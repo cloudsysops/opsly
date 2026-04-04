@@ -1,3 +1,11 @@
+# Traefik v3 — static configuration (secrets: ACME email via env on the traefik container,
+# e.g. TRAEFIK_CERTIFICATESRESOLVERS_LETSENCRYPT_ACME_EMAIL)
+
+log:
+  level: INFO
+
+accessLog: {}
+
 api:
   dashboard: true
   insecure: false
@@ -10,10 +18,15 @@ entryPoints:
         entryPoint:
           to: websecure
           scheme: https
+          permanent: true
   websecure:
     address: ":443"
 
 providers:
+  docker:
+    endpoint: "unix:///var/run/docker.sock"
+    exposedByDefault: false
+    network: traefik-public
   file:
     directory: /etc/traefik/dynamic
     watch: true
@@ -21,6 +34,5 @@ providers:
 certificatesResolvers:
   letsencrypt:
     acme:
-      email: admin@opsly.io
-      storage: /certs/acme.json
+      storage: /letsencrypt/acme.json
       tlsChallenge: {}

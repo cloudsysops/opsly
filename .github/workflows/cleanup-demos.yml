@@ -1,0 +1,15 @@
+name: Cleanup Expired Demos
+on:
+  schedule: [{ cron: "0 * * * *" }]
+  workflow_dispatch:
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Cleanup demos
+        run: bash scripts/cleanup-demos.sh
+        env:
+          PLATFORM_ADMIN_TOKEN: ${{ secrets.PLATFORM_ADMIN_TOKEN }}
+          NEXT_PUBLIC_APP_URL: ${{ secrets.NEXT_PUBLIC_APP_URL }}

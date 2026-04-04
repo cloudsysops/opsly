@@ -1,52 +1,113 @@
+# Create the shared edge network once before first deploy:
+#   docker network create traefik-public
+#
+# Required .env (non-exhaustive): PLATFORM_DOMAIN, REDIS_PASSWORD, ACME_EMAIL,
+# TRAEFIK_DASHBOARD_BASIC_AUTH_USERS (htpasswd format, e.g. user:$$apr1$$... — escape $ for Compose),
+# APP_IMAGE (optional), and application secrets for ../.env
+
 version: "3.9"
 
 services:
   traefik:
     image: traefik:v3.0
+    container_name: traefik
     ports:
       - "80:80"
       - "443:443"
+    environment:
+      TRAEFIK_CERTIFICATESRESOLVERS_LETSENCRYPT_ACME_EMAIL: ${ACME_EMAIL}
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./traefik/traefik.yml:/etc/traefik/traefik.yml:ro
       - ./traefik/dynamic:/etc/traefik/dynamic:ro
-      - traefik_certs:/certs
-    restart: unless-stopped
+      - letsencrypt:/letsencrypt
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik-public"
+      - "traefik.http.middlewares.traefik-dashboard-auth.basicauth.users=${TRAEFIK_DASHBOARD_BASIC_AUTH_USERS}"
+      # Dashboard Traefik (no usar admin.* — reservado para la app Opsly Admin)
+      - "traefik.http.routers.traefik-dashboard.rule=Host(`traefik.${PLATFORM_DOMAIN}`)"
+      - "traefik.http.routers.traefik-dashboard.entrypoints=websecure"
+      - "traefik.http.routers.traefik-dashboard.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.traefik-dashboard.service=api@internal"
+      - "traefik.http.routers.traefik-dashboard.middlewares=traefik-dashboard-auth@docker"
     networks:
-      - opsly
+      - traefik-public
+    restart: unless-stopped
 
   redis:
     image: redis:7-alpine
-    ports:
-      - "127.0.0.1:6379:6379"
+    command: redis-server --requirepass ${REDIS_PASSWORD}
     volumes:
       - redis_data:/data
-    restart: unless-stopped
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
     networks:
-      - opsly
+      - internal
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", 'redis-cli -a "$$REDIS_PASSWORD" ping | grep -q PONG']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
 
   app:
-    image: ghcr.io/cloudsysops/opsly:${VERSION:-latest}
-    env_file: ../.env
+    image: ${APP_IMAGE:-ghcr.io/tu-org/intcloudsysops-api:latest}
+    env_file:
+      - ../.env
     environment:
-      REDIS_URL: redis://redis:6379
-    depends_on:
-      - redis
+      REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379/0
+      PLATFORM_TENANTS_DIR: /opt/opsly/tenants
+      TEMPLATE_PATH: /opt/opsly/templates/docker-compose.tenant.yml.tpl
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - /opt/opsly/tenants:/opt/opsly/tenants
+      - ${PLATFORM_TENANTS_HOST_PATH:-/home/vps-dragon/opsly/tenants}:/opt/opsly/tenants
+      - ./templates:/opt/opsly/templates:ro
+    depends_on:
+      redis:
+        condition: service_healthy
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.app.rule=Host(`admin.opsly.io`)"
-      - "traefik.http.routers.app.tls=true"
-    restart: unless-stopped
+      - "traefik.docker.network=traefik-public"
+      - "traefik.http.routers.api.rule=Host(`api.${PLATFORM_DOMAIN}`)"
+      - "traefik.http.routers.api.entrypoints=websecure"
+      - "traefik.http.routers.api.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.api.service=app"
+      - "traefik.http.routers.api.middlewares=secure-headers@file,rate-limit@file,compress@file"
+      - "traefik.http.services.app.loadbalancer.server.port=3000"
     networks:
-      - opsly
+      - traefik-public
+      - internal
+    restart: unless-stopped
+    deploy:
+      replicas: 2
+
+  admin:
+    image: ${ADMIN_APP_IMAGE:-ghcr.io/tu-org/intcloudsysops-admin:latest}
+    container_name: opsly_admin
+    env_file:
+      - ../.env
+    environment:
+      PORT: "3001"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik-public"
+      - "traefik.http.routers.opsly-admin.rule=Host(`admin.${PLATFORM_DOMAIN}`)"
+      - "traefik.http.routers.opsly-admin.entrypoints=websecure"
+      - "traefik.http.routers.opsly-admin.tls.certresolver=letsencrypt"
+      - "traefik.http.services.opsly-admin.loadbalancer.server.port=3001"
+    networks:
+      - traefik-public
+    restart: unless-stopped
 
 networks:
-  opsly:
-    external: false
+  traefik-public:
+    external: true
+  internal:
+    driver: bridge
+    internal: true
 
 volumes:
-  traefik_certs:
+  letsencrypt:
   redis_data:

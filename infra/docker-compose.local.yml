@@ -1,0 +1,85 @@
+# Stack local: Traefik (HTTP) + Redis + API + Admin.
+# Build requiere contexto en la raíz del monorepo (package-lock.json workspace).
+#
+#   docker compose -f infra/docker-compose.local.yml build
+#   docker compose -f infra/docker-compose.local.yml up -d
+
+services:
+  traefik:
+    image: traefik:v3.0
+    container_name: traefik-local
+    command:
+      - --api.insecure=true
+      - --providers.docker=true
+      - --providers.docker.exposedByDefault=false
+      - --entrypoints.web.address=:80
+      - --log.level=DEBUG
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - traefik-local
+
+  redis:
+    image: redis:7-alpine
+    container_name: redis-local
+    command: redis-server --requirepass ${REDIS_PASSWORD:-localredis}
+    ports:
+      - "6379:6379"
+    networks:
+      - internal
+
+  api:
+    build:
+      context: ..
+      dockerfile: apps/api/Dockerfile
+    container_name: api-local
+    environment:
+      NODE_ENV: development
+      PORT: "3000"
+    env_file:
+      - ../.env.local
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ${TENANTS_PATH:-/tmp/opsly/tenants}:/opt/opsly/tenants
+      - ../infra/templates:/opt/opsly/templates:ro
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=traefik-local
+      - traefik.http.routers.api.rule=Host(`api.opsly.local`)
+      - traefik.http.routers.api.entrypoints=web
+      - traefik.http.services.api.loadbalancer.server.port=3000
+    networks:
+      - traefik-local
+      - internal
+    depends_on:
+      - redis
+
+  admin:
+    build:
+      context: ..
+      dockerfile: apps/admin/Dockerfile
+    container_name: admin-local
+    environment:
+      PORT: "3001"
+    env_file:
+      - ../.env.local
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=traefik-local
+      - traefik.http.routers.admin.rule=Host(`admin.opsly.local`)
+      - traefik.http.routers.admin.entrypoints=web
+      - traefik.http.services.admin.loadbalancer.server.port=3001
+    networks:
+      - traefik-local
+    depends_on:
+      - api
+
+networks:
+  traefik-local:
+    name: traefik-local
+  internal:
+    driver: bridge
+    internal: true

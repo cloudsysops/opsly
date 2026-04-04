@@ -1,0 +1,16 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+body {
+  @apply bg-ops-bg text-neutral-200 antialiased;
+}
+
+/* Terminal-style caret for inputs */
+.input-terminal-caret {
+  caret-color: #00ff88;
+}

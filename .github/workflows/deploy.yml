@@ -1,0 +1,158 @@
+# Secrets requeridos (repository o environment "production"):
+#   VPS_HOST, VPS_USER, VPS_SSH_KEY, DISCORD_WEBHOOK_URL, PLATFORM_DOMAIN
+#   (PLATFORM_DOMAIN: usado en el health check post-deploy vía SSH env)
+#
+# El resto de variables de .env deben definirse en el environment "production"
+# de GitHub y/o inyectarse en el VPS con Doppler (no van en texto plano en este YAML).
+
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      skip_tests:
+        description: "Omitir lint, typecheck y eslint"
+        type: boolean
+        required: false
+        default: false
+
+jobs:
+  lint-and-typecheck:
+    if: github.event_name != 'workflow_dispatch' || inputs.skip_tests != true
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      # Monorepo: un solo package-lock en la raíz instala workspaces (api + admin).
+      - name: npm ci (workspace)
+        run: npm ci
+
+      - name: Typecheck (parallel)
+        run: |
+          set -euo pipefail
+          (cd apps/api && npx tsc --noEmit) & pid1=$!
+          (cd apps/admin && npx tsc --noEmit) & pid2=$!
+          wait $pid1 $pid2
+
+      - name: ESLint if config exists (parallel)
+        run: |
+          set -euo pipefail
+          run_eslint() {
+            dir="$1"
+            if compgen -G "${dir}/eslint.config.*" >/dev/null 2>&1 \
+              || [ -f "${dir}/.eslintrc.json" ] \
+              || [ -f "${dir}/.eslintrc.cjs" ] \
+              || [ -f "${dir}/.eslintrc.js" ]; then
+              (cd "$dir" && npx eslint .)
+            else
+              echo "No ESLint config in ${dir}, skipping"
+            fi
+          }
+          run_eslint apps/api & pid1=$!
+          run_eslint apps/admin & pid2=$!
+          wait $pid1 $pid2
+
+  build:
+    needs: lint-and-typecheck
+    if: |
+      always() &&
+      (needs.lint-and-typecheck.result == 'success' || needs.lint-and-typecheck.result == 'skipped')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: npm ci + build (api, admin)
+        run: |
+          set -euo pipefail
+          npm ci
+          (cd apps/api && npm run build)
+          (cd apps/admin && npm run build)
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        env:
+          PLATFORM_DOMAIN: ${{ secrets.PLATFORM_DOMAIN }}
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          envs: PLATFORM_DOMAIN
+          script: |
+            set -euo pipefail
+
+            DEPLOY_PATH=/opt/opsly
+            REPO_URL=git@github.com:${{ github.repository }}.git
+
+            cd "$DEPLOY_PATH"
+            git fetch origin main
+            git reset --hard origin/main
+
+            # next build requiere devDependencies (TypeScript, tailwind, etc.)
+            npm ci
+
+            cd apps/api && npm run build && cd ../..
+            cd apps/admin && npm run build && cd ../..
+
+            cd /opt/opsly/infra
+            docker compose -f docker-compose.platform.yml up -d --no-deps --build app
+
+            sleep 10
+            if [ -z "${PLATFORM_DOMAIN:-}" ]; then
+              echo "PLATFORM_DOMAIN no está definido en el entorno remoto; define el secret PLATFORM_DOMAIN o exporta la variable en el VPS (Doppler)." >&2
+              exit 1
+            fi
+            curl -sf "https://api.${PLATFORM_DOMAIN}/api/health" || exit 1
+
+            echo "Deploy completado: $(date -u)"
+
+      - name: Notify Discord on success
+        if: success()
+        continue-on-error: true
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          set -euo pipefail
+          TS=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+          curl -X POST "$DISCORD_WEBHOOK_URL" \
+            -H "Content-Type: application/json" \
+            -d "$(jq -n \
+              --arg sha "${{ github.sha }}" \
+              --arg actor "${{ github.actor }}" \
+              --arg ts "$TS" \
+              '{embeds:[{title:"✅ Deploy exitoso",color:65416,fields:[{name:"Commit",value:$sha,inline:true},{name:"Author",value:$actor,inline:true}],timestamp:$ts}]}')"
+
+      - name: Notify Discord on failure
+        if: failure()
+        continue-on-error: true
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          set -euo pipefail
+          curl -X POST "$DISCORD_WEBHOOK_URL" \
+            -H "Content-Type: application/json" \
+            -d "$(jq -n \
+              --arg sha "${{ github.sha }}" \
+              --arg actor "${{ github.actor }}" \
+              --arg url "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+              '{embeds:[{title:"❌ Deploy fallido",color:16729156,fields:[{name:"Commit",value:$sha,inline:true},{name:"Author",value:$actor,inline:true},{name:"Logs",value:$url,inline:false}]}]}')"

@@ -1,97 +1,162 @@
 #!/usr/bin/env bash
+# Backup active tenant schemas to S3 (cron-safe: no prompts).
+#
+# Required env:
+#   SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, DB_CONNECTION_STRING,
+#   S3_BUCKET, AWS_REGION
+# Optional env:
+#   S3_PREFIX (default: opsly/backups), DISCORD_WEBHOOK_URL
+#
+# Exit codes: 0 ok, 1 error / backup failures, 2 missing dependency, 3 missing env
+
 set -euo pipefail
 
 _SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=scripts/lib/common.sh
 source "${_SCRIPT_DIR}/lib/common.sh"
 
-DRY_RUN=0
-for arg in "$@"; do
-  if [[ "${arg}" == "--dry-run" ]]; then
-    DRY_RUN=1
-    break
-  fi
+export DRY_RUN="${DRY_RUN:-false}"
+FILTER_SLUG=""
+BACKUP_DATE=""
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --dry-run)
+      export DRY_RUN=true
+      shift
+      ;;
+    --slug)
+      FILTER_SLUG="${2:-}"
+      shift 2
+      ;;
+    --date)
+      BACKUP_DATE="${2:-}"
+      shift 2
+      ;;
+    *)
+      die "Unknown argument: $1" 1
+      ;;
+  esac
 done
 
-check_env SUPABASE_SERVICE_ROLE_KEY SUPABASE_URL AWS_S3_BUCKET AWS_S3_REGION DB_CONNECTION_STRING
-require_command jq curl aws pg_dump gzip
+require_env SUPABASE_URL SUPABASE_SERVICE_ROLE_KEY DB_CONNECTION_STRING S3_BUCKET AWS_REGION
+require_cmd jq curl aws pg_dump gzip
 
-TENANTS_JSON="$(
-  curl -sS -G "${SUPABASE_URL}/rest/v1/tenants" \
-    --data-urlencode "select=slug,owner_email" \
-    --data-urlencode "status=eq.active" \
-    --data-urlencode "deleted_at=is.null" \
-    -H "apikey: ${SUPABASE_SERVICE_ROLE_KEY}" \
-    -H "Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}" \
-    -H "Accept-Profile: platform"
-)"
+S3_PREFIX="${S3_PREFIX:-opsly/backups}"
+DATE_UTC="${BACKUP_DATE:-$(date -u +%Y-%m-%d)}"
 
-if ! echo "${TENANTS_JSON}" | jq -e . >/dev/null 2>&1; then
-  log_error "Failed to fetch tenants from Supabase: ${TENANTS_JSON}"
-  exit 1
+if [[ -n "${BACKUP_DATE}" ]] && ! [[ "${BACKUP_DATE}" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]; then
+  die "Invalid --date (expected YYYY-MM-DD)" 1
 fi
 
-DATE_UTC="$(date -u +%Y-%m-%d)"
-COUNT=0
+notify_discord() {
+  local text="$1"
+  [[ -z "${DISCORD_WEBHOOK_URL:-}" ]] && return 0
+  if [[ "${DRY_RUN}" == "true" ]]; then
+    log_info "DRY-RUN: Discord notify skipped"
+    return 0
+  fi
+  curl -sS -X POST "${DISCORD_WEBHOOK_URL}" \
+    -H "Content-Type: application/json" \
+    -d "$(jq -n --arg c "${text}" '{content: $c}')" >/dev/null || true
+}
+
+TMP_ROOT="/tmp/intcloudsysops/${DATE_UTC}"
+run mkdir -p "${TMP_ROOT}"
+
+fetch_slugs() {
+  if [[ "${DRY_RUN}" == "true" ]]; then
+    log_info "DRY-RUN: GET ${SUPABASE_URL}/rest/v1/tenants (active, not deleted)"
+    if [[ -n "${FILTER_SLUG}" ]]; then
+      echo "${FILTER_SLUG}"
+    fi
+    return 0
+  fi
+
+  local -a curl_args=(
+    -sS -G "${SUPABASE_URL}/rest/v1/tenants"
+    --data-urlencode "select=slug"
+    --data-urlencode "status=eq.active"
+    --data-urlencode "deleted_at=is.null"
+  )
+  if [[ -n "${FILTER_SLUG}" ]]; then
+    curl_args+=(--data-urlencode "slug=eq.${FILTER_SLUG}")
+  fi
+  curl_args+=(
+    -H "apikey: ${SUPABASE_SERVICE_ROLE_KEY}"
+    -H "Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}"
+    -H "Accept-Profile: platform"
+  )
+
+  local json
+  json="$(curl "${curl_args[@]}")"
+  if ! echo "${json}" | jq -e . >/dev/null 2>&1; then
+    die "Failed to fetch tenants: ${json}" 1
+  fi
+  echo "${json}" | jq -r '.[].slug'
+}
+
+FAILED=()
+SUCCESS_COUNT=0
 
 while IFS= read -r slug; do
   [[ -z "${slug}" ]] && continue
-  COUNT=$((COUNT + 1))
-  tmp_sql_gz="/tmp/${slug}_${DATE_UTC}.sql.gz"
-  s3_key="opsly/backups/${DATE_UTC}/${slug}.sql.gz"
 
-  if [[ "${DRY_RUN}" -eq 1 ]]; then
-    log_info "DRY RUN: pg_dump schema tenant_${slug} | gzip > ${tmp_sql_gz}"
-    log_info "DRY RUN: aws s3 cp ${tmp_sql_gz} s3://${AWS_S3_BUCKET}/${s3_key}"
+  tmp_sql_gz="${TMP_ROOT}/${slug}.sql.gz"
+  s3_key="${S3_PREFIX}/${DATE_UTC}/${slug}.sql.gz"
+  s3_uri="s3://${S3_BUCKET}/${s3_key}"
+
+  if [[ "${DRY_RUN}" == "true" ]]; then
+    log_info "DRY-RUN: pg_dump -n tenant_${slug} ... | gzip > ${tmp_sql_gz}"
+    log_info "DRY-RUN: aws s3 cp ${tmp_sql_gz} ${s3_uri} --region ${AWS_REGION}"
+    log_info "DRY-RUN: aws s3 ls ${s3_uri}"
+    SUCCESS_COUNT=$((SUCCESS_COUNT + 1))
     continue
   fi
 
-  log_info "Backing up tenant schema: tenant_${slug}"
-  if ! pg_dump "${DB_CONNECTION_STRING}" -n "tenant_${slug}" --no-owner --no-acl | gzip -c >"${tmp_sql_gz}"; then
+  log_info "Backing up schema tenant_${slug}"
+  if ! pg_dump "${DB_CONNECTION_STRING}" -n "tenant_${slug}" --no-owner --no-acl 2>/dev/null | gzip -c >"${tmp_sql_gz}"; then
     log_error "pg_dump failed for slug=${slug}"
+    FAILED+=("${slug}")
     rm -f "${tmp_sql_gz}"
-    exit 1
+    continue
   fi
 
-  aws s3 cp "${tmp_sql_gz}" "s3://${AWS_S3_BUCKET}/${s3_key}" --region "${AWS_S3_REGION}"
-  rm -f "${tmp_sql_gz}"
-done < <(echo "${TENANTS_JSON}" | jq -r '.[].slug')
+  if ! aws s3 cp "${tmp_sql_gz}" "${s3_uri}" --region "${AWS_REGION}"; then
+    log_error "S3 upload failed for slug=${slug}"
+    FAILED+=("${slug}")
+    rm -f "${tmp_sql_gz}"
+    continue
+  fi
 
-if [[ "${DRY_RUN}" -eq 1 ]]; then
-  log_info "DRY RUN: prune S3 backups older than 30 days under s3://${AWS_S3_BUCKET}/opsly/backups/"
-  log_info "Backup complete (dry run): ${COUNT} tenants"
+  if ! aws s3 ls "${s3_uri}" --region "${AWS_REGION}" >/dev/null 2>&1; then
+    log_error "S3 verify failed for slug=${slug}"
+    FAILED+=("${slug}")
+    rm -f "${tmp_sql_gz}"
+    continue
+  fi
+
+  rm -f "${tmp_sql_gz}"
+  SUCCESS_COUNT=$((SUCCESS_COUNT + 1))
+  log_info "Uploaded ${s3_uri}"
+done < <(fetch_slugs)
+
+run rm -rf "${TMP_ROOT}"
+
+FAIL_COUNT="${#FAILED[@]}"
+SUMMARY="Backup ${DATE_UTC}: ${SUCCESS_COUNT} ok, ${FAIL_COUNT} failed."
+if [[ "${FAIL_COUNT}" -gt 0 ]]; then
+  SUMMARY+=" Failed: ${FAILED[*]}"
+fi
+notify_discord "${SUMMARY}"
+
+if [[ "${DRY_RUN}" == "true" ]]; then
+  log_info "DRY-RUN complete (${SUCCESS_COUNT} simulated tenants)"
   exit 0
 fi
 
-CUTOFF_DATE=""
-if CUTOFF_DATE="$(date -u -d "30 days ago" +%Y-%m-%d 2>/dev/null)"; then
-  :
-elif CUTOFF_DATE="$(date -u -v-30d +%Y-%m-%d 2>/dev/null)"; then
-  :
-else
-  log_warn "Could not compute cutoff date; skipping S3 prune"
-  CUTOFF_DATE=""
+log_info "${SUMMARY}"
+if [[ "${FAIL_COUNT}" -gt 0 ]]; then
+  exit 1
 fi
-
-if [[ -n "${CUTOFF_DATE}" ]]; then
-  log_info "Pruning backup date prefixes strictly before ${CUTOFF_DATE} (UTC)"
-fi
-
-while IFS= read -r line; do
-  [[ -z "${line}" ]] && continue
-  [[ "${line}" != *"PRE"* ]] && continue
-  [[ -z "${CUTOFF_DATE}" ]] && break
-  dir_token="${line##*PRE }"
-  dir_token="${dir_token//[[:space:]]/}"
-  prefix_date="${dir_token%/}"
-  [[ -z "${prefix_date}" ]] && continue
-  if ! [[ "${prefix_date}" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]; then
-    continue
-  fi
-  if [[ "${prefix_date}" < "${CUTOFF_DATE}" ]]; then
-    log_info "Deleting s3://${AWS_S3_BUCKET}/opsly/backups/${prefix_date}/"
-    aws s3 rm "s3://${AWS_S3_BUCKET}/opsly/backups/${prefix_date}/" --recursive --region "${AWS_S3_REGION}"
-  fi
-done < <(aws s3 ls "s3://${AWS_S3_BUCKET}/opsly/backups/" --region "${AWS_S3_REGION}" 2>/dev/null || true)
-
-log_info "Backup complete: ${COUNT} tenants"
+exit 0
