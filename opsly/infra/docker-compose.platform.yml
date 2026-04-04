@@ -1,0 +1,52 @@
+version: "3.9"
+
+services:
+  traefik:
+    image: traefik:v3.0
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./traefik/traefik.yml:/etc/traefik/traefik.yml:ro
+      - ./traefik/dynamic:/etc/traefik/dynamic:ro
+      - traefik_certs:/certs
+    restart: unless-stopped
+    networks:
+      - opsly
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "127.0.0.1:6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    networks:
+      - opsly
+
+  app:
+    image: ghcr.io/cloudsysops/opsly:${VERSION:-latest}
+    env_file: ../.env
+    environment:
+      REDIS_URL: redis://redis:6379
+    depends_on:
+      - redis
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /opt/opsly/tenants:/opt/opsly/tenants
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.app.rule=Host(`admin.opsly.io`)"
+      - "traefik.http.routers.app.tls=true"
+    restart: unless-stopped
+    networks:
+      - opsly
+
+networks:
+  opsly:
+    external: false
+
+volumes:
+  traefik_certs:
+  redis_data:

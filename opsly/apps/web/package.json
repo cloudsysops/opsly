@@ -1,0 +1,29 @@
+{
+  "name": "@intcloudsysops/web",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "lint": "eslint .",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "next": "^15.1.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "@supabase/ssr": "^0.6.1",
+    "@supabase/supabase-js": "^2.49.1",
+    "stripe": "^17.7.0",
+    "resend": "^4.1.2",
+    "bullmq": "^5.41.5",
+    "zod": "^3.24.2",
+    "execa": "^9.5.2",
+    "ioredis": "^5.6.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.3",
+    "@types/node": "^22.13.10",
+    "eslint": "^9.21.0"
+  }
+}
