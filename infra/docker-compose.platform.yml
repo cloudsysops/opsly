@@ -6,14 +6,17 @@
 #
 # Required en /opt/opsly/.env (non-exhaustive): PLATFORM_DOMAIN (base host, e.g. ops.smiletripcare.com),
 # REDIS_PASSWORD, ACME_EMAIL, TRAEFIK_DASHBOARD_BASIC_AUTH_USERS (htpasswd; escapar $ en Compose),
+# DOCKER_GID (GID del grupo del socket: stat -c %g /var/run/docker.sock; vps-bootstrap.sh lo añade),
 # APP_IMAGE (optional). Los servicios también cargan env_file ../.env (= /opt/opsly/.env desde infra/).
 
 services:
   traefik:
     image: traefik:v3.0
     container_name: traefik
-    # El socket de Docker suele ser root:root; ejecutar como root evita permisos denegados al leer /var/run/docker.sock.
-    user: root
+    # El socket suele ser root:docker (660). La imagen Traefik corre sin root; group_add inyecta el GID del grupo
+    # docker del host para que el proceso pueda usar /var/run/docker.sock (ver DOCKER_GID en .env).
+    group_add:
+      - "${DOCKER_GID:-999}"
     ports:
       - "80:80"
       - "443:443"

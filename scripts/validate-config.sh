@@ -82,6 +82,7 @@ ADMIN_DOM="$(read_cfg '.domains.admin')"
 DOPPLER_PROJECT="$(read_cfg '.project.doppler_project')"
 DOPPLER_CFG="$(read_cfg '.project.doppler_config')"
 VPS_USER="$(read_cfg '.infrastructure.vps_user')"
+VPS_PATH="$(read_cfg '.infrastructure.vps_path')"
 
 dns_points_to_vps() {
   local host="$1"
@@ -150,6 +151,20 @@ if ssh -o BatchMode=yes -o ConnectTimeout=5 "${VPS_USER}@${VPS_IP}" exit >/dev/n
   PASS_SSH=1
 else
   echo "⚠️  SSH no disponible sin interacción (clave, known_hosts o timeout)"
+fi
+
+# DOCKER_GID en .env del VPS — Traefik (compose) usa group_add con este valor para el socket Docker.
+if [[ "${PASS_SSH}" -eq 1 ]] && nonempty "${VPS_PATH}"; then
+  if ssh -o BatchMode=yes -o ConnectTimeout=8 "${VPS_USER}@${VPS_IP}" \
+    "test -f '${VPS_PATH}/.env' && grep -q '^DOCKER_GID=' '${VPS_PATH}/.env'" >/dev/null 2>&1; then
+    echo "✅ VPS ${VPS_PATH}/.env incluye DOCKER_GID (Traefik → docker.sock)"
+  else
+    echo "⚠️  Falta DOCKER_GID en ${VPS_PATH}/.env del VPS — Traefik no podrá usar el socket bien."
+    echo "    En el VPS: ejecuta ./scripts/vps-bootstrap.sh (añade DOCKER_GID con stat -c %g /var/run/docker.sock)"
+    echo "    o añade manualmente: echo \"DOCKER_GID=\$(stat -c %g /var/run/docker.sock)\" >> ${VPS_PATH}/.env"
+  fi
+elif [[ "${PASS_SSH}" -eq 1 ]]; then
+  echo "⚠️  infrastructure.vps_path vacío en JSON — no se comprobó DOCKER_GID en el VPS"
 fi
 
 # Terraform (opcional): si existe infra/terraform/, avisar si falta CLI o init

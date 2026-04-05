@@ -134,6 +134,21 @@ if [[ ! -f "${OPS_ROOT}/letsencrypt/acme.json" ]]; then
 fi
 run chmod 600 "${OPS_ROOT}/letsencrypt/acme.json"
 
+log_info "[i] DOCKER_GID — GID del socket Docker para Traefik (group_add en compose)"
+# Traefik necesita el mismo GID numérico que el grupo propietario de /var/run/docker.sock en el host.
+if [[ -S /var/run/docker.sock ]]; then
+  DOCKER_GID="$(stat -c %g /var/run/docker.sock)"
+  if ! grep -q '^DOCKER_GID=' "${ENV_FILE}" 2>/dev/null; then
+    echo "DOCKER_GID=${DOCKER_GID}" >>"${ENV_FILE}"
+    log_info "Añadido DOCKER_GID=${DOCKER_GID} a ${ENV_FILE}"
+  else
+    log_info "DOCKER_GID ya definido en ${ENV_FILE} (no se sobrescribe)"
+  fi
+  echo "Docker socket GID: ${DOCKER_GID}"
+else
+  echo "⚠️  /var/run/docker.sock no es un socket; no se pudo obtener DOCKER_GID" >&2
+fi
+
 log_info "[h] Resumen"
 echo ""
 echo "--- Nombres de variables en .env (sin valores) ---"
