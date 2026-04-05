@@ -17,14 +17,16 @@ services:
     ports:
       - "80:80"
       - "443:443"
-    # DOCKER_API_VERSION: Traefik usa un cliente Docker antiguo que negociaba API 1.24; el daemon actual exige ≥1.40
-    # ("client version 1.24 is too old"). Fijar 1.41 hace que las peticiones al socket usen una versión compatible.
+      # Depuración: dashboard Traefik con api.insecure (solo localhost en el VPS, no exponer a Internet).
+      - "127.0.0.1:8080:8080"
+    # DOCKER_API_VERSION: evita negociación API 1.24 por defecto en Traefik v3 frente a Docker Engine ≥1.40.
     environment:
-      DOCKER_API_VERSION: "1.41"
-      TRAEFIK_CERTIFICATESRESOLVERS_LETSENCRYPT_ACME_EMAIL: ${ACME_EMAIL}
-    # Volúmenes: docker.sock (ro) descubrimiento de servicios por labels; estáticos y dinámicos Traefik; certificados ACME.
+      - DOCKER_API_VERSION=1.41
+      - TRAEFIK_CERTIFICATESRESOLVERS_LETSENCRYPT_ACME_EMAIL=${ACME_EMAIL}
+    # Socket sin :ro: Traefik v3 puede necesitar escritura en el socket para eventos del provider Docker.
+    # Resto: configuración estática/dinámica y almacenamiento ACME.
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /var/run/docker.sock:/var/run/docker.sock
       - ./traefik/traefik.yml:/etc/traefik/traefik.yml:ro
       - ./traefik/dynamic:/etc/traefik/dynamic:ro
       - letsencrypt:/letsencrypt

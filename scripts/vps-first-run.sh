@@ -11,6 +11,12 @@ source "${SCRIPT_DIR}/lib/common.sh"
 
 require_cmd docker curl
 
+# Comprobar que el daemon Docker responde (socket y permisos del usuario actual).
+if ! docker info >/dev/null 2>&1; then
+  echo "ERROR: Docker no accesible. Verificar permisos (grupo docker o root)." >&2
+  exit 1
+fi
+
 if ! docker compose version >/dev/null 2>&1; then
   die "docker compose no disponible" 2
 fi

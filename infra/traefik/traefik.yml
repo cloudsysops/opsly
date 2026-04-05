@@ -6,9 +6,10 @@ log:
 
 accessLog: {}
 
+# insecure: true expone el dashboard/API en :8080 sin TLS (solo depuración; no usar en producción pública).
 api:
   dashboard: true
-  insecure: false
+  insecure: true
 
 entryPoints:
   web:
@@ -22,9 +23,8 @@ entryPoints:
   websecure:
     address: ":443"
 
-# Provider Docker (equivalente a --providers.docker=true en CLI):
-#   exposedByDefault: false  →  --providers.docker.exposedbydefault=false (solo contenedores con traefik.enable=true)
-#   network: traefik-public   →  --providers.docker.network=traefik-public (IP del backend en esa red)
+# Provider Docker: endpoint explícito al socket del host; sin esto Traefik v3 puede negociar API 1.24 y fallar con daemons recientes.
+# exposedByDefault: false = solo contenedores con traefik.enable=true; network = IP del backend en traefik-public.
 providers:
   docker:
     endpoint: "unix:///var/run/docker.sock"
