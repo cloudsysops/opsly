@@ -22,8 +22,9 @@
 ```
 Flujo de cierre:
 1. Actualiza AGENTS.md (todas las secciones 🔄).
-2. Commit y push a main (mensaje claro, ej. docs(agents): estado sesión YYYY-MM-DD),
-   o ejecuta ./scripts/update-agents.sh para espejar AGENTS, VISION y context/system_state.json en .github/ y pushear.
+2. Commit y push a main (mensaje claro, ej. docs(agents): estado sesión YYYY-MM-DD).
+   Con `core.hooksPath=.githooks`, el post-commit copia AGENTS y system_state a `.github/` (revisa `git status` por si hace falta un commit extra).
+   Alternativa: `./scripts/update-agents.sh` para espejar AGENTS, VISION y `context/system_state.json` y pushear.
 3. Respóndeme con la URL raw de AGENTS.md en main para que la pegue al abrir la próxima sesión.
 
 https://raw.githubusercontent.com/cloudsysops/opsly/main/AGENTS.md
@@ -45,16 +46,17 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 
 <!-- Actualizar al final de cada sesión -->
 
-**Fecha última actualización:** 2026-04-05 (alineación automática contexto Capa 1 + Capa 2)
+**Fecha última actualización:** 2026-04-05 (docs: inventario completo — contexto automático + gobernanza previa)
 
 **Completado ✅**
 
-*Alineación automática del contexto (Capa 1 + Capa 2; n8n después):*
-- **Capa 1 — `scripts/update-state.js`:** rellena `context/system_state.json` con `repo.apps`, conteos de `scripts/*.sh`, ADRs y migraciones SQL (sin tocar fase/VPS/Doppler manual)
-- **Capa 2 — `.githooks/post-commit`:** tras commit, si cambió `infra/`, `scripts/`, `apps/` o `supabase/`, ejecuta `update-state.js`; siempre copia `AGENTS.md` → `.github/AGENTS.md` y `context/system_state.json` → `.github/system_state.json`
-- **`npm run update-state` / `sync-agents` / `validate-context`** en `package.json`
-- **`.github/workflows/validate-context.yml`:** CI valida JSON, que cada `apps/*` aparezca en `AGENTS.md`, y que `AGENTS.md` coincida con `.github/AGENTS.md`
-- **`git config core.hooksPath .githooks`** documentado en `README.md` (sección **Setup**) y aplicado al inicio de `scripts/local-setup.sh`
+*Alineación automática del contexto (Capa 1 + Capa 2; n8n y capas superiores después):*
+- **Capa 1 — `scripts/update-state.js`:** Node sin dependencias extra; lee el repo y escribe en `context/system_state.json` el bloque `repo` (`apps[]`, número de `scripts/*.sh`, ADRs, migraciones `.sql`) y `last_updated` (UTC fecha); no sobrescribe fase, VPS, Doppler, DNS, `next_action` ni `tenants` (merge sobre JSON actual).
+- **Capa 2 — `.githooks/post-commit`:** Tras cada commit exitoso: si el commit tocó `infra/`, `scripts/`, `apps/` o `supabase/`, ejecuta `node scripts/update-state.js`; **siempre** copia `AGENTS.md` → `.github/AGENTS.md` y `context/system_state.json` → `.github/system_state.json` (si los cambios del hook quedan sin commitear, haz un segundo commit o `./scripts/update-agents.sh`).
+- **`package.json`:** `npm run update-state`, `sync-agents` → `bash scripts/update-agents.sh`, `validate-context` → validación JSON local con `python3 -m json.tool`.
+- **CI — `.github/workflows/validate-context.yml`:** en `push` y `pull_request` comprueba JSON válido, que cada carpeta bajo `apps/*` tenga mención en `AGENTS.md`, y `diff` entre `AGENTS.md` y `.github/AGENTS.md` (si falla: sincronizar y pushear).
+- **Activación hooks:** `git config core.hooksPath .githooks` en **README → Setup** y al arrancar `scripts/local-setup.sh`; **pre-commit** existente sigue ejecutando `npm run type-check` (Turbo) antes del commit.
+- **Verificación:** commit `feat(context): …` en `main` con pre-commit + post-commit ejecutándose (type-check OK, `update-state` y “Contexto sincronizado” en log).
 
 *Contexto y flujo para agentes (abr 2026):*
 - `VISION.md` — visión, ICP, planes, primer cliente smiletripcare, stack transferible, límites; **roadmap por fases (revisado 2026-04-04)** con Fase 1 (máx 1 semana), 2, 3, lista *Nunca* (K8s, Swarm, migrar Traefik/Supabase) y **regla:** antes de features nuevos → ¿tenants en producción > 0? si no, Fase 1
@@ -81,6 +83,7 @@ con facturación Stripe, backups automáticos y dashboard de administración.
   tunnel-access, setup-doppler, sync-config, validate-config,
   migrate-to-traefik, git-setup, deploy-staging)
 - apps/admin/ (dashboard Next.js dark theme ops/terminal)
+- apps/web/ (workspace Next.js en monorepo; documentado para CI `validate-context`)
 - .github/workflows/ (ci.yml, deploy.yml, deploy-staging.yml, backup.yml,
   cleanup-demos.yml, validate-context.yml)
 - config/opsly.config.json (fuente de verdad central)
