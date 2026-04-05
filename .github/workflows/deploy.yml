@@ -1,5 +1,6 @@
 # Secrets requeridos (repository o environment "production"):
-#   VPS_HOST, VPS_USER, VPS_SSH_KEY, DISCORD_WEBHOOK_URL, PLATFORM_DOMAIN
+#   VPS_HOST, VPS_USER, VPS_SSH_KEY, PLATFORM_DOMAIN
+#   DISCORD_WEBHOOK_URL (opcional; si falta, los steps de Discord hacen no-op)
 #   (PLATFORM_DOMAIN: usado en el health check post-deploy vía SSH env)
 #
 # El resto de variables de .env deben definirse en el environment "production"
@@ -131,12 +132,13 @@ jobs:
             echo "Deploy completado: $(date -u)"
 
       - name: Notify Discord on success
-        if: success() && secrets.DISCORD_WEBHOOK_URL != ''
+        if: success()
         continue-on-error: true
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: |
           set -euo pipefail
+          if [ -z "${DISCORD_WEBHOOK_URL:-}" ]; then echo "Discord omitido (DISCORD_WEBHOOK_URL vacío)"; exit 0; fi
           TS=$(date -u +%Y-%m-%dT%H:%M:%SZ)
           curl -X POST "$DISCORD_WEBHOOK_URL" \
             -H "Content-Type: application/json" \
@@ -147,12 +149,13 @@ jobs:
               '{embeds:[{title:"✅ Deploy exitoso",color:65416,fields:[{name:"Commit",value:$sha,inline:true},{name:"Author",value:$actor,inline:true}],timestamp:$ts}]}')"
 
       - name: Notify Discord on failure
-        if: failure() && secrets.DISCORD_WEBHOOK_URL != ''
+        if: failure()
         continue-on-error: true
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: |
           set -euo pipefail
+          if [ -z "${DISCORD_WEBHOOK_URL:-}" ]; then echo "Discord omitido (DISCORD_WEBHOOK_URL vacío)"; exit 0; fi
           curl -X POST "$DISCORD_WEBHOOK_URL" \
             -H "Content-Type: application/json" \
             -d "$(jq -n \
