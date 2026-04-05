@@ -47,7 +47,7 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 
 <!-- Actualizar al final de cada sesión -->
 
-**Fecha última actualización:** 2026-04-05 (tools/usb-kit pendrive + disk3 Ubuntu booteable documentado)
+**Fecha última actualización:** 2026-04-05 (usb-kit pendrive + plantillas profesionales `.github/` + esta sincronización de AGENTS)
 
 **Completado ✅**
 
@@ -98,7 +98,19 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 - **GHCR — sesiones siguientes:** flujo acordado: PAT GitHub `read:packages` → `docker login ghcr.io` en el VPS → opcional `doppler secrets set GHCR_TOKEN GHCR_USER` → bootstrap → first-run → health. **Aún no se pegó el PAT en el chat** (agente en espera); ejecutar login de forma segura (SSH interactiva o token no expuesto en historial).
 
 *USB kit / pendrive (2026-04-05):*
-- Carpeta **`tools/usb-kit/`** con `pen-check-tools.sh`, `pen-sync-repo.sh`, `pen-ssh-vps.sh`, `pen-hint-disks.sh`, `lib/usb-common.sh`, `pen.config.example.json`, `README.md`. Convención: **disk3** (macOS `diskutil`) = instalador Ubuntu booteable; en el pen de datos, **clon completo del repo** (no solo la carpeta kit). `pen.local.json` (copia del example) para `ssh.target` tipo `vps-dragon`; archivo **gitignored**.
+- Carpeta **`tools/usb-kit/`** con `pen-check-tools.sh`, `pen-sync-repo.sh`, `pen-ssh-vps.sh`, `pen-hint-disks.sh`, `lib/usb-common.sh`, `pen.config.example.json`, `README.md`. Convención: **disk3** (macOS `diskutil`) = instalador Ubuntu booteable; en el pen de datos, **clon completo del repo** (no solo la carpeta kit). `pen.local.json` (copia del example) para `ssh.target` tipo `vps-dragon`; archivo **gitignored**. Commits en `main`: `feat(tools): usb-kit…` (`99faa96`) + sync contexto (`8326b68`).
+
+*Plantillas y gobernanza GitHub (2026-04-05):*
+- **`.github/CODEOWNERS`:** rutas `apps/api/`, `scripts/`, `supabase/` → `@cloudsysops/backend`; `apps/admin/`, `apps/web/` → `@cloudsysops/frontend`; `infra/`, `infra/terraform/` → `@cloudsysops/infra`; fallback `*` → `@cboteros`. Cabecera en español explica orden (última regla que coincide gana). **Pendiente org:** crear equipos en GitHub si no existen o sustituir handles.
+- **`.github/PULL_REQUEST_TEMPLATE.md`:** reemplaza `pull_request_template.md` (nombre estándar en mayúsculas); bloque inicial en español; secciones tipo de cambio, impacto en tenants, checklist (type-check, Doppler, `./scripts/validate-config.sh`, `AGENTS.md` si arquitectura, `terraform plan` si `infra/terraform/`), Terraform/infra, notas al revisor.
+- **`.github/ISSUE_TEMPLATE/bug_report.yml`:** entornos `vps-prod` / `staging` / `local`; campo impacto en tenants; comentarios YAML sobre diferencia **formulario .yml** vs **plantilla .md**.
+- **`feature_request.yml`:** problema, propuesta, alternativas; desplegable **fase** (Fase 1–3, No aplica); **área** (api, admin, infra, billing, onboarding, terraform).
+- **`config.yml`:** `blank_issues_enabled: false`; `contact_links` → URL raw de `AGENTS.md` como contexto.
+- **`tenant_issue.yml`:** cabecera explicativa añadida (formulario sin cambio funcional).
+- **`.github/copilot-instructions.md`:** convenciones Opsly, archivos de referencia, sección **qué NO hacer** (K8s/Swarm/nginx, secretos en código, saltear validate-config, terraform sin plan). Contenido saneado (sin volcado accidental de AGENTS).
+- **`.github/README-github-templates.md`:** guía en español (tabla archivo → propósito → cuándo → quién; reutilización en otros repos).
+- **Workflows** en `.github/workflows/` **no** se modificaron en esta tarea.
+- Commit de referencia: `docs(github): add professional templates and explain each file` (`a82180e`).
 
 *Alineación automática del contexto (Capa 1 + Capa 2; n8n y capas superiores después):*
 - **Capa 1 — `scripts/update-state.js`:** Node sin dependencias extra; lee el repo y escribe en `context/system_state.json` el bloque `repo` (`apps[]`, número de `scripts/*.sh`, ADRs, migraciones `.sql`) y `last_updated` (UTC fecha); no sobrescribe fase, VPS, Doppler, DNS, `next_action` ni `tenants` (merge sobre JSON actual).
@@ -114,7 +126,7 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 - `.vscode/extensions.json` — extensiones recomendadas (ESLint, Prettier, Tailwind, TS, GitLens, Supabase, Thunder Client, etc.)
 - `.cursor/rules/opsly.mdc` — Fase 1 validación; prioridad `VISION.md` → `AGENTS.md` → `config/opsly.config.json`; consultar `docs/adr/` para arquitectura
 - `.claude/CLAUDE.md` — URLs raw de `AGENTS.md` y `VISION.md`
-- **GitHub:** repo `cloudsysops/opsly` **público** para que Claude u otros lean sin clonar
+- **GitHub:** repo `cloudsysops/opsly` **público** para que Claude u otros lean sin clonar; plantillas en `.github/` documentadas en `README-github-templates.md`
 - `docs/adr/` — ADR-001 (compose por tenant), ADR-002 (Traefik v3), ADR-003 (Doppler), ADR-004 (Supabase schema por tenant)
 - `agents/prompts/` — `claude-architect.md`, `cursor-executor.md`
 - `context/system_state.json` — fase, VPS, DNS, `deploy_staging`, `doppler`, `repo` (vía `update-state.js`); `next_action` según bloqueo actual; espejo `.github/system_state.json` vía `update-agents.sh` / post-commit
@@ -135,19 +147,21 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 - apps/admin/ (dashboard Next.js dark theme ops/terminal)
 - apps/web/ (workspace Next.js en monorepo; documentado para CI `validate-context`)
 - .github/workflows/ (ci.yml, deploy.yml, deploy-staging.yml, backup.yml,
-  cleanup-demos.yml, validate-context.yml)
+  cleanup-demos.yml, validate-context.yml); CODEOWNERS; PULL_REQUEST_TEMPLATE.md;
+  ISSUE_TEMPLATE/*.yml; copilot-instructions.md; README-github-templates.md
 - config/opsly.config.json (fuente de verdad central)
 - docs/ (ARCHITECTURE.md, TEST_PLAN.md, DNS_SETUP.md, VPS-ARCHITECTURE.md)
 - README.md completo
 - .githooks/ (pre-commit type-check, post-commit contexto) + plantillas GitHub
-  (CODEOWNERS, issue forms, PR template)
+  (CODEOWNERS, issue forms, PR template, guía README-github-templates)
 - AGENTS.md (este archivo)
 - Auditoría secrets: `doppler secrets upload` desde `/opt/opsly/.env` (18 claves
   de la lista audit) + alineación `PLATFORM_*` / `NEXT_PUBLIC_*` dominio con
   `config/opsly.config.json` (2026-04-05)
 - `config/doppler-missing.txt` (instrucciones + auditoría 2026-04-05 deploy bloqueado)
 - `tools/usb-kit/` (scripts portátiles pendrive: chequeo CLI, sync git, SSH VPS, hints disco; README **disk3** Ubuntu booteable)
-- `.github/copilot-instructions.md`, `.github/AGENTS.md` (espejo de este archivo)
+- `.github/copilot-instructions.md`, `.github/README-github-templates.md`,
+  `.github/AGENTS.md` (espejo de este archivo cuando está sincronizado)
 
 **En progreso 🔄**
 - **CI `Deploy` en GitHub Actions:** tras push a `main`, **`build-and-push`** debe publicar las dos imágenes en GHCR y **`deploy`** debe hacer **`pull` + `up`** en el VPS; revisar run en *Actions → Deploy* si falla login GHCR, permisos `packages:write` o SSH/health.
@@ -156,6 +170,7 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 - DNS: ops.smiletripcare.com → 157.245.223.7 ✅
 
 **Pendiente ⏳**
+- En GitHub: comprobar que existen los equipos `@cloudsysops/backend`, `@cloudsysops/frontend`, `@cloudsysops/infra` (o ajustar `CODEOWNERS`) para que las solicitudes de revisión no fallen.
 - Confirmar **health 200** tras un deploy verde; si Traefik/Redis no están arriba, **`vps-first-run.sh`** o compose completo antes de solo `app admin`.
 - Revisar `/opt/opsly/.env` por línea corrupta / nombre falso en listados de bootstrap.
 - Rotación de tokens de servicio Doppler / PAT si hubo exposición en historial.
@@ -264,6 +279,7 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 | 2026-04-05 | `gh api` URL con `?` debe ir entre comillas en zsh | Evita *no matches found* por glob del `?` |
 | 2026-04-05 | Listar paquetes org en GHCR requiere `read:packages` en token `gh` | Sin scope → HTTP 403 |
 | 2026-04-05 | `tools/usb-kit/` en repo: clon completo en USB; **disk3** = Ubuntu booteable (macOS); sin secretos en pen | Flujo rescate/otras máquinas alineado a `opsly.config.json` + `pen.local.json` opcional |
+| 2026-04-05 | Plantillas `.github/`: CODEOWNERS por equipo/ruta; issues en formulario YAML; PR con checklist validate-config + AGENTS + Terraform; Copilot con límites explícitos; `blank_issues_enabled: false` + enlace raw `AGENTS.md` | Gobernanza homogénea; workflows no tocados (`a82180e`) |
 
 ---
 
@@ -293,7 +309,8 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 ├── .vscode/                 # extensiones recomendadas
 ├── .cursor/rules/           # Reglas Cursor (opsly.mdc)
 ├── .claude/                 # Contexto Claude (CLAUDE.md)
-├── .github/                 # workflows, espejo AGENTS/VISION/system_state, Copilot, plantillas
+├── .github/                 # workflows, espejo AGENTS/VISION/system_state, Copilot,
+│                            # CODEOWNERS, ISSUE_TEMPLATE, PULL_REQUEST_TEMPLATE, README-github-templates
 ├── .githooks/               # pre-commit (type-check), post-commit (sync contexto)
 ├── package.json             # workspaces + turbo
 ├── README.md
