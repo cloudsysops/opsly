@@ -47,7 +47,8 @@ COMMON_SH="$(_resolve_common_sh)" || {
   echo "  bash ${OPS_ROOT}/scripts/vps-bootstrap.sh" >&2
   exit 1
 }
-# shellcheck source=scripts/lib/common.sh
+# shellcheck source=lib/common.sh
+# shellcheck disable=SC1091
 source "${COMMON_SH}"
 
 require_cmd docker git doppler jq
@@ -102,8 +103,8 @@ run mv "${ENV_FILE}.tmp" "${ENV_FILE}"
 run chmod 600 "${ENV_FILE}"
 
 log_info "[f] Variables críticas en .env"
-# shellcheck disable=SC1090
 set -a
+# shellcheck disable=SC1090
 source "${ENV_FILE}"
 set +a
 
@@ -164,7 +165,7 @@ if command -v sudo >/dev/null 2>&1 && sudo -n true 2>/dev/null; then
 else
   log_warn "Sin sudo sin contraseña (sudo -n); no se creó ${DAEMON_JSON}."
   echo "  Si el archivo no existe, créalo con sudo, por ejemplo:"
-  echo "    printf '%s\\n' '{\"api-version-compat\": true}' | sudo tee ${DAEMON_JSON} >/dev/null"
+  printf "    printf '%%s\\n' '{\"api-version-compat\": true}' | sudo tee %s >/dev/null\n" "${DAEMON_JSON}"
 fi
 echo ""
 echo "  Tras crear o editar ${DAEMON_JSON}, aplica con reinicio manual de Docker (afecta todos los contenedores):"

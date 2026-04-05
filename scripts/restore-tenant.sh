@@ -11,7 +11,8 @@
 set -euo pipefail
 
 _SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-# shellcheck source=scripts/lib/common.sh
+# shellcheck source=lib/common.sh
+# shellcheck disable=SC1091
 source "${_SCRIPT_DIR}/lib/common.sh"
 
 export DRY_RUN="${DRY_RUN:-false}"

@@ -6,7 +6,8 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-# shellcheck source=scripts/lib/common.sh
+# shellcheck source=lib/common.sh
+# shellcheck disable=SC1091
 source "${SCRIPT_DIR}/lib/common.sh"
 
 F1="❌"
@@ -33,7 +34,7 @@ if run brew install node@20; then
   ZSHRC="${HOME}/.zshrc"
   PATH_LINE="export PATH=\"${BREW_PREFIX}/opt/node@20/bin:\$PATH\""
   if [[ -f "${ZSHRC}" ]] && grep -qF "opt/node@20/bin" "${ZSHRC}" 2>/dev/null; then
-    log_info "~/.zshrc ya referencia node@20"
+    log_info "${ZSHRC} ya referencia node@20"
   else
     {
       echo ""

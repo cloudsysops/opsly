@@ -11,9 +11,11 @@
 set -euo pipefail
 
 _SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-# shellcheck source=scripts/lib/common.sh
+# shellcheck disable=SC1091
+# shellcheck source=lib/common.sh
 source "${_SCRIPT_DIR}/lib/common.sh"
-# shellcheck source=scripts/lib/docker-helpers.sh
+# shellcheck disable=SC1091
+# shellcheck source=lib/docker-helpers.sh
 source "${_SCRIPT_DIR}/lib/docker-helpers.sh"
 
 SLUG=""

@@ -32,7 +32,7 @@
       "api",
       "web"
     ],
-    "scripts": 15,
+    "scripts": 19,
     "adrs": 5,
     "migrations": 7
   }

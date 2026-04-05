@@ -2,7 +2,8 @@
 # Docker Compose helpers for tenant stacks under TENANTS_PATH.
 
 _LIB_DOCKER="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-# shellcheck source=scripts/lib/common.sh
+# shellcheck source=common.sh
+# shellcheck disable=SC1091
 source "${_LIB_DOCKER}/common.sh"
 
 compose_file_for_slug() {

@@ -3,7 +3,8 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
-# shellcheck source=scripts/lib/common.sh
+# shellcheck source=lib/common.sh
+# shellcheck disable=SC1091
 source "${SCRIPT_DIR}/lib/common.sh"
 
 if docker compose version >/dev/null 2>&1; then
@@ -107,6 +108,9 @@ client_mode() {
     log_info "Health OK: http://api.opsly.local/api/health"
   else
     log_warn "No se pudo alcanzar api.opsly.local; revisa firewall o que el stack esté arriba en la 2011."
+  fi
+  if [[ -n "${SSH_KEY}" ]] && [[ ! -f "${SSH_KEY}" ]]; then
+    log_warn "SSH key no existe: ${SSH_KEY} (si usarás túneles SSH, ajusta --ssh-key)"
   fi
   log_info "URLs (Mac 2020):"
   log_info "  http://admin.opsly.local"

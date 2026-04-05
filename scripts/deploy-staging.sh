@@ -13,8 +13,11 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# REPO_ROOT se deja por consistencia con otros scripts (y para futuras extensiones).
+# shellcheck disable=SC2034
 REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
-# shellcheck source=scripts/lib/common.sh
+# shellcheck source=lib/common.sh
+# shellcheck disable=SC1091
 source "${SCRIPT_DIR}/lib/common.sh"
 
 VPS_HOST="${VPS_HOST:-157.245.223.7}"

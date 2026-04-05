@@ -391,6 +391,7 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 | 2026-04-05 | Next `output: "standalone"` + Dockerfiles copian standalone/static/public | Imágenes runner más pequeñas y alineadas a Next 15 en monorepo |
 | 2026-04-05 | `nightly-fix.yml`: typecheck/lint/health/auto-fix/report + `gh pr` / `gh issue` | Daemon de calidad nocturna; TS no auto-corregible → issue etiquetada |
 | 2026-04-05 | `lint:fix` en `apps/api` y `apps/admin` | Misma orden que usa el job auto-fix del workflow |
+| 2026-04-05 | Contenedor API/Admin: `CMD ["node", "server.js"]` en imágenes standalone | Entrada directa del servidor Next en runner Alpine |
 
 ---
 
