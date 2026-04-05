@@ -1,0 +1,30 @@
+# Variables de la lista de auditoría que NO se suben o requieren acción manual
+# (sin valores en este archivo — solo instrucciones).
+
+# --- No aplican al repo actual ---
+NEXTAUTH_SECRET=          # Opsly no usa NextAuth en apps/api ni apps/admin (grep sin matches). Si añades Auth.js: openssl rand -base64 32
+NEXTAUTH_URL=             # URL pública de la app auth, ej. https://admin.ops.smiletripcare.com — solo si adoptas NextAuth
+
+# --- No debe vivir en Doppler (token de máquina) ---
+DOPPLER_TOKEN=            # Service token para el VPS: scripts/setup-doppler.sh (PROVISION_VPS=1) o Doppler Dashboard → Service Tokens → guardar en /etc/doppler.env en el servidor
+
+# --- Si algo falló en validate-config, revisar en Doppler UI ---
+# SUPABASE_* / STRIPE_* / REDIS_PASSWORD / PLATFORM_ADMIN_TOKEN / ACME_EMAIL / TRAEFIK_DASHBOARD_BASIC_AUTH_USERS
+# deben ser valores reales de producción, no placeholders (.env del VPS se subió el 2026-04-05).
+#
+# Referencias rápidas:
+# SUPABASE_URL=           https://supabase.com/dashboard → Project Settings → API → Project URL
+# SUPABASE_SERVICE_ROLE_KEY=  misma pantalla → service_role (secreto)
+# NEXT_PUBLIC_SUPABASE_URL=   mismo URL que SUPABASE_URL para el browser
+# NEXT_PUBLIC_SUPABASE_ANON_KEY=  misma pantalla → anon public
+# STRIPE_SECRET_KEY=      https://dashboard.stripe.com/apikeys
+# STRIPE_WEBHOOK_SECRET=  Stripe → Developers → Webhooks → endpoint → Signing secret
+# STRIPE_PRICE_STARTUP=   Stripe → Products → Price ID (price_...)
+# STRIPE_PRICE_BUSINESS=
+# STRIPE_PRICE_ENTERPRISE=
+# ACME_EMAIL=             Email para Let's Encrypt (debe ser válido)
+# REDIS_PASSWORD=         Cadena fuerte; REDIS_URL en Compose suele ser redis://:${REDIS_PASSWORD}@redis:6379/0
+# PLATFORM_ADMIN_TOKEN=   mín. 32 chars; mismo valor que NEXT_PUBLIC_PLATFORM_ADMIN_TOKEN en admin
+# TRAEFIK_DASHBOARD_BASIC_AUTH_USERS=  htpasswd -nb user password  (en Compose escapa $ como $$)
+# RESEND_API_KEY=         https://resend.com/api-keys
+# DISCORD_WEBHOOK_URL=    Discord → canal → Integrations → Webhooks (opcional)
