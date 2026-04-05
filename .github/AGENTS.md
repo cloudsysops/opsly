@@ -47,7 +47,7 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 
 <!-- Actualizar al final de cada sesión -->
 
-**Fecha última actualización:** 2026-04-05 (docs: VPS verify, first-run vs GHCR, CI inventario, AGENTS sincronizado)
+**Fecha última actualización:** 2026-04-05 (docs: CI build+push GHCR, deploy pull en VPS, Doppler imágenes, AGENTS sincronizado)
 
 **Completado ✅**
 
@@ -75,8 +75,15 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 - **`vps-first-run.sh` tras login GHCR (2026-04-05):** falló con **`not found`** al resolver `ghcr.io/cloudsysops/intcloudsysops-api:latest` (y pull de `admin` interrumpido). **Auth GHCR OK;** el bloqueo actual es que **esa referencia de imagen/tag no existe** en el registry (o el nombre del paquete en GHCR difiere). Alinear `APP_IMAGE` / `ADMIN_APP_IMAGE` en Doppler con paquetes reales o **publicar** imágenes con CI.
 - **Inventario GHCR desde Mac (`gh api`):** sin comillas, **zsh** expande `?` en la URL → `no matches found`. Con URL entre comillas, sin scope **`read:packages`** en el token de `gh` → **HTTP 403** (*You need at least read:packages scope to list packages*). Para listar: `gh api '/orgs/cloudsysops/packages?package_type=container' --jq '.[].name'` con token adecuado.
 - **Workflows en `.github/workflows/`:** `backup.yml`, `ci.yml`, `cleanup-demos.yml`, `deploy-staging.yml`, `deploy.yml`, `validate-context.yml`.
-- **`deploy.yml` (producción):** **no** hace `docker buildx` + push a GHCR. Hace lint/typecheck/build **Node** en Actions, luego **SSH al VPS:** `git` en `/opt/opsly`, `npm ci`, `npm run build` en `apps/api` y `apps/admin`, y en `infra/` ejecuta **`docker compose -f docker-compose.platform.yml up -d --no-deps --build app`** — o sea **build de la imagen `app` en el servidor**, no pull de `ghcr.io/.../intcloudsysops-api:latest`. Revisar **`deploy-staging.yml`** / **`ci.yml`** si el objetivo es publicar imágenes en GHCR para `vps-first-run`.
 - **Dockerfiles:** existen `apps/api/Dockerfile` y `apps/admin/Dockerfile` en el repo.
+
+*CI — `deploy.yml`: build+push GHCR y deploy por pull en VPS (commit `0e4123b`, 2026-04-05):*
+- El job **`build`** (solo Node build en Actions) se sustituyó por **`build-and-push`:** `permissions: contents: read`, `packages: write`; **`docker/login-action@v3`** contra `ghcr.io` con `${{ github.actor }}` y **`${{ secrets.GITHUB_TOKEN }}`** (si el login en Actions falla por token vacío, usar **`${{ github.token }}`** según documentación de GitHub).
+- Dos pasos **`docker/build-push-action@v5`:** `context: .`, `file: apps/api/Dockerfile` y `apps/admin/Dockerfile`, **`push: true`**, tags **`ghcr.io/cloudsysops/intcloudsysops-api:latest`** y **`ghcr.io/cloudsysops/intcloudsysops-admin:latest`**.
+- Job **`deploy`** ahora **`needs: build-and-push`**. Script SSH en VPS: `git fetch` / `reset` en `/opt/opsly`, **`npm ci`** en raíz (sin `npm run build` en `apps/api` ni `apps/admin`); en **`infra/`** → **`docker compose -f docker-compose.platform.yml pull`** y **`docker compose up -d --no-deps app admin`** (sin **`--build`**).
+- **`infra/docker-compose.platform.yml`:** imágenes por defecto pasan a **`ghcr.io/cloudsysops/intcloudsysops-api:latest`** y **`ghcr.io/cloudsysops/intcloudsysops-admin:latest`** (sustituye `tu-org` en los defaults).
+- **Doppler `prd`:** **`APP_IMAGE`** y **`ADMIN_APP_IMAGE`** actualizados a esas mismas URLs para alinear `.env` del VPS tras bootstrap.
+- **Contexto histórico:** antes de este cambio, `deploy.yml` hacía build Next en el VPS con **`compose --build app`** únicamente; **`vps-first-run`** y pulls manuales dependían de imágenes publicadas en GHCR que aún no existían → **`not found`**. El pipeline anterior queda **obsoleto** respecto al flujo GHCR descrito arriba.
 
 *Intento deploy staging → `https://api.ops.smiletripcare.com/api/health` (2026-04-05):*
 - **Paso 1 — Auditoría:** revisados `config/opsly.config.json` (sin secretos), `.env.local.example` (placeholders), `infra/docker-compose.platform.yml` (solo nombres de vars), y por SSH el árbol `.env*` bajo `/opt/opsly` (`.env`, `.env.example`, `.env.local.example`, `.env.swp`).
@@ -139,13 +146,13 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 - `.github/copilot-instructions.md`, `.github/AGENTS.md` (espejo de este archivo)
 
 **En progreso 🔄**
-- Deploy staging VPS — login GHCR en VPS **OK**; **`vps-first-run.sh`** aún **no** levanta el stack mientras **`APP_IMAGE` / `ADMIN_APP_IMAGE`** apunten a tags **inexistentes** en GHCR (`intcloudsysops-api:latest` / `admin` verificado **not found**).
-- Decidir estrategia: **(A)** pipeline que **push**ee imágenes a GHCR con nombres/tags que coincidan con Doppler, **(B)** cambiar compose/Doppler a imágenes que ya existan, o **(C)** usar en staging el mismo enfoque que **`deploy.yml`** (build en VPS vía compose `--build`, sin depender del pull de GHCR para api/admin).
+- **CI `Deploy` en GitHub Actions:** tras push a `main`, **`build-and-push`** debe publicar las dos imágenes en GHCR y **`deploy`** debe hacer **`pull` + `up`** en el VPS; revisar run en *Actions → Deploy* si falla login GHCR, permisos `packages:write` o SSH/health.
+- Deploy staging — imágenes **`ghcr.io/cloudsysops/intcloudsysops-{api,admin}:latest`** quedan definidas en compose + Doppler; en VPS conviene **`./scripts/vps-bootstrap.sh`** (o `doppler secrets download`) para refrescar `.env` y **`docker login ghcr.io`** con credenciales con pull.
 - Con Doppler CLI + token con scope `/opt/opsly`: **`./scripts/vps-bootstrap.sh`** regenera `.env`; ejecutar tras cambiar imágenes o secretos en `prd`.
 - DNS: ops.smiletripcare.com → 157.245.223.7 ✅
 
 **Pendiente ⏳**
-- **Imágenes GHCR:** publicar o corregir referencias; re-ejecutar **`vps-first-run.sh`** y **`curl`** health.
+- Confirmar **health 200** tras un deploy verde; si Traefik/Redis no están arriba, **`vps-first-run.sh`** o compose completo antes de solo `app admin`.
 - Revisar `/opt/opsly/.env` por línea corrupta / nombre falso en listados de bootstrap.
 - Rotación de tokens de servicio Doppler / PAT si hubo exposición en historial.
 - `DOPPLER_TOKEN` en `/etc/doppler.env` — opcional si se usa solo `doppler configure set token --scope` (como en esta sesión).
@@ -171,6 +178,7 @@ curl -sf https://api.ops.smiletripcare.com/api/health | jq .
 # Tras health OK: actualizar context/system_state.json + ./scripts/update-agents.sh
 ./scripts/validate-config.sh   # local; debe seguir en LISTO PARA DEPLOY
 # Listar paquetes GHCR (Mac): gh auth refresh -s read:packages; gh api '/orgs/cloudsysops/packages?package_type=container' --jq '.[].name'
+# Tras cambios en deploy.yml: push a main dispara build+push; VPS recibe imágenes vía job deploy (pull).
 ```
 
 ---
@@ -182,7 +190,7 @@ curl -sf https://api.ops.smiletripcare.com/api/health | jq .
 - [x] Bulk upload Doppler desde VPS `.env` (lista audit) — hecho 2026-04-05
 - [x] **validate-config** → LISTO PARA DEPLOY (2026-04-05, tras tokens plataforma/Redis + imágenes GHCR en Doppler)
 - [x] **GHCR en `prd` + login Docker en VPS** (2026-04-05): `GHCR_USER` / `GHCR_TOKEN` en `prd`; `docker login ghcr.io` con Doppler **solo** con `cd /opt/opsly`.
-- [ ] **Imágenes en GHCR** para `APP_IMAGE` / `ADMIN_APP_IMAGE`: `ghcr.io/cloudsysops/intcloudsysops-{api,admin}:latest` devolvió **not found** al hacer pull tras login — publicar imágenes o actualizar vars en Doppler al nombre/tag real del paquete.
+- [x] **Publicación de imágenes a GHCR** vía **`deploy.yml`** (`build-and-push`, 2026-04-05, commit `0e4123b`). Verificar en UI de Packages que existan los paquetes y que el último run de **Deploy** sea **success**.
 - [x] **`.env` VPS** alineado con Doppler vía **`vps-bootstrap.sh`** + Doppler en VPS (sesión 2026-04-05); repetir bootstrap tras cambios en `prd`
 - [x] **Doppler CLI + token con scope `/opt/opsly`** en VPS (sesión 2026-04-05) — alternativa a solo `scp`
 
@@ -247,7 +255,8 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 | 2026-04-05 | `doppler secrets get GHCR_*` debe coincidir con secretos en `prd` | Login GHCR automatizado solo si nombres y config son correctos en Doppler UI |
 | 2026-04-05 | PAT en `stg` como `TOKEN_GH_OSPSLY`; en `prd` usar `GHCR_TOKEN` + `GHCR_USER` | La CLI no admite guiones en nombres; los scripts de deploy esperan `GHCR_*` en `prd` |
 | 2026-04-05 | En VPS, `doppler secrets get` con token scoped requiere `cd /opt/opsly` | Sin ese cwd, Doppler responde *you must provide a token* y `docker login` ve usuario vacío |
-| 2026-04-05 | `deploy.yml` no publica a GHCR; build remoto `compose --build app` | `vps-first-run` que hace pull de GHCR exige imágenes publicadas o otra estrategia |
+| 2026-04-05 | `deploy.yml`: job `build-and-push` publica API+Admin a GHCR; VPS hace `compose pull` + `up app admin` | Unifica imágenes con `vps-first-run`/Doppler; commit `0e4123b` |
+| 2026-04-05 | (Histórico) `deploy.yml` solo `compose --build app` en VPS sin push GHCR | Sustituido por flujo build+push + pull; ver fila anterior |
 | 2026-04-05 | `gh api` URL con `?` debe ir entre comillas en zsh | Evita *no matches found* por glob del `?` |
 | 2026-04-05 | Listar paquetes org en GHCR requiere `read:packages` en token `gh` | Sin scope → HTTP 403 |
 
