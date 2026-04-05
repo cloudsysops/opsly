@@ -18,6 +18,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 # shellcheck source=lib/common.sh
+# shellcheck disable=SC1091
 source "${SCRIPT_DIR}/lib/common.sh"
 
 cd "${REPO_ROOT}"

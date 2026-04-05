@@ -7,6 +7,7 @@ set -euo pipefail
 OPS_ROOT="${OPS_ROOT:-/opt/opsly}"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=lib/common.sh
+# shellcheck disable=SC1091
 source "${SCRIPT_DIR}/lib/common.sh"
 
 require_cmd docker curl

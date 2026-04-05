@@ -48,6 +48,7 @@ COMMON_SH="$(_resolve_common_sh)" || {
   exit 1
 }
 # shellcheck source=lib/common.sh
+# shellcheck disable=SC1091
 source "${COMMON_SH}"
 
 require_cmd docker git doppler jq

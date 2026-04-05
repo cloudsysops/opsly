@@ -3,6 +3,7 @@
 
 _LIB_DOCKER="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=common.sh
+# shellcheck disable=SC1091
 source "${_LIB_DOCKER}/common.sh"
 
 compose_file_for_slug() {
