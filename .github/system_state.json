@@ -5,29 +5,19 @@
     "ip": "157.245.223.7",
     "user": "vps-dragon",
     "repo": "/opt/opsly",
-    "status": "pending-bootstrap"
+    "status": "needs_ghcr_auth",
+    "notes": "vps-bootstrap.sh no existe en disco remoto (solo en repo local sin track); se usó doppler secrets download en Mac + scp a /opt/opsly/.env. vps-first-run.sh falló: docker pull ghcr.io/cloudsysops/* denied — hace falta docker login ghcr.io en el VPS (PAT read:packages) o imágenes públicas."
   },
   "deploy_staging": {
     "api_health_url": "https://api.ops.smiletripcare.com/api/health",
-    "status": "blocked_secrets",
-    "notes": "2026-04-05: validate-config no LISTO (Doppler). PLATFORM_ADMIN_TOKEN y REDIS_PASSWORD placeholder. En Doppler prd, SUPABASE_SERVICE_ROLE_KEY / NEXT_PUBLIC_SUPABASE_ANON_KEY / STRIPE_* tienen longitud inválida (truncados). VPS /opt/opsly/.env refleja los mismos truncamientos. Pasos 4–6 no ejecutados."
+    "status": "blocked_ghcr_pull",
+    "notes": "2026-04-05: validate-config → LISTO PARA DEPLOY. Doppler: PLATFORM_ADMIN_TOKEN, REDIS_*, APP_IMAGE/ADMIN_APP_IMAGE corregidos en prd. .env VPS sustituido desde Doppler. Stack no levantó por GHCR denied. Health público (curl -k): 404 (sin app nueva o ruta distinta)."
   },
   "doppler": {
     "project": "ops-intcloudsysops",
     "config": "prd",
-    "status": "invalid_or_placeholder",
-    "fix_in_order": [
-      "SUPABASE_SERVICE_ROLE_KEY",
-      "NEXT_PUBLIC_SUPABASE_ANON_KEY",
-      "NEXT_PUBLIC_SUPABASE_URL",
-      "SUPABASE_URL",
-      "STRIPE_SECRET_KEY",
-      "STRIPE_WEBHOOK_SECRET",
-      "PLATFORM_ADMIN_TOKEN",
-      "NEXT_PUBLIC_PLATFORM_ADMIN_TOKEN",
-      "REDIS_PASSWORD",
-      "REDIS_URL"
-    ]
+    "status": "complete",
+    "missing": []
   },
   "dns": {
     "base": "ops.smiletripcare.com",
@@ -35,7 +25,7 @@
     "status": "ok"
   },
   "tenants": [],
-  "next_action": "Completar secretos reales en Doppler (config/doppler-missing.txt) → ./scripts/validate-config.sh → vps-bootstrap → vps-first-run",
+  "next_action": "En VPS: docker login ghcr.io (usuario GitHub, PAT read:packages) → cd /opt/opsly && bash scripts/vps-first-run.sh; opcional: git pull / añadir vps-bootstrap.sh al repo y en servidor.",
   "repo": {
     "apps": [
       "admin",
