@@ -1,28 +1,35 @@
+# =============================================================================
+# feature_request.yml — Formulario de solicitud de funcionalidad
+# =============================================================================
+# Qué hace: guía a quien abre el issue para describir problema, propuesta y fase.
+# Cuándo se activa: al elegir “Solicitud de funcionalidad” en New issue.
+# Reutilizar: ajusta opciones de “área” y “fase” al roadmap de tu producto.
+#
+# Sobre .yml frente a .md: ver comentario en bug_report.yml (formulario vs plantilla libre).
+# =============================================================================
+
 name: Solicitud de funcionalidad
 description: Proponer una mejora o capacidad nueva
 labels: [enhancement]
 body:
-  - type: textarea
-    id: description
+  - type: markdown
     attributes:
-      label: Descripción de la funcionalidad
-      description: Qué quieres construir o habilitar.
-    validations:
-      required: true
+      value: |
+        Alinea la idea con `VISION.md` y la fase actual del producto cuando sea posible.
 
   - type: textarea
     id: problem
     attributes:
       label: Problema que resuelve
-      description: Para quién y por qué importa.
+      description: Para quién es el dolor y por qué importa ahora.
     validations:
       required: true
 
   - type: textarea
-    id: solution
+    id: proposal
     attributes:
-      label: Solución propuesta
-      description: Enfoque técnico o de producto (puede ser borrador).
+      label: Propuesta
+      description: Qué haríamos (producto o técnico); puede ser borrador.
     validations:
       required: true
 
@@ -30,28 +37,32 @@ body:
     id: alternatives
     attributes:
       label: Alternativas consideradas
-      description: Otras opciones que descartaste y por qué.
+      description: Otras opciones descartadas y motivos breves.
 
   - type: dropdown
-    id: component
+    id: phase
     attributes:
-      label: Componente afectado
+      label: Fase donde aplica
+      description: Según roadmap Opsly en VISION.md (validación vs escala).
       options:
-        - api
-        - admin
-        - infra
-        - scripts
-        - docs
+        - Fase 1
+        - Fase 2
+        - Fase 3
+        - No aplica por ahora
     validations:
       required: true
 
   - type: dropdown
-    id: priority
+    id: area
     attributes:
-      label: Prioridad
+      label: Área
+      description: Parte del sistema principalmente afectada.
       options:
-        - high
-        - medium
-        - low
+        - api
+        - admin
+        - infra
+        - billing
+        - onboarding
+        - terraform
     validations:
       required: true

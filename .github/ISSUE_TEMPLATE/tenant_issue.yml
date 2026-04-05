@@ -1,3 +1,11 @@
+# =============================================================================
+# tenant_issue.yml — Formulario para incidencias de un tenant concreto
+# =============================================================================
+# Qué hace: recopila slug, plan, servicio y logs operativos sin secretos.
+# Cuándo se activa: New issue → Incidencia de tenant.
+# Reutilizar: ajusta opciones de plan/servicio a tu catálogo real.
+# =============================================================================
+
 name: Incidencia de tenant
 description: Problemas con un tenant concreto (n8n, API, uptime, etc.)
 labels: [tenant]

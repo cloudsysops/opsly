@@ -1,2 +1,29 @@
-# Propietario por defecto (revisión y responsabilidad del repo).
+# =============================================================================
+# CODEOWNERS — Opsly (cloudsysops/opsly)
+# =============================================================================
+# Qué hace: indica a GitHub qué usuarios o equipos deben revisar cambios según
+#   la ruta de los archivos en un pull request (solicitudes de revisión automáticas).
+# Cuándo se activa: al abrir o actualizar un PR que toca archivos bajo esas rutas.
+#   La última regla que coincide con una ruta gana si hay solapamiento (orden importa).
+# Reutilizar en otro proyecto: sustituye @cloudsysops/* por tus equipos de GitHub
+#   (deben existir en la org o ser usuarios con acceso al repo) y ajusta rutas.
+# =============================================================================
+
+# Propietario por defecto (todo lo que no cae en reglas más específicas más abajo).
+# Esta línea debe ir PRIMERO; las rutas concretas van después para sobrescribirla.
 * @cboteros
+
+# API de control plane y automatización operativa → backend.
+apps/api/ @cloudsysops/backend
+scripts/ @cloudsysops/backend
+
+# Interfaces Next.js (dashboard admin y workspace web) → frontend.
+apps/admin/ @cloudsysops/frontend
+apps/web/ @cloudsysops/frontend
+
+# Compose, Traefik, plantillas de tenant; Terraform cuando exista bajo infra/ → infra.
+infra/ @cloudsysops/infra
+infra/terraform/ @cloudsysops/infra
+
+# Esquema Postgres, RLS, migraciones → backend (misma línea de producto que API).
+supabase/ @cloudsysops/backend

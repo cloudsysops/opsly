@@ -1,1 +1,19 @@
-blank_issues_enabled: true
+# =============================================================================
+# config.yml — Configuración del selector de issues en GitHub
+# =============================================================================
+# Qué hace: controla si se permiten issues en blanco y enlaces de ayuda arriba
+#   del listado de plantillas (contact_links).
+# Cuándo se activa: siempre que alguien pulse “New issue” en el repositorio.
+# Reutilizar: pon blank_issues_enabled según tu gobernanza (false fuerza plantillas);
+#   actualiza la URL raw de tu AGENTS.md o documento de contexto equivalente.
+#
+# blank_issues_enabled: false evita issues sin estructura; quien necesite algo
+#   atípico puede usar la plantilla más cercana o pedir a un maintainer.
+# =============================================================================
+
+blank_issues_enabled: false
+
+contact_links:
+  - name: Contexto del proyecto (AGENTS.md)
+    url: https://raw.githubusercontent.com/cloudsysops/opsly/main/AGENTS.md
+    about: Estado actual, VPS, Doppler y decisiones fijas antes de abrir un issue amplio.

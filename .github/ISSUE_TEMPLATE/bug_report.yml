@@ -1,3 +1,18 @@
+# =============================================================================
+# bug_report.yml — Formulario de reporte de bug (GitHub Issue Forms)
+# =============================================================================
+# Qué hace: define campos estructurados al crear un issue tipo “bug”.
+# Cuándo se activa: el usuario elige “Reporte de bug” en New issue.
+# Reutilizar: copia el YAML, cambia labels y opciones de entorno; valida en
+#   GitHub → Settings → General → Issues (formularios habilitados).
+#
+# .yml vs .md en ISSUE_TEMPLATE:
+# - Los .yml (issue forms) generan formularios con validación, dropdowns y tipos
+#   de campo; GitHub valida el esquema.
+# - Los .md son plantillas libres en Markdown: más flexibles pero sin campos
+#   obligatorios ni listas cerradas. Este repo usa .yml para bugs puntuales.
+# =============================================================================
+
 name: Reporte de bug
 description: Algo no funciona como debería
 labels: [bug]
@@ -5,13 +20,13 @@ body:
   - type: markdown
     attributes:
       value: |
-        Gracias por el reporte. Cuanta más información, más rápido podremos reproducirlo.
+        Gracias por el reporte. Cuanta más información (sin secretos), más rápido podremos reproducirlo.
 
   - type: textarea
     id: description
     attributes:
-      label: Descripción del bug
-      description: Qué ocurre y en qué contexto.
+      label: Descripción
+      description: Qué ocurre, dónde lo viste y en qué contexto.
     validations:
       required: true
 
@@ -45,10 +60,11 @@ body:
     id: environment
     attributes:
       label: Entorno
+      description: Dónde se reproduce el problema.
       options:
-        - VPS
-        - local
+        - vps-prod
         - staging
+        - local
     validations:
       required: true
 
@@ -56,8 +72,14 @@ body:
     id: logs
     attributes:
       label: Logs relevantes
-      description: Pega fragmentos de logs, trazas o respuestas HTTP (sin secretos).
+      description: Fragmentos de logs, trazas o respuestas HTTP (sin tokens, claves ni PII).
       render: shell
+
+  - type: textarea
+    id: tenant_impact
+    attributes:
+      label: Impacto en tenants activos
+      description: ¿Afecta a un tenant concreto, a todos o solo a la plataforma? Incluye slug si aplica (sin datos sensibles).
 
   - type: dropdown
     id: severity
