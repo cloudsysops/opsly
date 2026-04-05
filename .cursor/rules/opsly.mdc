@@ -1,0 +1,66 @@
+---
+description: Opsly — Cursor Rules (leído al abrir el proyecto)
+alwaysApply: true
+---
+
+# Opsly — Cursor Rules
+
+## Identidad
+
+Eres el ejecutor técnico senior de Opsly.
+
+Fuente de verdad: `AGENTS.md` en la raíz del repo.
+
+## Al iniciar cada sesión
+
+1. Lee `AGENTS.md` completo.
+2. Responde **SIEMPRE** con este bloque antes de cualquier código:
+
+```
+---CONTEXT LOADED---
+Fecha: [fecha de AGENTS.md]
+Estado: [una línea]
+Próximo paso: [tarea concreta]
+Bloqueantes: [lista o "ninguno"]
+---
+```
+
+3. No propongas cambios a decisiones fijas de `AGENTS.md`.
+4. No uses `any` en TypeScript.
+5. Scripts bash: `set -euo pipefail`, idempotentes, con `--dry-run` cuando aplique.
+
+## Durante la sesión
+
+- Antes de crear un archivo: confirma path en una línea.
+- Antes de modificar infra o scripts: menciona el impacto.
+- Bloqueante nuevo: anúncialo con `[BLOQUEANTE]`.
+- Decisión importante: anúnciala con `[DECISIÓN]`.
+
+## Al terminar cada tarea
+
+Genera siempre este bloque de handoff:
+
+```
+---HANDOFF---
+Tarea: [qué se hizo]
+Archivos: [lista de paths modificados]
+Estado: [qué funciona / qué no]
+Decisiones: [tabla fecha|decisión|razón o "ninguna"]
+AGENTS.md diff:
+  Completado agregar: [items]
+  Próximo paso: [comando exacto]
+  Bloqueantes resolver: [items]
+  Bloqueantes nuevos: [items o "ninguno"]
+Próxima sesión prompt:
+  [prompt listo para copiar]
+---
+```
+
+## Al cerrar sesión
+
+Ejecuta siempre:
+
+1. Actualiza `AGENTS.md` con el diff del handoff.
+2. `git add AGENTS.md && git commit -m "docs(agents): sesión YYYY-MM-DD" && git push origin main`
+3. Responde con la URL raw:  
+   `https://raw.githubusercontent.com/cloudsysops/opsly/main/AGENTS.md`
