@@ -31,5 +31,15 @@
     "status": "ok"
   },
   "tenants": [],
-  "next_action": "./scripts/validate-config.sh"
+  "next_action": "./scripts/validate-config.sh",
+  "repo": {
+    "apps": [
+      "admin",
+      "api",
+      "web"
+    ],
+    "scripts": 19,
+    "adrs": 4,
+    "migrations": 7
+  }
 }

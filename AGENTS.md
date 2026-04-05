@@ -45,9 +45,16 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 
 <!-- Actualizar al final de cada sesión -->
 
-**Fecha última actualización:** 2026-04-05 (consolidación: contexto IA + gobernanza + roadmap VISION)
+**Fecha última actualización:** 2026-04-05 (alineación automática contexto Capa 1 + Capa 2)
 
 **Completado ✅**
+
+*Alineación automática del contexto (Capa 1 + Capa 2; n8n después):*
+- **Capa 1 — `scripts/update-state.js`:** rellena `context/system_state.json` con `repo.apps`, conteos de `scripts/*.sh`, ADRs y migraciones SQL (sin tocar fase/VPS/Doppler manual)
+- **Capa 2 — `.githooks/post-commit`:** tras commit, si cambió `infra/`, `scripts/`, `apps/` o `supabase/`, ejecuta `update-state.js`; siempre copia `AGENTS.md` → `.github/AGENTS.md` y `context/system_state.json` → `.github/system_state.json`
+- **`npm run update-state` / `sync-agents` / `validate-context`** en `package.json`
+- **`.github/workflows/validate-context.yml`:** CI valida JSON, que cada `apps/*` aparezca en `AGENTS.md`, y que `AGENTS.md` coincida con `.github/AGENTS.md`
+- **`git config core.hooksPath .githooks`** documentado en `README.md` (sección **Setup**) y aplicado al inicio de `scripts/local-setup.sh`
 
 *Contexto y flujo para agentes (abr 2026):*
 - `VISION.md` — visión, ICP, planes, primer cliente smiletripcare, stack transferible, límites; **roadmap por fases (revisado 2026-04-04)** con Fase 1 (máx 1 semana), 2, 3, lista *Nunca* (K8s, Swarm, migrar Traefik/Supabase) y **regla:** antes de features nuevos → ¿tenants en producción > 0? si no, Fase 1
@@ -75,11 +82,12 @@ con facturación Stripe, backups automáticos y dashboard de administración.
   migrate-to-traefik, git-setup, deploy-staging)
 - apps/admin/ (dashboard Next.js dark theme ops/terminal)
 - .github/workflows/ (ci.yml, deploy.yml, deploy-staging.yml, backup.yml,
-  cleanup-demos.yml)
+  cleanup-demos.yml, validate-context.yml)
 - config/opsly.config.json (fuente de verdad central)
 - docs/ (ARCHITECTURE.md, TEST_PLAN.md, DNS_SETUP.md, VPS-ARCHITECTURE.md)
 - README.md completo
-- .githooks/ + plantillas GitHub (CODEOWNERS, issue forms, PR template)
+- .githooks/ (pre-commit type-check, post-commit contexto) + plantillas GitHub
+  (CODEOWNERS, issue forms, PR template)
 - AGENTS.md (este archivo)
 - Auditoría secrets: `doppler secrets upload` desde `/opt/opsly/.env` (18 claves
   de la lista audit) + alineación `PLATFORM_*` / `NEXT_PUBLIC_*` dominio con
@@ -175,6 +183,7 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 | 2026-04-04 | ADR-001 a ADR-004 documentadas en `docs/adr/` | Gobernanza explícita; agentes no reabren K8s/Swarm/nginx sin ADR nuevo |
 | 2026-04 | Repo GitHub `cloudsysops/opsly` en visibilidad **public** | Lectura por URL raw / Claude sin credenciales |
 | 2026-04-04 | Roadmap realista en `VISION.md` (fases + *Nunca* + regla tenants) | Alinear trabajo a validación antes de producto |
+| 2026-04-05 | `update-state.js` + post-commit + `validate-context.yml` | Capa 1–2: estado repo en JSON + espejo .github + CI |
 
 ---
 
@@ -184,7 +193,8 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 .
 ├── apps/
 │   ├── api/                 # Next.js API (control plane)
-│   └── admin/               # Next.js dashboard admin
+│   ├── admin/               # Next.js dashboard admin
+│   └── web/                 # App web (workspace)
 ├── config/
 │   └── opsly.config.json    # Infra/dominios/planes (sin secretos)
 ├── agents/prompts/          # Plantillas Claude / Cursor
@@ -202,7 +212,7 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 ├── .cursor/rules/           # Reglas Cursor (opsly.mdc)
 ├── .claude/                 # Contexto Claude (CLAUDE.md)
 ├── .github/                 # workflows, espejo AGENTS/VISION/system_state, Copilot, plantillas
-├── .githooks/               # pre-commit (type-check), opcional Husky
+├── .githooks/               # pre-commit (type-check), post-commit (sync contexto)
 ├── package.json             # workspaces + turbo
 ├── README.md
 ├── VISION.md                # Norte del producto (fases, ICP, límites agentes)

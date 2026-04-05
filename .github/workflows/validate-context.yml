@@ -1,0 +1,40 @@
+name: Validate agent context
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: system_state.json es JSON válido
+        run: |
+          python3 -m json.tool context/system_state.json > /dev/null
+          echo "✅ system_state.json válido"
+
+      - name: Servicios documentados en AGENTS.md
+        run: |
+          FAIL=0
+          for app in apps/*/; do
+            name=$(basename "$app")
+            if ! grep -q "$name" AGENTS.md; then
+              echo "❌ apps/$name no está en AGENTS.md"
+              FAIL=1
+            fi
+          done
+          if [ "$FAIL" -eq 0 ]; then
+            echo "✅ Todos los servicios documentados"
+          fi
+          exit "$FAIL"
+
+      - name: AGENTS.md y .github/AGENTS.md sincronizados
+        run: |
+          if ! diff -q AGENTS.md .github/AGENTS.md > /dev/null 2>&1; then
+            echo "❌ AGENTS.md y .github/AGENTS.md están desincronizados"
+            echo "Corre: ./scripts/update-agents.sh o haz commit con hooks activos"
+            exit 1
+          fi
+          echo "✅ AGENTS.md sincronizado"

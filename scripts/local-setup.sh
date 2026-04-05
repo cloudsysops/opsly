@@ -22,6 +22,13 @@ source "${SCRIPT_DIR}/lib/common.sh"
 
 cd "${REPO_ROOT}"
 
+log_info "Activando git hooks (core.hooksPath=.githooks)…"
+if git -C "${REPO_ROOT}" config core.hooksPath .githooks; then
+  log_info "✅ Git hooks activados"
+else
+  log_warn "No se pudo configurar core.hooksPath (¿no es un repo git?)."
+fi
+
 require_cmd docker npm node
 
 if docker compose version >/dev/null 2>&1; then

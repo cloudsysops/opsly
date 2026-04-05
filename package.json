@@ -6,7 +6,10 @@
     "dev": "turbo dev",
     "build": "turbo build",
     "lint": "turbo lint",
-    "type-check": "turbo type-check"
+    "type-check": "turbo type-check",
+    "update-state": "node scripts/update-state.js",
+    "sync-agents": "bash scripts/update-agents.sh",
+    "validate-context": "python3 -m json.tool context/system_state.json > /dev/null"
   },
   "devDependencies": {
     "turbo": "^1.13.4"

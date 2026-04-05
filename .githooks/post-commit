@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT="$(git rev-parse --show-toplevel)"
+CHANGED=$(git diff-tree --no-commit-id -r --name-only HEAD 2>/dev/null || true)
+
+# Si cambió código → actualiza system_state.json
+if echo "$CHANGED" | grep -qE "^(infra|scripts|apps|supabase)/"; then
+  echo "🔄 Detectado cambio en servicios, actualizando system_state.json..."
+  node "$ROOT/scripts/update-state.js" 2>/dev/null || true
+fi
+
+# Siempre sincroniza AGENTS.md a .github/
+if [ -f "$ROOT/AGENTS.md" ]; then
+  cp "$ROOT/AGENTS.md" "$ROOT/.github/AGENTS.md"
+fi
+
+# Sincroniza context/ a .github/
+if [ -f "$ROOT/context/system_state.json" ]; then
+  cp "$ROOT/context/system_state.json" "$ROOT/.github/system_state.json"
+fi
+
+echo "✅ Contexto sincronizado"

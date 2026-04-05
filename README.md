@@ -19,6 +19,16 @@ Referencia conceptual **Opsly**: el **control plane** decide ciclo de vida, fact
 - Cuenta Stripe con productos/precios y webhook configurado
 - Cuenta Doppler (recomendado para secretos en VPS y CI)
 
+## Setup
+
+Activar hooks de git (requerido para sincronizar contexto tras cada commit):
+
+```bash
+git config core.hooksPath .githooks
+```
+
+También se configura automáticamente al ejecutar `./scripts/local-setup.sh`.
+
 ## Quickstart
 
 1. `git clone <repo-url> && cd intcloudsysops`
@@ -169,6 +179,18 @@ Provision (cola → Docker Compose tenant)
 | `S3_BUCKET`, `S3_PREFIX`, `AWS_*` | Backups | Destino en S3. |
 | `DISCORD_WEBHOOK_URL` | No | Notificaciones operativas. |
 | `DOPPLER_TOKEN` | Opcional | Inyección de secretos en runtime. |
+
+<!-- URLS_START -->
+### URLs de producción (`config/opsly.config.json`)
+
+| Entorno | URL |
+|---------|-----|
+| Dominio base | `https://ops.smiletripcare.com` |
+| API | `https://api.ops.smiletripcare.com` |
+| Admin | `https://admin.ops.smiletripcare.com` |
+| Traefik dashboard | `https://traefik.ops.smiletripcare.com` |
+| Wildcard tenants | `*.ops.smiletripcare.com` |
+<!-- URLS_END -->
 
 ## Deployment
 
