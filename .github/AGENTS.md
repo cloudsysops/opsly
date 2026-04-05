@@ -47,7 +47,7 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 
 <!-- Actualizar al final de cada sesión -->
 
-**Fecha última actualización:** 2026-04-05 (capas de calidad monorepo `d4acfcb` + sincronización de este AGENTS.md)
+**Fecha última actualización:** 2026-04-05 (Traefik: `DOCKER_API_VERSION`, socket rw, `group_add`/`DOCKER_GID`, bootstrap/validate-config, dashboard debug :8080, health con reintentos; + sincronización AGENTS.md)
 
 **Completado ✅**
 
@@ -96,6 +96,27 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 - **`infra/docker-compose.platform.yml`:** imágenes por defecto pasan a **`ghcr.io/cloudsysops/intcloudsysops-api:latest`** y **`ghcr.io/cloudsysops/intcloudsysops-admin:latest`** (sustituye `tu-org` en los defaults).
 - **Doppler `prd`:** **`APP_IMAGE`** y **`ADMIN_APP_IMAGE`** actualizados a esas mismas URLs para alinear `.env` del VPS tras bootstrap.
 - **Contexto histórico:** antes de este cambio, `deploy.yml` hacía build Next en el VPS con **`compose --build app`** únicamente; **`vps-first-run`** y pulls manuales dependían de imágenes publicadas en GHCR que aún no existían → **`not found`**. El pipeline anterior queda **obsoleto** respecto al flujo GHCR descrito arriba.
+
+*CI/deploy — GHCR desde Actions, health, Traefik, `.env` compose, Discord, VPS (2026-04-05, sesión Cursor):*
+- **`deploy.yml` — login GHCR en el VPS sin Doppler:** el script SSH ya no usa `doppler secrets get GHCR_TOKEN/GHCR_USER`. En el step *Deploy via SSH*: `env` con `GHCR_USER: ${{ github.actor }}`, `GHCR_PAT: ${{ secrets.GITHUB_TOKEN }}`; `envs: PLATFORM_DOMAIN,GHCR_USER,GHCR_PAT` para `appleboy/ssh-action`; en remoto: `echo "$GHCR_PAT" | docker login ghcr.io -u "$GHCR_USER" --password-stdin`. Job **`deploy`** con **`permissions: contents: read, packages: read`** para que `GITHUB_TOKEN` pueda autenticar lectura en GHCR al reutilizarse como PAT en el VPS.
+- **`apps/api/package.json` y `apps/admin/package.json`:** añadido script **`start`** (`next start -p 3000` / `3001`). Sin él, los contenedores entraban en bucle con *Missing script: "start"* pese a imagen correcta.
+- **Health check post-deploy (SSH):** **`curl -sfk "https://api.${PLATFORM_DOMAIN}/api/health"`**; mensaje *Esperando que Traefik registre routers…*, luego **`sleep 60`**, hasta **5 intentos** con **`sleep 15`** entre fallos; en el intento 5 fallido: logs **`docker logs infra-app-1`** y **`exit 1`**. Secret **`PLATFORM_DOMAIN`** = dominio **base** (ej. **`ops.smiletripcare.com`**).
+- **`infra/docker-compose.platform.yml` — router Traefik para la API:** labels del servicio **`app`** con `traefik.http.routers.app.rule=Host(\`api.${PLATFORM_DOMAIN}\`)`, **`entrypoints=websecure`**, **`tls=true`**, **`tls.certresolver=letsencrypt`**, **`service=app`**, **`traefik.http.services.app.loadbalancer.server.port=3000`**, `traefik.enable=true`, **`traefik.docker.network=traefik-public`**. Redes: **`traefik`** y **`app`** en **`traefik-public`** (externa); `app` también en `internal` (Redis). Middlewares de archivo se mantienen en el router `app`.
+- **Interpolación de variables en Compose:** por defecto Compose busca `.env` en el directorio del proyecto (junto a `infra/docker-compose.platform.yml`), **no** en `/opt/opsly/.env`. En **`deploy.yml`**, **`docker compose --env-file /opt/opsly/.env -f docker-compose.platform.yml pull`** y el mismo **`--env-file`** en **`up`**, para que `${PLATFORM_DOMAIN}`, `${ACME_EMAIL}`, `${REDIS_PASSWORD}`, etc. se resuelvan en labels y `environment`. Comentario en el YAML del compose documenta esto.
+- **Discord en GitHub Actions:** **no** usar **`secrets.…` dentro de expresiones `if:`** en steps (p. ej. `if: failure() && secrets.DISCORD_WEBHOOK_URL != ''`) — el workflow queda **inválido** (*workflow file issue*, run ~0s sin logs). Solución: `if: success()` / `if: failure()` y en el script: si `DISCORD_WEBHOOK_URL` vacío → mensaje y **`exit 0`** (no-op); evita `curl: (3) URL rejected` con webhook vacío.
+- **VPS — disco lleno durante `docker compose pull`:** error *no space left on device* al extraer capas (p. ej. bajo `/var/lib/containerd/.../node_modules/...`). Tras **`docker image prune -af`** y **`docker builder prune -af`** se recuperó espacio (orden ~5GB en un caso); **`df -h /`** pasó de ~**99%** a ~**68%** uso en el mismo host.
+- **Diagnóstico health con app “Ready”:** en un run, `infra-app-1` mostraba Next *Ready in Xs* pero el `curl` del job fallaba: suele ser **routing TLS/Traefik** o **`PLATFORM_DOMAIN` / interpolación** incorrecta en labels; las correcciones anteriores apuntan a eso.
+- **Traefik — logs en VPS:** error **`client version 1.24 is too old`** cuando el cliente embebido negocia API antigua frente a Docker Engine ≥1.40 — mitigado con **`DOCKER_API_VERSION=1.41`** en el servicio Traefik del compose.
+
+*Traefik — socket Docker, API y grupo `docker` (2026-04-05, seguimiento Cursor):*
+- **`DOCKER_API_VERSION=1.41`** (lista `environment` en compose): fuerza versión de API compatible con el daemon del host además de la config estática en `traefik.yml`.
+- **Volumen `/var/run/docker.sock` sin `:ro`:** Traefik v3 puede requerir permisos completos en el socket para eventos del provider Docker.
+- **`api.insecure: true`** en **`infra/traefik/traefik.yml`:** expone dashboard/API en **:8080** sin TLS (**solo depuración**). En compose, **`127.0.0.1:8080:8080`** para no publicar el dashboard a Internet; conviene volver a **`insecure: false`** y quitar el mapeo en producción.
+- **`group_add: ["${DOCKER_GID:-999}"]`:** el socket suele ser **`root:docker`** (`srw-rw----`). La imagen Traefik corre con usuario no root; hay que añadir el **GID numérico** del grupo `docker` del **host** al contenedor. Se quitó **`user: root`** como enfoque principal en favor de este patrón.
+- **`DOCKER_GID` en `/opt/opsly/.env`:** **`scripts/vps-bootstrap.sh`** (paso **`[i]`**) obtiene **`stat -c %g /var/run/docker.sock`** y añade **`DOCKER_GID=…`** al `.env` si no existe línea `^DOCKER_GID=` (no sobrescribe). **`scripts/validate-config.sh`:** tras SSH OK, comprueba que **`${VPS_PATH}/.env`** en el VPS contenga **`DOCKER_GID`**; si no, **warning** con instrucción de ejecutar bootstrap o añadir la línea manualmente.
+- **`scripts/vps-first-run.sh`:** al inicio, si **`docker info`** falla → error (daemon/socket/permisos del usuario que ejecuta el script).
+- **Raíz del compose:** sin clave **`version:`** (obsoleta en Compose moderno, eliminaba warning).
+- **Commits de referencia:** `ed38256` (`fix(traefik): set DOCKER_API_VERSION and fix socket mount…`), `57f0440` (`fix(traefik): fix docker provider config and socket access…` — insecure, health 5×15s, `docker info` en first-run), `0df201c` (`fix(traefik): add docker group and API version to fix socket discovery` — `group_add`, bootstrap/validate `DOCKER_GID`). Histórico previo del mismo hilo: `393bc3c` … `03068a0` (`--env-file`). Runs ejemplo: `24008556692`, `24008712390`, `24009183221`.
 
 *Intento deploy staging → `https://api.ops.smiletripcare.com/api/health` (2026-04-05):*
 - **Paso 1 — Auditoría:** revisados `config/opsly.config.json` (sin secretos), `.env.local.example` (placeholders), `infra/docker-compose.platform.yml` (solo nombres de vars), y por SSH el árbol `.env*` bajo `/opt/opsly` (`.env`, `.env.example`, `.env.local.example`, `.env.swp`).
@@ -177,8 +198,8 @@ con facturación Stripe, backups automáticos y dashboard de administración.
   `.github/AGENTS.md` (espejo de este archivo cuando está sincronizado)
 
 **En progreso 🔄**
-- **CI `Deploy` en GitHub Actions:** tras push a `main`, **`build-and-push`** debe publicar las dos imágenes en GHCR y **`deploy`** debe hacer **`pull` + `up`** en el VPS; revisar run en *Actions → Deploy* si falla login GHCR, permisos `packages:write` o SSH/health.
-- Deploy staging — imágenes **`ghcr.io/cloudsysops/intcloudsysops-{api,admin}:latest`** quedan definidas en compose + Doppler; en VPS conviene **`./scripts/vps-bootstrap.sh`** (o `doppler secrets download`) para refrescar `.env` y **`docker login ghcr.io`** con credenciales con pull.
+- **CI `Deploy` en GitHub Actions:** tras push a `main`, **`build-and-push`** publica imágenes en GHCR; **`deploy`** hace SSH, **`docker compose --env-file /opt/opsly/.env … pull` + `up`**, health con reintentos y **`curl -sfk`**. Revisar *Actions → Deploy* si falla SSH, disco VPS, Traefik, **`PLATFORM_DOMAIN`** o falta **`DOCKER_GID`** en el `.env` del VPS (sin él, `group_add` usa `999` y el socket puede seguir inaccesible).
+- Deploy staging — imágenes **`ghcr.io/cloudsysops/intcloudsysops-{api,admin}:latest`**; en VPS **`/opt/opsly/.env`** con **`DOCKER_GID`** (vuelve a ejecutar **`vps-bootstrap.sh`** tras cambios de compose si hace falta); login GHCR en el job con **`GITHUB_TOKEN`**. Tras cambios en Traefik: recrear contenedor **`traefik`** en el VPS para cargar env y `group_add`.
 - Con Doppler CLI + token con scope `/opt/opsly`: **`./scripts/vps-bootstrap.sh`** regenera `.env`; ejecutar tras cambiar imágenes o secretos en `prd`.
 - DNS: ops.smiletripcare.com → 157.245.223.7 ✅
 
@@ -201,20 +222,24 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 npx eslint "apps/api/**/*.ts" --max-warnings 0
 npm run type-check
 
-# Mac — comprobar prd sin imprimir valores:
+# Mac — comprobar prd sin imprimir valores (si aún usas Doppler para otros flujos):
 doppler secrets get GHCR_TOKEN --plain --project ops-intcloudsysops --config prd >/dev/null && echo "GHCR_TOKEN prd: OK"
 doppler secrets get GHCR_USER --plain --project ops-intcloudsysops --config prd >/dev/null && echo "GHCR_USER prd: OK"
 
-# VPS — obligatorio cd /opt/opsly (scope del token de servicio):
-ssh vps-dragon 'cd /opt/opsly && echo "$(doppler secrets get GHCR_TOKEN --plain)" | docker login ghcr.io -u "$(doppler secrets get GHCR_USER --plain)" --password-stdin'
-# → Login Succeeded
+# VPS — compose manual: siempre --env-file raíz (incluye PLATFORM_DOMAIN, DOCKER_GID, etc.):
+#   cd /opt/opsly/infra && docker compose --env-file /opt/opsly/.env -f docker-compose.platform.yml pull
+#   docker compose --env-file /opt/opsly/.env -f docker-compose.platform.yml up -d
+# Tras cambios en Traefik: up -d traefik (carga DOCKER_GID, group_add, DOCKER_API_VERSION)
 
-ssh vps-dragon 'cd /opt/opsly && ./scripts/vps-first-run.sh'   # requiere imágenes existentes en GHCR o ajustar .env/compose
-curl -sf https://api.ops.smiletripcare.com/api/health | jq .
+# VPS — login GHCR alternativo (Doppler; requiere cd /opt/opsly por scope del token):
+ssh vps-dragon 'cd /opt/opsly && echo "$(doppler secrets get GHCR_TOKEN --plain)" | docker login ghcr.io -u "$(doppler secrets get GHCR_USER --plain)" --password-stdin'
+
+ssh vps-dragon 'cd /opt/opsly && ./scripts/vps-first-run.sh'   # requiere imágenes en GHCR o .env/compose alineados
+curl -sfk "https://api.ops.smiletripcare.com/api/health"   # o el dominio base del secret PLATFORM_DOMAIN
 # Tras health OK: actualizar context/system_state.json + ./scripts/update-agents.sh
 ./scripts/validate-config.sh   # local; debe seguir en LISTO PARA DEPLOY
 # Listar paquetes GHCR (Mac): gh auth refresh -s read:packages; gh api '/orgs/cloudsysops/packages?package_type=container' --jq '.[].name'
-# Tras cambios en deploy.yml: push a main dispara build+push; VPS recibe imágenes vía job deploy (pull).
+# Push a main dispara deploy.yml: build-and-push + SSH con GITHUB_TOKEN para docker login en VPS.
 ```
 
 ---
@@ -300,6 +325,18 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 | 2026-04-05 | ESLint en raíz con flat config + legacy compat; reglas estrictas solo donde aplica override API; `constants.ts` exento de `no-magic-numbers` | Un solo lugar de verdad lint; web/admin no bloqueados por el hook |
 | 2026-04-05 | Pre-commit: ESLint staged solo `apps/api/app` + `apps/api/lib` tras type-check | Feedback rápido sin forzar mismas reglas en admin/web |
 | 2026-04-05 | Errores Supabase en metrics: convertir `{message}` a `new Error()` para tipo `Error` | Corrige TS2741 en `firstMetricsError` |
+| 2026-04-05 | Deploy SSH: `docker login ghcr.io` con `GITHUB_TOKEN` + `github.actor` vía env al VPS (no Doppler en ese paso) | Mismo token que build; `permissions: packages: read` en job `deploy` |
+| 2026-04-05 | `npm start` obligatorio en api/admin para imágenes de producción | Next en contenedor ejecuta `npm start`; sin script el contenedor reinicia en bucle |
+| 2026-04-05 | Health check CI: `curl -sfk` + `https://api.${PLATFORM_DOMAIN}/api/health` + sleep 45s | Cert staging / ACME; dominio base en secret alineado con labels Traefik |
+| 2026-04-05 | Traefik: router Docker nombrado `app` (no `api`), `tls=true`, misma regla `Host(api.${PLATFORM_DOMAIN})` | Evitar ambigüedad y asegurar TLS explícito en router |
+| 2026-04-05 | `docker compose --env-file /opt/opsly/.env` en `pull` y `up` (deploy.yml) | Compose no lee por defecto `.env` de la raíz del repo bajo `/opt/opsly` |
+| 2026-04-05 | No usar `secrets.*` en `if:` de steps; guarda en bash para Discord | GitHub invalida el workflow; webhook vacío rompía `curl` |
+| 2026-04-05 | VPS: vigilar disco antes de pulls grandes (`docker system df`, prune) | *no space left on device* al extraer capas de imágenes Next |
+| 2026-04-05 | Traefik: `DOCKER_API_VERSION=1.41` + socket sin `:ro` | API Docker compatible; eventos del provider |
+| 2026-04-05 | Traefik: `group_add` con `${DOCKER_GID}`; sin `user: root` por defecto | Socket `root:docker`; usuario de la imagen + GID suplementario |
+| 2026-04-05 | `vps-bootstrap.sh` añade `DOCKER_GID` vía `stat -c %g /var/run/docker.sock` | `.env` listo para interpolación en compose |
+| 2026-04-05 | `validate-config.sh` comprueba `DOCKER_GID` en `.env` del VPS por SSH | Warning temprano si falta antes de deploy |
+| 2026-04-05 | Dashboard Traefik `api.insecure` + `127.0.0.1:8080` solo depuración | No exponer 8080 públicamente en producción |
 
 ---
 
@@ -339,3 +376,34 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 ├── VISION.md                # Norte del producto (fases, ICP, límites agentes)
 └── AGENTS.md                # Este archivo
 ```
+
+## 🔄 Actualización — 2026-04-05 (acciones del agente)
+
+- **Verificado `start` en `apps/api/package.json` y `apps/admin/package.json`:** ambos contienen el script `start` correcto.
+  - `apps/api/package.json`: `"start": "next start -p 3000"`
+  - `apps/admin/package.json`: `"start": "next start -p 3001"`
+
+- **Revisión de Dockerfiles:** `apps/api/Dockerfile` y `apps/admin/Dockerfile` revisados.
+  - El `CMD` final ejecuta `npm start` en ambos contenedores — OK.
+  - Los `EXPOSE` coinciden con los puertos de arranque (`3000` para API, `3001` para Admin) — OK.
+  - Observación: los Dockerfiles copian `.next` pero **no** copian `.next/standalone` — si se usa el modo `next build && next export` o `standalone` en la imagen de producción, considerar añadir `COPY --from=builder /repo/apps/APP/.next/standalone ./apps/APP/.next/standalone` durante la fase final.
+
+- **Ruta de salud:** existe `apps/api/app/api/health/route.ts` y responde con `status` y metadatos (supabase, timestamp, version) — OK.
+
+- **TypeScript:** se intentó correr `npx tsc --noEmit` en `apps/api` y `apps/admin`. El comando se ejecutó desde el agente pero produjo salida/estado inconsistente en este entorno (no se aplicaron correcciones). Resultado: **no se tocaron errores de tipos** en este commit; se recomienda ejecutar localmente `npx tsc --noEmit` y corregir los errores detectados en ambos paquetes.
+
+- **ESLint:** añadido `apps/admin/eslint.config.js` con `@eslint/js` recomendado para el paquete `admin`.
+  - Archivo agregado: `apps/admin/eslint.config.js`
+
+Cambios realizados en el repo durante esta sesión:
+
+- Añadido: `apps/admin/eslint.config.js` (configuración ESLint recomendada)
+- Actualizado: `AGENTS.md` (este bloque de resumen)
+
+Commit: `docs: update AGENTS.md 2026-04-05`
+
+Próximos pasos recomendados:
+
+- Ejecutar localmente `npx tsc --noEmit` en `apps/api` y `apps/admin` y corregir errores de tipos.
+- Si se utiliza output `standalone` de Next, actualizar Dockerfiles para copiar `.next/standalone` en la etapa final.
+

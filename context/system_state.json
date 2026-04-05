@@ -32,8 +32,8 @@
       "api",
       "web"
     ],
-    "scripts": 19,
-    "adrs": 4,
+    "scripts": 15,
+    "adrs": 5,
     "migrations": 7
   }
 }
