@@ -109,6 +109,10 @@ jobs:
             npm ci
 
             cd /opt/opsly/infra
+            echo "$(doppler secrets get GHCR_TOKEN --plain)" | \
+              docker login ghcr.io \
+              -u "$(doppler secrets get GHCR_USER --plain)" \
+              --password-stdin
             docker compose -f docker-compose.platform.yml pull
             docker compose -f docker-compose.platform.yml up -d --no-deps app admin
 
