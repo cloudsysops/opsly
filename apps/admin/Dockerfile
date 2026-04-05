@@ -16,13 +16,18 @@ ENV NEXT_TELEMETRY_DISABLED=1
 RUN mkdir -p public && npm run build
 
 FROM node:20-alpine AS runner
-WORKDIR /repo
+WORKDIR /app
+
 ENV NODE_ENV=production
 ENV PORT=3001
-COPY --from=builder /repo/apps/admin/.next ./apps/admin/.next
+ENV HOSTNAME=0.0.0.0
+
+COPY --from=builder /repo/apps/admin/.next/standalone ./
+COPY --from=builder /repo/apps/admin/.next/static ./apps/admin/.next/static
 COPY --from=builder /repo/apps/admin/public ./apps/admin/public
-COPY --from=builder /repo/apps/admin/package.json ./apps/admin/package.json
-COPY --from=builder /repo/node_modules ./node_modules
-WORKDIR /repo/apps/admin
+
+WORKDIR /app/apps/admin
+
 EXPOSE 3001
+
 CMD ["npm", "start"]
