@@ -383,7 +383,7 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 | 2026-04-05 | `docker compose --env-file /opt/opsly/.env` en `pull` y `up` (deploy.yml) | Compose no lee por defecto `.env` de la raíz del repo bajo `/opt/opsly` |
 | 2026-04-05 | No usar `secrets.*` en `if:` de steps; guarda en bash para Discord | GitHub invalida el workflow; webhook vacío rompía `curl` |
 | 2026-04-05 | VPS: vigilar disco antes de pulls grandes (`docker system df`, prune) | *no space left on device* al extraer capas de imágenes Next |
-| 2026-04-05 | Traefik: `DOCKER_API_VERSION=1.41` + socket sin `:ro` | API Docker compatible; eventos del provider |
+| 2026-04-05 | Traefik + Docker 29: `/etc/docker/daemon.json` con `min-api-version` "1.24" (`vps-bootstrap.sh` si `sudo -n`; restart manual de dockerd) | El cliente embebido de Traefik negocia API 1.24; `DOCKER_API_VERSION` en compose no lo afecta |
 | 2026-04-05 | Traefik: `group_add` con `${DOCKER_GID}`; sin `user: root` por defecto | Socket `root:docker`; usuario de la imagen + GID suplementario |
 | 2026-04-05 | `vps-bootstrap.sh` añade `DOCKER_GID` vía `stat -c %g /var/run/docker.sock` | `.env` listo para interpolación en compose |
 | 2026-04-05 | `validate-config.sh` comprueba `DOCKER_GID` en `.env` del VPS por SSH | Warning temprano si falta antes de deploy |
