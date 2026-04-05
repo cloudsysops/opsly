@@ -8,7 +8,7 @@ DST="${ROOT_DIR}/.github/AGENTS.md"
 
 cp "${SRC}" "${DST}"
 cp "${ROOT_DIR}/VISION.md" "${ROOT_DIR}/.github/VISION.md" 2>/dev/null || true
-git -C "${ROOT_DIR}" add AGENTS.md VISION.md .github/ 2>/dev/null || true
+git -C "${ROOT_DIR}" add AGENTS.md VISION.md .github/AGENTS.md .github/VISION.md 2>/dev/null || true
 git -C "${ROOT_DIR}" commit -m "docs(agents): sync sesión $(date +%Y-%m-%d)" || true
 git -C "${ROOT_DIR}" push origin main
 echo "✅ AGENTS.md / VISION.md sincronizados y pusheado"
