@@ -1,0 +1,84 @@
+# Staging: tras CI exitoso en main, o manual.
+#
+# Secrets (environment "staging" o repositorio):
+#   VPS_HOST, VPS_USER, VPS_SSH_KEY, DISCORD_WEBHOOK_URL (opcional, notificaciones)
+#
+# El health check usa la URL indicada en el requisito del equipo; ajusta si Opsly usa otro host.
+
+name: Deploy staging
+
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: staging
+    if: |
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'workflow_run' &&
+       github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.head_branch == 'main')
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.sha }}
+
+      - name: Deploy por SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            set -euo pipefail
+            cd /opt/opsly
+            chmod +x scripts/*.sh 2>/dev/null || true
+            ./scripts/vps-deploy.sh
+
+      # Health incluido en vps-deploy.sh (curl a api.$PLATFORM_DOMAIN + fallback localhost)
+
+      - name: Notificar Discord (éxito)
+        if: success()
+        continue-on-error: true
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          set -euo pipefail
+          if [ -z "${DISCORD_WEBHOOK_URL:-}" ]; then
+            echo "DISCORD_WEBHOOK_URL no configurado; omitiendo notificación"
+            exit 0
+          fi
+          TS=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+          curl -fsS -X POST "$DISCORD_WEBHOOK_URL" \
+            -H "Content-Type: application/json" \
+            -d "$(jq -n \
+              --arg title "Staging deploy OK" \
+              --arg sha "${{ github.sha }}" \
+              --arg actor "${{ github.actor }}" \
+              --arg ts "$TS" \
+              '{embeds:[{title:$title,color:3066993,fields:[{name:"Commit",value:$sha,inline:true},{name:"Actor",value:$actor,inline:true}],timestamp:$ts}]}')"
+
+      - name: Notificar Discord (fallo)
+        if: failure()
+        continue-on-error: true
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          set -euo pipefail
+          if [ -z "${DISCORD_WEBHOOK_URL:-}" ]; then
+            echo "DISCORD_WEBHOOK_URL no configurado; omitiendo notificación"
+            exit 0
+          fi
+          curl -fsS -X POST "$DISCORD_WEBHOOK_URL" \
+            -H "Content-Type: application/json" \
+            -d "$(jq -n \
+              --arg sha "${{ github.sha }}" \
+              --arg actor "${{ github.actor }}" \
+              --arg url "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+              '{embeds:[{title:"Staging deploy fallido",color:15158332,fields:[{name:"Commit",value:$sha,inline:true},{name:"Actor",value:$actor,inline:true},{name:"Run",value:$url,inline:false}]}]}')"

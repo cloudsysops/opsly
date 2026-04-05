@@ -1,0 +1,72 @@
+name: Reporte de bug
+description: Algo no funciona como debería
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Gracias por el reporte. Cuanta más información, más rápido podremos reproducirlo.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Descripción del bug
+      description: Qué ocurre y en qué contexto.
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Pasos para reproducir
+      description: Lista numerada, idealmente desde un estado limpio.
+      placeholder: |
+        1. …
+        2. …
+        3. …
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Comportamiento esperado
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Comportamiento actual
+    validations:
+      required: true
+
+  - type: dropdown
+    id: environment
+    attributes:
+      label: Entorno
+      options:
+        - VPS
+        - local
+        - staging
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs relevantes
+      description: Pega fragmentos de logs, trazas o respuestas HTTP (sin secretos).
+      render: shell
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severidad
+      options:
+        - critical
+        - high
+        - medium
+        - low
+    validations:
+      required: true

@@ -1,0 +1,57 @@
+name: Solicitud de funcionalidad
+description: Proponer una mejora o capacidad nueva
+labels: [enhancement]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Descripción de la funcionalidad
+      description: Qué quieres construir o habilitar.
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problema que resuelve
+      description: Para quién y por qué importa.
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Solución propuesta
+      description: Enfoque técnico o de producto (puede ser borrador).
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternativas consideradas
+      description: Otras opciones que descartaste y por qué.
+
+  - type: dropdown
+    id: component
+    attributes:
+      label: Componente afectado
+      options:
+        - api
+        - admin
+        - infra
+        - scripts
+        - docs
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Prioridad
+      options:
+        - high
+        - medium
+        - low
+    validations:
+      required: true

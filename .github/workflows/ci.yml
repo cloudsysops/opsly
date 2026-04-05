@@ -1,16 +1,101 @@
 name: CI
+
 on:
-  pull_request: { branches: [main] }
-  push: { branches: [main] }
+  push:
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  validate:
+  lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
-        with: { node-version: 20, cache: "npm" }
-      - run: npm ci
-      - run: npm run lint
-      - run: npm run type-check
-      - run: npm run build
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: npm ci
+        run: npm ci
+
+      - name: TypeScript (api + admin, paralelo)
+        run: |
+          set -euo pipefail
+          (cd apps/api && npx tsc --noEmit) & pid1=$!
+          (cd apps/admin && npx tsc --noEmit) & pid2=$!
+          wait $pid1 $pid2
+
+      - name: ESLint si existe config (paralelo)
+        run: |
+          set -euo pipefail
+          run_eslint() {
+            dir="$1"
+            if compgen -G "${dir}/eslint.config.*" >/dev/null 2>&1 \
+              || [ -f "${dir}/.eslintrc.json" ] \
+              || [ -f "${dir}/.eslintrc.cjs" ] \
+              || [ -f "${dir}/.eslintrc.js" ]; then
+              (cd "$dir" && npx eslint .)
+            else
+              echo "No ESLint config in ${dir}, skipping"
+            fi
+          }
+          run_eslint apps/api & pid1=$!
+          run_eslint apps/admin & pid2=$!
+          wait $pid1 $pid2
+
+  test:
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Tests pendientes
+        run: echo "Tests pendientes"
+
+  build:
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: npm ci + build (api + admin)
+        run: |
+          set -euo pipefail
+          npm ci
+          (cd apps/api && npm run build) & pid1=$!
+          (cd apps/admin && npm run build) & pid2=$!
+          wait $pid1 $pid2
+
+  scripts-check:
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: bash -n (scripts/*.sh)
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          for f in scripts/*.sh; do
+            echo "bash -n $f"
+            bash -n "$f"
+          done
+
+      - name: Instalar shellcheck
+        run: sudo apt-get update -qq && sudo apt-get install -y shellcheck
+
+      - name: shellcheck scripts/*.sh
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          shellcheck scripts/*.sh

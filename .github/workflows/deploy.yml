@@ -4,6 +4,9 @@
 #
 # El resto de variables de .env deben definirse en el environment "production"
 # de GitHub y/o inyectarse en el VPS con Doppler (no van en texto plano en este YAML).
+#
+# OPSLY_CONFIG_SYNC: valores públicos desde config/opsly.config.json (scripts/sync-config.sh)
+# VPS_HOST (secret) debe coincidir con infrastructure.vps_ip del JSON.
 
 name: Deploy
 
@@ -102,7 +105,7 @@ jobs:
             set -euo pipefail
 
             DEPLOY_PATH=/opt/opsly
-            REPO_URL=git@github.com:${{ github.repository }}.git
+            REPO_URL=git@github.com:cloudsysops/opsly.git
 
             cd "$DEPLOY_PATH"
             git fetch origin main
@@ -122,7 +125,7 @@ jobs:
               echo "PLATFORM_DOMAIN no está definido en el entorno remoto; define el secret PLATFORM_DOMAIN o exporta la variable en el VPS (Doppler)." >&2
               exit 1
             fi
-            curl -sf "https://api.${PLATFORM_DOMAIN}/api/health" || exit 1
+            curl -sf "https://api.ops.smiletripcare.com/api/health" || exit 1
 
             echo "Deploy completado: $(date -u)"
 

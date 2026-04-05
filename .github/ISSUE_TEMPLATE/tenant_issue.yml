@@ -1,0 +1,61 @@
+name: Incidencia de tenant
+description: Problemas con un tenant concreto (n8n, API, uptime, etc.)
+labels: [tenant]
+body:
+  - type: input
+    id: slug
+    attributes:
+      label: Tenant slug
+      description: Identificador corto del tenant (ej. acme-corp).
+    validations:
+      required: true
+
+  - type: dropdown
+    id: plan
+    attributes:
+      label: Plan
+      options:
+        - startup
+        - business
+        - enterprise
+    validations:
+      required: true
+
+  - type: dropdown
+    id: service
+    attributes:
+      label: Servicio afectado
+      options:
+        - n8n
+        - uptime
+        - api
+    validations:
+      required: true
+
+  - type: textarea
+    id: container_status
+    attributes:
+      label: Estado del container
+      description: Salida de `docker ps -a`, nombre del contenedor, reinicios, etc.
+      render: shell
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs del container
+      description: Últimas líneas relevantes (sin tokens ni claves).
+      render: shell
+
+  - type: dropdown
+    id: action
+    attributes:
+      label: Acción requerida
+      options:
+        - restart
+        - suspend
+        - delete
+        - investigate
+    validations:
+      required: true
