@@ -1,7 +1,8 @@
 # Create the shared edge network once before first deploy:
 #   docker network create traefik-public
 #
-# Required .env (non-exhaustive): PLATFORM_DOMAIN, REDIS_PASSWORD, ACME_EMAIL,
+# Required .env (non-exhaustive): PLATFORM_DOMAIN (base host, e.g. ops.smiletripcare.com — same
+# value as GitHub secret PLATFORM_DOMAIN for deploy health checks), REDIS_PASSWORD, ACME_EMAIL,
 # TRAEFIK_DASHBOARD_BASIC_AUTH_USERS (htpasswd format, e.g. user:$$apr1$$... — escape $ for Compose),
 # APP_IMAGE (optional), and application secrets for ../.env
 
@@ -70,11 +71,12 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=traefik-public"
-      - "traefik.http.routers.api.rule=Host(`api.${PLATFORM_DOMAIN}`)"
-      - "traefik.http.routers.api.entrypoints=websecure"
-      - "traefik.http.routers.api.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.api.service=app"
-      - "traefik.http.routers.api.middlewares=secure-headers@file,rate-limit@file,compress@file"
+      - "traefik.http.routers.app.rule=Host(`api.${PLATFORM_DOMAIN}`)"
+      - "traefik.http.routers.app.entrypoints=websecure"
+      - "traefik.http.routers.app.tls=true"
+      - "traefik.http.routers.app.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.app.service=app"
+      - "traefik.http.routers.app.middlewares=secure-headers@file,rate-limit@file,compress@file"
       - "traefik.http.services.app.loadbalancer.server.port=3000"
     networks:
       - traefik-public

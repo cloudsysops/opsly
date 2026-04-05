@@ -1,7 +1,8 @@
 # Secrets requeridos (repository o environment "production"):
 #   VPS_HOST, VPS_USER, VPS_SSH_KEY, PLATFORM_DOMAIN
 #   DISCORD_WEBHOOK_URL (opcional; si falta, los steps de Discord hacen no-op)
-#   (PLATFORM_DOMAIN: usado en el health check post-deploy vía SSH env)
+#   PLATFORM_DOMAIN: dominio base sin subdominio (ej. ops.smiletripcare.com). Debe coincidir con
+#   .env del VPS para compose; el health check usa https://api.${PLATFORM_DOMAIN}/api/health
 #
 # El resto de variables de .env deben definirse en el environment "production"
 # de GitHub y/o inyectarse en el VPS con Doppler (no van en texto plano en este YAML).
@@ -119,7 +120,7 @@ jobs:
             docker compose -f docker-compose.platform.yml pull
             docker compose -f docker-compose.platform.yml up -d --no-deps app admin
 
-            sleep 30
+            sleep 45
             if [ -z "${PLATFORM_DOMAIN:-}" ]; then
               echo "PLATFORM_DOMAIN no está definido" >&2
               exit 1
