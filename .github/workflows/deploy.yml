@@ -83,6 +83,9 @@ jobs:
     needs: build-and-push
     runs-on: ubuntu-latest
     environment: production
+    permissions:
+      contents: read
+      packages: read
     steps:
       - uses: actions/checkout@v4
 
@@ -90,11 +93,13 @@ jobs:
         uses: appleboy/ssh-action@v1.0.3
         env:
           PLATFORM_DOMAIN: ${{ secrets.PLATFORM_DOMAIN }}
+          GHCR_USER: ${{ github.actor }}
+          GHCR_PAT: ${{ secrets.GITHUB_TOKEN }}
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
-          envs: PLATFORM_DOMAIN
+          envs: PLATFORM_DOMAIN,GHCR_USER,GHCR_PAT
           script: |
             set -euo pipefail
 
@@ -109,10 +114,7 @@ jobs:
             npm ci
 
             cd /opt/opsly/infra
-            echo "$(doppler secrets get GHCR_TOKEN --plain)" | \
-              docker login ghcr.io \
-              -u "$(doppler secrets get GHCR_USER --plain)" \
-              --password-stdin
+            echo "$GHCR_PAT" | docker login ghcr.io -u "$GHCR_USER" --password-stdin
             docker compose -f docker-compose.platform.yml pull
             docker compose -f docker-compose.platform.yml up -d --no-deps app admin
 
