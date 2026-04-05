@@ -17,15 +17,19 @@
    - Ejemplo: `https://raw.githubusercontent.com/cloudsysops/opsly/main/AGENTS.md`
 4. Pide explícitamente: *«Lee el contenido de esa URL y actúa según AGENTS.md»*.
 
-**Al cerrar la sesión con Cursor — díselo tal cual (copiar/pegar):**
+**Al cerrar la sesión con Cursor — copiar/pegar esto:**
 
 ```
-Antes de cerrar: actualiza AGENTS.md (todas las secciones 🔄), haz commit y push a main
-con un mensaje claro (ej. docs(agents): estado sesión YYYY-MM-DD). Luego respóndeme con
-la URL raw de AGENTS.md en main para pegarla al iniciar la próxima sesión.
+Flujo de cierre:
+1. Actualiza AGENTS.md (todas las secciones 🔄).
+2. Commit y push a main (mensaje claro, ej. docs(agents): estado sesión YYYY-MM-DD),
+   o ejecuta ./scripts/update-agents.sh para espejar AGENTS/VISION en .github/ y pushear.
+3. Respóndeme con la URL raw de AGENTS.md en main para que la pegue al abrir la próxima sesión.
+
+https://raw.githubusercontent.com/cloudsysops/opsly/main/AGENTS.md
 ```
 
-*(El “commit automático” lo hace Cursor si se lo pides así; si usas reglas/hooks, mantén el mismo criterio: siempre push a `main` tras editar AGENTS.md.)*
+**Resumen:** Cursor deja `AGENTS.md` al día → commit/push a `main` → tú pegas la URL raw al iniciar la próxima sesión con el agente → listo.
 
 ---
 
