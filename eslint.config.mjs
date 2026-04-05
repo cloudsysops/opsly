@@ -28,7 +28,6 @@ const eslintrc = require("./.eslintrc.json");
 export default [
   {
     ignores: [
-      "apps/admin/**",
       "apps/web/**",
       "**/node_modules/**",
       "**/.next/**",
