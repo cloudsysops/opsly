@@ -120,15 +120,29 @@ jobs:
             docker compose --env-file /opt/opsly/.env -f docker-compose.platform.yml pull
             docker compose --env-file /opt/opsly/.env -f docker-compose.platform.yml up -d --no-deps app admin
 
-            sleep 45
+            sleep 60
             if [ -z "${PLATFORM_DOMAIN:-}" ]; then
               echo "PLATFORM_DOMAIN no está definido" >&2
               exit 1
             fi
-            echo "Health check..."
-            curl -sfk "https://api.${PLATFORM_DOMAIN}/api/health" \
-              && echo "Health OK" \
-              || { echo "Health falló - logs:"; docker logs --tail 20 infra-app-1 2>&1; exit 1; }
+            echo "Health check (hasta 3 intentos)..."
+            health_ok=0
+            for i in 1 2 3; do
+              if curl -sfk "https://api.${PLATFORM_DOMAIN}/api/health"; then
+                echo "Health OK"
+                health_ok=1
+                break
+              fi
+              echo "Intento $i fallido, esperando 20s..."
+              if [ "$i" -lt 3 ]; then
+                sleep 20
+              fi
+            done
+            if [ "$health_ok" -ne 1 ]; then
+              echo "Health falló tras reintentos - logs:"
+              docker logs --tail 20 infra-app-1 2>&1
+              exit 1
+            fi
 
             echo "Deploy completado: $(date -u)"
 

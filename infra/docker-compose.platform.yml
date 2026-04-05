@@ -8,17 +8,21 @@
 # REDIS_PASSWORD, ACME_EMAIL, TRAEFIK_DASHBOARD_BASIC_AUTH_USERS (htpasswd; escapar $ en Compose),
 # APP_IMAGE (optional). Los servicios también cargan env_file ../.env (= /opt/opsly/.env desde infra/).
 
-version: "3.9"
-
 services:
   traefik:
     image: traefik:v3.0
     container_name: traefik
+    # El socket de Docker suele ser root:root; ejecutar como root evita permisos denegados al leer /var/run/docker.sock.
+    user: root
     ports:
       - "80:80"
       - "443:443"
+    # DOCKER_API_VERSION: Traefik usa un cliente Docker antiguo que negociaba API 1.24; el daemon actual exige ≥1.40
+    # ("client version 1.24 is too old"). Fijar 1.41 hace que las peticiones al socket usen una versión compatible.
     environment:
+      DOCKER_API_VERSION: "1.41"
       TRAEFIK_CERTIFICATESRESOLVERS_LETSENCRYPT_ACME_EMAIL: ${ACME_EMAIL}
+    # Volúmenes: docker.sock (ro) descubrimiento de servicios por labels; estáticos y dinámicos Traefik; certificados ACME.
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./traefik/traefik.yml:/etc/traefik/traefik.yml:ro
