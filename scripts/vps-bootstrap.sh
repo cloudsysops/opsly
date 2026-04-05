@@ -165,7 +165,7 @@ if command -v sudo >/dev/null 2>&1 && sudo -n true 2>/dev/null; then
 else
   log_warn "Sin sudo sin contraseña (sudo -n); no se creó ${DAEMON_JSON}."
   echo "  Si el archivo no existe, créalo con sudo, por ejemplo:"
-  echo "    printf '%s\\n' '{\"api-version-compat\": true}' | sudo tee ${DAEMON_JSON} >/dev/null"
+  printf "    printf '%%s\\n' '{\"api-version-compat\": true}' | sudo tee %s >/dev/null\n" "${DAEMON_JSON}"
 fi
 echo ""
 echo "  Tras crear o editar ${DAEMON_JSON}, aplica con reinicio manual de Docker (afecta todos los contenedores):"
