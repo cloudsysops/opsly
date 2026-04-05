@@ -1,0 +1,322 @@
+name: Nightly code quality
+
+on:
+  schedule:
+    # 03:00 UTC daily
+    - cron: "0 3 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+concurrency:
+  group: nightly-fix-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  ensure-labels:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ensure GitHub labels exist
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh label create bug --color d73a4a --description "Bug reports" --repo "${{ github.repository }}" 2>/dev/null || true
+          gh label create automated --color 0E8A16 --description "Automation" --repo "${{ github.repository }}" 2>/dev/null || true
+
+  typecheck:
+    name: typecheck
+    needs: ensure-labels
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: npm ci
+        run: npm ci
+
+      - name: TypeScript (api + admin, parallel) → errors.txt
+        run: |
+          set +e
+          : > errors.txt
+          tmp_a="$(mktemp)"
+          tmp_b="$(mktemp)"
+          (cd apps/api && npx tsc --noEmit) >"$tmp_a" 2>&1
+          (cd apps/admin && npx tsc --noEmit) >"$tmp_b" 2>&1
+          {
+            echo "=== apps/api ==="
+            cat "$tmp_a"
+            echo ""
+            echo "=== apps/admin ==="
+            cat "$tmp_b"
+            echo ""
+          } >> errors.txt
+          rm -f "$tmp_a" "$tmp_b"
+          exit 0
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nightly-errors
+          path: errors.txt
+          if-no-files-found: error
+
+  lint:
+    name: lint
+    needs: typecheck
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: npm ci
+        run: npm ci
+
+      - name: ESLint report → lint-report.txt
+        run: |
+          set +e
+          : > lint-report.txt
+          append_lint() {
+            local dir="$1"
+            echo "=== ${dir} ===" >> lint-report.txt
+            (cd "$dir" && npx eslint .) >> lint-report.txt 2>&1 || true
+            echo "" >> lint-report.txt
+          }
+          append_lint apps/api
+          append_lint apps/admin
+          exit 0
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nightly-lint-report
+          path: lint-report.txt
+          if-no-files-found: error
+
+  health-check:
+    name: health-check
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Ensure apps/api/app/api/health/route.ts exists
+        id: ensure_health
+        run: |
+          set -euo pipefail
+          FILE="apps/api/app/api/health/route.ts"
+          if [ ! -f "$FILE" ]; then
+            mkdir -p "$(dirname "$FILE")"
+            cat > "$FILE" << 'EOF'
+export async function GET() {
+  return Response.json({ status: "ok", timestamp: new Date().toISOString() })
+}
+EOF
+            echo "created=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "created=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/upload-artifact@v4
+        if: steps.ensure_health.outputs.created == 'true'
+        with:
+          name: nightly-health-route
+          path: apps/api/app/api/health/route.ts
+
+  auto-fix:
+    name: auto-fix
+    needs: health-check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ github.token }}
+
+      - uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: nightly-health-route
+          path: _health
+
+      - name: Apply health route from artifact (if created in health-check)
+        run: |
+          set -euo pipefail
+          if [ -d _health ]; then
+            found="$(find _health -name route.ts -print -quit 2>/dev/null || true)"
+            if [ -n "${found}" ]; then
+              mkdir -p apps/api/app/api/health
+              cp "${found}" apps/api/app/api/health/route.ts
+            fi
+          fi
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: npm ci
+        run: npm ci
+
+      - name: ESLint --fix (api + admin)
+        run: |
+          set +e
+          npm run lint:fix -w @intcloudsysops/api || true
+          npm run lint:fix -w @intcloudsysops/admin || true
+          exit 0
+
+      - name: Prettier --write (if installed at repo root)
+        run: |
+          set +e
+          if [ -f node_modules/prettier/package.json ]; then
+            npx prettier --write "apps/api/**/*.{ts,tsx,js,jsx,mjs,cjs,json,md,css}" \
+              "apps/admin/**/*.{ts,tsx,js,jsx,mjs,cjs,json,md,css}" \
+              --ignore-unknown || true
+          else
+            echo "Prettier not installed at repo root; skipping Prettier."
+          fi
+          exit 0
+
+      - name: Create PR if there are changes
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          DATE="$(date -u +%Y-%m-%d)"
+          BRANCH="nightly-fix/${DATE}"
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          if [ -z "$(git status --porcelain)" ]; then
+            echo "No file changes after auto-fix; skipping PR."
+            exit 0
+          fi
+
+          git stash push -u -m "nightly-autofix"
+
+          git fetch origin
+          git checkout main
+          git pull --ff-only origin main || true
+
+          if git rev-parse --verify "refs/remotes/origin/${BRANCH}" >/dev/null 2>&1; then
+            git checkout -B "${BRANCH}" "origin/${BRANCH}"
+            git merge origin/main -m "chore: merge main into ${BRANCH}" || true
+          else
+            git checkout -b "${BRANCH}"
+          fi
+
+          if ! git stash pop; then
+            echo "stash pop produced conflicts; aborting PR step."
+            git status
+            exit 1
+          fi
+
+          git add -A
+          if git diff --cached --quiet; then
+            echo "Nothing to commit after applying stash; skipping PR."
+            exit 0
+          fi
+
+          git commit -m "chore: nightly auto-fix ${DATE}"
+
+          git push origin "HEAD:${BRANCH}"
+
+          PR_COUNT="$(gh pr list --repo "${{ github.repository }}" --head "${BRANCH}" --state open --json number --jq 'length')"
+          if [ "${PR_COUNT}" = "0" ]; then
+            BODY_FILE="$(mktemp)"
+            {
+              echo "## Nightly auto-fix (${DATE})"
+              echo ""
+              echo "- Ran \`eslint --fix\` in \`apps/api\` and \`apps/admin\` (via \`npm run lint:fix -w …\`)."
+              echo "- Ran Prettier when \`prettier\` is present at the repo root."
+              echo "- Restored \`apps/api/app/api/health/route.ts\` from the health-check job when it was missing."
+              echo ""
+              echo "Workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            } > "${BODY_FILE}"
+            gh pr create \
+              --repo "${{ github.repository }}" \
+              --base main \
+              --head "${BRANCH}" \
+              --title "chore: nightly auto-fix ${DATE}" \
+              --body-file "${BODY_FILE}"
+          else
+            echo "PR already open for ${BRANCH}; skipping gh pr create."
+          fi
+
+  report:
+    name: report
+    needs: [typecheck, auto-fix]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: nightly-errors
+          path: errors-dir
+
+      - name: Open issue for remaining TypeScript errors
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          DATE="$(date -u +%Y-%m-%d)"
+          TITLE="🔴 TypeScript errors found - ${DATE}"
+          ERR_FILE="errors-dir/errors.txt"
+
+          if [ ! -f "${ERR_FILE}" ]; then
+            echo "No errors.txt artifact; skipping issue."
+            exit 0
+          fi
+
+          if ! grep -q "error TS" "${ERR_FILE}"; then
+            echo "No TypeScript error markers in errors.txt; skipping issue."
+            exit 0
+          fi
+
+          EXISTING="$(gh issue list --repo "${{ github.repository }}" --state open --json title,number \
+            | jq -r --arg t "${TITLE}" '.[] | select(.title == $t) | .number' \
+            | head -1)"
+          if [ -n "${EXISTING}" ]; then
+            echo "Open issue #${EXISTING} already has this title; skipping."
+            exit 0
+          fi
+
+          BODY_FILE="$(mktemp)"
+          {
+            echo "TypeScript \`tsc --noEmit\` reported errors in \`apps/api\` and/or \`apps/admin\` on ${DATE}."
+            echo ""
+            echo "These are not auto-fixed by ESLint/Prettier."
+            echo ""
+            echo "---"
+            echo ""
+            if [ "$(wc -c < "${ERR_FILE}")" -gt 60000 ]; then
+              echo "(truncated — download artifact \`nightly-errors\` from the workflow run for the full log)"
+              echo ""
+              head -c 60000 "${ERR_FILE}"
+            else
+              cat "${ERR_FILE}"
+            fi
+          } > "${BODY_FILE}"
+
+          gh issue create \
+            --repo "${{ github.repository }}" \
+            --title "${TITLE}" \
+            --body-file "${BODY_FILE}" \
+            --label "bug" \
+            --label "automated"
