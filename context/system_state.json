@@ -33,7 +33,7 @@
       "web"
     ],
     "scripts": 19,
-    "adrs": 4,
+    "adrs": 5,
     "migrations": 7
   }
 }
