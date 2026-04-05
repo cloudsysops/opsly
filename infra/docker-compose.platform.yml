@@ -11,7 +11,7 @@
 
 services:
   traefik:
-    image: traefik:v3.3
+    image: traefik:v3.5
     container_name: traefik
     # El socket suele ser root:docker (660). La imagen Traefik corre sin root; group_add inyecta el GID del grupo
     # docker del host para que el proceso pueda usar /var/run/docker.sock (ver DOCKER_GID en .env).
