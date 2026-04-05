@@ -74,31 +74,31 @@ async function handleCheckoutSessionCompleted(
   });
 }
 
-async function handleCustomerSubscriptionUpdated(event: Stripe.Event): Promise<void> {
-  const sub = event.data.object as Stripe.Subscription;
-  let tenantId: string | undefined =
-    typeof sub.metadata?.tenant_id === "string" ? sub.metadata.tenant_id : undefined;
+const MS_PER_SECOND = 1000;
 
-  if (tenantId === undefined) {
-    const customerId = getStripeCustomerId(sub.customer);
-    if (customerId !== undefined) {
-      const row = await resolveTenantIdByCustomerId(customerId);
-      tenantId = row?.id;
-    }
+async function resolveTenantIdForSubscription(sub: Stripe.Subscription): Promise<string | undefined> {
+  if (typeof sub.metadata?.tenant_id === "string") {
+    return sub.metadata.tenant_id;
   }
-
-  if (tenantId === undefined) {
-    console.error("customer.subscription.updated: could not resolve tenant_id");
-    return;
+  const customerId = getStripeCustomerId(sub.customer);
+  if (customerId === undefined) {
+    return undefined;
   }
+  const row = await resolveTenantIdByCustomerId(customerId);
+  return row?.id;
+}
 
+async function upsertSubscriptionRow(
+  tenantId: string,
+  event: Stripe.Event,
+  sub: Stripe.Subscription,
+): Promise<boolean> {
   const periodEnd =
     sub.current_period_end !== undefined && sub.current_period_end !== null
-      ? new Date(sub.current_period_end * 1000).toISOString()
+      ? new Date(sub.current_period_end * MS_PER_SECOND).toISOString()
       : null;
 
   const planMeta = sub.metadata?.plan ?? null;
-
   const db = getServiceClient();
   const { error: insertError } = await db.schema("platform").from("subscriptions").insert({
     tenant_id: tenantId,
@@ -108,23 +108,44 @@ async function handleCustomerSubscriptionUpdated(event: Stripe.Event): Promise<v
     plan: planMeta,
   });
 
-  if (insertError) {
-    if (insertError.code === "23505") {
-      return;
-    }
-    console.error("subscriptions insert:", insertError);
-    return;
+  if (!insertError) {
+    return true;
   }
+  if (insertError.code === "23505") {
+    return true;
+  }
+  console.error("subscriptions insert:", insertError);
+  return false;
+}
 
+async function attachStripeSubscriptionToTenant(tenantId: string, subscriptionId: string): Promise<void> {
+  const db = getServiceClient();
   const { error: tenantError } = await db
     .schema("platform")
     .from("tenants")
-    .update({ stripe_subscription_id: sub.id })
+    .update({ stripe_subscription_id: subscriptionId })
     .eq("id", tenantId);
 
   if (tenantError) {
     console.error("tenant subscription id update:", tenantError);
   }
+}
+
+async function handleCustomerSubscriptionUpdated(event: Stripe.Event): Promise<void> {
+  const sub = event.data.object as Stripe.Subscription;
+  const tenantId = await resolveTenantIdForSubscription(sub);
+
+  if (tenantId === undefined) {
+    console.error("customer.subscription.updated: could not resolve tenant_id");
+    return;
+  }
+
+  const inserted = await upsertSubscriptionRow(tenantId, event, sub);
+  if (!inserted) {
+    return;
+  }
+
+  await attachStripeSubscriptionToTenant(tenantId, sub.id);
 }
 
 async function handleInvoicePaymentFailed(invoice: Stripe.Invoice): Promise<void> {

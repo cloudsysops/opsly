@@ -36,3 +36,68 @@ Stack resumido: Next.js 15, Tailwind, Supabase, Stripe, Docker Compose, Traefik 
 - No **saltarse** `./scripts/validate-config.sh` cuando el cambio afecte deploy, DNS o secretos esperados en `prd`.
 - No aplicar **Terraform** sin **plan revisado** y sin entender impacto en VPS/tenants.
 - No contradecir decisiones fijas tabuladas en `AGENTS.md` sin acuerdo del equipo.
+
+## Patrones de diseño en Opsly
+
+- **Repository:** toda lectura/escritura a **Supabase** va en `apps/api/lib/repositories/` (un archivo o carpeta por agregado). Los **route handlers** (`app/api/**/route.ts`) solo llaman a repositorios o casos de uso, **nunca** instancian el cliente Supabase para queries ad hoc.
+  - Estructura sugerida: `lib/repositories/tenant.repository.ts` exporta funciones puras o clase pequeña con `findById`, `list`, `create`, etc.
+- **Factory:** creación de **tenants**, **compose**, **configs** dinámicos → funciones factory en `apps/api/lib/factories/` (p. ej. `createTenantComposeEnv()`). Evitá bloques grandes de “armado” inline en handlers.
+- **Observer / eventos:** eventos de dominio (tenant creado, pago recibido, backup completado) → **emitir** evento (Node `EventEmitter` acotado o **BullMQ** como cola). Los consumidores se registran aparte; **no** encadenar llamadas directas a notificaciones/email desde el mismo archivo que persiste datos.
+- **Strategy:** proveedores intercambiables (**Stripe**, email, notificaciones) → interfaz común en `apps/api/lib/providers/` con implementaciones concretas; el handler o servicio recibe la estrategia por parámetro o registro de DI sencillo.
+
+## Algoritmos — cuándo usar qué
+
+- **Listas pequeñas (< ~100 ítems):** `Array.prototype.filter` / `find` en memoria; no micro-optimizar.
+- **Listas grandes o datos persistentes:** **índices y consultas en Supabase**; nunca escanear tablas enteras en un loop en Node.
+- **Reintentos:** **BullMQ** con `attempts` y **backoff exponencial**; no `setTimeout` en bucle manual para reintentos de negocio.
+- **Paginación:** preferir **cursor-based** (keyset) para logs/tenants en crecimiento; evitar `OFFSET` alto en tablas grandes.
+- **Caché:** **Redis** para resultados costosos **> ~100 ms**; siempre definir **TTL** explícito (ver `lib/constants.ts` → `CACHE_TTL`).
+
+## Principios SOLID aplicados a Opsly
+
+- **S — Single responsibility:** cada módulo bajo `lib/` tiene una responsabilidad clara (un tema por archivo cuando sea posible).
+- **O — Open/closed:** nuevos **providers** o estrategias se añaden sin modificar el núcleo (interfaces + registro).
+- **L — Liskov:** si una función acepta `TenantConfig`, cualquier subtipo válido debe comportarse sin romper llamadas.
+- **I — Interface segregation:** preferir tipos pequeños (`Pick`, interfaces enfocadas) a un objeto “común” con decenas de campos opcionales.
+- **D — Dependency inversion:** los route handlers dependen de **contratos** (funciones importadas desde `lib/`), no de implementaciones bajas mezcladas en el mismo archivo.
+
+## Reglas de estilo obligatorias
+
+- **Early return:** validar input y errores al inicio; el “camino feliz” al final.
+- **Sin números mágicos:** usar `lib/constants.ts` u otras constantes nombradas.
+- **Comentarios:** explicar el **por qué**, no lo obvio; el **qué** debe leerse en el código.
+- **Nombres en inglés** en código; **comentarios en español** cuando ayuden al equipo.
+- **Funciones puras** cuando no haya I/O; aislar efectos secundarios.
+
+## Estructura de un archivo nuevo en `apps/api` (route handler)
+
+1. **Imports:** tipos → `lib/` (repositorios, validación) → externos (`next/server`, etc.).
+2. **Validación** del input (query/body) con **early return** (`400`/`422`).
+3. **Lógica de negocio** delegada a `lib/` (repositorio, factory, servicio); **sin** SQL ni Supabase directo en el handler.
+4. **Respuesta** `NextResponse.json(...)` con tipo explícito o `satisfies` cuando aplique.
+
+## Estructura de un script bash nuevo (`scripts/` o `tools/`)
+
+```bash
+#!/usr/bin/env bash
+# Propósito en una línea.
+set -euo pipefail
+
+DRY_RUN="${DRY_RUN:-false}"
+log() { echo "[script] $*"; }
+
+check_dependencies() {
+  command -v jq >/dev/null || { echo "Falta jq" >&2; exit 2; }
+}
+
+main() {
+  check_dependencies
+  if [[ "${DRY_RUN}" == "true" ]]; then
+    log "DRY-RUN: …"
+    return 0
+  fi
+  # …
+}
+
+main "$@"
+```

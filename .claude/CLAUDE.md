@@ -43,3 +43,12 @@ Además de AGENTS.md, puedes pedir:
 
 URL raw VISION.md:  
 https://raw.githubusercontent.com/cloudsysops/opsly/main/VISION.md
+
+## Cómo programar en Opsly
+
+- Leer **`AGENTS.md`** y **`VISION.md`** antes de proponer cambios de producto o arquitectura.
+- Revisar **`docs/adr/`** para no reabrir decisiones ya cerradas.
+- No proponer lo listado como **“Nunca”** en `VISION.md` sin un ADR nuevo explícito.
+- Cada archivo nuevo debe seguir las plantillas de **`.github/copilot-instructions.md`** (secciones *Estructura de un archivo nuevo* en `apps/api` y scripts bash).
+- **Patrones obligatorios:** Repository para Supabase, Factory para creación de recursos, Strategy para proveedores externos (Stripe, email, notificaciones).
+- Antes de cambios en **`infra/terraform/`**: mostrar y revisar **`terraform plan`** (no aplicar a ciegas).

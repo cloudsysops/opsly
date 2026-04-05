@@ -76,3 +76,24 @@ Fase actual: **FASE 1 — Validación**.
 1. `VISION.md` → el norte (no cambia frecuentemente)
 2. `AGENTS.md` → el estado actual (cambia cada sesión)
 3. `config/opsly.config.json` → la verdad técnica (cambia con infra)
+
+## Antes de escribir código
+
+1. ¿Ya existe algo similar en `lib/`? **Reutilizar** antes de duplicar.
+2. ¿La función supera **~50 líneas**? **Dividir** en funciones más pequeñas o mover a `lib/`.
+3. ¿Hay **números mágicos**? Mover a `apps/api/lib/constants.ts` u otra constante nombrada.
+4. ¿Es una **query a Supabase**? Va en `apps/api/lib/repositories/` (Repository), no en el route handler.
+5. ¿Es **creación de recurso** (tenant, compose, config)? Va en `apps/api/lib/factories/` (Factory).
+
+## Antes de crear un script bash
+
+1. ¿Tiene `set -euo pipefail`?
+2. ¿Soporta `--dry-run` o variable `DRY_RUN=true` cuando modifique estado?
+3. ¿Es **idempotente** (dos ejecuciones seguras)?
+4. ¿Tiene `check_dependencies()` o equivalente (`require_cmd` en scripts que usan `lib/common.sh`)?
+
+## Antes de hacer commit
+
+- Confirmar que **`npm run type-check`** pasa.
+- No introducir **`any`** nuevo en TypeScript.
+- No commitear **secretos** (tokens, claves, `.env` reales).

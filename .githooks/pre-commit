@@ -1,0 +1,30 @@
+#!/usr/bin/env sh
+# Pre-commit: type-check del monorepo + ESLint estricto solo en apps/api (app/ y lib/).
+set -e
+ROOT="$(git rev-parse --show-toplevel)"
+cd "$ROOT" || exit 1
+if [ ! -f package.json ]; then
+  exit 0
+fi
+if ! command -v npm >/dev/null 2>&1; then
+  echo "pre-commit: npm no disponible, omitiendo type-check"
+  exit 0
+fi
+
+npm run type-check
+
+# ESLint: solo archivos TypeScript staged bajo apps/api/app y apps/api/lib (no admin/web).
+if command -v npx >/dev/null 2>&1 && [ -f eslint.config.mjs ]; then
+  STAGED_API=$(git diff --cached --name-only --diff-filter=ACM | grep -E '^apps/api/(app|lib)/.*\.(tsx?)$' || true)
+  if [ -n "$STAGED_API" ]; then
+    echo "pre-commit: ESLint (apps/api app + lib, --max-warnings 0)…"
+    # shellcheck disable=SC2086
+    if ! echo "$STAGED_API" | xargs npx eslint --max-warnings 0; then
+      echo ""
+      echo "pre-commit (ES): ESLint falló en apps/api."
+      echo "Revisá reglas: @typescript-eslint/no-explicit-any, eqeqeq, complexity, no-nested-ternary,"
+      echo "prefer-const, no-magic-numbers, max-lines-per-function, @typescript-eslint/explicit-function-return-type."
+      exit 1
+    fi
+  fi
+fi

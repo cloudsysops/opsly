@@ -1,4 +1,5 @@
 import { Resend } from "resend";
+import { JSON_PRETTY_PRINT_INDENT } from "../constants";
 import type { Tenant } from "../supabase/types";
 
 function requireEnv(name: string): string {
@@ -36,7 +37,7 @@ function servicesSummary(services: Tenant["services"]): string {
   if (services === null || typeof services !== "object" || Array.isArray(services)) {
     return JSON.stringify(services);
   }
-  return JSON.stringify(services, null, 2);
+  return JSON.stringify(services, null, JSON_PRETTY_PRINT_INDENT);
 }
 
 function escapeHtml(value: string): string {

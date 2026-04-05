@@ -1,6 +1,7 @@
 import { randomBytes } from "node:crypto";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
+import { COMPOSE_CRYPTO } from "../constants";
 import { getTenantsBaseDir } from "./paths";
 
 function requireEnv(name: string): string {
@@ -34,8 +35,10 @@ export async function renderTenantComposeFromTemplate(
   const domain = requireEnv("PLATFORM_DOMAIN");
   const traefikNetwork = optionalEnv("TRAEFIK_NETWORK", "traefik-public");
   const n8nUser = optionalEnv("N8N_BASIC_AUTH_USER", "admin");
-  const n8nPassword = randomBytes(24).toString("hex");
-  const n8nEncryptionKey = randomBytes(32).toString("hex");
+  const n8nPassword = randomBytes(COMPOSE_CRYPTO.N8N_PASSWORD_RANDOM_BYTES).toString("hex");
+  const n8nEncryptionKey = randomBytes(
+    COMPOSE_CRYPTO.N8N_ENCRYPTION_KEY_RANDOM_BYTES,
+  ).toString("hex");
 
   let yaml = await readFile(templatePath, "utf8");
   yaml = yaml.replaceAll("{{SLUG}}", slug);

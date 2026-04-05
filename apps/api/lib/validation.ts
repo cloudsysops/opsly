@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { LIST_TENANTS } from "./constants";
 
 const tenantStatusEnum = z.enum([
   "provisioning",
@@ -21,7 +22,12 @@ export const CreateTenantSchema = z.object({
 
 export const ListTenantsQuerySchema = z.object({
   page: z.coerce.number().int().min(1).default(1),
-  limit: z.coerce.number().int().min(1).max(100).default(20),
+  limit: z.coerce
+    .number()
+    .int()
+    .min(1)
+    .max(LIST_TENANTS.MAX_LIMIT)
+    .default(LIST_TENANTS.DEFAULT_LIMIT),
   status: tenantStatusEnum.optional(),
   plan: planEnum.optional(),
 });

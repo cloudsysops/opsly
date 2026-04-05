@@ -1,4 +1,9 @@
 import { z } from "zod";
+import {
+  ONBOARDING_PIPELINE,
+  ONBOARDING_ROLLBACK,
+  ORCHESTRATION_HEALTH,
+} from "./constants";
 import { sendWelcomeEmail } from "./email";
 import {
   renderTenantComposeFromTemplate,
@@ -42,12 +47,12 @@ export async function pollPortsUntilHealthy(
     (port) => `http://127.0.0.1:${port}/healthz`,
   );
 
-  for (let attempt = 0; attempt < 12; attempt += 1) {
+  for (let attempt = 0; attempt < ORCHESTRATION_HEALTH.MAX_ATTEMPTS; attempt += 1) {
     const checks = await Promise.all(
       urls.map(async (url) => {
         try {
           const response = await fetch(url, {
-            signal: AbortSignal.timeout(4000),
+            signal: AbortSignal.timeout(ORCHESTRATION_HEALTH.FETCH_TIMEOUT_MS),
           });
           return response.ok;
         } catch {
@@ -60,7 +65,7 @@ export async function pollPortsUntilHealthy(
       return;
     }
 
-    await sleep(5000);
+    await sleep(ORCHESTRATION_HEALTH.POLL_INTERVAL_MS);
   }
 
   throw new Error("Health checks did not pass within the allotted time");
@@ -88,38 +93,38 @@ class OnboardingOrchestrator {
   }
 
   async runProvisioningPipeline(): Promise<OnboardingResult> {
-    let lastCompletedStep = 3;
+    let lastCompletedStep: number = ONBOARDING_PIPELINE.INITIAL;
     try {
       if (!this.tenantId) {
         throw new Error("Tenant identifier missing before provisioning pipeline");
       }
 
       this.ports = await allocatePorts(this.tenantId, [...PLAN_SERVICES[this.plan]]);
-      lastCompletedStep = 4;
+      lastCompletedStep = ONBOARDING_PIPELINE.AFTER_PORTS;
 
       const composeYaml = await renderTenantComposeFromTemplate(
         this.slug,
         this.ports,
       );
       this.composePath = await writeComposeFile(this.slug, composeYaml);
-      lastCompletedStep = 5;
+      lastCompletedStep = ONBOARDING_PIPELINE.AFTER_COMPOSE_WRITTEN;
 
       await startTenant(this.slug, this.composePath);
-      lastCompletedStep = 6;
+      lastCompletedStep = ONBOARDING_PIPELINE.AFTER_COMPOSE_STARTED;
 
       await pollPortsUntilHealthy(this.ports);
-      lastCompletedStep = 7;
+      lastCompletedStep = ONBOARDING_PIPELINE.AFTER_HEALTH;
 
       await this.updateTenantActive();
-      lastCompletedStep = 8;
+      lastCompletedStep = ONBOARDING_PIPELINE.AFTER_ACTIVE_DB;
 
       const tenant = await this.fetchTenantRow();
 
       await sendWelcomeEmail(tenant.owner_email, tenant.services);
-      lastCompletedStep = 9;
+      lastCompletedStep = ONBOARDING_PIPELINE.AFTER_EMAIL;
 
       await notifyTenantCreated(tenant);
-      lastCompletedStep = 10;
+      lastCompletedStep = ONBOARDING_PIPELINE.AFTER_NOTIFY;
 
       return {
         success: true,
@@ -246,7 +251,7 @@ class OnboardingOrchestrator {
   }
 
   private async rollback(step: number): Promise<void> {
-    if (this.composePath && step >= 6) {
+    if (this.composePath && step >= ONBOARDING_ROLLBACK.STOP_COMPOSE_MIN_STEP) {
       await stopTenant(this.slug, this.composePath).catch(() => undefined);
     }
 
@@ -254,7 +259,7 @@ class OnboardingOrchestrator {
       return;
     }
 
-    if (step >= 8) {
+    if (step >= ONBOARDING_ROLLBACK.MARK_FAILED_MIN_STEP) {
       await getServiceClient()
         .schema("platform")
         .from("tenants")
@@ -264,17 +269,17 @@ class OnboardingOrchestrator {
         })
         .eq("id", this.tenantId);
 
-      if (step >= 4) {
+      if (step >= ONBOARDING_ROLLBACK.RELEASE_PORTS_MIN_STEP) {
         await releasePorts(this.tenantId).catch(() => undefined);
       }
       return;
     }
 
-    if (step >= 4) {
+    if (step >= ONBOARDING_ROLLBACK.RELEASE_PORTS_MIN_STEP) {
       await releasePorts(this.tenantId).catch(() => undefined);
     }
 
-    if (step >= 2) {
+    if (step >= ONBOARDING_ROLLBACK.DELETE_TENANT_MIN_STEP) {
       await getServiceClient().schema("platform").from("tenants").delete().eq("id", this.tenantId);
     }
   }
@@ -385,7 +390,13 @@ export async function suspendTenant(
   }
 }
 
-export async function resumeTenant(tenantId: string): Promise<void> {
+type TenantResumeRow = {
+  id: string;
+  slug: string;
+  status: string;
+};
+
+async function loadSuspendedTenantOrThrow(tenantId: string): Promise<TenantResumeRow> {
   const db = getServiceClient();
   const { data: tenant, error: fetchError } = await db
     .schema("platform")
@@ -401,29 +412,32 @@ export async function resumeTenant(tenantId: string): Promise<void> {
   if (!tenant) {
     throw new Error("Tenant not found");
   }
-
   if (tenant.status !== "suspended") {
     throw new Error("Tenant is not suspended");
   }
+  return tenant;
+}
 
+async function markTenantDeployingProgress(tenantId: string): Promise<void> {
+  const db = getServiceClient();
   const { error: deployingError } = await db
     .schema("platform")
     .from("tenants")
     .update({ status: "deploying", progress: 50 })
-    .eq("id", tenant.id);
+    .eq("id", tenantId);
 
   if (deployingError) {
     throw new Error(deployingError.message);
   }
+}
 
-  const composePath = getTenantComposePath(tenant.slug);
-  await startTenant(tenant.slug, composePath);
-
+async function buildPortsMapForTenant(tenantId: string): Promise<Record<string, number>> {
+  const db = getServiceClient();
   const { data: portsRows, error: portsError } = await db
     .schema("platform")
     .from("port_allocations")
     .select("port, service")
-    .eq("tenant_id", tenant.id);
+    .eq("tenant_id", tenantId);
 
   if (portsError) {
     throw new Error(portsError.message);
@@ -436,9 +450,11 @@ export async function resumeTenant(tenantId: string): Promise<void> {
     }
     ports[row.service] = row.port;
   }
+  return ports;
+}
 
-  await pollPortsUntilHealthy(ports);
-
+async function markTenantActiveAndLogResume(tenant: TenantResumeRow): Promise<void> {
+  const db = getServiceClient();
   const { error: activeError } = await db
     .schema("platform")
     .from("tenants")
@@ -459,4 +475,16 @@ export async function resumeTenant(tenantId: string): Promise<void> {
   if (auditError) {
     throw new Error(auditError.message);
   }
+}
+
+export async function resumeTenant(tenantId: string): Promise<void> {
+  const tenant = await loadSuspendedTenantOrThrow(tenantId);
+  await markTenantDeployingProgress(tenant.id);
+
+  const composePath = getTenantComposePath(tenant.slug);
+  await startTenant(tenant.slug, composePath);
+
+  const ports = await buildPortsMapForTenant(tenant.id);
+  await pollPortsUntilHealthy(ports);
+  await markTenantActiveAndLogResume(tenant);
 }

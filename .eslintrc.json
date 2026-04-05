@@ -1,0 +1,51 @@
+{
+  "root": true,
+  "ignorePatterns": [
+    "apps/admin/**",
+    "apps/web/**",
+    "node_modules/**",
+    "**/.next/**",
+    "**/dist/**",
+    "coverage/**"
+  ],
+  "overrides": [
+    {
+      "files": ["apps/api/lib/constants.ts"],
+      "rules": {
+        "no-magic-numbers": "off"
+      }
+    },
+    {
+      "files": ["apps/api/**/*.ts", "apps/api/**/*.tsx"],
+      "parser": "@typescript-eslint/parser",
+      "parserOptions": {
+        "ecmaVersion": 2022,
+        "sourceType": "module"
+      },
+      "plugins": ["@typescript-eslint"],
+      "extends": [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/recommended"
+      ],
+      "rules": {
+        "complexity": ["error", 10],
+        "max-lines-per-function": ["warn", { "max": 50, "skipBlankLines": true, "skipComments": true }],
+        "no-magic-numbers": [
+          "warn",
+          {
+            "ignore": [0, 1, -1, 100, 1000],
+            "ignoreEnums": true,
+            "ignoreNumericLiteralTypes": true,
+            "ignoreReadonlyClassProperties": true,
+            "ignoreDefaultValues": true
+          }
+        ],
+        "@typescript-eslint/no-explicit-any": "error",
+        "@typescript-eslint/explicit-function-return-type": "warn",
+        "no-nested-ternary": "error",
+        "prefer-const": "error",
+        "eqeqeq": ["error", "always", { "null": "ignore" }]
+      }
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  // --- Formato al guardar y acciones ESLint / imports ---
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit",
+    "source.organizeImports": "explicit"
+  },
+
+  // --- TypeScript: imports relativos dentro del paquete (monorepo) ---
+  "typescript.preferences.importModuleSpecifier": "relative",
+  "javascript.preferences.importModuleSpecifier": "relative",
+
+  // --- GitHub Copilot: español y habilitado en lenguajes del stack Opsly ---
+  "github.copilot.chat.localeOverride": "es",
+  "github.copilot.enable": {
+    "*": true,
+    "plaintext": false,
+    "markdown": true,
+    "typescript": true,
+    "typescriptreact": true,
+    "javascript": true,
+    "javascriptreact": true,
+    "json": true,
+    "jsonc": true,
+    "shellscript": true,
+    "dockerfile": true,
+    "yaml": true,
+    "github-actions-workflow": true
+  },
+
+  // --- ESLint: validar TS/TSX (apps Next.js) ---
+  "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact"],
+  "eslint.workingDirectories": [{ "mode": "auto" }]
+}

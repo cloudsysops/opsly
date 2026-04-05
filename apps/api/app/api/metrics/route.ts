@@ -1,23 +1,26 @@
 import { requireAdminToken } from "../../../lib/auth";
 import { computeMrr } from "../../../lib/stripe";
 import { getServiceClient } from "../../../lib/supabase";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
-export async function GET(request: Request): Promise<Response> {
-  const authError = requireAdminToken(request);
-  if (authError) {
-    return authError;
-  }
+type CountHeadResult = {
+  count: number | null;
+  error: { message: string; code?: string } | null;
+};
 
-  const client = getServiceClient();
+type MetricRows = {
+  totalRes: CountHeadResult;
+  activeRes: CountHeadResult;
+  suspendedRes: CountHeadResult;
+  startupRes: CountHeadResult;
+  businessRes: CountHeadResult;
+  enterpriseRes: CountHeadResult;
+};
 
-  const [
-    totalRes,
-    activeRes,
-    suspendedRes,
-    startupRes,
-    businessRes,
-    enterpriseRes,
-  ] = await Promise.all([
+async function fetchTenantStatusCounts(client: SupabaseClient): Promise<
+  Pick<MetricRows, "totalRes" | "activeRes" | "suspendedRes">
+> {
+  const [totalRes, activeRes, suspendedRes] = await Promise.all([
     client
       .schema("platform")
       .from("tenants")
@@ -35,6 +38,14 @@ export async function GET(request: Request): Promise<Response> {
       .select("*", { count: "exact", head: true })
       .is("deleted_at", null)
       .eq("status", "suspended"),
+  ]);
+  return { totalRes, activeRes, suspendedRes };
+}
+
+async function fetchTenantPlanCounts(client: SupabaseClient): Promise<
+  Pick<MetricRows, "startupRes" | "businessRes" | "enterpriseRes">
+> {
+  const [startupRes, businessRes, enterpriseRes] = await Promise.all([
     client
       .schema("platform")
       .from("tenants")
@@ -54,18 +65,44 @@ export async function GET(request: Request): Promise<Response> {
       .is("deleted_at", null)
       .eq("plan", "enterprise"),
   ]);
+  return { startupRes, businessRes, enterpriseRes };
+}
 
-  const errors = [
-    totalRes.error,
-    activeRes.error,
-    suspendedRes.error,
-    startupRes.error,
-    businessRes.error,
-    enterpriseRes.error,
-  ].filter(Boolean);
+async function fetchTenantMetricRows(client: SupabaseClient): Promise<MetricRows> {
+  const [status, plans] = await Promise.all([
+    fetchTenantStatusCounts(client),
+    fetchTenantPlanCounts(client),
+  ]);
+  return { ...status, ...plans };
+}
 
-  if (errors.length > 0) {
-    console.error("metrics:", errors[0]);
+function firstMetricsError(rows: MetricRows): Error | null {
+  type SupabaseQueryError = { message: string; code?: string };
+  const errors: SupabaseQueryError[] = [
+    rows.totalRes.error,
+    rows.activeRes.error,
+    rows.suspendedRes.error,
+    rows.startupRes.error,
+    rows.businessRes.error,
+    rows.enterpriseRes.error,
+  ].filter((e): e is SupabaseQueryError => e != null);
+  if (errors.length === 0) {
+    return null;
+  }
+  return new Error(errors[0].message);
+}
+
+export async function GET(request: Request): Promise<Response> {
+  const authError = requireAdminToken(request);
+  if (authError) {
+    return authError;
+  }
+
+  const client = getServiceClient();
+  const rows = await fetchTenantMetricRows(client);
+  const err = firstMetricsError(rows);
+  if (err) {
+    console.error("metrics:", err);
     return Response.json({ error: "Internal server error" }, { status: 500 });
   }
 
@@ -78,14 +115,14 @@ export async function GET(request: Request): Promise<Response> {
   }
 
   return Response.json({
-    total_tenants: totalRes.count ?? 0,
-    active_tenants: activeRes.count ?? 0,
-    suspended_tenants: suspendedRes.count ?? 0,
+    total_tenants: rows.totalRes.count ?? 0,
+    active_tenants: rows.activeRes.count ?? 0,
+    suspended_tenants: rows.suspendedRes.count ?? 0,
     mrr_usd,
     tenants_by_plan: {
-      startup: startupRes.count ?? 0,
-      business: businessRes.count ?? 0,
-      enterprise: enterpriseRes.count ?? 0,
+      startup: rows.startupRes.count ?? 0,
+      business: rows.businessRes.count ?? 0,
+      enterprise: rows.enterpriseRes.count ?? 0,
     },
   });
 }
