@@ -15,6 +15,7 @@
 3. Pega en el chat la **URL raw** del archivo para que el agente lo cargue sin clonar:
    - Formato: `https://raw.githubusercontent.com/<org>/<repo>/<branch>/AGENTS.md`
    - Ejemplo: `https://raw.githubusercontent.com/cloudsysops/opsly/main/AGENTS.md`
+   - Si la raw da **404** pese a repo público: revisar org/repo/rama (`main`), probar vista web `https://github.com/cloudsysops/opsly/blob/main/AGENTS.md`, o **adjuntar / pegar** este archivo completo en el chat (alternativa válida).
 4. Pide explícitamente: *«Lee el contenido de esa URL y actúa según AGENTS.md»*.
 
 **Al cerrar la sesión con Cursor — copiar/pegar esto:**
@@ -46,7 +47,7 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 
 <!-- Actualizar al final de cada sesión -->
 
-**Fecha última actualización:** 2026-04-05 (docs: inventario sesión deploy staging + estado Doppler/VPS)
+**Fecha última actualización:** 2026-04-05 (docs: acceso contexto para otros agentes + orden deploy)
 
 **Completado ✅**
 
@@ -56,6 +57,7 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 - **Paso 2 — `config/doppler-missing.txt`:** añadida sección *Auditoría 2026-04-05* con causa del bloqueo y orden sugerido de corrección (Supabase → Stripe → tokens plataforma → Redis / `REDIS_URL`).
 - **Paso 3 — `./scripts/validate-config.sh`:** JSON y campos OK; DNS `api` / base / `admin` → IP VPS OK; SSH OK; Doppler ⚠️ `PLATFORM_ADMIN_TOKEN` y `REDIS_PASSWORD` placeholder → resultado **REVISAR** (no “LISTO PARA DEPLOY”). Pasos 4–6 (`vps-bootstrap`, `vps-first-run`, `curl` health) **no ejecutados** por política “parar si falla”.
 - **Estado persistido:** `context/system_state.json` con `deploy_staging.status: blocked_secrets`, `doppler.fix_in_order`, `next_action` encadenado a corregir Doppler → validate → bootstrap; espejo en `.github/system_state.json`. Repo: commit `docs(deploy): audit staging bloqueado por secretos Doppler/VPS` (`8cb94f5`).
+- **Sesión acceso / handoff (misma fecha):** comprobado con `gh repo view` que `cloudsysops/opsly` sigue **PUBLIC**; guía si `raw.githubusercontent.com` falla (URL, rama, blob, o pegar `AGENTS.md`). **Aclaración modelo de datos:** en `system_state.json`, `next_action` es campo en la **raíz** del JSON; `deploy_staging` es un **objeto aparte** (`status`, `notes`, etc.) — no son el mismo campo. **Orden antes de paso 4:** corregir Doppler → `./scripts/validate-config.sh` hasta **LISTO PARA DEPLOY** → entonces `vps-bootstrap.sh` (no arrancar bootstrap con Doppler roto). Commits de referencia: `8cb94f5` (audit deploy), `6ac453d` (docs AGENTS).
 
 *Alineación automática del contexto (Capa 1 + Capa 2; n8n y capas superiores después):*
 - **Capa 1 — `scripts/update-state.js`:** Node sin dependencias extra; lee el repo y escribe en `context/system_state.json` el bloque `repo` (`apps[]`, número de `scripts/*.sh`, ADRs, migraciones `.sql`) y `last_updated` (UTC fecha); no sobrescribe fase, VPS, Doppler, DNS, `next_action` ni `tenants` (merge sobre JSON actual).
@@ -197,6 +199,7 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 | 2026-04-04 | Roadmap realista en `VISION.md` (fases + *Nunca* + regla tenants) | Alinear trabajo a validación antes de producto |
 | 2026-04-05 | `update-state.js` + post-commit + `validate-context.yml` | Capa 1–2: estado repo en JSON + espejo .github + CI |
 | 2026-04-05 | No `doppler secrets upload` desde VPS mientras haya JWT/Stripe truncados | Evitar sobrescribir Doppler prd con valores inválidos del `.env` de `/opt/opsly` |
+| 2026-04-05 | No `vps-bootstrap` hasta `validate-config` en verde | Bootstrap solo propaga lo que Doppler ya tiene bien |
 
 ---
 
