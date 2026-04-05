@@ -11,7 +11,7 @@
 
 services:
   traefik:
-    image: traefik:v3.0
+    image: traefik:v3.1
     container_name: traefik
     # El socket suele ser root:docker (660). La imagen Traefik corre sin root; group_add inyecta el GID del grupo
     # docker del host para que el proceso pueda usar /var/run/docker.sock (ver DOCKER_GID en .env).
@@ -22,14 +22,12 @@ services:
       - "443:443"
       # Depuración: dashboard Traefik con api.insecure (solo localhost en el VPS, no exponer a Internet).
       - "127.0.0.1:8080:8080"
-    # DOCKER_API_VERSION: evita negociación API 1.24 por defecto en Traefik v3 frente a Docker Engine ≥1.40.
+    # Traefik ≥v3.1 corrige la negociación de API con el daemon Docker; en v3.0.x persistía 1.24 (bug conocido).
     environment:
-      - DOCKER_API_VERSION=1.41
       - TRAEFIK_CERTIFICATESRESOLVERS_LETSENCRYPT_ACME_EMAIL=${ACME_EMAIL}
-    # Socket sin :ro: Traefik v3 puede necesitar escritura en el socket para eventos del provider Docker.
-    # Resto: configuración estática/dinámica y almacenamiento ACME.
+    # Socket en solo lectura: el provider Docker solo necesita observar el daemon (ver ADR-005).
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./traefik/traefik.yml:/etc/traefik/traefik.yml:ro
       - ./traefik/dynamic:/etc/traefik/dynamic:ro
       - letsencrypt:/letsencrypt

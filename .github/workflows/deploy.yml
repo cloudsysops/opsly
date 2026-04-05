@@ -128,14 +128,13 @@ jobs:
             sleep 60
             for i in 1 2 3 4 5; do
               if curl -sfk "https://api.${PLATFORM_DOMAIN}/api/health"; then
-                echo "Health OK en intento $i"
+                echo "✅ Health OK en intento $i"
                 break
               fi
               echo "Intento $i/5 fallido, esperando 15s..."
               sleep 15
               if [ "$i" -eq 5 ]; then
-                echo "Health falló después de 5 intentos"
-                docker logs infra-app-1 --tail 20
+                echo "❌ Health falló después de 5 intentos"
                 exit 1
               fi
             done
