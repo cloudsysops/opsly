@@ -47,7 +47,7 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 
 <!-- Actualizar al final de cada sesión -->
 
-**Fecha última actualización:** 2026-04-05 (capas de calidad monorepo `d4acfcb` + sincronización de este AGENTS.md)
+**Fecha última actualización:** 2026-04-05 (CI/deploy VPS: GHCR vía Actions, Traefik labels, `--env-file`, health check, Discord, `npm start`, disco VPS; + esta sincronización de AGENTS.md)
 
 **Completado ✅**
 
@@ -96,6 +96,18 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 - **`infra/docker-compose.platform.yml`:** imágenes por defecto pasan a **`ghcr.io/cloudsysops/intcloudsysops-api:latest`** y **`ghcr.io/cloudsysops/intcloudsysops-admin:latest`** (sustituye `tu-org` en los defaults).
 - **Doppler `prd`:** **`APP_IMAGE`** y **`ADMIN_APP_IMAGE`** actualizados a esas mismas URLs para alinear `.env` del VPS tras bootstrap.
 - **Contexto histórico:** antes de este cambio, `deploy.yml` hacía build Next en el VPS con **`compose --build app`** únicamente; **`vps-first-run`** y pulls manuales dependían de imágenes publicadas en GHCR que aún no existían → **`not found`**. El pipeline anterior queda **obsoleto** respecto al flujo GHCR descrito arriba.
+
+*CI/deploy — GHCR desde Actions, health, Traefik, `.env` compose, Discord, VPS (2026-04-05, sesión Cursor):*
+- **`deploy.yml` — login GHCR en el VPS sin Doppler:** el script SSH ya no usa `doppler secrets get GHCR_TOKEN/GHCR_USER`. En el step *Deploy via SSH*: `env` con `GHCR_USER: ${{ github.actor }}`, `GHCR_PAT: ${{ secrets.GITHUB_TOKEN }}`; `envs: PLATFORM_DOMAIN,GHCR_USER,GHCR_PAT` para `appleboy/ssh-action`; en remoto: `echo "$GHCR_PAT" | docker login ghcr.io -u "$GHCR_USER" --password-stdin`. Job **`deploy`** con **`permissions: contents: read, packages: read`** para que `GITHUB_TOKEN` pueda autenticar lectura en GHCR al reutilizarse como PAT en el VPS.
+- **`apps/api/package.json` y `apps/admin/package.json`:** añadido script **`start`** (`next start -p 3000` / `3001`). Sin él, los contenedores entraban en bucle con *Missing script: "start"* pese a imagen correcta.
+- **Health check post-deploy (SSH):** de URL fija a **`curl -sfk "https://api.${PLATFORM_DOMAIN}/api/health"`** (coherente con Traefik `Host(\`api.${PLATFORM_DOMAIN}\`)`). **`sleep 45`** antes del check (margen Traefik / ACME). Si falla: mensaje *Health falló* + `docker logs --tail 20 infra-app-1`. El secret GitHub **`PLATFORM_DOMAIN`** debe ser el dominio **base** (ej. **`ops.smiletripcare.com`**), no `api.…`.
+- **`infra/docker-compose.platform.yml` — router Traefik para la API:** labels del servicio **`app`** con `traefik.http.routers.app.rule=Host(\`api.${PLATFORM_DOMAIN}\`)`, **`entrypoints=websecure`**, **`tls=true`**, **`tls.certresolver=letsencrypt`**, **`service=app`**, **`traefik.http.services.app.loadbalancer.server.port=3000`**, `traefik.enable=true`, **`traefik.docker.network=traefik-public`**. Redes: **`traefik`** y **`app`** en **`traefik-public`** (externa); `app` también en `internal` (Redis). Middlewares de archivo se mantienen en el router `app`.
+- **Interpolación de variables en Compose:** por defecto Compose busca `.env` en el directorio del proyecto (junto a `infra/docker-compose.platform.yml`), **no** en `/opt/opsly/.env`. En **`deploy.yml`**, **`docker compose --env-file /opt/opsly/.env -f docker-compose.platform.yml pull`** y el mismo **`--env-file`** en **`up`**, para que `${PLATFORM_DOMAIN}`, `${ACME_EMAIL}`, `${REDIS_PASSWORD}`, etc. se resuelvan en labels y `environment`. Comentario en el YAML del compose documenta esto.
+- **Discord en GitHub Actions:** **no** usar **`secrets.…` dentro de expresiones `if:`** en steps (p. ej. `if: failure() && secrets.DISCORD_WEBHOOK_URL != ''`) — el workflow queda **inválido** (*workflow file issue*, run ~0s sin logs). Solución: `if: success()` / `if: failure()` y en el script: si `DISCORD_WEBHOOK_URL` vacío → mensaje y **`exit 0`** (no-op); evita `curl: (3) URL rejected` con webhook vacío.
+- **VPS — disco lleno durante `docker compose pull`:** error *no space left on device* al extraer capas (p. ej. bajo `/var/lib/containerd/.../node_modules/...`). Tras **`docker image prune -af`** y **`docker builder prune -af`** se recuperó espacio (orden ~5GB en un caso); **`df -h /`** pasó de ~**99%** a ~**68%** uso en el mismo host.
+- **Diagnóstico health con app “Ready”:** en un run, `infra-app-1` mostraba Next *Ready in Xs* pero el `curl` del job fallaba: suele ser **routing TLS/Traefik** o **`PLATFORM_DOMAIN` / interpolación** incorrecta en labels; las correcciones anteriores apuntan a eso.
+- **Traefik — logs en VPS:** pueden aparecer **`client version 1.24 is too old`** (provider Docker) si la imagen Traefik usa un cliente Docker API más antiguo que el mínimo del daemon del host; investigar versión Traefik / socket si bloquea descubrimiento de contenedores.
+- **Commits de referencia (rama `main`):** `393bc3c` (GHCR PAT en SSH), `79cdef5` (`start` api/admin), `baf6585` (health `-k` + dominio dinámico; Discord en `if` con secrets → roto), `13d26a6` (Discord sin secrets en `if`), `31cd2d9` (labels Traefik router `app` + `tls=true`, sleep 45), `03068a0` (`--env-file /opt/opsly/.env` en pull/up). Runs ejemplo: `24008556692` (workflow inválido), `24008712390` (disco), `24009183221` (health tras liberar disco + fixes).
 
 *Intento deploy staging → `https://api.ops.smiletripcare.com/api/health` (2026-04-05):*
 - **Paso 1 — Auditoría:** revisados `config/opsly.config.json` (sin secretos), `.env.local.example` (placeholders), `infra/docker-compose.platform.yml` (solo nombres de vars), y por SSH el árbol `.env*` bajo `/opt/opsly` (`.env`, `.env.example`, `.env.local.example`, `.env.swp`).
@@ -177,8 +189,8 @@ con facturación Stripe, backups automáticos y dashboard de administración.
   `.github/AGENTS.md` (espejo de este archivo cuando está sincronizado)
 
 **En progreso 🔄**
-- **CI `Deploy` en GitHub Actions:** tras push a `main`, **`build-and-push`** debe publicar las dos imágenes en GHCR y **`deploy`** debe hacer **`pull` + `up`** en el VPS; revisar run en *Actions → Deploy* si falla login GHCR, permisos `packages:write` o SSH/health.
-- Deploy staging — imágenes **`ghcr.io/cloudsysops/intcloudsysops-{api,admin}:latest`** quedan definidas en compose + Doppler; en VPS conviene **`./scripts/vps-bootstrap.sh`** (o `doppler secrets download`) para refrescar `.env` y **`docker login ghcr.io`** con credenciales con pull.
+- **CI `Deploy` en GitHub Actions:** tras push a `main`, **`build-and-push`** publica imágenes en GHCR; **`deploy`** hace SSH, **`docker compose --env-file /opt/opsly/.env … pull` + `up`**, health `https://api.${PLATFORM_DOMAIN}/api/health` con `-k`. Revisar *Actions → Deploy* si falla SSH, disco VPS, Traefik o secret **`PLATFORM_DOMAIN`** (debe coincidir con `/opt/opsly/.env`).
+- Deploy staging — imágenes **`ghcr.io/cloudsysops/intcloudsysops-{api,admin}:latest`**; en VPS **`/opt/opsly/.env`** alineado con Doppler; login GHCR en el job usa **`GITHUB_TOKEN`** del actor (no hace falta Doppler solo para ese paso).
 - Con Doppler CLI + token con scope `/opt/opsly`: **`./scripts/vps-bootstrap.sh`** regenera `.env`; ejecutar tras cambiar imágenes o secretos en `prd`.
 - DNS: ops.smiletripcare.com → 157.245.223.7 ✅
 
@@ -201,20 +213,23 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 npx eslint "apps/api/**/*.ts" --max-warnings 0
 npm run type-check
 
-# Mac — comprobar prd sin imprimir valores:
+# Mac — comprobar prd sin imprimir valores (si aún usas Doppler para otros flujos):
 doppler secrets get GHCR_TOKEN --plain --project ops-intcloudsysops --config prd >/dev/null && echo "GHCR_TOKEN prd: OK"
 doppler secrets get GHCR_USER --plain --project ops-intcloudsysops --config prd >/dev/null && echo "GHCR_USER prd: OK"
 
-# VPS — obligatorio cd /opt/opsly (scope del token de servicio):
-ssh vps-dragon 'cd /opt/opsly && echo "$(doppler secrets get GHCR_TOKEN --plain)" | docker login ghcr.io -u "$(doppler secrets get GHCR_USER --plain)" --password-stdin'
-# → Login Succeeded
+# VPS — compose manual: siempre --env-file raíz (interpolación ${PLATFORM_DOMAIN}, etc.):
+#   cd /opt/opsly/infra && docker compose --env-file /opt/opsly/.env -f docker-compose.platform.yml pull
+#   docker compose --env-file /opt/opsly/.env -f docker-compose.platform.yml up -d
 
-ssh vps-dragon 'cd /opt/opsly && ./scripts/vps-first-run.sh'   # requiere imágenes existentes en GHCR o ajustar .env/compose
-curl -sf https://api.ops.smiletripcare.com/api/health | jq .
+# VPS — login GHCR alternativo (Doppler; requiere cd /opt/opsly por scope del token):
+ssh vps-dragon 'cd /opt/opsly && echo "$(doppler secrets get GHCR_TOKEN --plain)" | docker login ghcr.io -u "$(doppler secrets get GHCR_USER --plain)" --password-stdin'
+
+ssh vps-dragon 'cd /opt/opsly && ./scripts/vps-first-run.sh'   # requiere imágenes en GHCR o .env/compose alineados
+curl -sfk "https://api.ops.smiletripcare.com/api/health"   # o el dominio base del secret PLATFORM_DOMAIN
 # Tras health OK: actualizar context/system_state.json + ./scripts/update-agents.sh
 ./scripts/validate-config.sh   # local; debe seguir en LISTO PARA DEPLOY
 # Listar paquetes GHCR (Mac): gh auth refresh -s read:packages; gh api '/orgs/cloudsysops/packages?package_type=container' --jq '.[].name'
-# Tras cambios en deploy.yml: push a main dispara build+push; VPS recibe imágenes vía job deploy (pull).
+# Push a main dispara deploy.yml: build-and-push + SSH con GITHUB_TOKEN para docker login en VPS.
 ```
 
 ---
@@ -300,6 +315,13 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 | 2026-04-05 | ESLint en raíz con flat config + legacy compat; reglas estrictas solo donde aplica override API; `constants.ts` exento de `no-magic-numbers` | Un solo lugar de verdad lint; web/admin no bloqueados por el hook |
 | 2026-04-05 | Pre-commit: ESLint staged solo `apps/api/app` + `apps/api/lib` tras type-check | Feedback rápido sin forzar mismas reglas en admin/web |
 | 2026-04-05 | Errores Supabase en metrics: convertir `{message}` a `new Error()` para tipo `Error` | Corrige TS2741 en `firstMetricsError` |
+| 2026-04-05 | Deploy SSH: `docker login ghcr.io` con `GITHUB_TOKEN` + `github.actor` vía env al VPS (no Doppler en ese paso) | Mismo token que build; `permissions: packages: read` en job `deploy` |
+| 2026-04-05 | `npm start` obligatorio en api/admin para imágenes de producción | Next en contenedor ejecuta `npm start`; sin script el contenedor reinicia en bucle |
+| 2026-04-05 | Health check CI: `curl -sfk` + `https://api.${PLATFORM_DOMAIN}/api/health` + sleep 45s | Cert staging / ACME; dominio base en secret alineado con labels Traefik |
+| 2026-04-05 | Traefik: router Docker nombrado `app` (no `api`), `tls=true`, misma regla `Host(api.${PLATFORM_DOMAIN})` | Evitar ambigüedad y asegurar TLS explícito en router |
+| 2026-04-05 | `docker compose --env-file /opt/opsly/.env` en `pull` y `up` (deploy.yml) | Compose no lee por defecto `.env` de la raíz del repo bajo `/opt/opsly` |
+| 2026-04-05 | No usar `secrets.*` en `if:` de steps; guarda en bash para Discord | GitHub invalida el workflow; webhook vacío rompía `curl` |
+| 2026-04-05 | VPS: vigilar disco antes de pulls grandes (`docker system df`, prune) | *no space left on device* al extraer capas de imágenes Next |
 
 ---
 
