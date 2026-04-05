@@ -23,13 +23,16 @@ entryPoints:
   websecure:
     address: ":443"
 
-# Provider Docker: endpoint explícito al socket del host; sin esto Traefik v3 puede negociar API 1.24 y fallar con daemons recientes.
+# Provider Docker: forzar API 1.40 explícitamente en la config estática
+# Nota: Traefik ignora DOCKER_API_VERSION en environment; hay que especificar aquí.
 # exposedByDefault: false = solo contenedores con traefik.enable=true; network = IP del backend en traefik-public.
 providers:
   docker:
     endpoint: "unix:///var/run/docker.sock"
+    httpClientTimeout: 10s
     exposedByDefault: false
     network: traefik-public
+    apiVersion: "1.40"
   file:
     directory: /etc/traefik/dynamic
     watch: true
