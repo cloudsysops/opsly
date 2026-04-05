@@ -376,3 +376,34 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 ├── VISION.md                # Norte del producto (fases, ICP, límites agentes)
 └── AGENTS.md                # Este archivo
 ```
+
+## 🔄 Actualización — 2026-04-05 (acciones del agente)
+
+- **Verificado `start` en `apps/api/package.json` y `apps/admin/package.json`:** ambos contienen el script `start` correcto.
+  - `apps/api/package.json`: `"start": "next start -p 3000"`
+  - `apps/admin/package.json`: `"start": "next start -p 3001"`
+
+- **Revisión de Dockerfiles:** `apps/api/Dockerfile` y `apps/admin/Dockerfile` revisados.
+  - El `CMD` final ejecuta `npm start` en ambos contenedores — OK.
+  - Los `EXPOSE` coinciden con los puertos de arranque (`3000` para API, `3001` para Admin) — OK.
+  - Observación: los Dockerfiles copian `.next` pero **no** copian `.next/standalone` — si se usa el modo `next build && next export` o `standalone` en la imagen de producción, considerar añadir `COPY --from=builder /repo/apps/APP/.next/standalone ./apps/APP/.next/standalone` durante la fase final.
+
+- **Ruta de salud:** existe `apps/api/app/api/health/route.ts` y responde con `status` y metadatos (supabase, timestamp, version) — OK.
+
+- **TypeScript:** se intentó correr `npx tsc --noEmit` en `apps/api` y `apps/admin`. El comando se ejecutó desde el agente pero produjo salida/estado inconsistente en este entorno (no se aplicaron correcciones). Resultado: **no se tocaron errores de tipos** en este commit; se recomienda ejecutar localmente `npx tsc --noEmit` y corregir los errores detectados en ambos paquetes.
+
+- **ESLint:** añadido `apps/admin/eslint.config.js` con `@eslint/js` recomendado para el paquete `admin`.
+  - Archivo agregado: `apps/admin/eslint.config.js`
+
+Cambios realizados en el repo durante esta sesión:
+
+- Añadido: `apps/admin/eslint.config.js` (configuración ESLint recomendada)
+- Actualizado: `AGENTS.md` (este bloque de resumen)
+
+Commit: `docs: update AGENTS.md 2026-04-05`
+
+Próximos pasos recomendados:
+
+- Ejecutar localmente `npx tsc --noEmit` en `apps/api` y `apps/admin` y corregir errores de tipos.
+- Si se utiliza output `standalone` de Next, actualizar Dockerfiles para copiar `.next/standalone` en la etapa final.
+
