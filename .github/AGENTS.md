@@ -47,7 +47,7 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 
 <!-- Actualizar al final de cada sesión -->
 
-**Fecha última actualización:** 2026-04-05 (deploy: Doppler verde + intento stack VPS; bloqueo GHCR)
+**Fecha última actualización:** 2026-04-05 (docs: inventario deploy Doppler/GHCR + sync `5c3f843`)
 
 **Completado ✅**
 
@@ -58,7 +58,8 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 - **Paso 3 — `./scripts/validate-config.sh`:** JSON y campos OK; DNS `api` / base / `admin` → IP VPS OK; SSH OK; Doppler ⚠️ `PLATFORM_ADMIN_TOKEN` y `REDIS_PASSWORD` placeholder → resultado **REVISAR** (no “LISTO PARA DEPLOY”). Pasos 4–6 (`vps-bootstrap`, `vps-first-run`, `curl` health) **no ejecutados** por política “parar si falla”.
 - **Estado persistido:** `context/system_state.json` con `deploy_staging.status: blocked_secrets`, `doppler.fix_in_order`, `next_action` encadenado a corregir Doppler → validate → bootstrap; espejo en `.github/system_state.json`. Repo: commit `docs(deploy): audit staging bloqueado por secretos Doppler/VPS` (`8cb94f5`).
 - **Sesión acceso / handoff (misma fecha):** comprobado con `gh repo view` que `cloudsysops/opsly` sigue **PUBLIC**; guía si `raw.githubusercontent.com` falla (URL, rama, blob, o pegar `AGENTS.md`). **Aclaración modelo de datos:** en `system_state.json`, `next_action` es campo en la **raíz** del JSON; `deploy_staging` es un **objeto aparte** (`status`, `notes`, etc.) — no son el mismo campo. **Orden antes de paso 4:** corregir Doppler → `./scripts/validate-config.sh` hasta **LISTO PARA DEPLOY** → entonces `vps-bootstrap.sh` (no arrancar bootstrap con Doppler roto). Commits de referencia: `8cb94f5` (audit deploy), `6ac453d` (docs AGENTS).
-- **Segunda ola deploy (2026-04-05, tarde):** VPS `.env` crítico sigue con JWT/Stripe **truncados** (no se subió eso a Doppler). Se aplicó en Doppler `prd`: `PLATFORM_ADMIN_TOKEN`, `NEXT_PUBLIC_PLATFORM_ADMIN_TOKEN`, `REDIS_PASSWORD`, `REDIS_URL`; `APP_IMAGE` / `ADMIN_APP_IMAGE` → `ghcr.io/cloudsysops/intcloudsysops-{api,admin}:latest`. `./scripts/validate-config.sh` → **LISTO PARA DEPLOY**. En el VPS **no** existe `scripts/vps-bootstrap.sh` (archivo local aún **untracked** en git); **no** hay CLI `doppler` en el servidor → `doppler secrets download` en Mac + `scp` de `.env` a `/opt/opsly/.env`. Se copió `scripts/vps-first-run.sh` al VPS; `docker compose up` falló: **`denied` al pull GHCR** (imágenes privadas o sin `docker login ghcr.io`). Health público probado con `curl -k`: **404** (stack nuevo no arriba). Ver `context/system_state.json` (`deploy_staging.blocked_ghcr_pull`, `doppler.status: complete`).
+- **Segunda ola deploy (2026-04-05, tarde):** VPS `.env` crítico sigue con JWT/Stripe **truncados** (no se subió eso a Doppler). Se aplicó en Doppler `prd`: `PLATFORM_ADMIN_TOKEN`, `NEXT_PUBLIC_PLATFORM_ADMIN_TOKEN`, `REDIS_PASSWORD`, `REDIS_URL`; `APP_IMAGE` / `ADMIN_APP_IMAGE` → `ghcr.io/cloudsysops/intcloudsysops-{api,admin}:latest`. `./scripts/validate-config.sh` → **LISTO PARA DEPLOY**. En el VPS **no** existe `scripts/vps-bootstrap.sh` (archivo local aún **untracked** en git); **no** hay CLI `doppler` en el servidor → `doppler secrets download` en Mac + `scp` de `.env` a `/opt/opsly/.env`. Se copió `scripts/vps-first-run.sh` al VPS; `docker compose up` falló: **`denied` al pull GHCR** (imágenes privadas o sin `docker login ghcr.io`). Health público probado con `curl -k`: **404** (stack nuevo no arriba). Ver `context/system_state.json` (`deploy_staging.blocked_ghcr_pull`, `doppler.status: complete`, `doppler.missing: []`). **`./scripts/update-agents.sh`** → commit **`5c3f843`** (`docs(agents): sync sesión 2026-04-05`) con espejos `.github/AGENTS.md` y `system_state.json`.
+- **Higiene:** tokens de plataforma/Redis usados en sesión quedaron en chat / logs; **rotar** en Doppler si hay riesgo de exposición.
 
 *Alineación automática del contexto (Capa 1 + Capa 2; n8n y capas superiores después):*
 - **Capa 1 — `scripts/update-state.js`:** Node sin dependencias extra; lee el repo y escribe en `context/system_state.json` el bloque `repo` (`apps[]`, número de `scripts/*.sh`, ADRs, migraciones `.sql`) y `last_updated` (UTC fecha); no sobrescribe fase, VPS, Doppler, DNS, `next_action` ni `tenants` (merge sobre JSON actual).
@@ -114,13 +115,11 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 - DNS: ops.smiletripcare.com → 157.245.223.7 ✅
 
 **Pendiente ⏳**
-- Revisar en Doppler UI que no queden placeholders (p. ej. ACME_EMAIL,
-  PLATFORM_ADMIN_TOKEN, REDIS_* si aún decían change-me en el .env del VPS)
-- `DOPPLER_TOKEN` de servicio en el VPS (`/etc/doppler.env`) — ver
-  `config/doppler-missing.txt` y `scripts/setup-doppler.sh`
+- **GHCR en VPS:** `docker login ghcr.io` y re-ejecutar `vps-first-run.sh` (o publicar imágenes)
+- **Track en git:** `scripts/vps-bootstrap.sh` (y scripts VPS asociados) para que existan en `/opt/opsly` tras `git pull`
+- Rotación opcional de tokens expuestos en chat; revisar Doppler UI (`ACME_EMAIL`, etc.)
+- `DOPPLER_TOKEN` de servicio en el VPS (`/etc/doppler.env`) — ver `config/doppler-missing.txt`
 - `NEXTAUTH_*`: no usado en el código actual; ver `doppler-missing.txt`
-- Correr `vps-bootstrap.sh` / `doppler secrets download` en VPS para alinear
-  disco con Doppler
 - Primer tenant de prueba: smiletripcare
 
 ---
@@ -145,7 +144,7 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 - [x] Bulk upload Doppler desde VPS `.env` (lista audit) — hecho 2026-04-05
 - [x] **validate-config** → LISTO PARA DEPLOY (2026-04-05, tras tokens plataforma/Redis + imágenes GHCR en Doppler)
 - [ ] **GHCR:** `docker login ghcr.io` en el VPS o imágenes públicas — bloquea `vps-first-run`
-- [ ] **`.env` VPS** sincronizado con Doppler (vía `scp` desde Mac si no hay Doppler en servidor)
+- [x] **`.env` VPS** alineado con Doppler (2026-04-05 vía `doppler secrets download` + `scp`; repetir tras cambios en prd)
 - [ ] Token de servicio Doppler en VPS (`/etc/doppler.env`) — opcional si se usa solo `scp`
 
 ---
@@ -202,6 +201,7 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 | 2026-04-05 | No `doppler secrets upload` desde VPS mientras haya JWT/Stripe truncados | Evitar sobrescribir Doppler prd con valores inválidos del `.env` de `/opt/opsly` |
 | 2026-04-05 | No `vps-bootstrap` hasta `validate-config` en verde | Bootstrap solo propaga lo que Doppler ya tiene bien |
 | 2026-04-05 | Deploy `.env` al VPS sin Doppler CLI: `doppler secrets download` local + `scp` | VPS no tenía `doppler` en PATH; `vps-bootstrap.sh` ausente en disco remoto |
+| 2026-04-05 | Stack bloqueado hasta `docker login ghcr.io` en VPS | Pull `ghcr.io/cloudsysops/*` devolvió `denied` |
 
 ---
 
