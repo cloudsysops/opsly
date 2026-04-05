@@ -1,3 +1,6 @@
+# USB kit: overrides locales (SSH Host, etc.)
+tools/usb-kit/pen.local.json
+
 # Nunca commitear secretos locales derivados del config
 config/opsly.secrets.json
 config/doppler-ready.json
