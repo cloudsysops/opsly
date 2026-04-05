@@ -47,7 +47,7 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 
 <!-- Actualizar al final de cada sesión -->
 
-**Fecha última actualización:** 2026-04-05 (Traefik: `DOCKER_API_VERSION`, socket rw, `group_add`/`DOCKER_GID`, bootstrap/validate-config, dashboard debug :8080, health con reintentos; + sincronización AGENTS.md)
+**Fecha última actualización:** 2026-04-05 (Docker Next `standalone` + Dockerfiles; workflow **Nightly code quality** `nightly-fix.yml`; `lint:fix` api/admin; health liveness; docs AGENTS)
 
 **Completado ✅**
 
@@ -86,7 +86,7 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 - **Verificación rutas en VPS:** `ls /opt` incluye `opsly`; `ls /opt/opsly` muestra árbol del repo (`apps`, `infra`, `scripts`, etc.).
 - **`vps-first-run.sh` tras login GHCR (2026-04-05):** falló con **`not found`** al resolver `ghcr.io/cloudsysops/intcloudsysops-api:latest` (y pull de `admin` interrumpido). **Auth GHCR OK;** el bloqueo actual es que **esa referencia de imagen/tag no existe** en el registry (o el nombre del paquete en GHCR difiere). Alinear `APP_IMAGE` / `ADMIN_APP_IMAGE` en Doppler con paquetes reales o **publicar** imágenes con CI.
 - **Inventario GHCR desde Mac (`gh api`):** sin comillas, **zsh** expande `?` en la URL → `no matches found`. Con URL entre comillas, sin scope **`read:packages`** en el token de `gh` → **HTTP 403** (*You need at least read:packages scope to list packages*). Para listar: `gh api '/orgs/cloudsysops/packages?package_type=container' --jq '.[].name'` con token adecuado.
-- **Workflows en `.github/workflows/`:** `backup.yml`, `ci.yml`, `cleanup-demos.yml`, `deploy-staging.yml`, `deploy.yml`, `validate-context.yml`.
+- **Workflows en `.github/workflows/`:** `backup.yml`, `ci.yml`, `cleanup-demos.yml`, `deploy-staging.yml`, `deploy.yml`, `validate-context.yml`, **`nightly-fix.yml`** (calidad nocturna: typecheck, lint, health, auto-fix, report).
 - **Dockerfiles:** existen `apps/api/Dockerfile` y `apps/admin/Dockerfile` en el repo.
 
 *CI — `deploy.yml`: build+push GHCR y deploy por pull en VPS (commit `0e4123b`, 2026-04-05):*
@@ -153,6 +153,15 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 - **Activación hooks:** `git config core.hooksPath .githooks` en **README → Setup** y al arrancar `scripts/local-setup.sh`; **pre-commit:** `npm run type-check` (Turbo) + ESLint `--max-warnings 0` sobre staged en `apps/api/app` y `apps/api/lib` (2026-04-05).
 - **Verificación:** commit `feat(context): …` en `main` con pre-commit + post-commit ejecutándose (type-check OK, `update-state` y “Contexto sincronizado” en log).
 
+*Sesión agente Cursor — Docker producción, health y CI nocturna (2026-04-05):*
+- **`apps/api` / `apps/admin` — `package.json`:** scripts **`start`** verificados (`next start -p 3000` / `3001`). Añadido **`lint:fix`:** `eslint . --fix` en ambos workspaces (uso desde CI y local: `npm run lint:fix -w @intcloudsysops/api` / `admin`).
+- **Next.js `output: "standalone"`:** en `apps/api/next.config.ts` y `apps/admin/next.config.ts` (con `outputFileTracingRoot` del monorepo).
+- **Dockerfiles (`apps/api/Dockerfile`, `apps/admin/Dockerfile`):** etapa `runner` copia **`.next/standalone`**, **`.next/static`** y **`public`**; `WORKDIR` bajo `apps/api` o `apps/admin`; **`ENV PORT`/`HOSTNAME`**; **`EXPOSE`** 3000 / 3001; **`CMD ["npm","start"]`**. Referencia: commit `7ef98d9` (`fix(docker): enable Next standalone output and slim runner images`).
+- **`GET /api/health`:** existe `apps/api/app/api/health/route.ts`; liveness **`Response.json({ status: "ok" })`** con tipo **`Promise<Response>`**. El workflow **`nightly-fix`** crea el archivo con **`status` + `timestamp`** solo si **falta** la ruta. Referencia histórica: commit `78d3135` (simplificación a solo `ok`).
+- **TypeScript:** `npx tsc --noEmit` en api y admin y **`npm run type-check`** (Turbo) pasan en el monorepo tras los cambios anteriores de la sesión.
+- **`.github/workflows/nightly-fix.yml` — “Nightly code quality”:** disparo **`cron: 0 3 * * *` (03:00 UTC)** y **`workflow_dispatch`**. Permisos: **`contents: write`**, **`pull-requests: write`**, **`issues: write`**. Jobs en cadena: **`ensure-labels`** (crea `bug` y `automated` si no existen), **`typecheck`** (tsc api+admin en paralelo → artifact **`errors.txt`**, el job no falla el workflow), **`lint`** (ESLint → **`lint-report.txt`**), **`health-check`** (crea `apps/api/app/api/health/route.ts` si falta con `status` + `timestamp`), **`auto-fix`** (`npm run lint:fix -w` api/admin; Prettier `--write` solo si hay **`prettier`** en la raíz del repo; stash + rama **`nightly-fix/YYYY-MM-DD`** + push + **`gh pr create`** si hay cambios y no hay PR abierta), **`report`** (`if: always()`; si en **`errors.txt`** aparece **`error TS`**, abre issue titulado **`🔴 TypeScript errors found - YYYY-MM-DD`** con labels **`bug`** y **`automated`**, sin duplicar si ya hay issue abierto con el mismo título). Commits en **`main`:** `8f36e5c` (workflow + `lint:fix`), `1492946` (sync espejo `.github/AGENTS.md` y `system_state` vía post-commit).
+- **Labels en GitHub:** **`bug`** y **`automated`** verificadas con `gh label list` / `gh label create` (idempotente).
+
 *Contexto y flujo para agentes (abr 2026):*
 - `VISION.md` — visión, ICP, planes, primer cliente smiletripcare, stack transferible, límites; **roadmap por fases (revisado 2026-04-04)** con Fase 1 (máx 1 semana), 2, 3, lista *Nunca* (K8s, Swarm, migrar Traefik/Supabase) y **regla:** antes de features nuevos → ¿tenants en producción > 0? si no, Fase 1
 - `AGENTS.md` — fuente de verdad por sesión; bloque de **cierre** para Cursor (actualizar 🔄, commit/push o `./scripts/update-agents.sh`, pegar URL raw al abrir la próxima sesión)
@@ -180,7 +189,7 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 - apps/admin/ (dashboard Next.js dark theme ops/terminal)
 - apps/web/ (workspace Next.js en monorepo; documentado para CI `validate-context`)
 - .github/workflows/ (ci.yml, deploy.yml, deploy-staging.yml, backup.yml,
-  cleanup-demos.yml, validate-context.yml); CODEOWNERS; PULL_REQUEST_TEMPLATE.md;
+  cleanup-demos.yml, validate-context.yml, nightly-fix.yml); CODEOWNERS; PULL_REQUEST_TEMPLATE.md;
   ISSUE_TEMPLATE/*.yml; copilot-instructions.md; README-github-templates.md
 - config/opsly.config.json (fuente de verdad central)
 - docs/ (ARCHITECTURE.md, TEST_PLAN.md, DNS_SETUP.md, VPS-ARCHITECTURE.md)
@@ -198,6 +207,7 @@ con facturación Stripe, backups automáticos y dashboard de administración.
   `.github/AGENTS.md` (espejo de este archivo cuando está sincronizado)
 
 **En progreso 🔄**
+- **CI “Nightly code quality” (`nightly-fix.yml`):** probar con *Actions → Run workflow*; el cron solo corre con el workflow en la rama por defecto (`main`).
 - **CI `Deploy` en GitHub Actions:** tras push a `main`, **`build-and-push`** publica imágenes en GHCR; **`deploy`** hace SSH, **`docker compose --env-file /opt/opsly/.env … pull` + `up`**, health con reintentos y **`curl -sfk`**. Revisar *Actions → Deploy* si falla SSH, disco VPS, Traefik, **`PLATFORM_DOMAIN`** o falta **`DOCKER_GID`** en el `.env` del VPS (sin él, `group_add` usa `999` y el socket puede seguir inaccesible).
 - Deploy staging — imágenes **`ghcr.io/cloudsysops/intcloudsysops-{api,admin}:latest`**; en VPS **`/opt/opsly/.env`** con **`DOCKER_GID`** (vuelve a ejecutar **`vps-bootstrap.sh`** tras cambios de compose si hace falta); login GHCR en el job con **`GITHUB_TOKEN`**. Tras cambios en Traefik: recrear contenedor **`traefik`** en el VPS para cargar env y `group_add`.
 - Con Doppler CLI + token con scope `/opt/opsly`: **`./scripts/vps-bootstrap.sh`** regenera `.env`; ejecutar tras cambiar imágenes o secretos en `prd`.
@@ -240,6 +250,9 @@ curl -sfk "https://api.ops.smiletripcare.com/api/health"   # o el dominio base d
 ./scripts/validate-config.sh   # local; debe seguir en LISTO PARA DEPLOY
 # Listar paquetes GHCR (Mac): gh auth refresh -s read:packages; gh api '/orgs/cloudsysops/packages?package_type=container' --jq '.[].name'
 # Push a main dispara deploy.yml: build-and-push + SSH con GITHUB_TOKEN para docker login en VPS.
+
+# GitHub — calidad nocturna (manual o cron 03:00 UTC):
+#   Actions → "Nightly code quality" → Run workflow
 ```
 
 ---
@@ -337,6 +350,9 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 | 2026-04-05 | `vps-bootstrap.sh` añade `DOCKER_GID` vía `stat -c %g /var/run/docker.sock` | `.env` listo para interpolación en compose |
 | 2026-04-05 | `validate-config.sh` comprueba `DOCKER_GID` en `.env` del VPS por SSH | Warning temprano si falta antes de deploy |
 | 2026-04-05 | Dashboard Traefik `api.insecure` + `127.0.0.1:8080` solo depuración | No exponer 8080 públicamente en producción |
+| 2026-04-05 | Next `output: "standalone"` + Dockerfiles copian standalone/static/public | Imágenes runner más pequeñas y alineadas a Next 15 en monorepo |
+| 2026-04-05 | `nightly-fix.yml`: typecheck/lint/health/auto-fix/report + `gh pr` / `gh issue` | Daemon de calidad nocturna; TS no auto-corregible → issue etiquetada |
+| 2026-04-05 | `lint:fix` en `apps/api` y `apps/admin` | Misma orden que usa el job auto-fix del workflow |
 
 ---
 
@@ -376,34 +392,3 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 ├── VISION.md                # Norte del producto (fases, ICP, límites agentes)
 └── AGENTS.md                # Este archivo
 ```
-
-## 🔄 Actualización — 2026-04-05 (acciones del agente)
-
-- **Verificado `start` en `apps/api/package.json` y `apps/admin/package.json`:** ambos contienen el script `start` correcto.
-  - `apps/api/package.json`: `"start": "next start -p 3000"`
-  - `apps/admin/package.json`: `"start": "next start -p 3001"`
-
-- **Revisión de Dockerfiles:** `apps/api/Dockerfile` y `apps/admin/Dockerfile` revisados.
-  - El `CMD` final ejecuta `npm start` en ambos contenedores — OK.
-  - Los `EXPOSE` coinciden con los puertos de arranque (`3000` para API, `3001` para Admin) — OK.
-  - Observación: los Dockerfiles copian `.next` pero **no** copian `.next/standalone` — si se usa el modo `next build && next export` o `standalone` en la imagen de producción, considerar añadir `COPY --from=builder /repo/apps/APP/.next/standalone ./apps/APP/.next/standalone` durante la fase final.
-
-- **Ruta de salud:** existe `apps/api/app/api/health/route.ts` y responde con `status` y metadatos (supabase, timestamp, version) — OK.
-
-- **TypeScript:** se intentó correr `npx tsc --noEmit` en `apps/api` y `apps/admin`. El comando se ejecutó desde el agente pero produjo salida/estado inconsistente en este entorno (no se aplicaron correcciones). Resultado: **no se tocaron errores de tipos** en este commit; se recomienda ejecutar localmente `npx tsc --noEmit` y corregir los errores detectados en ambos paquetes.
-
-- **ESLint:** añadido `apps/admin/eslint.config.js` con `@eslint/js` recomendado para el paquete `admin`.
-  - Archivo agregado: `apps/admin/eslint.config.js`
-
-Cambios realizados en el repo durante esta sesión:
-
-- Añadido: `apps/admin/eslint.config.js` (configuración ESLint recomendada)
-- Actualizado: `AGENTS.md` (este bloque de resumen)
-
-Commit: `docs: update AGENTS.md 2026-04-05`
-
-Próximos pasos recomendados:
-
-- Ejecutar localmente `npx tsc --noEmit` en `apps/api` y `apps/admin` y corregir errores de tipos.
-- Si se utiliza output `standalone` de Next, actualizar Dockerfiles para copiar `.next/standalone` en la etapa final.
-
