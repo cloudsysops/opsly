@@ -11,7 +11,7 @@
 **Al abrir una sesión nueva conmigo (otro agente / otro dispositivo):**
 
 1. Asegúrate de que `AGENTS.md` en `main` está actualizado (último commit en GitHub).
-2. **Contexto:** lee `VISION.md` una vez (el norte del producto); lee `AGENTS.md` siempre (estado de la sesión). Ante decisiones de arquitectura, verifica alineación con `VISION.md` y documéntalas aquí.
+2. **Contexto:** lee `VISION.md` una vez (el norte del producto); lee `AGENTS.md` siempre (estado de la sesión); para arquitectura, consulta `docs/adr/`. Ante decisiones nuevas, verifica alineación con `VISION.md` y documéntalas aquí (y ADR si aplica).
 3. Pega en el chat la **URL raw** del archivo para que el agente lo cargue sin clonar:
    - Formato: `https://raw.githubusercontent.com/<org>/<repo>/<branch>/AGENTS.md`
    - Ejemplo: `https://raw.githubusercontent.com/cloudsysops/opsly/main/AGENTS.md`
@@ -23,7 +23,7 @@
 Flujo de cierre:
 1. Actualiza AGENTS.md (todas las secciones 🔄).
 2. Commit y push a main (mensaje claro, ej. docs(agents): estado sesión YYYY-MM-DD),
-   o ejecuta ./scripts/update-agents.sh para espejar AGENTS/VISION en .github/ y pushear.
+   o ejecuta ./scripts/update-agents.sh para espejar AGENTS, VISION y context/system_state.json en .github/ y pushear.
 3. Respóndeme con la URL raw de AGENTS.md en main para que la pegue al abrir la próxima sesión.
 
 https://raw.githubusercontent.com/cloudsysops/opsly/main/AGENTS.md
@@ -45,9 +45,12 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 
 <!-- Actualizar al final de cada sesión -->
 
-**Fecha última actualización:** 2026-04-05 (contexto agentes: VISION + extensiones)
+**Fecha última actualización:** 2026-04-05 (gobernanza: ADRs + prompts + system_state)
 
 **Completado ✅**
+- `docs/adr/` — ADR-001 (compose por tenant), ADR-002 (Traefik v3), ADR-003 (Doppler), ADR-004 (Supabase schema por tenant)
+- `agents/prompts/` — `claude-architect.md`, `cursor-executor.md`
+- `context/system_state.json` — snapshot operativo (fase, VPS, Doppler, DNS, next_action); espejo en `.github/system_state.json` vía `update-agents.sh`
 - `VISION.md` (visión, fases, primer cliente, stack transferible, límites para agentes)
 - `.vscode/extensions.json` (recomendaciones Cursor/VS Code)
 - `.cursor/rules/opsly.mdc` (visión del producto + prioridad de archivos de contexto)
@@ -164,6 +167,7 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 | 2026-04 | validate-config usa `dig +short` para DNS | Comprobar que la IP del VPS aparece en la resolución |
 | 2026-04 | sync-config redirige stdout de `doppler secrets set` a /dev/null | No volcar tablas con valores en logs compartidos |
 | 2026-04 | Dashboard Traefik en `traefik.${PLATFORM_DOMAIN}` | Reservar `admin.*` para la app Admin Opsly |
+| 2026-04-04 | ADR-001 a ADR-004 documentadas en `docs/adr/` | Gobernanza explícita; agentes no reabren K8s/Swarm/nginx sin ADR nuevo |
 
 ---
 
@@ -176,7 +180,10 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 │   └── admin/               # Next.js dashboard admin
 ├── config/
 │   └── opsly.config.json    # Infra/dominios/planes (sin secretos)
-├── docs/                    # Arquitectura, DNS, tests, VPS
+├── agents/prompts/          # Plantillas Claude / Cursor
+├── context/                 # system_state.json (sin secretos)
+├── docs/                    # Arquitectura, ADRs, DNS, tests, VPS
+│   └── adr/                 # Decisiones de arquitectura (ADR-001 …)
 ├── infra/
 │   ├── docker-compose.platform.yml
 │   ├── docker-compose.local.yml
@@ -187,7 +194,7 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 ├── .vscode/                 # extensiones recomendadas
 ├── .cursor/rules/           # Reglas Cursor (opsly.mdc)
 ├── .claude/                 # Contexto Claude (CLAUDE.md)
-├── .github/                 # workflows, AGENTS.md + VISION.md espejo, Copilot, plantillas
+├── .github/                 # workflows, espejo AGENTS/VISION/system_state, Copilot, plantillas
 ├── .githooks/               # pre-commit (type-check), opcional Husky
 ├── package.json             # workspaces + turbo
 ├── README.md

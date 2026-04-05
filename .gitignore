@@ -2,6 +2,10 @@
 config/opsly.secrets.json
 config/doppler-ready.json
 
+# Agent context (no secrets)
+context/doppler-ready.json
+agents/prompts/secrets-*.md
+
 # Cursor / entorno local
 .cursor/mcp.json
 .env.local

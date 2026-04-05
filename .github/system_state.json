@@ -1,0 +1,35 @@
+{
+  "last_updated": "2026-04-04",
+  "phase": "fase-1-validacion",
+  "vps": {
+    "ip": "157.245.223.7",
+    "user": "vps-dragon",
+    "repo": "/opt/opsly",
+    "status": "pending-bootstrap"
+  },
+  "doppler": {
+    "project": "ops-intcloudsysops",
+    "config": "prd",
+    "status": "partial",
+    "missing": [
+      "SUPABASE_URL",
+      "SUPABASE_SERVICE_ROLE_KEY",
+      "NEXT_PUBLIC_SUPABASE_URL",
+      "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+      "STRIPE_SECRET_KEY",
+      "STRIPE_WEBHOOK_SECRET",
+      "STRIPE_PRICE_STARTUP",
+      "STRIPE_PRICE_BUSINESS",
+      "ACME_EMAIL",
+      "REDIS_PASSWORD",
+      "PLATFORM_ADMIN_TOKEN"
+    ]
+  },
+  "dns": {
+    "base": "ops.smiletripcare.com",
+    "ip": "157.245.223.7",
+    "status": "ok"
+  },
+  "tenants": [],
+  "next_action": "./scripts/validate-config.sh"
+}
