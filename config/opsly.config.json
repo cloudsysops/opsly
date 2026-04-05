@@ -1,0 +1,64 @@
+{
+  "project": {
+    "name": "opsly",
+    "doppler_project": "ops-intcloudsysops",
+    "doppler_config": "prd",
+    "github_org": "cloudsysops",
+    "github_repo": "opsly"
+  },
+  "infrastructure": {
+    "vps_ip": "157.245.223.7",
+    "vps_user": "vps-dragon",
+    "vps_path": "/opt/opsly",
+    "traefik_network": "traefik-public"
+  },
+  "domains": {
+    "base": "ops.smiletripcare.com",
+    "api": "api.ops.smiletripcare.com",
+    "admin": "admin.ops.smiletripcare.com",
+    "traefik": "traefik.ops.smiletripcare.com",
+    "wildcard": "*.ops.smiletripcare.com"
+  },
+  "ports": {
+    "traefik_http": 80,
+    "traefik_https": 443,
+    "traefik_dashboard": 8080,
+    "redis": 6379,
+    "api": 3000,
+    "admin": 3001
+  },
+  "plans": {
+    "startup": {
+      "price_usd": 49,
+      "port_base": 8000
+    },
+    "business": {
+      "price_usd": 149,
+      "port_base": 9000
+    },
+    "enterprise": {
+      "price_usd": 0,
+      "port_base": 10000
+    }
+  },
+  "services": {
+    "n8n": {
+      "image": "n8nio/n8n:latest",
+      "internal_port": 5678
+    },
+    "uptime_kuma": {
+      "image": "louislam/uptime-kuma:1",
+      "internal_port": 3001
+    }
+  },
+  "backups": {
+    "s3_prefix": "opsly/backups",
+    "retention_days": 30,
+    "cron": "0 2 * * *"
+  },
+  "terraform": {
+    "region": "nyc3",
+    "droplet_size": "s-1vcpu-2gb",
+    "project_name": "opsly"
+  }
+}

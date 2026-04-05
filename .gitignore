@@ -21,3 +21,13 @@ node_modules
 !.env.local.example
 dist
 .turbo
+
+# --- Terraform (infra/terraform/) ---
+# .terraform/ — plugins y metadata del proveedor (regenerable con terraform init).
+# terraform.tfstate / *.backup — estado con IDs y a veces datos sensibles; por máquina.
+# *.tfvars — suele usarse para secretos locales; no commitear (usar TF_VAR_* / Doppler).
+# .terraform.lock.hcl — NO ignorar: fija versiones del proveedor; debe versionarse en git.
+.terraform/
+terraform.tfstate
+terraform.tfstate.backup
+*.tfvars
