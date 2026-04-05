@@ -118,17 +118,20 @@ jobs:
             docker compose -f docker-compose.platform.yml pull
             docker compose -f docker-compose.platform.yml up -d --no-deps app admin
 
-            sleep 10
+            sleep 30
             if [ -z "${PLATFORM_DOMAIN:-}" ]; then
-              echo "PLATFORM_DOMAIN no está definido en el entorno remoto; define el secret PLATFORM_DOMAIN o exporta la variable en el VPS (Doppler)." >&2
+              echo "PLATFORM_DOMAIN no está definido" >&2
               exit 1
             fi
-            curl -sf "https://api.ops.smiletripcare.com/api/health" || exit 1
+            echo "Health check..."
+            curl -sfk "https://api.${PLATFORM_DOMAIN}/api/health" \
+              && echo "Health OK" \
+              || { echo "Health falló - logs:"; docker logs --tail 20 infra-app-1 2>&1; exit 1; }
 
             echo "Deploy completado: $(date -u)"
 
       - name: Notify Discord on success
-        if: success()
+        if: success() && secrets.DISCORD_WEBHOOK_URL != ''
         continue-on-error: true
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
@@ -144,7 +147,7 @@ jobs:
               '{embeds:[{title:"✅ Deploy exitoso",color:65416,fields:[{name:"Commit",value:$sha,inline:true},{name:"Author",value:$actor,inline:true}],timestamp:$ts}]}')"
 
       - name: Notify Discord on failure
-        if: failure()
+        if: failure() && secrets.DISCORD_WEBHOOK_URL != ''
         continue-on-error: true
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
