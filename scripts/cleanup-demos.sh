@@ -2,7 +2,7 @@
 set -euo pipefail
 
 _SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-# shellcheck source=scripts/lib/common.sh
+# shellcheck source=lib/common.sh
 source "${_SCRIPT_DIR}/lib/common.sh"
 
 DRY_RUN=0

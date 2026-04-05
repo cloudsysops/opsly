@@ -7,7 +7,7 @@ set -euo pipefail
 
 OPS_ROOT="${OPS_ROOT:-/opt/opsly}"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-# shellcheck source=scripts/lib/common.sh
+# shellcheck source=lib/common.sh
 source "${SCRIPT_DIR}/lib/common.sh"
 
 require_cmd docker git curl doppler
@@ -64,8 +64,8 @@ if [[ "${DRY_RUN}" != "true" ]]; then
 fi
 
 log_info "[h] Health check"
-# shellcheck disable=SC1090
 set -a
+# shellcheck disable=SC1090
 source "${ENV_FILE}"
 set +a
 require_env PLATFORM_DOMAIN

@@ -47,7 +47,7 @@ COMMON_SH="$(_resolve_common_sh)" || {
   echo "  bash ${OPS_ROOT}/scripts/vps-bootstrap.sh" >&2
   exit 1
 }
-# shellcheck source=scripts/lib/common.sh
+# shellcheck source=lib/common.sh
 source "${COMMON_SH}"
 
 require_cmd docker git doppler jq
@@ -102,8 +102,8 @@ run mv "${ENV_FILE}.tmp" "${ENV_FILE}"
 run chmod 600 "${ENV_FILE}"
 
 log_info "[f] Variables críticas en .env"
-# shellcheck disable=SC1090
 set -a
+# shellcheck disable=SC1090
 source "${ENV_FILE}"
 set +a
 

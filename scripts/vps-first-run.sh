@@ -6,7 +6,7 @@ set -euo pipefail
 
 OPS_ROOT="${OPS_ROOT:-/opt/opsly}"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-# shellcheck source=scripts/lib/common.sh
+# shellcheck source=lib/common.sh
 source "${SCRIPT_DIR}/lib/common.sh"
 
 require_cmd docker curl
@@ -27,8 +27,8 @@ COMPOSE_FILE="infra/docker-compose.platform.yml"
 [[ -f "${ENV_FILE}" ]] || die "No existe ${ENV_FILE}; ejecuta primero scripts/vps-bootstrap.sh" 1
 
 log_info "[a] Cargar ${ENV_FILE}"
-# shellcheck disable=SC1090
 set -a
+# shellcheck disable=SC1090
 source "${ENV_FILE}"
 set +a
 require_env PLATFORM_DOMAIN
