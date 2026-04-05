@@ -1,5 +1,7 @@
 # USB kit: overrides locales (SSH Host, etc.)
 tools/usb-kit/pen.local.json
+# Cifrados age de emergencia (.env, SSH, PAT) — nunca al repo
+tools/usb-kit/secrets/
 
 # Nunca commitear secretos locales derivados del config
 config/opsly.secrets.json
