@@ -108,6 +108,9 @@ client_mode() {
   else
     log_warn "No se pudo alcanzar api.opsly.local; revisa firewall o que el stack esté arriba en la 2011."
   fi
+  if [[ -n "${SSH_KEY}" ]] && [[ ! -f "${SSH_KEY}" ]]; then
+    log_warn "SSH key no existe: ${SSH_KEY} (si usarás túneles SSH, ajusta --ssh-key)"
+  fi
   log_info "URLs (Mac 2020):"
   log_info "  http://admin.opsly.local"
   log_info "  http://api.opsly.local/api/health"

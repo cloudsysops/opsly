@@ -26,7 +26,6 @@ read_config() {
 DOPPLER_PROJECT="$(read_config '.project.doppler_project')"
 DOPPLER_CFG="$(read_config '.project.doppler_config')"
 VPS_PATH="$(read_config '.infrastructure.vps_path')"
-VPS_IP="$(read_config '.infrastructure.vps_ip')"
 TRAEFIK_NET="$(read_config '.infrastructure.traefik_network')"
 BASE_DOM="$(read_config '.domains.base')"
 API_DOM="$(read_config '.domains.api')"

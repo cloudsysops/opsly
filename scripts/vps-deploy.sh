@@ -11,6 +11,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "${SCRIPT_DIR}/lib/common.sh"
 
 require_cmd docker git curl doppler
+require_cmd jq
 
 if ! docker compose version >/dev/null 2>&1; then
   die "docker compose no disponible" 2

@@ -90,7 +90,12 @@ run supabase start
 
 ANON_KEY=""
 SERVICE_ROLE_KEY=""
-SB_JSON="$(cd "${REPO_ROOT}" && supabase status --output json 2>/dev/null || true)"
+SB_JSON=""
+if cd "${REPO_ROOT}"; then
+  if supabase status --output json >/dev/null 2>&1; then
+    SB_JSON="$(supabase status --output json 2>/dev/null || true)"
+  fi
+fi
 if [[ -n "${SB_JSON}" ]] && command -v jq >/dev/null 2>&1; then
   ANON_KEY="$(echo "${SB_JSON}" | jq -r '.anon_key // .ANON_KEY // .API.anon_key // empty')"
   SERVICE_ROLE_KEY="$(echo "${SB_JSON}" | jq -r '.service_role_key // .SERVICE_ROLE_KEY // .API.service_role_key // empty')"

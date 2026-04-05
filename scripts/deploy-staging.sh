@@ -13,7 +13,8 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+# REPO_ROOT se deja por consistencia con otros scripts (y para futuras extensiones).
+REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)" # shellcheck disable=SC2034
 # shellcheck source=scripts/lib/common.sh
 source "${SCRIPT_DIR}/lib/common.sh"
 
