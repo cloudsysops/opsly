@@ -1,10 +1,12 @@
 # Create the shared edge network once before first deploy:
 #   docker network create traefik-public
 #
-# Required .env (non-exhaustive): PLATFORM_DOMAIN (base host, e.g. ops.smiletripcare.com — same
-# value as GitHub secret PLATFORM_DOMAIN for deploy health checks), REDIS_PASSWORD, ACME_EMAIL,
-# TRAEFIK_DASHBOARD_BASIC_AUTH_USERS (htpasswd format, e.g. user:$$apr1$$... — escape $ for Compose),
-# APP_IMAGE (optional), and application secrets for ../.env
+# Interpolación ${VAR} en este archivo: el deploy usa `docker compose --env-file /opt/opsly/.env`
+# (Compose por defecto solo lee .env junto al YAML en infra/, no la raíz del repo).
+#
+# Required en /opt/opsly/.env (non-exhaustive): PLATFORM_DOMAIN (base host, e.g. ops.smiletripcare.com),
+# REDIS_PASSWORD, ACME_EMAIL, TRAEFIK_DASHBOARD_BASIC_AUTH_USERS (htpasswd; escapar $ en Compose),
+# APP_IMAGE (optional). Los servicios también cargan env_file ../.env (= /opt/opsly/.env desde infra/).
 
 version: "3.9"
 

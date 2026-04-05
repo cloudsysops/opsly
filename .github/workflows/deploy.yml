@@ -117,8 +117,8 @@ jobs:
 
             cd /opt/opsly/infra
             echo "$GHCR_PAT" | docker login ghcr.io -u "$GHCR_USER" --password-stdin
-            docker compose -f docker-compose.platform.yml pull
-            docker compose -f docker-compose.platform.yml up -d --no-deps app admin
+            docker compose --env-file /opt/opsly/.env -f docker-compose.platform.yml pull
+            docker compose --env-file /opt/opsly/.env -f docker-compose.platform.yml up -d --no-deps app admin
 
             sleep 45
             if [ -z "${PLATFORM_DOMAIN:-}" ]; then
