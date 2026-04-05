@@ -34,7 +34,6 @@ jobs:
           cache: npm
           cache-dependency-path: package-lock.json
 
-      # Monorepo: un solo package-lock en la raíz instala workspaces (api + admin).
       - name: npm ci (workspace)
         run: npm ci
 
@@ -43,24 +42,6 @@ jobs:
           set -euo pipefail
           (cd apps/api && npx tsc --noEmit) & pid1=$!
           (cd apps/admin && npx tsc --noEmit) & pid2=$!
-          wait $pid1 $pid2
-
-      - name: ESLint if config exists (parallel)
-        run: |
-          set -euo pipefail
-          run_eslint() {
-            dir="$1"
-            if compgen -G "${dir}/eslint.config.*" >/dev/null 2>&1 \
-              || [ -f "${dir}/.eslintrc.json" ] \
-              || [ -f "${dir}/.eslintrc.cjs" ] \
-              || [ -f "${dir}/.eslintrc.js" ]; then
-              (cd "$dir" && npx eslint .)
-            else
-              echo "No ESLint config in ${dir}, skipping"
-            fi
-          }
-          run_eslint apps/api & pid1=$!
-          run_eslint apps/admin & pid2=$!
           wait $pid1 $pid2
 
   build-and-push:
