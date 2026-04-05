@@ -47,9 +47,21 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 
 <!-- Actualizar al final de cada sesión -->
 
-**Fecha última actualización:** 2026-04-05 (usb-kit pendrive + plantillas profesionales `.github/` + esta sincronización de AGENTS)
+**Fecha última actualización:** 2026-04-05 (capas de calidad monorepo `d4acfcb` + sincronización de este AGENTS.md)
 
 **Completado ✅**
+
+*Capas de calidad de código — monorepo Opsly (2026-04-05, commit `d4acfcb` `feat(quality): add code patterns, SOLID rules and automated review layers`, pusheado a `main`):*
+- **CAPA 1 — `.vscode/settings.json`:** `formatOnSave`, `codeActionsOnSave` (ESLint + organize imports), imports relativos TS/JS, Copilot en español (`github.copilot.chat.localeOverride: "es"`), Copilot habilitado por lenguajes del stack, `eslint.validate` para JS/TS/TSX; comentarios en español por grupo de opciones.
+- **CAPA 2 — ESLint raíz:** `.eslintrc.json` con reglas estrictas en `apps/api` (`complexity` 10, `max-lines-per-function` 50 warn, `no-magic-numbers` con ignore `[0,1,-1,100,1000]`, `@typescript-eslint/no-explicit-any` error, `explicit-function-return-type` warn, `no-nested-ternary`, `prefer-const`, `eqeqeq`); override para `apps/api/lib/constants.ts` sin `no-magic-numbers`. **`eslint.config.mjs`:** flat config con `FlatCompat` + `recommendedConfig`/`allConfig` desde `@eslint/js`; ignores para `apps/web`, `apps/admin`, `next-env.d.ts`, etc.
+- **Dependencias raíz:** `eslint`, `@eslint/js`, `@eslint/eslintrc`, `@typescript-eslint/parser`, `@typescript-eslint/eslint-plugin`, `typescript` (dev) para ejecutar ESLint desde la raíz del monorepo.
+- **CAPA 3 — `.github/copilot-instructions.md`:** secciones añadidas (sin borrar lo existente): patrones Repository/Factory/Observer/Strategy; algoritmos (listas, Supabase, BullMQ backoff, paginación cursor, Redis TTL); SOLID aplicado a Opsly; reglas de estilo; plantilla route handler en `apps/api`; plantilla script bash (`set -euo pipefail`, `--dry-run`, `main`).
+- **CAPA 4 — `.cursor/rules/opsly.mdc`:** checklist “antes de escribir código”, “antes de script bash”, “antes de commit” (type-check, sin `any`, sin secretos).
+- **CAPA 5 — `.claude/CLAUDE.md`:** sección “Cómo programar en Opsly” (AGENTS/VISION, ADR, lista *Nunca*, estructura según copilot-instructions, patrones Repository/Factory/Strategy, plan antes de cambios terraform/infra).
+- **CAPA 6 — `apps/api/lib/constants.ts`:** `HTTP_STATUS`, `TENANT_STATUS`, `BILLING_PLANS`, `RETRY_CONFIG`, `CACHE_TTL` y constantes de orquestación/compose/JSON (sin secretos); comentarios en español.
+- **CAPA 7 — `.githooks/pre-commit`:** tras `npm run type-check` (Turbo), si hay staged bajo `apps/api/app/` o `apps/api/lib/` (`.ts`/`.tsx`), ejecuta `npx eslint --max-warnings 0` solo sobre esos archivos; mensaje de error en español si falla. **No** aplica ESLint estricto a `apps/web` ni `apps/admin` vía este hook.
+- **Refactors API para cumplir reglas:** `app/api/metrics/route.ts` (helpers de conteos Supabase, `firstMetricsError` con `new Error(message)` por TS2741), `webhooks/stripe/route.ts`, `lib/orchestrator.ts`, `lib/docker/compose-generator.ts`, `lib/email/index.ts`, `lib/validation.ts` usando `lib/constants.ts`.
+- **Verificación local:** `npx eslint "apps/api/**/*.ts" --max-warnings 0` y `npm run type-check` en verde antes del commit de calidad.
 
 *Sesión agente Cursor — deploy staging VPS (2026-04-04 / 2026-04-05, cronología):*
 - **`./scripts/validate-config.sh`:** LISTO PARA DEPLOY (JSON, DNS, Doppler críticos, SSH VPS OK).
@@ -107,7 +119,7 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 - **`feature_request.yml`:** problema, propuesta, alternativas; desplegable **fase** (Fase 1–3, No aplica); **área** (api, admin, infra, billing, onboarding, terraform).
 - **`config.yml`:** `blank_issues_enabled: false`; `contact_links` → URL raw de `AGENTS.md` como contexto.
 - **`tenant_issue.yml`:** cabecera explicativa añadida (formulario sin cambio funcional).
-- **`.github/copilot-instructions.md`:** convenciones Opsly, archivos de referencia, sección **qué NO hacer** (K8s/Swarm/nginx, secretos en código, saltear validate-config, terraform sin plan). Contenido saneado (sin volcado accidental de AGENTS).
+- **`.github/copilot-instructions.md`:** convenciones Opsly, archivos de referencia, sección **qué NO hacer** (K8s/Swarm/nginx, secretos en código, saltear validate-config, terraform sin plan); más **patrones de diseño**, algoritmos, SOLID, estilo, plantillas route API y bash (2026-04-05, `feat(quality)`).
 - **`.github/README-github-templates.md`:** guía en español (tabla archivo → propósito → cuándo → quién; reutilización en otros repos).
 - **Workflows** en `.github/workflows/` **no** se modificaron en esta tarea.
 - Commit de referencia: `docs(github): add professional templates and explain each file` (`a82180e`).
@@ -117,13 +129,13 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 - **Capa 2 — `.githooks/post-commit`:** Tras cada commit exitoso: si el commit tocó `infra/`, `scripts/`, `apps/` o `supabase/`, ejecuta `node scripts/update-state.js`; **siempre** copia `AGENTS.md` → `.github/AGENTS.md` y `context/system_state.json` → `.github/system_state.json` (si los cambios del hook quedan sin commitear, haz un segundo commit o `./scripts/update-agents.sh`).
 - **`package.json`:** `npm run update-state`, `sync-agents` → `bash scripts/update-agents.sh`, `validate-context` → validación JSON local con `python3 -m json.tool`.
 - **CI — `.github/workflows/validate-context.yml`:** en `push` y `pull_request` comprueba JSON válido, que cada carpeta bajo `apps/*` tenga mención en `AGENTS.md`, y `diff` entre `AGENTS.md` y `.github/AGENTS.md` (si falla: sincronizar y pushear).
-- **Activación hooks:** `git config core.hooksPath .githooks` en **README → Setup** y al arrancar `scripts/local-setup.sh`; **pre-commit** existente sigue ejecutando `npm run type-check` (Turbo) antes del commit.
+- **Activación hooks:** `git config core.hooksPath .githooks` en **README → Setup** y al arrancar `scripts/local-setup.sh`; **pre-commit:** `npm run type-check` (Turbo) + ESLint `--max-warnings 0` sobre staged en `apps/api/app` y `apps/api/lib` (2026-04-05).
 - **Verificación:** commit `feat(context): …` en `main` con pre-commit + post-commit ejecutándose (type-check OK, `update-state` y “Contexto sincronizado” en log).
 
 *Contexto y flujo para agentes (abr 2026):*
 - `VISION.md` — visión, ICP, planes, primer cliente smiletripcare, stack transferible, límites; **roadmap por fases (revisado 2026-04-04)** con Fase 1 (máx 1 semana), 2, 3, lista *Nunca* (K8s, Swarm, migrar Traefik/Supabase) y **regla:** antes de features nuevos → ¿tenants en producción > 0? si no, Fase 1
 - `AGENTS.md` — fuente de verdad por sesión; bloque de **cierre** para Cursor (actualizar 🔄, commit/push o `./scripts/update-agents.sh`, pegar URL raw al abrir la próxima sesión)
-- `.vscode/extensions.json` — extensiones recomendadas (ESLint, Prettier, Tailwind, TS, GitLens, Supabase, Thunder Client, etc.)
+- `.vscode/extensions.json` + **`.vscode/settings.json`** — extensiones recomendadas y ahorro/formato/ESLint/Copilot (español) al guardar
 - `.cursor/rules/opsly.mdc` — Fase 1 validación; prioridad `VISION.md` → `AGENTS.md` → `config/opsly.config.json`; consultar `docs/adr/` para arquitectura
 - `.claude/CLAUDE.md` — URLs raw de `AGENTS.md` y `VISION.md`
 - **GitHub:** repo `cloudsysops/opsly` **público** para que Claude u otros lean sin clonar; plantillas en `.github/` documentadas en `README-github-templates.md`
@@ -152,7 +164,8 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 - config/opsly.config.json (fuente de verdad central)
 - docs/ (ARCHITECTURE.md, TEST_PLAN.md, DNS_SETUP.md, VPS-ARCHITECTURE.md)
 - README.md completo
-- .githooks/ (pre-commit type-check, post-commit contexto) + plantillas GitHub
+- `.eslintrc.json`, `eslint.config.mjs` (ESLint monorepo, foco API)
+- .githooks/ (pre-commit: type-check + ESLint API staged; post-commit contexto) + plantillas GitHub
   (CODEOWNERS, issue forms, PR template, guía README-github-templates)
 - AGENTS.md (este archivo)
 - Auditoría secrets: `doppler secrets upload` desde `/opt/opsly/.env` (18 claves
@@ -184,6 +197,10 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 
 <!-- Una sola tarea concreta. Actualizar al final de cada sesión -->
 ```bash
+# Local — calidad API (opcional antes de commit):
+npx eslint "apps/api/**/*.ts" --max-warnings 0
+npm run type-check
+
 # Mac — comprobar prd sin imprimir valores:
 doppler secrets get GHCR_TOKEN --plain --project ops-intcloudsysops --config prd >/dev/null && echo "GHCR_TOKEN prd: OK"
 doppler secrets get GHCR_USER --plain --project ops-intcloudsysops --config prd >/dev/null && echo "GHCR_USER prd: OK"
@@ -280,6 +297,9 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 | 2026-04-05 | Listar paquetes org en GHCR requiere `read:packages` en token `gh` | Sin scope → HTTP 403 |
 | 2026-04-05 | `tools/usb-kit/` en repo: clon completo en USB; **disk3** = Ubuntu booteable (macOS); sin secretos en pen | Flujo rescate/otras máquinas alineado a `opsly.config.json` + `pen.local.json` opcional |
 | 2026-04-05 | Plantillas `.github/`: CODEOWNERS por equipo/ruta; issues en formulario YAML; PR con checklist validate-config + AGENTS + Terraform; Copilot con límites explícitos; `blank_issues_enabled: false` + enlace raw `AGENTS.md` | Gobernanza homogénea; workflows no tocados (`a82180e`) |
+| 2026-04-05 | ESLint en raíz con flat config + legacy compat; reglas estrictas solo donde aplica override API; `constants.ts` exento de `no-magic-numbers` | Un solo lugar de verdad lint; web/admin no bloqueados por el hook |
+| 2026-04-05 | Pre-commit: ESLint staged solo `apps/api/app` + `apps/api/lib` tras type-check | Feedback rápido sin forzar mismas reglas en admin/web |
+| 2026-04-05 | Errores Supabase en metrics: convertir `{message}` a `new Error()` para tipo `Error` | Corrige TS2741 en `firstMetricsError` |
 
 ---
 
@@ -306,7 +326,9 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 │   └── traefik/             # Estático + dynamic middlewares
 ├── scripts/                 # Operación, VPS, Doppler, sync-config
 ├── supabase/                # migrations, config CLI
-├── .vscode/                 # extensiones recomendadas
+├── .vscode/                 # extensions.json + settings.json (formato, ESLint, Copilot ES)
+├── .eslintrc.json           # reglas legacy + overrides API
+├── eslint.config.mjs        # ESLint 9 flat + compat
 ├── .cursor/rules/           # Reglas Cursor (opsly.mdc)
 ├── .claude/                 # Contexto Claude (CLAUDE.md)
 ├── .github/                 # workflows, espejo AGENTS/VISION/system_state, Copilot,
