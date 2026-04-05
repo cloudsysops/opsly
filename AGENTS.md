@@ -46,7 +46,7 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 
 <!-- Actualizar al final de cada sesión -->
 
-**Fecha última actualización:** 2026-04-05 (docs: inventario completo — contexto automático + gobernanza previa)
+**Fecha última actualización:** 2026-04-05 (intento deploy staging: audit VPS + Doppler; bloqueado por secretos)
 
 **Completado ✅**
 
@@ -100,9 +100,8 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 - `.github/copilot-instructions.md`, `.github/AGENTS.md` (espejo de este archivo)
 
 **En progreso 🔄**
-- Deploy staging VPS DigitalOcean
-- Refrescar `.env` en VPS desde Doppler tras el upload (`vps-bootstrap` o
-  `doppler secrets download`)
+- Deploy staging VPS DigitalOcean — **parado en secretos** (ver `context/system_state.json` → `deploy_staging`, `config/doppler-missing.txt`)
+- Refrescar `.env` en VPS desde Doppler tras corregir valores en Doppler (`vps-bootstrap` o `doppler secrets download`)
 - DNS: ops.smiletripcare.com → 157.245.223.7 ✅
 
 **Pendiente ⏳**
@@ -121,9 +120,12 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 
 <!-- Una sola tarea concreta. Actualizar al final de cada sesión -->
 ```bash
-# Paso actual:
+# 1) Pegar en Doppler (prd) valores COMPLETOS desde Supabase / Stripe (ver config/doppler-missing.txt).
+#    Generar REDIS_PASSWORD y PLATFORM_ADMIN_TOKEN fuertes; alinear REDIS_URL y NEXT_PUBLIC_PLATFORM_ADMIN_TOKEN.
+# 2) Cuando validate-config pase en verde:
 ./scripts/validate-config.sh
-# Si pasa: ssh vps-dragon@157.245.223.7 'cd /opt/opsly && ./scripts/vps-bootstrap.sh'
+# 3) ssh vps-dragon@157.245.223.7 'cd /opt/opsly && ./scripts/vps-bootstrap.sh'
+# 4) curl -s https://api.ops.smiletripcare.com/api/health
 ```
 
 ---
@@ -133,6 +135,7 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 <!-- Qué está roto o bloqueado ahora mismo -->
 
 - [x] Bulk upload Doppler desde VPS `.env` (lista audit) — hecho 2026-04-05
+- [ ] **Secretos Doppler prd válidos** (JWT/Stripe completos, no `eyJ...` truncados; `PLATFORM_ADMIN_TOKEN` / `REDIS_PASSWORD` reales) — audit 2026-04-05
 - [ ] Token de servicio Doppler en VPS (`/etc/doppler.env`)
 - [ ] `.env` en disco VPS sincronizado con Doppler tras el upload
 

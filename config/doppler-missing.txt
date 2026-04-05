@@ -8,6 +8,14 @@ NEXTAUTH_URL=             # URL pública de la app auth, ej. https://admin.ops.s
 # --- No debe vivir en Doppler (token de máquina) ---
 DOPPLER_TOKEN=            # Service token para el VPS: scripts/setup-doppler.sh (PROVISION_VPS=1) o Doppler Dashboard → Service Tokens → guardar en /etc/doppler.env en el servidor
 
+# --- Auditoría 2026-04-05 (deploy staging bloqueado) ---
+# No se ejecutó doppler secrets upload desde /opt/opsly/.env: muchas claves en el VPS están
+# truncadas (eyJ..., sk_... cortos) o son change-me; subirlas habría contaminado Doppler.
+# En Doppler prd, longitudes actuales (--plain) son inválidas para JWT/Stripe en
+# SUPABASE_SERVICE_ROLE_KEY, NEXT_PUBLIC_SUPABASE_ANON_KEY, STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET.
+# validate-config.sh reportó PLATFORM_ADMIN_TOKEN y REDIS_PASSWORD como placeholder.
+# Sustituir en Doppler con valores completos desde dashboards; luego vps-bootstrap / secrets download.
+
 # --- Si algo falló en validate-config, revisar en Doppler UI ---
 # SUPABASE_* / STRIPE_* / REDIS_PASSWORD / PLATFORM_ADMIN_TOKEN / ACME_EMAIL / TRAEFIK_DASHBOARD_BASIC_AUTH_USERS
 # deben ser valores reales de producción, no placeholders (.env del VPS se subió el 2026-04-05).
