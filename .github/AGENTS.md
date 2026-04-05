@@ -47,9 +47,21 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 
 <!-- Actualizar al final de cada sesión -->
 
-**Fecha última actualización:** 2026-04-05 (docs: GHCR playbook + scripts VPS en `main`)
+**Fecha última actualización:** 2026-04-05 (docs: sesión deploy VPS — AGENTS sincronizado)
 
 **Completado ✅**
+
+*Sesión agente Cursor — deploy staging VPS (2026-04-04 / 2026-04-05, cronología):*
+- **`./scripts/validate-config.sh`:** LISTO PARA DEPLOY (JSON, DNS, Doppler críticos, SSH VPS OK).
+- **`git pull` en `/opt/opsly`:** falló por `scripts/vps-first-run.sh` **untracked** (copia manual previa); merge abortado. Fix documentado: `cp scripts/vps-first-run.sh /tmp/…bak && rm scripts/vps-first-run.sh` luego `git pull origin main`.
+- **Post-pull:** `fast-forward` a `main` reciente (incluye `vps-bootstrap.sh`, `vps-first-run.sh` trackeados). Primer `./scripts/vps-bootstrap.sh` falló: **Doppler CLI no estaba en PATH** en el VPS.
+- **Doppler en VPS:** instalación vía `apt` requiere **root/sudo**; desde SSH no interactivo falló sin contraseña. Tras preparación en el servidor, **`doppler --version`** → `v3.75.3` (CLI operativa).
+- **Service token:** `doppler configs tokens create` **desde el VPS falló** (sin sesión humana); token creado **desde Mac** (`vps-production-token`, proyecto `ops-intcloudsysops` / `prd`) y `doppler configure set token … --scope /opt/opsly` en el VPS. **Rotar** token si hubo exposición en chat/logs.
+- **`doppler secrets --only-names` en VPS:** OK (lista completa de vars en `prd`).
+- **`./scripts/vps-bootstrap.sh`:** OK — `doppler secrets download` → `/opt/opsly/.env`, red `traefik-public`, directorios. En el resumen de nombres del `.env` apareció una línea **ajena a convención `KEY=VALUE`** (cadena tipo `wLzJ…`); revisar `.env` en VPS por líneas sueltas o valores sin clave.
+- **`./scripts/vps-first-run.sh`:** falló con **`denied`** al pull de `ghcr.io/cloudsysops/intcloudsysops-{api,admin}:latest` hasta tener **`docker login ghcr.io`**.
+- **Login GHCR desde Doppler:** script con `doppler secrets get GHCR_TOKEN` / `GHCR_USER` falló: **secretos no encontrados**. Comprobado en VPS y en Mac con `doppler secrets --only-names --project ops-intcloudsysops --config prd`: **no figuraban `GHCR_TOKEN` ni `GHCR_USER`** en esa config (añadir en **`prd`** con esos nombres exactos o verificar proyecto/config; hasta entonces login manual con PAT `read:packages` sigue siendo la vía).
+- **`context/system_state.json`:** actualizado en sesión anterior con bloqueo `git_pull_blocked_untracked` / `blocked_vps_git_merge` y `next_action` encadenado; **no** se marcó `deploy_staging.complete` ni health 200 porque el stack no quedó arriba.
 
 *Intento deploy staging → `https://api.ops.smiletripcare.com/api/health` (2026-04-05):*
 - **Paso 1 — Auditoría:** revisados `config/opsly.config.json` (sin secretos), `.env.local.example` (placeholders), `infra/docker-compose.platform.yml` (solo nombres de vars), y por SSH el árbol `.env*` bajo `/opt/opsly` (`.env`, `.env.example`, `.env.local.example`, `.env.swp`).
@@ -112,15 +124,15 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 - `.github/copilot-instructions.md`, `.github/AGENTS.md` (espejo de este archivo)
 
 **En progreso 🔄**
-- Deploy staging VPS — **parado en `docker login ghcr.io`** en el VPS (PAT `read:packages`); imágenes `ghcr.io/cloudsysops/intcloudsysops-*` privadas. `.env` en VPS alineado con Doppler vía `scp` (sesión anterior).
-- Tras login: `git pull` en `/opt/opsly` → `./scripts/vps-bootstrap.sh` (requiere CLI **doppler** en el VPS o seguir usando download+scp; bootstrap llama `doppler secrets download`).
+- Deploy staging VPS — **parado en autenticación GHCR:** `vps-first-run` necesita pull de imágenes privadas; falta **`docker login ghcr.io`** exitoso en el VPS (PAT `read:packages` o credenciales en Doppler `prd` como **`GHCR_USER` + `GHCR_TOKEN`** verificables con `doppler secrets get` en `ops-intcloudsysops` / `prd`).
+- Con Doppler CLI + token con scope `/opt/opsly`: **`./scripts/vps-bootstrap.sh`** ya puede regenerar `.env`; repetir tras añadir secretos nuevos en `prd`.
 - DNS: ops.smiletripcare.com → 157.245.223.7 ✅
 
 **Pendiente ⏳**
-- **GHCR:** PAT + `docker login ghcr.io` en VPS; opcional `GHCR_TOKEN` / `GHCR_USER` en Doppler `prd`
-- **`vps-bootstrap.sh` en VPS:** instalar [Doppler CLI](https://docs.doppler.com/docs/install-cli) en el servidor **o** adaptar bootstrap / seguir con download+`scp` del `.env`
-- Rotación opcional de tokens expuestos en chat; revisar Doppler UI (`ACME_EMAIL`, etc.)
-- `DOPPLER_TOKEN` de servicio en el VPS (`/etc/doppler.env`) — ver `config/doppler-missing.txt`
+- **GHCR:** confirmar `GHCR_TOKEN` y `GHCR_USER` en Doppler **`prd`** (nombres exactos) **o** login manual una vez en el VPS; luego `./scripts/vps-first-run.sh` y `curl` health.
+- Revisar `/opt/opsly/.env` por línea corrupta / nombre falso en listados de bootstrap.
+- Rotación de tokens de servicio Doppler / PAT si hubo exposición en historial.
+- `DOPPLER_TOKEN` en `/etc/doppler.env` — opcional si se usa solo `doppler configure set token --scope` (como en esta sesión).
 - `NEXTAUTH_*`: no usado en el código actual; ver `doppler-missing.txt`
 - Primer tenant de prueba: smiletripcare
 
@@ -130,12 +142,15 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 
 <!-- Una sola tarea concreta. Actualizar al final de cada sesión -->
 ```bash
-# 0) En VPS: cd /opt/opsly && git pull origin main
-# 1) En el VPS: echo TOKEN | docker login ghcr.io -u GITHUB_USER --password-stdin  → Login Succeeded
-# 2) (Opcional) doppler secrets set GHCR_TOKEN GHCR_USER en prd
-# 3) En VPS: ./scripts/vps-bootstrap.sh   # requiere doppler en PATH en servidor; si no, scp .env
-# 4) En VPS: ./scripts/vps-first-run.sh
-# 5) curl -sf https://api.ops.smiletripcare.com/api/health
+# En Mac: doppler secrets get GHCR_TOKEN --plain --project ops-intcloudsysops --config prd  # debe existir
+# En VPS:
+cd /opt/opsly
+GHCR_TOKEN=$(doppler secrets get GHCR_TOKEN --plain)
+GHCR_USER=$(doppler secrets get GHCR_USER --plain)
+echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_USER" --password-stdin   # → Login Succeeded
+./scripts/vps-first-run.sh
+curl -sf https://api.ops.smiletripcare.com/api/health | jq .
+# Local tras health OK: actualizar context/system_state.json + ./scripts/update-agents.sh
 ./scripts/validate-config.sh   # debe seguir en LISTO PARA DEPLOY
 ```
 
@@ -147,9 +162,9 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 
 - [x] Bulk upload Doppler desde VPS `.env` (lista audit) — hecho 2026-04-05
 - [x] **validate-config** → LISTO PARA DEPLOY (2026-04-05, tras tokens plataforma/Redis + imágenes GHCR en Doppler)
-- [ ] **GHCR:** `docker login ghcr.io` en el VPS o imágenes públicas — bloquea `vps-first-run`
-- [x] **`.env` VPS** alineado con Doppler (2026-04-05 vía `doppler secrets download` + `scp`; repetir tras cambios en prd)
-- [ ] Token de servicio Doppler en VPS (`/etc/doppler.env`) — opcional si se usa solo `scp`
+- [ ] **GHCR:** `docker login ghcr.io` en el VPS con credenciales válidas — bloquea `vps-first-run` hasta entonces. Si se usan secretos Doppler, deben existir en **`prd`** como `GHCR_TOKEN` / `GHCR_USER` (verificado 2026-04-05: API aún no los listaba en `prd`; corregir en UI o nombre/config).
+- [x] **`.env` VPS** alineado con Doppler vía **`vps-bootstrap.sh`** + Doppler en VPS (sesión 2026-04-05); repetir bootstrap tras cambios en `prd`
+- [x] **Doppler CLI + token con scope `/opt/opsly`** en VPS (sesión 2026-04-05) — alternativa a solo `scp`
 
 ---
 
@@ -207,6 +222,9 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 | 2026-04-05 | Deploy `.env` al VPS sin Doppler CLI: `doppler secrets download` local + `scp` | VPS no tenía `doppler` en PATH; `vps-bootstrap.sh` ausente en disco remoto |
 | 2026-04-05 | Stack bloqueado hasta `docker login ghcr.io` en VPS | Pull `ghcr.io/cloudsysops/*` devolvió `denied` |
 | 2026-04-05 | `vps-bootstrap.sh` + `vps-first-run.sh` en git (`9cb18cb`) | El VPS puede `git pull`; antes faltaban en disco remoto |
+| 2026-04-05 | Untracked `scripts/vps-first-run.sh` en VPS bloquea `git pull` | Git no puede sobrescribir archivo sin track; backup + `rm` antes de merge |
+| 2026-04-05 | Service token Doppler creado en Mac si falla `tokens create` en VPS | VPS sin login humano a Doppler; `configure set token --scope /opt/opsly` |
+| 2026-04-05 | `doppler secrets get GHCR_*` debe coincidir con secretos en `prd` | Login GHCR automatizado solo si nombres y config son correctos en Doppler UI |
 
 ---
 
