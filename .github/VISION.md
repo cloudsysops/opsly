@@ -99,3 +99,48 @@ Escalar = más VPS, no más complejidad.
 - Usar `any` en TypeScript
 - Crear scripts no idempotentes
 - Tomar decisiones de arquitectura sin documentarlas en AGENTS.md
+
+## Roadmap por fases (revisado 2026-04-04)
+
+### Fase 1 — Validación (AHORA, máx 1 semana)
+
+Objetivo: un tenant real corriendo en producción.
+
+- [ ] validate-config.sh verde
+- [ ] vps-bootstrap.sh sin errores
+- [ ] curl https://api.ops.smiletripcare.com/api/health → 200
+- [ ] tenant smiletripcare: n8n + Uptime Kuma accesibles
+- [ ] Stripe webhook recibiendo eventos
+- [ ] Backup automático corriendo
+
+### Fase 2 — Producto (post-validación)
+
+Objetivo: onboarding sin intervención manual.
+
+- [ ] Stripe → webhook → tenant desplegado automáticamente
+- [ ] Dashboard admin operativo
+- [ ] Redis memory layer para contexto de agentes
+- [ ] Emails transaccionales (Resend)
+- [ ] Segundo cliente real
+
+### Fase 3 — Escala (cuando Fase 2 esté estable)
+
+Objetivo: plataforma que vende sola.
+
+- [ ] Self-service completo
+- [ ] Observabilidad: métricas por tenant
+- [ ] Vector DB para memoria semántica de agentes
+- [ ] API docs públicas
+- [ ] Multi-VPS si el primero no alcanza
+
+### Nunca (decisiones fijas)
+
+- Kubernetes
+- Docker Swarm
+- Migrar de Traefik
+- Migrar de Supabase
+
+## Regla para agentes
+
+Antes de proponer cualquier feature nuevo, verificar:
+¿Tenants en producción > 0? Si no → volver a Fase 1.
