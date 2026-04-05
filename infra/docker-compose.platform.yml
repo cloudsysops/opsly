@@ -25,6 +25,9 @@ services:
     # Traefik v3.3+ negocia la API del daemon Docker de forma dinámica (compatible con Engine 29.x); evitar v3.1 con daemons que exigen mínimo ≥1.40.
     environment:
       - TRAEFIK_CERTIFICATESRESOLVERS_LETSENCRYPT_ACME_EMAIL=${ACME_EMAIL}
+      - DOCKER_API_VERSION=1.40
+    command:
+      - "--providers.docker.endpoint=unix:///var/run/docker.sock"
     # Socket en solo lectura: el provider Docker solo necesita observar el daemon (ver ADR-005).
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
