@@ -53,7 +53,7 @@ services:
       start_period: 10s
 
   app:
-    image: ${APP_IMAGE:-ghcr.io/tu-org/intcloudsysops-api:latest}
+    image: ${APP_IMAGE:-ghcr.io/cloudsysops/intcloudsysops-api:latest}
     env_file:
       - ../.env
     environment:
@@ -62,7 +62,7 @@ services:
       TEMPLATE_PATH: /opt/opsly/templates/docker-compose.tenant.yml.tpl
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ${PLATFORM_TENANTS_HOST_PATH:-/home/vps-dragon/opsly/tenants}:/opt/opsly/tenants
+      - ${PLATFORM_TENANTS_HOST_PATH:-/opt/opsly/tenants}:/opt/opsly/tenants
       - ./templates:/opt/opsly/templates:ro
     depends_on:
       redis:
@@ -84,7 +84,7 @@ services:
       replicas: 2
 
   admin:
-    image: ${ADMIN_APP_IMAGE:-ghcr.io/tu-org/intcloudsysops-admin:latest}
+    image: ${ADMIN_APP_IMAGE:-ghcr.io/cloudsysops/intcloudsysops-admin:latest}
     container_name: opsly_admin
     env_file:
       - ../.env
