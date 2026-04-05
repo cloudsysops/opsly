@@ -1,17 +1,17 @@
 {
-  "last_updated": "2026-04-05",
+  "last_updated": "2026-04-04",
   "phase": "fase-1-validacion",
   "vps": {
     "ip": "157.245.223.7",
     "user": "vps-dragon",
     "repo": "/opt/opsly",
-    "status": "needs_ghcr_auth",
-    "notes": "vps-bootstrap.sh no existe en disco remoto (solo en repo local sin track); se usó doppler secrets download en Mac + scp a /opt/opsly/.env. vps-first-run.sh falló: docker pull ghcr.io/cloudsysops/* denied — hace falta docker login ghcr.io en el VPS (PAT read:packages) o imágenes públicas."
+    "status": "git_pull_blocked_untracked",
+    "notes": "2026-04-04: git pull origin main abortó: untracked scripts/vps-first-run.sh en /opt/opsly sería sobrescrito por merge (copia manual previa). Resolver en VPS (rm/mv el archivo o git clean) y repetir pull → vps-bootstrap. GHCR login sigue siendo requisito previo conocido para first-run si no estaba hecho."
   },
   "deploy_staging": {
     "api_health_url": "https://api.ops.smiletripcare.com/api/health",
-    "status": "blocked_ghcr_pull",
-    "notes": "2026-04-05: validate-config → LISTO PARA DEPLOY. Doppler: PLATFORM_ADMIN_TOKEN, REDIS_*, APP_IMAGE/ADMIN_APP_IMAGE corregidos en prd. .env VPS sustituido desde Doppler. Stack no levantó por GHCR denied. Health público (curl -k): 404 (sin app nueva o ruta distinta)."
+    "status": "blocked_vps_git_merge",
+    "notes": "2026-04-04: No se ejecutó bootstrap/first-run; pull falló antes. Tras limpiar untracked en VPS: pull, bootstrap, first-run, health."
   },
   "doppler": {
     "project": "ops-intcloudsysops",
@@ -25,7 +25,7 @@
     "status": "ok"
   },
   "tenants": [],
-  "next_action": "En VPS: docker login ghcr.io (usuario GitHub, PAT read:packages) → cd /opt/opsly && bash scripts/vps-first-run.sh; opcional: git pull / añadir vps-bootstrap.sh al repo y en servidor.",
+  "next_action": "En VPS: eliminar o mover scripts/vps-first-run.sh (untracked) o integrarlo; cd /opt/opsly && git pull origin main && ./scripts/vps-bootstrap.sh. Luego docker login ghcr.io si aún falta, ./scripts/vps-first-run.sh, curl health.",
   "repo": {
     "apps": [
       "admin",
