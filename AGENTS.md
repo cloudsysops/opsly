@@ -11,10 +11,11 @@
 **Al abrir una sesión nueva conmigo (otro agente / otro dispositivo):**
 
 1. Asegúrate de que `AGENTS.md` en `main` está actualizado (último commit en GitHub).
-2. Pega en el chat la **URL raw** del archivo para que el agente lo cargue sin clonar:
+2. **Contexto:** lee `VISION.md` una vez (el norte del producto); lee `AGENTS.md` siempre (estado de la sesión). Ante decisiones de arquitectura, verifica alineación con `VISION.md` y documéntalas aquí.
+3. Pega en el chat la **URL raw** del archivo para que el agente lo cargue sin clonar:
    - Formato: `https://raw.githubusercontent.com/<org>/<repo>/<branch>/AGENTS.md`
    - Ejemplo: `https://raw.githubusercontent.com/cloudsysops/opsly/main/AGENTS.md`
-3. Pide explícitamente: *«Lee el contenido de esa URL y actúa según AGENTS.md»*.
+4. Pide explícitamente: *«Lee el contenido de esa URL y actúa según AGENTS.md»*.
 
 **Al cerrar la sesión con Cursor — díselo tal cual (copiar/pegar):**
 
@@ -40,9 +41,14 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 
 <!-- Actualizar al final de cada sesión -->
 
-**Fecha última actualización:** 2026-04-05 (instrucciones equipo + agentes)
+**Fecha última actualización:** 2026-04-05 (contexto agentes: VISION + extensiones)
 
 **Completado ✅**
+- `VISION.md` (visión, fases, primer cliente, stack transferible, límites para agentes)
+- `.vscode/extensions.json` (recomendaciones Cursor/VS Code)
+- `.cursor/rules/opsly.mdc` (visión del producto + prioridad de archivos de contexto)
+- `.claude/CLAUDE.md` (contexto adicional + URL raw VISION)
+- `scripts/update-agents.sh` (sync `VISION.md` → `.github/VISION.md` + `git add`)
 - Supabase migrations (schema platform, tenants, RLS, subscriptions)
 - apps/api/lib/ (supabase, stripe, docker, doppler, notifications, email,
   orchestrator, auth, validation)
@@ -174,11 +180,13 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 │   └── traefik/             # Estático + dynamic middlewares
 ├── scripts/                 # Operación, VPS, Doppler, sync-config
 ├── supabase/                # migrations, config CLI
+├── .vscode/                 # extensiones recomendadas
 ├── .cursor/rules/           # Reglas Cursor (opsly.mdc)
 ├── .claude/                 # Contexto Claude (CLAUDE.md)
-├── .github/                 # workflows, AGENTS.md espejo, Copilot, plantillas
+├── .github/                 # workflows, AGENTS.md + VISION.md espejo, Copilot, plantillas
 ├── .githooks/               # pre-commit (type-check), opcional Husky
 ├── package.json             # workspaces + turbo
 ├── README.md
+├── VISION.md                # Norte del producto (fases, ICP, límites agentes)
 └── AGENTS.md                # Este archivo
 ```

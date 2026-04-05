@@ -33,3 +33,13 @@ Si no tienes esa URL al iniciar, pídela antes de continuar.
 | AGENTS.md | Memoria compartida entre sesiones |
 | Doppler | Secrets (nunca en repo) |
 | GitHub | Código + historial de AGENTS.md |
+
+## Contexto adicional disponible
+
+Además de AGENTS.md, puedes pedir:
+
+- `VISION.md` → objetivos y fases del producto
+- `config/opsly.config.json` → configuración técnica actual
+
+URL raw VISION.md:  
+https://raw.githubusercontent.com/cloudsysops/opsly/main/VISION.md

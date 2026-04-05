@@ -64,3 +64,15 @@ Ejecuta siempre:
 2. `git add AGENTS.md && git commit -m "docs(agents): sesión YYYY-MM-DD" && git push origin main`
 3. Responde con la URL raw:  
    `https://raw.githubusercontent.com/cloudsysops/opsly/main/AGENTS.md`
+
+## Visión del producto
+
+Lee `VISION.md` antes de proponer cualquier cambio de arquitectura.
+Cada decisión técnica debe alinearse con los objetivos de la fase actual.
+Fase actual: **FASE 1 — Validación**.
+
+## Prioridad de archivos de contexto
+
+1. `VISION.md` → el norte (no cambia frecuentemente)
+2. `AGENTS.md` → el estado actual (cambia cada sesión)
+3. `config/opsly.config.json` → la verdad técnica (cambia con infra)
