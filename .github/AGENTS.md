@@ -45,17 +45,24 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 
 <!-- Actualizar al final de cada sesión -->
 
-**Fecha última actualización:** 2026-04-05 (gobernanza: ADRs + prompts + system_state)
+**Fecha última actualización:** 2026-04-05 (consolidación: contexto IA + gobernanza + roadmap VISION)
 
 **Completado ✅**
+
+*Contexto y flujo para agentes (abr 2026):*
+- `VISION.md` — visión, ICP, planes, primer cliente smiletripcare, stack transferible, límites; **roadmap por fases (revisado 2026-04-04)** con Fase 1 (máx 1 semana), 2, 3, lista *Nunca* (K8s, Swarm, migrar Traefik/Supabase) y **regla:** antes de features nuevos → ¿tenants en producción > 0? si no, Fase 1
+- `AGENTS.md` — fuente de verdad por sesión; bloque de **cierre** para Cursor (actualizar 🔄, commit/push o `./scripts/update-agents.sh`, pegar URL raw al abrir la próxima sesión)
+- `.vscode/extensions.json` — extensiones recomendadas (ESLint, Prettier, Tailwind, TS, GitLens, Supabase, Thunder Client, etc.)
+- `.cursor/rules/opsly.mdc` — Fase 1 validación; prioridad `VISION.md` → `AGENTS.md` → `config/opsly.config.json`; consultar `docs/adr/` para arquitectura
+- `.claude/CLAUDE.md` — URLs raw de `AGENTS.md` y `VISION.md`
+- **GitHub:** repo `cloudsysops/opsly` **público** para que Claude u otros lean sin clonar
 - `docs/adr/` — ADR-001 (compose por tenant), ADR-002 (Traefik v3), ADR-003 (Doppler), ADR-004 (Supabase schema por tenant)
 - `agents/prompts/` — `claude-architect.md`, `cursor-executor.md`
-- `context/system_state.json` — snapshot operativo (fase, VPS, Doppler, DNS, next_action); espejo en `.github/system_state.json` vía `update-agents.sh`
-- `VISION.md` (visión, fases, primer cliente, stack transferible, límites para agentes)
-- `.vscode/extensions.json` (recomendaciones Cursor/VS Code)
-- `.cursor/rules/opsly.mdc` (visión del producto + prioridad de archivos de contexto)
-- `.claude/CLAUDE.md` (contexto adicional + URL raw VISION)
-- `scripts/update-agents.sh` (sync `VISION.md` → `.github/VISION.md` + `git add`)
+- `context/system_state.json` — fase `fase-1-validacion`, `next_action` `./scripts/validate-config.sh`, VPS/DNS/Doppler; espejo `.github/system_state.json` vía `update-agents.sh`
+- `.gitignore` — `context/doppler-ready.json`, `agents/prompts/secrets-*.md` (sin secretos en repo)
+- `scripts/update-agents.sh` — copia `AGENTS.md`, `VISION.md`, `context/system_state.json` → `.github/`; `git add` de espejos y `docs/adr/`, `agents/` (sin `git add .github/` completo)
+
+*Código e infra en repo (resumen):*
 - Supabase migrations (schema platform, tenants, RLS, subscriptions)
 - apps/api/lib/ (supabase, stripe, docker, doppler, notifications, email,
   orchestrator, auth, validation)
@@ -79,9 +86,7 @@ con facturación Stripe, backups automáticos y dashboard de administración.
   `config/opsly.config.json` (2026-04-05)
 - `config/doppler-missing.txt` (instrucciones para claves no aplicables o token de
   servicio)
-- Instrucciones humano + IA: `.cursor/rules/opsly.mdc`, `.claude/CLAUDE.md`,
-  `.github/copilot-instructions.md`, `.github/AGENTS.md` (espejo de este archivo),
-  `scripts/update-agents.sh` (sync espejo + commit/push)
+- `.github/copilot-instructions.md`, `.github/AGENTS.md` (espejo de este archivo)
 
 **En progreso 🔄**
 - Deploy staging VPS DigitalOcean
@@ -168,6 +173,8 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 | 2026-04 | sync-config redirige stdout de `doppler secrets set` a /dev/null | No volcar tablas con valores en logs compartidos |
 | 2026-04 | Dashboard Traefik en `traefik.${PLATFORM_DOMAIN}` | Reservar `admin.*` para la app Admin Opsly |
 | 2026-04-04 | ADR-001 a ADR-004 documentadas en `docs/adr/` | Gobernanza explícita; agentes no reabren K8s/Swarm/nginx sin ADR nuevo |
+| 2026-04 | Repo GitHub `cloudsysops/opsly` en visibilidad **public** | Lectura por URL raw / Claude sin credenciales |
+| 2026-04-04 | Roadmap realista en `VISION.md` (fases + *Nunca* + regla tenants) | Alinear trabajo a validación antes de producto |
 
 ---
 
