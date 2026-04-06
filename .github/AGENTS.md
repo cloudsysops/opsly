@@ -47,9 +47,17 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 
 <!-- Actualizar al final de cada sesión -->
 
-**Fecha última actualización:** 2026-04-06 — CORS API + build-args admin/CI + sincronización de este `AGENTS.md` (commit `docs: update AGENTS.md 2026-04-06`).
+**Fecha última actualización:** 2026-04-07 — Portal cliente `apps/portal` integrado en repo; **pendiente** deploy GHCR/VPS y prueba con invitación (p. ej. tenant `peskids`).
 
 **Completado ✅**
+
+*Portal cliente `apps/portal` (2026-04-07):*
+- Next.js 15, tema dark `#0a0a0a`, rutas: `/login`, `/invite/[token]` (activación con OTP o `?code=`), `/dashboard` (selector developer/managed con persistencia en `user_metadata.mode`), `/dashboard/developer`, `/dashboard/managed`.
+- Auth Supabase solo por **invitación** (sin registro público). Cliente usa `GET /api/portal/me` con Bearer.
+- API: `GET /api/portal/me`, `POST /api/portal/mode`, invitaciones `POST /api/invitations` (admin + Resend). Ruta legacy `GET /api/portal/tenant` **eliminada** (sustituida por `/me`).
+- CORS en API: `apps/api/middleware.ts` + `lib/cors-origins.ts` (orígenes admin + portal según `PLATFORM_DOMAIN` / env); sin duplicar headers CORS en `next.config` para `/api`.
+- Imagen `ghcr.io/cloudsysops/intcloudsysops-portal:latest`, puerto **3002**, `standalone`, `CMD ["node","server.js"]`; `deploy.yml` con build-args `NEXT_PUBLIC_SUPABASE_*`, `NEXT_PUBLIC_API_URL`, `NEXT_PUBLIC_PLATFORM_DOMAIN`, `NEXT_PUBLIC_SUPPORT_EMAIL` (opcional; en UI managed si falta se muestra aviso de configuración).
+- Compose: servicio `portal` en red **`traefik-public`** (sin `internal`) para permitir salida HTTPS a Supabase y API pública.
 
 *CORS + `NEXT_PUBLIC_*` en build admin + `deploy.yml` (2026-04-06, commit `8f12487` `fix(admin): add CORS headers and Supabase build args`, pusheado a `main`):*
 - **Problema:** el navegador en `admin.${PLATFORM_DOMAIN}` hacía `fetch` a `api.${PLATFORM_DOMAIN}` y la API rechazaba por **CORS**.
@@ -299,6 +307,7 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 - Build artifacts: Ready for GHCR push
 
 **En progreso 🔄**
+- **Deploy portal:** run **Deploy** en GitHub tras push (imagen `intcloudsysops-portal`); en VPS `docker compose … pull` + `up -d` incluyendo servicio **`portal`**; validar `https://portal.ops.smiletripcare.com/login` y flujo invite.
 - **Secretos GitHub** `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `PLATFORM_DOMAIN` definidos en `cloudsysops/opsly` y **Deploy** verde para que la imagen admin incluya Supabase/API URL y la API CORS el origen admin correcto.
 - **Despliegue Admin + API lectura demo en VPS:** variables `ADMIN_PUBLIC_DEMO_READ=true` y nuevas imágenes GHCR; validar dashboard, `/api/metrics/system` y consola del navegador (CORS + `NEXT_PUBLIC_*`).
 - **CI “Nightly code quality” (`nightly-fix.yml`):** probar con *Actions → Run workflow*; el cron solo corre con el workflow en la rama por defecto (`main`).
@@ -322,20 +331,15 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 <!-- Una sola tarea concreta. Actualizar al final de cada sesión -->
 
 ```bash
-# ✅ STAGING VERDE — Health OK
-# ✅ Primer tenant smiletripcare onboarded (2026-04-06) — n8n + Uptime OK; secretos n8n en Doppler prd
-# ✅ CORS + build-args admin/API en main (2026-04-06) — commit 8f12487
+# Portal en main (2026-04-07) — pendiente deploy y prueba en staging.
 
-# Secretos GitHub (una vez, desde valores Doppler prd):
-# gh secret set NEXT_PUBLIC_SUPABASE_URL --repo cloudsysops/opsly
-# gh secret set NEXT_PUBLIC_SUPABASE_ANON_KEY --repo cloudsysops/opsly
-# gh secret set PLATFORM_DOMAIN --repo cloudsysops/opsly
+# 1. Tras push: Actions → Deploy verde (imágenes api, admin, portal). En VPS: compose pull + up traefik app admin portal.
+# 2. Opcional: gh secret set NEXT_PUBLIC_SUPPORT_EMAIL --repo cloudsysops/opsly (correo soporte visible en modo managed).
+# 3. Invitación de prueba: POST /api/invitations con x-admin-token → tenant peskids (email acordado).
+# 4. Validar https://portal.ops.smiletripcare.com (login + email de invitación → /invite → /dashboard).
 
-# Próximo paso inmediato:
-# 1. Tras push/deploy: abrir https://admin.ops.smiletripcare.com/dashboard — sin errores CORS ni Supabase en consola.
-# 2. En VPS: ADMIN_PUBLIC_DEMO_READ=true en /opt/opsly/.env, docker compose pull + up app admin si hace falta nueva imagen.
-# 3. Validar métricas: Prometheus vía host.docker.internal desde app; si no, aviso «datos simulados» en dashboard.
-# 4. (Opcional) Admin cerrado: NEXT_PUBLIC_ADMIN_PUBLIC_DEMO=false en build y quitar ADMIN_PUBLIC_DEMO_READ en app.
+# Admin / API (sigue aplicando):
+# gh secret set NEXT_PUBLIC_SUPABASE_URL / NEXT_PUBLIC_SUPABASE_ANON_KEY / PLATFORM_DOMAIN si faltan.
 ```
 
 ---
