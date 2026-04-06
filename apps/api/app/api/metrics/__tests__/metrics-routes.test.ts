@@ -55,7 +55,10 @@ function mockTenantCountClient(
                 return Promise.resolve({ count: counts.active, error: null });
               }
               if (field === "status" && val === "suspended") {
-                return Promise.resolve({ count: counts.suspended, error: null });
+                return Promise.resolve({
+                  count: counts.suspended,
+                  error: null,
+                });
               }
               if (field === "plan" && val === "startup") {
                 return Promise.resolve({ count: counts.startup, error: null });
@@ -64,7 +67,10 @@ function mockTenantCountClient(
                 return Promise.resolve({ count: counts.business, error: null });
               }
               if (field === "plan" && val === "enterprise") {
-                return Promise.resolve({ count: counts.enterprise, error: null });
+                return Promise.resolve({
+                  count: counts.enterprise,
+                  error: null,
+                });
               }
               return Promise.resolve({ count: 0, error: null });
             },

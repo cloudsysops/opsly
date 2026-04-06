@@ -35,9 +35,7 @@ describe("GET /api/health", () => {
   it("marks redis ok when REDIS_URL is set", async () => {
     process.env.REDIS_URL = "redis://localhost:6379";
     process.env.NEXT_PUBLIC_SUPABASE_URL = "https://proj.supabase.co";
-    vi.mocked(fetch).mockResolvedValue(
-      new Response(null, { status: 200 }),
-    );
+    vi.mocked(fetch).mockResolvedValue(new Response(null, { status: 200 }));
 
     const res = await GET();
     const body = (await res.json()) as Record<string, unknown>;

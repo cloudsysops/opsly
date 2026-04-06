@@ -60,7 +60,10 @@ describe("POST /api/tenants/:id/suspend", () => {
   });
 
   it("returns 401 without token", async () => {
-    const res = await suspendPost(new Request("http://x", { method: "POST" }), params(UUID));
+    const res = await suspendPost(
+      new Request("http://x", { method: "POST" }),
+      params(UUID),
+    );
     expect(res.status).toBe(401);
   });
 
@@ -135,7 +138,10 @@ describe("POST /api/tenants/:id/resume", () => {
   });
 
   it("returns 401 without token", async () => {
-    const res = await resumePost(new Request("http://x", { method: "POST" }), params(UUID));
+    const res = await resumePost(
+      new Request("http://x", { method: "POST" }),
+      params(UUID),
+    );
     expect(res.status).toBe(401);
   });
 

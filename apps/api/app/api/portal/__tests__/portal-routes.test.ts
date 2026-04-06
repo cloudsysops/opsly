@@ -10,7 +10,8 @@ vi.mock("../../../../lib/portal-auth", () => ({
 }));
 
 vi.mock("../../../../lib/portal-me", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("../../../../lib/portal-me")>();
+  const actual =
+    await importOriginal<typeof import("../../../../lib/portal-me")>();
   return {
     ...actual,
     fetchPortalTenantRowBySlug: vi.fn(),
