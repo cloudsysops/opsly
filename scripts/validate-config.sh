@@ -142,6 +142,28 @@ if command -v doppler >/dev/null 2>&1 && doppler me >/dev/null 2>&1; then
   else
     echo "⚠️  Revisa Doppler: doppler secrets --project ${DOPPLER_PROJECT} --config ${DOPPLER_CFG}"
   fi
+
+  # Invitaciones portal (Resend): claves reales suelen ser largas (re_…); valores cortos provocan "API key is invalid".
+  RESEND_KEY="$(
+    doppler secrets get RESEND_API_KEY --project "${DOPPLER_PROJECT}" --config "${DOPPLER_CFG}" --plain 2>/dev/null || true
+  )"
+  RESEND_MIN_LEN=20
+  if [[ -n "${RESEND_KEY}" ]] && (( ${#RESEND_KEY} < RESEND_MIN_LEN )); then
+    echo "⚠️  RESEND_API_KEY en Doppler parece placeholder (longitud ${#RESEND_KEY} < ${RESEND_MIN_LEN}) — POST /api/invitations fallará hasta poner clave de resend.com"
+  elif [[ -z "${RESEND_KEY}" ]]; then
+    echo "⚠️  RESEND_API_KEY vacía en Doppler — invitaciones por email no funcionarán"
+  fi
+  RESEND_FROM="$(
+    doppler secrets get RESEND_FROM_EMAIL --project "${DOPPLER_PROJECT}" --config "${DOPPLER_CFG}" --plain 2>/dev/null || true
+  )"
+  if [[ -z "${RESEND_FROM}" ]]; then
+    RESEND_FROM="$(
+      doppler secrets get RESEND_FROM_ADDRESS --project "${DOPPLER_PROJECT}" --config "${DOPPLER_CFG}" --plain 2>/dev/null || true
+    )"
+  fi
+  if [[ -z "${RESEND_FROM}" ]] && [[ -n "${RESEND_KEY}" ]]; then
+    echo "⚠️  Falta RESEND_FROM_EMAIL o RESEND_FROM_ADDRESS en Doppler — la API puede responder 500 al invitar"
+  fi
 else
   echo "⚠️  Doppler CLI no autenticado — no se validaron secretos remotos"
 fi

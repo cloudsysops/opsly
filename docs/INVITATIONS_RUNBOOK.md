@@ -58,7 +58,7 @@ Campos opcionales: `name` (sobrescribe el nombre mostrado en el email; por defec
 | **403 Forbidden** | Email no coincide con `owner_email` | Consultar `platform.tenants` por slug; alinear email en el POST |
 | **404 Tenant not found** | Slug mal escrito o tenant borrado (`deleted_at`) | Verificar slug en Supabase |
 | **500** + mensaje Resend | API key, dominio de envío, cuota | Dashboard Resend; `RESEND_API_KEY` / `RESEND_FROM_*` en Doppler `prd` + bootstrap VPS + `compose up --force-recreate app` |
-| **500** + `API key is invalid` | `RESEND_API_KEY` revocada, de otro entorno o copiada mal | Crear clave nueva en Resend → `doppler secrets set RESEND_API_KEY=… --project ops-intcloudsysops --config prd` → bootstrap en VPS → recrear `app` |
+| **500** + `API key is invalid` | Clave revocada, mal copiada o **placeholder corto** en Doppler (p. ej. solo `re_…` de 6 caracteres) | Clave **completa** desde [resend.com/api-keys](https://resend.com/api-keys); `./scripts/validate-config.sh` avisa si longitud &lt; 20; luego bootstrap VPS + recrear `app` |
 | **500** + Supabase | `generateLink` rechazado (usuario existe, política, etc.) | Logs API; revisar usuario en Auth |
 | **No llega el email** | Spam, bloqueo, remitente no verificado | Resend logs; probar otro buzón |
 | **CORS en navegador** | Solo aplica si llamas la API desde browser | Invitaciones deben hacerse **server-side** o desde admin con origen permitido |
