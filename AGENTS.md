@@ -47,11 +47,12 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 
 <!-- Actualizar al final de cada sesión -->
 
-**Fecha última actualización:** 2026-04-06 — Consolidación en `AGENTS.md` de la sesión portal: app **`apps/portal`**, API **`GET /api/portal/me`** (fix frente a `/tenant`), CORS middleware, Docker **3002** + Traefik + **`deploy.yml`**, hook **`usePortalTenant`**, doc y espejo `.github/AGENTS.md`; todo en **`main`** (`cloudsysops/opsly`). **Pendiente:** deploy portal en VPS + E2E + invitación **`peskids`**.
+**Fecha última actualización:** 2026-04-06 — Deploy **verde** (`gh run 24039567533`, commit **`c93c200`**): pull GHCR en VPS con **`github.token` + `github.actor`** (PAT `GHCR_*` daba 403 en manifiestos privados). Antes **`6bea49d`**: logout GHCR + pulls secuenciales desde `docker compose config --images`. **`https://api.ops.smiletripcare.com/api/health`** → `{"status":"ok"}`. **Pendiente:** E2E portal + invitación **`peskids`**.
 
 **Completado ✅**
 
 *Sesión Cursor — qué se hizo (orden aproximado):*
+0. **GHCR deploy 2026-04-06 (tarde)** — Auditoría: paquetes `intcloudsysops-{api,admin,portal}` existen y son privados; 403 no era “solo portal” sino PAT sin acceso efectivo a manifiestos. **`deploy.yml`**: login en VPS con token del workflow; pulls alineados al compose.
 1. **Scaffold portal** — `apps/portal` (Next 15, Tailwind, login, `/invite/[token]`, dashboards developer/managed, `middleware`, libs Supabase, `output: standalone`, sin `any`).
 2. **API** — `GET /api/portal/me`, `POST /api/portal/mode`, invitaciones `POST /api/invitations` + Resend; **`lib/portal-me.ts`**, **`portal-auth.ts`**, **`cors-origins.ts`**, **`apps/api/middleware.ts`**.
 3. **Corrección crítica** — El cliente ya llamaba **`/api/portal/me`** pero la API exponía solo **`/tenant`** → handler movido a **`app/api/portal/me/route.ts`**, eliminado **`tenant`**, imports relativos corregidos (`../../../../lib/...`); **`npm run type-check`** en verde.
@@ -80,7 +81,7 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 **Infra / CI**
 - **`apps/portal/Dockerfile`**: multi-stage, standalone, `EXPOSE 3002`, `node server.js`; build-args `NEXT_PUBLIC_SUPABASE_*`, `NEXT_PUBLIC_API_URL` (y los que defina `deploy.yml`).
 - **`infra/docker-compose.platform.yml`**: servicio **`portal`**, Traefik `Host(\`portal.${PLATFORM_DOMAIN}\`)`, TLS, puerto contenedor **3002**, vars `NEXT_PUBLIC_*`; red acorde al compose actual (p. ej. `traefik-public` para el router).
-- **`.github/workflows/deploy.yml`** y **`ci.yml`**: type-check/lint/build del workspace **portal**; imagen **`ghcr.io/cloudsysops/intcloudsysops-portal:latest`** en paralelo con api/admin.
+- **`.github/workflows/deploy.yml`** y **`ci.yml`**: type-check/lint/build del workspace **portal**; imagen **`ghcr.io/cloudsysops/intcloudsysops-portal:latest`** en paralelo con api/admin; job **deploy** hace `docker login ghcr.io` en el VPS con **`github.token`** y **`github.actor`** (paquetes ligados al repo).
 
 **Calidad**
 - `npm run type-check` (Turbo) en verde antes de commit; ESLint en rutas API portal (`me`, `mode`) y **`lib/portal-me.ts`**; pre-commit acotado a `apps/api/app` + `apps/api/lib`; **`apps/portal/eslint.config.js`** ignora **`.next/**`** y **`eslint.config.js`** para no lintar artefactos ni el propio config CommonJS.
