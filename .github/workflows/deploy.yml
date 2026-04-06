@@ -145,8 +145,7 @@ jobs:
             git fetch origin main
             git reset --hard origin/main
 
-            # next build requiere devDependencies (TypeScript, tailwind, etc.)
-            npm ci
+            # Imágenes app/admin/portal vienen de GHCR; no hace falta npm ci en el VPS (evita OOM / exit 137).
 
             cd /opt/opsly/infra
             if [ -z "${GHCR_USER:-}" ] || [ -z "${GHCR_PAT:-}" ]; then
