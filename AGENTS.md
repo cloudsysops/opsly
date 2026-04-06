@@ -47,7 +47,7 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 
 <!-- Actualizar al final de cada sesión -->
 
-**Fecha última actualización:** 2026-04-07 — **Fase 2 invite/onboard:** `./scripts/validate-config.sh` → **LISTO PARA DEPLOY**. **Portal staging:** `https://portal.ops.smiletripcare.com/login` → **200** (tras recuperar contenedores `app`/`admin`/`portal` que habían quedado en `Created` y **404** en Traefik; ver `docs/TROUBLESHOOTING.md` y `deploy.yml` con `--force-recreate`). **`curl api`/health** → `status ok`. **Contenedores Opsly:** `traefik`, `infra-redis-1`, `infra-app-*`, `opsly_admin`, `opsly_portal`. **Tenants:** `smiletripcare`, `peskids` (stacks n8n/uptime Up). **Resend (2026-04-07):** `RESEND_FROM_EMAIL` en `prd` + VPS actualizado. **Causa de `API key is invalid`:** en Doppler `prd`, **`RESEND_API_KEY` es un placeholder demasiado corto** (no una clave completa de Resend). **`./scripts/validate-config.sh`** avisa si la longitud es **&lt; 20** (sin imprimir el valor). Acción: crear clave en [resend.com/api-keys](https://resend.com/api-keys), pegar el valor **completo** en Doppler → bootstrap VPS → `compose up --force-recreate app` → E2E. **Admin:** `/invitations` en repo.
+**Fecha última actualización:** 2026-04-07 — **Fase 2 invite/onboard:** `./scripts/validate-config.sh` → **LISTO PARA DEPLOY**. **Portal staging:** `https://portal.ops.smiletripcare.com/login` → **200** (tras recuperar contenedores `app`/`admin`/`portal` que habían quedado en `Created` y **404** en Traefik; ver `docs/TROUBLESHOOTING.md` y `deploy.yml` con `--force-recreate`). **`curl api`/health** → `status ok`. **Contenedores Opsly:** `traefik`, `infra-redis-1`, `infra-app-*`, `opsly_admin`, `opsly_portal`. **Tenants:** `smiletripcare`, `peskids` (stacks n8n/uptime Up). **Resend (2026-04-07):** `RESEND_FROM_EMAIL` en `prd` + VPS actualizado. **Causa de `API key is invalid`:** en Doppler `prd`, **`RESEND_API_KEY` sigue siendo placeholder corto** hasta que se pegue la clave **completa** desde [resend.com/api-keys](https://resend.com/api-keys). **`./scripts/validate-config.sh`** avisa (longitud **&lt; 20**). Tras corregir Doppler: **`./scripts/vps-refresh-api-env.sh`** (bootstrap + recreate `app`; `--dry-run` / `--skip-resend-check` en script) → **`./scripts/test-e2e-invite-flow.sh`**. **Admin:** `/invitations` en repo.
 
 **Completado ✅**
 
@@ -369,8 +369,8 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 ```bash
 # 0. ./scripts/validate-config.sh  →  si ⚠️ RESEND_API_KEY placeholder, la clave en Doppler no es la cadena completa de Resend.
 # 1. Resend: nueva API key en dashboard; doppler secrets set RESEND_API_KEY=… --project ops-intcloudsysops --config prd (valor completo re_…)
-# 2. VPS: ssh vps-dragon@$IP 'cd /opt/opsly && ./scripts/vps-bootstrap.sh'
-#    luego infra: docker compose … up -d --no-deps --force-recreate app  (si conflictos de nombre, stop/rm infra-app-* antes)
+# 2. VPS (automatizado): ./scripts/vps-refresh-api-env.sh   — vps-bootstrap + recreate app (falla si RESEND_API_KEY sigue corta; usar --skip-resend-check solo si actualizaste otros secretos)
+#    Manual equivalente: ssh … 'cd /opt/opsly && ./scripts/vps-bootstrap.sh' luego compose up --force-recreate app (limpiar infra-app-* si hay conflicto de nombres)
 # 3. E2E: export ADMIN_TOKEN="$(doppler secrets get PLATFORM_ADMIN_TOKEN --plain --project ops-intcloudsysops --config prd)"
 #         export OWNER_EMAIL="smiletripcare@gmail.com"
 #         ./scripts/test-e2e-invite-flow.sh
@@ -450,6 +450,7 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 | 2026-04-07 | `requireAdminToken` acepta `Authorization: Bearer` o `x-admin-token` | Runbook/E2E/documentación usaban `x-admin-token`; el admin app usa Bearer; ambas formas válidas |
 | 2026-04-07 | Remitente por defecto `RESEND_FROM_EMAIL=onboarding@resend.dev` en Doppler `prd` hasta dominio verificado ops/smiletrip | Desbloquea envío respecto a “missing RESEND_FROM_*”; la clave API debe seguir siendo válida en Resend |
 | 2026-04-07 | `validate-config.sh` avisa si `RESEND_API_KEY` en Doppler tiene longitud &lt; 20 | Detecta placeholders tipo `re_abc` que provocan *API key is invalid* en Resend sin volcar el secreto |
+| 2026-04-07 | `scripts/vps-refresh-api-env.sh` encadena bootstrap + recreate `app` tras cambios en Doppler | Misma intención que pasos manuales en AGENTS; valida longitud RESEND salvo `--skip-resend-check` |
 | 2026-04 | validate-config usa `dig +short` para DNS | Comprobar que la IP del VPS aparece en la resolución |
 | 2026-04 | sync-config redirige stdout de `doppler secrets set` a /dev/null | No volcar tablas con valores en logs compartidos |
 | 2026-04 | Dashboard Traefik en `traefik.${PLATFORM_DOMAIN}` | Reservar `admin.*` para la app Admin Opsly |
