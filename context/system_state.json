@@ -33,7 +33,7 @@
       "portal",
       "web"
     ],
-    "scripts": 21,
+    "scripts": 22,
     "adrs": 8,
     "migrations": 7
   }
