@@ -152,8 +152,32 @@ jobs:
               echo "GHCR_USER o GHCR_PAT vacíos en el job (secrets GitHub)" >&2
               exit 1
             fi
-            echo "$GHCR_PAT" | docker login ghcr.io -u "$GHCR_USER" --password-stdin
-            docker compose --env-file /opt/opsly/.env -f docker-compose.platform.yml pull app admin portal
+            # Evita credenciales viejas en ~/.docker/config.json que provoquen 403 tras un login “Succeeded”.
+            docker logout ghcr.io 2>/dev/null || true
+            if ! echo "$GHCR_PAT" | docker login ghcr.io -u "$GHCR_USER" --password-stdin; then
+              echo "docker login ghcr.io falló" >&2
+              exit 1
+            fi
+            # Imágenes efectivas del compose (respeta APP_IMAGE / PORTAL_APP_IMAGE en .env). Pull secuencial: error claro por tag.
+            tmp_imgs="$(mktemp)"
+            docker compose --env-file /opt/opsly/.env -f docker-compose.platform.yml config --images | sort -u >"$tmp_imgs"
+            while IFS= read -r img; do
+              [ -z "$img" ] && continue
+              case "$img" in ghcr.io/*) ;;
+                *) echo "Omitiendo pull (no GHCR): $img"
+                   continue ;;
+              esac
+              echo "Pulling $img ..."
+              if ! docker pull "$img"; then
+                rm -f "$tmp_imgs"
+                echo "❌ Pull GHCR falló: $img" >&2
+                echo "Comprueba: GHCR_USER = usuario GitHub dueño del PAT (no el nombre de la org); PAT con read:packages;" >&2
+                echo "si la org usa SSO, autorizar el token; acceso Read a los paquetes en" >&2
+                echo "https://github.com/orgs/cloudsysops/packages?repo_name=opsly" >&2
+                exit 1
+              fi
+            done <"$tmp_imgs"
+            rm -f "$tmp_imgs"
             docker compose --env-file /opt/opsly/.env -f docker-compose.platform.yml up -d --no-deps traefik app admin portal
 
             if [ -z "${PLATFORM_DOMAIN:-}" ]; then
