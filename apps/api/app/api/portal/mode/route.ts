@@ -22,7 +22,10 @@ export async function POST(request: Request): Promise<Response> {
 
   const parsed = ModeBodySchema.safeParse(body);
   if (!parsed.success) {
-    return Response.json({ error: formatZodError(parsed.error) }, { status: 400 });
+    return Response.json(
+      { error: formatZodError(parsed.error) },
+      { status: 400 },
+    );
   }
 
   const prevMeta =
@@ -32,12 +35,15 @@ export async function POST(request: Request): Promise<Response> {
       ? { ...(user.user_metadata as Record<string, unknown>) }
       : {};
 
-  const { error } = await getServiceClient().auth.admin.updateUserById(user.id, {
-    user_metadata: {
-      ...prevMeta,
-      mode: parsed.data.mode,
+  const { error } = await getServiceClient().auth.admin.updateUserById(
+    user.id,
+    {
+      user_metadata: {
+        ...prevMeta,
+        mode: parsed.data.mode,
+      },
     },
-  });
+  );
 
   if (error) {
     console.error("portal mode update:", error);

@@ -12,7 +12,10 @@ function readString(obj: unknown, key: string): string | null {
   return typeof v === "string" && v.length > 0 ? v : null;
 }
 
-function firstString(obj: Record<string, unknown>, keys: string[]): string | null {
+function firstString(
+  obj: Record<string, unknown>,
+  keys: string[],
+): string | null {
   for (const key of keys) {
     const v = readString(obj, key);
     if (v !== null) {
@@ -28,7 +31,11 @@ export function parsePortalServices(services: Json): {
   n8n_user: string | null;
   n8n_password: string | null;
 } {
-  if (services === null || typeof services !== "object" || Array.isArray(services)) {
+  if (
+    services === null ||
+    typeof services !== "object" ||
+    Array.isArray(services)
+  ) {
     return {
       n8n_url: null,
       uptime_url: null,
@@ -40,7 +47,10 @@ export function parsePortalServices(services: Json): {
   const n8n_url = firstString(s, ["n8n"]);
   const uptime_url = firstString(s, ["uptime_kuma", "uptime"]);
   const n8n_user = firstString(s, ["n8n_basic_auth_user", "n8n_user"]);
-  const n8n_password = firstString(s, ["n8n_basic_auth_password", "n8n_password"]);
+  const n8n_password = firstString(s, [
+    "n8n_basic_auth_password",
+    "n8n_password",
+  ]);
   return { n8n_url, uptime_url, n8n_user, n8n_password };
 }
 
@@ -70,7 +80,14 @@ export async function portalUrlReachable(url: string | null): Promise<boolean> {
 
 export type PortalTenantRow = Pick<
   Tenant,
-  "id" | "slug" | "name" | "owner_email" | "plan" | "status" | "services" | "created_at"
+  | "id"
+  | "slug"
+  | "name"
+  | "owner_email"
+  | "plan"
+  | "status"
+  | "services"
+  | "created_at"
 >;
 
 export type PortalTenantLookup =
@@ -78,7 +95,11 @@ export type PortalTenantLookup =
   | { ok: false; reason: "db" | "not_found" };
 
 function tenantSlugFromMetadata(metadata: unknown): string | null {
-  if (metadata === null || typeof metadata !== "object" || Array.isArray(metadata)) {
+  if (
+    metadata === null ||
+    typeof metadata !== "object" ||
+    Array.isArray(metadata)
+  ) {
     return null;
   }
   const ts = (metadata as Record<string, unknown>).tenant_slug;
@@ -89,10 +110,15 @@ export function readPortalTenantSlugFromUser(user: {
   user_metadata?: unknown;
   app_metadata?: unknown;
 }): string | null {
-  return tenantSlugFromMetadata(user.user_metadata) ?? tenantSlugFromMetadata(user.app_metadata);
+  return (
+    tenantSlugFromMetadata(user.user_metadata) ??
+    tenantSlugFromMetadata(user.app_metadata)
+  );
 }
 
-export async function fetchPortalTenantRowBySlug(slug: string): Promise<PortalTenantLookup> {
+export async function fetchPortalTenantRowBySlug(
+  slug: string,
+): Promise<PortalTenantLookup> {
   const { data: tenant, error } = await getServiceClient()
     .schema("platform")
     .from("tenants")

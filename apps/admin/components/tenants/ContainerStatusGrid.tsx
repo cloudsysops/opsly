@@ -1,9 +1,19 @@
 import type { ContainerStatus } from "@/lib/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-function Dot({ state, health }: { state: ContainerStatus["state"]; health: string }) {
-  const starting = state === "running" && health !== "healthy" && health !== "ok";
-  if (state === "running" && (health === "healthy" || health === "ok" || !health)) {
+function Dot({
+  state,
+  health,
+}: {
+  state: ContainerStatus["state"];
+  health: string;
+}) {
+  const starting =
+    state === "running" && health !== "healthy" && health !== "ok";
+  if (
+    state === "running" &&
+    (health === "healthy" || health === "ok" || !health)
+  ) {
     return (
       <span className="relative flex h-3 w-3">
         <span className="absolute inline-flex h-full w-full rounded-full bg-ops-green opacity-40" />

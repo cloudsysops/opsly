@@ -1,11 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import {
-  deleteTenant,
-  resumeTenant,
-  suspendTenant,
-} from "@/lib/api-client";
+import { deleteTenant, resumeTenant, suspendTenant } from "@/lib/api-client";
 import type { TenantStatus } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import {
@@ -126,8 +122,9 @@ export function TenantActions({
           <DialogHeader>
             <DialogTitle>Eliminar tenant</DialogTitle>
             <DialogDescription>
-              Escribe el slug <span className="font-mono text-ops-yellow">{slug}</span>{" "}
-              para confirmar. Esta acción marca el tenant como eliminado en la API.
+              Escribe el slug{" "}
+              <span className="font-mono text-ops-yellow">{slug}</span> para
+              confirmar. Esta acción marca el tenant como eliminado en la API.
             </DialogDescription>
           </DialogHeader>
           <Input

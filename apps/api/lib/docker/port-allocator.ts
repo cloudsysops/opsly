@@ -47,7 +47,9 @@ export async function allocatePorts(
       .eq("port", row.port);
 
     if (updateError) {
-      throw new Error(`Failed to assign port ${row.port}: ${updateError.message}`);
+      throw new Error(
+        `Failed to assign port ${row.port}: ${updateError.message}`,
+      );
     }
 
     result[serviceName] = row.port;

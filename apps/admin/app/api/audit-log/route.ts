@@ -48,7 +48,9 @@ export async function GET(): Promise<NextResponse> {
       ...new Set(
         rows
           .map((r) => r.tenant_id)
-          .filter((id): id is string => typeof id === "string" && id.length > 0),
+          .filter(
+            (id): id is string => typeof id === "string" && id.length > 0,
+          ),
       ),
     ];
 
@@ -70,9 +72,7 @@ export async function GET(): Promise<NextResponse> {
         meta && typeof meta.slug === "string" ? meta.slug : null;
       const tid = r.tenant_id;
       const slug =
-        tid && slugById.has(tid)
-          ? slugById.get(tid) ?? null
-          : slugFromMeta;
+        tid && slugById.has(tid) ? (slugById.get(tid) ?? null) : slugFromMeta;
       return {
         id: r.id,
         action: r.action,

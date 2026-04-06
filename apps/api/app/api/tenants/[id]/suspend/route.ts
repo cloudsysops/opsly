@@ -18,7 +18,10 @@ export async function POST(
   const { id } = await context.params;
   const idParsed = idParamSchema.safeParse(id);
   if (!idParsed.success) {
-    return Response.json({ error: formatZodError(idParsed.error) }, { status: 400 });
+    return Response.json(
+      { error: formatZodError(idParsed.error) },
+      { status: 400 },
+    );
   }
 
   const { data: existing, error: fetchError } = await getServiceClient()

@@ -79,7 +79,9 @@ export type SubscriptionInsert = {
   created_at?: string;
 };
 
-export type SubscriptionUpdate = Partial<Omit<Subscription, "id" | "tenant_id">>;
+export type SubscriptionUpdate = Partial<
+  Omit<Subscription, "id" | "tenant_id">
+>;
 
 export type AuditLogInsert = {
   id?: string;

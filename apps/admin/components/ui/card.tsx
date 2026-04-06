@@ -22,7 +22,10 @@ const CardHeader = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn("flex flex-col gap-1 border-b border-ops-border p-3", className)}
+    className={cn(
+      "flex flex-col gap-1 border-b border-ops-border p-3",
+      className,
+    )}
     {...props}
   />
 ));

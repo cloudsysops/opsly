@@ -35,13 +35,17 @@ export async function renderTenantComposeFromTemplate(
   const n8nPort = ports.n8n;
   const uptimePort = ports.uptime_kuma;
   if (typeof n8nPort !== "number" || typeof uptimePort !== "number") {
-    throw new Error("compose template requires ports.n8n and ports.uptime_kuma");
+    throw new Error(
+      "compose template requires ports.n8n and ports.uptime_kuma",
+    );
   }
 
   const domain = requireEnv("PLATFORM_DOMAIN");
   const traefikNetwork = optionalEnv("TRAEFIK_NETWORK", "traefik-public");
   const n8nUser = optionalEnv("N8N_BASIC_AUTH_USER", "admin");
-  const n8nPassword = randomBytes(COMPOSE_CRYPTO.N8N_PASSWORD_RANDOM_BYTES).toString("hex");
+  const n8nPassword = randomBytes(
+    COMPOSE_CRYPTO.N8N_PASSWORD_RANDOM_BYTES,
+  ).toString("hex");
   const n8nEncryptionKey = randomBytes(
     COMPOSE_CRYPTO.N8N_ENCRYPTION_KEY_RANDOM_BYTES,
   ).toString("hex");
@@ -62,7 +66,10 @@ export async function renderTenantComposeFromTemplate(
   };
 }
 
-export async function writeComposeFile(slug: string, content: string): Promise<string> {
+export async function writeComposeFile(
+  slug: string,
+  content: string,
+): Promise<string> {
   const dir = join(getTenantsBaseDir(), slug);
   await mkdir(dir, { recursive: true });
   const filePath = join(dir, "docker-compose.yml");

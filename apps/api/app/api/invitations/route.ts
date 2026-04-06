@@ -27,7 +27,10 @@ export async function POST(request: Request): Promise<Response> {
 
   const parsed = InvitationBodySchema.safeParse(body);
   if (!parsed.success) {
-    return Response.json({ error: formatZodError(parsed.error) }, { status: 400 });
+    return Response.json(
+      { error: formatZodError(parsed.error) },
+      { status: 400 },
+    );
   }
 
   const { slug, email, name } = parsed.data;

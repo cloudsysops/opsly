@@ -33,8 +33,7 @@ export function TenantTable({
     }
     return tenants.filter(
       (t) =>
-        t.slug.toLowerCase().includes(q) ||
-        t.name.toLowerCase().includes(q),
+        t.slug.toLowerCase().includes(q) || t.name.toLowerCase().includes(q),
     );
   }, [tenants, q]);
 

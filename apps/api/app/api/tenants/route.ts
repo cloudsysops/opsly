@@ -1,4 +1,7 @@
-import { requireAdminToken, requireAdminTokenUnlessDemoRead } from "../../../lib/auth";
+import {
+  requireAdminToken,
+  requireAdminTokenUnlessDemoRead,
+} from "../../../lib/auth";
 import {
   CreateTenantSchema,
   formatZodError,
@@ -9,7 +12,11 @@ import { getServiceClient } from "../../../lib/supabase";
 import type { TenantStatus } from "../../../lib/supabase/types";
 
 function isUniqueViolation(message: string, code: string | undefined): boolean {
-  return code === "23505" || message.includes("duplicate key") || message.includes("unique constraint");
+  return (
+    code === "23505" ||
+    message.includes("duplicate key") ||
+    message.includes("unique constraint")
+  );
 }
 
 export async function GET(request: Request): Promise<Response> {
@@ -19,9 +26,14 @@ export async function GET(request: Request): Promise<Response> {
   }
 
   const url = new URL(request.url);
-  const parsed = ListTenantsQuerySchema.safeParse(Object.fromEntries(url.searchParams));
+  const parsed = ListTenantsQuerySchema.safeParse(
+    Object.fromEntries(url.searchParams),
+  );
   if (!parsed.success) {
-    return Response.json({ error: formatZodError(parsed.error) }, { status: 400 });
+    return Response.json(
+      { error: formatZodError(parsed.error) },
+      { status: 400 },
+    );
   }
 
   const { page, limit, status, plan } = parsed.data;
@@ -73,7 +85,10 @@ export async function POST(request: Request): Promise<Response> {
 
   const parsed = CreateTenantSchema.safeParse(body);
   if (!parsed.success) {
-    return Response.json({ error: formatZodError(parsed.error) }, { status: 400 });
+    return Response.json(
+      { error: formatZodError(parsed.error) },
+      { status: 400 },
+    );
   }
 
   const { slug, owner_email, plan, stripe_customer_id } = parsed.data;
@@ -90,7 +105,8 @@ export async function POST(request: Request): Promise<Response> {
       { status: 202 },
     );
   } catch (err) {
-    const message = err instanceof Error ? err.message : "Failed to create tenant";
+    const message =
+      err instanceof Error ? err.message : "Failed to create tenant";
     if (isUniqueViolation(message, (err as { code?: string }).code)) {
       return Response.json({ error: "Slug already exists" }, { status: 409 });
     }

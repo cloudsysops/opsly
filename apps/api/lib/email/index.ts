@@ -34,7 +34,11 @@ function requireFromAddress(): string {
 }
 
 function servicesSummary(services: Tenant["services"]): string {
-  if (services === null || typeof services !== "object" || Array.isArray(services)) {
+  if (
+    services === null ||
+    typeof services !== "object" ||
+    Array.isArray(services)
+  ) {
     return JSON.stringify(services);
   }
   return JSON.stringify(services, null, JSON_PRETTY_PRINT_INDENT);
@@ -75,7 +79,10 @@ export async function sendHtmlEmail(options: {
   from?: string;
 }): Promise<void> {
   const resend = getResend();
-  const from = options.from && options.from.length > 0 ? options.from : requireFromAddress();
+  const from =
+    options.from && options.from.length > 0
+      ? options.from
+      : requireFromAddress();
   const { error } = await resend.emails.send({
     from,
     to: options.to,

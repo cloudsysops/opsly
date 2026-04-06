@@ -51,5 +51,7 @@ export const UpdateTenantSchema = z
   });
 
 export function formatZodError(error: z.ZodError): string {
-  return error.issues.map((i) => `${i.path.join(".") || "root"}: ${i.message}`).join("; ");
+  return error.issues
+    .map((i) => `${i.path.join(".") || "root"}: ${i.message}`)
+    .join("; ");
 }

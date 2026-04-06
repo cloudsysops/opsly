@@ -1,5 +1,8 @@
 import { z } from "zod";
-import { requireAdminToken, requireAdminTokenUnlessDemoRead } from "../../../../lib/auth";
+import {
+  requireAdminToken,
+  requireAdminTokenUnlessDemoRead,
+} from "../../../../lib/auth";
 import { deleteTenant } from "../../../../lib/orchestrator";
 import { getTenantStackStatus } from "../../../../lib/docker";
 import {
@@ -24,7 +27,10 @@ export async function GET(
   const { id } = await context.params;
   const refParsed = TenantRefParamSchema.safeParse(id);
   if (!refParsed.success) {
-    return Response.json({ error: formatZodError(refParsed.error) }, { status: 400 });
+    return Response.json(
+      { error: formatZodError(refParsed.error) },
+      { status: 400 },
+    );
   }
 
   const ref = refParsed.data;
@@ -66,7 +72,10 @@ export async function PATCH(
   const { id } = await context.params;
   const idParsed = idParamSchema.safeParse(id);
   if (!idParsed.success) {
-    return Response.json({ error: formatZodError(idParsed.error) }, { status: 400 });
+    return Response.json(
+      { error: formatZodError(idParsed.error) },
+      { status: 400 },
+    );
   }
 
   let body: unknown;
@@ -78,7 +87,10 @@ export async function PATCH(
 
   const parsed = UpdateTenantSchema.safeParse(body);
   if (!parsed.success) {
-    return Response.json({ error: formatZodError(parsed.error) }, { status: 400 });
+    return Response.json(
+      { error: formatZodError(parsed.error) },
+      { status: 400 },
+    );
   }
 
   const updates: Partial<Pick<Tenant, "name" | "plan">> = {};
@@ -121,7 +133,10 @@ export async function DELETE(
   const { id } = await context.params;
   const idParsed = idParamSchema.safeParse(id);
   if (!idParsed.success) {
-    return Response.json({ error: formatZodError(idParsed.error) }, { status: 400 });
+    return Response.json(
+      { error: formatZodError(idParsed.error) },
+      { status: 400 },
+    );
   }
 
   const { data: existing, error: fetchError } = await getServiceClient()

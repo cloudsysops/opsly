@@ -29,7 +29,10 @@ export async function notifyTenantCreated(tenant: Tenant): Promise<void> {
   );
 }
 
-export async function notifyTenantFailed(slug: string, error: string): Promise<void> {
+export async function notifyTenantFailed(
+  slug: string,
+  error: string,
+): Promise<void> {
   await postDiscord(`**Tenant onboarding failed** — \`${slug}\`: ${error}`);
 }
 

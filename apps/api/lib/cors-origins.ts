@@ -7,7 +7,8 @@ export function getAllowedCorsOrigins(): string[] {
   const adminUrl = process.env.NEXT_PUBLIC_ADMIN_URL?.trim();
   const portalUrl = process.env.NEXT_PUBLIC_PORTAL_URL?.trim();
   const domain =
-    process.env.PLATFORM_DOMAIN?.trim() ?? process.env.PLATFORM_BASE_DOMAIN?.trim();
+    process.env.PLATFORM_DOMAIN?.trim() ??
+    process.env.PLATFORM_BASE_DOMAIN?.trim();
 
   if (adminUrl) {
     out.add(adminUrl.replace(/\/$/, ""));

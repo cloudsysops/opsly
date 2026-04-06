@@ -42,11 +42,14 @@ export function getPortalSiteUrl(): string {
     return explicit.replace(/\/$/, "");
   }
   const domain =
-    process.env.PLATFORM_DOMAIN?.trim() ?? process.env.PLATFORM_BASE_DOMAIN?.trim();
+    process.env.PLATFORM_DOMAIN?.trim() ??
+    process.env.PLATFORM_BASE_DOMAIN?.trim();
   if (domain && domain.length > 0) {
     return `https://portal.${domain}`;
   }
-  throw new Error("PORTAL_SITE_URL or PLATFORM_DOMAIN is required for portal invites");
+  throw new Error(
+    "PORTAL_SITE_URL or PLATFORM_DOMAIN is required for portal invites",
+  );
 }
 
 function parseInviteTokenFromActionLink(actionLink: string): string | null {
@@ -60,19 +63,22 @@ function parseInviteTokenFromActionLink(actionLink: string): string | null {
 
 function footerLineFromEnv(): string {
   const domain =
-    process.env.PLATFORM_DOMAIN?.trim() ?? process.env.PLATFORM_BASE_DOMAIN?.trim();
+    process.env.PLATFORM_DOMAIN?.trim() ??
+    process.env.PLATFORM_BASE_DOMAIN?.trim();
   if (domain && domain.length > 0) {
     return `Opsly · ${domain}`;
   }
   return "Opsly";
 }
 
-function buildPortalInviteHtml(displayName: string, activateUrl: string): string {
+function buildPortalInviteHtml(
+  displayName: string,
+  activateUrl: string,
+): string {
   const safeName = escapeHtml(displayName);
   const safeUrl = escapeHtml(activateUrl);
   const safeFooter = escapeHtml(footerLineFromEnv());
-  return PORTAL_INVITE_HTML_TEMPLATE
-    .replace("{displayName}", safeName)
+  return PORTAL_INVITE_HTML_TEMPLATE.replace("{displayName}", safeName)
     .replace("{activateUrl}", safeUrl)
     .replace("{footerLine}", safeFooter);
 }

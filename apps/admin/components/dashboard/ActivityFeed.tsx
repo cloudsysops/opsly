@@ -53,7 +53,9 @@ export function ActivityFeed({
             )}
           </span>
           <span className="text-ops-gray">{e.actor}</span>
-          <span className="ml-auto text-ops-gray">{relativeTime(e.created_at)}</span>
+          <span className="ml-auto text-ops-gray">
+            {relativeTime(e.created_at)}
+          </span>
         </li>
       ))}
     </ul>

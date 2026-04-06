@@ -49,14 +49,20 @@ export function getTenantComposePath(slug: string): string {
   return join(getTenantsBaseDir(), slug, "docker-compose.yml");
 }
 
-export async function startTenant(slug: string, composePath: string): Promise<void> {
+export async function startTenant(
+  slug: string,
+  composePath: string,
+): Promise<void> {
   void slug;
   await execa("docker", ["compose", "-f", composePath, "up", "-d"], {
     stdio: "pipe",
   });
 }
 
-export async function stopTenant(slug: string, composePath: string): Promise<void> {
+export async function stopTenant(
+  slug: string,
+  composePath: string,
+): Promise<void> {
   void slug;
   await execa("docker", ["compose", "-f", composePath, "down"], {
     stdio: "pipe",

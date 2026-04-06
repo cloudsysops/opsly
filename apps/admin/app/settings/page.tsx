@@ -90,9 +90,7 @@ export default function SettingsPage() {
               {(["startup", "business", "enterprise"] as const).map((p) => (
                 <TableRow key={p}>
                   <TableCell className="font-mono">{p}</TableCell>
-                  <TableCell className="font-mono">
-                    {PLAN_MRR_USD[p]}
-                  </TableCell>
+                  <TableCell className="font-mono">{PLAN_MRR_USD[p]}</TableCell>
                   <TableCell className="font-mono">
                     {PLAN_PORT_BASE[p]}
                   </TableCell>
@@ -117,7 +115,9 @@ export default function SettingsPage() {
           <div>
             <span className="text-ops-gray">Stripe webhook </span>
             <span className="font-mono text-neutral-200">
-              {stripeOk ? "configured (flag)" : "verificar en API / dashboard Stripe"}
+              {stripeOk
+                ? "configured (flag)"
+                : "verificar en API / dashboard Stripe"}
             </span>
           </div>
         </CardContent>

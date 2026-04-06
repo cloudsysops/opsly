@@ -62,7 +62,10 @@ export default function LoginPage() {
               </div>
             ) : null}
             <div className="space-y-1">
-              <label className="font-sans text-xs text-ops-gray" htmlFor="email">
+              <label
+                className="font-sans text-xs text-ops-gray"
+                htmlFor="email"
+              >
                 email
               </label>
               <div className="relative">

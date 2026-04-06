@@ -92,8 +92,8 @@ export default function DashboardPage() {
                   <div className="mb-2 flex justify-between font-mono text-sm">
                     <span className="text-neutral-300">RAM</span>
                     <span className="tabular-nums text-neutral-100">
-                      {data.ram_used_gb.toFixed(2)} / {data.ram_total_gb.toFixed(2)}{" "}
-                      GB
+                      {data.ram_used_gb.toFixed(2)} /{" "}
+                      {data.ram_total_gb.toFixed(2)} GB
                     </span>
                   </div>
                   <Progress
@@ -105,8 +105,8 @@ export default function DashboardPage() {
                   <div className="mb-2 flex justify-between font-mono text-sm">
                     <span className="text-neutral-300">Disco</span>
                     <span className="tabular-nums text-neutral-100">
-                      {data.disk_used_gb.toFixed(2)} / {data.disk_total_gb.toFixed(2)}{" "}
-                      GB
+                      {data.disk_used_gb.toFixed(2)} /{" "}
+                      {data.disk_total_gb.toFixed(2)} GB
                     </span>
                   </div>
                   <Progress

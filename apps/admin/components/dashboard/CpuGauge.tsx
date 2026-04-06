@@ -20,7 +20,12 @@ export function CpuGauge({ percent }: { percent: number }) {
 
   return (
     <div className="relative mx-auto flex h-44 w-44 items-center justify-center">
-      <svg className="-rotate-90" width="160" height="160" viewBox="0 0 120 120">
+      <svg
+        className="-rotate-90"
+        width="160"
+        height="160"
+        viewBox="0 0 120 120"
+      >
         <circle
           cx="60"
           cy="60"

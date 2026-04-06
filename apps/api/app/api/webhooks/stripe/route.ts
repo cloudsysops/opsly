@@ -76,7 +76,9 @@ async function handleCheckoutSessionCompleted(
 
 const MS_PER_SECOND = 1000;
 
-async function resolveTenantIdForSubscription(sub: Stripe.Subscription): Promise<string | undefined> {
+async function resolveTenantIdForSubscription(
+  sub: Stripe.Subscription,
+): Promise<string | undefined> {
   if (typeof sub.metadata?.tenant_id === "string") {
     return sub.metadata.tenant_id;
   }
@@ -100,13 +102,16 @@ async function upsertSubscriptionRow(
 
   const planMeta = sub.metadata?.plan ?? null;
   const db = getServiceClient();
-  const { error: insertError } = await db.schema("platform").from("subscriptions").insert({
-    tenant_id: tenantId,
-    stripe_event_id: event.id,
-    stripe_status: sub.status,
-    current_period_end: periodEnd,
-    plan: planMeta,
-  });
+  const { error: insertError } = await db
+    .schema("platform")
+    .from("subscriptions")
+    .insert({
+      tenant_id: tenantId,
+      stripe_event_id: event.id,
+      stripe_status: sub.status,
+      current_period_end: periodEnd,
+      plan: planMeta,
+    });
 
   if (!insertError) {
     return true;
@@ -118,7 +123,10 @@ async function upsertSubscriptionRow(
   return false;
 }
 
-async function attachStripeSubscriptionToTenant(tenantId: string, subscriptionId: string): Promise<void> {
+async function attachStripeSubscriptionToTenant(
+  tenantId: string,
+  subscriptionId: string,
+): Promise<void> {
   const db = getServiceClient();
   const { error: tenantError } = await db
     .schema("platform")
@@ -131,7 +139,9 @@ async function attachStripeSubscriptionToTenant(tenantId: string, subscriptionId
   }
 }
 
-async function handleCustomerSubscriptionUpdated(event: Stripe.Event): Promise<void> {
+async function handleCustomerSubscriptionUpdated(
+  event: Stripe.Event,
+): Promise<void> {
   const sub = event.data.object as Stripe.Subscription;
   const tenantId = await resolveTenantIdForSubscription(sub);
 
@@ -148,7 +158,9 @@ async function handleCustomerSubscriptionUpdated(event: Stripe.Event): Promise<v
   await attachStripeSubscriptionToTenant(tenantId, sub.id);
 }
 
-async function handleInvoicePaymentFailed(invoice: Stripe.Invoice): Promise<void> {
+async function handleInvoicePaymentFailed(
+  invoice: Stripe.Invoice,
+): Promise<void> {
   const customerId = getStripeCustomerId(invoice.customer);
   if (!customerId) {
     console.error("invoice.payment_failed: missing customer");
@@ -157,7 +169,10 @@ async function handleInvoicePaymentFailed(invoice: Stripe.Invoice): Promise<void
 
   const row = await resolveTenantIdByCustomerId(customerId);
   if (!row) {
-    console.error("invoice.payment_failed: tenant not found for customer", customerId);
+    console.error(
+      "invoice.payment_failed: tenant not found for customer",
+      customerId,
+    );
     return;
   }
 

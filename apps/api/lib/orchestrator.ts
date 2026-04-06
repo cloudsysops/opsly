@@ -47,7 +47,11 @@ export async function pollPortsUntilHealthy(
     (port) => `http://127.0.0.1:${port}/healthz`,
   );
 
-  for (let attempt = 0; attempt < ORCHESTRATION_HEALTH.MAX_ATTEMPTS; attempt += 1) {
+  for (
+    let attempt = 0;
+    attempt < ORCHESTRATION_HEALTH.MAX_ATTEMPTS;
+    attempt += 1
+  ) {
     const checks = await Promise.all(
       urls.map(async (url) => {
         try {
@@ -100,10 +104,14 @@ class OnboardingOrchestrator {
     let lastCompletedStep: number = ONBOARDING_PIPELINE.INITIAL;
     try {
       if (!this.tenantId) {
-        throw new Error("Tenant identifier missing before provisioning pipeline");
+        throw new Error(
+          "Tenant identifier missing before provisioning pipeline",
+        );
       }
 
-      this.ports = await allocatePorts(this.tenantId, [...PLAN_SERVICES[this.plan]]);
+      this.ports = await allocatePorts(this.tenantId, [
+        ...PLAN_SERVICES[this.plan],
+      ]);
       lastCompletedStep = ONBOARDING_PIPELINE.AFTER_PORTS;
 
       const rendered = await renderTenantComposeFromTemplate(
@@ -142,7 +150,8 @@ class OnboardingOrchestrator {
         services: tenant.services as object,
       };
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Unknown onboarding error";
+      const message =
+        err instanceof Error ? err.message : "Unknown onboarding error";
       await this.rollback(lastCompletedStep).catch(() => undefined);
       await notifyTenantFailed(this.slug, message).catch(() => undefined);
       return { success: false, error: message };
@@ -181,7 +190,9 @@ class OnboardingOrchestrator {
       .single();
 
     if (error || !data) {
-      const err = new Error(error?.message ?? "Failed to create tenant") as Error & {
+      const err = new Error(
+        error?.message ?? "Failed to create tenant",
+      ) as Error & {
         code?: string;
       };
       if (error?.code) {
@@ -198,12 +209,15 @@ class OnboardingOrchestrator {
       return;
     }
 
-    const { error } = await getServiceClient().schema("platform").from("audit_log").insert({
-      tenant_id: this.tenantId,
-      action,
-      actor: "onboarding-orchestrator",
-      metadata: { slug: this.slug },
-    });
+    const { error } = await getServiceClient()
+      .schema("platform")
+      .from("audit_log")
+      .insert({
+        tenant_id: this.tenantId,
+        action,
+        actor: "onboarding-orchestrator",
+        metadata: { slug: this.slug },
+      });
 
     if (error) {
       throw new Error(`Failed to write audit log: ${error.message}`);
@@ -223,7 +237,9 @@ class OnboardingOrchestrator {
       this.n8nBasicAuthUser === undefined ||
       this.n8nBasicAuthPassword === undefined
     ) {
-      throw new Error("n8n basic auth credentials missing after compose render");
+      throw new Error(
+        "n8n basic auth credentials missing after compose render",
+      );
     }
 
     // Hostnames match infra/templates/docker-compose.tenant.yml.tpl (Traefik rules).
@@ -298,7 +314,11 @@ class OnboardingOrchestrator {
     }
 
     if (step >= ONBOARDING_ROLLBACK.DELETE_TENANT_MIN_STEP) {
-      await getServiceClient().schema("platform").from("tenants").delete().eq("id", this.tenantId);
+      await getServiceClient()
+        .schema("platform")
+        .from("tenants")
+        .delete()
+        .eq("id", this.tenantId);
     }
   }
 }
@@ -396,12 +416,15 @@ export async function suspendTenant(
     throw new Error(updateError.message);
   }
 
-  const { error: auditError } = await db.schema("platform").from("audit_log").insert({
-    tenant_id: tenant.id,
-    action: "suspended",
-    actor,
-    metadata: { slug: tenant.slug },
-  });
+  const { error: auditError } = await db
+    .schema("platform")
+    .from("audit_log")
+    .insert({
+      tenant_id: tenant.id,
+      action: "suspended",
+      actor,
+      metadata: { slug: tenant.slug },
+    });
 
   if (auditError) {
     throw new Error(auditError.message);
@@ -414,7 +437,9 @@ type TenantResumeRow = {
   status: string;
 };
 
-async function loadSuspendedTenantOrThrow(tenantId: string): Promise<TenantResumeRow> {
+async function loadSuspendedTenantOrThrow(
+  tenantId: string,
+): Promise<TenantResumeRow> {
   const db = getServiceClient();
   const { data: tenant, error: fetchError } = await db
     .schema("platform")
@@ -449,7 +474,9 @@ async function markTenantDeployingProgress(tenantId: string): Promise<void> {
   }
 }
 
-async function buildPortsMapForTenant(tenantId: string): Promise<Record<string, number>> {
+async function buildPortsMapForTenant(
+  tenantId: string,
+): Promise<Record<string, number>> {
   const db = getServiceClient();
   const { data: portsRows, error: portsError } = await db
     .schema("platform")
@@ -471,7 +498,9 @@ async function buildPortsMapForTenant(tenantId: string): Promise<Record<string, 
   return ports;
 }
 
-async function markTenantActiveAndLogResume(tenant: TenantResumeRow): Promise<void> {
+async function markTenantActiveAndLogResume(
+  tenant: TenantResumeRow,
+): Promise<void> {
   const db = getServiceClient();
   const { error: activeError } = await db
     .schema("platform")
@@ -483,12 +512,15 @@ async function markTenantActiveAndLogResume(tenant: TenantResumeRow): Promise<vo
     throw new Error(activeError.message);
   }
 
-  const { error: auditError } = await db.schema("platform").from("audit_log").insert({
-    tenant_id: tenant.id,
-    action: "resumed",
-    actor: "platform-api",
-    metadata: { slug: tenant.slug },
-  });
+  const { error: auditError } = await db
+    .schema("platform")
+    .from("audit_log")
+    .insert({
+      tenant_id: tenant.id,
+      action: "resumed",
+      actor: "platform-api",
+      metadata: { slug: tenant.slug },
+    });
 
   if (auditError) {
     throw new Error(auditError.message);

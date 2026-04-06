@@ -25,7 +25,10 @@ export function middleware(request: NextRequest): NextResponse {
     if (!origin) {
       return new NextResponse(null, { status: 204 });
     }
-    return new NextResponse(null, { status: 204, headers: corsHeaders(origin) });
+    return new NextResponse(null, {
+      status: 204,
+      headers: corsHeaders(origin),
+    });
   }
 
   if (!origin) {

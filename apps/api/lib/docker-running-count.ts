@@ -12,7 +12,10 @@ export async function countRunningDockerContainers(): Promise<number | null> {
     if (result.exitCode !== 0 || typeof result.stdout !== "string") {
       return null;
     }
-    const lines = result.stdout.trim().split("\n").filter((line) => line.length > 0);
+    const lines = result.stdout
+      .trim()
+      .split("\n")
+      .filter((line) => line.length > 0);
     return lines.length;
   } catch {
     return null;

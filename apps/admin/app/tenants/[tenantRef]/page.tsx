@@ -63,9 +63,7 @@ export default function TenantDetailPage() {
   const containers = stackRecordToContainers(stack_status);
   const urls = parseServiceUrls(tenant.services);
   const statusEmbed =
-    urls.uptime !== null
-      ? uptimeStatusPageUrl(urls.uptime, tenant.slug)
-      : null;
+    urls.uptime !== null ? uptimeStatusPageUrl(urls.uptime, tenant.slug) : null;
 
   return (
     <div className="space-y-8">
@@ -178,8 +176,8 @@ export default function TenantDetailPage() {
             Estado (embed)
           </h2>
           <p className="font-sans text-xs text-ops-gray">
-            Si no carga, el servidor puede bloquear iframes (X-Frame-Options); usa
-            el enlace de status page.
+            Si no carga, el servidor puede bloquear iframes (X-Frame-Options);
+            usa el enlace de status page.
           </p>
           <div className="overflow-hidden rounded border border-ops-border bg-black/40">
             <iframe
@@ -235,7 +233,9 @@ export default function TenantDetailPage() {
             </div>
           ) : null}
           {!urls.n8n && !urls.uptime ? (
-            <p className="font-sans text-sm text-ops-gray">Sin URLs en services.</p>
+            <p className="font-sans text-sm text-ops-gray">
+              Sin URLs en services.
+            </p>
           ) : null}
         </div>
       </section>

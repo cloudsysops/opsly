@@ -11,7 +11,10 @@ import {
 export async function GET(request: Request): Promise<Response> {
   const user = await getUserFromAuthorizationHeader(request);
   if (!user) {
-    return Response.json({ error: "Unauthorized" }, { status: HTTP_STATUS.UNAUTHORIZED });
+    return Response.json(
+      { error: "Unauthorized" },
+      { status: HTTP_STATUS.UNAUTHORIZED },
+    );
   }
 
   const slug = readPortalTenantSlugFromUser(user);
@@ -25,14 +28,20 @@ export async function GET(request: Request): Promise<Response> {
   const lookup = await fetchPortalTenantRowBySlug(slug);
   if (!lookup.ok) {
     const status =
-      lookup.reason === "db" ? HTTP_STATUS.INTERNAL_ERROR : HTTP_STATUS.NOT_FOUND;
-    const message = lookup.reason === "db" ? "Internal server error" : "Tenant not found";
+      lookup.reason === "db"
+        ? HTTP_STATUS.INTERNAL_ERROR
+        : HTTP_STATUS.NOT_FOUND;
+    const message =
+      lookup.reason === "db" ? "Internal server error" : "Tenant not found";
     return Response.json({ error: message }, { status });
   }
 
   const emailNorm = user.email?.toLowerCase() ?? "";
   if (lookup.row.owner_email.toLowerCase() !== emailNorm) {
-    return Response.json({ error: "Forbidden" }, { status: HTTP_STATUS.FORBIDDEN });
+    return Response.json(
+      { error: "Forbidden" },
+      { status: HTTP_STATUS.FORBIDDEN },
+    );
   }
 
   const svc = parsePortalServices(lookup.row.services);

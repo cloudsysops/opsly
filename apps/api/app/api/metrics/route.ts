@@ -17,9 +17,9 @@ type MetricRows = {
   enterpriseRes: CountHeadResult;
 };
 
-async function fetchTenantStatusCounts(client: SupabaseClient): Promise<
-  Pick<MetricRows, "totalRes" | "activeRes" | "suspendedRes">
-> {
+async function fetchTenantStatusCounts(
+  client: SupabaseClient,
+): Promise<Pick<MetricRows, "totalRes" | "activeRes" | "suspendedRes">> {
   const [totalRes, activeRes, suspendedRes] = await Promise.all([
     client
       .schema("platform")
@@ -42,9 +42,9 @@ async function fetchTenantStatusCounts(client: SupabaseClient): Promise<
   return { totalRes, activeRes, suspendedRes };
 }
 
-async function fetchTenantPlanCounts(client: SupabaseClient): Promise<
-  Pick<MetricRows, "startupRes" | "businessRes" | "enterpriseRes">
-> {
+async function fetchTenantPlanCounts(
+  client: SupabaseClient,
+): Promise<Pick<MetricRows, "startupRes" | "businessRes" | "enterpriseRes">> {
   const [startupRes, businessRes, enterpriseRes] = await Promise.all([
     client
       .schema("platform")
@@ -68,7 +68,9 @@ async function fetchTenantPlanCounts(client: SupabaseClient): Promise<
   return { startupRes, businessRes, enterpriseRes };
 }
 
-async function fetchTenantMetricRows(client: SupabaseClient): Promise<MetricRows> {
+async function fetchTenantMetricRows(
+  client: SupabaseClient,
+): Promise<MetricRows> {
   const [status, plans] = await Promise.all([
     fetchTenantStatusCounts(client),
     fetchTenantPlanCounts(client),
