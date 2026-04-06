@@ -47,7 +47,7 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 
 <!-- Actualizar al final de cada sesión -->
 
-**Fecha última actualización:** 2026-04-06 — Documentación alineada al portal en `main` (`GET /api/portal/tenant`, sin `/me`); **pendiente** deploy GHCR/VPS y prueba E2E con invitación (p. ej. `peskids`).
+**Fecha última actualización:** 2026-04-07 — Portal en `main`; **`GET /api/portal/me`** en API (commit `fix(api): serve portal session at GET /api/portal/me`). **Pendiente:** deploy + invitación `peskids`.
 
 **Completado ✅**
 
@@ -55,15 +55,14 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 
 **App (`apps/portal`)**
 - Next.js 15, TypeScript, Tailwind, shadcn-style UI, tema dark fondo `#0a0a0a`.
-- Rutas: `/` → redirect a `/login`; `/login` (email + password, sin registro público; copy de invitación); `/invite/[token]` con `?email=` — `verifyOtp` (`type: "invite"`) + `updateUser({ password })` → `/dashboard`; `/dashboard` — **selector de modo** (cards Developer / Managed) que llama `POST /api/portal/mode` y guarda `user_metadata.mode`; **no** se redirige automáticamente desde `/dashboard` si ya hay modo guardado (así el enlace «Cambiar modo» del shell vuelve al selector); `/dashboard/developer` y `/dashboard/managed` — páginas **server** con `requirePortalPayload()` → `fetchPortalTenant(access_token)` contra la API pública.
+- Rutas: `/` → redirect `/login`; `/login` (email + password; sin registro público); `/invite/[token]?email=` — `verifyOtp({ type: "invite" })` + `updateUser({ password })` → `/dashboard`; `/dashboard` — selector de modo vía `POST /api/portal/mode`; **sin** auto-redirect desde `/dashboard` si ya hay modo (permite «Cambiar modo»); `/dashboard/developer` y `/dashboard/managed` — `requirePortalPayload()` → `fetchPortalTenant` → **`GET /api/portal/tenant`** con Bearer.
 - Middleware portal: `lib/supabase/middleware.ts` refresca sesión; `/dashboard/*` exige usuario (excepto login/invite).
-- Componentes: `ModeSelector`, `PortalShell`, `ServiceCard`, `StatusBadge` + `healthFromReachable`, `CredentialReveal` (password **30 s** y vuelve a oculto), `DeveloperActions` (copiar URL n8n / credenciales). Modo managed: soporte **hola@smiletripcare.com** por defecto; override con `NEXT_PUBLIC_SUPPORT_EMAIL`.
+- Componentes: `ModeSelector`, `PortalShell`, `ServiceCard`, `StatusBadge` + `healthFromReachable`, `CredentialReveal` (30 s), `DeveloperActions`. Soporte en managed: solo si **`NEXT_PUBLIC_SUPPORT_EMAIL`** está definido (si no, texto de configuración). Hook opcional **`usePortalTenant`** en `apps/portal/hooks/`.
 
 **API (`apps/api`) — datos portal**
-- **`GET /api/portal/tenant`** — Única ruta de lectura para el portal. JWT Bearer → `getUserFromAuthorizationHeader`; `tenant_slug` en `user_metadata` / `app_metadata` (set en invite); carga fila `platform.tenants`; comprueba `owner_email` === email del usuario; **`lib/portal-me.ts`**: `parsePortalServices` (`n8n`, `uptime_kuma`, `n8n_basic_auth_*`), `portalUrlReachable`, `fetchPortalTenantRowBySlug`, `readPortalTenantSlugFromUser`, `parsePortalMode`; constantes de sonda en **`lib/constants.ts`** (`PORTAL_URL_PROBE`).
-- **`POST /api/portal/mode`** — body `{ mode: "developer" | "managed" }` → `auth.admin.updateUserById` merge `user_metadata.mode`.
-- **`POST /api/invitations`** — header admin; `sendPortalInvitationForTenant` (`lib/portal-invitations.ts`): `generateLink` invite, enlace `PORTAL_SITE_URL` o `https://portal.${PLATFORM_DOMAIN}/invite/{token}?email=…`, email HTML dark + Resend (`RESEND_*` / `getInviteFromEmail`).
-- **No** hay **`GET /api/portal/me`** (cualquier referencia previa queda obsoleta).
+- **`GET /api/portal/me`** — `app/api/portal/me/route.ts`. JWT Bearer → `portal-auth` + `portal-me` (tenant, servicios, health). **`GET /api/portal/tenant` eliminada** (antes mismo contrato, path distinto al cliente).
+- **`POST /api/portal/mode`** — `{ mode: "developer" | "managed" }` → `updateUserById` + `user_metadata.mode`.
+- **`POST /api/invitations`** — admin token; `portal-invitations.ts`, Resend, enlace a `/invite`.
 
 **CORS / Next API**
 - **`apps/api/middleware.ts`** + **`lib/cors-origins.ts`**: orígenes explícitos (`NEXT_PUBLIC_ADMIN_URL`, `NEXT_PUBLIC_PORTAL_URL`, `https://admin.${PLATFORM_DOMAIN}`, `https://portal.${PLATFORM_DOMAIN}`); matcher `/api/:path*`; OPTIONS 204 con headers cuando el `Origin` está permitido.
@@ -75,7 +74,7 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 - **`.github/workflows/deploy.yml`** y **`ci.yml`**: type-check/lint/build del workspace **portal**; imagen **`ghcr.io/cloudsysops/intcloudsysops-portal:latest`** en paralelo con api/admin.
 
 **Calidad**
-- `npm run type-check` (Turbo) en verde; ESLint API en `portal/tenant` y `portal-me`; **`apps/portal/eslint.config.js`** ignora `.next/**` y el propio config (evita lintar artefactos Next).
+- `npm run type-check` en verde; ESLint en rutas API portal y `portal-me`; **`apps/portal/eslint.config.js`** ignora `.next/**`.
 
 **Git (referencia)**
 - Mensaje principal: `feat(portal): add client dashboard with developer and managed modes`; seguimiento: `chore: sync AGENTS mirror after portal feature` (y posible auto-fix de calidad en CI). Repo remoto: **`cloudsysops/opsly`**.
@@ -355,7 +354,7 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 # Portal en main — pendiente deploy y prueba en staging.
 
 # 1. Actions → Deploy verde (api, admin, portal). VPS: compose pull + up (traefik, app, admin, portal).
-# 2. API necesita NEXT_PUBLIC_SUPABASE_ANON_KEY en runtime para validar JWT en GET /api/portal/tenant y POST /api/portal/mode.
+# 2. API necesita NEXT_PUBLIC_SUPABASE_URL y NEXT_PUBLIC_SUPABASE_ANON_KEY en runtime para validar JWT en GET /api/portal/tenant y POST /api/portal/mode.
 # 3. Invitación: POST /api/invitations (header admin) → email Resend; activar en /invite/[token]?email=...
 # 4. Validar https://portal.ops.smiletripcare.com — login, selector de modo, dashboards developer/managed.
 
