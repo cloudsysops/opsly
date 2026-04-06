@@ -1,8 +1,12 @@
 import { z } from "zod";
-import { requireAdminToken } from "../../../../lib/auth";
+import { requireAdminToken, requireAdminTokenUnlessDemoRead } from "../../../../lib/auth";
 import { deleteTenant } from "../../../../lib/orchestrator";
 import { getTenantStackStatus } from "../../../../lib/docker";
-import { formatZodError, UpdateTenantSchema } from "../../../../lib/validation";
+import {
+  formatZodError,
+  TenantRefParamSchema,
+  UpdateTenantSchema,
+} from "../../../../lib/validation";
 import { getServiceClient } from "../../../../lib/supabase";
 import type { Tenant } from "../../../../lib/supabase/types";
 
@@ -12,23 +16,26 @@ export async function GET(
   request: Request,
   context: { params: Promise<{ id: string }> },
 ): Promise<Response> {
-  const authError = requireAdminToken(request);
+  const authError = requireAdminTokenUnlessDemoRead(request);
   if (authError) {
     return authError;
   }
 
   const { id } = await context.params;
-  const idParsed = idParamSchema.safeParse(id);
-  if (!idParsed.success) {
-    return Response.json({ error: formatZodError(idParsed.error) }, { status: 400 });
+  const refParsed = TenantRefParamSchema.safeParse(id);
+  if (!refParsed.success) {
+    return Response.json({ error: formatZodError(refParsed.error) }, { status: 400 });
   }
+
+  const ref = refParsed.data;
+  const byId = z.string().uuid().safeParse(ref).success;
 
   const { data: tenant, error } = await getServiceClient()
     .schema("platform")
     .from("tenants")
     .select("*")
-    .eq("id", idParsed.data)
     .is("deleted_at", null)
+    .eq(byId ? "id" : "slug", ref)
     .maybeSingle();
 
   if (error) {

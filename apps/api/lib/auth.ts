@@ -1,3 +1,18 @@
+export function isPublicDemoRead(): boolean {
+  return process.env.ADMIN_PUBLIC_DEMO_READ === "true";
+}
+
+/**
+ * GET público solo cuando ADMIN_PUBLIC_DEMO_READ=true (demo familia).
+ * Mutaciones siguen usando requireAdminToken.
+ */
+export function requireAdminTokenUnlessDemoRead(request: Request): Response | null {
+  if (request.method === "GET" && isPublicDemoRead()) {
+    return null;
+  }
+  return requireAdminToken(request);
+}
+
 export function requireAdminToken(request: Request): Response | null {
   const expected = process.env.PLATFORM_ADMIN_TOKEN;
   if (!expected || expected.length === 0) {

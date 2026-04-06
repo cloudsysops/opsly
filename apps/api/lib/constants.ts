@@ -78,6 +78,32 @@ export const LIST_TENANTS = {
   MAX_LIMIT: 100,
 } as const;
 
+/** Segmento URL `/api/tenants/:ref` (UUID o slug). */
+export const TENANT_ROUTE_REF = {
+  SLUG_MIN_LEN: 3,
+  SLUG_MAX_LEN: 63,
+} as const;
+
+/** Conversión bytes → gibibytes en métricas de host. */
+export const HOST_METRICS = {
+  BYTES_PER_GIB: 1024 ** 3,
+  CPU_MIN_PCT: 0,
+  CPU_MAX_PCT: 100,
+  DECIMALS_GB: 2,
+  DECIMALS_CPU: 1,
+} as const;
+
+/** Respuesta simulada si Prometheus no es alcanzable desde la API. */
+export const DEMO_SYSTEM_METRICS_MOCK = {
+  CPU_PERCENT: 27.3,
+  RAM_USED_GB: 6.8,
+  RAM_TOTAL_GB: 16,
+  DISK_USED_GB: 48,
+  DISK_TOTAL_GB: 120,
+  UPTIME_SECONDS: 259_200,
+  CONTAINERS_WHEN_DOCKER_UNKNOWN: 12,
+} as const;
+
 /** Generación compose (bytes criptográficos). */
 export const COMPOSE_CRYPTO = {
   N8N_PASSWORD_RANDOM_BYTES: 24,

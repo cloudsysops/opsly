@@ -2,6 +2,11 @@ import { createServerClient, type SetAllCookies } from "@supabase/ssr";
 import { type NextRequest, NextResponse } from "next/server";
 
 export async function updateSession(request: NextRequest): Promise<NextResponse> {
+  const publicDemo = process.env.NEXT_PUBLIC_ADMIN_PUBLIC_DEMO === "true";
+  if (publicDemo) {
+    return NextResponse.next({ request });
+  }
+
   let supabaseResponse = NextResponse.next({
     request,
   });

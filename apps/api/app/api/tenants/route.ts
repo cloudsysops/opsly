@@ -1,4 +1,4 @@
-import { requireAdminToken } from "../../../lib/auth";
+import { requireAdminToken, requireAdminTokenUnlessDemoRead } from "../../../lib/auth";
 import {
   CreateTenantSchema,
   formatZodError,
@@ -13,7 +13,7 @@ function isUniqueViolation(message: string, code: string | undefined): boolean {
 }
 
 export async function GET(request: Request): Promise<Response> {
-  const authError = requireAdminToken(request);
+  const authError = requireAdminTokenUnlessDemoRead(request);
   if (authError) {
     return authError;
   }

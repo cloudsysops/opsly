@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { LIST_TENANTS } from "./constants";
+import { LIST_TENANTS, TENANT_ROUTE_REF } from "./constants";
 
 const tenantStatusEnum = z.enum([
   "provisioning",
@@ -31,6 +31,15 @@ export const ListTenantsQuerySchema = z.object({
   status: tenantStatusEnum.optional(),
   plan: planEnum.optional(),
 });
+
+export const TenantRefParamSchema = z.union([
+  z.string().uuid(),
+  z
+    .string()
+    .min(TENANT_ROUTE_REF.SLUG_MIN_LEN)
+    .max(TENANT_ROUTE_REF.SLUG_MAX_LEN)
+    .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
+]);
 
 export const UpdateTenantSchema = z
   .object({

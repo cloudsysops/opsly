@@ -1,4 +1,4 @@
-import { requireAdminToken } from "../../../lib/auth";
+import { requireAdminTokenUnlessDemoRead } from "../../../lib/auth";
 import { computeMrr } from "../../../lib/stripe";
 import { getServiceClient } from "../../../lib/supabase";
 import type { SupabaseClient } from "@supabase/supabase-js";
@@ -93,7 +93,7 @@ function firstMetricsError(rows: MetricRows): Error | null {
 }
 
 export async function GET(request: Request): Promise<Response> {
-  const authError = requireAdminToken(request);
+  const authError = requireAdminTokenUnlessDemoRead(request);
   if (authError) {
     return authError;
   }

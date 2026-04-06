@@ -57,6 +57,19 @@ export type MetricsResponse = {
   };
 };
 
+/** Métricas del host vía Prometheus (API hace de proxy). */
+export type SystemMetricsResponse = {
+  cpu_percent: number;
+  ram_used_gb: number;
+  ram_total_gb: number;
+  disk_used_gb: number;
+  disk_total_gb: number;
+  uptime_seconds: number;
+  active_tenants: number;
+  containers_running: number;
+  mock: boolean;
+};
+
 export type TenantsListResponse = {
   data: Tenant[];
   total: number;

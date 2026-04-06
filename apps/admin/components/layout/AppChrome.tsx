@@ -12,9 +12,12 @@ export function AppChrome({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-ops-bg">
       <Sidebar />
-      <div className="ml-[240px] flex min-w-0 flex-1 flex-col">
+      <div className="ml-[240px] flex min-h-screen min-w-0 flex-1 flex-col">
         <Topbar />
         <main className="flex-1 overflow-auto p-6">{children}</main>
+        <footer className="border-t border-ops-border px-6 py-3 font-mono text-[11px] text-ops-gray">
+          Opsly Platform v1.0 · staging · ops.smiletripcare.com
+        </footer>
       </div>
     </div>
   );

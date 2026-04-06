@@ -8,12 +8,15 @@ function utcDay(d: Date): string {
 
 export async function GET(): Promise<NextResponse> {
   try {
+    const publicDemo = process.env.NEXT_PUBLIC_ADMIN_PUBLIC_DEMO === "true";
     const userClient = await createServerSupabase();
-    const {
-      data: { user },
-    } = await userClient.auth.getUser();
-    if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (!publicDemo) {
+      const {
+        data: { user },
+      } = await userClient.auth.getUser();
+      if (!user) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      }
     }
 
     const url = process.env.NEXT_PUBLIC_SUPABASE_URL;

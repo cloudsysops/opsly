@@ -1,22 +1,42 @@
 import type {
   MetricsResponse,
+  SystemMetricsResponse,
   Tenant,
   TenantDetailResponse,
   TenantsListResponse,
 } from "./types";
 
-function getBaseUrl(): string {
-  const base = process.env.NEXT_PUBLIC_API_URL;
-  if (!base || base.length === 0) {
-    throw new Error("NEXT_PUBLIC_API_URL is not set");
+function inferApiBaseFromAdminHost(hostname: string): string | null {
+  if (hostname === "localhost" || hostname === "127.0.0.1") {
+    return "http://127.0.0.1:3000";
   }
-  return base.replace(/\/$/, "");
+  if (hostname.startsWith("admin.")) {
+    return `https://api.${hostname.slice("admin.".length)}`;
+  }
+  return null;
 }
 
-function getAdminToken(): string {
+function getBaseUrl(): string {
+  const base = process.env.NEXT_PUBLIC_API_URL;
+  if (base && base.length > 0) {
+    return base.replace(/\/$/, "");
+  }
+  if (typeof window !== "undefined") {
+    const inferred = inferApiBaseFromAdminHost(window.location.hostname);
+    if (inferred !== null) {
+      return inferred;
+    }
+  }
+  throw new Error("NEXT_PUBLIC_API_URL is not set");
+}
+
+function getAdminToken(): string | undefined {
+  if (process.env.NEXT_PUBLIC_ADMIN_PUBLIC_DEMO === "true") {
+    return undefined;
+  }
   const token = process.env.NEXT_PUBLIC_PLATFORM_ADMIN_TOKEN;
   if (!token || token.length === 0) {
-    throw new Error("NEXT_PUBLIC_PLATFORM_ADMIN_TOKEN is not set");
+    return undefined;
   }
   return token;
 }
@@ -45,17 +65,17 @@ function getErrorMessage(data: unknown): string {
   return "Request failed";
 }
 
-async function request<T>(
-  path: string,
-  init?: RequestInit,
-): Promise<T> {
+async function request<T>(path: string, init?: RequestInit): Promise<T> {
+  const headers = new Headers(init?.headers);
+  headers.set("Content-Type", "application/json");
+  const token = getAdminToken();
+  if (token !== undefined) {
+    headers.set("Authorization", `Bearer ${token}`);
+  }
+
   const res = await fetch(`${getBaseUrl()}${path}`, {
     ...init,
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${getAdminToken()}`,
-      ...init?.headers,
-    },
+    headers,
   });
 
   if (res.status === 204) {
@@ -93,8 +113,10 @@ export async function getTenants(
   return request<TenantsListResponse>(`/api/tenants?${search.toString()}`);
 }
 
-export async function getTenant(id: string): Promise<TenantDetailResponse> {
-  return request<TenantDetailResponse>(`/api/tenants/${id}`);
+export async function getTenant(
+  idOrSlug: string,
+): Promise<TenantDetailResponse> {
+  return request<TenantDetailResponse>(`/api/tenants/${idOrSlug}`);
 }
 
 export type CreateTenantBody = {
@@ -142,4 +164,8 @@ export async function resumeTenant(id: string): Promise<{ status: string }> {
 
 export async function getMetrics(): Promise<MetricsResponse> {
   return request<MetricsResponse>("/api/metrics");
+}
+
+export async function getSystemMetrics(): Promise<SystemMetricsResponse> {
+  return request<SystemMetricsResponse>("/api/metrics/system");
 }

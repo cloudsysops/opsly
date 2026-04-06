@@ -73,6 +73,11 @@ services:
       REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379/0
       PLATFORM_TENANTS_DIR: /opt/opsly/tenants
       TEMPLATE_PATH: /opt/opsly/templates/docker-compose.tenant.yml.tpl
+      # Prometheus en el host (VPS): desde el contenedor usar host-gateway, no localhost.
+      PROMETHEUS_BASE_URL: ${PROMETHEUS_BASE_URL:-http://host.docker.internal:9090}
+      ADMIN_PUBLIC_DEMO_READ: ${ADMIN_PUBLIC_DEMO_READ:-false}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ${PLATFORM_TENANTS_HOST_PATH:-/opt/opsly/tenants}:/opt/opsly/tenants
@@ -109,6 +114,7 @@ services:
       - "traefik.docker.network=traefik-public"
       - "traefik.http.routers.opsly-admin.rule=Host(`admin.${PLATFORM_DOMAIN}`)"
       - "traefik.http.routers.opsly-admin.entrypoints=websecure"
+      - "traefik.http.routers.opsly-admin.tls=true"
       - "traefik.http.routers.opsly-admin.tls.certresolver=letsencrypt"
       - "traefik.http.services.opsly-admin.loadbalancer.server.port=3001"
     networks:

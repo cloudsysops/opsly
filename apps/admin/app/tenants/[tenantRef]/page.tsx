@@ -7,7 +7,7 @@ import { PlanBadge } from "@/components/tenants/PlanBadge";
 import { TenantActions } from "@/components/tenants/TenantActions";
 import { TenantStatusBadge } from "@/components/tenants/TenantStatusBadge";
 import { useTenant } from "@/hooks/useTenant";
-import { parseServiceUrls } from "@/lib/service-urls";
+import { parseServiceUrls, uptimeStatusPageUrl } from "@/lib/service-urls";
 import { stackRecordToContainers } from "@/lib/stack-map";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -36,9 +36,10 @@ function CopyUrlButton({ url }: { url: string }) {
 
 export default function TenantDetailPage() {
   const params = useParams();
-  const id = typeof params.id === "string" ? params.id : "";
+  const tenantRef =
+    typeof params.tenantRef === "string" ? params.tenantRef : "";
   const router = useRouter();
-  const { data, error, isLoading, mutate } = useTenant(id);
+  const { data, error, isLoading, mutate } = useTenant(tenantRef);
 
   if (error) {
     return (
@@ -61,6 +62,10 @@ export default function TenantDetailPage() {
   const { tenant, stack_status } = data;
   const containers = stackRecordToContainers(stack_status);
   const urls = parseServiceUrls(tenant.services);
+  const statusEmbed =
+    urls.uptime !== null
+      ? uptimeStatusPageUrl(urls.uptime, tenant.slug)
+      : null;
 
   return (
     <div className="space-y-8">
@@ -69,7 +74,6 @@ export default function TenantDetailPage() {
           <h1 className="font-mono text-xl text-neutral-100">{tenant.name}</h1>
           <p className="mt-1 font-mono text-sm text-ops-green">{tenant.slug}</p>
           <div className="mt-3 flex flex-wrap gap-2">
-            <PlanBadge plan={tenant.plan} />
             <TenantStatusBadge status={tenant.status} />
           </div>
         </div>
@@ -82,31 +86,111 @@ export default function TenantDetailPage() {
         />
       </div>
 
+      <div className="grid gap-4 sm:grid-cols-3">
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="font-sans text-xs uppercase tracking-wide text-ops-gray">
+              Plan
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <PlanBadge plan={tenant.plan} />
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="font-sans text-xs uppercase tracking-wide text-ops-gray">
+              Email
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="break-all font-mono text-sm text-neutral-200">
+              {tenant.owner_email}
+            </p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="font-sans text-xs uppercase tracking-wide text-ops-gray">
+              Creado
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="font-mono text-sm text-neutral-200">
+              {new Date(tenant.created_at).toLocaleString("es")}
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+
       <Card>
         <CardHeader>
           <CardTitle className="font-sans text-sm text-ops-gray">
-            Información
+            Accesos directos
           </CardTitle>
         </CardHeader>
-        <CardContent className="grid gap-3 font-sans text-sm sm:grid-cols-2">
-          <div>
-            <div className="text-ops-gray">owner_email</div>
-            <div className="font-mono text-neutral-200">{tenant.owner_email}</div>
-          </div>
-          <div>
-            <div className="text-ops-gray">stripe_customer_id</div>
-            <div className="font-mono text-neutral-200">
-              {tenant.stripe_customer_id ?? "—"}
-            </div>
-          </div>
-          <div>
-            <div className="text-ops-gray">id</div>
-            <div className="break-all font-mono text-xs text-neutral-400">
-              {tenant.id}
-            </div>
-          </div>
+        <CardContent className="flex flex-wrap gap-3">
+          {urls.n8n ? (
+            <Button variant="primary" size="sm" asChild>
+              <a
+                href={urls.n8n}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-1"
+              >
+                Abrir n8n
+                <ExternalLink className="h-3 w-3" />
+              </a>
+            </Button>
+          ) : null}
+          {urls.uptime ? (
+            <Button variant="primary" size="sm" asChild>
+              <a
+                href={urls.uptime}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-1"
+              >
+                Abrir Uptime Kuma
+                <ExternalLink className="h-3 w-3" />
+              </a>
+            </Button>
+          ) : null}
+          {statusEmbed ? (
+            <Button variant="ghost" size="sm" asChild>
+              <a
+                href={statusEmbed}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-1"
+              >
+                Status page (nueva pestaña)
+                <ExternalLink className="h-3 w-3" />
+              </a>
+            </Button>
+          ) : null}
         </CardContent>
       </Card>
+
+      {statusEmbed ? (
+        <section className="space-y-2">
+          <h2 className="font-sans text-xs uppercase tracking-wide text-ops-gray">
+            Estado (embed)
+          </h2>
+          <p className="font-sans text-xs text-ops-gray">
+            Si no carga, el servidor puede bloquear iframes (X-Frame-Options); usa
+            el enlace de status page.
+          </p>
+          <div className="overflow-hidden rounded border border-ops-border bg-black/40">
+            <iframe
+              title={`Uptime status ${tenant.slug}`}
+              src={statusEmbed}
+              className="h-[min(520px,70vh)] w-full"
+              sandbox="allow-scripts allow-same-origin allow-popups"
+            />
+          </div>
+        </section>
+      ) : null}
 
       <section>
         <h2 className="mb-3 font-sans text-xs uppercase tracking-wide text-ops-gray">
@@ -117,7 +201,7 @@ export default function TenantDetailPage() {
 
       <section>
         <h2 className="mb-3 font-sans text-xs uppercase tracking-wide text-ops-gray">
-          URLs
+          URLs técnicas
         </h2>
         <div className="space-y-3 rounded border border-ops-border bg-ops-surface p-4">
           {urls.n8n ? (

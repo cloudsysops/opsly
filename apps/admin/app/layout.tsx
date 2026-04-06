@@ -15,8 +15,8 @@ const mono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "intcloudsysops — admin",
-  description: "Ops terminal admin",
+  title: "Opsly — Admin",
+  description: "Opsly platform admin",
 };
 
 export default function RootLayout({

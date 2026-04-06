@@ -2,24 +2,27 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Server, Settings } from "lucide-react";
+import { LayoutDashboard, Server } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const nav = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/tenants", label: "Tenants", icon: Server },
-  { href: "/settings", label: "Settings", icon: Settings },
 ];
 
 export function Sidebar() {
   const pathname = usePathname();
   return (
     <aside className="fixed left-0 top-0 z-40 flex h-screen w-[240px] flex-col border-r border-ops-border bg-ops-surface">
-      <div className="border-b border-ops-border px-4 py-4 font-mono text-sm text-ops-green">
-        <span className="text-neutral-500">$ </span>
-        <span className="font-semibold text-neutral-100">intcloudsysops</span>
-        <div className="text-[10px] uppercase tracking-wider text-ops-gray">
-          admin
+      <div className="border-b border-ops-border px-4 py-4">
+        <Link
+          href="/dashboard"
+          className="block font-mono text-lg font-semibold tracking-tight text-ops-green hover:text-ops-green/90"
+        >
+          Opsly
+        </Link>
+        <div className="mt-1 text-[10px] uppercase tracking-wider text-ops-gray">
+          Admin
         </div>
       </div>
       <nav className="flex flex-1 flex-col gap-0.5 p-2">
