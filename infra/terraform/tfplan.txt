@@ -1,0 +1,71 @@
+# tfplan.txt — salida de `terraform show -no-color tfplan` (2026-04-06).
+# Generado con TF_VAR_do_token / TF_VAR_ssh_fingerprint placeholder; no es apply real.
+# Estado local del clon puede proponer creación de droplet si aún no hay `terraform import`.
+
+Terraform used the selected providers to generate the following execution
+plan. Resource actions are indicated with the following symbols:
+  + create
+
+Terraform will perform the following actions:
+
+  # digitalocean_droplet.production will be created
+  + resource "digitalocean_droplet" "production" {
+      + backups              = false
+      + created_at           = (known after apply)
+      + disk                 = (known after apply)
+      + graceful_shutdown    = false
+      + id                   = (known after apply)
+      + image                = "ubuntu-24-04-x64"
+      + ipv4_address         = (known after apply)
+      + ipv4_address_private = (known after apply)
+      + ipv6                 = false
+      + ipv6_address         = (known after apply)
+      + locked               = (known after apply)
+      + memory               = (known after apply)
+      + monitoring           = false
+      + name                 = "opsly-production"
+      + price_hourly         = (known after apply)
+      + price_monthly        = (known after apply)
+      + private_networking   = (known after apply)
+      + region               = "nyc3"
+      + resize_disk          = true
+      + size                 = "s-1vcpu-2gb"
+      + ssh_keys             = (sensitive value)
+      + status               = (known after apply)
+      + tags                 = [
+          + "opsly",
+          + "production",
+        ]
+      + urn                  = (known after apply)
+      + vcpus                = (known after apply)
+      + volume_ids           = (known after apply)
+      + vpc_uuid             = (known after apply)
+    }
+
+  # digitalocean_record.api_ops will be created
+  + resource "digitalocean_record" "api_ops" {
+      + domain = "smiletripcare.com"
+      + fqdn   = (known after apply)
+      + id     = (known after apply)
+      + name   = "api.ops"
+      + ttl    = 300
+      + type   = "A"
+      + value  = (known after apply)
+    }
+
+  # digitalocean_record.wildcard_ops will be created
+  + resource "digitalocean_record" "wildcard_ops" {
+      + domain = "smiletripcare.com"
+      + fqdn   = (known after apply)
+      + id     = (known after apply)
+      + name   = "*.ops"
+      + ttl    = 300
+      + type   = "A"
+      + value  = (known after apply)
+    }
+
+Plan: 3 to add, 0 to change, 0 to destroy.
+
+Changes to Outputs:
+  + production_droplet_id = (known after apply)
+  + production_ip         = (known after apply)
