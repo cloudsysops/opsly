@@ -47,7 +47,7 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 
 <!-- Actualizar al final de cada sesión -->
 
-**Fecha última actualización:** 2026-04-07 — **Fase 2 invite/onboard (checklist Cursor):** no existe en repo el archivo `/home/claude/cursor-task-phase2-final-invite-onboard.md`; se ejecutó validación **`./scripts/validate-config.sh`** → **LISTO PARA DEPLOY**; VPS **`/opt/opsly`** en **`96e9a38`** (sync con `origin/main`). **Contenedores plataforma Opsly:** `traefik`, `infra-redis-1`, `infra-app-1`/`infra-app-2`, `opsly_admin`, `opsly_portal`; **tenants:** `n8n_smiletripcare`, `uptime_smiletripcare`, **`n8n_peskids`**, **`uptime_peskids`** (Up/healthy). Otros stacks en el mismo host (`smiletrip_*`, `mission_*`) son ajenos al compose Opsly monorepo. **`curl api`/health** devuelve `status ok`; `checks.supabase` puede figurar **`degraded`** desde fuera del contenedor API (probe Auth). **Pendiente:** UI admin invitations; invitación E2E con `OWNER_EMAIL` real vía `scripts/test-e2e-invite-flow.sh`.
+**Fecha última actualización:** 2026-04-07 — **Fase 2 invite/onboard:** `./scripts/validate-config.sh` → **LISTO PARA DEPLOY**. **Portal staging:** `https://portal.ops.smiletripcare.com/login` → **200** (tras recuperar contenedores `app`/`admin`/`portal` que habían quedado en `Created` y **404** en Traefik; ver `docs/TROUBLESHOOTING.md` y `deploy.yml` con `--force-recreate`). **`curl api`/health** → `status ok`. **Contenedores Opsly:** `traefik`, `infra-redis-1`, `infra-app-*`, `opsly_admin`, `opsly_portal`. **Tenants:** `smiletripcare`, `peskids` (stacks n8n/uptime Up). **Pendiente:** UI admin invitations; **E2E invitación** con email real → `scripts/test-e2e-invite-flow.sh`; confirmar secrets GitHub `NEXT_PUBLIC_*` / `PLATFORM_DOMAIN` si un Deploy futuro falla en build.
 
 **Completado ✅**
 
@@ -367,15 +367,17 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 <!-- Una sola tarea concreta. Actualizar al final de cada sesión -->
 
 ```bash
-# Portal en main — pendiente deploy y prueba en staging.
+# Portal /login en staging verificado (200). Siguiente valor: flujo invitación + admin.
 
-# 1. Actions → Deploy verde (api, admin, portal). VPS: compose pull + up (traefik, app, admin, portal).
-# 2. API necesita NEXT_PUBLIC_SUPABASE_URL y NEXT_PUBLIC_SUPABASE_ANON_KEY en runtime para validar JWT en GET /api/portal/me y POST /api/portal/mode.
-# 3. Invitación: POST /api/invitations (header admin) → email Resend; activar en /invite/[token]?email=...
-# 4. Validar https://portal.ops.smiletripcare.com — login, selector de modo, dashboards developer/managed.
+# 1. E2E: ./scripts/test-e2e-invite-flow.sh (OWNER_EMAIL acorde a tenant en Supabase; token admin en Doppler/prd).
+# 2. Tras invite: abrir link email → /invite/[token]?email=… → password → /dashboard (modo developer/managed).
+# 3. Implementar o completar UI admin para POST /api/invitations (header x-admin-token), si aún no está en producción.
+# 4. Tras próximo push: Actions Deploy usa compose up --force-recreate traefik app admin portal (evita réplicas huérfanas).
 
-# Admin / API (sigue aplicando):
-# gh secret set NEXT_PUBLIC_SUPABASE_URL / NEXT_PUBLIC_SUPABASE_ANON_KEY / PLATFORM_DOMAIN si faltan.
+# Secrets build (si falla job build-and-push; uno por comando):
+# gh secret set NEXT_PUBLIC_SUPABASE_URL --repo cloudsysops/opsly
+# gh secret set NEXT_PUBLIC_SUPABASE_ANON_KEY --repo cloudsysops/opsly
+# gh secret set PLATFORM_DOMAIN --repo cloudsysops/opsly
 ```
 
 ---
@@ -439,6 +441,7 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 
 | Fecha | Decisión | Razón |
 |---|---|---|
+| 2026-04-07 | Job Deploy: `docker compose up -d --no-deps --force-recreate traefik app admin portal` | Con `deploy.replicas: 2` en `app`, un `up` sin recrear dejaba contenedores en `Created` y `opsly_portal`/`opsly_admin` sin rutear → 404 en `portal.*` |
 | 2026-04 | validate-config usa `dig +short` para DNS | Comprobar que la IP del VPS aparece en la resolución |
 | 2026-04 | sync-config redirige stdout de `doppler secrets set` a /dev/null | No volcar tablas con valores en logs compartidos |
 | 2026-04 | Dashboard Traefik en `traefik.${PLATFORM_DOMAIN}` | Reservar `admin.*` para la app Admin Opsly |
