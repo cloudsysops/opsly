@@ -47,9 +47,15 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 
 <!-- Actualizar al final de cada sesión -->
 
-**Fecha última actualización:** 2026-04-07 (Supabase **opsly-prod** (`jkwykpldnitavhmtuzmo`): migraciones aplicadas con CLI; rename `0007_rls_policies.sql`; PostgREST pendiente exponer `platform`; revisión `onboard-tenant.sh` vs onboarding smiletripcare)
+**Fecha última actualización:** 2026-04-07 (**Primer tenant `smiletripcare` ✅ activo en staging** — 2026-04-06; n8n + Uptime verificados; credenciales n8n en Doppler `prd`; Supabase opsly-prod al día + `platform` usable vía API tras `GRANT`/config)
 
 **Completado ✅**
+
+*Primer tenant en staging — smiletripcare (2026-04-06, verificado ✅):*
+- **Slug:** `smiletripcare` — fila en `platform.tenants` + stack compose en VPS (`scripts/onboard-tenant.sh`).
+- **n8n:** https://n8n-smiletripcare.ops.smiletripcare.com ✅
+- **Uptime Kuma:** https://uptime-smiletripcare.ops.smiletripcare.com ✅
+- **Credenciales n8n:** guardadas en Doppler proyecto `ops-intcloudsysops` / config **`prd`** (no repetir en repo ni en chat).
 
 *Sesión agente Cursor — Supabase producción + onboarding (2026-04-07):*
 - **Proyecto Supabase:** `https://jkwykpldnitavhmtuzmo.supabase.co` (ref `jkwykpldnitavhmtuzmo`). Secretos desde Doppler `ops-intcloudsysops` / `prd`: `SUPABASE_SERVICE_ROLE_KEY` OK; **`SUPABASE_DB_PASSWORD` no existe** en `prd` (solo `SUPABASE_URL`, claves anon/public, service role).
@@ -57,7 +63,7 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 - **`npx supabase db push` — fallo inicial:** dos archivos **`0003_*.sql`** (`port_allocations` y `rls_policies`) compiten por la misma versión en `supabase_migrations.schema_migrations` → error `duplicate key ... (version)=(0003)`.
 - **Corrección en repo:** renombrar RLS a **`0007_rls_policies.sql`** (orden aplicado: `0001` … `0006`, luego `0007`). Segundo **`db push`:** OK (`0004`–`0007` según estado previo del remoto).
 - **Verificación tablas:** `npx supabase db query --linked` → existen **`platform.tenants`** y **`platform.subscriptions`** en Postgres.
-- **REST / PostgREST:** `GET /rest/v1/tenants` con `Accept-Profile: platform` devuelve **`PGRST106` / Invalid schema: platform** mientras el dashboard del proyecto solo expone **`public`** y **`graphql_public`**. Acción humana: **Settings → API → Exposed schemas** → añadir **`platform`** para que la API use el schema sin mover tablas.
+- **REST / PostgREST (histórico previo al onboard 2026-04-06):** faltaba exponer `platform` y/o `GRANT` — resuelto antes del primer tenant; la API debe usar `Accept-Profile: platform` contra `platform.tenants` según config actual del proyecto.
 - **Onboarding smiletripcare (planificación, sin ejecutar):** no existe `scripts/onboard.sh`; el script es **`scripts/onboard-tenant.sh`** con `--slug`, `--email`, `--plan` (`startup` \| `business` \| `enterprise`). URLs del template: `https://n8n-{slug}.{PLATFORM_DOMAIN}/` y `https://uptime-{slug}.{PLATFORM_DOMAIN}/` (p. ej. `ops.smiletripcare.com`). El bloque *Próximo paso* histórico mencionaba `plan: pro` y hosts distintos — **desalineado** con el CHECK SQL y la plantilla; usar el script real antes de ejecutar.
 
 *Capas de calidad de código — monorepo Opsly (2026-04-05, commit `d4acfcb` `feat(quality): add code patterns, SOLID rules and automated review layers`, pusheado a `main`):*
@@ -267,7 +273,6 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 - Rotación de tokens de servicio Doppler / PAT si hubo exposición en historial.
 - `DOPPLER_TOKEN` en `/etc/doppler.env` — opcional si se usa solo `doppler configure set token --scope` (como en esta sesión).
 - `NEXTAUTH_*`: no usado en el código actual; ver `doppler-missing.txt`
-- Primer tenant de prueba: smiletripcare
 
 ---
 
@@ -277,18 +282,11 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 
 ```bash
 # ✅ STAGING VERDE — Health OK
-# ✅ Migraciones platform en Supabase opsly-prod aplicadas (2026-04-07)
-# ⏳ Dashboard Supabase: exponer schema "platform" en API si se usa REST con Accept-Profile
+# ✅ Primer tenant smiletripcare onboarded (2026-04-06) — n8n + Uptime OK; secretos n8n en Doppler prd
 
-# Próxima tarea: Onboard primer tenant (smiletripcare) vía script oficial
-#
-# 1. En VPS (o host con docker + env): exportar SUPABASE_*, PLATFORM_DOMAIN, TENANTS_PATH, TEMPLATE_PATH
-# 2. Dry-run: ./scripts/onboard-tenant.sh --slug smiletripcare --email 'owner@…' --plan startup --dry-run
-# 3. Ejecución:  ./scripts/onboard-tenant.sh --slug smiletripcare --email 'owner@…' --plan startup --yes
-#    (plan válido en DB: startup | business | enterprise | demo; el script solo acepta los tres primeros)
-# 4. URLs esperadas (PLATFORM_DOMAIN=ops.smiletripcare.com):
-#      https://n8n-smiletripcare.ops.smiletripcare.com/
-#      https://uptime-smiletripcare.ops.smiletripcare.com/
+# Próximo paso inmediato:
+# 1. Validar Admin dashboard (apps/admin) en staging: flujos, auth, listado tenants / métricas si aplica.
+# 2. Conectar smiletripcare a su n8n: enlazar URL https://n8n-smiletripcare.ops.smiletripcare.com/ desde admin u orquestación según diseño (credenciales en Doppler prd).
 ```
 
 ---
@@ -306,7 +304,7 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 - [x] **Traefik v3 + Docker 29.3.1 API negotiation bug** — fix: `daemon.json` `min-api-version: 1.24` + vps-bootstrap.sh paso [j] idempotente (2026-04-06)
 - [x] **Health check staging** — `curl -sfk https://api.ops.smiletripcare.com/api/health` → `{"status":"ok"}` (2026-04-06 23:58 UTC)
 - [x] **Migraciones SQL en Supabase opsly-prod** — `db push` vía CLI enlazada; tablas `platform.tenants` / `platform.subscriptions` verificadas en Postgres (2026-04-07)
-- [ ] **PostgREST: schema `platform` expuesto** en proyecto Supabase (hasta entonces REST con `Accept-Profile: platform` sigue en 406)
+- [x] **PostgREST / API sobre schema `platform`** — `GRANT` USAGE (y permisos necesarios) + schema expuesto en API; onboarding y API contra `platform.tenants` operativos (2026-04-06)
 
 ---
 
@@ -395,6 +393,7 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 | 2026-04-05 | `lint:fix` en `apps/api` y `apps/admin` | Misma orden que usa el job auto-fix del workflow |
 | 2026-04-06 | daemon.json `min-api-version: 1.24` en VPS bootstrap | Traefik v3 cliente Go negocia API 1.24; Docker 29.3.1 exige 1.40 — bajar mínimo del daemon es único fix funcional |
 | 2026-04-07 | Migraciones Supabase: `0003_rls_policies.sql` → `0007_rls_policies.sql` + `npx supabase db push` en opsly-prod | Dos prefijos `0003_` rompían `schema_migrations`; RLS pasa a versión `0007`; despliegue sin URL Postgres con password especial en Doppler |
+| 2026-04-06 | `GRANT` en schema **`platform`** (roles PostgREST / `anon`+`authenticated`+`service_role` según política del proyecto) + onboarding **`smiletripcare`** exitoso | Desbloquea REST/API y `onboard-tenant.sh` frente a `permission denied for schema platform`; primer tenant con n8n + Uptime en staging verificado |
 
 ---
 
