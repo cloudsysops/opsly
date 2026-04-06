@@ -94,8 +94,7 @@ describe("GET /api/tenants/:id", () => {
       select: () => chain,
       is: () => chain,
       eq: () => chain,
-      maybeSingle: () =>
-        Promise.resolve({ data: tenant, error: null }),
+      maybeSingle: () => Promise.resolve({ data: tenant, error: null }),
     };
     vi.mocked(supabaseMod.getServiceClient).mockReturnValue(
       chain as ReturnType<typeof supabaseMod.getServiceClient>,
@@ -232,7 +231,10 @@ describe("DELETE /api/tenants/:id", () => {
 
   it("returns 400 for invalid uuid", async () => {
     const res = await DELETE(
-      new Request("http://local/x", { method: "DELETE", headers: authHeaders() }),
+      new Request("http://local/x", {
+        method: "DELETE",
+        headers: authHeaders(),
+      }),
       params("bad"),
     );
     expect(res.status).toBe(400);
@@ -251,7 +253,10 @@ describe("DELETE /api/tenants/:id", () => {
       chain as ReturnType<typeof supabaseMod.getServiceClient>,
     );
     const res = await DELETE(
-      new Request("http://local/x", { method: "DELETE", headers: authHeaders() }),
+      new Request("http://local/x", {
+        method: "DELETE",
+        headers: authHeaders(),
+      }),
       params(UUID),
     );
     expect(res.status).toBe(404);
@@ -264,15 +269,17 @@ describe("DELETE /api/tenants/:id", () => {
       select: () => chain,
       eq: () => chain,
       is: () => chain,
-      maybeSingle: () =>
-        Promise.resolve({ data: { id: UUID }, error: null }),
+      maybeSingle: () => Promise.resolve({ data: { id: UUID }, error: null }),
     };
     vi.mocked(supabaseMod.getServiceClient).mockReturnValue(
       chain as ReturnType<typeof supabaseMod.getServiceClient>,
     );
     vi.mocked(orchestratorMod.deleteTenant).mockResolvedValue(undefined);
     const res = await DELETE(
-      new Request("http://local/x", { method: "DELETE", headers: authHeaders() }),
+      new Request("http://local/x", {
+        method: "DELETE",
+        headers: authHeaders(),
+      }),
       params(UUID),
     );
     expect(res.status).toBe(204);
@@ -285,8 +292,7 @@ describe("DELETE /api/tenants/:id", () => {
       select: () => chain,
       eq: () => chain,
       is: () => chain,
-      maybeSingle: () =>
-        Promise.resolve({ data: { id: UUID }, error: null }),
+      maybeSingle: () => Promise.resolve({ data: { id: UUID }, error: null }),
     };
     vi.mocked(supabaseMod.getServiceClient).mockReturnValue(
       chain as ReturnType<typeof supabaseMod.getServiceClient>,
@@ -295,7 +301,10 @@ describe("DELETE /api/tenants/:id", () => {
       new Error("Tenant not found"),
     );
     const res = await DELETE(
-      new Request("http://local/x", { method: "DELETE", headers: authHeaders() }),
+      new Request("http://local/x", {
+        method: "DELETE",
+        headers: authHeaders(),
+      }),
       params(UUID),
     );
     expect(res.status).toBe(404);

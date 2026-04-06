@@ -1,4 +1,12 @@
-import { describe, it, expect, vi, beforeEach, beforeAll, afterAll } from "vitest";
+import {
+  describe,
+  it,
+  expect,
+  vi,
+  beforeEach,
+  beforeAll,
+  afterAll,
+} from "vitest";
 import { GET, POST } from "../route";
 import * as supabaseMod from "../../../../lib/supabase";
 import * as orchestratorMod from "../../../../lib/orchestrator";
@@ -52,10 +60,9 @@ describe("GET /api/tenants", () => {
   });
 
   it("returns 400 for invalid query params", async () => {
-    const req = new Request(
-      "http://local/api/tenants?page=not-a-number",
-      { headers: authHeaders() },
-    );
+    const req = new Request("http://local/api/tenants?page=not-a-number", {
+      headers: authHeaders(),
+    });
     const res = await GET(req);
     expect(res.status).toBe(400);
   });

@@ -88,9 +88,7 @@ describe("portalUrlReachable", () => {
   });
 
   it("is true when status is 200", async () => {
-    vi.mocked(fetch).mockResolvedValueOnce(
-      new Response(null, { status: 200 }),
-    );
+    vi.mocked(fetch).mockResolvedValueOnce(new Response(null, { status: 200 }));
     await expect(portalUrlReachable("https://x")).resolves.toBe(true);
   });
 
