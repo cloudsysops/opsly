@@ -176,7 +176,8 @@ jobs:
               fi
             done <"$tmp_imgs"
             rm -f "$tmp_imgs"
-            docker compose --env-file /opt/opsly/.env -f docker-compose.platform.yml up -d --no-deps traefik app admin portal
+            # --force-recreate: evita réplicas app (deploy.replicas: 2) quedando en Created mientras otras siguen Up.
+            docker compose --env-file /opt/opsly/.env -f docker-compose.platform.yml up -d --no-deps --force-recreate traefik app admin portal
 
             if [ -z "${PLATFORM_DOMAIN:-}" ]; then
               echo "PLATFORM_DOMAIN no está definido" >&2

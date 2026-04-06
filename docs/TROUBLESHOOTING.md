@@ -20,6 +20,13 @@ Guía rápida sin depender de acceso humano a Doppler/VPS (salvo donde se indica
 - Confirmar que el job de Deploy subió imagen GHCR y el VPS hizo `pull` + `up`.
 - Traefik debe enrutar `Host(api.<PLATFORM_DOMAIN>)` al servicio API.
 
+## 404 en `portal.<PLATFORM_DOMAIN>` (texto plano desde Traefik)
+
+- Suele indicar que **`opsly_portal` no está en estado `Up`** (contenedor en `Created` o caído) o hay **réplicas huérfanas** del servicio `app` con `deploy.replicas: 2`.
+- En el VPS: `docker compose --env-file /opt/opsly/.env -f docker-compose.platform.yml ps -a` y revisar `opsly_portal`, `opsly_admin`, `infra-app-*`.
+- Recuperación: `cd /opt/opsly/infra && docker compose ... stop app admin portal`, eliminar contenedores `Created` del proyecto y ejecutar `docker compose ... up -d app admin portal`.
+- El workflow **Deploy** usa `up -d --force-recreate` para traefik, app, admin y portal y reduce este estado en el siguiente push.
+
 ## Onboarding de tenant atascado
 
 - Estado en DB: `platform.tenants.status` (`provisioning`, `failed`, etc.).
