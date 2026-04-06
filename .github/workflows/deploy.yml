@@ -1,10 +1,8 @@
 # Secrets requeridos (repository o environment "production"):
 #   VPS_HOST, VPS_USER, VPS_SSH_KEY, PLATFORM_DOMAIN
-#   GHCR_PAT, GHCR_USER — PAT con read:packages (y acceso a paquetes privados de la org)
-#     para docker login en el VPS; poblar desde Doppler prd, p. ej.:
-#     doppler secrets get GHCR_TOKEN --plain --project ops-intcloudsysops --config prd | gh secret set GHCR_PAT --repo cloudsysops/opsly
-#     doppler secrets get GHCR_USER --plain --project ops-intcloudsysops --config prd | gh secret set GHCR_USER --repo cloudsysops/opsly
-#   Sin ellos, pull de imágenes privadas en GHCR falla (403) aunque GITHUB_TOKEN autentique.
+#   Pull GHCR en el VPS (job deploy): usa github.token + github.actor (permiso packages:read del workflow).
+#     Los paquetes intcloudsysops-* están ligados a este repo → el token del Actions puede hacer pull.
+#   GHCR_PAT / GHCR_USER (opcional): solo para login manual en el VPS fuera de Actions; ver doppler / docs.
 #   DISCORD_WEBHOOK_URL (opcional; si falta, los steps de Discord hacen no-op)
 #   PLATFORM_DOMAIN: dominio base sin subdominio (ej. ops.smiletripcare.com). Debe coincidir con
 #   .env del VPS para compose; el health check usa https://api.${PLATFORM_DOMAIN}/api/health
@@ -128,13 +126,13 @@ jobs:
         uses: appleboy/ssh-action@v1.0.3
         env:
           PLATFORM_DOMAIN: ${{ secrets.PLATFORM_DOMAIN }}
-          GHCR_USER: ${{ secrets.GHCR_USER }}
-          GHCR_PAT: ${{ secrets.GHCR_PAT }}
+          GITHUB_DEPLOY_TOKEN: ${{ github.token }}
+          GITHUB_DEPLOY_ACTOR: ${{ github.actor }}
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
-          envs: PLATFORM_DOMAIN,GHCR_USER,GHCR_PAT
+          envs: PLATFORM_DOMAIN,GITHUB_DEPLOY_TOKEN,GITHUB_DEPLOY_ACTOR
           script: |
             set -euo pipefail
 
@@ -148,14 +146,14 @@ jobs:
             # Imágenes app/admin/portal vienen de GHCR; no hace falta npm ci en el VPS (evita OOM / exit 137).
 
             cd /opt/opsly/infra
-            if [ -z "${GHCR_USER:-}" ] || [ -z "${GHCR_PAT:-}" ]; then
-              echo "GHCR_USER o GHCR_PAT vacíos en el job (secrets GitHub)" >&2
+            if [ -z "${GITHUB_DEPLOY_TOKEN:-}" ] || [ -z "${GITHUB_DEPLOY_ACTOR:-}" ]; then
+              echo "GITHUB_DEPLOY_TOKEN o GITHUB_DEPLOY_ACTOR vacíos (token del workflow)" >&2
               exit 1
             fi
             # Evita credenciales viejas en ~/.docker/config.json que provoquen 403 tras un login “Succeeded”.
             docker logout ghcr.io 2>/dev/null || true
-            if ! echo "$GHCR_PAT" | docker login ghcr.io -u "$GHCR_USER" --password-stdin; then
-              echo "docker login ghcr.io falló" >&2
+            if ! echo "$GITHUB_DEPLOY_TOKEN" | docker login ghcr.io -u "$GITHUB_DEPLOY_ACTOR" --password-stdin; then
+              echo "docker login ghcr.io (github.token) falló" >&2
               exit 1
             fi
             # Imágenes efectivas del compose (respeta APP_IMAGE / PORTAL_APP_IMAGE en .env). Pull secuencial: error claro por tag.
@@ -171,8 +169,8 @@ jobs:
               if ! docker pull "$img"; then
                 rm -f "$tmp_imgs"
                 echo "❌ Pull GHCR falló: $img" >&2
-                echo "Comprueba: GHCR_USER = usuario GitHub dueño del PAT (no el nombre de la org); PAT con read:packages;" >&2
-                echo "si la org usa SSO, autorizar el token; acceso Read a los paquetes en" >&2
+                echo "Comprueba: packages ligados a cloudsysops/opsly; job deploy con permissions packages:read;" >&2
+                echo "GITHUB_DEPLOY_ACTOR acorde a la cuenta que disparó el workflow; políticas org de Actions/token." >&2
                 echo "https://github.com/orgs/cloudsysops/packages?repo_name=opsly" >&2
                 exit 1
               fi
