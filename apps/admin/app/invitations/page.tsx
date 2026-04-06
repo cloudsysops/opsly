@@ -48,9 +48,7 @@ export default function InvitationsPage(): ReactElement {
         email: email.trim(),
         tenantRef,
         mode,
-        ...(displayName.trim().length > 0
-          ? { name: displayName.trim() }
-          : {}),
+        ...(displayName.trim().length > 0 ? { name: displayName.trim() } : {}),
       });
       setSuccessLink(res.link);
     } catch (err) {
@@ -74,7 +72,9 @@ export default function InvitationsPage(): ReactElement {
         El email debe coincidir con{" "}
         <code className="text-ops-green">owner_email</code> del tenant en
         Supabase. En producción hace falta token admin (
-        <code className="text-neutral-400">NEXT_PUBLIC_PLATFORM_ADMIN_TOKEN</code>
+        <code className="text-neutral-400">
+          NEXT_PUBLIC_PLATFORM_ADMIN_TOKEN
+        </code>
         ) salvo modo demo con mutaciones bloqueadas.
       </p>
 
@@ -96,7 +96,10 @@ export default function InvitationsPage(): ReactElement {
           ) : (
             <form onSubmit={onSubmit} className="space-y-4">
               <div className="space-y-1">
-                <label className="font-sans text-xs text-ops-gray" htmlFor="tenant">
+                <label
+                  className="font-sans text-xs text-ops-gray"
+                  htmlFor="tenant"
+                >
                   tenant
                 </label>
                 <Select value={tenantRef} onValueChange={setTenantRef}>
@@ -114,7 +117,10 @@ export default function InvitationsPage(): ReactElement {
               </div>
 
               <div className="space-y-1">
-                <label className="font-sans text-xs text-ops-gray" htmlFor="email">
+                <label
+                  className="font-sans text-xs text-ops-gray"
+                  htmlFor="email"
+                >
                   email (owner)
                 </label>
                 <Input
@@ -123,13 +129,19 @@ export default function InvitationsPage(): ReactElement {
                   autoComplete="email"
                   value={email}
                   onChange={(ev) => setEmail(ev.target.value)}
-                  placeholder={tenantOptions.find((t) => t.slug === tenantRef)?.owner_email ?? ""}
+                  placeholder={
+                    tenantOptions.find((t) => t.slug === tenantRef)
+                      ?.owner_email ?? ""
+                  }
                   required
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="font-sans text-xs text-ops-gray" htmlFor="mode">
+                <label
+                  className="font-sans text-xs text-ops-gray"
+                  htmlFor="mode"
+                >
                   modo portal
                 </label>
                 <Select
@@ -147,7 +159,10 @@ export default function InvitationsPage(): ReactElement {
               </div>
 
               <div className="space-y-1">
-                <label className="font-sans text-xs text-ops-gray" htmlFor="name">
+                <label
+                  className="font-sans text-xs text-ops-gray"
+                  htmlFor="name"
+                >
                   nombre en email (opcional)
                 </label>
                 <Input
@@ -167,7 +182,8 @@ export default function InvitationsPage(): ReactElement {
               {successLink ? (
                 <div className="space-y-2 rounded border border-ops-green/40 bg-ops-green/10 px-3 py-2">
                   <p className="font-sans text-xs text-ops-green">
-                    Invitación enviada. Enlace (copiar y pegar en ventana privada):
+                    Invitación enviada. Enlace (copiar y pegar en ventana
+                    privada):
                   </p>
                   <p className="break-all font-mono text-[11px] text-neutral-300">
                     {successLink}
@@ -183,7 +199,10 @@ export default function InvitationsPage(): ReactElement {
                 </div>
               ) : null}
 
-              <Button type="submit" disabled={busy || tenantOptions.length === 0}>
+              <Button
+                type="submit"
+                disabled={busy || tenantOptions.length === 0}
+              >
                 {busy ? "Enviando…" : "Enviar invitación"}
               </Button>
             </form>
