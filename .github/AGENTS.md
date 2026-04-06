@@ -47,9 +47,16 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 
 <!-- Actualizar al final de cada sesión -->
 
-**Fecha última actualización:** 2026-04-07 (**Primer tenant `smiletripcare` ✅ activo en staging** — 2026-04-06; n8n + Uptime verificados; credenciales n8n en Doppler `prd`; Supabase opsly-prod al día + `platform` usable vía API tras `GRANT`/config)
+**Fecha última actualización:** 2026-04-04 — Admin dashboard demo + métricas VPS vía Prometheus; primer tenant `smiletripcare` sigue referencia en bloque siguiente.
 
 **Completado ✅**
+
+*Admin dashboard (`apps/admin`) — demo stakeholders (2026-04-04):*
+- **URL:** https://admin.ops.smiletripcare.com (Traefik `admin.${PLATFORM_DOMAIN}` → puerto 3001).
+- **Rutas:** `/dashboard` (CPU gauge, RAM/disco con barras, uptime, tenants activos y contenedores Docker vía `GET /api/metrics/system` que hace proxy a Prometheus; refresco 30s), `/tenants` (tabla `platform.tenants` + fila expandible con n8n/Uptime y email), `/tenants/{slug}` (detalle; embed status Uptime Kuma en `/status/{slug}` con enlace alternativo).
+- **Sin login (demo):** build admin con `NEXT_PUBLIC_ADMIN_PUBLIC_DEMO=true` (por defecto en `apps/admin/Dockerfile`); en el servicio **`app`** del compose, `ADMIN_PUBLIC_DEMO_READ=true` en `/opt/opsly/.env` habilita GET públicos (`/api/tenants`, `/api/metrics`, `/api/metrics/system`, tenant por slug/UUID). POST/PATCH/DELETE siguen exigiendo `PLATFORM_ADMIN_TOKEN`.
+- **Prometheus desde la API:** `PROMETHEUS_BASE_URL` (default compose `http://host.docker.internal:9090`) + `extra_hosts: host.docker.internal:host-gateway` en el servicio **`app`**. Si no hay métricas, la API devuelve datos simulados con `mock: true`.
+- **Cliente admin → API:** si falta `NEXT_PUBLIC_API_URL`, en el navegador se infiere `https://api.<resto-del-host>` cuando el host empieza por `admin.`.
 
 *Primer tenant en staging — smiletripcare (2026-04-06, verificado ✅):*
 - **Slug:** `smiletripcare` — fila en `platform.tenants` + stack compose en VPS (`scripts/onboard-tenant.sh`).
