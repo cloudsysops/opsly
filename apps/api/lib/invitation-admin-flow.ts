@@ -39,9 +39,10 @@ function resolveDisplayName(
   return tenantName;
 }
 
-async function fetchTenantRow(slug: string): Promise<
-  | { ok: true; tenant: TenantRow }
-  | { ok: false; response: Response }
+async function fetchTenantRow(
+  slug: string,
+): Promise<
+  { ok: true; tenant: TenantRow } | { ok: false; response: Response }
 > {
   const { data: tenant, error } = await getServiceClient()
     .schema("platform")
@@ -55,7 +56,10 @@ async function fetchTenantRow(slug: string): Promise<
     console.error("invitations tenant lookup:", error);
     return {
       ok: false,
-      response: Response.json({ error: "Internal server error" }, { status: 500 }),
+      response: Response.json(
+        { error: "Internal server error" },
+        { status: 500 },
+      ),
     };
   }
   if (!tenant) {
@@ -67,7 +71,10 @@ async function fetchTenantRow(slug: string): Promise<
   return { ok: true, tenant };
 }
 
-function ensureOwnerEmail(tenant: TenantRow, emailNorm: string): Response | null {
+function ensureOwnerEmail(
+  tenant: TenantRow,
+  emailNorm: string,
+): Response | null {
   if (tenant.owner_email.toLowerCase() !== emailNorm) {
     return Response.json(
       { error: "Email does not match tenant owner" },
