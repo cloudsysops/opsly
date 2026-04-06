@@ -7,7 +7,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase";
 import { postPortalMode } from "@/lib/tenant";
-import type { PortalMode } from "@/lib/types";
+import type { PortalMode } from "@/types";
 
 export function ModeSelector(): ReactElement {
   const router = useRouter();

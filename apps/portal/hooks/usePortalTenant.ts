@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase";
 import { fetchPortalTenant } from "@/lib/tenant";
-import type { PortalTenantPayload } from "@/lib/types";
+import type { PortalTenantPayload } from "@/types";
 
 export function usePortalTenant(): {
   data: PortalTenantPayload | undefined;

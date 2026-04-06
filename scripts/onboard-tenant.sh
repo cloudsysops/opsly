@@ -16,6 +16,30 @@ source "${_SCRIPT_DIR}/lib/common.sh"
 # shellcheck source=scripts/lib/docker-helpers.sh
 source "${_SCRIPT_DIR}/lib/docker-helpers.sh"
 
+show_onboard_help() {
+  cat <<'EOF'
+Onboard de tenant: inserta fila en Supabase, genera compose y levanta n8n + Uptime Kuma.
+
+Uso:
+  ./scripts/onboard-tenant.sh --slug <slug> --email <owner@domain> --plan startup|business|enterprise [opciones]
+
+Opciones:
+  --dry-run               Muestra el plan y sale sin Supabase, Docker ni secretos generados.
+  --stripe-customer-id X Opcional (Stripe customer id).
+  --yes                   Confirmaciones no interactivas (si el script las usa).
+  -h, --help              Esta ayuda.
+
+Ejemplos:
+  ./scripts/onboard-tenant.sh --slug demo --email owner@example.com --plan startup --dry-run
+  export SUPABASE_URL=... SUPABASE_SERVICE_ROLE_KEY=... PLATFORM_DOMAIN=... TENANTS_PATH=... TEMPLATE_PATH=...
+  ./scripts/onboard-tenant.sh --slug demo --email owner@example.com --plan startup
+
+Variables obligatorias (solo si NO usas --dry-run):
+  SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, PLATFORM_DOMAIN, TENANTS_PATH, TEMPLATE_PATH
+
+EOF
+}
+
 SLUG=""
 EMAIL=""
 PLAN=""
@@ -48,14 +72,18 @@ while [[ $# -gt 0 ]]; do
       export ASSUME_YES=true
       shift
       ;;
+    -h | --help)
+      show_onboard_help
+      exit 0
+      ;;
     *)
-      die "Unknown argument: $1" 1
+      die "Unknown argument: $1 (use --help)" 1
       ;;
   esac
 done
 
 if [[ -z "${SLUG}" || -z "${EMAIL}" || -z "${PLAN}" ]]; then
-  die "Required: --slug, --email, --plan (startup|business|enterprise)" 1
+  die "Required: --slug, --email, --plan (startup|business|enterprise). Use --help." 1
 fi
 
 if [[ ! "${SLUG}" =~ ^[a-z0-9-]{3,30}$ ]]; then
@@ -66,6 +94,31 @@ case "${PLAN}" in
   startup | business | enterprise) ;;
   *) die "Invalid plan: ${PLAN} (expected startup|business|enterprise)" 1 ;;
 esac
+
+if [[ "${DRY_RUN}" == "true" ]]; then
+  log_info "========== DRY-RUN — resumen =========="
+  log_info "Slug:           ${SLUG}"
+  log_info "Owner email:    ${EMAIL}"
+  log_info "Plan:           ${PLAN}"
+  if [[ -n "${STRIPE_ID}" ]]; then
+    log_info "Stripe customer id: (set)"
+  fi
+  log_info "Traefik network default: ${TRAEFIK_NETWORK:-traefik-public}"
+  log_info ""
+  log_info "Pasos que ejecutaría el script en modo real:"
+  log_info "  1. Validar dependencias (curl, jq, openssl, sed, docker)"
+  log_info "  2. Comprobar que el slug no exista ya en Supabase (GET tenants)"
+  log_info "  3. Asignar puertos host para n8n y Uptime según plan y ${TENANTS_PATH:-\$TENANTS_PATH}/docker-compose.*.yml"
+  log_info "  4. Generar N8N_BASIC_AUTH_PASSWORD y N8N_ENCRYPTION_KEY (openssl)"
+  log_info "  5. Renderizar plantilla → \${TENANTS_PATH}/docker-compose.${SLUG}.yml"
+  log_info "  6. POST tenant (status=provisioning) en schema platform"
+  log_info "  7. docker compose up del stack tenant; esperar healthy"
+  log_info "  8. PATCH tenant active + JSON services (URLs n8n/uptime)"
+  log_info "  9. Webhook Discord (si DISCORD_WEBHOOK_URL)"
+  log_info "========================================="
+  log_info "No se ha modificado Supabase ni disco. Ejecuta sin --dry-run cuando el entorno esté listo."
+  exit 0
+fi
 
 require_env SUPABASE_URL SUPABASE_SERVICE_ROLE_KEY PLATFORM_DOMAIN TENANTS_PATH TEMPLATE_PATH
 require_cmd curl jq openssl sed
@@ -145,22 +198,6 @@ tenant_exists_json() {
     -H "Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}" \
     -H "Accept-Profile: platform"
 }
-
-if [[ "${DRY_RUN}" == "true" ]]; then
-  log_info "DRY-RUN — full execution plan (no Supabase/Docker changes)"
-  log_info "1. Validate args/env (done)"
-  log_info "2. GET ${SUPABASE_URL}/rest/v1/tenants?slug=eq.${SLUG}"
-  log_info "3. Allocate ports from base $(plan_port_base "${PLAN}") scanning ${TENANTS_PATH}/docker-compose.*.yml"
-  log_info "4. openssl rand for N8N_BASIC_AUTH_PASSWORD, N8N_ENCRYPTION_KEY"
-  log_info "5. sed render ${TEMPLATE_PATH} -> ${TENANTS_PATH}/docker-compose.${SLUG}.yml"
-  log_info "6. POST ${SUPABASE_URL}/rest/v1/tenants (status=provisioning)"
-  log_info "7. docker compose -f ${TENANTS_PATH}/docker-compose.${SLUG}.yml up -d --remove-orphans"
-  log_info "8. wait_healthy ${SLUG} 60"
-  log_info "9. PATCH tenant status=active + services JSON"
-  log_info "10. Discord webhook (if set)"
-  log_info "11. Print summary URLs"
-  exit 0
-fi
 
 require_cmd docker
 

@@ -53,7 +53,11 @@ async function fetchTenantRow(
     .maybeSingle();
 
   if (error) {
-    console.error("invitations tenant lookup:", error);
+    const code =
+      error && typeof error === "object" && "code" in error
+        ? String((error as { code: unknown }).code)
+        : "unknown";
+    console.error("invitations tenant lookup failed", { code });
     return {
       ok: false,
       response: Response.json(
@@ -117,7 +121,7 @@ export async function executeAdminInvitation(
     });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Invite failed";
-    console.error("sendPortalInvitationForTenant:", err);
+    console.error("sendPortalInvitationForTenant failed [REDACTED]");
     return Response.json({ error: message }, { status: 500 });
   }
 }

@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { createServerSupabase } from "@/lib/supabase/server";
 import { fetchPortalTenant } from "@/lib/tenant";
-import type { PortalTenantPayload } from "@/lib/types";
+import type { PortalTenantPayload } from "@/types";
 
 export async function requirePortalPayload(): Promise<PortalTenantPayload> {
   const supabase = await createServerSupabase();
