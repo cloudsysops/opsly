@@ -15,10 +15,10 @@ Guía operativa para enviar invitaciones al portal del tenant (staging/producci�
 
 | Requisito | Detalle |
 |-----------|---------|
-| Header admin | `x-admin-token: <PLATFORM_ADMIN_TOKEN>` (mismo valor que en Doppler `prd`) |
+| Header admin | `Authorization: Bearer <PLATFORM_ADMIN_TOKEN>` o `x-admin-token` (mismo valor que en Doppler `prd`) |
 | Tenant | Fila en `platform.tenants` con `slug` y `owner_email` |
 | Email | Debe ser exactamente el `owner_email` del tenant (normalizado a minúsculas) |
-| Resend | `RESEND_API_KEY` y remitente válidos en entorno API |
+| Resend | `RESEND_API_KEY` (clave activa en [resend.com](https://resend.com/api-keys)), y **`RESEND_FROM_EMAIL`** o **`RESEND_FROM_ADDRESS`** en Doppler → `.env` del contenedor API (tras `vps-bootstrap.sh`, recrear servicio `app`). Prueba sin dominio propio: `onboarding@resend.dev` (sujeto a políticas de la cuenta Resend). |
 | Dominio portal | `PORTAL_SITE_URL` o `PLATFORM_DOMAIN` para construir `https://portal.${DOMAIN}` |
 
 ## Códigos de respuesta
@@ -57,7 +57,8 @@ Campos opcionales: `name` (sobrescribe el nombre mostrado en el email; por defec
 |---------|----------------|------------|
 | **403 Forbidden** | Email no coincide con `owner_email` | Consultar `platform.tenants` por slug; alinear email en el POST |
 | **404 Tenant not found** | Slug mal escrito o tenant borrado (`deleted_at`) | Verificar slug en Supabase |
-| **500** + mensaje Resend | API key, dominio de envío, cuota | Dashboard Resend; variable `RESEND_API_KEY` en Doppler |
+| **500** + mensaje Resend | API key, dominio de envío, cuota | Dashboard Resend; `RESEND_API_KEY` / `RESEND_FROM_*` en Doppler `prd` + bootstrap VPS + `compose up --force-recreate app` |
+| **500** + `API key is invalid` | `RESEND_API_KEY` revocada, de otro entorno o copiada mal | Crear clave nueva en Resend → `doppler secrets set RESEND_API_KEY=… --project ops-intcloudsysops --config prd` → bootstrap en VPS → recrear `app` |
 | **500** + Supabase | `generateLink` rechazado (usuario existe, política, etc.) | Logs API; revisar usuario en Auth |
 | **No llega el email** | Spam, bloqueo, remitente no verificado | Resend logs; probar otro buzón |
 | **CORS en navegador** | Solo aplica si llamas la API desde browser | Invitaciones deben hacerse **server-side** o desde admin con origen permitido |
@@ -69,7 +70,7 @@ docker logs opsly_portal 2>&1 | tail -50
 # Si el servicio API tiene otro nombre de contenedor, ajustar (p. ej. stack del compose plataforma).
 ```
 
-## Próximo: Automatizar en UI admin
+## UI admin
 
-- Formulario en ruta dedicada (p. ej. `/invitations`) para generar enlaces sin `curl`.
-- Listado de invitaciones pendientes requeriría nuevo modelo o integración con Supabase Auth; ver `apps/admin/INVITATIONS_UI.md`.
+- Formulario en **`/invitations`** (ver `apps/admin/INVITATIONS_UI.md`).
+- Listado de invitaciones pendientes requeriría nuevo modelo o integración con Supabase Auth.

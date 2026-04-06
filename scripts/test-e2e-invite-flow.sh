@@ -82,8 +82,8 @@ echo "${RESPONSE}" | jq . 2>/dev/null || echo "${RESPONSE}"
 
 if [[ "${HTTP_CODE}" != "200" ]]; then
   echo "❌ POST /api/invitations → HTTP ${HTTP_CODE}" >&2
-  if [[ "${RESPONSE}" == *RESEND* ]]; then
-    echo "   Bloqueante: define RESEND_API_KEY y RESEND_FROM_EMAIL (o RESEND_FROM_ADDRESS) en Doppler prd y vps-bootstrap." >&2
+  if [[ "${RESPONSE}" == *RESEND* || "${RESPONSE}" == *"API key is invalid"* ]]; then
+    echo "   Revisa Doppler prd: RESEND_API_KEY (clave activa en resend.com) y RESEND_FROM_EMAIL o RESEND_FROM_ADDRESS; vps-bootstrap + recrear servicio app en VPS." >&2
   fi
   exit 1
 fi

@@ -47,7 +47,7 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 
 <!-- Actualizar al final de cada sesión -->
 
-**Fecha última actualización:** 2026-04-07 — **Fase 2 invite/onboard:** `./scripts/validate-config.sh` → **LISTO PARA DEPLOY**. **Portal staging:** `https://portal.ops.smiletripcare.com/login` → **200** (tras recuperar contenedores `app`/`admin`/`portal` que habían quedado en `Created` y **404** en Traefik; ver `docs/TROUBLESHOOTING.md` y `deploy.yml` con `--force-recreate`). **`curl api`/health** → `status ok`. **Contenedores Opsly:** `traefik`, `infra-redis-1`, `infra-app-*`, `opsly_admin`, `opsly_portal`. **Tenants:** `smiletripcare`, `peskids` (stacks n8n/uptime Up). **Pendiente:** **Resend en VPS:** `RESEND_API_KEY` + `RESEND_FROM_EMAIL` o `RESEND_FROM_ADDRESS` en Doppler `prd` → `./scripts/vps-bootstrap.sh` (o `secrets download`) para que `POST /api/invitations` no devuelva 500. **E2E:** `OWNER_EMAIL=smiletripcare@gmail.com` (owner en Supabase) + `ADMIN_TOKEN` → `./scripts/test-e2e-invite-flow.sh`. **Admin:** pantalla **`/invitations`** (enviar invitación vía API con Bearer); redeploy admin para staging.
+**Fecha última actualización:** 2026-04-07 — **Fase 2 invite/onboard:** `./scripts/validate-config.sh` → **LISTO PARA DEPLOY**. **Portal staging:** `https://portal.ops.smiletripcare.com/login` → **200** (tras recuperar contenedores `app`/`admin`/`portal` que habían quedado en `Created` y **404** en Traefik; ver `docs/TROUBLESHOOTING.md` y `deploy.yml` con `--force-recreate`). **`curl api`/health** → `status ok`. **Contenedores Opsly:** `traefik`, `infra-redis-1`, `infra-app-*`, `opsly_admin`, `opsly_portal`. **Tenants:** `smiletripcare`, `peskids` (stacks n8n/uptime Up). **Resend (2026-04-07):** en Doppler `prd` existe **`RESEND_FROM_EMAIL=onboarding@resend.dev`**; VPS `vps-bootstrap.sh` + recreación **`app`**. **`POST /api/invitations`** aún falla con cuerpo **`API key is invalid`** → revisar **`RESEND_API_KEY`** en [Resend](https://resend.com/api-keys) (clave activa) y actualizar Doppler + bootstrap + `compose up --force-recreate app`. **E2E** listo tras clave válida. **Admin:** `/invitations` en repo; staging necesita imagen admin reciente si falta en el host.
 
 **Completado ✅**
 
@@ -367,13 +367,14 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 <!-- Una sola tarea concreta. Actualizar al final de cada sesión -->
 
 ```bash
-# 1. Doppler prd (+ bootstrap VPS): RESEND_API_KEY, RESEND_FROM_EMAIL (o RESEND_FROM_ADDRESS).
-# 2. Deploy app (API) si aún no está la imagen con requireAdminToken (Bearer | x-admin-token).
+# 1. Resend: verificar en dashboard que RESEND_API_KEY es válida; doppler secrets set RESEND_API_KEY=… --project ops-intcloudsysops --config prd
+# 2. VPS: ssh vps-dragon@$IP 'cd /opt/opsly && ./scripts/vps-bootstrap.sh'
+#    luego infra: docker compose … up -d --no-deps --force-recreate app  (si conflictos de nombre, stop/rm infra-app-* antes)
 # 3. E2E: export ADMIN_TOKEN="$(doppler secrets get PLATFORM_ADMIN_TOKEN --plain --project ops-intcloudsysops --config prd)"
-#         export OWNER_EMAIL="smiletripcare@gmail.com"   # mismo owner_email que GET /api/tenants
+#         export OWNER_EMAIL="smiletripcare@gmail.com"
 #         ./scripts/test-e2e-invite-flow.sh
-# 4. Humano: link del 200 → portal /invite/...?email=... → set password → /dashboard.
-# 5. Admin staging: https://admin.ops.smiletripcare.com/invitations tras redeploy admin.
+# 4. Humano: link del 200 → portal /invite/...?email=... → password → /dashboard.
+# 5. Admin: https://admin.ops.smiletripcare.com/invitations (tras deploy admin con último main).
 
 # Secrets build (si falla job build-and-push; uno por comando):
 # gh secret set NEXT_PUBLIC_SUPABASE_URL --repo cloudsysops/opsly
@@ -397,7 +398,8 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 - [x] **Health check staging** — `curl -sfk https://api.ops.smiletripcare.com/api/health` → `{"status":"ok"}` (2026-04-06 23:58 UTC)
 - [x] **Migraciones SQL en Supabase opsly-prod** — `db push` vía CLI enlazada; tablas `platform.tenants` / `platform.subscriptions` verificadas en Postgres (2026-04-07)
 - [x] **PostgREST / API sobre schema `platform`** — `GRANT` USAGE (y permisos necesarios) + schema expuesto en API; onboarding y API contra `platform.tenants` operativos (2026-04-06)
-- [ ] **Resend en API (invitaciones)** — sin `RESEND_FROM_EMAIL`/`RESEND_FROM_ADDRESS` (+ `RESEND_API_KEY`) en `.env` del VPS, `POST /api/invitations` → 500; resolver en Doppler `prd` + bootstrap antes de E2E completo.
+- [x] **Resend remitente en Doppler/VPS** — `RESEND_FROM_EMAIL` en `prd` + bootstrap + `app` recreado (2026-04-07).
+- [ ] **`RESEND_API_KEY` válida** — staging devuelve `API key is invalid` en `POST /api/invitations`; rotar clave en Resend y Doppler, luego bootstrap + recrear `app`.
 
 ---
 
@@ -445,6 +447,7 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 |---|---|---|
 | 2026-04-07 | Job Deploy: `docker compose up -d --no-deps --force-recreate traefik app admin portal` | Con `deploy.replicas: 2` en `app`, un `up` sin recrear dejaba contenedores en `Created` y `opsly_portal`/`opsly_admin` sin rutear → 404 en `portal.*` |
 | 2026-04-07 | `requireAdminToken` acepta `Authorization: Bearer` o `x-admin-token` | Runbook/E2E/documentación usaban `x-admin-token`; el admin app usa Bearer; ambas formas válidas |
+| 2026-04-07 | Remitente por defecto `RESEND_FROM_EMAIL=onboarding@resend.dev` en Doppler `prd` hasta dominio verificado ops/smiletrip | Desbloquea envío respecto a “missing RESEND_FROM_*”; la clave API debe seguir siendo válida en Resend |
 | 2026-04 | validate-config usa `dig +short` para DNS | Comprobar que la IP del VPS aparece en la resolución |
 | 2026-04 | sync-config redirige stdout de `doppler secrets set` a /dev/null | No volcar tablas con valores en logs compartidos |
 | 2026-04 | Dashboard Traefik en `traefik.${PLATFORM_DOMAIN}` | Reservar `admin.*` para la app Admin Opsly |
