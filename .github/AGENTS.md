@@ -47,9 +47,18 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 
 <!-- Actualizar al final de cada sesión -->
 
-**Fecha última actualización:** 2026-04-04 — Documentación consolidada de la sesión Admin + API métricas + infra; commits en `main`: `5219370` (`feat(admin): …`), `3c4cf33` (sync `.github/AGENTS.md`).
+**Fecha última actualización:** 2026-04-06 — CORS API + build-args admin/CI + sincronización de este `AGENTS.md` (commit `docs: update AGENTS.md 2026-04-06`).
 
 **Completado ✅**
+
+*CORS + `NEXT_PUBLIC_*` en build admin + `deploy.yml` (2026-04-06, commit `8f12487` `fix(admin): add CORS headers and Supabase build args`, pusheado a `main`):*
+- **Problema:** el navegador en `admin.${PLATFORM_DOMAIN}` hacía `fetch` a `api.${PLATFORM_DOMAIN}` y la API rechazaba por **CORS**.
+- **`apps/api/next.config.ts`:** `headers()` en rutas `/api/:path*` con `Access-Control-Allow-Origin` (sin `*`), `Allow-Methods` (`GET,POST,PATCH,DELETE,OPTIONS`), `Allow-Headers` (`Content-Type`, `Authorization`, `x-admin-token`). Origen: `NEXT_PUBLIC_ADMIN_URL` si existe; si no, `https://admin.${PLATFORM_DOMAIN}`. Si no hay origen resuelto, **no** se envían headers CORS (evita wildcard y URLs inventadas).
+- **`apps/api/Dockerfile` (builder):** `ARG`/`ENV` `PLATFORM_DOMAIN` y `NEXT_PUBLIC_ADMIN_URL` **antes** de `npm run build` — los headers de `next.config` se resuelven en **build time** en la imagen.
+- **`apps/admin/Dockerfile` (builder):** `ARG`/`ENV` `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `NEXT_PUBLIC_API_URL` antes del build (Next hornea `NEXT_PUBLIC_*`).
+- **`.github/workflows/deploy.yml`:** en *Build and push API image*, `build-args: PLATFORM_DOMAIN=${{ secrets.PLATFORM_DOMAIN }}`. En *Admin*, `build-args` con `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` y `NEXT_PUBLIC_API_URL=https://api.${{ secrets.PLATFORM_DOMAIN }}`. Comentario en cabecera del YAML con comandos `gh secret set` para el repo.
+- **Secretos GitHub requeridos en el job build** (valores desde Doppler `prd`): `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `PLATFORM_DOMAIN`. Sin ellos el build de admin o el origen CORS en API pueden fallar o quedar vacíos.
+- **Verificación local:** `npm run type-check` en verde antes del commit; post-deploy humano: `https://admin.ops.smiletripcare.com/dashboard` sin errores de CORS/Supabase en consola (tras definir secrets y un run verde de **Deploy**).
 
 *Admin dashboard + API métricas — sesión Cursor 2026-04-04 (stakeholders / familia):*
 
@@ -136,7 +145,7 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 
 *CI — `deploy.yml`: build+push GHCR y deploy por pull en VPS (commit `0e4123b`, 2026-04-05):*
 - El job **`build`** (solo Node build en Actions) se sustituyó por **`build-and-push`:** `permissions: contents: read`, `packages: write`; **`docker/login-action@v3`** contra `ghcr.io` con `${{ github.actor }}` y **`${{ secrets.GITHUB_TOKEN }}`** (si el login en Actions falla por token vacío, usar **`${{ github.token }}`** según documentación de GitHub).
-- Dos pasos **`docker/build-push-action@v5`:** `context: .`, `file: apps/api/Dockerfile` y `apps/admin/Dockerfile`, **`push: true`**, tags **`ghcr.io/cloudsysops/intcloudsysops-api:latest`** y **`ghcr.io/cloudsysops/intcloudsysops-admin:latest`**.
+- Dos pasos **`docker/build-push-action@v5`:** `context: .`, `file: apps/api/Dockerfile` y `apps/admin/Dockerfile`, **`push: true`**, tags **`ghcr.io/cloudsysops/intcloudsysops-api:latest`** y **`ghcr.io/cloudsysops/intcloudsysops-admin:latest`**. Desde **2026-04-06** (`8f12487`): **build-args** en API (`PLATFORM_DOMAIN`) y admin (`NEXT_PUBLIC_SUPABASE_*`, `NEXT_PUBLIC_API_URL` con `secrets.PLATFORM_DOMAIN`).
 - Job **`deploy`** ahora **`needs: build-and-push`**. Script SSH en VPS: `git fetch` / `reset` en `/opt/opsly`, **`npm ci`** en raíz (sin `npm run build` en `apps/api` ni `apps/admin`); en **`infra/`** → **`docker compose -f docker-compose.platform.yml pull`** y **`docker compose up -d --no-deps app admin`** (sin **`--build`**).
 - **`infra/docker-compose.platform.yml`:** imágenes por defecto pasan a **`ghcr.io/cloudsysops/intcloudsysops-api:latest`** y **`ghcr.io/cloudsysops/intcloudsysops-admin:latest`** (sustituye `tu-org` en los defaults).
 - **Doppler `prd`:** **`APP_IMAGE`** y **`ADMIN_APP_IMAGE`** actualizados a esas mismas URLs para alinear `.env` del VPS tras bootstrap.
@@ -290,7 +299,8 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 - Build artifacts: Ready for GHCR push
 
 **En progreso 🔄**
-- **Despliegue Admin + API lectura demo en VPS:** variables `ADMIN_PUBLIC_DEMO_READ=true` y nuevas imágenes GHCR (`feat(admin)` en `main`); validar dashboard y `/api/metrics/system` en producción staging.
+- **Secretos GitHub** `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `PLATFORM_DOMAIN` definidos en `cloudsysops/opsly` y **Deploy** verde para que la imagen admin incluya Supabase/API URL y la API CORS el origen admin correcto.
+- **Despliegue Admin + API lectura demo en VPS:** variables `ADMIN_PUBLIC_DEMO_READ=true` y nuevas imágenes GHCR; validar dashboard, `/api/metrics/system` y consola del navegador (CORS + `NEXT_PUBLIC_*`).
 - **CI “Nightly code quality” (`nightly-fix.yml`):** probar con *Actions → Run workflow*; el cron solo corre con el workflow en la rama por defecto (`main`).
 - **CI `Deploy` en GitHub Actions:** tras push a `main`, **`build-and-push`** publica imágenes en GHCR; **`deploy`** hace SSH, **`docker compose --env-file /opt/opsly/.env … pull` + `up`**, health con reintentos y **`curl -sfk`**. Revisar *Actions → Deploy* si falla SSH, disco VPS, Traefik, **`PLATFORM_DOMAIN`** o falta **`DOCKER_GID`** en el `.env` del VPS (sin él, `group_add` usa `999` y el socket puede seguir inaccesible).
 - Deploy staging — imágenes **`ghcr.io/cloudsysops/intcloudsysops-{api,admin}:latest`**; en VPS **`/opt/opsly/.env`** con **`DOCKER_GID`** (vuelve a ejecutar **`vps-bootstrap.sh`** tras cambios de compose si hace falta); login GHCR en el job con **`GITHUB_TOKEN`**. Tras cambios en Traefik: recrear contenedor **`traefik`** en el VPS para cargar env y `group_add`.
@@ -314,12 +324,18 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 ```bash
 # ✅ STAGING VERDE — Health OK
 # ✅ Primer tenant smiletripcare onboarded (2026-04-06) — n8n + Uptime OK; secretos n8n en Doppler prd
-# ✅ Admin dashboard demo implementado en repo (2026-04-04) — despliegue: pull imágenes + ADMIN_PUBLIC_DEMO_READ en app
+# ✅ CORS + build-args admin/API en main (2026-04-06) — commit 8f12487
+
+# Secretos GitHub (una vez, desde valores Doppler prd):
+# gh secret set NEXT_PUBLIC_SUPABASE_URL --repo cloudsysops/opsly
+# gh secret set NEXT_PUBLIC_SUPABASE_ANON_KEY --repo cloudsysops/opsly
+# gh secret set PLATFORM_DOMAIN --repo cloudsysops/opsly
 
 # Próximo paso inmediato:
-# 1. En VPS: asegurar ADMIN_PUBLIC_DEMO_READ=true en /opt/opsly/.env, docker compose pull + up app admin; verificar https://admin.ops.smiletripcare.com sin redirect a /login.
-# 2. Validar métricas reales: Prometheus en host :9090 alcanzable vía host.docker.internal desde contenedor app; si no, confirmar aviso «datos simulados» en dashboard.
-# 3. (Opcional) Reintroducir auth Supabase para admin operativo interno: build con NEXT_PUBLIC_ADMIN_PUBLIC_DEMO=false y quitar ADMIN_PUBLIC_DEMO_READ en producción cerrada.
+# 1. Tras push/deploy: abrir https://admin.ops.smiletripcare.com/dashboard — sin errores CORS ni Supabase en consola.
+# 2. En VPS: ADMIN_PUBLIC_DEMO_READ=true en /opt/opsly/.env, docker compose pull + up app admin si hace falta nueva imagen.
+# 3. Validar métricas: Prometheus vía host.docker.internal desde app; si no, aviso «datos simulados» en dashboard.
+# 4. (Opcional) Admin cerrado: NEXT_PUBLIC_ADMIN_PUBLIC_DEMO=false en build y quitar ADMIN_PUBLIC_DEMO_READ en app.
 ```
 
 ---
@@ -430,6 +446,9 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 | 2026-04-04 | Admin demo + `GET /api/metrics/system` (Prometheus proxy) + lectura pública GET con `ADMIN_PUBLIC_DEMO_READ` | Stakeholders ven VPS/tenants sin login; el navegador nunca llama a Prometheus directo; mutaciones API siguen protegidas |
 | 2026-04-04 | Traefik admin: `tls=true` explícito en router `opsly-admin` | Alineado con router `app`; certresolver LetsEncrypt sin ambigüedad TLS |
 | 2026-04-04 | Orden de overrides ESLint: `constants.ts` al final de `overrides` | Evita que `apps/api/**` reactive `no-magic-numbers` sobre constantes con literales numéricos |
+| 2026-04-06 | CORS en API vía `next.config` `headers()` + origen explícito (env o `https://admin.${PLATFORM_DOMAIN}`); sin `*` | Admin y API en subdominios distintos; sin hardcode de dominio cliente en código si se usa `PLATFORM_DOMAIN` en build |
+| 2026-04-06 | Imagen API: `PLATFORM_DOMAIN` en build para fijar CORS en standalone Next | `next.config` se evalúa en build; el `.env` del contenedor en runtime no rebakea headers |
+| 2026-04-06 | Imagen admin: `NEXT_PUBLIC_SUPABASE_*` y `NEXT_PUBLIC_API_URL` como ARG/ENV en Dockerfile + secrets en `deploy.yml` build-args | Next solo inyecta `NEXT_PUBLIC_*` en build; CI debe pasar URL anon y API pública |
 
 ---
 

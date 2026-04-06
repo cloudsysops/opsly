@@ -30,9 +30,10 @@
     "apps": [
       "admin",
       "api",
+      "portal",
       "web"
     ],
-    "scripts": 15,
+    "scripts": 16,
     "adrs": 5,
     "migrations": 7
   }
