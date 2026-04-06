@@ -23,7 +23,7 @@ async function supabaseReachable(): Promise<CheckStatus> {
   if (!raw) {
     return "error";
   }
-  const base = raw.replace(/\/$/, "");
+  const base = raw.replace(/\/+$/, "");
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), HEALTH_FETCH_MS);
   try {

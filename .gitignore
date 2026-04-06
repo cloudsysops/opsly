@@ -17,6 +17,7 @@ agents/prompts/secrets-*.md
 .env*.local
 
 node_modules
+apps/api/coverage/
 .next
 .env*
 !.env.example
@@ -33,3 +34,4 @@ dist
 terraform.tfstate
 terraform.tfstate.backup
 *.tfvars
+infra/terraform/tfplan
