@@ -1,0 +1,427 @@
+openapi: 3.0.3
+info:
+  title: Opsly Platform API (subset)
+  version: 0.1.0
+  description: >
+    Referencia estilo OpenAPI de rutas públicas documentadas en el monorepo.
+    Base URL típica `https://api.<PLATFORM_DOMAIN>`. Autenticación admin vía
+    `Authorization: Bearer <PLATFORM_ADMIN_TOKEN>` salvo rutas portal (JWT Supabase)
+    o health.
+servers:
+  - url: https://api.example.com
+    description: Sustituir por dominio real (p. ej. api.ops.smiletripcare.com)
+
+paths:
+  /api/health:
+    get:
+      summary: Health check
+      operationId: getHealth
+      responses:
+        '200':
+          description: Estado del servicio y checks
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+                  timestamp:
+                    type: string
+                    format: date-time
+                  version:
+                    type: string
+                  checks:
+                    type: object
+                    properties:
+                      supabase:
+                        type: string
+                        enum: [ok, degraded, error, skipped]
+                      redis:
+                        type: string
+                        enum: [ok, degraded, error, skipped]
+
+  /api/metrics:
+    get:
+      summary: Métricas agregadas de tenants + MRR
+      operationId: getMetrics
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Conteos y MRR
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total_tenants:
+                    type: integer
+                  active_tenants:
+                    type: integer
+                  suspended_tenants:
+                    type: integer
+                  mrr_usd:
+                    type: number
+                  tenants_by_plan:
+                    type: object
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /api/metrics/system:
+    get:
+      summary: Métricas de host (Prometheus o mock)
+      operationId: getSystemMetrics
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: CPU, RAM, disco, uptime, contadores
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  cpu_percent:
+                    type: number
+                  ram_used_gb:
+                    type: number
+                  ram_total_gb:
+                    type: number
+                  disk_used_gb:
+                    type: number
+                  disk_total_gb:
+                    type: number
+                  uptime_seconds:
+                    type: integer
+                  active_tenants:
+                    type: integer
+                  containers_running:
+                    type: integer
+                  mock:
+                    type: boolean
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /api/tenants:
+    get:
+      summary: Listar tenants
+      operationId: listTenants
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+        - name: status
+          in: query
+          schema:
+            type: string
+        - name: plan
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Lista paginada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                  total:
+                    type: integer
+                  page:
+                    type: integer
+                  limit:
+                    type: integer
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    post:
+      summary: Crear tenant (orquestación async)
+      operationId: createTenant
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [slug, owner_email, plan]
+              properties:
+                slug:
+                  type: string
+                owner_email:
+                  type: string
+                  format: email
+                plan:
+                  type: string
+                  enum: [startup, business, enterprise, demo]
+                stripe_customer_id:
+                  type: string
+      responses:
+        '202':
+          description: Aceptado — provisión en curso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  slug:
+                    type: string
+                  status:
+                    type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '409':
+          description: Slug duplicado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+
+  /api/tenants/{id}:
+    get:
+      summary: Obtener tenant por UUID o slug
+      operationId: getTenant
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/TenantRef'
+      responses:
+        '200':
+          description: Tenant y estado del stack
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      summary: Actualizar nombre o plan
+      operationId: patchTenant
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                plan:
+                  type: string
+      responses:
+        '200':
+          description: Registro actualizado
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      summary: Eliminar tenant (orquestación)
+      operationId: deleteTenant
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Eliminado
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/portal/me:
+    get:
+      summary: Sesión portal — datos tenant y salud de URLs
+      operationId: getPortalMe
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Payload portal
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/portal/mode:
+    post:
+      summary: Establecer modo developer | managed
+      operationId: postPortalMode
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [mode]
+              properties:
+                mode:
+                  type: string
+                  enum: [developer, managed]
+      responses:
+        '200':
+          description: Actualizado
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /api/invitations:
+    post:
+      summary: Enviar invitación (admin)
+      operationId: postInvitation
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email]
+              properties:
+                email:
+                  type: string
+                slug:
+                  type: string
+                tenantRef:
+                  type: string
+                name:
+                  type: string
+                mode:
+                  type: string
+                  enum: [developer, managed]
+      responses:
+        '200':
+          description: Invitación aceptada en flujo
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /api/webhooks/stripe:
+    post:
+      summary: Webhook Stripe (firma requerida si hay secret)
+      operationId: postStripeWebhook
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      parameters:
+        - name: Stripe-Signature
+          in: header
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Siempre acknowledged con received
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  received:
+                    type: boolean
+                    example: true
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: >
+        Admin `PLATFORM_ADMIN_TOKEN` o JWT Supabase según ruta.
+
+  parameters:
+    TenantRef:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+      description: UUID o slug del tenant
+
+  schemas:
+    ErrorBody:
+      type: object
+      properties:
+        error:
+          type: string
+
+  responses:
+    BadRequest:
+      description: Validación o JSON inválido
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorBody'
+    Unauthorized:
+      description: Sin autorización
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorBody'
+    Forbidden:
+      description: Prohibido
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorBody'
+    NotFound:
+      description: No encontrado
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorBody'
+    InternalError:
+      description: Error interno
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorBody'
