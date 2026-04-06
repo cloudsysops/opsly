@@ -47,11 +47,20 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 
 <!-- Actualizar al final de cada sesión -->
 
-**Fecha última actualización:** 2026-04-06 — Sesión portal documentada: app `apps/portal`, **`GET /api/portal/me`**, `POST /api/portal/mode`, invitaciones Resend, CORS en middleware, Docker/Traefik/CI; commits `feat(portal)…`, `fix(api): serve portal session at GET /api/portal/me`, ajustes `docs(agents)…` en `main`. **Pendiente:** deploy imagen portal en VPS + prueba E2E invitación (p. ej. `peskids`).
+**Fecha última actualización:** 2026-04-06 — Consolidación en `AGENTS.md` de la sesión portal: app **`apps/portal`**, API **`GET /api/portal/me`** (fix frente a `/tenant`), CORS middleware, Docker **3002** + Traefik + **`deploy.yml`**, hook **`usePortalTenant`**, doc y espejo `.github/AGENTS.md`; todo en **`main`** (`cloudsysops/opsly`). **Pendiente:** deploy portal en VPS + E2E + invitación **`peskids`**.
 
 **Completado ✅**
 
-*Portal cliente `apps/portal` (integrado en `main`, sesión 2026-04-06 / 2026-04-07):*
+*Sesión Cursor — qué se hizo (orden aproximado):*
+1. **Scaffold portal** — `apps/portal` (Next 15, Tailwind, login, `/invite/[token]`, dashboards developer/managed, `middleware`, libs Supabase, `output: standalone`, sin `any`).
+2. **API** — `GET /api/portal/me`, `POST /api/portal/mode`, invitaciones `POST /api/invitations` + Resend; **`lib/portal-me.ts`**, **`portal-auth.ts`**, **`cors-origins.ts`**, **`apps/api/middleware.ts`**.
+3. **Corrección crítica** — El cliente ya llamaba **`/api/portal/me`** pero la API exponía solo **`/tenant`** → handler movido a **`app/api/portal/me/route.ts`**, eliminado **`tenant`**, imports relativos corregidos (`../../../../lib/...`); **`npm run type-check`** en verde.
+4. **Hook** — **`apps/portal/hooks/usePortalTenant.ts`** (opcional) para fetch con sesión.
+5. **Managed** — Sin email fijo; solo **`NEXT_PUBLIC_SUPPORT_EMAIL`** o mensaje de configuración en UI.
+6. **Infra/CI** — Imagen **`ghcr.io/cloudsysops/intcloudsysops-portal:latest`**, servicio **`portal`** en compose, job Deploy con **`up … portal`**; build-args **`NEXT_PUBLIC_*`** alineados a admin.
+7. **Git** — `feat(portal): add client dashboard…` → `fix(api): serve portal session at GET /api/portal/me (remove /tenant)` → `docs(agents): portal built…` → `docs(agents): fix portal API path /me vs /tenant in AGENTS` → push a **`main`**.
+
+*Portal cliente `apps/portal` (detalle en repo):*
 
 **App (`apps/portal`)**
 - Next.js 15, TypeScript, Tailwind, shadcn-style UI, tema dark fondo `#0a0a0a`.
@@ -473,7 +482,8 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 | 2026-04-06 | CORS en API vía `next.config` `headers()` + origen explícito (env o `https://admin.${PLATFORM_DOMAIN}`); sin `*` | Admin y API en subdominios distintos; sin hardcode de dominio cliente en código si se usa `PLATFORM_DOMAIN` en build |
 | 2026-04-06 | Imagen API: `PLATFORM_DOMAIN` en build para fijar CORS en standalone Next | `next.config` se evalúa en build; el `.env` del contenedor en runtime no rebakea headers |
 | 2026-04-06 | Imagen admin: `NEXT_PUBLIC_SUPABASE_*` y `NEXT_PUBLIC_API_URL` como ARG/ENV en Dockerfile + secrets en `deploy.yml` build-args | Next solo inyecta `NEXT_PUBLIC_*` en build; CI debe pasar URL anon y API pública |
-| 2026-04-06 | **Portal cliente** `apps/portal`: Next 15, puerto **3002**, Traefik; invitación + login; lectura sesión/tenant vía **`GET /api/portal/me`** (`apps/portal/lib/tenant.ts` → API); `POST /api/portal/mode`; `POST /api/invitations` + Resend; CORS **`apps/api/middleware.ts`** + **`lib/cors-origins.ts`** | `lib/portal-me.ts`, **`PORTAL_URL_PROBE`**; `/dashboard` sin auto-redirect por modo; path **`/api/portal/me`** es el publicado (alias conceptual `/tenant` solo en docs de spec) |
+| 2026-04-06 | **Portal cliente** `apps/portal`: Next 15, puerto **3002**, Traefik; invitación + login; datos vía **`GET /api/portal/me`**; `POST /api/portal/mode`; `POST /api/invitations` + Resend; CORS **middleware** + **cors-origins** | `portal-me.ts`, **`PORTAL_URL_PROBE`**; `/dashboard` sin auto-redirect por modo |
+| 2026-04-07 | **Fix routing:** handler movido de **`/api/portal/tenant`** a **`/api/portal/me`** para coincidir con `apps/portal/lib/tenant.ts` | Eliminaba 404 en dashboard hasta el deploy de la imagen API actualizada |
 
 ---
 
