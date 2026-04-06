@@ -47,7 +47,7 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 
 <!-- Actualizar al final de cada sesión -->
 
-**Fecha última actualización:** 2026-04-07 — Portal en `main`; **`GET /api/portal/me`** en API (commit `fix(api): serve portal session at GET /api/portal/me`). **Pendiente:** deploy + invitación `peskids`.
+**Fecha última actualización:** 2026-04-06 — Sesión portal documentada: app `apps/portal`, **`GET /api/portal/me`**, `POST /api/portal/mode`, invitaciones Resend, CORS en middleware, Docker/Traefik/CI; commits `feat(portal)…`, `fix(api): serve portal session at GET /api/portal/me`, ajustes `docs(agents)…` en `main`. **Pendiente:** deploy imagen portal en VPS + prueba E2E invitación (p. ej. `peskids`).
 
 **Completado ✅**
 
@@ -55,14 +55,14 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 
 **App (`apps/portal`)**
 - Next.js 15, TypeScript, Tailwind, shadcn-style UI, tema dark fondo `#0a0a0a`.
-- Rutas: `/` → `/login`; `/login`; `/invite/[token]` (invite OTP o `?code=`); `/dashboard` — selector de modo vía `POST /api/portal/mode`; **sin** auto-redirect desde `/dashboard` si ya hay modo (permite «Cambiar modo»); `/dashboard/developer` y `/dashboard/managed` — `requirePortalPayload()` → `fetchPortalTenant` → **`GET /api/portal/me`**.
-- Middleware portal: `lib/supabase/middleware.ts` refresca sesión; `/dashboard/*` exige usuario (excepto login/invite).
-- Componentes: `ModeSelector`, `PortalShell`, `ServiceCard`, `StatusBadge` + `healthFromReachable`, `CredentialReveal` (30 s), `DeveloperActions`. Soporte en managed: solo si **`NEXT_PUBLIC_SUPPORT_EMAIL`** está definido (si no, texto de configuración). Hook opcional **`usePortalTenant`** en `apps/portal/hooks/`.
+- Rutas: `/` → redirect `/login`; `/login` (email + password; sin registro público); `/invite/[token]` con query **`email`** — `verifyOtp({ type: "invite" })` + `updateUser({ password })` → `/dashboard`; `/dashboard` — selector de modo (Developer / Managed) vía **`POST /api/portal/mode`**; **sin** auto-redirect desde `/dashboard` cuando ya hay `user_metadata.mode` (el enlace «Cambiar modo» del shell vuelve al selector); `/dashboard/developer` y `/dashboard/managed` — server **`requirePortalPayload()`** en `lib/portal-server.ts` → **`fetchPortalTenant`** en `lib/tenant.ts` → **`GET /api/portal/me`** con Bearer JWT.
+- Middleware: `lib/supabase/middleware.ts` (sesión Supabase); rutas `/dashboard/*` protegidas (login e invite públicos).
+- Componentes: `ModeSelector`, `PortalShell`, `ServiceCard`, `StatusBadge` + `healthFromReachable`, `CredentialReveal` (password **30 s** visible y luego oculto), `DeveloperActions` (copiar URL n8n / credenciales). Managed: email de soporte solo si está definido **`NEXT_PUBLIC_SUPPORT_EMAIL`** (si no, aviso en UI). Hook opcional cliente **`usePortalTenant`** en `apps/portal/hooks/` (si se usa en evoluciones).
 
 **API (`apps/api`) — datos portal**
-- **`GET /api/portal/me`** — `app/api/portal/me/route.ts`. JWT Bearer → `portal-auth` + `portal-me` (tenant, servicios, health). **`GET /api/portal/tenant` eliminada** (antes mismo contrato, path distinto al cliente).
-- **`POST /api/portal/mode`** — `{ mode: "developer" | "managed" }` → `updateUserById` + `user_metadata.mode`.
-- **`POST /api/invitations`** — admin token; `portal-invitations.ts`, Resend, enlace a `/invite`.
+- **`GET /api/portal/me`** — `app/api/portal/me/route.ts`. JWT Bearer → **`getUserFromAuthorizationHeader`** (`lib/portal-auth.ts`) + **`lib/portal-me.ts`**: `readPortalTenantSlugFromUser`, `fetchPortalTenantRowBySlug`, `parsePortalServices` (`n8n`, `uptime_kuma`, credenciales basic auth), `portalUrlReachable`, `parsePortalMode`; umbrales en **`PORTAL_URL_PROBE`** (`lib/constants.ts`). Comprueba **owner_email** del tenant vs usuario. *(En documentación de producto a veces se nombra el mismo contrato como `GET /api/portal/tenant`; en el código actual el path publicado es **`/api/portal/me`**.)*
+- **`POST /api/portal/mode`** — body `{ mode: "developer" | "managed" }` → `auth.admin.updateUserById` con merge de **`user_metadata.mode`**.
+- **`POST /api/invitations`** — header admin (**`PLATFORM_ADMIN_TOKEN`** / convención del repo); **`lib/portal-invitations.ts`**: `generateLink` tipo invite, HTML dark, Resend; URL base **`PORTAL_SITE_URL`** o **`https://portal.${PLATFORM_DOMAIN}`**.
 
 **CORS / Next API**
 - **`apps/api/middleware.ts`** + **`lib/cors-origins.ts`**: orígenes explícitos (`NEXT_PUBLIC_ADMIN_URL`, `NEXT_PUBLIC_PORTAL_URL`, `https://admin.${PLATFORM_DOMAIN}`, `https://portal.${PLATFORM_DOMAIN}`); matcher `/api/:path*`; OPTIONS 204 con headers cuando el `Origin` está permitido.
@@ -74,10 +74,10 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 - **`.github/workflows/deploy.yml`** y **`ci.yml`**: type-check/lint/build del workspace **portal**; imagen **`ghcr.io/cloudsysops/intcloudsysops-portal:latest`** en paralelo con api/admin.
 
 **Calidad**
-- `npm run type-check` en verde; ESLint en rutas API portal y `portal-me`; **`apps/portal/eslint.config.js`** ignora `.next/**`.
+- `npm run type-check` (Turbo) en verde antes de commit; ESLint en rutas API portal (`me`, `mode`) y **`lib/portal-me.ts`**; pre-commit acotado a `apps/api/app` + `apps/api/lib`; **`apps/portal/eslint.config.js`** ignora **`.next/**`** y **`eslint.config.js`** para no lintar artefactos ni el propio config CommonJS.
 
 **Git (referencia)**
-- `feat(portal): add client dashboard…`; `fix(api): serve portal session at GET /api/portal/me (remove /tenant)`; `docs(agents): portal built, next deploy and invite peskids`; este bloque corrige doc que citaba `/tenant`. Repo: **`cloudsysops/opsly`**.
+- Hitos: **`feat(portal): add client dashboard with developer and managed modes`**; **`fix(api): serve portal session at GET /api/portal/me`**; espejo **`chore: sync AGENTS mirror…`**; correcciones **`docs(agents): …`** (p. ej. path `/me` vs `/tenant`). Este archivo: commit **`docs: update AGENTS.md 2026-04-06`**. Repo remoto: **`cloudsysops/opsly`**.
 
 *CORS + `NEXT_PUBLIC_*` en build admin + `deploy.yml` (2026-04-06, commit `8f12487` `fix(admin): add CORS headers and Supabase build args`, pusheado a `main`):*
 - **Problema:** el navegador en `admin.${PLATFORM_DOMAIN}` hacía `fetch` a `api.${PLATFORM_DOMAIN}` y la API rechazaba por **CORS**.
@@ -354,7 +354,7 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 # Portal en main — pendiente deploy y prueba en staging.
 
 # 1. Actions → Deploy verde (api, admin, portal). VPS: compose pull + up (traefik, app, admin, portal).
-# 2. API necesita NEXT_PUBLIC_SUPABASE_URL y NEXT_PUBLIC_SUPABASE_ANON_KEY en runtime para validar JWT en GET /api/portal/tenant y POST /api/portal/mode.
+# 2. API necesita NEXT_PUBLIC_SUPABASE_URL y NEXT_PUBLIC_SUPABASE_ANON_KEY en runtime para validar JWT en GET /api/portal/me y POST /api/portal/mode.
 # 3. Invitación: POST /api/invitations (header admin) → email Resend; activar en /invite/[token]?email=...
 # 4. Validar https://portal.ops.smiletripcare.com — login, selector de modo, dashboards developer/managed.
 
@@ -473,8 +473,7 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 | 2026-04-06 | CORS en API vía `next.config` `headers()` + origen explícito (env o `https://admin.${PLATFORM_DOMAIN}`); sin `*` | Admin y API en subdominios distintos; sin hardcode de dominio cliente en código si se usa `PLATFORM_DOMAIN` en build |
 | 2026-04-06 | Imagen API: `PLATFORM_DOMAIN` en build para fijar CORS en standalone Next | `next.config` se evalúa en build; el `.env` del contenedor en runtime no rebakea headers |
 | 2026-04-06 | Imagen admin: `NEXT_PUBLIC_SUPABASE_*` y `NEXT_PUBLIC_API_URL` como ARG/ENV en Dockerfile + secrets en `deploy.yml` build-args | Next solo inyecta `NEXT_PUBLIC_*` en build; CI debe pasar URL anon y API pública |
-| 2026-04-07 | Lectura portal: **`GET /api/portal/me`**; eliminado **`GET /api/portal/tenant`** | Alineado con `apps/portal/lib/tenant.ts` |
-| 2026-04-06 | **Portal cliente** `apps/portal`: Next 15, puerto **3002**, Traefik; invitación + login; `POST /api/portal/mode`; `POST /api/invitations` + Resend; CORS **middleware** + **cors-origins** | `portal-me.ts`, `PORTAL_URL_PROBE`; selector en `/dashboard` sin auto-redirect |
+| 2026-04-06 | **Portal cliente** `apps/portal`: Next 15, puerto **3002**, Traefik; invitación + login; lectura sesión/tenant vía **`GET /api/portal/me`** (`apps/portal/lib/tenant.ts` → API); `POST /api/portal/mode`; `POST /api/invitations` + Resend; CORS **`apps/api/middleware.ts`** + **`lib/cors-origins.ts`** | `lib/portal-me.ts`, **`PORTAL_URL_PROBE`**; `/dashboard` sin auto-redirect por modo; path **`/api/portal/me`** es el publicado (alias conceptual `/tenant` solo en docs de spec) |
 
 ---
 
