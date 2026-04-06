@@ -1,3 +1,6 @@
+import { jsonError } from "./api-response";
+import { HTTP_STATUS } from "./constants";
+
 export function isPublicDemoRead(): boolean {
   return process.env.ADMIN_PUBLIC_DEMO_READ === "true";
 }
@@ -18,9 +21,9 @@ export function requireAdminTokenUnlessDemoRead(
 export function requireAdminToken(request: Request): Response | null {
   const expected = process.env.PLATFORM_ADMIN_TOKEN;
   if (!expected || expected.length === 0) {
-    return Response.json(
-      { error: "Server misconfiguration: PLATFORM_ADMIN_TOKEN is not set" },
-      { status: 500 },
+    return jsonError(
+      "Server misconfiguration: PLATFORM_ADMIN_TOKEN is not set",
+      HTTP_STATUS.INTERNAL_ERROR,
     );
   }
 
@@ -31,7 +34,7 @@ export function requireAdminToken(request: Request): Response | null {
       : "";
 
   if (token.length === 0 || token !== expected) {
-    return Response.json({ error: "Unauthorized" }, { status: 401 });
+    return jsonError("Unauthorized", HTTP_STATUS.UNAUTHORIZED);
   }
 
   return null;

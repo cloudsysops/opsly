@@ -1,3 +1,4 @@
+import { serverErrorLogged } from "../../../lib/api-response";
 import { requireAdminTokenUnlessDemoRead } from "../../../lib/auth";
 import { computeMrr } from "../../../lib/stripe";
 import { getServiceClient } from "../../../lib/supabase";
@@ -104,16 +105,14 @@ export async function GET(request: Request): Promise<Response> {
   const rows = await fetchTenantMetricRows(client);
   const err = firstMetricsError(rows);
   if (err) {
-    console.error("metrics:", err);
-    return Response.json({ error: "Internal server error" }, { status: 500 });
+    return serverErrorLogged("metrics:", err);
   }
 
   let mrr_usd = 0;
   try {
     mrr_usd = await computeMrr(client);
   } catch (e) {
-    console.error("computeMrr:", e);
-    return Response.json({ error: "Internal server error" }, { status: 500 });
+    return serverErrorLogged("computeMrr:", e);
   }
 
   return Response.json({

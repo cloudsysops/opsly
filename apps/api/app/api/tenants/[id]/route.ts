@@ -1,8 +1,10 @@
 import { z } from "zod";
+import { jsonError, serverErrorLogged } from "../../../../lib/api-response";
 import {
   requireAdminToken,
   requireAdminTokenUnlessDemoRead,
 } from "../../../../lib/auth";
+import { HTTP_STATUS } from "../../../../lib/constants";
 import { deleteTenant } from "../../../../lib/orchestrator";
 import { getTenantStackStatus } from "../../../../lib/docker";
 import {
@@ -14,6 +16,29 @@ import { getServiceClient } from "../../../../lib/supabase";
 import type { Tenant } from "../../../../lib/supabase/types";
 
 const idParamSchema = z.string().uuid();
+
+async function patchTenantRecord(
+  tenantId: string,
+  updates: Partial<Pick<Tenant, "name" | "plan">>,
+): Promise<Response> {
+  const { data, error } = await getServiceClient()
+    .schema("platform")
+    .from("tenants")
+    .update(updates)
+    .eq("id", tenantId)
+    .is("deleted_at", null)
+    .select("*")
+    .single();
+
+  if (error) {
+    return serverErrorLogged("PATCH tenant:", error);
+  }
+  if (!data) {
+    return jsonError("Tenant not found", HTTP_STATUS.NOT_FOUND);
+  }
+
+  return Response.json(data);
+}
 
 export async function GET(
   request: Request,
@@ -27,10 +52,7 @@ export async function GET(
   const { id } = await context.params;
   const refParsed = TenantRefParamSchema.safeParse(id);
   if (!refParsed.success) {
-    return Response.json(
-      { error: formatZodError(refParsed.error) },
-      { status: 400 },
-    );
+    return jsonError(formatZodError(refParsed.error), HTTP_STATUS.BAD_REQUEST);
   }
 
   const ref = refParsed.data;
@@ -45,11 +67,10 @@ export async function GET(
     .maybeSingle();
 
   if (error) {
-    console.error("GET tenant:", error);
-    return Response.json({ error: "Internal server error" }, { status: 500 });
+    return serverErrorLogged("GET tenant:", error);
   }
   if (!tenant) {
-    return Response.json({ error: "Tenant not found" }, { status: 404 });
+    return jsonError("Tenant not found", HTTP_STATUS.NOT_FOUND);
   }
 
   const stackStatus = await getTenantStackStatus(tenant.slug);
@@ -72,25 +93,19 @@ export async function PATCH(
   const { id } = await context.params;
   const idParsed = idParamSchema.safeParse(id);
   if (!idParsed.success) {
-    return Response.json(
-      { error: formatZodError(idParsed.error) },
-      { status: 400 },
-    );
+    return jsonError(formatZodError(idParsed.error), HTTP_STATUS.BAD_REQUEST);
   }
 
   let body: unknown;
   try {
     body = await request.json();
   } catch {
-    return Response.json({ error: "Invalid JSON body" }, { status: 400 });
+    return jsonError("Invalid JSON body", HTTP_STATUS.BAD_REQUEST);
   }
 
   const parsed = UpdateTenantSchema.safeParse(body);
   if (!parsed.success) {
-    return Response.json(
-      { error: formatZodError(parsed.error) },
-      { status: 400 },
-    );
+    return jsonError(formatZodError(parsed.error), HTTP_STATUS.BAD_REQUEST);
   }
 
   const updates: Partial<Pick<Tenant, "name" | "plan">> = {};
@@ -101,24 +116,7 @@ export async function PATCH(
     updates.plan = parsed.data.plan;
   }
 
-  const { data, error } = await getServiceClient()
-    .schema("platform")
-    .from("tenants")
-    .update(updates)
-    .eq("id", idParsed.data)
-    .is("deleted_at", null)
-    .select("*")
-    .single();
-
-  if (error) {
-    console.error("PATCH tenant:", error);
-    return Response.json({ error: "Internal server error" }, { status: 500 });
-  }
-  if (!data) {
-    return Response.json({ error: "Tenant not found" }, { status: 404 });
-  }
-
-  return Response.json(data);
+  return patchTenantRecord(idParsed.data, updates);
 }
 
 export async function DELETE(
@@ -133,10 +131,7 @@ export async function DELETE(
   const { id } = await context.params;
   const idParsed = idParamSchema.safeParse(id);
   if (!idParsed.success) {
-    return Response.json(
-      { error: formatZodError(idParsed.error) },
-      { status: 400 },
-    );
+    return jsonError(formatZodError(idParsed.error), HTTP_STATUS.BAD_REQUEST);
   }
 
   const { data: existing, error: fetchError } = await getServiceClient()
@@ -148,11 +143,10 @@ export async function DELETE(
     .maybeSingle();
 
   if (fetchError) {
-    console.error("DELETE tenant fetch:", fetchError);
-    return Response.json({ error: "Internal server error" }, { status: 500 });
+    return serverErrorLogged("DELETE tenant fetch:", fetchError);
   }
   if (!existing) {
-    return Response.json({ error: "Tenant not found" }, { status: 404 });
+    return jsonError("Tenant not found", HTTP_STATUS.NOT_FOUND);
   }
 
   try {
@@ -160,11 +154,10 @@ export async function DELETE(
   } catch (err) {
     const message = err instanceof Error ? err.message : "Delete failed";
     if (message === "Tenant not found") {
-      return Response.json({ error: "Tenant not found" }, { status: 404 });
+      return jsonError("Tenant not found", HTTP_STATUS.NOT_FOUND);
     }
-    console.error("DELETE tenant:", err);
-    return Response.json({ error: "Internal server error" }, { status: 500 });
+    return serverErrorLogged("DELETE tenant:", err);
   }
 
-  return new Response(null, { status: 204 });
+  return new Response(null, { status: HTTP_STATUS.NO_CONTENT });
 }

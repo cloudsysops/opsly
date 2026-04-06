@@ -1,4 +1,10 @@
 import {
+  jsonError,
+  serverErrorLogged,
+  tryRoute,
+} from "../../../lib/api-response";
+import { HTTP_STATUS } from "../../../lib/constants";
+import {
   requireAdminToken,
   requireAdminTokenUnlessDemoRead,
 } from "../../../lib/auth";
@@ -19,54 +25,52 @@ function isUniqueViolation(message: string, code: string | undefined): boolean {
   );
 }
 
-export async function GET(request: Request): Promise<Response> {
-  const authError = requireAdminTokenUnlessDemoRead(request);
-  if (authError) {
-    return authError;
-  }
+export function GET(request: Request): Promise<Response> {
+  return tryRoute("GET /api/tenants", async () => {
+    const authError = requireAdminTokenUnlessDemoRead(request);
+    if (authError) {
+      return authError;
+    }
 
-  const url = new URL(request.url);
-  const parsed = ListTenantsQuerySchema.safeParse(
-    Object.fromEntries(url.searchParams),
-  );
-  if (!parsed.success) {
-    return Response.json(
-      { error: formatZodError(parsed.error) },
-      { status: 400 },
+    const url = new URL(request.url);
+    const parsed = ListTenantsQuerySchema.safeParse(
+      Object.fromEntries(url.searchParams),
     );
-  }
+    if (!parsed.success) {
+      return jsonError(formatZodError(parsed.error), HTTP_STATUS.BAD_REQUEST);
+    }
 
-  const { page, limit, status, plan } = parsed.data;
-  const from = (page - 1) * limit;
-  const to = from + limit - 1;
+    const { page, limit, status, plan } = parsed.data;
+    const from = (page - 1) * limit;
+    const to = from + limit - 1;
 
-  let query = getServiceClient()
-    .schema("platform")
-    .from("tenants")
-    .select("*", { count: "exact" })
-    .is("deleted_at", null)
-    .order("created_at", { ascending: false })
-    .range(from, to);
+    let query = getServiceClient()
+      .schema("platform")
+      .from("tenants")
+      .select("*", { count: "exact" })
+      .is("deleted_at", null)
+      .order("created_at", { ascending: false })
+      .range(from, to);
 
-  if (status !== undefined) {
-    query = query.eq("status", status as TenantStatus);
-  }
-  if (plan !== undefined) {
-    query = query.eq("plan", plan);
-  }
+    if (status !== undefined) {
+      query = query.eq("status", status as TenantStatus);
+    }
+    if (plan !== undefined) {
+      query = query.eq("plan", plan);
+    }
 
-  const { data, error, count } = await query;
+    const { data, error, count } = await query;
 
-  if (error) {
-    console.error("List tenants:", error);
-    return Response.json({ error: "Internal server error" }, { status: 500 });
-  }
+    if (error) {
+      return serverErrorLogged("List tenants:", error);
+    }
 
-  return Response.json({
-    data: data ?? [],
-    total: count ?? 0,
-    page,
-    limit,
+    return Response.json({
+      data: data ?? [],
+      total: count ?? 0,
+      page,
+      limit,
+    });
   });
 }
 
@@ -80,15 +84,12 @@ export async function POST(request: Request): Promise<Response> {
   try {
     body = await request.json();
   } catch {
-    return Response.json({ error: "Invalid JSON body" }, { status: 400 });
+    return jsonError("Invalid JSON body", HTTP_STATUS.BAD_REQUEST);
   }
 
   const parsed = CreateTenantSchema.safeParse(body);
   if (!parsed.success) {
-    return Response.json(
-      { error: formatZodError(parsed.error) },
-      { status: 400 },
-    );
+    return jsonError(formatZodError(parsed.error), HTTP_STATUS.BAD_REQUEST);
   }
 
   const { slug, owner_email, plan, stripe_customer_id } = parsed.data;
@@ -108,9 +109,8 @@ export async function POST(request: Request): Promise<Response> {
     const message =
       err instanceof Error ? err.message : "Failed to create tenant";
     if (isUniqueViolation(message, (err as { code?: string }).code)) {
-      return Response.json({ error: "Slug already exists" }, { status: 409 });
+      return jsonError("Slug already exists", HTTP_STATUS.CONFLICT);
     }
-    console.error("POST /tenants:", err);
-    return Response.json({ error: "Internal server error" }, { status: 500 });
+    return serverErrorLogged("POST /tenants:", err);
   }
 }
