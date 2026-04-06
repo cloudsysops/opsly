@@ -28,10 +28,12 @@ export function requireAdminToken(request: Request): Response | null {
   }
 
   const auth = request.headers.get("authorization");
-  const token =
+  const bearer =
     auth?.startsWith("Bearer ") === true
       ? auth.slice("Bearer ".length).trim()
       : "";
+  const headerToken = request.headers.get("x-admin-token")?.trim() ?? "";
+  const token = bearer.length > 0 ? bearer : headerToken;
 
   if (token.length === 0 || token !== expected) {
     return jsonError("Unauthorized", HTTP_STATUS.UNAUTHORIZED);

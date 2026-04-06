@@ -45,6 +45,15 @@ export type ContainerStatus = {
   health: string;
 };
 
+/** Respuesta 200 de POST /api/invitations */
+export type InvitationSendResponse = {
+  ok: boolean;
+  tenant_id: string;
+  link: string;
+  email: string;
+  token: string;
+};
+
 export type MetricsResponse = {
   total_tenants: number;
   active_tenants: number;

@@ -1,4 +1,5 @@
 import type {
+  InvitationSendResponse,
   MetricsResponse,
   SystemMetricsResponse,
   Tenant,
@@ -168,4 +169,27 @@ export async function getMetrics(): Promise<MetricsResponse> {
 
 export async function getSystemMetrics(): Promise<SystemMetricsResponse> {
   return request<SystemMetricsResponse>("/api/metrics/system");
+}
+
+export type SendInvitationBody = {
+  email: string;
+  tenantRef: string;
+  mode?: "developer" | "managed";
+  name?: string;
+};
+
+export async function sendInvitation(
+  data: SendInvitationBody,
+): Promise<InvitationSendResponse> {
+  return request<InvitationSendResponse>("/api/invitations", {
+    method: "POST",
+    body: JSON.stringify({
+      email: data.email,
+      tenantRef: data.tenantRef,
+      mode: data.mode ?? "developer",
+      ...(data.name !== undefined && data.name.length > 0
+        ? { name: data.name }
+        : {}),
+    }),
+  });
 }

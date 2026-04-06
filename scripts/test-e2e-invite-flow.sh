@@ -62,17 +62,31 @@ if [[ -z "${OWNER_EMAIL:-}" ]]; then
 fi
 
 echo "✓ Test 2: POST /api/invitations"
-RESPONSE="$(
-  curl -sfk -X POST "${API_URL}/api/invitations" \
+# Authorization Bearer + x-admin-token (API acepta cualquiera; Bearer es el que suele usar el admin app).
+TMP_BODY="$(mktemp)"
+TMP_RES="$(mktemp)"
+trap 'rm -f "${TMP_BODY}" "${TMP_RES}"' EXIT
+jq -n \
+  --arg email "${OWNER_EMAIL}" \
+  --arg ts "$(date +%s)" \
+  '{ email: $email, tenantRef: "smiletripcare", mode: "developer", name: ("e2e-" + $ts) }' >"${TMP_BODY}"
+HTTP_CODE="$(
+  curl -sk -o "${TMP_RES}" -w "%{http_code}" -X POST "${API_URL}/api/invitations" \
     -H "Content-Type: application/json" \
+    -H "Authorization: Bearer ${ADMIN_TOKEN}" \
     -H "x-admin-token: ${ADMIN_TOKEN}" \
-    -d "$(jq -n \
-      --arg email "${OWNER_EMAIL}" \
-      --arg ts "$(date +%s)" \
-      '{ email: $email, tenantRef: "smiletripcare", mode: "developer", name: ("e2e-" + $ts) }')"
+    -d @"${TMP_BODY}"
 )"
+RESPONSE="$(cat "${TMP_RES}")"
+echo "${RESPONSE}" | jq . 2>/dev/null || echo "${RESPONSE}"
 
-echo "${RESPONSE}" | jq .
+if [[ "${HTTP_CODE}" != "200" ]]; then
+  echo "❌ POST /api/invitations → HTTP ${HTTP_CODE}" >&2
+  if [[ "${RESPONSE}" == *RESEND* ]]; then
+    echo "   Bloqueante: define RESEND_API_KEY y RESEND_FROM_EMAIL (o RESEND_FROM_ADDRESS) en Doppler prd y vps-bootstrap." >&2
+  fi
+  exit 1
+fi
 TOKEN="$(echo "${RESPONSE}" | jq -r .token)"
 
 if [[ "${TOKEN}" == "null" || -z "${TOKEN}" ]]; then

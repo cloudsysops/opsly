@@ -1,6 +1,6 @@
 # Admin — Invitations UI (Fase 2)
 
-Plan de producto (sin implementación en esta fase).
+Implementado: **`/invitations`** en `apps/admin` (formulario → `POST /api/invitations` vía `sendInvitation` en `lib/api-client.ts`). Tabla histórica / persistencia sigue pendiente (no hay `GET /api/invitations`).
 
 ## Pantalla: `/invitations`
 

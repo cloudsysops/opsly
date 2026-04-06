@@ -66,15 +66,15 @@
     {
       "slug": "smiletripcare",
       "plan": "startup",
-      "ownerEmail": "cristian@cloudsysops.com",
+      "ownerEmail": "smiletripcare@gmail.com",
       "status": "active",
       "createdAt": "2026-04-06"
     },
     {
       "slug": "peskids",
       "plan": "startup",
-      "ownerEmail": "peskids@example.com",
-      "status": "provisioning",
+      "ownerEmail": "sierrasantiago90@gmail.com",
+      "status": "active",
       "createdAt": "2026-04-07"
     }
   ]
