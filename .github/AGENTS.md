@@ -47,7 +47,7 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 
 <!-- Actualizar al final de cada sesión -->
 
-**Fecha última actualización:** 2026-04-07 — **Fase 2 invite/onboard:** `./scripts/validate-config.sh` → **LISTO PARA DEPLOY**. **Portal staging:** `https://portal.ops.smiletripcare.com/login` → **200** (tras recuperar contenedores `app`/`admin`/`portal` que habían quedado en `Created` y **404** en Traefik; ver `docs/TROUBLESHOOTING.md` y `deploy.yml` con `--force-recreate`). **`curl api`/health** → `status ok`. **Contenedores Opsly:** `traefik`, `infra-redis-1`, `infra-app-*`, `opsly_admin`, `opsly_portal`. **Tenants:** `smiletripcare`, `peskids` (stacks n8n/uptime Up). **Pendiente:** UI admin invitations; **E2E invitación** con email real → `scripts/test-e2e-invite-flow.sh`; confirmar secrets GitHub `NEXT_PUBLIC_*` / `PLATFORM_DOMAIN` si un Deploy futuro falla en build.
+**Fecha última actualización:** 2026-04-07 — **Fase 2 invite/onboard:** `./scripts/validate-config.sh` → **LISTO PARA DEPLOY**. **Portal staging:** `https://portal.ops.smiletripcare.com/login` → **200** (tras recuperar contenedores `app`/`admin`/`portal` que habían quedado en `Created` y **404** en Traefik; ver `docs/TROUBLESHOOTING.md` y `deploy.yml` con `--force-recreate`). **`curl api`/health** → `status ok`. **Contenedores Opsly:** `traefik`, `infra-redis-1`, `infra-app-*`, `opsly_admin`, `opsly_portal`. **Tenants:** `smiletripcare`, `peskids` (stacks n8n/uptime Up). **Pendiente:** **Resend en VPS:** `RESEND_API_KEY` + `RESEND_FROM_EMAIL` o `RESEND_FROM_ADDRESS` en Doppler `prd` → `./scripts/vps-bootstrap.sh` (o `secrets download`) para que `POST /api/invitations` no devuelva 500. **E2E:** `OWNER_EMAIL=smiletripcare@gmail.com` (owner en Supabase) + `ADMIN_TOKEN` → `./scripts/test-e2e-invite-flow.sh`. **Admin:** pantalla **`/invitations`** (enviar invitación vía API con Bearer); redeploy admin para staging.
 
 **Completado ✅**
 
@@ -78,7 +78,7 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 **API (`apps/api`) — datos portal**
 - **`GET /api/portal/me`** — `app/api/portal/me/route.ts`. JWT Bearer → **`getUserFromAuthorizationHeader`** (`lib/portal-auth.ts`) + **`lib/portal-me.ts`**: `readPortalTenantSlugFromUser`, `fetchPortalTenantRowBySlug`, `parsePortalServices` (`n8n`, `uptime_kuma`, credenciales basic auth), `portalUrlReachable`, `parsePortalMode`; umbrales en **`PORTAL_URL_PROBE`** (`lib/constants.ts`). Comprueba **owner_email** del tenant vs usuario. *(En documentación de producto a veces se nombra el mismo contrato como `GET /api/portal/tenant`; en el código actual el path publicado es **`/api/portal/me`**.)*
 - **`POST /api/portal/mode`** — body `{ mode: "developer" | "managed" }` → `auth.admin.updateUserById` con merge de **`user_metadata.mode`**.
-- **`POST /api/invitations`** — header admin (**`x-admin-token`** vía **`requireAdminToken`**); body: **`email`**, **`slug` *o* `tenantRef`** (mismo patrón 3–30), **`name`** opcional (default nombre tenant), **`mode`** opcional `developer` \| `managed` (va en `data` del invite Supabase). Respuesta **200**: **`ok`**, **`tenant_id`**, **`link`**, **`email`**, **`token`**. Implementación: **`lib/invitation-admin-flow.ts`** + **`lib/portal-invitations.ts`** (HTML dark, Resend; URL **`PORTAL_SITE_URL`** o **`https://portal.${PLATFORM_DOMAIN}`**). El email del body debe coincidir con **`owner_email`** del tenant.
+- **`POST /api/invitations`** — header admin **`Authorization: Bearer`** o **`x-admin-token`** (**`requireAdminToken`**); body: **`email`**, **`slug` *o* `tenantRef`** (mismo patrón 3–30), **`name`** opcional (default nombre tenant), **`mode`** opcional `developer` \| `managed` (va en `data` del invite Supabase). Respuesta **200**: **`ok`**, **`tenant_id`**, **`link`**, **`email`**, **`token`**. Implementación: **`lib/invitation-admin-flow.ts`** + **`lib/portal-invitations.ts`** (HTML dark, Resend; URL **`PORTAL_SITE_URL`** o **`https://portal.${PLATFORM_DOMAIN}`**). El email del body debe coincidir con **`owner_email`** del tenant. Requiere **`RESEND_API_KEY`** y remitente (**`RESEND_FROM_EMAIL`** o **`RESEND_FROM_ADDRESS`**) en el entorno del contenedor API.
 
 **CORS / Next API**
 - **`apps/api/middleware.ts`** + **`lib/cors-origins.ts`**: orígenes explícitos (`NEXT_PUBLIC_ADMIN_URL`, `NEXT_PUBLIC_PORTAL_URL`, `https://admin.${PLATFORM_DOMAIN}`, `https://portal.${PLATFORM_DOMAIN}`); matcher `/api/:path*`; OPTIONS 204 con headers cuando el `Origin` está permitido.
@@ -367,12 +367,13 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 <!-- Una sola tarea concreta. Actualizar al final de cada sesión -->
 
 ```bash
-# Portal /login en staging verificado (200). Siguiente valor: flujo invitación + admin.
-
-# 1. E2E: ./scripts/test-e2e-invite-flow.sh (OWNER_EMAIL acorde a tenant en Supabase; token admin en Doppler/prd).
-# 2. Tras invite: abrir link email → /invite/[token]?email=… → password → /dashboard (modo developer/managed).
-# 3. Implementar o completar UI admin para POST /api/invitations (header x-admin-token), si aún no está en producción.
-# 4. Tras próximo push: Actions Deploy usa compose up --force-recreate traefik app admin portal (evita réplicas huérfanas).
+# 1. Doppler prd (+ bootstrap VPS): RESEND_API_KEY, RESEND_FROM_EMAIL (o RESEND_FROM_ADDRESS).
+# 2. Deploy app (API) si aún no está la imagen con requireAdminToken (Bearer | x-admin-token).
+# 3. E2E: export ADMIN_TOKEN="$(doppler secrets get PLATFORM_ADMIN_TOKEN --plain --project ops-intcloudsysops --config prd)"
+#         export OWNER_EMAIL="smiletripcare@gmail.com"   # mismo owner_email que GET /api/tenants
+#         ./scripts/test-e2e-invite-flow.sh
+# 4. Humano: link del 200 → portal /invite/...?email=... → set password → /dashboard.
+# 5. Admin staging: https://admin.ops.smiletripcare.com/invitations tras redeploy admin.
 
 # Secrets build (si falla job build-and-push; uno por comando):
 # gh secret set NEXT_PUBLIC_SUPABASE_URL --repo cloudsysops/opsly
@@ -396,6 +397,7 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 - [x] **Health check staging** — `curl -sfk https://api.ops.smiletripcare.com/api/health` → `{"status":"ok"}` (2026-04-06 23:58 UTC)
 - [x] **Migraciones SQL en Supabase opsly-prod** — `db push` vía CLI enlazada; tablas `platform.tenants` / `platform.subscriptions` verificadas en Postgres (2026-04-07)
 - [x] **PostgREST / API sobre schema `platform`** — `GRANT` USAGE (y permisos necesarios) + schema expuesto en API; onboarding y API contra `platform.tenants` operativos (2026-04-06)
+- [ ] **Resend en API (invitaciones)** — sin `RESEND_FROM_EMAIL`/`RESEND_FROM_ADDRESS` (+ `RESEND_API_KEY`) en `.env` del VPS, `POST /api/invitations` → 500; resolver en Doppler `prd` + bootstrap antes de E2E completo.
 
 ---
 
@@ -442,6 +444,7 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 | Fecha | Decisión | Razón |
 |---|---|---|
 | 2026-04-07 | Job Deploy: `docker compose up -d --no-deps --force-recreate traefik app admin portal` | Con `deploy.replicas: 2` en `app`, un `up` sin recrear dejaba contenedores en `Created` y `opsly_portal`/`opsly_admin` sin rutear → 404 en `portal.*` |
+| 2026-04-07 | `requireAdminToken` acepta `Authorization: Bearer` o `x-admin-token` | Runbook/E2E/documentación usaban `x-admin-token`; el admin app usa Bearer; ambas formas válidas |
 | 2026-04 | validate-config usa `dig +short` para DNS | Comprobar que la IP del VPS aparece en la resolución |
 | 2026-04 | sync-config redirige stdout de `doppler secrets set` a /dev/null | No volcar tablas con valores en logs compartidos |
 | 2026-04 | Dashboard Traefik en `traefik.${PLATFORM_DOMAIN}` | Reservar `admin.*` para la app Admin Opsly |
