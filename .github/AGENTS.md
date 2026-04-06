@@ -47,9 +47,18 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 
 <!-- Actualizar al final de cada sesión -->
 
-**Fecha última actualización:** 2026-04-06 (✅ **Staging VERDE — Health: `{"status":"ok"}`**; Traefik v3.0.0 + Docker daemon `min-api-version: 1.24` fix; `vps-bootstrap.sh` paso [j] idempotente JSON merge; próximo: onboard smiletripcare)
+**Fecha última actualización:** 2026-04-07 (Supabase **opsly-prod** (`jkwykpldnitavhmtuzmo`): migraciones aplicadas con CLI; rename `0007_rls_policies.sql`; PostgREST pendiente exponer `platform`; revisión `onboard-tenant.sh` vs onboarding smiletripcare)
 
 **Completado ✅**
+
+*Sesión agente Cursor — Supabase producción + onboarding (2026-04-07):*
+- **Proyecto Supabase:** `https://jkwykpldnitavhmtuzmo.supabase.co` (ref `jkwykpldnitavhmtuzmo`). Secretos desde Doppler `ops-intcloudsysops` / `prd`: `SUPABASE_SERVICE_ROLE_KEY` OK; **`SUPABASE_DB_PASSWORD` no existe** en `prd` (solo `SUPABASE_URL`, claves anon/public, service role).
+- **`npx supabase link --project-ref jkwykpldnitavhmtuzmo --yes`:** enlazó sin pedir password en el entorno usado (sesión CLI ya autenticada).
+- **`npx supabase db push` — fallo inicial:** dos archivos **`0003_*.sql`** (`port_allocations` y `rls_policies`) compiten por la misma versión en `supabase_migrations.schema_migrations` → error `duplicate key ... (version)=(0003)`.
+- **Corrección en repo:** renombrar RLS a **`0007_rls_policies.sql`** (orden aplicado: `0001` … `0006`, luego `0007`). Segundo **`db push`:** OK (`0004`–`0007` según estado previo del remoto).
+- **Verificación tablas:** `npx supabase db query --linked` → existen **`platform.tenants`** y **`platform.subscriptions`** en Postgres.
+- **REST / PostgREST:** `GET /rest/v1/tenants` con `Accept-Profile: platform` devuelve **`PGRST106` / Invalid schema: platform** mientras el dashboard del proyecto solo expone **`public`** y **`graphql_public`**. Acción humana: **Settings → API → Exposed schemas** → añadir **`platform`** para que la API use el schema sin mover tablas.
+- **Onboarding smiletripcare (planificación, sin ejecutar):** no existe `scripts/onboard.sh`; el script es **`scripts/onboard-tenant.sh`** con `--slug`, `--email`, `--plan` (`startup` \| `business` \| `enterprise`). URLs del template: `https://n8n-{slug}.{PLATFORM_DOMAIN}/` y `https://uptime-{slug}.{PLATFORM_DOMAIN}/` (p. ej. `ops.smiletripcare.com`). El bloque *Próximo paso* histórico mencionaba `plan: pro` y hosts distintos — **desalineado** con el CHECK SQL y la plantilla; usar el script real antes de ejecutar.
 
 *Capas de calidad de código — monorepo Opsly (2026-04-05, commit `d4acfcb` `feat(quality): add code patterns, SOLID rules and automated review layers`, pusheado a `main`):*
 - **CAPA 1 — `.vscode/settings.json`:** `formatOnSave`, `codeActionsOnSave` (ESLint + organize imports), imports relativos TS/JS, Copilot en español (`github.copilot.chat.localeOverride: "es"`), Copilot habilitado por lenguajes del stack, `eslint.validate` para JS/TS/TSX; comentarios en español por grupo de opciones.
@@ -268,29 +277,18 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 
 ```bash
 # ✅ STAGING VERDE — Health OK
+# ✅ Migraciones platform en Supabase opsly-prod aplicadas (2026-04-07)
+# ⏳ Dashboard Supabase: exponer schema "platform" en API si se usa REST con Accept-Profile
 
-# Próxima tarea: Onboard first tenant (smiletripcare)
+# Próxima tarea: Onboard primer tenant (smiletripcare) vía script oficial
 #
-# 1. Crear tenant en Supabase (platform schema)
-#      - name: "SmileTrip Care"
-#      - slug: "smiletripcare"
-#      - status: "active"
-#      - plan: "pro" (p. ej., si existe)
-#      - app_password: generar UUID token para n8n / Uptime Kuma
-#      - postgres_password: generar UUID + hash
-#
-# 2. Crear schema tenant_smiletripcare en Supabase (migrations/T001_tenant_schema.sql)
-#
-# 3. Crear docker-compose.tenant-smiletripcare.yml en infra/templates/
-#    - n8n, Uptime Kuma, postgres, redis
-#    - traefik labels para n8n.smiletripcare.ops.smiletripcare.com
-#
-# 4. Script onboard:
-#    scripts/onboard-tenant.sh smiletripcare
-#    (prepara .env, registry, compose, health check)
-#
-# 5. Verificar:
-#    curl -sfk https://n8n.smiletripcare.ops.smiletripcare.com/
+# 1. En VPS (o host con docker + env): exportar SUPABASE_*, PLATFORM_DOMAIN, TENANTS_PATH, TEMPLATE_PATH
+# 2. Dry-run: ./scripts/onboard-tenant.sh --slug smiletripcare --email 'owner@…' --plan startup --dry-run
+# 3. Ejecución:  ./scripts/onboard-tenant.sh --slug smiletripcare --email 'owner@…' --plan startup --yes
+#    (plan válido en DB: startup | business | enterprise | demo; el script solo acepta los tres primeros)
+# 4. URLs esperadas (PLATFORM_DOMAIN=ops.smiletripcare.com):
+#      https://n8n-smiletripcare.ops.smiletripcare.com/
+#      https://uptime-smiletripcare.ops.smiletripcare.com/
 ```
 
 ---
@@ -307,6 +305,8 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 - [x] **Doppler CLI + token con scope `/opt/opsly`** en VPS (sesión 2026-04-05) — alternativa a solo `scp`
 - [x] **Traefik v3 + Docker 29.3.1 API negotiation bug** — fix: `daemon.json` `min-api-version: 1.24` + vps-bootstrap.sh paso [j] idempotente (2026-04-06)
 - [x] **Health check staging** — `curl -sfk https://api.ops.smiletripcare.com/api/health` → `{"status":"ok"}` (2026-04-06 23:58 UTC)
+- [x] **Migraciones SQL en Supabase opsly-prod** — `db push` vía CLI enlazada; tablas `platform.tenants` / `platform.subscriptions` verificadas en Postgres (2026-04-07)
+- [ ] **PostgREST: schema `platform` expuesto** en proyecto Supabase (hasta entonces REST con `Accept-Profile: platform` sigue en 406)
 
 ---
 
@@ -394,6 +394,7 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 | 2026-04-05 | `nightly-fix.yml`: typecheck/lint/health/auto-fix/report + `gh pr` / `gh issue` | Daemon de calidad nocturna; TS no auto-corregible → issue etiquetada |
 | 2026-04-05 | `lint:fix` en `apps/api` y `apps/admin` | Misma orden que usa el job auto-fix del workflow |
 | 2026-04-06 | daemon.json `min-api-version: 1.24` en VPS bootstrap | Traefik v3 cliente Go negocia API 1.24; Docker 29.3.1 exige 1.40 — bajar mínimo del daemon es único fix funcional |
+| 2026-04-07 | Migraciones Supabase: `0003_rls_policies.sql` → `0007_rls_policies.sql` + `npx supabase db push` en opsly-prod | Dos prefijos `0003_` rompían `schema_migrations`; RLS pasa a versión `0007`; despliegue sin URL Postgres con password especial en Doppler |
 
 ---
 
