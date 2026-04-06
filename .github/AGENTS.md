@@ -47,11 +47,12 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 
 <!-- Actualizar al final de cada sesión -->
 
-**Fecha última actualización:** 2026-04-06 — Consolidación en `AGENTS.md` de la sesión portal: app **`apps/portal`**, API **`GET /api/portal/me`** (fix frente a `/tenant`), CORS middleware, Docker **3002** + Traefik + **`deploy.yml`**, hook **`usePortalTenant`**, doc y espejo `.github/AGENTS.md`; todo en **`main`** (`cloudsysops/opsly`). **Pendiente:** deploy portal en VPS + E2E + invitación **`peskids`**.
+**Fecha última actualización:** 2026-04-07 — **Portal staging OK** (`curl` login + `/invite/*` HTML). **`POST /api/invitations`**: body admite **`tenantRef`** o **`slug`**, **`mode`** opcional; respuesta incluye **`link`**, **`email`**, **`token`** (además de `ok`, `tenant_id`); lógica en **`lib/invitation-admin-flow.ts`**; **`user_data`** invite incluye `mode` si viene. **`config/opsly.config.json`**: dominio **`portal`**, registry **`tenants`** (`smiletripcare` activo, **`peskids`** provisioning — onboarding VPS/Supabase pendiente de ejecutar). Deploy previo verde (`24039850342`). **Pendiente:** ejecutar **`onboard-tenant.sh`** para `peskids` en VPS; E2E invite con email real + Resend.
 
 **Completado ✅**
 
 *Sesión Cursor — qué se hizo (orden aproximado):*
+0. **GHCR deploy 2026-04-06 (tarde)** — Auditoría: paquetes `intcloudsysops-{api,admin,portal}` existen y son privados; 403 no era “solo portal” sino PAT sin acceso efectivo a manifiestos. **`deploy.yml`**: login en VPS con token del workflow; pulls alineados al compose.
 1. **Scaffold portal** — `apps/portal` (Next 15, Tailwind, login, `/invite/[token]`, dashboards developer/managed, `middleware`, libs Supabase, `output: standalone`, sin `any`).
 2. **API** — `GET /api/portal/me`, `POST /api/portal/mode`, invitaciones `POST /api/invitations` + Resend; **`lib/portal-me.ts`**, **`portal-auth.ts`**, **`cors-origins.ts`**, **`apps/api/middleware.ts`**.
 3. **Corrección crítica** — El cliente ya llamaba **`/api/portal/me`** pero la API exponía solo **`/tenant`** → handler movido a **`app/api/portal/me/route.ts`**, eliminado **`tenant`**, imports relativos corregidos (`../../../../lib/...`); **`npm run type-check`** en verde.
@@ -71,7 +72,7 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 **API (`apps/api`) — datos portal**
 - **`GET /api/portal/me`** — `app/api/portal/me/route.ts`. JWT Bearer → **`getUserFromAuthorizationHeader`** (`lib/portal-auth.ts`) + **`lib/portal-me.ts`**: `readPortalTenantSlugFromUser`, `fetchPortalTenantRowBySlug`, `parsePortalServices` (`n8n`, `uptime_kuma`, credenciales basic auth), `portalUrlReachable`, `parsePortalMode`; umbrales en **`PORTAL_URL_PROBE`** (`lib/constants.ts`). Comprueba **owner_email** del tenant vs usuario. *(En documentación de producto a veces se nombra el mismo contrato como `GET /api/portal/tenant`; en el código actual el path publicado es **`/api/portal/me`**.)*
 - **`POST /api/portal/mode`** — body `{ mode: "developer" | "managed" }` → `auth.admin.updateUserById` con merge de **`user_metadata.mode`**.
-- **`POST /api/invitations`** — header admin (**`PLATFORM_ADMIN_TOKEN`** / convención del repo); **`lib/portal-invitations.ts`**: `generateLink` tipo invite, HTML dark, Resend; URL base **`PORTAL_SITE_URL`** o **`https://portal.${PLATFORM_DOMAIN}`**.
+- **`POST /api/invitations`** — header admin (**`x-admin-token`** vía **`requireAdminToken`**); body: **`email`**, **`slug` *o* `tenantRef`** (mismo patrón 3–30), **`name`** opcional (default nombre tenant), **`mode`** opcional `developer` \| `managed` (va en `data` del invite Supabase). Respuesta **200**: **`ok`**, **`tenant_id`**, **`link`**, **`email`**, **`token`**. Implementación: **`lib/invitation-admin-flow.ts`** + **`lib/portal-invitations.ts`** (HTML dark, Resend; URL **`PORTAL_SITE_URL`** o **`https://portal.${PLATFORM_DOMAIN}`**). El email del body debe coincidir con **`owner_email`** del tenant.
 
 **CORS / Next API**
 - **`apps/api/middleware.ts`** + **`lib/cors-origins.ts`**: orígenes explícitos (`NEXT_PUBLIC_ADMIN_URL`, `NEXT_PUBLIC_PORTAL_URL`, `https://admin.${PLATFORM_DOMAIN}`, `https://portal.${PLATFORM_DOMAIN}`); matcher `/api/:path*`; OPTIONS 204 con headers cuando el `Origin` está permitido.
@@ -80,7 +81,7 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 **Infra / CI**
 - **`apps/portal/Dockerfile`**: multi-stage, standalone, `EXPOSE 3002`, `node server.js`; build-args `NEXT_PUBLIC_SUPABASE_*`, `NEXT_PUBLIC_API_URL` (y los que defina `deploy.yml`).
 - **`infra/docker-compose.platform.yml`**: servicio **`portal`**, Traefik `Host(\`portal.${PLATFORM_DOMAIN}\`)`, TLS, puerto contenedor **3002**, vars `NEXT_PUBLIC_*`; red acorde al compose actual (p. ej. `traefik-public` para el router).
-- **`.github/workflows/deploy.yml`** y **`ci.yml`**: type-check/lint/build del workspace **portal**; imagen **`ghcr.io/cloudsysops/intcloudsysops-portal:latest`** en paralelo con api/admin.
+- **`.github/workflows/deploy.yml`** y **`ci.yml`**: type-check/lint/build del workspace **portal**; imagen **`ghcr.io/cloudsysops/intcloudsysops-portal:latest`** en paralelo con api/admin; job **deploy** hace `docker login ghcr.io` en el VPS con **`github.token`** y **`github.actor`** (paquetes ligados al repo).
 
 **Calidad**
 - `npm run type-check` (Turbo) en verde antes de commit; ESLint en rutas API portal (`me`, `mode`) y **`lib/portal-me.ts`**; pre-commit acotado a `apps/api/app` + `apps/api/lib`; **`apps/portal/eslint.config.js`** ignora **`.next/**`** y **`eslint.config.js`** para no lintar artefactos ni el propio config CommonJS.
