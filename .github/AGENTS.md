@@ -368,7 +368,7 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 
 ```bash
 # Referencia: README «Scripts Reference» / «Troubleshooting»; config/doppler-missing.txt (RESEND_*).
-# 0. ./scripts/validate-config.sh  →  si ⚠️ RESEND_API_KEY placeholder, la clave en Doppler no es la cadena completa de Resend.
+# 0. ./scripts/validate-config.sh  →  línea final «Invitaciones (Resend): OK | BLOQUEADO»; ⚠️ RESEND = placeholder si aún no importaste la clave completa.
 # 1. Resend: clave completa desde dashboard → Doppler prd. Recomendado (stdin, sin historial):
 #         pbpaste | ./scripts/doppler-import-resend-api-key.sh
 #    (o: doppler secrets set RESEND_API_KEY --project ops-intcloudsysops --config prd — pega en modo interactivo)
@@ -457,6 +457,7 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 | 2026-04-07 | `scripts/vps-refresh-api-env.sh` encadena bootstrap + recreate `app` tras cambios en Doppler | Misma intención que pasos manuales en AGENTS; valida longitud RESEND salvo `--skip-resend-check` |
 | 2026-04-07 | `scripts/sync-and-test-invite-flow.sh` = vps-refresh + test-e2e-invite-flow | Un solo comando tras `RESEND_API_KEY` completa; `--dry-run` usa `--skip-resend-check` en vps-refresh para poder ensayar sin clave |
 | 2026-04-07 | `doppler-import-resend-api-key.sh` lee API key por stdin → Doppler prd | Evita `KEY=value` en argv/historial; alinea con `doppler secrets set` vía stdin |
+| 2026-04-07 | `validate-config.sh` línea «Invitaciones (Resend): OK \| BLOQUEADO» | No altera LISTO PARA DEPLOY; resume el paso 1 del AGENTS (clave larga + remitente en Doppler) |
 | 2026-04 | validate-config usa `dig +short` para DNS | Comprobar que la IP del VPS aparece en la resolución |
 | 2026-04 | sync-config redirige stdout de `doppler secrets set` a /dev/null | No volcar tablas con valores en logs compartidos |
 | 2026-04 | Dashboard Traefik en `traefik.${PLATFORM_DOMAIN}` | Reservar `admin.*` para la app Admin Opsly |
