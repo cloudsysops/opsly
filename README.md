@@ -155,6 +155,10 @@ Provision (cola → Docker Compose tenant)
 | `scripts/backup-tenants.sh` | Respalda tenants activos a S3 | `--dry-run`, variables `S3_*` / `DB_CONNECTION_STRING` |
 | `scripts/restore-tenant.sh` | Restaura desde S3 | `--slug`, `--date`, `--dry-run` |
 | `scripts/cleanup-demos.sh` | Limpia demos vía API | `--dry-run` |
+| `scripts/validate-config.sh` | Valida JSON, DNS, Doppler críticos, SSH al VPS | Sin flags |
+| `scripts/vps-bootstrap.sh` | Descarga Doppler → `.env` en el VPS, red Traefik, dirs | Ejecutar en el VPS como `vps-dragon` |
+| `scripts/vps-refresh-api-env.sh` | Bootstrap + recrea servicio `app` (tras cambiar secretos en prd) | `--dry-run`, `--skip-resend-check` |
+| `scripts/test-e2e-invite-flow.sh` | Smoke contra API pública (health + POST invitaciones) | `--dry-run`, `--api-url`, requiere `ADMIN_TOKEN` / `OWNER_EMAIL` |
 
 ## Environment Variables Reference
 
@@ -177,6 +181,8 @@ Provision (cola → Docker Compose tenant)
 | `NEXT_PUBLIC_PLATFORM_ADMIN_TOKEN` | Sí (admin) | Mismo valor que `PLATFORM_ADMIN_TOKEN` (navegador). |
 | `DB_CONNECTION_STRING` | Backups | Postgres para `pg_dump`. |
 | `S3_BUCKET`, `S3_PREFIX`, `AWS_*` | Backups | Destino en S3. |
+| `RESEND_API_KEY` | Sí (invitaciones) | API de Resend; valor completo desde el dashboard (no placeholder corto). |
+| `RESEND_FROM_EMAIL` / `RESEND_FROM_ADDRESS` | Sí (invitaciones) | Remitente; la API exige al menos uno de los dos. |
 | `DISCORD_WEBHOOK_URL` | No | Notificaciones operativas. |
 | `DOPPLER_TOKEN` | Opcional | Inyección de secretos en runtime. |
 
@@ -210,6 +216,7 @@ Tras el despliegue, el pipeline espera y llama `https://api.<PLATFORM_DOMAIN>/ap
 | Admin redirige siempre a `/login` | `NEXT_PUBLIC_SUPABASE_*` correctas, cookies en dominio, middleware y proyecto Supabase Auth. |
 | Backup no sube a S3 | `S3_BUCKET`, `AWS_REGION`, credenciales IAM, prefijo `S3_PREFIX`; probar `aws s3 ls` desde el mismo entorno. |
 | Health check del deploy falla | `PLATFORM_DOMAIN` en el servidor o secret `PLATFORM_DOMAIN` en GitHub; firewall; réplicas del servicio `app` y tiempo de arranque. |
+| Invitaciones portal → 500 *API key is invalid* | `RESEND_API_KEY` completa en Doppler `prd`; `./scripts/validate-config.sh` avisa si parece corta; luego `./scripts/vps-refresh-api-env.sh` en local (SSH al VPS). |
 
 ## License
 

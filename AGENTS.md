@@ -367,6 +367,7 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 <!-- Una sola tarea concreta. Actualizar al final de cada sesión -->
 
 ```bash
+# Referencia: README «Scripts Reference» / «Troubleshooting»; config/doppler-missing.txt (RESEND_*).
 # 0. ./scripts/validate-config.sh  →  si ⚠️ RESEND_API_KEY placeholder, la clave en Doppler no es la cadena completa de Resend.
 # 1. Resend: nueva API key en dashboard; doppler secrets set RESEND_API_KEY=… --project ops-intcloudsysops --config prd (valor completo re_…)
 # 2. VPS (automatizado): ./scripts/vps-refresh-api-env.sh   — vps-bootstrap + recreate app (falla si RESEND_API_KEY sigue corta; usar --skip-resend-check solo si actualizaste otros secretos)
