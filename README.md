@@ -159,6 +159,7 @@ Provision (cola → Docker Compose tenant)
 | `scripts/vps-bootstrap.sh` | Descarga Doppler → `.env` en el VPS, red Traefik, dirs | Ejecutar en el VPS como `vps-dragon` |
 | `scripts/vps-refresh-api-env.sh` | Bootstrap + recrea servicio `app` (tras cambiar secretos en prd) | `--dry-run`, `--skip-resend-check` |
 | `scripts/test-e2e-invite-flow.sh` | Smoke contra API pública (health + POST invitaciones) | `--dry-run`, `--api-url`, requiere `ADMIN_TOKEN` / `OWNER_EMAIL` |
+| `scripts/sync-and-test-invite-flow.sh` | Tras Doppler OK: `vps-refresh-api-env` + `test-e2e-invite-flow` | `--dry-run`, `--skip-vps`; requiere `ADMIN_TOKEN` (+ `OWNER_EMAIL` salvo `--dry-run`) |
 
 ## Environment Variables Reference
 
