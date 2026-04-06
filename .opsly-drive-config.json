@@ -1,0 +1,29 @@
+{
+  "google_drive_sync": {
+    "enabled": true,
+    "folder_name": "Opsly",
+    "folder_url": "",
+    "share_recommended": "Anyone with the link can view (or organization-only)",
+    "claude_access_note": "Requires Google Drive integration enabled in your Claude workspace; Claude does not access Drive without your connected Google account and product permissions.",
+    "file_list_path": "docs/opsly-drive-files.list",
+    "last_sync": null,
+    "files": [
+      "AGENTS.md",
+      "VISION.md",
+      "docs/ARCHITECTURE.md",
+      "docs/OPENCLAW-ARCHITECTURE.md",
+      "docs/CLAUDE-WORKFLOW-OPTIMIZATION.md",
+      "docs/AUTO-PUSH-WATCHER.md",
+      "docs/SECURITY_AUDIT_REPORT.md",
+      "docs/TROUBLESHOOTING.md",
+      "docs/SECURITY_CHECKLIST.md",
+      "docs/INVITATIONS_RUNBOOK.md",
+      "docs/FAQ.md",
+      "infra/terraform/tfplan.txt",
+      "scripts/onboard-tenant.sh",
+      "scripts/auto-push-watcher.sh",
+      "scripts/cursor-prompt-monitor.sh"
+    ],
+    "notes": "Cristian syncs manually after major doc changes; see docs/GOOGLE-DRIVE-SYNC.md"
+  }
+}
