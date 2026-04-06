@@ -149,25 +149,61 @@ else
   echo "⚠️  /var/run/docker.sock no es un socket; no se pudo obtener DOCKER_GID" >&2
 fi
 
-log_info "[j] Docker Engine — daemon.json api-version-compat (solo si no existe)"
-# Crea /etc/docker/daemon.json una sola vez con api-version-compat (idempotente: si ya hay archivo, no tocar).
-# No reiniciamos dockerd desde este script: reinicia todos los contenedores del host. Aplicar cambios a mano:
-#   sudo systemctl restart docker
+log_info "[j] Docker Engine — daemon.json min-api-version (idempotente con merge JSON)"
+# Traefik v3 cliente Go negocia API 1.24; Docker 29.3.1 exige mínimo 1.40.
+# Solución: bajar el mínimo del daemon a 1.24 para permitir clientes legacy.
+# Idempotente: si el archivo existe con otras claves, hace merge con python3.
+# No reinicia dockerd: aplica cambios con sudo systemctl restart docker manual.
 DAEMON_JSON="/etc/docker/daemon.json"
-if command -v sudo >/dev/null 2>&1 && sudo -n true 2>/dev/null; then
-  if sudo test -f "${DAEMON_JSON}"; then
-    log_info "${DAEMON_JSON} ya existe; no se modifica (idempotente)."
-  else
-    printf '%s\n' '{"api-version-compat": true}' | sudo tee "${DAEMON_JSON}" >/dev/null
-    log_info "Creado ${DAEMON_JSON} con api-version-compat: true."
-  fi
+if ! command -v sudo >/dev/null 2>&1; then
+  log_warn "sudo no disponible; no se puede configurar ${DAEMON_JSON}."
+  echo "  Crea manualmente (si no existe): echo '{\"min-api-version\": \"1.24\"}' | sudo tee ${DAEMON_JSON}" >&2
+elif ! sudo -n true 2>/dev/null; then
+  log_warn "sudo sin contraseña (sudo -n) no disponible; no se puede configurar ${DAEMON_JSON}."
+  echo "  Crea manualmente (si no existe): echo '{\"min-api-version\": \"1.24\"}' | sudo tee ${DAEMON_JSON}" >&2
 else
-  log_warn "Sin sudo sin contraseña (sudo -n); no se creó ${DAEMON_JSON}."
-  echo "  Si el archivo no existe, créalo con sudo, por ejemplo:"
-  echo "    printf '%s\\n' '{\"api-version-compat\": true}' | sudo tee ${DAEMON_JSON} >/dev/null"
+  # Usa python3 para hacer merge JSON idempotente
+  if sudo test ! -f "${DAEMON_JSON}"; then
+    # Archivo no existe: crear con min-api-version
+    printf '%s\n' '{"min-api-version": "1.24"}' | sudo tee "${DAEMON_JSON}" >/dev/null
+    log_info "Creado ${DAEMON_JSON} con min-api-version: 1.24"
+  else
+    # Archivo existe: hacer merge con python3 (añadir min-api-version si no existe)
+    if command -v python3 >/dev/null 2>&1; then
+      sudo python3 << 'PYTHON'
+import json
+import sys
+DAEMON_JSON = "/etc/docker/daemon.json"
+try:
+  with open(DAEMON_JSON, 'r') as f:
+    cfg = json.load(f)
+except (FileNotFoundError, json.JSONDecodeError) as e:
+  print(f"Error leyendo {DAEMON_JSON}: {e}", file=sys.stderr)
+  cfg = {}
+if "min-api-version" not in cfg:
+  cfg["min-api-version"] = "1.24"
+  with open(DAEMON_JSON, 'w') as f:
+    json.dump(cfg, f, indent=2)
+  print(f"Actualizado {DAEMON_JSON}: añadido min-api-version: 1.24")
+else:
+  print(f"{DAEMON_JSON}: min-api-version ya existe (idempotente)")
+PYTHON
+    else
+      log_warn "python3 no disponible para merge JSON; intentando jq..."
+      if command -v jq >/dev/null 2>&1; then
+        TEMP="$(mktemp)"
+        sudo jq '. + {"min-api-version": "1.24"}' "${DAEMON_JSON}" | sudo tee "${TEMP}" >/dev/null
+        sudo mv "${TEMP}" "${DAEMON_JSON}"
+        log_info "Actualizado ${DAEMON_JSON} con jq: añadido min-api-version: 1.24"
+      else
+        log_warn "Ni python3 ni jq disponibles; no se puede hacer merge JSON."
+        echo "  Edita ${DAEMON_JSON} manualmente y añade: \"min-api-version\": \"1.24\"" >&2
+      fi
+    fi
+  fi
 fi
 echo ""
-echo "  Tras crear o editar ${DAEMON_JSON}, aplica con reinicio manual de Docker (afecta todos los contenedores):"
+echo "⚠️  Tras crear o editar ${DAEMON_JSON}, aplica con reinicio manual (afecta todos los contenedores):"
 echo "    sudo systemctl restart docker"
 echo ""
 
