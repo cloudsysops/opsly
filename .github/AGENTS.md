@@ -47,16 +47,39 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 
 <!-- Actualizar al final de cada sesión -->
 
-**Fecha última actualización:** 2026-04-04 — Admin dashboard demo + métricas VPS vía Prometheus; primer tenant `smiletripcare` sigue referencia en bloque siguiente.
+**Fecha última actualización:** 2026-04-04 — Documentación consolidada de la sesión Admin + API métricas + infra; commits en `main`: `5219370` (`feat(admin): …`), `3c4cf33` (sync `.github/AGENTS.md`).
 
 **Completado ✅**
 
-*Admin dashboard (`apps/admin`) — demo stakeholders (2026-04-04):*
-- **URL:** https://admin.ops.smiletripcare.com (Traefik `admin.${PLATFORM_DOMAIN}` → puerto 3001).
-- **Rutas:** `/dashboard` (CPU gauge, RAM/disco con barras, uptime, tenants activos y contenedores Docker vía `GET /api/metrics/system` que hace proxy a Prometheus; refresco 30s), `/tenants` (tabla `platform.tenants` + fila expandible con n8n/Uptime y email), `/tenants/{slug}` (detalle; embed status Uptime Kuma en `/status/{slug}` con enlace alternativo).
-- **Sin login (demo):** build admin con `NEXT_PUBLIC_ADMIN_PUBLIC_DEMO=true` (por defecto en `apps/admin/Dockerfile`); en el servicio **`app`** del compose, `ADMIN_PUBLIC_DEMO_READ=true` en `/opt/opsly/.env` habilita GET públicos (`/api/tenants`, `/api/metrics`, `/api/metrics/system`, tenant por slug/UUID). POST/PATCH/DELETE siguen exigiendo `PLATFORM_ADMIN_TOKEN`.
-- **Prometheus desde la API:** `PROMETHEUS_BASE_URL` (default compose `http://host.docker.internal:9090`) + `extra_hosts: host.docker.internal:host-gateway` en el servicio **`app`**. Si no hay métricas, la API devuelve datos simulados con `mock: true`.
-- **Cliente admin → API:** si falta `NEXT_PUBLIC_API_URL`, en el navegador se infiere `https://api.<resto-del-host>` cuando el host empieza por `admin.`.
+*Admin dashboard + API métricas — sesión Cursor 2026-04-04 (stakeholders / familia):*
+
+**Objetivo:** Admin en `apps/admin` operativo y legible, con datos reales del VPS y del tenant `smiletripcare` (Supabase `platform.tenants`), sin autenticación Supabase en modo demo.
+
+**URL pública:** https://admin.ops.smiletripcare.com — Traefik router `opsly-admin`, `Host(admin.${PLATFORM_DOMAIN})`, `entrypoints=websecure`, `tls=true`, `tls.certresolver=letsencrypt`, servicio puerto **3001** (`infra/docker-compose.platform.yml`).
+
+**Admin — pantallas y UX**
+- **`/dashboard`:** Gauge circular CPU (verde si el uso es menor que 60%, amarillo si es menor que 85%, rojo en caso contrario; hex `#22c55e` / `#eab308` / `#ef4444`), RAM y disco en GB con `Progress` (shadcn/Radix), uptime legible, conteo tenants activos y contenedores Docker en ejecución; **SWR cada 30 s** contra la API. Tema dark, fondo `#0a0a0a`, valores en `font-mono`. Aviso en UI si la API devuelve **`mock: true`** (Prometheus no alcanzable).
+- **`/tenants`:** Tabla: slug, plan, status (badges: active verde, provisioning amarillo, failed rojo, etc.), `created_at`. Clic en fila expande: URLs n8n y Uptime con botones «Abrir», email owner, fechas; enlace a detalle.
+- **`/tenants/[tenantRef]`:** Detalle por **slug o UUID** (carpeta dinámica `[tenantRef]`). Header con nombre y status; cards plan / email / creado; botones n8n y Uptime; **iframe** a `{uptime_base}/status/{slug}` (Uptime Kuma) con texto de ayuda si bloquea por `X-Frame-Options`; sección containers y URLs técnicas.
+- **Chrome:** Marca **Opsly**, sidebar solo **Dashboard | Tenants**, footer: `Opsly Platform v1.0 · staging · ops.smiletripcare.com`.
+- **Dependencias admin:** `@radix-ui/react-progress`, componente `components/ui/progress.tsx`, `CpuGauge`, hook `useSystemMetrics`.
+
+**API (`apps/api`)**
+- **`GET /api/metrics/system`** — Proxy a Prometheus (`/api/v1/query`). Consultas: CPU `100 - (avg(rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100)`; RAM `sum(MemTotal)-sum(MemAvailable)`; disco `sum(size)-sum(free)` con `mountpoint="/"`; uptime `time() - node_boot_time_seconds`. Respuesta JSON incluye `cpu_percent`, `ram_*_gb`, `disk_*_gb`, `uptime_seconds`, `active_tenants` (Supabase), `containers_running` (`docker ps -q` vía **execa**), `mock`. Implementación modular: `lib/prometheus.ts`, `lib/fetch-host-metrics-prometheus.ts`, `lib/docker-running-count.ts`, fallback mock en `DEMO_SYSTEM_METRICS_MOCK` (`lib/constants.ts`).
+- **`GET /api/tenants`**, **`GET /api/metrics`**, **`GET /api/tenants/:ref`:** Con `ADMIN_PUBLIC_DEMO_READ=true`, los **GET** omiten `PLATFORM_ADMIN_TOKEN` (`requireAdminTokenUnlessDemoRead` en `lib/auth.ts`). **`:ref`** = UUID o slug (`TenantRefParamSchema` en `lib/validation.ts` + `TENANT_ROUTE_REF` en constants). POST/PATCH/DELETE sin cambios (token obligatorio).
+- **Prometheus en Docker:** Desde el contenedor `app`, `localhost:9090` no es el host; en compose: `PROMETHEUS_BASE_URL` default `http://host.docker.internal:9090`, `extra_hosts: host.docker.internal:host-gateway`.
+
+**Admin — demo sin login**
+- **`NEXT_PUBLIC_ADMIN_PUBLIC_DEMO=true`** por **ARG** en `apps/admin/Dockerfile` (build); `lib/supabase/middleware.ts` devuelve `NextResponse.next` sin redirigir a `/login`. `app/api/audit-log/route.ts` omite comprobación de usuario Supabase en ese modo.
+- **`lib/api-client.ts`:** Sin header `Authorization` en demo; **`getBaseUrl()`** infiere `https://api.<suffix>` si el host del navegador empieza por `admin.` (y `http://127.0.0.1:3000` en localhost), para no depender de `NEXT_PUBLIC_API_URL` en build.
+
+**Tooling / calidad**
+- **`.eslintrc.json`:** El override de **`apps/api/lib/constants.ts`** (`no-magic-numbers: off`) se movió **después** del bloque `apps/api/**/*.ts`; si va antes, el segundo override volvía a activar la regla sobre `constants.ts`.
+
+**Verificación y despliegue**
+- `npm run type-check` (Turbo) en verde antes de commit; pre-commit ESLint en rutas API tocadas.
+- Tras push a `main`, CI despliega imágenes GHCR. **Hasta `pull` + `up` de `app` y `admin` en el VPS**, una imagen admin antigua puede seguir redirigiendo a `/login` (307): hace falta imagen nueva con el ARG de demo y, en `.env`, **`ADMIN_PUBLIC_DEMO_READ=true`** para el servicio **`app`**.
+- Comprobación sugerida post-deploy: `curl -sfk https://admin.ops.smiletripcare.com` (esperar HTML del dashboard, no solo redirect a login).
 
 *Primer tenant en staging — smiletripcare (2026-04-06, verificado ✅):*
 - **Slug:** `smiletripcare` — fila en `platform.tenants` + stack compose en VPS (`scripts/onboard-tenant.sh`).
@@ -75,7 +98,7 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 
 *Capas de calidad de código — monorepo Opsly (2026-04-05, commit `d4acfcb` `feat(quality): add code patterns, SOLID rules and automated review layers`, pusheado a `main`):*
 - **CAPA 1 — `.vscode/settings.json`:** `formatOnSave`, `codeActionsOnSave` (ESLint + organize imports), imports relativos TS/JS, Copilot en español (`github.copilot.chat.localeOverride: "es"`), Copilot habilitado por lenguajes del stack, `eslint.validate` para JS/TS/TSX; comentarios en español por grupo de opciones.
-- **CAPA 2 — ESLint raíz:** `.eslintrc.json` con reglas estrictas en `apps/api` (`complexity` 10, `max-lines-per-function` 50 warn, `no-magic-numbers` con ignore `[0,1,-1,100,1000]`, `@typescript-eslint/no-explicit-any` error, `explicit-function-return-type` warn, `no-nested-ternary`, `prefer-const`, `eqeqeq`); override para `apps/api/lib/constants.ts` sin `no-magic-numbers`. **`eslint.config.mjs`:** flat config con `FlatCompat` + `recommendedConfig`/`allConfig` desde `@eslint/js`; ignores para `apps/web`, `apps/admin`, `next-env.d.ts`, etc.
+- **CAPA 2 — ESLint raíz:** `.eslintrc.json` con reglas estrictas en `apps/api` (`complexity` 10, `max-lines-per-function` 50 warn, `no-magic-numbers` con ignore `[0,1,-1,100,1000]`, `@typescript-eslint/no-explicit-any` error, `explicit-function-return-type` warn, `no-nested-ternary`, `prefer-const`, `eqeqeq`); **override final** para `apps/api/lib/constants.ts` sin `no-magic-numbers` (debe ir **después** del bloque `apps/api/**` para que no lo pise). **`eslint.config.mjs`:** flat config con `FlatCompat` + `recommendedConfig`/`allConfig` desde `@eslint/js`; ignores para `apps/web`, `apps/admin`, `next-env.d.ts`, etc.
 - **Dependencias raíz:** `eslint`, `@eslint/js`, `@eslint/eslintrc`, `@typescript-eslint/parser`, `@typescript-eslint/eslint-plugin`, `typescript` (dev) para ejecutar ESLint desde la raíz del monorepo.
 - **CAPA 3 — `.github/copilot-instructions.md`:** secciones añadidas (sin borrar lo existente): patrones Repository/Factory/Observer/Strategy; algoritmos (listas, Supabase, BullMQ backoff, paginación cursor, Redis TTL); SOLID aplicado a Opsly; reglas de estilo; plantilla route handler en `apps/api`; plantilla script bash (`set -euo pipefail`, `--dry-run`, `main`).
 - **CAPA 4 — `.cursor/rules/opsly.mdc`:** checklist “antes de escribir código”, “antes de script bash”, “antes de commit” (type-check, sin `any`, sin secretos).
@@ -267,6 +290,7 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 - Build artifacts: Ready for GHCR push
 
 **En progreso 🔄**
+- **Despliegue Admin + API lectura demo en VPS:** variables `ADMIN_PUBLIC_DEMO_READ=true` y nuevas imágenes GHCR (`feat(admin)` en `main`); validar dashboard y `/api/metrics/system` en producción staging.
 - **CI “Nightly code quality” (`nightly-fix.yml`):** probar con *Actions → Run workflow*; el cron solo corre con el workflow en la rama por defecto (`main`).
 - **CI `Deploy` en GitHub Actions:** tras push a `main`, **`build-and-push`** publica imágenes en GHCR; **`deploy`** hace SSH, **`docker compose --env-file /opt/opsly/.env … pull` + `up`**, health con reintentos y **`curl -sfk`**. Revisar *Actions → Deploy* si falla SSH, disco VPS, Traefik, **`PLATFORM_DOMAIN`** o falta **`DOCKER_GID`** en el `.env` del VPS (sin él, `group_add` usa `999` y el socket puede seguir inaccesible).
 - Deploy staging — imágenes **`ghcr.io/cloudsysops/intcloudsysops-{api,admin}:latest`**; en VPS **`/opt/opsly/.env`** con **`DOCKER_GID`** (vuelve a ejecutar **`vps-bootstrap.sh`** tras cambios de compose si hace falta); login GHCR en el job con **`GITHUB_TOKEN`**. Tras cambios en Traefik: recrear contenedor **`traefik`** en el VPS para cargar env y `group_add`.
@@ -290,10 +314,12 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 ```bash
 # ✅ STAGING VERDE — Health OK
 # ✅ Primer tenant smiletripcare onboarded (2026-04-06) — n8n + Uptime OK; secretos n8n en Doppler prd
+# ✅ Admin dashboard demo implementado en repo (2026-04-04) — despliegue: pull imágenes + ADMIN_PUBLIC_DEMO_READ en app
 
 # Próximo paso inmediato:
-# 1. Validar Admin dashboard (apps/admin) en staging: flujos, auth, listado tenants / métricas si aplica.
-# 2. Conectar smiletripcare a su n8n: enlazar URL https://n8n-smiletripcare.ops.smiletripcare.com/ desde admin u orquestación según diseño (credenciales en Doppler prd).
+# 1. En VPS: asegurar ADMIN_PUBLIC_DEMO_READ=true en /opt/opsly/.env, docker compose pull + up app admin; verificar https://admin.ops.smiletripcare.com sin redirect a /login.
+# 2. Validar métricas reales: Prometheus en host :9090 alcanzable vía host.docker.internal desde contenedor app; si no, confirmar aviso «datos simulados» en dashboard.
+# 3. (Opcional) Reintroducir auth Supabase para admin operativo interno: build con NEXT_PUBLIC_ADMIN_PUBLIC_DEMO=false y quitar ADMIN_PUBLIC_DEMO_READ en producción cerrada.
 ```
 
 ---
@@ -401,6 +427,9 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 | 2026-04-06 | daemon.json `min-api-version: 1.24` en VPS bootstrap | Traefik v3 cliente Go negocia API 1.24; Docker 29.3.1 exige 1.40 — bajar mínimo del daemon es único fix funcional |
 | 2026-04-07 | Migraciones Supabase: `0003_rls_policies.sql` → `0007_rls_policies.sql` + `npx supabase db push` en opsly-prod | Dos prefijos `0003_` rompían `schema_migrations`; RLS pasa a versión `0007`; despliegue sin URL Postgres con password especial en Doppler |
 | 2026-04-06 | `GRANT` en schema **`platform`** (roles PostgREST / `anon`+`authenticated`+`service_role` según política del proyecto) + onboarding **`smiletripcare`** exitoso | Desbloquea REST/API y `onboard-tenant.sh` frente a `permission denied for schema platform`; primer tenant con n8n + Uptime en staging verificado |
+| 2026-04-04 | Admin demo + `GET /api/metrics/system` (Prometheus proxy) + lectura pública GET con `ADMIN_PUBLIC_DEMO_READ` | Stakeholders ven VPS/tenants sin login; el navegador nunca llama a Prometheus directo; mutaciones API siguen protegidas |
+| 2026-04-04 | Traefik admin: `tls=true` explícito en router `opsly-admin` | Alineado con router `app`; certresolver LetsEncrypt sin ambigüedad TLS |
+| 2026-04-04 | Orden de overrides ESLint: `constants.ts` al final de `overrides` | Evita que `apps/api/**` reactive `no-magic-numbers` sobre constantes con literales numéricos |
 
 ---
 
