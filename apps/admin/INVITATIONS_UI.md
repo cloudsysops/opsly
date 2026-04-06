@@ -6,25 +6,25 @@ Plan de producto (sin implementación en esta fase).
 
 ### Tabla (solo lectura)
 
-| Columna | Fuente propuesta |
-|---------|-------------------|
-| Email | Último invite enviado (requiere persistencia o API Supabase Admin) |
-| Tenant | `slug` |
-| Modo | `developer` \| `managed` |
-| Enviado | `created_at` (si se registra) |
-| Estado | `pending` \| `accepted` \| `expired` (heurística vía Auth o tabla auxiliar) |
+| Columna | Fuente propuesta                                                            |
+| ------- | --------------------------------------------------------------------------- |
+| Email   | Último invite enviado (requiere persistencia o API Supabase Admin)          |
+| Tenant  | `slug`                                                                      |
+| Modo    | `developer` \| `managed`                                                    |
+| Enviado | `created_at` (si se registra)                                               |
+| Estado  | `pending` \| `accepted` \| `expired` (heurística vía Auth o tabla auxiliar) |
 
 **Filtros:** tenant, estado, rango de fechas.  
 **Fetch:** hoy no existe `GET /api/invitations`; Fase 2 añadiría listado paginado o lectura desde Supabase con token admin.
 
 ### Formulario (crear invitación)
 
-| Campo | Tipo |
-|-------|------|
-| Email | Text (validar formato) |
+| Campo  | Tipo                                                    |
+| ------ | ------------------------------------------------------- |
+| Email  | Text (validar formato)                                  |
 | Tenant | Select poblado desde `GET /api/tenants` (slugs activos) |
-| Modo | Select `developer` / `managed` |
-| Acción | Botón «Enviar invitación» → `POST /api/invitations` |
+| Modo   | Select `developer` / `managed`                          |
+| Acción | Botón «Enviar invitación» → `POST /api/invitations`     |
 
 ### Validaciones frontend
 

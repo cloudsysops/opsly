@@ -29,8 +29,7 @@ function mockClientForTenant(
     select: () => chain,
     eq: () => chain,
     is: () => chain,
-    maybeSingle: () =>
-      Promise.resolve({ data: tenant, error: queryError }),
+    maybeSingle: () => Promise.resolve({ data: tenant, error: queryError }),
   };
   return chain as ReturnType<typeof supabaseMod.getServiceClient>;
 }
