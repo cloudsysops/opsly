@@ -23,9 +23,9 @@ const PORTAL_INVITE_HTML_TEMPLATE = `<!DOCTYPE html>
 <tr><td style="height:32px;"></td></tr>
 <tr><td style="font-size:13px;font-weight:600;color:#a3a3a3;text-transform:uppercase;letter-spacing:0.06em;">Lo que tienes disponible</td></tr>
 <tr><td style="height:12px;"></td></tr>
-<tr><td style="font-size:14px;line-height:1.8;color:#e5e5e5;"><div>✅ n8n — Motor de automatización</div><div>✅ Uptime Kuma — Monitoreo 24/7</div><div>✅ Dominio propio</div></td></tr>
+<tr><td style="font-size:14px;line-height:1.8;color:#e5e5e5;"><div>✅ Motor de automatización</div><div>✅ Monitor 24/7</div><div>✅ Dominio propio</div></td></tr>
 <tr><td style="height:28px;"></td></tr>
-<tr><td style="font-size:12px;color:#737373;border-top:1px solid #1e1e1e;padding-top:20px;">Opsly · ops.smiletripcare.com</td></tr>
+<tr><td style="font-size:12px;color:#737373;border-top:1px solid #1e1e1e;padding-top:20px;">{footerLine}</td></tr>
 </table></td></tr></table></body></html>`;
 
 function requireEnv(name: string): string {
@@ -58,12 +58,23 @@ function parseInviteTokenFromActionLink(actionLink: string): string | null {
   }
 }
 
+function footerLineFromEnv(): string {
+  const domain =
+    process.env.PLATFORM_DOMAIN?.trim() ?? process.env.PLATFORM_BASE_DOMAIN?.trim();
+  if (domain && domain.length > 0) {
+    return `Opsly · ${domain}`;
+  }
+  return "Opsly";
+}
+
 function buildPortalInviteHtml(displayName: string, activateUrl: string): string {
   const safeName = escapeHtml(displayName);
   const safeUrl = escapeHtml(activateUrl);
+  const safeFooter = escapeHtml(footerLineFromEnv());
   return PORTAL_INVITE_HTML_TEMPLATE
     .replace("{displayName}", safeName)
-    .replace("{activateUrl}", safeUrl);
+    .replace("{activateUrl}", safeUrl)
+    .replace("{footerLine}", safeFooter);
 }
 
 async function generateInviteLink(
@@ -82,7 +93,7 @@ async function generateInviteLink(
         full_name: name,
         tenant_slug: slug,
       },
-      redirectTo: `${portalBase}/dashboard`,
+      redirectTo: `${portalBase}/invite`,
     },
   });
 

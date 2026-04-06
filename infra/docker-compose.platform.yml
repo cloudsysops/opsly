@@ -121,6 +121,30 @@ services:
       - traefik-public
     restart: unless-stopped
 
+  portal:
+    image: ${PORTAL_APP_IMAGE:-ghcr.io/cloudsysops/intcloudsysops-portal:latest}
+    container_name: opsly_portal
+    env_file:
+      - ../.env
+    environment:
+      PORT: "3002"
+      NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL}
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${NEXT_PUBLIC_SUPABASE_ANON_KEY}
+      NEXT_PUBLIC_API_URL: https://api.${PLATFORM_DOMAIN}
+      NEXT_PUBLIC_PLATFORM_DOMAIN: ${PLATFORM_DOMAIN}
+      NEXT_PUBLIC_SUPPORT_EMAIL: ${NEXT_PUBLIC_SUPPORT_EMAIL:-}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik-public"
+      - "traefik.http.routers.portal.rule=Host(`portal.${PLATFORM_DOMAIN}`)"
+      - "traefik.http.routers.portal.entrypoints=websecure"
+      - "traefik.http.routers.portal.tls=true"
+      - "traefik.http.routers.portal.tls.certresolver=letsencrypt"
+      - "traefik.http.services.portal.loadbalancer.server.port=3002"
+    networks:
+      - traefik-public
+    restart: unless-stopped
+
 networks:
   traefik-public:
     external: true

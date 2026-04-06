@@ -35,7 +35,7 @@ export async function POST(request: Request): Promise<Response> {
   const { error } = await getServiceClient().auth.admin.updateUserById(user.id, {
     user_metadata: {
       ...prevMeta,
-      portal_mode: parsed.data.mode,
+      mode: parsed.data.mode,
     },
   });
 

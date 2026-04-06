@@ -72,6 +72,13 @@ export const ORCHESTRATION_HEALTH = {
   POLL_INTERVAL_MS: 5_000,
 } as const;
 
+/** Sonda HTTP para URLs de servicios del portal (n8n / uptime). */
+export const PORTAL_URL_PROBE = {
+  TIMEOUT_MS: 10_000,
+  /** Límite superior exclusivo para “hubo respuesta HTTP” (menor que este valor). */
+  STATUS_EXCLUSIVE_MAX: 600,
+} as const;
+
 /** Paginación API listados. */
 export const LIST_TENANTS = {
   DEFAULT_LIMIT: 20,

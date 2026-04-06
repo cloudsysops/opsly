@@ -24,12 +24,13 @@ jobs:
       - name: npm ci
         run: npm ci
 
-      - name: TypeScript (api + admin, paralelo)
+      - name: TypeScript (api + admin + portal, paralelo)
         run: |
           set -euo pipefail
           (cd apps/api && npx tsc --noEmit) & pid1=$!
           (cd apps/admin && npx tsc --noEmit) & pid2=$!
-          wait $pid1 $pid2
+          (cd apps/portal && npx tsc --noEmit) & pid3=$!
+          wait $pid1 $pid2 $pid3
 
       - name: ESLint si existe config (paralelo)
         run: |
@@ -47,7 +48,8 @@ jobs:
           }
           run_eslint apps/api & pid1=$!
           run_eslint apps/admin & pid2=$!
-          wait $pid1 $pid2
+          run_eslint apps/portal & pid3=$!
+          wait $pid1 $pid2 $pid3
 
   test:
     needs: lint
@@ -68,13 +70,14 @@ jobs:
           cache: npm
           cache-dependency-path: package-lock.json
 
-      - name: npm ci + build (api + admin)
+      - name: npm ci + build (api + admin + portal)
         run: |
           set -euo pipefail
           npm ci
           (cd apps/api && npm run build) & pid1=$!
           (cd apps/admin && npm run build) & pid2=$!
-          wait $pid1 $pid2
+          (cd apps/portal && npm run build) & pid3=$!
+          wait $pid1 $pid2 $pid3
 
   scripts-check:
     needs: lint

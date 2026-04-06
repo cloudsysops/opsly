@@ -51,7 +51,8 @@ jobs:
           set -euo pipefail
           (cd apps/api && npx tsc --noEmit) & pid1=$!
           (cd apps/admin && npx tsc --noEmit) & pid2=$!
-          wait $pid1 $pid2
+          (cd apps/portal && npx tsc --noEmit) & pid3=$!
+          wait $pid1 $pid2 $pid3
 
   build-and-push:
     needs: lint-and-typecheck
@@ -94,6 +95,20 @@ jobs:
             NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
             NEXT_PUBLIC_API_URL=https://api.${{ secrets.PLATFORM_DOMAIN }}
 
+      - name: Build and push Portal image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: apps/portal/Dockerfile
+          push: true
+          tags: ghcr.io/cloudsysops/intcloudsysops-portal:latest
+          build-args: |
+            NEXT_PUBLIC_SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+            NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+            NEXT_PUBLIC_API_URL=https://api.${{ secrets.PLATFORM_DOMAIN }}
+            NEXT_PUBLIC_SUPPORT_EMAIL=${{ secrets.NEXT_PUBLIC_SUPPORT_EMAIL }}
+            NEXT_PUBLIC_PLATFORM_DOMAIN=${{ secrets.PLATFORM_DOMAIN }}
+
   deploy:
     needs: build-and-push
     runs-on: ubuntu-latest
@@ -131,7 +146,7 @@ jobs:
             cd /opt/opsly/infra
             echo "$GHCR_PAT" | docker login ghcr.io -u "$GHCR_USER" --password-stdin
             docker compose --env-file /opt/opsly/.env -f docker-compose.platform.yml pull
-            docker compose --env-file /opt/opsly/.env -f docker-compose.platform.yml up -d --no-deps traefik app admin
+            docker compose --env-file /opt/opsly/.env -f docker-compose.platform.yml up -d --no-deps traefik app admin portal
 
             if [ -z "${PLATFORM_DOMAIN:-}" ]; then
               echo "PLATFORM_DOMAIN no está definido" >&2
