@@ -34,6 +34,7 @@ DOPPLER_TOKEN=            # Service token para el VPS: scripts/setup-doppler.sh 
 # REDIS_PASSWORD=         Cadena fuerte; REDIS_URL en Compose suele ser redis://:${REDIS_PASSWORD}@redis:6379/0
 # PLATFORM_ADMIN_TOKEN=   mín. 32 chars; mismo valor que NEXT_PUBLIC_PLATFORM_ADMIN_TOKEN en admin
 # TRAEFIK_DASHBOARD_BASIC_AUTH_USERS=  htpasswd -nb user password  (en Compose escapa $ como $$)
-# RESEND_API_KEY=         https://resend.com/api-keys — pegar la clave COMPLETA (suele ser mucho más larga que el prefijo re_). Si en Doppler solo hay ~6 caracteres, Resend responde "API key is invalid" en POST /api/invitations. ./scripts/validate-config.sh avisa si longitud < 20.
+# RESEND_API_KEY=         https://resend.com/api-keys — pegar la clave COMPLETA. Import seguro: pbpaste | ./scripts/doppler-import-resend-api-key.sh
+#                         Si en Doppler solo hay ~6 caracteres, Resend responde "API key is invalid". ./scripts/validate-config.sh avisa si longitud < 20.
 # RESEND_FROM_EMAIL=      o RESEND_FROM_ADDRESS — remitente verificado o, para pruebas, onboarding@resend.dev (según política de la cuenta Resend).
 # DISCORD_WEBHOOK_URL=    Discord → canal → Integrations → Webhooks (opcional)
