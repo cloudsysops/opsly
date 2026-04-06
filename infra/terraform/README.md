@@ -76,6 +76,20 @@ terraform destroy -target=digitalocean_droplet.staging[0] -target=digitalocean_r
 - `dns.tf` — registros A para `api.ops`, `*.ops`, y `staging.ops` condicional.
 - `variables.tf` — entradas sensibles y de configuración.
 - `outputs.tf` — IPs y ID de producción.
+- `terraform.tfvars.example` — **placeholders** para `do_token` y `ssh_fingerprint`; copiar a `terraform.tfvars` (gitignored) o usar `TF_VAR_*`.
+
+## Plan sin apply (verificación local)
+
+Ejemplo con variables placeholder (sin guardar secretos en disco):
+
+```bash
+cd infra/terraform
+export TF_VAR_do_token="REPLACE_WITH_DIGITALOCEAN_API_TOKEN"
+export TF_VAR_ssh_fingerprint="REPLACE_WITH_DO_SSH_KEY_FINGERPRINT"
+terraform plan -input=false
+```
+
+En un clon **sin estado/import** del droplet de producción, un `plan` puede proponer recursos nuevos (p. ej. DNS). Tras `terraform import` del droplet existente, el diff debe alinearse con la realidad. **Última corrida de referencia (2026-04-06):** `Plan: 3 to add, 0 to change, 0 to destroy` con tokens placeholder y estado local del entorno de desarrollo — no usar como verdad de producción.
 
 ## TODO (Fase 2)
 

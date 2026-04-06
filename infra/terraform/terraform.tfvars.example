@@ -1,0 +1,11 @@
+# Copia a terraform.tfvars (gitignored) o exporta TF_VAR_* desde Doppler.
+# Nunca commitees valores reales.
+
+do_token         = "REPLACE_WITH_DIGITALOCEAN_API_TOKEN"
+ssh_fingerprint  = "REPLACE_WITH_DO_SSH_KEY_FINGERPRINT"
+
+# Opcionales (valores por defecto en variables.tf):
+# region                = "nyc3"
+# create_staging        = false
+# dns_managed_zone      = "smiletripcare.com"
+# production_droplet_name = "opsly-production"
