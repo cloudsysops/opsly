@@ -1,0 +1,70 @@
+name: Auto-fix on push
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'apps/api/**'
+      - 'apps/admin/**'
+      - 'scripts/**'
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  review-and-fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ github.token }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: npm ci
+        run: npm ci
+
+      - name: ESLint --fix (api + admin)
+        run: |
+          set +e
+          npm run lint:fix -w @intcloudsysops/api || true
+          npm run lint:fix -w @intcloudsysops/admin || true
+          exit 0
+
+      - name: Prettier --write
+        run: |
+          set +e
+          if [ -f node_modules/prettier/package.json ]; then
+            npx prettier --write \
+              "apps/api/**/*.{ts,tsx,js,jsx,json,md}" \
+              "apps/admin/**/*.{ts,tsx,js,jsx,json,md}" \
+              --ignore-unknown || true
+          fi
+          exit 0
+
+      - name: Commit and push if changes
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          if [ -z "$(git status --porcelain)" ]; then
+            echo "✅ No changes after auto-fix"
+            exit 0
+          fi
+
+          git add -A
+          COMMIT_MSG="chore: auto-fix code quality on $(git rev-parse --short HEAD)"
+          git commit -m "$COMMIT_MSG"
+          git push origin main
+
+          echo "✅ Changes pushed to main"

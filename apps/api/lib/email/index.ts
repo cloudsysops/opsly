@@ -40,7 +40,7 @@ function servicesSummary(services: Tenant["services"]): string {
   return JSON.stringify(services, null, JSON_PRETTY_PRINT_INDENT);
 }
 
-function escapeHtml(value: string): string {
+export function escapeHtml(value: string): string {
   return value
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
@@ -66,4 +66,35 @@ export async function sendWelcomeEmail(
   if (error) {
     throw new Error(error.message);
   }
+}
+
+export async function sendHtmlEmail(options: {
+  to: string;
+  subject: string;
+  html: string;
+  from?: string;
+}): Promise<void> {
+  const resend = getResend();
+  const from = options.from && options.from.length > 0 ? options.from : requireFromAddress();
+  const { error } = await resend.emails.send({
+    from,
+    to: options.to,
+    subject: options.subject,
+    html: options.html,
+  });
+  if (error) {
+    throw new Error(error.message);
+  }
+}
+
+function inviteFromEmail(): string {
+  const direct = process.env.RESEND_INVITE_FROM_EMAIL?.trim();
+  if (direct && direct.length > 0) {
+    return direct;
+  }
+  return requireFromAddress();
+}
+
+export function getInviteFromEmail(): string {
+  return inviteFromEmail();
 }

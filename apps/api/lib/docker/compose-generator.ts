@@ -21,10 +21,16 @@ function optionalEnv(name: string, fallback: string): string {
  * Renders infra/templates/docker-compose.tenant.yml.tpl using the same
  * {{PLACEHOLDER}} set as scripts/onboard-tenant.sh (CHECK 6).
  */
+export type RenderedTenantCompose = {
+  yaml: string;
+  n8nBasicAuthUser: string;
+  n8nBasicAuthPassword: string;
+};
+
 export async function renderTenantComposeFromTemplate(
   slug: string,
   ports: Record<string, number>,
-): Promise<string> {
+): Promise<RenderedTenantCompose> {
   const templatePath = requireEnv("TEMPLATE_PATH");
   const n8nPort = ports.n8n;
   const uptimePort = ports.uptime_kuma;
@@ -49,7 +55,11 @@ export async function renderTenantComposeFromTemplate(
   yaml = yaml.replaceAll("{{N8N_ENCRYPTION_KEY}}", n8nEncryptionKey);
   yaml = yaml.replaceAll("{{DOMAIN}}", domain);
   yaml = yaml.replaceAll("{{TRAEFIK_NETWORK}}", traefikNetwork);
-  return yaml;
+  return {
+    yaml,
+    n8nBasicAuthUser: n8nUser,
+    n8nBasicAuthPassword: n8nPassword,
+  };
 }
 
 export async function writeComposeFile(slug: string, content: string): Promise<string> {

@@ -4,7 +4,6 @@ import {
   ONBOARDING_ROLLBACK,
   ORCHESTRATION_HEALTH,
 } from "./constants";
-import { sendWelcomeEmail } from "./email";
 import {
   renderTenantComposeFromTemplate,
   writeComposeFile,
@@ -16,6 +15,7 @@ import {
 } from "./docker/container";
 import { allocatePorts, releasePorts } from "./docker/port-allocator";
 import { notifyTenantCreated, notifyTenantFailed } from "./notifications";
+import { sendPortalInvitationForTenant } from "./portal-invitations";
 import { getServiceClient } from "./supabase";
 import type { Json, PlanKey, Tenant } from "./supabase/types";
 import { PLAN_SERVICES } from "./stripe/plans";
@@ -78,6 +78,10 @@ class OnboardingOrchestrator {
 
   private ports: Record<string, number> | undefined;
 
+  private n8nBasicAuthUser: string | undefined;
+
+  private n8nBasicAuthPassword: string | undefined;
+
   constructor(
     private readonly slug: string,
     private readonly email: string,
@@ -102,11 +106,13 @@ class OnboardingOrchestrator {
       this.ports = await allocatePorts(this.tenantId, [...PLAN_SERVICES[this.plan]]);
       lastCompletedStep = ONBOARDING_PIPELINE.AFTER_PORTS;
 
-      const composeYaml = await renderTenantComposeFromTemplate(
+      const rendered = await renderTenantComposeFromTemplate(
         this.slug,
         this.ports,
       );
-      this.composePath = await writeComposeFile(this.slug, composeYaml);
+      this.composePath = await writeComposeFile(this.slug, rendered.yaml);
+      this.n8nBasicAuthUser = rendered.n8nBasicAuthUser;
+      this.n8nBasicAuthPassword = rendered.n8nBasicAuthPassword;
       lastCompletedStep = ONBOARDING_PIPELINE.AFTER_COMPOSE_WRITTEN;
 
       await startTenant(this.slug, this.composePath);
@@ -120,7 +126,11 @@ class OnboardingOrchestrator {
 
       const tenant = await this.fetchTenantRow();
 
-      await sendWelcomeEmail(tenant.owner_email, tenant.services);
+      await sendPortalInvitationForTenant({
+        email: tenant.owner_email,
+        name: tenant.name,
+        slug: tenant.slug,
+      });
       lastCompletedStep = ONBOARDING_PIPELINE.AFTER_EMAIL;
 
       await notifyTenantCreated(tenant);
@@ -209,11 +219,19 @@ class OnboardingOrchestrator {
     if (!this.tenantId) {
       throw new Error("Tenant not initialized");
     }
+    if (
+      this.n8nBasicAuthUser === undefined ||
+      this.n8nBasicAuthPassword === undefined
+    ) {
+      throw new Error("n8n basic auth credentials missing after compose render");
+    }
 
     // Hostnames match infra/templates/docker-compose.tenant.yml.tpl (Traefik rules).
     const services: Json = {
       n8n: `https://n8n-${this.slug}.${domain}/`,
       uptime_kuma: `https://uptime-${this.slug}.${domain}/`,
+      n8n_basic_auth_user: this.n8nBasicAuthUser,
+      n8n_basic_auth_password: this.n8nBasicAuthPassword,
     };
 
     const { error } = await getServiceClient()
