@@ -33,6 +33,13 @@ https://raw.githubusercontent.com/cloudsysops/opsly/main/AGENTS.md
 
 **Resumen:** Cursor deja `AGENTS.md` al día → commit/push a `main` → tú pegas la URL raw al iniciar la próxima sesión con el agente → listo.
 
+### Flujo con Claude (multi-agente)
+
+1. **Contexto:** misma **URL raw** de `AGENTS.md` (arriba) y, si aplica, `VISION.md` — referencias en `.claude/CLAUDE.md`.
+2. **Prompt operativo en VPS (opcional):** `docs/ACTIVE-PROMPT.md` — tras `git pull` en `/opt/opsly`, el servicio **`cursor-prompt-monitor`** (`scripts/cursor-prompt-monitor.sh`, unidad `infra/systemd/cursor-prompt-monitor.service`) detecta cambios cada **30 s** y ejecuta el contenido filtrado como shell. **Solo** líneas que no empiezan por `#` ni `---`; si todo es comentario, no ejecuta nada. **Riesgo RCE** si alguien no confiable puede editar ese archivo.
+3. **Logs en VPS:** `/opt/opsly/logs/cursor-prompt-monitor.log` (directorio `logs/` ignorado en git).
+4. **Docs de apoyo:** `docs/CLAUDE-WORKFLOW-OPTIMIZATION.md`, `docs/OPENCLAW-ARCHITECTURE.md`.
+
 ---
 
 ## Rol
@@ -51,7 +58,7 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 |----------|-------------------|
 | Modelo de orquestación | `docs/OPENCLAW-ARCHITECTURE.md` — Redis, motor de decisiones, costos |
 | Eficiencia de sesiones | `docs/CLAUDE-WORKFLOW-OPTIMIZATION.md` — 10 técnicas de flujo |
-| Contexto siempre publicado | URL raw de `AGENTS.md` + hooks existentes; opcional `scripts/auto-push-watcher.sh` |
+| Contexto siempre publicado | URL raw de `AGENTS.md` + hooks; opcional `scripts/auto-push-watcher.sh` y/o `docs/ACTIVE-PROMPT.md` + `cursor-prompt-monitor` en VPS |
 | Criterios de salida (borrador) | ADR si hay cola/orquestador nuevo; métricas de jobs; runbook de incidentes multi-agente |
 
 **Automatización opcional (VPS):** unidad `infra/systemd/opsly-watcher.service` y guía `docs/AUTO-PUSH-WATCHER.md`. No sustituye revisión humana ni política de secretos.
@@ -64,7 +71,7 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 
 <!-- Actualizar al final de cada sesión -->
 
-**Fecha última actualización:** 2026-04-05 — Fase 4 (plan multi-agente): `docs/OPENCLAW-ARCHITECTURE.md`, `docs/CLAUDE-WORKFLOW-OPTIMIZATION.md`, `docs/AUTO-PUSH-WATCHER.md`, `scripts/auto-push-watcher.sh`, `infra/systemd/opsly-watcher.service`. **2026-04-07 —** **Fase 2 invite/onboard:** `./scripts/validate-config.sh` → **LISTO PARA DEPLOY**. **Portal staging:** `https://portal.ops.smiletripcare.com/login` → **200** (tras recuperar contenedores `app`/`admin`/`portal` que habían quedado en `Created` y **404** en Traefik; ver `docs/TROUBLESHOOTING.md` y `deploy.yml` con `--force-recreate`). **`curl api`/health** → `status ok`. **Contenedores Opsly:** `traefik`, `infra-redis-1`, `infra-app-*`, `opsly_admin`, `opsly_portal`. **Tenants:** `smiletripcare`, `peskids` (stacks n8n/uptime Up). **Resend (2026-04-07):** `RESEND_FROM_EMAIL` en `prd` + VPS actualizado. **Causa de `API key is invalid`:** en Doppler `prd`, **`RESEND_API_KEY` sigue siendo placeholder corto** hasta que se pegue la clave **completa** desde [resend.com/api-keys](https://resend.com/api-keys). **`./scripts/validate-config.sh`** avisa (longitud **&lt; 20**). Tras corregir Doppler: **`./scripts/vps-refresh-api-env.sh`** (bootstrap + recreate `app`; `--dry-run` / `--skip-resend-check` en script) → **`./scripts/test-e2e-invite-flow.sh`**. **Admin:** `/invitations` en repo.
+**Fecha última actualización:** 2026-04-05 — Flujo Claude documentado: `docs/ACTIVE-PROMPT.md`, `scripts/cursor-prompt-monitor.sh`, `infra/systemd/cursor-prompt-monitor.service`, logs en `logs/`. Fase 4 (plan multi-agente): `docs/OPENCLAW-ARCHITECTURE.md`, `docs/CLAUDE-WORKFLOW-OPTIMIZATION.md`, `docs/AUTO-PUSH-WATCHER.md`, `scripts/auto-push-watcher.sh`, `infra/systemd/opsly-watcher.service`. **2026-04-07 —** **Fase 2 invite/onboard:** `./scripts/validate-config.sh` → **LISTO PARA DEPLOY**. **Portal staging:** `https://portal.ops.smiletripcare.com/login` → **200** (tras recuperar contenedores `app`/`admin`/`portal` que habían quedado en `Created` y **404** en Traefik; ver `docs/TROUBLESHOOTING.md` y `deploy.yml` con `--force-recreate`). **`curl api`/health** → `status ok`. **Contenedores Opsly:** `traefik`, `infra-redis-1`, `infra-app-*`, `opsly_admin`, `opsly_portal`. **Tenants:** `smiletripcare`, `peskids` (stacks n8n/uptime Up). **Resend (2026-04-07):** `RESEND_FROM_EMAIL` en `prd` + VPS actualizado. **Causa de `API key is invalid`:** en Doppler `prd`, **`RESEND_API_KEY` sigue siendo placeholder corto** hasta que se pegue la clave **completa** desde [resend.com/api-keys](https://resend.com/api-keys). **`./scripts/validate-config.sh`** avisa (longitud **&lt; 20**). Tras corregir Doppler: **`./scripts/vps-refresh-api-env.sh`** (bootstrap + recreate `app`; `--dry-run` / `--skip-resend-check` en script) → **`./scripts/test-e2e-invite-flow.sh`**. **Admin:** `/invitations` en repo.
 
 **Completado ✅**
 
@@ -384,6 +391,7 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 <!-- Una sola tarea concreta. Actualizar al final de cada sesión -->
 
 ```bash
+# Nuevo flujo multi-agente (Claude): URL raw AGENTS.md + opcional ACTIVE-PROMPT en VPS (ver sección «Flujo con Claude» arriba).
 # Referencia: README «Scripts Reference» / «Troubleshooting»; config/doppler-missing.txt (RESEND_*).
 # 0. ./scripts/validate-config.sh  →  línea final «Invitaciones (Resend): OK | BLOQUEADO»; ⚠️ RESEND = placeholder si aún no importaste la clave completa.
 # 1. Resend: clave completa desde dashboard → Doppler prd. Recomendado (stdin, sin historial):
