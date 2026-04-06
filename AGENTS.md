@@ -43,11 +43,28 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 
 ---
 
+## Fase 4 — Multi-agente Opsly (plan de trabajo)
+
+**Ámbito:** orquestación y operación con **varios agentes** (Cursor, Claude, automatismos) sobre un **único contexto** (`AGENTS.md`, `VISION.md`, `config/opsly.config.json`), sin cambiar las decisiones fijas de infra (Compose, Traefik v3, Doppler, Supabase).
+
+| Objetivo | Entregable / nota |
+|----------|-------------------|
+| Modelo de orquestación | `docs/OPENCLAW-ARCHITECTURE.md` — Redis, motor de decisiones, costos |
+| Eficiencia de sesiones | `docs/CLAUDE-WORKFLOW-OPTIMIZATION.md` — 10 técnicas de flujo |
+| Contexto siempre publicado | URL raw de `AGENTS.md` + hooks existentes; opcional `scripts/auto-push-watcher.sh` |
+| Criterios de salida (borrador) | ADR si hay cola/orquestador nuevo; métricas de jobs; runbook de incidentes multi-agente |
+
+**Automatización opcional (VPS):** unidad `infra/systemd/opsly-watcher.service` y guía `docs/AUTO-PUSH-WATCHER.md`. No sustituye revisión humana ni política de secretos.
+
+**Relación con `VISION.md`:** las fases 1–3 del producto siguen siendo el norte comercial; la **Fase 4** aquí nombra la **capa de trabajo multi-agente y documentación operativa** que las alimenta.
+
+---
+
 ## 🔄 Estado actual
 
 <!-- Actualizar al final de cada sesión -->
 
-**Fecha última actualización:** 2026-04-07 — **Fase 2 invite/onboard:** `./scripts/validate-config.sh` → **LISTO PARA DEPLOY**. **Portal staging:** `https://portal.ops.smiletripcare.com/login` → **200** (tras recuperar contenedores `app`/`admin`/`portal` que habían quedado en `Created` y **404** en Traefik; ver `docs/TROUBLESHOOTING.md` y `deploy.yml` con `--force-recreate`). **`curl api`/health** → `status ok`. **Contenedores Opsly:** `traefik`, `infra-redis-1`, `infra-app-*`, `opsly_admin`, `opsly_portal`. **Tenants:** `smiletripcare`, `peskids` (stacks n8n/uptime Up). **Resend (2026-04-07):** `RESEND_FROM_EMAIL` en `prd` + VPS actualizado. **Causa de `API key is invalid`:** en Doppler `prd`, **`RESEND_API_KEY` sigue siendo placeholder corto** hasta que se pegue la clave **completa** desde [resend.com/api-keys](https://resend.com/api-keys). **`./scripts/validate-config.sh`** avisa (longitud **&lt; 20**). Tras corregir Doppler: **`./scripts/vps-refresh-api-env.sh`** (bootstrap + recreate `app`; `--dry-run` / `--skip-resend-check` en script) → **`./scripts/test-e2e-invite-flow.sh`**. **Admin:** `/invitations` en repo.
+**Fecha última actualización:** 2026-04-05 — Fase 4 (plan multi-agente): `docs/OPENCLAW-ARCHITECTURE.md`, `docs/CLAUDE-WORKFLOW-OPTIMIZATION.md`, `docs/AUTO-PUSH-WATCHER.md`, `scripts/auto-push-watcher.sh`, `infra/systemd/opsly-watcher.service`. **2026-04-07 —** **Fase 2 invite/onboard:** `./scripts/validate-config.sh` → **LISTO PARA DEPLOY**. **Portal staging:** `https://portal.ops.smiletripcare.com/login` → **200** (tras recuperar contenedores `app`/`admin`/`portal` que habían quedado en `Created` y **404** en Traefik; ver `docs/TROUBLESHOOTING.md` y `deploy.yml` con `--force-recreate`). **`curl api`/health** → `status ok`. **Contenedores Opsly:** `traefik`, `infra-redis-1`, `infra-app-*`, `opsly_admin`, `opsly_portal`. **Tenants:** `smiletripcare`, `peskids` (stacks n8n/uptime Up). **Resend (2026-04-07):** `RESEND_FROM_EMAIL` en `prd` + VPS actualizado. **Causa de `API key is invalid`:** en Doppler `prd`, **`RESEND_API_KEY` sigue siendo placeholder corto** hasta que se pegue la clave **completa** desde [resend.com/api-keys](https://resend.com/api-keys). **`./scripts/validate-config.sh`** avisa (longitud **&lt; 20**). Tras corregir Doppler: **`./scripts/vps-refresh-api-env.sh`** (bootstrap + recreate `app`; `--dry-run` / `--skip-resend-check` en script) → **`./scripts/test-e2e-invite-flow.sh`**. **Admin:** `/invitations` en repo.
 
 **Completado ✅**
 

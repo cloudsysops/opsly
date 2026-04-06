@@ -1,0 +1,21 @@
+[Unit]
+Description=Opsly docs and AGENTS.md auto-push watcher
+Documentation=file:///opt/opsly/docs/AUTO-PUSH-WATCHER.md
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=vps-dragon
+Group=vps-dragon
+WorkingDirectory=/opt/opsly
+Environment=REPO_ROOT=/opt/opsly
+Environment=POLL_SEC=30
+Environment=DEBOUNCE=10
+Environment=WATCH_BRANCH=main
+ExecStart=/bin/bash /opt/opsly/scripts/auto-push-watcher.sh
+Restart=on-failure
+RestartSec=30
+
+[Install]
+WantedBy=multi-user.target
