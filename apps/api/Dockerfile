@@ -13,6 +13,11 @@ COPY --from=deps /repo/node_modules ./node_modules
 COPY apps/api ./apps/api
 WORKDIR /repo/apps/api
 ENV NEXT_TELEMETRY_DISABLED=1
+# CORS en next.config: se resuelve en build (mismo origen admin = https://admin.${PLATFORM_DOMAIN})
+ARG PLATFORM_DOMAIN
+ENV PLATFORM_DOMAIN=$PLATFORM_DOMAIN
+ARG NEXT_PUBLIC_ADMIN_URL
+ENV NEXT_PUBLIC_ADMIN_URL=$NEXT_PUBLIC_ADMIN_URL
 RUN mkdir -p public && npm run build
 
 FROM node:20-alpine AS runner

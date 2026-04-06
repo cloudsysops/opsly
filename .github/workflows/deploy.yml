@@ -4,6 +4,13 @@
 #   PLATFORM_DOMAIN: dominio base sin subdominio (ej. ops.smiletripcare.com). Debe coincidir con
 #   .env del VPS para compose; el health check usa https://api.${PLATFORM_DOMAIN}/api/health
 #
+# Secrets para build de imágenes (valores desde Doppler prd u origen equivalente):
+#   gh secret set NEXT_PUBLIC_SUPABASE_URL --repo cloudsysops/opsly
+#   gh secret set NEXT_PUBLIC_SUPABASE_ANON_KEY --repo cloudsysops/opsly
+#   gh secret set PLATFORM_DOMAIN --repo cloudsysops/opsly
+#   PLATFORM_DOMAIN también se usa en job deploy (health SSH). La API usa build-arg PLATFORM_DOMAIN
+#   para CORS (origen admin); el admin usa NEXT_PUBLIC_* y NEXT_PUBLIC_API_URL construida en el workflow.
+#
 # El resto de variables de .env deben definirse en el environment "production"
 # de GitHub y/o inyectarse en el VPS con Doppler (no van en texto plano en este YAML).
 #
@@ -72,6 +79,8 @@ jobs:
           file: apps/api/Dockerfile
           push: true
           tags: ghcr.io/cloudsysops/intcloudsysops-api:latest
+          build-args: |
+            PLATFORM_DOMAIN=${{ secrets.PLATFORM_DOMAIN }}
 
       - name: Build and push Admin image
         uses: docker/build-push-action@v5
@@ -80,6 +89,10 @@ jobs:
           file: apps/admin/Dockerfile
           push: true
           tags: ghcr.io/cloudsysops/intcloudsysops-admin:latest
+          build-args: |
+            NEXT_PUBLIC_SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+            NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+            NEXT_PUBLIC_API_URL=https://api.${{ secrets.PLATFORM_DOMAIN }}
 
   deploy:
     needs: build-and-push
