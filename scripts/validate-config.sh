@@ -21,6 +21,8 @@ PASS_DNS_BASE=0
 PASS_DNS_ADMIN=0
 PASS_DOPPLER=0
 PASS_SSH=0
+# 0 = no comprobado; 1 = listo invitaciones; 2 = bloqueado
+INVITE_RESEND_STATUS=0
 
 echo ""
 echo "┌──────────────────────────────────────────┐"
@@ -164,6 +166,12 @@ if command -v doppler >/dev/null 2>&1 && doppler me >/dev/null 2>&1; then
   if [[ -z "${RESEND_FROM}" ]] && [[ -n "${RESEND_KEY}" ]]; then
     echo "⚠️  Falta RESEND_FROM_EMAIL o RESEND_FROM_ADDRESS en Doppler — la API puede responder 500 al invitar"
   fi
+
+  if [[ -n "${RESEND_KEY}" ]] && (( ${#RESEND_KEY} >= RESEND_MIN_LEN )) && [[ -n "${RESEND_FROM}" ]]; then
+    INVITE_RESEND_STATUS=1
+  else
+    INVITE_RESEND_STATUS=2
+  fi
 else
   echo "⚠️  Doppler CLI no autenticado — no se validaron secretos remotos"
 fi
@@ -219,4 +227,16 @@ if [[ "${ready}" -eq 1 ]]; then
 else
   echo "Resultado: REVISAR ítems ⚠️ o ❌ antes de producción"
 fi
+
+case "${INVITE_RESEND_STATUS}" in
+  1)
+    echo "Invitaciones (Resend): OK — siguiente: ./scripts/sync-and-test-invite-flow.sh (tras cambios en prd)"
+    ;;
+  2)
+    echo "Invitaciones (Resend): BLOQUEADO — AGENTS.md «Próximo paso»; pbpaste | ./scripts/doppler-import-resend-api-key.sh"
+    ;;
+  *)
+    echo "Invitaciones (Resend): no verificado (Doppler CLI no autenticado)"
+    ;;
+esac
 echo ""

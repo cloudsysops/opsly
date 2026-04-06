@@ -155,7 +155,7 @@ Provision (cola → Docker Compose tenant)
 | `scripts/backup-tenants.sh` | Respalda tenants activos a S3 | `--dry-run`, variables `S3_*` / `DB_CONNECTION_STRING` |
 | `scripts/restore-tenant.sh` | Restaura desde S3 | `--slug`, `--date`, `--dry-run` |
 | `scripts/cleanup-demos.sh` | Limpia demos vía API | `--dry-run` |
-| `scripts/validate-config.sh` | Valida JSON, DNS, Doppler críticos, SSH al VPS | Sin flags |
+| `scripts/validate-config.sh` | Valida JSON, DNS, Doppler críticos, SSH; resume invitaciones Resend al final | Sin flags |
 | `scripts/vps-bootstrap.sh` | Descarga Doppler → `.env` en el VPS, red Traefik, dirs | Ejecutar en el VPS como `vps-dragon` |
 | `scripts/vps-refresh-api-env.sh` | Bootstrap + recrea servicio `app` (tras cambiar secretos en prd) | `--dry-run`, `--skip-resend-check` |
 | `scripts/test-e2e-invite-flow.sh` | Smoke contra API pública (health + POST invitaciones) | `--dry-run`, `--api-url`, requiere `ADMIN_TOKEN` / `OWNER_EMAIL` |
