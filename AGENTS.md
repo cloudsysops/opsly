@@ -47,7 +47,7 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 
 <!-- Actualizar al final de cada sesión -->
 
-**Fecha última actualización:** 2026-04-06 — Deploy **verde** (`gh run 24039567533`, commit **`c93c200`**): pull GHCR en VPS con **`github.token` + `github.actor`** (PAT `GHCR_*` daba 403 en manifiestos privados). Antes **`6bea49d`**: logout GHCR + pulls secuenciales desde `docker compose config --images`. **`https://api.ops.smiletripcare.com/api/health`** → `{"status":"ok"}`. **Pendiente:** E2E portal + invitación **`peskids`**.
+**Fecha última actualización:** 2026-04-07 — **Portal staging OK** (`curl` login + `/invite/*` HTML). **`POST /api/invitations`**: body admite **`tenantRef`** o **`slug`**, **`mode`** opcional; respuesta incluye **`link`**, **`email`**, **`token`** (además de `ok`, `tenant_id`); lógica en **`lib/invitation-admin-flow.ts`**; **`user_data`** invite incluye `mode` si viene. **`config/opsly.config.json`**: dominio **`portal`**, registry **`tenants`** (`smiletripcare` activo, **`peskids`** provisioning — onboarding VPS/Supabase pendiente de ejecutar). Deploy previo verde (`24039850342`). **Pendiente:** ejecutar **`onboard-tenant.sh`** para `peskids` en VPS; E2E invite con email real + Resend.
 
 **Completado ✅**
 
@@ -72,7 +72,7 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 **API (`apps/api`) — datos portal**
 - **`GET /api/portal/me`** — `app/api/portal/me/route.ts`. JWT Bearer → **`getUserFromAuthorizationHeader`** (`lib/portal-auth.ts`) + **`lib/portal-me.ts`**: `readPortalTenantSlugFromUser`, `fetchPortalTenantRowBySlug`, `parsePortalServices` (`n8n`, `uptime_kuma`, credenciales basic auth), `portalUrlReachable`, `parsePortalMode`; umbrales en **`PORTAL_URL_PROBE`** (`lib/constants.ts`). Comprueba **owner_email** del tenant vs usuario. *(En documentación de producto a veces se nombra el mismo contrato como `GET /api/portal/tenant`; en el código actual el path publicado es **`/api/portal/me`**.)*
 - **`POST /api/portal/mode`** — body `{ mode: "developer" | "managed" }` → `auth.admin.updateUserById` con merge de **`user_metadata.mode`**.
-- **`POST /api/invitations`** — header admin (**`PLATFORM_ADMIN_TOKEN`** / convención del repo); **`lib/portal-invitations.ts`**: `generateLink` tipo invite, HTML dark, Resend; URL base **`PORTAL_SITE_URL`** o **`https://portal.${PLATFORM_DOMAIN}`**.
+- **`POST /api/invitations`** — header admin (**`x-admin-token`** vía **`requireAdminToken`**); body: **`email`**, **`slug` *o* `tenantRef`** (mismo patrón 3–30), **`name`** opcional (default nombre tenant), **`mode`** opcional `developer` \| `managed` (va en `data` del invite Supabase). Respuesta **200**: **`ok`**, **`tenant_id`**, **`link`**, **`email`**, **`token`**. Implementación: **`lib/invitation-admin-flow.ts`** + **`lib/portal-invitations.ts`** (HTML dark, Resend; URL **`PORTAL_SITE_URL`** o **`https://portal.${PLATFORM_DOMAIN}`**). El email del body debe coincidir con **`owner_email`** del tenant.
 
 **CORS / Next API**
 - **`apps/api/middleware.ts`** + **`lib/cors-origins.ts`**: orígenes explícitos (`NEXT_PUBLIC_ADMIN_URL`, `NEXT_PUBLIC_PORTAL_URL`, `https://admin.${PLATFORM_DOMAIN}`, `https://portal.${PLATFORM_DOMAIN}`); matcher `/api/:path*`; OPTIONS 204 con headers cuando el `Origin` está permitido.

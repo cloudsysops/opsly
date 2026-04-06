@@ -16,6 +16,7 @@
     "base": "ops.smiletripcare.com",
     "api": "api.ops.smiletripcare.com",
     "admin": "admin.ops.smiletripcare.com",
+    "portal": "portal.ops.smiletripcare.com",
     "traefik": "traefik.ops.smiletripcare.com",
     "wildcard": "*.ops.smiletripcare.com"
   },
@@ -60,5 +61,21 @@
     "region": "nyc3",
     "droplet_size": "s-1vcpu-2gb",
     "project_name": "opsly"
-  }
+  },
+  "tenants": [
+    {
+      "slug": "smiletripcare",
+      "plan": "startup",
+      "ownerEmail": "cristian@cloudsysops.com",
+      "status": "active",
+      "createdAt": "2026-04-06"
+    },
+    {
+      "slug": "peskids",
+      "plan": "startup",
+      "ownerEmail": "peskids@example.com",
+      "status": "provisioning",
+      "createdAt": "2026-04-07"
+    }
+  ]
 }

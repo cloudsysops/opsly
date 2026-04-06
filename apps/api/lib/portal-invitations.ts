@@ -83,22 +83,33 @@ function buildPortalInviteHtml(
     .replace("{footerLine}", safeFooter);
 }
 
+export type PortalInviteLinkResult = {
+  link: string;
+  token: string;
+};
+
 async function generateInviteLink(
   email: string,
   name: string,
   slug: string,
-): Promise<string> {
+  mode?: "developer" | "managed",
+): Promise<PortalInviteLinkResult> {
   const admin = getServiceClient();
   const portalBase = getPortalSiteUrl();
+
+  const userData: Record<string, string> = {
+    full_name: name,
+    tenant_slug: slug,
+  };
+  if (mode) {
+    userData.mode = mode;
+  }
 
   const { data, error } = await admin.auth.admin.generateLink({
     type: "invite",
     email,
     options: {
-      data: {
-        full_name: name,
-        tenant_slug: slug,
-      },
+      data: userData,
       redirectTo: `${portalBase}/invite`,
     },
   });
@@ -116,19 +127,21 @@ async function generateInviteLink(
     throw new Error("Could not parse invite token from action_link");
   }
 
-  return `${portalBase}/invite/${encodeURIComponent(token)}?email=${encodeURIComponent(email)}`;
+  const link = `${portalBase}/invite/${encodeURIComponent(token)}?email=${encodeURIComponent(email)}`;
+  return { link, token };
 }
 
 export async function sendPortalInvitationForTenant(
-  params: PortalInviteParams,
-): Promise<void> {
+  params: PortalInviteParams & { mode?: "developer" | "managed" },
+): Promise<PortalInviteLinkResult> {
   requireEnv("NEXT_PUBLIC_SUPABASE_URL");
   requireEnv("SUPABASE_SERVICE_ROLE_KEY");
 
-  const activateUrl = await generateInviteLink(
+  const { link: activateUrl, token } = await generateInviteLink(
     params.email,
     params.name,
     params.slug,
+    params.mode,
   );
 
   const html = buildPortalInviteHtml(params.name, activateUrl);
@@ -139,4 +152,6 @@ export async function sendPortalInvitationForTenant(
     html,
     from: getInviteFromEmail(),
   });
+
+  return { link: activateUrl, token };
 }
