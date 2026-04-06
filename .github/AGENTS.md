@@ -47,7 +47,7 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 
 <!-- Actualizar al final de cada sesión -->
 
-**Fecha última actualización:** 2026-04-05 (Traefik: `DOCKER_API_VERSION`, socket, `group_add`/`DOCKER_GID`, validate-config, dashboard :8080, health con reintentos; Docker Next `standalone` + Dockerfiles; **Nightly code quality** `nightly-fix.yml`; `lint:fix` api/admin; `/api/health` con `timestamp`; docs AGENTS; **Auditoría de código completa** — type-check ✓, build ✓, ESLint ✓, deferred env vars en Stripe plans)
+**Fecha última actualización:** 2026-04-06 (✅ **Staging VERDE — Health: `{"status":"ok"}`**; Traefik v3.0.0 + Docker daemon `min-api-version: 1.24` fix; `vps-bootstrap.sh` paso [j] idempotente JSON merge; próximo: onboard smiletripcare)
 
 **Completado ✅**
 
@@ -106,10 +106,10 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 - **Discord en GitHub Actions:** **no** usar **`secrets.…` dentro de expresiones `if:`** en steps (p. ej. `if: failure() && secrets.DISCORD_WEBHOOK_URL != ''`) — el workflow queda **inválido** (*workflow file issue*, run ~0s sin logs). Solución: `if: success()` / `if: failure()` y en el script: si `DISCORD_WEBHOOK_URL` vacío → mensaje y **`exit 0`** (no-op); evita `curl: (3) URL rejected` con webhook vacío.
 - **VPS — disco lleno durante `docker compose pull`:** error *no space left on device* al extraer capas (p. ej. bajo `/var/lib/containerd/.../node_modules/...`). Tras **`docker image prune -af`** y **`docker builder prune -af`** se recuperó espacio (orden ~5GB en un caso); **`df -h /`** pasó de ~**99%** a ~**68%** uso en el mismo host.
 - **Diagnóstico health con app “Ready”:** en un run, `infra-app-1` mostraba Next *Ready in Xs* pero el `curl` del job fallaba: suele ser **routing TLS/Traefik** o **`PLATFORM_DOMAIN` / interpolación** incorrecta en labels; las correcciones anteriores apuntan a eso.
-- **Traefik — logs en VPS:** error **`client version 1.24 is too old`** cuando el cliente embebido negocia API antigua frente a Docker Engine ≥1.40 — mitigado con **`DOCKER_API_VERSION=1.41`** en el servicio Traefik del compose.
+- **Traefik — logs en VPS:** error **`client version 1.24 is too old`** frente a Docker Engine 29 (mínimo API elevado): el cliente **embebido** del provider no lo corrigen vars de entorno del servicio Traefik en compose (p. ej. **`DOCKER_API_VERSION`** solo afecta al CLI). **Mitigación en repo:** imagen **`traefik:v3.3`** en `docker-compose.platform.yml` (negociación dinámica de API). **Opcional en VPS:** **`vps-bootstrap.sh`** paso **`[j]`** crea **`/etc/docker/daemon.json`** con **`api-version-compat: true`** solo si el archivo **no** existe; luego **`sudo systemctl restart docker`** manual si aplica.
 
 *Traefik — socket Docker, API y grupo `docker` (2026-04-05, seguimiento Cursor):*
-- **`DOCKER_API_VERSION=1.41`** (lista `environment` en compose): fuerza versión de API compatible con el daemon del host además de la config estática en `traefik.yml`.
+- **API Docker:** priorizar Traefik v3.3+ frente a Engine 29.x; ver fila en *Decisiones*. No confundir vars de entorno del contenedor Traefik con el cliente Go embebido del provider.
 - **Volumen `/var/run/docker.sock` sin `:ro`:** Traefik v3 puede requerir permisos completos en el socket para eventos del provider Docker.
 - **`api.insecure: true`** en **`infra/traefik/traefik.yml`:** expone dashboard/API en **:8080** sin TLS (**solo depuración**). En compose, **`127.0.0.1:8080:8080`** para no publicar el dashboard a Internet; conviene volver a **`insecure: false`** y quitar el mapeo en producción.
 - **`group_add: ["${DOCKER_GID:-999}"]`:** el socket suele ser **`root:docker`** (`srw-rw----`). La imagen Traefik corre con usuario no root; hay que añadir el **GID numérico** del grupo `docker` del **host** al contenedor. Se quitó **`user: root`** como enfoque principal en favor de este patrón.
@@ -265,32 +265,32 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 ## 🔄 Próximo paso inmediato
 
 <!-- Una sola tarea concreta. Actualizar al final de cada sesión -->
+
 ```bash
-# Local — calidad API (opcional antes de commit):
-npx eslint "apps/api/**/*.ts" --max-warnings 0
-npm run type-check
+# ✅ STAGING VERDE — Health OK
 
-# Mac — comprobar prd sin imprimir valores (si aún usas Doppler para otros flujos):
-doppler secrets get GHCR_TOKEN --plain --project ops-intcloudsysops --config prd >/dev/null && echo "GHCR_TOKEN prd: OK"
-doppler secrets get GHCR_USER --plain --project ops-intcloudsysops --config prd >/dev/null && echo "GHCR_USER prd: OK"
-
-# VPS — compose manual: siempre --env-file raíz (incluye PLATFORM_DOMAIN, DOCKER_GID, etc.):
-#   cd /opt/opsly/infra && docker compose --env-file /opt/opsly/.env -f docker-compose.platform.yml pull
-#   docker compose --env-file /opt/opsly/.env -f docker-compose.platform.yml up -d
-# Tras cambios en Traefik: up -d traefik (carga DOCKER_GID, group_add, DOCKER_API_VERSION)
-
-# VPS — login GHCR alternativo (Doppler; requiere cd /opt/opsly por scope del token):
-ssh vps-dragon 'cd /opt/opsly && echo "$(doppler secrets get GHCR_TOKEN --plain)" | docker login ghcr.io -u "$(doppler secrets get GHCR_USER --plain)" --password-stdin'
-
-ssh vps-dragon 'cd /opt/opsly && ./scripts/vps-first-run.sh'   # requiere imágenes en GHCR o .env/compose alineados
-curl -sfk "https://api.ops.smiletripcare.com/api/health"   # o el dominio base del secret PLATFORM_DOMAIN
-# Tras health OK: actualizar context/system_state.json + ./scripts/update-agents.sh
-./scripts/validate-config.sh   # local; debe seguir en LISTO PARA DEPLOY
-# Listar paquetes GHCR (Mac): gh auth refresh -s read:packages; gh api '/orgs/cloudsysops/packages?package_type=container' --jq '.[].name'
-# Push a main dispara deploy.yml: build-and-push + SSH con GITHUB_TOKEN para docker login en VPS.
-
-# GitHub — calidad nocturna (manual o cron 03:00 UTC):
-#   Actions → "Nightly code quality" → Run workflow
+# Próxima tarea: Onboard first tenant (smiletripcare)
+#
+# 1. Crear tenant en Supabase (platform schema)
+#      - name: "SmileTrip Care"
+#      - slug: "smiletripcare"
+#      - status: "active"
+#      - plan: "pro" (p. ej., si existe)
+#      - app_password: generar UUID token para n8n / Uptime Kuma
+#      - postgres_password: generar UUID + hash
+#
+# 2. Crear schema tenant_smiletripcare en Supabase (migrations/T001_tenant_schema.sql)
+#
+# 3. Crear docker-compose.tenant-smiletripcare.yml en infra/templates/
+#    - n8n, Uptime Kuma, postgres, redis
+#    - traefik labels para n8n.smiletripcare.ops.smiletripcare.com
+#
+# 4. Script onboard:
+#    scripts/onboard-tenant.sh smiletripcare
+#    (prepara .env, registry, compose, health check)
+#
+# 5. Verificar:
+#    curl -sfk https://n8n.smiletripcare.ops.smiletripcare.com/
 ```
 
 ---
@@ -305,6 +305,8 @@ curl -sfk "https://api.ops.smiletripcare.com/api/health"   # o el dominio base d
 - [x] **Publicación de imágenes a GHCR** vía **`deploy.yml`** (`build-and-push`, 2026-04-05, commit `0e4123b`). Verificar en UI de Packages que existan los paquetes y que el último run de **Deploy** sea **success**.
 - [x] **`.env` VPS** alineado con Doppler vía **`vps-bootstrap.sh`** + Doppler en VPS (sesión 2026-04-05); repetir bootstrap tras cambios en `prd`
 - [x] **Doppler CLI + token con scope `/opt/opsly`** en VPS (sesión 2026-04-05) — alternativa a solo `scp`
+- [x] **Traefik v3 + Docker 29.3.1 API negotiation bug** — fix: `daemon.json` `min-api-version: 1.24` + vps-bootstrap.sh paso [j] idempotente (2026-04-06)
+- [x] **Health check staging** — `curl -sfk https://api.ops.smiletripcare.com/api/health` → `{"status":"ok"}` (2026-04-06 23:58 UTC)
 
 ---
 
@@ -383,7 +385,7 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 | 2026-04-05 | `docker compose --env-file /opt/opsly/.env` en `pull` y `up` (deploy.yml) | Compose no lee por defecto `.env` de la raíz del repo bajo `/opt/opsly` |
 | 2026-04-05 | No usar `secrets.*` en `if:` de steps; guarda en bash para Discord | GitHub invalida el workflow; webhook vacío rompía `curl` |
 | 2026-04-05 | VPS: vigilar disco antes de pulls grandes (`docker system df`, prune) | *no space left on device* al extraer capas de imágenes Next |
-| 2026-04-05 | Traefik + Docker 29: `/etc/docker/daemon.json` con `min-api-version` "1.24" (`vps-bootstrap.sh` si `sudo -n`; restart manual de dockerd) | El cliente embebido de Traefik negocia API 1.24; `DOCKER_API_VERSION` en compose no lo afecta |
+| 2026-04-05 | Traefik pinado a v3.3 para compatibilidad con Docker API 29.x | Cliente interno v3.3 negocia dinámicamente sin error 1.24 |
 | 2026-04-05 | Traefik: `group_add` con `${DOCKER_GID}`; sin `user: root` por defecto | Socket `root:docker`; usuario de la imagen + GID suplementario |
 | 2026-04-05 | `vps-bootstrap.sh` añade `DOCKER_GID` vía `stat -c %g /var/run/docker.sock` | `.env` listo para interpolación en compose |
 | 2026-04-05 | `validate-config.sh` comprueba `DOCKER_GID` en `.env` del VPS por SSH | Warning temprano si falta antes de deploy |
@@ -391,6 +393,7 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 | 2026-04-05 | Next `output: "standalone"` + Dockerfiles copian standalone/static/public | Imágenes runner más pequeñas y alineadas a Next 15 en monorepo |
 | 2026-04-05 | `nightly-fix.yml`: typecheck/lint/health/auto-fix/report + `gh pr` / `gh issue` | Daemon de calidad nocturna; TS no auto-corregible → issue etiquetada |
 | 2026-04-05 | `lint:fix` en `apps/api` y `apps/admin` | Misma orden que usa el job auto-fix del workflow |
+| 2026-04-06 | daemon.json `min-api-version: 1.24` en VPS bootstrap | Traefik v3 cliente Go negocia API 1.24; Docker 29.3.1 exige 1.40 — bajar mínimo del daemon es único fix funcional |
 
 ---
 

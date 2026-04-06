@@ -47,7 +47,7 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 
 <!-- Actualizar al final de cada sesión -->
 
-**Fecha última actualización:** 2026-04-05 (Traefik: `DOCKER_API_VERSION`, socket, `group_add`/`DOCKER_GID`, validate-config, dashboard :8080, health con reintentos; Docker Next `standalone` + Dockerfiles; **Nightly code quality** `nightly-fix.yml`; `lint:fix` api/admin; `/api/health` con `timestamp`; docs AGENTS; **Auditoría de código completa** — type-check ✓, build ✓, ESLint ✓, deferred env vars en Stripe plans)
+**Fecha última actualización:** 2026-04-06 (✅ **Staging VERDE — Health: `{"status":"ok"}`**; Traefik v3.0.0 + Docker daemon `min-api-version: 1.24` fix; `vps-bootstrap.sh` paso [j] idempotente JSON merge; próximo: onboard smiletripcare)
 
 **Completado ✅**
 
@@ -265,32 +265,32 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 ## 🔄 Próximo paso inmediato
 
 <!-- Una sola tarea concreta. Actualizar al final de cada sesión -->
+
 ```bash
-# Local — calidad API (opcional antes de commit):
-npx eslint "apps/api/**/*.ts" --max-warnings 0
-npm run type-check
+# ✅ STAGING VERDE — Health OK
 
-# Mac — comprobar prd sin imprimir valores (si aún usas Doppler para otros flujos):
-doppler secrets get GHCR_TOKEN --plain --project ops-intcloudsysops --config prd >/dev/null && echo "GHCR_TOKEN prd: OK"
-doppler secrets get GHCR_USER --plain --project ops-intcloudsysops --config prd >/dev/null && echo "GHCR_USER prd: OK"
-
-# VPS — compose manual: siempre --env-file raíz (incluye PLATFORM_DOMAIN, DOCKER_GID, etc.):
-#   cd /opt/opsly/infra && docker compose --env-file /opt/opsly/.env -f docker-compose.platform.yml pull
-#   docker compose --env-file /opt/opsly/.env -f docker-compose.platform.yml up -d
-# Tras cambios en Traefik: up -d traefik (carga DOCKER_GID, group_add, imagen v3.3+)
-
-# VPS — login GHCR alternativo (Doppler; requiere cd /opt/opsly por scope del token):
-ssh vps-dragon 'cd /opt/opsly && echo "$(doppler secrets get GHCR_TOKEN --plain)" | docker login ghcr.io -u "$(doppler secrets get GHCR_USER --plain)" --password-stdin'
-
-ssh vps-dragon 'cd /opt/opsly && ./scripts/vps-first-run.sh'   # requiere imágenes en GHCR o .env/compose alineados
-curl -sfk "https://api.ops.smiletripcare.com/api/health"   # o el dominio base del secret PLATFORM_DOMAIN
-# Tras health OK: actualizar context/system_state.json + ./scripts/update-agents.sh
-./scripts/validate-config.sh   # local; debe seguir en LISTO PARA DEPLOY
-# Listar paquetes GHCR (Mac): gh auth refresh -s read:packages; gh api '/orgs/cloudsysops/packages?package_type=container' --jq '.[].name'
-# Push a main dispara deploy.yml: build-and-push + SSH con GITHUB_TOKEN para docker login en VPS.
-
-# GitHub — calidad nocturna (manual o cron 03:00 UTC):
-#   Actions → "Nightly code quality" → Run workflow
+# Próxima tarea: Onboard first tenant (smiletripcare)
+#
+# 1. Crear tenant en Supabase (platform schema)
+#      - name: "SmileTrip Care"
+#      - slug: "smiletripcare"
+#      - status: "active"
+#      - plan: "pro" (p. ej., si existe)
+#      - app_password: generar UUID token para n8n / Uptime Kuma
+#      - postgres_password: generar UUID + hash
+#
+# 2. Crear schema tenant_smiletripcare en Supabase (migrations/T001_tenant_schema.sql)
+#
+# 3. Crear docker-compose.tenant-smiletripcare.yml en infra/templates/
+#    - n8n, Uptime Kuma, postgres, redis
+#    - traefik labels para n8n.smiletripcare.ops.smiletripcare.com
+#
+# 4. Script onboard:
+#    scripts/onboard-tenant.sh smiletripcare
+#    (prepara .env, registry, compose, health check)
+#
+# 5. Verificar:
+#    curl -sfk https://n8n.smiletripcare.ops.smiletripcare.com/
 ```
 
 ---
@@ -305,6 +305,8 @@ curl -sfk "https://api.ops.smiletripcare.com/api/health"   # o el dominio base d
 - [x] **Publicación de imágenes a GHCR** vía **`deploy.yml`** (`build-and-push`, 2026-04-05, commit `0e4123b`). Verificar en UI de Packages que existan los paquetes y que el último run de **Deploy** sea **success**.
 - [x] **`.env` VPS** alineado con Doppler vía **`vps-bootstrap.sh`** + Doppler en VPS (sesión 2026-04-05); repetir bootstrap tras cambios en `prd`
 - [x] **Doppler CLI + token con scope `/opt/opsly`** en VPS (sesión 2026-04-05) — alternativa a solo `scp`
+- [x] **Traefik v3 + Docker 29.3.1 API negotiation bug** — fix: `daemon.json` `min-api-version: 1.24` + vps-bootstrap.sh paso [j] idempotente (2026-04-06)
+- [x] **Health check staging** — `curl -sfk https://api.ops.smiletripcare.com/api/health` → `{"status":"ok"}` (2026-04-06 23:58 UTC)
 
 ---
 
@@ -391,6 +393,7 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 | 2026-04-05 | Next `output: "standalone"` + Dockerfiles copian standalone/static/public | Imágenes runner más pequeñas y alineadas a Next 15 en monorepo |
 | 2026-04-05 | `nightly-fix.yml`: typecheck/lint/health/auto-fix/report + `gh pr` / `gh issue` | Daemon de calidad nocturna; TS no auto-corregible → issue etiquetada |
 | 2026-04-05 | `lint:fix` en `apps/api` y `apps/admin` | Misma orden que usa el job auto-fix del workflow |
+| 2026-04-06 | daemon.json `min-api-version: 1.24` en VPS bootstrap | Traefik v3 cliente Go negocia API 1.24; Docker 29.3.1 exige 1.40 — bajar mínimo del daemon es único fix funcional |
 
 ---
 
