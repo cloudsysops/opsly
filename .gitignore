@@ -35,3 +35,6 @@ terraform.tfstate
 terraform.tfstate.backup
 *.tfvars
 infra/terraform/tfplan
+
+# Cursor prompt monitor (VPS/local runtime log)
+logs/

@@ -1,0 +1,19 @@
+[Unit]
+Description=Cursor Automatic Prompt Monitor (docs/ACTIVE-PROMPT.md)
+Documentation=file:///opt/opsly/docs/ACTIVE-PROMPT.md
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=vps-dragon
+Group=vps-dragon
+WorkingDirectory=/opt/opsly
+Environment=REPO_PATH=/opt/opsly
+Environment=CHECK_INTERVAL=30
+ExecStart=/opt/opsly/scripts/cursor-prompt-monitor.sh
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
