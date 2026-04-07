@@ -4,6 +4,7 @@ import { notifyInvoicePaymentFailed } from "../../../../lib/notifications";
 import { provisionTenant, suspendTenant } from "../../../../lib/orchestrator";
 import { constructWebhookEvent } from "../../../../lib/stripe";
 import { getServiceClient } from "../../../../lib/supabase";
+import { logger } from "../../../../lib/logger";
 const planSchema = z.enum(["startup", "business", "enterprise", "demo"]);
 
 function getStripeCustomerId(
@@ -34,7 +35,7 @@ async function resolveTenantIdByCustomerId(customerId: string): Promise<{
     .maybeSingle();
 
   if (error) {
-    console.error("resolveTenantByCustomer:", error);
+    logger.error("resolveTenantByCustomer", error);
     return null;
   }
   if (!data) {
@@ -52,15 +53,17 @@ async function handleCheckoutSessionCompleted(
   const planRaw = md.plan;
 
   if (!slug || !email || !planRaw) {
-    console.error(
-      "checkout.session.completed: missing tenant_slug, email, or plan in metadata",
-    );
+    logger.error("checkout.session.completed missing metadata", {
+      slug,
+      email,
+      planRaw,
+    });
     return;
   }
 
   const planParsed = planSchema.safeParse(planRaw);
   if (!planParsed.success) {
-    console.error("checkout.session.completed: invalid plan", planRaw);
+    logger.error("checkout.session.completed invalid plan", { plan: planRaw });
     return;
   }
 
@@ -119,7 +122,7 @@ async function upsertSubscriptionRow(
   if (insertError.code === "23505") {
     return true;
   }
-  console.error("subscriptions insert:", insertError);
+  logger.error("subscriptions insert", insertError);
   return false;
 }
 
@@ -135,7 +138,7 @@ async function attachStripeSubscriptionToTenant(
     .eq("id", tenantId);
 
   if (tenantError) {
-    console.error("tenant subscription id update:", tenantError);
+    logger.error("tenant subscription id update", tenantError);
   }
 }
 
@@ -146,7 +149,7 @@ async function handleCustomerSubscriptionUpdated(
   const tenantId = await resolveTenantIdForSubscription(sub);
 
   if (tenantId === undefined) {
-    console.error("customer.subscription.updated: could not resolve tenant_id");
+    logger.error("customer.subscription.updated could not resolve tenant_id");
     return;
   }
 
@@ -163,29 +166,26 @@ async function handleInvoicePaymentFailed(
 ): Promise<void> {
   const customerId = getStripeCustomerId(invoice.customer);
   if (!customerId) {
-    console.error("invoice.payment_failed: missing customer");
+    logger.error("invoice.payment_failed missing customer");
     return;
   }
 
   const row = await resolveTenantIdByCustomerId(customerId);
   if (!row) {
-    console.error(
-      "invoice.payment_failed: tenant not found for customer",
-      customerId,
-    );
+    logger.error("invoice.payment_failed tenant not found", { customerId });
     return;
   }
 
   try {
     await suspendTenant(row.id, "stripe-webhook");
   } catch (e) {
-    console.error("invoice.payment_failed suspend:", e);
+    logger.error("invoice.payment_failed suspend", e instanceof Error ? e : { error: String(e) });
   }
 
   try {
     await notifyInvoicePaymentFailed(row.slug, invoice.id);
   } catch (e) {
-    console.error("invoice.payment_failed discord:", e);
+    logger.error("invoice.payment_failed discord", e instanceof Error ? e : { error: String(e) });
   }
 }
 
@@ -215,27 +215,27 @@ export async function POST(request: Request): Promise<Response> {
   try {
     rawBody = await request.text();
   } catch (e) {
-    console.error("stripe webhook: failed to read body", e);
+    logger.error("stripe webhook failed to read body", e instanceof Error ? e : { error: String(e) });
     return Response.json({ received: true }, { status: 200 });
   }
 
   const secret = process.env.STRIPE_WEBHOOK_SECRET;
   if (!secret || secret.length === 0) {
-    console.error("stripe webhook: STRIPE_WEBHOOK_SECRET not configured");
+    logger.error("stripe webhook STRIPE_WEBHOOK_SECRET not configured");
     return Response.json({ received: true }, { status: 200 });
   }
 
   const signature = request.headers.get("stripe-signature");
   const event = constructWebhookEvent(rawBody, signature, secret);
   if (!event) {
-    console.error("stripe webhook: signature verification failed");
+    logger.error("stripe webhook signature verification failed");
     return Response.json({ received: true }, { status: 200 });
   }
 
   try {
     await dispatchStripeEvent(event);
   } catch (e) {
-    console.error("stripe webhook: dispatch error", e);
+    logger.error("stripe webhook dispatch error", e instanceof Error ? e : { error: String(e) });
   }
 
   return Response.json({ received: true }, { status: 200 });

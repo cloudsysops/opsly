@@ -3,6 +3,7 @@ import { requireAdminToken } from "../../../../../lib/auth";
 import { suspendTenant } from "../../../../../lib/orchestrator";
 import { formatZodError } from "../../../../../lib/validation";
 import { getServiceClient } from "../../../../../lib/supabase";
+import { logger } from "../../../../../lib/logger";
 
 const idParamSchema = z.string().uuid();
 
@@ -33,7 +34,7 @@ export async function POST(
     .maybeSingle();
 
   if (fetchError) {
-    console.error("suspend fetch:", fetchError);
+    logger.error("suspend fetch", fetchError);
     return Response.json({ error: "Internal server error" }, { status: 500 });
   }
   if (!existing) {
@@ -47,7 +48,7 @@ export async function POST(
     if (message === "Tenant not found") {
       return Response.json({ error: "Tenant not found" }, { status: 404 });
     }
-    console.error("suspend:", err);
+    logger.error("suspend", err instanceof Error ? err : { error: String(err) });
     return Response.json({ error: "Internal server error" }, { status: 500 });
   }
 

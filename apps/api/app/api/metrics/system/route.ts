@@ -4,6 +4,7 @@ import { countRunningDockerContainers } from "../../../../lib/docker-running-cou
 import { fetchHostMetricsFromPrometheus } from "../../../../lib/fetch-host-metrics-prometheus";
 import { getPrometheusBaseUrl } from "../../../../lib/prometheus";
 import { getServiceClient } from "../../../../lib/supabase";
+import { logger } from "../../../../lib/logger";
 
 type SystemMetrics = {
   cpu_percent: number;
@@ -47,7 +48,7 @@ async function fetchActiveTenantCount(): Promise<number> {
     .eq("status", "active");
 
   if (error) {
-    console.error("active tenants count:", error);
+    logger.error("active tenants count", error);
     return 0;
   }
   return count ?? 0;

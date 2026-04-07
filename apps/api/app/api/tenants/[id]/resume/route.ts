@@ -3,6 +3,7 @@ import { requireAdminToken } from "../../../../../lib/auth";
 import { resumeTenant } from "../../../../../lib/orchestrator";
 import { formatZodError } from "../../../../../lib/validation";
 import { getServiceClient } from "../../../../../lib/supabase";
+import { logger } from "../../../../../lib/logger";
 
 const idParamSchema = z.string().uuid();
 
@@ -33,7 +34,7 @@ export async function POST(
     .maybeSingle();
 
   if (fetchError) {
-    console.error("resume fetch:", fetchError);
+    logger.error("resume fetch", fetchError);
     return Response.json({ error: "Internal server error" }, { status: 500 });
   }
   if (!existing) {
@@ -50,7 +51,7 @@ export async function POST(
     if (message === "Tenant is not suspended") {
       return Response.json({ error: message }, { status: 409 });
     }
-    console.error("resume:", err);
+    logger.error("resume", err instanceof Error ? err : { error: String(err) });
     return Response.json({ error: "Internal server error" }, { status: 500 });
   }
 

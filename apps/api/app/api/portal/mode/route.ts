@@ -2,6 +2,7 @@ import { z } from "zod";
 import { getUserFromAuthorizationHeader } from "../../../../lib/portal-auth";
 import { formatZodError } from "../../../../lib/validation";
 import { getServiceClient } from "../../../../lib/supabase";
+import { logger } from "../../../../lib/logger";
 
 const ModeBodySchema = z.object({
   mode: z.enum(["developer", "managed"]),
@@ -46,7 +47,7 @@ export async function POST(request: Request): Promise<Response> {
   );
 
   if (error) {
-    console.error("portal mode update:", error);
+    logger.error("portal mode update", error);
     return Response.json({ error: error.message }, { status: 500 });
   }
 
