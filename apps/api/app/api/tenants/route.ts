@@ -1,21 +1,22 @@
 import {
-  jsonError,
-  serverErrorLogged,
-  tryRoute,
+    jsonError,
+    parseJsonBody,
+    serverErrorLogged,
+    tryRoute,
 } from "../../../lib/api-response";
-import { HTTP_STATUS } from "../../../lib/constants";
 import {
-  requireAdminToken,
-  requireAdminTokenUnlessDemoRead,
+    requireAdminToken,
+    requireAdminTokenUnlessDemoRead,
 } from "../../../lib/auth";
-import {
-  CreateTenantSchema,
-  formatZodError,
-  ListTenantsQuerySchema,
-} from "../../../lib/validation";
+import { HTTP_STATUS } from "../../../lib/constants";
 import { provisionTenant } from "../../../lib/orchestrator";
 import { getServiceClient } from "../../../lib/supabase";
 import type { TenantStatus } from "../../../lib/supabase/types";
+import {
+    CreateTenantSchema,
+    ListTenantsQuerySchema,
+    formatZodError,
+} from "../../../lib/validation";
 
 function isUniqueViolation(message: string, code: string | undefined): boolean {
   return (
@@ -80,14 +81,12 @@ export async function POST(request: Request): Promise<Response> {
     return authError;
   }
 
-  let body: unknown;
-  try {
-    body = await request.json();
-  } catch {
-    return jsonError("Invalid JSON body", HTTP_STATUS.BAD_REQUEST);
+  const parsedBody = await parseJsonBody(request);
+  if (!parsedBody.ok) {
+    return parsedBody.response;
   }
 
-  const parsed = CreateTenantSchema.safeParse(body);
+  const parsed = CreateTenantSchema.safeParse(parsedBody.body);
   if (!parsed.success) {
     return jsonError(formatZodError(parsed.error), HTTP_STATUS.BAD_REQUEST);
   }

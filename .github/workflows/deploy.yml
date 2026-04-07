@@ -175,6 +175,7 @@ jobs:
             # Imágenes app/admin/portal vienen de GHCR; no hace falta npm ci en el VPS (evita OOM / exit 137).
 
             cd /opt/opsly/infra
+            COMPOSE_CMD="docker compose --env-file /opt/opsly/.env -f docker-compose.platform.yml"
             if [ -z "${GITHUB_DEPLOY_TOKEN:-}" ] || [ -z "${GITHUB_DEPLOY_ACTOR:-}" ]; then
               echo "GITHUB_DEPLOY_TOKEN o GITHUB_DEPLOY_ACTOR vacíos (token del workflow)" >&2
               exit 1
@@ -187,7 +188,7 @@ jobs:
             fi
             # Imágenes efectivas del compose (respeta APP_IMAGE / PORTAL_APP_IMAGE en .env). Pull secuencial: error claro por tag.
             tmp_imgs="$(mktemp)"
-            docker compose --env-file /opt/opsly/.env -f docker-compose.platform.yml config --images | sort -u >"$tmp_imgs"
+            $COMPOSE_CMD config --images | sort -u >"$tmp_imgs"
             while IFS= read -r img; do
               [ -z "$img" ] && continue
               case "$img" in ghcr.io/*) ;;
@@ -206,7 +207,7 @@ jobs:
             done <"$tmp_imgs"
             rm -f "$tmp_imgs"
             # --force-recreate: evita réplicas app (deploy.replicas: 2) quedando en Created mientras otras siguen Up.
-            docker compose --env-file /opt/opsly/.env -f docker-compose.platform.yml up -d --no-deps --force-recreate traefik app admin portal mcp
+            $COMPOSE_CMD up -d --no-deps --force-recreate traefik app admin portal mcp
 
             if [ -z "${PLATFORM_DOMAIN:-}" ]; then
               echo "PLATFORM_DOMAIN no está definido" >&2

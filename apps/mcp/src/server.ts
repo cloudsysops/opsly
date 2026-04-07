@@ -5,10 +5,20 @@ import { metricsTool } from "./tools/metrics.js";
 import { onboardTool } from "./tools/onboard.js";
 import { suspendTools } from "./tools/suspend.js";
 import { tenantsTools } from "./tools/tenants.js";
+import type { ToolDefinition } from "./types/index.js";
 
 interface RegisteredTool {
   name: string;
   handler: (input: unknown) => Promise<unknown>;
+}
+
+function adaptTool<TInput, TOutput>(
+  tool: ToolDefinition<TInput, TOutput>,
+): RegisteredTool {
+  return {
+    name: tool.name,
+    handler: async (input: unknown) => tool.handler(input as TInput),
+  };
 }
 
 export class OpenClawMcpServer {
@@ -38,13 +48,19 @@ export class OpenClawMcpServer {
 
 export function createServer(): OpenClawMcpServer {
   const server = new OpenClawMcpServer();
+  const [getTenantsTool, getTenantTool] = tenantsTools;
+  const [getHealthTool, getMetricsTool] = metricsTool;
+  const [suspendTenantTool, resumeTenantTool] = suspendTools;
   server.registerTools([
-    ...(tenantsTools as unknown as RegisteredTool[]),
-    onboardTool as unknown as RegisteredTool,
-    invitationsTool as unknown as RegisteredTool,
-    ...(metricsTool as unknown as RegisteredTool[]),
-    ...(suspendTools as unknown as RegisteredTool[]),
-    executorTool as unknown as RegisteredTool
+    adaptTool(getTenantsTool),
+    adaptTool(getTenantTool),
+    adaptTool(onboardTool),
+    adaptTool(invitationsTool),
+    adaptTool(getHealthTool),
+    adaptTool(getMetricsTool),
+    adaptTool(suspendTenantTool),
+    adaptTool(resumeTenantTool),
+    adaptTool(executorTool),
   ]);
   return server;
 }

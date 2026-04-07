@@ -1,8 +1,10 @@
 import { z } from "zod";
-import { getUserFromAuthorizationHeader } from "../../../../lib/portal-auth";
-import { formatZodError } from "../../../../lib/validation";
-import { getServiceClient } from "../../../../lib/supabase";
+import { jsonError, parseJsonBody } from "../../../../lib/api-response";
+import { HTTP_STATUS } from "../../../../lib/constants";
 import { logger } from "../../../../lib/logger";
+import { getUserFromAuthorizationHeader } from "../../../../lib/portal-auth";
+import { getServiceClient } from "../../../../lib/supabase";
+import { formatZodError } from "../../../../lib/validation";
 
 const ModeBodySchema = z.object({
   mode: z.enum(["developer", "managed"]),
@@ -11,22 +13,17 @@ const ModeBodySchema = z.object({
 export async function POST(request: Request): Promise<Response> {
   const user = await getUserFromAuthorizationHeader(request);
   if (!user) {
-    return Response.json({ error: "Unauthorized" }, { status: 401 });
+    return jsonError("Unauthorized", HTTP_STATUS.UNAUTHORIZED);
   }
 
-  let body: unknown;
-  try {
-    body = await request.json();
-  } catch {
-    return Response.json({ error: "Invalid JSON body" }, { status: 400 });
+  const parsedBody = await parseJsonBody(request);
+  if (!parsedBody.ok) {
+    return parsedBody.response;
   }
 
-  const parsed = ModeBodySchema.safeParse(body);
+  const parsed = ModeBodySchema.safeParse(parsedBody.body);
   if (!parsed.success) {
-    return Response.json(
-      { error: formatZodError(parsed.error) },
-      { status: 400 },
-    );
+    return jsonError(formatZodError(parsed.error), HTTP_STATUS.BAD_REQUEST);
   }
 
   const prevMeta =

@@ -14,6 +14,20 @@ export function jsonError(message: string, status: number): Response {
   return Response.json(body, { status });
 }
 
+export async function parseJsonBody(
+  request: Request,
+): Promise<{ ok: true; body: unknown } | { ok: false; response: Response }> {
+  try {
+    const body = await request.json();
+    return { ok: true, body };
+  } catch {
+    return {
+      ok: false,
+      response: jsonError("Invalid JSON body", HTTP_STATUS.BAD_REQUEST),
+    };
+  }
+}
+
 /** Registra `err` y devuelve 500 con mensaje genérico al cliente. */
 export function serverErrorLogged(context: string, err: unknown): Response {
   console.error(context, err);

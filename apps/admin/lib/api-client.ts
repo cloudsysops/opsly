@@ -1,10 +1,10 @@
 import type {
-  InvitationSendResponse,
-  MetricsResponse,
-  SystemMetricsResponse,
-  Tenant,
-  TenantDetailResponse,
-  TenantsListResponse,
+    InvitationSendResponse,
+    MetricsResponse,
+    SystemMetricsResponse,
+    Tenant,
+    TenantDetailResponse,
+    TenantsListResponse,
 } from "./types";
 
 function inferApiBaseFromAdminHost(hostname: string): string | null {
@@ -22,8 +22,8 @@ function getBaseUrl(): string {
   if (base && base.length > 0) {
     return base.replace(/\/$/, "");
   }
-  if (typeof window !== "undefined") {
-    const inferred = inferApiBaseFromAdminHost(window.location.hostname);
+  if (typeof globalThis.window !== "undefined") {
+    const inferred = inferApiBaseFromAdminHost(globalThis.window.location.hostname);
     if (inferred !== null) {
       return inferred;
     }
@@ -40,6 +40,16 @@ function getAdminToken(): string | undefined {
     return undefined;
   }
   return token;
+}
+
+function buildHeaders(initHeaders: HeadersInit | undefined): Headers {
+  const headers = new Headers(initHeaders);
+  headers.set("Content-Type", "application/json");
+  const token = getAdminToken();
+  if (token !== undefined) {
+    headers.set("Authorization", `Bearer ${token}`);
+  }
+  return headers;
 }
 
 async function parseJson(res: Response): Promise<unknown> {
@@ -67,12 +77,7 @@ function getErrorMessage(data: unknown): string {
 }
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
-  const headers = new Headers(init?.headers);
-  headers.set("Content-Type", "application/json");
-  const token = getAdminToken();
-  if (token !== undefined) {
-    headers.set("Authorization", `Bearer ${token}`);
-  }
+  const headers = buildHeaders(init?.headers);
 
   const res = await fetch(`${getBaseUrl()}${path}`, {
     ...init,

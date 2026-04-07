@@ -1,19 +1,23 @@
 import { z } from "zod";
-import { jsonError, serverErrorLogged } from "../../../../lib/api-response";
 import {
-  requireAdminToken,
-  requireAdminTokenUnlessDemoRead,
+    jsonError,
+    parseJsonBody,
+    serverErrorLogged,
+} from "../../../../lib/api-response";
+import {
+    requireAdminToken,
+    requireAdminTokenUnlessDemoRead,
 } from "../../../../lib/auth";
 import { HTTP_STATUS } from "../../../../lib/constants";
-import { deleteTenant } from "../../../../lib/orchestrator";
 import { getTenantStackStatus } from "../../../../lib/docker";
-import {
-  formatZodError,
-  TenantRefParamSchema,
-  UpdateTenantSchema,
-} from "../../../../lib/validation";
+import { deleteTenant } from "../../../../lib/orchestrator";
 import { getServiceClient } from "../../../../lib/supabase";
 import type { Tenant } from "../../../../lib/supabase/types";
+import {
+    TenantRefParamSchema,
+    UpdateTenantSchema,
+    formatZodError,
+} from "../../../../lib/validation";
 
 const idParamSchema = z.string().uuid();
 
@@ -96,14 +100,12 @@ export async function PATCH(
     return jsonError(formatZodError(idParsed.error), HTTP_STATUS.BAD_REQUEST);
   }
 
-  let body: unknown;
-  try {
-    body = await request.json();
-  } catch {
-    return jsonError("Invalid JSON body", HTTP_STATUS.BAD_REQUEST);
+  const parsedBody = await parseJsonBody(request);
+  if (!parsedBody.ok) {
+    return parsedBody.response;
   }
 
-  const parsed = UpdateTenantSchema.safeParse(body);
+  const parsed = UpdateTenantSchema.safeParse(parsedBody.body);
   if (!parsed.success) {
     return jsonError(formatZodError(parsed.error), HTTP_STATUS.BAD_REQUEST);
   }

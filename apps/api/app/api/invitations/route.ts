@@ -1,5 +1,7 @@
 import { z } from "zod";
+import { jsonError, parseJsonBody } from "../../../lib/api-response";
 import { requireAdminToken } from "../../../lib/auth";
+import { HTTP_STATUS } from "../../../lib/constants";
 import { executeAdminInvitation } from "../../../lib/invitation-admin-flow";
 import { formatZodError } from "../../../lib/validation";
 
@@ -26,19 +28,14 @@ export async function POST(request: Request): Promise<Response> {
     return authError;
   }
 
-  let body: unknown;
-  try {
-    body = await request.json();
-  } catch {
-    return Response.json({ error: "Invalid JSON body" }, { status: 400 });
+  const parsedBody = await parseJsonBody(request);
+  if (!parsedBody.ok) {
+    return parsedBody.response;
   }
 
-  const parsed = InvitationBodySchema.safeParse(body);
+  const parsed = InvitationBodySchema.safeParse(parsedBody.body);
   if (!parsed.success) {
-    return Response.json(
-      { error: formatZodError(parsed.error) },
-      { status: 400 },
-    );
+    return jsonError(formatZodError(parsed.error), HTTP_STATUS.BAD_REQUEST);
   }
 
   return executeAdminInvitation(parsed.data);

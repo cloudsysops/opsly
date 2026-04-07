@@ -72,7 +72,7 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 
 <!-- Actualizar al final de cada sesión -->
 
-**Fecha última actualización:** 2026-04-07 — **Sesión Cursor (automation pipeline v1):** Fase 0 audit completada y versionada en `docs/reports/audit-2026-04-07.md` (VPS `cursor-prompt-monitor`/`opsly-watcher` activos; Doppler OK para `DISCORD_WEBHOOK_URL`, `RESEND_API_KEY`, `PLATFORM_ADMIN_TOKEN`; faltan `GOOGLE_DRIVE_TOKEN` y `GITHUB_TOKEN_N8N`). Fase 1 plan versionado en `docs/AUTOMATION-PLAN.md`. Fase 2 TDD: nuevos tests `scripts/test-{notify-discord,drive-sync,n8n-webhook}.sh` creados y ejecutados. Fase 3 implementación: `scripts/notify-discord.sh`, `scripts/drive-sync.sh`, mejoras en `.githooks/post-commit` (notificación + drive sync condicional) y `scripts/cursor-prompt-monitor.sh` (before/after/error a Discord). Fase 4 documentación n8n: `docs/n8n-workflows/discord-to-github.json` + `docs/N8N-SETUP.md`. Fase 5 validación: tests unitarios en verde, `drive-sync --dry-run` OK, type-check verde, commit vacío de verificación de hook (`test(automation): verify post-commit hooks`). Quedan pendientes solo secretos de automatización (`GOOGLE_DRIVE_TOKEN`, `GITHUB_TOKEN_N8N`) para activar flujo end-to-end sin intervención. Flujo Claude documentado: `docs/ACTIVE-PROMPT.md`, `scripts/cursor-prompt-monitor.sh`, `infra/systemd/cursor-prompt-monitor.service`, logs en `logs/`. Fase 4 (plan multi-agente): `docs/OPENCLAW-ARCHITECTURE.md`, `docs/CLAUDE-WORKFLOW-OPTIMIZATION.md`, `docs/AUTO-PUSH-WATCHER.md`, `scripts/auto-push-watcher.sh`, `infra/systemd/opsly-watcher.service`. **2026-04-07 —** **Fase 2 invite/onboard:** `./scripts/validate-config.sh` → **LISTO PARA DEPLOY**. **Portal staging:** `https://portal.ops.smiletripcare.com/login` → **200** (tras recuperar contenedores `app`/`admin`/`portal` que habían quedado en `Created` y **404** en Traefik; ver `docs/TROUBLESHOOTING.md` y `deploy.yml` con `--force-recreate`). **`curl api`/health** → `status ok`. **Contenedores Opsly:** `traefik`, `infra-redis-1`, `infra-app-*`, `opsly_admin`, `opsly_portal`. **Tenants:** `smiletripcare`, `peskids` (stacks n8n/uptime Up). **Resend (2026-04-07):** `RESEND_FROM_EMAIL` en `prd` + VPS actualizado. **Causa de `API key is invalid`:** en Doppler `prd`, **`RESEND_API_KEY` sigue siendo placeholder corto** hasta que se pegue la clave **completa** desde [resend.com/api-keys](https://resend.com/api-keys). **`./scripts/validate-config.sh`** avisa (longitud **&lt; 20**). Tras corregir Doppler: **`./scripts/vps-refresh-api-env.sh`** (bootstrap + recreate `app`; `--dry-run` / `--skip-resend-check` en script) → **`./scripts/test-e2e-invite-flow.sh`**. **Admin:** `/invitations` en repo.
+**Fecha última actualización:** 2026-04-07 — **Sesión Cursor (automation pipeline v1 + autodiagnóstico):** Fase 0 audit completada y versionada en `docs/reports/audit-2026-04-07.md` (VPS `cursor-prompt-monitor`/`opsly-watcher` activos; Doppler OK para `DISCORD_WEBHOOK_URL`, `RESEND_API_KEY`, `PLATFORM_ADMIN_TOKEN`; faltan `GOOGLE_DRIVE_TOKEN` y `GITHUB_TOKEN_N8N`). Fase 1 plan versionado en `docs/AUTOMATION-PLAN.md`. Fase 2 TDD: nuevos tests `scripts/test-{notify-discord,drive-sync,n8n-webhook}.sh` creados y ejecutados. Fase 3 implementación: `scripts/notify-discord.sh`, `scripts/drive-sync.sh`, mejoras en `.githooks/post-commit` (notificación + drive sync condicional) y `scripts/cursor-prompt-monitor.sh` (before/after/error a Discord). Fase 4 documentación n8n: `docs/n8n-workflows/discord-to-github.json` + `docs/N8N-SETUP.md`. Fase 5 validación: tests unitarios en verde, `drive-sync --dry-run` OK, type-check verde, commit vacío de verificación de hook (`test(automation): verify post-commit hooks`). Flujo Claude documentado: `docs/ACTIVE-PROMPT.md`, `scripts/cursor-prompt-monitor.sh`, `infra/systemd/cursor-prompt-monitor.service`, logs en `logs/`. Fase 4 (plan multi-agente): `docs/OPENCLAW-ARCHITECTURE.md`, `docs/CLAUDE-WORKFLOW-OPTIMIZATION.md`, `docs/AUTO-PUSH-WATCHER.md`, `scripts/auto-push-watcher.sh`, `infra/systemd/opsly-watcher.service`. **2026-04-07 —** **Fase 2 invite/onboard:** `./scripts/validate-config.sh` → **LISTO PARA DEPLOY**. **Portal staging:** `https://portal.ops.smiletripcare.com/login` → **200** (tras recuperar contenedores `app`/`admin`/`portal` que habían quedado en `Created` y **404** en Traefik; ver `docs/TROUBLESHOOTING.md` y `deploy.yml` con `--force-recreate`). **`curl api`/health** → `status ok` (con `supabase: degraded`). **Contenedores Opsly:** `traefik`, `infra-redis-1`, `infra-app-*`, `opsly_admin`, `opsly_portal`; stacks de tenants `smiletripcare`, `peskids`, `intcloudsysops` activos en VPS. **Autodiagnóstico y ejecución autónoma:** commits `97616fe` y `docs/N8N-IMPORT-GUIDE.md` actualizado con estado operativo; limpieza de disco VPS aplicada (`100%` → `83%`), notificaciones Discord enviadas por cada acción, `drive-sync --dry-run` validado. **Pendiente real para cierre end-to-end:** `GITHUB_TOKEN_N8N`, `GOOGLE_DRIVE_TOKEN`, `STRIPE_SECRET_KEY` válido y bajar disco de VPS por debajo de `80%`.
 
 **Completado ✅**
 
@@ -81,6 +81,7 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 * **2026-04-06 — cursor-autonomous-plan (archivo `/home/claude/cursor-autonomous-plan.md` no presente):** SUB-A `lib/api-response.ts` + refactor `auth`, `tenants`, `metrics`, `tenants/[id]`; SUB-C `docs/SECURITY_AUDIT_REPORT.md`; SUB-B `TROUBLESHOOTING.md`, `SECURITY_CHECKLIST.md`, `PERFORMANCE_BASELINE.md`; SUB-D `OBSERVABILITY.md`; SUB-E `docs/openapi-opsly-api.yaml`.
 
 *Sesión Cursor — qué se hizo (orden aproximado):*
+* **2026-04-07 noche (autónomo):** diagnóstico integral (VPS/Doppler/Actions/Supabase/health/tests), prune Docker seguro en VPS, `drive-sync --dry-run` validado, actualización de `docs/N8N-IMPORT-GUIDE.md` con estado actual de secretos y comando exacto, reporte final de bloqueos humanos, commit `chore(auto): autonomous diagnostic and fixes 2026-04-07`.
 * **2026-04-07 tarde:** Runbook invitaciones (`docs/INVITATIONS_RUNBOOK.md`); plan UI admin; plantilla n8n; auditoría Doppler (nombres solo); Vitest + 6 tests `invitation-admin-flow`; `/api/health` con metadata; scripts `test-e2e-invite-flow.sh`, `generate-tenant-config.sh`; `onboard-tenant.sh` `--help` y dry-run sin env; tipos portal `@/types`; logs invitaciones redactados.
 * **2026-04-07 (pasos 1–5 sin markdown externo):** Validación local + snapshot VPS + health público; commit **`96e9a38`** en remoto y disco VPS; archivo tarea Claude **no** presente en workspace.
 * **2026-04-07 — Cursor (automation protocol v1):** `docs/reports/audit-2026-04-07.md` + `docs/AUTOMATION-PLAN.md`; TDD de `notify-discord`, `drive-sync`, `n8n-webhook`; implementación de `scripts/notify-discord.sh` y `scripts/drive-sync.sh`; integración en `.githooks/post-commit` y `scripts/cursor-prompt-monitor.sh`; documentación `docs/N8N-SETUP.md` + `docs/n8n-workflows/discord-to-github.json`; validación local y commit de test hook.
@@ -394,20 +395,16 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 <!-- Una sola tarea concreta. Actualizar al final de cada sesión -->
 
 ```bash
-# Fase 4 automation pipeline (pendiente de secretos)
+# Cierre de bloqueantes críticos detectados por autodiagnóstico
 # 0. Completar secretos faltantes en Doppler prd:
-#    doppler secrets set GOOGLE_DRIVE_TOKEN --project ops-intcloudsysops --config prd
 #    doppler secrets set GITHUB_TOKEN_N8N --project ops-intcloudsysops --config prd
-# 1. Re-ejecutar auditoria:
-#    ./scripts/notify-discord.sh "Audit" "post-token check" "info" --dry-run
-#    ./scripts/drive-sync.sh --dry-run
-# 2. Importar workflow en n8n:
-#    docs/n8n-workflows/discord-to-github.json
-# 3. Verificar flujo end-to-end:
-#    Discord #opsly-tareas -> GitHub ACTIVE-PROMPT -> cursor-prompt-monitor -> Discord confirm
-# 4. Mantener flujo invite/onboard:
-#    export ADMIN_TOKEN=... OWNER_EMAIL=smiletripcare@gmail.com
-#    ./scripts/sync-and-test-invite-flow.sh
+#    doppler secrets set GOOGLE_DRIVE_TOKEN --project ops-intcloudsysops --config prd
+#    doppler secrets set STRIPE_SECRET_KEY --project ops-intcloudsysops --config prd
+# 1. Revalidar flujo de automatización:
+#    ./scripts/drive-sync.sh
+#    N8N_WEBHOOK_URL="<url_production_webhook>" N8N_WEBHOOK_SECRET="<secret>" ./scripts/test-n8n-webhook.sh
+# 2. Bajar uso de disco VPS por debajo de 80%:
+#    ssh vps-dragon@157.245.223.7 "docker system df && sudo du -xh /var --max-depth=2 | sort -h | tail -20"
 ```
 
 ---
@@ -477,6 +474,9 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 
 | Fecha | Decisión | Razón |
 |---|---|---|
+| 2026-04-07 | Autodiagnóstico autónomo ejecuta limpieza de disco con `docker image prune -f` + `docker builder prune -f` sin borrar volúmenes | Mitigar bloqueo operativo inmediato por VPS al 100% de uso; bajó a ~83% y quedó acción humana para cerrar <80% |
+| 2026-04-07 | Consulta de tenants Supabase en sesiones de diagnóstico usa schema `platform` | Evita falsos negativos de `Supabase query failed` al consultar `tenants` fuera del schema por defecto |
+| 2026-04-07 | `docs/N8N-IMPORT-GUIDE.md` se actualiza con estado operativo real y comando exacto de secreto faltante | Reducir ambigüedad del handoff cuando falte `GITHUB_TOKEN_N8N` y acelerar activación del flujo n8n |
 | 2026-04-07 | Job Deploy: `docker compose up -d --no-deps --force-recreate traefik app admin portal` | Con `deploy.replicas: 2` en `app`, un `up` sin recrear dejaba contenedores en `Created` y `opsly_portal`/`opsly_admin` sin rutear → 404 en `portal.*` |
 | 2026-04-07 | `requireAdminToken` acepta `Authorization: Bearer` o `x-admin-token` | Runbook/E2E/documentación usaban `x-admin-token`; el admin app usa Bearer; ambas formas válidas |
 | 2026-04-07 | Remitente por defecto `RESEND_FROM_EMAIL=onboarding@resend.dev` en Doppler `prd` hasta dominio verificado ops/smiletrip | Desbloquea envío respecto a “missing RESEND_FROM_*”; la clave API debe seguir siendo válida en Resend |

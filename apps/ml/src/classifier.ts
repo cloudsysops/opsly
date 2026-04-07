@@ -1,4 +1,5 @@
 import Anthropic from "@anthropic-ai/sdk";
+import { z } from "zod";
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -8,6 +9,13 @@ export interface LeadClassification {
   next_action: string;
   reasoning: string;
 }
+
+const LeadClassificationSchema = z.object({
+  score: z.number().min(0).max(100),
+  category: z.enum(["hot", "warm", "cold"]),
+  next_action: z.string().min(1),
+  reasoning: z.string().min(1),
+});
 
 export async function classifyLead(
   tenantSlug: string,
@@ -28,10 +36,14 @@ export async function classifyLead(
   });
 
   const first = response.content[0];
-  if (!first || first.type !== "text") {
+  if (first?.type !== "text") {
     throw new Error("Respuesta inesperada de Claude");
   }
 
-  const clean = first.text.replace(/```json|```/g, "").trim();
-  return JSON.parse(clean) as LeadClassification;
+  const clean = first.text.replaceAll(/```json|```/g, "").trim();
+  const parsed = LeadClassificationSchema.safeParse(JSON.parse(clean) as unknown);
+  if (!parsed.success) {
+    throw new Error("Lead classification payload invalido");
+  }
+  return parsed.data;
 }

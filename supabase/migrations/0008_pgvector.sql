@@ -1,5 +1,4 @@
 CREATE EXTENSION IF NOT EXISTS vector;
-
 CREATE TABLE IF NOT EXISTS platform.tenant_embeddings (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
   tenant_slug text NOT NULL,
