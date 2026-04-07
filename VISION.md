@@ -144,3 +144,40 @@ Objetivo: plataforma que vende sola.
 
 Antes de proponer cualquier feature nuevo, verificar:
 ¿Tenants en producción > 0? Si no → volver a Fase 1.
+
+---
+
+## Evolución arquitectónica — AI Platform
+
+### Visión de escalonamiento
+
+**Vertical (ahora → 6 meses):**
+- Un VPS DigitalOcean escalado (CPU/RAM según carga)
+- Redis como núcleo: sessions + cache LLM + job queues
+- BullMQ con workers paralelos (concurrency por tenant)
+- LLM Gateway con cache → ahorro 40-70% tokens
+
+**Horizontal (6 → 18 meses):**
+- Multi-VPS con Traefik como load balancer
+- Redis Cluster o Redis Sentinel
+- Tenant runtime portable (abstraído de n8n)
+- Multi-región cuando haya clientes enterprise
+
+**Agentes paralelos:**
+- Cada tenant tiene su pool de workers BullMQ
+- Workers especializados: CodeAgent, ResearchAgent, NotifyAgent
+- Ejecución paralela con límites por plan (startup: 2, business: 5, enterprise: unlimited)
+- Estado persistido en Redis con TTL por sesión
+
+**Servicios nuevos en roadmap:**
+1. LLM Gateway (cache + routing + cost control)
+2. Context Builder (prompt optimization)
+3. Orchestrator event-driven completo
+4. Observabilidad por tenant (tokens, costo, éxito)
+5. Tenant Runtime abstraction
+6. Control Plane vs Data Plane separados
+
+### Regla de escalonamiento
+
+> Nunca añadir infra nueva sin cliente pagador que lo justifique.
+> Escalar verticalmente primero. Horizontal solo con 10+ tenants activos.
