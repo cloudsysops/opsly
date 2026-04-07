@@ -24,7 +24,7 @@ jobs:
       - name: npm ci
         run: npm ci
 
-      - name: TypeScript (api + admin + portal + mcp + orchestrator + ml)
+      - name: TypeScript (api + admin + portal + mcp + orchestrator + ml + llm-gateway + context-builder)
         run: |
           set -euo pipefail
           (cd apps/api && npx tsc --noEmit) & pid1=$!
@@ -33,6 +33,8 @@ jobs:
           (cd apps/mcp && npx tsc --noEmit) & pid4=$!
           (cd apps/orchestrator && npx tsc --noEmit) & pid5=$!
           (cd apps/ml && npx tsc --noEmit) & pid6=$!
+          (cd apps/llm-gateway && npx tsc --noEmit) & pid7=$!
+          (cd apps/context-builder && npx tsc --noEmit) & pid8=$!
           status=0
           wait $pid1 || status=1
           wait $pid2 || status=1
@@ -40,6 +42,8 @@ jobs:
           wait $pid4 || status=1
           wait $pid5 || status=1
           wait $pid6 || status=1
+          wait $pid7 || status=1
+          wait $pid8 || status=1
           exit $status
 
       - name: ESLint si existe config (paralelo)
@@ -62,6 +66,8 @@ jobs:
           run_eslint apps/mcp & pid4=$!
           run_eslint apps/orchestrator & pid5=$!
           run_eslint apps/ml & pid6=$!
+          run_eslint apps/llm-gateway & pid7=$!
+          run_eslint apps/context-builder & pid8=$!
           status=0
           wait $pid1 || status=1
           wait $pid2 || status=1
@@ -69,6 +75,8 @@ jobs:
           wait $pid4 || status=1
           wait $pid5 || status=1
           wait $pid6 || status=1
+          wait $pid7 || status=1
+          wait $pid8 || status=1
           exit $status
 
   test:
@@ -81,17 +89,19 @@ jobs:
           node-version: "20"
           cache: npm
           cache-dependency-path: package-lock.json
-      - name: npm ci + tests mcp/orchestrator/ml
+      - name: npm ci + tests mcp/orchestrator/ml/llm-gateway
         run: |
           set -euo pipefail
           npm ci
           (cd apps/mcp && npm test) & pid1=$!
           (cd apps/orchestrator && npm test) & pid2=$!
           (cd apps/ml && npm test) & pid3=$!
+          (cd apps/llm-gateway && npm test) & pid4=$!
           status=0
           wait $pid1 || status=1
           wait $pid2 || status=1
           wait $pid3 || status=1
+          wait $pid4 || status=1
           exit $status
 
   build:

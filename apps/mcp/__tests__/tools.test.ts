@@ -4,6 +4,10 @@ vi.mock("../src/lib/api-client.js", () => ({
   opslyFetch: vi.fn()
 }));
 
+vi.mock("../src/lib/events.js", () => ({
+  publishEvent: vi.fn(async () => undefined),
+}));
+
 import { opslyFetch } from "../src/lib/api-client.js";
 import { metricsTool } from "../src/tools/metrics.js";
 import { onboardTool } from "../src/tools/onboard.js";

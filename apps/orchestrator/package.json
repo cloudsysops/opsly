@@ -10,7 +10,9 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "bullmq": "^5.58.5"
+    "bullmq": "^5.58.5",
+    "execa": "^9.6.0",
+    "redis": "^4.7.0"
   },
   "devDependencies": {
     "@types/node": "^20.19.12",

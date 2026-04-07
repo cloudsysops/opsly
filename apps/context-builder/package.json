@@ -1,17 +1,21 @@
 {
-  "name": "@intcloudsysops/ml",
+  "name": "@intcloudsysops/context-builder",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "scripts": {
-    "dev": "tsx watch src/index.ts",
+    "dev": "tsx watch src/builder.ts",
     "build": "tsc",
-    "start": "node dist/index.js",
+    "start": "node dist/builder.js",
     "test": "vitest run",
     "type-check": "tsc --noEmit"
   },
+  "exports": {
+    ".": "./src/builder.ts"
+  },
   "dependencies": {
     "@intcloudsysops/llm-gateway": "^1.0.0",
-    "@supabase/supabase-js": "^2.56.1"
+    "redis": "^4.7.0"
   },
   "devDependencies": {
     "@types/node": "^20.19.12",

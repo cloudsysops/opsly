@@ -5,6 +5,7 @@ export interface OrchestratorJob {
   payload: Record<string, unknown>;
   tenant_slug?: string;
   initiated_by: "claude" | "discord" | "cron" | "system";
+  plan?: "startup" | "business" | "enterprise";
 }
 
 export type Intent =

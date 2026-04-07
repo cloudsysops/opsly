@@ -1,4 +1,5 @@
 import { enqueueJob } from "./queue.js";
+import { setJobState } from "./state/store.js";
 import type { IntentRequest, OrchestratorJob } from "./types.js";
 
 export async function processIntent(req: IntentRequest) {
@@ -58,6 +59,18 @@ export async function processIntent(req: IntentRequest) {
   }
 
   const enqueued = await Promise.all(jobs.map((job) => enqueueJob(job)));
+  await Promise.all(
+    enqueued.map(async (job, index) => {
+      const queuedJob = jobs[index];
+      await setJobState(String(job.id), {
+        id: String(job.id),
+        type: queuedJob.type,
+        status: "pending",
+        tenant_slug: queuedJob.tenant_slug,
+        started_at: new Date().toISOString(),
+      });
+    }),
+  );
   return {
     jobs_enqueued: enqueued.length,
     job_ids: enqueued.map((job) => job.id),

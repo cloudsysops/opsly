@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { opslyFetch } from "../lib/api-client.js";
+import { publishEvent } from "../lib/events.js";
 import type { ToolDefinition } from "../types/index.js";
 
 interface OnboardInput {
@@ -43,6 +44,13 @@ export const onboardTool: ToolDefinition<OnboardInput, Record<string, unknown>> 
         })
       });
     }
+
+    await publishEvent("tenant.onboarded", {
+      slug: input.slug,
+      plan: input.plan,
+      email: input.email,
+      invitation_sent: input.send_invitation
+    });
 
     return {
       success: true,

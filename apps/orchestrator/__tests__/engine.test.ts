@@ -4,6 +4,10 @@ vi.mock("../src/queue.js", () => ({
   enqueueJob: vi.fn(async (job: { type: string }) => ({ id: `${job.type}-1` }))
 }));
 
+vi.mock("../src/state/store.js", () => ({
+  setJobState: vi.fn(async () => undefined),
+}));
+
 import { processIntent } from "../src/engine.js";
 
 describe("processIntent", () => {

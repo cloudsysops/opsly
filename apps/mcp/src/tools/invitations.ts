@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { opslyFetch } from "../lib/api-client.js";
+import { publishEvent } from "../lib/events.js";
 import type { ToolDefinition } from "../types/index.js";
 
 interface InvitationInput {
@@ -25,6 +26,12 @@ export const invitationsTool: ToolDefinition<InvitationInput, Record<string, unk
         mode: input.mode
       })
     })) as { link?: string };
+
+    await publishEvent("invite.sent", {
+      tenant_ref: input.tenant_ref,
+      email: input.email,
+      mode: input.mode
+    });
 
     return {
       success: true,
