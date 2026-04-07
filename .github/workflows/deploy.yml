@@ -112,8 +112,37 @@ jobs:
             NEXT_PUBLIC_SUPPORT_EMAIL=${{ secrets.NEXT_PUBLIC_SUPPORT_EMAIL }}
             NEXT_PUBLIC_PLATFORM_DOMAIN=${{ secrets.PLATFORM_DOMAIN }}
 
+  build-mcp:
+    needs: lint-and-typecheck
+    if: |
+      always() &&
+      (needs.lint-and-typecheck.result == 'success' || needs.lint-and-typecheck.result == 'skipped')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push MCP image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: apps/mcp/Dockerfile
+          push: true
+          tags: ghcr.io/cloudsysops/intcloudsysops-mcp:latest
+
   deploy:
-    needs: build-and-push
+    needs:
+      - build-and-push
+      - build-mcp
     runs-on: ubuntu-latest
     environment: production
     permissions:
@@ -177,7 +206,7 @@ jobs:
             done <"$tmp_imgs"
             rm -f "$tmp_imgs"
             # --force-recreate: evita réplicas app (deploy.replicas: 2) quedando en Created mientras otras siguen Up.
-            docker compose --env-file /opt/opsly/.env -f docker-compose.platform.yml up -d --no-deps --force-recreate traefik app admin portal
+            docker compose --env-file /opt/opsly/.env -f docker-compose.platform.yml up -d --no-deps --force-recreate traefik app admin portal mcp
 
             if [ -z "${PLATFORM_DOMAIN:-}" ]; then
               echo "PLATFORM_DOMAIN no está definido" >&2
