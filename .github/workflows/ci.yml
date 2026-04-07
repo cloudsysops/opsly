@@ -33,7 +33,14 @@ jobs:
           (cd apps/mcp && npx tsc --noEmit) & pid4=$!
           (cd apps/orchestrator && npx tsc --noEmit) & pid5=$!
           (cd apps/ml && npx tsc --noEmit) & pid6=$!
-          wait $pid1 $pid2 $pid3 $pid4 $pid5 $pid6
+          status=0
+          wait $pid1 || status=1
+          wait $pid2 || status=1
+          wait $pid3 || status=1
+          wait $pid4 || status=1
+          wait $pid5 || status=1
+          wait $pid6 || status=1
+          exit $status
 
       - name: ESLint si existe config (paralelo)
         run: |
@@ -55,7 +62,14 @@ jobs:
           run_eslint apps/mcp & pid4=$!
           run_eslint apps/orchestrator & pid5=$!
           run_eslint apps/ml & pid6=$!
-          wait $pid1 $pid2 $pid3 $pid4 $pid5 $pid6
+          status=0
+          wait $pid1 || status=1
+          wait $pid2 || status=1
+          wait $pid3 || status=1
+          wait $pid4 || status=1
+          wait $pid5 || status=1
+          wait $pid6 || status=1
+          exit $status
 
   test:
     needs: lint
@@ -74,7 +88,11 @@ jobs:
           (cd apps/mcp && npm test) & pid1=$!
           (cd apps/orchestrator && npm test) & pid2=$!
           (cd apps/ml && npm test) & pid3=$!
-          wait $pid1 $pid2 $pid3
+          status=0
+          wait $pid1 || status=1
+          wait $pid2 || status=1
+          wait $pid3 || status=1
+          exit $status
 
   build:
     needs: lint
@@ -95,7 +113,11 @@ jobs:
           (cd apps/api && npm run build) & pid1=$!
           (cd apps/admin && npm run build) & pid2=$!
           (cd apps/portal && npm run build) & pid3=$!
-          wait $pid1 $pid2 $pid3
+          status=0
+          wait $pid1 || status=1
+          wait $pid2 || status=1
+          wait $pid3 || status=1
+          exit $status
 
   scripts-check:
     needs: lint
