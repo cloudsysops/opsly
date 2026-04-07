@@ -431,7 +431,140 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 - [ ] **`RESEND_API_KEY` real en Doppler** — no basta con el prefijo `re_`; hace falta la clave completa (~36+ chars). Hasta entonces `POST /api/invitations` → 500 *API key is invalid*.
 - [ ] **`GOOGLE_DRIVE_TOKEN` en Doppler `prd`** — requerido para sync real a Drive (actualmente solo dry-run).
 - [ ] **`GITHUB_TOKEN_N8N` en Doppler `prd`** — requerido para workflow n8n Discord→GitHub.
-- [ ] **`STRIPE_PRICE_ID_STARTUP` (y price IDs relacionados) en entorno de build** — `npm run build` falla en `apps/web` con *Missing required environment variable: STRIPE_PRICE_ID_STARTUP*.
+- [ ] **`STRIPE_PRICE_ID_*` en Doppler `prd` / secrets de CI** — necesarios para billing/checkout real en `apps/web`; el build puede completarse sin ellos (`envOrEmpty` en `apps/web/lib/stripe/plans.ts`), pero Stripe fallará en runtime si faltan.
+
+---
+
+## Arquitectura y flujos (diagrama)
+
+Vista rápida de **runtime en VPS**, **flujo producto (admin/portal/API)**, **CI/CD** y **capa OpenClaw** (MCP + orquestador + ML). Detalle: `docs/OPENCLAW-ARCHITECTURE.md`, `docs/adr/ADR-009-openclaw-mcp-architecture.md`.
+
+### Plataforma en VPS (Traefik + servicios + tenants)
+
+```mermaid
+flowchart TB
+  subgraph internet[Internet]
+    U1[Administrador]
+    U2[Cliente portal]
+    U3[Claude / conector MCP]
+  end
+
+  DOP[Doppler prd]
+
+  subgraph vps[VPS /opt/opsly]
+    T[Traefik v3 TLS]
+    subgraph platform[Compose plataforma]
+      API[app API Next]
+      ADM[admin Next]
+      POR[portal Next]
+      MCP[mcp opcional]
+      RD[(Redis)]
+    end
+    subgraph tenants[Stacks por tenant]
+      N8N[n8n slug]
+      UP[Uptime Kuma slug]
+    end
+  end
+
+  SB[(Supabase Postgres platform + RLS)]
+
+  DOP -. bootstrap .env .-> vps
+  U1 --> T
+  U2 --> T
+  U3 --> MCP
+  T --> API
+  T --> ADM
+  T --> POR
+  T --> MCP
+  T --> N8N
+  T --> UP
+  API --> SB
+  API --> RD
+  MCP --> API
+```
+
+### Flujo producto: invitación, login y datos del tenant
+
+```mermaid
+sequenceDiagram
+  participant Adm as Admin UI
+  participant Api as API apps/api
+  participant Sb as Supabase Auth + platform.tenants
+  participant Rs as Resend
+  participant Por as Portal
+
+  Adm->>Api: POST /api/invitations Bearer admin
+  Api->>Sb: invite + metadata
+  Api->>Rs: email enlace
+  Por->>Sb: activate / login
+  Por->>Api: GET /api/portal/me Bearer JWT
+  Api->>Sb: tenant por slug + owner_email
+  Api-->>Por: servicios n8n / uptime / modo
+  Por->>Api: POST /api/portal/mode
+```
+
+### CI/CD y automatización operativa
+
+```mermaid
+flowchart LR
+  subgraph git[Repositorio]
+    PUSH[push main]
+    HOOK[post-commit sync]
+  end
+
+  subgraph gha[GitHub Actions]
+    CI[ci.yml lint/typecheck/test]
+    DEP[deploy.yml build GHCR]
+  end
+
+  subgraph vps[VPS]
+    COM[compose pull + up]
+    MON[cursor-prompt-monitor]
+    ACT[ACTIVE-PROMPT.md]
+  end
+
+  PUSH --> CI
+  PUSH --> DEP
+  DEP --> GHCR[(GHCR imágenes)]
+  GHCR --> COM
+  HOOK --> DC[Discord opcional]
+  HOOK --> DRV[Drive sync opcional]
+  MON --> ACT
+```
+
+### OpenClaw: MCP → API; orquestador → cola
+
+```mermaid
+flowchart TB
+  subgraph cap1[Capa 1 MCP apps/mcp]
+    TOOLS[Tools: tenants health metrics onboard invite suspend execute_prompt]
+  end
+
+  subgraph opsly[Opsly existente]
+    API2[apps/api HTTPS]
+    GH[GitHub API ACTIVE-PROMPT]
+  end
+
+  subgraph cap2[Capa 2 Orchestrator apps/orchestrator]
+    ENG[processIntent]
+    Q[BullMQ openclaw]
+  end
+
+  subgraph cap3[Capa 3 ML apps/ml]
+    RAG[RAG / classifier]
+    EMB[embeddings + pgvector]
+  end
+
+  TOOLS --> API2
+  TOOLS --> GH
+  ENG --> Q
+  Q --> CUR[Job Cursor]
+  Q --> N8[Job n8n webhook]
+  Q --> DIS[Job Discord]
+  Q --> DRV2[Job Drive]
+  RAG --> API2
+  EMB --> API2
+```
 
 ---
 
@@ -557,7 +690,10 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 │   ├── api/                 # Next.js API (control plane)
 │   ├── admin/               # Next.js dashboard admin
 │   ├── portal/              # Next.js portal cliente (login, invitación, modos)
-│   └── web/                 # App web (workspace)
+│   ├── web/                 # App web (workspace)
+│   ├── mcp/                 # OpenClaw MCP server (tools → API / GitHub)
+│   ├── orchestrator/        # OpenClaw BullMQ + processIntent
+│   └── ml/                  # OpenClaw ML (RAG, clasificación, embeddings)
 ├── config/
 │   └── opsly.config.json    # Infra/dominios/planes (sin secretos)
 ├── agents/prompts/          # Plantillas Claude / Cursor
