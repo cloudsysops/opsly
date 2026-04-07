@@ -48,7 +48,10 @@ export async function POST(
     if (message === "Tenant not found") {
       return Response.json({ error: "Tenant not found" }, { status: 404 });
     }
-    logger.error("suspend", err instanceof Error ? err : { error: String(err) });
+    logger.error(
+      "suspend",
+      err instanceof Error ? err : { error: String(err) },
+    );
     return Response.json({ error: "Internal server error" }, { status: 500 });
   }
 

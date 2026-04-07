@@ -179,13 +179,19 @@ async function handleInvoicePaymentFailed(
   try {
     await suspendTenant(row.id, "stripe-webhook");
   } catch (e) {
-    logger.error("invoice.payment_failed suspend", e instanceof Error ? e : { error: String(e) });
+    logger.error(
+      "invoice.payment_failed suspend",
+      e instanceof Error ? e : { error: String(e) },
+    );
   }
 
   try {
     await notifyInvoicePaymentFailed(row.slug, invoice.id);
   } catch (e) {
-    logger.error("invoice.payment_failed discord", e instanceof Error ? e : { error: String(e) });
+    logger.error(
+      "invoice.payment_failed discord",
+      e instanceof Error ? e : { error: String(e) },
+    );
   }
 }
 
@@ -215,7 +221,10 @@ export async function POST(request: Request): Promise<Response> {
   try {
     rawBody = await request.text();
   } catch (e) {
-    logger.error("stripe webhook failed to read body", e instanceof Error ? e : { error: String(e) });
+    logger.error(
+      "stripe webhook failed to read body",
+      e instanceof Error ? e : { error: String(e) },
+    );
     return Response.json({ received: true }, { status: 200 });
   }
 
@@ -235,7 +244,10 @@ export async function POST(request: Request): Promise<Response> {
   try {
     await dispatchStripeEvent(event);
   } catch (e) {
-    logger.error("stripe webhook dispatch error", e instanceof Error ? e : { error: String(e) });
+    logger.error(
+      "stripe webhook dispatch error",
+      e instanceof Error ? e : { error: String(e) },
+    );
   }
 
   return Response.json({ received: true }, { status: 200 });
