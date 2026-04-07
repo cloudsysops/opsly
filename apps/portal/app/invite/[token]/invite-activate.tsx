@@ -1,11 +1,14 @@
 "use client";
 
-import type { FormEvent } from "react";
-import { useMemo, useState } from "react";
-import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { createClient } from "@/lib/supabase";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { useMemo, useState } from "react";
+
+type FormSubmitEvent = Parameters<
+  NonNullable<React.ComponentProps<"form">["onSubmit"]>
+>[0];
 
 export function InviteActivate() {
   const params = useParams();
@@ -23,7 +26,7 @@ export function InviteActivate() {
 
   const displayName = email.includes("@") ? email.split("@")[0] : "equipo";
 
-  async function onSubmit(e: FormEvent) {
+  async function onSubmit(e: FormSubmitEvent) {
     e.preventDefault();
     setErr(null);
     if (password !== confirm) {
@@ -72,6 +75,8 @@ export function InviteActivate() {
       }
       router.push("/dashboard");
       router.refresh();
+    } catch (error) {
+      setErr(error instanceof Error ? error.message : "No se pudo activar la cuenta");
     } finally {
       setLoading(false);
     }
@@ -129,7 +134,7 @@ export function InviteActivate() {
             className="w-full"
             disabled={loading}
           >
-            Activar mi cuenta
+            {loading ? "Activando..." : "Activar mi cuenta"}
           </Button>
         </form>
       </div>

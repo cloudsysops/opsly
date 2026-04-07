@@ -1,19 +1,23 @@
 "use client";
 
-import { useEffect, useMemo, useState, type ReactElement } from "react";
-import { useTenants } from "@/hooks/useTenants";
-import { sendInvitation } from "@/lib/api-client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useTenants } from "@/hooks/useTenants";
+import { sendInvitation } from "@/lib/api-client";
+import { useEffect, useMemo, useState, type ReactElement } from "react";
+
+type FormSubmitEvent = Parameters<
+  NonNullable<React.ComponentProps<"form">["onSubmit"]>
+>[0];
 
 export default function InvitationsPage(): ReactElement {
   const { data, error, isLoading } = useTenants({ page: 1, limit: 100 });
@@ -34,7 +38,7 @@ export default function InvitationsPage(): ReactElement {
     setTenantRef(tenantOptions[0]?.slug ?? "");
   }, [tenantOptions, tenantRef]);
 
-  const onSubmit = async (e: React.FormEvent): Promise<void> => {
+  const onSubmit = async (e: FormSubmitEvent): Promise<void> => {
     e.preventDefault();
     setFormError(null);
     setSuccessLink(null);
@@ -62,7 +66,11 @@ export default function InvitationsPage(): ReactElement {
     if (!successLink) {
       return;
     }
-    await navigator.clipboard.writeText(successLink);
+    try {
+      await navigator.clipboard.writeText(successLink);
+    } catch {
+      setFormError("No se pudo copiar automáticamente. Copia el enlace manualmente.");
+    }
   };
 
   return (
@@ -71,11 +79,9 @@ export default function InvitationsPage(): ReactElement {
       <p className="font-sans text-sm text-ops-gray">
         El email debe coincidir con{" "}
         <code className="text-ops-green">owner_email</code> del tenant en
-        Supabase. En producción hace falta token admin (
-        <code className="text-neutral-400">
-          NEXT_PUBLIC_PLATFORM_ADMIN_TOKEN
-        </code>
-        ) salvo modo demo con mutaciones bloqueadas.
+        Supabase. En producción hace falta token admin{" "}
+        <code className="text-neutral-400">NEXT_PUBLIC_PLATFORM_ADMIN_TOKEN</code>{" "}
+        salvo modo demo con mutaciones bloqueadas.
       </p>
 
       {error ? (

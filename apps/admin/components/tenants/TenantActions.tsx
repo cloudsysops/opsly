@@ -1,18 +1,18 @@
 "use client";
 
-import { useState } from "react";
-import { deleteTenant, resumeTenant, suspendTenant } from "@/lib/api-client";
-import type { TenantStatus } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { deleteTenant, resumeTenant, suspendTenant } from "@/lib/api-client";
+import type { TenantStatus } from "@/lib/types";
+import { useState } from "react";
 
 export function TenantActions({
   tenantId,
@@ -20,13 +20,13 @@ export function TenantActions({
   status,
   onMutate,
   onDeleted,
-}: {
+}: Readonly<{
   tenantId: string;
   slug: string;
   status: TenantStatus;
   onMutate: () => void;
   onDeleted?: () => void;
-}) {
+}>) {
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const [delOpen, setDelOpen] = useState(false);
@@ -134,7 +134,11 @@ export function TenantActions({
             className="font-mono"
           />
           <DialogFooter className="gap-2 sm:gap-0">
-            <Button variant="ghost" onClick={() => setDelOpen(false)}>
+            <Button
+              variant="ghost"
+              disabled={busy}
+              onClick={() => setDelOpen(false)}
+            >
               Cancelar
             </Button>
             <Button
@@ -142,7 +146,7 @@ export function TenantActions({
               disabled={busy || confirmSlug !== slug}
               onClick={() => void handleDelete()}
             >
-              Eliminar
+              {busy ? "Eliminando..." : "Eliminar"}
             </Button>
           </DialogFooter>
         </DialogContent>

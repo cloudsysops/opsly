@@ -1,18 +1,18 @@
 "use client";
 
-import { useState } from "react";
-import { PLAN_MRR_USD, PLAN_PORT_BASE } from "@/lib/plans";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
 } from "@/components/ui/table";
+import { PLAN_MRR_USD, PLAN_PORT_BASE } from "@/lib/plans";
+import { useState } from "react";
 
 function maskUrl(url: string | undefined): string {
   if (!url) {
@@ -22,6 +22,17 @@ function maskUrl(url: string | undefined): string {
     return "••••••••";
   }
   return `${url.slice(0, 12)}…${url.slice(-6)}`;
+}
+
+function parseJsonSafe(text: string): { error?: string } {
+  if (!text) {
+    return {};
+  }
+  try {
+    return JSON.parse(text) as { error?: string };
+  } catch {
+    return {};
+  }
 }
 
 export default function SettingsPage() {
@@ -40,7 +51,7 @@ export default function SettingsPage() {
     try {
       const res = await fetch("/api/backup", { method: "POST" });
       const text = await res.text();
-      const body = text ? (JSON.parse(text) as { error?: string }) : {};
+      const body = parseJsonSafe(text);
       if (!res.ok) {
         setBackupErr(body.error ?? `HTTP ${res.status}`);
         return;
