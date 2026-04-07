@@ -12,12 +12,38 @@ interface RegisteredTool {
   handler: (input: unknown) => Promise<unknown>;
 }
 
+type ParseResult =
+  | { success: true; data: unknown }
+  | { success: false; error: { message: string } };
+
+type SchemaWithSafeParse = {
+  safeParse: (input: unknown) => ParseResult;
+};
+
+function isSchemaWithSafeParse(value: unknown): value is SchemaWithSafeParse {
+  return (
+    value !== null &&
+    typeof value === "object" &&
+    "safeParse" in value &&
+    typeof (value as { safeParse?: unknown }).safeParse === "function"
+  );
+}
+
 function adaptTool<TInput, TOutput>(
   tool: ToolDefinition<TInput, TOutput>,
 ): RegisteredTool {
   return {
     name: tool.name,
-    handler: async (input: unknown) => tool.handler(input as TInput),
+    handler: async (input: unknown) => {
+      if (isSchemaWithSafeParse(tool.inputSchema)) {
+        const parsed = tool.inputSchema.safeParse(input);
+        if (!parsed.success) {
+          throw new Error(`Invalid input for ${tool.name}: ${parsed.error.message}`);
+        }
+        return tool.handler(parsed.data as TInput);
+      }
+      return tool.handler(input as TInput);
+    },
   };
 }
 

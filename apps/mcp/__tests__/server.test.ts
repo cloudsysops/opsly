@@ -16,4 +16,18 @@ describe("createServer", () => {
     expect(tools).toContain("resume_tenant");
     expect(tools).toContain("execute_prompt");
   });
+
+  it("lanza error si la tool no existe", async () => {
+    const server = createServer();
+    await expect(server.callTool("unknown_tool", {})).rejects.toThrow(
+      "Tool not found: unknown_tool",
+    );
+  });
+
+  it("valida inputSchema y rechaza payload invalido", async () => {
+    const server = createServer();
+    await expect(server.callTool("get_tenant", {})).rejects.toThrow(
+      "Invalid input for get_tenant",
+    );
+  });
 });

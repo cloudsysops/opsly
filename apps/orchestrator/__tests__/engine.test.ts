@@ -41,4 +41,24 @@ describe("processIntent", () => {
     expect(result.jobs_enqueued).toBe(1);
     expect(result.job_ids).toEqual(["n8n-1"]);
   });
+
+  it("encola notify", async () => {
+    const result = await processIntent({
+      intent: "notify",
+      context: { message: "hola" },
+      initiated_by: "system",
+    });
+    expect(result.jobs_enqueued).toBe(1);
+    expect(result.job_ids).toEqual(["notify-1"]);
+  });
+
+  it("encola sync_drive", async () => {
+    const result = await processIntent({
+      intent: "sync_drive",
+      context: {},
+      initiated_by: "cron",
+    });
+    expect(result.jobs_enqueued).toBe(1);
+    expect(result.job_ids).toEqual(["drive-1"]);
+  });
 });
