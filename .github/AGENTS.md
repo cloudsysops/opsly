@@ -387,6 +387,8 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 - Rotación de tokens de servicio Doppler / PAT si hubo exposición en historial.
 - `DOPPLER_TOKEN` en `/etc/doppler.env` — opcional si se usa solo `doppler configure set token --scope` (como en esta sesión).
 - `NEXTAUTH_*`: no usado en el código actual; ver `doppler-missing.txt`
+- Variables Stripe de precios para build/runtime web (`STRIPE_PRICE_ID_STARTUP` y equivalentes por plan) en Doppler/GitHub Secrets.
+- Comandos manuales listos para secretos críticos en `docs/REFACTOR-CHECKLIST.md` (sección **Variables manuales (owner)**).
 
 ---
 
@@ -429,6 +431,7 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 - [ ] **`RESEND_API_KEY` real en Doppler** — no basta con el prefijo `re_`; hace falta la clave completa (~36+ chars). Hasta entonces `POST /api/invitations` → 500 *API key is invalid*.
 - [ ] **`GOOGLE_DRIVE_TOKEN` en Doppler `prd`** — requerido para sync real a Drive (actualmente solo dry-run).
 - [ ] **`GITHUB_TOKEN_N8N` en Doppler `prd`** — requerido para workflow n8n Discord→GitHub.
+- [ ] **`STRIPE_PRICE_ID_STARTUP` (y price IDs relacionados) en entorno de build** — `npm run build` falla en `apps/web` con *Missing required environment variable: STRIPE_PRICE_ID_STARTUP*.
 
 ---
 

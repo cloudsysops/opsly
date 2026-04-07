@@ -388,6 +388,7 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 - `DOPPLER_TOKEN` en `/etc/doppler.env` — opcional si se usa solo `doppler configure set token --scope` (como en esta sesión).
 - `NEXTAUTH_*`: no usado en el código actual; ver `doppler-missing.txt`
 - Variables Stripe de precios para build/runtime web (`STRIPE_PRICE_ID_STARTUP` y equivalentes por plan) en Doppler/GitHub Secrets.
+- Comandos manuales listos para secretos críticos en `docs/REFACTOR-CHECKLIST.md` (sección **Variables manuales (owner)**).
 
 ---
 
