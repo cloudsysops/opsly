@@ -1,0 +1,107 @@
+{
+  "name": "Opsly Discord to GitHub ACTIVE-PROMPT",
+  "meta": {
+    "description": "Workflow template: Discord webhook -> validation -> GitHub update docs/ACTIVE-PROMPT.md -> Discord confirmation",
+    "version": "1.0.0",
+    "owner": "opsly"
+  },
+  "nodes": [
+    {
+      "name": "Discord Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "opsly-discord-task",
+        "responseMode": "responseNode"
+      }
+    },
+    {
+      "name": "Validate Message",
+      "type": "n8n-nodes-base.if",
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json.body.content || ''}}",
+              "operation": "notEmpty"
+            }
+          ],
+          "number": [
+            {
+              "value1": "={{($json.body.content || '').length}}",
+              "operation": "larger",
+              "value2": 10
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Prepare ACTIVE-PROMPT",
+      "type": "n8n-nodes-base.code",
+      "parameters": {
+        "language": "javascript",
+        "jsCode": "const body = $json.body || {};\nconst content = body.content || '';\nconst author = body.author?.username || 'Cristian';\nconst formatted = `# Tarea recibida desde Discord\\n# Fecha: ${new Date().toISOString()}\\n# Autor: ${author}\\n\\n${content}\\n`;\nreturn [{ json: { ...body, formatted_content: formatted } }];"
+      }
+    },
+    {
+      "name": "Get ACTIVE-PROMPT SHA",
+      "type": "n8n-nodes-base.httpRequest",
+      "parameters": {
+        "method": "GET",
+        "url": "https://api.github.com/repos/cloudsysops/opsly/contents/docs/ACTIVE-PROMPT.md",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{$env.GITHUB_TOKEN_N8N}}"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Update ACTIVE-PROMPT",
+      "type": "n8n-nodes-base.httpRequest",
+      "parameters": {
+        "method": "PUT",
+        "url": "https://api.github.com/repos/cloudsysops/opsly/contents/docs/ACTIVE-PROMPT.md",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{$env.GITHUB_TOKEN_N8N}}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Notify Discord Confirm",
+      "type": "n8n-nodes-base.httpRequest",
+      "parameters": {
+        "method": "POST",
+        "url": "={{$env.DISCORD_WEBHOOK_URL}}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\"content\":\"📝 Tarea enviada a Cursor — ejecutara en ~30s\"}"
+      }
+    }
+  ],
+  "connections": {}
+}

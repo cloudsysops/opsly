@@ -72,7 +72,7 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 
 <!-- Actualizar al final de cada sesión -->
 
-**Fecha última actualización:** 2026-04-06 — **Sesión Cursor (documentación + E2E):** lectura operativa desde URL raw `AGENTS.md` (`https://raw.githubusercontent.com/cloudsysops/opsly/main/AGENTS.md`); `./scripts/validate-config.sh` puede dar **LISTO PARA DEPLOY** + Invitaciones OK o **REVISAR** si SSH al VPS no está disponible sin interacción (clave/agent/`known_hosts`); **`scripts/test-e2e-invite-flow.sh`:** `--dry-run` solo health **sin** `ADMIN_TOKEN`; GET `/api/health` con código HTTP y timeouts `curl`; variable **`TENANT_SLUG`** con default **`smiletripcare`**; respuesta del POST con `token` truncado y sin volcar `link` completo. Flujo Claude documentado: `docs/ACTIVE-PROMPT.md`, `scripts/cursor-prompt-monitor.sh`, `infra/systemd/cursor-prompt-monitor.service`, logs en `logs/`. Fase 4 (plan multi-agente): `docs/OPENCLAW-ARCHITECTURE.md`, `docs/CLAUDE-WORKFLOW-OPTIMIZATION.md`, `docs/AUTO-PUSH-WATCHER.md`, `scripts/auto-push-watcher.sh`, `infra/systemd/opsly-watcher.service`. **2026-04-07 —** **Fase 2 invite/onboard:** `./scripts/validate-config.sh` → **LISTO PARA DEPLOY**. **Portal staging:** `https://portal.ops.smiletripcare.com/login` → **200** (tras recuperar contenedores `app`/`admin`/`portal` que habían quedado en `Created` y **404** en Traefik; ver `docs/TROUBLESHOOTING.md` y `deploy.yml` con `--force-recreate`). **`curl api`/health** → `status ok`. **Contenedores Opsly:** `traefik`, `infra-redis-1`, `infra-app-*`, `opsly_admin`, `opsly_portal`. **Tenants:** `smiletripcare`, `peskids` (stacks n8n/uptime Up). **Resend (2026-04-07):** `RESEND_FROM_EMAIL` en `prd` + VPS actualizado. **Causa de `API key is invalid`:** en Doppler `prd`, **`RESEND_API_KEY` sigue siendo placeholder corto** hasta que se pegue la clave **completa** desde [resend.com/api-keys](https://resend.com/api-keys). **`./scripts/validate-config.sh`** avisa (longitud **&lt; 20**). Tras corregir Doppler: **`./scripts/vps-refresh-api-env.sh`** (bootstrap + recreate `app`; `--dry-run` / `--skip-resend-check` en script) → **`./scripts/test-e2e-invite-flow.sh`**. **Admin:** `/invitations` en repo.
+**Fecha última actualización:** 2026-04-07 — **Sesión Cursor (automation pipeline v1):** Fase 0 audit completada y versionada en `docs/reports/audit-2026-04-07.md` (VPS `cursor-prompt-monitor`/`opsly-watcher` activos; Doppler OK para `DISCORD_WEBHOOK_URL`, `RESEND_API_KEY`, `PLATFORM_ADMIN_TOKEN`; faltan `GOOGLE_DRIVE_TOKEN` y `GITHUB_TOKEN_N8N`). Fase 1 plan versionado en `docs/AUTOMATION-PLAN.md`. Fase 2 TDD: nuevos tests `scripts/test-{notify-discord,drive-sync,n8n-webhook}.sh` creados y ejecutados. Fase 3 implementación: `scripts/notify-discord.sh`, `scripts/drive-sync.sh`, mejoras en `.githooks/post-commit` (notificación + drive sync condicional) y `scripts/cursor-prompt-monitor.sh` (before/after/error a Discord). Fase 4 documentación n8n: `docs/n8n-workflows/discord-to-github.json` + `docs/N8N-SETUP.md`. Fase 5 validación: tests unitarios en verde, `drive-sync --dry-run` OK, type-check verde, commit vacío de verificación de hook (`test(automation): verify post-commit hooks`). Quedan pendientes solo secretos de automatización (`GOOGLE_DRIVE_TOKEN`, `GITHUB_TOKEN_N8N`) para activar flujo end-to-end sin intervención. Flujo Claude documentado: `docs/ACTIVE-PROMPT.md`, `scripts/cursor-prompt-monitor.sh`, `infra/systemd/cursor-prompt-monitor.service`, logs en `logs/`. Fase 4 (plan multi-agente): `docs/OPENCLAW-ARCHITECTURE.md`, `docs/CLAUDE-WORKFLOW-OPTIMIZATION.md`, `docs/AUTO-PUSH-WATCHER.md`, `scripts/auto-push-watcher.sh`, `infra/systemd/opsly-watcher.service`. **2026-04-07 —** **Fase 2 invite/onboard:** `./scripts/validate-config.sh` → **LISTO PARA DEPLOY**. **Portal staging:** `https://portal.ops.smiletripcare.com/login` → **200** (tras recuperar contenedores `app`/`admin`/`portal` que habían quedado en `Created` y **404** en Traefik; ver `docs/TROUBLESHOOTING.md` y `deploy.yml` con `--force-recreate`). **`curl api`/health** → `status ok`. **Contenedores Opsly:** `traefik`, `infra-redis-1`, `infra-app-*`, `opsly_admin`, `opsly_portal`. **Tenants:** `smiletripcare`, `peskids` (stacks n8n/uptime Up). **Resend (2026-04-07):** `RESEND_FROM_EMAIL` en `prd` + VPS actualizado. **Causa de `API key is invalid`:** en Doppler `prd`, **`RESEND_API_KEY` sigue siendo placeholder corto** hasta que se pegue la clave **completa** desde [resend.com/api-keys](https://resend.com/api-keys). **`./scripts/validate-config.sh`** avisa (longitud **&lt; 20**). Tras corregir Doppler: **`./scripts/vps-refresh-api-env.sh`** (bootstrap + recreate `app`; `--dry-run` / `--skip-resend-check` en script) → **`./scripts/test-e2e-invite-flow.sh`**. **Admin:** `/invitations` en repo.
 
 **Completado ✅**
 
@@ -83,6 +83,7 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 *Sesión Cursor — qué se hizo (orden aproximado):*
 * **2026-04-07 tarde:** Runbook invitaciones (`docs/INVITATIONS_RUNBOOK.md`); plan UI admin; plantilla n8n; auditoría Doppler (nombres solo); Vitest + 6 tests `invitation-admin-flow`; `/api/health` con metadata; scripts `test-e2e-invite-flow.sh`, `generate-tenant-config.sh`; `onboard-tenant.sh` `--help` y dry-run sin env; tipos portal `@/types`; logs invitaciones redactados.
 * **2026-04-07 (pasos 1–5 sin markdown externo):** Validación local + snapshot VPS + health público; commit **`96e9a38`** en remoto y disco VPS; archivo tarea Claude **no** presente en workspace.
+* **2026-04-07 — Cursor (automation protocol v1):** `docs/reports/audit-2026-04-07.md` + `docs/AUTOMATION-PLAN.md`; TDD de `notify-discord`, `drive-sync`, `n8n-webhook`; implementación de `scripts/notify-discord.sh` y `scripts/drive-sync.sh`; integración en `.githooks/post-commit` y `scripts/cursor-prompt-monitor.sh`; documentación `docs/N8N-SETUP.md` + `docs/n8n-workflows/discord-to-github.json`; validación local y commit de test hook.
 * **2026-04-06 — Cursor (handoff AGENTS + endurecimiento E2E):** Varias iteraciones de «lee AGENTS raw + próximo paso» para arranque multi-agente; **`docs: update AGENTS.md`** al cierre de sesión con URL raw para la siguiente; cambios en **`scripts/test-e2e-invite-flow.sh`** (dry-run sin admin token, slug por defecto alineado a staging, redacción de salida, timeouts).
 0. **GHCR deploy 2026-04-06 (tarde)** — Auditoría: paquetes `intcloudsysops-{api,admin,portal}` existen y son privados; 403 no era “solo portal” sino PAT sin acceso efectivo a manifiestos. **`deploy.yml`**: login en VPS con token del workflow; pulls alineados al compose.
 1. **Scaffold portal** — `apps/portal` (Next 15, Tailwind, login, `/invite/[token]`, dashboards developer/managed, `middleware`, libs Supabase, `output: standalone`, sin `any`).
@@ -393,26 +394,20 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 <!-- Una sola tarea concreta. Actualizar al final de cada sesión -->
 
 ```bash
-# Nuevo flujo multi-agente (Claude): URL raw AGENTS.md + opcional ACTIVE-PROMPT en VPS (ver sección «Flujo con Claude» arriba).
-# Referencia: README «Scripts Reference» / «Troubleshooting»; config/doppler-missing.txt (RESEND_*).
-# 0. ./scripts/validate-config.sh  →  línea final «Invitaciones (Resend): OK | BLOQUEADO»; ⚠️ RESEND = placeholder si aún no importaste la clave completa.
-# 1. Resend: clave completa desde dashboard → Doppler prd. Recomendado (stdin, sin historial):
-#         pbpaste | ./scripts/doppler-import-resend-api-key.sh
-#    (o: doppler secrets set RESEND_API_KEY --project ops-intcloudsysops --config prd — pega en modo interactivo)
-# 2–3 (un solo comando tras paso 1): export ADMIN_TOKEN=… OWNER_EMAIL=smiletripcare@gmail.com
-#         ./scripts/sync-and-test-invite-flow.sh
-#    Equivale a: ./scripts/vps-refresh-api-env.sh && ./scripts/test-e2e-invite-flow.sh
-#    --dry-run: encadena dry-run de VPS + E2E (health); --skip-vps: solo E2E.
-# 2 (solo VPS): ./scripts/vps-refresh-api-env.sh  (falla si RESEND_API_KEY corta; --skip-resend-check si solo otros secretos)
-# 3 (solo E2E): ./scripts/test-e2e-invite-flow.sh
-#    Smoke sin secretos (solo health): ./scripts/test-e2e-invite-flow.sh --dry-run
-# 4. Humano: link del 200 → portal /invite/...?email=... → password → /dashboard.
-# 5. Admin: https://admin.ops.smiletripcare.com/invitations (tras deploy admin con último main).
-
-# Secrets build (si falla job build-and-push; uno por comando):
-# gh secret set NEXT_PUBLIC_SUPABASE_URL --repo cloudsysops/opsly
-# gh secret set NEXT_PUBLIC_SUPABASE_ANON_KEY --repo cloudsysops/opsly
-# gh secret set PLATFORM_DOMAIN --repo cloudsysops/opsly
+# Fase 4 automation pipeline (pendiente de secretos)
+# 0. Completar secretos faltantes en Doppler prd:
+#    doppler secrets set GOOGLE_DRIVE_TOKEN --project ops-intcloudsysops --config prd
+#    doppler secrets set GITHUB_TOKEN_N8N --project ops-intcloudsysops --config prd
+# 1. Re-ejecutar auditoria:
+#    ./scripts/notify-discord.sh "Audit" "post-token check" "info" --dry-run
+#    ./scripts/drive-sync.sh --dry-run
+# 2. Importar workflow en n8n:
+#    docs/n8n-workflows/discord-to-github.json
+# 3. Verificar flujo end-to-end:
+#    Discord #opsly-tareas -> GitHub ACTIVE-PROMPT -> cursor-prompt-monitor -> Discord confirm
+# 4. Mantener flujo invite/onboard:
+#    export ADMIN_TOKEN=... OWNER_EMAIL=smiletripcare@gmail.com
+#    ./scripts/sync-and-test-invite-flow.sh
 ```
 
 ---
@@ -432,7 +427,11 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 - [x] **Migraciones SQL en Supabase opsly-prod** — `db push` vía CLI enlazada; tablas `platform.tenants` / `platform.subscriptions` verificadas en Postgres (2026-04-07)
 - [x] **PostgREST / API sobre schema `platform`** — `GRANT` USAGE (y permisos necesarios) + schema expuesto en API; onboarding y API contra `platform.tenants` operativos (2026-04-06)
 - [x] **Resend remitente en Doppler/VPS** — `RESEND_FROM_EMAIL` en `prd` + bootstrap + `app` recreado (2026-04-07).
+- [x] **Automation scripts base** — `scripts/notify-discord.sh`, `scripts/drive-sync.sh`, tests TDD y hooks en repo (2026-04-07).
+- [x] **Plan + auditoria automation** — `docs/AUTOMATION-PLAN.md`, `docs/reports/audit-2026-04-07.md`, `docs/N8N-SETUP.md`, `docs/n8n-workflows/discord-to-github.json` (2026-04-07).
 - [ ] **`RESEND_API_KEY` real en Doppler** — no basta con el prefijo `re_`; hace falta la clave completa (~36+ chars). Hasta entonces `POST /api/invitations` → 500 *API key is invalid*.
+- [ ] **`GOOGLE_DRIVE_TOKEN` en Doppler `prd`** — requerido para sync real a Drive (actualmente solo dry-run).
+- [ ] **`GITHUB_TOKEN_N8N` en Doppler `prd`** — requerido para workflow n8n Discord→GitHub.
 
 ---
 
@@ -486,6 +485,9 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 | 2026-04-07 | `scripts/sync-and-test-invite-flow.sh` = vps-refresh + test-e2e-invite-flow | Un solo comando tras `RESEND_API_KEY` completa; `--dry-run` usa `--skip-resend-check` en vps-refresh para poder ensayar sin clave |
 | 2026-04-07 | `doppler-import-resend-api-key.sh` lee API key por stdin → Doppler prd | Evita `KEY=value` en argv/historial; alinea con `doppler secrets set` vía stdin |
 | 2026-04-07 | `validate-config.sh` línea «Invitaciones (Resend): OK \| BLOQUEADO» | No altera LISTO PARA DEPLOY; resume el paso 1 del AGENTS (clave larga + remitente en Doppler) |
+| 2026-04-07 | `notify-discord.sh` y `drive-sync.sh` devuelven `exit 0` cuando falta secreto | No rompe hooks ni despliegues; deja warning explícito y permite adopción progresiva |
+| 2026-04-07 | `.githooks/post-commit` dispara notificación Discord y `drive-sync` condicional para cambios en docs/AGENTS | Mantiene contexto sincronizado y visibilidad de commits sin depender de pasos manuales |
+| 2026-04-07 | `cursor-prompt-monitor.sh` notifica Discord antes/después/error de ejecución | Cierra loop operativo entre Discord -> GitHub -> Cursor con trazabilidad temporal |
 | 2026-04-06 | `test-e2e-invite-flow.sh --dry-run` no exige `ADMIN_TOKEN` | Smoke de `GET /api/health` sin Doppler; POST sigue requiriendo token + `OWNER_EMAIL` |
 | 2026-04 | validate-config usa `dig +short` para DNS | Comprobar que la IP del VPS aparece en la resolución |
 | 2026-04 | sync-config redirige stdout de `doppler secrets set` a /dev/null | No volcar tablas con valores en logs compartidos |

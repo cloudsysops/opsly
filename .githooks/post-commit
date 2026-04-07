@@ -21,3 +21,19 @@ if [ -f "$ROOT/context/system_state.json" ]; then
 fi
 
 echo "✅ Contexto sincronizado"
+
+# ─── Notificacion Discord ────────────────────────────────
+COMMIT_MSG=$(git log -1 --pretty="%s" 2>/dev/null || echo "commit")
+BRANCH=$(git branch --show-current 2>/dev/null || echo "unknown")
+AUTHOR=$(git log -1 --pretty="%an" 2>/dev/null || echo "unknown")
+
+./scripts/notify-discord.sh \
+  "Commit en $BRANCH" \
+  "**$COMMIT_MSG**\nAutor: $AUTHOR" \
+  "success" 2>/dev/null || true
+
+# ─── Drive sync si toco docs/ o AGENTS.md ────────────────
+CHANGED_AFTER=$(git diff --name-only HEAD~1 HEAD 2>/dev/null || echo "")
+if echo "$CHANGED_AFTER" | rg -q "(AGENTS\\.md|VISION\\.md|docs/)"; then
+  ./scripts/drive-sync.sh 2>/dev/null || true
+fi

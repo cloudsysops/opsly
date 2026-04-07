@@ -12,10 +12,10 @@ assert() {
   local expected="$3"
   if [[ "$result" == "$expected" ]]; then
     echo "  PASS $desc"
-    ((PASS++))
+    PASS=$((PASS + 1))
   else
     echo "  FAIL $desc (got: $result, expected: $expected)"
-    ((FAIL++))
+    FAIL=$((FAIL + 1))
   fi
 }
 
@@ -36,7 +36,12 @@ done
 # T3: sin token -> exit 0 con warning
 result=$(GOOGLE_DRIVE_TOKEN="" "$SCRIPT" 2>&1; echo "EXIT:$?")
 assert "exit 0 sin token" "$(echo "$result" | rg -c "EXIT:0")" "1"
-assert "warning en output" "$(echo "$result" | rg -ci "skip|warn|token")" "1"
+warn_count="$(echo "$result" | rg -ci "skip|warn|token" || true)"
+warn_ok="0"
+if [[ "$warn_count" -ge 1 ]]; then
+  warn_ok="1"
+fi
+assert "warning en output" "$warn_ok" "1"
 
 # T4: archivos objetivo existen en repo
 for f in AGENTS.md VISION.md docs/FAQ.md docs/TROUBLESHOOTING.md; do

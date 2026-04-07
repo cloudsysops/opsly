@@ -3,9 +3,10 @@
 # Uso:
 #   export ADMIN_TOKEN="..."   # PLATFORM_ADMIN_TOKEN (nunca pegar en issues públicos)
 #   export OWNER_EMAIL="owner@dominio-real-del-tenant"   # Debe coincidir con owner_email en Supabase
+#   export TENANT_SLUG="smiletripcare"  # slug del tenant a probar (default smiletripcare)
 #   bash scripts/test-e2e-invite-flow.sh [--api-url URL] [--dry-run]
 #
-# --dry-run: solo health check (no POST /api/invitations).
+# --dry-run: solo health check (no POST /api/invitations); no requiere ADMIN_TOKEN.
 
 set -euo pipefail
 
@@ -27,7 +28,7 @@ while [[ $# -gt 0 ]]; do
       shift
       ;;
     -h | --help)
-      grep '^#' "$0" | head -20
+      grep '^#' "$0" | head -25
       exit 0
       ;;
     *)
@@ -40,7 +41,7 @@ if [[ "${API_URL}" == "" ]]; then
   die "--api-url no puede estar vacío" 1
 fi
 
-if [[ -z "${ADMIN_TOKEN:-}" ]]; then
+if [[ "${DRY_RUN}" != "true" && -z "${ADMIN_TOKEN:-}" ]]; then
   die "ADMIN_TOKEN vacío. Exporta PLATFORM_ADMIN_TOKEN desde Doppler (no lo pegues en chat)." 1
 fi
 
@@ -49,7 +50,16 @@ echo "  API: ${API_URL}"
 echo "  Dry-run: ${DRY_RUN}"
 
 echo "✓ Test 1: Health"
-curl -sfk "${API_URL}/api/health" | jq . >/dev/null
+TMP_HEALTH="$(mktemp)"
+trap 'rm -f "${TMP_HEALTH}"' EXIT
+HTTP_HEALTH="$(
+  curl -sk -o "${TMP_HEALTH}" -w "%{http_code}" --connect-timeout 20 --max-time 45 "${API_URL}/api/health"
+)"
+echo "  HTTP Test 1 (GET /api/health): ${HTTP_HEALTH}"
+[[ "${HTTP_HEALTH}" == "200" ]] || die "Health check HTTP ${HTTP_HEALTH}" 1
+jq . >/dev/null < "${TMP_HEALTH}"
+rm -f "${TMP_HEALTH}"
+trap - EXIT
 
 if [[ "${DRY_RUN}" == "true" ]]; then
   echo "✓ Dry-run: omitiendo POST /api/invitations"
@@ -58,10 +68,12 @@ if [[ "${DRY_RUN}" == "true" ]]; then
 fi
 
 if [[ -z "${OWNER_EMAIL:-}" ]]; then
-  die "Para POST real define OWNER_EMAIL con el owner_email del tenant (ej. smiletripcare)." 1
+  die "Para POST real define OWNER_EMAIL con el owner_email del tenant (debe coincidir con platform.tenants para TENANT_SLUG)." 1
 fi
 
-echo "✓ Test 2: POST /api/invitations"
+TENANT_SLUG="${TENANT_SLUG:-smiletripcare}"
+
+echo "✓ Test 2: POST /api/invitations (tenant slug: ${TENANT_SLUG})"
 # Authorization Bearer + x-admin-token (API acepta cualquiera; Bearer es el que suele usar el admin app).
 TMP_BODY="$(mktemp)"
 TMP_RES="$(mktemp)"
@@ -69,16 +81,27 @@ trap 'rm -f "${TMP_BODY}" "${TMP_RES}"' EXIT
 jq -n \
   --arg email "${OWNER_EMAIL}" \
   --arg ts "$(date +%s)" \
-  '{ email: $email, tenantRef: "smiletripcare", mode: "developer", name: ("e2e-" + $ts) }' >"${TMP_BODY}"
+  --arg tenant_slug "${TENANT_SLUG}" \
+  '{ email: $email, tenantRef: $tenant_slug, mode: "developer", name: ("e2e-" + $ts) }' >"${TMP_BODY}"
 HTTP_CODE="$(
-  curl -sk -o "${TMP_RES}" -w "%{http_code}" -X POST "${API_URL}/api/invitations" \
+  curl -sk -o "${TMP_RES}" -w "%{http_code}" --connect-timeout 30 --max-time 120 -X POST "${API_URL}/api/invitations" \
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer ${ADMIN_TOKEN}" \
     -H "x-admin-token: ${ADMIN_TOKEN}" \
     -d @"${TMP_BODY}"
 )"
+echo "  HTTP Test 2 (POST /api/invitations): ${HTTP_CODE}"
 RESPONSE="$(cat "${TMP_RES}")"
-echo "${RESPONSE}" | jq . 2>/dev/null || echo "${RESPONSE}"
+# No imprimir token completo ni URL con token (el link suele incluir el invite en el path o query)
+echo "${RESPONSE}" | jq '
+  if (type == "object") and (.token | type) == "string" and (.token | length) > 0 then
+    .token = ((.token | .[0:12]) + "…")
+  else . end
+  | if (type == "object") and (.link | type) == "string" and (.link | length) > 0 then
+    .link_preview = ((.link | .[0:20]) + "…")
+    | del(.link)
+  else . end
+' 2>/dev/null || echo "(respuesta no JSON o jq no disponible; omitiendo cuerpo por seguridad)"
 
 if [[ "${HTTP_CODE}" != "200" ]]; then
   echo "❌ POST /api/invitations → HTTP ${HTTP_CODE}" >&2
@@ -98,7 +121,10 @@ echo "✓ Test 3: Longitud de token"
 
 echo "✓ Test 4: GET /api/portal/me sin sesión (esperado 401/4xx)"
 set +e
-curl -sfk "${API_URL}/api/portal/me" -H "Authorization: Bearer invalid" >/dev/null 2>&1
+HTTP_ME="$(
+  curl -sk -o /dev/null -w "%{http_code}" --connect-timeout 15 --max-time 30 "${API_URL}/api/portal/me" -H "Authorization: Bearer invalid"
+)"
 set -e
+echo "  HTTP Test 4 (GET /api/portal/me inválido): ${HTTP_ME}"
 
 echo "✅ E2E script completado"
