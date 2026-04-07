@@ -30,6 +30,8 @@
     "apps": [
       "admin",
       "api",
+      "context-builder",
+      "llm-gateway",
       "mcp",
       "ml",
       "orchestrator",
@@ -37,7 +39,7 @@
       "web"
     ],
     "scripts": 28,
-    "adrs": 9,
-    "migrations": 8
+    "adrs": 12,
+    "migrations": 9
   }
 }
