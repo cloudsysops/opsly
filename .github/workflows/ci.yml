@@ -24,13 +24,16 @@ jobs:
       - name: npm ci
         run: npm ci
 
-      - name: TypeScript (api + admin + portal, paralelo)
+      - name: TypeScript (api + admin + portal + mcp + orchestrator + ml)
         run: |
           set -euo pipefail
           (cd apps/api && npx tsc --noEmit) & pid1=$!
           (cd apps/admin && npx tsc --noEmit) & pid2=$!
           (cd apps/portal && npx tsc --noEmit) & pid3=$!
-          wait $pid1 $pid2 $pid3
+          (cd apps/mcp && npx tsc --noEmit) & pid4=$!
+          (cd apps/orchestrator && npx tsc --noEmit) & pid5=$!
+          (cd apps/ml && npx tsc --noEmit) & pid6=$!
+          wait $pid1 $pid2 $pid3 $pid4 $pid5 $pid6
 
       - name: ESLint si existe config (paralelo)
         run: |
@@ -49,14 +52,29 @@ jobs:
           run_eslint apps/api & pid1=$!
           run_eslint apps/admin & pid2=$!
           run_eslint apps/portal & pid3=$!
-          wait $pid1 $pid2 $pid3
+          run_eslint apps/mcp & pid4=$!
+          run_eslint apps/orchestrator & pid5=$!
+          run_eslint apps/ml & pid6=$!
+          wait $pid1 $pid2 $pid3 $pid4 $pid5 $pid6
 
   test:
     needs: lint
     runs-on: ubuntu-latest
     steps:
-      - name: Tests pendientes
-        run: echo "Tests pendientes"
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: package-lock.json
+      - name: npm ci + tests mcp/orchestrator/ml
+        run: |
+          set -euo pipefail
+          npm ci
+          (cd apps/mcp && npm test) & pid1=$!
+          (cd apps/orchestrator && npm test) & pid2=$!
+          (cd apps/ml && npm test) & pid3=$!
+          wait $pid1 $pid2 $pid3
 
   build:
     needs: lint

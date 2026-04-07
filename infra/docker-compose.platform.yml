@@ -145,6 +145,29 @@ services:
       - traefik-public
     restart: unless-stopped
 
+  mcp:
+    image: ${MCP_IMAGE:-ghcr.io/cloudsysops/intcloudsysops-mcp:latest}
+    container_name: opsly_mcp
+    env_file:
+      - ../.env
+    environment:
+      OPSLY_API_URL: https://api.${PLATFORM_DOMAIN}
+      PLATFORM_ADMIN_TOKEN: ${PLATFORM_ADMIN_TOKEN}
+      GITHUB_TOKEN_N8N: ${GITHUB_TOKEN_N8N}
+      PORT: "3003"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik-public"
+      - "traefik.http.routers.mcp.rule=Host(`mcp.${PLATFORM_DOMAIN}`)"
+      - "traefik.http.routers.mcp.entrypoints=websecure"
+      - "traefik.http.routers.mcp.tls=true"
+      - "traefik.http.routers.mcp.tls.certresolver=letsencrypt"
+      - "traefik.http.services.mcp.loadbalancer.server.port=3003"
+    networks:
+      - traefik-public
+      - internal
+    restart: unless-stopped
+
 networks:
   traefik-public:
     external: true
