@@ -1,21 +1,21 @@
 import {
-    jsonError,
-    parseJsonBody,
-    serverErrorLogged,
-    tryRoute,
+  jsonError,
+  parseJsonBody,
+  serverErrorLogged,
+  tryRoute,
 } from "../../../lib/api-response";
 import {
-    requireAdminToken,
-    requireAdminTokenUnlessDemoRead,
+  requireAdminToken,
+  requireAdminTokenUnlessDemoRead,
 } from "../../../lib/auth";
 import { HTTP_STATUS } from "../../../lib/constants";
 import { provisionTenant } from "../../../lib/orchestrator";
 import { getServiceClient } from "../../../lib/supabase";
 import type { TenantStatus } from "../../../lib/supabase/types";
 import {
-    CreateTenantSchema,
-    ListTenantsQuerySchema,
-    formatZodError,
+  CreateTenantSchema,
+  ListTenantsQuerySchema,
+  formatZodError,
 } from "../../../lib/validation";
 
 function isUniqueViolation(message: string, code: string | undefined): boolean {

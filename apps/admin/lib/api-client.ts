@@ -1,10 +1,10 @@
 import type {
-    InvitationSendResponse,
-    MetricsResponse,
-    SystemMetricsResponse,
-    Tenant,
-    TenantDetailResponse,
-    TenantsListResponse,
+  InvitationSendResponse,
+  MetricsResponse,
+  SystemMetricsResponse,
+  Tenant,
+  TenantDetailResponse,
+  TenantsListResponse,
 } from "./types";
 
 function inferApiBaseFromAdminHost(hostname: string): string | null {
@@ -23,7 +23,9 @@ function getBaseUrl(): string {
     return base.replace(/\/$/, "");
   }
   if (typeof globalThis.window !== "undefined") {
-    const inferred = inferApiBaseFromAdminHost(globalThis.window.location.hostname);
+    const inferred = inferApiBaseFromAdminHost(
+      globalThis.window.location.hostname,
+    );
     if (inferred !== null) {
       return inferred;
     }

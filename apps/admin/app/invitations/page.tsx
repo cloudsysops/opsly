@@ -4,11 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useTenants } from "@/hooks/useTenants";
@@ -69,7 +69,9 @@ export default function InvitationsPage(): ReactElement {
     try {
       await navigator.clipboard.writeText(successLink);
     } catch {
-      setFormError("No se pudo copiar automáticamente. Copia el enlace manualmente.");
+      setFormError(
+        "No se pudo copiar automáticamente. Copia el enlace manualmente.",
+      );
     }
   };
 
@@ -80,7 +82,9 @@ export default function InvitationsPage(): ReactElement {
         El email debe coincidir con{" "}
         <code className="text-ops-green">owner_email</code> del tenant en
         Supabase. En producción hace falta token admin{" "}
-        <code className="text-neutral-400">NEXT_PUBLIC_PLATFORM_ADMIN_TOKEN</code>{" "}
+        <code className="text-neutral-400">
+          NEXT_PUBLIC_PLATFORM_ADMIN_TOKEN
+        </code>{" "}
         salvo modo demo con mutaciones bloqueadas.
       </p>
 

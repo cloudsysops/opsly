@@ -1,12 +1,12 @@
 import { z } from "zod";
 import {
-    jsonError,
-    parseJsonBody,
-    serverErrorLogged,
+  jsonError,
+  parseJsonBody,
+  serverErrorLogged,
 } from "../../../../lib/api-response";
 import {
-    requireAdminToken,
-    requireAdminTokenUnlessDemoRead,
+  requireAdminToken,
+  requireAdminTokenUnlessDemoRead,
 } from "../../../../lib/auth";
 import { HTTP_STATUS } from "../../../../lib/constants";
 import { getTenantStackStatus } from "../../../../lib/docker";
@@ -14,9 +14,9 @@ import { deleteTenant } from "../../../../lib/orchestrator";
 import { getServiceClient } from "../../../../lib/supabase";
 import type { Tenant } from "../../../../lib/supabase/types";
 import {
-    TenantRefParamSchema,
-    UpdateTenantSchema,
-    formatZodError,
+  TenantRefParamSchema,
+  UpdateTenantSchema,
+  formatZodError,
 } from "../../../../lib/validation";
 
 const idParamSchema = z.string().uuid();
