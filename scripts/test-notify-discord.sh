@@ -1,0 +1,74 @@
+#!/usr/bin/env bash
+# Tests para notify-discord.sh
+# Ejecutar: ./scripts/test-notify-discord.sh
+set -euo pipefail
+
+PASS=0
+FAIL=0
+SCRIPT="./scripts/notify-discord.sh"
+
+assert() {
+  local desc="$1"
+  local result="$2"
+  local expected="$3"
+  if [[ "$result" == "$expected" ]]; then
+    echo "  PASS $desc"
+    ((PASS++))
+  else
+    echo "  FAIL $desc"
+    echo "     got:      $result"
+    echo "     expected: $expected"
+    ((FAIL++))
+  fi
+}
+
+echo ""
+echo "test notify-discord.sh — $(date)"
+echo ""
+
+# T1: script existe y es ejecutable
+assert "script existe" "$(test -f "$SCRIPT" && echo 1 || echo 0)" "1"
+assert "script ejecutable" "$(test -x "$SCRIPT" && echo 1 || echo 0)" "1"
+
+# T2: dry-run sin webhook -> exit 0
+code=$(DISCORD_WEBHOOK_URL="" "$SCRIPT" "T" "M" "success" --dry-run \
+  2>/dev/null; echo $?)
+assert "dry-run sin webhook: exit 0" "$code" "0"
+
+# T3: dry-run produce JSON valido
+payload=$(DISCORD_WEBHOOK_URL="https://fake" \
+  "$SCRIPT" "Titulo test" "Mensaje test" "success" --dry-run 2>/dev/null)
+echo "$payload" | python3 -m json.tool > /dev/null 2>&1
+assert "payload es JSON valido" "$?" "0"
+
+# T4: JSON contiene campos requeridos
+for field in title description color timestamp footer; do
+  count=$(echo "$payload" | rg -c "\"$field\"" || true)
+  assert "JSON contiene '$field'" "$count" "1"
+done
+
+# T5: colores correctos por tipo
+declare -A COLORS=(
+  [success]=3066993
+  [error]=15158332
+  [info]=3447003
+  [warning]=16776960
+)
+for tipo in success error info warning; do
+  p=$(DISCORD_WEBHOOK_URL="https://fake" \
+    "$SCRIPT" "T" "M" "$tipo" --dry-run 2>/dev/null)
+  assert "color $tipo = ${COLORS[$tipo]}" \
+    "$(echo "$p" | rg -c "${COLORS[$tipo]}")" "1"
+done
+
+# T6: footer contiene "Opsly Platform"
+assert "footer Opsly Platform" \
+  "$(echo "$payload" | rg -c "Opsly Platform")" "1"
+
+# T7: sin webhook real -> exit 0 (no rompe flujo)
+code=$(DISCORD_WEBHOOK_URL="" "$SCRIPT" "T" "M" "info" 2>/dev/null; echo $?)
+assert "sin webhook real: exit 0" "$code" "0"
+
+echo ""
+echo "Result: PASS $PASS | FAIL $FAIL"
+[[ $FAIL -eq 0 ]] && exit 0 || exit 1
