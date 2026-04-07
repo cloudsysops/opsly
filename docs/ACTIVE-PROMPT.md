@@ -1,3 +1,7 @@
+# ACTIVE-PROMPT — Opsly
+# Protocolo: leer AGENTS.md y VISION.md antes de ejecutar
+# Fuente de verdad: https://raw.githubusercontent.com/cloudsysops/opsly/main/AGENTS.md
+
 # ACTIVE-PROMPT.md
 
 # Placeholder v1 — todo el cuerpo ejecutable debe ser shell válido o ir comentado con # al inicio de línea.
