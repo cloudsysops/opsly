@@ -3,6 +3,19 @@
 Guia paso a paso para importar y verificar el workflow
 `docs/n8n-workflows/discord-to-github.json` sin ejecucion automatica.
 
+## Estado actual (autodiagnostico)
+
+- Fecha: 2026-04-07
+- `GITHUB_TOKEN_N8N` en Doppler `prd`: faltante (`0 chars`)
+- `DISCORD_WEBHOOK_URL` en Doppler `prd`: disponible
+- Siguiente accion operativa: cargar `GITHUB_TOKEN_N8N` y luego ejecutar la prueba de webhook del paso 6.
+
+Comando exacto para habilitar el flujo:
+
+```bash
+doppler secrets set GITHUB_TOKEN_N8N --project ops-intcloudsysops --config prd
+```
+
 ## 1) Pre-checks obligatorios
 
 1. Verifica acceso a n8n:
