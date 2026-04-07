@@ -73,7 +73,7 @@ notify_discord() {
 if [[ "${DRY_RUN}" == "true" ]]; then
   log_info "DRY-RUN: GET ${SUPABASE_URL}/rest/v1/tenants?slug=eq.${SLUG}"
   log_info "DRY-RUN: confirm suspend (skipped in dry-run)"
-  log_info "DRY-RUN: docker compose -f \${TENANTS_PATH}/docker-compose.${SLUG}.yml stop"
+  log_info "DRY-RUN: docker compose --project-name tenant_${SLUG} -f \${TENANTS_PATH}/docker-compose.${SLUG}.yml stop"
   log_info "DRY-RUN: PATCH tenant status=suspended"
   log_info "DRY-RUN: Discord notify (if DISCORD_WEBHOOK_URL set)"
   exit 0

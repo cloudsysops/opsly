@@ -112,7 +112,7 @@ if [[ "${DRY_RUN}" == "true" ]]; then
   log_info "  4. Generar N8N_BASIC_AUTH_PASSWORD y N8N_ENCRYPTION_KEY (openssl)"
   log_info "  5. Renderizar plantilla → \${TENANTS_PATH}/docker-compose.${SLUG}.yml"
   log_info "  6. POST tenant (status=provisioning) en schema platform"
-  log_info "  7. docker compose up del stack tenant; esperar healthy"
+  log_info "  7. docker compose --project-name tenant_${SLUG} -f … up -d (aislado por slug; no toca otros tenants)"
   log_info "  8. PATCH tenant active + JSON services (URLs n8n/uptime)"
   log_info "  9. Webhook Discord (si DISCORD_WEBHOOK_URL)"
   log_info "========================================="
