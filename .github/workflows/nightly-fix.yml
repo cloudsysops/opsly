@@ -44,23 +44,30 @@ jobs:
       - name: npm ci
         run: npm ci
 
-      - name: TypeScript (api + admin, parallel) → errors.txt
+      - name: TypeScript (api, admin, portal, mcp, orchestrator, ml, llm-gateway, context-builder) → errors.txt
         run: |
           set +e
           : > errors.txt
-          tmp_a="$(mktemp)"
-          tmp_b="$(mktemp)"
-          (cd apps/api && npx tsc --noEmit) >"$tmp_a" 2>&1
-          (cd apps/admin && npx tsc --noEmit) >"$tmp_b" 2>&1
-          {
-            echo "=== apps/api ==="
-            cat "$tmp_a"
-            echo ""
-            echo "=== apps/admin ==="
-            cat "$tmp_b"
-            echo ""
-          } >> errors.txt
-          rm -f "$tmp_a" "$tmp_b"
+          run_tsc() {
+            local dir="$1"
+            local tmp
+            tmp="$(mktemp)"
+            (cd "$dir" && npx tsc --noEmit) >"$tmp" 2>&1
+            {
+              echo "=== ${dir} ==="
+              cat "$tmp"
+              echo ""
+            } >> errors.txt
+            rm -f "$tmp"
+          }
+          run_tsc apps/api
+          run_tsc apps/admin
+          run_tsc apps/portal
+          run_tsc apps/mcp
+          run_tsc apps/orchestrator
+          run_tsc apps/ml
+          run_tsc apps/llm-gateway
+          run_tsc apps/context-builder
           exit 0
 
       - uses: actions/upload-artifact@v4
@@ -93,11 +100,24 @@ jobs:
           append_lint() {
             local dir="$1"
             echo "=== ${dir} ===" >> lint-report.txt
-            (cd "$dir" && npx eslint .) >> lint-report.txt 2>&1 || true
+            if compgen -G "${dir}/eslint.config.*" >/dev/null 2>&1 \
+              || [ -f "${dir}/.eslintrc.json" ] \
+              || [ -f "${dir}/.eslintrc.cjs" ] \
+              || [ -f "${dir}/.eslintrc.js" ]; then
+              (cd "$dir" && npx eslint .) >> lint-report.txt 2>&1 || true
+            else
+              echo "No ESLint config in ${dir}, skipping" >> lint-report.txt
+            fi
             echo "" >> lint-report.txt
           }
           append_lint apps/api
           append_lint apps/admin
+          append_lint apps/portal
+          append_lint apps/mcp
+          append_lint apps/orchestrator
+          append_lint apps/ml
+          append_lint apps/llm-gateway
+          append_lint apps/context-builder
           exit 0
 
       - uses: actions/upload-artifact@v4
@@ -299,7 +319,7 @@ EOF
 
           BODY_FILE="$(mktemp)"
           {
-            echo "TypeScript \`tsc --noEmit\` reported errors in \`apps/api\` and/or \`apps/admin\` on ${DATE}."
+            echo "TypeScript \`tsc --noEmit\` reported errors in monitored apps (api, admin, portal, mcp, orchestrator, ml, llm-gateway, context-builder) on ${DATE}."
             echo ""
             echo "These are not auto-fixed by ESLint/Prettier."
             echo ""

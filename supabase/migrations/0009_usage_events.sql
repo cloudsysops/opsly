@@ -10,7 +10,6 @@ CREATE TABLE IF NOT EXISTS platform.usage_events (
   session_id text,
   created_at timestamptz NOT NULL DEFAULT now()
 );
-
 CREATE INDEX IF NOT EXISTS idx_usage_tenant_date
   ON platform.usage_events(tenant_slug, created_at DESC);
 

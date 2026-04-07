@@ -18,4 +18,5 @@ RUN npm ci --omit=dev
 COPY --from=builder /app/apps/llm-gateway/dist ./apps/llm-gateway/dist
 
 WORKDIR /app/apps/llm-gateway
-CMD ["node", "dist/index.js"]
+EXPOSE 3010
+CMD ["node", "dist/server.js"]

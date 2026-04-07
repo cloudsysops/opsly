@@ -151,6 +151,14 @@ jobs:
           push: true
           tags: ghcr.io/cloudsysops/intcloudsysops-orchestrator:latest
 
+      - name: Build and push Context Builder image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: apps/context-builder/Dockerfile
+          push: true
+          tags: ghcr.io/cloudsysops/intcloudsysops-context-builder:latest
+
   build-mcp:
     needs: lint-and-typecheck
     if: |
@@ -246,7 +254,7 @@ jobs:
             done <"$tmp_imgs"
             rm -f "$tmp_imgs"
             # --force-recreate: evita réplicas app (deploy.replicas: 2) quedando en Created mientras otras siguen Up.
-            $COMPOSE_CMD up -d --no-deps --force-recreate traefik app admin portal mcp llm-gateway orchestrator
+            $COMPOSE_CMD up -d --no-deps --force-recreate traefik app admin portal mcp llm-gateway orchestrator context-builder
 
             if [ -z "${PLATFORM_DOMAIN:-}" ]; then
               echo "PLATFORM_DOMAIN no está definido" >&2

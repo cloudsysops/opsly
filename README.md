@@ -11,6 +11,51 @@ Referencia conceptual **Opsly**: el **control plane** decide ciclo de vida, fact
 | Control plane | Checkout Stripe, webhooks, colas, API admin, Supabase | Next.js API, Redis/BullMQ, scripts, dashboard |
 | Data plane | Aislamiento por tenant | Compose por slug, Traefik, n8n, uptime, volúmenes dedicados |
 
+## Arquitectura OpenClaw
+
+Capa opcional de **orquestación multi-agente**, LLM unificado y contexto de sesión, alineada con `docs/OPENCLAW-ARCHITECTURE.md`.
+
+```
+                    ┌─────────────────────────────────────┐
+  Capa 1            │  MCP (apps/mcp) — tools → API       │
+  herramientas      │  Puerto público vía Traefik: 3003     │
+                    └─────────────────┬───────────────────┘
+                                      │
+                    ┌─────────────────▼───────────────────┐
+  Capa 2            │  Orchestrator — cola BullMQ Redis  │
+  cola / workers    │  Health interno :3011               │
+                    └─────────────────┬───────────────────┘
+                                      │
+          ┌───────────────────────────┼───────────────────────────┐
+          ▼                           ▼                           ▼
+   LLM Gateway                  Context Builder              API / ml
+   cache + Anthropic            sesión Redis                 métricas tenant
+   health :3010                 health :3012
+```
+
+**Documentación por servicio**
+
+| Doc | Contenido |
+|-----|-----------|
+| [docs/LLM-GATEWAY.md](docs/LLM-GATEWAY.md) | Cache, modelos, env vars |
+| [docs/ORCHESTRATOR.md](docs/ORCHESTRATOR.md) | Jobs, workers, estados |
+| [docs/CONTEXT-BUILDER.md](docs/CONTEXT-BUILDER.md) | Sesión, TTL, resúmenes |
+| [docs/AGENTS-GUIDE.md](docs/AGENTS-GUIDE.md) | Agentes paralelos y límites por plan |
+
+**Tabla de servicios (puertos de proceso / contenedor)**
+
+| Workspace | Puerto típico | Función |
+|-----------|----------------|---------|
+| `apps/api` | 3000 | Control plane HTTP, `/api/health` |
+| `apps/admin` | 3001 | Dashboard admin |
+| `apps/portal` | 3002 | Portal cliente |
+| `apps/mcp` | 3003 | MCP + `GET /health` |
+| `apps/llm-gateway` | 3010 | Gateway LLM + `GET /health` (red interna Compose) |
+| `apps/orchestrator` | 3011 | Workers + `GET /health` (interno) |
+| `apps/context-builder` | 3012 | Health HTTP (interno); librería importada por API/u otros |
+
+Imágenes GHCR: `intcloudsysops-{api,admin,portal,mcp,llm-gateway,orchestrator,context-builder}` (ver `.github/workflows/deploy.yml`).
+
 ## Prerequisites
 
 - VPS Ubuntu 24 con Docker (y Docker Compose plugin) instalado

@@ -19,4 +19,5 @@ COPY --from=builder /app/apps/orchestrator/dist ./apps/orchestrator/dist
 COPY --from=builder /app/scripts ./scripts
 
 WORKDIR /app/apps/orchestrator
+EXPOSE 3011
 CMD ["node", "dist/index.js"]

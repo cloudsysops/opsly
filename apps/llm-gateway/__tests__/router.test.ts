@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { estimateCost, MODEL_CONFIG, selectModel } from "../src/router.js";
+import { MODEL_CONFIG, estimateCost, selectModel } from "../src/router.js";
 
 describe("router", () => {
   it("selectModel usa preferencia por defecto", () => {

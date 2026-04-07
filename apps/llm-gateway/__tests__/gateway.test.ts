@@ -21,8 +21,8 @@ vi.mock("../src/logger.js", () => ({
   logUsage: vi.fn(),
 }));
 
-import { llmCall } from "../src/gateway.js";
 import * as cache from "../src/cache.js";
+import { llmCall } from "../src/gateway.js";
 
 describe("LLM Gateway", () => {
   beforeEach(() => {
