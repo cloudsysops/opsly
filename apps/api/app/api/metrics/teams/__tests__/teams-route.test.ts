@@ -16,7 +16,9 @@ describe("GET /api/metrics/teams", () => {
   });
 
   it("returns 401 without admin token", async () => {
-    const res = await GET(new NextRequest("http://localhost/api/metrics/teams", { method: "GET" }));
+    const res = await GET(
+      new NextRequest("http://localhost/api/metrics/teams", { method: "GET" }),
+    );
     expect(res.status).toBe(401);
   });
 
