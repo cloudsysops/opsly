@@ -8,7 +8,7 @@ if [[ "${1:-}" == "--dry-run" ]]; then
 fi
 
 if $DRY_RUN; then
-  echo "dry-run: comprobaría ANTHROPIC_API_KEY OPENROUTER_API_KEY OPENAI_API_KEY OLLAMA_URL GITHUB_TOKEN_N8N GOOGLE_DRIVE_TOKEN RESEND_API_KEY DISCORD_WEBHOOK_URL PLATFORM_ADMIN_TOKEN en Doppler prd (solo longitudes / Ollama reachability)."
+  echo "dry-run: comprobaría ANTHROPIC_API_KEY OPENROUTER_API_KEY OPENAI_API_KEY OLLAMA_URL GITHUB_TOKEN_N8N GOOGLE_DRIVE_TOKEN RESEND_API_KEY DISCORD_WEBHOOK_URL PLATFORM_ADMIN_TOKEN MCP_JWT_SECRET en Doppler prd (solo longitudes / Ollama reachability)."
   exit 0
 fi
 
@@ -18,7 +18,7 @@ if ! command -v doppler >/dev/null 2>&1; then
 fi
 
 for VAR in ANTHROPIC_API_KEY OPENROUTER_API_KEY OPENAI_API_KEY GITHUB_TOKEN_N8N GOOGLE_DRIVE_TOKEN RESEND_API_KEY \
-  DISCORD_WEBHOOK_URL PLATFORM_ADMIN_TOKEN; do
+  DISCORD_WEBHOOK_URL PLATFORM_ADMIN_TOKEN MCP_JWT_SECRET; do
   VAL="$(doppler secrets get "$VAR" --project ops-intcloudsysops --config prd --plain 2>/dev/null || echo "")"
   LEN=${#VAL}
   if [[ $LEN -gt 20 ]]; then

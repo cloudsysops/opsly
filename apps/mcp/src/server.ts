@@ -1,3 +1,4 @@
+import { requireMCPAuth } from "./auth/middleware.js";
 import { MCP_SERVER_INFO } from "./lib/constants.js";
 import { executorTool } from "./tools/executor.js";
 import { invitationsTool } from "./tools/invitations.js";
@@ -18,6 +19,23 @@ type ParseResult =
 
 type SchemaWithSafeParse = {
   safeParse: (input: unknown) => ParseResult;
+};
+
+/** Scope OAuth requerido por tool cuando se envía `Authorization` en `callTool`. */
+const TOOL_REQUIRED_SCOPES: Record<string, string> = {
+  get_tenants: "tenants:read",
+  get_tenant: "tenants:read",
+  onboard_tenant: "tenants:write",
+  suspend_tenant: "tenants:write",
+  resume_tenant: "tenants:write",
+  send_invitation: "invitations:write",
+  get_health: "metrics:read",
+  get_metrics: "metrics:read",
+  execute_prompt: "executor:write",
+};
+
+export type CallToolOptions = {
+  authorization?: string;
 };
 
 function isSchemaWithSafeParse(value: unknown): value is SchemaWithSafeParse {
@@ -59,10 +77,18 @@ export class OpenClawMcpServer {
     }
   }
 
-  async callTool(name: string, input: unknown): Promise<unknown> {
+  async callTool(name: string, input: unknown, options?: CallToolOptions): Promise<unknown> {
     const tool = this.tools.get(name);
     if (!tool) {
       throw new Error(`Tool not found: ${name}`);
+    }
+    const requiredScope = TOOL_REQUIRED_SCOPES[name];
+    const authHeader = options?.authorization;
+    if (requiredScope !== undefined && authHeader !== undefined) {
+      const auth = requireMCPAuth(authHeader, requiredScope);
+      if (!auth.authorized) {
+        throw new Error(`Unauthorized: ${name} requires scope ${requiredScope}`);
+      }
     }
     return tool.handler(input);
   }
