@@ -36,6 +36,7 @@ async function runEventSubscription(teamManager: TeamManager): Promise<void> {
 async function main(): Promise<void> {
   console.log("[orchestrator] Iniciando…");
 
+  // TeamManager + misma conexión Redis que openclaw (queue.ts); eventos → assignToTeam p.ej. deploy
   const teamManager = new TeamManager(connection);
   console.log("[orchestrator] TeamManager: 4 equipos BullMQ activos");
 
@@ -50,13 +51,16 @@ async function main(): Promise<void> {
   startNotifyWorker(connection);
   startDriveWorker(connection);
 
-  process.on("SIGTERM", () => {
+  const shutdown = (): void => {
     void (async () => {
-      console.log("[orchestrator] SIGTERM, cerrando TeamManager…");
+      console.log("[orchestrator] Shutdown, cerrando TeamManager…");
       await teamManager.close();
       process.exit(0);
     })();
-  });
+  };
+
+  process.on("SIGTERM", shutdown);
+  process.on("SIGINT", shutdown);
 
   const result = await processIntent({
     intent: "notify",

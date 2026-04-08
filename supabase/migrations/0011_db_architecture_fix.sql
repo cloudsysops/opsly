@@ -1,6 +1,8 @@
 -- Correcciones arquitectura DB (post 0010 feedback + alineación revisión)
 -- Idempotente: usa DO / IF NOT EXISTS donde aplica.
 -- Nota: Postgres no soporta ADD CONSTRAINT IF NOT EXISTS; usamos pg_catalog.
+-- Seguimiento: 0012_llm_feedback_conversations_fk.sql reasigna llm_feedback.conversation_id
+-- a platform.conversations (sesiones ML/Beast), no a feedback_conversations del portal.
 
 -- ─── FEEDBACK CONVERSATIONS: unicidad sesión por tenant ─────────────────
 

@@ -2,6 +2,7 @@
 # activate-tokens.sh — Activación cuando los secretos en Doppler prd están listos.
 # Uso: ./scripts/activate-tokens.sh [--dry-run]
 # Requisitos: doppler CLI, npx supabase (db push), curl; ejecutar desde la raíz del repo.
+# Si `npx supabase db push` falla: enlazar proyecto (`npx supabase link --project-ref …`) o usar máquina ya enlazada.
 
 set -euo pipefail
 
