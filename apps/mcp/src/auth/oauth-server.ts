@@ -1,8 +1,8 @@
-import type { IncomingMessage, ServerResponse } from "node:http";
 import { getRedisClient } from "@intcloudsysops/llm-gateway/cache";
-import { buildAuthorizationServerMetadata } from "./well-known.js";
+import type { IncomingMessage, ServerResponse } from "node:http";
 import { verifyCodeChallenge } from "./pkce.js";
 import { generateAccessToken, generateAuthCode } from "./tokens.js";
+import { buildAuthorizationServerMetadata } from "./well-known.js";
 
 export type RegisteredOAuthClient = {
   name: string;
