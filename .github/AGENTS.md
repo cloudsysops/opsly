@@ -91,7 +91,16 @@ Procedimientos vivos en el repo: **`skills/user/<skill>/SKILL.md`**. En runtimes
 
 <!-- Actualizar al final de cada sesión -->
 
-**Fecha última actualización:** 2026-04-09 — **Cierre Fase 9 + arranque Fase 10:** Supabase `link + db push` aplicados, E2E invitaciones en verde, Discord operativo por webhook válido, y transición a Google Cloud + BigQuery.
+**Fecha última actualización:** 2026-04-08 — **Fase 10 (progreso):** OAuth service account operativo tras fix `google_base64url_encode` (JWT); Drive sync queda en **403** hasta compartir carpeta con `client_email` del JSON; CI Docker builder corregido (root `package.json` en imágenes api/mcp); automatización n8n (`dispatch-discord-command`, `@cursor`/`@claude`), `autonomous-plan-discord-agent`, docs y `check-tokens` endurecido para JSON de SA.
+
+**Resumen 2026-04-08 (Cursor / Opsly — sesión corta)**
+
+| Área | Qué quedó hecho |
+|------|------------------|
+| **Google auth / Drive** | Fix crítico: `google_base64url_encode` no consumía stdin del pipe; token OAuth OK. `GOOGLE_SERVICE_ACCOUNT_JSON_FILE`, normalización JSON, `curl --data-urlencode`, `drive-sync` cuenta errores y guía 403. |
+| **CI / Docker** | `apps/api/Dockerfile` + `apps/mcp/Dockerfile`: copiar `package.json` y `package-lock.json` al stage `builder` (evita `ENOENT` en `npm run -w` en Actions). |
+| **n8n / Discord** | `scripts/dispatch-discord-command.sh` (`--target`, menciones); plantilla `discord-to-github.json`; docs `N8N-SETUP`, `N8N-IMPORT-GUIDE`; `scripts/autonomous-plan-discord-agent.sh`. |
+| **Docs / tokens** | `docs/GOOGLE-CLOUD-SETUP.md` (stdin Doppler + permiso Drive); `docs/MASTER-PLAN-STATUS.md`; `check-tokens` valida `type`/`client_email`/`private_key` en SA JSON; `.gitignore` `supabase/.temp/`. |
 
 **Resumen 2026-04-07 … 2026-04-09 (Cursor / Opsly)**
 
@@ -450,6 +459,10 @@ Procedimientos vivos en el repo: **`skills/user/<skill>/SKILL.md`**. En runtimes
 ### Fase 10 — arranque inmediato (Google Cloud + BigQuery)
 
 ```bash
+# Paso 0 (Drive): compartir carpeta Opsly en Google Drive como Editor con el client_email del JSON del service account (ver docs/GOOGLE-CLOUD-SETUP.md). Sin eso: HTTP 403 en upload.
+# JSON completo en Doppler (la UI trunca): doppler secrets set GOOGLE_SERVICE_ACCOUNT_JSON --project ops-intcloudsysops --config prd < ruta/al-service-account.json
+# Opcional local: GOOGLE_SERVICE_ACCOUNT_JSON_FILE=/ruta/al.json en .env.local
+
 # Paso 1: Completar variables Google Cloud en Doppler prd
 doppler secrets set GOOGLE_CLOUD_PROJECT_ID --project ops-intcloudsysops --config prd
 doppler secrets set BIGQUERY_DATASET --project ops-intcloudsysops --config prd
@@ -458,7 +471,7 @@ doppler secrets set VERTEX_AI_REGION --project ops-intcloudsysops --config prd
 # Paso 2: Validar readiness de secretos
 ./scripts/check-tokens.sh
 
-# Paso 3: Reintentar Drive sync con service account (bloqueante actual)
+# Paso 3: Drive sync (requiere paso 0)
 ./scripts/drive-sync.sh
 
 # Paso 4: Notificar inicio Fase 10
@@ -505,8 +518,9 @@ ssh vps-dragon@157.245.223.7 "docker system df && sudo du -xh /var --max-depth=2
 - [x] **`GITHUB_TOKEN_N8N` en Doppler `prd`** — presente y validado por `check-tokens.sh`.
 - [x] **`ANTHROPIC_API_KEY` en Doppler `prd`** — presente y validado por `check-tokens.sh`.
 - [ ] **`GOOGLE_CLOUD_PROJECT_ID` / `BIGQUERY_DATASET` / `VERTEX_AI_REGION` en `prd`** — requeridos para Fase 10.
-- [ ] **Drive sync con service account** — sigue fallando con `invalid_request` en token endpoint de Google.
-- [ ] **Imágenes GHCR faltantes/parciales** (`mcp`, `context-builder`) y `Deploy` workflow en `failure`.
+- [x] **OAuth token Google (service account)** — corregido `google_base64url_encode` + POST token; token emitido OK (2026-04-08).
+- [ ] **Drive sync escritura** — pendiente compartir carpeta destino con `client_email` del SA (**HTTP 403** hasta entonces); opcional `GOOGLE_SERVICE_ACCOUNT_JSON_FILE` o `doppler secrets set ... < archivo.json`.
+- [ ] **Imágenes GHCR / workflow Deploy** — pendiente **success** tras fix builder Docker en `main`; servicios opcionales pueden seguir en best-effort.
 - [ ] **`STRIPE_PRICE_ID_*` en Doppler `prd` / secrets de CI** — necesarios para billing/checkout real en `apps/web`; el build puede completarse sin ellos (`envOrEmpty` en `apps/web/lib/stripe/plans.ts`), pero Stripe fallará en runtime si faltan.
 
 ---
