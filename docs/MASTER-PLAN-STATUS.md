@@ -1,6 +1,6 @@
 # MASTER PLAN — Estado actual
-## Última actualización: 2026-04-09 (post-ejecución fase 9)
-## FASE ACTUAL: 9 — Activación producción completa (en progreso)
+## Última actualización: 2026-04-09 (fase 9 validada, transición fase 10)
+## FASE ACTUAL: 10 — Google Cloud + BigQuery (en progreso)
 
 ## Progreso por fase
 | Fase | Nombre | Estado | Commit |
@@ -13,25 +13,24 @@
 | 6 | OAuth 2.0 + PKCE | ✅ Completa | — |
 | 7 | Skills Claude Supremo | ✅ Completa | — |
 | 8 | Sprint nocturno | ✅ Completa | `c5cac32` |
-| 9 | Activación producción | 🔄 En progreso | — |
-| 10 | Google Cloud + BigQuery | ⏳ Pendiente | — |
+| 9 | Activación producción | ✅ Completa (operativa) | `dbb28c9` |
+| 10 | Google Cloud + BigQuery | 🔄 En progreso | — |
 | 11 | Fine-tuning + Agentes | ⏳ Pendiente | — |
 | 12 | Monetización | ⏳ Pendiente | — |
 
 ## Próximo paso inmediato
-Desbloquear `supabase link` local y validar `RESEND_API_KEY` real para completar Fase 9.
+Configurar `GOOGLE_CLOUD_PROJECT_ID`, `BIGQUERY_DATASET` y `VERTEX_AI_REGION` en Doppler `prd` para arrancar Fase 10.
 
 ## Bloqueantes activos
-- `./scripts/activate-tokens.sh` falla en `supabase db push` por proyecto no linkeado (`supabase link` pendiente).
-- `./scripts/test-e2e-invite-flow.sh` falla en `POST /api/invitations` con `API key is invalid` (RESEND).
 - `./scripts/drive-sync.sh` aún no obtiene access token de Google (`invalid_request` en token endpoint).
-- Verificación MCP por curl falla por TLS/cert en este entorno (`curl: (60)`), requiere revisión desde red/host autorizado.
-- Últimos workflows `Deploy` en GitHub figuran `failure`; revisar runs 24121277376, 24121273333, 24121005893.
+- Faltan en Doppler `prd`: `GOOGLE_CLOUD_PROJECT_ID`, `BIGQUERY_DATASET`, `VERTEX_AI_REGION`.
+- Workflow `Deploy` en GitHub sigue en `failure` en runs recientes; último: `24128493156`.
+- Pull GHCR parcial en VPS muestra restricciones/intermitencias para algunas imágenes (`403`/`not found` en servicios no críticos para Fase 9).
 
 ## Métricas del proyecto
 - Tenants activos: 3 (según contexto AGENTS)
 - Tests pasando: mcp 26/26, llm-gateway 17/17, orchestrator 8/8, ml 4/4, api 126/126
 - Cobertura: —
-- Último deploy: failure (3 últimos runs)
+- Último deploy: failure (workflow), pero servicios base (`api/admin/portal`) operativos en VPS
 - MRR actual: $—
 

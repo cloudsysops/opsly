@@ -91,7 +91,7 @@ Procedimientos vivos en el repo: **`skills/user/<skill>/SKILL.md`**. En runtimes
 
 <!-- Actualizar al final de cada sesión -->
 
-**Fecha última actualización:** 2026-04-09 — **Sesión documentación AGENTS + cierre de trabajo reciente:** resumen consolidado abajo; commit `docs: update AGENTS.md 2026-04-09`; URL raw publicada al cerrar.
+**Fecha última actualización:** 2026-04-09 — **Cierre Fase 9 + arranque Fase 10:** Supabase `link + db push` aplicados, E2E invitaciones en verde, Discord operativo por webhook válido, y transición a Google Cloud + BigQuery.
 
 **Resumen 2026-04-07 … 2026-04-09 (Cursor / Opsly)**
 
@@ -114,6 +114,14 @@ Procedimientos vivos en el repo: **`skills/user/<skill>/SKILL.md`**. En runtimes
 | 5 | `.claude/CLAUDE.md` actualizado: incluye skill `opsly-google-cloud` y Doppler var `GOOGLE_SERVICE_ACCOUNT_JSON`. | ✅ |
 | 6 | Docs: `docs/GOOGLE-CLOUD-ACTIVATION.md`; `.env.local.example` actualizado (service account + BigQuery vars); `check-tokens` incluye vars GCloud como opcionales. | ✅ |
 | 7 | Supabase: no se pudo ejecutar `supabase link/db push` desde este entorno; se agregó migración `0013_*` para completar index+grants de `platform.tenant_embeddings` (pgvector). | ⚠️ |
+
+**2026-04-09 (cierre operativo) — Fase 9 validada**
+
+- `npx supabase login` + `npx supabase link --project-ref jkwykpldnitavhmtuzmo` + `npx supabase db push` ejecutados con éxito (migraciones 0010–0013 aplicadas).
+- `./scripts/test-e2e-invite-flow.sh` en local: `POST /api/invitations` -> **200** (antes 500 por Resend).
+- `doppler run ... ./scripts/notify-discord.sh` -> **OK** tras corregir `DISCORD_WEBHOOK_URL` en Doppler `prd`.
+- VPS recreado con `vps-bootstrap.sh` + `compose up` de `app/admin/portal/traefik`; health público operativo.
+- Persisten fallos parciales de pull GHCR para imágenes nuevas/no publicadas (`mcp`, `context-builder`) y `Deploy` workflow continúa en `failure`.
 
 **2026-04-08 — Índice de skills** (`skills/user/*`) + tabla en AGENTS + `.claude/CLAUDE.md` modo supremo alineados. **MCP OAuth 2.0 + PKCE:** `response_type=code` en `/oauth/authorize`, metadata `token_endpoint_auth_methods_supported: none`, tests discovery + flujo código→token (Redis mock). **Checklist activación tokens + DB 0011/0012 documentados;** TeamManager ya cableado en orchestrator (SIGINT/SIGTERM cierra colas); `GET /api/metrics/teams` operativo; `activate-tokens.sh` listo. **2026-04-06 — Feedback Chat + ML Decision Engine:** migración `0010_feedback_system.sql` (conversaciones, mensajes, decisiones, agent_teams, agent_executions); `apps/ml` `feedback-decision-engine.ts` + `write-active-prompt.ts` (GitHub ACTIVE-PROMPT); API `POST/GET /api/feedback`, `POST /api/feedback/approve`; portal widget `FeedbackChat` en layout dashboard; admin `/feedback` con aprobación; `TeamManager` en orchestrator (4 equipos BullMQ). **LLM Gateway v2 (Beast Mode):** health daemon (ping 30s, circuit breaker 3 fallos, reintento `down` cada 60s, alertas Discord), analizador de complejidad 1/2/3, batcher (nivel1 max 10 / 50ms, nivel2 max 5 / 100ms, nivel3 max 3 / 200ms; `LLM_BATCH_WINDOW_SCALE` para tests), descomponer con Haiku → subtareas paralelas → merge, multi-proveedor (Ollama + Haiku + Sonnet + OpenRouter + GPT-4o/mini), cache Redis TTL configurable (`LLM_CACHE_TTL_SECONDS`). Docs: `docs/LLM-GATEWAY.md`, `docs/DOPPLER-VARS.md`. Tests: `apps/llm-gateway/__tests__/beast.test.ts`. **Sesión previa 2026-04-07 — Cursor (automation pipeline v1 + autodiagnóstico):** Fase 0 audit completada y versionada en `docs/reports/audit-2026-04-07.md` (VPS `cursor-prompt-monitor`/`opsly-watcher` activos; Doppler OK para `DISCORD_WEBHOOK_URL`, `RESEND_API_KEY`, `PLATFORM_ADMIN_TOKEN`; faltan `GOOGLE_DRIVE_TOKEN` y `GITHUB_TOKEN_N8N`). Fase 1 plan versionado en `docs/AUTOMATION-PLAN.md`. Fase 2 TDD: nuevos tests `scripts/test-{notify-discord,drive-sync,n8n-webhook}.sh` creados y ejecutados. Fase 3 implementación: `scripts/notify-discord.sh`, `scripts/drive-sync.sh`, mejoras en `.githooks/post-commit` (notificación + drive sync condicional) y `scripts/cursor-prompt-monitor.sh` (before/after/error a Discord). Fase 4 documentación n8n: `docs/n8n-workflows/discord-to-github.json` + `docs/N8N-SETUP.md`. Fase 5 validación: tests unitarios en verde, `drive-sync --dry-run` OK, type-check verde, commit vacío de verificación de hook (`test(automation): verify post-commit hooks`). Flujo Claude documentado: `docs/ACTIVE-PROMPT.md`, `scripts/cursor-prompt-monitor.sh`, `infra/systemd/cursor-prompt-monitor.service`, logs en `logs/`. Fase 4 (plan multi-agente): `docs/OPENCLAW-ARCHITECTURE.md`, `docs/CLAUDE-WORKFLOW-OPTIMIZATION.md`, `docs/AUTO-PUSH-WATCHER.md`, `scripts/auto-push-watcher.sh`, `infra/systemd/opsly-watcher.service`. **2026-04-07 —** **Fase 2 invite/onboard:** `./scripts/validate-config.sh` → **LISTO PARA DEPLOY**. **Portal staging:** `https://portal.ops.smiletripcare.com/login` → **200** (tras recuperar contenedores `app`/`admin`/`portal` que habían quedado en `Created` y **404** en Traefik; ver `docs/TROUBLESHOOTING.md` y `deploy.yml` con `--force-recreate`). **`curl api`/health** → `status ok` (con `supabase: degraded`). **Contenedores Opsly:** `traefik`, `infra-redis-1`, `infra-app-*`, `opsly_admin`, `opsly_portal`; stacks de tenants `smiletripcare`, `peskids`, `intcloudsysops` activos en VPS. **Autodiagnóstico y ejecución autónoma:** commits `97616fe` y `docs/N8N-IMPORT-GUIDE.md` actualizado con estado operativo; limpieza de disco VPS aplicada (`100%` → `83%`), notificaciones Discord enviadas por cada acción, `drive-sync --dry-run` validado. **OpenClaw AI Platform v2 (iteración inicial):** `VISION.md` actualizado con roadmap de escalado vertical/horizontal; ADR-010/011/012 creados; nuevos workspaces `apps/llm-gateway` y `apps/context-builder`; `apps/orchestrator` extendido con workers/event bus/state store; `apps/ml` migrado a `llmCall`; migración `supabase/migrations/0009_usage_events.sql` y endpoint `GET /api/metrics/tenant/[slug]`. **Pendiente real para cierre end-to-end:** `GITHUB_TOKEN_N8N`, `GOOGLE_DRIVE_TOKEN`, `STRIPE_SECRET_KEY` válido, `ANTHROPIC_API_KEY` y bajar disco de VPS por debajo de `80%`.
 
@@ -439,24 +447,25 @@ Procedimientos vivos en el repo: **`skills/user/<skill>/SKILL.md`**. En runtimes
 
 <!-- Una sola tarea concreta. Actualizar al final de cada sesión -->
 
-### Cuando Cristian llegue a casa — orden exacto
+### Fase 10 — arranque inmediato (Google Cloud + BigQuery)
 
 ```bash
-# Paso 1: Pegar tokens en Doppler prd (stdin recomendado para no dejar valor en historial)
-doppler secrets set ANTHROPIC_API_KEY --project ops-intcloudsysops --config prd
-doppler secrets set GITHUB_TOKEN_N8N --project ops-intcloudsysops --config prd
-doppler secrets set RESEND_API_KEY --project ops-intcloudsysops --config prd
-doppler secrets set DISCORD_WEBHOOK_URL --project ops-intcloudsysops --config prd
+# Paso 1: Completar variables Google Cloud en Doppler prd
+doppler secrets set GOOGLE_CLOUD_PROJECT_ID --project ops-intcloudsysops --config prd
+doppler secrets set BIGQUERY_DATASET --project ops-intcloudsysops --config prd
+doppler secrets set VERTEX_AI_REGION --project ops-intcloudsysops --config prd
 
-# Paso 2: Activar todo (verifica secretos, db push, VPS, E2E invite, feedback API, Discord)
-./scripts/activate-tokens.sh
+# Paso 2: Validar readiness de secretos
+./scripts/check-tokens.sh
 
-# Paso 3: Importar workflow n8n
-# → https://n8n-intcloudsysops.ops.smiletripcare.com
-# → Workflows → Import → docs/n8n-workflows/discord-to-github.json
+# Paso 3: Reintentar Drive sync con service account (bloqueante actual)
+./scripts/drive-sync.sh
 
-# Paso 4: Google Drive (opcional esa noche)
-# → console.cloud.google.com → Service Account → JSON → Doppler GOOGLE_DRIVE_TOKEN
+# Paso 4: Notificar inicio Fase 10
+doppler run --project ops-intcloudsysops --config prd -- \
+  ./scripts/notify-discord.sh "☁️ Fase 10 iniciada" \
+  "Vars GCP cargadas + validación de tokens ejecutada" \
+  "success"
 ```
 
 ### Mantenimiento / deuda operativa
@@ -491,10 +500,13 @@ ssh vps-dragon@157.245.223.7 "docker system df && sudo du -xh /var --max-depth=2
 - [x] **Resend remitente en Doppler/VPS** — `RESEND_FROM_EMAIL` en `prd` + bootstrap + `app` recreado (2026-04-07).
 - [x] **Automation scripts base** — `scripts/notify-discord.sh`, `scripts/drive-sync.sh`, tests TDD y hooks en repo (2026-04-07).
 - [x] **Plan + auditoria automation** — `docs/AUTOMATION-PLAN.md`, `docs/reports/audit-2026-04-07.md`, `docs/N8N-SETUP.md`, `docs/n8n-workflows/discord-to-github.json` (2026-04-07).
-- [ ] **`RESEND_API_KEY` real en Doppler** — no basta con el prefijo `re_`; hace falta la clave completa (~36+ chars). Hasta entonces `POST /api/invitations` → 500 *API key is invalid*.
-- [ ] **`GOOGLE_DRIVE_TOKEN` en Doppler `prd`** — requerido para sync real a Drive (actualmente solo dry-run).
-- [ ] **`GITHUB_TOKEN_N8N` en Doppler `prd`** — requerido para workflow n8n Discord→GitHub.
-- [ ] **`ANTHROPIC_API_KEY` en Doppler `prd`** — requerido para llamadas reales del `llm-gateway`.
+- [x] **`RESEND_API_KEY` real en Doppler** — validado por E2E (`POST /api/invitations` → 200).
+- [x] **`DISCORD_WEBHOOK_URL` válido en Doppler `prd`** — `notify-discord.sh` devuelve OK.
+- [x] **`GITHUB_TOKEN_N8N` en Doppler `prd`** — presente y validado por `check-tokens.sh`.
+- [x] **`ANTHROPIC_API_KEY` en Doppler `prd`** — presente y validado por `check-tokens.sh`.
+- [ ] **`GOOGLE_CLOUD_PROJECT_ID` / `BIGQUERY_DATASET` / `VERTEX_AI_REGION` en `prd`** — requeridos para Fase 10.
+- [ ] **Drive sync con service account** — sigue fallando con `invalid_request` en token endpoint de Google.
+- [ ] **Imágenes GHCR faltantes/parciales** (`mcp`, `context-builder`) y `Deploy` workflow en `failure`.
 - [ ] **`STRIPE_PRICE_ID_*` en Doppler `prd` / secrets de CI** — necesarios para billing/checkout real en `apps/web`; el build puede completarse sin ellos (`envOrEmpty` en `apps/web/lib/stripe/plans.ts`), pero Stripe fallará en runtime si faltan.
 
 ---

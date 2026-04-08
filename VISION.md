@@ -197,6 +197,12 @@ Antes de proponer cualquier feature nuevo, verificar:
 
 ## Stack de expansión — Google Cloud + Open Source
 
+### Estado operativo (2026-04-09)
+- Fase 9 (activación producción) validada: migraciones Supabase aplicadas y E2E de invitaciones en verde.
+- Discord operativo con webhook válido en Doppler `prd`.
+- Transición iniciada a Fase 10 con foco en variables GCP (`GOOGLE_CLOUD_PROJECT_ID`, `BIGQUERY_DATASET`, `VERTEX_AI_REGION`).
+- Bloqueante vigente: `drive-sync` con service account aún devuelve `invalid_request` en OAuth token endpoint.
+
 ### Principio
 Usar gratis lo que Google da gratis.
 Integrar open source antes de pagar servicios.

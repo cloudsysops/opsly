@@ -1,15 +1,10 @@
-import dynamic from "next/dynamic";
-
-const FeedbackChatMount = dynamic(
-  () => import("@/components/FeedbackChatMount").then((m) => m.FeedbackChatMount),
-  { ssr: false },
-);
+import { FeedbackChatMount } from "@/components/FeedbackChatMount";
 
 export default function DashboardLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode;
-}) {
+}>) {
   return (
     <>
       {children}
