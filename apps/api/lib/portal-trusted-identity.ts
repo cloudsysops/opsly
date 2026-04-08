@@ -65,3 +65,14 @@ export async function resolveTrustedPortalSession(
     session: { user, tenant: lookup.row },
   };
 }
+
+/**
+ * Compara un `slug` (p. ej. de `params` en App Router) con el tenant ya verificado.
+ * No sustituye `resolveTrustedPortalSession`: úsalo después de obtener la sesión.
+ */
+export function tenantSlugMatchesSession(
+  session: TrustedPortalSession,
+  slug: string,
+): boolean {
+  return session.tenant.slug === slug;
+}

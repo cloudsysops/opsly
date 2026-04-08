@@ -1,5 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { resolveTrustedPortalSession } from "../portal-trusted-identity";
+import {
+  resolveTrustedPortalSession,
+  tenantSlugMatchesSession,
+} from "../portal-trusted-identity";
 import * as portalAuth from "../portal-auth";
 import * as portalMe from "../portal-me";
 
@@ -131,5 +134,41 @@ describe("resolveTrustedPortalSession", () => {
     expect(res.session.user.id).toBe("user-id-1");
     expect(res.session.tenant.slug).toBe("acme");
     expect(res.session.tenant.owner_email).toBe("owner@acme.com");
+  });
+});
+
+describe("tenantSlugMatchesSession", () => {
+  it("true cuando el slug coincide con el tenant de la sesión", () => {
+    const session = {
+      user: {} as never,
+      tenant: {
+        id: "uuid-1",
+        slug: "acme",
+        name: "Acme",
+        owner_email: "owner@acme.com",
+        plan: "startup" as const,
+        status: "active" as const,
+        services: {},
+        created_at: "2026-01-01",
+      },
+    };
+    expect(tenantSlugMatchesSession(session, "acme")).toBe(true);
+  });
+
+  it("false cuando el slug no coincide", () => {
+    const session = {
+      user: {} as never,
+      tenant: {
+        id: "uuid-1",
+        slug: "acme",
+        name: "Acme",
+        owner_email: "owner@acme.com",
+        plan: "startup" as const,
+        status: "active" as const,
+        services: {},
+        created_at: "2026-01-01",
+      },
+    };
+    expect(tenantSlugMatchesSession(session, "other")).toBe(false);
   });
 });
