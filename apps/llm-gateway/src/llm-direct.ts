@@ -190,16 +190,18 @@ async function finalizeSuccess(
     const promptHash = hashPrompt(req.messages, req.system);
     await cacheSet(req.tenant_slug, promptHash, content);
   }
-  await logUsage({
-    tenant_slug: req.tenant_slug,
-    model: model_used,
-    tokens_input: tokens_in,
-    tokens_output: tokens_out,
-    cost_usd: cost,
-    cache_hit: false,
-    session_id: req.session_id,
-    created_at: new Date().toISOString(),
-  });
+  if (!req.skip_usage_log) {
+    await logUsage({
+      tenant_slug: req.tenant_slug,
+      model: model_used,
+      tokens_input: tokens_in,
+      tokens_output: tokens_out,
+      cost_usd: cost,
+      cache_hit: false,
+      session_id: req.session_id,
+      created_at: new Date().toISOString(),
+    });
+  }
   return {
     content,
     model_used,

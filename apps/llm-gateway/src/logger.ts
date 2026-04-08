@@ -1,4 +1,5 @@
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
+import { platformSchema } from "./supabase-helpers.js";
 import type { UsageEvent } from "./types.js";
 
 let supabaseClient: ReturnType<typeof createSupabaseClient> | null = null;
@@ -29,7 +30,7 @@ export async function logUsage(event: UsageEvent): Promise<void> {
     if (!supabase) {
       return;
     }
-    await supabase.from("platform.usage_events").insert(event as never);
+    await platformSchema(supabase).from("usage_events").insert(event);
   } catch (error) {
     console.error("[llm-gateway] Error logging usage:", error);
   }
@@ -61,8 +62,8 @@ export async function getTenantUsage(
       ? new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString()
       : new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
 
-  const { data } = await supabase
-    .from("platform.usage_events")
+  const { data } = await platformSchema(supabase)
+    .from("usage_events")
     .select("tokens_input,tokens_output,cost_usd,cache_hit")
     .eq("tenant_slug", tenantSlug)
     .gte("created_at", from);

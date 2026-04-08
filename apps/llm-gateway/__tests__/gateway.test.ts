@@ -45,6 +45,7 @@ describe("LLM Gateway", () => {
 
     const resultPromise = llmCall({
       tenant_slug: "test",
+      legacy_pipeline: true,
       messages: [{ role: "user", content: "hola" }],
       temperature: 0,
     });
@@ -66,6 +67,7 @@ describe("LLM Gateway", () => {
 
     const resultPromise = llmCall({
       tenant_slug: "test",
+      legacy_pipeline: true,
       messages: [{ role: "user", content: "hola" }],
     });
     await vi.runAllTimersAsync();

@@ -8,6 +8,17 @@ interface BatchItem {
   queued_at: number;
 }
 
+/** Mayor número = mayor prioridad en flush (enterprise antes que startup). */
+function planPriority(tenantPlan: string | undefined): number {
+  if (tenantPlan === "enterprise") {
+    return 3;
+  }
+  if (tenantPlan === "business") {
+    return 2;
+  }
+  return 1;
+}
+
 const BATCH_CONFIG = {
   1: { max_size: 10, window_ms: 50, label: "Llama/simple" },
   2: { max_size: 5, window_ms: 100, label: "Haiku/moderate" },
@@ -56,6 +67,10 @@ async function flushQueue(level: 1 | 2 | 3): Promise<void> {
 
   const batch = queues[level].splice(0);
   if (batch.length === 0) return;
+
+  batch.sort(
+    (a, b) => planPriority(b.request.tenant_plan) - planPriority(a.request.tenant_plan),
+  );
 
   if (batch.length === 1) {
     try {

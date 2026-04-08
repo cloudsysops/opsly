@@ -1,3 +1,28 @@
+export type OutputChannel = "api" | "discord" | "portal_chat" | "cursor" | "email";
+
+export type TenantPlan = "startup" | "business" | "enterprise";
+
+export type IntentKind =
+  | "bug_fix"
+  | "feature_request"
+  | "refactor"
+  | "question"
+  | "deploy"
+  | "analysis"
+  | "config";
+
+export type AffectedArea = "frontend" | "backend" | "infra" | "ml";
+
+export type UrgencyLevel = "low" | "medium" | "high" | "critical";
+
+export interface DetectedIntent {
+  intent: IntentKind;
+  confidence: number;
+  affected_area: AffectedArea;
+  urgency: UrgencyLevel;
+  suggested_team: string;
+}
+
 export interface LLMMessage {
   role: "user" | "assistant";
   content: string;
@@ -13,6 +38,14 @@ export interface LLMRequest {
   temperature?: number;
   cache?: boolean;
   session_id?: string;
+  /** Plan del tenant para cola con prioridad y presupuesto (opcional; si falta se infiere o default startup). */
+  tenant_plan?: TenantPlan;
+  /** Canal de salida para formateo post-respuesta (v3). */
+  output_channel?: OutputChannel;
+  /** Si true, omite pipeline v3 (intent, enrich, scorer, etc.). */
+  legacy_pipeline?: boolean;
+  /** No escribe fila en usage_events (llamadas auxiliares: intent, scorer, reintentos intermedios). */
+  skip_usage_log?: boolean;
 }
 
 export interface LLMResponse {
@@ -25,6 +58,12 @@ export interface LLMResponse {
   latency_ms: number;
   /** Presente cuando la respuesta proviene de descomposición optimizada. */
   savings_usd?: number;
+  /** v3: metadatos opcionales */
+  intent?: DetectedIntent;
+  quality_score?: number;
+  formatted?: unknown;
+  semantic_cache_hit?: boolean;
+  budget_forced_cheap?: boolean;
 }
 
 export interface UsageEvent {
@@ -36,4 +75,5 @@ export interface UsageEvent {
   cache_hit: boolean;
   session_id?: string;
   created_at: string;
+  quality_score?: number;
 }
