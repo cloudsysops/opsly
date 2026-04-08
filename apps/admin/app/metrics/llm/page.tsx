@@ -22,29 +22,35 @@ function percent(n: number): string {
 export default function AdminLlmMetricsPage() {
   const [period, setPeriod] = useState<"today" | "month">("today");
 
-  const { data: tenantsData, error: tenantsError, isLoading: tenantsLoading } =
-    useSWR(["tenants", 1], () => getTenants({ page: 1, limit: 200 }), {
-      revalidateOnFocus: false,
-      refreshInterval: 60_000,
-    });
+  const {
+    data: tenantsData,
+    error: tenantsError,
+    isLoading: tenantsLoading,
+  } = useSWR(["tenants", 1], () => getTenants({ page: 1, limit: 200 }), {
+    revalidateOnFocus: false,
+    refreshInterval: 60_000,
+  });
 
   const tenants = tenantsData?.data ?? [];
   const slugs = useMemo(() => tenants.map((t) => t.slug), [tenants]);
 
-  const { data: metricsMap, error: metricsError, isLoading: metricsLoading } =
-    useSWR(
-      ["tenant-usage", period, ...slugs],
-      async () => {
-        const out: Record<string, TenantUsageMetricsResponse> = {};
-        await Promise.all(
-          slugs.map(async (slug) => {
-            out[slug] = await getTenantUsageMetrics(slug, period);
-          }),
-        );
-        return out;
-      },
-      { revalidateOnFocus: false, refreshInterval: 60_000 },
-    );
+  const {
+    data: metricsMap,
+    error: metricsError,
+    isLoading: metricsLoading,
+  } = useSWR(
+    ["tenant-usage", period, ...slugs],
+    async () => {
+      const out: Record<string, TenantUsageMetricsResponse> = {};
+      await Promise.all(
+        slugs.map(async (slug) => {
+          out[slug] = await getTenantUsageMetrics(slug, period);
+        }),
+      );
+      return out;
+    },
+    { revalidateOnFocus: false, refreshInterval: 60_000 },
+  );
 
   const rows = useMemo(() => {
     const map = metricsMap ?? {};
@@ -66,7 +72,13 @@ export default function AdminLlmMetricsPage() {
         requests: acc.requests + cur.requests,
         cache_hits: acc.cache_hits + cur.cache_hits,
       }),
-      { tokens_input: 0, tokens_output: 0, cost_usd: 0, requests: 0, cache_hits: 0 },
+      {
+        tokens_input: 0,
+        tokens_output: 0,
+        cost_usd: 0,
+        requests: 0,
+        cache_hits: 0,
+      },
     );
   }, [metricsMap]);
 
@@ -116,8 +128,18 @@ export default function AdminLlmMetricsPage() {
         <CardContent className="grid gap-3 md:grid-cols-5">
           <Stat label="Requests" value={String(total.requests)} />
           <Stat label="Cache hits" value={String(total.cache_hits)} />
-          <Stat label="Cache hit rate" value={percent(total.requests > 0 ? (total.cache_hits / total.requests) * 100 : 0)} />
-          <Stat label="Tokens (in/out)" value={`${total.tokens_input}/${total.tokens_output}`} />
+          <Stat
+            label="Cache hit rate"
+            value={percent(
+              total.requests > 0
+                ? (total.cache_hits / total.requests) * 100
+                : 0,
+            )}
+          />
+          <Stat
+            label="Tokens (in/out)"
+            value={`${total.tokens_input}/${total.tokens_output}`}
+          />
           <Stat label="Cost USD" value={fmtUsd(total.cost_usd)} />
         </CardContent>
       </Card>
@@ -199,4 +221,3 @@ function TenantRow({
     </tr>
   );
 }
-

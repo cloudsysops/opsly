@@ -20,7 +20,9 @@ export default function AdminAgentsPage() {
           Agent Teams
         </h1>
         <div className="font-mono text-xs text-ops-gray">
-          {data?.timestamp ? `updated ${new Date(data.timestamp).toLocaleString("es")}` : null}
+          {data?.timestamp
+            ? `updated ${new Date(data.timestamp).toLocaleString("es")}`
+            : null}
         </div>
       </div>
 
@@ -46,9 +48,19 @@ export default function AdminAgentsPage() {
 }
 
 function statusBadge(status: string) {
-  if (status === "active") return <Badge className="font-mono text-[10px]">active</Badge>;
-  if (status === "busy") return <Badge variant="gray" className="font-mono text-[10px]">busy</Badge>;
-  return <Badge variant="gray" className="font-mono text-[10px]">idle</Badge>;
+  if (status === "active")
+    return <Badge className="font-mono text-[10px]">active</Badge>;
+  if (status === "busy")
+    return (
+      <Badge variant="gray" className="font-mono text-[10px]">
+        busy
+      </Badge>
+    );
+  return (
+    <Badge variant="gray" className="font-mono text-[10px]">
+      idle
+    </Badge>
+  );
 }
 
 function TeamCard({ team }: Readonly<{ team: TeamMetrics }>) {
@@ -69,4 +81,3 @@ function TeamCard({ team }: Readonly<{ team: TeamMetrics }>) {
     </div>
   );
 }
-
