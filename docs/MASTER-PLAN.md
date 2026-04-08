@@ -12,6 +12,73 @@
 # Documentar todo en AGENTS.md al terminar cada fase.
 
 ═══════════════════════════════════════════════════════════════
+STACK DE LIBRERÍAS — INVENTARIO vs NECESIDAD (2026-04)
+═══════════════════════════════════════════════════════════════
+# Referencia cruzada con la lista “stack sugerido” externa. No añadir dependencias
+# masivas sin ADR + fase del plan; aquí solo se documenta qué ya existe, qué falta
+# por fase y qué es opcional / fuera de alcance actual.
+
+## Ya integrado en el monorepo (no duplicar)
+| Capa | Librería / herramienta | Dónde |
+|------|------------------------|--------|
+| Framework API/UI | Next.js 15 | apps/api, admin, portal, web |
+| Monorepo | turbo + npm workspaces | raíz |
+| Validación | zod | apps/api (y rutas que validan body) |
+| Colas | bullmq | apps/orchestrator |
+| Redis (cliente) | redis (node-redis v4) | apps/orchestrator, apps/llm-gateway; ioredis solo en apps/web |
+| DB / Auth | @supabase/supabase-js, @supabase/ssr | api (service), admin, portal |
+| Email | resend | apps/api |
+| Billing | stripe | apps/api |
+| LLM (Anthropic) | @anthropic-ai/sdk | apps/llm-gateway |
+| Paquetes internos | @intcloudsysops/llm-gateway, @intcloudsysops/ml | api → ml; ml → llm-gateway |
+| Procesos / CLI | execa | api, orchestrator |
+| Tests | vitest | api, orchestrator, ml, llm-gateway |
+| Reverse proxy / deploy | Traefik, Docker Compose, GitHub Actions | infra, .github |
+
+## Necesario para el sistema Opsly (core actual) — ya cubierto o cubierto por diseño
+- **API + validación:** Next + Zod — no añadir Joi/Yup salvo caso concreto (ADR).
+- **Colas:** BullMQ + Redis — coherente; no migrar a otro motor de colas sin ADR.
+- **Orquestación tenant:** Docker Compose por tenant (no K8s/Swarm; ya en reglas del plan).
+- **Auth:** Supabase Auth + tokens admin (PLATFORM_ADMIN_TOKEN); no next-auth salvo producto lo exija.
+- **Métricas host:** API ya consulta Prometheus vía HTTP (métricas sistema); no exige prom-client en package.json hoy.
+
+## Falta por fase del MASTER PLAN (añadir solo cuando toque la fase)
+| Fase | Librería / herramienta | Motivo |
+|------|------------------------|--------|
+| 8–9 | bull-board (opcional) | UI colas BullMQ en staging; no obligatorio en prod |
+| 9+ | @sentry/nextjs (u otro) | Error tracking unificado API/admin/portal — evaluar coste y DSN en Doppler |
+| 9+ | pino (o logger estructurado) | Sustituir gradualmente console.* en servicios largos (orchestrator, gateway) |
+| 10 | @google-cloud/bigquery (+ cliente GCP) | apps/analytics según PASO 10.1 del plan |
+| 10–11 | pgvector / embeddings | RAG y Fase 11 — migración Supabase + diseño índices |
+| 11 | OpenAI SDK (opcional) | Si fine-tuning o modelo OpenAI entra en pipeline además de Anthropic |
+| 11 | gray-matter | Si se formaliza parseo de SKILL.md en runtime (skills ya existen como docs) |
+| 12 | (sin cambio de stack masivo) | Stripe webhooks ya con zod donde aplique |
+
+## Opcionales / “útil más adelante” — no integrar por defecto
+- **Fastify / Express** junto a Next API: duplicaría superficie HTTP; Next basta salvo microservicio extra aislado (ADR).
+- **Prisma / Drizzle** además de Supabase client: duplicación de modelo; usar solo si hay query muy pesada fuera de PostgREST.
+- **LangChain / LangGraph:** solo si un flujo de agentes lo exige; hoy el gateway + orchestrator cubren el camino “Opsly”.
+- **LiteLLM / OpenRouter:** evaluar si multi-proveedor se vuelve requisito; hoy LLM Gateway propio.
+- **next-auth:** no alineado con “Supabase Auth + portal por invitación” sin rediseño.
+- **casl (RBAC):** valor si roles multi-tenant complejos; hoy policies en API + metadata.
+- **Twilio / FCM / nodemailer:** Resend cubre email; otros canales = nueva fase producto.
+- **Terraform:** ya en cultura del repo para infra; no mezclar con dependencias npm del app layer.
+- **Playwright E2E:** recomendable en CI; añadir workspace devDependency cuando haya suite E2E estable (no bloquea Fase 8).
+- **OpenTelemetry:** cuando SLOs y trazas distribuidas sean requisito; no sustituir logs básicos antes de tiempo.
+- **tiktoken / lodash:** solo si ML/context engine lo requiere medible (tokens, chunks); evitar lodash global si TS + utilidades nativas bastan.
+
+## Reglas para no romper nada
+1. Ninguna dependencia nueva en `apps/api` sin pasar `npm run type-check` y revisión de bundle (Next).
+2. Redis: orchestrator ya usa `redis` v4; antes de introducir **ioredis** en orchestrator, verificar compatibilidad BullMQ y una sola abstracción de conexión (evitar dos clientes distintos al mismo host sin motivo).
+3. AI: mantener regla **“no Anthropic directo desde producto; LLM Gateway”** salvo scripts internos documentados.
+4. Cualquier SDK de terceros con secretos → solo Doppler / env, nunca commit.
+
+## Resumen ejecutivo
+- **No hace falta** clonar el “stack completo” de la lista externa: gran parte ya está o está cubierta por diseño (Next, Zod, BullMQ, Redis, Supabase, Stripe, Resend, Vitest, Anthropic vía gateway).
+- **Sí hace falta planificar** (sin instalar aún): observabilidad producto (Sentry o similar), logger estructurado, E2E Playwright, BigQuery/analytics en Fase 10, vector/RAG en Fase 11 — según tablas anteriores.
+- **Evitar** añadir frameworks paralelos (Fastify, ORM duplicado, LangChain) hasta que una fase del plan o un ADR lo justifique.
+
+═══════════════════════════════════════════════════════════════
 FASE 0: PROTOCOLO OBLIGATORIO ANTES DE EMPEZAR
 ═══════════════════════════════════════════════════════════════
 

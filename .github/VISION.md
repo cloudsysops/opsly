@@ -193,6 +193,10 @@ Antes de proponer cualquier feature nuevo, verificar:
 > Nunca añadir infra nueva sin cliente pagador que lo justifique.
 > Escalar verticalmente primero. Horizontal solo con 10+ tenants activos.
 
+### Plan maestro incremental (plataforma AI — Fase 4)
+
+El desglose operativo (**extender sin re-arquitecturar**, mapa de `apps/*`, incrementos en orden, qué evitar, checklist de PR) vive en **`AGENTS.md`** → sección **«Fase 4 — Multi-agente Opsly (plan maestro de trabajo)»**. Aquí se mantienen la visión económica y el escalonamiento; allí, el trabajo ejecutable por sesiones.
+
 ---
 
 ## Stack de expansión — Google Cloud + Open Source
@@ -268,6 +272,10 @@ Nunca añadir infra nueva sin cliente pagador que lo justifique.
 |------|-----|---------|--------|
 | Apache Spark | Procesamiento batch masivo | Cuando datos > 10TB | ⏳ planificado |
 | Ray | Computación distribuida ML | Para fine-tuning serio | ⏳ planificado |
+
+### Inventario de librerías (npm vs necesidad)
+
+La fuente de verdad de qué paquetes **ya están** en el monorepo, qué falta **por fase** del roadmap y qué es **opcional / no ahora** está en **`docs/MASTER-PLAN.md`** (sección *STACK DE LIBRERÍAS — INVENTARIO vs NECESIDAD*). Evita duplicar frameworks o añadir dependencias masivas sin ADR.
 
 ### Reglas de integración
 
