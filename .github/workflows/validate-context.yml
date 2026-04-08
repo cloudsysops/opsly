@@ -10,6 +10,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Skills (manifest + SKILL.md)
+        run: npm run validate-skills
+
+      - name: Tests skills-manifest
+        run: npm run test-skills-manifest
+
       - name: system_state.json es JSON válido
         run: |
           python3 -m json.tool context/system_state.json > /dev/null

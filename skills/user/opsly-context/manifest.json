@@ -1,0 +1,16 @@
+{
+  "name": "opsly-context",
+  "version": "1.0.0",
+  "description": "Bootstrap de sesión: AGENTS, VISION, VPS, tokens",
+  "inputSchema": {
+    "type": "object",
+    "properties": {},
+    "additionalProperties": true
+  },
+  "outputSchema": {
+    "type": "object",
+    "properties": {
+      "contextLoaded": { "type": "boolean" }
+    }
+  }
+}
