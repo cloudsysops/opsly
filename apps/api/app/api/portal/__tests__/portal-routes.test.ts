@@ -1,9 +1,16 @@
+import { NextRequest } from "next/server";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { GET as portalMeGet } from "../me/route";
 import { POST as portalModePost } from "../mode/route";
+import { GET as portalUsageGet } from "../usage/route";
 import * as portalAuthMod from "../../../../lib/portal-auth";
 import * as portalMeLib from "../../../../lib/portal-me";
 import * as supabaseMod from "../../../../lib/supabase";
+import * as llmLogger from "@intcloudsysops/llm-gateway/logger";
+
+vi.mock("@intcloudsysops/llm-gateway/logger", () => ({
+  getTenantUsage: vi.fn(),
+}));
 
 vi.mock("../../../../lib/portal-auth", () => ({
   getUserFromAuthorizationHeader: vi.fn(),
@@ -247,5 +254,57 @@ describe("POST /api/portal/mode", () => {
     const body = (await res.json()) as Record<string, unknown>;
     expect(body.ok).toBe(true);
     expect(body.mode).toBe("developer");
+  });
+});
+
+describe("GET /api/portal/usage", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  function mockValidPortalUsageSession() {
+    vi.mocked(portalAuthMod.getUserFromAuthorizationHeader).mockResolvedValue({
+      id: "u1",
+      email: "owner@acme.com",
+      user_metadata: { tenant_slug: "acme" },
+    } as never);
+    vi.mocked(portalMeLib.fetchPortalTenantRowBySlug).mockResolvedValue({
+      ok: true,
+      row,
+    });
+  }
+
+  it("returns 401 without user", async () => {
+    vi.mocked(portalAuthMod.getUserFromAuthorizationHeader).mockResolvedValue(
+      null,
+    );
+    const res = await portalUsageGet(
+      new NextRequest("http://localhost/api/portal/usage"),
+    );
+    expect(res.status).toBe(401);
+  });
+
+  it("returns 200 with usage for session tenant only", async () => {
+    mockValidPortalUsageSession();
+    vi.mocked(llmLogger.getTenantUsage).mockResolvedValue({
+      tokens_input: 10,
+      tokens_output: 20,
+      cost_usd: 0.01,
+      requests: 2,
+      cache_hits: 1,
+    });
+
+    const res = await portalUsageGet(
+      new NextRequest("http://localhost/api/portal/usage?period=month", {
+        headers: { authorization: "Bearer t" },
+      }),
+    );
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as Record<string, unknown>;
+    expect(body.tenant).toBe("acme");
+    expect(body.period).toBe("month");
+    expect(body.requests).toBe(2);
+    expect(body.cache_hit_rate).toBe(50);
+    expect(llmLogger.getTenantUsage).toHaveBeenCalledWith("acme", "month");
   });
 });
