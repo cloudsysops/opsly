@@ -24,7 +24,12 @@ vi.mock("../lib/feedback-notify", () => ({
   notifyDiscordFeedback: vi.fn(),
 }));
 
+vi.mock("../lib/portal-feedback-auth", () => ({
+  resolveTrustedFeedbackIdentity: vi.fn(),
+}));
+
 import { llmCall } from "@intcloudsysops/llm-gateway";
+import { resolveTrustedFeedbackIdentity } from "../lib/portal-feedback-auth";
 import {
   analyzeFeedback,
   executeAutoImplement,
@@ -34,6 +39,22 @@ function chainableSupabaseForPostML() {
   return {
     schema: () => ({
       from: (table: string) => {
+        if (table === "feedback_conversations") {
+          return {
+            select: () => ({
+              eq: () => ({
+                maybeSingle: async () => ({
+                  data: {
+                    id: "conv-1",
+                    tenant_slug: "acme",
+                    user_email: "u@acme.com",
+                  },
+                  error: null,
+                }),
+              }),
+            }),
+          };
+        }
         if (table === "feedback_messages") {
           return {
             insert: async () => ({ error: null }),
@@ -97,6 +118,22 @@ function supabaseMockSecondMessageAnalysis() {
   return {
     schema: () => ({
       from: (table: string) => {
+        if (table === "feedback_conversations") {
+          return {
+            select: () => ({
+              eq: () => ({
+                maybeSingle: async () => ({
+                  data: {
+                    id: "conv-existing",
+                    tenant_slug: "acme",
+                    user_email: "u@acme.com",
+                  },
+                  error: null,
+                }),
+              }),
+            }),
+          };
+        }
         if (table === "feedback_messages") {
           return {
             insert: async () => ({ error: null }),
@@ -123,6 +160,10 @@ describe("/api/feedback", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     process.env.PLATFORM_ADMIN_TOKEN = "admin-secret-token";
+    vi.mocked(resolveTrustedFeedbackIdentity).mockResolvedValue({
+      ok: true,
+      identity: { tenant_slug: "acme", user_email: "u@acme.com" },
+    });
   });
 
   it("GET sin token → 401", async () => {
@@ -159,7 +200,28 @@ describe("/api/feedback", () => {
     expect(Array.isArray(body.feedbacks)).toBe(true);
   });
 
-  it("POST sin campos requeridos → 400", async () => {
+  it("POST sin sesión (sin resolver identidad) → 401", async () => {
+    vi.mocked(resolveTrustedFeedbackIdentity).mockResolvedValueOnce({
+      ok: false,
+      response: new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+      }),
+    });
+    const res = await feedbackPost(
+      new Request("http://localhost/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          tenant_slug: "acme",
+          user_email: "u@acme.com",
+          message: "x",
+        }),
+      }),
+    );
+    expect(res.status).toBe(401);
+  });
+
+  it("POST sin message → 400", async () => {
     const res = await feedbackPost(
       new Request("http://localhost/api/feedback", {
         method: "POST",
@@ -168,6 +230,59 @@ describe("/api/feedback", () => {
       }),
     );
     expect(res.status).toBe(400);
+  });
+
+  it("POST con tenant_slug que no coincide con sesión → 403", async () => {
+    const res = await feedbackPost(
+      new Request("http://localhost/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          tenant_slug: "otro-tenant",
+          user_email: "u@acme.com",
+          message: "hola",
+        }),
+      }),
+    );
+    expect(res.status).toBe(403);
+  });
+
+  it("POST con conversation_id de otro tenant → 403", async () => {
+    vi.mocked(supabaseMod.getServiceClient).mockReturnValue({
+      schema: () => ({
+        from: (table: string) => {
+          if (table === "feedback_conversations") {
+            return {
+              select: () => ({
+                eq: () => ({
+                  maybeSingle: async () => ({
+                    data: {
+                      id: "conv-other",
+                      tenant_slug: "evil",
+                      user_email: "u@acme.com",
+                    },
+                    error: null,
+                  }),
+                }),
+              }),
+            };
+          }
+          return {};
+        },
+      }),
+    } as never);
+
+    const res = await feedbackPost(
+      new Request("http://localhost/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message: "hola",
+          conversation_id: "conv-other",
+        }),
+      }),
+    );
+    expect(res.status).toBe(403);
   });
 
   it("POST sin conversation_id crea conversación y responde con clarify (llmCall)", async () => {

@@ -5,6 +5,10 @@ import {
   executeAutoImplement,
 } from "@intcloudsysops/ml/feedback-decision-engine-runtime";
 import { notifyDiscordFeedback } from "../feedback-notify";
+import {
+  resolveTrustedFeedbackIdentity,
+  type TrustedFeedbackIdentity,
+} from "../portal-feedback-auth";
 import { getServiceClient } from "../supabase";
 import { HTTP_STATUS } from "../constants";
 
@@ -112,14 +116,18 @@ function validateRequiredFeedbackFields(
 ): FeedbackPostFields | Response {
   if (!fields.tenant_slug || !fields.user_email || !fields.message) {
     return Response.json(
-      { error: "tenant_slug, user_email y message son requeridos" },
+      { error: "message es requerido; tenant y email vienen de la sesión" },
       { status: HTTP_STATUS.BAD_REQUEST },
     );
   }
   return fields;
 }
 
-function parseFeedbackPostFields(body: unknown): FeedbackPostFields | Response {
+/** Cuerpo: `message` obligatorio; `conversation_id` / `session_id` opcionales. tenant_slug/user_email opcionales si coinciden con la sesión (compat. portal). */
+function parseFeedbackPostFields(
+  body: unknown,
+  identity: TrustedFeedbackIdentity,
+): FeedbackPostFields | Response {
   if (body === null || typeof body !== "object") {
     return Response.json(
       { error: "Cuerpo inválido" },
@@ -127,13 +135,74 @@ function parseFeedbackPostFields(body: unknown): FeedbackPostFields | Response {
     );
   }
   const b = body as Record<string, unknown>;
+  const rawSlug = optionalStringField(b, "tenant_slug");
+  const rawEmail = optionalStringField(b, "user_email");
+  if (rawSlug !== undefined && rawSlug !== identity.tenant_slug) {
+    return Response.json(
+      { error: "tenant_slug no coincide con la sesión" },
+      { status: HTTP_STATUS.FORBIDDEN },
+    );
+  }
+  if (
+    rawEmail !== undefined &&
+    rawEmail.toLowerCase() !== identity.user_email.toLowerCase()
+  ) {
+    return Response.json(
+      { error: "user_email no coincide con la sesión" },
+      { status: HTTP_STATUS.FORBIDDEN },
+    );
+  }
+  const message = stringField(b, "message");
+  if (!message) {
+    return Response.json(
+      { error: "message es requerido" },
+      { status: HTTP_STATUS.BAD_REQUEST },
+    );
+  }
   return validateRequiredFeedbackFields({
-    tenant_slug: stringField(b, "tenant_slug"),
-    user_email: stringField(b, "user_email"),
-    message: stringField(b, "message"),
+    tenant_slug: identity.tenant_slug,
+    user_email: identity.user_email,
+    message,
     session_id: optionalStringField(b, "session_id"),
     conversation_id: optionalStringField(b, "conversation_id"),
   });
+}
+
+async function verifyConversationBelongsToUser(
+  supabase: ReturnType<typeof getServiceClient>,
+  conversationId: string,
+  identity: TrustedFeedbackIdentity,
+): Promise<Response | null> {
+  const { data, error } = await supabase
+    .schema("platform")
+    .from("feedback_conversations")
+    .select("id, tenant_slug, user_email")
+    .eq("id", conversationId)
+    .maybeSingle();
+
+  if (error) {
+    return Response.json(
+      { error: error.message },
+      { status: HTTP_STATUS.INTERNAL_ERROR },
+    );
+  }
+  if (!data || typeof data !== "object") {
+    return Response.json(
+      { error: "Conversación no encontrada" },
+      { status: HTTP_STATUS.NOT_FOUND },
+    );
+  }
+  const row = data as {
+    tenant_slug: string;
+    user_email: string;
+  };
+  if (row.tenant_slug !== identity.tenant_slug) {
+    return Response.json({ error: "Forbidden" }, { status: HTTP_STATUS.FORBIDDEN });
+  }
+  if (row.user_email.toLowerCase() !== identity.user_email.toLowerCase()) {
+    return Response.json({ error: "Forbidden" }, { status: HTTP_STATUS.FORBIDDEN });
+  }
+  return null;
 }
 
 type AssistantBranch = {
@@ -169,6 +238,19 @@ async function processFeedbackPost(
   fields: FeedbackPostFields,
 ): Promise<Response> {
   const supabase = getServiceClient();
+  if (fields.conversation_id) {
+    const block = await verifyConversationBelongsToUser(
+      supabase,
+      fields.conversation_id,
+      {
+        tenant_slug: fields.tenant_slug,
+        user_email: fields.user_email,
+      },
+    );
+    if (block) {
+      return block;
+    }
+  }
   const convId = await ensureConversationId(supabase, fields);
   if (convId instanceof Response) return convId;
 
@@ -205,10 +287,15 @@ async function processFeedbackPost(
 }
 
 export async function handleFeedbackPost(req: NextRequest): Promise<Response> {
+  const trusted = await resolveTrustedFeedbackIdentity(req);
+  if (!trusted.ok) {
+    return trusted.response;
+  }
+
   const bodyOrErr = await readJsonBody(req);
   if (bodyOrErr instanceof Response) return bodyOrErr;
 
-  const fieldsOrErr = parseFeedbackPostFields(bodyOrErr);
+  const fieldsOrErr = parseFeedbackPostFields(bodyOrErr, trusted.identity);
   if (fieldsOrErr instanceof Response) return fieldsOrErr;
 
   return processFeedbackPost(fieldsOrErr);
