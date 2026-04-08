@@ -1,10 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { NextRequest } from "next/server";
-import { GET as feedbackGet, POST as feedbackPost } from "../route";
-import { POST as approvePost } from "../approve/route";
-import * as supabaseMod from "../../../../lib/supabase";
+import { GET as feedbackGet, POST as feedbackPost } from "../app/api/feedback/route";
+import { POST as approvePost } from "../app/api/feedback/approve/route";
+import * as supabaseMod from "../lib/supabase";
 
-vi.mock("../../../../lib/supabase", () => ({
+vi.mock("../lib/supabase", () => ({
   getServiceClient: vi.fn(),
 }));
 
@@ -17,16 +17,17 @@ vi.mock("@intcloudsysops/ml/feedback-decision-engine", () => ({
   executeAutoImplement: vi.fn(),
 }));
 
-vi.mock("../../../../lib/feedback-notify", () => ({
+vi.mock("../lib/feedback-notify", () => ({
   notifyDiscordFeedback: vi.fn(),
 }));
 
+import { llmCall } from "@intcloudsysops/llm-gateway";
 import {
   analyzeFeedback,
   executeAutoImplement,
 } from "@intcloudsysops/ml/feedback-decision-engine";
 
-function chainableSupabaseForPost() {
+function chainableSupabaseForPostML() {
   return {
     schema: () => ({
       from: (table: string) => {
@@ -39,6 +40,67 @@ function chainableSupabaseForPost() {
                   data: [
                     { role: "user", content: "primera" },
                     { role: "user", content: "x".repeat(120) },
+                  ],
+                  error: null,
+                }),
+              }),
+            }),
+          };
+        }
+        return {};
+      },
+    }),
+  };
+}
+
+/** Primera interacción: crea conversación, mensaje corto, rama clarificar + llmCall */
+function supabaseMockNewConversationClarify() {
+  const convId = "conv-new-1";
+  return {
+    schema: () => ({
+      from: (table: string) => {
+        if (table === "feedback_conversations") {
+          return {
+            insert: () => ({
+              select: () => ({
+                single: async () => ({ data: { id: convId }, error: null }),
+              }),
+            }),
+          };
+        }
+        if (table === "feedback_messages") {
+          return {
+            insert: async () => ({ error: null }),
+            select: () => ({
+              eq: () => ({
+                order: async () => ({
+                  data: [{ role: "user", content: "Hola, un comentario corto" }],
+                  error: null,
+                }),
+              }),
+            }),
+          };
+        }
+        return {};
+      },
+    }),
+  };
+}
+
+/** Segundo POST con conversation_id: 2 mensajes usuario → análisis ML */
+function supabaseMockSecondMessageAnalysis() {
+  return {
+    schema: () => ({
+      from: (table: string) => {
+        if (table === "feedback_messages") {
+          return {
+            insert: async () => ({ error: null }),
+            select: () => ({
+              eq: () => ({
+                order: async () => ({
+                  data: [
+                    { role: "user", content: "uno" },
+                    { role: "user", content: "dos" },
                   ],
                   error: null,
                 }),
@@ -103,9 +165,81 @@ describe("/api/feedback", () => {
     expect(res.status).toBe(400);
   });
 
+  it("POST sin conversation_id crea conversación y responde con clarify (llmCall)", async () => {
+    vi.mocked(supabaseMod.getServiceClient).mockReturnValue(
+      supabaseMockNewConversationClarify() as never,
+    );
+    vi.mocked(llmCall).mockResolvedValue({
+      content: "¿Puedes detallar un poco más?",
+      model_used: "haiku",
+      tokens_input: 1,
+      tokens_output: 1,
+      cost_usd: 0,
+      cache_hit: false,
+      latency_ms: 1,
+    });
+
+    const res = await feedbackPost(
+      new Request("http://localhost/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          tenant_slug: "acme",
+          user_email: "u@acme.com",
+          message: "Hola, un comentario corto",
+        }),
+      }),
+    );
+
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as {
+      conversation_id: string;
+      message: string;
+      decision_type: null | string;
+    };
+    expect(body.conversation_id).toBe("conv-new-1");
+    expect(body.message).toContain("detallar");
+    expect(body.decision_type).toBeNull();
+    expect(analyzeFeedback).not.toHaveBeenCalled();
+    expect(llmCall).toHaveBeenCalled();
+  });
+
+  it("POST con 2+ mensajes de usuario dispara análisis ML (sin mensaje largo)", async () => {
+    vi.mocked(supabaseMod.getServiceClient).mockReturnValue(
+      supabaseMockSecondMessageAnalysis() as never,
+    );
+    vi.mocked(analyzeFeedback).mockResolvedValue({
+      output: {
+        decision_type: "needs_approval",
+        criticality: "medium",
+        reasoning: "test",
+        user_response: "Gracias",
+        notify_discord: false,
+      },
+      decision_id: "d1",
+    });
+
+    const res = await feedbackPost(
+      new Request("http://localhost/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          tenant_slug: "acme",
+          user_email: "u@acme.com",
+          message: "dos",
+          conversation_id: "conv-existing",
+        }),
+      }),
+    );
+
+    expect(res.status).toBe(200);
+    expect(analyzeFeedback).toHaveBeenCalled();
+    expect(executeAutoImplement).not.toHaveBeenCalled();
+  });
+
   it("POST con mensaje largo dispara análisis ML", async () => {
     vi.mocked(supabaseMod.getServiceClient).mockReturnValue(
-      chainableSupabaseForPost() as never,
+      chainableSupabaseForPostML() as never,
     );
     vi.mocked(analyzeFeedback).mockResolvedValue({
       output: {
