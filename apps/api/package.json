@@ -14,6 +14,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
+    "@intcloudsysops/ml": "^1.0.0",
     "@intcloudsysops/llm-gateway": "^1.0.0",
     "@supabase/supabase-js": "^2.49.1",
     "execa": "^9.5.2",

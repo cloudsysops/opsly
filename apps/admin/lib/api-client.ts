@@ -200,3 +200,47 @@ export async function sendInvitation(
     }),
   });
 }
+
+export type FeedbackDecisionRow = {
+  id?: string;
+  decision_type?: string;
+  criticality?: string;
+  reasoning?: string;
+  implemented_at?: string | null;
+  created_at?: string;
+};
+
+export type FeedbackConversationRow = {
+  id: string;
+  tenant_slug: string;
+  user_email: string;
+  status: string;
+  created_at: string;
+  feedback_decisions?: FeedbackDecisionRow[] | null;
+};
+
+export type ListFeedbackResponse = {
+  feedbacks: FeedbackConversationRow[];
+};
+
+export async function listFeedback(params: {
+  status?: string;
+  limit?: number;
+}): Promise<ListFeedbackResponse> {
+  const search = new URLSearchParams();
+  search.set("limit", String(params.limit ?? 50));
+  if (params.status) {
+    search.set("status", params.status);
+  }
+  return request<ListFeedbackResponse>(`/api/feedback?${search.toString()}`);
+}
+
+export async function approveFeedbackDecision(body: {
+  decision_id: string;
+  approved: boolean;
+}): Promise<{ success: boolean; approved: boolean }> {
+  return request(`/api/feedback/approve`, {
+    method: "POST",
+    body: JSON.stringify(body),
+  });
+}

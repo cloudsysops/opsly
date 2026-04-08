@@ -10,6 +10,7 @@ const labels: Record<string, string> = {
   tenants: "Tenants",
   settings: "Settings",
   login: "Login",
+  feedback: "Feedback",
 };
 
 export function Topbar() {

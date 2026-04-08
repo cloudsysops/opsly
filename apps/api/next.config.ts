@@ -10,7 +10,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const nextConfig: NextConfig = {
   output: "standalone",
   outputFileTracingRoot: path.join(__dirname, "../.."),
-  transpilePackages: ["@intcloudsysops/llm-gateway"],
+  transpilePackages: ["@intcloudsysops/llm-gateway", "@intcloudsysops/ml"],
 };
 
 export default nextConfig;
