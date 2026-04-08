@@ -41,7 +41,7 @@ fi
 
 source "$SCRIPT_DIR/lib/google-auth.sh"
 
-TOKEN="$(get_google_token)"
+TOKEN="$(get_google_token || true)"
 if [[ -z "$TOKEN" ]]; then
   warn "No se pudo obtener access token (service account) — Drive sync omitido"
   exit 0
