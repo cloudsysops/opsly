@@ -3,8 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "exports": {
-    ".": "./src/index.ts",
-    "./feedback-decision-engine": "./src/feedback-decision-engine.ts"
+    ".": "./dist/src/index.js",
+    "./feedback-decision-engine": "./dist/src/feedback-decision-engine.js",
+    "./feedback-decision-engine-runtime": "./dist/src/feedback-decision-engine.js"
   },
   "scripts": {
     "dev": "tsx watch src/index.ts",

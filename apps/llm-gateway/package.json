@@ -11,9 +11,21 @@
     "type-check": "tsc --noEmit"
   },
   "exports": {
-    ".": "./src/index.ts",
-    "./logger": "./src/logger.ts",
-    "./cache": "./src/cache.ts"
+    ".": {
+      "import": "./dist/src/index.js",
+      "default": "./dist/src/index.js",
+      "types": "./src/index.ts"
+    },
+    "./logger": {
+      "import": "./dist/src/logger.js",
+      "default": "./dist/src/logger.js",
+      "types": "./src/logger.ts"
+    },
+    "./cache": {
+      "import": "./dist/src/cache.js",
+      "default": "./dist/src/cache.js",
+      "types": "./src/cache.ts"
+    }
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.57.0",

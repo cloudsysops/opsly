@@ -3,9 +3,9 @@ import { NextRequest } from "next/server";
 import { requireAdminToken } from "../../../../../lib/auth";
 
 type RouteContext = {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 };
 
 export async function GET(
@@ -19,10 +19,11 @@ export async function GET(
 
   const periodParam = request.nextUrl.searchParams.get("period");
   const period = periodParam === "month" ? "month" : "today";
-  const usage = await getTenantUsage(context.params.slug, period);
+  const { slug } = await context.params;
+  const usage = await getTenantUsage(slug, period);
 
   return Response.json({
-    tenant: context.params.slug,
+    tenant: slug,
     period,
     ...usage,
     cache_hit_rate:

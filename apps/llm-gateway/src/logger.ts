@@ -1,10 +1,20 @@
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import type { UsageEvent } from "./types.js";
 
-const supabase = createSupabaseClient(
-  process.env.SUPABASE_URL || "",
-  process.env.SUPABASE_SERVICE_ROLE_KEY || "",
-);
+let supabaseClient: ReturnType<typeof createSupabaseClient> | null = null;
+
+function getSupabaseClient(): ReturnType<typeof createSupabaseClient> | null {
+  if (supabaseClient) {
+    return supabaseClient;
+  }
+  const supabaseUrl = process.env.SUPABASE_URL;
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!supabaseUrl || !serviceRoleKey) {
+    return null;
+  }
+  supabaseClient = createSupabaseClient(supabaseUrl, serviceRoleKey);
+  return supabaseClient;
+}
 
 type UsageRow = {
   tokens_input: number;
@@ -15,7 +25,11 @@ type UsageRow = {
 
 export async function logUsage(event: UsageEvent): Promise<void> {
   try {
-    await supabase.schema("platform").from("usage_events").insert(event);
+    const supabase = getSupabaseClient();
+    if (!supabase) {
+      return;
+    }
+    await supabase.from("platform.usage_events").insert(event as never);
   } catch (error) {
     console.error("[llm-gateway] Error logging usage:", error);
   }
@@ -31,6 +45,16 @@ export async function getTenantUsage(
   requests: number;
   cache_hits: number;
 }> {
+  const supabase = getSupabaseClient();
+  if (!supabase) {
+    return {
+      tokens_input: 0,
+      tokens_output: 0,
+      cost_usd: 0,
+      requests: 0,
+      cache_hits: 0,
+    };
+  }
   const now = new Date();
   const from =
     period === "today"
@@ -38,8 +62,7 @@ export async function getTenantUsage(
       : new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
 
   const { data } = await supabase
-    .schema("platform")
-    .from("usage_events")
+    .from("platform.usage_events")
     .select("tokens_input,tokens_output,cost_usd,cache_hit")
     .eq("tenant_slug", tenantSlug)
     .gte("created_at", from);

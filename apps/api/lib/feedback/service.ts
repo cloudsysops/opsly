@@ -3,8 +3,7 @@ import { llmCall } from "@intcloudsysops/llm-gateway";
 import {
   analyzeFeedback,
   executeAutoImplement,
-  type DecisionOutput,
-} from "@intcloudsysops/ml/feedback-decision-engine";
+} from "@intcloudsysops/ml/feedback-decision-engine-runtime";
 import { notifyDiscordFeedback } from "../feedback-notify";
 import { getServiceClient } from "../supabase";
 import { HTTP_STATUS } from "../constants";
@@ -64,9 +63,24 @@ type FeedbackPostFields = {
   conversation_id?: string;
 };
 
-async function readJsonBody(req: NextRequest): Promise<unknown | Response> {
+type DecisionType = "auto_implement" | "needs_approval" | "rejected" | "scheduled";
+type Criticality = "low" | "medium" | "high" | "critical";
+type DecisionOutput = {
+  decision_type: DecisionType;
+  criticality: Criticality;
+  reasoning: string;
+  implementation_prompt?: string;
+  user_response: string;
+  notify_discord: boolean;
+};
+
+async function readJsonBody(req: NextRequest): Promise<Record<string, unknown> | Response> {
   try {
-    return await req.json();
+    const body = await req.json();
+    if (body && typeof body === "object") {
+      return body as Record<string, unknown>;
+    }
+    return {};
   } catch {
     return Response.json(
       { error: "JSON inválido" },
@@ -274,7 +288,7 @@ async function runAnalysisBranch(
     messages: Array<{ role: "user" | "assistant"; content: string }>;
   },
 ): Promise<AssistantBranch> {
-  const { output, decision_id } = await analyzeFeedback(
+  const analyzed = (await analyzeFeedback(
     {
       conversation_id: ctx.convId,
       tenant_slug: ctx.tenant_slug,
@@ -282,7 +296,8 @@ async function runAnalysisBranch(
       messages: ctx.messages,
     },
     supabase,
-  );
+  )) as { output: DecisionOutput; decision_id: string | null };
+  const { output, decision_id } = analyzed;
 
   await notifyDecisionDiscord(output, ctx.tenant_slug, ctx.user_email);
 
