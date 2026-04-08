@@ -63,7 +63,11 @@ type FeedbackPostFields = {
   conversation_id?: string;
 };
 
-type DecisionType = "auto_implement" | "needs_approval" | "rejected" | "scheduled";
+type DecisionType =
+  | "auto_implement"
+  | "needs_approval"
+  | "rejected"
+  | "scheduled";
 type Criticality = "low" | "medium" | "high" | "critical";
 type DecisionOutput = {
   decision_type: DecisionType;
@@ -74,7 +78,9 @@ type DecisionOutput = {
   notify_discord: boolean;
 };
 
-async function readJsonBody(req: NextRequest): Promise<Record<string, unknown> | Response> {
+async function readJsonBody(
+  req: NextRequest,
+): Promise<Record<string, unknown> | Response> {
   try {
     const body = await req.json();
     if (body && typeof body === "object") {
