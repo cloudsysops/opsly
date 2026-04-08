@@ -1,7 +1,7 @@
 import { createClient } from "redis";
 
 const REDIS_URL = process.env.REDIS_URL || "redis://localhost:6379";
-const TTL_SECONDS = 3600;
+const TTL_SECONDS = Number.parseInt(process.env.LLM_CACHE_TTL_SECONDS ?? "7200", 10) || 7200;
 
 let client: ReturnType<typeof createClient> | null = null;
 

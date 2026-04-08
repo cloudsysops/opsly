@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const createMock = vi.hoisted(() => vi.fn());
 
@@ -11,6 +11,12 @@ vi.mock("@anthropic-ai/sdk", () => {
     })),
   };
 });
+
+vi.mock("../src/health-daemon.js", () => ({
+  healthDaemon: {
+    isAvailable: vi.fn().mockResolvedValue(true),
+  },
+}));
 
 vi.mock("../src/cache.js", () => ({
   cacheGet: vi.fn(),
@@ -27,16 +33,23 @@ import { llmCall } from "../src/gateway.js";
 describe("LLM Gateway", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
   it("retorna cache hit sin llamar a Anthropic", async () => {
     vi.mocked(cache.cacheGet).mockResolvedValueOnce("respuesta cacheada");
 
-    const result = await llmCall({
+    const resultPromise = llmCall({
       tenant_slug: "test",
       messages: [{ role: "user", content: "hola" }],
       temperature: 0,
     });
+    await vi.runAllTimersAsync();
+    const result = await resultPromise;
 
     expect(result.cache_hit).toBe(true);
     expect(result.content).toBe("respuesta cacheada");
@@ -51,10 +64,12 @@ describe("LLM Gateway", () => {
       usage: { input_tokens: 100, output_tokens: 50 },
     });
 
-    const result = await llmCall({
+    const resultPromise = llmCall({
       tenant_slug: "test",
       messages: [{ role: "user", content: "hola" }],
     });
+    await vi.runAllTimersAsync();
+    const result = await resultPromise;
 
     expect(result.cache_hit).toBe(false);
     expect(result.content).toBe("respuesta modelo");

@@ -1,33 +1,39 @@
-# LLM Gateway — Opsly
+# LLM Gateway — Opsly (v2 Beast Mode)
 
-Punto único para llamadas a modelos Anthropic desde `apps/ml`, `apps/context-builder` y cualquier workspace que importe `@intcloudsysops/llm-gateway`.
+Punto único para llamadas a modelos desde `apps/ml`, `apps/context-builder` y cualquier workspace que importe `@intcloudsysops/llm-gateway`.
 
 ## Qué hace
 
-- Expone `llmCall()` con selección de modelo (Sonnet / Haiku), estimación de coste y registro de uso.
-- Usa Redis para **deduplicar** prompts equivalentes (cache por hash del mensaje + modelo + tenant).
-- Puede persistir eventos de uso en Supabase (`platform.usage_events`) vía el módulo `logger`.
+- **`llmCall()`** (público): analiza complejidad (niveles 1–3), opcionalmente **descompone** tareas grandes (Haiku → subtareas → merge), **agrupa** peticiones en ventanas por nivel (batch), y enruta a **varios proveedores** con fallback.
+- **`llmCallDirect()`**: una sola ejecución sin batch ni descomposición (uso interno y pruebas avanzadas).
+- **Redis**: cache agresivo por hash de mensajes + tenant (`LLM_CACHE_TTL_SECONDS`, default 7200s) y **estado de salud** por API (`provider:*` keys).
+- **Health daemon** (proceso `server.ts`): ping cada 30s, circuit breaker (3 fallos → `down`), reintento a proveedores `down` cada 60s, alertas **Discord** en transiciones.
+- Supabase opcional: `platform.usage_events` vía `logger`.
 
-En **contenedor** (`Dockerfile`), el proceso escucha **GET `/health`** en el puerto configurado por `LLM_GATEWAY_PORT` (por defecto `3010`) para liveness.
+En **contenedor** (`Dockerfile`), el proceso escucha **GET `/health`** en `LLM_GATEWAY_PORT` (default `3010`).
 
-## Flujo de cache
+## Proveedores y niveles (resumen)
 
-1. Se calcula un hash estable del prompt normalizado (`hashPrompt`).
-2. Si existe entrada en Redis para `(tenant_slug, hash)` y no expiró, se devuelve la respuesta cacheada sin llamar a la API.
-3. Si no hay cache, se llama a Anthropic, se guarda en Redis con TTL y se registra uso (tokens / coste) según configuración.
+Definidos en `apps/llm-gateway/src/providers.ts` y costes en `router.ts` / `estimateCost`.
 
-## Modelos disponibles (Sonnet / Haiku)
+| Proveedor | Nivel típico | Coste orientativo / 1k tokens | Uso |
+|-----------|----------------|-------------------------------|-----|
+| Llama local | 1 | $0 | Clasificación, extracción, tareas baratas (`model: "cheap"` o complejidad 1) |
+| Claude Haiku | 2 | ~$0.00025 in / $0.00125 out | Moderado, RAG simple |
+| OpenRouter (Mistral 7B) | 2 | ~$0.00002 in / $0.00006 out | Fallback económico |
+| GPT-4o mini | 2 | ~$0.00015 in / $0.0006 out | Fallback OpenAI |
+| Claude Sonnet | 3 | ~$0.003 in / $0.015 out | Arquitectura, código complejo |
+| GPT-4o | 3 | ~$0.005 in / $0.015 out | Fallback si Sonnet no disponible |
 
-Definidos en `apps/llm-gateway/src/router.ts`:
+Salud en Redis se agrupa por **API**: `anthropic`, `llama_local`, `openrouter`, `openai`.
 
-| Alias   | ID API (referencia)     | Uso típico        |
-|--------|---------------------------|-------------------|
-| sonnet | `claude-sonnet-4-20250514` | Calidad / razonamiento |
-| haiku  | `claude-haiku-4-5-20251001` | Velocidad / fallback |
+## Flujo
 
-`selectModel(preference, fallback)` elige Haiku cuando `fallback === true`.
+1. Hash del prompt → cache hit devuelve respuesta sin llamar APIs.
+2. Si no hay cache: cadena de proveedores según preferencia (`sonnet` / `haiku` / `cheap`) y **disponibilidad** en Redis.
+3. `llmCall` aplica batch por nivel de complejidad (ventanas 50–200ms, tamaños 10/5/3) salvo descomposición.
 
-## Cómo usar desde otro servicio
+## Uso desde otro servicio
 
 ```typescript
 import { llmCall } from "@intcloudsysops/llm-gateway";
@@ -35,24 +41,21 @@ import { llmCall } from "@intcloudsysops/llm-gateway";
 const out = await llmCall({
   tenant_slug: "acme",
   messages: [{ role: "user", content: "Hola" }],
-  model_preference: "haiku",
+  model: "haiku",
+  temperature: 0,
 });
 ```
 
-Asegura dependencia en `package.json` del workspace (`"@intcloudsysops/llm-gateway": "^1.0.0"`) y que el monorepo resuelva el workspace vía `npm ci` en la raíz.
+`model` admite al menos `sonnet`, `haiku`, `cheap` (prioriza Ollama). Otros valores se tratan como hint de string.
 
-## Variables de entorno requeridas
+## Variables de entorno
 
-| Variable | Rol |
-|----------|-----|
-| `ANTHROPIC_API_KEY` | Llamadas reales a Anthropic (sin ella, operación limitada / errores en runtime). |
-| `REDIS_URL` | URL de Redis (Compose suele inyectar `redis://:password@redis:6379/0`). |
-| `REDIS_PASSWORD` | Coherente con la URL si el cliente lo exige por separado. |
-| `SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY` | Opcional: registro de `usage_events` en Postgres. |
-| `LLM_GATEWAY_PORT` | Solo proceso HTTP de health (default `3010`). |
+Ver **`docs/DOPPLER-VARS.md`** (sección LLM Gateway). Mínimo habitual: `ANTHROPIC_API_KEY`, `REDIS_URL`, opcionales `OPENROUTER_API_KEY`, `OPENAI_API_KEY`, `OLLAMA_URL`, `DISCORD_WEBHOOK_URL`, `SUPABASE_*`, `LLM_GATEWAY_PORT`, `LLM_CACHE_TTL_SECONDS`.
 
-## Cómo agregar un modelo nuevo
+## Tests
 
-1. Añadir entrada en `MODEL_CONFIG` en `router.ts` (id oficial Anthropic, `cost_per_1k_input` / `cost_per_1k_output`).
-2. Extender el tipo de `preference` en `types.ts` y en `selectModel` si aplica.
-3. Ajustar tests en `apps/llm-gateway/__tests__/` y documentar el alias aquí.
+```bash
+cd apps/llm-gateway && npm test
+```
+
+Variable `LLM_BATCH_WINDOW_SCALE=0` en el script `test` del paquete para ventanas de batch instantáneas en CI.

@@ -1,22 +1,26 @@
+import { PROVIDERS } from "./providers.js";
+
 export const MODEL_CONFIG = {
   sonnet: {
-    id: "claude-sonnet-4-20250514",
-    cost_per_1k_input: 0.003,
-    cost_per_1k_output: 0.015,
+    id: PROVIDERS.claude_sonnet.model,
+    cost_per_1k_input: PROVIDERS.claude_sonnet.cost_per_1k_input,
+    cost_per_1k_output: PROVIDERS.claude_sonnet.cost_per_1k_output,
   },
   haiku: {
-    id: "claude-haiku-4-5-20251001",
-    cost_per_1k_input: 0.00025,
-    cost_per_1k_output: 0.00125,
+    id: PROVIDERS.claude_haiku.model,
+    cost_per_1k_input: PROVIDERS.claude_haiku.cost_per_1k_input,
+    cost_per_1k_output: PROVIDERS.claude_haiku.cost_per_1k_output,
   },
 } as const;
 
 type ModelConfig = (typeof MODEL_CONFIG)[keyof typeof MODEL_CONFIG];
 
-export function selectModel(
-  preference: "sonnet" | "haiku" = "sonnet",
-  fallback = false,
-): ModelConfig {
+export type Costable = {
+  cost_per_1k_input: number;
+  cost_per_1k_output: number;
+};
+
+export function selectModel(preference: "sonnet" | "haiku" = "sonnet", fallback = false): ModelConfig {
   if (fallback) {
     return MODEL_CONFIG.haiku;
   }
@@ -24,7 +28,7 @@ export function selectModel(
 }
 
 export function estimateCost(
-  model: ModelConfig,
+  model: ModelConfig | Costable,
   tokensInput: number,
   tokensOutput: number,
 ): number {

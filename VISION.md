@@ -169,6 +169,17 @@ Antes de proponer cualquier feature nuevo, verificar:
 - Ejecución paralela con límites por plan (startup: 2, business: 5, enterprise: unlimited)
 - Estado persistido en Redis con TTL por sesión
 
+### Tabla de proveedores LLM (Gateway v2)
+
+| Provider | Nivel | Costo/1k tokens (orientativo) | Cuándo usar |
+|----------|-------|------------------------------|-------------|
+| Llama local | 1 | $0 | Clasificación, extracción, formato |
+| Claude Haiku | 2 | ~$0.001 combinado típico | Respuestas moderadas, RAG simple |
+| OpenRouter Mistral | 2 | ~$0.0002 combinado típico | Alternativa económica nivel 2 |
+| GPT-4o mini | 2 | ~$0.0004 combinado típico | Alternativa si Haiku no disponible |
+| Claude Sonnet | 3 | ~$0.015 salida (referencia) | Arquitectura, código complejo |
+| GPT-4o | 3 | ~$0.015 salida (referencia) | Fallback si Sonnet no disponible |
+
 **Servicios nuevos en roadmap:**
 1. LLM Gateway (cache + routing + cost control)
 2. Context Builder (prompt optimization)

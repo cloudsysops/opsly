@@ -7,7 +7,8 @@ export interface LLMRequest {
   tenant_slug: string;
   messages: LLMMessage[];
   system?: string;
-  model?: "sonnet" | "haiku";
+  /** Preferencia de ruta: sonnet | haiku | cheap (Llama primero) u otros alias. */
+  model?: string;
   max_tokens?: number;
   temperature?: number;
   cache?: boolean;
@@ -22,6 +23,8 @@ export interface LLMResponse {
   cost_usd: number;
   cache_hit: boolean;
   latency_ms: number;
+  /** Presente cuando la respuesta proviene de descomposición optimizada. */
+  savings_usd?: number;
 }
 
 export interface UsageEvent {

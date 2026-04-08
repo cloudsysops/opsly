@@ -4,10 +4,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "tsx watch src/index.ts",
+    "dev": "tsx watch src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
-    "test": "vitest run",
+    "test": "LLM_BATCH_WINDOW_SCALE=0 vitest run",
     "type-check": "tsc --noEmit"
   },
   "exports": {
