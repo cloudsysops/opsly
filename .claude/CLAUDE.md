@@ -16,6 +16,59 @@ Antes de CUALQUIER tarea, sin excepcion:
 Planificar -> Documentar -> Tests -> Implementar -> Validar -> Notificar
 NUNCA adivinar. NUNCA saltarse pasos.
 
+---
+
+# Claude en Opsly — Modo supremo (skills)
+
+## Antes de cualquier sesión
+
+1. Usar el skill **opsly-context** (repo: `skills/user/opsly-context/SKILL.md`).
+2. Leer `AGENTS.md` + `VISION.md` + `docs/OPENCLAW-ARCHITECTURE.md`.
+3. Estado VPS / tokens según ese skill.
+
+## URLs de contexto
+
+- AGENTS.md raw: https://raw.githubusercontent.com/cloudsysops/opsly/main/AGENTS.md
+- VISION.md raw: https://raw.githubusercontent.com/cloudsysops/opsly/main/VISION.md
+
+## Skills en el repo (fuente de verdad)
+
+Ruta base: **`skills/user/<skill>/SKILL.md`**. Si el runtime monta `/mnt/skills/user`, sincronizar o enlazar desde el clon (ver `skills/README.md`).
+
+| Tarea | Skill |
+|-------|--------|
+| Inicio de sesión | opsly-context |
+| Crear ruta API | opsly-api |
+| Crear script bash | opsly-bash |
+| Llamar a LLM (gateway) | opsly-llm |
+| Agregar tool MCP | opsly-mcp |
+| Migración Supabase | opsly-supabase |
+| Notificar Discord | opsly-discord |
+| Operaciones tenant | opsly-tenant |
+| Feedback / ML | opsly-feedback-ml |
+| Agent teams / colas | opsly-agent-teams |
+
+## Stack y puertos (orientativo)
+
+- API 3000, admin 3001, portal 3002, MCP `PORT` (ej. 3003), LLM Gateway `LLM_GATEWAY_PORT` (ej. 3010), orchestrator health `ORCHESTRATOR_HEALTH_PORT` (ej. 3011).
+- VPS: `157.245.223.7` / `vps-dragon` / `/opt/opsly`
+- Doppler: `ops-intcloudsysops` / `prd`
+- GitHub: `cloudsysops/opsly`
+
+## Reglas absolutas
+
+- NUNCA proponer K8s, Swarm, nginx (salvo ADR nuevo).
+- NUNCA secretos en código ni en mensajes Discord.
+- NUNCA `any` en TypeScript.
+- NUNCA saltarse `./scripts/validate-config.sh` cuando el cambio afecte deploy/secretos/DNS.
+- NUNCA `terraform apply` sin `plan` revisado.
+- NUNCA `docker system prune --volumes` en producción sin runbook.
+- SIEMPRE leer `AGENTS.md` al iniciar.
+- Preferir TDD en API (`apps/api` Vitest).
+- Hooks pueden notificar Discord / Drive cuando estén configurados (no asumir webhook siempre presente).
+
+---
+
 # Opsly — Claude Context
 
 > Pega la URL raw de AGENTS.md al iniciar cada sesión:  
