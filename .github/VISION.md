@@ -36,14 +36,18 @@ Agencias digitales y equipos de operaciones que necesitan:
 
 ### Extensiones VS Code / Cursor
 
+Fuente: `.vscode/extensions.json` (mismo orden).
+
 - dbaeumer.vscode-eslint
 - esbenp.prettier-vscode
 - bradlc.vscode-tailwindcss
 - ms-vscode.vscode-typescript-next
 - eamodio.gitlens
 - usernamehw.errorlens
-- Supabase.vscode-supabase-extension
-- YoavBls.pretty-typescript-errors
+- Supabase.vscode-supabase-extension (en Cursor, si `--install-extension` no lo encuentra, instalar el `.vsix` desde el Visual Studio Marketplace)
+- yoavbls.pretty-ts-errors
+- formulahendry.auto-rename-tag
+- christian-kohler.path-intellisense
 - rangav.vscode-thunder-client
 - Gruntfuggly.todo-tree
 
