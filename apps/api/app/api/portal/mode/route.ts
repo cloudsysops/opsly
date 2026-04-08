@@ -2,7 +2,7 @@ import { z } from "zod";
 import { jsonError, parseJsonBody } from "../../../../lib/api-response";
 import { HTTP_STATUS } from "../../../../lib/constants";
 import { logger } from "../../../../lib/logger";
-import { getUserFromAuthorizationHeader } from "../../../../lib/portal-auth";
+import { resolveTrustedPortalSession } from "../../../../lib/portal-trusted-identity";
 import { getServiceClient } from "../../../../lib/supabase";
 import { formatZodError } from "../../../../lib/validation";
 
@@ -11,10 +11,11 @@ const ModeBodySchema = z.object({
 });
 
 export async function POST(request: Request): Promise<Response> {
-  const user = await getUserFromAuthorizationHeader(request);
-  if (!user) {
-    return jsonError("Unauthorized", HTTP_STATUS.UNAUTHORIZED);
+  const trusted = await resolveTrustedPortalSession(request);
+  if (!trusted.ok) {
+    return trusted.response;
   }
+  const { user } = trusted.session;
 
   const parsedBody = await parseJsonBody(request);
   if (!parsedBody.ok) {

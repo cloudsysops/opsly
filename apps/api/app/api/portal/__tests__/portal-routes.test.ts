@@ -138,6 +138,19 @@ describe("POST /api/portal/mode", () => {
     vi.clearAllMocks();
   });
 
+  /** Sesión válida para `resolveTrustedPortalSession` (tenant + owner). */
+  function mockValidPortalModeSession() {
+    vi.mocked(portalAuthMod.getUserFromAuthorizationHeader).mockResolvedValue({
+      id: "u1",
+      email: "owner@acme.com",
+      user_metadata: { tenant_slug: "acme", theme: "dark" },
+    } as never);
+    vi.mocked(portalMeLib.fetchPortalTenantRowBySlug).mockResolvedValue({
+      ok: true,
+      row,
+    });
+  }
+
   it("returns 401 without user", async () => {
     vi.mocked(portalAuthMod.getUserFromAuthorizationHeader).mockResolvedValue(
       null,
@@ -151,11 +164,24 @@ describe("POST /api/portal/mode", () => {
     expect(res.status).toBe(401);
   });
 
-  it("returns 400 on invalid JSON", async () => {
+  it("returns 403 when user has no tenant slug", async () => {
     vi.mocked(portalAuthMod.getUserFromAuthorizationHeader).mockResolvedValue({
       id: "u1",
-      email: "a@b.com",
+      email: "owner@acme.com",
+      user_metadata: {},
     } as never);
+    const res = await portalModePost(
+      new Request("http://x", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ mode: "managed" }),
+      }),
+    );
+    expect(res.status).toBe(403);
+  });
+
+  it("returns 400 on invalid JSON", async () => {
+    mockValidPortalModeSession();
     const res = await portalModePost(
       new Request("http://x", {
         method: "POST",
@@ -167,9 +193,7 @@ describe("POST /api/portal/mode", () => {
   });
 
   it("returns 400 on invalid mode", async () => {
-    vi.mocked(portalAuthMod.getUserFromAuthorizationHeader).mockResolvedValue({
-      id: "u1",
-    } as never);
+    mockValidPortalModeSession();
     const res = await portalModePost(
       new Request("http://x", {
         method: "POST",
@@ -181,10 +205,7 @@ describe("POST /api/portal/mode", () => {
   });
 
   it("returns 500 when Supabase admin update fails", async () => {
-    vi.mocked(portalAuthMod.getUserFromAuthorizationHeader).mockResolvedValue({
-      id: "u1",
-      user_metadata: { x: 1 },
-    } as never);
+    mockValidPortalModeSession();
     vi.mocked(supabaseMod.getServiceClient).mockReturnValue({
       auth: {
         admin: {
@@ -206,10 +227,7 @@ describe("POST /api/portal/mode", () => {
   });
 
   it("returns 200 when mode updates", async () => {
-    vi.mocked(portalAuthMod.getUserFromAuthorizationHeader).mockResolvedValue({
-      id: "u1",
-      user_metadata: { theme: "dark" },
-    } as never);
+    mockValidPortalModeSession();
     vi.mocked(supabaseMod.getServiceClient).mockReturnValue({
       auth: {
         admin: {
