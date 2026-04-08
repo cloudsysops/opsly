@@ -1,6 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { NextRequest } from "next/server";
-import { GET as feedbackGet, POST as feedbackPost } from "../app/api/feedback/route";
+import {
+  GET as feedbackGet,
+  POST as feedbackPost,
+} from "../app/api/feedback/route";
 import { POST as approvePost } from "../app/api/feedback/approve/route";
 import * as supabaseMod from "../lib/supabase";
 
@@ -74,7 +77,9 @@ function supabaseMockNewConversationClarify() {
             select: () => ({
               eq: () => ({
                 order: async () => ({
-                  data: [{ role: "user", content: "Hola, un comentario corto" }],
+                  data: [
+                    { role: "user", content: "Hola, un comentario corto" },
+                  ],
                   error: null,
                 }),
               }),
