@@ -33,9 +33,11 @@ export type StoredAuthCode = {
   expires_at: number;
 };
 
+/** TTL alineado a setEx (10 min); no usar Map en memoria — soporta varias réplicas MCP. */
 const AUTH_CODE_TTL_MS = 600_000;
 const AUTH_CODE_TTL_SECONDS = 600;
 
+/** Redis key vía @intcloudsysops/llm-gateway/cache (mismo cliente que cache LLM). */
 function oauthCodeKey(code: string): string {
   return `oauth:code:${code}`;
 }
