@@ -24,6 +24,30 @@ FILES=(
 log() { echo "[drive-sync] $*"; }
 warn() { echo "[drive-sync] WARNING: $*" >&2; }
 
+# Extrae mensaje corto del JSON de error de Drive API (p. ej. storageQuotaExceeded en Mi unidad).
+drive_api_error_hint() {
+  local body_file="$1"
+  python3 -c '
+import json, sys
+try:
+    path = sys.argv[1]
+    with open(path, encoding="utf-8") as f:
+        d = json.load(f)
+    err = d.get("error") or {}
+    msg = (err.get("message") or "")[:220]
+    for e in err.get("errors") or []:
+        r = e.get("reason") or ""
+        if r == "storageQuotaExceeded":
+            msg = ("Service accounts no tienen cuota en Mi unidad personal. Mueve la carpeta a un "
+                   "Shared Drive (Drive compartido) y da Editor/Content manager a la SA, u oAuth de usuario. "
+                   + msg)
+            break
+    print(msg)
+except Exception:
+    print("")
+' "$body_file" 2>/dev/null || echo ""
+}
+
 if [[ "$DRY_RUN" == "true" ]]; then
   log "DRY-RUN — archivos que se subirian a Drive:"
   for f in "${FILES[@]}"; do
@@ -57,9 +81,10 @@ upload_file() {
   local metadata
   filename="$(basename "$filepath")"
 
+  # supportsAllDrives/includeItemsFromAllDrives: obligatorio si la carpeta está en un Shared Drive (si no, 403 aunque seas Editor).
   existing="$(curl -s \
     -H "Authorization: Bearer $TOKEN" \
-    "https://www.googleapis.com/drive/v3/files?q=name='$filename'+and+'$FOLDER_ID'+in+parents+and+trashed=false&fields=files(id,name)" \
+    "https://www.googleapis.com/drive/v3/files?q=name='$filename'+and+'$FOLDER_ID'+in+parents+and+trashed=false&fields=files(id,name)&supportsAllDrives=true&includeItemsFromAllDrives=true" \
     2>/dev/null || echo '{"files":[]}')"
 
   file_id="$(echo "$existing" | python3 -c "import sys,json; d=json.load(sys.stdin); f=d.get('files', []); print(f[0]['id'] if f else '')" 2>/dev/null || echo "")"
@@ -69,33 +94,41 @@ upload_file() {
   fi
 
   if [[ -n "$file_id" ]]; then
-    http="$(curl -s -o /dev/null -w "%{http_code}" \
+    err_body="$(mktemp)"
+    http="$(curl -s -o "$err_body" -w "%{http_code}" \
       -X PATCH \
       -H "Authorization: Bearer $TOKEN" \
       -H "Content-Type: $mime" \
       --data-binary "@$filepath" \
-      "https://www.googleapis.com/upload/drive/v3/files/$file_id?uploadType=media" \
+      "https://www.googleapis.com/upload/drive/v3/files/$file_id?uploadType=media&supportsAllDrives=true" \
       2>/dev/null || echo "000")"
     if [[ "$http" == "200" ]]; then
+      rm -f "$err_body"
       log "  updated: $filename"
       return 0
     fi
-    warn "  error actualizando $filename (HTTP $http) — comparte la carpeta con el client_email del service account (403 = sin permiso)"
+    hint="$(drive_api_error_hint "$err_body")"
+    rm -f "$err_body"
+    warn "  error actualizando $filename (HTTP $http)${hint:+ — $hint}"
     return 1
   fi
   metadata="$(printf '{"name":"%s","parents":["%s"]}' "$filename" "$FOLDER_ID")"
-  http="$(curl -s -o /dev/null -w "%{http_code}" \
+  err_body="$(mktemp)"
+  http="$(curl -s -o "$err_body" -w "%{http_code}" \
     -X POST \
     -H "Authorization: Bearer $TOKEN" \
     -F "metadata=$metadata;type=application/json" \
     -F "file=@$filepath;type=$mime" \
-    "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart" \
+    "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&supportsAllDrives=true" \
     2>/dev/null || echo "000")"
   if [[ "$http" == "200" ]]; then
+    rm -f "$err_body"
     log "  created: $filename"
     return 0
   fi
-  warn "  error creando $filename (HTTP $http) — comparte la carpeta con el client_email del service account (403 = sin permiso)"
+  hint="$(drive_api_error_hint "$err_body")"
+  rm -f "$err_body"
+  warn "  error creando $filename (HTTP $http)${hint:+ — $hint}"
   return 1
 }
 

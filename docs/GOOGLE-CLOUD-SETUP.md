@@ -40,5 +40,6 @@ En **local** (Mac): alternativa sin tocar Doppler — en `.env.local` define rut
 ## Carpeta Drive compartida
 - Nombre: Opsly
 - ID: 1r8fFtPnYRCjH1OEzLmXe7u-vcpWGqnWf
-- Compartir en Drive (Editor) con el **client_email** del JSON (ej. `opsly-drive-sync@opslyquantum.iam.gserviceaccount.com`). Si no, `./scripts/drive-sync.sh` obtiene token OK pero responde **HTTP 403**.
+- Compartir en Drive (Editor o **Content manager** en Shared Drive) con el **client_email** del JSON (ej. `opsly-drive-sync@opslyquantum.iam.gserviceaccount.com`).
+- **Importante (cuota):** una *service account* **no tiene cuota en “Mi unidad” personal**. Si la carpeta está solo en tu Drive personal, la API devuelve **403** con `storageQuotaExceeded`. Solución: crear o mover la carpeta **Opsly** dentro de un **[Shared Drive](https://developers.google.com/workspace/drive/api/guides/about-shareddrives)** (Drive compartido de Google Workspace) y dar acceso a la SA ahí; o subir con OAuth en nombre de un usuario en lugar de la SA.
 
