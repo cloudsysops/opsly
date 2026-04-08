@@ -41,21 +41,11 @@ fi
 
 source "$SCRIPT_DIR/lib/google-auth.sh"
 
-SERVICE_ACCOUNT_JSON="${GOOGLE_SERVICE_ACCOUNT_JSON:-}"
-if [[ -z "$SERVICE_ACCOUNT_JSON" ]] && command -v doppler >/dev/null 2>&1; then
-  SERVICE_ACCOUNT_JSON="$(doppler secrets get GOOGLE_SERVICE_ACCOUNT_JSON --project ops-intcloudsysops --config prd --plain 2>/dev/null || echo "")"
-fi
-if [[ -z "$SERVICE_ACCOUNT_JSON" ]] && command -v doppler >/dev/null 2>&1; then
-  SERVICE_ACCOUNT_JSON="$(cd /opt/opsly 2>/dev/null && doppler secrets get GOOGLE_SERVICE_ACCOUNT_JSON --plain 2>/dev/null || echo "")"
-fi
-
-if [[ -z "$SERVICE_ACCOUNT_JSON" ]]; then
-  warn "GOOGLE_SERVICE_ACCOUNT_JSON vacío — Drive sync omitido"
-  warn "Para activar: doppler secrets set GOOGLE_SERVICE_ACCOUNT_JSON --project ops-intcloudsysops --config prd"
+TOKEN="$(get_google_token)"
+if [[ -z "$TOKEN" ]]; then
+  warn "No se pudo obtener access token (service account) — Drive sync omitido"
   exit 0
 fi
-
-TOKEN="$(google_sa_access_token_from_json "$SERVICE_ACCOUNT_JSON" "https://www.googleapis.com/auth/drive")"
 
 upload_file() {
   local filepath="$1"

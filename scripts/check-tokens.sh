@@ -27,7 +27,12 @@ for VAR in \
     --plain 2>/dev/null || echo "")
   LEN=${#VAL}
 
-  if [[ $LEN -gt 20 ]]; then
+  MIN_LEN=20
+  if [[ "$VAR" == "GOOGLE_SERVICE_ACCOUNT_JSON" ]]; then
+    MIN_LEN=500
+  fi
+
+  if [[ $LEN -gt $MIN_LEN ]]; then
     ok "$VAR" "$LEN"
   else
     fail "$VAR"

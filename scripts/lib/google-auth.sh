@@ -11,6 +11,26 @@ sys.stdout.write(enc)
 PY
 }
 
+get_google_token() {
+  # google-auth.sh — obtener access token desde service account JSON
+  # Uso: source scripts/lib/google-auth.sh && get_google_token
+  #
+  # Variables:
+  #   GOOGLE_SERVICE_ACCOUNT_JSON — JSON completo del service account
+  local sa_json="${GOOGLE_SERVICE_ACCOUNT_JSON:-}"
+  if [[ -z "$sa_json" ]] && command -v doppler >/dev/null 2>&1; then
+    sa_json="$(cd /opt/opsly 2>/dev/null && doppler secrets get GOOGLE_SERVICE_ACCOUNT_JSON --plain 2>/dev/null || echo "")"
+  fi
+  if [[ -z "$sa_json" ]]; then
+    echo "[google-auth] WARNING: GOOGLE_SERVICE_ACCOUNT_JSON vacío" >&2
+    echo ""
+    return 0
+  fi
+
+  # drive.file (solo archivos creados/abiertos por la app) es suficiente para sync de docs.
+  google_sa_access_token_from_json "$sa_json" "https://www.googleapis.com/auth/drive.file"
+}
+
 google_sa_access_token_from_json() {
   # Usage: google_sa_access_token_from_json "$SERVICE_ACCOUNT_JSON" "$SCOPE"
   # Prints access token to stdout.
