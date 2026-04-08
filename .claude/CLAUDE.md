@@ -18,41 +18,51 @@ NUNCA adivinar. NUNCA saltarse pasos.
 
 ---
 
-# Claude en Opsly — Modo supremo (skills)
+# Claude en Opsly — Modo supremo
 
 ## Antes de cualquier sesión
 
-1. Usar el skill **opsly-context** (repo: `skills/user/opsly-context/SKILL.md`).
+1. Skill **opsly-context**: `skills/user/opsly-context/SKILL.md` (o `/mnt/skills/user/opsly-context/` si el runtime monta skills ahí).
 2. Leer `AGENTS.md` + `VISION.md` + `docs/OPENCLAW-ARCHITECTURE.md`.
-3. Estado VPS / tokens según ese skill.
+3. Estado VPS y tokens según ese skill (`./scripts/check-tokens.sh` cuando aplique).
 
 ## URLs de contexto
 
 - AGENTS.md raw: https://raw.githubusercontent.com/cloudsysops/opsly/main/AGENTS.md
 - VISION.md raw: https://raw.githubusercontent.com/cloudsysops/opsly/main/VISION.md
 
-## Skills en el repo (fuente de verdad)
+## Skills disponibles por tarea
 
-Ruta base: **`skills/user/<skill>/SKILL.md`**. Si el runtime monta `/mnt/skills/user`, sincronizar o enlazar desde el clon (ver `skills/README.md`).
+| Tarea | Skill | Path en repo |
+|-------|--------|----------------|
+| Inicio de sesión | opsly-context | `skills/user/opsly-context/` |
+| Crear ruta API | opsly-api | `skills/user/opsly-api/` |
+| Crear script bash | opsly-bash | `skills/user/opsly-bash/` |
+| Llamar a LLM | opsly-llm | `skills/user/opsly-llm/` |
+| Agregar tool MCP | opsly-mcp | `skills/user/opsly-mcp/` |
+| Migración Supabase | opsly-supabase | `skills/user/opsly-supabase/` |
+| Notificar Discord | opsly-discord | `skills/user/opsly-discord/` |
+| Operaciones tenant | opsly-tenant | `skills/user/opsly-tenant/` |
+| Procesar feedback / ML | opsly-feedback-ml | `skills/user/opsly-feedback-ml/` |
+| Asignar a team / colas | opsly-agent-teams | `skills/user/opsly-agent-teams/` |
 
-| Tarea | Skill |
-|-------|--------|
-| Inicio de sesión | opsly-context |
-| Crear ruta API | opsly-api |
-| Crear script bash | opsly-bash |
-| Llamar a LLM (gateway) | opsly-llm |
-| Agregar tool MCP | opsly-mcp |
-| Migración Supabase | opsly-supabase |
-| Notificar Discord | opsly-discord |
-| Operaciones tenant | opsly-tenant |
-| Feedback / ML | opsly-feedback-ml |
-| Agent teams / colas | opsly-agent-teams |
+Fuente de verdad en git: **`skills/user/<skill>/SKILL.md`**. Sincronización con `/mnt/skills/user`: ver `skills/README.md`.
 
-## Stack y puertos (orientativo)
+## Stack completo (orientativo)
 
-- API 3000, admin 3001, portal 3002, MCP `PORT` (ej. 3003), LLM Gateway `LLM_GATEWAY_PORT` (ej. 3010), orchestrator health `ORCHESTRATOR_HEALTH_PORT` (ej. 3011).
-- VPS: `157.245.223.7` / `vps-dragon` / `/opt/opsly`
+| App / servicio | Puerto típico |
+|----------------|-----------------|
+| api | 3000 |
+| admin | 3001 |
+| portal | 3002 |
+| mcp | `PORT` (ej. 3003) |
+| llm-gateway | `LLM_GATEWAY_PORT` (ej. 3010) |
+| orchestrator health | `ORCHESTRATOR_HEALTH_PORT` (ej. 3011) |
+| context-builder | `CONTEXT_BUILDER_PORT` (default 3012) |
+
+- VPS: `157.245.223.7` · usuario `vps-dragon` · repo `/opt/opsly`
 - Doppler: `ops-intcloudsysops` / `prd`
+- Supabase (proyecto staging referenciado en docs): `jkwykpldnitavhmtuzmo`
 - GitHub: `cloudsysops/opsly`
 
 ## Reglas absolutas
@@ -65,7 +75,7 @@ Ruta base: **`skills/user/<skill>/SKILL.md`**. Si el runtime monta `/mnt/skills/
 - NUNCA `docker system prune --volumes` en producción sin runbook.
 - SIEMPRE leer `AGENTS.md` al iniciar.
 - Preferir TDD en API (`apps/api` Vitest).
-- Hooks pueden notificar Discord / Drive cuando estén configurados (no asumir webhook siempre presente).
+- Tras cambios relevantes: notificar con `./scripts/notify-discord.sh` si `DISCORD_WEBHOOK_URL` está definido; post-commit puede ejecutar Drive sync si está configurado (no fallar si faltan secretos).
 
 ---
 
