@@ -203,6 +203,33 @@ describe("LLM Gateway Beast Mode", () => {
       expect(r2.content).toBe("ok");
       expect(mocks.llmCallDirect).toHaveBeenCalledTimes(2);
     });
+
+    it("nivel 3 combina dos tareas en una llamada y reparte JSON por subtarea", async () => {
+      mocks.llmCallDirect.mockResolvedValueOnce({
+        content: JSON.stringify({ task_1: "resp-A", task_2: "resp-B" }),
+        model_used: "claude-sonnet-4-20250514",
+        tokens_input: 100,
+        tokens_output: 40,
+        cost_usd: 0.02,
+        cache_hit: false,
+        latency_ms: 50,
+      });
+      const p1 = batchedLLMCall(
+        { tenant_slug: "t", messages: [{ role: "user", content: "tarea uno" }] },
+        3,
+      );
+      const p2 = batchedLLMCall(
+        { tenant_slug: "t", messages: [{ role: "user", content: "tarea dos" }] },
+        3,
+      );
+      await vi.runAllTimersAsync();
+      const [r1, r2] = await Promise.all([p1, p2]);
+      expect(r1.content).toBe("resp-A");
+      expect(r2.content).toBe("resp-B");
+      expect(mocks.llmCallDirect).toHaveBeenCalledTimes(1);
+      const combinedCall = mocks.llmCallDirect.mock.calls[0]?.[0] as { model?: string };
+      expect(combinedCall.model).toBe("sonnet");
+    });
   });
 
   describe("Cost estimation", () => {
