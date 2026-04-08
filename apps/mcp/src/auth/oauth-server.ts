@@ -1,4 +1,5 @@
 import type { IncomingMessage, ServerResponse } from "node:http";
+import { getRedisClient } from "@intcloudsysops/llm-gateway/cache";
 import { buildAuthorizationServerMetadata } from "./well-known.js";
 import { verifyCodeChallenge } from "./pkce.js";
 import { generateAccessToken, generateAuthCode } from "./tokens.js";
@@ -32,10 +33,12 @@ export type StoredAuthCode = {
   expires_at: number;
 };
 
-/** Store en memoria (un solo proceso); usar Redis si hay varias réplicas. */
-export const authCodeStore = new Map<string, StoredAuthCode>();
-
 const AUTH_CODE_TTL_MS = 600_000;
+const AUTH_CODE_TTL_SECONDS = 600;
+
+function oauthCodeKey(code: string): string {
+  return `oauth:code:${code}`;
+}
 
 function oauthIssuerBase(): string {
   const explicit = process.env.MCP_PUBLIC_URL?.trim();
@@ -67,13 +70,13 @@ function redirect(res: ServerResponse, location: string): void {
  * Maneja rutas OAuth del MCP HTTP server.
  * @returns true si la petición fue atendida (incl. errores OAuth).
  */
-export function handleOAuthRequest(
+export async function handleOAuthRequest(
   req: IncomingMessage,
   res: ServerResponse,
   pathname: string,
   searchParams: URLSearchParams,
   body: string,
-): boolean {
+): Promise<boolean> {
   if (pathname === "/.well-known/oauth-authorization-server") {
     const base = oauthIssuerBase();
     res.setHeader("Content-Type", "application/json; charset=utf-8");
@@ -111,13 +114,15 @@ export function handleOAuthRequest(
     const scopesToGrant = requestedScopes.length > 0 ? requestedScopes : ["tenants:read"];
 
     const code = generateAuthCode();
-    authCodeStore.set(code, {
+    const stored: StoredAuthCode = {
       client_id: clientId,
       code_challenge: codeChallenge,
       code_challenge_method: codeChallengeMethod,
       scope: scopesToGrant.join(" "),
       expires_at: Date.now() + AUTH_CODE_TTL_MS,
-    });
+    };
+    const redis = await getRedisClient();
+    await redis.setEx(oauthCodeKey(code), AUTH_CODE_TTL_SECONDS, JSON.stringify(stored));
 
     const callbackUrl = new URL(redirectUri);
     callbackUrl.searchParams.set("code", code);
@@ -161,7 +166,16 @@ export function handleOAuthRequest(
       return true;
     }
 
-    const stored = authCodeStore.get(code);
+    const redis = await getRedisClient();
+    const raw = await redis.get(oauthCodeKey(code));
+    let stored: StoredAuthCode | null = null;
+    if (raw) {
+      try {
+        stored = JSON.parse(raw) as StoredAuthCode;
+      } catch {
+        stored = null;
+      }
+    }
     if (!stored || stored.expires_at < Date.now()) {
       json(res, 400, { error: "invalid_grant" });
       return true;
@@ -180,7 +194,7 @@ export function handleOAuthRequest(
       return true;
     }
 
-    authCodeStore.delete(code);
+    await redis.del(oauthCodeKey(code));
 
     const scopeList = stored.scope.split(/\s+/).filter(Boolean);
     const accessToken = generateAccessToken(clientId, scopeList);

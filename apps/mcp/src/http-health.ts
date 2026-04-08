@@ -52,7 +52,7 @@ async function handleHttp(req: IncomingMessage, res: ServerResponse): Promise<vo
   const body =
     req.method === "POST" && pathname === "/oauth/token" ? await readRequestBody(req) : "";
 
-  if (handleOAuthRequest(req, res, pathname, url.searchParams, body)) {
+  if (await handleOAuthRequest(req, res, pathname, url.searchParams, body)) {
     return;
   }
 

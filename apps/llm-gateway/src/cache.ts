@@ -16,6 +16,11 @@ async function getClient() {
   return client;
 }
 
+/** Misma conexión Redis que cache LLM (MCP OAuth codes, etc.). */
+export async function getRedisClient() {
+  return getClient();
+}
+
 export async function cacheGet(
   tenantSlug: string,
   promptHash: string,
