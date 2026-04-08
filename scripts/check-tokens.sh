@@ -20,7 +20,10 @@ for VAR in \
   GOOGLE_SERVICE_ACCOUNT_JSON \
   MCP_JWT_SECRET \
   OPENROUTER_API_KEY \
-  OPENAI_API_KEY; do
+  OPENAI_API_KEY \
+  GOOGLE_CLOUD_PROJECT_ID \
+  BIGQUERY_DATASET \
+  VERTEX_AI_REGION; do
 
   VAL=$(doppler secrets get "$VAR" \
     --project ops-intcloudsysops --config prd \
@@ -30,6 +33,9 @@ for VAR in \
   MIN_LEN=20
   if [[ "$VAR" == "GOOGLE_SERVICE_ACCOUNT_JSON" ]]; then
     MIN_LEN=500
+  fi
+  if [[ "$VAR" == "GOOGLE_CLOUD_PROJECT_ID" || "$VAR" == "BIGQUERY_DATASET" || "$VAR" == "VERTEX_AI_REGION" ]]; then
+    MIN_LEN=0
   fi
 
   if [[ $LEN -gt $MIN_LEN ]]; then
