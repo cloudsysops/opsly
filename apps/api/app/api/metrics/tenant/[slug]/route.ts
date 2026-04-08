@@ -26,6 +26,8 @@ export async function GET(
     period,
     ...usage,
     cache_hit_rate:
-      usage.requests > 0 ? Math.round((usage.cache_hits / usage.requests) * 100) : 0,
+      usage.requests > 0
+        ? Math.round((usage.cache_hits / usage.requests) * 100)
+        : 0,
   });
 }

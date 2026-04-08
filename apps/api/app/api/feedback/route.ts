@@ -1,5 +1,8 @@
 import type { NextRequest } from "next/server";
-import { handleFeedbackGet, handleFeedbackPost } from "../../../lib/feedback/service";
+import {
+  handleFeedbackGet,
+  handleFeedbackPost,
+} from "../../../lib/feedback/service";
 
 export async function POST(req: NextRequest): Promise<Response> {
   return handleFeedbackPost(req);

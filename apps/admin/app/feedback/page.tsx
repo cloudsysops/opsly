@@ -47,7 +47,9 @@ export default function FeedbackAdminPage() {
 
   const rows = data?.feedbacks ?? [];
   const filtered = tenantFilter.trim()
-    ? rows.filter((r) => r.tenant_slug.includes(tenantFilter.trim().toLowerCase()))
+    ? rows.filter((r) =>
+        r.tenant_slug.includes(tenantFilter.trim().toLowerCase()),
+      )
     : rows;
 
   async function onApprove(decisionId: string, approved: boolean) {
@@ -58,7 +60,9 @@ export default function FeedbackAdminPage() {
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
-        <h1 className="font-mono text-lg tracking-tight text-ops-green">Feedback</h1>
+        <h1 className="font-mono text-lg tracking-tight text-ops-green">
+          Feedback
+        </h1>
         <div className="flex flex-wrap items-center gap-3">
           <Select value={statusFilter} onValueChange={setStatusFilter}>
             <SelectTrigger className="w-[200px] font-mono text-xs">
@@ -66,7 +70,9 @@ export default function FeedbackAdminPage() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Todos</SelectItem>
-              <SelectItem value="pending_approval">Pendiente aprobación</SelectItem>
+              <SelectItem value="pending_approval">
+                Pendiente aprobación
+              </SelectItem>
               <SelectItem value="implementing">Implementando</SelectItem>
               <SelectItem value="open">Abierto</SelectItem>
               <SelectItem value="analyzing">Analizando</SelectItem>
@@ -87,9 +93,7 @@ export default function FeedbackAdminPage() {
       {error ? (
         <p className="text-sm text-red-400">{String(error.message)}</p>
       ) : null}
-      {isLoading ? (
-        <p className="text-sm text-ops-gray">Cargando…</p>
-      ) : null}
+      {isLoading ? <p className="text-sm text-ops-gray">Cargando…</p> : null}
 
       <div className="grid gap-4">
         {filtered.map((row) => (
@@ -98,7 +102,9 @@ export default function FeedbackAdminPage() {
       </div>
 
       {!isLoading && filtered.length === 0 ? (
-        <p className="text-sm text-ops-gray">No hay conversaciones con este filtro.</p>
+        <p className="text-sm text-ops-gray">
+          No hay conversaciones con este filtro.
+        </p>
       ) : null}
     </div>
   );
@@ -115,7 +121,8 @@ function FeedbackRow({
     () =>
       [...(row.feedback_decisions ?? [])].sort(
         (a, b) =>
-          new Date(b.created_at ?? 0).getTime() - new Date(a.created_at ?? 0).getTime(),
+          new Date(b.created_at ?? 0).getTime() -
+          new Date(a.created_at ?? 0).getTime(),
       ),
     [row.feedback_decisions],
   );
@@ -146,7 +153,9 @@ function FeedbackRow({
               className="rounded border border-ops-border/60 p-3 text-sm"
             >
               <div className="flex flex-wrap items-center gap-2">
-                <span className="text-lg">{criticalityEmoji(d.criticality)}</span>
+                <span className="text-lg">
+                  {criticalityEmoji(d.criticality)}
+                </span>
                 <Badge variant="gray" className="font-mono text-[10px]">
                   {d.decision_type}
                 </Badge>

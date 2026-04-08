@@ -46,7 +46,9 @@ async function notifyDecisionDiscord(
   const emoji = criticalityEmoji(output.criticality);
   const type = criticalityNotifyType(output.criticality);
   const extra =
-    output.decision_type === "needs_approval" ? "\n👉 Requiere aprobación en admin" : "";
+    output.decision_type === "needs_approval"
+      ? "\n👉 Requiere aprobación en admin"
+      : "";
   await notifyDiscordFeedback(
     `${emoji} Feedback ${output.decision_type}: ${tenant_slug}`,
     `Usuario: ${user_email}\nCriticidad: ${output.criticality}\nRazón: ${output.reasoning}${extra}`,
@@ -66,11 +68,17 @@ async function readJsonBody(req: NextRequest): Promise<unknown | Response> {
   try {
     return await req.json();
   } catch {
-    return Response.json({ error: "JSON inválido" }, { status: HTTP_STATUS.BAD_REQUEST });
+    return Response.json(
+      { error: "JSON inválido" },
+      { status: HTTP_STATUS.BAD_REQUEST },
+    );
   }
 }
 
-function optionalStringField(b: Record<string, unknown>, key: string): string | undefined {
+function optionalStringField(
+  b: Record<string, unknown>,
+  key: string,
+): string | undefined {
   const v = b[key];
   return typeof v === "string" ? v : undefined;
 }
@@ -79,7 +87,9 @@ function stringField(b: Record<string, unknown>, key: string): string {
   return optionalStringField(b, key) ?? "";
 }
 
-function validateRequiredFeedbackFields(fields: FeedbackPostFields): FeedbackPostFields | Response {
+function validateRequiredFeedbackFields(
+  fields: FeedbackPostFields,
+): FeedbackPostFields | Response {
   if (!fields.tenant_slug || !fields.user_email || !fields.message) {
     return Response.json(
       { error: "tenant_slug, user_email y message son requeridos" },
@@ -91,7 +101,10 @@ function validateRequiredFeedbackFields(fields: FeedbackPostFields): FeedbackPos
 
 function parseFeedbackPostFields(body: unknown): FeedbackPostFields | Response {
   if (body === null || typeof body !== "object") {
-    return Response.json({ error: "Cuerpo inválido" }, { status: HTTP_STATUS.BAD_REQUEST });
+    return Response.json(
+      { error: "Cuerpo inválido" },
+      { status: HTTP_STATUS.BAD_REQUEST },
+    );
   }
   const b = body as Record<string, unknown>;
   return validateRequiredFeedbackFields({
@@ -112,7 +125,10 @@ async function resolveAssistantBranch(
   supabase: ReturnType<typeof getServiceClient>,
   convId: string,
   fields: FeedbackPostFields,
-  historyResult: { messages: Array<{ role: "user" | "assistant"; content: string }>; userMsgCount: number },
+  historyResult: {
+    messages: Array<{ role: "user" | "assistant"; content: string }>;
+    userMsgCount: number;
+  },
 ): Promise<AssistantBranch> {
   const shouldAnalyze =
     historyResult.userMsgCount >= MIN_USER_MESSAGES_FOR_ANALYSIS ||
@@ -129,7 +145,9 @@ async function resolveAssistantBranch(
   return runClarifyBranch(historyResult.messages);
 }
 
-async function processFeedbackPost(fields: FeedbackPostFields): Promise<Response> {
+async function processFeedbackPost(
+  fields: FeedbackPostFields,
+): Promise<Response> {
   const supabase = getServiceClient();
   const convId = await ensureConversationId(supabase, fields);
   if (convId instanceof Response) return convId;
@@ -139,14 +157,24 @@ async function processFeedbackPost(fields: FeedbackPostFields): Promise<Response
   const historyResult = await loadMessageHistory(supabase, convId);
   if (historyResult instanceof Response) return historyResult;
 
-  const branch = await resolveAssistantBranch(supabase, convId, fields, historyResult);
+  const branch = await resolveAssistantBranch(
+    supabase,
+    convId,
+    fields,
+    historyResult,
+  );
 
-  await supabase.schema("platform").from("feedback_messages").insert({
-    conversation_id: convId,
-    role: "assistant",
-    content: branch.assistantResponse,
-    metadata: branch.decision ? { decision_type: branch.decision.decision_type } : {},
-  });
+  await supabase
+    .schema("platform")
+    .from("feedback_messages")
+    .insert({
+      conversation_id: convId,
+      role: "assistant",
+      content: branch.assistantResponse,
+      metadata: branch.decision
+        ? { decision_type: branch.decision.decision_type }
+        : {},
+    });
 
   return Response.json({
     conversation_id: convId,
@@ -222,7 +250,10 @@ async function loadMessageHistory(
     .order("created_at", { ascending: true });
 
   if (histErr) {
-    return Response.json({ error: histErr.message }, { status: HTTP_STATUS.INTERNAL_ERROR });
+    return Response.json(
+      { error: histErr.message },
+      { status: HTTP_STATUS.INTERNAL_ERROR },
+    );
   }
 
   const rows = (history ?? []) as Array<{ role: string; content: string }>;
@@ -255,8 +286,16 @@ async function runAnalysisBranch(
 
   await notifyDecisionDiscord(output, ctx.tenant_slug, ctx.user_email);
 
-  if (output.decision_type === "auto_implement" && output.implementation_prompt && decision_id) {
-    await executeAutoImplement(decision_id, output.implementation_prompt, ctx.tenant_slug).catch((e) => {
+  if (
+    output.decision_type === "auto_implement" &&
+    output.implementation_prompt &&
+    decision_id
+  ) {
+    await executeAutoImplement(
+      decision_id,
+      output.implementation_prompt,
+      ctx.tenant_slug,
+    ).catch((e) => {
       console.error("[feedback] executeAutoImplement:", e);
     });
   }
@@ -280,16 +319,22 @@ async function runClarifyBranch(
 
 export async function handleFeedbackGet(req: NextRequest): Promise<Response> {
   const token =
-    req.headers.get("x-admin-token") ?? req.headers.get("authorization")?.replace("Bearer ", "") ?? "";
+    req.headers.get("x-admin-token") ??
+    req.headers.get("authorization")?.replace("Bearer ", "") ??
+    "";
 
   if (token !== process.env.PLATFORM_ADMIN_TOKEN) {
-    return Response.json({ error: "Unauthorized" }, { status: HTTP_STATUS.UNAUTHORIZED });
+    return Response.json(
+      { error: "Unauthorized" },
+      { status: HTTP_STATUS.UNAUTHORIZED },
+    );
   }
 
   const status = req.nextUrl.searchParams.get("status");
   const limitParam = req.nextUrl.searchParams.get("limit");
   const limit =
-    Number.parseInt(limitParam ?? String(DEFAULT_FEEDBACK_LIST_LIMIT), 10) || DEFAULT_FEEDBACK_LIST_LIMIT;
+    Number.parseInt(limitParam ?? String(DEFAULT_FEEDBACK_LIST_LIMIT), 10) ||
+    DEFAULT_FEEDBACK_LIST_LIMIT;
 
   const supabase = getServiceClient();
 
@@ -309,9 +354,14 @@ export async function handleFeedbackGet(req: NextRequest): Promise<Response> {
     q = q.eq("status", status);
   }
 
-  const { data, error } = await q.order("created_at", { ascending: false }).limit(limit);
+  const { data, error } = await q
+    .order("created_at", { ascending: false })
+    .limit(limit);
   if (error) {
-    return Response.json({ error: error.message }, { status: HTTP_STATUS.INTERNAL_ERROR });
+    return Response.json(
+      { error: error.message },
+      { status: HTTP_STATUS.INTERNAL_ERROR },
+    );
   }
 
   return Response.json({ feedbacks: data });

@@ -104,7 +104,9 @@ describe("/api/feedback", () => {
   });
 
   it("POST con mensaje largo dispara análisis ML", async () => {
-    vi.mocked(supabaseMod.getServiceClient).mockReturnValue(chainableSupabaseForPost() as never);
+    vi.mocked(supabaseMod.getServiceClient).mockReturnValue(
+      chainableSupabaseForPost() as never,
+    );
     vi.mocked(analyzeFeedback).mockResolvedValue({
       output: {
         decision_type: "needs_approval",
@@ -153,8 +155,12 @@ describe("/api/feedback/approve", () => {
   });
 
   it("con token y approved llama executeAutoImplement", async () => {
-    const updateDec = vi.fn().mockReturnValue({ eq: async () => ({ error: null }) });
-    const updateConv = vi.fn().mockReturnValue({ eq: async () => ({ error: null }) });
+    const updateDec = vi
+      .fn()
+      .mockReturnValue({ eq: async () => ({ error: null }) });
+    const updateConv = vi
+      .fn()
+      .mockReturnValue({ eq: async () => ({ error: null }) });
     const from = vi.fn((table: string) => {
       if (table === "feedback_decisions") {
         return {
@@ -196,10 +202,6 @@ describe("/api/feedback/approve", () => {
     );
 
     expect(res.status).toBe(200);
-    expect(executeAutoImplement).toHaveBeenCalledWith(
-      "dec-1",
-      "haz X",
-      "acme",
-    );
+    expect(executeAutoImplement).toHaveBeenCalledWith("dec-1", "haz X", "acme");
   });
 });

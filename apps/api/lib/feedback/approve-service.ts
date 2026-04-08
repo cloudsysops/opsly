@@ -8,7 +8,10 @@ type DecisionRow = {
   id: string;
   conversation_id: string;
   implementation_prompt: string | null;
-  feedback_conversations: { tenant_slug: string } | { tenant_slug: string }[] | null;
+  feedback_conversations:
+    | { tenant_slug: string }
+    | { tenant_slug: string }[]
+    | null;
 };
 
 function tenantSlugFromDecision(row: DecisionRow): string {
@@ -21,11 +24,16 @@ function tenantSlugFromDecision(row: DecisionRow): string {
 
 function adminUnauthorizedResponse(req: NextRequest): Response | null {
   const token =
-    req.headers.get("x-admin-token") ?? req.headers.get("authorization")?.replace("Bearer ", "") ?? "";
+    req.headers.get("x-admin-token") ??
+    req.headers.get("authorization")?.replace("Bearer ", "") ??
+    "";
   if (token === process.env.PLATFORM_ADMIN_TOKEN) {
     return null;
   }
-  return Response.json({ error: "Unauthorized" }, { status: HTTP_STATUS.UNAUTHORIZED });
+  return Response.json(
+    { error: "Unauthorized" },
+    { status: HTTP_STATUS.UNAUTHORIZED },
+  );
 }
 
 async function parseApproveBody(
@@ -35,21 +43,32 @@ async function parseApproveBody(
   try {
     body = await req.json();
   } catch {
-    return Response.json({ error: "JSON inválido" }, { status: HTTP_STATUS.BAD_REQUEST });
+    return Response.json(
+      { error: "JSON inválido" },
+      { status: HTTP_STATUS.BAD_REQUEST },
+    );
   }
   if (body === null || typeof body !== "object") {
-    return Response.json({ error: "Cuerpo inválido" }, { status: HTTP_STATUS.BAD_REQUEST });
+    return Response.json(
+      { error: "Cuerpo inválido" },
+      { status: HTTP_STATUS.BAD_REQUEST },
+    );
   }
   const b = body as Record<string, unknown>;
   const decision_id = typeof b.decision_id === "string" ? b.decision_id : "";
   const approved = b.approved === true;
   if (!decision_id) {
-    return Response.json({ error: "decision_id requerido" }, { status: HTTP_STATUS.BAD_REQUEST });
+    return Response.json(
+      { error: "decision_id requerido" },
+      { status: HTTP_STATUS.BAD_REQUEST },
+    );
   }
   return { decision_id, approved };
 }
 
-export async function handleFeedbackApprove(req: NextRequest): Promise<Response> {
+export async function handleFeedbackApprove(
+  req: NextRequest,
+): Promise<Response> {
   const unauthorized = adminUnauthorizedResponse(req);
   if (unauthorized) return unauthorized;
 
@@ -63,12 +82,17 @@ export async function handleFeedbackApprove(req: NextRequest): Promise<Response>
   const { data: decision, error: decErr } = await supabase
     .schema("platform")
     .from("feedback_decisions")
-    .select("id, conversation_id, implementation_prompt, feedback_conversations(tenant_slug)")
+    .select(
+      "id, conversation_id, implementation_prompt, feedback_conversations(tenant_slug)",
+    )
     .eq("id", decision_id)
     .single();
 
   if (decErr || !decision || typeof decision !== "object") {
-    return Response.json({ error: "Decisión no encontrada" }, { status: HTTP_STATUS.NOT_FOUND });
+    return Response.json(
+      { error: "Decisión no encontrada" },
+      { status: HTTP_STATUS.NOT_FOUND },
+    );
   }
 
   const row = decision as DecisionRow;
