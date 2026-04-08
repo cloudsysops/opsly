@@ -8,6 +8,7 @@ vi.mock("../src/state/store.js", () => ({
   setJobState: vi.fn(async () => undefined),
 }));
 
+import { enqueueJob } from "../src/queue.js";
 import { processIntent } from "../src/engine.js";
 
 describe("processIntent", () => {
@@ -24,6 +25,9 @@ describe("processIntent", () => {
 
     expect(result.jobs_enqueued).toBe(3);
     expect(result.job_ids).toEqual(["cursor-1", "notify-1", "drive-1"]);
+    expect(result.request_id).toMatch(
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i,
+    );
   });
 
   it("encola execute_code como cursor", async () => {
@@ -64,5 +68,53 @@ describe("processIntent", () => {
     });
     expect(result.jobs_enqueued).toBe(1);
     expect(result.job_ids).toEqual(["drive-1"]);
+  });
+
+  it("propaga metadata opcional e idempotency por sub-job", async () => {
+    const result = await processIntent({
+      intent: "notify",
+      context: { message: "x" },
+      initiated_by: "system",
+      tenant_slug: "acme",
+      tenant_id: "550e8400-e29b-41d4-a716-446655440000",
+      plan: "startup",
+      idempotency_key: "idem-1",
+      request_id: "req-fixed",
+      cost_budget_usd: 0.5,
+      agent_role: "notifier",
+    });
+
+    expect(result.request_id).toBe("req-fixed");
+    expect(enqueueJob).toHaveBeenCalledWith(
+      expect.objectContaining({
+        tenant_slug: "acme",
+        tenant_id: "550e8400-e29b-41d4-a716-446655440000",
+        plan: "startup",
+        request_id: "req-fixed",
+        idempotency_key: "idem-1::notify::0",
+        cost_budget_usd: 0.5,
+        agent_role: "notifier",
+      }),
+    );
+  });
+
+  it("full_pipeline usa idempotency_key distinta por tipo", async () => {
+    await processIntent({
+      intent: "full_pipeline",
+      context: { t: 1 },
+      initiated_by: "claude",
+      idempotency_key: "pipe-1",
+    });
+
+    const calls = vi.mocked(enqueueJob).mock.calls.map((c) => c[0]);
+    expect(calls.map((j) => j.idempotency_key)).toEqual([
+      "pipe-1::cursor::0",
+      "pipe-1::notify::1",
+      "pipe-1::drive::2",
+    ]);
+    const rid = calls[0]?.request_id;
+    expect(rid).toBeDefined();
+    expect(calls[1]?.request_id).toBe(rid);
+    expect(calls[2]?.request_id).toBe(rid);
   });
 });

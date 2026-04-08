@@ -29,7 +29,14 @@ El contenedor expone **GET `/health`** en `ORCHESTRATOR_HEALTH_PORT` (por defect
 
 ## Estados de job
 
-Tras encolar, `setJobState` guarda objetos con campos como `id`, `type`, `status` (`pending`, etc.), `tenant_slug`, `started_at`. Consulta el store en `state/store.ts` para el esquema exacto y TTL.
+Tras encolar, `setJobState` guarda objetos con `id`, `type`, `status`, `tenant_slug`, `tenant_id`, `plan`, `request_id`, `idempotency_key`, `cost_budget_usd`, `agent_role`, `started_at`, etc. (ver `state/store.ts`). TTL sin cambios.
+
+## Metadata de jobs e idempotencia
+
+- **`IntentRequest`** puede incluir opcionales: `tenant_id`, `plan`, `idempotency_key`, `request_id`, `cost_budget_usd`, `agent_role` (`planner` \| `executor` \| `tool` \| `notifier`).
+- **`request_id`:** correlación entre jobs del mismo `processIntent`; si no se envía, se genera UUID.
+- **`idempotency_key`:** por intent con varios jobs se sufija por tipo e índice (`<key>::<type>::<n>`). BullMQ recibe `jobId` derivado en `queue-opts.ts` (`idem:<type>:...`) para deduplicar reintentos.
+- **Log estructurado:** cada encolado escribe una línea JSON en stdout (`observability/job-log.ts`) con `tenant_slug`, `request_id`, `job_type`, etc.
 
 ## Concurrency por plan
 
