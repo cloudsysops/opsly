@@ -71,9 +71,54 @@ Procedimientos vivos en el repo: **`skills/user/<skill>/SKILL.md`**. En runtimes
 
 ---
 
-## Fase 4 — Multi-agente Opsly (plan de trabajo)
+## Fase 4 — Multi-agente Opsly (plan maestro de trabajo)
 
 **Ámbito:** orquestación y operación con **varios agentes** (Cursor, Claude, automatismos) sobre un **único contexto** (`AGENTS.md`, `VISION.md`, `config/opsly.config.json`), sin cambiar las decisiones fijas de infra (Compose, Traefik v3, Doppler, Supabase).
+
+### Principio rector (no negociable)
+
+- **Extender, no re-arquitecturar:** todo vive en el monorepo actual (`apps/*`, `skills/`, `infra/`, `scripts/`). No crear carpetas raíz tipo `agents/` paralelas ni un segundo sistema de orquestación.
+- **Compatibilidad hacia atrás:** APIs y jobs existentes siguen funcionando; nuevos campos y rutas son **opcionales** con defaults = comportamiento actual.
+- **Incrementos verificables:** cada PR debe poder validarse con `type-check`, tests donde existan, y criterio de smoke acotado.
+- **Sin infra nueva** salvo decisión explícita y alineación con `VISION.md` (*Nunca* K8s/Swarm; escalar VPS antes que complejidad).
+
+### Mapa — qué ya existe (no duplicar)
+
+| Capacidad | Ubicación en repo |
+|-----------|-------------------|
+| Orchestrator + cola BullMQ + workers | `apps/orchestrator` — ver `docs/ORCHESTRATOR.md`, ADR-011 |
+| MCP / herramientas | `apps/mcp` — ADR-009 |
+| LLM Gateway (cache, routing futuro) | `apps/llm-gateway` |
+| Context pipeline (servicio) | `apps/context-builder` — integrar como **cliente** al servicio existente; no crear un segundo “context builder” embebido en orchestrator sin ADR |
+| API control plane + tenants | `apps/api` |
+| Skills operativos | `skills/user/*`, `skills/README.md` |
+| Diseño OpenClaw / costos | `docs/OPENCLAW-ARCHITECTURE.md` |
+| Docker tenant aislado | `scripts/lib/docker-helpers.sh` — `--project-name tenant_<slug>` |
+
+### Incrementos adoptados (acordados, orden recomendado)
+
+1. **Tipos + metadata de jobs (orchestrator)** — *primer incremento sugerido.* Campos opcionales: `tenant_slug` / `tenant_id` (según contrato ya usado), `plan`, hooks de coste, **idempotency key**; payloads viejos sin metadata siguen válidos.
+2. **Roles de agente como tipos y convenciones** — `planner` \| `executor` \| `tool` \| `notifier` (enum o union en tipos compartidos), no un framework de agentes nuevo.
+3. **Logs estructurados** — en workers/orchestrator y en `llm-gateway`: `tenant`, `requestId`, `cost`, `tokens`, `latency` donde aplique.
+4. **Skills** — manifest / `inputSchema` / `outputSchema` / **version** opcional (p. ej. frontmatter o `manifest.json` junto a `SKILL.md`) sin romper el mecanismo de lectura actual el día uno.
+5. **LLM Gateway** — routing progresivo por costo, tamaño de contexto y tipo de tarea **detrás de defaults actuales** (query params o headers opcionales).
+6. **Orchestrator (fases posteriores)** — descomposición ligera de tareas, routing interno ya presente en `engine.ts`, prioridad por plan (ADR-011) donde aún haya valores fijos; **no** DAG global hasta necesidad demostrada.
+7. **Refuerzo Zero-Trust incremental** — validar tenant en rutas sensibles; no confiar en cuerpos internos sin comprobar; sin rediseño total de auth (Supabase + RLS ya existentes).
+
+### Qué evitamos por ahora
+
+- Segundo orchestrator, segundo motor de contexto, o reestructurar `infra/` sin necesidad.
+- DAG engine complejo, LangGraph/CrewAI como dependencia runtime obligatoria, K8s.
+- Sustituir BullMQ o MCP por alternativas paralelas.
+
+### Errores que rompen la arquitectura (checklist de PR)
+
+- Carpeta raíz `agents/` fuera del patrón `apps/agents/*`.
+- Duplicar `apps/context-builder` dentro de orchestrator sin decisión.
+- Cambios breaking en colas o en contratos HTTP sin versión/ADR.
+- Features grandes sin paso intermedio en `AGENTS.md` / sin validación.
+
+### Documentación y prompts
 
 | Objetivo | Entregable / nota |
 |----------|-------------------|
@@ -84,7 +129,14 @@ Procedimientos vivos en el repo: **`skills/user/<skill>/SKILL.md`**. En runtimes
 
 **Automatización opcional (VPS):** unidad `infra/systemd/opsly-watcher.service` y guía `docs/AUTO-PUSH-WATCHER.md`. No sustituye revisión humana ni política de secretos.
 
-**Relación con `VISION.md`:** las fases 1–3 del producto siguen siendo el norte comercial; la **Fase 4** aquí nombra la **capa de trabajo multi-agente y documentación operativa** que las alimenta.
+### Sesiones Cursor sugeridas (una capacidad por sesión)
+
+1. Tipos + metadata de jobs en `apps/orchestrator`.
+2. Helpers de logging estructurado (orchestrator + gateway).
+3. Routing opcional en `llm-gateway` con defaults preservados.
+4. Normalización gradual de skills (manifest/version).
+
+**Relación con `VISION.md`:** las fases 1–3 del producto siguen siendo el norte comercial; esta **Fase 4** documenta la **plataforma multi-agente incremental** y la **documentación operativa** que las alimentan. El detalle económico y de roadmap largo plazo sigue en `VISION.md` → *Evolución arquitectónica — AI Platform*.
 
 ---
 
@@ -92,7 +144,7 @@ Procedimientos vivos en el repo: **`skills/user/<skill>/SKILL.md`**. En runtimes
 
 <!-- Actualizar al final de cada sesión -->
 
-**Fecha última actualización:** 2026-04-09 — **Consolidación (sesiones Cursor: docs multi-agente + Compose tenant):** Fase 4 — `docs/OPENCLAW-ARCHITECTURE.md`, `docs/CLAUDE-WORKFLOW-OPTIMIZATION.md`, `docs/AUTO-PUSH-WATCHER.md`, `scripts/auto-push-watcher.sh`, `infra/systemd/opsly-watcher.service`. Flujo Claude — `docs/ACTIVE-PROMPT.md`, `scripts/cursor-prompt-monitor.sh`, `infra/systemd/cursor-prompt-monitor.service`, logs `logs/`. Google Drive — `docs/GOOGLE-DRIVE-SYNC.md`, `docs/opsly-drive-files.list`, `.opsly-drive-config.json` (pegar enlace de carpeta compartida cuando exista). **Fix tenant stacks:** `scripts/lib/docker-helpers.sh` usa `docker compose --project-name tenant_<slug>` en `compose_up`, `compose_stop`, `compose_down`, `stack_running`, `compose_ps`; en `up` ya no se pasa `--remove-orphans` (evita que un `up` de un tenant borre contenedores de otros en el mismo directorio `tenants/`). **NotebookLM agent + LocalRank (tester):** paquete `@intcloudsysops/notebooklm-agent` en `apps/agents/notebooklm/` (Python + TS, MCP tool `notebooklm`, scope `agents:write`); ADR-014; skill `opsly-notebooklm`; guía `docs/LOCALRANK-TESTER-GUIDE.md`. **LocalRank** (`localrank` / jkbotero78@gmail.com / startup): onboard e invitación vía API **pendiente de ejecutar desde red con SSH/API estables** — en sesión Cursor, SSH a `157.245.223.7` dio *banner timeout* / *docker ps* colgado; reintentar `./scripts/onboard-tenant.sh --slug localrank ...` y `POST /api/invitations` desde Mac/red confiable. **Tester externo + Drive (histórico):** commit `7035d6c` — OAuth usuario en `drive-sync`; tenant piloto `jkboterolabs` en docs previos. **Resend:** dominio verificado condiciona email a Gmail; ver runbooks invitaciones.
+**Fecha última actualización:** 2026-04-09 — **Plan maestro Fase 4** ampliado (principios extend-not-replace, mapa `apps/*`, incrementos 1–7, sesiones Cursor, checklist PR; `VISION.md` enlaza a esta sección). **Consolidación (sesiones Cursor: docs multi-agente + Compose tenant):** Fase 4 — `docs/OPENCLAW-ARCHITECTURE.md`, `docs/CLAUDE-WORKFLOW-OPTIMIZATION.md`, `docs/AUTO-PUSH-WATCHER.md`, `scripts/auto-push-watcher.sh`, `infra/systemd/opsly-watcher.service`. Flujo Claude — `docs/ACTIVE-PROMPT.md`, `scripts/cursor-prompt-monitor.sh`, `infra/systemd/cursor-prompt-monitor.service`, logs `logs/`. Google Drive — `docs/GOOGLE-DRIVE-SYNC.md`, `docs/opsly-drive-files.list`, `.opsly-drive-config.json` (pegar enlace de carpeta compartida cuando exista). **Fix tenant stacks:** `scripts/lib/docker-helpers.sh` usa `docker compose --project-name tenant_<slug>` en `compose_up`, `compose_stop`, `compose_down`, `stack_running`, `compose_ps`; en `up` ya no se pasa `--remove-orphans` (evita que un `up` de un tenant borre contenedores de otros en el mismo directorio `tenants/`). **NotebookLM agent + LocalRank (tester):** paquete `@intcloudsysops/notebooklm-agent` en `apps/agents/notebooklm/` (Python + TS, MCP tool `notebooklm`, scope `agents:write`); ADR-014; skill `opsly-notebooklm`; guía `docs/LOCALRANK-TESTER-GUIDE.md`. **LocalRank** (`localrank` / jkbotero78@gmail.com / startup): onboard e invitación vía API **pendiente de ejecutar desde red con SSH/API estables** — en sesión Cursor, SSH a `157.245.223.7` dio *banner timeout* / *docker ps* colgado; reintentar `./scripts/onboard-tenant.sh --slug localrank ...` y `POST /api/invitations` desde Mac/red confiable. **Tester externo + Drive (histórico):** commit `7035d6c` — OAuth usuario en `drive-sync`; tenant piloto `jkboterolabs` en docs previos. **Resend:** dominio verificado condiciona email a Gmail; ver runbooks invitaciones.
 
 **Resumen 2026-04-08 (Cursor / Opsly — sesión tester + Drive)**
 
