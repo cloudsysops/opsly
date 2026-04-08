@@ -4,6 +4,7 @@ import { executorTool } from "./tools/executor.js";
 import { invitationsTool } from "./tools/invitations.js";
 import { metricsTool } from "./tools/metrics.js";
 import { onboardTool } from "./tools/onboard.js";
+import { notebooklmTool } from "./tools/notebooklm.js";
 import { suspendTools } from "./tools/suspend.js";
 import { tenantsTools } from "./tools/tenants.js";
 import type { ToolDefinition } from "./types/index.js";
@@ -113,6 +114,7 @@ export function createServer(): OpenClawMcpServer {
     adaptTool(suspendTenantTool),
     adaptTool(resumeTenantTool),
     adaptTool(executorTool),
+    adaptTool(notebooklmTool),
   ]);
   return server;
 }

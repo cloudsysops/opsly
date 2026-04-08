@@ -1,0 +1,22 @@
+{
+  "name": "@intcloudsysops/notebooklm-agent",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "TypeScript wrapper + Python client for notebooklm-py (NotebookLM unofficial API)",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "type-check": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.12",
+    "typescript": "^5.9.2"
+  }
+}

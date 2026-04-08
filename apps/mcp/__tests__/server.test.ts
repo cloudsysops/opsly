@@ -15,6 +15,7 @@ describe("createServer", () => {
     expect(tools).toContain("suspend_tenant");
     expect(tools).toContain("resume_tenant");
     expect(tools).toContain("execute_prompt");
+    expect(tools).toContain("notebooklm");
   });
 
   it("lanza error si la tool no existe", async () => {

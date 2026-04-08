@@ -5,7 +5,7 @@ Skills procedurales para trabajar en **Opsly** sin improvisar.
 ## Ubicación en repo
 
 - **`skills/user/<nombre>/SKILL.md`** — fuente de verdad en git.
-- Skills incluidos: `opsly-context`, `opsly-api`, `opsly-bash`, `opsly-llm`, `opsly-mcp`, `opsly-supabase`, `opsly-discord`, `opsly-tenant`, `opsly-feedback-ml`, `opsly-agent-teams`.
+- Skills incluidos: `opsly-context`, `opsly-api`, `opsly-bash`, `opsly-llm`, `opsly-mcp`, `opsly-supabase`, `opsly-discord`, `opsly-tenant`, `opsly-feedback-ml`, `opsly-agent-teams`, `opsly-notebooklm`.
 
 ## Entornos con `/mnt/skills`
 

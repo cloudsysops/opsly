@@ -6,6 +6,7 @@ export const MCP_OAUTH_SCOPES_SUPPORTED = [
   "metrics:read",
   "invitations:write",
   "executor:write",
+  "agents:write",
 ] as const;
 
 export function buildAuthorizationServerMetadata(baseUrl: string): Record<string, unknown> {

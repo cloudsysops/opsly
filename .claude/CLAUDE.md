@@ -45,6 +45,7 @@ NUNCA adivinar. NUNCA saltarse pasos.
 | Operaciones tenant | opsly-tenant | `skills/user/opsly-tenant/` |
 | Procesar feedback / ML | opsly-feedback-ml | `skills/user/opsly-feedback-ml/` |
 | Asignar a team / colas | opsly-agent-teams | `skills/user/opsly-agent-teams/` |
+| NotebookLM / contenido | opsly-notebooklm | `skills/user/opsly-notebooklm/` |
 | Google Cloud | opsly-google-cloud | `skills/user/opsly-google-cloud/` |
 
 Fuente de verdad en git: **`skills/user/<skill>/SKILL.md`**. Sincronización con `/mnt/skills/user`: ver `skills/README.md`.

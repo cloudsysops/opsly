@@ -21,6 +21,7 @@ export const REGISTERED_CLIENTS: Record<string, RegisteredOAuthClient> = {
       "metrics:read",
       "invitations:write",
       "executor:write",
+      "agents:write",
     ],
   },
 };

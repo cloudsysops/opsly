@@ -10,6 +10,7 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
+    "@intcloudsysops/notebooklm-agent": "*",
     "@intcloudsysops/llm-gateway": "^1.0.0",
     "@modelcontextprotocol/sdk": "^1.17.5",
     "redis": "^4.7.0",
