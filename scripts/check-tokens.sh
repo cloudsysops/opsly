@@ -39,7 +39,16 @@ for VAR in \
   fi
 
   if [[ $LEN -gt $MIN_LEN ]]; then
-    ok "$VAR" "$LEN"
+    if [[ "$VAR" == "GOOGLE_SERVICE_ACCOUNT_JSON" ]]; then
+      if printf '%s' "$VAL" | python3 -c 'import json,sys; d=json.load(sys.stdin); assert d.get("type")=="service_account" and d.get("client_email") and d.get("private_key")' >/dev/null 2>&1; then
+        ok "$VAR" "$LEN"
+      else
+        echo "[check-tokens] ❌ $VAR — JSON incompleto o no es service_account (usa: doppler secrets set ... < archivo.json)"
+        ((MISSING++)) || true
+      fi
+    else
+      ok "$VAR" "$LEN"
+    fi
   else
     fail "$VAR"
     ((MISSING++)) || true

@@ -38,3 +38,6 @@ infra/terraform/tfplan
 
 # Cursor prompt monitor (VPS/local runtime log)
 logs/
+
+# Supabase CLI local link metadata (regenerable)
+supabase/.temp/

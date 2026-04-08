@@ -78,24 +78,25 @@ upload_file() {
       2>/dev/null || echo "000")"
     if [[ "$http" == "200" ]]; then
       log "  updated: $filename"
-    else
-      warn "  error actualizando $filename (HTTP $http)"
+      return 0
     fi
-  else
-    metadata="$(printf '{"name":"%s","parents":["%s"]}' "$filename" "$FOLDER_ID")"
-    http="$(curl -s -o /dev/null -w "%{http_code}" \
-      -X POST \
-      -H "Authorization: Bearer $TOKEN" \
-      -F "metadata=$metadata;type=application/json" \
-      -F "file=@$filepath;type=$mime" \
-      "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart" \
-      2>/dev/null || echo "000")"
-    if [[ "$http" == "200" ]]; then
-      log "  created: $filename"
-    else
-      warn "  error creando $filename (HTTP $http)"
-    fi
+    warn "  error actualizando $filename (HTTP $http) — comparte la carpeta con el client_email del service account (403 = sin permiso)"
+    return 1
   fi
+  metadata="$(printf '{"name":"%s","parents":["%s"]}' "$filename" "$FOLDER_ID")"
+  http="$(curl -s -o /dev/null -w "%{http_code}" \
+    -X POST \
+    -H "Authorization: Bearer $TOKEN" \
+    -F "metadata=$metadata;type=application/json" \
+    -F "file=@$filepath;type=$mime" \
+    "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart" \
+    2>/dev/null || echo "000")"
+  if [[ "$http" == "200" ]]; then
+    log "  created: $filename"
+    return 0
+  fi
+  warn "  error creando $filename (HTTP $http) — comparte la carpeta con el client_email del service account (403 = sin permiso)"
+  return 1
 }
 
 log "Iniciando sync a Drive folder: $FOLDER_ID"

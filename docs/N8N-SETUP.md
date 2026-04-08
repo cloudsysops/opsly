@@ -38,8 +38,9 @@ y notificar confirmacion de recepcion.
 
 ```json
 {
-  "content": "Tarea a ejecutar por Cursor",
-  "author": { "username": "Cristian" }
+  "content": "@cursor Tarea a ejecutar",
+  "author": { "username": "Cristian" },
+  "target": "cursor"
 }
 ```
 
@@ -58,10 +59,47 @@ curl -sk -X POST "$N8N_WEBHOOK_URL" \
   -d '{"content":"# test\necho hello","author":{"username":"Cristian"}}'
 ```
 
-3. Verificar:
+1. Verificar:
    - commit nuevo sobre `docs/ACTIVE-PROMPT.md` (o update por API)
    - mensaje de confirmacion en Discord
    - ejecucion detectada por `cursor-prompt-monitor`
+
+## Dispatch automatizado (recomendado)
+
+Para no construir payloads a mano en cada prueba, usar el helper:
+
+```bash
+doppler run --project ops-intcloudsysops --config prd -- \
+  ./scripts/dispatch-discord-command.sh --content "# smoke\necho n8n-ok"
+```
+
+Opcionalmente, enviar contenido desde archivo:
+
+```bash
+doppler run --project ops-intcloudsysops --config prd -- \
+  ./scripts/dispatch-discord-command.sh --file ./docs/ACTIVE-PROMPT.md --dry-run
+```
+
+Flujo esperado:
+
+- `dispatch-discord-command.sh` responde `Webhook n8n OK`.
+- n8n actualiza `docs/ACTIVE-PROMPT.md` en GitHub.
+- `cursor-prompt-monitor` detecta el cambio y ejecuta.
+- `notify-discord.sh` publica inicio/fin o error.
+
+## Menciones por agente (@cursor / @claude)
+
+Puedes enviar en Discord:
+
+- `@cursor <instrucción>` para ejecución en el carril de Cursor.
+- `@claude <instrucción>` para carril de Claude/n8n.
+
+El helper detecta target en automático:
+
+```bash
+doppler run --project ops-intcloudsysops --config prd -- \
+  ./scripts/dispatch-discord-command.sh --content "@claude revisa estado del deploy"
+```
 
 ## Troubleshooting
 

@@ -41,7 +41,7 @@
       "type": "n8n-nodes-base.code",
       "parameters": {
         "language": "javascript",
-        "jsCode": "const body = $json.body || {};\nconst content = body.content || '';\nconst author = body.author?.username || 'Cristian';\nconst formatted = `# Tarea recibida desde Discord\\n# Fecha: ${new Date().toISOString()}\\n# Autor: ${author}\\n\\n${content}\\n`;\nreturn [{ json: { ...body, formatted_content: formatted } }];"
+        "jsCode": "const body = $json.body || {};\nconst content = body.content || '';\nconst author = body.author?.username || 'Cristian';\nconst mentionTarget = /^\\s*@claude(\\s|$)/i.test(content) ? 'claude' : (/^\\s*@cursor(\\s|$)/i.test(content) ? 'cursor' : 'cursor');\nconst target = body.target || mentionTarget;\nconst formatted = `# Tarea recibida desde Discord\\n# Fecha: ${new Date().toISOString()}\\n# Autor: ${author}\\n# Target: ${target}\\n\\n${content}\\n`;\nreturn [{ json: { ...body, target, formatted_content: formatted } }];"
       }
     },
     {

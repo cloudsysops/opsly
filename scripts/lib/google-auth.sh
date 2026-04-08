@@ -1,14 +1,79 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-google_base64url_encode() {
-  # Reads from stdin, writes base64url without padding.
-  python3 - <<'PY'
-import base64, sys
-data = sys.stdin.buffer.read()
-enc = base64.urlsafe_b64encode(data).decode("ascii").rstrip("=")
-sys.stdout.write(enc)
+normalize_google_sa_json() {
+  # Soporta:
+  # 1) JSON normal {"type":"service_account",...}
+  # 2) JSON stringificado "\"{...}\""
+  # 3) JSON en base64/base64url
+  local raw="${1:-}"
+  python3 - <<'PY' "$raw"
+import base64
+import json
+import sys
+
+raw = sys.argv[1] if len(sys.argv) > 1 else ""
+s = raw.strip().lstrip("\ufeff")
+if not s:
+    print("")
+    raise SystemExit(0)
+
+def try_json(text: str):
+    try:
+        parsed = json.loads(text)
+    except Exception:
+        return None
+    if isinstance(parsed, str):
+        try:
+            parsed2 = json.loads(parsed)
+            if isinstance(parsed2, dict):
+                return parsed2
+        except Exception:
+            return None
+        return None
+    if isinstance(parsed, dict):
+        return parsed
+    return None
+
+obj = try_json(s)
+if obj is None:
+    candidate = s.replace("-", "+").replace("_", "/")
+    padding = "=" * ((4 - len(candidate) % 4) % 4)
+    try:
+        decoded = base64.b64decode(candidate + padding).decode("utf-8", errors="strict")
+        obj = try_json(decoded.strip().lstrip("\ufeff"))
+    except Exception:
+        obj = None
+
+if obj is None:
+    print("")
+else:
+    print(json.dumps(obj, separators=(",", ":")))
 PY
+}
+
+read_google_sa_json_file() {
+  local path="${1:-}"
+  if [[ -z "$path" ]]; then
+    return 1
+  fi
+  if [[ ! -f "$path" ]]; then
+    echo "[google-auth] WARNING: no existe GOOGLE_SERVICE_ACCOUNT_JSON_FILE: $path" >&2
+    return 1
+  fi
+  if [[ ! -r "$path" ]]; then
+    echo "[google-auth] WARNING: sin lectura en GOOGLE_SERVICE_ACCOUNT_JSON_FILE: $path" >&2
+    return 1
+  fi
+  python3 -c 'import pathlib,sys; sys.stdout.write(pathlib.Path(sys.argv[1]).read_text(encoding="utf-8"))' "$path"
+}
+
+google_base64url_encode() {
+  # Lee de stdin del caller (NO usar heredoc: roba stdin y rompe el pipe).
+  python3 -c 'import base64,sys
+data=sys.stdin.buffer.read()
+sys.stdout.write(base64.urlsafe_b64encode(data).decode("ascii").rstrip("="))
+'
 }
 
 get_google_token() {
@@ -16,8 +81,16 @@ get_google_token() {
   # Uso: source scripts/lib/google-auth.sh && get_google_token
   #
   # Variables:
-  #   GOOGLE_SERVICE_ACCOUNT_JSON — JSON completo del service account
-  local sa_json="${GOOGLE_SERVICE_ACCOUNT_JSON:-}"
+  #   GOOGLE_SERVICE_ACCOUNT_JSON — JSON completo del service account (o vacío)
+  #   GOOGLE_SERVICE_ACCOUNT_JSON_FILE — ruta al .json (recomendado en local si la UI de Doppler trunca)
+  local sa_json=""
+  local json_file="${GOOGLE_SERVICE_ACCOUNT_JSON_FILE:-}"
+  # Prioridad: inline env -> archivo local -> Doppler (la UI puede truncar; usar archivo o `doppler secrets set ... < file.json`).
+  if [[ -n "${GOOGLE_SERVICE_ACCOUNT_JSON:-}" ]]; then
+    sa_json="${GOOGLE_SERVICE_ACCOUNT_JSON}"
+  elif [[ -n "$json_file" ]]; then
+    sa_json="$(read_google_sa_json_file "$json_file" 2>/dev/null || true)"
+  fi
   if [[ -z "$sa_json" ]] && command -v doppler >/dev/null 2>&1; then
     sa_json="$(doppler secrets get GOOGLE_SERVICE_ACCOUNT_JSON --project ops-intcloudsysops --config prd --plain 2>/dev/null || echo "")"
   fi
@@ -25,13 +98,32 @@ get_google_token() {
     sa_json="$(cd /opt/opsly 2>/dev/null && doppler secrets get GOOGLE_SERVICE_ACCOUNT_JSON --plain 2>/dev/null || echo "")"
   fi
   if [[ -z "$sa_json" ]]; then
-    echo "[google-auth] WARNING: GOOGLE_SERVICE_ACCOUNT_JSON vacío" >&2
+    echo "[google-auth] WARNING: sin credencial (GOOGLE_SERVICE_ACCOUNT_JSON, GOOGLE_SERVICE_ACCOUNT_JSON_FILE o Doppler)" >&2
     echo ""
     return 0
   fi
 
-  # drive.file (solo archivos creados/abiertos por la app) es suficiente para sync de docs.
-  google_sa_access_token_from_json "$sa_json" "https://www.googleapis.com/auth/drive.file" || true
+  sa_json="$(normalize_google_sa_json "$sa_json")"
+  if [[ -z "$sa_json" && -n "$json_file" ]]; then
+    sa_json="$(read_google_sa_json_file "$json_file" 2>/dev/null || true)"
+    sa_json="$(normalize_google_sa_json "$sa_json")"
+  fi
+  if [[ -z "$sa_json" ]]; then
+    echo "[google-auth] WARNING: GOOGLE_SERVICE_ACCOUNT_JSON no es JSON interpretable (normal/string/base64). Si pegaste en Doppler y se cortó, usa: doppler secrets set GOOGLE_SERVICE_ACCOUNT_JSON --project ops-intcloudsysops --config prd < tu-archivo.json o define GOOGLE_SERVICE_ACCOUNT_JSON_FILE" >&2
+    echo ""
+    return 0
+  fi
+
+  # drive.file (mínimo privilegio) y fallback a drive por compatibilidad.
+  local token
+  token="$(google_sa_access_token_from_json "$sa_json" "https://www.googleapis.com/auth/drive.file" 2>/dev/null || true)"
+  if [[ -n "$token" ]]; then
+    printf '%s' "$token"
+    return 0
+  fi
+
+  echo "[google-auth] WARNING: fallback a scope drive (token con drive.file no emitido)" >&2
+  google_sa_access_token_from_json "$sa_json" "https://www.googleapis.com/auth/drive" || true
 }
 
 google_sa_access_token_from_json() {
@@ -39,6 +131,7 @@ google_sa_access_token_from_json() {
   # Prints access token to stdout.
   local service_account_json="${1:-}"
   local scope="${2:-https://www.googleapis.com/auth/drive}"
+  service_account_json="$(printf '%s' "$service_account_json" | sed 's/^\xEF\xBB\xBF//')"
 
   if [[ -z "$service_account_json" ]]; then
     echo "google-auth: service account JSON vacío" >&2
@@ -46,25 +139,40 @@ google_sa_access_token_from_json() {
   fi
 
   local client_email
+  local sa_type
   local token_uri
+  sa_type="$(python3 -c 'import json,sys; print(json.loads(sys.stdin.read()).get("type",""))' <<<"$service_account_json" 2>/dev/null || true)"
   client_email="$(python3 -c 'import json,sys; print(json.loads(sys.stdin.read()).get("client_email",""))' <<<"$service_account_json" 2>/dev/null || true)"
   token_uri="$(python3 -c 'import json,sys; print(json.loads(sys.stdin.read()).get("token_uri",""))' <<<"$service_account_json" 2>/dev/null || true)"
+
+  if [[ "$sa_type" != "service_account" ]]; then
+    echo "google-auth: JSON inválido (type debe ser service_account)" >&2
+    return 1
+  fi
 
   if [[ -z "$client_email" ]]; then
     echo "google-auth: JSON inválido (client_email faltante)" >&2
     return 1
   fi
-  # Google recomienda este endpoint; evitar divergencias de JSON.
+  # Google exige aud fijo (no confundir con token_uri del JSON de la cuenta).
   token_uri="https://oauth2.googleapis.com/token"
-
-  local iat
-  local exp
-  iat="$(python3 -c 'import time; print(int(time.time()))')"
-  exp="$((iat + 3600))"
 
   local header payload_json payload signing_input signature jwt
   header="$(printf '{"alg":"RS256","typ":"JWT"}' | google_base64url_encode)"
-  payload_json="$(python3 -c "import json; print(json.dumps({'iss': '${client_email}','scope': '${scope}','aud': '${token_uri}','iat': int(${iat}),'exp': int(${exp})}, separators=(',',':')))" 2>/dev/null || true)"
+  # Payload sin interpolación shell. Sin claim "sub" salvo delegación de dominio (si no,
+  # Google a veces responde invalid_request / Bad Request sin detalle).
+  payload_json="$(printf '%s' "$service_account_json" | python3 -c '
+import json, sys, time
+sa = json.loads(sys.stdin.read())
+scope = sys.argv[1]
+email = sa["client_email"]
+aud = "https://oauth2.googleapis.com/token"
+now = int(time.time())
+iat = now - 90
+exp = iat + 3600
+body = {"iss": email, "scope": scope, "aud": aud, "iat": iat, "exp": exp}
+print(json.dumps(body, separators=(",", ":")))
+' "$scope" 2>/dev/null || true)"
   if [[ -z "${payload_json:-}" ]]; then
     echo "google-auth: no se pudo construir JWT payload" >&2
     return 1
@@ -100,11 +208,19 @@ google_sa_access_token_from_json() {
   jwt="${signing_input}.${signature}"
 
   local resp token
+  # --data-urlencode evita invalid_request cuando el JWT rompe el body form (caracteres reservados).
   resp="$(curl -sS -X POST \
     -H "Content-Type: application/x-www-form-urlencoded" \
-    --data "grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer" \
-    --data "assertion=$jwt" \
+    --data-urlencode "grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer" \
+    --data-urlencode "assertion=${jwt}" \
     "$token_uri" 2>/dev/null || true)"
+
+  if [[ "${GOOGLE_OAUTH_DEBUG:-}" == "1" ]]; then
+    echo "[google-auth] debug: token_uri=$token_uri resp_bytes=$(printf '%s' "$resp" | wc -c | tr -d ' ')" >&2
+  fi
+  if [[ "${GOOGLE_OAUTH_DEBUG:-}" == "2" ]]; then
+    echo "[google-auth] debug: body=$(printf '%s' "$resp")" >&2
+  fi
 
   token="$(python3 -c 'import json,sys; print(json.loads(sys.stdin.read()).get("access_token",""))' <<<"$resp" 2>/dev/null || true)"
   if [[ -z "$token" ]]; then
@@ -112,8 +228,9 @@ google_sa_access_token_from_json() {
     desc="$(python3 -c 'import json,sys; d=json.loads(sys.stdin.read()); print(d.get("error_description",""))' <<<"$resp" 2>/dev/null || true)"
     if [[ -n "${err:-}" || -n "${desc:-}" ]]; then
       echo "google-auth: token endpoint error: ${err:-unknown} ${desc:-}" >&2
+      echo "google-auth: tip: IAM > Service accounts > Keys (key revocada o JSON de otra cuenta). Subir JSON nuevo: doppler secrets set GOOGLE_SERVICE_ACCOUNT_JSON ... < archivo.json" >&2
     else
-      echo "google-auth: no se pudo obtener access_token (respuesta no contiene access_token)" >&2
+      echo "google-auth: no se pudo obtener access_token (respuesta no JSON o vacía): $(printf '%.200s' "$resp")" >&2
     fi
     return 1
   fi

@@ -8,6 +8,8 @@ RUN npm ci -w @intcloudsysops/mcp
 FROM node:20-alpine AS builder
 WORKDIR /repo
 COPY --from=deps /repo/node_modules ./node_modules
+COPY --from=deps /repo/package.json ./package.json
+COPY --from=deps /repo/package-lock.json ./package-lock.json
 COPY apps/mcp ./apps/mcp
 COPY apps/llm-gateway ./apps/llm-gateway
 RUN npm run build -w @intcloudsysops/mcp

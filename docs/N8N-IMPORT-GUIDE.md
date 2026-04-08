@@ -27,9 +27,9 @@ doppler secrets get GITHUB_TOKEN_N8N \
   --project ops-intcloudsysops --config prd --plain | wc -c
 ```
 
-3. Resultado esperado:
+1. Resultado esperado:
    - `> 10` caracteres.
-4. Resultado observado en esta ejecucion:
+1. Resultado observado en esta ejecucion:
    - `Doppler Error: Could not find requested secret: GITHUB_TOKEN_N8N` y `0`.
    - Si ocurre, crear/cargar el secreto en `prd` antes de activar el flujo.
 
@@ -60,11 +60,13 @@ No hardcodear tokens en nodos.
 ## 4) Verificacion de nodos HTTP (sin adivinar)
 
 ### Nodo `Get ACTIVE-PROMPT SHA`
+
 - Method: `GET`
 - URL: `https://api.github.com/repos/cloudsysops/opsly/contents/docs/ACTIVE-PROMPT.md`
 - Header: `Authorization: Bearer {{$env.GITHUB_TOKEN_N8N}}`
 
 ### Nodo `Update ACTIVE-PROMPT`
+
 - Method: `PUT`
 - URL: `https://api.github.com/repos/cloudsysops/opsly/contents/docs/ACTIVE-PROMPT.md`
 - Headers:
@@ -72,6 +74,7 @@ No hardcodear tokens en nodos.
   - `Content-Type: application/json`
 
 ### Nodo `Notify Discord Confirm`
+
 - Method: `POST`
 - URL: `{{$env.DISCORD_WEBHOOK_URL}}`
 - Body json:
@@ -97,7 +100,14 @@ export N8N_WEBHOOK_SECRET="<SECRET_COMPARTIDO>"
 curl -sk -X POST "$N8N_WEBHOOK_URL" \
   -H "Content-Type: application/json" \
   -H "X-Opsly-Secret: $N8N_WEBHOOK_SECRET" \
-  -d '{"content":"# test\necho hello","author":{"username":"Cristian"},"dry_run":true}'
+  -d '{"content":"@cursor # test\necho hello","author":{"username":"Cristian"},"target":"cursor","dry_run":true}'
+```
+
+Alternativa automatizada (helper del repo):
+
+```bash
+doppler run --project ops-intcloudsysops --config prd -- \
+  ./scripts/dispatch-discord-command.sh --content "@claude revisar health + resumen"
 ```
 
 ## 7) Checklist de salida
@@ -107,4 +117,3 @@ curl -sk -X POST "$N8N_WEBHOOK_URL" \
 - [ ] Variables de entorno cargadas en n8n.
 - [ ] Webhook URL copiada desde n8n.
 - [ ] `curl` responde 200/2xx con payload `dry_run: true`.
-
