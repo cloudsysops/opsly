@@ -4,6 +4,29 @@ import type { OrchestratorJob } from "./types.js";
 const MAX_JOB_ID_LEN = 128;
 
 /**
+ * Prioridad BullMQ: rango 0 (máxima) … 2_097_152 (mínima).
+ * Alineado con ADR-011 (planes); menor número = antes en la cola.
+ */
+export const PLAN_QUEUE_PRIORITY = {
+  enterprise: 0,
+  business: 10_000,
+  startup: 50_000,
+} as const;
+
+/**
+ * Prioridad de encolado por plan de tenant. Sin `plan` se trata como startup.
+ */
+export function planToQueuePriority(plan?: OrchestratorJob["plan"]): number {
+  if (plan === "enterprise") {
+    return PLAN_QUEUE_PRIORITY.enterprise;
+  }
+  if (plan === "business") {
+    return PLAN_QUEUE_PRIORITY.business;
+  }
+  return PLAN_QUEUE_PRIORITY.startup;
+}
+
+/**
  * BullMQ `jobId` solo acepta caracteres seguros; evita colisiones entre tipos.
  */
 export function sanitizeQueueJobId(raw: string): string {
@@ -15,6 +38,7 @@ export function buildQueueAddOptions(job: OrchestratorJob): JobsOptions {
   const opts: JobsOptions = {
     attempts: 3,
     backoff: { type: "exponential", delay: 2000 },
+    priority: planToQueuePriority(job.plan),
   };
 
   if (job.idempotency_key && job.idempotency_key.length > 0) {

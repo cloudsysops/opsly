@@ -13,6 +13,8 @@ export interface JobEnqueueLogFields {
   initiated_by: OrchestratorJob["initiated_by"];
   agent_role?: string;
   cost_budget_usd?: number;
+  /** Prioridad BullMQ (0 = máxima); ver `planToQueuePriority` en `queue-opts.ts`. */
+  queue_priority?: number;
 }
 
 /**

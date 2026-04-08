@@ -37,7 +37,6 @@
       "ml",
       "orchestrator",
       "portal",
-      "skill-manifest",
       "web"
     ],
     "scripts": 32,

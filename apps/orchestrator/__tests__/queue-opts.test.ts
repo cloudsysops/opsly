@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { buildQueueAddOptions, sanitizeQueueJobId } from "../src/queue-opts.js";
+import {
+  buildQueueAddOptions,
+  PLAN_QUEUE_PRIORITY,
+  planToQueuePriority,
+  sanitizeQueueJobId,
+} from "../src/queue-opts.js";
 import type { OrchestratorJob } from "../src/types.js";
 
 function baseJob(overrides: Partial<OrchestratorJob>): OrchestratorJob {
@@ -26,11 +31,38 @@ describe("sanitizeQueueJobId", () => {
   });
 });
 
+describe("planToQueuePriority", () => {
+  it("enterprise es la más alta (menor número BullMQ)", () => {
+    expect(planToQueuePriority("enterprise")).toBe(PLAN_QUEUE_PRIORITY.enterprise);
+    expect(planToQueuePriority("enterprise")).toBeLessThan(planToQueuePriority("business"));
+  });
+
+  it("business entre enterprise y startup", () => {
+    expect(planToQueuePriority("business")).toBe(PLAN_QUEUE_PRIORITY.business);
+    expect(planToQueuePriority("business")).toBeLessThan(planToQueuePriority("startup"));
+  });
+
+  it("sin plan equivale a startup", () => {
+    expect(planToQueuePriority(undefined)).toBe(PLAN_QUEUE_PRIORITY.startup);
+    expect(planToQueuePriority("startup")).toBe(PLAN_QUEUE_PRIORITY.startup);
+  });
+});
+
 describe("buildQueueAddOptions", () => {
   it("sin idempotency_key no fija jobId", () => {
     const opts = buildQueueAddOptions(baseJob({}));
     expect(opts.jobId).toBeUndefined();
     expect(opts.attempts).toBe(3);
+    expect(opts.priority).toBe(PLAN_QUEUE_PRIORITY.startup);
+  });
+
+  it("prioridad por plan", () => {
+    expect(buildQueueAddOptions(baseJob({ plan: "enterprise" })).priority).toBe(
+      PLAN_QUEUE_PRIORITY.enterprise,
+    );
+    expect(buildQueueAddOptions(baseJob({ plan: "business" })).priority).toBe(
+      PLAN_QUEUE_PRIORITY.business,
+    );
   });
 
   it("con idempotency_key fija jobId determinista", () => {

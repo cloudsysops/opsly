@@ -42,3 +42,7 @@ Tras encolar, `setJobState` guarda objetos con `id`, `type`, `status`, `tenant_s
 ## Concurrency por plan
 
 La priorización por plan (Startup / Business / Enterprise) está alineada con `VISION.md` y `docs/OPENCLAW-ARCHITECTURE.md`: los workers pueden leer el plan del tenant desde Supabase/API y ajustar `concurrency` o rechazar trabajo; hoy los workers usan valores fijos (p. ej. `concurrency: 3` en `CursorWorker`). Evolución: leer política por `tenant_slug` antes de ejecutar side-effects costosos.
+
+### Prioridad en la cola BullMQ (`queue-opts.ts`)
+
+Cada job lleva `priority` en las opciones de `Queue.add` (BullMQ: **0 = máxima prioridad**, valores mayores se procesan después). `planToQueuePriority` asigna: **enterprise → 0**, **business → 10_000**, **startup** o sin plan → **50_000**. El log JSON `job_enqueue` incluye `queue_priority` para correlación.
