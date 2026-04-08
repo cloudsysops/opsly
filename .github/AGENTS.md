@@ -97,9 +97,9 @@ Procedimientos vivos en el repo: **`skills/user/<skill>/SKILL.md`**. En runtimes
 
 ### Incrementos adoptados (acordados, orden recomendado)
 
-1. **Tipos + metadata de jobs (orchestrator)** — *primer incremento sugerido.* Campos opcionales: `tenant_slug` / `tenant_id` (según contrato ya usado), `plan`, hooks de coste, **idempotency key**; payloads viejos sin metadata siguen válidos.
-2. **Roles de agente como tipos y convenciones** — `planner` \| `executor` \| `tool` \| `notifier` (enum o union en tipos compartidos), no un framework de agentes nuevo.
-3. **Logs estructurados** — en workers/orchestrator y en `llm-gateway`: `tenant`, `requestId`, `cost`, `tokens`, `latency` donde aplique.
+1. **✅ Tipos + metadata de jobs (orchestrator)** — *Hecho (2026-04).* `OrchestratorJob` / `IntentRequest` en `apps/orchestrator/src/types.ts`: `tenant_id`, `request_id`, `plan`, `idempotency_key`, `cost_budget_usd`, `agent_role`. `processIntent` devuelve `request_id`. Cola: `buildQueueAddOptions` + `jobId` BullMQ si hay idempotencia (`queue-opts.ts`). Redis `JobState` ampliado. Log JSON por encolado (`observability/job-log.ts`). Pruebas: `__tests__/queue-opts.test.ts`, `__tests__/engine.test.ts`.
+2. **Roles de agente como tipos y convenciones** — `planner` \| `executor` \| `tool` \| `notifier` ya en tipo `AgentRole`; uso progresivo en callers, no un framework nuevo.
+3. **Logs estructurados (siguiente foco)** — ampliar a workers y `llm-gateway` además de la línea por encolado ya presente en orchestrator.
 4. **Skills** — manifest / `inputSchema` / `outputSchema` / **version** opcional (p. ej. frontmatter o `manifest.json` junto a `SKILL.md`) sin romper el mecanismo de lectura actual el día uno.
 5. **LLM Gateway** — routing progresivo por costo, tamaño de contexto y tipo de tarea **detrás de defaults actuales** (query params o headers opcionales).
 6. **Orchestrator (fases posteriores)** — descomposición ligera de tareas, routing interno ya presente en `engine.ts`, prioridad por plan (ADR-011) donde aún haya valores fijos; **no** DAG global hasta necesidad demostrada.
@@ -131,8 +131,8 @@ Procedimientos vivos en el repo: **`skills/user/<skill>/SKILL.md`**. En runtimes
 
 ### Sesiones Cursor sugeridas (una capacidad por sesión)
 
-1. Tipos + metadata de jobs en `apps/orchestrator`.
-2. Helpers de logging estructurado (orchestrator + gateway).
+1. ~~Tipos + metadata de jobs en `apps/orchestrator`.~~ ✅
+2. Helpers de logging estructurado (workers + `llm-gateway`; reutilizar patrón `job-log.ts`).
 3. Routing opcional en `llm-gateway` con defaults preservados.
 4. Normalización gradual de skills (manifest/version).
 
@@ -144,7 +144,7 @@ Procedimientos vivos en el repo: **`skills/user/<skill>/SKILL.md`**. En runtimes
 
 <!-- Actualizar al final de cada sesión -->
 
-**Fecha última actualización:** 2026-04-09 — **Plan maestro Fase 4** ampliado (principios extend-not-replace, mapa `apps/*`, incrementos 1–7, sesiones Cursor, checklist PR; `VISION.md` enlaza a esta sección). **Consolidación (sesiones Cursor: docs multi-agente + Compose tenant):** Fase 4 — `docs/OPENCLAW-ARCHITECTURE.md`, `docs/CLAUDE-WORKFLOW-OPTIMIZATION.md`, `docs/AUTO-PUSH-WATCHER.md`, `scripts/auto-push-watcher.sh`, `infra/systemd/opsly-watcher.service`. Flujo Claude — `docs/ACTIVE-PROMPT.md`, `scripts/cursor-prompt-monitor.sh`, `infra/systemd/cursor-prompt-monitor.service`, logs `logs/`. Google Drive — `docs/GOOGLE-DRIVE-SYNC.md`, `docs/opsly-drive-files.list`, `.opsly-drive-config.json` (pegar enlace de carpeta compartida cuando exista). **Fix tenant stacks:** `scripts/lib/docker-helpers.sh` usa `docker compose --project-name tenant_<slug>` en `compose_up`, `compose_stop`, `compose_down`, `stack_running`, `compose_ps`; en `up` ya no se pasa `--remove-orphans` (evita que un `up` de un tenant borre contenedores de otros en el mismo directorio `tenants/`). **NotebookLM agent + LocalRank (tester):** paquete `@intcloudsysops/notebooklm-agent` en `apps/agents/notebooklm/` (Python + TS, MCP tool `notebooklm`, scope `agents:write`); ADR-014; skill `opsly-notebooklm`; guía `docs/LOCALRANK-TESTER-GUIDE.md`. **LocalRank** (`localrank` / jkbotero78@gmail.com / startup): onboard e invitación vía API **pendiente de ejecutar desde red con SSH/API estables** — en sesión Cursor, SSH a `157.245.223.7` dio *banner timeout* / *docker ps* colgado; reintentar `./scripts/onboard-tenant.sh --slug localrank ...` y `POST /api/invitations` desde Mac/red confiable. **Tester externo + Drive (histórico):** commit `7035d6c` — OAuth usuario en `drive-sync`; tenant piloto `jkboterolabs` en docs previos. **Resend:** dominio verificado condiciona email a Gmail; ver runbooks invitaciones.
+**Fecha última actualización:** 2026-04-10 — **Incremento 1 Fase 4:** metadata + idempotencia + logs en orchestrator (`apps/orchestrator`, `docs/ORCHESTRATOR.md`). **Plan maestro Fase 4** (AGENTS + `VISION.md`). **Consolidación (sesiones Cursor: docs multi-agente + Compose tenant):** Fase 4 — `docs/OPENCLAW-ARCHITECTURE.md`, `docs/CLAUDE-WORKFLOW-OPTIMIZATION.md`, `docs/AUTO-PUSH-WATCHER.md`, `scripts/auto-push-watcher.sh`, `infra/systemd/opsly-watcher.service`. Flujo Claude — `docs/ACTIVE-PROMPT.md`, `scripts/cursor-prompt-monitor.sh`, `infra/systemd/cursor-prompt-monitor.service`, logs `logs/`. Google Drive — `docs/GOOGLE-DRIVE-SYNC.md`, `docs/opsly-drive-files.list`, `.opsly-drive-config.json` (pegar enlace de carpeta compartida cuando exista). **Fix tenant stacks:** `scripts/lib/docker-helpers.sh` usa `docker compose --project-name tenant_<slug>` en `compose_up`, `compose_stop`, `compose_down`, `stack_running`, `compose_ps`; en `up` ya no se pasa `--remove-orphans` (evita que un `up` de un tenant borre contenedores de otros en el mismo directorio `tenants/`). **NotebookLM agent + LocalRank (tester):** paquete `@intcloudsysops/notebooklm-agent` en `apps/agents/notebooklm/` (Python + TS, MCP tool `notebooklm`, scope `agents:write`); ADR-014; skill `opsly-notebooklm`; guía `docs/LOCALRANK-TESTER-GUIDE.md`. **LocalRank** (`localrank` / jkbotero78@gmail.com / startup): onboard e invitación vía API **pendiente de ejecutar desde red con SSH/API estables** — en sesión Cursor, SSH a `157.245.223.7` dio *banner timeout* / *docker ps* colgado; reintentar `./scripts/onboard-tenant.sh --slug localrank ...` y `POST /api/invitations` desde Mac/red confiable. **Tester externo + Drive (histórico):** commit `7035d6c` — OAuth usuario en `drive-sync`; tenant piloto `jkboterolabs` en docs previos. **Resend:** dominio verificado condiciona email a Gmail; ver runbooks invitaciones.
 
 **Resumen 2026-04-08 (Cursor / Opsly — sesión tester + Drive)**
 
@@ -772,6 +772,7 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 | Fecha | Decisión | Razón |
 |---|---|---|
 | 2026-04-09 | Stacks tenant: `docker compose --project-name tenant_<slug>` en `scripts/lib/docker-helpers.sh` para `up`/`stop`/`down`/`ps`/`stack_running`; sin `--remove-orphans` en `up` | El nombre de proyecto por defecto (p. ej. directorio `tenants`) unificaba todos los `docker-compose.*.yml`; un `up -f` de un slug trataba contenedores de otros tenants como huérfanos y los eliminaba |
+| 2026-04-10 | Jobs orchestrator: metadata opcional + `request_id` correlación + `idempotency_key` → BullMQ `jobId` + `JobState` en Redis + log JSON por encolado | Base para observabilidad y cost tracking sin romper payloads; ver `docs/ORCHESTRATOR.md` |
 | 2026-04-07 | Autodiagnóstico autónomo ejecuta limpieza de disco con `docker image prune -f` + `docker builder prune -f` sin borrar volúmenes | Mitigar bloqueo operativo inmediato por VPS al 100% de uso; bajó a ~83% y quedó acción humana para cerrar <80% |
 | 2026-04-07 | Consulta de tenants Supabase en sesiones de diagnóstico usa schema `platform` | Evita falsos negativos de `Supabase query failed` al consultar `tenants` fuera del schema por defecto |
 | 2026-04-07 | `docs/N8N-IMPORT-GUIDE.md` se actualiza con estado operativo real y comando exacto de secreto faltante | Reducir ambigüedad del handoff cuando falte `GITHUB_TOKEN_N8N` y acelerar activación del flujo n8n |
