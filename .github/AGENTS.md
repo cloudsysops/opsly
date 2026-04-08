@@ -91,16 +91,17 @@ Procedimientos vivos en el repo: **`skills/user/<skill>/SKILL.md`**. En runtimes
 
 <!-- Actualizar al final de cada sesión -->
 
-**Fecha última actualización:** 2026-04-08 — **Fase 10 (progreso):** OAuth service account operativo tras fix `google_base64url_encode` (JWT); Drive sync queda en **403** hasta compartir carpeta con `client_email` del JSON; CI Docker builder corregido (root `package.json` en imágenes api/mcp); automatización n8n (`dispatch-discord-command`, `@cursor`/`@claude`), `autonomous-plan-discord-agent`, docs y `check-tokens` endurecido para JSON de SA.
+**Fecha última actualización:** 2026-04-08 — **Tester externo + Drive OAuth usuario:** commit `7035d6c` — `google-auth.sh` soporta `GOOGLE_USER_CREDENTIALS_JSON`/ADC + `GOOGLE_AUTH_STRATEGY` (`drive-sync` usa `user_first`); `onboard-tenant.sh --name`; email invitación (`portal-invitations.ts`) con empresa, primeros pasos y feedback; `check-tokens` opcional usuario; docs ADC en `docs/GOOGLE-CLOUD-SETUP.md`. **Tenant piloto prueba:** `jkboterolabs` / JK Botero Labs / jkbotero78@gmail.com / startup — onboard OK en VPS (n8n/uptime en `*.ops.smiletripcare.com`). **Resend:** `POST /api/invitations` **500** hacia Gmail hasta dominio verificado en Resend (`from` propio); workaround: `auth.admin.generateLink` con service role (script en «Próximo paso»). **gcloud** instalado en Mac; **ADC** no generado en sesión (login interactivo) — subir `GOOGLE_USER_CREDENTIALS_JSON` a Doppler tras `gcloud auth application-default login` con scopes en docs.
 
-**Resumen 2026-04-08 (Cursor / Opsly — sesión corta)**
+**Resumen 2026-04-08 (Cursor / Opsly — sesión tester + Drive)**
 
 | Área | Qué quedó hecho |
-|------|------------------|
-| **Google auth / Drive** | Fix crítico: `google_base64url_encode` no consumía stdin del pipe; token OAuth OK. `GOOGLE_SERVICE_ACCOUNT_JSON_FILE`, normalización JSON, `curl --data-urlencode`, `drive-sync` cuenta errores y guía 403. |
-| **CI / Docker** | `apps/api/Dockerfile` + `apps/mcp/Dockerfile`: copiar `package.json` y `package-lock.json` al stage `builder` (evita `ENOENT` en `npm run -w` en Actions). |
-| **n8n / Discord** | `scripts/dispatch-discord-command.sh` (`--target`, menciones); plantilla `discord-to-github.json`; docs `N8N-SETUP`, `N8N-IMPORT-GUIDE`; `scripts/autonomous-plan-discord-agent.sh`. |
-| **Docs / tokens** | `docs/GOOGLE-CLOUD-SETUP.md` (stdin Doppler + permiso Drive); `docs/MASTER-PLAN-STATUS.md`; `check-tokens` valida `type`/`client_email`/`private_key` en SA JSON; `.gitignore` `supabase/.temp/`. |
+|------|-----------------|
+| **Drive OAuth usuario** | `load_google_user_credentials_raw`, `get_google_user_access_token`, `get_google_service_account_access_token`, `get_google_token` con `user_first` / `service_account_first`; `drive-sync` exporta `user_first` por defecto. |
+| **Onboard** | `--name` para `name` en `platform.tenants`; VPS: `./scripts/onboard-tenant.sh --slug jkboterolabs --email jkbotero78@gmail.com --plan startup --name "JK Botero Labs" --yes`. |
+| **Invitaciones** | Mejora HTML/asunto; bloque operativo Resend dominio para email externo. |
+| **Discord** | Hitos: código Drive usuario; onboard tester. |
+| **Histórico misma fecha** | Fix `google_base64url_encode`; CI Docker builder root `package.json`; n8n dispatch/docs; `GOOGLE-CLOUD-SETUP` / `check-tokens` SA. |
 
 **Resumen 2026-04-07 … 2026-04-09 (Cursor / Opsly)**
 
@@ -456,12 +457,28 @@ Procedimientos vivos en el repo: **`skills/user/<skill>/SKILL.md`**. En runtimes
 
 <!-- Una sola tarea concreta. Actualizar al final de cada sesión -->
 
+### Cierre E2E tester `jkboterolabs` + Resend + Drive usuario
+
+```bash
+# 1) Resend: verificar dominio en resend.com → Doppler RESEND_FROM_EMAIL con ese dominio → redeploy API → repetir POST /api/invitations.
+
+# 2) Invitación manual (si Resend aún bloquea): desde apps/api, doppler run — node script generateLink (mismo patrón que sesión 2026-04-08); enviar link al tester por canal privado (no commitear token).
+
+# 3) Google Drive usuario en Doppler:
+gcloud auth application-default login \
+  --scopes=https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/drive.file
+doppler secrets set GOOGLE_USER_CREDENTIALS_JSON --project ops-intcloudsysops --config prd \
+  < ~/.config/gcloud/application_default_credentials.json
+./scripts/drive-sync.sh
+
+# 4) Imagen API con email nuevo: tras cambios en portal-invitations.ts, pipeline Deploy GHCR + compose pull app en VPS.
+```
+
 ### Fase 10 — arranque inmediato (Google Cloud + BigQuery)
 
 ```bash
-# Paso 0 (Drive): compartir carpeta Opsly en Google Drive como Editor con el client_email del JSON del service account (ver docs/GOOGLE-CLOUD-SETUP.md). Sin eso: HTTP 403 en upload.
-# JSON completo en Doppler (la UI trunca): doppler secrets set GOOGLE_SERVICE_ACCOUNT_JSON --project ops-intcloudsysops --config prd < ruta/al-service-account.json
-# Opcional local: GOOGLE_SERVICE_ACCOUNT_JSON_FILE=/ruta/al.json en .env.local
+# Paso 0 (Drive): Shared Drive + SA, o OAuth usuario (`GOOGLE_USER_CREDENTIALS_JSON` + drive-sync `user_first`). Ver docs/GOOGLE-CLOUD-SETUP.md.
+# JSON SA en Doppler: doppler secrets set GOOGLE_SERVICE_ACCOUNT_JSON --project ops-intcloudsysops --config prd < ruta/al-service-account.json
 
 # Paso 1: Completar variables Google Cloud en Doppler prd
 doppler secrets set GOOGLE_CLOUD_PROJECT_ID --project ops-intcloudsysops --config prd
@@ -519,8 +536,9 @@ ssh vps-dragon@157.245.223.7 "docker system df && sudo du -xh /var --max-depth=2
 - [x] **`ANTHROPIC_API_KEY` en Doppler `prd`** — presente y validado por `check-tokens.sh`.
 - [ ] **`GOOGLE_CLOUD_PROJECT_ID` / `BIGQUERY_DATASET` / `VERTEX_AI_REGION` en `prd`** — requeridos para Fase 10.
 - [x] **OAuth token Google (service account)** — corregido `google_base64url_encode` + POST token; token emitido OK (2026-04-08).
-- [ ] **Drive sync escritura** — pendiente compartir carpeta destino con `client_email` del SA (**HTTP 403** hasta entonces); opcional `GOOGLE_SERVICE_ACCOUNT_JSON_FILE` o `doppler secrets set ... < archivo.json`.
-- [ ] **Imágenes GHCR / workflow Deploy** — pendiente **success** tras fix builder Docker en `main`; servicios opcionales pueden seguir en best-effort.
+- [ ] **Drive sync escritura Mi unidad** — subir `GOOGLE_USER_CREDENTIALS_JSON` (ADC OAuth usuario) a Doppler **o** carpeta en Shared Drive + SA; `drive-sync` ya intenta usuario primero.
+- [ ] **Resend dominio verificado** — sin ello, envío a emails fuera de la cuenta de prueba Resend → **500** en `POST /api/invitations` (ver mensaje API `verify a domain`).
+- [ ] **Imágenes GHCR / workflow Deploy** — desplegar API con plantilla invitación nueva (`portal-invitations.ts`); pendiente **success** de pipeline si aplica.
 - [ ] **`STRIPE_PRICE_ID_*` en Doppler `prd` / secrets de CI** — necesarios para billing/checkout real en `apps/web`; el build puede completarse sin ellos (`envOrEmpty` en `apps/web/lib/stripe/plans.ts`), pero Stripe fallará en runtime si faltan.
 
 ---
@@ -770,6 +788,9 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 | 2026-04-06 | Imagen admin: `NEXT_PUBLIC_SUPABASE_*` y `NEXT_PUBLIC_API_URL` como ARG/ENV en Dockerfile + secrets en `deploy.yml` build-args | Next solo inyecta `NEXT_PUBLIC_*` en build; CI debe pasar URL anon y API pública |
 | 2026-04-06 | **Portal cliente** `apps/portal`: Next 15, puerto **3002**, Traefik; invitación + login; datos vía **`GET /api/portal/me`**; `POST /api/portal/mode`; `POST /api/invitations` + Resend; CORS **middleware** + **cors-origins** | `portal-me.ts`, **`PORTAL_URL_PROBE`**; `/dashboard` sin auto-redirect por modo |
 | 2026-04-07 | **Fix routing:** handler movido de **`/api/portal/tenant`** a **`/api/portal/me`** para coincidir con `apps/portal/lib/tenant.ts` | Eliminaba 404 en dashboard hasta el deploy de la imagen API actualizada |
+| 2026-04-08 | **Drive:** `GOOGLE_AUTH_STRATEGY` + OAuth usuario (`refresh_token`) además de SA; `drive-sync` default `user_first` | Escribir en Mi unidad sin Shared Drive usando cuota del usuario |
+| 2026-04-08 | **Onboard:** flag `--name` en `onboard-tenant.sh` para `platform.tenants.name` | Invitaciones y UI con nombre comercial distinto del slug |
+| 2026-04-08 | **Tester piloto** slug `jkboterolabs` / JK Botero Labs / jkbotero78@gmail.com | Validar stack multi-tenant; invitación email bloqueada por Resend hasta dominio |
 
 ---
 
