@@ -67,6 +67,7 @@ Procedimientos vivos en el repo: **`skills/user/<skill>/SKILL.md`**. En runtimes
 | opsly-tenant | `skills/user/opsly-tenant/` | Onboarding / tenants |
 | opsly-feedback-ml | `skills/user/opsly-feedback-ml/` | Feedback + ML |
 | opsly-agent-teams | `skills/user/opsly-agent-teams/` | BullMQ / TeamManager |
+| opsly-notebooklm | `skills/user/opsly-notebooklm/` | Agente NotebookLM (notebooklm-py), contenido por tenant |
 
 ---
 
@@ -91,7 +92,7 @@ Procedimientos vivos en el repo: **`skills/user/<skill>/SKILL.md`**. En runtimes
 
 <!-- Actualizar al final de cada sesión -->
 
-**Fecha última actualización:** 2026-04-08 — **Tester externo + Drive OAuth usuario:** commit `7035d6c` — `google-auth.sh` soporta `GOOGLE_USER_CREDENTIALS_JSON`/ADC + `GOOGLE_AUTH_STRATEGY` (`drive-sync` usa `user_first`); `onboard-tenant.sh --name`; email invitación (`portal-invitations.ts`) con empresa, primeros pasos y feedback; `check-tokens` opcional usuario; docs ADC en `docs/GOOGLE-CLOUD-SETUP.md`. **Tenant piloto prueba:** `jkboterolabs` / JK Botero Labs / jkbotero78@gmail.com / startup — onboard OK en VPS (n8n/uptime en `*.ops.smiletripcare.com`). **Resend:** `POST /api/invitations` **500** hacia Gmail hasta dominio verificado en Resend (`from` propio); workaround: `auth.admin.generateLink` con service role (script en «Próximo paso»). **gcloud** instalado en Mac; **ADC** no generado en sesión (login interactivo) — subir `GOOGLE_USER_CREDENTIALS_JSON` a Doppler tras `gcloud auth application-default login` con scopes en docs.
+**Fecha última actualización:** 2026-04-08 — **NotebookLM agent + LocalRank (tester):** paquete `@intcloudsysops/notebooklm-agent` en `apps/agents/notebooklm/` (Python + TS, MCP tool `notebooklm`, scope `agents:write`); ADR-014; skill `opsly-notebooklm`; guía `docs/LOCALRANK-TESTER-GUIDE.md`. **LocalRank** (`localrank` / jkbotero78@gmail.com / startup): onboard e invitación vía API **pendiente de ejecutar desde red con SSH/API estables** — en sesión Cursor, SSH a `157.245.223.7` dio *banner timeout* / *docker ps* colgado; reintentar `./scripts/onboard-tenant.sh --slug localrank ...` y `POST /api/invitations` desde Mac/red confiable. **Tester externo + Drive (histórico):** commit `7035d6c` — OAuth usuario en `drive-sync`; tenant piloto `jkboterolabs` en docs previos. **Resend:** dominio verificado condiciona email a Gmail; ver runbooks invitaciones.
 
 **Resumen 2026-04-08 (Cursor / Opsly — sesión tester + Drive)**
 
@@ -801,6 +802,8 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 ├── tools/
 │ └── usb-kit/        # Scripts portátiles pendrive (disk3 Ubuntu booteable; ver README)
 ├── apps/
+│   ├── agents/
+│   │   └── notebooklm/      # Agente NotebookLM (notebooklm-py + wrapper TS + MCP)
 │   ├── api/                 # Next.js API (control plane)
 │   ├── admin/               # Next.js dashboard admin
 │   ├── portal/              # Next.js portal cliente (login, invitación, modos)
