@@ -29,6 +29,7 @@
   "repo": {
     "apps": [
       "admin",
+      "agents",
       "api",
       "context-builder",
       "llm-gateway",
@@ -39,7 +40,7 @@
       "web"
     ],
     "scripts": 32,
-    "adrs": 13,
+    "adrs": 14,
     "migrations": 14
   }
 }
