@@ -192,3 +192,98 @@ Antes de proponer cualquier feature nuevo, verificar:
 
 > Nunca añadir infra nueva sin cliente pagador que lo justifique.
 > Escalar verticalmente primero. Horizontal solo con 10+ tenants activos.
+
+---
+
+## Stack de expansión — Google Cloud + Open Source
+
+### Principio
+Usar gratis lo que Google da gratis.
+Integrar open source antes de pagar servicios.
+Escalar verticalmente antes de horizontalmente.
+Nunca añadir infra nueva sin cliente pagador que lo justifique.
+
+### Google Cloud — roadmap por fase
+
+#### AHORA (activo)
+| Servicio | Uso | Costo | Estado |
+|---------|-----|-------|--------|
+| Drive API | Sync docs AGENTS.md | Gratis | ✅ implementado |
+| Sheets API | Reportes tenants/billing | Gratis | ⏳ próximo |
+
+#### PRÓXIMO MES (cuando haya 3+ tenants pagando)
+| Servicio | Uso | Costo | Estado |
+|---------|-----|-------|--------|
+| BigQuery | Analytics usage_events | 1TB queries/mes gratis | ⏳ planificado |
+| Cloud Run | Workers ML sin VPS dedicado | 2M requests/mes gratis | ⏳ planificado |
+
+#### 6 MESES (cuando haya 10+ tenants)
+| Servicio | Uso | Costo | Estado |
+|---------|-----|-------|--------|
+| Vertex AI | Fine-tuning Llama con datos Opsly | $300 créditos iniciales | ⏳ planificado |
+| Speech-to-Text | Transcripción para tenants | 60 min/mes gratis | ⏳ planificado |
+| Vision API | Análisis imágenes para clientes | 1000 unidades/mes gratis | ⏳ planificado |
+
+#### 1 AÑO (cuando VPS no alcance)
+| Servicio | Uso | Costo | Estado |
+|---------|-----|-------|--------|
+| GKE Autopilot | Escalado horizontal | Pago por uso | ⏳ planificado |
+| Cloud Spanner | DB global multi-región | Pago por uso | ⏳ planificado |
+
+### Open Source — roadmap por fase
+
+#### AHORA (integrar en VPS existente)
+| Tool | Uso | Por qué | Estado |
+|------|-----|---------|--------|
+| Ollama | LLMs locales gratis | Ya instalado | ✅ activo |
+| Llama 3.2 3B | Clasificación, extracción | $0/token | ⏳ configurar |
+| Llama 3.1 8B | Respuestas moderadas | $0/token | ⏳ configurar |
+| Mistral 7B | Alternativa a Haiku | $0/token | ⏳ configurar |
+| Phi-3 Mini | Muy liviano, rápido | $0/token | ⏳ configurar |
+| DuckDB | Analytics local en VPS | Gratis, brutal velocidad | ⏳ planificado |
+| Prometheus | Métricas VPS | Ya instalado | ✅ activo |
+
+#### PRÓXIMO MES
+| Tool | Uso | Por qué | Estado |
+|------|-----|---------|--------|
+| OpenTelemetry | Traces + métricas distribuidas | Estándar industria | ⏳ planificado |
+| Grafana | Dashboards observabilidad | Gratis self-hosted | ⏳ planificado |
+| Qdrant | Vector DB a escala | Mejor que pgvector > 1M docs | ⏳ planificado |
+
+#### 6 MESES
+| Tool | Uso | Por qué | Estado |
+|------|-----|---------|--------|
+| LangGraph | Orquestación agentes complejos | Open source, estable | ⏳ planificado |
+| CrewAI | Multi-agent teams | Complementa OpenClaw | ⏳ planificado |
+| AutoGen | Agentes conversacionales | Microsoft, activo | ⏳ planificado |
+
+#### 1 AÑO
+| Tool | Uso | Por qué | Estado |
+|------|-----|---------|--------|
+| Apache Spark | Procesamiento batch masivo | Cuando datos > 10TB | ⏳ planificado |
+| Ray | Computación distribuida ML | Para fine-tuning serio | ⏳ planificado |
+
+### Reglas de integración
+
+1. **Gratis primero**: siempre explorar tier gratuito antes de pagar
+2. **Open source primero**: antes de SaaS de pago, buscar alternativa OS
+3. **VPS primero**: agotar capacidad vertical antes de Cloud Run/GKE
+4. **Datos primero**: recolectar datos HOY para ML de mañana
+5. **Un servicio a la vez**: no añadir dos tecnologías nuevas en el mismo sprint
+
+### El activo más valioso — datos
+
+Los datos que recolectamos hoy son el cimiento del LLM propio de mañana:
+
+```
+platform.conversations     → historial de chats por tenant
+platform.llm_feedback      → correcciones y ratings
+platform.usage_events      → tokens, costos, latencias
+platform.agent_executions  → qué funcionó, qué falló
+platform.feedback_decisions → qué implementó el ML solo
+```
+
+Con 12 meses de datos + Vertex AI + Llama base:
+→ Fine-tuning especializado en automatización de negocios
+→ Modelo propio que corre en VPS ($0/token)
+→ Ventaja competitiva real vs plataformas genéricas
