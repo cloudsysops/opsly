@@ -2,7 +2,9 @@ import type {
   InvitationSendResponse,
   MetricsResponse,
   SystemMetricsResponse,
+  TeamMetricsResponse,
   Tenant,
+  TenantUsageMetricsResponse,
   TenantDetailResponse,
   TenantsListResponse,
 } from "./types";
@@ -22,7 +24,7 @@ function getBaseUrl(): string {
   if (base && base.length > 0) {
     return base.replace(/\/$/, "");
   }
-  if (typeof globalThis.window !== "undefined") {
+  if (globalThis.window !== undefined) {
     const inferred = inferApiBaseFromAdminHost(
       globalThis.window.location.hostname,
     );
@@ -176,6 +178,21 @@ export async function getMetrics(): Promise<MetricsResponse> {
 
 export async function getSystemMetrics(): Promise<SystemMetricsResponse> {
   return request<SystemMetricsResponse>("/api/metrics/system");
+}
+
+export async function getTeamMetrics(): Promise<TeamMetricsResponse> {
+  return request<TeamMetricsResponse>("/api/metrics/teams");
+}
+
+export async function getTenantUsageMetrics(
+  slug: string,
+  period: "today" | "month" = "today",
+): Promise<TenantUsageMetricsResponse> {
+  const search = new URLSearchParams();
+  search.set("period", period);
+  return request<TenantUsageMetricsResponse>(
+    `/api/metrics/tenant/${encodeURIComponent(slug)}?${search.toString()}`,
+  );
 }
 
 export type SendInvitationBody = {

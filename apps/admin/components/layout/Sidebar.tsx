@@ -2,13 +2,15 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Mail, MessageSquare, Server } from "lucide-react";
+import { Activity, BarChart3, LayoutDashboard, Mail, MessageSquare, Server } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const nav = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/tenants", label: "Tenants", icon: Server },
   { href: "/invitations", label: "Invitations", icon: Mail },
+  { href: "/metrics/llm", label: "LLM Metrics", icon: BarChart3 },
+  { href: "/agents", label: "Agent Teams", icon: Activity },
   { href: "/feedback", label: "Feedback", icon: MessageSquare },
 ];
 

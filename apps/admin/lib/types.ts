@@ -66,6 +66,35 @@ export type MetricsResponse = {
   };
 };
 
+export type TenantUsagePeriod = "today" | "month";
+
+export type TenantUsageMetricsResponse = {
+  tenant: string;
+  period: TenantUsagePeriod;
+  tokens_input: number;
+  tokens_output: number;
+  cost_usd: number;
+  requests: number;
+  cache_hits: number;
+  cache_hit_rate: number;
+};
+
+export type TeamStatus = "active" | "idle" | "busy";
+
+export type TeamMetrics = {
+  name: string;
+  specialization: string;
+  max_parallel: number;
+  handles: string[];
+  status: TeamStatus;
+};
+
+export type TeamMetricsResponse = {
+  teams: TeamMetrics[];
+  total_parallel_capacity: number;
+  timestamp: string;
+};
+
 /** Métricas del host vía Prometheus (API hace de proxy). */
 export type SystemMetricsResponse = {
   cpu_percent: number;
