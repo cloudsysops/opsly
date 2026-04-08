@@ -7,7 +7,7 @@ Antes de CUALQUIER tarea, sin excepcion:
 3. Verificar estado VPS:
    `ssh vps-dragon@157.245.223.7 "systemctl is-active cursor-prompt-monitor opsly-watcher && docker ps --format '{{.Names}}\t{{.Status}}' | grep -E 'n8n|uptime|infra|traefik'"`
 4. Verificar vars criticas Doppler:
-   `for VAR in DISCORD_WEBHOOK_URL RESEND_API_KEY GITHUB_TOKEN_N8N GOOGLE_DRIVE_TOKEN; do VAL=$(doppler secrets get $VAR --project ops-intcloudsysops --config prd --plain 2>/dev/null || echo ""); echo "$VAR: ${#VAL} chars"; done`
+   `for VAR in DISCORD_WEBHOOK_URL RESEND_API_KEY GITHUB_TOKEN_N8N GOOGLE_SERVICE_ACCOUNT_JSON; do VAL=$(doppler secrets get $VAR --project ops-intcloudsysops --config prd --plain 2>/dev/null || echo ""); echo "$VAR: ${#VAL} chars"; done`
 5. Reportar gaps antes de continuar.
 6. No ejecutar nada hasta confirmar el reporte.
 
@@ -45,6 +45,7 @@ NUNCA adivinar. NUNCA saltarse pasos.
 | Operaciones tenant | opsly-tenant | `skills/user/opsly-tenant/` |
 | Procesar feedback / ML | opsly-feedback-ml | `skills/user/opsly-feedback-ml/` |
 | Asignar a team / colas | opsly-agent-teams | `skills/user/opsly-agent-teams/` |
+| Google Cloud | opsly-google-cloud | `skills/user/opsly-google-cloud/` |
 
 Fuente de verdad en git: **`skills/user/<skill>/SKILL.md`**. Sincronización con `/mnt/skills/user`: ver `skills/README.md`.
 
