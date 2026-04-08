@@ -84,9 +84,9 @@ Adoptamos el estándar OAuth 2.0 + PKCE descrito para MCP en:
 
 **Implementación en `apps/mcp/`**
 
-- Descubrimiento: `GET /.well-known/oauth-authorization-server` (issuer, `authorization_endpoint`, `token_endpoint`, `code_challenge_methods_supported: S256`, scopes).
-- Autorización: `GET /oauth/authorize` con `code_challenge` / `code_challenge_method`, redirección con `code`.
-- Token: `POST /oauth/token` (`application/x-www-form-urlencoded`) con `grant_type=authorization_code`, `code`, `code_verifier`, `client_id`.
+- Descubrimiento: `GET /.well-known/oauth-authorization-server` (issuer, `authorization_endpoint`, `token_endpoint`, `token_endpoint_auth_methods_supported: ["none"]` para clientes públicos PKCE, `code_challenge_methods_supported: S256`, scopes).
+- Autorización: `GET /oauth/authorize` con `response_type=code` (obligatorio, OAuth 2.0), `code_challenge` / `code_challenge_method`, redirección con `code`. Códigos de autorización almacenados en **Redis** (misma instancia que cache LLM), TTL 10 min.
+- Token: `POST /oauth/token` (`Content-Type: application/x-www-form-urlencoded`) con `grant_type=authorization_code`, `code`, `code_verifier`, `client_id`.
 - Access tokens: JWT firmados (secreto `MCP_JWT_SECRET`, o mismo material que admin solo si cumple longitud mínima en entornos sin secreto dedicado).
 - Compatibilidad hacia atrás: `Authorization: Bearer` con `PLATFORM_ADMIN_TOKEN` sigue aceptado en la capa MCP (equivale a scope `*`).
 

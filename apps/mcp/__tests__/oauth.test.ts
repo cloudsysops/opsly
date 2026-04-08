@@ -20,6 +20,24 @@ describe("PKCE", () => {
     const challenge = generateCodeChallenge(v);
     expect(verifyCodeChallenge("otro-verifier", challenge, "S256")).toBe(false);
   });
+
+  it("verifyCodeChallenge plain coincide con verifier", async () => {
+    const { verifyCodeChallenge } = await import("../src/auth/pkce.js");
+    const v = "plain-verifier-12345";
+    expect(verifyCodeChallenge(v, v, "plain")).toBe(true);
+    expect(verifyCodeChallenge("otro", v, "plain")).toBe(false);
+  });
+});
+
+describe("well-known metadata", () => {
+  it("buildAuthorizationServerMetadata expone endpoints OAuth", async () => {
+    const { buildAuthorizationServerMetadata } = await import("../src/auth/well-known.js");
+    const meta = buildAuthorizationServerMetadata("https://mcp.example.com");
+    expect(meta.issuer).toBe("https://mcp.example.com");
+    expect(meta.authorization_endpoint).toBe("https://mcp.example.com/oauth/authorize");
+    expect(meta.token_endpoint).toBe("https://mcp.example.com/oauth/token");
+    expect(meta.token_endpoint_auth_methods_supported).toEqual(["none"]);
+  });
 });
 
 describe("JWT access tokens (MCP)", () => {

@@ -87,6 +87,14 @@ export async function handleOAuthRequest(
   }
 
   if (pathname === "/oauth/authorize" && req.method === "GET") {
+    const responseType = searchParams.get("response_type");
+    if (responseType !== "code") {
+      json(res, 400, {
+        error: responseType === null || responseType === "" ? "invalid_request" : "unsupported_response_type",
+      });
+      return true;
+    }
+
     const clientId = searchParams.get("client_id");
     const redirectUri = searchParams.get("redirect_uri");
     const codeChallenge = searchParams.get("code_challenge");
