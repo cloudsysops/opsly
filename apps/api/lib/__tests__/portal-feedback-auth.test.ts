@@ -22,7 +22,9 @@ describe("resolveTrustedFeedbackIdentity", () => {
   });
 
   it("sin JWT → 401", async () => {
-    vi.mocked(portalAuth.getUserFromAuthorizationHeader).mockResolvedValue(null);
+    vi.mocked(portalAuth.getUserFromAuthorizationHeader).mockResolvedValue(
+      null,
+    );
     const res = await resolveTrustedFeedbackIdentity(
       new Request("http://localhost/api/feedback", { method: "POST" }),
     );

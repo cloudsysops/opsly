@@ -197,10 +197,16 @@ async function verifyConversationBelongsToUser(
     user_email: string;
   };
   if (row.tenant_slug !== identity.tenant_slug) {
-    return Response.json({ error: "Forbidden" }, { status: HTTP_STATUS.FORBIDDEN });
+    return Response.json(
+      { error: "Forbidden" },
+      { status: HTTP_STATUS.FORBIDDEN },
+    );
   }
   if (row.user_email.toLowerCase() !== identity.user_email.toLowerCase()) {
-    return Response.json({ error: "Forbidden" }, { status: HTTP_STATUS.FORBIDDEN });
+    return Response.json(
+      { error: "Forbidden" },
+      { status: HTTP_STATUS.FORBIDDEN },
+    );
   }
   return null;
 }
