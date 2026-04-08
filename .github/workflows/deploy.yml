@@ -233,28 +233,16 @@ jobs:
               echo "docker login ghcr.io (github.token) falló" >&2
               exit 1
             fi
-            # Imágenes efectivas del compose (respeta APP_IMAGE / PORTAL_APP_IMAGE en .env). Pull secuencial: error claro por tag.
-            tmp_imgs="$(mktemp)"
-            $COMPOSE_CMD config --images | sort -u >"$tmp_imgs"
-            while IFS= read -r img; do
-              [ -z "$img" ] && continue
-              case "$img" in ghcr.io/*) ;;
-                *) echo "Omitiendo pull (no GHCR): $img"
-                   continue ;;
-              esac
-              echo "Pulling $img ..."
-              if ! docker pull "$img"; then
-                rm -f "$tmp_imgs"
-                echo "❌ Pull GHCR falló: $img" >&2
-                echo "Comprueba: packages ligados a cloudsysops/opsly; job deploy con permissions packages:read;" >&2
-                echo "GITHUB_DEPLOY_ACTOR acorde a la cuenta que disparó el workflow; políticas org de Actions/token." >&2
-                echo "https://github.com/orgs/cloudsysops/packages?repo_name=opsly" >&2
-                exit 1
-              fi
-            done <"$tmp_imgs"
-            rm -f "$tmp_imgs"
+            # Core runtime must always deploy. Optional services are best-effort.
+            echo "Pulling core services (required)..."
+            $COMPOSE_CMD pull traefik app admin portal
+            echo "Pulling optional services (best-effort)..."
+            $COMPOSE_CMD pull mcp llm-gateway orchestrator context-builder || true
+
             # --force-recreate: evita réplicas app (deploy.replicas: 2) quedando en Created mientras otras siguen Up.
-            $COMPOSE_CMD up -d --no-deps --force-recreate traefik app admin portal mcp llm-gateway orchestrator context-builder
+            $COMPOSE_CMD up -d --no-deps --force-recreate traefik app admin portal
+            # Optional services: no bloquear deploy si falta imagen/tag.
+            $COMPOSE_CMD up -d --no-deps --force-recreate mcp llm-gateway orchestrator context-builder || true
 
             if [ -z "${PLATFORM_DOMAIN:-}" ]; then
               echo "PLATFORM_DOMAIN no está definido" >&2
