@@ -48,6 +48,25 @@ const out = await llmCall({
 
 `model` admite al menos `sonnet`, `haiku`, `cheap` (prioriza Ollama). Otros valores se tratan como hint de string.
 
+### Routing opcional (Fase 4 — sesgo + HTTP)
+
+- **`routing_bias`** en `LLMRequest` (`cost` \| `balanced` \| `quality`): ajusta la preferencia inferida por **complejidad** cuando **`model` no está fijado**. `cost` tiende a cadenas más baratas; `quality` a más capaces; `balanced` equivale al comportamiento histórico. La lógica está en `routing-hints.ts` (`applyRoutingBias`), aplicada en `llmCallDirect` → `buildChain`.
+- **Query (Route Handlers):** `parseLlmGatewayRoutingParams(searchParams)` — claves `llm_model` o `model`; `llm_routing` o `routing_bias`.
+- **Cabeceras:** `parseLlmGatewayRoutingHeaders(headers)` — `x-llm-model`, `x-llm-routing`.
+
+Ejemplo:
+
+```typescript
+import { llmCall, parseLlmGatewayRoutingParams } from "@intcloudsysops/llm-gateway";
+
+const hints = parseLlmGatewayRoutingParams(request.nextUrl.searchParams);
+await llmCall({
+  tenant_slug: "acme",
+  messages: [{ role: "user", content: "…" }],
+  ...hints,
+});
+```
+
 ## Variables de entorno
 
 Ver **`docs/DOPPLER-VARS.md`** (sección LLM Gateway). Mínimo habitual: `ANTHROPIC_API_KEY`, `REDIS_URL`, opcionales `OPENROUTER_API_KEY`, `OPENAI_API_KEY`, `OLLAMA_URL`, `DISCORD_WEBHOOK_URL`, `SUPABASE_*`, `LLM_GATEWAY_PORT`, `LLM_CACHE_TTL_SECONDS`.

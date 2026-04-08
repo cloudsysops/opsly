@@ -11,6 +11,7 @@ import {
   type ProviderChainEntry,
   type ProviderDefinition,
 } from "./providers.js";
+import { applyRoutingBias } from "./routing-hints.js";
 import { estimateCost } from "./router.js";
 import type { LLMMessage, LLMRequest, LLMResponse } from "./types.js";
 
@@ -27,7 +28,10 @@ async function buildChain(req: LLMRequest): Promise<ProviderChainEntry[]> {
   const analysis = analyzeComplexity(last, {
     context_length: contextLength(req.messages),
   });
-  const pref = resolveRoutingPreference(req.model, analysis.level);
+  let pref = resolveRoutingPreference(req.model, analysis.level);
+  if (req.model === undefined && req.routing_bias && req.routing_bias !== "balanced") {
+    pref = applyRoutingBias(pref, analysis.level, req.routing_bias);
+  }
   return getProvidersByPreference(pref);
 }
 

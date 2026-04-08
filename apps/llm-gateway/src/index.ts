@@ -12,4 +12,10 @@ export {
   type RoutingPreference,
 } from "./providers.js";
 export { estimateCost, MODEL_CONFIG, selectModel } from "./router.js";
+export {
+  applyRoutingBias,
+  parseLlmGatewayRoutingHeaders,
+  parseLlmGatewayRoutingParams,
+  type RoutingBias,
+} from "./routing-hints.js";
 export type { LLMRequest, LLMResponse, UsageEvent } from "./types.js";

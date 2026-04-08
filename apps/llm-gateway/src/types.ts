@@ -1,3 +1,5 @@
+import type { RoutingBias } from "./routing-hints.js";
+
 export type OutputChannel = "api" | "discord" | "portal_chat" | "cursor" | "email";
 
 export type TenantPlan = "startup" | "business" | "enterprise";
@@ -34,6 +36,11 @@ export interface LLMRequest {
   system?: string;
   /** Preferencia de ruta: sonnet | haiku | cheap (Llama primero) u otros alias. */
   model?: string;
+  /**
+   * Sesgo opcional sobre la ruta inferida por complejidad (solo si `model` no está fijado).
+   * `cost` baja un escalón; `quality` sube; `balanced` = comportamiento por defecto.
+   */
+  routing_bias?: RoutingBias;
   max_tokens?: number;
   temperature?: number;
   cache?: boolean;

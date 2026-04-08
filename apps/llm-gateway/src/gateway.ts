@@ -236,6 +236,7 @@ export async function llmCall(req: LLMRequest): Promise<LLMResponse> {
       cache_hit: res.cache_hit,
       latency_ms: Date.now() - start,
       legacy_pipeline,
+      ...(req.routing_bias !== undefined ? { routing_bias: req.routing_bias } : {}),
     });
     return res;
   } catch (err) {
@@ -246,6 +247,7 @@ export async function llmCall(req: LLMRequest): Promise<LLMResponse> {
       request_id,
       latency_ms: Date.now() - start,
       legacy_pipeline,
+      ...(req.routing_bias !== undefined ? { routing_bias: req.routing_bias } : {}),
       error: msg,
     });
     throw err;
