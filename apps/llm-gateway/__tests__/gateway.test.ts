@@ -27,6 +27,10 @@ vi.mock("../src/logger.js", () => ({
   logUsage: vi.fn(),
 }));
 
+vi.mock("../src/structured-log.js", () => ({
+  logGatewayEvent: vi.fn(),
+}));
+
 import * as cache from "../src/cache.js";
 import { llmCall } from "../src/gateway.js";
 

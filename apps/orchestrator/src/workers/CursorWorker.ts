@@ -1,4 +1,5 @@
 import { Job, Worker } from "bullmq";
+import { logWorkerLifecycle } from "../observability/worker-log.js";
 import { notifyDiscord } from "./NotifyWorker.js";
 
 async function writeActivePrompt(content: string): Promise<void> {
@@ -52,29 +53,42 @@ export function startCursorWorker(connection: object) {
         return;
       }
 
-      const payload = job.data.payload as {
-        task?: string;
-        commands?: string[];
-        tenant_slug?: string;
-      };
+      const t0 = Date.now();
+      logWorkerLifecycle("start", "cursor", job);
 
-      const task = payload.task || "sin tarea";
-      const tenantSlug = payload.tenant_slug || "platform";
-      const commands = payload.commands || [];
+      try {
+        const payload = job.data.payload as {
+          task?: string;
+          commands?: string[];
+          tenant_slug?: string;
+        };
 
-      await notifyDiscord("🤖 Cursor ejecutando", `Tarea: ${task}\nTenant: ${tenantSlug}`, "info");
+        const task = payload.task || "sin tarea";
+        const tenantSlug = payload.tenant_slug || "platform";
+        const commands = payload.commands || [];
 
-      const content = [
-        `# Tarea: ${task}`,
-        `# Tenant: ${tenantSlug}`,
-        `# Job ID: ${job.id}`,
-        `# Fecha: ${new Date().toISOString()}`,
-        "",
-        ...commands,
-      ].join("\n");
+        await notifyDiscord("🤖 Cursor ejecutando", `Tarea: ${task}\nTenant: ${tenantSlug}`, "info");
 
-      await writeActivePrompt(content);
-      return { success: true, job_id: job.id };
+        const content = [
+          `# Tarea: ${task}`,
+          `# Tenant: ${tenantSlug}`,
+          `# Job ID: ${job.id}`,
+          `# Fecha: ${new Date().toISOString()}`,
+          "",
+          ...commands,
+        ].join("\n");
+
+        await writeActivePrompt(content);
+        logWorkerLifecycle("complete", "cursor", job, { duration_ms: Date.now() - t0 });
+        return { success: true, job_id: job.id };
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err);
+        logWorkerLifecycle("fail", "cursor", job, {
+          duration_ms: Date.now() - t0,
+          error: msg,
+        });
+        throw err;
+      }
     },
     {
       connection,

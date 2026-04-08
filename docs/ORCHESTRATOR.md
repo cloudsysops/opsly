@@ -37,6 +37,7 @@ Tras encolar, `setJobState` guarda objetos con `id`, `type`, `status`, `tenant_s
 - **`request_id`:** correlación entre jobs del mismo `processIntent`; si no se envía, se genera UUID.
 - **`idempotency_key`:** por intent con varios jobs se sufija por tipo e índice (`<key>::<type>::<n>`). BullMQ recibe `jobId` derivado en `queue-opts.ts` (`idem:<type>:...`) para deduplicar reintentos.
 - **Log estructurado:** cada encolado escribe una línea JSON en stdout (`observability/job-log.ts`) con `tenant_slug`, `request_id`, `job_type`, etc.
+- **Workers:** inicio, éxito y fallo por job escriben líneas JSON (`observability/worker-log.ts`) con `event` `worker_start` \| `worker_complete` \| `worker_fail`, `worker` (`cursor` \| `n8n` \| `notify` \| `drive`), `bullmq_job_id` y `duration_ms` cuando aplica.
 
 ## Concurrency por plan
 

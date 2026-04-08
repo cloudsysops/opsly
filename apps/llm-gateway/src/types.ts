@@ -46,6 +46,8 @@ export interface LLMRequest {
   legacy_pipeline?: boolean;
   /** No escribe fila en usage_events (llamadas auxiliares: intent, scorer, reintentos intermedios). */
   skip_usage_log?: boolean;
+  /** Correlación con orchestrator / clientes; si falta, el gateway genera uno en stdout. */
+  request_id?: string;
 }
 
 export interface LLMResponse {

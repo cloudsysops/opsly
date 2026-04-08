@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import { batchedLLMCall } from "./batcher.js";
 import { checkBudget, resolveTenantPlan } from "./budget.js";
 import { analyzeComplexity } from "./complexity.js";
@@ -11,6 +12,7 @@ import { scoreQuality } from "./quality-scorer.js";
 import { formatResponse } from "./response-formatter.js";
 import { semanticCacheGetExact, semanticCacheGetSimilar, semanticCacheSet } from "./semantic-cache.js";
 import { hashPrompt } from "./hash.js";
+import { logGatewayEvent } from "./structured-log.js";
 import type { LLMMessage, LLMRequest, LLMResponse } from "./types.js";
 
 function contextLength(req: LLMRequest): number {
@@ -208,10 +210,44 @@ export async function v3Pipeline(req: LLMRequest): Promise<LLMResponse> {
   };
 }
 
-/** Entrada pública: pipeline v3 por defecto; Beast Mode v1 con LLM_GATEWAY_LEGACY=true o legacy_pipeline. */
-export async function llmCall(req: LLMRequest): Promise<LLMResponse> {
+/** Pipeline interno (sin log de línea única en stdout). */
+async function llmCallPipeline(req: LLMRequest): Promise<LLMResponse> {
   if (isLegacyMode(req)) {
     return legacyLlmCall(req);
   }
   return v3Pipeline(req);
+}
+
+/** Entrada pública: pipeline v3 por defecto; Beast Mode v1 con LLM_GATEWAY_LEGACY=true o legacy_pipeline. */
+export async function llmCall(req: LLMRequest): Promise<LLMResponse> {
+  const request_id = req.request_id ?? randomUUID();
+  const legacy_pipeline = isLegacyMode(req);
+  const start = Date.now();
+  try {
+    const res = await llmCallPipeline(req);
+    logGatewayEvent({
+      event: "llm_call_complete",
+      tenant_slug: req.tenant_slug,
+      request_id,
+      model_used: res.model_used,
+      tokens_input: res.tokens_input,
+      tokens_output: res.tokens_output,
+      cost_usd: res.cost_usd,
+      cache_hit: res.cache_hit,
+      latency_ms: Date.now() - start,
+      legacy_pipeline,
+    });
+    return res;
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    logGatewayEvent({
+      event: "llm_call_error",
+      tenant_slug: req.tenant_slug,
+      request_id,
+      latency_ms: Date.now() - start,
+      legacy_pipeline,
+      error: msg,
+    });
+    throw err;
+  }
 }

@@ -1,4 +1,5 @@
 import { Job, Worker } from "bullmq";
+import { logWorkerLifecycle } from "../observability/worker-log.js";
 
 const WEBHOOK = process.env.DISCORD_WEBHOOK_URL || "";
 
@@ -44,17 +45,29 @@ export function startNotifyWorker(connection: object) {
       if (job.name !== "notify") {
         return;
       }
-      const payload = job.data.payload as {
-        title?: string;
-        message?: string;
-        type?: "success" | "error" | "info" | "warning";
-      };
-      await notifyDiscord(
-        payload.title || "OpenClaw notificacion",
-        payload.message || "Sin mensaje",
-        payload.type || "info",
-      );
-      return { success: true };
+      const t0 = Date.now();
+      logWorkerLifecycle("start", "notify", job);
+      try {
+        const payload = job.data.payload as {
+          title?: string;
+          message?: string;
+          type?: "success" | "error" | "info" | "warning";
+        };
+        await notifyDiscord(
+          payload.title || "OpenClaw notificacion",
+          payload.message || "Sin mensaje",
+          payload.type || "info",
+        );
+        logWorkerLifecycle("complete", "notify", job, { duration_ms: Date.now() - t0 });
+        return { success: true };
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err);
+        logWorkerLifecycle("fail", "notify", job, {
+          duration_ms: Date.now() - t0,
+          error: msg,
+        });
+        throw err;
+      }
     },
     { connection, concurrency: 10 },
   );
