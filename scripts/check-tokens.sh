@@ -55,6 +55,27 @@ for VAR in \
   fi
 done
 
+echo ""
+VAL_UC=$(doppler secrets get GOOGLE_USER_CREDENTIALS_JSON \
+  --project ops-intcloudsysops --config prd \
+  --plain 2>/dev/null || echo "")
+LEN_UC=${#VAL_UC}
+if [[ $LEN_UC -ge 80 ]]; then
+  if printf '%s' "$VAL_UC" | python3 -c '
+import json, sys
+d = json.load(sys.stdin)
+if d.get("type") == "service_account":
+    raise SystemExit(1)
+assert d.get("refresh_token"), "need refresh_token"
+' 2>/dev/null; then
+    log "✅ GOOGLE_USER_CREDENTIALS_JSON opcional (Drive usuario) — presente ($LEN_UC chars)"
+  else
+    log "⚠️ GOOGLE_USER_CREDENTIALS_JSON parcial — revisa refresh_token / client_id"
+  fi
+else
+  log "ℹ️ GOOGLE_USER_CREDENTIALS_JSON opcional — no definido (drive-sync puede usar solo SA / Shared Drive)"
+fi
+
 # Verificar Ollama si está configurado
 OLLAMA_URL=$(doppler secrets get OLLAMA_URL \
   --project ops-intcloudsysops --config prd \

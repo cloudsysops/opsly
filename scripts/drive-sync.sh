@@ -65,9 +65,12 @@ fi
 
 source "$SCRIPT_DIR/lib/google-auth.sh"
 
+# Mi unidad personal: OAuth usuario primero (cuota). Shared Drive con SA: export GOOGLE_AUTH_STRATEGY=service_account_first
+export GOOGLE_AUTH_STRATEGY="${GOOGLE_AUTH_STRATEGY:-user_first}"
+
 TOKEN="$(get_google_token || true)"
 if [[ -z "$TOKEN" ]]; then
-  warn "No se pudo obtener access token (service account) — Drive sync omitido"
+  warn "No se pudo obtener access token (usuario OAuth / SA / ADC) — Drive sync omitido"
   exit 0
 fi
 

@@ -17,13 +17,23 @@ const PORTAL_INVITE_HTML_TEMPLATE = `<!DOCTYPE html>
 <tr><td style="height:24px;"></td></tr>
 <tr><td style="font-size:18px;line-height:1.5;">Hola {displayName},</td></tr>
 <tr><td style="height:12px;"></td></tr>
-<tr><td style="font-size:15px;line-height:1.6;color:#d4d4d4;">Tu plataforma de automatización está lista.</td></tr>
+<tr><td style="font-size:15px;line-height:1.6;color:#d4d4d4;">Tu espacio <strong>{companyName}</strong> en Opsly está listo: automatización y monitoreo en un solo lugar.</td></tr>
 <tr><td style="height:28px;"></td></tr>
 <tr><td align="center"><a href="{activateUrl}" style="display:inline-block;background:#22c55e;color:#0a0a0a;text-decoration:none;font-weight:600;font-size:15px;padding:14px 28px;border-radius:8px;">Activar mi cuenta</a></td></tr>
-<tr><td style="height:32px;"></td></tr>
-<tr><td style="font-size:13px;font-weight:600;color:#a3a3a3;text-transform:uppercase;letter-spacing:0.06em;">Lo que tienes disponible</td></tr>
+<tr><td style="height:28px;"></td></tr>
+<tr><td style="font-size:14px;line-height:1.6;color:#d4d4d4;"><strong style="color:#fafafa;">Primeros pasos</strong>
+<ol style="margin:12px 0 0 18px;padding:0;line-height:1.7;">
+<li>Pulsa <strong>Activar mi cuenta</strong> y define una contraseña segura.</li>
+<li>Accede al <a href="{portalHomeUrl}" style="color:#22c55e;text-decoration:none;">portal</a> y revisa tu dashboard.</li>
+<li>En modo desarrollador encontrarás la URL de n8n, Uptime Kuma y credenciales cuando apliquen.</li>
+</ol></td></tr>
+<tr><td style="height:20px;"></td></tr>
+<tr><td style="font-size:14px;line-height:1.6;color:#d4d4d4;"><strong style="color:#fafafa;">Feedback</strong><br />
+En el panel hay un chat de feedback: úsalo para reportar incidencias o sugerencias; el equipo lo revisa.</td></tr>
+<tr><td style="height:28px;"></td></tr>
+<tr><td style="font-size:13px;font-weight:600;color:#a3a3a3;text-transform:uppercase;letter-spacing:0.06em;">Incluido en tu plan</td></tr>
 <tr><td style="height:12px;"></td></tr>
-<tr><td style="font-size:14px;line-height:1.8;color:#e5e5e5;"><div>✅ Motor de automatización</div><div>✅ Monitor 24/7</div><div>✅ Dominio propio</div></td></tr>
+<tr><td style="font-size:14px;line-height:1.8;color:#e5e5e5;"><div>✅ Motor de automatización (n8n)</div><div>✅ Monitor de disponibilidad 24/7</div><div>✅ Enlaces dedicados para tu organización</div></td></tr>
 <tr><td style="height:28px;"></td></tr>
 <tr><td style="font-size:12px;color:#737373;border-top:1px solid #1e1e1e;padding-top:20px;">{footerLine}</td></tr>
 </table></td></tr></table></body></html>`;
@@ -73,13 +83,19 @@ function footerLineFromEnv(): string {
 
 function buildPortalInviteHtml(
   displayName: string,
+  companyName: string,
   activateUrl: string,
+  portalHomeUrl: string,
 ): string {
   const safeName = escapeHtml(displayName);
+  const safeCompany = escapeHtml(companyName);
   const safeUrl = escapeHtml(activateUrl);
+  const safePortal = escapeHtml(portalHomeUrl);
   const safeFooter = escapeHtml(footerLineFromEnv());
   return PORTAL_INVITE_HTML_TEMPLATE.replace("{displayName}", safeName)
+    .replace("{companyName}", safeCompany)
     .replace("{activateUrl}", safeUrl)
+    .replace("{portalHomeUrl}", safePortal)
     .replace("{footerLine}", safeFooter);
 }
 
@@ -144,11 +160,17 @@ export async function sendPortalInvitationForTenant(
     params.mode,
   );
 
-  const html = buildPortalInviteHtml(params.name, activateUrl);
+  const portalHome = getPortalSiteUrl();
+  const html = buildPortalInviteHtml(
+    params.name,
+    params.name,
+    activateUrl,
+    portalHome,
+  );
 
   await sendHtmlEmail({
     to: params.email,
-    subject: "Tu espacio en Opsly está listo 🚀",
+    subject: `Tu plataforma ${params.name} está lista 🚀`,
     html,
     from: getInviteFromEmail(),
   });

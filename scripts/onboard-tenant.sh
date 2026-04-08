@@ -25,6 +25,7 @@ Uso:
 
 Opciones:
   --dry-run               Muestra el plan y sale sin Supabase, Docker ni secretos generados.
+  --name "Nombre"         Nombre mostrado del tenant en Supabase (default: mismo que --slug).
   --stripe-customer-id X Opcional (Stripe customer id).
   --yes                   Confirmaciones no interactivas (si el script las usa).
   -h, --help              Esta ayuda.
@@ -44,6 +45,7 @@ SLUG=""
 EMAIL=""
 PLAN=""
 STRIPE_ID=""
+TENANT_DISPLAY_NAME=""
 export DRY_RUN="${DRY_RUN:-false}"
 
 while [[ $# -gt 0 ]]; do
@@ -58,6 +60,10 @@ while [[ $# -gt 0 ]]; do
       ;;
     --plan)
       PLAN="${2:-}"
+      shift 2
+      ;;
+    --name)
+      TENANT_DISPLAY_NAME="${2:-}"
       shift 2
       ;;
     --stripe-customer-id)
@@ -98,6 +104,7 @@ esac
 if [[ "${DRY_RUN}" == "true" ]]; then
   log_info "========== DRY-RUN — resumen =========="
   log_info "Slug:           ${SLUG}"
+  log_info "Nombre:         ${TENANT_DISPLAY_NAME:-$SLUG}"
   log_info "Owner email:    ${EMAIL}"
   log_info "Plan:           ${PLAN}"
   if [[ -n "${STRIPE_ID}" ]]; then
@@ -118,6 +125,11 @@ if [[ "${DRY_RUN}" == "true" ]]; then
   log_info "========================================="
   log_info "No se ha modificado Supabase ni disco. Ejecuta sin --dry-run cuando el entorno esté listo."
   exit 0
+fi
+
+TENANT_NAME_RESOLVED="${TENANT_DISPLAY_NAME:-$SLUG}"
+if [[ -z "${TENANT_NAME_RESOLVED// /}" ]]; then
+  TENANT_NAME_RESOLVED="${SLUG}"
 fi
 
 require_env SUPABASE_URL SUPABASE_SERVICE_ROLE_KEY PLATFORM_DOMAIN TENANTS_PATH TEMPLATE_PATH
@@ -241,12 +253,13 @@ log_info "Wrote ${OUT_FILE}"
 INSERT_BODY="$(
   jq -n \
     --arg slug "${SLUG}" \
+    --arg name "${TENANT_NAME_RESOLVED}" \
     --arg email "${EMAIL}" \
     --arg plan "${PLAN}" \
     --arg stripe_id "${STRIPE_ID}" \
     '{
       slug: $slug,
-      name: $slug,
+      name: $name,
       owner_email: $email,
       plan: $plan,
       status: "provisioning",

@@ -76,16 +76,105 @@ sys.stdout.write(base64.urlsafe_b64encode(data).decode("ascii").rstrip("="))
 '
 }
 
-get_google_token() {
-  # google-auth.sh — obtener access token desde service account JSON
-  # Uso: source scripts/lib/google-auth.sh && get_google_token
-  #
-  # Variables:
-  #   GOOGLE_SERVICE_ACCOUNT_JSON — JSON completo del service account (o vacío)
-  #   GOOGLE_SERVICE_ACCOUNT_JSON_FILE — ruta al .json (recomendado en local si la UI de Doppler trunca)
+load_google_user_credentials_raw() {
+  # JSON tipo authorized_user (refresh_token + client_id + client_secret) o ADC de gcloud.
+  local raw=""
+  if [[ -n "${GOOGLE_USER_CREDENTIALS_JSON:-}" ]]; then
+    raw="${GOOGLE_USER_CREDENTIALS_JSON}"
+  elif [[ -n "${GOOGLE_USER_CREDENTIALS_JSON_FILE:-}" && -f "${GOOGLE_USER_CREDENTIALS_JSON_FILE}" ]]; then
+    raw="$(python3 -c 'import pathlib,sys; sys.stdout.write(pathlib.Path(sys.argv[1]).read_text(encoding="utf-8"))' "${GOOGLE_USER_CREDENTIALS_JSON_FILE}" 2>/dev/null || true)"
+  fi
+  if [[ -z "$raw" ]] && command -v doppler >/dev/null 2>&1; then
+    raw="$(doppler secrets get GOOGLE_USER_CREDENTIALS_JSON --project ops-intcloudsysops --config prd --plain 2>/dev/null || echo "")"
+  fi
+  if [[ -z "$raw" ]] && command -v doppler >/dev/null 2>&1; then
+    raw="$(cd /opt/opsly 2>/dev/null && doppler secrets get GOOGLE_USER_CREDENTIALS_JSON --plain 2>/dev/null || echo "")"
+  fi
+  if [[ -z "$raw" ]]; then
+    local adc="${GOOGLE_APPLICATION_CREDENTIALS:-}"
+    if [[ -z "$adc" ]]; then
+      adc="${HOME}/.config/gcloud/application_default_credentials.json"
+    fi
+    if [[ -f "$adc" ]]; then
+      raw="$(python3 -c 'import pathlib,sys; sys.stdout.write(pathlib.Path(sys.argv[1]).read_text(encoding="utf-8"))' "$adc" 2>/dev/null || true)"
+    fi
+  fi
+  printf '%s' "$raw"
+}
+
+get_google_user_access_token() {
+  # OAuth usuario: refresh_token → access_token (escritura en Mi unidad vía cuota del usuario).
+  local creds_raw
+  creds_raw="$(load_google_user_credentials_raw)"
+  if [[ -z "$creds_raw" ]]; then
+    echo ""
+    return 0
+  fi
+
+  local out
+  out="$(printf '%s' "$creds_raw" | python3 -c '
+import json, sys
+raw = sys.stdin.read().strip().lstrip("\ufeff")
+if not raw:
+    raise SystemExit(2)
+try:
+    d = json.loads(raw)
+except Exception:
+    raise SystemExit(2)
+if isinstance(d, str):
+    try:
+        d = json.loads(d)
+    except Exception:
+        raise SystemExit(2)
+if not isinstance(d, dict):
+    raise SystemExit(2)
+if d.get("type") == "service_account":
+    raise SystemExit(2)
+rt = (d.get("refresh_token") or "").strip()
+cid = (d.get("client_id") or "").strip()
+cs = (d.get("client_secret") or "").strip()
+if not rt:
+    raise SystemExit(2)
+print(json.dumps({"refresh_token": rt, "client_id": cid, "client_secret": cs}, separators=(",", ":")))
+' 2>/dev/null || true)"
+
+  if [[ -z "$out" ]]; then
+    echo ""
+    return 0
+  fi
+
+  local refresh_token client_id client_secret
+  refresh_token="$(printf '%s' "$out" | python3 -c 'import json,sys; print(json.load(sys.stdin)["refresh_token"])')"
+  client_id="$(printf '%s' "$out" | python3 -c 'import json,sys; print(json.load(sys.stdin)["client_id"])')"
+  client_secret="$(printf '%s' "$out" | python3 -c 'import json,sys; print(json.load(sys.stdin)["client_secret"])')"
+
+  if [[ -z "$client_secret" ]]; then
+    echo "[google-auth] WARNING: credenciales de usuario sin client_secret (no se puede refrescar token). Usa gcloud auth application-default login o JSON OAuth completo." >&2
+    echo ""
+    return 0
+  fi
+
+  local resp atok
+  resp="$(curl -sS -X POST https://oauth2.googleapis.com/token \
+    -d "client_id=${client_id}" \
+    -d "client_secret=${client_secret}" \
+    -d "refresh_token=${refresh_token}" \
+    -d "grant_type=refresh_token" 2>/dev/null || true)"
+  atok="$(printf '%s' "$resp" | python3 -c 'import json,sys; print(json.loads(sys.stdin.read()).get("access_token",""))' 2>/dev/null || true)"
+  if [[ -z "$atok" ]]; then
+    err="$(printf '%s' "$resp" | python3 -c 'import json,sys; print(json.loads(sys.stdin.read()).get("error",""))' 2>/dev/null || true)"
+    if [[ -n "${err:-}" ]]; then
+      echo "[google-auth] WARNING: refresh token usuario falló: ${err}" >&2
+    fi
+    echo ""
+    return 0
+  fi
+  printf '%s' "$atok"
+}
+
+get_google_service_account_access_token() {
   local sa_json=""
   local json_file="${GOOGLE_SERVICE_ACCOUNT_JSON_FILE:-}"
-  # Prioridad: inline env -> archivo local -> Doppler (la UI puede truncar; usar archivo o `doppler secrets set ... < file.json`).
   if [[ -n "${GOOGLE_SERVICE_ACCOUNT_JSON:-}" ]]; then
     sa_json="${GOOGLE_SERVICE_ACCOUNT_JSON}"
   elif [[ -n "$json_file" ]]; then
@@ -98,7 +187,6 @@ get_google_token() {
     sa_json="$(cd /opt/opsly 2>/dev/null && doppler secrets get GOOGLE_SERVICE_ACCOUNT_JSON --plain 2>/dev/null || echo "")"
   fi
   if [[ -z "$sa_json" ]]; then
-    echo "[google-auth] WARNING: sin credencial (GOOGLE_SERVICE_ACCOUNT_JSON, GOOGLE_SERVICE_ACCOUNT_JSON_FILE o Doppler)" >&2
     echo ""
     return 0
   fi
@@ -109,21 +197,65 @@ get_google_token() {
     sa_json="$(normalize_google_sa_json "$sa_json")"
   fi
   if [[ -z "$sa_json" ]]; then
-    echo "[google-auth] WARNING: GOOGLE_SERVICE_ACCOUNT_JSON no es JSON interpretable (normal/string/base64). Si pegaste en Doppler y se cortó, usa: doppler secrets set GOOGLE_SERVICE_ACCOUNT_JSON --project ops-intcloudsysops --config prd < tu-archivo.json o define GOOGLE_SERVICE_ACCOUNT_JSON_FILE" >&2
     echo ""
     return 0
   fi
 
-  # drive.file (mínimo privilegio) y fallback a drive por compatibilidad.
   local token
   token="$(google_sa_access_token_from_json "$sa_json" "https://www.googleapis.com/auth/drive.file" 2>/dev/null || true)"
   if [[ -n "$token" ]]; then
     printf '%s' "$token"
     return 0
   fi
+  google_sa_access_token_from_json "$sa_json" "https://www.googleapis.com/auth/drive" 2>/dev/null || true
+}
 
-  echo "[google-auth] WARNING: fallback a scope drive (token con drive.file no emitido)" >&2
-  google_sa_access_token_from_json "$sa_json" "https://www.googleapis.com/auth/drive" || true
+get_google_token() {
+  # google-auth.sh — access token para Google APIs (Drive, etc.)
+  # Uso: source scripts/lib/google-auth.sh && get_google_token
+  #
+  # Variables:
+  #   GOOGLE_SERVICE_ACCOUNT_JSON, GOOGLE_SERVICE_ACCOUNT_JSON_FILE
+  #   GOOGLE_USER_CREDENTIALS_JSON, GOOGLE_USER_CREDENTIALS_JSON_FILE, GOOGLE_USER_CREDENTIALS_JSON en Doppler
+  #   GOOGLE_APPLICATION_CREDENTIALS o ~/.config/gcloud/application_default_credentials.json
+  #
+  # GOOGLE_AUTH_STRATEGY:
+  #   service_account_first (default) — SA; si token vacío → usuario
+  #   user_first — usuario; si vacío → SA (recomendado para drive-sync hacia Mi unidad)
+  local strategy="${GOOGLE_AUTH_STRATEGY:-service_account_first}"
+  local token=""
+
+  if [[ "$strategy" == "user_first" ]]; then
+    token="$(get_google_user_access_token 2>/dev/null || true)"
+    if [[ -n "$token" ]]; then
+      printf '%s' "$token"
+      return 0
+    fi
+    token="$(get_google_service_account_access_token 2>/dev/null || true)"
+    if [[ -n "$token" ]]; then
+      printf '%s' "$token"
+      return 0
+    fi
+    echo "[google-auth] WARNING: sin credencial usable (usuario ni SA)" >&2
+    echo ""
+    return 0
+  fi
+
+  token="$(get_google_service_account_access_token 2>/dev/null || true)"
+  if [[ -n "$token" ]]; then
+    printf '%s' "$token"
+    return 0
+  fi
+
+  token="$(get_google_user_access_token 2>/dev/null || true)"
+  if [[ -n "$token" ]]; then
+    printf '%s' "$token"
+    return 0
+  fi
+
+  echo "[google-auth] WARNING: sin credencial (GOOGLE_SERVICE_ACCOUNT_JSON, GOOGLE_USER_CREDENTIALS_JSON/ADC o Doppler)" >&2
+  echo ""
+  return 0
 }
 
 google_sa_access_token_from_json() {
