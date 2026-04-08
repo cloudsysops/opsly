@@ -1,41 +1,60 @@
 #!/usr/bin/env bash
-# Comprueba longitud de secretos en Doppler prd sin imprimir valores.
+# check-tokens.sh — Verifica tokens en Doppler prd sin mostrar valores
 set -euo pipefail
 
-DRY_RUN=false
-if [[ "${1:-}" == "--dry-run" ]]; then
-  DRY_RUN=true
-fi
+log()  { echo "[check-tokens] $*"; }
+ok()   { echo "[check-tokens] ✅ $1 ($2 chars)"; }
+fail() { echo "[check-tokens] ❌ $1 — falta o placeholder"; }
 
-if $DRY_RUN; then
-  echo "dry-run: comprobaría ANTHROPIC_API_KEY OPENROUTER_API_KEY OPENAI_API_KEY OLLAMA_URL GITHUB_TOKEN_N8N GOOGLE_DRIVE_TOKEN RESEND_API_KEY DISCORD_WEBHOOK_URL PLATFORM_ADMIN_TOKEN MCP_JWT_SECRET en Doppler prd (solo longitudes / Ollama reachability)."
-  exit 0
-fi
+log "Verificando tokens en Doppler ops-intcloudsysops/prd..."
+echo ""
 
-if ! command -v doppler >/dev/null 2>&1; then
-  echo "❌ doppler CLI no está en PATH; instálalo o usa esta máquina con Doppler configurado."
-  exit 1
-fi
+MISSING=0
 
-for VAR in ANTHROPIC_API_KEY OPENROUTER_API_KEY OPENAI_API_KEY GITHUB_TOKEN_N8N GOOGLE_DRIVE_TOKEN RESEND_API_KEY \
-  DISCORD_WEBHOOK_URL PLATFORM_ADMIN_TOKEN MCP_JWT_SECRET; do
-  VAL="$(doppler secrets get "$VAR" --project ops-intcloudsysops --config prd --plain 2>/dev/null || echo "")"
+for VAR in \
+  ANTHROPIC_API_KEY \
+  GITHUB_TOKEN_N8N \
+  RESEND_API_KEY \
+  PLATFORM_ADMIN_TOKEN \
+  DISCORD_WEBHOOK_URL \
+  GOOGLE_DRIVE_TOKEN \
+  MCP_JWT_SECRET \
+  OPENROUTER_API_KEY \
+  OPENAI_API_KEY; do
+
+  VAL=$(doppler secrets get "$VAR" \
+    --project ops-intcloudsysops --config prd \
+    --plain 2>/dev/null || echo "")
   LEN=${#VAL}
+
   if [[ $LEN -gt 20 ]]; then
-    echo "✅ $VAR ($LEN chars)"
+    ok "$VAR" "$LEN"
   else
-    echo "❌ $VAR — falta o placeholder"
+    fail "$VAR"
+    ((MISSING++)) || true
   fi
 done
 
-OLLAMA_URL_VAL="$(doppler secrets get OLLAMA_URL --project ops-intcloudsysops --config prd --plain 2>/dev/null || echo "")"
-if [[ -z "$OLLAMA_URL_VAL" ]]; then
-  OLLAMA_URL_VAL="http://localhost:11434"
+# Verificar Ollama si está configurado
+OLLAMA_URL=$(doppler secrets get OLLAMA_URL \
+  --project ops-intcloudsysops --config prd \
+  --plain 2>/dev/null || echo "")
+if [[ -n "$OLLAMA_URL" ]]; then
+  HTTP=$(curl -sf -o /dev/null -w "%{http_code}" \
+    "$OLLAMA_URL/api/tags" \
+    --connect-timeout 3 2>/dev/null || echo "000")
+  if [[ "$HTTP" == "200" ]]; then
+    ok "OLLAMA_URL (responde)" "${#OLLAMA_URL}"
+  else
+    fail "OLLAMA_URL (no responde HTTP $HTTP)"
+    ((MISSING++)) || true
+  fi
 fi
-OLLAMA_BASE="${OLLAMA_URL_VAL%/}"
-HTTP_CODE="$(curl -s -o /dev/null -w "%{http_code}" --max-time 3 "${OLLAMA_BASE}/api/tags" 2>/dev/null || echo "000")"
-if [[ "$HTTP_CODE" == "200" || "$HTTP_CODE" == "401" ]]; then
-  echo "✅ OLLAMA_URL (${OLLAMA_BASE}/api/tags → HTTP ${HTTP_CODE})"
+
+echo ""
+if [[ $MISSING -eq 0 ]]; then
+  echo "[check-tokens] ✅ Todos los tokens OK"
 else
-  echo "❌ OLLAMA_URL — no responde ${OLLAMA_BASE}/api/tags (HTTP ${HTTP_CODE}; opcional si no usas Ollama en prd)"
+  echo "[check-tokens] ❌ $MISSING tokens faltantes"
+  exit 1
 fi
