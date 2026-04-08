@@ -32,6 +32,7 @@ Lista operativa para releases y revisiones periódicas. Marca ítems según tu p
 - [ ] CORS en API acotado a orígenes conocidos (admin, portal).
 - [ ] Webhooks Stripe validados con firma.
 - [ ] Rate limiting / reCAPTCHA: evaluar según exposición pública (fase de producto).
+- [ ] **Feedback portal (`POST /api/feedback`):** identidad solo vía `resolveTrustedFeedbackIdentity` (`apps/api/lib/portal-feedback-auth.ts`) — JWT Supabase + fila `platform.tenants` + coincidencia `owner_email`; el cuerpo no sustituye `tenant_slug` / `user_email` (rechazo si discrepan). Reutilización de `conversation_id` validada en `verifyConversationBelongsToUser` (`lib/feedback/service.ts`). Tests: `lib/__tests__/portal-feedback-auth.test.ts`, `__tests__/feedback.test.ts`.
 
 ## Informes
 
