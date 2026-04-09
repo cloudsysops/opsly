@@ -18,6 +18,9 @@ jobs:
       - name: Instalar dependencias
         run: npm ci
 
+      - name: OpenAPI YAML (parse + estructura mínima)
+        run: npm run validate-openapi
+
       - name: Skills (manifest + SKILL.md)
         run: npm run validate-skills
 
