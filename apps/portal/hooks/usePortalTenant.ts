@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase";
-import { fetchPortalTenant } from "@/lib/tenant";
+import { fetchPortalTenant, tenantSlugFromUserMetadata } from "@/lib/tenant";
 import type { PortalTenantPayload } from "@/types";
 
 export function usePortalTenant(): {
@@ -29,8 +29,10 @@ export function usePortalTenant(): {
         if (sessionError || !sessionData.session) {
           throw new Error("No hay sesión");
         }
+        const slug = tenantSlugFromUserMetadata(sessionData.session.user);
         const payload = await fetchPortalTenant(
           sessionData.session.access_token,
+          slug,
         );
         if (!cancelled) {
           setData(payload);

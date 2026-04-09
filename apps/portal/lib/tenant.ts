@@ -7,10 +7,42 @@ import type {
   PortalUsagePeriod,
 } from "./types";
 
+/**
+ * Lee `tenant_slug` del JWT de Supabase cuando está presente (invitaciones / portal).
+ */
+export function tenantSlugFromUserMetadata(
+  user: { user_metadata?: unknown } | null | undefined,
+): string | undefined {
+  if (
+    !user?.user_metadata ||
+    typeof user.user_metadata !== "object" ||
+    Array.isArray(user.user_metadata)
+  ) {
+    return undefined;
+  }
+  const ts = (user.user_metadata as Record<string, unknown>).tenant_slug;
+  if (typeof ts !== "string") {
+    return undefined;
+  }
+  const trimmed = ts.trim();
+  return trimmed.length > 0 ? trimmed : undefined;
+}
+
+/**
+ * Payload del tenant portal. Con `tenantSlug` llama a
+ * `GET /api/portal/tenant/[slug]/me` (validación `tenantSlugMatchesSession` en API);
+ * sin slug usa `GET /api/portal/me` (mismo JWT).
+ */
 export async function fetchPortalTenant(
   accessToken: string,
+  tenantSlug?: string,
 ): Promise<PortalTenantPayload> {
-  return requestPortalApi<PortalTenantPayload>(`${getApiBaseUrl()}/api/portal/me`, {
+  const base = getApiBaseUrl();
+  const path =
+    tenantSlug !== undefined && tenantSlug.length > 0
+      ? `${base}/api/portal/tenant/${encodeURIComponent(tenantSlug)}/me`
+      : `${base}/api/portal/me`;
+  return requestPortalApi<PortalTenantPayload>(path, {
     method: "GET",
     headers: {
       Authorization: `Bearer ${accessToken}`,

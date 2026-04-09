@@ -6,7 +6,11 @@ import type { ReactElement } from "react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase";
-import { fetchPortalTenant, postPortalMode } from "@/lib/tenant";
+import {
+  fetchPortalTenant,
+  postPortalMode,
+  tenantSlugFromUserMetadata,
+} from "@/lib/tenant";
 import type { PortalMode } from "@/types";
 
 export function ModeSelector(): ReactElement {
@@ -26,7 +30,8 @@ export function ModeSelector(): ReactElement {
         return;
       }
       const token = data.session.access_token;
-      const tenant = await fetchPortalTenant(token);
+      const slug = tenantSlugFromUserMetadata(data.session.user);
+      const tenant = await fetchPortalTenant(token, slug);
       await postPortalMode(token, mode, tenant.slug);
       router.push(mode === "developer" ? "/dashboard/developer" : "/dashboard/managed");
       router.refresh();

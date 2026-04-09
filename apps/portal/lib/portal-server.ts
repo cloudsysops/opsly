@@ -1,6 +1,10 @@
 import { redirect } from "next/navigation";
 import { createServerSupabase } from "@/lib/supabase/server";
-import { fetchPortalTenant, fetchPortalUsage } from "@/lib/tenant";
+import {
+  fetchPortalTenant,
+  fetchPortalUsage,
+  tenantSlugFromUserMetadata,
+} from "@/lib/tenant";
 import type { PortalTenantPayload, PortalUsageSnapshot } from "@/types";
 
 export async function requirePortalPayload(): Promise<PortalTenantPayload> {
@@ -12,7 +16,11 @@ export async function requirePortalPayload(): Promise<PortalTenantPayload> {
     redirect("/login");
   }
   try {
-    return await fetchPortalTenant(session.access_token);
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    const slug = tenantSlugFromUserMetadata(user);
+    return await fetchPortalTenant(session.access_token, slug);
   } catch {
     redirect("/login");
   }
@@ -35,7 +43,11 @@ export async function requirePortalPayloadWithUsage(): Promise<{
   }
   const token = session.access_token;
   try {
-    const payload = await fetchPortalTenant(token);
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    const slugFromJwt = tenantSlugFromUserMetadata(user);
+    const payload = await fetchPortalTenant(token, slugFromJwt);
     const slug = payload.slug;
     const [today, month] = await Promise.all([
       fetchPortalUsage(token, "today", slug).catch((): null => null),
