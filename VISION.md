@@ -1,5 +1,7 @@
 # Opsly — Visión y Objetivos
 
+> Última revisión: 2026-04-09
+
 ## Qué es Opsly
 
 Plataforma multi-tenant SaaS que despliega y gestiona stacks de agentes
