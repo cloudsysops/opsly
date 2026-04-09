@@ -43,6 +43,10 @@ Lista operativa para releases y revisiones periódicas. Marca ítems según tu p
 
 ## 🔒 Evaluación de Seguridad Multi-Tenancy (2026-04-09)
 
+### Respuesta corta al founder
+
+Sí, el backend está **bien separado por tenant para la fase actual** (staging + pocos tenants), pero **no es aislamiento fuerte tipo VPC por tenant**. El modelo actual reduce mucho el riesgo de cruces lógicos (API/DB), mientras que los riesgos principales quedan en infraestructura compartida (VPS, Docker host, service-role global).
+
 ### Arquitectura Actual: Separación por Tenant
 
 | Capa | Nivel de Aislamiento | Fortalezas | Riesgos Restantes | Mitigación Recomendada |
@@ -117,7 +121,7 @@ Lista operativa para releases y revisiones periódicas. Marca ítems según tu p
    - Drop incoming por defecto
    - Whitelist SSH desde Tailscale range 100.64.0.0/10
    - Allow HTTP/HTTPS públicos
-   - Commands (abajo en sección "Mitigaciones")
+  - Command recomendado: `./scripts/vps-secure.sh --ssh-host 100.120.151.91`
 
 #### 🟡 IMPORTANTE (Esta semana)
 3. **Tailscale SSH en VPS**
@@ -129,6 +133,14 @@ Lista operativa para releases y revisiones periódicas. Marca ítems según tu p
    - Nueva ADR-015: "Multi-Tenant API Security Pattern"
    - Incluir `tenantSlugMatchesSession` obligatorio
    - Pre-commit checks
+
+### Cambios concretos recomendados (middleware/scripts)
+
+- **Script (implementado):** `scripts/vps-secure.sh` ahora elimina reglas SSH públicas (`allow 22/tcp`) y mantiene SSH solo por CIDR Tailscale.
+- **Script (implementado):** `scripts/onboard-tenant.sh` admite `--ssh-host` y hace preflight SSH con 3 retries (`ConnectTimeout=15`).
+- **Middleware/API (siguiente PR):**
+  - añadir rate limit por IP + ruta para endpoints públicos (`/api/portal/health`, `/api/feedback`, `/api/invitations`) usando middleware edge o Traefik middleware dedicado;
+  - checklist de seguridad obligatoria en nuevas rutas con segmento `[slug]` (`tenantSlugMatchesSession` requerido).
 
 #### 🟢 OPCIONAL (Fase 2+)
 5. **OWASP ZAP scanning** en CI
