@@ -1,5 +1,10 @@
 import { getApiBaseUrl } from "./api";
 import { requestPortalApi } from "./http";
+import {
+  portalTenantMeUrl,
+  portalTenantModeUrl,
+  portalTenantUsageUrl,
+} from "./portal-api-paths";
 import type {
   PortalMode,
   PortalTenantPayload,
@@ -37,11 +42,7 @@ export async function fetchPortalTenant(
   accessToken: string,
   tenantSlug?: string,
 ): Promise<PortalTenantPayload> {
-  const base = getApiBaseUrl();
-  const path =
-    tenantSlug !== undefined && tenantSlug.length > 0
-      ? `${base}/api/portal/tenant/${encodeURIComponent(tenantSlug)}/me`
-      : `${base}/api/portal/me`;
+  const path = portalTenantMeUrl(getApiBaseUrl(), tenantSlug);
   return requestPortalApi<PortalTenantPayload>(path, {
     method: "GET",
     headers: {
@@ -62,11 +63,7 @@ export async function postPortalMode(
   mode: PortalMode,
   tenantSlug?: string,
 ): Promise<void> {
-  const base = getApiBaseUrl();
-  const path =
-    tenantSlug !== undefined && tenantSlug.length > 0
-      ? `${base}/api/portal/tenant/${encodeURIComponent(tenantSlug)}/mode`
-      : `${base}/api/portal/mode`;
+  const path = portalTenantModeUrl(getApiBaseUrl(), tenantSlug);
   await requestPortalApi(path, {
     method: "POST",
     headers: {
@@ -87,12 +84,7 @@ export async function fetchPortalUsage(
   period: PortalUsagePeriod = "today",
   tenantSlug?: string,
 ): Promise<PortalUsagePayload> {
-  const qs = new URLSearchParams({ period });
-  const base = getApiBaseUrl();
-  const path =
-    tenantSlug !== undefined && tenantSlug.length > 0
-      ? `${base}/api/portal/tenant/${encodeURIComponent(tenantSlug)}/usage?${qs.toString()}`
-      : `${base}/api/portal/usage?${qs.toString()}`;
+  const path = portalTenantUsageUrl(getApiBaseUrl(), period, tenantSlug);
   return requestPortalApi<PortalUsagePayload>(path, {
     method: "GET",
     headers: {
