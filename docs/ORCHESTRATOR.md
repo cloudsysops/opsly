@@ -50,9 +50,9 @@ Cada job lleva `priority` en las opciones de `Queue.add` (BullMQ: **0 = máxima 
 ## Remote Planner (Chat.z / Fase 4)
 
 - **Intención:** `remote_plan` (o cualquier intent con `agent_role: "planner"`, que se normaliza a `remote_plan`).
-- **Flujo:** el orchestrator llama a `POST /v1/planner` del **llm-gateway** (`callRemotePlanner` en `apps/orchestrator/src/llm-gateway-client.ts`). No hay llamadas directas a Anthropic/OpenAI desde el orchestrator.
+- **Flujo principal:** el orchestrator usa `executeRemotePlanner` en `apps/orchestrator/src/planner-client.ts` → **`POST /v1/chat/completions`** en **llm-gateway** (mensajes `system` + `user` con contexto y lista de herramientas). Compatibilidad: `callRemotePlanner` en `llm-gateway-client.ts` delega en el mismo cliente. **`POST /v1/planner`** sigue disponible (mismo `llmCall` + JSON planner). No hay llamadas directas a Anthropic/OpenAI desde el orchestrator.
 - **Hermes:** el gateway ejecuta `llmCall()` y registra uso (tokens/costo) con `request_id` y `tenant_slug` en el flujo estándar del gateway.
-- **Respuesta:** JSON `{ reasoning, actions: [{ tool, params }] }`; el motor encola jobs (`cursor` \| `n8n` \| `notify` \| `drive`) según `planner-map.ts`. Los jobs derivados llevan `payload.planner_tool` y reciben **boost de prioridad** en `queue-opts.ts`.
+- **Respuesta:** JSON `{ reasoning, actions: [{ tool, params }] }`. **Modo seguro (Go-Live):** el motor **no encola** jobs a partir del plan; registra `planner_response` en stdout y hace `console.log` por acción simulada. Cuando se active la ejecución real, volver a mapear acciones → cola vía `planner-map.ts` (`payload.planner_tool` + prioridad en `queue-opts.ts`).
 - **Red Docker:** definir `ORCHESTRATOR_LLM_GATEWAY_URL=http://llm-gateway:3010` (ya en `infra/docker-compose.platform.yml`).
 
 ### Prueba manual del planner HTTP
@@ -65,4 +65,14 @@ curl -sS -X POST "http://127.0.0.1:3010/v1/planner" \
   -H "x-tenant-slug: localrank" \
   -H "x-request-id: $(uuidgen)" \
   -d '{"tenant_slug":"localrank","context":{"note":"smoke"},"available_tools":["get_health","notify"]}'
+```
+
+Chat/completions (mismo cuerpo de respuesta `planner` + `llm`):
+
+```bash
+curl -sS -X POST "http://127.0.0.1:3010/v1/chat/completions" \
+  -H "Content-Type: application/json" \
+  -H "x-tenant-slug: localrank" \
+  -H "x-request-id: $(uuidgen)" \
+  -d '{"tenant_slug":"localrank","messages":[{"role":"system","content":"Eres un orquestador experto. Devuelve SOLO JSON: reasoning + actions."},{"role":"user","content":"contexto: smoke"}]}'
 ```

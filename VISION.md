@@ -164,6 +164,7 @@ Objetivo: unificar herramientas, orquestación y capa de costos IA bajo un contr
 - [ ] LLM Gateway como punto único de routing, cache y métricas de costo.
 - [ ] Context Builder integrado para continuidad entre sesiones.
 - [ ] NotebookLM disponible como EXPERIMENTAL con feature flag en planes superiores.
+- [x] Planner externo (Chat.z): delegar planes de ejecución a LLMs remotos vía LLM Gateway (`/v1/chat/completions` / `/v1/planner`), con razonamiento complejo sin añadir infraestructura pesada fuera de Compose.
 
 ### Fase 5 — Ecosistema IA Madura
 

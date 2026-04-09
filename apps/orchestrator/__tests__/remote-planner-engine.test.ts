@@ -8,8 +8,8 @@ vi.mock("../src/state/store.js", () => ({
   setJobState: vi.fn(async () => undefined),
 }));
 
-vi.mock("../src/llm-gateway-client.js", () => ({
-  callRemotePlanner: vi.fn(async () => ({
+vi.mock("../src/planner-client.js", () => ({
+  executeRemotePlanner: vi.fn(async () => ({
     planner: {
       reasoning: "test-plan",
       actions: [
@@ -37,7 +37,7 @@ describe("processIntent remote_plan", () => {
     vi.clearAllMocks();
   });
 
-  it("consulta LLM Gateway y encola jobs por acciones del planner", async () => {
+  it("consulta LLM Gateway vía /v1/chat/completions y no encola jobs (solo simulación)", async () => {
     const result = await processIntent({
       intent: "remote_plan",
       context: { goal: "smoke" },
@@ -50,8 +50,9 @@ describe("processIntent remote_plan", () => {
     expect(result.intent).toBe("remote_plan");
     expect(result.planner?.reasoning).toBe("test-plan");
     expect(result.planner?.actions_count).toBe(2);
-    expect(result.jobs_enqueued).toBe(2);
-    expect(enqueueJob).toHaveBeenCalledTimes(2);
+    expect(result.jobs_enqueued).toBe(0);
+    expect(result.job_ids).toEqual([]);
+    expect(enqueueJob).not.toHaveBeenCalled();
   });
 
   it("sin tenant_slug falla", async () => {

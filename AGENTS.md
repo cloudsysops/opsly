@@ -130,7 +130,8 @@ Procedimientos vivos en el repo: **`skills/user/<skill>/SKILL.md`**. En runtimes
 23. **✅ CI — OpenAPI paths portal obligatorios** — *Hecho (2026-04-08).* `scripts/validate-openapi-yaml.mjs` (`REQUIRED_PORTAL_PATHS`): exige en `paths` las rutas portal del subset (ampliadas a **8** con health en incr. 25). `docs/SECURITY_CHECKLIST.md` referencia la validación. Sin cambio de runtime.
 24. **✅ OpenAPI — `/api/feedback` (POST portal JWT + GET admin)** — *Hecho (2026-04-08).* `docs/openapi-opsly-api.yaml`: `POST /api/feedback` (cuerpo `message` + opcionales alineados a `parseFeedbackPostFields`); `GET /api/feedback` (`status`, `limit`; admin `Bearer` / `x-admin-token`). `validate-openapi-yaml.mjs` (`REQUIRED_FEEDBACK_PATHS`) exige `/api/feedback`. Sin cambio de runtime. Suite API actual en incr. 25: **162** tests.
 25. **✅ Portal — health API + `portal-api-paths` + Playwright E2E smoke** — *Hecho (2026-04-08).* API: `GET /api/portal/health?slug=` (público, monitoring); `GET /api/portal/tenant/{slug}/health` (JWT + `tenantSlugMatchesSession`); `lib/portal-health-json.ts` (`respondPortalTenantHealth`). Cliente: `portalHealthUrl(slug)`, `portalPublicHealthUrl(slug)`, `fetchPortalHealth` (`lib/tenant.ts`). **`@playwright/test`**, `playwright.config.ts`, `e2e/portal.spec.ts` (login + invite + smoke; dashboard redirect tests con `test.skip` si faltan vars Supabase públicas). OpenAPI + `REQUIRED_PORTAL_PATHS` (**8** rutas portal, incl. health). Tests API **162**; portal Vitest **21**; `npm run test:e2e --workspace=@intcloudsysops/portal`.
-26. **Siguiente** — p. ej. E2E invite con Supabase en CI, más rutas bajo `/api/portal/tenant/[slug]/`, u operación VPS según `VISION.md`.
+26. **✅ Remote Planner (Chat.z) integrado en Orchestrator** — *Hecho (2026-04-10).* Cliente `executeRemotePlanner` (`apps/orchestrator/src/planner-client.ts`) → `POST /v1/chat/completions` en llm-gateway; compat `POST /v1/planner`. Intent `remote_plan`: sin encolar jobs efectivos (solo logs JSON + simulación `console.log` por acción) hasta validación Go-Live; Hermes vía `llmCall` en gateway. Healthchecks en `infra/docker-compose.platform.yml` (app `/api/health`, portal `/login`, llm-gateway y orchestrator `/health`) con `interval` 30s. Doc: `docs/ORCHESTRATOR.md`.
+27. **Siguiente** — p. ej. E2E invite con Supabase en CI, más rutas bajo `/api/portal/tenant/[slug]/`, reactivar encolado de jobs desde el planner tras smoke, u operación VPS según `VISION.md`.
 
 ### Qué evitamos por ahora
 
@@ -194,7 +195,7 @@ Procedimientos vivos en el repo: **`skills/user/<skill>/SKILL.md`**. En runtimes
 
 <!-- Actualizar al final de cada sesión -->
 
-**Fecha última actualización:** 2026-04-09 23:00 UTC — **Última revisión:** 2026-04-09. **Última interacción:** actualización documental de `AGENTS.md` y `VISION.md` con commit de mantenimiento solicitado por founder. Estado LocalRank: onboarding listo para ejecutar por Tailscale; pendiente conectividad SSH estable y verificación Cloudflare Proxy. **NotebookLM:** feature flag `NOTEBOOKLM_ENABLED` documentado para Doppler `prd`; activar solo para planes Business+.
+**Fecha última actualización:** 2026-04-10 — **Última revisión:** 2026-04-10. **Última interacción:** Remote Planner (`/v1/chat/completions`), modo seguro sin encolado desde `remote_plan`, healthchecks Compose en servicios clave. Estado LocalRank: onboarding listo por Tailscale cuando SSH sea estable; Cloudflare Proxy recomendado. **NotebookLM:** feature flag `NOTEBOOKLM_ENABLED` en Doppler `prd` para planes Business+.
 
 ### Ecosistema IA – OpenClaw (2026-04-10)
 

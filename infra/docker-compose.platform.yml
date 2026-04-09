@@ -100,6 +100,18 @@ services:
       - traefik-public
       - internal
     restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:3000/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
     deploy:
       replicas: 2
 
@@ -145,6 +157,18 @@ services:
     networks:
       - traefik-public
     restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:3002/login').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
 
   mcp:
     image: ${MCP_IMAGE:-ghcr.io/cloudsysops/intcloudsysops-mcp:latest}
@@ -187,6 +211,18 @@ services:
     networks:
       - internal
     restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:3010/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
 
   orchestrator:
     image: ${ORCHESTRATOR_IMAGE:-ghcr.io/cloudsysops/intcloudsysops-orchestrator:latest}
@@ -208,6 +244,18 @@ services:
     networks:
       - internal
     restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:3011/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
 
   context-builder:
     image: ${CONTEXT_BUILDER_IMAGE:-ghcr.io/cloudsysops/intcloudsysops-context-builder:latest}
