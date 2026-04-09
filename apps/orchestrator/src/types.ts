@@ -25,7 +25,9 @@ export type Intent =
   | "trigger_workflow"
   | "notify"
   | "sync_drive"
-  | "full_pipeline";
+  | "full_pipeline"
+  /** Delegación al LLM Gateway (Remote Planner / Chat.z); requiere tenant_slug y plan Hermes. */
+  | "remote_plan";
 
 export interface IntentRequest {
   intent: Intent;
@@ -38,4 +40,16 @@ export interface IntentRequest {
   request_id?: string;
   cost_budget_usd?: number;
   agent_role?: AgentRole;
+}
+
+/** Params por acción devuelta por el Remote Planner (JSON vía LLM Gateway). Sin `any`. */
+export interface PlannerAction {
+  tool: string;
+  params: Record<string, unknown>;
+}
+
+/** Respuesta estructurada del cerebro externo (LLM Gateway / planner). */
+export interface PlannerResponse {
+  reasoning: string;
+  actions: PlannerAction[];
 }

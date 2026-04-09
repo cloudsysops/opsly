@@ -71,4 +71,15 @@ describe("buildQueueAddOptions", () => {
     );
     expect(opts.jobId).toBe("idem:cursor:run-1::cursor::0");
   });
+
+  it("sube prioridad (menor número) para jobs derivados del Remote Planner", () => {
+    const base = buildQueueAddOptions(baseJob({ plan: "startup" })).priority ?? 0;
+    const boosted = buildQueueAddOptions(
+      baseJob({
+        plan: "startup",
+        payload: { planner_tool: "notify", message: "x" },
+      }),
+    ).priority ?? 0;
+    expect(boosted).toBeLessThan(base);
+  });
 });

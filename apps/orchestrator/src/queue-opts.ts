@@ -34,11 +34,24 @@ export function sanitizeQueueJobId(raw: string): string {
   return cleaned.length <= MAX_JOB_ID_LEN ? cleaned : cleaned.slice(0, MAX_JOB_ID_LEN);
 }
 
+function isPlannerDerivedJob(job: OrchestratorJob): boolean {
+  const p = job.payload;
+  if (typeof p !== "object" || p === null) {
+    return false;
+  }
+  return "planner_tool" in p && typeof (p as { planner_tool?: unknown }).planner_tool === "string";
+}
+
+/**
+ * Jobs generados tras Remote Planner: suben prioridad relativa (BullMQ: menor número = antes).
+ */
 export function buildQueueAddOptions(job: OrchestratorJob): JobsOptions {
+  const basePriority = planToQueuePriority(job.plan);
+  const boosted = isPlannerDerivedJob(job) ? Math.max(0, basePriority - 5000) : basePriority;
   const opts: JobsOptions = {
     attempts: 3,
     backoff: { type: "exponential", delay: 2000 },
-    priority: planToQueuePriority(job.plan),
+    priority: boosted,
   };
 
   if (job.idempotency_key && job.idempotency_key.length > 0) {

@@ -4,7 +4,7 @@ Servicio Node (`apps/orchestrator`) que consume la cola BullMQ **`openclaw`** en
 
 ## Arquitectura event-driven
 
-- **Entrada:** `processIntent()` en `engine.ts` traduce intenciones (`notify`, `execute_code`, `trigger_workflow`, `sync_drive`, `full_pipeline`, etc.) en uno o más jobs y los encola.
+- **Entrada:** `processIntent()` en `engine.ts` traduce intenciones (`notify`, `execute_code`, `trigger_workflow`, `sync_drive`, `full_pipeline`, `remote_plan`, etc.) en uno o más jobs y los encola.
 - **Cola:** `apps/orchestrator/src/queue.ts` — `Queue("openclaw")`, reintentos con backoff exponencial.
 - **Estado:** `state/store.ts` persiste estado de jobs en Redis (TTL) para inspección.
 - **Workers:** BullMQ `Worker` por tipo de job; cada uno escucha el nombre de job acorde a `OrchestratorJob.type`.
@@ -46,3 +46,23 @@ La priorización por plan (Startup / Business / Enterprise) está alineada con `
 ### Prioridad en la cola BullMQ (`queue-opts.ts`)
 
 Cada job lleva `priority` en las opciones de `Queue.add` (BullMQ: **0 = máxima prioridad**, valores mayores se procesan después). `planToQueuePriority` asigna: **enterprise → 0**, **business → 10_000**, **startup** o sin plan → **50_000**. El log JSON `job_enqueue` incluye `queue_priority` para correlación.
+
+## Remote Planner (Chat.z / Fase 4)
+
+- **Intención:** `remote_plan` (o cualquier intent con `agent_role: "planner"`, que se normaliza a `remote_plan`).
+- **Flujo:** el orchestrator llama a `POST /v1/planner` del **llm-gateway** (`callRemotePlanner` en `apps/orchestrator/src/llm-gateway-client.ts`). No hay llamadas directas a Anthropic/OpenAI desde el orchestrator.
+- **Hermes:** el gateway ejecuta `llmCall()` y registra uso (tokens/costo) con `request_id` y `tenant_slug` en el flujo estándar del gateway.
+- **Respuesta:** JSON `{ reasoning, actions: [{ tool, params }] }`; el motor encola jobs (`cursor` \| `n8n` \| `notify` \| `drive`) según `planner-map.ts`. Los jobs derivados llevan `payload.planner_tool` y reciben **boost de prioridad** en `queue-opts.ts`.
+- **Red Docker:** definir `ORCHESTRATOR_LLM_GATEWAY_URL=http://llm-gateway:3010` (ya en `infra/docker-compose.platform.yml`).
+
+### Prueba manual del planner HTTP
+
+Con el gateway levantado:
+
+```bash
+curl -sS -X POST "http://127.0.0.1:3010/v1/planner" \
+  -H "Content-Type: application/json" \
+  -H "x-tenant-slug: localrank" \
+  -H "x-request-id: $(uuidgen)" \
+  -d '{"tenant_slug":"localrank","context":{"note":"smoke"},"available_tools":["get_health","notify"]}'
+```

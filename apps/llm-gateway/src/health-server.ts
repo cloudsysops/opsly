@@ -1,4 +1,5 @@
 import { createServer } from "node:http";
+import { handlePlannerHttp } from "./planner-route.js";
 
 const DEFAULT_PORT = 3010;
 
@@ -8,18 +9,30 @@ function parsePort(): number {
   return Number.isFinite(n) && n > 0 ? n : DEFAULT_PORT;
 }
 
-/** HTTP health endpoint for the LLM gateway process. */
+/** HTTP health + Remote Planner endpoint for the LLM gateway process. */
 export function createHealthServer(port?: number): void {
   const p = port ?? parsePort();
   const server = createServer((req, res) => {
-    const pathOnly = req.url?.split("?")[0] ?? "/";
-    if (req.method === "GET" && pathOnly === "/health") {
-      res.writeHead(200, { "Content-Type": "application/json" });
-      res.end(JSON.stringify({ status: "ok", service: "llm-gateway" }));
-      return;
-    }
-    res.writeHead(404);
-    res.end();
+    void (async () => {
+      try {
+        const handled = await handlePlannerHttp(req, res);
+        if (handled) {
+          return;
+        }
+        const pathOnly = req.url?.split("?")[0] ?? "/";
+        if (req.method === "GET" && pathOnly === "/health") {
+          res.writeHead(200, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ status: "ok", service: "llm-gateway" }));
+          return;
+        }
+        res.writeHead(404);
+        res.end();
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err);
+        res.writeHead(500, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ error: "internal_error", message: msg }));
+      }
+    })();
   });
   server.listen(p, "0.0.0.0", () => {
     process.stdout.write(

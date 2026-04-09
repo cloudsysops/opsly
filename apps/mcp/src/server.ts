@@ -4,6 +4,7 @@ import { executorTool } from "./tools/executor.js";
 import { invitationsTool } from "./tools/invitations.js";
 import { metricsTool } from "./tools/metrics.js";
 import { notebooklmTool } from "./tools/notebooklm.js";
+import { opsStubsTools } from "./tools/ops-stubs.js";
 import { onboardTool } from "./tools/onboard.js";
 import { suspendTools } from "./tools/suspend.js";
 import { tenantsTools } from "./tools/tenants.js";
@@ -34,6 +35,8 @@ const TOOL_REQUIRED_SCOPES: Record<string, string> = {
   get_metrics: "metrics:read",
   execute_prompt: "executor:write",
   notebooklm: "agents:write",
+  check_service_health: "metrics:read",
+  restart_container: "tenants:write",
 };
 
 export type CallToolOptions = {
@@ -105,6 +108,7 @@ export function createServer(): OpenClawMcpServer {
   const [getTenantsTool, getTenantTool] = tenantsTools;
   const [getHealthTool, getMetricsTool] = metricsTool;
   const [suspendTenantTool, resumeTenantTool] = suspendTools;
+  const [checkServiceHealthTool, restartContainerTool] = opsStubsTools;
   server.registerTools([
     adaptTool(getTenantsTool),
     adaptTool(getTenantTool),
@@ -116,6 +120,8 @@ export function createServer(): OpenClawMcpServer {
     adaptTool(resumeTenantTool),
     adaptTool(executorTool),
     adaptTool(notebooklmTool),
+    adaptTool(checkServiceHealthTool),
+    adaptTool(restartContainerTool),
   ]);
   return server;
 }

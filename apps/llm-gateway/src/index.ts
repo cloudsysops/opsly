@@ -19,3 +19,4 @@ export {
   type RoutingBias,
 } from "./routing-hints.js";
 export type { LLMRequest, LLMResponse, UsageEvent } from "./types.js";
+export type { PlannerHttpRequestBody, PlannerResponseShape } from "./planner-route.js";

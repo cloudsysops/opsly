@@ -195,6 +195,7 @@ services:
       - ../.env
     environment:
       ORCHESTRATOR_HEALTH_PORT: "3011"
+      ORCHESTRATOR_LLM_GATEWAY_URL: http://llm-gateway:3010
       REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379/0
       REDIS_PASSWORD: ${REDIS_PASSWORD}
       DISCORD_WEBHOOK_URL: ${DISCORD_WEBHOOK_URL}
@@ -202,6 +203,8 @@ services:
     depends_on:
       redis:
         condition: service_healthy
+      llm-gateway:
+        condition: service_started
     networks:
       - internal
     restart: unless-stopped
