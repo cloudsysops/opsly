@@ -2,6 +2,10 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  inviteActivationErrorMessage,
+  validateInviteActivationForm,
+} from "@/lib/invite-activation-validation";
 import { createClient } from "@/lib/supabase";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
@@ -29,20 +33,14 @@ export function InviteActivate() {
   async function onSubmit(e: FormSubmitEvent) {
     e.preventDefault();
     setErr(null);
-    if (password !== confirm) {
-      setErr("Las contraseñas no coinciden");
-      return;
-    }
-    if (password.length < 8) {
-      setErr("Mínimo 8 caracteres");
-      return;
-    }
-    if (!email || email.length === 0) {
-      setErr("Falta el parámetro email en el enlace");
-      return;
-    }
-    if (!token || token.length === 0) {
-      setErr("Token de invitación no válido");
+    const validation = validateInviteActivationForm({
+      password,
+      confirm,
+      email,
+      token,
+    });
+    if (validation) {
+      setErr(inviteActivationErrorMessage(validation));
       return;
     }
 
