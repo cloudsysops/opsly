@@ -410,6 +410,102 @@ paths:
         '403':
           $ref: '#/components/responses/Forbidden'
 
+  /api/feedback:
+    post:
+      summary: Feedback portal — mensaje con JWT (tenant/email desde sesión)
+      description: >
+        `message` obligatorio. `tenant_slug` y `user_email` opcionales; si se envían deben coincidir con el JWT.
+        Identidad vía `resolveTrustedFeedbackIdentity` (Fase 4 §7).
+      operationId: postFeedback
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [message]
+              properties:
+                message:
+                  type: string
+                tenant_slug:
+                  type: string
+                  description: Debe coincidir con el tenant de la sesión si se envía
+                user_email:
+                  type: string
+                  description: Debe coincidir con el email de la sesión si se envía
+                session_id:
+                  type: string
+                conversation_id:
+                  type: string
+                  format: uuid
+      responses:
+        '200':
+          description: Respuesta del asistente y metadatos de decisión si aplica
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  conversation_id:
+                    type: string
+                  message:
+                    type: string
+                  decision_type:
+                    type: string
+                    nullable: true
+                    description: auto_implement | needs_approval | rejected | scheduled
+                  criticality:
+                    type: string
+                    nullable: true
+                    description: low | medium | high | critical
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    get:
+      summary: Listar conversaciones de feedback (admin)
+      description: >
+        Requiere `PLATFORM_ADMIN_TOKEN` en `Authorization: Bearer` o cabecera `x-admin-token`.
+      operationId: listFeedbackConversations
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 50
+      responses:
+        '200':
+          description: Lista paginada de conversaciones con decisiones anidadas
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  feedbacks:
+                    type: array
+                    items:
+                      type: object
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
   /api/invitations:
     post:
       summary: Enviar invitación (admin)

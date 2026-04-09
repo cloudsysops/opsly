@@ -30,5 +30,38 @@ if (doc.paths === null || typeof doc.paths !== "object" || Array.isArray(doc.pat
   process.exit(1);
 }
 
+/** Paths portal Zero-Trust que deben permanecer en el subset publicado. */
+const REQUIRED_PORTAL_PATHS = [
+  "/api/portal/me",
+  "/api/portal/mode",
+  "/api/portal/usage",
+  "/api/portal/tenant/{slug}/me",
+  "/api/portal/tenant/{slug}/mode",
+  "/api/portal/tenant/{slug}/usage",
+];
+
+for (const p of REQUIRED_PORTAL_PATHS) {
+  if (!Object.prototype.hasOwnProperty.call(doc.paths, p)) {
+    console.error(
+      `validate-openapi-yaml: falta path obligatorio en spec: ${p}`,
+    );
+    process.exit(1);
+  }
+}
+
+/** Subset feedback (portal POST + admin GET) — Fase 4 incr. 24. */
+const REQUIRED_FEEDBACK_PATHS = ["/api/feedback"];
+
+for (const p of REQUIRED_FEEDBACK_PATHS) {
+  if (!Object.prototype.hasOwnProperty.call(doc.paths, p)) {
+    console.error(
+      `validate-openapi-yaml: falta path obligatorio en spec: ${p}`,
+    );
+    process.exit(1);
+  }
+}
+
 const n = Object.keys(doc.paths).length;
-console.log(`validate-openapi-yaml: OK (OpenAPI ${doc.openapi}, ${n} paths)`);
+console.log(
+  `validate-openapi-yaml: OK (OpenAPI ${doc.openapi}, ${n} paths, portal ${REQUIRED_PORTAL_PATHS.length} + feedback ${REQUIRED_FEEDBACK_PATHS.length} requeridos)`,
+);
