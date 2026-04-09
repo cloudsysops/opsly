@@ -2,7 +2,7 @@ import { NextRequest } from "next/server";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { GET as portalMeGet } from "../me/route";
 import { POST as portalModePost } from "../mode/route";
-import { GET as portalTenantSlugUsageGet } from "../tenant/[slug]/usage/route";
+import { GET as portalTenantSlugMeGet } from "../tenant/[slug]/me/route";
 import { GET as portalTenantSlugUsageGet } from "../tenant/[slug]/usage/route";
 import { GET as portalUsageGet } from "../usage/route";
 import * as portalAuthMod from "../../../../lib/portal-auth";
@@ -139,6 +139,68 @@ describe("GET /api/portal/me", () => {
     expect(body.mode).toBe("developer");
     const health = body.health as { n8n_reachable: boolean };
     expect(health.n8n_reachable).toBe(true);
+  });
+});
+
+describe("GET /api/portal/tenant/[slug]/me", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.mocked(portalMeLib.portalUrlReachable).mockResolvedValue(false);
+  });
+
+  it("returns 401 without user", async () => {
+    vi.mocked(portalAuthMod.getUserFromAuthorizationHeader).mockResolvedValue(
+      null,
+    );
+    const res = await portalTenantSlugMeGet(
+      new NextRequest("http://localhost/api/portal/tenant/acme/me"),
+      { params: Promise.resolve({ slug: "acme" }) },
+    );
+    expect(res.status).toBe(401);
+  });
+
+  it("returns 403 when path slug does not match session tenant", async () => {
+    vi.mocked(portalAuthMod.getUserFromAuthorizationHeader).mockResolvedValue({
+      id: "u1",
+      email: "owner@acme.com",
+      user_metadata: { tenant_slug: "acme" },
+    } as never);
+    vi.mocked(portalMeLib.fetchPortalTenantRowBySlug).mockResolvedValue({
+      ok: true,
+      row,
+    });
+
+    const res = await portalTenantSlugMeGet(
+      new NextRequest("http://localhost/api/portal/tenant/other/me", {
+        headers: { authorization: "Bearer t" },
+      }),
+      { params: Promise.resolve({ slug: "other" }) },
+    );
+    expect(res.status).toBe(403);
+  });
+
+  it("returns 200 with same payload as /api/portal/me when slug matches", async () => {
+    vi.mocked(portalAuthMod.getUserFromAuthorizationHeader).mockResolvedValue({
+      id: "u1",
+      email: "owner@acme.com",
+      user_metadata: { tenant_slug: "acme", mode: "developer" },
+    } as never);
+    vi.mocked(portalMeLib.fetchPortalTenantRowBySlug).mockResolvedValue({
+      ok: true,
+      row,
+    });
+    vi.mocked(portalMeLib.portalUrlReachable).mockResolvedValue(true);
+
+    const res = await portalTenantSlugMeGet(
+      new NextRequest("http://localhost/api/portal/tenant/acme/me", {
+        headers: { authorization: "Bearer t" },
+      }),
+      { params: Promise.resolve({ slug: "acme" }) },
+    );
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as Record<string, unknown>;
+    expect(body.slug).toBe("acme");
+    expect(body.mode).toBe("developer");
   });
 });
 

@@ -36,6 +36,7 @@ Lista operativa para releases y revisiones periódicas. Marca ítems según tu p
 - [ ] **Portal `GET /api/portal/me` y `POST /api/portal/mode`:** misma sesión confiable (`resolveTrustedPortalSession`) antes de responder o mutar `user_metadata`; sin tenant/owner válidos → 401/403/404 como corresponda. Tests: `app/api/portal/__tests__/portal-routes.test.ts`, `lib/__tests__/portal-trusted-identity.test.ts`.
 - [ ] **Portal `GET /api/portal/usage`:** solo métricas del tenant de la sesión (`resolveTrustedPortalSession` + `getTenantUsage`); no exponer otro tenant vía query/path. Tests: `app/api/portal/__tests__/portal-routes.test.ts`.
 - [x] **`GET /api/portal/tenant/[slug]/usage`:** tras `resolveTrustedPortalSession`, validar con `tenantSlugMatchesSession(session, slug)`; mismo JSON que `GET /api/portal/usage` vía `respondPortalTenantUsage` (`lib/portal-usage-json.ts`). Tests: `app/api/portal/__tests__/portal-routes.test.ts`.
+- [x] **`GET /api/portal/tenant/[slug]/me`:** mismo patrón; JSON compartido con `GET /api/portal/me` vía `respondTrustedPortalMe` (`lib/portal-me-json.ts`). Tests: `app/api/portal/__tests__/portal-routes.test.ts`.
 
 ## Informes
 
