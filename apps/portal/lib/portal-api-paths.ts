@@ -45,3 +45,15 @@ export function portalTenantUsageUrl(
   }
   return `${base}/api/portal/usage?${qs}`;
 }
+
+/** URL absoluta `GET` health con JWT — `/api/portal/tenant/[slug]/health` (Zero-Trust). */
+export function portalHealthUrl(apiBaseUrl: string, tenantSlug: string): string {
+  const base = normalizeApiBase(apiBaseUrl);
+  return `${base}/api/portal/tenant/${encodeURIComponent(tenantSlug)}/health`;
+}
+
+/** URL absoluta `GET` health público — `/api/portal/health?slug=` (monitoring, sin JWT). */
+export function portalPublicHealthUrl(apiBaseUrl: string, slug: string): string {
+  const base = normalizeApiBase(apiBaseUrl);
+  return `${base}/api/portal/health?slug=${encodeURIComponent(slug)}`;
+}

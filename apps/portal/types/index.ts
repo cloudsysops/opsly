@@ -44,6 +44,24 @@ export type PortalUsageSnapshot = {
   month: PortalUsagePayload | null;
 };
 
+export type PortalHealthPayload = {
+  slug: string;
+  name: string;
+  plan: string;
+  status: string;
+  services: {
+    n8n_url: string | null;
+    uptime_url: string | null;
+    n8n_user: string | null;
+    n8n_password: string | null;
+  };
+  health: {
+    n8n_reachable: boolean;
+    uptime_reachable: boolean;
+    checked_at: string;
+  };
+};
+
 /** Respuesta documentada de POST /api/invitations (consumo futuro en UI). */
 export type AdminInvitationResponse = {
   ok: true;

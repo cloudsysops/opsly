@@ -35,9 +35,11 @@ const REQUIRED_PORTAL_PATHS = [
   "/api/portal/me",
   "/api/portal/mode",
   "/api/portal/usage",
+  "/api/portal/health",
   "/api/portal/tenant/{slug}/me",
   "/api/portal/tenant/{slug}/mode",
   "/api/portal/tenant/{slug}/usage",
+  "/api/portal/tenant/{slug}/health",
 ];
 
 for (const p of REQUIRED_PORTAL_PATHS) {

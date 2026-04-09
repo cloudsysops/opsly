@@ -1,11 +1,13 @@
 import { getApiBaseUrl } from "./api";
 import { requestPortalApi } from "./http";
 import {
+  portalHealthUrl,
   portalTenantMeUrl,
   portalTenantModeUrl,
   portalTenantUsageUrl,
 } from "./portal-api-paths";
 import type {
+  PortalHealthPayload,
   PortalMode,
   PortalTenantPayload,
   PortalUsagePayload,
@@ -86,6 +88,25 @@ export async function fetchPortalUsage(
 ): Promise<PortalUsagePayload> {
   const path = portalTenantUsageUrl(getApiBaseUrl(), period, tenantSlug);
   return requestPortalApi<PortalUsagePayload>(path, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      "Content-Type": "application/json",
+    },
+    cache: "no-store",
+  });
+}
+
+/**
+ * Health de un tenant. Con slug → `GET /api/portal/tenant/[slug]/health` (Zero-Trust).
+ * Sin slug → `GET /api/portal/health?slug=` (público, para Uptime Kuma).
+ */
+export async function fetchPortalHealth(
+  accessToken: string,
+  tenantSlug: string,
+): Promise<PortalHealthPayload> {
+  const path = portalHealthUrl(getApiBaseUrl(), tenantSlug);
+  return requestPortalApi<PortalHealthPayload>(path, {
     method: "GET",
     headers: {
       Authorization: `Bearer ${accessToken}`,

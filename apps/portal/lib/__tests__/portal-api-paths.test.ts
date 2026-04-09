@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
+  portalHealthUrl,
+  portalPublicHealthUrl,
   portalTenantMeUrl,
   portalTenantModeUrl,
   portalTenantUsageUrl,
@@ -58,6 +60,31 @@ describe("portalTenantUsageUrl", () => {
   it("con slug → /tenant/…/usage?period=", () => {
     expect(portalTenantUsageUrl(BASE, "today", "acme")).toBe(
       `${BASE}/api/portal/tenant/acme/usage?period=today`,
+    );
+  });
+});
+
+describe("portalHealthUrl", () => {
+  it("con slug → /tenant/…/health", () => {
+    expect(portalHealthUrl(BASE, "acme")).toBe(
+      `${BASE}/api/portal/tenant/acme/health`,
+    );
+    expect(portalHealthUrl(BASE, "a/b")).toBe(
+      `${BASE}/api/portal/tenant/${encodeURIComponent("a/b")}/health`,
+    );
+  });
+});
+
+describe("portalPublicHealthUrl", () => {
+  it("usa ?slug= codificado", () => {
+    expect(portalPublicHealthUrl(BASE, "acme")).toBe(
+      `${BASE}/api/portal/health?slug=acme`,
+    );
+    expect(portalPublicHealthUrl(BASE, "a/b")).toBe(
+      `${BASE}/api/portal/health?slug=${encodeURIComponent("a/b")}`,
+    );
+    expect(portalPublicHealthUrl(BASE, "a b")).toBe(
+      `${BASE}/api/portal/health?slug=${encodeURIComponent("a b")}`,
     );
   });
 });

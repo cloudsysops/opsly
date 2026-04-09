@@ -410,6 +410,102 @@ paths:
         '403':
           $ref: '#/components/responses/Forbidden'
 
+  /api/portal/health:
+    get:
+      summary: Health check público (Uptime Kuma) — requiere ?slug= del tenant
+      operationId: getPortalHealthPublic
+      parameters:
+        - name: slug
+          in: query
+          required: true
+          description: Slug del tenant (3–30 chars, pattern a-z0-9-)
+          schema:
+            type: string
+            minLength: 3
+            maxLength: 30
+            pattern: "^[a-z0-9-]+$"
+      responses:
+        '200':
+          description: Health del tenant (n8n + Uptime reachable)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  slug:
+                    type: string
+                  name:
+                    type: string
+                  plan:
+                    type: string
+                  status:
+                    type: string
+                  services:
+                    type: object
+                    properties:
+                      n8n_url:
+                        type: string
+                        nullable: true
+                      uptime_url:
+                        type: string
+                        nullable: true
+                  health:
+                    type: object
+                    properties:
+                      n8n_reachable:
+                        type: boolean
+                      uptime_reachable:
+                        type: boolean
+                      checked_at:
+                        type: string
+                        format: date-time
+        '400':
+          description: Slug inválido o ausente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+        '404':
+          description: Tenant no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /api/portal/tenant/{slug}/health:
+    get:
+      summary: Health del tenant de la sesión (Zero-Trust — slug validado con JWT)
+      operationId: getPortalTenantHealthBySlug
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Health del tenant (mismo contrato que /api/portal/health)
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          description: El slug del path no coincide con el tenant del JWT
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+        '404':
+          description: Tenant no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
   /api/feedback:
     post:
       summary: Feedback portal — mensaje con JWT (tenant/email desde sesión)
