@@ -14,6 +14,9 @@ Eres uno de nuestros primeros testers externos: tu feedback ayuda a definir el p
 
 *(Las URLs asumen el tenant `localrank` desplegado en el VPS de staging.)*
 
+**Nota de seguridad:** acceso SSH de administración solo por Tailscale (`100.120.151.91`).
+Las webs públicas están detrás de Cloudflare (Proxy ON recomendado para `*.ops.smiletripcare.com`).
+
 ## Qué probar esta semana
 
 ### Día 1 — Acceso básico

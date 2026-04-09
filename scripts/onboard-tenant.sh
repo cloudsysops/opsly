@@ -5,6 +5,7 @@
 #   SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, PLATFORM_DOMAIN, TENANTS_PATH, TEMPLATE_PATH
 # Optional env:
 #   DISCORD_WEBHOOK_URL, TRAEFIK_NETWORK (default: traefik-public), N8N_BASIC_AUTH_USER (default: admin)
+#   SSH_HOST (default: 100.120.151.91), SSH_USER (default: vps-dragon)
 #
 # Exit codes: 0 ok, 1 general error, 2 missing dependency, 3 missing env
 
@@ -46,6 +47,8 @@ EMAIL=""
 PLAN=""
 STRIPE_ID=""
 TENANT_DISPLAY_NAME=""
+SSH_HOST="${SSH_HOST:-100.120.151.91}"
+SSH_USER="${SSH_USER:-vps-dragon}"
 export DRY_RUN="${DRY_RUN:-false}"
 
 while [[ $# -gt 0 ]]; do
@@ -64,6 +67,10 @@ while [[ $# -gt 0 ]]; do
       ;;
     --name)
       TENANT_DISPLAY_NAME="${2:-}"
+      shift 2
+      ;;
+    --ssh-host)
+      SSH_HOST="${2:-}"
       shift 2
       ;;
     --stripe-customer-id)
@@ -92,6 +99,10 @@ if [[ -z "${SLUG}" || -z "${EMAIL}" || -z "${PLAN}" ]]; then
   die "Required: --slug, --email, --plan (startup|business|enterprise). Use --help." 1
 fi
 
+if [[ -z "${SSH_HOST}" ]]; then
+  die "Invalid --ssh-host: empty" 1
+fi
+
 if [[ ! "${SLUG}" =~ ^[a-z0-9-]{3,30}$ ]]; then
   die "Invalid slug: use 3-30 chars [a-z0-9-]" 1
 fi
@@ -111,6 +122,7 @@ if [[ "${DRY_RUN}" == "true" ]]; then
     log_info "Stripe customer id: (set)"
   fi
   log_info "Traefik network default: ${TRAEFIK_NETWORK:-traefik-public}"
+  log_info "SSH host preflight:      ${SSH_USER}@${SSH_HOST}"
   log_info ""
   log_info "Pasos que ejecutaría el script en modo real:"
   log_info "  1. Validar dependencias (curl, jq, openssl, sed, docker)"
@@ -212,6 +224,24 @@ tenant_exists_json() {
 }
 
 require_cmd docker
+
+ssh_preflight() {
+  local retries=3
+  local attempt=1
+  while (( attempt <= retries )); do
+    if ssh -o BatchMode=yes -o ConnectTimeout=15 "${SSH_USER}@${SSH_HOST}" "echo ok" >/dev/null 2>&1; then
+      log_info "SSH preflight OK (${SSH_USER}@${SSH_HOST})"
+      return 0
+    fi
+    log_warn "SSH preflight failed (${attempt}/${retries}) for ${SSH_USER}@${SSH_HOST}; retrying..."
+    sleep 2
+    attempt=$((attempt + 1))
+  done
+  log_warn "SSH preflight unavailable after ${retries} attempts; continuing local onboarding flow."
+  return 0
+}
+
+ssh_preflight
 
 EXISTING_JSON="$(tenant_exists_json)"
 if ! echo "${EXISTING_JSON}" | jq -e . >/dev/null 2>&1; then
