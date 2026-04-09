@@ -226,9 +226,25 @@ Procedimientos vivos en el repo: **`skills/user/<skill>/SKILL.md`**. En runtimes
 - VPS recreado con `vps-bootstrap.sh` + `compose up` de `app/admin/portal/traefik`; health público operativo.
 - Persisten fallos parciales de pull GHCR para imágenes nuevas/no publicadas (`mcp`, `context-builder`) y `Deploy` workflow continúa en `failure`.
 
-**2026-04-08 — Índice de skills** (`skills/user/*`) + tabla en AGENTS + `.claude/CLAUDE.md` modo supremo alineados. **MCP OAuth 2.0 + PKCE:** `response_type=code` en `/oauth/authorize`, metadata `token_endpoint_auth_methods_supported: none`, tests discovery + flujo código→token (Redis mock). **Checklist activación tokens + DB 0011/0012 documentados;** TeamManager ya cableado en orchestrator (SIGINT/SIGTERM cierra colas); `GET /api/metrics/teams` operativo; `activate-tokens.sh` listo. **2026-04-06 — Feedback Chat + ML Decision Engine:** migración `0010_feedback_system.sql` (conversaciones, mensajes, decisiones, agent_teams, agent_executions); `apps/ml` `feedback-decision-engine.ts` + `write-active-prompt.ts` (GitHub ACTIVE-PROMPT); API `POST/GET /api/feedback`, `POST /api/feedback/approve`; portal widget `FeedbackChat` en layout dashboard; admin `/feedback` con aprobación; `TeamManager` en orchestrator (4 equipos BullMQ). **LLM Gateway v2 (Beast Mode):** health daemon (ping 30s, circuit breaker 3 fallos, reintento `down` cada 60s, alertas Discord), analizador de complejidad 1/2/3, batcher (nivel1 max 10 / 50ms, nivel2 max 5 / 100ms, nivel3 max 3 / 200ms; `LLM_BATCH_WINDOW_SCALE` para tests), descomponer con Haiku → subtareas paralelas → merge, multi-proveedor (Ollama + Haiku + Sonnet + OpenRouter + GPT-4o/mini), cache Redis TTL configurable (`LLM_CACHE_TTL_SECONDS`). Docs: `docs/LLM-GATEWAY.md`, `docs/DOPPLER-VARS.md`. Tests: `apps/llm-gateway/__tests__/beast.test.ts`. **Sesión previa 2026-04-07 — Cursor (automation pipeline v1 + autodiagnóstico):** Fase 0 audit completada y versionada en `docs/reports/audit-2026-04-07.md` (VPS `cursor-prompt-monitor`/`opsly-watcher` activos; Doppler OK para `DISCORD_WEBHOOK_URL`, `RESEND_API_KEY`, `PLATFORM_ADMIN_TOKEN`; faltan `GOOGLE_DRIVE_TOKEN` y `GITHUB_TOKEN_N8N`). Fase 1 plan versionado en `docs/AUTOMATION-PLAN.md`. Fase 2 TDD: nuevos tests `scripts/test-{notify-discord,drive-sync,n8n-webhook}.sh` creados y ejecutados. Fase 3 implementación: `scripts/notify-discord.sh`, `scripts/drive-sync.sh`, mejoras en `.githooks/post-commit` (notificación + drive sync condicional) y `scripts/cursor-prompt-monitor.sh` (before/after/error a Discord). Fase 4 documentación n8n: `docs/n8n-workflows/discord-to-github.json` + `docs/N8N-SETUP.md`. Fase 5 validación: tests unitarios en verde, `drive-sync --dry-run` OK, type-check verde, commit vacío de verificación de hook (`test(automation): verify post-commit hooks`). Flujo Claude documentado: `docs/ACTIVE-PROMPT.md`, `scripts/cursor-prompt-monitor.sh`, `infra/systemd/cursor-prompt-monitor.service`, logs en `logs/`. Fase 4 (plan multi-agente): `docs/OPENCLAW-ARCHITECTURE.md`, `docs/CLAUDE-WORKFLOW-OPTIMIZATION.md`, `docs/AUTO-PUSH-WATCHER.md`, `scripts/auto-push-watcher.sh`, `infra/systemd/opsly-watcher.service`. **2026-04-07 —** **Fase 2 invite/onboard:** `./scripts/validate-config.sh` → **LISTO PARA DEPLOY**. **Portal staging:** `https://portal.ops.smiletripcare.com/login` → **200** (tras recuperar contenedores `app`/`admin`/`portal` que habían quedado en `Created` y **404** en Traefik; ver `docs/TROUBLESHOOTING.md` y `deploy.yml` con `--force-recreate`). **`curl api`/health** → `status ok` (con `supabase: degraded`). **Contenedores Opsly:** `traefik`, `infra-redis-1`, `infra-app-*`, `opsly_admin`, `opsly_portal`; stacks de tenants `smiletripcare`, `peskids`, `intcloudsysops` activos en VPS. **Autodiagnóstico y ejecución autónoma:** commits `97616fe` y `docs/N8N-IMPORT-GUIDE.md` actualizado con estado operativo; limpieza de disco VPS aplicada (`100%` → `83%`), notificaciones Discord enviadas por cada acción, `drive-sync --dry-run` validado. **OpenClaw AI Platform v2 (iteración inicial):** `VISION.md` actualizado con roadmap de escalado vertical/horizontal; ADR-010/011/012 creados; nuevos workspaces `apps/llm-gateway` y `apps/context-builder`; `apps/orchestrator` extendido con workers/event bus/state store; `apps/ml` migrado a `llmCall`; migración `supabase/migrations/0009_usage_events.sql` y endpoint `GET /api/metrics/tenant/[slug]`. **Pendiente real para cierre end-to-end:** `GITHUB_TOKEN_N8N`, `GOOGLE_DRIVE_TOKEN`, `STRIPE_SECRET_KEY` válido, `ANTHROPIC_API_KEY` y bajar disco de VPS por debajo de `80%`.
+**2026-04-09 — Fase 21: Portal health endpoints + Playwright E2E (Playwright):**
+- API: `lib/portal-health-json.ts` (helper JSON compartido), `app/api/portal/health/route.ts` (**público con `?slug=`**), `app/api/portal/tenant/[slug]/health/route.ts` (**Zero-Trust JWT + `tenantSlugMatchesSession`**).
+- Portal: `types/index.ts` → `PortalHealthPayload`; `lib/portal-api-paths.ts` → `portalHealthUrl(base, tenantSlug?)` (slug vacío → `/api/portal/health`, slug → `/api/portal/tenant/{slug}/health`); `lib/tenant.ts` → `fetchPortalHealth(accessToken, tenantSlug?)`.
+- Playwright E2E: `playwright.config.ts` (Chromium, 1 worker, `PORTAL_URL` env var), `e2e/portal.spec.ts` (4 tests públicos: `/login`, `/invite/TOKEN` sin email param, `/invite/TOKEN?email=test@test.com`, `/dashboard` → redirect a `/login`; 3 tests auth: skip sin Supabase env vars).
+- Vitest: 4 tests nuevos `portalHealthUrl` en `lib/__tests__/portal-api-paths.test.ts`.
+- OpenAPI: `/api/portal/health` + `/api/portal/tenant/{slug}/health` en `docs/openapi-opsly-api.yaml`; `REQUIRED_PORTAL_PATHS` ampliado; `validate-openapi-yaml.mjs` OK (**16 paths**).
+- Validación: `npm run type-check` (11 workspaces ✅), `npm run test --workspace=@intcloudsysops/api` (**155 tests**), `npm run test --workspace=@intcloudsysops/portal` (**23 tests**), `npm run build --workspace=@intcloudsysops/portal`, Playwright E2E 4/4 pass / 3 skip, `npm run validate-openapi` OK, lint portal 0 errors. Middleware portal sin `NEXT_PUBLIC_SUPABASE_URL` → pasa sin redirigir (comportamiento conocido, no bloqueante).
+
+**Histórico 2026-04-09 (misma fecha):** Confirmado OAuth codes en Redis (TTL 600s) en `apps/mcp/src/auth/oauth-server.ts`; `drive-sync` migrado a `GOOGLE_SERVICE_ACCOUNT_JSON` + helper `scripts/lib/google-auth.sh`; Admin páginas métricas y agents; docs Google Cloud; Supabase migraciones 0010–0013 aplicadas; health daemon LLM Gateway; `doppler run` + `notify-discord.sh` OK; `.claude/CLAUDE.md` actualizado con skill `opsly-google-cloud`. **Drive usuario + onboard tester localrank:** SSH timeout / docker ps colgado; reintentar `./scripts/onboard-tenant.sh` y `POST /api/invitations` desde red estable.
 
 **Completado ✅**
+
+* **2026-04-09 — Fase 21: Portal health endpoints + Playwright E2E (Playwright):**
+- API: `lib/portal-health-json.ts` (helper JSON compartido), `app/api/portal/health/route.ts` (**público con `?slug=`**), `app/api/portal/tenant/[slug]/health/route.ts` (**Zero-Trust JWT + `tenantSlugMatchesSession`**).
+- Portal: `types/index.ts` → `PortalHealthPayload`; `lib/portal-api-paths.ts` → `portalHealthUrl(base, tenantSlug?)` (slug vacío → `/api/portal/health`, slug → `/api/portal/tenant/{slug}/health`); `lib/tenant.ts` → `fetchPortalHealth(accessToken, tenantSlug?)`.
+- Playwright E2E: `playwright.config.ts` (Chromium, 1 worker, `PORTAL_URL` env var), `e2e/portal.spec.ts` (4 tests públicos: `/login`, `/invite/TOKEN` sin email param, `/invite/TOKEN?email=test@test.com`, `/dashboard` → redirect a `/login`; 3 tests auth: skip sin Supabase env vars).
+- Vitest: 4 tests nuevos `portalHealthUrl` en `lib/__tests__/portal-api-paths.test.ts`.
+- OpenAPI: `/api/portal/health` + `/api/portal/tenant/{slug}/health` en `docs/openapi-opsly-api.yaml`; `REQUIRED_PORTAL_PATHS` ampliado; `validate-openapi-yaml.mjs` OK (**16 paths**).
+- Validación: `npm run type-check` (11 workspaces ✅), `npm run test --workspace=@intcloudsysops/api` (**155 tests**), `npm run test --workspace=@intcloudsysops/portal` (**23 tests**), `npm run build --workspace=@intcloudsysops/portal`, Playwright E2E 4/4 pass / 3 skip, `npm run validate-openapi` OK, lint portal 0 errors. Middleware portal sin `NEXT_PUBLIC_SUPABASE_URL` → pasa sin redirigir (comportamiento conocido, no bloqueante).
 
 * **2026-04-06 — Bloques A/B/C (plan 3 vías):** Vitest en `apps/api`: tests nuevos para `validation`, `portal-me`, `pollPortsUntilHealthy`, rutas `tenants` y `tenants/[id]` (`npm run test` 67 tests, `npm run type-check` verde). Documentación: `docs/runbooks/{admin,dev,managed,incident}.md`, ADR-006–008, `docs/FAQ.md`. Terraform: `infra/terraform/terraform.tfvars.example` (placeholders), `terraform plan -input=false` con `TF_VAR_*` de ejemplo y nota en `infra/terraform/README.md`.
 * **2026-04-06 — CURSOR-EXECUTE-NOW (archivo `/home/claude/CURSOR-EXECUTE-NOW.md` no presente en workspace):** +36 casos en 4 archivos `*.test.ts` (health, metrics, portal, suspend/resume) + `invitations-stripe-routes.test.ts` para cobertura de `route.ts`; `npm run test:coverage` ~89% líneas en `app/api/**/route.ts`; `health/route.ts` recorta slashes finales en URL Supabase; `docs/FAQ.md` enlaces Markdown validados; `infra/terraform/tfplan.txt` + `.gitignore` `infra/terraform/tfplan`.
@@ -595,6 +611,30 @@ doppler run --project ops-intcloudsysops --config prd -- \
   "success"
 ```
 
+### Fase 10 — arranque inmediato (Google Cloud + BigQuery)
+
+```bash
+# Paso 0 (Drive): Shared Drive + SA, o OAuth usuario (`GOOGLE_USER_CREDENTIALS_JSON` + drive-sync `user_first`). Ver docs/GOOGLE-CLOUD-SETUP.md.
+# JSON SA en Doppler: doppler secrets set GOOGLE_SERVICE_ACCOUNT_JSON --project ops-intcloudsysops --config prd < ruta/al-service-account.json
+
+# Paso 1: Completar variables Google Cloud en Doppler prd
+doppler secrets set GOOGLE_CLOUD_PROJECT_ID --project ops-intcloudsysops --config prd
+doppler secrets set BIGQUERY_DATASET --project ops-intcloudsysops --config prd
+doppler secrets set VERTEX_AI_REGION --project ops-intcloudsysops --config prd
+
+# Paso 2: Validar readiness de secretos
+./scripts/check-tokens.sh
+
+# Paso 3: Drive sync (requiere paso 0)
+./scripts/drive-sync.sh
+
+# Paso 4: Notificar inicio Fase 10
+doppler run --project ops-intcloudsysops --config prd -- \
+  ./scripts/notify-discord.sh "☁️ Fase 10 iniciada" \
+  "Vars GCP cargadas + validación de tokens ejecutada" \
+  "success"
+```
+
 ### Mantenimiento / deuda operativa
 
 ```bash
@@ -834,6 +874,8 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 | 2026-04-08 | OpenAPI: lista fija de 6 paths portal en `validate-openapi-yaml.mjs` (`REQUIRED_PORTAL_PATHS`); falla si se borra una ruta del subset | Fase 4 incremento 23; contrato portal no se “silencia” al editar el YAML |
 | 2026-04-04 | Portal `/invite/[token]`: validación pura `validateInviteActivationForm` + mensajes ES centralizados; Vitest sin mocks de Supabase | Fase 4 incremento 22; mismo UX; base para E2E invite |
 | 2026-04-08 | OpenAPI: `GET`/`POST /api/feedback` en `openapi-opsly-api.yaml`; `REQUIRED_FEEDBACK_PATHS` en `validate-openapi-yaml.mjs` | Fase 4 incremento 24; contrato integradores + regresión CI |
+| 2026-04-09 | Portal health endpoints: público `GET /api/portal/health?slug=` + Zero-Trust `GET /api/portal/tenant/[slug]/health`; helper compartido `portal-health-json.ts`; `portalHealthUrl` unificada con slug opcional (`portal-api-paths.ts`) | Fase 4 incremento 25; mismo patrón que `/usage` y `/me`; OpenAPI + `REQUIRED_PORTAL_PATHS` ampliado a 8 paths; Playwright E2E scaffold con `@playwright/test` y 4 tests públicos (4/4 pass, 3 auth skip) |
+| 2026-04-09 | Portal Vitest: `lib/__tests__/portal-api-paths.test.ts` cubre `portalHealthUrl` (4 casos); portal `npm run test` ejecuta Vitest + `playwright.config.ts` con `PORTAL_URL` env var; `npm run test:e2e` corre Playwright | Fase 4 incr. 25 tests; suite portal 23 tests Vitest; E2E portal scaffold listo para integración CI |
 | 2026-04-09 | Portal dashboards: `requirePortalPayloadWithUsage` + `LlmUsageCard`; mismas credenciales que `/me` para métricas LLM; degradación si la API de uso falla | Fase 4 incremento 11 |
 | 2026-04-05 | Portal UI uso LLM: un solo `fetchPortalUsage` en `tenant.ts` + tipo `PortalUsagePeriod`; una `LlmUsageCard` por página; no mantener dos componentes de métricas duplicados | Evitar drift y UI repetida; mismo contrato API |
 | 2026-04-08 | `POST /api/feedback`: identidad solo con Bearer JWT + `platform.tenants`; validar `feedback_conversations` si hay `conversation_id`; cuerpo no sustituye la sesión | Fase 4 incremento 7 (Zero-Trust incremental); admin list/approve siguen con token plataforma |
