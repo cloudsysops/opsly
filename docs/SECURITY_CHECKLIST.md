@@ -38,6 +38,7 @@ Lista operativa para releases y revisiones periódicas. Marca ítems según tu p
 - [x] **`GET /api/portal/tenant/[slug]/usage`:** tras `resolveTrustedPortalSession`, validar con `tenantSlugMatchesSession(session, slug)`; mismo JSON que `GET /api/portal/usage` vía `respondPortalTenantUsage` (`lib/portal-usage-json.ts`). Tests: `app/api/portal/__tests__/portal-routes.test.ts`.
 - [x] **`GET /api/portal/tenant/[slug]/me`:** mismo patrón; JSON compartido con `GET /api/portal/me` vía `respondTrustedPortalMe` (`lib/portal-me-json.ts`). Tests: `app/api/portal/__tests__/portal-routes.test.ts`.
 - [x] **`POST /api/portal/tenant/[slug]/mode`:** `tenantSlugMatchesSession` antes de mutar; lógica compartida con `POST /api/portal/mode` vía `applyPortalModeUpdate` (`lib/portal-mode-update.ts`). Tests: `app/api/portal/__tests__/portal-routes.test.ts`.
+- [x] **Portal cliente (`apps/portal`):** `tenantSlugFromUserMetadata` + `fetchPortalTenant` / `fetchPortalUsage` / `postPortalMode` con slug opcional solo refuerzan la URL; la autorización sigue siendo la API (`tenantSlugMatchesSession`). Tests portal: `lib/__tests__/tenant-metadata.test.ts` (Vitest).
 
 ## Informes
 

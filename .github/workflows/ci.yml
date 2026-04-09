@@ -89,15 +89,17 @@ jobs:
           node-version: "20"
           cache: npm
           cache-dependency-path: package-lock.json
-      - name: npm ci + tests mcp/orchestrator/ml/llm-gateway
+      - name: npm ci + tests portal/mcp/orchestrator/ml/llm-gateway
         run: |
           set -euo pipefail
           npm ci
+          (cd apps/portal && npm test) & pid0=$!
           (cd apps/mcp && npm test) & pid1=$!
           (cd apps/orchestrator && npm test) & pid2=$!
           (cd apps/ml && npm test) & pid3=$!
           (cd apps/llm-gateway && npm test) & pid4=$!
           status=0
+          wait $pid0 || status=1
           wait $pid1 || status=1
           wait $pid2 || status=1
           wait $pid3 || status=1
