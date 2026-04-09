@@ -49,6 +49,14 @@ Eres el arquitecto senior de **Opsly** — plataforma multi-tenant SaaS
 que despliega stacks de agentes autónomos (n8n, Uptime Kuma) por cliente,
 con facturación Stripe, backups automáticos y dashboard de administración.
 
+## Reglas Rápidas – DOs y NOs para Agentes
+
+- **DO:** todo tráfico IA pasa por OpenClaw → LLM Gateway (sin llamadas LLM directas fuera de ese flujo).
+- **DO:** incluir `tenant_slug` y `request_id` en cada job/orquestación para trazabilidad.
+- **DO:** tratar NotebookLM como **EXPERIMENTAL** (solo Business+ y `NOTEBOOKLM_ENABLED=true`).
+- **NO:** exponer SSH en IP pública; acceso admin solo por Tailscale `100.120.151.91`.
+- **NO:** hardcodear secrets, tokens o IPs en código/scripts/docs operativos.
+
 ---
 
 ## Skills disponibles para Claude modo supremo
@@ -186,7 +194,26 @@ Procedimientos vivos en el repo: **`skills/user/<skill>/SKILL.md`**. En runtimes
 
 <!-- Actualizar al final de cada sesión -->
 
-**Fecha última actualización:** 2026-04-09 23:00 UTC — **Última interacción:** hardening Tailscale-first para VPS (`scripts/vps-secure.sh`, `--ssh-host` en `onboard-tenant.sh`, default `SSH_HOST=100.120.151.91` en `opsly.sh`) + documentación LocalRank/NotebookLM. Estado LocalRank: onboarding listo para ejecutar por Tailscale; pendiente conectividad SSH estable y verificación Cloudflare Proxy. **NotebookLM:** feature flag `NOTEBOOKLM_ENABLED` documentado para Doppler `prd`; activar solo para planes Business+.
+**Fecha última actualización:** 2026-04-09 23:00 UTC — **Última revisión:** 2026-04-09. **Última interacción:** hardening Tailscale-first para VPS (`scripts/vps-secure.sh`, `--ssh-host` en `onboard-tenant.sh`, default `SSH_HOST=100.120.151.91` en `opsly.sh`) + documentación LocalRank/NotebookLM. Estado LocalRank: onboarding listo para ejecutar por Tailscale; pendiente conectividad SSH estable y verificación Cloudflare Proxy. **NotebookLM:** feature flag `NOTEBOOKLM_ENABLED` documentado para Doppler `prd`; activar solo para planes Business+.
+
+### Ecosistema IA – OpenClaw (2026-04-10)
+
+OpenClaw se consolida como backbone IA: **MCP + Orchestrator (BullMQ con prioridad por plan) + LLM Gateway (routing/cache/costos) + Context Builder**.  
+NotebookLM está integrado vía MCP tool (`notebooklm`) como capacidad **EXPERIMENTAL**, y `localrank` queda pendiente de ejecución operativa por bloqueo SSH/Tailscale.
+
+```mermaid
+flowchart LR
+  U[User/Admin/Portal] --> MCP[OpenClaw MCP]
+  MCP --> ORCH[Orchestrator BullMQ]
+  ORCH --> CBUILDER[Context Builder]
+  ORCH --> LLMG[LLM Gateway]
+  LLMG --> MODELS[LLM Providers]
+  ORCH --> TOOLS[Tools/Workers]
+  TOOLS --> TENANTS[Tenant Stacks n8n/uptime]
+  ORCH --> NB[NotebookLM Tool EXPERIMENTAL]
+  TENANTS --> API[Opsly API]
+  API --> DB[(Supabase platform + tenant schemas)]
+```
 
 **Resumen 2026-04-08 (Cursor / Opsly — sesión tester + Drive)**
 
@@ -1009,6 +1036,17 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 | 2026-04-08 | **Tester piloto** slug `jkboterolabs` / JK Botero Labs / jkbotero78@gmail.com | Validar stack multi-tenant; invitación email bloqueada por Resend hasta dominio |
 
 ---
+
+## Mejoras Futuras & Roadmap
+
+1. **Modularizar AGENTS/VISION** en subdocs por dominio (`security`, `ops`, `ai-platform`, `runbooks`) con índice maestro.
+2. **Gatekeeper de seguridad para rutas IA**: checklist automatizado en CI para exigir `tenant_slug`, `request_id` y validación Zero-Trust.
+3. **Fase 5 — Ecosistema IA Madura**: routing inteligente multi-modelo, cost caps por tenant, budget alerts y políticas por plan.
+4. **Self-healing agents**: reintentos con circuit breaker, fallback model/provider y remediación automática en jobs degradados.
+5. **Observabilidad IA avanzada**: métricas SLO por tenant (`latency`, `cost`, `success_rate`, `cache_hit`) y alertas por umbral.
+6. **Contrato OpenClaw versionado**: esquema estable para MCP tools/jobs con compatibilidad hacia atrás y deprecaciones controladas.
+7. **Fase 6+ multi-región**: replicación de control-plane y workers con estrategia de failover por tenant enterprise.
+8. **Playbooks de incidentes IA**: runbooks accionables para outage LLM, fuga de presupuesto y degradación de colas.
 
 ## Estructura del repo
 
