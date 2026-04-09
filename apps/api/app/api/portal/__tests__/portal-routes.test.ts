@@ -2,6 +2,7 @@ import { NextRequest } from "next/server";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { GET as portalMeGet } from "../me/route";
 import { POST as portalModePost } from "../mode/route";
+import { POST as portalTenantSlugModePost } from "../tenant/[slug]/mode/route";
 import { GET as portalTenantSlugMeGet } from "../tenant/[slug]/me/route";
 import { GET as portalTenantSlugUsageGet } from "../tenant/[slug]/usage/route";
 import { GET as portalUsageGet } from "../usage/route";
@@ -313,6 +314,85 @@ describe("POST /api/portal/mode", () => {
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ mode: "developer" }),
       }),
+    );
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as Record<string, unknown>;
+    expect(body.ok).toBe(true);
+    expect(body.mode).toBe("developer");
+  });
+});
+
+describe("POST /api/portal/tenant/[slug]/mode", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  function mockValidPortalModeSession() {
+    vi.mocked(portalAuthMod.getUserFromAuthorizationHeader).mockResolvedValue({
+      id: "u1",
+      email: "owner@acme.com",
+      user_metadata: { tenant_slug: "acme", theme: "dark" },
+    } as never);
+    vi.mocked(portalMeLib.fetchPortalTenantRowBySlug).mockResolvedValue({
+      ok: true,
+      row,
+    });
+  }
+
+  it("returns 401 without user", async () => {
+    vi.mocked(portalAuthMod.getUserFromAuthorizationHeader).mockResolvedValue(
+      null,
+    );
+    const res = await portalTenantSlugModePost(
+      new NextRequest("http://localhost/api/portal/tenant/acme/mode", {
+        method: "POST",
+        body: JSON.stringify({ mode: "managed" }),
+      }),
+      { params: Promise.resolve({ slug: "acme" }) },
+    );
+    expect(res.status).toBe(401);
+  });
+
+  it("returns 403 when path slug does not match session tenant", async () => {
+    mockValidPortalModeSession();
+    const updateSpy = vi.fn().mockResolvedValue({ error: null });
+    vi.mocked(supabaseMod.getServiceClient).mockReturnValue({
+      auth: {
+        admin: {
+          updateUserById: updateSpy,
+        },
+      },
+    } as never);
+
+    const res = await portalTenantSlugModePost(
+      new NextRequest("http://localhost/api/portal/tenant/other/mode", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ mode: "managed" }),
+      }),
+      { params: Promise.resolve({ slug: "other" }) },
+    );
+    expect(res.status).toBe(403);
+    expect(updateSpy).not.toHaveBeenCalled();
+  });
+
+  it("returns 200 when slug matches and mode updates", async () => {
+    mockValidPortalModeSession();
+    vi.mocked(supabaseMod.getServiceClient).mockReturnValue({
+      auth: {
+        admin: {
+          updateUserById: vi.fn().mockResolvedValue({ error: null }),
+        },
+      },
+    } as never);
+
+    const res = await portalTenantSlugModePost(
+      new NextRequest("http://localhost/api/portal/tenant/acme/mode", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ mode: "developer" }),
+      }),
+      { params: Promise.resolve({ slug: "acme" }) },
     );
     expect(res.status).toBe(200);
     const body = (await res.json()) as Record<string, unknown>;
