@@ -311,6 +311,105 @@ paths:
         '401':
           $ref: '#/components/responses/Unauthorized'
 
+  /api/portal/usage:
+    get:
+      summary: Métricas LLM del tenant de la sesión (sin slug en path)
+      operationId: getPortalUsage
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: period
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [today, month]
+      responses:
+        '200':
+          description: Agregados de uso LLM (mismo contrato que admin por tenant)
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /api/portal/tenant/{slug}/me:
+    get:
+      summary: Sesión portal — mismo payload que /api/portal/me si el slug coincide con el tenant JWT
+      operationId: getPortalTenantMeBySlug
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Payload portal
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/portal/tenant/{slug}/mode:
+    post:
+      summary: Establecer modo developer | managed con validación de slug en ruta
+      operationId: postPortalTenantModeBySlug
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [mode]
+              properties:
+                mode:
+                  type: string
+                  enum: [developer, managed]
+      responses:
+        '200':
+          description: Actualizado
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /api/portal/tenant/{slug}/usage:
+    get:
+      summary: Métricas LLM con validación de slug en ruta (Zero-Trust)
+      operationId: getPortalTenantUsageBySlug
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: period
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [today, month]
+      responses:
+        '200':
+          description: Agregados de uso LLM
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
   /api/invitations:
     post:
       summary: Enviar invitación (admin)
