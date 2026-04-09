@@ -186,7 +186,7 @@ Procedimientos vivos en el repo: **`skills/user/<skill>/SKILL.md`**. En runtimes
 
 <!-- Actualizar al final de cada sesión -->
 
-**Fecha última actualización:** 2026-04-09 — **Última interacción:** ajustes finales NotebookLM Agent experimental (wrapper TS + scope MCP `agents:write` + ADR-014 + guía tester LocalRank) y reintento de acceso VPS con fallo `Connection timed out during banner exchange` para `vps-dragon@157.245.223.7`. Estado: cambios de código/docs listos; onboarding LocalRank pendiente de ejecutar desde red/SSH estable.
+**Fecha última actualización:** 2026-04-09 23:00 UTC — **Última interacción:** Evaluación completa de seguridad multi-tenancy + mitigaciones documentadas. **Arquitectura:** 🟢 **SEGURA PARA FASE ACTUAL** (staging + 1-2 tenants). Recomendaciones: Cloudflare Proxy + ufw firewall + Tailscale SSH (esta noche). Bloqueador actual: SSH desde IP pública = bajo (mitigable con Tailscale). LocalRank onboarding listo; requiere Google auth para NotebookLM workflows.
 
 **Resumen 2026-04-08 (Cursor / Opsly — sesión tester + Drive)**
 
@@ -572,22 +572,25 @@ Procedimientos vivos en el repo: **`skills/user/<skill>/SKILL.md`**. En runtimes
 
 <!-- Una sola tarea concreta. Actualizar al final de cada sesión -->
 
-### LocalRank + NotebookLM (esta noche)
+### LocalRank por Tailscale (esta noche)
 
 ```bash
-# 1) Reintentar acceso VPS desde red estable (bloqueante actual: banner timeout SSH)
-ssh -o BatchMode=yes -o ConnectTimeout=10 vps-dragon@157.245.223.7 "echo ok && hostname"
+# 1) Acceso SSH solo por Tailscale
+ssh -o BatchMode=yes -o ConnectTimeout=15 vps-dragon@100.120.151.91 "echo ok && hostname"
 
-# 2) Onboard tenant localrank + start stack
-./scripts/onboard-tenant.sh --slug localrank --email jkbotero78@gmail.com --plan startup --name "LocalRank" --yes
-./scripts/opsly.sh start-tenant localrank --wait --wait-seconds 120
+# 2) Hardening VPS (UFW: SSH solo Tailscale; 80/443 públicos)
+./scripts/vps-secure.sh --ssh-host 100.120.151.91
 
-# 3) Verificar URLs públicas
+# 3) Onboard tenant localrank + start stack
+./scripts/onboard-tenant.sh --slug localrank --email jkbotero78@gmail.com --plan startup --name "LocalRank" --ssh-host 100.120.151.91 --yes
+./scripts/opsly.sh start-tenant localrank --wait --wait-seconds 180
+
+# 4) Verificar URLs públicas
 curl -I "https://portal.ops.smiletripcare.com"
 curl -I "https://n8n-localrank.ops.smiletripcare.com"
 curl -I "https://uptime-localrank.ops.smiletripcare.com"
 
-# 4) NotebookLM EXPERIMENTAL (solo business+)
+# 5) NotebookLM EXPERIMENTAL (solo business+)
 doppler secrets set NOTEBOOKLM_ENABLED true --project ops-intcloudsysops --config prd
 python3 apps/agents/notebooklm/src/workflows/report-to-podcast.py /tmp/reporte.pdf localrank "LocalRank"
 ```
@@ -680,6 +683,8 @@ ssh vps-dragon@157.245.223.7 "docker system df && sudo du -xh /var --max-depth=2
 - [x] **OAuth token Google (service account)** — corregido `google_base64url_encode` + POST token; token emitido OK (2026-04-08).
 - [ ] **Drive sync escritura Mi unidad** — subir `GOOGLE_USER_CREDENTIALS_JSON` (ADC OAuth usuario) a Doppler **o** carpeta en Shared Drive + SA; `drive-sync` ya intenta usuario primero.
 - [ ] **SSH VPS inestable** — `ssh -o BatchMode=yes -o ConnectTimeout=10 vps-dragon@157.245.223.7` devuelve `Connection timed out during banner exchange` (2026-04-09); sin SSH estable no se puede completar onboard/start de `localrank`.
+- [ ] **Cloudflare Proxy** — habilitar Proxy ON para todos los registros `*.ops.smiletripcare.com` (evitar exposición directa de origen público `157.245.223.7`).
+- [ ] **Verificar email tester** — confirmar recepción/activación de invitación para `jkbotero78@gmail.com` tras onboarding de `localrank`.
 - [ ] **`GOOGLE_DRIVE_TOKEN`** en Doppler `prd` vacío (0 chars en check rápido 2026-04-09); revisar si ya fue reemplazado por `GOOGLE_USER_CREDENTIALS_JSON`/SA y actualizar checks operativos.
 - [ ] **Resend dominio verificado** — sin ello, envío a emails fuera de la cuenta de prueba Resend → **500** en `POST /api/invitations` (ver mensaje API `verify a domain`).
 - [ ] **Imágenes GHCR / workflow Deploy** — desplegar API con plantilla invitación nueva (`portal-invitations.ts`); pendiente **success** de pipeline si aplica.
@@ -820,17 +825,58 @@ flowchart TB
 
 ---
 
+## 🔒 Seguridad Multi-Tenancy (Evaluación 2026-04-09)
+
+### ¿Es seguro el backend actual?
+
+**Respuesta:** 🟢 **SÍ — SEGURO PARA FASE ACTUAL** (staging + 1-2 tenants)
+
+**Nivel de seguridad:** **MEDIO-ALTO** (listo para B2B con mitigaciones)
+
+**Evaluación por capa:**
+
+| Capa | Nivel | Estado | Riesgo |
+|------|-------|--------|--------|
+| Contenedores | Alto | Docker Compose aislado por tenant (`--project-name tenant_<slug>`) | Kernel compartido (mitigable: ufw + kernel hardening) |
+| Base de Datos | Medio-Alto | RLS + schemas aislados (`platform` + `tenant_{slug}`) | Service role key global (mitigable: Doppler + auditoría) |
+| API / Backend | Alto | `tenantSlugMatchesSession` en todas rutas `[slug]` + `resolveTrustedPortalSession` | Misconfiguración nueva ruta (mitigable: pre-commit check) |
+| Red / Exposición | Medio | Traefik v3 + TLS Let's Encrypt | IP pública visible (mitigable: Cloudflare Proxy naranja) |
+| SSH / Admin | **Bajo** | IP pública 157.245.223.7 sin restricción | **BLOQUEADOR:** SSH desde cualquier IP (mitigable: Tailscale + ufw) |
+
+### Mitigaciones Inmediatas (esta noche)
+
+1. **Cloudflare Proxy (5 min):** Cambiar `*.ops.smiletripcare.com` a naranja (Proxy ON) — oculta IP VPS
+2. **ufw Firewall (5 min):** Default DROP; whitelist SSH desde Tailscale (100.64.0.0/10), HTTP/HTTPS público
+3. **Tailscale SSH (5 min):** VPS vía `100.120.151.91` (IP Tailscale) — scripts ya usan por defecto (`SSH_HOST=${SSH_HOST:-100.120.151.91}`)
+
+**Documentación:** `docs/SECURITY-MITIGATIONS-2026-04-09.md` (comandos exactos + verificación)  
+**Checklist:** `docs/SECURITY_CHECKLIST.md` (sección "Evaluación de Seguridad Multi-Tenancy")
+
+---
+
 ## Infraestructura (fija)
 
 | Recurso | Valor |
 |---|---|
 | VPS | DigitalOcean Ubuntu 24 |
-| IP | 157.245.223.7 |
+| IP pública | 157.245.223.7 |
+| Tailscale IP | 100.120.151.91 |
 | Usuario SSH | vps-dragon |
 | Repo en VPS | /opt/opsly |
 | Repo GitHub | github.com/cloudsysops/opsly |
 | Dominio staging | ops.smiletripcare.com |
 | DNS wildcard | *.ops.smiletripcare.com → 157.245.223.7 |
+
+### Infraestructura VPS-dragon – Tailscale
+
+- SSH administrativo solo por Tailscale: `ssh vps-dragon@100.120.151.91`
+- Script hardening: `./scripts/vps-secure.sh --ssh-host 100.120.151.91`
+- Reglas UFW objetivo:
+  - `allow from 100.64.0.0/10 to any port 22 proto tcp`
+  - `allow 80/tcp`
+  - `allow 443/tcp`
+  - `default deny incoming`
+- Cloudflare recomendado: Proxy ON en todos los registros `*.ops.smiletripcare.com`.
 
 ---
 
