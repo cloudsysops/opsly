@@ -12,7 +12,7 @@
 NotebookLM es una herramienta de Google que permite crear notebooks interactivos con IA a partir de documentos.  
 La librería `notebooklm-py` (no oficial) proporciona acceso vía API/browser automation.
 
-**Caso de uso:** LocalRank (tenant startup) necesita convertir reportes PDF → podcast + slides + infographic automáticamente para compartir insights con stakeholders.
+**Caso de uso:** LocalRank necesita convertir reportes PDF → podcast + slides + infographic automáticamente para compartir insights con stakeholders.
 
 ---
 
@@ -31,7 +31,7 @@ La librería `notebooklm-py` (no oficial) proporciona acceso vía API/browser au
 
 - **Feature flag:** `NOTEBOOKLM_ENABLED` (solo en Doppler prd, solo para Business+)
 - **Scope MCP:** `agents:write` (requiere token admin)
-- **Límite:** Business y Enterprise plans solo (Startup puede usar pero con warnings)
+- **Límite:** Business y Enterprise plans solo (Startup bloqueado por policy)
 - **Ubicación:** `apps/agents/notebooklm/` (workspace con Python + TypeScript wrapper)
 - **Workflow principal:** PDF reporte → notebook → podcast + slides + infographic
 
@@ -140,10 +140,10 @@ export async function processNotebookLMJob(job: Job<NotebookLMJobData>) {
 
 ## Rollout Plan
 
-### Phase 1: Soft Launch (Business only)
+### Phase 1: Soft Launch (Business+ only)
 - Feature flag en `prd` (admin puede habilitar)
 - Tests + MockClient verde
-- LocalRank (startup) piloto con warnings
+- Piloto LocalRank solo cuando el tenant tenga plan Business o Enterprise
 
 ### Phase 2: General Availability
 - Documentación completa en LOCALRANK-TESTER-GUIDE.md
