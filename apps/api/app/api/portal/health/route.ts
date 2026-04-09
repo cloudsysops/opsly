@@ -18,7 +18,9 @@ export async function GET(request: Request): Promise<Response> {
     slug.length > PORTAL_HEALTH_SLUG_MAX_LEN
   ) {
     return Response.json(
-      { error: "Missing or invalid ?slug= parameter (3–30 chars, slug pattern)" },
+      {
+        error: "Missing or invalid ?slug= parameter (3–30 chars, slug pattern)",
+      },
       { status: HTTP_STATUS.BAD_REQUEST },
     );
   }

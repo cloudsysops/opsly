@@ -16,7 +16,10 @@ export async function respondPortalTenantHealth(
 
   if (!lookup.ok) {
     return Response.json(
-      { error: lookup.reason === "not_found" ? "Tenant not found" : "Database error" },
+      {
+        error:
+          lookup.reason === "not_found" ? "Tenant not found" : "Database error",
+      },
       {
         status:
           lookup.reason === "not_found"
