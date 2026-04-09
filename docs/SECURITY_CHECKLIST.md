@@ -35,7 +35,7 @@ Lista operativa para releases y revisiones periódicas. Marca ítems según tu p
 - [ ] **Feedback portal (`POST /api/feedback`):** identidad solo vía `resolveTrustedFeedbackIdentity` → `resolveTrustedPortalSession` (`apps/api/lib/portal-trusted-identity.ts`) — JWT Supabase + fila `platform.tenants` + coincidencia `owner_email`; el cuerpo no sustituye `tenant_slug` / `user_email` (rechazo si discrepan). Reutilización de `conversation_id` validada en `verifyConversationBelongsToUser` (`lib/feedback/service.ts`). Tests: `lib/__tests__/portal-feedback-auth.test.ts`, `__tests__/feedback.test.ts`.
 - [ ] **Portal `GET /api/portal/me` y `POST /api/portal/mode`:** misma sesión confiable (`resolveTrustedPortalSession`) antes de responder o mutar `user_metadata`; sin tenant/owner válidos → 401/403/404 como corresponda. Tests: `app/api/portal/__tests__/portal-routes.test.ts`, `lib/__tests__/portal-trusted-identity.test.ts`.
 - [ ] **Portal `GET /api/portal/usage`:** solo métricas del tenant de la sesión (`resolveTrustedPortalSession` + `getTenantUsage`); no exponer otro tenant vía query/path. Tests: `app/api/portal/__tests__/portal-routes.test.ts`.
-- [ ] **Rutas futuras con `slug` en URL (`/api/portal/.../[slug]`):** tras `resolveTrustedPortalSession`, validar con `tenantSlugMatchesSession(session, slug)` — no confiar solo en el segmento de ruta.
+- [x] **`GET /api/portal/tenant/[slug]/usage`:** tras `resolveTrustedPortalSession`, validar con `tenantSlugMatchesSession(session, slug)`; mismo JSON que `GET /api/portal/usage` vía `respondPortalTenantUsage` (`lib/portal-usage-json.ts`). Tests: `app/api/portal/__tests__/portal-routes.test.ts`.
 
 ## Informes
 

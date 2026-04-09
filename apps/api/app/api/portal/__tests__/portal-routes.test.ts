@@ -2,6 +2,8 @@ import { NextRequest } from "next/server";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { GET as portalMeGet } from "../me/route";
 import { POST as portalModePost } from "../mode/route";
+import { GET as portalTenantSlugUsageGet } from "../tenant/[slug]/usage/route";
+import { GET as portalTenantSlugUsageGet } from "../tenant/[slug]/usage/route";
 import { GET as portalUsageGet } from "../usage/route";
 import * as portalAuthMod from "../../../../lib/portal-auth";
 import * as portalMeLib from "../../../../lib/portal-me";
@@ -306,5 +308,69 @@ describe("GET /api/portal/usage", () => {
     expect(body.requests).toBe(2);
     expect(body.cache_hit_rate).toBe(50);
     expect(llmLogger.getTenantUsage).toHaveBeenCalledWith("acme", "month");
+  });
+});
+
+describe("GET /api/portal/tenant/[slug]/usage", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  function mockValidPortalUsageSession() {
+    vi.mocked(portalAuthMod.getUserFromAuthorizationHeader).mockResolvedValue({
+      id: "u1",
+      email: "owner@acme.com",
+      user_metadata: { tenant_slug: "acme" },
+    } as never);
+    vi.mocked(portalMeLib.fetchPortalTenantRowBySlug).mockResolvedValue({
+      ok: true,
+      row,
+    });
+  }
+
+  it("returns 401 without user", async () => {
+    vi.mocked(portalAuthMod.getUserFromAuthorizationHeader).mockResolvedValue(
+      null,
+    );
+    const res = await portalTenantSlugUsageGet(
+      new NextRequest("http://localhost/api/portal/tenant/acme/usage"),
+      { params: Promise.resolve({ slug: "acme" }) },
+    );
+    expect(res.status).toBe(401);
+  });
+
+  it("returns 403 when path slug does not match session tenant", async () => {
+    mockValidPortalUsageSession();
+    const res = await portalTenantSlugUsageGet(
+      new NextRequest("http://localhost/api/portal/tenant/other/usage", {
+        headers: { authorization: "Bearer t" },
+      }),
+      { params: Promise.resolve({ slug: "other" }) },
+    );
+    expect(res.status).toBe(403);
+    expect(llmLogger.getTenantUsage).not.toHaveBeenCalled();
+  });
+
+  it("returns 200 and usage when slug matches session", async () => {
+    mockValidPortalUsageSession();
+    vi.mocked(llmLogger.getTenantUsage).mockResolvedValue({
+      tokens_input: 1,
+      tokens_output: 2,
+      cost_usd: 0,
+      requests: 1,
+      cache_hits: 0,
+    });
+
+    const res = await portalTenantSlugUsageGet(
+      new NextRequest("http://localhost/api/portal/tenant/acme/usage", {
+        headers: { authorization: "Bearer t" },
+      }),
+      { params: Promise.resolve({ slug: "acme" }) },
+    );
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as Record<string, unknown>;
+    expect(body.tenant).toBe("acme");
+    expect(body.period).toBe("today");
+    expect(llmLogger.getTenantUsage).toHaveBeenCalledWith("acme", "today");
   });
 });

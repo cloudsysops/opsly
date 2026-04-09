@@ -1,5 +1,5 @@
-import { getTenantUsage } from "@intcloudsysops/llm-gateway/logger";
 import { NextRequest } from "next/server";
+import { respondPortalTenantUsage } from "../../../../lib/portal-usage-json";
 import { resolveTrustedPortalSession } from "../../../../lib/portal-trusted-identity";
 
 /**
@@ -12,18 +12,6 @@ export async function GET(request: NextRequest): Promise<Response> {
     return trusted.response;
   }
 
-  const periodParam = request.nextUrl.searchParams.get("period");
-  const period = periodParam === "month" ? "month" : "today";
   const slug = trusted.session.tenant.slug;
-  const usage = await getTenantUsage(slug, period);
-
-  return Response.json({
-    tenant: slug,
-    period,
-    ...usage,
-    cache_hit_rate:
-      usage.requests > 0
-        ? Math.round((usage.cache_hits / usage.requests) * 100)
-        : 0,
-  });
+  return respondPortalTenantUsage(request, slug);
 }
