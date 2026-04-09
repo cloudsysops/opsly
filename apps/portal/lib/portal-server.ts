@@ -19,8 +19,8 @@ export async function requirePortalPayload(): Promise<PortalTenantPayload> {
 }
 
 /**
- * Sesión portal + métricas LLM (`GET /api/portal/usage`). Si la API de uso falla,
- * devuelve `null` por periodo sin invalidar el dashboard.
+ * Sesión portal + métricas LLM vía `GET /api/portal/tenant/[slug]/usage` (slug del payload).
+ * Si la API de uso falla, devuelve `null` por periodo sin invalidar el dashboard.
  */
 export async function requirePortalPayloadWithUsage(): Promise<{
   payload: PortalTenantPayload;
@@ -36,9 +36,10 @@ export async function requirePortalPayloadWithUsage(): Promise<{
   const token = session.access_token;
   try {
     const payload = await fetchPortalTenant(token);
+    const slug = payload.slug;
     const [today, month] = await Promise.all([
-      fetchPortalUsage(token, "today").catch((): null => null),
-      fetchPortalUsage(token, "month").catch((): null => null),
+      fetchPortalUsage(token, "today", slug).catch((): null => null),
+      fetchPortalUsage(token, "month", slug).catch((): null => null),
     ]);
     return { payload, usage: { today, month } };
   } catch {

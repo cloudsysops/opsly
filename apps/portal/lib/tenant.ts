@@ -34,20 +34,28 @@ export async function postPortalMode(
   });
 }
 
+/**
+ * Métricas LLM del tenant. Con `tenantSlug` llama a
+ * `GET /api/portal/tenant/[slug]/usage` (validación `tenantSlugMatchesSession` en API);
+ * sin slug usa `GET /api/portal/usage` (mismo JWT).
+ */
 export async function fetchPortalUsage(
   accessToken: string,
   period: PortalUsagePeriod = "today",
+  tenantSlug?: string,
 ): Promise<PortalUsagePayload> {
   const qs = new URLSearchParams({ period });
-  return requestPortalApi<PortalUsagePayload>(
-    `${getApiBaseUrl()}/api/portal/usage?${qs.toString()}`,
-    {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        "Content-Type": "application/json",
-      },
-      cache: "no-store",
+  const base = getApiBaseUrl();
+  const path =
+    tenantSlug !== undefined && tenantSlug.length > 0
+      ? `${base}/api/portal/tenant/${encodeURIComponent(tenantSlug)}/usage?${qs.toString()}`
+      : `${base}/api/portal/usage?${qs.toString()}`;
+  return requestPortalApi<PortalUsagePayload>(path, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      "Content-Type": "application/json",
     },
-  );
+    cache: "no-store",
+  });
 }
