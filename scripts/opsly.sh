@@ -12,6 +12,8 @@ source "${_SCRIPT_DIR}/lib/docker-helpers.sh"
 if [[ -z "${TENANTS_PATH:-}" ]]; then
   TENANTS_PATH="$(cd "${_SCRIPT_DIR}/.." && pwd)/tenants"
 fi
+SSH_HOST="${SSH_HOST:-100.120.151.91}"
+SSH_CONNECT_TIMEOUT="${SSH_CONNECT_TIMEOUT:-15}"
 export TENANTS_PATH
 
 show_help() {
@@ -34,7 +36,7 @@ Comandos:
   help
 
 Variables:
-  TENANTS_PATH, PLATFORM_DOMAIN, SSH_HOST (default: 100.120.151.91), SSH_USER
+  TENANTS_PATH, PLATFORM_DOMAIN, SSH_HOST (default: 100.120.151.91), SSH_USER, SSH_CONNECT_TIMEOUT (default: 15)
 
 EOF
 }
@@ -142,7 +144,7 @@ case "${command}" in
     fi
     slug="$1"
     shift
-    exec "${_SCRIPT_DIR}/onboard-tenant.sh" --slug "${slug}" --ssh-host "${SSH_HOST:-100.120.151.91}" "$@"
+    exec "${_SCRIPT_DIR}/onboard-tenant.sh" --slug "${slug}" --ssh-host "${SSH_HOST}" "$@"
     ;;
   start-tenant)
     if [[ $# -lt 1 ]]; then

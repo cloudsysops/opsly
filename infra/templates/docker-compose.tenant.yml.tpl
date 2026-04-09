@@ -25,6 +25,7 @@ services:
       traefik.docker.network: "{{TRAEFIK_NETWORK}}"
       traefik.http.routers.n8n-{{SLUG}}.rule: Host(`n8n-{{SLUG}}.{{DOMAIN}}`)
       traefik.http.routers.n8n-{{SLUG}}.entrypoints: websecure
+      traefik.http.routers.n8n-{{SLUG}}.tls: "true"
       traefik.http.routers.n8n-{{SLUG}}.tls.certresolver: letsencrypt
       traefik.http.services.n8n-{{SLUG}}.loadbalancer.server.port: "5678"
       traefik.http.routers.n8n-{{SLUG}}.middlewares: secure-headers@file,rate-limit@file
@@ -50,6 +51,7 @@ services:
       traefik.docker.network: "{{TRAEFIK_NETWORK}}"
       traefik.http.routers.uptime-{{SLUG}}.rule: Host(`uptime-{{SLUG}}.{{DOMAIN}}`)
       traefik.http.routers.uptime-{{SLUG}}.entrypoints: websecure
+      traefik.http.routers.uptime-{{SLUG}}.tls: "true"
       traefik.http.routers.uptime-{{SLUG}}.tls.certresolver: letsencrypt
       traefik.http.services.uptime-{{SLUG}}.loadbalancer.server.port: "3001"
       traefik.http.routers.uptime-{{SLUG}}.middlewares: secure-headers@file,rate-limit@file

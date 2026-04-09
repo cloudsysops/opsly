@@ -27,6 +27,7 @@ Uso:
 Opciones:
   --dry-run               Muestra el plan y sale sin Supabase, Docker ni secretos generados.
   --name "Nombre"         Nombre mostrado del tenant en Supabase (default: mismo que --slug).
+  --ssh-host HOST         Host SSH administrativo (default: 100.120.151.91).
   --stripe-customer-id X Opcional (Stripe customer id).
   --yes                   Confirmaciones no interactivas (si el script las usa).
   -h, --help              Esta ayuda.
@@ -49,6 +50,7 @@ STRIPE_ID=""
 TENANT_DISPLAY_NAME=""
 SSH_HOST="${SSH_HOST:-100.120.151.91}"
 SSH_USER="${SSH_USER:-vps-dragon}"
+SSH_CONNECT_TIMEOUT="${SSH_CONNECT_TIMEOUT:-15}"
 export DRY_RUN="${DRY_RUN:-false}"
 
 while [[ $# -gt 0 ]]; do
@@ -120,6 +122,11 @@ if [[ "${DRY_RUN}" == "true" ]]; then
   log_info "Plan:           ${PLAN}"
   if [[ -n "${STRIPE_ID}" ]]; then
     log_info "Stripe customer id: (set)"
+  fi
+  if [[ "${PLAN}" == "business" || "${PLAN}" == "enterprise" ]]; then
+    log_info "NotebookLM: elegible con feature flag NOTEBOOKLM_ENABLED=true (EXPERIMENTAL)"
+  else
+    log_info "NotebookLM: no elegible en startup (solo business/enterprise + NOTEBOOKLM_ENABLED)"
   fi
   log_info "Traefik network default: ${TRAEFIK_NETWORK:-traefik-public}"
   log_info "SSH host preflight:      ${SSH_USER}@${SSH_HOST}"
@@ -229,7 +236,7 @@ ssh_preflight() {
   local retries=3
   local attempt=1
   while (( attempt <= retries )); do
-    if ssh -o BatchMode=yes -o ConnectTimeout=15 "${SSH_USER}@${SSH_HOST}" "echo ok" >/dev/null 2>&1; then
+    if ssh -o BatchMode=yes -o ConnectTimeout="${SSH_CONNECT_TIMEOUT}" "${SSH_USER}@${SSH_HOST}" "echo ok" >/dev/null 2>&1; then
       log_info "SSH preflight OK (${SSH_USER}@${SSH_HOST})"
       return 0
     fi

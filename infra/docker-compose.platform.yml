@@ -11,7 +11,7 @@
 
 services:
   traefik:
-    image: traefik:v3.0.0
+    image: traefik:v3.3
     container_name: traefik
     # El socket suele ser root:docker (660). La imagen Traefik corre sin root; group_add inyecta el GID del grupo
     # docker del host para que el proceso pueda usar /var/run/docker.sock (ver DOCKER_GID en .env).
@@ -25,6 +25,7 @@ services:
     # Traefik v3.3+ negocia la API del daemon Docker de forma dinámica (compatible con Engine 29.x); evitar v3.1 con daemons que exigen mínimo ≥1.40.
     environment:
       - TRAEFIK_CERTIFICATESRESOLVERS_LETSENCRYPT_ACME_EMAIL=${ACME_EMAIL}
+      - CF_DNS_API_TOKEN=${CF_DNS_API_TOKEN}
       - DOCKER_API_VERSION=1.40
     command:
       - "--providers.docker.endpoint=unix:///var/run/docker.sock"

@@ -38,4 +38,6 @@ certificatesResolvers:
   letsencrypt:
     acme:
       storage: /letsencrypt/acme.json
-      tlsChallenge: {}
+      dnsChallenge:
+        provider: cloudflare
+        delayBeforeCheck: "20"
