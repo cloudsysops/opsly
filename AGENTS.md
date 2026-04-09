@@ -186,7 +186,7 @@ Procedimientos vivos en el repo: **`skills/user/<skill>/SKILL.md`**. En runtimes
 
 <!-- Actualizar al final de cada sesión -->
 
-**Fecha última actualización:** 2026-04-09 23:00 UTC — **Última interacción:** Evaluación completa de seguridad multi-tenancy + mitigaciones documentadas. **Arquitectura:** 🟢 **SEGURA PARA FASE ACTUAL** (staging + 1-2 tenants). Recomendaciones: Cloudflare Proxy + ufw firewall + Tailscale SSH (esta noche). Bloqueador actual: SSH desde IP pública = bajo (mitigable con Tailscale). LocalRank onboarding listo; requiere Google auth para NotebookLM workflows.
+**Fecha última actualización:** 2026-04-09 23:00 UTC — **Última interacción:** hardening Tailscale-first para VPS (`scripts/vps-secure.sh`, `--ssh-host` en `onboard-tenant.sh`, default `SSH_HOST=100.120.151.91` en `opsly.sh`) + documentación LocalRank/NotebookLM. Estado LocalRank: onboarding listo para ejecutar por Tailscale; pendiente conectividad SSH estable y verificación Cloudflare Proxy. **NotebookLM:** feature flag `NOTEBOOKLM_ENABLED` documentado para Doppler `prd`; activar solo para planes Business+.
 
 **Resumen 2026-04-08 (Cursor / Opsly — sesión tester + Drive)**
 
