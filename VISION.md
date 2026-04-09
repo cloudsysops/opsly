@@ -112,6 +112,7 @@ Escalar = más VPS, no más complejidad.
 - Multi-tenancy Zero-Trust en capas IA: identidad, contexto, ejecución y observabilidad por tenant.
 - Agentes premium (NotebookLM y similares) permanecen **EXPERIMENTALES** hasta planes superiores.
 - Cost-aware routing y límites por tenant son obligatorios para sostenibilidad de margen.
+- **Hermes (metering/billing IA)** es la fuente única para medir tokens, costo, latencia y cache-hit por `tenant_slug` y `request_id`.
 
 ## Lo que un agente NUNCA debe hacer
 
@@ -380,3 +381,10 @@ Con 12 meses de datos + Vertex AI + Llama base:
 → Fine-tuning especializado en automatización de negocios
 → Modelo propio que corre en VPS ($0/token)
 → Ventaja competitiva real vs plataformas genéricas
+
+### Sistema de Metering — Hermes
+
+- **Fuente de eventos:** `platform.usage_events` como ledger por tenant para LLM Gateway, Orchestrator y agentes MCP.
+- **Claves obligatorias por evento:** `tenant_slug`, `request_id`, `agent_role`, `model`, `tokens_in`, `tokens_out`, `cost_usd`, `latency_ms`, `cache_hit`.
+- **Regla operativa:** ninguna llamada de agente/LLM entra a producción sin evento de metering trazable.
+- **Objetivo Fase 5:** budget caps por tenant, alertas automáticas y reconciliación mensual de margen.

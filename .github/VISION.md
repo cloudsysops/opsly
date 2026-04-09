@@ -1,5 +1,7 @@
 # Opsly — Visión y Objetivos
 
+> Última revisión: 2026-04-09
+
 ## Qué es Opsly
 
 Plataforma multi-tenant SaaS que despliega y gestiona stacks de agentes
@@ -96,6 +98,22 @@ Cada tenant es un docker-compose aislado.
 No Kubernetes, no Swarm. Simplicidad operativa sobre escala teórica.
 Escalar = más VPS, no más complejidad.
 
+## Principios de Arquitectura
+
+- Aislamiento por tenant con Docker Compose + Traefik por subdominio.
+- Control plane único en `apps/api` y servicios OpenClaw.
+- Escalamiento incremental: vertical primero, horizontal con demanda real.
+- Seguridad Zero-Trust en rutas dinámicas y sesiones portal.
+
+## Principios del Ecosistema IA
+
+- Todo tráfico LLM/agent pasa por **OpenClaw / LLM Gateway** como punto único de control.
+- **Orchestrator** es el motor event-driven (BullMQ), con prioridad/costo por plan.
+- Multi-tenancy Zero-Trust en capas IA: identidad, contexto, ejecución y observabilidad por tenant.
+- Agentes premium (NotebookLM y similares) permanecen **EXPERIMENTALES** hasta planes superiores.
+- Cost-aware routing y límites por tenant son obligatorios para sostenibilidad de margen.
+- **Hermes (metering/billing IA)** es la fuente única para medir tokens, costo, latencia y cache-hit por `tenant_slug` y `request_id`.
+
 ## Lo que un agente NUNCA debe hacer
 
 - Proponer migrar a Kubernetes o Swarm
@@ -137,6 +155,35 @@ Objetivo: plataforma que vende sola.
 - [ ] API docs públicas
 - [ ] Multi-VPS si el primero no alcanza
 
+### Fase 4 — Multi-agente con OpenClaw (actual)
+
+Objetivo: unificar herramientas, orquestación y capa de costos IA bajo un control plane único.
+
+- [ ] MCP como entrypoint estándar de herramientas para agentes.
+- [ ] Orchestrator BullMQ con prioridad por plan (`startup|business|enterprise`).
+- [ ] LLM Gateway como punto único de routing, cache y métricas de costo.
+- [ ] Context Builder integrado para continuidad entre sesiones.
+- [ ] NotebookLM disponible como EXPERIMENTAL con feature flag en planes superiores.
+
+### Fase 5 — Ecosistema IA Madura
+
+Objetivo: operaciones IA predecibles, auditables y eficientes por tenant.
+
+- [ ] Routing inteligente multi-modelo con políticas por plan/tenant.
+- [ ] Cost tracking por tenant en tiempo real (budget cap + alertas automáticas).
+- [ ] Self-healing en orquestación (retry inteligente, fallback provider/modelo).
+- [ ] Métricas avanzadas IA: latencia, éxito, costo, cache hit rate y trazas por `request_id`.
+- [ ] Catálogo de agentes versionado (MCP tools/jobs con contratos estables).
+
+### Fase 6+ — Multi-región y agentes autónomos completos
+
+Objetivo: resiliencia enterprise y autonomía operativa avanzada.
+
+- [ ] Multi-región activa-activa para control plane y workers críticos.
+- [ ] Failover automático por tenant y plan.
+- [ ] Workflows autónomos de remediación (incidentes, costos, degradación).
+- [ ] Gobernanza global de prompts, políticas y auditoría por región.
+
 ### Nunca (decisiones fijas)
 
 - Kubernetes
@@ -152,6 +199,35 @@ Antes de proponer cualquier feature nuevo, verificar:
 ---
 
 ## Evolución arquitectónica — AI Platform
+
+### Diagrama de Arquitectura High-Level
+
+```mermaid
+flowchart TB
+  U[Users / Admin / Portal] --> TR[Traefik]
+  A[Tailscale Admin SSH] --> TR
+  TR --> API[Opsly API]
+  API --> OC[OpenClaw]
+
+  subgraph OPENCLAW[OpenClaw Core]
+    MCP[MCP Server]
+    ORCH[Orchestrator BullMQ]
+    LLMG[LLM Gateway]
+    CB[Context Builder]
+  end
+
+  OC --> MCP
+  OC --> ORCH
+  OC --> LLMG
+  OC --> CB
+
+  ORCH --> TEN[Tenants Docker Compose]
+  TEN --> N8N[n8n per tenant]
+  TEN --> UK[Uptime Kuma per tenant]
+  MCP --> NB[NotebookLM EXPERIMENTAL]
+  API --> SUP[(Supabase platform + tenant schemas)]
+  LLMG --> MODELS[LLM Providers]
+```
 
 ### Visión de escalonamiento
 
@@ -305,3 +381,10 @@ Con 12 meses de datos + Vertex AI + Llama base:
 → Fine-tuning especializado en automatización de negocios
 → Modelo propio que corre en VPS ($0/token)
 → Ventaja competitiva real vs plataformas genéricas
+
+### Sistema de Metering — Hermes
+
+- **Fuente de eventos:** `platform.usage_events` como ledger por tenant para LLM Gateway, Orchestrator y agentes MCP.
+- **Claves obligatorias por evento:** `tenant_slug`, `request_id`, `agent_role`, `model`, `tokens_in`, `tokens_out`, `cost_usd`, `latency_ms`, `cache_hit`.
+- **Regla operativa:** ninguna llamada de agente/LLM entra a producción sin evento de metering trazable.
+- **Objetivo Fase 5:** budget caps por tenant, alertas automáticas y reconciliación mensual de margen.

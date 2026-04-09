@@ -916,6 +916,13 @@ flowchart TB
   - `default deny incoming`
 - Cloudflare recomendado: Proxy ON en todos los registros `*.ops.smiletripcare.com`.
 
+### Topología de red activa (Management vs Edge)
+
+- **Management plane (privado):** administración y SSH solo por Tailscale `100.120.151.91`.
+- **Edge plane (público):** tráfico de usuarios por Cloudflare Proxy (nube naranja) a `157.245.223.7` solo en `80/443`.
+- **TLS en Traefik:** resolver ACME por `dnsChallenge` con Cloudflare (`CF_DNS_API_TOKEN` desde Doppler).
+- **Tenant LocalRank:** onboarding listo con `--ssh-host 100.120.151.91`; NotebookLM solo en `business|enterprise` con `NOTEBOOKLM_ENABLED=true`.
+
 ---
 
 ## Stack (fijo)
