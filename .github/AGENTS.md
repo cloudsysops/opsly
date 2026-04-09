@@ -198,22 +198,33 @@ Procedimientos vivos en el repo: **`skills/user/<skill>/SKILL.md`**. En runtimes
 
 ### Ecosistema IA – OpenClaw (2026-04-10)
 
-OpenClaw se consolida como backbone IA: **MCP + Orchestrator (BullMQ con prioridad por plan) + LLM Gateway (routing/cache/costos) + Context Builder**.  
-NotebookLM está integrado vía MCP tool (`notebooklm`) como capacidad **EXPERIMENTAL**, y `localrank` queda pendiente de ejecución operativa por bloqueo SSH/Tailscale.
+OpenClaw opera como **control plane IA** de Opsly: estandariza entrada (MCP/API), orquesta ejecución event-driven (BullMQ), aplica políticas de costo/routing (LLM Gateway), y mantiene contexto operativo para sesiones de agentes (Context Builder).
+
+| Componente | Ubicación | Responsabilidad principal |
+|---|---|---|
+| OpenClaw MCP | `apps/mcp` | Punto único de herramientas/acciones para agentes externos e internos |
+| Orchestrator | `apps/orchestrator` | Cola BullMQ, prioridad por plan, coordinación de workers por job |
+| LLM Gateway | `apps/llm-gateway` | Routing, cache, costos por tenant, observabilidad de llamadas LLM |
+| Context Builder | `apps/context-builder` | Construcción de contexto y continuidad entre interacciones |
+| ML Services | `apps/ml` | Clasificación, embeddings, soporte a decisiones IA |
+| API Control Plane | `apps/api` | Identidad Zero-Trust, validación tenant/session, contratos HTTP |
+| NotebookLM Tool | `apps/agents/notebooklm` + MCP | Generación de artefactos (podcast/slides/infografía), **EXPERIMENTAL** |
 
 ```mermaid
 flowchart LR
-  U[User/Admin/Portal] --> MCP[OpenClaw MCP]
-  MCP --> ORCH[Orchestrator BullMQ]
-  ORCH --> CBUILDER[Context Builder]
+  P[Portal / n8n / Admin] --> APIGW[Opsly API Gateway]
+  APIGW --> ORCH[Orchestrator BullMQ]
   ORCH --> LLMG[LLM Gateway]
-  LLMG --> MODELS[LLM Providers]
-  ORCH --> TOOLS[Tools/Workers]
-  TOOLS --> TENANTS[Tenant Stacks n8n/uptime]
-  ORCH --> NB[NotebookLM Tool EXPERIMENTAL]
-  TENANTS --> API[Opsly API]
-  API --> DB[(Supabase platform + tenant schemas)]
+  LLMG --> MCP[MCP Tools]
+  MCP --> NB[NotebookLM Tool EXPERIMENTAL]
+  NB --> RESULT[Artifacts / Response]
+  ORCH --> CB[Context Builder]
+  APIGW --> DB[(Supabase platform + tenant schemas)]
 ```
+
+**Estado NotebookLM:** integrado vía MCP tool `notebooklm`; habilitación solo Business+ con `NOTEBOOKLM_ENABLED=true`.  
+**Estado LocalRank:** pendiente ejecución operativa por bloqueo SSH/Tailscale (`100.120.151.91`).  
+**Mitigaciones requeridas:** Cloudflare Proxy ON + UFW/Tailscale-only SSH.
 
 **Resumen 2026-04-08 (Cursor / Opsly — sesión tester + Drive)**
 
@@ -852,11 +863,11 @@ flowchart TB
 
 ---
 
-## 🔒 Seguridad Multi-Tenancy (Evaluación 2026-04-09)
+## 🔒 Seguridad y Multi-Tenancy (Evaluación 2026-04-09)
 
 ### ¿Es seguro el backend actual?
 
-**Respuesta:** 🟢 **SÍ — SEGURO PARA FASE ACTUAL** (staging + 1-2 tenants)
+**Respuesta founder:** 🟢 **SÍ — seguro para fase actual** (staging + 1-2 tenants), con aislamiento lógico sólido por tenant en API/DB y mitigaciones de red/SSH obligatorias antes de escalar.
 
 **Nivel de seguridad:** **MEDIO-ALTO** (listo para B2B con mitigaciones)
 
@@ -873,7 +884,7 @@ flowchart TB
 ### Mitigaciones Inmediatas (esta noche)
 
 1. **Cloudflare Proxy (5 min):** Cambiar `*.ops.smiletripcare.com` a naranja (Proxy ON) — oculta IP VPS
-2. **ufw Firewall (5 min):** Default DROP; whitelist SSH desde Tailscale (100.64.0.0/10), HTTP/HTTPS público
+2. **ufw Firewall (5 min):** Default DROP; whitelist SSH desde Tailscale (100.64.0.0/10), HTTP/HTTPS público (`./scripts/vps-secure.sh --ssh-host 100.120.151.91`)
 3. **Tailscale SSH (5 min):** VPS vía `100.120.151.91` (IP Tailscale) — scripts ya usan por defecto (`SSH_HOST=${SSH_HOST:-100.120.151.91}`)
 
 **Documentación:** `docs/SECURITY-MITIGATIONS-2026-04-09.md` (comandos exactos + verificación)  

@@ -109,6 +109,7 @@ Escalar = más VPS, no más complejidad.
 - **Orchestrator** es el motor event-driven (BullMQ), con prioridad/costo por plan.
 - Multi-tenancy Zero-Trust en capas IA: identidad, contexto, ejecución y observabilidad por tenant.
 - Agentes premium (NotebookLM y similares) permanecen **EXPERIMENTALES** hasta planes superiores.
+- Cost-aware routing y límites por tenant son obligatorios para sostenibilidad de margen.
 
 ## Lo que un agente NUNCA debe hacer
 
@@ -151,6 +152,16 @@ Objetivo: plataforma que vende sola.
 - [ ] API docs públicas
 - [ ] Multi-VPS si el primero no alcanza
 
+### Fase 4 — Multi-agente con OpenClaw (actual)
+
+Objetivo: unificar herramientas, orquestación y capa de costos IA bajo un control plane único.
+
+- [ ] MCP como entrypoint estándar de herramientas para agentes.
+- [ ] Orchestrator BullMQ con prioridad por plan (`startup|business|enterprise`).
+- [ ] LLM Gateway como punto único de routing, cache y métricas de costo.
+- [ ] Context Builder integrado para continuidad entre sesiones.
+- [ ] NotebookLM disponible como EXPERIMENTAL con feature flag en planes superiores.
+
 ### Fase 5 — Ecosistema IA Madura
 
 Objetivo: operaciones IA predecibles, auditables y eficientes por tenant.
@@ -191,6 +202,7 @@ Antes de proponer cualquier feature nuevo, verificar:
 ```mermaid
 flowchart TB
   U[Users / Admin / Portal] --> TR[Traefik]
+  A[Tailscale Admin SSH] --> TR
   TR --> API[Opsly API]
   API --> OC[OpenClaw]
 
@@ -209,6 +221,7 @@ flowchart TB
   ORCH --> TEN[Tenants Docker Compose]
   TEN --> N8N[n8n per tenant]
   TEN --> UK[Uptime Kuma per tenant]
+  MCP --> NB[NotebookLM EXPERIMENTAL]
   API --> SUP[(Supabase platform + tenant schemas)]
   LLMG --> MODELS[LLM Providers]
 ```
