@@ -6,7 +6,7 @@ import type { ReactElement } from "react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase";
-import { postPortalMode } from "@/lib/tenant";
+import { fetchPortalTenant, postPortalMode } from "@/lib/tenant";
 import type { PortalMode } from "@/types";
 
 export function ModeSelector(): ReactElement {
@@ -25,7 +25,9 @@ export function ModeSelector(): ReactElement {
         setLoading(null);
         return;
       }
-      await postPortalMode(data.session.access_token, mode);
+      const token = data.session.access_token;
+      const tenant = await fetchPortalTenant(token);
+      await postPortalMode(token, mode, tenant.slug);
       router.push(mode === "developer" ? "/dashboard/developer" : "/dashboard/managed");
       router.refresh();
     } catch (e) {

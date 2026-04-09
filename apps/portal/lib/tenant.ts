@@ -20,11 +20,22 @@ export async function fetchPortalTenant(
   });
 }
 
+/**
+ * Persiste el modo del portal. Con `tenantSlug` llama a
+ * `POST /api/portal/tenant/[slug]/mode` (validación `tenantSlugMatchesSession` en API);
+ * sin slug usa `POST /api/portal/mode` (mismo JWT).
+ */
 export async function postPortalMode(
   accessToken: string,
   mode: PortalMode,
+  tenantSlug?: string,
 ): Promise<void> {
-  await requestPortalApi(`${getApiBaseUrl()}/api/portal/mode`, {
+  const base = getApiBaseUrl();
+  const path =
+    tenantSlug !== undefined && tenantSlug.length > 0
+      ? `${base}/api/portal/tenant/${encodeURIComponent(tenantSlug)}/mode`
+      : `${base}/api/portal/mode`;
+  await requestPortalApi(path, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${accessToken}`,
