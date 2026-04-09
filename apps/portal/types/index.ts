@@ -25,6 +25,25 @@ export type PortalTenantPayload = {
   };
 };
 
+export type PortalUsagePeriod = "today" | "month";
+
+/** Respuesta de `GET /api/portal/usage` (alineada con la API). */
+export type PortalUsagePayload = {
+  tenant: string;
+  period: PortalUsagePeriod;
+  tokens_input: number;
+  tokens_output: number;
+  cost_usd: number;
+  requests: number;
+  cache_hits: number;
+  cache_hit_rate: number;
+};
+
+export type PortalUsageSnapshot = {
+  today: PortalUsagePayload | null;
+  month: PortalUsagePayload | null;
+};
+
 /** Respuesta documentada de POST /api/invitations (consumo futuro en UI). */
 export type AdminInvitationResponse = {
   ok: true;

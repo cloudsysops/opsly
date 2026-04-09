@@ -1,6 +1,11 @@
 import { getApiBaseUrl } from "./api";
 import { requestPortalApi } from "./http";
-import type { PortalMode, PortalTenantPayload } from "./types";
+import type {
+  PortalMode,
+  PortalTenantPayload,
+  PortalUsagePayload,
+  PortalUsagePeriod,
+} from "./types";
 
 export async function fetchPortalTenant(
   accessToken: string,
@@ -27,4 +32,22 @@ export async function postPortalMode(
     },
     body: JSON.stringify({ mode }),
   });
+}
+
+export async function fetchPortalUsage(
+  accessToken: string,
+  period: PortalUsagePeriod = "today",
+): Promise<PortalUsagePayload> {
+  const qs = new URLSearchParams({ period });
+  return requestPortalApi<PortalUsagePayload>(
+    `${getApiBaseUrl()}/api/portal/usage?${qs.toString()}`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+      cache: "no-store",
+    },
+  );
 }

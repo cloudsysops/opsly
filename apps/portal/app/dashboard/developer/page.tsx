@@ -2,15 +2,16 @@ import type { ReactElement } from "react";
 import { redirect } from "next/navigation";
 import { CredentialReveal } from "@/components/credential-reveal";
 import { DeveloperActions } from "@/components/developer-actions";
+import { LlmUsageCard } from "@/components/llm-usage-card";
 import { PortalShell } from "@/components/portal-shell";
 import { ServiceCard } from "@/components/service-card";
 import { healthFromReachable } from "@/components/status-badge";
-import { requirePortalPayload } from "@/lib/portal-server";
+import { requirePortalPayloadWithUsage } from "@/lib/portal-server";
 
 const DEFAULT_N8N_USER = "admin";
 
 export default async function DeveloperDashboardPage(): Promise<ReactElement> {
-  const data = await requirePortalPayload();
+  const { payload: data, usage } = await requirePortalPayloadWithUsage();
   if (data.mode === "managed") {
     redirect("/dashboard/managed");
   }
@@ -23,6 +24,8 @@ export default async function DeveloperDashboardPage(): Promise<ReactElement> {
   return (
     <PortalShell title={`Panel Developer — ${data.slug}`} showModeLink>
       <div className="space-y-8">
+        <LlmUsageCard usage={usage} />
+
         <section className="space-y-4">
           <h2 className="text-sm font-semibold text-ops-gray">Servicios</h2>
           <div className="grid gap-4">

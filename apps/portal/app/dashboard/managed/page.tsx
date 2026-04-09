@@ -1,12 +1,13 @@
 import type { ReactElement } from "react";
 import { redirect } from "next/navigation";
+import { LlmUsageCard } from "@/components/llm-usage-card";
 import { PortalShell } from "@/components/portal-shell";
 import { ServiceCard } from "@/components/service-card";
 import { healthFromReachable } from "@/components/status-badge";
-import { requirePortalPayload } from "@/lib/portal-server";
+import { requirePortalPayloadWithUsage } from "@/lib/portal-server";
 
 export default async function ManagedDashboardPage(): Promise<ReactElement> {
-  const data = await requirePortalPayload();
+  const { payload: data, usage } = await requirePortalPayloadWithUsage();
   if (data.mode === "developer") {
     redirect("/dashboard/developer");
   }
@@ -21,6 +22,8 @@ export default async function ManagedDashboardPage(): Promise<ReactElement> {
   return (
     <PortalShell title={`Tus Automatizaciones — ${displayName}`} showModeLink>
       <div className="space-y-8">
+        <LlmUsageCard usage={usage} />
+
         <section className="rounded-lg border border-ops-border bg-ops-surface p-5">
           <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-ops-gray">
             Estado general
