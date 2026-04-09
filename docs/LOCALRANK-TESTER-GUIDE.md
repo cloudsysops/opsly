@@ -27,11 +27,21 @@ Eres uno de nuestros primeros testers externos: tu feedback ayuda a definir el p
 - [ ] Crear un workflow simple (ej.: webhook → notificación cuando llega un lead)
 - [ ] Comprobar que Uptime Kuma refleja tus servicios
 
-### Día 3 — Generación de contenido (experimental)
+### Día 3 — Generación de contenido (experimental, Business+)
 
+- [ ] Confirmar con soporte que el tenant está en plan Business o Enterprise
+- [ ] Confirmar `NOTEBOOKLM_ENABLED=true` para el entorno
 - [ ] Subir un PDF de reporte de cliente
-- [ ] Pedir generación de podcast resumen (cuando NotebookLM esté habilitado en plataforma)
-- [ ] Verificar que recibes el audio u otros artefactos acordados
+- [ ] Pedir generación de podcast resumen
+- [ ] Verificar que recibes audio + slides + infografía
+
+## Checklist rápido (smoke test)
+
+- [ ] `https://portal.ops.smiletripcare.com` carga login
+- [ ] `https://n8n-localrank.ops.smiletripcare.com` responde
+- [ ] `https://uptime-localrank.ops.smiletripcare.com` responde
+- [ ] Invitación del tenant recibida y activada
+- [ ] Si NotebookLM está habilitado: artifacts generados correctamente
 
 ### Día 4 — Feedback
 

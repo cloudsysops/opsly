@@ -33,6 +33,7 @@ const TOOL_REQUIRED_SCOPES: Record<string, string> = {
   get_health: "metrics:read",
   get_metrics: "metrics:read",
   execute_prompt: "executor:write",
+  notebooklm: "agents:write",
 };
 
 export type CallToolOptions = {

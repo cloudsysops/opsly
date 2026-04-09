@@ -44,6 +44,13 @@ export interface NotebookLMResult {
   task_id?: string;
 }
 
+export interface NotebookLMTool {
+  name: "notebooklm";
+  description: string;
+  requiredScope: "agents:write";
+  execute: (command: NotebookLMCommand) => Promise<NotebookLMResult>;
+}
+
 function runPythonClient(command: NotebookLMCommand): Promise<string> {
   const script = resolvePythonClientPath();
   return new Promise((resolve, reject) => {
@@ -88,3 +95,15 @@ export async function executeNotebookLM(
     };
   }
 }
+
+/**
+ * Lightweight tool wrapper reusable by MCP servers.
+ * Enforced as experimental through NOTEBOOKLM_ENABLED in Python client.
+ */
+export const notebookLMTool: NotebookLMTool = {
+  name: "notebooklm",
+  description:
+    "NotebookLM experimental tool: create notebook, add sources, and generate artifacts.",
+  requiredScope: "agents:write",
+  execute: executeNotebookLM,
+};
