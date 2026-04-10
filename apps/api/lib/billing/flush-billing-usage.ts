@@ -32,7 +32,10 @@ export function parseUsageRedisKey(
   if (!m) {
     return null;
   }
-  return { tenantId: m[REGEX_TENANT_GROUP], metricType: m[REGEX_METRIC_GROUP] as BillingMetricType };
+  return {
+    tenantId: m[REGEX_TENANT_GROUP],
+    metricType: m[REGEX_METRIC_GROUP] as BillingMetricType,
+  };
 }
 
 async function resolveTenantSlug(tenantId: string): Promise<string | null> {
@@ -99,14 +102,18 @@ async function persistAndDelete(
       },
     );
   } catch (e) {
-    errors.push(`insert billing_usage falló para ${ctx.key}: ${e instanceof Error ? e.message : String(e)}`);
+    errors.push(
+      `insert billing_usage falló para ${ctx.key}: ${e instanceof Error ? e.message : String(e)}`,
+    );
     return "skipped";
   }
   try {
     await redis.del(ctx.key);
     return "inserted_deleted";
   } catch (e) {
-    errors.push(`Redis DEL falló tras insert OK (${ctx.key}): ${e instanceof Error ? e.message : String(e)}`);
+    errors.push(
+      `Redis DEL falló tras insert OK (${ctx.key}): ${e instanceof Error ? e.message : String(e)}`,
+    );
     return "inserted_redis_del_failed";
   }
 }
@@ -125,11 +132,17 @@ async function flushOneKey(
 
   const tenantSlug = await resolveTenantSlug(parsed.tenantId);
   if (!tenantSlug) {
-    errors.push(`tenant no encontrado para id=${parsed.tenantId} (clave ${key})`);
+    errors.push(
+      `tenant no encontrado para id=${parsed.tenantId} (clave ${key})`,
+    );
     return "skipped";
   }
 
-  return persistAndDelete(redis, { key, ...parsed, tenantSlug, quantity }, errors);
+  return persistAndDelete(
+    redis,
+    { key, ...parsed, tenantSlug, quantity },
+    errors,
+  );
 }
 
 /**

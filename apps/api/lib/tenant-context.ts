@@ -12,7 +12,9 @@ export type TenantContext = {
 const tenantStorage = new AsyncLocalStorage<TenantContext>();
 
 export class TenantContextMissingError extends Error {
-  constructor(message = "TENANT_CONTEXT_MISSING: ninguna petición activa estableció el tenant (use runWithTenantContext).") {
+  constructor(
+    message = "TENANT_CONTEXT_MISSING: ninguna petición activa estableció el tenant (use runWithTenantContext).",
+  ) {
     super(message);
     this.name = "TenantContextMissingError";
   }

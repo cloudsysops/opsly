@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
 import {
-    TenantContextMissingError,
-    getTenantContext,
-    runWithTenantContext,
-    tryGetTenantContext,
+  TenantContextMissingError,
+  getTenantContext,
+  runWithTenantContext,
+  tryGetTenantContext,
 } from "../tenant-context";
 
 describe("tenant-context", () => {

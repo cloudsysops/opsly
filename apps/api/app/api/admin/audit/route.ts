@@ -54,10 +54,15 @@ function applyFilters(query: any, filters: AuditFilters): any {
 function buildPage(
   data: Array<{ id: string }>,
   limit: number,
-): { items: Array<{ id: string }>; hasNextPage: boolean; nextCursor: string | null } {
+): {
+  items: Array<{ id: string }>;
+  hasNextPage: boolean;
+  nextCursor: string | null;
+} {
   const hasNextPage = data.length > limit;
   const items = hasNextPage ? data.slice(0, limit) : data;
-  const nextCursor = hasNextPage && items.length > 0 ? items[items.length - 1].id : null;
+  const nextCursor =
+    hasNextPage && items.length > 0 ? items[items.length - 1].id : null;
   return { items, hasNextPage, nextCursor };
 }
 
@@ -87,10 +92,19 @@ export function GET(request: Request): Promise<Response> {
 
     if (error) {
       console.error("[audit GET] Supabase error:", error.message);
-      return jsonError("Failed to fetch audit events", HTTP_STATUS.INTERNAL_ERROR);
+      return jsonError(
+        "Failed to fetch audit events",
+        HTTP_STATUS.INTERNAL_ERROR,
+      );
     }
 
-    const { items, hasNextPage, nextCursor } = buildPage(data ?? [], filters.limit);
-    return Response.json({ items, pagination: { limit: filters.limit, hasNextPage, nextCursor } });
+    const { items, hasNextPage, nextCursor } = buildPage(
+      data ?? [],
+      filters.limit,
+    );
+    return Response.json({
+      items,
+      pagination: { limit: filters.limit, hasNextPage, nextCursor },
+    });
   });
 }

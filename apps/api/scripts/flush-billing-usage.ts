@@ -8,7 +8,7 @@ import { runFlushBillingUsage } from "../lib/billing/flush-billing-usage";
 
 async function main(): Promise<void> {
   const result = await runFlushBillingUsage();
-  // eslint-disable-next-line no-console -- CLI
+
   console.log(JSON.stringify(result, null, 2));
   if (result.errors.length > 0) {
     process.exitCode = 1;
@@ -16,7 +16,6 @@ async function main(): Promise<void> {
 }
 
 void main().catch((e: unknown) => {
-  // eslint-disable-next-line no-console -- CLI
   console.error(e);
   process.exit(1);
 });

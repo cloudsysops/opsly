@@ -11,6 +11,10 @@ describe("parseUsageRedisKey", () => {
 
   it("rechaza claves sin patrón usage:{uuid}:{metric}", () => {
     expect(parseUsageRedisKey("usage:bad:ai_tokens")).toBeNull();
-    expect(parseUsageRedisKey("other:a1b2c3d4-e5f6-7890-abcd-ef1234567890:ai_tokens")).toBeNull();
+    expect(
+      parseUsageRedisKey(
+        "other:a1b2c3d4-e5f6-7890-abcd-ef1234567890:ai_tokens",
+      ),
+    ).toBeNull();
   });
 });

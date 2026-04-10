@@ -131,7 +131,9 @@ describe("GET /api/admin/audit", () => {
 
   it("passes from/to filters", async () => {
     const qb = buildSupabaseMock(sampleEvents);
-    await GET(makeRequest({ from: "2026-04-01T00:00:00Z", to: "2026-04-10T00:00:00Z" }));
+    await GET(
+      makeRequest({ from: "2026-04-01T00:00:00Z", to: "2026-04-10T00:00:00Z" }),
+    );
     expect(qb.gte).toHaveBeenCalledWith("created_at", "2026-04-01T00:00:00Z");
     expect(qb.lte).toHaveBeenCalledWith("created_at", "2026-04-10T00:00:00Z");
   });
