@@ -1,6 +1,8 @@
-# Guía de Agentes Paralelos — Opsly
+# Guía de agentes en paralelo — Opsly
 
-Convenciones para operar varios asistentes (Cursor, Claude, automatismos) sobre el mismo repo sin divergir del contexto.
+> **No es un segundo `AGENTS.md`.** La **fuente de verdad del estado operativo** (bloqueantes, próximo paso, URL raw, Fase 4) está en **`AGENTS.md`** en la raíz del repo — léelo **siempre** al iniciar trabajo. **Este documento** define únicamente **cómo coordinar varios asistentes o procesos** (Cursor, Claude, n8n, orchestrator) sin pisarse ni duplicar contexto.
+
+Convenciones para operar varios asistentes (Cursor, Claude, automatismos) sobre el mismo repo sin divergir del contexto publicado en `AGENTS.md` / `VISION.md`.
 
 ## Qué es un agente en Opsly
 
