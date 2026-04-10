@@ -59,6 +59,14 @@ const REQUIRED_FEEDBACK_PATHS = ["/api/feedback"];
 
 const REQUIRED_ADMIN_PATHS = ["/api/admin/audit"];
 
+/** Sprint 5: Swagger UI, versioning, webhooks */
+const REQUIRED_SPRINT5_PATHS = [
+  "/api/docs",
+  "/api/v1",
+  "/api/tenants/{id}/webhooks",
+  "/api/tenants/{id}/webhooks/{webhookId}",
+];
+
 for (const p of REQUIRED_FEEDBACK_PATHS) {
   if (!Object.prototype.hasOwnProperty.call(doc.paths, p)) {
     console.error(
@@ -77,7 +85,16 @@ for (const p of REQUIRED_ADMIN_PATHS) {
   }
 }
 
+for (const p of REQUIRED_SPRINT5_PATHS) {
+  if (!Object.prototype.hasOwnProperty.call(doc.paths, p)) {
+    console.error(
+      `validate-openapi-yaml: falta path sprint5 en spec: ${p}`,
+    );
+    process.exit(1);
+  }
+}
+
 const n = Object.keys(doc.paths).length;
 console.log(
-  `validate-openapi-yaml: OK (OpenAPI ${doc.openapi}, ${n} paths, portal ${REQUIRED_PORTAL_PATHS.length} + feedback ${REQUIRED_FEEDBACK_PATHS.length} + admin ${REQUIRED_ADMIN_PATHS.length} requeridos)`,
+  `validate-openapi-yaml: OK (OpenAPI ${doc.openapi}, ${n} paths, portal ${REQUIRED_PORTAL_PATHS.length} + feedback ${REQUIRED_FEEDBACK_PATHS.length} + admin ${REQUIRED_ADMIN_PATHS.length} + sprint5 ${REQUIRED_SPRINT5_PATHS.length} requeridos)`,
 );

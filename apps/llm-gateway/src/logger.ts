@@ -22,6 +22,7 @@ type UsageRow = {
   tokens_output: number;
   cost_usd: number;
   cache_hit: boolean;
+  model: string;
 };
 
 export async function logUsage(event: UsageEvent): Promise<void> {
@@ -45,6 +46,7 @@ export async function getTenantUsage(
   cost_usd: number;
   requests: number;
   cache_hits: number;
+  top_model: string | null;
 }> {
   const supabase = getSupabaseClient();
   if (!supabase) {
@@ -54,6 +56,7 @@ export async function getTenantUsage(
       cost_usd: 0,
       requests: 0,
       cache_hits: 0,
+      top_model: null,
     };
   }
   const now = new Date();
@@ -64,11 +67,27 @@ export async function getTenantUsage(
 
   const { data } = await platformSchema(supabase)
     .from("usage_events")
-    .select("tokens_input,tokens_output,cost_usd,cache_hit")
+    .select("tokens_input,tokens_output,cost_usd,cache_hit,model")
     .eq("tenant_slug", tenantSlug)
     .gte("created_at", from);
 
   const rows: UsageRow[] = (data || []) as UsageRow[];
+
+  // Compute the most-used model
+  const modelCount = new Map<string, number>();
+  for (const row of rows) {
+    if (row.model) {
+      modelCount.set(row.model, (modelCount.get(row.model) ?? 0) + 1);
+    }
+  }
+  let top_model: string | null = null;
+  let topCount = 0;
+  for (const [model, count] of modelCount) {
+    if (count > topCount) {
+      top_model = model;
+      topCount = count;
+    }
+  }
 
   return {
     tokens_input: rows.reduce((sum, row) => sum + row.tokens_input, 0),
@@ -76,5 +95,6 @@ export async function getTenantUsage(
     cost_usd: rows.reduce((sum, row) => sum + row.cost_usd, 0),
     requests: rows.length,
     cache_hits: rows.filter((row) => row.cache_hit).length,
+    top_model,
   };
 }

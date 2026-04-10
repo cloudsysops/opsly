@@ -217,7 +217,9 @@ function TenantRow({
       <td className="py-2 pr-3 font-mono text-neutral-200">
         {usage ? fmtUsd(usage.cost_usd) : "—"}
       </td>
-      <td className="py-2 pr-3 font-mono text-ops-gray">n/a</td>
+      <td className="py-2 pr-3 font-mono text-ops-gray">
+        {usage?.top_model ?? "—"}
+      </td>
     </tr>
   );
 }

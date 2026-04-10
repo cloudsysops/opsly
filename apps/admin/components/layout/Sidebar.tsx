@@ -9,6 +9,7 @@ import {
   Mail,
   MessageSquare,
   Server,
+  Settings,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -19,6 +20,7 @@ const nav = [
   { href: "/metrics/llm", label: "LLM Metrics", icon: BarChart3 },
   { href: "/agents", label: "Agent Teams", icon: Activity },
   { href: "/feedback", label: "Feedback", icon: MessageSquare },
+  { href: "/settings", label: "Settings", icon: Settings },
 ];
 
 export function Sidebar() {

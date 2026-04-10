@@ -57,3 +57,9 @@ export function portalPublicHealthUrl(apiBaseUrl: string, slug: string): string 
   const base = normalizeApiBase(apiBaseUrl);
   return `${base}/api/portal/health?slug=${encodeURIComponent(slug)}`;
 }
+
+/** URL absoluta `GET` estado infraestructura (`/api/infra/status`). */
+export function infraStatusUrl(apiBaseUrl: string): string {
+  const base = normalizeApiBase(apiBaseUrl);
+  return `${base}/api/infra/status`;
+}

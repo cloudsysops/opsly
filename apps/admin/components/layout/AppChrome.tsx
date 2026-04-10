@@ -16,7 +16,11 @@ export function AppChrome({ children }: { children: React.ReactNode }) {
         <Topbar />
         <main className="flex-1 overflow-auto p-6">{children}</main>
         <footer className="border-t border-ops-border px-6 py-3 font-mono text-[11px] text-ops-gray">
-          Opsly Platform v1.0 · staging · ops.smiletripcare.com
+          Opsly Platform v{process.env.NEXT_PUBLIC_APP_VERSION ?? "1.0"}{" "}
+          &middot;{" "}
+          {process.env.NEXT_PUBLIC_ENV ?? "staging"}{" "}
+          &middot;{" "}
+          {process.env.NEXT_PUBLIC_PLATFORM_DOMAIN ?? "ops.smiletripcare.com"}
         </footer>
       </div>
     </div>

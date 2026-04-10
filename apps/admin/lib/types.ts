@@ -77,6 +77,7 @@ export type TenantUsageMetricsResponse = {
   requests: number;
   cache_hits: number;
   cache_hit_rate: number;
+  top_model: string | null;
 };
 
 export type TeamStatus = "active" | "idle" | "busy";
@@ -87,6 +88,8 @@ export type TeamMetrics = {
   max_parallel: number;
   handles: string[];
   status: TeamStatus;
+  waiting?: number;
+  active?: number;
 };
 
 export type TeamMetricsResponse = {

@@ -15,14 +15,15 @@
     "flush-billing": "tsx scripts/flush-billing-usage.ts"
   },
   "dependencies": {
-    "@intcloudsysops/ml": "^1.0.0",
     "@intcloudsysops/llm-gateway": "^1.0.0",
+    "@intcloudsysops/ml": "^1.0.0",
     "@supabase/supabase-js": "^2.49.1",
+    "bullmq": "^5.73.3",
     "execa": "^9.5.2",
     "next": "^15.1.0",
-    "redis": "^4.7.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "redis": "^4.7.0",
     "resend": "^4.1.2",
     "stripe": "^17.7.0",
     "zod": "^3.24.2"

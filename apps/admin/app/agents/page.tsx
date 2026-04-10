@@ -76,7 +76,10 @@ function TeamCard({ team }: Readonly<{ team: TeamMetrics }>) {
         <div>handles: {team.handles.join(", ")}</div>
       </div>
       <div className="mt-3 font-mono text-[11px] text-ops-gray">
-        queue/active: n/a (endpoint aún no expone jobs)
+        queue/active:{" "}
+        {team.waiting !== undefined
+          ? `${team.waiting} / ${team.active ?? 0}`
+          : "—"}
       </div>
     </div>
   );

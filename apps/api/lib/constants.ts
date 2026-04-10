@@ -117,6 +117,11 @@ export const COMPOSE_CRYPTO = {
   N8N_ENCRYPTION_KEY_RANDOM_BYTES: 32,
 } as const;
 
+/** Webhooks outbound. */
+export const WEBHOOK_CRYPTO = {
+  SECRET_RANDOM_BYTES: 32,
+} as const;
+
 /** JSON legible en emails. */
 export const JSON_PRETTY_PRINT_INDENT = 2;
 

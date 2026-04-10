@@ -11,6 +11,9 @@ const labels: Record<string, string> = {
   settings: "Settings",
   login: "Login",
   feedback: "Feedback",
+  invitations: "Invitations",
+  metrics: "Metrics",
+  agents: "Agent Teams",
 };
 
 export function Topbar() {

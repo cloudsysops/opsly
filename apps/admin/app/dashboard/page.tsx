@@ -1,8 +1,11 @@
 "use client";
 
+import { ActivityChart } from "@/components/dashboard/ActivityChart";
+import { ActivityFeed } from "@/components/dashboard/ActivityFeed";
 import { CpuGauge } from "@/components/dashboard/CpuGauge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { useAuditLog } from "@/hooks/useAuditLog";
 import { useSystemMetrics } from "@/hooks/useSystemMetrics";
 
 function formatUptime(seconds: number): string {
@@ -30,6 +33,11 @@ function barTone(pct: number): string {
 
 export default function DashboardPage() {
   const { data, error, isLoading } = useSystemMetrics();
+  const {
+    data: auditData,
+    error: auditError,
+    isLoading: auditLoading,
+  } = useAuditLog();
 
   const ramPct =
     data !== undefined && data.ram_total_gb > 0
@@ -169,6 +177,22 @@ export default function DashboardPage() {
             </p>
           </CardContent>
         </Card>
+      </div>
+
+      {/* Actividad reciente — audit_log 7 días */}
+      <div className="space-y-3">
+        <h2 className="font-mono text-xs uppercase tracking-wider text-ops-gray">
+          Actividad reciente
+        </h2>
+        <ActivityChart
+          buckets={auditData?.buckets}
+          isLoading={auditLoading}
+        />
+        <ActivityFeed
+          entries={auditData?.entries}
+          isLoading={auditLoading}
+          error={auditError}
+        />
       </div>
     </div>
   );
