@@ -1,5 +1,9 @@
 import { randomUUID } from "node:crypto";
 import { MAX_PLANNER_ACTIONS } from "./constants-planner.js";
+import {
+    meterPlannerLlmFireAndForget,
+    meterRemotePlanWorkerFireAndForget,
+} from "./metering/usage-events-meter.js";
 import { logPlannerActionEnqueued, logPlannerUnknownTool } from "./observability/planner-log.js";
 import { executeRemotePlanner } from "./planner-client.js";
 import {
@@ -73,99 +77,113 @@ export async function processIntent(req: IntentRequest): Promise<ProcessIntentRe
       }
       const snapshot = buildPlannerContextSnapshot({ ...req, intent });
       const contextStr = JSON.stringify(snapshot, null, 2);
-      const gw = await executeRemotePlanner(contextStr, DEFAULT_PLANNER_TOOL_NAMES, {
-        tenantSlug,
-        requestId: correlationId,
-        tenantPlan: req.plan,
-      });
-
-      process.stdout.write(
-        `${JSON.stringify({
-          event: "planner_response",
-          request_id: correlationId,
-          tenant_slug: tenantSlug,
-          planner: gw.planner,
-        })}\n`,
-      );
-
-      if (gw.planner.actions.length > MAX_PLANNER_ACTIONS) {
-        throw new Error("Plan demasiado complejo: más de 5 acciones");
-      }
-
-      const plannedJobs: OrchestratorJob[] = [];
-      const enqueuedPlannerTools: string[] = [];
-      for (let i = 0; i < gw.planner.actions.length; i++) {
-        const action = gw.planner.actions[i];
-        if (!action) {
-          continue;
-        }
-        const mapped = plannerActionToOrchestratorJob(action, req, correlationId, i);
-        if (!mapped) {
-          logPlannerUnknownTool({
-            event: "planner_unknown_tool",
-            tool: action.tool,
-            tenant_slug: tenantSlug,
-            request_id: correlationId,
-            action_id: i,
-          });
-          continue;
-        }
-        plannedJobs.push({
-          ...mapped,
-          cost_budget_usd: req.cost_budget_usd,
-          agent_role: "executor",
-          taskId: req.taskId,
-          metadata: req.metadata,
+      const remotePlanStartedAt = Date.now();
+      try {
+        const gw = await executeRemotePlanner(contextStr, DEFAULT_PLANNER_TOOL_NAMES, {
+          tenantSlug,
+          requestId: correlationId,
+          tenantPlan: req.plan,
         });
-        enqueuedPlannerTools.push(action.tool);
-      }
+        meterPlannerLlmFireAndForget(tenantSlug, req.tenant_id, {
+          model_used: gw.llm.model_used,
+          tokens_input: gw.llm.tokens_input,
+          tokens_output: gw.llm.tokens_output,
+        });
 
-      const enqueued = await Promise.all(plannedJobs.map((job) => enqueueJob(job)));
-      await Promise.all(
-        enqueued.map(async (job, index) => {
-          const queuedJob = plannedJobs[index];
-          if (!queuedJob || !job.id) {
-            return;
-          }
-          const jobId = String(job.id);
-          logPlannerActionEnqueued({
-            event: "planner_action_enqueued",
-            tool: enqueuedPlannerTools[index] ?? "unknown",
-            tenant_slug: tenantSlug,
-            action_id: index,
+        process.stdout.write(
+          `${JSON.stringify({
+            event: "planner_response",
             request_id: correlationId,
-            job_type: queuedJob.type,
-            bullmq_job_id: jobId,
-          });
-          await setJobState(jobId, {
-            id: jobId,
-            type: queuedJob.type,
-            status: "pending",
-            task_id: queuedJob.taskId,
-            tenant_slug: queuedJob.tenant_slug,
-            tenant_id: queuedJob.tenant_id,
-            plan: queuedJob.plan,
-            request_id: queuedJob.request_id,
-            idempotency_key: queuedJob.idempotency_key,
-            cost_budget_usd: queuedJob.cost_budget_usd,
-            agent_role: queuedJob.agent_role,
-            metadata: queuedJob.metadata,
-            started_at: new Date().toISOString(),
-          });
-        }),
-      );
+            tenant_slug: tenantSlug,
+            planner: gw.planner,
+          })}\n`,
+        );
 
-      return {
-        jobs_enqueued: enqueued.length,
-        job_ids: enqueued.map((job) => String(job.id)),
-        intent,
-        request_id: correlationId,
-        planner: {
-          reasoning: gw.planner.reasoning,
-          actions_count: gw.planner.actions.length,
-          llm: gw.llm,
-        },
-      };
+        if (gw.planner.actions.length > MAX_PLANNER_ACTIONS) {
+          throw new Error("Plan demasiado complejo: más de 5 acciones");
+        }
+
+        const plannedJobs: OrchestratorJob[] = [];
+        const enqueuedPlannerTools: string[] = [];
+        for (let i = 0; i < gw.planner.actions.length; i++) {
+          const action = gw.planner.actions[i];
+          if (!action) {
+            continue;
+          }
+          const mapped = plannerActionToOrchestratorJob(action, req, correlationId, i);
+          if (!mapped) {
+            logPlannerUnknownTool({
+              event: "planner_unknown_tool",
+              tool: action.tool,
+              tenant_slug: tenantSlug,
+              request_id: correlationId,
+              action_id: i,
+            });
+            continue;
+          }
+          plannedJobs.push({
+            ...mapped,
+            cost_budget_usd: req.cost_budget_usd,
+            agent_role: "executor",
+            taskId: req.taskId,
+            metadata: req.metadata,
+          });
+          enqueuedPlannerTools.push(action.tool);
+        }
+
+        const enqueued = await Promise.all(plannedJobs.map((job) => enqueueJob(job)));
+        await Promise.all(
+          enqueued.map(async (job, index) => {
+            const queuedJob = plannedJobs[index];
+            if (!queuedJob || !job.id) {
+              return;
+            }
+            const jobId = String(job.id);
+            logPlannerActionEnqueued({
+              event: "planner_action_enqueued",
+              tool: enqueuedPlannerTools[index] ?? "unknown",
+              tenant_slug: tenantSlug,
+              action_id: index,
+              request_id: correlationId,
+              job_type: queuedJob.type,
+              bullmq_job_id: jobId,
+            });
+            await setJobState(jobId, {
+              id: jobId,
+              type: queuedJob.type,
+              status: "pending",
+              task_id: queuedJob.taskId,
+              tenant_slug: queuedJob.tenant_slug,
+              tenant_id: queuedJob.tenant_id,
+              plan: queuedJob.plan,
+              request_id: queuedJob.request_id,
+              idempotency_key: queuedJob.idempotency_key,
+              cost_budget_usd: queuedJob.cost_budget_usd,
+              agent_role: queuedJob.agent_role,
+              metadata: queuedJob.metadata,
+              started_at: new Date().toISOString(),
+            });
+          }),
+        );
+
+        return {
+          jobs_enqueued: enqueued.length,
+          job_ids: enqueued.map((job) => String(job.id)),
+          intent,
+          request_id: correlationId,
+          planner: {
+            reasoning: gw.planner.reasoning,
+            actions_count: gw.planner.actions.length,
+            llm: gw.llm,
+          },
+        };
+      } finally {
+        meterRemotePlanWorkerFireAndForget(
+          tenantSlug,
+          req.tenant_id,
+          (Date.now() - remotePlanStartedAt) / 1000,
+        );
+      }
     }
     case "execute_code":
       jobs.push(

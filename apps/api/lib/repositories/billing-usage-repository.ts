@@ -1,7 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
-import type { BillingMetricType } from "../billing/types";
 import { BaseRepository } from "../base-repository";
+import type { BillingMetricType } from "../billing/types";
 import { getServiceClient } from "../supabase";
 import type { Database, Json } from "../supabase/types";
 
@@ -38,4 +38,35 @@ export class BillingUsageRepository extends BaseRepository {
     );
     return { error: error ? new Error(error.message) : null };
   }
+
+  /**
+   * Suma `total_amount` en el mes actual o desde `recorded_at >= recordedAtGte` (UTC).
+   * Requiere `runWithTenantContext` / `runTrustedPortalDal`.
+   */
+  async sumSettledTotalAmountSince(
+    recordedAtGteIso: string,
+  ): Promise<{ value: number; error: Error | null }> {
+    const { data, error } = await this.select(
+      "billing_usage",
+      "total_amount.sum()",
+      { tenantColumn: "tenant_id" },
+    ).gte("recorded_at", recordedAtGteIso);
+
+    if (error) {
+      return { value: 0, error: new Error(error.message) };
+    }
+    return { value: extractAggregateSum(data), error: null };
+  }
+}
+
+function extractAggregateSum(data: unknown): number {
+  if (!Array.isArray(data) || data.length === 0) {
+    return 0;
+  }
+  const row = data[0] as Record<string, unknown>;
+  if (row.sum !== undefined && row.sum !== null) {
+    const n = Number(row.sum);
+    return Number.isFinite(n) ? n : 0;
+  }
+  return 0;
 }

@@ -142,6 +142,32 @@ async function attachStripeSubscriptionToTenant(
   }
 }
 
+const VALID_PLANS = ["startup", "business", "enterprise"] as const;
+type UpgradablePlan = (typeof VALID_PLANS)[number];
+
+function isValidPlan(p: unknown): p is UpgradablePlan {
+  return VALID_PLANS.includes(p as UpgradablePlan);
+}
+
+async function syncTenantPlanFromSubscription(
+  tenantId: string,
+  sub: Stripe.Subscription,
+): Promise<void> {
+  const rawPlan = sub.metadata?.plan;
+  if (!isValidPlan(rawPlan)) {
+    return;
+  }
+  const db = getServiceClient();
+  const { error } = await db
+    .schema("platform")
+    .from("tenants")
+    .update({ plan: rawPlan })
+    .eq("id", tenantId);
+  if (error) {
+    logger.error("subscription.updated syncTenantPlan", error);
+  }
+}
+
 async function handleCustomerSubscriptionUpdated(
   event: Stripe.Event,
 ): Promise<void> {
@@ -159,6 +185,32 @@ async function handleCustomerSubscriptionUpdated(
   }
 
   await attachStripeSubscriptionToTenant(tenantId, sub.id);
+  await syncTenantPlanFromSubscription(tenantId, sub);
+}
+
+async function handleInvoicePaymentSucceeded(
+  invoice: Stripe.Invoice,
+): Promise<void> {
+  const customerId = getStripeCustomerId(invoice.customer);
+  if (!customerId) {
+    return;
+  }
+  const row = await resolveTenantIdByCustomerId(customerId);
+  if (!row) {
+    return;
+  }
+  const db = getServiceClient();
+  const pdfUrl = invoice.invoice_pdf ?? null;
+  const { error } = await db
+    .schema("platform")
+    .from("subscriptions")
+    .update({ last_invoice_pdf: pdfUrl, last_invoice_at: new Date().toISOString() })
+    .eq("tenant_id", row.id)
+    .order("created_at", { ascending: false })
+    .limit(1);
+  if (error) {
+    logger.error("invoice.payment_succeeded update subscriptions", error);
+  }
 }
 
 async function handleInvoicePaymentFailed(
@@ -209,6 +261,11 @@ async function dispatchStripeEvent(event: Stripe.Event): Promise<void> {
     case "invoice.payment_failed": {
       const invoice = event.data.object as Stripe.Invoice;
       await handleInvoicePaymentFailed(invoice);
+      return;
+    }
+    case "invoice.payment_succeeded": {
+      const invoice = event.data.object as Stripe.Invoice;
+      await handleInvoicePaymentSucceeded(invoice);
       return;
     }
     default:

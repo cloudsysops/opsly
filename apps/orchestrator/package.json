@@ -10,8 +10,10 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.49.1",
     "bullmq": "^5.58.5",
     "execa": "^9.6.0",
+    "ioredis": "^5.4.2",
     "redis": "^4.7.0"
   },
   "devDependencies": {

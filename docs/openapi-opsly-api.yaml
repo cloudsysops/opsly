@@ -330,6 +330,53 @@ paths:
         '401':
           $ref: '#/components/responses/Unauthorized'
 
+  /api/portal/billing/summary:
+    get:
+      summary: Resumen facturación — asentado (Postgres) + pendiente (Redis) + proyección fin de mes
+      operationId: getPortalBillingSummary
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Totales USD del mes en curso (UTC)
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - period_start
+                  - period_end
+                  - currency
+                  - settled_cost_usd
+                  - pending_cost_usd
+                  - current_total_usd
+                  - projected_month_end_usd
+                  - daily_average_usd
+                properties:
+                  period_start:
+                    type: string
+                    format: date
+                  period_end:
+                    type: string
+                    format: date
+                  currency:
+                    type: string
+                    example: USD
+                  settled_cost_usd:
+                    type: number
+                  pending_cost_usd:
+                    type: number
+                  current_total_usd:
+                    type: number
+                  projected_month_end_usd:
+                    type: number
+                  daily_average_usd:
+                    type: number
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          description: Error al consultar billing_usage
+
   /api/portal/tenant/{slug}/me:
     get:
       summary: Sesión portal — mismo payload que /api/portal/me si el slug coincide con el tenant JWT
@@ -505,6 +552,152 @@ paths:
                 $ref: '#/components/schemas/ErrorBody'
         '500':
           $ref: '#/components/responses/InternalError'
+
+  /api/portal/tenant/{slug}/budget:
+    get:
+      summary: Presupuesto IA mensual del tenant (Zero-Trust)
+      operationId: getPortalTenantBudget
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Presupuesto configurado (o null si no hay override)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  slug:
+                    type: string
+                  monthly_cap_usd:
+                    type: number
+                    nullable: true
+                  alert_threshold_pct:
+                    type: integer
+                    minimum: 1
+                    maximum: 100
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+    put:
+      summary: Establece un presupuesto mensual personalizado para el tenant
+      operationId: putPortalTenantBudget
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [monthly_cap_usd]
+              properties:
+                monthly_cap_usd:
+                  type: number
+                  minimum: 0.01
+                alert_threshold_pct:
+                  type: integer
+                  minimum: 1
+                  maximum: 100
+                  default: 80
+      responses:
+        '200':
+          description: Presupuesto guardado
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /api/portal/tenant/{slug}/subscription/upgrade:
+    post:
+      summary: Sube el plan de suscripción del tenant (startup → business/enterprise)
+      operationId: postPortalTenantSubscriptionUpgrade
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [plan]
+              properties:
+                plan:
+                  type: string
+                  enum: [business, enterprise]
+      responses:
+        '200':
+          description: Plan actualizado en Stripe y en DB
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                  plan:
+                    type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /api/cron/sync-stripe-usage:
+    get:
+      summary: Sincroniza consumo de tokens IA con Stripe Usage Records
+      operationId: cronSyncStripeUsage
+      description: >
+        Programar diariamente. Requiere `Authorization: Bearer <CRON_SECRET>` o `x-cron-secret`.
+        Reporta tokens acumulados del período de facturación activo por tenant.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Resultado de la sincronización
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  tenants_synced:
+                    type: integer
+                  tenants_skipped:
+                    type: integer
+                  total_tokens:
+                    type: integer
+                  errors:
+                    type: array
+                    items:
+                      type: string
+        '401':
+          $ref: '#/components/responses/Unauthorized'
 
   /api/feedback:
     post:
