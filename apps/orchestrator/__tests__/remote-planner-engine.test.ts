@@ -16,8 +16,8 @@ vi.mock("../src/planner-client.js", () => ({
   executeRemotePlanner: mockExecuteRemotePlanner,
 }));
 
-import { enqueueJob } from "../src/queue.js";
 import { processIntent } from "../src/engine.js";
+import { enqueueJob } from "../src/queue.js";
 
 const defaultLlm = {
   model_used: "claude-haiku",
