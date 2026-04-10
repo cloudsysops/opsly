@@ -48,27 +48,32 @@ jobs:
         run: |
           set +e
           : > errors.txt
+          HAS_ERRORS=0
           run_tsc() {
             local dir="$1"
             local tmp
             tmp="$(mktemp)"
             (cd "$dir" && npx tsc --noEmit) >"$tmp" 2>&1
+            local rc=$?
             {
               echo "=== ${dir} ==="
               cat "$tmp"
               echo ""
             } >> errors.txt
             rm -f "$tmp"
+            return $rc
           }
-          run_tsc apps/api
-          run_tsc apps/admin
-          run_tsc apps/portal
-          run_tsc apps/mcp
-          run_tsc apps/orchestrator
-          run_tsc apps/ml
-          run_tsc apps/llm-gateway
-          run_tsc apps/context-builder
-          exit 0
+          run_tsc apps/api         || HAS_ERRORS=1
+          run_tsc apps/admin       || HAS_ERRORS=1
+          run_tsc apps/portal      || HAS_ERRORS=1
+          run_tsc apps/mcp         || HAS_ERRORS=1
+          run_tsc apps/orchestrator || HAS_ERRORS=1
+          run_tsc apps/ml          || HAS_ERRORS=1
+          run_tsc apps/llm-gateway || HAS_ERRORS=1
+          run_tsc apps/context-builder || HAS_ERRORS=1
+          # Exit with error so the job is visibly marked ⚠️/failed in Actions UI.
+          # continue-on-error: true on the job level lets downstream jobs proceed.
+          exit $HAS_ERRORS
 
       - uses: actions/upload-artifact@v4
         with:

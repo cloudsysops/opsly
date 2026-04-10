@@ -1,0 +1,125 @@
+# CVE & secret scanning — runs on every PR and weekly cron.
+# High/critical npm vulnerabilities block the PR (audit-level=high).
+# Docker Scout CVE scan runs on images already pushed to GHCR (post-deploy).
+# TruffleHog secret scan runs in ci.yml (see: secret-scan job).
+
+name: Security scan
+
+on:
+  pull_request:
+    branches: [main]
+  schedule:
+    # Weekly Monday 06:00 UTC — catches new CVEs without a code change
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write   # for SARIF upload (optional future use)
+  pull-requests: write
+
+jobs:
+  npm-audit:
+    name: npm audit (high+critical)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: npm ci
+        run: npm ci
+
+      - name: npm audit — fail on high/critical
+        id: audit
+        run: |
+          set +e
+          npm audit --audit-level=high --json > audit-report.json 2>&1
+          EXIT_CODE=$?
+          # Print summary (no secrets in output)
+          npm audit --audit-level=high 2>&1 || true
+          exit $EXIT_CODE
+
+      - name: Upload audit report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: npm-audit-report
+          path: audit-report.json
+          if-no-files-found: ignore
+
+      - name: Comment PR with audit summary (on failure)
+        if: failure() && github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          BODY="## ⚠️ npm audit found HIGH/CRITICAL vulnerabilities
+
+          Run \`npm audit --audit-level=high\` locally to see details.
+          This PR cannot be merged until vulnerabilities are resolved or explicitly exempted.
+
+          [Workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})"
+
+          gh pr comment "${{ github.event.pull_request.number }}" \
+            --repo "${{ github.repository }}" \
+            --body "$BODY" 2>/dev/null || true
+
+  docker-scout:
+    name: Docker Scout CVE scan
+    runs-on: ubuntu-latest
+    # Only run on schedule or manual dispatch (images may not exist on PR branches)
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+
+      - name: Docker Scout — API image
+        uses: docker/scout-action@v1
+        with:
+          command: cves
+          image: ghcr.io/cloudsysops/intcloudsysops-api:latest
+          only-severities: high,critical
+          exit-code: true
+        continue-on-error: true
+
+      - name: Docker Scout — Portal image
+        uses: docker/scout-action@v1
+        with:
+          command: cves
+          image: ghcr.io/cloudsysops/intcloudsysops-portal:latest
+          only-severities: high,critical
+          exit-code: true
+        continue-on-error: true
+
+      - name: Docker Scout — LLM Gateway image
+        uses: docker/scout-action@v1
+        with:
+          command: cves
+          image: ghcr.io/cloudsysops/intcloudsysops-llm-gateway:latest
+          only-severities: high,critical
+          exit-code: true
+        continue-on-error: true
+
+      - name: Notify Discord on CVE findings
+        if: failure()
+        continue-on-error: true
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          if [ -z "${DISCORD_WEBHOOK_URL:-}" ]; then exit 0; fi
+          curl -fsS -X POST "$DISCORD_WEBHOOK_URL" \
+            -H "Content-Type: application/json" \
+            -d "$(jq -n \
+              --arg url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+              '{embeds:[{title:"🔴 CVEs HIGH/CRITICAL found in Docker images",color:15158332,fields:[{name:"Run",value:$url}]}]}')"

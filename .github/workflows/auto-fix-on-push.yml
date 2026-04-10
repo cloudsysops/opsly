@@ -48,12 +48,12 @@ jobs:
           fi
           exit 0
 
-      - name: Commit and push if changes
+      - name: Open PR if changes (never commit directly to main)
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          
+
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
@@ -62,9 +62,33 @@ jobs:
             exit 0
           fi
 
-          git add -A
-          COMMIT_MSG="chore: auto-fix code quality on $(git rev-parse --short HEAD)"
-          git commit -m "$COMMIT_MSG"
-          git push origin main
+          DATE="$(date -u +%Y-%m-%d)"
+          SHA_SHORT="$(git rev-parse --short HEAD)"
+          BRANCH="auto-fix/push-${SHA_SHORT}"
 
-          echo "✅ Changes pushed to main"
+          git stash push -u -m "auto-fix-${SHA_SHORT}"
+          git fetch origin
+          git checkout -b "${BRANCH}"
+          git stash pop
+
+          git add -A
+          git commit -m "chore: auto-fix code quality on ${SHA_SHORT}"
+          git push origin "HEAD:${BRANCH}"
+
+          PR_COUNT="$(gh pr list --repo "${{ github.repository }}" \
+            --head "${BRANCH}" --state open --json number --jq 'length')"
+          if [ "${PR_COUNT}" = "0" ]; then
+            gh pr create \
+              --repo "${{ github.repository }}" \
+              --base main \
+              --head "${BRANCH}" \
+              --title "chore: auto-fix code quality (${DATE} ${SHA_SHORT})" \
+              --body "Automated ESLint/Prettier fixes triggered by push to main.
+Triggered by commit \`${SHA_SHORT}\`. Review before merging.
+
+Workflow: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          else
+            echo "PR already open for ${BRANCH}; skipping."
+          fi
+
+          echo "✅ PR created (not direct push) for branch ${BRANCH}"

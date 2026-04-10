@@ -27,3 +27,8 @@ infra/terraform/ @cloudsysops/infra
 
 # Esquema Postgres, RLS, migraciones → backend (misma línea de producto que API).
 supabase/ @cloudsysops/backend
+
+# Workflows y gobernanza GitHub → propietario del proyecto (cambios de seguridad/CI).
+# Esto evita que un bot o fork modifique workflows sin revisión humana.
+.github/ @cboteros
+.github/workflows/ @cboteros

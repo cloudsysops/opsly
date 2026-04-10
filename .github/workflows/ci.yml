@@ -89,16 +89,19 @@ jobs:
           node-version: "20"
           cache: npm
           cache-dependency-path: package-lock.json
-      - name: npm ci + tests portal/mcp/orchestrator/ml/llm-gateway
+      - name: npm ci + tests (api/portal/mcp/orchestrator/ml/llm-gateway)
         run: |
           set -euo pipefail
           npm ci
+          # api: 241+ tests — critical to run on every PR
+          (cd apps/api && npm test) & pid_api=$!
           (cd apps/portal && npm test) & pid0=$!
           (cd apps/mcp && npm test) & pid1=$!
           (cd apps/orchestrator && npm test) & pid2=$!
           (cd apps/ml && npm test) & pid3=$!
           (cd apps/llm-gateway && npm test) & pid4=$!
           status=0
+          wait $pid_api || status=1
           wait $pid0 || status=1
           wait $pid1 || status=1
           wait $pid2 || status=1
@@ -154,3 +157,18 @@ jobs:
           set -euo pipefail
           shopt -s nullglob
           shellcheck scripts/*.sh
+
+  secret-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: TruffleHog — scan for secrets
+        uses: trufflesecurity/trufflehog@main
+        with:
+          path: ./
+          base: ${{ github.event.repository.default_branch }}
+          head: HEAD
+          extra_args: --only-verified

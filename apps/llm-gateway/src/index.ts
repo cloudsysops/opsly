@@ -25,3 +25,5 @@ export type {
   PlannerHttpRequestBody,
   PlannerResponseShape,
 } from "./planner-route.js";
+
+export { llmCallWithFallback } from "./fallback-chain.js";

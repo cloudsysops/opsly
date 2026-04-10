@@ -1,6 +1,7 @@
 # Backup diario en el VPS (tenants). Requiere SSH al staging/prod según secrets.
 #
 # Secrets: VPS_HOST, VPS_USER, VPS_SSH_KEY, DISCORD_WEBHOOK_URL (opcional)
+# Integridad: verifica checksum SHA256 y tamaño mínimo de cada archivo de backup.
 
 name: Backup tenants
 
@@ -27,6 +28,58 @@ jobs:
             cd /opt/opsly
             ./scripts/backup-tenants.sh
 
+      - name: Verificar integridad de backups
+        id: integrity
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            set -euo pipefail
+            # Minimum acceptable backup size: 1 KB (catches empty files, tar failures)
+            MIN_BYTES=1024
+            BACKUP_DIR="${BACKUP_DIR:-/opt/opsly/backups}"
+            FAILED=0
+
+            if [ ! -d "$BACKUP_DIR" ]; then
+              echo "⚠️  Backup dir $BACKUP_DIR not found"
+              exit 1
+            fi
+
+            # Find backups created in the last 2 hours
+            mapfile -t RECENT < <(find "$BACKUP_DIR" -name "*.tar.gz" -newer "$BACKUP_DIR" -mmin -120 2>/dev/null || true)
+
+            if [ ${#RECENT[@]} -eq 0 ]; then
+              echo "⚠️  No backup files created in the last 2 hours"
+              exit 1
+            fi
+
+            for f in "${RECENT[@]}"; do
+              SIZE=$(stat -c%s "$f" 2>/dev/null || echo 0)
+              if [ "$SIZE" -lt "$MIN_BYTES" ]; then
+                echo "❌ Backup too small: $f ($SIZE bytes, min $MIN_BYTES)"
+                FAILED=1
+                continue
+              fi
+              # Validate SHA256 checksum file if it exists alongside the archive
+              CHECKSUM_FILE="${f}.sha256"
+              if [ -f "$CHECKSUM_FILE" ]; then
+                if sha256sum --check --status "$CHECKSUM_FILE"; then
+                  echo "✅ Checksum OK: $(basename "$f")"
+                else
+                  echo "❌ Checksum MISMATCH: $f"
+                  FAILED=1
+                fi
+              else
+                # Generate checksum for next run
+                sha256sum "$f" > "$CHECKSUM_FILE"
+                echo "✅ Backup OK (checksum generated): $(basename "$f") ($SIZE bytes)"
+              fi
+            done
+
+            exit $FAILED
+
       - name: Notificar Discord (éxito)
         if: success()
         continue-on-error: true
@@ -42,7 +95,7 @@ jobs:
           curl -fsS -X POST "$DISCORD_WEBHOOK_URL" \
             -H "Content-Type: application/json" \
             -d "$(jq -n \
-              --arg title "Backup tenants OK" \
+              --arg title "✅ Backup tenants OK (integridad verificada)" \
               --arg ts "$TS" \
               '{embeds:[{title:$title,color:3066993,timestamp:$ts}]}')"
 
@@ -61,4 +114,4 @@ jobs:
             -H "Content-Type: application/json" \
             -d "$(jq -n \
               --arg url "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
-              '{embeds:[{title:"Backup tenants fallido",color:15158332,fields:[{name:"Run",value:$url}]}]}')"
+              '{embeds:[{title:"❌ Backup tenants fallido o integridad inválida",color:15158332,fields:[{name:"Run",value:$url}]}]}')"

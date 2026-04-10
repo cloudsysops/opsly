@@ -105,7 +105,9 @@ jobs:
           context: .
           file: apps/api/Dockerfile
           push: true
-          tags: ghcr.io/cloudsysops/intcloudsysops-api:latest
+          tags: |
+            ghcr.io/cloudsysops/intcloudsysops-api:latest
+            ghcr.io/cloudsysops/intcloudsysops-api:${{ github.sha }}
           build-args: |
             PLATFORM_DOMAIN=${{ secrets.PLATFORM_DOMAIN }}
 
@@ -115,7 +117,9 @@ jobs:
           context: .
           file: apps/admin/Dockerfile
           push: true
-          tags: ghcr.io/cloudsysops/intcloudsysops-admin:latest
+          tags: |
+            ghcr.io/cloudsysops/intcloudsysops-admin:latest
+            ghcr.io/cloudsysops/intcloudsysops-admin:${{ github.sha }}
           build-args: |
             NEXT_PUBLIC_SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
             NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
@@ -127,7 +131,9 @@ jobs:
           context: .
           file: apps/portal/Dockerfile
           push: true
-          tags: ghcr.io/cloudsysops/intcloudsysops-portal:latest
+          tags: |
+            ghcr.io/cloudsysops/intcloudsysops-portal:latest
+            ghcr.io/cloudsysops/intcloudsysops-portal:${{ github.sha }}
           build-args: |
             NEXT_PUBLIC_SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
             NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
@@ -141,7 +147,9 @@ jobs:
           context: .
           file: apps/llm-gateway/Dockerfile
           push: true
-          tags: ghcr.io/cloudsysops/intcloudsysops-llm-gateway:latest
+          tags: |
+            ghcr.io/cloudsysops/intcloudsysops-llm-gateway:latest
+            ghcr.io/cloudsysops/intcloudsysops-llm-gateway:${{ github.sha }}
 
       - name: Build and push Orchestrator image
         uses: docker/build-push-action@v5
@@ -149,7 +157,9 @@ jobs:
           context: .
           file: apps/orchestrator/Dockerfile
           push: true
-          tags: ghcr.io/cloudsysops/intcloudsysops-orchestrator:latest
+          tags: |
+            ghcr.io/cloudsysops/intcloudsysops-orchestrator:latest
+            ghcr.io/cloudsysops/intcloudsysops-orchestrator:${{ github.sha }}
 
       - name: Build and push Context Builder image
         uses: docker/build-push-action@v5
@@ -157,7 +167,9 @@ jobs:
           context: .
           file: apps/context-builder/Dockerfile
           push: true
-          tags: ghcr.io/cloudsysops/intcloudsysops-context-builder:latest
+          tags: |
+            ghcr.io/cloudsysops/intcloudsysops-context-builder:latest
+            ghcr.io/cloudsysops/intcloudsysops-context-builder:${{ github.sha }}
 
   build-mcp:
     needs: lint-and-typecheck
