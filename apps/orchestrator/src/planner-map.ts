@@ -18,17 +18,68 @@ export const DEFAULT_PLANNER_TOOL_NAMES: string[] = [
   "notebooklm",
   "check_service_health",
   "restart_container",
+  "notify",
+  "sync_drive",
 ];
 
-/** Mapea una acción del planner a un job BullMQ conocido (MCP se invoca desde workers/API, no aquí). */
+/** Mapa legible: herramienta planner → cola BullMQ = tipo de job (`openclaw` queue) + rol. */
+export const PLANNER_TOOL_MAP: Record<
+  string,
+  { job_type: OrchestratorJob["type"]; label: string }
+> = {
+  execute_prompt: { job_type: "cursor", label: "cursor_worker" },
+  send_invitation: { job_type: "n8n", label: "n8n_webhook" },
+  notify: { job_type: "notify", label: "notify_worker" },
+  get_health: { job_type: "notify", label: "planner_stub_notify" },
+  get_metrics: { job_type: "notify", label: "planner_stub_notify" },
+  get_tenants: { job_type: "notify", label: "planner_stub_notify" },
+  get_tenant: { job_type: "notify", label: "planner_stub_notify" },
+  check_service_health: { job_type: "notify", label: "planner_stub_notify" },
+  restart_container: { job_type: "notify", label: "planner_stub_notify" },
+  onboard_tenant: { job_type: "n8n", label: "n8n_onboard" },
+  suspend_tenant: { job_type: "n8n", label: "n8n_suspend" },
+  resume_tenant: { job_type: "n8n", label: "n8n_resume" },
+  notebooklm: { job_type: "drive", label: "drive_notebooklm" },
+  sync_drive: { job_type: "drive", label: "drive_sync" },
+};
+
+const FORBIDDEN_PLANNER_PARAM_KEYS = new Set(["tenant_slug", "request_id", "tenant_id"]);
+
+/** Zero-Trust: el planner no puede sobrescribir identidad del intent por params. */
+export function sanitizePlannerParams(params: Record<string, unknown>): Record<string, unknown> {
+  const out: Record<string, unknown> = {};
+  for (const [k, v] of Object.entries(params)) {
+    if (FORBIDDEN_PLANNER_PARAM_KEYS.has(k)) {
+      continue;
+    }
+    out[k] = v;
+  }
+  return out;
+}
+
+export function isKnownPlannerTool(tool: string): boolean {
+  return Object.prototype.hasOwnProperty.call(PLANNER_TOOL_MAP, tool);
+}
+
+/**
+ * Mapea una acción del planner a un job BullMQ conocido.
+ * @returns `null` si la herramienta no está registrada (fail-safe en engine).
+ */
 export function plannerActionToOrchestratorJob(
   action: PlannerAction,
   req: Pick<IntentRequest, "tenant_slug" | "initiated_by" | "plan" | "tenant_id">,
   correlationId: string,
   batchIndex: number,
-): OrchestratorJob {
-  const { tool, params } = action;
-  const idempotencyKey = `planner::${tool}::${batchIndex}`;
+): OrchestratorJob | null {
+  const { tool } = action;
+  const params = sanitizePlannerParams(action.params);
+
+  if (!isKnownPlannerTool(tool)) {
+    return null;
+  }
+
+  const idempotencyKey = `${correlationId}::planner::${tool}::${batchIndex}`;
+
   const common: Pick<
     OrchestratorJob,
     | "tenant_slug"
@@ -56,6 +107,9 @@ export function plannerActionToOrchestratorJob(
         ...common,
       };
     case "send_invitation":
+    case "onboard_tenant":
+    case "suspend_tenant":
+    case "resume_tenant":
       return {
         type: "n8n",
         payload: { ...params, planner_tool: tool },
@@ -69,6 +123,8 @@ export function plannerActionToOrchestratorJob(
       };
     case "get_health":
     case "get_metrics":
+    case "get_tenants":
+    case "get_tenant":
     case "check_service_health":
     case "restart_container":
       return {
@@ -88,16 +144,11 @@ export function plannerActionToOrchestratorJob(
         payload: { ...params, planner_tool: tool },
         ...common,
       };
-    default:
-      return {
-        type: "notify",
-        payload: {
-          title: "Planner (unmapped tool)",
-          message: JSON.stringify({ tool, params }),
-          type: "warning",
-        },
-        ...common,
-      };
+    default: {
+      throw new Error(
+        `plannerActionToOrchestratorJob: unknown tool "${tool}" - available: ${DEFAULT_PLANNER_TOOL_NAMES.join(", ")}`,
+      );
+    }
   }
 }
 

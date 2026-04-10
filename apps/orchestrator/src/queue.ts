@@ -21,6 +21,7 @@ export async function enqueueJob(job: OrchestratorJob) {
   logJobEnqueue({
     event: "job_enqueue",
     job_type: job.type,
+    task_id: job.taskId,
     tenant_slug: job.tenant_slug,
     tenant_id: job.tenant_id,
     plan: job.plan,
@@ -31,6 +32,7 @@ export async function enqueueJob(job: OrchestratorJob) {
     agent_role: job.agent_role,
     cost_budget_usd: job.cost_budget_usd,
     queue_priority: opts.priority,
+    metadata: job.metadata,
   });
 
   return bull;

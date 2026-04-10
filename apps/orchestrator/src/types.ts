@@ -6,6 +6,8 @@ export type AgentRole = "planner" | "executor" | "tool" | "notifier";
 export interface OrchestratorJob {
   type: JobType;
   payload: Record<string, unknown>;
+  /** Identificador de tarea para trazabilidad; opcional. */
+  taskId?: string;
   tenant_slug?: string;
   /** UUID tenant en Supabase cuando exista; opcional. */
   tenant_id?: string;
@@ -18,6 +20,8 @@ export interface OrchestratorJob {
   /** Presupuesto simbólico USD para capas posteriores (cost tracking). */
   cost_budget_usd?: number;
   agent_role?: AgentRole;
+  /** Metadatos adicionales para extensibilidad. */
+  metadata?: Record<string, unknown>;
 }
 
 export type Intent =
@@ -32,6 +36,7 @@ export type Intent =
 export interface IntentRequest {
   intent: Intent;
   context: Record<string, unknown>;
+  taskId?: string;
   tenant_slug?: string;
   tenant_id?: string;
   initiated_by: OrchestratorJob["initiated_by"];
@@ -40,6 +45,7 @@ export interface IntentRequest {
   request_id?: string;
   cost_budget_usd?: number;
   agent_role?: AgentRole;
+  metadata?: Record<string, unknown>;
 }
 
 /** Params por acción devuelta por el Remote Planner (JSON vía LLM Gateway). Sin `any`. */
@@ -53,3 +59,41 @@ export interface PlannerResponse {
   reasoning: string;
   actions: PlannerAction[];
 }
+
+/**
+ * Minimal validation schema for job payloads.
+ * Extensible — no breaking changes for existing jobs.
+ */
+export const JOB_VALIDATION = {
+  /** Required base fields for any job. */
+  isValidJob: (job: unknown): job is OrchestratorJob => {
+    if (!job || typeof job !== "object") {
+      return false;
+    }
+    const j = job as Partial<OrchestratorJob>;
+    return (
+      typeof j.type === "string" &&
+      j.type.length > 0 &&
+      typeof j.initiated_by === "string" &&
+      ["claude", "discord", "cron", "system"].includes(j.initiated_by)
+    );
+  },
+
+  /** Validate optional idempotency key format. */
+  isValidIdempotencyKey: (key: unknown): boolean => {
+    return (
+      typeof key === "string" &&
+      key.length > 0 &&
+      key.length <= 256 &&
+      /^[a-zA-Z0-9:_-]+$/.test(key)
+    );
+  },
+
+  /** Validate plan if provided. */
+  isValidPlan: (plan: unknown): plan is OrchestratorJob["plan"] => {
+    return (
+      typeof plan === "string" &&
+      (plan === "startup" || plan === "business" || plan === "enterprise")
+    );
+  },
+} as const;

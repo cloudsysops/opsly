@@ -1,7 +1,13 @@
 import { randomUUID } from "node:crypto";
+import { MAX_PLANNER_ACTIONS } from "./constants-planner.js";
 import { enqueueJob } from "./queue.js";
 import { executeRemotePlanner } from "./planner-client.js";
-import { buildPlannerContextSnapshot, DEFAULT_PLANNER_TOOL_NAMES } from "./planner-map.js";
+import { logPlannerActionEnqueued, logPlannerUnknownTool } from "./observability/planner-log.js";
+import {
+  buildPlannerContextSnapshot,
+  DEFAULT_PLANNER_TOOL_NAMES,
+  plannerActionToOrchestratorJob,
+} from "./planner-map.js";
 import { setJobState } from "./state/store.js";
 import type { Intent, IntentRequest, OrchestratorJob } from "./types.js";
 
@@ -13,6 +19,7 @@ function enrichJob(
 ): OrchestratorJob {
   return {
     ...base,
+    taskId: req.taskId,
     tenant_id: req.tenant_id,
     plan: req.plan,
     request_id: correlationId,
@@ -21,6 +28,7 @@ function enrichJob(
     idempotency_key: req.idempotency_key
       ? `${req.idempotency_key}::${base.type}::${batchIndex}`
       : undefined,
+    metadata: req.metadata,
   };
 }
 
@@ -59,13 +67,14 @@ export async function processIntent(req: IntentRequest): Promise<ProcessIntentRe
 
   switch (intent) {
     case "remote_plan": {
-      if (!req.tenant_slug || req.tenant_slug.length === 0) {
+      const tenantSlug = req.tenant_slug;
+      if (!tenantSlug || tenantSlug.length === 0) {
         throw new Error("remote_plan requires tenant_slug (Hermes / tenant isolation)");
       }
       const snapshot = buildPlannerContextSnapshot({ ...req, intent });
       const contextStr = JSON.stringify(snapshot, null, 2);
       const gw = await executeRemotePlanner(contextStr, DEFAULT_PLANNER_TOOL_NAMES, {
-        tenantSlug: req.tenant_slug,
+        tenantSlug,
         requestId: correlationId,
         tenantPlan: req.plan,
       });
@@ -74,24 +83,81 @@ export async function processIntent(req: IntentRequest): Promise<ProcessIntentRe
         `${JSON.stringify({
           event: "planner_response",
           request_id: correlationId,
-          tenant_slug: req.tenant_slug,
+          tenant_slug: tenantSlug,
           planner: gw.planner,
         })}\n`,
       );
 
-      for (const action of gw.planner.actions) {
-        // Fase segura: no encolar jobs ni MCP reales hasta validación operativa (LocalRank Go-Live).
-        console.log(
-          `[planner] simulated action (no side effects): ${JSON.stringify({
-            tool: action.tool,
-            params: action.params,
-          })}`,
-        );
+      if (gw.planner.actions.length > MAX_PLANNER_ACTIONS) {
+        throw new Error("Plan demasiado complejo: más de 5 acciones");
       }
 
+      const plannedJobs: OrchestratorJob[] = [];
+      const enqueuedPlannerTools: string[] = [];
+      for (let i = 0; i < gw.planner.actions.length; i++) {
+        const action = gw.planner.actions[i];
+        if (!action) {
+          continue;
+        }
+        const mapped = plannerActionToOrchestratorJob(action, req, correlationId, i);
+        if (!mapped) {
+          logPlannerUnknownTool({
+            event: "planner_unknown_tool",
+            tool: action.tool,
+            tenant_slug: tenantSlug,
+            request_id: correlationId,
+            action_id: i,
+          });
+          continue;
+        }
+        plannedJobs.push({
+          ...mapped,
+          cost_budget_usd: req.cost_budget_usd,
+          agent_role: "executor",
+          taskId: req.taskId,
+          metadata: req.metadata,
+        });
+        enqueuedPlannerTools.push(action.tool);
+      }
+
+      const enqueued = await Promise.all(plannedJobs.map((job) => enqueueJob(job)));
+      await Promise.all(
+        enqueued.map(async (job, index) => {
+          const queuedJob = plannedJobs[index];
+          if (!queuedJob || !job.id) {
+            return;
+          }
+          const jobId = String(job.id);
+          logPlannerActionEnqueued({
+            event: "planner_action_enqueued",
+            tool: enqueuedPlannerTools[index] ?? "unknown",
+            tenant_slug: req.tenant_slug!,
+            action_id: index,
+            request_id: correlationId,
+            job_type: queuedJob.type,
+            bullmq_job_id: jobId,
+          });
+          await setJobState(jobId, {
+            id: jobId,
+            type: queuedJob.type,
+            status: "pending",
+            task_id: queuedJob.taskId,
+            tenant_slug: queuedJob.tenant_slug,
+            tenant_id: queuedJob.tenant_id,
+            plan: queuedJob.plan,
+            request_id: queuedJob.request_id,
+            idempotency_key: queuedJob.idempotency_key,
+            cost_budget_usd: queuedJob.cost_budget_usd,
+            agent_role: queuedJob.agent_role,
+            metadata: queuedJob.metadata,
+            started_at: new Date().toISOString(),
+          });
+        }),
+      );
+
       return {
-        jobs_enqueued: 0,
-        job_ids: [],
+        jobs_enqueued: enqueued.length,
+        job_ids: enqueued.map((job) => String(job.id)),
         intent,
         request_id: correlationId,
         planner: {
@@ -208,6 +274,7 @@ export async function processIntent(req: IntentRequest): Promise<ProcessIntentRe
         id: String(job.id),
         type: queuedJob.type,
         status: "pending",
+        task_id: queuedJob.taskId,
         tenant_slug: queuedJob.tenant_slug,
         tenant_id: queuedJob.tenant_id,
         plan: queuedJob.plan,
@@ -215,6 +282,7 @@ export async function processIntent(req: IntentRequest): Promise<ProcessIntentRe
         idempotency_key: queuedJob.idempotency_key,
         cost_budget_usd: queuedJob.cost_budget_usd,
         agent_role: queuedJob.agent_role,
+        metadata: queuedJob.metadata,
         started_at: new Date().toISOString(),
       });
     }),

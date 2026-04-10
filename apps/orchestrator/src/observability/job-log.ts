@@ -3,6 +3,7 @@ import type { OrchestratorJob } from "../types.js";
 export interface JobEnqueueLogFields {
   event: "job_enqueue";
   job_type: OrchestratorJob["type"];
+  task_id?: string;
   tenant_slug?: string;
   tenant_id?: string;
   plan?: string;
@@ -15,6 +16,7 @@ export interface JobEnqueueLogFields {
   cost_budget_usd?: number;
   /** Prioridad BullMQ (0 = máxima); ver `planToQueuePriority` en `queue-opts.ts`. */
   queue_priority?: number;
+  metadata?: Record<string, unknown>;
 }
 
 /**

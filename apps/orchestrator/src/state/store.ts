@@ -7,6 +7,7 @@ export interface JobState {
   id: string;
   type: string;
   status: "pending" | "running" | "completed" | "failed";
+  task_id?: string;
   tenant_slug?: string;
   tenant_id?: string;
   plan?: string;
@@ -14,6 +15,7 @@ export interface JobState {
   idempotency_key?: string;
   cost_budget_usd?: number;
   agent_role?: string;
+  metadata?: Record<string, unknown>;
   started_at: string;
   completed_at?: string;
   result?: unknown;
