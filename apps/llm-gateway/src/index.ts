@@ -1,6 +1,7 @@
 export { analyzeComplexity } from "./complexity.js";
 export { cacheGet, cacheSet, getCacheStats } from "./cache.js";
 export { llmCall, llmCallDirect } from "./gateway.js";
+export { fetchRepoContextBlock } from "./repo-context-client.js";
 export { healthDaemon, HealthDaemon, type ProviderHealth } from "./health-daemon.js";
 export { hashPrompt } from "./hash.js";
 export { getTenantUsage, logUsage } from "./logger.js";

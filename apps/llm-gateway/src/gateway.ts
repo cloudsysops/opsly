@@ -13,6 +13,7 @@ import { formatResponse } from "./response-formatter.js";
 import { semanticCacheGetExact, semanticCacheGetSimilar, semanticCacheSet } from "./semantic-cache.js";
 import { hashPrompt } from "./hash.js";
 import { logGatewayEvent } from "./structured-log.js";
+import { fetchRepoContextBlock } from "./repo-context-client.js";
 import type { LLMMessage, LLMRequest, LLMResponse } from "./types.js";
 
 function contextLength(req: LLMRequest): number {
@@ -52,6 +53,26 @@ export async function legacyLlmCall(req: LLMRequest): Promise<LLMResponse> {
 
 function estimateTokensFromText(s: string): number {
   return Math.max(1, Math.ceil(s.length / 4));
+}
+
+/** Repo-First RAG: inyecta contexto local antes del pipeline (sin fallar si context-builder no responde). */
+async function mergeRepoContext(req: LLMRequest): Promise<LLMRequest> {
+  if (req.skip_repo_context === true) {
+    return req;
+  }
+  if (process.env.LLM_GATEWAY_REPO_CONTEXT !== "true") {
+    return req;
+  }
+  const query = req.messages.at(-1)?.content ?? "";
+  if (!query.trim()) {
+    return req;
+  }
+  const block = await fetchRepoContextBlock(query);
+  if (!block) {
+    return req;
+  }
+  const system = [req.system, "## Repo context (Opsly knowledge)\n", block].filter(Boolean).join("\n\n");
+  return { ...req, system };
 }
 
 export async function v3Pipeline(req: LLMRequest): Promise<LLMResponse> {
@@ -224,7 +245,8 @@ export async function llmCall(req: LLMRequest): Promise<LLMResponse> {
   const legacy_pipeline = isLegacyMode(req);
   const start = Date.now();
   try {
-    const res = await llmCallPipeline(req);
+    const withContext = await mergeRepoContext(req);
+    const res = await llmCallPipeline(withContext);
     logGatewayEvent({
       event: "llm_call_complete",
       tenant_slug: req.tenant_slug,

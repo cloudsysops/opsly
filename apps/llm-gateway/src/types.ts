@@ -55,6 +55,11 @@ export interface LLMRequest {
   skip_usage_log?: boolean;
   /** Correlación con orchestrator / clientes; si falta, el gateway genera uno en stdout. */
   request_id?: string;
+  /**
+   * Si true, no llama a context-builder (evita ruido en planner JSON, summarizer, tests).
+   * @default false cuando `LLM_GATEWAY_REPO_CONTEXT=true`
+   */
+  skip_repo_context?: boolean;
 }
 
 export interface LLMResponse {

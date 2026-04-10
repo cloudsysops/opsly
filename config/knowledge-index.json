@@ -1,0 +1,668 @@
+{
+  "version": 1,
+  "root": "/Users/dragon/cboteros/proyectos/intcloudsysops",
+  "generated_at": "2026-04-09T23:51:20.642Z",
+  "topics": {
+    "2026": [
+      "docs/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md",
+      "docs/SECURITY-MITIGATIONS-2026-04-09.md",
+      "docs/reports/audit-2026-04-07.md"
+    ],
+    "activeprompt": [
+      "docs/ACTIVE-PROMPT.md"
+    ],
+    "active": [
+      "docs/ACTIVE-PROMPT.md"
+    ],
+    "prompt": [
+      "docs/ACTIVE-PROMPT.md"
+    ],
+    "opsly": [
+      "docs/ACTIVE-PROMPT.md",
+      "docs/AGENTS-GUIDE.md",
+      "docs/ARCHITECT-SECURITY-REVIEW.md",
+      "docs/ARCHITECTURE.md",
+      "docs/AUTO-PUSH-WATCHER.md",
+      "docs/AUTOMATION-PLAN.md",
+      "docs/CLAUDE-WORKFLOW-OPTIMIZATION.md",
+      "docs/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md",
+      "docs/CONTEXT-BUILDER.md",
+      "docs/DOPPLER-VARS.md",
+      "docs/EXECUTION-PLAN-LOCALRANK-NOTEBOOKLM.md",
+      "docs/FAQ.md",
+      "docs/GOOGLE-CLOUD-ACTIVATION.md",
+      "docs/GOOGLE-CLOUD-SETUP.md",
+      "docs/GOOGLE-DRIVE-SYNC.md",
+      "docs/INVITATIONS_RUNBOOK.md",
+      "docs/LIBRARIES-INSTALLED.md",
+      "docs/LLM-GATEWAY.md",
+      "docs/LOCALRANK-TESTER-GUIDE.md",
+      "docs/MASTER-PLAN-STATUS.md",
+      "docs/MASTER-PLAN.md",
+      "docs/N8N-IMPORT-GUIDE.md",
+      "docs/N8N-SETUP.md",
+      "docs/OBSERVABILITY.md",
+      "docs/OPENCLAW-ARCHITECTURE.md",
+      "docs/ORCHESTRATOR-FIXES-EXECUTION.md",
+      "docs/ORCHESTRATOR.md",
+      "docs/PERFORMANCE_BASELINE.md",
+      "docs/QA-REVIEW-COMPLETE.md",
+      "docs/REFACTOR-CHECKLIST.md",
+      "docs/SECURITY-MITIGATIONS-2026-04-09.md",
+      "docs/SECURITY_AUDIT_REPORT.md",
+      "docs/SECURITY_CHECKLIST.md",
+      "docs/SSH-COMMANDS-LOCALRANK.md",
+      "docs/TEST_PLAN.md",
+      "docs/TROUBLESHOOTING.md",
+      "docs/VPS-ARCHITECTURE.md",
+      "docs/adr/ADR-001-docker-compose-por-tenant.md",
+      "docs/adr/ADR-002-traefik-sobre-nginx.md",
+      "docs/adr/ADR-003-doppler-secrets.md",
+      "docs/adr/ADR-004-supabase-schema-por-tenant.md",
+      "docs/adr/ADR-005-traefik-v3-1-docker-api.md",
+      "docs/adr/ADR-006-api-testing-vitest.md",
+      "docs/adr/ADR-007-runbooks-y-documentacion-operativa.md",
+      "docs/adr/ADR-008-terraform-digitalocean-plan.md",
+      "docs/adr/ADR-009-openclaw-mcp-architecture.md",
+      "docs/adr/ADR-010-llm-gateway.md",
+      "docs/adr/ADR-011-event-driven-orchestrator.md",
+      "docs/adr/ADR-012-observability.md",
+      "docs/adr/ADR-013-google-cloud-openSource-strategy.md",
+      "docs/adr/ADR-014-notebooklm-agent.md",
+      "docs/reports/audit-2026-04-07.md",
+      "docs/runbooks/admin.md",
+      "docs/runbooks/dev.md",
+      "docs/runbooks/frontend-audit.md",
+      "docs/runbooks/incident.md",
+      "docs/runbooks/managed.md",
+      "AGENTS.md",
+      "VISION.md"
+    ],
+    "agentsguide": [
+      "docs/AGENTS-GUIDE.md"
+    ],
+    "agents": [
+      "docs/AGENTS-GUIDE.md",
+      "AGENTS.md"
+    ],
+    "guide": [
+      "docs/AGENTS-GUIDE.md",
+      "docs/LOCALRANK-TESTER-GUIDE.md",
+      "docs/N8N-IMPORT-GUIDE.md"
+    ],
+    "architectsecurityreview": [
+      "docs/ARCHITECT-SECURITY-REVIEW.md"
+    ],
+    "architect": [
+      "docs/ARCHITECT-SECURITY-REVIEW.md"
+    ],
+    "security": [
+      "docs/ARCHITECT-SECURITY-REVIEW.md",
+      "docs/SECURITY-MITIGATIONS-2026-04-09.md",
+      "docs/SECURITY_AUDIT_REPORT.md",
+      "docs/SECURITY_CHECKLIST.md"
+    ],
+    "review": [
+      "docs/ARCHITECT-SECURITY-REVIEW.md",
+      "docs/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md",
+      "docs/QA-REVIEW-COMPLETE.md"
+    ],
+    "architecture": [
+      "docs/ARCHITECTURE.md",
+      "docs/OPENCLAW-ARCHITECTURE.md",
+      "docs/VPS-ARCHITECTURE.md",
+      "docs/adr/ADR-009-openclaw-mcp-architecture.md"
+    ],
+    "autopushwatcher": [
+      "docs/AUTO-PUSH-WATCHER.md"
+    ],
+    "auto": [
+      "docs/AUTO-PUSH-WATCHER.md"
+    ],
+    "push": [
+      "docs/AUTO-PUSH-WATCHER.md"
+    ],
+    "watcher": [
+      "docs/AUTO-PUSH-WATCHER.md"
+    ],
+    "automationplan": [
+      "docs/AUTOMATION-PLAN.md"
+    ],
+    "automation": [
+      "docs/AUTOMATION-PLAN.md"
+    ],
+    "plan": [
+      "docs/AUTOMATION-PLAN.md",
+      "docs/EXECUTION-PLAN-LOCALRANK-NOTEBOOKLM.md",
+      "docs/MASTER-PLAN-STATUS.md",
+      "docs/MASTER-PLAN.md",
+      "docs/TEST_PLAN.md",
+      "docs/adr/ADR-008-terraform-digitalocean-plan.md"
+    ],
+    "claudeworkflowoptimization": [
+      "docs/CLAUDE-WORKFLOW-OPTIMIZATION.md"
+    ],
+    "claude": [
+      "docs/CLAUDE-WORKFLOW-OPTIMIZATION.md"
+    ],
+    "workflow": [
+      "docs/CLAUDE-WORKFLOW-OPTIMIZATION.md"
+    ],
+    "optimization": [
+      "docs/CLAUDE-WORKFLOW-OPTIMIZATION.md"
+    ],
+    "coderevieworchestrator20260409": [
+      "docs/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md"
+    ],
+    "code": [
+      "docs/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md"
+    ],
+    "orchestrator": [
+      "docs/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md",
+      "docs/ORCHESTRATOR-FIXES-EXECUTION.md",
+      "docs/ORCHESTRATOR.md",
+      "docs/adr/ADR-011-event-driven-orchestrator.md"
+    ],
+    "04": [
+      "docs/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md",
+      "docs/SECURITY-MITIGATIONS-2026-04-09.md",
+      "docs/reports/audit-2026-04-07.md"
+    ],
+    "09": [
+      "docs/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md",
+      "docs/SECURITY-MITIGATIONS-2026-04-09.md"
+    ],
+    "contextbuilder": [
+      "docs/CONTEXT-BUILDER.md"
+    ],
+    "context": [
+      "docs/CONTEXT-BUILDER.md"
+    ],
+    "builder": [
+      "docs/CONTEXT-BUILDER.md"
+    ],
+    "dopplervars": [
+      "docs/DOPPLER-VARS.md"
+    ],
+    "doppler": [
+      "docs/DOPPLER-VARS.md",
+      "docs/adr/ADR-003-doppler-secrets.md"
+    ],
+    "vars": [
+      "docs/DOPPLER-VARS.md"
+    ],
+    "executionplanlocalranknotebooklm": [
+      "docs/EXECUTION-PLAN-LOCALRANK-NOTEBOOKLM.md"
+    ],
+    "execution": [
+      "docs/EXECUTION-PLAN-LOCALRANK-NOTEBOOKLM.md",
+      "docs/ORCHESTRATOR-FIXES-EXECUTION.md"
+    ],
+    "localrank": [
+      "docs/EXECUTION-PLAN-LOCALRANK-NOTEBOOKLM.md",
+      "docs/LOCALRANK-TESTER-GUIDE.md",
+      "docs/SSH-COMMANDS-LOCALRANK.md"
+    ],
+    "notebooklm": [
+      "docs/EXECUTION-PLAN-LOCALRANK-NOTEBOOKLM.md",
+      "docs/adr/ADR-014-notebooklm-agent.md"
+    ],
+    "faq": [
+      "docs/FAQ.md"
+    ],
+    "googlecloudactivation": [
+      "docs/GOOGLE-CLOUD-ACTIVATION.md"
+    ],
+    "google": [
+      "docs/GOOGLE-CLOUD-ACTIVATION.md",
+      "docs/GOOGLE-CLOUD-SETUP.md",
+      "docs/GOOGLE-DRIVE-SYNC.md",
+      "docs/adr/ADR-013-google-cloud-openSource-strategy.md"
+    ],
+    "cloud": [
+      "docs/GOOGLE-CLOUD-ACTIVATION.md",
+      "docs/GOOGLE-CLOUD-SETUP.md",
+      "docs/adr/ADR-013-google-cloud-openSource-strategy.md"
+    ],
+    "activation": [
+      "docs/GOOGLE-CLOUD-ACTIVATION.md"
+    ],
+    "googlecloudsetup": [
+      "docs/GOOGLE-CLOUD-SETUP.md"
+    ],
+    "setup": [
+      "docs/GOOGLE-CLOUD-SETUP.md",
+      "docs/N8N-SETUP.md"
+    ],
+    "googledrivesync": [
+      "docs/GOOGLE-DRIVE-SYNC.md"
+    ],
+    "drive": [
+      "docs/GOOGLE-DRIVE-SYNC.md"
+    ],
+    "sync": [
+      "docs/GOOGLE-DRIVE-SYNC.md"
+    ],
+    "invitationsrunbook": [
+      "docs/INVITATIONS_RUNBOOK.md"
+    ],
+    "invitations": [
+      "docs/INVITATIONS_RUNBOOK.md"
+    ],
+    "runbook": [
+      "docs/INVITATIONS_RUNBOOK.md"
+    ],
+    "librariesinstalled": [
+      "docs/LIBRARIES-INSTALLED.md"
+    ],
+    "libraries": [
+      "docs/LIBRARIES-INSTALLED.md"
+    ],
+    "installed": [
+      "docs/LIBRARIES-INSTALLED.md"
+    ],
+    "llmgateway": [
+      "docs/LLM-GATEWAY.md"
+    ],
+    "llm": [
+      "docs/LLM-GATEWAY.md",
+      "docs/adr/ADR-010-llm-gateway.md"
+    ],
+    "gateway": [
+      "docs/LLM-GATEWAY.md",
+      "docs/adr/ADR-010-llm-gateway.md"
+    ],
+    "localranktesterguide": [
+      "docs/LOCALRANK-TESTER-GUIDE.md"
+    ],
+    "tester": [
+      "docs/LOCALRANK-TESTER-GUIDE.md"
+    ],
+    "masterplanstatus": [
+      "docs/MASTER-PLAN-STATUS.md"
+    ],
+    "master": [
+      "docs/MASTER-PLAN-STATUS.md",
+      "docs/MASTER-PLAN.md"
+    ],
+    "status": [
+      "docs/MASTER-PLAN-STATUS.md"
+    ],
+    "masterplan": [
+      "docs/MASTER-PLAN.md"
+    ],
+    "n8nimportguide": [
+      "docs/N8N-IMPORT-GUIDE.md"
+    ],
+    "n8n": [
+      "docs/N8N-IMPORT-GUIDE.md",
+      "docs/N8N-SETUP.md"
+    ],
+    "import": [
+      "docs/N8N-IMPORT-GUIDE.md"
+    ],
+    "n8nsetup": [
+      "docs/N8N-SETUP.md"
+    ],
+    "observability": [
+      "docs/OBSERVABILITY.md",
+      "docs/adr/ADR-012-observability.md"
+    ],
+    "openclawarchitecture": [
+      "docs/OPENCLAW-ARCHITECTURE.md"
+    ],
+    "openclaw": [
+      "docs/OPENCLAW-ARCHITECTURE.md",
+      "docs/adr/ADR-009-openclaw-mcp-architecture.md"
+    ],
+    "orchestratorfixesexecution": [
+      "docs/ORCHESTRATOR-FIXES-EXECUTION.md"
+    ],
+    "fixes": [
+      "docs/ORCHESTRATOR-FIXES-EXECUTION.md"
+    ],
+    "performancebaseline": [
+      "docs/PERFORMANCE_BASELINE.md"
+    ],
+    "performance": [
+      "docs/PERFORMANCE_BASELINE.md"
+    ],
+    "baseline": [
+      "docs/PERFORMANCE_BASELINE.md"
+    ],
+    "qareviewcomplete": [
+      "docs/QA-REVIEW-COMPLETE.md"
+    ],
+    "qa": [
+      "docs/QA-REVIEW-COMPLETE.md"
+    ],
+    "complete": [
+      "docs/QA-REVIEW-COMPLETE.md"
+    ],
+    "refactorchecklist": [
+      "docs/REFACTOR-CHECKLIST.md"
+    ],
+    "refactor": [
+      "docs/REFACTOR-CHECKLIST.md"
+    ],
+    "checklist": [
+      "docs/REFACTOR-CHECKLIST.md",
+      "docs/SECURITY_CHECKLIST.md"
+    ],
+    "securitymitigations20260409": [
+      "docs/SECURITY-MITIGATIONS-2026-04-09.md"
+    ],
+    "mitigations": [
+      "docs/SECURITY-MITIGATIONS-2026-04-09.md"
+    ],
+    "securityauditreport": [
+      "docs/SECURITY_AUDIT_REPORT.md"
+    ],
+    "audit": [
+      "docs/SECURITY_AUDIT_REPORT.md",
+      "docs/reports/audit-2026-04-07.md",
+      "docs/runbooks/frontend-audit.md"
+    ],
+    "report": [
+      "docs/SECURITY_AUDIT_REPORT.md"
+    ],
+    "securitychecklist": [
+      "docs/SECURITY_CHECKLIST.md"
+    ],
+    "sshcommandslocalrank": [
+      "docs/SSH-COMMANDS-LOCALRANK.md"
+    ],
+    "ssh": [
+      "docs/SSH-COMMANDS-LOCALRANK.md"
+    ],
+    "commands": [
+      "docs/SSH-COMMANDS-LOCALRANK.md"
+    ],
+    "testplan": [
+      "docs/TEST_PLAN.md"
+    ],
+    "test": [
+      "docs/TEST_PLAN.md"
+    ],
+    "troubleshooting": [
+      "docs/TROUBLESHOOTING.md"
+    ],
+    "vpsarchitecture": [
+      "docs/VPS-ARCHITECTURE.md"
+    ],
+    "vps": [
+      "docs/VPS-ARCHITECTURE.md"
+    ],
+    "adr001dockercomposeportenant": [
+      "docs/adr/ADR-001-docker-compose-por-tenant.md"
+    ],
+    "adr": [
+      "docs/adr/ADR-001-docker-compose-por-tenant.md",
+      "docs/adr/ADR-002-traefik-sobre-nginx.md",
+      "docs/adr/ADR-003-doppler-secrets.md",
+      "docs/adr/ADR-004-supabase-schema-por-tenant.md",
+      "docs/adr/ADR-005-traefik-v3-1-docker-api.md",
+      "docs/adr/ADR-006-api-testing-vitest.md",
+      "docs/adr/ADR-007-runbooks-y-documentacion-operativa.md",
+      "docs/adr/ADR-008-terraform-digitalocean-plan.md",
+      "docs/adr/ADR-009-openclaw-mcp-architecture.md",
+      "docs/adr/ADR-010-llm-gateway.md",
+      "docs/adr/ADR-011-event-driven-orchestrator.md",
+      "docs/adr/ADR-012-observability.md",
+      "docs/adr/ADR-013-google-cloud-openSource-strategy.md",
+      "docs/adr/ADR-014-notebooklm-agent.md"
+    ],
+    "001": [
+      "docs/adr/ADR-001-docker-compose-por-tenant.md"
+    ],
+    "docker": [
+      "docs/adr/ADR-001-docker-compose-por-tenant.md",
+      "docs/adr/ADR-005-traefik-v3-1-docker-api.md"
+    ],
+    "compose": [
+      "docs/adr/ADR-001-docker-compose-por-tenant.md"
+    ],
+    "por": [
+      "docs/adr/ADR-001-docker-compose-por-tenant.md",
+      "docs/adr/ADR-004-supabase-schema-por-tenant.md"
+    ],
+    "tenant": [
+      "docs/adr/ADR-001-docker-compose-por-tenant.md",
+      "docs/adr/ADR-004-supabase-schema-por-tenant.md"
+    ],
+    "adr002traefiksobrenginx": [
+      "docs/adr/ADR-002-traefik-sobre-nginx.md"
+    ],
+    "002": [
+      "docs/adr/ADR-002-traefik-sobre-nginx.md"
+    ],
+    "traefik": [
+      "docs/adr/ADR-002-traefik-sobre-nginx.md",
+      "docs/adr/ADR-005-traefik-v3-1-docker-api.md"
+    ],
+    "sobre": [
+      "docs/adr/ADR-002-traefik-sobre-nginx.md"
+    ],
+    "nginx": [
+      "docs/adr/ADR-002-traefik-sobre-nginx.md"
+    ],
+    "adr003dopplersecrets": [
+      "docs/adr/ADR-003-doppler-secrets.md"
+    ],
+    "003": [
+      "docs/adr/ADR-003-doppler-secrets.md"
+    ],
+    "secrets": [
+      "docs/adr/ADR-003-doppler-secrets.md"
+    ],
+    "adr004supabaseschemaportenant": [
+      "docs/adr/ADR-004-supabase-schema-por-tenant.md"
+    ],
+    "004": [
+      "docs/adr/ADR-004-supabase-schema-por-tenant.md"
+    ],
+    "supabase": [
+      "docs/adr/ADR-004-supabase-schema-por-tenant.md"
+    ],
+    "schema": [
+      "docs/adr/ADR-004-supabase-schema-por-tenant.md"
+    ],
+    "adr005traefikv31dockerapi": [
+      "docs/adr/ADR-005-traefik-v3-1-docker-api.md"
+    ],
+    "005": [
+      "docs/adr/ADR-005-traefik-v3-1-docker-api.md"
+    ],
+    "v3": [
+      "docs/adr/ADR-005-traefik-v3-1-docker-api.md"
+    ],
+    "api": [
+      "docs/adr/ADR-005-traefik-v3-1-docker-api.md",
+      "docs/adr/ADR-006-api-testing-vitest.md"
+    ],
+    "adr006apitestingvitest": [
+      "docs/adr/ADR-006-api-testing-vitest.md"
+    ],
+    "006": [
+      "docs/adr/ADR-006-api-testing-vitest.md"
+    ],
+    "testing": [
+      "docs/adr/ADR-006-api-testing-vitest.md"
+    ],
+    "vitest": [
+      "docs/adr/ADR-006-api-testing-vitest.md"
+    ],
+    "adr007runbooksydocumentacionoperativa": [
+      "docs/adr/ADR-007-runbooks-y-documentacion-operativa.md"
+    ],
+    "007": [
+      "docs/adr/ADR-007-runbooks-y-documentacion-operativa.md"
+    ],
+    "runbooks": [
+      "docs/adr/ADR-007-runbooks-y-documentacion-operativa.md"
+    ],
+    "documentacion": [
+      "docs/adr/ADR-007-runbooks-y-documentacion-operativa.md"
+    ],
+    "operativa": [
+      "docs/adr/ADR-007-runbooks-y-documentacion-operativa.md"
+    ],
+    "adr008terraformdigitaloceanplan": [
+      "docs/adr/ADR-008-terraform-digitalocean-plan.md"
+    ],
+    "008": [
+      "docs/adr/ADR-008-terraform-digitalocean-plan.md"
+    ],
+    "terraform": [
+      "docs/adr/ADR-008-terraform-digitalocean-plan.md"
+    ],
+    "digitalocean": [
+      "docs/adr/ADR-008-terraform-digitalocean-plan.md"
+    ],
+    "adr009openclawmcparchitecture": [
+      "docs/adr/ADR-009-openclaw-mcp-architecture.md"
+    ],
+    "009": [
+      "docs/adr/ADR-009-openclaw-mcp-architecture.md"
+    ],
+    "mcp": [
+      "docs/adr/ADR-009-openclaw-mcp-architecture.md"
+    ],
+    "adr010llmgateway": [
+      "docs/adr/ADR-010-llm-gateway.md"
+    ],
+    "010": [
+      "docs/adr/ADR-010-llm-gateway.md"
+    ],
+    "adr011eventdrivenorchestrator": [
+      "docs/adr/ADR-011-event-driven-orchestrator.md"
+    ],
+    "011": [
+      "docs/adr/ADR-011-event-driven-orchestrator.md"
+    ],
+    "event": [
+      "docs/adr/ADR-011-event-driven-orchestrator.md"
+    ],
+    "driven": [
+      "docs/adr/ADR-011-event-driven-orchestrator.md"
+    ],
+    "adr012observability": [
+      "docs/adr/ADR-012-observability.md"
+    ],
+    "012": [
+      "docs/adr/ADR-012-observability.md"
+    ],
+    "adr013googlecloudopensourcestrategy": [
+      "docs/adr/ADR-013-google-cloud-openSource-strategy.md"
+    ],
+    "013": [
+      "docs/adr/ADR-013-google-cloud-openSource-strategy.md"
+    ],
+    "opensource": [
+      "docs/adr/ADR-013-google-cloud-openSource-strategy.md"
+    ],
+    "strategy": [
+      "docs/adr/ADR-013-google-cloud-openSource-strategy.md"
+    ],
+    "adr014notebooklmagent": [
+      "docs/adr/ADR-014-notebooklm-agent.md"
+    ],
+    "014": [
+      "docs/adr/ADR-014-notebooklm-agent.md"
+    ],
+    "agent": [
+      "docs/adr/ADR-014-notebooklm-agent.md"
+    ],
+    "audit20260407": [
+      "docs/reports/audit-2026-04-07.md"
+    ],
+    "07": [
+      "docs/reports/audit-2026-04-07.md"
+    ],
+    "admin": [
+      "docs/runbooks/admin.md"
+    ],
+    "dev": [
+      "docs/runbooks/dev.md"
+    ],
+    "frontendaudit": [
+      "docs/runbooks/frontend-audit.md"
+    ],
+    "frontend": [
+      "docs/runbooks/frontend-audit.md"
+    ],
+    "incident": [
+      "docs/runbooks/incident.md"
+    ],
+    "managed": [
+      "docs/runbooks/managed.md"
+    ],
+    "vision": [
+      "VISION.md"
+    ],
+    "roadmap": [
+      "VISION.md"
+    ]
+  },
+  "files": [
+    "AGENTS.md",
+    "VISION.md",
+    "docs/ACTIVE-PROMPT.md",
+    "docs/AGENTS-GUIDE.md",
+    "docs/ARCHITECT-SECURITY-REVIEW.md",
+    "docs/ARCHITECTURE.md",
+    "docs/AUTO-PUSH-WATCHER.md",
+    "docs/AUTOMATION-PLAN.md",
+    "docs/CLAUDE-WORKFLOW-OPTIMIZATION.md",
+    "docs/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md",
+    "docs/CONTEXT-BUILDER.md",
+    "docs/DOPPLER-VARS.md",
+    "docs/EXECUTION-PLAN-LOCALRANK-NOTEBOOKLM.md",
+    "docs/FAQ.md",
+    "docs/GOOGLE-CLOUD-ACTIVATION.md",
+    "docs/GOOGLE-CLOUD-SETUP.md",
+    "docs/GOOGLE-DRIVE-SYNC.md",
+    "docs/INVITATIONS_RUNBOOK.md",
+    "docs/LIBRARIES-INSTALLED.md",
+    "docs/LLM-GATEWAY.md",
+    "docs/LOCALRANK-TESTER-GUIDE.md",
+    "docs/MASTER-PLAN-STATUS.md",
+    "docs/MASTER-PLAN.md",
+    "docs/N8N-IMPORT-GUIDE.md",
+    "docs/N8N-SETUP.md",
+    "docs/OBSERVABILITY.md",
+    "docs/OPENCLAW-ARCHITECTURE.md",
+    "docs/ORCHESTRATOR-FIXES-EXECUTION.md",
+    "docs/ORCHESTRATOR.md",
+    "docs/PERFORMANCE_BASELINE.md",
+    "docs/QA-REVIEW-COMPLETE.md",
+    "docs/REFACTOR-CHECKLIST.md",
+    "docs/SECURITY-MITIGATIONS-2026-04-09.md",
+    "docs/SECURITY_AUDIT_REPORT.md",
+    "docs/SECURITY_CHECKLIST.md",
+    "docs/SSH-COMMANDS-LOCALRANK.md",
+    "docs/TEST_PLAN.md",
+    "docs/TROUBLESHOOTING.md",
+    "docs/VPS-ARCHITECTURE.md",
+    "docs/adr/ADR-001-docker-compose-por-tenant.md",
+    "docs/adr/ADR-002-traefik-sobre-nginx.md",
+    "docs/adr/ADR-003-doppler-secrets.md",
+    "docs/adr/ADR-004-supabase-schema-por-tenant.md",
+    "docs/adr/ADR-005-traefik-v3-1-docker-api.md",
+    "docs/adr/ADR-006-api-testing-vitest.md",
+    "docs/adr/ADR-007-runbooks-y-documentacion-operativa.md",
+    "docs/adr/ADR-008-terraform-digitalocean-plan.md",
+    "docs/adr/ADR-009-openclaw-mcp-architecture.md",
+    "docs/adr/ADR-010-llm-gateway.md",
+    "docs/adr/ADR-011-event-driven-orchestrator.md",
+    "docs/adr/ADR-012-observability.md",
+    "docs/adr/ADR-013-google-cloud-openSource-strategy.md",
+    "docs/adr/ADR-014-notebooklm-agent.md",
+    "docs/reports/audit-2026-04-07.md",
+    "docs/runbooks/admin.md",
+    "docs/runbooks/dev.md",
+    "docs/runbooks/frontend-audit.md",
+    "docs/runbooks/incident.md",
+    "docs/runbooks/managed.md"
+  ]
+}

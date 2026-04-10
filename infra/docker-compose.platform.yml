@@ -205,9 +205,13 @@ services:
       REDIS_PASSWORD: ${REDIS_PASSWORD}
       SUPABASE_URL: ${SUPABASE_URL}
       SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY}
+      CONTEXT_BUILDER_URL: http://context-builder:3012
+      LLM_GATEWAY_REPO_CONTEXT: "true"
     depends_on:
       redis:
         condition: service_healthy
+      context-builder:
+        condition: service_started
     networks:
       - internal
     restart: unless-stopped
@@ -266,6 +270,10 @@ services:
       CONTEXT_BUILDER_PORT: "3012"
       REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379/0
       REDIS_PASSWORD: ${REDIS_PASSWORD}
+      OPS_REPO_ROOT: ${OPS_REPO_ROOT:-/opt/opsly}
+      KNOWLEDGE_INDEX_PATH: ${KNOWLEDGE_INDEX_PATH:-/opt/opsly/config/knowledge-index.json}
+    volumes:
+      - ${OPS_REPO_HOST_PATH:-/opt/opsly}:/opt/opsly:ro
     depends_on:
       redis:
         condition: service_healthy

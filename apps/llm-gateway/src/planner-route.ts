@@ -118,6 +118,7 @@ function chatBodyToLlmRequest(body: ChatCompletionsPlannerBody, requestId: strin
     routing_bias: "cost",
     max_tokens: 2048,
     temperature: 0.2,
+    skip_repo_context: true,
   };
 }
 
@@ -242,6 +243,7 @@ async function handleLegacyPlanner(req: IncomingMessage, res: ServerResponse): P
     routing_bias: "cost",
     max_tokens: 2048,
     temperature: 0.2,
+    skip_repo_context: true,
   };
 
   try {

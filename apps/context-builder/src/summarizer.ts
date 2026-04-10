@@ -17,6 +17,7 @@ export async function summarizeSession(ctx: SessionContext): Promise<string> {
     model: "haiku",
     temperature: 0,
     cache: true,
+    skip_repo_context: true,
   });
 
   return result.content;
