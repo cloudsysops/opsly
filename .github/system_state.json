@@ -32,6 +32,7 @@
       "agents",
       "api",
       "context-builder",
+      "ingestion-service",
       "llm-gateway",
       "mcp",
       "ml",
@@ -39,8 +40,8 @@
       "portal",
       "web"
     ],
-    "scripts": 39,
+    "scripts": 40,
     "adrs": 15,
-    "migrations": 20
+    "migrations": 23
   }
 }
