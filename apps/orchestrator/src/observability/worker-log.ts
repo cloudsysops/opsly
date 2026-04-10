@@ -1,7 +1,7 @@
 import type { Job } from "bullmq";
 import type { OrchestratorJob } from "../types.js";
 
-export type WorkerName = "cursor" | "n8n" | "notify" | "drive";
+export type WorkerName = "cursor" | "n8n" | "notify" | "drive" | "backup" | "health";
 
 export function extractJobContext(job: Job): {
   task_id?: string;

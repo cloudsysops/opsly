@@ -1,4 +1,4 @@
-export type JobType = "cursor" | "n8n" | "notify" | "drive";
+export type JobType = "cursor" | "n8n" | "notify" | "drive" | "backup" | "health";
 
 /** Rol convencional para trazabilidad (no framework aparte). */
 export type AgentRole = "planner" | "executor" | "tool" | "notifier";

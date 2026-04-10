@@ -40,7 +40,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 require_env SUPABASE_URL SUPABASE_SERVICE_ROLE_KEY DB_CONNECTION_STRING S3_BUCKET AWS_REGION
-require_cmd jq curl aws pg_dump gzip
+require_cmd jq curl aws pg_dump gzip sha256sum
 
 S3_PREFIX="${S3_PREFIX:-opsly/backups}"
 DATE_UTC="${BACKUP_DATE:-$(date -u +%Y-%m-%d)}"
@@ -108,8 +108,10 @@ while IFS= read -r slug; do
 
   if [[ "${DRY_RUN}" == "true" ]]; then
     log_info "DRY-RUN: pg_dump -n tenant_${slug} ... | gzip > ${tmp_sql_gz}"
+    log_info "DRY-RUN: sha256sum ${tmp_sql_gz} > ${tmp_sql_gz}.sha256"
     log_info "DRY-RUN: aws s3 cp ${tmp_sql_gz} ${s3_uri} --region ${AWS_REGION}"
-    log_info "DRY-RUN: aws s3 ls ${s3_uri}"
+    log_info "DRY-RUN: aws s3 cp ${tmp_sql_gz}.sha256 ${s3_uri}.sha256 --region ${AWS_REGION}"
+    log_info "DRY-RUN: verify SHA256 download from ${s3_uri}"
     SUCCESS_COUNT=$((SUCCESS_COUNT + 1))
     continue
   fi
@@ -122,23 +124,50 @@ while IFS= read -r slug; do
     continue
   fi
 
+  # Generar checksum SHA256 antes de subir
+  local tmp_sha="${tmp_sql_gz}.sha256"
+  sha256sum "${tmp_sql_gz}" >"${tmp_sha}"
+  log_info "SHA256: $(cat "${tmp_sha}")"
+
   if ! aws s3 cp "${tmp_sql_gz}" "${s3_uri}" --region "${AWS_REGION}"; then
     log_error "S3 upload failed for slug=${slug}"
     FAILED+=("${slug}")
-    rm -f "${tmp_sql_gz}"
+    rm -f "${tmp_sql_gz}" "${tmp_sha}"
     continue
   fi
 
-  if ! aws s3 ls "${s3_uri}" --region "${AWS_REGION}" >/dev/null 2>&1; then
-    log_error "S3 verify failed for slug=${slug}"
+  # Subir checksum junto al backup
+  if ! aws s3 cp "${tmp_sha}" "${s3_uri}.sha256" --region "${AWS_REGION}"; then
+    log_error "S3 checksum upload failed for slug=${slug}"
     FAILED+=("${slug}")
-    rm -f "${tmp_sql_gz}"
+    rm -f "${tmp_sql_gz}" "${tmp_sha}"
     continue
   fi
 
-  rm -f "${tmp_sql_gz}"
+  # Verificar integridad: descargar y comparar SHA256
+  local tmp_verify="${TMP_ROOT}/${slug}_verify.sql.gz"
+  local tmp_verify_sha="${tmp_verify}.sha256"
+  if ! aws s3 cp "${s3_uri}" "${tmp_verify}" --region "${AWS_REGION}" --quiet; then
+    log_error "S3 download for verify failed for slug=${slug}"
+    FAILED+=("${slug}")
+    rm -f "${tmp_sql_gz}" "${tmp_sha}" "${tmp_verify}" "${tmp_verify_sha}"
+    continue
+  fi
+
+  local expected_hash actual_hash
+  expected_hash="$(awk '{print $1}' "${tmp_sha}")"
+  actual_hash="$(sha256sum "${tmp_verify}" | awk '{print $1}')"
+
+  if [[ "${expected_hash}" != "${actual_hash}" ]]; then
+    log_error "SHA256 mismatch for slug=${slug}: expected=${expected_hash} actual=${actual_hash}"
+    FAILED+=("${slug}")
+    rm -f "${tmp_sql_gz}" "${tmp_sha}" "${tmp_verify}"
+    continue
+  fi
+
+  rm -f "${tmp_sql_gz}" "${tmp_sha}" "${tmp_verify}"
   SUCCESS_COUNT=$((SUCCESS_COUNT + 1))
-  log_info "Uploaded ${s3_uri}"
+  log_info "Uploaded + verified ${s3_uri} (sha256: ${expected_hash})"
 done < <(fetch_slugs)
 
 run rm -rf "${TMP_ROOT}"

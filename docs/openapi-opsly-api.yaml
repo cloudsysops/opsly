@@ -602,6 +602,106 @@ paths:
         '500':
           $ref: '#/components/responses/InternalError'
 
+  /api/admin/audit:
+    get:
+      summary: Audit trail inmutable (admin)
+      description: >
+        Lista eventos de auditoría con paginación cursor (keyset). Requiere `PLATFORM_ADMIN_TOKEN`.
+        Solo INSERT es posible en la tabla subyacente — sin UPDATE ni DELETE (inmutable por RLS).
+      operationId: listAuditEvents
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: slug
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Filtrar por tenant_slug
+        - name: action
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Filtrar por acción (ej. invitation.sent, tenant.suspended)
+        - name: from
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+          description: Desde (ISO 8601)
+        - name: to
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+          description: Hasta (ISO 8601)
+        - name: after
+          in: query
+          required: false
+          schema:
+            type: string
+            format: uuid
+          description: Cursor de paginación (UUID del último elemento de la página anterior)
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 50
+            maximum: 200
+      responses:
+        '200':
+          description: Eventos de auditoría paginados
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          format: uuid
+                        tenant_slug:
+                          type: string
+                        actor_email:
+                          type: string
+                        action:
+                          type: string
+                        resource:
+                          type: string
+                          nullable: true
+                        metadata:
+                          type: object
+                          nullable: true
+                        ip:
+                          type: string
+                          nullable: true
+                        created_at:
+                          type: string
+                          format: date-time
+                  pagination:
+                    type: object
+                    properties:
+                      limit:
+                        type: integer
+                      hasNextPage:
+                        type: boolean
+                      nextCursor:
+                        type: string
+                        format: uuid
+                        nullable: true
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
   /api/invitations:
     post:
       summary: Enviar invitación (admin)

@@ -54,7 +54,18 @@ for (const p of REQUIRED_PORTAL_PATHS) {
 /** Subset feedback (portal POST + admin GET) — Fase 4 incr. 24. */
 const REQUIRED_FEEDBACK_PATHS = ["/api/feedback"];
 
+const REQUIRED_ADMIN_PATHS = ["/api/admin/audit"];
+
 for (const p of REQUIRED_FEEDBACK_PATHS) {
+  if (!Object.prototype.hasOwnProperty.call(doc.paths, p)) {
+    console.error(
+      `validate-openapi-yaml: falta path obligatorio en spec: ${p}`,
+    );
+    process.exit(1);
+  }
+}
+
+for (const p of REQUIRED_ADMIN_PATHS) {
   if (!Object.prototype.hasOwnProperty.call(doc.paths, p)) {
     console.error(
       `validate-openapi-yaml: falta path obligatorio en spec: ${p}`,
@@ -65,5 +76,5 @@ for (const p of REQUIRED_FEEDBACK_PATHS) {
 
 const n = Object.keys(doc.paths).length;
 console.log(
-  `validate-openapi-yaml: OK (OpenAPI ${doc.openapi}, ${n} paths, portal ${REQUIRED_PORTAL_PATHS.length} + feedback ${REQUIRED_FEEDBACK_PATHS.length} requeridos)`,
+  `validate-openapi-yaml: OK (OpenAPI ${doc.openapi}, ${n} paths, portal ${REQUIRED_PORTAL_PATHS.length} + feedback ${REQUIRED_FEEDBACK_PATHS.length} + admin ${REQUIRED_ADMIN_PATHS.length} requeridos)`,
 );

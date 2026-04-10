@@ -3,8 +3,10 @@ import { processIntent } from "./engine.js";
 import { connection } from "./queue.js";
 import { startOrchestratorHealthServer } from "./health-server.js";
 import { TeamManager } from "./teams/TeamManager.js";
+import { startBackupWorker } from "./workers/BackupWorker.js";
 import { startCursorWorker } from "./workers/CursorWorker.js";
 import { startDriveWorker } from "./workers/DriveWorker.js";
+import { startHealthWorker } from "./workers/HealthWorker.js";
 import { startN8nWorker } from "./workers/N8nWorker.js";
 import { startNotifyWorker } from "./workers/NotifyWorker.js";
 
@@ -50,6 +52,9 @@ async function main(): Promise<void> {
   startN8nWorker(connection);
   startNotifyWorker(connection);
   startDriveWorker(connection);
+  startBackupWorker(connection);
+  startHealthWorker(connection);
+  console.log("[orchestrator] Workers: cursor, n8n, notify, drive, backup, health");
 
   const shutdown = (): void => {
     void (async () => {
