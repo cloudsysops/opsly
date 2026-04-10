@@ -2,6 +2,8 @@
 
 Servicio opcional que vigila **`docs/`** y **`AGENTS.md`** en el clon de Opsly y, tras un periodo de estabilidad, ejecuta **`git add`**, **`commit`** y **`push`** a **`origin main`**.
 
+**No confundir:** esto **no** es el deploy ni el `git pull` desde GitHub. Para flujo CI → VPS, índice de conocimiento y hooks, ver **`docs/DEPLOY-VPS-AND-INDEX.md`**.
+
 ## Cuándo usarlo
 
 - Máquina dedicada (p. ej. VPS) donde solo se editan documentos de contexto para agentes.
