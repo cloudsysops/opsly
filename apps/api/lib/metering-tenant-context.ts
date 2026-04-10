@@ -23,10 +23,7 @@ export async function runWithResolvedTenantContext<T>(
     throw new Error(`metering: tenant not found for slug ${tenantSlug}`);
   }
 
-  return runWithTenantContext(
-    { tenantId: data.id, tenantSlug: data.slug },
-    fn,
-  );
+  return runWithTenantContext({ tenantId: data.id, tenantSlug: data.slug }, fn);
 }
 
 /**
@@ -49,10 +46,7 @@ export async function runWithMeteringTenantContext<T>(
   }
 
   if (options?.tenantId) {
-    return runWithTenantContext(
-      { tenantId: options.tenantId, tenantSlug },
-      fn,
-    );
+    return runWithTenantContext({ tenantId: options.tenantId, tenantSlug }, fn);
   }
 
   return runWithResolvedTenantContext(tenantSlug, fn);

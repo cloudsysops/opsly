@@ -47,7 +47,11 @@ function defaultModelLabel(eventType: UsageMeterEventType): string {
 }
 
 function sessionIdFromMetadata(metadata: Json | undefined): string | null {
-  if (metadata === null || typeof metadata !== "object" || Array.isArray(metadata)) {
+  if (
+    metadata === null ||
+    typeof metadata !== "object" ||
+    Array.isArray(metadata)
+  ) {
     return null;
   }
   const sid = (metadata as Record<string, unknown>).session_id;
