@@ -4,8 +4,8 @@ Antes de CUALQUIER tarea, sin excepcion:
 
 1. Leer `AGENTS.md` completo.
 2. Leer `VISION.md` completo.
-3. Verificar estado VPS:
-   `ssh vps-dragon@157.245.223.7 "systemctl is-active cursor-prompt-monitor opsly-watcher && docker ps --format '{{.Names}}\t{{.Status}}' | grep -E 'n8n|uptime|infra|traefik'"`
+3. Verificar estado VPS (acceso **solo por Tailscale** — `100.120.151.91`, nunca IP pública):
+   `ssh vps-dragon@100.120.151.91 "systemctl is-active cursor-prompt-monitor opsly-watcher && docker ps --format '{{.Names}}\t{{.Status}}' | grep -E 'n8n|uptime|infra|traefik'"`
 4. Verificar vars criticas Doppler:
    `for VAR in DISCORD_WEBHOOK_URL RESEND_API_KEY GITHUB_TOKEN_N8N GOOGLE_DRIVE_TOKEN; do VAL=$(doppler secrets get $VAR --project ops-intcloudsysops --config prd --plain 2>/dev/null || echo ""); echo "$VAR: ${#VAL} chars"; done`
 5. Reportar gaps antes de continuar.
@@ -192,6 +192,27 @@ git config core.hooksPath .githooks
 npm run validate-context          # Valida system_state.json
 npm run validate-skills           # Verifica metadatos en skills/user/*/
 ```
+
+---
+
+## Acceso al VPS — Tailscale obligatorio
+
+> **Regla de oro:** el SSH al VPS va **SIEMPRE** por Tailscale. Nunca usar la IP pública `157.245.223.7` para conectarse.
+
+| Propósito | Dirección | Nota |
+|-----------|-----------|------|
+| SSH / admin | `vps-dragon@100.120.151.91` | Tailscale VPN — única vía válida |
+| HTTP/HTTPS público | `157.245.223.7` (detrás de Cloudflare) | Solo tráfico de usuarios |
+
+```bash
+# ✅ CORRECTO — siempre así
+ssh vps-dragon@100.120.151.91
+
+# ❌ NUNCA — IP pública bloqueada por ufw para SSH
+ssh vps-dragon@157.245.223.7
+```
+
+Si Tailscale no responde (`Connection timed out`): verificar `tailscale status` localmente y en el VPS antes de escalar.
 
 ---
 
