@@ -24,6 +24,7 @@
 
 ## Referencias
 
+- **`docs/ADMIN-ECOSYSTEM.md`** — manual amplio: comandos SSH, Docker, Doppler, scripts, health checks, tenants
 - `AGENTS.md` — estado y próximo paso
 - `docs/adr/` — decisiones de arquitectura
 - `docs/runbooks/incident.md` — respuesta a incidentes
