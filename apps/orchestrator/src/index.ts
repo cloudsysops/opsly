@@ -9,6 +9,7 @@ import { startDriveWorker } from "./workers/DriveWorker.js";
 import { startHealthWorker } from "./workers/HealthWorker.js";
 import { startN8nWorker } from "./workers/N8nWorker.js";
 import { startNotifyWorker } from "./workers/NotifyWorker.js";
+import { createWebhookWorker } from "./workers/WebhookWorker.js";
 
 async function runEventSubscription(teamManager: TeamManager): Promise<void> {
   await subscribeEvents(async (event, eventData) => {
@@ -54,7 +55,8 @@ async function main(): Promise<void> {
   startDriveWorker(connection);
   startBackupWorker(connection);
   startHealthWorker(connection);
-  console.log("[orchestrator] Workers: cursor, n8n, notify, drive, backup, health");
+  createWebhookWorker();
+  console.log("[orchestrator] Workers: cursor, n8n, notify, drive, backup, health, webhooks");
 
   const shutdown = (): void => {
     void (async () => {
