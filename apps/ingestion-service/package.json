@@ -1,0 +1,19 @@
+{
+  "name": "@intcloudsysops/ingestion-service",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Ingestion Bunker: recibe webhooks y eventos y los encola en Redis (sin lógica de negocio).",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "bullmq": "^5.58.5",
+    "express": "^4.21.2",
+    "ioredis": "^5.4.2"
+  }
+}

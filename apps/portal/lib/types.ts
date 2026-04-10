@@ -1,5 +1,7 @@
 export type {
   AdminInvitationResponse,
+  OnboardingRequest,
+  OnboardingResponse,
   PortalHealthPayload,
   PortalMode,
   PortalTenantPayload,

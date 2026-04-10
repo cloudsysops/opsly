@@ -1,5 +1,7 @@
 import type { Tenant } from "../supabase/types";
 
+const MAX_ERROR_SLICE = 900;
+
 function getWebhookUrl(): string | null {
   const url = process.env.DISCORD_WEBHOOK_URL;
   return url && url.length > 0 ? url : null;
@@ -43,4 +45,24 @@ export async function notifyInvoicePaymentFailed(
   await postDiscord(
     `**Invoice payment failed** — tenant \`${slug}\`, invoice \`${invoiceId}\``,
   );
+}
+
+/** Alerta operativa cuando el handler de webhook Stripe falla tras verificación (p. ej. provision). */
+export async function notifyStripeWebhookCritical(
+  eventType: string,
+  error: string,
+  tenantSlug?: string,
+): Promise<void> {
+  const webhookUrl = getWebhookUrl();
+  if (!webhookUrl) {
+    return;
+  }
+  const slugPart = tenantSlug ? `tenant \`${tenantSlug}\` — ` : "";
+  try {
+    await postDiscord(
+      `**Stripe webhook CRITICAL** (\`${eventType}\`) — ${slugPart}${error.slice(0, MAX_ERROR_SLICE)}`,
+    );
+  } catch {
+    /* ya logueado en postDiscord; no bloquear respuesta al webhook */
+  }
 }

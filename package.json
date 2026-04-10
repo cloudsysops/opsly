@@ -11,6 +11,8 @@
     "sync-agents": "bash scripts/update-agents.sh",
     "validate-context": "python3 -m json.tool context/system_state.json > /dev/null",
     "validate-openapi": "node scripts/validate-openapi-yaml.mjs",
+    "create-tool": "node scripts/create-tool.js",
+    "test:tools": "npm run test:tools --workspace=@intcloudsysops/orchestrator",
     "index-knowledge": "bash scripts/index-knowledge.sh",
     "validate-skills": "npm run validate-skills --prefix skills/manifest",
     "test-skills-manifest": "npm test --prefix skills/manifest",

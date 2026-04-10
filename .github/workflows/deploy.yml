@@ -19,12 +19,20 @@
 #
 # OPSLY_CONFIG_SYNC: valores públicos desde config/opsly.config.json (scripts/sync-config.sh)
 # VPS_HOST (secret) debe coincidir con infrastructure.vps_ip del JSON.
+#
+# Despliegue Node/PM2 (job deploy-pm2-vps):
+#   Ramas: main → DEPLOY_DIR=/opt/opsly, PM2_NAME=opsly-prod
+#          staging → DEPLOY_DIR=/opt/opsly-staging, PM2_NAME=opsly-staging
+#   Requiere en el VPS: repo clonable (SSH deploy key o credencial git), Node/npm, supabase CLI
+#   vinculado si se usa db push, y ecosystem.config.js en DEPLOY_DIR (o ajustar el fallback pm2 start).
+#   Secretos SSH: VPS_HOST, VPS_USER (o VPS_USERNAME como alias en la UI; el workflow usa VPS_USER),
+#   VPS_SSH_KEY
 
 name: Deploy
 
 on:
   push:
-    branches: [main]
+    branches: [main, staging]
   workflow_dispatch:
     inputs:
       skip_tests:
@@ -66,7 +74,8 @@ jobs:
     needs: lint-and-typecheck
     if: |
       always() &&
-      (needs.lint-and-typecheck.result == 'success' || needs.lint-and-typecheck.result == 'skipped')
+      (needs.lint-and-typecheck.result == 'success' || needs.lint-and-typecheck.result == 'skipped') &&
+      github.ref_name == 'main'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -175,7 +184,8 @@ jobs:
     needs: lint-and-typecheck
     if: |
       always() &&
-      (needs.lint-and-typecheck.result == 'success' || needs.lint-and-typecheck.result == 'skipped')
+      (needs.lint-and-typecheck.result == 'success' || needs.lint-and-typecheck.result == 'skipped') &&
+      github.ref_name == 'main'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -198,10 +208,68 @@ jobs:
           push: true
           tags: ghcr.io/cloudsysops/intcloudsysops-mcp:latest
 
+  # Git + npm + Supabase + PM2 en el VPS (orquestador / proceso Node). Ramas main y staging.
+  deploy-pm2-vps:
+    name: Deploy Node/PM2 on VPS (SSH)
+    needs: lint-and-typecheck
+    if: |
+      always() &&
+      (needs.lint-and-typecheck.result == 'success' || needs.lint-and-typecheck.result == 'skipped') &&
+      github.event_name == 'push' &&
+      (github.ref_name == 'staging' || github.ref_name == 'main')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy via SSH (clone si falta, pull, npm, supabase, pm2 reload)
+        uses: appleboy/ssh-action@v1.0.3
+        env:
+          DEPLOY_DIR: ${{ github.ref_name == 'main' && '/opt/opsly' || '/opt/opsly-staging' }}
+          PM2_NAME: ${{ github.ref_name == 'main' && 'opsly-prod' || 'opsly-staging' }}
+          GIT_BRANCH: ${{ github.ref_name }}
+          REPO_SSH_URL: git@github.com:${{ github.repository }}.git
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          envs: DEPLOY_DIR,PM2_NAME,GIT_BRANCH,REPO_SSH_URL
+          script: |
+            set -euo pipefail
+            echo "PM2 deploy: branch=${GIT_BRANCH} DEPLOY_DIR=${DEPLOY_DIR} PM2_NAME=${PM2_NAME}"
+
+            if [ ! -d "${DEPLOY_DIR}/.git" ]; then
+              echo "Sin repo en ${DEPLOY_DIR}; clonando ${REPO_SSH_URL} ..."
+              PARENT="$(dirname "${DEPLOY_DIR}")"
+              if [ ! -d "${PARENT}" ]; then
+                sudo mkdir -p "${PARENT}" 2>/dev/null || mkdir -p "${PARENT}"
+              fi
+              if [ -e "${DEPLOY_DIR}" ] && [ ! -d "${DEPLOY_DIR}/.git" ]; then
+                echo "Error: ${DEPLOY_DIR} existe y no es un repositorio git" >&2
+                exit 1
+              fi
+              git clone "${REPO_SSH_URL}" "${DEPLOY_DIR}"
+            fi
+
+            cd "${DEPLOY_DIR}"
+            git remote set-url origin "${REPO_SSH_URL}" || true
+            git fetch origin "${GIT_BRANCH}"
+            git checkout "${GIT_BRANCH}"
+            git pull origin "${GIT_BRANCH}"
+
+            npm install --production
+
+            npx supabase db push
+
+            pm2 reload "${PM2_NAME}" --update-env || pm2 start ecosystem.config.js --name "${PM2_NAME}"
+
+            echo "Deployed to ${GIT_BRANCH} successfully (PM2 ${PM2_NAME} @ ${DEPLOY_DIR})"
+
   deploy:
     needs:
       - build-and-push
       - build-mcp
+    # Solo producción: imágenes GHCR + compose. En staging este job no corre (build-* están skipped).
+    if: github.ref_name == 'main'
     runs-on: ubuntu-latest
     environment: production
     permissions:

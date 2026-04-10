@@ -31,7 +31,9 @@ export type Intent =
   | "sync_drive"
   | "full_pipeline"
   /** Delegación al LLM Gateway (Remote Planner / Chat.z); requiere tenant_slug y plan Hermes. */
-  | "remote_plan";
+  | "remote_plan"
+  /** Plan + sprint persistido en `platform.sprints`; ejecución en background. */
+  | "sprint_plan";
 
 export interface IntentRequest {
   intent: Intent;

@@ -1,4 +1,6 @@
 import { randomUUID } from "node:crypto";
+import { buildConsciousAppendix } from "./agents/conscious-layer.js";
+import { createDefaultToolRegistry } from "./agents/tools/registry.js";
 import { MAX_PLANNER_ACTIONS } from "./constants-planner.js";
 import {
     meterPlannerLlmFireAndForget,
@@ -12,6 +14,7 @@ import {
     plannerActionToOrchestratorJob,
 } from "./planner-map.js";
 import { enqueueJob } from "./queue.js";
+import { SprintManager } from "./sprints/sprint-manager.js";
 import { setJobState } from "./state/store.js";
 import type { Intent, IntentRequest, OrchestratorJob } from "./types.js";
 
@@ -37,6 +40,9 @@ function enrichJob(
 }
 
 function effectiveIntent(req: IntentRequest): Intent {
+  if (req.intent === "sprint_plan") {
+    return "sprint_plan";
+  }
   if (req.agent_role === "planner" && req.intent !== "remote_plan") {
     return "remote_plan";
   }
@@ -48,6 +54,8 @@ export interface ProcessIntentResult {
   job_ids: string[];
   intent: Intent;
   request_id: string;
+  /** Presente cuando `intent === "sprint_plan"`. */
+  sprint_id?: string;
   planner?: {
     reasoning: string;
     actions_count: number;
@@ -70,16 +78,83 @@ export async function processIntent(req: IntentRequest): Promise<ProcessIntentRe
   const intent = effectiveIntent(req);
 
   switch (intent) {
+    case "sprint_plan": {
+      const goal =
+        typeof req.context.goal === "string" ? req.context.goal.trim() : "";
+      if (goal.length === 0) {
+        throw new Error("sprint_plan requires context.goal (string)");
+      }
+      const tenantId = req.tenant_id?.trim();
+      const tenantSlug = req.tenant_slug?.trim();
+      if (!tenantId || !tenantSlug) {
+        throw new Error("sprint_plan requires tenant_id and tenant_slug");
+      }
+      const manager = new SprintManager();
+      const { sprintId } = await manager.createSprint({
+        tenantId,
+        tenantSlug,
+        goal,
+        requestId: correlationId,
+        plan: req.plan,
+        intentRequest: req,
+      });
+      void manager.executeSprint(sprintId).catch((err) => {
+        process.stderr.write(
+          `${JSON.stringify({
+            event: "sprint_execute_error",
+            sprint_id: sprintId,
+            error: err instanceof Error ? err.message : String(err),
+          })}\n`,
+        );
+      });
+      return {
+        jobs_enqueued: 0,
+        job_ids: [],
+        intent,
+        request_id: correlationId,
+        sprint_id: sprintId,
+      };
+    }
     case "remote_plan": {
       const tenantSlug = req.tenant_slug;
       if (!tenantSlug || tenantSlug.length === 0) {
         throw new Error("remote_plan requires tenant_slug (Hermes / tenant isolation)");
       }
       const snapshot = buildPlannerContextSnapshot({ ...req, intent });
-      const contextStr = JSON.stringify(snapshot, null, 2);
+      const toolRegistry = createDefaultToolRegistry();
+      const intentHint =
+        typeof req.context.query === "string"
+          ? req.context.query
+          : typeof req.context.prompt === "string"
+            ? req.context.prompt
+            : "necesito calcular";
+      const discoveredTools = toolRegistry.search(intentHint);
+      if (discoveredTools.length > 0) {
+        process.stdout.write(
+          `${JSON.stringify({
+            event: "tool_registry_match",
+            request_id: correlationId,
+            query: intentHint,
+            tools: discoveredTools.map((t) => t.name),
+          })}\n`,
+        );
+      }
+      const plannerTools = Array.from(
+        new Set([...DEFAULT_PLANNER_TOOL_NAMES, ...toolRegistry.listToolNames()]),
+      );
+      let contextStr = JSON.stringify(snapshot, null, 2);
+      const consciousAppendix = await buildConsciousAppendix({
+        intentHint,
+        tenantId: req.tenant_id ?? "",
+        requestId: correlationId,
+        toolRegistry,
+      });
+      if (consciousAppendix.length > 0) {
+        contextStr = `${contextStr}\n${consciousAppendix}`;
+      }
       const remotePlanStartedAt = Date.now();
       try {
-        const gw = await executeRemotePlanner(contextStr, DEFAULT_PLANNER_TOOL_NAMES, {
+        const gw = await executeRemotePlanner(contextStr, plannerTools, {
           tenantSlug,
           requestId: correlationId,
           tenantPlan: req.plan,
@@ -108,6 +183,29 @@ export async function processIntent(req: IntentRequest): Promise<ProcessIntentRe
         for (let i = 0; i < gw.planner.actions.length; i++) {
           const action = gw.planner.actions[i];
           if (!action) {
+            continue;
+          }
+          const localTool = toolRegistry.get(action.tool);
+          if (localTool) {
+            const toolOutput = await localTool.execute(action.params);
+            plannedJobs.push({
+              type: "notify",
+              payload: {
+                title: `Tool: ${localTool.name}`,
+                message: JSON.stringify(toolOutput),
+                type: "info",
+                planner_tool: localTool.name,
+              },
+              tenant_slug: req.tenant_slug,
+              tenant_id: req.tenant_id,
+              initiated_by: req.initiated_by,
+              plan: req.plan,
+              request_id: correlationId,
+              idempotency_key: `${correlationId}::planner::${localTool.name}::${i}`,
+              agent_role: "tool",
+              metadata: req.metadata,
+            });
+            enqueuedPlannerTools.push(localTool.name);
             continue;
           }
           const mapped = plannerActionToOrchestratorJob(action, req, correlationId, i);

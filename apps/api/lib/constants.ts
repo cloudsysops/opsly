@@ -17,6 +17,8 @@ export const HTTP_STATUS = {
   FORBIDDEN: 403,
   NOT_FOUND: 404,
   CONFLICT: 409,
+  /** Proveedor cloud aún no implementado (p. ej. Azure/GCP). */
+  NOT_IMPLEMENTED: 501,
   UNPROCESSABLE: 422,
   TOO_MANY_REQUESTS: 429,
   INTERNAL_ERROR: 500,
@@ -77,6 +79,12 @@ export const PORTAL_URL_PROBE = {
   TIMEOUT_MS: 10_000,
   /** Límite superior exclusivo para “hubo respuesta HTTP” (menor que este valor). */
   STATUS_EXCLUSIVE_MAX: 600,
+} as const;
+
+/** Fees por defecto en cotización / aprovisionamiento cloud (USD/mes). */
+export const PROVISIONING_OPSLY_FEE_USD = {
+  FREE_TIER_DEFAULT: 29,
+  SERVERLESS_STARTER_DEFAULT: 49,
 } as const;
 
 /** Paginación API listados. */

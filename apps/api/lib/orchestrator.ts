@@ -1,24 +1,25 @@
 import { z } from "zod";
+import { BUDGET_AUTO_SUSPEND_METADATA_KEY } from "./billing/budget-constants";
 import {
-  ONBOARDING_PIPELINE,
-  ONBOARDING_ROLLBACK,
-  ORCHESTRATION_HEALTH,
+    ONBOARDING_PIPELINE,
+    ONBOARDING_ROLLBACK,
+    ORCHESTRATION_HEALTH,
 } from "./constants";
 import {
-  renderTenantComposeFromTemplate,
-  writeComposeFile,
+    renderTenantComposeFromTemplate,
+    writeComposeFile,
 } from "./docker/compose-generator";
 import {
-  getTenantComposePath,
-  startTenant,
-  stopTenant,
+    getTenantComposePath,
+    startTenant,
+    stopTenant,
 } from "./docker/container";
 import { allocatePorts, releasePorts } from "./docker/port-allocator";
 import { notifyTenantCreated, notifyTenantFailed } from "./notifications";
 import { sendPortalInvitationForTenant } from "./portal-invitations";
+import { PLAN_SERVICES } from "./stripe/plans";
 import { getServiceClient } from "./supabase";
 import type { Json, PlanKey, Tenant } from "./supabase/types";
-import { PLAN_SERVICES } from "./stripe/plans";
 
 const onboardingInputSchema = z.object({
   slug: z.string().regex(/^[a-z0-9-]{3,30}$/),
@@ -38,6 +39,30 @@ function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => {
     setTimeout(resolve, ms);
   });
+}
+
+function mergeBudgetAutoSuspendFlag(metadata: Json): Json {
+  const base =
+    metadata !== null &&
+    typeof metadata === "object" &&
+    !Array.isArray(metadata)
+      ? { ...(metadata as Record<string, unknown>) }
+      : {};
+  base[BUDGET_AUTO_SUSPEND_METADATA_KEY] = true;
+  return base as Json;
+}
+
+function stripBudgetAutoSuspendFlag(metadata: Json): Json {
+  if (
+    metadata === null ||
+    typeof metadata !== "object" ||
+    Array.isArray(metadata)
+  ) {
+    return metadata;
+  }
+  const next = { ...(metadata as Record<string, unknown>) };
+  delete next[BUDGET_AUTO_SUSPEND_METADATA_KEY];
+  return next as Json;
 }
 
 export async function pollPortsUntilHealthy(
@@ -383,15 +408,21 @@ export async function deleteTenant(tenantId: string): Promise<void> {
   }
 }
 
+export type SuspendTenantOptions = {
+  /** Si true, marca metadata para permitir reactivación automática al bajar el gasto. */
+  readonly budgetAutoSuspended?: boolean;
+};
+
 export async function suspendTenant(
   tenantId: string,
   actor = "platform-api",
+  options?: SuspendTenantOptions,
 ): Promise<void> {
   const db = getServiceClient();
   const { data: tenant, error: fetchError } = await db
     .schema("platform")
     .from("tenants")
-    .select("id, slug")
+    .select("id, slug, metadata")
     .eq("id", tenantId)
     .is("deleted_at", null)
     .maybeSingle();
@@ -406,10 +437,19 @@ export async function suspendTenant(
   const composePath = getTenantComposePath(tenant.slug);
   await stopTenant(tenant.slug, composePath).catch(() => undefined);
 
+  const updatePayload: { status: "suspended"; metadata?: Json } = {
+    status: "suspended",
+  };
+  if (options?.budgetAutoSuspended === true) {
+    updatePayload.metadata = mergeBudgetAutoSuspendFlag(
+      tenant.metadata as Json,
+    );
+  }
+
   const { error: updateError } = await db
     .schema("platform")
     .from("tenants")
-    .update({ status: "suspended" })
+    .update(updatePayload)
     .eq("id", tenant.id);
 
   if (updateError) {
@@ -502,10 +542,29 @@ async function markTenantActiveAndLogResume(
   tenant: TenantResumeRow,
 ): Promise<void> {
   const db = getServiceClient();
+  const { data: metaRow, error: metaErr } = await db
+    .schema("platform")
+    .from("tenants")
+    .select("metadata")
+    .eq("id", tenant.id)
+    .maybeSingle();
+
+  if (metaErr) {
+    throw new Error(metaErr.message);
+  }
+
+  const clearedMetadata = stripBudgetAutoSuspendFlag(
+    (metaRow?.metadata ?? null) as Json,
+  );
+
   const { error: activeError } = await db
     .schema("platform")
     .from("tenants")
-    .update({ status: "active", progress: 100 })
+    .update({
+      status: "active",
+      progress: 100,
+      metadata: clearedMetadata,
+    })
     .eq("id", tenant.id);
 
   if (activeError) {

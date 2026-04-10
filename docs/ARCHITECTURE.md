@@ -57,3 +57,30 @@ Developer laptop (Cursor, Node 20, Supabase CLI)
 ```
 
 Production mirrors this with a VPS path: GitHub Actions deploys to `/opt/opsly`, rebuilds the app image or pulls `latest`, and restarts the `app` service while Traefik and Redis stay up.
+
+## Multi-Cloud Strategy (Provider Adapter)
+
+Opsly puede orquestar despliegues en cuentas de cliente en **AWS**, **Azure** y **GCP** sin acoplar el control plane a un SDK concreto.
+
+### Patrón Provider Adapter
+
+- **Contrato único:** `CloudProvider` en `apps/api/lib/cloud-providers/interface.ts` define `estimateProvisioningCost`, `provisionResources` y `validateCredentials`.
+- **Registro:** `apps/api/lib/cloud-providers/registry.ts` resuelve `getCloudProvider("aws" | "azure" | "gcp")` y cachea instancias. Nuevos proveedores se añaden registrando una clase que implementa la interfaz; las rutas HTTP y la facturación de plataforma no cambian.
+- **Implementaciones:** cada proveedor vive en su módulo (p. ej. `aws-provider.ts`). El MVP usa estimaciones fijas o placeholders; la evolución natural es Pricing API / Terraform por proveedor detrás del mismo contrato.
+
+### Cost transparency & authorization
+
+1. El cliente solicita una **cotización** con `POST /api/provisioning/quote` (`provider`, `plan`): la API suma el **coste cloud estimado** (adaptador) y el **fee de gestión Opsly** (`opslyManagementFeeUsd`, configurable con `OPSLY_MANAGEMENT_FEE_USD`).
+2. La respuesta incluye `terms` por proveedor y montos en USD; no se persisten credenciales en este paso.
+3. El **portal** (`/onboarding/authorize-deployment`) muestra el desglose y exige **checkbox explícito** antes de habilitar “Desplegar Infraestructura”; el despliegue real y el almacenamiento seguro de credenciales son iteraciones posteriores sobre `provisionResources` y flujos de onboarding.
+
+Objetivo: **passthrough de coste de nube** (según uso real del cliente) **+ comisión Opsly**, con **autorización informada** antes de mutar infraestructura en la cuenta del cliente.
+
+## Ingestion Bunker (disaster recovery / recepción)
+
+Si el API principal (`app`, p. ej. en Vercel o el contenedor Next) no está disponible, los webhooks de Stripe y otros eventos **no deben perderse**.
+
+- **Servicio:** `apps/ingestion-service` — Express mínimo, **sin** dependencias de `apps/api`. Usa el **mismo Redis** (`REDIS_URL` / `REDIS_PASSWORD`) que BullMQ en el resto de Opsly.
+- **Endpoints:** `POST /ingest/stripe` (cuerpo crudo → cola `webhooks-processing`), `POST /ingest/event` (JSON `{ type, tenantId, data }` → cola `general-events`). Respuestas **202 Accepted** con encolado inmediato.
+- **Orquestador:** workers `WebhooksProcessingWorker` y `GeneralEventsWorker` consumen esas colas. El de Stripe **verifica la firma** con `STRIPE_WEBHOOK_SECRET` y reenvía el cuerpo a `OPSLY_API_INTERNAL_URL` (p. ej. `http://app:3000`) en `/api/webhooks/stripe`, donde corre la lógica de negocio existente. Los eventos generales se loguean o se reenvían si `OPSLY_GENERAL_EVENTS_FORWARD_URL` está definida.
+- **Despliegue:** compose `ingestion-bunker` en `infra/docker-compose.platform.yml` (host público opcional `ingest.${PLATFORM_DOMAIN}`); alternativa **systemd** en `infra/systemd/ingestion-bunker.service.example`. Ver `apps/ingestion-service/README.md`.

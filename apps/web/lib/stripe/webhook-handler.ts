@@ -58,8 +58,20 @@ function requireEnv(name: string): string {
   return value;
 }
 
+/** Live: STRIPE_WEBHOOK_SECRET. No-prod: STRIPE_WEBHOOK_SECRET_TEST. */
+function resolveStripeWebhookEndpointSecret(): string {
+  if (process.env.NODE_ENV === "production") {
+    return requireEnv("STRIPE_WEBHOOK_SECRET");
+  }
+  const test = process.env.STRIPE_WEBHOOK_SECRET_TEST?.trim();
+  if (test && test.length > 0) {
+    return test;
+  }
+  return requireEnv("STRIPE_WEBHOOK_SECRET_TEST");
+}
+
 export async function handleStripeWebhook(request: Request): Promise<Response> {
-  const webhookSecret = requireEnv("STRIPE_WEBHOOK_SECRET");
+  const webhookSecret = resolveStripeWebhookEndpointSecret();
   const signature = request.headers.get("stripe-signature");
   if (!signature) {
     return new Response(JSON.stringify({ error: "Missing Stripe-Signature header" }), {

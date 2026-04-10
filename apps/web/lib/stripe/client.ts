@@ -1,5 +1,11 @@
 import Stripe from "stripe";
 
+const STRIPE_API_VERSION = "2024-06-20" as unknown as Stripe.LatestApiVersion;
+
+function isProductionRuntime(): boolean {
+  return process.env.NODE_ENV === "production";
+}
+
 function requireEnv(name: string): string {
   const value = process.env[name];
   if (!value) {
@@ -8,11 +14,19 @@ function requireEnv(name: string): string {
   return value;
 }
 
+function resolveStripeSecretKey(): string {
+  return isProductionRuntime()
+    ? requireEnv("STRIPE_SECRET_KEY")
+    : requireEnv("STRIPE_TEST_SECRET_KEY");
+}
+
 let stripeInstance: Stripe | null = null;
 
 function getStripe(): Stripe {
   if (!stripeInstance) {
-    stripeInstance = new Stripe(requireEnv("STRIPE_SECRET_KEY"));
+    stripeInstance = new Stripe(resolveStripeSecretKey(), {
+      apiVersion: STRIPE_API_VERSION,
+    });
   }
   return stripeInstance;
 }

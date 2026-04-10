@@ -3,6 +3,7 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { AdminNavLink } from "@/components/admin-nav-link";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase";
 
@@ -36,6 +37,7 @@ export function PortalShell({
               Opsly
             </Link>
             <span className="font-sans text-sm text-neutral-300">{title}</span>
+            <AdminNavLink />
           </div>
           <div className="flex items-center gap-2">
             {showModeLink === true ? (

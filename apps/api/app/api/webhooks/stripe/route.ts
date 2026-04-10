@@ -1,10 +1,15 @@
 import type Stripe from "stripe";
 import { z } from "zod";
-import { notifyInvoicePaymentFailed } from "../../../../lib/notifications";
+import { HTTP_STATUS } from "../../../../lib/constants";
+import { logger } from "../../../../lib/logger";
+import {
+    notifyInvoicePaymentFailed,
+    notifyStripeWebhookCritical,
+} from "../../../../lib/notifications";
 import { provisionTenant, suspendTenant } from "../../../../lib/orchestrator";
 import { constructWebhookEvent } from "../../../../lib/stripe";
+import { resolveStripeWebhookEndpointSecret } from "../../../../lib/stripe/webhook-env";
 import { getServiceClient } from "../../../../lib/supabase";
-import { logger } from "../../../../lib/logger";
 const planSchema = z.enum(["startup", "business", "enterprise", "demo"]);
 
 function getStripeCustomerId(
@@ -247,6 +252,15 @@ async function handleInvoicePaymentFailed(
   }
 }
 
+function tenantSlugFromCheckoutEvent(event: Stripe.Event): string | undefined {
+  if (event.type !== "checkout.session.completed") {
+    return undefined;
+  }
+  const session = event.data.object as Stripe.Checkout.Session;
+  const slug = session.metadata?.tenant_slug;
+  return typeof slug === "string" && slug.length > 0 ? slug : undefined;
+}
+
 async function dispatchStripeEvent(event: Stripe.Event): Promise<void> {
   switch (event.type) {
     case "checkout.session.completed": {
@@ -282,30 +296,46 @@ export async function POST(request: Request): Promise<Response> {
       "stripe webhook failed to read body",
       e instanceof Error ? e : { error: String(e) },
     );
-    return Response.json({ received: true }, { status: 200 });
+    return Response.json(
+      { error: "body_read_failed" },
+      { status: HTTP_STATUS.INTERNAL_ERROR },
+    );
   }
 
-  const secret = process.env.STRIPE_WEBHOOK_SECRET;
-  if (!secret || secret.length === 0) {
-    logger.error("stripe webhook STRIPE_WEBHOOK_SECRET not configured");
-    return Response.json({ received: true }, { status: 200 });
+  const endpointSecret = resolveStripeWebhookEndpointSecret();
+  if (!endpointSecret) {
+    logger.error(
+      "stripe webhook endpoint secret not configured (STRIPE_WEBHOOK_SECRET en prod; STRIPE_WEBHOOK_SECRET_TEST en no-prod)",
+    );
+    return Response.json(
+      { error: "webhook_not_configured" },
+      { status: HTTP_STATUS.INTERNAL_ERROR },
+    );
   }
 
   const signature = request.headers.get("stripe-signature");
-  const event = constructWebhookEvent(rawBody, signature, secret);
+  const event = constructWebhookEvent(rawBody, signature, endpointSecret);
   if (!event) {
     logger.error("stripe webhook signature verification failed");
-    return Response.json({ received: true }, { status: 200 });
+    return Response.json(
+      { error: "invalid_signature" },
+      { status: HTTP_STATUS.BAD_REQUEST },
+    );
   }
 
   try {
     await dispatchStripeEvent(event);
   } catch (e) {
-    logger.error(
-      "stripe webhook dispatch error",
-      e instanceof Error ? e : { error: String(e) },
+    const errPayload = e instanceof Error ? e : { error: String(e) };
+    logger.error("stripe webhook dispatch error — Stripe reintentará si respondemos 5xx", errPayload);
+    const msg = e instanceof Error ? e.message : String(e);
+    const slug = tenantSlugFromCheckoutEvent(event);
+    await notifyStripeWebhookCritical(event.type, msg, slug);
+    return Response.json(
+      { error: "processing_failed" },
+      { status: HTTP_STATUS.INTERNAL_ERROR },
     );
   }
 
-  return Response.json({ received: true }, { status: 200 });
+  return Response.json({ received: true }, { status: HTTP_STATUS.OK });
 }

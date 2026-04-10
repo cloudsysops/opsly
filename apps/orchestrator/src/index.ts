@@ -1,7 +1,8 @@
-import { subscribeEvents } from "./events/bus.js";
+import { setupLangSmithTracing } from "./agents/langsmith.js";
 import { processIntent } from "./engine.js";
-import { connection } from "./queue.js";
+import { subscribeEvents } from "./events/bus.js";
 import { startOrchestratorHealthServer } from "./health-server.js";
+import { connection } from "./queue.js";
 import { TeamManager } from "./teams/TeamManager.js";
 import { startBackupWorker } from "./workers/BackupWorker.js";
 import { startCursorWorker } from "./workers/CursorWorker.js";
@@ -9,7 +10,10 @@ import { startDriveWorker } from "./workers/DriveWorker.js";
 import { startHealthWorker } from "./workers/HealthWorker.js";
 import { startN8nWorker } from "./workers/N8nWorker.js";
 import { startNotifyWorker } from "./workers/NotifyWorker.js";
+import { startSuspensionWorker } from "./workers/SuspensionWorker.js";
+import { startGeneralEventsWorker } from "./workers/GeneralEventsWorker.js";
 import { createWebhookWorker } from "./workers/WebhookWorker.js";
+import { startWebhooksProcessingWorker } from "./workers/WebhooksProcessingWorker.js";
 
 async function runEventSubscription(teamManager: TeamManager): Promise<void> {
   await subscribeEvents(async (event, eventData) => {
@@ -37,6 +41,7 @@ async function runEventSubscription(teamManager: TeamManager): Promise<void> {
 }
 
 async function main(): Promise<void> {
+  setupLangSmithTracing();
   console.log("[orchestrator] Iniciando…");
 
   // TeamManager + misma conexión Redis que openclaw (queue.ts); eventos → assignToTeam p.ej. deploy
@@ -55,8 +60,13 @@ async function main(): Promise<void> {
   startDriveWorker(connection);
   startBackupWorker(connection);
   startHealthWorker(connection);
+  startSuspensionWorker(connection);
   createWebhookWorker();
-  console.log("[orchestrator] Workers: cursor, n8n, notify, drive, backup, health, webhooks");
+  startWebhooksProcessingWorker();
+  startGeneralEventsWorker();
+  console.log(
+    "[orchestrator] Workers: cursor, n8n, notify, drive, backup, health, budget, opsly-webhooks, webhooks-processing, general-events",
+  );
 
   const shutdown = (): void => {
     void (async () => {

@@ -70,3 +70,42 @@ export type AdminInvitationResponse = {
   email: string;
   token: string;
 };
+
+/** Body para POST /api/portal/onboarding. */
+export type OnboardingRequest = {
+  org_name: string;
+  slug: string;
+  plan: "startup" | "business" | "enterprise";
+};
+
+/** Respuesta de POST /api/portal/onboarding. */
+export type OnboardingResponse = {
+  ok: true;
+  tenant_id: string;
+  slug: string;
+  org_name: string;
+  plan: "startup" | "business" | "enterprise";
+  bootstrap: {
+    workers_deployed: number;
+    job_name: string;
+  };
+};
+
+/** Body de POST /api/provisioning/quote. */
+export type ProvisioningQuoteRequest = {
+  provider: "aws" | "azure" | "gcp";
+  plan: "free-tier" | "serverless-starter";
+};
+
+/** Respuesta de POST /api/provisioning/quote. */
+export type ProvisioningQuoteResponse = {
+  provider: string;
+  plan: string;
+  cloud_cost_estimated_usd: number;
+  currency_cloud: string;
+  is_free_tier: boolean;
+  opsly_fee_usd: number;
+  total_monthly_usd: number;
+  line_items: readonly { label: string; amountUsd: number }[];
+  terms: string;
+};

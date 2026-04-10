@@ -58,6 +58,11 @@ export function portalPublicHealthUrl(apiBaseUrl: string, slug: string): string 
   return `${base}/api/portal/health?slug=${encodeURIComponent(slug)}`;
 }
 
+/** URL absoluta `POST` onboarding de nuevo tenant (`/api/portal/onboarding`). */
+export function portalOnboardingUrl(apiBaseUrl: string): string {
+  return `${normalizeApiBase(apiBaseUrl)}/api/portal/onboarding`;
+}
+
 /** URL absoluta `GET` estado infraestructura (`/api/infra/status`). */
 export function infraStatusUrl(apiBaseUrl: string): string {
   const base = normalizeApiBase(apiBaseUrl);

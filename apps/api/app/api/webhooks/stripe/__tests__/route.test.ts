@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { POST } from "../route";
 
 vi.mock("../../../../../lib/stripe", () => ({
@@ -12,6 +12,7 @@ vi.mock("../../../../../lib/orchestrator", () => ({
 
 vi.mock("../../../../../lib/notifications", () => ({
   notifyInvoicePaymentFailed: vi.fn(),
+  notifyStripeWebhookCritical: vi.fn(),
 }));
 
 vi.mock("../../../../../lib/supabase", () => ({
@@ -22,12 +23,15 @@ vi.mock("../../../../../lib/logger", () => ({
   logger: { info: vi.fn(), error: vi.fn(), warn: vi.fn() },
 }));
 
-import { constructWebhookEvent } from "../../../../../lib/stripe";
 import {
-  provisionTenant,
-  suspendTenant,
+    notifyInvoicePaymentFailed,
+    notifyStripeWebhookCritical,
+} from "../../../../../lib/notifications";
+import {
+    provisionTenant,
+    suspendTenant,
 } from "../../../../../lib/orchestrator";
-import { notifyInvoicePaymentFailed } from "../../../../../lib/notifications";
+import { constructWebhookEvent } from "../../../../../lib/stripe";
 import { getServiceClient } from "../../../../../lib/supabase";
 
 function makeRequest(body: string, signature = "t=1,v1=abc") {
@@ -73,25 +77,29 @@ function makeSubscriptionInsertChain() {
 
 beforeEach(() => {
   vi.clearAllMocks();
+  process.env.NODE_ENV = "test";
+  process.env.STRIPE_TEST_SECRET_KEY = "sk_test_route_dummy";
+  process.env.STRIPE_WEBHOOK_SECRET_TEST = "whsec_test";
   process.env.STRIPE_WEBHOOK_SECRET = "whsec_test";
 });
 
 describe("POST /api/webhooks/stripe", () => {
   describe("signature verification", () => {
-    it("returns 200 without side effects when STRIPE_WEBHOOK_SECRET is missing", async () => {
+    it("returns 500 when ningún webhook secret está configurado (no-prod)", async () => {
       delete process.env.STRIPE_WEBHOOK_SECRET;
+      delete process.env.STRIPE_WEBHOOK_SECRET_TEST;
       const res = await POST(
         makeRequest(JSON.stringify({ type: "checkout.session.completed" })),
       );
-      expect(res.status).toBe(200);
+      expect(res.status).toBe(500);
       expect(constructWebhookEvent).not.toHaveBeenCalled();
       expect(provisionTenant).not.toHaveBeenCalled();
     });
 
-    it("returns 200 without side effects when signature verification fails", async () => {
+    it("returns 400 when signature verification fails", async () => {
       (constructWebhookEvent as ReturnType<typeof vi.fn>).mockReturnValue(null);
       const res = await POST(makeRequest("raw-body"));
-      expect(res.status).toBe(200);
+      expect(res.status).toBe(400);
       expect(provisionTenant).not.toHaveBeenCalled();
     });
   });
@@ -173,7 +181,7 @@ describe("POST /api/webhooks/stripe", () => {
       expect(provisionTenant).not.toHaveBeenCalled();
     });
 
-    it("still returns 200 if provisionTenant throws (never 500 on webhooks)", async () => {
+    it("returns 500 if provisionTenant throws (Stripe reintenta)", async () => {
       const mockEvent = {
         type: "checkout.session.completed",
         data: {
@@ -195,7 +203,8 @@ describe("POST /api/webhooks/stripe", () => {
       );
 
       const res = await POST(makeRequest(JSON.stringify(mockEvent)));
-      expect(res.status).toBe(200);
+      expect(res.status).toBe(500);
+      expect(notifyStripeWebhookCritical).toHaveBeenCalled();
     });
   });
 

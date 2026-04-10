@@ -112,7 +112,20 @@ export type Database = {
   public: {
     Tables: Record<string, never>;
     Views: Record<string, never>;
-    Functions: Record<string, never>;
+    Functions: {
+      opsly_admin_metrics: {
+        Args: { p_month_start: string };
+        Returns: Json;
+      };
+      opsly_admin_tenants_page: {
+        Args: { p_limit: number; p_offset: number };
+        Returns: Json;
+      };
+      opsly_admin_revenue_by_month: {
+        Args: { p_months?: number };
+        Returns: Json;
+      };
+    };
     Enums: Record<string, never>;
   };
   platform: {
@@ -193,6 +206,32 @@ export type Database = {
         Row: Record<string, unknown>;
         Insert: Record<string, unknown>;
         Update: Record<string, unknown>;
+      };
+      sprints: {
+        Row: {
+          id: string;
+          tenant_id: string;
+          goal: string;
+          status: string;
+          steps: Json;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          tenant_id: string;
+          goal: string;
+          status?: string;
+          steps?: Json;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<{
+          goal: string;
+          status: string;
+          steps: Json;
+          updated_at: string;
+        }>;
       };
     };
     Views: Record<string, never>;

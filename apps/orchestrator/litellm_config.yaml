@@ -1,0 +1,17 @@
+# Referencia de modelos para el Gateway LiteLLM del Orchestrator (Opsly).
+# Los nombres deben coincidir con proveedores soportados por el paquete npm `litellm`.
+# Variables: OPENAI_API_KEY, ANTHROPIC_API_KEY (según modelo).
+
+models:
+  complex_reasoning:
+    id: gpt-4o
+    provider: openai
+    description: Razonamiento complejo y planes largos
+  fast_cheap:
+    id: gpt-4o-mini
+    provider: openai
+    description: Tareas rápidas y bajo coste
+
+defaults:
+  coach: gpt-4o-mini
+  coach_complex: gpt-4o

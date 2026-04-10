@@ -8,6 +8,18 @@ vi.mock("../src/state/store.js", () => ({
   setJobState: vi.fn(async () => undefined),
 }));
 
+vi.mock("../src/sprints/sprint-manager.js", () => ({
+  SprintManager: class MockSprintManager {
+    async createSprint(): Promise<{ sprintId: string }> {
+      return { sprintId: "11111111-1111-1111-1111-111111111111" };
+    }
+
+    async executeSprint(): Promise<void> {
+      return undefined;
+    }
+  },
+}));
+
 import { enqueueJob } from "../src/queue.js";
 import { processIntent } from "../src/engine.js";
 
@@ -96,6 +108,19 @@ describe("processIntent", () => {
         agent_role: "notifier",
       }),
     );
+  });
+
+  it("sprint_plan devuelve sprint_id sin encolar jobs", async () => {
+    const result = await processIntent({
+      intent: "sprint_plan",
+      context: { goal: "validar sprint" },
+      initiated_by: "system",
+      tenant_id: "550e8400-e29b-41d4-a716-446655440000",
+      tenant_slug: "acme",
+    });
+    expect(result.jobs_enqueued).toBe(0);
+    expect(result.job_ids).toEqual([]);
+    expect(result.sprint_id).toBe("11111111-1111-1111-1111-111111111111");
   });
 
   it("full_pipeline usa idempotency_key distinta por tipo", async () => {

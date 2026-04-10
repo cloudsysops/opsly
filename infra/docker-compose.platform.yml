@@ -228,16 +228,65 @@ services:
       retries: 3
       start_period: 30s
 
+  ingestion-bunker:
+    build:
+      context: ../apps/ingestion-service
+      dockerfile: Dockerfile
+    container_name: opsly_ingestion_bunker
+    env_file:
+      - ../.env
+    environment:
+      PORT: "3040"
+      REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379/0
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - internal
+      - traefik-public
+    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:3040/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik-public"
+      - "traefik.http.routers.ingest.rule=Host(`ingest.${PLATFORM_DOMAIN}`)"
+      - "traefik.http.routers.ingest.entrypoints=websecure"
+      - "traefik.http.routers.ingest.tls=true"
+      - "traefik.http.routers.ingest.tls.certresolver=letsencrypt"
+      - "traefik.http.services.ingest.loadbalancer.server.port=3040"
+
   orchestrator:
     image: ${ORCHESTRATOR_IMAGE:-ghcr.io/cloudsysops/intcloudsysops-orchestrator:latest}
     container_name: opsly_orchestrator
     env_file:
       - ../.env
     environment:
+      NODE_ENV: production
       ORCHESTRATOR_HEALTH_PORT: "3011"
       ORCHESTRATOR_LLM_GATEWAY_URL: http://llm-gateway:3010
+      OPSLY_API_INTERNAL_URL: ${OPSLY_API_INTERNAL_URL:-http://app:3000}
+      SUPABASE_URL: ${SUPABASE_URL:-${NEXT_PUBLIC_SUPABASE_URL:-}}
+      NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL:-}
+      SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY:-}
       REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379/0
       REDIS_PASSWORD: ${REDIS_PASSWORD}
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
+      # Solo si en el futuro el orchestrator corre con NODE_ENV≠production (p. ej. staging con claves Test)
+      STRIPE_TEST_SECRET_KEY: ${STRIPE_TEST_SECRET_KEY:-}
+      STRIPE_WEBHOOK_SECRET_TEST: ${STRIPE_WEBHOOK_SECRET_TEST:-}
       DISCORD_WEBHOOK_URL: ${DISCORD_WEBHOOK_URL}
       GITHUB_TOKEN_N8N: ${GITHUB_TOKEN_N8N}
     depends_on:

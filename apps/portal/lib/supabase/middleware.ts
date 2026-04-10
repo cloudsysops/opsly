@@ -38,8 +38,11 @@ export async function updateSession(request: NextRequest): Promise<NextResponse>
   const pathname = request.nextUrl.pathname;
   const isLogin = pathname === "/login" || pathname.startsWith("/login/");
   const isInvite = pathname.startsWith("/invite/");
+  const isOnboarding = pathname.startsWith("/onboarding/");
 
-  if (!user && !isLogin && !isInvite && pathname.startsWith("/dashboard")) {
+  const isAdmin = pathname.startsWith("/admin");
+
+  if (!user && !isLogin && !isInvite && (pathname.startsWith("/dashboard") || isOnboarding || isAdmin)) {
     const redirectUrl = request.nextUrl.clone();
     redirectUrl.pathname = "/login";
     return NextResponse.redirect(redirectUrl);

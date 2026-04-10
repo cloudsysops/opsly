@@ -3,6 +3,7 @@
  * POST /v1/chat/completions — Hermes / metering en el proceso gateway (sin LLM directo aquí).
  */
 
+import { setupLangSmithTracing } from "./agents/langsmith.js";
 import type { PlannerResponse } from "./types.js";
 
 const DEFAULT_BASE = "http://127.0.0.1:3010";
@@ -71,6 +72,7 @@ export async function executeRemotePlanner(
   tools: string[],
   options: ExecuteRemotePlannerOptions,
 ): Promise<ExecuteRemotePlannerResult> {
+  setupLangSmithTracing();
   const url = `${gatewayBaseUrl()}/v1/chat/completions`;
   const userContent = `${context}\n\n---\nHerramientas disponibles (nombres exactos): ${JSON.stringify(tools)}`;
 

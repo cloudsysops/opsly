@@ -1,10 +1,13 @@
 import {
-  aiModelCostMultiplier,
-  BILLING_METER_UNIT_COST_USD,
+    aiModelCostMultiplier,
+    BILLING_METER_UNIT_COST_USD,
 } from "../billing-meter-pricing";
+import { insertBillingUsageLine } from "../billing/billing-usage-repository";
+import { scheduleBudgetCheckJob } from "../billing/budget-check-queue";
 import { runWithMeteringTenantContext } from "../metering-tenant-context";
 import { UsageRepository } from "../repositories/usage-repository";
 import type { Json } from "../supabase/types";
+import { getTenantContext } from "../tenant-context";
 
 function logMeteringError(context: string, error: unknown): void {
   const message = error instanceof Error ? error.message : String(error);
@@ -43,6 +46,15 @@ export class BillingMeterService {
           model: modelName,
           metadata: options?.metadata,
         });
+        const ctx = getTenantContext();
+        await insertBillingUsageLine({
+          tenantId: ctx.tenantId,
+          metricType: "ai_tokens",
+          quantity: totalTokens,
+          unitCost: unitCostUsd,
+          metadata: { source: "billing_meter_service", model: modelName },
+        });
+        scheduleBudgetCheckJob(ctx.tenantId, ctx.tenantSlug);
       },
       { tenantId: options?.tenantId },
     );
@@ -62,12 +74,23 @@ export class BillingMeterService {
       tenantSlug,
       async () => {
         const repo = new UsageRepository();
+        const unitCostUsd = BILLING_METER_UNIT_COST_USD.CPU_SECOND;
         await repo.recordEvent({
           eventType: "cpu_time",
           quantity: seconds,
+          unitCostUsd,
           metadata: options?.metadata,
           model: "meter:worker_cpu",
         });
+        const ctx = getTenantContext();
+        await insertBillingUsageLine({
+          tenantId: ctx.tenantId,
+          metricType: "worker_seconds",
+          quantity: seconds,
+          unitCost: unitCostUsd,
+          metadata: { source: "billing_meter_service" },
+        });
+        scheduleBudgetCheckJob(ctx.tenantId, ctx.tenantSlug);
       },
       { tenantId: options?.tenantId },
     );

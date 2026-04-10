@@ -1,5 +1,4 @@
-import type { OrchestratorJob } from "./types.js";
-import type { IntentRequest, PlannerAction } from "./types.js";
+import type { IntentRequest, OrchestratorJob, PlannerAction } from "./types.js";
 
 /**
  * Herramientas MCP expuestas al planner (lista para prompt; ejecución real vía jobs).
@@ -20,6 +19,8 @@ export const DEFAULT_PLANNER_TOOL_NAMES: string[] = [
   "restart_container",
   "notify",
   "sync_drive",
+  "tavily_search",
+  "get_server_status",
 ];
 
 /** Mapa legible: herramienta planner → cola BullMQ = tipo de job (`openclaw` queue) + rol. */
@@ -41,6 +42,8 @@ export const PLANNER_TOOL_MAP: Record<
   resume_tenant: { job_type: "n8n", label: "n8n_resume" },
   notebooklm: { job_type: "drive", label: "drive_notebooklm" },
   sync_drive: { job_type: "drive", label: "drive_sync" },
+  tavily_search: { job_type: "notify", label: "local_tool_result" },
+  get_server_status: { job_type: "notify", label: "local_tool_result" },
 };
 
 const FORBIDDEN_PLANNER_PARAM_KEYS = new Set(["tenant_slug", "request_id", "tenant_id"]);
@@ -142,6 +145,18 @@ export function plannerActionToOrchestratorJob(
       return {
         type: "drive",
         payload: { ...params, planner_tool: tool },
+        ...common,
+      };
+    case "tavily_search":
+    case "get_server_status":
+      return {
+        type: "notify",
+        payload: {
+          title: "Planner local tool",
+          message: JSON.stringify({ tool, params }),
+          type: "info",
+          planner_tool: tool,
+        },
         ...common,
       };
     default: {

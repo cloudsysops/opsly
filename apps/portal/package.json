@@ -14,6 +14,9 @@
     "test:e2e:ui": "playwright test --ui"
   },
   "dependencies": {
+    "@react-three/drei": "^10.7.7",
+    "@react-three/fiber": "^9.0.0",
+    "@xyflow/react": "^12.3.6",
     "@radix-ui/react-slot": "^1.1.1",
     "@supabase/ssr": "^0.6.1",
     "@supabase/supabase-js": "^2.49.1",
@@ -21,19 +24,25 @@
     "clsx": "^2.1.1",
     "lucide-react": "^0.469.0",
     "next": "^15.1.0",
+    "recharts": "^2.15.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "swr": "^2.4.1",
-    "tailwind-merge": "^2.5.5"
+    "tailwind-merge": "^2.5.5",
+    "three": "^0.170.0"
   },
   "devDependencies": {
     "@playwright/test": "^1.49.0",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
     "@types/node": "^22.10.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
+    "@types/three": "^0.170.0",
     "autoprefixer": "^10.4.20",
     "eslint": "^9.21.0",
     "eslint-config-next": "^15.1.0",
+    "jsdom": "^29.0.2",
     "postcss": "^8.4.49",
     "tailwindcss": "^3.4.17",
     "tailwindcss-animate": "^1.0.7",

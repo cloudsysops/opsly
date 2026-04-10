@@ -1,7 +1,16 @@
 import type { Job } from "bullmq";
 import type { OrchestratorJob } from "../types.js";
 
-export type WorkerName = "cursor" | "n8n" | "notify" | "drive" | "backup" | "health";
+export type WorkerName =
+  | "cursor"
+  | "n8n"
+  | "notify"
+  | "drive"
+  | "backup"
+  | "health"
+  | "budget"
+  | "webhooks-processing"
+  | "general-events";
 
 export function extractJobContext(job: Job): {
   task_id?: string;
@@ -12,11 +21,13 @@ export function extractJobContext(job: Job): {
   idempotency_key?: string;
   metadata?: Record<string, unknown>;
 } {
-  const d = job.data as Partial<OrchestratorJob>;
+  const d = job.data as Partial<OrchestratorJob> & {
+    payload?: { tenant_id?: string; tenant_slug?: string };
+  };
   return {
     task_id: d.taskId,
-    tenant_slug: d.tenant_slug,
-    tenant_id: d.tenant_id,
+    tenant_slug: d.tenant_slug ?? d.payload?.tenant_slug,
+    tenant_id: d.tenant_id ?? d.payload?.tenant_id,
     request_id: d.request_id,
     plan: d.plan,
     idempotency_key: d.idempotency_key,

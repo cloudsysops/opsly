@@ -1,4 +1,5 @@
 import { insertBillingUsageLine } from "./billing-usage-repository";
+import { scheduleBudgetCheckAfterUsage } from "./budget-check-queue";
 import { logMeteringAudit } from "./metering-audit-log";
 import { pushMeteringFallback } from "./metering-fallback-queue";
 import { incrementUsageCounter } from "./redis-metering";
@@ -31,6 +32,7 @@ async function processMetering(
       unitCost: options.unitCostUsd,
       metadata: { operation: payload.operation, kind: payload.kind },
     });
+    scheduleBudgetCheckAfterUsage(payload.tenantId);
   }
 }
 

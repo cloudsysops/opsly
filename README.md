@@ -63,6 +63,18 @@ Plataforma multi-tenant **enterprise SaaS**: plano de control (API, billing, orq
 | [`docs/GOOGLE-CLOUD-SETUP.md`](docs/GOOGLE-CLOUD-SETUP.md) | Google Cloud + Drive sync |
 | [`skills/README.md`](skills/README.md) | Skills Claude y manifests |
 
+## Stripe (Live vs Test)
+
+La lógica es la misma en código; **solo cambian las variables** según el entorno:
+
+| Variable | Cuándo |
+|----------|--------|
+| `NODE_ENV === "production"` | `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET` (Live), `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` (pk_live_…) |
+| Desarrollo, CI, preview | `STRIPE_TEST_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET_TEST`, `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` (pk_test_…) |
+
+- **Webhooks:** firma inválida → **400**; error al procesar un evento verificado (p. ej. fallo de provision tras checkout) → **500** para que Stripe reintente. Secreto del endpoint: Live `STRIPE_WEBHOOK_SECRET`, Test solo `STRIPE_WEBHOOK_SECRET_TEST` (ver `.env.example`). API version Stripe fijada en código a `2024-06-20` (alinear dashboard Stripe si hace falta).
+- **API:** `apps/api/lib/stripe/client.ts` y `apps/api/lib/stripe/webhook-env.ts`; el orchestrator y `apps/web/lib/stripe` siguen la misma convención.
+
 ## Architecture
 
 > 🔒 **SSH al VPS siempre por Tailscale:** `ssh vps-dragon@100.120.151.91`  

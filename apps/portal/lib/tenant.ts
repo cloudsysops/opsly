@@ -2,11 +2,14 @@ import { getApiBaseUrl } from "./api";
 import { requestPortalApi } from "./http";
 import {
   portalHealthUrl,
+  portalOnboardingUrl,
   portalTenantMeUrl,
   portalTenantModeUrl,
   portalTenantUsageUrl,
 } from "./portal-api-paths";
 import type {
+  OnboardingRequest,
+  OnboardingResponse,
   PortalHealthPayload,
   PortalMode,
   PortalTenantPayload,
@@ -113,5 +116,24 @@ export async function fetchPortalHealth(
       "Content-Type": "application/json",
     },
     cache: "no-store",
+  });
+}
+
+/**
+ * Crea la primera organización del usuario autenticado.
+ * Llama a POST /api/portal/onboarding — no requiere tenant previo.
+ */
+export async function postPortalOnboarding(
+  accessToken: string,
+  body: OnboardingRequest,
+): Promise<OnboardingResponse> {
+  const path = portalOnboardingUrl(getApiBaseUrl());
+  return requestPortalApi<OnboardingResponse>(path, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(body),
   });
 }

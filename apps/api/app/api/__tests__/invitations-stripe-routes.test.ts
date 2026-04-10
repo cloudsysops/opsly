@@ -1,11 +1,11 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { POST as invitationPost } from "../invitations/route";
-import { POST as stripeWebhookPost } from "../webhooks/stripe/route";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import * as invitationFlowMod from "../../../lib/invitation-admin-flow";
+import * as notificationsMod from "../../../lib/notifications";
+import * as orchestratorMod from "../../../lib/orchestrator";
 import * as stripeLib from "../../../lib/stripe";
 import * as supabaseMod from "../../../lib/supabase";
-import * as orchestratorMod from "../../../lib/orchestrator";
-import * as notificationsMod from "../../../lib/notifications";
+import { POST as invitationPost } from "../invitations/route";
+import { POST as stripeWebhookPost } from "../webhooks/stripe/route";
 
 vi.mock("../../../lib/invitation-admin-flow", () => ({
   executeAdminInvitation: vi.fn(),
@@ -28,6 +28,7 @@ vi.mock("../../../lib/supabase", () => ({
 
 vi.mock("../../../lib/notifications", () => ({
   notifyInvoicePaymentFailed: vi.fn(),
+  notifyStripeWebhookCritical: vi.fn(),
 }));
 
 const ADMIN = "invite-route-admin";
@@ -103,36 +104,50 @@ describe("POST /api/invitations", () => {
 
 describe("POST /api/webhooks/stripe", () => {
   const origSecret = process.env.STRIPE_WEBHOOK_SECRET;
+  const origTestSecret = process.env.STRIPE_WEBHOOK_SECRET_TEST;
+  const origTestKey = process.env.STRIPE_TEST_SECRET_KEY;
+  const origNodeEnv = process.env.NODE_ENV;
 
   beforeEach(() => {
     vi.clearAllMocks();
+    process.env.NODE_ENV = "test";
+    process.env.STRIPE_TEST_SECRET_KEY = "sk_test_invite_dummy";
+    process.env.STRIPE_WEBHOOK_SECRET_TEST = "whsec_test_placeholder";
     process.env.STRIPE_WEBHOOK_SECRET = "whsec_test_placeholder";
     vi.mocked(orchestratorMod.provisionTenant).mockResolvedValue(undefined);
     vi.mocked(orchestratorMod.suspendTenant).mockResolvedValue(undefined);
     vi.mocked(notificationsMod.notifyInvoicePaymentFailed).mockResolvedValue(
       undefined,
     );
+    vi.mocked(notificationsMod.notifyStripeWebhookCritical).mockResolvedValue(
+      undefined,
+    );
   });
 
   afterEach(() => {
     process.env.STRIPE_WEBHOOK_SECRET = origSecret;
+    process.env.STRIPE_WEBHOOK_SECRET_TEST = origTestSecret;
+    process.env.STRIPE_TEST_SECRET_KEY = origTestKey;
+    process.env.NODE_ENV = origNodeEnv;
   });
 
-  it("returns 200 and skips verification when webhook secret missing", async () => {
+  it("returns 500 when webhook secrets are missing", async () => {
     delete process.env.STRIPE_WEBHOOK_SECRET;
+    delete process.env.STRIPE_WEBHOOK_SECRET_TEST;
     const res = await stripeWebhookPost(
       new Request("http://x", {
         method: "POST",
         body: "{}",
       }),
     );
-    expect(res.status).toBe(200);
-    const body = (await res.json()) as { received: boolean };
-    expect(body.received).toBe(true);
+    expect(res.status).toBe(500);
+    const body = (await res.json()) as { error: string };
+    expect(body.error).toBe("webhook_not_configured");
   });
 
-  it("returns 200 when signature verification fails", async () => {
+  it("returns 400 when signature verification fails", async () => {
     process.env.STRIPE_WEBHOOK_SECRET = "whsec_x";
+    process.env.STRIPE_WEBHOOK_SECRET_TEST = "whsec_x";
     vi.mocked(stripeLib.constructWebhookEvent).mockReturnValue(null);
     const res = await stripeWebhookPost(
       new Request("http://x", {
@@ -141,7 +156,7 @@ describe("POST /api/webhooks/stripe", () => {
         body: "{}",
       }),
     );
-    expect(res.status).toBe(200);
+    expect(res.status).toBe(400);
   });
 
   it("returns 200 after dispatch for unknown event type", async () => {
@@ -160,13 +175,13 @@ describe("POST /api/webhooks/stripe", () => {
     expect(res.status).toBe(200);
   });
 
-  it("returns 200 when request.text() rejects", async () => {
+  it("returns 500 when request.text() rejects", async () => {
     const req = {
       headers: new Headers(),
       text: () => Promise.reject(new Error("read failed")),
     } as Request;
     const res = await stripeWebhookPost(req);
-    expect(res.status).toBe(200);
+    expect(res.status).toBe(500);
   });
 
   it("checkout.session.completed calls provisionTenant when metadata valid", async () => {

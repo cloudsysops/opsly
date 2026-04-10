@@ -1,11 +1,18 @@
 "use client";
 
-import { clsx } from "clsx";
-import { useMemo } from "react";
+import dynamic from "next/dynamic";
+import { useMemo, useState } from "react";
 import useSWR from "swr";
 
 import { getApiBaseUrl } from "@/lib/api";
 import { infraStatusUrl } from "@/lib/portal-api-paths";
+import { createClient } from "@/lib/supabase/client";
+
+import { ActiveSprintsFlow } from "./components/ActiveSprintsFlow";
+
+// ---------------------------------------------------------------------------
+// Types
+// ---------------------------------------------------------------------------
 
 type InfraServiceStatus = "healthy" | "degraded" | "down";
 
@@ -22,234 +29,467 @@ type InfraStatusPayload = {
   readonly generated_at: string;
 };
 
-const REFRESH_MS = 5_000;
+type InfraStatusError = {
+  readonly error?: string;
+  readonly message?: string;
+};
 
+// ---------------------------------------------------------------------------
+// Constants
+// ---------------------------------------------------------------------------
+
+const REFRESH_MS = 5_000;
+const SKELETON_COUNT = 6;
+
+const VirtualOffice = dynamic(
+  () =>
+    import("./components/VirtualOffice").then((m) => ({
+      default: m.VirtualOffice,
+    })),
+  {
+    loading: () => (
+      <div className="flex h-[min(70vh,560px)] w-full items-center justify-center rounded-2xl border border-slate-800 bg-slate-950/80 font-mono text-sm text-slate-500">
+        Inicializando motor 3D…
+      </div>
+    ),
+    ssr: false,
+  },
+);
+
+type MissionViewMode = "2d" | "3d";
+
+type MissionSection = "infra" | "sprints";
+
+// ---------------------------------------------------------------------------
+// Utilities
+// ---------------------------------------------------------------------------
+
+/** Convierte segundos transcurridos en texto relativo amigable. */
 function formatTimeAgo(seconds: number | null): string {
   if (seconds === null) return "sin latido";
-  if (seconds < 60) {
-    if (seconds <= 1) return "Justo ahora";
-    return `hace ${Math.floor(seconds)}s`;
-  }
-  const minutes = Math.floor(seconds / 60);
-  if (minutes < 60) {
-    return `hace ${minutes} min`;
-  }
-  const hours = Math.floor(minutes / 60);
-  return `hace ${hours} h`;
+  if (seconds < 60) return "Justo ahora";
+  if (seconds < 3600) return `hace ${Math.floor(seconds / 60)} min`;
+  return `hace ${Math.floor(seconds / 3600)} horas`;
 }
 
-interface StatusIndicatorProps {
-  status: InfraServiceStatus;
+function fetchInfraStatus(
+  url: string,
+  accessToken: string,
+): Promise<InfraStatusPayload> {
+  return fetch(url, {
+    cache: "no-store",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      "Content-Type": "application/json",
+    },
+  }).then(async (res) => {
+    if (!res.ok) {
+      const body = (await res.json().catch(() => ({}))) as InfraStatusError;
+      const reason =
+        res.status === 401
+          ? "Unauthorized"
+          : body.message ?? body.error ?? `HTTP ${res.status}`;
+      throw new Error(reason);
+    }
+    return (await res.json()) as InfraStatusPayload;
+  });
 }
+
+// ---------------------------------------------------------------------------
+// StatusIndicator
+// ---------------------------------------------------------------------------
+
+type StatusIndicatorProps = {
+  readonly status: InfraServiceStatus;
+};
 
 function StatusIndicator({ status }: StatusIndicatorProps) {
-  const baseClasses = "h-3.5 w-3.5 rounded-full";
-  
   if (status === "healthy") {
     return (
-      <span 
-        className={clsx(baseClasses, "bg-emerald-400 shadow-[0_0_10px_rgba(34,197,94,0.6)] animate-pulse")}
-        aria-label="healthy"
-      />
+      <span className="relative flex h-3.5 w-3.5" aria-label="Healthy">
+        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-50" />
+        <span className="relative inline-flex h-3.5 w-3.5 rounded-full bg-emerald-400 shadow-[0_0_10px_rgba(34,197,94,0.8)]" />
+      </span>
     );
   }
   if (status === "degraded") {
     return (
-      <span 
-        className={clsx(baseClasses, "bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.5)]")}
-        aria-label="degraded"
-      />
+      <span className="relative flex h-3.5 w-3.5" aria-label="Degraded">
+        <span className="relative inline-flex h-3.5 w-3.5 rounded-full bg-amber-400 shadow-[0_0_10px_rgba(234,179,8,0.7)]" />
+      </span>
     );
   }
   return (
-    <span 
-      className={clsx(baseClasses, "bg-rose-500 shadow-[0_0_12px_rgba(244,63,94,0.7)] animate-pulse")}
-      style={{ animationDuration: "0.6s" }}
-      aria-label="down"
-    />
+    <span className="relative flex h-3.5 w-3.5" aria-label="Down">
+      <span
+        className="absolute inline-flex h-full w-full animate-ping rounded-full bg-rose-500 opacity-75"
+        style={{ animationDuration: "0.7s" }}
+      />
+      <span className="relative inline-flex h-3.5 w-3.5 rounded-full bg-rose-500 shadow-[0_0_14px_rgba(239,68,68,0.9)]" />
+    </span>
   );
 }
 
-interface ServiceCardProps {
-  service: InfraService;
+// ---------------------------------------------------------------------------
+// Status config
+// ---------------------------------------------------------------------------
+
+type StatusConfig = {
+  readonly label: string;
+  readonly textColor: string;
+  readonly isDown: boolean;
+};
+
+function resolveStatusConfig(status: InfraServiceStatus): StatusConfig {
+  if (status === "healthy") {
+    return { label: "HEALTHY", textColor: "text-emerald-400", isDown: false };
+  }
+  if (status === "degraded") {
+    return { label: "DEGRADED", textColor: "text-amber-400", isDown: false };
+  }
+  return { label: "DOWN", textColor: "text-rose-400", isDown: true };
 }
 
-function ServiceCard({ service }: ServiceCardProps) {
-  const isDown = service.status === "down";
-  
+// ---------------------------------------------------------------------------
+// SkeletonCard
+// ---------------------------------------------------------------------------
+
+function SkeletonCard() {
   return (
-    <article
-      className={clsx(
-        "group relative overflow-hidden rounded-2xl border border-slate-700/50",
-        "bg-slate-900/50 backdrop-blur-xl shadow-xl shadow-black/50",
-        "transition-all duration-300 hover:scale-[1.02] hover:border-slate-500/70",
-        "hover:shadow-2xl hover:shadow-cyan-500/5"
+    <div className="animate-pulse rounded-2xl border border-slate-700/30 bg-slate-900/40 p-5 shadow-xl shadow-black/40 backdrop-blur-xl">
+      <div className="flex items-center justify-between">
+        <div className="h-6 w-28 rounded-lg bg-slate-700/50" />
+        <div className="h-3.5 w-3.5 rounded-full bg-slate-700/50" />
+      </div>
+      <div className="mt-4 space-y-2">
+        <div className="h-3.5 w-20 rounded bg-slate-700/40" />
+        <div className="h-3 w-36 rounded bg-slate-700/30" />
+        <div className="h-3 w-24 rounded bg-slate-700/25" />
+      </div>
+      <div className="mt-4 h-24 rounded-lg bg-slate-800/50" />
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// SystemAlert
+// ---------------------------------------------------------------------------
+
+type SystemAlertProps = {
+  readonly message: string;
+  readonly onRetry: () => void;
+};
+
+function SystemAlert({ message, onRetry }: SystemAlertProps) {
+  return (
+    <div className="flex min-h-[60vh] flex-col items-center justify-center px-6">
+      <div className="w-full max-w-lg rounded-2xl border border-rose-500/30 bg-rose-950/30 p-10 text-center shadow-2xl shadow-rose-900/20 backdrop-blur-2xl">
+        <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full border border-rose-500/40 bg-rose-900/30 shadow-[0_0_30px_rgba(239,68,68,0.25)]">
+          <svg
+            className="h-8 w-8 text-rose-400"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={1.5}
+            aria-hidden="true"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"
+            />
+          </svg>
+        </div>
+        <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-rose-500/70">
+          Sistema · Crítico
+        </p>
+        <h2 className="mt-3 text-lg font-semibold leading-snug text-rose-100">
+          CONEXIÓN PERDIDA CON EL SISTEMA CENTRAL
+        </h2>
+        <p className="mt-2 font-mono text-xs text-rose-300/60">{message}</p>
+        <button
+          type="button"
+          onClick={onRetry}
+          className="mt-8 rounded-lg border border-rose-500/40 bg-rose-900/30 px-6 py-2.5 font-mono text-sm text-rose-200 transition-all duration-200 hover:border-rose-400/70 hover:bg-rose-800/50 hover:shadow-[0_0_15px_rgba(239,68,68,0.25)] active:scale-95"
+        >
+          Reintentar
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// ServiceCard
+// ---------------------------------------------------------------------------
+
+type ServiceCardProps = {
+  readonly service: InfraService;
+};
+
+function ServiceCard({ service }: ServiceCardProps) {
+  const cfg = resolveStatusConfig(service.status);
+
+  return (
+    <article className="group relative cursor-default overflow-hidden rounded-2xl border border-slate-700/50 bg-slate-900/50 shadow-xl shadow-black/50 backdrop-blur-xl transition-all duration-300 hover:scale-[1.02] hover:border-slate-500/60 hover:shadow-2xl hover:shadow-cyan-500/5">
+      {cfg.isDown && (
+        <div
+          className="absolute inset-x-0 top-0 h-0.5 animate-pulse bg-gradient-to-r from-transparent via-rose-500 to-transparent"
+          aria-hidden="true"
+        />
       )}
-    >
-      {isDown && (
-        <div className="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-transparent via-rose-500 to-transparent opacity-80" />
-      )}
-      
       <div className="p-5">
-        <div className="flex items-center justify-between">
-          <h2 className="font-sans text-lg font-medium capitalize tracking-wide text-slate-100">
+        <div className="flex items-start justify-between gap-3">
+          <h2 className="font-sans text-base font-medium capitalize leading-tight text-slate-100">
             {service.name}
           </h2>
-          <StatusIndicator status={service.status} />
+          <div className="mt-0.5 shrink-0">
+            <StatusIndicator status={service.status} />
+          </div>
         </div>
-        
-        <div className="mt-4 space-y-1.5">
-          <p className="text-sm text-slate-300">
-            Estado:{" "}
-            <span className={clsx(
-              "font-mono font-medium uppercase tracking-wide",
-              service.status === "healthy" && "text-emerald-400",
-              service.status === "degraded" && "text-amber-400",
-              service.status === "down" && "text-rose-400"
-            )}>
-              {service.status}
-            </span>
-          </p>
-          <p className="font-mono text-xs text-slate-400">
-            {formatTimeAgo(service.lastSeenSeconds)}
-          </p>
+        <p
+          className={"mt-2 font-mono text-[11px] font-semibold uppercase tracking-widest " + cfg.textColor}
+        >
+          {cfg.label}
+        </p>
+        <div className="mt-3 space-y-1">
           <p className="font-mono text-xs text-slate-500">
-            TTL: {service.ttlSeconds === null ? "N/A" : `${service.ttlSeconds}s`}
+            <span className="text-slate-700">latido</span>{" "}
+            <span className="text-slate-400">{formatTimeAgo(service.lastSeenSeconds)}</span>
+          </p>
+          <p className="font-mono text-xs text-slate-600">
+            <span className="text-slate-700">TTL Redis</span>{" "}
+            {service.ttlSeconds === null ? "N/A" : service.ttlSeconds + "s"}
           </p>
         </div>
-        
-        <pre className="mt-4 max-h-28 overflow-auto rounded-lg bg-slate-950/80 p-3 text-[10px] leading-relaxed text-cyan-300/80 font-mono">
+        <pre className="mt-4 max-h-28 overflow-auto rounded-lg border border-slate-800/70 bg-slate-950/60 p-3 font-mono text-[10px] leading-relaxed text-cyan-300/80">
           {JSON.stringify(service.metadata, null, 2)}
         </pre>
       </div>
+      <div
+        className="pointer-events-none absolute inset-0 opacity-0 ring-1 ring-inset ring-white/5 transition-opacity duration-300 group-hover:opacity-100"
+        aria-hidden="true"
+      />
     </article>
   );
 }
 
-function ServiceCardSkeleton() {
-  return (
-    <div className="animate-pulse rounded-2xl border border-slate-700/30 bg-slate-900/30 p-5">
-      <div className="flex items-center justify-between">
-        <div className="h-6 w-24 rounded-lg bg-slate-700/40" />
-        <div className="h-3.5 w-3.5 rounded-full bg-slate-700/50" />
-      </div>
-      <div className="mt-4 space-y-2">
-        <div className="h-4 w-32 rounded bg-slate-700/30" />
-        <div className="h-3 w-40 rounded bg-slate-700/20" />
-        <div className="h-3 w-24 rounded bg-slate-700/20" />
-      </div>
-      <div className="mt-4 h-20 rounded-lg bg-slate-700/20" />
-    </div>
-  );
-}
-
-interface SystemAlertProps {
-  message: string;
-  onRetry: () => void;
-}
-
-function SystemAlert({ message, onRetry }: SystemAlertProps) {
-  return (
-    <div className="flex min-h-[300px] flex-col items-center justify-center rounded-2xl border border-rose-500/40 bg-rose-950/20 p-8 text-center backdrop-blur-xl">
-      <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-rose-500/20">
-        <svg className="h-8 w-8 text-rose-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-        </svg>
-      </div>
-      <h2 className="mb-3 font-sans text-xl font-semibold tracking-wide text-rose-400">
-        CONEXIÓN PERDIDA
-      </h2>
-      <p className="mb-6 max-w-md text-sm text-slate-400">
-        {message}
-      </p>
-      <button
-        onClick={onRetry}
-        className="group relative overflow-hidden rounded-lg bg-rose-500/20 px-6 py-2.5 font-medium text-rose-300 transition-all duration-300 hover:bg-rose-500/30 hover:text-rose-200"
-      >
-        <span className="relative z-10">Reintentar</span>
-        <div className="absolute inset-0 bg-gradient-to-r from-rose-500/0 via-rose-500/20 to-rose-500/0 opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
-      </button>
-    </div>
-  );
-}
-
-function fetchInfraStatus(url: string): Promise<InfraStatusPayload> {
-  return fetch(url, { cache: "no-store" }).then(async (res) => {
-    if (!res.ok) {
-      const body = await res.json().catch(() => ({}));
-      throw new Error(body.message ?? body.error ?? `HTTP ${res.status}`);
-    }
-    return res.json();
-  });
-}
+// ---------------------------------------------------------------------------
+// Page
+// ---------------------------------------------------------------------------
 
 export default function MissionControlPage() {
+  const [section, setSection] = useState<MissionSection>("infra");
+  const [viewMode, setViewMode] = useState<MissionViewMode>("2d");
   const url = infraStatusUrl(getApiBaseUrl());
-  const { data, error, isLoading, mutate } = useSWR<InfraStatusPayload>(
-    url,
-    fetchInfraStatus,
+  const supabase = useMemo(() => createClient(), []);
+
+  const { data: tokenData, error: tokenError } = useSWR<string, Error>(
+    "mission-control-access-token",
+    async () => {
+      const { data, error } = await supabase.auth.getSession();
+      if (error || !data.session?.access_token) {
+        throw new Error("Unauthorized");
+      }
+      return data.session.access_token;
+    },
     {
       refreshInterval: REFRESH_MS,
       revalidateOnFocus: true,
-      dedupingInterval: 2000,
+      dedupingInterval: 2_000,
+    },
+  );
+
+  const infraStatusKey = tokenData
+    ? { targetUrl: url, accessToken: tokenData }
+    : null;
+
+  const { data, error, isLoading, mutate } = useSWR<InfraStatusPayload, Error>(
+    infraStatusKey,
+    (key) => fetchInfraStatus(key.targetUrl, key.accessToken),
+    {
+      refreshInterval: REFRESH_MS,
+      revalidateOnFocus: true,
+      dedupingInterval: 2_000,
+      keepPreviousData: true,
     },
   );
 
   const services = useMemo(() => data?.services ?? [], [data]);
 
   return (
-    <main className="min-h-screen bg-slate-950 text-slate-100 relative">
-      <div 
-        className="pointer-events-none absolute inset-0 opacity-[0.03]"
+    <main className="relative min-h-screen overflow-x-hidden bg-slate-950 text-slate-100">
+      {/* Rejilla de puntos */}
+      <div
+        className="pointer-events-none absolute inset-0 opacity-[0.04]"
         style={{
-          backgroundImage: 'radial-gradient(circle at 1px 1px, currentColor 1px, transparent 0)',
-          backgroundSize: '32px 32px',
+          backgroundImage: "radial-gradient(circle at 1px 1px, currentColor 1px, transparent 0)",
+          backgroundSize: "24px 24px",
         }}
+        aria-hidden="true"
       />
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-cyan-950/10 via-transparent to-transparent" />
-      
-      <section className="mx-auto max-w-6xl px-6 py-10 relative">
+      {/* Gradientes de ambiente */}
+      <div
+        className="pointer-events-none absolute inset-0"
+        style={{
+          backgroundImage: [
+            "radial-gradient(ellipse at 15% 55%, rgba(56,189,248,0.04) 0%, transparent 45%)",
+            "radial-gradient(ellipse at 85% 15%, rgba(99,102,241,0.05) 0%, transparent 40%)",
+          ].join(", "),
+        }}
+        aria-hidden="true"
+      />
+
+      <section className="relative mx-auto max-w-6xl px-6 py-10">
         <header className="mb-10">
-          <p className="text-xs uppercase tracking-[0.25em] text-cyan-400/70 font-medium">
-            Mission Control
-          </p>
-          <h1 className="mt-2 bg-gradient-to-r from-slate-100 to-slate-400 bg-clip-text text-4xl font-semibold text-transparent">
-            Infra Heartbeat
+          <div className="mb-5 flex items-center gap-3">
+            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-cyan-500/25 to-transparent" />
+            <p className="font-mono text-[10px] uppercase tracking-[0.35em] text-cyan-400/60">
+              Mission Control
+            </p>
+            <div className="h-px flex-1 bg-gradient-to-l from-transparent via-cyan-500/25 to-transparent" />
+          </div>
+          <h1 className="bg-gradient-to-r from-slate-100 to-slate-400 bg-clip-text text-4xl font-semibold tracking-tight text-transparent">
+            {section === "infra" ? "Infra Heartbeat" : "Plan & Sprints"}
           </h1>
-          <p className="mt-3 font-mono text-sm text-slate-500">
-            Polling: {REFRESH_MS / 1000}s · Redis
+          <p className="mt-3 font-mono text-sm text-slate-600">
+            {section === "infra" ? (
+              <>
+                Polling cada {REFRESH_MS / 1_000}s · Redis live
+                {data ? " · " + services.length + " servicios" : ""}
+              </>
+            ) : (
+              <>Sprints activos desde la API · flujo React Flow en tiempo real</>
+            )}
           </p>
+          {tokenData ? (
+            <div className="mt-5 flex flex-wrap items-center gap-2">
+              <span className="font-mono text-[10px] uppercase tracking-widest text-slate-500">
+                Vista
+              </span>
+              <div className="inline-flex rounded-lg border border-slate-700/80 bg-slate-900/50 p-0.5 shadow-inner shadow-black/40">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSection("infra");
+                  }}
+                  className={
+                    "rounded-md px-3 py-1.5 font-mono text-xs transition-colors " +
+                    (section === "infra"
+                      ? "bg-cyan-500/15 text-cyan-300 shadow-[0_0_12px_rgba(34,211,238,0.15)]"
+                      : "text-slate-500 hover:text-slate-300")
+                  }
+                >
+                  Infra
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSection("sprints");
+                  }}
+                  className={
+                    "rounded-md px-3 py-1.5 font-mono text-xs transition-colors " +
+                    (section === "sprints"
+                      ? "bg-indigo-500/15 text-indigo-300 shadow-[0_0_12px_rgba(129,140,248,0.2)]"
+                      : "text-slate-500 hover:text-slate-300")
+                  }
+                >
+                  Active Sprints
+                </button>
+              </div>
+            </div>
+          ) : null}
+          {tokenData && section === "infra" ? (
+            <div className="mt-4 flex flex-wrap items-center gap-2">
+              <span className="font-mono text-[10px] uppercase tracking-widest text-slate-500">
+                Modo
+              </span>
+              <div className="inline-flex rounded-lg border border-slate-700/80 bg-slate-900/50 p-0.5 shadow-inner shadow-black/40">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setViewMode("2d");
+                  }}
+                  className={
+                    "rounded-md px-3 py-1.5 font-mono text-xs transition-colors " +
+                    (viewMode === "2d"
+                      ? "bg-cyan-500/15 text-cyan-300 shadow-[0_0_12px_rgba(34,211,238,0.15)]"
+                      : "text-slate-500 hover:text-slate-300")
+                  }
+                >
+                  2D Technical
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setViewMode("3d");
+                  }}
+                  className={
+                    "rounded-md px-3 py-1.5 font-mono text-xs transition-colors " +
+                    (viewMode === "3d"
+                      ? "bg-violet-500/15 text-violet-300 shadow-[0_0_12px_rgba(167,139,250,0.2)]"
+                      : "text-slate-500 hover:text-slate-300")
+                  }
+                >
+                  3D Virtual
+                </button>
+              </div>
+            </div>
+          ) : null}
         </header>
 
-        {error ? (
-          <SystemAlert message={error.message} onRetry={() => mutate()} />
+        {tokenError || error ? (
+          <SystemAlert
+            message={(tokenError ?? error)?.message ?? "Unauthorized"}
+            onRetry={() => void mutate()}
+          />
         ) : (
           <>
-            <div className="grid gap-5 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
-              {isLoading
-                ? Array.from({ length: 6 }).map((_, i) => (
-                    <ServiceCardSkeleton key={i} />
-                  ))
-                : services.map((service) => (
-                    <ServiceCard key={service.name} service={service} />
-                  ))}
-            </div>
-            
-            {services.length === 0 && !isLoading && (
-              <div className="py-12 text-center text-slate-500">
-                No hay servicios monitoreados
-              </div>
-            )}
+            {section === "sprints" && tokenData ? (
+              <ActiveSprintsFlow accessToken={tokenData} />
+            ) : null}
+
+            {section === "infra" ? (
+              <>
+                {viewMode === "3d" && tokenData ? (
+                  <VirtualOffice accessToken={tokenData} />
+                ) : (
+                  <>
+                    <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+                      {isLoading && !data
+                        ? Array.from({ length: SKELETON_COUNT }).map((_, i) => (
+                            // eslint-disable-next-line react/no-array-index-key
+                            <SkeletonCard key={i} />
+                          ))
+                        : services.map((service) => (
+                            <ServiceCard key={service.name} service={service} />
+                          ))}
+                    </div>
+
+                    {services.length === 0 && !isLoading && (
+                      <p className="py-12 text-center font-mono text-sm text-slate-600">
+                        No hay servicios monitoreados
+                      </p>
+                    )}
+                  </>
+                )}
+
+                {data && viewMode === "2d" ? (
+                  <footer className="mt-10 flex items-center justify-between border-t border-slate-800/50 pt-5 font-mono text-xs text-slate-600">
+                    <span>snapshot {data.generated_at}</span>
+                    <span className="flex items-center gap-2">
+                      <span
+                        className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500 shadow-[0_0_6px_rgba(34,197,94,0.7)]"
+                        aria-hidden="true"
+                      />
+                      Live
+                    </span>
+                  </footer>
+                ) : null}
+              </>
+            ) : null}
           </>
         )}
-
-        <footer className="mt-10 flex items-center justify-between border-t border-slate-800/50 pt-6 font-mono text-xs text-slate-600">
-          <span>Snapshot: {data?.generated_at ?? "—"}</span>
-          <span className="flex items-center gap-2">
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400/50 animate-pulse" />
-            Live
-          </span>
-        </footer>
       </section>
     </main>
   );

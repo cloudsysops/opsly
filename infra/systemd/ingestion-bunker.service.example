@@ -1,0 +1,20 @@
+[Unit]
+Description=Opsly Ingestion Bunker (Express → BullMQ / Redis)
+Documentation=file:///opt/opsly/apps/ingestion-service/README.md
+After=network-online.target redis.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=vps-dragon
+Group=vps-dragon
+WorkingDirectory=/opt/opsly/apps/ingestion-service
+EnvironmentFile=-/opt/opsly/.env
+Environment=NODE_ENV=production
+Environment=PORT=3040
+ExecStart=/usr/bin/node /opt/opsly/apps/ingestion-service/server.js
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

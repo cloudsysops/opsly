@@ -10,6 +10,8 @@ RUN npm run build -w @intcloudsysops/orchestrator
 
 FROM node:20-alpine AS runner
 
+ENV NODE_ENV=production
+
 WORKDIR /app
 COPY package*.json ./
 COPY apps/orchestrator/package*.json ./apps/orchestrator/
