@@ -8,12 +8,10 @@ const slugRegex = /^[a-z0-9][a-z0-9-]{1,28}[a-z0-9]$/;
 
 const checkoutSessionSchema = z.object({
   email: z.string().email({ message: "Email inválido" }),
-  slug: z
-    .string()
-    .regex(slugRegex, {
-      message:
-        "El workspace debe tener 3-30 caracteres: solo letras minúsculas, números y guiones (no puede empezar ni terminar con guión)",
-    }),
+  slug: z.string().regex(slugRegex, {
+    message:
+      "El workspace debe tener 3-30 caracteres: solo letras minúsculas, números y guiones (no puede empezar ni terminar con guión)",
+  }),
   plan: z.enum(["startup", "business", "enterprise"]),
 });
 
@@ -70,7 +68,11 @@ async function createStripeSession(
     metadata: { tenant_slug: slug, email, plan },
     subscription_data: { metadata: { tenant_slug: slug, plan } },
   });
-  logger.info("checkout.session.created", { slug, plan, sessionId: session.id });
+  logger.info("checkout.session.created", {
+    slug,
+    plan,
+    sessionId: session.id,
+  });
   return NextResponse.json({ url: session.url }, { status: 200 });
 }
 
@@ -95,7 +97,10 @@ export async function POST(request: Request): Promise<NextResponse> {
   const priceId = getPriceId(plan);
   if (!priceId) {
     logger.error("checkout.session price id not configured", { plan });
-    return NextResponse.json({ error: "Plan no disponible. Contacta soporte." }, { status: 503 });
+    return NextResponse.json(
+      { error: "Plan no disponible. Contacta soporte." },
+      { status: 503 },
+    );
   }
 
   const available = await slugIsAvailable(slug);

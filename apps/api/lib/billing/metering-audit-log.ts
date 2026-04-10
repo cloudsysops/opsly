@@ -3,7 +3,10 @@ import type { MeteringEventPayload } from "./types";
 /**
  * Log estructurado (stdout) para auditoría; no bloquea la petición HTTP.
  */
-export function logMeteringAudit(event: MeteringEventPayload, extra?: Record<string, unknown>): void {
+export function logMeteringAudit(
+  event: MeteringEventPayload,
+  extra?: Record<string, unknown>,
+): void {
   const line = JSON.stringify({
     type: "billing_metering",
     tenant_id: event.tenantId,

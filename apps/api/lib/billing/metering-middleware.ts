@@ -5,7 +5,10 @@ export interface MeteringRouteOptions {
   readonly resolveTenantId: (request: Request) => string | null;
   readonly operation: string;
   readonly kind: MeteringOperationKind;
-  readonly resolveMetricType: (request: Request, response: Response) => BillingMetricType;
+  readonly resolveMetricType: (
+    request: Request,
+    response: Response,
+  ) => BillingMetricType;
   readonly resolveQuantity?: (request: Request, response: Response) => number;
   readonly persistLine?: boolean;
   readonly unitCostUsd?: number;

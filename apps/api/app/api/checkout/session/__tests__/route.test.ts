@@ -83,7 +83,9 @@ describe("POST /api/checkout/session", () => {
 
     it("returns 422 on invalid email", async () => {
       mockSlugFree();
-      const res = await POST(makeRequest({ email: "bad", slug: "my-test", plan: "startup" }));
+      const res = await POST(
+        makeRequest({ email: "bad", slug: "my-test", plan: "startup" }),
+      );
       expect(res.status).toBe(422);
       const json = await res.json();
       expect(json.details.email).toBeDefined();
@@ -91,19 +93,25 @@ describe("POST /api/checkout/session", () => {
 
     it("returns 422 on invalid slug (uppercase)", async () => {
       mockSlugFree();
-      const res = await POST(makeRequest({ email: "u@e.com", slug: "MySlug", plan: "startup" }));
+      const res = await POST(
+        makeRequest({ email: "u@e.com", slug: "MySlug", plan: "startup" }),
+      );
       expect(res.status).toBe(422);
     });
 
     it("returns 422 on slug starting with hyphen", async () => {
       mockSlugFree();
-      const res = await POST(makeRequest({ email: "u@e.com", slug: "-badslug", plan: "startup" }));
+      const res = await POST(
+        makeRequest({ email: "u@e.com", slug: "-badslug", plan: "startup" }),
+      );
       expect(res.status).toBe(422);
     });
 
     it("returns 422 on invalid plan", async () => {
       mockSlugFree();
-      const res = await POST(makeRequest({ email: "u@e.com", slug: "ok-slug", plan: "free" }));
+      const res = await POST(
+        makeRequest({ email: "u@e.com", slug: "ok-slug", plan: "free" }),
+      );
       expect(res.status).toBe(422);
     });
   });
@@ -111,7 +119,9 @@ describe("POST /api/checkout/session", () => {
   describe("slug availability", () => {
     it("returns 409 when slug is already taken", async () => {
       mockSlugTaken();
-      const res = await POST(makeRequest({ email: "u@e.com", slug: "taken", plan: "startup" }));
+      const res = await POST(
+        makeRequest({ email: "u@e.com", slug: "taken", plan: "startup" }),
+      );
       expect(res.status).toBe(409);
       const json = await res.json();
       expect(json.error).toMatch(/en uso/);
@@ -121,9 +131,18 @@ describe("POST /api/checkout/session", () => {
   describe("stripe checkout session creation", () => {
     it("creates session and returns url for startup plan", async () => {
       mockSlugFree();
-      mockStripeCreate.mockResolvedValue({ id: "cs_test_1", url: "https://checkout.stripe.com/pay/cs_test_1" });
+      mockStripeCreate.mockResolvedValue({
+        id: "cs_test_1",
+        url: "https://checkout.stripe.com/pay/cs_test_1",
+      });
 
-      const res = await POST(makeRequest({ email: "user@company.com", slug: "my-company", plan: "startup" }));
+      const res = await POST(
+        makeRequest({
+          email: "user@company.com",
+          slug: "my-company",
+          plan: "startup",
+        }),
+      );
       expect(res.status).toBe(200);
       const json = await res.json();
       expect(json.url).toBe("https://checkout.stripe.com/pay/cs_test_1");
@@ -133,16 +152,29 @@ describe("POST /api/checkout/session", () => {
           mode: "subscription",
           customer_email: "user@company.com",
           line_items: [{ price: "price_startup_test", quantity: 1 }],
-          metadata: { tenant_slug: "my-company", email: "user@company.com", plan: "startup" },
+          metadata: {
+            tenant_slug: "my-company",
+            email: "user@company.com",
+            plan: "startup",
+          },
         }),
       );
     });
 
     it("creates session for business plan with correct price id", async () => {
       mockSlugFree();
-      mockStripeCreate.mockResolvedValue({ id: "cs_test_2", url: "https://checkout.stripe.com/pay/cs_test_2" });
+      mockStripeCreate.mockResolvedValue({
+        id: "cs_test_2",
+        url: "https://checkout.stripe.com/pay/cs_test_2",
+      });
 
-      const res = await POST(makeRequest({ email: "cto@corp.io", slug: "my-corp", plan: "business" }));
+      const res = await POST(
+        makeRequest({
+          email: "cto@corp.io",
+          slug: "my-corp",
+          plan: "business",
+        }),
+      );
       expect(res.status).toBe(200);
       expect(mockStripeCreate).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -153,9 +185,18 @@ describe("POST /api/checkout/session", () => {
 
     it("sets subscription_data metadata with tenant_slug and plan", async () => {
       mockSlugFree();
-      mockStripeCreate.mockResolvedValue({ id: "cs_test_3", url: "https://checkout.stripe.com/pay/cs_test_3" });
+      mockStripeCreate.mockResolvedValue({
+        id: "cs_test_3",
+        url: "https://checkout.stripe.com/pay/cs_test_3",
+      });
 
-      await POST(makeRequest({ email: "user@company.com", slug: "my-slug", plan: "enterprise" }));
+      await POST(
+        makeRequest({
+          email: "user@company.com",
+          slug: "my-slug",
+          plan: "enterprise",
+        }),
+      );
 
       expect(mockStripeCreate).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -170,7 +211,9 @@ describe("POST /api/checkout/session", () => {
       mockSlugFree();
       delete process.env.STRIPE_PRICE_ID_STARTUP;
 
-      const res = await POST(makeRequest({ email: "u@e.com", slug: "ok-slug", plan: "startup" }));
+      const res = await POST(
+        makeRequest({ email: "u@e.com", slug: "ok-slug", plan: "startup" }),
+      );
       expect(res.status).toBe(503);
     });
 
@@ -178,7 +221,9 @@ describe("POST /api/checkout/session", () => {
       mockSlugFree();
       mockStripeCreate.mockRejectedValue(new Error("Stripe network error"));
 
-      const res = await POST(makeRequest({ email: "u@e.com", slug: "ok-slug", plan: "startup" }));
+      const res = await POST(
+        makeRequest({ email: "u@e.com", slug: "ok-slug", plan: "startup" }),
+      );
       expect(res.status).toBe(500);
     });
   });

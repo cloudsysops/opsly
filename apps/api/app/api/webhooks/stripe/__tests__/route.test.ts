@@ -23,7 +23,10 @@ vi.mock("../../../../../lib/logger", () => ({
 }));
 
 import { constructWebhookEvent } from "../../../../../lib/stripe";
-import { provisionTenant, suspendTenant } from "../../../../../lib/orchestrator";
+import {
+  provisionTenant,
+  suspendTenant,
+} from "../../../../../lib/orchestrator";
 import { notifyInvoicePaymentFailed } from "../../../../../lib/notifications";
 import { getServiceClient } from "../../../../../lib/supabase";
 
@@ -77,7 +80,9 @@ describe("POST /api/webhooks/stripe", () => {
   describe("signature verification", () => {
     it("returns 200 without side effects when STRIPE_WEBHOOK_SECRET is missing", async () => {
       delete process.env.STRIPE_WEBHOOK_SECRET;
-      const res = await POST(makeRequest(JSON.stringify({ type: "checkout.session.completed" })));
+      const res = await POST(
+        makeRequest(JSON.stringify({ type: "checkout.session.completed" })),
+      );
       expect(res.status).toBe(200);
       expect(constructWebhookEvent).not.toHaveBeenCalled();
       expect(provisionTenant).not.toHaveBeenCalled();
@@ -97,13 +102,21 @@ describe("POST /api/webhooks/stripe", () => {
         type: "checkout.session.completed",
         data: {
           object: {
-            metadata: { tenant_slug: "acme", email: "ceo@acme.com", plan: "startup" },
+            metadata: {
+              tenant_slug: "acme",
+              email: "ceo@acme.com",
+              plan: "startup",
+            },
             customer: "cus_123",
           },
         },
       };
-      (constructWebhookEvent as ReturnType<typeof vi.fn>).mockReturnValue(mockEvent);
-      (provisionTenant as ReturnType<typeof vi.fn>).mockResolvedValue(undefined);
+      (constructWebhookEvent as ReturnType<typeof vi.fn>).mockReturnValue(
+        mockEvent,
+      );
+      (provisionTenant as ReturnType<typeof vi.fn>).mockResolvedValue(
+        undefined,
+      );
 
       const res = await POST(makeRequest(JSON.stringify(mockEvent)));
       expect(res.status).toBe(200);
@@ -128,7 +141,9 @@ describe("POST /api/webhooks/stripe", () => {
           },
         },
       };
-      (constructWebhookEvent as ReturnType<typeof vi.fn>).mockReturnValue(mockEvent);
+      (constructWebhookEvent as ReturnType<typeof vi.fn>).mockReturnValue(
+        mockEvent,
+      );
 
       const res = await POST(makeRequest(JSON.stringify(mockEvent)));
       expect(res.status).toBe(200);
@@ -140,12 +155,18 @@ describe("POST /api/webhooks/stripe", () => {
         type: "checkout.session.completed",
         data: {
           object: {
-            metadata: { tenant_slug: "acme", email: "ceo@acme.com", plan: "invalid_plan" },
+            metadata: {
+              tenant_slug: "acme",
+              email: "ceo@acme.com",
+              plan: "invalid_plan",
+            },
             customer: "cus_123",
           },
         },
       };
-      (constructWebhookEvent as ReturnType<typeof vi.fn>).mockReturnValue(mockEvent);
+      (constructWebhookEvent as ReturnType<typeof vi.fn>).mockReturnValue(
+        mockEvent,
+      );
 
       const res = await POST(makeRequest(JSON.stringify(mockEvent)));
       expect(res.status).toBe(200);
@@ -157,13 +178,21 @@ describe("POST /api/webhooks/stripe", () => {
         type: "checkout.session.completed",
         data: {
           object: {
-            metadata: { tenant_slug: "acme", email: "ceo@acme.com", plan: "business" },
+            metadata: {
+              tenant_slug: "acme",
+              email: "ceo@acme.com",
+              plan: "business",
+            },
             customer: null,
           },
         },
       };
-      (constructWebhookEvent as ReturnType<typeof vi.fn>).mockReturnValue(mockEvent);
-      (provisionTenant as ReturnType<typeof vi.fn>).mockRejectedValue(new Error("VPS unreachable"));
+      (constructWebhookEvent as ReturnType<typeof vi.fn>).mockReturnValue(
+        mockEvent,
+      );
+      (provisionTenant as ReturnType<typeof vi.fn>).mockRejectedValue(
+        new Error("VPS unreachable"),
+      );
 
       const res = await POST(makeRequest(JSON.stringify(mockEvent)));
       expect(res.status).toBe(200);
@@ -179,9 +208,13 @@ describe("POST /api/webhooks/stripe", () => {
           object: { customer: "cus_456", id: "in_789" },
         },
       };
-      (constructWebhookEvent as ReturnType<typeof vi.fn>).mockReturnValue(mockEvent);
+      (constructWebhookEvent as ReturnType<typeof vi.fn>).mockReturnValue(
+        mockEvent,
+      );
       (suspendTenant as ReturnType<typeof vi.fn>).mockResolvedValue(undefined);
-      (notifyInvoicePaymentFailed as ReturnType<typeof vi.fn>).mockResolvedValue(undefined);
+      (
+        notifyInvoicePaymentFailed as ReturnType<typeof vi.fn>
+      ).mockResolvedValue(undefined);
 
       const res = await POST(makeRequest(JSON.stringify(mockEvent)));
       expect(res.status).toBe(200);
@@ -207,7 +240,9 @@ describe("POST /api/webhooks/stripe", () => {
         type: "invoice.payment_failed",
         data: { object: { customer: "cus_unknown", id: "in_000" } },
       };
-      (constructWebhookEvent as ReturnType<typeof vi.fn>).mockReturnValue(mockEvent);
+      (constructWebhookEvent as ReturnType<typeof vi.fn>).mockReturnValue(
+        mockEvent,
+      );
 
       const res = await POST(makeRequest(JSON.stringify(mockEvent)));
       expect(res.status).toBe(200);
@@ -217,8 +252,13 @@ describe("POST /api/webhooks/stripe", () => {
 
   describe("unknown event types", () => {
     it("ignores unknown event types and returns 200", async () => {
-      const mockEvent = { type: "payment_intent.created", data: { object: {} } };
-      (constructWebhookEvent as ReturnType<typeof vi.fn>).mockReturnValue(mockEvent);
+      const mockEvent = {
+        type: "payment_intent.created",
+        data: { object: {} },
+      };
+      (constructWebhookEvent as ReturnType<typeof vi.fn>).mockReturnValue(
+        mockEvent,
+      );
 
       const res = await POST(makeRequest(JSON.stringify(mockEvent)));
       expect(res.status).toBe(200);

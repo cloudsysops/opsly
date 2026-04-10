@@ -34,7 +34,10 @@ describe("withMetering", () => {
         resolveQuantity: () => 42,
       },
     );
-    const res = await wrapped(new Request("https://x/api/analyze"), {} as never);
+    const res = await wrapped(
+      new Request("https://x/api/analyze"),
+      {} as never,
+    );
     expect(res.status).toBe(200);
     await new Promise((r) => setTimeout(r, 0));
     expect(spy).toHaveBeenCalledTimes(1);
