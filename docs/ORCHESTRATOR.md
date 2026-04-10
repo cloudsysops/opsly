@@ -52,7 +52,18 @@ Cada job lleva `priority` en las opciones de `Queue.add` (BullMQ: **0 = máxima 
 - **Intención:** `remote_plan` (o cualquier intent con `agent_role: "planner"`, que se normaliza a `remote_plan`).
 - **Flujo principal:** el orchestrator usa `executeRemotePlanner` en `apps/orchestrator/src/planner-client.ts` → **`POST /v1/chat/completions`** en **llm-gateway** (mensajes `system` + `user` con contexto y lista de herramientas). Compatibilidad: `callRemotePlanner` en `llm-gateway-client.ts` delega en el mismo cliente. **`POST /v1/planner`** sigue disponible (mismo `llmCall` + JSON planner). No hay llamadas directas a Anthropic/OpenAI desde el orchestrator.
 - **Hermes:** el gateway ejecuta `llmCall()` y registra uso (tokens/costo) con `request_id` y `tenant_slug` en el flujo estándar del gateway.
-- **Respuesta:** JSON `{ reasoning, actions: [{ tool, params }] }`. **Modo seguro (Go-Live):** el motor **no encola** jobs a partir del plan; registra `planner_response` en stdout y hace `console.log` por acción simulada. Cuando se active la ejecución real, volver a mapear acciones → cola vía `planner-map.ts` (`payload.planner_tool` + prioridad en `queue-opts.ts`).
+- **Respuesta:** JSON `{ reasoning, actions: [{ tool, params }] }`.
+
+**Estado del Planner (2026-04-10):** el flujo `remote_plan` está en **modo producción**.
+
+1. El orchestrator recibe un `IntentRequest` (exige `tenant_slug` para aislamiento Hermes).
+2. Llama a `executeRemotePlanner` → **LLM Gateway** (`POST /v1/chat/completions` o equivalente interno).
+3. El JSON devuelto se valida; cada acción se mapea con `planner-map.ts` a un `OrchestratorJob` y se encola en BullMQ vía `enqueueJob` (cola `openclaw`, tipos `cursor` \| `n8n` \| `notify` \| `drive` según herramienta). Los `params` del planner pasan por `sanitizePlannerParams` (no pueden sobrescribir `tenant_slug`, `request_id` ni `tenant_id`).
+4. **Límites de seguridad:** máximo **5** acciones por plan (`MAX_PLANNER_ACTIONS`); si se supera → error *Plan demasiado complejo*. Herramientas desconocidas → log `planner_unknown_tool` y se omiten (fail-safe).
+5. **Observabilidad:** línea JSON `planner_response` en stdout; por cada job encolado, `planner_action_enqueued` (`observability/planner-log.ts`); estado inicial en Redis con `setJobState`.
+
+*Nota histórica:* el código legacy de solo simulación (`console.log` sin encolar) fue sustituido por encolado real (`enqueueJob` / `queue.add` con opciones de `queue-opts.ts`).
+
 - **Red Docker:** definir `ORCHESTRATOR_LLM_GATEWAY_URL=http://llm-gateway:3010` (ya en `infra/docker-compose.platform.yml`).
 
 ### Prueba manual del planner HTTP
