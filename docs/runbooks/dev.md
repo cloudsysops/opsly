@@ -11,7 +11,7 @@
 ## Arranque rápido
 
 1. `npm ci` en la raíz
-2. Copiar `.env.local.example` → `.env.local` en apps que apliquen; rellenar con `doppler run` o valores no secretos solo para dev
+2. Copiar `.env.example` → `.env.local` (o usar `./scripts/local-setup.sh`); rellenar con `doppler run` o valores no secretos solo para dev
 3. `npm run dev` — levanta workspaces configurados en Turbo
 
 ## Calidad antes de PR

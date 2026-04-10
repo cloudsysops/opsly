@@ -21,7 +21,7 @@ apps/api/coverage/
 .next
 .env*
 !.env.example
-!.env.local.example
+!.env.example.old
 dist
 .turbo
 

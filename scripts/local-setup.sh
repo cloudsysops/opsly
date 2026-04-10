@@ -71,11 +71,11 @@ else
 fi
 
 if [[ ! -f "${REPO_ROOT}/.env.local" ]]; then
-  if [[ -f "${REPO_ROOT}/.env.local.example" ]]; then
-    log_info "Creando .env.local desde .env.local.example"
-    cp "${REPO_ROOT}/.env.local.example" "${REPO_ROOT}/.env.local"
+  if [[ -f "${REPO_ROOT}/.env.example" ]]; then
+    log_info "Creando .env.local desde .env.example (plantilla unificada)"
+    cp "${REPO_ROOT}/.env.example" "${REPO_ROOT}/.env.local"
   else
-    log_error "Falta .env.local.example en la raíz del repo."
+    log_error "Falta .env.example en la raíz del repo."
     exit 1
   fi
 else

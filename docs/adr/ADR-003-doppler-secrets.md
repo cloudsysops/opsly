@@ -21,6 +21,6 @@ Todos los secrets van a Doppler. Nunca en repo ni en `.env` commiteado.
 
 ## Consecuencias
 
-- `.env.local.example` solo tiene placeholders
+- `.env.example` (plantilla unificada) solo tiene placeholders; no commitear `.env` / `.env.local` reales
 - Scripts usan: `doppler run -- comando`
 - `config/doppler-ready.json` se borra tras importar

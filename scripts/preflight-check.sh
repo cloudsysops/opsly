@@ -177,7 +177,7 @@ check_port 3001 "Admin (host directo)"
 if [[ -f "${REPO_ROOT}/.env.local" ]]; then
   ok_line ".env.local existe"
 else
-  warn_line ".env.local no existe — local-setup creará desde .env.local.example"
+  warn_line ".env.local no existe — local-setup creará desde .env.example"
 fi
 
 missing_file=0
