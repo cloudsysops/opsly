@@ -758,7 +758,7 @@ ssh vps-dragon@100.120.151.91 "docker system df && sudo du -xh /var --max-depth=
 - [ ] **SSH VPS inestable** — `ssh -o BatchMode=yes -o ConnectTimeout=10 vps-dragon@100.120.151.91 # Tailscale` devuelve `Connection timed out during banner exchange` (2026-04-09); sin SSH estable no se puede completar onboard/start de `localrank`.
 - [ ] **Cloudflare Proxy** — habilitar Proxy ON para todos los registros `*.ops.smiletripcare.com` (evitar exposición directa de origen público `157.245.223.7`).
 - [ ] **Verificar email tester** — confirmar recepción/activación de invitación para `jkbotero78@gmail.com` tras onboarding de `localrank`.
-- [ ] **`GOOGLE_DRIVE_TOKEN`** en Doppler `prd` vacío (0 chars en check rápido 2026-04-09); revisar si ya fue reemplazado por `GOOGLE_USER_CREDENTIALS_JSON`/SA y actualizar checks operativos.
+- [x] **`GOOGLE_DRIVE_TOKEN`** — confirmado 2026-04-10: Drive usa `GOOGLE_SERVICE_ACCOUNT_JSON` (2361 chars, válido). No es un gap real; la variable legacy no se usa.
 - [ ] **Resend dominio verificado** — sin ello, envío a emails fuera de la cuenta de prueba Resend → **500** en `POST /api/invitations` (ver mensaje API `verify a domain`).
 - [ ] **Imágenes GHCR / workflow Deploy** — desplegar API con plantilla invitación nueva (`portal-invitations.ts`); pendiente **success** de pipeline si aplica.
 - [ ] **`STRIPE_PRICE_ID_*` en Doppler `prd` / secrets de CI** — necesarios para billing/checkout real en `apps/web`; el build puede completarse sin ellos (`envOrEmpty` en `apps/web/lib/stripe/plans.ts`), pero Stripe fallará en runtime si faltan.

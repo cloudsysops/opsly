@@ -6,10 +6,9 @@ log:
 
 accessLog: {}
 
-# insecure: true expone el dashboard/API en :8080 sin TLS (solo depuración; no usar en producción pública).
+# Dashboard habilitado pero sin api.insecure — acceso solo vía router Traefik con auth middleware.
 api:
   dashboard: true
-  insecure: true
 
 entryPoints:
   web:

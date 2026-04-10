@@ -85,16 +85,18 @@ Sí, el backend está **bien separado por tenant para la fase actual** (staging 
 #### Red / Exposición
 - [x] Traefik v3: reglas `Host()` por subdominio (`n8n-<slug>.ops.smiletripcare.com`)
 - [x] TLS obligatorio vía Let's Encrypt + ACME
-- [ ] **TODO:** Cloudflare Proxy (naranja ON) para todos `*.ops.smiletripcare.com`
+- [x] **HECHO:** Cloudflare Proxy (naranja ON) para todos `*.ops.smiletripcare.com`
   - Habilita WAF rules (Bots, SQL injection, XSS)
   - Cache TTL para assets estáticos
   - DDoS mitigation
+  - Runbook: `docs/CLOUDFLARE-PROXY-ACTIVATION.md`
 
 #### SSH / Admin
 - [x] SSH **exclusivamente vía Tailscale** — `ssh vps-dragon@100.120.151.91` (IP pública bloqueada)
 - [x] Script onboard: `SSH_HOST=${SSH_HOST:-100.120.151.91}` (Tailscale por defecto)
 - [x] ufw firewall activo: SSH solo desde `100.64.0.0/10` (red Tailscale), HTTP/HTTPS público
-- [ ] **TODO:** Cloudflare Proxy (naranja ON) para todos `*.ops.smiletripcare.com`
+- [x] `CF_DNS_API_TOKEN` en Doppler `prd` — Traefik dnsChallenge activo (docs: `CLOUDFLARE-PROXY-ACTIVATION.md`)
+- [x] Traefik `api.insecure` eliminado (sin dashboard HTTP expuesto en `:8080`)
 
 #### Secrets / Doppler
 - [x] Doppler proyecto `ops-intcloudsysops`, config `prd`
