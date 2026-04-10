@@ -23,9 +23,7 @@
 | **2. BD Schemas** | `platform` (global) + `tenant_<slug>` (aislado) + RLS | Medio-Alto | ✅ RLS policies en migración 0007 |
 | **3. API Validation** | `tenantSlugMatchesSession()` en todas rutas `[slug]` → 403 | Alto | ✅ 4 rutas implementadas |
 | **4. Red DNS** | Traefik Host() rules: `n8n-<slug>.ops.smiletripcare.com` | Medio | ✅ TLS obligatorio |
-| **5. SSH Admin** | Tailscale VPN (IP privada 100.120.151.91) | Bajo→Alto* | ⚠️ Mejorable* |
-
-*SSH actualmente desde IP pública 157.245.223.7 (bajo riesgo). **Mitigable esta noche** con ufw + Tailscale.
+| **5. SSH Admin** | Tailscale VPN únicamente (`vps-dragon@100.120.151.91`) — IP pública bloqueada por ufw | Alto | ✅ Implementado |
 
 ---
 
@@ -89,18 +87,14 @@ echo "y" | sudo ufw enable
 
 ### 3. Tailscale SSH (5 min — Install)
 ```bash
-# Mac
-curl -fsSL https://tailscale.com/install.sh | sh
-sudo tailscale up
+# El VPS ya tiene Tailscale instalado — SSH solo via VPN
+# Nunca conectar via IP pública directa (bloqueada por ufw)
 
-# VPS
-ssh vps-dragon@157.245.223.7
-curl -fsSL https://tailscale.com/install.sh | sh
-sudo tailscale up --advertise-exit-node
-# Authorize in browser
+# Verificar que Tailscale está activo en el VPS (desde la red Tailscale)
+ssh vps-dragon@100.120.151.91 "tailscale status"
 
-# From now on
-ssh vps-dragon@100.120.151.91  # Tailscale IP (private)
+# Conexión de trabajo
+ssh vps-dragon@100.120.151.91  # Tailscale IP (única vía válida)
 ```
 **Resultado:** SSH solo desde VPN; IP pública rechaza ✅
 

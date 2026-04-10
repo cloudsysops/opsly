@@ -12,8 +12,8 @@ cat AGENTS.md
 cat VISION.md
 cat docs/OPENCLAW-ARCHITECTURE.md
 
-# 2. Estado VPS (si hay SSH)
-ssh vps-dragon@157.245.223.7 "
+# 2. Estado VPS — acceso SOLO por Tailscale (nunca IP pública 157.245.223.7)
+ssh vps-dragon@100.120.151.91 "
   systemctl is-active cursor-prompt-monitor opsly-watcher 2>/dev/null || true
   docker ps --format 'table {{.Names}}\t{{.Status}}' \
     | grep -E 'n8n|uptime|infra|traefik|mcp|gateway' || true
@@ -42,5 +42,5 @@ Next.js 15 · TypeScript · Tailwind · Supabase · Stripe · Docker Compose · 
 ## Repos y paths
 
 - GitHub: `cloudsysops/opsly`
-- VPS: `/opt/opsly` · `vps-dragon@157.245.223.7`
+- VPS: `/opt/opsly` · SSH `vps-dragon@100.120.151.91` (Tailscale · IP pública `157.245.223.7` solo para tráfico HTTP/HTTPS)
 - Doppler: `ops-intcloudsysops` / `prd`

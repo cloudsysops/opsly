@@ -94,7 +94,7 @@ ls skills/user/
 cat skills/user/opsly-context/SKILL.md
 
 # 3. Estado VPS
-ssh vps-dragon@157.245.223.7 "
+ssh vps-dragon@100.120.151.91 "
   echo '=== Servicios ===' &&
   systemctl is-active \
     cursor-prompt-monitor \

@@ -87,12 +87,50 @@ Stack resumido: Next.js 15, Tailwind, Supabase, Stripe, Docker Compose, Traefik 
 - **Nombres en inglés** en código; **comentarios en español** cuando ayuden al equipo.
 - **Funciones puras** cuando no haya I/O; aislar efectos secundarios.
 
+## Antes de escribir código — checklist rápido
+
+1. ¿Ya existe algo similar en `lib/`? → **Reutilizar** antes de duplicar.
+2. ¿La función supera ~50 líneas? → **Dividir** en funciones menores o mover a `lib/`.
+3. ¿Hay números mágicos? → Mover a `apps/api/lib/constants.ts` (`HTTP_STATUS`, `CACHE_TTL`, etc.).
+4. ¿Es una query a Supabase? → Va en `apps/api/lib/repositories/` (patrón Repository).
+5. ¿Es creación de recurso (tenant, compose, config)? → Va en `apps/api/lib/factories/` (patrón Factory).
+
 ## Estructura de un archivo nuevo en `apps/api` (route handler)
 
 1. **Imports:** tipos → `lib/` (repositorios, validación) → externos (`next/server`, etc.).
 2. **Validación** del input (query/body) con **early return** (`400`/`422`).
 3. **Lógica de negocio** delegada a `lib/` (repositorio, factory, servicio); **sin** SQL ni Supabase directo en el handler.
 4. **Respuesta** `NextResponse.json(...)` con tipo explícito o `satisfies` cuando aplique.
+
+### Patrón Zero-Trust — rutas portal `[slug]`
+
+Toda ruta bajo `/api/portal/**` debe seguir este esquema. No instanciar Supabase directamente en el handler.
+
+```typescript
+// app/api/portal/tenant/[slug]/mi-ruta/route.ts
+import { resolveTrustedPortalSession, tenantSlugMatchesSession } from "@/lib/portal-trusted-identity";
+import { HTTP_STATUS } from "@/lib/constants";
+
+export async function GET(
+  request: NextRequest,
+  context: { params: Promise<{ slug: string }> },
+) {
+  // 1. Resolver sesión Zero-Trust (JWT → tenant → owner_email)
+  const trusted = await resolveTrustedPortalSession(request);
+  if (!trusted.ok) return trusted.response; // 401 / 403 / 404
+
+  // 2. Validar que el slug del path coincide con el tenant de la sesión
+  const { slug } = await context.params;
+  if (!tenantSlugMatchesSession(trusted.session, slug)) {
+    return Response.json({ error: "Forbidden" }, { status: HTTP_STATUS.FORBIDDEN });
+  }
+
+  // 3. Lógica — delegar a lib/ (helper JSON compartido o repositorio)
+  return respondMiRecurso(trusted.session);
+}
+```
+
+Helpers compartidos viven en `lib/portal-*-json.ts` (p. ej. `portal-usage-json.ts`, `portal-me-json.ts`).
 
 ## Estructura de un script bash nuevo (`scripts/` o `tools/`)
 
@@ -185,12 +223,61 @@ git config core.hooksPath .githooks
   npm test -w skills/manifest
   ```
 
+### Patrón de test para routes en `apps/api`
+
+```typescript
+// __tests__/mi-ruta.test.ts
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { NextRequest } from "next/server";
+import { GET } from "../app/api/portal/tenant/[slug]/mi-ruta/route";
+import * as supabaseMod from "../lib/supabase";
+import * as identityMod from "../lib/portal-trusted-identity";
+
+// Mockear módulos antes de importar el handler
+vi.mock("../lib/supabase", () => ({ getServiceClient: vi.fn() }));
+vi.mock("../lib/portal-trusted-identity", () => ({
+  resolveTrustedPortalSession: vi.fn(),
+  tenantSlugMatchesSession: vi.fn(),
+}));
+
+function makeReq(token = "Bearer test-token") {
+  return new NextRequest("http://localhost/api/portal/tenant/acme/mi-ruta", {
+    headers: { Authorization: token },
+  });
+}
+
+describe("GET /api/portal/tenant/[slug]/mi-ruta", () => {
+  beforeEach(() => vi.clearAllMocks());
+
+  it("returns 401 when no session", async () => {
+    vi.mocked(identityMod.resolveTrustedPortalSession).mockResolvedValue({
+      ok: false,
+      response: Response.json({ error: "Unauthorized" }, { status: 401 }),
+    });
+    const res = await GET(makeReq(), { params: Promise.resolve({ slug: "acme" }) });
+    expect(res.status).toBe(401);
+  });
+
+  it("returns 403 when slug mismatch", async () => {
+    vi.mocked(identityMod.resolveTrustedPortalSession).mockResolvedValue({
+      ok: true, session: { user: { email: "a@acme.com" }, tenant: { slug: "other" } } as any,
+    });
+    vi.mocked(identityMod.tenantSlugMatchesSession).mockReturnValue(false);
+    const res = await GET(makeReq(), { params: Promise.resolve({ slug: "acme" }) });
+    expect(res.status).toBe(403);
+  });
+});
+```
+
+Patrón clave: **vi.mock antes de imports del handler**, mocks restablecidos con `beforeEach(() => vi.clearAllMocks())`.
+
 ### Validation scripts (antes de deploy)
 
 ```bash
 ./scripts/validate-config.sh     # Verifica JSON, DNS, SSH VPS, Doppler vars críticas
 npm run validate-context          # Valida system_state.json
 npm run validate-skills           # Verifica metadatos en skills/user/*/
+npm run validate-openapi          # Valida openapi-opsly-api.yaml: paths, estructura, rutas obligatorias
 ```
 
 ---
@@ -382,3 +469,25 @@ curl -s http://localhost:3012/health            # Context Builder
 9. **Deploy** — `deploy.yml` build GHCR + deploy VPS
 
 Si el cambio afecta **infra, DNS, deploy o secretos**: ejecutar `./scripts/validate-config.sh` antes de merge.
+
+### Bloque HANDOFF — al cerrar una sesión de trabajo
+
+Generar siempre este bloque al terminar una tarea (especialmente en sesiones multi-agente):
+
+```
+---HANDOFF---
+Tarea: [qué se hizo]
+Archivos: [lista de paths modificados]
+Estado: [qué funciona / qué no]
+Decisiones: [tabla fecha|decisión|razón — o "ninguna"]
+AGENTS.md diff:
+  Completado agregar: [items]
+  Próximo paso: [comando exacto]
+  Bloqueantes resolver: [items]
+  Bloqueantes nuevos: [items o "ninguno"]
+Próxima sesión prompt:
+  [prompt listo para copiar y pegar]
+---
+```
+
+Al cerrar sesión Cursor: actualizar `AGENTS.md` → commit → push → responder con URL raw de `AGENTS.md` en `main`.

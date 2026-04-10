@@ -4,8 +4,8 @@ Antes de CUALQUIER tarea, sin excepcion:
 
 1. Leer `AGENTS.md` completo.
 2. Leer `VISION.md` completo.
-3. Verificar estado VPS:
-   `ssh vps-dragon@157.245.223.7 "systemctl is-active cursor-prompt-monitor opsly-watcher && docker ps --format '{{.Names}}\t{{.Status}}' | grep -E 'n8n|uptime|infra|traefik'"`
+3. Verificar estado VPS (acceso **solo por Tailscale** — `100.120.151.91`, nunca IP pública):
+   `ssh vps-dragon@100.120.151.91 "systemctl is-active cursor-prompt-monitor opsly-watcher && docker ps --format '{{.Names}}\t{{.Status}}' | grep -E 'n8n|uptime|infra|traefik'"`
 4. Verificar vars criticas Doppler:
    `for VAR in DISCORD_WEBHOOK_URL RESEND_API_KEY GITHUB_TOKEN_N8N GOOGLE_SERVICE_ACCOUNT_JSON; do VAL=$(doppler secrets get $VAR --project ops-intcloudsysops --config prd --plain 2>/dev/null || echo ""); echo "$VAR: ${#VAL} chars"; done`
 5. Reportar gaps antes de continuar.
@@ -62,7 +62,7 @@ Fuente de verdad en git: **`skills/user/<skill>/SKILL.md`**. Sincronización con
 | orchestrator health | `ORCHESTRATOR_HEALTH_PORT` (ej. 3011) |
 | context-builder | `CONTEXT_BUILDER_PORT` (default 3012) |
 
-- VPS: `157.245.223.7` · usuario `vps-dragon` · repo `/opt/opsly`
+- VPS: IP pública `157.245.223.7` (solo HTTP/HTTPS) · SSH **solo por Tailscale** `vps-dragon@100.120.151.91` · repo `/opt/opsly`
 - Doppler: `ops-intcloudsysops` / `prd`
 - Supabase (proyecto staging referenciado en docs): `jkwykpldnitavhmtuzmo`
 - GitHub: `cloudsysops/opsly`

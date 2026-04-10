@@ -57,7 +57,7 @@ cd /Users/dragon/cboteros/proyectos/intcloudsysops
 ### 2.4 Verify Onboard (SSH to VPS)
 
 ```bash
-ssh vps-dragon@157.245.223.7
+ssh vps-dragon@100.120.151.91
   # Inside VPS:
   cd /opt/opsly
   doppler run -- npx supabase query "SELECT slug, plan, status FROM platform.tenants WHERE slug = 'localrank'"
@@ -108,7 +108,7 @@ doppler secrets set NOTEBOOKLM_STORAGE_PATH "/opt/opsly/.notebooklm_storage" --p
 ### 4.2 SSH Setup on VPS
 
 ```bash
-ssh vps-dragon@157.245.223.7
+ssh vps-dragon@100.120.151.91
   # Inside VPS:
   cd /opt/opsly
   mkdir -p .notebooklm_storage
@@ -150,7 +150,7 @@ NOTEBOOKLM_ENABLED=true ./scripts/test-notebooklm.sh --pdf-path /tmp/localrank-r
 ### 5.3 Execute Workflow (SSH)
 
 ```bash
-ssh vps-dragon@157.245.223.7
+ssh vps-dragon@100.120.151.91
   # Inside VPS:
   cd /opt/opsly
   doppler run -- python3 apps/agents/notebooklm/src/workflows/report-to-podcast.py \

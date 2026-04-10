@@ -63,8 +63,8 @@ Sí, el backend está **bien separado por tenant para la fase actual** (staging 
 #### Contenedores
 - [x] Docker Compose por tenant: `--project-name tenant_<slug>` en `docker_compose()`
 - [x] Redes Docker internas: `internal_network_<slug>` sin exposición a host network
-- [ ] **TODO:** ufw firewall: drop incoming por defecto; whitelist SSH (Tailscale), HTTP/HTTPS
-- [ ] **TODO:** Talescale setup: VPN para SSH solo (100.120.151.91)
+- [x] ufw firewall: drop incoming por defecto; SSH solo Tailscale (`100.64.0.0/10`), HTTP/HTTPS público
+- [x] Tailscale activo en VPS: SSH solo vía `100.120.151.91`
 - [ ] **TODO:** Auditoría CVEs Docker: `docker scan` en pipeline CI
 
 #### Base de Datos
@@ -89,13 +89,12 @@ Sí, el backend está **bien separado por tenant para la fase actual** (staging 
   - Habilita WAF rules (Bots, SQL injection, XSS)
   - Cache TTL para assets estáticos
   - DDoS mitigation
-- [ ] **TODO:** Registrar IPs VPS (157.245.223.7) en Cloudflare gray-list si es necesario
 
 #### SSH / Admin
+- [x] SSH **exclusivamente vía Tailscale** — `ssh vps-dragon@100.120.151.91` (IP pública bloqueada)
 - [x] Script onboard: `SSH_HOST=${SSH_HOST:-100.120.151.91}` (Tailscale por defecto)
-- [ ] **TODO:** Instalar Tailscale en VPS: `curl -fsSL https://tailscale.com/install.sh | sh`
-- [ ] **TODO:** ufw firewall: `ufw default DROP; ufw allow 22/tcp from 100.64.0.0/10; ufw allow 80,443/tcp`
-- [ ] **TODO:** Remover acceso SSH desde IP pública (solo Tailscale)
+- [x] ufw firewall activo: SSH solo desde `100.64.0.0/10` (red Tailscale), HTTP/HTTPS público
+- [ ] **TODO:** Cloudflare Proxy (naranja ON) para todos `*.ops.smiletripcare.com`
 
 #### Secrets / Doppler
 - [x] Doppler proyecto `ops-intcloudsysops`, config `prd`
