@@ -33,9 +33,10 @@ En **Docker**, el servicio `context-builder` expone **GET `/health`** y **POST `
 
 ## Repo-First RAG (índice local, estilo Obsidian)
 
-- **Índice:** `config/knowledge-index.json` — mapa `topics` → rutas `.md` (relativas al repo). Generación: `./scripts/index-knowledge.sh` (variable `OPSLY_ROOT`, por defecto raíz del repo; en VPS `/opt/opsly`).
-- **Lectura:** `buildContextFromQuery(query)` usa el índice, lee ficheros con `fs` (fallos ignorados), empaqueta en `<context_bundle>` / `<context_file source="…">`.
+- **Índice:** `config/knowledge-index.json` — por cada `.md`: `path`, `title` (primer `#`), `keywords` (derivados de `##`, nombre de archivo y título), `size_bytes`; más `topics` (token → rutas) para búsqueda rápida.
+- **Generación:** `./scripts/index-knowledge.sh` usa `find` (excluye `node_modules`, `.git`, `dist`, `.next`, etc.) y `scripts/generate-knowledge-index.mjs`. Variables: `OPSLY_ROOT` (default raíz del repo; en VPS `/opt/opsly`), `KNOWLEDGE_INDEX_OUT` (default `config/knowledge-index.json`; en VPS se puede usar `/tmp/opsly-knowledge-index.json` para depuración).
+- **API:** `buildContextFromQuery(query)` empaqueta fragmentos en `<context_bundle>`; `loadIndex` / `search` desde `@intcloudsysops/context-builder/indexer` filtran entradas sin leer todos los ficheros.
 - **Caché Redis:** clave `opsly:ctx:{sha256(query)}`, TTL **24 h** (`CONTEXT_CACHE_TTL_SECONDS` en código).
-- **Variables:** `OPS_REPO_ROOT` (raíz con `docs/`, `AGENTS.md`), `KNOWLEDGE_INDEX_PATH` (ruta al JSON).
+- **Variables:** `OPS_REPO_ROOT` (raíz del clone), `KNOWLEDGE_INDEX_PATH` (ruta al JSON que consume el servicio).
 
 **LLM Gateway:** con `LLM_GATEWAY_REPO_CONTEXT=true` y `CONTEXT_BUILDER_URL=http://context-builder:3012`, `llmCall` antepone el bloque al **system**. Usar `skip_repo_context: true` en llamadas auxiliares (p. ej. planner JSON, resúmenes de sesión).

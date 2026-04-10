@@ -8,6 +8,8 @@
 
 ## Flujo de sesión (humano + Cursor)
 
+**Índice de conocimiento (Repo-First RAG):** tras `git pull` en el VPS (o al añadir muchos `.md`), ejecuta `./scripts/index-knowledge.sh` desde la raíz del repo (`OPSLY_ROOT=/opt/opsly` si aplica) para regenerar `config/knowledge-index.json`. Sin ese paso, el Context Builder y el planner siguen “ciegos” respecto a títulos/keywords de la documentación nueva.
+
 **Al abrir una sesión nueva conmigo (otro agente / otro dispositivo):**
 
 1. Asegúrate de que `AGENTS.md` en `main` está actualizado (último commit en GitHub).
@@ -32,6 +34,33 @@ https://raw.githubusercontent.com/cloudsysops/opsly/main/AGENTS.md
 ```
 
 **Resumen:** Cursor deja `AGENTS.md` al día → commit/push a `main` → tú pegas la URL raw al iniciar la próxima sesión con el agente → listo.
+
+---
+
+## ⚡ Quick Commands
+
+```bash
+# Type-check all (Turbo)
+npm run type-check
+
+# Test single workspace
+npm run test --workspace=@intcloudsysops/orchestrator
+
+# Validate OpenAPI spec (CI required)
+npm run validate-openapi
+
+# Validate skills manifest
+npm run validate-skills
+
+# Update repo state JSON
+npm run update-state
+```
+
+**Lint rules:** ESLint staged only on `apps/api/app` + `apps/api/lib` after type-check.
+
+**Orchestrator jobs:** Use `JOB_VALIDATION.isValidJob()` for optional validation. Idempotency via `job.idempotency_key` → BullMQ `jobId`.
+
+---
 
 ### Flujo con Claude (multi-agente)
 
@@ -161,7 +190,7 @@ Procedimientos vivos en el repo: **`skills/user/<skill>/SKILL.md`**. En runtimes
 
 ### Sesiones Cursor sugeridas (una capacidad por sesión)
 
-1. ~~Tipos + metadata de jobs en `apps/orchestrator`.~~ ✅
+1. ~~Tipos + metadata de jobs en `apps/orchestrator`.~~ ✅ (2026-04-10: taskId, metadata, status logging)
 2. ~~Helpers de logging estructurado (workers + `llm-gateway`; reutilizar patrón `job-log.ts`).~~ ✅
 3. ~~Routing opcional en `llm-gateway` con defaults preservados (plan Fase 4 § incremento 5).~~ ✅
 4. ~~Normalización gradual de skills (manifest/version) (plan § incremento 4).~~ ✅
@@ -195,7 +224,9 @@ Procedimientos vivos en el repo: **`skills/user/<skill>/SKILL.md`**. En runtimes
 
 <!-- Actualizar al final de cada sesión -->
 
-**Fecha última actualización:** 2026-04-09 23:51 UTC — **Fase 1.5 (QA Review Cursor Orchestrator):** ✅ COMPLETA. Verdict: 🟢 **GOOD CODE** (3 critical issues documented + fixes ready). Docs: `CODE-REVIEW-ORCHESTRATOR`, `ORCHESTRATOR-FIXES-EXECUTION`, `QA-REVIEW-COMPLETE`. Ready-to-use fixes in `/tmp/`. Next: implement fixes (22 min) or ask Cursor. **Fase 4 Incremento 27 (Remote Planner + Healthchecks):** ✅ Completa (2026-04-10). **Fase 4 Incremento 26–18:** Portal Vitest (21 tests), OpenAPI validation, E2E smoke, health endpoints, feedback routes. **Status prod:** Type-check 11/11 ✅, Tests 155/155 API ✅, Portal Vitest 21 ✅. **LocalRank & NotebookLM:** Blocked on SSH/Tailscale; feature flag + MCP integration ready. **Security:** Zero-Trust portal routes, healthchecks, Traefik v3, Supabase RLS active.
+**Fecha última actualización:** 2026-04-10 23:30 UTC — **Repo-First índice + planner enqueue:** `scripts/index-knowledge.sh` escanea todo `*.md` vía `find` → `generate-knowledge-index.mjs` (título `#`, keywords, `size_bytes`, `topics`). `apps/context-builder`: `indexer.ts` (`loadIndex`, `search`, `searchInIndex`), `knowledge-index.ts` enriquecido. Orchestrator: `remote_plan` encola jobs reales (MAX acciones, logs `planner_action_enqueued`). Tras `git pull` en VPS: `./scripts/index-knowledge.sh`. Tests: context-builder ✅, orchestrator ✅, `npm run type-check` monorepo ✅.
+
+**URL raw (sesión siguiente):** https://raw.githubusercontent.com/cloudsysops/opsly/main/AGENTS.md
 
 ### Ecosistema IA – OpenClaw (2026-04-10)
 
@@ -979,6 +1010,7 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 | 2026-04-08 | `POST /api/feedback`: identidad solo con Bearer JWT + `platform.tenants`; validar `feedback_conversations` si hay `conversation_id`; cuerpo no sustituye la sesión | Fase 4 incremento 7 (Zero-Trust incremental); admin list/approve siguen con token plataforma |
 | 2026-04-09 | Stacks tenant: `docker compose --project-name tenant_<slug>` en `scripts/lib/docker-helpers.sh` para `up`/`stop`/`down`/`ps`/`stack_running`; sin `--remove-orphans` en `up` | El nombre de proyecto por defecto (p. ej. directorio `tenants`) unificaba todos los `docker-compose.*.yml`; un `up -f` de un slug trataba contenedores de otros tenants como huérfanos y los eliminaba |
 | 2026-04-04 | Logs JSON en workers OpenClaw + `llm_call_complete` / `llm_call_error` en `llmCall`; `LLMRequest.request_id` opcional (UUID si falta) | Misma convención que `job-log.ts` (stdout JSON); no sustituye `usage_events` / `logUsage`; agregación en plataforma de logs sin nuevos servicios |
+| 2026-04-10 | Jobs orchestrator: `taskId` + `metadata` opcionales + logs estructurados con `status` (started/completed/failed) + `JobState` en Redis | Fase 4 incremento 1; backward compatible; workers + enqueue log incluyen nuevos campos; tests 25/25 |
 | 2026-04-10 | Jobs orchestrator: metadata opcional + `request_id` correlación + `idempotency_key` → BullMQ `jobId` + `JobState` en Redis + log JSON por encolado | Base para observabilidad y cost tracking sin romper payloads; ver `docs/ORCHESTRATOR.md` |
 | 2026-04-07 | Autodiagnóstico autónomo ejecuta limpieza de disco con `docker image prune -f` + `docker builder prune -f` sin borrar volúmenes | Mitigar bloqueo operativo inmediato por VPS al 100% de uso; bajó a ~83% y quedó acción humana para cerrar <80% |
 | 2026-04-07 | Consulta de tenants Supabase en sesiones de diagnóstico usa schema `platform` | Evita falsos negativos de `Supabase query failed` al consultar `tenants` fuera del schema por defecto |

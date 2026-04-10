@@ -11,7 +11,8 @@
     "type-check": "tsc --noEmit"
   },
   "exports": {
-    ".": "./src/builder.ts"
+    ".": "./src/builder.ts",
+    "./indexer": "./src/indexer.ts"
   },
   "dependencies": {
     "@intcloudsysops/llm-gateway": "^1.0.0",

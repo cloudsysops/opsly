@@ -1,13 +1,13 @@
 import { randomUUID } from "node:crypto";
 import { MAX_PLANNER_ACTIONS } from "./constants-planner.js";
-import { enqueueJob } from "./queue.js";
-import { executeRemotePlanner } from "./planner-client.js";
 import { logPlannerActionEnqueued, logPlannerUnknownTool } from "./observability/planner-log.js";
+import { executeRemotePlanner } from "./planner-client.js";
 import {
-  buildPlannerContextSnapshot,
-  DEFAULT_PLANNER_TOOL_NAMES,
-  plannerActionToOrchestratorJob,
+    DEFAULT_PLANNER_TOOL_NAMES,
+    buildPlannerContextSnapshot,
+    plannerActionToOrchestratorJob,
 } from "./planner-map.js";
+import { enqueueJob } from "./queue.js";
 import { setJobState } from "./state/store.js";
 import type { Intent, IntentRequest, OrchestratorJob } from "./types.js";
 
@@ -131,7 +131,7 @@ export async function processIntent(req: IntentRequest): Promise<ProcessIntentRe
           logPlannerActionEnqueued({
             event: "planner_action_enqueued",
             tool: enqueuedPlannerTools[index] ?? "unknown",
-            tenant_slug: req.tenant_slug!,
+            tenant_slug: tenantSlug,
             action_id: index,
             request_id: correlationId,
             job_type: queuedJob.type,

@@ -1,613 +1,6314 @@
 {
   "version": 1,
   "root": "/Users/dragon/cboteros/proyectos/intcloudsysops",
-  "generated_at": "2026-04-09T23:51:20.642Z",
+  "generated_at": "2026-04-10T00:20:13.426Z",
+  "files": [
+    {
+      "path": ".claude/CLAUDE.md",
+      "title": "Claude en Opsly — Modo supremo",
+      "keywords": [
+        "absolutas",
+        "adicional",
+        "antes",
+        "claude",
+        "completo",
+        "contexto",
+        "cualquier",
+        "disponible",
+        "disponibles",
+        "division",
+        "filosofia",
+        "fuente",
+        "haces",
+        "inicio",
+        "markdown",
+        "modo",
+        "obligatorio",
+        "opsly",
+        "orientativo",
+        "protocolo",
+        "reglas",
+        "rol",
+        "roles",
+        "sesion",
+        "skills",
+        "stack",
+        "supremo",
+        "tarea",
+        "trabajo",
+        "urls",
+        "verdad"
+      ],
+      "size_bytes": 5696
+    },
+    {
+      "path": ".github/AGENTS.md",
+      "title": "Opsly — Contexto del Agente",
+      "keywords": [
+        "acordados",
+        "adoptados",
+        "agente",
+        "agentes",
+        "agents",
+        "ahora",
+        "arquitectura",
+        "checklist",
+        "claude",
+        "contexto",
+        "cursor",
+        "disponibles",
+        "documentacion",
+        "dos",
+        "duplicar",
+        "errores",
+        "evitamos",
+        "existe",
+        "fase",
+        "flujo",
+        "humano",
+        "incrementos",
+        "maestro",
+        "mapa",
+        "markdown",
+        "modo",
+        "multi",
+        "negociable",
+        "nos",
+        "opsly",
+        "orden",
+        "plan",
+        "principio",
+        "prompts",
+        "rapidas",
+        "recomendado",
+        "rector",
+        "reglas",
+        "rol",
+        "rompen",
+        "sesion",
+        "skills",
+        "supremo",
+        "trabajo"
+      ],
+      "size_bytes": 131151
+    },
+    {
+      "path": ".github/copilot-instructions.md",
+      "title": "Opsly — Instrucciones para GitHub Copilot",
+      "keywords": [
+        "algoritmos",
+        "api",
+        "aplicados",
+        "apps",
+        "archivo",
+        "archivos",
+        "bash",
+        "convenciones",
+        "copilot",
+        "cuando",
+        "diseno",
+        "estilo",
+        "estructura",
+        "filosofia",
+        "github",
+        "hacer",
+        "handler",
+        "inicio",
+        "instrucciones",
+        "instructions",
+        "markdown",
+        "nuevo",
+        "obligatorias",
+        "obligatorio",
+        "opsly",
+        "patrones",
+        "principios",
+        "protocolo",
+        "referencia",
+        "reglas",
+        "route",
+        "script",
+        "scripts",
+        "sesion",
+        "solid",
+        "tools",
+        "trabajo",
+        "usar"
+      ],
+      "size_bytes": 6950
+    },
+    {
+      "path": ".github/PULL_REQUEST_TEMPLATE.md",
+      "title": "PULL_REQUEST_TEMPLATE",
+      "keywords": [
+        "aplica",
+        "cambio",
+        "checklist",
+        "impacto",
+        "infra",
+        "markdown",
+        "notas",
+        "opsly",
+        "probar",
+        "pull",
+        "quien",
+        "request",
+        "resumen",
+        "revisa",
+        "solo",
+        "template",
+        "tenants",
+        "terraform",
+        "tipo"
+      ],
+      "size_bytes": 2764
+    },
+    {
+      "path": ".github/README-github-templates.md",
+      "title": "Guía de `.github/` — plantillas y gobernanza (Opsly)",
+      "keywords": [
+        "estas",
+        "github",
+        "gobernanza",
+        "guia",
+        "markdown",
+        "nuevo",
+        "opsly",
+        "plantillas",
+        "proyecto",
+        "rapida",
+        "readme",
+        "reutilizar",
+        "tabla",
+        "templates",
+        "workflows"
+      ],
+      "size_bytes": 2871
+    },
+    {
+      "path": ".github/VISION.md",
+      "title": "Opsly — Visión y Objetivos",
+      "keywords": [
+        "ahora",
+        "cliente",
+        "code",
+        "core",
+        "cursor",
+        "desde",
+        "escala",
+        "extensiones",
+        "fase",
+        "markdown",
+        "middleware",
+        "npm",
+        "objetivos",
+        "opsly",
+        "paquetes",
+        "patron",
+        "planes",
+        "primer",
+        "producto",
+        "quien",
+        "real",
+        "smiletripcare",
+        "stack",
+        "transferible",
+        "validacion",
+        "vision"
+      ],
+      "size_bytes": 14981
+    },
+    {
+      "path": "AGENTS.md",
+      "title": "Opsly — Contexto del Agente",
+      "keywords": [
+        "acordados",
+        "adoptados",
+        "agente",
+        "agentes",
+        "agents",
+        "ahora",
+        "arquitectura",
+        "checklist",
+        "claude",
+        "commands",
+        "contexto",
+        "cursor",
+        "disponibles",
+        "dos",
+        "duplicar",
+        "errores",
+        "evitamos",
+        "existe",
+        "fase",
+        "flujo",
+        "humano",
+        "incrementos",
+        "maestro",
+        "mapa",
+        "markdown",
+        "modo",
+        "multi",
+        "negociable",
+        "nos",
+        "opsly",
+        "orden",
+        "plan",
+        "principio",
+        "quick",
+        "rapidas",
+        "recomendado",
+        "rector",
+        "reglas",
+        "rol",
+        "rompen",
+        "sesion",
+        "skills",
+        "supremo",
+        "trabajo"
+      ],
+      "size_bytes": 131943
+    },
+    {
+      "path": "agents/prompts/claude-architect.md",
+      "title": "Claude — Prompt Arquitecto Opsly",
+      "keywords": [
+        "architect",
+        "arquitecto",
+        "claude",
+        "markdown",
+        "opsly",
+        "prompt"
+      ],
+      "size_bytes": 704
+    },
+    {
+      "path": "agents/prompts/cursor-executor.md",
+      "title": "Cursor — Prompt Ejecutor Opsly",
+      "keywords": [
+        "cursor",
+        "ejecutor",
+        "executor",
+        "markdown",
+        "opsly",
+        "prompt"
+      ],
+      "size_bytes": 459
+    },
+    {
+      "path": "apps/admin/INVITATIONS_UI.md",
+      "title": "Admin — Invitations UI (Fase 2)",
+      "keywords": [
+        "admin",
+        "componentes",
+        "crear",
+        "exito",
+        "fase",
+        "formulario",
+        "frontend",
+        "invitacion",
+        "invitations",
+        "lectura",
+        "markdown",
+        "opsly",
+        "pantalla",
+        "reutilizables",
+        "solo",
+        "tabla",
+        "validaciones"
+      ],
+      "size_bytes": 2282
+    },
+    {
+      "path": "apps/agents/notebooklm/README.md",
+      "title": "NotebookLM Agent (Opsly)",
+      "keywords": [
+        "agent",
+        "desde",
+        "docker",
+        "markdown",
+        "monorepo",
+        "notebooklm",
+        "opsly",
+        "planes",
+        "readme",
+        "requisitos",
+        "typescript",
+        "uso"
+      ],
+      "size_bytes": 1110
+    },
+    {
+      "path": "apps/mcp/README.md",
+      "title": "OpenClaw MCP Server",
+      "keywords": [
+        "entorno",
+        "markdown",
+        "mcp",
+        "openclaw",
+        "opsly",
+        "readme",
+        "scripts",
+        "server",
+        "variables"
+      ],
+      "size_bytes": 263
+    },
+    {
+      "path": "config/doppler-audit-2026-04-07.md",
+      "title": "Auditoría Doppler — `ops-intcloudsysops` / `prd` (2026-04-07)",
+      "keywords": [
+        "2026",
+        "audit",
+        "auditoria",
+        "claves",
+        "doppler",
+        "intcloudsysops",
+        "inventario",
+        "markdown",
+        "ops",
+        "opsly",
+        "orientativa",
+        "pasos",
+        "politica",
+        "prd",
+        "presencia",
+        "proximos",
+        "recomendada",
+        "rotacion"
+      ],
+      "size_bytes": 4005
+    },
+    {
+      "path": "docs/ACTIVE-PROMPT.md",
+      "title": "ACTIVE-PROMPT — Opsly",
+      "keywords": [
+        "active",
+        "markdown",
+        "opsly",
+        "prompt"
+      ],
+      "size_bytes": 569
+    },
+    {
+      "path": "docs/adr/ADR-001-docker-compose-por-tenant.md",
+      "title": "ADR-001 — Docker Compose por tenant",
+      "keywords": [
+        "001",
+        "adr",
+        "alternativas",
+        "compose",
+        "consecuencias",
+        "decision",
+        "docker",
+        "markdown",
+        "opsly",
+        "razones",
+        "rechazadas",
+        "tenant"
+      ],
+      "size_bytes": 649
+    },
+    {
+      "path": "docs/adr/ADR-002-traefik-sobre-nginx.md",
+      "title": "ADR-002 — Traefik v3 como reverse proxy",
+      "keywords": [
+        "002",
+        "adr",
+        "alternativas",
+        "consecuencias",
+        "decision",
+        "markdown",
+        "nginx",
+        "opsly",
+        "proxy",
+        "razones",
+        "rechazadas",
+        "reverse",
+        "sobre",
+        "traefik"
+      ],
+      "size_bytes": 672
+    },
+    {
+      "path": "docs/adr/ADR-003-doppler-secrets.md",
+      "title": "ADR-003 — Doppler como gestor de secrets",
+      "keywords": [
+        "003",
+        "adr",
+        "configuracion",
+        "consecuencias",
+        "decision",
+        "doppler",
+        "gestor",
+        "markdown",
+        "opsly",
+        "razones",
+        "secrets"
+      ],
+      "size_bytes": 564
+    },
+    {
+      "path": "docs/adr/ADR-004-supabase-schema-por-tenant.md",
+      "title": "ADR-004 — Supabase con schema por tenant",
+      "keywords": [
+        "004",
+        "adr",
+        "consecuencias",
+        "decision",
+        "markdown",
+        "opsly",
+        "razones",
+        "schema",
+        "supabase",
+        "tenant"
+      ],
+      "size_bytes": 529
+    },
+    {
+      "path": "docs/adr/ADR-005-traefik-v3-1-docker-api.md",
+      "title": "ADR-005 — Traefik v3.3+ frente a Docker Engine 29.x",
+      "keywords": [
+        "005",
+        "adr",
+        "api",
+        "consecuencias",
+        "contexto",
+        "decision",
+        "docker",
+        "engine",
+        "frente",
+        "markdown",
+        "opsly",
+        "otras",
+        "relacion",
+        "traefik"
+      ],
+      "size_bytes": 1543
+    },
+    {
+      "path": "docs/adr/ADR-006-api-testing-vitest.md",
+      "title": "ADR-006 — Tests de API con Vitest (Node)",
+      "keywords": [
+        "006",
+        "adr",
+        "api",
+        "consecuencias",
+        "decision",
+        "markdown",
+        "node",
+        "opsly",
+        "razones",
+        "testing",
+        "tests",
+        "vitest"
+      ],
+      "size_bytes": 788
+    },
+    {
+      "path": "docs/adr/ADR-007-runbooks-y-documentacion-operativa.md",
+      "title": "ADR-007 — Estructura de runbooks y documentación operativa",
+      "keywords": [
+        "007",
+        "adr",
+        "consecuencias",
+        "decision",
+        "documentacion",
+        "estructura",
+        "markdown",
+        "operativa",
+        "opsly",
+        "razones",
+        "runbooks"
+      ],
+      "size_bytes": 749
+    },
+    {
+      "path": "docs/adr/ADR-008-terraform-digitalocean-plan.md",
+      "title": "ADR-008 — Terraform en DigitalOcean (plan sin apply automático)",
+      "keywords": [
+        "008",
+        "adr",
+        "apply",
+        "automatico",
+        "consecuencias",
+        "decision",
+        "digitalocean",
+        "markdown",
+        "opsly",
+        "plan",
+        "razones",
+        "sin",
+        "terraform"
+      ],
+      "size_bytes": 1083
+    },
+    {
+      "path": "docs/adr/ADR-009-openclaw-mcp-architecture.md",
+      "title": "ADR-009: OpenClaw MCP Server Architecture",
+      "keywords": [
+        "009",
+        "adr",
+        "apps",
+        "architecture",
+        "autenticacion",
+        "capa",
+        "consecuencias",
+        "contexto",
+        "decision",
+        "layer",
+        "markdown",
+        "mcp",
+        "oauth",
+        "objetivos",
+        "openclaw",
+        "opsly",
+        "orchestrator",
+        "orquestador",
+        "pkce",
+        "server"
+      ],
+      "size_bytes": 4312
+    },
+    {
+      "path": "docs/adr/ADR-010-llm-gateway.md",
+      "title": "ADR-010: LLM Gateway con Cache Redis",
+      "keywords": [
+        "010",
+        "2026",
+        "aceptado",
+        "adr",
+        "cache",
+        "consecuencias",
+        "contexto",
+        "decision",
+        "estado",
+        "fecha",
+        "gateway",
+        "hacer",
+        "llm",
+        "markdown",
+        "opsly",
+        "redis",
+        "responsabilidades"
+      ],
+      "size_bytes": 966
+    },
+    {
+      "path": "docs/adr/ADR-011-event-driven-orchestrator.md",
+      "title": "ADR-011: Orchestrator Event-Driven con BullMQ",
+      "keywords": [
+        "011",
+        "2026",
+        "aceptado",
+        "adr",
+        "bullmq",
+        "consecuencias",
+        "contexto",
+        "decision",
+        "driven",
+        "estado",
+        "estructura",
+        "event",
+        "eventos",
+        "fecha",
+        "markdown",
+        "opsly",
+        "orchestrator",
+        "paralelos",
+        "tenant",
+        "workers"
+      ],
+      "size_bytes": 783
+    },
+    {
+      "path": "docs/adr/ADR-012-observability.md",
+      "title": "ADR-012: Observabilidad por Tenant",
+      "keywords": [
+        "012",
+        "2026",
+        "aceptado",
+        "adr",
+        "consecuencias",
+        "contexto",
+        "decision",
+        "estado",
+        "fecha",
+        "markdown",
+        "observabilidad",
+        "observability",
+        "opsly",
+        "tenant"
+      ],
+      "size_bytes": 630
+    },
+    {
+      "path": "docs/adr/ADR-013-google-cloud-openSource-strategy.md",
+      "title": "ADR-013: Google Cloud + Open Source Integration Strategy",
+      "keywords": [
+        "013",
+        "2026",
+        "aceptado",
+        "adr",
+        "cloud",
+        "consecuencias",
+        "contexto",
+        "decision",
+        "estado",
+        "fecha",
+        "google",
+        "habilitados",
+        "hacer",
+        "integration",
+        "markdown",
+        "open",
+        "opensource",
+        "opsly",
+        "platform",
+        "principios",
+        "proyecto",
+        "servicios",
+        "source",
+        "strategy"
+      ],
+      "size_bytes": 1624
+    },
+    {
+      "path": "docs/adr/ADR-014-notebooklm-agent.md",
+      "title": "ADR-014: NotebookLM Agent (EXPERIMENTAL)",
+      "keywords": [
+        "014",
+        "adr",
+        "agent",
+        "agents",
+        "apps",
+        "client",
+        "consequences",
+        "context",
+        "decision",
+        "experimental",
+        "feature",
+        "flag",
+        "implementation",
+        "index",
+        "markdown",
+        "mcp",
+        "metricas",
+        "monitoreo",
+        "notebooklm",
+        "opsly",
+        "problem",
+        "pros",
+        "python",
+        "registration",
+        "riesgos",
+        "src",
+        "tool",
+        "typescript",
+        "wrapper"
+      ],
+      "size_bytes": 5778
+    },
+    {
+      "path": "docs/AGENTS-GUIDE.md",
+      "title": "Guía de Agentes Paralelos — Opsly",
+      "keywords": [
+        "agente",
+        "agentes",
+        "agents",
+        "business",
+        "crear",
+        "ejemplos",
+        "enterprise",
+        "guia",
+        "guide",
+        "limites",
+        "markdown",
+        "nuevo",
+        "opsly",
+        "paralelos",
+        "plan",
+        "startup"
+      ],
+      "size_bytes": 2220
+    },
+    {
+      "path": "docs/ARCHITECT-SECURITY-REVIEW.md",
+      "title": "🎯 Respuesta Arquitecto: Evaluación de Seguridad Multi-Tenancy (2026-04-09)",
+      "keywords": [
+        "2026",
+        "actual",
+        "actuales",
+        "architect",
+        "arquitecto",
+        "bajo",
+        "capas",
+        "cloudflare",
+        "com",
+        "esta",
+        "evaluacion",
+        "fase",
+        "finales",
+        "firewall",
+        "fortalezas",
+        "founder",
+        "gmail",
+        "inmediatas",
+        "install",
+        "jkbotero78",
+        "manual",
+        "markdown",
+        "medio",
+        "min",
+        "mitigaciones",
+        "multi",
+        "noche",
+        "opsly",
+        "portales",
+        "pregunta",
+        "proxy",
+        "publicos",
+        "respuesta",
+        "restantes",
+        "review",
+        "riesgos",
+        "security",
+        "seguridad",
+        "seguro",
+        "separacion",
+        "ssh",
+        "tailscale",
+        "tenancy",
+        "tenant",
+        "tester",
+        "ufw",
+        "urls"
+      ],
+      "size_bytes": 6804
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "title": "Opsly Architecture",
+      "keywords": [
+        "allocation",
+        "architecture",
+        "backup",
+        "control",
+        "data",
+        "development",
+        "environment",
+        "flow",
+        "isolation",
+        "markdown",
+        "model",
+        "onboarding",
+        "opsly",
+        "plane",
+        "port",
+        "strategy",
+        "tenant"
+      ],
+      "size_bytes": 3813
+    },
+    {
+      "path": "docs/AUTO-PUSH-WATCHER.md",
+      "title": "Auto-push watcher (docs + `AGENTS.md`)",
+      "keywords": [
+        "agents",
+        "auto",
+        "comportamiento",
+        "cuando",
+        "docs",
+        "instalacion",
+        "manual",
+        "markdown",
+        "opsly",
+        "opt",
+        "problemas",
+        "push",
+        "referencias",
+        "script",
+        "solucion",
+        "ubuntu",
+        "usarlo",
+        "vps",
+        "watcher"
+      ],
+      "size_bytes": 2658
+    },
+    {
+      "path": "docs/AUTOMATION-PLAN.md",
+      "title": "Plan de Automatizacion Opsly",
+      "keywords": [
+        "2026",
+        "automation",
+        "automatizacion",
+        "componentes",
+        "construir",
+        "criterios",
+        "doppler",
+        "estado",
+        "exito",
+        "fecha",
+        "flujo",
+        "markdown",
+        "objetivo",
+        "opsly",
+        "plan",
+        "prd",
+        "progreso",
+        "requeridas",
+        "restricciones",
+        "seguridad",
+        "variables",
+        "version"
+      ],
+      "size_bytes": 5009
+    },
+    {
+      "path": "docs/CLAUDE-WORKFLOW-OPTIMIZATION.md",
+      "title": "Optimización de flujo de trabajo (Claude / Cursor / agentes)",
+      "keywords": [
+        "agente",
+        "agentes",
+        "antes",
+        "archivos",
+        "bloqueantes",
+        "buscar",
+        "cargar",
+        "claude",
+        "commit",
+        "concreta",
+        "configuracion",
+        "contexto",
+        "cuando",
+        "cursor",
+        "deploy",
+        "documentar",
+        "dry",
+        "estrictos",
+        "explicito",
+        "fallidas",
+        "fijo",
+        "flujo",
+        "grandes",
+        "handoff",
+        "herramientas",
+        "hipotesis",
+        "leer",
+        "mantener",
+        "momento",
+        "nueva",
+        "optimizacion",
+        "optimization",
+        "orden",
+        "paralelizar",
+        "produccion",
+        "repetir",
+        "run",
+        "sea",
+        "sesion",
+        "siguiente",
+        "sin",
+        "solo",
+        "tarea",
+        "tipos",
+        "tocar",
+        "trabajo",
+        "validar",
+        "workflow"
+      ],
+      "size_bytes": 2748
+    },
+    {
+      "path": "docs/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md",
+      "title": "🔍 Code Review: Cursor Orchestrator Work - 2026-04-09",
+      "keywords": [
+        "2026",
+        "allsettled",
+        "array",
+        "case",
+        "catch",
+        "code",
+        "condition",
+        "critical",
+        "cursor",
+        "default",
+        "docker",
+        "executive",
+        "fetch",
+        "fix",
+        "good",
+        "healthchecks",
+        "important",
+        "incomplete",
+        "index",
+        "issue",
+        "issues",
+        "json",
+        "markdown",
+        "missing",
+        "observations",
+        "opsly",
+        "orchestrator",
+        "parse",
+        "promise",
+        "quality",
+        "race",
+        "review",
+        "schema",
+        "strict",
+        "summary",
+        "switch",
+        "this",
+        "timeout",
+        "tonight",
+        "try",
+        "typescript",
+        "validation",
+        "week",
+        "without",
+        "work"
+      ],
+      "size_bytes": 12156
+    },
+    {
+      "path": "docs/CONTEXT-BUILDER.md",
+      "title": "Context Builder",
+      "keywords": [
+        "auto",
+        "builder",
+        "context",
+        "estilo",
+        "first",
+        "funciona",
+        "indice",
+        "integrar",
+        "local",
+        "markdown",
+        "nuevo",
+        "obsidian",
+        "opsly",
+        "rag",
+        "repo",
+        "servicio",
+        "session",
+        "summarize",
+        "ttl"
+      ],
+      "size_bytes": 2812
+    },
+    {
+      "path": "docs/DOPPLER-VARS.md",
+      "title": "Variables Doppler / secretos — referencia",
+      "keywords": [
+        "beast",
+        "doppler",
+        "gateway",
+        "llm",
+        "markdown",
+        "mode",
+        "opsly",
+        "otros",
+        "plataforma",
+        "referencia",
+        "secretos",
+        "variables",
+        "vars"
+      ],
+      "size_bytes": 1212
+    },
+    {
+      "path": "docs/EXECUTION-PLAN-LOCALRANK-NOTEBOOKLM.md",
+      "title": "🚀 EXECUTION PLAN - LocalRank + NotebookLM (Tonight)",
+      "keywords": [
+        "admin",
+        "already",
+        "block",
+        "cleanup",
+        "discord",
+        "done",
+        "doppler",
+        "dry",
+        "enable",
+        "environment",
+        "execute",
+        "execution",
+        "invitation",
+        "local",
+        "localrank",
+        "mac",
+        "markdown",
+        "notebooklm",
+        "notification",
+        "onboard",
+        "onboarding",
+        "opsly",
+        "plan",
+        "prepare",
+        "real",
+        "run",
+        "send",
+        "setup",
+        "ssh",
+        "test",
+        "token",
+        "tonight",
+        "verify",
+        "vps"
+      ],
+      "size_bytes": 4817
+    },
+    {
+      "path": "docs/FAQ.md",
+      "title": "FAQ — Opsly (operaciones y desarrollo)",
+      "keywords": [
+        "401",
+        "desarrollo",
+        "despliego",
+        "developer",
+        "documentamos",
+        "donde",
+        "ejecuto",
+        "error",
+        "esta",
+        "estado",
+        "falla",
+        "faq",
+        "incidente",
+        "managed",
+        "markdown",
+        "operaciones",
+        "opsly",
+        "plan",
+        "portal",
+        "produccion",
+        "proyecto",
+        "staging",
+        "terraform",
+        "tests",
+        "token",
+        "vivo"
+      ],
+      "size_bytes": 1741
+    },
+    {
+      "path": "docs/GOOGLE-CLOUD-ACTIVATION.md",
+      "title": "Activación Google Cloud $300 — Guía para Cristian",
+      "keywords": [
+        "300",
+        "activacion",
+        "activar",
+        "activation",
+        "bigquery",
+        "billing",
+        "cloud",
+        "comandos",
+        "cristian",
+        "cuando",
+        "free",
+        "google",
+        "guia",
+        "markdown",
+        "mes",
+        "necesitamos",
+        "nuevas",
+        "opsly",
+        "primero",
+        "run",
+        "semana",
+        "speech",
+        "text",
+        "tier",
+        "usa",
+        "variables",
+        "vertex",
+        "vision"
+      ],
+      "size_bytes": 1351
+    },
+    {
+      "path": "docs/GOOGLE-CLOUD-SETUP.md",
+      "title": "Google Cloud Setup — Opsly",
+      "keywords": [
+        "account",
+        "adc",
+        "apis",
+        "billing",
+        "cargar",
+        "carpeta",
+        "cloud",
+        "compartida",
+        "completo",
+        "drive",
+        "google",
+        "habilitadas",
+        "json",
+        "markdown",
+        "oauth",
+        "opsly",
+        "pegar",
+        "proyecto",
+        "service",
+        "setup",
+        "suele",
+        "sync",
+        "truncar",
+        "unidad",
+        "usuario"
+      ],
+      "size_bytes": 2556
+    },
+    {
+      "path": "docs/GOOGLE-DRIVE-SYNC.md",
+      "title": "Google Drive — espejo de documentación Opsly",
+      "keywords": [
+        "actualizar",
+        "archivos",
+        "claude",
+        "compartido",
+        "configuracion",
+        "copiar",
+        "cristian",
+        "cuando",
+        "documentacion",
+        "drive",
+        "espejo",
+        "google",
+        "instrucciones",
+        "link",
+        "lista",
+        "mac",
+        "markdown",
+        "navegador",
+        "objetivo",
+        "opsly",
+        "puede",
+        "repo",
+        "sync",
+        "usarlo"
+      ],
+      "size_bytes": 3121
+    },
+    {
+      "path": "docs/INVITATIONS_RUNBOOK.md",
+      "title": "Invitaciones — Runbook Admin",
+      "keywords": [
+        "admin",
+        "codigos",
+        "completo",
+        "curl",
+        "ejemplo",
+        "flujo",
+        "invitaciones",
+        "invitations",
+        "markdown",
+        "opsly",
+        "requisitos",
+        "respuesta",
+        "runbook",
+        "troubleshooting"
+      ],
+      "size_bytes": 4348
+    },
+    {
+      "path": "docs/LIBRARIES-INSTALLED.md",
+      "title": "📦 LIBRERÍAS INSTALADAS - OPSLY ECOSYSTEM",
+      "keywords": [
+        "arquitectura",
+        "async",
+        "authentication",
+        "categoria",
+        "completo",
+        "database",
+        "ecosystem",
+        "frameworks",
+        "global",
+        "instaladas",
+        "installed",
+        "jobs",
+        "libraries",
+        "librerias",
+        "llm",
+        "markdown",
+        "notifications",
+        "opsly",
+        "payments",
+        "queuing",
+        "runtimes",
+        "safety",
+        "stack",
+        "styling",
+        "testing",
+        "type",
+        "utilities",
+        "validation",
+        "verificacion"
+      ],
+      "size_bytes": 9982
+    },
+    {
+      "path": "docs/LLM-GATEWAY.md",
+      "title": "LLM Gateway — Opsly (v2 Beast Mode)",
+      "keywords": [
+        "beast",
+        "desde",
+        "entorno",
+        "fase",
+        "flujo",
+        "gateway",
+        "hace",
+        "http",
+        "llm",
+        "markdown",
+        "mode",
+        "niveles",
+        "opcional",
+        "opsly",
+        "otro",
+        "proveedores",
+        "resumen",
+        "routing",
+        "servicio",
+        "sesgo",
+        "tests",
+        "uso",
+        "variables"
+      ],
+      "size_bytes": 3975
+    },
+    {
+      "path": "docs/LOCALRANK-TESTER-GUIDE.md",
+      "title": "LocalRank — Guía de testing (Opsly beta)",
+      "keywords": [
+        "acceso",
+        "automatizaciones",
+        "basico",
+        "beta",
+        "bienvenido",
+        "business",
+        "checklist",
+        "contacto",
+        "contenido",
+        "dar",
+        "dia",
+        "esta",
+        "experimental",
+        "feedback",
+        "generacion",
+        "guia",
+        "guide",
+        "localrank",
+        "markdown",
+        "opsly",
+        "probar",
+        "rapido",
+        "semana",
+        "servicios",
+        "smoke",
+        "test",
+        "tester",
+        "testing",
+        "tus"
+      ],
+      "size_bytes": 2182
+    },
+    {
+      "path": "docs/MASTER-PLAN-STATUS.md",
+      "title": "MASTER PLAN — Estado actual",
+      "keywords": [
+        "2026",
+        "activos",
+        "actual",
+        "actualizacion",
+        "automatizacion",
+        "bigquery",
+        "bloqueantes",
+        "cloud",
+        "discord",
+        "docker",
+        "drive",
+        "estado",
+        "fase",
+        "google",
+        "hecho",
+        "inmediato",
+        "markdown",
+        "master",
+        "metricas",
+        "n8n",
+        "oauth",
+        "opsly",
+        "paso",
+        "plan",
+        "progreso",
+        "proximo",
+        "proyecto",
+        "recientemente",
+        "status",
+        "ultima"
+      ],
+      "size_bytes": 3374
+    },
+    {
+      "path": "docs/MASTER-PLAN.md",
+      "title": "OPSLY MASTER PLAN — Plan de trabajo completo",
+      "keywords": [
+        "activos",
+        "actual",
+        "actualizacion",
+        "adelante",
+        "anadir",
+        "bloqueantes",
+        "completo",
+        "core",
+        "cuando",
+        "cubierto",
+        "defecto",
+        "diseno",
+        "duplicar",
+        "ejecutivo",
+        "falta",
+        "fase",
+        "fecha",
+        "inmediato",
+        "integrado",
+        "integrar",
+        "markdown",
+        "mas",
+        "master",
+        "metricas",
+        "monorepo",
+        "nada",
+        "necesario",
+        "nombre",
+        "numero",
+        "opcionales",
+        "opsly",
+        "paso",
+        "plan",
+        "progreso",
+        "proximo",
+        "proyecto",
+        "reglas",
+        "resumen",
+        "romper",
+        "sistema",
+        "solo",
+        "toque",
+        "trabajo",
+        "ultima",
+        "util"
+      ],
+      "size_bytes": 22693
+    },
+    {
+      "path": "docs/N8N-IMPORT-GUIDE.md",
+      "title": "N8N Import Guide — Discord to GitHub",
+      "keywords": [
+        "active",
+        "actual",
+        "adivinar",
+        "autodiagnostico",
+        "checklist",
+        "checks",
+        "configurar",
+        "confirm",
+        "curl",
+        "despues",
+        "discord",
+        "dry",
+        "entorno",
+        "estado",
+        "github",
+        "guide",
+        "http",
+        "import",
+        "importar",
+        "json",
+        "manual",
+        "markdown",
+        "n8n",
+        "nodo",
+        "nodos",
+        "notify",
+        "obligatorios",
+        "obtener",
+        "opsly",
+        "payload",
+        "pre",
+        "probar",
+        "prompt",
+        "run",
+        "salida",
+        "sha",
+        "sin",
+        "update",
+        "url",
+        "variables",
+        "verificacion",
+        "webhook"
+      ],
+      "size_bytes": 3590
+    },
+    {
+      "path": "docs/N8N-SETUP.md",
+      "title": "N8N Setup — Discord to GitHub",
+      "keywords": [
+        "agente",
+        "automatizado",
+        "claude",
+        "configuracion",
+        "cursor",
+        "discord",
+        "dispatch",
+        "github",
+        "importar",
+        "manual",
+        "markdown",
+        "menciones",
+        "n8n",
+        "objetivo",
+        "opsly",
+        "prerrequisitos",
+        "prueba",
+        "recomendado",
+        "requeridas",
+        "setup",
+        "sugerida",
+        "troubleshooting",
+        "variables",
+        "webhook",
+        "workflow"
+      ],
+      "size_bytes": 3101
+    },
+    {
+      "path": "docs/OBSERVABILITY.md",
+      "title": "Observabilidad — Opsly (Prometheus / métricas host)",
+      "keywords": [
+        "alertas",
+        "api",
+        "consultas",
+        "dashboard",
+        "ejemplos",
+        "endpoints",
+        "esquema",
+        "grafana",
+        "host",
+        "instant",
+        "integracion",
+        "interna",
+        "markdown",
+        "metricas",
+        "observabilidad",
+        "observability",
+        "opsly",
+        "paneles",
+        "prometheus",
+        "promql",
+        "query",
+        "referencias",
+        "sugeridas"
+      ],
+      "size_bytes": 2815
+    },
+    {
+      "path": "docs/OPENCLAW-ARCHITECTURE.md",
+      "title": "OpenClaw — Arquitectura de orquestación (Opsly)",
+      "keywords": [
+        "architecture",
+        "arquitectura",
+        "componentes",
+        "costos",
+        "flujo",
+        "markdown",
+        "n8n",
+        "objetivo",
+        "openclaw",
+        "opsly",
+        "orquestacion",
+        "pasos",
+        "propuestos",
+        "proximos",
+        "reduccion",
+        "referencias",
+        "relacion",
+        "repo",
+        "simplificado",
+        "tecnicos",
+        "uptime"
+      ],
+      "size_bytes": 2911
+    },
+    {
+      "path": "docs/ORCHESTRATOR-FIXES-EXECUTION.md",
+      "title": "📋 Quick Fix Execution Guide - Orchestrator Critical Issues",
+      "keywords": [
+        "add",
+        "after",
+        "array",
+        "behavior",
+        "case",
+        "checklist",
+        "client",
+        "commit",
+        "compose",
+        "console",
+        "critical",
+        "default",
+        "docker",
+        "engine",
+        "estimate",
+        "execution",
+        "fix",
+        "fixes",
+        "gateway",
+        "guide",
+        "healthchecks",
+        "hour",
+        "important",
+        "index",
+        "issues",
+        "llm",
+        "locally",
+        "log",
+        "logger",
+        "map",
+        "min",
+        "optional",
+        "orchestrator",
+        "planner",
+        "platform",
+        "quick",
+        "replace",
+        "test",
+        "that",
+        "this",
+        "time",
+        "timeout",
+        "tonight",
+        "verification",
+        "week",
+        "with",
+        "work",
+        "yml"
+      ],
+      "size_bytes": 11344
+    },
+    {
+      "path": "docs/ORCHESTRATOR.md",
+      "title": "Orchestrator — OpenClaw",
+      "keywords": [
+        "agregar",
+        "arquitectura",
+        "bullmq",
+        "chat",
+        "cola",
+        "concurrency",
+        "disponibles",
+        "driven",
+        "estados",
+        "event",
+        "fase",
+        "http",
+        "idempotencia",
+        "job",
+        "jobs",
+        "manual",
+        "markdown",
+        "metadata",
+        "nuevo",
+        "openclaw",
+        "opsly",
+        "opts",
+        "orchestrator",
+        "plan",
+        "planner",
+        "prioridad",
+        "prueba",
+        "queue",
+        "remote",
+        "worker"
+      ],
+      "size_bytes": 5636
+    },
+    {
+      "path": "docs/PERFORMANCE_BASELINE.md",
+      "title": "Performance baseline — Opsly",
+      "keywords": [
+        "admin",
+        "api",
+        "baseline",
+        "cliente",
+        "exporter",
+        "fases",
+        "handlers",
+        "historial",
+        "host",
+        "markdown",
+        "metricas",
+        "next",
+        "node",
+        "opsly",
+        "pasos",
+        "performance",
+        "portal",
+        "posteriores",
+        "prometheus",
+        "proximos",
+        "route"
+      ],
+      "size_bytes": 1397
+    },
+    {
+      "path": "docs/QA-REVIEW-COMPLETE.md",
+      "title": "✅ QA Review Complete - Cursor Orchestrator Work",
+      "keywords": [
+        "case",
+        "catch",
+        "code",
+        "complete",
+        "critical",
+        "cursor",
+        "default",
+        "documentation",
+        "executive",
+        "fetch",
+        "fix",
+        "implementation",
+        "important",
+        "issues",
+        "json",
+        "markdown",
+        "min",
+        "missing",
+        "must",
+        "opsly",
+        "orchestrator",
+        "parse",
+        "path",
+        "provided",
+        "ready",
+        "review",
+        "summary",
+        "switch",
+        "this",
+        "timeout",
+        "tonight",
+        "try",
+        "use",
+        "week",
+        "well",
+        "what",
+        "without",
+        "work",
+        "working"
+      ],
+      "size_bytes": 6760
+    },
+    {
+      "path": "docs/REFACTOR-CHECKLIST.md",
+      "title": "Refactor Checklist (Monorepo)",
+      "keywords": [
+        "alcance",
+        "aplicado",
+        "checklist",
+        "claude",
+        "criterios",
+        "manuales",
+        "markdown",
+        "mcp",
+        "monorepo",
+        "openclaw",
+        "opsly",
+        "owner",
+        "readiness",
+        "refactor",
+        "requeridas",
+        "salida",
+        "variables",
+        "verificaciones"
+      ],
+      "size_bytes": 2046
+    },
+    {
+      "path": "docs/reports/audit-2026-04-07.md",
+      "title": "audit-2026-04-07",
+      "keywords": [
+        "2026",
+        "accion",
+        "audit",
+        "detectados",
+        "doppler",
+        "fase",
+        "gaps",
+        "markdown",
+        "opsly",
+        "plan",
+        "prd",
+        "reporte",
+        "servicios",
+        "variables",
+        "vps"
+      ],
+      "size_bytes": 1078
+    },
+    {
+      "path": "docs/runbooks/admin.md",
+      "title": "Runbook — Administración de plataforma (Opsly)",
+      "keywords": [
+        "admin",
+        "administracion",
+        "alta",
+        "api",
+        "checklist",
+        "diario",
+        "markdown",
+        "opsly",
+        "plataforma",
+        "produccion",
+        "referencias",
+        "rotacion",
+        "runbook",
+        "secretos",
+        "staging",
+        "tenant",
+        "via"
+      ],
+      "size_bytes": 1304
+    },
+    {
+      "path": "docs/runbooks/dev.md",
+      "title": "Runbook — Desarrollo local (Opsly)",
+      "keywords": [
+        "antes",
+        "api",
+        "arranque",
+        "calidad",
+        "desarrollo",
+        "dev",
+        "git",
+        "hooks",
+        "local",
+        "markdown",
+        "opsly",
+        "rapido",
+        "referencias",
+        "requisitos",
+        "runbook",
+        "tenants"
+      ],
+      "size_bytes": 1002
+    },
+    {
+      "path": "docs/runbooks/frontend-audit.md",
+      "title": "Frontend Audit (Portal/Admin/Web)",
+      "keywords": [
+        "admin",
+        "audit",
+        "estado",
+        "frontend",
+        "hallazgos",
+        "iteracion",
+        "markdown",
+        "opsly",
+        "pendientes",
+        "portal",
+        "recomendados",
+        "siguiente",
+        "web"
+      ],
+      "size_bytes": 1201
+    },
+    {
+      "path": "docs/runbooks/incident.md",
+      "title": "Runbook — Incidentes (Opsly)",
+      "keywords": [
+        "aplicacion",
+        "clasificacion",
+        "comunicacion",
+        "contactos",
+        "diagnostico",
+        "incident",
+        "incidentes",
+        "markdown",
+        "opsly",
+        "orden",
+        "rapida",
+        "rollback",
+        "runbook",
+        "secretos"
+      ],
+      "size_bytes": 1354
+    },
+    {
+      "path": "docs/runbooks/managed.md",
+      "title": "Runbook — Operaciones *managed* (cliente / tenant)",
+      "keywords": [
+        "cliente",
+        "escalacion",
+        "flujo",
+        "limites",
+        "managed",
+        "markdown",
+        "modos",
+        "operaciones",
+        "opsly",
+        "portal",
+        "runbook",
+        "servicio",
+        "solicitud",
+        "tenant",
+        "tipico"
+      ],
+      "size_bytes": 984
+    },
+    {
+      "path": "docs/SECURITY_AUDIT_REPORT.md",
+      "title": "Informe de auditoría de seguridad (automatizado en repo)",
+      "keywords": [
+        "audit",
+        "auditoria",
+        "automatizado",
+        "conclusion",
+        "escaneo",
+        "git",
+        "heuristico",
+        "informe",
+        "level",
+        "markdown",
+        "npm",
+        "opsly",
+        "repo",
+        "report",
+        "row",
+        "secretos",
+        "security",
+        "seguridad",
+        "supabase"
+      ],
+      "size_bytes": 1969
+    },
+    {
+      "path": "docs/SECURITY_CHECKLIST.md",
+      "title": "Security checklist — Opsly",
+      "keywords": [
+        "2026",
+        "actual",
+        "api",
+        "aplicacion",
+        "arquitectura",
+        "backend",
+        "base",
+        "checklist",
+        "configuracion",
+        "contenedores",
+        "corta",
+        "datos",
+        "dependencias",
+        "evaluacion",
+        "founder",
+        "infraestructura",
+        "markdown",
+        "multi",
+        "opsly",
+        "red",
+        "respuesta",
+        "secretos",
+        "security",
+        "seguridad",
+        "separacion",
+        "supabase",
+        "tenancy",
+        "tenant"
+      ],
+      "size_bytes": 11557
+    },
+    {
+      "path": "docs/SECURITY-MITIGATIONS-2026-04-09.md",
+      "title": "🔒 Mitigaciones de Seguridad Multi-Tenancy (LocalRank Pilot - 2026-04-09)",
+      "keywords": [
+        "2026",
+        "api",
+        "aplicar",
+        "auditoria",
+        "cloudflare",
+        "code",
+        "com",
+        "criticas",
+        "esta",
+        "fase",
+        "firewall",
+        "importantes",
+        "localrank",
+        "mac",
+        "markdown",
+        "mitigaciones",
+        "mitigations",
+        "multi",
+        "noche",
+        "opcionales",
+        "ops",
+        "opsly",
+        "orden",
+        "owasp",
+        "pilot",
+        "post",
+        "proxy",
+        "recomendado",
+        "resumen",
+        "review",
+        "rutas",
+        "security",
+        "seguridad",
+        "semana",
+        "setup",
+        "smiletripcare",
+        "ssh",
+        "tailscale",
+        "tenancy",
+        "ufw",
+        "vps",
+        "zap"
+      ],
+      "size_bytes": 11252
+    },
+    {
+      "path": "docs/SSH-COMMANDS-LOCALRANK.md",
+      "title": "📋 SSH COMMANDS - COPY & PASTE (LocalRank Onboarding - 2026-04-09)",
+      "keywords": [
+        "2026",
+        "bloque",
+        "cleanup",
+        "commands",
+        "copy",
+        "docker",
+        "fails",
+        "localrank",
+        "logs",
+        "markdown",
+        "need",
+        "notebooklm",
+        "onboard",
+        "onboarding",
+        "opsly",
+        "paste",
+        "setup",
+        "something",
+        "ssh",
+        "test",
+        "verification",
+        "vps",
+        "workflow"
+      ],
+      "size_bytes": 2231
+    },
+    {
+      "path": "docs/TEST_PLAN.md",
+      "title": "Test plan — intcloudsysops",
+      "keywords": [
+        "admin",
+        "api",
+        "backup",
+        "billing",
+        "dashboard",
+        "endpoints",
+        "flow",
+        "intcloudsysops",
+        "isolation",
+        "markdown",
+        "onboarding",
+        "opsly",
+        "plan",
+        "restore",
+        "resume",
+        "suspend",
+        "tenant",
+        "test",
+        "webhooks"
+      ],
+      "size_bytes": 6826
+    },
+    {
+      "path": "docs/TROUBLESHOOTING.md",
+      "title": "Troubleshooting — Opsly",
+      "keywords": [
+        "401",
+        "403",
+        "404",
+        "5xx",
+        "admin",
+        "api",
+        "atascado",
+        "deploy",
+        "desde",
+        "domain",
+        "markdown",
+        "onboarding",
+        "opsly",
+        "plano",
+        "platform",
+        "portal",
+        "referencias",
+        "responde",
+        "rutas",
+        "stripe",
+        "tenant",
+        "terraform",
+        "texto",
+        "traefik",
+        "tras",
+        "troubleshooting",
+        "webhooks"
+      ],
+      "size_bytes": 2597
+    },
+    {
+      "path": "docs/VPS-ARCHITECTURE.md",
+      "title": "VPS Architecture — Dragon's Lair",
+      "keywords": [
+        "architecture",
+        "automatizada",
+        "comandos",
+        "corriendo",
+        "docker",
+        "dragon",
+        "edge",
+        "lair",
+        "markdown",
+        "migracion",
+        "opsly",
+        "rapido",
+        "redes",
+        "rollback",
+        "routing",
+        "servicios",
+        "stacks",
+        "traefik",
+        "utiles",
+        "vps"
+      ],
+      "size_bytes": 4578
+    },
+    {
+      "path": "infra/templates/n8n-workflows-template.md",
+      "title": "Plantilla de workflows n8n por tenant",
+      "keywords": [
+        "alertas",
+        "backup",
+        "checklist",
+        "crear",
+        "criticos",
+        "datos",
+        "desde",
+        "estado",
+        "export",
+        "interno",
+        "kuma",
+        "leyenda",
+        "logico",
+        "markdown",
+        "n8n",
+        "onboarding",
+        "opsly",
+        "plantilla",
+        "recordatorios",
+        "sincronizacion",
+        "sla",
+        "sugeridos",
+        "template",
+        "tenant",
+        "uptime",
+        "workflows"
+      ],
+      "size_bytes": 2097
+    },
+    {
+      "path": "infra/terraform/.terraform/providers/registry.terraform.io/digitalocean/digitalocean/2.81.0/darwin_amd64/CHANGELOG.md",
+      "title": "Change Log",
+      "keywords": [
+        "change",
+        "changelog",
+        "log",
+        "markdown",
+        "opsly"
+      ],
+      "size_bytes": 77102
+    },
+    {
+      "path": "infra/terraform/.terraform/providers/registry.terraform.io/digitalocean/digitalocean/2.81.0/darwin_amd64/README.md",
+      "title": "README",
+      "keywords": [
+        "markdown",
+        "opsly",
+        "readme"
+      ],
+      "size_bytes": 1139
+    },
+    {
+      "path": "infra/terraform/README.md",
+      "title": "Terraform — DigitalOcean (Opsly)",
+      "keywords": [
+        "apply",
+        "archivos",
+        "basicos",
+        "comandos",
+        "digitalocean",
+        "directorio",
+        "este",
+        "existente",
+        "fase",
+        "flujo",
+        "git",
+        "gitignore",
+        "ignorar",
+        "importar",
+        "local",
+        "markdown",
+        "opsly",
+        "plan",
+        "produccion",
+        "pruebas",
+        "raiz",
+        "readme",
+        "repo",
+        "requisitos",
+        "servidor",
+        "sin",
+        "staging",
+        "terraform",
+        "todo",
+        "verificacion",
+        "vps"
+      ],
+      "size_bytes": 4759
+    },
+    {
+      "path": "README.md",
+      "title": "intcloudsysops",
+      "keywords": [
+        "acceso",
+        "architecture",
+        "arquitectura",
+        "comandos",
+        "desde",
+        "development",
+        "intcloudsysops",
+        "local",
+        "locales",
+        "maquina",
+        "markdown",
+        "openclaw",
+        "opsly",
+        "otra",
+        "prerequisites",
+        "previos",
+        "primer",
+        "prueba",
+        "quickstart",
+        "readme",
+        "red",
+        "requisitos",
+        "setup",
+        "sola",
+        "tenant",
+        "urls",
+        "utiles",
+        "vez"
+      ],
+      "size_bytes": 13290
+    },
+    {
+      "path": "skills/README.md",
+      "title": "Skills Opsly (Claude modo supremo)",
+      "keywords": [
+        "claude",
+        "entornos",
+        "markdown",
+        "mnt",
+        "modo",
+        "opsly",
+        "readme",
+        "repo",
+        "skills",
+        "supremo",
+        "ubicacion"
+      ],
+      "size_bytes": 1647
+    },
+    {
+      "path": "skills/user/opsly-agent-teams/SKILL.md",
+      "title": "Opsly Agent Teams Skill",
+      "keywords": [
+        "actual",
+        "admin",
+        "agent",
+        "asignacion",
+        "cuando",
+        "implementacion",
+        "markdown",
+        "metricas",
+        "opsly",
+        "patron",
+        "reglas",
+        "skill",
+        "teams",
+        "usar"
+      ],
+      "size_bytes": 1084
+    },
+    {
+      "path": "skills/user/opsly-api/SKILL.md",
+      "title": "Opsly API Skill",
+      "keywords": [
+        "api",
+        "cuando",
+        "handlers",
+        "markdown",
+        "opsly",
+        "plantilla",
+        "reglas",
+        "route",
+        "ruta",
+        "skill",
+        "tests",
+        "usar",
+        "vitest"
+      ],
+      "size_bytes": 1470
+    },
+    {
+      "path": "skills/user/opsly-bash/SKILL.md",
+      "title": "Opsly Bash Script Skill",
+      "keywords": [
+        "bash",
+        "cuando",
+        "markdown",
+        "obligatoria",
+        "opsly",
+        "plantilla",
+        "reglas",
+        "script",
+        "skill",
+        "usar"
+      ],
+      "size_bytes": 1248
+    },
+    {
+      "path": "skills/user/opsly-context/SKILL.md",
+      "title": "Opsly Context Skill",
+      "keywords": [
+        "alternativas",
+        "context",
+        "cuando",
+        "decisiones",
+        "fijas",
+        "markdown",
+        "nunca",
+        "obligatorio",
+        "opsly",
+        "paths",
+        "proponer",
+        "protocolo",
+        "repos",
+        "skill",
+        "stack",
+        "usar"
+      ],
+      "size_bytes": 1286
+    },
+    {
+      "path": "skills/user/opsly-discord/SKILL.md",
+      "title": "Opsly Discord Notifications Skill",
+      "keywords": [
+        "cuando",
+        "discord",
+        "markdown",
+        "notifications",
+        "opsly",
+        "reglas",
+        "skill",
+        "tipos",
+        "usar",
+        "uso"
+      ],
+      "size_bytes": 839
+    },
+    {
+      "path": "skills/user/opsly-feedback-ml/SKILL.md",
+      "title": "Opsly Feedback ML Skill",
+      "keywords": [
+        "alto",
+        "api",
+        "approval",
+        "auto",
+        "cambios",
+        "continua",
+        "cuando",
+        "datos",
+        "equivalente",
+        "feedback",
+        "flujo",
+        "implement",
+        "markdown",
+        "mejora",
+        "menores",
+        "needs",
+        "nivel",
+        "opsly",
+        "portal",
+        "siempre",
+        "skill",
+        "solo",
+        "usar"
+      ],
+      "size_bytes": 1256
+    },
+    {
+      "path": "skills/user/opsly-google-cloud/SKILL.md",
+      "title": "Opsly Google Cloud Skill",
+      "keywords": [
+        "access",
+        "account",
+        "alert",
+        "apis",
+        "billing",
+        "cloud",
+        "configurar",
+        "cuando",
+        "desde",
+        "disponibles",
+        "gcp",
+        "google",
+        "markdown",
+        "obtener",
+        "opsly",
+        "proyecto",
+        "reglas",
+        "service",
+        "skill",
+        "token",
+        "usar",
+        "usarlas",
+        "vez"
+      ],
+      "size_bytes": 1556
+    },
+    {
+      "path": "skills/user/opsly-llm/SKILL.md",
+      "title": "Opsly LLM Gateway Skill",
+      "keywords": [
+        "cache",
+        "correcto",
+        "cuando",
+        "gateway",
+        "infra",
+        "llm",
+        "markdown",
+        "modelo",
+        "opsly",
+        "orientativo",
+        "seleccion",
+        "skill",
+        "usar",
+        "uso"
+      ],
+      "size_bytes": 1368
+    },
+    {
+      "path": "skills/user/opsly-mcp/SKILL.md",
+      "title": "Opsly MCP Tool Skill",
+      "keywords": [
+        "cuando",
+        "exponer",
+        "markdown",
+        "mcp",
+        "oauth",
+        "obligatorio",
+        "opsly",
+        "plantilla",
+        "reglas",
+        "scopes",
+        "skill",
+        "tool",
+        "usar"
+      ],
+      "size_bytes": 1415
+    },
+    {
+      "path": "skills/user/opsly-notebooklm/SKILL.md",
+      "title": "Opsly NotebookLM Agent Skill",
+      "keywords": [
+        "acciones",
+        "advertencias",
+        "agent",
+        "caso",
+        "cuando",
+        "instalacion",
+        "localrank",
+        "markdown",
+        "mcp",
+        "notebooklm",
+        "opcional",
+        "opsly",
+        "skill",
+        "typescript",
+        "upstream",
+        "usar",
+        "uso"
+      ],
+      "size_bytes": 1892
+    },
+    {
+      "path": "skills/user/opsly-supabase/SKILL.md",
+      "title": "Opsly Supabase Skill",
+      "keywords": [
+        "cuando",
+        "markdown",
+        "migraciones",
+        "opsly",
+        "plantilla",
+        "politicas",
+        "reglas",
+        "rls",
+        "skill",
+        "supabase",
+        "usar"
+      ],
+      "size_bytes": 1981
+    },
+    {
+      "path": "skills/user/opsly-tenant/SKILL.md",
+      "title": "Opsly Tenant Operations Skill",
+      "keywords": [
+        "actual",
+        "check",
+        "criticas",
+        "cuando",
+        "markdown",
+        "onboarding",
+        "operations",
+        "opsly",
+        "planes",
+        "producto",
+        "reglas",
+        "skill",
+        "sql",
+        "staging",
+        "tenant",
+        "tipicas",
+        "urls",
+        "usar"
+      ],
+      "size_bytes": 1169
+    },
+    {
+      "path": "tools/usb-kit/README.md",
+      "title": "USB kit Opsly (herramienta de trabajo portátil)",
+      "keywords": [
+        "age",
+        "aprendizaje",
+        "cifrados",
+        "contenido",
+        "desde",
+        "despues",
+        "destino",
+        "discos",
+        "equipo",
+        "estructura",
+        "flujo",
+        "flujos",
+        "herramienta",
+        "instalar",
+        "kit",
+        "markdown",
+        "opsly",
+        "portatil",
+        "readme",
+        "recomendado",
+        "recuperacion",
+        "referencia",
+        "repetir",
+        "requisitos",
+        "resumen",
+        "scripts",
+        "secrets",
+        "sin",
+        "ssh",
+        "sugerida",
+        "terraform",
+        "trabajo",
+        "ubuntu",
+        "usb",
+        "usuario"
+      ],
+      "size_bytes": 6220
+    },
+    {
+      "path": "VISION.md",
+      "title": "Opsly — Visión y Objetivos",
+      "keywords": [
+        "ahora",
+        "cliente",
+        "code",
+        "core",
+        "cursor",
+        "desde",
+        "escala",
+        "extensiones",
+        "fase",
+        "markdown",
+        "middleware",
+        "npm",
+        "objetivos",
+        "opsly",
+        "paquetes",
+        "patron",
+        "planes",
+        "primer",
+        "producto",
+        "quien",
+        "real",
+        "smiletripcare",
+        "stack",
+        "transferible",
+        "validacion",
+        "vision"
+      ],
+      "size_bytes": 15195
+    }
+  ],
   "topics": {
+    "300": [
+      "docs/GOOGLE-CLOUD-ACTIVATION.md"
+    ],
+    "401": [
+      "docs/TROUBLESHOOTING.md",
+      "docs/FAQ.md"
+    ],
+    "403": [
+      "docs/TROUBLESHOOTING.md"
+    ],
+    "404": [
+      "docs/TROUBLESHOOTING.md"
+    ],
     "2026": [
+      "config/doppler-audit-2026-04-07.md",
+      "docs/ARCHITECT-SECURITY-REVIEW.md",
+      "docs/AUTOMATION-PLAN.md",
+      "docs/adr/ADR-011-event-driven-orchestrator.md",
+      "docs/adr/ADR-013-google-cloud-openSource-strategy.md",
+      "docs/adr/ADR-010-llm-gateway.md",
+      "docs/adr/ADR-012-observability.md",
+      "docs/SSH-COMMANDS-LOCALRANK.md",
+      "docs/SECURITY_CHECKLIST.md",
+      "docs/MASTER-PLAN-STATUS.md",
+      "docs/SECURITY-MITIGATIONS-2026-04-09.md",
+      "docs/reports/audit-2026-04-07.md",
+      "docs/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md"
+    ],
+    "change": [
+      "infra/terraform/.terraform/providers/registry.terraform.io/digitalocean/digitalocean/2.81.0/darwin_amd64/CHANGELOG.md"
+    ],
+    "changelog": [
+      "infra/terraform/.terraform/providers/registry.terraform.io/digitalocean/digitalocean/2.81.0/darwin_amd64/CHANGELOG.md"
+    ],
+    "log": [
+      "infra/terraform/.terraform/providers/registry.terraform.io/digitalocean/digitalocean/2.81.0/darwin_amd64/CHANGELOG.md",
+      "docs/ORCHESTRATOR-FIXES-EXECUTION.md"
+    ],
+    "markdown": [
+      "infra/terraform/.terraform/providers/registry.terraform.io/digitalocean/digitalocean/2.81.0/darwin_amd64/CHANGELOG.md",
+      "infra/terraform/.terraform/providers/registry.terraform.io/digitalocean/digitalocean/2.81.0/darwin_amd64/README.md",
+      "infra/terraform/README.md",
+      "infra/templates/n8n-workflows-template.md",
+      "tools/usb-kit/README.md",
+      "config/doppler-audit-2026-04-07.md",
+      ".claude/CLAUDE.md",
+      "agents/prompts/claude-architect.md",
+      "agents/prompts/cursor-executor.md",
+      "docs/ARCHITECT-SECURITY-REVIEW.md",
+      "docs/ORCHESTRATOR.md",
+      "docs/AUTOMATION-PLAN.md",
+      "docs/adr/ADR-004-supabase-schema-por-tenant.md",
+      "docs/adr/ADR-011-event-driven-orchestrator.md",
+      "docs/adr/ADR-001-docker-compose-por-tenant.md",
+      "docs/adr/ADR-009-openclaw-mcp-architecture.md",
+      "docs/adr/ADR-013-google-cloud-openSource-strategy.md",
+      "docs/adr/ADR-002-traefik-sobre-nginx.md",
+      "docs/adr/ADR-010-llm-gateway.md",
+      "docs/adr/ADR-007-runbooks-y-documentacion-operativa.md",
+      "docs/adr/ADR-012-observability.md",
+      "docs/adr/ADR-008-terraform-digitalocean-plan.md",
+      "docs/adr/ADR-006-api-testing-vitest.md",
+      "docs/adr/ADR-003-doppler-secrets.md",
+      "docs/adr/ADR-005-traefik-v3-1-docker-api.md",
+      "docs/adr/ADR-014-notebooklm-agent.md",
+      "docs/ARCHITECTURE.md",
+      "docs/AGENTS-GUIDE.md",
+      "docs/LLM-GATEWAY.md",
+      "docs/SECURITY_AUDIT_REPORT.md",
+      "docs/AUTO-PUSH-WATCHER.md",
+      "docs/INVITATIONS_RUNBOOK.md",
+      "docs/TROUBLESHOOTING.md",
+      "docs/OPENCLAW-ARCHITECTURE.md",
+      "docs/EXECUTION-PLAN-LOCALRANK-NOTEBOOKLM.md",
+      "docs/SSH-COMMANDS-LOCALRANK.md",
+      "docs/FAQ.md",
+      "docs/runbooks/managed.md",
+      "docs/runbooks/admin.md",
+      "docs/runbooks/frontend-audit.md",
+      "docs/runbooks/dev.md",
+      "docs/runbooks/incident.md",
+      "docs/SECURITY_CHECKLIST.md",
+      "docs/QA-REVIEW-COMPLETE.md",
+      "docs/DOPPLER-VARS.md",
+      "docs/GOOGLE-CLOUD-ACTIVATION.md",
+      "docs/TEST_PLAN.md",
+      "docs/MASTER-PLAN-STATUS.md",
+      "docs/N8N-SETUP.md",
+      "docs/ACTIVE-PROMPT.md",
+      "docs/N8N-IMPORT-GUIDE.md",
+      "docs/LOCALRANK-TESTER-GUIDE.md",
+      "docs/REFACTOR-CHECKLIST.md",
+      "docs/OBSERVABILITY.md",
+      "docs/GOOGLE-CLOUD-SETUP.md",
+      "docs/VPS-ARCHITECTURE.md",
+      "docs/SECURITY-MITIGATIONS-2026-04-09.md",
+      "docs/LIBRARIES-INSTALLED.md",
+      "docs/MASTER-PLAN.md",
+      "docs/GOOGLE-DRIVE-SYNC.md",
+      "docs/PERFORMANCE_BASELINE.md",
+      "docs/CONTEXT-BUILDER.md",
+      "docs/reports/audit-2026-04-07.md",
       "docs/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md",
+      "README.md",
+      "VISION.md",
+      ".github/PULL_REQUEST_TEMPLATE.md",
+      ".github/copilot-instructions.md",
+      ".github/VISION.md",
+      ".github/README-github-templates.md",
+      ".github/AGENTS.md",
+      "skills/user/opsly-llm/SKILL.md",
+      "skills/user/opsly-bash/SKILL.md",
+      "skills/user/opsly-notebooklm/SKILL.md",
+      "skills/user/opsly-discord/SKILL.md",
+      "skills/user/opsly-context/SKILL.md",
+      "skills/user/opsly-google-cloud/SKILL.md",
+      "skills/user/opsly-supabase/SKILL.md",
+      "skills/user/opsly-mcp/SKILL.md",
+      "skills/user/opsly-tenant/SKILL.md",
+      "skills/user/opsly-feedback-ml/SKILL.md",
+      "skills/user/opsly-agent-teams/SKILL.md",
+      "skills/user/opsly-api/SKILL.md",
+      "skills/README.md",
+      "AGENTS.md",
+      "apps/admin/INVITATIONS_UI.md",
+      "apps/agents/notebooklm/README.md",
+      "apps/mcp/README.md"
+    ],
+    "opsly": [
+      "infra/terraform/.terraform/providers/registry.terraform.io/digitalocean/digitalocean/2.81.0/darwin_amd64/CHANGELOG.md",
+      "infra/terraform/.terraform/providers/registry.terraform.io/digitalocean/digitalocean/2.81.0/darwin_amd64/README.md",
+      "infra/terraform/README.md",
+      "infra/templates/n8n-workflows-template.md",
+      "tools/usb-kit/README.md",
+      "config/doppler-audit-2026-04-07.md",
+      ".claude/CLAUDE.md",
+      "agents/prompts/claude-architect.md",
+      "agents/prompts/cursor-executor.md",
+      "docs/ARCHITECT-SECURITY-REVIEW.md",
+      "docs/ORCHESTRATOR.md",
+      "docs/AUTOMATION-PLAN.md",
+      "docs/adr/ADR-004-supabase-schema-por-tenant.md",
+      "docs/adr/ADR-011-event-driven-orchestrator.md",
+      "docs/adr/ADR-001-docker-compose-por-tenant.md",
+      "docs/adr/ADR-009-openclaw-mcp-architecture.md",
+      "docs/adr/ADR-013-google-cloud-openSource-strategy.md",
+      "docs/adr/ADR-002-traefik-sobre-nginx.md",
+      "docs/adr/ADR-010-llm-gateway.md",
+      "docs/adr/ADR-007-runbooks-y-documentacion-operativa.md",
+      "docs/adr/ADR-012-observability.md",
+      "docs/adr/ADR-008-terraform-digitalocean-plan.md",
+      "docs/adr/ADR-006-api-testing-vitest.md",
+      "docs/adr/ADR-003-doppler-secrets.md",
+      "docs/adr/ADR-005-traefik-v3-1-docker-api.md",
+      "docs/adr/ADR-014-notebooklm-agent.md",
+      "docs/ARCHITECTURE.md",
+      "docs/AGENTS-GUIDE.md",
+      "docs/LLM-GATEWAY.md",
+      "docs/SECURITY_AUDIT_REPORT.md",
+      "docs/AUTO-PUSH-WATCHER.md",
+      "docs/INVITATIONS_RUNBOOK.md",
+      "docs/TROUBLESHOOTING.md",
+      "docs/OPENCLAW-ARCHITECTURE.md",
+      "docs/EXECUTION-PLAN-LOCALRANK-NOTEBOOKLM.md",
+      "docs/SSH-COMMANDS-LOCALRANK.md",
+      "docs/FAQ.md",
+      "docs/runbooks/managed.md",
+      "docs/runbooks/admin.md",
+      "docs/runbooks/frontend-audit.md",
+      "docs/runbooks/dev.md",
+      "docs/runbooks/incident.md",
+      "docs/SECURITY_CHECKLIST.md",
+      "docs/QA-REVIEW-COMPLETE.md",
+      "docs/DOPPLER-VARS.md",
+      "docs/GOOGLE-CLOUD-ACTIVATION.md",
+      "docs/TEST_PLAN.md",
+      "docs/MASTER-PLAN-STATUS.md",
+      "docs/N8N-SETUP.md",
+      "docs/ACTIVE-PROMPT.md",
+      "docs/N8N-IMPORT-GUIDE.md",
+      "docs/LOCALRANK-TESTER-GUIDE.md",
+      "docs/REFACTOR-CHECKLIST.md",
+      "docs/OBSERVABILITY.md",
+      "docs/GOOGLE-CLOUD-SETUP.md",
+      "docs/VPS-ARCHITECTURE.md",
+      "docs/SECURITY-MITIGATIONS-2026-04-09.md",
+      "docs/LIBRARIES-INSTALLED.md",
+      "docs/MASTER-PLAN.md",
+      "docs/GOOGLE-DRIVE-SYNC.md",
+      "docs/PERFORMANCE_BASELINE.md",
+      "docs/CONTEXT-BUILDER.md",
+      "docs/reports/audit-2026-04-07.md",
+      "docs/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md",
+      "README.md",
+      "VISION.md",
+      ".github/PULL_REQUEST_TEMPLATE.md",
+      ".github/copilot-instructions.md",
+      ".github/VISION.md",
+      ".github/README-github-templates.md",
+      ".github/AGENTS.md",
+      "skills/user/opsly-llm/SKILL.md",
+      "skills/user/opsly-bash/SKILL.md",
+      "skills/user/opsly-notebooklm/SKILL.md",
+      "skills/user/opsly-discord/SKILL.md",
+      "skills/user/opsly-context/SKILL.md",
+      "skills/user/opsly-google-cloud/SKILL.md",
+      "skills/user/opsly-supabase/SKILL.md",
+      "skills/user/opsly-mcp/SKILL.md",
+      "skills/user/opsly-tenant/SKILL.md",
+      "skills/user/opsly-feedback-ml/SKILL.md",
+      "skills/user/opsly-agent-teams/SKILL.md",
+      "skills/user/opsly-api/SKILL.md",
+      "skills/README.md",
+      "AGENTS.md",
+      "apps/admin/INVITATIONS_UI.md",
+      "apps/agents/notebooklm/README.md",
+      "apps/mcp/README.md"
+    ],
+    "readme": [
+      "infra/terraform/.terraform/providers/registry.terraform.io/digitalocean/digitalocean/2.81.0/darwin_amd64/README.md",
+      "infra/terraform/README.md",
+      "tools/usb-kit/README.md",
+      "README.md",
+      ".github/README-github-templates.md",
+      "skills/README.md",
+      "apps/agents/notebooklm/README.md",
+      "apps/mcp/README.md"
+    ],
+    "apply": [
+      "infra/terraform/README.md",
+      "docs/adr/ADR-008-terraform-digitalocean-plan.md"
+    ],
+    "archivos": [
+      "infra/terraform/README.md",
+      "docs/CLAUDE-WORKFLOW-OPTIMIZATION.md",
+      "docs/GOOGLE-DRIVE-SYNC.md",
+      ".github/copilot-instructions.md"
+    ],
+    "basicos": [
+      "infra/terraform/README.md"
+    ],
+    "comandos": [
+      "infra/terraform/README.md",
+      "docs/GOOGLE-CLOUD-ACTIVATION.md",
+      "docs/VPS-ARCHITECTURE.md",
+      "README.md"
+    ],
+    "digitalocean": [
+      "infra/terraform/README.md",
+      "docs/adr/ADR-008-terraform-digitalocean-plan.md"
+    ],
+    "directorio": [
+      "infra/terraform/README.md"
+    ],
+    "este": [
+      "infra/terraform/README.md"
+    ],
+    "existente": [
+      "infra/terraform/README.md"
+    ],
+    "fase": [
+      "infra/terraform/README.md",
+      "docs/ARCHITECT-SECURITY-REVIEW.md",
+      "docs/ORCHESTRATOR.md",
+      "docs/LLM-GATEWAY.md",
+      "docs/MASTER-PLAN-STATUS.md",
+      "docs/SECURITY-MITIGATIONS-2026-04-09.md",
+      "docs/MASTER-PLAN.md",
+      "docs/reports/audit-2026-04-07.md",
+      "VISION.md",
+      ".github/VISION.md",
+      ".github/AGENTS.md",
+      "AGENTS.md",
+      "apps/admin/INVITATIONS_UI.md"
+    ],
+    "flujo": [
+      "infra/terraform/README.md",
+      "tools/usb-kit/README.md",
+      "docs/AUTOMATION-PLAN.md",
+      "docs/LLM-GATEWAY.md",
+      "docs/INVITATIONS_RUNBOOK.md",
+      "docs/OPENCLAW-ARCHITECTURE.md",
+      "docs/runbooks/managed.md",
+      "docs/CLAUDE-WORKFLOW-OPTIMIZATION.md",
+      ".github/AGENTS.md",
+      "skills/user/opsly-feedback-ml/SKILL.md",
+      "AGENTS.md"
+    ],
+    "git": [
+      "infra/terraform/README.md",
+      "docs/SECURITY_AUDIT_REPORT.md",
+      "docs/runbooks/dev.md"
+    ],
+    "gitignore": [
+      "infra/terraform/README.md"
+    ],
+    "ignorar": [
+      "infra/terraform/README.md"
+    ],
+    "importar": [
+      "infra/terraform/README.md",
+      "docs/N8N-SETUP.md",
+      "docs/N8N-IMPORT-GUIDE.md"
+    ],
+    "local": [
+      "infra/terraform/README.md",
+      "docs/EXECUTION-PLAN-LOCALRANK-NOTEBOOKLM.md",
+      "docs/runbooks/dev.md",
+      "docs/CONTEXT-BUILDER.md",
+      "README.md"
+    ],
+    "plan": [
+      "infra/terraform/README.md",
+      "docs/ORCHESTRATOR.md",
+      "docs/AUTOMATION-PLAN.md",
+      "docs/adr/ADR-008-terraform-digitalocean-plan.md",
+      "docs/AGENTS-GUIDE.md",
+      "docs/EXECUTION-PLAN-LOCALRANK-NOTEBOOKLM.md",
+      "docs/FAQ.md",
+      "docs/TEST_PLAN.md",
+      "docs/MASTER-PLAN-STATUS.md",
+      "docs/MASTER-PLAN.md",
+      "docs/reports/audit-2026-04-07.md",
+      ".github/AGENTS.md",
+      "AGENTS.md"
+    ],
+    "produccion": [
+      "infra/terraform/README.md",
+      "docs/FAQ.md",
+      "docs/runbooks/admin.md",
+      "docs/CLAUDE-WORKFLOW-OPTIMIZATION.md"
+    ],
+    "pruebas": [
+      "infra/terraform/README.md"
+    ],
+    "raiz": [
+      "infra/terraform/README.md"
+    ],
+    "repo": [
+      "infra/terraform/README.md",
+      "docs/SECURITY_AUDIT_REPORT.md",
+      "docs/OPENCLAW-ARCHITECTURE.md",
+      "docs/GOOGLE-DRIVE-SYNC.md",
+      "docs/CONTEXT-BUILDER.md",
+      "skills/README.md"
+    ],
+    "requisitos": [
+      "infra/terraform/README.md",
+      "tools/usb-kit/README.md",
+      "docs/INVITATIONS_RUNBOOK.md",
+      "docs/runbooks/dev.md",
+      "README.md",
+      "apps/agents/notebooklm/README.md"
+    ],
+    "servidor": [
+      "infra/terraform/README.md"
+    ],
+    "sin": [
+      "infra/terraform/README.md",
+      "tools/usb-kit/README.md",
+      "docs/adr/ADR-008-terraform-digitalocean-plan.md",
+      "docs/CLAUDE-WORKFLOW-OPTIMIZATION.md",
+      "docs/N8N-IMPORT-GUIDE.md"
+    ],
+    "staging": [
+      "infra/terraform/README.md",
+      "docs/FAQ.md",
+      "docs/runbooks/admin.md",
+      "skills/user/opsly-tenant/SKILL.md"
+    ],
+    "terraform": [
+      "infra/terraform/README.md",
+      "tools/usb-kit/README.md",
+      "docs/adr/ADR-008-terraform-digitalocean-plan.md",
+      "docs/TROUBLESHOOTING.md",
+      "docs/FAQ.md",
+      ".github/PULL_REQUEST_TEMPLATE.md"
+    ],
+    "todo": [
+      "infra/terraform/README.md"
+    ],
+    "verificacion": [
+      "infra/terraform/README.md",
+      "docs/N8N-IMPORT-GUIDE.md",
+      "docs/LIBRARIES-INSTALLED.md"
+    ],
+    "vps": [
+      "infra/terraform/README.md",
+      "docs/AUTO-PUSH-WATCHER.md",
+      "docs/EXECUTION-PLAN-LOCALRANK-NOTEBOOKLM.md",
+      "docs/SSH-COMMANDS-LOCALRANK.md",
+      "docs/VPS-ARCHITECTURE.md",
       "docs/SECURITY-MITIGATIONS-2026-04-09.md",
       "docs/reports/audit-2026-04-07.md"
     ],
-    "activeprompt": [
-      "docs/ACTIVE-PROMPT.md"
+    "alertas": [
+      "infra/templates/n8n-workflows-template.md",
+      "docs/OBSERVABILITY.md"
     ],
-    "active": [
-      "docs/ACTIVE-PROMPT.md"
-    ],
-    "prompt": [
-      "docs/ACTIVE-PROMPT.md"
-    ],
-    "opsly": [
-      "docs/ACTIVE-PROMPT.md",
-      "docs/AGENTS-GUIDE.md",
-      "docs/ARCHITECT-SECURITY-REVIEW.md",
+    "backup": [
+      "infra/templates/n8n-workflows-template.md",
       "docs/ARCHITECTURE.md",
-      "docs/AUTO-PUSH-WATCHER.md",
-      "docs/AUTOMATION-PLAN.md",
-      "docs/CLAUDE-WORKFLOW-OPTIMIZATION.md",
-      "docs/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md",
-      "docs/CONTEXT-BUILDER.md",
-      "docs/DOPPLER-VARS.md",
-      "docs/EXECUTION-PLAN-LOCALRANK-NOTEBOOKLM.md",
-      "docs/FAQ.md",
-      "docs/GOOGLE-CLOUD-ACTIVATION.md",
-      "docs/GOOGLE-CLOUD-SETUP.md",
-      "docs/GOOGLE-DRIVE-SYNC.md",
-      "docs/INVITATIONS_RUNBOOK.md",
-      "docs/LIBRARIES-INSTALLED.md",
-      "docs/LLM-GATEWAY.md",
-      "docs/LOCALRANK-TESTER-GUIDE.md",
-      "docs/MASTER-PLAN-STATUS.md",
-      "docs/MASTER-PLAN.md",
-      "docs/N8N-IMPORT-GUIDE.md",
-      "docs/N8N-SETUP.md",
-      "docs/OBSERVABILITY.md",
-      "docs/OPENCLAW-ARCHITECTURE.md",
-      "docs/ORCHESTRATOR-FIXES-EXECUTION.md",
-      "docs/ORCHESTRATOR.md",
-      "docs/PERFORMANCE_BASELINE.md",
-      "docs/QA-REVIEW-COMPLETE.md",
-      "docs/REFACTOR-CHECKLIST.md",
-      "docs/SECURITY-MITIGATIONS-2026-04-09.md",
-      "docs/SECURITY_AUDIT_REPORT.md",
-      "docs/SECURITY_CHECKLIST.md",
-      "docs/SSH-COMMANDS-LOCALRANK.md",
-      "docs/TEST_PLAN.md",
-      "docs/TROUBLESHOOTING.md",
-      "docs/VPS-ARCHITECTURE.md",
-      "docs/adr/ADR-001-docker-compose-por-tenant.md",
-      "docs/adr/ADR-002-traefik-sobre-nginx.md",
-      "docs/adr/ADR-003-doppler-secrets.md",
-      "docs/adr/ADR-004-supabase-schema-por-tenant.md",
-      "docs/adr/ADR-005-traefik-v3-1-docker-api.md",
-      "docs/adr/ADR-006-api-testing-vitest.md",
-      "docs/adr/ADR-007-runbooks-y-documentacion-operativa.md",
-      "docs/adr/ADR-008-terraform-digitalocean-plan.md",
-      "docs/adr/ADR-009-openclaw-mcp-architecture.md",
-      "docs/adr/ADR-010-llm-gateway.md",
-      "docs/adr/ADR-011-event-driven-orchestrator.md",
-      "docs/adr/ADR-012-observability.md",
-      "docs/adr/ADR-013-google-cloud-openSource-strategy.md",
-      "docs/adr/ADR-014-notebooklm-agent.md",
-      "docs/reports/audit-2026-04-07.md",
+      "docs/TEST_PLAN.md"
+    ],
+    "checklist": [
+      "infra/templates/n8n-workflows-template.md",
       "docs/runbooks/admin.md",
-      "docs/runbooks/dev.md",
-      "docs/runbooks/frontend-audit.md",
-      "docs/runbooks/incident.md",
-      "docs/runbooks/managed.md",
-      "AGENTS.md",
-      "VISION.md"
-    ],
-    "agentsguide": [
-      "docs/AGENTS-GUIDE.md"
-    ],
-    "agents": [
-      "docs/AGENTS-GUIDE.md",
+      "docs/SECURITY_CHECKLIST.md",
+      "docs/ORCHESTRATOR-FIXES-EXECUTION.md",
+      "docs/N8N-IMPORT-GUIDE.md",
+      "docs/LOCALRANK-TESTER-GUIDE.md",
+      "docs/REFACTOR-CHECKLIST.md",
+      ".github/PULL_REQUEST_TEMPLATE.md",
+      ".github/AGENTS.md",
       "AGENTS.md"
     ],
-    "guide": [
+    "crear": [
+      "infra/templates/n8n-workflows-template.md",
       "docs/AGENTS-GUIDE.md",
-      "docs/LOCALRANK-TESTER-GUIDE.md",
+      "apps/admin/INVITATIONS_UI.md"
+    ],
+    "criticos": [
+      "infra/templates/n8n-workflows-template.md"
+    ],
+    "datos": [
+      "infra/templates/n8n-workflows-template.md",
+      "docs/SECURITY_CHECKLIST.md",
+      "skills/user/opsly-feedback-ml/SKILL.md"
+    ],
+    "desde": [
+      "infra/templates/n8n-workflows-template.md",
+      "tools/usb-kit/README.md",
+      "docs/LLM-GATEWAY.md",
+      "docs/TROUBLESHOOTING.md",
+      "README.md",
+      "VISION.md",
+      ".github/VISION.md",
+      "skills/user/opsly-google-cloud/SKILL.md",
+      "apps/agents/notebooklm/README.md"
+    ],
+    "estado": [
+      "infra/templates/n8n-workflows-template.md",
+      "docs/AUTOMATION-PLAN.md",
+      "docs/adr/ADR-011-event-driven-orchestrator.md",
+      "docs/adr/ADR-013-google-cloud-openSource-strategy.md",
+      "docs/adr/ADR-010-llm-gateway.md",
+      "docs/adr/ADR-012-observability.md",
+      "docs/FAQ.md",
+      "docs/runbooks/frontend-audit.md",
+      "docs/MASTER-PLAN-STATUS.md",
       "docs/N8N-IMPORT-GUIDE.md"
     ],
-    "architectsecurityreview": [
-      "docs/ARCHITECT-SECURITY-REVIEW.md"
+    "export": [
+      "infra/templates/n8n-workflows-template.md"
+    ],
+    "interno": [
+      "infra/templates/n8n-workflows-template.md"
+    ],
+    "kuma": [
+      "infra/templates/n8n-workflows-template.md"
+    ],
+    "leyenda": [
+      "infra/templates/n8n-workflows-template.md"
+    ],
+    "logico": [
+      "infra/templates/n8n-workflows-template.md"
+    ],
+    "n8n": [
+      "infra/templates/n8n-workflows-template.md",
+      "docs/OPENCLAW-ARCHITECTURE.md",
+      "docs/MASTER-PLAN-STATUS.md",
+      "docs/N8N-SETUP.md",
+      "docs/N8N-IMPORT-GUIDE.md"
+    ],
+    "onboarding": [
+      "infra/templates/n8n-workflows-template.md",
+      "docs/ARCHITECTURE.md",
+      "docs/TROUBLESHOOTING.md",
+      "docs/EXECUTION-PLAN-LOCALRANK-NOTEBOOKLM.md",
+      "docs/SSH-COMMANDS-LOCALRANK.md",
+      "docs/TEST_PLAN.md",
+      "skills/user/opsly-tenant/SKILL.md"
+    ],
+    "plantilla": [
+      "infra/templates/n8n-workflows-template.md",
+      "skills/user/opsly-bash/SKILL.md",
+      "skills/user/opsly-supabase/SKILL.md",
+      "skills/user/opsly-mcp/SKILL.md",
+      "skills/user/opsly-api/SKILL.md"
+    ],
+    "recordatorios": [
+      "infra/templates/n8n-workflows-template.md"
+    ],
+    "sincronizacion": [
+      "infra/templates/n8n-workflows-template.md"
+    ],
+    "sla": [
+      "infra/templates/n8n-workflows-template.md"
+    ],
+    "sugeridos": [
+      "infra/templates/n8n-workflows-template.md"
+    ],
+    "template": [
+      "infra/templates/n8n-workflows-template.md",
+      ".github/PULL_REQUEST_TEMPLATE.md"
+    ],
+    "tenant": [
+      "infra/templates/n8n-workflows-template.md",
+      "docs/ARCHITECT-SECURITY-REVIEW.md",
+      "docs/adr/ADR-004-supabase-schema-por-tenant.md",
+      "docs/adr/ADR-011-event-driven-orchestrator.md",
+      "docs/adr/ADR-001-docker-compose-por-tenant.md",
+      "docs/adr/ADR-012-observability.md",
+      "docs/ARCHITECTURE.md",
+      "docs/TROUBLESHOOTING.md",
+      "docs/runbooks/managed.md",
+      "docs/runbooks/admin.md",
+      "docs/SECURITY_CHECKLIST.md",
+      "docs/TEST_PLAN.md",
+      "README.md",
+      "skills/user/opsly-tenant/SKILL.md"
+    ],
+    "uptime": [
+      "infra/templates/n8n-workflows-template.md",
+      "docs/OPENCLAW-ARCHITECTURE.md"
+    ],
+    "workflows": [
+      "infra/templates/n8n-workflows-template.md",
+      ".github/README-github-templates.md"
+    ],
+    "age": [
+      "tools/usb-kit/README.md"
+    ],
+    "aprendizaje": [
+      "tools/usb-kit/README.md"
+    ],
+    "cifrados": [
+      "tools/usb-kit/README.md"
+    ],
+    "contenido": [
+      "tools/usb-kit/README.md",
+      "docs/LOCALRANK-TESTER-GUIDE.md"
+    ],
+    "despues": [
+      "tools/usb-kit/README.md",
+      "docs/N8N-IMPORT-GUIDE.md"
+    ],
+    "destino": [
+      "tools/usb-kit/README.md"
+    ],
+    "discos": [
+      "tools/usb-kit/README.md"
+    ],
+    "equipo": [
+      "tools/usb-kit/README.md"
+    ],
+    "estructura": [
+      "tools/usb-kit/README.md",
+      "docs/adr/ADR-011-event-driven-orchestrator.md",
+      "docs/adr/ADR-007-runbooks-y-documentacion-operativa.md",
+      ".github/copilot-instructions.md"
+    ],
+    "flujos": [
+      "tools/usb-kit/README.md"
+    ],
+    "herramienta": [
+      "tools/usb-kit/README.md"
+    ],
+    "instalar": [
+      "tools/usb-kit/README.md"
+    ],
+    "kit": [
+      "tools/usb-kit/README.md"
+    ],
+    "portatil": [
+      "tools/usb-kit/README.md"
+    ],
+    "recomendado": [
+      "tools/usb-kit/README.md",
+      "docs/N8N-SETUP.md",
+      "docs/SECURITY-MITIGATIONS-2026-04-09.md",
+      ".github/AGENTS.md",
+      "AGENTS.md"
+    ],
+    "recuperacion": [
+      "tools/usb-kit/README.md"
+    ],
+    "referencia": [
+      "tools/usb-kit/README.md",
+      "docs/DOPPLER-VARS.md",
+      ".github/copilot-instructions.md"
+    ],
+    "repetir": [
+      "tools/usb-kit/README.md",
+      "docs/CLAUDE-WORKFLOW-OPTIMIZATION.md"
+    ],
+    "resumen": [
+      "tools/usb-kit/README.md",
+      "docs/LLM-GATEWAY.md",
+      "docs/SECURITY-MITIGATIONS-2026-04-09.md",
+      "docs/MASTER-PLAN.md",
+      ".github/PULL_REQUEST_TEMPLATE.md"
+    ],
+    "scripts": [
+      "tools/usb-kit/README.md",
+      ".github/copilot-instructions.md",
+      "apps/mcp/README.md"
+    ],
+    "secrets": [
+      "tools/usb-kit/README.md",
+      "docs/adr/ADR-003-doppler-secrets.md"
+    ],
+    "ssh": [
+      "tools/usb-kit/README.md",
+      "docs/ARCHITECT-SECURITY-REVIEW.md",
+      "docs/EXECUTION-PLAN-LOCALRANK-NOTEBOOKLM.md",
+      "docs/SSH-COMMANDS-LOCALRANK.md",
+      "docs/SECURITY-MITIGATIONS-2026-04-09.md"
+    ],
+    "sugerida": [
+      "tools/usb-kit/README.md",
+      "docs/N8N-SETUP.md"
+    ],
+    "trabajo": [
+      "tools/usb-kit/README.md",
+      ".claude/CLAUDE.md",
+      "docs/CLAUDE-WORKFLOW-OPTIMIZATION.md",
+      "docs/MASTER-PLAN.md",
+      ".github/copilot-instructions.md",
+      ".github/AGENTS.md",
+      "AGENTS.md"
+    ],
+    "ubuntu": [
+      "tools/usb-kit/README.md",
+      "docs/AUTO-PUSH-WATCHER.md"
+    ],
+    "usb": [
+      "tools/usb-kit/README.md"
+    ],
+    "usuario": [
+      "tools/usb-kit/README.md",
+      "docs/GOOGLE-CLOUD-SETUP.md"
+    ],
+    "audit": [
+      "config/doppler-audit-2026-04-07.md",
+      "docs/SECURITY_AUDIT_REPORT.md",
+      "docs/runbooks/frontend-audit.md",
+      "docs/reports/audit-2026-04-07.md"
+    ],
+    "auditoria": [
+      "config/doppler-audit-2026-04-07.md",
+      "docs/SECURITY_AUDIT_REPORT.md",
+      "docs/SECURITY-MITIGATIONS-2026-04-09.md"
+    ],
+    "claves": [
+      "config/doppler-audit-2026-04-07.md"
+    ],
+    "doppler": [
+      "config/doppler-audit-2026-04-07.md",
+      "docs/AUTOMATION-PLAN.md",
+      "docs/adr/ADR-003-doppler-secrets.md",
+      "docs/EXECUTION-PLAN-LOCALRANK-NOTEBOOKLM.md",
+      "docs/DOPPLER-VARS.md",
+      "docs/reports/audit-2026-04-07.md"
+    ],
+    "intcloudsysops": [
+      "config/doppler-audit-2026-04-07.md",
+      "docs/TEST_PLAN.md",
+      "README.md"
+    ],
+    "inventario": [
+      "config/doppler-audit-2026-04-07.md"
+    ],
+    "ops": [
+      "config/doppler-audit-2026-04-07.md",
+      "docs/SECURITY-MITIGATIONS-2026-04-09.md"
+    ],
+    "orientativa": [
+      "config/doppler-audit-2026-04-07.md"
+    ],
+    "pasos": [
+      "config/doppler-audit-2026-04-07.md",
+      "docs/OPENCLAW-ARCHITECTURE.md",
+      "docs/PERFORMANCE_BASELINE.md"
+    ],
+    "politica": [
+      "config/doppler-audit-2026-04-07.md"
+    ],
+    "prd": [
+      "config/doppler-audit-2026-04-07.md",
+      "docs/AUTOMATION-PLAN.md",
+      "docs/reports/audit-2026-04-07.md"
+    ],
+    "presencia": [
+      "config/doppler-audit-2026-04-07.md"
+    ],
+    "proximos": [
+      "config/doppler-audit-2026-04-07.md",
+      "docs/OPENCLAW-ARCHITECTURE.md",
+      "docs/PERFORMANCE_BASELINE.md"
+    ],
+    "recomendada": [
+      "config/doppler-audit-2026-04-07.md"
+    ],
+    "rotacion": [
+      "config/doppler-audit-2026-04-07.md",
+      "docs/runbooks/admin.md"
+    ],
+    "absolutas": [
+      ".claude/CLAUDE.md"
+    ],
+    "adicional": [
+      ".claude/CLAUDE.md"
+    ],
+    "antes": [
+      ".claude/CLAUDE.md",
+      "docs/runbooks/dev.md",
+      "docs/CLAUDE-WORKFLOW-OPTIMIZATION.md"
+    ],
+    "claude": [
+      ".claude/CLAUDE.md",
+      "agents/prompts/claude-architect.md",
+      "docs/CLAUDE-WORKFLOW-OPTIMIZATION.md",
+      "docs/N8N-SETUP.md",
+      "docs/REFACTOR-CHECKLIST.md",
+      "docs/GOOGLE-DRIVE-SYNC.md",
+      ".github/AGENTS.md",
+      "skills/README.md",
+      "AGENTS.md"
+    ],
+    "completo": [
+      ".claude/CLAUDE.md",
+      "docs/INVITATIONS_RUNBOOK.md",
+      "docs/GOOGLE-CLOUD-SETUP.md",
+      "docs/LIBRARIES-INSTALLED.md",
+      "docs/MASTER-PLAN.md"
+    ],
+    "contexto": [
+      ".claude/CLAUDE.md",
+      "docs/adr/ADR-011-event-driven-orchestrator.md",
+      "docs/adr/ADR-009-openclaw-mcp-architecture.md",
+      "docs/adr/ADR-013-google-cloud-openSource-strategy.md",
+      "docs/adr/ADR-010-llm-gateway.md",
+      "docs/adr/ADR-012-observability.md",
+      "docs/adr/ADR-005-traefik-v3-1-docker-api.md",
+      "docs/CLAUDE-WORKFLOW-OPTIMIZATION.md",
+      ".github/AGENTS.md",
+      "AGENTS.md"
+    ],
+    "cualquier": [
+      ".claude/CLAUDE.md"
+    ],
+    "disponible": [
+      ".claude/CLAUDE.md"
+    ],
+    "disponibles": [
+      ".claude/CLAUDE.md",
+      "docs/ORCHESTRATOR.md",
+      ".github/AGENTS.md",
+      "skills/user/opsly-google-cloud/SKILL.md",
+      "AGENTS.md"
+    ],
+    "division": [
+      ".claude/CLAUDE.md"
+    ],
+    "filosofia": [
+      ".claude/CLAUDE.md",
+      ".github/copilot-instructions.md"
+    ],
+    "fuente": [
+      ".claude/CLAUDE.md"
+    ],
+    "haces": [
+      ".claude/CLAUDE.md"
+    ],
+    "inicio": [
+      ".claude/CLAUDE.md",
+      ".github/copilot-instructions.md"
+    ],
+    "modo": [
+      ".claude/CLAUDE.md",
+      ".github/AGENTS.md",
+      "skills/README.md",
+      "AGENTS.md"
+    ],
+    "obligatorio": [
+      ".claude/CLAUDE.md",
+      ".github/copilot-instructions.md",
+      "skills/user/opsly-context/SKILL.md",
+      "skills/user/opsly-mcp/SKILL.md"
+    ],
+    "orientativo": [
+      ".claude/CLAUDE.md",
+      "skills/user/opsly-llm/SKILL.md"
+    ],
+    "protocolo": [
+      ".claude/CLAUDE.md",
+      ".github/copilot-instructions.md",
+      "skills/user/opsly-context/SKILL.md"
+    ],
+    "reglas": [
+      ".claude/CLAUDE.md",
+      "docs/MASTER-PLAN.md",
+      ".github/copilot-instructions.md",
+      ".github/AGENTS.md",
+      "skills/user/opsly-bash/SKILL.md",
+      "skills/user/opsly-discord/SKILL.md",
+      "skills/user/opsly-google-cloud/SKILL.md",
+      "skills/user/opsly-supabase/SKILL.md",
+      "skills/user/opsly-mcp/SKILL.md",
+      "skills/user/opsly-tenant/SKILL.md",
+      "skills/user/opsly-agent-teams/SKILL.md",
+      "skills/user/opsly-api/SKILL.md",
+      "AGENTS.md"
+    ],
+    "rol": [
+      ".claude/CLAUDE.md",
+      ".github/AGENTS.md",
+      "AGENTS.md"
+    ],
+    "roles": [
+      ".claude/CLAUDE.md"
+    ],
+    "sesion": [
+      ".claude/CLAUDE.md",
+      "docs/CLAUDE-WORKFLOW-OPTIMIZATION.md",
+      ".github/copilot-instructions.md",
+      ".github/AGENTS.md",
+      "AGENTS.md"
+    ],
+    "skills": [
+      ".claude/CLAUDE.md",
+      ".github/AGENTS.md",
+      "skills/README.md",
+      "AGENTS.md"
+    ],
+    "stack": [
+      ".claude/CLAUDE.md",
+      "docs/LIBRARIES-INSTALLED.md",
+      "VISION.md",
+      ".github/VISION.md",
+      "skills/user/opsly-context/SKILL.md"
+    ],
+    "supremo": [
+      ".claude/CLAUDE.md",
+      ".github/AGENTS.md",
+      "skills/README.md",
+      "AGENTS.md"
+    ],
+    "tarea": [
+      ".claude/CLAUDE.md",
+      "docs/CLAUDE-WORKFLOW-OPTIMIZATION.md"
+    ],
+    "urls": [
+      ".claude/CLAUDE.md",
+      "docs/ARCHITECT-SECURITY-REVIEW.md",
+      "README.md",
+      "skills/user/opsly-tenant/SKILL.md"
+    ],
+    "verdad": [
+      ".claude/CLAUDE.md"
     ],
     "architect": [
+      "agents/prompts/claude-architect.md",
       "docs/ARCHITECT-SECURITY-REVIEW.md"
     ],
-    "security": [
+    "arquitecto": [
+      "agents/prompts/claude-architect.md",
+      "docs/ARCHITECT-SECURITY-REVIEW.md"
+    ],
+    "prompt": [
+      "agents/prompts/claude-architect.md",
+      "agents/prompts/cursor-executor.md",
+      "docs/ACTIVE-PROMPT.md",
+      "docs/N8N-IMPORT-GUIDE.md"
+    ],
+    "cursor": [
+      "agents/prompts/cursor-executor.md",
+      "docs/QA-REVIEW-COMPLETE.md",
+      "docs/CLAUDE-WORKFLOW-OPTIMIZATION.md",
+      "docs/N8N-SETUP.md",
+      "docs/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md",
+      "VISION.md",
+      ".github/VISION.md",
+      ".github/AGENTS.md",
+      "AGENTS.md"
+    ],
+    "ejecutor": [
+      "agents/prompts/cursor-executor.md"
+    ],
+    "executor": [
+      "agents/prompts/cursor-executor.md"
+    ],
+    "actual": [
       "docs/ARCHITECT-SECURITY-REVIEW.md",
-      "docs/SECURITY-MITIGATIONS-2026-04-09.md",
-      "docs/SECURITY_AUDIT_REPORT.md",
+      "docs/SECURITY_CHECKLIST.md",
+      "docs/MASTER-PLAN-STATUS.md",
+      "docs/N8N-IMPORT-GUIDE.md",
+      "docs/MASTER-PLAN.md",
+      "skills/user/opsly-tenant/SKILL.md",
+      "skills/user/opsly-agent-teams/SKILL.md"
+    ],
+    "actuales": [
+      "docs/ARCHITECT-SECURITY-REVIEW.md"
+    ],
+    "bajo": [
+      "docs/ARCHITECT-SECURITY-REVIEW.md"
+    ],
+    "capas": [
+      "docs/ARCHITECT-SECURITY-REVIEW.md"
+    ],
+    "cloudflare": [
+      "docs/ARCHITECT-SECURITY-REVIEW.md",
+      "docs/SECURITY-MITIGATIONS-2026-04-09.md"
+    ],
+    "com": [
+      "docs/ARCHITECT-SECURITY-REVIEW.md",
+      "docs/SECURITY-MITIGATIONS-2026-04-09.md"
+    ],
+    "esta": [
+      "docs/ARCHITECT-SECURITY-REVIEW.md",
+      "docs/FAQ.md",
+      "docs/LOCALRANK-TESTER-GUIDE.md",
+      "docs/SECURITY-MITIGATIONS-2026-04-09.md"
+    ],
+    "evaluacion": [
+      "docs/ARCHITECT-SECURITY-REVIEW.md",
       "docs/SECURITY_CHECKLIST.md"
+    ],
+    "finales": [
+      "docs/ARCHITECT-SECURITY-REVIEW.md"
+    ],
+    "firewall": [
+      "docs/ARCHITECT-SECURITY-REVIEW.md",
+      "docs/SECURITY-MITIGATIONS-2026-04-09.md"
+    ],
+    "fortalezas": [
+      "docs/ARCHITECT-SECURITY-REVIEW.md"
+    ],
+    "founder": [
+      "docs/ARCHITECT-SECURITY-REVIEW.md",
+      "docs/SECURITY_CHECKLIST.md"
+    ],
+    "gmail": [
+      "docs/ARCHITECT-SECURITY-REVIEW.md"
+    ],
+    "inmediatas": [
+      "docs/ARCHITECT-SECURITY-REVIEW.md"
+    ],
+    "install": [
+      "docs/ARCHITECT-SECURITY-REVIEW.md"
+    ],
+    "jkbotero78": [
+      "docs/ARCHITECT-SECURITY-REVIEW.md"
+    ],
+    "manual": [
+      "docs/ARCHITECT-SECURITY-REVIEW.md",
+      "docs/ORCHESTRATOR.md",
+      "docs/AUTO-PUSH-WATCHER.md",
+      "docs/N8N-SETUP.md",
+      "docs/N8N-IMPORT-GUIDE.md"
+    ],
+    "medio": [
+      "docs/ARCHITECT-SECURITY-REVIEW.md"
+    ],
+    "min": [
+      "docs/ARCHITECT-SECURITY-REVIEW.md",
+      "docs/QA-REVIEW-COMPLETE.md",
+      "docs/ORCHESTRATOR-FIXES-EXECUTION.md"
+    ],
+    "mitigaciones": [
+      "docs/ARCHITECT-SECURITY-REVIEW.md",
+      "docs/SECURITY-MITIGATIONS-2026-04-09.md"
+    ],
+    "multi": [
+      "docs/ARCHITECT-SECURITY-REVIEW.md",
+      "docs/SECURITY_CHECKLIST.md",
+      "docs/SECURITY-MITIGATIONS-2026-04-09.md",
+      ".github/AGENTS.md",
+      "AGENTS.md"
+    ],
+    "noche": [
+      "docs/ARCHITECT-SECURITY-REVIEW.md",
+      "docs/SECURITY-MITIGATIONS-2026-04-09.md"
+    ],
+    "portales": [
+      "docs/ARCHITECT-SECURITY-REVIEW.md"
+    ],
+    "pregunta": [
+      "docs/ARCHITECT-SECURITY-REVIEW.md"
+    ],
+    "proxy": [
+      "docs/ARCHITECT-SECURITY-REVIEW.md",
+      "docs/adr/ADR-002-traefik-sobre-nginx.md",
+      "docs/SECURITY-MITIGATIONS-2026-04-09.md"
+    ],
+    "publicos": [
+      "docs/ARCHITECT-SECURITY-REVIEW.md"
+    ],
+    "respuesta": [
+      "docs/ARCHITECT-SECURITY-REVIEW.md",
+      "docs/INVITATIONS_RUNBOOK.md",
+      "docs/SECURITY_CHECKLIST.md"
+    ],
+    "restantes": [
+      "docs/ARCHITECT-SECURITY-REVIEW.md"
     ],
     "review": [
       "docs/ARCHITECT-SECURITY-REVIEW.md",
+      "docs/QA-REVIEW-COMPLETE.md",
+      "docs/SECURITY-MITIGATIONS-2026-04-09.md",
+      "docs/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md"
+    ],
+    "riesgos": [
+      "docs/ARCHITECT-SECURITY-REVIEW.md",
+      "docs/adr/ADR-014-notebooklm-agent.md"
+    ],
+    "security": [
+      "docs/ARCHITECT-SECURITY-REVIEW.md",
+      "docs/SECURITY_AUDIT_REPORT.md",
+      "docs/SECURITY_CHECKLIST.md",
+      "docs/SECURITY-MITIGATIONS-2026-04-09.md"
+    ],
+    "seguridad": [
+      "docs/ARCHITECT-SECURITY-REVIEW.md",
+      "docs/AUTOMATION-PLAN.md",
+      "docs/SECURITY_AUDIT_REPORT.md",
+      "docs/SECURITY_CHECKLIST.md",
+      "docs/SECURITY-MITIGATIONS-2026-04-09.md"
+    ],
+    "seguro": [
+      "docs/ARCHITECT-SECURITY-REVIEW.md"
+    ],
+    "separacion": [
+      "docs/ARCHITECT-SECURITY-REVIEW.md",
+      "docs/SECURITY_CHECKLIST.md"
+    ],
+    "tailscale": [
+      "docs/ARCHITECT-SECURITY-REVIEW.md",
+      "docs/SECURITY-MITIGATIONS-2026-04-09.md"
+    ],
+    "tenancy": [
+      "docs/ARCHITECT-SECURITY-REVIEW.md",
+      "docs/SECURITY_CHECKLIST.md",
+      "docs/SECURITY-MITIGATIONS-2026-04-09.md"
+    ],
+    "tester": [
+      "docs/ARCHITECT-SECURITY-REVIEW.md",
+      "docs/LOCALRANK-TESTER-GUIDE.md"
+    ],
+    "ufw": [
+      "docs/ARCHITECT-SECURITY-REVIEW.md",
+      "docs/SECURITY-MITIGATIONS-2026-04-09.md"
+    ],
+    "agregar": [
+      "docs/ORCHESTRATOR.md"
+    ],
+    "arquitectura": [
+      "docs/ORCHESTRATOR.md",
+      "docs/OPENCLAW-ARCHITECTURE.md",
+      "docs/SECURITY_CHECKLIST.md",
+      "docs/LIBRARIES-INSTALLED.md",
+      "README.md",
+      ".github/AGENTS.md",
+      "AGENTS.md"
+    ],
+    "bullmq": [
+      "docs/ORCHESTRATOR.md",
+      "docs/adr/ADR-011-event-driven-orchestrator.md"
+    ],
+    "chat": [
+      "docs/ORCHESTRATOR.md"
+    ],
+    "cola": [
+      "docs/ORCHESTRATOR.md"
+    ],
+    "concurrency": [
+      "docs/ORCHESTRATOR.md"
+    ],
+    "driven": [
+      "docs/ORCHESTRATOR.md",
+      "docs/adr/ADR-011-event-driven-orchestrator.md"
+    ],
+    "estados": [
+      "docs/ORCHESTRATOR.md"
+    ],
+    "event": [
+      "docs/ORCHESTRATOR.md",
+      "docs/adr/ADR-011-event-driven-orchestrator.md"
+    ],
+    "http": [
+      "docs/ORCHESTRATOR.md",
+      "docs/LLM-GATEWAY.md",
+      "docs/N8N-IMPORT-GUIDE.md"
+    ],
+    "idempotencia": [
+      "docs/ORCHESTRATOR.md"
+    ],
+    "job": [
+      "docs/ORCHESTRATOR.md"
+    ],
+    "jobs": [
+      "docs/ORCHESTRATOR.md",
+      "docs/LIBRARIES-INSTALLED.md"
+    ],
+    "metadata": [
+      "docs/ORCHESTRATOR.md"
+    ],
+    "nuevo": [
+      "docs/ORCHESTRATOR.md",
+      "docs/AGENTS-GUIDE.md",
+      "docs/CONTEXT-BUILDER.md",
+      ".github/copilot-instructions.md",
+      ".github/README-github-templates.md"
+    ],
+    "openclaw": [
+      "docs/ORCHESTRATOR.md",
+      "docs/adr/ADR-009-openclaw-mcp-architecture.md",
+      "docs/OPENCLAW-ARCHITECTURE.md",
+      "docs/REFACTOR-CHECKLIST.md",
+      "README.md",
+      "apps/mcp/README.md"
+    ],
+    "opts": [
+      "docs/ORCHESTRATOR.md"
+    ],
+    "orchestrator": [
+      "docs/ORCHESTRATOR.md",
+      "docs/adr/ADR-011-event-driven-orchestrator.md",
+      "docs/adr/ADR-009-openclaw-mcp-architecture.md",
+      "docs/QA-REVIEW-COMPLETE.md",
+      "docs/ORCHESTRATOR-FIXES-EXECUTION.md",
+      "docs/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md"
+    ],
+    "planner": [
+      "docs/ORCHESTRATOR.md",
+      "docs/ORCHESTRATOR-FIXES-EXECUTION.md"
+    ],
+    "prioridad": [
+      "docs/ORCHESTRATOR.md"
+    ],
+    "prueba": [
+      "docs/ORCHESTRATOR.md",
+      "docs/N8N-SETUP.md",
+      "README.md"
+    ],
+    "queue": [
+      "docs/ORCHESTRATOR.md"
+    ],
+    "remote": [
+      "docs/ORCHESTRATOR.md"
+    ],
+    "worker": [
+      "docs/ORCHESTRATOR.md"
+    ],
+    "automation": [
+      "docs/AUTOMATION-PLAN.md"
+    ],
+    "automatizacion": [
+      "docs/AUTOMATION-PLAN.md",
+      "docs/MASTER-PLAN-STATUS.md"
+    ],
+    "componentes": [
+      "docs/AUTOMATION-PLAN.md",
+      "docs/OPENCLAW-ARCHITECTURE.md",
+      "apps/admin/INVITATIONS_UI.md"
+    ],
+    "construir": [
+      "docs/AUTOMATION-PLAN.md"
+    ],
+    "criterios": [
+      "docs/AUTOMATION-PLAN.md",
+      "docs/REFACTOR-CHECKLIST.md"
+    ],
+    "exito": [
+      "docs/AUTOMATION-PLAN.md",
+      "apps/admin/INVITATIONS_UI.md"
+    ],
+    "fecha": [
+      "docs/AUTOMATION-PLAN.md",
+      "docs/adr/ADR-011-event-driven-orchestrator.md",
+      "docs/adr/ADR-013-google-cloud-openSource-strategy.md",
+      "docs/adr/ADR-010-llm-gateway.md",
+      "docs/adr/ADR-012-observability.md",
+      "docs/MASTER-PLAN.md"
+    ],
+    "objetivo": [
+      "docs/AUTOMATION-PLAN.md",
+      "docs/OPENCLAW-ARCHITECTURE.md",
+      "docs/N8N-SETUP.md",
+      "docs/GOOGLE-DRIVE-SYNC.md"
+    ],
+    "progreso": [
+      "docs/AUTOMATION-PLAN.md",
+      "docs/MASTER-PLAN-STATUS.md",
+      "docs/MASTER-PLAN.md"
+    ],
+    "requeridas": [
+      "docs/AUTOMATION-PLAN.md",
+      "docs/N8N-SETUP.md",
+      "docs/REFACTOR-CHECKLIST.md"
+    ],
+    "restricciones": [
+      "docs/AUTOMATION-PLAN.md"
+    ],
+    "variables": [
+      "docs/AUTOMATION-PLAN.md",
+      "docs/LLM-GATEWAY.md",
+      "docs/DOPPLER-VARS.md",
+      "docs/GOOGLE-CLOUD-ACTIVATION.md",
+      "docs/N8N-SETUP.md",
+      "docs/N8N-IMPORT-GUIDE.md",
+      "docs/REFACTOR-CHECKLIST.md",
+      "docs/reports/audit-2026-04-07.md",
+      "apps/mcp/README.md"
+    ],
+    "version": [
+      "docs/AUTOMATION-PLAN.md"
+    ],
+    "004": [
+      "docs/adr/ADR-004-supabase-schema-por-tenant.md"
+    ],
+    "adr": [
+      "docs/adr/ADR-004-supabase-schema-por-tenant.md",
+      "docs/adr/ADR-011-event-driven-orchestrator.md",
+      "docs/adr/ADR-001-docker-compose-por-tenant.md",
+      "docs/adr/ADR-009-openclaw-mcp-architecture.md",
+      "docs/adr/ADR-013-google-cloud-openSource-strategy.md",
+      "docs/adr/ADR-002-traefik-sobre-nginx.md",
+      "docs/adr/ADR-010-llm-gateway.md",
+      "docs/adr/ADR-007-runbooks-y-documentacion-operativa.md",
+      "docs/adr/ADR-012-observability.md",
+      "docs/adr/ADR-008-terraform-digitalocean-plan.md",
+      "docs/adr/ADR-006-api-testing-vitest.md",
+      "docs/adr/ADR-003-doppler-secrets.md",
+      "docs/adr/ADR-005-traefik-v3-1-docker-api.md",
+      "docs/adr/ADR-014-notebooklm-agent.md"
+    ],
+    "consecuencias": [
+      "docs/adr/ADR-004-supabase-schema-por-tenant.md",
+      "docs/adr/ADR-011-event-driven-orchestrator.md",
+      "docs/adr/ADR-001-docker-compose-por-tenant.md",
+      "docs/adr/ADR-009-openclaw-mcp-architecture.md",
+      "docs/adr/ADR-013-google-cloud-openSource-strategy.md",
+      "docs/adr/ADR-002-traefik-sobre-nginx.md",
+      "docs/adr/ADR-010-llm-gateway.md",
+      "docs/adr/ADR-007-runbooks-y-documentacion-operativa.md",
+      "docs/adr/ADR-012-observability.md",
+      "docs/adr/ADR-008-terraform-digitalocean-plan.md",
+      "docs/adr/ADR-006-api-testing-vitest.md",
+      "docs/adr/ADR-003-doppler-secrets.md",
+      "docs/adr/ADR-005-traefik-v3-1-docker-api.md"
+    ],
+    "decision": [
+      "docs/adr/ADR-004-supabase-schema-por-tenant.md",
+      "docs/adr/ADR-011-event-driven-orchestrator.md",
+      "docs/adr/ADR-001-docker-compose-por-tenant.md",
+      "docs/adr/ADR-009-openclaw-mcp-architecture.md",
+      "docs/adr/ADR-013-google-cloud-openSource-strategy.md",
+      "docs/adr/ADR-002-traefik-sobre-nginx.md",
+      "docs/adr/ADR-010-llm-gateway.md",
+      "docs/adr/ADR-007-runbooks-y-documentacion-operativa.md",
+      "docs/adr/ADR-012-observability.md",
+      "docs/adr/ADR-008-terraform-digitalocean-plan.md",
+      "docs/adr/ADR-006-api-testing-vitest.md",
+      "docs/adr/ADR-003-doppler-secrets.md",
+      "docs/adr/ADR-005-traefik-v3-1-docker-api.md",
+      "docs/adr/ADR-014-notebooklm-agent.md"
+    ],
+    "razones": [
+      "docs/adr/ADR-004-supabase-schema-por-tenant.md",
+      "docs/adr/ADR-001-docker-compose-por-tenant.md",
+      "docs/adr/ADR-002-traefik-sobre-nginx.md",
+      "docs/adr/ADR-007-runbooks-y-documentacion-operativa.md",
+      "docs/adr/ADR-008-terraform-digitalocean-plan.md",
+      "docs/adr/ADR-006-api-testing-vitest.md",
+      "docs/adr/ADR-003-doppler-secrets.md"
+    ],
+    "schema": [
+      "docs/adr/ADR-004-supabase-schema-por-tenant.md",
+      "docs/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md"
+    ],
+    "supabase": [
+      "docs/adr/ADR-004-supabase-schema-por-tenant.md",
+      "docs/SECURITY_AUDIT_REPORT.md",
+      "docs/SECURITY_CHECKLIST.md",
+      "skills/user/opsly-supabase/SKILL.md"
+    ],
+    "011": [
+      "docs/adr/ADR-011-event-driven-orchestrator.md"
+    ],
+    "aceptado": [
+      "docs/adr/ADR-011-event-driven-orchestrator.md",
+      "docs/adr/ADR-013-google-cloud-openSource-strategy.md",
+      "docs/adr/ADR-010-llm-gateway.md",
+      "docs/adr/ADR-012-observability.md"
+    ],
+    "eventos": [
+      "docs/adr/ADR-011-event-driven-orchestrator.md"
+    ],
+    "paralelos": [
+      "docs/adr/ADR-011-event-driven-orchestrator.md",
+      "docs/AGENTS-GUIDE.md"
+    ],
+    "workers": [
+      "docs/adr/ADR-011-event-driven-orchestrator.md"
+    ],
+    "001": [
+      "docs/adr/ADR-001-docker-compose-por-tenant.md"
+    ],
+    "alternativas": [
+      "docs/adr/ADR-001-docker-compose-por-tenant.md",
+      "docs/adr/ADR-002-traefik-sobre-nginx.md",
+      "skills/user/opsly-context/SKILL.md"
+    ],
+    "compose": [
+      "docs/adr/ADR-001-docker-compose-por-tenant.md",
+      "docs/ORCHESTRATOR-FIXES-EXECUTION.md"
+    ],
+    "docker": [
+      "docs/adr/ADR-001-docker-compose-por-tenant.md",
+      "docs/adr/ADR-005-traefik-v3-1-docker-api.md",
+      "docs/SSH-COMMANDS-LOCALRANK.md",
+      "docs/MASTER-PLAN-STATUS.md",
+      "docs/ORCHESTRATOR-FIXES-EXECUTION.md",
+      "docs/VPS-ARCHITECTURE.md",
       "docs/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md",
-      "docs/QA-REVIEW-COMPLETE.md"
+      "apps/agents/notebooklm/README.md"
+    ],
+    "rechazadas": [
+      "docs/adr/ADR-001-docker-compose-por-tenant.md",
+      "docs/adr/ADR-002-traefik-sobre-nginx.md"
+    ],
+    "009": [
+      "docs/adr/ADR-009-openclaw-mcp-architecture.md"
+    ],
+    "apps": [
+      "docs/adr/ADR-009-openclaw-mcp-architecture.md",
+      "docs/adr/ADR-014-notebooklm-agent.md",
+      ".github/copilot-instructions.md"
     ],
     "architecture": [
+      "docs/adr/ADR-009-openclaw-mcp-architecture.md",
       "docs/ARCHITECTURE.md",
       "docs/OPENCLAW-ARCHITECTURE.md",
       "docs/VPS-ARCHITECTURE.md",
+      "README.md"
+    ],
+    "autenticacion": [
       "docs/adr/ADR-009-openclaw-mcp-architecture.md"
     ],
-    "autopushwatcher": [
-      "docs/AUTO-PUSH-WATCHER.md"
+    "capa": [
+      "docs/adr/ADR-009-openclaw-mcp-architecture.md"
+    ],
+    "layer": [
+      "docs/adr/ADR-009-openclaw-mcp-architecture.md"
+    ],
+    "mcp": [
+      "docs/adr/ADR-009-openclaw-mcp-architecture.md",
+      "docs/adr/ADR-014-notebooklm-agent.md",
+      "docs/REFACTOR-CHECKLIST.md",
+      "skills/user/opsly-notebooklm/SKILL.md",
+      "skills/user/opsly-mcp/SKILL.md",
+      "apps/mcp/README.md"
+    ],
+    "oauth": [
+      "docs/adr/ADR-009-openclaw-mcp-architecture.md",
+      "docs/MASTER-PLAN-STATUS.md",
+      "docs/GOOGLE-CLOUD-SETUP.md",
+      "skills/user/opsly-mcp/SKILL.md"
+    ],
+    "objetivos": [
+      "docs/adr/ADR-009-openclaw-mcp-architecture.md",
+      "VISION.md",
+      ".github/VISION.md"
+    ],
+    "orquestador": [
+      "docs/adr/ADR-009-openclaw-mcp-architecture.md"
+    ],
+    "pkce": [
+      "docs/adr/ADR-009-openclaw-mcp-architecture.md"
+    ],
+    "server": [
+      "docs/adr/ADR-009-openclaw-mcp-architecture.md",
+      "apps/mcp/README.md"
+    ],
+    "013": [
+      "docs/adr/ADR-013-google-cloud-openSource-strategy.md"
+    ],
+    "cloud": [
+      "docs/adr/ADR-013-google-cloud-openSource-strategy.md",
+      "docs/GOOGLE-CLOUD-ACTIVATION.md",
+      "docs/MASTER-PLAN-STATUS.md",
+      "docs/GOOGLE-CLOUD-SETUP.md",
+      "skills/user/opsly-google-cloud/SKILL.md"
+    ],
+    "google": [
+      "docs/adr/ADR-013-google-cloud-openSource-strategy.md",
+      "docs/GOOGLE-CLOUD-ACTIVATION.md",
+      "docs/MASTER-PLAN-STATUS.md",
+      "docs/GOOGLE-CLOUD-SETUP.md",
+      "docs/GOOGLE-DRIVE-SYNC.md",
+      "skills/user/opsly-google-cloud/SKILL.md"
+    ],
+    "habilitados": [
+      "docs/adr/ADR-013-google-cloud-openSource-strategy.md"
+    ],
+    "hacer": [
+      "docs/adr/ADR-013-google-cloud-openSource-strategy.md",
+      "docs/adr/ADR-010-llm-gateway.md",
+      ".github/copilot-instructions.md"
+    ],
+    "integration": [
+      "docs/adr/ADR-013-google-cloud-openSource-strategy.md"
+    ],
+    "open": [
+      "docs/adr/ADR-013-google-cloud-openSource-strategy.md"
+    ],
+    "opensource": [
+      "docs/adr/ADR-013-google-cloud-openSource-strategy.md"
+    ],
+    "platform": [
+      "docs/adr/ADR-013-google-cloud-openSource-strategy.md",
+      "docs/TROUBLESHOOTING.md",
+      "docs/ORCHESTRATOR-FIXES-EXECUTION.md"
+    ],
+    "principios": [
+      "docs/adr/ADR-013-google-cloud-openSource-strategy.md",
+      ".github/copilot-instructions.md"
+    ],
+    "proyecto": [
+      "docs/adr/ADR-013-google-cloud-openSource-strategy.md",
+      "docs/FAQ.md",
+      "docs/MASTER-PLAN-STATUS.md",
+      "docs/GOOGLE-CLOUD-SETUP.md",
+      "docs/MASTER-PLAN.md",
+      ".github/README-github-templates.md",
+      "skills/user/opsly-google-cloud/SKILL.md"
+    ],
+    "servicios": [
+      "docs/adr/ADR-013-google-cloud-openSource-strategy.md",
+      "docs/LOCALRANK-TESTER-GUIDE.md",
+      "docs/VPS-ARCHITECTURE.md",
+      "docs/reports/audit-2026-04-07.md"
+    ],
+    "source": [
+      "docs/adr/ADR-013-google-cloud-openSource-strategy.md"
+    ],
+    "strategy": [
+      "docs/adr/ADR-013-google-cloud-openSource-strategy.md",
+      "docs/ARCHITECTURE.md"
+    ],
+    "002": [
+      "docs/adr/ADR-002-traefik-sobre-nginx.md"
+    ],
+    "nginx": [
+      "docs/adr/ADR-002-traefik-sobre-nginx.md"
+    ],
+    "reverse": [
+      "docs/adr/ADR-002-traefik-sobre-nginx.md"
+    ],
+    "sobre": [
+      "docs/adr/ADR-002-traefik-sobre-nginx.md"
+    ],
+    "traefik": [
+      "docs/adr/ADR-002-traefik-sobre-nginx.md",
+      "docs/adr/ADR-005-traefik-v3-1-docker-api.md",
+      "docs/TROUBLESHOOTING.md",
+      "docs/VPS-ARCHITECTURE.md"
+    ],
+    "010": [
+      "docs/adr/ADR-010-llm-gateway.md"
+    ],
+    "cache": [
+      "docs/adr/ADR-010-llm-gateway.md",
+      "skills/user/opsly-llm/SKILL.md"
+    ],
+    "gateway": [
+      "docs/adr/ADR-010-llm-gateway.md",
+      "docs/LLM-GATEWAY.md",
+      "docs/DOPPLER-VARS.md",
+      "docs/ORCHESTRATOR-FIXES-EXECUTION.md",
+      "skills/user/opsly-llm/SKILL.md"
+    ],
+    "llm": [
+      "docs/adr/ADR-010-llm-gateway.md",
+      "docs/LLM-GATEWAY.md",
+      "docs/DOPPLER-VARS.md",
+      "docs/ORCHESTRATOR-FIXES-EXECUTION.md",
+      "docs/LIBRARIES-INSTALLED.md",
+      "skills/user/opsly-llm/SKILL.md"
+    ],
+    "redis": [
+      "docs/adr/ADR-010-llm-gateway.md"
+    ],
+    "responsabilidades": [
+      "docs/adr/ADR-010-llm-gateway.md"
+    ],
+    "007": [
+      "docs/adr/ADR-007-runbooks-y-documentacion-operativa.md"
+    ],
+    "documentacion": [
+      "docs/adr/ADR-007-runbooks-y-documentacion-operativa.md",
+      "docs/GOOGLE-DRIVE-SYNC.md",
+      ".github/AGENTS.md"
+    ],
+    "operativa": [
+      "docs/adr/ADR-007-runbooks-y-documentacion-operativa.md"
+    ],
+    "runbooks": [
+      "docs/adr/ADR-007-runbooks-y-documentacion-operativa.md"
+    ],
+    "012": [
+      "docs/adr/ADR-012-observability.md"
+    ],
+    "observabilidad": [
+      "docs/adr/ADR-012-observability.md",
+      "docs/OBSERVABILITY.md"
+    ],
+    "observability": [
+      "docs/adr/ADR-012-observability.md",
+      "docs/OBSERVABILITY.md"
+    ],
+    "008": [
+      "docs/adr/ADR-008-terraform-digitalocean-plan.md"
+    ],
+    "automatico": [
+      "docs/adr/ADR-008-terraform-digitalocean-plan.md"
+    ],
+    "006": [
+      "docs/adr/ADR-006-api-testing-vitest.md"
+    ],
+    "api": [
+      "docs/adr/ADR-006-api-testing-vitest.md",
+      "docs/adr/ADR-005-traefik-v3-1-docker-api.md",
+      "docs/TROUBLESHOOTING.md",
+      "docs/runbooks/admin.md",
+      "docs/runbooks/dev.md",
+      "docs/SECURITY_CHECKLIST.md",
+      "docs/TEST_PLAN.md",
+      "docs/OBSERVABILITY.md",
+      "docs/SECURITY-MITIGATIONS-2026-04-09.md",
+      "docs/PERFORMANCE_BASELINE.md",
+      ".github/copilot-instructions.md",
+      "skills/user/opsly-feedback-ml/SKILL.md",
+      "skills/user/opsly-api/SKILL.md"
+    ],
+    "node": [
+      "docs/adr/ADR-006-api-testing-vitest.md",
+      "docs/PERFORMANCE_BASELINE.md"
+    ],
+    "testing": [
+      "docs/adr/ADR-006-api-testing-vitest.md",
+      "docs/LOCALRANK-TESTER-GUIDE.md",
+      "docs/LIBRARIES-INSTALLED.md"
+    ],
+    "tests": [
+      "docs/adr/ADR-006-api-testing-vitest.md",
+      "docs/LLM-GATEWAY.md",
+      "docs/FAQ.md",
+      "skills/user/opsly-api/SKILL.md"
+    ],
+    "vitest": [
+      "docs/adr/ADR-006-api-testing-vitest.md",
+      "skills/user/opsly-api/SKILL.md"
+    ],
+    "003": [
+      "docs/adr/ADR-003-doppler-secrets.md"
+    ],
+    "configuracion": [
+      "docs/adr/ADR-003-doppler-secrets.md",
+      "docs/SECURITY_CHECKLIST.md",
+      "docs/CLAUDE-WORKFLOW-OPTIMIZATION.md",
+      "docs/N8N-SETUP.md",
+      "docs/GOOGLE-DRIVE-SYNC.md"
+    ],
+    "gestor": [
+      "docs/adr/ADR-003-doppler-secrets.md"
+    ],
+    "005": [
+      "docs/adr/ADR-005-traefik-v3-1-docker-api.md"
+    ],
+    "engine": [
+      "docs/adr/ADR-005-traefik-v3-1-docker-api.md",
+      "docs/ORCHESTRATOR-FIXES-EXECUTION.md"
+    ],
+    "frente": [
+      "docs/adr/ADR-005-traefik-v3-1-docker-api.md"
+    ],
+    "otras": [
+      "docs/adr/ADR-005-traefik-v3-1-docker-api.md"
+    ],
+    "relacion": [
+      "docs/adr/ADR-005-traefik-v3-1-docker-api.md",
+      "docs/OPENCLAW-ARCHITECTURE.md"
+    ],
+    "014": [
+      "docs/adr/ADR-014-notebooklm-agent.md"
+    ],
+    "agent": [
+      "docs/adr/ADR-014-notebooklm-agent.md",
+      "skills/user/opsly-notebooklm/SKILL.md",
+      "skills/user/opsly-agent-teams/SKILL.md",
+      "apps/agents/notebooklm/README.md"
+    ],
+    "agents": [
+      "docs/adr/ADR-014-notebooklm-agent.md",
+      "docs/AGENTS-GUIDE.md",
+      "docs/AUTO-PUSH-WATCHER.md",
+      ".github/AGENTS.md",
+      "AGENTS.md"
+    ],
+    "client": [
+      "docs/adr/ADR-014-notebooklm-agent.md",
+      "docs/ORCHESTRATOR-FIXES-EXECUTION.md"
+    ],
+    "consequences": [
+      "docs/adr/ADR-014-notebooklm-agent.md"
+    ],
+    "context": [
+      "docs/adr/ADR-014-notebooklm-agent.md",
+      "docs/CONTEXT-BUILDER.md",
+      "skills/user/opsly-context/SKILL.md"
+    ],
+    "experimental": [
+      "docs/adr/ADR-014-notebooklm-agent.md",
+      "docs/LOCALRANK-TESTER-GUIDE.md"
+    ],
+    "feature": [
+      "docs/adr/ADR-014-notebooklm-agent.md"
+    ],
+    "flag": [
+      "docs/adr/ADR-014-notebooklm-agent.md"
+    ],
+    "implementation": [
+      "docs/adr/ADR-014-notebooklm-agent.md",
+      "docs/QA-REVIEW-COMPLETE.md"
+    ],
+    "index": [
+      "docs/adr/ADR-014-notebooklm-agent.md",
+      "docs/ORCHESTRATOR-FIXES-EXECUTION.md",
+      "docs/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md"
+    ],
+    "metricas": [
+      "docs/adr/ADR-014-notebooklm-agent.md",
+      "docs/MASTER-PLAN-STATUS.md",
+      "docs/OBSERVABILITY.md",
+      "docs/MASTER-PLAN.md",
+      "docs/PERFORMANCE_BASELINE.md",
+      "skills/user/opsly-agent-teams/SKILL.md"
+    ],
+    "monitoreo": [
+      "docs/adr/ADR-014-notebooklm-agent.md"
+    ],
+    "notebooklm": [
+      "docs/adr/ADR-014-notebooklm-agent.md",
+      "docs/EXECUTION-PLAN-LOCALRANK-NOTEBOOKLM.md",
+      "docs/SSH-COMMANDS-LOCALRANK.md",
+      "skills/user/opsly-notebooklm/SKILL.md",
+      "apps/agents/notebooklm/README.md"
+    ],
+    "problem": [
+      "docs/adr/ADR-014-notebooklm-agent.md"
+    ],
+    "pros": [
+      "docs/adr/ADR-014-notebooklm-agent.md"
+    ],
+    "python": [
+      "docs/adr/ADR-014-notebooklm-agent.md"
+    ],
+    "registration": [
+      "docs/adr/ADR-014-notebooklm-agent.md"
+    ],
+    "src": [
+      "docs/adr/ADR-014-notebooklm-agent.md"
+    ],
+    "tool": [
+      "docs/adr/ADR-014-notebooklm-agent.md",
+      "skills/user/opsly-mcp/SKILL.md"
+    ],
+    "typescript": [
+      "docs/adr/ADR-014-notebooklm-agent.md",
+      "docs/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md",
+      "skills/user/opsly-notebooklm/SKILL.md",
+      "apps/agents/notebooklm/README.md"
+    ],
+    "wrapper": [
+      "docs/adr/ADR-014-notebooklm-agent.md"
+    ],
+    "allocation": [
+      "docs/ARCHITECTURE.md"
+    ],
+    "control": [
+      "docs/ARCHITECTURE.md"
+    ],
+    "data": [
+      "docs/ARCHITECTURE.md"
+    ],
+    "development": [
+      "docs/ARCHITECTURE.md",
+      "README.md"
+    ],
+    "environment": [
+      "docs/ARCHITECTURE.md",
+      "docs/EXECUTION-PLAN-LOCALRANK-NOTEBOOKLM.md"
+    ],
+    "flow": [
+      "docs/ARCHITECTURE.md",
+      "docs/TEST_PLAN.md"
+    ],
+    "isolation": [
+      "docs/ARCHITECTURE.md",
+      "docs/TEST_PLAN.md"
+    ],
+    "model": [
+      "docs/ARCHITECTURE.md"
+    ],
+    "plane": [
+      "docs/ARCHITECTURE.md"
+    ],
+    "port": [
+      "docs/ARCHITECTURE.md"
+    ],
+    "agente": [
+      "docs/AGENTS-GUIDE.md",
+      "docs/CLAUDE-WORKFLOW-OPTIMIZATION.md",
+      "docs/N8N-SETUP.md",
+      ".github/AGENTS.md",
+      "AGENTS.md"
+    ],
+    "agentes": [
+      "docs/AGENTS-GUIDE.md",
+      "docs/CLAUDE-WORKFLOW-OPTIMIZATION.md",
+      ".github/AGENTS.md",
+      "AGENTS.md"
+    ],
+    "business": [
+      "docs/AGENTS-GUIDE.md",
+      "docs/LOCALRANK-TESTER-GUIDE.md"
+    ],
+    "ejemplos": [
+      "docs/AGENTS-GUIDE.md",
+      "docs/OBSERVABILITY.md"
+    ],
+    "enterprise": [
+      "docs/AGENTS-GUIDE.md"
+    ],
+    "guia": [
+      "docs/AGENTS-GUIDE.md",
+      "docs/GOOGLE-CLOUD-ACTIVATION.md",
+      "docs/LOCALRANK-TESTER-GUIDE.md",
+      ".github/README-github-templates.md"
+    ],
+    "guide": [
+      "docs/AGENTS-GUIDE.md",
+      "docs/ORCHESTRATOR-FIXES-EXECUTION.md",
+      "docs/N8N-IMPORT-GUIDE.md",
+      "docs/LOCALRANK-TESTER-GUIDE.md"
+    ],
+    "limites": [
+      "docs/AGENTS-GUIDE.md",
+      "docs/runbooks/managed.md"
+    ],
+    "startup": [
+      "docs/AGENTS-GUIDE.md"
+    ],
+    "beast": [
+      "docs/LLM-GATEWAY.md",
+      "docs/DOPPLER-VARS.md"
+    ],
+    "entorno": [
+      "docs/LLM-GATEWAY.md",
+      "docs/N8N-IMPORT-GUIDE.md",
+      "apps/mcp/README.md"
+    ],
+    "hace": [
+      "docs/LLM-GATEWAY.md"
+    ],
+    "mode": [
+      "docs/LLM-GATEWAY.md",
+      "docs/DOPPLER-VARS.md"
+    ],
+    "niveles": [
+      "docs/LLM-GATEWAY.md"
+    ],
+    "opcional": [
+      "docs/LLM-GATEWAY.md",
+      "skills/user/opsly-notebooklm/SKILL.md"
+    ],
+    "otro": [
+      "docs/LLM-GATEWAY.md"
+    ],
+    "proveedores": [
+      "docs/LLM-GATEWAY.md"
+    ],
+    "routing": [
+      "docs/LLM-GATEWAY.md",
+      "docs/VPS-ARCHITECTURE.md"
+    ],
+    "servicio": [
+      "docs/LLM-GATEWAY.md",
+      "docs/runbooks/managed.md",
+      "docs/CONTEXT-BUILDER.md"
+    ],
+    "sesgo": [
+      "docs/LLM-GATEWAY.md"
+    ],
+    "uso": [
+      "docs/LLM-GATEWAY.md",
+      "skills/user/opsly-llm/SKILL.md",
+      "skills/user/opsly-notebooklm/SKILL.md",
+      "skills/user/opsly-discord/SKILL.md",
+      "apps/agents/notebooklm/README.md"
+    ],
+    "automatizado": [
+      "docs/SECURITY_AUDIT_REPORT.md",
+      "docs/N8N-SETUP.md"
+    ],
+    "conclusion": [
+      "docs/SECURITY_AUDIT_REPORT.md"
+    ],
+    "escaneo": [
+      "docs/SECURITY_AUDIT_REPORT.md"
+    ],
+    "heuristico": [
+      "docs/SECURITY_AUDIT_REPORT.md"
+    ],
+    "informe": [
+      "docs/SECURITY_AUDIT_REPORT.md"
+    ],
+    "level": [
+      "docs/SECURITY_AUDIT_REPORT.md"
+    ],
+    "npm": [
+      "docs/SECURITY_AUDIT_REPORT.md",
+      "VISION.md",
+      ".github/VISION.md"
+    ],
+    "report": [
+      "docs/SECURITY_AUDIT_REPORT.md"
+    ],
+    "row": [
+      "docs/SECURITY_AUDIT_REPORT.md"
+    ],
+    "secretos": [
+      "docs/SECURITY_AUDIT_REPORT.md",
+      "docs/runbooks/admin.md",
+      "docs/runbooks/incident.md",
+      "docs/SECURITY_CHECKLIST.md",
+      "docs/DOPPLER-VARS.md"
     ],
     "auto": [
+      "docs/AUTO-PUSH-WATCHER.md",
+      "docs/CONTEXT-BUILDER.md",
+      "skills/user/opsly-feedback-ml/SKILL.md"
+    ],
+    "comportamiento": [
+      "docs/AUTO-PUSH-WATCHER.md"
+    ],
+    "cuando": [
+      "docs/AUTO-PUSH-WATCHER.md",
+      "docs/GOOGLE-CLOUD-ACTIVATION.md",
+      "docs/CLAUDE-WORKFLOW-OPTIMIZATION.md",
+      "docs/MASTER-PLAN.md",
+      "docs/GOOGLE-DRIVE-SYNC.md",
+      ".github/copilot-instructions.md",
+      "skills/user/opsly-llm/SKILL.md",
+      "skills/user/opsly-bash/SKILL.md",
+      "skills/user/opsly-notebooklm/SKILL.md",
+      "skills/user/opsly-discord/SKILL.md",
+      "skills/user/opsly-context/SKILL.md",
+      "skills/user/opsly-google-cloud/SKILL.md",
+      "skills/user/opsly-supabase/SKILL.md",
+      "skills/user/opsly-mcp/SKILL.md",
+      "skills/user/opsly-tenant/SKILL.md",
+      "skills/user/opsly-feedback-ml/SKILL.md",
+      "skills/user/opsly-agent-teams/SKILL.md",
+      "skills/user/opsly-api/SKILL.md"
+    ],
+    "docs": [
+      "docs/AUTO-PUSH-WATCHER.md"
+    ],
+    "instalacion": [
+      "docs/AUTO-PUSH-WATCHER.md",
+      "skills/user/opsly-notebooklm/SKILL.md"
+    ],
+    "opt": [
+      "docs/AUTO-PUSH-WATCHER.md"
+    ],
+    "problemas": [
       "docs/AUTO-PUSH-WATCHER.md"
     ],
     "push": [
       "docs/AUTO-PUSH-WATCHER.md"
     ],
+    "referencias": [
+      "docs/AUTO-PUSH-WATCHER.md",
+      "docs/TROUBLESHOOTING.md",
+      "docs/OPENCLAW-ARCHITECTURE.md",
+      "docs/runbooks/admin.md",
+      "docs/runbooks/dev.md",
+      "docs/OBSERVABILITY.md"
+    ],
+    "script": [
+      "docs/AUTO-PUSH-WATCHER.md",
+      ".github/copilot-instructions.md",
+      "skills/user/opsly-bash/SKILL.md"
+    ],
+    "solucion": [
+      "docs/AUTO-PUSH-WATCHER.md"
+    ],
+    "usarlo": [
+      "docs/AUTO-PUSH-WATCHER.md",
+      "docs/GOOGLE-DRIVE-SYNC.md"
+    ],
     "watcher": [
       "docs/AUTO-PUSH-WATCHER.md"
     ],
-    "automationplan": [
-      "docs/AUTOMATION-PLAN.md"
-    ],
-    "automation": [
-      "docs/AUTOMATION-PLAN.md"
-    ],
-    "plan": [
-      "docs/AUTOMATION-PLAN.md",
+    "admin": [
+      "docs/INVITATIONS_RUNBOOK.md",
+      "docs/TROUBLESHOOTING.md",
       "docs/EXECUTION-PLAN-LOCALRANK-NOTEBOOKLM.md",
-      "docs/MASTER-PLAN-STATUS.md",
-      "docs/MASTER-PLAN.md",
+      "docs/runbooks/admin.md",
+      "docs/runbooks/frontend-audit.md",
       "docs/TEST_PLAN.md",
-      "docs/adr/ADR-008-terraform-digitalocean-plan.md"
+      "docs/PERFORMANCE_BASELINE.md",
+      "skills/user/opsly-agent-teams/SKILL.md",
+      "apps/admin/INVITATIONS_UI.md"
     ],
-    "claudeworkflowoptimization": [
+    "codigos": [
+      "docs/INVITATIONS_RUNBOOK.md"
+    ],
+    "curl": [
+      "docs/INVITATIONS_RUNBOOK.md",
+      "docs/N8N-IMPORT-GUIDE.md"
+    ],
+    "ejemplo": [
+      "docs/INVITATIONS_RUNBOOK.md"
+    ],
+    "invitaciones": [
+      "docs/INVITATIONS_RUNBOOK.md"
+    ],
+    "invitations": [
+      "docs/INVITATIONS_RUNBOOK.md",
+      "apps/admin/INVITATIONS_UI.md"
+    ],
+    "runbook": [
+      "docs/INVITATIONS_RUNBOOK.md",
+      "docs/runbooks/managed.md",
+      "docs/runbooks/admin.md",
+      "docs/runbooks/dev.md",
+      "docs/runbooks/incident.md"
+    ],
+    "troubleshooting": [
+      "docs/INVITATIONS_RUNBOOK.md",
+      "docs/TROUBLESHOOTING.md",
+      "docs/N8N-SETUP.md"
+    ],
+    "5xx": [
+      "docs/TROUBLESHOOTING.md"
+    ],
+    "atascado": [
+      "docs/TROUBLESHOOTING.md"
+    ],
+    "deploy": [
+      "docs/TROUBLESHOOTING.md",
       "docs/CLAUDE-WORKFLOW-OPTIMIZATION.md"
     ],
-    "claude": [
-      "docs/CLAUDE-WORKFLOW-OPTIMIZATION.md"
+    "domain": [
+      "docs/TROUBLESHOOTING.md"
     ],
-    "workflow": [
-      "docs/CLAUDE-WORKFLOW-OPTIMIZATION.md"
+    "plano": [
+      "docs/TROUBLESHOOTING.md"
     ],
-    "optimization": [
-      "docs/CLAUDE-WORKFLOW-OPTIMIZATION.md"
+    "portal": [
+      "docs/TROUBLESHOOTING.md",
+      "docs/FAQ.md",
+      "docs/runbooks/managed.md",
+      "docs/runbooks/frontend-audit.md",
+      "docs/PERFORMANCE_BASELINE.md",
+      "skills/user/opsly-feedback-ml/SKILL.md"
     ],
-    "coderevieworchestrator20260409": [
-      "docs/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md"
+    "responde": [
+      "docs/TROUBLESHOOTING.md"
     ],
-    "code": [
-      "docs/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md"
-    ],
-    "orchestrator": [
-      "docs/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md",
-      "docs/ORCHESTRATOR-FIXES-EXECUTION.md",
-      "docs/ORCHESTRATOR.md",
-      "docs/adr/ADR-011-event-driven-orchestrator.md"
-    ],
-    "04": [
-      "docs/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md",
-      "docs/SECURITY-MITIGATIONS-2026-04-09.md",
-      "docs/reports/audit-2026-04-07.md"
-    ],
-    "09": [
-      "docs/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md",
+    "rutas": [
+      "docs/TROUBLESHOOTING.md",
       "docs/SECURITY-MITIGATIONS-2026-04-09.md"
     ],
-    "contextbuilder": [
-      "docs/CONTEXT-BUILDER.md"
+    "stripe": [
+      "docs/TROUBLESHOOTING.md"
     ],
-    "context": [
-      "docs/CONTEXT-BUILDER.md"
+    "texto": [
+      "docs/TROUBLESHOOTING.md"
     ],
-    "builder": [
-      "docs/CONTEXT-BUILDER.md"
+    "tras": [
+      "docs/TROUBLESHOOTING.md"
     ],
-    "dopplervars": [
-      "docs/DOPPLER-VARS.md"
+    "webhooks": [
+      "docs/TROUBLESHOOTING.md",
+      "docs/TEST_PLAN.md"
     ],
-    "doppler": [
-      "docs/DOPPLER-VARS.md",
-      "docs/adr/ADR-003-doppler-secrets.md"
+    "costos": [
+      "docs/OPENCLAW-ARCHITECTURE.md"
     ],
-    "vars": [
-      "docs/DOPPLER-VARS.md"
+    "orquestacion": [
+      "docs/OPENCLAW-ARCHITECTURE.md"
     ],
-    "executionplanlocalranknotebooklm": [
+    "propuestos": [
+      "docs/OPENCLAW-ARCHITECTURE.md"
+    ],
+    "reduccion": [
+      "docs/OPENCLAW-ARCHITECTURE.md"
+    ],
+    "simplificado": [
+      "docs/OPENCLAW-ARCHITECTURE.md"
+    ],
+    "tecnicos": [
+      "docs/OPENCLAW-ARCHITECTURE.md"
+    ],
+    "already": [
+      "docs/EXECUTION-PLAN-LOCALRANK-NOTEBOOKLM.md"
+    ],
+    "block": [
+      "docs/EXECUTION-PLAN-LOCALRANK-NOTEBOOKLM.md"
+    ],
+    "cleanup": [
+      "docs/EXECUTION-PLAN-LOCALRANK-NOTEBOOKLM.md",
+      "docs/SSH-COMMANDS-LOCALRANK.md"
+    ],
+    "discord": [
+      "docs/EXECUTION-PLAN-LOCALRANK-NOTEBOOKLM.md",
+      "docs/MASTER-PLAN-STATUS.md",
+      "docs/N8N-SETUP.md",
+      "docs/N8N-IMPORT-GUIDE.md",
+      "skills/user/opsly-discord/SKILL.md"
+    ],
+    "done": [
+      "docs/EXECUTION-PLAN-LOCALRANK-NOTEBOOKLM.md"
+    ],
+    "dry": [
+      "docs/EXECUTION-PLAN-LOCALRANK-NOTEBOOKLM.md",
+      "docs/CLAUDE-WORKFLOW-OPTIMIZATION.md",
+      "docs/N8N-IMPORT-GUIDE.md"
+    ],
+    "enable": [
+      "docs/EXECUTION-PLAN-LOCALRANK-NOTEBOOKLM.md"
+    ],
+    "execute": [
       "docs/EXECUTION-PLAN-LOCALRANK-NOTEBOOKLM.md"
     ],
     "execution": [
       "docs/EXECUTION-PLAN-LOCALRANK-NOTEBOOKLM.md",
       "docs/ORCHESTRATOR-FIXES-EXECUTION.md"
     ],
+    "invitation": [
+      "docs/EXECUTION-PLAN-LOCALRANK-NOTEBOOKLM.md"
+    ],
     "localrank": [
       "docs/EXECUTION-PLAN-LOCALRANK-NOTEBOOKLM.md",
+      "docs/SSH-COMMANDS-LOCALRANK.md",
       "docs/LOCALRANK-TESTER-GUIDE.md",
+      "docs/SECURITY-MITIGATIONS-2026-04-09.md",
+      "skills/user/opsly-notebooklm/SKILL.md"
+    ],
+    "mac": [
+      "docs/EXECUTION-PLAN-LOCALRANK-NOTEBOOKLM.md",
+      "docs/SECURITY-MITIGATIONS-2026-04-09.md",
+      "docs/GOOGLE-DRIVE-SYNC.md"
+    ],
+    "notification": [
+      "docs/EXECUTION-PLAN-LOCALRANK-NOTEBOOKLM.md"
+    ],
+    "onboard": [
+      "docs/EXECUTION-PLAN-LOCALRANK-NOTEBOOKLM.md",
       "docs/SSH-COMMANDS-LOCALRANK.md"
     ],
-    "notebooklm": [
+    "prepare": [
+      "docs/EXECUTION-PLAN-LOCALRANK-NOTEBOOKLM.md"
+    ],
+    "real": [
       "docs/EXECUTION-PLAN-LOCALRANK-NOTEBOOKLM.md",
-      "docs/adr/ADR-014-notebooklm-agent.md"
+      "VISION.md",
+      ".github/VISION.md"
+    ],
+    "run": [
+      "docs/EXECUTION-PLAN-LOCALRANK-NOTEBOOKLM.md",
+      "docs/GOOGLE-CLOUD-ACTIVATION.md",
+      "docs/CLAUDE-WORKFLOW-OPTIMIZATION.md",
+      "docs/N8N-IMPORT-GUIDE.md"
+    ],
+    "send": [
+      "docs/EXECUTION-PLAN-LOCALRANK-NOTEBOOKLM.md"
+    ],
+    "setup": [
+      "docs/EXECUTION-PLAN-LOCALRANK-NOTEBOOKLM.md",
+      "docs/SSH-COMMANDS-LOCALRANK.md",
+      "docs/N8N-SETUP.md",
+      "docs/GOOGLE-CLOUD-SETUP.md",
+      "docs/SECURITY-MITIGATIONS-2026-04-09.md",
+      "README.md"
+    ],
+    "test": [
+      "docs/EXECUTION-PLAN-LOCALRANK-NOTEBOOKLM.md",
+      "docs/SSH-COMMANDS-LOCALRANK.md",
+      "docs/TEST_PLAN.md",
+      "docs/ORCHESTRATOR-FIXES-EXECUTION.md",
+      "docs/LOCALRANK-TESTER-GUIDE.md"
+    ],
+    "token": [
+      "docs/EXECUTION-PLAN-LOCALRANK-NOTEBOOKLM.md",
+      "docs/FAQ.md",
+      "skills/user/opsly-google-cloud/SKILL.md"
+    ],
+    "tonight": [
+      "docs/EXECUTION-PLAN-LOCALRANK-NOTEBOOKLM.md",
+      "docs/QA-REVIEW-COMPLETE.md",
+      "docs/ORCHESTRATOR-FIXES-EXECUTION.md",
+      "docs/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md"
+    ],
+    "verify": [
+      "docs/EXECUTION-PLAN-LOCALRANK-NOTEBOOKLM.md"
+    ],
+    "bloque": [
+      "docs/SSH-COMMANDS-LOCALRANK.md"
+    ],
+    "commands": [
+      "docs/SSH-COMMANDS-LOCALRANK.md",
+      "AGENTS.md"
+    ],
+    "copy": [
+      "docs/SSH-COMMANDS-LOCALRANK.md"
+    ],
+    "fails": [
+      "docs/SSH-COMMANDS-LOCALRANK.md"
+    ],
+    "logs": [
+      "docs/SSH-COMMANDS-LOCALRANK.md"
+    ],
+    "need": [
+      "docs/SSH-COMMANDS-LOCALRANK.md"
+    ],
+    "paste": [
+      "docs/SSH-COMMANDS-LOCALRANK.md"
+    ],
+    "something": [
+      "docs/SSH-COMMANDS-LOCALRANK.md"
+    ],
+    "verification": [
+      "docs/SSH-COMMANDS-LOCALRANK.md",
+      "docs/ORCHESTRATOR-FIXES-EXECUTION.md"
+    ],
+    "workflow": [
+      "docs/SSH-COMMANDS-LOCALRANK.md",
+      "docs/CLAUDE-WORKFLOW-OPTIMIZATION.md",
+      "docs/N8N-SETUP.md"
+    ],
+    "desarrollo": [
+      "docs/FAQ.md",
+      "docs/runbooks/dev.md"
+    ],
+    "despliego": [
+      "docs/FAQ.md"
+    ],
+    "developer": [
+      "docs/FAQ.md"
+    ],
+    "documentamos": [
+      "docs/FAQ.md"
+    ],
+    "donde": [
+      "docs/FAQ.md"
+    ],
+    "ejecuto": [
+      "docs/FAQ.md"
+    ],
+    "error": [
+      "docs/FAQ.md"
+    ],
+    "falla": [
+      "docs/FAQ.md"
     ],
     "faq": [
       "docs/FAQ.md"
     ],
-    "googlecloudactivation": [
+    "incidente": [
+      "docs/FAQ.md"
+    ],
+    "managed": [
+      "docs/FAQ.md",
+      "docs/runbooks/managed.md"
+    ],
+    "operaciones": [
+      "docs/FAQ.md",
+      "docs/runbooks/managed.md"
+    ],
+    "vivo": [
+      "docs/FAQ.md"
+    ],
+    "cliente": [
+      "docs/runbooks/managed.md",
+      "docs/PERFORMANCE_BASELINE.md",
+      "VISION.md",
+      ".github/VISION.md"
+    ],
+    "escalacion": [
+      "docs/runbooks/managed.md"
+    ],
+    "modos": [
+      "docs/runbooks/managed.md"
+    ],
+    "solicitud": [
+      "docs/runbooks/managed.md"
+    ],
+    "tipico": [
+      "docs/runbooks/managed.md"
+    ],
+    "administracion": [
+      "docs/runbooks/admin.md"
+    ],
+    "alta": [
+      "docs/runbooks/admin.md"
+    ],
+    "diario": [
+      "docs/runbooks/admin.md"
+    ],
+    "plataforma": [
+      "docs/runbooks/admin.md",
+      "docs/DOPPLER-VARS.md"
+    ],
+    "via": [
+      "docs/runbooks/admin.md"
+    ],
+    "frontend": [
+      "docs/runbooks/frontend-audit.md",
+      "apps/admin/INVITATIONS_UI.md"
+    ],
+    "hallazgos": [
+      "docs/runbooks/frontend-audit.md"
+    ],
+    "iteracion": [
+      "docs/runbooks/frontend-audit.md"
+    ],
+    "pendientes": [
+      "docs/runbooks/frontend-audit.md"
+    ],
+    "recomendados": [
+      "docs/runbooks/frontend-audit.md"
+    ],
+    "siguiente": [
+      "docs/runbooks/frontend-audit.md",
+      "docs/CLAUDE-WORKFLOW-OPTIMIZATION.md"
+    ],
+    "web": [
+      "docs/runbooks/frontend-audit.md"
+    ],
+    "arranque": [
+      "docs/runbooks/dev.md"
+    ],
+    "calidad": [
+      "docs/runbooks/dev.md"
+    ],
+    "dev": [
+      "docs/runbooks/dev.md"
+    ],
+    "hooks": [
+      "docs/runbooks/dev.md"
+    ],
+    "rapido": [
+      "docs/runbooks/dev.md",
+      "docs/LOCALRANK-TESTER-GUIDE.md",
+      "docs/VPS-ARCHITECTURE.md"
+    ],
+    "tenants": [
+      "docs/runbooks/dev.md",
+      ".github/PULL_REQUEST_TEMPLATE.md"
+    ],
+    "aplicacion": [
+      "docs/runbooks/incident.md",
+      "docs/SECURITY_CHECKLIST.md"
+    ],
+    "clasificacion": [
+      "docs/runbooks/incident.md"
+    ],
+    "comunicacion": [
+      "docs/runbooks/incident.md"
+    ],
+    "contactos": [
+      "docs/runbooks/incident.md"
+    ],
+    "diagnostico": [
+      "docs/runbooks/incident.md"
+    ],
+    "incident": [
+      "docs/runbooks/incident.md"
+    ],
+    "incidentes": [
+      "docs/runbooks/incident.md"
+    ],
+    "orden": [
+      "docs/runbooks/incident.md",
+      "docs/CLAUDE-WORKFLOW-OPTIMIZATION.md",
+      "docs/SECURITY-MITIGATIONS-2026-04-09.md",
+      ".github/AGENTS.md",
+      "AGENTS.md"
+    ],
+    "rapida": [
+      "docs/runbooks/incident.md",
+      ".github/README-github-templates.md"
+    ],
+    "rollback": [
+      "docs/runbooks/incident.md",
+      "docs/VPS-ARCHITECTURE.md"
+    ],
+    "backend": [
+      "docs/SECURITY_CHECKLIST.md"
+    ],
+    "base": [
+      "docs/SECURITY_CHECKLIST.md"
+    ],
+    "contenedores": [
+      "docs/SECURITY_CHECKLIST.md"
+    ],
+    "corta": [
+      "docs/SECURITY_CHECKLIST.md"
+    ],
+    "dependencias": [
+      "docs/SECURITY_CHECKLIST.md"
+    ],
+    "infraestructura": [
+      "docs/SECURITY_CHECKLIST.md"
+    ],
+    "red": [
+      "docs/SECURITY_CHECKLIST.md",
+      "README.md"
+    ],
+    "case": [
+      "docs/QA-REVIEW-COMPLETE.md",
+      "docs/ORCHESTRATOR-FIXES-EXECUTION.md",
+      "docs/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md"
+    ],
+    "catch": [
+      "docs/QA-REVIEW-COMPLETE.md",
+      "docs/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md"
+    ],
+    "code": [
+      "docs/QA-REVIEW-COMPLETE.md",
+      "docs/SECURITY-MITIGATIONS-2026-04-09.md",
+      "docs/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md",
+      "VISION.md",
+      ".github/VISION.md"
+    ],
+    "complete": [
+      "docs/QA-REVIEW-COMPLETE.md"
+    ],
+    "critical": [
+      "docs/QA-REVIEW-COMPLETE.md",
+      "docs/ORCHESTRATOR-FIXES-EXECUTION.md",
+      "docs/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md"
+    ],
+    "default": [
+      "docs/QA-REVIEW-COMPLETE.md",
+      "docs/ORCHESTRATOR-FIXES-EXECUTION.md",
+      "docs/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md"
+    ],
+    "documentation": [
+      "docs/QA-REVIEW-COMPLETE.md"
+    ],
+    "executive": [
+      "docs/QA-REVIEW-COMPLETE.md",
+      "docs/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md"
+    ],
+    "fetch": [
+      "docs/QA-REVIEW-COMPLETE.md",
+      "docs/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md"
+    ],
+    "fix": [
+      "docs/QA-REVIEW-COMPLETE.md",
+      "docs/ORCHESTRATOR-FIXES-EXECUTION.md",
+      "docs/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md"
+    ],
+    "important": [
+      "docs/QA-REVIEW-COMPLETE.md",
+      "docs/ORCHESTRATOR-FIXES-EXECUTION.md",
+      "docs/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md"
+    ],
+    "issues": [
+      "docs/QA-REVIEW-COMPLETE.md",
+      "docs/ORCHESTRATOR-FIXES-EXECUTION.md",
+      "docs/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md"
+    ],
+    "json": [
+      "docs/QA-REVIEW-COMPLETE.md",
+      "docs/N8N-IMPORT-GUIDE.md",
+      "docs/GOOGLE-CLOUD-SETUP.md",
+      "docs/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md"
+    ],
+    "missing": [
+      "docs/QA-REVIEW-COMPLETE.md",
+      "docs/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md"
+    ],
+    "must": [
+      "docs/QA-REVIEW-COMPLETE.md"
+    ],
+    "parse": [
+      "docs/QA-REVIEW-COMPLETE.md",
+      "docs/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md"
+    ],
+    "path": [
+      "docs/QA-REVIEW-COMPLETE.md"
+    ],
+    "provided": [
+      "docs/QA-REVIEW-COMPLETE.md"
+    ],
+    "ready": [
+      "docs/QA-REVIEW-COMPLETE.md"
+    ],
+    "summary": [
+      "docs/QA-REVIEW-COMPLETE.md",
+      "docs/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md"
+    ],
+    "switch": [
+      "docs/QA-REVIEW-COMPLETE.md",
+      "docs/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md"
+    ],
+    "this": [
+      "docs/QA-REVIEW-COMPLETE.md",
+      "docs/ORCHESTRATOR-FIXES-EXECUTION.md",
+      "docs/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md"
+    ],
+    "timeout": [
+      "docs/QA-REVIEW-COMPLETE.md",
+      "docs/ORCHESTRATOR-FIXES-EXECUTION.md",
+      "docs/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md"
+    ],
+    "try": [
+      "docs/QA-REVIEW-COMPLETE.md",
+      "docs/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md"
+    ],
+    "use": [
+      "docs/QA-REVIEW-COMPLETE.md"
+    ],
+    "week": [
+      "docs/QA-REVIEW-COMPLETE.md",
+      "docs/ORCHESTRATOR-FIXES-EXECUTION.md",
+      "docs/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md"
+    ],
+    "well": [
+      "docs/QA-REVIEW-COMPLETE.md"
+    ],
+    "what": [
+      "docs/QA-REVIEW-COMPLETE.md"
+    ],
+    "without": [
+      "docs/QA-REVIEW-COMPLETE.md",
+      "docs/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md"
+    ],
+    "work": [
+      "docs/QA-REVIEW-COMPLETE.md",
+      "docs/ORCHESTRATOR-FIXES-EXECUTION.md",
+      "docs/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md"
+    ],
+    "working": [
+      "docs/QA-REVIEW-COMPLETE.md"
+    ],
+    "otros": [
+      "docs/DOPPLER-VARS.md"
+    ],
+    "vars": [
+      "docs/DOPPLER-VARS.md"
+    ],
+    "activacion": [
       "docs/GOOGLE-CLOUD-ACTIVATION.md"
     ],
-    "google": [
-      "docs/GOOGLE-CLOUD-ACTIVATION.md",
-      "docs/GOOGLE-CLOUD-SETUP.md",
-      "docs/GOOGLE-DRIVE-SYNC.md",
-      "docs/adr/ADR-013-google-cloud-openSource-strategy.md"
-    ],
-    "cloud": [
-      "docs/GOOGLE-CLOUD-ACTIVATION.md",
-      "docs/GOOGLE-CLOUD-SETUP.md",
-      "docs/adr/ADR-013-google-cloud-openSource-strategy.md"
+    "activar": [
+      "docs/GOOGLE-CLOUD-ACTIVATION.md"
     ],
     "activation": [
       "docs/GOOGLE-CLOUD-ACTIVATION.md"
     ],
-    "googlecloudsetup": [
-      "docs/GOOGLE-CLOUD-SETUP.md"
+    "bigquery": [
+      "docs/GOOGLE-CLOUD-ACTIVATION.md",
+      "docs/MASTER-PLAN-STATUS.md"
     ],
-    "setup": [
+    "billing": [
+      "docs/GOOGLE-CLOUD-ACTIVATION.md",
+      "docs/TEST_PLAN.md",
       "docs/GOOGLE-CLOUD-SETUP.md",
-      "docs/N8N-SETUP.md"
+      "skills/user/opsly-google-cloud/SKILL.md"
     ],
-    "googledrivesync": [
+    "cristian": [
+      "docs/GOOGLE-CLOUD-ACTIVATION.md",
       "docs/GOOGLE-DRIVE-SYNC.md"
+    ],
+    "free": [
+      "docs/GOOGLE-CLOUD-ACTIVATION.md"
+    ],
+    "mes": [
+      "docs/GOOGLE-CLOUD-ACTIVATION.md"
+    ],
+    "necesitamos": [
+      "docs/GOOGLE-CLOUD-ACTIVATION.md"
+    ],
+    "nuevas": [
+      "docs/GOOGLE-CLOUD-ACTIVATION.md"
+    ],
+    "primero": [
+      "docs/GOOGLE-CLOUD-ACTIVATION.md"
+    ],
+    "semana": [
+      "docs/GOOGLE-CLOUD-ACTIVATION.md",
+      "docs/LOCALRANK-TESTER-GUIDE.md",
+      "docs/SECURITY-MITIGATIONS-2026-04-09.md"
+    ],
+    "speech": [
+      "docs/GOOGLE-CLOUD-ACTIVATION.md"
+    ],
+    "text": [
+      "docs/GOOGLE-CLOUD-ACTIVATION.md"
+    ],
+    "tier": [
+      "docs/GOOGLE-CLOUD-ACTIVATION.md"
+    ],
+    "usa": [
+      "docs/GOOGLE-CLOUD-ACTIVATION.md"
+    ],
+    "vertex": [
+      "docs/GOOGLE-CLOUD-ACTIVATION.md"
+    ],
+    "vision": [
+      "docs/GOOGLE-CLOUD-ACTIVATION.md",
+      "VISION.md",
+      ".github/VISION.md"
+    ],
+    "dashboard": [
+      "docs/TEST_PLAN.md",
+      "docs/OBSERVABILITY.md"
+    ],
+    "endpoints": [
+      "docs/TEST_PLAN.md",
+      "docs/OBSERVABILITY.md"
+    ],
+    "restore": [
+      "docs/TEST_PLAN.md"
+    ],
+    "resume": [
+      "docs/TEST_PLAN.md"
+    ],
+    "suspend": [
+      "docs/TEST_PLAN.md"
+    ],
+    "activos": [
+      "docs/MASTER-PLAN-STATUS.md",
+      "docs/MASTER-PLAN.md"
+    ],
+    "actualizacion": [
+      "docs/MASTER-PLAN-STATUS.md",
+      "docs/MASTER-PLAN.md"
+    ],
+    "bloqueantes": [
+      "docs/MASTER-PLAN-STATUS.md",
+      "docs/CLAUDE-WORKFLOW-OPTIMIZATION.md",
+      "docs/MASTER-PLAN.md"
     ],
     "drive": [
+      "docs/MASTER-PLAN-STATUS.md",
+      "docs/GOOGLE-CLOUD-SETUP.md",
       "docs/GOOGLE-DRIVE-SYNC.md"
     ],
-    "sync": [
-      "docs/GOOGLE-DRIVE-SYNC.md"
-    ],
-    "invitationsrunbook": [
-      "docs/INVITATIONS_RUNBOOK.md"
-    ],
-    "invitations": [
-      "docs/INVITATIONS_RUNBOOK.md"
-    ],
-    "runbook": [
-      "docs/INVITATIONS_RUNBOOK.md"
-    ],
-    "librariesinstalled": [
-      "docs/LIBRARIES-INSTALLED.md"
-    ],
-    "libraries": [
-      "docs/LIBRARIES-INSTALLED.md"
-    ],
-    "installed": [
-      "docs/LIBRARIES-INSTALLED.md"
-    ],
-    "llmgateway": [
-      "docs/LLM-GATEWAY.md"
-    ],
-    "llm": [
-      "docs/LLM-GATEWAY.md",
-      "docs/adr/ADR-010-llm-gateway.md"
-    ],
-    "gateway": [
-      "docs/LLM-GATEWAY.md",
-      "docs/adr/ADR-010-llm-gateway.md"
-    ],
-    "localranktesterguide": [
-      "docs/LOCALRANK-TESTER-GUIDE.md"
-    ],
-    "tester": [
-      "docs/LOCALRANK-TESTER-GUIDE.md"
-    ],
-    "masterplanstatus": [
+    "hecho": [
       "docs/MASTER-PLAN-STATUS.md"
+    ],
+    "inmediato": [
+      "docs/MASTER-PLAN-STATUS.md",
+      "docs/MASTER-PLAN.md"
     ],
     "master": [
       "docs/MASTER-PLAN-STATUS.md",
       "docs/MASTER-PLAN.md"
     ],
+    "paso": [
+      "docs/MASTER-PLAN-STATUS.md",
+      "docs/MASTER-PLAN.md"
+    ],
+    "proximo": [
+      "docs/MASTER-PLAN-STATUS.md",
+      "docs/MASTER-PLAN.md"
+    ],
+    "recientemente": [
+      "docs/MASTER-PLAN-STATUS.md"
+    ],
     "status": [
       "docs/MASTER-PLAN-STATUS.md"
     ],
-    "masterplan": [
+    "ultima": [
+      "docs/MASTER-PLAN-STATUS.md",
       "docs/MASTER-PLAN.md"
     ],
-    "n8nimportguide": [
-      "docs/N8N-IMPORT-GUIDE.md"
+    "buscar": [
+      "docs/CLAUDE-WORKFLOW-OPTIMIZATION.md"
     ],
-    "n8n": [
+    "cargar": [
+      "docs/CLAUDE-WORKFLOW-OPTIMIZATION.md",
+      "docs/GOOGLE-CLOUD-SETUP.md"
+    ],
+    "commit": [
+      "docs/CLAUDE-WORKFLOW-OPTIMIZATION.md",
+      "docs/ORCHESTRATOR-FIXES-EXECUTION.md"
+    ],
+    "concreta": [
+      "docs/CLAUDE-WORKFLOW-OPTIMIZATION.md"
+    ],
+    "documentar": [
+      "docs/CLAUDE-WORKFLOW-OPTIMIZATION.md"
+    ],
+    "estrictos": [
+      "docs/CLAUDE-WORKFLOW-OPTIMIZATION.md"
+    ],
+    "explicito": [
+      "docs/CLAUDE-WORKFLOW-OPTIMIZATION.md"
+    ],
+    "fallidas": [
+      "docs/CLAUDE-WORKFLOW-OPTIMIZATION.md"
+    ],
+    "fijo": [
+      "docs/CLAUDE-WORKFLOW-OPTIMIZATION.md"
+    ],
+    "grandes": [
+      "docs/CLAUDE-WORKFLOW-OPTIMIZATION.md"
+    ],
+    "handoff": [
+      "docs/CLAUDE-WORKFLOW-OPTIMIZATION.md"
+    ],
+    "herramientas": [
+      "docs/CLAUDE-WORKFLOW-OPTIMIZATION.md"
+    ],
+    "hipotesis": [
+      "docs/CLAUDE-WORKFLOW-OPTIMIZATION.md"
+    ],
+    "leer": [
+      "docs/CLAUDE-WORKFLOW-OPTIMIZATION.md"
+    ],
+    "mantener": [
+      "docs/CLAUDE-WORKFLOW-OPTIMIZATION.md"
+    ],
+    "momento": [
+      "docs/CLAUDE-WORKFLOW-OPTIMIZATION.md"
+    ],
+    "nueva": [
+      "docs/CLAUDE-WORKFLOW-OPTIMIZATION.md"
+    ],
+    "optimizacion": [
+      "docs/CLAUDE-WORKFLOW-OPTIMIZATION.md"
+    ],
+    "optimization": [
+      "docs/CLAUDE-WORKFLOW-OPTIMIZATION.md"
+    ],
+    "paralelizar": [
+      "docs/CLAUDE-WORKFLOW-OPTIMIZATION.md"
+    ],
+    "sea": [
+      "docs/CLAUDE-WORKFLOW-OPTIMIZATION.md"
+    ],
+    "solo": [
+      "docs/CLAUDE-WORKFLOW-OPTIMIZATION.md",
+      "docs/MASTER-PLAN.md",
+      ".github/PULL_REQUEST_TEMPLATE.md",
+      "skills/user/opsly-feedback-ml/SKILL.md",
+      "apps/admin/INVITATIONS_UI.md"
+    ],
+    "tipos": [
+      "docs/CLAUDE-WORKFLOW-OPTIMIZATION.md",
+      "skills/user/opsly-discord/SKILL.md"
+    ],
+    "tocar": [
+      "docs/CLAUDE-WORKFLOW-OPTIMIZATION.md"
+    ],
+    "validar": [
+      "docs/CLAUDE-WORKFLOW-OPTIMIZATION.md"
+    ],
+    "dispatch": [
+      "docs/N8N-SETUP.md"
+    ],
+    "github": [
+      "docs/N8N-SETUP.md",
       "docs/N8N-IMPORT-GUIDE.md",
+      ".github/copilot-instructions.md",
+      ".github/README-github-templates.md"
+    ],
+    "menciones": [
       "docs/N8N-SETUP.md"
     ],
-    "import": [
+    "prerrequisitos": [
+      "docs/N8N-SETUP.md"
+    ],
+    "webhook": [
+      "docs/N8N-SETUP.md",
       "docs/N8N-IMPORT-GUIDE.md"
     ],
-    "n8nsetup": [
-      "docs/N8N-SETUP.md"
+    "add": [
+      "docs/ORCHESTRATOR-FIXES-EXECUTION.md"
     ],
-    "observability": [
-      "docs/OBSERVABILITY.md",
-      "docs/adr/ADR-012-observability.md"
+    "after": [
+      "docs/ORCHESTRATOR-FIXES-EXECUTION.md"
     ],
-    "openclawarchitecture": [
-      "docs/OPENCLAW-ARCHITECTURE.md"
+    "array": [
+      "docs/ORCHESTRATOR-FIXES-EXECUTION.md",
+      "docs/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md"
     ],
-    "openclaw": [
-      "docs/OPENCLAW-ARCHITECTURE.md",
-      "docs/adr/ADR-009-openclaw-mcp-architecture.md"
+    "behavior": [
+      "docs/ORCHESTRATOR-FIXES-EXECUTION.md"
     ],
-    "orchestratorfixesexecution": [
+    "console": [
+      "docs/ORCHESTRATOR-FIXES-EXECUTION.md"
+    ],
+    "estimate": [
       "docs/ORCHESTRATOR-FIXES-EXECUTION.md"
     ],
     "fixes": [
       "docs/ORCHESTRATOR-FIXES-EXECUTION.md"
     ],
-    "performancebaseline": [
-      "docs/PERFORMANCE_BASELINE.md"
+    "healthchecks": [
+      "docs/ORCHESTRATOR-FIXES-EXECUTION.md",
+      "docs/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md"
     ],
-    "performance": [
-      "docs/PERFORMANCE_BASELINE.md"
+    "hour": [
+      "docs/ORCHESTRATOR-FIXES-EXECUTION.md"
     ],
-    "baseline": [
-      "docs/PERFORMANCE_BASELINE.md"
+    "locally": [
+      "docs/ORCHESTRATOR-FIXES-EXECUTION.md"
     ],
-    "qareviewcomplete": [
-      "docs/QA-REVIEW-COMPLETE.md"
+    "logger": [
+      "docs/ORCHESTRATOR-FIXES-EXECUTION.md"
     ],
-    "qa": [
-      "docs/QA-REVIEW-COMPLETE.md"
+    "map": [
+      "docs/ORCHESTRATOR-FIXES-EXECUTION.md"
     ],
-    "complete": [
-      "docs/QA-REVIEW-COMPLETE.md"
+    "optional": [
+      "docs/ORCHESTRATOR-FIXES-EXECUTION.md"
     ],
-    "refactorchecklist": [
+    "quick": [
+      "docs/ORCHESTRATOR-FIXES-EXECUTION.md",
+      "AGENTS.md"
+    ],
+    "replace": [
+      "docs/ORCHESTRATOR-FIXES-EXECUTION.md"
+    ],
+    "that": [
+      "docs/ORCHESTRATOR-FIXES-EXECUTION.md"
+    ],
+    "time": [
+      "docs/ORCHESTRATOR-FIXES-EXECUTION.md"
+    ],
+    "with": [
+      "docs/ORCHESTRATOR-FIXES-EXECUTION.md"
+    ],
+    "yml": [
+      "docs/ORCHESTRATOR-FIXES-EXECUTION.md"
+    ],
+    "active": [
+      "docs/ACTIVE-PROMPT.md",
+      "docs/N8N-IMPORT-GUIDE.md"
+    ],
+    "adivinar": [
+      "docs/N8N-IMPORT-GUIDE.md"
+    ],
+    "autodiagnostico": [
+      "docs/N8N-IMPORT-GUIDE.md"
+    ],
+    "checks": [
+      "docs/N8N-IMPORT-GUIDE.md"
+    ],
+    "configurar": [
+      "docs/N8N-IMPORT-GUIDE.md",
+      "skills/user/opsly-google-cloud/SKILL.md"
+    ],
+    "confirm": [
+      "docs/N8N-IMPORT-GUIDE.md"
+    ],
+    "import": [
+      "docs/N8N-IMPORT-GUIDE.md"
+    ],
+    "nodo": [
+      "docs/N8N-IMPORT-GUIDE.md"
+    ],
+    "nodos": [
+      "docs/N8N-IMPORT-GUIDE.md"
+    ],
+    "notify": [
+      "docs/N8N-IMPORT-GUIDE.md"
+    ],
+    "obligatorios": [
+      "docs/N8N-IMPORT-GUIDE.md"
+    ],
+    "obtener": [
+      "docs/N8N-IMPORT-GUIDE.md",
+      "skills/user/opsly-google-cloud/SKILL.md"
+    ],
+    "payload": [
+      "docs/N8N-IMPORT-GUIDE.md"
+    ],
+    "pre": [
+      "docs/N8N-IMPORT-GUIDE.md"
+    ],
+    "probar": [
+      "docs/N8N-IMPORT-GUIDE.md",
+      "docs/LOCALRANK-TESTER-GUIDE.md",
+      ".github/PULL_REQUEST_TEMPLATE.md"
+    ],
+    "salida": [
+      "docs/N8N-IMPORT-GUIDE.md",
+      "docs/REFACTOR-CHECKLIST.md"
+    ],
+    "sha": [
+      "docs/N8N-IMPORT-GUIDE.md"
+    ],
+    "update": [
+      "docs/N8N-IMPORT-GUIDE.md"
+    ],
+    "url": [
+      "docs/N8N-IMPORT-GUIDE.md"
+    ],
+    "acceso": [
+      "docs/LOCALRANK-TESTER-GUIDE.md",
+      "README.md"
+    ],
+    "automatizaciones": [
+      "docs/LOCALRANK-TESTER-GUIDE.md"
+    ],
+    "basico": [
+      "docs/LOCALRANK-TESTER-GUIDE.md"
+    ],
+    "beta": [
+      "docs/LOCALRANK-TESTER-GUIDE.md"
+    ],
+    "bienvenido": [
+      "docs/LOCALRANK-TESTER-GUIDE.md"
+    ],
+    "contacto": [
+      "docs/LOCALRANK-TESTER-GUIDE.md"
+    ],
+    "dar": [
+      "docs/LOCALRANK-TESTER-GUIDE.md"
+    ],
+    "dia": [
+      "docs/LOCALRANK-TESTER-GUIDE.md"
+    ],
+    "feedback": [
+      "docs/LOCALRANK-TESTER-GUIDE.md",
+      "skills/user/opsly-feedback-ml/SKILL.md"
+    ],
+    "generacion": [
+      "docs/LOCALRANK-TESTER-GUIDE.md"
+    ],
+    "smoke": [
+      "docs/LOCALRANK-TESTER-GUIDE.md"
+    ],
+    "tus": [
+      "docs/LOCALRANK-TESTER-GUIDE.md"
+    ],
+    "alcance": [
+      "docs/REFACTOR-CHECKLIST.md"
+    ],
+    "aplicado": [
+      "docs/REFACTOR-CHECKLIST.md"
+    ],
+    "manuales": [
+      "docs/REFACTOR-CHECKLIST.md"
+    ],
+    "monorepo": [
+      "docs/REFACTOR-CHECKLIST.md",
+      "docs/MASTER-PLAN.md",
+      "apps/agents/notebooklm/README.md"
+    ],
+    "owner": [
+      "docs/REFACTOR-CHECKLIST.md"
+    ],
+    "readiness": [
       "docs/REFACTOR-CHECKLIST.md"
     ],
     "refactor": [
       "docs/REFACTOR-CHECKLIST.md"
     ],
-    "checklist": [
-      "docs/REFACTOR-CHECKLIST.md",
-      "docs/SECURITY_CHECKLIST.md"
+    "verificaciones": [
+      "docs/REFACTOR-CHECKLIST.md"
     ],
-    "securitymitigations20260409": [
+    "consultas": [
+      "docs/OBSERVABILITY.md"
+    ],
+    "esquema": [
+      "docs/OBSERVABILITY.md"
+    ],
+    "grafana": [
+      "docs/OBSERVABILITY.md"
+    ],
+    "host": [
+      "docs/OBSERVABILITY.md",
+      "docs/PERFORMANCE_BASELINE.md"
+    ],
+    "instant": [
+      "docs/OBSERVABILITY.md"
+    ],
+    "integracion": [
+      "docs/OBSERVABILITY.md"
+    ],
+    "interna": [
+      "docs/OBSERVABILITY.md"
+    ],
+    "paneles": [
+      "docs/OBSERVABILITY.md"
+    ],
+    "prometheus": [
+      "docs/OBSERVABILITY.md",
+      "docs/PERFORMANCE_BASELINE.md"
+    ],
+    "promql": [
+      "docs/OBSERVABILITY.md"
+    ],
+    "query": [
+      "docs/OBSERVABILITY.md"
+    ],
+    "sugeridas": [
+      "docs/OBSERVABILITY.md"
+    ],
+    "account": [
+      "docs/GOOGLE-CLOUD-SETUP.md",
+      "skills/user/opsly-google-cloud/SKILL.md"
+    ],
+    "adc": [
+      "docs/GOOGLE-CLOUD-SETUP.md"
+    ],
+    "apis": [
+      "docs/GOOGLE-CLOUD-SETUP.md",
+      "skills/user/opsly-google-cloud/SKILL.md"
+    ],
+    "carpeta": [
+      "docs/GOOGLE-CLOUD-SETUP.md"
+    ],
+    "compartida": [
+      "docs/GOOGLE-CLOUD-SETUP.md"
+    ],
+    "habilitadas": [
+      "docs/GOOGLE-CLOUD-SETUP.md"
+    ],
+    "pegar": [
+      "docs/GOOGLE-CLOUD-SETUP.md"
+    ],
+    "service": [
+      "docs/GOOGLE-CLOUD-SETUP.md",
+      "skills/user/opsly-google-cloud/SKILL.md"
+    ],
+    "suele": [
+      "docs/GOOGLE-CLOUD-SETUP.md"
+    ],
+    "sync": [
+      "docs/GOOGLE-CLOUD-SETUP.md",
+      "docs/GOOGLE-DRIVE-SYNC.md"
+    ],
+    "truncar": [
+      "docs/GOOGLE-CLOUD-SETUP.md"
+    ],
+    "unidad": [
+      "docs/GOOGLE-CLOUD-SETUP.md"
+    ],
+    "automatizada": [
+      "docs/VPS-ARCHITECTURE.md"
+    ],
+    "corriendo": [
+      "docs/VPS-ARCHITECTURE.md"
+    ],
+    "dragon": [
+      "docs/VPS-ARCHITECTURE.md"
+    ],
+    "edge": [
+      "docs/VPS-ARCHITECTURE.md"
+    ],
+    "lair": [
+      "docs/VPS-ARCHITECTURE.md"
+    ],
+    "migracion": [
+      "docs/VPS-ARCHITECTURE.md"
+    ],
+    "redes": [
+      "docs/VPS-ARCHITECTURE.md"
+    ],
+    "stacks": [
+      "docs/VPS-ARCHITECTURE.md"
+    ],
+    "utiles": [
+      "docs/VPS-ARCHITECTURE.md",
+      "README.md"
+    ],
+    "aplicar": [
+      "docs/SECURITY-MITIGATIONS-2026-04-09.md"
+    ],
+    "criticas": [
+      "docs/SECURITY-MITIGATIONS-2026-04-09.md",
+      "skills/user/opsly-tenant/SKILL.md"
+    ],
+    "importantes": [
       "docs/SECURITY-MITIGATIONS-2026-04-09.md"
     ],
     "mitigations": [
       "docs/SECURITY-MITIGATIONS-2026-04-09.md"
     ],
-    "securityauditreport": [
-      "docs/SECURITY_AUDIT_REPORT.md"
+    "opcionales": [
+      "docs/SECURITY-MITIGATIONS-2026-04-09.md",
+      "docs/MASTER-PLAN.md"
     ],
-    "audit": [
-      "docs/SECURITY_AUDIT_REPORT.md",
-      "docs/reports/audit-2026-04-07.md",
-      "docs/runbooks/frontend-audit.md"
+    "owasp": [
+      "docs/SECURITY-MITIGATIONS-2026-04-09.md"
     ],
-    "report": [
-      "docs/SECURITY_AUDIT_REPORT.md"
+    "pilot": [
+      "docs/SECURITY-MITIGATIONS-2026-04-09.md"
     ],
-    "securitychecklist": [
-      "docs/SECURITY_CHECKLIST.md"
+    "post": [
+      "docs/SECURITY-MITIGATIONS-2026-04-09.md"
     ],
-    "sshcommandslocalrank": [
-      "docs/SSH-COMMANDS-LOCALRANK.md"
+    "smiletripcare": [
+      "docs/SECURITY-MITIGATIONS-2026-04-09.md",
+      "VISION.md",
+      ".github/VISION.md"
     ],
-    "ssh": [
-      "docs/SSH-COMMANDS-LOCALRANK.md"
+    "zap": [
+      "docs/SECURITY-MITIGATIONS-2026-04-09.md"
     ],
-    "commands": [
-      "docs/SSH-COMMANDS-LOCALRANK.md"
+    "async": [
+      "docs/LIBRARIES-INSTALLED.md"
     ],
-    "testplan": [
-      "docs/TEST_PLAN.md"
+    "authentication": [
+      "docs/LIBRARIES-INSTALLED.md"
     ],
-    "test": [
-      "docs/TEST_PLAN.md"
+    "categoria": [
+      "docs/LIBRARIES-INSTALLED.md"
     ],
-    "troubleshooting": [
-      "docs/TROUBLESHOOTING.md"
+    "database": [
+      "docs/LIBRARIES-INSTALLED.md"
     ],
-    "vpsarchitecture": [
-      "docs/VPS-ARCHITECTURE.md"
+    "ecosystem": [
+      "docs/LIBRARIES-INSTALLED.md"
     ],
-    "vps": [
-      "docs/VPS-ARCHITECTURE.md"
+    "frameworks": [
+      "docs/LIBRARIES-INSTALLED.md"
     ],
-    "adr001dockercomposeportenant": [
-      "docs/adr/ADR-001-docker-compose-por-tenant.md"
+    "global": [
+      "docs/LIBRARIES-INSTALLED.md"
     ],
-    "adr": [
-      "docs/adr/ADR-001-docker-compose-por-tenant.md",
-      "docs/adr/ADR-002-traefik-sobre-nginx.md",
-      "docs/adr/ADR-003-doppler-secrets.md",
-      "docs/adr/ADR-004-supabase-schema-por-tenant.md",
-      "docs/adr/ADR-005-traefik-v3-1-docker-api.md",
-      "docs/adr/ADR-006-api-testing-vitest.md",
-      "docs/adr/ADR-007-runbooks-y-documentacion-operativa.md",
-      "docs/adr/ADR-008-terraform-digitalocean-plan.md",
-      "docs/adr/ADR-009-openclaw-mcp-architecture.md",
-      "docs/adr/ADR-010-llm-gateway.md",
-      "docs/adr/ADR-011-event-driven-orchestrator.md",
-      "docs/adr/ADR-012-observability.md",
-      "docs/adr/ADR-013-google-cloud-openSource-strategy.md",
-      "docs/adr/ADR-014-notebooklm-agent.md"
+    "instaladas": [
+      "docs/LIBRARIES-INSTALLED.md"
     ],
-    "001": [
-      "docs/adr/ADR-001-docker-compose-por-tenant.md"
+    "installed": [
+      "docs/LIBRARIES-INSTALLED.md"
     ],
-    "docker": [
-      "docs/adr/ADR-001-docker-compose-por-tenant.md",
-      "docs/adr/ADR-005-traefik-v3-1-docker-api.md"
+    "libraries": [
+      "docs/LIBRARIES-INSTALLED.md"
     ],
-    "compose": [
-      "docs/adr/ADR-001-docker-compose-por-tenant.md"
+    "librerias": [
+      "docs/LIBRARIES-INSTALLED.md"
     ],
-    "por": [
-      "docs/adr/ADR-001-docker-compose-por-tenant.md",
-      "docs/adr/ADR-004-supabase-schema-por-tenant.md"
+    "notifications": [
+      "docs/LIBRARIES-INSTALLED.md",
+      "skills/user/opsly-discord/SKILL.md"
     ],
-    "tenant": [
-      "docs/adr/ADR-001-docker-compose-por-tenant.md",
-      "docs/adr/ADR-004-supabase-schema-por-tenant.md"
+    "payments": [
+      "docs/LIBRARIES-INSTALLED.md"
     ],
-    "adr002traefiksobrenginx": [
-      "docs/adr/ADR-002-traefik-sobre-nginx.md"
+    "queuing": [
+      "docs/LIBRARIES-INSTALLED.md"
     ],
-    "002": [
-      "docs/adr/ADR-002-traefik-sobre-nginx.md"
+    "runtimes": [
+      "docs/LIBRARIES-INSTALLED.md"
     ],
-    "traefik": [
-      "docs/adr/ADR-002-traefik-sobre-nginx.md",
-      "docs/adr/ADR-005-traefik-v3-1-docker-api.md"
+    "safety": [
+      "docs/LIBRARIES-INSTALLED.md"
     ],
-    "sobre": [
-      "docs/adr/ADR-002-traefik-sobre-nginx.md"
+    "styling": [
+      "docs/LIBRARIES-INSTALLED.md"
     ],
-    "nginx": [
-      "docs/adr/ADR-002-traefik-sobre-nginx.md"
+    "type": [
+      "docs/LIBRARIES-INSTALLED.md"
     ],
-    "adr003dopplersecrets": [
-      "docs/adr/ADR-003-doppler-secrets.md"
+    "utilities": [
+      "docs/LIBRARIES-INSTALLED.md"
     ],
-    "003": [
-      "docs/adr/ADR-003-doppler-secrets.md"
+    "validation": [
+      "docs/LIBRARIES-INSTALLED.md",
+      "docs/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md"
     ],
-    "secrets": [
-      "docs/adr/ADR-003-doppler-secrets.md"
+    "adelante": [
+      "docs/MASTER-PLAN.md"
     ],
-    "adr004supabaseschemaportenant": [
-      "docs/adr/ADR-004-supabase-schema-por-tenant.md"
+    "anadir": [
+      "docs/MASTER-PLAN.md"
     ],
-    "004": [
-      "docs/adr/ADR-004-supabase-schema-por-tenant.md"
+    "core": [
+      "docs/MASTER-PLAN.md",
+      "VISION.md",
+      ".github/VISION.md"
     ],
-    "supabase": [
-      "docs/adr/ADR-004-supabase-schema-por-tenant.md"
+    "cubierto": [
+      "docs/MASTER-PLAN.md"
     ],
-    "schema": [
-      "docs/adr/ADR-004-supabase-schema-por-tenant.md"
+    "defecto": [
+      "docs/MASTER-PLAN.md"
     ],
-    "adr005traefikv31dockerapi": [
-      "docs/adr/ADR-005-traefik-v3-1-docker-api.md"
+    "diseno": [
+      "docs/MASTER-PLAN.md",
+      ".github/copilot-instructions.md"
     ],
-    "005": [
-      "docs/adr/ADR-005-traefik-v3-1-docker-api.md"
+    "duplicar": [
+      "docs/MASTER-PLAN.md",
+      ".github/AGENTS.md",
+      "AGENTS.md"
     ],
-    "v3": [
-      "docs/adr/ADR-005-traefik-v3-1-docker-api.md"
+    "ejecutivo": [
+      "docs/MASTER-PLAN.md"
     ],
-    "api": [
-      "docs/adr/ADR-005-traefik-v3-1-docker-api.md",
-      "docs/adr/ADR-006-api-testing-vitest.md"
+    "falta": [
+      "docs/MASTER-PLAN.md"
     ],
-    "adr006apitestingvitest": [
-      "docs/adr/ADR-006-api-testing-vitest.md"
+    "integrado": [
+      "docs/MASTER-PLAN.md"
     ],
-    "006": [
-      "docs/adr/ADR-006-api-testing-vitest.md"
+    "integrar": [
+      "docs/MASTER-PLAN.md",
+      "docs/CONTEXT-BUILDER.md"
     ],
-    "testing": [
-      "docs/adr/ADR-006-api-testing-vitest.md"
+    "mas": [
+      "docs/MASTER-PLAN.md"
     ],
-    "vitest": [
-      "docs/adr/ADR-006-api-testing-vitest.md"
+    "nada": [
+      "docs/MASTER-PLAN.md"
     ],
-    "adr007runbooksydocumentacionoperativa": [
-      "docs/adr/ADR-007-runbooks-y-documentacion-operativa.md"
+    "necesario": [
+      "docs/MASTER-PLAN.md"
     ],
-    "007": [
-      "docs/adr/ADR-007-runbooks-y-documentacion-operativa.md"
+    "nombre": [
+      "docs/MASTER-PLAN.md"
     ],
-    "runbooks": [
-      "docs/adr/ADR-007-runbooks-y-documentacion-operativa.md"
+    "numero": [
+      "docs/MASTER-PLAN.md"
     ],
-    "documentacion": [
-      "docs/adr/ADR-007-runbooks-y-documentacion-operativa.md"
+    "romper": [
+      "docs/MASTER-PLAN.md"
     ],
-    "operativa": [
-      "docs/adr/ADR-007-runbooks-y-documentacion-operativa.md"
+    "sistema": [
+      "docs/MASTER-PLAN.md"
     ],
-    "adr008terraformdigitaloceanplan": [
-      "docs/adr/ADR-008-terraform-digitalocean-plan.md"
+    "toque": [
+      "docs/MASTER-PLAN.md"
     ],
-    "008": [
-      "docs/adr/ADR-008-terraform-digitalocean-plan.md"
+    "util": [
+      "docs/MASTER-PLAN.md"
     ],
-    "terraform": [
-      "docs/adr/ADR-008-terraform-digitalocean-plan.md"
+    "actualizar": [
+      "docs/GOOGLE-DRIVE-SYNC.md"
     ],
-    "digitalocean": [
-      "docs/adr/ADR-008-terraform-digitalocean-plan.md"
+    "compartido": [
+      "docs/GOOGLE-DRIVE-SYNC.md"
     ],
-    "adr009openclawmcparchitecture": [
-      "docs/adr/ADR-009-openclaw-mcp-architecture.md"
+    "copiar": [
+      "docs/GOOGLE-DRIVE-SYNC.md"
     ],
-    "009": [
-      "docs/adr/ADR-009-openclaw-mcp-architecture.md"
+    "espejo": [
+      "docs/GOOGLE-DRIVE-SYNC.md"
     ],
-    "mcp": [
-      "docs/adr/ADR-009-openclaw-mcp-architecture.md"
+    "instrucciones": [
+      "docs/GOOGLE-DRIVE-SYNC.md",
+      ".github/copilot-instructions.md"
     ],
-    "adr010llmgateway": [
-      "docs/adr/ADR-010-llm-gateway.md"
+    "link": [
+      "docs/GOOGLE-DRIVE-SYNC.md"
     ],
-    "010": [
-      "docs/adr/ADR-010-llm-gateway.md"
+    "lista": [
+      "docs/GOOGLE-DRIVE-SYNC.md"
     ],
-    "adr011eventdrivenorchestrator": [
-      "docs/adr/ADR-011-event-driven-orchestrator.md"
+    "navegador": [
+      "docs/GOOGLE-DRIVE-SYNC.md"
     ],
-    "011": [
-      "docs/adr/ADR-011-event-driven-orchestrator.md"
+    "puede": [
+      "docs/GOOGLE-DRIVE-SYNC.md"
     ],
-    "event": [
-      "docs/adr/ADR-011-event-driven-orchestrator.md"
+    "baseline": [
+      "docs/PERFORMANCE_BASELINE.md"
     ],
-    "driven": [
-      "docs/adr/ADR-011-event-driven-orchestrator.md"
+    "exporter": [
+      "docs/PERFORMANCE_BASELINE.md"
     ],
-    "adr012observability": [
-      "docs/adr/ADR-012-observability.md"
+    "fases": [
+      "docs/PERFORMANCE_BASELINE.md"
     ],
-    "012": [
-      "docs/adr/ADR-012-observability.md"
+    "handlers": [
+      "docs/PERFORMANCE_BASELINE.md",
+      "skills/user/opsly-api/SKILL.md"
     ],
-    "adr013googlecloudopensourcestrategy": [
-      "docs/adr/ADR-013-google-cloud-openSource-strategy.md"
+    "historial": [
+      "docs/PERFORMANCE_BASELINE.md"
     ],
-    "013": [
-      "docs/adr/ADR-013-google-cloud-openSource-strategy.md"
+    "next": [
+      "docs/PERFORMANCE_BASELINE.md"
     ],
-    "opensource": [
-      "docs/adr/ADR-013-google-cloud-openSource-strategy.md"
+    "performance": [
+      "docs/PERFORMANCE_BASELINE.md"
     ],
-    "strategy": [
-      "docs/adr/ADR-013-google-cloud-openSource-strategy.md"
+    "posteriores": [
+      "docs/PERFORMANCE_BASELINE.md"
     ],
-    "adr014notebooklmagent": [
-      "docs/adr/ADR-014-notebooklm-agent.md"
+    "route": [
+      "docs/PERFORMANCE_BASELINE.md",
+      ".github/copilot-instructions.md",
+      "skills/user/opsly-api/SKILL.md"
     ],
-    "014": [
-      "docs/adr/ADR-014-notebooklm-agent.md"
+    "builder": [
+      "docs/CONTEXT-BUILDER.md"
     ],
-    "agent": [
-      "docs/adr/ADR-014-notebooklm-agent.md"
+    "estilo": [
+      "docs/CONTEXT-BUILDER.md",
+      ".github/copilot-instructions.md"
     ],
-    "audit20260407": [
+    "first": [
+      "docs/CONTEXT-BUILDER.md"
+    ],
+    "funciona": [
+      "docs/CONTEXT-BUILDER.md"
+    ],
+    "indice": [
+      "docs/CONTEXT-BUILDER.md"
+    ],
+    "obsidian": [
+      "docs/CONTEXT-BUILDER.md"
+    ],
+    "rag": [
+      "docs/CONTEXT-BUILDER.md"
+    ],
+    "session": [
+      "docs/CONTEXT-BUILDER.md"
+    ],
+    "summarize": [
+      "docs/CONTEXT-BUILDER.md"
+    ],
+    "ttl": [
+      "docs/CONTEXT-BUILDER.md"
+    ],
+    "accion": [
       "docs/reports/audit-2026-04-07.md"
     ],
-    "07": [
+    "detectados": [
       "docs/reports/audit-2026-04-07.md"
     ],
-    "admin": [
-      "docs/runbooks/admin.md"
+    "gaps": [
+      "docs/reports/audit-2026-04-07.md"
     ],
-    "dev": [
-      "docs/runbooks/dev.md"
+    "reporte": [
+      "docs/reports/audit-2026-04-07.md"
     ],
-    "frontendaudit": [
-      "docs/runbooks/frontend-audit.md"
+    "allsettled": [
+      "docs/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md"
     ],
-    "frontend": [
-      "docs/runbooks/frontend-audit.md"
+    "condition": [
+      "docs/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md"
     ],
-    "incident": [
-      "docs/runbooks/incident.md"
+    "good": [
+      "docs/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md"
     ],
-    "managed": [
-      "docs/runbooks/managed.md"
+    "incomplete": [
+      "docs/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md"
     ],
-    "vision": [
-      "VISION.md"
+    "issue": [
+      "docs/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md"
     ],
-    "roadmap": [
-      "VISION.md"
+    "observations": [
+      "docs/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md"
+    ],
+    "promise": [
+      "docs/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md"
+    ],
+    "quality": [
+      "docs/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md"
+    ],
+    "race": [
+      "docs/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md"
+    ],
+    "strict": [
+      "docs/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md"
+    ],
+    "locales": [
+      "README.md"
+    ],
+    "maquina": [
+      "README.md"
+    ],
+    "otra": [
+      "README.md"
+    ],
+    "prerequisites": [
+      "README.md"
+    ],
+    "previos": [
+      "README.md"
+    ],
+    "primer": [
+      "README.md",
+      "VISION.md",
+      ".github/VISION.md"
+    ],
+    "quickstart": [
+      "README.md"
+    ],
+    "sola": [
+      "README.md"
+    ],
+    "vez": [
+      "README.md",
+      "skills/user/opsly-google-cloud/SKILL.md"
+    ],
+    "ahora": [
+      "VISION.md",
+      ".github/VISION.md",
+      ".github/AGENTS.md",
+      "AGENTS.md"
+    ],
+    "escala": [
+      "VISION.md",
+      ".github/VISION.md"
+    ],
+    "extensiones": [
+      "VISION.md",
+      ".github/VISION.md"
+    ],
+    "middleware": [
+      "VISION.md",
+      ".github/VISION.md"
+    ],
+    "paquetes": [
+      "VISION.md",
+      ".github/VISION.md"
+    ],
+    "patron": [
+      "VISION.md",
+      ".github/VISION.md",
+      "skills/user/opsly-agent-teams/SKILL.md"
+    ],
+    "planes": [
+      "VISION.md",
+      ".github/VISION.md",
+      "skills/user/opsly-tenant/SKILL.md",
+      "apps/agents/notebooklm/README.md"
+    ],
+    "producto": [
+      "VISION.md",
+      ".github/VISION.md",
+      "skills/user/opsly-tenant/SKILL.md"
+    ],
+    "quien": [
+      "VISION.md",
+      ".github/PULL_REQUEST_TEMPLATE.md",
+      ".github/VISION.md"
+    ],
+    "transferible": [
+      "VISION.md",
+      ".github/VISION.md"
+    ],
+    "validacion": [
+      "VISION.md",
+      ".github/VISION.md"
+    ],
+    "aplica": [
+      ".github/PULL_REQUEST_TEMPLATE.md"
+    ],
+    "cambio": [
+      ".github/PULL_REQUEST_TEMPLATE.md"
+    ],
+    "impacto": [
+      ".github/PULL_REQUEST_TEMPLATE.md"
+    ],
+    "infra": [
+      ".github/PULL_REQUEST_TEMPLATE.md",
+      "skills/user/opsly-llm/SKILL.md"
+    ],
+    "notas": [
+      ".github/PULL_REQUEST_TEMPLATE.md"
+    ],
+    "pull": [
+      ".github/PULL_REQUEST_TEMPLATE.md"
+    ],
+    "request": [
+      ".github/PULL_REQUEST_TEMPLATE.md"
+    ],
+    "revisa": [
+      ".github/PULL_REQUEST_TEMPLATE.md"
+    ],
+    "tipo": [
+      ".github/PULL_REQUEST_TEMPLATE.md"
+    ],
+    "algoritmos": [
+      ".github/copilot-instructions.md"
+    ],
+    "aplicados": [
+      ".github/copilot-instructions.md"
+    ],
+    "archivo": [
+      ".github/copilot-instructions.md"
+    ],
+    "bash": [
+      ".github/copilot-instructions.md",
+      "skills/user/opsly-bash/SKILL.md"
+    ],
+    "convenciones": [
+      ".github/copilot-instructions.md"
+    ],
+    "copilot": [
+      ".github/copilot-instructions.md"
+    ],
+    "handler": [
+      ".github/copilot-instructions.md"
+    ],
+    "instructions": [
+      ".github/copilot-instructions.md"
+    ],
+    "obligatorias": [
+      ".github/copilot-instructions.md"
+    ],
+    "patrones": [
+      ".github/copilot-instructions.md"
+    ],
+    "solid": [
+      ".github/copilot-instructions.md"
+    ],
+    "tools": [
+      ".github/copilot-instructions.md"
+    ],
+    "usar": [
+      ".github/copilot-instructions.md",
+      "skills/user/opsly-llm/SKILL.md",
+      "skills/user/opsly-bash/SKILL.md",
+      "skills/user/opsly-notebooklm/SKILL.md",
+      "skills/user/opsly-discord/SKILL.md",
+      "skills/user/opsly-context/SKILL.md",
+      "skills/user/opsly-google-cloud/SKILL.md",
+      "skills/user/opsly-supabase/SKILL.md",
+      "skills/user/opsly-mcp/SKILL.md",
+      "skills/user/opsly-tenant/SKILL.md",
+      "skills/user/opsly-feedback-ml/SKILL.md",
+      "skills/user/opsly-agent-teams/SKILL.md",
+      "skills/user/opsly-api/SKILL.md"
+    ],
+    "estas": [
+      ".github/README-github-templates.md"
+    ],
+    "gobernanza": [
+      ".github/README-github-templates.md"
+    ],
+    "plantillas": [
+      ".github/README-github-templates.md"
+    ],
+    "reutilizar": [
+      ".github/README-github-templates.md"
+    ],
+    "tabla": [
+      ".github/README-github-templates.md",
+      "apps/admin/INVITATIONS_UI.md"
+    ],
+    "templates": [
+      ".github/README-github-templates.md"
+    ],
+    "acordados": [
+      ".github/AGENTS.md",
+      "AGENTS.md"
+    ],
+    "adoptados": [
+      ".github/AGENTS.md",
+      "AGENTS.md"
+    ],
+    "dos": [
+      ".github/AGENTS.md",
+      "AGENTS.md"
+    ],
+    "errores": [
+      ".github/AGENTS.md",
+      "AGENTS.md"
+    ],
+    "evitamos": [
+      ".github/AGENTS.md",
+      "AGENTS.md"
+    ],
+    "existe": [
+      ".github/AGENTS.md",
+      "AGENTS.md"
+    ],
+    "humano": [
+      ".github/AGENTS.md",
+      "AGENTS.md"
+    ],
+    "incrementos": [
+      ".github/AGENTS.md",
+      "AGENTS.md"
+    ],
+    "maestro": [
+      ".github/AGENTS.md",
+      "AGENTS.md"
+    ],
+    "mapa": [
+      ".github/AGENTS.md",
+      "AGENTS.md"
+    ],
+    "negociable": [
+      ".github/AGENTS.md",
+      "AGENTS.md"
+    ],
+    "nos": [
+      ".github/AGENTS.md",
+      "AGENTS.md"
+    ],
+    "principio": [
+      ".github/AGENTS.md",
+      "AGENTS.md"
+    ],
+    "prompts": [
+      ".github/AGENTS.md"
+    ],
+    "rapidas": [
+      ".github/AGENTS.md",
+      "AGENTS.md"
+    ],
+    "rector": [
+      ".github/AGENTS.md",
+      "AGENTS.md"
+    ],
+    "rompen": [
+      ".github/AGENTS.md",
+      "AGENTS.md"
+    ],
+    "correcto": [
+      "skills/user/opsly-llm/SKILL.md"
+    ],
+    "modelo": [
+      "skills/user/opsly-llm/SKILL.md"
+    ],
+    "seleccion": [
+      "skills/user/opsly-llm/SKILL.md"
+    ],
+    "skill": [
+      "skills/user/opsly-llm/SKILL.md",
+      "skills/user/opsly-bash/SKILL.md",
+      "skills/user/opsly-notebooklm/SKILL.md",
+      "skills/user/opsly-discord/SKILL.md",
+      "skills/user/opsly-context/SKILL.md",
+      "skills/user/opsly-google-cloud/SKILL.md",
+      "skills/user/opsly-supabase/SKILL.md",
+      "skills/user/opsly-mcp/SKILL.md",
+      "skills/user/opsly-tenant/SKILL.md",
+      "skills/user/opsly-feedback-ml/SKILL.md",
+      "skills/user/opsly-agent-teams/SKILL.md",
+      "skills/user/opsly-api/SKILL.md"
+    ],
+    "obligatoria": [
+      "skills/user/opsly-bash/SKILL.md"
+    ],
+    "acciones": [
+      "skills/user/opsly-notebooklm/SKILL.md"
+    ],
+    "advertencias": [
+      "skills/user/opsly-notebooklm/SKILL.md"
+    ],
+    "caso": [
+      "skills/user/opsly-notebooklm/SKILL.md"
+    ],
+    "upstream": [
+      "skills/user/opsly-notebooklm/SKILL.md"
+    ],
+    "decisiones": [
+      "skills/user/opsly-context/SKILL.md"
+    ],
+    "fijas": [
+      "skills/user/opsly-context/SKILL.md"
+    ],
+    "nunca": [
+      "skills/user/opsly-context/SKILL.md"
+    ],
+    "paths": [
+      "skills/user/opsly-context/SKILL.md"
+    ],
+    "proponer": [
+      "skills/user/opsly-context/SKILL.md"
+    ],
+    "repos": [
+      "skills/user/opsly-context/SKILL.md"
+    ],
+    "access": [
+      "skills/user/opsly-google-cloud/SKILL.md"
+    ],
+    "alert": [
+      "skills/user/opsly-google-cloud/SKILL.md"
+    ],
+    "gcp": [
+      "skills/user/opsly-google-cloud/SKILL.md"
+    ],
+    "usarlas": [
+      "skills/user/opsly-google-cloud/SKILL.md"
+    ],
+    "migraciones": [
+      "skills/user/opsly-supabase/SKILL.md"
+    ],
+    "politicas": [
+      "skills/user/opsly-supabase/SKILL.md"
+    ],
+    "rls": [
+      "skills/user/opsly-supabase/SKILL.md"
+    ],
+    "exponer": [
+      "skills/user/opsly-mcp/SKILL.md"
+    ],
+    "scopes": [
+      "skills/user/opsly-mcp/SKILL.md"
+    ],
+    "check": [
+      "skills/user/opsly-tenant/SKILL.md"
+    ],
+    "operations": [
+      "skills/user/opsly-tenant/SKILL.md"
+    ],
+    "sql": [
+      "skills/user/opsly-tenant/SKILL.md"
+    ],
+    "tipicas": [
+      "skills/user/opsly-tenant/SKILL.md"
+    ],
+    "alto": [
+      "skills/user/opsly-feedback-ml/SKILL.md"
+    ],
+    "approval": [
+      "skills/user/opsly-feedback-ml/SKILL.md"
+    ],
+    "cambios": [
+      "skills/user/opsly-feedback-ml/SKILL.md"
+    ],
+    "continua": [
+      "skills/user/opsly-feedback-ml/SKILL.md"
+    ],
+    "equivalente": [
+      "skills/user/opsly-feedback-ml/SKILL.md"
+    ],
+    "implement": [
+      "skills/user/opsly-feedback-ml/SKILL.md"
+    ],
+    "mejora": [
+      "skills/user/opsly-feedback-ml/SKILL.md"
+    ],
+    "menores": [
+      "skills/user/opsly-feedback-ml/SKILL.md"
+    ],
+    "needs": [
+      "skills/user/opsly-feedback-ml/SKILL.md"
+    ],
+    "nivel": [
+      "skills/user/opsly-feedback-ml/SKILL.md"
+    ],
+    "siempre": [
+      "skills/user/opsly-feedback-ml/SKILL.md"
+    ],
+    "asignacion": [
+      "skills/user/opsly-agent-teams/SKILL.md"
+    ],
+    "implementacion": [
+      "skills/user/opsly-agent-teams/SKILL.md"
+    ],
+    "teams": [
+      "skills/user/opsly-agent-teams/SKILL.md"
+    ],
+    "ruta": [
+      "skills/user/opsly-api/SKILL.md"
+    ],
+    "entornos": [
+      "skills/README.md"
+    ],
+    "mnt": [
+      "skills/README.md"
+    ],
+    "ubicacion": [
+      "skills/README.md"
+    ],
+    "formulario": [
+      "apps/admin/INVITATIONS_UI.md"
+    ],
+    "invitacion": [
+      "apps/admin/INVITATIONS_UI.md"
+    ],
+    "lectura": [
+      "apps/admin/INVITATIONS_UI.md"
+    ],
+    "pantalla": [
+      "apps/admin/INVITATIONS_UI.md"
+    ],
+    "reutilizables": [
+      "apps/admin/INVITATIONS_UI.md"
+    ],
+    "validaciones": [
+      "apps/admin/INVITATIONS_UI.md"
     ]
   },
-  "files": [
+  "file_paths": [
+    ".claude/CLAUDE.md",
+    ".github/AGENTS.md",
+    ".github/copilot-instructions.md",
+    ".github/PULL_REQUEST_TEMPLATE.md",
+    ".github/README-github-templates.md",
+    ".github/VISION.md",
     "AGENTS.md",
-    "VISION.md",
+    "agents/prompts/claude-architect.md",
+    "agents/prompts/cursor-executor.md",
+    "apps/admin/INVITATIONS_UI.md",
+    "apps/agents/notebooklm/README.md",
+    "apps/mcp/README.md",
+    "config/doppler-audit-2026-04-07.md",
     "docs/ACTIVE-PROMPT.md",
+    "docs/adr/ADR-001-docker-compose-por-tenant.md",
+    "docs/adr/ADR-002-traefik-sobre-nginx.md",
+    "docs/adr/ADR-003-doppler-secrets.md",
+    "docs/adr/ADR-004-supabase-schema-por-tenant.md",
+    "docs/adr/ADR-005-traefik-v3-1-docker-api.md",
+    "docs/adr/ADR-006-api-testing-vitest.md",
+    "docs/adr/ADR-007-runbooks-y-documentacion-operativa.md",
+    "docs/adr/ADR-008-terraform-digitalocean-plan.md",
+    "docs/adr/ADR-009-openclaw-mcp-architecture.md",
+    "docs/adr/ADR-010-llm-gateway.md",
+    "docs/adr/ADR-011-event-driven-orchestrator.md",
+    "docs/adr/ADR-012-observability.md",
+    "docs/adr/ADR-013-google-cloud-openSource-strategy.md",
+    "docs/adr/ADR-014-notebooklm-agent.md",
     "docs/AGENTS-GUIDE.md",
     "docs/ARCHITECT-SECURITY-REVIEW.md",
     "docs/ARCHITECTURE.md",
@@ -637,32 +6338,38 @@
     "docs/PERFORMANCE_BASELINE.md",
     "docs/QA-REVIEW-COMPLETE.md",
     "docs/REFACTOR-CHECKLIST.md",
-    "docs/SECURITY-MITIGATIONS-2026-04-09.md",
-    "docs/SECURITY_AUDIT_REPORT.md",
-    "docs/SECURITY_CHECKLIST.md",
-    "docs/SSH-COMMANDS-LOCALRANK.md",
-    "docs/TEST_PLAN.md",
-    "docs/TROUBLESHOOTING.md",
-    "docs/VPS-ARCHITECTURE.md",
-    "docs/adr/ADR-001-docker-compose-por-tenant.md",
-    "docs/adr/ADR-002-traefik-sobre-nginx.md",
-    "docs/adr/ADR-003-doppler-secrets.md",
-    "docs/adr/ADR-004-supabase-schema-por-tenant.md",
-    "docs/adr/ADR-005-traefik-v3-1-docker-api.md",
-    "docs/adr/ADR-006-api-testing-vitest.md",
-    "docs/adr/ADR-007-runbooks-y-documentacion-operativa.md",
-    "docs/adr/ADR-008-terraform-digitalocean-plan.md",
-    "docs/adr/ADR-009-openclaw-mcp-architecture.md",
-    "docs/adr/ADR-010-llm-gateway.md",
-    "docs/adr/ADR-011-event-driven-orchestrator.md",
-    "docs/adr/ADR-012-observability.md",
-    "docs/adr/ADR-013-google-cloud-openSource-strategy.md",
-    "docs/adr/ADR-014-notebooklm-agent.md",
     "docs/reports/audit-2026-04-07.md",
     "docs/runbooks/admin.md",
     "docs/runbooks/dev.md",
     "docs/runbooks/frontend-audit.md",
     "docs/runbooks/incident.md",
-    "docs/runbooks/managed.md"
+    "docs/runbooks/managed.md",
+    "docs/SECURITY_AUDIT_REPORT.md",
+    "docs/SECURITY_CHECKLIST.md",
+    "docs/SECURITY-MITIGATIONS-2026-04-09.md",
+    "docs/SSH-COMMANDS-LOCALRANK.md",
+    "docs/TEST_PLAN.md",
+    "docs/TROUBLESHOOTING.md",
+    "docs/VPS-ARCHITECTURE.md",
+    "infra/templates/n8n-workflows-template.md",
+    "infra/terraform/.terraform/providers/registry.terraform.io/digitalocean/digitalocean/2.81.0/darwin_amd64/CHANGELOG.md",
+    "infra/terraform/.terraform/providers/registry.terraform.io/digitalocean/digitalocean/2.81.0/darwin_amd64/README.md",
+    "infra/terraform/README.md",
+    "README.md",
+    "skills/README.md",
+    "skills/user/opsly-agent-teams/SKILL.md",
+    "skills/user/opsly-api/SKILL.md",
+    "skills/user/opsly-bash/SKILL.md",
+    "skills/user/opsly-context/SKILL.md",
+    "skills/user/opsly-discord/SKILL.md",
+    "skills/user/opsly-feedback-ml/SKILL.md",
+    "skills/user/opsly-google-cloud/SKILL.md",
+    "skills/user/opsly-llm/SKILL.md",
+    "skills/user/opsly-mcp/SKILL.md",
+    "skills/user/opsly-notebooklm/SKILL.md",
+    "skills/user/opsly-supabase/SKILL.md",
+    "skills/user/opsly-tenant/SKILL.md",
+    "tools/usb-kit/README.md",
+    "VISION.md"
   ]
 }
