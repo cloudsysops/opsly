@@ -2,14 +2,23 @@ import { unitCostUsdForMetric } from "./billing-meter-pricing";
 import { parseUsageRedisKey } from "./billing/flush-billing-usage";
 import { getMeteringRedis } from "./billing/redis-metering";
 
-const ISO_DATE_SLICE = 10;
 const CENTS = 100;
-const SCAN_COUNT = 100;
+const ISO_DATE_SLICE = 10;
+
+type ConnectedMeteringRedis = NonNullable<
+  Awaited<ReturnType<typeof getMeteringRedis>>
+>;
+
 
 /** Evita saturar logs en Vercel / serverless (una advertencia por ventana). */
 const BILLING_REDIS_WARN_INTERVAL_MS = 60_000;
 
 let lastBillingRedisWarnAt = 0;
+
+/** Reinicia el throttle de logs (solo tests). */
+export function resetBillingRedisWarningThrottleForTests(): void {
+  lastBillingRedisWarnAt = 0;
+}
 
 const BILLING_REDIS_STDERR_MSG =
   "[BILLING WARNING] Redis unreachable. Real-time billing disabled. Data may be delayed.";
@@ -62,21 +71,38 @@ function parseQuantity(raw: string | undefined): number {
   return Number.isFinite(n) ? n : 0;
 }
 
-type RedisInstance = Awaited<ReturnType<typeof getMeteringRedis>>;
-
-async function getKeyUsdContribution(
-  redis: NonNullable<RedisInstance>,
-  key: string,
+async function aggregatePendingUsdForTenant(
+  redis: ConnectedMeteringRedis,
   tenantId: string,
 ): Promise<number> {
-  if (typeof key !== "string") return 0;
-  const parsed = parseUsageRedisKey(key);
-  if (parsed?.tenantId !== tenantId) return 0;
-  const raw = await redis.get(key);
-  const qty = parseQuantity(raw ?? undefined);
-  if (qty <= 0) return 0;
-  const unit = unitCostUsdForMetric(parsed.metricType);
-  return qty * unit;
+  const pattern = `usage:${tenantId}:*`;
+  let pending = 0;
+  try {
+    for await (const key of redis.scanIterator({
+      MATCH: pattern,
+      COUNT: 100,
+    })) {
+      if (typeof key !== "string") {
+        continue;
+      }
+      const parsed = parseUsageRedisKey(key);
+      if (parsed?.tenantId !== tenantId) {
+        continue;
+      }
+      const raw = await redis.get(key);
+      const qty = parseQuantity(raw ?? undefined);
+      if (qty <= 0) {
+        continue;
+      }
+      const unit = unitCostUsdForMetric(parsed.metricType);
+      pending += qty * unit;
+    }
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    warnBillingRedisDegraded(`(scan/get failed: ${msg})`);
+    return 0;
+  }
+  return pending;
 }
 
 /**
@@ -86,26 +112,17 @@ async function getKeyUsdContribution(
 export async function sumPendingRedisUsageUsd(tenantId: string): Promise<number> {
   const redisUrlConfigured = Boolean(process.env.REDIS_URL?.trim());
   const redis = await getMeteringRedis();
-  if (!redis) {
+  if (redis) {
+    return aggregatePendingUsdForTenant(redis, tenantId);
+  }
+  if (redisUrlConfigured) {
     warnBillingRedisDegraded(
-      redisUrlConfigured
-        ? "(connection failed, timeout, or client closed — check REDIS_URL and Redis availability)"
-        : "(REDIS_URL not set)",
+      "(connection failed, timeout, or client closed — check REDIS_URL and Redis availability)",
     );
-    return 0;
+  } else {
+    warnBillingRedisDegraded("(REDIS_URL not set)");
   }
-  const pattern = `usage:${tenantId}:*`;
-  let pending = 0;
-  try {
-    for await (const key of redis.scanIterator({ MATCH: pattern, COUNT: SCAN_COUNT })) {
-      pending += await getKeyUsdContribution(redis, key as string, tenantId);
-    }
-  } catch (err) {
-    const msg = err instanceof Error ? err.message : String(err);
-    warnBillingRedisDegraded(`(scan/get failed: ${msg})`);
-    return 0;
-  }
-  return pending;
+  return 0;
 }
 
 export function roundUsd2(n: number): number {

@@ -1,8 +1,72 @@
-# intcloudsysops
+# intcloudsysops — Opsly
 
-Plataforma multi-tenant tipo **Opsly**: plano de control (API, billing, orquestación) y plano de datos (stacks Docker aislados por cliente detrás de Traefik).
+Plataforma multi-tenant **enterprise SaaS**: plano de control (API, billing, orquestación, IA) y plano de datos (stacks Docker aislados por cliente detrás de Traefik).
+
+**Estado actual:** Sprint 3 ✅ (Usage Billing + Plan Upgrade + AI Cost Caps) → Sprint 4 🔄 (Self-Healing + Context Persistence + CVE)
+
+## 📚 Índice de documentación
+
+### Contexto y roadmap
+| Doc | Descripción |
+|-----|-------------|
+| [`AGENTS.md`](AGENTS.md) | **Fuente de verdad** operativa — estado sesión, decisiones, bloqueantes |
+| [`VISION.md`](VISION.md) | Norte del producto, ICP, fases, límites |
+| [`docs/SPRINT-ROADMAP.md`](docs/SPRINT-ROADMAP.md) | Sprints enterprise 1–8 con entregables y estado |
+| [`docs/MASTER-PLAN-STATUS.md`](docs/MASTER-PLAN-STATUS.md) | Estado consolidado fases + sprints + métricas |
+| [`docs/MASTER-PLAN.md`](docs/MASTER-PLAN.md) | Stack inventario, reglas de dependencias |
+
+### Arquitectura
+| Doc | Descripción |
+|-----|-------------|
+| [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | Control plane vs data plane, flujos, aislamiento |
+| [`docs/OPENCLAW-ARCHITECTURE.md`](docs/OPENCLAW-ARCHITECTURE.md) | OpenClaw: MCP, Orchestrator, LLM Gateway, Context Builder |
+| [`docs/LLM-GATEWAY.md`](docs/LLM-GATEWAY.md) | Cache, routing, modelos, env vars |
+| [`docs/ORCHESTRATOR.md`](docs/ORCHESTRATOR.md) | BullMQ jobs, workers, circuit breaker (Sprint 4) |
+| [`docs/CONTEXT-BUILDER.md`](docs/CONTEXT-BUILDER.md) | Sesión, TTL, resúmenes, persistencia (Sprint 4) |
+| [`docs/AGENTS-GUIDE.md`](docs/AGENTS-GUIDE.md) | Agentes paralelos y límites por plan |
+
+### Decisiones de arquitectura (ADRs)
+| ADR | Decisión |
+|-----|----------|
+| [ADR-001](docs/adr/ADR-001-docker-compose-por-tenant.md) | Docker Compose por tenant |
+| [ADR-002](docs/adr/ADR-002-traefik-sobre-nginx.md) | Traefik v3 sobre nginx |
+| [ADR-003](docs/adr/ADR-003-doppler-secrets.md) | Doppler para secretos |
+| [ADR-004](docs/adr/ADR-004-supabase-schema-por-tenant.md) | Supabase schema por tenant |
+| [ADR-009](docs/adr/ADR-009-openclaw-mcp-architecture.md) | OpenClaw MCP Architecture |
+| [ADR-011](docs/adr/ADR-011-event-driven-orchestrator.md) | Event-driven Orchestrator |
+| [ADR-015](docs/adr/ADR-015-di-pattern-testability.md) | DI Pattern sobre vi.mock |
+
+### Operación y runbooks
+| Doc | Descripción |
+|-----|-------------|
+| [`docs/runbooks/admin.md`](docs/runbooks/admin.md) | Runbook administrador plataforma |
+| [`docs/runbooks/dev.md`](docs/runbooks/dev.md) | Runbook desarrollador |
+| [`docs/runbooks/incident.md`](docs/runbooks/incident.md) | Runbook incidentes |
+| [`docs/INVITATIONS_RUNBOOK.md`](docs/INVITATIONS_RUNBOOK.md) | Flujo de invitaciones portal |
+| [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md) | Diagnóstico y soluciones comunes |
+| [`docs/SECURITY_CHECKLIST.md`](docs/SECURITY_CHECKLIST.md) | Checklist Zero-Trust por ruta |
+| [`docs/SECURITY-MITIGATIONS-2026-04-09.md`](docs/SECURITY-MITIGATIONS-2026-04-09.md) | Mitigaciones UFW + Tailscale + CF |
+
+### Infra y deploy
+| Doc | Descripción |
+|-----|-------------|
+| [`docs/VPS-ARCHITECTURE.md`](docs/VPS-ARCHITECTURE.md) | Topología VPS, Traefik, redes |
+| [`docs/DOPPLER-VARS.md`](docs/DOPPLER-VARS.md) | Variables Doppler por entorno |
+| [`docs/BILLING-FLUSH-VERCEL.md`](docs/BILLING-FLUSH-VERCEL.md) | Cron billing sync (Sprint 3) |
+| [`infra/terraform/README.md`](infra/terraform/README.md) | IaC Terraform DigitalOcean |
+
+### Automatización y IA
+| Doc | Descripción |
+|-----|-------------|
+| [`docs/AUTOMATION-PLAN.md`](docs/AUTOMATION-PLAN.md) | Discord → GitHub → Cursor loop |
+| [`docs/N8N-SETUP.md`](docs/N8N-SETUP.md) | n8n workflows y secretos |
+| [`docs/GOOGLE-CLOUD-SETUP.md`](docs/GOOGLE-CLOUD-SETUP.md) | Google Cloud + Drive sync |
+| [`skills/README.md`](skills/README.md) | Skills Claude y manifests |
 
 ## Architecture
+
+> 🔒 **SSH al VPS siempre por Tailscale:** `ssh vps-dragon@100.120.151.91`  
+> ❌ Nunca usar IP pública `157.245.223.7` para SSH (bloqueada por UFW)
 
 Referencia conceptual **Opsly**: el **control plane** decide ciclo de vida, facturación y políticas; el **data plane** ejecuta cargas de trabajo por tenant (contenedores, redes, volúmenes y rutas TLS).
 
