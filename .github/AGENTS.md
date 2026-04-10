@@ -4,6 +4,8 @@
 > Al iniciar: lee este archivo completo antes de cualquier acción.
 > Al terminar: actualiza las secciones marcadas con 🔄.
 
+**Mapa de documentación (evitar duplicar con `docs/AGENTS-GUIDE.md`):** `VISION.md` = norte de producto; **`AGENTS.md` (este archivo)** = estado operativo, próximo paso, bloqueantes e incrementos **por sesión**; **`docs/AGENTS-GUIDE.md`** = convenciones **solo** para varios asistentes/automatismos en paralelo (no sustituye AGENTS). `docs/adr/` = decisiones de arquitectura. No copiar tablas de límites por plan aquí: enlazar `AGENTS-GUIDE` + `VISION.md`.
+
 ---
 
 ## Flujo de sesión (humano + Cursor)
@@ -537,6 +539,7 @@ flowchart LR
 *Contexto y flujo para agentes (abr 2026):*
 - `VISION.md` — visión, ICP, planes, primer cliente smiletripcare, stack transferible, límites; **roadmap por fases (revisado 2026-04-04)** con Fase 1 (máx 1 semana), 2, 3, lista *Nunca* (K8s, Swarm, migrar Traefik/Supabase) y **regla:** antes de features nuevos → ¿tenants en producción > 0? si no, Fase 1
 - `AGENTS.md` — fuente de verdad por sesión; bloque de **cierre** para Cursor (actualizar 🔄, commit/push o `./scripts/update-agents.sh`, pegar URL raw al abrir la próxima sesión)
+- `docs/AGENTS-GUIDE.md` — **multi-agente en paralelo** (límites de plan orientativos, cómo añadir roles); no duplicar estado de sesión aquí
 - `.vscode/extensions.json` + **`.vscode/settings.json`** — extensiones recomendadas y ahorro/formato/ESLint/Copilot (español) al guardar
 - `.cursor/rules/opsly.mdc` — Fase 1 validación; prioridad `VISION.md` → `AGENTS.md` → `config/opsly.config.json`; consultar `docs/adr/` para arquitectura
 - `.claude/CLAUDE.md` — URLs raw de `AGENTS.md` y `VISION.md`
@@ -721,7 +724,7 @@ doppler run --project ops-intcloudsysops --config prd -- \
 # N8N_WEBHOOK_URL="<url>" N8N_WEBHOOK_SECRET="<secret>" ./scripts/test-n8n-webhook.sh
 
 # Disco VPS < 80%
-ssh vps-dragon@157.245.223.7 "docker system df && sudo du -xh /var --max-depth=2 | sort -h | tail -20"
+ssh vps-dragon@100.120.151.91 "docker system df && sudo du -xh /var --max-depth=2 | sort -h | tail -20"
 ```
 
 **Migraciones Supabase:** `0011_db_architecture_fix.sql` ya incluye FK CASCADE, UNIQUE tenant+sesión, RLS, `llm_feedback` y `conversations`. `0012_llm_feedback_conversations_fk.sql` enlaza ratings ML a `platform.conversations`. Tras `supabase link`, validar con `npx supabase db push --dry-run` antes de aplicar en prod.
@@ -752,7 +755,7 @@ ssh vps-dragon@157.245.223.7 "docker system df && sudo du -xh /var --max-depth=2
 - [ ] **`GOOGLE_CLOUD_PROJECT_ID` / `BIGQUERY_DATASET` / `VERTEX_AI_REGION` en `prd`** — requeridos para Fase 10.
 - [x] **OAuth token Google (service account)** — corregido `google_base64url_encode` + POST token; token emitido OK (2026-04-08).
 - [ ] **Drive sync escritura Mi unidad** — subir `GOOGLE_USER_CREDENTIALS_JSON` (ADC OAuth usuario) a Doppler **o** carpeta en Shared Drive + SA; `drive-sync` ya intenta usuario primero.
-- [ ] **SSH VPS inestable** — `ssh -o BatchMode=yes -o ConnectTimeout=10 vps-dragon@157.245.223.7` devuelve `Connection timed out during banner exchange` (2026-04-09); sin SSH estable no se puede completar onboard/start de `localrank`.
+- [ ] **SSH VPS inestable** — `ssh -o BatchMode=yes -o ConnectTimeout=10 vps-dragon@100.120.151.91 # Tailscale` devuelve `Connection timed out during banner exchange` (2026-04-09); sin SSH estable no se puede completar onboard/start de `localrank`.
 - [ ] **Cloudflare Proxy** — habilitar Proxy ON para todos los registros `*.ops.smiletripcare.com` (evitar exposición directa de origen público `157.245.223.7`).
 - [ ] **Verificar email tester** — confirmar recepción/activación de invitación para `jkbotero78@gmail.com` tras onboarding de `localrank`.
 - [ ] **`GOOGLE_DRIVE_TOKEN`** en Doppler `prd` vacío (0 chars en check rápido 2026-04-09); revisar si ya fue reemplazado por `GOOGLE_USER_CREDENTIALS_JSON`/SA y actualizar checks operativos.
