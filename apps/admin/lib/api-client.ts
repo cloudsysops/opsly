@@ -8,6 +8,7 @@ import type {
   TenantDetailResponse,
   TenantsListResponse,
 } from "./types";
+import { getServerAuthToken } from "./session-auth";
 
 function inferApiBaseFromAdminHost(hostname: string): string | null {
   if (hostname === "localhost" || hostname === "127.0.0.1") {
@@ -35,23 +36,19 @@ function getBaseUrl(): string {
   throw new Error("NEXT_PUBLIC_API_URL is not set");
 }
 
-function getAdminToken(): string | undefined {
-  if (process.env.NEXT_PUBLIC_ADMIN_PUBLIC_DEMO === "true") {
-    return undefined;
-  }
-  const token = process.env.NEXT_PUBLIC_PLATFORM_ADMIN_TOKEN;
-  if (!token || token.length === 0) {
-    return undefined;
-  }
-  return token;
+function isDemo(): boolean {
+  return process.env.NEXT_PUBLIC_ADMIN_PUBLIC_DEMO === "true";
 }
 
-function buildHeaders(initHeaders: HeadersInit | undefined): Headers {
+async function buildHeaders(initHeaders: HeadersInit | undefined): Promise<Headers> {
   const headers = new Headers(initHeaders);
   headers.set("Content-Type", "application/json");
-  const token = getAdminToken();
-  if (token !== undefined) {
-    headers.set("Authorization", `Bearer ${token}`);
+  // En modo demo no se envía token de autorización
+  if (!isDemo()) {
+    const token = await getServerAuthToken();
+    if (token !== null && token.length > 0) {
+      headers.set("Authorization", `Bearer ${token}`);
+    }
   }
   return headers;
 }
@@ -81,7 +78,7 @@ function getErrorMessage(data: unknown): string {
 }
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
-  const headers = buildHeaders(init?.headers);
+  const headers = await buildHeaders(init?.headers);
 
   const res = await fetch(`${getBaseUrl()}${path}`, {
     ...init,
