@@ -4,7 +4,7 @@ import { NextRequest } from "next/server";
 const checkRateLimitMock = vi.hoisted(() => vi.fn());
 const pickCorsOriginMock = vi.hoisted(() => vi.fn());
 
-vi.mock("../src/lib/rate-limiter", () => ({
+vi.mock("../lib/rate-limiter", () => ({
   checkRateLimit: checkRateLimitMock,
   RATE_LIMIT_MAX_REQUESTS: 100,
 }));

@@ -193,6 +193,21 @@ El script hace todo:
 - Configura `.env.local` con las claves de Supabase
 - Construye y levanta el stack completo
 
+### Ubuntu / nodo local
+
+```bash
+git clone https://github.com/cloudsysops/opsly.git
+cd opsly
+./scripts/install-opsly-stack.sh --install-workspaces
+```
+
+Ese instalador:
+
+- Actualiza Ubuntu e instala utilidades base
+- Instala Node.js con NVM y deja Node 20 como default
+- Intenta instalar Docker y Tailscale sin abortar el resto si fallan
+- Configura el repo (`.env`, git hooks) y muestra un resumen final del estado
+
 ### Acceso desde otra máquina en la red
 
 ```bash

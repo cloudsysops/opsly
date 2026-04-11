@@ -9,7 +9,7 @@ vi.mock("redis", () => ({
 import {
   checkRateLimit,
   resetRateLimiterStateForTests,
-} from "../rate-limiter";
+} from "../../lib/rate-limiter";
 
 type MockRedisClient = {
   isOpen: boolean;

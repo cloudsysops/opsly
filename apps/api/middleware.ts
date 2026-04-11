@@ -6,7 +6,7 @@ import {
   checkRateLimit,
   RATE_LIMIT_MAX_REQUESTS,
   type RateLimitResult,
-} from "./src/lib/rate-limiter";
+} from "./lib/rate-limiter";
 
 const CORS_METHODS = "GET,POST,PATCH,DELETE,OPTIONS";
 const CORS_HEADERS = "Content-Type,Authorization,x-admin-token";
