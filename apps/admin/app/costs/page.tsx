@@ -66,10 +66,8 @@ export default function CostsPage() {
         <div className="rounded-lg border border-red-500/40 bg-red-500/10 px-4 py-3">
           <p className="text-red-300">
             No se pudieron cargar los costos. Comprueba{" "}
-            <code className="text-ops-muted">NEXT_PUBLIC_API_URL</code> y el token
-            admin (o demo con{" "}
-            <code className="text-ops-muted">NEXT_PUBLIC_PLATFORM_ADMIN_TOKEN</code>
-            ).
+            <code className="text-ops-muted">NEXT_PUBLIC_API_URL</code> y tu
+            sesión admin.
           </p>
           <button
             type="button"

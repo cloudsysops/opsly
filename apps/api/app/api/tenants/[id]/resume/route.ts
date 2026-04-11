@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { requireAdminToken } from "../../../../../lib/auth";
+import { requireAdminAccess } from "../../../../../lib/auth";
 import { resumeTenant } from "../../../../../lib/orchestrator";
 import { formatZodError } from "../../../../../lib/validation";
 import { getServiceClient } from "../../../../../lib/supabase";
@@ -11,7 +11,7 @@ export async function POST(
   request: Request,
   context: { params: Promise<{ id: string }> },
 ): Promise<Response> {
-  const authError = requireAdminToken(request);
+  const authError = await requireAdminAccess(request);
   if (authError) {
     return authError;
   }

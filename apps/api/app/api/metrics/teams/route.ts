@@ -1,19 +1,9 @@
 import type { NextRequest } from "next/server";
 import { Queue } from "bullmq";
-import { requireAdminToken } from "../../../../lib/auth";
+import { requireAdminAccess } from "../../../../lib/auth";
+import { getBullmqRedisConnection } from "../../../../lib/bullmq-redis";
 
 const TOTAL_PARALLEL_CAPACITY = 8;
-
-const REDIS_URL = process.env.REDIS_URL || "redis://localhost:6379";
-
-function redisConnection(): { host: string; port: number; password: string | undefined } {
-  const url = new URL(REDIS_URL);
-  return {
-    host: url.hostname,
-    port: Number(url.port || "6379"),
-    password: process.env.REDIS_PASSWORD,
-  };
-}
 
 const TEAM_CONFIGS = [
   {
@@ -49,7 +39,12 @@ const TEAM_CONFIGS = [
 async function getTeamCounts(
   name: string,
 ): Promise<{ waiting: number; active: number }> {
-  const queue = new Queue(`team-${name}`, { connection: redisConnection() });
+  const connection = getBullmqRedisConnection();
+  if (!connection) {
+    throw new Error("BullMQ Redis not configured");
+  }
+
+  const queue = new Queue(`team-${name}`, { connection });
   try {
     const [waiting, active] = await Promise.all([
       queue.getWaitingCount(),
@@ -62,7 +57,7 @@ async function getTeamCounts(
 }
 
 export async function GET(req: NextRequest): Promise<Response> {
-  const authError = requireAdminToken(req);
+  const authError = await requireAdminAccess(req);
   if (authError) return authError;
 
   const teams = await Promise.all(

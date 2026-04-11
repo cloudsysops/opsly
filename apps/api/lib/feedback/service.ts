@@ -9,6 +9,7 @@ import {
   resolveTrustedFeedbackIdentity,
   type TrustedFeedbackIdentity,
 } from "../portal-feedback-auth";
+import { requireAdminAccess } from "../auth";
 import { getServiceClient } from "../supabase";
 import { HTTP_STATUS } from "../constants";
 
@@ -432,16 +433,9 @@ async function runClarifyBranch(
 }
 
 export async function handleFeedbackGet(req: NextRequest): Promise<Response> {
-  const token =
-    req.headers.get("x-admin-token") ??
-    req.headers.get("authorization")?.replace("Bearer ", "") ??
-    "";
-
-  if (token !== process.env.PLATFORM_ADMIN_TOKEN) {
-    return Response.json(
-      { error: "Unauthorized" },
-      { status: HTTP_STATUS.UNAUTHORIZED },
-    );
+  const unauthorized = await requireAdminAccess(req);
+  if (unauthorized) {
+    return unauthorized;
   }
 
   const status = req.nextUrl.searchParams.get("status");

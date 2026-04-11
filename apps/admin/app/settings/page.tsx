@@ -140,7 +140,8 @@ export default function SettingsPage() {
         </CardHeader>
         <CardContent className="space-y-3">
           <p className="font-sans text-sm text-ops-gray">
-            Ejecuta backup remoto vía API si el endpoint existe.
+            Intenta disparar el backup remoto por API. Si el backend no expone
+            ese endpoint, debes usar el script operativo.
           </p>
           <Separator />
           <Button

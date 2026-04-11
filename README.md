@@ -319,7 +319,6 @@ Provision (cola → Docker Compose tenant)
 | `ACME_EMAIL` | Sí (Traefik) | Email Let’s Encrypt. |
 | `TRAEFIK_DASHBOARD_BASIC_AUTH_USERS` | Sí | Usuarios htpasswd para dashboard Traefik. |
 | `NEXT_PUBLIC_API_URL` | Sí (admin) | URL pública del API. |
-| `NEXT_PUBLIC_PLATFORM_ADMIN_TOKEN` | Sí (admin) | Mismo valor que `PLATFORM_ADMIN_TOKEN` (navegador). |
 | `DB_CONNECTION_STRING` | Backups | Postgres para `pg_dump`. |
 | `S3_BUCKET`, `S3_PREFIX`, `AWS_*` | Backups | Destino en S3. |
 | `RESEND_API_KEY` | Sí (invitaciones) | API de Resend; valor completo desde el dashboard (no placeholder corto). |

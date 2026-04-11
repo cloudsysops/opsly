@@ -6,8 +6,8 @@ import {
 import { jsonError } from "../../../../lib/api-response";
 import { HTTP_STATUS } from "../../../../lib/constants";
 import {
-  requireAdminToken,
-  requireAdminTokenUnlessDemoRead,
+  requireAdminAccess,
+  requireAdminAccessUnlessDemoRead,
 } from "../../../../lib/auth";
 
 async function notifyDiscordCostLine(content: string): Promise<void> {
@@ -27,7 +27,7 @@ async function notifyDiscordCostLine(content: string): Promise<void> {
 }
 
 export async function GET(request: Request): Promise<Response> {
-  const auth = requireAdminTokenUnlessDemoRead(request);
+  const auth = await requireAdminAccessUnlessDemoRead(request);
   if (auth !== null) {
     return auth;
   }
@@ -35,7 +35,7 @@ export async function GET(request: Request): Promise<Response> {
 }
 
 export async function POST(request: Request): Promise<Response> {
-  const auth = requireAdminToken(request);
+  const auth = await requireAdminAccess(request);
   if (auth !== null) {
     return auth;
   }

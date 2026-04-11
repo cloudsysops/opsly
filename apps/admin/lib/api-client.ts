@@ -10,7 +10,7 @@ import type {
   TenantDetailResponse,
   TenantsListResponse,
 } from "./types";
-import { getServerAuthToken } from "./session-auth";
+import { getSessionAuthToken } from "./session-auth";
 
 function inferApiBaseFromAdminHost(hostname: string): string | null {
   if (hostname === "localhost" || hostname === "127.0.0.1") {
@@ -38,22 +38,10 @@ function getBaseUrl(): string {
   throw new Error("NEXT_PUBLIC_API_URL is not set");
 }
 
-function isDemo(): boolean {
-  return process.env.NEXT_PUBLIC_ADMIN_PUBLIC_DEMO === "true";
-}
-
 async function buildHeaders(initHeaders: HeadersInit | undefined): Promise<Headers> {
   const headers = new Headers(initHeaders);
   headers.set("Content-Type", "application/json");
-  let authToken: string | null = null;
-  if (isDemo()) {
-    const demoAdmin = process.env.NEXT_PUBLIC_PLATFORM_ADMIN_TOKEN?.trim();
-    if (demoAdmin !== undefined && demoAdmin.length > 0) {
-      authToken = demoAdmin;
-    }
-  } else {
-    authToken = await getServerAuthToken();
-  }
+  const authToken = await getSessionAuthToken();
   if (authToken !== null && authToken.length > 0) {
     headers.set("Authorization", `Bearer ${authToken}`);
   }

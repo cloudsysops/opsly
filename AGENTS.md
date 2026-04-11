@@ -175,6 +175,31 @@ Procedimientos vivos en el repo: **`skills/user/<skill>/SKILL.md`**. En runtimes
 25. **✅ Portal — health API + `portal-api-paths` + Playwright E2E smoke** — *Hecho (2026-04-08).* API: `GET /api/portal/health?slug=` (público, monitoring); `GET /api/portal/tenant/{slug}/health` (JWT + `tenantSlugMatchesSession`); `lib/portal-health-json.ts` (`respondPortalTenantHealth`). Cliente: `portalHealthUrl(slug)`, `portalPublicHealthUrl(slug)`, `fetchPortalHealth` (`lib/tenant.ts`). **`@playwright/test`**, `playwright.config.ts`, `e2e/portal.spec.ts` (login + invite + smoke; dashboard redirect tests con `test.skip` si faltan vars Supabase públicas). OpenAPI + `REQUIRED_PORTAL_PATHS` (**8** rutas portal, incl. health). Tests API **162**; portal Vitest **21**; `npm run test:e2e --workspace=@intcloudsysops/portal`.
 26. **✅ Remote Planner (Chat.z) integrado en Orchestrator** — *Hecho (2026-04-10).* Cliente `executeRemotePlanner` (`apps/orchestrator/src/planner-client.ts`) → `POST /v1/chat/completions` en llm-gateway; compat `POST /v1/planner`. Intent `remote_plan`: sin encolar jobs efectivos (solo logs JSON + simulación `console.log` por acción) hasta validación Go-Live; Hermes vía `llmCall` en gateway. Healthchecks en `infra/docker-compose.platform.yml` (app `/api/health`, portal `/login`, llm-gateway y orchestrator `/health`) con `interval` 30s. Doc: `docs/ORCHESTRATOR.md`.
 27. **✅ Admin — dashboard de costos + API `/api/admin/costs` + worker Mac 2011** — *Hecho (2026-04-11).* `apps/api/lib/admin-costs.ts` + `app/api/admin/costs/route.ts` (`GET`/`POST`, aprobaciones en memoria de proceso, Discord opcional, `lastUpdated`, `specs`, alertas info/warning incl. GCP **opslyquantum**). Admin: `apps/admin/app/costs/page.tsx`, `components/costs/CostCard.tsx`, Sidebar **Costos**, `lib/api-client.ts` (`getAdminCosts`, `postCostDecision`; modo demo + `NEXT_PUBLIC_PLATFORM_ADMIN_TOKEN` para mutaciones). Sección **Control de costos** en este AGENTS. Scripts `scripts/start-workers-mac2011.sh` (`--dry-run`), `infra/docker-compose.workers.yml`. Docs: `docs/COST-DASHBOARD.md`, ampliación `docs/WORKER-SETUP-MAC2011.md`. Commits de referencia: `4de0201` (base), `8654a43` + `d2db1a0` (extensión + espejo AGENTS).
+
+* **2026-04-11 — Fase 1 Seguridad Crítica:**
+- ✅ Autenticación admin por sesión Supabase (`getServerAuthToken()`) en lugar de token público (`NEXT_PUBLIC_PLATFORM_ADMIN_TOKEN`).
+- ✅ Autenticación admin: `lib/auth.ts` + routes `apps/api/app/api/admin/*`.
+- ✅ BullMQ pipeline counts: `lib/bullmq-pipeline-counts.ts` + `lib/bullmq-redis.ts`.
+- ✅ Feedback services: `lib/feedback/service.ts` + `lib/feedback/approve-service.ts`.
+- ✅ Métricas teams: `GET /api/metrics/teams`.
+- ✅ Invitations admin: refactor `apps/api/app/api/invitations/route.ts`.
+- ✅ Settings admin: `apps/admin/app/settings/page.tsx`.
+- ✅ Backup admin: `apps/admin/app/api/backup/route.ts`.
+- ✅ Costos admin: refactor `apps/admin/app/costs/page.tsx`.
+- ✅ Tests: `lib/__tests__/auth-admin-access.test.ts`.
+
+**Commits de referencia:**
+- `d894fc6`: consolidate env files
+- `7a58fee`: token → session auth
+- `4de0201`: admin costs base
+- `8654a43`: costs extension
+- `d2db1a0`: AGENTS mirror
+
+**Type-check:** `npm run type-check` pasa en 11 workspaces (2026-04-11).
+
+**Git status:** 26 archivos modificados + 2 nuevos (`auth-admin-access.test.ts`, `bullmq-redis.ts`).
+
+**Bloqueante activo:** Cloudflare Proxy ON requerido para ocultar IP VPS pública (157.245.223.7).
 28. **Siguiente** — p. ej. **redeploy API + admin** en VPS para servir `/costs` y payload nuevo; E2E invite con Supabase en CI; más rutas bajo `/api/portal/tenant/[slug]/`; persistir aprobaciones de costos en DB si hace falta; operación VPS según `VISION.md`.
 
 ### Qué evitamos por ahora
@@ -240,7 +265,7 @@ Procedimientos vivos en el repo: **`skills/user/<skill>/SKILL.md`**. En runtimes
 
 <!-- Actualizar al final de cada sesión -->
 
-**Fecha última actualización:** 2026-04-11 UTC — **Disco VPS:** ~10 GB libre en `/` (≈80 % uso tras `docker image prune -af` de imágenes no referenciadas; el filtro `until=72h` recuperó 0 B — imágenes recientes). **Plan pruebas tenants:** `docs/TENANT-TESTING-PLAN.md` + `docs/TENANT-TESTING-GUIDE.md`. **Dashboard de costos (admin) + infra distribuida:** API `GET`/`POST /api/admin/costs` (`admin-costs.ts`: catálogo VPS/CF/Supabase/Resend + propuestas Mac 2011, GCP **opslyquantum**, CF LB, upgrade VPS; `lastUpdated`, `specs`, alertas; aprobaciones en memoria hasta persistencia futura). Admin `/costs`: resumen (actual / con aprobados / nº servicios activos), `CostCard`, alertas con botón Activar Mac 2011, tema `ops-*`. Sidebar **Costos**; `api-client` con token admin en demo (`NEXT_PUBLIC_PLATFORM_ADMIN_TOKEN`). **AGENTS:** sección *Control de costos* (regla de aprobación antes de activar proveedores de pago). **Scripts:** `scripts/start-workers-mac2011.sh` → delega en `start-worker.sh` / `run-orchestrator-worker.sh` (no existe `npm run start:worker` en raíz); `infra/docker-compose.workers.yml` (opcional, perfil `llm-split`). Docs: `docs/COST-DASHBOARD.md`, `docs/WORKER-SETUP-MAC2011.md` actualizado. **VISION:** gobernanza de costos proveedor y worker remoto alineados a Fase 4 — ver sección añadida. **Testing tenants + health Supabase (sesión previa en repo):** `docs/TENANT-TESTING-GUIDE.md`; `GET /api/health` probe Supabase 401/403 como alcanzable. Repo-First: `./scripts/index-knowledge.sh` en VPS tras pull.
+**Fecha última actualización:** 2026-04-11 UTC (sesión tarde/noche) — **Multiples cambios API/Admin esta sesión:** autenticación admin (`lib/auth.ts` + routes), BullMQ pipeline counts, feedback services, métricas teams/tenant, invitations, backups, costs, settings. **Type-check:** `npm run type-check` pasa en 11 workspaces. **Git status:** 26 archivos modificados + 2 nuevos (`auth-admin-access.test.ts`, `bullmq-redis.ts`). **Bloqueante activo:** Cloudflare Proxy ON requerido para ocultar IP VPS pública. **Pendiente:** verificar email invitación `jkbotero78@gmail.com` tras onboard `localrank`.
 
 **URL raw (sesión siguiente):** https://raw.githubusercontent.com/cloudsysops/opsly/main/AGENTS.md
 
@@ -791,7 +816,7 @@ ssh vps-dragon@100.120.151.91 "docker system df && sudo du -xh /var --max-depth=
 - [ ] **Drive sync escritura Mi unidad** — subir `GOOGLE_USER_CREDENTIALS_JSON` (ADC OAuth usuario) a Doppler **o** carpeta en Shared Drive + SA; `drive-sync` ya intenta usuario primero.
 - [x] **SSH VPS estable** — SSH Tailscale `100.120.151.91` operativo (2026-04-11).
 - [x] **Onboard localrank** — completado idempotente; contenedores n8n_localrank y uptime_localrank corriendo (2026-04-11 01:40 UTC).
-- [ ] **VPS carga alta** — Load average 31.72 (temporal); Docker commands timeout; necesita monitoreo.
+- [x] **VPS carga alta** — Load average 31.72 (temporal); Docker commands timeout; necesita monitoreo.
 - [ ] **Cloudflare Proxy** — habilitar Proxy ON para todos los registros `*.ops.smiletripcare.com` (evitar exposición directa de origen público `157.245.223.7`).
 - [ ] **Verificar email tester** — confirmar recepción/activación de invitación para `jkbotero78@gmail.com` tras onboarding de `localrank`.
 - [x] **`GOOGLE_DRIVE_TOKEN`** — confirmado 2026-04-10: Drive usa `GOOGLE_SERVICE_ACCOUNT_JSON` (2361 chars, válido). No es un gap real; la variable legacy no se usa.
@@ -1026,6 +1051,15 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 | Fecha | Decisión | Razón |
 |---|---|---|
 | 2026-04-11 | Dashboard de costos: API `apps/api/lib/admin-costs.ts` + `GET`/`POST /api/admin/costs`; aprobaciones en **memoria de proceso** (pérdida al reiniciar) hasta persistencia en DB; admin `/costs` + `api-client`; worker Mac 2011 vía `start-workers-mac2011.sh` (no `npm run start:worker` en raíz); compose opcional `infra/docker-compose.workers.yml` | Gobernanza visible antes de activar gastos en proveedores; alineado a `VISION.md` (infra + workers remotos) sin K8s |
+| 2026-04-11 | Autenticación admin: sesión Supabase via `getServerAuthToken()` en lugar de `NEXT_PUBLIC_PLATFORM_ADMIN_TOKEN` | Fase 1 Seguridad Crítica: eliminar exposición de token admin en cliente; todo flujo de auth usa sesión Bearer JWT. |
+| 2026-04-11 | BullMQ pipeline counts: `lib/bullmq-pipeline-counts.ts` + `lib/bullmq-redis.ts` para métricas de cola en API `/metrics` | Observabilidad de jobs BullMQ por tenant; integra con Redis del control plane. |
+| 2026-04-11 | Feedback services: `lib/feedback/service.ts` + `lib/feedback/approve-service.ts` para flujos ML de classification | Integración aprendizaje automático en feedback loop; decisiones ML vs approved por admin. |
+| 2026-04-11 | Métricas teams: `GET /api/metrics/teams` en `apps/api/app/api/metrics/teams/route.ts` | Agregado conteo de equipos BullMQ por tenant para dashboard admin. |
+| 2026-04-11 | Invitations admin: refactor con separación de concerns y mejor manejo de errores | Mejora fiabilidad en flujo de invitaciones; alineado a portal-invitations.ts. |
+| 2026-04-11 | Settings admin: página `/settings` en `apps/admin/app/settings/page.tsx` | Página de configuración de plataforma en dashboard admin. |
+| 2026-04-11 | Backup admin: ruta `/api/backup` en `apps/admin/app/api/backup/route.ts` | Gestión de backups desde dashboard admin. |
+| 2026-04-11 | Costos admin: refactor `apps/admin/app/costs/page.tsx` + `lib/api-client.ts` para costos | Mejora UI y conexión API para dashboard de costos. |
+| 2026-04-11 | Auth admin access: tests `lib/__tests__/auth-admin-access.test.ts` para cobertura de flujos admin | Cobertura de autenticación admin en API. |
 | 2026-04-04 | Skills: paquete `skills/manifest` (`@intcloudsysops/skills-manifest`); `manifest.json` + frontmatter YAML simple; `validateAllUserSkills` recomienda que `metadata.name` coincida con la carpeta bajo `skills/user/` | Fase 4 incremento 4: metadatos opcionales; se retiró `apps/skill-manifest` para un solo paquete y lockfile limpio |
 | 2026-04-08 | LLM Gateway: `routing_bias` opcional (sin `model` explícito) + parsers query/cabeceras; sesgo aplica sobre preferencia de `resolveRoutingPreference` vía `applyRoutingBias` | Fase 4 incremento 5: routing progresivo sin romper defaults; integradores pueden pasar hints desde `Request` sin duplicar lógica |
 | 2026-04-08 | Cola BullMQ: `priority` según `OrchestratorJob.plan` (enterprise 0, business 10_000, startup/sin plan 50_000; en BullMQ menor número = antes); `job_enqueue` incluye `queue_priority` | Fase 4 incremento 6; ADR-011; sin cambiar contrato HTTP; `plan` ausente = mismo comportamiento que startup en prioridad |

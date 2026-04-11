@@ -1,4 +1,4 @@
-import { requireAdminTokenUnlessDemoRead } from "../../../../lib/auth";
+import { requireAdminAccessUnlessDemoRead } from "../../../../lib/auth";
 import { DEMO_SYSTEM_METRICS_MOCK } from "../../../../lib/constants";
 import { countRunningDockerContainers } from "../../../../lib/docker-running-count";
 import { fetchHostMetricsFromPrometheus } from "../../../../lib/fetch-host-metrics-prometheus";
@@ -55,7 +55,7 @@ async function fetchActiveTenantCount(): Promise<number> {
 }
 
 export async function GET(request: Request): Promise<Response> {
-  const authError = requireAdminTokenUnlessDemoRead(request);
+  const authError = await requireAdminAccessUnlessDemoRead(request);
   if (authError) {
     return authError;
   }

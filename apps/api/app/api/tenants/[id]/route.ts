@@ -5,8 +5,8 @@ import {
   serverErrorLogged,
 } from "../../../../lib/api-response";
 import {
-  requireAdminToken,
-  requireAdminTokenUnlessDemoRead,
+  requireAdminAccess,
+  requireAdminAccessUnlessDemoRead,
 } from "../../../../lib/auth";
 import { HTTP_STATUS } from "../../../../lib/constants";
 import { getTenantStackStatus } from "../../../../lib/docker";
@@ -48,7 +48,7 @@ export async function GET(
   request: Request,
   context: { params: Promise<{ id: string }> },
 ): Promise<Response> {
-  const authError = requireAdminTokenUnlessDemoRead(request);
+  const authError = await requireAdminAccessUnlessDemoRead(request);
   if (authError) {
     return authError;
   }
@@ -89,7 +89,7 @@ export async function PATCH(
   request: Request,
   context: { params: Promise<{ id: string }> },
 ): Promise<Response> {
-  const authError = requireAdminToken(request);
+  const authError = await requireAdminAccess(request);
   if (authError) {
     return authError;
   }
@@ -125,7 +125,7 @@ export async function DELETE(
   request: Request,
   context: { params: Promise<{ id: string }> },
 ): Promise<Response> {
-  const authError = requireAdminToken(request);
+  const authError = await requireAdminAccess(request);
   if (authError) {
     return authError;
   }

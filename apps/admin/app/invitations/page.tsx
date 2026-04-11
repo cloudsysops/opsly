@@ -81,11 +81,9 @@ export default function InvitationsPage(): ReactElement {
       <p className="font-sans text-sm text-ops-gray">
         El email debe coincidir con{" "}
         <code className="text-ops-green">owner_email</code> del tenant en
-        Supabase. En producción hace falta token admin{" "}
-        <code className="text-neutral-400">
-          NEXT_PUBLIC_PLATFORM_ADMIN_TOKEN
-        </code>{" "}
-        salvo modo demo con mutaciones bloqueadas.
+        Supabase. Para enviar invitaciones necesitas una sesión admin válida en
+        el panel y que el API esté accesible desde{" "}
+        <code className="text-neutral-400">NEXT_PUBLIC_API_URL</code>.
       </p>
 
       {error ? (

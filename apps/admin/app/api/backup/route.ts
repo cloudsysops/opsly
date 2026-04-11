@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createServerSupabase } from "@/lib/supabase/server";
+import { getSessionAuthToken } from "@/lib/session-auth";
 
 export async function POST(): Promise<NextResponse> {
   try {
@@ -12,12 +13,15 @@ export async function POST(): Promise<NextResponse> {
     }
 
     const base = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "");
-    const token = process.env.NEXT_PUBLIC_PLATFORM_ADMIN_TOKEN;
-    if (!base || !token) {
+    const token = await getSessionAuthToken();
+    if (!base) {
       return NextResponse.json(
-        { error: "API URL or admin token not configured" },
+        { error: "API URL not configured" },
         { status: 500 },
       );
+    }
+    if (!token) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const res = await fetch(`${base}/api/backup`, {
@@ -35,7 +39,7 @@ export async function POST(): Promise<NextResponse> {
       return NextResponse.json(
         {
           error:
-            "Backup endpoint not implemented on API (POST /api/backup missing).",
+            "Backup remoto no disponible: el API no expone POST /api/backup. Usa scripts operativos hasta implementar ese endpoint.",
         },
         { status: 501 },
       );

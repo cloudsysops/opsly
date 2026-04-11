@@ -1,5 +1,5 @@
 import { serverErrorLogged } from "../../../lib/api-response";
-import { requireAdminTokenUnlessDemoRead } from "../../../lib/auth";
+import { requireAdminAccessUnlessDemoRead } from "../../../lib/auth";
 import { computeMrr } from "../../../lib/stripe";
 import { getServiceClient } from "../../../lib/supabase";
 import type { SupabaseClient } from "@supabase/supabase-js";
@@ -96,7 +96,7 @@ function firstMetricsError(rows: MetricRows): Error | null {
 }
 
 export async function GET(request: Request): Promise<Response> {
-  const authError = requireAdminTokenUnlessDemoRead(request);
+  const authError = await requireAdminAccessUnlessDemoRead(request);
   if (authError) {
     return authError;
   }

@@ -1,6 +1,7 @@
 import type { NextRequest } from "next/server";
 import { executeAutoImplement } from "@intcloudsysops/ml/feedback-decision-engine-runtime";
 import { notifyDiscordFeedback } from "../feedback-notify";
+import { requireAdminAccess } from "../auth";
 import { getServiceClient } from "../supabase";
 import { HTTP_STATUS } from "../constants";
 
@@ -20,20 +21,6 @@ function tenantSlugFromDecision(row: DecisionRow): string {
     return rel[0]?.tenant_slug ?? "platform";
   }
   return rel?.tenant_slug ?? "platform";
-}
-
-function adminUnauthorizedResponse(req: NextRequest): Response | null {
-  const token =
-    req.headers.get("x-admin-token") ??
-    req.headers.get("authorization")?.replace("Bearer ", "") ??
-    "";
-  if (token === process.env.PLATFORM_ADMIN_TOKEN) {
-    return null;
-  }
-  return Response.json(
-    { error: "Unauthorized" },
-    { status: HTTP_STATUS.UNAUTHORIZED },
-  );
 }
 
 async function parseApproveBody(
@@ -69,7 +56,7 @@ async function parseApproveBody(
 export async function handleFeedbackApprove(
   req: NextRequest,
 ): Promise<Response> {
-  const unauthorized = adminUnauthorizedResponse(req);
+  const unauthorized = await requireAdminAccess(req);
   if (unauthorized) return unauthorized;
 
   const parsed = await parseApproveBody(req);

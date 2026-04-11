@@ -1,6 +1,5 @@
 import { Queue } from "bullmq";
-
-const REDIS_URL = process.env.REDIS_URL || "redis://localhost:6379";
+import { getBullmqRedisConnection } from "./bullmq-redis";
 
 const TEAM_QUEUE_NAMES = [
   "team-frontend-team",
@@ -9,21 +8,13 @@ const TEAM_QUEUE_NAMES = [
   "team-infra-team",
 ] as const;
 
-function redisConnection(): {
-  host: string;
-  port: number;
-  password: string | undefined;
-} {
-  const url = new URL(REDIS_URL);
-  return {
-    host: url.hostname,
-    port: Number(url.port || "6379"),
-    password: process.env.REDIS_PASSWORD,
-  };
-}
-
 async function pipelineTotalForQueue(name: string): Promise<number> {
-  const queue = new Queue(name, { connection: redisConnection() });
+  const connection = getBullmqRedisConnection();
+  if (!connection) {
+    throw new Error("BullMQ Redis not configured");
+  }
+
+  const queue = new Queue(name, { connection });
   try {
     const [waiting, active] = await Promise.all([
       queue.getWaitingCount(),

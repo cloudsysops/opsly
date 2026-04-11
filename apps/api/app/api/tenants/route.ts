@@ -5,8 +5,8 @@ import {
   tryRoute,
 } from "../../../lib/api-response";
 import {
-  requireAdminToken,
-  requireAdminTokenUnlessDemoRead,
+  requireAdminAccess,
+  requireAdminAccessUnlessDemoRead,
 } from "../../../lib/auth";
 import { HTTP_STATUS } from "../../../lib/constants";
 import { provisionTenant } from "../../../lib/orchestrator";
@@ -28,7 +28,7 @@ function isUniqueViolation(message: string, code: string | undefined): boolean {
 
 export function GET(request: Request): Promise<Response> {
   return tryRoute("GET /api/tenants", async () => {
-    const authError = requireAdminTokenUnlessDemoRead(request);
+    const authError = await requireAdminAccessUnlessDemoRead(request);
     if (authError) {
       return authError;
     }
@@ -76,7 +76,7 @@ export function GET(request: Request): Promise<Response> {
 }
 
 export async function POST(request: Request): Promise<Response> {
-  const authError = requireAdminToken(request);
+  const authError = await requireAdminAccess(request);
   if (authError) {
     return authError;
   }

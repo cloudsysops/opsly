@@ -9,6 +9,7 @@ describe("GET /api/metrics/teams", () => {
 
   beforeEach(() => {
     process.env.PLATFORM_ADMIN_TOKEN = ADMIN;
+    delete process.env.REDIS_URL;
   });
 
   afterAll(() => {

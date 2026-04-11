@@ -16,9 +16,7 @@ Los importes son **orientativos** (orden de magnitud); la facturación real est�
 ### Autenticación
 
 - **Lectura (GET):** si `ADMIN_PUBLIC_DEMO_READ=true` en la API, el GET puede usarse sin token (modo demo de lectura).
-- **Mutaciones (POST):** siempre requieren `PLATFORM_ADMIN_TOKEN` (cabecera `Authorization: Bearer` o `x-admin-token`).
-
-En el admin en modo demo, si está definido `NEXT_PUBLIC_PLATFORM_ADMIN_TOKEN` en el build, el cliente envía ese token para permitir mutaciones (mismo patrón que otras pantallas admin).
+- **Mutaciones (POST):** aceptan `PLATFORM_ADMIN_TOKEN` para scripts/automatismos y también sesión Supabase de super admin desde el panel admin.
 
 ### Persistencia
 

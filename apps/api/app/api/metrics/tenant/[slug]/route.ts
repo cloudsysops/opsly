@@ -1,6 +1,6 @@
 import { getTenantUsage } from "@intcloudsysops/llm-gateway/logger";
 import { NextRequest } from "next/server";
-import { requireAdminToken } from "../../../../../lib/auth";
+import { requireAdminAccess } from "../../../../../lib/auth";
 
 type RouteContext = {
   params: Promise<{
@@ -12,7 +12,7 @@ export async function GET(
   request: NextRequest,
   context: RouteContext,
 ): Promise<Response> {
-  const authError = requireAdminToken(request);
+  const authError = await requireAdminAccess(request);
   if (authError) {
     return authError;
   }

@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { jsonError, parseJsonBody } from "../../../lib/api-response";
-import { requireAdminToken } from "../../../lib/auth";
+import { requireAdminAccess } from "../../../lib/auth";
 import { HTTP_STATUS } from "../../../lib/constants";
 import { executeAdminInvitation } from "../../../lib/invitation-admin-flow";
 import { formatZodError } from "../../../lib/validation";
@@ -23,7 +23,7 @@ const InvitationBodySchema = z
   });
 
 export async function POST(request: Request): Promise<Response> {
-  const authError = requireAdminToken(request);
+  const authError = await requireAdminAccess(request);
   if (authError) {
     return authError;
   }
