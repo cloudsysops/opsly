@@ -35,5 +35,7 @@ El disco raíz es **48 GB**. Con **Ollama (~9–10 GB imagen)**, **OpenClaw 
 
 ## Referencias
 
+- `docs/ARCHITECTURE-DISTRIBUTED-FINAL.md` — objetivo VPS + worker (Mac 2011)
+- `docs/DISTRIBUTED-ARCHITECTURE.md` — operación y checklist
 - `docs/DISK-USAGE-REPORT.md`
 - `docs/OPS-CLEANUP-PROCEDURES.md`
