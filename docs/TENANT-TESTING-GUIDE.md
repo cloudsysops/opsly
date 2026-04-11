@@ -1,5 +1,7 @@
 # Guía de testing para tenants (staging)
 
+**Checklist corto:** [`TENANT-TESTING-PLAN.md`](TENANT-TESTING-PLAN.md).
+
 Dominio base de ejemplo en staging: `ops.smiletripcare.com`. Sustituye `<slug>` por el slug de tu tenant (p. ej. `localrank`, `jkboterolabs`).
 
 ## 1. Verificar que el stack está activo
