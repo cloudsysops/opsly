@@ -15,7 +15,7 @@ vi.mock("@intcloudsysops/llm-gateway", () => ({
   llmCall: vi.fn(),
 }));
 
-vi.mock("@intcloudsysops/ml/feedback-decision-engine", () => ({
+vi.mock("@intcloudsysops/ml", () => ({
   analyzeFeedback: vi.fn(),
   executeAutoImplement: vi.fn(),
 }));
@@ -30,10 +30,7 @@ vi.mock("../lib/portal-feedback-auth", () => ({
 
 import { llmCall } from "@intcloudsysops/llm-gateway";
 import { resolveTrustedFeedbackIdentity } from "../lib/portal-feedback-auth";
-import {
-  analyzeFeedback,
-  executeAutoImplement,
-} from "@intcloudsysops/ml/feedback-decision-engine";
+import { analyzeFeedback, executeAutoImplement } from "@intcloudsysops/ml";
 
 function chainableSupabaseForPostML() {
   return {

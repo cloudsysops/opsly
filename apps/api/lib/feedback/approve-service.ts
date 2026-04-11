@@ -1,5 +1,5 @@
 import type { NextRequest } from "next/server";
-import { executeAutoImplement } from "@intcloudsysops/ml/feedback-decision-engine-runtime";
+import { executeAutoImplement } from "@intcloudsysops/ml";
 import { notifyDiscordFeedback } from "../feedback-notify";
 import { requireAdminAccess } from "../auth";
 import { getServiceClient } from "../supabase";

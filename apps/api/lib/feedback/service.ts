@@ -3,7 +3,7 @@ import { llmCall } from "@intcloudsysops/llm-gateway";
 import {
   analyzeFeedback,
   executeAutoImplement,
-} from "@intcloudsysops/ml/feedback-decision-engine-runtime";
+} from "@intcloudsysops/ml";
 import { notifyDiscordFeedback } from "../feedback-notify";
 import {
   resolveTrustedFeedbackIdentity,
