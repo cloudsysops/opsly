@@ -80,6 +80,11 @@ export function CostCard({
             <p className="mt-1 font-sans text-xs text-ops-muted">
               {service.description}
             </p>
+            {service.specs !== undefined && service.specs.length > 0 && (
+              <p className="mt-1 font-mono text-[11px] text-neutral-500">
+                {service.specs}
+              </p>
+            )}
             {service.duration && (
               <p className="mt-1 text-xs text-blue-400">⏱ {service.duration}</p>
             )}
@@ -123,6 +128,12 @@ export function CostCard({
           >
             Activar (gratis)
           </Button>
+        )}
+
+        {service.status === "approved" && (
+          <p className="text-center text-sm font-medium text-emerald-400">
+            Aprobado — listo para activación operativa (fuera de este panel)
+          </p>
         )}
 
         {showRejectModal && (

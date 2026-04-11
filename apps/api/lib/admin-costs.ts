@@ -21,6 +21,8 @@ export type CostLineItem = {
   future_cost?: string;
   duration?: string;
   description: string;
+  /** Hardware / SO del worker (solo informativo). */
+  specs?: string;
 };
 
 export type CostAlert = {
@@ -35,28 +37,28 @@ const CURRENT: Record<string, CostLineItem> = {
     cost: 12,
     period: "month",
     status: "active",
-    description: "Instancia principal (orden de magnitud; revisar factura DO).",
+    description: "VPS principal — ~2 GB RAM (orden de magnitud; revisar factura DO).",
   },
   cloudflare_proxy: {
     name: "Cloudflare Proxy",
     cost: 0,
     period: "month",
     status: "active",
-    description: "DNS + proxy (plan Free típico).",
+    description: "CDN y protección DDoS (plan Free típico).",
   },
   supabase: {
     name: "Supabase",
     cost: 0,
     period: "month",
     status: "active",
-    description: "Proyecto hosted (tier según cuenta).",
+    description: "Base de datos y autenticación (tier según cuenta).",
   },
   resend: {
     name: "Resend",
     cost: 0,
     period: "month",
     status: "active",
-    description: "Email transaccional (free tier / dominio verificado).",
+    description: "Envío de emails (free tier / dominio verificado).",
   },
 };
 
@@ -67,7 +69,9 @@ const PROPOSED_BASE: Record<string, CostLineItem> = {
     period: "month",
     status: "available",
     requires_approval: false,
-    description: "Orquestador en modo worker contra Redis del VPS (sin coste de proveedor).",
+    description:
+      "Worker distribuido (orchestrator BullMQ) contra Redis del control plane; sin coste de proveedor adicional.",
+    specs: "16 GB RAM, Ubuntu 22.04, Tailscale (ajustar según equipo real).",
   },
   gcp_failover: {
     name: "GCP e2-micro Failover",
@@ -77,8 +81,9 @@ const PROPOSED_BASE: Record<string, CostLineItem> = {
     status: "pending_approval",
     requires_approval: true,
     requires_credit_card: true,
-    future_cost: "Revisar precios Compute tras período promocional",
-    description: "VM standby documentada en docs/FAILOVER-GCP-ARCHITECTURE.md.",
+    future_cost: "~$7–10/mes tras 12 meses (revisar precios Compute)",
+    description:
+      "VM failover en Google Cloud — proyecto GCP de referencia: opslyquantum. Ver docs/FAILOVER-GCP-ARCHITECTURE.md.",
   },
   cloudflare_lb: {
     name: "Cloudflare Load Balancer",
@@ -129,6 +134,8 @@ export type AdminCostsPayload = {
     potentialSavings: number;
   };
   alerts: CostAlert[];
+  /** ISO 8601 — momento de generación de la respuesta. */
+  lastUpdated: string;
 };
 
 export function getAdminCostsPayload(): AdminCostsPayload {
@@ -147,10 +154,17 @@ export function getAdminCostsPayload(): AdminCostsPayload {
       {
         level: "info",
         message:
-          "Worker en Mac 2011 disponible sin coste de proveedor adicional (misma cola Redis).",
+          "Mac 2011 Worker disponible sin costo adicional de proveedor (misma cola Redis).",
         action: "enable_mac2011_worker",
       },
+      {
+        level: "warning",
+        message:
+          "GCP Failover (opslyquantum) puede requerir tarjeta para activar cuenta; sin cargo típico en período free según GCP.",
+        action: "review_gcp",
+      },
     ],
+    lastUpdated: new Date().toISOString(),
   };
 }
 

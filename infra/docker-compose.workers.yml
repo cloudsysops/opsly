@@ -1,26 +1,46 @@
-# Orchestrator solo workers (Mac 2011 / nodo remoto). Requiere misma imagen/secrets que el orchestrator en VPS.
-# Uso:
-#   cp .env.local .env.worker   # o crear a mano con REDIS_URL=redis://:PASS@TAILSCALE_IP:6379/0
-#   docker compose -f infra/docker-compose.workers.yml --env-file .env.worker up -d
+# Compose opcional: worker remoto (p. ej. Mac 2011) con el repo montado.
+# Uso desde la raíz del repo:
+#   REDIS_URL='redis://…' docker compose -f infra/docker-compose.workers.yml --env-file .env.worker up -d
 #
-# Redis debe ser alcanzable desde el host (Tailscale). No publicar Redis a Internet.
+# Requisitos: REDIS_URL con credenciales alineadas al VPS (ver Doppler prd).
+# Varias réplicas consumen la misma cola BullMQ (consumidores competidores):
+# ajusta concurrencia antes de duplicar servicios.
+#
+# `deploy.resources` solo aplica en Docker Swarm; en Compose clásico se ignora.
+# Ajusta memoria vía límites del host o una sola réplica.
+
 services:
-  orchestrator-worker:
-    image: ${ORCHESTRATOR_IMAGE:-ghcr.io/cloudsysops/intcloudsysops-orchestrator:latest}
-    container_name: opsly_orchestrator_worker
+  worker-primary:
+    image: node:20-bookworm-slim
+    working_dir: /app
+    volumes:
+      - ..:/app
+    environment:
+      WORKER_ID: ${WORKER_ID:-mac2011-worker-01}
+      OPSLY_ORCHESTRATOR_ROLE: ${OPSLY_ORCHESTRATOR_ROLE:-worker}
+      REDIS_URL: ${REDIS_URL:?Set REDIS_URL in environment or .env.worker}
+      OPSLY_API_INTERNAL_URL: ${OPSLY_API_INTERNAL_URL:-}
+    command:
+      - bash
+      - -lc
+      - npm ci && npm run build --workspace=@intcloudsysops/orchestrator && exec npm run start --workspace=@intcloudsysops/orchestrator
     restart: unless-stopped
     network_mode: host
+
+  worker-llm:
+    profiles:
+      - llm-split
+    image: node:20-bookworm-slim
+    working_dir: /app
+    volumes:
+      - ..:/app
     environment:
-      NODE_ENV: production
-      OPSLY_ORCHESTRATOR_ROLE: worker
-      ORCHESTRATOR_HEALTH_PORT: ${ORCHESTRATOR_HEALTH_PORT:-3011}
-      ORCHESTRATOR_LLM_GATEWAY_URL: ${ORCHESTRATOR_LLM_GATEWAY_URL:-}
-      OPSLY_API_INTERNAL_URL: ${OPSLY_API_INTERNAL_URL:-}
-      REDIS_URL: ${REDIS_URL}
-      SUPABASE_URL: ${SUPABASE_URL:-}
-      NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL:-}
-      SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY:-}
-      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-}
-      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET:-}
-      DISCORD_WEBHOOK_URL: ${DISCORD_WEBHOOK_URL:-}
-      GITHUB_TOKEN_N8N: ${GITHUB_TOKEN_N8N:-}
+      WORKER_ID: ${WORKER_ID:-mac2011-llm-01}
+      OPSLY_ORCHESTRATOR_ROLE: ${OPSLY_ORCHESTRATOR_ROLE:-worker}
+      REDIS_URL: ${REDIS_URL:?Set REDIS_URL in environment or .env.worker}
+    command:
+      - bash
+      - -lc
+      - npm ci && npm run build --workspace=@intcloudsysops/orchestrator && exec npm run start --workspace=@intcloudsysops/orchestrator
+    restart: unless-stopped
+    network_mode: host

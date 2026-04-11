@@ -124,7 +124,14 @@ cd ~/opsly
 ./scripts/start-worker.sh
 ```
 
-Implementación: `scripts/start-worker.sh` → `scripts/run-orchestrator-worker.sh`. Plantilla de variables (sin secretos): `docs/worker-env.local.example`.
+**Alias Mac 2011 / worker remoto** (carga opcional `.env.worker` y `config/gcp.env`; mismo arranque que arriba):
+
+```bash
+./scripts/start-workers-mac2011.sh
+./scripts/start-workers-mac2011.sh --dry-run
+```
+
+Implementación: `scripts/start-worker.sh` → `scripts/run-orchestrator-worker.sh`. Plantilla de variables (sin secretos): `docs/worker-env.local.example`. Compose opcional: `infra/docker-compose.workers.yml`.
 
 Variables típicas (ver `apps/orchestrator` y tu `.env`):
 

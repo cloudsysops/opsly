@@ -148,6 +148,7 @@ export type CostLineItem = {
   future_cost?: string;
   duration?: string;
   description: string;
+  specs?: string;
 };
 
 export type CostAlert = {
@@ -165,6 +166,7 @@ export type AdminCostsResponse = {
     potentialSavings: number;
   };
   alerts: CostAlert[];
+  lastUpdated: string;
 };
 
 export type CostDecisionResponse = {

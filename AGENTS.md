@@ -9,6 +9,15 @@
 
 **Mapa de documentación (evitar duplicar con `docs/AGENTS-GUIDE.md`):** `VISION.md` = norte de producto; **`AGENTS.md` (este archivo)** = estado operativo, próximo paso, bloqueantes e incrementos **por sesión**; **`docs/AGENTS-GUIDE.md`** = convenciones **solo** para varios asistentes/automatismos en paralelo (no sustituye AGENTS). `docs/adr/` = decisiones de arquitectura. No copiar tablas de límites por plan aquí: enlazar `AGENTS-GUIDE` + `VISION.md`.
 
+## ⚠️ Control de costos
+
+**Regla:** cualquier servicio con costo mensual recurrente requiere **aprobación explícita** del responsable antes de activarse en proveedor (DO, GCP, Cloudflare de pago, etc.). El dashboard de admin es **registro orientativo**; la facturación real está en cada panel de proveedor.
+
+- **Dashboard:** ruta admin `/costs` (p. ej. `https://admin.<PLATFORM_DOMAIN>/costs`).
+- **Costo orientativo actual:** ~**$12/mes** (VPS DigitalOcean — revisar factura DO).
+- **Sin coste de proveedor adicional:** worker Mac 2011 / nodo remoto (misma cola Redis; ver `docs/WORKER-SETUP-MAC2011.md`, `scripts/start-workers-mac2011.sh`).
+- **Pendientes típicos:** GCP failover (proyecto de referencia **opslyquantum**; free tier según cuenta), Cloudflare Load Balancer (~importe orientativo en catálogo), upgrade de VPS.
+
 ---
 
 ## Flujo de sesión (humano + Cursor)

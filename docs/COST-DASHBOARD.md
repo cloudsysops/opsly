@@ -8,7 +8,7 @@ En staging, la URL base suele ser `https://admin.<PLATFORM_DOMAIN>/costs` (por e
 
 ## Funcionalidad
 
-- **GET** `GET /api/admin/costs` (API `apps/api`): devuelve líneas de costo actuales y propuestas, resumen mensual y alertas informativas.
+- **GET** `GET /api/admin/costs` (API `apps/api`): devuelve líneas de costo actuales y propuestas, resumen mensual, **alertas** (info / warning, p. ej. Mac 2011 worker y revisión GCP **opslyquantum**), campo opcional **`specs`** en propuestas (hardware/SO) y **`lastUpdated`** (ISO 8601).
 - **POST** `POST /api/admin/costs`: registra **aprobación** o **rechazo** de una línea propuesta (`service_id`, `action`, `reason` opcional).
 
 Los importes son **orientativos** (orden de magnitud); la facturación real está en cada proveedor.
