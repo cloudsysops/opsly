@@ -3,19 +3,21 @@ FROM node:20-alpine AS builder
 WORKDIR /app
 COPY package*.json ./
 COPY apps/context-builder/package*.json ./apps/context-builder/
+COPY apps/llm-gateway/package*.json ./apps/llm-gateway/
 RUN npm ci
 
 COPY . .
-RUN npm run build -w @intcloudsysops/context-builder
+RUN npm run build -w @intcloudsysops/llm-gateway && npm run build -w @intcloudsysops/context-builder
+RUN npm prune --omit=dev
 
 FROM node:20-alpine AS runner
 
 WORKDIR /app
-COPY package*.json ./
-COPY apps/context-builder/package*.json ./apps/context-builder/
-RUN npm ci --omit=dev
-
+# Runtime: linked workspace + pruned node_modules from builder (includes @intcloudsysops/llm-gateway).
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/apps/llm-gateway ./apps/llm-gateway
 COPY --from=builder /app/apps/context-builder/dist ./apps/context-builder/dist
+COPY --from=builder /app/apps/context-builder/package.json ./apps/context-builder/package.json
 
 # Repo-First RAG: snapshot de docs + índice (override en VPS con volumen /opt/opsly)
 COPY --from=builder /app/docs /app/repo/docs

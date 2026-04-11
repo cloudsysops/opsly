@@ -14,7 +14,10 @@ COPY --from=deps /repo/package-lock.json ./package-lock.json
 COPY apps/mcp ./apps/mcp
 COPY apps/llm-gateway ./apps/llm-gateway
 COPY apps/agents/notebooklm ./apps/agents/notebooklm
-RUN npm run build -w @intcloudsysops/mcp
+# Workspace deps must emit dist/ before MCP (imports llm-gateway/cache, notebooklm-agent).
+RUN npm run build -w @intcloudsysops/llm-gateway && \
+    npm run build -w @intcloudsysops/notebooklm-agent && \
+    npm run build -w @intcloudsysops/mcp
 
 FROM node:20-alpine AS runner
 WORKDIR /app
