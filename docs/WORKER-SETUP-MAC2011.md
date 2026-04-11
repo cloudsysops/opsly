@@ -117,9 +117,18 @@ En este repo **no** existe `npm run start:worker` en la raíz. El orchestrator u
 | Build | `npm run build --workspace=@intcloudsysops/orchestrator` |
 | Arranque | `npm run start --workspace=@intcloudsysops/orchestrator` |
 
+**Script recomendado (carga `.env.local` si existe):**
+
+```bash
+cd ~/opsly
+./scripts/start-worker.sh
+```
+
+Implementación: `scripts/start-worker.sh` → `scripts/run-orchestrator-worker.sh`. Plantilla de variables (sin secretos): `docs/worker-env.local.example`.
+
 Variables típicas (ver `apps/orchestrator` y tu `.env`):
 
-- `REDIS_URL` — **obligatorio** para BullMQ (incluye contraseña si aplica).
+- `REDIS_URL` — **obligatorio** para BullMQ (incluye contraseña si aplica). Debe coincidir con **Doppler** `prd` (`ops-intcloudsysops`), no inventar `redis://100.120.151.91:6379` sin auth si Redis no está expuesto así.
 - `REDIS_PASSWORD` — si tu URL no la lleva embebida.
 - Resto: Supabase, LLM, etc., según lo que ejecute tu build.
 
@@ -131,7 +140,7 @@ ssh opsly-mac2011 "curl -sf --max-time 10 https://api.ops.smiletripcare.com/api/
 
 **Redis desde el worker:** debe ser alcanzable por red (Tailscale al VPS, túnel, o Redis dedicado). Un `redis-cli ping` solo funciona si el puerto Redis está expuesto a esa ruta y con credenciales correctas; en producción suele ser **solo red interna/VPN**.
 
-Se incluye script auxiliar en el repo: `scripts/run-orchestrator-worker.sh` (ver cabecera del script).
+**Seguridad:** no extraigas `SUPABASE_SERVICE_ROLE_KEY` del VPS con scripts que impriman valores; usa **Doppler** o copia local privada a `~/.opsly/` o `.env.local` en el worker.
 
 ---
 

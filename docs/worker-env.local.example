@@ -1,0 +1,13 @@
+# Plantilla para ~/opsly/.env.local en el worker (NO commitear).
+# Copiar: cp docs/worker-env.local.example ~/opsly/.env.local  y rellenar con Doppler o valores seguros.
+#
+# NODE_ENV=development
+# WORKER_ID=mac2011-ubuntu
+#
+# Obligatorio para BullMQ — misma URL que en entorno de plataforma (Doppler ops-intcloudsysops / prd):
+# REDIS_URL=redis://:PASSWORD@HOST:6379
+#
+# API pública (solo si el orchestrator la necesita):
+# OPSLY_API_INTERNAL_URL=https://api.ops.smiletripcare.com
+#
+# No pegues SUPABASE_SERVICE_ROLE_KEY en chats; carga desde Doppler o archivo local privado.
