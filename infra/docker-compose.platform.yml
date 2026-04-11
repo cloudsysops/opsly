@@ -274,6 +274,8 @@ services:
       - ../.env
     environment:
       NODE_ENV: production
+      # Vacío = full (compat). `control` = solo TeamManager/eventos en VPS; workers en otro nodo con `worker`.
+      OPSLY_ORCHESTRATOR_ROLE: ${OPSLY_ORCHESTRATOR_ROLE:-}
       ORCHESTRATOR_HEALTH_PORT: "3011"
       ORCHESTRATOR_LLM_GATEWAY_URL: http://llm-gateway:3010
       OPSLY_API_INTERNAL_URL: ${OPSLY_API_INTERNAL_URL:-http://app:3000}

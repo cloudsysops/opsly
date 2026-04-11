@@ -18,6 +18,7 @@ agents/prompts/secrets-*.md
 .cursor/mcp.json
 .env.local
 .env*.local
+.env.worker
 
 node_modules
 apps/api/coverage/

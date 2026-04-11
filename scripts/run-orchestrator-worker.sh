@@ -10,7 +10,11 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 
+# Por defecto solo workers (Mac 2011 / nodo remoto). Proceso completo: OPSLY_ORCHESTRATOR_ROLE=full
+export OPSLY_ORCHESTRATOR_ROLE="${OPSLY_ORCHESTRATOR_ROLE:-worker}"
+
 if [[ "${DRY_RUN:-}" == "true" ]]; then
+  echo "[dry-run] OPSLY_ORCHESTRATOR_ROLE=$OPSLY_ORCHESTRATOR_ROLE"
   echo "[dry-run] would run: npm run build --workspace=@intcloudsysops/orchestrator"
   echo "[dry-run] would run: npm run start --workspace=@intcloudsysops/orchestrator"
   exit 0

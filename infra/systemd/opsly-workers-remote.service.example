@@ -1,0 +1,27 @@
+# Ejemplo: orchestrator solo workers en Mac 2011 (usuario/ paths ajustar).
+#   sudo cp infra/systemd/opsly-workers-remote.service.example /etc/systemd/system/opsly-workers-remote.service
+#
+# EnvironmentFile debe incluir REDIS_URL (Tailscale al VPS) y secretos alineados a Doppler.
+
+[Unit]
+Description=Opsly Orchestrator Worker Remote (BullMQ)
+Documentation=https://github.com/cloudsysops/opsly
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=opslyquantum
+Group=opslyquantum
+WorkingDirectory=/home/opslyquantum/opsly
+Environment=OPSLY_ORCHESTRATOR_ROLE=worker
+EnvironmentFile=-/home/opslyquantum/opsly/.env.local
+ExecStart=/home/opslyquantum/opsly/scripts/run-worker-with-nvm.sh
+Restart=always
+RestartSec=15
+
+StandardOutput=append:/home/opslyquantum/opsly/logs/worker.log
+StandardError=append:/home/opslyquantum/opsly/logs/worker-error.log
+
+[Install]
+WantedBy=multi-user.target

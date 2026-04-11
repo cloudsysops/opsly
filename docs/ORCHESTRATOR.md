@@ -11,6 +11,16 @@ Servicio Node (`apps/orchestrator`) que consume la cola BullMQ **`openclaw`** en
 
 El contenedor expone **GET `/health`** en `ORCHESTRATOR_HEALTH_PORT` (por defecto `3011`).
 
+## Rol del proceso (`OPSLY_ORCHESTRATOR_ROLE`)
+
+| Valor | Dónde | Qué arranca |
+|--------|--------|-------------|
+| *(omitido)* / `full` | Por defecto | TeamManager + suscripción a eventos + **todos** los workers (comportamiento histórico). |
+| `control` | VPS (control plane) | TeamManager + eventos + health; **sin** workers BullMQ (consumo en otro host). |
+| `worker` | Mac 2011 / nodo remoto | Solo workers + health; **sin** TeamManager. |
+
+Misma imagen Docker / mismo `node dist/index.js`; ver `apps/orchestrator/src/orchestrator-role.ts` y `docs/ARCHITECTURE-DISTRIBUTED.md`.
+
 ## Jobs disponibles
 
 | Nombre job (BullMQ) | Worker | Rol |

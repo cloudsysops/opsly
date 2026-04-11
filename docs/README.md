@@ -30,6 +30,8 @@ docs/SPRINT-ROADMAP.md   ← sprints 1-8, qué está hecho, qué sigue
 | Doc | Cuándo usarlo |
 |-----|---------------|
 | [`ARCHITECTURE.md`](ARCHITECTURE.md) | Control plane vs data plane, Traefik, redes |
+| [`ARCHITECTURE-DISTRIBUTED.md`](ARCHITECTURE-DISTRIBUTED.md) | VPS control + workers remotos (Mac 2011), Redis Tailscale |
+| [`WORKER-FLOWS.md`](WORKER-FLOWS.md) | Quién corre TeamManager vs workers BullMQ |
 | [`OPENCLAW-ARCHITECTURE.md`](OPENCLAW-ARCHITECTURE.md) | MCP + Orchestrator + LLM Gateway + Context Builder |
 | [`ORCHESTRATOR.md`](ORCHESTRATOR.md) | BullMQ jobs, workers, circuit breaker, prioridades |
 | [`LLM-GATEWAY.md`](LLM-GATEWAY.md) | Cache Redis, routing bias, cost tracking |

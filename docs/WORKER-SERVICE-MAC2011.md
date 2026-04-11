@@ -3,6 +3,7 @@
 ## Requisitos
 
 - Repo en `~/opsly`, `REDIS_URL` en `~/opsly/.env.local` (misma URL que Doppler `prd` / VPS).
+- Con arquitectura distribuida, `run-orchestrator-worker.sh` fija **`OPSLY_ORCHESTRATOR_ROLE=worker`** por defecto; el VPS puede usar `control`. Ver **`docs/ARCHITECTURE-DISTRIBUTED.md`**.
 - Scripts ejecutables: `scripts/run-worker-with-nvm.sh`, `scripts/start-worker.sh`.
 - **sudo** para instalar la unidad (una vez).
 

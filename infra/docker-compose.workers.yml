@@ -1,0 +1,26 @@
+# Orchestrator solo workers (Mac 2011 / nodo remoto). Requiere misma imagen/secrets que el orchestrator en VPS.
+# Uso:
+#   cp .env.local .env.worker   # o crear a mano con REDIS_URL=redis://:PASS@TAILSCALE_IP:6379/0
+#   docker compose -f infra/docker-compose.workers.yml --env-file .env.worker up -d
+#
+# Redis debe ser alcanzable desde el host (Tailscale). No publicar Redis a Internet.
+services:
+  orchestrator-worker:
+    image: ${ORCHESTRATOR_IMAGE:-ghcr.io/cloudsysops/intcloudsysops-orchestrator:latest}
+    container_name: opsly_orchestrator_worker
+    restart: unless-stopped
+    network_mode: host
+    environment:
+      NODE_ENV: production
+      OPSLY_ORCHESTRATOR_ROLE: worker
+      ORCHESTRATOR_HEALTH_PORT: ${ORCHESTRATOR_HEALTH_PORT:-3011}
+      ORCHESTRATOR_LLM_GATEWAY_URL: ${ORCHESTRATOR_LLM_GATEWAY_URL:-}
+      OPSLY_API_INTERNAL_URL: ${OPSLY_API_INTERNAL_URL:-}
+      REDIS_URL: ${REDIS_URL}
+      SUPABASE_URL: ${SUPABASE_URL:-}
+      NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL:-}
+      SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY:-}
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET:-}
+      DISCORD_WEBHOOK_URL: ${DISCORD_WEBHOOK_URL:-}
+      GITHUB_TOKEN_N8N: ${GITHUB_TOKEN_N8N:-}

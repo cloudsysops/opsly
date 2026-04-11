@@ -2,6 +2,11 @@ import { setupLangSmithTracing } from "./agents/langsmith.js";
 import { processIntent } from "./engine.js";
 import { subscribeEvents } from "./events/bus.js";
 import { startOrchestratorHealthServer } from "./health-server.js";
+import {
+  parseOrchestratorRole,
+  shouldRunControlPlane,
+  shouldRunWorkers,
+} from "./orchestrator-role.js";
 import { connection } from "./queue.js";
 import { TeamManager } from "./teams/TeamManager.js";
 import { startBackupWorker } from "./workers/BackupWorker.js";
@@ -40,20 +45,7 @@ async function runEventSubscription(teamManager: TeamManager): Promise<void> {
   });
 }
 
-async function main(): Promise<void> {
-  setupLangSmithTracing();
-  console.log("[orchestrator] Iniciando…");
-
-  // TeamManager + misma conexión Redis que openclaw (queue.ts); eventos → assignToTeam p.ej. deploy
-  const teamManager = new TeamManager(connection);
-  console.log("[orchestrator] TeamManager: 4 equipos BullMQ activos");
-
-  startOrchestratorHealthServer();
-
-  void runEventSubscription(teamManager).catch((err) => {
-    console.error("[orchestrator] runEventSubscription", err);
-  });
-
+function startAllWorkers(): void {
   startCursorWorker(connection);
   startN8nWorker(connection);
   startNotifyWorker(connection);
@@ -67,11 +59,40 @@ async function main(): Promise<void> {
   console.log(
     "[orchestrator] Workers: cursor, n8n, notify, drive, backup, health, budget, opsly-webhooks, webhooks-processing, general-events",
   );
+}
+
+async function main(): Promise<void> {
+  setupLangSmithTracing();
+  const role = parseOrchestratorRole();
+  console.log(`[orchestrator] Iniciando… (OPSLY_ORCHESTRATOR_ROLE=${role})`);
+
+  let teamManager: TeamManager | undefined;
+
+  if (shouldRunControlPlane(role)) {
+    teamManager = new TeamManager(connection);
+    console.log("[orchestrator] TeamManager: 4 equipos BullMQ activos");
+  }
+
+  startOrchestratorHealthServer();
+
+  if (shouldRunControlPlane(role) && teamManager) {
+    void runEventSubscription(teamManager).catch((err) => {
+      console.error("[orchestrator] runEventSubscription", err);
+    });
+  }
+
+  if (shouldRunWorkers(role)) {
+    startAllWorkers();
+  }
 
   const shutdown = (): void => {
     void (async () => {
-      console.log("[orchestrator] Shutdown, cerrando TeamManager…");
-      await teamManager.close();
+      if (teamManager) {
+        console.log("[orchestrator] Shutdown, cerrando TeamManager…");
+        await teamManager.close();
+      } else {
+        console.log("[orchestrator] Shutdown (modo worker)");
+      }
       process.exit(0);
     })();
   };
@@ -79,13 +100,14 @@ async function main(): Promise<void> {
   process.on("SIGTERM", shutdown);
   process.on("SIGINT", shutdown);
 
-  const result = await processIntent({
-    intent: "notify",
-    context: { title: "OpenClaw", message: "orchestrator started", type: "info" },
-    initiated_by: "system",
-  });
-
-  process.stdout.write(`${JSON.stringify(result)}\n`);
+  if (shouldRunControlPlane(role)) {
+    const result = await processIntent({
+      intent: "notify",
+      context: { title: "OpenClaw", message: "orchestrator started", type: "info" },
+      initiated_by: "system",
+    });
+    process.stdout.write(`${JSON.stringify(result)}\n`);
+  }
 }
 
 void main();

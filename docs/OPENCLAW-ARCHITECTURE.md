@@ -8,6 +8,15 @@ Documento de **diseño orientativo** para una capa de orquestación de agentes y
 - Reducir **costo** (tokens, llamadas externas, contenedores) mediante priorización y deduplicación.
 - Reutilizar **Redis** ya presente en la plataforma (BullMQ / colas) como bus de eventos y estado de orquestación.
 
+## Workers remotos (Mac 2011 / nodos dedicados)
+
+El orchestrator (`apps/orchestrator`) puede dividirse con **`OPSLY_ORCHESTRATOR_ROLE`**:
+
+- **`control`** en el VPS: mantiene **TeamManager**, suscripción a eventos Redis y encolado; **no** arranca los consumidores BullMQ de jobs.
+- **`worker`** en un host con más CPU/RAM: arranca **solo** los `Worker` BullMQ contra el **mismo** `REDIS_URL` (típicamente Redis del VPS vía Tailscale).
+
+Así se alivia CPU en el VPS sin cambiar el modelo de cola única (`openclaw` en Redis). Detalle operativo: **`docs/ARCHITECTURE-DISTRIBUTED.md`**, **`docs/WORKER-FLOWS.md`**, **`docs/ORCHESTRATOR.md`**.
+
 ## Componentes propuestos
 
 | Pieza | Rol |
