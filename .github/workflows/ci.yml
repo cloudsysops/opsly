@@ -147,15 +147,14 @@ jobs:
           cache: npm
           cache-dependency-path: package-lock.json
 
-      - name: npm ci + build ml first (required by api)
+      - name: npm ci + build all packages (ml, llm-gateway, api, admin, portal)
         run: |
           set -euo pipefail
           npm ci
+          # Build internal packages first
           cd apps/ml && npm run build
-
-      - name: build api + admin + portal
-        run: |
-          set -euo pipefail
+          cd apps/llm-gateway && npm run build
+          # Then build apps in parallel
           (cd apps/api && npm run build) & pid1=$!
           (cd apps/admin && npm run build) & pid2=$!
           (cd apps/portal && npm run build) & pid3=$!
