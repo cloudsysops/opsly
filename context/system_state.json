@@ -40,7 +40,7 @@
       "portal",
       "web"
     ],
-    "scripts": 50,
+    "scripts": 55,
     "adrs": 15,
     "migrations": 23
   }
