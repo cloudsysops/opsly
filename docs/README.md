@@ -83,6 +83,8 @@ docs/SPRINT-ROADMAP.md   ← sprints 1-8, qué está hecho, qué sigue
 | [`runbooks/incident.md`](runbooks/incident.md) | Respuesta a incidentes paso a paso |
 | [`runbooks/managed.md`](runbooks/managed.md) | Runbook para tenants managed |
 | [`INVITATIONS_RUNBOOK.md`](INVITATIONS_RUNBOOK.md) | Flujo completo de invitaciones |
+| [`TENANT-TESTING-PLAN.md`](TENANT-TESTING-PLAN.md) | Checklist corto: URLs y pasos para tenants en staging |
+| [`TENANT-TESTING-GUIDE.md`](TENANT-TESTING-GUIDE.md) | Guía ampliada de verificación n8n / Uptime / portal |
 | [`TROUBLESHOOTING.md`](TROUBLESHOOTING.md) | Diagnóstico: Traefik, Docker, Supabase, Doppler |
 | [`FAQ.md`](FAQ.md) | Preguntas frecuentes con respuestas directas |
 | [`FAILOVER-RUNBOOK.md`](FAILOVER-RUNBOOK.md) | Detección, alertas y failover (segundo origen + LB; manual por defecto) |
