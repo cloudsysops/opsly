@@ -5,7 +5,7 @@
 # (Compose por defecto solo lee .env junto al YAML en infra/, no la raíz del repo).
 #
 # Required en /opt/opsly/.env (non-exhaustive): PLATFORM_DOMAIN (base host, e.g. ops.smiletripcare.com),
-# REDIS_PASSWORD, ACME_EMAIL, TRAEFIK_DASHBOARD_BASIC_AUTH_USERS (htpasswd; escapar $ en Compose),
+# REDIS_PASSWORD, REDIS_EXPORT_BIND (opcional; ver servicio redis), ACME_EMAIL, TRAEFIK_DASHBOARD_BASIC_AUTH_USERS (htpasswd; escapar $ en Compose),
 # DOCKER_GID (GID del grupo del socket: stat -c %g /var/run/docker.sock; vps-bootstrap.sh lo añade),
 # APP_IMAGE (optional). Los servicios también cargan env_file ../.env (= /opt/opsly/.env desde infra/).
 
@@ -52,12 +52,18 @@ services:
   redis:
     image: redis:7-alpine
     command: redis-server --requirepass ${REDIS_PASSWORD}
+    # Workers remotos (Tailscale): en .env p.ej. REDIS_EXPORT_BIND=100.120.151.91 (IP Tailscale del VPS).
+    # Por defecto 127.0.0.1: solo acceso local / túnel SSH (redis-cli -u redis://:...@127.0.0.1:6379/0).
+    ports:
+      - "${REDIS_EXPORT_BIND:-127.0.0.1}:6379:6379"
     volumes:
       - redis_data:/data
     environment:
       REDIS_PASSWORD: ${REDIS_PASSWORD}
     networks:
       - internal
+      # Sin una red no-internal, Docker no publica `ports` al host (NetworkSettings.Ports queda null).
+      - redis_edge
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", 'redis-cli -a "$$REDIS_PASSWORD" ping | grep -q PONG']
@@ -338,6 +344,8 @@ networks:
   internal:
     driver: bridge
     internal: true
+  redis_edge:
+    driver: bridge
 
 volumes:
   letsencrypt:
