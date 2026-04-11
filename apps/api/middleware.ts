@@ -1,43 +1,190 @@
-import { type NextRequest, NextResponse } from "next/server";
+// Middleware en la raíz del paquete (`apps/api/middleware.ts`). No existe `apps/api/src/middleware.ts` en este repo.
+import { NextResponse, type NextRequest } from "next/server";
 import { pickCorsOrigin } from "./lib/cors-origins";
+import { HTTP_STATUS } from "./lib/constants";
+import {
+  checkRateLimit,
+  RATE_LIMIT_MAX_REQUESTS,
+  type RateLimitResult,
+} from "./src/lib/rate-limiter";
 
 const CORS_METHODS = "GET,POST,PATCH,DELETE,OPTIONS";
 const CORS_HEADERS = "Content-Type,Authorization,x-admin-token";
 const API_VERSION = "1";
+const BASE64_BLOCK_SIZE = 4;
+const PORTAL_HEALTH_PATH = "/api/portal/health";
+const TENANT_PATH_MARKER = "tenant";
 
-// Security headers
-const SECURITY_HEADERS = {
-  // Content Security Policy
-  // - 'self' for same-origin resources
-  // - 'unsafe-inline' for Next.js (required for inline styles/scripts)
-  // - Supabase and Stripe domains for API connections
-  // - Default-src 'none' to block everything else by default
+// Security headers (CSP + hardening) — todas las respuestas `/api/*`
+const SECURITY_HEADERS: Record<string, string> = {
   "Content-Security-Policy":
-    "default-src 'none'; " +
-    "script-src 'self' 'unsafe-inline' https://*.supabase.co https://js.stripe.com; " +
+    "default-src 'self'; " +
+    "script-src 'self' 'unsafe-inline' 'unsafe-eval'; " +
     "style-src 'self' 'unsafe-inline'; " +
-    "img-src 'self' data: https://*.supabase.co; " +
+    "img-src 'self' data: https:; " +
     "connect-src 'self' https://*.supabase.co https://api.stripe.com; " +
-    "font-src 'self'; " +
-    "object-src 'none'; " +
-    "base-uri 'self'; " +
+    "font-src 'self' data:; " +
     "frame-ancestors 'none';",
 
-  // Prevent clickjacking
   "X-Frame-Options": "DENY",
 
-  // Prevent MIME type sniffing
   "X-Content-Type-Options": "nosniff",
 
-  // Referrer policy
   "Referrer-Policy": "strict-origin-when-cross-origin",
 
-  // Additional security headers
-  "X-DNS-Prefetch-Control": "on",
-  "Strict-Transport-Security": "max-age=63072000; includeSubDomains; preload",
-  "X-Permitted-Cross-Domain-Policies": "none",
-  "X-Download-Options": "noopen",
+  "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
 };
+
+function normalizedApiPath(pathname: string): string {
+  if (pathname.startsWith("/api/v1/")) {
+    return pathname.replace("/api/v1/", "/api/");
+  }
+  return pathname;
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return value !== null && typeof value === "object" && !Array.isArray(value);
+}
+
+function readTenantSlug(source: unknown): string | null {
+  if (!isRecord(source)) {
+    return null;
+  }
+  const value = source.tenant_slug;
+  if (typeof value !== "string") {
+    return null;
+  }
+  const slug = value.trim();
+  return slug.length > 0 ? slug : null;
+}
+
+function decodeJwtPayload(jwt: string): unknown | null {
+  const payload = jwt.split(".")[1];
+  if (!payload || payload.length === 0) {
+    return null;
+  }
+
+  try {
+    const normalized = payload.replace(/-/g, "+").replace(/_/g, "/");
+    const padded = normalized.padEnd(
+      Math.ceil(normalized.length / BASE64_BLOCK_SIZE) * BASE64_BLOCK_SIZE,
+      "=",
+    );
+    return JSON.parse(Buffer.from(padded, "base64").toString("utf8"));
+  } catch {
+    return null;
+  }
+}
+
+function readPayloadTenantSlug(
+  payload: unknown,
+  key: "user_metadata" | "app_metadata",
+): string | null {
+  if (!isRecord(payload)) {
+    return null;
+  }
+  return readTenantSlug(payload[key]);
+}
+
+function resolveTenantSlugFromAuth(request: NextRequest): string | null {
+  const auth = request.headers.get("authorization");
+  if (!auth?.startsWith("Bearer ")) {
+    return null;
+  }
+
+  const jwt = auth.slice("Bearer ".length).trim();
+  if (jwt.length === 0) {
+    return null;
+  }
+
+  const payload = decodeJwtPayload(jwt);
+  return (
+    readTenantSlug(payload) ??
+    readPayloadTenantSlug(payload, "user_metadata") ??
+    readPayloadTenantSlug(payload, "app_metadata")
+  );
+}
+
+function resolveTenantSlugFromPath(pathname: string): string | null {
+  const segments = pathname.split("/").filter(Boolean);
+  const [apiSegment, resourceSegment, tenantMarker, slugSegment] = segments;
+
+  if (apiSegment !== "api" || tenantMarker !== TENANT_PATH_MARKER) {
+    return null;
+  }
+
+  const isTenantScopedResource =
+    resourceSegment === "portal" || resourceSegment === "metrics";
+
+  return isTenantScopedResource ? slugSegment?.trim() || null : null;
+}
+
+function resolveTenantSlug(request: NextRequest): string | null {
+  const headerSlug = request.headers.get("x-tenant-slug")?.trim();
+  if (headerSlug && headerSlug.length > 0) {
+    return headerSlug;
+  }
+
+  const pathname = normalizedApiPath(request.nextUrl.pathname);
+  const slugFromQuery = request.nextUrl.searchParams.get("slug")?.trim();
+
+  if (pathname === PORTAL_HEALTH_PATH && slugFromQuery && slugFromQuery.length > 0) {
+    return slugFromQuery;
+  }
+
+  const slugFromPath = resolveTenantSlugFromPath(pathname);
+  if (slugFromPath) {
+    return slugFromPath;
+  }
+
+  return resolveTenantSlugFromAuth(request);
+}
+
+function applyRateLimitHeaders(
+  response: NextResponse,
+  result: RateLimitResult,
+): void {
+  const resetSeconds = Math.max(
+    0,
+    Math.ceil((result.resetAt.getTime() - Date.now()) / 1000),
+  );
+
+  response.headers.set("X-RateLimit-Limit", String(RATE_LIMIT_MAX_REQUESTS));
+  response.headers.set("X-RateLimit-Remaining", String(result.remaining));
+  response.headers.set(
+    "X-RateLimit-Reset",
+    String(Math.floor(result.resetAt.getTime() / 1000)),
+  );
+
+  if (!result.allowed) {
+    response.headers.set("Retry-After", String(resetSeconds));
+  }
+}
+
+function applyApiHeaders(
+  response: NextResponse,
+  origin: string | null,
+  rateLimitResult: RateLimitResult | null,
+): NextResponse {
+  response.headers.set("X-API-Version", API_VERSION);
+
+  Object.entries(SECURITY_HEADERS).forEach(([key, value]) => {
+    response.headers.set(key, value);
+  });
+
+  if (origin) {
+    const ch = corsHeaders(origin);
+    ch.forEach((value, key) => {
+      response.headers.set(key, value);
+    });
+  }
+
+  if (rateLimitResult) {
+    applyRateLimitHeaders(response, rateLimitResult);
+  }
+
+  return response;
+}
 
 function corsHeaders(origin: string): Headers {
   const h = new Headers();
@@ -58,7 +205,7 @@ function rewriteV1(request: NextRequest): NextResponse | null {
   return NextResponse.rewrite(url);
 }
 
-export function middleware(request: NextRequest): NextResponse {
+export async function middleware(request: NextRequest): Promise<NextResponse> {
   const pathname = request.nextUrl.pathname;
   
   // Skip API routes that don't start with /api
@@ -68,14 +215,6 @@ export function middleware(request: NextRequest): NextResponse {
 
   // Rewrite /api/v1/* → /api/*
   const rewritten = rewriteV1(request);
-  if (rewritten) {
-    rewritten.headers.set("X-API-Version", API_VERSION);
-    // Apply security headers to rewritten response
-    Object.entries(SECURITY_HEADERS).forEach(([key, value]) => {
-      rewritten.headers.set(key, value);
-    });
-    return rewritten;
-  }
 
   const origin = pickCorsOrigin(request.headers.get("origin"));
 
@@ -89,23 +228,28 @@ export function middleware(request: NextRequest): NextResponse {
     });
   }
 
-  const res = NextResponse.next();
-  res.headers.set("X-API-Version", API_VERSION);
+  const tenantSlug = resolveTenantSlug(request);
+  const rateLimitResult = tenantSlug ? await checkRateLimit(tenantSlug) : null;
 
-  // Apply security headers to all API responses
-  Object.entries(SECURITY_HEADERS).forEach(([key, value]) => {
-    res.headers.set(key, value);
-  });
-
-  if (!origin) {
-    return res;
+  if (rateLimitResult && !rateLimitResult.allowed) {
+    return applyApiHeaders(
+      NextResponse.json(
+        {
+          error: "Too many requests",
+          tenant: tenantSlug,
+        },
+        { status: HTTP_STATUS.TOO_MANY_REQUESTS },
+      ),
+      origin,
+      rateLimitResult,
+    );
   }
 
-  const ch = corsHeaders(origin);
-  ch.forEach((value, key) => {
-    res.headers.set(key, value);
-  });
-  return res;
+  if (rewritten) {
+    return applyApiHeaders(rewritten, origin, rateLimitResult);
+  }
+
+  return applyApiHeaders(NextResponse.next(), origin, rateLimitResult);
 }
 
 export const config = {

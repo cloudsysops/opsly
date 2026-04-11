@@ -29,6 +29,7 @@ Lista operativa para releases y revisiones periódicas. Marca ítems según tu p
 
 ## Aplicación
 
+- [x] **CSP Headers implementados** — `apps/api/middleware.ts` (matcher `/api/:path*`; CSP, `X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy`) — **2026-04-11**. *(Next.js resuelve el middleware en la raíz del app; no usar `apps/api/src/middleware.ts` en este repo.)*
 - [ ] CORS en API acotado a orígenes conocidos (admin, portal).
 - [ ] Webhooks Stripe validados con firma.
 - [ ] Rate limiting / reCAPTCHA: evaluar según exposición pública (fase de producto).
@@ -142,6 +143,7 @@ Sí, el backend está **bien separado por tenant para la fase actual** (staging 
 - **Middleware/API (siguiente PR):**
   - añadir rate limit por IP + ruta para endpoints públicos (`/api/portal/health`, `/api/feedback`, `/api/invitations`) usando middleware edge o Traefik middleware dedicado;
   - checklist de seguridad obligatoria en nuevas rutas con segmento `[slug]` (`tenantSlugMatchesSession` requerido).
+  - ~~CSP + cabeceras HTTP en API~~ — hecho **2026-04-11** (`apps/api/middleware.ts`).
 
 #### 🟢 OPCIONAL (Fase 2+)
 5. **OWASP ZAP scanning** en CI
