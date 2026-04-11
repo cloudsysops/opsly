@@ -3,7 +3,7 @@
 import { fetchProvisioningQuote } from "@/lib/provisioning-quote";
 import type { ProvisioningQuoteResponse } from "@/types";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, Suspense } from "react";
 
 function formatUsd(n: number): string {
   return n.toLocaleString("en-US", {
@@ -32,6 +32,14 @@ function formatInfraDisplay(quote: ProvisioningQuoteResponse): string {
 }
 
 export default function AuthorizeDeploymentPage() {
+  return (
+    <Suspense fallback={null}>
+      <AuthorizeDeploymentContent />
+    </Suspense>
+  );
+}
+
+function AuthorizeDeploymentContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const providerParam = searchParams.get("provider");

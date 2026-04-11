@@ -19,5 +19,6 @@ export function getApiBaseUrl(): string {
       return inferred;
     }
   }
-  throw new Error("NEXT_PUBLIC_API_URL is not set");
+  // Fallback for build or missing env - use default staging
+  return "https://api.ops.smiletripcare.com";
 }

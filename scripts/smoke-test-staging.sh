@@ -70,7 +70,7 @@ check "Sprints Active" "$(if [ "$SPRINTS" = "200" ] || [ "$SPRINTS" = "401" ]; t
 
 # Security Headers Tests
 echo -e "\n🔒 Security Headers"
-HEADERS=$(curl -sI --max-time 45 "${API_URL}/api/health" 2>/dev/null)
+HEADERS=$(curl -sI --max-time 45 "${API_URL}/api/health" 2>/dev/null || true)
 
 check "Content-Security-Policy" "$(echo "$HEADERS" | grep -qi "Content-Security-Policy" && echo OK || echo FAIL)"
 check "X-Frame-Options" "$(echo "$HEADERS" | grep -qi "X-Frame-Options.*DENY" && echo OK || echo FAIL)"

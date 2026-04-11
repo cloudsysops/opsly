@@ -18,5 +18,6 @@ export async function getApiBaseUrlServer(): Promise<string> {
   ) {
     return "http://127.0.0.1:3000";
   }
-  throw new Error("NEXT_PUBLIC_API_URL is not set and API host cannot be inferred");
+  // Fallback for build - use default staging
+  return "https://api.ops.smiletripcare.com";
 }

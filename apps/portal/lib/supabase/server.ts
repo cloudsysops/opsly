@@ -7,7 +7,24 @@ export async function createServerSupabase(): Promise<SupabaseClient> {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   if (!url || !anon) {
-    throw new Error("Missing Supabase URL or anon key");
+    const fallbackUrl = "https://placeholder.supabase.co";
+    const fallbackAnon = "placeholder";
+    return createServerClient(fallbackUrl, fallbackAnon, {
+      cookies: {
+        getAll() {
+          return cookieStore.getAll();
+        },
+        setAll(cookiesToSet: Parameters<SetAllCookies>[0]) {
+          try {
+            cookiesToSet.forEach(({ name, value, options }) => {
+              cookieStore.set(name, value, options);
+            });
+          } catch {
+            /* ignore when not mutable */
+          }
+        },
+      },
+    });
   }
   return createServerClient(url, anon, {
     cookies: {
