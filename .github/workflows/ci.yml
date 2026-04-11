@@ -201,7 +201,7 @@ jobs:
           extra_args: --only-verified
 
   e2e-invite:
-    needs: build
+    needs: lint
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
     steps:
