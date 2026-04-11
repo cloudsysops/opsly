@@ -1,4 +1,4 @@
-import { createServerSupabase } from "./supabase/server";
+import { createServerClient } from "@supabase/ssr";
 
 /**
  * Obtiene el access token de la sesión Supabase activa (Server Side).
@@ -8,7 +8,28 @@ import { createServerSupabase } from "./supabase/server";
  */
 export async function getServerAuthToken(): Promise<string | null> {
   try {
-    const supabase = await createServerSupabase();
+    const cookieStore = await import("next/headers").then((m) => m.cookies());
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL ?? "",
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "",
+      {
+        cookies: {
+          getAll() {
+            return cookieStore.getAll();
+          },
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          setAll(cookiesToSet: any) {
+            try {
+              cookiesToSet.forEach(({ name, value, options }: any) =>
+                cookieStore.set(name, value, options),
+              );
+            } catch {
+              // Ignore cookie set errors in client-components
+            }
+          },
+        },
+      },
+    );
     const { data, error } = await supabase.auth.getSession();
     if (error) {
       console.warn("[session-auth] Error al obtener sesión:", error.message);
