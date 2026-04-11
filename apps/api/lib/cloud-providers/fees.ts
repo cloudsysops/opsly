@@ -1,5 +1,5 @@
 import { PROVISIONING_OPSLY_FEE_USD } from "../constants";
-import type { ProvisioningPlan } from "./interface.js";
+import type { ProvisioningPlan } from "./interface";
 
 /** Fee de gestión Opsly (USD/mes) por plan de aprovisionamiento; configurable por env. */
 export function opslyManagementFeeUsd(plan: ProvisioningPlan): number {

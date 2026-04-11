@@ -8,7 +8,7 @@ import type {
     ProvisioningPlan,
     ProvisionResourcesResult,
     ValidateCredentialsResult,
-} from "./interface.js";
+} from "./interface";
 
 const DEFAULT_AWS_REGION = "us-east-1";
 const MAX_ACCOUNT_HINT_LEN = 48;

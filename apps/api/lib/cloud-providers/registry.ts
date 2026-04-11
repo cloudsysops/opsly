@@ -1,5 +1,5 @@
-import { AwsCloudProvider } from "./aws-provider.js";
-import type { CloudProvider, CloudProviderId } from "./interface.js";
+import { AwsCloudProvider } from "./aws-provider";
+import type { CloudProvider, CloudProviderId } from "./interface";
 
 const cache = new Map<CloudProviderId, CloudProvider>();
 

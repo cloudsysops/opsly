@@ -1,4 +1,4 @@
-import { listActiveWebhooksByEvent } from "../repositories/webhook-repository.js";
+import { listActiveWebhooksByEvent } from "../repositories/webhook-repository";
 
 // Tipos de eventos soportados por Opsly webhooks
 export type WebhookEvent =
