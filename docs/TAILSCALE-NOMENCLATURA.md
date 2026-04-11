@@ -10,7 +10,7 @@ Evita confusiones entre **hostname del sistema**, **nombre en Tailscale** y **al
 | **Worker** — hardware Mac 2011, **Ubuntu** (orchestrator, Node) | **`opsly-mac2011`** | **`100.80.41.29`** | **`Host opsly-mac2011`** |
 | VPS Opsly | `vps-dragon` | `100.120.151.91` | `Host vps-dragon` |
 
-> Si la Mac 2020 apareció antes con un nombre equivocado en Tailscale, **renómbrala** en el admin o por CLI (abajo). El worker **sí** es `opsly-mac2011` (Linux, usuario típico `cboteros`).
+> Si la Mac 2020 apareció antes con un nombre equivocado en Tailscale, **renómbrala** en el admin o por CLI (abajo). El worker **sí** es `opsly-mac2011` (Linux). El **usuario Linux** en el worker puede ser `cboteros`, **`opslyquantum`**, etc.: en `~/.ssh/config` usa `User` con el que realmente entras (`ssh opslyquantum@100.80.41.29`).
 
 ---
 
@@ -63,14 +63,26 @@ ssh mac2020 "hostname && scutil --get ComputerName 2>/dev/null || hostname"
 
 ### Worker Ubuntu (`opsly-mac2011`)
 
-Desde la Mac 2020 (ajusta clave SSH si usas otra):
+Desde la Mac 2020 (ajusta **`User`** y clave SSH si usas otra):
 
 ```sshconfig
 Host opsly-mac2011
     HostName 100.80.41.29
-    User cboteros
+    User opslyquantum
     IdentityFile ~/.ssh/id_ed25519
     ServerAliveInterval 60
+    ServerAliveCountMax 3
+```
+
+Opcional: segundo alias si prefieres entrar con el nombre de usuario:
+
+```sshconfig
+Host opslyquantum
+    HostName 100.80.41.29
+    User opslyquantum
+    IdentityFile ~/.ssh/id_ed25519
+    ServerAliveInterval 60
+    ServerAliveCountMax 3
 ```
 
 ```bash
