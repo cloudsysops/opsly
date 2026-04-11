@@ -126,6 +126,7 @@ trigger_failover() {
 }
 
 run_loop() {
+  trap 'echo "Daemon detenido"; exit 0' INT TERM
   echo "failover-monitor: HEALTH_URL=$HEALTH_URL_RESOLVED interval=${CHECK_INTERVAL}s max_failures=$MAX_FAILURES"
   while true; do
     if check_health; then

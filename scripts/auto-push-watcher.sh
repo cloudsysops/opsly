@@ -82,6 +82,8 @@ if ! git remote get-url origin >/dev/null 2>&1; then
   die "No git remote 'origin' configured"
 fi
 
+trap 'log_info "Daemon detenido"; exit 0' INT TERM
+
 paths_dirty() {
   # Porcelain for watched paths only
   git status --porcelain -- docs/ AGENTS.md 2>/dev/null | grep -q .
