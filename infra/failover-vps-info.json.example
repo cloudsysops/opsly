@@ -1,0 +1,7 @@
+{
+  "_comment": "Solo si existe un segundo VPS de contingencia provisionado",
+  "hostname": "",
+  "ssh_user": "root",
+  "tailscale_ip": "",
+  "public_ip": ""
+}

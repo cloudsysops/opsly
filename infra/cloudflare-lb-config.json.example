@@ -1,0 +1,8 @@
+{
+  "_comment": "Plantilla. Los IDs reales salen del dashboard Cloudflare Load Balancing. La API exacta depende del recurso (account/zone). Ver docs/FAILOVER-RUNBOOK.md",
+  "account_id": "",
+  "zone_id": "",
+  "pool_id": "",
+  "primary_origin_name": "primary",
+  "failover_origin_name": "failover"
+}

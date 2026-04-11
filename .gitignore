@@ -6,6 +6,9 @@ tools/usb-kit/secrets/
 # Nunca commitear secretos locales derivados del config
 config/opsly.secrets.json
 config/doppler-ready.json
+config/failover-monitor.env
+config/gcp.env
+infra/gcp-failover-info.json
 
 # Agent context (no secrets)
 context/doppler-ready.json

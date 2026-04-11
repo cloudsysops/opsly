@@ -1,0 +1,10 @@
+{
+  "_comment": "Generado por infra/provision-gcp-failover.sh → copiar a gcp-failover-info.json (gitignored) o mantener fuera del repo",
+  "project_id": "opslyquantum",
+  "instance_name": "opsly-failover",
+  "zone": "us-central1-a",
+  "machine_type": "e2-micro",
+  "external_ip": "",
+  "internal_ip": "",
+  "created": ""
+}

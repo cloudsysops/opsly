@@ -1,0 +1,19 @@
+# Copiar a /etc/systemd/system/opsly-failover-monitor.service y ajustar User/WorkingDirectory.
+# Secretos: EnvironmentFile apuntando a un fichero fuera de git (600) o variables del proveedor.
+
+[Unit]
+Description=Opsly Failover Monitor (health + alertas; CF opcional)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=opslyquantum
+WorkingDirectory=/home/opslyquantum/opsly
+# Opcional: EnvironmentFile=-/home/opslyquantum/opsly/config/failover-monitor.env
+ExecStart=/home/opslyquantum/opsly/scripts/failover-monitor.sh --daemon
+Restart=on-failure
+RestartSec=30
+
+[Install]
+WantedBy=multi-user.target

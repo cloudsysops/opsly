@@ -83,6 +83,10 @@ docs/SPRINT-ROADMAP.md   ← sprints 1-8, qué está hecho, qué sigue
 | [`INVITATIONS_RUNBOOK.md`](INVITATIONS_RUNBOOK.md) | Flujo completo de invitaciones |
 | [`TROUBLESHOOTING.md`](TROUBLESHOOTING.md) | Diagnóstico: Traefik, Docker, Supabase, Doppler |
 | [`FAQ.md`](FAQ.md) | Preguntas frecuentes con respuestas directas |
+| [`FAILOVER-RUNBOOK.md`](FAILOVER-RUNBOOK.md) | Detección, alertas y failover (segundo origen + LB; manual por defecto) |
+| [`FAILOVER-GCP-ARCHITECTURE.md`](FAILOVER-GCP-ARCHITECTURE.md) | Standby GCP (e2-micro) vs segundo VPS; diagramas y límites |
+| [`GCP-STANDBY-CONFIG.md`](GCP-STANDBY-CONFIG.md) | Redis 1 GB, health ligero, orden de despliegue |
+| [`GCP-ACTIVATION-CHECKLIST.md`](GCP-ACTIVATION-CHECKLIST.md) | Checklist activación proyecto opslyquantum + LB |
 
 ### 8. Automatización y IA
 | Doc | Cuándo usarlo |
