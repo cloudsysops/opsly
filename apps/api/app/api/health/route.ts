@@ -1,4 +1,5 @@
 import apiPkg from "../../../package.json";
+import { HTTP_STATUS } from "../../../lib/constants";
 
 const HEALTH_FETCH_MS = 2000;
 
@@ -34,6 +35,14 @@ async function supabaseReachable(): Promise<CheckStatus> {
     });
     clearTimeout(timeout);
     if (res.ok) {
+      return "ok";
+    }
+    // Supabase hosted puede responder 401/403 en `/auth/v1/health` sin credenciales;
+    // la respuesta HTTP demuestra alcanzabilidad TLS (no es caída del proyecto).
+    if (
+      res.status === HTTP_STATUS.UNAUTHORIZED ||
+      res.status === HTTP_STATUS.FORBIDDEN
+    ) {
       return "ok";
     }
     return "degraded";

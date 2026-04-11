@@ -229,7 +229,7 @@ Procedimientos vivos en el repo: **`skills/user/<skill>/SKILL.md`**. En runtimes
 
 <!-- Actualizar al final de cada sesión -->
 
-**Fecha última actualización:** 2026-04-10 23:30 UTC — **Repo-First índice + planner enqueue:** `scripts/index-knowledge.sh` escanea todo `*.md` vía `find` → `generate-knowledge-index.mjs` (título `#`, keywords, `size_bytes`, `topics`). `apps/context-builder`: `indexer.ts` (`loadIndex`, `search`, `searchInIndex`), `knowledge-index.ts` enriquecido. Orchestrator: `remote_plan` encola jobs reales (MAX acciones, logs `planner_action_enqueued`). Tras `git pull` en VPS: `./scripts/index-knowledge.sh`. Tests: context-builder ✅, orchestrator ✅, `npm run type-check` monorepo ✅.
+**Fecha última actualización:** 2026-04-11 UTC — **Testing tenants + health Supabase:** guía `docs/TENANT-TESTING-GUIDE.md` (localrank, jkboterolabs; URLs n8n/uptime; feedback vía `POST /api/feedback` existente, sin ruta duplicada). **`GET /api/health`:** probe Supabase trata **401/403** en `/auth/v1/health` como alcanzable (evita falso `degraded` en proyectos hosted). Handoff: `HANDOFF.md`. Sesión previa 2026-04-10: Repo-First índice + planner enqueue; `./scripts/index-knowledge.sh` en VPS tras pull.
 
 **URL raw (sesión siguiente):** https://raw.githubusercontent.com/cloudsysops/opsly/main/AGENTS.md
 
@@ -260,7 +260,7 @@ flowchart LR
 ```
 
 **Estado NotebookLM:** integrado vía MCP tool `notebooklm`; habilitación solo Business+ con `NOTEBOOKLM_ENABLED=true`.  
-**Estado LocalRank:** pendiente ejecución operativa por bloqueo SSH/Tailscale (`100.120.151.91`).  
+**Estado LocalRank:** SSH Tailscale OK para diagnóstico; stacks `localrank` / `jkboterolabs` con n8n **200** y uptime **302** en staging (ver `docs/TENANT-TESTING-GUIDE.md`).  
 **Mitigaciones requeridas:** Cloudflare Proxy ON + UFW/Tailscale-only SSH.
 
 **Resumen 2026-04-08 (Cursor / Opsly — sesión tester + Drive)**

@@ -65,7 +65,16 @@ describe("GET /api/health", () => {
     expect((body.checks as { supabase: string }).supabase).toBe("error");
   });
 
-  it("returns degraded when auth health not ok", async () => {
+  it("treats 401/403 on auth health as reachable (Supabase may require auth)", async () => {
+    process.env.NEXT_PUBLIC_SUPABASE_URL = "https://proj.supabase.co";
+    vi.mocked(fetch).mockResolvedValue(new Response(null, { status: 401 }));
+
+    const res = await GET();
+    const body = (await res.json()) as Record<string, unknown>;
+    expect((body.checks as { supabase: string }).supabase).toBe("ok");
+  });
+
+  it("returns degraded when auth health returns server error", async () => {
     process.env.NEXT_PUBLIC_SUPABASE_URL = "https://proj.supabase.co";
     vi.mocked(fetch).mockResolvedValue(new Response(null, { status: 503 }));
 
