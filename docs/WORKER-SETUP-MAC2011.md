@@ -161,13 +161,11 @@ Los scripts **`scripts/run-worker-with-nvm.sh`** y **`scripts/keep-worker-in-tmu
 
 ## Fase 6b — systemd (opcional, requiere sudo)
 
-Plantilla en el repo: **`infra/systemd/opsly-orchestrator-worker.service.example`** — usa `ExecStart=.../run-worker-with-nvm.sh` (nvm + `.env.local`).
+Guía completa: **`docs/WORKER-SERVICE-MAC2011.md`**. Unidad: **`infra/systemd/opsly-worker.service`** + **`scripts/install-opsly-worker-systemd.sh`**.
 
 ```bash
-sudo cp infra/systemd/opsly-orchestrator-worker.service.example /etc/systemd/system/opsly-orchestrator-worker.service
-# Editar User/WorkingDirectory si tu usuario no es opslyquantum
-sudo systemctl daemon-reload
-sudo systemctl enable --now opsly-orchestrator-worker
+cd ~/opsly && git pull && chmod +x scripts/install-opsly-worker-systemd.sh
+sudo ./scripts/install-opsly-worker-systemd.sh
 ```
 
 ---
