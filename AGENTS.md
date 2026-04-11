@@ -323,6 +323,20 @@ flowchart LR
 - OpenAPI: `/api/portal/health` + `/api/portal/tenant/{slug}/health` en `docs/openapi-opsly-api.yaml`; `REQUIRED_PORTAL_PATHS` ampliado; `validate-openapi-yaml.mjs` OK (**16 paths**).
 - Validación: `npm run type-check` (11 workspaces ✅), `npm run test --workspace=@intcloudsysops/api` (**155 tests**), `npm run test --workspace=@intcloudsysops/portal` (**23 tests**), `npm run build --workspace=@intcloudsysops/portal`, Playwright E2E 4/4 pass / 3 skip, `npm run validate-openapi` OK, lint portal 0 errors. Middleware portal sin `NEXT_PUBLIC_SUPABASE_URL` → pasa sin redirigir (comportamiento conocido, no bloqueante).
 
+* **2026-04-11 — Fase 1 Seguridad Crítica:**
+- ✅ Variables de entorno consolidadas (`.env.example` único)
+- ✅ Eliminada exposición de `NEXT_PUBLIC_PLATFORM_ADMIN_TOKEN`
+- ✅ Autenticación por sesión Supabase (`getServerAuthToken()`)
+- ✅ CSP Headers implementados
+- ✅ Rate limiting por tenant
+- ✅ Script rotación de tokens
+- ✅ CI arreglado (imports ML, tipos)
+
+**Commits:**
+- `d894fc6`: consolidate env files
+- `7a58fee`: token → session auth
+- (pendiente): CSP headers, rate limiting continua
+
 * **2026-04-06 — Bloques A/B/C (plan 3 vías):** Vitest en `apps/api`: tests nuevos para `validation`, `portal-me`, `pollPortsUntilHealthy`, rutas `tenants` y `tenants/[id]` (`npm run test` 67 tests, `npm run type-check` verde). Documentación: `docs/runbooks/{admin,dev,managed,incident}.md`, ADR-006–008, `docs/FAQ.md`. Terraform: `infra/terraform/terraform.tfvars.example` (placeholders), `terraform plan -input=false` con `TF_VAR_*` de ejemplo y nota en `infra/terraform/README.md`.
 * **2026-04-06 — CURSOR-EXECUTE-NOW (archivo `/home/claude/CURSOR-EXECUTE-NOW.md` no presente en workspace):** +36 casos en 4 archivos `*.test.ts` (health, metrics, portal, suspend/resume) + `invitations-stripe-routes.test.ts` para cobertura de `route.ts`; `npm run test:coverage` ~89% líneas en `app/api/**/route.ts`; `health/route.ts` recorta slashes finales en URL Supabase; `docs/FAQ.md` enlaces Markdown validados; `infra/terraform/tfplan.txt` + `.gitignore` `infra/terraform/tfplan`.
 * **2026-04-06 — cursor-autonomous-plan (archivo `/home/claude/cursor-autonomous-plan.md` no presente):** SUB-A `lib/api-response.ts` + refactor `auth`, `tenants`, `metrics`, `tenants/[id]`; SUB-C `docs/SECURITY_AUDIT_REPORT.md`; SUB-B `TROUBLESHOOTING.md`, `SECURITY_CHECKLIST.md`, `PERFORMANCE_BASELINE.md`; SUB-D `OBSERVABILITY.md`; SUB-E `docs/openapi-opsly-api.yaml`.
