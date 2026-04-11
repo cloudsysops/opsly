@@ -206,9 +206,13 @@ async function checkTenant(
   }
 }
 
+export interface HealthWorkerHandle {
+  stop(): Promise<void>;
+}
+
 export function startHealthWorker(
   connection: { host: string; port: number; password?: string },
-): NodeJS.Timeout {
+): HealthWorkerHandle {
   const redis = createClient({
     socket: { host: connection.host, port: connection.port },
     password: connection.password,
@@ -218,8 +222,9 @@ export function startHealthWorker(
     console.error("[health] Redis error:", err);
   });
 
-  void redis.connect().catch((err) => {
+  const connectPromise = redis.connect().catch((err) => {
     console.error("[health] Redis connect failed:", err);
+    return null;
   });
 
   async function tick(): Promise<void> {
@@ -234,9 +239,19 @@ export function startHealthWorker(
     console.error("[health] initial tick error:", err);
   });
 
-  return setInterval(() => {
+  const timer = setInterval(() => {
     void tick().catch((err) => {
       console.error("[health] tick error:", err);
     });
   }, HEALTH_INTERVAL_MS);
+
+  return {
+    async stop(): Promise<void> {
+      clearInterval(timer);
+      await connectPromise;
+      if (redis.isOpen) {
+        await redis.disconnect();
+      }
+    },
+  };
 }

@@ -22,6 +22,8 @@ RUN npm run build -w @intcloudsysops/llm-gateway && \
 FROM node:20-alpine AS runner
 WORKDIR /app
 ENV NODE_ENV=production
+COPY --from=builder /repo/package.json ./package.json
+COPY --from=builder /repo/package-lock.json ./package-lock.json
 COPY --from=builder /repo/node_modules ./node_modules
 COPY --from=builder /repo/apps/mcp ./apps/mcp
 COPY --from=builder /repo/apps/llm-gateway ./apps/llm-gateway

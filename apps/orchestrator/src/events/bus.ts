@@ -10,6 +10,10 @@ function buildClient() {
   });
 }
 
+export interface EventSubscriptionHandle {
+  close(): Promise<void>;
+}
+
 export async function publishEvent(
   event: OpslyEvent,
   data: Record<string, unknown>,
@@ -29,7 +33,7 @@ export async function publishEvent(
 
 export async function subscribeEvents(
   handler: (event: OpslyEvent, data: Record<string, unknown>) => Promise<void>,
-): Promise<void> {
+): Promise<EventSubscriptionHandle> {
   const subscriber = buildClient();
   await subscriber.connect();
   await subscriber.subscribe("opsly:events", async (message) => {
@@ -39,4 +43,13 @@ export async function subscribeEvents(
     };
     await handler(parsed.event, parsed.data);
   });
+
+  return {
+    async close(): Promise<void> {
+      await subscriber.unsubscribe("opsly:events");
+      if (subscriber.isOpen) {
+        await subscriber.disconnect();
+      }
+    },
+  };
 }

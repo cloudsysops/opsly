@@ -121,14 +121,16 @@ jobs:
           cache: npm
           cache-dependency-path: package-lock.json
 
-      - name: npm ci + build (api + admin + portal)
+      - name: npm ci + build (ml + api + admin + portal)
         run: |
           set -euo pipefail
           npm ci
+          (cd apps/ml && npm run build) & pid0=$!
           (cd apps/api && npm run build) & pid1=$!
           (cd apps/admin && npm run build) & pid2=$!
           (cd apps/portal && npm run build) & pid3=$!
           status=0
+          wait $pid0 || status=1
           wait $pid1 || status=1
           wait $pid2 || status=1
           wait $pid3 || status=1

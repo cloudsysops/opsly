@@ -7,6 +7,7 @@ import {
     meterRemotePlanWorkerFireAndForget,
 } from "./metering/usage-events-meter.js";
 import { logPlannerActionEnqueued, logPlannerUnknownTool } from "./observability/planner-log.js";
+import { parseOrchestratorRole, shouldRunControlPlane } from "./orchestrator-role.js";
 import { executeRemotePlanner } from "./planner-client.js";
 import {
     DEFAULT_PLANNER_TOOL_NAMES,
@@ -71,6 +72,10 @@ export interface ProcessIntentResult {
 }
 
 export async function processIntent(req: IntentRequest): Promise<ProcessIntentResult> {
+  if (!shouldRunControlPlane(parseOrchestratorRole())) {
+    throw new Error("Cannot dispatch jobs from worker-only mode");
+  }
+
   const correlationId = req.request_id ?? randomUUID();
   const jobs: OrchestratorJob[] = [];
   let batchIndex = 0;

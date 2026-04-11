@@ -410,7 +410,7 @@ async function runAnalysisBranch(
       decision_id,
       output.implementation_prompt,
       ctx.tenant_slug,
-    ).catch((e) => {
+    ).catch((e: unknown) => {
       console.error("[feedback] executeAutoImplement:", e);
     });
   }

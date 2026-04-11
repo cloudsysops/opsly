@@ -1,4 +1,9 @@
-import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
+import {
+  createServer,
+  type IncomingMessage,
+  type Server,
+  type ServerResponse,
+} from "node:http";
 import { enqueueWebhookJob } from "./workers/WebhookWorker.js";
 import type { WebhookJobData } from "./workers/WebhookWorker.js";
 
@@ -43,7 +48,7 @@ async function handleEnqueueWebhook(
 }
 
 /** HTTP liveness + internal webhook enqueue endpoint. */
-export function startOrchestratorHealthServer(): void {
+export function startOrchestratorHealthServer(): Server {
   const port = parsePort();
   const server = createServer(async (req, res) => {
     const pathOnly = req.url?.split("?")[0] ?? "/";
@@ -67,4 +72,5 @@ export function startOrchestratorHealthServer(): void {
       JSON.stringify({ service: "orchestrator", http: "listening", port, path: "/health" }) + "\n",
     );
   });
+  return server;
 }

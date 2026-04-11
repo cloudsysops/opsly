@@ -79,6 +79,10 @@ export function createWebhookWorker(): Worker<WebhookJobData> {
   return worker;
 }
 
+export async function closeWebhookQueue(): Promise<void> {
+  await webhookQueue.close();
+}
+
 // Encolar un webhook job con 3 reintentos y backoff exponencial
 export async function enqueueWebhookJob(data: WebhookJobData): Promise<void> {
   await webhookQueue.add("deliver", data, {

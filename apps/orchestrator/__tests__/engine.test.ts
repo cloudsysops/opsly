@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("../src/queue.js", () => ({
   enqueueJob: vi.fn(async (job: { type: string }) => ({ id: `${job.type}-1` }))
@@ -26,6 +26,10 @@ import { processIntent } from "../src/engine.js";
 describe("processIntent", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
   });
 
   it("encola full_pipeline en secuencia", async () => {
@@ -141,5 +145,18 @@ describe("processIntent", () => {
     expect(rid).toBeDefined();
     expect(calls[1]?.request_id).toBe(rid);
     expect(calls[2]?.request_id).toBe(rid);
+  });
+
+  it("rechaza dispatch cuando corre en modo worker", async () => {
+    vi.stubEnv("OPSLY_ORCHESTRATOR_ROLE", "worker");
+
+    await expect(
+      processIntent({
+        intent: "notify",
+        context: { message: "hola" },
+        initiated_by: "system",
+      }),
+    ).rejects.toThrow(/worker-only mode/);
+    expect(enqueueJob).not.toHaveBeenCalled();
   });
 });

@@ -114,7 +114,8 @@ log_info "  tenantRef/slug: ${REF}"
 log_info "  email: ${EMAIL}"
 
 TMP_BODY="$(mktemp)"
-trap 'rm -f "${TMP_BODY}"' EXIT
+TMP_RES="$(mktemp)"
+trap 'rm -f "${TMP_BODY}" "${TMP_RES}"' EXIT
 
 if [[ -n "${NAME:-}" ]]; then
   jq -n \
@@ -132,7 +133,7 @@ else
 fi
 
 HTTP_CODE="$(
-  curl -sk -o /tmp/send-invite-res.json -w "%{http_code}" --connect-timeout 30 --max-time 120 \
+  curl -sk -o "${TMP_RES}" -w "%{http_code}" --connect-timeout 30 --max-time 120 \
     -X POST "${API_URL}/api/invitations" \
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer ${ADMIN_TOKEN}" \
@@ -140,8 +141,7 @@ HTTP_CODE="$(
     -d @"${TMP_BODY}"
 )"
 
-RESPONSE="$(cat /tmp/send-invite-res.json 2>/dev/null || echo '{}')"
-rm -f /tmp/send-invite-res.json
+RESPONSE="$(cat "${TMP_RES}" 2>/dev/null || echo '{}')"
 
 echo "HTTP: ${HTTP_CODE}"
 # Redactar token/link en salida
