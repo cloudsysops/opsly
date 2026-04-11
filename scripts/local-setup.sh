@@ -3,7 +3,8 @@
 # QUICK START:
 #   Mac 2011: ./scripts/local-setup.sh
 #   Mac 2011: ./scripts/tunnel-access.sh --mode server
-#   Mac 2020: sudo ./scripts/tunnel-access.sh --mode client --mac2011-ip X.X.X.X
+#   Mac 2020: sudo ./scripts/tunnel-access.sh --mode client --mac2011-ip <IP_LAN_WORKER_UBUNTU>
+#   Ver docs/TAILSCALE-NOMENCLATURA.md (mac2020 vs worker; --mac2011-ip = IP del remoto, no la Mac principal)
 #
 # URLs disponibles tras el setup:
 #   http://admin.opsly.local           → Dashboard admin

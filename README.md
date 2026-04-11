@@ -46,6 +46,8 @@ Plataforma multi-tenant **enterprise SaaS**: plano de control (API, billing, orq
 | [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md) | Diagnóstico y soluciones comunes |
 | [`docs/SECURITY_CHECKLIST.md`](docs/SECURITY_CHECKLIST.md) | Checklist Zero-Trust por ruta |
 | [`docs/SECURITY-MITIGATIONS-2026-04-09.md`](docs/SECURITY-MITIGATIONS-2026-04-09.md) | Mitigaciones UFW + Tailscale + CF |
+| [`docs/TAILSCALE-NOMENCLATURA.md`](docs/TAILSCALE-NOMENCLATURA.md) | Tailscale + SSH: `mac2020`, **`opsly-mac2011`** (100.80.41.29), VPS |
+| [`docs/WORKER-SETUP-MAC2011.md`](docs/WORKER-SETUP-MAC2011.md) | Worker Ubuntu en Mac 2011 (`opsly-mac2011`) + orchestrator |
 
 ### Infra y deploy
 | Doc | Descripción |

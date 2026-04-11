@@ -26,6 +26,7 @@ usage() {
 Uso:
   Mac 2011 (servidor):  ./scripts/tunnel-access.sh [--mode server]
   Mac 2020 (cliente):   sudo ./scripts/tunnel-access.sh --mode client --mac2011-ip X.X.X.X [--mac2011-user USUARIO] [--ssh-key PATH]
+  # Nota: --mac2011-ip es la IP LAN del host remoto (worker Ubuntu), no la de la Mac 2020. Ver docs/TAILSCALE-NOMENCLATURA.md
 
 Nota: /etc/hosts no incluye puertos. Supabase Studio sigue siendo http://<IP>:54321
 EOF
