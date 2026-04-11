@@ -19,4 +19,4 @@ COPY --from=builder /app/apps/llm-gateway/dist ./apps/llm-gateway/dist
 
 WORKDIR /app/apps/llm-gateway
 EXPOSE 3010
-CMD ["node", "dist/server.js"]
+CMD ["node", "dist/src/server.js"]

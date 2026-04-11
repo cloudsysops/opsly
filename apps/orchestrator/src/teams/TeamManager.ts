@@ -52,13 +52,15 @@ export class TeamManager {
 
   private initializeTeams(): void {
     for (const config of TEAM_CONFIGS) {
-      const queue = new Queue(`team:${config.name}`, {
+      // BullMQ no permite ":" en el nombre de cola (v5+).
+      const queueName = `team-${config.name}`;
+      const queue = new Queue(queueName, {
         connection: this.connection,
       });
 
       const workers = Array.from({ length: config.max_parallel }, () => {
         return new Worker(
-          `team:${config.name}`,
+          queueName,
           async (job: Job) => this.executeJob(job, config.specialization),
           {
             connection: this.connection,

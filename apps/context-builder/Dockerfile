@@ -28,4 +28,4 @@ ENV KNOWLEDGE_INDEX_PATH=/app/repo/config/knowledge-index.json
 
 WORKDIR /app/apps/context-builder
 EXPOSE 3012
-CMD ["node", "dist/index.js"]
+CMD ["node", "dist/src/index.js"]

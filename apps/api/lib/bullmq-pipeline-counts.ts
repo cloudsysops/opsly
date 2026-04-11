@@ -3,10 +3,10 @@ import { Queue } from "bullmq";
 const REDIS_URL = process.env.REDIS_URL || "redis://localhost:6379";
 
 const TEAM_QUEUE_NAMES = [
-  "team:frontend-team",
-  "team:backend-team",
-  "team:ml-team",
-  "team:infra-team",
+  "team-frontend-team",
+  "team-backend-team",
+  "team-ml-team",
+  "team-infra-team",
 ] as const;
 
 function redisConnection(): {

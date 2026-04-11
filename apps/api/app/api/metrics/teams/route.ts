@@ -49,7 +49,7 @@ const TEAM_CONFIGS = [
 async function getTeamCounts(
   name: string,
 ): Promise<{ waiting: number; active: number }> {
-  const queue = new Queue(`team:${name}`, { connection: redisConnection() });
+  const queue = new Queue(`team-${name}`, { connection: redisConnection() });
   try {
     const [waiting, active] = await Promise.all([
       queue.getWaitingCount(),
