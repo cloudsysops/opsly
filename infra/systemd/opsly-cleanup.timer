@@ -1,0 +1,10 @@
+[Unit]
+Description=Timer diario — Opsly vps-cleanup-robust (alternativa a cron 03:00)
+Documentation=file:/opt/opsly/docs/OPS-CLEANUP-PROCEDURES.md
+
+[Timer]
+OnCalendar=*-*-* 03:00:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,14 @@
+[Unit]
+Description=Opsly VPS cleanup (robust script)
+After=docker.service network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/opsly
+ExecStart=/opt/opsly/scripts/vps-cleanup-robust.sh
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
