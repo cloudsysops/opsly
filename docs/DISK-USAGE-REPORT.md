@@ -5,12 +5,14 @@
 
 ## Resumen global
 
-| Métrica | Valor medido |
-|---------|----------------|
+| Métrica | Valor medido (instantánea inicial) |
+|---------|-------------------------------------|
 | **Disco raíz (`/`)** | **48 G** totales (`/dev/vda1`) |
 | **Usado** | **47 G (~99 %)** |
 | **Libre** | **~847 MiB** |
 | **Estado** | **Crítico** — riesgo inmediato de fallos (pulls, logs, escrituras) |
+
+> **Post‑limpieza (2026‑04‑11):** ~**39 G usados / ~9 G libres (~82 %)** — ver sección **Actualización** al final.
 
 > Nota: el volumen es **48 G**, no 50 G; el proveedor puede mostrar redondeos distintos en la UI.
 
@@ -109,7 +111,25 @@ Los **datos pesados de tenants** (n8n, uptime, etc.) están en **volúmenes Dock
 2. Objetivo: bajar **uso de `/` por debajo del 90 %** y mantener **≥2–3 G libres** mínimo.
 3. Si tras prune sigue el disco alto: **ampliar volumen** en DigitalOcean o mover stacks pesados (p. ej. observabilidad completa) a otro nodo.
 
+## Actualización: limpieza de emergencia (2026-04-11, ~22:39 UTC)
+
+Ejecutado en el VPS (usuario con acceso Docker, **sin** eliminar contenedores en ejecución):
+
+- `docker image prune -a -f`
+- `docker builder prune -a -f`
+- `docker container prune -f`
+
+| Métrica | Antes | Después |
+|---------|--------|---------|
+| **`df /` usado** | **47 G (98 %)** | **39 G (82 %)** |
+| **Libre** | **~1,3 G** | **~9,0 G** |
+| **Imágenes Docker (recuento / tamaño)** | 47 imágenes, ~38,4 G | **33 imágenes**, ~29,7 G |
+| **Reclamado (mensaje Docker prune)** | — | **~1,99 G** (el alivio en `df` puede ser mayor por capas compartidas / caché de FS) |
+
+**Estado:** uso **por debajo del 90 %**; margen operativo recuperado. Sigue habiendo espacio “reclamable” en `docker system df` por capas/imágenes aún referenciadas; ver `docs/HEAVY-SERVICES-DECISION.md` si hace falta mover Ollama/OpenClaw.
+
 ## Referencias
 
 - Limpieza automatizada: `docs/OPS-CLEANUP-PROCEDURES.md`, `scripts/vps-cleanup-robust.sh`
 - Política: `docs/RETENTION-POLICY.md`
+- Servicios pesados: `docs/HEAVY-SERVICES-DECISION.md`
