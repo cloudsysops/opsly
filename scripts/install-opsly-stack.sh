@@ -14,6 +14,7 @@ SKIP_NODE=false
 SKIP_CLONE=false
 SHOW_SUMMARY=true
 
+NODE_STATUS="pending"
 DOCKER_STATUS="pending"
 DOCKER_GROUP_STATUS="not checked"
 TAILSCALE_STATUS="pending"
@@ -152,6 +153,7 @@ load_nvm() {
 
 install_node_via_nvm() {
   if [[ "$SKIP_NODE" == true ]]; then
+    NODE_STATUS="skipped"
     info "Omitiendo Node/NVM (--skip-node)."
     return 0
   fi
@@ -161,6 +163,7 @@ install_node_via_nvm() {
     info "[dry-run] curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/${NVM_VERSION}/install.sh | bash"
     info "[dry-run] nvm install ${NODE_MAJOR}"
     info "[dry-run] nvm alias default ${NODE_MAJOR}"
+    NODE_STATUS="dry-run"
     return 0
   fi
 
@@ -175,12 +178,14 @@ install_node_via_nvm() {
   if [[ "$DRY_RUN" == true ]]; then
     info "[dry-run] nvm install ${NODE_MAJOR}"
     info "[dry-run] nvm alias default ${NODE_MAJOR}"
+    NODE_STATUS="dry-run"
     return 0
   fi
 
   nvm install "${NODE_MAJOR}"
   nvm alias default "${NODE_MAJOR}"
   nvm use default >/dev/null
+  NODE_STATUS="installed"
   info "Node activo: $(node -v 2>/dev/null || echo desconocido)"
 }
 
@@ -312,6 +317,12 @@ install_workspace_dependencies() {
 
 install_tailscale_optional() {
   info "Instalando Tailscale (tolerante a fallos)..."
+  if [[ "$DRY_RUN" == true ]]; then
+    TAILSCALE_STATUS="dry-run"
+    info "[dry-run] curl -fsSL https://tailscale.com/install.sh | sh"
+    return 0
+  fi
+
   if require_cmd tailscale; then
     TAILSCALE_STATUS="already installed"
     return 0
@@ -335,7 +346,9 @@ print_summary() {
   log "Estado de la Instalación"
   log "===============================================================================" 
 
-  if load_nvm && require_cmd node; then
+  if [[ "$DRY_RUN" == true ]]; then
+    log "Node version:    simulada (${NODE_STATUS})"
+  elif load_nvm && require_cmd node; then
     log "Node version:    $(node -v)"
   elif require_cmd node; then
     log "Node version:    $(node -v)"
@@ -343,7 +356,11 @@ print_summary() {
     log "Node version:    no disponible en PATH"
   fi
 
-  if require_cmd docker; then
+  if [[ "$DRY_RUN" == true ]]; then
+    log "Docker status:   simulado (${DOCKER_STATUS})"
+    log "Compose status:  simulado"
+    log "Docker daemon:   no verificado en dry-run"
+  elif require_cmd docker; then
     log "Docker status:   $(docker --version 2>/dev/null || echo instalado)"
     if docker compose version >/dev/null 2>&1; then
       log "Compose status:  $(docker compose version 2>/dev/null | head -1)"
@@ -361,7 +378,9 @@ print_summary() {
     log "Docker status:   no instalado o no disponible (${DOCKER_STATUS})"
   fi
 
-  if [[ -d "$REPO_DIR/.git" ]]; then
+  if [[ "$DRY_RUN" == true ]]; then
+    log "Repo status:     simulado (${REPO_STATUS}) en $REPO_DIR"
+  elif [[ -d "$REPO_DIR/.git" ]]; then
     log "Repo status:     $REPO_DIR"
     log "Git status:"
     git -C "$REPO_DIR" status --short --branch 2>/dev/null || log "(no disponible)"
