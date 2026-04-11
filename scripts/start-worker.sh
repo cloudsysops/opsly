@@ -19,4 +19,12 @@ if [[ -f .env.local ]]; then
   set +a
 fi
 
+# Workers remotos (Mac 2011): debe ganar sobre .env.local si ahí hay REDIS_URL tipo docker (redis:6379).
+if [[ -f .env.worker ]]; then
+  set -a
+  # shellcheck source=/dev/null
+  source .env.worker
+  set +a
+fi
+
 exec "$ROOT/scripts/run-orchestrator-worker.sh"
