@@ -144,32 +144,30 @@ ssh opsly-mac2011 "curl -sf --max-time 10 https://api.ops.smiletripcare.com/api/
 
 ---
 
-## Fase 6 — systemd (opcional)
+## Fase 6 — Seguir trabajando con la pantalla apagada (tmux, sin sudo)
 
-Plantilla (sustituye `USUARIO` y ruta del repo):
-
-```ini
-[Unit]
-Description=Opsly Orchestrator Worker
-After=network-online.target
-Wants=network-online.target
-
-[Service]
-Type=simple
-User=USUARIO
-WorkingDirectory=/home/USUARIO/opsly
-EnvironmentFile=-/home/USUARIO/opsly/.env
-ExecStart=/home/USUARIO/opsly/scripts/run-orchestrator-worker.sh
-Restart=on-failure
-RestartSec=15
-
-[Install]
-WantedBy=multi-user.target
-```
+Tras configurar **`REDIS_URL`** en `~/opsly/.env.local`:
 
 ```bash
+cd ~/opsly
+./scripts/keep-worker-in-tmux.sh
+```
+
+- Ver proceso: `tmux attach -t opsly-orchestrator` (salir sin matar: `Ctrl+b` luego `d`)
+- Listar: `tmux ls`
+- Parar: `tmux kill-session -t opsly-orchestrator`
+
+Los scripts **`scripts/run-worker-with-nvm.sh`** y **`scripts/keep-worker-in-tmux.sh`** cargan **nvm** (Node no viene en PATH en servicios crudos).
+
+## Fase 6b — systemd (opcional, requiere sudo)
+
+Plantilla en el repo: **`infra/systemd/opsly-orchestrator-worker.service.example`** — usa `ExecStart=.../run-worker-with-nvm.sh` (nvm + `.env.local`).
+
+```bash
+sudo cp infra/systemd/opsly-orchestrator-worker.service.example /etc/systemd/system/opsly-orchestrator-worker.service
+# Editar User/WorkingDirectory si tu usuario no es opslyquantum
 sudo systemctl daemon-reload
-sudo systemctl enable --now opsly-orchestrator-worker.service
+sudo systemctl enable --now opsly-orchestrator-worker
 ```
 
 ---
