@@ -337,6 +337,12 @@ flowchart LR
 - `7a58fee`: token → session auth
 - (pendiente): CSP headers, rate limiting continua
 
+**2026-04-11 — Ejecución Plan:**
+- ✅ SSH Tailscale operativo (`100.120.151.91`)
+- ✅ Onboard tenant `localrank` idempotente
+- ⚠️ VPS con carga alta (load 31.72) + Docker timeouts
+- 🎯 Bloqueante: Cloudflare Proxy ON
+
 * **2026-04-06 — Bloques A/B/C (plan 3 vías):** Vitest en `apps/api`: tests nuevos para `validation`, `portal-me`, `pollPortsUntilHealthy`, rutas `tenants` y `tenants/[id]` (`npm run test` 67 tests, `npm run type-check` verde). Documentación: `docs/runbooks/{admin,dev,managed,incident}.md`, ADR-006–008, `docs/FAQ.md`. Terraform: `infra/terraform/terraform.tfvars.example` (placeholders), `terraform plan -input=false` con `TF_VAR_*` de ejemplo y nota en `infra/terraform/README.md`.
 * **2026-04-06 — CURSOR-EXECUTE-NOW (archivo `/home/claude/CURSOR-EXECUTE-NOW.md` no presente en workspace):** +36 casos en 4 archivos `*.test.ts` (health, metrics, portal, suspend/resume) + `invitations-stripe-routes.test.ts` para cobertura de `route.ts`; `npm run test:coverage` ~89% líneas en `app/api/**/route.ts`; `health/route.ts` recorta slashes finales en URL Supabase; `docs/FAQ.md` enlaces Markdown validados; `infra/terraform/tfplan.txt` + `.gitignore` `infra/terraform/tfplan`.
 * **2026-04-06 — cursor-autonomous-plan (archivo `/home/claude/cursor-autonomous-plan.md` no presente):** SUB-A `lib/api-response.ts` + refactor `auth`, `tenants`, `metrics`, `tenants/[id]`; SUB-C `docs/SECURITY_AUDIT_REPORT.md`; SUB-B `TROUBLESHOOTING.md`, `SECURITY_CHECKLIST.md`, `PERFORMANCE_BASELINE.md`; SUB-D `OBSERVABILITY.md`; SUB-E `docs/openapi-opsly-api.yaml`.
@@ -772,7 +778,9 @@ ssh vps-dragon@100.120.151.91 "docker system df && sudo du -xh /var --max-depth=
 - [ ] **`GOOGLE_CLOUD_PROJECT_ID` / `BIGQUERY_DATASET` / `VERTEX_AI_REGION` en `prd`** — requeridos para Fase 10.
 - [x] **OAuth token Google (service account)** — corregido `google_base64url_encode` + POST token; token emitido OK (2026-04-08).
 - [ ] **Drive sync escritura Mi unidad** — subir `GOOGLE_USER_CREDENTIALS_JSON` (ADC OAuth usuario) a Doppler **o** carpeta en Shared Drive + SA; `drive-sync` ya intenta usuario primero.
-- [ ] **SSH VPS inestable** — `ssh -o BatchMode=yes -o ConnectTimeout=10 vps-dragon@100.120.151.91 # Tailscale` devuelve `Connection timed out during banner exchange` (2026-04-09); sin SSH estable no se puede completar onboard/start de `localrank`.
+- [x] **SSH VPS estable** — SSH Tailscale `100.120.151.91` operativo (2026-04-11).
+- [x] **Onboard localrank** — completado idempotente; contenedores n8n_localrank y uptime_localrank corriendo (2026-04-11 01:40 UTC).
+- [ ] **VPS carga alta** — Load average 31.72 (temporal); Docker commands timeout; necesita monitoreo.
 - [ ] **Cloudflare Proxy** — habilitar Proxy ON para todos los registros `*.ops.smiletripcare.com` (evitar exposición directa de origen público `157.245.223.7`).
 - [ ] **Verificar email tester** — confirmar recepción/activación de invitación para `jkbotero78@gmail.com` tras onboarding de `localrank`.
 - [x] **`GOOGLE_DRIVE_TOKEN`** — confirmado 2026-04-10: Drive usa `GOOGLE_SERVICE_ACCOUNT_JSON` (2361 chars, válido). No es un gap real; la variable legacy no se usa.
