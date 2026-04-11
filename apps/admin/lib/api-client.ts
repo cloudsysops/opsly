@@ -1,4 +1,6 @@
 import type {
+  AdminCostsResponse,
+  CostDecisionResponse,
   InvitationSendResponse,
   MetricsResponse,
   SystemMetricsResponse,
@@ -43,12 +45,17 @@ function isDemo(): boolean {
 async function buildHeaders(initHeaders: HeadersInit | undefined): Promise<Headers> {
   const headers = new Headers(initHeaders);
   headers.set("Content-Type", "application/json");
-  // En modo demo no se envía token de autorización
-  if (!isDemo()) {
-    const token = await getServerAuthToken();
-    if (token !== null && token.length > 0) {
-      headers.set("Authorization", `Bearer ${token}`);
+  let authToken: string | null = null;
+  if (isDemo()) {
+    const demoAdmin = process.env.NEXT_PUBLIC_PLATFORM_ADMIN_TOKEN?.trim();
+    if (demoAdmin !== undefined && demoAdmin.length > 0) {
+      authToken = demoAdmin;
     }
+  } else {
+    authToken = await getServerAuthToken();
+  }
+  if (authToken !== null && authToken.length > 0) {
+    headers.set("Authorization", `Bearer ${authToken}`);
   }
   return headers;
 }
@@ -254,6 +261,21 @@ export async function approveFeedbackDecision(body: {
   approved: boolean;
 }): Promise<{ success: boolean; approved: boolean }> {
   return request(`/api/feedback/approve`, {
+    method: "POST",
+    body: JSON.stringify(body),
+  });
+}
+
+export async function getAdminCosts(): Promise<AdminCostsResponse> {
+  return request<AdminCostsResponse>("/api/admin/costs");
+}
+
+export async function postCostDecision(body: {
+  service_id: string;
+  action: "approve" | "reject";
+  reason?: string;
+}): Promise<CostDecisionResponse> {
+  return request<CostDecisionResponse>("/api/admin/costs", {
     method: "POST",
     body: JSON.stringify(body),
   });

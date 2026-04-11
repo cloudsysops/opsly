@@ -130,3 +130,45 @@ export type AuditLogEntry = {
   created_at: string;
   tenant_slug: string | null;
 };
+
+export type CostLineStatus =
+  | "active"
+  | "approved"
+  | "pending_approval"
+  | "rejected"
+  | "available";
+
+export type CostLineItem = {
+  name: string;
+  cost: number;
+  period: string;
+  status: CostLineStatus;
+  requires_approval?: boolean;
+  requires_credit_card?: boolean;
+  future_cost?: string;
+  duration?: string;
+  description: string;
+};
+
+export type CostAlert = {
+  level: "info" | "warning";
+  message: string;
+  action: string;
+};
+
+export type AdminCostsResponse = {
+  current: Record<string, CostLineItem>;
+  proposed: Record<string, CostLineItem>;
+  summary: {
+    currentMonthly: number;
+    proposedMonthly: number;
+    potentialSavings: number;
+  };
+  alerts: CostAlert[];
+};
+
+export type CostDecisionResponse = {
+  success: boolean;
+  proposed?: CostLineItem;
+  summary: AdminCostsResponse["summary"];
+};
