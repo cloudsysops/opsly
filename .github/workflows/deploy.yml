@@ -302,7 +302,8 @@ jobs:
             # Imágenes app/admin/portal vienen de GHCR; no hace falta npm ci en el VPS (evita OOM / exit 137).
 
             cd /opt/opsly/infra
-            COMPOSE_CMD="docker compose --env-file /opt/opsly/.env -f docker-compose.platform.yml"
+            # Invocación explícita (no COMPOSE_CMD en variable): el login shell del VPS puede ser zsh y
+            # no hace word-splitting en $COMPOSE_CMD pull → "no such file or directory".
             if [ -z "${GITHUB_DEPLOY_TOKEN:-}" ] || [ -z "${GITHUB_DEPLOY_ACTOR:-}" ]; then
               echo "GITHUB_DEPLOY_TOKEN o GITHUB_DEPLOY_ACTOR vacíos (token del workflow)" >&2
               exit 1
@@ -315,14 +316,14 @@ jobs:
             fi
             # Core runtime must always deploy. Optional services are best-effort.
             echo "Pulling core services (required)..."
-            $COMPOSE_CMD pull traefik app admin portal
+            docker compose --env-file /opt/opsly/.env -f docker-compose.platform.yml pull traefik app admin portal
             echo "Pulling optional services (best-effort)..."
-            $COMPOSE_CMD pull mcp llm-gateway orchestrator context-builder || true
+            docker compose --env-file /opt/opsly/.env -f docker-compose.platform.yml pull mcp llm-gateway orchestrator context-builder || true
 
             # --force-recreate: evita réplicas app (deploy.replicas: 2) quedando en Created mientras otras siguen Up.
-            $COMPOSE_CMD up -d --no-deps --force-recreate traefik app admin portal
+            docker compose --env-file /opt/opsly/.env -f docker-compose.platform.yml up -d --no-deps --force-recreate traefik app admin portal
             # Optional services: no bloquear deploy si falta imagen/tag.
-            $COMPOSE_CMD up -d --no-deps --force-recreate mcp llm-gateway orchestrator context-builder || true
+            docker compose --env-file /opt/opsly/.env -f docker-compose.platform.yml up -d --no-deps --force-recreate mcp llm-gateway orchestrator context-builder || true
 
             if [ -z "${PLATFORM_DOMAIN:-}" ]; then
               echo "PLATFORM_DOMAIN no está definido" >&2
