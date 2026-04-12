@@ -43,6 +43,6 @@
     ],
     "scripts": 85,
     "adrs": 19,
-    "migrations": 28
+    "migrations": 29
   }
 }
