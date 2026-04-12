@@ -46,3 +46,23 @@ export type ApprovalDecision = z.infer<typeof approvalDecisionSchema>;
 export type ApprovalGateRequest = z.infer<typeof approvalGateRequestSchema>;
 export type ApprovalGateResponse = z.infer<typeof approvalGateResponseSchema>;
 export type ApprovalGateJobData = z.infer<typeof approvalGateJobDataSchema>;
+
+/** Solicitud de embedding (Vertex / futuros proveedores). */
+export interface EmbeddingRequest {
+  text: string;
+  model?: string;
+}
+
+export interface EmbeddingResponse {
+  values: number[];
+  dimension: number;
+}
+
+/** Fila lógica para métricas embedidas (tabla platform.approval_gate_embeddings). */
+export interface ApprovalEmbedding {
+  sandbox_run_id: string;
+  metrics_embedding: number[];
+  metrics_text: string;
+  model_used: string;
+  created_at: string;
+}

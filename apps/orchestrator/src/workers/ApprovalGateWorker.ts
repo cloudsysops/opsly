@@ -6,6 +6,12 @@ import {
   type ApprovalGateResponse,
 } from "@intcloudsysops/types";
 import { ApprovalGateClient } from "../lib/approval-gate-client.js";
+import {
+  formatApprovalMetricsEmbeddingText,
+  isVertexEmbeddingConfigured,
+  VertexAIClient,
+  VERTEX_TEXT_EMBEDDING_004_DIM,
+} from "../lib/vertex-ai-client.js";
 import { logWorkerLifecycle } from "../observability/worker-log.js";
 
 const DEFAULT_GATES = {
@@ -65,9 +71,16 @@ export class ApprovalGateWorker {
 
   private readonly approvalClient: ApprovalGateClient;
 
-  public constructor(supabase: SupabaseClient, approvalClient: ApprovalGateClient) {
+  private readonly vertexClient: VertexAIClient | null;
+
+  public constructor(
+    supabase: SupabaseClient,
+    approvalClient: ApprovalGateClient,
+    vertexClient: VertexAIClient | null = null,
+  ) {
     this.supabase = supabase;
     this.approvalClient = approvalClient;
+    this.vertexClient = vertexClient;
   }
 
   public async execute(data: ApprovalGateJobData): Promise<ApprovalGateResponse> {
@@ -101,6 +114,38 @@ export class ApprovalGateWorker {
       throw new Error(error.message);
     }
 
+    if (this.vertexClient !== null) {
+      try {
+        const emb = await this.vertexClient.embedMetrics(job.metrics);
+        const vectorLiteral = `[${emb.values.join(",")}]`;
+        const modelUsed =
+          process.env.VERTEX_AI_EMBEDDING_MODEL?.trim() || "text-embedding-004";
+        const { error: embErr } = await this.supabase
+          .schema("platform")
+          .from("approval_gate_embeddings")
+          .insert({
+            sandbox_run_id: job.sandbox_run_id,
+            metrics_embedding: vectorLiteral,
+            metrics_text: formatApprovalMetricsEmbeddingText(job.metrics),
+            model_used: modelUsed,
+          });
+        if (embErr) {
+          console.warn("[ApprovalGate] embedding insert failed", embErr.message);
+        } else {
+          const dim = emb.dimension;
+          console.log(`[ApprovalGate] Embedding stored: ${String(dim)} dims`);
+          if (dim !== VERTEX_TEXT_EMBEDDING_004_DIM) {
+            console.warn(
+              `[ApprovalGate] expected ${String(VERTEX_TEXT_EMBEDDING_004_DIM)} dims, got ${String(dim)}`,
+            );
+          }
+        }
+      } catch (e) {
+        const msg = e instanceof Error ? e.message : String(e);
+        console.warn("[ApprovalGate] Vertex embedding skipped:", msg);
+      }
+    }
+
     await notifyDiscordApproval(response, job.deployment_id);
     return response;
   }
@@ -111,7 +156,16 @@ export function startApprovalGateWorker(
 ): { worker: Worker; closeSupabase: () => Promise<void> } {
   const supabase = getSupabase();
   const client = new ApprovalGateClient();
-  const gate = new ApprovalGateWorker(supabase, client);
+  let vertex: VertexAIClient | null = null;
+  if (isVertexEmbeddingConfigured()) {
+    try {
+      vertex = new VertexAIClient();
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : String(e);
+      console.warn("[ApprovalGate] VERTEX_AI_EMBED_ENABLED but client init failed:", msg);
+    }
+  }
+  const gate = new ApprovalGateWorker(supabase, client, vertex);
 
   const worker = new Worker<ApprovalGateJobData>(
     "approval-gate",
