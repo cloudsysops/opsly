@@ -1,0 +1,59 @@
+# Imagen opsly-hermes: worker Hermes (BullMQ) + health HTTP, con runtime Python/Playwright para notebooklm-py (ADR-014).
+# El entrypoint no ejecuta apps/orchestrator/dist/index.js (evita duplicar el resto de workers).
+
+FROM node:20-alpine AS builder
+
+WORKDIR /app
+COPY package.json package-lock.json ./
+COPY apps/orchestrator/package.json ./apps/orchestrator/
+COPY apps/agents/notebooklm/package.json ./apps/agents/notebooklm/
+COPY packages/types/package.json ./packages/types/
+RUN npm ci
+
+COPY . .
+RUN npm run build -w @intcloudsysops/types \
+  && npm run build -w @intcloudsysops/notebooklm-agent \
+  && npm run build -w @intcloudsysops/orchestrator
+
+FROM node:20-alpine AS runner
+
+ENV NODE_ENV=production
+ENV ORCHESTRATOR_HEALTH_PORT=3020
+
+# Python + Chromium para notebooklm-py / Playwright (NotebookLM agent)
+RUN apk add --no-cache \
+    python3 \
+    py3-pip \
+    chromium \
+    nss \
+    freetype \
+    harfbuzz \
+    ca-certificates \
+    ttf-dejavu \
+  && python3 -m pip install --no-cache-dir --break-system-packages \
+    "notebooklm-py>=0.2.0,<0.3" \
+    "playwright>=1.40.0,<1.50" \
+  && python3 -m playwright install chromium
+
+WORKDIR /app
+COPY package.json package-lock.json ./
+COPY apps/orchestrator/package.json ./apps/orchestrator/
+COPY apps/agents/notebooklm/package.json ./apps/agents/notebooklm/
+COPY packages/types/package.json ./packages/types/
+RUN npm ci --omit=dev
+
+COPY --from=builder /app/apps/orchestrator/dist ./apps/orchestrator/dist
+COPY --from=builder /app/apps/agents/notebooklm/dist ./apps/agents/notebooklm/dist
+COPY --from=builder /app/packages/types/dist ./packages/types/dist
+COPY --from=builder /app/scripts ./scripts
+COPY infra/hermes ./infra/hermes
+
+RUN chmod +x /app/infra/hermes/docker-entrypoint.sh
+
+# Puerto HTTP interno del health server (mapear host 3012:3020 en compose si se desea :3012 en el host)
+EXPOSE 3020
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+  CMD node -e "fetch('http://127.0.0.1:'+(process.env.ORCHESTRATOR_HEALTH_PORT||3020)+'/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+
+ENTRYPOINT ["/bin/sh", "/app/infra/hermes/docker-entrypoint.sh"]

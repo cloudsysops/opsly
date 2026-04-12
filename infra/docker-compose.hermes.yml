@@ -1,0 +1,12 @@
+# Merge opcional para desarrollo local: imagen Hermes construida desde Dockerfile.hermes
+#
+#   docker compose --env-file ../.env -f docker-compose.platform.yml -f docker-compose.hermes.yml config
+#
+# No sustituye el servicio `hermes` definido en docker-compose.platform.yml: fusiona la clave `build`.
+
+services:
+  hermes:
+    build:
+      context: ..
+      dockerfile: Dockerfile.hermes
+    image: ghcr.io/cloudsysops/intcloudsysops-hermes:latest
