@@ -1,0 +1,21 @@
+{
+  "name": "opsly-quantum",
+  "version": "1.0.0",
+  "description": "Skill maestro: orquesta contexto, diagnóstico seguro y enlaces a skills Opsly",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "command": {
+        "type": "string",
+        "description": "context | status | smoke | skills | help"
+      }
+    },
+    "additionalProperties": true
+  },
+  "outputSchema": {
+    "type": "object",
+    "properties": {
+      "ok": { "type": "boolean" }
+    }
+  }
+}

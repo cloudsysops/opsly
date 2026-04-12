@@ -36,6 +36,7 @@ NUNCA adivinar. NUNCA saltarse pasos.
 | Tarea | Skill | Path en repo |
 |-------|--------|----------------|
 | Inicio de sesión | opsly-context | `skills/user/opsly-context/` |
+| Vista maestro / orquestación segura | opsly-quantum | `skills/user/opsly-quantum/` · `./scripts/opsly-quantum.sh` |
 | Crear ruta API | opsly-api | `skills/user/opsly-api/` |
 | Crear script bash | opsly-bash | `skills/user/opsly-bash/` |
 | Llamar a LLM | opsly-llm | `skills/user/opsly-llm/` |
