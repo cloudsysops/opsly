@@ -8,6 +8,16 @@
 # REDIS_PASSWORD, REDIS_EXPORT_BIND (opcional; ver servicio redis), ACME_EMAIL, TRAEFIK_DASHBOARD_BASIC_AUTH_USERS (htpasswd; escapar $ en Compose),
 # DOCKER_GID (GID del grupo del socket: stat -c %g /var/run/docker.sock; vps-bootstrap.sh lo añade),
 # APP_IMAGE (optional). Los servicios también cargan env_file ../.env (= /opt/opsly/.env desde infra/).
+# Nuevos servicios opcionales: GRAFANA_ADMIN_PASSWORD, GF_SECURITY_SECRET_KEY,
+# WATCHTOWER_REGISTRY_USER, WATCHTOWER_REGISTRY_PASSWORD (token GHCR read:packages).
+
+# ── Logging estándar: rotación automática en todos los servicios ──────────────
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+    tag: "{{.Name}}"
 
 services:
   traefik:
@@ -45,13 +55,15 @@ services:
       - "traefik.http.routers.traefik-dashboard.tls.certresolver=letsencrypt"
       - "traefik.http.routers.traefik-dashboard.service=api@internal"
       - "traefik.http.routers.traefik-dashboard.middlewares=traefik-dashboard-auth@docker"
+    logging: *default-logging
     networks:
       - traefik-public
     restart: unless-stopped
 
   redis:
     image: redis:7-alpine
-    command: redis-server --requirepass ${REDIS_PASSWORD}
+    # maxmemory + LRU: evita OOM si las colas BullMQ crecen; ajustar según RAM del VPS.
+    command: redis-server --requirepass ${REDIS_PASSWORD} --maxmemory 256mb --maxmemory-policy allkeys-lru --save 60 1
     # Workers remotos (Tailscale): en .env p.ej. REDIS_EXPORT_BIND=100.120.151.91 (IP Tailscale del VPS).
     # Por defecto 127.0.0.1: solo acceso local / túnel SSH (redis-cli -u redis://:...@127.0.0.1:6379/0).
     ports:
@@ -60,6 +72,7 @@ services:
       - redis_data:/data
     environment:
       REDIS_PASSWORD: ${REDIS_PASSWORD}
+    logging: *default-logging
     networks:
       - internal
       # Sin una red no-internal, Docker no publica `ports` al host (NetworkSettings.Ports queda null).
@@ -71,6 +84,10 @@ services:
       timeout: 5s
       retries: 5
       start_period: 10s
+    deploy:
+      resources:
+        limits:
+          memory: 384M
 
   # --- Monitoreo plataforma (métricas host → Admin /api/metrics/system) ---
   prometheus:
@@ -86,6 +103,7 @@ services:
       - prometheus_data:/prometheus
     ports:
       - "127.0.0.1:${PROMETHEUS_HOST_PORT:-9090}:9090"
+    logging: *default-logging
     networks:
       - internal
     restart: unless-stopped
@@ -95,6 +113,10 @@ services:
       timeout: 5s
       retries: 5
       start_period: 20s
+    deploy:
+      resources:
+        limits:
+          memory: 512M
 
   node-exporter:
     image: prom/node-exporter:v1.8.2
@@ -108,6 +130,7 @@ services:
       - /proc:/host/proc:ro
       - /sys:/host/sys:ro
       - /:/rootfs:ro,rslave
+    logging: *default-logging
     networks:
       - internal
     restart: unless-stopped
@@ -143,6 +166,8 @@ services:
       - "traefik.http.routers.app.service=app"
       - "traefik.http.routers.app.middlewares=secure-headers@file,rate-limit@file,compress@file"
       - "traefik.http.services.app.loadbalancer.server.port=3000"
+      - "com.centurylinklabs.watchtower.enable=true"
+    logging: *default-logging
     networks:
       - traefik-public
       - internal
@@ -161,6 +186,9 @@ services:
       start_period: 60s
     deploy:
       replicas: 2
+      resources:
+        limits:
+          memory: 768M
 
   admin:
     image: ${ADMIN_APP_IMAGE:-ghcr.io/cloudsysops/intcloudsysops-admin:latest}
@@ -177,9 +205,27 @@ services:
       - "traefik.http.routers.opsly-admin.tls=true"
       - "traefik.http.routers.opsly-admin.tls.certresolver=letsencrypt"
       - "traefik.http.services.opsly-admin.loadbalancer.server.port=3001"
+      - "com.centurylinklabs.watchtower.enable=true"
+    logging: *default-logging
     networks:
       - traefik-public
     restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:3001').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 45s
+    deploy:
+      resources:
+        limits:
+          memory: 512M
 
   portal:
     image: ${PORTAL_APP_IMAGE:-ghcr.io/cloudsysops/intcloudsysops-portal:latest}
@@ -201,6 +247,8 @@ services:
       - "traefik.http.routers.portal.tls=true"
       - "traefik.http.routers.portal.tls.certresolver=letsencrypt"
       - "traefik.http.services.portal.loadbalancer.server.port=3002"
+      - "com.centurylinklabs.watchtower.enable=true"
+    logging: *default-logging
     networks:
       - traefik-public
     restart: unless-stopped
@@ -216,6 +264,10 @@ services:
       timeout: 10s
       retries: 3
       start_period: 60s
+    deploy:
+      resources:
+        limits:
+          memory: 512M
 
   mcp:
     image: ${MCP_IMAGE:-ghcr.io/cloudsysops/intcloudsysops-mcp:latest}
@@ -236,10 +288,28 @@ services:
       - "traefik.http.routers.mcp.tls=true"
       - "traefik.http.routers.mcp.tls.certresolver=letsencrypt"
       - "traefik.http.services.mcp.loadbalancer.server.port=3003"
+      - "com.centurylinklabs.watchtower.enable=true"
+    logging: *default-logging
     networks:
       - traefik-public
       - internal
     restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:3003/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 256M
 
   llm-gateway:
     image: ${LLM_GATEWAY_IMAGE:-ghcr.io/cloudsysops/intcloudsysops-llm-gateway:latest}
@@ -260,6 +330,9 @@ services:
         condition: service_healthy
       context-builder:
         condition: service_started
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+    logging: *default-logging
     networks:
       - internal
     restart: unless-stopped
@@ -275,11 +348,13 @@ services:
       timeout: 10s
       retries: 3
       start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 1G
 
   ingestion-bunker:
-    build:
-      context: ../apps/ingestion-service
-      dockerfile: Dockerfile
+    image: ${INGESTION_IMAGE:-ghcr.io/cloudsysops/intcloudsysops-ingestion-service:latest}
     container_name: opsly_ingestion_bunker
     env_file:
       - ../.env
@@ -290,6 +365,16 @@ services:
     depends_on:
       redis:
         condition: service_healthy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik-public"
+      - "traefik.http.routers.ingest.rule=Host(`ingest.${PLATFORM_DOMAIN}`)"
+      - "traefik.http.routers.ingest.entrypoints=websecure"
+      - "traefik.http.routers.ingest.tls=true"
+      - "traefik.http.routers.ingest.tls.certresolver=letsencrypt"
+      - "traefik.http.services.ingest.loadbalancer.server.port=3040"
+      - "com.centurylinklabs.watchtower.enable=true"
+    logging: *default-logging
     networks:
       - internal
       - traefik-public
@@ -306,14 +391,10 @@ services:
       timeout: 10s
       retries: 3
       start_period: 15s
-    labels:
-      - "traefik.enable=true"
-      - "traefik.docker.network=traefik-public"
-      - "traefik.http.routers.ingest.rule=Host(`ingest.${PLATFORM_DOMAIN}`)"
-      - "traefik.http.routers.ingest.entrypoints=websecure"
-      - "traefik.http.routers.ingest.tls=true"
-      - "traefik.http.routers.ingest.tls.certresolver=letsencrypt"
-      - "traefik.http.services.ingest.loadbalancer.server.port=3040"
+    deploy:
+      resources:
+        limits:
+          memory: 256M
 
   orchestrator:
     image: ${ORCHESTRATOR_IMAGE:-ghcr.io/cloudsysops/intcloudsysops-orchestrator:latest}
@@ -322,6 +403,8 @@ services:
       - ../.env
     environment:
       NODE_ENV: production
+      # Si usas el servicio `hermes` (contenedor dedicado), pon `HERMES_ENABLED=false` en .env/Doppler para no duplicar el worker.
+      HERMES_ENABLED: ${HERMES_ENABLED:-true}
       # Vacío = full (compat). `control` = solo TeamManager/eventos en VPS; workers en otro nodo con `worker`.
       OPSLY_ORCHESTRATOR_ROLE: ${OPSLY_ORCHESTRATOR_ROLE:-}
       ORCHESTRATOR_HEALTH_PORT: "3011"
@@ -345,6 +428,9 @@ services:
         condition: service_healthy
       llm-gateway:
         condition: service_started
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+    logging: *default-logging
     networks:
       - internal
     restart: unless-stopped
@@ -360,6 +446,72 @@ services:
       timeout: 10s
       retries: 3
       start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+
+  # Worker Hermes (BullMQ hermes-orchestration) + health HTTP. Imagen: Dockerfile.hermes (ADR-015).
+  # Con este servicio activo, en Doppler/VPS establecer HERMES_ENABLED=false en el servicio `orchestrator`
+  # para no duplicar el worker Hermes en el mismo host.
+  hermes:
+    image: ${HERMES_IMAGE:-ghcr.io/cloudsysops/intcloudsysops-hermes:latest}
+    container_name: opsly_hermes
+    env_file:
+      - ../.env
+    environment:
+      NODE_ENV: production
+      ORCHESTRATOR_HEALTH_PORT: "3020"
+      ORCHESTRATOR_LLM_GATEWAY_URL: http://llm-gateway:3010
+      OPSLY_API_INTERNAL_URL: ${OPSLY_API_INTERNAL_URL:-http://app:3000}
+      SUPABASE_URL: ${SUPABASE_URL:-${NEXT_PUBLIC_SUPABASE_URL:-}}
+      NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL:-}
+      SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY:-}
+      REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379/0
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+      NOTEBOOKLM_ENABLED: ${NOTEBOOKLM_ENABLED:-false}
+      NOTEBOOKLM_NOTEBOOK_ID: ${NOTEBOOKLM_NOTEBOOK_ID:-}
+      NOTEBOOKLM_DEFAULT_TENANT_SLUG: ${NOTEBOOKLM_DEFAULT_TENANT_SLUG:-}
+      DISCORD_WEBHOOK_URL: ${DISCORD_WEBHOOK_URL:-}
+      GITHUB_TOKEN: ${GITHUB_TOKEN:-}
+      GITHUB_TOKEN_N8N: ${GITHUB_TOKEN_N8N:-}
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET:-}
+      STRIPE_TEST_SECRET_KEY: ${STRIPE_TEST_SECRET_KEY:-}
+      STRIPE_WEBHOOK_SECRET_TEST: ${STRIPE_WEBHOOK_SECRET_TEST:-}
+      PLAYWRIGHT_HEADLESS: "true"
+    ports:
+      - "127.0.0.1:${HERMES_HOST_PORT:-3021}:3020"
+    depends_on:
+      redis:
+        condition: service_healthy
+      app:
+        condition: service_healthy
+      llm-gateway:
+        condition: service_started
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+    logging: *default-logging
+    networks:
+      - internal
+    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:3020/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          # Playwright/Chromium necesita ~1.5G; Hermes también carga el runtime Python
+          memory: 2G
 
   context-builder:
     image: ${CONTEXT_BUILDER_IMAGE:-ghcr.io/cloudsysops/intcloudsysops-context-builder:latest}
@@ -377,6 +529,139 @@ services:
     depends_on:
       redis:
         condition: service_healthy
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+    logging: *default-logging
+    networks:
+      - internal
+    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:3012/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+
+  # ── Métricas Redis → Prometheus ──────────────────────────────────────────────
+  redis-exporter:
+    image: oliver006/redis_exporter:v1.66.0
+    container_name: opsly_redis_exporter
+    environment:
+      REDIS_ADDR: redis://redis:6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+    depends_on:
+      redis:
+        condition: service_healthy
+    logging: *default-logging
+    networks:
+      - internal
+    restart: unless-stopped
+
+  # ── Métricas de contenedores → Prometheus ────────────────────────────────────
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:v0.50.0
+    container_name: opsly_cadvisor
+    command:
+      - "--housekeeping_interval=30s"
+      - "--max_housekeeping_interval=35s"
+      - "--disable_metrics=advtcp,cpuLoad,cpuset,hugetlb,memory_numa,percpu,referenced_memory,resctrl,sched,tcp,udp"
+      - "--store_container_labels=false"
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    privileged: true
+    devices:
+      - /dev/kmsg
+    logging: *default-logging
+    networks:
+      - internal
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+
+  # ── Visualización de métricas: grafana.${PLATFORM_DOMAIN} ────────────────────
+  grafana:
+    image: grafana/grafana:11.4.0
+    container_name: opsly_grafana
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-changeme}
+      GF_SECURITY_SECRET_KEY: ${GF_SECURITY_SECRET_KEY:-changeme-set-in-doppler}
+      GF_SERVER_ROOT_URL: https://grafana.${PLATFORM_DOMAIN}
+      GF_SERVER_DOMAIN: grafana.${PLATFORM_DOMAIN}
+      GF_ANALYTICS_REPORTING_ENABLED: "false"
+      GF_ANALYTICS_CHECK_FOR_UPDATES: "false"
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_AUTH_ANONYMOUS_ENABLED: "false"
+      GF_LOG_MODE: console
+      GF_LOG_LEVEL: warn
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    depends_on:
+      prometheus:
+        condition: service_healthy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik-public"
+      - "traefik.http.routers.grafana.rule=Host(`grafana.${PLATFORM_DOMAIN}`)"
+      - "traefik.http.routers.grafana.entrypoints=websecure"
+      - "traefik.http.routers.grafana.tls=true"
+      - "traefik.http.routers.grafana.tls.certresolver=letsencrypt"
+      - "traefik.http.services.grafana.loadbalancer.server.port=3000"
+      - "traefik.http.routers.grafana.middlewares=secure-headers@file"
+    logging: *default-logging
+    networks:
+      - traefik-public
+      - internal
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:3000/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+
+  # ── Auto-update imágenes Opsly (solo las etiquetadas watchtower.enable=true) ──
+  # Solo actualiza contenedores con label com.centurylinklabs.watchtower.enable=true.
+  # Añadir WATCHTOWER_REGISTRY_USER / WATCHTOWER_REGISTRY_PASSWORD en Doppler
+  # (token GHCR con scope read:packages).
+  watchtower:
+    image: containrrr/watchtower:1.7.1
+    container_name: opsly_watchtower
+    environment:
+      WATCHTOWER_LABEL_ENABLE: "true"
+      WATCHTOWER_CLEANUP: "true"
+      WATCHTOWER_INCLUDE_STOPPED: "false"
+      WATCHTOWER_POLL_INTERVAL: "300"
+      WATCHTOWER_NOTIFICATIONS: "slack"
+      WATCHTOWER_NOTIFICATION_SLACK_HOOK_URL: ${DISCORD_WEBHOOK_URL:-}
+      WATCHTOWER_NOTIFICATION_SLACK_IDENTIFIER: "watchtower@opsly"
+      REPO_USER: ${WATCHTOWER_REGISTRY_USER:-}
+      REPO_PASS: ${WATCHTOWER_REGISTRY_PASSWORD:-}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    logging: *default-logging
     networks:
       - internal
     restart: unless-stopped
@@ -394,3 +679,4 @@ volumes:
   letsencrypt:
   redis_data:
   prometheus_data:
+  grafana_data:
