@@ -8,7 +8,8 @@
     "start": "node dist/index.js",
     "test": "vitest run",
     "test:tools": "vitest run --passWithNoTests src/agents/tools",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "hermes": "tsx src/hermes/cli.ts"
   },
   "dependencies": {
     "@intcloudsysops/types": "*",

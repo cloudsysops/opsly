@@ -13,7 +13,8 @@ export type WorkerName =
   | "webhooks-processing"
   | "general-events"
   | "agent-classifier"
-  | "approval-gate";
+  | "approval-gate"
+  | "hermes-orchestration";
 
 export function extractJobContext(job: Job): {
   task_id?: string;

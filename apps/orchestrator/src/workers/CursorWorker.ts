@@ -62,11 +62,17 @@ export function startCursorWorker(connection: object) {
           task?: string;
           commands?: string[];
           tenant_slug?: string;
+          notebooklm_context?: string;
+          notebooklm_answer?: string;
+          hermes_enrichment_summary?: string;
         };
 
         const task = payload.task || "sin tarea";
         const tenantSlug = payload.tenant_slug || "platform";
         const commands = payload.commands || [];
+        const nbCtx = payload.notebooklm_context;
+        const nbAns = payload.notebooklm_answer;
+        const hermesSum = payload.hermes_enrichment_summary;
 
         await notifyDiscord("🤖 Cursor ejecutando", `Tarea: ${task}\nTenant: ${tenantSlug}`, "info");
 
@@ -75,9 +81,14 @@ export function startCursorWorker(connection: object) {
           `# Tenant: ${tenantSlug}`,
           `# Job ID: ${job.id}`,
           `# Fecha: ${new Date().toISOString()}`,
+          hermesSum ? `# Hermes: ${hermesSum}` : "",
+          nbCtx ? `\n## Contexto sugerido (Hermes / NotebookLM)\n${nbCtx}` : "",
+          nbAns ? `\n## Respuesta NotebookLM (recorte)\n${nbAns}` : "",
           "",
           ...commands,
-        ].join("\n");
+        ]
+          .filter((line) => line !== "")
+          .join("\n");
 
         await writeActivePrompt(content);
         logWorkerLifecycle("complete", "cursor", job, { duration_ms: Date.now() - t0 });

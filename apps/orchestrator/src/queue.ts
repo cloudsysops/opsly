@@ -27,6 +27,15 @@ export const approvalGateQueue = new Queue("approval-gate", {
   },
 });
 
+/** Cola Hermes: tick periódico vía worker `HermesOrchestrationWorker` (`HERMES_ENABLED`). */
+export const hermesOrchestrationQueue = new Queue("hermes-orchestration", {
+  connection,
+  defaultJobOptions: {
+    attempts: 2,
+    backoff: { type: "fixed", delay: 5000 },
+  },
+});
+
 export async function enqueueJob(job: OrchestratorJob) {
   const opts = buildQueueAddOptions(job);
   const bull = await orchestratorQueue.add(job.type, job, opts);
