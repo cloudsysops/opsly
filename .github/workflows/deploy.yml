@@ -7,6 +7,10 @@
 #   PLATFORM_DOMAIN: dominio base sin subdominio (ej. ops.smiletripcare.com). Debe coincidir con
 #   .env del VPS para compose; el health check usa https://api.${PLATFORM_DOMAIN}/api/health
 #
+# Staging (rama `staging` → VPS /opt/opsly-staging):
+#   Secret recomendado: STAGING_PLATFORM_DOMAIN (dominio base igual que PLATFORM_DOMAIN, ej. staging.ops.example.com).
+#   Si está vacío, el build usa PLATFORM_DOMAIN como fallback (solo para desbloquear CI).
+#
 # Secrets para build de imágenes (valores desde Doppler prd u origen equivalente):
 #   gh secret set NEXT_PUBLIC_SUPABASE_URL --repo cloudsysops/opsly
 #   gh secret set NEXT_PUBLIC_SUPABASE_ANON_KEY --repo cloudsysops/opsly
@@ -208,15 +212,247 @@ jobs:
           push: true
           tags: ghcr.io/cloudsysops/intcloudsysops-mcp:latest
 
-  # Git + npm + Supabase + PM2 en el VPS (orquestador / proceso Node). Ramas main y staging.
-  deploy-pm2-vps:
-    name: Deploy Node/PM2 on VPS (SSH)
+  # --- Staging: imágenes etiqueta :staging (solo rama staging) ---
+  build-and-push-staging:
     needs: lint-and-typecheck
     if: |
       always() &&
       (needs.lint-and-typecheck.result == 'success' || needs.lint-and-typecheck.result == 'skipped') &&
-      github.event_name == 'push' &&
-      (github.ref_name == 'staging' || github.ref_name == 'main')
+      github.ref_name == 'staging'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Resolve staging domain for build-args
+        id: staging_domain
+        env:
+          SD: ${{ secrets.STAGING_PLATFORM_DOMAIN }}
+          PD: ${{ secrets.PLATFORM_DOMAIN }}
+        run: |
+          set -euo pipefail
+          DOM="${SD:-$PD}"
+          if [ -z "$DOM" ]; then
+            echo "Definir al menos PLATFORM_DOMAIN o STAGING_PLATFORM_DOMAIN en secrets" >&2
+            exit 1
+          fi
+          echo "domain=$DOM" >> "$GITHUB_OUTPUT"
+          if [ -z "${SD:-}" ]; then
+            echo "::warning::STAGING_PLATFORM_DOMAIN vacío; usando PLATFORM_DOMAIN para build staging"
+          fi
+
+      - name: Build and push API image (staging)
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: apps/api/Dockerfile
+          push: true
+          tags: |
+            ghcr.io/cloudsysops/intcloudsysops-api:staging
+            ghcr.io/cloudsysops/intcloudsysops-api:${{ github.sha }}
+          build-args: |
+            PLATFORM_DOMAIN=${{ steps.staging_domain.outputs.domain }}
+
+      - name: Build and push Admin image (staging)
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: apps/admin/Dockerfile
+          push: true
+          tags: |
+            ghcr.io/cloudsysops/intcloudsysops-admin:staging
+            ghcr.io/cloudsysops/intcloudsysops-admin:${{ github.sha }}
+          build-args: |
+            NEXT_PUBLIC_SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+            NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+            NEXT_PUBLIC_API_URL=https://api.${{ steps.staging_domain.outputs.domain }}
+
+      - name: Build and push Portal image (staging)
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: apps/portal/Dockerfile
+          push: true
+          tags: |
+            ghcr.io/cloudsysops/intcloudsysops-portal:staging
+            ghcr.io/cloudsysops/intcloudsysops-portal:${{ github.sha }}
+          build-args: |
+            NEXT_PUBLIC_SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+            NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+            NEXT_PUBLIC_API_URL=https://api.${{ steps.staging_domain.outputs.domain }}
+            NEXT_PUBLIC_SUPPORT_EMAIL=${{ secrets.NEXT_PUBLIC_SUPPORT_EMAIL }}
+            NEXT_PUBLIC_PLATFORM_DOMAIN=${{ steps.staging_domain.outputs.domain }}
+
+      - name: Build and push LLM Gateway image (staging)
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: apps/llm-gateway/Dockerfile
+          push: true
+          tags: |
+            ghcr.io/cloudsysops/intcloudsysops-llm-gateway:staging
+            ghcr.io/cloudsysops/intcloudsysops-llm-gateway:${{ github.sha }}
+
+      - name: Build and push Orchestrator image (staging)
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: apps/orchestrator/Dockerfile
+          push: true
+          tags: |
+            ghcr.io/cloudsysops/intcloudsysops-orchestrator:staging
+            ghcr.io/cloudsysops/intcloudsysops-orchestrator:${{ github.sha }}
+
+      - name: Build and push Context Builder image (staging)
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: apps/context-builder/Dockerfile
+          push: true
+          tags: |
+            ghcr.io/cloudsysops/intcloudsysops-context-builder:staging
+            ghcr.io/cloudsysops/intcloudsysops-context-builder:${{ github.sha }}
+
+  build-mcp-staging:
+    needs: lint-and-typecheck
+    if: |
+      always() &&
+      (needs.lint-and-typecheck.result == 'success' || needs.lint-and-typecheck.result == 'skipped') &&
+      github.ref_name == 'staging'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push MCP image (staging)
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: apps/mcp/Dockerfile
+          push: true
+          tags: |
+            ghcr.io/cloudsysops/intcloudsysops-mcp:staging
+            ghcr.io/cloudsysops/intcloudsysops-mcp:${{ github.sha }}
+
+  deploy-staging:
+    needs:
+      - build-and-push-staging
+      - build-mcp-staging
+    if: github.ref_name == 'staging'
+    runs-on: ubuntu-latest
+    environment: staging
+    permissions:
+      contents: read
+      packages: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy staging via SSH (compose)
+        uses: appleboy/ssh-action@v1.0.3
+        env:
+          STAGING_PLATFORM_DOMAIN: ${{ secrets.STAGING_PLATFORM_DOMAIN }}
+          PLATFORM_DOMAIN_FALLBACK: ${{ secrets.PLATFORM_DOMAIN }}
+          GITHUB_DEPLOY_TOKEN: ${{ github.token }}
+          GITHUB_DEPLOY_ACTOR: ${{ github.actor }}
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          envs: STAGING_PLATFORM_DOMAIN,PLATFORM_DOMAIN_FALLBACK,GITHUB_DEPLOY_TOKEN,GITHUB_DEPLOY_ACTOR
+          script: |
+            set -euo pipefail
+            DEPLOY_PATH=/opt/opsly-staging
+            REPO_URL=git@github.com:cloudsysops/opsly.git
+            HEALTH_DOMAIN="${STAGING_PLATFORM_DOMAIN:-}"
+            if [ -z "$HEALTH_DOMAIN" ]; then
+              HEALTH_DOMAIN="${PLATFORM_DOMAIN_FALLBACK:-}"
+            fi
+            if [ -z "$HEALTH_DOMAIN" ]; then
+              echo "Definir STAGING_PLATFORM_DOMAIN o PLATFORM_DOMAIN en secrets para health check" >&2
+              exit 1
+            fi
+
+            mkdir -p "$(dirname "$DEPLOY_PATH")"
+            if [ ! -d "$DEPLOY_PATH/.git" ]; then
+              echo "Clonando repo en $DEPLOY_PATH (rama staging)..."
+              git clone "$REPO_URL" "$DEPLOY_PATH"
+            fi
+            cd "$DEPLOY_PATH"
+            git fetch origin staging
+            git checkout staging
+            git reset --hard origin/staging
+
+            cd "$DEPLOY_PATH/infra"
+            docker logout ghcr.io 2>/dev/null || true
+            echo "$GITHUB_DEPLOY_TOKEN" | docker login ghcr.io -u "$GITHUB_DEPLOY_ACTOR" --password-stdin
+
+            echo "Pulling staging images..."
+            docker compose --env-file "$DEPLOY_PATH/.env" -f docker-compose.platform.yml pull traefik app admin portal prometheus node-exporter || true
+            docker compose --env-file "$DEPLOY_PATH/.env" -f docker-compose.platform.yml pull mcp llm-gateway orchestrator context-builder || true
+
+            docker compose --env-file "$DEPLOY_PATH/.env" -f docker-compose.platform.yml up -d --no-deps --force-recreate traefik app admin portal prometheus node-exporter
+            docker compose --env-file "$DEPLOY_PATH/.env" -f docker-compose.platform.yml up -d --no-deps --force-recreate mcp llm-gateway orchestrator context-builder || true
+
+            echo "Esperando Traefik (staging)..."
+            sleep 45
+            for i in 1 2 3 4 5; do
+              if curl -sfk "https://api.${HEALTH_DOMAIN}/api/health"; then
+                echo "✅ Health staging OK (intento $i)"
+                exit 0
+              fi
+              echo "Intento $i/5..."
+              sleep 15
+            done
+            echo "❌ Health staging falló" >&2
+            exit 1
+
+      - name: Notify Discord (staging OK)
+        if: success()
+        continue-on-error: true
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          set -euo pipefail
+          if [ -z "${DISCORD_WEBHOOK_URL:-}" ]; then exit 0; fi
+          curl -fsS -X POST "$DISCORD_WEBHOOK_URL" -H "Content-Type: application/json" \
+            -d "$(jq -n --arg sha "${{ github.sha }}" --arg actor "${{ github.actor }}" \
+              '{embeds:[{title:"✅ Staging deploy OK",color:3066993,fields:[{name:"Commit",value:$sha},{name:"Actor",value:$actor}]}]}')"
+
+      - name: Notify Discord (staging fallo)
+        if: failure()
+        continue-on-error: true
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          set -euo pipefail
+          if [ -z "${DISCORD_WEBHOOK_URL:-}" ]; then exit 0; fi
+          curl -fsS -X POST "$DISCORD_WEBHOOK_URL" -H "Content-Type: application/json" \
+            -d "$(jq -n --arg url "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+              '{embeds:[{title:"❌ Staging deploy fallido",color:15158332,fields:[{name:"Run",value:$url}]}]}')"
+
+  # Git + npm + Supabase + PM2 en el VPS (legacy). Desactivado: el despliegue oficial es Docker (jobs deploy / deploy-staging).
+  deploy-pm2-vps:
+    name: Deploy Node/PM2 on VPS (SSH) [legacy desactivado]
+    # Evita npm/supabase/pm2 en VPS en paralelo a Docker (deploy / deploy-staging). Reactivar: quitar `if: false` y restaurar `needs` + condición.
+    if: false
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -316,12 +552,12 @@ jobs:
             fi
             # Core runtime must always deploy. Optional services are best-effort.
             echo "Pulling core services (required)..."
-            docker compose --env-file /opt/opsly/.env -f docker-compose.platform.yml pull traefik app admin portal
+            docker compose --env-file /opt/opsly/.env -f docker-compose.platform.yml pull traefik app admin portal prometheus node-exporter
             echo "Pulling optional services (best-effort)..."
             docker compose --env-file /opt/opsly/.env -f docker-compose.platform.yml pull mcp llm-gateway orchestrator context-builder || true
 
             # --force-recreate: evita réplicas app (deploy.replicas: 2) quedando en Created mientras otras siguen Up.
-            docker compose --env-file /opt/opsly/.env -f docker-compose.platform.yml up -d --no-deps --force-recreate traefik app admin portal
+            docker compose --env-file /opt/opsly/.env -f docker-compose.platform.yml up -d --no-deps --force-recreate traefik app admin portal prometheus node-exporter
             # Optional services: no bloquear deploy si falta imagen/tag.
             docker compose --env-file /opt/opsly/.env -f docker-compose.platform.yml up -d --no-deps --force-recreate mcp llm-gateway orchestrator context-builder || true
 

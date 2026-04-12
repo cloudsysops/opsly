@@ -8,6 +8,7 @@ config/opsly.secrets.json
 config/doppler-ready.json
 config/failover-monitor.env
 config/gcp.env
+config/worker-tailscale.env
 infra/gcp-failover-info.json
 # Worker Linux opslyquantum — env local del stack Docker (secretos)
 infra/opslyquantum.env

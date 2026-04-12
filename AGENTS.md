@@ -24,6 +24,8 @@
 
 ## Flujo de sesión (humano + Cursor)
 
+**Git antes de editar:** en **opsly-admin** (Mac), **opsly-worker** (`~/opsly`) y **VPS** (`/opt/opsly` o staging), ejecutar `./scripts/git-sync-repo.sh` o `git pull --ff-only` en la rama de trabajo. Detalle: `docs/SESSION-GIT-SYNC.md`.
+
 **Índice de conocimiento (Repo-First RAG):** tras `git pull` en el VPS (o al añadir muchos `.md`), ejecuta `./scripts/index-knowledge.sh` desde la raíz del repo (`OPSLY_ROOT=/opt/opsly` si aplica) para regenerar `config/knowledge-index.json`. Sin ese paso, el Context Builder y el planner siguen “ciegos” respecto a títulos/keywords de la documentación nueva.
 
 **Al abrir una sesión nueva conmigo (otro agente / otro dispositivo):**
@@ -61,6 +63,10 @@ npm run type-check
 
 # Test single workspace
 npm run test --workspace=@intcloudsysops/orchestrator
+
+# BullMQ / worker — encolar job de prueba (cola openclaw; requiere REDIS_URL)
+doppler run --project ops-intcloudsysops --config prd -- ./scripts/test-worker-e2e.sh smiletripcare --notify
+# Detalle: docs/WORKER-TESTING.md
 
 # Validate OpenAPI spec (CI required)
 npm run validate-openapi
@@ -484,7 +490,7 @@ flowchart LR
 **API (`apps/api`)**
 - **`GET /api/metrics/system`** — Proxy a Prometheus (`/api/v1/query`). Consultas: CPU `100 - (avg(rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100)`; RAM `sum(MemTotal)-sum(MemAvailable)`; disco `sum(size)-sum(free)` con `mountpoint="/"`; uptime `time() - node_boot_time_seconds`. Respuesta JSON incluye `cpu_percent`, `ram_*_gb`, `disk_*_gb`, `uptime_seconds`, `active_tenants` (Supabase), `containers_running` (`docker ps -q` vía **execa**), `mock`. Implementación modular: `lib/prometheus.ts`, `lib/fetch-host-metrics-prometheus.ts`, `lib/docker-running-count.ts`, fallback mock en `DEMO_SYSTEM_METRICS_MOCK` (`lib/constants.ts`).
 - **`GET /api/tenants`**, **`GET /api/metrics`**, **`GET /api/tenants/:ref`:** Con `ADMIN_PUBLIC_DEMO_READ=true`, los **GET** omiten `PLATFORM_ADMIN_TOKEN` (`requireAdminTokenUnlessDemoRead` en `lib/auth.ts`). **`:ref`** = UUID o slug (`TenantRefParamSchema` en `lib/validation.ts` + `TENANT_ROUTE_REF` en constants). POST/PATCH/DELETE sin cambios (token obligatorio).
-- **Prometheus en Docker:** Desde el contenedor `app`, `localhost:9090` no es el host; en compose: `PROMETHEUS_BASE_URL` default `http://host.docker.internal:9090`, `extra_hosts: host.docker.internal:host-gateway`.
+- **Prometheus en Docker:** Servicios `prometheus` y `node-exporter` en `infra/docker-compose.platform.yml`; `PROMETHEUS_BASE_URL` default `http://prometheus:9090`. `extra_hosts: host.docker.internal` sigue útil para otros usos. Ver `docs/MONITORING.md`.
 
 **Admin — demo sin login**
 - **`NEXT_PUBLIC_ADMIN_PUBLIC_DEMO=true`** por **ARG** en `apps/admin/Dockerfile` (build); `lib/supabase/middleware.ts` devuelve `NextResponse.next` sin redirigir a `/login`. `app/api/audit-log/route.ts` omite comprobación de usuario Supabase en ese modo.
@@ -809,7 +815,7 @@ doppler run --project ops-intcloudsysops --config prd -- \
 ```bash
 # Revalidar automatización
 ./scripts/drive-sync.sh
-# N8N_WEBHOOK_URL="<url>" N8N_WEBHOOK_SECRET="<secret>" ./scripts/test-n8n-webhook.sh
+# N8N_WEBHOOK_URL="<url>" N8N_WEBHOOK_SECRET_GH="<secret>" ./scripts/test-n8n-webhook.sh
 
 # Disco VPS < 80%
 ssh vps-dragon@100.120.151.91 "docker system df && sudo du -xh /var --max-depth=2 | sort -h | tail -20"
@@ -838,7 +844,7 @@ ssh vps-dragon@100.120.151.91 "docker system df && sudo du -xh /var --max-depth=
 - [x] **Plan + auditoria automation** — `docs/AUTOMATION-PLAN.md`, `docs/reports/audit-2026-04-07.md`, `docs/N8N-SETUP.md`, `docs/n8n-workflows/discord-to-github.json` (2026-04-07).
 - [x] **`RESEND_API_KEY` real en Doppler** — validado por E2E (`POST /api/invitations` → 200).
 - [x] **`DISCORD_WEBHOOK_URL` válido en Doppler `prd`** — `notify-discord.sh` devuelve OK.
-- [x] **`GITHUB_TOKEN_N8N` en Doppler `prd`** — presente y validado por `check-tokens.sh`.
+- [x] **PAT GitHub en Doppler `prd`** — `GITHUB_TOKEN` o `GITHUB_TOKEN_N8N` (al menos uno); validado por `check-tokens.sh`. Nombre canónico: `GITHUB_TOKEN` (ver `docs/GITHUB-TOKEN.md`).
 - [x] **`ANTHROPIC_API_KEY` en Doppler `prd`** — presente y validado por `check-tokens.sh`.
 - [ ] **`GOOGLE_CLOUD_PROJECT_ID` / `BIGQUERY_DATASET` / `VERTEX_AI_REGION` en `prd`** — requeridos para Fase 10.
 - [x] **OAuth token Google (service account)** — corregido `google_base64url_encode` + POST token; token emitido OK (2026-04-08).

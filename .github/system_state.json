@@ -36,11 +36,12 @@
       "llm-gateway",
       "mcp",
       "ml",
+      "notion-mcp",
       "orchestrator",
       "portal",
       "web"
     ],
-    "scripts": 64,
+    "scripts": 77,
     "adrs": 17,
     "migrations": 23
   }

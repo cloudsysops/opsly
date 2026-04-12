@@ -27,7 +27,7 @@
 │     │                                                        │
 │     │  TAILSCALE (capa administrativa / worker)              │
 │     ▼                                                        │
-│  MAC 2011 WORKER (opsly-mac2011)                             │
+│  MAC 2011 WORKER (opsly-worker)                             │
 │     ├── Orchestrator worker (proceso Node / tmux)            │
 │     ├── Ollama (:11434) — si inferencia local                │
 │     ├── Carga experimental / OpenClaw (si aplica)          │
@@ -107,7 +107,7 @@ La ruta exacta depende de si el orchestrator y el LLM Gateway siguen en el VPS o
 ### Tailscale
 
 - **VPS:** IP Tailscale del host (ej. `100.120.151.91`).
-- **Worker:** `100.80.41.29` (`opsly-mac2011`).
+- **Worker:** `100.80.41.29` (`opsly-worker`).
 
 ### Seguridad
 

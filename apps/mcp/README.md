@@ -13,4 +13,4 @@ Servidor MCP para exponer herramientas de control sobre Opsly.
 
 - `OPSLY_API_URL`
 - `PLATFORM_ADMIN_TOKEN`
-- `GITHUB_TOKEN_N8N`
+- `GITHUB_TOKEN` (recomendado) o `GITHUB_TOKEN_N8N` (legado) — ver `docs/GITHUB-TOKEN.md`

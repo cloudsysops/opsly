@@ -1,5 +1,9 @@
 # N8N Setup — Discord to GitHub
 
+> **Token GitHub:** el nombre **`GITHUB_TOKEN_N8N`** es histórico (cuando n8n llamaba a la API). En Doppler usa **`GITHUB_TOKEN`** como nombre principal; el código y los workflows aceptan cualquiera de los dos. Detalle: [`GITHUB-TOKEN.md`](./GITHUB-TOKEN.md).
+>
+> **Secreto webhook (header `X-Opsly-Secret`):** el nombre canónico en Doppler es **`N8N_WEBHOOK_SECRET_GH`** (flujo Discord→GitHub / pruebas `curl` y `dispatch-discord-command.sh`). El nombre **`N8N_WEBHOOK_SECRET`** queda como legado; los scripts leen primero `N8N_WEBHOOK_SECRET_GH` y, si falta, `N8N_WEBHOOK_SECRET`.
+
 ## Objetivo
 
 Automatizar el flujo Discord -> GitHub para actualizar `docs/ACTIVE-PROMPT.md`
@@ -9,9 +13,9 @@ y notificar confirmacion de recepcion.
 
 - n8n operativo en `https://n8n-intcloudsysops.ops.smiletripcare.com`
 - Secretos en Doppler `prd`:
-  - `GITHUB_TOKEN_N8N` (scope `repo`)
+  - `GITHUB_TOKEN` o `GITHUB_TOKEN_N8N` (scope `repo` o Contents en el repo)
   - `DISCORD_WEBHOOK_URL`
-  - `N8N_WEBHOOK_SECRET` (nuevo, recomendado)
+  - `N8N_WEBHOOK_SECRET_GH` (secreto compartido webhook; legado: `N8N_WEBHOOK_SECRET`)
 
 ## Importar workflow
 
@@ -27,9 +31,9 @@ y notificar confirmacion de recepcion.
 
 ## Variables requeridas en n8n
 
-- `GITHUB_TOKEN_N8N`: token GitHub con permisos `repo`.
+- `GITHUB_TOKEN` (recomendado) o `GITHUB_TOKEN_N8N` (legado): PAT con permisos `repo` / Contents.
 - `DISCORD_WEBHOOK_URL`: webhook del canal de notificaciones.
-- `N8N_WEBHOOK_SECRET`: secreto compartido para validar origen.
+- `N8N_WEBHOOK_SECRET_GH`: secreto compartido para validar origen (legado: `N8N_WEBHOOK_SECRET`).
 
 ## Configuracion sugerida del webhook
 
@@ -45,7 +49,7 @@ y notificar confirmacion de recepcion.
 ```
 
 - Header recomendado:
-  - `X-Opsly-Secret: <N8N_WEBHOOK_SECRET>`
+  - `X-Opsly-Secret: <N8N_WEBHOOK_SECRET_GH>`
 
 ## Prueba manual
 
@@ -55,7 +59,7 @@ y notificar confirmacion de recepcion.
 ```bash
 curl -sk -X POST "$N8N_WEBHOOK_URL" \
   -H "Content-Type: application/json" \
-  -H "X-Opsly-Secret: $N8N_WEBHOOK_SECRET" \
+  -H "X-Opsly-Secret: $N8N_WEBHOOK_SECRET_GH" \
   -d '{"content":"# test\necho hello","author":{"username":"Cristian"}}'
 ```
 
@@ -103,7 +107,7 @@ doppler run --project ops-intcloudsysops --config prd -- \
 
 ## Troubleshooting
 
-- **401/403 GitHub API**: revisar `GITHUB_TOKEN_N8N` y scope `repo`.
+- **401/403 GitHub API**: revisar `GITHUB_TOKEN` (o `GITHUB_TOKEN_N8N`) y scope `repo` / Contents.
 - **No llega confirmacion a Discord**: revisar `DISCORD_WEBHOOK_URL`.
 - **Webhook responde 200 pero no actualiza archivo**: validar obtencion de `sha` actual.
 - **Cursor no ejecuta**: verificar `cursor-prompt-monitor` activo y logs en `/opt/opsly/logs/cursor-prompt-monitor.log`.

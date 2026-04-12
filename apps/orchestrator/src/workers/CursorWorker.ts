@@ -1,11 +1,12 @@
 import { Job, Worker } from "bullmq";
+import { resolveGithubPat } from "../lib/github-pat.js";
 import { logWorkerLifecycle } from "../observability/worker-log.js";
 import { notifyDiscord } from "./NotifyWorker.js";
 
 async function writeActivePrompt(content: string): Promise<void> {
-  const token = process.env.GITHUB_TOKEN_N8N || "";
+  const token = resolveGithubPat();
   if (!token) {
-    throw new Error("GITHUB_TOKEN_N8N is required");
+    throw new Error("GITHUB_TOKEN or GITHUB_TOKEN_N8N is required for GitHub API");
   }
 
   const repo = process.env.OPSLY_GITHUB_REPO || "cloudsysops/opsly";

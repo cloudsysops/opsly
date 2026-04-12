@@ -1,0 +1,17 @@
+# Prometheus — monitoreo plataforma Opsly (repo: infra/monitoring/prometheus.yml)
+# Alimenta GET /api/metrics/system vía node_exporter (métricas node_*).
+#
+# Para añadir cAdvisor más adelante: servicio en compose + job scrape en este archivo.
+
+global:
+  scrape_interval: 30s
+  evaluation_interval: 30s
+
+scrape_configs:
+  - job_name: prometheus
+    static_configs:
+      - targets: ["localhost:9090"]
+
+  - job_name: node
+    static_configs:
+      - targets: ["node-exporter:9100"]

@@ -4,6 +4,7 @@
 #   sudo systemctl enable --now opsly-worker
 #
 # Requiere: ~/opsly/.env.local con REDIS_URL; scripts/run-worker-with-nvm.sh ejecutable.
+# run-worker-with-nvm.sh ejecuta git-sync-repo.sh antes de Node (pull --ff-only). Emergencia: OPSLY_SKIP_GIT_PULL=1 en Environment= del unit.
 
 [Unit]
 Description=Opsly Orchestrator Worker (BullMQ)

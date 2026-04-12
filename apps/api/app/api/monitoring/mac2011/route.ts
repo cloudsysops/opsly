@@ -39,7 +39,7 @@ async function readStatusFromFile(filePath: string): Promise<Response> {
 }
 
 /**
- * Estado del host opsly-mac2011 (JSON generado por `scripts/mac2011-monitor.sh`).
+ * Estado del worker `opsly-worker` (JSON de `scripts/mac2011-monitor.sh`).
  * Sin datos simulados: configurar `MAC2011_STATUS_URL` o `MAC2011_STATUS_FILE` en la API.
  */
 export async function GET(request: Request): Promise<Response> {

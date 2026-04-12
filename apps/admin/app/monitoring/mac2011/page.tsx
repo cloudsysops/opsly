@@ -1,10 +1,10 @@
 "use client";
 
-import type { ReactElement } from "react";
-import { useCallback, useEffect, useState } from "react";
 import { getMac2011Monitoring } from "@/lib/api-client";
 import type { Mac2011MonitoringStatus } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import type { ReactElement } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 function statusBadge(ok: boolean, label: string): ReactElement {
   return (
@@ -125,7 +125,7 @@ export default function Mac2011MonitoringPage(): ReactElement {
       <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
         <div>
           <h1 className="font-mono text-xl font-semibold text-ops-green">
-            Mac 2011 — monitoreo
+            opsly-worker — monitoreo
           </h1>
           <p className="mt-1 text-sm text-neutral-400">
             Datos desde{" "}

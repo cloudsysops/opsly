@@ -130,7 +130,7 @@ apps/
 | `RESEND_API_KEY` | Emails (invitaciones) |
 | `PLATFORM_ADMIN_TOKEN` | Rutas admin API |
 | `DISCORD_WEBHOOK_URL` | Notificaciones |
-| `GITHUB_TOKEN_N8N` | n8n → GitHub |
+| `GITHUB_TOKEN` | PAT GitHub (API: ACTIVE-PROMPT, etc.); preferido frente a `GITHUB_TOKEN_N8N` (legado) |
 | `ANTHROPIC_API_KEY` | LLM gateway |
 | `GOOGLE_SERVICE_ACCOUNT_JSON` | Drive sync |
 | `REDIS_URL` | Cola + cache |

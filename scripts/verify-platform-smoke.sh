@@ -1,35 +1,85 @@
 #!/usr/bin/env bash
 # Smoke test: disco VPS (SSH), API pública, Redis con AUTH (solo en el VPS — no imprime contraseña),
-# sesión tmux worker en Mac opcional, cabeceras HTTP de tenants.
+# sesión tmux worker en Linux opcional, cabeceras HTTP de tenants.
+#
+# Worker: por defecto resuelve MagicDNS **sin IP fija**: `usuario@<nombre-nodo>.<suffix>.ts.net`
+# (`suffix` vía `tailscale dns status`). Si cambia el 100.x de Tailscale, el FQDN sigue válido.
 #
 # Uso:
 #   ./scripts/verify-platform-smoke.sh
-#   API_URL=https://api.example.com ./scripts/verify-platform-smoke.sh
 #   SKIP_WORKER=1 ./scripts/verify-platform-smoke.sh
-#   VPS_SSH="user@host" ./scripts/verify-platform-smoke.sh
+#   WORKER_TAILSCALE_NAME=otro-nodo ./scripts/verify-platform-smoke.sh       # si el worker no se llama opsly-worker en Tailscale
+#   WORKER_SSH=opsly-worker ./scripts/verify-platform-smoke.sh               # solo alias ~/.ssh/config (sin FQDN auto)
+#   OPSLY_WORKER_HOSTNAME=opsly-worker.taile4fe40.ts.net ./scripts/verify-platform-smoke.sh
+#   USE_TAILSCALE_SSH=0 ./scripts/verify-platform-smoke.sh                    # no construir FQDN; usa WORKER_SSH o alias
 #
-# Requisitos: curl, jq, ssh (BatchMode al VPS).
+# Requisitos: curl, jq, ssh. Worker: Tailscale + `tailscale` CLI recomendado para leer el suffix DNS.
 
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 # shellcheck source=scripts/lib/common.sh
 # shellcheck disable=SC1091
 source "${SCRIPT_DIR}/lib/common.sh"
 
+if [[ -f "${REPO_ROOT}/config/worker-tailscale.env" ]]; then
+  set -a
+  # shellcheck disable=SC1091
+  source "${REPO_ROOT}/config/worker-tailscale.env"
+  set +a
+fi
+
 API_URL="${API_URL:-https://api.ops.smiletripcare.com}"
 VPS_SSH="${VPS_SSH:-vps-dragon@100.120.151.91}"
-WORKER_SSH="${WORKER_SSH:-opsly-mac2011}"
+
+WORKER_USER="${WORKER_USER:-opslyquantum}"
+WORKER_TAILSCALE_NAME="${WORKER_TAILSCALE_NAME:-opsly-worker}"
+OPSLY_WORKER_HOSTNAME="${OPSLY_WORKER_HOSTNAME:-}"
+USE_TAILSCALE_SSH="${USE_TAILSCALE_SSH:-1}"
+WORKER_SSH="${WORKER_SSH:-}"
+
 SKIP_WORKER="${SKIP_WORKER:-0}"
 
 require_cmd curl
 require_cmd jq
 require_cmd ssh
 
+resolve_worker_target() {
+  if [[ -n "${WORKER_SSH}" ]]; then
+    echo "${WORKER_SSH}"
+    return
+  fi
+  if [[ -n "${OPSLY_WORKER_HOSTNAME}" ]]; then
+    echo "${WORKER_USER}@${OPSLY_WORKER_HOSTNAME}"
+    return
+  fi
+  if [[ "${USE_TAILSCALE_SSH}" != "0" ]] && command -v tailscale >/dev/null 2>&1; then
+    local suf
+    suf="$(tailscale dns status 2>/dev/null | grep -oE 'suffix = [^)]+' | head -1 | sed 's/suffix = //' | tr -d ' ')"
+    if [[ -n "${suf}" ]]; then
+      echo "${WORKER_USER}@${WORKER_TAILSCALE_NAME}.${suf}"
+      return
+    fi
+  fi
+  echo "${WORKER_TAILSCALE_NAME}"
+}
+
+WORKER_SSH_TARGET="$(resolve_worker_target)"
+
+worker_ssh() {
+  ssh -o BatchMode=yes -o ConnectTimeout=15 \
+    -o "StrictHostKeyChecking=${OPSLY_WORKER_SSH_STRICT:-accept-new}" \
+    "${WORKER_SSH_TARGET}" "$@"
+}
+
 echo "🔍 SMOKE TEST OPSLY"
 echo "==================="
 echo "  API_URL=${API_URL}"
 echo "  VPS_SSH=${VPS_SSH}"
+if [[ "${SKIP_WORKER}" != "1" ]]; then
+  echo "  WORKER_SSH_TARGET=${WORKER_SSH_TARGET}"
+fi
 echo ""
 
 echo "💾 Disco (VPS /):"
@@ -75,14 +125,27 @@ else
 fi
 
 echo ""
-echo "🔧 Worker (tmux session worker en ${WORKER_SSH}):"
+echo "🔧 Worker (tmux: opsly-orchestrator o worker en ${WORKER_TAILSCALE_NAME}):"
 if [[ "${SKIP_WORKER}" == "1" ]]; then
   echo "  (omitido SKIP_WORKER=1)"
 else
-  if ssh -o BatchMode=yes -o ConnectTimeout=15 "${WORKER_SSH}" "tmux has-session -t worker 2>/dev/null && echo OK || echo FAIL"; then
+  if worker_ssh 'bash -s' <<'REMOTE'
+set -euo pipefail
+if tmux has-session -t opsly-orchestrator 2>/dev/null; then
+  echo "tmux_session=opsly-orchestrator OK"
+elif tmux has-session -t worker 2>/dev/null; then
+  echo "tmux_session=worker OK"
+else
+  echo "tmux_session=FAIL (esperado: opsly-orchestrator; ver scripts/keep-worker-in-tmux.sh)"
+  exit 1
+fi
+uname -n
+uptime
+REMOTE
+  then
     :
   else
-    log_warn "SSH worker no disponible o sesión ausente."
+    log_warn "SSH worker no disponible o sesión tmux ausente."
   fi
 fi
 

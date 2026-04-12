@@ -11,9 +11,25 @@ echo ""
 
 MISSING=0
 
+GH_OK=0
+for V in GITHUB_TOKEN GITHUB_TOKEN_N8N; do
+  VAL=$(doppler secrets get "$V" \
+    --project ops-intcloudsysops --config prd \
+    --plain 2>/dev/null || echo "")
+  LEN=${#VAL}
+  if [[ $LEN -gt 20 ]]; then
+    ok "$V (GitHub PAT; el otro nombre es legado)" "$LEN"
+    GH_OK=1
+    break
+  fi
+done
+if [[ $GH_OK -eq 0 ]]; then
+  fail "GITHUB_TOKEN o GITHUB_TOKEN_N8N (al menos uno, >20 chars)"
+  ((MISSING++)) || true
+fi
+
 for VAR in \
   ANTHROPIC_API_KEY \
-  GITHUB_TOKEN_N8N \
   RESEND_API_KEY \
   PLATFORM_ADMIN_TOKEN \
   DISCORD_WEBHOOK_URL \

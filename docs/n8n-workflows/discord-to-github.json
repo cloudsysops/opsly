@@ -55,7 +55,7 @@
           "parameters": [
             {
               "name": "Authorization",
-              "value": "=Bearer {{$env.GITHUB_TOKEN_N8N}}"
+              "value": "=Bearer {{$env.GITHUB_TOKEN}}"
             }
           ]
         }
@@ -72,7 +72,7 @@
           "parameters": [
             {
               "name": "Authorization",
-              "value": "=Bearer {{$env.GITHUB_TOKEN_N8N}}"
+              "value": "=Bearer {{$env.GITHUB_TOKEN}}"
             },
             {
               "name": "Content-Type",

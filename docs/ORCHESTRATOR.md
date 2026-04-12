@@ -25,7 +25,7 @@ Misma imagen Docker / mismo `node dist/index.js`; ver `apps/orchestrator/src/orc
 
 | Nombre job (BullMQ) | Worker | Rol |
 |---------------------|--------|-----|
-| `cursor` | `CursorWorker` | Escribe `docs/ACTIVE-PROMPT.md` en GitHub (requiere `GITHUB_TOKEN_N8N`). |
+| `cursor` | `CursorWorker` | Escribe `docs/ACTIVE-PROMPT.md` en GitHub vía API (requiere `GITHUB_TOKEN` o `GITHUB_TOKEN_N8N` legado; ver `docs/GITHUB-TOKEN.md`). |
 | `n8n` | `N8nWorker` | Disparar flujos / integraciones n8n según payload. |
 | `notify` | `NotifyWorker` | Notificaciones Discord u otros canales. |
 | `drive` | `DriveWorker` | Sincronización con Drive (cuando token configurado). |

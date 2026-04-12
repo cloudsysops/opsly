@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Instala scripts de limpieza/monitoreo opsly-mac2011.
+# Instala scripts de limpieza/monitoreo en el worker (opsly-worker).
 # macOS: LaunchAgents en ~/Library/LaunchAgents (ruta repo = OPSLY_ROOT).
 # Linux: muestra instrucciones para /opt/opsly + systemd/cron.
 #

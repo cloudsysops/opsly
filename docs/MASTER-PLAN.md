@@ -172,7 +172,7 @@ curl -sf https://portal.ops.smiletripcare.com/login
 PASO 9.2: Importar workflow n8n
 URL: https://n8n-intcloudsysops.ops.smiletripcare.com
 → Credentials → New → Crear estas credenciales:
-  - GitHub API: GITHUB_TOKEN_N8N
+  - GitHub API: `GITHUB_TOKEN` (legado en docs viejos: `GITHUB_TOKEN_N8N`)
   - Discord Webhook: DISCORD_WEBHOOK_URL
 → Workflows → Import from file
 → Seleccionar: docs/n8n-workflows/discord-to-github.json

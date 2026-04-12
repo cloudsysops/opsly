@@ -16,9 +16,14 @@
     "test-skills-manifest": "npm test --prefix skills/manifest",
     "test": "turbo run test",
     "dev:notion-mcp": "doppler run --project ops-intcloudsysops --config prd -- npm run dev --workspace=@intcloudsysops/notion-mcp",
-    "start:notion-mcp": "doppler run --project ops-intcloudsysops --config prd -- npm run start --workspace=@intcloudsysops/notion-mcp"
+    "start:notion-mcp": "doppler run --project ops-intcloudsysops --config prd -- npm run start --workspace=@intcloudsysops/notion-mcp",
+    "enqueue-test-job": "tsx --tsconfig scripts/tsconfig.enqueue.json scripts/enqueue-test-job.ts"
   },
   "devDependencies": {
+    "@types/node": "^20.19.12",
+    "bullmq": "^5.58.5",
+    "dotenv": "^16.4.7",
+    "tsx": "^4.20.5",
     "@eslint/eslintrc": "^3.3.1",
     "@eslint/js": "^9.21.0",
     "@typescript-eslint/eslint-plugin": "^8.58.0",

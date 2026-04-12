@@ -1,6 +1,6 @@
 /**
  * Escribe `docs/ACTIVE-PROMPT.md` en el repo GitHub (misma lógica que apps/mcp).
- * Requiere GITHUB_TOKEN_N8N con permiso de contenidos en cloudsysops/opsly.
+ * Requiere `GITHUB_TOKEN` o `GITHUB_TOKEN_N8N` (legado) con permiso de contenidos en el repo.
  */
 const GITHUB_API = "https://api.github.com";
 const REPO = "cloudsysops/opsly";
@@ -11,9 +11,10 @@ interface GithubContentResponse {
 }
 
 export async function writeActivePrompt(content: string): Promise<void> {
-  const token = process.env.GITHUB_TOKEN_N8N ?? "";
+  const token =
+    process.env.GITHUB_TOKEN?.trim() || process.env.GITHUB_TOKEN_N8N?.trim() || "";
   if (!token) {
-    throw new Error("GITHUB_TOKEN_N8N is required");
+    throw new Error("GITHUB_TOKEN or GITHUB_TOKEN_N8N is required");
   }
 
   const getUrl = `${GITHUB_API}/repos/${REPO}/contents/${ACTIVE_PROMPT_PATH}`;

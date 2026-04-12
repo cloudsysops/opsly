@@ -3,6 +3,7 @@
 ## Requisitos
 
 - Repo en `~/opsly`, `REDIS_URL` en `~/opsly/.env.local` (misma URL que Doppler `prd` / VPS).
+- En cada **restart**, `run-worker-with-nvm.sh` hace **`git pull --ff-only`** vía `scripts/git-sync-repo.sh` antes de levantar Node. Ver **`docs/SESSION-GIT-SYNC.md`**.
 - Con arquitectura distribuida, `run-orchestrator-worker.sh` fija **`OPSLY_ORCHESTRATOR_ROLE=worker`** por defecto; el VPS puede usar `control`. Ver **`docs/ARCHITECTURE-DISTRIBUTED.md`**.
 - Scripts ejecutables: `scripts/run-worker-with-nvm.sh`, `scripts/start-worker.sh`.
 - **sudo** para instalar la unidad (una vez).
@@ -11,7 +12,7 @@
 
 ```bash
 cd ~/opsly
-git pull origin main
+./scripts/git-sync-repo.sh "$HOME/opsly" main
 mkdir -p ~/opsly/logs
 chmod +x scripts/install-opsly-worker-systemd.sh scripts/manage-worker.sh
 sudo ./scripts/install-opsly-worker-systemd.sh

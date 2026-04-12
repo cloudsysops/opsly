@@ -66,8 +66,12 @@ docs/SPRINT-ROADMAP.md   ← sprints 1-8, qué está hecho, qué sigue
 |-----|---------------|
 | [`VPS-ARCHITECTURE.md`](VPS-ARCHITECTURE.md) | Topología VPS, Traefik, IPs, puertos |
 | [`DOPPLER-VARS.md`](DOPPLER-VARS.md) | Variables por entorno (`prd`, `stg`) |
+| [`GITHUB-TOKEN.md`](GITHUB-TOKEN.md) | PAT GitHub: `GITHUB_TOKEN` (canónico) vs `GITHUB_TOKEN_N8N` (legado n8n) |
+| [`MONITORING.md`](MONITORING.md) | Prometheus + Node Exporter en `infra/` (métricas Admin) |
 | [`CLOUDFLARE-PROXY-ACTIVATION.md`](CLOUDFLARE-PROXY-ACTIVATION.md) | Activar proxy CF naranja |
 | [`DEPLOY-VPS-AND-INDEX.md`](DEPLOY-VPS-AND-INDEX.md) | Deploy completo en VPS paso a paso |
+| [`CICD-VPS.md`](CICD-VPS.md) | GitHub Actions: rama `staging` → VPS staging; `main` → prod |
+| [`SESSION-GIT-SYNC.md`](SESSION-GIT-SYNC.md) | `git pull` / `git-sync-repo.sh` en opsly-admin, opsly-worker y VPS |
 | [`AUTO-PUSH-WATCHER.md`](AUTO-PUSH-WATCHER.md) | Servicio cursor-prompt-monitor en VPS |
 | [`infra/terraform/README.md`](../infra/terraform/README.md) | IaC Terraform DigitalOcean |
 
@@ -108,7 +112,7 @@ docs/SPRINT-ROADMAP.md   ← sprints 1-8, qué está hecho, qué sigue
 | Doc | Cuándo usarlo |
 |-----|---------------|
 | [`AUTOMATION-PLAN.md`](AUTOMATION-PLAN.md) | Loop Discord → GitHub → Cursor |
-| [`N8N-SETUP.md`](N8N-SETUP.md) | Configuración n8n y secretos requeridos |
+| [`N8N-SETUP.md`](N8N-SETUP.md) | n8n Discord→GitHub; Doppler `N8N_WEBHOOK_SECRET_GH` (legado `N8N_WEBHOOK_SECRET`) |
 | [`N8N-IMPORT-GUIDE.md`](N8N-IMPORT-GUIDE.md) | Importar workflows n8n |
 | [`OBSERVABILITY.md`](OBSERVABILITY.md) | Métricas, logs, alertas, Prometheus |
 | [`PERFORMANCE_BASELINE.md`](PERFORMANCE_BASELINE.md) | Baselines de performance por endpoint |

@@ -5,15 +5,15 @@ Guia paso a paso para importar y verificar el workflow
 
 ## Estado actual (autodiagnostico)
 
-- Fecha: 2026-04-07
-- `GITHUB_TOKEN_N8N` en Doppler `prd`: faltante (`0 chars`)
-- `DISCORD_WEBHOOK_URL` en Doppler `prd`: disponible
-- Siguiente accion operativa: cargar `GITHUB_TOKEN_N8N` y luego ejecutar la prueba de webhook del paso 6.
+- Fecha: 2026-04-08 (actualizado naming PAT)
+- **PAT GitHub en Doppler `prd`:** usar **`GITHUB_TOKEN`** (nombre alineado a CLI `gh` y al resto del monorepo). **`GITHUB_TOKEN_N8N`** es solo **legado** (mismo valor permitido como fallback en código/scripts; ver [`GITHUB-TOKEN.md`](../GITHUB-TOKEN.md)).
+- `DISCORD_WEBHOOK_URL` en Doppler `prd`: verificar longitud con el bucle de vars críticas.
+- Siguiente accion operativa: tener al menos uno de los dos nombres con PAT válido (`repo` / Contents) y ejecutar la prueba del paso 6.
 
-Comando exacto para habilitar el flujo:
+Comando típico (stdin, no pegar el token en argv):
 
 ```bash
-doppler secrets set GITHUB_TOKEN_N8N --project ops-intcloudsysops --config prd
+doppler secrets set GITHUB_TOKEN --project ops-intcloudsysops --config prd
 ```
 
 ## 1) Pre-checks obligatorios
@@ -23,15 +23,13 @@ doppler secrets set GITHUB_TOKEN_N8N --project ops-intcloudsysops --config prd
 2. Verifica secreto en Doppler (comando operativo):
 
 ```bash
-doppler secrets get GITHUB_TOKEN_N8N \
+doppler secrets get GITHUB_TOKEN \
   --project ops-intcloudsysops --config prd --plain | wc -c
 ```
 
 1. Resultado esperado:
-   - `> 10` caracteres.
-1. Resultado observado en esta ejecucion:
-   - `Doppler Error: Could not find requested secret: GITHUB_TOKEN_N8N` y `0`.
-   - Si ocurre, crear/cargar el secreto en `prd` antes de activar el flujo.
+   - `> 20` caracteres (PAT real).
+1. Si falla, probar el nombre legado: `doppler secrets get GITHUB_TOKEN_N8N ...` — `check-tokens.sh` acepta **cualquiera de los dos**.
 
 ## 2) Importar JSON en n8n (manual)
 
@@ -51,9 +49,11 @@ doppler secrets get GITHUB_TOKEN_N8N \
 
 Configurar en el entorno de n8n:
 
-- `GITHUB_TOKEN_N8N`
+- `GITHUB_TOKEN` (recomendado; el workflow importado usa `{{$env.GITHUB_TOKEN}}`)
 - `DISCORD_WEBHOOK_URL`
-- `N8N_WEBHOOK_SECRET` (recomendado para validacion de origen)
+- `N8N_WEBHOOK_SECRET_GH` (recomendado; legado: `N8N_WEBHOOK_SECRET`) para validacion de origen
+
+Si solo tienes el secreto bajo el nombre legado `GITHUB_TOKEN_N8N`, en n8n puedes duplicar la variable como `GITHUB_TOKEN` con el mismo valor, o editar los nodos HTTP para usar `{{$env.GITHUB_TOKEN_N8N}}`.
 
 No hardcodear tokens en nodos.
 
@@ -63,14 +63,14 @@ No hardcodear tokens en nodos.
 
 - Method: `GET`
 - URL: `https://api.github.com/repos/cloudsysops/opsly/contents/docs/ACTIVE-PROMPT.md`
-- Header: `Authorization: Bearer {{$env.GITHUB_TOKEN_N8N}}`
+- Header: `Authorization: Bearer {{$env.GITHUB_TOKEN}}`
 
 ### Nodo `Update ACTIVE-PROMPT`
 
 - Method: `PUT`
 - URL: `https://api.github.com/repos/cloudsysops/opsly/contents/docs/ACTIVE-PROMPT.md`
 - Headers:
-  - `Authorization: Bearer {{$env.GITHUB_TOKEN_N8N}}`
+  - `Authorization: Bearer {{$env.GITHUB_TOKEN}}`
   - `Content-Type: application/json`
 
 ### Nodo `Notify Discord Confirm`
@@ -88,7 +88,7 @@ No hardcodear tokens en nodos.
 
 ```bash
 export N8N_WEBHOOK_URL="<URL_WEBHOOK_COPIADA_DESDE_N8N>"
-export N8N_WEBHOOK_SECRET="<SECRET_COMPARTIDO>"
+export N8N_WEBHOOK_SECRET_GH="<SECRET_COMPARTIDO>"
 ```
 
 ## 6) Probar webhook con curl (dry-run en payload)
@@ -99,7 +99,7 @@ export N8N_WEBHOOK_SECRET="<SECRET_COMPARTIDO>"
 ```bash
 curl -sk -X POST "$N8N_WEBHOOK_URL" \
   -H "Content-Type: application/json" \
-  -H "X-Opsly-Secret: $N8N_WEBHOOK_SECRET" \
+  -H "X-Opsly-Secret: $N8N_WEBHOOK_SECRET_GH" \
   -d '{"content":"@cursor # test\necho hello","author":{"username":"Cristian"},"target":"cursor","dry_run":true}'
 ```
 
@@ -112,7 +112,7 @@ doppler run --project ops-intcloudsysops --config prd -- \
 
 ## 7) Checklist de salida
 
-- [ ] `GITHUB_TOKEN_N8N` disponible en Doppler `prd`.
+- [ ] `GITHUB_TOKEN` o `GITHUB_TOKEN_N8N` disponible en Doppler `prd` (y en env n8n si aplica).
 - [ ] Workflow importado en n8n sin errores.
 - [ ] Variables de entorno cargadas en n8n.
 - [ ] Webhook URL copiada desde n8n.

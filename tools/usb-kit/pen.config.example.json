@@ -1,6 +1,7 @@
 {
   "comment": "Copiar a pen.local.json (gitignored). Ver tools/usb-kit/README.md.",
   "ssh": {
-    "target": "vps-dragon"
+    "target": "vps-dragon",
+    "worker": "opsly-worker"
   }
 }

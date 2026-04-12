@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Monitoreo host opsly-mac2011 (macOS/Linux): CPU, RAM, disco, red, Docker, Ollama.
+# Monitoreo host worker opsly-worker (macOS/Linux): CPU, RAM, disco, red, Docker, Ollama.
 # Uso: ./scripts/mac2011-monitor.sh
 # Opcional: DISCORD_WEBHOOK_URL para alertas; OPSLY_LOG_DIR; OPSLY_ROOT (ruta repo)
 # Escribe JSON en: ${OPSLY_LOG_DIR}/mac2011-status.json
@@ -42,7 +42,7 @@ send_alert() {
   esc="$(discord_escape "${message}")"
   curl -sS -X POST "${DISCORD_WEBHOOK}" \
     -H "Content-Type: application/json" \
-    -d "{\"content\":\"${emoji} **opsly-mac2011 ${level}**\\n${esc}\"}" \
+    -d "{\"content\":\"${emoji} **opsly-worker ${level}**\\n${esc}\"}" \
     >>"${LOG_FILE}" 2>&1 || true
 }
 

@@ -1,6 +1,6 @@
 # Deploy en VPS, CI y índice de conocimiento
 
-Evita confundir **tres mecanismos distintos** en `dragon-1` (`/opt/opsly`).
+Evita confundir **tres mecanismos distintos** en el VPS (`vps-dragon`, `/opt/opsly`).
 
 ## 1. `opsly-watcher` — auto-**push** (no es auto-pull)
 

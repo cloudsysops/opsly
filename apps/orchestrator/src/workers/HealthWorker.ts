@@ -106,7 +106,8 @@ async function openGitHubIssue(
   slug: string,
   details: string,
 ): Promise<void> {
-  const token = process.env.GITHUB_TOKEN_N8N;
+  const token =
+    process.env.GITHUB_TOKEN?.trim() || process.env.GITHUB_TOKEN_N8N?.trim() || "";
   const repo =
     process.env.OPSLY_GITHUB_REPO ?? "cloudsysops/opsly";
   if (!token) {

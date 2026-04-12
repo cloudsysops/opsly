@@ -27,7 +27,22 @@ fi
 
 MISSING=0
 log "Verificando tokens en Doppler (ops-intcloudsysops / prd)…"
-for VAR in ANTHROPIC_API_KEY GITHUB_TOKEN_N8N RESEND_API_KEY PLATFORM_ADMIN_TOKEN DISCORD_WEBHOOK_URL; do
+GH_OK=0
+for V in GITHUB_TOKEN GITHUB_TOKEN_N8N; do
+  VAL="$(doppler secrets get "$V" --project ops-intcloudsysops --config prd --plain 2>/dev/null || true)"
+  LEN=${#VAL}
+  if [[ "$LEN" -gt 20 ]]; then
+    ok "$V — GitHub PAT ($LEN chars; el otro nombre es legado)"
+    GH_OK=1
+    break
+  fi
+done
+if [[ $GH_OK -eq 0 ]]; then
+  fail "GITHUB_TOKEN o GITHUB_TOKEN_N8N — falta al menos uno"
+  MISSING=$((MISSING + 1))
+fi
+
+for VAR in ANTHROPIC_API_KEY RESEND_API_KEY PLATFORM_ADMIN_TOKEN DISCORD_WEBHOOK_URL; do
   VAL="$(doppler secrets get "$VAR" --project ops-intcloudsysops --config prd --plain 2>/dev/null || true)"
   LEN=${#VAL}
   if [[ "$LEN" -gt 20 ]]; then

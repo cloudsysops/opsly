@@ -24,6 +24,8 @@
 
 ## Flujo de sesión (humano + Cursor)
 
+**Git antes de editar:** en **opsly-admin** (Mac), **opsly-worker** (`~/opsly`) y **VPS** (`/opt/opsly` o staging), ejecutar `./scripts/git-sync-repo.sh` o `git pull --ff-only` en la rama de trabajo. Detalle: `docs/SESSION-GIT-SYNC.md`.
+
 **Índice de conocimiento (Repo-First RAG):** tras `git pull` en el VPS (o al añadir muchos `.md`), ejecuta `./scripts/index-knowledge.sh` desde la raíz del repo (`OPSLY_ROOT=/opt/opsly` si aplica) para regenerar `config/knowledge-index.json`. Sin ese paso, el Context Builder y el planner siguen “ciegos” respecto a títulos/keywords de la documentación nueva.
 
 **Al abrir una sesión nueva conmigo (otro agente / otro dispositivo):**
@@ -274,6 +276,8 @@ Procedimientos vivos en el repo: **`skills/user/<skill>/SKILL.md`**. En runtimes
 
 **Notion + Doppler QA:** copiar `NOTION_TOKEN` de `prd` → `qa` sin tocar `prd`; en `qa` los UUID de bases QA van en las **cinco claves ya usadas por código** (`NOTION_DATABASE_TASKS` … `METRICS`), no en nombres nuevos tipo `TENANTS`. Tabla de mapeo y comandos: [`docs/DOPPLER-VARS.md`](docs/DOPPLER-VARS.md) (sección *Notion MCP — config qa*).
 
+**CI Doppler:** workflow [`validate-doppler.yml`](.github/workflows/validate-doppler.yml) + script [`scripts/validate-doppler-vars.sh`](scripts/validate-doppler-vars.sh); secretos GitHub `DOPPLER_TOKEN_PRD` / `DOPPLER_TOKEN_STG`; listas `config/doppler-ci-required*.txt`. Runbook: [`docs/DOPPLER-CI-RUNBOOK.md`](docs/DOPPLER-CI-RUNBOOK.md).
+
 ### Sprint activo — Semana 1 (alineado a ROADMAP.md)
 
 | Qué | Detalle |
@@ -482,7 +486,7 @@ flowchart LR
 **API (`apps/api`)**
 - **`GET /api/metrics/system`** — Proxy a Prometheus (`/api/v1/query`). Consultas: CPU `100 - (avg(rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100)`; RAM `sum(MemTotal)-sum(MemAvailable)`; disco `sum(size)-sum(free)` con `mountpoint="/"`; uptime `time() - node_boot_time_seconds`. Respuesta JSON incluye `cpu_percent`, `ram_*_gb`, `disk_*_gb`, `uptime_seconds`, `active_tenants` (Supabase), `containers_running` (`docker ps -q` vía **execa**), `mock`. Implementación modular: `lib/prometheus.ts`, `lib/fetch-host-metrics-prometheus.ts`, `lib/docker-running-count.ts`, fallback mock en `DEMO_SYSTEM_METRICS_MOCK` (`lib/constants.ts`).
 - **`GET /api/tenants`**, **`GET /api/metrics`**, **`GET /api/tenants/:ref`:** Con `ADMIN_PUBLIC_DEMO_READ=true`, los **GET** omiten `PLATFORM_ADMIN_TOKEN` (`requireAdminTokenUnlessDemoRead` en `lib/auth.ts`). **`:ref`** = UUID o slug (`TenantRefParamSchema` en `lib/validation.ts` + `TENANT_ROUTE_REF` en constants). POST/PATCH/DELETE sin cambios (token obligatorio).
-- **Prometheus en Docker:** Desde el contenedor `app`, `localhost:9090` no es el host; en compose: `PROMETHEUS_BASE_URL` default `http://host.docker.internal:9090`, `extra_hosts: host.docker.internal:host-gateway`.
+- **Prometheus en Docker:** Servicios `prometheus` y `node-exporter` en `infra/docker-compose.platform.yml`; `PROMETHEUS_BASE_URL` default `http://prometheus:9090`. `extra_hosts: host.docker.internal` sigue útil para otros usos. Ver `docs/MONITORING.md`.
 
 **Admin — demo sin login**
 - **`NEXT_PUBLIC_ADMIN_PUBLIC_DEMO=true`** por **ARG** en `apps/admin/Dockerfile` (build); `lib/supabase/middleware.ts` devuelve `NextResponse.next` sin redirigir a `/login`. `app/api/audit-log/route.ts` omite comprobación de usuario Supabase en ese modo.
@@ -807,7 +811,7 @@ doppler run --project ops-intcloudsysops --config prd -- \
 ```bash
 # Revalidar automatización
 ./scripts/drive-sync.sh
-# N8N_WEBHOOK_URL="<url>" N8N_WEBHOOK_SECRET="<secret>" ./scripts/test-n8n-webhook.sh
+# N8N_WEBHOOK_URL="<url>" N8N_WEBHOOK_SECRET_GH="<secret>" ./scripts/test-n8n-webhook.sh
 
 # Disco VPS < 80%
 ssh vps-dragon@100.120.151.91 "docker system df && sudo du -xh /var --max-depth=2 | sort -h | tail -20"

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Limpieza robusta — pensado para Mac (opsly-mac2011) o host Linux con Docker.
+# Limpieza robusta — pensado para worker (opsly-worker) o host Linux con Docker.
 # Uso: ./scripts/mac2011-cleanup-robust.sh [--dry-run] [--aggressive]
 #
 # Logs: OPSLY_LOG_DIR (default: $HOME/opsly/logs). Crear con permisos de usuario;

@@ -40,7 +40,7 @@ Si **migras** servicios al worker y los expones por Traefik en el VPS, añade **
 | Destino | Ejemplo |
 |---------|---------|
 | VPS | `100.120.151.91` (verificar en `tailscale status`) |
-| Mac 2011 | `100.80.41.29` (`opsly-mac2011`) |
+| Mac 2011 | `100.80.41.29` (`opsly-worker`) |
 
 **Redis:** usar la URL completa con contraseña desde Doppler / `.env.worker` (no pegar en chat).
 
@@ -55,7 +55,7 @@ ssh vps-dragon@100.120.151.91 "df -h / && docker ps --format '{{.Names}}\t{{.Sta
 ### Ver estado — Mac 2011
 
 ```bash
-ssh opsly-mac2011 "df -h / && free -h && tmux list-sessions 2>/dev/null || true"
+ssh opsly-worker "df -h / && free -h && tmux list-sessions 2>/dev/null || true"
 docker ps --format 'table {{.Names}}\t{{.Status}}' 2>/dev/null | head -15
 ```
 

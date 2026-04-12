@@ -72,6 +72,46 @@ services:
       retries: 5
       start_period: 10s
 
+  # --- Monitoreo plataforma (métricas host → Admin /api/metrics/system) ---
+  prometheus:
+    image: prom/prometheus:v2.54.1
+    container_name: opsly_prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--storage.tsdb.retention.time=15d"
+      - "--web.enable-lifecycle"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    ports:
+      - "127.0.0.1:${PROMETHEUS_HOST_PORT:-9090}:9090"
+    networks:
+      - internal
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:9090/-/healthy"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  node-exporter:
+    image: prom/node-exporter:v1.8.2
+    container_name: opsly_node_exporter
+    command:
+      - "--path.procfs=/host/proc"
+      - "--path.sysfs=/host/sys"
+      - "--path.rootfs=/rootfs"
+      - "--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)"
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro,rslave
+    networks:
+      - internal
+    restart: unless-stopped
+
   app:
     image: ${APP_IMAGE:-ghcr.io/cloudsysops/intcloudsysops-api:latest}
     env_file:
@@ -81,8 +121,8 @@ services:
       ORCHESTRATOR_INTERNAL_URL: ${ORCHESTRATOR_INTERNAL_URL:-http://orchestrator:3011}
       PLATFORM_TENANTS_DIR: /opt/opsly/tenants
       TEMPLATE_PATH: /opt/opsly/templates/docker-compose.tenant.yml.tpl
-      # Prometheus en el host (VPS): desde el contenedor usar host-gateway, no localhost.
-      PROMETHEUS_BASE_URL: ${PROMETHEUS_BASE_URL:-http://host.docker.internal:9090}
+      # Prometheus como servicio en la red internal (opsly_prometheus). Override si usas Prom externo.
+      PROMETHEUS_BASE_URL: ${PROMETHEUS_BASE_URL:-http://prometheus:9090}
       ADMIN_PUBLIC_DEMO_READ: ${ADMIN_PUBLIC_DEMO_READ:-false}
     extra_hosts:
       - "host.docker.internal:host-gateway"
@@ -185,7 +225,8 @@ services:
     environment:
       OPSLY_API_URL: https://api.${PLATFORM_DOMAIN}
       PLATFORM_ADMIN_TOKEN: ${PLATFORM_ADMIN_TOKEN}
-      GITHUB_TOKEN_N8N: ${GITHUB_TOKEN_N8N}
+      GITHUB_TOKEN: ${GITHUB_TOKEN:-}
+      GITHUB_TOKEN_N8N: ${GITHUB_TOKEN_N8N:-}
       PORT: "3003"
     labels:
       - "traefik.enable=true"
@@ -297,7 +338,8 @@ services:
       STRIPE_TEST_SECRET_KEY: ${STRIPE_TEST_SECRET_KEY:-}
       STRIPE_WEBHOOK_SECRET_TEST: ${STRIPE_WEBHOOK_SECRET_TEST:-}
       DISCORD_WEBHOOK_URL: ${DISCORD_WEBHOOK_URL}
-      GITHUB_TOKEN_N8N: ${GITHUB_TOKEN_N8N}
+      GITHUB_TOKEN: ${GITHUB_TOKEN:-}
+      GITHUB_TOKEN_N8N: ${GITHUB_TOKEN_N8N:-}
     depends_on:
       redis:
         condition: service_healthy
@@ -351,3 +393,4 @@ networks:
 volumes:
   letsencrypt:
   redis_data:
+  prometheus_data:

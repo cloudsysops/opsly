@@ -24,7 +24,7 @@
 
 Configurar estos secretos/variables fuera de código:
 
-- `GITHUB_TOKEN_N8N`
+- `GITHUB_TOKEN` (o legado `GITHUB_TOKEN_N8N`; ver `docs/GITHUB-TOKEN.md`)
 - `GOOGLE_DRIVE_TOKEN`
 - `RESEND_API_KEY` (real, no placeholder)
 - `STRIPE_SECRET_KEY`
@@ -36,7 +36,7 @@ Configurar estos secretos/variables fuera de código:
 Comandos de referencia:
 
 ```bash
-doppler secrets set GITHUB_TOKEN_N8N --project ops-intcloudsysops --config prd
+doppler secrets set GITHUB_TOKEN --project ops-intcloudsysops --config prd
 doppler secrets set GOOGLE_DRIVE_TOKEN --project ops-intcloudsysops --config prd
 doppler secrets set RESEND_API_KEY --project ops-intcloudsysops --config prd
 doppler secrets set STRIPE_SECRET_KEY --project ops-intcloudsysops --config prd

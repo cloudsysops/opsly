@@ -1,84 +1,59 @@
 # Tailscale — nombres de máquinas (Opsly)
 
-Evita confusiones entre **hostname del sistema**, **nombre en Tailscale** y **alias SSH** (`Host` en `~/.ssh/config`).
+Tres conceptos distintos: **hostname del SO** (`/etc/hostname`), **nombre en Tailscale** (admin / MagicDNS) y **alias SSH** (`Host` en `~/.ssh/config`). En Opsly solo usamos **dos nombres MagicDNS** para equipos de trabajo y **un** `Host` SSH por cada uno (sin alias duplicados).
 
-## Nomenclatura recomendada (abril 2026)
+## Nombres fijos (tailnet)
 
-| Rol real | Nombre en Tailscale (admin) | IP Tailscale (100.x) | Alias SSH (`~/.ssh/config`) |
-|----------|-----------------------------|----------------------|-----------------------------|
-| Mac 2020 — dev principal (Cursor, repo) | `mac2020` o `opsly-dev` | `100.89.38.3` | `Host mac2020` |
-| **Worker** — hardware Mac 2011, **Ubuntu** (orchestrator, Node) | **`opsly-mac2011`** | **`100.80.41.29`** | **`Host opsly-mac2011`** |
-| VPS Opsly | `vps-dragon` | `100.120.151.91` | `Host vps-dragon` |
+| Rol | Nombre en Tailscale = base MagicDNS | IP 100.x (referencia) | SSH |
+|-----|--------------------------------------|------------------------|-----|
+| Mac principal (Cursor, repo) | **`opsly-admin`** | `100.89.38.3` | `ssh opsly-admin` |
+| Worker Ubuntu (orchestrator, etc.) | **`opsly-worker`** | `100.80.41.29` | `ssh opsly-worker` |
+| VPS Opsly | `vps-dragon` | `100.120.151.91` | `ssh vps-dragon` |
 
-> Si la Mac 2020 apareció antes con un nombre equivocado en Tailscale, **renómbrala** en el admin o por CLI (abajo). El worker **sí** es `opsly-mac2011` (Linux). El **usuario Linux** en el worker puede ser `cboteros`, **`opslyquantum`**, etc.: en `~/.ssh/config` usa `User` con el que realmente entras (`ssh opslyquantum@100.80.41.29`).
+FQDN típico: **`<nombre>.<suffix>.ts.net`** — el **suffix** sale de `tailscale dns status` (línea `suffix = …`).
 
----
+**Git en cada host:** antes de cambios locales, sincronizar el repo Opsly (`./scripts/git-sync-repo.sh` o `git pull --ff-only`). Detalle: **`docs/SESSION-GIT-SYNC.md`** (opsly-admin, opsly-worker, VPS).
 
-## Cómo cambiar el nombre en Tailscale
-
-### Opción A — Consola web (recomendada)
-
-1. Abre [Tailscale admin — Machines](https://login.tailscale.com/admin/machines).
-2. Elige la máquina (p. ej. la que antes decía `mac2011`).
-3. Menú **⋯** → **Edit machine name** → por ejemplo `mac2020` o `opsly-dev`.
-4. Guarda. En unos segundos `tailscale status` en otros nodos mostrará el nombre nuevo.
-
-### Opción B — CLI en la propia máquina
-
-En la Mac donde quieres fijar el nombre (con Tailscale instalado):
-
-```bash
-sudo tailscale up --hostname=mac2020
-```
-
-> En macOS suele bastar la **opción A**; si el CLI falla o no admite `--hostname`, no uses `--reset` (puede deshacer ajustes). Reinicia la **app Tailscale** tras cambiar el nombre.
-
-Comprueba:
-
-```bash
-tailscale status
-tailscale ip -4
-```
+Usuario Linux en el worker: **`opslyquantum`** (o el que tengas creado). El **skill** del repo `opsly-quantum` (`skills/user/opsly-quantum/`) es solo el nombre del procedimiento maestro; **no** es el hostname del worker.
 
 ---
 
-## `~/.ssh/config` (Mac 2020 — ejemplo)
+## MagicDNS — comprobar
 
-Sustituye usuario si no es `cboteros`:
+```bash
+ping -c1 opsly-admin.<tu-suffix>.ts.net
+ping -c1 opsly-worker.<tu-suffix>.ts.net
+tailscale ping opsly-worker
+```
+
+**Smoke:** `scripts/verify-platform-smoke.sh` usa por defecto `opslyquantum@opsly-worker.<suffix>.ts.net`. Overrides: `WORKER_TAILSCALE_NAME`, `WORKER_USER`, `WORKER_SSH`, `OPSLY_WORKER_HOSTNAME`, o `config/worker-tailscale.env` (plantilla: `config/worker-tailscale.env.example`).
+
+En **`~/.ssh/config`**, **`HostName`** debe ser el **FQDN** MagicDNS, no la IP `100.x`, para que no quede obsoleto si Tailscale reasigna.
+
+---
+
+## Renombrar en Tailscale (admin)
+
+1. [Machines](https://login.tailscale.com/admin/machines) → nodo → **⋯** → **Edit machine name** → **`opsly-admin`** o **`opsly-worker`**.
+2. O en la máquina: `sudo tailscale up --hostname=opsly-admin` / `sudo tailscale up --hostname=opsly-worker`.
+
+Comprueba: `tailscale status`, `tailscale ip -4`.
+
+---
+
+## `~/.ssh/config` — plantilla Opsly
+
+Un **`Host` por rol**; sustituye `<suffix>` por el de `tailscale dns status` y usuarios si difieren:
 
 ```sshconfig
-# Mac 2020 — desarrollo principal (IP Tailscale actual)
-Host mac2020
-    HostName 100.89.38.3
+Host opsly-admin
+    HostName opsly-admin.<suffix>.ts.net
     User cboteros
     IdentityFile ~/.ssh/id_ed25519
     ServerAliveInterval 60
-```
 
-Prueba:
-
-```bash
-ssh mac2020 "hostname && scutil --get ComputerName 2>/dev/null || hostname"
-```
-
-### Worker Ubuntu (`opsly-mac2011`)
-
-Desde la Mac 2020 (ajusta **`User`** y clave SSH si usas otra):
-
-```sshconfig
-Host opsly-mac2011
-    HostName 100.80.41.29
-    User opslyquantum
-    IdentityFile ~/.ssh/id_ed25519
-    ServerAliveInterval 60
-    ServerAliveCountMax 3
-```
-
-Opcional: segundo alias si prefieres entrar con el nombre de usuario:
-
-```sshconfig
-Host opslyquantum
-    HostName 100.80.41.29
+Host opsly-worker
+    HostName opsly-worker.<suffix>.ts.net
     User opslyquantum
     IdentityFile ~/.ssh/id_ed25519
     ServerAliveInterval 60
@@ -86,24 +61,19 @@ Host opslyquantum
 ```
 
 ```bash
-ssh opsly-mac2011 "hostname && uname -a"
+ssh opsly-admin "hostname"
+ssh opsly-worker "hostname && uname -a"
 ```
 
 ---
 
-## Coherencia en el repo
+## Repo
 
-- Guías de worker remoto: `docs/WORKER-SETUP-MAC2011.md` (Ubuntu worker), no confundir con la Mac 2020.
-- Scripts legacy que mencionan `mac2011` en flags (`scripts/tunnel-access.sh --mac2011-ip`): el parámetro es la **IP LAN del worker** (en Tailscale suele ser **`100.80.41.29`** para `opsly-mac2011`), no la IP de la Mac 2020.
+- Worker remoto: **`docs/WORKER-SETUP-MAC2011.md`**.
+- Scripts con flag `--mac2011-ip`: es la **IP LAN / Tailscale del worker** (`100.80.41.29` típico), no la de la Mac principal.
 
 ---
 
-## Aviso de versiones `client != tailscaled`
+## Aviso `client != tailscaled`
 
-Si ves:
-
-```text
-Warning: client version "..." != tailscaled server version "..."
-```
-
-Actualiza **CLI y app** alineados (`brew upgrade tailscale` y/o actualizar la app desde la web/App Store). Suele ser cosmético si todo funciona.
+Si aparece advertencia de versión entre cliente y `tailscaled`, alinea versiones (`brew upgrade tailscale`, actualizar app). Suele ser cosmético si todo funciona.

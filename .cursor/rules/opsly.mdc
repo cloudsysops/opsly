@@ -14,7 +14,7 @@ Antes de CUALQUIER tarea, sin excepcion:
 3. Verificar estado VPS (acceso **solo por Tailscale** `100.120.151.91`, nunca IP pública):
    `ssh vps-dragon@100.120.151.91 "systemctl is-active cursor-prompt-monitor opsly-watcher && docker ps --format '{{.Names}}\t{{.Status}}' | grep -E 'n8n|uptime|infra|traefik'"`
 4. Verificar vars criticas Doppler:
-   `for VAR in DISCORD_WEBHOOK_URL RESEND_API_KEY GITHUB_TOKEN_N8N GOOGLE_DRIVE_TOKEN; do VAL=$(doppler secrets get $VAR --project ops-intcloudsysops --config prd --plain 2>/dev/null || echo ""); echo "$VAR: ${#VAL} chars"; done`
+   `for VAR in DISCORD_WEBHOOK_URL RESEND_API_KEY GITHUB_TOKEN N8N_WEBHOOK_SECRET_GH GOOGLE_DRIVE_TOKEN; do VAL=$(doppler secrets get $VAR --project ops-intcloudsysops --config prd --plain 2>/dev/null || echo ""); echo "$VAR: ${#VAL} chars"; done` (si `GITHUB_TOKEN` vacío, revisar legado `GITHUB_TOKEN_N8N`; si `N8N_WEBHOOK_SECRET_GH` vacío, revisar `N8N_WEBHOOK_SECRET` — ver `docs/N8N-SETUP.md`)
 5. Reportar gaps antes de continuar.
 6. No ejecutar nada hasta confirmar el reporte.
 
@@ -32,7 +32,8 @@ Fuente de verdad: `AGENTS.md` en la raíz del repo.
 ## Al iniciar cada sesión
 
 1. Lee `AGENTS.md` completo.
-2. Responde **SIEMPRE** con este bloque antes de cualquier código:
+2. **Git en el clon activo (obligatorio antes de editar o ejecutar scripts de infra):** en **opsly-admin** (Mac Cursor), **opsly-worker** (`~/opsly`) y **VPS** (`/opt/opsly` o `/opt/opsly-staging`), sincronizar con `origin` en la rama de trabajo: `./scripts/git-sync-repo.sh` (o `git pull --ff-only`). Detalle: `docs/SESSION-GIT-SYNC.md`.
+3. Responde **SIEMPRE** con este bloque antes de cualquier código:
 
 ```
 ---CONTEXT LOADED---
@@ -43,9 +44,9 @@ Bloqueantes: [lista o "ninguno"]
 ---
 ```
 
-3. No propongas cambios a decisiones fijas de `AGENTS.md`.
-4. No uses `any` en TypeScript.
-5. Scripts bash: `set -euo pipefail`, idempotentes, con `--dry-run` cuando aplique.
+4. No propongas cambios a decisiones fijas de `AGENTS.md`.
+5. No uses `any` en TypeScript.
+6. Scripts bash: `set -euo pipefail`, idempotentes, con `--dry-run` cuando aplique.
 
 ## Durante la sesión
 

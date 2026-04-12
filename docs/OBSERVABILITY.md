@@ -4,7 +4,7 @@ Documentación alineada con el código en `apps/api/lib/fetch-host-metrics-prome
 
 ## Endpoints / integración
 
-- **Prometheus** expuesto según tu despliegue (p. ej. `PROMETHEUS_BASE_URL` / `host.docker.internal:9090` desde el contenedor API).
+- **Prometheus** como servicio en `infra/docker-compose.platform.yml` (`http://prometheus:9090` por defecto en el contenedor API). Ver [`MONITORING.md`](./MONITORING.md). Override con `PROMETHEUS_BASE_URL` si Prometheus es externo.
 - **`GET /api/metrics/system`:** agrega lecturas instantáneas vía `/api/v1/query`; si Prometheus no responde, devuelve payload **mock** (`mock: true`).
 
 ## Consultas PromQL (instant query)
