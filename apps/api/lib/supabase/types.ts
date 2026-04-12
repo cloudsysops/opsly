@@ -233,6 +233,138 @@ export type Database = {
           updated_at: string;
         }>;
       };
+      hermes_state: {
+        Row: {
+          task_id: string;
+          name: string;
+          task_type: string;
+          state: string;
+          assignee: string | null;
+          effort: string;
+          agent: string | null;
+          payload: Json;
+          started_at: string | null;
+          completed_at: string | null;
+          result: Json | null;
+          idempotency_key: string | null;
+          request_id: string | null;
+          tenant_id: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          task_id: string;
+          name?: string;
+          task_type?: string;
+          state: string;
+          assignee?: string | null;
+          effort?: string;
+          agent?: string | null;
+          payload?: Json;
+          started_at?: string | null;
+          completed_at?: string | null;
+          result?: Json | null;
+          idempotency_key?: string | null;
+          request_id?: string | null;
+          tenant_id?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<{
+          name: string;
+          task_type: string;
+          state: string;
+          assignee: string | null;
+          effort: string;
+          agent: string | null;
+          payload: Json;
+          started_at: string | null;
+          completed_at: string | null;
+          result: Json | null;
+          idempotency_key: string | null;
+          request_id: string | null;
+          tenant_id: string | null;
+          updated_at: string;
+        }>;
+      };
+      hermes_workflows: {
+        Row: {
+          workflow_id: string;
+          name: string;
+          status: string;
+          steps: Json;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          workflow_id?: string;
+          name: string;
+          status?: string;
+          steps?: Json;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<{
+          name: string;
+          status: string;
+          steps: Json;
+          updated_at: string;
+        }>;
+      };
+      hermes_metrics: {
+        Row: {
+          id: string;
+          agent: string;
+          sprint: number | null;
+          tasks_completed: number;
+          tasks_failed: number;
+          avg_duration_ms: number | null;
+          success_rate: number | null;
+          captured_at: string;
+        };
+        Insert: {
+          id?: string;
+          agent: string;
+          sprint?: number | null;
+          tasks_completed?: number;
+          tasks_failed?: number;
+          avg_duration_ms?: number | null;
+          success_rate?: number | null;
+          captured_at?: string;
+        };
+        Update: Partial<{
+          tasks_completed: number;
+          tasks_failed: number;
+          avg_duration_ms: number | null;
+          success_rate: number | null;
+          captured_at: string;
+        }>;
+      };
+      hermes_audit: {
+        Row: {
+          id: string;
+          event_type: string;
+          task_id: string | null;
+          agent: string | null;
+          change: Json | null;
+          timestamp: string;
+        };
+        Insert: {
+          id?: string;
+          event_type: string;
+          task_id?: string | null;
+          agent?: string | null;
+          change?: Json | null;
+          timestamp?: string;
+        };
+        Update: Partial<{
+          event_type: string;
+          task_id: string | null;
+          agent: string | null;
+          change: Json | null;
+          timestamp: string;
+        }>;
+      };
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;

@@ -15,6 +15,7 @@
     "flush-billing": "tsx scripts/flush-billing-usage.ts"
   },
   "dependencies": {
+    "@intcloudsysops/notebooklm-agent": "*",
     "@aws-sdk/client-sts": "^3.1028.0",
     "@intcloudsysops/llm-gateway": "^1.0.0",
     "@intcloudsysops/ml": "^1.0.0",

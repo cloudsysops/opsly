@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import {
   Activity,
   BarChart3,
+  BookOpen,
   CircleDollarSign,
   LayoutDashboard,
   Mail,
@@ -22,6 +23,7 @@ const nav = [
   { href: "/metrics/llm", label: "LLM Metrics", icon: BarChart3 },
   { href: "/agents", label: "Agent Teams", icon: Activity },
   { href: "/costs", label: "Costos", icon: CircleDollarSign },
+  { href: "/notebooklm", label: "NotebookLM", icon: BookOpen },
   { href: "/feedback", label: "Feedback", icon: MessageSquare },
   { href: "/approval-decisions", label: "Approval Gate", icon: ShieldCheck },
   { href: "/settings", label: "Settings", icon: Settings },
