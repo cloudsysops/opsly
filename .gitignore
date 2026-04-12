@@ -54,17 +54,18 @@ supabase/.temp/
 apps/portal/test-results/
 apps/portal/playwright-report/
 
-# Obsidian
+# Obsidian — ignore runtime/personal state
 docs/.obsidian/cache
 docs/.obsidian/workspace
 docs/.obsidian/workspace.json
 docs/.obsidian/plugins/recent-files-obsidian/data.json
-docs/.obsidian/plugins/*/data.json
 
-# Keep config tracked
+# Keep config + plugin settings tracked
 !docs/.obsidian/app.json
 !docs/.obsidian/vault.json
 !docs/.obsidian/core-plugins.json
+!docs/.obsidian/community-plugins.json
 !docs/.obsidian/templates/
 !docs/.obsidian/hotkeys.json
 !docs/.obsidian/file-index.json
+!docs/.obsidian/plugins/obsidian-git/data.json
