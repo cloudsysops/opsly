@@ -1,0 +1,106 @@
+# Fuente de verdad — editar aquí; ejecutar `npm run docs:sync` para regenerar IMPLEMENTATION-STATUS.md
+# last_commit / last_updated pueden actualizarse en CI (workflow sync-docs) o manualmente.
+
+project: Opsly
+
+last_commit: ddccfbf
+last_updated: "2026-04-12T12:00:00.000Z"
+
+phases:
+  - number: 1
+    name: "Approval Gate + Vertex AI"
+    status: IN_PROGRESS
+    started: "2026-04-10"
+    estimated_completion: "2026-04-20"
+    description: "Decisión LLM + trazabilidad + embeddings Vertex (text-embedding-004) y pgvector."
+    dependencies:
+      - "Doppler prd"
+      - "Supabase migraciones"
+    components:
+      - name: "LLM Gateway Endpoint"
+        file: apps/llm-gateway/src/approval-route.ts
+        status: "✅ DONE"
+        description: "POST /v1/approval-analyze y contrato con gateway."
+        methods:
+          - "approvalAnalyze"
+        pr: null
+        commit: ddccfbf
+      - name: "ApprovalGateWorker"
+        file: apps/orchestrator/src/workers/ApprovalGateWorker.ts
+        status: "✅ DONE"
+        description: "Cola BullMQ approval-gate; insert en approval_gate_decisions; embeddings opcionales."
+        pr: null
+        commit: ddccfbf
+      - name: "Vertex AI Client"
+        file: apps/orchestrator/src/lib/vertex-ai-client.ts
+        status: "✅ DONE"
+        description: "Cliente Vertex predict embeddings; SA JSON; retries."
+        pr: null
+        commit: ddccfbf
+      - name: "Migrations (embeddings + RPC)"
+        file: supabase/migrations/0026_approval_gate_embeddings.sql
+        status: "✅ DONE"
+        description: "platform.approval_gate_embeddings + search_similar_approval_metrics."
+        pr: null
+        commit: ddccfbf
+      - name: "Doppler Secrets (GCP)"
+        file: docs/VERTEX-AI-SETUP.md
+        status: "⏳ PENDING"
+        description: "GCLOUD_* / GOOGLE_* + VERTEX_AI_EMBED_ENABLED en prd."
+        pr: null
+        commit: null
+      - name: "Supabase DB Push"
+        file: supabase/migrations/
+        status: "⏳ PENDING"
+        description: "Aplicar 0026/0027 en proyecto enlazado."
+        pr: null
+        commit: null
+      - name: "Pre-Flight Test"
+        file: scripts/test-vertex-ai.sh
+        status: "⏳ PENDING"
+        description: "doppler run + validación secretos / tabla."
+        pr: null
+        commit: null
+
+  - number: 2
+    name: "Learning Agent"
+    status: PLANNED
+    started: "2026-04-14"
+    estimated_completion: "2026-05-01"
+    description: "Reglas ML, fast path y worker de aprendizaje (fase posterior)."
+    components:
+      - name: "LearningAgentWorker"
+        file: apps/orchestrator/src/workers/LearningAgentWorker.ts
+        status: "🚧 PLANNED"
+        description: "Worker batch / heurísticas sobre embeddings."
+        pr: null
+        commit: null
+      - name: "ML Rules Table"
+        file: supabase/migrations/
+        status: "🚧 PLANNED"
+        description: "Tabla de reglas por tenant / umbral confianza."
+        pr: null
+        commit: null
+      - name: "Fast Path Logic"
+        file: apps/orchestrator/src/lib/
+        status: "🚧 PLANNED"
+        description: "Atajo cuando similitud > umbral vs histórico."
+        pr: null
+        commit: null
+
+blockers:
+  - title: "Doppler secrets GCP / Vertex no configurados en prd"
+    severity: CRITICAL
+    fix: "Seguir docs/VERTEX-AI-SETUP.md; doppler secrets set GCLOUD_* y JSON SA."
+    status: OPEN
+  - title: "Migraciones 0026/0027 no aplicadas en Supabase remoto"
+    severity: CRITICAL
+    fix: "npx supabase db push (o pipeline migraciones) contra proyecto enlazado."
+    status: OPEN
+
+next_steps:
+  - "Confirmar secretos Doppler en sesión operativa (prd)."
+  - "Ejecutar pre-flight: `doppler run -- bash scripts/test-vertex-ai.sh`."
+  - "Push a main y revisar GitHub Actions (deploy / CI)."
+  - "Verificar dashboard admin `/approval-decisions` con datos reales."
+  - "Iniciar Phase 2 (Learning Agent) según ROADMAP."

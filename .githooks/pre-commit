@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
-# Pre-commit: type-check del monorepo + ESLint estricto solo en apps/api (app/ y lib/).
+# Pre-commit: docs auto-sync (status.yaml) + type-check + ESLint API si aplica.
 set -e
 ROOT="$(git rev-parse --show-toplevel)"
 cd "$ROOT" || exit 1
@@ -9,6 +9,14 @@ fi
 if ! command -v npm >/dev/null 2>&1; then
   echo "pre-commit: npm no disponible, omitiendo type-check"
   exit 0
+fi
+
+# Si docs/implementation/status.yaml está en el índice, regenerar IMPLEMENTATION-STATUS.md
+STAGED_STATUS=$(git diff --cached --name-only --diff-filter=ACM | grep -E '^docs/implementation/status\.yaml$' || true)
+if [ -n "$STAGED_STATUS" ]; then
+  echo "pre-commit: docs:sync (status.yaml staged)…"
+  npm run docs:sync
+  git add docs/IMPLEMENTATION-STATUS.md
 fi
 
 npm run type-check
