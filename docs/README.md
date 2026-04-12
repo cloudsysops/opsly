@@ -35,6 +35,8 @@ docs/SPRINT-ROADMAP.md   ← sprints 1-8, qué está hecho, qué sigue
 | [`OPENCLAW-ARCHITECTURE.md`](OPENCLAW-ARCHITECTURE.md) | MCP + Orchestrator + LLM Gateway + Context Builder |
 | [`ORCHESTRATOR.md`](ORCHESTRATOR.md) | BullMQ jobs, workers, circuit breaker, prioridades |
 | [`LLM-GATEWAY.md`](LLM-GATEWAY.md) | Cache Redis, routing bias, cost tracking |
+| [`TOKEN-BILLING-SYSTEM.md`](TOKEN-BILLING-SYSTEM.md) | Tokens/créditos vs USD; qué existe hoy vs wallet prepago (roadmap) |
+| [`TOKEN-SYSTEM-GUIDE.md`](TOKEN-SYSTEM-GUIDE.md) | Guía corta: ahorro, routing, presupuestos |
 | [`CONTEXT-BUILDER.md`](CONTEXT-BUILDER.md) | Sesiones de agentes, TTL por plan, persistencia |
 | [`AGENTS-GUIDE.md`](AGENTS-GUIDE.md) | Agentes paralelos, roles, límites por plan |
 | [`WORKER-TEAM-ARCHITECTURE.md`](WORKER-TEAM-ARCHITECTURE.md) | Equipos OpenClaw / roles vs `TeamManager` (roadmap) |
@@ -53,6 +55,7 @@ docs/SPRINT-ROADMAP.md   ← sprints 1-8, qué está hecho, qué sigue
 | [ADR-012](adr/ADR-012-observability.md) | Observabilidad: logs JSON + métricas |
 | [ADR-015](adr/ADR-015-di-pattern-testability.md) | DI sobre vi.mock para módulos singleton |
 | [ADR-016](adr/ADR-016-worker-teams-billing-roadmap.md) | Roadmap equipos por tenant + billing ampliado (sin duplicar orquestador) |
+| [ADR-017](adr/ADR-017-prepaid-token-wallet-roadmap.md) | Wallet prepago / tokens abstractos vs metering USD actual (roadmap) |
 
 ### 4. Infra y deploy
 | Doc | Cuándo usarlo |
