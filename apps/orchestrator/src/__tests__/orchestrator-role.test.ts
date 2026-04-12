@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it } from "vitest";
 import {
+  orchestratorModeLabel,
   parseOrchestratorRole,
   shouldRunControlPlane,
   shouldRunWorkers,
@@ -14,6 +15,7 @@ describe("parseOrchestratorRole", () => {
 
   it("defaults to full when unset", () => {
     delete process.env.OPSLY_ORCHESTRATOR_ROLE;
+    delete process.env.OPSLY_ORCHESTRATOR_MODE;
     expect(parseOrchestratorRole()).toBe("full");
   });
 
@@ -29,6 +31,29 @@ describe("parseOrchestratorRole", () => {
       process.env.OPSLY_ORCHESTRATOR_ROLE = v;
       expect(parseOrchestratorRole()).toBe("worker");
     }
+  });
+
+  it("ROLE takes precedence over OPSLY_ORCHESTRATOR_MODE", () => {
+    process.env.OPSLY_ORCHESTRATOR_ROLE = "worker";
+    process.env.OPSLY_ORCHESTRATOR_MODE = "queue-only";
+    expect(parseOrchestratorRole()).toBe("worker");
+  });
+
+  it("maps OPSLY_ORCHESTRATOR_MODE when ROLE unset", () => {
+    delete process.env.OPSLY_ORCHESTRATOR_ROLE;
+    process.env.OPSLY_ORCHESTRATOR_MODE = "queue-only";
+    expect(parseOrchestratorRole()).toBe("control");
+    delete process.env.OPSLY_ORCHESTRATOR_MODE;
+    process.env.OPSLY_ORCHESTRATOR_MODE = "worker-enabled";
+    expect(parseOrchestratorRole()).toBe("worker");
+  });
+});
+
+describe("orchestratorModeLabel", () => {
+  it("maps roles to display modes", () => {
+    expect(orchestratorModeLabel("control")).toBe("queue-only");
+    expect(orchestratorModeLabel("worker")).toBe("worker-enabled");
+    expect(orchestratorModeLabel("full")).toBe("full-stack");
   });
 });
 

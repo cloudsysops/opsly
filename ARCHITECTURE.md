@@ -66,5 +66,6 @@ Este archivo resume el estado arquitectónico actual del monorepo.
 ## Referencias internas
 
 - Arquitectura detallada previa: `docs/ARCHITECTURE.md`
+- Orchestrator distribuido (control / worker): `docs/ARCHITECTURE-DISTRIBUTED.md`, `docs/adr/ADR-020-orchestrator-worker-separation.md`
 - Roadmap y visión: `VISION.md`
 - Contexto operativo de sesiones: `AGENTS.md`

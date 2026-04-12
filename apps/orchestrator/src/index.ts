@@ -5,6 +5,7 @@ import { startOrchestratorHealthServer } from "./health-server.js";
 import { drainMeteringOperations } from "./metering/usage-events-meter.js";
 import { closeOrchestratorRedis } from "./metering/redis-client.js";
 import {
+  orchestratorModeLabel,
   parseOrchestratorRole,
   shouldRunControlPlane,
   shouldRunWorkers,
@@ -119,7 +120,9 @@ async function closeHttpServer(
 async function main(): Promise<void> {
   setupLangSmithTracing();
   const role = parseOrchestratorRole();
-  console.log(`[orchestrator] Iniciando… (OPSLY_ORCHESTRATOR_ROLE=${role})`);
+  console.log(
+    `[orchestrator] Iniciando… role=${role} mode=${orchestratorModeLabel(role)}`,
+  );
 
   let teamManager: TeamManager | undefined;
   const cleanupTasks: AsyncCleanup[] = [];

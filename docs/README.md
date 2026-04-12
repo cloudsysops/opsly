@@ -60,6 +60,7 @@ docs/SPRINT-ROADMAP.md   ← sprints 1-8, qué está hecho, qué sigue
 | [ADR-015](adr/ADR-015-di-pattern-testability.md) | DI sobre vi.mock para módulos singleton |
 | [ADR-016](adr/ADR-016-worker-teams-billing-roadmap.md) | Roadmap equipos por tenant + billing ampliado (sin duplicar orquestador) |
 | [ADR-017](adr/ADR-017-prepaid-token-wallet-roadmap.md) | Wallet prepago / tokens abstractos vs metering USD actual (roadmap) |
+| [ADR-020](adr/ADR-020-orchestrator-worker-separation.md) | Control plane vs worker plane; alias `OPSLY_ORCHESTRATOR_MODE`; Redis canónico VPS + workers remotos |
 
 ### 4. Infra y deploy
 | Doc | Cuándo usarlo |

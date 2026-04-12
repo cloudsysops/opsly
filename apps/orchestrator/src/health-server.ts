@@ -5,6 +5,10 @@ import {
   type Server,
   type ServerResponse,
 } from "node:http";
+import {
+  orchestratorModeLabel,
+  parseOrchestratorRole,
+} from "./orchestrator-role.js";
 import { enqueueJob, orchestratorQueue } from "./queue.js";
 import type { OrchestratorJob } from "./types.js";
 import { enqueueWebhookJob } from "./workers/WebhookWorker.js";
@@ -192,8 +196,17 @@ export function startOrchestratorHealthServer(): Server {
     const query = url.includes("?") ? url.slice(url.indexOf("?")) : "";
 
     if (req.method === "GET" && pathOnly === "/health") {
+      const role = parseOrchestratorRole();
+      const mode = orchestratorModeLabel(role);
       res.writeHead(200, { "Content-Type": "application/json" });
-      res.end(JSON.stringify({ status: "ok", service: "orchestrator" }));
+      res.end(
+        JSON.stringify({
+          status: "ok",
+          service: "orchestrator",
+          role,
+          mode,
+        }),
+      );
       return;
     }
 
