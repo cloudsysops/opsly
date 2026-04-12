@@ -16,7 +16,7 @@ STAGED_STATUS=$(git diff --cached --name-only --diff-filter=ACM | grep -E '^docs
 if [ -n "$STAGED_STATUS" ]; then
   echo "pre-commit: docs:sync (status.yaml staged)…"
   npm run docs:sync
-  git add docs/IMPLEMENTATION-STATUS.md
+  git add docs/IMPLEMENTATION-STATUS.md docs/SPRINT-TRACKING.md docs/AGENTS-ASSIGNMENTS.md
 fi
 
 npm run type-check

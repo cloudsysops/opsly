@@ -1,0 +1,16 @@
+# GitHub Projects v2 (GraphQL) requiere PROJECT_ID y permisos finos — placeholder documentado.
+# Usar Projects UI o ampliar con gh project item-add cuando el board esté fijado en el repo.
+
+name: GitHub Project Board (manual)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  info:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Documentación
+        run: |
+          echo "Para vincular Issues al Project v2, ver docs/SPRINT-PLANNING-SETUP.md"
+          echo "Campos Status/Priority se gestionan en GitHub Projects o vía gh api graphql."

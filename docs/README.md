@@ -27,8 +27,12 @@ docs/SPRINT-ROADMAP.md   ← sprints 1-8, qué está hecho, qué sigue
 | [`IMPLEMENTATION-IA-LAYER.md`](IMPLEMENTATION-IA-LAYER.md) | Implementar capa IA en el monorepo (sin Python paralelo) |
 | [`SPRINT-ROADMAP.md`](SPRINT-ROADMAP.md) | Ver qué sprint está activo, entregables, estado |
 | [`MASTER-PLAN-STATUS.md`](MASTER-PLAN-STATUS.md) | Métricas consolidadas: tests, type-check, fases |
-| [`IMPLEMENTATION-STATUS.md`](IMPLEMENTATION-STATUS.md) | Estado por fases (generado; fuente: `implementation/status.yaml`) |
-| [`AUTO-SYNC-DOCS-SETUP.md`](AUTO-SYNC-DOCS-SETUP.md) | Auto-sync YAML → Markdown, hooks, GitHub Actions, Discord |
+| [`IMPLEMENTATION-STATUS.md`](IMPLEMENTATION-STATUS.md) | Estado por fases (**generado**; fuente: `implementation/status.yaml`) |
+| [`SPRINT-TRACKING.md`](SPRINT-TRACKING.md) | Sprints y burndown (**generado**) |
+| [`AGENTS-ASSIGNMENTS.md`](AGENTS-ASSIGNMENTS.md) | Asignaciones por agente lógico (**generado**) |
+| [`AUTO-SYNC-DOCS-SETUP.md`](AUTO-SYNC-DOCS-SETUP.md) | Auto-sync YAML → Markdown, hooks, CI |
+| [`SPRINT-PLANNING-SETUP.md`](SPRINT-PLANNING-SETUP.md) | Notion + GitHub + comandos `npm run` |
+| [`AGENTS-ORCHESTRATION.md`](AGENTS-ORCHESTRATION.md) | Roles Cursor / Claude / Actions / PO |
 | [`MASTER-PLAN.md`](MASTER-PLAN.md) | Stack inventario, reglas de dependencias |
 | [`ACTIVE-PROMPT.md`](ACTIVE-PROMPT.md) | Prompt activo ejecutado por cursor-prompt-monitor |
 

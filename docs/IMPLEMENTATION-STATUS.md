@@ -4,7 +4,7 @@
 
 | Campo | Valor |
 | --- | --- |
-| Generado (ISO) | 2026-04-12T17:22:31.630Z |
+| Generado (ISO) | 2026-04-12T17:36:49.087Z |
 | last_commit (YAML) | `ddccfbf` |
 | last_updated (YAML) | 2026-04-12T12:00:00.000Z |
 
@@ -67,4 +67,4 @@
 
 ---
 
-*Última generación local/CI: 2026-04-12T17:22:31.630Z*
+*Última generación local/CI: 2026-04-12T17:36:49.087Z*

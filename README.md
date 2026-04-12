@@ -4,6 +4,13 @@ Plataforma multi-tenant **enterprise SaaS**: plano de control (API, billing, orq
 
 **Estado actual:** Sprint 3 ✅ (Usage Billing + Plan Upgrade + AI Cost Caps) → Sprint 4 🔄 (Self-Healing + Context Persistence + CVE)
 
+## Sprint planning y task management
+
+- **Colaboración:** Notion (bases Tasks / Sprints) + variables en Doppler — ver [`docs/DOPPLER-VARS.md`](docs/DOPPLER-VARS.md).
+- **Repo:** `docs/implementation/status.yaml` alimenta documentación generada (`IMPLEMENTATION-STATUS.md`, `SPRINT-TRACKING.md`, `AGENTS-ASSIGNMENTS.md`).
+- **Comandos:** `npm run docs:sync` · `npm run sync:all` (con `NOTION_TOKEN` / `GITHUB_TOKEN` según entorno) · `npm run sprint:burndown`.
+- **Guías:** [`docs/SPRINT-PLANNING-SETUP.md`](docs/SPRINT-PLANNING-SETUP.md) · [`docs/AGENTS-ORCHESTRATION.md`](docs/AGENTS-ORCHESTRATION.md).
+
 ## 📚 Índice de documentación
 
 ### Contexto y roadmap

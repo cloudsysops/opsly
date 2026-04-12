@@ -18,9 +18,18 @@
     "dev:notion-mcp": "doppler run --project ops-intcloudsysops --config prd -- npm run dev --workspace=@intcloudsysops/notion-mcp",
     "start:notion-mcp": "doppler run --project ops-intcloudsysops --config prd -- npm run start --workspace=@intcloudsysops/notion-mcp",
     "enqueue-test-job": "tsx --tsconfig scripts/tsconfig.enqueue.json scripts/enqueue-test-job.ts",
-    "docs:sync": "node scripts/sync-docs.js",
+    "docs:sync": "node scripts/sync-docs.js && node scripts/generate-sprint-tracking.js && node scripts/generate-agents-assignments.js",
     "docs:watch": "nodemon --watch docs/implementation/status.yaml --exec \"npm run docs:sync\"",
-    "test:docs": "bash scripts/test-sync-docs.sh"
+    "test:docs": "bash scripts/test-sync-docs.sh",
+    "notion:fetch": "node scripts/notion-to-yaml.js",
+    "notion:push": "node scripts/yaml-to-notion.js",
+    "notion:sync": "npm run notion:fetch && npm run docs:sync",
+    "notion:validate": "node scripts/validate-notion-schema.js",
+    "github:sync-issues": "node scripts/notion-to-github-issues.js",
+    "sprint:burndown": "node scripts/update-sprint-burndown.js",
+    "agents:status": "node scripts/generate-agents-assignments.js && (command -v cat >/dev/null && cat docs/AGENTS-ASSIGNMENTS.md || true)",
+    "test:notion": "bash scripts/test-notion.sh",
+    "sync:all": "npm run docs:sync && node scripts/sync-all-orchestrator.js"
   },
   "devDependencies": {
     "@types/node": "^20.19.12",

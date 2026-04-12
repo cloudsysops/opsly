@@ -1,0 +1,71 @@
+# Orquestación suave: docs + validación Notion opcional + burndown. Sin push automático (evita bucles).
+# Secrets opcionales: NOTION_TOKEN, NOTION_DATABASE_TASKS, DISCORD_WEBHOOK_URL
+
+name: Sync All (docs + optional Notion)
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Diario ~17:00 UTC — burndown; ajustar en repo si hace falta
+    - cron: "0 17 * * *"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-all-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Sprint burndown snapshot
+        run: node scripts/update-sprint-burndown.js
+        continue-on-error: true
+
+      - name: Docs sync (implementation + sprint + agents)
+        run: npm run docs:sync
+
+      - name: Validate Notion schema (optional)
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          NOTION_DATABASE_TASKS: ${{ secrets.NOTION_DATABASE_TASKS }}
+        run: node scripts/validate-notion-schema.js || echo "::warning::Notion validate skipped or failed"
+        continue-on-error: true
+
+      - name: Discord summary (optional)
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          if [ -z "$DISCORD_WEBHOOK_URL" ]; then
+            echo "Discord webhook not configured, skipping"
+            exit 0
+          fi
+          node scripts/discord-notify.js burndown '{"velocity":"n/a","target":"see SPRINT-TRACKING.md"}' || true
+        continue-on-error: true
+
+      - name: Commit docs if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/implementation/status.yaml docs/IMPLEMENTATION-STATUS.md docs/SPRINT-TRACKING.md docs/AGENTS-ASSIGNMENTS.md
+          if git diff --cached --quiet; then
+            echo "No doc changes."
+            exit 0
+          fi
+          git commit -m "chore(docs): sync-all burndown + generated docs [docs-sync]"
+          git push origin "HEAD:${{ github.ref_name }}"
+        continue-on-error: true
