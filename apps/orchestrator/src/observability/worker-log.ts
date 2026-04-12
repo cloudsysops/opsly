@@ -12,7 +12,8 @@ export type WorkerName =
   | "budget"
   | "webhooks-processing"
   | "general-events"
-  | "agent-classifier";
+  | "agent-classifier"
+  | "approval-gate";
 
 export function extractJobContext(job: Job): {
   task_id?: string;

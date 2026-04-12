@@ -18,6 +18,15 @@ export const orchestratorQueue = new Queue("openclaw", { connection });
 /** Cola sandbox clasificador de tareas (worker opcional: `OPSLY_AGENT_CLASSIFIER_WORKER_ENABLED`). */
 export const agentClassifierQueue = new Queue("agent-classifier", { connection });
 
+/** Approval Gate Phase 1: decisión Sonnet sobre métricas sandbox (worker opcional: `OPSLY_APPROVAL_GATE_WORKER_ENABLED`). */
+export const approvalGateQueue = new Queue("approval-gate", {
+  connection,
+  defaultJobOptions: {
+    attempts: 2,
+    backoff: { type: "exponential", delay: 2000 },
+  },
+});
+
 export async function enqueueJob(job: OrchestratorJob) {
   const opts = buildQueueAddOptions(job);
   const bull = await orchestratorQueue.add(job.type, job, opts);

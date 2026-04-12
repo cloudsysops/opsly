@@ -11,6 +11,7 @@ import {
   MessageSquare,
   Server,
   Settings,
+  ShieldCheck,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -22,6 +23,7 @@ const nav = [
   { href: "/agents", label: "Agent Teams", icon: Activity },
   { href: "/costs", label: "Costos", icon: CircleDollarSign },
   { href: "/feedback", label: "Feedback", icon: MessageSquare },
+  { href: "/approval-decisions", label: "Approval Gate", icon: ShieldCheck },
   { href: "/settings", label: "Settings", icon: Settings },
 ];
 

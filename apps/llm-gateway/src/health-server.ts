@@ -1,4 +1,5 @@
 import { createServer } from "node:http";
+import { handleApprovalAnalyzeHttp } from "./approval-route.js";
 import { handlePlannerHttp } from "./planner-route.js";
 import { handleTextCompletionHttp } from "./text-completion-route.js";
 
@@ -18,6 +19,10 @@ export function createHealthServer(port?: number): void {
       try {
         const textHandled = await handleTextCompletionHttp(req, res);
         if (textHandled) {
+          return;
+        }
+        const approvalHandled = await handleApprovalAnalyzeHttp(req, res);
+        if (approvalHandled) {
           return;
         }
         const handled = await handlePlannerHttp(req, res);

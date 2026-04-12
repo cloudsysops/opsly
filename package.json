@@ -1,7 +1,7 @@
 {
   "name": "intcloudsysops",
   "private": true,
-  "workspaces": ["apps/*", "apps/agents/notebooklm", "skills/manifest"],
+  "workspaces": ["apps/*", "apps/agents/notebooklm", "skills/manifest", "packages/*"],
   "scripts": {
     "dev": "turbo dev",
     "build": "turbo build",

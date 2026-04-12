@@ -10,7 +10,12 @@ import {
   shouldRunControlPlane,
   shouldRunWorkers,
 } from "./orchestrator-role.js";
-import { agentClassifierQueue, connection, orchestratorQueue } from "./queue.js";
+import {
+  agentClassifierQueue,
+  approvalGateQueue,
+  connection,
+  orchestratorQueue,
+} from "./queue.js";
 import { closeCircuitBreakerRedis } from "./resilience/circuit-breaker.js";
 import { closeJobStateStore } from "./state/store.js";
 import { TeamManager } from "./teams/TeamManager.js";
@@ -21,6 +26,7 @@ import { startHealthWorker } from "./workers/HealthWorker.js";
 import { startN8nWorker } from "./workers/N8nWorker.js";
 import { startNotifyWorker } from "./workers/NotifyWorker.js";
 import { startAgentClassifierWorker } from "./workers/AgentClassifierWorker.js";
+import { startApprovalGateWorker } from "./workers/ApprovalGateWorker.js";
 import { startOllamaWorker } from "./workers/OllamaWorker.js";
 import { startSuspensionWorker } from "./workers/SuspensionWorker.js";
 import { startGeneralEventsWorker } from "./workers/GeneralEventsWorker.js";
@@ -79,6 +85,12 @@ function startAllWorkers(): AsyncCleanup[] {
     ];
   }
 
+  let approvalGateCleanup: AsyncCleanup[] = [];
+  if (process.env.OPSLY_APPROVAL_GATE_WORKER_ENABLED !== "false") {
+    const { worker: approvalGateWorker } = startApprovalGateWorker(connection);
+    approvalGateCleanup = [async () => approvalGateWorker.close()];
+  }
+
   cleanup.push(
     async () => cursorWorker.close(),
     async () => n8nWorker.close(),
@@ -92,13 +104,15 @@ function startAllWorkers(): AsyncCleanup[] {
     async () => generalEventsWorker.close(),
     async () => ollamaWorker.close(),
     ...agentClassifierCleanup,
+    ...approvalGateCleanup,
   );
 
   console.log(
     "[orchestrator] Workers: cursor, n8n, notify, drive, backup, health, ollama, budget, opsly-webhooks, webhooks-processing, general-events" +
       (process.env.OPSLY_AGENT_CLASSIFIER_WORKER_ENABLED === "true"
         ? ", agent-classifier"
-        : ""),
+        : "") +
+      (process.env.OPSLY_APPROVAL_GATE_WORKER_ENABLED !== "false" ? ", approval-gate" : ""),
   );
   return cleanup;
 }
@@ -138,6 +152,7 @@ async function main(): Promise<void> {
   cleanupTasks.push(async () => drainMeteringOperations());
   cleanupTasks.push(async () => orchestratorQueue.close());
   cleanupTasks.push(async () => agentClassifierQueue.close());
+  cleanupTasks.push(async () => approvalGateQueue.close());
   cleanupTasks.push(async () => closeWebhookQueue());
   cleanupTasks.push(async () => closeJobStateStore());
   cleanupTasks.push(async () => closeOrchestratorRedis());
