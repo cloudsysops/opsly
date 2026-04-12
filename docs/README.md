@@ -37,6 +37,8 @@ docs/SPRINT-ROADMAP.md   ← sprints 1-8, qué está hecho, qué sigue
 | [`LLM-GATEWAY.md`](LLM-GATEWAY.md) | Cache Redis, routing bias, cost tracking |
 | [`CONTEXT-BUILDER.md`](CONTEXT-BUILDER.md) | Sesiones de agentes, TTL por plan, persistencia |
 | [`AGENTS-GUIDE.md`](AGENTS-GUIDE.md) | Agentes paralelos, roles, límites por plan |
+| [`WORKER-TEAM-ARCHITECTURE.md`](WORKER-TEAM-ARCHITECTURE.md) | Equipos OpenClaw / roles vs `TeamManager` (roadmap) |
+| [`WORKER-TEAM-BILLING.md`](WORKER-TEAM-BILLING.md) | Billing workers: uso LLM, budgets, qué falta (CPU/mem) |
 
 ### 3. Decisiones de arquitectura (ADRs)
 | ADR | Decisión clave |
@@ -50,6 +52,7 @@ docs/SPRINT-ROADMAP.md   ← sprints 1-8, qué está hecho, qué sigue
 | [ADR-011](adr/ADR-011-event-driven-orchestrator.md) | Orchestrator event-driven con BullMQ |
 | [ADR-012](adr/ADR-012-observability.md) | Observabilidad: logs JSON + métricas |
 | [ADR-015](adr/ADR-015-di-pattern-testability.md) | DI sobre vi.mock para módulos singleton |
+| [ADR-016](adr/ADR-016-worker-teams-billing-roadmap.md) | Roadmap equipos por tenant + billing ampliado (sin duplicar orquestador) |
 
 ### 4. Infra y deploy
 | Doc | Cuándo usarlo |
