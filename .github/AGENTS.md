@@ -128,6 +128,7 @@ Procedimientos vivos en el repo: **`skills/user/<skill>/SKILL.md`**. En runtimes
 | opsly-feedback-ml | `skills/user/opsly-feedback-ml/` | Feedback + ML |
 | opsly-agent-teams | `skills/user/opsly-agent-teams/` | BullMQ / TeamManager |
 | opsly-notebooklm | `skills/user/opsly-notebooklm/` | Agente NotebookLM (notebooklm-py), contenido por tenant |
+| opsly-architect-senior | `skills/user/opsly-architect-senior/` | Diagnóstico arquitectónico, riesgos, ADRs (tras `opsly-context`) |
 
 ---
 
