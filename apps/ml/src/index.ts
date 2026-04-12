@@ -6,4 +6,6 @@ export { ragQuery } from "./rag.js";
 export { classifyTaskCategory } from "./task-category-classifier.js";
 export type { TaskCategoryInput, TaskCategoryOutput } from "./task-category-classifier.js";
 export { handleWhatsAppEvent } from "./whatsapp-bot.js";
+export { InsightEngine, createInsightEngine } from "./insight-engine.js";
+export type { InsightType, TenantInsight, ChurnPrediction, RevenueForecast, AnomalyDetection } from "./insight-engine.js";
 
