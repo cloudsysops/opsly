@@ -2,7 +2,7 @@
 # Copiar: cp docs/worker-env.local.example ~/opsly/.env.local  y rellenar con Doppler o valores seguros.
 #
 # NODE_ENV=development
-# WORKER_ID=mac2011-ubuntu
+# WORKER_ID=opslyquantum-worker-01
 #
 # Obligatorio para BullMQ — misma URL que en entorno de plataforma (Doppler ops-intcloudsysops / prd):
 # REDIS_URL=redis://:PASSWORD@HOST:6379

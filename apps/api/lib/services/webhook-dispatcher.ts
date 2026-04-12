@@ -21,7 +21,7 @@ export interface WebhookPayload {
 // Encola webhooks en BullMQ via HTTP para no crear dep circular con orchestrator.
 // El WebhookWorker (apps/orchestrator) consume esta cola.
 const ORCHESTRATOR_INTERNAL_URL =
-  process.env.ORCHESTRATOR_INTERNAL_URL ?? "http://localhost:3010";
+  process.env.ORCHESTRATOR_INTERNAL_URL ?? "http://localhost:3011";
 
 export async function dispatchWebhookEvent(
   tenantSlug: string,

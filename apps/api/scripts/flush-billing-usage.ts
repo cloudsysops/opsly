@@ -5,18 +5,18 @@
  * Ejecutar: `npm run flush-billing --workspace=@intcloudsysops/api`
  */
 import { runFlushBillingUsage } from "../lib/billing/flush-billing-usage";
-import { JSON_PRETTY_PRINT_INDENT } from "../lib/constants";
 
 async function main(): Promise<void> {
   const result = await runFlushBillingUsage();
-
-  console.log(JSON.stringify(result, null, JSON_PRETTY_PRINT_INDENT));
+  // eslint-disable-next-line no-console -- CLI
+  console.log(JSON.stringify(result, null, 2));
   if (result.errors.length > 0) {
     process.exitCode = 1;
   }
 }
 
 void main().catch((e: unknown) => {
+  // eslint-disable-next-line no-console -- CLI
   console.error(e);
   process.exit(1);
 });

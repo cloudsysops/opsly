@@ -1,18 +1,18 @@
 import Anthropic from "@anthropic-ai/sdk";
-import { analyzeComplexity } from "./complexity.js";
 import { cacheGet, cacheSet } from "./cache.js";
-import { healthDaemon } from "./health-daemon.js";
+import { analyzeComplexity } from "./complexity.js";
 import { hashPrompt } from "./hash.js";
+import { healthDaemon } from "./health-daemon.js";
 import { logUsage } from "./logger.js";
 import {
-  getProvidersByPreference,
-  PROVIDERS,
-  resolveRoutingPreference,
-  type ProviderChainEntry,
-  type ProviderDefinition,
+    PROVIDERS,
+    getProvidersByPreference,
+    resolveRoutingPreference,
+    type ProviderChainEntry,
+    type ProviderDefinition,
 } from "./providers.js";
-import { applyRoutingBias } from "./routing-hints.js";
 import { estimateCost } from "./router.js";
+import { applyRoutingBias } from "./routing-hints.js";
 import type { LLMMessage, LLMRequest, LLMResponse } from "./types.js";
 
 const anthropic = new Anthropic({

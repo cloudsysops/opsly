@@ -1,6 +1,118 @@
 # Variables Doppler / secretos — referencia
 
-Proyecto típico en Doppler: `ops-intcloudsysops`, config `prd` (producción) o `dev`.
+Proyecto típico en Doppler: `ops-intcloudsysops`, configs `prd` (producción), `stg` (staging), `qa`, `dev`.
+
+### CI (GitHub Actions)
+
+Workflow [`.github/workflows/validate-doppler.yml`](../.github/workflows/validate-doppler.yml): instala la CLI de Doppler y ejecuta [`scripts/validate-doppler-vars.sh`](../scripts/validate-doppler-vars.sh) con argumentos **`ops-intcloudsysops prd`** y **`ops-intcloudsysops stg`**.
+
+En el repo → **Settings → Secrets and variables → Actions** define:
+
+- `DOPPLER_TOKEN_PRD` — token con lectura del proyecto (config `prd`).
+- `DOPPLER_TOKEN_STG` — token con lectura (config `stg`). Puede ser el mismo service token si tiene acceso a ambas configs.
+
+Lista de variables obligatorias: `config/doppler-ci-required.txt` y, si existe, `config/doppler-ci-required-prd.txt` / `config/doppler-ci-required-stg.txt` (tienen prioridad sobre el `.txt` genérico por config).
+
+**Runbook paso a paso (GitHub, local, troubleshooting):** [DOPPLER-CI-RUNBOOK.md](./DOPPLER-CI-RUNBOOK.md).
+
+## Config `stg` (staging) — crear y poblar desde `prd`
+
+Objetivo: un entorno **stg** con los mismos secretos que `prd`, luego sustituir solo lo que debe ser distinto (p. ej. Stripe **test**).
+
+### 1) Crear la config `stg`
+
+```bash
+doppler configs create stg --project ops-intcloudsysops
+```
+
+(Si ya existe, Doppler devolverá error; puedes omitir este paso.)
+
+### Copia incremental (solo claves que faltan en `stg`)
+
+Sin JSON masivo ni sobrescribir lo ya definido en `stg`:
+
+```bash
+./scripts/sync-doppler-prd-to-stg.sh
+./scripts/sync-doppler-prd-to-stg.sh --dry-run   # solo lista acciones, no escribe
+```
+
+Edita el array `EXCLUDE_VARS` en el script si quieres preservar más overrides en `stg`.
+
+### 2) Clon completo vía JSON (`prd` → `stg`)
+
+Útil para un **espejo inicial**; si `upload` falla, usa el pipeline `jq` más abajo. Para mantener `stg` al día sin pisar overrides, prefiere **`sync-doppler-prd-to-stg.sh`** (arriba).
+
+| Paso | Acción |
+|------|--------|
+| **A** | Descargar JSON de `prd` a un fichero temporal (contiene secretos: bórralo después). |
+| **B** | Subir ese JSON a la config `stg`. |
+| **C** | Si el upload falla, usar **solo** el pipeline de normalización (paso B2) — no hace falta listar ni revisar valores en terminal. |
+
+**A — Descarga**
+
+```bash
+doppler secrets download --project ops-intcloudsysops --config prd --format=json /tmp/opsly-prd-secrets.json
+```
+
+**B — Upload directo**
+
+```bash
+doppler secrets upload /tmp/opsly-prd-secrets.json --project ops-intcloudsysops --config stg
+```
+
+**B2 — Si el upload rechaza nombres de variables** (mensaje tipo *name may not start with a number*): Doppler exige nombres `LIKE_THIS` (empiezan por letra o `_`). El export puede traer entradas que no son nombres válidos o valores anidados. Normaliza y vuelve a subir **sin imprimir nada en pantalla**:
+
+```bash
+jq '
+  with_entries(select(.key | test("^[A-Za-z_][A-Za-z0-9_]*$"))) |
+  map_values(
+    if type == "object" and (.computed != null) then .computed
+    elif type == "string" then .
+    else null end
+  ) |
+  with_entries(select(.value != null))
+' /tmp/opsly-prd-secrets.json > /tmp/opsly-prd-upload.json
+
+doppler secrets upload /tmp/opsly-prd-upload.json --project ops-intcloudsysops --config stg
+rm -f /tmp/opsly-prd-secrets.json /tmp/opsly-prd-upload.json
+```
+
+Lo que el `jq` descarta no llega a `stg`: corrige el nombre en **prd** en el dashboard (Doppler) o copia ese secreto a mano. Último recurso: duplicar config en la UI o `doppler secrets set` por variable.
+
+### 3) Stripe en `stg`
+
+Si **`STRIPE_PUBLIC_KEY`**, **`STRIPE_SECRET_KEY`** y **`STRIPE_WEBHOOK_SECRET`** ya están definidos en `stg` (clon desde `prd` o carga previa), **no hace falta** volver a configurarlos.
+
+Solo si quieres **sustituir** por otras claves (p. ej. solo test en staging):
+
+```bash
+doppler secrets set STRIPE_PUBLIC_KEY "pk_test_..." --project ops-intcloudsysops --config stg
+doppler secrets set STRIPE_SECRET_KEY "sk_test_..." --project ops-intcloudsysops --config stg
+doppler secrets set STRIPE_WEBHOOK_SECRET "whsec_..." --project ops-intcloudsysops --config stg
+```
+
+### 4) Verificar (opcional)
+
+```bash
+doppler secrets list --project ops-intcloudsysops --config stg | grep STRIPE
+```
+
+### 5) Probar Notion MCP contra `stg` (puerto 3015)
+
+```bash
+cd /Users/dragon/cboteros/proyectos/intcloudsysops
+MCP_PORT=3015 doppler run --project ops-intcloudsysops --config stg -- \
+  npm run dev --workspace=@intcloudsysops/notion-mcp
+```
+
+Otra terminal:
+
+```bash
+sleep 2
+curl -s http://127.0.0.1:3015/ready | python3 -m json.tool
+```
+
+Esperado: `status: ok` y títulos de las cinco bases (mismas variables `NOTION_DATABASE_*` que en el resto de configs; en `stg` puedes apuntar a bases Notion de staging si las creaste).
 
 ## LLM Gateway (Beast Mode v2)
 

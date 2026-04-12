@@ -11,6 +11,8 @@ Plataforma multi-tenant **enterprise SaaS**: plano de control (API, billing, orq
 |-----|-------------|
 | [`AGENTS.md`](AGENTS.md) | **Fuente de verdad** operativa — estado sesión, decisiones, bloqueantes |
 | [`VISION.md`](VISION.md) | Norte del producto, ICP, fases, límites |
+| [`ROADMAP.md`](ROADMAP.md) | Plan semanal Fase 2–3 (IA + producto), milestones |
+| [`docs/IMPLEMENTATION-IA-LAYER.md`](docs/IMPLEMENTATION-IA-LAYER.md) | Guía técnica capa IA (TypeScript; rutas en `apps/*`) |
 | [`docs/SPRINT-ROADMAP.md`](docs/SPRINT-ROADMAP.md) | Sprints enterprise 1–8 con entregables y estado |
 | [`docs/MASTER-PLAN-STATUS.md`](docs/MASTER-PLAN-STATUS.md) | Estado consolidado fases + sprints + métricas |
 | [`docs/MASTER-PLAN.md`](docs/MASTER-PLAN.md) | Stack inventario, reglas de dependencias |
@@ -55,6 +57,7 @@ Plataforma multi-tenant **enterprise SaaS**: plano de control (API, billing, orq
 |-----|-------------|
 | [`docs/VPS-ARCHITECTURE.md`](docs/VPS-ARCHITECTURE.md) | Topología VPS, Traefik, redes |
 | [`docs/DOPPLER-VARS.md`](docs/DOPPLER-VARS.md) | Variables Doppler por entorno |
+| [`docs/DOPPLER-CI-RUNBOOK.md`](docs/DOPPLER-CI-RUNBOOK.md) | CI + local: validar Doppler (`validate-doppler-vars.sh`, secretos GitHub) |
 | [`docs/BILLING-FLUSH-VERCEL.md`](docs/BILLING-FLUSH-VERCEL.md) | Cron billing sync (Sprint 3) |
 | [`infra/terraform/README.md`](infra/terraform/README.md) | IaC Terraform DigitalOcean |
 

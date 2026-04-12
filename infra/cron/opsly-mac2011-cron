@@ -1,0 +1,18 @@
+# Opsly — tareas periódicas en Linux (VPS o host Linux).
+# Instalar: copiar a /etc/cron.d/opsly-mac2011 y ajustar usuario + rutas.
+# En macOS usar infra/launchd/ o crontab del usuario.
+
+SHELL=/bin/bash
+PATH=/usr/local/bin:/usr/bin:/bin
+
+# Monitoreo cada 5 minutos (usuario y ruta /opt/opsly según despliegue)
+# */5 * * * * opsly OPSLY_ROOT=/opt/opsly OPSLY_LOG_DIR=/var/log/opsly /opt/opsly/scripts/mac2011-monitor.sh >>/var/log/opsly/opsly-mac2011-monitor.log 2>&1
+
+# Limpieza cada 6 horas
+# 0 */6 * * * opsly OPSLY_ROOT=/opt/opsly OPSLY_LOG_DIR=/var/log/opsly /opt/opsly/scripts/mac2011-cleanup-robust.sh >>/var/log/opsly/opsly-mac2011-cleanup.log 2>&1
+
+# Limpieza diaria 03:00
+# 0 3 * * * opsly OPSLY_ROOT=/opt/opsly OPSLY_LOG_DIR=/var/log/opsly /opt/opsly/scripts/mac2011-cleanup-robust.sh >>/var/log/opsly/opsly-mac2011-cleanup.log 2>&1
+
+# Limpieza agresiva semanal (domingo 04:00)
+# 0 4 * * 0 opsly OPSLY_ROOT=/opt/opsly OPSLY_LOG_DIR=/var/log/opsly /opt/opsly/scripts/mac2011-cleanup-robust.sh --aggressive >>/var/log/opsly/opsly-mac2011-cleanup.log 2>&1

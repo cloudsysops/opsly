@@ -76,6 +76,33 @@ else
   log "ℹ️ GOOGLE_USER_CREDENTIALS_JSON opcional — no definido (drive-sync puede usar solo SA / Shared Drive)"
 fi
 
+echo ""
+log "Notion MCP (opcional)…"
+NOTION_T=$(doppler secrets get NOTION_TOKEN \
+  --project ops-intcloudsysops --config prd \
+  --plain 2>/dev/null || echo "")
+LEN_NT=${#NOTION_T}
+if [[ $LEN_NT -ge 40 ]]; then
+  ok "NOTION_TOKEN" "$LEN_NT"
+  NOTION_DB_OK=0
+  for VAR in NOTION_DATABASE_TASKS NOTION_DATABASE_SPRINTS NOTION_DATABASE_STANDUP NOTION_DATABASE_QUALITY NOTION_DATABASE_METRICS; do
+    VAL=$(doppler secrets get "$VAR" \
+      --project ops-intcloudsysops --config prd \
+      --plain 2>/dev/null || echo "")
+    if [[ ${#VAL} -ge 32 ]]; then
+      ok "$VAR" "${#VAL}"
+      ((NOTION_DB_OK++)) || true
+    else
+      log "⚠️ $VAR — falta o ID inválido (UUID de la base de Notion)"
+    fi
+  done
+  if [[ $NOTION_DB_OK -eq 5 ]]; then
+    log "✅ Notion: token + 5 bases configuradas; prueba: npm run dev:notion-mcp → curl -s http://127.0.0.1:3013/ready"
+  fi
+else
+  log "ℹ️ Notion MCP — NOTION_TOKEN no configurado (opcional)"
+fi
+
 # Verificar Ollama si está configurado
 OLLAMA_URL=$(doppler secrets get OLLAMA_URL \
   --project ops-intcloudsysops --config prd \

@@ -1,0 +1,13 @@
+[Unit]
+Description=Opsly Mac 2011 monitor one-shot (Linux; preferir cron/timer)
+After=network.target
+
+[Service]
+Type=oneshot
+EnvironmentFile=-/etc/default/opsly-mac2011
+ExecStart=/opt/opsly/scripts/mac2011-monitor.sh
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

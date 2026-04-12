@@ -7,10 +7,6 @@ import { PLAN_MRR_USD } from "./plans";
 export type { PlanKey } from "../supabase/types";
 export { getStripe } from "./client";
 export { PLAN_MRR_USD, PLAN_SERVICES } from "./plans";
-export {
-    isStripeWebhookProductionMode,
-    resolveStripeWebhookEndpointSecret
-} from "./webhook-env";
 
 export function constructWebhookEvent(
   rawBody: string,

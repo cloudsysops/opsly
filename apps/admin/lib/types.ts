@@ -196,3 +196,23 @@ export type CostDecisionResponse = {
   proposed?: CostLineItem;
   summary: AdminCostsResponse["summary"];
 };
+
+/** JSON de `scripts/mac2011-monitor.sh` expuesto por GET /api/monitoring/mac2011 */
+export type Mac2011MonitoringStatus = {
+  timestamp: string;
+  hostname: string;
+  cpu_usage: number;
+  memory_usage: number;
+  disk_usage: number;
+  docker: { containers: number };
+  workers: {
+    ollama: string;
+    opsly_worker: string;
+  };
+  network: {
+    vps_connection: string;
+  };
+};
+
+/** Estado devuelto por GET /api/admin/ollama-demo?job_id= (proxy al orchestrator). */
+export type OllamaDemoJobStatus = Record<string, unknown>;

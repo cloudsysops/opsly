@@ -1,4 +1,4 @@
-# Compose opcional: worker remoto (p. ej. Mac 2011) con el repo montado.
+# Compose opcional: worker remoto Linux (p. ej. **opslyquantum**) con el repo montado.
 # Uso desde la raíz del repo:
 #   REDIS_URL='redis://…' docker compose -f infra/docker-compose.workers.yml --env-file .env.worker up -d
 #
@@ -16,7 +16,7 @@ services:
     volumes:
       - ..:/app
     environment:
-      WORKER_ID: ${WORKER_ID:-mac2011-worker-01}
+      WORKER_ID: ${WORKER_ID:-opslyquantum-worker-01}
       OPSLY_ORCHESTRATOR_ROLE: ${OPSLY_ORCHESTRATOR_ROLE:-worker}
       REDIS_URL: ${REDIS_URL:?Set REDIS_URL in environment or .env.worker}
       OPSLY_API_INTERNAL_URL: ${OPSLY_API_INTERNAL_URL:-}
@@ -35,7 +35,7 @@ services:
     volumes:
       - ..:/app
     environment:
-      WORKER_ID: ${WORKER_ID:-mac2011-llm-01}
+      WORKER_ID: ${WORKER_ID:-opslyquantum-llm-01}
       OPSLY_ORCHESTRATOR_ROLE: ${OPSLY_ORCHESTRATOR_ROLE:-worker}
       REDIS_URL: ${REDIS_URL:?Set REDIS_URL in environment or .env.worker}
     command:

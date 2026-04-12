@@ -37,7 +37,7 @@ if [[ -f config/gcp.env ]]; then
 fi
 
 export REDIS_URL="${REDIS_URL:-}"
-export WORKER_ID="${WORKER_ID:-mac2011-worker-01}"
+export WORKER_ID="${WORKER_ID:-opslyquantum-worker-01}"
 export WORKER_CONCURRENCY="${WORKER_CONCURRENCY:-5}"
 
 echo "[start-workers-mac2011] WORKER_ID=${WORKER_ID} WORKER_CONCURRENCY=${WORKER_CONCURRENCY}"

@@ -1,0 +1,12 @@
+# Instalar en /etc/logrotate.d/opsly-mac2011 (Linux).
+# Rutas alineadas a OPSLY_LOG_DIR en el host.
+
+/var/log/opsly/*.log {
+    daily
+    rotate 7
+    compress
+    delaycompress
+    missingok
+    notifempty
+    copytruncate
+}

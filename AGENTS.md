@@ -274,6 +274,8 @@ Procedimientos vivos en el repo: **`skills/user/<skill>/SKILL.md`**. En runtimes
 
 **Notion + Doppler QA:** copiar `NOTION_TOKEN` de `prd` → `qa` sin tocar `prd`; en `qa` los UUID de bases QA van en las **cinco claves ya usadas por código** (`NOTION_DATABASE_TASKS` … `METRICS`), no en nombres nuevos tipo `TENANTS`. Tabla de mapeo y comandos: [`docs/DOPPLER-VARS.md`](docs/DOPPLER-VARS.md) (sección *Notion MCP — config qa*).
 
+**CI Doppler:** workflow [`validate-doppler.yml`](.github/workflows/validate-doppler.yml) + script [`scripts/validate-doppler-vars.sh`](scripts/validate-doppler-vars.sh); secretos GitHub `DOPPLER_TOKEN_PRD` / `DOPPLER_TOKEN_STG`; listas `config/doppler-ci-required*.txt`. Runbook: [`docs/DOPPLER-CI-RUNBOOK.md`](docs/DOPPLER-CI-RUNBOOK.md).
+
 ### Sprint activo — Semana 1 (alineado a ROADMAP.md)
 
 | Qué | Detalle |

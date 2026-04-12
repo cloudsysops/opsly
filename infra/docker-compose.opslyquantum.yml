@@ -1,0 +1,160 @@
+# Stack opcional para worker Linux **opslyquantum** (Docker Engine): Ollama, Redis, Postgres,
+# y perfiles opcionales (n8n, Uptime Kuma, Chroma, Prometheus, Grafana).
+#
+# Uso (desde la raíz del repo):
+#   docker compose -f infra/docker-compose.opslyquantum.yml --env-file infra/opslyquantum.env up -d
+# Perfiles:
+#   --profile automation   n8n
+#   --profile monitoring   Uptime Kuma + Prometheus + Grafana
+#   --profile ai           ChromaDB
+#
+# Copiar antes: cp infra/opslyquantum.env.example infra/opslyquantum.env  (opslyquantum.env está en .gitignore vía .env*)
+
+name: opslyquantum
+
+services:
+  ollama:
+    image: ollama/ollama:latest
+    container_name: opslyquantum-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    environment:
+      OLLAMA_ORIGINS: ${OLLAMA_ORIGINS:-*}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "ollama list >/dev/null 2>&1 || exit 1"]
+      interval: 30s
+      timeout: 15s
+      retries: 5
+      start_period: 60s
+
+  redis:
+    image: redis:7-alpine
+    container_name: opslyquantum-redis
+    ports:
+      - "6380:6379"
+    volumes:
+      - redis_data:/data
+    command: >
+      redis-server
+      --maxmemory ${REDIS_MAXMEMORY:-2gb}
+      --maxmemory-policy allkeys-lru
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: opslyquantum-postgres
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-opsly_local}
+      POSTGRES_USER: ${POSTGRES_USER:-opsly}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-change_me_opslyquantum}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${POSTGRES_USER:-opsly} -d ${POSTGRES_DB:-opsly_local}",
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: opslyquantum-n8n
+    ports:
+      - "5679:5678"
+    environment:
+      N8N_BASIC_AUTH_ACTIVE: ${N8N_BASIC_AUTH_ACTIVE:-true}
+      N8N_BASIC_AUTH_USER: ${N8N_BASIC_AUTH_USER:-admin}
+      N8N_BASIC_AUTH_PASSWORD: ${N8N_BASIC_AUTH_PASSWORD:-change_me}
+      WEBHOOK_URL: ${N8N_WEBHOOK_URL:-http://localhost:5679/}
+    volumes:
+      - n8n_data:/home/node/.n8n
+    depends_on:
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    profiles:
+      - automation
+
+  uptime-kuma:
+    image: louislam/uptime-kuma:1
+    container_name: opslyquantum-uptime
+    ports:
+      - "3002:3001"
+    volumes:
+      - uptime_data:/app/data
+    restart: unless-stopped
+    profiles:
+      - monitoring
+
+  chromadb:
+    image: chromadb/chroma:latest
+    container_name: opslyquantum-chroma
+    ports:
+      - "8001:8000"
+    volumes:
+      - chroma_data:/chroma/chroma
+    environment:
+      IS_PERSISTENT: "TRUE"
+    restart: unless-stopped
+    profiles:
+      - ai
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: opslyquantum-prometheus
+    ports:
+      - "9091:9090"
+    volumes:
+      - ./prometheus.opslyquantum.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --storage.tsdb.retention.time=15d
+    restart: unless-stopped
+    profiles:
+      - monitoring
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: opslyquantum-grafana
+    ports:
+      - "3003:3000"
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-change_me}
+      GF_SERVER_ROOT_URL: ${GRAFANA_ROOT_URL:-http://localhost:3003/}
+    volumes:
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+    profiles:
+      - monitoring
+
+volumes:
+  ollama_data:
+  redis_data:
+  postgres_data:
+  n8n_data:
+  uptime_data:
+  chroma_data:
+  prometheus_data:
+  grafana_data:
+
+networks:
+  default:
+    name: opslyquantum

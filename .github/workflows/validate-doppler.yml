@@ -1,0 +1,33 @@
+# Valida acceso a Doppler y presencia de variables listadas en config/doppler-ci-required*.txt
+# Requiere en GitHub → Settings → Secrets → Actions:
+#   DOPPLER_TOKEN_PRD — token con acceso de lectura al proyecto ops-intcloudsysops (config prd)
+#   DOPPLER_TOKEN_STG — token con acceso de lectura (config stg)
+name: Validate Doppler Config
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  validate-doppler:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Doppler CLI
+        run: |
+          curl -Ls --tlsv1.2 --proto "=https" --retry 3 https://cli.doppler.com/install.sh | sudo sh
+
+      - name: Validate Doppler prd
+        env:
+          DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN_PRD }}
+        run: |
+          chmod +x scripts/validate-doppler-vars.sh
+          ./scripts/validate-doppler-vars.sh ops-intcloudsysops prd
+
+      - name: Validate Doppler stg
+        env:
+          DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN_STG }}
+        run: |
+          chmod +x scripts/validate-doppler-vars.sh
+          ./scripts/validate-doppler-vars.sh ops-intcloudsysops stg

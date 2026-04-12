@@ -1,0 +1,6 @@
+# Variables que deben existir en Doppler para pasar validate-doppler-vars.sh (CI).
+# Una por línea. Comentarios con #. GOOGLE_SERVICE_ACCOUNT_JSON exige longitud mínima 100 en el script.
+SUPABASE_URL
+REDIS_URL
+PLATFORM_ADMIN_TOKEN
+DISCORD_WEBHOOK_URL

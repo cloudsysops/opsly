@@ -19,6 +19,7 @@ import { startDriveWorker } from "./workers/DriveWorker.js";
 import { startHealthWorker } from "./workers/HealthWorker.js";
 import { startN8nWorker } from "./workers/N8nWorker.js";
 import { startNotifyWorker } from "./workers/NotifyWorker.js";
+import { startOllamaWorker } from "./workers/OllamaWorker.js";
 import { startSuspensionWorker } from "./workers/SuspensionWorker.js";
 import { startGeneralEventsWorker } from "./workers/GeneralEventsWorker.js";
 import { closeWebhookQueue, createWebhookWorker } from "./workers/WebhookWorker.js";
@@ -64,6 +65,7 @@ function startAllWorkers(): AsyncCleanup[] {
   const webhookWorker = createWebhookWorker();
   const webhooksProcessingWorker = startWebhooksProcessingWorker();
   const generalEventsWorker = startGeneralEventsWorker();
+  const ollamaWorker = startOllamaWorker(connection);
 
   cleanup.push(
     async () => cursorWorker.close(),
@@ -76,10 +78,11 @@ function startAllWorkers(): AsyncCleanup[] {
     async () => webhookWorker.close(),
     async () => webhooksProcessingWorker.close(),
     async () => generalEventsWorker.close(),
+    async () => ollamaWorker.close(),
   );
 
   console.log(
-    "[orchestrator] Workers: cursor, n8n, notify, drive, backup, health, budget, opsly-webhooks, webhooks-processing, general-events",
+    "[orchestrator] Workers: cursor, n8n, notify, drive, backup, health, ollama, budget, opsly-webhooks, webhooks-processing, general-events",
   );
   return cleanup;
 }

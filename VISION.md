@@ -1,6 +1,9 @@
 # Opsly — Visión y Objetivos
 
-> Última revisión: 2026-04-11
+> Última revisión: 2026-04-12
+
+**Planificación ejecutable por sprint:** [`ROADMAP.md`](ROADMAP.md) (semanas, milestones).  
+**Guía técnica capa IA (monorepo):** [`docs/IMPLEMENTATION-IA-LAYER.md`](docs/IMPLEMENTATION-IA-LAYER.md).
 
 ## Qué es Opsly
 
@@ -67,30 +70,10 @@ Fuente: `.vscode/extensions.json` (mismo orden).
 
 Next.js + Supabase Auth = @supabase/ssr + `NEXT_PUBLIC_SUPABASE_*` en `.env`
 
-## Objetivos por fase
+## Objetivos por fase (resumen)
 
-### Fase 1 — Validación (AHORA)
-
-- [ ] Deploy completo en staging (ops.smiletripcare.com)
-- [ ] Primer tenant smiletripcare corriendo
-- [ ] n8n accesible en n8n.smiletripcare.ops.smiletripcare.com
-- [ ] Uptime Kuma accesible
-- [ ] Stripe webhook funcionando
-- [ ] Backup automático corriendo
-
-### Fase 2 — Producto
-
-- [ ] Onboarding self-service (cliente paga → tenant se despliega solo)
-- [ ] Dashboard admin operativo
-- [ ] Emails transaccionales (Resend)
-- [ ] Alertas Discord funcionando
-
-### Fase 3 — Escala
-
-- [ ] Segundo cliente real
-- [ ] Sistema de memoria Redis + n8n → MCP → Claude
-- [ ] Multi-región
-- [ ] Documentación pública
+El detalle vive en **Roadmap por fases** más abajo (y en [`ROADMAP.md`](ROADMAP.md) para el desglose semanal).  
+**Fase 1** está cerrada en producción según checklist de la sección *Fase 1 — Validación*; **Fase 2** sigue abierta (p. ej. segundo cliente).
 
 ## Decisión de arquitectura central
 
@@ -115,6 +98,7 @@ Escalar = más VPS, no más complejidad.
 - Agentes premium (NotebookLM y similares) permanecen **EXPERIMENTALES** hasta planes superiores.
 - Cost-aware routing y límites por tenant son obligatorios para sostenibilidad de margen.
 - **Hermes (metering/billing IA)** es la fuente única para medir tokens, costo, latencia y cache-hit por `tenant_slug` y `request_id`.
+- La **inteligencia de routing** (qué modelo/proveedor intentar) se implementa en **LLM Gateway y orchestrator (TypeScript)**; no confundir Hermes con librerías externas de terceros ni con un runtime Python paralelo al monorepo.
 
 ## Lo que un agente NUNCA debe hacer
 
@@ -258,8 +242,7 @@ flowchart TB
 |----------|-------|------------------------------|-------------|
 | Llama local | 1 | $0 | Clasificación, extracción, formato |
 | Claude Haiku | 2 | ~$0.001 combinado típico | Respuestas moderadas, RAG simple |
-| OpenRouter Mistral | 2 | ~$0.0002 combinado típico | Alternativa económica nivel 2 |
-| GPT-4o mini | 2 | ~$0.0004 combinado típico | Alternativa si Haiku no disponible |
+| GPT-4o mini | 2 | ~$0.0004 combinado típico | Fallback económico tras Haiku/Ollama |
 | Claude Sonnet | 3 | ~$0.015 salida (referencia) | Arquitectura, código complejo |
 | GPT-4o | 3 | ~$0.015 salida (referencia) | Fallback si Sonnet no disponible |
 

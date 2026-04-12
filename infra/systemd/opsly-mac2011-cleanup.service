@@ -1,0 +1,13 @@
+[Unit]
+Description=Opsly Mac 2011 cleanup (Linux host; en macOS usar launchd)
+After=network.target
+
+[Service]
+Type=oneshot
+Environment=OPSLY_LOG_DIR=/var/log/opsly
+ExecStart=/opt/opsly/scripts/mac2011-cleanup-robust.sh
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

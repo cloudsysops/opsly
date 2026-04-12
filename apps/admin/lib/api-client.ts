@@ -1,16 +1,18 @@
-import type {
-  AdminCostsResponse,
-  CostDecisionResponse,
-  InvitationSendResponse,
-  MetricsResponse,
-  SystemMetricsResponse,
-  TeamMetricsResponse,
-  Tenant,
-  TenantUsageMetricsResponse,
-  TenantDetailResponse,
-  TenantsListResponse,
-} from "./types";
 import { getSessionAuthToken } from "./session-auth";
+import type {
+    AdminCostsResponse,
+    CostDecisionResponse,
+    InvitationSendResponse,
+    Mac2011MonitoringStatus,
+    MetricsResponse,
+    OllamaDemoJobStatus,
+    SystemMetricsResponse,
+    TeamMetricsResponse,
+    Tenant,
+    TenantDetailResponse,
+    TenantUsageMetricsResponse,
+    TenantsListResponse,
+} from "./types";
 
 function inferApiBaseFromAdminHost(hostname: string): string | null {
   if (hostname === "localhost" || hostname === "127.0.0.1") {
@@ -268,3 +270,54 @@ export async function postCostDecision(body: {
     body: JSON.stringify(body),
   });
 }
+
+export type Mac2011MonitoringResult =
+  | { ok: true; data: Mac2011MonitoringStatus; status: number }
+  | { ok: false; status: number; body: unknown };
+
+export async function getMac2011Monitoring(): Promise<Mac2011MonitoringResult> {
+  const headers = await buildHeaders(undefined);
+  const res = await fetch(`${getBaseUrl()}/api/monitoring/mac2011`, {
+    headers,
+  });
+  const body: unknown = await parseJson(res);
+  if (res.ok && body !== null && typeof body === "object" && !Array.isArray(body)) {
+    return {
+      ok: true,
+      data: body as Mac2011MonitoringStatus,
+      status: res.status,
+    };
+  }
+  return { ok: false, status: res.status, body };
+}
+
+export type PostOllamaDemoBody = {
+  tenant_slug: string;
+  prompt: string;
+  task_type: "analyze" | "generate" | "review" | "summarize";
+};
+
+export type PostOllamaDemoResponse = {
+  ok?: boolean;
+  job_id?: string | null;
+  request_id?: string;
+};
+
+export async function postOllamaDemo(
+  body: PostOllamaDemoBody,
+): Promise<PostOllamaDemoResponse> {
+  return request<PostOllamaDemoResponse>("/api/admin/ollama-demo", {
+    method: "POST",
+    body: JSON.stringify(body),
+  });
+}
+
+export async function getOllamaDemoJob(
+  jobId: string,
+): Promise<OllamaDemoJobStatus> {
+  return request<OllamaDemoJobStatus>(
+    `/api/admin/ollama-demo?job_id=${encodeURIComponent(jobId)}`,
+  );
+}
+
+export type { OllamaDemoJobStatus } from "./types";

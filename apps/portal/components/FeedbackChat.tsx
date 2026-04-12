@@ -1,8 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
 import { getApiBaseUrl } from "@/lib/api";
-import { createClient } from "@/lib/supabase";
+import { useEffect, useRef, useState } from "react";
 
 interface Message {
   role: "user" | "assistant";
@@ -42,27 +41,9 @@ export function FeedbackChat({ tenantSlug, userEmail }: FeedbackChatProps) {
     setLoading(true);
 
     try {
-      const supabase = createClient();
-      const { data: sessionData } = await supabase.auth.getSession();
-      const token = sessionData.session?.access_token;
-      if (!token) {
-        setMessages((prev) => [
-          ...prev,
-          {
-            role: "assistant",
-            content: "Sesión no disponible. Vuelve a iniciar sesión.",
-          },
-        ]);
-        setLoading(false);
-        return;
-      }
-
       const res = await fetch(`${getApiBaseUrl()}/api/feedback`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           tenant_slug: tenantSlug,
           user_email: userEmail,

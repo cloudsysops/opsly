@@ -1,5 +1,6 @@
 import { createServer } from "node:http";
 import { handlePlannerHttp } from "./planner-route.js";
+import { handleTextCompletionHttp } from "./text-completion-route.js";
 
 const DEFAULT_PORT = 3010;
 
@@ -15,6 +16,10 @@ export function createHealthServer(port?: number): void {
   const server = createServer((req, res) => {
     void (async () => {
       try {
+        const textHandled = await handleTextCompletionHttp(req, res);
+        if (textHandled) {
+          return;
+        }
         const handled = await handlePlannerHttp(req, res);
         if (handled) {
           return;

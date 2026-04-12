@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.opsly.mac2011.monitor</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/bash</string>
+    <string>__OPSLY_ROOT__/scripts/mac2011-monitor.sh</string>
+  </array>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>OPSLY_LOG_DIR</key>
+    <string>__OPSLY_ROOT__/logs</string>
+    <key>OPSLY_ROOT</key>
+    <string>__OPSLY_ROOT__</string>
+  </dict>
+  <key>StartInterval</key>
+  <integer>300</integer>
+  <key>RunAtLoad</key>
+  <true/>
+  <key>StandardOutPath</key>
+  <string>__OPSLY_ROOT__/logs/launchd-mac2011-monitor.out</string>
+  <key>StandardErrorPath</key>
+  <string>__OPSLY_ROOT__/logs/launchd-mac2011-monitor.err</string>
+</dict>
+</plist>

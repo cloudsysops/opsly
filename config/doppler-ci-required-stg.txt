@@ -1,0 +1,6 @@
+# Requisitos CI para config stg (ajusta si stg tiene menos que prd).
+# Si este archivo no existe, se usa config/doppler-ci-required.txt
+SUPABASE_URL
+REDIS_URL
+PLATFORM_ADMIN_TOKEN
+DISCORD_WEBHOOK_URL

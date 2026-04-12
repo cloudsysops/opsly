@@ -1,9 +1,12 @@
+import { randomUUID } from "node:crypto";
 import {
   createServer,
   type IncomingMessage,
   type Server,
   type ServerResponse,
 } from "node:http";
+import { enqueueJob, orchestratorQueue } from "./queue.js";
+import type { OrchestratorJob } from "./types.js";
 import { enqueueWebhookJob } from "./workers/WebhookWorker.js";
 import type { WebhookJobData } from "./workers/WebhookWorker.js";
 
@@ -32,6 +35,139 @@ async function readBody(req: IncomingMessage): Promise<unknown> {
   });
 }
 
+function verifyPlatformAdminToken(req: IncomingMessage): boolean {
+  const expected = process.env.PLATFORM_ADMIN_TOKEN?.trim() ?? "";
+  if (expected.length === 0) {
+    return false;
+  }
+  const auth = req.headers.authorization;
+  const bearer =
+    typeof auth === "string" && auth.startsWith("Bearer ")
+      ? auth.slice("Bearer ".length).trim()
+      : "";
+  return bearer.length > 0 && bearer === expected;
+}
+
+async function handleEnqueueOllama(
+  req: IncomingMessage,
+  res: ServerResponse,
+): Promise<void> {
+  if (!verifyPlatformAdminToken(req)) {
+    res.writeHead(401, { "Content-Type": "application/json" });
+    res.end(JSON.stringify({ error: "unauthorized" }));
+    return;
+  }
+  let body: unknown;
+  try {
+    body = await readBody(req);
+  } catch {
+    res.writeHead(400, { "Content-Type": "application/json" });
+    res.end(JSON.stringify({ error: "Invalid JSON" }));
+    return;
+  }
+  if (typeof body !== "object" || body === null) {
+    res.writeHead(400, { "Content-Type": "application/json" });
+    res.end(JSON.stringify({ error: "invalid body" }));
+    return;
+  }
+  const b = body as Record<string, unknown>;
+  const tenantSlug =
+    typeof b.tenant_slug === "string" ? b.tenant_slug.trim() : "";
+  const prompt = typeof b.prompt === "string" ? b.prompt.trim() : "";
+  if (tenantSlug.length === 0 || prompt.length === 0) {
+    res.writeHead(400, { "Content-Type": "application/json" });
+    res.end(JSON.stringify({ error: "tenant_slug and prompt required" }));
+    return;
+  }
+  const taskRaw = b.task_type;
+  const taskType =
+    taskRaw === "analyze" ||
+    taskRaw === "generate" ||
+    taskRaw === "review" ||
+    taskRaw === "summarize"
+      ? taskRaw
+      : "summarize";
+  let plan: OrchestratorJob["plan"];
+  const p = b.plan;
+  if (p === "startup" || p === "business" || p === "enterprise") {
+    plan = p;
+  }
+  const tenantId =
+    typeof b.tenant_id === "string" && b.tenant_id.length > 0
+      ? b.tenant_id
+      : undefined;
+  const requestId =
+    typeof b.request_id === "string" && b.request_id.length > 0
+      ? b.request_id
+      : randomUUID();
+
+  const job: OrchestratorJob = {
+    type: "ollama",
+    payload: { task_type: taskType, prompt },
+    tenant_slug: tenantSlug,
+    tenant_id: tenantId,
+    plan,
+    initiated_by: "system",
+    request_id: requestId,
+  };
+
+  try {
+    const bull = await enqueueJob(job);
+    res.writeHead(202, { "Content-Type": "application/json" });
+    res.end(
+      JSON.stringify({
+        ok: true,
+        job_id: bull.id != null ? String(bull.id) : null,
+        request_id: requestId,
+      }),
+    );
+  } catch (err) {
+    res.writeHead(500, { "Content-Type": "application/json" });
+    res.end(JSON.stringify({ error: String(err) }));
+  }
+}
+
+async function handleOpenclawJobStatus(
+  req: IncomingMessage,
+  res: ServerResponse,
+  query: string,
+): Promise<void> {
+  if (!verifyPlatformAdminToken(req)) {
+    res.writeHead(401, { "Content-Type": "application/json" });
+    res.end(JSON.stringify({ error: "unauthorized" }));
+    return;
+  }
+  const params = new URLSearchParams(query.startsWith("?") ? query.slice(1) : query);
+  const jobId = params.get("job_id")?.trim() ?? "";
+  if (jobId.length === 0) {
+    res.writeHead(400, { "Content-Type": "application/json" });
+    res.end(JSON.stringify({ error: "job_id required" }));
+    return;
+  }
+  try {
+    const j = await orchestratorQueue.getJob(jobId);
+    if (!j) {
+      res.writeHead(404, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ error: "not found" }));
+      return;
+    }
+    const state = await j.getState();
+    res.writeHead(200, { "Content-Type": "application/json" });
+    res.end(
+      JSON.stringify({
+        job_id: j.id != null ? String(j.id) : null,
+        name: j.name,
+        state,
+        returnvalue: j.returnvalue,
+        failedReason: j.failedReason,
+      }),
+    );
+  } catch (err) {
+    res.writeHead(500, { "Content-Type": "application/json" });
+    res.end(JSON.stringify({ error: String(err) }));
+  }
+}
+
 async function handleEnqueueWebhook(
   req: IncomingMessage,
   res: ServerResponse,
@@ -51,7 +187,9 @@ async function handleEnqueueWebhook(
 export function startOrchestratorHealthServer(): Server {
   const port = parsePort();
   const server = createServer(async (req, res) => {
-    const pathOnly = req.url?.split("?")[0] ?? "/";
+    const url = req.url ?? "/";
+    const pathOnly = url.split("?")[0] ?? "/";
+    const query = url.includes("?") ? url.slice(url.indexOf("?")) : "";
 
     if (req.method === "GET" && pathOnly === "/health") {
       res.writeHead(200, { "Content-Type": "application/json" });
@@ -59,8 +197,18 @@ export function startOrchestratorHealthServer(): Server {
       return;
     }
 
+    if (req.method === "GET" && pathOnly === "/internal/openclaw-job") {
+      await handleOpenclawJobStatus(req, res, query);
+      return;
+    }
+
     if (req.method === "POST" && pathOnly === "/internal/enqueue-webhook") {
       await handleEnqueueWebhook(req, res);
+      return;
+    }
+
+    if (req.method === "POST" && pathOnly === "/internal/enqueue-ollama") {
+      await handleEnqueueOllama(req, res);
       return;
     }
 

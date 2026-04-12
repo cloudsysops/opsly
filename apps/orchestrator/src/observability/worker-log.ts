@@ -8,6 +8,7 @@ export type WorkerName =
   | "drive"
   | "backup"
   | "health"
+  | "ollama"
   | "budget"
   | "webhooks-processing"
   | "general-events";

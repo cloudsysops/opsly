@@ -10,6 +10,8 @@
 ```
 AGENTS.md          ← estado de sesión, decisiones fijas, bloqueantes
 VISION.md          ← norte del producto, límites, fases
+ROADMAP.md         ← desglose semanal Fase 2–3, milestones (complementa VISION)
+docs/IMPLEMENTATION-IA-LAYER.md ← guía técnica capa IA (TypeScript, rutas en apps/*)
 docs/QUICK-REFERENCE.md  ← SSH, comandos, env vars, URLs — LEER PRIMERO
 docs/SPRINT-ROADMAP.md   ← sprints 1-8, qué está hecho, qué sigue
 ```
@@ -21,6 +23,8 @@ docs/SPRINT-ROADMAP.md   ← sprints 1-8, qué está hecho, qué sigue
 ### 1. Estado y roadmap
 | Doc | Cuándo usarlo |
 |-----|---------------|
+| [`../ROADMAP.md`](../ROADMAP.md) | Plan semanal Fase 2–3, milestones; alineado a VISION |
+| [`IMPLEMENTATION-IA-LAYER.md`](IMPLEMENTATION-IA-LAYER.md) | Implementar capa IA en el monorepo (sin Python paralelo) |
 | [`SPRINT-ROADMAP.md`](SPRINT-ROADMAP.md) | Ver qué sprint está activo, entregables, estado |
 | [`MASTER-PLAN-STATUS.md`](MASTER-PLAN-STATUS.md) | Métricas consolidadas: tests, type-check, fases |
 | [`MASTER-PLAN.md`](MASTER-PLAN.md) | Stack inventario, reglas de dependencias |
@@ -70,6 +74,8 @@ docs/SPRINT-ROADMAP.md   ← sprints 1-8, qué está hecho, qué sigue
 ### 5. Billing y Stripe
 | Doc | Cuándo usarlo |
 |-----|---------------|
+| [`BILLING-USD-DIAGRAMS.md`](BILLING-USD-DIAGRAMS.md) | Diagramas Mermaid: USD, enforcement, admin `/costs`, vs wallet ADR-017 |
+| [`WALLET-PREPAID-ROADMAP.md`](WALLET-PREPAID-ROADMAP.md) | Wallet prepago pausado — prerequisitos |
 | [`BILLING-FLUSH-VERCEL.md`](BILLING-FLUSH-VERCEL.md) | Cron metered billing, flush Redis → Stripe |
 | [`REFACTOR-CHECKLIST.md`](REFACTOR-CHECKLIST.md) | Checklist de variables manuales (Stripe price IDs) |
 
