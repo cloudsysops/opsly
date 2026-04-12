@@ -9,6 +9,8 @@
 
 **Mapa de documentación (evitar duplicar con `docs/AGENTS-GUIDE.md`):** `VISION.md` = norte de producto; **`AGENTS.md` (este archivo)** = estado operativo, próximo paso, bloqueantes e incrementos **por sesión**; **`docs/AGENTS-GUIDE.md`** = convenciones **solo** para varios asistentes/automatismos en paralelo (no sustituye AGENTS). `docs/adr/` = decisiones de arquitectura. No copiar tablas de límites por plan aquí: enlazar `AGENTS-GUIDE` + `VISION.md`.
 
+**Planificación por sprint (IA + producto):** [`ROADMAP.md`](ROADMAP.md) (timeline semanal, milestones). **Guía técnica capa IA:** [`docs/IMPLEMENTATION-IA-LAYER.md`](docs/IMPLEMENTATION-IA-LAYER.md) (TypeScript, rutas reales en `apps/*`).
+
 ## ⚠️ Control de costos
 
 **Regla:** cualquier servicio con costo mensual recurrente requiere **aprobación explícita** del responsable antes de activarse en proveedor (DO, GCP, Cloudflare de pago, etc.). El dashboard de admin es **registro orientativo**; la facturación real está en cada panel de proveedor.
@@ -220,6 +222,8 @@ Procedimientos vivos en el repo: **`skills/user/<skill>/SKILL.md`**. En runtimes
 
 | Objetivo | Entregable / nota |
 |----------|-------------------|
+| Roadmap semanal Fase 2–3 | [`ROADMAP.md`](ROADMAP.md) — milestones; complementa esta AGENTS |
+| Implementación capa IA | [`docs/IMPLEMENTATION-IA-LAYER.md`](docs/IMPLEMENTATION-IA-LAYER.md) — TS, sin Python paralelo |
 | Modelo de orquestación | `docs/OPENCLAW-ARCHITECTURE.md` — Redis, motor de decisiones, costos |
 | Eficiencia de sesiones | `docs/CLAUDE-WORKFLOW-OPTIMIZATION.md` — 10 técnicas de flujo |
 | Contexto siempre publicado | URL raw de `AGENTS.md` + hooks; opcional `scripts/auto-push-watcher.sh` y/o `docs/ACTIVE-PROMPT.md` + `cursor-prompt-monitor` en VPS |
@@ -256,7 +260,7 @@ Procedimientos vivos en el repo: **`skills/user/<skill>/SKILL.md`**. En runtimes
 23. ~~**OpenAPI — `/api/feedback`** (`openapi-opsly-api.yaml`, `REQUIRED_FEEDBACK_PATHS`).~~ ✅
 24. ~~**Portal — health API + Playwright smoke** (`portal-health-json`, `portal-api-paths`, `e2e/portal.spec.ts`).~~ ✅
 25. ~~**Dashboard de costos + workers Mac 2011** — `docs/COST-DASHBOARD.md`, `/api/admin/costs`, `start-workers-mac2011.sh`.~~ ✅ (2026-04-11)
-26. **Siguiente capacidad Fase 4** — E2E invite con credenciales en CI, más handlers bajo `/api/portal/tenant/[slug]/`, redeploy admin/API para `/costs`, o VPS según `VISION.md`.
+26. **Siguiente capacidad Fase 4** — Seguir [`ROADMAP.md`](ROADMAP.md) Semana 1+; E2E invite con credenciales en CI; más handlers bajo `/api/portal/tenant/[slug]/`; redeploy admin/API si aplica; o VPS según `VISION.md`.
 
 **Relación con `VISION.md`:** las fases 1–3 del producto siguen siendo el norte comercial; esta **Fase 4** documenta la **plataforma multi-agente incremental** y la **documentación operativa** que las alimentan. El detalle económico y de roadmap largo plazo sigue en `VISION.md` → *Evolución arquitectónica — AI Platform*.
 
@@ -266,7 +270,29 @@ Procedimientos vivos en el repo: **`skills/user/<skill>/SKILL.md`**. En runtimes
 
 <!-- Actualizar al final de cada sesión -->
 
-**Fecha última actualización:** 2026-04-11 UTC (sesión tarde/noche) — **Multiples cambios API/Admin esta sesión:** autenticación admin (`lib/auth.ts` + routes), BullMQ pipeline counts, feedback services, métricas teams/tenant, invitations, backups, costs, settings. **Type-check:** `npm run type-check` pasa en 11 workspaces. **Git status:** 26 archivos modificados + 2 nuevos (`auth-admin-access.test.ts`, `bullmq-redis.ts`). **Bloqueante activo:** Cloudflare Proxy ON requerido para ocultar IP VPS pública. **Pendiente:** verificar email invitación `jkbotero78@gmail.com` tras onboard `localrank`.
+**Fecha última actualización:** 2026-04-12 UTC — **Sprint ROADMAP:** Semana 1 (Fase 2 producto + IA), ventana **2026-04-14 → 2026-04-20**; revisión sprint **2026-04-19**. Documentos: [`ROADMAP.md`](ROADMAP.md), [`docs/IMPLEMENTATION-IA-LAYER.md`](docs/IMPLEMENTATION-IA-LAYER.md).
+
+**Notion + Doppler QA:** copiar `NOTION_TOKEN` de `prd` → `qa` sin tocar `prd`; en `qa` los UUID de bases QA van en las **cinco claves ya usadas por código** (`NOTION_DATABASE_TASKS` … `METRICS`), no en nombres nuevos tipo `TENANTS`. Tabla de mapeo y comandos: [`docs/DOPPLER-VARS.md`](docs/DOPPLER-VARS.md) (sección *Notion MCP — config qa*).
+
+### Sprint activo — Semana 1 (alineado a ROADMAP.md)
+
+| Qué | Detalle |
+|-----|---------|
+| **Objetivo** | Endurecer trazabilidad LLM (gateway), metering Hermes/`usage_events`, tests; **no** introducir runtime Python ni paquete `hermes-agent` ajeno al monorepo. |
+| **Código ya existente** | `apps/llm-gateway` (routing, `llm-direct`, providers), `apps/orchestrator` (BullMQ, planner), `POST /api/feedback`, admin `/costs`, metering en gateway — **extender**, no asumir “0 líneas”. |
+| **Hermes (nombre)** | En `VISION.md` = **metering/billing IA** unificado; decisión/routing = lógica TS en gateway/orchestrator según `IMPLEMENTATION-IA-LAYER.md`. |
+| **Tests orchestrator** | **Vitest** (`npm run test --workspace=@intcloudsysops/orchestrator`), no Jest. |
+
+**Prompt sugerido para Cursor (copiar):**
+```
+Sprint: ROADMAP Semana 1 (Fase 2) | Leer ROADMAP.md + docs/IMPLEMENTATION-IA-LAYER.md
+Objetivo: [una tarea concreta]
+Validación: npm run type-check; tests del workspace tocado
+```
+
+**Sesión previa 2026-04-11:** autenticación admin, BullMQ, feedback, costs, etc. **Type-check:** monorepo en verde según última sesión documentada.
+
+**Bloqueante operativo recurrente:** Cloudflare Proxy ON (origen); invitaciones/email según Resend.
 
 **URL raw (sesión siguiente):** https://raw.githubusercontent.com/cloudsysops/opsly/main/AGENTS.md
 
@@ -1051,6 +1077,7 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 
 | Fecha | Decisión | Razón |
 |---|---|---|
+| 2026-04-12 | **ROADMAP.md** + **docs/IMPLEMENTATION-IA-LAYER.md** como plan semanal Fase 2–3; **AGENTS.md** enlaza sprint activo sin reemplazar la historia Fase 4; trabajo IA **extiende** gateway/orchestrator existentes (TS, Vitest); **Hermes** sigue siendo metering en VISION, no paquete Python externo | Cursor y humanos comparten una sola línea temporal; evita afirmaciones falsas (“sin código”) sobre LLM Gateway/feedback |
 | 2026-04-11 | Dashboard de costos: API `apps/api/lib/admin-costs.ts` + `GET`/`POST /api/admin/costs`; aprobaciones en **memoria de proceso** (pérdida al reiniciar) hasta persistencia en DB; admin `/costs` + `api-client`; worker Mac 2011 vía `start-workers-mac2011.sh` (no `npm run start:worker` en raíz); compose opcional `infra/docker-compose.workers.yml` | Gobernanza visible antes de activar gastos en proveedores; alineado a `VISION.md` (infra + workers remotos) sin K8s |
 | 2026-04-11 | Autenticación admin: sesión Supabase via `getServerAuthToken()` en lugar de `NEXT_PUBLIC_PLATFORM_ADMIN_TOKEN` | Fase 1 Seguridad Crítica: eliminar exposición de token admin en cliente; todo flujo de auth usa sesión Bearer JWT. |
 | 2026-04-11 | BullMQ pipeline counts: `lib/bullmq-pipeline-counts.ts` + `lib/bullmq-redis.ts` para métricas de cola en API `/metrics` | Observabilidad de jobs BullMQ por tenant; integra con Redis del control plane. |
@@ -1192,7 +1219,8 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 │   ├── orchestrator/        # OpenClaw BullMQ + processIntent
 │   ├── ml/                  # OpenClaw ML (RAG, clasificación, embeddings)
 │   ├── llm-gateway/         # OpenClaw LLM Gateway (cache/routing/cost)
-│   └── context-builder/     # OpenClaw Context Builder (session+summary)
+│   ├── context-builder/     # OpenClaw Context Builder (session+summary)
+│   └── notion-mcp/          # HTTP hacia Notion (tareas, standup, quality; Doppler)
 ├── config/
 │   └── opsly.config.json    # Infra/dominios/planes (sin secretos)
 ├── agents/prompts/          # Plantillas Claude / Cursor
@@ -1219,6 +1247,4 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 ├── README.md
 ├── VISION.md                # Norte del producto (fases, ICP, límites agentes)
 └── AGENTS.md                # Este archivo
-```
-   # Este archivo
 ```
