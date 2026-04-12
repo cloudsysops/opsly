@@ -533,3 +533,8 @@ CUANDO CRISTIAN DICE "continúa":
 2. Identificar fase actual
 3. Ejecutar siguiente bloque sin preguntar
 4. Reportar solo bloqueantes humanos
+
+---
+
+## Related Documents
+[[MASTER-PLAN]] | [[ARCHITECTURE]] | [[HERMES-SPRINT-PLAN]] | [[NOTEBOOKLM-INTEGRATION]]

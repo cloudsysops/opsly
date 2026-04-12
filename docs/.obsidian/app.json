@@ -1,0 +1,23 @@
+{
+  "id": "opsly-vault-001",
+  "name": "Opsly Docs",
+  "baseFontSize": 16,
+  "useTab": false,
+  "lineLength": 80,
+  "readableLineLength": true,
+  "useMarkdownLinks": false,
+  "alwaysUpdateLinks": true,
+  "showFrontmatter": true,
+  "spellcheck": true,
+  "spellcheckLanguages": ["en-US", "es"],
+  "strictLineBreaks": false,
+  "showLineNumbers": false,
+  "showInlineTitle": true,
+  "folderSort": "alphabetical",
+  "ribbonMinWidth": 50,
+  "mobileSyncInterval": 300,
+  "noteComposerSide": "right",
+  "livePreview": true,
+  "newFileLocation": "folder",
+  "newFileFolderPath": "docs"
+}

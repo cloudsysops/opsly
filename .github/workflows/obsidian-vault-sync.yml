@@ -1,0 +1,97 @@
+name: Obsidian Vault Sync & Validate
+
+on:
+  push:
+    paths:
+      - 'docs/**/*.md'
+      - 'docs/.obsidian/**'
+      - '.github/workflows/obsidian-vault-sync.yml'
+  schedule:
+    - cron: '0 2 * * *'  # Daily at 2 AM UTC
+  workflow_dispatch:
+
+jobs:
+  validate-and-sync:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate wikilinks [[...]]
+        run: |
+          echo "Checking for broken wikilinks..."
+          BROKEN=0
+
+          while IFS= read -r link; do
+            FILE_HYPHEN=$(echo "$link" | tr ' ' '-')
+
+            if [ ! -f "docs/${FILE_HYPHEN}.md" ] && \
+               [ ! -f "docs/${link}.md" ] && \
+               [ ! -f "docs/adr/${FILE_HYPHEN}.md" ] && \
+               [ ! -f "docs/adr/${link}.md" ]; then
+              echo "❌ Broken link: [[$link]]"
+              BROKEN=$((BROKEN + 1))
+            fi
+          done < <(grep -rho '\[\[[^\]]*\]\]' docs/ | sed 's/\[\[//;s/\]\]//' | sort -u)
+
+          if [ "$BROKEN" -eq 0 ]; then
+            echo "✅ All wikilinks valid"
+          else
+            echo "⚠️  Found $BROKEN broken links (non-blocking)"
+          fi
+
+      - name: Validate YAML frontmatter
+        run: |
+          echo "Checking YAML frontmatter..."
+          WARNING=0
+
+          while IFS= read -r file; do
+            if head -1 "$file" | grep -q "^---"; then
+              if ! grep -q "title:" "$file"; then
+                echo "⚠️  $file: missing 'title' in frontmatter"
+                WARNING=$((WARNING + 1))
+              fi
+            fi
+          done < <(find docs -name "*.md" -type f)
+
+          if [ "$WARNING" -gt 0 ]; then
+            echo "⚠️  $WARNING files missing frontmatter (not critical)"
+          else
+            echo "✅ All frontmatter valid"
+          fi
+
+      - name: Generate vault file index
+        run: |
+          echo "Generating vault index..."
+          TOTAL=$(find docs -name "*.md" -type f | wc -l | tr -d ' ')
+          TIMESTAMP=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+
+          FILES_JSON=$(find docs -name "*.md" -type f -exec basename {} \; | sort | jq -R '.' | jq -s '.')
+
+          jq -n \
+            --arg ts "$TIMESTAMP" \
+            --argjson total "$TOTAL" \
+            --argjson files "$FILES_JSON" \
+            '{lastIndexed: $ts, totalFiles: $total, files: $files}' \
+            > docs/.obsidian/file-index.json
+
+          echo "✅ Vault index generated ($TOTAL files)"
+
+      - name: Commit index if changed
+        run: |
+          git config user.name "obsidian-sync-bot"
+          git config user.email "sync@opsly-bot.noreply"
+
+          git add docs/.obsidian/file-index.json
+
+          if git diff --cached --quiet; then
+            echo "ℹ️  No vault changes to commit"
+          else
+            TIMESTAMP=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+            git commit -m "chore(obsidian): update vault index [$TIMESTAMP]"
+            git push origin main || echo "ℹ️  Push skipped (nothing new)"
+          fi

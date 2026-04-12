@@ -53,3 +53,18 @@ supabase/.temp/
 # Playwright (apps/portal)
 apps/portal/test-results/
 apps/portal/playwright-report/
+
+# Obsidian
+docs/.obsidian/cache
+docs/.obsidian/workspace
+docs/.obsidian/workspace.json
+docs/.obsidian/plugins/recent-files-obsidian/data.json
+docs/.obsidian/plugins/*/data.json
+
+# Keep config tracked
+!docs/.obsidian/app.json
+!docs/.obsidian/vault.json
+!docs/.obsidian/core-plugins.json
+!docs/.obsidian/templates/
+!docs/.obsidian/hotkeys.json
+!docs/.obsidian/file-index.json
