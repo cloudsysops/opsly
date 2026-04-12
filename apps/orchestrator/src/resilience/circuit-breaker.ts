@@ -32,6 +32,14 @@ function getRedisClient(): Redis {
   return _redis;
 }
 
+export async function closeCircuitBreakerRedis(): Promise<void> {
+  if (!_redis) {
+    return;
+  }
+  _redis.disconnect();
+  _redis = null;
+}
+
 export type CircuitState = "CLOSED" | "OPEN" | "HALF_OPEN";
 
 interface BreakerSnapshot {

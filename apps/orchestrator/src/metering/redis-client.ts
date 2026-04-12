@@ -30,3 +30,11 @@ export function getOrchestratorRedis(): Redis | null {
   }
   return client;
 }
+
+export async function closeOrchestratorRedis(): Promise<void> {
+  if (!client) {
+    return;
+  }
+  client.disconnect();
+  client = null;
+}

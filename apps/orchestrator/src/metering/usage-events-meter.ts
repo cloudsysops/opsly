@@ -22,13 +22,30 @@ export type PlannerLlmMetrics = {
   tokens_output: number;
 };
 
+const pendingMetering = new Set<Promise<void>>();
+
 function scheduleMetering(fn: () => Promise<void>): void {
-  setImmediate(() => {
-    void fn().catch((e: unknown) => {
-      const msg = e instanceof Error ? e.message : String(e);
-      console.error("[orchestrator-meter]", msg);
+  const pending = new Promise<void>((resolve) => {
+    setImmediate(() => {
+      void fn()
+        .catch((e: unknown) => {
+          const msg = e instanceof Error ? e.message : String(e);
+          console.error("[orchestrator-meter]", msg);
+        })
+        .finally(resolve);
     });
   });
+  pendingMetering.add(pending);
+  void pending.finally(() => {
+    pendingMetering.delete(pending);
+  });
+}
+
+export async function drainMeteringOperations(): Promise<void> {
+  if (pendingMetering.size === 0) {
+    return;
+  }
+  await Promise.allSettled([...pendingMetering]);
 }
 
 /**

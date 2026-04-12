@@ -1,4 +1,4 @@
-export { cacheGet, cacheSet, getCacheStats } from "./cache.js";
+export { cacheGet, cacheSet, closeRedisClient, getCacheStats } from "./cache.js";
 export { analyzeComplexity } from "./complexity.js";
 export { llmCall, llmCallDirect } from "./gateway.js";
 export { fetchRepoContextBlock } from "./repo-context-client.js";

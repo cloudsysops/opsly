@@ -21,6 +21,19 @@ export async function getRedisClient() {
   return getClient();
 }
 
+export async function closeRedisClient(): Promise<void> {
+  if (!client) {
+    return;
+  }
+  try {
+    if (client.isOpen) {
+      await client.quit();
+    }
+  } finally {
+    client = null;
+  }
+}
+
 export async function cacheGet(
   tenantSlug: string,
   promptHash: string,

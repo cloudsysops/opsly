@@ -109,6 +109,7 @@ Procedimientos vivos en el repo: **`skills/user/<skill>/SKILL.md`**. En runtimes
 | Skill | Path (repo) | Cuándo usar |
 |-------|----------------|-------------|
 | opsly-context | `skills/user/opsly-context/` | **SIEMPRE** al inicio de sesión |
+| opsly-quantum | `skills/user/opsly-quantum/` | Skill maestro: orquestación segura + `scripts/opsly-quantum.sh` |
 | opsly-api | `skills/user/opsly-api/` | Rutas `apps/api/` |
 | opsly-bash | `skills/user/opsly-bash/` | Scripts `scripts/` |
 | opsly-llm | `skills/user/opsly-llm/` | Llamadas vía LLM Gateway |

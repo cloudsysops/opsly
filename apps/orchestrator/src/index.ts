@@ -2,12 +2,16 @@ import { setupLangSmithTracing } from "./agents/langsmith.js";
 import { processIntent } from "./engine.js";
 import { subscribeEvents } from "./events/bus.js";
 import { startOrchestratorHealthServer } from "./health-server.js";
+import { drainMeteringOperations } from "./metering/usage-events-meter.js";
+import { closeOrchestratorRedis } from "./metering/redis-client.js";
 import {
   parseOrchestratorRole,
   shouldRunControlPlane,
   shouldRunWorkers,
 } from "./orchestrator-role.js";
 import { connection, orchestratorQueue } from "./queue.js";
+import { closeCircuitBreakerRedis } from "./resilience/circuit-breaker.js";
+import { closeJobStateStore } from "./state/store.js";
 import { TeamManager } from "./teams/TeamManager.js";
 import { startBackupWorker } from "./workers/BackupWorker.js";
 import { startCursorWorker } from "./workers/CursorWorker.js";
@@ -110,8 +114,12 @@ async function main(): Promise<void> {
 
   const healthServer = startOrchestratorHealthServer();
   cleanupTasks.push(async () => closeHttpServer(healthServer));
+  cleanupTasks.push(async () => drainMeteringOperations());
   cleanupTasks.push(async () => orchestratorQueue.close());
   cleanupTasks.push(async () => closeWebhookQueue());
+  cleanupTasks.push(async () => closeJobStateStore());
+  cleanupTasks.push(async () => closeOrchestratorRedis());
+  cleanupTasks.push(async () => closeCircuitBreakerRedis());
 
   if (shouldRunControlPlane(role) && teamManager) {
     try {

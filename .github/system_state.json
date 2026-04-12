@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-04-11",
+  "last_updated": "2026-04-12",
   "phase": "fase-1-validacion",
   "vps": {
     "ip": "157.245.223.7",
@@ -40,8 +40,8 @@
       "portal",
       "web"
     ],
-    "scripts": 58,
-    "adrs": 15,
+    "scripts": 63,
+    "adrs": 17,
     "migrations": 23
   }
 }

@@ -48,3 +48,16 @@ export async function getJobState(jobId: string): Promise<JobState | null> {
   const data = await redis.get(`opsly:jobs:${jobId}`);
   return data ? (JSON.parse(data) as JobState) : null;
 }
+
+export async function closeJobStateStore(): Promise<void> {
+  if (!client) {
+    return;
+  }
+  try {
+    if (client.isOpen) {
+      await client.quit();
+    }
+  } finally {
+    client = null;
+  }
+}
