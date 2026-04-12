@@ -29,7 +29,13 @@
     "sprint:burndown": "node scripts/update-sprint-burndown.js",
     "agents:status": "node scripts/generate-agents-assignments.js && (command -v cat >/dev/null && cat docs/AGENTS-ASSIGNMENTS.md || true)",
     "test:notion": "bash scripts/test-notion.sh",
-    "sync:all": "npm run docs:sync && node scripts/sync-all-orchestrator.js"
+    "sync:all": "npm run docs:sync && node scripts/sync-all-orchestrator.js",
+    "hermes:tick": "npm run hermes --workspace=@intcloudsysops/orchestrator -- tick",
+    "hermes:status": "npm run hermes --workspace=@intcloudsysops/orchestrator -- status",
+    "docs:code-snapshots": "node scripts/generate-code-snapshots.mjs",
+    "docs:to-notebooklm": "node scripts/docs-to-notebooklm.mjs",
+    "notebooklm:sync": "npm run docs:code-snapshots && npm run docs:to-notebooklm",
+    "notebooklm:query": "node scripts/query-notebooklm.mjs"
   },
   "devDependencies": {
     "@types/node": "^20.19.12",
