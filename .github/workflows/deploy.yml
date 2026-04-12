@@ -174,6 +174,16 @@ jobs:
             ghcr.io/cloudsysops/intcloudsysops-orchestrator:latest
             ghcr.io/cloudsysops/intcloudsysops-orchestrator:${{ github.sha }}
 
+      - name: Build and push Hermes image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: Dockerfile.hermes
+          push: true
+          tags: |
+            ghcr.io/cloudsysops/intcloudsysops-hermes:latest
+            ghcr.io/cloudsysops/intcloudsysops-hermes:${{ github.sha }}
+
       - name: Build and push Context Builder image
         uses: docker/build-push-action@v5
         with:
@@ -312,6 +322,16 @@ jobs:
             ghcr.io/cloudsysops/intcloudsysops-orchestrator:staging
             ghcr.io/cloudsysops/intcloudsysops-orchestrator:${{ github.sha }}
 
+      - name: Build and push Hermes image (staging)
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: Dockerfile.hermes
+          push: true
+          tags: |
+            ghcr.io/cloudsysops/intcloudsysops-hermes:staging
+            ghcr.io/cloudsysops/intcloudsysops-hermes:${{ github.sha }}
+
       - name: Build and push Context Builder image (staging)
         uses: docker/build-push-action@v5
         with:
@@ -406,10 +426,10 @@ jobs:
 
             echo "Pulling staging images..."
             docker compose --env-file "$DEPLOY_PATH/.env" -f docker-compose.platform.yml pull traefik app admin portal prometheus node-exporter || true
-            docker compose --env-file "$DEPLOY_PATH/.env" -f docker-compose.platform.yml pull mcp llm-gateway orchestrator context-builder || true
+            docker compose --env-file "$DEPLOY_PATH/.env" -f docker-compose.platform.yml pull mcp llm-gateway orchestrator hermes context-builder || true
 
             docker compose --env-file "$DEPLOY_PATH/.env" -f docker-compose.platform.yml up -d --no-deps --force-recreate traefik app admin portal prometheus node-exporter
-            docker compose --env-file "$DEPLOY_PATH/.env" -f docker-compose.platform.yml up -d --no-deps --force-recreate mcp llm-gateway orchestrator context-builder || true
+            docker compose --env-file "$DEPLOY_PATH/.env" -f docker-compose.platform.yml up -d --no-deps --force-recreate mcp llm-gateway orchestrator hermes context-builder || true
 
             echo "Esperando Traefik (staging)..."
             sleep 45
@@ -554,12 +574,12 @@ jobs:
             echo "Pulling core services (required)..."
             docker compose --env-file /opt/opsly/.env -f docker-compose.platform.yml pull traefik app admin portal prometheus node-exporter
             echo "Pulling optional services (best-effort)..."
-            docker compose --env-file /opt/opsly/.env -f docker-compose.platform.yml pull mcp llm-gateway orchestrator context-builder || true
+            docker compose --env-file /opt/opsly/.env -f docker-compose.platform.yml pull mcp llm-gateway orchestrator hermes context-builder || true
 
             # --force-recreate: evita réplicas app (deploy.replicas: 2) quedando en Created mientras otras siguen Up.
             docker compose --env-file /opt/opsly/.env -f docker-compose.platform.yml up -d --no-deps --force-recreate traefik app admin portal prometheus node-exporter
             # Optional services: no bloquear deploy si falta imagen/tag.
-            docker compose --env-file /opt/opsly/.env -f docker-compose.platform.yml up -d --no-deps --force-recreate mcp llm-gateway orchestrator context-builder || true
+            docker compose --env-file /opt/opsly/.env -f docker-compose.platform.yml up -d --no-deps --force-recreate mcp llm-gateway orchestrator hermes context-builder || true
 
             if [ -z "${PLATFORM_DOMAIN:-}" ]; then
               echo "PLATFORM_DOMAIN no está definido" >&2

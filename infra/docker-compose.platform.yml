@@ -513,6 +513,60 @@ services:
           # Playwright/Chromium necesita ~1.5G; Hermes también carga el runtime Python
           memory: 2G
 
+  # Worker Hermes (BullMQ hermes-orchestration) + health HTTP. Imagen: Dockerfile.hermes (ADR-015).
+  # Con este servicio activo, en Doppler/VPS establecer HERMES_ENABLED=false en el servicio `orchestrator`
+  # para no duplicar el worker Hermes en el mismo host.
+  hermes:
+    image: ${HERMES_IMAGE:-ghcr.io/cloudsysops/intcloudsysops-hermes:latest}
+    container_name: opsly_hermes
+    env_file:
+      - ../.env
+    environment:
+      NODE_ENV: production
+      ORCHESTRATOR_HEALTH_PORT: "3020"
+      ORCHESTRATOR_LLM_GATEWAY_URL: http://llm-gateway:3010
+      OPSLY_API_INTERNAL_URL: ${OPSLY_API_INTERNAL_URL:-http://app:3000}
+      SUPABASE_URL: ${SUPABASE_URL:-${NEXT_PUBLIC_SUPABASE_URL:-}}
+      NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL:-}
+      SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY:-}
+      REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379/0
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+      NOTEBOOKLM_ENABLED: ${NOTEBOOKLM_ENABLED:-false}
+      NOTEBOOKLM_NOTEBOOK_ID: ${NOTEBOOKLM_NOTEBOOK_ID:-}
+      NOTEBOOKLM_DEFAULT_TENANT_SLUG: ${NOTEBOOKLM_DEFAULT_TENANT_SLUG:-}
+      DISCORD_WEBHOOK_URL: ${DISCORD_WEBHOOK_URL:-}
+      GITHUB_TOKEN: ${GITHUB_TOKEN:-}
+      GITHUB_TOKEN_N8N: ${GITHUB_TOKEN_N8N:-}
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET:-}
+      STRIPE_TEST_SECRET_KEY: ${STRIPE_TEST_SECRET_KEY:-}
+      STRIPE_WEBHOOK_SECRET_TEST: ${STRIPE_WEBHOOK_SECRET_TEST:-}
+      PLAYWRIGHT_HEADLESS: "true"
+    ports:
+      - "127.0.0.1:${HERMES_HOST_PORT:-3012}:3020"
+    depends_on:
+      redis:
+        condition: service_healthy
+      app:
+        condition: service_healthy
+      llm-gateway:
+        condition: service_started
+    networks:
+      - internal
+    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:3020/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
   context-builder:
     image: ${CONTEXT_BUILDER_IMAGE:-ghcr.io/cloudsysops/intcloudsysops-context-builder:latest}
     container_name: opsly_context_builder
