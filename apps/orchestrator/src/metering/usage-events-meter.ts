@@ -49,6 +49,19 @@ export async function drainMeteringOperations(): Promise<void> {
 }
 
 /**
+ * Hermes: acumula `cpu_seconds` en Redis (`usage:{tenantId}:cpu_seconds`) por duración de tarea.
+ * Reutiliza el mismo pipeline que `meterRemotePlanWorkerFireAndForget` (billing flush API).
+ */
+export function meterHermesTaskCpuFireAndForget(
+  tenantSlug: string,
+  tenantIdHint: string | undefined,
+  durationMs: number,
+): void {
+  const sec = Math.max(0, durationMs / 1000);
+  meterRemotePlanWorkerFireAndForget(tenantSlug, tenantIdHint, sec);
+}
+
+/**
  * Incrementa `usage:{tenantId}:ai_tokens` por el total de tokens (entero), fire-and-forget.
  */
 export function meterPlannerLlmFireAndForget(
