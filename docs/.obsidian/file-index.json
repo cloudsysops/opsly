@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-04-12T19:57:49Z",
-  "totalFiles": 129,
+  "lastIndexed": "2026-04-12T20:40:35Z",
+  "totalFiles": 132,
   "files": [
     "ACTIVE-PROMPT.md",
     "ADMIN-ECOSYSTEM.md",
@@ -22,6 +22,8 @@
     "ADR-015-hermes-orchestrator-architecture.md",
     "ADR-016-worker-teams-billing-roadmap.md",
     "ADR-017-prepaid-token-wallet-roadmap.md",
+    "ADR-018-pgvector-embeddings-rag.md",
+    "ADR-019-prometheus-grafana-observability.md",
     "ADR-020-orchestrator-worker-separation.md",
     "ADR-021-approval-gate-phase1.md",
     "AGENTS-ASSIGNMENTS.md",
@@ -102,6 +104,7 @@
     "SECURITY_CHECKLIST.md",
     "SESSION-GIT-SYNC.md",
     "SETUP-NOTION-MCP.md",
+    "SPRINT-CURSOR-PROMPTS.md",
     "SPRINT-PLANNING-SETUP.md",
     "SPRINT-ROADMAP.md",
     "SPRINT-TRACKING.md",
