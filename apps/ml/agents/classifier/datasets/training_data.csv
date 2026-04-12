@@ -1,0 +1,41 @@
+description,category
+Provision n8n workflow for WhatsApp integration,infra
+Configure Stripe webhook for payment notifications,billing
+Set up Uptime Kuma monitoring for API endpoint,infra
+Generate invoice for client smiletripcare,billing
+Classify support ticket priority,support
+Create onboarding checklist for new tenant,onboarding
+Debug rate limiting on API gateway,infra
+Batch process customer feedback with ML,ai_task
+Configure email domain verification,infra
+Refund transaction for failed payment,billing
+Train classifier model for task categorization,ai_task
+Guide user through n8n workflow builder,onboarding
+Alert: CPU usage exceeding 80%,infra
+Generate report: tenant usage metrics,billing
+Extract entities from user support message,ai_task
+Set credentials for n8n node authentication,infra
+Process bulk SMS reminder notifications,infra
+Update subscription plan tier,billing
+Fine-tune LLM on customer data,ai_task
+Reset user account after migration,support
+Add new domain to Resend sender list,infra
+Dispute chargebacks and refunds,billing
+Optimize query performance for analytics,infra
+Create chatbot for WhatsApp customer support,ai_task
+Migrate tenant data to new database schema,infra
+Generate invoice template customization,billing
+Analyze user feedback sentiment,ai_task
+Fix broken workflow in n8n,support
+Configure SSL certificate renewal,infra
+Apply promotional discount code,billing
+Route incoming WhatsApp message to correct agent,ai_task
+Deploy new n8n version to staging,infra
+Invoice reconciliation with accounting,billing
+Extract and classify WhatsApp media files,ai_task
+Emergency: Database connection timeout,support
+Add SSH key for VPS access,infra
+Create payment plan for installment billing,billing
+Generate podcast from documentation,ai_task
+Onboard new tenant with full setup,onboarding
+Monitor Stripe webhook delivery status,billing

@@ -1,0 +1,23 @@
+{
+  "name": "opsly-architect-senior",
+  "version": "1.0.0",
+  "description": "Diagnóstico arquitectónico, riesgos y priorización alineada a VISION/AGENTS/ADR",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "focus": {
+        "type": "string",
+        "description": "Opcional: seguridad | escala | ia | onboarding | infra"
+      }
+    },
+    "additionalProperties": true
+  },
+  "outputSchema": {
+    "type": "object",
+    "properties": {
+      "priorities": { "type": "array", "items": { "type": "string" } },
+      "risks": { "type": "array", "items": { "type": "string" } },
+      "nextAdrs": { "type": "array", "items": { "type": "string" } }
+    }
+  }
+}

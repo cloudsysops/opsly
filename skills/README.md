@@ -8,7 +8,7 @@ Skills procedurales para trabajar en **Opsly** sin improvisar.
 - **`manifest.json` (opcional)** junto a `SKILL.md`: `name`, `version`, `description`, `inputSchema` / `outputSchema` (JSON Schema como objetos JSON). Si existe, tiene prioridad sobre frontmatter para esos campos.
 - **Frontmatter opcional** al inicio de `SKILL.md` (bloque `---` … `---`): puede ser **JSON** (objeto, una línea o varias) o **YAML simple** (`clave: valor` por línea para `name`, `version`, `description`). Compatible con lectura manual; el cuerpo del skill queda tras el segundo `---`.
 - **Paquete `skills/manifest`**: `@intcloudsysops/skills-manifest` exporta `loadSkillMetadata`, `validateAllUserSkills`, `parseSimpleFrontmatter`, `parseManifestJsonObject`. Validación: `npm run validate-skills`; tests: `npm run test-skills-manifest` (raíz del repo).
-- Skills incluidos: `opsly-context`, `opsly-quantum` (maestro / orquestación), `opsly-api`, `opsly-bash`, `opsly-llm`, `opsly-mcp`, `opsly-supabase`, `opsly-discord`, `opsly-tenant`, `opsly-feedback-ml`, `opsly-agent-teams`, `opsly-notebooklm`, `opsly-google-cloud`.
+- Skills incluidos: `opsly-context`, `opsly-quantum` (maestro / orquestación), `opsly-architect-senior` (diagnóstico y priorización), `opsly-api`, `opsly-bash`, `opsly-llm`, `opsly-mcp`, `opsly-supabase`, `opsly-discord`, `opsly-tenant`, `opsly-feedback-ml`, `opsly-agent-teams`, `opsly-notebooklm`, `opsly-google-cloud`.
 
 ## Entornos con `/mnt/skills`
 

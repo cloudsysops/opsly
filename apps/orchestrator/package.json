@@ -11,6 +11,7 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
+    "@intcloudsysops/ml": "^1.0.0",
     "@llamaindex/postgres": "^0.0.65",
     "@supabase/supabase-js": "^2.49.1",
     "@tavily/core": "^0.7.2",

@@ -1,118 +1,58 @@
 ---
-description: Opsly — Cursor Rules (leído al abrir el proyecto)
+description: Opsly — reglas de sesión para Cursor
 alwaysApply: true
 ---
 
 # Opsly — Cursor Rules
 
-## PROTOCOLO OBLIGATORIO — INICIO DE SESION
+## Inicio de sesión (obligatorio)
 
-Antes de CUALQUIER tarea, sin excepcion:
+1. Leer `AGENTS.md` completo (estado operativo actual).
+2. `git pull --ff-only` en clon activo antes de editar.
+3. VPS solo por Tailscale `100.120.151.91` — nunca IP pública.
+4. Secrets via Doppler (`ops-intcloudsysops / prd`). Nunca en código ni mensajes.
+5. Reportar gaps antes de continuar. No ejecutar nada hasta confirmación.
 
-1. Leer `AGENTS.md` completo.
-2. Leer `VISION.md` completo.
-3. Verificar estado VPS (acceso **solo por Tailscale** `100.120.151.91`, nunca IP pública):
-   `ssh vps-dragon@100.120.151.91 "systemctl is-active cursor-prompt-monitor opsly-watcher && docker ps --format '{{.Names}}\t{{.Status}}' | grep -E 'n8n|uptime|infra|traefik'"`
-4. Verificar vars criticas Doppler:
-   `for VAR in DISCORD_WEBHOOK_URL RESEND_API_KEY GITHUB_TOKEN N8N_WEBHOOK_SECRET_GH GOOGLE_DRIVE_TOKEN; do VAL=$(doppler secrets get $VAR --project ops-intcloudsysops --config prd --plain 2>/dev/null || echo ""); echo "$VAR: ${#VAL} chars"; done` (si `GITHUB_TOKEN` vacío, revisar legado `GITHUB_TOKEN_N8N`; si `N8N_WEBHOOK_SECRET_GH` vacío, revisar `N8N_WEBHOOK_SECRET` — ver `docs/N8N-SETUP.md`)
-5. Reportar gaps antes de continuar.
-6. No ejecutar nada hasta confirmar el reporte.
-
-## FILOSOFIA DE TRABAJO
-
-Planificar -> Documentar -> Tests -> Implementar -> Validar -> Notificar
-NUNCA adivinar. NUNCA saltarse pasos.
+Responde al cargar contexto:
+```
+AGENTS: [fecha] | Estado: [línea] | Próximo: [tarea] | Bloqueantes: [o "ninguno"]
+```
 
 ## Identidad
 
-Eres el ejecutor técnico senior de Opsly.
+Ejecutor técnico senior de Opsly. Fuente de verdad: `AGENTS.md`.
+Filosofía: **Planificar → Documentar → Tests → Implementar → Validar → Notificar**
 
-Fuente de verdad: `AGENTS.md` en la raíz del repo.
+## Modelos LLM
 
-## Al iniciar cada sesión
+| Uso | Model | Temp |
+|-----|-------|------|
+| General | `claude-3-5-haiku-20241022` | 0.3 |
+| Arquitectura | `claude-3-5-sonnet-20241022` | 0.5 |
 
-1. Lee `AGENTS.md` completo.
-2. **Git en el clon activo (obligatorio antes de editar o ejecutar scripts de infra):** en **opsly-admin** (Mac Cursor), **opsly-worker** (`~/opsly`) y **VPS** (`/opt/opsly` o `/opt/opsly-staging`), sincronizar con `origin` en la rama de trabajo: `./scripts/git-sync-repo.sh` (o `git pull --ff-only`). Detalle: `docs/SESSION-GIT-SYNC.md`.
-3. Responde **SIEMPRE** con este bloque antes de cualquier código:
-
-```
----CONTEXT LOADED---
-Fecha: [fecha de AGENTS.md]
-Estado: [una línea]
-Próximo paso: [tarea concreta]
-Bloqueantes: [lista o "ninguno"]
----
-```
-
-4. No propongas cambios a decisiones fijas de `AGENTS.md`.
-5. No uses `any` en TypeScript.
-6. Scripts bash: `set -euo pipefail`, idempotentes, con `--dry-run` cuando aplique.
-
-## Durante la sesión
-
-- Antes de crear un archivo: confirma path en una línea.
-- Antes de modificar infra o scripts: menciona el impacto.
-- Bloqueante nuevo: anúncialo con `[BLOQUEANTE]`.
-- Decisión importante: anúnciala con `[DECISIÓN]`.
-
-## Al terminar cada tarea
-
-Genera siempre este bloque de handoff:
-
-```
----HANDOFF---
-Tarea: [qué se hizo]
-Archivos: [lista de paths modificados]
-Estado: [qué funciona / qué no]
-Decisiones: [tabla fecha|decisión|razón o "ninguna"]
-AGENTS.md diff:
-  Completado agregar: [items]
-  Próximo paso: [comando exacto]
-  Bloqueantes resolver: [items]
-  Bloqueantes nuevos: [items o "ninguno"]
-Próxima sesión prompt:
-  [prompt listo para copiar]
----
-```
-
-## Al cerrar sesión
-
-Ejecuta siempre:
-
-1. Actualiza `AGENTS.md` con el diff del handoff.
-2. `git add AGENTS.md && git commit -m "docs(agents): sesión YYYY-MM-DD" && git push origin main`
-3. Responde con la URL raw:  
-   `https://raw.githubusercontent.com/cloudsysops/opsly/main/AGENTS.md`
-
-## Visión del producto
-
-Lee `VISION.md` antes de proponer cualquier cambio de arquitectura.
-Cada decisión técnica debe alinearse con los objetivos de la fase actual.
-Fase actual: **FASE 1 — Validación**.
-
-## Prioridad de archivos de contexto
-
-1. `VISION.md` → el norte (no cambia frecuentemente)
-2. `AGENTS.md` → el estado actual (cambia cada sesión)
-3. `config/opsly.config.json` → la verdad técnica (cambia con infra)
+Max tokens: 4096. Constantes en config, no números mágicos en handlers.
 
 ## Antes de escribir código
 
-1. ¿Ya existe algo similar en `lib/`? **Reutilizar** antes de duplicar.
-2. ¿La función supera **~50 líneas**? **Dividir** en funciones más pequeñas o mover a `lib/`.
-3. ¿Hay **números mágicos**? Mover a `apps/api/lib/constants.ts` u otra constante nombrada.
-4. ¿Es una **query a Supabase**? Va en `apps/api/lib/repositories/` (Repository), no en el route handler.
-5. ¿Es **creación de recurso** (tenant, compose, config)? Va en `apps/api/lib/factories/` (Factory).
+- ¿Existe en `lib/`? Reutilizar antes de duplicar.
+- Función >50 líneas → dividir o mover a `lib/`.
+- Query Supabase → `apps/api/lib/repositories/` (Repository pattern).
+- Creación de recurso → `apps/api/lib/factories/` (Factory pattern).
+- Números mágicos → `apps/api/lib/constants.ts`.
 
-## Antes de crear un script bash
+## Antes de crear script bash
 
-1. ¿Tiene `set -euo pipefail`?
-2. ¿Soporta `--dry-run` o variable `DRY_RUN=true` cuando modifique estado?
-3. ¿Es **idempotente** (dos ejecuciones seguras)?
-4. ¿Tiene `check_dependencies()` o equivalente (`require_cmd` en scripts que usan `lib/common.sh`)?
+`set -euo pipefail` · idempotente · `--dry-run` si modifica estado · `check_dependencies()`.
 
-## Antes de hacer commit
+## Antes de commit
 
-- Confirmar que **`npm run type-check`** pasa.
-- No introducir **`any`** nuevo en TypeScript.
-- No commitear **secretos** (tokens, claves, `.env` reales).
+`npm run type-check` pasa · sin `any` nuevo · sin secretos · sin `.env` reales.
+
+## Durante la sesión
+
+- Path antes de crear archivo. Impacto antes de modificar infra.
+- Anunciar `[BLOQUEANTE]` o `[DECISIÓN]` cuando aplique.
+
+## Al cerrar
+
+`AGENTS.md` actualizado → commit `docs(agents): sesión YYYY-MM-DD` → push main.

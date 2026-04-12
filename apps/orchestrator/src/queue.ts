@@ -15,6 +15,9 @@ export const connection = {
 
 export const orchestratorQueue = new Queue("openclaw", { connection });
 
+/** Cola sandbox clasificador de tareas (worker opcional: `OPSLY_AGENT_CLASSIFIER_WORKER_ENABLED`). */
+export const agentClassifierQueue = new Queue("agent-classifier", { connection });
+
 export async function enqueueJob(job: OrchestratorJob) {
   const opts = buildQueueAddOptions(job);
   const bull = await orchestratorQueue.add(job.type, job, opts);

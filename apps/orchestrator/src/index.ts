@@ -9,7 +9,7 @@ import {
   shouldRunControlPlane,
   shouldRunWorkers,
 } from "./orchestrator-role.js";
-import { connection, orchestratorQueue } from "./queue.js";
+import { agentClassifierQueue, connection, orchestratorQueue } from "./queue.js";
 import { closeCircuitBreakerRedis } from "./resilience/circuit-breaker.js";
 import { closeJobStateStore } from "./state/store.js";
 import { TeamManager } from "./teams/TeamManager.js";
@@ -19,6 +19,7 @@ import { startDriveWorker } from "./workers/DriveWorker.js";
 import { startHealthWorker } from "./workers/HealthWorker.js";
 import { startN8nWorker } from "./workers/N8nWorker.js";
 import { startNotifyWorker } from "./workers/NotifyWorker.js";
+import { startAgentClassifierWorker } from "./workers/AgentClassifierWorker.js";
 import { startOllamaWorker } from "./workers/OllamaWorker.js";
 import { startSuspensionWorker } from "./workers/SuspensionWorker.js";
 import { startGeneralEventsWorker } from "./workers/GeneralEventsWorker.js";
@@ -67,6 +68,16 @@ function startAllWorkers(): AsyncCleanup[] {
   const generalEventsWorker = startGeneralEventsWorker();
   const ollamaWorker = startOllamaWorker(connection);
 
+  let agentClassifierCleanup: AsyncCleanup[] = [];
+  if (process.env.OPSLY_AGENT_CLASSIFIER_WORKER_ENABLED === "true") {
+    const { worker: agentClassifierWorker, closeRedis } =
+      startAgentClassifierWorker(connection);
+    agentClassifierCleanup = [
+      async () => agentClassifierWorker.close(),
+      closeRedis,
+    ];
+  }
+
   cleanup.push(
     async () => cursorWorker.close(),
     async () => n8nWorker.close(),
@@ -79,10 +90,14 @@ function startAllWorkers(): AsyncCleanup[] {
     async () => webhooksProcessingWorker.close(),
     async () => generalEventsWorker.close(),
     async () => ollamaWorker.close(),
+    ...agentClassifierCleanup,
   );
 
   console.log(
-    "[orchestrator] Workers: cursor, n8n, notify, drive, backup, health, ollama, budget, opsly-webhooks, webhooks-processing, general-events",
+    "[orchestrator] Workers: cursor, n8n, notify, drive, backup, health, ollama, budget, opsly-webhooks, webhooks-processing, general-events" +
+      (process.env.OPSLY_AGENT_CLASSIFIER_WORKER_ENABLED === "true"
+        ? ", agent-classifier"
+        : ""),
   );
   return cleanup;
 }
@@ -119,6 +134,7 @@ async function main(): Promise<void> {
   cleanupTasks.push(async () => closeHttpServer(healthServer));
   cleanupTasks.push(async () => drainMeteringOperations());
   cleanupTasks.push(async () => orchestratorQueue.close());
+  cleanupTasks.push(async () => agentClassifierQueue.close());
   cleanupTasks.push(async () => closeWebhookQueue());
   cleanupTasks.push(async () => closeJobStateStore());
   cleanupTasks.push(async () => closeOrchestratorRedis());
