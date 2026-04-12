@@ -1175,6 +1175,40 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 7. **Fase 6+ multi-región**: replicación de control-plane y workers con estrategia de failover por tenant enterprise.
 8. **Playbooks de incidentes IA**: runbooks accionables para outage LLM, fuga de presupuesto y degradación de colas.
 
+## Cursor Cloud specific instructions
+
+**Node.js version:** This monorepo targets **Node.js 20** (matching Dockerfile base images). Use `nvm use 20` if multiple versions are available.
+
+**Dependency install:** `npm ci` at the repo root installs all workspace dependencies via npm workspaces + Turborepo.
+
+**Library packages must be built before type-check:** The workspace packages `@intcloudsysops/llm-gateway`, `@intcloudsysops/ml`, and `@intcloudsysops/notebooklm-agent` export from `dist/` directories. Before running `npm run type-check`, you must build them:
+```bash
+npm run build --workspace=@intcloudsysops/llm-gateway
+npm run build --workspace=@intcloudsysops/ml
+npm run build --workspace=@intcloudsysops/notebooklm-agent
+```
+Without this step, `@intcloudsysops/api` and `@intcloudsysops/mcp` will fail type-check and tests with "Cannot find module" errors.
+
+**Running checks (see `package.json` scripts and AGENTS.md Quick Commands):**
+- Type-check: `npm run type-check` (Turbo, 11 workspaces)
+- Tests: `npm run test` (Turbo, 8 workspaces with Vitest)
+- Lint (API only): `npx eslint "apps/api/app/**/*.ts" "apps/api/lib/**/*.ts" --max-warnings 0`
+- OpenAPI: `npm run validate-openapi`
+- Skills: `npm run validate-skills`
+
+**Dev servers:** Each Next.js app can be started individually:
+- API: `npm run dev --workspace=@intcloudsysops/api` (port 3000)
+- Admin: `npm run dev --workspace=@intcloudsysops/admin` (port 3001)
+- Portal: `npm run dev --workspace=@intcloudsysops/portal` (port 3002)
+
+The API health endpoint (`GET /api/health`) works without Supabase/Redis configured; the `checks` object will show errors for unavailable services but the endpoint still returns `{"status":"ok"}`.
+
+**External services (not available in Cloud Agent VM):** Supabase (auth + DB), Redis (BullMQ queues), Stripe (billing), Resend (emails), Doppler (secrets). All tests mock these dependencies and pass without them.
+
+**Git hooks:** `git config core.hooksPath .githooks` activates pre-commit (type-check + ESLint on staged API files) and post-commit (context sync). The pre-commit hook runs `npm run type-check` which can be slow on first run but is cached by Turbo after.
+
+---
+
 ## Estructura del repo
 
 ```
