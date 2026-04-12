@@ -279,6 +279,8 @@ Procedimientos vivos en el repo: **`skills/user/<skill>/SKILL.md`**. En runtimes
 
 **Fecha última actualización:** 2026-04-12 UTC — **Sprint ROADMAP:** Semana 1 (Fase 2 producto + IA), ventana **2026-04-14 → 2026-04-20**; revisión sprint **2026-04-19**. Documentos: [`ROADMAP.md`](ROADMAP.md), [`docs/IMPLEMENTATION-IA-LAYER.md`](docs/IMPLEMENTATION-IA-LAYER.md).
 
+**ADR-020 (sesión):** [`docs/adr/ADR-020-orchestrator-worker-separation.md`](docs/adr/ADR-020-orchestrator-worker-separation.md) — alias `OPSLY_ORCHESTRATOR_MODE` documentado; tests `orchestrator-role.test.ts` ampliados; `npm run type-check` y `npm run test --workspace=@intcloudsysops/orchestrator` en verde.
+
 **Notion + Doppler QA:** copiar `NOTION_TOKEN` de `prd` → `qa` sin tocar `prd`; en `qa` los UUID de bases QA van en las **cinco claves ya usadas por código** (`NOTION_DATABASE_TASKS` … `METRICS`), no en nombres nuevos tipo `TENANTS`. Tabla de mapeo y comandos: [`docs/DOPPLER-VARS.md`](docs/DOPPLER-VARS.md) (sección *Notion MCP — config qa*).
 
 **CI Doppler:** workflow [`validate-doppler.yml`](.github/workflows/validate-doppler.yml) + script [`scripts/validate-doppler-vars.sh`](scripts/validate-doppler-vars.sh); secretos GitHub `DOPPLER_TOKEN_PRD` / `DOPPLER_TOKEN_STG`; listas `config/doppler-ci-required*.txt`. Runbook: [`docs/DOPPLER-CI-RUNBOOK.md`](docs/DOPPLER-CI-RUNBOOK.md).
@@ -1086,6 +1088,7 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 
 | Fecha | Decisión | Razón |
 |---|---|---|
+| 2026-04-12 | **ADR-020** (`docs/adr/ADR-020-orchestrator-worker-separation.md`): separación VPS **control** vs nodo **worker** ya soportada por `OPSLY_ORCHESTRATOR_ROLE`; alias opcional `OPSLY_ORCHESTRATOR_MODE` (`queue-only` / `worker-enabled`); Redis canónico en VPS con workers remotos vía mismo `REDIS_URL` (ver `docs/ARCHITECTURE-DISTRIBUTED.md`); health `/health` expone `role` + `mode` | Formalizar decisión sin duplicar flags; alinear operación Tailscale/Mac con código existente |
 | 2026-04-12 | **ROADMAP.md** + **docs/IMPLEMENTATION-IA-LAYER.md** como plan semanal Fase 2–3; **AGENTS.md** enlaza sprint activo sin reemplazar la historia Fase 4; trabajo IA **extiende** gateway/orchestrator existentes (TS, Vitest); **Hermes** sigue siendo metering en VISION, no paquete Python externo | Cursor y humanos comparten una sola línea temporal; evita afirmaciones falsas (“sin código”) sobre LLM Gateway/feedback |
 | 2026-04-11 | Dashboard de costos: API `apps/api/lib/admin-costs.ts` + `GET`/`POST /api/admin/costs`; aprobaciones en **memoria de proceso** (pérdida al reiniciar) hasta persistencia en DB; admin `/costs` + `api-client`; worker Mac 2011 vía `start-workers-mac2011.sh` (no `npm run start:worker` en raíz); compose opcional `infra/docker-compose.workers.yml` | Gobernanza visible antes de activar gastos en proveedores; alineado a `VISION.md` (infra + workers remotos) sin K8s |
 | 2026-04-11 | Autenticación admin: sesión Supabase via `getServerAuthToken()` en lugar de `NEXT_PUBLIC_PLATFORM_ADMIN_TOKEN` | Fase 1 Seguridad Crítica: eliminar exposición de token admin en cliente; todo flujo de auth usa sesión Bearer JWT. |

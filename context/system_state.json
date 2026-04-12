@@ -42,7 +42,7 @@
       "web"
     ],
     "scripts": 82,
-    "adrs": 17,
+    "adrs": 18,
     "migrations": 25
   }
 }
