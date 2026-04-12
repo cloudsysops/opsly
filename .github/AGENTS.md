@@ -64,6 +64,10 @@ npm run type-check
 # Test single workspace
 npm run test --workspace=@intcloudsysops/orchestrator
 
+# BullMQ / worker — encolar job de prueba (cola openclaw; requiere REDIS_URL)
+doppler run --project ops-intcloudsysops --config prd -- ./scripts/test-worker-e2e.sh smiletripcare --notify
+# Detalle: docs/WORKER-TESTING.md
+
 # Validate OpenAPI spec (CI required)
 npm run validate-openapi
 
@@ -840,7 +844,7 @@ ssh vps-dragon@100.120.151.91 "docker system df && sudo du -xh /var --max-depth=
 - [x] **Plan + auditoria automation** — `docs/AUTOMATION-PLAN.md`, `docs/reports/audit-2026-04-07.md`, `docs/N8N-SETUP.md`, `docs/n8n-workflows/discord-to-github.json` (2026-04-07).
 - [x] **`RESEND_API_KEY` real en Doppler** — validado por E2E (`POST /api/invitations` → 200).
 - [x] **`DISCORD_WEBHOOK_URL` válido en Doppler `prd`** — `notify-discord.sh` devuelve OK.
-- [x] **`GITHUB_TOKEN_N8N` en Doppler `prd`** — presente y validado por `check-tokens.sh`.
+- [x] **PAT GitHub en Doppler `prd`** — `GITHUB_TOKEN` o `GITHUB_TOKEN_N8N` (al menos uno); validado por `check-tokens.sh`. Nombre canónico: `GITHUB_TOKEN` (ver `docs/GITHUB-TOKEN.md`).
 - [x] **`ANTHROPIC_API_KEY` en Doppler `prd`** — presente y validado por `check-tokens.sh`.
 - [ ] **`GOOGLE_CLOUD_PROJECT_ID` / `BIGQUERY_DATASET` / `VERTEX_AI_REGION` en `prd`** — requeridos para Fase 10.
 - [x] **OAuth token Google (service account)** — corregido `google_base64url_encode` + POST token; token emitido OK (2026-04-08).
