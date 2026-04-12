@@ -25,6 +25,7 @@ agents/prompts/secrets-*.md
 
 node_modules
 apps/api/coverage/
+apps/orchestrator/coverage/
 .next
 .env*
 !.env.example
