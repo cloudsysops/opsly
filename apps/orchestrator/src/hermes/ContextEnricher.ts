@@ -6,16 +6,39 @@ import type {
   DecisionContext,
   EnrichedTask,
   HermesTask,
+  NotebookQueryResponse,
   SuggestedApproach,
 } from "@intcloudsysops/types";
 
 import { NotebookLMClient } from "../lib/notebooklm-client.js";
+import { CircuitOpenError, withCircuitBreaker } from "../resilience/circuit-breaker.js";
 
 const LOCAL_DOC_PATHS = [
   "ARCHITECTURE.md",
   "AGENTS.md",
   "docs/HERMES-INTEGRATION.md",
 ] as const;
+
+const NOTEBOOKLM_BREAKER_NAME = "hermes:notebooklm";
+const QUERY_TIMEOUT_MS = 10_000;
+
+async function withQueryTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  try {
+    return await Promise.race([
+      promise,
+      new Promise<T>((_, reject) => {
+        timer = setTimeout(() => {
+          reject(new Error(`NotebookLM timeout after ${String(ms)}ms`));
+        }, ms);
+      }),
+    ]);
+  } finally {
+    if (timer) {
+      clearTimeout(timer);
+    }
+  }
+}
 
 function repoRoot(): string {
   return process.env.OPSLY_REPO_ROOT?.trim() || process.cwd();
@@ -38,9 +61,35 @@ function readLocalSnippets(): string {
 export class ContextEnricher {
   constructor(private readonly notebook: NotebookLMClient) {}
 
+  private async queryNotebookWithBreaker(
+    prompt: string,
+    localContext?: string,
+  ): Promise<NotebookQueryResponse> {
+    const empty: NotebookQueryResponse = {
+      answer: "",
+      sources: [],
+      confidence: 0,
+      cached: false,
+    };
+    try {
+      return await withCircuitBreaker(NOTEBOOKLM_BREAKER_NAME, async () => {
+        return await withQueryTimeout(
+          this.notebook.queryNotebook(prompt, localContext),
+          QUERY_TIMEOUT_MS,
+        );
+      });
+    } catch (err) {
+      if (err instanceof CircuitOpenError) {
+        return empty;
+      }
+      console.error("[ContextEnricher] NotebookLM query failed:", err);
+      return empty;
+    }
+  }
+
   public async enrichTaskContext(task: HermesTask): Promise<EnrichedTask> {
     const localContext = readLocalSnippets();
-    let notebooklm = await this.notebook.queryNotebook(
+    let notebooklm = await this.queryNotebookWithBreaker(
       `En Opsly, ¿qué patrones y límites aplican para una tarea de tipo "${task.type}" con esfuerzo "${task.effort}"? Responde en español, breve.`,
       localContext ? localContext.slice(0, 6000) : undefined,
     );
@@ -71,7 +120,7 @@ export class ContextEnricher {
   }
 
   public async enrichDecision(decision: ArchitecturalDecisionStub): Promise<DecisionContext> {
-    const res = await this.notebook.queryNotebook(
+    const res = await this.queryNotebookWithBreaker(
       `¿Hay precedentes o riesgos para esta decisión arquitectónica? ${decision.title}. Resumen: ${decision.summary}`,
     );
     return {
@@ -83,7 +132,7 @@ export class ContextEnricher {
   }
 
   public async suggestApproach(taskDescription: string): Promise<SuggestedApproach> {
-    const res = await this.notebook.queryNotebook(
+    const res = await this.queryNotebookWithBreaker(
       `Propón un enfoque por pasos para: ${taskDescription}`,
     );
     return {
