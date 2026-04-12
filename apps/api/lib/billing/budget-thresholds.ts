@@ -9,7 +9,7 @@ export const BUDGET_PERCENT_CRITICAL = 90;
 export type BudgetAlertLevel = "ok" | "warning" | "critical";
 
 export function budgetUsagePercent(used: number, limit: number): number {
-  if (!Number.isFinite(used) || limit <= 0) {
+  if (!Number.isFinite(used) || used < 0 || limit <= 0) {
     return 0;
   }
   return Math.min(100, (used / limit) * 100);

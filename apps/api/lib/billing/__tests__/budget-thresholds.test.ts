@@ -11,6 +11,7 @@ describe("budget-thresholds", () => {
   it("budgetUsagePercent acota a 100", () => {
     expect(budgetUsagePercent(200, 100)).toBe(100);
     expect(budgetUsagePercent(50, 100)).toBe(50);
+    expect(budgetUsagePercent(-10, 100)).toBe(0);
   });
 
   it("budgetAlertLevelFromPercent usa umbrales 75/90", () => {
