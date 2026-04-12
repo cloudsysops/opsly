@@ -2,6 +2,9 @@
 
 import { useCallback, useState } from "react";
 import useSWR from "swr";
+import { BudgetAlertCard } from "@/components/billing/BudgetAlertCard";
+import { LlmBudgetSummaryStrip } from "@/components/billing/LlmBudgetSummaryStrip";
+import { TenantBudgetBars } from "@/components/billing/TenantBudgetBars";
 import { CostCard } from "@/components/costs/CostCard";
 import { getAdminCosts, postCostDecision } from "@/lib/api-client";
 import type { AdminCostsResponse } from "@/lib/types";
@@ -124,6 +127,31 @@ export default function CostsPage() {
             {currentCount}
           </p>
         </div>
+      </div>
+
+      <LlmBudgetSummaryStrip summary={data.llm_budget_summary} />
+      <BudgetAlertCard snapshots={data.tenant_budgets} />
+
+      <div className="mb-8">
+        <TenantBudgetBars snapshots={data.tenant_budgets} />
+      </div>
+
+      <div className="mb-8 rounded-lg border border-blue-500/30 bg-blue-500/10 p-4">
+        <p className="text-sm font-medium text-blue-200">
+          Wallet prepago / tokens
+        </p>
+        <p className="mt-1 text-xs text-blue-300/90">
+          No implementado: requiere ledger y conciliación (ADR-017). Hoy: USD +
+          Stripe + límites mensuales.
+        </p>
+        <a
+          href="https://github.com/cloudsysops/opsly/blob/main/docs/WALLET-PREPAID-ROADMAP.md"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-2 inline-block text-xs text-blue-400 underline"
+        >
+          Ver roadmap pausado (docs) →
+        </a>
       </div>
 
       {data.alerts.length > 0 && (

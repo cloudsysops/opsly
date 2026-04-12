@@ -1,6 +1,6 @@
 import {
   applyCostDecision,
-  getAdminCostsPayload,
+  buildAdminCostsPayloadAsync,
   parseCostDecisionBody,
 } from "../../../../lib/admin-costs";
 import { jsonError } from "../../../../lib/api-response";
@@ -31,7 +31,7 @@ export async function GET(request: Request): Promise<Response> {
   if (auth !== null) {
     return auth;
   }
-  return Response.json(getAdminCostsPayload());
+  return Response.json(await buildAdminCostsPayloadAsync());
 }
 
 export async function POST(request: Request): Promise<Response> {
@@ -57,7 +57,7 @@ export async function POST(request: Request): Promise<Response> {
     return jsonError(result.error, result.status);
   }
 
-  const payload = getAdminCostsPayload();
+  const payload = await buildAdminCostsPayloadAsync();
   const svc = payload.proposed[body.service_id];
   if (svc) {
     if (body.action === "approve") {

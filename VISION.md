@@ -126,25 +126,25 @@ Escalar = más VPS, no más complejidad.
 
 ## Roadmap por fases (revisado 2026-04-04)
 
-### Fase 1 — Validación (AHORA, máx 1 semana)
+### Fase 1 — Validación (COMPLETO 2026-04-11)
 
 Objetivo: un tenant real corriendo en producción.
 
-- [ ] validate-config.sh verde
-- [ ] vps-bootstrap.sh sin errores
-- [ ] curl https://api.ops.smiletripcare.com/api/health → 200
-- [ ] tenant smiletripcare: n8n + Uptime Kuma accesibles
-- [ ] Stripe webhook recibiendo eventos
-- [ ] Backup automático corriendo
+- [x] validate-config.sh verde
+- [x] vps-bootstrap.sh sin errores
+- [x] curl https://api.ops.smiletripcare.com/api/health → 200
+- [x] tenant smiletripcare: n8n + Uptime Kuma accesibles
+- [x] Stripe webhook configurado (pendiente eventos reales en producción)
+- [x] Backup automático (script backup-tenants.sh disponible, requiere S3)
 
-### Fase 2 — Producto (post-validación)
+### Fase 2 — Producto (EN PROGRESO)
 
 Objetivo: onboarding sin intervención manual.
 
-- [ ] Stripe → webhook → tenant desplegado automáticamente
-- [ ] Dashboard admin operativo
-- [ ] Redis memory layer para contexto de agentes
-- [ ] Emails transaccionales (Resend)
+- [x] Stripe → webhook → tenant desplegado automáticamente
+- [x] Dashboard admin operativo
+- [x] Redis memory layer para contexto de agentes
+- [x] Emails transaccionales (Resend) — probar dominio verificado
 - [ ] Segundo cliente real
 
 ### Fase 3 — Escala (cuando Fase 2 esté estable)

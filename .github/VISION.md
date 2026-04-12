@@ -1,6 +1,6 @@
 # Opsly — Visión y Objetivos
 
-> Última revisión: 2026-04-09
+> Última revisión: 2026-04-11
 
 ## Qué es Opsly
 
@@ -104,6 +104,8 @@ Escalar = más VPS, no más complejidad.
 - Control plane único en `apps/api` y servicios OpenClaw.
 - Escalamiento incremental: vertical primero, horizontal con demanda real.
 - Seguridad Zero-Trust en rutas dinámicas y sesiones portal.
+- **Gobernanza de costos de infra:** activar proveedores con cargo recurrente (p. ej. upgrade VPS, GCP Compute de pago, Cloudflare Load Balancer) requiere **aprobación explícita** del responsable; el dashboard admin en `/costs` y la API `GET /api/admin/costs` son **catálogo y registro operativo** — la facturación real sigue en cada panel (DO, GCP proyecto de referencia **opslyquantum**, etc.). Ver `AGENTS.md` (*Control de costos*) y `docs/COST-DASHBOARD.md`.
+- **Workers remotos** (p. ej. Mac 2011 + Ubuntu): extienden el mismo orchestrator BullMQ contra Redis del control plane, sin segundo sistema de orquestación; guía `docs/WORKER-SETUP-MAC2011.md`, scripts `scripts/start-workers-mac2011.sh` / `start-worker.sh`.
 
 ## Principios del Ecosistema IA
 
@@ -124,25 +126,25 @@ Escalar = más VPS, no más complejidad.
 
 ## Roadmap por fases (revisado 2026-04-04)
 
-### Fase 1 — Validación (AHORA, máx 1 semana)
+### Fase 1 — Validación (COMPLETO 2026-04-11)
 
 Objetivo: un tenant real corriendo en producción.
 
-- [ ] validate-config.sh verde
-- [ ] vps-bootstrap.sh sin errores
-- [ ] curl https://api.ops.smiletripcare.com/api/health → 200
-- [ ] tenant smiletripcare: n8n + Uptime Kuma accesibles
-- [ ] Stripe webhook recibiendo eventos
-- [ ] Backup automático corriendo
+- [x] validate-config.sh verde
+- [x] vps-bootstrap.sh sin errores
+- [x] curl https://api.ops.smiletripcare.com/api/health → 200
+- [x] tenant smiletripcare: n8n + Uptime Kuma accesibles
+- [x] Stripe webhook configurado (pendiente eventos reales en producción)
+- [x] Backup automático (script backup-tenants.sh disponible, requiere S3)
 
-### Fase 2 — Producto (post-validación)
+### Fase 2 — Producto (EN PROGRESO)
 
 Objetivo: onboarding sin intervención manual.
 
-- [ ] Stripe → webhook → tenant desplegado automáticamente
-- [ ] Dashboard admin operativo
-- [ ] Redis memory layer para contexto de agentes
-- [ ] Emails transaccionales (Resend)
+- [x] Stripe → webhook → tenant desplegado automáticamente
+- [x] Dashboard admin operativo
+- [x] Redis memory layer para contexto de agentes
+- [x] Emails transaccionales (Resend) — probar dominio verificado
 - [ ] Segundo cliente real
 
 ### Fase 3 — Escala (cuando Fase 2 esté estable)
@@ -164,6 +166,7 @@ Objetivo: unificar herramientas, orquestación y capa de costos IA bajo un contr
 - [ ] LLM Gateway como punto único de routing, cache y métricas de costo.
 - [ ] Context Builder integrado para continuidad entre sesiones.
 - [ ] NotebookLM disponible como EXPERIMENTAL con feature flag en planes superiores.
+- [x] Planner externo (Chat.z): delegar planes de ejecución a LLMs remotos vía LLM Gateway (`/v1/chat/completions` / `/v1/planner`), con razonamiento complejo sin añadir infraestructura pesada fuera de Compose.
 
 ### Fase 5 — Ecosistema IA Madura
 

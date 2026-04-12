@@ -157,6 +157,26 @@ export type CostAlert = {
   action: string;
 };
 
+export type BudgetAlertLevel = "ok" | "warning" | "critical";
+
+export type TenantBudgetSnapshot = {
+  tenant_slug: string;
+  tenant_name: string;
+  current_spend_usd: number;
+  limit_usd: number;
+  percent_used: number;
+  alert_level: BudgetAlertLevel;
+  enforcement_skipped: boolean;
+  projected_month_end_usd: number;
+};
+
+export type LlmBudgetSummary = {
+  tenant_count: number;
+  tenants_at_warning: number;
+  tenants_at_critical: number;
+  total_spend_usd: number;
+};
+
 export type AdminCostsResponse = {
   current: Record<string, CostLineItem>;
   proposed: Record<string, CostLineItem>;
@@ -167,6 +187,8 @@ export type AdminCostsResponse = {
   };
   alerts: CostAlert[];
   lastUpdated: string;
+  tenant_budgets: TenantBudgetSnapshot[];
+  llm_budget_summary: LlmBudgetSummary;
 };
 
 export type CostDecisionResponse = {

@@ -2,6 +2,8 @@
  * Catálogo orientativo de costos plataforma (sin secretos).
  * Estado de aprobación en memoria del proceso (se pierde al reiniciar el contenedor).
  */
+import type { LlmBudgetSummary, TenantBudgetSnapshot } from "./admin-costs-types";
+import { fetchTenantBudgetOverview } from "./admin-costs-tenant-budgets";
 import { HTTP_STATUS } from "./constants";
 
 export type CostLineStatus =
@@ -30,6 +32,17 @@ export type CostAlert = {
   message: string;
   action: string;
 };
+
+export type { LlmBudgetSummary, TenantBudgetSnapshot } from "./admin-costs-types";
+
+function emptyLlmBudgetSummary(): LlmBudgetSummary {
+  return {
+    tenant_count: 0,
+    tenants_at_warning: 0,
+    tenants_at_critical: 0,
+    total_spend_usd: 0,
+  };
+}
 
 const CURRENT: Record<string, CostLineItem> = {
   vps_digitalocean: {
@@ -110,7 +123,7 @@ function mergeProposed(): Record<string, CostLineItem> {
   for (const [id, item] of Object.entries(PROPOSED_BASE)) {
     const override = approvalByServiceId.get(id);
     out[id] =
-      override !== undefined ? { ...item, status: override } : { ...item };
+      override === undefined ? { ...item } : { ...item, status: override };
   }
   return out;
 }
@@ -136,6 +149,9 @@ export type AdminCostsPayload = {
   alerts: CostAlert[];
   /** ISO 8601 — momento de generación de la respuesta. */
   lastUpdated: string;
+  /** Presupuesto LLM por tenant (USD, mes UTC); vacío si falla Supabase o no hay datos. */
+  tenant_budgets: TenantBudgetSnapshot[];
+  llm_budget_summary: LlmBudgetSummary;
 };
 
 export function getAdminCostsPayload(): AdminCostsPayload {
@@ -165,7 +181,19 @@ export function getAdminCostsPayload(): AdminCostsPayload {
       },
     ],
     lastUpdated: new Date().toISOString(),
+    tenant_budgets: [],
+    llm_budget_summary: emptyLlmBudgetSummary(),
   };
+}
+
+/**
+ * Igual que {@link getAdminCostsPayload} más vista de presupuestos LLM por tenant (USD).
+ * No implementa wallet prepago (ADR-017).
+ */
+export async function buildAdminCostsPayloadAsync(): Promise<AdminCostsPayload> {
+  const base = getAdminCostsPayload();
+  const overview = await fetchTenantBudgetOverview();
+  return { ...base, ...overview };
 }
 
 export type CostDecisionBody = {

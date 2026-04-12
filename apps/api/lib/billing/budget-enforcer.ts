@@ -143,3 +143,12 @@ export async function checkTenantBudget(
     budgetAutoSuspended,
   };
 }
+
+/** Umbrales de alerta UI (USD) — sin wallet prepago; ver ADR-017. */
+export {
+  BUDGET_PERCENT_CRITICAL,
+  BUDGET_PERCENT_WARNING,
+  budgetAlertLevelFromPercent,
+  budgetUsagePercent,
+  projectedMonthEndUsd,
+} from "./budget-thresholds";

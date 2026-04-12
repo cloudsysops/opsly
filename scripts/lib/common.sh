@@ -34,6 +34,10 @@ log_error() {
   echo "${_C_RED}[$(timestamp)] ERROR ${_C_RESET}$*" >&2
 }
 
+log_ok() {
+  echo "${_C_CYAN}[$(timestamp)] OK    ${_C_RESET}$*"
+}
+
 # die MESSAGE [EXIT_CODE]  (default exit 1)
 die() {
   local msg="${1:?}"
