@@ -1,0 +1,20 @@
+# Smoke CI para módulo Hermes (type-check + tests acotados).
+name: Hermes health
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "30 */6 * * *"
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+      - run: npm ci
+      - run: npm run type-check --workspace=@intcloudsysops/orchestrator
+      - run: npm run test --workspace=@intcloudsysops/orchestrator -- hermes

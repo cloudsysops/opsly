@@ -1,0 +1,32 @@
+# Sincronización documentación → NotebookLM (text sources). Requiere secretos NOTEBOOKLM_* y Python + notebooklm-py en el runner (o self-hosted).
+name: NotebookLM docs sync
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 2 * * *"
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: npm ci
+      - name: Install notebooklm-py (optional)
+        continue-on: true
+        run: pip install "notebooklm-py[browser]" || pip install notebooklm-py || true
+      - name: Generate code snapshots
+        run: npm run docs:code-snapshots
+      - name: Push docs to NotebookLM
+        env:
+          NOTEBOOKLM_ENABLED: ${{ secrets.NOTEBOOKLM_ENABLED }}
+          NOTEBOOKLM_NOTEBOOK_ID: ${{ secrets.NOTEBOOKLM_NOTEBOOK_ID }}
+          NOTEBOOKLM_DEFAULT_TENANT_SLUG: ${{ vars.NOTEBOOKLM_DEFAULT_TENANT_SLUG }}
+        run: npm run docs:to-notebooklm
