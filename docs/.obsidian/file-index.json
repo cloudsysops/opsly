@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-04-12T20:40:35Z",
-  "totalFiles": 132,
+  "lastIndexed": "2026-04-12T20:53:00Z",
+  "totalFiles": 133,
   "files": [
     "ACTIVE-PROMPT.md",
     "ADMIN-ECOSYSTEM.md",
@@ -26,6 +26,7 @@
     "ADR-019-prometheus-grafana-observability.md",
     "ADR-020-orchestrator-worker-separation.md",
     "ADR-021-approval-gate-phase1.md",
+    "ADR-021-predictive-bi-scalability.md",
     "AGENTS-ASSIGNMENTS.md",
     "AGENTS-GUIDE.md",
     "AGENTS-ORCHESTRATION.md",
