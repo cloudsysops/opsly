@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-04-13T17:05:46Z",
-  "totalFiles": 143,
+  "lastIndexed": "2026-04-13T22:18:08Z",
+  "totalFiles": 144,
   "files": [
     "ACTIVE-PROMPT.md",
     "ADMIN-ECOSYSTEM.md",
@@ -81,6 +81,7 @@
     "MASTER-PLAN-STATUS.md",
     "MASTER-PLAN.md",
     "MCP-SERVERS.md",
+    "MCP-STATUS-ANALYSIS.md",
     "MONITORING.md",
     "N8N-IMPORT-GUIDE.md",
     "N8N-SETUP.md",
