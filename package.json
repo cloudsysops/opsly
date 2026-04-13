@@ -1,11 +1,19 @@
 {
   "name": "intcloudsysops",
   "private": true,
-  "workspaces": ["apps/*", "apps/agents/notebooklm", "skills/manifest", "packages/*"],
+  "workspaces": [
+    "apps/*",
+    "apps/agents/notebooklm",
+    "skills/manifest",
+    "packages/*"
+  ],
   "scripts": {
     "dev": "turbo dev",
     "build": "turbo build",
     "lint": "turbo lint",
+    "lint:fix": "turbo lint:fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "type-check": "turbo type-check",
     "update-state": "node scripts/update-state.js",
     "sync-agents": "bash scripts/update-agents.sh",
@@ -15,6 +23,8 @@
     "validate-skills": "npm run validate-skills --prefix skills/manifest",
     "test-skills-manifest": "npm test --prefix skills/manifest",
     "test": "turbo run test",
+    "test:coverage": "turbo run test -- --coverage",
+    "test:e2e": "turbo run test:e2e",
     "dev:notion-mcp": "doppler run --project ops-intcloudsysops --config prd -- npm run dev --workspace=@intcloudsysops/notion-mcp",
     "start:notion-mcp": "doppler run --project ops-intcloudsysops --config prd -- npm run start --workspace=@intcloudsysops/notion-mcp",
     "enqueue-test-job": "tsx --tsconfig scripts/tsconfig.enqueue.json scripts/enqueue-test-job.ts",
@@ -35,22 +45,53 @@
     "docs:code-snapshots": "node scripts/generate-code-snapshots.mjs",
     "docs:to-notebooklm": "node scripts/docs-to-notebooklm.mjs",
     "notebooklm:sync": "npm run docs:code-snapshots && npm run docs:to-notebooklm",
-    "notebooklm:query": "node scripts/query-notebooklm.mjs"
+    "notebooklm:query": "node scripts/query-notebooklm.mjs",
+    "prepare": "husky install",
+    "commit": "git-cz"
   },
   "devDependencies": {
+    "@commitlint/cli": "^19.8.0",
+    "@commitlint/config-conventional": "^19.8.0",
     "@types/node": "^20.19.12",
     "bullmq": "^5.58.5",
+    "commitizen": "^4.3.1",
+    "cz-conventional-changelog": "^3.3.0",
     "dotenv": "^16.4.7",
-    "tsx": "^4.20.5",
+    "eslint": "^9.21.0",
+    "eslint-config-prettier": "^10.1.0",
+    "eslint-plugin-prettier": "^5.2.4",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.5.1",
     "@eslint/eslintrc": "^3.3.1",
     "@eslint/js": "^9.21.0",
     "@typescript-eslint/eslint-plugin": "^8.58.0",
     "@typescript-eslint/parser": "^8.58.0",
-    "eslint": "^9.21.0",
+    "prettier": "^3.5.3",
     "turbo": "^1.13.4",
     "typescript": "^5.7.3",
     "yaml": "^2.7.0",
     "js-yaml": "^4.1.0",
     "nodemon": "^3.1.9"
+  },
+  "config": {
+    "commitizen": {
+      "path": "cz-conventional-changelog"
+    }
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{js,json,md,yml,yaml}": [
+      "prettier --write"
+    ],
+    "*.sh": [
+      "bash -n"
+    ]
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "npm": ">=10.0.0"
   }
 }

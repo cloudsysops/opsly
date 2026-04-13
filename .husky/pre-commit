@@ -1,10 +1,13 @@
 #!/usr/bin/env sh
-# Opcional: delega en el hook real del repo (core.hooksPath suele ser .githooks).
-# Si usas Husky en lugar de .githooks, mantené esta delegación.
 ROOT="$(git rev-parse --show-toplevel)"
 cd "$ROOT" || exit 1
+
+# Run lint-staged on staged files
+npx lint-staged 2>/dev/null || true
+
+# Run existing .githooks pre-commit if exists
 if [ -f "$ROOT/.githooks/pre-commit" ]; then
   exec sh "$ROOT/.githooks/pre-commit"
 fi
-echo "husky: .githooks/pre-commit no encontrado; omitiendo."
+
 exit 0

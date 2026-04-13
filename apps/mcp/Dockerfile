@@ -1,6 +1,6 @@
 FROM node:20-alpine AS deps
 WORKDIR /repo
-COPY package.json package-lock.json pnpm-lock.yaml ./
+COPY package.json package-lock.json ./
 COPY packages/types/package.json ./packages/types/
 COPY apps/mcp/package.json ./apps/mcp/
 COPY apps/llm-gateway/package.json ./apps/llm-gateway/
