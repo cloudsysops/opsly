@@ -77,6 +77,33 @@ services:
     depends_on:
       - api
 
+  dify:
+    image: langgenius/dify-api:1.2.0
+    container_name: dify-local
+    restart: unless-stopped
+    profiles:
+      - ai
+    environment:
+      MODE: api
+      LOG_LEVEL: INFO
+      SECRET_KEY: ${DIFY_SECRET_KEY:-replace-me-local-dev-only}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-localredis}
+      DB_USERNAME: ${DIFY_DB_USERNAME:-postgres}
+      DB_PASSWORD: ${DIFY_DB_PASSWORD:-postgres}
+      DB_HOST: ${DIFY_DB_HOST:-host.docker.internal}
+      DB_PORT: ${DIFY_DB_PORT:-5432}
+      DB_DATABASE: ${DIFY_DB_DATABASE:-dify}
+      VECTOR_STORE: weaviate
+      WEAVIATE_ENDPOINT: ${DIFY_WEAVIATE_ENDPOINT:-http://host.docker.internal:8081}
+    ports:
+      - "5001:5001"
+    networks:
+      - internal
+    depends_on:
+      - redis
+
 networks:
   traefik-local:
     name: traefik-local
