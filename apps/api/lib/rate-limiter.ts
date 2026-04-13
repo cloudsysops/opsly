@@ -8,6 +8,7 @@ type RateLimitReply = {
 
 export const RATE_LIMIT_WINDOW_SECONDS = 60;
 export const RATE_LIMIT_MAX_REQUESTS = 100;
+const RATE_LIMIT_REPLY_LENGTH = 2;
 
 const RATE_LIMIT_LUA_SCRIPT = `
 local current = redis.call('INCR', KEYS[1])
@@ -62,7 +63,7 @@ function parseRedisInteger(value: unknown, field: string): number {
 }
 
 function parseRateLimitReply(reply: unknown): RateLimitReply {
-  if (!Array.isArray(reply) || reply.length !== 2) {
+  if (!Array.isArray(reply) || reply.length !== RATE_LIMIT_REPLY_LENGTH) {
     throw new Error('Invalid Redis rate limit reply');
   }
 
@@ -151,9 +152,9 @@ export async function checkRateLimit(tenantSlug: string): Promise<RateLimitResul
   try {
     const reply = parseRateLimitReply(
       await redis.sendCommand([
-        "EVAL",
+        'EVAL',
         RATE_LIMIT_LUA_SCRIPT,
-        "1",
+        '1',
         key,
         String(RATE_LIMIT_WINDOW_SECONDS),
       ])

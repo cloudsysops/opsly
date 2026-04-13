@@ -8,10 +8,7 @@ export function isPublicDemoRead(): boolean {
 
 function readAdminTokenFromRequest(request: Request): string {
   const auth = request.headers.get('authorization');
-  const bearer =
-    auth?.startsWith('Bearer ') === true
-      ? auth.slice('Bearer '.length).trim()
-      : '';
+  const bearer = auth?.startsWith('Bearer ') === true ? auth.slice('Bearer '.length).trim() : '';
   const headerToken = request.headers.get('x-admin-token')?.trim() ?? '';
   return bearer.length > 0 ? bearer : headerToken;
 }
@@ -24,9 +21,7 @@ function readExpectedAdminToken(): string {
  * GET publico solo cuando ADMIN_PUBLIC_DEMO_READ=true (demo familia).
  * Mutaciones siguen usando requireAdminToken.
  */
-export function requireAdminTokenUnlessDemoRead(
-  request: Request,
-): Response | null {
+export function requireAdminTokenUnlessDemoRead(request: Request): Response | null {
   if (request.method === 'GET' && isPublicDemoRead()) {
     return null;
   }
@@ -38,9 +33,7 @@ export function requireAdminTokenUnlessDemoRead(
  * Se usa en rutas consumidas por el panel admin para evitar exponer tokens
  * publicos en el navegador.
  */
-export async function requireAdminAccess(
-  request: Request,
-): Promise<Response | null> {
+export async function requireAdminAccess(request: Request): Promise<Response | null> {
   const expected = readExpectedAdminToken();
   const token = readAdminTokenFromRequest(request);
   if (expected.length > 0 && token.length > 0 && token === expected) {
@@ -54,9 +47,7 @@ export async function requireAdminAccess(
   return auth.response;
 }
 
-export async function requireAdminAccessUnlessDemoRead(
-  request: Request,
-): Promise<Response | null> {
+export async function requireAdminAccessUnlessDemoRead(request: Request): Promise<Response | null> {
   if (request.method === 'GET' && isPublicDemoRead()) {
     return null;
   }
@@ -68,7 +59,7 @@ export function requireAdminToken(request: Request): Response | null {
   if (expected.length === 0) {
     return jsonError(
       'Server misconfiguration: PLATFORM_ADMIN_TOKEN is not set',
-      HTTP_STATUS.INTERNAL_ERROR,
+      HTTP_STATUS.INTERNAL_ERROR
     );
   }
 
