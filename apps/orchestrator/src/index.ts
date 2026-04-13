@@ -88,9 +88,21 @@ function startAllWorkers(): AsyncCleanup[] {
   }
 
   let approvalGateCleanup: AsyncCleanup[] = [];
-  if (process.env.OPSLY_APPROVAL_GATE_WORKER_ENABLED !== "false") {
+  const supabaseConfigured =
+    (process.env.SUPABASE_URL?.trim() ?? "").length > 0 &&
+    (process.env.SUPABASE_SERVICE_ROLE_KEY?.trim() ?? "").length > 0;
+  const approvalGateEnabled =
+    process.env.OPSLY_APPROVAL_GATE_WORKER_ENABLED !== "false" && supabaseConfigured;
+  if (approvalGateEnabled) {
     const { worker: approvalGateWorker } = startApprovalGateWorker(connection);
     approvalGateCleanup = [async () => approvalGateWorker.close()];
+  } else if (
+    process.env.OPSLY_APPROVAL_GATE_WORKER_ENABLED !== "false" &&
+    !supabaseConfigured
+  ) {
+    console.warn(
+      "[orchestrator] Approval gate omitido: define SUPABASE_URL y SUPABASE_SERVICE_ROLE_KEY o exporta OPSLY_APPROVAL_GATE_WORKER_ENABLED=false",
+    );
   }
 
   let hermesCleanup: AsyncCleanup[] = [];
@@ -121,7 +133,7 @@ function startAllWorkers(): AsyncCleanup[] {
       (process.env.OPSLY_AGENT_CLASSIFIER_WORKER_ENABLED === "true"
         ? ", agent-classifier"
         : "") +
-      (process.env.OPSLY_APPROVAL_GATE_WORKER_ENABLED !== "false" ? ", approval-gate" : "") +
+      (approvalGateEnabled ? ", approval-gate" : "") +
       (process.env.HERMES_ENABLED === "true" ? ", hermes-orchestration" : ""),
   );
   return cleanup;
