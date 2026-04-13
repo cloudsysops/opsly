@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-04-13T16:28:07Z",
-  "totalFiles": 142,
+  "lastIndexed": "2026-04-13T16:47:40Z",
+  "totalFiles": 143,
   "files": [
     "ACTIVE-PROMPT.md",
     "ADMIN-ECOSYSTEM.md",
@@ -75,6 +75,7 @@
     "INCIDENT-2026-04-11-DISCO-LLENO.md",
     "INVITATIONS_RUNBOOK.md",
     "LIBRARIES-INSTALLED.md",
+    "LLM-GATEWAY-WORKPLAN.md",
     "LLM-GATEWAY.md",
     "LOCALRANK-TESTER-GUIDE.md",
     "MASTER-PLAN-STATUS.md",
