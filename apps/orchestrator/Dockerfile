@@ -8,6 +8,7 @@ COPY turbo.json ./
 COPY apps ./apps
 COPY packages ./packages
 COPY skills ./skills
+COPY scripts ./scripts
 RUN npm ci --ignore-scripts
 
 RUN npm run build -w @intcloudsysops/types && \
