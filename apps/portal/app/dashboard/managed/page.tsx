@@ -5,10 +5,11 @@ import { LlmUsageCard } from "@/components/llm-usage-card";
 import { PortalShell } from "@/components/portal-shell";
 import { ServiceCard } from "@/components/service-card";
 import { healthFromReachable } from "@/components/status-badge";
-import { requirePortalPayloadWithUsage } from "@/lib/portal-server";
+import { InsightDashboard } from "@/components/insight-dashboard";
+import { requirePortalPayloadWithUsageAndInsights } from "@/lib/portal-server";
 
 export default async function ManagedDashboardPage(): Promise<ReactElement> {
-  const { payload: data, usage } = await requirePortalPayloadWithUsage();
+  const { payload: data, usage, insights } = await requirePortalPayloadWithUsageAndInsights();
   if (data.mode === "developer") {
     redirect("/dashboard/developer");
   }
@@ -28,6 +29,13 @@ export default async function ManagedDashboardPage(): Promise<ReactElement> {
         </PageLead>
         <div className="stagger-children space-y-8">
         <LlmUsageCard usage={usage} />
+
+        {insights !== null && (
+          <InsightDashboard
+            tenantSlug={data.slug}
+            insights={insights.insights}
+          />
+        )}
 
         <section className="rounded-lg border border-ops-border bg-ops-surface p-5">
           <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-ops-gray">
