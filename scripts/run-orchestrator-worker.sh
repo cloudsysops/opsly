@@ -15,6 +15,7 @@ export OPSLY_ORCHESTRATOR_ROLE="${OPSLY_ORCHESTRATOR_ROLE:-worker}"
 
 if [[ "${DRY_RUN:-}" == "true" ]]; then
   echo "[dry-run] OPSLY_ORCHESTRATOR_ROLE=$OPSLY_ORCHESTRATOR_ROLE"
+  echo "[dry-run] would run: npm run build --workspace=@intcloudsysops/notebooklm-agent"
   echo "[dry-run] would run: npm run build --workspace=@intcloudsysops/orchestrator"
   echo "[dry-run] would run: npm run start --workspace=@intcloudsysops/orchestrator"
   exit 0
@@ -25,5 +26,6 @@ if [[ -z "${REDIS_URL:-}" ]]; then
   exit 1
 fi
 
+npm run build --workspace=@intcloudsysops/notebooklm-agent
 npm run build --workspace=@intcloudsysops/orchestrator
 exec npm run start --workspace=@intcloudsysops/orchestrator

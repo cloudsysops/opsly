@@ -8,10 +8,10 @@
     "start": "node dist/index.js",
     "test": "vitest run",
     "test:tools": "vitest run --passWithNoTests src/agents/tools",
-    "type-check": "tsc --noEmit",
-    "hermes": "tsx src/hermes/cli.ts"
+    "type-check": "tsc --noEmit"
   },
   "dependencies": {
+    "@intcloudsysops/notebooklm-agent": "*",
     "@intcloudsysops/types": "*",
     "@intcloudsysops/ml": "^1.0.0",
     "@llamaindex/postgres": "^0.0.65",
