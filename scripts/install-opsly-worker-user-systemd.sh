@@ -31,4 +31,5 @@ systemctl --user restart opsly-worker.service
 systemctl --user --no-pager status opsly-worker.service
 
 echo ""
+echo "Logs: journalctl --user -u opsly-worker.service -f"
 echo "Si quieres que arranque tras reboot sin abrir sesión: sudo loginctl enable-linger $(whoami)"

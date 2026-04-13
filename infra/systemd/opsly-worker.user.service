@@ -12,6 +12,8 @@ Description=Opsly Orchestrator Worker (BullMQ, user)
 Documentation=https://github.com/cloudsysops/opsly
 After=network-online.target
 Wants=network-online.target
+StartLimitIntervalSec=300
+StartLimitBurst=5
 
 [Service]
 Type=simple
@@ -19,11 +21,9 @@ WorkingDirectory=/home/opslyquantum/opsly
 ExecStart=/home/opslyquantum/opsly/scripts/run-worker-with-nvm.sh
 Restart=always
 RestartSec=15
-StartLimitIntervalSec=300
-StartLimitBurst=5
 
-StandardOutput=append:/home/opslyquantum/opsly/logs/worker.log
-StandardError=append:/home/opslyquantum/opsly/logs/worker-error.log
+# Journal del usuario (journalctl --user -u opsly-worker -f).
+# No usar append a logs/worker.log si ese archivo fue creado por unidad system (root).
 
 Environment=NODE_ENV=production
 
