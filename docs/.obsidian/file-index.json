@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-04-13T04:58:26Z",
-  "totalFiles": 136,
+  "lastIndexed": "2026-04-13T13:24:42Z",
+  "totalFiles": 138,
   "files": [
     "ACTIVE-PROMPT.md",
     "ADMIN-ECOSYSTEM.md",
@@ -95,6 +95,7 @@
     "PLAN-ORCHESTRATOR-WORKER.md",
     "PLANNING.md",
     "PLUGINS-TO-INSTALL.md",
+    "POLICY-AI-LOCAL-FIRST.md",
     "PREDICTIVE-BI-SCALABILITY.md",
     "QA-REVIEW-COMPLETE.md",
     "QUALITY-GATES.md",
@@ -102,6 +103,7 @@
     "README.md",
     "REFACTOR-CHECKLIST.md",
     "RETENTION-POLICY.md",
+    "RUNBOOK-AI-LOCAL-FIRST.md",
     "RUNBOOK-INSIGHTS-DEPLOY.md",
     "SECURITY-MITIGATIONS-2026-04-09.md",
     "SECURITY_AUDIT_REPORT.md",
