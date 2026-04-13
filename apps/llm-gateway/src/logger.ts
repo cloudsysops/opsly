@@ -25,55 +25,27 @@ type UsageRow = {
   model: string;
 };
 
-export async function logUsage(event: UsageEvent): Promise<void> {
-  try {
-    const supabase = getSupabaseClient();
-    if (!supabase) {
-      return;
-    }
-    await platformSchema(supabase).from("usage_events").insert(event);
-  } catch (error) {
-    console.error("[llm-gateway] Error logging usage:", error);
-  }
-}
-
-export async function getTenantUsage(
-  tenantSlug: string,
-  period: "today" | "month" = "today",
-): Promise<{
+type UsageAggregate = {
   tokens_input: number;
   tokens_output: number;
   cost_usd: number;
   requests: number;
   cache_hits: number;
   top_model: string | null;
-}> {
-  const supabase = getSupabaseClient();
-  if (!supabase) {
-    return {
-      tokens_input: 0,
-      tokens_output: 0,
-      cost_usd: 0,
-      requests: 0,
-      cache_hits: 0,
-      top_model: null,
-    };
-  }
-  const now = new Date();
-  const from =
-    period === "today"
-      ? new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString()
-      : new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+};
 
-  const { data } = await platformSchema(supabase)
-    .from("usage_events")
-    .select("tokens_input,tokens_output,cost_usd,cache_hit,model")
-    .eq("tenant_slug", tenantSlug)
-    .gte("created_at", from);
+function emptyUsageAggregate(): UsageAggregate {
+  return {
+    tokens_input: 0,
+    tokens_output: 0,
+    cost_usd: 0,
+    requests: 0,
+    cache_hits: 0,
+    top_model: null,
+  };
+}
 
-  const rows: UsageRow[] = (data || []) as UsageRow[];
-
-  // Compute the most-used model
+function buildUsageAggregate(rows: UsageRow[]): UsageAggregate {
   const modelCount = new Map<string, number>();
   for (const row of rows) {
     if (row.model) {
@@ -97,4 +69,59 @@ export async function getTenantUsage(
     cache_hits: rows.filter((row) => row.cache_hit).length,
     top_model,
   };
+}
+
+function usagePeriodStart(period: "today" | "month"): string {
+  const now = new Date();
+  return period === "today"
+    ? new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString()
+    : new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+}
+
+export async function logUsage(event: UsageEvent): Promise<void> {
+  try {
+    const supabase = getSupabaseClient();
+    if (!supabase) {
+      return;
+    }
+    await platformSchema(supabase).from("usage_events").insert(event);
+  } catch (error) {
+    console.error("[llm-gateway] Error logging usage:", error);
+  }
+}
+
+export async function getTenantUsage(
+  tenantSlug: string,
+  period: "today" | "month" = "today",
+): Promise<UsageAggregate> {
+  const supabase = getSupabaseClient();
+  if (!supabase) {
+    return emptyUsageAggregate();
+  }
+  const from = usagePeriodStart(period);
+
+  const { data } = await platformSchema(supabase)
+    .from("usage_events")
+    .select("tokens_input,tokens_output,cost_usd,cache_hit,model")
+    .eq("tenant_slug", tenantSlug)
+    .gte("created_at", from);
+
+  const rows: UsageRow[] = (data || []) as UsageRow[];
+  return buildUsageAggregate(rows);
+}
+
+export async function getPlatformLlmUsage(
+  period: "today" | "month" = "today",
+): Promise<UsageAggregate> {
+  const supabase = getSupabaseClient();
+  if (!supabase) {
+    return emptyUsageAggregate();
+  }
+
+  const { data } = await platformSchema(supabase)
+    .from("usage_events")
+    .select("tokens_input,tokens_output,cost_usd,cache_hit,model")
+    .gte("created_at", usagePeriodStart(period));
+
+  return buildUsageAggregate((data || []) as UsageRow[]);
 }
