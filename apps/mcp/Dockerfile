@@ -1,21 +1,24 @@
 FROM node:20-alpine AS deps
 WORKDIR /repo
-COPY package.json package-lock.json ./
+COPY package.json package-lock.json pnpm-lock.yaml ./
+COPY packages/types/package.json ./packages/types/
 COPY apps/mcp/package.json ./apps/mcp/
 COPY apps/llm-gateway/package.json ./apps/llm-gateway/
 COPY apps/agents/notebooklm/package.json ./apps/agents/notebooklm/
-RUN npm ci -w @intcloudsysops/mcp
+RUN npm ci
 
 FROM node:20-alpine AS builder
 WORKDIR /repo
 COPY --from=deps /repo/node_modules ./node_modules
 COPY --from=deps /repo/package.json ./package.json
 COPY --from=deps /repo/package-lock.json ./package-lock.json
+COPY packages/types ./packages/types
 COPY apps/mcp ./apps/mcp
 COPY apps/llm-gateway ./apps/llm-gateway
 COPY apps/agents/notebooklm ./apps/agents/notebooklm
-# Workspace deps must emit dist/ before MCP (imports llm-gateway/cache, notebooklm-agent).
-RUN npm run build -w @intcloudsysops/llm-gateway && \
+# Build types first (required by llm-gateway), then other workspaces
+RUN npm run build -w @intcloudsysops/types && \
+    npm run build -w @intcloudsysops/llm-gateway && \
     npm run build -w @intcloudsysops/notebooklm-agent && \
     npm run build -w @intcloudsysops/mcp
 

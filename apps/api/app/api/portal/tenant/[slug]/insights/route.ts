@@ -2,15 +2,14 @@ import { NextRequest } from "next/server";
 import { HTTP_STATUS } from "../../../../../../lib/constants";
 import {
   getInsightsForTenant,
-  markInsightRead,
-  markInsightStatus,
 } from "../../../../../../lib/insights/engine";
+import { applyInsightPatchAction } from "../../../../../../lib/insights/insight-patch-actions";
 import {
   resolveTrustedPortalSession,
   tenantSlugMatchesSession,
 } from "../../../../../../lib/portal-trusted-identity";
 
-function normalizeInsight(row: {
+type PortalInsightRow = {
   id: string;
   tenant_id: string;
   insight_type: string;
@@ -23,7 +22,29 @@ function normalizeInsight(row: {
   read_at: string | null;
   actioned_at: string | null;
   created_at: string;
-}) {
+};
+
+type PortalInsightResponse = {
+  id: string;
+  tenant_id: string;
+  insight_type: string;
+  title: string;
+  summary: string;
+  payload: Record<string, unknown>;
+  confidence: number;
+  impact_score: number;
+  status: string;
+  read_at: string | null;
+  actioned_at: string | null;
+  created_at: string;
+};
+
+type InsightPatchBody = {
+  insight_id?: string;
+  action?: string;
+};
+
+function normalizeInsight(row: PortalInsightRow): PortalInsightResponse {
   const conf =
     typeof row.confidence === "string"
       ? Number.parseFloat(row.confidence)
@@ -44,33 +65,117 @@ function normalizeInsight(row: {
   };
 }
 
+async function resolveTrustedTenant(
+  request: NextRequest,
+  context: { params: Promise<{ slug: string }> },
+): Promise<
+  | {
+      ok: true;
+      slug: string;
+      tenantId: string;
+    }
+  | { ok: false; response: Response }
+> {
+  const trusted = await resolveTrustedPortalSession(request);
+  if (!trusted.ok) {
+    return { ok: false, response: trusted.response };
+  }
+
+  const { slug } = await context.params;
+  if (!tenantSlugMatchesSession(trusted.session, slug)) {
+    return {
+      ok: false,
+      response: Response.json(
+        { error: "Tenant slug does not match session" },
+        { status: HTTP_STATUS.FORBIDDEN },
+      ),
+    };
+  }
+
+  return {
+    ok: true,
+    slug,
+    tenantId: trusted.session.tenant.id,
+  };
+}
+
+async function parsePatchBody(request: NextRequest): Promise<
+  | { ok: true; body: InsightPatchBody }
+  | { ok: false; response: Response }
+> {
+  try {
+    return {
+      ok: true,
+      body: (await request.json()) as InsightPatchBody,
+    };
+  } catch {
+    return {
+      ok: false,
+      response: Response.json(
+        { error: "Invalid JSON" },
+        { status: HTTP_STATUS.BAD_REQUEST },
+      ),
+    };
+  }
+}
+
+function validateInsightPatchBody(
+  body: InsightPatchBody,
+): { ok: true; insightId: string; action: string } | { ok: false; response: Response } {
+  const insightId = body.insight_id?.trim();
+  const action = body.action?.trim();
+  if (!insightId || !action) {
+    return {
+      ok: false,
+      response: Response.json(
+        { error: "insight_id and action required" },
+        { status: HTTP_STATUS.BAD_REQUEST },
+      ),
+    };
+  }
+
+  return {
+    ok: true,
+    insightId,
+    action,
+  };
+}
+
+function invalidInsightActionResponse(): Response {
+  return Response.json(
+    { error: "action must be read, dismiss, or action" },
+    { status: HTTP_STATUS.BAD_REQUEST },
+  );
+}
+
+function insightPatchErrorResponse(error: unknown): Response {
+  const message = error instanceof Error ? error.message : "update failed";
+  const status =
+    message === "Insight not found"
+      ? HTTP_STATUS.NOT_FOUND
+      : HTTP_STATUS.INTERNAL_ERROR;
+  return Response.json({ error: message }, { status });
+}
+
 /**
  * Insights predictivos (Zero-Trust): el slug del path debe coincidir con la sesión.
  */
 export async function GET(
-  _request: NextRequest,
+  request: NextRequest,
   context: { params: Promise<{ slug: string }> },
 ): Promise<Response> {
-  const trusted = await resolveTrustedPortalSession(_request);
-  if (!trusted.ok) {
-    return trusted.response;
-  }
-  const { slug } = await context.params;
-  if (!tenantSlugMatchesSession(trusted.session, slug)) {
-    return Response.json(
-      { error: "Tenant slug does not match session" },
-      { status: HTTP_STATUS.FORBIDDEN },
-    );
+  const trustedTenant = await resolveTrustedTenant(request, context);
+  if (!trustedTenant.ok) {
+    return trustedTenant.response;
   }
 
-  const tenantId = trusted.session.tenant.id;
-  const rows = await getInsightsForTenant(tenantId, {
+  const rows = await getInsightsForTenant(trustedTenant.tenantId, {
     includeRead: true,
     limit: 40,
   });
 
   return Response.json({
-    tenant_slug: slug,
+    tenant_slug: trustedTenant.slug,
     insights: rows.map(normalizeInsight),
   });
 }
@@ -79,67 +184,33 @@ export async function PATCH(
   request: NextRequest,
   context: { params: Promise<{ slug: string }> },
 ): Promise<Response> {
-  const trusted = await resolveTrustedPortalSession(request);
-  if (!trusted.ok) {
-    return trusted.response;
-  }
-  const { slug } = await context.params;
-  if (!tenantSlugMatchesSession(trusted.session, slug)) {
-    return Response.json(
-      { error: "Tenant slug does not match session" },
-      { status: HTTP_STATUS.FORBIDDEN },
-    );
+  const trustedTenant = await resolveTrustedTenant(request, context);
+  if (!trustedTenant.ok) {
+    return trustedTenant.response;
   }
 
-  let body: { insight_id?: string; action?: string };
-  try {
-    body = (await request.json()) as { insight_id?: string; action?: string };
-  } catch {
-    return Response.json(
-      { error: "Invalid JSON" },
-      { status: HTTP_STATUS.BAD_REQUEST },
-    );
+  const parsedBody = await parsePatchBody(request);
+  if (!parsedBody.ok) {
+    return parsedBody.response;
   }
 
-  const insightId = body.insight_id?.trim();
-  const action = body.action?.trim();
-  if (!insightId || !action) {
-    return Response.json(
-      { error: "insight_id and action required" },
-      { status: HTTP_STATUS.BAD_REQUEST },
-    );
+  const validatedPatch = validateInsightPatchBody(parsedBody.body);
+  if (!validatedPatch.ok) {
+    return validatedPatch.response;
   }
-
-  const tenantId = trusted.session.tenant.id;
 
   try {
-    if (action === "read") {
-      await markInsightRead(insightId, tenantId);
-    } else if (action === "dismiss") {
-      await markInsightStatus({
-        insightId,
-        tenantId,
-        status: "dismissed",
-      });
-    } else if (action === "action") {
-      await markInsightStatus({
-        insightId,
-        tenantId,
-        status: "actioned",
-      });
-    } else {
-      return Response.json(
-        { error: "action must be read, dismiss, or action" },
-        { status: HTTP_STATUS.BAD_REQUEST },
-      );
+    const applied = await applyInsightPatchAction(
+      validatedPatch.action,
+      validatedPatch.insightId,
+      trustedTenant.tenantId,
+    );
+    if (!applied) {
+      return invalidInsightActionResponse();
     }
+
     return Response.json({ ok: true });
   } catch (e) {
-    const message = e instanceof Error ? e.message : "update failed";
-    const status =
-      message === "Insight not found"
-        ? HTTP_STATUS.NOT_FOUND
-        : HTTP_STATUS.INTERNAL_ERROR;
-    return Response.json({ error: message }, { status });
+    return insightPatchErrorResponse(e);
   }
 }
