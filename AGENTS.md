@@ -286,11 +286,14 @@ Procedimientos vivos en el repo: **`skills/user/<skill>/SKILL.md`**. En runtimes
 - ✅ Predictive BI Engine: rutas `GET/POST /api/portal/tenant/[slug]/insights` + `GET /api/admin/overview` + `POST /api/notebooklm/query` actualizadas
 - ✅ API Dockerfile fix: añadido `packages/types` COPY y build antes de `llm-gateway`
 - ✅ MCP Dockerfile fix: eliminado `pnpm-lock.yaml` que no existe (repo usa npm)
-- ✅ LangChain stubs: `lib/ai/langchain.ts` stubbed para evitar errores de compilación
+- ✅ LangChain + LlamaIndex stubs: evitado errores de compilación por paquetes faltantes
+- ✅ Todos los Dockerfiles: añadido `--ignore-scripts` para skip husky en build
+- ✅ Dockerfile.hermes: fix pip install, scripts COPY
+- ✅ docker-compose.platform.yml: eliminado duplicate hermes service
 - ✅ Type-check: 14/14 packages successful
-- ✅ Committed and pushed to main: `0de8094 fix: remove pnpm-lock.yaml from MCP Dockerfile and stub unused langchain imports`
+- ✅ Docker images: build + push exitoso a GHCR (api, admin, portal, llm-gateway, orchestrator, hermes, context-builder, mcp)
 
-**Pendiente inmediato:** Verificar que GitHub Actions `Deploy` workflow succeed tras los fixes de Dockerfiles.
+**Pendiente VPS:** Deployment falla por contenedores antiguos + imagen local `opsly-orchestrator:local`. Limpiar VPS: `docker container prune -f && docker image prune -af` antes de redeploy.
 
 **ADR-020 (sesión):** [`docs/adr/ADR-020-orchestrator-worker-separation.md`](docs/adr/ADR-020-orchestrator-worker-separation.md) — alias `OPSLY_ORCHESTRATOR_MODE` documentado; tests `orchestrator-role.test.ts` ampliados; `npm run type-check` y `npm run test --workspace=@intcloudsysops/orchestrator` en verde.
 
