@@ -1,6 +1,4 @@
-import { Settings, type LLM } from "llamaindex";
-
-export type LlamaIndexProvider = "anthropic" | "openai";
+export type LlamaIndexProvider = 'anthropic' | 'openai';
 
 export interface LlamaIndexConfig {
   provider: LlamaIndexProvider;
@@ -12,7 +10,7 @@ export interface LlamaIndexConfig {
 const DEFAULT_TEMPERATURE = 0.3;
 const DEFAULT_MAX_TOKENS = 1024;
 
-function requireKey(envVar: "ANTHROPIC_API_KEY" | "OPENAI_API_KEY"): string {
+function requireKey(envVar: 'ANTHROPIC_API_KEY' | 'OPENAI_API_KEY'): string {
   const value = process.env[envVar]?.trim();
   if (!value) {
     throw new Error(`Missing ${envVar} for LlamaIndex integration`);
@@ -33,17 +31,16 @@ export function createLlamaIndexConfig(config: LlamaIndexConfig): LlamaIndexRunt
     model: config.model,
     temperature,
     maxTokens,
-    apiKey: config.provider === "anthropic" ? requireKey("ANTHROPIC_API_KEY") : requireKey("OPENAI_API_KEY"),
+    apiKey:
+      config.provider === 'anthropic'
+        ? requireKey('ANTHROPIC_API_KEY')
+        : requireKey('OPENAI_API_KEY'),
   };
 }
 
-export function applyLlamaIndexDefaults(config: LlamaIndexConfig, llm?: LLM): LlamaIndexRuntimeConfig {
-  const resolved = createLlamaIndexConfig(config);
-
-  // Optional: when caller already created a concrete LLM instance, apply it globally.
-  if (llm) {
-    Settings.llm = llm;
-  }
-
-  return resolved;
+export function applyLlamaIndexDefaults(
+  config: LlamaIndexConfig,
+  _llm?: unknown
+): LlamaIndexRuntimeConfig {
+  return createLlamaIndexConfig(config);
 }
