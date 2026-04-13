@@ -1,21 +1,50 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import useSWR from "swr";
 import { BudgetAlertCard } from "@/components/billing/BudgetAlertCard";
 import { LlmBudgetSummaryStrip } from "@/components/billing/LlmBudgetSummaryStrip";
 import { TenantBudgetBars } from "@/components/billing/TenantBudgetBars";
 import { CostCard } from "@/components/costs/CostCard";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { getAdminCosts, postCostDecision } from "@/lib/api-client";
 import type { AdminCostsResponse } from "@/lib/types";
 
 const fetcher = (): Promise<AdminCostsResponse> => getAdminCosts();
+
+type BudgetFilterValue = "all" | "critical" | "warning" | "ok" | "skipped";
+type BudgetSortValue = "percent_desc" | "projected_desc" | "name_asc";
+
+function formatUsd(value: number): string {
+  return `$${value.toFixed(2)}`;
+}
+
+function deltaValueClass(value: number): string {
+  if (value > 0) {
+    return "text-amber-400";
+  }
+  if (value < 0) {
+    return "text-emerald-400";
+  }
+  return "text-ops-text";
+}
 
 export default function CostsPage() {
   const { data, error, isLoading, mutate } = useSWR("admin-costs", fetcher, {
     revalidateOnFocus: true,
   });
   const [actionError, setActionError] = useState<string | null>(null);
+  const [budgetQuery, setBudgetQuery] = useState("");
+  const [budgetFilter, setBudgetFilter] = useState<BudgetFilterValue>("all");
+  const [budgetSort, setBudgetSort] = useState<BudgetSortValue>("percent_desc");
 
   const handleApprove = useCallback(
     async (serviceId: string) => {
@@ -85,40 +114,122 @@ export default function CostsPage() {
   }
 
   const currentCount = Object.keys(data.current).length;
+  const deltaMonthly = data.summary.proposedMonthly - data.summary.currentMonthly;
   const updatedLabel =
     data.lastUpdated.length > 0
       ? new Date(data.lastUpdated).toLocaleString()
       : "—";
+  const budgetCounts = data.tenant_budgets.reduce(
+    (counts, snapshot) => {
+      counts.total += 1;
+      if (snapshot.enforcement_skipped) {
+        counts.skipped += 1;
+      }
+      if (snapshot.alert_level === "critical") {
+        counts.critical += 1;
+      } else if (snapshot.alert_level === "warning") {
+        counts.warning += 1;
+      } else {
+        counts.ok += 1;
+      }
+      return counts;
+    },
+    { total: 0, critical: 0, warning: 0, ok: 0, skipped: 0 },
+  );
+  const filteredBudgetSnapshots = useMemo(() => {
+    const normalizedQuery = budgetQuery.trim().toLowerCase();
+
+    const matchesFilter = (snapshot: AdminCostsResponse["tenant_budgets"][number]): boolean => {
+      switch (budgetFilter) {
+        case "critical":
+          return snapshot.alert_level === "critical";
+        case "warning":
+          return snapshot.alert_level === "warning";
+        case "ok":
+          return snapshot.alert_level === "ok" && !snapshot.enforcement_skipped;
+        case "skipped":
+          return snapshot.enforcement_skipped;
+        default:
+          return true;
+      }
+    };
+
+    const matchesQuery = (snapshot: AdminCostsResponse["tenant_budgets"][number]): boolean => {
+      if (normalizedQuery.length === 0) {
+        return true;
+      }
+
+      return (
+        snapshot.tenant_name.toLowerCase().includes(normalizedQuery) ||
+        snapshot.tenant_slug.toLowerCase().includes(normalizedQuery)
+      );
+    };
+
+    const sortedSnapshots = data.tenant_budgets
+      .filter((snapshot) => matchesFilter(snapshot) && matchesQuery(snapshot))
+      .sort((left, right) => {
+        switch (budgetSort) {
+          case "name_asc":
+            return left.tenant_name.localeCompare(right.tenant_name);
+          case "projected_desc":
+            return right.projected_month_end_usd - left.projected_month_end_usd;
+          case "percent_desc":
+          default:
+            return right.percent_used - left.percent_used;
+        }
+      });
+
+    return sortedSnapshots;
+  }, [budgetFilter, budgetQuery, budgetSort, data.tenant_budgets]);
 
   return (
     <div className="mx-auto max-w-7xl p-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-ops-text">
+      <div className="mb-8 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-ops-text">
           Gestión de costos
-        </h1>
-        <p className="mt-1 text-ops-muted">
-          Control y aprobación de servicios (estimación; no sustituye facturación
-          real). Actualizado: {updatedLabel}
-        </p>
+          </h1>
+          <p className="mt-1 text-ops-muted">
+            Control y aprobación de servicios (estimación; no sustituye facturación
+            real). Actualizado: {updatedLabel}
+          </p>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <Badge variant="blue">Tenants LLM: {budgetCounts.total}</Badge>
+          <Badge variant="yellow">Riesgo: {budgetCounts.warning}</Badge>
+          <Badge variant="red">Críticos: {budgetCounts.critical}</Badge>
+          {budgetCounts.skipped > 0 ? (
+            <Badge variant="gray">Enforcement omitido: {budgetCounts.skipped}</Badge>
+          ) : null}
+        </div>
       </div>
 
       {actionError && (
-        <p className="mb-4 text-sm text-red-400">{actionError}</p>
+        <div className="mb-4 rounded-lg border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+          {actionError}
+        </div>
       )}
 
-      <div className="mb-8 grid grid-cols-1 gap-4 md:grid-cols-3">
+      <div className="mb-8 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
         <div className="rounded-lg border border-ops-border bg-ops-card p-4">
           <p className="text-sm text-ops-muted">Costo actual mensual</p>
           <p className="font-mono text-3xl font-bold text-ops-text">
-            ${data.summary.currentMonthly}
+            {formatUsd(data.summary.currentMonthly)}
             <span className="text-lg font-normal text-ops-muted">/mes</span>
           </p>
         </div>
         <div className="rounded-lg border border-ops-border bg-ops-card p-4">
           <p className="text-sm text-ops-muted">Con aprobados</p>
           <p className="font-mono text-3xl font-bold text-blue-400">
-            ${data.summary.proposedMonthly}
+            {formatUsd(data.summary.proposedMonthly)}
             <span className="text-lg font-normal text-ops-muted">/mes</span>
+          </p>
+        </div>
+        <div className="rounded-lg border border-ops-border bg-ops-card p-4">
+          <p className="text-sm text-ops-muted">Cambio neto si apruebas</p>
+          <p className={`font-mono text-3xl font-bold ${deltaValueClass(deltaMonthly)}`}>
+            {deltaMonthly >= 0 ? "+" : ""}
+            {formatUsd(deltaMonthly)}
           </p>
         </div>
         <div className="rounded-lg border border-ops-border bg-ops-card p-4">
@@ -133,7 +244,83 @@ export default function CostsPage() {
       <BudgetAlertCard snapshots={data.tenant_budgets} />
 
       <div className="mb-8">
-        <TenantBudgetBars snapshots={data.tenant_budgets} />
+        <div className="mb-4 flex flex-col gap-4 rounded-lg border border-ops-border bg-ops-card p-4 lg:flex-row lg:items-end lg:justify-between">
+          <div>
+            <h2 className="text-xl font-semibold text-ops-text">
+              Presupuesto LLM por tenant
+            </h2>
+            <p className="mt-1 text-sm text-ops-muted">
+              Prioriza tenants con proyección de sobreconsumo antes de tocar límites o
+              activar enforcement.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-3 lg:min-w-[720px]">
+            <div>
+              <label
+                htmlFor="budget-query"
+                className="mb-1 block text-xs font-medium uppercase tracking-wide text-ops-muted"
+              >
+                Buscar tenant
+              </label>
+              <Input
+                id="budget-query"
+                value={budgetQuery}
+                onChange={(event) => setBudgetQuery(event.target.value)}
+                placeholder="slug o nombre"
+              />
+            </div>
+            <div>
+              <span className="mb-1 block text-xs font-medium uppercase tracking-wide text-ops-muted">
+                Estado
+              </span>
+              <Select
+                value={budgetFilter}
+                onValueChange={(value) => setBudgetFilter(value as BudgetFilterValue)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Todos" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todos</SelectItem>
+                  <SelectItem value="critical">Criticos</SelectItem>
+                  <SelectItem value="warning">Avisos</SelectItem>
+                  <SelectItem value="ok">Saludables</SelectItem>
+                  <SelectItem value="skipped">Enforcement omitido</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <span className="mb-1 block text-xs font-medium uppercase tracking-wide text-ops-muted">
+                Orden
+              </span>
+              <Select
+                value={budgetSort}
+                onValueChange={(value) => setBudgetSort(value as BudgetSortValue)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Mayor uso" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="percent_desc">Mayor uso</SelectItem>
+                  <SelectItem value="projected_desc">Mayor proyeccion</SelectItem>
+                  <SelectItem value="name_asc">Nombre A-Z</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        </div>
+        <div className="mb-3 flex flex-wrap items-center gap-2">
+          <Badge variant="default">
+            Mostrando {filteredBudgetSnapshots.length} de {budgetCounts.total}
+          </Badge>
+          {budgetFilter !== "all" ? (
+            <Badge variant="blue">Filtro: {budgetFilter}</Badge>
+          ) : null}
+          {budgetQuery.trim().length > 0 ? (
+            <Badge variant="gray">Busqueda: {budgetQuery.trim()}</Badge>
+          ) : null}
+        </div>
+        <TenantBudgetBars snapshots={filteredBudgetSnapshots} />
       </div>
 
       <div className="mb-8 rounded-lg border border-blue-500/30 bg-blue-500/10 p-4">
