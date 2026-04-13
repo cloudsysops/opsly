@@ -1,13 +1,2 @@
-#!/usr/bin/env sh
-ROOT="$(git rev-parse --show-toplevel)"
-cd "$ROOT" || exit 1
-
-# Run lint-staged on staged files
-npx lint-staged 2>/dev/null || true
-
-# Run existing .githooks pre-commit if exists
-if [ -f "$ROOT/.githooks/pre-commit" ]; then
-  exec sh "$ROOT/.githooks/pre-commit"
-fi
-
-exit 0
+npx --no -- turbo run type-check --filter=@intcloudsysops/api --filter=@intcloudsysops/admin --filter=@intcloudsysops/portal
+npx --no -- eslint apps/api/app apps/api/lib --max-warnings 0
