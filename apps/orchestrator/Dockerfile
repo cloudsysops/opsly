@@ -1,23 +1,33 @@
+# Monorepo: el orchestrator importa @intcloudsysops/ml en runtime (p. ej. AgentClassifierWorker).
+# El runner anterior solo hacía `npm ci` parcial y no incluía el workspace `ml` → MODULE_NOT_FOUND en producción.
 FROM node:20-alpine AS builder
 
 WORKDIR /app
-COPY package*.json ./
-COPY apps/orchestrator/package*.json ./apps/orchestrator/
+COPY package.json package-lock.json ./
+COPY turbo.json ./
+COPY apps ./apps
+COPY packages ./packages
+COPY skills ./skills
 RUN npm ci
 
-COPY . .
-RUN npm run build -w @intcloudsysops/orchestrator
+RUN npm run build -w @intcloudsysops/types && \
+    npm run build -w @intcloudsysops/ml && \
+    npm run build -w @intcloudsysops/orchestrator
+RUN npm prune --omit=dev
 
 FROM node:20-alpine AS runner
 
 ENV NODE_ENV=production
 
 WORKDIR /app
-COPY package*.json ./
-COPY apps/orchestrator/package*.json ./apps/orchestrator/
-RUN npm ci --omit=dev
 
+COPY --from=builder /app/package.json ./
+COPY --from=builder /app/package-lock.json ./
+COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/apps/orchestrator/dist ./apps/orchestrator/dist
+COPY --from=builder /app/apps/orchestrator/package.json ./apps/orchestrator/package.json
+COPY --from=builder /app/apps/ml ./apps/ml
+COPY --from=builder /app/packages/types ./packages/types
 COPY --from=builder /app/scripts ./scripts
 
 WORKDIR /app/apps/orchestrator
