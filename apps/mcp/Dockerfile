@@ -5,7 +5,7 @@ COPY packages/types/package.json ./packages/types/
 COPY apps/mcp/package.json ./apps/mcp/
 COPY apps/llm-gateway/package.json ./apps/llm-gateway/
 COPY apps/agents/notebooklm/package.json ./apps/agents/notebooklm/
-RUN npm ci
+RUN npm ci --ignore-scripts
 
 FROM node:20-alpine AS builder
 WORKDIR /repo

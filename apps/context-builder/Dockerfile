@@ -4,7 +4,7 @@ WORKDIR /app
 COPY package*.json ./
 COPY apps/context-builder/package*.json ./apps/context-builder/
 COPY apps/llm-gateway/package*.json ./apps/llm-gateway/
-RUN npm ci
+RUN npm ci --ignore-scripts
 
 COPY . .
 RUN npm run build -w @intcloudsysops/llm-gateway && npm run build -w @intcloudsysops/context-builder
