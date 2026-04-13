@@ -7,6 +7,7 @@ COPY package.json package-lock.json ./
 COPY apps/api/package.json ./apps/api/
 COPY apps/ml/package.json ./apps/ml/
 COPY apps/llm-gateway/package.json ./apps/llm-gateway/
+COPY packages/types/package.json ./packages/types/
 RUN npm ci -w @intcloudsysops/api
 
 FROM node:20-alpine AS builder
@@ -17,7 +18,8 @@ COPY --from=deps /repo/package-lock.json ./package-lock.json
 COPY apps/api ./apps/api
 COPY apps/ml ./apps/ml
 COPY apps/llm-gateway ./apps/llm-gateway
-RUN npm run build -w @intcloudsysops/llm-gateway && npm run build -w @intcloudsysops/ml
+COPY packages/types ./packages/types
+RUN npm run build -w @intcloudsysops/types && npm run build -w @intcloudsysops/llm-gateway && npm run build -w @intcloudsysops/ml
 WORKDIR /repo/apps/api
 ENV NEXT_TELEMETRY_DISABLED=1
 # CORS en next.config: se resuelve en build (mismo origen admin = https://admin.${PLATFORM_DOMAIN})
