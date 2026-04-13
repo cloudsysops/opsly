@@ -84,7 +84,7 @@ describe("checkRateLimit", () => {
     });
   });
 
-  it("degrada a permitido si REDIS_URL no está configurada", async () => {
+  it("usa fallback en memoria si REDIS_URL no está configurada", async () => {
     const nowMs = 1_700_000_100_000;
     const error = vi.spyOn(console, "error").mockImplementation(() => {});
 
@@ -97,15 +97,19 @@ describe("checkRateLimit", () => {
     expect(createClientMock).not.toHaveBeenCalled();
     expect(first).toEqual({
       allowed: true,
-      remaining: 100,
-      resetAt: new Date(nowMs),
+      remaining: 99,
+      resetAt: new Date(nowMs + 60_000),
     });
-    expect(second).toEqual(first);
+    expect(second).toEqual({
+      allowed: true,
+      remaining: 98,
+      resetAt: new Date(nowMs + 60_000),
+    });
     expect(error).toHaveBeenCalledTimes(1);
     expect(error).toHaveBeenCalledWith("[rate-limiter] REDIS_URL not set");
   });
 
-  it("degrada a permitido si Redis falla durante el incremento", async () => {
+  it("usa fallback en memoria si Redis falla durante la petición", async () => {
     const nowMs = 1_700_000_200_000;
     const redis = buildRedisClient(1, 60);
     const boom = new Error("boom");
@@ -120,10 +124,27 @@ describe("checkRateLimit", () => {
 
     expect(result).toEqual({
       allowed: true,
-      remaining: 100,
-      resetAt: new Date(nowMs),
+      remaining: 99,
+      resetAt: new Date(nowMs + 60_000),
     });
     expect(error).toHaveBeenCalledWith("[rate-limiter] request failed", boom);
+  });
+
+  it("bloquea en fallback memoria cuando supera el límite", async () => {
+    const nowMs = 1_700_000_300_000;
+    vi.stubEnv("REDIS_URL", "");
+    vi.spyOn(Date, "now").mockReturnValue(nowMs);
+
+    let result = await checkRateLimit("tenant-a");
+    for (let i = 1; i < 101; i += 1) {
+      result = await checkRateLimit("tenant-a");
+    }
+
+    expect(result).toEqual({
+      allowed: false,
+      remaining: 0,
+      resetAt: new Date(nowMs + 60_000),
+    });
   });
 
   it("falla explícitamente si el tenantSlug está vacío", async () => {

@@ -16,7 +16,6 @@
 
 import type { OrchestratorJob } from './types.js';
 import {
-  connection,
   orchestratorQueue,
   agentClassifierQueue,
   hermesOrchestrationQueue,
@@ -116,7 +115,7 @@ export function logJobComplete(
   emit({
     event: 'job.complete',
     timestamp: new Date().toISOString(),
-    service: ' orchestrator',
+    service: 'orchestrator',
     job_type: jobType,
     job_id: jobId,
     worker_name: workerName,

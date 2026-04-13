@@ -76,7 +76,7 @@
 
 ---
 
-## Fase 5: Testing + CI (1 semana)
+## Fase 5: Testing + CI (COMPLETO)
 
 ### 5.1 Unit tests
 
@@ -137,3 +137,69 @@ npm run test:coverage --workspace=@intcloudsysops/llm-gateway
 ## Próximo paso inmediato
 
 Ejecutar `npm run type-check --workspace=@intcloudsysops/llm-gateway` para verificar estado actual.
+
+---
+
+## 🆕 OpenAI Compatible Endpoints (PENDIENTE)
+
+Para que agentes externos usen el gateway como替代 a OpenAI:
+
+```bash
+# Endpoints a implementar
+POST /v1/chat/completions   # Chat completions (stream + non-stream)
+POST /v1/completions       # Text completions
+GET  /v1/models            # List available models
+```
+
+### Implementación sugerida
+
+```typescript
+// apps/llm-gateway/src/routes/chat-completions.ts
+import { llmCallDirect } from '../llm-direct.js';
+import { logUsage } from '../logger.js';
+
+export async function chatCompletions(req: Request): Promise<Response> {
+  const body = await req.json();
+  const { messages, model, stream, temperature, max_tokens } = body;
+
+  // Map OpenAI params to LLMRequest
+  const llmReq = {
+    messages: messages.map((m) => ({ role: m.role, content: m.content })),
+    model: model || 'claude-sonnet-4-20250514',
+    max_tokens,
+    temperature,
+    stream: stream === true,
+  };
+
+  if (stream) {
+    // Implement SSE streaming
+    return new Response(streamIterable(llmReq), {
+      headers: { 'Content-Type': 'text/event-stream' },
+    });
+  }
+
+  const result = await llmCallDirect(llmReq);
+  return Response.json({
+    id: `chat-${Date.now()}`,
+    object: 'chat.completion',
+    created: Math.floor(Date.now() / 1000),
+    model: llmReq.model,
+    choices: [
+      {
+        index: 0,
+        message: { role: 'assistant', content: result.content },
+        finish_reason: 'stop',
+      },
+    ],
+    usage: result.usage,
+  });
+}
+```
+
+### Tests
+
+```bash
+# Añadir tests
+npx vitest create __tests__/chat-completions.test.ts
+npx vitest create __tests__/streaming.test.ts
+```
