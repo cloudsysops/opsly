@@ -1,0 +1,35 @@
+# Unidad systemd de USUARIO (sin sudo).
+# Uso: ~/.config/systemd/user/opsly-worker.service
+#   systemctl --user daemon-reload && systemctl --user enable --now opsly-worker
+#
+# Arranque tras boot sin sesión de login (una vez, con sudo):
+#   sudo loginctl enable-linger opslyquantum
+#
+# Requiere: ~/opsly/.env.local con REDIS_URL; scripts/run-worker-with-nvm.sh ejecutable.
+
+[Unit]
+Description=Opsly Orchestrator Worker (BullMQ, user)
+Documentation=https://github.com/cloudsysops/opsly
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/opslyquantum/opsly
+ExecStart=/home/opslyquantum/opsly/scripts/run-worker-with-nvm.sh
+Restart=always
+RestartSec=15
+StartLimitIntervalSec=300
+StartLimitBurst=5
+
+StandardOutput=append:/home/opslyquantum/opsly/logs/worker.log
+StandardError=append:/home/opslyquantum/opsly/logs/worker-error.log
+
+Environment=NODE_ENV=production
+
+# Primer arranque: npm ci + build orchestrator puede superar 1–2 min en Mac 2011
+TimeoutStartSec=400
+TimeoutStopSec=60
+
+[Install]
+WantedBy=default.target
