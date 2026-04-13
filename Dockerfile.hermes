@@ -38,7 +38,7 @@ COPY package.json package-lock.json ./
 COPY apps/orchestrator/package.json ./apps/orchestrator/
 COPY apps/agents/notebooklm/package.json ./apps/agents/notebooklm/
 COPY packages/types/package.json ./packages/types/
-RUN npm ci --omit=dev
+RUN npm ci --ignore-scripts --omit=dev
 
 COPY --from=builder /app/apps/orchestrator/dist ./apps/orchestrator/dist
 COPY --from=builder /app/apps/agents/notebooklm/dist ./apps/agents/notebooklm/dist
