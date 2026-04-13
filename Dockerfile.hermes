@@ -20,7 +20,7 @@ FROM node:20-alpine AS runner
 ENV NODE_ENV=production
 ENV ORCHESTRATOR_HEALTH_PORT=3020
 
-# Python + Chromium para notebooklm-py / Playwright (NotebookLM agent)
+# Python para notebooklm-py (NotebookLM agent) - playwright se instala via npx en runtime si se necesita
 RUN apk add --no-cache \
     python3 \
     py3-pip \
@@ -31,9 +31,7 @@ RUN apk add --no-cache \
     ca-certificates \
     ttf-dejavu \
   && python3 -m pip install --no-cache-dir --break-system-packages \
-    "notebooklm-py>=0.2.0,<0.3" \
-    "playwright>=1.40.0" \
-  && python3 -m playwright install chromium
+    "notebooklm-py>=0.2.0,<0.3"
 
 WORKDIR /app
 COPY package.json package-lock.json ./
