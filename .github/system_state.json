@@ -5,13 +5,13 @@
     "ip": "157.245.223.7",
     "user": "vps-dragon",
     "repo": "/opt/opsly",
-    "status": "git_pull_blocked_untracked",
-    "notes": "2026-04-04: git pull origin main abortó: untracked scripts/vps-first-run.sh en /opt/opsly sería sobrescrito por merge (copia manual previa). Resolver en VPS (rm/mv el archivo o git clean) y repetir pull → vps-bootstrap. GHCR login sigue siendo requisito previo conocido para first-run si no estaba hecho."
+    "status": "operational",
+    "notes": "Acceso admin SSH recomendado por Tailscale (ver AGENTS.md y docs/SECURITY-MITIGATIONS-2026-04-09.md). Resolver drift local en VPS con git pull según docs/SESSION-GIT-SYNC.md si aplica."
   },
   "deploy_staging": {
     "api_health_url": "https://api.ops.smiletripcare.com/api/health",
-    "status": "blocked_vps_git_merge",
-    "notes": "2026-04-04: No se ejecutó bootstrap/first-run; pull falló antes. Tras limpiar untracked en VPS: pull, bootstrap, first-run, health."
+    "status": "healthy",
+    "notes": "Health público verificado en sesiones previas; CI/deploy: ver GitHub Actions y AGENTS.md."
   },
   "doppler": {
     "project": "ops-intcloudsysops",
@@ -25,7 +25,11 @@
     "status": "ok"
   },
   "tenants": [],
-  "next_action": "En VPS: eliminar o mover scripts/vps-first-run.sh (untracked) o integrarlo; cd /opt/opsly && git pull origin main && ./scripts/vps-bootstrap.sh. Luego docker login ghcr.io si aún falta, ./scripts/vps-first-run.sh, curl health.",
+  "next_action": "Estado operativo detallado: AGENTS.md en la raíz del repo. Tras docs: ADR duplicados renumerados (022 DI, 023 approval gate); índice ADR e insights en docs/README.md.",
+  "documentation": {
+    "adr_duplicates_fixed": true,
+    "readme_index_updated": true
+  },
   "repo": {
     "apps": [
       "admin",
