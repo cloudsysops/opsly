@@ -277,22 +277,6 @@ Procedimientos vivos en el repo: **`skills/user/<skill>/SKILL.md`**. En runtimes
 
 <!-- Actualizar al final de cada sesión -->
 
-## Operación Actual (2026-04-12)
-
-| Componente | Nodo | Estado | Verificación |
-|---|---|---|---|
-| Ollama | opsly-mac2011 | 🟢 | `curl :11434/api/tags` |
-| LLM Gateway | opsly-mac2011 | 🟢 | `curl :9000/health` |
-| Policy local-first | VPS+Macs | 🟢 | `echo $AI_PROFILE` |
-| Budget caps | Doppler | 🟢 | `doppler get DAILY_BUDGET_*` |
-| Alertas 429/402 | Discord | 🟡 | Ver `#alerts` |
-
-### Decisiones Semana 1
-
-- ✅ ADR-021: Local-First AI Policy
-- ✅ Perfiles versionados + auto-apply
-- ✅ Guardrails budget + alertas
-
 **Fecha última actualización:** 2026-04-12 UTC — **Sprint ROADMAP:** Semana 1 (Fase 2 producto + IA), ventana **2026-04-14 → 2026-04-20**; revisión sprint **2026-04-19**. Documentos: [`ROADMAP.md`](ROADMAP.md), [`docs/IMPLEMENTATION-IA-LAYER.md`](docs/IMPLEMENTATION-IA-LAYER.md).
 
 **ADR-020 (sesión):** [`docs/adr/ADR-020-orchestrator-worker-separation.md`](docs/adr/ADR-020-orchestrator-worker-separation.md) — alias `OPSLY_ORCHESTRATOR_MODE` documentado; tests `orchestrator-role.test.ts` ampliados; `npm run type-check` y `npm run test --workspace=@intcloudsysops/orchestrator` en verde.

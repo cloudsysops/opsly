@@ -48,8 +48,3 @@
 
 - [ADR-014: NotebookLM agent](./adr/ADR-014-notebooklm-agent.md) — experimental, browser automation
 - ADR futuro (TBD): límites de recursos Hermes en Compose, si se escala fuera del orchestrator monolítico
-
----
-
-## Related Documents
-[[MASTER-PLAN]] | [[ARCHITECTURE]] | [[HERMES-SPRINT-PLAN]] | [[NOTEBOOKLM-INTEGRATION]]

@@ -4,8 +4,6 @@ No se requieren API keys nuevas (OpenAI, etc.). El motor usa `usage_events` y es
 
 **Orden recomendado:** Supabase → Doppler/`CRON_SECRET` → (opcional) semilla SQL → cron → portal.
 
-**Textos en UI (MVP):** el motor genera títulos en español alineados al código (p. ej. riesgo de **desinterés** por falta de uso LLM, **tendencia de gasto IA**, **anomalía de volumen**). La “proyección” del MVP es sobre **gasto IA** agregado desde `cost_usd` en `usage_events`, no ingresos Stripe directos.
-
 ---
 
 ## PASO 1 — Base de datos (Supabase)

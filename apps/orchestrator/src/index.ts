@@ -10,13 +10,7 @@ import {
   shouldRunControlPlane,
   shouldRunWorkers,
 } from "./orchestrator-role.js";
-import {
-  agentClassifierQueue,
-  approvalGateQueue,
-  connection,
-  hermesOrchestrationQueue,
-  orchestratorQueue,
-} from "./queue.js";
+import { agentClassifierQueue, connection, orchestratorQueue } from "./queue.js";
 import { closeCircuitBreakerRedis } from "./resilience/circuit-breaker.js";
 import { closeJobStateStore } from "./state/store.js";
 import { TeamManager } from "./teams/TeamManager.js";
@@ -27,8 +21,6 @@ import { startHealthWorker } from "./workers/HealthWorker.js";
 import { startN8nWorker } from "./workers/N8nWorker.js";
 import { startNotifyWorker } from "./workers/NotifyWorker.js";
 import { startAgentClassifierWorker } from "./workers/AgentClassifierWorker.js";
-import { startApprovalGateWorker } from "./workers/ApprovalGateWorker.js";
-import { startHermesOrchestrationWorker } from "./workers/HermesOrchestrationWorker.js";
 import { startOllamaWorker } from "./workers/OllamaWorker.js";
 import { startSuspensionWorker } from "./workers/SuspensionWorker.js";
 import { startGeneralEventsWorker } from "./workers/GeneralEventsWorker.js";
@@ -87,30 +79,6 @@ function startAllWorkers(): AsyncCleanup[] {
     ];
   }
 
-  let approvalGateCleanup: AsyncCleanup[] = [];
-  const supabaseConfigured =
-    (process.env.SUPABASE_URL?.trim() ?? "").length > 0 &&
-    (process.env.SUPABASE_SERVICE_ROLE_KEY?.trim() ?? "").length > 0;
-  const approvalGateEnabled =
-    process.env.OPSLY_APPROVAL_GATE_WORKER_ENABLED !== "false" && supabaseConfigured;
-  if (approvalGateEnabled) {
-    const { worker: approvalGateWorker } = startApprovalGateWorker(connection);
-    approvalGateCleanup = [async () => approvalGateWorker.close()];
-  } else if (
-    process.env.OPSLY_APPROVAL_GATE_WORKER_ENABLED !== "false" &&
-    !supabaseConfigured
-  ) {
-    console.warn(
-      "[orchestrator] Approval gate omitido: define SUPABASE_URL y SUPABASE_SERVICE_ROLE_KEY o exporta OPSLY_APPROVAL_GATE_WORKER_ENABLED=false",
-    );
-  }
-
-  let hermesCleanup: AsyncCleanup[] = [];
-  if (process.env.HERMES_ENABLED === "true") {
-    const hermesWorker = startHermesOrchestrationWorker(connection);
-    hermesCleanup = [async () => hermesWorker.close()];
-  }
-
   cleanup.push(
     async () => cursorWorker.close(),
     async () => n8nWorker.close(),
@@ -124,17 +92,13 @@ function startAllWorkers(): AsyncCleanup[] {
     async () => generalEventsWorker.close(),
     async () => ollamaWorker.close(),
     ...agentClassifierCleanup,
-    ...approvalGateCleanup,
-    ...hermesCleanup,
   );
 
   console.log(
     "[orchestrator] Workers: cursor, n8n, notify, drive, backup, health, ollama, budget, opsly-webhooks, webhooks-processing, general-events" +
       (process.env.OPSLY_AGENT_CLASSIFIER_WORKER_ENABLED === "true"
         ? ", agent-classifier"
-        : "") +
-      (approvalGateEnabled ? ", approval-gate" : "") +
-      (process.env.HERMES_ENABLED === "true" ? ", hermes-orchestration" : ""),
+        : ""),
   );
   return cleanup;
 }
@@ -174,8 +138,6 @@ async function main(): Promise<void> {
   cleanupTasks.push(async () => drainMeteringOperations());
   cleanupTasks.push(async () => orchestratorQueue.close());
   cleanupTasks.push(async () => agentClassifierQueue.close());
-  cleanupTasks.push(async () => approvalGateQueue.close());
-  cleanupTasks.push(async () => hermesOrchestrationQueue.close());
   cleanupTasks.push(async () => closeWebhookQueue());
   cleanupTasks.push(async () => closeJobStateStore());
   cleanupTasks.push(async () => closeOrchestratorRedis());
@@ -191,22 +153,6 @@ async function main(): Promise<void> {
 
   if (shouldRunWorkers(role)) {
     cleanupTasks.push(...startAllWorkers());
-  }
-
-  if (process.env.HERMES_ENABLED === "true" && shouldRunControlPlane(role)) {
-    try {
-      await hermesOrchestrationQueue.add(
-        "hermes-tick",
-        { source: "repeat" },
-        {
-          repeat: { pattern: "*/5 * * * *" },
-          jobId: "hermes-orchestrate-repeat-v1",
-        },
-      );
-      console.log("[orchestrator] Hermes: repeatable hermes-tick cada 5 min");
-    } catch (err) {
-      console.error("[orchestrator] Hermes repeatable job", err);
-    }
   }
 
   let shutdownStarted = false;

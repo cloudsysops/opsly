@@ -1,9 +1,9 @@
 {
   // --- Formato al guardar y acciones ESLint / imports ---
   "editor.formatOnSave": true,
+  "editor.codeActionsOnSaveTimeout": 200,
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "explicit",
-    "source.organizeImports": "explicit"
+    "source.fixAll.eslint": "explicit"
   },
 
   // --- TypeScript: imports relativos dentro del paquete (monorepo) ---

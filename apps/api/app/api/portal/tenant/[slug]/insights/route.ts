@@ -1,13 +1,16 @@
 import { NextRequest } from "next/server";
 import { HTTP_STATUS } from "../../../../../../lib/constants";
-import { getInsightsForTenant } from "../../../../../../lib/insights/engine";
-import { applyInsightPatchAction } from "../../../../../../lib/insights/insight-patch-actions";
+import {
+  getInsightsForTenant,
+  markInsightRead,
+  markInsightStatus,
+} from "../../../../../../lib/insights/engine";
 import {
   resolveTrustedPortalSession,
   tenantSlugMatchesSession,
 } from "../../../../../../lib/portal-trusted-identity";
 
-type InsightRow = {
+function normalizeInsight(row: {
   id: string;
   tenant_id: string;
   insight_type: string;
@@ -20,24 +23,7 @@ type InsightRow = {
   read_at: string | null;
   actioned_at: string | null;
   created_at: string;
-};
-
-type NormalizedInsight = {
-  id: string;
-  tenant_id: string;
-  insight_type: string;
-  title: string;
-  summary: string;
-  payload: Record<string, unknown>;
-  confidence: number;
-  impact_score: number;
-  status: string;
-  read_at: string | null;
-  actioned_at: string | null;
-  created_at: string;
-};
-
-function normalizeInsight(row: InsightRow): NormalizedInsight {
+}) {
   const conf =
     typeof row.confidence === "string"
       ? Number.parseFloat(row.confidence)
@@ -56,40 +42,6 @@ function normalizeInsight(row: InsightRow): NormalizedInsight {
     actioned_at: row.actioned_at,
     created_at: row.created_at,
   };
-}
-
-async function parseInsightPatchBody(
-  request: NextRequest,
-): Promise<
-  | { ok: true; insightId: string; action: string }
-  | { ok: false; response: Response }
-> {
-  let body: { insight_id?: string; action?: string };
-  try {
-    body = (await request.json()) as { insight_id?: string; action?: string };
-  } catch {
-    return {
-      ok: false,
-      response: Response.json(
-        { error: "Invalid JSON" },
-        { status: HTTP_STATUS.BAD_REQUEST },
-      ),
-    };
-  }
-
-  const insightId = body.insight_id?.trim();
-  const action = body.action?.trim();
-  if (!insightId || !action) {
-    return {
-      ok: false,
-      response: Response.json(
-        { error: "insight_id and action required" },
-        { status: HTTP_STATUS.BAD_REQUEST },
-      ),
-    };
-  }
-
-  return { ok: true, insightId, action };
 }
 
 /**
@@ -139,20 +91,43 @@ export async function PATCH(
     );
   }
 
-  const parsed = await parseInsightPatchBody(request);
-  if (!parsed.ok) {
-    return parsed.response;
+  let body: { insight_id?: string; action?: string };
+  try {
+    body = (await request.json()) as { insight_id?: string; action?: string };
+  } catch {
+    return Response.json(
+      { error: "Invalid JSON" },
+      { status: HTTP_STATUS.BAD_REQUEST },
+    );
+  }
+
+  const insightId = body.insight_id?.trim();
+  const action = body.action?.trim();
+  if (!insightId || !action) {
+    return Response.json(
+      { error: "insight_id and action required" },
+      { status: HTTP_STATUS.BAD_REQUEST },
+    );
   }
 
   const tenantId = trusted.session.tenant.id;
 
   try {
-    const applied = await applyInsightPatchAction(
-      parsed.action,
-      parsed.insightId,
-      tenantId,
-    );
-    if (!applied) {
+    if (action === "read") {
+      await markInsightRead(insightId, tenantId);
+    } else if (action === "dismiss") {
+      await markInsightStatus({
+        insightId,
+        tenantId,
+        status: "dismissed",
+      });
+    } else if (action === "action") {
+      await markInsightStatus({
+        insightId,
+        tenantId,
+        status: "actioned",
+      });
+    } else {
       return Response.json(
         { error: "action must be read, dismiss, or action" },
         { status: HTTP_STATUS.BAD_REQUEST },

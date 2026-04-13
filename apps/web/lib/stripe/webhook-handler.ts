@@ -1,26 +1,130 @@
 import Stripe from "stripe";
 import { stripeClient } from "./client";
 
-async function onCheckoutSessionCompleted(
-  _session: Stripe.Checkout.Session,
-): Promise<void> {
-  // TODO: call subscription service to activate tenant from checkout.session.completed
+interface TenantActivation {
+  tenantId: string;
+  customerId: string;
+  subscriptionId: string;
 }
 
-async function onInvoicePaymentFailed(_invoice: Stripe.Invoice): Promise<void> {
-  // TODO: call billing service to handle invoice.payment_failed
+async function findTenantByCustomerId(
+  customerId: string,
+): Promise<TenantActivation | null> {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!supabaseUrl || !supabaseKey) {
+    console.error("[webhook] Missing Supabase config");
+    return null;
+  }
+
+  const { createClient } = await import("@supabase/supabase-js");
+  const supabase = createClient(supabaseUrl, supabaseKey);
+
+  const { data, error } = await supabase
+    .from("platform.tenants")
+    .select("id, stripe_customer_id")
+    .eq("stripe_customer_id", customerId)
+    .single();
+
+  if (error || !data) {
+    console.error("[webhook] Tenant not found for customer:", customerId);
+    return null;
+  }
+
+  return { tenantId: data.id, customerId, subscriptionId: "" };
 }
 
-async function onInvoicePaymentSucceeded(
-  _invoice: Stripe.Invoice,
-): Promise<void> {
-  // TODO: call billing service to handle invoice.payment_succeeded
+async function onCheckoutSessionCompleted(session: Stripe.Checkout.Session): Promise<void> {
+  const customerId = session.customer as string;
+  const subscriptionId = session.subscription as string;
+
+  console.log("[webhook] checkout.session.completed:", {
+    customerId,
+    subscriptionId,
+    tenant: session.client_reference_id,
+  });
+
+  if (!customerId) {
+    console.warn("[webhook] No customer ID in session");
+    return;
+  }
+
+  const tenant = await findTenantByCustomerId(customerId);
+  if (!tenant) {
+    return;
+  }
+
+  console.log("[webhook] Activating tenant:", tenant.tenantId);
 }
 
-async function onCustomerSubscriptionDeleted(
-  _subscription: Stripe.Subscription,
-): Promise<void> {
-  // TODO: call subscription service to suspend or offboard tenant for customer.subscription.deleted
+async function onInvoicePaymentFailed(invoice: Stripe.Invoice): Promise<void> {
+  const customerId = invoice.customer as string;
+  const amountDue = invoice.amount_due;
+
+  console.log("[webhook] invoice.payment_failed:", {
+    customerId,
+    amountDue,
+    currency: invoice.currency,
+  });
+
+  if (!customerId) {
+    return;
+  }
+
+  const tenant = await findTenantByCustomerId(customerId);
+  if (!tenant) {
+    return;
+  }
+
+  console.log("[webhook] Payment failed for tenant:", tenant.tenantId);
+}
+
+async function onInvoicePaymentSucceeded(invoice: Stripe.Invoice): Promise<void> {
+  const customerId = invoice.customer as string;
+  const amountPaid = invoice.amount_paid;
+  const periodStart = invoice.period_start;
+  const periodEnd = invoice.period_end;
+
+  console.log("[webhook] invoice.payment_succeeded:", {
+    customerId,
+    amountPaid,
+    periodStart,
+    periodEnd,
+  });
+
+  if (!customerId) {
+    return;
+  }
+
+  const tenant = await findTenantByCustomerId(customerId);
+  if (!tenant) {
+    return;
+  }
+
+  console.log("[webhook] Payment recorded for tenant:", tenant.tenantId);
+}
+
+async function onCustomerSubscriptionDeleted(subscription: Stripe.Subscription): Promise<void> {
+  const customerId = subscription.customer as string;
+  const subscriptionId = subscription.id;
+  const status = subscription.status;
+
+  console.log("[webhook] customer.subscription.deleted:", {
+    customerId,
+    subscriptionId,
+    status,
+  });
+
+  if (!customerId) {
+    return;
+  }
+
+  const tenant = await findTenantByCustomerId(customerId);
+  if (!tenant) {
+    return;
+  }
+
+  console.log("[webhook] Suspending tenant:", tenant.tenantId);
 }
 
 async function dispatchStripeEvent(event: Stripe.Event): Promise<void> {

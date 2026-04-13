@@ -6,12 +6,9 @@ import { queryNotebookLmForApi } from "../../../../lib/notebooklm-query";
 
 export const dynamic = "force-dynamic";
 
-const MAX_QUESTION_LEN = 8000;
-const MAX_CONTEXT_LEN = 16_000;
-
 const bodySchema = z.object({
-  question: z.string().min(1).max(MAX_QUESTION_LEN),
-  context: z.string().max(MAX_CONTEXT_LEN).optional(),
+  question: z.string().min(1).max(8000),
+  context: z.string().max(16_000).optional(),
 });
 
 /**

@@ -214,5 +214,60 @@ export type Mac2011MonitoringStatus = {
   };
 };
 
+/** GET /api/admin/overview — plataforma: VPS, máquina local, Redis/BullMQ, LLM agregado */
+export type AdminOverviewLlmPeriod = {
+  tokens_input: number;
+  tokens_output: number;
+  cost_usd: number;
+  requests: number;
+  cache_hits: number;
+  top_model: string | null;
+  cache_hit_rate: number;
+};
+
+export type AdminOverviewVpsHost = {
+  mock: boolean;
+  cpu_percent: number;
+  ram_used_gb: number;
+  ram_total_gb: number;
+  disk_used_gb: number;
+  disk_total_gb: number;
+  uptime_seconds: number;
+  active_tenants: number;
+  containers_running: number;
+};
+
+export type AdminOverviewQueueRow = {
+  id: string;
+  label: string;
+  role: "orchestrator" | "agent_team";
+  waiting: number;
+  active: number;
+};
+
+export type AdminOverviewResponse = {
+  generated_at: string;
+  sources: Record<string, string>;
+  vps_host: AdminOverviewVpsHost;
+  local_machine: Partial<Mac2011MonitoringStatus> | null;
+  local_machine_configured: boolean;
+  workers: {
+    redis_available: boolean;
+    queues: AdminOverviewQueueRow[];
+    totals: {
+      orchestrator_jobs: number;
+      agent_team_jobs: number;
+      all_waiting: number;
+      all_active: number;
+    };
+  };
+  llm: {
+    today: AdminOverviewLlmPeriod;
+    month: AdminOverviewLlmPeriod;
+    savings_estimate_usd_month: number;
+    savings_note: string;
+  };
+};
+
 /** Estado devuelto por GET /api/admin/ollama-demo?job_id= (proxy al orchestrator). */
 export type OllamaDemoJobStatus = Record<string, unknown>;

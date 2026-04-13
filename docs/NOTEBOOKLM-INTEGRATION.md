@@ -58,8 +58,3 @@ Workflow `.github/workflows/notebooklm-sync.yml`: cron diario + `workflow_dispat
 - `docs/adr/ADR-014-notebooklm-agent.md`
 - `docs/HERMES-INTEGRATION.md`
 - `skills/user/opsly-notebooklm/SKILL.md`
-
----
-
-## Related Documents
-[[MASTER-PLAN]] | [[ARCHITECTURE]] | [[HERMES-SPRINT-PLAN]] | [[NOTEBOOKLM-INTEGRATION]]

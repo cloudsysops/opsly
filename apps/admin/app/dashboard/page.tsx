@@ -4,6 +4,7 @@ import { ActivityChart } from "@/components/dashboard/ActivityChart";
 import { ActivityFeed } from "@/components/dashboard/ActivityFeed";
 import { CpuGauge } from "@/components/dashboard/CpuGauge";
 import { PlatformOverview } from "@/components/dashboard/PlatformOverview";
+import { QuickActions } from "@/components/dashboard/QuickActions";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { useAuditLog } from "@/hooks/useAuditLog";
@@ -51,6 +52,8 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-8">
+      <QuickActions />
+
       <div className="flex flex-wrap items-end justify-between gap-4">
         <h1 className="font-mono text-lg tracking-tight text-ops-green">
           Dashboard

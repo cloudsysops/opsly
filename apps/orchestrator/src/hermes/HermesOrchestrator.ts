@@ -1,9 +1,7 @@
 import type { HermesTask } from "@intcloudsysops/types";
 import { NotebookLMClient } from "../lib/notebooklm-client.js";
-import { runWithTenantContext } from "../lib/tenant-context.js";
 import { enqueueJob } from "../queue.js";
 import { getOrchestratorRedis } from "../metering/redis-client.js";
-import { meterHermesTaskCpuFireAndForget } from "../metering/usage-events-meter.js";
 import {
   ContextEnricher,
   createContextEnricher,
@@ -11,10 +9,8 @@ import {
 } from "./ContextEnricher.js";
 import { DecisionEngine } from "./DecisionEngine.js";
 import { DiscordNotifier } from "./DiscordNotifier.js";
-import { HermesStateRepository } from "./HermesStateRepository.js";
 import { logHermesEvent } from "./hermes-log.js";
 import { MetricsCollector } from "./MetricsCollector.js";
-import { resolveHermesTenantContext } from "./resolve-hermes-tenant.js";
 import { getHermesSupabase } from "./supabase-client.js";
 import { TaskStateManager } from "./TaskStateManager.js";
 
@@ -63,7 +59,6 @@ export class HermesOrchestrator {
     }
 
     const tsm = new TaskStateManager(supabase);
-    const stateRepo = new HermesStateRepository(supabase);
     const metrics = new MetricsCollector(supabase, parseSprint());
     let processed = 0;
 
@@ -85,133 +80,104 @@ export class HermesOrchestrator {
     }
 
     for (const task of pending) {
-      const tenantCtx = await resolveHermesTenantContext(task, supabase);
+      const t0 = Date.now();
+      try {
+        const enriched = this.enricher
+          ? await this.enricher.enrichTaskContext(task)
+          : await enrichTaskLocalOnly(task);
 
-      const worker = async (): Promise<void> => {
-        const t0 = Date.now();
-        try {
-          const enriched = this.enricher
-            ? await this.enricher.enrichTaskContext(task)
-            : await enrichTaskLocalOnly(task);
+        const nb = enriched.notebooklm;
+        if (nb?.latency_ms !== undefined && nb.latency_ms > 0) {
+          await metrics.recordNotebookLmCall(nb.answer.length > 0, nb.latency_ms);
+        }
 
-          const nb = enriched.notebooklm;
-          if (nb?.latency_ms !== undefined && nb.latency_ms > 0) {
-            await metrics.recordNotebookLmCall(nb.answer.length > 0, nb.latency_ms);
-          }
+        const route = this.decision.routeWithContext(task, enriched);
+        if (shouldNotifyDiscord()) {
+          await this.discord.notifyTaskStart(task);
+        }
 
-          const route = this.decision.routeWithContext(task, enriched);
-          if (shouldNotifyDiscord()) {
-            await this.discord.notifyTaskStart(task);
-          }
+        await tsm.updateTaskState(task.id, "PENDING", "ROUTED", {
+          agent: route.agentType === "none" ? null : route.agentType,
+        });
 
-          await tsm.updateTaskState(task.id, "PENDING", "ROUTED", {
-            agent: route.agentType === "none" ? null : route.agentType,
+        const now = new Date().toISOString();
+        await tsm.updateTaskState(task.id, "ROUTED", "EXECUTING", {
+          started_at: now,
+        });
+
+        if (shouldDispatchOpenclaw() && route.agentType === "cursor") {
+          await enqueueJob({
+            type: "cursor",
+            payload: {
+              hermes_task_id: task.id,
+              hermes_route: route,
+              source: "hermes",
+              notebooklm_context: enriched.suggestedApproach,
+              notebooklm_answer: enriched.notebooklm?.answer?.slice(0, 2000),
+              hermes_enrichment_summary: route.enrichment_summary,
+            },
+            initiated_by: "cron",
+            taskId: task.id,
+            tenant_id: task.tenant_id,
+            request_id: task.request_id,
+            idempotency_key: task.idempotency_key ?? `hermes:${task.id}`,
+            metadata: { hermes: true, notebooklm: Boolean(nb?.answer) },
           });
+        }
 
-          const now = new Date().toISOString();
-          await tsm.updateTaskState(task.id, "ROUTED", "EXECUTING", {
-            started_at: now,
-          });
+        const resultPayload = {
+          mode: "v1_stub",
+          queue: route.queueName,
+          agent: route.agentType,
+          enrichment: route.enrichment_summary ?? "",
+        };
+        await tsm.recordExecution(task.id, route.agentType, resultPayload);
 
-          if (shouldDispatchOpenclaw() && route.agentType === "cursor") {
-            await enqueueJob({
-              type: "cursor",
-              payload: {
-                hermes_task_id: task.id,
-                hermes_route: route,
-                source: "hermes",
-                notebooklm_context: enriched.suggestedApproach,
-                notebooklm_answer: enriched.notebooklm?.answer?.slice(0, 2000),
-                hermes_enrichment_summary: route.enrichment_summary,
-              },
-              initiated_by: "cron",
-              taskId: task.id,
-              tenant_id: task.tenant_id,
-              request_id: task.request_id,
-              idempotency_key: task.idempotency_key ?? `hermes:${task.id}`,
-              metadata: { hermes: true, notebooklm: Boolean(nb?.answer) },
-            });
-          }
+        const done = new Date().toISOString();
+        await tsm.updateTaskState(task.id, "EXECUTING", "COMPLETED", {
+          completed_at: done,
+          result: resultPayload,
+        });
 
-          const resultPayload = {
-            mode: "v1_stub",
-            queue: route.queueName,
-            agent: route.agentType,
-            enrichment: route.enrichment_summary ?? "",
-          };
-          await tsm.recordExecution(task.id, route.agentType, resultPayload);
+        const duration_ms = Date.now() - t0;
+        await metrics.recordTaskCompletion(task, {
+          ok: true,
+          duration_ms,
+          agent: route.agentType,
+        });
 
-          const done = new Date().toISOString();
-          await tsm.updateTaskState(task.id, "EXECUTING", "COMPLETED", {
-            completed_at: done,
-            result: resultPayload,
-          });
-
-          const duration_ms = Date.now() - t0;
-          await metrics.recordTaskCompletion(task, {
+        if (shouldNotifyDiscord()) {
+          await this.discord.notifyTaskComplete(task, {
             ok: true,
             duration_ms,
             agent: route.agentType,
           });
-
-          if (tenantCtx) {
-            meterHermesTaskCpuFireAndForget(
-              tenantCtx.tenantSlug,
-              tenantCtx.tenantId,
-              duration_ms,
-            );
-          }
-
-          if (shouldNotifyDiscord()) {
-            await this.discord.notifyTaskComplete(task, {
-              ok: true,
-              duration_ms,
-              agent: route.agentType,
-            });
-          }
-          processed += 1;
-        } catch (e) {
-          const duration_ms = Date.now() - t0;
-          if (tenantCtx) {
-            meterHermesTaskCpuFireAndForget(
-              tenantCtx.tenantSlug,
-              tenantCtx.tenantId,
-              duration_ms,
-            );
-          }
-
-          const msg = e instanceof Error ? e.message : String(e);
-          errors.push(`${task.id}: ${msg}`);
-          logHermesEvent("hermes_task_error", { task_id: task.id, message: msg });
-          const latest = tenantCtx
-            ? await stateRepo.findByTaskId(task.id)
-            : await tsm.getTask(task.id);
-          const st = latest?.state;
-          const failPatch = {
-            result: { error: msg } as Record<string, unknown>,
-            completed_at: new Date().toISOString(),
-          };
-          try {
-            if (st === "EXECUTING") {
-              await tsm.updateTaskState(task.id, "EXECUTING", "FAILED", failPatch);
-            } else if (st === "ROUTED") {
-              await tsm.updateTaskState(task.id, "ROUTED", "FAILED", failPatch);
-            } else if (st === "PENDING") {
-              await tsm.updateTaskState(task.id, "PENDING", "FAILED", failPatch);
-            }
-          } catch {
-            // best-effort: estado intermedio desconocido
-          }
-          if (shouldNotifyDiscord()) {
-            await this.discord.notifyTaskFailed(task, msg);
-          }
         }
-      };
-
-      if (tenantCtx) {
-        await runWithTenantContext(tenantCtx, () => worker());
-      } else {
-        await worker();
+        processed += 1;
+      } catch (e) {
+        const msg = e instanceof Error ? e.message : String(e);
+        errors.push(`${task.id}: ${msg}`);
+        logHermesEvent("hermes_task_error", { task_id: task.id, message: msg });
+        const latest = await tsm.getTask(task.id);
+        const st = latest?.state;
+        const failPatch = {
+          result: { error: msg } as Record<string, unknown>,
+          completed_at: new Date().toISOString(),
+        };
+        try {
+          if (st === "EXECUTING") {
+            await tsm.updateTaskState(task.id, "EXECUTING", "FAILED", failPatch);
+          } else if (st === "ROUTED") {
+            await tsm.updateTaskState(task.id, "ROUTED", "FAILED", failPatch);
+          } else if (st === "PENDING") {
+            await tsm.updateTaskState(task.id, "PENDING", "FAILED", failPatch);
+          }
+        } catch {
+          // best-effort: estado intermedio desconocido
+        }
+        if (shouldNotifyDiscord()) {
+          await this.discord.notifyTaskFailed(task, msg);
+        }
       }
     }
 

@@ -150,12 +150,13 @@
             "state": {
               "type": "outline",
               "state": {
+                "file": "Untitled.base",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline"
+              "title": "Outline of Untitled"
             }
           }
         ]
@@ -178,13 +179,17 @@
   },
   "active": "418ec74650a3559b",
   "lastOpenFiles": [
+    "nodes-registry.json",
+    "systemd/opsly-worker.user.service",
+    "Untitled.base",
+    "Untitled 1.base",
+    "Untitled.canvas",
     "monitoring/grafana/dashboards/opsly-overview.json",
     "monitoring/grafana/provisioning/dashboards/provider.yml",
     "monitoring/grafana/provisioning/datasources/prometheus.yml",
     "monitoring/grafana/provisioning/datasources",
     "monitoring/grafana/provisioning/dashboards",
     "monitoring/grafana/provisioning",
-    "monitoring/grafana/dashboards",
-    "monitoring/grafana"
+    "monitoring/grafana/dashboards"
   ]
 }

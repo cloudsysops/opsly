@@ -1,6 +1,7 @@
 import { getSessionAuthToken } from "./session-auth";
 import type {
     AdminCostsResponse,
+    AdminOverviewResponse,
     CostDecisionResponse,
     InvitationSendResponse,
     Mac2011MonitoringStatus,
@@ -176,6 +177,10 @@ export async function getSystemMetrics(): Promise<SystemMetricsResponse> {
 
 export async function getTeamMetrics(): Promise<TeamMetricsResponse> {
   return request<TeamMetricsResponse>("/api/metrics/teams");
+}
+
+export async function getAdminOverview(): Promise<AdminOverviewResponse> {
+  return request<AdminOverviewResponse>("/api/admin/overview");
 }
 
 export async function getTenantUsageMetrics(

@@ -11,7 +11,6 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@intcloudsysops/notebooklm-agent": "*",
     "@intcloudsysops/types": "*",
     "@intcloudsysops/ml": "^1.0.0",
     "@llamaindex/postgres": "^0.0.65",

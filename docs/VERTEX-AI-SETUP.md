@@ -83,5 +83,5 @@ doppler run --project ops-intcloudsysops --config prd -- bash scripts/test-verte
 
 ## Referencias
 
-- ADR: `docs/adr/ADR-023-approval-gate-phase1.md`
+- ADR: `docs/adr/ADR-021-approval-gate-phase1.md`
 - Cliente: `apps/orchestrator/src/lib/vertex-ai-client.ts`

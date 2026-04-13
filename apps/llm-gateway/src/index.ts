@@ -1,8 +1,6 @@
 export { cacheGet, cacheSet, closeRedisClient, getCacheStats } from "./cache.js";
 export { analyzeComplexity } from "./complexity.js";
-export { checkDailyBudget, resolveAiProfile, resolveDailyBudgetUsd } from "./config/budgets.js";
-export { llmCall } from "./gateway.js";
-export { GatewayHttpError, llmCallDirect } from "./llm-direct.js";
+export { llmCall, llmCallDirect } from "./gateway.js";
 export { fetchRepoContextBlock } from "./repo-context-client.js";
 export { hashPrompt } from "./hash.js";
 export { HealthDaemon, healthDaemon, type ProviderHealth } from "./health-daemon.js";
@@ -19,7 +17,6 @@ export {
     type ProviderId,
     type RoutingPreference
 } from "./providers.js";
-export { notifyBudgetExceeded, notifyBudgetWarning, notifyProviderRateLimit } from "./providers/discord.js";
 export { MODEL_CONFIG, estimateCost, selectModel } from "./router.js";
 export {
     applyRoutingBias,
