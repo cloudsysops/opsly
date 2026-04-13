@@ -177,6 +177,14 @@ cd ~/opsly && git pull && chmod +x scripts/install-opsly-worker-systemd.sh
 sudo ./scripts/install-opsly-worker-systemd.sh
 ```
 
+### Fase 6c — systemd de usuario (sin sudo para enable)
+
+Si no tienes `sudo` sin contraseña, usa la unidad de **usuario**: **`infra/systemd/opsly-worker.user.service`** + **`scripts/install-opsly-worker-user-systemd.sh`**. Logs: `journalctl --user -u opsly-worker.service -f`. Para que arranque tras reboot sin login interactivo (una vez): `sudo loginctl enable-linger "$(whoami)"`.
+
+```bash
+cd ~/opsly && git pull && ./scripts/install-opsly-worker-user-systemd.sh
+```
+
 ---
 
 ## Fase 7 — Cursor / VS Code Remote
