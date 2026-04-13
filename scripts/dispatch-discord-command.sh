@@ -25,7 +25,8 @@ Opciones:
 Variables de entorno:
   N8N_WEBHOOK_URL           URL del webhook n8n.
   N8N_WEBHOOK_SECRET_GH     Secreto compartido X-Opsly-Secret (canónico en Doppler).
-  N8N_WEBHOOK_SECRET        Legado; se usa si GH está vacío.
+  N8N_WEBHOOK_SECRET        Legado intermedio; se usa si GH está vacío.
+  GITHUB_N8N                Obsoleto (mismo uso que el secreto webhook); último fallback.
 EOF
 }
 
@@ -100,7 +101,7 @@ if [[ "$TARGET" == "auto" ]]; then
 fi
 
 WEBHOOK_URL="${N8N_WEBHOOK_URL:-}"
-WEBHOOK_SECRET="${N8N_WEBHOOK_SECRET_GH:-${N8N_WEBHOOK_SECRET:-}}"
+WEBHOOK_SECRET="${N8N_WEBHOOK_SECRET_GH:-${N8N_WEBHOOK_SECRET:-${GITHUB_N8N:-}}}"
 
 if [[ "$DRY_RUN" != "true" && -z "$WEBHOOK_URL" && -x "${SCRIPT_DIR}/check-tokens.sh" ]]; then
   WEBHOOK_URL="$(doppler secrets get N8N_WEBHOOK_URL --project ops-intcloudsysops --config prd --plain 2>/dev/null || true)"
@@ -110,6 +111,9 @@ if [[ "$DRY_RUN" != "true" && -z "$WEBHOOK_SECRET" ]]; then
 fi
 if [[ "$DRY_RUN" != "true" && -z "$WEBHOOK_SECRET" ]]; then
   WEBHOOK_SECRET="$(doppler secrets get N8N_WEBHOOK_SECRET --project ops-intcloudsysops --config prd --plain 2>/dev/null || true)"
+fi
+if [[ "$DRY_RUN" != "true" && -z "$WEBHOOK_SECRET" ]]; then
+  WEBHOOK_SECRET="$(doppler secrets get GITHUB_N8N --project ops-intcloudsysops --config prd --plain 2>/dev/null || true)"
 fi
 
 require_cmd curl python3

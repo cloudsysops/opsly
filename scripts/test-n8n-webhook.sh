@@ -40,7 +40,7 @@ else
 
   HTTP=$(curl -sk -o /dev/null -w "%{http_code}" \
     -X POST -H "Content-Type: application/json" \
-    -H "X-Opsly-Secret: ${N8N_WEBHOOK_SECRET_GH:-${N8N_WEBHOOK_SECRET:-test}}" \
+    -H "X-Opsly-Secret: ${N8N_WEBHOOK_SECRET_GH:-${N8N_WEBHOOK_SECRET:-${GITHUB_N8N:-test}}}" \
     -d '{"content":"# test\necho hello","dry_run":true}' \
     "$WEBHOOK_URL" 2>/dev/null || echo "000")
   assert "webhook acepta payload valido" "$HTTP" "200"

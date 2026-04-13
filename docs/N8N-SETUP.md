@@ -2,7 +2,7 @@
 
 > **Token GitHub:** el nombre **`GITHUB_TOKEN_N8N`** es histórico (cuando n8n llamaba a la API). En Doppler usa **`GITHUB_TOKEN`** como nombre principal; el código y los workflows aceptan cualquiera de los dos. Detalle: [`GITHUB-TOKEN.md`](./GITHUB-TOKEN.md).
 >
-> **Secreto webhook (header `X-Opsly-Secret`):** el nombre canónico en Doppler es **`N8N_WEBHOOK_SECRET_GH`** (flujo Discord→GitHub / pruebas `curl` y `dispatch-discord-command.sh`). El nombre **`N8N_WEBHOOK_SECRET`** queda como legado; los scripts leen primero `N8N_WEBHOOK_SECRET_GH` y, si falta, `N8N_WEBHOOK_SECRET`.
+> **Secreto webhook (header `X-Opsly-Secret`):** el nombre canónico en Doppler es **`N8N_WEBHOOK_SECRET_GH`** (flujo Discord→GitHub / pruebas `curl` y `dispatch-discord-command.sh`). Sustituye al nombre antiguo **`GITHUB_N8N`** (si aún existe en Doppler, migrar el valor a `N8N_WEBHOOK_SECRET_GH` y borrar la clave vieja). El nombre **`N8N_WEBHOOK_SECRET`** queda como legado intermedio; los scripts leen primero `N8N_WEBHOOK_SECRET_GH`, luego `N8N_WEBHOOK_SECRET`, luego `GITHUB_N8N` si hace falta.
 
 ## Objetivo
 
@@ -15,7 +15,7 @@ y notificar confirmacion de recepcion.
 - Secretos en Doppler `prd`:
   - `GITHUB_TOKEN` o `GITHUB_TOKEN_N8N` (scope `repo` o Contents en el repo)
   - `DISCORD_WEBHOOK_URL`
-  - `N8N_WEBHOOK_SECRET_GH` (secreto compartido webhook; legado: `N8N_WEBHOOK_SECRET`)
+  - `N8N_WEBHOOK_SECRET_GH` (secreto compartido webhook; legados: `N8N_WEBHOOK_SECRET`, `GITHUB_N8N`)
 
 ## Importar workflow
 
@@ -33,7 +33,7 @@ y notificar confirmacion de recepcion.
 
 - `GITHUB_TOKEN` (recomendado) o `GITHUB_TOKEN_N8N` (legado): PAT con permisos `repo` / Contents.
 - `DISCORD_WEBHOOK_URL`: webhook del canal de notificaciones.
-- `N8N_WEBHOOK_SECRET_GH`: secreto compartido para validar origen (legado: `N8N_WEBHOOK_SECRET`).
+- `N8N_WEBHOOK_SECRET_GH`: secreto compartido para validar origen (legados: `N8N_WEBHOOK_SECRET`, `GITHUB_N8N`).
 
 ## Configuracion sugerida del webhook
 

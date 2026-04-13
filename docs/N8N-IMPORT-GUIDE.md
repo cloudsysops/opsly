@@ -51,9 +51,9 @@ Configurar en el entorno de n8n:
 
 - `GITHUB_TOKEN` (recomendado; el workflow importado usa `{{$env.GITHUB_TOKEN}}`)
 - `DISCORD_WEBHOOK_URL`
-- `N8N_WEBHOOK_SECRET_GH` (recomendado; legado: `N8N_WEBHOOK_SECRET`) para validacion de origen
+- `N8N_WEBHOOK_SECRET_GH` (recomendado; legados: `N8N_WEBHOOK_SECRET`, `GITHUB_N8N`) para validacion de origen (`X-Opsly-Secret`). El nombre **`GITHUB_N8N`** es el antiguo; migrar el valor a **`N8N_WEBHOOK_SECRET_GH`** en Doppler.
 
-Si solo tienes el secreto bajo el nombre legado `GITHUB_TOKEN_N8N`, en n8n puedes duplicar la variable como `GITHUB_TOKEN` con el mismo valor, o editar los nodos HTTP para usar `{{$env.GITHUB_TOKEN_N8N}}`.
+Si solo tienes el **PAT** bajo el nombre legado `GITHUB_TOKEN_N8N`, en n8n puedes duplicar la variable como `GITHUB_TOKEN` con el mismo valor, o editar los nodos HTTP para usar `{{$env.GITHUB_TOKEN_N8N}}`.
 
 No hardcodear tokens en nodos.
 

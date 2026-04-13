@@ -1,5 +1,9 @@
 # GitHub PAT — `GITHUB_TOKEN` vs `GITHUB_TOKEN_N8N`
 
+## No confundir con el secreto del webhook n8n
+
+El **secreto compartido** del webhook Discord→GitHub (cabecera `X-Opsly-Secret`) **no es un PAT**. El nombre canónico en Doppler es **`N8N_WEBHOOK_SECRET_GH`**. El nombre antiguo **`GITHUB_N8N`** se usaba en algunos entornos para ese valor; debe migrarse a `N8N_WEBHOOK_SECRET_GH` (ver [`N8N-SETUP.md`](./N8N-SETUP.md)). **`GITHUB_TOKEN_N8N`** (abajo) es otra cosa: es el **PAT** legado para la API de GitHub.
+
 ## Qué es
 
 Un **personal access token (PAT)** con permisos suficientes para la **API REST de GitHub** cuando Opsly debe:
