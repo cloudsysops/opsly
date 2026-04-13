@@ -27,6 +27,7 @@ function UsageBlock(props: {
       </div>
     );
   }
+
   return (
     <div className="rounded-md border border-ops-border/60 bg-ops-surface/50 p-3">
       <p className="text-xs font-semibold uppercase tracking-wide text-ops-gray">{title}</p>
@@ -76,6 +77,14 @@ export function LlmUsageCard(props: { usage: PortalUsageSnapshot }): ReactElemen
           <UsageBlock title="Este mes" data={usage.month} />
         </div>
       )}
+
+      {!empty && usage.month !== null ? (
+        <div className="mt-4 border-t border-ops-border/40 pt-4">
+          <p className="text-xs text-ops-gray">
+            El coste mensual se factura según uso real. Los datos son aproximados.
+          </p>
+        </div>
+      ) : null}
     </section>
   );
 }

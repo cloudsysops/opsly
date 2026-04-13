@@ -4,7 +4,7 @@ export { llmCall, llmCallDirect } from "./gateway.js";
 export { fetchRepoContextBlock } from "./repo-context-client.js";
 export { hashPrompt } from "./hash.js";
 export { HealthDaemon, healthDaemon, type ProviderHealth } from "./health-daemon.js";
-export { getTenantUsage, logUsage } from "./logger.js";
+export { getPlatformLlmUsage, getTenantUsage, logUsage } from "./logger.js";
 export type {
     ChatCompletionsPlannerBody,
     PlannerHttpRequestBody,
