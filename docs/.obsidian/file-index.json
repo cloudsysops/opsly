@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-04-12T20:53:00Z",
-  "totalFiles": 133,
+  "lastIndexed": "2026-04-13T02:18:23Z",
+  "totalFiles": 134,
   "files": [
     "ACTIVE-PROMPT.md",
     "ADMIN-ECOSYSTEM.md",
@@ -92,6 +92,7 @@
     "ORCHESTRATOR-FIXES-EXECUTION.md",
     "ORCHESTRATOR.md",
     "PERFORMANCE_BASELINE.md",
+    "PLAN-ORCHESTRATOR-WORKER.md",
     "PLANNING.md",
     "PLUGINS-TO-INSTALL.md",
     "QA-REVIEW-COMPLETE.md",
