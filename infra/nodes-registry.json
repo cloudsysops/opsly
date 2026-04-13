@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "updated_at": "2026-04-13T00:00:00Z",
+  "nodes": [
+    {
+      "name": "opsly-admin",
+      "host": "127.0.0.1",
+      "user": "dragon",
+      "role": "control",
+      "status": "active",
+      "notes": "Mac principal / Cursor"
+    },
+    {
+      "name": "opsly-worker",
+      "host": "100.80.41.29",
+      "user": "opslyquantum",
+      "role": "worker",
+      "status": "active",
+      "notes": "Mac 2011 Ubuntu por Tailscale"
+    },
+    {
+      "name": "vps-dragon",
+      "host": "100.120.151.91",
+      "user": "vps-dragon",
+      "role": "control",
+      "status": "active",
+      "notes": "VPS control plane"
+    }
+  ]
+}
