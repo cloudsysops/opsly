@@ -8,7 +8,7 @@ COPY apps/api/package.json ./apps/api/
 COPY apps/ml/package.json ./apps/ml/
 COPY apps/llm-gateway/package.json ./apps/llm-gateway/
 COPY packages/types/package.json ./packages/types/
-RUN HUSKY=0 npm ci -w @intcloudsysops/api
+RUN npm ci --ignore-scripts -w @intcloudsysops/api
 
 FROM node:20-alpine AS builder
 WORKDIR /repo
