@@ -277,7 +277,15 @@ Procedimientos vivos en el repo: **`skills/user/<skill>/SKILL.md`**. En runtimes
 
 <!-- Actualizar al final de cada sesión -->
 
-**Fecha última actualización:** 2026-04-12 UTC — **Sprint ROADMAP:** Semana 1 (Fase 2 producto + IA), ventana **2026-04-14 → 2026-04-20**; revisión sprint **2026-04-19**. Documentos: [`ROADMAP.md`](ROADMAP.md), [`docs/IMPLEMENTATION-IA-LAYER.md`](docs/IMPLEMENTATION-IA-LAYER.md).
+**Fecha última actualización:** 2026-04-13 UTC — **Sprint ROADMAP:** Semana 1 (Fase 2 producto + IA), ventana **2026-04-14 → 2026-04-20**; revisión sprint **2026-04-19**. Documentos: [`ROADMAP.md`](ROADMAP.md), [`docs/IMPLEMENTATION-IA-LAYER.md`](docs/IMPLEMENTATION-IA-LAYER.md).
+
+**Sesión 2026-04-13:** 
+- ✅ MCP Dockerfile fix: añadido `packages/types` al COPY del deps stage y `npm run build -w @intcloudsysops/types` antes de otros workspaces (commit `ae7ee0e`)
+- ✅ Predictive BI Engine: rutas `GET/POST /api/portal/tenant/[slug]/insights` + `GET /api/admin/overview` + `POST /api/notebooklm/query` actualizadas
+- ✅ Type-check: 13/14 packages successful (14 workspaces total)
+- ✅ Committed and pushed to main: `ae7ee0e fix(mcp): add packages/types build step to Dockerfile`
+
+**Pendiente inmediato:** Verificar que GitHub Actions `Deploy` workflow succeed tras el fix del Dockerfile MCP.
 
 **ADR-020 (sesión):** [`docs/adr/ADR-020-orchestrator-worker-separation.md`](docs/adr/ADR-020-orchestrator-worker-separation.md) — alias `OPSLY_ORCHESTRATOR_MODE` documentado; tests `orchestrator-role.test.ts` ampliados; `npm run type-check` y `npm run test --workspace=@intcloudsysops/orchestrator` en verde.
 
@@ -405,6 +413,16 @@ flowchart LR
 - ✅ Rate limiting por tenant
 - ✅ Script rotación de tokens
 - ✅ CI arreglado (imports ML, tipos)
+
+* **2026-04-13 — Predictive BI Engine + MCP Dockerfile fix:**
+- ✅ SQL migrations para `predictive_bi_engine` (`0014_*.sql`): `tenant_insights`, `ml_model_snapshots`, `insight_events`
+- ✅ InsightGenerator worker en `apps/orchestrator/src/workers/insight-generator.ts`: churn prediction, revenue forecast, anomaly detection, growth opportunity
+- ✅ API routes: `GET/POST /api/portal/tenant/[slug]/insights`, `GET /api/admin/overview`, `POST /api/notebooklm/query`
+- ✅ ML engine: `apps/ml/src/insight-engine.ts` + `apps/api/lib/insights/engine.ts`
+- ✅ Dashboard: `apps/admin/components/insights/InsightDashboard.tsx` con Recharts
+- ✅ ADR-021 scalability strategy documentado
+- ✅ MCP Dockerfile fix: `packages/types` en deps stage + build order (commit `ae7ee0e`)
+- ✅ Type-check: 13/14 packages successful
 
 **Commits:**
 - `d894fc6`: consolidate env files
@@ -860,7 +878,7 @@ ssh vps-dragon@100.120.151.91 "docker system df && sudo du -xh /var --max-depth=
 - [x] **`GOOGLE_DRIVE_TOKEN`** — confirmado 2026-04-10: Drive usa `GOOGLE_SERVICE_ACCOUNT_JSON` (2361 chars, válido). No es un gap real; la variable legacy no se usa.
 - [ ] **Resend dominio verificado** — sin ello, envío a emails fuera de la cuenta de prueba Resend → **500** en `POST /api/invitations` (ver mensaje API `verify a domain`).
 - [ ] **Imágenes GHCR / workflow Deploy** — desplegar API con plantilla invitación nueva (`portal-invitations.ts`); pendiente **success** de pipeline si aplica.
-- [x] **Fix Dockerfile MCP** — añadido `apps/agents/notebooklm` al COPY en deps/builder/runner stages (faltaba para build) (2026-04-11).
+- [x] **Fix Dockerfile MCP** — añadido `apps/agents/notebooklm` al COPY en deps/builder/runner stages + `packages/types` al deps stage + `npm run build -w @intcloudsysops/types` antes de otros workspaces (completado 2026-04-13, commit `ae7ee0e`).
 - [ ] **`STRIPE_PRICE_ID_*` en Doppler `prd` / secrets de CI** — necesarios para billing/checkout real en `apps/web`; el build puede completarse sin ellos (`envOrEmpty` en `apps/web/lib/stripe/plans.ts`), pero Stripe fallará en runtime si faltan.
 
 ---
