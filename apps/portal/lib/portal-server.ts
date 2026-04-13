@@ -1,11 +1,16 @@
 import { redirect } from "next/navigation";
 import { createServerSupabase } from "@/lib/supabase/server";
 import {
+  fetchPortalInsights,
   fetchPortalTenant,
   fetchPortalUsage,
   tenantSlugFromUserMetadata,
 } from "@/lib/tenant";
-import type { PortalTenantPayload, PortalUsageSnapshot } from "@/types";
+import type {
+  PortalInsightsPayload,
+  PortalTenantPayload,
+  PortalUsageSnapshot,
+} from "@/types";
 
 export async function requirePortalPayload(): Promise<PortalTenantPayload> {
   const supabase = await createServerSupabase();
@@ -54,6 +59,44 @@ export async function requirePortalPayloadWithUsage(): Promise<{
       fetchPortalUsage(token, "month", slug).catch((): null => null),
     ]);
     return { payload, usage: { today, month } };
+  } catch {
+    redirect("/login");
+  }
+}
+
+/**
+ * Igual que `requirePortalPayloadWithUsage` más insights predictivos (fallo → `null`).
+ */
+export async function requirePortalPayloadWithUsageAndInsights(): Promise<{
+  payload: PortalTenantPayload;
+  usage: PortalUsageSnapshot;
+  insights: PortalInsightsPayload | null;
+}> {
+  const supabase = await createServerSupabase();
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  if (!session?.access_token) {
+    redirect("/login");
+  }
+  const token = session.access_token;
+  try {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    const slugFromJwt = tenantSlugFromUserMetadata(user);
+    const payload = await fetchPortalTenant(token, slugFromJwt);
+    const slug = payload.slug;
+    const [today, month, insights] = await Promise.all([
+      fetchPortalUsage(token, "today", slug).catch((): null => null),
+      fetchPortalUsage(token, "month", slug).catch((): null => null),
+      fetchPortalInsights(token, slug).catch((): null => null),
+    ]);
+    return {
+      payload,
+      usage: { today, month },
+      insights,
+    };
   } catch {
     redirect("/login");
   }

@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   portalHealthUrl,
   portalPublicHealthUrl,
+  portalTenantInsightsUrl,
   portalTenantMeUrl,
   portalTenantModeUrl,
   portalTenantUsageUrl,
@@ -60,6 +61,17 @@ describe("portalTenantUsageUrl", () => {
   it("con slug → /tenant/…/usage?period=", () => {
     expect(portalTenantUsageUrl(BASE, "today", "acme")).toBe(
       `${BASE}/api/portal/tenant/acme/usage?period=today`,
+    );
+  });
+});
+
+describe("portalTenantInsightsUrl", () => {
+  it("codifica slug en /tenant/…/insights", () => {
+    expect(portalTenantInsightsUrl(BASE, "acme")).toBe(
+      `${BASE}/api/portal/tenant/acme/insights`,
+    );
+    expect(portalTenantInsightsUrl(BASE, "a/b")).toBe(
+      `${BASE}/api/portal/tenant/${encodeURIComponent("a/b")}/insights`,
     );
   });
 });

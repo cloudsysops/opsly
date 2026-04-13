@@ -365,6 +365,70 @@ export type Database = {
           timestamp: string;
         }>;
       };
+      tenant_insights: {
+        Row: {
+          id: string;
+          tenant_id: string;
+          insight_type: string;
+          title: string;
+          summary: string;
+          payload: Json;
+          confidence: number;
+          impact_score: number;
+          status: string;
+          read_at: string | null;
+          actioned_at: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          tenant_id: string;
+          insight_type: string;
+          title: string;
+          summary?: string;
+          payload?: Json;
+          confidence?: number;
+          impact_score?: number;
+          status?: string;
+          read_at?: string | null;
+          actioned_at?: string | null;
+          created_at?: string;
+        };
+        Update: Partial<{
+          title: string;
+          summary: string;
+          payload: Json;
+          confidence: number;
+          impact_score: number;
+          status: string;
+          read_at: string | null;
+          actioned_at: string | null;
+        }>;
+      };
+      ml_model_snapshots: {
+        Row: {
+          id: string;
+          tenant_id: string | null;
+          model_key: string;
+          version: number;
+          payload: Json;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          tenant_id?: string | null;
+          model_key: string;
+          version?: number;
+          payload?: Json;
+          created_at?: string;
+        };
+        Update: Partial<{
+          tenant_id: string | null;
+          model_key: string;
+          version: number;
+          payload: Json;
+        }>;
+      };
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;

@@ -1,5 +1,6 @@
 import type { ReactElement } from "react";
 import { redirect } from "next/navigation";
+import { DashboardShell, PageLead } from "@/components/dashboard/premium-dashboard";
 import { ModeSelector } from "@/components/mode-selector";
 import { PortalShell } from "@/components/portal-shell";
 import { createServerSupabase } from "@/lib/supabase/server";
@@ -15,7 +16,12 @@ export default async function DashboardSelectorPage(): Promise<ReactElement> {
 
   return (
     <PortalShell title="Elige cómo trabajar">
-      <ModeSelector />
+      <DashboardShell>
+        <PageLead>
+          Elige si administras la infraestructura (developer) o prefieres una vista guiada (managed).
+        </PageLead>
+        <ModeSelector />
+      </DashboardShell>
     </PortalShell>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import type { FormEvent, ReactElement } from "react";
+import { Loader2 } from "lucide-react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -38,20 +39,43 @@ export default function LoginPage(): ReactElement {
   };
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center px-4">
-      <div className="w-full max-w-sm space-y-8">
+    <main
+      id="main-content"
+      className="ops-auth-backdrop flex min-h-screen flex-col items-center justify-center px-4 py-12"
+    >
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-10 focus:rounded-sm focus:bg-ops-green focus:px-3 focus:py-2 focus:text-sm focus:font-medium focus:text-ops-bg"
+      >
+        Saltar al formulario
+      </a>
+      <div className="relative w-full max-w-sm space-y-8">
         <div className="text-center">
-          <h1 className="text-2xl font-bold tracking-tight text-ops-green">Opsly</h1>
-          <p className="mt-1 text-sm text-ops-gray">Portal de Cliente</p>
+          <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-ops-gray">
+            Opsly
+          </p>
+          <h1 className="mt-2 text-2xl font-bold tracking-tight text-neutral-100">
+            Portal de cliente
+          </h1>
+          <p className="mt-2 text-sm text-neutral-500">
+            Inicia sesión con el email de tu invitación.
+          </p>
         </div>
-        <form onSubmit={(e) => void onSubmit(e)} className="space-y-4">
+        <form
+          onSubmit={(e) => void onSubmit(e)}
+          className="space-y-4 rounded-lg border border-ops-border/80 bg-ops-surface/60 p-6 shadow-xl shadow-black/30 backdrop-blur-sm"
+          aria-busy={loading}
+        >
           {error ? (
-            <p className="rounded-sm border border-ops-red/40 bg-ops-red/10 px-3 py-2 text-sm text-ops-red">
+            <p
+              role="alert"
+              className="rounded-sm border border-ops-red/40 bg-ops-red/10 px-3 py-2 text-sm text-ops-red"
+            >
               {error}
             </p>
           ) : null}
           <div>
-            <label htmlFor="email" className="mb-1 block text-xs uppercase text-ops-gray">
+            <label htmlFor="email" className="mb-1 block text-xs uppercase tracking-wide text-ops-gray">
               Email
             </label>
             <input
@@ -62,11 +86,11 @@ export default function LoginPage(): ReactElement {
               required
               value={email}
               onChange={(ev) => setEmail(ev.target.value)}
-              className="input-terminal-caret w-full rounded-sm border border-ops-border bg-ops-surface px-3 py-2 text-sm text-neutral-100 outline-none focus:border-ops-green"
+              className="input-terminal-caret w-full rounded-sm border border-ops-border bg-ops-bg/80 px-3 py-2.5 text-sm text-neutral-100 outline-none transition-colors focus:border-ops-green focus:ring-2 focus:ring-ops-green/30"
             />
           </div>
           <div>
-            <label htmlFor="password" className="mb-1 block text-xs uppercase text-ops-gray">
+            <label htmlFor="password" className="mb-1 block text-xs uppercase tracking-wide text-ops-gray">
               Contraseña
             </label>
             <input
@@ -77,15 +101,22 @@ export default function LoginPage(): ReactElement {
               required
               value={password}
               onChange={(ev) => setPassword(ev.target.value)}
-              className="input-terminal-caret w-full rounded-sm border border-ops-border bg-ops-surface px-3 py-2 text-sm text-neutral-100 outline-none focus:border-ops-green"
+              className="input-terminal-caret w-full rounded-sm border border-ops-border bg-ops-bg/80 px-3 py-2.5 text-sm text-neutral-100 outline-none transition-colors focus:border-ops-green focus:ring-2 focus:ring-ops-green/30"
             />
           </div>
           <Button type="submit" variant="primary" className="w-full" disabled={loading}>
-            {loading ? "Entrando…" : "Entrar"}
+            {loading ? (
+              <>
+                <Loader2 className="h-4 w-4 shrink-0 animate-spin" aria-hidden />
+                Entrando…
+              </>
+            ) : (
+              "Entrar"
+            )}
           </Button>
         </form>
-        <p className="text-center text-xs text-ops-gray">
-          ¿Primera vez? Revisa tu email de invitación.
+        <p className="text-center text-xs leading-relaxed text-ops-gray">
+          ¿Primera vez? Revisa tu email de invitación y el enlace de activación.
         </p>
       </div>
     </main>

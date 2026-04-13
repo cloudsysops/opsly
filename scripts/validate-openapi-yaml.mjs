@@ -43,6 +43,7 @@ const REQUIRED_PORTAL_PATHS = [
   "/api/portal/tenant/{slug}/health",
   "/api/portal/tenant/{slug}/budget",
   "/api/portal/tenant/{slug}/subscription/upgrade",
+  "/api/portal/tenant/{slug}/insights",
 ];
 
 for (const p of REQUIRED_PORTAL_PATHS) {

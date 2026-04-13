@@ -1,0 +1,115 @@
+/**
+ * Design tokens — Opsly portal (CSS variables).
+ * Base scale from prompt; dark theme aligned to html.dark (portal default).
+ */
+:root {
+  /* === BRAND (primary scale; accent green in dark UI) === */
+  --opsly-primary-50: #eff6ff;
+  --opsly-primary-100: #dbeafe;
+  --opsly-primary-500: #3b82f6;
+  --opsly-primary-600: #2563eb;
+  --opsly-primary-700: #1d4ed8;
+  --opsly-primary-800: #1e40af;
+  --opsly-primary-900: #1e3a8a;
+
+  /* === NEUTRALS (light reference) === */
+  --opsly-gray-50: #f9fafb;
+  --opsly-gray-100: #f3f4f6;
+  --opsly-gray-200: #e5e7eb;
+  --opsly-gray-300: #d1d5db;
+  --opsly-gray-400: #9ca3af;
+  --opsly-gray-500: #6b7280;
+  --opsly-gray-600: #4b5563;
+  --opsly-gray-700: #374151;
+  --opsly-gray-800: #1f2937;
+  --opsly-gray-900: #111827;
+
+  /* === SEMANTIC === */
+  --opsly-success-500: #22c55e;
+  --opsly-warning-500: #f59e0b;
+  --opsly-error-500: #ef4444;
+  --opsly-info-500: #3388ff;
+
+  /* === SPACING (8px grid) === */
+  --opsly-space-1: 0.25rem;
+  --opsly-space-2: 0.5rem;
+  --opsly-space-3: 0.75rem;
+  --opsly-space-4: 1rem;
+  --opsly-space-5: 1.5rem;
+  --opsly-space-6: 2rem;
+  --opsly-space-8: 3rem;
+  --opsly-space-10: 4rem;
+
+  /* === TYPOGRAPHY === */
+  --opsly-font-sans: var(--font-geist-sans), "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  --opsly-font-mono: var(--font-geist-mono), "JetBrains Mono", "Fira Code", ui-monospace, monospace;
+
+  --opsly-text-xs: 0.75rem;
+  --opsly-text-sm: 0.875rem;
+  --opsly-text-base: 1rem;
+  --opsly-text-lg: 1.125rem;
+  --opsly-text-xl: 1.25rem;
+  --opsly-text-2xl: 1.5rem;
+  --opsly-text-3xl: 1.875rem;
+  --opsly-text-4xl: 2.25rem;
+
+  /* === RADIUS === */
+  --opsly-radius-sm: 0.375rem;
+  --opsly-radius-md: 0.5rem;
+  --opsly-radius-lg: 0.75rem;
+  --opsly-radius-xl: 1rem;
+  --opsly-radius-2xl: 1.5rem;
+  --opsly-radius-full: 9999px;
+
+  /* === SHADOWS === */
+  --opsly-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.25);
+  --opsly-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.35), 0 2px 4px -2px rgb(0 0 0 / 0.3);
+  --opsly-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4), 0 4px 6px -4px rgb(0 0 0 / 0.35);
+  --opsly-shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.45), 0 8px 10px -6px rgb(0 0 0 / 0.4);
+
+  /* === TRANSITIONS === */
+  --opsly-transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --opsly-transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  --opsly-transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* === Z-INDEX === */
+  --opsly-z-dropdown: 1000;
+  --opsly-z-sticky: 1100;
+  --opsly-z-modal: 1200;
+  --opsly-z-popover: 1300;
+  --opsly-z-tooltip: 1400;
+  --opsly-z-toast: 1500;
+
+  /* === SURFACE (portal dark — default) === */
+  --opsly-canvas: #0a0a0a;
+  --opsly-surface: #111111;
+  --opsly-border: #1e1e1e;
+  --opsly-muted: #666666;
+  --opsly-fg: #e5e5e5;
+  --opsly-fg-subtle: #a3a3a3;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --opsly-gray-50: #1f2937;
+    --opsly-gray-100: #374151;
+    --opsly-gray-200: #4b5563;
+    --opsly-gray-300: #6b7280;
+    --opsly-gray-400: #9ca3af;
+    --opsly-gray-500: #d1d5db;
+    --opsly-gray-600: #e5e7eb;
+    --opsly-gray-700: #f3f4f6;
+    --opsly-gray-800: #f9fafb;
+    --opsly-gray-900: #ffffff;
+  }
+}
+
+html.dark {
+  --opsly-canvas: #0a0a0a;
+  --opsly-surface: #111111;
+  --opsly-border: #1e1e1e;
+  --opsly-muted: #666666;
+  --opsly-fg: #e5e5e5;
+  --opsly-fg-subtle: #a3a3a3;
+}

@@ -460,6 +460,62 @@ paths:
         '403':
           $ref: '#/components/responses/Forbidden'
 
+  /api/portal/tenant/{slug}/insights:
+    get:
+      summary: Insights predictivos (churn, forecast, anomalías) — Zero-Trust por slug
+      operationId: getPortalTenantInsights
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Lista de insights activos del tenant
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+    patch:
+      summary: Marcar insight como leído, descartado o accionado
+      operationId: patchPortalTenantInsight
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [insight_id, action]
+              properties:
+                insight_id:
+                  type: string
+                  format: uuid
+                action:
+                  type: string
+                  enum: [read, dismiss, action]
+      responses:
+        '200':
+          description: Actualizado
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
   /api/portal/health:
     get:
       summary: Health check público (Uptime Kuma) — requiere ?slug= del tenant

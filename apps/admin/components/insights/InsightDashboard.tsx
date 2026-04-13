@@ -57,13 +57,27 @@ export enum InsightStatus {
   DISMISSED = 'dismissed'
 }
 
+export interface RevenueForecastPayload {
+  current_revenue: number;
+  forecast_30d: number;
+  confidence: number;
+  trend: 'up' | 'stable' | 'down';
+  change_percent: number;
+}
+
+export interface ChurnRiskPayload {
+  riskScore: number;
+  days_since_last_activity: number;
+  transaction_trend: number;
+}
+
 export interface TenantInsight {
   id: string;
   tenant_id: string;
   insight_type: InsightType;
   title: string;
   description: string;
-  payload: Record<string, unknown>;
+  payload: RevenueForecastPayload | ChurnRiskPayload | Record<string, unknown>;
   confidence: number;
   impact_score: number;
   status: InsightStatus;
@@ -282,46 +296,46 @@ function InsightCard({
       </p>
 
       {/* Payload visualization for revenue forecast */}
-      {insight.insight_type === InsightType.REVENUE_FORECAST && insight.payload.forecast_30d && (
+      {insight.insight_type === InsightType.REVENUE_FORECAST && (insight.payload as RevenueForecastPayload).forecast_30d && (
         <div className="mb-4 p-3 rounded-lg bg-black/20">
           <div className="flex items-center justify-between">
             <span className="text-xs text-white/60">Proyección 30 días</span>
             <span className="text-lg font-mono text-white">
-              ${Number(insight.payload.forecast_30d).toLocaleString()}
+              ${Number((insight.payload as RevenueForecastPayload).forecast_30d).toLocaleString()}
             </span>
           </div>
-          {insight.payload.change_percent && (
+          {(insight.payload as RevenueForecastPayload).change_percent && (
             <div className={`
               flex items-center gap-1 mt-1 text-xs
-              ${Number(insight.payload.change_percent) > 0 ? 'text-green-400' : 'text-red-400'}
+              ${Number((insight.payload as RevenueForecastPayload).change_percent) > 0 ? 'text-green-400' : 'text-red-400'}
             `}>
-              {Number(insight.payload.change_percent) > 0 ? (
+              {Number((insight.payload as RevenueForecastPayload).change_percent) > 0 ? (
                 <TrendingUp className="w-3 h-3" />
               ) : (
                 <TrendingDown className="w-3 h-3" />
               )}
-              {Math.abs(Number(insight.payload.change_percent)).toFixed(1)}%
+              {Math.abs(Number((insight.payload as RevenueForecastPayload).change_percent)).toFixed(1)}%
             </div>
           )}
         </div>
       )}
 
       {/* Churn risk visualization */}
-      {insight.insight_type === InsightType.CHURN_RISK && insight.payload.riskScore && (
+      {insight.insight_type === InsightType.CHURN_RISK && (insight.payload as ChurnRiskPayload).riskScore && (
         <div className="mb-4">
           <div className="flex items-center justify-between text-xs mb-1">
             <span className="text-white/60">Nivel de riesgo</span>
-            <span className={getConfidenceColor(Number(insight.payload.riskScore))}>
-              {(Number(insight.payload.riskScore) * 100).toFixed(0)}%
+            <span className={getConfidenceColor(Number((insight.payload as ChurnRiskPayload).riskScore))}>
+              {(Number((insight.payload as ChurnRiskPayload).riskScore) * 100).toFixed(0)}%
             </span>
           </div>
           <div className="h-2 bg-white/10 rounded-full overflow-hidden">
             <div 
               className={`h-full rounded-full transition-all ${
-                Number(insight.payload.riskScore) > 0.7 ? 'bg-red-500' :
-                Number(insight.payload.riskScore) > 0.4 ? 'bg-yellow-500' : 'bg-green-500'
+                Number((insight.payload as ChurnRiskPayload).riskScore) > 0.7 ? 'bg-red-500' :
+                Number((insight.payload as ChurnRiskPayload).riskScore) > 0.4 ? 'bg-yellow-500' : 'bg-green-500'
               }`}
-              style={{ width: `${Number(insight.payload.riskScore) * 100}%` }}
+              style={{ width: `${Number((insight.payload as ChurnRiskPayload).riskScore) * 100}%` }}
             />
           </div>
         </div>
@@ -452,7 +466,7 @@ function RevenueForecastChart({ insights }: { insights: TenantInsight[] }) {
   
   if (!revenueInsight) return null;
 
-  const payload = revenueInsight.payload;
+  const payload = revenueInsight.payload as RevenueForecastPayload;
   const currentRevenue = Number(payload.current_revenue) || 0;
   const forecast = Number(payload.forecast_30d) || 0;
 

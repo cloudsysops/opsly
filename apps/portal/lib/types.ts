@@ -3,6 +3,8 @@ export type {
   OnboardingRequest,
   OnboardingResponse,
   PortalHealthPayload,
+  PortalInsightItem,
+  PortalInsightsPayload,
   PortalMode,
   PortalTenantPayload,
   PortalUsagePayload,

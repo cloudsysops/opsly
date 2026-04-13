@@ -46,6 +46,15 @@ export function portalTenantUsageUrl(
   return `${base}/api/portal/usage?${qs}`;
 }
 
+/** URL absoluta `GET/PATCH` insights — `/api/portal/tenant/[slug]/insights`. */
+export function portalTenantInsightsUrl(
+  apiBaseUrl: string,
+  tenantSlug: string,
+): string {
+  const base = normalizeApiBase(apiBaseUrl);
+  return `${base}/api/portal/tenant/${encodeURIComponent(tenantSlug)}/insights`;
+}
+
 /** URL absoluta `GET` health con JWT — `/api/portal/tenant/[slug]/health` (Zero-Trust). */
 export function portalHealthUrl(apiBaseUrl: string, tenantSlug: string): string {
   const base = normalizeApiBase(apiBaseUrl);

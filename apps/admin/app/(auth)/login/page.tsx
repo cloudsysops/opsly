@@ -1,5 +1,6 @@
 "use client";
 
+import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
@@ -47,17 +48,36 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center p-6">
-      <Card className="w-full max-w-md border-ops-green/40">
+    <main
+      id="main-content"
+      className="ops-auth-backdrop flex min-h-screen flex-col items-center justify-center p-6"
+    >
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-10 focus:rounded-sm focus:bg-ops-green focus:px-3 focus:py-2 focus:text-sm focus:font-medium focus:text-ops-bg"
+      >
+        Saltar al formulario
+      </a>
+      <Card className="w-full max-w-md border-ops-green/40 shadow-xl shadow-black/30 backdrop-blur-sm">
         <CardHeader>
           <CardTitle className="font-mono text-ops-green">
             <span className="text-neutral-500">$ </span>login
           </CardTitle>
+          <p className="pt-1 font-sans text-sm text-neutral-500">
+            Acceso al panel de operaciones.
+          </p>
         </CardHeader>
         <CardContent>
-          <form onSubmit={(e) => void onSubmit(e)} className="space-y-4">
+          <form
+            onSubmit={(e) => void onSubmit(e)}
+            className="space-y-4"
+            aria-busy={loading}
+          >
             {error ? (
-              <div className="rounded border border-ops-red/60 bg-ops-red/10 px-3 py-2 font-sans text-sm text-ops-red">
+              <div
+                role="alert"
+                className="rounded border border-ops-red/60 bg-ops-red/10 px-3 py-2 font-sans text-sm text-ops-red"
+              >
                 {error}
               </div>
             ) : null}
@@ -106,11 +126,18 @@ export default function LoginPage() {
               className="w-full font-mono"
               disabled={loading}
             >
-              {loading ? "…" : "authenticate"}
+              {loading ? (
+                <>
+                  <Loader2 className="h-4 w-4 shrink-0 animate-spin" aria-hidden />
+                  authenticate…
+                </>
+              ) : (
+                "authenticate"
+              )}
             </Button>
           </form>
         </CardContent>
       </Card>
-    </div>
+    </main>
   );
 }

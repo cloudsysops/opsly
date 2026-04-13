@@ -44,6 +44,27 @@ export type PortalUsageSnapshot = {
   month: PortalUsagePayload | null;
 };
 
+/** Ítem de `GET /api/portal/tenant/[slug]/insights`. */
+export type PortalInsightItem = {
+  id: string;
+  tenant_id: string;
+  insight_type: string;
+  title: string;
+  summary: string;
+  payload: Record<string, unknown>;
+  confidence: number;
+  impact_score: number;
+  status: string;
+  read_at: string | null;
+  actioned_at: string | null;
+  created_at: string;
+};
+
+export type PortalInsightsPayload = {
+  tenant_slug: string;
+  insights: PortalInsightItem[];
+};
+
 export type PortalHealthPayload = {
   slug: string;
   name: string;

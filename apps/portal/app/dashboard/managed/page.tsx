@@ -1,5 +1,6 @@
 import type { ReactElement } from "react";
 import { redirect } from "next/navigation";
+import { DashboardShell, PageLead, ResponsiveGrid } from "@/components/dashboard/premium-dashboard";
 import { LlmUsageCard } from "@/components/llm-usage-card";
 import { PortalShell } from "@/components/portal-shell";
 import { ServiceCard } from "@/components/service-card";
@@ -21,7 +22,11 @@ export default async function ManagedDashboardPage(): Promise<ReactElement> {
 
   return (
     <PortalShell title={`Tus Automatizaciones — ${displayName}`} showModeLink>
-      <div className="space-y-8">
+      <DashboardShell>
+        <PageLead>
+          Vista resumida: estado de servicios, uso de IA y canal de soporte cuando esté configurado.
+        </PageLead>
+        <div className="stagger-children space-y-8">
         <LlmUsageCard usage={usage} />
 
         <section className="rounded-lg border border-ops-border bg-ops-surface p-5">
@@ -35,7 +40,7 @@ export default async function ManagedDashboardPage(): Promise<ReactElement> {
           )}
         </section>
 
-        <div className="grid gap-6 lg:grid-cols-2">
+        <ResponsiveGrid preset="1-2-2" gap="lg">
           <ServiceCard
             title="Motor de Automatización"
             description="Procesa tus flujos de trabajo automáticamente"
@@ -55,7 +60,7 @@ export default async function ManagedDashboardPage(): Promise<ReactElement> {
             health={healthFromReachable(data.health.uptime_reachable)}
             healthLabel={data.health.uptime_reachable ? "Activo" : "Inactivo"}
           />
-        </div>
+        </ResponsiveGrid>
 
         <section className="rounded-lg border border-ops-border bg-ops-surface p-5">
           <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-ops-gray">
@@ -75,7 +80,8 @@ export default async function ManagedDashboardPage(): Promise<ReactElement> {
           </p>
           <p className="mt-1 text-xs text-ops-gray">Respondemos en menos de 24 horas</p>
         </section>
-      </div>
+        </div>
+      </DashboardShell>
     </PortalShell>
   );
 }

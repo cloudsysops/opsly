@@ -3,6 +3,7 @@ import { requestPortalApi } from "./http";
 import {
   portalHealthUrl,
   portalOnboardingUrl,
+  portalTenantInsightsUrl,
   portalTenantMeUrl,
   portalTenantModeUrl,
   portalTenantUsageUrl,
@@ -11,6 +12,7 @@ import type {
   OnboardingRequest,
   OnboardingResponse,
   PortalHealthPayload,
+  PortalInsightsPayload,
   PortalMode,
   PortalTenantPayload,
   PortalUsagePayload,
@@ -91,6 +93,24 @@ export async function fetchPortalUsage(
 ): Promise<PortalUsagePayload> {
   const path = portalTenantUsageUrl(getApiBaseUrl(), period, tenantSlug);
   return requestPortalApi<PortalUsagePayload>(path, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      "Content-Type": "application/json",
+    },
+    cache: "no-store",
+  });
+}
+
+/**
+ * Insights predictivos (churn, forecast, anomalías). Requiere `tenantSlug` para ruta Zero-Trust.
+ */
+export async function fetchPortalInsights(
+  accessToken: string,
+  tenantSlug: string,
+): Promise<PortalInsightsPayload> {
+  const path = portalTenantInsightsUrl(getApiBaseUrl(), tenantSlug);
+  return requestPortalApi<PortalInsightsPayload>(path, {
     method: "GET",
     headers: {
       Authorization: `Bearer ${accessToken}`,

@@ -1,0 +1,68 @@
+/* ============================================
+   OPSLY DARK THEME - Enterprise (Contoso-inspired)
+   ============================================ */
+
+:root {
+  /* Background Layers */
+  --bg-primary: #0f172a;
+  --bg-secondary: #1e293b;
+  --bg-tertiary: #334155;
+  --bg-card: #1e293b;
+  --bg-card-hover: #2d3a4f;
+  --bg-sidebar: #0f172a;
+  --bg-input: #1e293b;
+
+  /* Text Colors */
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --text-accent: #38bdf8;
+
+  /* Brand Colors */
+  --brand-primary: #3b82f6;
+  --brand-primary-hover: #2563eb;
+  --brand-secondary: #8b5cf6;
+  --brand-success: #22c55e;
+  --brand-warning: #f59e0b;
+  --brand-error: #ef4444;
+  --brand-info: #06b6d4;
+
+  /* Border Colors */
+  --border-default: #334155;
+  --border-subtle: #1e293b;
+  --border-accent: #3b82f6;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.5);
+  --shadow-glow: 0 0 20px rgba(59, 130, 246, 0.3);
+
+  /* Gradients */
+  --gradient-primary: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  --gradient-success: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+  --gradient-card: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+}
+
+.enterprise-root body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+.enterprise-root ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.enterprise-root ::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+.enterprise-root ::-webkit-scrollbar-thumb {
+  background: var(--bg-tertiary);
+  border-radius: 4px;
+}
+
+.enterprise-root ::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}

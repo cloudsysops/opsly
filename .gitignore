@@ -12,6 +12,9 @@ config/worker-tailscale.env
 infra/gcp-failover-info.json
 # Worker Linux opslyquantum — env local del stack Docker (secretos)
 infra/opslyquantum.env
+# Obsidian local (infra vault)
+infra/.obsidian/graph.json
+infra/Untitled.base
 
 # Agent context (no secrets)
 context/doppler-ready.json
