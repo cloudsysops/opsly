@@ -1,4 +1,4 @@
-/* eslint-disable max-lines-per-function, no-magic-numbers -- scoring heuristics use explicit numeric thresholds */
+/* eslint-disable no-magic-numbers, max-lines-per-function */
 import { getServiceClient } from "../supabase/client";
 import type { PlanKey, TenantStatus } from "../supabase/types";
 import {

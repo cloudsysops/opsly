@@ -43,7 +43,7 @@ export function ModeSelector(): ReactElement {
   };
 
   return (
-    <div className="stagger-children mx-auto grid max-w-4xl gap-6 md:grid-cols-2">
+    <div className="mx-auto grid max-w-4xl gap-6 md:grid-cols-2">
       {error ? (
         <p role="alert" className="md:col-span-2 text-center text-sm text-ops-red">
           {error}
