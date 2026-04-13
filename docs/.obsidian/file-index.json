@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-04-13T22:18:08Z",
-  "totalFiles": 144,
+  "lastIndexed": "2026-04-13T22:47:48Z",
+  "totalFiles": 145,
   "files": [
     "ACTIVE-PROMPT.md",
     "ADMIN-ECOSYSTEM.md",
@@ -83,6 +83,7 @@
     "MCP-SERVERS.md",
     "MCP-STATUS-ANALYSIS.md",
     "MONITORING.md",
+    "MULTI-AGENT-ARCHITECTURE.md",
     "N8N-IMPORT-GUIDE.md",
     "N8N-SETUP.md",
     "NOTEBOOKLM-INTEGRATION.md",
