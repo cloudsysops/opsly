@@ -35,6 +35,8 @@ Plataforma multi-tenant **enterprise SaaS**: plano de control (API, billing, orq
 | [`docs/AGENTS-GUIDE.md`](docs/AGENTS-GUIDE.md) | Agentes paralelos y límites por plan |
 
 ### Decisiones de arquitectura (ADRs)
+Índice completo en [`docs/README.md`](docs/README.md#3-decisiones-de-arquitectura-adrs).
+
 | ADR | Decisión |
 |-----|----------|
 | [ADR-001](docs/adr/ADR-001-docker-compose-por-tenant.md) | Docker Compose por tenant |
@@ -43,7 +45,7 @@ Plataforma multi-tenant **enterprise SaaS**: plano de control (API, billing, orq
 | [ADR-004](docs/adr/ADR-004-supabase-schema-por-tenant.md) | Supabase schema por tenant |
 | [ADR-009](docs/adr/ADR-009-openclaw-mcp-architecture.md) | OpenClaw MCP Architecture |
 | [ADR-011](docs/adr/ADR-011-event-driven-orchestrator.md) | Event-driven Orchestrator |
-| [ADR-015](docs/adr/ADR-015-di-pattern-testability.md) | DI Pattern sobre vi.mock |
+| [ADR-022](docs/adr/ADR-022-di-pattern-testability.md) | DI Pattern sobre vi.mock |
 
 ### Operación y runbooks
 | Doc | Descripción |

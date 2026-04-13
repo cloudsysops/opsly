@@ -1,4 +1,4 @@
-# ADR-015 — Dependency Injection sobre vi.mock para módulos con singletons
+# ADR-022 — Dependency Injection sobre vi.mock para módulos con singletons
 
 **Fecha:** 2026-04-10  
 **Estado:** Aceptada  

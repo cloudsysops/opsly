@@ -1,4 +1,4 @@
-# ADR-021: Approval Gate — Fase 1 (MVP)
+# ADR-023: Approval Gate — Fase 1 (MVP)
 
 ## Estado
 

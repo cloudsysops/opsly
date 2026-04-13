@@ -27,12 +27,6 @@ docs/SPRINT-ROADMAP.md   ← sprints 1-8, qué está hecho, qué sigue
 | [`IMPLEMENTATION-IA-LAYER.md`](IMPLEMENTATION-IA-LAYER.md) | Implementar capa IA en el monorepo (sin Python paralelo) |
 | [`SPRINT-ROADMAP.md`](SPRINT-ROADMAP.md) | Ver qué sprint está activo, entregables, estado |
 | [`MASTER-PLAN-STATUS.md`](MASTER-PLAN-STATUS.md) | Métricas consolidadas: tests, type-check, fases |
-| [`IMPLEMENTATION-STATUS.md`](IMPLEMENTATION-STATUS.md) | Estado por fases (**generado**; fuente: `implementation/status.yaml`) |
-| [`SPRINT-TRACKING.md`](SPRINT-TRACKING.md) | Sprints y burndown (**generado**) |
-| [`AGENTS-ASSIGNMENTS.md`](AGENTS-ASSIGNMENTS.md) | Asignaciones por agente lógico (**generado**) |
-| [`AUTO-SYNC-DOCS-SETUP.md`](AUTO-SYNC-DOCS-SETUP.md) | Auto-sync YAML → Markdown, hooks, CI |
-| [`SPRINT-PLANNING-SETUP.md`](SPRINT-PLANNING-SETUP.md) | Notion + GitHub + comandos `npm run` |
-| [`AGENTS-ORCHESTRATION.md`](AGENTS-ORCHESTRATION.md) | Roles Cursor / Claude / Actions / PO |
 | [`MASTER-PLAN.md`](MASTER-PLAN.md) | Stack inventario, reglas de dependencias |
 | [`ACTIVE-PROMPT.md`](ACTIVE-PROMPT.md) | Prompt activo ejecutado por cursor-prompt-monitor |
 
@@ -53,20 +47,34 @@ docs/SPRINT-ROADMAP.md   ← sprints 1-8, qué está hecho, qué sigue
 | [`WORKER-TEAM-BILLING.md`](WORKER-TEAM-BILLING.md) | Billing workers: uso LLM, budgets, qué falta (CPU/mem) |
 
 ### 3. Decisiones de arquitectura (ADRs)
+
+Índice completo de `docs/adr/` (un número = un archivo; sin duplicados).
+
 | ADR | Decisión clave |
 |-----|----------------|
 | [ADR-001](adr/ADR-001-docker-compose-por-tenant.md) | Docker Compose por tenant (no Swarm/K8s) |
 | [ADR-002](adr/ADR-002-traefik-sobre-nginx.md) | Traefik v3 como reverse proxy |
-| [ADR-003](adr/ADR-003-doppler-secrets.md) | Doppler para todos los secretos |
-| [ADR-004](adr/ADR-004-supabase-schema-por-tenant.md) | Schema `tenant_{slug}` en Supabase |
-| [ADR-009](adr/ADR-009-openclaw-mcp-architecture.md) | OpenClaw MCP como capa de herramientas |
-| [ADR-010](adr/ADR-010-llm-gateway.md) | LLM Gateway como proxy unificado |
-| [ADR-011](adr/ADR-011-event-driven-orchestrator.md) | Orchestrator event-driven con BullMQ |
-| [ADR-012](adr/ADR-012-observability.md) | Observabilidad: logs JSON + métricas |
-| [ADR-015](adr/ADR-015-di-pattern-testability.md) | DI sobre vi.mock para módulos singleton |
-| [ADR-016](adr/ADR-016-worker-teams-billing-roadmap.md) | Roadmap equipos por tenant + billing ampliado (sin duplicar orquestador) |
-| [ADR-017](adr/ADR-017-prepaid-token-wallet-roadmap.md) | Wallet prepago / tokens abstractos vs metering USD actual (roadmap) |
-| [ADR-020](adr/ADR-020-orchestrator-worker-separation.md) | Control plane vs worker plane; alias `OPSLY_ORCHESTRATOR_MODE`; Redis canónico VPS + workers remotos |
+| [ADR-003](adr/ADR-003-doppler-secrets.md) | Doppler como gestor de secrets |
+| [ADR-004](adr/ADR-004-supabase-schema-por-tenant.md) | Supabase con schema por tenant |
+| [ADR-005](adr/ADR-005-traefik-v3-1-docker-api.md) | Traefik v3.3+ frente a Docker Engine 29.x |
+| [ADR-006](adr/ADR-006-api-testing-vitest.md) | Tests de API con Vitest (Node) |
+| [ADR-007](adr/ADR-007-runbooks-y-documentacion-operativa.md) | Estructura de runbooks y documentación operativa |
+| [ADR-008](adr/ADR-008-terraform-digitalocean-plan.md) | Terraform en DigitalOcean (plan sin apply automático) |
+| [ADR-009](adr/ADR-009-openclaw-mcp-architecture.md) | OpenClaw MCP Server Architecture |
+| [ADR-010](adr/ADR-010-llm-gateway.md) | LLM Gateway con Cache Redis |
+| [ADR-011](adr/ADR-011-event-driven-orchestrator.md) | Orchestrator Event-Driven con BullMQ |
+| [ADR-012](adr/ADR-012-observability.md) | Observabilidad por tenant |
+| [ADR-013](adr/ADR-013-google-cloud-openSource-strategy.md) | Google Cloud + Open Source Integration Strategy |
+| [ADR-014](adr/ADR-014-notebooklm-agent.md) | NotebookLM Agent (EXPERIMENTAL) |
+| [ADR-015](adr/ADR-015-hermes-orchestrator-architecture.md) | Hermes como servicio Docker separado |
+| [ADR-016](adr/ADR-016-worker-teams-billing-roadmap.md) | Equipos de workers por tenant y billing ampliado (roadmap) |
+| [ADR-017](adr/ADR-017-prepaid-token-wallet-roadmap.md) | Wallet prepago y “tokens” de cuenta (roadmap) |
+| [ADR-018](adr/ADR-018-pgvector-embeddings-rag.md) | pgvector + Embeddings para RAG en decisiones Hermes |
+| [ADR-019](adr/ADR-019-prometheus-grafana-observability.md) | Prometheus + Grafana para observabilidad de plataforma |
+| [ADR-020](adr/ADR-020-orchestrator-worker-separation.md) | Separación control plane (VPS) ↔ worker plane (remoto) |
+| [ADR-021](adr/ADR-021-predictive-bi-scalability.md) | Escalabilidad — Predictive BI Engine |
+| [ADR-022](adr/ADR-022-di-pattern-testability.md) | Dependency Injection sobre vi.mock para módulos con singletons |
+| [ADR-023](adr/ADR-023-approval-gate-phase1.md) | Approval Gate — Fase 1 (MVP) |
 
 ### 4. Infra y deploy
 | Doc | Cuándo usarlo |

@@ -58,7 +58,7 @@ Cada sprint dura ~2–3 días de trabajo intenso. El criterio de salida es:
 | 429 cost cap middleware | `lib/billing/flush-billing-usage.ts` | ✅ |
 | Migration tenant_budgets | `supabase/migrations/0017_tenant_budgets.sql` | ✅ |
 | Migration invoice tracking | `supabase/migrations/0018_subscriptions_invoice_tracking.sql` | ✅ |
-| ADR-015 DI pattern | `docs/adr/ADR-015-di-pattern-testability.md` | ✅ |
+| ADR-022 DI pattern | `docs/adr/ADR-022-di-pattern-testability.md` | ✅ |
 
 ---
 
