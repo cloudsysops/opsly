@@ -32,7 +32,7 @@ RUN apk add --no-cache \
     ttf-dejavu \
   && python3 -m pip install --no-cache-dir --break-system-packages \
     "notebooklm-py>=0.2.0,<0.3" \
-    "playwright>=1.40.0,<1.50" \
+    "playwright>=1.40.0" \
   && python3 -m playwright install chromium
 
 WORKDIR /app
