@@ -1,38 +1,34 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { cacheGet, cacheSet } from "./cache.js";
 import { analyzeComplexity } from "./complexity.js";
+import { checkDailyBudget, resolveAiProfile } from "./config/budgets.js";
 import { hashPrompt } from "./hash.js";
 import { healthDaemon } from "./health-daemon.js";
 import { logUsage } from "./logger.js";
 import {
+  notifyBudgetExceeded,
+  notifyBudgetWarning,
+  notifyProviderRateLimit,
+} from "./providers/discord.js";
+import {
     PROVIDERS,
-    getProvidersByPreference,
-    resolveRoutingPreference,
     type ProviderChainEntry,
     type ProviderDefinition,
 } from "./providers.js";
 import { estimateCost } from "./router.js";
-import { applyRoutingBias } from "./routing-hints.js";
 import type { LLMMessage, LLMRequest, LLMResponse } from "./types.js";
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
 });
 
-function contextLength(msgs: LLMMessage[]): number {
-  return msgs.reduce((s, m) => s + m.content.length, 0);
-}
+export class GatewayHttpError extends Error {
+  readonly statusCode: number;
 
-async function buildChain(req: LLMRequest): Promise<ProviderChainEntry[]> {
-  const last = req.messages.at(-1)?.content ?? "";
-  const analysis = analyzeComplexity(last, {
-    context_length: contextLength(req.messages),
-  });
-  let pref = resolveRoutingPreference(req.model, analysis.level);
-  if (req.model === undefined && req.routing_bias && req.routing_bias !== "balanced") {
-    pref = applyRoutingBias(pref, analysis.level, req.routing_bias);
+  constructor(statusCode: number, message: string) {
+    super(message);
+    this.statusCode = statusCode;
   }
-  return getProvidersByPreference(pref);
 }
 
 async function invokeAnthropic(
@@ -64,6 +60,7 @@ type OllamaChatResponse = {
 async function invokeOllama(
   def: ProviderDefinition,
   req: LLMRequest,
+  timeoutMs = 60_000,
 ): Promise<{ content: string; tokens_in: number; tokens_out: number }> {
   const base = def.baseUrl ?? "http://localhost:11434";
   const messages: Array<{ role: string; content: string }> = req.system
@@ -78,7 +75,7 @@ async function invokeOllama(
       stream: false,
       options: { temperature: req.temperature ?? 0 },
     }),
-    signal: AbortSignal.timeout(60_000),
+    signal: AbortSignal.timeout(timeoutMs),
   });
   if (!res.ok) throw new Error(`Ollama HTTP ${res.status}`);
   const data = (await res.json()) as OllamaChatResponse;
@@ -136,6 +133,7 @@ async function invokeOpenAiCompatible(
 async function runProvider(
   entry: ProviderChainEntry,
   req: LLMRequest,
+  timeoutMs?: number,
 ): Promise<{
   content: string;
   tokens_in: number;
@@ -149,7 +147,7 @@ async function runProvider(
     return { ...out, model_used: def.model, billing: def };
   }
   if (def.kind === "ollama") {
-    const out = await invokeOllama(def, req);
+    const out = await invokeOllama(def, req, timeoutMs);
     return { ...out, model_used: def.model, billing: def };
   }
   if (def.kind === "openrouter") {
@@ -177,6 +175,11 @@ async function runProvider(
     req,
   );
   return { ...out, model_used: def.model, billing: def };
+}
+
+function isRateLimitError(err: unknown): boolean {
+  const msg = err instanceof Error ? err.message : String(err);
+  return msg.includes("429") || msg.toLowerCase().includes("rate limit");
 }
 
 async function finalizeSuccess(
@@ -220,6 +223,9 @@ async function finalizeSuccess(
 /** Llamada directa al proveedor — sin batch ni descomposición (uso interno). */
 export async function llmCallDirect(req: LLMRequest): Promise<LLMResponse> {
   const start = Date.now();
+  void analyzeComplexity(req.messages.at(-1)?.content ?? "", {
+    context_length: req.messages.reduce((sum, message) => sum + message.content.length, 0),
+  });
   const shouldCache = req.cache !== false && (req.temperature ?? 0) === 0;
 
   if (shouldCache) {
@@ -238,31 +244,93 @@ export async function llmCallDirect(req: LLMRequest): Promise<LLMResponse> {
     }
   }
 
-  const chain = await buildChain(req);
-  let lastErr: unknown;
+  const budget = await checkDailyBudget(req.tenant_slug);
+  if (!budget.allowed) {
+    await notifyBudgetExceeded(req.tenant_slug, budget.usedUsd, budget.budgetUsd).catch(() => undefined);
+    throw new GatewayHttpError(
+      402,
+      `Daily budget exceeded for tenant ${req.tenant_slug}: ${budget.usedUsd.toFixed(4)}/${budget.budgetUsd.toFixed(4)} USD`,
+    );
+  }
+  if (budget.warn) {
+    await notifyBudgetWarning(req.tenant_slug, budget.usedUsd, budget.budgetUsd).catch(() => undefined);
+  }
 
-  for (const entry of chain) {
-    const healthy = await healthDaemon.isAvailable(entry.healthKey);
-    if (!healthy) continue;
-    try {
-      const { content, tokens_in, tokens_out, model_used, billing } = await runProvider(entry, req);
-      return await finalizeSuccess(req, shouldCache, start, content, tokens_in, tokens_out, model_used, billing);
-    } catch (e) {
-      lastErr = e;
+  const profile = resolveAiProfile(req.tenant_slug);
+  const allowLocal = profile !== "cloud-only";
+  const allowCloud = profile !== "free-always";
+
+  let lastErr: unknown;
+  if (allowLocal) {
+    const localEntry: ProviderChainEntry = {
+      id: "llama_local",
+      healthKey: PROVIDERS.llama_local.healthKey,
+      def: PROVIDERS.llama_local,
+    };
+    const localHealthy = await healthDaemon.isAvailable(localEntry.healthKey);
+    if (localHealthy) {
+      try {
+        const local = await runProvider(localEntry, req, 1_000);
+        return await finalizeSuccess(
+          req,
+          shouldCache,
+          start,
+          local.content,
+          local.tokens_in,
+          local.tokens_out,
+          local.model_used,
+          local.billing,
+        );
+      } catch (err) {
+        lastErr = err;
+      }
+    } else {
+      lastErr = new Error("local provider unhealthy");
     }
   }
 
-  const fallback: ProviderChainEntry = {
-    id: "claude_haiku",
-    healthKey: PROVIDERS.claude_haiku.healthKey,
-    def: PROVIDERS.claude_haiku,
-  };
-  try {
-    const { content, tokens_in, tokens_out, model_used, billing } = await runProvider(fallback, req);
-    return await finalizeSuccess(req, shouldCache, start, content, tokens_in, tokens_out, model_used, billing);
-  } catch (e) {
-    const last = lastErr instanceof Error ? lastErr.message : String(lastErr);
-    const cur = e instanceof Error ? e.message : String(e);
-    throw new Error(`LLM providers agotados. Último error en cadena: ${last}. Fallback Haiku: ${cur}`);
+  if (!allowCloud) {
+    throw new GatewayHttpError(
+      503,
+      `Local provider unavailable for tenant ${req.tenant_slug} with profile ${profile}`,
+    );
   }
+
+  const cloudChain: ProviderChainEntry[] = [
+    { id: "claude_haiku", healthKey: PROVIDERS.claude_haiku.healthKey, def: PROVIDERS.claude_haiku },
+    { id: "gpt4o_mini", healthKey: PROVIDERS.gpt4o_mini.healthKey, def: PROVIDERS.gpt4o_mini },
+    { id: "openrouter_cheap", healthKey: PROVIDERS.openrouter_cheap.healthKey, def: PROVIDERS.openrouter_cheap },
+  ];
+
+  for (const entry of cloudChain) {
+    const healthy = await healthDaemon.isAvailable(entry.healthKey);
+    if (!healthy) {
+      continue;
+    }
+    try {
+      const out = await runProvider(entry, req);
+      return await finalizeSuccess(
+        req,
+        shouldCache,
+        start,
+        out.content,
+        out.tokens_in,
+        out.tokens_out,
+        out.model_used,
+        out.billing,
+      );
+    } catch (err) {
+      lastErr = err;
+      if (isRateLimitError(err)) {
+        await notifyProviderRateLimit(
+          req.tenant_slug,
+          entry.id,
+          err instanceof Error ? err.message : String(err),
+        ).catch(() => undefined);
+      }
+    }
+  }
+
+  const msg = lastErr instanceof Error ? lastErr.message : String(lastErr);
+  throw new Error(`LLM providers exhausted for tenant ${req.tenant_slug}: ${msg}`);
 }

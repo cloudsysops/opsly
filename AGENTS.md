@@ -110,28 +110,6 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 
 ---
 
-## 🤖 Agent Orchestration
-
-### Roles (resumen)
-
-| Agente | Rol | Tareas típicas | Autonomía | Aprobación |
-|--------|-----|----------------|-----------|------------|
-| **Cursor** | Ejecución de código | Implementar, migrar, tests, workflows | Alta (guiado por prompts) | Revisión humana / CI |
-| **Claude** | Decisiones y ADRs | Arquitectura, prompts, revisión conceptual | Media (alineado a producto) | Product owner en decisiones de producto |
-| **GitHub Actions** | CI/CD | Build, deploy, sync docs, notificaciones | Alta (automático) | Configuración del repo |
-| **Cristian** | Product owner | Sprint, prioridades, aprobaciones | Manual | N/A |
-
-### Flujo de asignación (resumen)
-
-1. Tarea creada en **Notion** (fuente de verdad colaborativa) o reflejada en `docs/implementation/status.yaml`.
-2. Opcional: **Issue** en GitHub vía `npm run github:sync-issues` (requiere tokens).
-3. **Cursor** ejecuta implementación; **Claude** apoya en diseño/prompts; **Actions** valida y despliega.
-4. Documentación generada: `npm run docs:sync` → `IMPLEMENTATION-STATUS.md`, `SPRINT-TRACKING.md`, `AGENTS-ASSIGNMENTS.md`.
-
-Detalle y escenarios: [`docs/AGENTS-ORCHESTRATION.md`](docs/AGENTS-ORCHESTRATION.md), [`docs/SPRINT-PLANNING-SETUP.md`](docs/SPRINT-PLANNING-SETUP.md).
-
----
-
 ## Skills disponibles para Claude modo supremo
 
 Procedimientos vivos en el repo: **`skills/user/<skill>/SKILL.md`**. En runtimes que montan `/mnt/skills/user`, enlazar o copiar desde el clon (ver `skills/README.md`).
@@ -298,6 +276,22 @@ Procedimientos vivos en el repo: **`skills/user/<skill>/SKILL.md`**. En runtimes
 ## 🔄 Estado actual
 
 <!-- Actualizar al final de cada sesión -->
+
+## Operación Actual (2026-04-12)
+
+| Componente | Nodo | Estado | Verificación |
+|---|---|---|---|
+| Ollama | opsly-mac2011 | 🟢 | `curl :11434/api/tags` |
+| LLM Gateway | opsly-mac2011 | 🟢 | `curl :9000/health` |
+| Policy local-first | VPS+Macs | 🟢 | `echo $AI_PROFILE` |
+| Budget caps | Doppler | 🟢 | `doppler get DAILY_BUDGET_*` |
+| Alertas 429/402 | Discord | 🟡 | Ver `#alerts` |
+
+### Decisiones Semana 1
+
+- ✅ ADR-021: Local-First AI Policy
+- ✅ Perfiles versionados + auto-apply
+- ✅ Guardrails budget + alertas
 
 **Fecha última actualización:** 2026-04-12 UTC — **Sprint ROADMAP:** Semana 1 (Fase 2 producto + IA), ventana **2026-04-14 → 2026-04-20**; revisión sprint **2026-04-19**. Documentos: [`ROADMAP.md`](ROADMAP.md), [`docs/IMPLEMENTATION-IA-LAYER.md`](docs/IMPLEMENTATION-IA-LAYER.md).
 

@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import type { IncomingMessage, ServerResponse } from "node:http";
 import { llmCall } from "./gateway.js";
+import { GatewayHttpError } from "./llm-direct.js";
 import type { LLMMessage, LLMRequest } from "./types.js";
 
 /** Contrato alineado con apps/orchestrator (Remote Planner / Chat.z). */
@@ -186,7 +187,11 @@ async function handleChatCompletionsPlanner(
     await sendPlannerJsonResponse(res, llmReq, requestId);
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
-    res.writeHead(502, { "Content-Type": "application/json" });
+    const status =
+      err instanceof GatewayHttpError && Number.isInteger(err.statusCode)
+        ? err.statusCode
+        : 502;
+    res.writeHead(status, { "Content-Type": "application/json" });
     res.end(JSON.stringify({ error: "planner_failed", message: msg }));
   }
   return true;
@@ -250,7 +255,11 @@ async function handleLegacyPlanner(req: IncomingMessage, res: ServerResponse): P
     await sendPlannerJsonResponse(res, llmReq, requestId);
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
-    res.writeHead(502, { "Content-Type": "application/json" });
+    const status =
+      err instanceof GatewayHttpError && Number.isInteger(err.statusCode)
+        ? err.statusCode
+        : 502;
+    res.writeHead(status, { "Content-Type": "application/json" });
     res.end(JSON.stringify({ error: "planner_failed", message: msg }));
   }
   return true;

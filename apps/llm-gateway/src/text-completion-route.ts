@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 import type { IncomingMessage, ServerResponse } from "node:http";
-import { llmCallDirect } from "./llm-direct.js";
+import { GatewayHttpError, llmCallDirect } from "./llm-direct.js";
 import type { LLMRequest, TenantPlan } from "./types.js";
 
 export type OllamaTaskType = "analyze" | "generate" | "review" | "summarize";
@@ -151,7 +151,11 @@ export async function handleTextCompletionHttp(
     );
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
-    res.writeHead(502, { "Content-Type": "application/json" });
+    const status =
+      err instanceof GatewayHttpError && Number.isInteger(err.statusCode)
+        ? err.statusCode
+        : 502;
+    res.writeHead(status, { "Content-Type": "application/json" });
     res.end(JSON.stringify({ error: "text_completion_failed", message: msg }));
   }
   return true;
