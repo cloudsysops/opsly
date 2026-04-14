@@ -114,6 +114,32 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 
 Procedimientos vivos en el repo: **`skills/user/<skill>/SKILL.md`**. En runtimes que montan `/mnt/skills/user`, enlazar o copiar desde el clon (ver `skills/README.md`).
 
+### CLI de Skills
+
+```bash
+# Ver todos los skills disponibles
+node scripts/load-skills.js list
+
+# Bootstrap de sesión (qué cargar al inicio)
+node scripts/load-skills.js bootstrap
+
+# Buscar skill por关键词
+node scripts/load-skills.js search "llm"
+node scripts/load-skills.js search "api"
+node scripts/load-skills.js search "docker"
+
+# Ver detalles de un skill
+node scripts/load-skills.js show opsly-api
+```
+
+Índice: **`skills/index.json`** (15 skills, categorías, triggers).
+
+### Por prioridad
+
+**CRITICAL** (siempre al inicio): `opsly-context` + `opsly-quantum`  
+**HIGH** (recomendados): `opsly-architect-senior`, `opsly-api`, `opsly-bash`, `opsly-llm`, `opsly-mcp`, `opsly-supabase`, `opsly-tenant`  
+**MEDIUM/LOW**: `opsly-agent-teams`, `opsly-discord`, `opsly-feedback-ml`, `opsly-google-cloud`, `opsly-notebooklm`, `opsly-simplify`
+
 | Skill                  | Path (repo)                           | Cuándo usar                                                      |
 | ---------------------- | ------------------------------------- | ---------------------------------------------------------------- |
 | opsly-context          | `skills/user/opsly-context/`          | **SIEMPRE** al inicio de sesión                                  |
@@ -129,6 +155,8 @@ Procedimientos vivos en el repo: **`skills/user/<skill>/SKILL.md`**. En runtimes
 | opsly-agent-teams      | `skills/user/opsly-agent-teams/`      | BullMQ / TeamManager                                             |
 | opsly-notebooklm       | `skills/user/opsly-notebooklm/`       | Agente NotebookLM (notebooklm-py), contenido por tenant          |
 | opsly-architect-senior | `skills/user/opsly-architect-senior/` | Diagnóstico arquitectónico, riesgos, ADRs (tras `opsly-context`) |
+| opsly-google-cloud     | `skills/user/opsly-google-cloud/`     | Google Cloud: Drive, BigQuery, Vertex AI                         |
+| opsly-simplify         | `skills/user/opsly-simplify/`          | Docker & Compose optimization                                    |
 
 ---
 
