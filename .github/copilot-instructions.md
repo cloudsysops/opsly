@@ -22,6 +22,23 @@ NUNCA adivinar. NUNCA saltarse pasos.
 
 Next.js 15 · TypeScript · Tailwind · Supabase · Stripe · Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 
+## Framework: **OpenClaw** (obligatorio)
+
+Todo el trabajo de agentes debe usar la arquitectura OpenClaw:
+
+| Componente | Puerto | Path |
+|------------|--------|------|
+| MCP Server | 3003 | `apps/mcp` |
+| Orchestrator | 3011 | `apps/orchestrator` |
+| LLM Gateway | 3010 | `apps/llm-gateway` |
+| Context Builder | 3012 | `apps/context-builder` |
+
+**Reglas OpenClaw:**
+- Todo tráfico IA pasa por LLM Gateway (no llamadas directas)
+- Jobs orchestrator: incluir `tenant_slug` y `request_id`
+- Prioridad BullMQ: Enterprise 0, Business 10000, Startup 50000
+- Logs estructurados JSON (worker_start/complete/fail)
+
 ## Decisiones fijas (NO proponer alternativas)
 
 | Decisión | Valor |

@@ -38,6 +38,7 @@ Bloqueantes: [lista o "ninguno"]
 ---
 
 **Reglas:**
+- Framework: **OpenClaw** (MCP 3003 → Orchestrator 3011 → LLM Gateway 3010 → Context Builder 3012)
 - TypeScript: sin `any`
 - Scripts: `set -euo pipefail`, idempotentes, `--dry-run`
 - Secrets: solo Doppler, nunca en código

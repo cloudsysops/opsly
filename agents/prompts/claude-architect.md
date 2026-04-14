@@ -35,9 +35,16 @@ Bloqueantes: [lista o "ninguno"]
 - Decisiones importantes → `AGENTS.md` + nuevo ADR si aplica
 - Secrets: solo Doppler (`ops-intcloudsysops` / `prd`), nunca en código
 - **SIEMPRE git add + git commit tras cada tarea completada** (no acumular cambios)
+- **USAR OpenClaw como framework de trabajo** (MCP → Orchestrator → LLM Gateway → Context Builder)
 
 ---
 
 **Stack:** Next.js 15 · TS · Tailwind · Supabase · Stripe · Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
+
+**OpenClaw:**
+- MCP: apps/mcp (puerto 3003)
+- Orchestrator: apps/orchestrator (puerto 3011, BullMQ)
+- LLM Gateway: apps/llm-gateway (puerto 3010)
+- Context Builder: apps/context-builder (puerto 3012)
 
 **SSH:** solo Tailscale `vps-dragon@100.120.151.91` (nunca IP pública 157.245.223.7)

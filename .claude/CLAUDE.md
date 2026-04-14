@@ -56,6 +56,7 @@ OpenClaw es el **framework de orquestación multi-agente** de Opsly. Ver `.openc
 - **NUNCA** terraform apply sin plan
 - **SIEMPRE** leer AGENTS.md al iniciar
 - **SIEMPRE** git add + git commit tras cada tarea completada (no acumular cambios)
+- **SIEMPRE** usar OpenClaw como framework de trabajo
 
 ## Stack
 
