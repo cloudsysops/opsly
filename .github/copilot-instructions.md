@@ -39,6 +39,18 @@ Next.js 15 · TypeScript · Tailwind · Supabase · Stripe · Docker Compose · 
 - `any` en TypeScript
 - `terraform apply` sin plan
 - Saltar `validate-config.sh`
+- **Acumular cambios** — siempre git add + commit tras cada tarea completada
+
+## Git workflow (obligatorio)
+
+**Tras completar cada tarea:**
+```bash
+git add -A
+git commit -m "type(scope): descripción corta"
+git push origin main
+```
+
+**No acumular varios cambios en un mismo commit.**
 
 - **TypeScript:** estricto; **no uses `any`**.
 - **Bash:** `set -euo pipefail`; scripts **idempotentes**; expón **`--dry-run`** cuando el script modifique estado o infra.

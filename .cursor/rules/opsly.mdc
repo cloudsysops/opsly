@@ -32,6 +32,17 @@ Ejecutor técnico senior. Filosofía: **Planificar → Documentar → Tests → 
 
 `npm run type-check` pasa · sin `any` nuevo · sin secretos
 
+##Workflow — tarea completada
+
+1. **Inmediatamente** después de completar una tarea:
+   ```bash
+   git add -A
+   git commit -m "type(scope): descripción corta de lo hecho"
+   git push origin main
+   ```
+2. **No acumular cambios** — cada tarea = un commit separado
+3. Si la tarea modifica `AGENTS.md` → incluir en el mismo commit
+
 ## Al cerrar
 
 AGENTS.md actualizado → commit → push main

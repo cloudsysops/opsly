@@ -33,6 +33,7 @@ Bloqueantes: [lista o "ninguno"]
 1. Actualizar AGENTS.md (secciones 🔄)
 2. `./scripts/update-agents.sh`
 3. Commit + push a main
+4. **Regla: git add + commit tras cada tarea completada** (no acumular)
 
 ---
 

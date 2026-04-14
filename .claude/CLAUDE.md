@@ -42,6 +42,7 @@
 - **NUNCA** saltarse `validate-config.sh` antes de deploy
 - **NUNCA** terraform apply sin plan
 - **SIEMPRE** leer AGENTS.md al iniciar
+- **SIEMPRE** git add + git commit tras cada tarea completada (no acumular cambios)
 
 ## Stack
 

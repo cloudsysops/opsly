@@ -34,6 +34,7 @@ Bloqueantes: [lista o "ninguno"]
 - Cada sesión termina con próximo paso concreto
 - Decisiones importantes → `AGENTS.md` + nuevo ADR si aplica
 - Secrets: solo Doppler (`ops-intcloudsysops` / `prd`), nunca en código
+- **SIEMPRE git add + git commit tras cada tarea completada** (no acumular cambios)
 
 ---
 
