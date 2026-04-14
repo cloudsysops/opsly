@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-04-14T01:57:32Z",
-  "totalFiles": 154,
+  "lastIndexed": "2026-04-14T03:18:22Z",
+  "totalFiles": 155,
   "files": [
     "ACTIVE-PROMPT.md",
     "ADMIN-ECOSYSTEM.md",
@@ -97,6 +97,7 @@
     "OBSIDIAN-README.md",
     "OPENCLAW-ARCHITECTURE.md",
     "OPS-CLEANUP-PROCEDURES.md",
+    "OPSLY-KNOWLEDGE-BASE.md",
     "OPSLYQUANTUM-SKILL-DESIGN.md",
     "OPSLYQUANTUM-USAGE.md",
     "ORCHESTRATOR-FIXES-EXECUTION.md",
