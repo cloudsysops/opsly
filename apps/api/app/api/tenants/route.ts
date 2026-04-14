@@ -1,42 +1,30 @@
-import {
-  jsonError,
-  parseJsonBody,
-  serverErrorLogged,
-  tryRoute,
-} from "../../../lib/api-response";
-import {
-  requireAdminAccess,
-  requireAdminAccessUnlessDemoRead,
-} from "../../../lib/auth";
-import { HTTP_STATUS } from "../../../lib/constants";
-import { provisionTenant } from "../../../lib/orchestrator";
-import { getServiceClient } from "../../../lib/supabase";
-import type { TenantStatus } from "../../../lib/supabase/types";
+import { jsonError, parseJsonBody, serverErrorLogged, tryRoute } from '../../../lib/api-response';
+import { requireAdminAccess, requireAdminAccessUnlessDemoRead } from '../../../lib/auth';
+import { HTTP_STATUS } from '../../../lib/constants';
+import { provisionTenant } from '../../../lib/orchestrator';
+import { getServiceClient } from '../../../lib/supabase';
+import type { TenantStatus } from '../../../lib/supabase/types';
 import {
   CreateTenantSchema,
   ListTenantsQuerySchema,
   formatZodError,
-} from "../../../lib/validation";
+} from '../../../lib/validation';
 
 function isUniqueViolation(message: string, code: string | undefined): boolean {
   return (
-    code === "23505" ||
-    message.includes("duplicate key") ||
-    message.includes("unique constraint")
+    code === '23505' || message.includes('duplicate key') || message.includes('unique constraint')
   );
 }
 
 export function GET(request: Request): Promise<Response> {
-  return tryRoute("GET /api/tenants", async () => {
+  return tryRoute('GET /api/tenants', async () => {
     const authError = await requireAdminAccessUnlessDemoRead(request);
     if (authError) {
       return authError;
     }
 
     const url = new URL(request.url);
-    const parsed = ListTenantsQuerySchema.safeParse(
-      Object.fromEntries(url.searchParams),
-    );
+    const parsed = ListTenantsQuerySchema.safeParse(Object.fromEntries(url.searchParams));
     if (!parsed.success) {
       return jsonError(formatZodError(parsed.error), HTTP_STATUS.BAD_REQUEST);
     }
@@ -46,24 +34,24 @@ export function GET(request: Request): Promise<Response> {
     const to = from + limit - 1;
 
     let query = getServiceClient()
-      .schema("platform")
-      .from("tenants")
-      .select("*", { count: "exact" })
-      .is("deleted_at", null)
-      .order("created_at", { ascending: false })
+      .schema('platform')
+      .from('tenants')
+      .select('*', { count: 'exact' })
+      .is('deleted_at', null)
+      .order('created_at', { ascending: false })
       .range(from, to);
 
     if (status !== undefined) {
-      query = query.eq("status", status as TenantStatus);
+      query = query.eq('status', status as TenantStatus);
     }
     if (plan !== undefined) {
-      query = query.eq("plan", plan);
+      query = query.eq('plan', plan);
     }
 
     const { data, error, count } = await query;
 
     if (error) {
-      return serverErrorLogged("List tenants:", error);
+      return serverErrorLogged('List tenants:', error);
     }
 
     return Response.json({
@@ -102,14 +90,13 @@ export async function POST(request: Request): Promise<Response> {
     });
     return Response.json(
       { id: result.id, slug: result.slug, status: result.status },
-      { status: 202 },
+      { status: 202 }
     );
   } catch (err) {
-    const message =
-      err instanceof Error ? err.message : "Failed to create tenant";
+    const message = err instanceof Error ? err.message : 'Failed to create tenant';
     if (isUniqueViolation(message, (err as { code?: string }).code)) {
-      return jsonError("Slug already exists", HTTP_STATUS.CONFLICT);
+      return jsonError('Slug already exists', HTTP_STATUS.CONFLICT);
     }
-    return serverErrorLogged("POST /tenants:", err);
+    return serverErrorLogged('POST /tenants:', err);
   }
 }

@@ -1,22 +1,19 @@
-import { randomBytes } from "node:crypto";
-import { z } from "zod";
-import { jsonError, parseJsonBody, tryRoute } from "../../../../../lib/api-response";
-import { requireAdminToken } from "../../../../../lib/auth";
-import { HTTP_STATUS, WEBHOOK_CRYPTO } from "../../../../../lib/constants";
-import {
-  createWebhook,
-  listWebhooks,
-} from "../../../../../lib/repositories/webhook-repository";
+import { randomBytes } from 'node:crypto';
+import { z } from 'zod';
+import { jsonError, parseJsonBody, tryRoute } from '../../../../../lib/api-response';
+import { requireAdminToken } from '../../../../../lib/auth';
+import { HTTP_STATUS, WEBHOOK_CRYPTO } from '../../../../../lib/constants';
+import { createWebhook, listWebhooks } from '../../../../../lib/repositories/webhook-repository';
 
 const ALLOWED_EVENTS = [
-  "tenant.created",
-  "tenant.suspended",
-  "tenant.resumed",
-  "billing.paid",
-  "billing.failed",
-  "backup.completed",
-  "backup.failed",
-  "usage.threshold_reached",
+  'tenant.created',
+  'tenant.suspended',
+  'tenant.resumed',
+  'billing.paid',
+  'billing.failed',
+  'backup.completed',
+  'backup.failed',
+  'usage.threshold_reached',
 ] as const;
 
 const CreateWebhookSchema = z.object({
@@ -27,7 +24,7 @@ const CreateWebhookSchema = z.object({
 type RouteParams = { params: Promise<{ id: string }> };
 
 export async function GET(_req: Request, { params }: RouteParams): Promise<Response> {
-  return tryRoute("GET /api/tenants/[id]/webhooks", async () => {
+  return tryRoute('GET /api/tenants/[id]/webhooks', async () => {
     const authErr = requireAdminToken(_req);
     if (authErr) return authErr;
 
@@ -43,7 +40,7 @@ export async function GET(_req: Request, { params }: RouteParams): Promise<Respo
 }
 
 export async function POST(req: Request, { params }: RouteParams): Promise<Response> {
-  return tryRoute("POST /api/tenants/[id]/webhooks", async () => {
+  return tryRoute('POST /api/tenants/[id]/webhooks', async () => {
     const authErr = requireAdminToken(req);
     if (authErr) return authErr;
 
@@ -54,7 +51,7 @@ export async function POST(req: Request, { params }: RouteParams): Promise<Respo
     }
 
     const { id: tenantSlug } = await params;
-    const secret = randomBytes(WEBHOOK_CRYPTO.SECRET_RANDOM_BYTES).toString("hex");
+    const secret = randomBytes(WEBHOOK_CRYPTO.SECRET_RANDOM_BYTES).toString('hex');
 
     const webhook = await createWebhook({
       tenant_slug: tenantSlug,
@@ -68,4 +65,4 @@ export async function POST(req: Request, { params }: RouteParams): Promise<Respo
   });
 }
 
-export const runtime = "nodejs";
+export const runtime = 'nodejs';

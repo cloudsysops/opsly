@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextResponse } from 'next/server';
 
 // Swagger UI servida via CDN; la spec vive en /openapi.yaml (apps/api/public/)
 export function GET(): NextResponse {
@@ -31,6 +31,6 @@ export function GET(): NextResponse {
 </html>`;
 
   return new NextResponse(html, {
-    headers: { "Content-Type": "text/html; charset=utf-8" },
+    headers: { 'Content-Type': 'text/html; charset=utf-8' },
   });
 }

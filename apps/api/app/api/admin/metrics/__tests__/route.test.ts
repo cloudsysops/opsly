@@ -1,34 +1,32 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { GET } from "../route";
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { GET } from '../route';
 
-vi.mock("../../../../../lib/supabase", () => ({
+vi.mock('../../../../../lib/supabase', () => ({
   getServiceClient: vi.fn(),
 }));
 
-vi.mock("../../../../../lib/portal-auth", () => ({
+vi.mock('../../../../../lib/portal-auth', () => ({
   getUserFromAuthorizationHeader: vi.fn(),
 }));
 
-vi.mock("../../../../../lib/bullmq-pipeline-counts", () => ({
+vi.mock('../../../../../lib/bullmq-pipeline-counts', () => ({
   getBullmqPipelineJobTotals: vi.fn(),
 }));
 
-import { getBullmqPipelineJobTotals } from "../../../../../lib/bullmq-pipeline-counts";
-import { getUserFromAuthorizationHeader } from "../../../../../lib/portal-auth";
-import { getServiceClient } from "../../../../../lib/supabase";
+import { getBullmqPipelineJobTotals } from '../../../../../lib/bullmq-pipeline-counts';
+import { getUserFromAuthorizationHeader } from '../../../../../lib/portal-auth';
+import { getServiceClient } from '../../../../../lib/supabase';
 
 const superAdminUser = {
-  id: "admin-1",
-  user_metadata: { role: "admin" },
+  id: 'admin-1',
+  user_metadata: { role: 'admin' },
   app_metadata: {},
 };
 
-describe("GET /api/admin/metrics", () => {
+describe('GET /api/admin/metrics', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(getUserFromAuthorizationHeader).mockResolvedValue(
-      superAdminUser as never,
-    );
+    vi.mocked(getUserFromAuthorizationHeader).mockResolvedValue(superAdminUser as never);
     vi.mocked(getBullmqPipelineJobTotals).mockResolvedValue({
       openclaw_total: 2,
       teams_total: 1,
@@ -36,7 +34,7 @@ describe("GET /api/admin/metrics", () => {
     });
     vi.mocked(getServiceClient).mockReturnValue({
       rpc: vi.fn((name: string) => {
-        if (name === "opsly_admin_metrics") {
+        if (name === 'opsly_admin_metrics') {
           return Promise.resolve({
             data: {
               active_tenants: 5,
@@ -45,46 +43,46 @@ describe("GET /api/admin/metrics", () => {
             error: null,
           });
         }
-        if (name === "opsly_admin_revenue_by_month") {
+        if (name === 'opsly_admin_revenue_by_month') {
           return Promise.resolve({
-            data: [{ month: "2026-01", amount: 10 }],
+            data: [{ month: '2026-01', amount: 10 }],
             error: null,
           });
         }
-        return Promise.resolve({ data: null, error: new Error("unknown") });
+        return Promise.resolve({ data: null, error: new Error('unknown') });
       }),
     } as never);
   });
 
-  it("returns 401 without super admin user", async () => {
+  it('returns 401 without super admin user', async () => {
     vi.mocked(getUserFromAuthorizationHeader).mockResolvedValue(null);
     const res = await GET(
-      new Request("http://localhost/api/admin/metrics", {
-        headers: { Authorization: "Bearer x" },
-      }),
+      new Request('http://localhost/api/admin/metrics', {
+        headers: { Authorization: 'Bearer x' },
+      })
     );
     expect(res.status).toBe(401);
   });
 
-  it("returns 403 for non-super-admin", async () => {
+  it('returns 403 for non-super-admin', async () => {
     vi.mocked(getUserFromAuthorizationHeader).mockResolvedValue({
-      id: "u",
+      id: 'u',
       user_metadata: {},
       app_metadata: {},
     } as never);
     const res = await GET(
-      new Request("http://localhost/api/admin/metrics", {
-        headers: { Authorization: "Bearer x" },
-      }),
+      new Request('http://localhost/api/admin/metrics', {
+        headers: { Authorization: 'Bearer x' },
+      })
     );
     expect(res.status).toBe(403);
   });
 
-  it("returns metrics JSON for super admin", async () => {
+  it('returns metrics JSON for super admin', async () => {
     const res = await GET(
-      new Request("http://localhost/api/admin/metrics", {
-        headers: { Authorization: "Bearer token" },
-      }),
+      new Request('http://localhost/api/admin/metrics', {
+        headers: { Authorization: 'Bearer token' },
+      })
     );
     expect(res.status).toBe(200);
     const body = (await res.json()) as {

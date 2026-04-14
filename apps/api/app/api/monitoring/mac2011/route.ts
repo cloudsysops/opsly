@@ -1,6 +1,6 @@
-import { readFile } from "node:fs/promises";
-import { requireAdminAccess } from "../../../../lib/auth";
-import { HTTP_STATUS } from "../../../../lib/constants";
+import { readFile } from 'node:fs/promises';
+import { requireAdminAccess } from '../../../../lib/auth';
+import { HTTP_STATUS } from '../../../../lib/constants';
 
 function errorMessage(err: unknown): string {
   return err instanceof Error ? err.message : String(err);
@@ -8,32 +8,32 @@ function errorMessage(err: unknown): string {
 
 async function fetchStatusFromUrl(url: string): Promise<Response> {
   try {
-    const res = await fetch(url, { cache: "no-store" });
+    const res = await fetch(url, { cache: 'no-store' });
     if (!res.ok) {
       return Response.json(
-        { error: "upstream_error", status: res.status },
-        { status: HTTP_STATUS.SERVICE_UNAVAILABLE },
+        { error: 'upstream_error', status: res.status },
+        { status: HTTP_STATUS.SERVICE_UNAVAILABLE }
       );
     }
     const data: unknown = await res.json();
     return Response.json(data);
   } catch (err) {
     return Response.json(
-      { error: "fetch_failed", message: errorMessage(err) },
-      { status: HTTP_STATUS.SERVICE_UNAVAILABLE },
+      { error: 'fetch_failed', message: errorMessage(err) },
+      { status: HTTP_STATUS.SERVICE_UNAVAILABLE }
     );
   }
 }
 
 async function readStatusFromFile(filePath: string): Promise<Response> {
   try {
-    const raw = await readFile(filePath, "utf8");
+    const raw = await readFile(filePath, 'utf8');
     const data: unknown = JSON.parse(raw);
     return Response.json(data);
   } catch (err) {
     return Response.json(
-      { error: "file_read_failed", message: errorMessage(err) },
-      { status: HTTP_STATUS.SERVICE_UNAVAILABLE },
+      { error: 'file_read_failed', message: errorMessage(err) },
+      { status: HTTP_STATUS.SERVICE_UNAVAILABLE }
     );
   }
 }
@@ -60,10 +60,9 @@ export async function GET(request: Request): Promise<Response> {
 
   return Response.json(
     {
-      error: "not_configured",
-      hint:
-        "Define MAC2011_STATUS_URL (HTTP) o MAC2011_STATUS_FILE (ruta al JSON de mac2011-monitor.sh) en el entorno del contenedor API.",
+      error: 'not_configured',
+      hint: 'Define MAC2011_STATUS_URL (HTTP) o MAC2011_STATUS_FILE (ruta al JSON de mac2011-monitor.sh) en el entorno del contenedor API.',
     },
-    { status: HTTP_STATUS.NOT_IMPLEMENTED },
+    { status: HTTP_STATUS.NOT_IMPLEMENTED }
   );
 }

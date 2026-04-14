@@ -1,6 +1,6 @@
-import { NextRequest } from "next/server";
-import { respondPortalTenantUsage } from "../../../../lib/portal-usage-json";
-import { resolveTrustedPortalSession } from "../../../../lib/portal-trusted-identity";
+import { NextRequest } from 'next/server';
+import { respondPortalTenantUsage } from '../../../../lib/portal-usage-json';
+import { resolveTrustedPortalSession } from '../../../../lib/portal-trusted-identity';
 
 /**
  * Uso LLM del tenant de la sesión (mismo agregado que admin `GET /api/metrics/tenant/:slug`,

@@ -1,16 +1,16 @@
-import { NextResponse } from "next/server";
+import { NextResponse } from 'next/server';
 
 import {
-    classifyHeartbeat,
-    heartbeatKey,
-    requireHeartbeatRedis,
-    type ServiceHeartbeatStatus,
-} from "../../../../lib/infra/heartbeat";
-import { runTrustedPortalDal } from "../../../../lib/portal-tenant-dal";
+  classifyHeartbeat,
+  heartbeatKey,
+  requireHeartbeatRedis,
+  type ServiceHeartbeatStatus,
+} from '../../../../lib/infra/heartbeat';
+import { runTrustedPortalDal } from '../../../../lib/portal-tenant-dal';
 
-export const runtime = "nodejs";
+export const runtime = 'nodejs';
 
-const EXPECTED_SERVICES = ["api", "orchestrator"] as const;
+const EXPECTED_SERVICES = ['api', 'orchestrator'] as const;
 
 export async function GET(request: Request): Promise<Response> {
   const out = await runTrustedPortalDal(request, async () => {
@@ -21,13 +21,13 @@ export async function GET(request: Request): Promise<Response> {
       const services: ServiceHeartbeatStatus[] = [];
 
       for await (const key of redis.scanIterator({
-        MATCH: "heartbeat:*",
+        MATCH: 'heartbeat:*',
         COUNT: 100,
       })) {
-        if (typeof key !== "string") {
+        if (typeof key !== 'string') {
           continue;
         }
-        const name = key.replace(/^heartbeat:/, "");
+        const name = key.replace(/^heartbeat:/, '');
         seen.add(name);
         const [raw, ttl] = await Promise.all([redis.get(key), redis.ttl(key)]);
         services.push(classifyHeartbeat(name, raw, ttl, now));
@@ -42,24 +42,22 @@ export async function GET(request: Request): Promise<Response> {
         services.push(classifyHeartbeat(expected, raw, ttl, now));
       }
 
-      const sortedServices = [...services].sort((a, b) =>
-        a.name.localeCompare(b.name),
-      );
+      const sortedServices = [...services].sort((a, b) => a.name.localeCompare(b.name));
       return NextResponse.json(
         {
           services: sortedServices,
           generated_at: new Date(now).toISOString(),
         },
-        { status: 200 },
+        { status: 200 }
       );
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       return NextResponse.json(
         {
-          error: "SYSTEM_UNREACHABLE",
+          error: 'SYSTEM_UNREACHABLE',
           message: `infra status unavailable: ${message}`,
         },
-        { status: 503 },
+        { status: 503 }
       );
     }
   });

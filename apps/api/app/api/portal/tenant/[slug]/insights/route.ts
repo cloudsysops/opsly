@@ -1,13 +1,11 @@
-import { NextRequest } from "next/server";
-import { HTTP_STATUS } from "../../../../../../lib/constants";
-import {
-  getInsightsForTenant,
-} from "../../../../../../lib/insights/engine";
-import { applyInsightPatchAction } from "../../../../../../lib/insights/insight-patch-actions";
+import { NextRequest } from 'next/server';
+import { HTTP_STATUS } from '../../../../../../lib/constants';
+import { getInsightsForTenant } from '../../../../../../lib/insights/engine';
+import { applyInsightPatchAction } from '../../../../../../lib/insights/insight-patch-actions';
 import {
   resolveTrustedPortalSession,
   tenantSlugMatchesSession,
-} from "../../../../../../lib/portal-trusted-identity";
+} from '../../../../../../lib/portal-trusted-identity';
 
 type PortalInsightRow = {
   id: string;
@@ -46,9 +44,7 @@ type InsightPatchBody = {
 
 function normalizeInsight(row: PortalInsightRow): PortalInsightResponse {
   const conf =
-    typeof row.confidence === "string"
-      ? Number.parseFloat(row.confidence)
-      : Number(row.confidence);
+    typeof row.confidence === 'string' ? Number.parseFloat(row.confidence) : Number(row.confidence);
   return {
     id: row.id,
     tenant_id: row.tenant_id,
@@ -67,7 +63,7 @@ function normalizeInsight(row: PortalInsightRow): PortalInsightResponse {
 
 async function resolveTrustedTenant(
   request: NextRequest,
-  context: { params: Promise<{ slug: string }> },
+  context: { params: Promise<{ slug: string }> }
 ): Promise<
   | {
       ok: true;
@@ -86,8 +82,8 @@ async function resolveTrustedTenant(
     return {
       ok: false,
       response: Response.json(
-        { error: "Tenant slug does not match session" },
-        { status: HTTP_STATUS.FORBIDDEN },
+        { error: 'Tenant slug does not match session' },
+        { status: HTTP_STATUS.FORBIDDEN }
       ),
     };
   }
@@ -99,10 +95,9 @@ async function resolveTrustedTenant(
   };
 }
 
-async function parsePatchBody(request: NextRequest): Promise<
-  | { ok: true; body: InsightPatchBody }
-  | { ok: false; response: Response }
-> {
+async function parsePatchBody(
+  request: NextRequest
+): Promise<{ ok: true; body: InsightPatchBody } | { ok: false; response: Response }> {
   try {
     return {
       ok: true,
@@ -111,16 +106,13 @@ async function parsePatchBody(request: NextRequest): Promise<
   } catch {
     return {
       ok: false,
-      response: Response.json(
-        { error: "Invalid JSON" },
-        { status: HTTP_STATUS.BAD_REQUEST },
-      ),
+      response: Response.json({ error: 'Invalid JSON' }, { status: HTTP_STATUS.BAD_REQUEST }),
     };
   }
 }
 
 function validateInsightPatchBody(
-  body: InsightPatchBody,
+  body: InsightPatchBody
 ): { ok: true; insightId: string; action: string } | { ok: false; response: Response } {
   const insightId = body.insight_id?.trim();
   const action = body.action?.trim();
@@ -128,8 +120,8 @@ function validateInsightPatchBody(
     return {
       ok: false,
       response: Response.json(
-        { error: "insight_id and action required" },
-        { status: HTTP_STATUS.BAD_REQUEST },
+        { error: 'insight_id and action required' },
+        { status: HTTP_STATUS.BAD_REQUEST }
       ),
     };
   }
@@ -143,17 +135,15 @@ function validateInsightPatchBody(
 
 function invalidInsightActionResponse(): Response {
   return Response.json(
-    { error: "action must be read, dismiss, or action" },
-    { status: HTTP_STATUS.BAD_REQUEST },
+    { error: 'action must be read, dismiss, or action' },
+    { status: HTTP_STATUS.BAD_REQUEST }
   );
 }
 
 function insightPatchErrorResponse(error: unknown): Response {
-  const message = error instanceof Error ? error.message : "update failed";
+  const message = error instanceof Error ? error.message : 'update failed';
   const status =
-    message === "Insight not found"
-      ? HTTP_STATUS.NOT_FOUND
-      : HTTP_STATUS.INTERNAL_ERROR;
+    message === 'Insight not found' ? HTTP_STATUS.NOT_FOUND : HTTP_STATUS.INTERNAL_ERROR;
   return Response.json({ error: message }, { status });
 }
 
@@ -162,7 +152,7 @@ function insightPatchErrorResponse(error: unknown): Response {
  */
 export async function GET(
   request: NextRequest,
-  context: { params: Promise<{ slug: string }> },
+  context: { params: Promise<{ slug: string }> }
 ): Promise<Response> {
   const trustedTenant = await resolveTrustedTenant(request, context);
   if (!trustedTenant.ok) {
@@ -182,7 +172,7 @@ export async function GET(
 
 export async function PATCH(
   request: NextRequest,
-  context: { params: Promise<{ slug: string }> },
+  context: { params: Promise<{ slug: string }> }
 ): Promise<Response> {
   const trustedTenant = await resolveTrustedTenant(request, context);
   if (!trustedTenant.ok) {
@@ -203,7 +193,7 @@ export async function PATCH(
     const applied = await applyInsightPatchAction(
       validatedPatch.action,
       validatedPatch.insightId,
-      trustedTenant.tenantId,
+      trustedTenant.tenantId
     );
     if (!applied) {
       return invalidInsightActionResponse();

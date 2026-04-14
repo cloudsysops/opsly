@@ -1,8 +1,8 @@
-import { serverErrorLogged } from "../../../lib/api-response";
-import { requireAdminAccessUnlessDemoRead } from "../../../lib/auth";
-import { computeMrr } from "../../../lib/stripe";
-import { getServiceClient } from "../../../lib/supabase";
-import type { SupabaseClient } from "@supabase/supabase-js";
+import { serverErrorLogged } from '../../../lib/api-response';
+import { requireAdminAccessUnlessDemoRead } from '../../../lib/auth';
+import { computeMrr } from '../../../lib/stripe';
+import { getServiceClient } from '../../../lib/supabase';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
 type CountHeadResult = {
   count: number | null;
@@ -19,59 +19,57 @@ type MetricRows = {
 };
 
 async function fetchTenantStatusCounts(
-  client: SupabaseClient,
-): Promise<Pick<MetricRows, "totalRes" | "activeRes" | "suspendedRes">> {
+  client: SupabaseClient
+): Promise<Pick<MetricRows, 'totalRes' | 'activeRes' | 'suspendedRes'>> {
   const [totalRes, activeRes, suspendedRes] = await Promise.all([
     client
-      .schema("platform")
-      .from("tenants")
-      .select("*", { count: "exact", head: true })
-      .is("deleted_at", null),
+      .schema('platform')
+      .from('tenants')
+      .select('*', { count: 'exact', head: true })
+      .is('deleted_at', null),
     client
-      .schema("platform")
-      .from("tenants")
-      .select("*", { count: "exact", head: true })
-      .is("deleted_at", null)
-      .eq("status", "active"),
+      .schema('platform')
+      .from('tenants')
+      .select('*', { count: 'exact', head: true })
+      .is('deleted_at', null)
+      .eq('status', 'active'),
     client
-      .schema("platform")
-      .from("tenants")
-      .select("*", { count: "exact", head: true })
-      .is("deleted_at", null)
-      .eq("status", "suspended"),
+      .schema('platform')
+      .from('tenants')
+      .select('*', { count: 'exact', head: true })
+      .is('deleted_at', null)
+      .eq('status', 'suspended'),
   ]);
   return { totalRes, activeRes, suspendedRes };
 }
 
 async function fetchTenantPlanCounts(
-  client: SupabaseClient,
-): Promise<Pick<MetricRows, "startupRes" | "businessRes" | "enterpriseRes">> {
+  client: SupabaseClient
+): Promise<Pick<MetricRows, 'startupRes' | 'businessRes' | 'enterpriseRes'>> {
   const [startupRes, businessRes, enterpriseRes] = await Promise.all([
     client
-      .schema("platform")
-      .from("tenants")
-      .select("*", { count: "exact", head: true })
-      .is("deleted_at", null)
-      .eq("plan", "startup"),
+      .schema('platform')
+      .from('tenants')
+      .select('*', { count: 'exact', head: true })
+      .is('deleted_at', null)
+      .eq('plan', 'startup'),
     client
-      .schema("platform")
-      .from("tenants")
-      .select("*", { count: "exact", head: true })
-      .is("deleted_at", null)
-      .eq("plan", "business"),
+      .schema('platform')
+      .from('tenants')
+      .select('*', { count: 'exact', head: true })
+      .is('deleted_at', null)
+      .eq('plan', 'business'),
     client
-      .schema("platform")
-      .from("tenants")
-      .select("*", { count: "exact", head: true })
-      .is("deleted_at", null)
-      .eq("plan", "enterprise"),
+      .schema('platform')
+      .from('tenants')
+      .select('*', { count: 'exact', head: true })
+      .is('deleted_at', null)
+      .eq('plan', 'enterprise'),
   ]);
   return { startupRes, businessRes, enterpriseRes };
 }
 
-async function fetchTenantMetricRows(
-  client: SupabaseClient,
-): Promise<MetricRows> {
+async function fetchTenantMetricRows(client: SupabaseClient): Promise<MetricRows> {
   const [status, plans] = await Promise.all([
     fetchTenantStatusCounts(client),
     fetchTenantPlanCounts(client),
@@ -105,14 +103,14 @@ export async function GET(request: Request): Promise<Response> {
   const rows = await fetchTenantMetricRows(client);
   const err = firstMetricsError(rows);
   if (err) {
-    return serverErrorLogged("metrics:", err);
+    return serverErrorLogged('metrics:', err);
   }
 
   let mrr_usd = 0;
   try {
     mrr_usd = await computeMrr(client);
   } catch (e) {
-    return serverErrorLogged("computeMrr:", e);
+    return serverErrorLogged('computeMrr:', e);
   }
 
   return Response.json({

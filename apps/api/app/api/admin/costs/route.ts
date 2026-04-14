@@ -2,13 +2,10 @@ import {
   applyCostDecision,
   buildAdminCostsPayloadAsync,
   parseCostDecisionBody,
-} from "../../../../lib/admin-costs";
-import { jsonError } from "../../../../lib/api-response";
-import { HTTP_STATUS } from "../../../../lib/constants";
-import {
-  requireAdminAccess,
-  requireAdminAccessUnlessDemoRead,
-} from "../../../../lib/auth";
+} from '../../../../lib/admin-costs';
+import { jsonError } from '../../../../lib/api-response';
+import { HTTP_STATUS } from '../../../../lib/constants';
+import { requireAdminAccess, requireAdminAccessUnlessDemoRead } from '../../../../lib/auth';
 
 async function notifyDiscordCostLine(content: string): Promise<void> {
   const url = process.env.DISCORD_WEBHOOK_URL?.trim();
@@ -17,8 +14,8 @@ async function notifyDiscordCostLine(content: string): Promise<void> {
   }
   try {
     await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ content }),
     });
   } catch {
@@ -44,12 +41,12 @@ export async function POST(request: Request): Promise<Response> {
   try {
     raw = await request.json();
   } catch {
-    return jsonError("Invalid JSON", HTTP_STATUS.BAD_REQUEST);
+    return jsonError('Invalid JSON', HTTP_STATUS.BAD_REQUEST);
   }
 
   const body = parseCostDecisionBody(raw);
   if (body === null) {
-    return jsonError("service_id and action required", HTTP_STATUS.BAD_REQUEST);
+    return jsonError('service_id and action required', HTTP_STATUS.BAD_REQUEST);
   }
 
   const result = applyCostDecision(body);
@@ -60,16 +57,13 @@ export async function POST(request: Request): Promise<Response> {
   const payload = await buildAdminCostsPayloadAsync();
   const svc = payload.proposed[body.service_id];
   if (svc) {
-    if (body.action === "approve") {
+    if (body.action === 'approve') {
       await notifyDiscordCostLine(
-        `✅ **Costos (aprobación registrada)**\n> ${svc.name} — $${svc.cost}/${svc.period}`,
+        `✅ **Costos (aprobación registrada)**\n> ${svc.name} — $${svc.cost}/${svc.period}`
       );
     } else {
-      const reason =
-        body.reason && body.reason.length > 0 ? ` — ${body.reason}` : "";
-      await notifyDiscordCostLine(
-        `❌ **Costos (rechazo)**\n> ${svc.name}${reason}`,
-      );
+      const reason = body.reason && body.reason.length > 0 ? ` — ${body.reason}` : '';
+      await notifyDiscordCostLine(`❌ **Costos (rechazo)**\n> ${svc.name}${reason}`);
     }
   }
 

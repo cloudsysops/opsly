@@ -1,9 +1,9 @@
-import { requireAdminToken } from "../../../../lib/auth";
-import { checkTenantBudget } from "../../../../lib/billing/budget-enforcer";
-import { HTTP_STATUS } from "../../../../lib/constants";
-import { executeBudgetEnforcement } from "../../../../lib/internal/budget-enforce-response";
-import { parseTenantIdFromJsonBody } from "../../../../lib/internal/parse-tenant-id-body";
-import { logger } from "../../../../lib/logger";
+import { requireAdminToken } from '../../../../lib/auth';
+import { checkTenantBudget } from '../../../../lib/billing/budget-enforcer';
+import { HTTP_STATUS } from '../../../../lib/constants';
+import { executeBudgetEnforcement } from '../../../../lib/internal/budget-enforce-response';
+import { parseTenantIdFromJsonBody } from '../../../../lib/internal/parse-tenant-id-body';
+import { logger } from '../../../../lib/logger';
 
 /**
  * POST /api/internal/budget-enforce
@@ -24,18 +24,12 @@ export async function POST(request: Request): Promise<Response> {
   try {
     body = await request.json();
   } catch {
-    return Response.json(
-      { error: "Invalid JSON body" },
-      { status: HTTP_STATUS.BAD_REQUEST },
-    );
+    return Response.json({ error: 'Invalid JSON body' }, { status: HTTP_STATUS.BAD_REQUEST });
   }
 
   const tenantId = parseTenantIdFromJsonBody(body);
   if (tenantId === null) {
-    return Response.json(
-      { error: "tenant_id is required" },
-      { status: HTTP_STATUS.BAD_REQUEST },
-    );
+    return Response.json({ error: 'tenant_id is required' }, { status: HTTP_STATUS.BAD_REQUEST });
   }
 
   try {
@@ -45,10 +39,7 @@ export async function POST(request: Request): Promise<Response> {
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     const logArg = err instanceof Error ? err : new Error(message);
-    logger.error("internal budget-enforce", logArg);
-    return Response.json(
-      { error: message },
-      { status: HTTP_STATUS.INTERNAL_ERROR },
-    );
+    logger.error('internal budget-enforce', logArg);
+    return Response.json({ error: message }, { status: HTTP_STATUS.INTERNAL_ERROR });
   }
 }

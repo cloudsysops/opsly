@@ -1,5 +1,5 @@
-import { HTTP_STATUS } from "../../../../lib/constants";
-import { respondPortalTenantHealth } from "../../../../lib/portal-health-json";
+import { HTTP_STATUS } from '../../../../lib/constants';
+import { respondPortalTenantHealth } from '../../../../lib/portal-health-json';
 
 const PORTAL_HEALTH_SLUG_MIN_LEN = 3;
 const PORTAL_HEALTH_SLUG_MAX_LEN = 30;
@@ -10,7 +10,7 @@ const PORTAL_HEALTH_SLUG_MAX_LEN = 30;
  */
 export async function GET(request: Request): Promise<Response> {
   const url = new URL(request.url);
-  const slug = url.searchParams.get("slug");
+  const slug = url.searchParams.get('slug');
 
   if (
     !slug ||
@@ -19,17 +19,14 @@ export async function GET(request: Request): Promise<Response> {
   ) {
     return Response.json(
       {
-        error: "Missing or invalid ?slug= parameter (3–30 chars, slug pattern)",
+        error: 'Missing or invalid ?slug= parameter (3–30 chars, slug pattern)',
       },
-      { status: HTTP_STATUS.BAD_REQUEST },
+      { status: HTTP_STATUS.BAD_REQUEST }
     );
   }
 
   if (!/^[a-z0-9-]+$/.test(slug)) {
-    return Response.json(
-      { error: "Invalid slug format" },
-      { status: HTTP_STATUS.BAD_REQUEST },
-    );
+    return Response.json({ error: 'Invalid slug format' }, { status: HTTP_STATUS.BAD_REQUEST });
   }
 
   return respondPortalTenantHealth(slug);

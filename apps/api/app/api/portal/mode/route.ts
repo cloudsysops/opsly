@@ -1,5 +1,5 @@
-import { applyPortalModeUpdate } from "../../../../lib/portal-mode-update";
-import { resolveTrustedPortalSession } from "../../../../lib/portal-trusted-identity";
+import { applyPortalModeUpdate } from '../../../../lib/portal-mode-update';
+import { resolveTrustedPortalSession } from '../../../../lib/portal-trusted-identity';
 
 export async function POST(request: Request): Promise<Response> {
   const trusted = await resolveTrustedPortalSession(request);

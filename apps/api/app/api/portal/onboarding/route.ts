@@ -1,5 +1,5 @@
-import { tryRoute } from "../../../../lib/api-response";
-import { processPortalOnboardingPost } from "../../../../lib/portal-onboarding-handlers";
+import { tryRoute } from '../../../../lib/api-response';
+import { processPortalOnboardingPost } from '../../../../lib/portal-onboarding-handlers';
 
 /**
  * POST /api/portal/onboarding
@@ -7,7 +7,5 @@ import { processPortalOnboardingPost } from "../../../../lib/portal-onboarding-h
  * Crea la primera organización (tenant) para el usuario autenticado vía JWT.
  */
 export function POST(request: Request): Promise<Response> {
-  return tryRoute("POST /api/portal/onboarding", () =>
-    processPortalOnboardingPost(request),
-  );
+  return tryRoute('POST /api/portal/onboarding', () => processPortalOnboardingPost(request));
 }

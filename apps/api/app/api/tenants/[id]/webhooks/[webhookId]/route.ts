@@ -1,12 +1,12 @@
-import { tryRoute } from "../../../../../../lib/api-response";
-import { requireAdminToken } from "../../../../../../lib/auth";
-import { HTTP_STATUS } from "../../../../../../lib/constants";
-import { deleteWebhook } from "../../../../../../lib/repositories/webhook-repository";
+import { tryRoute } from '../../../../../../lib/api-response';
+import { requireAdminToken } from '../../../../../../lib/auth';
+import { HTTP_STATUS } from '../../../../../../lib/constants';
+import { deleteWebhook } from '../../../../../../lib/repositories/webhook-repository';
 
 type RouteParams = { params: Promise<{ id: string; webhookId: string }> };
 
 export async function DELETE(req: Request, { params }: RouteParams): Promise<Response> {
-  return tryRoute("DELETE /api/tenants/[id]/webhooks/[webhookId]", async () => {
+  return tryRoute('DELETE /api/tenants/[id]/webhooks/[webhookId]', async () => {
     const authErr = requireAdminToken(req);
     if (authErr) return authErr;
 
@@ -16,4 +16,4 @@ export async function DELETE(req: Request, { params }: RouteParams): Promise<Res
   });
 }
 
-export const runtime = "nodejs";
+export const runtime = 'nodejs';

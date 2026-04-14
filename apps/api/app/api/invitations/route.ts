@@ -1,9 +1,9 @@
-import { z } from "zod";
-import { jsonError, parseJsonBody } from "../../../lib/api-response";
-import { requireAdminAccess } from "../../../lib/auth";
-import { HTTP_STATUS } from "../../../lib/constants";
-import { executeAdminInvitation } from "../../../lib/invitation-admin-flow";
-import { formatZodError } from "../../../lib/validation";
+import { z } from 'zod';
+import { jsonError, parseJsonBody } from '../../../lib/api-response';
+import { requireAdminAccess } from '../../../lib/auth';
+import { HTTP_STATUS } from '../../../lib/constants';
+import { executeAdminInvitation } from '../../../lib/invitation-admin-flow';
+import { formatZodError } from '../../../lib/validation';
 
 const MAX_NAME_LENGTH = 200;
 
@@ -15,11 +15,11 @@ const InvitationBodySchema = z
     tenantRef: z.string().regex(slugPattern).optional(),
     email: z.string().email(),
     name: z.string().min(1).max(MAX_NAME_LENGTH).optional(),
-    mode: z.enum(["developer", "managed"]).optional(),
+    mode: z.enum(['developer', 'managed']).optional(),
   })
   .refine((b) => Boolean(b.slug ?? b.tenantRef), {
-    message: "Provide slug or tenantRef",
-    path: ["slug"],
+    message: 'Provide slug or tenantRef',
+    path: ['slug'],
   });
 
 export async function POST(request: Request): Promise<Response> {

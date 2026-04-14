@@ -1,7 +1,7 @@
-import { jsonError, tryRoute } from "../../../../lib/api-response";
-import { requireAdminToken } from "../../../../lib/auth";
-import { HTTP_STATUS } from "../../../../lib/constants";
-import { getServiceClient } from "../../../../lib/supabase";
+import { jsonError, tryRoute } from '../../../../lib/api-response';
+import { requireAdminToken } from '../../../../lib/auth';
+import { HTTP_STATUS } from '../../../../lib/constants';
+import { getServiceClient } from '../../../../lib/supabase';
 
 const MAX_LIMIT = 200;
 const DEFAULT_LIMIT = 50;
@@ -29,31 +29,29 @@ interface AuditFilters {
 
 function parseFilters(url: URL): AuditFilters {
   return {
-    slug: url.searchParams.get("slug"),
-    action: url.searchParams.get("action"),
-    from: url.searchParams.get("from"),
-    to: url.searchParams.get("to"),
-    after: url.searchParams.get("after"),
-    limit: clampLimit(
-      parsePositiveInt(url.searchParams.get("limit"), DEFAULT_LIMIT),
-    ),
+    slug: url.searchParams.get('slug'),
+    action: url.searchParams.get('action'),
+    from: url.searchParams.get('from'),
+    to: url.searchParams.get('to'),
+    after: url.searchParams.get('after'),
+    limit: clampLimit(parsePositiveInt(url.searchParams.get('limit'), DEFAULT_LIMIT)),
   };
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function applyFilters(query: any, filters: AuditFilters): any {
   let q = query;
-  if (filters.slug) q = q.eq("tenant_slug", filters.slug);
-  if (filters.action) q = q.eq("action", filters.action.toUpperCase());
-  if (filters.from) q = q.gte("created_at", filters.from);
-  if (filters.to) q = q.lte("created_at", filters.to);
-  if (filters.after) q = q.lt("id", filters.after); // keyset cursor
+  if (filters.slug) q = q.eq('tenant_slug', filters.slug);
+  if (filters.action) q = q.eq('action', filters.action.toUpperCase());
+  if (filters.from) q = q.gte('created_at', filters.from);
+  if (filters.to) q = q.lte('created_at', filters.to);
+  if (filters.after) q = q.lt('id', filters.after); // keyset cursor
   return q;
 }
 
 function buildPage(
   data: Array<{ id: string }>,
-  limit: number,
+  limit: number
 ): {
   items: Array<{ id: string }>;
   hasNextPage: boolean;
@@ -61,8 +59,7 @@ function buildPage(
 } {
   const hasNextPage = data.length > limit;
   const items = hasNextPage ? data.slice(0, limit) : data;
-  const nextCursor =
-    hasNextPage && items.length > 0 ? items[items.length - 1].id : null;
+  const nextCursor = hasNextPage && items.length > 0 ? items[items.length - 1].id : null;
   return { items, hasNextPage, nextCursor };
 }
 
@@ -72,36 +69,30 @@ function buildPage(
  *               after (UUID cursor), limit (default 50, max 200)
  */
 export function GET(request: Request): Promise<Response> {
-  return tryRoute("GET /api/admin/audit", async () => {
+  return tryRoute('GET /api/admin/audit', async () => {
     const authError = requireAdminToken(request);
     if (authError) return authError;
 
     const filters = parseFilters(new URL(request.url));
     const client = getServiceClient();
     const baseQuery = client
-      .schema("platform")
-      .from("audit_events")
+      .schema('platform')
+      .from('audit_events')
       .select(
-        "id, tenant_slug, actor_email, action, resource, status_code, ip, created_at, metadata",
+        'id, tenant_slug, actor_email, action, resource, status_code, ip, created_at, metadata'
       )
-      .order("created_at", { ascending: false })
-      .order("id", { ascending: false })
+      .order('created_at', { ascending: false })
+      .order('id', { ascending: false })
       .limit(filters.limit + 1); // +1 para detectar hasNextPage
 
     const { data, error } = await applyFilters(baseQuery, filters);
 
     if (error) {
-      console.error("[audit GET] Supabase error:", error.message);
-      return jsonError(
-        "Failed to fetch audit events",
-        HTTP_STATUS.INTERNAL_ERROR,
-      );
+      console.error('[audit GET] Supabase error:', error.message);
+      return jsonError('Failed to fetch audit events', HTTP_STATUS.INTERNAL_ERROR);
     }
 
-    const { items, hasNextPage, nextCursor } = buildPage(
-      data ?? [],
-      filters.limit,
-    );
+    const { items, hasNextPage, nextCursor } = buildPage(data ?? [], filters.limit);
     return Response.json({
       items,
       pagination: { limit: filters.limit, hasNextPage, nextCursor },

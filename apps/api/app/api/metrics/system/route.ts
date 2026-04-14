@@ -1,10 +1,10 @@
-import { requireAdminAccessUnlessDemoRead } from "../../../../lib/auth";
-import { DEMO_SYSTEM_METRICS_MOCK } from "../../../../lib/constants";
-import { countRunningDockerContainers } from "../../../../lib/docker-running-count";
-import { fetchHostMetricsFromPrometheus } from "../../../../lib/fetch-host-metrics-prometheus";
-import { getPrometheusBaseUrl } from "../../../../lib/prometheus";
-import { getServiceClient } from "../../../../lib/supabase";
-import { logger } from "../../../../lib/logger";
+import { requireAdminAccessUnlessDemoRead } from '../../../../lib/auth';
+import { DEMO_SYSTEM_METRICS_MOCK } from '../../../../lib/constants';
+import { countRunningDockerContainers } from '../../../../lib/docker-running-count';
+import { fetchHostMetricsFromPrometheus } from '../../../../lib/fetch-host-metrics-prometheus';
+import { getPrometheusBaseUrl } from '../../../../lib/prometheus';
+import { getServiceClient } from '../../../../lib/supabase';
+import { logger } from '../../../../lib/logger';
 
 type SystemMetrics = {
   cpu_percent: number;
@@ -18,10 +18,7 @@ type SystemMetrics = {
   mock: boolean;
 };
 
-function buildMockResponse(
-  activeTenants: number,
-  containers: number | null,
-): SystemMetrics {
+function buildMockResponse(activeTenants: number, containers: number | null): SystemMetrics {
   const running =
     containers !== null && containers > 0
       ? containers
@@ -41,14 +38,14 @@ function buildMockResponse(
 
 async function fetchActiveTenantCount(): Promise<number> {
   const { count, error } = await getServiceClient()
-    .schema("platform")
-    .from("tenants")
-    .select("*", { count: "exact", head: true })
-    .is("deleted_at", null)
-    .eq("status", "active");
+    .schema('platform')
+    .from('tenants')
+    .select('*', { count: 'exact', head: true })
+    .is('deleted_at', null)
+    .eq('status', 'active');
 
   if (error) {
-    logger.error("active tenants count", error);
+    logger.error('active tenants count', error);
     return 0;
   }
   return count ?? 0;

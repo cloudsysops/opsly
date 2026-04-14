@@ -1,11 +1,11 @@
-import { NextResponse } from "next/server";
-import { z } from "zod";
+import { NextResponse } from 'next/server';
+import { z } from 'zod';
 
-import { requireAdminAccess } from "../../../../lib/auth";
-import { HTTP_STATUS } from "../../../../lib/constants";
-import { queryNotebookLmForApi } from "../../../../lib/notebooklm-query";
+import { requireAdminAccess } from '../../../../lib/auth';
+import { HTTP_STATUS } from '../../../../lib/constants';
+import { queryNotebookLmForApi } from '../../../../lib/notebooklm-query';
 
-export const dynamic = "force-dynamic";
+export const dynamic = 'force-dynamic';
 const NOTEBOOKLM_QUESTION_MAX_LENGTH = 8_000;
 const NOTEBOOKLM_CONTEXT_MAX_LENGTH = 16_000;
 
@@ -27,17 +27,14 @@ export async function POST(request: Request): Promise<Response> {
   try {
     json = await request.json();
   } catch {
-    return NextResponse.json(
-      { error: "Invalid JSON" },
-      { status: HTTP_STATUS.BAD_REQUEST },
-    );
+    return NextResponse.json({ error: 'Invalid JSON' }, { status: HTTP_STATUS.BAD_REQUEST });
   }
 
   const parsed = bodySchema.safeParse(json);
   if (!parsed.success) {
     return NextResponse.json(
       { error: parsed.error.flatten() },
-      { status: HTTP_STATUS.BAD_REQUEST },
+      { status: HTTP_STATUS.BAD_REQUEST }
     );
   }
 
@@ -49,10 +46,10 @@ export async function POST(request: Request): Promise<Response> {
       {
         ok: false,
         error:
-          "NotebookLM no disponible (NOTEBOOKLM_ENABLED, NOTEBOOKLM_NOTEBOOK_ID o cliente Python).",
+          'NotebookLM no disponible (NOTEBOOKLM_ENABLED, NOTEBOOKLM_NOTEBOOK_ID o cliente Python).',
         ...out,
       },
-      { status: HTTP_STATUS.SERVICE_UNAVAILABLE },
+      { status: HTTP_STATUS.SERVICE_UNAVAILABLE }
     );
   }
 

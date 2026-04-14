@@ -1,8 +1,8 @@
-import { NextResponse } from "next/server";
-import { requireAdminAccess } from "../../../../lib/auth";
-import { getServiceClient } from "../../../../lib/supabase/client";
+import { NextResponse } from 'next/server';
+import { requireAdminAccess } from '../../../../lib/auth';
+import { getServiceClient } from '../../../../lib/supabase/client';
 
-export const dynamic = "force-dynamic";
+export const dynamic = 'force-dynamic';
 
 const LIMIT_STATE_ROWS = 10_000;
 const LIMIT_METRICS_ROWS = 50;
@@ -26,12 +26,23 @@ type SupabaseTableResult = {
 async function loadHermesAggregates(): Promise<
   [SupabaseTableResult, SupabaseTableResult, SupabaseTableResult, SupabaseTableResult]
 > {
-  const sb = getServiceClient().schema("platform");
+  const sb = getServiceClient().schema('platform');
   return Promise.all([
-    sb.from("hermes_state").select("state").limit(LIMIT_STATE_ROWS),
-    sb.from("hermes_metrics").select("*").order("captured_at", { ascending: false }).limit(LIMIT_METRICS_ROWS),
-    sb.from("hermes_workflows").select("workflow_id, name, status, updated_at").limit(LIMIT_WORKFLOW_ROWS),
-    sb.from("hermes_audit").select("*").order("timestamp", { ascending: false }).limit(LIMIT_AUDIT_ROWS),
+    sb.from('hermes_state').select('state').limit(LIMIT_STATE_ROWS),
+    sb
+      .from('hermes_metrics')
+      .select('*')
+      .order('captured_at', { ascending: false })
+      .limit(LIMIT_METRICS_ROWS),
+    sb
+      .from('hermes_workflows')
+      .select('workflow_id, name, status, updated_at')
+      .limit(LIMIT_WORKFLOW_ROWS),
+    sb
+      .from('hermes_audit')
+      .select('*')
+      .order('timestamp', { ascending: false })
+      .limit(LIMIT_AUDIT_ROWS),
   ]);
 }
 

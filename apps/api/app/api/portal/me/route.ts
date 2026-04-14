@@ -1,5 +1,5 @@
-import { respondTrustedPortalMe } from "../../../../lib/portal-me-json";
-import { resolveTrustedPortalSession } from "../../../../lib/portal-trusted-identity";
+import { respondTrustedPortalMe } from '../../../../lib/portal-me-json';
+import { resolveTrustedPortalSession } from '../../../../lib/portal-trusted-identity';
 
 export async function GET(request: Request): Promise<Response> {
   const trusted = await resolveTrustedPortalSession(request);
