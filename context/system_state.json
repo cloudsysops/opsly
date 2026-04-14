@@ -1,35 +1,47 @@
 {
-  "last_updated": "2026-04-13",
-  "phase": "fase-1-validacion",
+  "last_updated": "2026-04-14",
+  "phase": "fase-2-producto-ia",
   "vps": {
     "ip": "157.245.223.7",
+    "tailscale": "100.120.151.91",
     "user": "vps-dragon",
     "repo": "/opt/opsly",
     "status": "operational",
-    "notes": "Acceso admin SSH recomendado por Tailscale (ver AGENTS.md y docs/SECURITY-MITIGATIONS-2026-04-09.md). Resolver drift local en VPS con git pull según docs/SESSION-GIT-SYNC.md si aplica."
+    "services": {
+      "traefik": "running",
+      "api": "error-id-ref-conflict",
+      "admin": "running",
+      "portal": "running",
+      "mcp": "running",
+      "orchestrator": "restarting-pending-ci",
+      "redis": "running"
+    },
+    "notes": "API con error [id] !== [ref] - carpeta duplicada en imagen GHCR. Orchestrator necesita rebuild CI con packages/ml."
   },
   "deploy_staging": {
     "api_health_url": "https://api.ops.smiletripcare.com/api/health",
-    "status": "healthy",
-    "notes": "Health público verificado en sesiones previas; CI/deploy: ver GitHub Actions y AGENTS.md."
+    "status": "partial",
+    "notes": "Admin + Portal funcionando; API con error de rutas; MCP funcionando."
   },
   "doppler": {
     "project": "ops-intcloudsysops",
     "config": "prd",
     "status": "complete",
-    "missing": []
+    "missing": ["GOOGLE_CLOUD_PROJECT_ID", "BIGQUERY_DATASET", "VERTEX_AI_REGION"]
   },
   "dns": {
     "base": "ops.smiletripcare.com",
     "ip": "157.245.223.7",
     "status": "ok"
   },
-  "tenants": [],
-  "next_action": "Estado operativo detallado: AGENTS.md en la raíz del repo. Tras docs: ADR duplicados renumerados (022 DI, 023 approval gate); índice ADR e insights en docs/README.md.",
-  "documentation": {
-    "adr_duplicates_fixed": true,
-    "readme_index_updated": true
-  },
+  "tenants": [
+    { "slug": "smiletripcare", "status": "active" },
+    { "slug": "localrank", "status": "active" },
+    { "slug": "jkboterolabs", "status": "active" },
+    { "slug": "peskids", "status": "active" },
+    { "slug": "intcloudsysops", "status": "active" }
+  ],
+  "next_action": "Fix [id] !== [ref] conflict - eliminar carpeta tenants/[ref] del repo y rebuildear API. Commit 4fb9e92 para orchestrator+llm-gateway.",
   "repo": {
     "apps": [
       "admin",
@@ -46,7 +58,7 @@
       "web"
     ],
     "scripts": 101,
-    "adrs": 23,
+    "adrs": 25,
     "migrations": 31
   }
 }

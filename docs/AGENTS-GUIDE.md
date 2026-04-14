@@ -21,11 +21,11 @@ Convenciones para operar varios asistentes (Cursor, Claude, automatismos) sobre 
 
 Referencia de producto alineada con `VISION.md` y `docs/OPENCLAW-ARCHITECTURE.md`:
 
-| Plan       | Agentes paralelos (orientativo) | Notas |
-|------------|---------------------------------|--------|
-| Startup    | 2 | Colas y workers con menor paralelismo. |
-| Business   | 5 | Mayor profundidad de cola y concurrencia. |
-| Enterprise | Sin tope contractual en código | Ajustar en política/infra por contrato. |
+| Plan       | Agentes paralelos (orientativo) | Notas                                     |
+| ---------- | ------------------------------- | ----------------------------------------- |
+| Startup    | 2                               | Colas y workers con menor paralelismo.    |
+| Business   | 5                               | Mayor profundidad de cola y concurrencia. |
+| Enterprise | Sin tope contractual en código  | Ajustar en política/infra por contrato.   |
 
 La aplicación de estos límites en runtime es responsabilidad del motor de decisiones y de la configuración de BullMQ / rate limits por tenant.
 
@@ -36,3 +36,19 @@ La aplicación de estos límites en runtime es responsabilidad del motor de deci
 - **MCP + Claude/otro LLM:** herramientas `get_health`, `onboard_tenant`, etc., sin exponer secretos en el prompt.
 
 Enlaces: `docs/OPENCLAW-ARCHITECTURE.md`, `docs/ORCHESTRATOR.md`, `apps/mcp/README.md` (si existe).
+
+---
+
+### Estado del sistema (2026-04-14)
+
+| Servicio     | Status | URL/Notas                                  |
+| ------------ | ------ | ------------------------------------------ |
+| Traefik      | ✅     | Puertos 80/443                             |
+| Admin        | ✅     | admin.ops.smiletripcare.com                |
+| Portal       | ✅     | portal.ops.smiletripcare.com               |
+| MCP          | ✅     | Puerto 3003                                |
+| API          | ⚠️     | Error `[id] !== [ref]` — carpeta duplicada |
+| Orchestrator | ⏳     | Esperando rebuild CI                       |
+| Redis        | ✅     | Sin password                               |
+
+**Fix pendientes:** API `[id] !== [ref]` conflict (eliminar `apps/api/app/api/tenants/[ref]`), orchestrator rebuild con packages/ml.

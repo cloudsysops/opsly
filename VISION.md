@@ -1,6 +1,6 @@
 # Opsly — Visión y Objetivos
 
-> Última revisión: 2026-04-12
+> Última revisión: 2026-04-14
 
 **Planificación ejecutable por sprint:** [`ROADMAP.md`](ROADMAP.md) (semanas, milestones).  
 **Guía técnica capa IA (monorepo):** [`docs/IMPLEMENTATION-IA-LAYER.md`](docs/IMPLEMENTATION-IA-LAYER.md).
@@ -22,11 +22,11 @@ Agencias digitales y equipos de operaciones que necesitan:
 
 ## Planes
 
-| Plan | Precio | Incluye |
-|------|--------|---------|
-| Startup | $49/mes | n8n + Uptime Kuma, 1 dominio |
-| Business | $149/mes | Todo Startup + backups diarios, soporte |
-| Enterprise | Custom | Multi-región, SLA, onboarding dedicado |
+| Plan       | Precio   | Incluye                                 |
+| ---------- | -------- | --------------------------------------- |
+| Startup    | $49/mes  | n8n + Uptime Kuma, 1 dominio            |
+| Business   | $149/mes | Todo Startup + backups diarios, soporte |
+| Enterprise | Custom   | Multi-región, SLA, onboarding dedicado  |
 
 ## Primer cliente real
 
@@ -73,7 +73,7 @@ Next.js + Supabase Auth = @supabase/ssr + `NEXT_PUBLIC_SUPABASE_*` en `.env`
 ## Objetivos por fase (resumen)
 
 El detalle vive en **Roadmap por fases** más abajo (y en [`ROADMAP.md`](ROADMAP.md) para el desglose semanal).  
-**Fase 1** está cerrada en producción según checklist de la sección *Fase 1 — Validación*; **Fase 2** sigue abierta (p. ej. segundo cliente).
+**Fase 1** está cerrada en producción según checklist de la sección _Fase 1 — Validación_; **Fase 2** sigue abierta (p. ej. segundo cliente).
 
 ## Decisión de arquitectura central
 
@@ -87,7 +87,7 @@ Escalar = más VPS, no más complejidad.
 - Control plane único en `apps/api` y servicios OpenClaw.
 - Escalamiento incremental: vertical primero, horizontal con demanda real.
 - Seguridad Zero-Trust en rutas dinámicas y sesiones portal.
-- **Gobernanza de costos de infra:** activar proveedores con cargo recurrente (p. ej. upgrade VPS, GCP Compute de pago, Cloudflare Load Balancer) requiere **aprobación explícita** del responsable; el dashboard admin en `/costs` y la API `GET /api/admin/costs` son **catálogo y registro operativo** — la facturación real sigue en cada panel (DO, GCP proyecto de referencia **opslyquantum**, etc.). Ver `AGENTS.md` (*Control de costos*) y `docs/COST-DASHBOARD.md`.
+- **Gobernanza de costos de infra:** activar proveedores con cargo recurrente (p. ej. upgrade VPS, GCP Compute de pago, Cloudflare Load Balancer) requiere **aprobación explícita** del responsable; el dashboard admin en `/costs` y la API `GET /api/admin/costs` son **catálogo y registro operativo** — la facturación real sigue en cada panel (DO, GCP proyecto de referencia **opslyquantum**, etc.). Ver `AGENTS.md` (_Control de costos_) y `docs/COST-DASHBOARD.md`.
 - **Workers remotos** (p. ej. Mac 2011 + Ubuntu): extienden el mismo orchestrator BullMQ contra Redis del control plane, sin segundo sistema de orquestación; guía `docs/WORKER-SETUP-MAC2011.md`, scripts `scripts/start-workers-mac2011.sh` / `start-worker.sh`.
 
 ## Principios del Ecosistema IA
@@ -219,18 +219,21 @@ flowchart TB
 ### Visión de escalonamiento
 
 **Vertical (ahora → 6 meses):**
+
 - Un VPS DigitalOcean escalado (CPU/RAM según carga)
 - Redis como núcleo: sessions + cache LLM + job queues
 - BullMQ con workers paralelos (concurrency por tenant)
 - LLM Gateway con cache → ahorro 40-70% tokens
 
 **Horizontal (6 → 18 meses):**
+
 - Multi-VPS con Traefik como load balancer
 - Redis Cluster o Redis Sentinel
 - Tenant runtime portable (abstraído de n8n)
 - Multi-región cuando haya clientes enterprise
 
 **Agentes paralelos:**
+
 - Cada tenant tiene su pool de workers BullMQ
 - Workers especializados: CodeAgent, ResearchAgent, NotifyAgent
 - Ejecución paralela con límites por plan (startup: 2, business: 5, enterprise: unlimited)
@@ -238,15 +241,16 @@ flowchart TB
 
 ### Tabla de proveedores LLM (Gateway v2)
 
-| Provider | Nivel | Costo/1k tokens (orientativo) | Cuándo usar |
-|----------|-------|------------------------------|-------------|
-| Llama local | 1 | $0 | Clasificación, extracción, formato |
-| Claude Haiku | 2 | ~$0.001 combinado típico | Respuestas moderadas, RAG simple |
-| GPT-4o mini | 2 | ~$0.0004 combinado típico | Fallback económico tras Haiku/Ollama |
-| Claude Sonnet | 3 | ~$0.015 salida (referencia) | Arquitectura, código complejo |
-| GPT-4o | 3 | ~$0.015 salida (referencia) | Fallback si Sonnet no disponible |
+| Provider      | Nivel | Costo/1k tokens (orientativo) | Cuándo usar                          |
+| ------------- | ----- | ----------------------------- | ------------------------------------ |
+| Llama local   | 1     | $0                            | Clasificación, extracción, formato   |
+| Claude Haiku  | 2     | ~$0.001 combinado típico      | Respuestas moderadas, RAG simple     |
+| GPT-4o mini   | 2     | ~$0.0004 combinado típico     | Fallback económico tras Haiku/Ollama |
+| Claude Sonnet | 3     | ~$0.015 salida (referencia)   | Arquitectura, código complejo        |
+| GPT-4o        | 3     | ~$0.015 salida (referencia)   | Fallback si Sonnet no disponible     |
 
 **Servicios nuevos en roadmap:**
+
 1. LLM Gateway (cache + routing + cost control)
 2. Context Builder (prompt optimization)
 3. Orchestrator event-driven completo
@@ -268,12 +272,14 @@ El desglose operativo (**extender sin re-arquitecturar**, mapa de `apps/*`, incr
 ## Stack de expansión — Google Cloud + Open Source
 
 ### Estado operativo (2026-04-09)
+
 - Fase 9 (activación producción) validada: migraciones Supabase aplicadas y E2E de invitaciones en verde.
 - Discord operativo con webhook válido en Doppler `prd`.
 - Transición iniciada a Fase 10 con foco en variables GCP (`GOOGLE_CLOUD_PROJECT_ID`, `BIGQUERY_DATASET`, `VERTEX_AI_REGION`).
 - Bloqueante vigente: `drive-sync` con service account aún devuelve `invalid_request` en OAuth token endpoint.
 
 ### Principio
+
 Usar gratis lo que Google da gratis.
 Integrar open source antes de pagar servicios.
 Escalar verticalmente antes de horizontalmente.
@@ -282,66 +288,74 @@ Nunca añadir infra nueva sin cliente pagador que lo justifique.
 ### Google Cloud — roadmap por fase
 
 #### AHORA (activo)
-| Servicio | Uso | Costo | Estado |
-|---------|-----|-------|--------|
-| Drive API | Sync docs AGENTS.md | Gratis | ✅ implementado |
-| Sheets API | Reportes tenants/billing | Gratis | ⏳ próximo |
+
+| Servicio   | Uso                      | Costo  | Estado          |
+| ---------- | ------------------------ | ------ | --------------- |
+| Drive API  | Sync docs AGENTS.md      | Gratis | ✅ implementado |
+| Sheets API | Reportes tenants/billing | Gratis | ⏳ próximo      |
 
 #### PRÓXIMO MES (cuando haya 3+ tenants pagando)
-| Servicio | Uso | Costo | Estado |
-|---------|-----|-------|--------|
-| BigQuery | Analytics usage_events | 1TB queries/mes gratis | ⏳ planificado |
+
+| Servicio  | Uso                         | Costo                  | Estado         |
+| --------- | --------------------------- | ---------------------- | -------------- |
+| BigQuery  | Analytics usage_events      | 1TB queries/mes gratis | ⏳ planificado |
 | Cloud Run | Workers ML sin VPS dedicado | 2M requests/mes gratis | ⏳ planificado |
 
 #### 6 MESES (cuando haya 10+ tenants)
-| Servicio | Uso | Costo | Estado |
-|---------|-----|-------|--------|
-| Vertex AI | Fine-tuning Llama con datos Opsly | $300 créditos iniciales | ⏳ planificado |
-| Speech-to-Text | Transcripción para tenants | 60 min/mes gratis | ⏳ planificado |
-| Vision API | Análisis imágenes para clientes | 1000 unidades/mes gratis | ⏳ planificado |
+
+| Servicio       | Uso                               | Costo                    | Estado         |
+| -------------- | --------------------------------- | ------------------------ | -------------- |
+| Vertex AI      | Fine-tuning Llama con datos Opsly | $300 créditos iniciales  | ⏳ planificado |
+| Speech-to-Text | Transcripción para tenants        | 60 min/mes gratis        | ⏳ planificado |
+| Vision API     | Análisis imágenes para clientes   | 1000 unidades/mes gratis | ⏳ planificado |
 
 #### 1 AÑO (cuando VPS no alcance)
-| Servicio | Uso | Costo | Estado |
-|---------|-----|-------|--------|
-| GKE Autopilot | Escalado horizontal | Pago por uso | ⏳ planificado |
+
+| Servicio      | Uso                    | Costo        | Estado         |
+| ------------- | ---------------------- | ------------ | -------------- |
+| GKE Autopilot | Escalado horizontal    | Pago por uso | ⏳ planificado |
 | Cloud Spanner | DB global multi-región | Pago por uso | ⏳ planificado |
 
 ### Open Source — roadmap por fase
 
 #### AHORA (integrar en VPS existente)
-| Tool | Uso | Por qué | Estado |
-|------|-----|---------|--------|
-| Ollama | LLMs locales gratis | Ya instalado | ✅ activo |
-| Llama 3.2 3B | Clasificación, extracción | $0/token | ⏳ configurar |
-| Llama 3.1 8B | Respuestas moderadas | $0/token | ⏳ configurar |
-| Mistral 7B | Alternativa a Haiku | $0/token | ⏳ configurar |
-| Phi-3 Mini | Muy liviano, rápido | $0/token | ⏳ configurar |
-| DuckDB | Analytics local en VPS | Gratis, brutal velocidad | ⏳ planificado |
-| Prometheus | Métricas VPS | Ya instalado | ✅ activo |
+
+| Tool         | Uso                       | Por qué                  | Estado         |
+| ------------ | ------------------------- | ------------------------ | -------------- |
+| Ollama       | LLMs locales gratis       | Ya instalado             | ✅ activo      |
+| Llama 3.2 3B | Clasificación, extracción | $0/token                 | ⏳ configurar  |
+| Llama 3.1 8B | Respuestas moderadas      | $0/token                 | ⏳ configurar  |
+| Mistral 7B   | Alternativa a Haiku       | $0/token                 | ⏳ configurar  |
+| Phi-3 Mini   | Muy liviano, rápido       | $0/token                 | ⏳ configurar  |
+| DuckDB       | Analytics local en VPS    | Gratis, brutal velocidad | ⏳ planificado |
+| Prometheus   | Métricas VPS              | Ya instalado             | ✅ activo      |
 
 #### PRÓXIMO MES
-| Tool | Uso | Por qué | Estado |
-|------|-----|---------|--------|
-| OpenTelemetry | Traces + métricas distribuidas | Estándar industria | ⏳ planificado |
-| Grafana | Dashboards observabilidad | Gratis self-hosted | ⏳ planificado |
-| Qdrant | Vector DB a escala | Mejor que pgvector > 1M docs | ⏳ planificado |
+
+| Tool          | Uso                            | Por qué                      | Estado         |
+| ------------- | ------------------------------ | ---------------------------- | -------------- |
+| OpenTelemetry | Traces + métricas distribuidas | Estándar industria           | ⏳ planificado |
+| Grafana       | Dashboards observabilidad      | Gratis self-hosted           | ⏳ planificado |
+| Qdrant        | Vector DB a escala             | Mejor que pgvector > 1M docs | ⏳ planificado |
 
 #### 6 MESES
-| Tool | Uso | Por qué | Estado |
-|------|-----|---------|--------|
+
+| Tool      | Uso                            | Por qué              | Estado         |
+| --------- | ------------------------------ | -------------------- | -------------- |
 | LangGraph | Orquestación agentes complejos | Open source, estable | ⏳ planificado |
-| CrewAI | Multi-agent teams | Complementa OpenClaw | ⏳ planificado |
-| AutoGen | Agentes conversacionales | Microsoft, activo | ⏳ planificado |
+| CrewAI    | Multi-agent teams              | Complementa OpenClaw | ⏳ planificado |
+| AutoGen   | Agentes conversacionales       | Microsoft, activo    | ⏳ planificado |
 
 #### 1 AÑO
-| Tool | Uso | Por qué | Estado |
-|------|-----|---------|--------|
-| Apache Spark | Procesamiento batch masivo | Cuando datos > 10TB | ⏳ planificado |
-| Ray | Computación distribuida ML | Para fine-tuning serio | ⏳ planificado |
+
+| Tool         | Uso                        | Por qué                | Estado         |
+| ------------ | -------------------------- | ---------------------- | -------------- |
+| Apache Spark | Procesamiento batch masivo | Cuando datos > 10TB    | ⏳ planificado |
+| Ray          | Computación distribuida ML | Para fine-tuning serio | ⏳ planificado |
 
 ### Inventario de librerías (npm vs necesidad)
 
-La fuente de verdad de qué paquetes **ya están** en el monorepo, qué falta **por fase** del roadmap y qué es **opcional / no ahora** está en **`docs/MASTER-PLAN.md`** (sección *STACK DE LIBRERÍAS — INVENTARIO vs NECESIDAD*). Evita duplicar frameworks o añadir dependencias masivas sin ADR.
+La fuente de verdad de qué paquetes **ya están** en el monorepo, qué falta **por fase** del roadmap y qué es **opcional / no ahora** está en **`docs/MASTER-PLAN.md`** (sección _STACK DE LIBRERÍAS — INVENTARIO vs NECESIDAD_). Evita duplicar frameworks o añadir dependencias masivas sin ADR.
 
 ### Reglas de integración
 
