@@ -2,6 +2,10 @@
 set -euo pipefail
 
 DRY_RUN="false"
+VPS_SSH_TARGET="${VPS_SSH_TARGET:-vps-dragon@100.120.151.91}"
+WORKER_SSH_TARGET="${WORKER_SSH_TARGET:-opslyquantum@100.80.41.29}"
+VPS_TAILSCALE_IP="${VPS_TAILSCALE_IP:-100.120.151.91}"
+WORKER_TAILSCALE_IP="${WORKER_TAILSCALE_IP:-100.80.41.29}"
 for arg in "$@"; do
   if [[ "$arg" == "--dry-run" ]]; then
     DRY_RUN="true"
@@ -54,29 +58,34 @@ latency_check() {
 
 print_row() {
   local machine="$1"
-  local ollama="$2"
-  local gateway="$3"
-  local redis="$4"
-  local profile="$5"
+  local role="$2"
+  local local_health="$3"
+  local remote_health="$4"
+  local queue_path="$5"
   local latency="$6"
-  echo "| $machine | $(status_icon "$ollama") | $(status_icon "$gateway") | $(status_icon "$redis") | $(status_icon "$profile") | $(status_icon "$latency") |"
+  echo "| $machine | $role | $(status_icon "$local_health") | $(status_icon "$remote_health") | $(status_icon "$queue_path") | $(status_icon "$latency") |"
 }
 
-check_machine() {
-  local machine="$1"
-  local prefix="$2"
-  local ollama gateway redis profile latency
-  ollama="$(check_cmd "$prefix curl -sf http://127.0.0.1:11434/api/tags")"
-  gateway="$(check_cmd "$prefix curl -sf http://127.0.0.1:9000/health || $prefix curl -sf http://127.0.0.1:3010/health")"
-  redis="$(check_cmd "$prefix redis-cli PING | grep -q PONG")"
-  profile="$(check_cmd "$prefix test -n \"\${AI_PROFILE:-}\"")"
-  latency="$(latency_check "$prefix curl -sf http://127.0.0.1:11434/api/tags")"
-  print_row "$machine" "$ollama" "$gateway" "$redis" "$profile" "$latency"
+check_vps() {
+  local local_health remote_health queue_path latency
+  local_health="$(check_cmd "ssh $VPS_SSH_TARGET \"curl -sf http://127.0.0.1:3010/health >/dev/null && curl -sf http://127.0.0.1:3011/health >/dev/null\"")"
+  remote_health="$(check_cmd "ssh $VPS_SSH_TARGET \"curl -sf --max-time 5 http://$WORKER_TAILSCALE_IP:11434/api/tags >/dev/null\"")"
+  queue_path="$(check_cmd "ssh $VPS_SSH_TARGET \"cd /opt/opsly && source .env && redis-cli -a \\\"\$REDIS_PASSWORD\\\" -h 127.0.0.1 -p 6379 ping | grep -q PONG\"")"
+  latency="$(latency_check "ssh $VPS_SSH_TARGET \"curl -sf --max-time 5 http://$WORKER_TAILSCALE_IP:11434/api/tags >/dev/null\"")"
+  print_row "vps-dragon" "control-plane" "$local_health" "$remote_health" "$queue_path" "$latency"
 }
 
-echo "| Máquina | Ollama | Gateway | Redis | AI_PROFILE | Latencia local <100ms |"
+check_worker() {
+  local local_health remote_health queue_path latency
+  local_health="$(check_cmd "ssh $WORKER_SSH_TARGET \"curl -sf http://127.0.0.1:11434/api/tags >/dev/null && curl -sf http://127.0.0.1:3011/health >/dev/null\"")"
+  remote_health="$(check_cmd "ssh $WORKER_SSH_TARGET \"curl -sf http://$VPS_TAILSCALE_IP:3010/health >/dev/null\"")"
+  queue_path="$(check_cmd "ssh $WORKER_SSH_TARGET \"cd ~/opsly && set -a && source .env.worker >/dev/null 2>&1 && set +a && redis-cli -u \\\"\$REDIS_URL\\\" ping | grep -q PONG\"")"
+  latency="$(latency_check "ssh $WORKER_SSH_TARGET \"curl -sf http://$VPS_TAILSCALE_IP:3010/health >/dev/null\"")"
+  print_row "opsly-mac2011" "worker-plane" "$local_health" "$remote_health" "$queue_path" "$latency"
+}
+
+echo "| Máquina | Rol | Salud local | Salud remota | Cola/Redis | Latencia remota <100ms |"
 echo "|---|---|---|---|---|---|"
 
-check_machine "vps-dragon" "ssh vps-dragon@100.120.151.91 "
-check_machine "opsly-mac2011" "ssh opsly-mac2011 "
-check_machine "opsly-mac2020" "ssh opsly-mac2020 "
+check_vps
+check_worker

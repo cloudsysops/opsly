@@ -1,6 +1,7 @@
 import { createHmac } from "node:crypto";
 import { Job, Queue, Worker } from "bullmq";
 import { connection } from "../queue.js";
+import { getWorkerConcurrency } from "../worker-concurrency.js";
 import type { WebhookPayload } from "./webhook-types.js";
 
 export const WEBHOOK_QUEUE = "opsly-webhooks";
@@ -41,9 +42,10 @@ async function deliverWebhook(job: Job<WebhookJobData>): Promise<void> {
 }
 
 export function createWebhookWorker(): Worker<WebhookJobData> {
+  const concurrency = getWorkerConcurrency("webhook");
   const worker = new Worker<WebhookJobData>(WEBHOOK_QUEUE, deliverWebhook, {
     connection,
-    concurrency: 10,
+    concurrency,
   });
 
   worker.on("active", (job) => {

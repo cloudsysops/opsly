@@ -110,7 +110,7 @@ scp .env.local opsly-worker:~/opsly/.env.local
 
 ---
 
-## Fase 5 — Orchestrator como worker (comandos reales del monorepo)
+## Fase 5 — Orchestrator como worker plane (comandos reales del monorepo)
 
 En este repo **no** existe `npm run start:worker` en la raíz. El orchestrator usa:
 
@@ -123,7 +123,7 @@ En este repo **no** existe `npm run start:worker` en la raíz. El orchestrator u
 
 ```bash
 cd ~/opsly
-./scripts/start-worker.sh
+OPSLY_ORCHESTRATOR_MODE=worker-enabled ./scripts/start-worker.sh
 ```
 
 **Alias Mac 2011 / worker remoto** (carga opcional `.env.worker` y `config/gcp.env`; mismo arranque que arriba):
@@ -135,10 +135,19 @@ cd ~/opsly
 
 Implementación: `scripts/start-worker.sh` → `scripts/run-orchestrator-worker.sh`. Plantilla de variables (sin secretos): `docs/worker-env.local.example`. Compose opcional: `infra/docker-compose.workers.yml`.
 
+**`start-workers-mac2011.sh`** ya exporta defaults conservadores para no saturar el host remoto: `cursor=1`, `ollama=1`, `n8n=1`, `drive=1`, `notify=2`, además de `OPSLY_ORCHESTRATOR_MODE=worker-enabled` si no viene definido.
+
 Variables típicas (ver `apps/orchestrator` y tu `.env`):
 
 - `REDIS_URL` — **obligatorio** para BullMQ (incluye contraseña si aplica). Debe coincidir con **Doppler** `prd` (`ops-intcloudsysops`), no inventar `redis://100.120.151.91:6379` sin auth si Redis no está expuesto así.
 - `REDIS_PASSWORD` — si tu URL no la lleva embebida.
+- `OPSLY_ORCHESTRATOR_MODE=worker-enabled` — alias recomendado para dejar el nodo solo como workers.
+- `LLM_GATEWAY_URL=http://<tailscale-vps-ip>:3010` — URL del gateway alcanzable desde el worker.
+- `ORCHESTRATOR_CURSOR_CONCURRENCY=1`
+- `ORCHESTRATOR_OLLAMA_CONCURRENCY=1`
+- `ORCHESTRATOR_N8N_CONCURRENCY=1`
+- `ORCHESTRATOR_DRIVE_CONCURRENCY=1`
+- `ORCHESTRATOR_NOTIFY_CONCURRENCY=2`
 - Resto: Supabase, LLM, etc., según lo que ejecute tu build.
 
 Comprueba API pública (sin secretos):

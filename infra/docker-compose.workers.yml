@@ -18,8 +18,11 @@ services:
     environment:
       WORKER_ID: ${WORKER_ID:-opslyquantum-worker-01}
       OPSLY_ORCHESTRATOR_ROLE: ${OPSLY_ORCHESTRATOR_ROLE:-worker}
+      OPSLY_ORCHESTRATOR_MODE: ${OPSLY_ORCHESTRATOR_MODE:-worker-enabled}
       REDIS_URL: ${REDIS_URL:?Set REDIS_URL in environment or .env.worker}
       OPSLY_API_INTERNAL_URL: ${OPSLY_API_INTERNAL_URL:-}
+      ORCHESTRATOR_LLM_GATEWAY_URL: ${ORCHESTRATOR_LLM_GATEWAY_URL:-}
+      LLM_GATEWAY_URL: ${LLM_GATEWAY_URL:-}
     command:
       - bash
       - -lc
@@ -37,7 +40,10 @@ services:
     environment:
       WORKER_ID: ${WORKER_ID:-opslyquantum-llm-01}
       OPSLY_ORCHESTRATOR_ROLE: ${OPSLY_ORCHESTRATOR_ROLE:-worker}
+      OPSLY_ORCHESTRATOR_MODE: ${OPSLY_ORCHESTRATOR_MODE:-worker-enabled}
       REDIS_URL: ${REDIS_URL:?Set REDIS_URL in environment or .env.worker}
+      ORCHESTRATOR_LLM_GATEWAY_URL: ${ORCHESTRATOR_LLM_GATEWAY_URL:-}
+      LLM_GATEWAY_URL: ${LLM_GATEWAY_URL:-}
     command:
       - bash
       - -lc

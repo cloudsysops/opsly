@@ -11,15 +11,19 @@ Servicio Node (`apps/orchestrator`) que consume la cola BullMQ **`openclaw`** en
 
 El contenedor expone **GET `/health`** en `ORCHESTRATOR_HEALTH_PORT` (por defecto `3011`).
 
-## Rol del proceso (`OPSLY_ORCHESTRATOR_ROLE`)
+## Rol del proceso (`OPSLY_ORCHESTRATOR_ROLE` / `OPSLY_ORCHESTRATOR_MODE`)
 
-| Valor | Dónde | Qué arranca |
-|--------|--------|-------------|
-| *(omitido)* / `full` | Por defecto | TeamManager + suscripción a eventos + **todos** los workers (comportamiento histórico). |
-| `control` | VPS (control plane) | TeamManager + eventos + health; **sin** workers BullMQ (consumo en otro host). |
-| `worker` | Mac 2011 / nodo remoto | Solo workers + health; **sin** TeamManager. |
+| Variable | Valor | Dónde | Qué arranca |
+|--------|--------|--------|-------------|
+| `OPSLY_ORCHESTRATOR_ROLE` | *(omitido)* / `full` | Por defecto | TeamManager + suscripción a eventos + **todos** los workers (comportamiento histórico). |
+| `OPSLY_ORCHESTRATOR_ROLE` | `control` | VPS (control plane) | TeamManager + eventos + health; **sin** workers BullMQ (consumo en otro host). |
+| `OPSLY_ORCHESTRATOR_ROLE` | `worker` | Mac 2011 / nodo remoto | Solo workers + health; **sin** TeamManager. |
+| `OPSLY_ORCHESTRATOR_MODE` | `queue-only` | Alias legible | Equivale a `control` cuando `ROLE` no está definido. |
+| `OPSLY_ORCHESTRATOR_MODE` | `worker-enabled` | Alias legible | Equivale a `worker` cuando `ROLE` no está definido. |
 
 Misma imagen Docker / mismo `node dist/index.js`; ver `apps/orchestrator/src/orchestrator-role.ts` y `docs/ARCHITECTURE-DISTRIBUTED.md`.
+
+**Precedencia:** si defines ambas, `OPSLY_ORCHESTRATOR_ROLE` gana sobre `OPSLY_ORCHESTRATOR_MODE`.
 
 ## Jobs disponibles
 
@@ -52,6 +56,21 @@ Tras encolar, `setJobState` guarda objetos con `id`, `type`, `status`, `tenant_s
 ## Concurrency por plan
 
 La priorización por plan (Startup / Business / Enterprise) está alineada con `VISION.md` y `docs/OPENCLAW-ARCHITECTURE.md`: los workers pueden leer el plan del tenant desde Supabase/API y ajustar `concurrency` o rechazar trabajo; hoy los workers usan valores fijos (p. ej. `concurrency: 3` en `CursorWorker`). Evolución: leer política por `tenant_slug` antes de ejecutar side-effects costosos.
+
+### Defaults operativos para worker plane distribuido
+
+Cuando el proceso corre en `worker-enabled` / `worker`, el orchestrator usa defaults conservadores para no saturar el host remoto:
+
+- `cursor=1`
+- `ollama=1`
+- `n8n=1`
+- `drive=1`
+- `notify=2`
+- `webhook=1`
+- `webhooks-processing=1`
+- `general-events=1`
+
+En `full-stack` se mantienen los defaults históricos. Todos los workers aceptan override por env con `ORCHESTRATOR_<WORKER>_CONCURRENCY` (por ejemplo `ORCHESTRATOR_OLLAMA_CONCURRENCY=2`).
 
 ### Prioridad en la cola BullMQ (`queue-opts.ts`)
 

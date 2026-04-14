@@ -1,8 +1,10 @@
 import { Job, Worker } from "bullmq";
 import { execa } from "execa";
 import { logWorkerLifecycle } from "../observability/worker-log.js";
+import { getWorkerConcurrency } from "../worker-concurrency.js";
 
 export function startDriveWorker(connection: object) {
+  const concurrency = getWorkerConcurrency("drive");
   return new Worker(
     "openclaw",
     async (job: Job) => {
@@ -26,6 +28,6 @@ export function startDriveWorker(connection: object) {
         throw err;
       }
     },
-    { connection, concurrency: 2 },
+    { connection, concurrency },
   );
 }

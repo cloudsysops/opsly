@@ -5,6 +5,7 @@
 import { Job, Worker } from "bullmq";
 import { logWorkerLifecycle } from "../observability/worker-log.js";
 import { connection } from "../queue.js";
+import { getWorkerConcurrency } from "../worker-concurrency.js";
 
 export const GENERAL_EVENTS_QUEUE = "general-events";
 
@@ -48,8 +49,9 @@ async function processGeneralEvent(job: Job<GeneralEventJobData>): Promise<void>
 }
 
 export function startGeneralEventsWorker(): Worker<GeneralEventJobData> {
+  const concurrency = getWorkerConcurrency("general-events");
   return new Worker<GeneralEventJobData>(GENERAL_EVENTS_QUEUE, processGeneralEvent, {
     connection,
-    concurrency: 10,
+    concurrency,
   });
 }

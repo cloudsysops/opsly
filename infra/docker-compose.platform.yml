@@ -5,7 +5,8 @@
 # (Compose por defecto solo lee .env junto al YAML en infra/, no la raíz del repo).
 #
 # Required en /opt/opsly/.env (non-exhaustive): PLATFORM_DOMAIN (base host, e.g. ops.smiletripcare.com),
-# REDIS_PASSWORD, REDIS_EXPORT_BIND (opcional; ver servicio redis), ACME_EMAIL, TRAEFIK_DASHBOARD_BASIC_AUTH_USERS (htpasswd; escapar $ en Compose),
+# REDIS_PASSWORD, REDIS_EXPORT_BIND (opcional; ver servicio redis), LLM_GATEWAY_EXPORT_BIND (opcional; ver servicio llm-gateway),
+# ACME_EMAIL, TRAEFIK_DASHBOARD_BASIC_AUTH_USERS (htpasswd; escapar $ en Compose),
 # DOCKER_GID (GID del grupo del socket: stat -c %g /var/run/docker.sock; vps-bootstrap.sh lo añade),
 # APP_IMAGE (optional). Los servicios también cargan env_file ../.env (= /opt/opsly/.env desde infra/).
 # Nuevos servicios opcionales: GRAFANA_ADMIN_PASSWORD, GF_SECURITY_SECRET_KEY,
@@ -106,6 +107,7 @@ services:
     logging: *default-logging
     networks:
       - internal
+      - redis_edge
     restart: unless-stopped
     healthcheck:
       test: ['CMD', 'wget', '-q', '--spider', 'http://127.0.0.1:9090/-/healthy']
@@ -133,6 +135,7 @@ services:
     logging: *default-logging
     networks:
       - internal
+      - redis_edge
     restart: unless-stopped
 
   app:
@@ -325,6 +328,10 @@ services:
       SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY}
       CONTEXT_BUILDER_URL: http://context-builder:3012
       LLM_GATEWAY_REPO_CONTEXT: 'true'
+    # Workers remotos (Tailscale): en .env p.ej. LLM_GATEWAY_EXPORT_BIND=100.120.151.91.
+    # Por defecto 127.0.0.1: solo acceso local / túnel SSH.
+    ports:
+      - '${LLM_GATEWAY_EXPORT_BIND:-127.0.0.1}:3010:3010'
     depends_on:
       redis:
         condition: service_healthy
@@ -407,6 +414,7 @@ services:
       HERMES_ENABLED: ${HERMES_ENABLED:-true}
       # Vacío = full (compat). `control` = solo TeamManager/eventos en VPS; workers en otro nodo con `worker`.
       OPSLY_ORCHESTRATOR_ROLE: ${OPSLY_ORCHESTRATOR_ROLE:-}
+      OPSLY_ORCHESTRATOR_MODE: ${OPSLY_ORCHESTRATOR_MODE:-}
       ORCHESTRATOR_HEALTH_PORT: '3011'
       ORCHESTRATOR_LLM_GATEWAY_URL: http://llm-gateway:3010
       OPSLY_API_INTERNAL_URL: ${OPSLY_API_INTERNAL_URL:-http://app:3000}

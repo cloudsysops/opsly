@@ -2,6 +2,7 @@ import { Job, Worker } from "bullmq";
 import Redis from "ioredis";
 import { classifyTaskCategory } from "@intcloudsysops/ml";
 import { logWorkerLifecycle } from "../observability/worker-log.js";
+import { getWorkerConcurrency } from "../worker-concurrency.js";
 
 /** Hash Redis para predicciones sandbox (namespace opsly:sandbox:*). */
 const SANDBOX_PREDICTIONS_KEY = "opsly:sandbox:classifier:predictions";
@@ -46,6 +47,7 @@ export function startAgentClassifierWorker(
   connection: object
 ): { worker: Worker; closeRedis: () => Promise<void> } {
   const redis = new Redis(process.env.REDIS_URL ?? "redis://127.0.0.1:6379");
+  const concurrency = getWorkerConcurrency("agent-classifier");
 
   const worker = new Worker<AgentClassifierJobPayload>(
     "agent-classifier",
@@ -97,7 +99,7 @@ export function startAgentClassifierWorker(
         throw err;
       }
     },
-    { connection, concurrency: 2 }
+    { connection, concurrency }
   );
 
   return {

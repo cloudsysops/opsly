@@ -10,11 +10,15 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 
-# Por defecto solo workers (Mac 2011 / nodo remoto). Proceso completo: OPSLY_ORCHESTRATOR_ROLE=full
-export OPSLY_ORCHESTRATOR_ROLE="${OPSLY_ORCHESTRATOR_ROLE:-worker}"
+# Por defecto solo workers (Mac 2011 / nodo remoto). Mantiene compatibilidad
+# con ROLE, pero expone MODE como alias legible para la topología distribuida.
+if [[ -z "${OPSLY_ORCHESTRATOR_ROLE:-}" && -z "${OPSLY_ORCHESTRATOR_MODE:-}" ]]; then
+  export OPSLY_ORCHESTRATOR_MODE="worker-enabled"
+fi
 
 if [[ "${DRY_RUN:-}" == "true" ]]; then
-  echo "[dry-run] OPSLY_ORCHESTRATOR_ROLE=$OPSLY_ORCHESTRATOR_ROLE"
+  echo "[dry-run] OPSLY_ORCHESTRATOR_ROLE=${OPSLY_ORCHESTRATOR_ROLE:-<unset>}"
+  echo "[dry-run] OPSLY_ORCHESTRATOR_MODE=${OPSLY_ORCHESTRATOR_MODE:-<unset>}"
   echo "[dry-run] would run: npm run build --workspace=@intcloudsysops/notebooklm-agent"
   echo "[dry-run] would run: npm run build --workspace=@intcloudsysops/orchestrator"
   echo "[dry-run] would run: npm run start --workspace=@intcloudsysops/orchestrator"

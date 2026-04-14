@@ -3,9 +3,20 @@
 #
 # NODE_ENV=development
 # WORKER_ID=opslyquantum-worker-01
+# OPSLY_ORCHESTRATOR_MODE=worker-enabled
 #
 # Obligatorio para BullMQ — misma URL que en entorno de plataforma (Doppler ops-intcloudsysops / prd):
 # REDIS_URL=redis://:PASSWORD@HOST:6379
+#
+# URL del gateway en el VPS (Tailscale o endpoint alcanzable desde el worker):
+# LLM_GATEWAY_URL=http://<tailscale-vps-ip>:3010
+#
+# Defaults conservadores para Mac 2011 / worker plane:
+# ORCHESTRATOR_CURSOR_CONCURRENCY=1
+# ORCHESTRATOR_OLLAMA_CONCURRENCY=1
+# ORCHESTRATOR_N8N_CONCURRENCY=1
+# ORCHESTRATOR_DRIVE_CONCURRENCY=1
+# ORCHESTRATOR_NOTIFY_CONCURRENCY=2
 #
 # API pública (solo si el orchestrator la necesita):
 # OPSLY_API_INTERNAL_URL=https://api.ops.smiletripcare.com

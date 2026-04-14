@@ -1,11 +1,13 @@
 import { Job, Worker } from "bullmq";
 import { execa } from "execa";
 import { logWorkerLifecycle } from "../observability/worker-log.js";
+import { getWorkerConcurrency } from "../worker-concurrency.js";
 import { notifyDiscord } from "./NotifyWorker.js";
 
 const BACKUP_SCRIPT = "./scripts/backup-tenants.sh";
 
 export function startBackupWorker(connection: object) {
+  const concurrency = getWorkerConcurrency("backup");
   return new Worker(
     "openclaw",
     async (job: Job) => {
@@ -49,6 +51,6 @@ export function startBackupWorker(connection: object) {
         throw err;
       }
     },
-    { connection, concurrency: 1 },
+    { connection, concurrency },
   );
 }

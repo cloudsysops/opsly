@@ -1,7 +1,9 @@
 import { Job, Worker } from "bullmq";
 import { logWorkerLifecycle } from "../observability/worker-log.js";
+import { getWorkerConcurrency } from "../worker-concurrency.js";
 
 export function startN8nWorker(connection: object) {
+  const concurrency = getWorkerConcurrency("n8n");
   return new Worker(
     "openclaw",
     async (job: Job) => {
@@ -38,6 +40,6 @@ export function startN8nWorker(connection: object) {
         throw err;
       }
     },
-    { connection, concurrency: 5 },
+    { connection, concurrency },
   );
 }

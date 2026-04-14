@@ -2,6 +2,7 @@ import { Job, Worker } from "bullmq";
 import { meterPlannerLlmFireAndForget } from "../metering/usage-events-meter.js";
 import { logWorkerLifecycle } from "../observability/worker-log.js";
 import type { OrchestratorJob } from "../types.js";
+import { getWorkerConcurrency } from "../worker-concurrency.js";
 
 const DEFAULT_GATEWAY = "http://127.0.0.1:3010";
 
@@ -24,6 +25,7 @@ type TextGatewayResponse = {
 };
 
 export function startOllamaWorker(connection: object): Worker {
+  const concurrency = getWorkerConcurrency("ollama");
   return new Worker(
     "openclaw",
     async (job: Job) => {
@@ -119,6 +121,6 @@ export function startOllamaWorker(connection: object): Worker {
         model_used: json.llm?.model_used ?? "unknown",
       };
     },
-    { connection, concurrency: 2 },
+    { connection, concurrency },
   );
 }

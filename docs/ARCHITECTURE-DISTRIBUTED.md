@@ -1,6 +1,6 @@
 # Arquitectura distribuida — VPS (control) + Mac 2011 (workers)
 
-> **Implementación en código:** variable `OPSLY_ORCHESTRATOR_ROLE` en `apps/orchestrator` (`control` \| `worker` \| `full`). Ver `docs/ORCHESTRATOR.md`.
+> **Implementación en código:** `OPSLY_ORCHESTRATOR_ROLE` (`control` \| `worker` \| `full`) y alias `OPSLY_ORCHESTRATOR_MODE` (`queue-only` \| `worker-enabled`). Ver `docs/ORCHESTRATOR.md`.
 
 ## Estado típico (todo en VPS)
 
@@ -13,7 +13,7 @@ flowchart TB
   subgraph VPS["VPS — control plane"]
     API["API Next.js"]
     Redis["Redis BullMQ"]
-    OrchC["Orchestrator OPSLY_ORCHESTRATOR_ROLE=control"]
+    OrchC["Orchestrator queue-only"]
     T["Traefik"]
     API --> Redis
     OrchC --> Redis
@@ -21,14 +21,14 @@ flowchart TB
   end
 
   subgraph Mac["Mac 2011 — worker plane"]
-    OrchW["Orchestrator OPSLY_ORCHESTRATOR_ROLE=worker"]
+    OrchW["Orchestrator worker-enabled"]
   end
 
   OrchW -->|"misma cola openclaw"| Redis
 ```
 
-- **VPS:** API, Traefik, Redis, **orchestrator en modo `control`** (TeamManager + eventos + health; no arranca workers BullMQ).
-- **Mac (u otro nodo):** **orchestrator en modo `worker`** (mismos `start*Worker`, mismo `REDIS_URL` hacia el VPS vía Tailscale).
+- **VPS:** API, Traefik, Redis, **orchestrator en modo `queue-only`** (TeamManager + eventos + health; no arranca workers BullMQ).
+- **Mac (u otro nodo):** **orchestrator en modo `worker-enabled`** (mismos `start*Worker`, mismo `REDIS_URL` hacia el VPS vía Tailscale).
 
 Misma base de código e imagen Docker; solo cambia el rol.
 
@@ -52,10 +52,22 @@ redis-cli -u "$REDIS_URL" ping
 
 | Ubicación | Variable | Comando |
 |-----------|----------|---------|
-| VPS `.env` / Doppler | `OPSLY_ORCHESTRATOR_ROLE=control` | `docker compose ... up -d orchestrator` |
-| Mac `.env.local` | `REDIS_URL=...` y `OPSLY_ORCHESTRATOR_ROLE=worker` (por defecto en `run-orchestrator-worker.sh`) | `./scripts/run-orchestrator-worker.sh` o `./scripts/start-workers-mac2011.sh --native` |
+| VPS `.env` / Doppler | `OPSLY_ORCHESTRATOR_MODE=queue-only` | `docker compose ... up -d orchestrator` |
+| Mac `.env.local` | `REDIS_URL=...` y `OPSLY_ORCHESTRATOR_MODE=worker-enabled` | `./scripts/run-orchestrator-worker.sh` o `./scripts/start-workers-mac2011.sh` |
 
 Scripts de ayuda: `scripts/setup-vps-control-plane.sh`, `scripts/start-workers-mac2011.sh`.
+
+## Defaults recomendados para el nodo worker
+
+Arranque seguro inicial para `opsly-mac2011` / `opslyquantum`:
+
+- `ORCHESTRATOR_CURSOR_CONCURRENCY=1`
+- `ORCHESTRATOR_OLLAMA_CONCURRENCY=1`
+- `ORCHESTRATOR_N8N_CONCURRENCY=1`
+- `ORCHESTRATOR_DRIVE_CONCURRENCY=1`
+- `ORCHESTRATOR_NOTIFY_CONCURRENCY=2`
+
+Sube estos valores solo tras medir CPU sostenida, crecimiento de `waiting` y latencia del gateway/Ollama.
 
 ## Límites y operación
 

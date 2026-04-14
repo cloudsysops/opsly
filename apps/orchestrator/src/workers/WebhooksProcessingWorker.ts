@@ -6,6 +6,7 @@ import { Job, Worker } from "bullmq";
 import Stripe from "stripe";
 import { logWorkerLifecycle } from "../observability/worker-log.js";
 import { connection } from "../queue.js";
+import { getWorkerConcurrency } from "../worker-concurrency.js";
 
 export const WEBHOOKS_PROCESSING_QUEUE = "webhooks-processing";
 
@@ -102,6 +103,7 @@ async function deliverStripeIngest(job: Job<StripeIngestJobData>): Promise<void>
 }
 
 export function startWebhooksProcessingWorker(): Worker<StripeIngestJobData> {
+  const concurrency = getWorkerConcurrency("webhooks-processing");
   const worker = new Worker<StripeIngestJobData>(
     WEBHOOKS_PROCESSING_QUEUE,
     async (job: Job<StripeIngestJobData>) => {
@@ -110,7 +112,7 @@ export function startWebhooksProcessingWorker(): Worker<StripeIngestJobData> {
       }
       await deliverStripeIngest(job);
     },
-    { connection, concurrency: 3 },
+    { connection, concurrency },
   );
 
   worker.on("failed", (job, err) => {

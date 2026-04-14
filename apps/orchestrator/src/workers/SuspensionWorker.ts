@@ -1,5 +1,6 @@
 import { Job, Worker } from "bullmq";
 import { logWorkerLifecycle } from "../observability/worker-log.js";
+import { getWorkerConcurrency } from "../worker-concurrency.js";
 
 /** Debe coincidir con `apps/api/lib/billing/budget-check-queue.ts`. */
 export const BUDGET_ENFORCEMENT_QUEUE = "opsly-budget-enforcement";
@@ -18,6 +19,7 @@ function internalApiBaseUrl(): string {
  * Consume jobs de presupuesto y delega en la API (Docker/stack solo en el servicio `app`).
  */
 export function startSuspensionWorker(connection: object): Worker {
+  const concurrency = getWorkerConcurrency("budget");
   return new Worker<CheckBudgetJobPayload>(
     BUDGET_ENFORCEMENT_QUEUE,
     async (job: Job<CheckBudgetJobPayload>) => {
@@ -72,6 +74,6 @@ export function startSuspensionWorker(connection: object): Worker {
         throw err;
       }
     },
-    { connection, concurrency: 2 },
+    { connection, concurrency },
   );
 }

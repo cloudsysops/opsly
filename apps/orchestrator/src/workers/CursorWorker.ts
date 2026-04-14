@@ -1,6 +1,7 @@
 import { Job, Worker } from "bullmq";
 import { resolveGithubPat } from "../lib/github-pat.js";
 import { logWorkerLifecycle } from "../observability/worker-log.js";
+import { getWorkerConcurrency } from "../worker-concurrency.js";
 import { notifyDiscord } from "./NotifyWorker.js";
 
 async function writeActivePrompt(content: string): Promise<void> {
@@ -47,6 +48,7 @@ async function writeActivePrompt(content: string): Promise<void> {
 }
 
 export function startCursorWorker(connection: object) {
+  const concurrency = getWorkerConcurrency("cursor");
   return new Worker(
     "openclaw",
     async (job: Job) => {
@@ -104,7 +106,7 @@ export function startCursorWorker(connection: object) {
     },
     {
       connection,
-      concurrency: 3,
+      concurrency,
     },
   );
 }

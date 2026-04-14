@@ -1,23 +1,24 @@
 # ADR-024: Ollama Local como Provider Primary en Worker Remoto
 
-## Estado: PROPUESTO | Fecha: 2026-04-14
+## Estado: ACEPTADO | Fecha: 2026-04-14
 
 ## Contexto
 
 - El VPS tiene CPU limitado (load 31.72 reportado); ejecutar Ollama local en el VPS consume recursos.
 - Ya existe `OllamaWorker` en `apps/orchestrator/src/workers/OllamaWorker.ts` que llama a `/v1/text` del LLM Gateway.
-- El Mac 2011 (`opslyquantum`) tiene más CPU/RAM disponible y puede correr Ollama + orchestrator worker.
+- El Mac 2011 (`opslyquantum`, peer actual `opsly-mac2011`) tiene más CPU/RAM disponible y puede correr Ollama + orchestrator worker.
 - ADR-020 ya soporta separación `control` (VPS) / `worker` (remoto) con `OPSLY_ORCHESTRATOR_MODE=worker-enabled`.
 - LLM Gateway ya tiene `llama_local` en `providers.ts` con `OLLAMA_URL` configurable.
 
 ## Decisión
 
-1. **Ollama corre en el worker Mac 2011** (`opslyquantum`), accesible por red al LLM Gateway.
+1. **Ollama corre en el worker Mac 2011** (`opslyquantum` / `opsly-mac2011`), accesible por red al LLM Gateway.
 2. **VPS = control plane** (`OPSLY_ORCHESTRATOR_MODE=queue-only`): TeamManager + API del orchestrator, sin Ollama ni workers BullMQ.
 3. **Worker Mac 2011 = worker plane** (`OPSLY_ORCHESTRATOR_MODE=worker-enabled`): Ollama + BullMQ workers (cursor, n8n, drive, ollama).
 4. **LLM Gateway en VPS**: routing centralizado; `OLLAMA_URL` apunta a `http://<ip-worker>:11434`.
 5. **Routing bias por defecto**: `cheap` → `llama_local` primary (costo $0), fallback a cloud (haiku → openrouter → gpt4o_mini).
 6. **Redis compartido**: mismo `REDIS_URL` (VPS) para BullMQ, cache LLM Gateway y health daemon.
+7. **Exposición remota solo por Tailscale**: `REDIS_EXPORT_BIND` y `LLM_GATEWAY_EXPORT_BIND` deben apuntar a la IP Tailscale del VPS, nunca a `0.0.0.0`.
 
 ## Topología
 
@@ -37,12 +38,12 @@
          │ OLLAMA_URL                   │ REDIS_URL
          ▼                              ▼
 ┌─────────────────────────────────────────────────────────────┐
-│  Mac 2011 (worker plane) — opslyquantum                     │
+│  Mac 2011 (worker plane) — opslyquantum / opsly-mac2011    │
 │  ┌─────────────┐  ┌─────────────────────────────────────┐  │
 │  │ Ollama      │  │ orchestrator (worker-enabled)        │  │
 │  │ :11434      │  │ BullMQ workers: cursor, n8n, ollama│  │
 │  └─────────────┘  └─────────────────────────────────────┘  │
-│  Docker compose: ollama, redis (local), postgres            │
+│  Docker compose: ollama + worker services; sin Redis local  │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -50,11 +51,23 @@
 
 | Variable | Dónde | Valor ejemplo |
 |----------|-------|---------------|
-| `OLLAMA_URL` | LLM Gateway (VPS) + Doppler prd | `http://100.80.41.29:11434` |
+| `OLLAMA_URL` | LLM Gateway (VPS) + Doppler prd | `http://<tailscale-worker-ip>:11434` |
 | `OLLAMA_MODEL` | Doppler prd | `llama3.2` o `qwen2.5-coder` |
-| `REDIS_URL` | Worker Mac 2011 | `redis://100.120.151.91:6379` |
-| `LLM_GATEWAY_URL` | Worker Mac 2011 | `http://100.120.151.91:3010` |
+| `REDIS_EXPORT_BIND` | VPS + Doppler prd | `100.120.151.91` |
+| `LLM_GATEWAY_EXPORT_BIND` | VPS + Doppler prd | `100.120.151.91` |
+| `REDIS_URL` | Worker Mac 2011 | `redis://:PASSWORD@<tailscale-vps-ip>:6379/0` |
+| `LLM_GATEWAY_URL` | Worker Mac 2011 | `http://<tailscale-vps-ip>:3010` |
 | `OPSLY_ORCHESTRATOR_MODE` | Worker Mac 2011 | `worker-enabled` |
+
+## Capacidad inicial recomendada
+
+- `ORCHESTRATOR_OLLAMA_CONCURRENCY=1`
+- `ORCHESTRATOR_CURSOR_CONCURRENCY=1`
+- `ORCHESTRATOR_N8N_CONCURRENCY=1`
+- `ORCHESTRATOR_DRIVE_CONCURRENCY=1`
+- `ORCHESTRATOR_NOTIFY_CONCURRENCY=2`
+
+Subir concurrencia solo cuando CPU sostenida, cola `waiting` y latencia del gateway indiquen margen real.
 
 ## Routing en LLM Gateway
 
@@ -79,6 +92,7 @@ export function resolveRoutingPreference(explicitModel, complexityLevel): Routin
 - Latencia Ollama por red si worker y VPS en diferentes geografías
 - Worker Mac 2011 depende de energía/conectividad
 - Modelo local limitado a lo que corre Ollama (sin function calling advanced)
+- Hay dos puntos remotos que deben seguir vivos para el camino local (`REDIS_URL` y `LLM_GATEWAY_URL` sobre Tailscale)
 
 ## Checklist de implementación
 

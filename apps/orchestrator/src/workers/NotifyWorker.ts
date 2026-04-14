@@ -1,5 +1,6 @@
 import { Job, Worker } from "bullmq";
 import { logWorkerLifecycle } from "../observability/worker-log.js";
+import { getWorkerConcurrency } from "../worker-concurrency.js";
 
 const WEBHOOK = process.env.DISCORD_WEBHOOK_URL || "";
 
@@ -39,6 +40,7 @@ export async function notifyDiscord(
 }
 
 export function startNotifyWorker(connection: object) {
+  const concurrency = getWorkerConcurrency("notify");
   return new Worker(
     "openclaw",
     async (job: Job) => {
@@ -69,6 +71,6 @@ export function startNotifyWorker(connection: object) {
         throw err;
       }
     },
-    { connection, concurrency: 10 },
+    { connection, concurrency },
   );
 }
