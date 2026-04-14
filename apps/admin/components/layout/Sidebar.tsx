@@ -6,6 +6,7 @@ import {
   Activity,
   BarChart3,
   BookOpen,
+  Boxes,
   CircleDollarSign,
   LayoutDashboard,
   Mail,
@@ -18,6 +19,7 @@ import { cn } from "@/lib/utils";
 
 const nav = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/machines", label: "Máquinas", icon: Boxes },
   { href: "/tenants", label: "Tenants", icon: Server },
   { href: "/invitations", label: "Invitations", icon: Mail },
   { href: "/metrics/llm", label: "LLM Metrics", icon: BarChart3 },

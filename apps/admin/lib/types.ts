@@ -214,6 +214,28 @@ export type Mac2011MonitoringStatus = {
   };
 };
 
+/** GET /api/admin/docker/containers — inventario Docker del host de la API */
+export type AdminDockerContainerRow = {
+  id: string;
+  names: string[];
+  image: string;
+  command: string;
+  state: string;
+  status: string;
+  ports: string;
+  created_at: string;
+  running_for: string;
+};
+
+export type AdminDockerContainersResponse = {
+  generated_at: string;
+  docker_available: boolean;
+  error: string | null;
+  truncated: boolean;
+  limit: number;
+  containers: AdminDockerContainerRow[];
+};
+
 /** GET /api/admin/overview — plataforma: VPS, máquina local, Redis/BullMQ, LLM agregado */
 export type AdminOverviewLlmPeriod = {
   tokens_input: number;

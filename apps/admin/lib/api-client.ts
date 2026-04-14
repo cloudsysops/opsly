@@ -1,6 +1,7 @@
 import { getSessionAuthToken } from "./session-auth";
 import type {
     AdminCostsResponse,
+    AdminDockerContainersResponse,
     AdminOverviewResponse,
     CostDecisionResponse,
     InvitationSendResponse,
@@ -181,6 +182,10 @@ export async function getTeamMetrics(): Promise<TeamMetricsResponse> {
 
 export async function getAdminOverview(): Promise<AdminOverviewResponse> {
   return request<AdminOverviewResponse>("/api/admin/overview");
+}
+
+export async function getDockerContainers(): Promise<AdminDockerContainersResponse> {
+  return request<AdminDockerContainersResponse>("/api/admin/docker/containers");
 }
 
 export async function getTenantUsageMetrics(

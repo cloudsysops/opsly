@@ -1,6 +1,7 @@
 "use client";
 
 import type { ReactElement } from "react";
+import Link from "next/link";
 import useSWR from "swr";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getAdminOverview } from "@/lib/api-client";
@@ -135,6 +136,14 @@ export function PlatformOverview(): React.ReactElement {
             <p>
               <span className="text-ops-gray">Contenedores </span>
               {vps.containers_running}
+            </p>
+            <p className="pt-1">
+              <Link
+                href="/machines"
+                className="text-ops-green underline-offset-4 hover:underline"
+              >
+                Listado Docker (ps -a) →
+              </Link>
             </p>
             <p>
               <span className="text-ops-gray">Tenants activos </span>

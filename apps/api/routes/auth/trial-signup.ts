@@ -100,7 +100,8 @@ router.post('/trial-signup', async (req, res) => {
     });
 
     // 3. Create tenant in Supabase
-    const { data: tenantData, error: tenantError } = await supabase
+    const { data: tenantData, error: tenantError } = await supabase()
+      .schema('platform')
       .from('tenants')
       .insert({
         slug: tenantSlug,

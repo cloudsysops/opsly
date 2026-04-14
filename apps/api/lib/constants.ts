@@ -99,6 +99,12 @@ export const TENANT_ROUTE_REF = {
   SLUG_MAX_LEN: 63,
 } as const;
 
+/** Máximo de contenedores en GET /api/admin/docker/containers (evita respuestas enormes). */
+export const DOCKER_PS_LIST_MAX = 500;
+
+/** Buffer stdout para `docker ps` (execa maxBuffer). */
+export const DOCKER_PS_LIST_MAX_BUFFER_BYTES = 12 * 1024 * 1024;
+
 /** Conversión bytes → gibibytes en métricas de host. */
 export const HOST_METRICS = {
   BYTES_PER_GIB: 1024 ** 3,

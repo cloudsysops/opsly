@@ -6,10 +6,9 @@ import {
   MailPlus,
   CreditCard,
   Settings,
-  RefreshCw,
   Users,
   TrendingUp,
-  Shield,
+  Boxes,
 } from "lucide-react";
 
 const actions = [
@@ -18,6 +17,12 @@ const actions = [
     href: "/tenants?new=true",
     icon: Plus,
     color: "bg-ops-green/10 text-ops-green hover:bg-ops-green/20",
+  },
+  {
+    label: "Máquinas",
+    href: "/machines",
+    icon: Boxes,
+    color: "bg-cyan-500/10 text-cyan-400 hover:bg-cyan-500/20",
   },
   {
     label: "Invitar",
@@ -59,7 +64,7 @@ export function QuickActions() {
       <h2 className="font-mono text-xs uppercase tracking-wider text-ops-gray">
         Acciones rápidas
       </h2>
-      <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-7">
         {actions.map((action) => {
           const Icon = action.icon;
           return (
