@@ -1,0 +1,28 @@
+# Dockerfile para worker local (Colima failover)
+# Build: docker build -f Dockerfile.local-worker -t opsly-worker-local:latest .
+# Uso: docker run -d --name opsly-worker-local opsly-worker-local:latest
+
+FROM node:20-bookworm-slim
+
+WORKDIR /app
+
+# Instalar dependencias del repo
+COPY package.json pnpm-workspace.yaml turbo.json ./
+COPY packages/*/package.json packages/ 2>/dev/null || true
+COPY apps/*/package.json apps/ 2>/dev/null || true
+
+# Instalar deps (sin scripts postinstall)
+RUN npm ci --ignore-scripts && \
+    npm run build --workspace=@intcloudsysops/types 2>/dev/null || true
+
+COPY . .
+
+# Build final
+RUN npm run build --workspace=@intcloudsysops/orchestrator || true
+
+# Healthcheck
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+  CMD node -e "require('/app/apps/orchestrator/dist/health.js') || process.exit(0)"
+
+# Start
+CMD ["npm", "run", "start", "--workspace=@intcloudsysops/orchestrator"]

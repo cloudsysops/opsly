@@ -42,6 +42,19 @@
     { "slug": "intcloudsysops", "status": "active" }
   ],
   "next_action": "Fix [id] !== [ref] conflict - eliminar carpeta tenants/[ref] del repo y rebuildear API. Commit 4fb9e92 para orchestrator+llm-gateway.",
+  "knowledge_system": {
+    "notebooklm": {
+      "enabled": false,
+      "notebook_id": null,
+      "status": "pending_setup"
+    },
+    "obsidian": {
+      "vault": "docs/",
+      "graph_enabled": true
+    },
+    "index_script": "scripts/index-knowledge.sh",
+    "quick_query": "node scripts/query-notebooklm.mjs"
+  },
   "repo": {
     "apps": [
       "admin",

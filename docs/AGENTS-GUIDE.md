@@ -39,6 +39,16 @@ Enlaces: `docs/OPENCLAW-ARCHITECTURE.md`, `docs/ORCHESTRATOR.md`, `apps/mcp/READ
 
 ---
 
+## 🔄 Sistema de conocimiento
+
+**LEER PRIMERO para cualquier sesión:**
+
+1. [`docs/KNOWLEDGE-SYSTEM.md`](KNOWLEDGE-SYSTEM.md) — cómo funcionan NotebookLM + Obsidian
+2. [`docs/NOTEBOOKLM-SETUP.md`](NOTEBOOKLM-SETUP.md) — configuración paso a paso
+3. Query startup obligatorio: `"¿Cuál es el estado actual de Opsly?"`
+
+---
+
 ### Estado del sistema (2026-04-14)
 
 | Servicio     | Status | URL/Notas                                  |

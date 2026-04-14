@@ -20,144 +20,162 @@ docs/SPRINT-ROADMAP.md   ← sprints 1-8, qué está hecho, qué sigue
 
 ## 📂 Categorías
 
+### 0. Sistema de conocimiento (⚡ LEER PRIMERO)
+
+| Doc                                          | Cuándo usarlo                                            |
+| -------------------------------------------- | -------------------------------------------------------- |
+| [`KNOWLEDGE-SYSTEM.md`](KNOWLEDGE-SYSTEM.md) | **ESENCIAL** — NotebookLM + Obsidian, flujo para agentes |
+| [`NOTEBOOKLM-SETUP.md`](NOTEBOOKLM-SETUP.md) | Guía de instalación y configuración                      |
+
 ### 1. Estado y roadmap
-| Doc | Cuándo usarlo |
-|-----|---------------|
-| [`../ROADMAP.md`](../ROADMAP.md) | Plan semanal Fase 2–3, milestones; alineado a VISION |
+
+| Doc                                                        | Cuándo usarlo                                            |
+| ---------------------------------------------------------- | -------------------------------------------------------- |
+| [`../ROADMAP.md`](../ROADMAP.md)                           | Plan semanal Fase 2–3, milestones; alineado a VISION     |
 | [`IMPLEMENTATION-IA-LAYER.md`](IMPLEMENTATION-IA-LAYER.md) | Implementar capa IA en el monorepo (sin Python paralelo) |
-| [`SPRINT-ROADMAP.md`](SPRINT-ROADMAP.md) | Ver qué sprint está activo, entregables, estado |
-| [`MASTER-PLAN-STATUS.md`](MASTER-PLAN-STATUS.md) | Métricas consolidadas: tests, type-check, fases |
-| [`MASTER-PLAN.md`](MASTER-PLAN.md) | Stack inventario, reglas de dependencias |
-| [`ACTIVE-PROMPT.md`](ACTIVE-PROMPT.md) | Prompt activo ejecutado por cursor-prompt-monitor |
+| [`SPRINT-ROADMAP.md`](SPRINT-ROADMAP.md)                   | Ver qué sprint está activo, entregables, estado          |
+| [`MASTER-PLAN-STATUS.md`](MASTER-PLAN-STATUS.md)           | Métricas consolidadas: tests, type-check, fases          |
+| [`MASTER-PLAN.md`](MASTER-PLAN.md)                         | Stack inventario, reglas de dependencias                 |
+| [`ACTIVE-PROMPT.md`](ACTIVE-PROMPT.md)                     | Prompt activo ejecutado por cursor-prompt-monitor        |
 
 ### 2. Arquitectura
-| Doc | Cuándo usarlo |
-|-----|---------------|
-| [`ARCHITECTURE.md`](ARCHITECTURE.md) | Control plane vs data plane, Traefik, redes |
-| [`ARCHITECTURE-DISTRIBUTED.md`](ARCHITECTURE-DISTRIBUTED.md) | VPS control + workers remotos (Mac 2011), Redis Tailscale |
-| [`WORKER-FLOWS.md`](WORKER-FLOWS.md) | Quién corre TeamManager vs workers BullMQ |
-| [`OPENCLAW-ARCHITECTURE.md`](OPENCLAW-ARCHITECTURE.md) | MCP + Orchestrator + LLM Gateway + Context Builder |
-| [`ORCHESTRATOR.md`](ORCHESTRATOR.md) | BullMQ jobs, workers, circuit breaker, prioridades |
-| [`LLM-GATEWAY.md`](LLM-GATEWAY.md) | Cache Redis, routing bias, cost tracking |
-| [`TOKEN-BILLING-SYSTEM.md`](TOKEN-BILLING-SYSTEM.md) | Tokens/créditos vs USD; qué existe hoy vs wallet prepago (roadmap) |
-| [`TOKEN-SYSTEM-GUIDE.md`](TOKEN-SYSTEM-GUIDE.md) | Guía corta: ahorro, routing, presupuestos |
-| [`CONTEXT-BUILDER.md`](CONTEXT-BUILDER.md) | Sesiones de agentes, TTL por plan, persistencia |
-| [`AGENTS-GUIDE.md`](AGENTS-GUIDE.md) | Agentes paralelos, roles, límites por plan |
-| [`WORKER-TEAM-ARCHITECTURE.md`](WORKER-TEAM-ARCHITECTURE.md) | Equipos OpenClaw / roles vs `TeamManager` (roadmap) |
-| [`WORKER-TEAM-BILLING.md`](WORKER-TEAM-BILLING.md) | Billing workers: uso LLM, budgets, qué falta (CPU/mem) |
+
+| Doc                                                          | Cuándo usarlo                                                      |
+| ------------------------------------------------------------ | ------------------------------------------------------------------ |
+| [`ARCHITECTURE.md`](ARCHITECTURE.md)                         | Control plane vs data plane, Traefik, redes                        |
+| [`ARCHITECTURE-DISTRIBUTED.md`](ARCHITECTURE-DISTRIBUTED.md) | VPS control + workers remotos (Mac 2011), Redis Tailscale          |
+| [`WORKER-FLOWS.md`](WORKER-FLOWS.md)                         | Quién corre TeamManager vs workers BullMQ                          |
+| [`OPENCLAW-ARCHITECTURE.md`](OPENCLAW-ARCHITECTURE.md)       | MCP + Orchestrator + LLM Gateway + Context Builder                 |
+| [`ORCHESTRATOR.md`](ORCHESTRATOR.md)                         | BullMQ jobs, workers, circuit breaker, prioridades                 |
+| [`LLM-GATEWAY.md`](LLM-GATEWAY.md)                           | Cache Redis, routing bias, cost tracking                           |
+| [`TOKEN-BILLING-SYSTEM.md`](TOKEN-BILLING-SYSTEM.md)         | Tokens/créditos vs USD; qué existe hoy vs wallet prepago (roadmap) |
+| [`TOKEN-SYSTEM-GUIDE.md`](TOKEN-SYSTEM-GUIDE.md)             | Guía corta: ahorro, routing, presupuestos                          |
+| [`CONTEXT-BUILDER.md`](CONTEXT-BUILDER.md)                   | Sesiones de agentes, TTL por plan, persistencia                    |
+| [`AGENTS-GUIDE.md`](AGENTS-GUIDE.md)                         | Agentes paralelos, roles, límites por plan                         |
+| [`WORKER-TEAM-ARCHITECTURE.md`](WORKER-TEAM-ARCHITECTURE.md) | Equipos OpenClaw / roles vs `TeamManager` (roadmap)                |
+| [`WORKER-TEAM-BILLING.md`](WORKER-TEAM-BILLING.md)           | Billing workers: uso LLM, budgets, qué falta (CPU/mem)             |
 
 ### 3. Decisiones de arquitectura (ADRs)
 
 Índice completo de `docs/adr/` (un número = un archivo; sin duplicados).
 
-| ADR | Decisión clave |
-|-----|----------------|
-| [ADR-001](adr/ADR-001-docker-compose-por-tenant.md) | Docker Compose por tenant (no Swarm/K8s) |
-| [ADR-002](adr/ADR-002-traefik-sobre-nginx.md) | Traefik v3 como reverse proxy |
-| [ADR-003](adr/ADR-003-doppler-secrets.md) | Doppler como gestor de secrets |
-| [ADR-004](adr/ADR-004-supabase-schema-por-tenant.md) | Supabase con schema por tenant |
-| [ADR-005](adr/ADR-005-traefik-v3-1-docker-api.md) | Traefik v3.3+ frente a Docker Engine 29.x |
-| [ADR-006](adr/ADR-006-api-testing-vitest.md) | Tests de API con Vitest (Node) |
-| [ADR-007](adr/ADR-007-runbooks-y-documentacion-operativa.md) | Estructura de runbooks y documentación operativa |
-| [ADR-008](adr/ADR-008-terraform-digitalocean-plan.md) | Terraform en DigitalOcean (plan sin apply automático) |
-| [ADR-009](adr/ADR-009-openclaw-mcp-architecture.md) | OpenClaw MCP Server Architecture |
-| [ADR-010](adr/ADR-010-llm-gateway.md) | LLM Gateway con Cache Redis |
-| [ADR-011](adr/ADR-011-event-driven-orchestrator.md) | Orchestrator Event-Driven con BullMQ |
-| [ADR-012](adr/ADR-012-observability.md) | Observabilidad por tenant |
-| [ADR-013](adr/ADR-013-google-cloud-openSource-strategy.md) | Google Cloud + Open Source Integration Strategy |
-| [ADR-014](adr/ADR-014-notebooklm-agent.md) | NotebookLM Agent (EXPERIMENTAL) |
-| [ADR-015](adr/ADR-015-hermes-orchestrator-architecture.md) | Hermes como servicio Docker separado |
-| [ADR-016](adr/ADR-016-worker-teams-billing-roadmap.md) | Equipos de workers por tenant y billing ampliado (roadmap) |
-| [ADR-017](adr/ADR-017-prepaid-token-wallet-roadmap.md) | Wallet prepago y “tokens” de cuenta (roadmap) |
-| [ADR-018](adr/ADR-018-pgvector-embeddings-rag.md) | pgvector + Embeddings para RAG en decisiones Hermes |
-| [ADR-019](adr/ADR-019-prometheus-grafana-observability.md) | Prometheus + Grafana para observabilidad de plataforma |
-| [ADR-020](adr/ADR-020-orchestrator-worker-separation.md) | Separación control plane (VPS) ↔ worker plane (remoto) |
-| [ADR-021](adr/ADR-021-predictive-bi-scalability.md) | Escalabilidad — Predictive BI Engine |
-| [ADR-022](adr/ADR-022-di-pattern-testability.md) | Dependency Injection sobre vi.mock para módulos con singletons |
-| [ADR-023](adr/ADR-023-approval-gate-phase1.md) | Approval Gate — Fase 1 (MVP) |
+| ADR                                                          | Decisión clave                                                 |
+| ------------------------------------------------------------ | -------------------------------------------------------------- |
+| [ADR-001](adr/ADR-001-docker-compose-por-tenant.md)          | Docker Compose por tenant (no Swarm/K8s)                       |
+| [ADR-002](adr/ADR-002-traefik-sobre-nginx.md)                | Traefik v3 como reverse proxy                                  |
+| [ADR-003](adr/ADR-003-doppler-secrets.md)                    | Doppler como gestor de secrets                                 |
+| [ADR-004](adr/ADR-004-supabase-schema-por-tenant.md)         | Supabase con schema por tenant                                 |
+| [ADR-005](adr/ADR-005-traefik-v3-1-docker-api.md)            | Traefik v3.3+ frente a Docker Engine 29.x                      |
+| [ADR-006](adr/ADR-006-api-testing-vitest.md)                 | Tests de API con Vitest (Node)                                 |
+| [ADR-007](adr/ADR-007-runbooks-y-documentacion-operativa.md) | Estructura de runbooks y documentación operativa               |
+| [ADR-008](adr/ADR-008-terraform-digitalocean-plan.md)        | Terraform en DigitalOcean (plan sin apply automático)          |
+| [ADR-009](adr/ADR-009-openclaw-mcp-architecture.md)          | OpenClaw MCP Server Architecture                               |
+| [ADR-010](adr/ADR-010-llm-gateway.md)                        | LLM Gateway con Cache Redis                                    |
+| [ADR-011](adr/ADR-011-event-driven-orchestrator.md)          | Orchestrator Event-Driven con BullMQ                           |
+| [ADR-012](adr/ADR-012-observability.md)                      | Observabilidad por tenant                                      |
+| [ADR-013](adr/ADR-013-google-cloud-openSource-strategy.md)   | Google Cloud + Open Source Integration Strategy                |
+| [ADR-014](adr/ADR-014-notebooklm-agent.md)                   | NotebookLM Agent (EXPERIMENTAL)                                |
+| [ADR-015](adr/ADR-015-hermes-orchestrator-architecture.md)   | Hermes como servicio Docker separado                           |
+| [ADR-016](adr/ADR-016-worker-teams-billing-roadmap.md)       | Equipos de workers por tenant y billing ampliado (roadmap)     |
+| [ADR-017](adr/ADR-017-prepaid-token-wallet-roadmap.md)       | Wallet prepago y “tokens” de cuenta (roadmap)                  |
+| [ADR-018](adr/ADR-018-pgvector-embeddings-rag.md)            | pgvector + Embeddings para RAG en decisiones Hermes            |
+| [ADR-019](adr/ADR-019-prometheus-grafana-observability.md)   | Prometheus + Grafana para observabilidad de plataforma         |
+| [ADR-020](adr/ADR-020-orchestrator-worker-separation.md)     | Separación control plane (VPS) ↔ worker plane (remoto)         |
+| [ADR-021](adr/ADR-021-predictive-bi-scalability.md)          | Escalabilidad — Predictive BI Engine                           |
+| [ADR-022](adr/ADR-022-di-pattern-testability.md)             | Dependency Injection sobre vi.mock para módulos con singletons |
+| [ADR-023](adr/ADR-023-approval-gate-phase1.md)               | Approval Gate — Fase 1 (MVP)                                   |
 
 ### 4. Infra y deploy
-| Doc | Cuándo usarlo |
-|-----|---------------|
-| [`VPS-ARCHITECTURE.md`](VPS-ARCHITECTURE.md) | Topología VPS, Traefik, IPs, puertos |
-| [`DOPPLER-VARS.md`](DOPPLER-VARS.md) | Variables por entorno (`prd`, `stg`) |
-| [`GITHUB-TOKEN.md`](GITHUB-TOKEN.md) | PAT GitHub: `GITHUB_TOKEN` (canónico) vs `GITHUB_TOKEN_N8N` (legado n8n) |
-| [`MONITORING.md`](MONITORING.md) | Prometheus + Node Exporter en `infra/` (métricas Admin) |
-| [`CLOUDFLARE-PROXY-ACTIVATION.md`](CLOUDFLARE-PROXY-ACTIVATION.md) | Activar proxy CF naranja |
-| [`DEPLOY-VPS-AND-INDEX.md`](DEPLOY-VPS-AND-INDEX.md) | Deploy completo en VPS paso a paso |
-| [`CICD-VPS.md`](CICD-VPS.md) | GitHub Actions: rama `staging` → VPS staging; `main` → prod |
-| [`SESSION-GIT-SYNC.md`](SESSION-GIT-SYNC.md) | `git pull` / `git-sync-repo.sh` en opsly-admin, opsly-worker y VPS |
-| [`AUTO-PUSH-WATCHER.md`](AUTO-PUSH-WATCHER.md) | Servicio cursor-prompt-monitor en VPS |
-| [`infra/terraform/README.md`](../infra/terraform/README.md) | IaC Terraform DigitalOcean |
+
+| Doc                                                                | Cuándo usarlo                                                            |
+| ------------------------------------------------------------------ | ------------------------------------------------------------------------ |
+| [`VPS-ARCHITECTURE.md`](VPS-ARCHITECTURE.md)                       | Topología VPS, Traefik, IPs, puertos                                     |
+| [`DOPPLER-VARS.md`](DOPPLER-VARS.md)                               | Variables por entorno (`prd`, `stg`)                                     |
+| [`GITHUB-TOKEN.md`](GITHUB-TOKEN.md)                               | PAT GitHub: `GITHUB_TOKEN` (canónico) vs `GITHUB_TOKEN_N8N` (legado n8n) |
+| [`MONITORING.md`](MONITORING.md)                                   | Prometheus + Node Exporter en `infra/` (métricas Admin)                  |
+| [`CLOUDFLARE-PROXY-ACTIVATION.md`](CLOUDFLARE-PROXY-ACTIVATION.md) | Activar proxy CF naranja                                                 |
+| [`DEPLOY-VPS-AND-INDEX.md`](DEPLOY-VPS-AND-INDEX.md)               | Deploy completo en VPS paso a paso                                       |
+| [`CICD-VPS.md`](CICD-VPS.md)                                       | GitHub Actions: rama `staging` → VPS staging; `main` → prod              |
+| [`SESSION-GIT-SYNC.md`](SESSION-GIT-SYNC.md)                       | `git pull` / `git-sync-repo.sh` en opsly-admin, opsly-worker y VPS       |
+| [`AUTO-PUSH-WATCHER.md`](AUTO-PUSH-WATCHER.md)                     | Servicio cursor-prompt-monitor en VPS                                    |
+| [`infra/terraform/README.md`](../infra/terraform/README.md)        | IaC Terraform DigitalOcean                                               |
 
 ### 5. Billing y Stripe
-| Doc | Cuándo usarlo |
-|-----|---------------|
-| [`BILLING-USD-DIAGRAMS.md`](BILLING-USD-DIAGRAMS.md) | Diagramas Mermaid: USD, enforcement, admin `/costs`, vs wallet ADR-017 |
-| [`WALLET-PREPAID-ROADMAP.md`](WALLET-PREPAID-ROADMAP.md) | Wallet prepago pausado — prerequisitos |
-| [`BILLING-FLUSH-VERCEL.md`](BILLING-FLUSH-VERCEL.md) | Cron metered billing, flush Redis → Stripe |
-| [`REFACTOR-CHECKLIST.md`](REFACTOR-CHECKLIST.md) | Checklist de variables manuales (Stripe price IDs) |
+
+| Doc                                                      | Cuándo usarlo                                                          |
+| -------------------------------------------------------- | ---------------------------------------------------------------------- |
+| [`BILLING-USD-DIAGRAMS.md`](BILLING-USD-DIAGRAMS.md)     | Diagramas Mermaid: USD, enforcement, admin `/costs`, vs wallet ADR-017 |
+| [`WALLET-PREPAID-ROADMAP.md`](WALLET-PREPAID-ROADMAP.md) | Wallet prepago pausado — prerequisitos                                 |
+| [`BILLING-FLUSH-VERCEL.md`](BILLING-FLUSH-VERCEL.md)     | Cron metered billing, flush Redis → Stripe                             |
+| [`REFACTOR-CHECKLIST.md`](REFACTOR-CHECKLIST.md)         | Checklist de variables manuales (Stripe price IDs)                     |
 
 ### 6. Seguridad
-| Doc | Cuándo usarlo |
-|-----|---------------|
-| [`SECURITY_CHECKLIST.md`](SECURITY_CHECKLIST.md) | Zero-Trust por ruta API — revisar antes de merge |
-| [`SECURITY_AUDIT_REPORT.md`](SECURITY_AUDIT_REPORT.md) | Auditoría de seguridad completa |
-| [`ARCHITECT-SECURITY-REVIEW.md`](ARCHITECT-SECURITY-REVIEW.md) | Review arquitectónica de seguridad |
-| [`SECURITY-MITIGATIONS-2026-04-09.md`](SECURITY-MITIGATIONS-2026-04-09.md) | UFW + Tailscale + Cloudflare paso a paso |
+
+| Doc                                                                        | Cuándo usarlo                                    |
+| -------------------------------------------------------------------------- | ------------------------------------------------ |
+| [`SECURITY_CHECKLIST.md`](SECURITY_CHECKLIST.md)                           | Zero-Trust por ruta API — revisar antes de merge |
+| [`SECURITY_AUDIT_REPORT.md`](SECURITY_AUDIT_REPORT.md)                     | Auditoría de seguridad completa                  |
+| [`ARCHITECT-SECURITY-REVIEW.md`](ARCHITECT-SECURITY-REVIEW.md)             | Review arquitectónica de seguridad               |
+| [`SECURITY-MITIGATIONS-2026-04-09.md`](SECURITY-MITIGATIONS-2026-04-09.md) | UFW + Tailscale + Cloudflare paso a paso         |
 
 ### 7. Operación y runbooks
-| Doc | Cuándo usarlo |
-|-----|---------------|
-| [`runbooks/admin.md`](runbooks/admin.md) | Ops día a día del administrador |
-| [`runbooks/dev.md`](runbooks/dev.md) | Setup y workflows del desarrollador |
-| [`runbooks/incident.md`](runbooks/incident.md) | Respuesta a incidentes paso a paso |
-| [`runbooks/managed.md`](runbooks/managed.md) | Runbook para tenants managed |
-| [`INVITATIONS_RUNBOOK.md`](INVITATIONS_RUNBOOK.md) | Flujo completo de invitaciones |
-| [`TENANT-TESTING-PLAN.md`](TENANT-TESTING-PLAN.md) | Checklist corto: URLs y pasos para tenants en staging |
-| [`TENANT-TESTING-GUIDE.md`](TENANT-TESTING-GUIDE.md) | Guía ampliada de verificación n8n / Uptime / portal |
-| [`TROUBLESHOOTING.md`](TROUBLESHOOTING.md) | Diagnóstico: Traefik, Docker, Supabase, Doppler |
-| [`FAQ.md`](FAQ.md) | Preguntas frecuentes con respuestas directas |
-| [`FAILOVER-RUNBOOK.md`](FAILOVER-RUNBOOK.md) | Detección, alertas y failover (segundo origen + LB; manual por defecto) |
-| [`FAILOVER-GCP-ARCHITECTURE.md`](FAILOVER-GCP-ARCHITECTURE.md) | Standby GCP (e2-micro) vs segundo VPS; diagramas y límites |
-| [`GCP-STANDBY-CONFIG.md`](GCP-STANDBY-CONFIG.md) | Redis 1 GB, health ligero, orden de despliegue |
-| [`GCP-ACTIVATION-CHECKLIST.md`](GCP-ACTIVATION-CHECKLIST.md) | Checklist activación proyecto opslyquantum + LB |
+
+| Doc                                                            | Cuándo usarlo                                                           |
+| -------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| [`runbooks/admin.md`](runbooks/admin.md)                       | Ops día a día del administrador                                         |
+| [`runbooks/dev.md`](runbooks/dev.md)                           | Setup y workflows del desarrollador                                     |
+| [`runbooks/incident.md`](runbooks/incident.md)                 | Respuesta a incidentes paso a paso                                      |
+| [`runbooks/managed.md`](runbooks/managed.md)                   | Runbook para tenants managed                                            |
+| [`INVITATIONS_RUNBOOK.md`](INVITATIONS_RUNBOOK.md)             | Flujo completo de invitaciones                                          |
+| [`TENANT-TESTING-PLAN.md`](TENANT-TESTING-PLAN.md)             | Checklist corto: URLs y pasos para tenants en staging                   |
+| [`TENANT-TESTING-GUIDE.md`](TENANT-TESTING-GUIDE.md)           | Guía ampliada de verificación n8n / Uptime / portal                     |
+| [`TROUBLESHOOTING.md`](TROUBLESHOOTING.md)                     | Diagnóstico: Traefik, Docker, Supabase, Doppler                         |
+| [`FAQ.md`](FAQ.md)                                             | Preguntas frecuentes con respuestas directas                            |
+| [`FAILOVER-RUNBOOK.md`](FAILOVER-RUNBOOK.md)                   | Detección, alertas y failover (segundo origen + LB; manual por defecto) |
+| [`FAILOVER-GCP-ARCHITECTURE.md`](FAILOVER-GCP-ARCHITECTURE.md) | Standby GCP (e2-micro) vs segundo VPS; diagramas y límites              |
+| [`GCP-STANDBY-CONFIG.md`](GCP-STANDBY-CONFIG.md)               | Redis 1 GB, health ligero, orden de despliegue                          |
+| [`GCP-ACTIVATION-CHECKLIST.md`](GCP-ACTIVATION-CHECKLIST.md)   | Checklist activación proyecto opslyquantum + LB                         |
 
 ### 8. Automatización y IA
-| Doc | Cuándo usarlo |
-|-----|---------------|
-| [`AUTOMATION-PLAN.md`](AUTOMATION-PLAN.md) | Loop Discord → GitHub → Cursor |
-| [`N8N-SETUP.md`](N8N-SETUP.md) | n8n Discord→GitHub; Doppler `N8N_WEBHOOK_SECRET_GH` (legado `N8N_WEBHOOK_SECRET`) |
-| [`N8N-IMPORT-GUIDE.md`](N8N-IMPORT-GUIDE.md) | Importar workflows n8n |
-| [`OBSERVABILITY.md`](OBSERVABILITY.md) | Métricas, logs, alertas, Prometheus |
-| [`PERFORMANCE_BASELINE.md`](PERFORMANCE_BASELINE.md) | Baselines de performance por endpoint |
-| [`CLAUDE-WORKFLOW-OPTIMIZATION.md`](CLAUDE-WORKFLOW-OPTIMIZATION.md) | Optimización de sesiones con Claude |
+
+| Doc                                                                  | Cuándo usarlo                                                                     |
+| -------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| [`AUTOMATION-PLAN.md`](AUTOMATION-PLAN.md)                           | Loop Discord → GitHub → Cursor                                                    |
+| [`N8N-SETUP.md`](N8N-SETUP.md)                                       | n8n Discord→GitHub; Doppler `N8N_WEBHOOK_SECRET_GH` (legado `N8N_WEBHOOK_SECRET`) |
+| [`N8N-IMPORT-GUIDE.md`](N8N-IMPORT-GUIDE.md)                         | Importar workflows n8n                                                            |
+| [`OBSERVABILITY.md`](OBSERVABILITY.md)                               | Métricas, logs, alertas, Prometheus                                               |
+| [`PERFORMANCE_BASELINE.md`](PERFORMANCE_BASELINE.md)                 | Baselines de performance por endpoint                                             |
+| [`CLAUDE-WORKFLOW-OPTIMIZATION.md`](CLAUDE-WORKFLOW-OPTIMIZATION.md) | Optimización de sesiones con Claude                                               |
 
 ### 9. Google Cloud y Drive
-| Doc | Cuándo usarlo |
-|-----|---------------|
-| [`GOOGLE-CLOUD-SETUP.md`](GOOGLE-CLOUD-SETUP.md) | Setup inicial GCP + service account |
-| [`GOOGLE-CLOUD-ACTIVATION.md`](GOOGLE-CLOUD-ACTIVATION.md) | Activación BigQuery + Vertex AI |
-| [`GOOGLE-DRIVE-SYNC.md`](GOOGLE-DRIVE-SYNC.md) | Sync Drive: SA vs OAuth usuario |
+
+| Doc                                                        | Cuándo usarlo                       |
+| ---------------------------------------------------------- | ----------------------------------- |
+| [`GOOGLE-CLOUD-SETUP.md`](GOOGLE-CLOUD-SETUP.md)           | Setup inicial GCP + service account |
+| [`GOOGLE-CLOUD-ACTIVATION.md`](GOOGLE-CLOUD-ACTIVATION.md) | Activación BigQuery + Vertex AI     |
+| [`GOOGLE-DRIVE-SYNC.md`](GOOGLE-DRIVE-SYNC.md)             | Sync Drive: SA vs OAuth usuario     |
 
 ### 10. Tenants y portal
-| Doc | Cuándo usarlo |
-|-----|---------------|
-| [`LOCALRANK-TESTER-GUIDE.md`](LOCALRANK-TESTER-GUIDE.md) | Onboarding del tenant LocalRank |
-| [`SSH-COMMANDS-LOCALRANK.md`](SSH-COMMANDS-LOCALRANK.md) | Comandos SSH específicos para LocalRank |
-| [`EXECUTION-PLAN-LOCALRANK-NOTEBOOKLM.md`](EXECUTION-PLAN-LOCALRANK-NOTEBOOKLM.md) | Plan ejecución NotebookLM + LocalRank |
-| [`ADMIN-ECOSYSTEM.md`](ADMIN-ECOSYSTEM.md) | Ecosistema panel admin completo |
+
+| Doc                                                                                | Cuándo usarlo                           |
+| ---------------------------------------------------------------------------------- | --------------------------------------- |
+| [`LOCALRANK-TESTER-GUIDE.md`](LOCALRANK-TESTER-GUIDE.md)                           | Onboarding del tenant LocalRank         |
+| [`SSH-COMMANDS-LOCALRANK.md`](SSH-COMMANDS-LOCALRANK.md)                           | Comandos SSH específicos para LocalRank |
+| [`EXECUTION-PLAN-LOCALRANK-NOTEBOOKLM.md`](EXECUTION-PLAN-LOCALRANK-NOTEBOOKLM.md) | Plan ejecución NotebookLM + LocalRank   |
+| [`ADMIN-ECOSYSTEM.md`](ADMIN-ECOSYSTEM.md)                                         | Ecosistema panel admin completo         |
 
 ### 11. Testing y calidad
-| Doc | Cuándo usarlo |
-|-----|---------------|
-| [`TEST_PLAN.md`](TEST_PLAN.md) | Plan de pruebas por componente |
-| [`QA-REVIEW-COMPLETE.md`](QA-REVIEW-COMPLETE.md) | QA review completa del sistema |
+
+| Doc                                                | Cuándo usarlo                        |
+| -------------------------------------------------- | ------------------------------------ |
+| [`TEST_PLAN.md`](TEST_PLAN.md)                     | Plan de pruebas por componente       |
+| [`QA-REVIEW-COMPLETE.md`](QA-REVIEW-COMPLETE.md)   | QA review completa del sistema       |
 | [`LIBRARIES-INSTALLED.md`](LIBRARIES-INSTALLED.md) | Librerías instaladas y justificación |
 
 ### 12. Skills y agentes Claude
-| Doc | Cuándo usarlo |
-|-----|---------------|
+
+| Doc                                          | Cuándo usarlo                         |
+| -------------------------------------------- | ------------------------------------- |
 | [`../skills/README.md`](../skills/README.md) | Índice de skills, cómo usar manifests |
 
 ---
@@ -200,4 +218,4 @@ Estos archivos son históricos — válidos como referencia pero **no deben guia
 
 ---
 
-*Actualizado: Sprint 3 ✅ | Próximo: Sprint 4 (Self-Healing + Context Persistence + CVE Scanning)*
+_Actualizado: Sprint 3 ✅ | Próximo: Sprint 4 (Self-Healing + Context Persistence + CVE Scanning)_

@@ -1,0 +1,73 @@
+# Compose para workers locales ( failover )
+# Uso:
+#   # Con Redis del VPS (failover real - misma cola)
+#   REDIS_URL='redis://redis.ops.smiletripcare.com:6379' docker compose -f infra/docker-compose.local-workers.yml up -d
+#
+#   # Con Redis local (testing)
+#   docker compose -f infra/docker-compose.local-workers.yml --env-file .env.local-workers up -d
+#
+# Para failover real: usar REDIS_URL del VPS para consumir la misma cola BullMQ.
+# Memory limit: 512MB max para no competir con Cursor (16GB total).
+
+services:
+  redis-local:
+    image: redis:7-alpine
+    container_name: opsly-redis-local
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis-local-data:/data
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    restart: unless-stopped
+
+  worker-local:
+    image: node:20-bookworm-slim
+    container_name: opsly-worker-local
+    working_dir: /app
+    volumes:
+      - ..:/app
+    environment:
+      WORKER_ID: ${WORKER_ID:-opsly-local-worker-01}
+      OPSLY_ORCHESTRATOR_ROLE: ${OPSLY_ORCHESTRATOR_ROLE:-worker}
+      REDIS_URL: ${REDIS_URL:-redis://redis-local:6379}
+      NODE_ENV: ${NODE_ENV:-development}
+    command:
+      - bash
+      - -lc
+      - |
+        echo "==> Installing dependencies..."
+        npm ci
+        echo "==> Building orchestrator..."
+        npm run build --workspace=@intcloudsysops/orchestrator
+        echo "==> Starting worker..."
+        exec npm run start --workspace=@intcloudsysops/orchestrator
+    depends_on:
+      redis-local:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+        reservations:
+          cpus: '0.5'
+          memory: 256M
+    restart: unless-stopped
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+
+volumes:
+  redis-local-data:
