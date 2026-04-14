@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-04-14T01:48:15Z",
-  "totalFiles": 152,
+  "lastIndexed": "2026-04-14T01:57:32Z",
+  "totalFiles": 154,
   "files": [
     "ACTIVE-PROMPT.md",
     "ADMIN-ECOSYSTEM.md",
@@ -77,6 +77,7 @@
     "IMPLEMENTATION-STATUS.md",
     "INCIDENT-2026-04-11-DISCO-LLENO.md",
     "INVITATIONS_RUNBOOK.md",
+    "KNOWLEDGE-SYSTEM.md",
     "LIBRARIES-INSTALLED.md",
     "LLM-GATEWAY-WORKPLAN.md",
     "LLM-GATEWAY.md",
@@ -90,6 +91,7 @@
     "N8N-IMPORT-GUIDE.md",
     "N8N-SETUP.md",
     "NOTEBOOKLM-INTEGRATION.md",
+    "NOTEBOOKLM-SETUP.md",
     "NOTION-MCP-SERVER.md",
     "OBSERVABILITY.md",
     "OBSIDIAN-README.md",
