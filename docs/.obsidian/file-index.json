@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-04-14T00:09:21Z",
-  "totalFiles": 146,
+  "lastIndexed": "2026-04-14T00:16:35Z",
+  "totalFiles": 150,
   "files": [
     "ACTIVE-PROMPT.md",
     "ADMIN-ECOSYSTEM.md",
@@ -28,7 +28,9 @@
     "ADR-022-di-pattern-testability.md",
     "ADR-023-approval-gate-phase1.md",
     "ADR-024-ollama-local-worker-primary.md",
+    "ADR-025-notebooklm-knowledge-layer.md",
     "AGENTS-ASSIGNMENTS.md",
+    "AGENTS-GLOBAL-CONTEXT.md",
     "AGENTS-GUIDE.md",
     "AGENTS-ORCHESTRATION.md",
     "AI-FRAMEWORKS.md",
@@ -98,6 +100,8 @@
     "ORCHESTRATOR-FIXES-EXECUTION.md",
     "ORCHESTRATOR.md",
     "PERFORMANCE_BASELINE.md",
+    "PLAN-NOTEBOOKLM-KNOWLEDGE-2026-04-14.md",
+    "PLAN-OLLAMA-WORKER-2026-04-14.md",
     "PLAN-ORCHESTRATOR-WORKER.md",
     "PLANNING.md",
     "PLUGINS-TO-INSTALL.md",
