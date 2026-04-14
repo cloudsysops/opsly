@@ -1,4 +1,6 @@
-export { getServiceClient } from "./client";
+import { getServiceClient } from "./client";
+
+export { getServiceClient };
 export type {
   Database,
   Json,
@@ -8,3 +10,6 @@ export type {
   TenantInsert,
   TenantUpdate,
 } from "./types";
+
+// Singleton supabase client for backward compatibility
+export { getServiceClient as supabase };

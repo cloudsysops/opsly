@@ -80,7 +80,7 @@ services:
   redis:
     image: redis:7-alpine
     # maxmemory + LRU: evita OOM si las colas BullMQ crecen; ajustar según RAM del VPS.
-    command: redis-server --requirepass ${REDIS_PASSWORD} --maxmemory 256mb --maxmemory-policy allkeys-lru --save 60 1
+    command: redis-server --requirepass ${REDIS_PASSWORD} --maxmemory 256mb --maxmemory-policy noeviction --save 60 1
     # Workers remotos (Tailscale): en .env p.ej. REDIS_EXPORT_BIND=100.120.151.91 (IP Tailscale del VPS).
     # Por defecto 127.0.0.1: solo acceso local / túnel SSH (redis-cli -u redis://:...@127.0.0.1:6379/0).
     ports:
@@ -165,6 +165,7 @@ services:
     environment:
       REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379/0
       ORCHESTRATOR_INTERNAL_URL: ${ORCHESTRATOR_INTERNAL_URL:-http://orchestrator:3011}
+      OPSLY_ORCHESTRATOR_MODE: ${OPSLY_ORCHESTRATOR_MODE:-queue-only}
       PLATFORM_TENANTS_DIR: /opt/opsly/tenants
       TEMPLATE_PATH: /opt/opsly/templates/docker-compose.tenant.yml.tpl
       # Prometheus como servicio en la red internal (opsly_prometheus). Override si usas Prom externo.

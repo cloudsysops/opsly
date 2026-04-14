@@ -1,0 +1,70 @@
+# Rendered by orchestrator: replace {{PLACEHOLDERS}} then write docker-compose.yml per tenant.
+# Do not run this file directly.
+
+services:
+  n8n_smiletripcare:
+    image: n8nio/n8n:latest
+    container_name: n8n_smiletripcare
+    ports:
+      - "8000:5678"
+    environment:
+      N8N_BASIC_AUTH_ACTIVE: "true"
+      N8N_BASIC_AUTH_USER: admin
+      N8N_BASIC_AUTH_PASSWORD: 19b3c44439f2b6397145c671fb85af6e2cdaf9ef4864028b
+      N8N_ENCRYPTION_KEY: 27fba881aaf7052bd8b3828da47be5bfb025306b9f21b883ee29fcefb8df1441
+      N8N_HOST: n8n-smiletripcare.ops.smiletripcare.com
+      N8N_PROTOCOL: https
+      WEBHOOK_URL: https://n8n-smiletripcare.ops.smiletripcare.com/
+      DB_TYPE: sqlite
+    volumes:
+      - n8n_data_smiletripcare:/home/node/.n8n
+    networks:
+      - traefik-public
+    labels:
+      traefik.enable: "true"
+      traefik.docker.network: "traefik-public"
+      traefik.http.routers.n8n-smiletripcare.rule: Host(`n8n-smiletripcare.ops.smiletripcare.com`)
+      traefik.http.routers.n8n-smiletripcare.entrypoints: websecure
+      traefik.http.routers.n8n-smiletripcare.tls.certresolver: letsencrypt
+      traefik.http.services.n8n-smiletripcare.loadbalancer.server.port: "5678"
+      traefik.http.routers.n8n-smiletripcare.middlewares: secure-headers@file,rate-limit@file
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:5678/healthz || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  uptime-kuma_smiletripcare:
+    image: louislam/uptime-kuma:1
+    container_name: uptime_smiletripcare
+    ports:
+      - "8001:3001"
+    volumes:
+      - uptime_data_smiletripcare:/app/data
+    networks:
+      - traefik-public
+    labels:
+      traefik.enable: "true"
+      traefik.docker.network: "traefik-public"
+      traefik.http.routers.uptime-smiletripcare.rule: Host(`uptime-smiletripcare.ops.smiletripcare.com`)
+      traefik.http.routers.uptime-smiletripcare.entrypoints: websecure
+      traefik.http.routers.uptime-smiletripcare.tls.certresolver: letsencrypt
+      traefik.http.services.uptime-smiletripcare.loadbalancer.server.port: "3001"
+      traefik.http.routers.uptime-smiletripcare.middlewares: secure-headers@file,rate-limit@file
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:3001 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+volumes:
+  n8n_data_smiletripcare:
+  uptime_data_smiletripcare:
+
+networks:
+  traefik-public:
+    external: true

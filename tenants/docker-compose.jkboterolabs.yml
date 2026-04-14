@@ -1,0 +1,70 @@
+# Rendered by orchestrator: replace {{PLACEHOLDERS}} then write docker-compose.yml per tenant.
+# Do not run this file directly.
+
+services:
+  n8n_jkboterolabs:
+    image: n8nio/n8n:latest
+    container_name: n8n_jkboterolabs
+    ports:
+      - "8006:5678"
+    environment:
+      N8N_BASIC_AUTH_ACTIVE: "true"
+      N8N_BASIC_AUTH_USER: admin
+      N8N_BASIC_AUTH_PASSWORD: 80bebea873af044e9f9f4ab673dda9093f28f98c5ed38b2a
+      N8N_ENCRYPTION_KEY: 602a986127fce518a70eace4535cf91ae340a69648ae85bef82950ea184cacf8
+      N8N_HOST: n8n-jkboterolabs.ops.smiletripcare.com
+      N8N_PROTOCOL: https
+      WEBHOOK_URL: https://n8n-jkboterolabs.ops.smiletripcare.com/
+      DB_TYPE: sqlite
+    volumes:
+      - n8n_data_jkboterolabs:/home/node/.n8n
+    networks:
+      - traefik-public
+    labels:
+      traefik.enable: "true"
+      traefik.docker.network: "traefik-public"
+      traefik.http.routers.n8n-jkboterolabs.rule: Host(`n8n-jkboterolabs.ops.smiletripcare.com`)
+      traefik.http.routers.n8n-jkboterolabs.entrypoints: websecure
+      traefik.http.routers.n8n-jkboterolabs.tls.certresolver: letsencrypt
+      traefik.http.services.n8n-jkboterolabs.loadbalancer.server.port: "5678"
+      traefik.http.routers.n8n-jkboterolabs.middlewares: secure-headers@file,rate-limit@file
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:5678/healthz || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  uptime-kuma_jkboterolabs:
+    image: louislam/uptime-kuma:1
+    container_name: uptime_jkboterolabs
+    ports:
+      - "8007:3001"
+    volumes:
+      - uptime_data_jkboterolabs:/app/data
+    networks:
+      - traefik-public
+    labels:
+      traefik.enable: "true"
+      traefik.docker.network: "traefik-public"
+      traefik.http.routers.uptime-jkboterolabs.rule: Host(`uptime-jkboterolabs.ops.smiletripcare.com`)
+      traefik.http.routers.uptime-jkboterolabs.entrypoints: websecure
+      traefik.http.routers.uptime-jkboterolabs.tls.certresolver: letsencrypt
+      traefik.http.services.uptime-jkboterolabs.loadbalancer.server.port: "3001"
+      traefik.http.routers.uptime-jkboterolabs.middlewares: secure-headers@file,rate-limit@file
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:3001 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+volumes:
+  n8n_data_jkboterolabs:
+  uptime_data_jkboterolabs:
+
+networks:
+  traefik-public:
+    external: true
