@@ -278,7 +278,19 @@ Procedimientos vivos en el repo: **`skills/user/<skill>/SKILL.md`**. En runtimes
 
 <!-- Actualizar al final de cada sesión -->
 
-**Fecha última actualización:** 2026-04-13 UTC — **Sprint ROADMAP:** Semana 1 (Fase 2 producto + IA), ventana **2026-04-14 → 2026-04-20**; revisión sprint **2026-04-19**. Documentos: [`ROADMAP.md`](ROADMAP.md), [`docs/IMPLEMENTATION-IA-LAYER.md`](docs/IMPLEMENTATION-IA-LAYER.md).
+**Fecha última actualización:** 2026-04-14 UTC — **Sprint ROADMAP:** Semana 1 (Fase 2 producto + IA), ventana **2026-04-14 → 2026-04-20**; revisión sprint **2026-04-19**. Documentos: [`ROADMAP.md`](ROADMAP.md), [`docs/IMPLEMENTATION-IA-LAYER.md`](docs/IMPLEMENTATION-IA-LAYER.md).
+
+**Sesión 2026-04-14:**
+
+- ✅ ADR-024 creado: [`docs/adr/ADR-024-ollama-local-worker-primary.md`](docs/adr/ADR-024-ollama-local-worker-primary.md) — Ollama local como provider primary en worker Mac 2011
+- ✅ Plan de ejecución: [`docs/PLAN-OLLAMA-WORKER-2026-04-14.md`](docs/PLAN-OLLAMA-WORKER-2026-04-14.md) — Fases 1–5 con comandos exactos
+- ✅ ADR-025 creado: [`docs/adr/ADR-025-notebooklm-knowledge-layer.md`](docs/adr/ADR-025-notebooklm-knowledge-layer.md) — NotebookLM como knowledge layer universal para todos los agentes IA
+- ✅ Plan NotebookLM: [`docs/PLAN-NOTEBOOKLM-KNOWLEDGE-2026-04-14.md`](docs/PLAN-NOTEBOOKLM-KNOWLEDGE-2026-04-14.md) — 5 fases de implementación
+- ✅ Contexto global: [`docs/AGENTS-GLOBAL-CONTEXT.md`](docs/AGENTS-GLOBAL-CONTEXT.md) — actualizado con prompt startup NotebookLM obligatorio
+- ✅ LLM Gateway: `llama_local` verificado como provider primary en `providers.ts` (costo $0, `OLLAMA_URL` + `OLLAMA_MODEL`)
+- ✅ Workers: `opslyquantum` (Mac 2011) confirmado como worker plane en Tailscale IP `100.80.41.29`
+
+**Pendiente ejecutar:** Plan ADR-024 — requiere acceso SSH a VPS + opslyquantum para configurar Doppler + workers.
 
 **Sesión 2026-04-13:**
 
@@ -810,6 +822,43 @@ _Auditoría TypeScript y correcciones de código (2026-04-05, sesión agente Cla
 
 <!-- Una sola tarea concreta. Actualizar al final de cada sesión -->
 
+### Ejecutar Plan Ollama Worker (ADR-024) — Sesión siguiente
+
+```bash
+# FASE 1: Configurar Doppler prd
+# (Requiere acceso humano a Doppler para secrets sensibles)
+
+# FASE 2: Worker Mac 2011 (opslyquantum)
+ssh opslyquantum "curl -sf http://127.0.0.1:11434/api/tags | jq '.[\"models\"] | length'"
+
+# FASE 3: VPS queue-only
+ssh vps-dragon@100.120.151.91 "cd /opt/opsly && \
+  grep -q OPSLY_ORCHESTRATOR_MODE .env && \
+  sed -i 's/^OPSLY_ORCHESTRATOR_MODE=.*/OPSLY_ORCHESTRATOR_MODE=queue-only/' .env || \
+  echo 'OPSLY_ORCHESTRATOR_MODE=queue-only' >> .env"
+
+# FASE 4: Validación
+ssh vps-dragon@100.120.151.91 "curl -sf --max-time 5 http://100.80.41.29:11434/api/tags"
+
+# Detalle: docs/PLAN-OLLAMA-WORKER-2026-04-14.md
+```
+
+### Implementar NotebookLM Knowledge Layer (ADR-025) — Paralelo
+
+```bash
+# 1. Crear notebook en https://notebooklm.google.com y guardar ID en Doppler
+doppler secrets set NOTEBOOKLM_NOTEBOOK_ID=<id> \
+  --project ops-intcloudsysops --config prd
+
+# 2. Implementar scripts de sync (FASE 2 del plan)
+# scripts/state-to-notebooklm.mjs
+# scripts/llm-stats-to-notebooklm.mjs
+
+# 3. Validar
+npm run notebooklm:sync
+node scripts/query-notebooklm.mjs "¿Cuál es el estado actual de Opsly?"
+```
+
 ### LocalRank por Tailscale (esta noche)
 
 ```bash
@@ -1156,6 +1205,8 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 
 | Fecha      | Decisión                                                                                                                                                                                                                                                                                                                                                                                    | Razón                                                                                                                                                                                                  |
 | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------- | -------------------------------------------------------------------------- |
+| 2026-04-14 | **ADR-025** (`docs/adr/ADR-025-notebooklm-knowledge-layer.md`): NotebookLM como **knowledge layer universal** para todos los agentes IA. Feed automático post-commit de AGENTS.md, ADRs, system_state.json, costos LLM. Query startup obligatorio ("estado operativo actual"). Routing LLM Gateway consulta NotebookLM si detecta keywords operativas. Feature flag `NOTEBOOKLM_ENABLED` + fallback local. | Agentes más inteligentes desde el primer segundo; contexto compartido sin duplicar estado; decisiones propagan automáticamente.                                                                                           |
+| 2026-04-14 | **ADR-024** (`docs/adr/ADR-024-ollama-local-worker-primary.md`): Ollama local como provider primary en worker Mac 2011 (`opslyquantum`). VPS = control plane (`queue-only`). Worker Mac 2011 = worker plane (`worker-enabled`). Routing `cheap` → `llama_local` primary (costo $0), fallback cloud. LLM Gateway ya tiene `llama_local` configurado en `providers.ts`. | Aliviar CPU VPS; costo $0 en tokens para tareas simples; worker Mac 2011 usa hardware ocioso.                                                                                                              |
 | 2026-04-12 | **ADR-020** (`docs/adr/ADR-020-orchestrator-worker-separation.md`): separación VPS **control** vs nodo **worker** ya soportada por `OPSLY_ORCHESTRATOR_ROLE`; alias opcional `OPSLY_ORCHESTRATOR_MODE` (`queue-only` / `worker-enabled`); Redis canónico en VPS con workers remotos vía mismo `REDIS_URL` (ver `docs/ARCHITECTURE-DISTRIBUTED.md`); health `/health` expone `role` + `mode` | Formalizar decisión sin duplicar flags; alinear operación Tailscale/Mac con código existente                                                                                                           |
 | 2026-04-12 | **ROADMAP.md** + **docs/IMPLEMENTATION-IA-LAYER.md** como plan semanal Fase 2–3; **AGENTS.md** enlaza sprint activo sin reemplazar la historia Fase 4; trabajo IA **extiende** gateway/orchestrator existentes (TS, Vitest); **Hermes** sigue siendo metering en VISION, no paquete Python externo                                                                                          | Cursor y humanos comparten una sola línea temporal; evita afirmaciones falsas (“sin código”) sobre LLM Gateway/feedback                                                                                |
 | 2026-04-11 | Dashboard de costos: API `apps/api/lib/admin-costs.ts` + `GET`/`POST /api/admin/costs`; aprobaciones en **memoria de proceso** (pérdida al reiniciar) hasta persistencia en DB; admin `/costs` + `api-client`; worker Mac 2011 vía `start-workers-mac2011.sh` (no `npm run start:worker` en raíz); compose opcional `infra/docker-compose.workers.yml`                                      | Gobernanza visible antes de activar gastos en proveedores; alineado a `VISION.md` (infra + workers remotos) sin K8s                                                                                    |
