@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-04-14T00:16:35Z",
-  "totalFiles": 150,
+  "lastIndexed": "2026-04-14T00:22:04Z",
+  "totalFiles": 151,
   "files": [
     "ACTIVE-PROMPT.md",
     "ADMIN-ECOSYSTEM.md",
@@ -103,6 +103,7 @@
     "PLAN-NOTEBOOKLM-KNOWLEDGE-2026-04-14.md",
     "PLAN-OLLAMA-WORKER-2026-04-14.md",
     "PLAN-ORCHESTRATOR-WORKER.md",
+    "PLAN-SKILLS-TO-NOTEBOOKLM-2026-04-14.md",
     "PLANNING.md",
     "PLUGINS-TO-INSTALL.md",
     "POLICY-AI-LOCAL-FIRST.md",
