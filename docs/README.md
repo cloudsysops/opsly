@@ -12,6 +12,7 @@ AGENTS.md          ← estado de sesión, decisiones fijas, bloqueantes
 VISION.md          ← norte del producto, límites, fases
 ROADMAP.md         ← desglose semanal Fase 2–3, milestones (complementa VISION)
 docs/IMPLEMENTATION-IA-LAYER.md ← guía técnica capa IA (TypeScript, rutas en apps/*)
+docs/QUICKSTART-AGENTS.md ← añadir tools MCP y probar sin duplicar tablas ni endpoints
 docs/QUICK-REFERENCE.md  ← SSH, comandos, env vars, URLs — LEER PRIMERO
 docs/SPRINT-ROADMAP.md   ← sprints 1-8, qué está hecho, qué sigue
 ```
@@ -46,6 +47,7 @@ docs/SPRINT-ROADMAP.md   ← sprints 1-8, qué está hecho, qué sigue
 | [`ARCHITECTURE-DISTRIBUTED.md`](ARCHITECTURE-DISTRIBUTED.md) | VPS control + workers remotos (Mac 2011), Redis Tailscale          |
 | [`WORKER-FLOWS.md`](WORKER-FLOWS.md)                         | Quién corre TeamManager vs workers BullMQ                          |
 | [`OPENCLAW-ARCHITECTURE.md`](OPENCLAW-ARCHITECTURE.md)       | MCP + Orchestrator + LLM Gateway + Context Builder                 |
+| [`QUICKSTART-AGENTS.md`](QUICKSTART-AGENTS.md)               | Añadir tools MCP OpenClaw, tests, qué no duplicar                   |
 | [`ORCHESTRATOR.md`](ORCHESTRATOR.md)                         | BullMQ jobs, workers, circuit breaker, prioridades                 |
 | [`LLM-GATEWAY.md`](LLM-GATEWAY.md)                           | Cache Redis, routing bias, cost tracking                           |
 | [`TOKEN-BILLING-SYSTEM.md`](TOKEN-BILLING-SYSTEM.md)         | Tokens/créditos vs USD; qué existe hoy vs wallet prepago (roadmap) |
