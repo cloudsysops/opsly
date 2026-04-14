@@ -338,7 +338,7 @@ node scripts/load-skills.js show opsly-api
 
 **ADR-024 (Ollama worker):** [`docs/adr/ADR-024-ollama-local-worker-primary.md`](docs/adr/ADR-024-ollama-local-worker-primary.md) — Pendiente ejecución en opslyquantum (Mac 2011).
 
-**ADR-025 (NotebookLM):** [`docs/adr/ADR-025-notebooklm-knowledge-layer.md`](docs/adr/ADR-025-notebooklm-knowledge-layer.md) — Pendiente implementación.
+**ADR-025 (NotebookLM):** [`docs/adr/ADR-025-notebooklm-knowledge-layer.md`](docs/adr/ADR-025-notebooklm-knowledge-layer.md) — ✅ **CONFIGURADO** (notebook ID: `8447967c-f375-47d6-a920-c3100efd7e7b`)
 
 **Sesión 2026-04-13:**
 

@@ -44,9 +44,10 @@
   "next_action": "Fix [id] !== [ref] conflict - eliminar carpeta tenants/[ref] del repo y rebuildear API. Commit 4fb9e92 para orchestrator+llm-gateway.",
   "knowledge_system": {
     "notebooklm": {
-      "enabled": false,
-      "notebook_id": null,
-      "status": "pending_setup"
+      "enabled": true,
+      "notebook_id": "8447967c-f375-47d6-a920-c3100efd7e7b",
+      "status": "configured",
+      "notebook_url": "https://notebooklm.google.com/notebook/8447967c-f375-47d6-a920-c3100efd7e7b"
     },
     "obsidian": {
       "vault": "docs/",
