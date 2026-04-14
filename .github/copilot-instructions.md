@@ -1,61 +1,53 @@
-## PROTOCOLO OBLIGATORIO — INICIO DE SESION
+## PROTOCOLO — INICIO DE SESIÓN
 
-Antes de CUALQUIER tarea, sin excepcion:
+**Antes de cualquier tarea, sin excepción:**
 
-1. Leer `AGENTS.md` completo.
-2. Leer `VISION.md` completo.
-3. Verificar estado VPS (acceso **solo por Tailscale** — `100.120.151.91`, nunca IP pública):
-   `ssh vps-dragon@100.120.151.91 "systemctl is-active cursor-prompt-monitor opsly-watcher && docker ps --format '{{.Names}}\t{{.Status}}' | grep -E 'n8n|uptime|infra|traefik'"`
-4. Verificar vars criticas Doppler:
-   `for VAR in DISCORD_WEBHOOK_URL RESEND_API_KEY GITHUB_TOKEN GOOGLE_DRIVE_TOKEN; do VAL=$(doppler secrets get $VAR --project ops-intcloudsysops --config prd --plain 2>/dev/null || echo ""); echo "$VAR: ${#VAL} chars"; done` (si `GITHUB_TOKEN` vacío, comprobar legado `GITHUB_TOKEN_N8N` — ver `docs/GITHUB-TOKEN.md`)
-5. Reportar gaps antes de continuar.
-6. No ejecutar nada hasta confirmar el reporte.
+1. Leer `AGENTS.md` completo
+2. Leer `VISION.md` completo
+3. Verificar estado VPS: `ssh vps-dragon@100.120.151.91 "docker ps --format '{{.Names}}\t{{.Status}}' | grep -E 'n8n|uptime|infra|traefik'"`
+4. Verificar vars críticas Doppler: `DISCORD_WEBHOOK_URL`, `RESEND_API_KEY`, `GITHUB_TOKEN`
+5. Reportar gaps antes de continuar
+6. No ejecutar nada hasta confirmar el reporte
 
 ## FILOSOFIA DE TRABAJO
 
 Planificar -> Documentar -> Tests -> Implementar -> Validar -> Notificar
 NUNCA adivinar. NUNCA saltarse pasos.
 
-# Opsly — Instrucciones para GitHub Copilot
+# Opsly — Instrucciones para Copilot/Agentes
 
-<!--
-Qué hace: orienta a Copilot (y herramientas que lean este archivo) sobre convenciones
-  del repo Opsly y límites de arquitectura.
-Cuándo se activa: Copilot lo usa como contexto al sugerir código en este repositorio.
-Reutilizar en otro proyecto: sustituye nombres (Opsly → tu producto), rutas de config
-  y lista de “qué NO hacer” según tus ADRs.
--->
+> Contexto obligatorio: [AGENTS.md](https://raw.githubusercontent.com/cloudsysops/opsly/main/AGENTS.md)
 
-Fuente de verdad operativa: `AGENTS.md` en la raíz del repo (y espejo bajo `.github/` cuando esté sincronizado).
+## Stack
 
-## Convenciones Opsly
+Next.js 15 · TypeScript · Tailwind · Supabase · Stripe · Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
+
+## Decisiones fijas (NO proponer alternativas)
+
+| Decisión | Valor |
+|----------|-------|
+| Orquestación | docker-compose por tenant |
+| DB | Supabase schema `platform` |
+| Proxy | Traefik v3 |
+| Secrets | Doppler `ops-intcloudsysops/prd` |
+| SSH | solo Tailscale `100.120.151.91` |
+
+## NO hacer
+
+- K8s, Swarm, nginx (salvo ADR)
+- Secretos en código
+- `any` en TypeScript
+- `terraform apply` sin plan
+- Saltar `validate-config.sh`
 
 - **TypeScript:** estricto; **no uses `any`**.
 - **Bash:** `set -euo pipefail`; scripts **idempotentes**; expón **`--dry-run`** cuando el script modifique estado o infra.
 - **Secretos:** solo vía **Doppler** (proyecto `ops-intcloudsysops`, config `prd` en producción); nunca en código ni commits.
 - **Config central:** valores no secretos y rutas de producto en `config/opsly.config.json` (sin credenciales).
 
-Stack resumido: Next.js 15, Tailwind, Supabase, Stripe, Docker Compose, Traefik v3, Redis/BullMQ.
+## Stack resumido
 
-## Archivos de referencia
-
-| Recurso | Uso |
-|--------|-----|
-| `VISION.md` | Norte del producto, fases, ICP, qué no haremos. |
-| `AGENTS.md` | Estado de sesión, VPS, DNS, próximos pasos, decisiones fijas. |
-| `config/opsly.config.json` | Dominios, IP VPS, nombres Doppler/GitHub, planes. |
-| `docs/adr/` | Decisiones de arquitectura (Traefik, compose por tenant, Doppler, schemas). |
-| `infra/terraform/` | IaC cuando exista; revisar plan antes de aplicar. |
-
-## Qué NO hacer
-
-- No proponer **Kubernetes**, **Docker Swarm** ni **nginx** como reemplazo del diseño acordado (compose + Traefik v3), salvo ADR nuevo explícito.
-- No **hardcodear** URLs de producción, tokens, API keys ni contraseñas; usar Doppler y variables de entorno documentadas.
-- No **saltarse** `./scripts/validate-config.sh` cuando el cambio afecte deploy, DNS o secretos esperados en `prd`.
-- No aplicar **Terraform** sin **plan revisado** y sin entender impacto en VPS/tenants.
-- No contradecir decisiones fijas tabuladas en `AGENTS.md` sin acuerdo del equipo.
-
-## Patrones de diseño en Opsly
+Next.js 15 · TypeScript · Tailwind · Supabase · Stripe · Docker Compose · Traefik v3 · Redis/BullMQ
 
 - **Repository:** toda lectura/escritura a **Supabase** va en `apps/api/lib/repositories/` (un archivo o carpeta por agregado). Los **route handlers** (`app/api/**/route.ts`) solo llaman a repositorios o casos de uso, **nunca** instancian el cliente Supabase para queries ad hoc.
   - Estructura sugerida: `lib/repositories/tenant.repository.ts` exporta funciones puras o clase pequeña con `findById`, `list`, `create`, etc.

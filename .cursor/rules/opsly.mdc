@@ -1,58 +1,37 @@
 ---
-description: Opsly — reglas de sesión para Cursor
+description: Opsly — reglas para Cursor
 alwaysApply: true
 ---
 
-# Opsly — Cursor Rules
+# Cursor Rules — Opsly
 
-## Inicio de sesión (obligatorio)
+## Inicio (obligatorio)
 
-1. Leer `AGENTS.md` completo (estado operativo actual).
-2. `git pull --ff-only` en clon activo antes de editar.
-3. VPS solo por Tailscale `100.120.151.91` — nunca IP pública.
-4. Secrets via Doppler (`ops-intcloudsysops / prd`). Nunca en código ni mensajes.
-5. Reportar gaps antes de continuar. No ejecutar nada hasta confirmación.
-
-Responde al cargar contexto:
-```
-AGENTS: [fecha] | Estado: [línea] | Próximo: [tarea] | Bloqueantes: [o "ninguno"]
-```
+1. Leer AGENTS.md (URL raw: https://raw.githubusercontent.com/cloudsysops/opsly/main/AGENTS.md)
+2. `git pull --ff-only` antes de editar
+3. SSH solo Tailscale `100.120.151.91` — nunca IP pública
+4. Secrets via Doppler (`ops-intcloudsysops/prd`)
 
 ## Identidad
 
-Ejecutor técnico senior de Opsly. Fuente de verdad: `AGENTS.md`.
-Filosofía: **Planificar → Documentar → Tests → Implementar → Validar → Notificar**
+Ejecutor técnico senior. Filosofía: **Planificar → Documentar → Tests → Implementar → Validar → Notificar**
 
-## Modelos LLM
+## Antes de código
 
-| Uso | Model | Temp |
-|-----|-------|------|
-| General | `claude-3-5-haiku-20241022` | 0.3 |
-| Arquitectura | `claude-3-5-sonnet-20241022` | 0.5 |
+- ¿Existe en `lib/`? → reutilizar
+- Función >50 líneas → dividir
+- Query Supabase → Repository pattern (`lib/repositories/`)
+- Crear recurso → Factory pattern (`lib/factories/`)
+- Números mágicos → `lib/constants.ts`
 
-Max tokens: 4096. Constantes en config, no números mágicos en handlers.
+## Antes de bash
 
-## Antes de escribir código
-
-- ¿Existe en `lib/`? Reutilizar antes de duplicar.
-- Función >50 líneas → dividir o mover a `lib/`.
-- Query Supabase → `apps/api/lib/repositories/` (Repository pattern).
-- Creación de recurso → `apps/api/lib/factories/` (Factory pattern).
-- Números mágicos → `apps/api/lib/constants.ts`.
-
-## Antes de crear script bash
-
-`set -euo pipefail` · idempotente · `--dry-run` si modifica estado · `check_dependencies()`.
+`set -euo pipefail` · idempotente · `--dry-run` si modifica estado
 
 ## Antes de commit
 
-`npm run type-check` pasa · sin `any` nuevo · sin secretos · sin `.env` reales.
-
-## Durante la sesión
-
-- Path antes de crear archivo. Impacto antes de modificar infra.
-- Anunciar `[BLOQUEANTE]` o `[DECISIÓN]` cuando aplique.
+`npm run type-check` pasa · sin `any` nuevo · sin secretos
 
 ## Al cerrar
 
-`AGENTS.md` actualizado → commit `docs(agents): sesión YYYY-MM-DD` → push main.
+AGENTS.md actualizado → commit → push main

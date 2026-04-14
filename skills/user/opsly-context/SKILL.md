@@ -15,7 +15,13 @@ Cargar el contexto operativo real de la sesión, detectar gaps antes de actuar y
 cat AGENTS.md
 cat VISION.md
 
-# 2. Estado VPS — acceso SOLO por Tailscale (nunca IP pública 157.245.223.7)
+# 2. Consulta NotebookLM (fuente de verdad universal para agentes IA)
+# Si NOTEBOOKLM_ENABLED=true en el entorno:
+if [ "${NOTEBOOKLM_ENABLED:-false}" = "true" ]; then
+  node scripts/query-notebooklm.mjs "Resume en 5 bullets: 1) Qué se decidió hoy, 2) Qué está bloqueado, 3) Qué es prioritario, 4) Qué optimizar, 5) Qué NO hacer. Basado en AGENTS.md, ROADMAP.md y docs/adr/"
+fi
+
+# 3. Estado VPS — acceso SOLO por Tailscale (nunca IP pública 157.245.223.7)
 ssh vps-dragon@100.120.151.91 \
   "systemctl is-active cursor-prompt-monitor opsly-watcher && \
    docker ps --format '{{.Names}}\t{{.Status}}' | grep -E 'n8n|uptime|infra|traefik'"

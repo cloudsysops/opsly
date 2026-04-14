@@ -136,13 +136,13 @@ export function getNotebookLMContext(query: string): string | undefined {
 
 ## Checklist de implementación
 
-- [ ] `NOTEBOOKLM_NOTEBOOK_ID` en Doppler prd
-- [ ] Hook post-commit actualizado (`notebooklm:sync`)
-- [ ] `scripts/state-to-notebooklm.mjs` creado
-- [ ] `scripts/llm-stats-to-notebooklm.mjs` creado
-- [ ] Skill `opsly-context` actualizado (consulta NotebookLM al inicio)
-- [ ] `.claude/CLAUDE.md` incluye prompt de startup NotebookLM
-- [ ] `.cursor/rules/opsly.mdc` incluye checkpoint NotebookLM
+- [x] `NOTEBOOKLM_NOTEBOOK_ID` en Doppler prd
+- [x] Hook post-commit actualizado (`notebooklm:sync`)
+- [x] `scripts/state-to-notebooklm.mjs` creado
+- [x] `scripts/llm-stats-to-notebooklm.mjs` creado
+- [x] Skill `opsly-context` actualizado (consulta NotebookLM al inicio)
+- [x] `.claude/CLAUDE.md` incluye prompt de startup NotebookLM
+- [x] `.cursor/rules/opsly.mdc` incluye checkpoint NotebookLM
 - [ ] Tests: `npm run test --workspace=@intcloudsysops/orchestrator`
 - [ ] Validación: `npm run type-check`
 

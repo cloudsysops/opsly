@@ -32,6 +32,16 @@ AUTHOR=$(git log -1 --pretty="%an" 2>/dev/null || echo "unknown")
   "**$COMMIT_MSG**\nAutor: $AUTHOR" \
   "success" 2>/dev/null || true
 
+# ─── NotebookLM sync si hay cambios relevantes ────────────
+NOTEBOOKLM_ENABLED="${NOTEBOOKLM_ENABLED:-false}"
+if [ "$NOTEBOOKLM_ENABLED" = "true" ]; then
+  if echo "$CHANGED" | rg -q "(AGENTS\.md|VISION\.md|docs/|context/)"; then
+    echo "📓 Sincronizando con NotebookLM..."
+    npm run notebooklm:sync 2>/dev/null || true
+    node "$ROOT/scripts/state-to-notebooklm.mjs" 2>/dev/null || true
+  fi
+fi
+
 # ─── Drive sync si toco docs/ o AGENTS.md ────────────────
 CHANGED_AFTER=$(git diff --name-only HEAD~1 HEAD 2>/dev/null || echo "")
 if echo "$CHANGED_AFTER" | rg -q "(AGENTS\\.md|VISION\\.md|docs/)"; then
