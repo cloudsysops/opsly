@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-04-13T22:47:48Z",
-  "totalFiles": 145,
+  "lastIndexed": "2026-04-14T00:09:21Z",
+  "totalFiles": 146,
   "files": [
     "ACTIVE-PROMPT.md",
     "ADMIN-ECOSYSTEM.md",
@@ -27,6 +27,7 @@
     "ADR-021-predictive-bi-scalability.md",
     "ADR-022-di-pattern-testability.md",
     "ADR-023-approval-gate-phase1.md",
+    "ADR-024-ollama-local-worker-primary.md",
     "AGENTS-ASSIGNMENTS.md",
     "AGENTS-GUIDE.md",
     "AGENTS-ORCHESTRATION.md",
