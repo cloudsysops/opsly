@@ -46,6 +46,8 @@
     "docs:to-notebooklm": "node scripts/docs-to-notebooklm.mjs",
     "notebooklm:sync": "npm run docs:code-snapshots && npm run docs:to-notebooklm",
     "notebooklm:query": "node scripts/query-notebooklm.mjs",
+    "skills:to-notebooklm": "node scripts/skills-to-notebooklm.mjs",
+    "notebooklm:full-sync": "npm run notebooklm:sync && npm run skills:to-notebooklm",
     "prepare": "husky",
     "commit": "git-cz"
   },
