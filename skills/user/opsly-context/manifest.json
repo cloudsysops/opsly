@@ -1,7 +1,7 @@
 {
   "name": "opsly-context",
-  "version": "1.0.0",
-  "description": "Bootstrap de sesión: AGENTS, VISION, VPS, tokens",
+  "version": "1.1.0",
+  "description": "Bootstrap de sesión con AGENTS/VISION, chequeo VPS por Tailscale y reporte explícito de gaps",
   "inputSchema": {
     "type": "object",
     "properties": {},
@@ -10,7 +10,11 @@
   "outputSchema": {
     "type": "object",
     "properties": {
-      "contextLoaded": { "type": "boolean" }
+      "contextLoaded": { "type": "boolean" },
+      "gaps": {
+        "type": "array",
+        "items": { "type": "string" }
+      }
     }
   }
 }
