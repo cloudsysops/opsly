@@ -21,14 +21,14 @@ const CreateWebhookSchema = z.object({
   events: z.array(z.enum(ALLOWED_EVENTS)).min(1),
 });
 
-type RouteParams = { params: Promise<{ id: string }> };
+type RouteParams = { params: Promise<{ ref: string }> };
 
 export async function GET(_req: Request, { params }: RouteParams): Promise<Response> {
-  return tryRoute('GET /api/tenants/[id]/webhooks', async () => {
+  return tryRoute('GET /api/tenants/[ref]/webhooks', async () => {
     const authErr = requireAdminToken(_req);
     if (authErr) return authErr;
 
-    const { id: tenantSlug } = await params;
+    const { ref: tenantSlug } = await params;
     const webhooks = await listWebhooks(tenantSlug);
     const safe = webhooks.map((w) => {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -40,7 +40,7 @@ export async function GET(_req: Request, { params }: RouteParams): Promise<Respo
 }
 
 export async function POST(req: Request, { params }: RouteParams): Promise<Response> {
-  return tryRoute('POST /api/tenants/[id]/webhooks', async () => {
+  return tryRoute('POST /api/tenants/[ref]/webhooks', async () => {
     const authErr = requireAdminToken(req);
     if (authErr) return authErr;
 
@@ -50,7 +50,7 @@ export async function POST(req: Request, { params }: RouteParams): Promise<Respo
       return jsonError(parsed.error.message, HTTP_STATUS.UNPROCESSABLE);
     }
 
-    const { id: tenantSlug } = await params;
+    const { ref: tenantSlug } = await params;
     const secret = randomBytes(WEBHOOK_CRYPTO.SECRET_RANDOM_BYTES).toString('hex');
 
     const webhook = await createWebhook({

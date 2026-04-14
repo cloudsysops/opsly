@@ -35,5 +35,10 @@ AUTHOR=$(git log -1 --pretty="%an" 2>/dev/null || echo "unknown")
 # ─── Drive sync si toco docs/ o AGENTS.md ────────────────
 CHANGED_AFTER=$(git diff --name-only HEAD~1 HEAD 2>/dev/null || echo "")
 if echo "$CHANGED_AFTER" | rg -q "(AGENTS\\.md|VISION\\.md|docs/)"; then
-  ./scripts/drive-sync.sh 2>/dev/null || true
+  # Intentar OAuth con rclone primero, luego service account
+  if rclone listremotes 2>/dev/null | grep -q "opsly-drive"; then
+    rclone copy /tmp/opsly-drive-sync/ opsly-drive: --progress 2>/dev/null || true
+  else
+    ./scripts/drive-sync.sh 2>/dev/null || true
+  fi
 fi

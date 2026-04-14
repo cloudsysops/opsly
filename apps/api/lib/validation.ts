@@ -1,17 +1,17 @@
-import { z } from "zod";
-import { LIST_TENANTS, TENANT_ROUTE_REF } from "./constants";
+import { z } from 'zod';
+import { LIST_TENANTS, TENANT_ROUTE_REF } from './constants';
 
 const tenantStatusEnum = z.enum([
-  "provisioning",
-  "configuring",
-  "deploying",
-  "active",
-  "suspended",
-  "failed",
-  "deleted",
+  'provisioning',
+  'configuring',
+  'deploying',
+  'active',
+  'suspended',
+  'failed',
+  'deleted',
 ]);
 
-const planEnum = z.enum(["startup", "business", "enterprise", "demo"]);
+const planEnum = z.enum(['startup', 'business', 'enterprise', 'demo']);
 
 export const CreateTenantSchema = z.object({
   slug: z.string().regex(/^[a-z0-9-]{3,30}$/),
@@ -47,11 +47,9 @@ export const UpdateTenantSchema = z
     plan: planEnum.optional(),
   })
   .refine((v) => v.name !== undefined || v.plan !== undefined, {
-    message: "At least one of name or plan is required",
+    message: 'At least one of name or plan is required',
   });
 
 export function formatZodError(error: z.ZodError): string {
-  return error.issues
-    .map((i) => `${i.path.join(".") || "root"}: ${i.message}`)
-    .join("; ");
+  return error.issues.map((i) => `${i.path.join('.') || 'root'}: ${i.message}`).join('; ');
 }

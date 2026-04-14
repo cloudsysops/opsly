@@ -26,19 +26,19 @@ export const HTTP_STATUS = {
 } as const;
 
 export const TENANT_STATUS = {
-  ACTIVE: "active",
-  SUSPENDED: "suspended",
-  PENDING: "pending",
-  CANCELLED: "cancelled",
+  ACTIVE: 'active',
+  SUSPENDED: 'suspended',
+  PENDING: 'pending',
+  CANCELLED: 'cancelled',
 } as const;
 
 export type TenantStatus = (typeof TENANT_STATUS)[keyof typeof TENANT_STATUS];
 
 /** Planes de facturación (nombres canónicos en código). Mapear a `config/opsly.config.json` / Stripe según producto. */
 export const BILLING_PLANS = {
-  STARTER: "starter",
-  PRO: "pro",
-  ENTERPRISE: "enterprise",
+  STARTER: 'starter',
+  PRO: 'pro',
+  ENTERPRISE: 'enterprise',
 } as const;
 
 export type BillingPlanId = (typeof BILLING_PLANS)[keyof typeof BILLING_PLANS];

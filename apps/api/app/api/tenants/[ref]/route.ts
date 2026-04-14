@@ -39,28 +39,28 @@ async function patchTenantRecord(
 
 export async function GET(
   request: Request,
-  context: { params: Promise<{ id: string }> }
+  context: { params: Promise<{ ref: string }> }
 ): Promise<Response> {
   const authError = await requireAdminAccessUnlessDemoRead(request);
   if (authError) {
     return authError;
   }
 
-  const { id } = await context.params;
-  const refParsed = TenantRefParamSchema.safeParse(id);
+  const { ref } = await context.params;
+  const refParsed = TenantRefParamSchema.safeParse(ref);
   if (!refParsed.success) {
     return jsonError(formatZodError(refParsed.error), HTTP_STATUS.BAD_REQUEST);
   }
 
-  const ref = refParsed.data;
-  const byId = z.string().uuid().safeParse(ref).success;
+  const refValue = refParsed.data;
+  const byId = z.string().uuid().safeParse(refValue).success;
 
   const { data: tenant, error } = await getServiceClient()
     .schema('platform')
     .from('tenants')
     .select('*')
     .is('deleted_at', null)
-    .eq(byId ? 'id' : 'slug', ref)
+    .eq(byId ? 'id' : 'slug', refValue)
     .maybeSingle();
 
   if (error) {
@@ -80,15 +80,15 @@ export async function GET(
 
 export async function PATCH(
   request: Request,
-  context: { params: Promise<{ id: string }> }
+  context: { params: Promise<{ ref: string }> }
 ): Promise<Response> {
   const authError = await requireAdminAccess(request);
   if (authError) {
     return authError;
   }
 
-  const { id } = await context.params;
-  const idParsed = idParamSchema.safeParse(id);
+  const { ref } = await context.params;
+  const idParsed = idParamSchema.safeParse(ref);
   if (!idParsed.success) {
     return jsonError(formatZodError(idParsed.error), HTTP_STATUS.BAD_REQUEST);
   }
@@ -116,15 +116,15 @@ export async function PATCH(
 
 export async function DELETE(
   request: Request,
-  context: { params: Promise<{ id: string }> }
+  context: { params: Promise<{ ref: string }> }
 ): Promise<Response> {
   const authError = await requireAdminAccess(request);
   if (authError) {
     return authError;
   }
 
-  const { id } = await context.params;
-  const idParsed = idParamSchema.safeParse(id);
+  const { ref } = await context.params;
+  const idParsed = idParamSchema.safeParse(ref);
   if (!idParsed.success) {
     return jsonError(formatZodError(idParsed.error), HTTP_STATUS.BAD_REQUEST);
   }
