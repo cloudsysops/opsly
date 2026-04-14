@@ -10,6 +10,19 @@
 
 # Claude en Opsly
 
+## Framework: OpenClaw
+
+OpenClaw es el **framework de orquestación multi-agente** de Opsly. Ver `.openclaw.md` para configuración completa.
+
+### Componentes OpenClaw
+
+| Componente | Puerto |
+|------------|--------|
+| MCP Server | 3003 |
+| Orchestrator | 3011 |
+| LLM Gateway | 3010 |
+| Context Builder | 3012 |
+
 ## URLs raw
 - AGENTS.md: https://raw.githubusercontent.com/cloudsysops/opsly/main/AGENTS.md
 - VISION.md: https://raw.githubusercontent.com/cloudsysops/opsly/main/VISION.md

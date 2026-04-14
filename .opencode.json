@@ -1,0 +1,31 @@
+{
+  "version": "1.0.0",
+  "description": "OpenCode configuration for Opsly using OpenClaw framework",
+  "framework": "openclaw",
+  "settings": {
+    "model": "claude-3-5-sonnet-20241022",
+    "temperature": 0.5,
+    "maxTokens": 4096
+  },
+  "context": {
+    "agentsMd": "https://raw.githubusercontent.com/cloudsysops/opsly/main/AGENTS.md",
+    "visionMd": "https://raw.githubusercontent.com/cloudsysops/opsly/main/VISION.md",
+    "openapiSpec": "docs/openapi-opsly-api.yaml"
+  },
+  "openclaw": {
+    "mcpServer": "apps/mcp",
+    "orchestrator": "apps/orchestrator",
+    "llmGateway": "apps/llm-gateway",
+    "contextBuilder": "apps/context-builder"
+  },
+  "rules": {
+    "gitWorkflow": "commit after each task",
+    "noSecrets": "use Doppler only",
+    "noAny": "strict TypeScript",
+    "ssh": "Tailscale only 100.120.151.91"
+  },
+  "skills": {
+    "required": ["opsly-context", "opsly-quantum"],
+    "recommended": ["opsly-api", "opsly-bash", "opsly-llm", "opsly-mcp", "opsly-supabase", "opsly-tenant"]
+  }
+}

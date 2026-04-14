@@ -5,6 +5,10 @@ alwaysApply: true
 
 # Cursor Rules — Opsly
 
+## Framework: OpenClaw
+
+Orquestación multi-agente con MCP (3003) → Orchestrator (3011) → LLM Gateway (3010)
+
 ## Inicio (obligatorio)
 
 1. Leer AGENTS.md (URL raw: https://raw.githubusercontent.com/cloudsysops/opsly/main/AGENTS.md)
