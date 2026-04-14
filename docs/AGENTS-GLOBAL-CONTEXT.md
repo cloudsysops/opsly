@@ -9,6 +9,34 @@
 - **URL raw:** `https://raw.githubusercontent.com/cloudsysops/opsly/main/AGENTS.md`
 - **Último commit:** `ae7ee0e` (2026-04-13)
 
+## 🧠 NotebookLM — Knowledge Layer Universal
+
+> **Cada agente DEBE consultar NotebookLM al iniciar sesión.**
+> Ver: [`docs/adr/ADR-025-notebooklm-knowledge-layer.md`](../adr/ADR-025-notebooklm-knowledge-layer.md)
+
+**Query de startup obligatorio:**
+```
+"Eres el arquitecto senior de Opsly. Resume en 5 bullets:
+1. Qué se decidió hoy
+2. Qué está bloqueado
+3. Qué es prioritario
+4. Qué optimizar
+5. Qué NO hacer
+
+Basado en: AGENTS.md, ROADMAP.md, y las últimas decisiones en docs/adr/"
+```
+
+**Sync automático:** `npm run notebooklm:sync` tras cada commit (hook post-commit).
+
+| Acción | Comando |
+|--------|---------|
+| Sync docs → NotebookLM | `npm run notebooklm:sync` |
+| Query NotebookLM | `npm run notebooklm:query "<pregunta>"` |
+| Feed single doc | `npm run docs:to-notebooklm` |
+
+**Keywords que activan consulta NotebookLM:**
+`bloqueante`, `prioridad`, `estado actual`, `qué hacer`, `next`, `decisión`
+
 ## 🚀 Inicio rápido para nuevo agente
 
 ```bash
@@ -33,8 +61,8 @@ npm run type-check
 | **Cursor** | `.cursor/rules/opsly.mdc` + `skills/user/opsly-*/SKILL.md` |
 | **Copilot** | `.github/copilot-instructions.md` |
 | **OpenCode** | Este repo + skills/* |
-| **Hermes** | `docs/IMPLEMENTATION-IA-LAYER.md` |
-| **Nuevo agente** | Leer `AGENTS.md` + `VISION.md` |
+| **Hermes** | `docs/IMPLEMENTATION-IA-LAYER.md` + NotebookLM |
+| **Nuevo agente** | Leer `AGENTS.md` + `VISION.md` + **consultar NotebookLM** |
 
 ## 📁 Archivos de contexto por defecto
 
@@ -68,6 +96,7 @@ VPS (control plane)                    Worker Mac 2011
 
 ## ✅ Checklist antes de ejecutar código
 
+- [ ] **Consultar NotebookLM** al iniciar ("estado operativo actual de Opsly")
 - [ ] Leer `AGENTS.md` completo
 - [ ] Verificar estado VPS (`docker ps`)
 - [ ] `npm run type-check` pasa
