@@ -28,6 +28,7 @@ COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/apps/orchestrator/dist ./apps/orchestrator/dist
 COPY --from=builder /app/apps/orchestrator/package.json ./apps/orchestrator/package.json
 COPY --from=builder /app/apps/ml ./apps/ml
+COPY --from=builder /app/apps/llm-gateway ./apps/llm-gateway
 COPY --from=builder /app/packages/types ./packages/types
 COPY --from=builder /app/scripts ./scripts
 
