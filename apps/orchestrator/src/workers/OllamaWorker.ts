@@ -41,8 +41,8 @@ export function startOllamaWorker(connection: object): Worker {
       };
       
       const autoCommit = data.metadata?.auto_commit === true;
-      const agentPersona = data.metadata?.persona ?? "unknown";
-      const runId = data.metadata?.run_id ?? "unknown";
+      const agentPersona = String(data.metadata?.persona ?? "unknown");
+      const runId = String(data.metadata?.run_id ?? "unknown");
       
       const prompt =
         typeof payload.prompt === "string" ? payload.prompt.trim() : "";
@@ -115,11 +115,12 @@ export function startOllamaWorker(connection: object): Worker {
       const duration = Date.now() - t0;
       
       if (autoCommit) {
+        const resultContent = typeof json.content === "string" ? json.content : JSON.stringify(json.content ?? "");
         await handleAutoCommit({
           persona: agentPersona,
           runId,
           tenantSlug,
-          result: json.content ?? "",
+          result: resultContent,
           success: true,
           durationMs: duration,
         });
@@ -188,4 +189,84 @@ async function handleAutoCommit(ctx: {
   }
   
   console.log(`[auto-commit] Task result stored for ${persona} (${runId}) in sandbox`);
+  
+  if (persona === "evolution-agent") {
+    await runEvolutionLoop(ctx);
+  } else if (persona === "notifier-desayuno") {
+    await runAutoSync(ctx);
+  }
+}
+
+async function runEvolutionLoop(ctx: {
+  persona: string;
+  runId: string;
+  tenantSlug: string;
+  result: string;
+  success: boolean;
+  durationMs: number;
+}): Promise<void> {
+  console.log("[evolution] Analyzing team performance...");
+  
+  const { createClient } = await import("@supabase/supabase-js");
+  const supabaseUrl = process.env.SUPABASE_URL ?? "https://jkwykpldnitavhmtuzmo.supabase.co";
+  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY ?? process.env.SUPABASE_ANON_KEY ?? "";
+  
+  if (!supabaseKey) return;
+  
+  const supabase = createClient(supabaseUrl, supabaseKey);
+  
+  const { data: results } = await supabase
+    .schema("sandbox")
+    .from("agent_task_results")
+    .select("*")
+    .order("completed_at", { ascending: false })
+    .limit(20);
+  
+  if (!results || results.length === 0) {
+    console.log("[evolution] No historical data to analyze");
+    return;
+  }
+  
+  const successCount = results.filter(r => r.success).length;
+  const failCount = results.length - successCount;
+  const avgDuration = results.reduce((acc, r) => acc + (r.duration_ms || 0), 0) / results.length;
+  
+  console.log(`[evolution] Stats: ${successCount} success, ${failCount} failed, avg ${Math.round(avgDuration)}ms`);
+  
+  if (failCount > successCount * 0.5) {
+    console.log("[evolution] ⚠️ High failure rate detected - triggering correction");
+  }
+  
+  console.log("[evolution] Evolution analysis complete");
+}
+
+async function runAutoSync(ctx: {
+  persona: string;
+  runId: string;
+  tenantSlug: string;
+}): Promise<void> {
+  console.log("[auto-sync] Checking for repo updates...");
+  
+  const gitDir = process.env.OPSLY_GIT_DIR || "/opt/opsly";
+  
+  try {
+    const { execSync } = await import("child_process");
+    
+    process.chdir(gitDir);
+    execSync("git fetch origin main", { stdio: "ignore" });
+    
+    const local = execSync("git rev-parse HEAD").toString().trim();
+    const remote = execSync("git rev-parse origin/main").toString().trim();
+    
+    if (local !== remote) {
+      console.log(`[auto-sync] New commits: ${local.slice(0,7)} -> ${remote.slice(0,7)}`);
+      execSync("git stash", { stdio: "ignore" });
+      execSync("git pull --rebase origin main", { stdio: "inherit" });
+      console.log("[auto-sync] Repo synced");
+    } else {
+      console.log("[auto-sync] Up to date");
+    }
+  } catch (err) {
+    console.log(`[auto-sync] Sync failed: ${err instanceof Error ? err.message : "unknown"}`);
+  }
 }

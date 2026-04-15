@@ -149,19 +149,37 @@ echo ">>> Creando EQUIPO DESAYUNO..."
 
 planner_prompt="Eres el Planner del equipo Lanidea. Objetivo: ${GOAL}. 
 Analiza el objetivo, identifica dependencias, crea plan de 5 pasos máximo.
-Al completar, ejecuta git commit automático si auto_commit=true."
+Al completar, ejecuta git commit automático si auto_commit=true.
+TU MISIÓN: Aprende del resultado y propón UNA mejora para el siguiente ciclo."
 
 executor_prompt="Eres el Executor del equipo Lanidea. Objetivo: ${GOAL}.
 Ejecuta las tareas asignadas por el planner. Devuelve resultado accionable.
-Al completar, ejecuta git commit automático si auto_commit=true."
+Al completar, ejecuta git commit automático si auto_commit=true.
+EVALÚA: ¿Qué funcionó? ¿Qué falló? ¿Cómo mejorar?"
 
 notifier_prompt="Eres el Notifier del equipo Lanidea. Objetivo: ${GOAL}.
 Resume el estado actual: progreso, bloqueantes, siguiente acción.
-Al completar, ejecuta git commit automático si auto_commit=true."
+Al completar, ejecuta git commit automático si auto_commit=true.
+SINCRONIZA: Revisa cambios recientes del repo con git pull origin main."
 
 enqueue_agent "planner-desayuno" "planner" "analyze" "${planner_prompt}"
 enqueue_agent "executor-desayuno" "executor" "generate" "${executor_prompt}"
 enqueue_agent "notifier-desayuno" "notifier" "summarize" "${notifier_prompt}"
+
+# === EVOLUTION LOOP (auto-mejora) ===
+echo ""
+echo ">>> Creando AGENTE DE EVOLUCIÓN..."
+
+evolution_prompt="Eres el Evolution Agent de Lanidea. Tu trabajo es AUTO-MEJORAR el equipo.
+1. Lee los últimos resultados en sandbox.agent_task_results
+2. Analiza: ¿qué agentes fallaron? ¿cuáles fueron exitosos?
+3. Propón cambios en: prompts, workflow, prioridades
+4. Si detectas un problema crítico, ENCOLA una corrección directamente
+5. Haz git pull origin main para tener el código más reciente
+6. Si hay cambios relevantes, haz git stash y rebase
+RESPETO: Solo propón, no ejecutes cambios que rompan producción"
+
+enqueue_agent "evolution-agent" "planner" "analyze" "${evolution_prompt}"
 
 # === LÍDER ARQUITECTO ===
 echo ""
