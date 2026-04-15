@@ -1,9 +1,14 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = process.env.SUPABASE_URL ?? 'https://jkwykpldnitavhmtuzmo.supabase.co';
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY ?? '';
-const supabase = createClient(supabaseUrl, supabaseKey);
+function getSupabase(): ReturnType<typeof createClient> {
+  const supabaseUrl = process.env.SUPABASE_URL ?? 'https://jkwykpldnitavhmtuzmo.supabase.co';
+  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY ?? '';
+  if (!supabaseKey) {
+    throw new Error('SUPABASE_SERVICE_ROLE_KEY is required');
+  }
+  return createClient(supabaseUrl, supabaseKey);
+}
 
 /** Umbral: si fallos > completed * ratio → status error. */
 const FAILURE_DOMINANCE_RATIO = 0.5;
@@ -64,6 +69,7 @@ function applyResultRow(
 
 export async function GET(): Promise<Response> {
   try {
+    const supabase = getSupabase();
     const { data: teams, error } = await supabase
       .schema('sandbox')
       .from('agent_task_results')
