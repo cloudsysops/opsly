@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-04-15T05:30:40Z",
-  "totalFiles": 162,
+  "lastIndexed": "2026-04-15T05:37:24Z",
+  "totalFiles": 163,
   "files": [
     "ACTIVE-PROMPT.md",
     "ADMIN-ECOSYSTEM.md",
@@ -75,6 +75,7 @@
     "GOOGLE-DRIVE-SYNC.md",
     "HEAVY-SERVICES-DECISION.md",
     "HERMES-INTEGRATION.md",
+    "HERMES-LOCAL-AGENTS-STACK.md",
     "HERMES-SPRINT-PLAN.md",
     "HOSTS-PATHS.md",
     "IMPLEMENTATION-IA-LAYER.md",
