@@ -1,7 +1,7 @@
 # Opsly — Sprint tracking
 
 > **Generado automáticamente** — fuente: [`docs/implementation/status.yaml`](implementation/status.yaml).
-> Generado: 2026-04-12T18:35:16.860Z
+> Generado: 2026-04-15T05:59:47.046Z
 
 ## Sprint 1: Approval Gate + Vertex AI
 
