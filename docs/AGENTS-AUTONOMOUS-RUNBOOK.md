@@ -93,20 +93,41 @@ Configuración declarativa del equipo (roles, presupuestos, herramientas): [`con
 
 ---
 
+## 6.1 Autopilot continuo (Hermes + Ollama squad + smoke)
+
+Para dejar agentes trabajando en bucle sin intervención manual:
+
+```bash
+# Arranca en background (nohup + pid file en logs/)
+TENANT_SLUG=smiletripcare \
+GOAL="Mantener plataforma multi-agente estable y eficiente" \
+PLAN=business \
+INTERVAL_SECONDS=300 \
+./scripts/start-agents-autopilot.sh
+
+# Estado
+./scripts/status-agents-autopilot.sh
+
+# Stop limpio
+./scripts/stop-agents-autopilot.sh
+```
+
+El loop (`scripts/agents-autopilot.sh`) ejecuta por ciclo:
+
+1. `npm run hermes:tick --workspace=@intcloudsysops/orchestrator`
+2. `npx tsx scripts/enqueue-ollama-squad.ts ...`
+3. `./scripts/test-worker-e2e.sh <tenant> --notify` (si `ENABLE_WORKER_SMOKE=true`)
+
+Por defecto usa `doppler run --project ops-intcloudsysops --config prd` si la CLI está disponible.
+
+---
+
 ## 7. Tras cada `git pull` en el worker
 
 ```bash
 cd ~/opsly && git pull --ff-only origin main && npm ci
 sudo systemctl restart opsly-worker   # si usas systemd
 ```
-
----
-
-## 8. Mejora continua con modelos locales
-
-- **Modelos recomendados** (Nemotron 4B, etc.): [`download-ollama-models.sh`](../scripts/download-ollama-models.sh) cuando el contenedor `opslyquantum-ollama` está en marcha.
-- **Gateway (VPS):** `OLLAMA_URL` debe apuntar al Ollama del worker (IP Tailscale + `:11434`). Tras cambiar modelo en Doppler, reiniciar solo `llm-gateway` en el VPS si hace falta.
-- **Verificación extremo a extremo:** [`verify-distributed-stack.sh`](../scripts/verify-distributed-stack.sh).
 
 ---
 
