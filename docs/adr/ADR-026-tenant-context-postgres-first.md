@@ -22,6 +22,14 @@ Estrategia de **contexto nativo en base de datos**:
 - **Positivas:** Sin infraestructura adicional; consistencia fuerte en Postgres; menor superficie de ataque y operación unificada con migraciones Supabase existentes.
 - **Negativas:** pgvector puede ser más lento que motores especializados a volúmenes muy altos; conviene vigilar tamaño de índices y backups.
 
+## Checklist de implementación
+
+- [x] Migración `0031_tenant_context_profile.sql` — columnas `tech_stack`, `coding_standards`, `vector_namespace` en `platform.tenants`
+- [x] `apps/context-builder/src/tenant-profile.ts` — `resolveTenantIdentity()`, `buildIdentityPromptBlock()`
+- [x] `apps/context-builder/src/context-pack-builder.ts` — integración con tenant profile
+- [x] Tests context-builder: **8 passed**
+- [x] Type-check context-builder: ✅
+
 ## Referencias
 
 - Migración: `supabase/migrations/0031_tenant_context_profile.sql`
