@@ -51,6 +51,9 @@
     "notebooklm:query": "node scripts/query-notebooklm.mjs",
     "skills:to-notebooklm": "node scripts/skills-to-notebooklm.mjs",
     "notebooklm:full-sync": "npm run notebooklm:sync && npm run skills:to-notebooklm",
+    "superagents:install": "bash scripts/install-superagents-stack.sh",
+    "superagents:up": "bash scripts/superagents-up.sh",
+    "superagents:doctor": "bash scripts/superagents-doctor.sh",
     "prepare": "husky",
     "commit": "git-cz"
   },
