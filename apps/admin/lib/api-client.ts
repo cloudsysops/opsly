@@ -39,8 +39,10 @@ function getBaseUrl(): string {
       return inferred;
     }
   }
-  throw new Error("NEXT_PUBLIC_API_URL is not set");
+  return "http://127.0.0.1:3000";
 }
+
+export { getBaseUrl };
 
 async function buildHeaders(initHeaders: HeadersInit | undefined): Promise<Headers> {
   const headers = new Headers(initHeaders);
