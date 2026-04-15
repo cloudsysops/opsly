@@ -15,6 +15,7 @@ infra/opslyquantum.env
 # Obsidian local (infra vault)
 infra/.obsidian/graph.json
 infra/Untitled.base
+infra/Untitled.canvas
 
 # Agent context (no secrets)
 context/doppler-ready.json
