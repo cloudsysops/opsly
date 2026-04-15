@@ -173,13 +173,29 @@ echo ">>> Creando AGENTE DE EVOLUCIÓN..."
 evolution_prompt="Eres el Evolution Agent de Lanidea. Tu trabajo es AUTO-MEJORAR el equipo.
 1. Lee los últimos resultados en sandbox.agent_task_results
 2. Analiza: ¿qué agentes fallaron? ¿cuáles fueron exitosos?
-3. Propón cambios en: prompts, workflow, prioridades
+3. Propón y EJECUTA cambios en: prompts, workflow, prioridades
 4. Si detectas un problema crítico, ENCOLA una corrección directamente
 5. Haz git pull origin main para tener el código más reciente
 6. Si hay cambios relevantes, haz git stash y rebase
-RESPETO: Solo propón, no ejecutes cambios que rompan producción"
+7. EJECUTA shell commands directamente para mejorar el sistema
+RESPETO: Ejecuta cambios que mejoren el rendimiento del equipo"
 
 enqueue_agent "evolution-agent" "planner" "analyze" "${evolution_prompt}"
+
+# === WATCHER (monitor de salud) ===
+echo ""
+echo ">>> Creando WATCHER (monitor autónomo)..."
+
+watcher_prompt="Eres el Watcher Agent de Lanidea. Monitor de salud autónoma.
+1. Checkea salud de todos los servicios: Redis, Ollama, Orchestrator, LLM Gateway
+2. Si un servicio está down, intenta restartarlo o encola recuperación
+3. Reporta métricas: queue depth, success rate, response time
+4. Si queue > 50 jobs, escala workers o encola más executor-desayuno
+5. Publish métricas a sandbox.agent_watcher_metrics
+6. Auto-healing: si worker falló >3 veces, restart el contenedor
+ACCIÓN: No solo reportes, ejecuta acciones de recuperación"
+
+enqueue_agent "watcher-agent" "notifier" "summarize" "${watcher_prompt}"
 
 # === LÍDER ARQUITECTO ===
 echo ""

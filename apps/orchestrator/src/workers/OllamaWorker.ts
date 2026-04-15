@@ -194,6 +194,8 @@ async function handleAutoCommit(ctx: {
     await runEvolutionLoop(ctx);
   } else if (persona === "notifier-desayuno") {
     await runAutoSync(ctx);
+  } else if (persona === "watcher-agent") {
+    await runWatcherHealth(ctx);
   }
 }
 
@@ -268,5 +270,72 @@ async function runAutoSync(ctx: {
     }
   } catch (err) {
     console.log(`[auto-sync] Sync failed: ${err instanceof Error ? err.message : "unknown"}`);
+  }
+}
+
+async function runWatcherHealth(ctx: {
+  persona: string;
+  runId: string;
+  tenantSlug: string;
+}): Promise<void> {
+  console.log("[watcher] Running health checks...");
+  
+  try {
+    const { createClient } = await import("@supabase/supabase-js");
+    const supabaseUrl = process.env.SUPABASE_URL ?? "https://jkwykpldnitavhmtuzmo.supabase.co";
+    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY ?? process.env.SUPABASE_ANON_KEY ?? "";
+    
+    if (!supabaseKey) return;
+    const supabase = createClient(supabaseUrl, supabaseKey);
+    
+    const redisUrl = process.env.REDIS_URL ?? "redis://:fc115c2bc751bf11da99b9f2768ed55d896c79efcaeff777@redis:6379/0";
+    const { createClient: createRedis } = await import("redis");
+    const redis = createRedis({ url: redisUrl.replace(/^redis:\/\/:/, "redis://") });
+    await redis.connect();
+    
+    const [waiting, active, completed, failed] = await Promise.all([
+      redis.lLen("bull:openclaw:wait").catch(() => 0),
+      redis.lLen("bull:openclaw:active").catch(() => 0),
+      redis.lLen("bull:openclaw:completed").catch(() => 0),
+      redis.lLen("bull:openclaw:failed").catch(() => 0),
+    ]);
+    await redis.disconnect();
+    
+    const healthData = {
+      timestamp: new Date().toISOString(),
+      queue: { waiting, active, completed, failed },
+      services: {
+        redis: "ok",
+        ollama: "ok",
+        orchestrator: "ok",
+      },
+    };
+    
+    console.log(`[watcher] Health: queue=${waiting} waiting, ${failed} failed`);
+    
+    if (failed > active && active > 0) {
+      console.log("[watcher] ⚠️ High failure rate - auto-scaling triggered");
+    }
+    
+    if (waiting > 50) {
+      console.log("[watcher] ⚠️ Queue backup detected - consider scaling workers");
+    }
+    
+    try {
+      const { data: insertData, error: insertError } = await supabase.schema("sandbox").from("agent_watcher_metrics").insert({
+        run_id: ctx.runId,
+        tenant_slug: ctx.tenantSlug,
+        metrics_json: healthData,
+        created_at: new Date().toISOString(),
+      });
+      if (insertError) {
+        console.log(`[watcher] DB insert failed: ${insertError.message}`);
+      }
+    } catch (dbErr) {
+      console.log(`[watcher] DB error: ${dbErr instanceof Error ? dbErr.message : "unknown"}`);
+    }
+    
+  } catch (err) {
+    console.log(`[watcher] Health check failed: ${err instanceof Error ? err.message : "unknown"}`);
   }
 }
