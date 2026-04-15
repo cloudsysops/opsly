@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-04-15T04:45:26Z",
-  "totalFiles": 161,
+  "lastIndexed": "2026-04-15T05:01:26Z",
+  "totalFiles": 162,
   "files": [
     "ACTIVE-PROMPT.md",
     "ADMIN-ECOSYSTEM.md",
@@ -32,6 +32,7 @@
     "ADR-025-token-optimization-ollama-primary.md",
     "ADR-026-tenant-context-postgres-first.md",
     "AGENTS-ASSIGNMENTS.md",
+    "AGENTS-AUTONOMOUS-RUNBOOK.md",
     "AGENTS-GLOBAL-CONTEXT.md",
     "AGENTS-GUIDE.md",
     "AGENTS-ORCHESTRATION.md",
