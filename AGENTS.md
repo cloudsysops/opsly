@@ -1435,4 +1435,26 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 ├── README.md
 ├── VISION.md                # Norte del producto (fases, ICP, límites agentes)
 └── AGENTS.md                # Este archivo
+
+---
+
+## 🔄 Estado Actual (2026-04-15 20:48 UTC)
+
+**Agente:** opencode (arquitecto)  
+**Tareas completadas:** ADR-025 NotebookLM checklist ✅  
+**Bloqueantes:** NO
+
+### Validación final
+- ✅ Tests orchestrator: 92 passed
+- ✅ Type-check: 13/14 workspaces (mission-control usa pnpm)
+- ✅ OpenAPI: 28 paths valid
+- ✅ Redis: 59 clients, 1234 BullMQ keys
+- ✅ Orchestrator: role=control, mode=queue-only
+- ✅ Mac 2011: Ollama 2 modelos
+
+### Servicios VPS (todos healthy)
+- opsly_orchestrator, opsly_llm_gateway, opsly_context_builder, opsly_hermes
+- infra-redis-1, infra-app-1, infra-app-2
+- opsly_portal, opsly_mcp (12 tools)
+- Prometheus, Grafana, cAdvisor, Watchtower
 ```
