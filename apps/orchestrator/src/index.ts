@@ -10,7 +10,12 @@ import {
   shouldRunControlPlane,
   shouldRunWorkers,
 } from "./orchestrator-role.js";
-import { agentClassifierQueue, connection, orchestratorQueue } from "./queue.js";
+import {
+  agentClassifierQueue,
+  connection,
+  hermesOrchestrationQueue,
+  orchestratorQueue,
+} from "./queue.js";
 import { closeCircuitBreakerRedis } from "./resilience/circuit-breaker.js";
 import { closeJobStateStore } from "./state/store.js";
 import { TeamManager } from "./teams/TeamManager.js";
@@ -95,10 +100,11 @@ function startAllWorkers(): AsyncCleanup[] {
   );
 
   console.log(
-    "[orchestrator] Workers: cursor, n8n, notify, drive, backup, health, ollama, budget, opsly-webhooks, webhooks-processing, general-events" +
+    "[orchestrator] Workers: cursor, n8n, notify, drive, backup, health, budget, opsly-webhooks, webhooks-processing, general-events, ollama" +
       (process.env.OPSLY_AGENT_CLASSIFIER_WORKER_ENABLED === "true"
         ? ", agent-classifier"
-        : ""),
+        : "") +
+      "; Hermes tick → servicio opsly-hermes (no este proceso).",
   );
   return cleanup;
 }
@@ -138,6 +144,7 @@ async function main(): Promise<void> {
   cleanupTasks.push(async () => drainMeteringOperations());
   cleanupTasks.push(async () => orchestratorQueue.close());
   cleanupTasks.push(async () => agentClassifierQueue.close());
+  cleanupTasks.push(async () => hermesOrchestrationQueue.close());
   cleanupTasks.push(async () => closeWebhookQueue());
   cleanupTasks.push(async () => closeJobStateStore());
   cleanupTasks.push(async () => closeOrchestratorRedis());

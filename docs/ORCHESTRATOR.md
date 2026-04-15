@@ -25,6 +25,27 @@ Misma imagen Docker / mismo `node dist/index.js`; ver `apps/orchestrator/src/orc
 
 **Precedencia:** si defines ambas, `OPSLY_ORCHESTRATOR_ROLE` gana sobre `OPSLY_ORCHESTRATOR_MODE`.
 
+### Workers en `dist/index.js` (este proceso)
+
+Cuando `shouldRunWorkers` es verdadero (`full` o `worker` / `worker-enabled`), se arrancan en este orden (ver `apps/orchestrator/src/index.ts` → `startAllWorkers`):
+
+| Orden | Cola / ámbito | Módulo | Notas |
+|------|----------------|--------|--------|
+| 1 | `openclaw` · jobs `cursor` | `CursorWorker` | |
+| 2 | `openclaw` · `n8n` | `N8nWorker` | |
+| 3 | `openclaw` · `notify` | `NotifyWorker` | |
+| 4 | `openclaw` · `drive` | `DriveWorker` | |
+| 5 | `openclaw` · backup | `BackupWorker` | |
+| 6 | health / métricas | `HealthWorker` | |
+| 7 | `opsly-budget-enforcement` | `SuspensionWorker` | Logs internos `worker: budget`; concurrencia `ORCHESTRATOR_BUDGET_CONCURRENCY` |
+| 8 | webhooks tenant | `WebhookWorker` | |
+| 9 | `webhooks-processing` | `WebhooksProcessingWorker` | |
+| 10 | eventos generales | `GeneralEventsWorker` | |
+| 11 | Ollama local | `OllamaWorker` | |
+| opt. | `agent-classifier` | `AgentClassifierWorker` | Solo si `OPSLY_AGENT_CLASSIFIER_WORKER_ENABLED=true` |
+
+**No** se registra aquí `HermesOrchestrationWorker`: la cola `hermes-orchestration` la consume el **contenedor** `hermes` (imagen `Dockerfile.hermes`, entrypoint `infra/hermes/docker-entrypoint.sh`). Evita duplicar ticks Hermes en el mismo host que el servicio `hermes` (ver comentario en `infra/docker-compose.platform.yml`). El proceso principal solo instancia el cliente `Queue` en `queue.ts` y lo cierra en shutdown; el **Worker** BullMQ de Hermes vive en opsly-hermes.
+
 ## Jobs disponibles
 
 | Nombre job (BullMQ) | Worker | Rol |
