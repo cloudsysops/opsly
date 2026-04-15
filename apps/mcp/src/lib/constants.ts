@@ -1,6 +1,6 @@
 export const MCP_SERVER_INFO = {
   name: "opsly-openclaw",
-  version: "1.0.0",
+  version: "1.1.0",
   description: "OpenClaw — Control completo de Opsly desde Claude"
 } as const;
 

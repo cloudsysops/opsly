@@ -10,7 +10,8 @@ interface ExecutePromptInput {
 
 export const executorTool: ToolDefinition<ExecutePromptInput, Record<string, unknown>> = {
   name: "execute_prompt",
-  description: "Envia tarea a Cursor escribiendo docs/ACTIVE-PROMPT.md",
+  description:
+    "Encola trabajo para Cursor (u operador humano) escribiendo docs/ACTIVE-PROMPT.md en GitHub; compatible con flujo monitor/cursor-prompt en VPS.",
   inputSchema: z.object({
     task: z.string().min(10),
     commands: z.array(z.string()),

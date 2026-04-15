@@ -27,6 +27,9 @@ Construir en 3 capas desacopladas:
   - `get_metrics` -> `GET /api/metrics/system`
   - `get_health` -> `GET /api/health`
   - `execute_prompt` -> escribe `docs/ACTIVE-PROMPT.md` via GitHub API
+  - `list_ai_integrations` -> catálogo de integraciones (Cursor/GitHub prompt, Docker, LLM Gateway, NotebookLM); opcional snapshots `/health` de servicios internos (`MCP_*_URL`)
+  - `probe_platform_component` -> GET `/health` allowlist (llm-gateway, orchestrator, context-builder, mcp)
+  - `get_docker_containers` -> `GET /api/admin/docker/containers`
 
 ### Capa 2 — Orquestador (`apps/orchestrator/`)
 

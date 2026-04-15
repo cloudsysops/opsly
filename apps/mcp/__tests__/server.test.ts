@@ -18,6 +18,9 @@ describe("createServer", () => {
     expect(tools).toContain("notebooklm");
     expect(tools).toContain("check_service_health");
     expect(tools).toContain("restart_container");
+    expect(tools).toContain("list_ai_integrations");
+    expect(tools).toContain("probe_platform_component");
+    expect(tools).toContain("get_docker_containers");
   });
 
   it("lanza error si la tool no existe", async () => {

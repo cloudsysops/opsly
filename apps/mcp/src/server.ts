@@ -1,5 +1,6 @@
 import { requireMCPAuth } from "./auth/middleware.js";
 import { MCP_SERVER_INFO } from "./lib/constants.js";
+import { aiIntegrationsTools } from "./tools/ai-integrations.js";
 import { executorTool } from "./tools/executor.js";
 import { invitationsTool } from "./tools/invitations.js";
 import { metricsTool } from "./tools/metrics.js";
@@ -109,6 +110,8 @@ export function createServer(): OpenClawMcpServer {
   const [getHealthTool, getMetricsTool] = metricsTool;
   const [suspendTenantTool, resumeTenantTool] = suspendTools;
   const [checkServiceHealthTool, restartContainerTool] = opsStubsTools;
+  const [listAiIntegrationsTool, probePlatformComponentTool, getDockerContainersTool] =
+    aiIntegrationsTools;
   server.registerTools([
     adaptTool(getTenantsTool),
     adaptTool(getTenantTool),
@@ -122,6 +125,9 @@ export function createServer(): OpenClawMcpServer {
     adaptTool(notebooklmTool),
     adaptTool(checkServiceHealthTool),
     adaptTool(restartContainerTool),
+    adaptTool(listAiIntegrationsTool),
+    adaptTool(probePlatformComponentTool),
+    adaptTool(getDockerContainersTool),
   ]);
   return server;
 }
