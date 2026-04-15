@@ -1,0 +1,252 @@
+# OpenClaw Orchestrator - Advanced Docker Stack
+# Nivel producción con workers, monitoring y auto-gestión
+#
+# Uso:
+#   docker compose -f infra/docker-compose.openclaw-orchestrator.yml up -d
+#   docker compose -f infra/docker-compose.openclaw-orchestrator.yml logs -f orchestrator
+#
+# Servicios:
+#   - orchestrator: BullMQ workers (cursor, n8n, ollama, notify, drive)
+#   - redis: Cola y cache (persistencia)
+#   - llm-gateway: Routing LLM con cache
+#   - mcp: Tools para agentes
+#   - prometheus: Métricas
+#   - grafana: Dashboard
+#   - mission-control: Dashboard equipos
+
+name: openclaw-orchestrator
+
+services:
+  # Redis - cola BullMQ y cache LLM
+  redis:
+    image: redis:7-alpine
+    container_name: openclaw-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: >
+      redis-server
+      --maxmemory 1gb
+      --maxmemory-policy allkeys-lru
+      --save 900 1
+      --save 300 10
+      --save 60 10000
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+    networks:
+      - openclaw-net
+
+  # LLM Gateway - routing y cache
+  llm-gateway:
+    image: ghcr.io/cloudsysops/intcloudsysops-llm-gateway:latest
+    container_name: openclaw-llm-gateway
+    ports:
+      - "3010:3010"
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+      - NODE_ENV=production
+      - PORT=3010
+      - OLLAMA_URL=${OLLAMA_URL:-http://ollama:11434}
+      - OLLAMA_MODEL=${OLLAMA_MODEL:-llama3.2}
+    depends_on:
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:3010/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - openclaw-net
+
+  # Ollama - modelo local
+  ollama:
+    image: ollama/ollama:latest
+    container_name: openclaw-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    environment:
+      - OLLAMA_ORIGINS=*
+      - OLLAMA_HOST=0.0.0.0
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+        reservations:
+          memory: 2G
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:11434/api/tags || exit 1"]
+      interval: 30s
+      timeout: 15s
+      retries: 5
+    networks:
+      - openclaw-net
+
+  # Orchestrator - workers BullMQ
+  orchestrator:
+    image: ghcr.io/cloudsysops/intcloudsysops-orchestrator:latest
+    container_name: openclaw-orchestrator
+    ports:
+      - "3011:3011"
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+      - LLM_GATEWAY_URL=http://llm-gateway:3010
+      - OPSLY_ORCHESTRATOR_MODE=worker-enabled
+      - OPSLY_GITHUB_REPO=cloudsysops/opsly
+      - NODE_ENV=production
+      - PORT=3011
+      # Concurrency por worker
+      - ORCHESTRATOR_OLLAMA_CONCURRENCY=2
+      - ORCHESTRATOR_CURSOR_CONCURRENCY=2
+      - ORCHESTRATOR_N8N_CONCURRENCY=2
+      - ORCHESTRATOR_DRIVE_CONCURRENCY=1
+      - ORCHESTRATOR_NOTIFY_CONCURRENCY=3
+      - ORCHESTRATOR_WEBHOOK_CONCURRENCY=1
+    depends_on:
+      redis:
+        condition: service_healthy
+      llm-gateway:
+        condition: service_healthy
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+        reservations:
+          memory: 1G
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:3011/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - openclaw-net
+
+  # MCP Server - herramientas
+  mcp:
+    image: ghcr.io/cloudsysops/intcloudsysops-mcp:latest
+    container_name: openclaw-mcp
+    ports:
+      - "3003:3003"
+    environment:
+      - NODE_ENV=production
+      - PORT=3003
+      - OPSLY_API_URL=http://api:3000
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:3003/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - openclaw-net
+
+  # Mission Control - dashboard equipos
+  mission-control:
+    image: ghcr.io/cloudsysops/intcloudsysops-mission-control:latest
+    container_name: openclaw-mission-control
+    ports:
+      - "3015:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - ORCHESTRATOR_URL=http://orchestrator:3011
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      - orchestrator
+      - redis
+    restart: unless-stopped
+    networks:
+      - openclaw-net
+
+  # Prometheus - métricas
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: openclaw-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.openclaw.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=15d'
+      - '--web.enable-lifecycle'
+      - '--web.enable-admin-api'
+    restart: unless-stopped
+    networks:
+      - openclaw-net
+
+  # Grafana - dashboards
+  grafana:
+    image: grafana/grafana:latest
+    container_name: openclaw-grafana
+    ports:
+      - "3030:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin123}
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_SERVER_ROOT_URL=http://localhost:3030
+      - GF_INSTALL_PLUGINS=grafana-piechart-panel
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+    networks:
+      - openclaw-net
+
+  # Auto-scaler -监控 y scale
+  auto-scaler:
+    image: alpine:latest
+    container_name: openclaw-autoscaler
+    command: >
+      sh -c "
+        echo 'Auto-scaler starting...' &&
+        while true; do
+          # Check queue depth
+          QUEUE_SIZE=$$(redis-cli -h redis LLEN bull:openclaw:wait 2>/dev/null || echo 0)
+          echo \"[autoscaler] Queue: $$QUEUE_SIZE\"
+          
+          # Scale workers based on queue
+          if [ $$QUEUE_SIZE -gt 20 ]; then
+            echo '[autoscaler] High load - consider scaling'
+          elif [ $$QUEUE_SIZE -lt 5 ]; then
+            echo '[autoscaler] Low load - normal operation'
+          fi
+          
+          # Check worker health
+          HEALTH=$$(curl -sf http://orchestrator:3011/health 2>/dev/null | grep -o '\"status\":\"[^\"]*\"' | cut -d'\"' -f4 || echo 'unknown')
+          echo \"[autoscaler] Orchestrator health: $$HEALTH\"
+          
+          sleep 30
+        done
+      "
+    depends_on:
+      - redis
+      - orchestrator
+    networks:
+      - openclaw-net
+    restart: unless-stopped
+
+volumes:
+  redis_data:
+  ollama_data:
+  prometheus_data:
+  grafana_data:
+
+networks:
+  openclaw-net:
+    name: openclaw-network
+    driver: bridge
