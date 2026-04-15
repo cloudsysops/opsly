@@ -16,6 +16,7 @@ tenants
 *.md
 docs
 infra
+!infra/hermes
 .github
 skills
 apps/*/node_modules
