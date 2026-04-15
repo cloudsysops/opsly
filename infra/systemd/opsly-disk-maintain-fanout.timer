@@ -1,0 +1,10 @@
+[Unit]
+Description=Opsly — comprobar uso de disco cada 15 min (fan-out si >= umbral)
+
+[Timer]
+OnBootSec=3min
+OnUnitActiveSec=15min
+Persistent=true
+
+[Install]
+WantedBy=timers.target

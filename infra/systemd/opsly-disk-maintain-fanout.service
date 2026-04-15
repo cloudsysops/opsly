@@ -1,0 +1,15 @@
+[Unit]
+Description=Opsly disk threshold maintain and fleet fan-out (89%% default)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/opsly
+EnvironmentFile=-/etc/default/opsly-disk-maintain
+ExecStart=/bin/bash /opt/opsly/scripts/opsly-disk-maintain-fanout.sh
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
