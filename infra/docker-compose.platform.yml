@@ -25,6 +25,40 @@ x-healthcheck-node: &healthcheck-node
   interval: 30s
   timeout: 10s
   retries: 3
+  start_period: 30s
+
+# ── Healthcheck para Prometheus/HTTP ─────────────────────────────────────────
+x-healthcheck-http: &healthcheck-http
+  interval: 15s
+  timeout: 5s
+  retries: 5
+  start_period: 20s
+
+# ── Deploy base (resources) ──────────────────────────────────────────────────
+x-deploy-small: &deploy-small
+  resources:
+    limits:
+      memory: 128M
+
+x-deploy-medium: &deploy-medium
+  resources:
+    limits:
+      memory: 256M
+
+x-deploy-large: &deploy-large
+  resources:
+    limits:
+      memory: 512M
+
+x-deploy-xlarge: &deploy-xlarge
+  resources:
+    limits:
+      memory: 1G
+
+x-deploy-xxlarge: &deploy-xxlarge
+  resources:
+    limits:
+      memory: 2G
 
 # ── Environment variables comunes para Supabase en workers ──────────────────────
 x-env-supabase: &env-supabase
@@ -72,10 +106,7 @@ services:
     networks:
       - traefik-public
     restart: unless-stopped
-    deploy:
-      resources:
-        limits:
-          memory: 512M
+    deploy: *deploy-large
 
   redis:
     image: redis:7-alpine
@@ -130,15 +161,9 @@ services:
       - redis_edge
     restart: unless-stopped
     healthcheck:
+      <<: *healthcheck-http
       test: ['CMD', 'wget', '-q', '--spider', 'http://127.0.0.1:9090/-/healthy']
-      interval: 15s
-      timeout: 5s
-      retries: 5
-      start_period: 20s
-    deploy:
-      resources:
-        limits:
-          memory: 512M
+    deploy: *deploy-large
 
   node-exporter:
     image: prom/node-exporter:v1.8.2
@@ -157,10 +182,7 @@ services:
       - internal
       - redis_edge
     restart: unless-stopped
-    deploy:
-      resources:
-        limits:
-          memory: 128M
+    deploy: *deploy-small
 
   app:
     image: ${APP_IMAGE:-ghcr.io/cloudsysops/intcloudsysops-api:latest}
@@ -246,10 +268,7 @@ services:
           "fetch('http://127.0.0.1:3001').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
         ]
       start_period: 45s
-    deploy:
-      resources:
-        limits:
-          memory: 512M
+    deploy: *deploy-large
 
   portal:
     image: ${PORTAL_APP_IMAGE:-ghcr.io/cloudsysops/intcloudsysops-portal:latest}
@@ -286,10 +305,7 @@ services:
           "fetch('http://127.0.0.1:3002/login').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
         ]
       start_period: 60s
-    deploy:
-      resources:
-        limits:
-          memory: 512M
+    deploy: *deploy-large
 
   mcp:
     image: ${MCP_IMAGE:-ghcr.io/cloudsysops/intcloudsysops-mcp:latest}
@@ -330,10 +346,7 @@ services:
           "fetch('http://127.0.0.1:3003/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
         ]
       start_period: 30s
-    deploy:
-      resources:
-        limits:
-          memory: 256M
+    deploy: *deploy-medium
 
   llm-gateway:
     image: ${LLM_GATEWAY_IMAGE:-ghcr.io/cloudsysops/intcloudsysops-llm-gateway:latest}
@@ -375,10 +388,7 @@ services:
           "fetch('http://127.0.0.1:3010/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
         ]
       start_period: 30s
-    deploy:
-      resources:
-        limits:
-          memory: 1G
+    deploy: *deploy-xlarge
 
   # ingestion-bunker:
   #   image: ${INGESTION_IMAGE:-ghcr.io/cloudsysops/intcloudsysops-ingestion-service:latest}
@@ -464,10 +474,7 @@ services:
           "fetch('http://127.0.0.1:3011/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
         ]
       start_period: 30s
-    deploy:
-      resources:
-        limits:
-          memory: 1G
+    deploy: *deploy-xlarge
 
   # Worker Hermes (BullMQ hermes-orchestration) + health HTTP. Imagen: Dockerfile.hermes (ADR-015).
   # Con este servicio activo, en Doppler/VPS establecer HERMES_ENABLED=false en el servicio `orchestrator`
@@ -521,11 +528,7 @@ services:
           "fetch('http://127.0.0.1:3020/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
         ]
       start_period: 60s
-    deploy:
-      resources:
-        limits:
-          # Playwright/Chromium necesita ~1.5G; Hermes también carga el runtime Python
-          memory: 2G
+    deploy: *deploy-xxlarge
 
   context-builder:
     image: ${CONTEXT_BUILDER_IMAGE:-ghcr.io/cloudsysops/intcloudsysops-context-builder:latest}
@@ -559,10 +562,7 @@ services:
           "fetch('http://127.0.0.1:3012/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
         ]
       start_period: 30s
-    deploy:
-      resources:
-        limits:
-          memory: 512M
+    deploy: *deploy-large
 
   # ── Métricas Redis → Prometheus ──────────────────────────────────────────────
   redis-exporter:
@@ -578,10 +578,7 @@ services:
     networks:
       - internal
     restart: unless-stopped
-    deploy:
-      resources:
-        limits:
-          memory: 128M
+    deploy: *deploy-small
 
   # ── Métricas de contenedores → Prometheus ────────────────────────────────────
   cadvisor:
@@ -605,10 +602,7 @@ services:
     networks:
       - internal
     restart: unless-stopped
-    deploy:
-      resources:
-        limits:
-          memory: 256M
+    deploy: *deploy-medium
 
   # ── Visualización de métricas: grafana.${PLATFORM_DOMAIN} ────────────────────
   grafana:
@@ -648,15 +642,10 @@ services:
       - internal
     restart: unless-stopped
     healthcheck:
+      <<: *healthcheck-http
       test: ['CMD', 'wget', '-q', '--spider', 'http://127.0.0.1:3000/api/health']
       interval: 30s
-      timeout: 5s
-      retries: 3
-      start_period: 30s
-    deploy:
-      resources:
-        limits:
-          memory: 256M
+    deploy: *deploy-medium
 
   # ── Auto-update imágenes Opsly (solo las etiquetadas watchtower.enable=true) ──
   # Solo actualiza contenedores con label com.centurylinklabs.watchtower.enable=true.
@@ -681,10 +670,7 @@ services:
     networks:
       - internal
     restart: unless-stopped
-    deploy:
-      resources:
-        limits:
-          memory: 256M
+    deploy: *deploy-medium
 
 networks:
   traefik-public:
