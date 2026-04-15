@@ -52,7 +52,7 @@
 | Variable | Dónde | Valor ejemplo |
 |----------|-------|---------------|
 | `OLLAMA_URL` | LLM Gateway (VPS) + Doppler prd | `http://<tailscale-worker-ip>:11434` |
-| `OLLAMA_MODEL` | Doppler prd | `llama3.2` o `qwen2.5-coder` |
+| `OLLAMA_MODEL` | Doppler prd | `nemotron-3-nano:4b` (default código), o `nemotron-3-nano:30b` / `qwen2.5-coder` según RAM |
 | `REDIS_EXPORT_BIND` | VPS + Doppler prd | `100.120.151.91` |
 | `LLM_GATEWAY_EXPORT_BIND` | VPS + Doppler prd | `100.120.151.91` |
 | `REDIS_URL` | Worker Mac 2011 | `redis://:PASSWORD@<tailscale-vps-ip>:6379/0` |

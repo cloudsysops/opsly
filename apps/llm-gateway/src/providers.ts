@@ -31,7 +31,7 @@ export const PROVIDERS = {
     healthKey: "anthropic",
   },
   llama_local: {
-    model: process.env.OLLAMA_MODEL ?? "llama3.2",
+    model: process.env.OLLAMA_MODEL ?? "nemotron-3-nano:4b",
     kind: "ollama",
     cost_per_1k_input: 0,
     cost_per_1k_output: 0,

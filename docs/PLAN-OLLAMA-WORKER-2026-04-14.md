@@ -30,7 +30,7 @@ doppler secrets set LLM_GATEWAY_EXPORT_BIND=100.120.151.91 \
   --project ops-intcloudsysops --config prd
 
 # Modelo recomendado para levantar rápido en Mac 2011:
-doppler secrets set OLLAMA_MODEL=llama3.2 \
+doppler secrets set OLLAMA_MODEL=nemotron-3-nano:4b \
   --project ops-intcloudsysops --config prd
 
 # Alternativa orientada a coding:
@@ -78,8 +78,8 @@ ssh opslyquantum@100.80.41.29 "cd ~/opsly && \
 ### 2.3 Descargar modelo (si no existe)
 
 ```bash
-ssh opslyquantum@100.80.41.29 "docker exec opslyquantum-ollama ollama list | grep llama3.2 || \
-  docker exec opslyquantum-ollama ollama pull llama3.2"
+ssh opslyquantum@100.80.41.29 "docker exec opslyquantum-ollama ollama list | grep nemotron-3-nano || \
+  docker exec opslyquantum-ollama ollama pull nemotron-3-nano:4b"
 ```
 
 ### 2.4 Configurar orchestrator en modo worker

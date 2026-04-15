@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Descarga modelos Ollama recomendados (phi3:mini, llama3.2:3b).
+# Descarga modelos Ollama recomendados (Nemotron 4B por defecto Opsly + phi3 + llama3.2).
 # Si el contenedor opslyquantum-ollama está en ejecución, usa docker exec;
 # si no, usa el binario ollama del host.
 
@@ -8,6 +8,7 @@ set -euo pipefail
 OLLAMA_CONTAINER="${OLLAMA_CONTAINER:-opslyquantum-ollama}"
 
 MODELS=(
+  "nemotron-3-nano:4b"
   "phi3:mini"
   "llama3.2:3b"
 )

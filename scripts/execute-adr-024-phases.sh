@@ -27,7 +27,7 @@ doppler secrets set REDIS_EXPORT_BIND="100.120.151.91" \
 doppler secrets set LLM_GATEWAY_EXPORT_BIND="100.120.151.91" \
   --project ops-intcloudsysops --config prd
 
-doppler secrets set OLLAMA_MODEL="llama3.2" \
+doppler secrets set OLLAMA_MODEL="nemotron-3-nano:4b" \
   --project ops-intcloudsysops --config prd
 
 echo "✅ FASE 1 complete. Proceed to FASE 2."
@@ -56,9 +56,9 @@ ssh opslyquantum@100.80.41.29 "curl -sf http://127.0.0.1:11434/api/tags | jq '.[
 # ssh opslyquantum@100.80.41.29 "cd ~/opsly && \
 #   OLLAMA_ORIGINS='*' docker compose -f infra/docker-compose.opslyquantum.yml up -d ollama"
 
-# 2.3 Ensure llama3.2 model exists
-ssh opslyquantum@100.80.41.29 "docker exec opslyquantum-ollama ollama list | grep llama3.2 || \
-  docker exec opslyquantum-ollama ollama pull llama3.2"
+# 2.3 Ensure Nemotron (default gateway) model exists
+ssh opslyquantum@100.80.41.29 "docker exec opslyquantum-ollama ollama list | grep nemotron-3-nano || \
+  docker exec opslyquantum-ollama ollama pull nemotron-3-nano:4b"
 
 # 2.4 Configure orchestrator worker env
 ssh opslyquantum@100.80.41.29 "cd ~/opsly && cat >> .env.worker <<'ENVEOF'
@@ -157,7 +157,7 @@ echo "📌 FASE 5: Update AGENTS.md"
 echo ""
 echo "✅ All phases executed. Update AGENTS.md with completion status:"
 echo ""
-echo "| 2026-04-14 | ADR-024: Ollama Local + worker queue | ✅ Implemented | Worker Mac 2011 (100.80.41.29) routes simple tasks to llama3.2, VPS orchestrator queue-only |"
+echo "| 2026-04-14 | ADR-024: Ollama Local + worker queue | ✅ Implemented | Worker Mac 2011 (100.80.41.29) routes simple tasks to nemotron-3-nano:4b, VPS orchestrator queue-only |"
 echo ""
 
 exit 0

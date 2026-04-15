@@ -41,6 +41,7 @@ vi.mock("../src/providers/discord.js", () => ({
 }));
 
 import { GatewayHttpError, llmCallDirect } from "../src/llm-direct.js";
+import { PROVIDERS } from "../src/providers.js";
 
 describe("local-first policy", () => {
   beforeEach(() => {
@@ -89,7 +90,7 @@ describe("local-first policy", () => {
     });
 
     expect(out.content).toBe("respuesta local");
-    expect(out.model_used).toContain("llama");
+    expect(out.model_used).toBe(PROVIDERS.llama_local.model);
     expect(out.cost_usd).toBe(0);
   });
 
@@ -180,7 +181,7 @@ describe("local-first policy", () => {
     expect(logUsageMock).toHaveBeenCalledWith(
       expect.objectContaining({
         tenant_slug: "test",
-        model: expect.stringContaining("llama"),
+        model: PROVIDERS.llama_local.model,
         cost_usd: 0,
       }),
     );

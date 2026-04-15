@@ -124,7 +124,7 @@ Esperado: `status: ok` y títulos de las cinco bases (mismas variables `NOTION_D
 | `LLM_GATEWAY_PORT` | Puerto del HTTP `/health` del proceso gateway (default `3010`). |
 | `LLM_CACHE_TTL_SECONDS` | TTL del cache Redis de prompts (default `7200`). |
 | `OLLAMA_URL` | Base URL de Ollama (default `http://localhost:11434`). |
-| `OLLAMA_MODEL` | Modelo Ollama por defecto (default `llama3.2`). |
+| `OLLAMA_MODEL` | Modelo Ollama por defecto (default `nemotron-3-nano:4b`; override p. ej. `nemotron-3-nano:30b`). |
 | `OPENROUTER_API_KEY` | OpenRouter (fallback económico). |
 | `OPENAI_API_KEY` | OpenAI (`gpt-4o`, `gpt-4o-mini`) como fallback. |
 | `OPENROUTER_HTTP_REFERER` | Opcional: cabecera HTTP-Referer para OpenRouter. |
