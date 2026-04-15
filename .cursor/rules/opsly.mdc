@@ -9,6 +9,19 @@ alwaysApply: true
 
 Orquestación multi-agente con MCP (3003) → Orchestrator (3011) → LLM Gateway (3010)
 
+## Skills globales (catálogo Opsly)
+
+Todos los procedimientos viven en `skills/user/<nombre>/SKILL.md` (índice: `skills/index.json`). **Global =** considerar el skill cuya tarea coincida con triggers/categoría; no improvisar fuera de Opsly.
+
+| Prioridad | Skills |
+|-----------|--------|
+| critical | `opsly-context`, `opsly-quantum` (siempre al inicio de sesión) |
+| high | `opsly-architect-senior`, `opsly-api`, `opsly-bash`, `opsly-llm`, `opsly-mcp`, `opsly-supabase`, `opsly-tenant` |
+| medium | `opsly-agent-teams`, `opsly-discord`, `opsly-feedback-ml`, `opsly-google-cloud` |
+| low | `opsly-notebooklm`, `opsly-simplify` |
+
+CLI: `npm run skills:list` · `npm run skills:bootstrap` · `node scripts/load-skills.js search <palabra>`
+
 ## Inicio (obligatorio)
 
 1. Leer AGENTS.md (URL raw: https://raw.githubusercontent.com/cloudsysops/opsly/main/AGENTS.md)

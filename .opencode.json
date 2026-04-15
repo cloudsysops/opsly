@@ -26,6 +26,22 @@
   },
   "skills": {
     "required": ["opsly-context", "opsly-quantum"],
-    "recommended": ["opsly-api", "opsly-bash", "opsly-llm", "opsly-mcp", "opsly-supabase", "opsly-tenant"]
+    "recommended": [
+      "opsly-architect-senior",
+      "opsly-api",
+      "opsly-bash",
+      "opsly-llm",
+      "opsly-mcp",
+      "opsly-supabase",
+      "opsly-tenant",
+      "opsly-agent-teams",
+      "opsly-discord",
+      "opsly-feedback-ml",
+      "opsly-google-cloud",
+      "opsly-notebooklm",
+      "opsly-simplify"
+    ],
+    "global": true,
+    "indexPath": "skills/index.json"
   }
 }

@@ -2,6 +2,12 @@
 
 Skills procedurales para trabajar en **Opsly** sin improvisar.
 
+## Activación global (OpenCode + Cursor + CLI)
+
+- **OpenCode** (`.opencode.json`): `skills.required` + `skills.recommended` incluye el catálogo completo; `skills.global: true` indica que el índice `skills/index.json` es la fuente de lista.
+- **Cursor**: regla siempre aplicada `.cursor/rules/opsly.mdc` — tabla de skills y prioridades.
+- **CLI**: `npm run skills:list`, `npm run skills:bootstrap`, `node scripts/load-skills.js search <query>`.
+
 ## Ubicación en repo
 
 - **`skills/user/<nombre>/SKILL.md`** — fuente de verdad en git.
