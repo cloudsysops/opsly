@@ -42,6 +42,13 @@ export class DecisionEngine {
   }
 
   private baseRoute(t: HermesTaskType, effort: HermesTask["effort"]): HermesRoutingDecision {
+    const localLlmFirst = process.env.HERMES_LOCAL_LLM_FIRST === "true";
+
+    /** Decisiones rápidas (esfuerzo S) → Ollama local primero si está activado (ADR-024). */
+    if (localLlmFirst && t === "decision" && effort === "S") {
+      return { agentType: "ollama", queueName: "openclaw", priority: 0 };
+    }
+
     if (t === "feature" && (effort === "M" || effort === "L" || effort === "XL")) {
       return {
         agentType: "cursor",

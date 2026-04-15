@@ -39,6 +39,37 @@ describe("Hermes DecisionEngine", () => {
     const r = engine.route(baseTask({ type: "task-management" }));
     expect(r.agentType).toBe("notion");
   });
+
+  it("routes decision + S to ollama when HERMES_LOCAL_LLM_FIRST=true", () => {
+    const prev = process.env.HERMES_LOCAL_LLM_FIRST;
+    process.env.HERMES_LOCAL_LLM_FIRST = "true";
+    try {
+      const r = engine.route(baseTask({ type: "decision", effort: "S" }));
+      expect(r.agentType).toBe("ollama");
+      expect(r.queueName).toBe("openclaw");
+    } finally {
+      if (prev === undefined) {
+        delete process.env.HERMES_LOCAL_LLM_FIRST;
+      } else {
+        process.env.HERMES_LOCAL_LLM_FIRST = prev;
+      }
+    }
+  });
+
+  it("routes decision + S to claude when HERMES_LOCAL_LLM_FIRST is unset", () => {
+    const prev = process.env.HERMES_LOCAL_LLM_FIRST;
+    delete process.env.HERMES_LOCAL_LLM_FIRST;
+    try {
+      const r = engine.route(baseTask({ type: "decision", effort: "S" }));
+      expect(r.agentType).toBe("claude");
+    } finally {
+      if (prev === undefined) {
+        delete process.env.HERMES_LOCAL_LLM_FIRST;
+      } else {
+        process.env.HERMES_LOCAL_LLM_FIRST = prev;
+      }
+    }
+  });
 });
 
 describe("Hermes transitions", () => {

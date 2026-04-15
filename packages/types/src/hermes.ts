@@ -31,6 +31,8 @@ export type HermesEffort = z.infer<typeof hermesEffortSchema>;
 export const hermesAgentKindSchema = z.enum([
   "cursor",
   "claude",
+  /** Inferencia vía worker `ollama` → LLM Gateway (`llama_local` / Ollama). */
+  "ollama",
   "github_actions",
   "notion",
   "none",

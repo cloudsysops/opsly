@@ -317,6 +317,8 @@ node scripts/load-skills.js show opsly-api
 
 **Worker autónomo + Ollama local:** `scripts/ensure-ollama-local.sh`, unidad `infra/systemd/opsly-ollama.service`, `OPSLY_ENSURE_OLLAMA=1` en `.env.local` (carga antes del arranque en `run-worker-with-nvm.sh`). Runbook [`docs/AGENTS-AUTONOMOUS-RUNBOOK.md`](docs/AGENTS-AUTONOMOUS-RUNBOOK.md), ADR-024.
 
+**Hermes + LLM local (Cursor/Claude/Copilot en doc):** con `HERMES_DISPATCH_OPENCLAW=true` y `HERMES_LOCAL_LLM_FIRST=true`, tareas `decision` + esfuerzo `S` encolan job `ollama` (gateway `llama_local`). Matriz: [`docs/HERMES-LOCAL-AGENTS-STACK.md`](docs/HERMES-LOCAL-AGENTS-STACK.md).
+
 **Servicios VPS (2026-04-14 01:45 UTC):**
 
 | Servicio      | Status        | Puerto | Notes                                           |

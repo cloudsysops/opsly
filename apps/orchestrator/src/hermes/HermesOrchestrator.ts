@@ -13,6 +13,7 @@ import { logHermesEvent } from "./hermes-log.js";
 import { MetricsCollector } from "./MetricsCollector.js";
 import { getHermesSupabase } from "./supabase-client.js";
 import { TaskStateManager } from "./TaskStateManager.js";
+import { resolveHermesTenantContext } from "./resolve-hermes-tenant.js";
 
 const HEARTBEAT_KEY = "hermes:heartbeat";
 
@@ -122,6 +123,42 @@ export class HermesOrchestrator {
             request_id: task.request_id,
             idempotency_key: task.idempotency_key ?? `hermes:${task.id}`,
             metadata: { hermes: true, notebooklm: Boolean(nb?.answer) },
+          });
+        }
+
+        if (shouldDispatchOpenclaw() && route.agentType === "ollama") {
+          const tenantCtx = await resolveHermesTenantContext(task, supabase);
+          const tenantSlug =
+            tenantCtx?.tenantSlug ??
+            process.env.HERMES_FALLBACK_TENANT_SLUG?.trim() ??
+            "platform";
+          const tenantId = tenantCtx?.tenantId ?? task.tenant_id;
+          const prompt = [
+            `Tarea Hermes: ${task.name}`,
+            `Tipo: ${task.type} · esfuerzo: ${task.effort}`,
+            enriched.suggestedApproach?.slice(0, 4000) ?? "",
+            route.enrichment_summary ? `Contexto: ${route.enrichment_summary}` : "",
+          ]
+            .filter((line) => line.length > 0)
+            .join("\n");
+
+          await enqueueJob({
+            type: "ollama",
+            payload: {
+              task_type: "analyze",
+              prompt,
+            },
+            initiated_by: "cron",
+            taskId: task.id,
+            tenant_id: tenantId,
+            tenant_slug: tenantSlug,
+            request_id: task.request_id,
+            idempotency_key: task.idempotency_key ?? `hermes:ollama:${task.id}`,
+            metadata: {
+              hermes: true,
+              hermes_agent: "ollama",
+              notebooklm: Boolean(nb?.answer),
+            },
           });
         }
 
