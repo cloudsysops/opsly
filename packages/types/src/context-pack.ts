@@ -36,6 +36,8 @@ export const ContextPackSchema = z.object({
     tech_stack: z.record(z.string()).optional(),
     coding_standards: z.string().optional(),
     business_domain: z.string().optional(),
+    /** Namespace lógico para filtrar embeddings (pgvector); ver ADR-026. */
+    vector_namespace: z.string().optional(),
   }),
 
   knowledge: z.object({

@@ -8,6 +8,10 @@ import {
   type ContextPackAdr,
 } from "@intcloudsysops/types";
 import { loadKnowledgeIndex, repoRoot } from "./knowledge-index.js";
+import {
+  buildIdentityPromptBlock,
+  resolveTenantIdentity,
+} from "./tenant-profile.js";
 
 const STALE_MS = 24 * 60 * 60 * 1000;
 const MAX_ADR_FILES = 50;
@@ -140,7 +144,9 @@ export async function buildContextPack(
   const base = supabase
     .schema("platform")
     .from("tenants")
-    .select("id, slug, name, plan, status, services, metadata");
+    .select(
+      "id, slug, name, plan, status, services, metadata, tech_stack, coding_standards, vector_namespace",
+    );
 
   let tenantRow: {
     id: string;
@@ -150,6 +156,9 @@ export async function buildContextPack(
     status: string | null;
     services: unknown;
     metadata: unknown;
+    tech_stack?: unknown;
+    coding_standards?: string | null;
+    vector_namespace?: string | null;
   } | null = null;
 
   if (input.tenantId?.trim()) {
@@ -179,27 +188,22 @@ export async function buildContextPack(
       ? (tenantRow.metadata as Record<string, unknown>)
       : {};
 
-  const techRaw = meta.tech_stack;
-  let tech_stack: Record<string, string> | undefined;
-  if (techRaw && typeof techRaw === "object" && !Array.isArray(techRaw)) {
-    const entries = Object.entries(techRaw as Record<string, unknown>).filter(
-      ([, v]) => typeof v === "string",
-    ) as [string, string][];
-    if (entries.length > 0) {
-      tech_stack = Object.fromEntries(entries);
-    }
-  }
+  const resolved = resolveTenantIdentity(
+    {
+      tech_stack: tenantRow.tech_stack,
+      coding_standards: tenantRow.coding_standards,
+      vector_namespace: tenantRow.vector_namespace,
+    },
+    meta,
+  );
 
-  const coding_standards =
-    typeof meta.coding_standards === "string" ? meta.coding_standards : undefined;
-  const business_domain =
-    typeof meta.business_domain === "string" ? meta.business_domain : undefined;
-  const domain =
-    typeof meta.domain === "string"
-      ? meta.domain
-      : typeof meta.public_domain === "string"
-        ? meta.public_domain
-        : undefined;
+  const {
+    tech_stack,
+    coding_standards,
+    vector_namespace,
+    domain,
+    business_domain,
+  } = resolved;
 
   const [vision, agents_manifest, adrs, index] = await Promise.all([
     loadMarkdownRel("VISION.md"),
@@ -223,10 +227,14 @@ export async function buildContextPack(
 
   const generated_at = new Date().toISOString();
 
+  const identityBlock = buildIdentityPromptBlock(tenantRow.name, resolved);
+
   const system_instructions = [
     `Eres un agente Opsly para el tenant "${tenantRow.name}" (slug: ${tenantRow.slug}, plan: ${tenantRow.plan ?? "unknown"}).`,
     "Sigue VISION.md, AGENTS.md y los ADRs listados. Usa herramientas MCP/OpenClaw según el plan y políticas de la plataforma.",
-  ].join(" ");
+    "",
+    identityBlock,
+  ].join("\n");
 
   const pack = {
     tenant_id: tenantRow.id,
@@ -240,6 +248,7 @@ export async function buildContextPack(
       tech_stack,
       coding_standards,
       business_domain,
+      vector_namespace,
     },
     knowledge: {
       vision,
