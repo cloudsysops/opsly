@@ -1,5 +1,7 @@
 # Worker Opsly — Mac 2011 (Ubuntu) controlado desde la Mac principal (opsly-admin)
 
+> **Primer arranque OpenClaw (workers en cola `openclaw`):** guía mínima en **`docs/FIRST-OPENCLAW-AGENTS-MAC2011.md`**.
+>
 > **Antes de cualquier cambio en `~/opsly`:** `git pull --ff-only` en la rama activa o `./scripts/git-sync-repo.sh` (igual que en **opsly-admin** y en el **VPS**). Ver **`docs/SESSION-GIT-SYNC.md`**. El servicio systemd ejecuta sincronización al **inicio** vía `run-worker-with-nvm.sh` (salvo `OPSLY_SKIP_GIT_PULL=1`).
 
 Guía para usar un equipo **Ubuntu** (p. ej. Mac 2011 con Linux) como **worker** remoto: Tailscale, SSH, VS Code/Cursor Remote, y orchestrator.
