@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-04-15T06:16:34Z",
-  "totalFiles": 164,
+  "lastIndexed": "2026-04-15T06:36:06Z",
+  "totalFiles": 165,
   "files": [
     "ACTIVE-PROMPT.md",
     "ADMIN-ECOSYSTEM.md",
@@ -141,6 +141,7 @@
     "SPRINT-ROADMAP.md",
     "SPRINT-TRACKING.md",
     "SSH-COMMANDS-LOCALRANK.md",
+    "SUPERAGENTS-BOOTSTRAP.md",
     "TAILSCALE-NOMENCLATURA.md",
     "TENANT-TESTING-GUIDE.md",
     "TENANT-TESTING-PLAN.md",
