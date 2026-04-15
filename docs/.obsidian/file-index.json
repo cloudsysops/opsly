@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-04-15T03:48:25Z",
-  "totalFiles": 157,
+  "lastIndexed": "2026-04-15T04:09:58Z",
+  "totalFiles": 158,
   "files": [
     "ACTIVE-PROMPT.md",
     "ADMIN-ECOSYSTEM.md",
@@ -29,6 +29,7 @@
     "ADR-023-approval-gate-phase1.md",
     "ADR-024-ollama-local-worker-primary.md",
     "ADR-025-notebooklm-knowledge-layer.md",
+    "ADR-026-tenant-context-postgres-first.md",
     "AGENTS-ASSIGNMENTS.md",
     "AGENTS-GLOBAL-CONTEXT.md",
     "AGENTS-GUIDE.md",
