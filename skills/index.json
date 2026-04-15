@@ -1,8 +1,19 @@
 {
-  "version": "1.0.0",
-  "generated": "2026-04-14T00:00:00Z",
-  "description": "Índice de todos los skills disponibles en Opsly para agentes IA",
+  "version": "2.0.0",
+  "generated": "2026-04-15T00:00:00Z",
+  "description": "Índice de todos los skills disponibles en Opsly para agentes IA autónomos",
   "skills": [
+    {
+      "name": "opsly-autonomous",
+      "version": "1.0.0",
+      "description": "Sistema de autonomía: auto-detección de skills, chains inteligentes, self-healing",
+      "category": "autonomous",
+      "priority": "critical",
+      "usage": "Para queries que requieren múltiples skills o autonomía completa",
+      "triggers": ["autónomo", "autonomous", "godmode", "auto", "self-healing", "auto-fix", "auto-ejecutar", "sin preguntar"],
+      "crossReferences": ["opsly-context", "opsly-quantum", "opsly-api", "opsly-bash"],
+      "path": "skills/user/opsly-autonomous/"
+    },
     {
       "name": "opsly-context",
       "version": "1.0.0",
@@ -10,7 +21,8 @@
       "category": "bootstrap",
       "priority": "critical",
       "usage": "SIEMPRE al inicio de cualquier sesión",
-      "triggers": ["nueva sesión", "inicio de sesión", "claude modo supremo"],
+      "triggers": ["nueva sesión", "inicio de sesión", "claude modo supremo", "agente", "contexto", "start"],
+      "crossReferences": ["opsly-quantum", "opsly-architect-senior"],
       "path": "skills/user/opsly-context/"
     },
     {
@@ -158,6 +170,7 @@
   "categories": {
     "bootstrap": ["opsly-context"],
     "master": ["opsly-quantum"],
+    "autonomous": ["opsly-autonomous"],
     "architecture": ["opsly-architect-senior"],
     "development": ["opsly-api", "opsly-bash"],
     "ai": ["opsly-llm", "opsly-notebooklm", "opsly-feedback-ml"],
@@ -171,9 +184,19 @@
   "quick_reference": {
     "nueva_sesion": ["opsly-context"],
     "orquestacion": ["opsly-quantum"],
+    "autonomia": ["opsly-autonomous"],
     "desarrollo_api": ["opsly-api", "opsly-bash"],
     "ia_ml": ["opsly-llm", "opsly-feedback-ml", "opsly-notebooklm"],
     "infra": ["opsly-supabase", "opsly-tenant", "opsly-discord"],
     "revision_arquitectura": ["opsly-architect-senior"]
+  },
+  "search": {
+    "by_keyword": {
+      "deploy": ["opsly-discord", "opsly-tenant", "opsly-agent-teams"],
+      "debug": ["opsly-api", "opsly-supabase", "opsly-bash"],
+      "security": ["opsly-architect-senior", "opsly-google-cloud", "opsly-mcp"],
+      "performance": ["opsly-simplify", "opsly-llm"],
+      "automatizacion": ["opsly-bash", "opsly-discord", "opsly-tenant"]
+    }
   }
 }

@@ -16,7 +16,7 @@ Servidor MCP para exponer herramientas de control sobre Opsly.
 | Modo | Cuándo | Comportamiento |
 |------|--------|----------------|
 | **http** (default) | Docker / VPS | `PORT` (3003): `GET /health`, OAuth (`/.well-known/...`, `/oauth/*`). Una línea JSON de arranque en stdout (no usar como cliente MCP). |
-| **stdio** | `MCP_TRANSPORT=stdio` o `node ... --stdio` | `@modelcontextprotocol/sdk`: JSON-RPC por stdin/stdout; herramientas registradas vía `McpServer`. |
+| **stdio** | `MCP_TRANSPORT=stdio` o `node ... --stdio` | `@modelcontextprotocol/sdk`: JSON-RPC por stdin/stdout; tools + resources + prompts. El health HTTP sigue activo para liveness. |
 
 Tras `npm run build`, ejemplo **Cursor** (`.cursor/mcp.json` o ajustes MCP), sustituye la ruta al `dist` de tu clon:
 
@@ -56,3 +56,19 @@ En contenedor **no** uses stdio; deja el default HTTP y enruta Traefik al servic
 | `get_docker_containers` | `GET /api/admin/docker/containers` (token admin) |
 
 La inferencia multi-modelo sigue centralizada en **llm-gateway** (no se exponen API keys de Anthropic/OpenAI/Copilot en MCP).
+
+## Resources y prompts MCP
+
+### Resources
+
+- `opsly://context/agents`
+- `opsly://context/vision`
+- `opsly://context/system-state`
+- `opsly://context/drive-config`
+- `opsly://context/mcp-status`
+- `opsly://adr/{slug}`
+
+### Prompts
+
+- `opsly_startup`
+- `opsly_handoff`

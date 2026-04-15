@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { executeNotebookLM } from "@intcloudsysops/notebooklm-agent";
 import type { ToolDefinition } from "../types/index.js";
 
 const inputSchema = z.object({
@@ -36,6 +35,30 @@ const inputSchema = z.object({
 
 type NotebookLMInput = z.infer<typeof inputSchema>;
 
+type NotebookLMModule = {
+  executeNotebookLM: (input: Record<string, unknown>) => Promise<unknown>;
+};
+
+let notebookLmModulePromise: Promise<NotebookLMModule> | undefined;
+
+async function loadNotebookLmModule(): Promise<NotebookLMModule> {
+  if (!notebookLmModulePromise) {
+    notebookLmModulePromise = import("@intcloudsysops/notebooklm-agent")
+      .then((module) => ({
+        executeNotebookLM: module.executeNotebookLM as NotebookLMModule["executeNotebookLM"],
+      }))
+      .catch((error: unknown) => {
+        notebookLmModulePromise = undefined;
+        const message = error instanceof Error ? error.message : String(error);
+        throw new Error(
+          `NotebookLM agent package is unavailable. Build or install @intcloudsysops/notebooklm-agent before invoking this tool. Root cause: ${message}`,
+        );
+      });
+  }
+
+  return notebookLmModulePromise;
+}
+
 export const notebooklmTool: ToolDefinition<NotebookLMInput, Record<string, unknown>> = {
   name: "notebooklm",
   description:
@@ -44,6 +67,7 @@ export const notebooklmTool: ToolDefinition<NotebookLMInput, Record<string, unkn
     "Requiere NOTEBOOKLM_ENABLED y credenciales Google (notebooklm-py).",
   inputSchema,
   handler: async (input: NotebookLMInput) => {
+    const { executeNotebookLM } = await loadNotebookLmModule();
     const result = await executeNotebookLM({
       action: input.action,
       tenant_slug: input.tenant_slug,

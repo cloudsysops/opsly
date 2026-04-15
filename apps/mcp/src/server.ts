@@ -25,7 +25,7 @@ type SchemaWithSafeParse = {
 };
 
 /** Scope OAuth requerido por tool cuando se envía `Authorization` en `callTool`. */
-const TOOL_REQUIRED_SCOPES: Record<string, string> = {
+export const TOOL_REQUIRED_SCOPES: Record<string, string> = {
   get_tenants: "tenants:read",
   get_tenant: "tenants:read",
   onboard_tenant: "tenants:write",

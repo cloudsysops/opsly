@@ -13,13 +13,13 @@ function useStdioTransport(): boolean {
 async function main(): Promise<void> {
   const openClaw = createServer();
   const definitions = getAllToolDefinitions();
+  startMcpHttpHealth();
 
   if (useStdioTransport()) {
     await startMcpStdioServer(openClaw, definitions);
     return;
   }
 
-  startMcpHttpHealth();
   process.stdout.write(
     JSON.stringify({
       service: openClaw.name,

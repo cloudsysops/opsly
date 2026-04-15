@@ -79,7 +79,7 @@ export function startMcpHttpHealth(): void {
     });
   });
   httpServer.listen(port, "0.0.0.0", () => {
-    process.stdout.write(
+    process.stderr.write(
       JSON.stringify({
         service: "mcp",
         http: "listening",

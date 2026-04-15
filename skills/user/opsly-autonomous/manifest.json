@@ -1,0 +1,107 @@
+{
+  "name": "opsly-autonomous",
+  "version": "1.0.0",
+  "description": "Sistema de auto-activación de skills basado en keywords y contexto. Decide SOLO qué skills cargar sin preguntar.",
+  "priority": "critical",
+  "triggers": ["autónomo", "autonomous", "godmode", "auto", "self-healing", "auto-fix", "auto-ejecutar", "sin preguntar", "ejecutar solo"],
+  "autoActivation": {
+    "enabled": true,
+    "mode": "contextual_routing",
+    "decisionPattern": "keyword_matching + intent_classification",
+    "noConfirmation": true
+  },
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "query": {
+        "type": "string",
+        "description": "Consulta o request del usuario"
+      },
+      "context": {
+        "type": "object",
+        "description": "Contexto operativo actual (estado, servicios, errores)"
+      },
+      "forceSkills": {
+        "type": "array",
+        "items": { "type": "string" },
+        "description": "Skills a forzar (opcional)"
+      }
+    },
+    "required": ["query"]
+  },
+  "outputSchema": {
+    "type": "object",
+    "properties": {
+      "skillsLoaded": {
+        "type": "array",
+        "items": { "type": "string" }
+      },
+      "executionPlan": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "skill": { "type": "string" },
+            "action": { "type": "string" },
+            "priority": { "type": "string" }
+          }
+        }
+      },
+      "metrics": {
+        "type": "object",
+        "properties": {
+          "decisionTime": { "type": "number" },
+          "skillsActivated": { "type": "number" },
+          "confidence": { "type": "number" }
+        }
+      }
+    }
+  },
+  "skillChains": {
+    "api": ["opsly-api", "opsly-supabase", "opsly-tenant"],
+    "infra": ["opsly-bash", "opsly-quantum", "opsly-architect-senior"],
+    "ai": ["opsly-llm", "opsly-mcp", "opsly-context"],
+    "orchestration": ["opsly-agent-teams", "opsly-quantum"],
+    "debug": ["opsly-context", "opsly-bash", "opsly-quantum"]
+  },
+  "keywordMappings": {
+    "api": ["ruta", "endpoint", "api", "route", "handler", "rest", "next.js"],
+    "infra": ["docker", "deploy", "vps", "ssh", "infra", "traefik", "compose", "nginx"],
+    "ai": ["llm", "modelo", "openai", "anthropic", "gemini", "cache", "ai"],
+    "bash": ["script", "bash", "shell", "automatización", "automate", "crontab"],
+    "orchestration": ["bullmq", "queue", "job", "worker", "team", "parallel", "orchestrat"],
+    "debug": ["debug", "error", "fallo", "crash", "broken", "fix", "bug"],
+    "context": ["sesión", "contexto", "estado", "status", "reporte", "situación"],
+    "tenant": ["tenant", "onboard", "invitation", "invitar", "cliente"],
+    "architect": ["arquitectura", "adr", "decisión", "riesgo", "estrategia", "diseño"]
+  },
+  "priorityMapping": {
+    "critical": ["autonomous", "godmode", "self-healing", "auto-fix", "emergency"],
+    "high": ["deploy", "vps", "ssh", "docker", "security", "seguridad"],
+    "medium": ["script", "api", "route", "endpoint", "debug", "fix"],
+    "low": ["docs", "documentation", "readme", "comentario"]
+  },
+  "crossReferences": [
+    "opsly-context",
+    "opsly-quantum",
+    "opsly-api",
+    "opsly-bash",
+    "opsly-llm",
+    "opsly-mcp",
+    "opsly-supabase",
+    "opsly-tenant",
+    "opsly-agent-teams",
+    "opsly-architect-senior"
+  ],
+  "autonomyMetrics": {
+    "decisionThreshold": 0.7,
+    "maxSkillsPerRequest": 5,
+    "fallbackChain": ["opsly-context", "opsly-quantum"],
+    "escalationTriggers": ["unclear", "permission_required", "data_loss_risk", "production_change"]
+  },
+  "errors": {
+    "E_NO_MATCH": "No se encontró skill para la query. Cargar opsly-context como fallback.",
+    "E_TOO_MANY_SKILLS": "Demasiados skills detectados (>5). Priorizar por relevance score.",
+    "E_AMBIGUOUS": "Query ambigua. Usar keyword principal para desambiguar."
+  }
+}
