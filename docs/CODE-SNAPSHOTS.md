@@ -38,6 +38,8 @@ export type HermesEffort = z.infer<typeof hermesEffortSchema>;
 export const hermesAgentKindSchema = z.enum([
   "cursor",
   "claude",
+  /** Inferencia vía worker `ollama` → LLM Gateway (`llama_local` / Ollama). */
+  "ollama",
   "github_actions",
   "notion",
   "none",
@@ -152,6 +154,13 @@ export class DecisionEngine {
   }
 
   private baseRoute(t: HermesTaskType, effort: HermesTask["effort"]): HermesRoutingDecision {
+    const localLlmFirst = process.env.HERMES_LOCAL_LLM_FIRST === "true";
+
+    /** Decisiones rápidas (esfuerzo S) → Ollama local primero si está activado (ADR-024). */
+    if (localLlmFirst && t === "decision" && effort === "S") {
+      return { agentType: "ollama", queueName: "openclaw", priority: 0 };
+    }
+
     if (t === "feature" && (effort === "M" || effort === "L" || effort === "XL")) {
       return {
         agentType: "cursor",
@@ -211,6 +220,7 @@ import { logHermesEvent } from "./hermes-log.js";
 import { MetricsCollector } from "./MetricsCollector.js";
 import { getHermesSupabase } from "./supabase-client.js";
 import { TaskStateManager } from "./TaskStateManager.js";
+import { resolveHermesTenantContext } from "./resolve-hermes-tenant.js";
 
 const HEARTBEAT_KEY = "hermes:heartbeat";
 
@@ -323,6 +333,42 @@ export class HermesOrchestrator {
           });
         }
 
+        if (shouldDispatchOpenclaw() && route.agentType === "ollama") {
+          const tenantCtx = await resolveHermesTenantContext(task, supabase);
+          const tenantSlug =
+            tenantCtx?.tenantSlug ??
+            process.env.HERMES_FALLBACK_TENANT_SLUG?.trim() ??
+            "platform";
+          const tenantId = tenantCtx?.tenantId ?? task.tenant_id;
+          const prompt = [
+            `Tarea Hermes: ${task.name}`,
+            `Tipo: ${task.type} · esfuerzo: ${task.effort}`,
+            enriched.suggestedApproach?.slice(0, 4000) ?? "",
+            route.enrichment_summary ? `Contexto: ${route.enrichment_summary}` : "",
+          ]
+            .filter((line) => line.length > 0)
+            .join("\n");
+
+          await enqueueJob({
+            type: "ollama",
+            payload: {
+              task_type: "analyze",
+              prompt,
+            },
+            initiated_by: "cron",
+            taskId: task.id,
+            tenant_id: tenantId,
+            tenant_slug: tenantSlug,
+            request_id: task.request_id,
+            idempotency_key: task.idempotency_key ?? `hermes:ollama:${task.id}`,
+            metadata: {
+              hermes: true,
+              hermes_agent: "ollama",
+              notebooklm: Boolean(nb?.answer),
+            },
+          });
+        }
+
         const resultPayload = {
           mode: "v1_stub",
           queue: route.queueName,
@@ -393,19 +439,21 @@ export function createHermesOrchestrator(): HermesOrchestrator {
 ## apps/orchestrator/src/lib/notebooklm-client.ts
 
 ```typescript
-import { createHash } from "node:crypto";
-import { basename } from "node:path";
+import { createHash } from 'node:crypto';
+import { basename } from 'node:path';
 
-import { executeNotebookLM } from "@intcloudsysops/notebooklm-agent";
-import type { NotebookDocument, NotebookQueryResponse } from "@intcloudsysops/types";
+import { executeNotebookLM } from '@intcloudsysops/notebooklm-agent';
+import type { NotebookDocument, NotebookQueryResponse } from '@intcloudsysops/types';
 
-import { getNotebookLmCache, setNotebookLmCache } from "./notebooklm-cache.js";
+export type { NotebookQueryResponse };
+
+import { getNotebookLmCache, setNotebookLmCache } from './notebooklm-cache.js';
 
 const QUERY_TIMEOUT_MS = 30_000;
 const MAX_RETRIES = 2;
 
 function defaultTenantSlug(): string {
-  return process.env.NOTEBOOKLM_DEFAULT_TENANT_SLUG?.trim() || "platform";
+  return process.env.NOTEBOOKLM_DEFAULT_TENANT_SLUG?.trim() || 'platform';
 }
 
 function defaultNotebookId(): string | undefined {
@@ -414,13 +462,13 @@ function defaultNotebookId(): string | undefined {
 }
 
 function enabled(): boolean {
-  return process.env.NOTEBOOKLM_ENABLED?.trim().toLowerCase() === "true";
+  return process.env.NOTEBOOKLM_ENABLED?.trim().toLowerCase() === 'true';
 }
 
 function cacheKey(notebookId: string, question: string, context?: string): string {
-  return createHash("sha256")
-    .update(`${notebookId}|${question}|${context ?? ""}`)
-    .digest("hex");
+  return createHash('sha256')
+    .update(`${notebookId}|${question}|${context ?? ''}`)
+    .digest('hex');
 }
 
 async function withTimeout<T>(p: Promise<T>, ms: number): Promise<T> {
@@ -450,14 +498,11 @@ export class NotebookLMClient {
     return enabled() && defaultNotebookId() !== undefined;
   }
 
-  public async queryNotebook(
-    question: string,
-    context?: string,
-  ): Promise<NotebookQueryResponse> {
+  public async queryNotebook(question: string, context?: string): Promise<NotebookQueryResponse> {
     const notebookId = defaultNotebookId();
     if (!notebookId) {
       return {
-        answer: "",
+        answer: '',
         sources: [],
         confidence: 0,
         cached: false,
@@ -473,22 +518,22 @@ export class NotebookLMClient {
     const fullQ =
       context && context.length > 0 ? `${question}\n\nContexto adicional:\n${context}` : question;
 
-    let lastErr = "";
+    let lastErr = '';
     const t0 = Date.now();
     for (let attempt = 0; attempt < MAX_RETRIES; attempt += 1) {
       try {
         const result = await withTimeout(
           executeNotebookLM({
-            action: "ask",
+            action: 'ask',
             tenant_slug: defaultTenantSlug(),
             notebook_id: notebookId,
             question: fullQ,
           }),
-          QUERY_TIMEOUT_MS,
+          QUERY_TIMEOUT_MS
         );
 
         if (!result.success || result.answer === undefined) {
-          lastErr = result.error ?? "ask failed";
+          lastErr = result.error ?? 'ask failed';
           continue;
         }
 
@@ -507,7 +552,7 @@ export class NotebookLMClient {
     }
 
     return {
-      answer: "",
+      answer: '',
       sources: [],
       confidence: 0,
       cached: false,
@@ -518,19 +563,19 @@ export class NotebookLMClient {
   public async uploadDocument(filePath: string, content: string): Promise<string> {
     const notebookId = defaultNotebookId();
     if (!notebookId) {
-      throw new Error("NOTEBOOKLM_NOTEBOOK_ID is not set");
+      throw new Error('NOTEBOOKLM_NOTEBOOK_ID is not set');
     }
-    const title = basename(filePath) || "document.md";
+    const title = basename(filePath) || 'document.md';
     const result = await executeNotebookLM({
-      action: "add_source",
+      action: 'add_source',
       tenant_slug: defaultTenantSlug(),
       notebook_id: notebookId,
-      source_type: "text",
+      source_type: 'text',
       title,
       text: content,
     });
     if (!result.success) {
-      throw new Error(result.error ?? "add_source failed");
+      throw new Error(result.error ?? 'add_source failed');
     }
     return `text:${title}`;
   }
@@ -544,9 +589,9 @@ export class NotebookLMClient {
 
   public async summarize(_docId: string): Promise<{ summary: string }> {
     const q = await this.queryNotebook(
-      "Resume el documento indicado por el operador en una lista de viñetas (modo Hermes sync).",
+      'Resume el documento indicado por el operador en una lista de viñetas (modo Hermes sync).'
     );
-    return { summary: q.answer || "(sin respuesta NotebookLM)" };
+    return { summary: q.answer || '(sin respuesta NotebookLM)' };
   }
 }
 
