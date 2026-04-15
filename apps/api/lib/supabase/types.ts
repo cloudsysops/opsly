@@ -1,21 +1,15 @@
-export type Json =
-  | string
-  | number
-  | boolean
-  | null
-  | { [key: string]: Json | undefined }
-  | Json[];
+export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
 export type TenantStatus =
-  | "provisioning"
-  | "configuring"
-  | "deploying"
-  | "active"
-  | "suspended"
-  | "failed"
-  | "deleted";
+  | 'provisioning'
+  | 'configuring'
+  | 'deploying'
+  | 'active'
+  | 'suspended'
+  | 'failed'
+  | 'deleted';
 
-export type PlanKey = "startup" | "business" | "enterprise" | "demo";
+export type PlanKey = 'startup' | 'business' | 'enterprise' | 'demo';
 
 export type Tenant = {
   id: string;
@@ -57,7 +51,7 @@ export type TenantInsert = {
   deleted_at?: string | null;
 };
 
-export type TenantUpdate = Partial<Omit<Tenant, "id">>;
+export type TenantUpdate = Partial<Omit<Tenant, 'id'>>;
 
 export type Subscription = {
   id: string;
@@ -79,9 +73,7 @@ export type SubscriptionInsert = {
   created_at?: string;
 };
 
-export type SubscriptionUpdate = Partial<
-  Omit<Subscription, "id" | "tenant_id">
->;
+export type SubscriptionUpdate = Partial<Omit<Subscription, 'id' | 'tenant_id'>>;
 
 export type AuditLogInsert = {
   id?: string;
@@ -106,7 +98,7 @@ export type PortAllocationInsert = {
   allocated_at?: string;
 };
 
-export type PortAllocationUpdate = Partial<Omit<PortAllocation, "port">>;
+export type PortAllocationUpdate = Partial<Omit<PortAllocation, 'port'>>;
 
 export type Database = {
   public: {
@@ -428,6 +420,18 @@ export type Database = {
           version: number;
           payload: Json;
         }>;
+      };
+    };
+    Views: Record<string, never>;
+    Functions: Record<string, never>;
+    Enums: Record<string, never>;
+  };
+  sandbox: {
+    Tables: {
+      agent_task_results: {
+        Row: Record<string, unknown>;
+        Insert: Record<string, unknown>;
+        Update: Record<string, unknown>;
       };
     };
     Views: Record<string, never>;

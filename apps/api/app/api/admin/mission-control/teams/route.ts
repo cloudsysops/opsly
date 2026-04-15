@@ -1,13 +1,14 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { createClient, type SupabaseClient } from '@supabase/supabase-js';
+import type { Database } from '../../../../../lib/supabase/types';
 
-function getSupabase(): ReturnType<typeof createClient> {
+function getSupabase(): SupabaseClient<Database> {
   const supabaseUrl = process.env.SUPABASE_URL ?? 'https://jkwykpldnitavhmtuzmo.supabase.co';
   const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY ?? '';
   if (!supabaseKey) {
     throw new Error('SUPABASE_SERVICE_ROLE_KEY is required');
   }
-  return createClient(supabaseUrl, supabaseKey);
+  return createClient<Database>(supabaseUrl, supabaseKey);
 }
 
 /** Umbral: si fallos > completed * ratio → status error. */
