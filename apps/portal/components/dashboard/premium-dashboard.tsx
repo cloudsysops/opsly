@@ -6,7 +6,7 @@ import type { ReactElement, ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 export { PageLead } from "./page-lead";
-export { ResponsiveGrid, ResponsiveStack } from "@/components/layouts/responsive-grid";
+export { ResponsiveGrid, ResponsiveStack } from "@/components/layout/responsive-grid";
 
 export function DashboardShell(props: {
   children: ReactNode;

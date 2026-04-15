@@ -24,6 +24,7 @@ const nav = [
   { href: "/invitations", label: "Invitations", icon: Mail },
   { href: "/metrics/llm", label: "LLM Metrics", icon: BarChart3 },
   { href: "/agents", label: "Agent Teams", icon: Activity },
+  { href: "/agents-team", label: "Agents Config", icon: Activity },
   { href: "/costs", label: "Costos", icon: CircleDollarSign },
   { href: "/notebooklm", label: "NotebookLM", icon: BookOpen },
   { href: "/feedback", label: "Feedback", icon: MessageSquare },

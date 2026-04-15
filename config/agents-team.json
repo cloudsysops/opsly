@@ -1,0 +1,122 @@
+{
+  "team": {
+    "name": "Opsly Agent Team",
+    "description": "Arquitecto supervisor con workers especializados sobre OpenClaw"
+  },
+  "routing": {
+    "policy": "local-first",
+    "providers": {
+      "primary": "ollama",
+      "fallback": [
+        "openrouter",
+        "anthropic"
+      ]
+    }
+  },
+  "constraints": {
+    "max_total_daily_budget_usd": 5,
+    "max_concurrent_agents": 3,
+    "require_approval_for": [
+      "delete_file",
+      "git_push_main",
+      "infra_change"
+    ]
+  },
+  "agents": [
+    {
+      "id": "architect-supervisor",
+      "name": "Architect Supervisor",
+      "role": "planner",
+      "model": "llama3.2:latest",
+      "fallback_model": "anthropic/claude-3-5-sonnet",
+      "daily_budget_usd": 1.5,
+      "local_only": false,
+      "rate_limit": {
+        "requests_per_minute": 6,
+        "tokens_per_minute": 12000
+      },
+      "allowed_tools": [
+        "plan",
+        "delegate",
+        "summarize",
+        "route_task"
+      ],
+      "allowed_paths": [
+        "apps/",
+        "config/",
+        "docs/",
+        "scripts/"
+      ]
+    },
+    {
+      "id": "backend-worker",
+      "name": "Backend Worker",
+      "role": "executor",
+      "model": "deepseek-coder:6.7b",
+      "fallback_model": "anthropic/claude-3-5-haiku",
+      "daily_budget_usd": 1.2,
+      "local_only": false,
+      "rate_limit": {
+        "requests_per_minute": 5,
+        "tokens_per_minute": 10000
+      },
+      "allowed_tools": [
+        "read_file",
+        "write_file",
+        "run_tests",
+        "enqueue_job"
+      ],
+      "allowed_paths": [
+        "apps/api/",
+        "apps/orchestrator/",
+        "apps/llm-gateway/"
+      ]
+    },
+    {
+      "id": "frontend-worker",
+      "name": "Frontend Worker",
+      "role": "executor",
+      "model": "codellama:7b",
+      "fallback_model": "openrouter/gpt-4o-mini",
+      "daily_budget_usd": 0.8,
+      "local_only": false,
+      "rate_limit": {
+        "requests_per_minute": 5,
+        "tokens_per_minute": 8000
+      },
+      "allowed_tools": [
+        "read_file",
+        "write_file",
+        "run_tests"
+      ],
+      "allowed_paths": [
+        "apps/admin/",
+        "apps/portal/"
+      ]
+    },
+    {
+      "id": "infra-worker",
+      "name": "Infra Worker",
+      "role": "tool",
+      "model": "llama3.2:latest",
+      "fallback_model": "openrouter/claude-3.5-haiku",
+      "daily_budget_usd": 0.5,
+      "local_only": true,
+      "rate_limit": {
+        "requests_per_minute": 3,
+        "tokens_per_minute": 6000
+      },
+      "allowed_tools": [
+        "bash",
+        "docker_ps",
+        "health_check",
+        "logs_tail"
+      ],
+      "allowed_paths": [
+        "infra/",
+        "scripts/",
+        "docs/"
+      ]
+    }
+  ]
+}

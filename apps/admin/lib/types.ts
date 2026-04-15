@@ -98,6 +98,47 @@ export type TeamMetricsResponse = {
   timestamp: string;
 };
 
+export type AgentTeamRole = 'planner' | 'executor' | 'tool' | 'notifier';
+
+export type AgentTeamRateLimit = {
+  requests_per_minute: number;
+  tokens_per_minute: number;
+};
+
+export type AgentTeamMember = {
+  id: string;
+  name: string;
+  role: AgentTeamRole;
+  model: string;
+  fallback_model: string;
+  daily_budget_usd: number;
+  local_only: boolean;
+  rate_limit: AgentTeamRateLimit;
+  allowed_tools: string[];
+  allowed_paths: string[];
+};
+
+export type AgentsTeamResponse = {
+  team: {
+    name: string;
+    description: string;
+  };
+  routing: {
+    policy: string;
+    providers: {
+      primary: string;
+      fallback: string[];
+    };
+  };
+  constraints: {
+    max_total_daily_budget_usd: number;
+    max_concurrent_agents: number;
+    require_approval_for: string[];
+  };
+  agents: AgentTeamMember[];
+  generated_at: string;
+};
+
 /** Métricas del host vía Prometheus (API hace de proxy). */
 export type SystemMetricsResponse = {
   cpu_percent: number;

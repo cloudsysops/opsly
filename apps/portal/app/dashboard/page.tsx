@@ -2,7 +2,7 @@ import type { ReactElement } from "react";
 import { redirect } from "next/navigation";
 import { DashboardShell, PageLead } from "@/components/dashboard/premium-dashboard";
 import { ModeSelector } from "@/components/mode-selector";
-import { PortalShell } from "@/components/portal-shell";
+import { PortalShell } from "@/components/layout/portal-shell";
 import { createServerSupabase } from "@/lib/supabase/server";
 
 export default async function DashboardSelectorPage(): Promise<ReactElement> {

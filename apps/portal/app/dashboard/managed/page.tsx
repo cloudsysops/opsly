@@ -1,11 +1,11 @@
 import type { ReactElement } from "react";
 import { redirect } from "next/navigation";
+import { InsightDashboard } from "@/components/dashboard/insight-dashboard";
 import { DashboardShell, PageLead, ResponsiveGrid } from "@/components/dashboard/premium-dashboard";
+import { PortalShell } from "@/components/layout/portal-shell";
 import { LlmUsageCard } from "@/components/llm-usage-card";
-import { PortalShell } from "@/components/portal-shell";
 import { ServiceCard } from "@/components/service-card";
 import { healthFromReachable } from "@/components/status-badge";
-import { InsightDashboard } from "@/components/insight-dashboard";
 import { requirePortalPayloadWithUsageAndInsights } from "@/lib/portal-server";
 
 export default async function ManagedDashboardPage(): Promise<ReactElement> {

@@ -4,10 +4,10 @@ import { CredentialReveal } from "@/components/credential-reveal";
 import { DashboardShell, PageLead } from "@/components/dashboard/premium-dashboard";
 import { DeveloperActions } from "@/components/developer-actions";
 import { LlmUsageCard } from "@/components/llm-usage-card";
-import { PortalShell } from "@/components/portal-shell";
+import { InsightDashboard } from "@/components/dashboard/insight-dashboard";
+import { PortalShell } from "@/components/layout/portal-shell";
 import { ServiceCard } from "@/components/service-card";
 import { healthFromReachable } from "@/components/status-badge";
-import { InsightDashboard } from "@/components/insight-dashboard";
 import { requirePortalPayloadWithUsageAndInsights } from "@/lib/portal-server";
 
 const DEFAULT_N8N_USER = "admin";

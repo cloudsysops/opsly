@@ -1,5 +1,6 @@
 import { getSessionAuthToken } from "./session-auth";
 import type {
+    AgentsTeamResponse,
     AdminCostsResponse,
     AdminDockerContainersResponse,
     AdminOverviewResponse,
@@ -180,6 +181,10 @@ export async function getSystemMetrics(): Promise<SystemMetricsResponse> {
 
 export async function getTeamMetrics(): Promise<TeamMetricsResponse> {
   return request<TeamMetricsResponse>("/api/metrics/teams");
+}
+
+export async function getAgentsTeam(): Promise<AgentsTeamResponse> {
+  return request<AgentsTeamResponse>('/api/agents/team');
 }
 
 export async function getAdminOverview(): Promise<AdminOverviewResponse> {

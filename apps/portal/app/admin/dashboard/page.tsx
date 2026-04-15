@@ -1,6 +1,6 @@
 import type { ReactElement } from "react";
 import { redirect } from "next/navigation";
-import { PortalShell } from "@/components/portal-shell";
+import { PortalShell } from "@/components/layout/portal-shell";
 import { SuperAdminDashboard } from "@/components/super-admin-dashboard";
 import { fetchSuperAdminMetrics, fetchSuperAdminTenants } from "@/lib/admin-api";
 import { getApiBaseUrlServer } from "@/lib/api-server";
