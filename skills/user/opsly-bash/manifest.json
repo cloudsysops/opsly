@@ -1,0 +1,44 @@
+{
+  "name": "opsly-bash",
+  "version": "1.0.0",
+  "description": "Plantillas y reglas para scripts Bash en scripts/",
+  "triggers": ["script bash", "shell", "automatización", "bash script", "shellscript"],
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "action": {
+        "type": "string",
+        "description": "create | modify | debug",
+        "enum": ["create", "modify", "debug"]
+      },
+      "scriptName": {
+        "type": "string",
+        "description": "Nombre del script sin extensión"
+      },
+      "purpose": {
+        "type": "string",
+        "description": "Descripción breve del propósito del script"
+      }
+    },
+    "required": ["action", "purpose"]
+  },
+  "outputSchema": {
+    "type": "object",
+    "properties": {
+      "scriptCreated": { "type": "boolean" },
+      "path": { "type": "string" },
+      "dryRun": { "type": "boolean" }
+    }
+  },
+  "examples": [
+    {
+      "input": { "action": "create", "scriptName": "deploy-tenant", "purpose": "Desplegar stack de un tenant" },
+      "output": { "scriptCreated": true, "path": "scripts/deploy-tenant.sh", "dryRun": true }
+    }
+  ],
+  "crossReferences": ["opsly-tenant", "opsly-discord"],
+  "errors": {
+    "E_PIPEFAIL": "Usar set -euo pipefail desde el inicio",
+    "E_NO_DRYRUN": "Scripts que modifican infra requieren --dry-run"
+  }
+}

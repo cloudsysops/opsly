@@ -4,17 +4,6 @@
   "description": "Índice de todos los skills disponibles en Opsly para agentes IA autónomos",
   "skills": [
     {
-      "name": "opsly-autonomous",
-      "version": "1.0.0",
-      "description": "Sistema de autonomía: auto-detección de skills, chains inteligentes, self-healing",
-      "category": "autonomous",
-      "priority": "critical",
-      "usage": "Para queries que requieren múltiples skills o autonomía completa",
-      "triggers": ["autónomo", "autonomous", "godmode", "auto", "self-healing", "auto-fix", "auto-ejecutar", "sin preguntar"],
-      "crossReferences": ["opsly-context", "opsly-quantum", "opsly-api", "opsly-bash"],
-      "path": "skills/user/opsly-autonomous/"
-    },
-    {
       "name": "opsly-context",
       "version": "1.0.0",
       "description": "Bootstrap de sesión: AGENTS, VISION, VPS, tokens",
@@ -32,7 +21,8 @@
       "category": "master",
       "priority": "critical",
       "usage": "Visión completa del monorepo + diagnóstico + acciones",
-      "triggers": ["orquestación", "diagnóstico completo", "multi-skill"],
+      "triggers": ["orquestación", "diagnóstico completo", "multi-skill", "quantum", "maestro", "visión global"],
+      "crossReferences": ["opsly-context", "opsly-api", "opsly-bash", "opsly-llm", "opsly-mcp", "opsly-supabase", "opsly-tenant", "opsly-agent-teams"],
       "path": "skills/user/opsly-quantum/"
     },
     {
@@ -42,7 +32,8 @@
       "category": "architecture",
       "priority": "high",
       "usage": "Revisión de arquitectura antes de features grandes o cambios de infra",
-      "triggers": ["arquitectura", "ADR", "revisión", "cambio de infra"],
+      "triggers": ["arquitectura", "ADR", "revisión", "cambio de infra", "riesgo", "decisión", "priorizar"],
+      "crossReferences": ["opsly-context", "opsly-quantum", "opsly-supabase", "opsly-api"],
       "path": "skills/user/opsly-architect-senior/"
     },
     {
@@ -52,7 +43,8 @@
       "category": "development",
       "priority": "high",
       "usage": "Crear o modificar rutas en apps/api/",
-      "triggers": ["ruta API", "next.js", "route handler", "endpoint"],
+      "triggers": ["ruta API", "next.js", "route handler", "endpoint", "api route", "rest"],
+      "crossReferences": ["opsly-supabase", "opsly-mcp", "opsly-tenant"],
       "path": "skills/user/opsly-api/"
     },
     {
@@ -62,7 +54,8 @@
       "category": "development",
       "priority": "high",
       "usage": "Crear o modificar scripts en scripts/",
-      "triggers": ["script bash", "shell", "automatización"],
+      "triggers": ["script bash", "shell", "automatización", "bash script", "shellscript", "bash"],
+      "crossReferences": ["opsly-tenant", "opsly-discord", "opsly-supabase"],
       "path": "skills/user/opsly-bash/"
     },
     {
@@ -72,7 +65,8 @@
       "category": "ai",
       "priority": "high",
       "usage": "Cualquier llamada a LLM vía @intcloudsysops/llm-gateway",
-      "triggers": ["llm", "anthropic", "openai", "modelo", "cache"],
+      "triggers": ["llm", "anthropic", "openai", "modelo", "cache", "ai", "llmcall", "gemini", "sonnet", "haiku"],
+      "crossReferences": ["opsly-feedback-ml", "opsly-quantum", "opsly-agent-teams"],
       "path": "skills/user/opsly-llm/"
     },
     {
@@ -82,7 +76,8 @@
       "category": "integration",
       "priority": "high",
       "usage": "Agregar o modificar tools del MCP OpenClaw",
-      "triggers": ["mcp", "tool", "oauth", "pkce", "openclaw"],
+      "triggers": ["mcp", "tool", "oauth", "pkce", "openclaw", "mcp tool", "tool definition"],
+      "crossReferences": ["opsly-api", "opsly-tenant", "opsly-llm"],
       "path": "skills/user/opsly-mcp/"
     },
     {
@@ -92,7 +87,8 @@
       "category": "database",
       "priority": "high",
       "usage": "Crear migraciones SQL o diseñar queries contra schema platform",
-      "triggers": ["supabase", "sql", "migración", "postgres", "rls"],
+      "triggers": ["supabase", "sql", "migración", "postgres", "rls", "database", "schema", "pgvector"],
+      "crossReferences": ["opsly-api", "opsly-tenant", "opsly-feedback-ml"],
       "path": "skills/user/opsly-supabase/"
     },
     {
@@ -102,7 +98,8 @@
       "category": "operations",
       "priority": "high",
       "usage": "Onboarding, suspensión, resume o diagnóstico de stacks por tenant",
-      "triggers": ["onboard", "tenant", "suspend", "resume", "n8n", "uptime"],
+      "triggers": ["onboard", "tenant", "suspend", "resume", "n8n", "uptime", "stack", "cliente"],
+      "crossReferences": ["opsly-api", "opsly-supabase", "opsly-discord", "opsly-bash"],
       "path": "skills/user/opsly-tenant/"
     },
     {
@@ -112,7 +109,8 @@
       "category": "orchestration",
       "priority": "medium",
       "usage": "Encolar trabajo paralelo por especialización (BullMQ) o extender TeamManager",
-      "triggers": ["bullmq", "queue", "job", "worker", "team"],
+      "triggers": ["bullmq", "queue", "job", "worker", "team", "parallel", "orchestration"],
+      "crossReferences": ["opsly-quantum", "opsly-api", "opsly-llm"],
       "path": "skills/user/opsly-agent-teams/"
     },
     {
@@ -122,7 +120,8 @@
       "category": "notifications",
       "priority": "medium",
       "usage": "Notificar eventos operativos (deploy, errores, commits, monitor)",
-      "triggers": ["discord", "notificación", "webhook", "alerta"],
+      "triggers": ["discord", "notificación", "webhook", "alerta", "deploy", "commit", "error"],
+      "crossReferences": ["opsly-bash", "opsly-tenant", "opsly-quantum"],
       "path": "skills/user/opsly-discord/"
     },
     {
@@ -132,9 +131,10 @@
       "category": "ai",
       "priority": "low",
       "usage": "Generar contenido a partir de documentos (PDF→podcast+slides+infografía)",
-      "triggers": ["notebooklm", "podcast", "audio", "pdf", "google"],
-      "path": "skills/user/opsly-notebooklm/",
-      "requires": ["NOTEBOOKLM_ENABLED=true", "plan: business|enterprise"]
+      "triggers": ["notebooklm", "podcast", "audio", "pdf", "google", "research", "resumen"],
+      "requires": ["NOTEBOOKLM_ENABLED=true", "plan: business|enterprise"],
+      "crossReferences": ["opsly-tenant", "opsly-llm"],
+      "path": "skills/user/opsly-notebooklm/"
     },
     {
       "name": "opsly-feedback-ml",
@@ -143,7 +143,8 @@
       "category": "ai",
       "priority": "medium",
       "usage": "Flujo de feedback de usuarios, decisiones ML o tablas feedback_*/llm_feedback",
-      "triggers": ["feedback", "ml", "auto-implement", "aprobación"],
+      "triggers": ["feedback", "ml", "auto-implement", "aprobación", "clasificar", "clasificación"],
+      "crossReferences": ["opsly-llm", "opsly-api", "opsly-quantum"],
       "path": "skills/user/opsly-feedback-ml/"
     },
     {
@@ -153,7 +154,8 @@
       "category": "integration",
       "priority": "medium",
       "usage": "Integrar cualquier servicio de Google Cloud",
-      "triggers": ["gcp", "google", "drive", "bigquery", "vertex"],
+      "triggers": ["gcp", "google", "drive", "bigquery", "vertex", "cloud", "service account"],
+      "crossReferences": ["opsly-bash", "opsly-llm", "opsly-quantum"],
       "path": "skills/user/opsly-google-cloud/"
     },
     {
@@ -163,14 +165,14 @@
       "category": "optimization",
       "priority": "low",
       "usage": "Optimizar Dockerfiles y docker-compose.yaml",
-      "triggers": ["docker", "compose", "optimización", "yaml"],
+      "triggers": ["docker", "compose", "optimización", "yaml", "dockerfile", "healthcheck", "memory"],
+      "crossReferences": ["opsly-bash", "opsly-quantum"],
       "path": "skills/user/opsly-simplify/"
     }
   ],
   "categories": {
     "bootstrap": ["opsly-context"],
     "master": ["opsly-quantum"],
-    "autonomous": ["opsly-autonomous"],
     "architecture": ["opsly-architect-senior"],
     "development": ["opsly-api", "opsly-bash"],
     "ai": ["opsly-llm", "opsly-notebooklm", "opsly-feedback-ml"],
@@ -184,7 +186,6 @@
   "quick_reference": {
     "nueva_sesion": ["opsly-context"],
     "orquestacion": ["opsly-quantum"],
-    "autonomia": ["opsly-autonomous"],
     "desarrollo_api": ["opsly-api", "opsly-bash"],
     "ia_ml": ["opsly-llm", "opsly-feedback-ml", "opsly-notebooklm"],
     "infra": ["opsly-supabase", "opsly-tenant", "opsly-discord"],
@@ -195,7 +196,7 @@
       "deploy": ["opsly-discord", "opsly-tenant", "opsly-agent-teams"],
       "debug": ["opsly-api", "opsly-supabase", "opsly-bash"],
       "security": ["opsly-architect-senior", "opsly-google-cloud", "opsly-mcp"],
-      "performance": ["opsly-simplify", "opsly-llm"],
+      "performance": ["opsly-simplify", "opsly-llm", "opsly-llm"],
       "automatizacion": ["opsly-bash", "opsly-discord", "opsly-tenant"]
     }
   }

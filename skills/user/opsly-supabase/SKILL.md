@@ -1,5 +1,9 @@
 # Opsly Supabase Skill
 
+> **Triggers:** `supabase`, `sql`, `migración`, `postgres`, `rls`, `database`, `schema`, `pgvector`
+> **Priority:** HIGH
+> **Skills relacionados:** `opsly-api`, `opsly-tenant`, `opsly-feedback-ml`
+
 ## Cuándo usar
 
 Al crear migraciones SQL o diseñar queries contra el schema `platform`.
@@ -49,3 +53,24 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON platform.mi_tabla TO service_role;
 ## Políticas RLS
 
 Si anon/authenticated acceden por PostgREST, añadir políticas explícitas; si solo `service_role` vía backend, documentar en el ADR o en el comentario de la migración.
+
+## Errores comunes
+
+| Error | Causa | Solución |
+|-------|-------|----------|
+| duplicate key version | Migración con mismo número | Renombrar a versión siguiente |
+| permission denied | Schema no expuesto | `GRANT USAGE ON SCHEMA platform` |
+| RLS blocked | Políticas restrictivas | Verificar policies para service_role |
+
+## Testing
+
+```bash
+# Test migración dry-run
+npx supabase db push --dry-run
+
+# Ver tablas
+npx supabase db query --linked "SELECT tablename FROM pg_tables WHERE schemaname='platform'"
+
+# Test RLS
+npx supabase db query --linked "SELECT * FROM platform.tenants LIMIT 1"
+```

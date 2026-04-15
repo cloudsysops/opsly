@@ -1,0 +1,63 @@
+{
+  "name": "opsly-supabase",
+  "version": "1.0.0",
+  "description": "Migraciones SQL, schema platform, RLS, políticas",
+  "triggers": ["supabase", "sql", "migración", "postgres", "rls", "database", "schema", "pgvector"],
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "action": {
+        "type": "string",
+        "description": "create_migration | create_table | add_rls | add_policy | query",
+        "enum": ["create_migration", "create_table", "add_rls", "add_policy", "query"]
+      },
+      "tableName": { "type": "string", "description": "Nombre de la tabla" },
+      "columns": {
+        "type": "array",
+        "description": "Definición de columnas",
+        "items": { "type": "object" }
+      },
+      "tenantAware": { "type": "boolean", "description": "Si la tabla es multi-tenant" }
+    },
+    "required": ["action"]
+  },
+  "outputSchema": {
+    "type": "object",
+    "properties": {
+      "migrationCreated": { "type": "boolean" },
+      "path": { "type": "string" },
+      "version": { "type": "string" },
+      "rlsEnabled": { "type": "boolean" }
+    }
+  },
+  "examples": [
+    {
+      "input": {
+        "action": "create_migration",
+        "tableName": "tenant_logs",
+        "tenantAware": true,
+        "columns": [
+          { "name": "id", "type": "uuid", "primary": true },
+          { "name": "tenant_slug", "type": "text", "notNull": true },
+          { "name": "message", "type": "text" }
+        ]
+      },
+      "output": {
+        "migrationCreated": true,
+        "path": "supabase/migrations/00XX_tenant_logs.sql",
+        "version": "00XX",
+        "rlsEnabled": true
+      }
+    }
+  ],
+  "patterns": {
+    "tenantColumns": ["tenant_slug text NOT NULL"],
+    "indexPattern": "(tenant_slug, created_at DESC)",
+    "fkPattern": "REFERENCES platform.tenants(slug) ON DELETE CASCADE"
+  },
+  "crossReferences": ["opsly-api", "opsly-tenant"],
+  "errors": {
+    "E_DUPLICATE_VERSION": "No duplicar números de versión (0003 ya existe)",
+    "E_NO_RLS": "Tablas platform requieren RLS habilitado"
+  }
+}

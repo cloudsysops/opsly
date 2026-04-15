@@ -1,5 +1,9 @@
 # Opsly — Arquitecto senior (diagnóstico y priorización)
 
+> **Triggers:** `arquitectura`, `ADR`, `revisión`, `cambio de infra`, `riesgo`, `decisión`, `priorizar`
+> **Priority:** HIGH
+> **Skills relacionados:** `opsly-context`, `opsly-quantum`, `opsly-supabase`, `opsly-api`
+
 ## Cuándo usar
 
 - Revisión de arquitectura antes de features grandes o cambios de infra.

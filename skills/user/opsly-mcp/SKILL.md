@@ -1,5 +1,9 @@
 # Opsly MCP Tool Skill
 
+> **Triggers:** `mcp`, `tool`, `oauth`, `pkce`, `openclaw`, `mcp tool`, `tool definition`
+> **Priority:** HIGH
+> **Skills relacionados:** `opsly-api`, `opsly-tenant`, `opsly-llm`
+
 ## Cuándo usar
 
 Al agregar o modificar tools del MCP OpenClaw en `apps/mcp/`.
@@ -44,3 +48,23 @@ OAuth / PKCE: `apps/mcp/src/auth/` y `docs/adr/ADR-009-openclaw-mcp-architecture
 - `description` clara; `inputSchema` con `.describe()` por campo.
 - Sin side effects no documentados (GitHub, Discord, Docker, etc.).
 - Tests: mock de `opslyFetch` en `apps/mcp/__tests__/`.
+
+## Errores comunes
+
+| Error | Causa | Solución |
+|-------|-------|----------|
+| Tool not found | No registrada en server.ts | Añadir en `registerTools` |
+| OAuth scope missing | No en TOOL_REQUIRED_SCOPES | Añadir scope |
+| 401 Unauthorized | Token expirado | Refresh OAuth token |
+
+## Testing
+
+```bash
+# Ver tools disponibles
+curl -sf http://localhost:3003/tools | jq '.[].name'
+
+# Test tool manually
+curl -X POST http://localhost:3003/tools/mi_tool \
+  -H "Content-Type: application/json" \
+  -d '{"param":"valor"}'
+```

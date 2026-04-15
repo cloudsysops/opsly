@@ -1,0 +1,60 @@
+{
+  "name": "opsly-discord",
+  "version": "1.0.0",
+  "description": "Notificaciones Discord: notify-discord.sh, tipos, reglas",
+  "triggers": ["discord", "notificación", "webhook", "alerta", "deploy", "commit", "error"],
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "title": { "type": "string", "description": "Título del evento" },
+      "description": { "type": "string", "description": "Descripción (sin secretos)" },
+      "type": {
+        "type": "string",
+        "description": "Tipo de notificación",
+        "enum": ["success", "error", "warning", "info"]
+      },
+      "fields": {
+        "type": "array",
+        "description": "Campos adicionales para embed",
+        "items": {
+          "type": "object",
+          "properties": {
+            "name": { "type": "string" },
+            "value": { "type": "string" },
+            "inline": { "type": "boolean" }
+          }
+        }
+      }
+    },
+    "required": ["title", "description", "type"]
+  },
+  "outputSchema": {
+    "type": "object",
+    "properties": {
+      "sent": { "type": "boolean" },
+      "noop": { "type": "boolean", "description": "Si el webhook estaba vacío" }
+    }
+  },
+  "examples": [
+    {
+      "input": {
+        "title": "Deploy completado",
+        "description": "API actualizada a v1.2.3 en producción",
+        "type": "success",
+        "fields": [{ "name": "Ambiente", "value": "producción", "inline": true }]
+      },
+      "output": { "sent": true, "noop": false }
+    }
+  ],
+  "types": {
+    "success": { "color": 5763719, "use": "Deploy OK, tarea completada" },
+    "error": { "color": 15548984, "use": "Fallo crítico, provider caído" },
+    "warning": { "color": 16705372, "use": "Disco alto, degradación" },
+    "info": { "color": 3447003, "use": "Commit, sync, mensajes generales" }
+  },
+  "crossReferences": ["opsly-bash", "opsly-tenant"],
+  "errors": {
+    "E_NO_SECRET": "No usar secrets.* en título ni descripción",
+    "E_WEBHOOK_EMPTY": "Script hace no-op con exit 0 (comportamiento correcto)"
+  }
+}

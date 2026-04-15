@@ -1,0 +1,66 @@
+{
+  "name": "opsly-simplify",
+  "version": "1.0.0",
+  "description": "Docker & Docker Compose optimization: multi-stage, anchors, limits",
+  "triggers": ["docker", "compose", "optimización", "yaml", "dockerfile", "healthcheck", "memory"],
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "action": {
+        "type": "string",
+        "description": "optimize_dockerfile | optimize_compose | add_anchor | verify_limits",
+        "enum": ["optimize_dockerfile", "optimize_compose", "add_anchor", "verify_limits"]
+      },
+      "target": { "type": "string", "description": "Ruta al archivo a optimizar" },
+      "dryRun": { "type": "boolean" }
+    },
+    "required": ["action"]
+  },
+  "outputSchema": {
+    "type": "object",
+    "properties": {
+      "optimized": { "type": "boolean" },
+      "anchorsAdded": { "type": "array", "items": { "type": "string" } },
+      "memoryLimitsVerified": { "type": "boolean" },
+      "dockerfileValid": { "type": "boolean" }
+    }
+  },
+  "examples": [
+    {
+      "input": {
+        "action": "add_anchor",
+        "target": "infra/docker-compose.platform.yml"
+      },
+      "output": {
+        "optimized": true,
+        "anchorsAdded": ["x-healthcheck-node", "x-env-supabase"],
+        "memoryLimitsVerified": true
+      }
+    }
+  ],
+  "patterns": {
+    "healthcheckAnchor": {
+      "name": "x-healthcheck-node",
+      "values": { "interval": "30s", "timeout": "10s", "retries": 3 }
+    },
+    "envAnchor": {
+      "name": "x-env-supabase",
+      "vars": ["SUPABASE_URL", "NEXT_PUBLIC_SUPABASE_URL", "SUPABASE_SERVICE_ROLE_KEY"]
+    }
+  },
+  "memoryLimits": {
+    "app": "768M",
+    "admin": "512M",
+    "portal": "512M",
+    "mcp": "256M",
+    "llm-gateway": "1G",
+    "orchestrator": "1G",
+    "redis": "384M"
+  },
+  "crossReferences": ["opsly-bash"],
+  "errors": {
+    "E_NO_MULTI_STAGE": "Dockerfiles deben usar multi-stage (builder + runner)",
+    "E_NO_MEMORY_LIMIT": "Todos los servicios requieren memory limits",
+    "E_DUPLICATE_ANCHOR": "No duplicar anchors ya existentes"
+  }
+}

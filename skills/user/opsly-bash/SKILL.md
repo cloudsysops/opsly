@@ -1,5 +1,9 @@
 # Opsly Bash Script Skill
 
+> **Triggers:** `script bash`, `shell`, `automatización`, `bash script`, `shellscript`, `bash`
+> **Priority:** HIGH
+> **Skills relacionados:** `opsly-tenant`, `opsly-discord`, `opsly-supabase`
+
 ## Cuándo usar
 
 Al crear o modificar scripts en `scripts/`.
@@ -45,3 +49,24 @@ main "$@"
 - **Nunca** `docker system prune --volumes` en producción sin runbook explícito.
 - Helpers `log` / `warn` / `die` y `main` al final.
 - Notificaciones Discord: `notify-discord.sh` debe poder hacer no-op si falta webhook (ya implementado en Opsly).
+
+## Errores comunes
+
+| Error | Causa | Solución |
+|-------|-------|----------|
+| pipefail exit | Comando falla sin `set -e` | Añadir `set -euo pipefail` |
+| secrets leaked | echo sin sanitizar | Usar `log` sin valores sensibles |
+| docker prune | Sin --dry-run | Siempre `--dry-run` primero |
+
+## Testing
+
+```bash
+# Dry-run sin modificar nada
+./scripts/mi-script.sh --dry-run
+
+# Verificar exit code
+./scripts/mi-script.sh && echo "OK" || echo "FAIL"
+
+# Lint bash
+shellcheck scripts/mi-script.sh
+```

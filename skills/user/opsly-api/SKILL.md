@@ -1,5 +1,9 @@
 # Opsly API Skill
 
+> **Triggers:** `ruta API`, `next.js`, `route handler`, `endpoint`, `api route`, `rest`
+> **Priority:** HIGH
+> **Skills relacionados:** `opsly-supabase`, `opsly-mcp`, `opsly-tenant`
+
 ## Cuándo usar
 
 Al crear o modificar rutas en `apps/api/`.
@@ -40,7 +44,31 @@ Para lectura pública en demo admin, usar `requireAdminTokenUnlessDemoRead` dond
 
 ## Tests por ruta (Vitest)
 
-- 200 con datos esperados (mocks Supabase/fetch).
-- 401 sin token (cuando la ruta es protegida).
-- 400 body inválido si aplica.
-- 500 con error de DB mockeado si aplica.
+```typescript
+// apps/api/__tests__/mi-feature.test.ts
+import { describe, it, expect, vi } from "vitest";
+
+describe("GET /api/mi-feature", () => {
+  it("returns 200 with data", async () => {
+    // mock Supabase
+    // expect(status).toBe(200);
+  });
+
+  it("returns 401 without token", async () => {
+    // expect(status).toBe(401);
+  });
+
+  it("returns 500 on DB error", async () => {
+    // mock error
+    // expect(status).toBe(500);
+  });
+});
+```
+
+## Errores comunes
+
+| Error | Causa | Solución |
+|-------|-------|----------|
+| TS2741 | `err.message` en objeto Error | `new Error(message)` |
+| 500 en ruta | Supabase sin schema | Añadir `Accept-Profile: platform` |
+| CORS | Origen no permitido | Verificar `lib/cors-origins.ts` |

@@ -1,5 +1,9 @@
 # opsly-simplify: Docker & Docker Compose Optimization
 
+> **Triggers:** `docker`, `compose`, `optimización`, `yaml`, `dockerfile`, `healthcheck`, `memory`
+> **Priority:** LOW
+> **Skills relacionados:** `opsly-bash`, `opsly-quantum`
+
 ## Overview
 
 Systematic code simplification and optimization for opsly's Docker and docker-compose configuration. Identifies and fixes patterns that create maintenance burden, waste resources, or duplicate configuration.
@@ -238,3 +242,24 @@ deploy:
 - **Node app patterns:** `/opt/opsly/apps/{api,admin,portal,mcp,llm-gateway,ingestion-service,orchestrator,hermes,context-builder}/Dockerfile`
 - **Docker Compose docs:** https://docs.docker.com/compose/compose-file/compose-file-v3/
 - **YAML anchors:** https://yaml.org/type/merge.html
+
+## Errores comunes
+
+| Error | Causa | Solución |
+|-------|-------|----------|
+| Invalid YAML | Anchor mal formado | `docker-compose config` para validar |
+| No memory limit | OOM kills | Añadir `deploy.resources.limits.memory` |
+| Multi-stage broken | Runner sin artifacts | Copiar desde builder stage |
+
+## Testing
+
+```bash
+# Validar compose
+docker-compose -f infra/docker-compose.platform.yml config > /dev/null && echo "Valid YAML"
+
+# Verificar memory limits
+docker-compose -f infra/docker-compose.platform.yml config | grep -A2 memory
+
+# Test build
+docker build -f apps/api/Dockerfile --target runner apps/api && echo "Build OK"
+```

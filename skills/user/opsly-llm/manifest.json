@@ -1,0 +1,62 @@
+{
+  "name": "opsly-llm",
+  "version": "1.0.0",
+  "description": "LLM Gateway: llmCall, proveedores, caché, routing",
+  "triggers": ["llm", "anthropic", "openai", "modelo", "cache", "ai", "llmcall", "gemini", "sonnet", "haiku"],
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "tenant_slug": { "type": "string", "description": "Slug del tenant" },
+      "messages": {
+        "type": "array",
+        "description": "Mensajes en formato OpenAI",
+        "items": {
+          "type": "object",
+          "properties": {
+            "role": { "type": "string", "enum": ["system", "user", "assistant"] },
+            "content": { "type": "string" }
+          }
+        }
+      },
+      "model": {
+        "type": "string",
+        "description": "Modelo: haiku (barato), sonnet (complejo), gemini (balance)",
+        "enum": ["haiku", "sonnet", "gemini"]
+      },
+      "cache": { "type": "boolean", "description": "Usar caché Redis (default: true)" },
+      "temperature": { "type": "number", "description": "Temperatura (0 = determinista)" }
+    },
+    "required": ["tenant_slug", "messages"]
+  },
+  "outputSchema": {
+    "type": "object",
+    "properties": {
+      "content": { "type": "string" },
+      "usage": { "type": "object" },
+      "cached": { "type": "boolean" },
+      "cost_usd": { "type": "number" }
+    }
+  },
+  "examples": [
+    {
+      "input": {
+        "tenant_slug": "smiletripcare",
+        "messages": [{ "role": "user", "content": "Clasifica: urgente | normal | bajo" }],
+        "model": "haiku",
+        "cache": true
+      },
+      "output": {
+        "content": "urgente",
+        "usage": { "input_tokens": 45, "output_tokens": 2 },
+        "cached": true,
+        "cost_usd": 0.00001
+      }
+    }
+  ],
+  "crossReferences": ["opsly-feedback-ml", "opsly-quantum"],
+  "modelGuide": {
+    "haiku": { "use": "Clasificar, extraer, formatear", "cost": "bajo" },
+    "sonnet": { "use": "Código complejo, arquitectura", "cost": "medio" },
+    "gemini": { "use": "Balance costo/calidad", "cost": "variable" }
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "name": "opsly-google-cloud",
+  "version": "1.0.0",
+  "description": "Google Cloud: Drive, BigQuery, Vertex AI, service account",
+  "triggers": ["gcp", "google", "drive", "bigquery", "vertex", "cloud", "service account"],
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "action": {
+        "type": "string",
+        "description": "auth | drive_sync | bigquery_query | vertex_predict",
+        "enum": ["auth", "drive_sync", "bigquery_query", "vertex_predict"]
+      },
+      "service": {
+        "type": "string",
+        "description": "drive | bigquery | vertex | sheets",
+        "enum": ["drive", "bigquery", "vertex", "sheets"]
+      },
+      "query": { "type": "string", "description": "Query SQL para BigQuery" },
+      "dryRun": { "type": "boolean" }
+    },
+    "required": ["action"]
+  },
+  "outputSchema": {
+    "type": "object",
+    "properties": {
+      "authenticated": { "type": "boolean" },
+      "results": { "type": "array" },
+      "tokenObtained": { "type": "boolean" }
+    }
+  },
+  "examples": [
+    {
+      "input": { "action": "auth", "service": "drive" },
+      "output": { "authenticated": true, "tokenObtained": true }
+    },
+    {
+      "input": {
+        "action": "bigquery_query",
+        "query": "SELECT * FROM `opsly.usage_events` WHERE date = CURRENT_DATE()"
+      },
+      "output": { "results": [{ "tenant_slug": "smiletripcare", "tokens": 1500 }] }
+    }
+  ],
+  "apis": {
+    "drive": { "freeTier": "1B requests/día", "use": "Sync docs" },
+    "sheets": { "freeTier": "500 requests/100s", "use": "Reportes" },
+    "bigquery": { "freeTier": "1TB queries/mes", "use": "Analytics > 100k rows" },
+    "vertex": { "freeTier": "$300 credits", "use": "Fine-tuning ML" }
+  },
+  "crossReferences": ["opsly-bash", "opsly-llm"],
+  "errors": {
+    "E_NO_SERVICE_ACCOUNT": "SIEMPRE usar GOOGLE_SERVICE_ACCOUNT_JSON",
+    "E_NO_HARDCODED_PROJECT": "Nunca hardcodear project_id"
+  }
+}

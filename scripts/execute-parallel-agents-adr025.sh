@@ -75,7 +75,7 @@ enqueue_job() {
   fi
 
   # Store job data as Redis hash
-  redis-cli -a "${REDIS_PASSWORD:-}" -n 0 \
+  redis-cli -u "redis://:${REDIS_PASSWORD}@127.0.0.1:6379/0" \
     HSET "$job_key" \
     "data" "$payload" \
     "progress" "0" \
@@ -85,7 +85,7 @@ enqueue_job() {
     > /dev/null 2>&1 || log_error "Failed to store job data for $job_id"
 
   # Add to queue sorted set
-  redis-cli -a "${REDIS_PASSWORD:-}" -n 0 \
+  redis-cli -u "redis://:${REDIS_PASSWORD}@127.0.0.1:6379/0" \
     ZADD "$queue_name" "$score" "$job_id" \
     > /dev/null 2>&1 || log_error "Failed to add $job_id to queue"
 

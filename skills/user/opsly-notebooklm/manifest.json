@@ -1,0 +1,70 @@
+{
+  "name": "opsly-notebooklm",
+  "version": "1.0.0",
+  "description": "NotebookLM: PDF→podcast, fuentes, MCP tool (EXPERIMENTAL)",
+  "triggers": ["notebooklm", "podcast", "audio", "pdf", "google", "research", "resumen"],
+  "requires": ["NOTEBOOKLM_ENABLED=true", "plan: business|enterprise"],
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "action": {
+        "type": "string",
+        "description": "create_notebook | add_source | generate_podcast | generate_slides",
+        "enum": ["create_notebook", "add_source", "generate_podcast", "generate_slides", "query"]
+      },
+      "tenant_slug": { "type": "string", "description": "Slug del tenant" },
+      "notebook_id": { "type": "string", "description": "ID del notebook" },
+      "source_type": {
+        "type": "string",
+        "description": "Tipo de fuente",
+        "enum": ["url", "pdf", "text", "url"]
+      },
+      "url": { "type": "string", "description": "URL de la fuente" },
+      "instructions": { "type": "string", "description": "Instrucciones para generación" },
+      "output_path": { "type": "string", "description": "Ruta de salida" }
+    },
+    "required": ["action", "tenant_slug"]
+  },
+  "outputSchema": {
+    "type": "object",
+    "properties": {
+      "notebookId": { "type": "string" },
+      "sourceId": { "type": "string" },
+      "audioUrl": { "type": "string" },
+      "generated": { "type": "boolean" }
+    }
+  },
+  "examples": [
+    {
+      "input": {
+        "action": "create_notebook",
+        "tenant_slug": "localrank",
+        "name": "Reporte Enero 2026"
+      },
+      "output": {
+        "notebookId": "nb_xxx",
+        "generated": true
+      }
+    },
+    {
+      "input": {
+        "action": "generate_podcast",
+        "tenant_slug": "localrank",
+        "notebook_id": "nb_xxx",
+        "instructions": "Resumen ejecutivo 10 min",
+        "output_path": "/tmp/podcast.mp3"
+      },
+      "output": {
+        "audioUrl": "/tmp/podcast.mp3",
+        "generated": true
+      }
+    }
+  ],
+  "outputFormats": ["podcast", "slides", "infografía", "quiz", "timeline"],
+  "crossReferences": ["opsly-tenant", "opsly-llm"],
+  "errors": {
+    "E_NOT_ENABLED": "NOTEBOOKLM_ENABLED=true requerido",
+    "E_PLAN_REQUIRED": "Solo planes business y enterprise",
+    "E_GOOGLE_API_UNSTABLE": "API no oficial de Google, puede dejar de funcionar"
+  }
+}

@@ -1,5 +1,9 @@
 # Opsly Quantum — skill maestro
 
+> **Triggers:** `orquestación`, `diagnóstico completo`, `multi-skill`, `quantum`, `maestro`, `visión global`
+> **Priority:** CRITICAL
+> **Skills relacionados:** `opsly-context`, `opsly-api`, `opsly-bash`, `opsly-llm`, `opsly-mcp`, `opsly-supabase`, `opsly-tenant`, `opsly-agent-teams`
+
 ## Cuándo usar
 
 Cuando el agente necesita **visión completa** del monorepo Opsly: contexto, diagnóstico seguro, enlaces a otros skills, y **acciones reales** vía scripts ya existentes (nunca inventar comandos que no estén en el repo).

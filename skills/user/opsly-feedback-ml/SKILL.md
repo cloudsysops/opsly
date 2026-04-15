@@ -1,5 +1,9 @@
 # Opsly Feedback ML Skill
 
+> **Triggers:** `feedback`, `ml`, `auto-implement`, `aprobación`, `clasificar`, `clasificación`
+> **Priority:** MEDIUM
+> **Skills relacionados:** `opsly-llm`, `opsly-api`, `opsly-quantum`
+
 ## Cuándo usar
 
 Al tocar el flujo de feedback de usuarios, decisiones ML o tablas `feedback_*` / `llm_feedback`.
@@ -29,3 +33,22 @@ Al tocar el flujo de feedback de usuarios, decisiones ML o tablas `feedback_*` /
 ## API / portal
 
 - `apps/api/lib/feedback/`, `apps/portal/components/FeedbackChat*.tsx`, migraciones `0010` / `0011`.
+
+## Errores comunes
+
+| Error | Causa | Solución |
+|-------|-------|----------|
+| needs_approval siempre | criticality alta | Verificar engine decision |
+| auto_implement falló | write-active-prompt | Verificar permisos GitHub |
+
+## Testing
+
+```bash
+# Test decision engine
+node -e "const {analyzeFeedback} = require('./apps/ml/src/feedback-decision-engine'); analyzeFeedback({criticality:'low'}).then(console.log)"
+
+# Test approval endpoint
+curl -sf -X POST https://api.ops.smiletripcare.com/api/feedback/approve \
+  -H "Authorization: Bearer $TOKEN" \
+  -d '{"conversation_id":"conv_xxx"}'
+```

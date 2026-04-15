@@ -1,0 +1,80 @@
+{
+  "name": "opsly-feedback-ml",
+  "version": "1.0.0",
+  "description": "Feedback loop, decisiones ML, auto-implement, aprobación humana",
+  "triggers": ["feedback", "ml", "auto-implement", "aprobación", "clasificar", "clasificación"],
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "action": {
+        "type": "string",
+        "description": "analyze | approve | reject | auto_implement",
+        "enum": ["analyze", "approve", "reject", "auto_implement"]
+      },
+      "conversation_id": { "type": "string", "description": "ID de conversación" },
+      "decision": {
+        "type": "string",
+        "description": "auto_implement | needs_approval | rejected",
+        "enum": ["auto_implement", "needs_approval", "rejected", "scheduled"]
+      },
+      "criticality": {
+        "type": "string",
+        "description": "critical | high | medium | low",
+        "enum": ["critical", "high", "medium", "low"]
+      }
+    },
+    "required": ["action"]
+  },
+  "outputSchema": {
+    "type": "object",
+    "properties": {
+      "decision": { "type": "string" },
+      "autoImplemented": { "type": "boolean" },
+      "requiresApproval": { "type": "boolean" }
+    }
+  },
+  "examples": [
+    {
+      "input": {
+        "action": "analyze",
+        "conversation_id": "conv_xxx",
+        "criticality": "low"
+      },
+      "output": {
+        "decision": "auto_implement",
+        "autoImplemented": true,
+        "requiresApproval": false
+      }
+    },
+    {
+      "input": {
+        "action": "analyze",
+        "criticality": "critical"
+      },
+      "output": {
+        "decision": "needs_approval",
+        "autoImplemented": false,
+        "requiresApproval": true
+      }
+    }
+  ],
+  "autoImplementable": [
+    "typos UI",
+    "estilos menores",
+    "textos de botón/error",
+    "enlaces en docs"
+  ],
+  "alwaysApproval": [
+    "nuevas features",
+    "lógica de negocio",
+    "pricing",
+    "integraciones nuevas",
+    "seguridad",
+    "criticality: critical"
+  ],
+  "crossReferences": ["opsly-llm", "opsly-api"],
+  "errors": {
+    "E_CRITICAL_NEEDS_APPROVAL": "Crítico siempre requiere aprobación humana",
+    "E_AUTO_IMPLEMENT_SAFE": "Solo cambios menores califican para auto-implement"
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "name": "@intcloudsysops/mission-control",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "pnpm dev",
+    "build": "pnpm build",
+    "start": "pnpm start",
+    "type-check": "pnpm typecheck",
+    "lint": "pnpm lint",
+    "test": "pnpm test"
+  },
+  "dependencies": {
+    "next": "^15.1.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "zustand": "^5.0.0",
+    "recharts": "^3.4.0",
+    "better-sqlite3": "^11.0.0",
+    "zod": "^4.0.0",
+    "ws": "^8.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@types/better-sqlite3": "^7.6.0",
+    "@types/ws": "^8.0.0",
+    "typescript": "^5.7.0",
+    "eslint": "^9.0.0",
+    "vitest": "^2.0.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

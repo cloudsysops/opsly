@@ -1,5 +1,9 @@
 # Opsly Context Skill
 
+> **Triggers:** `nueva sesión`, `inicio de sesión`, `claude modo supremo`, `agente`, `contexto`, `start`
+> **Priority:** CRITICAL — Siempre al inicio de cualquier sesión
+> **Skills relacionados:** `opsly-quantum`, `opsly-architect-senior`
+
 ## Cuándo usar
 
 **SIEMPRE** al inicio de cualquier sesión con Opsly, antes de escribir código, scripts, docs o ejecutar cambios en infra.
@@ -82,3 +86,25 @@ Next.js 15 · TypeScript · Tailwind · Supabase · Stripe · Docker Compose · 
 - SSH: `vps-dragon@100.120.151.91` (Tailscale)
 - IP pública VPS: `157.245.223.7` (solo edge HTTP/HTTPS)
 - Doppler: `ops-intcloudsysops` / `prd`
+
+## Errores comunes
+
+| Error | Causa | Solución |
+|-------|-------|----------|
+| `[id] !== [ref]` | Imagen GHCR con carpeta duplicada | Rebuild CI, `docker container prune` |
+| API Error 500 | Resend sin dominio verificado | Verificar dominio en Resend |
+| SSH timeout | IP pública expuesta, no Tailscale | Usar `100.120.151.91` |
+| Doppler fails | Token sin scope | `doppler configure set token --scope /opt/opsly` |
+
+## Testing
+
+```bash
+# Verificar contexto cargado
+curl -sf https://api.ops.smiletripcare.com/api/health
+
+# Verificar sync git
+cd /opt/opsly && git status
+
+# Verificar Doppler
+doppler secrets --project ops-intcloudsysops --config prd --only-names | head -5
+```

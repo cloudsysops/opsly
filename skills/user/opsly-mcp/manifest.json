@@ -1,0 +1,61 @@
+{
+  "name": "opsly-mcp",
+  "version": "1.0.0",
+  "description": "MCP OpenClaw: tools, OAuth/PKCE, scopes",
+  "triggers": ["mcp", "tool", "oauth", "pkce", "openclaw", "mcp tool", "tool definition"],
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "action": {
+        "type": "string",
+        "description": "create_tool | modify_tool | add_scope",
+        "enum": ["create_tool", "modify_tool", "add_scope"]
+      },
+      "toolName": { "type": "string", "description": "Nombre de la tool (snake_case)" },
+      "description": { "type": "string", "description": "Descripción clara de la tool" },
+      "params": {
+        "type": "object",
+        "description": "Parámetros de entrada con Zod schema"
+      },
+      "scopes": {
+        "type": "array",
+        "items": { "type": "string" },
+        "description": "Scopes OAuth requeridos"
+      }
+    },
+    "required": ["action", "toolName", "description"]
+  },
+  "outputSchema": {
+    "type": "object",
+    "properties": {
+      "toolCreated": { "type": "boolean" },
+      "registered": { "type": "boolean" },
+      "scopesAdded": { "type": "array", "items": { "type": "string" } }
+    }
+  },
+  "examples": [
+    {
+      "input": {
+        "action": "create_tool",
+        "toolName": "get_tenant_health",
+        "description": "Obtiene el estado de salud de un tenant",
+        "params": { "tenant_slug": "string" },
+        "scopes": ["tenants:read"]
+      },
+      "output": { "toolCreated": true, "registered": true, "scopesAdded": ["tenants:read"] }
+    }
+  ],
+  "availableScopes": [
+    "tenants:read",
+    "tenants:write",
+    "metrics:read",
+    "invitations:write",
+    "executor:write",
+    "agents:write"
+  ],
+  "crossReferences": ["opsly-api", "opsly-tenant"],
+  "errors": {
+    "E_NO_SCOPE": "Toda tool nueva debe tener scopes definidos en TOOL_REQUIRED_SCOPES",
+    "E_NO_DESCRIBE": "inputSchema requiere .describe() en cada campo"
+  }
+}

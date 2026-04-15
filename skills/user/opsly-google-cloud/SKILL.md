@@ -1,5 +1,9 @@
 # Opsly Google Cloud Skill
 
+> **Triggers:** `gcp`, `google`, `drive`, `bigquery`, `vertex`, `cloud`, `service account`
+> **Priority:** MEDIUM
+> **Skills relacionados:** `opsly-bash`, `opsly-llm`, `opsly-quantum`
+
 ## Cuándo usar
 Al integrar cualquier servicio de Google Cloud en Opsly.
 
@@ -54,5 +58,26 @@ console.cloud.google.com
 → Amount: $10/mes
 → Alert at: 50%, 90%, 100%
 → Email: cboteros1@gmail.com
+```
+
+## Errores comunes
+
+| Error | Causa | Solución |
+|-------|-------|----------|
+| 401 Unauthorized | SA JSON inválido | Verificar `GOOGLE_SERVICE_ACCOUNT_JSON` |
+| API not enabled | Console no habilitada | `console.cloud.google.com` → API |
+| Quota exceeded | Free tier agotado | Esperar reset o upgrade |
+
+## Testing
+
+```bash
+# Verificar SA JSON
+echo "$GOOGLE_SERVICE_ACCOUNT_JSON" | jq -r '.client_email'
+
+# Test auth
+./scripts/lib/google-auth.sh get_token && echo "Auth OK"
+
+# Test BigQuery
+bq query --use_legacy_sql=false "SELECT 1"
 ```
 

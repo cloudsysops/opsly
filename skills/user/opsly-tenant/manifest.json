@@ -1,0 +1,72 @@
+{
+  "name": "opsly-tenant",
+  "version": "1.0.0",
+  "description": "Onboarding, suspensión, resume, diagnóstico de stacks por tenant",
+  "triggers": ["onboard", "tenant", "suspend", "resume", "n8n", "uptime", "stack", "cliente"],
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "action": {
+        "type": "string",
+        "description": "onboard | suspend | resume | diagnose | status",
+        "enum": ["onboard", "suspend", "resume", "diagnose", "status"]
+      },
+      "slug": { "type": "string", "description": "Slug único del tenant" },
+      "email": { "type": "string", "description": "Email del owner" },
+      "plan": {
+        "type": "string",
+        "description": "Plan: startup | business | enterprise",
+        "enum": ["startup", "business", "enterprise"]
+      },
+      "name": { "type": "string", "description": "Nombre comercial del tenant" }
+    },
+    "required": ["action", "slug", "email"]
+  },
+  "outputSchema": {
+    "type": "object",
+    "properties": {
+      "tenantCreated": { "type": "boolean" },
+      "stackRunning": { "type": "boolean" },
+      "urls": {
+        "type": "object",
+        "properties": {
+          "n8n": { "type": "string" },
+          "uptime": { "type": "string" },
+          "portal": { "type": "string" }
+        }
+      },
+      "invitationSent": { "type": "boolean" }
+    }
+  },
+  "examples": [
+    {
+      "input": {
+        "action": "onboard",
+        "slug": "miempresa",
+        "email": "owner@miempresa.com",
+        "plan": "startup",
+        "name": "Mi Empresa"
+      },
+      "output": {
+        "tenantCreated": true,
+        "stackRunning": true,
+        "urls": {
+          "n8n": "https://n8n-miempresa.ops.smiletripcare.com",
+          "uptime": "https://uptime-miempresa.ops.smiletripcare.com",
+          "portal": "https://portal.ops.smiletripcare.com"
+        },
+        "invitationSent": true
+      }
+    }
+  ],
+  "plans": {
+    "startup": { "limits": "básico", "features": ["n8n", "uptime"] },
+    "business": { "limits": "medio", "features": ["n8n", "uptime", "ml"] },
+    "enterprise": { "limits": "alto", "features": ["n8n", "uptime", "ml", "notebooklm"] }
+  },
+  "crossReferences": ["opsly-api", "opsly-supabase", "opsly-discord"],
+  "errors": {
+    "E_SLUG_EXISTS": "El slug ya existe en platform.tenants",
+    "E_PLAN_INVALID": "Plan debe ser startup | business | enterprise"
+  }
+}

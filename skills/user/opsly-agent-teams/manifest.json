@@ -1,0 +1,59 @@
+{
+  "name": "opsly-agent-teams",
+  "version": "1.0.0",
+  "description": "BullMQ / TeamManager, colas paralelas, eventos Redis",
+  "triggers": ["bullmq", "queue", "job", "worker", "team", "parallel", "orchestration"],
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "action": {
+        "type": "string",
+        "description": "enqueue | assign_team | check_status | get_metrics",
+        "enum": ["enqueue", "assign_team", "check_status", "get_metrics"]
+      },
+      "team": {
+        "type": "string",
+        "description": "Nombre del equipo: frontend | backend | ml | infra",
+        "enum": ["frontend", "backend", "ml", "infra"]
+      },
+      "taskType": { "type": "string", "description": "Tipo de tarea" },
+      "payload": { "type": "object", "description": "Datos de la tarea" }
+    },
+    "required": ["action", "taskType"]
+  },
+  "outputSchema": {
+    "type": "object",
+    "properties": {
+      "jobId": { "type": "string" },
+      "teamAssigned": { "type": "string" },
+      "status": { "type": "string" },
+      "queued": { "type": "boolean" }
+    }
+  },
+  "examples": [
+    {
+      "input": {
+        "action": "assign_team",
+        "team": "backend",
+        "taskType": "api_fix",
+        "payload": { "tenant_slug": "smiletripcare", "issue": "timeout" }
+      },
+      "output": {
+        "teamAssigned": "backend",
+        "jobId": "job_xxx",
+        "queued": true
+      }
+    }
+  ],
+  "teams": {
+    "frontend": { "max_parallel": 5, "handles": ["ui_fix", "style"] },
+    "backend": { "max_parallel": 3, "handles": ["api_fix", "deploy"] },
+    "ml": { "max_parallel": 2, "handles": ["model_update", "retrain"] },
+    "infra": { "max_parallel": 1, "handles": ["deploy", "config"] }
+  },
+  "crossReferences": ["opsly-quantum", "opsly-api"],
+  "errors": {
+    "E_INFRA_SERIAL": "Infra team usa max_parallel: 1 (serial)",
+    "E_DESTROY_NO_PARALLEL": "Cambios destructivos no paralelizar sin diseño explícito"
+  }
+}

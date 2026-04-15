@@ -1,5 +1,9 @@
 # Opsly Tenant Operations Skill
 
+> **Triggers:** `onboard`, `tenant`, `suspend`, `resume`, `n8n`, `uptime`, `stack`, `cliente`
+> **Priority:** HIGH
+> **Skills relacionados:** `opsly-api`, `opsly-supabase`, `opsly-discord`, `opsly-bash`
+
 ## Cuándo usar
 
 Onboarding, suspensión, resume o diagnóstico de stacks por tenant.
@@ -33,3 +37,24 @@ Usar `--dry-run` primero si el entorno no está validado. Variables Supabase/pat
 - Portal: `https://portal.{PLATFORM_DOMAIN}`
 
 Sustituir `PLATFORM_DOMAIN` por el dominio base del entorno (ej. `ops.smiletripcare.com`).
+
+## Errores comunes
+
+| Error | Causa | Solución |
+|-------|-------|----------|
+| Stack failed | Credenciales no generadas | Revisar Doppler `prd` |
+| n8n 502 | Contenedor caído | `docker ps | grep n8n` |
+| Invite failed | Resend dominio | Verificar `RESEND_FROM_EMAIL` |
+
+## Testing
+
+```bash
+# Verificar stack corriendo
+docker ps | grep tenant_micliente
+
+# Health check tenant
+curl -sf https://n8n-micliente.ops.smiletripcare.com/healthz
+
+# Ver logs
+docker logs n8n_micliente_1 --tail 50
+```
