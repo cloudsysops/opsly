@@ -16,6 +16,8 @@
   },
   "dependencies": {
     "@intcloudsysops/llm-gateway": "^1.0.0",
+    "@intcloudsysops/types": "*",
+    "@supabase/supabase-js": "^2.49.1",
     "redis": "^4.7.0"
   },
   "devDependencies": {
