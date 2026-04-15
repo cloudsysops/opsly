@@ -1408,6 +1408,8 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 │   ├── ml/                  # OpenClaw ML (RAG, clasificación, embeddings)
 │   ├── llm-gateway/         # OpenClaw LLM Gateway (cache/routing/cost)
 │   ├── context-builder/     # OpenClaw Context Builder (session+summary)
+│   ├── ingestion-service/    # Webhooks → Redis queue (bunker)
+│   ├── mission-control/      # Control plane para workers remotos
 │   └── notion-mcp/          # HTTP hacia Notion (tareas, standup, quality; Doppler)
 ├── config/
 │   └── opsly.config.json    # Infra/dominios/planes (sin secretos)
