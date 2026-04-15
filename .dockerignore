@@ -14,9 +14,12 @@ tenants
 .vscode
 .idea
 *.md
+!*.md
 docs
+!docs
 infra
 !infra/hermes
+!config/knowledge-index.json
 .github
 skills
 apps/*/node_modules
