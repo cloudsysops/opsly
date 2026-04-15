@@ -45,7 +45,7 @@ async function loadNotebookLmModule(): Promise<NotebookLMModule> {
   if (!notebookLmModulePromise) {
     notebookLmModulePromise = import("@intcloudsysops/notebooklm-agent")
       .then((module) => ({
-        executeNotebookLM: module.executeNotebookLM as NotebookLMModule["executeNotebookLM"],
+        executeNotebookLM: module.executeNotebookLM as unknown as NotebookLMModule["executeNotebookLM"],
       }))
       .catch((error: unknown) => {
         notebookLmModulePromise = undefined;

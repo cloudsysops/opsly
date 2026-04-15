@@ -79,10 +79,19 @@ describe("MCP SDK bridge", () => {
     const { client, server } = await connectClientAndServer();
 
     const result = await client.callTool({ name: "get_tenants", arguments: {} });
+    const content = Array.isArray(result.content) ? result.content : [];
+    const first = content[0];
+    const firstText =
+      first !== undefined &&
+      typeof first === "object" &&
+      "text" in first &&
+      typeof (first as { text?: unknown }).text === "string"
+        ? (first as { text: string }).text
+        : "";
 
     expect(result.isError).not.toBe(true);
-    expect(result.content[0]).toMatchObject({ type: "text" });
-    expect(result.content[0] && "text" in result.content[0] && result.content[0].text).toContain("\"alpha\"");
+    expect(first).toMatchObject({ type: "text" });
+    expect(firstText).toContain("\"alpha\"");
 
     await Promise.all([client.close(), server.close()]);
   });

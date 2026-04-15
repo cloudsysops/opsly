@@ -1,6 +1,7 @@
 import { requireMCPAuth } from "./auth/middleware.js";
 import { MCP_SERVER_INFO } from "./lib/constants.js";
 import { aiIntegrationsTools } from "./tools/ai-integrations.js";
+import { contextTools } from "./tools/context.js";
 import { executorTool } from "./tools/executor.js";
 import { invitationsTool } from "./tools/invitations.js";
 import { metricsTool } from "./tools/metrics.js";
@@ -41,6 +42,10 @@ export const TOOL_REQUIRED_SCOPES: Record<string, string> = {
   list_ai_integrations: "metrics:read",
   probe_platform_component: "metrics:read",
   get_docker_containers: "metrics:read",
+  list_context_resources: "metrics:read",
+  read_context_resource: "metrics:read",
+  list_adrs: "metrics:read",
+  read_adr: "metrics:read",
 };
 
 export type CallToolOptions = {
@@ -113,6 +118,8 @@ export class OpenClawMcpServer {
 export function getAllToolDefinitions(): ToolDefinition<unknown, unknown>[] {
   const [getTenantsTool, getTenantTool] = tenantsTools;
   const [getHealthTool, getMetricsTool] = metricsTool;
+  const [listContextResourcesTool, readContextResourceTool, listAdrsTool, readAdrTool] =
+    contextTools;
   const [suspendTenantTool, resumeTenantTool] = suspendTools;
   const [checkServiceHealthTool, restartContainerTool] = opsStubsTools;
   const [listAiIntegrationsTool, probePlatformComponentTool, getDockerContainersTool] =
@@ -124,6 +131,10 @@ export function getAllToolDefinitions(): ToolDefinition<unknown, unknown>[] {
     invitationsTool,
     getHealthTool,
     getMetricsTool,
+    listContextResourcesTool,
+    readContextResourceTool,
+    listAdrsTool,
+    readAdrTool,
     suspendTenantTool,
     resumeTenantTool,
     executorTool,

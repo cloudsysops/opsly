@@ -203,6 +203,16 @@ export function createSdkBridgeServer(
 }
 
 /**
+ * Alias retrocompatible usado por tests/consumidores previos.
+ */
+export function createMcpSdkServer(
+  openClaw: OpenClawMcpServer,
+  definitions: ToolDefinition<unknown, unknown>[],
+): McpServer {
+  return createSdkBridgeServer(openClaw, definitions);
+}
+
+/**
  * Arranca el protocolo MCP sobre **stdio** (JSON-RPC), para Cursor / Claude Desktop / CLI.
  * Reutiliza `OpenClawMcpServer.callTool` (validación Zod + tools existentes).
  */

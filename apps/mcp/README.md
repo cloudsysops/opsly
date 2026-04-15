@@ -54,6 +54,10 @@ En contenedor **no** uses stdio; deja el default HTTP y enruta Traefik al servic
 | `list_ai_integrations` | Catálogo: Cursor (GitHub prompt), Docker/API, LLM Gateway, NotebookLM; opcional `include_health_snapshots` |
 | `probe_platform_component` | GET `/health` allowlist: `llm_gateway`, `orchestrator`, `context_builder`, `mcp` |
 | `get_docker_containers` | `GET /api/admin/docker/containers` (token admin) |
+| `list_context_resources` | Lista recursos estáticos de contexto (AGENTS, VISION, system_state, MCP status) |
+| `read_context_resource` | Lee texto de un recurso por URI (ej. `opsly://context/agents`) |
+| `list_adrs` | Lista ADRs disponibles en `docs/adr` |
+| `read_adr` | Lee un ADR por slug/archivo (ej. `ADR-024-ollama-local-worker-primary`) |
 
 La inferencia multi-modelo sigue centralizada en **llm-gateway** (no se exponen API keys de Anthropic/OpenAI/Copilot en MCP).
 

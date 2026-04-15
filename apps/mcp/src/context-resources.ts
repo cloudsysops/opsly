@@ -1,6 +1,5 @@
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { dirname, extname, join } from "node:path";
-import { fileURLToPath } from "node:url";
 
 export type StaticContextResource = {
   name: string;
@@ -66,8 +65,7 @@ const STATIC_CONTEXT_RESOURCES: StaticContextResource[] = [
 ];
 
 function findRepoRoot(): string {
-  const start = dirname(fileURLToPath(import.meta.url));
-  let current = start;
+  let current = __dirname;
 
   for (let i = 0; i < 8; i += 1) {
     if (existsSync(join(current, "AGENTS.md")) && existsSync(join(current, "VISION.md"))) {

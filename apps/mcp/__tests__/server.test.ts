@@ -18,6 +18,10 @@ describe("createServer", () => {
     expect(tools).toContain("send_invitation");
     expect(tools).toContain("get_health");
     expect(tools).toContain("get_metrics");
+    expect(tools).toContain("list_context_resources");
+    expect(tools).toContain("read_context_resource");
+    expect(tools).toContain("list_adrs");
+    expect(tools).toContain("read_adr");
     expect(tools).toContain("suspend_tenant");
     expect(tools).toContain("resume_tenant");
     expect(tools).toContain("execute_prompt");
