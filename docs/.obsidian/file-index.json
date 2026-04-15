@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-04-14T16:37:11Z",
-  "totalFiles": 155,
+  "lastIndexed": "2026-04-15T02:31:30Z",
+  "totalFiles": 157,
   "files": [
     "ACTIVE-PROMPT.md",
     "ADMIN-ECOSYSTEM.md",
@@ -62,6 +62,7 @@
     "FAILOVER-GCP-ARCHITECTURE.md",
     "FAILOVER-RUNBOOK.md",
     "FAQ.md",
+    "FIRST-OPENCLAW-AGENTS-MAC2011.md",
     "GCP-ACTIVATION-CHECKLIST.md",
     "GCP-STANDBY-CONFIG.md",
     "GITHUB-SETTINGS.md",
@@ -116,6 +117,7 @@
     "QA-REVIEW-COMPLETE.md",
     "QUALITY-GATES.md",
     "QUICK-REFERENCE.md",
+    "QUICKSTART-AGENTS.md",
     "README.md",
     "REFACTOR-CHECKLIST.md",
     "RETENTION-POLICY.md",
