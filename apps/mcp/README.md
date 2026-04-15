@@ -6,11 +6,41 @@ Servidor MCP para exponer herramientas de control sobre Opsly.
 
 - `npm run dev`
 - `npm run build`
+- `npm run start` — modo **HTTP** (default): OAuth + `GET /health` en `PORT` (3003).
+- `npm run start:stdio` — protocolo MCP sobre **stdio** (JSON-RPC) para Cursor / Claude Desktop.
 - `npm run test`
 - `npm run type-check`
 
+## Transporte
+
+| Modo | Cuándo | Comportamiento |
+|------|--------|----------------|
+| **http** (default) | Docker / VPS | `PORT` (3003): `GET /health`, OAuth (`/.well-known/...`, `/oauth/*`). Una línea JSON de arranque en stdout (no usar como cliente MCP). |
+| **stdio** | `MCP_TRANSPORT=stdio` o `node ... --stdio` | `@modelcontextprotocol/sdk`: JSON-RPC por stdin/stdout; herramientas registradas vía `McpServer`. |
+
+Tras `npm run build`, ejemplo **Cursor** (`.cursor/mcp.json` o ajustes MCP), sustituye la ruta al `dist` de tu clon:
+
+```json
+{
+  "mcpServers": {
+    "opsly-openclaw": {
+      "command": "node",
+      "args": ["/ruta/al/repo/apps/mcp/dist/src/index.js", "--stdio"],
+      "env": {
+        "MCP_TRANSPORT": "stdio",
+        "OPSLY_API_URL": "https://api.tu-dominio.com",
+        "PLATFORM_ADMIN_TOKEN": "tu-token-admin"
+      }
+    }
+  }
+}
+```
+
+En contenedor **no** uses stdio; deja el default HTTP y enruta Traefik al servicio `mcp`.
+
 ## Variables de entorno
 
+- `MCP_TRANSPORT` — `stdio` \| vacío/`http` (default HTTP + OAuth).
 - `OPSLY_API_URL`
 - `PLATFORM_ADMIN_TOKEN`
 - `GITHUB_TOKEN` (recomendado) o `GITHUB_TOKEN_N8N` (legado) — ver `docs/GITHUB-TOKEN.md`

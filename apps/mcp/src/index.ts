@@ -1,18 +1,38 @@
 import { startMcpHttpHealth } from "./http-health.js";
-import { createServer } from "./server.js";
+import { startMcpStdioServer } from "./mcp-sdk-bridge.js";
+import { createServer, getAllToolDefinitions } from "./server.js";
+
+function useStdioTransport(): boolean {
+  const env = process.env.MCP_TRANSPORT?.trim().toLowerCase();
+  if (env === "stdio") {
+    return true;
+  }
+  return process.argv.includes("--stdio");
+}
 
 async function main(): Promise<void> {
-  const server = createServer();
+  const openClaw = createServer();
+  const definitions = getAllToolDefinitions();
+
+  if (useStdioTransport()) {
+    await startMcpStdioServer(openClaw, definitions);
+    return;
+  }
+
   startMcpHttpHealth();
-  // Mantiene proceso vivo para integración por stdio/runner externo.
   process.stdout.write(
     JSON.stringify({
-      service: server.name,
-      version: server.version,
-      tools: server.listTools(),
-      status: "running"
-    }) + "\n"
+      service: openClaw.name,
+      version: openClaw.version,
+      tools: openClaw.listTools(),
+      status: "running",
+      transport: "http",
+    }) + "\n",
   );
 }
 
-void main();
+main().catch((err: unknown) => {
+  const msg = err instanceof Error ? err.message : String(err);
+  process.stderr.write(`${msg}\n`);
+  process.exit(1);
+});

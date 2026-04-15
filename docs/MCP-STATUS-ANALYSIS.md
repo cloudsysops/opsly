@@ -43,26 +43,14 @@
 
 ## ⏳ QUÉ FALTA
 
-### 1. **Transporte MCP Nativo** 🔴 CRÍTICO
-**Problema:** El SDK MCP (`@modelcontextprotocol/sdk`) **no está integrado** en el flujo de comunicación.
+### 1. **Transporte MCP Nativo** — stdio ✅ (2026-04-15)
+**Hecho:** `MCP_TRANSPORT=stdio` o `--stdio` arranca `McpServer` + `StdioServerTransport` (`apps/mcp/src/mcp-sdk-bridge.ts`), registrando las mismas tools que `OpenClawMcpServer` y delegando en `callTool`.
 
-Hoy:
-```
-Claude (via HTTP OAuth) → MCP Server (HTTP + OAuth) → Tools
-```
+**Sigue abierto (opcional):**
+- Streamable HTTP / SSE remoto para clientes web sin proceso local (ver ejemplos en `@modelcontextprotocol/sdk`).
+- OAuth + stdio: hoy el modo stdio no inyecta `Authorization` en `callTool` (mismo comportamiento que tests sin header; `PLATFORM_ADMIN_TOKEN` en env para `opslyFetch`).
 
-Debería ser:
-```
-Claude (stdio/SSE) → MCP Transport (stdio/SSE) → MCP Server → Tools
-```
-
-**Qué falta:**
-- Middleware para procesar mensajes MCP (call_tool, resources, etc.) en formato JSON-RPC 2.0
-- Transporte stdio (para Cursor, Claude Desktop, CLI)
-- Transporte SSE (para web, Claude.ai)
-- Integración del `createServer()` MCP SDK con `handleHttp`
-
-**Impacto:** Sin esto, el servidor **no funciona con Claude.ai** como MCP server registrado.
+**Modo Docker (default):** HTTP en `PORT` + OAuth + `GET /health` sin cambios.
 
 ### 2. **Integración con Orchestrator** 🟡 IMPORTANTE
 **Problema:** Las tools MCP ejecutan directamente contra la API, sin pasar por el orquestador.
@@ -190,11 +178,11 @@ Debería:
 ## 📋 Checklist de Implementación
 
 ### Phase 1: Transporte MCP (Bloqueante)
-- [ ] Reemplazar `http-health.ts` con `mcp-stdio-transport.ts` (stdio)
-- [ ] Agregar handler para `callTool` (JSON-RPC 2.0)
-- [ ] Agregar handler para `listTools`
-- [ ] Agregar handler para `listResources` (opcional, para docs)
-- [ ] Tests: stdio<→MCP roundtrip
+- [x] Transporte stdio vía SDK (`mcp-sdk-bridge.ts` + `getAllToolDefinitions`)
+- [x] JSON-RPC / protocol MCP delegado al SDK (`McpServer.connect(StdioServerTransport)`)
+- [x] `list_tools` / `call_tool` cubiertos por el SDK
+- [ ] `listResources` / recursos de docs (opcional)
+- [ ] E2E: cliente MCP ↔ proceso stdio (manual o script)
 
 ### Phase 2: Orchestrator Integration
 - [ ] `apps/mcp/src/lib/orchestrator-client.ts` → job enqueueing

@@ -38,6 +38,9 @@ const TOOL_REQUIRED_SCOPES: Record<string, string> = {
   notebooklm: "agents:write",
   check_service_health: "metrics:read",
   restart_container: "tenants:write",
+  list_ai_integrations: "metrics:read",
+  probe_platform_component: "metrics:read",
+  get_docker_containers: "metrics:read",
 };
 
 export type CallToolOptions = {
@@ -104,30 +107,38 @@ export class OpenClawMcpServer {
   }
 }
 
-export function createServer(): OpenClawMcpServer {
-  const server = new OpenClawMcpServer();
+/**
+ * Definiciones en el mismo orden que `createServer()` — usado por el transporte MCP (stdio) del SDK.
+ */
+export function getAllToolDefinitions(): ToolDefinition<unknown, unknown>[] {
   const [getTenantsTool, getTenantTool] = tenantsTools;
   const [getHealthTool, getMetricsTool] = metricsTool;
   const [suspendTenantTool, resumeTenantTool] = suspendTools;
   const [checkServiceHealthTool, restartContainerTool] = opsStubsTools;
   const [listAiIntegrationsTool, probePlatformComponentTool, getDockerContainersTool] =
     aiIntegrationsTools;
-  server.registerTools([
-    adaptTool(getTenantsTool),
-    adaptTool(getTenantTool),
-    adaptTool(onboardTool),
-    adaptTool(invitationsTool),
-    adaptTool(getHealthTool),
-    adaptTool(getMetricsTool),
-    adaptTool(suspendTenantTool),
-    adaptTool(resumeTenantTool),
-    adaptTool(executorTool),
-    adaptTool(notebooklmTool),
-    adaptTool(checkServiceHealthTool),
-    adaptTool(restartContainerTool),
-    adaptTool(listAiIntegrationsTool),
-    adaptTool(probePlatformComponentTool),
-    adaptTool(getDockerContainersTool),
-  ]);
+  return [
+    getTenantsTool,
+    getTenantTool,
+    onboardTool,
+    invitationsTool,
+    getHealthTool,
+    getMetricsTool,
+    suspendTenantTool,
+    resumeTenantTool,
+    executorTool,
+    notebooklmTool,
+    checkServiceHealthTool,
+    restartContainerTool,
+    listAiIntegrationsTool,
+    probePlatformComponentTool,
+    getDockerContainersTool,
+  ] as ToolDefinition<unknown, unknown>[];
+}
+
+export function createServer(): OpenClawMcpServer {
+  const server = new OpenClawMcpServer();
+  const definitions = getAllToolDefinitions();
+  server.registerTools(definitions.map((d) => adaptTool(d)));
   return server;
 }

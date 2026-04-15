@@ -6,6 +6,7 @@
     "dev": "tsx watch src/index.ts",
     "build": "tsc",
     "start": "node dist/src/index.js",
+    "start:stdio": "MCP_TRANSPORT=stdio node dist/src/index.js",
     "test": "vitest run",
     "type-check": "tsc --noEmit"
   },

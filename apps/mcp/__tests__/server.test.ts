@@ -1,7 +1,13 @@
 import { describe, expect, it } from "vitest";
-import { createServer } from "../src/server.js";
+import { createServer, getAllToolDefinitions } from "../src/server.js";
 
 describe("createServer", () => {
+  it("getAllToolDefinitions coincide con listTools", () => {
+    const server = createServer();
+    const defs = getAllToolDefinitions();
+    expect(defs.map((d) => d.name).sort()).toEqual([...server.listTools()].sort());
+  });
+
   it("registra herramientas esperadas", () => {
     const server = createServer();
     const tools = server.listTools();
