@@ -18,7 +18,6 @@ docs
 infra
 .github
 skills
-scripts
 apps/*/node_modules
 packages/*/node_modules
 .turbo
