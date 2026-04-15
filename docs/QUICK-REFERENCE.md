@@ -28,6 +28,17 @@ ssh vps-dragon@100.120.151.91
 
 ---
 
+## 🤖 Agentes OpenClaw (autónomos)
+
+Worker con `OPSLY_ORCHESTRATOR_MODE=worker-enabled` + Redis VPS + `LLM_GATEWAY_URL`. Arranque persistente: systemd `opsly-worker` (ver [`WORKER-SERVICE-MAC2011.md`](WORKER-SERVICE-MAC2011.md)). Runbook completo: [`AGENTS-AUTONOMOUS-RUNBOOK.md`](AGENTS-AUTONOMOUS-RUNBOOK.md).
+
+```bash
+# Salud del orchestrator en el worker (puerto 3011)
+curl -sf http://127.0.0.1:3011/health
+```
+
+---
+
 ## ⚡ Comandos frecuentes
 
 ### Desarrollo local
