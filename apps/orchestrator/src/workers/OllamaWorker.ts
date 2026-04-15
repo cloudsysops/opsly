@@ -39,6 +39,11 @@ export function startOllamaWorker(connection: object): Worker {
         task_type?: string;
         prompt?: string;
       };
+      
+      const autoCommit = data.metadata?.auto_commit === true;
+      const agentPersona = data.metadata?.persona ?? "unknown";
+      const runId = data.metadata?.run_id ?? "unknown";
+      
       const prompt =
         typeof payload.prompt === "string" ? payload.prompt.trim() : "";
       if (prompt.length === 0) {
@@ -107,8 +112,21 @@ export function startOllamaWorker(connection: object): Worker {
         tokens_output: tokensOut,
       });
 
+      const duration = Date.now() - t0;
+      
+      if (autoCommit) {
+        await handleAutoCommit({
+          persona: agentPersona,
+          runId,
+          tenantSlug,
+          result: json.content ?? "",
+          success: true,
+          durationMs: duration,
+        });
+      }
+
       logWorkerLifecycle("complete", "ollama", job, {
-        duration_ms: Date.now() - t0,
+        duration_ms: duration,
       });
 
       return {
@@ -119,8 +137,55 @@ export function startOllamaWorker(connection: object): Worker {
             : "",
         cost_usd: json.llm?.cost_usd ?? 0,
         model_used: json.llm?.model_used ?? "unknown",
+        auto_commit: autoCommit,
       };
     },
     { connection, concurrency },
   );
+}
+
+async function handleAutoCommit(ctx: {
+  persona: string;
+  runId: string;
+  tenantSlug: string;
+  result: string;
+  success: boolean;
+  durationMs: number;
+}): Promise<void> {
+  const { persona, runId, tenantSlug, result, success, durationMs } = ctx;
+  
+  console.log(`[auto-commit] ${persona} completed in ${durationMs}ms, success=${success}`);
+  
+  const { createClient } = await import("@supabase/supabase-js");
+  
+  const supabaseUrl = process.env.SUPABASE_URL ?? "https://jkwykpldnitavhmtuzmo.supabase.co";
+  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY ?? process.env.SUPABASE_ANON_KEY ?? "";
+  
+  if (!supabaseKey) {
+    console.log("[auto-commit] SUPABASE_URL/KEY not configured, skipping");
+    return;
+  }
+  
+  const supabase = createClient(supabaseUrl, supabaseKey);
+  
+  // Usar schema sandbox para testing
+  const { error } = await supabase
+    .schema("sandbox")
+    .from("agent_task_results")
+    .insert({
+      persona,
+      run_id: runId,
+      tenant_slug: tenantSlug,
+      result_summary: result.slice(0, 500),
+      success,
+      duration_ms: durationMs,
+      completed_at: new Date().toISOString(),
+    });
+  
+  if (error) {
+    console.log(`[auto-commit] DB insert failed: ${error.message}`);
+    return;
+  }
+  
+  console.log(`[auto-commit] Task result stored for ${persona} (${runId}) in sandbox`);
 }
