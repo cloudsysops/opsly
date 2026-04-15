@@ -7,7 +7,6 @@ COPY package.json package-lock.json ./
 COPY turbo.json ./
 COPY apps ./apps
 COPY packages ./packages
-COPY skills ./skills
 COPY scripts ./scripts
 RUN npm ci --ignore-scripts
 
