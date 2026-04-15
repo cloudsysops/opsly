@@ -1,0 +1,66 @@
+# Stack Lanidea OpenClaw Agents - Docker Compose
+# Objetivo: Equipo de agentes con Ollama local + auto-gestión (commit/pull)
+#
+# Uso:
+#   docker compose -f infra/docker-compose.lanidea.yml up -d
+#   docker compose -f infra/docker-compose.lanidea.yml logs -f
+
+name: lanidea-agents
+
+services:
+  # Ollama local - modelo primario para agentes
+  ollama:
+    image: ollama/ollama:latest
+    container_name: lanidea-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    environment:
+      OLLAMA_ORIGINS: "*"
+      OLLAMA_HOST: "0.0.0.0"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:11434/api/tags || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # Orchestrator worker - consume cola openclaw desde VPS
+  orchestrator:
+    image: ghcr.io/cloudsysops/intcloudsysops-orchestrator:latest
+    container_name: lanidea-orchestrator
+    ports:
+      - "3011:3011"
+    environment:
+      - REDIS_URL=${REDIS_URL:-redis://:password@100.120.151.91:6379/0}
+      - LLM_GATEWAY_URL=${LLM_GATEWAY_URL:-http://100.120.151.91:3010}
+      - OPSLY_ORCHESTRATOR_MODE=worker-enabled
+      - OPSLY_GITHUB_REPO=cloudsysops/opsly
+      - ORCHESTRATOR_OLLAMA_CONCURRENCY=2
+      - ORCHESTRATOR_CURSOR_CONCURRENCY=1
+      - ORCHESTRATOR_N8N_CONCURRENCY=1
+    depends_on:
+      ollama:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # Mission Control - dashboard de agentes
+  mission-control:
+    image: ghcr.io/cloudsysops/intcloudsysops-mission-control:latest
+    container_name: lanidea-mission-control
+    ports:
+      - "3015:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+    depends_on:
+      - orchestrator
+    restart: unless-stopped
+
+volumes:
+  ollama_data:
+
+networks:
+  default:
+    name: lanidea-network
