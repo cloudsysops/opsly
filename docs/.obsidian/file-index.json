@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-04-15T04:09:58Z",
-  "totalFiles": 158,
+  "lastIndexed": "2026-04-15T04:40:58Z",
+  "totalFiles": 161,
   "files": [
     "ACTIVE-PROMPT.md",
     "ADMIN-ECOSYSTEM.md",
@@ -29,6 +29,7 @@
     "ADR-023-approval-gate-phase1.md",
     "ADR-024-ollama-local-worker-primary.md",
     "ADR-025-notebooklm-knowledge-layer.md",
+    "ADR-025-token-optimization-ollama-primary.md",
     "ADR-026-tenant-context-postgres-first.md",
     "AGENTS-ASSIGNMENTS.md",
     "AGENTS-GLOBAL-CONTEXT.md",
@@ -80,6 +81,7 @@
     "INCIDENT-2026-04-11-DISCO-LLENO.md",
     "INVITATIONS_RUNBOOK.md",
     "KNOWLEDGE-SYSTEM.md",
+    "LANIDEA-OPENCLAW.md",
     "LIBRARIES-INSTALLED.md",
     "LLM-GATEWAY-WORKPLAN.md",
     "LLM-GATEWAY.md",
@@ -104,6 +106,7 @@
     "OPSLYQUANTUM-USAGE.md",
     "ORCHESTRATOR-FIXES-EXECUTION.md",
     "ORCHESTRATOR.md",
+    "PARALLEL-AGENTS-ORCHESTRATION.md",
     "PERFORMANCE_BASELINE.md",
     "PLAN-NOTEBOOKLM-KNOWLEDGE-2026-04-14.md",
     "PLAN-OLLAMA-WORKER-2026-04-14.md",
