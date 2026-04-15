@@ -1,0 +1,10 @@
+[Unit]
+Description=Opsly — mantenimiento nocturno diario (fan-out forzado)
+
+[Timer]
+OnCalendar=*-*-* 03:00:00
+RandomizedDelaySec=10min
+Persistent=true
+
+[Install]
+WantedBy=timers.target

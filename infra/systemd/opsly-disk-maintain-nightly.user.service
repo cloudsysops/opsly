@@ -1,0 +1,16 @@
+[Unit]
+Description=Opsly nightly maintain fan-out (forced run, user session)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+# Ajustar %h/opsly a la ruta real del clon en el worker (p. ej. %h/proyectos/intcloudsysops).
+WorkingDirectory=%h/opsly
+EnvironmentFile=-%h/.config/opsly/disk-maintain.env
+ExecStart=/bin/bash %h/opsly/scripts/opsly-disk-maintain-fanout.sh --force --threshold 0
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=default.target

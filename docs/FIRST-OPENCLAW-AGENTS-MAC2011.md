@@ -89,6 +89,24 @@ Observa logs del proceso orchestrator en el Mac 2011: debería aparecer activida
 
 [`scripts/apply-ai-profile-all.sh`](../scripts/apply-ai-profile-all.sh) referencia el host SSH **`opsly-mac2011`**. Si tu `Host` en `~/.ssh/config` es **`opsly-worker`**, unifica nombres o pasa el host que uses al automatizar.
 
+## 7. Squad local Ollama (produccion)
+
+Para llevar el worker a modo productivo, encola un squad completo:
+
+```bash
+PLATFORM_ADMIN_TOKEN=... ./scripts/create-ollama-local-agents.sh \
+  --tenant smiletripcare \
+  --goal "Subir throughput y bajar costo por tenant" \
+  --profile production
+```
+
+Perfiles disponibles:
+
+- `core`: `planner`, `executor`, `notifier`
+- `production`: `core` + `reviewer`, `sre_guard`, `cost_optimizer`, `growth_operator`
+
+Tip: usa `--dry-run` para revisar payloads antes de encolar.
+
 ## Referencias rápidas
 
 | Tema | Doc |

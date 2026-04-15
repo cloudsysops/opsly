@@ -36,10 +36,12 @@ if [[ "${MODE}" == "user" ]]; then
   mkdir -p "${HOME}/.config/systemd/user"
   cp "${REPO_ROOT}/infra/systemd/opsly-disk-maintain-fanout.user.service" "${HOME}/.config/systemd/user/opsly-disk-maintain-fanout.service"
   cp "${REPO_ROOT}/infra/systemd/opsly-disk-maintain-fanout.user.timer" "${HOME}/.config/systemd/user/opsly-disk-maintain-fanout.timer"
+  cp "${REPO_ROOT}/infra/systemd/opsly-disk-maintain-nightly.user.service" "${HOME}/.config/systemd/user/opsly-disk-maintain-nightly.service"
+  cp "${REPO_ROOT}/infra/systemd/opsly-disk-maintain-nightly.user.timer" "${HOME}/.config/systemd/user/opsly-disk-maintain-nightly.timer"
   log_info "Edita %h en el .service si el clon no está en ~/opsly"
   systemctl --user daemon-reload
-  systemctl --user enable --now opsly-disk-maintain-fanout.timer
-  log_ok "Timer user activo: systemctl --user status opsly-disk-maintain-fanout.timer"
+  systemctl --user enable --now opsly-disk-maintain-fanout.timer opsly-disk-maintain-nightly.timer
+  log_ok "Timers user activos: opsly-disk-maintain-fanout.timer + opsly-disk-maintain-nightly.timer"
   exit 0
 fi
 
@@ -52,7 +54,9 @@ require_cmd systemctl
 
 cp "${REPO_ROOT}/infra/systemd/opsly-disk-maintain-fanout.service" /etc/systemd/system/opsly-disk-maintain-fanout.service
 cp "${REPO_ROOT}/infra/systemd/opsly-disk-maintain-fanout.timer" /etc/systemd/system/opsly-disk-maintain-fanout.timer
+cp "${REPO_ROOT}/infra/systemd/opsly-disk-maintain-nightly.service" /etc/systemd/system/opsly-disk-maintain-nightly.service
+cp "${REPO_ROOT}/infra/systemd/opsly-disk-maintain-nightly.timer" /etc/systemd/system/opsly-disk-maintain-nightly.timer
 chmod +x /opt/opsly/scripts/opsly-disk-maintain-fanout.sh /opt/opsly/scripts/opsly-maintain-remote.sh
 systemctl daemon-reload
-systemctl enable --now opsly-disk-maintain-fanout.timer
-log_ok "Timer system activo: systemctl status opsly-disk-maintain-fanout.timer"
+systemctl enable --now opsly-disk-maintain-fanout.timer opsly-disk-maintain-nightly.timer
+log_ok "Timers system activos: opsly-disk-maintain-fanout.timer + opsly-disk-maintain-nightly.timer"

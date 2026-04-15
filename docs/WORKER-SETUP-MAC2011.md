@@ -254,13 +254,15 @@ ssh opsly-worker "
 - Logs orchestrator: según cómo arranques (systemd `journalctl -u opsly-orchestrator-worker -f` o archivo si rediriges en el script).
 - Actualizar código: `git pull` en `~/opsly`, `npm ci` si cambian dependencias, `npm run build --workspace=@intcloudsysops/orchestrator`, reiniciar servicio.
 
-### Disco ≥89%: mantenimiento local + flota (VPS)
+### Disco >=89% + mantenimiento de madrugada
 
-Cada **15 minutos** un timer puede comprobar el uso máximo en filesystems locales (`df -P -l`). Si **≥ 89%**, se ejecuta `scripts/opsly-maintain-remote.sh` en este host (Docker limpio en VPS vía `vps-cleanup-robust.sh --light`, o `~/bin/opsly-maintain` / `mac2011-cleanup-robust.sh` en el worker) y, si defines **`OPSLY_MAINTAIN_PEERS`**, se lanza el mismo flujo en los peers por **SSH** (p. ej. el VPS desde el worker y viceversa). Cooldown por defecto **1 h** para no repetir fan-out en bucle.
+Cada **15 minutos** un timer puede comprobar el uso maximo en filesystems locales (`df -P -l`). Si **>= 89%**, se ejecuta `scripts/opsly-maintain-remote.sh` en este host (VPS: `vps-cleanup-robust.sh --light`; worker: `~/bin/opsly-maintain` o `mac2011-cleanup-robust.sh`) y, si defines **`OPSLY_MAINTAIN_PEERS`**, se lanza el mismo flujo en los peers por SSH.
 
-- Plantilla de variables: `config/opsly-disk-maintain.example.env` → `~/.config/opsly/disk-maintain.env` en el worker.
-- Instalación timer **usuario** (worker): `./scripts/install-opsly-disk-maintain-timer.sh --user` (ajusta `%h/opsly` en la unidad si el clon no está en `~/opsly`).
-- **VPS** (`/opt/opsly`): `sudo ./scripts/install-opsly-disk-maintain-timer.sh` y copiar la plantilla a `/etc/default/opsly-disk-maintain`. Requiere **SSH por clave** entre cuentas (`vps-dragon` ↔ `opslyquantum`) para el fan-out.
+Ademas, hay un timer nocturno diario a las **03:00** que ejecuta mantenimiento forzado (`--force --threshold 0`) en local + peers aunque no se haya alcanzado 89%.
+
+- Plantilla de variables: `config/opsly-disk-maintain.example.env`
+- Worker (user systemd): `./scripts/install-opsly-disk-maintain-timer.sh --user`
+- VPS (`/opt/opsly`): `sudo ./scripts/install-opsly-disk-maintain-timer.sh`
 
 ---
 

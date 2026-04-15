@@ -1,0 +1,15 @@
+[Unit]
+Description=Opsly nightly maintain fan-out (forced run)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/opsly
+EnvironmentFile=-/etc/default/opsly-disk-maintain
+ExecStart=/bin/bash /opt/opsly/scripts/opsly-disk-maintain-fanout.sh --force --threshold 0
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

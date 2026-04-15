@@ -104,6 +104,22 @@ async function handleEnqueueOllama(
     typeof b.request_id === "string" && b.request_id.length > 0
       ? b.request_id
       : randomUUID();
+  const idempotencyKey =
+    typeof b.idempotency_key === "string" && b.idempotency_key.length > 0
+      ? b.idempotency_key
+      : undefined;
+  const agentRoleRaw = b.agent_role;
+  const agentRole =
+    agentRoleRaw === "planner" ||
+    agentRoleRaw === "executor" ||
+    agentRoleRaw === "tool" ||
+    agentRoleRaw === "notifier"
+      ? agentRoleRaw
+      : undefined;
+  const metadata =
+    typeof b.metadata === "object" && b.metadata !== null
+      ? (b.metadata as Record<string, unknown>)
+      : undefined;
 
   const job: OrchestratorJob = {
     type: "ollama",
@@ -113,6 +129,9 @@ async function handleEnqueueOllama(
     plan,
     initiated_by: "system",
     request_id: requestId,
+    idempotency_key: idempotencyKey,
+    agent_role: agentRole,
+    metadata,
   };
 
   try {
