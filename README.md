@@ -220,7 +220,7 @@ cd opsly
 Ese instalador:
 
 - Actualiza Ubuntu e instala utilidades base
-- Instala Node.js con NVM y deja Node 20 como default
+- Instala Node.js con NVM: en la raíz, `nvm install && nvm use` (`.nvmrc` → Node 22) si usas el CLI **`openclaw`**; para el resto del monorepo basta Node 20+
 - Intenta instalar Docker y Tailscale sin abortar el resto si fallan
 - Configura el repo (`.env`, git hooks) y muestra un resumen final del estado
 
