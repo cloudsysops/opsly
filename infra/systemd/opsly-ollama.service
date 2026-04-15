@@ -1,0 +1,32 @@
+# Ollama local (solo contenedor ollama del compose opslyquantum).
+# Instalación (worker Linux, usuario opslyquantum en grupo docker):
+#   sudo cp infra/systemd/opsly-ollama.service /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now opsly-ollama
+#
+# Ajusta rutas si el clon no está en /home/opslyquantum/opsly.
+# Opcional: copiar infra/opslyquantum.env.example → infra/opslyquantum.env
+
+[Unit]
+Description=Opsly Ollama local (Docker)
+Documentation=https://github.com/cloudsysops/opsly
+After=docker.service network-online.target
+Wants=docker.service
+Requires=docker.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+User=opslyquantum
+Group=opslyquantum
+SupplementaryGroups=docker
+WorkingDirectory=/home/opslyquantum/opsly
+
+# Si existe opslyquantum.env, Docker Compose lo usa; si no, defaults del YAML.
+ExecStart=/bin/bash -c 'if [ -f /home/opslyquantum/opsly/infra/opslyquantum.env ]; then exec docker compose -f /home/opslyquantum/opsly/infra/docker-compose.opslyquantum.yml --env-file /home/opslyquantum/opsly/infra/opslyquantum.env up -d ollama; else exec docker compose -f /home/opslyquantum/opsly/infra/docker-compose.opslyquantum.yml up -d ollama; fi'
+
+ExecStop=/usr/bin/docker compose -f /home/opslyquantum/opsly/infra/docker-compose.opslyquantum.yml stop ollama
+TimeoutStartSec=120
+
+[Install]
+WantedBy=multi-user.target

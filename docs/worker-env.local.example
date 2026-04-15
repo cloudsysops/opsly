@@ -11,6 +11,11 @@
 # URL del gateway en el VPS (Tailscale o endpoint alcanzable desde el worker):
 # LLM_GATEWAY_URL=http://<tailscale-vps-ip>:3010
 #
+# Autonomía + Ollama local (ver scripts/ensure-ollama-local.sh, docs/AGENTS-AUTONOMOUS-RUNBOOK.md):
+# OPSLY_ENSURE_OLLAMA=1
+# OPSLY_FAIL_WITHOUT_OLLAMA=0
+# OLLAMA_BASE_URL=http://127.0.0.1:11434
+#
 # Defaults conservadores para Mac 2011 / worker plane:
 # ORCHESTRATOR_CURSOR_CONCURRENCY=1
 # ORCHESTRATOR_OLLAMA_CONCURRENCY=1

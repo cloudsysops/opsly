@@ -102,6 +102,14 @@ sudo systemctl restart opsly-worker   # si usas systemd
 
 ---
 
+## 8. Mejora continua con modelos locales
+
+- **Modelos recomendados** (Nemotron 4B, etc.): [`download-ollama-models.sh`](../scripts/download-ollama-models.sh) cuando el contenedor `opslyquantum-ollama` está en marcha.
+- **Gateway (VPS):** `OLLAMA_URL` debe apuntar al Ollama del worker (IP Tailscale + `:11434`). Tras cambiar modelo en Doppler, reiniciar solo `llm-gateway` en el VPS si hace falta.
+- **Verificación extremo a extremo:** [`verify-distributed-stack.sh`](../scripts/verify-distributed-stack.sh).
+
+---
+
 ## Referencias
 
 - Primera puesta en marcha agentes: [`FIRST-OPENCLAW-AGENTS-MAC2011.md`](FIRST-OPENCLAW-AGENTS-MAC2011.md)

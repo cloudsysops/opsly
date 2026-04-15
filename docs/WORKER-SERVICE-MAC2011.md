@@ -7,6 +7,7 @@
 - Con arquitectura distribuida, `run-orchestrator-worker.sh` fija **`OPSLY_ORCHESTRATOR_ROLE=worker`** por defecto; el VPS puede usar `control`. Ver **`docs/ARCHITECTURE-DISTRIBUTED.md`**.
 - Scripts ejecutables: `scripts/run-worker-with-nvm.sh`, `scripts/start-worker.sh`.
 - **sudo** para instalar la unidad (una vez).
+- **Ollama local (opcional):** `scripts/ensure-ollama-local.sh`, unidad `infra/systemd/opsly-ollama.service`, y en `.env.local` `OPSLY_ENSURE_OLLAMA=1` para comprobar antes de Node. Ver **`docs/AGENTS-AUTONOMOUS-RUNBOOK.md`**.
 
 ## Instalar (en el worker)
 

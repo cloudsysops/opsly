@@ -77,6 +77,9 @@ npm run validate-skills
 
 # Update repo state JSON
 npm run update-state
+
+# Worker: comprobar / levantar Ollama local (compose opslyquantum, solo servicio ollama)
+npm run opsly:ensure-ollama -- --ensure
 ```
 
 **Lint rules:** ESLint staged only on `apps/api/app` + `apps/api/lib` after type-check.
@@ -310,7 +313,9 @@ node scripts/load-skills.js show opsly-api
 
 <!-- Actualizar al final de cada sesión -->
 
-**Fecha última actualización:** 2026-04-14 UTC 01:45 — **Sprint:** Semana 1 (Fase 2 producto + IA), ventana **2026-04-14 → 2026-04-20**. Documentos: [`ROADMAP.md`](ROADMAP.md), [`docs/IMPLEMENTATION-IA-LAYER.md`](docs/IMPLEMENTATION-IA-LAYER.md).
+**Fecha última actualización:** 2026-04-15 — **Sprint:** Semana 1 (Fase 2 producto + IA), ventana **2026-04-14 → 2026-04-20**. Documentos: [`ROADMAP.md`](ROADMAP.md), [`docs/IMPLEMENTATION-IA-LAYER.md`](docs/IMPLEMENTATION-IA-LAYER.md).
+
+**Worker autónomo + Ollama local:** `scripts/ensure-ollama-local.sh`, unidad `infra/systemd/opsly-ollama.service`, `OPSLY_ENSURE_OLLAMA=1` en `.env.local` (carga antes del arranque en `run-worker-with-nvm.sh`). Runbook [`docs/AGENTS-AUTONOMOUS-RUNBOOK.md`](docs/AGENTS-AUTONOMOUS-RUNBOOK.md), ADR-024.
 
 **Servicios VPS (2026-04-14 01:45 UTC):**
 

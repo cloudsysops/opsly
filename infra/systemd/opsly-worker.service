@@ -10,6 +10,7 @@
 Description=Opsly Orchestrator Worker (BullMQ)
 Documentation=https://github.com/cloudsysops/opsly
 After=network-online.target
+# Opcional si instalaste opsly-ollama.service: After=opsly-ollama.service
 Wants=network-online.target
 
 [Service]

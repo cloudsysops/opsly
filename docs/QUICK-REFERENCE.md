@@ -30,7 +30,7 @@ ssh vps-dragon@100.120.151.91
 
 ## 🤖 Agentes OpenClaw (autónomos)
 
-Worker con `OPSLY_ORCHESTRATOR_MODE=worker-enabled` + Redis VPS + `LLM_GATEWAY_URL`. Arranque persistente: systemd `opsly-worker` (ver [`WORKER-SERVICE-MAC2011.md`](WORKER-SERVICE-MAC2011.md)). Runbook completo: [`AGENTS-AUTONOMOUS-RUNBOOK.md`](AGENTS-AUTONOMOUS-RUNBOOK.md).
+Worker con `OPSLY_ORCHESTRATOR_MODE=worker-enabled` + Redis VPS + `LLM_GATEWAY_URL`. Ollama local: `./scripts/ensure-ollama-local.sh --ensure` o unidad `opsly-ollama.service`; en `.env.local` del worker `OPSLY_ENSURE_OLLAMA=1` para comprobar al arrancar. Arranque persistente: systemd `opsly-worker` (ver [`WORKER-SERVICE-MAC2011.md`](WORKER-SERVICE-MAC2011.md)). Runbook: [`AGENTS-AUTONOMOUS-RUNBOOK.md`](AGENTS-AUTONOMOUS-RUNBOOK.md), ADR-024.
 
 ```bash
 # Salud del orchestrator en el worker (puerto 3011)
