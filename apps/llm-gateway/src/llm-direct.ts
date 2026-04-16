@@ -206,6 +206,7 @@ async function finalizeSuccess(
       cost_usd: cost,
       cache_hit: false,
       session_id: req.session_id,
+      request_id: req.request_id,
       created_at: new Date().toISOString(),
     });
   }

@@ -32,6 +32,7 @@ vi.mock("../src/structured-log.js", () => ({
 }));
 
 import * as cache from "../src/cache.js";
+import * as logger from "../src/logger.js";
 import { llmCall } from "../src/gateway.js";
 
 describe("LLM Gateway", () => {
@@ -80,5 +81,33 @@ describe("LLM Gateway", () => {
     expect(result.cache_hit).toBe(false);
     expect(result.content).toBe("respuesta modelo");
     expect(createMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("registra request_id en logUsage para trazabilidad", async () => {
+    vi.mocked(cache.cacheGet).mockResolvedValueOnce(null);
+    createMock.mockResolvedValueOnce({
+      content: [{ type: "text", text: "respuesta modelo" }],
+      usage: { input_tokens: 100, output_tokens: 50 },
+    });
+
+    const requestId = "test-request-uuid-123";
+    const resultPromise = llmCall({
+      tenant_slug: "test-tenant",
+      request_id: requestId,
+      legacy_pipeline: true,
+      messages: [{ role: "user", content: "hola" }],
+    });
+    await vi.runAllTimersAsync();
+    const result = await resultPromise;
+
+    expect(result.cache_hit).toBe(false);
+    // Verify logUsage was called with request_id
+    expect(logger.logUsage).toHaveBeenCalledWith(
+      expect.objectContaining({
+        tenant_slug: "test-tenant",
+        request_id: requestId,
+        cache_hit: false,
+      })
+    );
   });
 });

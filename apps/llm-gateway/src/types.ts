@@ -88,6 +88,7 @@ export interface UsageEvent {
   cost_usd: number;
   cache_hit: boolean;
   session_id?: string;
+  request_id?: string;
   created_at: string;
   quality_score?: number;
 }
