@@ -77,6 +77,7 @@ Sube estos valores solo tras medir CPU sostenida, crecimiento de `waiting` y lat
 
 ## Referencias
 
+- `docs/VPS-SSH-WORKER-NODES.md` — SSH desde el VPS a nodos worker (clave dedicada + `authorized_keys`, Tailscale).
 - `docs/WORKER-FLOWS.md` — flujo lógico jobs / roles.
 - `docs/WORKER-SERVICE-MAC2011.md` — systemd en el Mac (si aplica).
 - `infra/systemd/opsly-workers-remote.service.example` — unidad ejemplo con `worker`.

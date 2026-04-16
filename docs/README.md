@@ -45,6 +45,7 @@ docs/SPRINT-ROADMAP.md   ← sprints 1-8, qué está hecho, qué sigue
 | ------------------------------------------------------------ | ------------------------------------------------------------------ |
 | [`ARCHITECTURE.md`](ARCHITECTURE.md)                         | Control plane vs data plane, Traefik, redes                        |
 | [`ARCHITECTURE-DISTRIBUTED.md`](ARCHITECTURE-DISTRIBUTED.md) | VPS control + workers remotos (Mac 2011), Redis Tailscale          |
+| [`VPS-SSH-WORKER-NODES.md`](VPS-SSH-WORKER-NODES.md) | Clave SSH VPS → workers (`authorized_keys`), solo Tailscale        |
 | [`AGENTS-AUTONOMOUS-RUNBOOK.md`](AGENTS-AUTONOMOUS-RUNBOOK.md) | Workers autónomos: systemd, Ollama, cola `openclaw`, verificación   |
 | [`FIRST-OPENCLAW-AGENTS-MAC2011.md`](FIRST-OPENCLAW-AGENTS-MAC2011.md) | Primer arranque workers OpenClaw en Mac 2011 (SSH, Redis, E2E)      |
 | [`WORKER-FLOWS.md`](WORKER-FLOWS.md)                         | Quién corre TeamManager vs workers BullMQ                          |

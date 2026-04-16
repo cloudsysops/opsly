@@ -14,6 +14,8 @@ ssh vps-dragon@100.120.151.91
 # 157.245.223.7
 ```
 
+**VPS → workers (otros nodos):** clave en el VPS + pegar la pública en `authorized_keys` de cada worker; guía [`VPS-SSH-WORKER-NODES.md`](VPS-SSH-WORKER-NODES.md).
+
 ---
 
 ## 📍 URLs clave
