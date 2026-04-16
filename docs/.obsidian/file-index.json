@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-04-15T23:45:05Z",
-  "totalFiles": 165,
+  "lastIndexed": "2026-04-16T00:23:25Z",
+  "totalFiles": 168,
   "files": [
     "ACTIVE-PROMPT.md",
     "ADMIN-ECOSYSTEM.md",
@@ -133,6 +133,9 @@
     "SECURITY-MITIGATIONS-2026-04-09.md",
     "SECURITY_AUDIT_REPORT.md",
     "SECURITY_CHECKLIST.md",
+    "SEMANA-1-INFORME.md",
+    "SEMANA-2-INFORME.md",
+    "SEMANA-3-INFORME.md",
     "SESSION-GIT-SYNC.md",
     "SETUP-NOTION-MCP.md",
     "SETUP-SUDOERS-CLOUDSYSOPS.md",
