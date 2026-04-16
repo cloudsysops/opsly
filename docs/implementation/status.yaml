@@ -3,208 +3,202 @@
 # last_commit / last_updated: CI sync-docs o manual.
 
 project: Opsly
-
 last_commit: e219942
-last_updated: "2026-04-15T05:59:46.810Z"
-
+last_updated: '2026-04-15T05:59:46.810Z'
 sprints:
   - number: 1
-    name: "Approval Gate + Vertex AI"
-    status: "IN_PROGRESS"
+    name: Approval Gate + Vertex AI
+    status: IN_PROGRESS
     dates:
-      start: "2026-04-12"
-      end: "2026-04-19"
+      start: '2026-04-12'
+      end: '2026-04-19'
     goals:
-      - "Implement Approval Gate (Sonnet 4)"
-      - "Add Vertex AI embeddings"
-      - "Setup auto-sync docs"
-      - "Integrate Notion + GitHub"
+      - Implement Approval Gate (Sonnet 4)
+      - Add Vertex AI embeddings
+      - Setup auto-sync docs
+      - Integrate Notion + GitHub
     capacity: 40
     burn_down:
       target: 40
-      actual: 25
+      actual: 1
       series:
-        - date: "2026-04-12"
+        - date: '2026-04-12'
           completed: 8
           actual: 8
           target: 40
-    completed: 8
-    in_progress: 3
-    blocked: 2
-    pending: 5
+        - date: '2026-04-16'
+          completed: 1
+          actual: 1
+          target: 40
+    completed: 1
+    in_progress: 0
+    blocked: 0
+    pending: 2
     tasks:
-      - id: "approval-gate-worker"
-        name: "ApprovalGateWorker implementation"
-        type: "feature"
-        status: "✅ DONE"
-        assignee: "Cursor"
-        effort: "M"
+      - id: approval-gate-worker
+        name: ApprovalGateWorker implementation
+        type: feature
+        status: ✅ DONE
+        assignee: Cursor
+        effort: M
         phase: 1
-        commit: "ddccfbf"
-      
-      - id: "doppler-secrets"
-        name: "Configure Doppler secrets (GCP)"
-        type: "infra"
-        status: "⏳ PENDING"
-        assignee: "Cristian"
-        effort: "XS"
+        commit: ddccfbf
+      - id: doppler-secrets
+        name: Configure Doppler secrets (GCP)
+        type: infra
+        status: ⏳ PENDING
+        assignee: Cristian
+        effort: XS
         phase: 1
         blocker: true
-      
-      - id: "supabase-migrations"
-        name: "Apply Supabase migrations"
-        type: "infra"
-        status: "⏳ PENDING"
-        assignee: "Cristian"
-        effort: "S"
+      - id: supabase-migrations
+        name: Apply Supabase migrations
+        type: infra
+        status: ⏳ PENDING
+        assignee: Cristian
+        effort: S
         phase: 1
-        depends_on: ["doppler-secrets"]
-
+        depends_on:
+          - doppler-secrets
 agents:
-  - name: "Cursor"
-    role: "Code generation + execution"
+  - name: Cursor
+    role: Code generation + execution
     capabilities:
-      - "Write TypeScript/Python"
-      - "Create migrations"
-      - "Generate workflows"
-      - "Run tests"
+      - Write TypeScript/Python
+      - Create migrations
+      - Generate workflows
+      - Run tests
     tasks_assigned:
-      - "approval-gate-worker"
-      - "vertex-client"
-      - "notion-sync-scripts"
-    success_rate: "98%"
-    last_task: "Vertex AI embeddings integration"
-    next_task: "Learning Agent Phase 2"
-  
-  - name: "Claude"
-    role: "Architecture + decision making"
+      - approval-gate-worker
+      - vertex-client
+      - notion-sync-scripts
+    success_rate: 98%
+    last_task: Vertex AI embeddings integration
+    next_task: Learning Agent Phase 2
+  - name: Claude
+    role: Architecture + decision making
     capabilities:
-      - "Design systems"
-      - "Write ADRs"
-      - "Generate prompts for Cursor"
-      - "Code review"
+      - Design systems
+      - Write ADRs
+      - Generate prompts for Cursor
+      - Code review
     tasks_assigned:
-      - "ADR-021: Approval Gate Phase 1"
-      - "ADR-022: Notion + GitHub Sync"
-      - "Sprint planning + coordination"
-    success_rate: "100%"
-    last_task: "Integration planning"
-    next_task: "Phase 2 architecture"
-  
-  - name: "GitHub Actions"
-    role: "CI/CD + automation"
+      - 'ADR-021: Approval Gate Phase 1'
+      - 'ADR-022: Notion + GitHub Sync'
+      - Sprint planning + coordination
+    success_rate: 100%
+    last_task: Integration planning
+    next_task: Phase 2 architecture
+  - name: GitHub Actions
+    role: CI/CD + automation
     capabilities:
-      - "Build + test"
-      - "Deploy to VPS"
-      - "Sync Notion ↔ GitHub"
-      - "Notify Discord"
+      - Build + test
+      - Deploy to VPS
+      - Sync Notion ↔ GitHub
+      - Notify Discord
     workflows:
-      - "deploy.yml"
-      - "sync-docs.yml"
-      - "sync-all.yml"
-    success_rate: "95%"
-    last_action: "Auto-sync docs"
-    next_action: "Sprint burndown tracking"
-
+      - deploy.yml
+      - sync-docs.yml
+      - sync-all.yml
+    success_rate: 95%
+    last_action: Auto-sync docs
+    next_action: Sprint burndown tracking
 phases:
   - number: 1
-    name: "Approval Gate + Vertex AI"
+    name: Approval Gate + Vertex AI
     status: IN_PROGRESS
     sprint: 1
-    started: "2026-04-10"
-    estimated_completion: "2026-04-20"
-    description: "Decisión LLM + trazabilidad + embeddings Vertex (text-embedding-004) y pgvector."
+    started: '2026-04-10'
+    estimated_completion: '2026-04-20'
+    description: Decisión LLM + trazabilidad + embeddings Vertex (text-embedding-004) y pgvector.
     dependencies:
-      - "Doppler prd"
-      - "Supabase migraciones"
+      - Doppler prd
+      - Supabase migraciones
     components:
-      - name: "LLM Gateway Endpoint"
+      - name: LLM Gateway Endpoint
         file: apps/llm-gateway/src/approval-route.ts
-        status: "✅ DONE"
-        description: "POST /v1/approval-analyze y contrato con gateway."
+        status: ✅ DONE
+        description: POST /v1/approval-analyze y contrato con gateway.
         methods:
-          - "approvalAnalyze"
+          - approvalAnalyze
         pr: null
         commit: ddccfbf
-      - name: "ApprovalGateWorker"
+      - name: ApprovalGateWorker
         file: apps/orchestrator/src/workers/ApprovalGateWorker.ts
-        status: "✅ DONE"
-        description: "Cola BullMQ approval-gate; insert en approval_gate_decisions; embeddings opcionales."
+        status: ✅ DONE
+        description: Cola BullMQ approval-gate; insert en approval_gate_decisions; embeddings opcionales.
         pr: null
         commit: ddccfbf
-      - name: "Vertex AI Client"
+      - name: Vertex AI Client
         file: apps/orchestrator/src/lib/vertex-ai-client.ts
-        status: "✅ DONE"
-        description: "Cliente Vertex predict embeddings; SA JSON; retries."
+        status: ✅ DONE
+        description: Cliente Vertex predict embeddings; SA JSON; retries.
         pr: null
         commit: ddccfbf
-      - name: "Migrations (embeddings + RPC)"
+      - name: Migrations (embeddings + RPC)
         file: supabase/migrations/0026_approval_gate_embeddings.sql
-        status: "✅ DONE"
-        description: "platform.approval_gate_embeddings + search_similar_approval_metrics."
+        status: ✅ DONE
+        description: platform.approval_gate_embeddings + search_similar_approval_metrics.
         pr: null
         commit: ddccfbf
-      - name: "Doppler Secrets (GCP)"
+      - name: Doppler Secrets (GCP)
         file: docs/VERTEX-AI-SETUP.md
-        status: "⏳ PENDING"
-        description: "GCLOUD_* / GOOGLE_* + VERTEX_AI_EMBED_ENABLED en prd."
+        status: ⏳ PENDING
+        description: GCLOUD_* / GOOGLE_* + VERTEX_AI_EMBED_ENABLED en prd.
         pr: null
         commit: null
-      - name: "Supabase DB Push"
+      - name: Supabase DB Push
         file: supabase/migrations/
-        status: "⏳ PENDING"
-        description: "Aplicar 0026/0027 en proyecto enlazado."
+        status: ⏳ PENDING
+        description: Aplicar 0026/0027 en proyecto enlazado.
         pr: null
         commit: null
-      - name: "Pre-Flight Test"
+      - name: Pre-Flight Test
         file: scripts/test-vertex-ai.sh
-        status: "⏳ PENDING"
-        description: "doppler run + validación secretos / tabla."
+        status: ⏳ PENDING
+        description: doppler run + validación secretos / tabla.
         pr: null
         commit: null
-
   - number: 2
-    name: "Learning Agent"
+    name: Learning Agent
     status: PLANNED
     sprint: 2
-    started: "2026-04-14"
-    estimated_completion: "2026-05-01"
-    start_date: "2026-04-20"
+    started: '2026-04-14'
+    estimated_completion: '2026-05-01'
+    start_date: '2026-04-20'
     duration_weeks: 2
-    description: "Reglas ML, fast path y worker de aprendizaje (fase posterior)."
+    description: Reglas ML, fast path y worker de aprendizaje (fase posterior).
     components:
-      - name: "LearningAgentWorker"
+      - name: LearningAgentWorker
         file: apps/orchestrator/src/workers/LearningAgentWorker.ts
-        status: "🚧 PLANNED"
-        description: "Worker batch / heurísticas sobre embeddings."
+        status: 🚧 PLANNED
+        description: Worker batch / heurísticas sobre embeddings.
         pr: null
         commit: null
-      - name: "ML Rules Table"
+      - name: ML Rules Table
         file: supabase/migrations/
-        status: "🚧 PLANNED"
-        description: "Tabla de reglas por tenant / umbral confianza."
+        status: 🚧 PLANNED
+        description: Tabla de reglas por tenant / umbral confianza.
         pr: null
         commit: null
-      - name: "Fast Path Logic"
+      - name: Fast Path Logic
         file: apps/orchestrator/src/lib/
-        status: "🚧 PLANNED"
-        description: "Atajo cuando similitud > umbral vs histórico."
+        status: 🚧 PLANNED
+        description: Atajo cuando similitud > umbral vs histórico.
         pr: null
         commit: null
-
 blockers:
-  - title: "Doppler secrets GCP / Vertex no configurados en prd"
+  - title: Doppler secrets GCP / Vertex no configurados en prd
     severity: CRITICAL
-    fix: "Seguir docs/VERTEX-AI-SETUP.md; doppler secrets set GCLOUD_* y JSON SA."
+    fix: Seguir docs/VERTEX-AI-SETUP.md; doppler secrets set GCLOUD_* y JSON SA.
     status: OPEN
-  - title: "Migraciones 0026/0027 no aplicadas en Supabase remoto"
+  - title: Migraciones 0026/0027 no aplicadas en Supabase remoto
     severity: CRITICAL
-    fix: "npx supabase db push (o pipeline migraciones) contra proyecto enlazado."
+    fix: npx supabase db push (o pipeline migraciones) contra proyecto enlazado.
     status: OPEN
-
 next_steps:
-  - "Confirmar secretos Doppler en sesión operativa (prd)."
-  - "Ejecutar pre-flight: `doppler run -- bash scripts/test-vertex-ai.sh`."
-  - "Push a main y revisar GitHub Actions (deploy / CI)."
-  - "Verificar dashboard admin `/approval-decisions` con datos reales."
-  - "Iniciar Phase 2 (Learning Agent) según ROADMAP."
+  - Confirmar secretos Doppler en sesión operativa (prd).
+  - 'Ejecutar pre-flight: `doppler run -- bash scripts/test-vertex-ai.sh`.'
+  - Push a main y revisar GitHub Actions (deploy / CI).
+  - Verificar dashboard admin `/approval-decisions` con datos reales.
+  - Iniciar Phase 2 (Learning Agent) según ROADMAP.
