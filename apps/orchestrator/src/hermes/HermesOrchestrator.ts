@@ -36,7 +36,9 @@ export class HermesOrchestrator {
 
   private readonly discord = new DiscordNotifier();
 
-  private enricher: ContextEnricher | null = createContextEnricher();
+  private readonly supabase = getHermesSupabase();
+
+  private enricher: ContextEnricher | null = createContextEnricher(this.supabase ?? undefined);
 
   async initialize(): Promise<void> {
     logHermesEvent("hermes_orchestrator_init", { ok: true });

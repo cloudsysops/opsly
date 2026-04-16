@@ -8,6 +8,7 @@ import type {
   HermesTask,
   SuggestedApproach,
 } from "@intcloudsysops/types";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { NotebookLMClient } from "../lib/notebooklm-client.js";
 
@@ -35,22 +36,76 @@ function readLocalSnippets(): string {
   return parts.join("\n\n");
 }
 
+type TenantPlan = "startup" | "business" | "enterprise" | "demo";
+
 export class ContextEnricher {
-  constructor(private readonly notebook: NotebookLMClient) {}
+  constructor(
+    private readonly notebook: NotebookLMClient,
+    private readonly supabase?: SupabaseClient,
+  ) {}
+
+  private async resolveTenantPlan(tenantId: string): Promise<TenantPlan> {
+    if (!this.supabase || !tenantId) {
+      return "startup"; // fallback conservador
+    }
+
+    try {
+      const { data, error } = await this.supabase
+        .schema("platform")
+        .from("tenants")
+        .select("plan")
+        .eq("id", tenantId)
+        .is("deleted_at", null)
+        .maybeSingle();
+
+      if (error || !data) {
+        console.warn(`[ContextEnricher] Could not resolve plan for tenant ${tenantId}:`, error?.message);
+        return "startup";
+      }
+
+      const plan = data.plan as TenantPlan;
+      return ["startup", "business", "enterprise", "demo"].includes(plan) ? plan : "startup";
+    } catch (err) {
+      console.error(`[ContextEnricher] Error resolving tenant plan:`, err);
+      return "startup";
+    }
+  }
+
+  private isNotebookLmAllowed(plan: TenantPlan): boolean {
+    // NotebookLM disponible solo para business y enterprise
+    // Startup excluido per "NotebookLM no expuesto a Startup sin flag"
+    return plan === "business" || plan === "enterprise";
+  }
 
   public async enrichTaskContext(task: HermesTask): Promise<EnrichedTask> {
     const localContext = readLocalSnippets();
-    let notebooklm = await this.notebook.queryNotebook(
-      `En Opsly, ¿qué patrones y límites aplican para una tarea de tipo "${task.type}" con esfuerzo "${task.effort}"? Responde en español, breve.`,
-      localContext ? localContext.slice(0, 6000) : undefined,
-    );
 
-    if (!notebooklm.answer || notebooklm.confidence === 0) {
+    // Resolver plan del tenant para validar acceso a NotebookLM
+    const plan = await this.resolveTenantPlan(task.tenant_id ?? "");
+    const allowNotebookLm = this.isNotebookLmAllowed(plan);
+
+    let notebooklm;
+    if (allowNotebookLm) {
+      notebooklm = await this.notebook.queryNotebook(
+        `En Opsly, ¿qué patrones y límites aplican para una tarea de tipo "${task.type}" con esfuerzo "${task.effort}"? Responde en español, breve.`,
+        localContext ? localContext.slice(0, 6000) : undefined,
+      );
+
+      if (!notebooklm.answer || notebooklm.confidence === 0) {
+        notebooklm = {
+          answer:
+            "NotebookLM no disponible o sin respuesta; se usa solo contexto local y reglas Hermes por defecto.",
+          sources: ["local-fallback"],
+          confidence: 0.2,
+          cached: false,
+        };
+      }
+    } else {
+      // Plan no permite NotebookLM (startup)
       notebooklm = {
-        answer:
-          "NotebookLM no disponible o sin respuesta; se usa solo contexto local y reglas Hermes por defecto.",
-        sources: ["local-fallback"],
-        confidence: 0.2,
+        answer: `NotebookLM no disponible para plan ${plan}. Usar contexto local y reglas por defecto.`,
+        sources: ["plan-restricted"],
+        confidence: 0,
         cached: false,
       };
     }
@@ -95,12 +150,12 @@ export class ContextEnricher {
   }
 }
 
-export function createContextEnricher(): ContextEnricher | null {
+export function createContextEnricher(supabase?: SupabaseClient): ContextEnricher | null {
   const client = new NotebookLMClient();
   if (!client.isAvailable()) {
     return null;
   }
-  return new ContextEnricher(client);
+  return new ContextEnricher(client, supabase);
 }
 
 /** Sin NotebookLM: solo recortes de docs locales (si existen en disco). */
