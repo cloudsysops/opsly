@@ -3,6 +3,33 @@
 > **Objetivo:** que el usuario del VPS (p. ej. `vps-dragon`) pueda abrir sesiones SSH **sin contraseña** hacia workers (Mac 2011, laptops, etc.) usando **clave pública**, solo por **Tailscale** (`100.64.0.0/10` o nombres MagicDNS).  
 > **No sustituye** el acceso humano desde `opsly-admin`: sigue siendo válido `ssh opsly-worker` desde la Mac principal. Esto documenta el caso **VPS → nodo** para scripts, healthchecks o despliegues.
 
+## Automatización (scripts en el repo)
+
+Desde la **Mac admin** (repo clonado), si ya tienes `ssh` sin contraseña al **VPS** y al **worker**:
+
+```bash
+./scripts/vps-ssh-bootstrap-from-admin.sh \
+  --vps vps-dragon@100.120.151.91 \
+  --worker opslyquantum@100.80.41.29
+./scripts/vps-ssh-bootstrap-from-admin.sh --dry-run --vps ... --worker ...   # simulación
+```
+
+**Solo en el VPS** (clave + comprobar):
+
+```bash
+cd /opt/opsly   # o ruta del clone
+./scripts/vps-ssh-ensure-key.sh
+./scripts/vps-ssh-verify.sh opslyquantum@100.80.41.29
+```
+
+**Solo en el worker** (si añades la pública a mano):
+
+```bash
+./scripts/worker-ssh-authorize-pubkey.sh /ruta/recibida/vps.pub
+```
+
+**npm (desde la raíz del repo):** `npm run opsly:vps-ssh:bootstrap -- --vps … --worker …` · `npm run opsly:vps-ssh:ensure-key`
+
 ## Principio
 
 Linux/OpenSSH no «da permisos desde el VPS» de forma mágica: en **cada nodo destino** hay que añadir la **clave pública** del VPS a `~/.ssh/authorized_keys` del usuario que recibirá la conexión (p. ej. `opslyquantum`).
