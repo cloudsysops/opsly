@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-04-18T04:32:13Z",
-  "totalFiles": 169,
+  "lastIndexed": "2026-04-18T14:08:07Z",
+  "totalFiles": 171,
   "files": [
     "ACTIVE-PROMPT.md",
     "ADMIN-ECOSYSTEM.md",
@@ -31,6 +31,7 @@
     "ADR-025-notebooklm-knowledge-layer.md",
     "ADR-025-token-optimization-ollama-primary.md",
     "ADR-026-tenant-context-postgres-first.md",
+    "ADR-027-hybrid-compute-plane-k8s.md",
     "AGENTS-ASSIGNMENTS.md",
     "AGENTS-AUTONOMOUS-RUNBOOK.md",
     "AGENTS-GLOBAL-CONTEXT.md",
@@ -99,6 +100,7 @@
     "NOTEBOOKLM-INTEGRATION.md",
     "NOTEBOOKLM-SETUP.md",
     "NOTION-MCP-SERVER.md",
+    "OAR.md",
     "OBSERVABILITY.md",
     "OBSIDIAN-README.md",
     "OPENCLAW-ARCHITECTURE.md",
