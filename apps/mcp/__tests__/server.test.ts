@@ -25,6 +25,7 @@ describe("createServer", () => {
     expect(tools).toContain("suspend_tenant");
     expect(tools).toContain("resume_tenant");
     expect(tools).toContain("execute_prompt");
+    expect(tools).toContain("run_agent_task");
     expect(tools).toContain("notebooklm");
     expect(tools).toContain("check_service_health");
     expect(tools).toContain("restart_container");

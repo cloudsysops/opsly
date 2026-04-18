@@ -14,7 +14,8 @@ export type WorkerName =
   | "general-events"
   | "agent-classifier"
   | "approval-gate"
-  | "hermes-orchestration";
+  | "hermes-orchestration"
+  | "intent_dispatch";
 
 export function extractJobContext(job: Job): {
   task_id?: string;

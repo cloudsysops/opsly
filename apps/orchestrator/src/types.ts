@@ -5,7 +5,9 @@ export type JobType =
   | "drive"
   | "backup"
   | "health"
-  | "ollama";
+  | "ollama"
+  /** Payload: `{ intent_request: IntentRequest }` — ejecuta `processIntent` (p. ej. `oar_react`) en worker. */
+  | "intent_dispatch";
 
 /** Rol convencional para trazabilidad (no framework aparte). */
 export type AgentRole = "planner" | "executor" | "tool" | "notifier";

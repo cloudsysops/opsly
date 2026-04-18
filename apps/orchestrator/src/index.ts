@@ -29,6 +29,7 @@ import { startAgentClassifierWorker } from "./workers/AgentClassifierWorker.js";
 import { startOllamaWorker } from "./workers/OllamaWorker.js";
 import { startSuspensionWorker } from "./workers/SuspensionWorker.js";
 import { startGeneralEventsWorker } from "./workers/GeneralEventsWorker.js";
+import { startIntentDispatchWorker } from "./workers/IntentDispatchWorker.js";
 import { closeWebhookQueue, createWebhookWorker } from "./workers/WebhookWorker.js";
 import { startWebhooksProcessingWorker } from "./workers/WebhooksProcessingWorker.js";
 
@@ -73,6 +74,7 @@ function startAllWorkers(): AsyncCleanup[] {
   const webhooksProcessingWorker = startWebhooksProcessingWorker();
   const generalEventsWorker = startGeneralEventsWorker();
   const ollamaWorker = startOllamaWorker(connection);
+  const intentDispatchWorker = startIntentDispatchWorker(connection);
 
   let agentClassifierCleanup: AsyncCleanup[] = [];
   if (process.env.OPSLY_AGENT_CLASSIFIER_WORKER_ENABLED === "true") {
@@ -96,11 +98,12 @@ function startAllWorkers(): AsyncCleanup[] {
     async () => webhooksProcessingWorker.close(),
     async () => generalEventsWorker.close(),
     async () => ollamaWorker.close(),
+    async () => intentDispatchWorker.close(),
     ...agentClassifierCleanup,
   );
 
   console.log(
-    "[orchestrator] Workers: cursor, n8n, notify, drive, backup, health, budget, opsly-webhooks, webhooks-processing, general-events, ollama" +
+    "[orchestrator] Workers: cursor, n8n, notify, drive, backup, health, budget, opsly-webhooks, webhooks-processing, general-events, ollama, intent_dispatch" +
       (process.env.OPSLY_AGENT_CLASSIFIER_WORKER_ENABLED === "true"
         ? ", agent-classifier"
         : "") +

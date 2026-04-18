@@ -54,6 +54,14 @@ function effectiveIntent(req: IntentRequest): Intent {
   return req.intent;
 }
 
+export interface ProcessIntentOptions {
+  /**
+   * Solo para jobs `intent_dispatch` en worker: permite `oar_react` sin control plane local
+   * (MCP → cola → worker remoto con LLM gateway).
+   */
+  invokedFromIntentDispatchWorker?: boolean;
+}
+
 export interface ProcessIntentResult {
   jobs_enqueued: number;
   job_ids: string[];
@@ -83,8 +91,14 @@ export interface ProcessIntentResult {
   };
 }
 
-export async function processIntent(req: IntentRequest): Promise<ProcessIntentResult> {
-  if (!shouldRunControlPlane(parseOrchestratorRole())) {
+export async function processIntent(
+  req: IntentRequest,
+  options?: ProcessIntentOptions,
+): Promise<ProcessIntentResult> {
+  const intentPreview = effectiveIntent(req);
+  const allowOarOnWorker =
+    options?.invokedFromIntentDispatchWorker === true && intentPreview === "oar_react";
+  if (!allowOarOnWorker && !shouldRunControlPlane(parseOrchestratorRole())) {
     throw new Error("Cannot dispatch jobs from worker-only mode");
   }
 
