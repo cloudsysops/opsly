@@ -9,6 +9,8 @@ import { z } from "zod";
 
 import type { AgentActionPort } from "../interfaces/agent-action-port.js";
 import type { MemoryInterface } from "../interfaces/memory.interface.js";
+import type { OarTracer } from "../observability/tracer.js";
+import { traceOar } from "../observability/tracer.js";
 import { OAR_LIFECYCLE } from "../types.js";
 
 import type { RunPlanExecuteResult } from "./plan-execute-engine.js";
@@ -26,6 +28,8 @@ export interface ReflectionOptions {
   maxReflections: number;
   /** Modelo para la llamada de crítica; si se omite, se usa {@link DEFAULT_REACT_MODEL}. */
   critiqueModel?: string;
+  /** Trazas X-Ray (Redis Pub/Sub); opcional. */
+  tracer?: OarTracer;
 }
 
 /** Contexto compartido con las estrategias primarias (el `actionPort` lo usa el runner vía closure). */
@@ -176,11 +180,16 @@ interface ReflectionRoundParams<T extends StrategyTerminalResult> {
   critiqueModel: string;
   memory: MemoryInterface;
   llmGatewayClient: ReActLlmGatewayClient;
+  tracer: OarTracer | undefined;
 }
 
 async function runOneReflectionRound<T extends StrategyTerminalResult>(
   p: ReflectionRoundParams<T>,
 ): Promise<ReflectionLoopControl<T>> {
+  traceOar(p.tracer, p.sessionId, p.tenantSlug, "reflection_loop", {
+    attemptIndex: p.reflectionRound,
+  });
+
   let result: T;
   try {
     result = await p.primaryStrategyFunction(p.currentPrompt);
@@ -202,6 +211,10 @@ async function runOneReflectionRound<T extends StrategyTerminalResult>(
   const parsed = parseCritiqueResponse(critiqueRaw);
 
   if (!parsed.ok) {
+    traceOar(p.tracer, p.sessionId, p.tenantSlug, "reflection_result", {
+      verdict: "parse_error",
+      message: parsed.message,
+    });
     const note = `[reflection] Critique parse failed: ${parsed.message}. Raw (truncated): ${critiqueRaw.slice(0, 400)}`;
     await p.memory.appendObservation(p.tenantSlug, p.sessionId, REFLECTION_MEMORY_OFFSET + p.reflectionRound, note);
     if (p.reflectionRound >= p.maxRetries) {
@@ -211,10 +224,15 @@ async function runOneReflectionRound<T extends StrategyTerminalResult>(
   }
 
   if (parsed.value.verdict === "pass") {
+    traceOar(p.tracer, p.sessionId, p.tenantSlug, "reflection_result", { verdict: "pass" });
     return { action: "return", value: result };
   }
 
   const reason = parsed.value.reason;
+  traceOar(p.tracer, p.sessionId, p.tenantSlug, "reflection_result", {
+    verdict: "fail",
+    reason,
+  });
   await p.memory.appendObservation(
     p.tenantSlug,
     p.sessionId,
@@ -242,6 +260,7 @@ export async function runWithReflection<T extends StrategyTerminalResult>(
 ): Promise<T> {
   const critiqueModel = options.critiqueModel ?? DEFAULT_REACT_MODEL;
   const maxRetries = Math.max(0, options.maxReflections);
+  const tracer = options.tracer;
   const { tenantSlug, sessionId, initialPrompt, memory, llmGatewayClient } = ctx;
 
   let currentPrompt = initialPrompt;
@@ -258,6 +277,7 @@ export async function runWithReflection<T extends StrategyTerminalResult>(
       critiqueModel,
       memory,
       llmGatewayClient,
+      tracer,
     });
 
     if (step.action === "return") {

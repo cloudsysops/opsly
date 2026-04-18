@@ -8,6 +8,8 @@ import { z } from "zod";
 
 import type { AgentActionPort } from "../interfaces/agent-action-port.js";
 import type { MemoryInterface } from "../interfaces/memory.interface.js";
+import type { OarTracer } from "../observability/tracer.js";
+import { traceOar } from "../observability/tracer.js";
 import type { OarLifecycleState } from "../types.js";
 import { OAR_LIFECYCLE } from "../types.js";
 
@@ -27,6 +29,8 @@ export interface RunPlanExecuteStrategyOptions {
   maxPlanParseRetries?: number;
   /** Tope de elementos del array de pasos ejecutados (default: {@link DEFAULT_MAX_PLAN_STEPS}). */
   maxPlanSteps?: number;
+  /** Trazas X-Ray (Redis Pub/Sub); opcional. */
+  tracer?: OarTracer;
 }
 
 export interface RunPlanExecuteResult {
@@ -152,6 +156,7 @@ async function executePlanSteps(
   steps: readonly PlanStep[],
   actionPort: AgentActionPort,
   memory: MemoryInterface,
+  tracer: OarTracer | undefined,
 ): Promise<
   | { ok: true; executionLog: string[] }
   | { ok: false; result: RunPlanExecuteResult }
@@ -176,6 +181,11 @@ async function executePlanSteps(
       };
     }
 
+    traceOar(tracer, sessionId, tenantSlug, "tool_call", {
+      stepId: step.stepId,
+      toolName: step.action,
+      args,
+    });
     const toolResult = await actionPort.executeAction(tenantSlug, step.action, args);
     const line = `stepId=${String(step.stepId)} action=${step.action} success=${String(toolResult.success)} observation=${toolResult.observation}`;
     executionLog.push(line);
@@ -214,6 +224,9 @@ export async function runPlanExecuteStrategy(
   const model = options?.model ?? DEFAULT_PLAN_EXECUTE_MODEL;
   const maxParseRetries = options?.maxPlanParseRetries ?? DEFAULT_MAX_PLAN_PARSE_RETRIES;
   const maxPlanSteps = Math.max(0, options?.maxPlanSteps ?? DEFAULT_MAX_PLAN_STEPS);
+  const tracer = options?.tracer;
+
+  traceOar(tracer, sessionId, tenantSlug, "strategy_start", { type: "plan_execute" });
 
   const working = await memory.getWorkingContext(tenantSlug, sessionId);
   const contextBlock =
@@ -239,6 +252,10 @@ export async function runPlanExecuteStrategy(
 
     const capped = parsed.plan.slice(0, maxPlanSteps);
     if (capped.length === 0) {
+      traceOar(tracer, sessionId, tenantSlug, "strategy_end", {
+        state: "failed",
+        errorMessage: "Plan is empty after applying maxPlanSteps.",
+      });
       return {
         state: "failed",
         errorMessage: "Plan is empty after applying maxPlanSteps.",
@@ -248,17 +265,35 @@ export async function runPlanExecuteStrategy(
       };
     }
 
+    traceOar(tracer, sessionId, tenantSlug, "llm_call", {
+      phase: "planning",
+      stepsCount: capped.length,
+      attempt,
+    });
+
     await persistPlanSummary(memory, tenantSlug, sessionId, capped);
 
-    const ran = await executePlanSteps(tenantSlug, sessionId, capped, actionPort, memory);
+    const ran = await executePlanSteps(tenantSlug, sessionId, capped, actionPort, memory, tracer);
     if (!ran.ok) {
+      traceOar(tracer, sessionId, tenantSlug, "strategy_end", {
+        state: ran.result.state,
+        stepsExecuted: ran.result.stepsExecuted,
+        planStepCount: ran.result.planStepCount,
+        errorMessage: ran.result.errorMessage,
+      });
       return ran.result;
     }
 
+    traceOar(tracer, sessionId, tenantSlug, "llm_call", { phase: "synthesis" });
     const synthesisPrompt = contextBlock + buildSynthesisPrompt(initialPrompt, ran.executionLog);
     const synthesisRaw = await llmGatewayClient.complete(model, synthesisPrompt);
     const finalAnswer = stripCodeFences(synthesisRaw).trim();
 
+    traceOar(tracer, sessionId, tenantSlug, "strategy_end", {
+      state: "completed",
+      stepsExecuted: ran.executionLog.length,
+      planStepCount: capped.length,
+    });
     return {
       state: "completed",
       finalAnswer,
@@ -268,6 +303,10 @@ export async function runPlanExecuteStrategy(
     };
   }
 
+  traceOar(tracer, sessionId, tenantSlug, "strategy_end", {
+    state: "failed",
+    errorMessage: `Could not obtain a valid plan after ${String(maxParseRetries)} attempt(s).`,
+  });
   return {
     state: "failed",
     errorMessage: `Could not obtain a valid plan after ${String(maxParseRetries)} attempt(s). Last error: ${lastParseError}`,
