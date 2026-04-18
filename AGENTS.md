@@ -176,7 +176,7 @@ node scripts/load-skills.js show opsly-api
 - **Extender, no re-arquitecturar:** todo vive en el monorepo actual (`apps/*`, `skills/`, `infra/`, `scripts/`). No crear carpetas raíz tipo `agents/` paralelas ni un segundo sistema de orquestación.
 - **Compatibilidad hacia atrás:** APIs y jobs existentes siguen funcionando; nuevos campos y rutas son **opcionales** con defaults = comportamiento actual.
 - **Incrementos verificables:** cada PR debe poder validarse con `type-check`, tests donde existan, y criterio de smoke acotado.
-- **Sin infra nueva** salvo decisión explícita y alineación con `VISION.md` (_Nunca_ K8s/Swarm; escalar VPS antes que complejidad).
+- **Sin infra nueva** salvo decisión explícita y alineación con `VISION.md` (Compose por defecto; _Nunca_ big-bang K8s/Swarm para el control plane; excepción futura *compute plane* solo según [ADR-027](docs/adr/ADR-027-hybrid-compute-plane-k8s.md); escalar VPS antes que complejidad).
 
 ### Mapa — qué ya existe (no duplicar)
 
@@ -313,7 +313,9 @@ node scripts/load-skills.js show opsly-api
 
 <!-- Actualizar al final de cada sesión -->
 
-**Fecha última actualización:** 2026-04-15 — **Sprint:** Semana 1 (Fase 2 producto + IA), ventana **2026-04-14 → 2026-04-20**. Documentos: [`ROADMAP.md`](ROADMAP.md), [`docs/IMPLEMENTATION-IA-LAYER.md`](docs/IMPLEMENTATION-IA-LAYER.md).
+**Fecha última actualización:** 2026-04-18 — **Sprint:** Semana 1 (Fase 2 producto + IA), ventana **2026-04-14 → 2026-04-20**. Documentos: [`ROADMAP.md`](ROADMAP.md), [`docs/IMPLEMENTATION-IA-LAYER.md`](docs/IMPLEMENTATION-IA-LAYER.md).
+
+**Agentic Runtime + infra híbrida (documentación):** [`docs/design/OAR.md`](docs/design/OAR.md) (OAR — contrato de comportamiento: loops ReAct / Plan-Execute / Reflection, `MemoryInterface`, `AgentActionPort`). [`docs/adr/ADR-027-hybrid-compute-plane-k8s.md`](docs/adr/ADR-027-hybrid-compute-plane-k8s.md) (compute plane opcional en K8s; control plane sigue en Compose por defecto). Implementación de código OAR: pendiente (skeleton en `apps/orchestrator/src/runtime/` según OAR §7).
 
 **Worker autónomo + Ollama local:** `scripts/ensure-ollama-local.sh`, unidad `infra/systemd/opsly-ollama.service`, `OPSLY_ENSURE_OLLAMA=1` en `.env.local` (carga antes del arranque en `run-worker-with-nvm.sh`). Runbook [`docs/AGENTS-AUTONOMOUS-RUNBOOK.md`](docs/AGENTS-AUTONOMOUS-RUNBOOK.md), ADR-024.
 
@@ -1245,6 +1247,7 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 | Decisión       | Valor                                            |
 | -------------- | ------------------------------------------------ |
 | Orquestación   | docker-compose por tenant (no Swarm)             |
+| Control plane  | Compose + Traefik en VPS por defecto; K8s solo como *compute plane* opcional futuro ([ADR-027](docs/adr/ADR-027-hybrid-compute-plane-k8s.md)) |
 | DB plataforma  | Supabase schema "platform"                       |
 | DB por tenant  | schema aislado "tenant\_{slug}"                  |
 | Proxy          | Traefik v3 (no nginx)                            |
@@ -1261,6 +1264,7 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 
 | Fecha      | Decisión                                                                                                                                                                                                                                                                                                                                                                                                   | Razón                                                                                                                                                                                                  |
 | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------- | -------------------------------------------------------------------------- |
+| 2026-04-18 | **Design Doc OAR** (`docs/design/OAR.md`): **Opsly Agentic Runtime** — loops explícitos (ReAct, Plan & Execute, Reflection), máquina de estados, `MemoryInterface` + `AgentActionPort` (tipado estricto, `tenant_slug`). Integración prevista con Mode System. **ADR-027** (`docs/adr/ADR-027-hybrid-compute-plane-k8s.md`): control plane en Compose por defecto; compute plane (workers, sandboxes, ML) candidato a K8s bajo criterios de activación. | Contrato de comportamiento entre orchestrator y LLM Gateway; estrategia híbrida sin big-bang K8s. |
 | 2026-04-14 | **ADR-025** (`docs/adr/ADR-025-notebooklm-knowledge-layer.md`): NotebookLM como **knowledge layer universal** para todos los agentes IA. Feed automático post-commit de AGENTS.md, ADRs, system_state.json, costos LLM. Query startup obligatorio ("estado operativo actual"). Routing LLM Gateway consulta NotebookLM si detecta keywords operativas. Feature flag `NOTEBOOKLM_ENABLED` + fallback local. | Agentes más inteligentes desde el primer segundo; contexto compartido sin duplicar estado; decisiones propagan automáticamente.                                                                        |
 | 2026-04-14 | **ADR-024** (`docs/adr/ADR-024-ollama-local-worker-primary.md`): Ollama local como provider primary en worker Mac 2011 (`opslyquantum`). VPS = control plane (`queue-only`). Worker Mac 2011 = worker plane (`worker-enabled`). Routing `cheap` → `llama_local` primary (costo $0), fallback cloud. LLM Gateway ya tiene `llama_local` configurado en `providers.ts`.                                      | Aliviar CPU VPS; costo $0 en tokens para tareas simples; worker Mac 2011 usa hardware ocioso.                                                                                                          |
 | 2026-04-12 | **ADR-020** (`docs/adr/ADR-020-orchestrator-worker-separation.md`): separación VPS **control** vs nodo **worker** ya soportada por `OPSLY_ORCHESTRATOR_ROLE`; alias opcional `OPSLY_ORCHESTRATOR_MODE` (`queue-only` / `worker-enabled`); Redis canónico en VPS con workers remotos vía mismo `REDIS_URL` (ver `docs/ARCHITECTURE-DISTRIBUTED.md`); health `/health` expone `role` + `mode`                | Formalizar decisión sin duplicar flags; alinear operación Tailscale/Mac con código existente                                                                                                           |

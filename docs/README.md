@@ -50,6 +50,8 @@ docs/SPRINT-ROADMAP.md   ← sprints 1-8, qué está hecho, qué sigue
 | [`FIRST-OPENCLAW-AGENTS-MAC2011.md`](FIRST-OPENCLAW-AGENTS-MAC2011.md) | Primer arranque workers OpenClaw en Mac 2011 (SSH, Redis, E2E)      |
 | [`WORKER-FLOWS.md`](WORKER-FLOWS.md)                         | Quién corre TeamManager vs workers BullMQ                          |
 | [`OPENCLAW-ARCHITECTURE.md`](OPENCLAW-ARCHITECTURE.md)       | MCP + Orchestrator + LLM Gateway + Context Builder                 |
+| [`design/OAR.md`](design/OAR.md)                             | Opsly Agentic Runtime (OAR): loops, MemoryInterface, AgentActionPort |
+| [`adr/ADR-027-hybrid-compute-plane-k8s.md`](adr/ADR-027-hybrid-compute-plane-k8s.md) | Control plane Compose vs compute plane K8s (futuro, criterios)     |
 | [`QUICKSTART-AGENTS.md`](QUICKSTART-AGENTS.md)               | Añadir tools MCP OpenClaw, tests, qué no duplicar                   |
 | [`ORCHESTRATOR.md`](ORCHESTRATOR.md)                         | BullMQ jobs, workers, circuit breaker, prioridades                 |
 | [`LLM-GATEWAY.md`](LLM-GATEWAY.md)                           | Cache Redis, routing bias, cost tracking                           |

@@ -1,9 +1,11 @@
 # Opsly — Visión y Objetivos
 
-> Última revisión: 2026-04-14
+> Última revisión: 2026-04-18
 
 **Planificación ejecutable por sprint:** [`ROADMAP.md`](ROADMAP.md) (semanas, milestones).  
-**Guía técnica capa IA (monorepo):** [`docs/IMPLEMENTATION-IA-LAYER.md`](docs/IMPLEMENTATION-IA-LAYER.md).
+**Guía técnica capa IA (monorepo):** [`docs/IMPLEMENTATION-IA-LAYER.md`](docs/IMPLEMENTATION-IA-LAYER.md).  
+**Runtime agéntico (borrador):** [`docs/design/OAR.md`](docs/design/OAR.md) — Opsly Agentic Runtime (OAR).  
+**Infra híbrida futura (opcional):** [`docs/adr/ADR-027-hybrid-compute-plane-k8s.md`](docs/adr/ADR-027-hybrid-compute-plane-k8s.md).
 
 ## Qué es Opsly
 
@@ -77,9 +79,9 @@ El detalle vive en **Roadmap por fases** más abajo (y en [`ROADMAP.md`](ROADMAP
 
 ## Decisión de arquitectura central
 
-Cada tenant es un docker-compose aislado.
-No Kubernetes, no Swarm. Simplicidad operativa sobre escala teórica.
-Escalar = más VPS, no más complejidad.
+Cada tenant es un docker-compose aislado. **Despliegue por defecto:** Docker Compose + Traefik en VPS — **sin Kubernetes ni Swarm** como stack principal del control plane. Simplicidad operativa sobre escala teórica; escalar = más VPS antes que más complejidad.
+
+**Excepción estratégica (futura, no por defecto):** una **fase opcional** de *compute plane* (workers BullMQ, sandboxes de ejecución, ML/GPU) podrá usar **Kubernetes** solo cuando se cumplan criterios de negocio/seguridad documentados — ver [`docs/adr/ADR-027-hybrid-compute-plane-k8s.md`](docs/adr/ADR-027-hybrid-compute-plane-k8s.md). El **control plane** (API, portal, admin, MCP HTTP, web) permanece en Compose salvo nueva decisión explícita.
 
 ## Principios de Arquitectura
 
@@ -99,10 +101,11 @@ Escalar = más VPS, no más complejidad.
 - Cost-aware routing y límites por tenant son obligatorios para sostenibilidad de margen.
 - **Hermes (metering/billing IA)** es la fuente única para medir tokens, costo, latencia y cache-hit por `tenant_slug` y `request_id`.
 - La **inteligencia de routing** (qué modelo/proveedor intentar) se implementa en **LLM Gateway y orchestrator (TypeScript)**; no confundir Hermes con librerías externas de terceros ni con un runtime Python paralelo al monorepo.
+- **Comportamiento agéntico (roadmap):** el **Opsly Agentic Runtime (OAR)** — [`docs/design/OAR.md`](docs/design/OAR.md) — define loops explícitos (ReAct, Plan & Execute, Reflection) e interfaces `MemoryInterface` / `AgentActionPort` entre orchestrator y gateway; implementación por fases, no sustituye Hermes/BullMQ de un día para otro.
 
 ## Lo que un agente NUNCA debe hacer
 
-- Proponer migrar a Kubernetes o Swarm
+- Proponer **migración masiva** a Kubernetes o Swarm **sin ADR** y sin criterios de activación (el despliegue por defecto sigue siendo Compose; la excepción *compute plane* está en [ADR-027](docs/adr/ADR-027-hybrid-compute-plane-k8s.md))
 - Hardcodear secrets (todo va a Doppler)
 - Usar `any` en TypeScript
 - Crear scripts no idempotentes
@@ -173,10 +176,12 @@ Objetivo: resiliencia enterprise y autonomía operativa avanzada.
 
 ### Nunca (decisiones fijas)
 
-- Kubernetes
-- Docker Swarm
+- **Kubernetes o Swarm como reemplazo del control plane por defecto** (API/portal/admin/MCP siguen en Compose salvo ADR explícito).
+- Docker Swarm como orquestador de tenants (se usa Compose por proyecto).
 - Migrar de Traefik
 - Migrar de Supabase
+
+_Nota: una futura **opción** de compute plane en K8s (workers/sandboxes) no revoca esta lista para el control plane; ver [ADR-027](docs/adr/ADR-027-hybrid-compute-plane-k8s.md)._
 
 ## Regla para agentes
 
