@@ -3,8 +3,8 @@
 # last_commit / last_updated: CI sync-docs o manual.
 
 project: Opsly
-last_commit: e219942
-last_updated: '2026-04-15T05:59:46.810Z'
+last_commit: 547e863
+last_updated: "2026-04-18T23:46:16.626Z"
 sprints:
   - number: 1
     name: Approval Gate + Vertex AI
