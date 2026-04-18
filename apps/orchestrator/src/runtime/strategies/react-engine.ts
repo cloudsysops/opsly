@@ -8,6 +8,8 @@
 
 import type { AgentActionPort } from "../interfaces/agent-action-port.js";
 import type { MemoryInterface } from "../interfaces/memory.interface.js";
+import type { OarTracer } from "../observability/tracer.js";
+import { traceOar } from "../observability/tracer.js";
 import type { OarLifecycleState } from "../types.js";
 import { OAR_LIFECYCLE } from "../types.js";
 
@@ -43,6 +45,8 @@ export interface RunReActStrategyResult {
 export interface RunReActStrategyOptions {
   maxSteps?: number;
   model?: string;
+  /** Trazas X-Ray (Redis Pub/Sub); opcional. */
+  tracer?: OarTracer;
 }
 
 type ParsedModelStep =
@@ -130,6 +134,9 @@ export async function runReActStrategy(
 ): Promise<RunReActStrategyResult> {
   const maxSteps = options?.maxSteps ?? DEFAULT_MAX_REACT_STEPS;
   const model = options?.model ?? DEFAULT_REACT_MODEL;
+  const tracer = options?.tracer;
+
+  traceOar(tracer, sessionId, tenantSlug, "strategy_start", { type: "react" });
 
   const working = await memory.getWorkingContext(tenantSlug, sessionId);
   const contextBlock =
@@ -147,6 +154,14 @@ export async function runReActStrategy(
 
     const parsed = parseReActModelOutput(raw);
 
+    traceOar(tracer, sessionId, tenantSlug, "llm_call", {
+      stepIndex,
+      iteration: iter,
+      model,
+      outcome: parsed.kind,
+      thought: parsed.kind === "action" ? parsed.thought : undefined,
+    });
+
     if (parsed.kind === "parse_error") {
       const note = `[parse_error] ${parsed.message} Raw (truncated): ${raw.slice(0, 500)}`;
       await memory.appendObservation(tenantSlug, sessionId, stepIndex, note);
@@ -156,6 +171,11 @@ export async function runReActStrategy(
     }
 
     if (parsed.kind === "final_answer") {
+      traceOar(tracer, sessionId, tenantSlug, "strategy_end", {
+        state: "completed",
+        stepsExecuted: stepIndex + 1,
+        lastLifecycleState: OAR_LIFECYCLE.completed,
+      });
       return {
         state: "completed",
         finalAnswer: parsed.answer,
@@ -166,6 +186,11 @@ export async function runReActStrategy(
 
     // ACTING → OBSERVING → REMEMBERING
     const thoughtLine = parsed.thought ? `Thought: ${parsed.thought}\n` : "";
+    traceOar(tracer, sessionId, tenantSlug, "tool_call", {
+      toolName: parsed.actionName,
+      args: parsed.args,
+      stepIndex,
+    });
     const toolResult = await actionPort.executeAction(tenantSlug, parsed.actionName, parsed.args);
 
     const observationText = toolResult.success
@@ -180,6 +205,12 @@ export async function runReActStrategy(
     stepIndex += 1;
   }
 
+  traceOar(tracer, sessionId, tenantSlug, "strategy_end", {
+    state: "failed",
+    stepsExecuted: stepIndex,
+    lastLifecycleState: OAR_LIFECYCLE.failed,
+    errorMessage: `ReAct exceeded maximum steps (${maxSteps}) without final_answer.`,
+  });
   return {
     state: "failed",
     errorMessage: `ReAct exceeded maximum steps (${maxSteps}) without final_answer.`,

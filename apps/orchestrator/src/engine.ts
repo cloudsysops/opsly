@@ -2,6 +2,10 @@ import { randomUUID } from "node:crypto";
 import { buildConsciousAppendix } from "./agents/conscious-layer.js";
 import { createDefaultToolRegistry } from "./agents/tools/registry.js";
 import { MAX_PLANNER_ACTIONS } from "./constants-planner.js";
+import { StubAgentActionPort } from "./runtime/adapters/stub-action-port.js";
+import { createOarTextCompletionClient } from "./runtime/llm/oar-text-completion-client.js";
+import { InMemoryMemory } from "./runtime/memory/in-memory-memory.js";
+import { runReActStrategy } from "./runtime/strategies/react-engine.js";
 import {
     meterPlannerLlmFireAndForget,
     meterRemotePlanWorkerFireAndForget,
@@ -44,7 +48,7 @@ function effectiveIntent(req: IntentRequest): Intent {
   if (req.intent === "sprint_plan") {
     return "sprint_plan";
   }
-  if (req.agent_role === "planner" && req.intent !== "remote_plan") {
+  if (req.agent_role === "planner" && req.intent !== "remote_plan" && req.intent !== "oar_react") {
     return "remote_plan";
   }
   return req.intent;
@@ -69,6 +73,14 @@ export interface ProcessIntentResult {
       cache_hit: boolean;
     };
   };
+  /** Presente cuando `intent === "oar_react"` (OAR ReAct). */
+  oar?: {
+    state: "completed" | "failed";
+    final_answer?: string;
+    error_message?: string;
+    steps_executed: number;
+    last_lifecycle_state: string;
+  };
 }
 
 export async function processIntent(req: IntentRequest): Promise<ProcessIntentResult> {
@@ -83,6 +95,75 @@ export async function processIntent(req: IntentRequest): Promise<ProcessIntentRe
   const intent = effectiveIntent(req);
 
   switch (intent) {
+    case "oar_react": {
+      const tenantSlug = req.tenant_slug?.trim();
+      if (!tenantSlug || tenantSlug.length === 0) {
+        throw new Error("oar_react requires tenant_slug");
+      }
+      const promptRaw =
+        typeof req.context.prompt === "string"
+          ? req.context.prompt.trim()
+          : typeof req.context.query === "string"
+            ? req.context.query.trim()
+            : "";
+      if (promptRaw.length === 0) {
+        throw new Error("oar_react requires context.prompt or context.query (non-empty string)");
+      }
+      const sessionId =
+        typeof req.context.session_id === "string" && req.context.session_id.trim().length > 0
+          ? req.context.session_id.trim()
+          : correlationId;
+      let maxSteps: number | undefined;
+      const ms = req.context.max_steps;
+      if (typeof ms === "number" && Number.isFinite(ms) && ms > 0) {
+        maxSteps = Math.min(100, Math.floor(ms));
+      }
+
+      const memory = new InMemoryMemory();
+      const actionPort = new StubAgentActionPort();
+      const llmClient = createOarTextCompletionClient({
+        tenantSlug,
+        requestId: correlationId,
+        tenantId: req.tenant_id,
+        tenantPlan: req.plan,
+      });
+
+      const initialPrompt = `You are the Opsly OAR ReAct agent. Follow the JSON protocol in your instructions.\n\nUser task:\n${promptRaw}`;
+
+      const oarResult = await runReActStrategy(
+        tenantSlug,
+        sessionId,
+        initialPrompt,
+        actionPort,
+        memory,
+        llmClient,
+        { maxSteps },
+      );
+
+      process.stdout.write(
+        `${JSON.stringify({
+          event: "oar_react_result",
+          request_id: correlationId,
+          tenant_slug: tenantSlug,
+          state: oarResult.state,
+          steps_executed: oarResult.stepsExecuted,
+        })}\n`,
+      );
+
+      return {
+        jobs_enqueued: 0,
+        job_ids: [],
+        intent,
+        request_id: correlationId,
+        oar: {
+          state: oarResult.state,
+          final_answer: oarResult.finalAnswer,
+          error_message: oarResult.errorMessage,
+          steps_executed: oarResult.stepsExecuted,
+          last_lifecycle_state: oarResult.lastLifecycleState,
+        },
+      };
+    }
     case "sprint_plan": {
       const goal =
         typeof req.context.goal === "string" ? req.context.goal.trim() : "";

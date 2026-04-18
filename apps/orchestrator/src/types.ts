@@ -40,7 +40,12 @@ export type Intent =
   /** Delegación al LLM Gateway (Remote Planner / Chat.z); requiere tenant_slug y plan Hermes. */
   | "remote_plan"
   /** Plan + sprint persistido en `platform.sprints`; ejecución en background. */
-  | "sprint_plan";
+  | "sprint_plan"
+  /**
+   * Opsly Agentic Runtime — estrategia ReAct vía LLM Gateway `/v1/text` + memoria en proceso.
+   * Requiere `tenant_slug` y `context.prompt` o `context.query`.
+   */
+  | "oar_react";
 
 export interface IntentRequest {
   intent: Intent;

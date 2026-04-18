@@ -1,6 +1,6 @@
 # Design Doc #1: Opsly Agentic Runtime (OAR)
 
-**Status:** Propuesto  
+**Status:** En implementación (runtime + intent `oar_react` en orchestrator)  
 **Autor:** Opsly Architecture Team  
 **Context:** Mejora de Producto #1 - Agentic Runtime
 
@@ -167,12 +167,13 @@ El `ModeContext` (que persistes en Redis) inyecta configuración al OAR:
 
 ## 7. Plan de Implementación
 
-1. **Fase 1: Skeleton:** Crear la carpeta `apps/orchestrator/src/runtime/`. Definir las interfaces `MemoryInterface` y `AgentActionPort` con tipos estrictos (`unknown`).
-2. **Fase 2: ReAct Engine:** Implementar el primer loop (ReAct) conectando al `llm-gateway` actual.
-3. **Fase 3: Action Port Adapter:** Crear el adapter que consume `AgentActionPort` para enviar jobs a BullMQ o llamar a la API HTTP de Opsly.
-4. **Fase 4: Plan-Execute:** Implementar la extracción de planes JSON y la ejecución secuencial.
-5. **Fase 5: Reflection Hook:** Añadir el paso de validación post-ejecución.
-6. **Fase 6: Tracing:** Emitir eventos a un exchange de Redis para que `Langfuse` (o el servicio de observabilidad) construya la traza "X-Ray".
+1. **Fase 1: Skeleton:** Crear la carpeta `apps/orchestrator/src/runtime/`. Definir las interfaces `MemoryInterface` y `AgentActionPort` con tipos estrictos (`unknown`). — **Hecho**
+2. **Fase 2: ReAct Engine:** Implementar el primer loop (ReAct) conectando al `llm-gateway` actual (`POST /v1/text` vía `runtime/llm/oar-text-completion-client.ts`). — **Hecho**
+3. **Fase 3: Action Port Adapter:** Adapter `OpslyActionAdapter` (API + BullMQ) + `StubAgentActionPort` para MVP sin herramientas reales. — **Parcial (adapter + stub)**
+4. **Fase 4: Plan-Execute:** Implementar la extracción de planes JSON y la ejecución secuencial. — **Código en** `plan-execute-engine.ts`
+5. **Fase 5: Reflection Hook:** Añadir el paso de validación post-ejecución. — **Código en** `reflection-engine.ts`
+6. **Fase 6: Tracing:** Emitir eventos a un exchange de Redis para que `Langfuse` (o el servicio de observabilidad) construya la traza "X-Ray". — **Parcial** (`OarTracer` + Pub/Sub `opsly:oar:trace`)
+7. **Integración control plane:** Intent `oar_react` en `processIntent` (`apps/orchestrator/src/engine.ts`): memoria en proceso, acciones stub, sin encolar jobs BullMQ salvo otros intents.
 
 ## Referencias
 
