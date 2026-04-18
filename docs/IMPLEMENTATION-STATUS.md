@@ -4,7 +4,7 @@
 
 | Campo | Valor |
 | --- | --- |
-| Generado (ISO) | 2026-04-17T17:54:23.388Z |
+| Generado (ISO) | 2026-04-18T17:41:36.994Z |
 | last_commit (YAML) | `e219942` |
 | last_updated (YAML) | 2026-04-15T05:59:46.810Z |
 
@@ -67,4 +67,4 @@
 
 ---
 
-*Última generación local/CI: 2026-04-17T17:54:23.388Z*
+*Última generación local/CI: 2026-04-18T17:41:36.994Z*
