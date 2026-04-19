@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-04-19T15:53:26Z",
-  "totalFiles": 174,
+  "lastIndexed": "2026-04-19T17:38:01Z",
+  "totalFiles": 175,
   "files": [
     "ACTIVE-PROMPT.md",
     "ADMIN-ECOSYSTEM.md",
@@ -80,6 +80,7 @@
     "HERMES-LOCAL-AGENTS-STACK.md",
     "HERMES-SPRINT-PLAN.md",
     "HOSTS-PATHS.md",
+    "HYBRID-OPSLY-ADMIN.md",
     "IMPLEMENTATION-IA-LAYER.md",
     "IMPLEMENTATION-STATUS.md",
     "INCIDENT-2026-04-11-DISCO-LLENO.md",
