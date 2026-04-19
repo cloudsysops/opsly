@@ -204,8 +204,9 @@ services:
       - "host.docker.internal:host-gateway"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      # Monorepo read-only (relativo a este YAML: padre de infra/ = raíz del repo en VPS/local)
-      - ../:/opt/opsly:ro
+      # Monorepo: RW para OAR `POST /api/tools/execute` (fs_write bajo raíz; path traversal mitigado en código).
+      # Revisar `docs/runbooks/e2e-hybrid-write.md` y endurecer token admin tras habilitar escritura.
+      - ../:/opt/opsly
       - ${PLATFORM_TENANTS_HOST_PATH:-/opt/opsly/tenants}:/opt/opsly/tenants
       - ./templates:/opt/opsly/templates:ro
     depends_on:

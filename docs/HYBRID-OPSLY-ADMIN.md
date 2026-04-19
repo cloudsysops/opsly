@@ -105,7 +105,7 @@ ssh vps-dragon "cd /opt/opsly/infra && docker compose --env-file /opt/opsly/.env
 
 - [ ] `PLATFORM_ADMIN_TOKEN` coherente entre quien llama a la API y el entorno del contenedor `app`.
 - [ ] `OPSLY_REPO_ROOT` (o default `/opt/opsly`) coincide con el volumen montado en el servicio `app`.
-- [ ] **Escritura en el monorepo:** en `docker-compose.platform.yml` el volumen del repo está montado como **`../:/opt/opsly:ro`**. Las lecturas vía `fs_read` encajan; **escrituras** al árbol del repo requieren cambiar el compose (quitar `:ro` u otro volumen de escritura) de forma consciente.
+- [ ] **Escritura en el monorepo:** el volumen del servicio `app` puede montar **`../:/opt/opsly`** (RW) para OAR/`fs_write`; ver **`docs/runbooks/e2e-hybrid-write.md`** (E2E y endurecimiento).
 
 ---
 

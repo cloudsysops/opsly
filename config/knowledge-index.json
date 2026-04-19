@@ -1,7 +1,7 @@
 {
   "version": 1,
   "root": "/Users/dragon/cboteros/proyectos/intcloudsysops",
-  "generated_at": "2026-04-19T17:37:33.404Z",
+  "generated_at": "2026-04-19T17:47:19.633Z",
   "files": [
     {
       "path": ".claude/CLAUDE.md",
@@ -10369,7 +10369,7 @@
         "uso",
         "verificacion"
       ],
-      "size_bytes": 6392
+      "size_bytes": 6289
     },
     {
       "path": "docs/IMPLEMENTATION-IA-LAYER.md",
@@ -12092,7 +12092,7 @@
         "stripe",
         "wiki"
       ],
-      "size_bytes": 20168
+      "size_bytes": 20297
     },
     {
       "path": "docs/REFACTOR-CHECKLIST.md",
@@ -12325,6 +12325,32 @@
         "tenants"
       ],
       "size_bytes": 1011
+    },
+    {
+      "path": "docs/runbooks/e2e-hybrid-write.md",
+      "title": "E2E: escritura híbrida (`/api/tools/execute`) en el VPS",
+      "keywords": [
+        "api",
+        "cambio",
+        "desplegar",
+        "e2e",
+        "escaneo",
+        "escritura",
+        "execute",
+        "hibrida",
+        "hybrid",
+        "manual",
+        "markdown",
+        "opsly",
+        "post",
+        "prueba",
+        "rapida",
+        "seguridad",
+        "tools",
+        "vps",
+        "write"
+      ],
+      "size_bytes": 1351
     },
     {
       "path": "docs/runbooks/frontend-audit.md",
@@ -12838,7 +12864,7 @@
         "tracking",
         "vertex"
       ],
-      "size_bytes": 1423
+      "size_bytes": 1446
     },
     {
       "path": "docs/SSH-COMMANDS-LOCALRANK.md",
@@ -15049,6 +15075,7 @@
       "docs/HERMES-LOCAL-AGENTS-STACK.md",
       "docs/SESSION-GIT-SYNC.md",
       "docs/FAQ.md",
+      "docs/runbooks/e2e-hybrid-write.md",
       "docs/runbooks/managed.md",
       "docs/runbooks/admin.md",
       "docs/runbooks/frontend-audit.md",
@@ -15507,6 +15534,7 @@
       "docs/HERMES-LOCAL-AGENTS-STACK.md",
       "docs/SESSION-GIT-SYNC.md",
       "docs/FAQ.md",
+      "docs/runbooks/e2e-hybrid-write.md",
       "docs/runbooks/managed.md",
       "docs/runbooks/admin.md",
       "docs/runbooks/frontend-audit.md",
@@ -16305,6 +16333,7 @@
       "docs/EXECUTION-PLAN-LOCALRANK-NOTEBOOKLM.md",
       "docs/SSH-COMMANDS-LOCALRANK.md",
       "docs/SESSION-GIT-SYNC.md",
+      "docs/runbooks/e2e-hybrid-write.md",
       "docs/OPSLY-KNOWLEDGE-BASE.md",
       "docs/RTK.md",
       "docs/ARCHITECTURE-DISTRIBUTED.md",
@@ -19402,6 +19431,7 @@
       "docs/OPS-CLEANUP-PROCEDURES.md",
       "docs/BILLING-FLUSH-VERCEL.md",
       "docs/SESSION-GIT-SYNC.md",
+      "docs/runbooks/e2e-hybrid-write.md",
       "docs/.obsidian/PLUGINS-TO-INSTALL.md",
       "docs/PROVISIONING-SYSTEM.md",
       "docs/FAILOVER-RUNBOOK.md",
@@ -19556,6 +19586,7 @@
       "docs/ARCHITECTURE-DISTRIBUTED-FINAL.md",
       "docs/CLOUDFLARE-PROXY-ACTIVATION.md",
       "docs/SECURITY_AUDIT_REPORT.md",
+      "docs/runbooks/e2e-hybrid-write.md",
       "docs/SECURITY_CHECKLIST.md",
       "docs/README.md",
       "docs/PROVISIONING-SYSTEM.md",
@@ -20077,6 +20108,7 @@
       "docs/ORCHESTRATOR.md",
       "docs/WORKER-TESTING.md",
       "docs/BILLING-FLUSH-VERCEL.md",
+      "docs/runbooks/e2e-hybrid-write.md",
       "docs/RUNBOOK-INSIGHTS-DEPLOY.md",
       "docs/N8N-SETUP.md",
       "docs/FIRST-OPENCLAW-AGENTS-MAC2011.md",
@@ -20323,6 +20355,7 @@
       "docs/TROUBLESHOOTING.md",
       "docs/SPRINT-ROADMAP.md",
       "docs/BILLING-FLUSH-VERCEL.md",
+      "docs/runbooks/e2e-hybrid-write.md",
       "docs/runbooks/admin.md",
       "docs/runbooks/dev.md",
       "docs/MULTI-AGENT-ARCHITECTURE.md",
@@ -22789,6 +22822,7 @@
       ".claude/worktrees/crazy-carson/docs/NOTEBOOKLM-SETUP.md",
       ".claude/worktrees/crazy-carson/docs/DEPLOY-VPS-AND-INDEX.md",
       "docs/adr/ADR-025-notebooklm-knowledge-layer.md",
+      "docs/runbooks/e2e-hybrid-write.md",
       "docs/FAILOVER-RUNBOOK.md",
       "docs/ops/runbook-redis.md",
       "docs/CLIENTS-TO-INVITE.md",
@@ -24148,6 +24182,7 @@
       ".claude/worktrees/crazy-carson/docs/MCP-STATUS-ANALYSIS.md",
       ".claude/worktrees/crazy-carson/docs/MCP-SERVERS.md",
       "docs/QUICKSTART-AGENTS.md",
+      "docs/runbooks/e2e-hybrid-write.md",
       "docs/MCP-STATUS-ANALYSIS.md",
       "docs/MCP-SERVERS.md"
     ],
@@ -24325,7 +24360,8 @@
     ],
     "escaneo": [
       ".claude/worktrees/crazy-carson/docs/SECURITY_AUDIT_REPORT.md",
-      "docs/SECURITY_AUDIT_REPORT.md"
+      "docs/SECURITY_AUDIT_REPORT.md",
+      "docs/runbooks/e2e-hybrid-write.md"
     ],
     "heuristico": [
       ".claude/worktrees/crazy-carson/docs/SECURITY_AUDIT_REPORT.md",
@@ -24854,6 +24890,7 @@
       ".claude/worktrees/crazy-carson/.github/README-github-templates.md",
       "docs/SSH-USERS-FOR-AGENTS.md",
       "docs/OPS-CLEANUP-PROCEDURES.md",
+      "docs/runbooks/e2e-hybrid-write.md",
       "docs/runbooks/incident.md",
       "docs/AGENTS-AUTONOMOUS-RUNBOOK.md",
       "docs/FAILOVER-GCP-ARCHITECTURE.md",
@@ -25285,7 +25322,8 @@
     "execute": [
       ".claude/worktrees/crazy-carson/docs/EXECUTION-PLAN-LOCALRANK-NOTEBOOKLM.md",
       "docs/design/OAR.md",
-      "docs/EXECUTION-PLAN-LOCALRANK-NOTEBOOKLM.md"
+      "docs/EXECUTION-PLAN-LOCALRANK-NOTEBOOKLM.md",
+      "docs/runbooks/e2e-hybrid-write.md"
     ],
     "invitation": [
       ".claude/worktrees/crazy-carson/docs/EXECUTION-PLAN-LOCALRANK-NOTEBOOKLM.md",
@@ -27242,6 +27280,7 @@
     "cambio": [
       ".claude/worktrees/crazy-carson/docs/OPSLYQUANTUM-USAGE.md",
       ".claude/worktrees/crazy-carson/.github/PULL_REQUEST_TEMPLATE.md",
+      "docs/runbooks/e2e-hybrid-write.md",
       "docs/OPSLYQUANTUM-USAGE.md",
       ".github/PULL_REQUEST_TEMPLATE.md"
     ],
@@ -27359,6 +27398,7 @@
     "e2e": [
       ".claude/worktrees/crazy-carson/docs/SEMANA-2-INFORME.md",
       ".claude/worktrees/crazy-carson/ROADMAP.md",
+      "docs/runbooks/e2e-hybrid-write.md",
       "docs/SEMANA-2-INFORME.md",
       "ROADMAP.md"
     ],
@@ -29390,6 +29430,7 @@
     ],
     "hybrid": [
       "docs/adr/ADR-027-hybrid-compute-plane-k8s.md",
+      "docs/runbooks/e2e-hybrid-write.md",
       "docs/HYBRID-OPSLY-ADMIN.md"
     ],
     "k8s": [
@@ -29412,6 +29453,18 @@
     ],
     "users": [
       "docs/SSH-USERS-FOR-AGENTS.md"
+    ],
+    "desplegar": [
+      "docs/runbooks/e2e-hybrid-write.md"
+    ],
+    "escritura": [
+      "docs/runbooks/e2e-hybrid-write.md"
+    ],
+    "hibrida": [
+      "docs/runbooks/e2e-hybrid-write.md"
+    ],
+    "write": [
+      "docs/runbooks/e2e-hybrid-write.md"
     ],
     "killer": [
       "docs/RTK.md"
@@ -29938,6 +29991,7 @@
     "docs/RUNBOOK-INSIGHTS-DEPLOY.md",
     "docs/runbooks/admin.md",
     "docs/runbooks/dev.md",
+    "docs/runbooks/e2e-hybrid-write.md",
     "docs/runbooks/frontend-audit.md",
     "docs/runbooks/incident.md",
     "docs/runbooks/managed.md",
