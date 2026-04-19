@@ -181,12 +181,17 @@ async function executePlanSteps(
       };
     }
 
+    const toolResult = await actionPort.executeAction(tenantSlug, step.action, args);
+    const observationForTrace = toolResult.success
+      ? toolResult.observation
+      : `[action error] ${toolResult.error ?? "unknown error"}. Observation: ${toolResult.observation}`;
     traceOar(tracer, sessionId, tenantSlug, "tool_call", {
       stepId: step.stepId,
       toolName: step.action,
       args,
+      input: args,
+      toolResult: observationForTrace,
     });
-    const toolResult = await actionPort.executeAction(tenantSlug, step.action, args);
     const line = `stepId=${String(step.stepId)} action=${step.action} success=${String(toolResult.success)} observation=${toolResult.observation}`;
     executionLog.push(line);
     await memory.appendObservation(tenantSlug, sessionId, stepMemoryIndex, toolResult.observation);
@@ -269,6 +274,8 @@ export async function runPlanExecuteStrategy(
       phase: "planning",
       stepsCount: capped.length,
       attempt,
+      input: planningPrompt,
+      output: planRaw,
     });
 
     await persistPlanSummary(memory, tenantSlug, sessionId, capped);
@@ -284,9 +291,13 @@ export async function runPlanExecuteStrategy(
       return ran.result;
     }
 
-    traceOar(tracer, sessionId, tenantSlug, "llm_call", { phase: "synthesis" });
     const synthesisPrompt = contextBlock + buildSynthesisPrompt(initialPrompt, ran.executionLog);
     const synthesisRaw = await llmGatewayClient.complete(model, synthesisPrompt);
+    traceOar(tracer, sessionId, tenantSlug, "llm_call", {
+      phase: "synthesis",
+      input: synthesisPrompt,
+      output: synthesisRaw,
+    });
     const finalAnswer = stripCodeFences(synthesisRaw).trim();
 
     traceOar(tracer, sessionId, tenantSlug, "strategy_end", {

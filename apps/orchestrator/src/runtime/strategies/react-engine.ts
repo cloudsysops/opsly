@@ -160,6 +160,8 @@ export async function runReActStrategy(
       model,
       outcome: parsed.kind,
       thought: parsed.kind === "action" ? parsed.thought : undefined,
+      input: prompt,
+      output: raw,
     });
 
     if (parsed.kind === "parse_error") {
@@ -186,16 +188,19 @@ export async function runReActStrategy(
 
     // ACTING → OBSERVING → REMEMBERING
     const thoughtLine = parsed.thought ? `Thought: ${parsed.thought}\n` : "";
-    traceOar(tracer, sessionId, tenantSlug, "tool_call", {
-      toolName: parsed.actionName,
-      args: parsed.args,
-      stepIndex,
-    });
     const toolResult = await actionPort.executeAction(tenantSlug, parsed.actionName, parsed.args);
 
     const observationText = toolResult.success
       ? toolResult.observation
       : `[action error] ${toolResult.error ?? "unknown error"}. Observation: ${toolResult.observation}`;
+
+    traceOar(tracer, sessionId, tenantSlug, "tool_call", {
+      toolName: parsed.actionName,
+      args: parsed.args,
+      stepIndex,
+      input: parsed.args,
+      toolResult: observationText,
+    });
 
     await memory.appendObservation(tenantSlug, sessionId, stepIndex, observationText);
 
