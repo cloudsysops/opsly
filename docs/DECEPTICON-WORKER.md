@@ -43,6 +43,20 @@ docker compose version
 
 Documentación Docker: [Install Compose plugin](https://docs.docker.com/compose/install/linux/).
 
+**Sin `sudo`:** si no puedes instalar el paquete del sistema, instala el binario del plugin en el usuario (mismo efecto que `docker compose`):
+
+```bash
+mkdir -p ~/.docker/cli-plugins
+curl -fsSL "https://github.com/docker/compose/releases/download/v2.32.4/docker-compose-linux-x86_64" \
+  -o ~/.docker/cli-plugins/docker-compose
+chmod +x ~/.docker/cli-plugins/docker-compose
+docker compose version
+```
+
+(En **aarch64**, sustituye `docker-compose-linux-aarch64` en la URL.)
+
+**PATH:** el instalador deja `decepticon` en `~/.local/bin`. En SSH no interactivo añade `export PATH="$HOME/.local/bin:$PATH"` o usa login shell.
+
 ---
 
 ## Instalación (oficial)

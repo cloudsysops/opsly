@@ -82,6 +82,7 @@ if ! ssh -o BatchMode=yes -o ConnectTimeout=15 \
   -o "StrictHostKeyChecking=${OPSLY_WORKER_SSH_STRICT:-accept-new}" \
   "${TARGET}" bash -s <<'REMOTE'
 set -e
+export PATH="${HOME}/.local/bin:${PATH}"
 echo "== hostname =="
 hostname
 echo "== docker =="
