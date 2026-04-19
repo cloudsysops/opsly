@@ -270,3 +270,4 @@ Ademas, hay un timer nocturno diario a las **03:00** que ejecuta mantenimiento f
 
 - Orchestrator: `apps/orchestrator/`, `docs/ORCHESTRATOR.md`
 - Cola BullMQ / Redis: misma URL que en entorno de plataforma; no duplicar lógica sin revisar `REDIS_URL` en Doppler `prd`.
+- Decepticon (herramienta red team, opcional en este host): [`docs/DECEPTICON-WORKER.md`](DECEPTICON-WORKER.md), script `scripts/check-decepticon-worker.sh`.

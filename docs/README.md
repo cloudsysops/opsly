@@ -48,6 +48,7 @@ docs/SPRINT-ROADMAP.md   ← sprints 1-8, qué está hecho, qué sigue
 | [`VPS-SSH-WORKER-NODES.md`](VPS-SSH-WORKER-NODES.md) | Clave SSH VPS → workers (`authorized_keys`), solo Tailscale        |
 | [`AGENTS-AUTONOMOUS-RUNBOOK.md`](AGENTS-AUTONOMOUS-RUNBOOK.md) | Workers autónomos: systemd, Ollama, cola `openclaw`, verificación   |
 | [`FIRST-OPENCLAW-AGENTS-MAC2011.md`](FIRST-OPENCLAW-AGENTS-MAC2011.md) | Primer arranque workers OpenClaw en Mac 2011 (SSH, Redis, E2E)      |
+| [`DECEPTICON-WORKER.md`](DECEPTICON-WORKER.md)                         | Decepticon en worker Ubuntu (instalación, seguridad, vs LLM Gateway Opsly) |
 | [`WORKER-FLOWS.md`](WORKER-FLOWS.md)                         | Quién corre TeamManager vs workers BullMQ                          |
 | [`OPENCLAW-ARCHITECTURE.md`](OPENCLAW-ARCHITECTURE.md)       | MCP + Orchestrator + LLM Gateway + Context Builder                 |
 | [`design/OAR.md`](design/OAR.md)                             | Opsly Agentic Runtime (OAR): loops, MemoryInterface, AgentActionPort |
