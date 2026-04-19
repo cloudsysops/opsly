@@ -68,16 +68,16 @@ if command -v docker >/dev/null 2>&1; then
   echo ""
 fi
 
-# --- 1) Docker: prune agresivo (IMÁGENES no usadas por contenedores en ejecución) ---
+# --- 1) Docker: solo imágenes huérfanas (NO usar `docker system prune -a` aquí: borra
+#     contenedores PARADOS y luego puede tumbar stacks compose intencionalmente detenidos). ---
 echo "----------------------------------------------------------------"
-echo "PASO 1 — Docker system prune -a"
-echo "  RIESGO: Elimina todas las imágenes que no estén asociadas a un"
-echo "  contenedor (incl. parados). Los contenedores en marcha conservan su imagen."
-echo "  Puede liberar varios GB (p. ej. capas viejas de GHCR)."
-echo "  NO elimina volúmenes (usa paso 2 aparte)."
+echo "PASO 1 — docker image prune -a"
+echo "  Elimina imágenes no referenciadas por NINGÚN contenedor (ni siquiera parado)."
+echo "  NO elimina contenedores parados (a diferencia de \`docker system prune -a\`)."
+echo "  Libera capas GHCR antiguas con menos riesgo operativo."
 echo "----------------------------------------------------------------"
-if confirm "¿Ejecutar \`docker system prune -a -f\`?"; then
-  run docker system prune -a -f
+if confirm "¿Ejecutar \`docker image prune -a -f\`?"; then
+  run docker image prune -a -f
 else
   echo "[cleanup-vps] Paso 1 omitido."
 fi

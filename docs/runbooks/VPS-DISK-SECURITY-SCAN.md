@@ -84,6 +84,8 @@ sudo bash /opt/opsly/scripts/cleanup-vps.sh
 bash /opt/opsly/scripts/cleanup-vps.sh --dry-run
 ```
 
+**Importante:** el paso 1 usa **`docker image prune -a`** (no `docker system prune -a`). Este último **elimina contenedores parados** y puede borrar stacks `compose` detenidos antes de limpiar imágenes; luego hay que **`compose pull` + `up -d`** para recuperar la plataforma.
+
 Existe también `scripts/vps-cleanup-robust.sh` (perfiles `--light` / `--aggressive`).
 
 ---
