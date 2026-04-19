@@ -1,7 +1,7 @@
 {
   "version": 1,
   "root": "/Users/dragon/cboteros/proyectos/intcloudsysops",
-  "generated_at": "2026-04-19T15:52:34.819Z",
+  "generated_at": "2026-04-19T17:37:33.404Z",
   "files": [
     {
       "path": ".claude/CLAUDE.md",
@@ -10324,6 +10324,54 @@
       "size_bytes": 1400
     },
     {
+      "path": "docs/HYBRID-OPSLY-ADMIN.md",
+      "title": "Guía de operaciones: centro de mando (`opsly-admin`)",
+      "keywords": [
+        "acceso",
+        "admin",
+        "agente",
+        "aplica",
+        "arquitectura",
+        "autenticacion",
+        "centro",
+        "checklist",
+        "codigo",
+        "conexion",
+        "config",
+        "cursor",
+        "desde",
+        "determinar",
+        "docker",
+        "dragonb",
+        "ejemplo",
+        "escriben",
+        "flujo",
+        "git",
+        "guia",
+        "herramientas",
+        "hybrid",
+        "leen",
+        "mando",
+        "maquina",
+        "markdown",
+        "mcp",
+        "operaciones",
+        "operativo",
+        "opsly",
+        "realista",
+        "referencias",
+        "requerida",
+        "resumen",
+        "roles",
+        "ssh",
+        "tipico",
+        "transporte",
+        "uso",
+        "verificacion"
+      ],
+      "size_bytes": 6392
+    },
+    {
       "path": "docs/IMPLEMENTATION-IA-LAYER.md",
       "title": "Guía de implementación — Capa IA (Opsly monorepo)",
       "keywords": [
@@ -12044,7 +12092,7 @@
         "stripe",
         "wiki"
       ],
-      "size_bytes": 20041
+      "size_bytes": 20168
     },
     {
       "path": "docs/REFACTOR-CHECKLIST.md",
@@ -15046,6 +15094,7 @@
       "docs/SEMANA-2-INFORME.md",
       "docs/N8N-IMPORT-GUIDE.md",
       "docs/OBSIDIAN-README.md",
+      "docs/HYBRID-OPSLY-ADMIN.md",
       "docs/DECEPTICON-WORKER.md",
       "docs/SPRINT-CURSOR-PROMPTS.md",
       "docs/AGENTS-AUTONOMOUS-RUNBOOK.md",
@@ -15503,6 +15552,7 @@
       "docs/SEMANA-2-INFORME.md",
       "docs/N8N-IMPORT-GUIDE.md",
       "docs/OBSIDIAN-README.md",
+      "docs/HYBRID-OPSLY-ADMIN.md",
       "docs/DECEPTICON-WORKER.md",
       "docs/SPRINT-CURSOR-PROMPTS.md",
       "docs/AGENTS-AUTONOMOUS-RUNBOOK.md",
@@ -15834,6 +15884,7 @@
       "docs/PROVISIONING-SYSTEM.md",
       "docs/CLAUDE-WORKFLOW-OPTIMIZATION.md",
       "docs/CICD-VPS.md",
+      "docs/HYBRID-OPSLY-ADMIN.md",
       "docs/GITHUB-TOKEN.md",
       "docs/COST-DASHBOARD.md",
       "docs/AUTO-SYNC-DOCS-SETUP.md",
@@ -15865,6 +15916,7 @@
       "docs/runbooks/dev.md",
       "docs/.obsidian/PLUGINS-TO-INSTALL.md",
       "docs/OBSIDIAN-README.md",
+      "docs/HYBRID-OPSLY-ADMIN.md",
       "docs/AGENTS-AUTONOMOUS-RUNBOOK.md",
       ".github/copilot-instructions.md"
     ],
@@ -16195,6 +16247,7 @@
       "docs/TENANT-TESTING-PLAN.md",
       "docs/GCP-ACTIVATION-CHECKLIST.md",
       "docs/N8N-IMPORT-GUIDE.md",
+      "docs/HYBRID-OPSLY-ADMIN.md",
       "docs/DECEPTICON-WORKER.md",
       "docs/AGENTS-AUTONOMOUS-RUNBOOK.md",
       "docs/ops/runbook-redis.md",
@@ -16354,6 +16407,7 @@
       "docs/GCP-ACTIVATION-CHECKLIST.md",
       "docs/ORCHESTRATOR-FIXES-EXECUTION.md",
       "docs/N8N-IMPORT-GUIDE.md",
+      "docs/HYBRID-OPSLY-ADMIN.md",
       "docs/LOCALRANK-TESTER-GUIDE.md",
       "docs/AGENTS-GLOBAL-CONTEXT.md",
       "docs/REFACTOR-CHECKLIST.md",
@@ -16462,6 +16516,7 @@
       "docs/TROUBLESHOOTING.md",
       "docs/SPRINT-PLANNING-SETUP.md",
       "docs/DOPPLER-VARS.md",
+      "docs/HYBRID-OPSLY-ADMIN.md",
       "docs/DECEPTICON-WORKER.md",
       "docs/VPS-SSH-WORKER-NODES.md",
       "docs/FIRST-OPENCLAW-AGENTS-MAC2011.md",
@@ -16949,6 +17004,7 @@
       "docs/SPRINT-TRACKING.md",
       "docs/HOSTS-PATHS.md",
       "docs/LANIDEA-OPENCLAW.md",
+      "docs/HYBRID-OPSLY-ADMIN.md",
       "docs/SPRINT-CURSOR-PROMPTS.md",
       "docs/SECURITY-MITIGATIONS-2026-04-09.md",
       "docs/MASTER-PLAN.md",
@@ -17021,6 +17077,7 @@
       "docs/SSH-COMMANDS-LOCALRANK.md",
       "docs/CICD-VPS.md",
       "docs/TAILSCALE-NOMENCLATURA.md",
+      "docs/HYBRID-OPSLY-ADMIN.md",
       "docs/VPS-SSH-WORKER-NODES.md",
       "docs/SECURITY-MITIGATIONS-2026-04-09.md",
       "docs/PLAN-ORCHESTRATOR-WORKER.md",
@@ -17232,6 +17289,7 @@
       "docs/WORKER-TEAM-ARCHITECTURE.md",
       "docs/BILLING-USD-DIAGRAMS.md",
       "docs/ARCHITECTURE-DISTRIBUTED.md",
+      "docs/HYBRID-OPSLY-ADMIN.md",
       "docs/DECEPTICON-WORKER.md",
       "docs/AGENTS-AUTONOMOUS-RUNBOOK.md",
       "docs/OBSERVABILITY.md",
@@ -17314,6 +17372,7 @@
       "docs/TEST_PLAN.md",
       "docs/IMPLEMENTATION-IA-LAYER.md",
       "docs/TAILSCALE-NOMENCLATURA.md",
+      "docs/HYBRID-OPSLY-ADMIN.md",
       "docs/COST-DASHBOARD.md",
       "docs/PERFORMANCE_BASELINE.md",
       "ROADMAP.md",
@@ -17936,6 +17995,7 @@
       "docs/RTK.md",
       "docs/CLAUDE-WORKFLOW-OPTIMIZATION.md",
       "docs/N8N-SETUP.md",
+      "docs/HYBRID-OPSLY-ADMIN.md",
       "docs/AGENTS-GLOBAL-CONTEXT.md",
       "docs/PLAN-SKILLS-TO-NOTEBOOKLM-2026-04-14.md",
       "docs/FIRST-OPENCLAW-AGENTS-MAC2011.md",
@@ -18504,7 +18564,8 @@
       ".claude/worktrees/crazy-carson/.claude/CLAUDE.md",
       ".claude/worktrees/crazy-carson/docs/adr/ADR-025-notebooklm-knowledge-layer.md",
       ".claude/CLAUDE.md",
-      "docs/adr/ADR-025-notebooklm-knowledge-layer.md"
+      "docs/adr/ADR-025-notebooklm-knowledge-layer.md",
+      "docs/HYBRID-OPSLY-ADMIN.md"
     ],
     "reutilizables": [
       ".claude/worktrees/crazy-carson/.claude/CLAUDE.md",
@@ -18644,6 +18705,7 @@
       "docs/N8N-SETUP.md",
       "docs/OPSLYQUANTUM-USAGE.md",
       "docs/AGENTS-ASSIGNMENTS.md",
+      "docs/HYBRID-OPSLY-ADMIN.md",
       "docs/SPRINT-CURSOR-PROMPTS.md",
       "docs/MCP-SERVERS.md",
       "docs/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md",
@@ -18679,6 +18741,7 @@
       "docs/PARALLEL-AGENTS-ORCHESTRATION.md",
       "docs/DOPPLER-VARS.md",
       "docs/TAILSCALE-NOMENCLATURA.md",
+      "docs/HYBRID-OPSLY-ADMIN.md",
       "docs/VPS-SSH-WORKER-NODES.md",
       "skills/templates/template-mcp-tool.md"
     ],
@@ -19818,6 +19881,7 @@
       "docs/README.md",
       "docs/ARCHITECTURE-DISTRIBUTED.md",
       "docs/NOTION-MCP-SERVER.md",
+      "docs/HYBRID-OPSLY-ADMIN.md",
       "docs/PLAN-SKILLS-TO-NOTEBOOKLM-2026-04-14.md",
       "docs/FAILOVER-GCP-ARCHITECTURE.md",
       "docs/LIBRARIES-INSTALLED.md",
@@ -20952,6 +21016,7 @@
       "docs/PLAN-SUPER-ARCHITECT-AGENT-2026-04-14.md",
       "docs/emails/tenant-welcome-email.md",
       "docs/CLAUDE-WORKFLOW-OPTIMIZATION.md",
+      "docs/HYBRID-OPSLY-ADMIN.md",
       "apps/mcp/README.md"
     ],
     "macro": [
@@ -21861,6 +21926,7 @@
       "docs/SSH-COMMANDS-LOCALRANK.md",
       "docs/LANIDEA-OPENCLAW.md",
       "docs/ORCHESTRATOR-FIXES-EXECUTION.md",
+      "docs/HYBRID-OPSLY-ADMIN.md",
       "docs/DECEPTICON-WORKER.md",
       "docs/AGENTS-AUTONOMOUS-RUNBOOK.md",
       "docs/VPS-ARCHITECTURE.md",
@@ -22253,6 +22319,7 @@
       ".claude/worktrees/crazy-carson/docs/COST-DASHBOARD.md",
       "docs/adr/ADR-009-openclaw-mcp-architecture.md",
       "docs/MCP-STATUS-ANALYSIS.md",
+      "docs/HYBRID-OPSLY-ADMIN.md",
       "docs/ops/runbook-redis.md",
       "docs/COST-DASHBOARD.md"
     ],
@@ -22307,6 +22374,7 @@
       "docs/MCP-STATUS-ANALYSIS.md",
       "docs/DOPPLER-VARS.md",
       "docs/NOTION-MCP-SERVER.md",
+      "docs/HYBRID-OPSLY-ADMIN.md",
       "docs/REFACTOR-CHECKLIST.md",
       "docs/MCP-SERVERS.md",
       "docs/SUPERAGENTS-BOOTSTRAP.md",
@@ -23369,6 +23437,7 @@
       "docs/DISTRIBUTED-ARCHITECTURE.md",
       "docs/CLOUDFLARE-PROXY-ACTIVATION.md",
       "docs/emails/tenant-welcome-email.md",
+      "docs/HYBRID-OPSLY-ADMIN.md",
       "docs/LOCALRANK-TESTER-GUIDE.md",
       "docs/PLAN-OLLAMA-WORKER-2026-04-14.md",
       "docs/COST-DASHBOARD.md"
@@ -23639,6 +23708,7 @@
       "docs/TOKEN-SYSTEM-GUIDE.md",
       "docs/GOOGLE-CLOUD-ACTIVATION.md",
       "docs/IMPLEMENTATION-IA-LAYER.md",
+      "docs/HYBRID-OPSLY-ADMIN.md",
       "docs/LOCALRANK-TESTER-GUIDE.md",
       "docs/TENANT-TESTING-GUIDE.md",
       "docs/NOTEBOOKLM-SETUP.md",
@@ -23796,6 +23866,7 @@
       "docs/LANIDEA-OPENCLAW.md",
       "docs/KNOWLEDGE-SYSTEM.md",
       "docs/OPSLYQUANTUM-USAGE.md",
+      "docs/HYBRID-OPSLY-ADMIN.md",
       "docs/NOTEBOOKLM-SETUP.md",
       "docs/DISK-USAGE-REPORT.md",
       "skills/user/opsly-llm/SKILL.md",
@@ -23902,6 +23973,7 @@
       "docs/WORKER-TEAM-BILLING.md",
       "docs/WORKER-TEAM-ARCHITECTURE.md",
       "docs/IMPLEMENTATION-IA-LAYER.md",
+      "docs/HYBRID-OPSLY-ADMIN.md",
       "docs/DECEPTICON-WORKER.md",
       "docs/AGENTS-GLOBAL-CONTEXT.md",
       "docs/PLAN-SKILLS-TO-NOTEBOOKLM-2026-04-14.md",
@@ -24356,6 +24428,7 @@
       ".claude/worktrees/crazy-carson/skills/user/opsly-quantum/templates/runbook.md",
       "docs/TOKEN-BILLING-SYSTEM.md",
       "docs/INVITATIONS_RUNBOOK.md",
+      "docs/HYBRID-OPSLY-ADMIN.md",
       "docs/DISK-USAGE-REPORT.md",
       "skills/user/opsly-quantum/templates/runbook.md"
     ],
@@ -25307,6 +25380,7 @@
       ".claude/worktrees/crazy-carson/SPRINT-TRACKER.md",
       "docs/RUNBOOK-AI-LOCAL-FIRST.md",
       "docs/HOSTS-PATHS.md",
+      "docs/HYBRID-OPSLY-ADMIN.md",
       "docs/DECEPTICON-WORKER.md",
       "SPRINT-TRACKER.md"
     ],
@@ -25720,7 +25794,8 @@
       ".claude/worktrees/crazy-carson/docs/AGENTS-ORCHESTRATION.md",
       "docs/HERMES-LOCAL-AGENTS-STACK.md",
       "docs/WORKER-TEAM-ARCHITECTURE.md",
-      "docs/AGENTS-ORCHESTRATION.md"
+      "docs/AGENTS-ORCHESTRATION.md",
+      "docs/HYBRID-OPSLY-ADMIN.md"
     ],
     "comando": [
       ".claude/worktrees/crazy-carson/docs/SESSION-GIT-SYNC.md",
@@ -25782,7 +25857,8 @@
       ".claude/worktrees/crazy-carson/docs/FAQ.md",
       ".claude/worktrees/crazy-carson/docs/runbooks/managed.md",
       "docs/FAQ.md",
-      "docs/runbooks/managed.md"
+      "docs/runbooks/managed.md",
+      "docs/HYBRID-OPSLY-ADMIN.md"
     ],
     "vivo": [
       ".claude/worktrees/crazy-carson/docs/FAQ.md",
@@ -25804,7 +25880,8 @@
       ".claude/worktrees/crazy-carson/docs/runbooks/managed.md",
       ".claude/worktrees/crazy-carson/docs/ARCHITECTURE-DISTRIBUTED.md",
       "docs/runbooks/managed.md",
-      "docs/ARCHITECTURE-DISTRIBUTED.md"
+      "docs/ARCHITECTURE-DISTRIBUTED.md",
+      "docs/HYBRID-OPSLY-ADMIN.md"
     ],
     "administracion": [
       ".claude/worktrees/crazy-carson/docs/runbooks/admin.md",
@@ -26180,6 +26257,7 @@
       ".claude/worktrees/crazy-carson/docs/MCP-STATUS-ANALYSIS.md",
       ".claude/worktrees/crazy-carson/apps/mcp/README.md",
       "docs/MCP-STATUS-ANALYSIS.md",
+      "docs/HYBRID-OPSLY-ADMIN.md",
       "apps/mcp/README.md"
     ],
     "alto": [
@@ -27730,6 +27808,7 @@
     "maquina": [
       ".claude/worktrees/crazy-carson/docs/VPS-SSH-WORKER-NODES.md",
       "docs/design/OAR.md",
+      "docs/HYBRID-OPSLY-ADMIN.md",
       "docs/VPS-SSH-WORKER-NODES.md"
     ],
     "nodes": [
@@ -28644,6 +28723,7 @@
     ],
     "aplica": [
       ".claude/worktrees/crazy-carson/.github/PULL_REQUEST_TEMPLATE.md",
+      "docs/HYBRID-OPSLY-ADMIN.md",
       ".github/PULL_REQUEST_TEMPLATE.md"
     ],
     "request": [
@@ -29309,7 +29389,8 @@
       "docs/adr/ADR-027-hybrid-compute-plane-k8s.md"
     ],
     "hybrid": [
-      "docs/adr/ADR-027-hybrid-compute-plane-k8s.md"
+      "docs/adr/ADR-027-hybrid-compute-plane-k8s.md",
+      "docs/HYBRID-OPSLY-ADMIN.md"
     ],
     "k8s": [
       "docs/adr/ADR-027-hybrid-compute-plane-k8s.md"
@@ -29352,6 +29433,30 @@
     ],
     "rust": [
       "docs/RTK.md"
+    ],
+    "centro": [
+      "docs/HYBRID-OPSLY-ADMIN.md"
+    ],
+    "conexion": [
+      "docs/HYBRID-OPSLY-ADMIN.md"
+    ],
+    "determinar": [
+      "docs/HYBRID-OPSLY-ADMIN.md"
+    ],
+    "dragonb": [
+      "docs/HYBRID-OPSLY-ADMIN.md"
+    ],
+    "escriben": [
+      "docs/HYBRID-OPSLY-ADMIN.md"
+    ],
+    "leen": [
+      "docs/HYBRID-OPSLY-ADMIN.md"
+    ],
+    "mando": [
+      "docs/HYBRID-OPSLY-ADMIN.md"
+    ],
+    "realista": [
+      "docs/HYBRID-OPSLY-ADMIN.md"
     ],
     "decepticon": [
       "docs/DECEPTICON-WORKER.md"
@@ -29776,6 +29881,7 @@
     "docs/HERMES-LOCAL-AGENTS-STACK.md",
     "docs/HERMES-SPRINT-PLAN.md",
     "docs/HOSTS-PATHS.md",
+    "docs/HYBRID-OPSLY-ADMIN.md",
     "docs/IMPLEMENTATION-IA-LAYER.md",
     "docs/IMPLEMENTATION-STATUS.md",
     "docs/INCIDENT-2026-04-11-DISCO-LLENO.md",
