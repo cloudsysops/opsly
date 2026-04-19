@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-04-18T23:36:06Z",
-  "totalFiles": 171,
+  "lastIndexed": "2026-04-19T01:11:16Z",
+  "totalFiles": 172,
   "files": [
     "ACTIVE-PROMPT.md",
     "ADMIN-ECOSYSTEM.md",
@@ -57,6 +57,7 @@
     "CONTEXT-BUILDER.md",
     "COST-DASHBOARD.md",
     "CURSOR-DAILY-CHECKLIST.md",
+    "DECEPTICON-WORKER.md",
     "DEPLOY-VPS-AND-INDEX.md",
     "DISK-USAGE-REPORT.md",
     "DISTRIBUTED-ARCHITECTURE.md",
