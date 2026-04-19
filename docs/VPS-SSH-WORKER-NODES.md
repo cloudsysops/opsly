@@ -3,32 +3,22 @@
 > **Objetivo:** que el usuario del VPS (p. ej. `vps-dragon`) pueda abrir sesiones SSH **sin contraseña** hacia workers (Mac 2011, laptops, etc.) usando **clave pública**, solo por **Tailscale** (`100.64.0.0/10` o nombres MagicDNS).  
 > **No sustituye** el acceso humano desde `opsly-admin`: sigue siendo válido `ssh opsly-worker` desde la Mac principal. Esto documenta el caso **VPS → nodo** para scripts, healthchecks o despliegues.
 
-## Automatización (scripts en el repo)
+**Usuarios por máquina (agentes):** tabla canónica en [`SSH-USERS-FOR-AGENTS.md`](SSH-USERS-FOR-AGENTS.md).
 
-Desde la **Mac admin** (repo clonado), si ya tienes `ssh` sin contraseña al **VPS** y al **worker**:
+## Convención desplegada en VPS (referencia)
 
-```bash
-./scripts/vps-ssh-bootstrap-from-admin.sh \
-  --vps vps-dragon@100.120.151.91 \
-  --worker opslyquantum@100.80.41.29
-./scripts/vps-ssh-bootstrap-from-admin.sh --dry-run --vps ... --worker ...   # simulación
-```
+En el VPS real puede existir el par **`~/.ssh/vps_to_nodes`** / **`vps_to_nodes.pub`** (en lugar del nombre de ejemplo `id_ed25519_opsly_nodes`). La **pública** debe estar en `~opslyquantum/.ssh/authorized_keys` del worker.
 
-**Solo en el VPS** (clave + comprobar):
+Ejemplo de prueba:
 
 ```bash
-cd /opt/opsly   # o ruta del clone
-./scripts/vps-ssh-ensure-key.sh
-./scripts/vps-ssh-verify.sh opslyquantum@100.80.41.29
+ssh -i ~/.ssh/vps_to_nodes -o IdentitiesOnly=yes \
+  opslyquantum@100.80.41.29 "hostname"
 ```
 
-**Solo en el worker** (si añades la pública a mano):
+Opcional en `~/.ssh/config` del VPS: host **`opsly-mac2011-ip`** → `HostName 100.80.41.29`, `User opslyquantum`, `IdentityFile ~/.ssh/vps_to_nodes`.
 
-```bash
-./scripts/worker-ssh-authorize-pubkey.sh /ruta/recibida/vps.pub
-```
-
-**npm (desde la raíz del repo):** `npm run opsly:vps-ssh:bootstrap -- --vps … --worker …` · `npm run opsly:vps-ssh:ensure-key`
+Los pasos siguientes usan el nombre **`id_ed25519_opsly_nodes`** como plantilla para **nuevas** instalaciones; si ya tenéis `vps_to_nodes`, **no** dupliquéis claves: reutilizad el mismo par.
 
 ## Principio
 

@@ -4,6 +4,10 @@
 
 Convenciones para operar varios asistentes (Cursor, Claude, automatismos) sobre el mismo repo sin divergir del contexto publicado en `AGENTS.md` / `VISION.md`.
 
+### SSH y usuarios remotos
+
+Antes de proponer comandos `ssh`, leer **[`SSH-USERS-FOR-AGENTS.md`](SSH-USERS-FOR-AGENTS.md)** (`vps-dragon` en el VPS, `opslyquantum` en el worker Ubuntu, `cboteros` solo como ejemplo de usuario en la Mac admin). El humano **no** debe cambiar de usuario local en la Mac para usar Cursor; el agente sí debe usar el usuario **remoto** correcto en cada host.
+
 ## Qué es un agente en Opsly
 
 - **Agente humano + herramienta:** persona que sigue `AGENTS.md`, `VISION.md` y ADRs.

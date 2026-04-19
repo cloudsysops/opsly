@@ -6,15 +6,18 @@
 
 ## 🔒 SSH / Acceso VPS
 
+**Usuarios por máquina (agentes):** [`SSH-USERS-FOR-AGENTS.md`](SSH-USERS-FOR-AGENTS.md) — VPS `vps-dragon`, worker `opslyquantum`, Mac admin típico `cboteros` en `~/.ssh/config`.
+
 ```bash
 # SIEMPRE por Tailscale — nunca IP pública
-ssh vps-dragon@100.120.151.91
+ssh vps-dragon@100.120.151.91          # control plane
+ssh opslyquantum@100.80.41.29          # worker Ubuntu (opsly-mac2011)
 
 # IP pública (solo HTTP/HTTPS — bloqueada para SSH por UFW)
 # 157.245.223.7
 ```
 
-**VPS → workers (otros nodos):** clave en el VPS + pegar la pública en `authorized_keys` de cada worker; guía [`VPS-SSH-WORKER-NODES.md`](VPS-SSH-WORKER-NODES.md).
+**VPS → workers (otros nodos):** clave en el VPS (`vps_to_nodes` o `id_ed25519_opsly_nodes`) + `authorized_keys` en el worker; guía [`VPS-SSH-WORKER-NODES.md`](VPS-SSH-WORKER-NODES.md).
 
 ---
 

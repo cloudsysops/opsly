@@ -1,7 +1,7 @@
 {
   "version": 1,
   "root": "/Users/dragon/cboteros/proyectos/intcloudsysops",
-  "generated_at": "2026-04-19T01:39:32.761Z",
+  "generated_at": "2026-04-19T15:52:34.819Z",
   "files": [
     {
       "path": ".claude/CLAUDE.md",
@@ -8700,10 +8700,13 @@
         "opsly",
         "paralelo",
         "plan",
+        "remotos",
         "sistema",
-        "startup"
+        "ssh",
+        "startup",
+        "usuarios"
       ],
-      "size_bytes": 3932
+      "size_bytes": 4320
     },
     {
       "path": "docs/AGENTS-ORCHESTRATION.md",
@@ -11970,7 +11973,7 @@
         "vars",
         "vps"
       ],
-      "size_bytes": 6379
+      "size_bytes": 6681
     },
     {
       "path": "docs/QUICKSTART-AGENTS.md",
@@ -12041,7 +12044,7 @@
         "stripe",
         "wiki"
       ],
-      "size_bytes": 19910
+      "size_bytes": 20041
     },
     {
       "path": "docs/REFACTOR-CHECKLIST.md",
@@ -12820,6 +12823,39 @@
       "size_bytes": 2237
     },
     {
+      "path": "docs/SSH-USERS-FOR-AGENTS.md",
+      "title": "SSH — qué usuario usar (humanos y agentes)",
+      "keywords": [
+        "abrir",
+        "agente",
+        "agentes",
+        "agents",
+        "antes",
+        "cambiar",
+        "confundir",
+        "cursor",
+        "healthchecks",
+        "humanos",
+        "mac",
+        "markdown",
+        "nombres",
+        "opsly",
+        "rapida",
+        "referencias",
+        "scripts",
+        "ssh",
+        "suelen",
+        "tabla",
+        "tengo",
+        "usar",
+        "users",
+        "usuario",
+        "vps",
+        "worker"
+      ],
+      "size_bytes": 3031
+    },
+    {
       "path": "docs/SUPERAGENTS-BOOTSTRAP.md",
       "title": "Superagentes Opsly — Bootstrap completo",
       "keywords": [
@@ -12870,7 +12906,7 @@
         "tailscale",
         "tailscaled"
       ],
-      "size_bytes": 3190
+      "size_bytes": 3534
     },
     {
       "path": "docs/TENANT-TESTING-GUIDE.md",
@@ -13136,8 +13172,10 @@
         "cada",
         "clave",
         "config",
+        "convencion",
         "dedicado",
         "desde",
+        "desplegada",
         "endurecimiento",
         "generar",
         "hacia",
@@ -13154,6 +13192,7 @@
         "principio",
         "probar",
         "recomendado",
+        "referencia",
         "referencias",
         "ssh",
         "tiene",
@@ -13162,7 +13201,7 @@
         "worker",
         "workers"
       ],
-      "size_bytes": 3788
+      "size_bytes": 4641
     },
     {
       "path": "docs/WALLET-PREPAID-ROADMAP.md",
@@ -14934,6 +14973,7 @@
       "docs/WORKER-TEAM-BILLING.md",
       "docs/QUICKSTART-AGENTS.md",
       "docs/CLOUDFLARE-PROXY-ACTIVATION.md",
+      "docs/SSH-USERS-FOR-AGENTS.md",
       "docs/SECURITY_AUDIT_REPORT.md",
       "docs/AUTO-PUSH-WATCHER.md",
       "docs/TOKEN-BILLING-SYSTEM.md",
@@ -15389,6 +15429,7 @@
       "docs/WORKER-TEAM-BILLING.md",
       "docs/QUICKSTART-AGENTS.md",
       "docs/CLOUDFLARE-PROXY-ACTIVATION.md",
+      "docs/SSH-USERS-FOR-AGENTS.md",
       "docs/SECURITY_AUDIT_REPORT.md",
       "docs/AUTO-PUSH-WATCHER.md",
       "docs/TOKEN-BILLING-SYSTEM.md",
@@ -16206,6 +16247,7 @@
       "docs/ADMIN-ECOSYSTEM.md",
       "docs/DISTRIBUTED-ARCHITECTURE.md",
       "docs/CLOUDFLARE-PROXY-ACTIVATION.md",
+      "docs/SSH-USERS-FOR-AGENTS.md",
       "docs/AUTO-PUSH-WATCHER.md",
       "docs/EXECUTION-PLAN-LOCALRANK-NOTEBOOKLM.md",
       "docs/SSH-COMMANDS-LOCALRANK.md",
@@ -16875,7 +16917,8 @@
       "docs/BILLING-USD-DIAGRAMS.md",
       "docs/TENANT-TESTING-PLAN.md",
       "docs/DOPPLER-VARS.md",
-      "docs/DECEPTICON-WORKER.md"
+      "docs/DECEPTICON-WORKER.md",
+      "docs/VPS-SSH-WORKER-NODES.md"
     ],
     "repetir": [
       "tools/usb-kit/README.md",
@@ -16932,6 +16975,7 @@
       "docs/NOTEBOOKLM-INTEGRATION.md",
       "docs/WORKER-TESTING.md",
       "docs/ADMIN-ECOSYSTEM.md",
+      "docs/SSH-USERS-FOR-AGENTS.md",
       "docs/KNOWLEDGE-SYSTEM.md",
       "docs/PLAN-SKILLS-TO-NOTEBOOKLM-2026-04-14.md",
       "docs/RETENTION-POLICY.md",
@@ -16971,6 +17015,8 @@
       "docs/WORKER-SETUP-MAC2011.md",
       "docs/ARCHITECT-SECURITY-REVIEW.md",
       "docs/QUICK-REFERENCE.md",
+      "docs/AGENTS-GUIDE.md",
+      "docs/SSH-USERS-FOR-AGENTS.md",
       "docs/EXECUTION-PLAN-LOCALRANK-NOTEBOOKLM.md",
       "docs/SSH-COMMANDS-LOCALRANK.md",
       "docs/CICD-VPS.md",
@@ -17031,6 +17077,7 @@
       "tools/usb-kit/README.md",
       ".claude/worktrees/crazy-carson/tools/usb-kit/README.md",
       ".claude/worktrees/crazy-carson/docs/GOOGLE-CLOUD-SETUP.md",
+      "docs/SSH-USERS-FOR-AGENTS.md",
       "docs/RTK.md",
       "docs/GOOGLE-CLOUD-SETUP.md"
     ],
@@ -17170,6 +17217,7 @@
       "docs/adr/ADR-027-hybrid-compute-plane-k8s.md",
       "docs/QUALITY-GATES.md",
       "docs/WORKER-TEAM-BILLING.md",
+      "docs/SSH-USERS-FOR-AGENTS.md",
       "docs/AUTO-PUSH-WATCHER.md",
       "docs/TOKEN-BILLING-SYSTEM.md",
       "docs/TROUBLESHOOTING.md",
@@ -17881,6 +17929,7 @@
       ".claude/worktrees/crazy-carson/.github/AGENTS.md",
       ".claude/worktrees/crazy-carson/AGENTS.md",
       "docs/AGENTS-GUIDE.md",
+      "docs/SSH-USERS-FOR-AGENTS.md",
       "docs/PLAN-SUPER-ARCHITECT-AGENT-2026-04-14.md",
       "docs/HERMES-SPRINT-PLAN.md",
       "docs/KNOWLEDGE-SYSTEM.md",
@@ -18584,6 +18633,7 @@
       ".claude/worktrees/crazy-carson/.github/AGENTS.md",
       ".claude/worktrees/crazy-carson/AGENTS.md",
       "agents/prompts/cursor-executor.md",
+      "docs/SSH-USERS-FOR-AGENTS.md",
       "docs/PARALLEL-AGENTS-ORCHESTRATION.md",
       "docs/SETUP-NOTION-MCP.md",
       "docs/HERMES-LOCAL-AGENTS-STACK.md",
@@ -18816,6 +18866,7 @@
       "docs/WORKER-SETUP-MAC2011.md",
       "docs/ARCHITECTURE-DISTRIBUTED-FINAL.md",
       "docs/DISTRIBUTED-ARCHITECTURE.md",
+      "docs/SSH-USERS-FOR-AGENTS.md",
       "docs/OPENCLAW-ARCHITECTURE.md",
       "docs/EXECUTION-PLAN-LOCALRANK-NOTEBOOKLM.md",
       "docs/WORKER-SERVICE-MAC2011.md",
@@ -19147,6 +19198,7 @@
       "docs/adr/ADR-016-worker-teams-billing-roadmap.md",
       "docs/DISTRIBUTED-ARCHITECTURE.md",
       "docs/WORKER-TEAM-BILLING.md",
+      "docs/SSH-USERS-FOR-AGENTS.md",
       "docs/BILLING-FLUSH-VERCEL.md",
       "docs/WORKER-SERVICE-MAC2011.md",
       "docs/SESSION-GIT-SYNC.md",
@@ -22566,6 +22618,7 @@
       "docs/QUICK-REFERENCE.md",
       "docs/AGENTS-GUIDE.md",
       "docs/QUICKSTART-AGENTS.md",
+      "docs/SSH-USERS-FOR-AGENTS.md",
       "docs/HERMES-LOCAL-AGENTS-STACK.md",
       "docs/TOKEN-SYSTEM-GUIDE.md",
       "docs/README.md",
@@ -23045,6 +23098,7 @@
       "docs/adr/ADR-014-notebooklm-agent.md",
       "docs/AGENTS-GUIDE.md",
       "docs/QUICKSTART-AGENTS.md",
+      "docs/SSH-USERS-FOR-AGENTS.md",
       "docs/AUTO-PUSH-WATCHER.md",
       "docs/PARALLEL-AGENTS-ORCHESTRATION.md",
       "docs/HERMES-LOCAL-AGENTS-STACK.md",
@@ -23767,6 +23821,7 @@
       ".claude/worktrees/crazy-carson/.github/copilot-instructions.md",
       ".claude/worktrees/crazy-carson/skills/user/opsly-context/SKILL.md",
       "docs/QUALITY-GATES.md",
+      "docs/SSH-USERS-FOR-AGENTS.md",
       "docs/CLIENT-TESTING-CHECKLIST.md",
       "docs/SESSION-GIT-SYNC.md",
       "docs/runbooks/dev.md",
@@ -23905,6 +23960,7 @@
       ".claude/worktrees/crazy-carson/skills/templates/template-migration.md",
       ".claude/worktrees/crazy-carson/apps/admin/INVITATIONS_UI.md",
       "docs/WORKER-TEAM-BILLING.md",
+      "docs/SSH-USERS-FOR-AGENTS.md",
       "ROADMAP.md",
       ".github/README-github-templates.md",
       "skills/user/opsly-autonomous/SKILL.md",
@@ -24723,6 +24779,7 @@
       ".claude/worktrees/crazy-carson/docs/GITHUB-SETTINGS.md",
       ".claude/worktrees/crazy-carson/docs/AUTO-SYNC-DOCS-SETUP.md",
       ".claude/worktrees/crazy-carson/.github/README-github-templates.md",
+      "docs/SSH-USERS-FOR-AGENTS.md",
       "docs/OPS-CLEANUP-PROCEDURES.md",
       "docs/runbooks/incident.md",
       "docs/AGENTS-AUTONOMOUS-RUNBOOK.md",
@@ -25049,6 +25106,7 @@
     ],
     "remotos": [
       ".claude/worktrees/crazy-carson/docs/OPENCLAW-ARCHITECTURE.md",
+      "docs/AGENTS-GUIDE.md",
       "docs/OPENCLAW-ARCHITECTURE.md"
     ],
     "tecnicos": [
@@ -26025,6 +26083,7 @@
     ],
     "usuarios": [
       ".claude/worktrees/crazy-carson/docs/TOKEN-SYSTEM-GUIDE.md",
+      "docs/AGENTS-GUIDE.md",
       "docs/TOKEN-SYSTEM-GUIDE.md"
     ],
     "building": [
@@ -26694,6 +26753,7 @@
     ],
     "humanos": [
       ".claude/worktrees/crazy-carson/docs/MASTER-PLAN-STATUS.md",
+      "docs/SSH-USERS-FOR-AGENTS.md",
       "docs/MASTER-PLAN-STATUS.md"
     ],
     "inmediato": [
@@ -27078,6 +27138,7 @@
     ],
     "nombres": [
       ".claude/worktrees/crazy-carson/docs/TAILSCALE-NOMENCLATURA.md",
+      "docs/SSH-USERS-FOR-AGENTS.md",
       "docs/TAILSCALE-NOMENCLATURA.md"
     ],
     "renombrar": [
@@ -27151,6 +27212,7 @@
     "healthchecks": [
       ".claude/worktrees/crazy-carson/docs/ORCHESTRATOR-FIXES-EXECUTION.md",
       ".claude/worktrees/crazy-carson/docs/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md",
+      "docs/SSH-USERS-FOR-AGENTS.md",
       "docs/ORCHESTRATOR-FIXES-EXECUTION.md",
       "docs/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md"
     ],
@@ -27933,6 +27995,7 @@
     ],
     "confundir": [
       ".claude/worktrees/crazy-carson/docs/GITHUB-TOKEN.md",
+      "docs/SSH-USERS-FOR-AGENTS.md",
       "docs/GITHUB-TOKEN.md"
     ],
     "pat": [
@@ -28652,6 +28715,7 @@
       ".claude/worktrees/crazy-carson/skills/user/opsly-api/SKILL.md",
       ".claude/worktrees/crazy-carson/skills/user/opsly-quantum/SKILL.md",
       ".claude/worktrees/crazy-carson/skills/templates/README.md",
+      "docs/SSH-USERS-FOR-AGENTS.md",
       ".github/copilot-instructions.md",
       "skills/user/opsly-llm/SKILL.md",
       "skills/user/opsly-bash/SKILL.md",
@@ -29253,6 +29317,21 @@
     "permanece": [
       "docs/adr/ADR-027-hybrid-compute-plane-k8s.md"
     ],
+    "abrir": [
+      "docs/SSH-USERS-FOR-AGENTS.md"
+    ],
+    "cambiar": [
+      "docs/SSH-USERS-FOR-AGENTS.md"
+    ],
+    "suelen": [
+      "docs/SSH-USERS-FOR-AGENTS.md"
+    ],
+    "tengo": [
+      "docs/SSH-USERS-FOR-AGENTS.md"
+    ],
+    "users": [
+      "docs/SSH-USERS-FOR-AGENTS.md"
+    ],
     "killer": [
       "docs/RTK.md"
     ],
@@ -29309,6 +29388,12 @@
     ],
     "validado": [
       "docs/DECEPTICON-WORKER.md"
+    ],
+    "convencion": [
+      "docs/VPS-SSH-WORKER-NODES.md"
+    ],
+    "desplegada": [
+      "docs/VPS-SSH-WORKER-NODES.md"
     ],
     "license": [
       "apps/ml/agents/classifier/.venv/lib/python3.13/site-packages/pip-25.2.dist-info/licenses/src/pip/_vendor/idna/LICENSE.md",
@@ -29764,6 +29849,7 @@
     "docs/SPRINT-ROADMAP.md",
     "docs/SPRINT-TRACKING.md",
     "docs/SSH-COMMANDS-LOCALRANK.md",
+    "docs/SSH-USERS-FOR-AGENTS.md",
     "docs/SUPERAGENTS-BOOTSTRAP.md",
     "docs/TAILSCALE-NOMENCLATURA.md",
     "docs/TENANT-TESTING-GUIDE.md",
