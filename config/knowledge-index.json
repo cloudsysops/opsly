@@ -1,7 +1,7 @@
 {
   "version": 1,
   "root": "/Users/dragon/cboteros/proyectos/intcloudsysops",
-  "generated_at": "2026-04-19T01:09:41.640Z",
+  "generated_at": "2026-04-19T01:39:32.761Z",
   "files": [
     {
       "path": ".claude/CLAUDE.md",
@@ -9468,7 +9468,7 @@
         "verificacion",
         "worker"
       ],
-      "size_bytes": 7313
+      "size_bytes": 8133
     },
     {
       "path": "docs/DEPLOY-VPS-AND-INDEX.md",
@@ -11970,7 +11970,7 @@
         "vars",
         "vps"
       ],
-      "size_bytes": 6239
+      "size_bytes": 6379
     },
     {
       "path": "docs/QUICKSTART-AGENTS.md",
@@ -12041,7 +12041,7 @@
         "stripe",
         "wiki"
       ],
-      "size_bytes": 19756
+      "size_bytes": 19910
     },
     {
       "path": "docs/REFACTOR-CHECKLIST.md",
@@ -12126,6 +12126,41 @@
         "volumenes"
       ],
       "size_bytes": 3482
+    },
+    {
+      "path": "docs/RTK.md",
+      "title": "RTK (Rust Token Killer) — menos tokens en contexto de agente",
+      "keywords": [
+        "agente",
+        "claude",
+        "code",
+        "comandos",
+        "contexto",
+        "cursor",
+        "globales",
+        "hooks",
+        "instalacion",
+        "killer",
+        "linux",
+        "macos",
+        "markdown",
+        "menos",
+        "opcional",
+        "openclaw",
+        "opsly",
+        "plataforma",
+        "privacidad",
+        "relacion",
+        "rtk",
+        "rust",
+        "token",
+        "tokens",
+        "usuario",
+        "utiles",
+        "vps",
+        "worker"
+      ],
+      "size_bytes": 2765
     },
     {
       "path": "docs/RUNBOOK-AI-LOCAL-FIRST.md",
@@ -14952,6 +14987,7 @@
       "docs/AGENTS-ORCHESTRATION.md",
       "docs/PROVISIONING-SYSTEM.md",
       "docs/FAILOVER-RUNBOOK.md",
+      "docs/RTK.md",
       "docs/CURSOR-DAILY-CHECKLIST.md",
       "docs/ARCHITECTURE-DISTRIBUTED.md",
       "docs/HERMES-INTEGRATION.md",
@@ -15407,6 +15443,7 @@
       "docs/AGENTS-ORCHESTRATION.md",
       "docs/PROVISIONING-SYSTEM.md",
       "docs/FAILOVER-RUNBOOK.md",
+      "docs/RTK.md",
       "docs/CURSOR-DAILY-CHECKLIST.md",
       "docs/ARCHITECTURE-DISTRIBUTED.md",
       "docs/HERMES-INTEGRATION.md",
@@ -15621,6 +15658,7 @@
       "docs/TOKEN-SYSTEM-GUIDE.md",
       "docs/GOOGLE-CLOUD-ACTIVATION.md",
       "docs/OPSLY-KNOWLEDGE-BASE.md",
+      "docs/RTK.md",
       "docs/IMPLEMENTATION-IA-LAYER.md",
       "docs/VPS-ARCHITECTURE.md",
       "docs/DEPLOY-VPS-AND-INDEX.md",
@@ -16173,6 +16211,7 @@
       "docs/SSH-COMMANDS-LOCALRANK.md",
       "docs/SESSION-GIT-SYNC.md",
       "docs/OPSLY-KNOWLEDGE-BASE.md",
+      "docs/RTK.md",
       "docs/ARCHITECTURE-DISTRIBUTED.md",
       "docs/CICD-VPS.md",
       "docs/ops/runbook-redis.md",
@@ -16992,6 +17031,7 @@
       "tools/usb-kit/README.md",
       ".claude/worktrees/crazy-carson/tools/usb-kit/README.md",
       ".claude/worktrees/crazy-carson/docs/GOOGLE-CLOUD-SETUP.md",
+      "docs/RTK.md",
       "docs/GOOGLE-CLOUD-SETUP.md"
     ],
     "actual": [
@@ -17844,6 +17884,7 @@
       "docs/PLAN-SUPER-ARCHITECT-AGENT-2026-04-14.md",
       "docs/HERMES-SPRINT-PLAN.md",
       "docs/KNOWLEDGE-SYSTEM.md",
+      "docs/RTK.md",
       "docs/CLAUDE-WORKFLOW-OPTIMIZATION.md",
       "docs/N8N-SETUP.md",
       "docs/AGENTS-GLOBAL-CONTEXT.md",
@@ -17967,6 +18008,7 @@
       "docs/OPENCLAW-ARCHITECTURE.md",
       "docs/WORKER-TEAM-ARCHITECTURE.md",
       "docs/LANIDEA-OPENCLAW.md",
+      "docs/RTK.md",
       "docs/AGENTS-AUTONOMOUS-RUNBOOK.md",
       "docs/REFACTOR-CHECKLIST.md",
       "docs/PLAN-OLLAMA-WORKER-2026-04-14.md",
@@ -18210,6 +18252,7 @@
       "agents/prompts/claude-architect.md",
       "docs/PLAN-SUPER-ARCHITECT-AGENT-2026-04-14.md",
       "docs/HERMES-LOCAL-AGENTS-STACK.md",
+      "docs/RTK.md",
       "docs/CLAUDE-WORKFLOW-OPTIMIZATION.md",
       "docs/N8N-SETUP.md",
       "docs/OPSLYQUANTUM-USAGE.md",
@@ -18321,6 +18364,7 @@
       "docs/adr/ADR-027-hybrid-compute-plane-k8s.md",
       "docs/adr/ADR-005-traefik-v3-1-docker-api.md",
       "docs/WORKER-TEAM-ARCHITECTURE.md",
+      "docs/RTK.md",
       "docs/CLAUDE-WORKFLOW-OPTIMIZATION.md",
       "docs/AGENTS-GLOBAL-CONTEXT.md",
       "docs/OPENCLAW-TEAM-PLAN.md",
@@ -18544,6 +18588,7 @@
       "docs/SETUP-NOTION-MCP.md",
       "docs/HERMES-LOCAL-AGENTS-STACK.md",
       "docs/QA-REVIEW-COMPLETE.md",
+      "docs/RTK.md",
       "docs/CURSOR-DAILY-CHECKLIST.md",
       "docs/CLAUDE-WORKFLOW-OPTIMIZATION.md",
       "docs/N8N-SETUP.md",
@@ -18861,6 +18906,7 @@
       "docs/WORKER-SERVICE-MAC2011.md",
       "docs/DOPPLER-VARS.md",
       "docs/FAILOVER-RUNBOOK.md",
+      "docs/RTK.md",
       "docs/NOTION-MCP-SERVER.md",
       "docs/RUNBOOK-INSIGHTS-DEPLOY.md",
       "docs/OPSLYQUANTUM-USAGE.md",
@@ -19105,6 +19151,7 @@
       "docs/WORKER-SERVICE-MAC2011.md",
       "docs/SESSION-GIT-SYNC.md",
       "docs/WORKER-TEAM-ARCHITECTURE.md",
+      "docs/RTK.md",
       "docs/ARCHITECTURE-DISTRIBUTED.md",
       "docs/DECEPTICON-WORKER.md",
       "docs/AGENTS-AUTONOMOUS-RUNBOOK.md",
@@ -20278,6 +20325,7 @@
       "docs/CODE-SNAPSHOTS.md",
       "docs/PARALLEL-AGENTS-ORCHESTRATION.md",
       "docs/QA-REVIEW-COMPLETE.md",
+      "docs/RTK.md",
       "docs/SECURITY-MITIGATIONS-2026-04-09.md",
       "docs/MCP-SERVERS.md",
       "docs/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md",
@@ -21438,6 +21486,7 @@
       "docs/FAQ.md",
       "docs/TOKEN-SYSTEM-GUIDE.md",
       "docs/DOPPLER-VARS.md",
+      "docs/RTK.md",
       "docs/DOPPLER-CI-RUNBOOK.md",
       "docs/GITHUB-TOKEN.md",
       "skills/user/opsly-google-cloud/SKILL.md"
@@ -21448,7 +21497,8 @@
       ".claude/worktrees/crazy-carson/docs/TOKEN-SYSTEM-GUIDE.md",
       "docs/adr/ADR-017-prepaid-token-wallet-roadmap.md",
       "docs/TOKEN-BILLING-SYSTEM.md",
-      "docs/TOKEN-SYSTEM-GUIDE.md"
+      "docs/TOKEN-SYSTEM-GUIDE.md",
+      "docs/RTK.md"
     ],
     "wallet": [
       ".claude/worktrees/crazy-carson/docs/adr/ADR-017-prepaid-token-wallet-roadmap.md",
@@ -22878,6 +22928,7 @@
       "docs/runbooks/admin.md",
       "docs/TOKEN-SYSTEM-GUIDE.md",
       "docs/FAILOVER-RUNBOOK.md",
+      "docs/RTK.md",
       "docs/MONITORING.md",
       "skills/user/opsly-quantum/templates/runbook.md"
     ],
@@ -22944,6 +22995,7 @@
       ".claude/worktrees/crazy-carson/docs/MONITORING.md",
       "docs/adr/ADR-005-traefik-v3-1-docker-api.md",
       "docs/OPENCLAW-ARCHITECTURE.md",
+      "docs/RTK.md",
       "docs/DOPPLER-CI-RUNBOOK.md",
       "docs/MONITORING.md"
     ],
@@ -23466,6 +23518,7 @@
       "docs/ADMIN-ECOSYSTEM.md",
       "docs/WORKER-TEAM-BILLING.md",
       "docs/TOKEN-SYSTEM-GUIDE.md",
+      "docs/RTK.md",
       "docs/IMPLEMENTATION-IA-LAYER.md",
       "docs/VPS-ARCHITECTURE.md",
       "docs/DEPLOY-VPS-AND-INDEX.md",
@@ -24188,6 +24241,7 @@
       ".claude/worktrees/crazy-carson/docs/NOTEBOOKLM-SETUP.md",
       ".claude/worktrees/crazy-carson/skills/user/opsly-notebooklm/SKILL.md",
       "docs/AUTO-PUSH-WATCHER.md",
+      "docs/RTK.md",
       "docs/DECEPTICON-WORKER.md",
       "docs/SUPERAGENTS-BOOTSTRAP.md",
       "docs/NOTEBOOKLM-SETUP.md",
@@ -25744,6 +25798,7 @@
       ".claude/worktrees/crazy-carson/docs/runbooks/dev.md",
       ".claude/worktrees/crazy-carson/skills/README.md",
       "docs/runbooks/dev.md",
+      "docs/RTK.md",
       "skills/README.md"
     ],
     "aplicacion": [
@@ -27401,6 +27456,7 @@
     ],
     "globales": [
       ".claude/worktrees/crazy-carson/docs/AGENTS-GLOBAL-CONTEXT.md",
+      "docs/RTK.md",
       "docs/AGENTS-GLOBAL-CONTEXT.md"
     ],
     "todos": [
@@ -29197,6 +29253,27 @@
     "permanece": [
       "docs/adr/ADR-027-hybrid-compute-plane-k8s.md"
     ],
+    "killer": [
+      "docs/RTK.md"
+    ],
+    "linux": [
+      "docs/RTK.md"
+    ],
+    "macos": [
+      "docs/RTK.md"
+    ],
+    "menos": [
+      "docs/RTK.md"
+    ],
+    "privacidad": [
+      "docs/RTK.md"
+    ],
+    "rtk": [
+      "docs/RTK.md"
+    ],
+    "rust": [
+      "docs/RTK.md"
+    ],
     "decepticon": [
       "docs/DECEPTICON-WORKER.md"
     ],
@@ -29665,6 +29742,7 @@
     "docs/REFACTOR-CHECKLIST.md",
     "docs/reports/audit-2026-04-07.md",
     "docs/RETENTION-POLICY.md",
+    "docs/RTK.md",
     "docs/RUNBOOK-AI-LOCAL-FIRST.md",
     "docs/RUNBOOK-INSIGHTS-DEPLOY.md",
     "docs/runbooks/admin.md",

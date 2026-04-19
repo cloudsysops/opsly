@@ -45,6 +45,9 @@ curl -sf http://127.0.0.1:3011/health
 
 ### Desarrollo local
 ```bash
+# RTK — menos tokens en salidas de terminal (Cursor hooks): ver docs/RTK.md
+# rtk --version   # ~/.local/bin/rtk tras install.sh oficial
+
 npm run dev                          # Turbo: todos los servicios
 npm run type-check                   # TypeScript 11 workspaces
 npm run test --workspace=@intcloudsysops/api  # Tests API (241+)
