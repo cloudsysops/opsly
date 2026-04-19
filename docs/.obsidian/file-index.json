@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-04-19T17:38:01Z",
-  "totalFiles": 175,
+  "lastIndexed": "2026-04-19T17:47:45Z",
+  "totalFiles": 176,
   "files": [
     "ACTIVE-PROMPT.md",
     "ADMIN-ECOSYSTEM.md",
@@ -172,6 +172,7 @@
     "audit-2026-04-07.md",
     "dev.md",
     "doc-template.md",
+    "e2e-hybrid-write.md",
     "frontend-audit.md",
     "incident.md",
     "managed.md",
