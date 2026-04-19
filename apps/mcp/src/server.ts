@@ -8,6 +8,7 @@ import { metricsTool } from "./tools/metrics.js";
 import { notebooklmTool } from "./tools/notebooklm.js";
 import { opsStubsTools } from "./tools/ops-stubs.js";
 import { onboardTool } from "./tools/onboard.js";
+import { getJobStatusTool } from "./tools/get-job-status.tool.js";
 import { runAgentTaskTool } from "./tools/run-agent-task.tool.js";
 import { suspendTools } from "./tools/suspend.js";
 import { tenantsTools } from "./tools/tenants.js";
@@ -39,6 +40,7 @@ export const TOOL_REQUIRED_SCOPES: Record<string, string> = {
   execute_prompt: "executor:write",
   notebooklm: "agents:write",
   run_agent_task: "agents:write",
+  get_job_status: "agents:write",
   check_service_health: "metrics:read",
   restart_container: "tenants:write",
   list_ai_integrations: "metrics:read",
@@ -141,6 +143,7 @@ export function getAllToolDefinitions(): ToolDefinition<unknown, unknown>[] {
     resumeTenantTool,
     executorTool,
     runAgentTaskTool,
+    getJobStatusTool,
     notebooklmTool,
     checkServiceHealthTool,
     restartContainerTool,

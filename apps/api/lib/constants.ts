@@ -158,3 +158,9 @@ export const ONBOARDING_ROLLBACK = {
   STOP_COMPOSE_MIN_STEP: 6,
   MARK_FAILED_MIN_STEP: 8,
 } as const;
+
+/** Límites para `POST /api/tools/execute` (OAR). */
+export const TOOLS_EXECUTE_LIMITS = {
+  REPO_ROOT_MAX_PARENT_HOPS: 14,
+  KNOWLEDGE_INDEX_SLICE: 500,
+} as const;

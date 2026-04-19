@@ -28,11 +28,11 @@ export function startIntentDispatchWorker(connection: object): Worker {
         if (req.intent !== "oar_react") {
           throw new Error("intent_dispatch: only intent oar_react is supported");
         }
-        await processIntent(req, { invokedFromIntentDispatchWorker: true });
+        const result = await processIntent(req, { invokedFromIntentDispatchWorker: true });
         logWorkerLifecycle("complete", "intent_dispatch", job, {
           duration_ms: Date.now() - t0,
         });
-        return { success: true };
+        return result;
       } catch (err) {
         const msg = err instanceof Error ? err.message : String(err);
         logWorkerLifecycle("fail", "intent_dispatch", job, {

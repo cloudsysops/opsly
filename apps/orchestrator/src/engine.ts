@@ -2,7 +2,11 @@ import { randomUUID } from "node:crypto";
 import { buildConsciousAppendix } from "./agents/conscious-layer.js";
 import { createDefaultToolRegistry } from "./agents/tools/registry.js";
 import { MAX_PLANNER_ACTIONS } from "./constants-planner.js";
-import { StubAgentActionPort } from "./runtime/adapters/stub-action-port.js";
+import type { Queue } from "bullmq";
+import {
+  type OarEnqueueJobPayload,
+  OpslyActionAdapter,
+} from "./runtime/adapters/opsly-action-adapter.js";
 import { createOarTextCompletionClient } from "./runtime/llm/oar-text-completion-client.js";
 import { InMemoryMemory } from "./runtime/memory/in-memory-memory.js";
 import { runReActStrategy } from "./runtime/strategies/react-engine.js";
@@ -18,7 +22,7 @@ import {
     buildPlannerContextSnapshot,
     plannerActionToOrchestratorJob,
 } from "./planner-map.js";
-import { enqueueJob } from "./queue.js";
+import { enqueueJob, orchestratorQueue } from "./queue.js";
 import { SprintManager } from "./sprints/sprint-manager.js";
 import { setJobState } from "./state/store.js";
 import type { Intent, IntentRequest, OrchestratorJob } from "./types.js";
@@ -41,6 +45,24 @@ function enrichJob(
       ? `${req.idempotency_key}::${base.type}::${batchIndex}`
       : undefined,
     metadata: req.metadata,
+  };
+}
+
+/** Base URL/API token para `OpslyActionAdapter` (OAR); sin secretos hardcodeados. */
+function resolveOarActionAdapterApiConfig(): { baseUrl: string; authToken: string } {
+  const baseUrl =
+    process.env.OPSLY_API_INTERNAL_URL?.trim() ||
+    process.env.OPSLY_API_URL?.trim() ||
+    "http://app:3000";
+  const authToken =
+    process.env.PLATFORM_ADMIN_TOKEN?.trim() || process.env.OPSLY_API_TOKEN?.trim() || "";
+  return { baseUrl, authToken };
+}
+
+/** Cola `openclaw` como `default` para acciones OAR asíncronas (mismo Redis que el orchestrator). */
+function buildOarActionQueues(): Record<string, Queue<OarEnqueueJobPayload>> {
+  return {
+    default: orchestratorQueue as Queue<OarEnqueueJobPayload>,
   };
 }
 
@@ -134,7 +156,15 @@ export async function processIntent(
       }
 
       const memory = new InMemoryMemory();
-      const actionPort = new StubAgentActionPort();
+      const { baseUrl, authToken } = resolveOarActionAdapterApiConfig();
+      const actionPort = new OpslyActionAdapter(
+        { baseUrl, authToken },
+        buildOarActionQueues(),
+        {
+          toolsExecutePath: "/api/tools/execute",
+          defaultQueueKey: "default",
+        },
+      );
       const llmClient = createOarTextCompletionClient({
         tenantSlug,
         requestId: correlationId,

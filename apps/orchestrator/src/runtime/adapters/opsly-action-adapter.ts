@@ -10,7 +10,13 @@ import type { Queue } from "bullmq";
 import type { AgentActionPort, ToolResult } from "../interfaces/agent-action-port.js";
 
 /** Herramientas consideradas seguras para ejecución síncrona vía API (MVP). */
-export const DEFAULT_SAFE_SYNC_TOOLS: readonly string[] = ["fs_read", "list_adrs"];
+export const DEFAULT_SAFE_SYNC_TOOLS: readonly string[] = [
+  "fs_read",
+  "fs_read_file",
+  "fs_write",
+  "fs_write_file",
+  "list_adrs",
+];
 
 /** Cuerpo encolado para jobs OAR (serializable). */
 export interface OarEnqueueJobPayload {
