@@ -498,8 +498,8 @@ services:
     env_file:
       - ../.env
     networks:
-      - infra_internal
-      - infra_redis_edge
+      - internal
+      - redis_edge
     environment:
       NODE_ENV: production
       ORCHESTRATOR_HEALTH_PORT: "3020"
