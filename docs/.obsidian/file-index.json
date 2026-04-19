@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-04-19T01:22:51Z",
-  "totalFiles": 172,
+  "lastIndexed": "2026-04-19T01:40:10Z",
+  "totalFiles": 173,
   "files": [
     "ACTIVE-PROMPT.md",
     "ADMIN-ECOSYSTEM.md",
@@ -131,6 +131,7 @@
     "README.md",
     "REFACTOR-CHECKLIST.md",
     "RETENTION-POLICY.md",
+    "RTK.md",
     "RUNBOOK-AI-LOCAL-FIRST.md",
     "RUNBOOK-INSIGHTS-DEPLOY.md",
     "SECURITY-MITIGATIONS-2026-04-09.md",
