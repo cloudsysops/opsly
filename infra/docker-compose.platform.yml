@@ -528,7 +528,7 @@ services:
         condition: service_healthy
       llm-gateway:
         condition: service_started
-labels:
+    labels:
       - "com.centurylinklabs.watchtower.enable=true"
     logging: *default-logging
     restart: unless-stopped
