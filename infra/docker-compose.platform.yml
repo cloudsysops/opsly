@@ -16,9 +16,9 @@
 x-logging: &default-logging
   driver: json-file
   options:
-    max-size: '10m'
-    max-file: '3'
-    tag: '{{.Name}}'
+    max-size: "10m"
+    max-file: "3"
+    tag: "{{.Name}}"
 
 # ── Healthcheck estándar para servicios Node.js (fetch-based) ─────────────────
 x-healthcheck-node: &healthcheck-node
@@ -73,19 +73,19 @@ services:
     # El socket suele ser root:docker (660). La imagen Traefik corre sin root; group_add inyecta el GID del grupo
     # docker del host para que el proceso pueda usar /var/run/docker.sock (ver DOCKER_GID en .env).
     group_add:
-      - '${DOCKER_GID:-999}'
+      - "${DOCKER_GID:-999}"
     ports:
-      - '80:80'
-      - '443:443'
+      - "80:80"
+      - "443:443"
       # Depuración: dashboard Traefik con api.insecure (solo localhost en el VPS, no exponer a Internet).
-      - '127.0.0.1:8080:8080'
+      - "127.0.0.1:8080:8080"
     # Traefik v3.3+ negocia la API del daemon Docker de forma dinámica (compatible con Engine 29.x); evitar v3.1 con daemons que exigen mínimo ≥1.40.
     environment:
       - TRAEFIK_CERTIFICATESRESOLVERS_LETSENCRYPT_ACME_EMAIL=${ACME_EMAIL}
       - CF_DNS_API_TOKEN=${CF_DNS_API_TOKEN}
       - DOCKER_API_VERSION=1.40
     command:
-      - '--providers.docker.endpoint=unix:///var/run/docker.sock'
+      - "--providers.docker.endpoint=unix:///var/run/docker.sock"
     # Socket en solo lectura: el provider Docker solo necesita observar el daemon (ver ADR-005).
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
@@ -93,15 +93,18 @@ services:
       - ./traefik/dynamic:/etc/traefik/dynamic:ro
       - letsencrypt:/letsencrypt
     labels:
-      - 'traefik.enable=true'
-      - 'traefik.docker.network=traefik-public'
-      - 'traefik.http.middlewares.traefik-dashboard-auth.basicauth.users=${TRAEFIK_DASHBOARD_BASIC_AUTH_USERS}'
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik-public"
+      - "traefik.http.middlewares.traefik-dashboard-auth.basicauth.users=${TRAE\
+        FIK_DASHBOARD_BASIC_AUTH_USERS}"
       # Dashboard Traefik (no usar admin.* — reservado para la app Opsly Admin)
-      - 'traefik.http.routers.traefik-dashboard.rule=Host(`traefik.${PLATFORM_DOMAIN}`)'
-      - 'traefik.http.routers.traefik-dashboard.entrypoints=websecure'
-      - 'traefik.http.routers.traefik-dashboard.tls.certresolver=letsencrypt'
-      - 'traefik.http.routers.traefik-dashboard.service=api@internal'
-      - 'traefik.http.routers.traefik-dashboard.middlewares=traefik-dashboard-auth@docker'
+      - "traefik.http.routers.traefik-dashboard.rule=Host(`traefik.${PLATFORM_D\
+        OMAIN}`)"
+      - "traefik.http.routers.traefik-dashboard.entrypoints=websecure"
+      - "traefik.http.routers.traefik-dashboard.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.traefik-dashboard.service=api@internal"
+      - "traefik.http.routers.traefik-dashboard.middlewares=traefik-dashboard-a\
+        uth@docker"
     logging: *default-logging
     networks:
       - traefik-public
@@ -111,15 +114,12 @@ services:
   redis:
     image: redis:7-alpine
     command: >
-      redis-server
-      --requirepass ${REDIS_PASSWORD}
-      --maxmemory 256mb
-      --maxmemory-policy noeviction
-      --save 60 1
+      redis-server --requirepass ${REDIS_PASSWORD} --maxmemory 256mb
+      --maxmemory-policy noeviction --save 60 1
     # Workers remotos (Tailscale): en .env p.ej. REDIS_EXPORT_BIND=100.120.151.91 (IP Tailscale del VPS).
     # Por defecto 127.0.0.1: solo acceso local / túnel SSH (redis-cli -u redis://:...@127.0.0.1:6379/0).
     ports:
-      - '${REDIS_EXPORT_BIND:-127.0.0.1}:6379:6379'
+      - "${REDIS_EXPORT_BIND:-127.0.0.1}:6379:6379"
     volumes:
       - redis_data:/data
     environment:
@@ -131,7 +131,7 @@ services:
       - redis_edge
     restart: unless-stopped
     healthcheck:
-      test: ['CMD-SHELL', 'redis-cli -a "$$REDIS_PASSWORD" ping | grep -q PONG']
+      test: [ "CMD-SHELL", "redis-cli -a \"$$REDIS_PASSWORD\" ping | grep -q PONG" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -146,15 +146,15 @@ services:
     image: prom/prometheus:v2.54.1
     container_name: opsly_prometheus
     command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus'
-      - '--storage.tsdb.retention.time=15d'
-      - '--web.enable-lifecycle'
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--storage.tsdb.retention.time=15d"
+      - "--web.enable-lifecycle"
     volumes:
       - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus_data:/prometheus
     ports:
-      - '127.0.0.1:${PROMETHEUS_HOST_PORT:-9090}:9090'
+      - "127.0.0.1:${PROMETHEUS_HOST_PORT:-9090}:9090"
     logging: *default-logging
     networks:
       - internal
@@ -162,17 +162,18 @@ services:
     restart: unless-stopped
     healthcheck:
       <<: *healthcheck-http
-      test: ['CMD', 'wget', '-q', '--spider', 'http://127.0.0.1:9090/-/healthy']
+      test: [ "CMD", "wget", "-q", "--spider", "http://127.0.0.1:9090/-/healthy" ]
     deploy: *deploy-large
 
   node-exporter:
     image: prom/node-exporter:v1.8.2
     container_name: opsly_node_exporter
     command:
-      - '--path.procfs=/host/proc'
-      - '--path.sysfs=/host/sys'
-      - '--path.rootfs=/rootfs'
-      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+      - "--path.procfs=/host/proc"
+      - "--path.sysfs=/host/sys"
+      - "--path.rootfs=/rootfs"
+      - "--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)(\
+        $$|/)"
     volumes:
       - /proc:/host/proc:ro
       - /sys:/host/sys:ro
@@ -192,31 +193,36 @@ services:
       REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379/0
       ORCHESTRATOR_INTERNAL_URL: ${ORCHESTRATOR_INTERNAL_URL:-http://orchestrator:3011}
       OPSLY_ORCHESTRATOR_MODE: ${OPSLY_ORCHESTRATOR_MODE:-queue-only}
+      # Raíz del monorepo montada en volumes (OAR /api/tools/execute fs_read, list_adrs)
+      OPSLY_REPO_ROOT: ${OPSLY_REPO_ROOT:-/opt/opsly}
       PLATFORM_TENANTS_DIR: /opt/opsly/tenants
       TEMPLATE_PATH: /opt/opsly/templates/docker-compose.tenant.yml.tpl
       # Prometheus como servicio en la red internal (opsly_prometheus). Override si usas Prom externo.
       PROMETHEUS_BASE_URL: ${PROMETHEUS_BASE_URL:-http://prometheus:9090}
       ADMIN_PUBLIC_DEMO_READ: ${ADMIN_PUBLIC_DEMO_READ:-false}
     extra_hosts:
-      - 'host.docker.internal:host-gateway'
+      - "host.docker.internal:host-gateway"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
+      # Monorepo read-only (relativo a este YAML: padre de infra/ = raíz del repo en VPS/local)
+      - ../:/opt/opsly:ro
       - ${PLATFORM_TENANTS_HOST_PATH:-/opt/opsly/tenants}:/opt/opsly/tenants
       - ./templates:/opt/opsly/templates:ro
     depends_on:
       redis:
         condition: service_healthy
     labels:
-      - 'traefik.enable=true'
-      - 'traefik.docker.network=traefik-public'
-      - 'traefik.http.routers.app.rule=Host(`api.${PLATFORM_DOMAIN}`)'
-      - 'traefik.http.routers.app.entrypoints=websecure'
-      - 'traefik.http.routers.app.tls=true'
-      - 'traefik.http.routers.app.tls.certresolver=letsencrypt'
-      - 'traefik.http.routers.app.service=app'
-      - 'traefik.http.routers.app.middlewares=secure-headers@file,rate-limit@file,compress@file'
-      - 'traefik.http.services.app.loadbalancer.server.port=3000'
-      - 'com.centurylinklabs.watchtower.enable=true'
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik-public"
+      - "traefik.http.routers.app.rule=Host(`api.${PLATFORM_DOMAIN}`)"
+      - "traefik.http.routers.app.entrypoints=websecure"
+      - "traefik.http.routers.app.tls=true"
+      - "traefik.http.routers.app.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.app.service=app"
+      - "traefik.http.routers.app.middlewares=secure-headers@file,rate-limit@fi\
+        le,compress@file"
+      - "traefik.http.services.app.loadbalancer.server.port=3000"
+      - "com.centurylinklabs.watchtower.enable=true"
     logging: *default-logging
     networks:
       - traefik-public
@@ -226,10 +232,11 @@ services:
       <<: *healthcheck-node
       test:
         [
-          'CMD',
-          'node',
-          '-e',
-          "fetch('http://127.0.0.1:3000/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:3000/api/health').then(r=>process.exit(r.o\
+            k?0:1)).catch(()=>process.exit(1))",
         ]
       start_period: 60s
     deploy:
@@ -244,16 +251,16 @@ services:
     env_file:
       - ../.env
     environment:
-      PORT: '3001'
+      PORT: "3001"
     labels:
-      - 'traefik.enable=true'
-      - 'traefik.docker.network=traefik-public'
-      - 'traefik.http.routers.opsly-admin.rule=Host(`admin.${PLATFORM_DOMAIN}`)'
-      - 'traefik.http.routers.opsly-admin.entrypoints=websecure'
-      - 'traefik.http.routers.opsly-admin.tls=true'
-      - 'traefik.http.routers.opsly-admin.tls.certresolver=letsencrypt'
-      - 'traefik.http.services.opsly-admin.loadbalancer.server.port=3001'
-      - 'com.centurylinklabs.watchtower.enable=true'
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik-public"
+      - "traefik.http.routers.opsly-admin.rule=Host(`admin.${PLATFORM_DOMAIN}`)"
+      - "traefik.http.routers.opsly-admin.entrypoints=websecure"
+      - "traefik.http.routers.opsly-admin.tls=true"
+      - "traefik.http.routers.opsly-admin.tls.certresolver=letsencrypt"
+      - "traefik.http.services.opsly-admin.loadbalancer.server.port=3001"
+      - "com.centurylinklabs.watchtower.enable=true"
     logging: *default-logging
     networks:
       - traefik-public
@@ -262,10 +269,11 @@ services:
       <<: *healthcheck-node
       test:
         [
-          'CMD',
-          'node',
-          '-e',
-          "fetch('http://127.0.0.1:3001').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:3001').then(r=>process.exit(r.ok?0:1)).cat\
+            ch(()=>process.exit(1))",
         ]
       start_period: 45s
     deploy: *deploy-large
@@ -276,21 +284,21 @@ services:
     env_file:
       - ../.env
     environment:
-      PORT: '3002'
+      PORT: "3002"
       NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL}
       NEXT_PUBLIC_SUPABASE_ANON_KEY: ${NEXT_PUBLIC_SUPABASE_ANON_KEY}
       NEXT_PUBLIC_API_URL: https://api.${PLATFORM_DOMAIN}
       NEXT_PUBLIC_PLATFORM_DOMAIN: ${PLATFORM_DOMAIN}
       NEXT_PUBLIC_SUPPORT_EMAIL: ${NEXT_PUBLIC_SUPPORT_EMAIL:-}
     labels:
-      - 'traefik.enable=true'
-      - 'traefik.docker.network=traefik-public'
-      - 'traefik.http.routers.portal.rule=Host(`portal.${PLATFORM_DOMAIN}`)'
-      - 'traefik.http.routers.portal.entrypoints=websecure'
-      - 'traefik.http.routers.portal.tls=true'
-      - 'traefik.http.routers.portal.tls.certresolver=letsencrypt'
-      - 'traefik.http.services.portal.loadbalancer.server.port=3002'
-      - 'com.centurylinklabs.watchtower.enable=true'
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik-public"
+      - "traefik.http.routers.portal.rule=Host(`portal.${PLATFORM_DOMAIN}`)"
+      - "traefik.http.routers.portal.entrypoints=websecure"
+      - "traefik.http.routers.portal.tls=true"
+      - "traefik.http.routers.portal.tls.certresolver=letsencrypt"
+      - "traefik.http.services.portal.loadbalancer.server.port=3002"
+      - "com.centurylinklabs.watchtower.enable=true"
     logging: *default-logging
     networks:
       - traefik-public
@@ -299,10 +307,11 @@ services:
       <<: *healthcheck-node
       test:
         [
-          'CMD',
-          'node',
-          '-e',
-          "fetch('http://127.0.0.1:3002/login').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:3002/login').then(r=>process.exit(r.ok?0:1\
+            )).catch(()=>process.exit(1))",
         ]
       start_period: 60s
     deploy: *deploy-large
@@ -317,20 +326,20 @@ services:
       PLATFORM_ADMIN_TOKEN: ${PLATFORM_ADMIN_TOKEN}
       GITHUB_TOKEN: ${GITHUB_TOKEN:-}
       GITHUB_TOKEN_N8N: ${GITHUB_TOKEN_N8N:-}
-      PORT: '3003'
+      PORT: "3003"
       # Herramientas MCP: sondeo /health de la red Docker interna (list_ai_integrations, probe_platform_component)
       MCP_LLM_GATEWAY_URL: http://llm-gateway:3010
       MCP_ORCHESTRATOR_URL: http://orchestrator:3011
       MCP_CONTEXT_BUILDER_URL: http://context-builder:3012
     labels:
-      - 'traefik.enable=true'
-      - 'traefik.docker.network=traefik-public'
-      - 'traefik.http.routers.mcp.rule=Host(`mcp.${PLATFORM_DOMAIN}`)'
-      - 'traefik.http.routers.mcp.entrypoints=websecure'
-      - 'traefik.http.routers.mcp.tls=true'
-      - 'traefik.http.routers.mcp.tls.certresolver=letsencrypt'
-      - 'traefik.http.services.mcp.loadbalancer.server.port=3003'
-      - 'com.centurylinklabs.watchtower.enable=true'
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik-public"
+      - "traefik.http.routers.mcp.rule=Host(`mcp.${PLATFORM_DOMAIN}`)"
+      - "traefik.http.routers.mcp.entrypoints=websecure"
+      - "traefik.http.routers.mcp.tls=true"
+      - "traefik.http.routers.mcp.tls.certresolver=letsencrypt"
+      - "traefik.http.services.mcp.loadbalancer.server.port=3003"
+      - "com.centurylinklabs.watchtower.enable=true"
     logging: *default-logging
     networks:
       - traefik-public
@@ -340,10 +349,11 @@ services:
       <<: *healthcheck-node
       test:
         [
-          'CMD',
-          'node',
-          '-e',
-          "fetch('http://127.0.0.1:3003/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:3003/health').then(r=>process.exit(r.ok?0:\
+            1)).catch(()=>process.exit(1))",
         ]
       start_period: 30s
     deploy: *deploy-medium
@@ -354,25 +364,25 @@ services:
     env_file:
       - ../.env
     environment:
-      LLM_GATEWAY_PORT: '3010'
+      LLM_GATEWAY_PORT: "3010"
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
       REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379/0
       REDIS_PASSWORD: ${REDIS_PASSWORD}
       SUPABASE_URL: ${SUPABASE_URL}
       SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY}
       CONTEXT_BUILDER_URL: http://context-builder:3012
-      LLM_GATEWAY_REPO_CONTEXT: 'true'
+      LLM_GATEWAY_REPO_CONTEXT: "true"
     # Workers remotos (Tailscale): en .env p.ej. LLM_GATEWAY_EXPORT_BIND=100.120.151.91.
     # Por defecto 127.0.0.1: solo acceso local / túnel SSH.
     ports:
-      - '${LLM_GATEWAY_EXPORT_BIND:-127.0.0.1}:3010:3010'
+      - "${LLM_GATEWAY_EXPORT_BIND:-127.0.0.1}:3010:3010"
     depends_on:
       redis:
         condition: service_healthy
       context-builder:
         condition: service_started
     labels:
-      - 'com.centurylinklabs.watchtower.enable=true'
+      - "com.centurylinklabs.watchtower.enable=true"
     logging: *default-logging
     networks:
       - internal
@@ -382,10 +392,11 @@ services:
       <<: *healthcheck-node
       test:
         [
-          'CMD',
-          'node',
-          '-e',
-          "fetch('http://127.0.0.1:3010/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:3010/health').then(r=>process.exit(r.ok?0:\
+            1)).catch(()=>process.exit(1))",
         ]
       start_period: 30s
     deploy: *deploy-xlarge
@@ -439,7 +450,7 @@ services:
       # Vacío = full (compat). `control` = solo TeamManager/eventos en VPS; workers en otro nodo con `worker`.
       OPSLY_ORCHESTRATOR_ROLE: ${OPSLY_ORCHESTRATOR_ROLE:-}
       OPSLY_ORCHESTRATOR_MODE: ${OPSLY_ORCHESTRATOR_MODE:-}
-      ORCHESTRATOR_HEALTH_PORT: '3011'
+      ORCHESTRATOR_HEALTH_PORT: "3011"
       ORCHESTRATOR_LLM_GATEWAY_URL: http://llm-gateway:3010
       OPSLY_API_INTERNAL_URL: ${OPSLY_API_INTERNAL_URL:-http://app:3000}
       <<: *env-supabase
@@ -459,7 +470,7 @@ services:
       llm-gateway:
         condition: service_started
     labels:
-      - 'com.centurylinklabs.watchtower.enable=true'
+      - "com.centurylinklabs.watchtower.enable=true"
     logging: *default-logging
     networks:
       - internal
@@ -468,10 +479,11 @@ services:
       <<: *healthcheck-node
       test:
         [
-          'CMD',
-          'node',
-          '-e',
-          "fetch('http://127.0.0.1:3011/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:3011/health').then(r=>process.exit(r.ok?0:\
+            1)).catch(()=>process.exit(1))",
         ]
       start_period: 30s
     deploy: *deploy-xlarge
@@ -484,9 +496,12 @@ services:
     container_name: opsly_hermes
     env_file:
       - ../.env
+    networks:
+      - infra_internal
+      - infra_redis_edge
     environment:
       NODE_ENV: production
-      ORCHESTRATOR_HEALTH_PORT: '3020'
+      ORCHESTRATOR_HEALTH_PORT: "3020"
       ORCHESTRATOR_LLM_GATEWAY_URL: http://llm-gateway:3010
       OPSLY_API_INTERNAL_URL: ${OPSLY_API_INTERNAL_URL:-http://app:3000}
       <<: *env-supabase
@@ -502,9 +517,9 @@ services:
       STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET:-}
       STRIPE_TEST_SECRET_KEY: ${STRIPE_TEST_SECRET_KEY:-}
       STRIPE_WEBHOOK_SECRET_TEST: ${STRIPE_WEBHOOK_SECRET_TEST:-}
-      PLAYWRIGHT_HEADLESS: 'true'
+      PLAYWRIGHT_HEADLESS: "true"
     ports:
-      - '127.0.0.1:${HERMES_HOST_PORT:-3021}:3020'
+      - "127.0.0.1:${HERMES_HOST_PORT:-3021}:3020"
     depends_on:
       redis:
         condition: service_healthy
@@ -513,7 +528,7 @@ services:
       llm-gateway:
         condition: service_started
     labels:
-      - 'com.centurylinklabs.watchtower.enable=true'
+      - "com.centurylinklabs.watchtower.enable=true"
     logging: *default-logging
     networks:
       - internal
@@ -522,10 +537,11 @@ services:
       <<: *healthcheck-node
       test:
         [
-          'CMD',
-          'node',
-          '-e',
-          "fetch('http://127.0.0.1:3020/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:3020/health').then(r=>process.exit(r.ok?0:\
+            1)).catch(()=>process.exit(1))",
         ]
       start_period: 60s
     deploy: *deploy-xxlarge
@@ -536,7 +552,7 @@ services:
     env_file:
       - ../.env
     environment:
-      CONTEXT_BUILDER_PORT: '3012'
+      CONTEXT_BUILDER_PORT: "3012"
       REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379/0
       REDIS_PASSWORD: ${REDIS_PASSWORD}
       OPS_REPO_ROOT: ${OPS_REPO_ROOT:-/opt/opsly}
@@ -547,7 +563,7 @@ services:
       redis:
         condition: service_healthy
     labels:
-      - 'com.centurylinklabs.watchtower.enable=true'
+      - "com.centurylinklabs.watchtower.enable=true"
     logging: *default-logging
     networks:
       - internal
@@ -556,10 +572,11 @@ services:
       <<: *healthcheck-node
       test:
         [
-          'CMD',
-          'node',
-          '-e',
-          "fetch('http://127.0.0.1:3012/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:3012/health').then(r=>process.exit(r.ok?0:\
+            1)).catch(()=>process.exit(1))",
         ]
       start_period: 30s
     deploy: *deploy-large
@@ -585,10 +602,11 @@ services:
     image: gcr.io/cadvisor/cadvisor:v0.50.0
     container_name: opsly_cadvisor
     command:
-      - '--housekeeping_interval=30s'
-      - '--max_housekeeping_interval=35s'
-      - '--disable_metrics=advtcp,cpuLoad,cpuset,hugetlb,memory_numa,percpu,referenced_memory,resctrl,sched,tcp,udp'
-      - '--store_container_labels=false'
+      - "--housekeeping_interval=30s"
+      - "--max_housekeeping_interval=35s"
+      - "--disable_metrics=advtcp,cpuLoad,cpuset,hugetlb,memory_numa,percpu,ref\
+        erenced_memory,resctrl,sched,tcp,udp"
+      - "--store_container_labels=false"
     volumes:
       - /:/rootfs:ro
       - /var/run:/var/run:ro
@@ -614,10 +632,10 @@ services:
       GF_SECURITY_SECRET_KEY: ${GF_SECURITY_SECRET_KEY:-changeme-set-in-doppler}
       GF_SERVER_ROOT_URL: https://grafana.${PLATFORM_DOMAIN}
       GF_SERVER_DOMAIN: grafana.${PLATFORM_DOMAIN}
-      GF_ANALYTICS_REPORTING_ENABLED: 'false'
-      GF_ANALYTICS_CHECK_FOR_UPDATES: 'false'
-      GF_USERS_ALLOW_SIGN_UP: 'false'
-      GF_AUTH_ANONYMOUS_ENABLED: 'false'
+      GF_ANALYTICS_REPORTING_ENABLED: "false"
+      GF_ANALYTICS_CHECK_FOR_UPDATES: "false"
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_AUTH_ANONYMOUS_ENABLED: "false"
       GF_LOG_MODE: console
       GF_LOG_LEVEL: warn
     volumes:
@@ -628,14 +646,14 @@ services:
       prometheus:
         condition: service_healthy
     labels:
-      - 'traefik.enable=true'
-      - 'traefik.docker.network=traefik-public'
-      - 'traefik.http.routers.grafana.rule=Host(`grafana.${PLATFORM_DOMAIN}`)'
-      - 'traefik.http.routers.grafana.entrypoints=websecure'
-      - 'traefik.http.routers.grafana.tls=true'
-      - 'traefik.http.routers.grafana.tls.certresolver=letsencrypt'
-      - 'traefik.http.services.grafana.loadbalancer.server.port=3000'
-      - 'traefik.http.routers.grafana.middlewares=secure-headers@file'
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik-public"
+      - "traefik.http.routers.grafana.rule=Host(`grafana.${PLATFORM_DOMAIN}`)"
+      - "traefik.http.routers.grafana.entrypoints=websecure"
+      - "traefik.http.routers.grafana.tls=true"
+      - "traefik.http.routers.grafana.tls.certresolver=letsencrypt"
+      - "traefik.http.services.grafana.loadbalancer.server.port=3000"
+      - "traefik.http.routers.grafana.middlewares=secure-headers@file"
     logging: *default-logging
     networks:
       - traefik-public
@@ -643,7 +661,7 @@ services:
     restart: unless-stopped
     healthcheck:
       <<: *healthcheck-http
-      test: ['CMD', 'wget', '-q', '--spider', 'http://127.0.0.1:3000/api/health']
+      test: [ "CMD", "wget", "-q", "--spider", "http://127.0.0.1:3000/api/health" ]
       interval: 30s
     deploy: *deploy-medium
 
@@ -655,13 +673,13 @@ services:
     image: containrrr/watchtower:1.7.1
     container_name: opsly_watchtower
     environment:
-      WATCHTOWER_LABEL_ENABLE: 'true'
-      WATCHTOWER_CLEANUP: 'true'
-      WATCHTOWER_INCLUDE_STOPPED: 'false'
-      WATCHTOWER_POLL_INTERVAL: '300'
-      WATCHTOWER_NOTIFICATIONS: 'slack'
+      WATCHTOWER_LABEL_ENABLE: "true"
+      WATCHTOWER_CLEANUP: "true"
+      WATCHTOWER_INCLUDE_STOPPED: "false"
+      WATCHTOWER_POLL_INTERVAL: "300"
+      WATCHTOWER_NOTIFICATIONS: "slack"
       WATCHTOWER_NOTIFICATION_SLACK_HOOK_URL: ${DISCORD_WEBHOOK_URL:-}
-      WATCHTOWER_NOTIFICATION_SLACK_IDENTIFIER: 'watchtower@opsly'
+      WATCHTOWER_NOTIFICATION_SLACK_IDENTIFIER: "watchtower@opsly"
       REPO_USER: ${WATCHTOWER_REGISTRY_USER:-}
       REPO_PASS: ${WATCHTOWER_REGISTRY_PASSWORD:-}
     volumes:
