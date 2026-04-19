@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-04-19T17:47:45Z",
-  "totalFiles": 176,
+  "lastIndexed": "2026-04-19T18:44:08Z",
+  "totalFiles": 177,
   "files": [
     "ACTIVE-PROMPT.md",
     "ADMIN-ECOSYSTEM.md",
@@ -160,6 +160,7 @@
     "TROUBLESHOOTING.md",
     "VERTEX-AI-SETUP.md",
     "VPS-ARCHITECTURE.md",
+    "VPS-DISK-SECURITY-SCAN.md",
     "VPS-SSH-WORKER-NODES.md",
     "WALLET-PREPAID-ROADMAP.md",
     "WORKER-FLOWS.md",
