@@ -527,23 +527,16 @@ services:
         condition: service_healthy
       llm-gateway:
         condition: service_started
-    labels:
+labels:
       - "com.centurylinklabs.watchtower.enable=true"
     logging: *default-logging
-    networks:
-      - internal
     restart: unless-stopped
     healthcheck:
-      <<: *healthcheck-node
-      test:
-        [
-          "CMD",
-          "node",
-          "-e",
-          "fetch('http://127.0.0.1:3020/health').then(r=>process.exit(r.ok?0:\
-            1)).catch(()=>process.exit(1))",
-        ]
-      start_period: 60s
+      test: ["CMD", "pgrep", "-f", "hermes"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
     deploy: *deploy-xxlarge
 
   context-builder:
