@@ -1,7 +1,7 @@
 {
   "version": 1,
   "root": "/Users/dragon/cboteros/proyectos/intcloudsysops",
-  "generated_at": "2026-04-19T17:47:19.633Z",
+  "generated_at": "2026-04-19T18:43:41.297Z",
   "files": [
     {
       "path": ".claude/CLAUDE.md",
@@ -12092,7 +12092,7 @@
         "stripe",
         "wiki"
       ],
-      "size_bytes": 20297
+      "size_bytes": 20413
     },
     {
       "path": "docs/REFACTOR-CHECKLIST.md",
@@ -12414,6 +12414,41 @@
         "tipico"
       ],
       "size_bytes": 984
+    },
+    {
+      "path": "docs/runbooks/VPS-DISK-SECURITY-SCAN.md",
+      "title": "Auditoría disco y seguridad — VPS (`vps-dragon`)",
+      "keywords": [
+        "auditoria",
+        "cambio",
+        "checklist",
+        "controlada",
+        "disco",
+        "disk",
+        "dragon",
+        "ejecutar",
+        "ejemplo",
+        "hallazgos",
+        "instalacion",
+        "limpieza",
+        "markdown",
+        "objetivo",
+        "opsly",
+        "post",
+        "reporte",
+        "scan",
+        "secretos",
+        "security",
+        "seguridad",
+        "servidor",
+        "snapshot",
+        "tipicos",
+        "trivy",
+        "volver",
+        "vps",
+        "vulnerabilidades"
+      ],
+      "size_bytes": 3213
     },
     {
       "path": "docs/SECURITY_AUDIT_REPORT.md",
@@ -15080,6 +15115,7 @@
       "docs/runbooks/admin.md",
       "docs/runbooks/frontend-audit.md",
       "docs/runbooks/dev.md",
+      "docs/runbooks/VPS-DISK-SECURITY-SCAN.md",
       "docs/runbooks/incident.md",
       "docs/.obsidian/PLUGINS-TO-INSTALL.md",
       "docs/.obsidian/templates/doc-template.md",
@@ -15539,6 +15575,7 @@
       "docs/runbooks/admin.md",
       "docs/runbooks/frontend-audit.md",
       "docs/runbooks/dev.md",
+      "docs/runbooks/VPS-DISK-SECURITY-SCAN.md",
       "docs/runbooks/incident.md",
       "docs/.obsidian/PLUGINS-TO-INSTALL.md",
       "docs/.obsidian/templates/doc-template.md",
@@ -16177,7 +16214,8 @@
     ],
     "servidor": [
       "infra/terraform/README.md",
-      ".claude/worktrees/crazy-carson/infra/terraform/README.md"
+      ".claude/worktrees/crazy-carson/infra/terraform/README.md",
+      "docs/runbooks/VPS-DISK-SECURITY-SCAN.md"
     ],
     "sin": [
       "infra/terraform/README.md",
@@ -16334,6 +16372,7 @@
       "docs/SSH-COMMANDS-LOCALRANK.md",
       "docs/SESSION-GIT-SYNC.md",
       "docs/runbooks/e2e-hybrid-write.md",
+      "docs/runbooks/VPS-DISK-SECURITY-SCAN.md",
       "docs/OPSLY-KNOWLEDGE-BASE.md",
       "docs/RTK.md",
       "docs/ARCHITECTURE-DISTRIBUTED.md",
@@ -16429,6 +16468,7 @@
       "docs/BILLING-FLUSH-VERCEL.md",
       "docs/CLIENT-TESTING-CHECKLIST.md",
       "docs/runbooks/admin.md",
+      "docs/runbooks/VPS-DISK-SECURITY-SCAN.md",
       "docs/SECURITY_CHECKLIST.md",
       "docs/CURSOR-DAILY-CHECKLIST.md",
       "docs/DOPPLER-CI-RUNBOOK.md",
@@ -17335,7 +17375,8 @@
     ],
     "snapshot": [
       "ARCHITECTURE.md",
-      ".claude/worktrees/crazy-carson/ARCHITECTURE.md"
+      ".claude/worktrees/crazy-carson/ARCHITECTURE.md",
+      "docs/runbooks/VPS-DISK-SECURITY-SCAN.md"
     ],
     "tecnologias": [
       "ARCHITECTURE.md",
@@ -17850,6 +17891,7 @@
       ".claude/worktrees/crazy-carson/docs/SECURITY_AUDIT_REPORT.md",
       ".claude/worktrees/crazy-carson/docs/SECURITY-MITIGATIONS-2026-04-09.md",
       "docs/SECURITY_AUDIT_REPORT.md",
+      "docs/runbooks/VPS-DISK-SECURITY-SCAN.md",
       "docs/SECURITY-MITIGATIONS-2026-04-09.md"
     ],
     "claves": [
@@ -18537,6 +18579,7 @@
       ".claude/worktrees/crazy-carson/docs/AGENTS-GLOBAL-CONTEXT.md",
       ".claude/worktrees/crazy-carson/skills/templates/template-bash-script.md",
       ".claude/CLAUDE.md",
+      "docs/runbooks/VPS-DISK-SECURITY-SCAN.md",
       "docs/RUNBOOK-INSIGHTS-DEPLOY.md",
       "docs/AGENTS-GLOBAL-CONTEXT.md",
       "skills/templates/template-bash-script.md"
@@ -19566,6 +19609,7 @@
       ".claude/worktrees/crazy-carson/docs/GITHUB-SETTINGS.md",
       "docs/ARCHITECT-SECURITY-REVIEW.md",
       "docs/SECURITY_AUDIT_REPORT.md",
+      "docs/runbooks/VPS-DISK-SECURITY-SCAN.md",
       "docs/SECURITY_CHECKLIST.md",
       "docs/SECURITY-MITIGATIONS-2026-04-09.md",
       "docs/GITHUB-SETTINGS.md"
@@ -19587,6 +19631,7 @@
       "docs/CLOUDFLARE-PROXY-ACTIVATION.md",
       "docs/SECURITY_AUDIT_REPORT.md",
       "docs/runbooks/e2e-hybrid-write.md",
+      "docs/runbooks/VPS-DISK-SECURITY-SCAN.md",
       "docs/SECURITY_CHECKLIST.md",
       "docs/README.md",
       "docs/PROVISIONING-SYSTEM.md",
@@ -20223,6 +20268,7 @@
       "docs/PLAN-SUPER-ARCHITECT-AGENT-2026-04-14.md",
       "docs/OPENCLAW-ARCHITECTURE.md",
       "docs/SEMANA-1-INFORME.md",
+      "docs/runbooks/VPS-DISK-SECURITY-SCAN.md",
       "docs/ARCHITECTURE-DISTRIBUTED.md",
       "docs/NOTION-MCP-SERVER.md",
       "docs/N8N-SETUP.md",
@@ -22823,6 +22869,7 @@
       ".claude/worktrees/crazy-carson/docs/DEPLOY-VPS-AND-INDEX.md",
       "docs/adr/ADR-025-notebooklm-knowledge-layer.md",
       "docs/runbooks/e2e-hybrid-write.md",
+      "docs/runbooks/VPS-DISK-SECURITY-SCAN.md",
       "docs/FAILOVER-RUNBOOK.md",
       "docs/ops/runbook-redis.md",
       "docs/CLIENTS-TO-INVITE.md",
@@ -24389,6 +24436,7 @@
       "docs/SECURITY_AUDIT_REPORT.md",
       "docs/BILLING-FLUSH-VERCEL.md",
       "docs/runbooks/admin.md",
+      "docs/runbooks/VPS-DISK-SECURITY-SCAN.md",
       "docs/runbooks/incident.md",
       "docs/SECURITY_CHECKLIST.md",
       "docs/DOPPLER-VARS.md",
@@ -24405,6 +24453,7 @@
       ".claude/worktrees/crazy-carson/docs/NOTEBOOKLM-SETUP.md",
       ".claude/worktrees/crazy-carson/skills/user/opsly-notebooklm/SKILL.md",
       "docs/AUTO-PUSH-WATCHER.md",
+      "docs/runbooks/VPS-DISK-SECURITY-SCAN.md",
       "docs/RTK.md",
       "docs/DECEPTICON-WORKER.md",
       "docs/SUPERAGENTS-BOOTSTRAP.md",
@@ -24464,6 +24513,7 @@
       ".claude/worktrees/crazy-carson/skills/user/opsly-quantum/templates/runbook.md",
       "docs/TOKEN-BILLING-SYSTEM.md",
       "docs/INVITATIONS_RUNBOOK.md",
+      "docs/runbooks/VPS-DISK-SECURITY-SCAN.md",
       "docs/HYBRID-OPSLY-ADMIN.md",
       "docs/DISK-USAGE-REPORT.md",
       "skills/user/opsly-quantum/templates/runbook.md"
@@ -24833,6 +24883,7 @@
       ".claude/worktrees/crazy-carson/docs/INCIDENT-2026-04-11-DISCO-LLENO.md",
       ".claude/worktrees/crazy-carson/docs/DISK-USAGE-REPORT.md",
       "docs/OPS-CLEANUP-PROCEDURES.md",
+      "docs/runbooks/VPS-DISK-SECURITY-SCAN.md",
       "docs/INCIDENT-2026-04-11-DISCO-LLENO.md",
       "docs/DISK-USAGE-REPORT.md"
     ],
@@ -24856,6 +24907,7 @@
       ".claude/worktrees/crazy-carson/docs/OPS-CLEANUP-PROCEDURES.md",
       ".claude/worktrees/crazy-carson/docs/DISK-USAGE-REPORT.md",
       "docs/OPS-CLEANUP-PROCEDURES.md",
+      "docs/runbooks/VPS-DISK-SECURITY-SCAN.md",
       "docs/DISK-USAGE-REPORT.md"
     ],
     "lleno": [
@@ -25939,7 +25991,8 @@
     ],
     "hallazgos": [
       ".claude/worktrees/crazy-carson/docs/runbooks/frontend-audit.md",
-      "docs/runbooks/frontend-audit.md"
+      "docs/runbooks/frontend-audit.md",
+      "docs/runbooks/VPS-DISK-SECURITY-SCAN.md"
     ],
     "iteracion": [
       ".claude/worktrees/crazy-carson/docs/runbooks/frontend-audit.md",
@@ -27281,6 +27334,7 @@
       ".claude/worktrees/crazy-carson/docs/OPSLYQUANTUM-USAGE.md",
       ".claude/worktrees/crazy-carson/.github/PULL_REQUEST_TEMPLATE.md",
       "docs/runbooks/e2e-hybrid-write.md",
+      "docs/runbooks/VPS-DISK-SECURITY-SCAN.md",
       "docs/OPSLYQUANTUM-USAGE.md",
       ".github/PULL_REQUEST_TEMPLATE.md"
     ],
@@ -27887,6 +27941,7 @@
     ],
     "dragon": [
       ".claude/worktrees/crazy-carson/docs/VPS-ARCHITECTURE.md",
+      "docs/runbooks/VPS-DISK-SECURITY-SCAN.md",
       "docs/VPS-ARCHITECTURE.md"
     ],
     "lair": [
@@ -28519,6 +28574,7 @@
     ],
     "reporte": [
       ".claude/worktrees/crazy-carson/docs/reports/audit-2026-04-07.md",
+      "docs/runbooks/VPS-DISK-SECURITY-SCAN.md",
       "docs/reports/audit-2026-04-07.md"
     ],
     "aproximado": [
@@ -28535,6 +28591,7 @@
     ],
     "disk": [
       ".claude/worktrees/crazy-carson/docs/DISK-USAGE-REPORT.md",
+      "docs/runbooks/VPS-DISK-SECURITY-SCAN.md",
       "docs/DISK-USAGE-REPORT.md"
     ],
     "escribible": [
@@ -29466,6 +29523,24 @@
     "write": [
       "docs/runbooks/e2e-hybrid-write.md"
     ],
+    "controlada": [
+      "docs/runbooks/VPS-DISK-SECURITY-SCAN.md"
+    ],
+    "scan": [
+      "docs/runbooks/VPS-DISK-SECURITY-SCAN.md"
+    ],
+    "tipicos": [
+      "docs/runbooks/VPS-DISK-SECURITY-SCAN.md"
+    ],
+    "trivy": [
+      "docs/runbooks/VPS-DISK-SECURITY-SCAN.md"
+    ],
+    "volver": [
+      "docs/runbooks/VPS-DISK-SECURITY-SCAN.md"
+    ],
+    "vulnerabilidades": [
+      "docs/runbooks/VPS-DISK-SECURITY-SCAN.md"
+    ],
     "killer": [
       "docs/RTK.md"
     ],
@@ -29995,6 +30070,7 @@
     "docs/runbooks/frontend-audit.md",
     "docs/runbooks/incident.md",
     "docs/runbooks/managed.md",
+    "docs/runbooks/VPS-DISK-SECURITY-SCAN.md",
     "docs/SECURITY_AUDIT_REPORT.md",
     "docs/SECURITY_CHECKLIST.md",
     "docs/SECURITY-MITIGATIONS-2026-04-09.md",

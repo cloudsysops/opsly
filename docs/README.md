@@ -47,6 +47,7 @@ docs/SPRINT-ROADMAP.md   ← sprints 1-8, qué está hecho, qué sigue
 | [`ARCHITECTURE-DISTRIBUTED.md`](ARCHITECTURE-DISTRIBUTED.md) | VPS control + workers remotos (Mac 2011), Redis Tailscale          |
 | [`HYBRID-OPSLY-ADMIN.md`](HYBRID-OPSLY-ADMIN.md) | **Centro de mando** (Mac `opsly-admin`): Cursor, MCP, Git, DragonB, SSH |
 | [`runbooks/e2e-hybrid-write.md`](runbooks/e2e-hybrid-write.md) | E2E escritura API `/api/tools/execute`, deploy `app`, Trivy |
+| [`runbooks/VPS-DISK-SECURITY-SCAN.md`](runbooks/VPS-DISK-SECURITY-SCAN.md) | Disco VPS, Trivy, `cleanup-vps.sh` |
 | [`VPS-SSH-WORKER-NODES.md`](VPS-SSH-WORKER-NODES.md) | Clave SSH VPS → workers (`authorized_keys`), solo Tailscale        |
 | [`SSH-USERS-FOR-AGENTS.md`](SSH-USERS-FOR-AGENTS.md) | **Qué usuario SSH usar** (VPS, worker, Mac) — agentes y humanos      |
 | [`AGENTS-AUTONOMOUS-RUNBOOK.md`](AGENTS-AUTONOMOUS-RUNBOOK.md) | Workers autónomos: systemd, Ollama, cola `openclaw`, verificación   |
