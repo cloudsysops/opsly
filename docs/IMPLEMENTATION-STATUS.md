@@ -4,9 +4,9 @@
 
 | Campo | Valor |
 | --- | --- |
-| Generado (ISO) | 2026-04-20T18:01:51.635Z |
-| last_commit (YAML) | `Infinity` |
-| last_updated (YAML) | 2026-04-18T23:46:16.626Z |
+| Generado (ISO) | 2026-04-20T23:33:20.423Z |
+| last_commit (YAML) | `f0c3edd` |
+| last_updated (YAML) | 2026-04-20T23:33:20.237Z |
 
 ## Phase 1: Approval Gate + Vertex AI
 
@@ -67,4 +67,4 @@
 
 ---
 
-*Última generación local/CI: 2026-04-20T18:01:51.635Z*
+*Última generación local/CI: 2026-04-20T23:33:20.423Z*
