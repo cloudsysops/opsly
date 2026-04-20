@@ -48,19 +48,33 @@ fi
 check_env PLATFORM_ADMIN_TOKEN NEXT_PUBLIC_APP_URL
 require_command jq curl
 
-PAYLOAD="$(
-  jq -n \
-    --arg slug "${SLUG}" \
-    --arg email "${EMAIL}" \
-    --arg plan "${PLAN}" \
-    --arg stripe_id "${STRIPE_ID}" \
-    '{
-      slug: $slug,
-      owner_email: $email,
-      plan: $plan,
-      stripe_customer_id: (if ($stripe_id | length) > 0 then $stripe_id else null end)
-    }'
-)"
+if [[ -z "${STRIPE_ID}" ]]; then
+  PAYLOAD="$(
+    jq -n \
+      --arg slug "${SLUG}" \
+      --arg email "${EMAIL}" \
+      --arg plan "${PLAN}" \
+      '{
+        slug: $slug,
+        owner_email: $email,
+        plan: $plan
+      }'
+  )"
+else
+  PAYLOAD="$(
+    jq -n \
+      --arg slug "${SLUG}" \
+      --arg email "${EMAIL}" \
+      --arg plan "${PLAN}" \
+      --arg stripe_id "${STRIPE_ID}" \
+      '{
+        slug: $slug,
+        owner_email: $email,
+        plan: $plan,
+        stripe_customer_id: $stripe_id
+      }'
+  )"
+fi
 
 if [[ "${DRY_RUN}" -eq 1 ]]; then
   log_info "DRY RUN: POST /api/tenants"
