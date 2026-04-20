@@ -151,12 +151,16 @@ export const ONBOARDING_PIPELINE = {
   AFTER_NOTIFY: 10,
 } as const;
 
-/** Umbrales de rollback (comparar con lastCompletedStep). */
+/** Umbrales de rollback (comparar con lastCompletedStep).
+ *
+ * MARK_FAILED must be <= INITIAL so that any pipeline failure preserves
+ * the tenant record as "failed" instead of deleting it.  Admins can then
+ * inspect the row and retry or remove it manually.
+ */
 export const ONBOARDING_ROLLBACK = {
-  DELETE_TENANT_MIN_STEP: 2,
+  MARK_FAILED_MIN_STEP: 3,
   RELEASE_PORTS_MIN_STEP: 4,
   STOP_COMPOSE_MIN_STEP: 6,
-  MARK_FAILED_MIN_STEP: 8,
 } as const;
 
 /** Límites para `POST /api/tools/execute` (OAR). */

@@ -1,30 +1,19 @@
-import { z } from "zod";
-import { BUDGET_AUTO_SUSPEND_METADATA_KEY } from "./billing/budget-constants";
-import {
-    ONBOARDING_PIPELINE,
-    ONBOARDING_ROLLBACK,
-    ORCHESTRATION_HEALTH,
-} from "./constants";
-import {
-    renderTenantComposeFromTemplate,
-    writeComposeFile,
-} from "./docker/compose-generator";
-import {
-    getTenantComposePath,
-    startTenant,
-    stopTenant,
-} from "./docker/container";
-import { allocatePorts, releasePorts } from "./docker/port-allocator";
-import { notifyTenantCreated, notifyTenantFailed } from "./notifications";
-import { sendPortalInvitationForTenant } from "./portal-invitations";
-import { PLAN_SERVICES } from "./stripe/plans";
-import { getServiceClient } from "./supabase";
-import type { Json, PlanKey, Tenant } from "./supabase/types";
+import { z } from 'zod';
+import { BUDGET_AUTO_SUSPEND_METADATA_KEY } from './billing/budget-constants';
+import { ONBOARDING_PIPELINE, ONBOARDING_ROLLBACK, ORCHESTRATION_HEALTH } from './constants';
+import { renderTenantComposeFromTemplate, writeComposeFile } from './docker/compose-generator';
+import { getTenantComposePath, startTenant, stopTenant } from './docker/container';
+import { allocatePorts, releasePorts } from './docker/port-allocator';
+import { notifyTenantCreated, notifyTenantFailed } from './notifications';
+import { sendPortalInvitationForTenant } from './portal-invitations';
+import { PLAN_SERVICES } from './stripe/plans';
+import { getServiceClient } from './supabase';
+import type { Json, PlanKey, Tenant } from './supabase/types';
 
 const onboardingInputSchema = z.object({
   slug: z.string().regex(/^[a-z0-9-]{3,30}$/),
   email: z.string().email(),
-  plan: z.enum(["startup", "business", "enterprise", "demo"]),
+  plan: z.enum(['startup', 'business', 'enterprise', 'demo']),
   stripeCustomerId: z.string().min(1).optional(),
 });
 
@@ -43,9 +32,7 @@ function sleep(ms: number): Promise<void> {
 
 function mergeBudgetAutoSuspendFlag(metadata: Json): Json {
   const base =
-    metadata !== null &&
-    typeof metadata === "object" &&
-    !Array.isArray(metadata)
+    metadata !== null && typeof metadata === 'object' && !Array.isArray(metadata)
       ? { ...(metadata as Record<string, unknown>) }
       : {};
   base[BUDGET_AUTO_SUSPEND_METADATA_KEY] = true;
@@ -53,11 +40,7 @@ function mergeBudgetAutoSuspendFlag(metadata: Json): Json {
 }
 
 function stripBudgetAutoSuspendFlag(metadata: Json): Json {
-  if (
-    metadata === null ||
-    typeof metadata !== "object" ||
-    Array.isArray(metadata)
-  ) {
+  if (metadata === null || typeof metadata !== 'object' || Array.isArray(metadata)) {
     return metadata;
   }
   const next = { ...(metadata as Record<string, unknown>) };
@@ -65,18 +48,10 @@ function stripBudgetAutoSuspendFlag(metadata: Json): Json {
   return next as Json;
 }
 
-export async function pollPortsUntilHealthy(
-  ports: Record<string, number>,
-): Promise<void> {
-  const urls = Object.values(ports).map(
-    (port) => `http://127.0.0.1:${port}/healthz`,
-  );
+export async function pollPortsUntilHealthy(ports: Record<string, number>): Promise<void> {
+  const urls = Object.values(ports).map((port) => `http://127.0.0.1:${port}/healthz`);
 
-  for (
-    let attempt = 0;
-    attempt < ORCHESTRATION_HEALTH.MAX_ATTEMPTS;
-    attempt += 1
-  ) {
+  for (let attempt = 0; attempt < ORCHESTRATION_HEALTH.MAX_ATTEMPTS; attempt += 1) {
     const checks = await Promise.all(
       urls.map(async (url) => {
         try {
@@ -87,7 +62,7 @@ export async function pollPortsUntilHealthy(
         } catch {
           return false;
         }
-      }),
+      })
     );
 
     if (checks.every(Boolean)) {
@@ -97,7 +72,7 @@ export async function pollPortsUntilHealthy(
     await sleep(ORCHESTRATION_HEALTH.POLL_INTERVAL_MS);
   }
 
-  throw new Error("Health checks did not pass within the allotted time");
+  throw new Error('Health checks did not pass within the allotted time');
 }
 
 class OnboardingOrchestrator {
@@ -115,13 +90,13 @@ class OnboardingOrchestrator {
     private readonly slug: string,
     private readonly email: string,
     private readonly plan: PlanKey,
-    private readonly stripeCustomerId: string | undefined,
+    private readonly stripeCustomerId: string | undefined
   ) {}
 
   async createAndBeginProvisioning(): Promise<string> {
     await this.validateInputs();
     this.tenantId = await this.createTenantRecord();
-    await this.logAudit("onboarding_started");
+    await this.logAudit('onboarding_started');
     return this.tenantId;
   }
 
@@ -129,20 +104,13 @@ class OnboardingOrchestrator {
     let lastCompletedStep: number = ONBOARDING_PIPELINE.INITIAL;
     try {
       if (!this.tenantId) {
-        throw new Error(
-          "Tenant identifier missing before provisioning pipeline",
-        );
+        throw new Error('Tenant identifier missing before provisioning pipeline');
       }
 
-      this.ports = await allocatePorts(this.tenantId, [
-        ...PLAN_SERVICES[this.plan],
-      ]);
+      this.ports = await allocatePorts(this.tenantId, [...PLAN_SERVICES[this.plan]]);
       lastCompletedStep = ONBOARDING_PIPELINE.AFTER_PORTS;
 
-      const rendered = await renderTenantComposeFromTemplate(
-        this.slug,
-        this.ports,
-      );
+      const rendered = await renderTenantComposeFromTemplate(this.slug, this.ports);
       this.composePath = await writeComposeFile(this.slug, rendered.yaml);
       this.n8nBasicAuthUser = rendered.n8nBasicAuthUser;
       this.n8nBasicAuthPassword = rendered.n8nBasicAuthPassword;
@@ -175,8 +143,7 @@ class OnboardingOrchestrator {
         services: tenant.services as object,
       };
     } catch (err) {
-      const message =
-        err instanceof Error ? err.message : "Unknown onboarding error";
+      const message = err instanceof Error ? err.message : 'Unknown onboarding error';
       await this.rollback(lastCompletedStep).catch(() => undefined);
       await notifyTenantFailed(this.slug, message).catch(() => undefined);
       return { success: false, error: message };
@@ -200,24 +167,22 @@ class OnboardingOrchestrator {
   private async createTenantRecord(): Promise<string> {
     const db = getServiceClient();
     const { data, error } = await db
-      .schema("platform")
-      .from("tenants")
+      .schema('platform')
+      .from('tenants')
       .insert({
         slug: this.slug,
         name: this.slug,
         owner_email: this.email,
         plan: this.plan,
-        status: "provisioning",
+        status: 'provisioning',
         progress: 0,
         stripe_customer_id: this.stripeCustomerId ?? null,
       })
-      .select("id")
+      .select('id')
       .single();
 
     if (error || !data) {
-      const err = new Error(
-        error?.message ?? "Failed to create tenant",
-      ) as Error & {
+      const err = new Error(error?.message ?? 'Failed to create tenant') as Error & {
         code?: string;
       };
       if (error?.code) {
@@ -235,12 +200,12 @@ class OnboardingOrchestrator {
     }
 
     const { error } = await getServiceClient()
-      .schema("platform")
-      .from("audit_log")
+      .schema('platform')
+      .from('audit_log')
       .insert({
         tenant_id: this.tenantId,
         action,
-        actor: "onboarding-orchestrator",
+        actor: 'onboarding-orchestrator',
         metadata: { slug: this.slug },
       });
 
@@ -250,21 +215,15 @@ class OnboardingOrchestrator {
   }
 
   private async updateTenantActive(): Promise<void> {
-    const domain =
-      process.env.PLATFORM_DOMAIN ?? process.env.PLATFORM_BASE_DOMAIN;
+    const domain = process.env.PLATFORM_DOMAIN ?? process.env.PLATFORM_BASE_DOMAIN;
     if (!domain) {
-      throw new Error("Missing PLATFORM_DOMAIN or PLATFORM_BASE_DOMAIN");
+      throw new Error('Missing PLATFORM_DOMAIN or PLATFORM_BASE_DOMAIN');
     }
     if (!this.tenantId) {
-      throw new Error("Tenant not initialized");
+      throw new Error('Tenant not initialized');
     }
-    if (
-      this.n8nBasicAuthUser === undefined ||
-      this.n8nBasicAuthPassword === undefined
-    ) {
-      throw new Error(
-        "n8n basic auth credentials missing after compose render",
-      );
+    if (this.n8nBasicAuthUser === undefined || this.n8nBasicAuthPassword === undefined) {
+      throw new Error('n8n basic auth credentials missing after compose render');
     }
 
     // Hostnames match infra/templates/docker-compose.tenant.yml.tpl (Traefik rules).
@@ -276,14 +235,14 @@ class OnboardingOrchestrator {
     };
 
     const { error } = await getServiceClient()
-      .schema("platform")
-      .from("tenants")
+      .schema('platform')
+      .from('tenants')
       .update({
-        status: "active",
+        status: 'active',
         progress: 100,
         services,
       })
-      .eq("id", this.tenantId);
+      .eq('id', this.tenantId);
 
     if (error) {
       throw new Error(`Failed to finalize tenant: ${error.message}`);
@@ -292,18 +251,18 @@ class OnboardingOrchestrator {
 
   private async fetchTenantRow(): Promise<Tenant> {
     if (!this.tenantId) {
-      throw new Error("Tenant not initialized");
+      throw new Error('Tenant not initialized');
     }
 
     const { data, error } = await getServiceClient()
-      .schema("platform")
-      .from("tenants")
-      .select("*")
-      .eq("id", this.tenantId)
+      .schema('platform')
+      .from('tenants')
+      .select('*')
+      .eq('id', this.tenantId)
       .single();
 
     if (error || !data) {
-      throw new Error(error?.message ?? "Failed to load tenant");
+      throw new Error(error?.message ?? 'Failed to load tenant');
     }
 
     return data;
@@ -318,32 +277,19 @@ class OnboardingOrchestrator {
       return;
     }
 
-    if (step >= ONBOARDING_ROLLBACK.MARK_FAILED_MIN_STEP) {
-      await getServiceClient()
-        .schema("platform")
-        .from("tenants")
-        .update({
-          status: "failed",
-          progress: 0,
-        })
-        .eq("id", this.tenantId);
-
-      if (step >= ONBOARDING_ROLLBACK.RELEASE_PORTS_MIN_STEP) {
-        await releasePorts(this.tenantId).catch(() => undefined);
-      }
-      return;
-    }
-
     if (step >= ONBOARDING_ROLLBACK.RELEASE_PORTS_MIN_STEP) {
       await releasePorts(this.tenantId).catch(() => undefined);
     }
 
-    if (step >= ONBOARDING_ROLLBACK.DELETE_TENANT_MIN_STEP) {
+    if (step >= ONBOARDING_ROLLBACK.MARK_FAILED_MIN_STEP) {
       await getServiceClient()
-        .schema("platform")
-        .from("tenants")
-        .delete()
-        .eq("id", this.tenantId);
+        .schema('platform')
+        .from('tenants')
+        .update({
+          status: 'failed',
+          progress: 0,
+        })
+        .eq('id', this.tenantId);
     }
   }
 }
@@ -356,52 +302,59 @@ export type ProvisionTenantInput = {
 };
 
 export async function provisionTenant(
-  input: ProvisionTenantInput,
-): Promise<{ id: string; slug: string; status: "provisioning" }> {
+  input: ProvisionTenantInput
+): Promise<{ id: string; slug: string; status: 'provisioning' }> {
   const orchestrator = new OnboardingOrchestrator(
     input.slug,
     input.owner_email,
     input.plan,
-    input.stripe_customer_id,
+    input.stripe_customer_id
   );
 
   const id = await orchestrator.createAndBeginProvisioning();
 
-  void orchestrator.runProvisioningPipeline().catch((err: unknown) => {
-    console.error("Onboarding pipeline error:", err);
-  });
+  void orchestrator
+    .runProvisioningPipeline()
+    .then((result) => {
+      if (!result.success) {
+        console.error(`[onboarding] pipeline failed for ${input.slug}: ${result.error}`);
+      }
+    })
+    .catch((err: unknown) => {
+      console.error(`[onboarding] unhandled pipeline error for ${input.slug}:`, err);
+    });
 
-  return { id, slug: input.slug, status: "provisioning" };
+  return { id, slug: input.slug, status: 'provisioning' };
 }
 
 export async function deleteTenant(tenantId: string): Promise<void> {
   const db = getServiceClient();
   const { data: tenant, error: fetchError } = await db
-    .schema("platform")
-    .from("tenants")
-    .select("id, slug")
-    .eq("id", tenantId)
-    .is("deleted_at", null)
+    .schema('platform')
+    .from('tenants')
+    .select('id, slug')
+    .eq('id', tenantId)
+    .is('deleted_at', null)
     .maybeSingle();
 
   if (fetchError) {
     throw new Error(fetchError.message);
   }
   if (!tenant) {
-    throw new Error("Tenant not found");
+    throw new Error('Tenant not found');
   }
 
   const composePath = getTenantComposePath(tenant.slug);
   await stopTenant(tenant.slug, composePath).catch(() => undefined);
 
   const { error: updateError } = await db
-    .schema("platform")
-    .from("tenants")
+    .schema('platform')
+    .from('tenants')
     .update({
       deleted_at: new Date().toISOString(),
-      status: "deleted",
+      status: 'deleted',
     })
-    .eq("id", tenant.id);
+    .eq('id', tenant.id);
 
   if (updateError) {
     throw new Error(updateError.message);
@@ -415,53 +368,51 @@ export type SuspendTenantOptions = {
 
 export async function suspendTenant(
   tenantId: string,
-  actor = "platform-api",
-  options?: SuspendTenantOptions,
+  actor = 'platform-api',
+  options?: SuspendTenantOptions
 ): Promise<void> {
   const db = getServiceClient();
   const { data: tenant, error: fetchError } = await db
-    .schema("platform")
-    .from("tenants")
-    .select("id, slug, metadata")
-    .eq("id", tenantId)
-    .is("deleted_at", null)
+    .schema('platform')
+    .from('tenants')
+    .select('id, slug, metadata')
+    .eq('id', tenantId)
+    .is('deleted_at', null)
     .maybeSingle();
 
   if (fetchError) {
     throw new Error(fetchError.message);
   }
   if (!tenant) {
-    throw new Error("Tenant not found");
+    throw new Error('Tenant not found');
   }
 
   const composePath = getTenantComposePath(tenant.slug);
   await stopTenant(tenant.slug, composePath).catch(() => undefined);
 
-  const updatePayload: { status: "suspended"; metadata?: Json } = {
-    status: "suspended",
+  const updatePayload: { status: 'suspended'; metadata?: Json } = {
+    status: 'suspended',
   };
   if (options?.budgetAutoSuspended === true) {
-    updatePayload.metadata = mergeBudgetAutoSuspendFlag(
-      tenant.metadata as Json,
-    );
+    updatePayload.metadata = mergeBudgetAutoSuspendFlag(tenant.metadata as Json);
   }
 
   const { error: updateError } = await db
-    .schema("platform")
-    .from("tenants")
+    .schema('platform')
+    .from('tenants')
     .update(updatePayload)
-    .eq("id", tenant.id);
+    .eq('id', tenant.id);
 
   if (updateError) {
     throw new Error(updateError.message);
   }
 
   const { error: auditError } = await db
-    .schema("platform")
-    .from("audit_log")
+    .schema('platform')
+    .from('audit_log')
     .insert({
       tenant_id: tenant.id,
-      action: "suspended",
+      action: 'suspended',
       actor,
       metadata: { slug: tenant.slug },
     });
@@ -477,26 +428,24 @@ type TenantResumeRow = {
   status: string;
 };
 
-async function loadSuspendedTenantOrThrow(
-  tenantId: string,
-): Promise<TenantResumeRow> {
+async function loadSuspendedTenantOrThrow(tenantId: string): Promise<TenantResumeRow> {
   const db = getServiceClient();
   const { data: tenant, error: fetchError } = await db
-    .schema("platform")
-    .from("tenants")
-    .select("id, slug, status")
-    .eq("id", tenantId)
-    .is("deleted_at", null)
+    .schema('platform')
+    .from('tenants')
+    .select('id, slug, status')
+    .eq('id', tenantId)
+    .is('deleted_at', null)
     .maybeSingle();
 
   if (fetchError) {
     throw new Error(fetchError.message);
   }
   if (!tenant) {
-    throw new Error("Tenant not found");
+    throw new Error('Tenant not found');
   }
-  if (tenant.status !== "suspended") {
-    throw new Error("Tenant is not suspended");
+  if (tenant.status !== 'suspended') {
+    throw new Error('Tenant is not suspended');
   }
   return tenant;
 }
@@ -504,25 +453,23 @@ async function loadSuspendedTenantOrThrow(
 async function markTenantDeployingProgress(tenantId: string): Promise<void> {
   const db = getServiceClient();
   const { error: deployingError } = await db
-    .schema("platform")
-    .from("tenants")
-    .update({ status: "deploying", progress: 50 })
-    .eq("id", tenantId);
+    .schema('platform')
+    .from('tenants')
+    .update({ status: 'deploying', progress: 50 })
+    .eq('id', tenantId);
 
   if (deployingError) {
     throw new Error(deployingError.message);
   }
 }
 
-async function buildPortsMapForTenant(
-  tenantId: string,
-): Promise<Record<string, number>> {
+async function buildPortsMapForTenant(tenantId: string): Promise<Record<string, number>> {
   const db = getServiceClient();
   const { data: portsRows, error: portsError } = await db
-    .schema("platform")
-    .from("port_allocations")
-    .select("port, service")
-    .eq("tenant_id", tenantId);
+    .schema('platform')
+    .from('port_allocations')
+    .select('port, service')
+    .eq('tenant_id', tenantId);
 
   if (portsError) {
     throw new Error(portsError.message);
@@ -530,7 +477,7 @@ async function buildPortsMapForTenant(
 
   const ports: Record<string, number> = {};
   for (const row of portsRows ?? []) {
-    if (row.service === "available") {
+    if (row.service === 'available') {
       continue;
     }
     ports[row.service] = row.port;
@@ -538,46 +485,42 @@ async function buildPortsMapForTenant(
   return ports;
 }
 
-async function markTenantActiveAndLogResume(
-  tenant: TenantResumeRow,
-): Promise<void> {
+async function markTenantActiveAndLogResume(tenant: TenantResumeRow): Promise<void> {
   const db = getServiceClient();
   const { data: metaRow, error: metaErr } = await db
-    .schema("platform")
-    .from("tenants")
-    .select("metadata")
-    .eq("id", tenant.id)
+    .schema('platform')
+    .from('tenants')
+    .select('metadata')
+    .eq('id', tenant.id)
     .maybeSingle();
 
   if (metaErr) {
     throw new Error(metaErr.message);
   }
 
-  const clearedMetadata = stripBudgetAutoSuspendFlag(
-    (metaRow?.metadata ?? null) as Json,
-  );
+  const clearedMetadata = stripBudgetAutoSuspendFlag((metaRow?.metadata ?? null) as Json);
 
   const { error: activeError } = await db
-    .schema("platform")
-    .from("tenants")
+    .schema('platform')
+    .from('tenants')
     .update({
-      status: "active",
+      status: 'active',
       progress: 100,
       metadata: clearedMetadata,
     })
-    .eq("id", tenant.id);
+    .eq('id', tenant.id);
 
   if (activeError) {
     throw new Error(activeError.message);
   }
 
   const { error: auditError } = await db
-    .schema("platform")
-    .from("audit_log")
+    .schema('platform')
+    .from('audit_log')
     .insert({
       tenant_id: tenant.id,
-      action: "resumed",
-      actor: "platform-api",
+      action: 'resumed',
+      actor: 'platform-api',
       metadata: { slug: tenant.slug },
     });
 

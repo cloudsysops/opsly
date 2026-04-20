@@ -58,6 +58,15 @@ export function parseTaskType(
   return "summarize";
 }
 
+/** PostgREST / migración 0015: tabla ausente → no bloquear el demo admin. */
+function isBillingUsageSchemaMissingError(message: string): boolean {
+  const m = message.toLowerCase();
+  return (
+    m.includes("billing_usage") &&
+    (m.includes("schema cache") || m.includes("could not find the table"))
+  );
+}
+
 export async function checkBudgetForOllamaDemo(
   tenantId: string,
   tenantSlug: string,
@@ -75,6 +84,13 @@ export async function checkBudgetForOllamaDemo(
     }
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
+    if (isBillingUsageSchemaMissingError(message)) {
+      logger.warn(
+        "admin ollama-demo: billing_usage unavailable; skipping budget check",
+        { tenant_slug: tenantSlug },
+      );
+      return null;
+    }
     logger.error(
       "admin ollama-demo budget check",
       err instanceof Error ? err : new Error(message),

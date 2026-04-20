@@ -294,6 +294,16 @@ docker exec infra-app-1 nslookup ollama.tailscale.local
 2. Verify Tailscale on Mac: `tailscale status`
 3. Re-authenticate if needed: `tailscale login`
 
+### POST /api/admin/ollama-demo returns 500 (`billing_usage` / schema cache)
+
+**Symptom:** Response body mentions `Could not find the table 'platform.billing_usage' in the schema cache` (or similar PostgREST errors about `billing_usage`).
+
+**Cause:** The metering table from migration [`0015_billing_metering.sql`](../supabase/migrations/0015_billing_metering.sql) is not applied in the linked Supabase project, or PostgREST has not refreshed its schema cache after the migration.
+
+**Behavior (current API):** `checkBudgetForOllamaDemo` in `apps/api/lib/admin-ollama-demo.ts` treats this class of error as non-fatal: it logs a warning and **skips the budget gate** so the demo can enqueue the Ollama job. If you still see 500, the running API container is likely on an **older image** without that handler — redeploy the `app` service from `main`.
+
+**Fix (proper metering):** Apply the migration (`npx supabase db push` or your approved process) so `platform.billing_usage` exists and budget checks use real spend.
+
 ## Monitoring
 
 ### Metrics Dashboard
