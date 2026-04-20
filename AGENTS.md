@@ -1107,6 +1107,14 @@ ssh vps-dragon@100.120.151.91 "docker system df && sudo du -xh /var --max-depth=
 
 <!-- Qué está roto o bloqueado ahora mismo -->
 
+- [ ] **🚨 CRÍTICO: POST /api/tenants retorna 202 con UUID pero no crea tenant en DB** (2026-04-20 18:23 UTC)
+  - **Síntoma:** `curl -X POST https://api.ops.smiletripcare.com/api/tenants` devuelve `{"id":"...", "slug":"...", "status":"provisioning"}` (HTTP 202)
+  - **Realidad:** Tenant NO aparece en `GET /api/tenants` lista, ni en provisioning, ni en ningún status
+  - **Causa:** Unknown — possible: (a) `createTenantRecord()` en `apps/api/lib/orchestrator.ts` falla silenciosamente, (b) RLS policy bloquea insert, (c) transaction rollback en provisioning pipeline, (d) error catch silencioso
+  - **Bloqueado:** Semana 6 (onboarding segundo cliente) — imposible sin tenant provisioning
+  - **Workaround:** Investigar si hay método manual de creación o si necesita revert/fix crítico en orchestrator.ts
+  - **Notas:** onboard-tenant.sh está OK tras fix stripe_customer_id (commit 4334e57); error no es validación de payload
+  
 - [x] Bulk upload Doppler desde VPS `.env` (lista audit) — hecho 2026-04-05
 - [x] **validate-config** → LISTO PARA DEPLOY (2026-04-05, tras tokens plataforma/Redis + imágenes GHCR en Doppler)
 - [x] **GHCR en `prd` + login Docker en VPS** (2026-04-05): `GHCR_USER` / `GHCR_TOKEN` en `prd`; `docker login ghcr.io` con Doppler **solo** con `cd /opt/opsly`.
