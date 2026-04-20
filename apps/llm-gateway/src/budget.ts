@@ -148,6 +148,7 @@ export async function checkBudget(
   }
 
   const allowed = frac < 1;
+  /** Cost-aware routing: cerca del tope mensual → forzar cadena "cheap" en v3 pipeline. */
   const force_cheap =
     frac >= FORCE_CHEAP_COST_FRACTION || fracTok >= FORCE_CHEAP_TOKEN_FRACTION;
 

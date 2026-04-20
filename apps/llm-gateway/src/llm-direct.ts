@@ -4,7 +4,7 @@ import { analyzeComplexity } from "./complexity.js";
 import { checkDailyBudget, resolveAiProfile } from "./config/budgets.js";
 import { hashPrompt } from "./hash.js";
 import { healthDaemon } from "./health-daemon.js";
-import { logUsage } from "./logger.js";
+import { logUsage, mergeUsageAttribution } from "./logger.js";
 import {
   notifyBudgetExceeded,
   notifyBudgetWarning,
@@ -198,17 +198,19 @@ async function finalizeSuccess(
     await cacheSet(req.tenant_slug, promptHash, content);
   }
   if (!req.skip_usage_log) {
-    await logUsage({
-      tenant_slug: req.tenant_slug,
-      model: model_used,
-      tokens_input: tokens_in,
-      tokens_output: tokens_out,
-      cost_usd: cost,
-      cache_hit: false,
-      session_id: req.session_id,
-      request_id: req.request_id,
-      created_at: new Date().toISOString(),
-    });
+    await logUsage(
+      mergeUsageAttribution(req, {
+        tenant_slug: req.tenant_slug,
+        model: model_used,
+        tokens_input: tokens_in,
+        tokens_output: tokens_out,
+        cost_usd: cost,
+        cache_hit: false,
+        session_id: req.session_id,
+        request_id: req.request_id,
+        created_at: new Date().toISOString(),
+      }),
+    );
   }
   return {
     content,

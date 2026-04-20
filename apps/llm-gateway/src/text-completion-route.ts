@@ -11,6 +11,9 @@ export interface TextCompletionBody {
   request_id?: string;
   task_type?: OllamaTaskType;
   prompt: string;
+  user_id?: string;
+  feature?: string;
+  usage_metadata?: Record<string, unknown>;
 }
 
 function readBody(req: IncomingMessage): Promise<string> {
@@ -48,6 +51,13 @@ function isTaskType(v: unknown): v is OllamaTaskType | undefined {
   return (
     v === "analyze" || v === "generate" || v === "review" || v === "summarize"
   );
+}
+
+function parseUsageMetadataField(v: unknown): Record<string, unknown> | undefined {
+  if (typeof v !== "object" || v === null || Array.isArray(v)) {
+    return undefined;
+  }
+  return v as Record<string, unknown>;
 }
 
 /**
@@ -118,6 +128,16 @@ export async function handleTextCompletionHttp(
       ? body.request_id
       : randomUUID();
 
+  const userId =
+    typeof body.user_id === "string" && body.user_id.length > 0
+      ? body.user_id
+      : undefined;
+  const feature =
+    typeof body.feature === "string" && body.feature.length > 0
+      ? body.feature
+      : undefined;
+  const usageMeta = parseUsageMetadataField(body.usage_metadata);
+
   const userContent = `${prefixForTask(taskType)}${prompt.trim()}`;
   const llmReq: LLMRequest = {
     tenant_slug: tenantSlug,
@@ -130,6 +150,9 @@ export async function handleTextCompletionHttp(
     max_tokens: 1024,
     temperature: 0.2,
     skip_repo_context: true,
+    ...(userId !== undefined ? { user_id: userId } : {}),
+    ...(feature !== undefined ? { feature } : {}),
+    ...(usageMeta !== undefined ? { usage_metadata: usageMeta } : {}),
   };
 
   try {

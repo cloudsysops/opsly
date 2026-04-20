@@ -1,6 +1,6 @@
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { platformSchema } from "./supabase-helpers.js";
-import type { UsageEvent } from "./types.js";
+import type { LLMRequest, UsageEvent } from "./types.js";
 
 let supabaseClient: ReturnType<typeof createSupabaseClient> | null = null;
 
@@ -24,6 +24,20 @@ type UsageRow = {
   cache_hit: boolean;
   model: string;
 };
+
+/** Combina fila de uso con atribución opcional del request (billing / analytics). */
+export function mergeUsageAttribution(req: LLMRequest, base: UsageEvent): UsageEvent {
+  const meta =
+    req.usage_metadata !== undefined && Object.keys(req.usage_metadata).length > 0
+      ? req.usage_metadata
+      : undefined;
+  return {
+    ...base,
+    ...(req.user_id !== undefined && req.user_id.length > 0 ? { user_id: req.user_id } : {}),
+    ...(req.feature !== undefined && req.feature.length > 0 ? { feature: req.feature } : {}),
+    ...(meta !== undefined ? { metadata: meta } : {}),
+  };
+}
 
 export async function logUsage(event: UsageEvent): Promise<void> {
   try {

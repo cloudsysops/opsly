@@ -28,6 +28,9 @@ export interface ChatCompletionsPlannerBody {
   request_id?: string;
   tenant_plan?: "startup" | "business" | "enterprise";
   messages: Array<{ role: string; content: string }>;
+  user_id?: string;
+  feature?: string;
+  usage_metadata?: Record<string, unknown>;
 }
 
 function readBody(req: IncomingMessage): Promise<string> {
@@ -120,6 +123,19 @@ function chatBodyToLlmRequest(body: ChatCompletionsPlannerBody, requestId: strin
     max_tokens: 2048,
     temperature: 0.2,
     skip_repo_context: true,
+    ...(body.user_id !== undefined && body.user_id.length > 0
+      ? { user_id: body.user_id }
+      : {}),
+    ...(body.feature !== undefined && body.feature.length > 0
+      ? { feature: body.feature }
+      : {}),
+    ...(body.usage_metadata !== undefined &&
+    typeof body.usage_metadata === "object" &&
+    !Array.isArray(body.usage_metadata) &&
+    body.usage_metadata !== null &&
+    Object.keys(body.usage_metadata).length > 0
+      ? { usage_metadata: body.usage_metadata }
+      : {}),
   };
 }
 

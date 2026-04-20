@@ -60,6 +60,12 @@ export interface LLMRequest {
    * @default false cuando `LLM_GATEWAY_REPO_CONTEXT=true`
    */
   skip_repo_context?: boolean;
+  /** Usuario final (atribución billing / analytics); opcional. */
+  user_id?: string;
+  /** Área de producto, ej. legal_analysis, redaction; opcional. */
+  feature?: string;
+  /** Metadatos arbitrarios no sensibles persistidos en usage_events.metadata. */
+  usage_metadata?: Record<string, unknown>;
 }
 
 export interface LLMResponse {
@@ -91,4 +97,7 @@ export interface UsageEvent {
   request_id?: string;
   created_at: string;
   quality_score?: number;
+  user_id?: string;
+  feature?: string;
+  metadata?: Record<string, unknown>;
 }

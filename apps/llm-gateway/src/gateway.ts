@@ -6,7 +6,7 @@ import { enrichContext } from "./context-enricher.js";
 import { decomposeAndExecute } from "./decomposer.js";
 import { detectIntent } from "./intent-detector.js";
 import { llmCallDirect } from "./llm-direct.js";
-import { logUsage } from "./logger.js";
+import { logUsage, mergeUsageAttribution } from "./logger.js";
 import { buildPrompt } from "./prompt-builder.js";
 import { scoreQuality } from "./quality-scorer.js";
 import { formatResponse } from "./response-formatter.js";
@@ -191,18 +191,20 @@ export async function v3Pipeline(req: LLMRequest): Promise<LLMResponse> {
     q = await scoreQuality(req.tenant_slug, userMsg, constraintsSummary, response.content);
   }
 
-  await logUsage({
-    tenant_slug: req.tenant_slug,
-    model: response.model_used,
-    tokens_input: response.tokens_input,
-    tokens_output: response.tokens_output,
-    cost_usd: response.cost_usd,
-    cache_hit: response.cache_hit,
-    session_id: req.session_id,
-    request_id: req.request_id,
-    created_at: new Date().toISOString(),
-    quality_score: q.score,
-  });
+  await logUsage(
+    mergeUsageAttribution(req, {
+      tenant_slug: req.tenant_slug,
+      model: response.model_used,
+      tokens_input: response.tokens_input,
+      tokens_output: response.tokens_output,
+      cost_usd: response.cost_usd,
+      cache_hit: response.cache_hit,
+      session_id: req.session_id,
+      request_id: req.request_id,
+      created_at: new Date().toISOString(),
+      quality_score: q.score,
+    }),
+  );
 
   if (req.cache !== false) {
     await semanticCacheSet({
