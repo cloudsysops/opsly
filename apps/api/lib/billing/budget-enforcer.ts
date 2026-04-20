@@ -1,13 +1,14 @@
-import { BillingUsageRepository } from "../repositories/billing-usage-repository";
-import { getServiceClient } from "../supabase";
-import type { Json, PlanKey, TenantStatus } from "../supabase/types";
-import { runWithTenantContext } from "../tenant-context";
+import { logger } from '../logger';
+import { BillingUsageRepository } from '../repositories/billing-usage-repository';
+import { getServiceClient } from '../supabase';
+import type { Json, PlanKey, TenantStatus } from '../supabase/types';
+import { runWithTenantContext } from '../tenant-context';
 import {
-    BUDGET_AUTO_SUSPEND_METADATA_KEY,
-    DEFAULT_MONTHLY_BUDGET_USD_BY_PLAN,
-    FREE_TIER_FALLBACK_MONTHLY_USD,
-    budgetEnforcementBypassSlugs,
-} from "./budget-constants";
+  BUDGET_AUTO_SUSPEND_METADATA_KEY,
+  DEFAULT_MONTHLY_BUDGET_USD_BY_PLAN,
+  FREE_TIER_FALLBACK_MONTHLY_USD,
+  budgetEnforcementBypassSlugs,
+} from './budget-constants';
 
 export type TenantBudgetCheckResult = {
   readonly isOverBudget: boolean;
@@ -25,12 +26,16 @@ function startOfUtcMonthIso(): string {
   return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1, 0, 0, 0, 0)).toISOString();
 }
 
+/** Migración 0015 no aplicada o tabla no en caché PostgREST: no bloquear presupuesto. */
+function isBillingUsageUnavailableError(err: Error): boolean {
+  const m = err.message.toLowerCase();
+  return (
+    m.includes('billing_usage') && (m.includes('schema cache') || m.includes('does not exist'))
+  );
+}
+
 function isBudgetEnforcementDisabledInMetadata(metadata: Json): boolean {
-  if (
-    metadata === null ||
-    typeof metadata !== "object" ||
-    Array.isArray(metadata)
-  ) {
+  if (metadata === null || typeof metadata !== 'object' || Array.isArray(metadata)) {
     return false;
   }
   const v = (metadata as Record<string, unknown>).budget_enforcement_disabled;
@@ -38,25 +43,19 @@ function isBudgetEnforcementDisabledInMetadata(metadata: Json): boolean {
 }
 
 function readBudgetAutoSuspended(metadata: Json): boolean {
-  if (
-    metadata === null ||
-    typeof metadata !== "object" ||
-    Array.isArray(metadata)
-  ) {
+  if (metadata === null || typeof metadata !== 'object' || Array.isArray(metadata)) {
     return false;
   }
   return (metadata as Record<string, unknown>)[BUDGET_AUTO_SUSPEND_METADATA_KEY] === true;
 }
 
-async function fetchMonthlyCapFromTenantBudgets(
-  slug: string,
-): Promise<number | null> {
+async function fetchMonthlyCapFromTenantBudgets(slug: string): Promise<number | null> {
   const db = getServiceClient();
   const { data, error } = await db
-    .schema("platform")
-    .from("tenant_budgets")
-    .select("monthly_cap_usd")
-    .eq("tenant_slug", slug)
+    .schema('platform')
+    .from('tenant_budgets')
+    .select('monthly_cap_usd')
+    .eq('tenant_slug', slug)
     .maybeSingle();
 
   if (error || !data) {
@@ -70,10 +69,7 @@ function resolveDefaultLimitForPlan(plan: PlanKey): number {
   return DEFAULT_MONTHLY_BUDGET_USD_BY_PLAN[plan] ?? FREE_TIER_FALLBACK_MONTHLY_USD;
 }
 
-async function resolveMonthlyLimitUsd(
-  slug: string,
-  plan: PlanKey,
-): Promise<number> {
+async function resolveMonthlyLimitUsd(slug: string, plan: PlanKey): Promise<number> {
   const fromTable = await fetchMonthlyCapFromTenantBudgets(slug);
   if (fromTable !== null) {
     return fromTable;
@@ -81,27 +77,51 @@ async function resolveMonthlyLimitUsd(
   return resolveDefaultLimitForPlan(plan);
 }
 
+async function resolveCurrentSpendUsd(
+  tenantId: string,
+  tenantSlug: string,
+  monthStartIso: string
+): Promise<number> {
+  const { value: spendFromRepo, error: sumError } = await runWithTenantContext(
+    { tenantId, tenantSlug },
+    async () => {
+      const repo = new BillingUsageRepository();
+      return repo.sumSettledTotalAmountSince(monthStartIso);
+    }
+  );
+
+  if (!sumError) {
+    return spendFromRepo;
+  }
+  if (isBillingUsageUnavailableError(sumError)) {
+    logger.warn('checkTenantBudget: billing_usage unavailable; assuming 0 spend', {
+      tenantSlug,
+      message: sumError.message,
+    });
+    return 0;
+  }
+  throw sumError;
+}
+
 /**
  * Evalúa gasto en `platform.billing_usage` (mes calendario UTC) frente al límite mensual.
  * El límite viene de `tenant_budgets.monthly_cap_usd` o del plan, con fallback {@link FREE_TIER_FALLBACK_MONTHLY_USD}.
  */
-export async function checkTenantBudget(
-  tenantId: string,
-): Promise<TenantBudgetCheckResult> {
+export async function checkTenantBudget(tenantId: string): Promise<TenantBudgetCheckResult> {
   const db = getServiceClient();
   const { data: tenant, error } = await db
-    .schema("platform")
-    .from("tenants")
-    .select("id, slug, plan, status, metadata")
-    .eq("id", tenantId)
-    .is("deleted_at", null)
+    .schema('platform')
+    .from('tenants')
+    .select('id, slug, plan, status, metadata')
+    .eq('id', tenantId)
+    .is('deleted_at', null)
     .maybeSingle();
 
   if (error) {
     throw new Error(error.message);
   }
   if (!tenant?.id || !tenant.slug) {
-    throw new Error("Tenant not found");
+    throw new Error('Tenant not found');
   }
 
   const slug = tenant.slug as string;
@@ -117,18 +137,7 @@ export async function checkTenantBudget(
 
   const limit = await resolveMonthlyLimitUsd(slug, plan);
   const monthStart = startOfUtcMonthIso();
-
-  const { value: currentSpend, error: sumError } = await runWithTenantContext(
-    { tenantId: tenant.id, tenantSlug: slug },
-    async () => {
-      const repo = new BillingUsageRepository();
-      return repo.sumSettledTotalAmountSince(monthStart);
-    },
-  );
-
-  if (sumError) {
-    throw sumError;
-  }
+  const currentSpend = await resolveCurrentSpendUsd(tenant.id as string, slug, monthStart);
 
   const isOverBudget = currentSpend > limit;
   const budgetAutoSuspended = readBudgetAutoSuspended(metadata);
@@ -151,4 +160,4 @@ export {
   budgetAlertLevelFromPercent,
   budgetUsagePercent,
   projectedMonthEndUsd,
-} from "./budget-thresholds";
+} from './budget-thresholds';
