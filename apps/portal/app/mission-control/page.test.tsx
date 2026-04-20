@@ -1,6 +1,7 @@
 /* @vitest-environment jsdom */
 import "@testing-library/jest-dom/vitest";
 
+// @ts-ignore - screen is exported from @testing-library/react but TypeScript doesn't resolve it
 import { render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -39,22 +40,24 @@ describe("Mission Control auth regression", () => {
       },
     } as never);
 
-    vi.mocked(useSWR).mockImplementation((key: string | null) => {
+    vi.mocked(useSWR).mockImplementation(((key: string | null) => {
       if (key === "mission-control-access-token") {
         return {
           data: undefined,
           error: new Error("Unauthorized"),
           isLoading: false,
+          isValidating: false,
           mutate: vi.fn(),
-        } as never;
+        };
       }
       return {
         data: undefined,
         error: undefined,
         isLoading: false,
+        isValidating: false,
         mutate: vi.fn(),
-      } as never;
-    });
+      };
+    }) as never);
 
     render(<MissionControlPage />);
 
@@ -73,14 +76,15 @@ describe("Mission Control auth regression", () => {
       },
     } as never);
 
-    vi.mocked(useSWR).mockImplementation((key: string | null) => {
+    vi.mocked(useSWR).mockImplementation(((key: string | null) => {
       if (key === "mission-control-access-token") {
         return {
           data: "valid-token",
           error: undefined,
           isLoading: false,
+          isValidating: false,
           mutate: vi.fn(),
-        } as never;
+        };
       }
       return {
         data: {
@@ -104,9 +108,10 @@ describe("Mission Control auth regression", () => {
         },
         error: undefined,
         isLoading: false,
+        isValidating: false,
         mutate: vi.fn(),
-      } as never;
-    });
+      };
+    }) as never);
 
     render(<MissionControlPage />);
 

@@ -1,107 +1,213 @@
 "use client";
 
-import { useCallback, useState } from "react";
-import { BookOpen } from "lucide-react";
+import { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-import { getSessionAuthToken } from "@/lib/session-auth";
-
-function getBaseUrl(): string {
-  const base = process.env.NEXT_PUBLIC_API_URL;
-  if (base && base.length > 0) {
-    return base.replace(/\/$/, "");
-  }
-  if (typeof window !== "undefined" && window.location.hostname.startsWith("admin.")) {
-    return `https://api.${window.location.hostname.slice("admin.".length)}`;
-  }
-  return "http://127.0.0.1:3000";
+interface QueryResult {
+  answer: string;
+  sources: string[];
+  confidence: number;
+  cached: boolean;
+  latency_ms?: number;
 }
 
-export default function NotebookLMPage() {
-  const [question, setQuestion] = useState(
-    "¿Cómo se implementa un worker de BullMQ en Opsly?",
-  );
+export default function AdminNotebookLmPage() {
+  const [question, setQuestion] = useState("");
   const [context, setContext] = useState("");
-  const [answer, setAnswer] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState<QueryResult | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  const onSubmit = useCallback(async () => {
-    setError(null);
-    setAnswer(null);
+  const handleQuery = async () => {
     setLoading(true);
+    setError(null);
+    setResult(null);
+
     try {
-      const token = await getSessionAuthToken();
-      const headers: Record<string, string> = { "Content-Type": "application/json" };
-      if (token) {
-        headers.Authorization = `Bearer ${token}`;
-      }
-      const res = await fetch(`${getBaseUrl()}/api/notebooklm/query`, {
+      const response = await fetch("/api/notebooklm/query", {
         method: "POST",
-        headers,
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           question: question.trim(),
           context: context.trim() || undefined,
         }),
       });
-      const data = (await res.json()) as { ok?: boolean; answer?: string; error?: string };
-      if (!res.ok) {
-        setError(data.error ?? `HTTP ${String(res.status)}`);
+
+      if (!response.ok) {
+        const data = await response.json();
+        setError(data.error || `HTTP ${response.status}`);
         return;
       }
-      setAnswer(data.answer ?? JSON.stringify(data));
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Error de red");
+
+      const data = await response.json();
+      if (data.ok) {
+        setResult({
+          answer: data.answer || "",
+          sources: data.sources || [],
+          confidence: data.confidence || 0,
+          cached: data.cached || false,
+          latency_ms: data.latency_ms,
+        });
+        setQuestion("");
+        setContext("");
+      } else {
+        setError(data.error || "Query failed");
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Unknown error");
     } finally {
       setLoading(false);
     }
-  }, [question, context]);
+  };
 
   return (
-    <div className="mx-auto max-w-3xl space-y-6 p-8 text-neutral-200">
-      <div className="flex items-center gap-2">
-        <BookOpen className="h-6 w-6 text-ops-green" />
-        <h1 className="font-mono text-xl font-semibold text-ops-green">NotebookLM (Opsly)</h1>
+    <div className="space-y-6">
+      <div className="flex items-end justify-between">
+        <h1 className="font-mono text-lg tracking-tight text-ops-green">
+          NotebookLM Query Tool
+        </h1>
+        <p className="text-xs text-ops-gray">
+          Queries the dynamic knowledge base (ROADMAP.md + AGENTS.md)
+        </p>
       </div>
-      <p className="text-sm text-neutral-400">
-        Consulta experimental vía <code className="text-ops-green">notebooklm-py</code> (requiere{" "}
-        <code className="text-ops-green">NOTEBOOKLM_ENABLED</code> y runtime Python en la API).
-        Ver <code className="text-ops-green">docs/NOTEBOOKLM-INTEGRATION.md</code>.
-      </p>
-      <label className="block space-y-1">
-        <span className="text-xs uppercase text-neutral-500">Pregunta</span>
-        <textarea
-          className="min-h-[100px] w-full rounded border border-ops-border bg-ops-surface px-3 py-2 font-sans text-sm"
-          value={question}
-          onChange={(e) => setQuestion(e.target.value)}
-        />
-      </label>
-      <label className="block space-y-1">
-        <span className="text-xs uppercase text-neutral-500">Contexto opcional</span>
-        <textarea
-          className="min-h-[80px] w-full rounded border border-ops-border bg-ops-surface px-3 py-2 font-sans text-sm"
-          value={context}
-          onChange={(e) => setContext(e.target.value)}
-          placeholder="Pega un fragmento de ARCHITECTURE.md o un error…"
-        />
-      </label>
-      <button
-        type="button"
-        onClick={() => void onSubmit()}
-        disabled={loading || question.trim().length === 0}
-        className="rounded bg-ops-green px-4 py-2 font-mono text-sm font-medium text-black hover:bg-ops-green/90 disabled:opacity-50"
-      >
-        {loading ? "Consultando…" : "Consultar"}
-      </button>
-      {error ? (
-        <div className="rounded border border-red-900/60 bg-red-950/40 px-3 py-2 text-sm text-red-200">
-          {error}
-        </div>
-      ) : null}
-      {answer ? (
-        <div className="rounded border border-ops-border bg-ops-surface/80 p-4 font-sans text-sm leading-relaxed whitespace-pre-wrap">
-          {answer}
-        </div>
-      ) : null}
+
+      <Card className="border-ops-border bg-ops-surface">
+        <CardHeader>
+          <CardTitle className="font-mono text-sm">Query</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div>
+            <label className="text-xs font-mono text-ops-gray">Question</label>
+            <textarea
+              value={question}
+              onChange={(e) => setQuestion(e.target.value)}
+              placeholder="Ask something about Opsly..."
+              className="mt-2 w-full rounded border border-ops-border/60 bg-ops-bg-secondary p-3 font-mono text-sm text-neutral-200 placeholder-ops-gray focus:border-ops-green focus:outline-none"
+              rows={4}
+            />
+          </div>
+
+          <div>
+            <label className="text-xs font-mono text-ops-gray">
+              Context (optional)
+            </label>
+            <textarea
+              value={context}
+              onChange={(e) => setContext(e.target.value)}
+              placeholder="Additional context..."
+              className="mt-2 w-full rounded border border-ops-border/60 bg-ops-bg-secondary p-3 font-mono text-sm text-neutral-200 placeholder-ops-gray focus:border-ops-green focus:outline-none"
+              rows={3}
+            />
+          </div>
+
+          <button
+            onClick={handleQuery}
+            disabled={!question.trim() || loading}
+            className="w-full rounded border border-ops-green bg-ops-green/10 px-4 py-2 font-mono text-sm text-ops-green disabled:cursor-not-allowed disabled:border-ops-border/60 disabled:bg-transparent disabled:text-ops-gray hover:bg-ops-green/20 disabled:hover:bg-transparent"
+          >
+            {loading ? "Querying..." : "Query"}
+          </button>
+        </CardContent>
+      </Card>
+
+      {error && (
+        <Card className="border-red-500/50 bg-red-950/20">
+          <CardContent className="pt-6">
+            <p className="font-mono text-sm text-red-400">{error}</p>
+          </CardContent>
+        </Card>
+      )}
+
+      {result && (
+        <Card className="border-ops-border bg-ops-surface">
+          <CardHeader>
+            <CardTitle className="font-mono text-sm">Response</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div>
+              <div className="font-mono text-xs text-ops-gray">Answer</div>
+              <p className="mt-2 whitespace-pre-wrap text-sm text-neutral-200">
+                {result.answer}
+              </p>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+              <Stat
+                label="Confidence"
+                value={`${Math.round(result.confidence * 100)}%`}
+              />
+              <Stat
+                label="Cached"
+                value={result.cached ? "Yes" : "No"}
+              />
+              {result.latency_ms !== undefined && (
+                <Stat label="Latency" value={`${result.latency_ms}ms`} />
+              )}
+              <Stat label="Sources" value={String(result.sources.length)} />
+            </div>
+
+            {result.sources.length > 0 && (
+              <div>
+                <div className="font-mono text-xs text-ops-gray">Sources</div>
+                <ul className="mt-2 space-y-1">
+                  {result.sources.map((src, i) => (
+                    <li
+                      key={i}
+                      className="font-mono text-xs text-neutral-300"
+                    >
+                      • {src}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
+      <Card className="border-ops-border bg-ops-surface">
+        <CardHeader>
+          <CardTitle className="font-mono text-sm">Example Queries</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-2">
+          <button
+            onClick={() =>
+              setQuestion("What are the main objectives for Semana 2?")
+            }
+            className="block w-full rounded border border-ops-border/60 bg-ops-bg-secondary p-2 text-left font-mono text-xs text-neutral-300 hover:border-ops-green hover:bg-ops-green/10"
+          >
+            What are the main objectives for Semana 2?
+          </button>
+          <button
+            onClick={() =>
+              setQuestion("What is the status of ADR-024?")
+            }
+            className="block w-full rounded border border-ops-border/60 bg-ops-bg-secondary p-2 text-left font-mono text-xs text-neutral-300 hover:border-ops-green hover:bg-ops-green/10"
+          >
+            What is the status of ADR-024?
+          </button>
+          <button
+            onClick={() =>
+              setQuestion("Explain the Ollama local worker architecture")
+            }
+            className="block w-full rounded border border-ops-border/60 bg-ops-bg-secondary p-2 text-left font-mono text-xs text-neutral-300 hover:border-ops-green hover:bg-ops-green/10"
+          >
+            Explain the Ollama local worker architecture
+          </button>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+function Stat({
+  label,
+  value,
+}: Readonly<{ label: string; value: string }>) {
+  return (
+    <div className="rounded border border-ops-border/60 p-2">
+      <div className="font-mono text-[10px] text-ops-gray">{label}</div>
+      <div className="mt-1 font-mono text-xs text-neutral-200">{value}</div>
     </div>
   );
 }
