@@ -11,6 +11,7 @@ import {
 import { createOarTextCompletionClient } from "./runtime/llm/oar-text-completion-client.js";
 import { InMemoryMemory } from "./runtime/memory/in-memory-memory.js";
 import { runReActStrategy } from "./runtime/strategies/react-engine.js";
+import { runPlanExecuteStrategy } from "./runtime/strategies/plan-execute-engine.js";
 import {
     meterPlannerLlmFireAndForget,
     meterRemotePlanWorkerFireAndForget,
@@ -194,15 +195,32 @@ export async function processIntent(
 
       const initialPrompt = `You are the Opsly OAR ReAct agent. Follow the JSON protocol in your instructions.\n\nUser task:\n${promptRaw}`;
 
-      const oarResult = await runReActStrategy(
-        tenantSlug,
-        sessionId,
-        initialPrompt,
-        actionPort,
-        memory,
-        llmClient,
-        { maxSteps },
-      );
+      // Mode System: Select strategy based on tenant mode
+      const tenantMode = typeof req.context.tenantMode === "string"
+        ? req.context.tenantMode.toLowerCase()
+        : "hacker";
+
+      const usesPlanExecute = tenantMode === "architect" || tenantMode === "developer";
+
+      const oarResult = usesPlanExecute
+        ? await runPlanExecuteStrategy(
+            tenantSlug,
+            sessionId,
+            initialPrompt,
+            actionPort,
+            memory,
+            llmClient,
+            { maxPlanSteps: maxSteps },
+          )
+        : await runReActStrategy(
+            tenantSlug,
+            sessionId,
+            initialPrompt,
+            actionPort,
+            memory,
+            llmClient,
+            { maxSteps },
+          );
 
       process.stdout.write(
         `${JSON.stringify({
