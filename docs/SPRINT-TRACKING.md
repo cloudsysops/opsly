@@ -1,7 +1,7 @@
 # Opsly — Sprint tracking
 
 > **Generado automáticamente** — fuente: [`docs/implementation/status.yaml`](implementation/status.yaml).
-> Generado: 2026-04-19T17:41:13.711Z
+> Generado: 2026-04-20T18:01:51.692Z
 
 ## Sprint 1: Approval Gate + Vertex AI
 
@@ -28,6 +28,7 @@ Day    Target  Actual
 2026-04-17    40     1
 2026-04-18    40     1
 2026-04-19    40     1
+2026-04-20    40     1
 ```
 
 ### Tasks

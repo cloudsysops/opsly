@@ -4,7 +4,7 @@
 
 | Campo | Valor |
 | --- | --- |
-| Generado (ISO) | 2026-04-19T17:41:13.658Z |
+| Generado (ISO) | 2026-04-20T18:01:51.635Z |
 | last_commit (YAML) | `Infinity` |
 | last_updated (YAML) | 2026-04-18T23:46:16.626Z |
 
@@ -67,4 +67,4 @@
 
 ---
 
-*Última generación local/CI: 2026-04-19T17:41:13.658Z*
+*Última generación local/CI: 2026-04-20T18:01:51.635Z*
