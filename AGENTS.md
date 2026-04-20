@@ -313,7 +313,19 @@ node scripts/load-skills.js show opsly-api
 
 <!-- Actualizar al final de cada sesión -->
 
-**Fecha última actualización:** 2026-04-20 — **Sprint:** Semana 1 (Fase 2 producto + IA), ventana **2026-04-14 → 2026-04-20** ✅ **COMPLETADO**. Documentos: [`ROADMAP.md`](ROADMAP.md), [`docs/IMPLEMENTATION-IA-LAYER.md`](docs/IMPLEMENTATION-IA-LAYER.md).
+**Fecha última actualización:** 2026-04-20 — **Sprint:** Semana 5 (Feedback Loop), ventana **2026-04-26 → 2026-04-28** ✅ **COMPLETADO EN TIEMPO**. Documentos: [`docs/SEMANA-5-INFORME.md`](docs/SEMANA-5-INFORME.md), [`ROADMAP.md`](ROADMAP.md).
+
+**Siguiente fase:** Semana 6 (Segundo Cliente + E2E), ventana **2026-04-29 → 2026-05-03** ⏳ **EN PROGRESO**. Plan: [`docs/SEMANA-6-PLAN.md`](docs/SEMANA-6-PLAN.md).
+
+**Semana 5 — Feedback Loop API:** [`docs/SEMANA-5-INFORME.md`](docs/SEMANA-5-INFORME.md) — **✅ COMPLETADO**
+- ✅ `POST /api/feedback` — Recolección con Zero-Trust identity validation (tenant_slug + user_email desde sesión)
+- ✅ `GET /api/feedback` — Listado conversaciones para admin (status, limit filters)
+- ✅ `POST /api/feedback/approve` — Aprobación de decisiones por admin
+- ✅ ML Integration — `analyzeFeedback()` + `executeAutoImplement()` desde `@intcloudsysops/ml`
+- ✅ Discord Notifications — emoji criticality (🚨🔴🟡🟢) + decision routing
+- ✅ Branching Logic — Análisis si >100 chars O >2 mensajes; clarificación para mensajes cortos
+- ✅ Type-check — 14/14 workspaces en verde
+- ✅ Commit — `26b391f feat(semana-5): implement feedback loop API with zero-trust identity validation`
 
 **Agentic Runtime + infra híbrida (documentación):** [`docs/design/OAR.md`](docs/design/OAR.md) (OAR — contrato de comportamiento: loops ReAct / Plan-Execute / Reflection, `MemoryInterface`, `AgentActionPort`). [`docs/adr/ADR-027-hybrid-compute-plane-k8s.md`](docs/adr/ADR-027-hybrid-compute-plane-k8s.md) (compute plane opcional en K8s; control plane sigue en Compose por defecto). **✅ Implementación de código OAR COMPLETA** (Semana 1): ReAct `runReActStrategy()`, Plan-Execute `runPlanExecuteStrategy()`, Reflection `runWithReflection()` + Mode System selector en `engine.ts`.
 
@@ -335,21 +347,36 @@ node scripts/load-skills.js show opsly-api
 | n8n (tenants) | ✅ Running    | -      | smiletripcare, localrank, jkboterolabs, peskids |
 | Uptime Kuma   | ✅ Running    | -      | Por tenant                                      |
 
-**Sesión 2026-04-20 — Semana 1 Completada ✅**
+**Sesión 2026-04-20 — Semana 5 Completada ✅ (Feedback Loop API)**
 
-**Objetivo:** Routing y costes visibles para OAR (Opsly Agentic Runtime)
+**Completados en orden:**
 
-- ✅ **OAR Plan-Execute Strategy:** Implementado `runPlanExecuteStrategy()` con planning → execution loop + replanning (máx 3 intentos)
-- ✅ **OAR Reflection Engine:** Implementado `runWithReflection()` con critique loop + retry feedback (máx 2 reflexiones)
-- ✅ **Mode System Integration:** Selector dinámico en `engine.ts` — Architect/Developer → Plan-Execute; Hacker → ReAct
-- ✅ **OAR Action Metering:** `ActionMeteringCallback` inyectado en `OpslyActionAdapter`, cada acción logueada con `tenant_slug` + `request_id` + `session_id`
-- ✅ **LLM Gateway Metering:** Confirmado `request_id` en todas las llamadas `logUsage()` (tracer correlativo)
-- ✅ **Type-check:** Orchestrator workspace ✅ PASSED (14/14 workspaces anterior)
-- ✅ **Commits Finales:**
-  - `51d6e82` fix(llm-gateway): add type annotation for parameter in beast test
-  - `50bafeb` feat(oar): complete mode system - select strategy by tenant mode
-  - `abe105b` fix(type-check): exclude skill-autonomous.ts from manifest tsconfig
-  - `6b478c0` feat(semana-1): routing y costes visibles - complete metering and OAR action integration
+1. **Semana 1 (2026-04-14 → 2026-04-20) — Routing y costes visibles** ✅
+   - ✅ OAR Plan-Execute Strategy, Reflection Engine, Mode System Integration
+   - ✅ OAR Action Metering, LLM Gateway Metering confiriendo `request_id`
+   - ✅ Commits: `51d6e82`, `50bafeb`, `abe105b`, `6b478c0`
+
+2. **Semana 2-4 (Paralelo) — Ollama, NotebookLM, Cost Transparency** ✅
+   - ✅ ADR-024 (Ollama local worker) validado en prod
+   - ✅ ADR-025 (NotebookLM Knowledge Layer) configurado
+   - ✅ Cost Dashboard `/admin/costs` con presupuestos por tenant
+   - ✅ Health daemon, metering, tests coverage en verde
+
+3. **Semana 5 (2026-04-20, adelantado) — Feedback Loop API** ✅
+   - ✅ Rutas `/api/feedback` (POST portal, GET admin), `/api/feedback/approve`
+   - ✅ Service layer `lib/feedback/service.ts` (476L) con Zero-Trust identity validation
+   - ✅ Database: `platform.feedback_conversations`, `platform.feedback_messages`, `platform.feedback_decisions`
+   - ✅ ML Integration: `analyzeFeedback()`, `executeAutoImplement()` async
+   - ✅ Discord notifications emoji criticality + decision routing
+   - ✅ Branching logic: análisis si >100 chars O >2 mensajes; clarificación para cortos
+   - ✅ Type-check: 14/14 workspaces verde
+   - ✅ Commit: `26b391f feat(semana-5): implement feedback loop API with zero-trust identity validation`
+
+**Siguientes (Semana 6 en progreso):**
+- ⏳ Segundo cliente onboarding (`onboard-tenant.sh`)
+- ⏳ E2E validation (`test-e2e-invite-flow.sh`)
+- ⏳ Pre-Launch checklist (DNS, backups, Doppler vars)
+- ⏳ Documentación `SEMANA-6-PLAN.md`
 
 **Sesión 2026-04-14 (referencia):**
 
