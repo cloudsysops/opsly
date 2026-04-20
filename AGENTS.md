@@ -313,9 +313,9 @@ node scripts/load-skills.js show opsly-api
 
 <!-- Actualizar al final de cada sesión -->
 
-**Fecha última actualización:** 2026-04-18 — **Sprint:** Semana 1 (Fase 2 producto + IA), ventana **2026-04-14 → 2026-04-20**. Documentos: [`ROADMAP.md`](ROADMAP.md), [`docs/IMPLEMENTATION-IA-LAYER.md`](docs/IMPLEMENTATION-IA-LAYER.md).
+**Fecha última actualización:** 2026-04-20 — **Sprint:** Semana 1 (Fase 2 producto + IA), ventana **2026-04-14 → 2026-04-20** ✅ **COMPLETADO**. Documentos: [`ROADMAP.md`](ROADMAP.md), [`docs/IMPLEMENTATION-IA-LAYER.md`](docs/IMPLEMENTATION-IA-LAYER.md).
 
-**Agentic Runtime + infra híbrida (documentación):** [`docs/design/OAR.md`](docs/design/OAR.md) (OAR — contrato de comportamiento: loops ReAct / Plan-Execute / Reflection, `MemoryInterface`, `AgentActionPort`). [`docs/adr/ADR-027-hybrid-compute-plane-k8s.md`](docs/adr/ADR-027-hybrid-compute-plane-k8s.md) (compute plane opcional en K8s; control plane sigue en Compose por defecto). Implementación de código OAR: pendiente (skeleton en `apps/orchestrator/src/runtime/` según OAR §7).
+**Agentic Runtime + infra híbrida (documentación):** [`docs/design/OAR.md`](docs/design/OAR.md) (OAR — contrato de comportamiento: loops ReAct / Plan-Execute / Reflection, `MemoryInterface`, `AgentActionPort`). [`docs/adr/ADR-027-hybrid-compute-plane-k8s.md`](docs/adr/ADR-027-hybrid-compute-plane-k8s.md) (compute plane opcional en K8s; control plane sigue en Compose por defecto). **✅ Implementación de código OAR COMPLETA** (Semana 1): ReAct `runReActStrategy()`, Plan-Execute `runPlanExecuteStrategy()`, Reflection `runWithReflection()` + Mode System selector en `engine.ts`.
 
 **Worker autónomo + Ollama local:** `scripts/ensure-ollama-local.sh`, unidad `infra/systemd/opsly-ollama.service`, `OPSLY_ENSURE_OLLAMA=1` en `.env.local` (carga antes del arranque en `run-worker-with-nvm.sh`). Runbook [`docs/AGENTS-AUTONOMOUS-RUNBOOK.md`](docs/AGENTS-AUTONOMOUS-RUNBOOK.md), ADR-024.
 
@@ -330,19 +330,34 @@ node scripts/load-skills.js show opsly-api
 | Admin         | ✅ Running    | 3001   | `admin.ops.smiletripcare.com`                   |
 | Portal        | ✅ Running    | 3002   | `portal.ops.smiletripcare.com`                  |
 | MCP           | ✅ Running    | 3003   | Herramientas disponibles                        |
-| Orchestrator  | ⚠️ Restarting | 3011   | Esperando rebuild CI (falta ML)                 |
+| Orchestrator  | ✅ Running    | 3011   | OAR + Mode System COMPLETO (Semana 1)           |
 | Redis         | ✅ Running    | 6379   | Sin password (bug compose)                      |
 | n8n (tenants) | ✅ Running    | -      | smiletripcare, localrank, jkboterolabs, peskids |
 | Uptime Kuma   | ✅ Running    | -      | Por tenant                                      |
 
-**Sesión 2026-04-14 (hoy):**
+**Sesión 2026-04-20 — Semana 1 Completada ✅**
+
+**Objetivo:** Routing y costes visibles para OAR (Opsly Agentic Runtime)
+
+- ✅ **OAR Plan-Execute Strategy:** Implementado `runPlanExecuteStrategy()` con planning → execution loop + replanning (máx 3 intentos)
+- ✅ **OAR Reflection Engine:** Implementado `runWithReflection()` con critique loop + retry feedback (máx 2 reflexiones)
+- ✅ **Mode System Integration:** Selector dinámico en `engine.ts` — Architect/Developer → Plan-Execute; Hacker → ReAct
+- ✅ **OAR Action Metering:** `ActionMeteringCallback` inyectado en `OpslyActionAdapter`, cada acción logueada con `tenant_slug` + `request_id` + `session_id`
+- ✅ **LLM Gateway Metering:** Confirmado `request_id` en todas las llamadas `logUsage()` (tracer correlativo)
+- ✅ **Type-check:** Orchestrator workspace ✅ PASSED (14/14 workspaces anterior)
+- ✅ **Commits Finales:**
+  - `51d6e82` fix(llm-gateway): add type annotation for parameter in beast test
+  - `50bafeb` feat(oar): complete mode system - select strategy by tenant mode
+  - `abe105b` fix(type-check): exclude skill-autonomous.ts from manifest tsconfig
+  - `6b478c0` feat(semana-1): routing y costes visibles - complete metering and OAR action integration
+
+**Sesión 2026-04-14 (referencia):**
 
 - ✅ MCP verificado corriendo en puerto 3003 con tools
 - ✅ Traefik reiniciado con puertos 80/443 expuestos
 - ✅ Admin + Portal funcionando
 - ✅ .env VPS actualizado desde Doppler
 - ⏳ API error: `[id] !== [ref]` — carpeta duplicada en imagen GHCR (tenants/[ref] vs [id])
-- ⏳ Orchestrator: espera rebuild CI para incluir packages/ml
 - ✅ Fix commiteado: `llm-gateway` en orchestrator Dockerfile
 
 **ADR-024 (Ollama worker):** [`docs/adr/ADR-024-ollama-local-worker-primary.md`](docs/adr/ADR-024-ollama-local-worker-primary.md) — Pendiente ejecución en opslyquantum (Mac 2011).
@@ -879,7 +894,9 @@ _Auditoría TypeScript y correcciones de código (2026-04-05, sesión agente Cla
 
 <!-- Una sola tarea concreta. Actualizar al final de cada sesión -->
 
-### Ejecutar Plan Ollama Worker (ADR-024) — Sesión siguiente
+**Semana 2 (2026-04-21 → 2026-04-27):** Infraestructura IA (Ollama + NotebookLM Knowledge Layer)
+
+### Ejecutar Plan Ollama Worker (ADR-024) — Sesión siguiente (Semana 2)
 
 ```bash
 # FASE 1: Configurar Doppler prd
