@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-04-20T04:57:38Z",
-  "totalFiles": 177,
+  "lastIndexed": "2026-04-20T22:22:10Z",
+  "totalFiles": 181,
   "files": [
     "ACTIVE-PROMPT.md",
     "ADMIN-ECOSYSTEM.md",
@@ -105,6 +105,7 @@
     "OAR.md",
     "OBSERVABILITY.md",
     "OBSIDIAN-README.md",
+    "OLLAMA-DEPLOYMENT.md",
     "OPENCLAW-ARCHITECTURE.md",
     "OPENCLAW-TEAM-PLAN.md",
     "OPS-CLEANUP-PROCEDURES.md",
@@ -141,6 +142,9 @@
     "SEMANA-1-INFORME.md",
     "SEMANA-2-INFORME.md",
     "SEMANA-3-INFORME.md",
+    "SEMANA-4-INFORME.md",
+    "SEMANA-5-INFORME.md",
+    "SEMANA-6-PLAN.md",
     "SESSION-GIT-SYNC.md",
     "SETUP-NOTION-MCP.md",
     "SETUP-SUDOERS-CLOUDSYSOPS.md",
