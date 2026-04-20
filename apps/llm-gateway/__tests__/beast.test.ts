@@ -88,7 +88,7 @@ describe("LLM Gateway Beast Mode", () => {
         }
       ).checkProvider("anthropic", check);
 
-      const healthCall = setEx.mock.calls.find((c) => String(c[0]).endsWith(":health"));
+      const healthCall = setEx.mock.calls.find((c: unknown[]) => String(c[0]).endsWith(":health"));
       expect(healthCall).toBeDefined();
       const payload = JSON.parse(String(healthCall?.[2])) as { status: string; consecutive_failures: number };
       expect(payload.status).toBe("down");
