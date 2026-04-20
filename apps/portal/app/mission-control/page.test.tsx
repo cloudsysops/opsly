@@ -39,7 +39,7 @@ describe("Mission Control auth regression", () => {
       },
     } as never);
 
-    vi.mocked(useSWR).mockImplementation((key) => {
+    vi.mocked(useSWR).mockImplementation((key: string | null) => {
       if (key === "mission-control-access-token") {
         return {
           data: undefined,
@@ -73,7 +73,7 @@ describe("Mission Control auth regression", () => {
       },
     } as never);
 
-    vi.mocked(useSWR).mockImplementation((key) => {
+    vi.mocked(useSWR).mockImplementation((key: string | null) => {
       if (key === "mission-control-access-token") {
         return {
           data: "valid-token",

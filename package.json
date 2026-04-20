@@ -1,6 +1,7 @@
 {
   "name": "intcloudsysops",
   "private": true,
+  "packageManager": "npm@10.5.0",
   "workspaces": [
     "apps/*",
     "apps/agents/notebooklm",
@@ -80,7 +81,7 @@
     "lint-staged": "^15.5.1",
     "nodemon": "^3.1.9",
     "prettier": "^3.8.2",
-    "turbo": "^1.13.4",
+    "turbo": "^2.9.6",
     "typescript": "^5.7.3",
     "yaml": "^2.7.0"
   },
@@ -104,5 +105,9 @@
   "engines": {
     "node": ">=20.0.0",
     "npm": ">=10.0.0"
+  },
+  "dependencies": {
+    "@redis/client": "^1.6.1",
+    "js-tiktoken": "^1.0.21"
   }
 }

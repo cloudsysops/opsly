@@ -14,7 +14,7 @@ test.describe("Portal — public pages", () => {
     page,
   }) => {
     const errors: string[] = [];
-    page.on("console", (msg) => {
+    page.on("console", (msg: any) => {
       if (msg.type() === "error") errors.push(msg.text());
     });
     await page.goto("/login");
@@ -22,12 +22,12 @@ test.describe("Portal — public pages", () => {
     await expect(page.getByLabel(/email/i)).toBeVisible();
     await expect(page.getByLabel(/contraseña/i)).toBeVisible();
     await expect(page.getByRole("button", { name: /entrar/i })).toBeVisible();
-    expect(errors.filter((e) => !e.includes("favicon"))).toHaveLength(0);
+    expect(errors.filter((e) => !e.includes("favicon")).length).toBe(0);
   });
 
   test("invite page renders password form", async ({ page }) => {
     const errors: string[] = [];
-    page.on("console", (msg) => {
+    page.on("console", (msg: any) => {
       if (msg.type() === "error") errors.push(msg.text());
     });
     await page.goto("/invite/test-token");
@@ -35,7 +35,7 @@ test.describe("Portal — public pages", () => {
     await expect(page.getByLabel("Nueva contraseña")).toBeVisible();
     await expect(page.getByLabel("Confirmar contraseña")).toBeVisible();
     await expect(page.getByRole("button", { name: /activar/i })).toBeVisible();
-    expect(errors.filter((e) => !e.includes("favicon"))).toHaveLength(0);
+    expect(errors.filter((e) => !e.includes("favicon")).length).toBe(0);
   });
 
   test("invite page submits empty form without crash", async ({ page }) => {

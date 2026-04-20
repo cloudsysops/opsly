@@ -1,4 +1,4 @@
-import { defineConfig, devices } from "@playwright/test";
+import { defineConfig } from "@playwright/test";
 
 const BASE_URL = process.env.PORTAL_URL ?? "http://localhost:3002";
 
@@ -17,7 +17,7 @@ export default defineConfig({
   projects: [
     {
       name: "chromium",
-      use: { ...devices["Desktop Chrome"] },
+      use: { browserName: "chromium" },
     },
   ],
   webServer: process.env.CI
