@@ -3,6 +3,7 @@ import { buildConsciousAppendix } from "./agents/conscious-layer.js";
 import { createDefaultToolRegistry } from "./agents/tools/registry.js";
 import { MAX_PLANNER_ACTIONS } from "./constants-planner.js";
 import type { Queue } from "bullmq";
+import { logUsage } from "@intcloudsysops/llm-gateway";
 import {
   type OarEnqueueJobPayload,
   OpslyActionAdapter,
@@ -163,6 +164,25 @@ export async function processIntent(
         {
           toolsExecutePath: "/api/tools/execute",
           defaultQueueKey: "default",
+          requestId: correlationId,
+          sessionId,
+          meteringCallback: async (params) => {
+            try {
+              await logUsage({
+                tenant_slug: params.tenantSlug,
+                model: `oar_action:${params.actionName}`,
+                tokens_input: 0,
+                tokens_output: 0,
+                cost_usd: 0,
+                cache_hit: false,
+                request_id: params.requestId,
+                session_id: params.sessionId,
+                created_at: new Date().toISOString(),
+              });
+            } catch {
+              // Silently ignore metering errors
+            }
+          },
         },
       );
       const llmClient = createOarTextCompletionClient({

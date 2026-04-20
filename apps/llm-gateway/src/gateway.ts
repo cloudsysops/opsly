@@ -199,6 +199,7 @@ export async function v3Pipeline(req: LLMRequest): Promise<LLMResponse> {
     cost_usd: response.cost_usd,
     cache_hit: response.cache_hit,
     session_id: req.session_id,
+    request_id: req.request_id,
     created_at: new Date().toISOString(),
     quality_score: q.score,
   });

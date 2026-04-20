@@ -7,7 +7,7 @@
     "dev": "pnpm dev",
     "build": "pnpm build",
     "start": "pnpm start",
-    "type-check": "pnpm typecheck",
+    "type-check": "tsc --noEmit",
     "lint": "pnpm lint",
     "test": "pnpm test"
   },

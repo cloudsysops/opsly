@@ -9,6 +9,15 @@ import type { Queue } from "bullmq";
 
 import type { AgentActionPort, ToolResult } from "../interfaces/agent-action-port.js";
 
+/** Callback para metering de acciones ejecutadas. */
+export type ActionMeteringCallback = (params: {
+  tenantSlug: string;
+  actionName: string;
+  success: boolean;
+  requestId?: string;
+  sessionId?: string;
+}) => Promise<void> | void;
+
 /** Herramientas consideradas seguras para ejecución síncrona vía API (MVP). */
 export const DEFAULT_SAFE_SYNC_TOOLS: readonly string[] = [
   "fs_read",
@@ -43,6 +52,12 @@ export interface OpslyActionAdapterOptions {
   defaultQueueKey?: string;
   /** Lista extra de acciones síncronas además del prefijo `http_`. @default DEFAULT_SAFE_SYNC_TOOLS */
   safeSyncTools?: readonly string[];
+  /** Callback para metering de acciones (p. ej. logUsage). */
+  meteringCallback?: ActionMeteringCallback;
+  /** Request ID para trazabilidad (de correlationId del job). */
+  requestId?: string;
+  /** Session ID del contexto OAR (de sessionId del job). */
+  sessionId?: string;
 }
 
 function normalizeBaseUrl(baseUrl: string): string {
@@ -142,6 +157,9 @@ function observationFromAxiosError(err: AxiosError<unknown>): string {
  */
 export class OpslyActionAdapter implements AgentActionPort {
   private readonly safeSyncTools: readonly string[];
+  private readonly meteringCallback?: ActionMeteringCallback;
+  private readonly requestId?: string;
+  private readonly sessionId?: string;
 
   constructor(
     private readonly apiConfig: OpslyActionAdapterApiConfig,
@@ -149,6 +167,9 @@ export class OpslyActionAdapter implements AgentActionPort {
     private readonly options: OpslyActionAdapterOptions = {},
   ) {
     this.safeSyncTools = options.safeSyncTools ?? DEFAULT_SAFE_SYNC_TOOLS;
+    this.meteringCallback = options.meteringCallback;
+    this.requestId = options.requestId;
+    this.sessionId = options.sessionId;
   }
 
   async executeAction(
@@ -161,18 +182,41 @@ export class OpslyActionAdapter implements AgentActionPort {
       sanitized = sanitizeArgs(args);
     } catch (e) {
       const msg = unknownToErrorMessage(e);
-      return {
+      const result: ToolResult = {
         success: false,
         error: msg,
         observation: msg,
       };
+      await this.meterAction(tenantSlug, actionName, false);
+      return result;
     }
 
+    let result: ToolResult;
     if (isSyncRoute(actionName, this.safeSyncTools)) {
-      return this.executeViaApi(tenantSlug, actionName, sanitized);
+      result = await this.executeViaApi(tenantSlug, actionName, sanitized);
+    } else {
+      result = await this.enqueueJob(tenantSlug, actionName, sanitized);
     }
 
-    return this.enqueueJob(tenantSlug, actionName, sanitized);
+    await this.meterAction(tenantSlug, actionName, result.success);
+    return result;
+  }
+
+  private async meterAction(tenantSlug: string, actionName: string, success: boolean): Promise<void> {
+    if (this.meteringCallback === undefined) {
+      return;
+    }
+    try {
+      await this.meteringCallback({
+        tenantSlug,
+        actionName,
+        success,
+        requestId: this.requestId,
+        sessionId: this.sessionId,
+      });
+    } catch {
+      // Silently ignore metering errors to avoid breaking the action execution
+    }
   }
 
   private async executeViaApi(

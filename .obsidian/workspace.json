@@ -1,0 +1,218 @@
+{
+  "main": {
+    "id": "beecbad47044a8fe",
+    "type": "split",
+    "children": [
+      {
+        "id": "25da231bb977afbf",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "b49d7cadc22b48ed",
+            "type": "leaf",
+            "state": {
+              "type": "graph",
+              "state": {},
+              "icon": "lucide-git-fork",
+              "title": "Graph view"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "47cd69f672089f0b",
+    "type": "split",
+    "children": [
+      {
+        "id": "a2d95d541f396505",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "e5a8eaef0e6bfac2",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Files"
+            }
+          },
+          {
+            "id": "65a6e9534af61225",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Search"
+            }
+          },
+          {
+            "id": "9b3eb53b00e0a942",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Bookmarks"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "d799161bbc89abff",
+    "type": "split",
+    "children": [
+      {
+        "id": "9c7a197678e5b531",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "34b9b1aee5065565",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Backlinks"
+            }
+          },
+          {
+            "id": "2b86a1ec4ee8eba0",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Outgoing links"
+            }
+          },
+          {
+            "id": "7b320812c6dbf580",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
+            }
+          },
+          {
+            "id": "34f1919ff81f02fd",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "All properties"
+            }
+          },
+          {
+            "id": "42cd829dc27d88c7",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Outline"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
+      "bases:Create new base": false
+    }
+  },
+  "active": "b49d7cadc22b48ed",
+  "lastOpenFiles": [
+    "node_modules/langfuse-core/lib/index.mjs.map",
+    "node_modules/langfuse-core/lib/index.mjs",
+    "node_modules/langfuse-core/lib/index.d.ts",
+    "node_modules/langfuse-core/lib/index.d.mts",
+    "node_modules/langfuse-core/lib/index.cjs.js.map",
+    "node_modules/langfuse-core/lib/index.cjs.js",
+    "node_modules/langfuse-core/lib",
+    "node_modules/langfuse-core/package.json",
+    "node_modules/langfuse-core/README.md",
+    "node_modules/langfuse-core/LICENSE",
+    "node_modules/langfuse-core",
+    "node_modules/langfuse/lib/index.mjs.map",
+    "node_modules/langfuse/README.md",
+    "docs/runbooks/VPS-DISK-SECURITY-SCAN.md",
+    "docs/runbooks/e2e-hybrid-write.md",
+    "docs/HYBRID-OPSLY-ADMIN.md",
+    "docs/SSH-USERS-FOR-AGENTS.md",
+    "docs/RTK.md",
+    "docs/DECEPTICON-WORKER.md",
+    "node_modules/turbo/node_modules/turbo-darwin-64/README.md",
+    "node_modules/@reduxjs/toolkit/node_modules/immer/readme.md",
+    "node_modules/@reduxjs/toolkit/README.md",
+    "node_modules/rc/node_modules/strip-json-comments/readme.md",
+    "node_modules/rc/node_modules/ini/README.md",
+    "node_modules/rc/README.md",
+    "node_modules/@vercel/oidc/docs/classes/RefreshAccessTokenFailedError.md",
+    "node_modules/@vercel/oidc/docs/classes/AccessTokenMissingError.md",
+    "node_modules/@vercel/oidc/docs/README.md",
+    "node_modules/@vercel/oidc/README.md",
+    "node_modules/@vercel/oidc/CHANGELOG.md",
+    "node_modules/@opentelemetry/api/README.md",
+    "apps/mission-control/node_modules/vitest/node_modules/@vitest/mocker/README.md",
+    "apps/mission-control/node_modules/@vitest/spy/README.md",
+    "apps/mission-control/node_modules/@vitest/snapshot/README.md",
+    "apps/mission-control/node_modules/@vitest/runner/README.md",
+    "apps/mission-control/node_modules/@vitest/expect/README.md"
+  ]
+}

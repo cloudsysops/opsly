@@ -3,7 +3,7 @@
  * Decide qué skills cargar basándose en el contexto de la query
  */
 
-import { findSkills, suggestChain, getSkillPath } from "../../scripts/skill-finder.js";
+import { findSkills, suggestChain, getSkillPath } from "../../../scripts/skill-finder.js";
 import { readFileSync, existsSync } from "fs";
 import { join } from "path";
 
