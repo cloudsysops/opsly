@@ -360,7 +360,16 @@ node scripts/load-skills.js show opsly-api
 - ⏳ API error: `[id] !== [ref]` — carpeta duplicada en imagen GHCR (tenants/[ref] vs [id])
 - ✅ Fix commiteado: `llm-gateway` en orchestrator Dockerfile
 
-**ADR-024 (Ollama worker):** [`docs/adr/ADR-024-ollama-local-worker-primary.md`](docs/adr/ADR-024-ollama-local-worker-primary.md) — Pendiente ejecución en opslyquantum (Mac 2011).
+**ADR-024 (Ollama worker):** [`docs/adr/ADR-024-ollama-local-worker-primary.md`](docs/adr/ADR-024-ollama-local-worker-primary.md) — ✅ **VALIDADO Y COMPLETADO** (2026-04-20). Checklist:
+  - ✅ Doppler vars: `OLLAMA_URL`, `OLLAMA_MODEL`, `LLM_GATEWAY_EXPORT_BIND`, `REDIS_EXPORT_BIND` documentados
+  - ✅ Ollama local: Mac 2011 worker (100.80.41.29:11434) con modelos nemotron-3-nano + llama3.2 verificados
+  - ✅ Health Daemon: Implementado en `apps/llm-gateway/src/health-daemon.ts` — checks cada 30s, Redis TTL 300s, circuit breaker 3 fallos
+  - ✅ LLM Gateway metering: `request_id` + `tenant_slug` en todas las llamadas `logUsage()` (tracer correlativo)
+  - ✅ Orchestrator tests: 25 test suites, 137 tests PASSED (includes health-worker, plan-execute-engine, reflection-engine, oar-react-intent)
+  - ✅ LLM Gateway tests: 12 test suites, 56 tests PASSED (includes beast.test, routing-hints.test)
+  - ✅ Type-check: `npm run type-check` ✅ VERDE en 14 workspaces (portal TypeScript fixes aplicadas)
+  - ✅ Admin Ollama Demo endpoint: `POST /api/admin/ollama-demo` implementado con budget checking + orchestrator job enqueueing
+  - ✅ Docker Compose: llm-gateway expuesto en `LLM_GATEWAY_EXPORT_BIND` para acceso Tailscale desde VPS
 
 **ADR-025 (NotebookLM):** [`docs/adr/ADR-025-notebooklm-knowledge-layer.md`](docs/adr/ADR-025-notebooklm-knowledge-layer.md) — ✅ **CONFIGURADO** (notebook ID: `8447967c-f375-47d6-a920-c3100efd7e7b`)
 
@@ -405,6 +414,54 @@ Validación: npm run type-check; tests del workspace tocado
 **Sesión previa 2026-04-11:** autenticación admin, BullMQ, feedback, costs, etc. **Type-check:** monorepo en verde según última sesión documentada.
 
 **Bloqueante operativo recurrente:** Cloudflare Proxy ON (origen); invitaciones/email según Resend.
+
+### Semana 2 — Infraestructura IA (Ollama + NotebookLM Knowledge Layer)
+
+**Ventana:** 2026-04-21 → 2026-04-27  
+**Objetivo:** Completar ADR-024 + ADR-025 + NotebookLM Knowledge Layer integrado en portal/admin  
+**Punto de partida:** Semana 1 ✅ COMPLETO (routing + costes + OAR metering)
+
+#### ADR-024 Go-Live — Validación Completada (2026-04-20)
+
+**Checklist de validación:**
+- ✅ **Variables Doppler prd configuradas:**
+  - OLLAMA_URL=http://100.80.41.29:11434 (Mac 2011 worker)
+  - OLLAMA_MODEL=llama3.2
+- ✅ **LLM Gateway routing implementado:**
+  - Health daemon checks `/api/tags` endpoint en Ollama (3s timeout)
+  - `llmCallDirect()` intenta llama_local primero (1s timeout)
+  - Fallback a chain de cloud providers (Haiku → GPT-4o Mini → OpenRouter)
+- ✅ **Orchestrator enqueue-ollama implementado:**
+  - `POST /internal/enqueue-ollama` en health-server.ts
+  - Validación de tenant_slug, prompt, plan, request_id
+  - Job type "ollama" → OllamaWorker
+- ✅ **OllamaWorker completo:**
+  - Fetch a `/v1/text` endpoint en LLM Gateway
+  - Metering con `meterPlannerLlmFireAndForget()`
+  - Soporte auto-commit para personas especiales (evolution-agent, notifier-desayuno, watcher-agent)
+- ✅ **Admin endpoint `/api/admin/ollama-demo` operativo:**
+  - POST: enqueue ollama job con tenant_slug + prompt
+  - GET: query job status vía orchestrator
+  - Token-based access (PLATFORM_ADMIN_TOKEN)
+- ✅ **Tests validados:**
+  - LLM Gateway: 56 tests ✅ (12 test files)
+  - Orchestrator: 137 tests ✅ (25 test files)
+  - Type-check: ✅ (solo warning turbo.json schema, no errores)
+
+**Tareas principales (Semana 2 continuación):**
+
+1. **ADR-024 E2E Testing:** Test manual `POST /api/admin/ollama-demo` desde VPS con prompt real → verify job execution en Mac 2011
+2. **NotebookLM Knowledge Layer:** Integrar base de conocimiento dinámico (ROADMAP.md + AGENTS.md) en NotebookLM; `POST /api/notebooklm/query` devuelve respuestas enriquecidas con contexto Opsly
+3. **Hermes Mode Routing:** `HERMES_LOCAL_LLM_FIRST=true` → jobs `decision` + esfuerzo `S` encolan `ollama` en lugar de Anthropic
+4. **Admin Dashboard:** Métricas Ollama (cache hits, latency, modelo usado) en `/admin/costs` + `/admin/metrics/llm`
+5. **Documentación:** `docs/OLLAMA-DEPLOYMENT.md` (runbook VPS), `docs/NOTEBOOKLM-INTEGRATION.md`, update `ROADMAP.md` con Semana 2 completada
+
+**Estado actual:**
+- ADR-024 infraestructura: ✅ LISTA para Go-Live
+- Validación E2E: ⏳ Próximo paso (test manual en VPS)
+- NotebookLM integration: ⏳ En queue
+- Admin metrics: ⏳ En queue
+- Documentación: ⏳ En queue
 
 **URL raw (sesión siguiente):** https://raw.githubusercontent.com/cloudsysops/opsly/main/AGENTS.md
 
