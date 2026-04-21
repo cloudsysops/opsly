@@ -1,0 +1,23 @@
+{
+  "name": "@intcloudsysops/ai-evolution",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch src/index.js",
+    "start": "node src/index.js",
+    "build": "tsc",
+    "type-check": "tsc --noEmit",
+    "evolution:run": "node src/index.js run",
+    "evolution:reflect": "node src/reflection/engine.js",
+    "evolution:skills": "node src/skills/engine.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "typescript": "^5.7.2"
+  }
+}
