@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-04-21T04:48:17Z",
-  "totalFiles": 181,
+  "lastIndexed": "2026-04-21T14:19:03Z",
+  "totalFiles": 182,
   "files": [
     "ACTIVE-PROMPT.md",
     "ADMIN-ECOSYSTEM.md",
@@ -154,6 +154,7 @@
     "SPRINT-TRACKING.md",
     "SSH-COMMANDS-LOCALRANK.md",
     "SSH-USERS-FOR-AGENTS.md",
+    "SUPER-AGENT-SHADOW-DEPLOY.md",
     "SUPERAGENTS-BOOTSTRAP.md",
     "TAILSCALE-NOMENCLATURA.md",
     "TENANT-TESTING-GUIDE.md",
