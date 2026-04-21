@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-04-21T15:04:58Z",
-  "totalFiles": 207,
+  "lastIndexed": "2026-04-21T15:13:39Z",
+  "totalFiles": 208,
   "files": [
     "2026-04-21.md",
     "6xk2xhn5f8hcllwj3npzaik36lqycdg0y3xw06lo.md",
@@ -34,6 +34,7 @@
     "ADR-025-token-optimization-ollama-primary.md",
     "ADR-026-tenant-context-postgres-first.md",
     "ADR-027-hybrid-compute-plane-k8s.md",
+    "AGENT-HOOKS-OBSIDIAN-NOTEBOOKLM-N8N.md",
     "AGENTS-ASSIGNMENTS.md",
     "AGENTS-AUTONOMOUS-RUNBOOK.md",
     "AGENTS-GLOBAL-CONTEXT.md",

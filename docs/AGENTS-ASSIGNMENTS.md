@@ -1,7 +1,7 @@
 # Opsly — Agent assignments
 
 > **Generado automáticamente** — fuente: [`docs/implementation/status.yaml`](implementation/status.yaml).
-> Generado: 2026-04-20T23:33:20.541Z
+> Generado: 2026-04-21T18:03:11.834Z
 
 Ver responsabilidades y flujos en [`docs/AGENTS-ORCHESTRATION.md`](AGENTS-ORCHESTRATION.md).
 

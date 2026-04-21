@@ -4,7 +4,7 @@
 
 project: Opsly
 last_commit: f0c3edd
-last_updated: "2026-04-20T23:33:20.237Z"
+last_updated: '2026-04-20T23:33:20.237Z'
 sprints:
   - number: 1
     name: Approval Gate + Vertex AI
@@ -43,6 +43,10 @@ sprints:
           actual: 1
           target: 40
         - date: '2026-04-20'
+          completed: 1
+          actual: 1
+          target: 40
+        - date: '2026-04-21'
           completed: 1
           actual: 1
           target: 40
