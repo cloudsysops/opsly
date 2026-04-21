@@ -1,0 +1,22 @@
+{
+  "name": "opsly-skill-creator",
+  "version": "1.0.0",
+  "description": "Crear, mejorar y evaluar skills para el ecosistema Opsly. Usar cuando se identifique un proceso repetitivo que debería automatizarse, cuando un agente quiera capturar un workflow como skill, o cuando se diga 'crear skill', 'nueva skill', 'turn this into a skill', 'automatizar proceso'. También usar cuando hallazgos de QA/audit sugieran la necesidad de un proceso estándar.",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "intent": { "type": "string", "description": "Qué debería hacer la skill" },
+      "source": { "type": "string", "description": "De dónde viene la idea: conversation, qa-audit, agent-discovery, user-request" },
+      "existingSkill": { "type": "string", "description": "Nombre de skill existente si es mejora" }
+    },
+    "additionalProperties": true
+  },
+  "outputSchema": {
+    "type": "object",
+    "properties": {
+      "skillName": { "type": "string" },
+      "skillPath": { "type": "string" },
+      "registered": { "type": "boolean" }
+    }
+  }
+}

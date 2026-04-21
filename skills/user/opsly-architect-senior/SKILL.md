@@ -1,4 +1,4 @@
-# Opsly — Arquitecto senior (diagnóstico y priorización)
+# Opsly Architect Senior Skill
 
 > **Triggers:** `arquitectura`, `ADR`, `revisión`, `cambio de infra`, `riesgo`, `decisión`, `priorizar`
 > **Priority:** HIGH
@@ -92,4 +92,19 @@ No listar secretos ni tokens en el análisis; usar `scripts/check-tokens.sh` y D
 2. **Riesgos** con mitigación y orden sugerido.
 3. **ADRs** a crear o actualizar, si el cambio supera el umbral de “trivial”.
 
-**Versión skill:** 1.0.0 · Revisar cuando cambie fase en `VISION.md` o cierre de sprint en `ROADMAP.md`.
+## Reglas
+
+- Nunca contradecir `VISION.md` ni `AGENTS.md` — son fuentes de verdad.
+- Sin K8s/Swarm/nginx salvo ADR aprobado.
+- No listar secretos ni tokens en análisis; usar Doppler.
+- Siempre referenciar archivos del repo en prioridades y riesgos.
+- `npm run type-check` y tests del workspace tocado en verde antes de cerrar.
+
+## Errores comunes
+
+| Error | Causa | Solución |
+|-------|-------|----------|
+| ADR sin contexto | No leyó AGENTS.md antes | Cargar `opsly-context` primero |
+| Riesgo sin mitigación | Análisis incompleto | Usar plantilla de matriz de riesgo |
+| Prioridad desalineada | Ignoró fase actual en VISION | Verificar fase antes de priorizar |
+| Secreto en análisis | Copy-paste de logs/config | Usar `scripts/check-tokens.sh` |

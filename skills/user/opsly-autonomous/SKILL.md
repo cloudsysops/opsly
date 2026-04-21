@@ -1,8 +1,12 @@
-# Opsly Autonomous Skill — Sistema de Auto-Activación
+# Opsly Autonomous Skill
 
 > **Triggers:** `autónomo`, `autonomous`, `godmode`, `auto`, `self-healing`, `auto-fix`, `auto-ejecutar`, `sin preguntar`, `ejecutar solo`
 > **Priority:** CRITICAL
-> **Modo:** NO CONFIRMAR — Decide SOLO qué skills cargar basándose en la query del usuario
+> **Skills relacionados:** todos los skills de Opsly
+
+## Cuándo usar
+
+Cuando el agente debe operar en modo autónomo: decidir y cargar skills sin intervención humana, basándose en análisis de la query del usuario. Modo NO CONFIRMAR — analizar, decidir, actuar.
 
 ## Sistema de Detección de Contexto
 

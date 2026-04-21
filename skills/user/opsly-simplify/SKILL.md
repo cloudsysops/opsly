@@ -1,14 +1,19 @@
-# opsly-simplify: Docker & Docker Compose Optimization
+# Opsly Simplify Skill
 
 > **Triggers:** `docker`, `compose`, `optimización`, `yaml`, `dockerfile`, `healthcheck`, `memory`
 > **Priority:** LOW
 > **Skills relacionados:** `opsly-bash`, `opsly-quantum`
 
-## Overview
+## Cuándo usar
 
-Systematic code simplification and optimization for opsly's Docker and docker-compose configuration. Identifies and fixes patterns that create maintenance burden, waste resources, or duplicate configuration.
+Al optimizar Dockerfiles y docker-compose.yaml del monorepo: multi-stage builds, YAML anchors, resource limits, healthchecks, o eliminación de configuración duplicada.
 
-**Git source:** `skills/user/opsly-simplify/SKILL.md`
+## Reglas
+
+- Siempre validar con `docker-compose config` después de cambios YAML.
+- No crear anchors para configuración que aparece una sola vez.
+- Todos los servicios deben tener memory limits para prevenir OOM.
+- Runner stages no deben repetir `npm ci/install` — copiar desde builder.
 
 ---
 

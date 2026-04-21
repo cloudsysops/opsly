@@ -56,10 +56,11 @@ source scripts/skill-hooks.sh
 skill_autoload "mi query"
 ```
 
-### Índice de Skills (v2.0)
+### Índice de Skills (v2.1)
 
 | Priority | Skill | Triggers | Cross-Refs |
 |----------|-------|----------|------------|
+| CRITICAL | `opsly-skill-creator` | crear skill, nueva skill, automatizar proceso, capturar workflow | quantum, context, autonomous |
 | CRITICAL | `opsly-context` | sesión, inicio, contexto | quantum, architect |
 | CRITICAL | `opsly-quantum` | orquestación, diagnóstico, maestro | todos |
 | CRITICAL | `opsly-autonomous` | autónomo, godmode, auto-fix | todos |

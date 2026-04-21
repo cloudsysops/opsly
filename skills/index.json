@@ -4,6 +4,17 @@
   "description": "Índice de todos los skills disponibles en Opsly para agentes IA autónomos",
   "skills": [
     {
+      "name": "opsly-skill-creator",
+      "version": "1.0.0",
+      "description": "Crear, mejorar y evaluar skills para el ecosistema Opsly. Usar cuando se identifique un proceso repetitivo, un agente quiera capturar un workflow, o se diga 'crear skill', 'nueva skill', 'automatizar proceso'. También cuando hallazgos de QA/audit sugieran la necesidad de un proceso estándar.",
+      "category": "tooling",
+      "priority": "critical",
+      "usage": "Crear nuevas skills, mejorar existentes, o capturar workflows como skills",
+      "triggers": ["crear skill", "nueva skill", "skill creator", "automatizar proceso", "capturar workflow", "skill from", "turn into skill", "normalizar skills"],
+      "crossReferences": ["opsly-quantum", "opsly-context", "opsly-autonomous"],
+      "path": "skills/user/opsly-skill-creator/"
+    },
+    {
       "name": "opsly-context",
       "version": "1.0.0",
       "description": "Bootstrap de sesión: AGENTS, VISION, VPS, tokens",
@@ -171,6 +182,7 @@
     }
   ],
   "categories": {
+    "tooling": ["opsly-skill-creator"],
     "bootstrap": ["opsly-context"],
     "master": ["opsly-quantum"],
     "architecture": ["opsly-architect-senior"],

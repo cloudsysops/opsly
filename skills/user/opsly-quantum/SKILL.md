@@ -1,4 +1,4 @@
-# Opsly Quantum — skill maestro
+# Opsly Quantum Skill
 
 > **Triggers:** `orquestación`, `diagnóstico completo`, `multi-skill`, `quantum`, `maestro`, `visión global`
 > **Priority:** CRITICAL
@@ -49,6 +49,23 @@ Cuando el agente necesita **visión completa** del monorepo Opsly: contexto, dia
 - No ejecuta deploy a producción ni `terraform apply` sin runbook explícito.
 - No escribe en `AGENTS.md` automáticamente en cada comando (solo el humano/agente al cierre de sesión según protocolo).
 - No sustituye **Doppler** ni expone secretos.
+
+## Reglas
+
+- Nunca ejecutar deploy a producción ni `terraform apply` sin runbook explícito.
+- No escribir en `AGENTS.md` automáticamente — solo el humano/agente al cierre de sesión.
+- No sustituir Doppler ni exponer secretos.
+- No inventar comandos que no existan en el repo — usar solo scripts existentes en `scripts/`.
+- Siempre ejecutar `opsly-context` antes de Quantum.
+
+## Errores comunes
+
+| Error | Causa | Solución |
+|-------|-------|----------|
+| Script no existe | Inventó un comando | Verificar `ls scripts/` antes de ejecutar |
+| Deploy sin runbook | Saltó validación | Buscar runbook en `docs/` primero |
+| Diagnóstico incompleto | No cargó contexto | Ejecutar `opsly-context` antes |
+| Secreto expuesto | Leyó config directo | Usar Doppler, nunca cat de .env |
 
 ## Referencias
 
