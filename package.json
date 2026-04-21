@@ -25,6 +25,7 @@
     "test-skills-manifest": "npm test --prefix skills/manifest",
     "skills:list": "node scripts/load-skills.js list",
     "skills:bootstrap": "node scripts/load-skills.js bootstrap",
+    "skills:sync:external": "bash scripts/sync-skills-external.sh",
     "opsly:ensure-ollama": "bash scripts/ensure-ollama-local.sh",
     "opsly:vps-ssh:ensure-key": "bash scripts/vps-ssh-ensure-key.sh",
     "opsly:vps-ssh:verify": "bash scripts/vps-ssh-verify.sh",

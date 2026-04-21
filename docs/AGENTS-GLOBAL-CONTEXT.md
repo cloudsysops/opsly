@@ -57,11 +57,12 @@ npm run type-check
 
 | Agente / Herramienta | Skill |
 |---------------------|-------|
-| **Claude** | `.claude/CLAUDE.md` + `skills/user/opsly-*/SKILL.md` |
-| **Cursor** | `.cursor/rules/opsly.mdc` + `skills/user/opsly-*/SKILL.md` |
-| **Copilot** | `.github/copilot-instructions.md` |
-| **OpenCode** | Este repo + skills/* |
-| **Hermes** | `docs/IMPLEMENTATION-IA-LAYER.md` + NotebookLM |
+| **Claude** | `.claude/CLAUDE.md` + `/mnt/skills/index.json` + `/mnt/skills/user/*` |
+| **Cursor** | `.cursor/rules/opsly.mdc` + `/mnt/skills/index.json` + `/mnt/skills/user/*` |
+| **Copilot** | `.github/copilot-instructions.md` + `/mnt/skills/index.json` |
+| **OpenCode** | `/mnt/skills/index.json` + `/mnt/skills/user/*` |
+| **Hermes** | `docs/IMPLEMENTATION-IA-LAYER.md` + `/mnt/skills/index.json` |
+| **Decepticon / OpenClaude / nuevos agentes** | `/mnt/skills/index.json` + `/mnt/skills/user/*` |
 | **Nuevo agente** | Leer `AGENTS.md` + `VISION.md` + **consultar NotebookLM** |
 
 ## 📁 Archivos de contexto por defecto
@@ -71,7 +72,18 @@ npm run type-check
 | `AGENTS.md` | Estado operativo, bloqueantes, decisiones sesión | ✅ SIEMPRE |
 | `VISION.md` | Norte de producto, fases, ICP | ✅ Al inicio |
 | `docs/adr/*.md` | Decisiones de arquitectura | Si toca arquitectura |
-| `skills/user/opsly-*/SKILL.md` | Procedimientos operativos | Por skill |
+| `/mnt/skills/index.json` | Catálogo unificado de skills | ✅ SIEMPRE |
+| `/mnt/skills/user/opsly-*/SKILL.md` | Procedimientos operativos | Por skill |
+
+## 🔁 Publicación de skills para todos los agentes
+
+```bash
+# Export estándar para runtimes externos e internos
+npm run skills:sync:external
+
+# Dry-run
+bash scripts/sync-skills-external.sh --dry-run
+```
 
 ## 🔐 Reglas globales para todos los agentes
 

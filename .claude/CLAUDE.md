@@ -38,6 +38,8 @@ OpenClaw es el **framework de orquestación multi-agente** de Opsly. Ver `.openc
 
 **Regla central:** buscar skill existente primero; si no hay match adecuado, crear o extender skill por módulo usando `opsly-skill-creator`.
 
+**Shared catalog para herramientas externas/internas:** `/mnt/skills/index.json` + `/mnt/skills/user/*` (publicar con `npm run skills:sync:external`).
+
 ### CLI de Skills
 
 ```bash

@@ -181,6 +181,28 @@ source scripts/skill-hooks.sh
 skill_autoload "inicio sesión"
 ```
 
+### Herramientas externas (Claude, OpenCode, Hermes, Copilot, Decepticon, OpenClaw, etc.)
+
+Todas deben consumir el mismo catálogo exportado:
+
+```bash
+# Export default: /mnt/skills
+npm run skills:sync:external
+
+# O target custom (ej. contenedor local)
+bash scripts/sync-skills-external.sh --target /tmp/opsly-skills
+```
+
+Estructura publicada:
+- `/mnt/skills/user/*` (cada skill)
+- `/mnt/skills/index.json` (índice unificado)
+- `/mnt/skills/README.md` (guía de uso)
+
+Regla de uso para cualquier herramienta nueva:
+1. Buscar skill existente en `index.json`
+2. Reusar/mejorar skill si el match es adecuado
+3. Crear/expandir skill con `opsly-skill-creator` si no hay match suficiente
+
 ### GitHub Actions
 
 ```yaml
