@@ -1,0 +1,134 @@
+# Knowledge Brain - Configuration
+# Copiar a knowledge-sources.yaml y personalizar
+
+sources:
+  programming:
+    - name: 'HackerNews'
+      url: 'https://hnrss.org/frontpage'
+      category: '01-programming'
+      tags: ['tech', 'startups', 'ai']
+      enabled: true
+
+    - name: 'Reddit Programming'
+      url: 'https://www.reddit.com/r/programming/.rss'
+      category: '01-programming'
+      tags: ['code', 'development']
+      enabled: true
+
+    - name: 'Dev.to'
+      url: 'https://dev.to/feed'
+      category: '01-programming'
+      tags: ['tutorial', 'dev']
+      enabled: true
+
+  security:
+    - name: 'The Hacker News'
+      url: 'https://feeds.feedburner.com/TheHackersNews'
+      category: '04-security'
+      tags: ['breach', 'vulnerability', 'cyber']
+      enabled: true
+
+    - name: 'Krebs on Security'
+      url: 'https://krebsonsecurity.com/feed/'
+      category: '04-security'
+      tags: ['investigation', 'crime']
+      enabled: true
+
+  hacking:
+    - name: 'GitHub Security Advisories'
+      url: 'https://api.github.com/advisories'
+      category: '05-hacking'
+      tags: ['cve', 'advisory']
+      format: 'json'
+      enabled: true
+
+    - name: 'Exploit-DB'
+      url: 'https://www.exploit-db.com/rss.xml'
+      category: '05-hacking'
+      tags: ['exploit', 'poc']
+      enabled: true
+
+  design:
+    - name: 'Design Week'
+      url: 'https://designweek.co.uk/feed/'
+      category: '02-design'
+      tags: ['ui', 'ux']
+      enabled: true
+
+    - name: 'Awwwards'
+      url: 'https://www.awwwards.com/feed/'
+      category: '02-design'
+      tags: ['inspiration', 'web']
+      enabled: true
+
+  marketing:
+    - name: 'Marketing Week'
+      url: 'https://www.marketingweek.com/feed/'
+      category: '03-marketing'
+      tags: ['strategy', 'trends']
+      enabled: true
+
+  warfare:
+    - name: 'War on the Rocks'
+      url: 'https://warontherocks.com/feed/'
+      category: '06-warfare'
+      tags: ['strategy', 'military']
+      enabled: true
+
+  love:
+    - name: 'Psychology Today'
+      url: 'https://www.psychologytoday.com/blog/feed'
+      category: '07-love'
+      tags: ['psychology', 'relationships']
+      enabled: true
+
+  ia_ml:
+    - name: 'OpenAI Blog'
+      url: 'https://openai.com/blog/rss.xml'
+      category: '08-ia-ml'
+      tags: ['ai', 'research']
+      enabled: true
+
+    - name: 'Google AI'
+      url: 'https://blog.google/technology/ai/rss/'
+      category: '08-ia-ml'
+      tags: ['ml', 'research']
+      enabled: true
+
+  archive:
+    - name: 'Internet Archive News'
+      url: 'https://blog.archive.org/feed/'
+      category: '09-archive'
+      tags: ['archive', 'digital-preservation']
+      enabled: true
+
+  podcasts:
+    - name: 'Acquired Podcast'
+      url: 'https://feeds.acquired.com/acquired-show'
+      category: '10-podcasts'
+      tags: ['business', 'strategy']
+      enabled: true
+
+    - name: '_lex Podcast'
+      url: 'https://lexpodcast.substack.com/feed'
+      category: '10-podcasts'
+      tags: ['ai', 'tech']
+      enabled: true
+
+# Configuración global
+settings:
+  max_entries_per_source: 10
+  summary_length: 200
+  importance_threshold: 3
+  categories:
+    - '01-programming'
+    - '02-design'
+    - '03-marketing'
+    - '04-security'
+    - '05-hacking'
+    - '06-warfare'
+    - '07-love'
+    - '08-ia-ml'
+    - '09-archive'
+    - '10-podcasts'
+    - '99-archive'
