@@ -52,3 +52,6 @@ if echo "$CHANGED_AFTER" | rg -q "(AGENTS\\.md|VISION\\.md|docs/)"; then
     ./scripts/drive-sync.sh 2>/dev/null || true
   fi
 fi
+
+# ─── Unified hooks for external/internal agents ─────────────
+./scripts/agent-hooks.sh post-commit 2>/dev/null || true

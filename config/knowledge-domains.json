@@ -1,0 +1,50 @@
+{
+  "version": "1.0.0",
+  "domains": {
+    "01-programming": {
+      "label": "Programming",
+      "archiveQuery": "programming OR software engineering OR algorithms OR distributed systems",
+      "sources": ["Internet Archive", "Hacker News", "GitHub"]
+    },
+    "02-design": {
+      "label": "Design",
+      "archiveQuery": "design systems OR UX OR UI OR visual design",
+      "sources": ["Internet Archive", "Awwwards", "Design resources"]
+    },
+    "03-marketing": {
+      "label": "Marketing",
+      "archiveQuery": "marketing strategy OR growth OR copywriting OR branding",
+      "sources": ["Internet Archive", "Ahrefs", "Marketing Week"]
+    },
+    "04-security": {
+      "label": "Security",
+      "archiveQuery": "defensive cybersecurity OR security engineering OR blue team OR threat modeling",
+      "sources": ["Internet Archive", "Krebs", "OWASP"]
+    },
+    "05-hacking": {
+      "label": "Hacking (Defensive)",
+      "archiveQuery": "ethical hacking OR penetration testing OR red team OR exploit mitigation",
+      "sources": ["Internet Archive", "GitHub Advisories", "CVE feeds"]
+    },
+    "06-warfare": {
+      "label": "Warfare Studies",
+      "archiveQuery": "military strategy OR conflict analysis OR war studies",
+      "sources": ["Internet Archive", "War on the Rocks"]
+    },
+    "07-love": {
+      "label": "Relationships",
+      "archiveQuery": "relationship psychology OR emotional intelligence OR communication",
+      "sources": ["Internet Archive", "Psychology resources"]
+    },
+    "08-ia_ml": {
+      "label": "AI/ML",
+      "archiveQuery": "machine learning OR ai systems OR llm OR agentic systems",
+      "sources": ["Internet Archive", "OpenAI blog", "Google AI blog"]
+    },
+    "09-archive": {
+      "label": "General Archive",
+      "archiveQuery": "open knowledge OR digital library OR educational materials",
+      "sources": ["Internet Archive"]
+    }
+  }
+}

@@ -8,7 +8,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
-TARGET_ROOT="/mnt/skills"
+TARGET_ROOT="${OPSLY_SKILLS_TARGET:-/mnt/skills}"
 DRY_RUN=false
 
 while [[ $# -gt 0 ]]; do
@@ -53,7 +53,15 @@ if $DRY_RUN; then
   exit 0
 fi
 
-mkdir -p "$DEST_USER"
+if ! mkdir -p "$DEST_USER" 2>/dev/null; then
+  FALLBACK_ROOT="/tmp/opsly-skills"
+  log "Target no escribible ($TARGET_ROOT). Fallback -> $FALLBACK_ROOT"
+  TARGET_ROOT="$FALLBACK_ROOT"
+  DEST_USER="$TARGET_ROOT/user"
+  DEST_INDEX="$TARGET_ROOT/index.json"
+  DEST_README="$TARGET_ROOT/README.md"
+  mkdir -p "$DEST_USER"
+fi
 
 # Copia atómica simple por carpeta para compatibilidad amplia.
 rm -rf "$DEST_USER"

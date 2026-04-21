@@ -85,6 +85,19 @@ npm run skills:sync:external
 bash scripts/sync-skills-external.sh --dry-run
 ```
 
+## 🪝 Hooks unificados para agentes
+
+```bash
+# Internos (Cursor/Hermes/servicios locales)
+npm run agents:hooks:bootstrap:internal
+
+# Externos (Claude/OpenCode/Copilot/Decepticon/OpenClaude)
+npm run agents:hooks:bootstrap:external
+```
+
+Referencia completa:
+- `docs/AGENT-HOOKS-OBSIDIAN-NOTEBOOKLM-N8N.md`
+
 ## 🔐 Reglas globales para todos los agentes
 
 1. **NUNCA hardcodear secretos** — usar Doppler (`ops-intcloudsysops/prd`)
