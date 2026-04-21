@@ -9,6 +9,7 @@ import { notebooklmTool } from "./tools/notebooklm.js";
 import { opsStubsTools } from "./tools/ops-stubs.js";
 import { onboardTool } from "./tools/onboard.js";
 import { getJobStatusTool } from "./tools/get-job-status.tool.js";
+import { n8nCreateWorkflowTool } from "./tools/n8n-create-workflow.tool.js";
 import { runAgentTaskTool } from "./tools/run-agent-task.tool.js";
 import { suspendTools } from "./tools/suspend.js";
 import { tenantsTools } from "./tools/tenants.js";
@@ -41,6 +42,7 @@ export const TOOL_REQUIRED_SCOPES: Record<string, string> = {
   notebooklm: "agents:write",
   run_agent_task: "agents:write",
   get_job_status: "agents:write",
+  n8n_create_workflow: "agents:write",
   check_service_health: "metrics:read",
   restart_container: "tenants:write",
   list_ai_integrations: "metrics:read",
@@ -144,6 +146,7 @@ export function getAllToolDefinitions(): ToolDefinition<unknown, unknown>[] {
     executorTool,
     runAgentTaskTool,
     getJobStatusTool,
+    n8nCreateWorkflowTool,
     notebooklmTool,
     checkServiceHealthTool,
     restartContainerTool,
