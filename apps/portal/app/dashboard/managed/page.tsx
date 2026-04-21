@@ -10,11 +10,11 @@ import { requirePortalPayloadWithUsageAndInsights } from "@/lib/portal-server";
 
 export default async function ManagedDashboardPage(): Promise<ReactElement> {
   const { payload: data, usage, insights } = await requirePortalPayloadWithUsageAndInsights();
-  if (data.mode === "developer") {
-    redirect("/dashboard/developer");
-  }
   if (data.mode === null) {
     redirect("/dashboard");
+  }
+  if (data.mode !== "managed") {
+    redirect("/dashboard/developer");
   }
 
   const allHealthy = data.health.n8n_reachable && data.health.uptime_reachable;

@@ -1,0 +1,114 @@
+{
+  "info": {
+    "name": "Opsly Super Agent - Smoke",
+    "_postman_id": "9f5f9d8a-opsly-super-agent-smoke",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Coleccion base para validar API admin, portal y n8n orchestration."
+  },
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "GET /api/health",
+          "request": {
+            "method": "GET",
+            "url": "{{api_base}}/api/health"
+          }
+        },
+        {
+          "name": "GET /api/health/lightweight",
+          "request": {
+            "method": "GET",
+            "url": "{{api_base}}/api/health/lightweight"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin",
+      "item": [
+        {
+          "name": "GET /api/metrics",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{platform_admin_token}}" }
+            ],
+            "url": "{{api_base}}/api/metrics"
+          }
+        },
+        {
+          "name": "GET /api/admin/overview",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{platform_admin_token}}" }
+            ],
+            "url": "{{api_base}}/api/admin/overview"
+          }
+        }
+      ]
+    },
+    {
+      "name": "n8n Super Agent",
+      "item": [
+        {
+          "name": "POST /api/n8n/decide",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{platform_admin_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"task_description\": \"automatizar deploy y notificacion de errores\",\n  \"constraints\": {\n    \"security_level\": \"safe\",\n    \"cost_limit\": 25\n  },\n  \"context\": {\n    \"repo\": \"cloudsysops/opsly\"\n  }\n}"
+            },
+            "url": "{{api_base}}/api/n8n/decide"
+          }
+        },
+        {
+          "name": "POST /api/n8n/execute",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{platform_admin_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"agent_id\": \"cursor\",\n  \"plan_step_index\": 0,\n  \"args\": {\n    \"tenant_slug\": \"smiletripcare\",\n    \"task_description\": \"run deploy workflow\"\n  }\n}"
+            },
+            "url": "{{api_base}}/api/n8n/execute"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Portal (JWT)",
+      "item": [
+        {
+          "name": "GET /api/portal/me",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{supabase_access_token}}" }
+            ],
+            "url": "{{api_base}}/api/portal/me"
+          }
+        },
+        {
+          "name": "GET /api/portal/usage",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{supabase_access_token}}" }
+            ],
+            "url": "{{api_base}}/api/portal/usage?period=today"
+          }
+        }
+      ]
+    }
+  ]
+}

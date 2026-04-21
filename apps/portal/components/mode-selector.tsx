@@ -1,6 +1,6 @@
 "use client";
 
-import { Loader2, Sparkles, Terminal } from "lucide-react";
+import { Loader2, ShieldCheck, Sparkles, Terminal } from "lucide-react";
 import { useRouter } from "next/navigation";
 import type { ReactElement } from "react";
 import { useState } from "react";
@@ -33,7 +33,9 @@ export function ModeSelector(): ReactElement {
       const slug = tenantSlugFromUserMetadata(data.session.user);
       const tenant = await fetchPortalTenant(token, slug);
       await postPortalMode(token, mode, tenant.slug);
-      router.push(mode === "developer" ? "/dashboard/developer" : "/dashboard/managed");
+      const target =
+        mode === "managed" ? "/dashboard/managed" : "/dashboard/developer";
+      router.push(target);
       router.refresh();
     } catch (e) {
       setError(e instanceof Error ? e.message : "No se pudo guardar el modo");
@@ -109,6 +111,38 @@ export function ModeSelector(): ReactElement {
             </>
           ) : (
             "Entrar en modo managed"
+          )}
+        </Button>
+      </article>
+
+      <article
+        className="group flex flex-col rounded-lg border border-amber-500/35 bg-ops-surface/90 p-6 shadow-md shadow-black/25 ring-1 ring-amber-500/25 transition-[border-color,box-shadow,transform] duration-200 hover:border-amber-500/50 hover:shadow-lg focus-within:ring-2 focus-within:ring-amber-400/40 md:hover:-translate-y-0.5"
+      >
+        <div className="mb-4 flex items-center gap-3">
+          <ShieldCheck className="h-8 w-8 shrink-0 text-amber-400 transition-transform duration-200 group-hover:scale-105" aria-hidden />
+          <span className="rounded-sm border border-amber-400/40 bg-amber-500/10 px-2 py-0.5 text-xs text-amber-300">
+            Security defense
+          </span>
+        </div>
+        <h2 className="text-lg font-semibold text-neutral-100">
+          Modo defensa activa
+        </h2>
+        <p className="mt-2 flex-1 text-sm text-neutral-400">
+          Perfil para auditoría y respuesta a incidentes defensivos autorizados.
+        </p>
+        <Button
+          className="mt-6"
+          variant="primary"
+          disabled={loading !== null}
+          onClick={() => void selectMode("security_defense")}
+        >
+          {loading === "security_defense" ? (
+            <>
+              <Loader2 className="h-4 w-4 shrink-0 animate-spin" aria-hidden />
+              Guardando…
+            </>
+          ) : (
+            "Entrar en modo security defense"
           )}
         </Button>
       </article>

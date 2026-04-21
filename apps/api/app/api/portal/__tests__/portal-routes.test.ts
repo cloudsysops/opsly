@@ -313,6 +313,29 @@ describe('POST /api/portal/mode', () => {
     expect(body.ok).toBe(true);
     expect(body.mode).toBe('developer');
   });
+
+  it('accepts security_defense mode', async () => {
+    mockValidPortalModeSession();
+    vi.mocked(supabaseMod.getServiceClient).mockReturnValue({
+      auth: {
+        admin: {
+          updateUserById: vi.fn().mockResolvedValue({ error: null }),
+        },
+      },
+    } as never);
+
+    const res = await portalModePost(
+      new Request('http://x', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ mode: 'security_defense' }),
+      })
+    );
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as Record<string, unknown>;
+    expect(body.ok).toBe(true);
+    expect(body.mode).toBe('security_defense');
+  });
 });
 
 describe('POST /api/portal/tenant/[slug]/mode', () => {

@@ -18,7 +18,8 @@ export default async function DashboardSelectorPage(): Promise<ReactElement> {
     <PortalShell title="Elige cómo trabajar">
       <DashboardShell>
         <PageLead>
-          Elige si administras la infraestructura (developer) o prefieres una vista guiada (managed).
+          Elige si administras la infraestructura (developer), prefieres vista guiada (managed)
+          o activas defensa de seguridad (security defense).
         </PageLead>
         <ModeSelector />
       </DashboardShell>

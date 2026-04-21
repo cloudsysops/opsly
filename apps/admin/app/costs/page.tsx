@@ -45,6 +45,7 @@ export default function CostsPage() {
   const [budgetQuery, setBudgetQuery] = useState("");
   const [budgetFilter, setBudgetFilter] = useState<BudgetFilterValue>("all");
   const [budgetSort, setBudgetSort] = useState<BudgetSortValue>("percent_desc");
+  const tenantBudgets = data?.tenant_budgets ?? [];
 
   const handleApprove = useCallback(
     async (serviceId: string) => {
@@ -76,50 +77,7 @@ export default function CostsPage() {
     [mutate]
   );
 
-  if (isLoading && !data) {
-    return (
-      <div className="p-8">
-        <div className="animate-pulse space-y-4">
-          <div className="h-8 w-1/4 rounded bg-ops-border" />
-          <div className="h-4 w-1/2 rounded bg-ops-border" />
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="h-32 rounded bg-ops-border" />
-            ))}
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (error || !data) {
-    return (
-      <div className="p-8">
-        <div className="rounded-lg border border-red-500/40 bg-red-500/10 px-4 py-3">
-          <p className="text-red-300">
-            No se pudieron cargar los costos. Comprueba{" "}
-            <code className="text-ops-muted">NEXT_PUBLIC_API_URL</code> y tu
-            sesión admin.
-          </p>
-          <button
-            type="button"
-            onClick={() => void mutate()}
-            className="mt-2 text-sm text-ops-green underline"
-          >
-            Reintentar
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  const currentCount = Object.keys(data.current).length;
-  const deltaMonthly = data.summary.proposedMonthly - data.summary.currentMonthly;
-  const updatedLabel =
-    data.lastUpdated.length > 0
-      ? new Date(data.lastUpdated).toLocaleString()
-      : "—";
-  const budgetCounts = data.tenant_budgets.reduce(
+  const budgetCounts = tenantBudgets.reduce(
     (counts, snapshot) => {
       counts.total += 1;
       if (snapshot.enforcement_skipped) {
@@ -165,7 +123,7 @@ export default function CostsPage() {
       );
     };
 
-    const sortedSnapshots = data.tenant_budgets
+    const sortedSnapshots = tenantBudgets
       .filter((snapshot) => matchesFilter(snapshot) && matchesQuery(snapshot))
       .sort((left, right) => {
         switch (budgetSort) {
@@ -180,7 +138,51 @@ export default function CostsPage() {
       });
 
     return sortedSnapshots;
-  }, [budgetFilter, budgetQuery, budgetSort, data.tenant_budgets]);
+  }, [budgetFilter, budgetQuery, budgetSort, tenantBudgets]);
+
+  if (isLoading && !data) {
+    return (
+      <div className="p-8">
+        <div className="animate-pulse space-y-4">
+          <div className="h-8 w-1/4 rounded bg-ops-border" />
+          <div className="h-4 w-1/2 rounded bg-ops-border" />
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="h-32 rounded bg-ops-border" />
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !data) {
+    return (
+      <div className="p-8">
+        <div className="rounded-lg border border-red-500/40 bg-red-500/10 px-4 py-3">
+          <p className="text-red-300">
+            No se pudieron cargar los costos. Comprueba{" "}
+            <code className="text-ops-muted">NEXT_PUBLIC_API_URL</code> y tu
+            sesión admin.
+          </p>
+          <button
+            type="button"
+            onClick={() => void mutate()}
+            className="mt-2 text-sm text-ops-green underline"
+          >
+            Reintentar
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  const currentCount = Object.keys(data.current).length;
+  const deltaMonthly = data.summary.proposedMonthly - data.summary.currentMonthly;
+  const updatedLabel =
+    data.lastUpdated.length > 0
+      ? new Date(data.lastUpdated).toLocaleString()
+      : "—";
 
   return (
     <div className="mx-auto max-w-7xl p-8">
@@ -313,9 +315,9 @@ export default function CostsPage() {
           <Badge variant="default">
             Mostrando {filteredBudgetSnapshots.length} de {budgetCounts.total}
           </Badge>
-          {budgetFilter !== "all" ? (
+          {budgetFilter === "all" ? null : (
             <Badge variant="blue">Filtro: {budgetFilter}</Badge>
-          ) : null}
+          )}
           {budgetQuery.trim().length > 0 ? (
             <Badge variant="gray">Busqueda: {budgetQuery.trim()}</Badge>
           ) : null}

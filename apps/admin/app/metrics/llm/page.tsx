@@ -26,7 +26,7 @@ export default function AdminLlmMetricsPage() {
     data: tenantsData,
     error: tenantsError,
     isLoading: tenantsLoading,
-  } = useSWR(["tenants", 1], () => getTenants({ page: 1, limit: 200 }), {
+  } = useSWR(["tenants", 1], () => getTenants({ page: 1, limit: 100 }), {
     revalidateOnFocus: false,
     refreshInterval: 60_000,
   });

@@ -3,7 +3,7 @@
  * Importar desde `@/types` o vía re-export en `@/lib/types`.
  */
 
-export type PortalMode = "developer" | "managed";
+export type PortalMode = "developer" | "managed" | "security_defense";
 
 export type PortalTenantPayload = {
   slug: string;

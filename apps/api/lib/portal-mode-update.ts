@@ -1,13 +1,13 @@
-import { z } from "zod";
-import { jsonError, parseJsonBody } from "./api-response";
-import { HTTP_STATUS } from "./constants";
-import { logger } from "./logger";
-import type { TrustedPortalSession } from "./portal-trusted-identity";
-import { getServiceClient } from "./supabase";
-import { formatZodError } from "./validation";
+import { z } from 'zod';
+import { jsonError, parseJsonBody } from './api-response';
+import { HTTP_STATUS } from './constants';
+import { logger } from './logger';
+import type { TrustedPortalSession } from './portal-trusted-identity';
+import { getServiceClient } from './supabase';
+import { formatZodError } from './validation';
 
 const ModeBodySchema = z.object({
-  mode: z.enum(["developer", "managed"]),
+  mode: z.enum(['developer', 'managed', 'security_defense']),
 });
 
 /**
@@ -16,7 +16,7 @@ const ModeBodySchema = z.object({
  */
 export async function applyPortalModeUpdate(
   session: TrustedPortalSession,
-  request: Request,
+  request: Request
 ): Promise<Response> {
   const { user } = session;
 
@@ -32,23 +32,20 @@ export async function applyPortalModeUpdate(
 
   const prevMeta =
     user.user_metadata !== null &&
-    typeof user.user_metadata === "object" &&
+    typeof user.user_metadata === 'object' &&
     !Array.isArray(user.user_metadata)
       ? { ...(user.user_metadata as Record<string, unknown>) }
       : {};
 
-  const { error } = await getServiceClient().auth.admin.updateUserById(
-    user.id,
-    {
-      user_metadata: {
-        ...prevMeta,
-        mode: parsed.data.mode,
-      },
+  const { error } = await getServiceClient().auth.admin.updateUserById(user.id, {
+    user_metadata: {
+      ...prevMeta,
+      mode: parsed.data.mode,
     },
-  );
+  });
 
   if (error) {
-    logger.error("portal mode update", error);
+    logger.error('portal mode update', error);
     return Response.json({ error: error.message }, { status: 500 });
   }
 

@@ -51,6 +51,12 @@ async function buildHeaders(initHeaders: HeadersInit | undefined): Promise<Heade
   const authToken = await getSessionAuthToken();
   if (authToken !== null && authToken.length > 0) {
     headers.set("Authorization", `Bearer ${authToken}`);
+    return headers;
+  }
+  const adminToken = process.env.NEXT_PUBLIC_PLATFORM_ADMIN_TOKEN?.trim() ?? "";
+  if (adminToken.length > 0) {
+    headers.set("Authorization", `Bearer ${adminToken}`);
+    headers.set("x-admin-token", adminToken);
   }
   return headers;
 }
