@@ -1,184 +1,255 @@
 {
-  "version": "2.1.0",
-  "generated": "2026-04-21T00:00:00Z",
-  "description": "Índice modular de skills Opsly para operación, desarrollo y automatización por dominio.",
+  "version": "3.0.0",
+  "generated": "2026-04-21T09:51:00Z",
+  "description": "Índice de todos los skills disponibles en Opsly para agentes IA autónomos",
   "skills": [
     {
       "name": "opsly-skill-creator",
-      "version": "1.0.0",
-      "description": "Crear, mejorar y evaluar skills para capturar procesos repetitivos.",
+      "version": "2.0.0",
+      "description": "Crear, mejorar y evaluar skills para el ecosistema Opsly. Usar cuando se identifique un proceso repetitivo, un agente quiera capturar un workflow, o se diga 'crear skill', 'nueva skill', 'automatizar proceso'. También cuando hallazgos de QA/audit sugieran la necesidad de un proceso estándar.",
       "category": "tooling",
       "priority": "critical",
-      "usage": "Default para capturar nuevos workflows como skills",
-      "triggers": ["crear skill", "nueva skill", "skill creator", "automatizar proceso", "capturar workflow", "normalizar skills"],
-      "crossReferences": ["opsly-bootstrap", "opsly-api", "opsly-frontend"],
+      "usage": "Crear nuevas skills, mejorar existentes, o capturar workflows como skills",
       "path": "skills/user/opsly-skill-creator/"
+    },
+    {
+      "name": "opsly-context",
+      "version": "2.0.0",
+      "description": "Bootstrap de sesión: AGENTS, VISION, VPS, tokens. SIEMPRE al inicio de cualquier sesión",
+      "category": "bootstrap",
+      "priority": "critical",
+      "usage": "SIEMPRE al inicio de cualquier sesión",
+      "path": "skills/user/opsly-context/"
+    },
+    {
+      "name": "opsly-quantum",
+      "version": "2.0.0",
+      "description": "Skill maestro: orquestación segura + acciones reales vía scripts del repo",
+      "category": "master",
+      "priority": "critical",
+      "usage": "Visión completa del monorepo + diagnóstico + acciones",
+      "path": "skills/user/opsly-quantum/"
+    },
+    {
+      "name": "opsly-autonomous",
+      "version": "1.0.0",
+      "description": "Modo autónomo: detectar contexto, cargar skills sin intervención humana, decidir y actuar. Modo NO CONFIRMAR.",
+      "category": "autonomy",
+      "priority": "critical",
+      "usage": "Cuando el usuario dice 'autónomo', 'godmode', 'auto-fix', 'sin preguntar', o necesita operación automática",
+      "path": "skills/user/opsly-autonomous/"
     },
     {
       "name": "opsly-bootstrap",
       "version": "1.0.0",
-      "description": "Bootstrap de sesión y auto-selección de skills por tarea.",
+      "description": "[DEPRECATED] Usar opsly-context en su lugar. Bootstrap de sesión legacy.",
       "category": "bootstrap",
-      "priority": "critical",
-      "usage": "SIEMPRE al inicio de sesión",
-      "triggers": ["inicio sesión", "bootstrap", "contexto", "autónomo", "godmode"],
-      "crossReferences": ["opsly-skill-creator"],
+      "priority": "deprecated",
+      "替代": "opsly-context",
       "path": "skills/user/opsly-bootstrap/"
     },
     {
-      "name": "opsly-api",
+      "name": "opsly-architect-senior",
       "version": "1.0.0",
-      "description": "Patrones y prácticas para rutas en apps/api.",
-      "category": "development",
+      "description": "Diagnóstico arquitectónico, riesgos, priorización, ADRs. Revisión de arquitectura antes de features grandes o cambios de infra.",
+      "category": "architecture",
       "priority": "high",
-      "usage": "Crear o modificar endpoints y librerías backend",
-      "triggers": ["api", "route", "endpoint", "handler", "rest"],
-      "crossReferences": ["opsly-supabase", "opsly-mcp", "opsly-billing"],
-      "path": "skills/user/opsly-api/"
-    },
-    {
-      "name": "opsly-frontend",
-      "version": "1.0.0",
-      "description": "React/Next.js para portal/admin/web con patrones de auth, UI y hydration.",
-      "category": "frontend",
-      "priority": "high",
-      "usage": "Páginas y componentes en apps/portal, apps/admin, apps/web",
-      "triggers": ["frontend", "react", "next", "portal", "admin", "ui", "tailwind"],
-      "crossReferences": ["opsly-api", "opsly-qa", "opsly-tenant"],
-      "path": "skills/user/opsly-frontend/"
-    },
-    {
-      "name": "opsly-supabase",
-      "version": "1.0.0",
-      "description": "Migraciones SQL, RLS y modelado schema platform.",
-      "category": "database",
-      "priority": "high",
-      "usage": "Cambios de DB y consultas en Supabase/Postgres",
-      "triggers": ["supabase", "sql", "migration", "rls", "postgres"],
-      "crossReferences": ["opsly-api", "opsly-billing", "opsly-tenant"],
-      "path": "skills/user/opsly-supabase/"
-    },
-    {
-      "name": "opsly-infra",
-      "version": "1.0.0",
-      "description": "Infraestructura Docker/Compose, VPS, deploy y scripts operativos.",
-      "category": "operations",
-      "priority": "high",
-      "usage": "Cambios de infra, despliegue y operación en VPS",
-      "triggers": ["infra", "docker", "compose", "vps", "deploy", "traefik", "bash"],
-      "crossReferences": ["opsly-tenant", "opsly-discord", "opsly-qa"],
-      "path": "skills/user/opsly-infra/"
-    },
-    {
-      "name": "opsly-mcp",
-      "version": "1.0.0",
-      "description": "Tools MCP OpenClaw, OAuth/PKCE y contratos de tools.",
-      "category": "integration",
-      "priority": "high",
-      "usage": "Agregar o modificar herramientas MCP",
-      "triggers": ["mcp", "tool", "oauth", "pkce", "openclaw"],
-      "crossReferences": ["opsly-api", "opsly-orchestrator"],
-      "path": "skills/user/opsly-mcp/"
-    },
-    {
-      "name": "opsly-llm",
-      "version": "1.0.0",
-      "description": "LLM Gateway: providers, routing, cache y costos.",
-      "category": "ai",
-      "priority": "high",
-      "usage": "Cambios en llm-gateway y consumo de modelos",
-      "triggers": ["llm", "gateway", "model", "cache", "routing", "provider"],
-      "crossReferences": ["opsly-orchestrator", "opsly-billing", "opsly-qa"],
-      "path": "skills/user/opsly-llm/"
-    },
-    {
-      "name": "opsly-tenant",
-      "version": "1.0.0",
-      "description": "Onboarding y operación tenant (n8n/uptime/portal).",
-      "category": "operations",
-      "priority": "high",
-      "usage": "Flujos de tenant lifecycle",
-      "triggers": ["tenant", "onboard", "suspend", "resume", "n8n", "uptime"],
-      "crossReferences": ["opsly-api", "opsly-supabase", "opsly-infra"],
-      "path": "skills/user/opsly-tenant/"
-    },
-    {
-      "name": "opsly-orchestrator",
-      "version": "1.0.0",
-      "description": "OAR, jobs, estrategias y workflows n8n/super-agent.",
-      "category": "orchestration",
-      "priority": "high",
-      "usage": "Cambios en apps/orchestrator y rutas n8n",
-      "triggers": ["orchestrator", "oar", "workflow", "n8n", "job", "super-agent"],
-      "crossReferences": ["opsly-api", "opsly-llm", "opsly-qa"],
-      "path": "skills/user/opsly-orchestrator/"
-    },
-    {
-      "name": "opsly-billing",
-      "version": "1.0.0",
-      "description": "Billing Stripe: subscriptions, invoices, metering y webhooks.",
-      "category": "billing",
-      "priority": "high",
-      "usage": "Cambios de facturación y planes por tenant",
-      "triggers": ["billing", "stripe", "subscription", "invoice", "metering", "plan"],
-      "crossReferences": ["opsly-api", "opsly-supabase", "opsly-tenant"],
-      "path": "skills/user/opsly-billing/"
-    },
-    {
-      "name": "opsly-qa",
-      "version": "1.0.0",
-      "description": "Estrategia QA: pruebas, auditoría y criterios Go/No-Go.",
-      "category": "qa",
-      "priority": "medium",
-      "usage": "Validación de cambios antes de release",
-      "triggers": ["qa", "testing", "smoke", "audit", "regression", "playwright"],
-      "crossReferences": ["opsly-api", "opsly-frontend", "opsly-infra", "opsly-orchestrator"],
-      "path": "skills/user/opsly-qa/"
-    },
-    {
-      "name": "opsly-discord",
-      "version": "1.0.0",
-      "description": "Notificaciones operativas por Discord.",
-      "category": "notifications",
-      "priority": "medium",
-      "usage": "Alertas de deploy/incidentes/eventos",
-      "triggers": ["discord", "webhook", "alerta", "notify"],
-      "crossReferences": ["opsly-infra", "opsly-tenant", "opsly-qa"],
-      "path": "skills/user/opsly-discord/"
+      "usage": "Revisión de arquitectura antes de features grandes o cambios de infra",
+      "path": "skills/user/opsly-architect-senior/"
     },
     {
       "name": "opsly-architect",
       "version": "1.0.0",
-      "description": "Diseño y decisiones de arquitectura con enfoque incremental.",
+      "description": "[DEPRECATED] Usar opsly-architect-senior en su lugar. Arquitectura legacy.",
       "category": "architecture",
-      "priority": "medium",
-      "usage": "Análisis de tradeoffs y ADRs",
-      "triggers": ["arquitectura", "adr", "tradeoff", "diseño", "riesgo"],
-      "crossReferences": ["opsly-bootstrap", "opsly-api", "opsly-infra"],
+      "priority": "deprecated",
+      "替代": "opsly-architect-senior",
       "path": "skills/user/opsly-architect/"
+    },
+    {
+      "name": "opsly-api",
+      "version": "1.0.0",
+      "description": "Rutas en apps/api, patrones, templates, tests. Crear o modificar rutas en apps/api/",
+      "category": "development",
+      "priority": "high",
+      "usage": "Crear o modificar rutas en apps/api/",
+      "path": "skills/user/opsly-api/"
+    },
+    {
+      "name": "opsly-bash",
+      "version": "1.0.0",
+      "description": "Scripts en scripts/, plantilla, set -euo pipefail, idempotencia. Crear o modificar scripts en scripts/",
+      "category": "development",
+      "priority": "high",
+      "usage": "Crear o modificar scripts en scripts/",
+      "path": "skills/user/opsly-bash/"
+    },
+    {
+      "name": "opsly-llm",
+      "version": "1.0.0",
+      "description": "LLM Gateway: llmCall, proveedores, caché, routing. Cualquier llamada a LLM vía @intcloudsysops/llm-gateway",
+      "category": "ai",
+      "priority": "high",
+      "usage": "Cualquier llamada a LLM vía @intcloudsysops/llm-gateway",
+      "path": "skills/user/opsly-llm/"
+    },
+    {
+      "name": "opsly-mcp",
+      "version": "1.0.0",
+      "description": "MCP OpenClaw: tools, OAuth/PKCE, scopes. Agregar o modificar tools del MCP OpenClaw",
+      "category": "integration",
+      "priority": "high",
+      "usage": "Agregar o modificar tools del MCP OpenClaw",
+      "path": "skills/user/opsly-mcp/"
+    },
+    {
+      "name": "opsly-supabase",
+      "version": "1.0.0",
+      "description": "Migraciones SQL, schema platform, RLS, políticas. Crear migraciones SQL o diseñar queries contra schema platform",
+      "category": "database",
+      "priority": "high",
+      "usage": "Crear migraciones SQL o diseñar queries contra schema platform",
+      "path": "skills/user/opsly-supabase/"
+    },
+    {
+      "name": "opsly-tenant",
+      "version": "1.0.0",
+      "description": "Onboarding, suspensión, resume, diagnóstico de stacks por tenant. Onboarding, suspensión, resume o diagnóstico de stacks por tenant",
+      "category": "operations",
+      "priority": "high",
+      "usage": "Onboarding, suspensión, resume o diagnóstico de stacks por tenant",
+      "path": "skills/user/opsly-tenant/"
+    },
+    {
+      "name": "opsly-infra",
+      "version": "1.0.0",
+      "description": "Docker, Compose, VPS, deploy, scripts de infraestructura. Operaciones de infraestructura y despliegue.",
+      "category": "infrastructure",
+      "priority": "high",
+      "usage": "Docker, Compose, VPS, deploy, operaciones de infraestructura",
+      "path": "skills/user/opsly-infra/"
+    },
+    {
+      "name": "opsly-frontend",
+      "version": "1.0.0",
+      "description": "Portal, Admin, UI, React, Tailwind, shadcn/ui. Desarrollo frontend en apps/portal y apps/admin.",
+      "category": "development",
+      "priority": "high",
+      "usage": "Desarrollo frontend (portal, admin, dashboards)",
+      "path": "skills/user/opsly-frontend/"
+    },
+    {
+      "name": "opsly-billing",
+      "version": "1.0.0",
+      "description": "Stripe: subscriptions, invoices, metering, planes, webhooks. Gestión de facturación y pagos.",
+      "category": "billing",
+      "priority": "high",
+      "usage": "Facturación, Stripe, planes, invoices",
+      "path": "skills/user/opsly-billing/"
+    },
+    {
+      "name": "opsly-orchestrator",
+      "version": "1.0.0",
+      "description": "OAR, workflows, n8n, super-agent, BullMQ. Orquestación de agentes y workflows automizados.",
+      "category": "orchestration",
+      "priority": "high",
+      "usage": "Orquestación, OAR, n8n, super-agent",
+      "path": "skills/user/opsly-orchestrator/"
+    },
+    {
+      "name": "opsly-qa",
+      "version": "1.0.0",
+      "description": "Testing, smoke, audit, regression. Testing y validación de calidad.",
+      "category": "qa",
+      "priority": "medium",
+      "usage": "Testing, smoke, audit, regression",
+      "path": "skills/user/opsly-qa/"
+    },
+    {
+      "name": "opsly-agent-teams",
+      "version": "1.0.0",
+      "description": "BullMQ / TeamManager, colas paralelas, eventos Redis. Encolar trabajo paralelo por especialización.",
+      "category": "orchestration",
+      "priority": "medium",
+      "usage": "BullMQ / TeamManager, colas paralelas, eventos Redis",
+      "path": "skills/user/opsly-agent-teams/"
+    },
+    {
+      "name": "opsly-discord",
+      "version": "1.0.0",
+      "description": "Notificaciones Discord: notify-discord.sh, tipos, reglas. Notificar eventos operativos.",
+      "category": "notifications",
+      "priority": "medium",
+      "usage": "Notificar eventos operativos (deploy, errores, commits, monitor)",
+      "path": "skills/user/opsly-discord/"
+    },
+    {
+      "name": "opsly-feedback-ml",
+      "version": "1.0.0",
+      "description": "Feedback loop, decisiones ML, auto-implement, aprobación humana. Flujo de feedback con ML.",
+      "category": "ai",
+      "priority": "medium",
+      "usage": "Flujo de feedback de usuarios, decisiones ML",
+      "path": "skills/user/opsly-feedback-ml/"
+    },
+    {
+      "name": "opsly-google-cloud",
+      "version": "1.0.0",
+      "description": "Google Cloud: Drive, BigQuery, Vertex AI, service account. Integrar servicios de Google Cloud.",
+      "category": "integration",
+      "priority": "medium",
+      "usage": "Integrar cualquier servicio de Google Cloud",
+      "path": "skills/user/opsly-google-cloud/"
+    },
+    {
+      "name": "opsly-notebooklm",
+      "version": "1.0.0",
+      "description": "NotebookLM: PDF→podcast, fuentes, MCP tool (EXPERIMENTAL). Generar contenido a partir de documentos.",
+      "category": "ai",
+      "priority": "low",
+      "usage": "Generar contenido a partir de documentos (PDF→podcast+slides+infografía)",
+      "requires": ["NOTEBOOKLM_ENABLED=true", "plan: business|enterprise"],
+      "path": "skills/user/opsly-notebooklm/"
+    },
+    {
+      "name": "opsly-simplify",
+      "version": "1.0.0",
+      "description": "Docker & Docker Compose optimization: multi-stage, anchors, limits. Optimizar Dockerfiles y compose.",
+      "category": "optimization",
+      "priority": "low",
+      "usage": "Optimizar Dockerfiles y docker-compose.yaml",
+      "path": "skills/user/opsly-simplify/"
     }
   ],
   "categories": {
     "tooling": ["opsly-skill-creator"],
-    "bootstrap": ["opsly-bootstrap"],
-    "development": ["opsly-api"],
-    "frontend": ["opsly-frontend"],
+    "bootstrap": ["opsly-context", "opsly-bootstrap"],
+    "master": ["opsly-quantum"],
+    "autonomy": ["opsly-autonomous"],
+    "architecture": ["opsly-architect-senior", "opsly-architect"],
+    "development": ["opsly-api", "opsly-bash", "opsly-frontend"],
+    "ai": ["opsly-llm", "opsly-notebooklm", "opsly-feedback-ml"],
+    "integration": ["opsly-mcp", "opsly-google-cloud"],
     "database": ["opsly-supabase"],
-    "operations": ["opsly-infra", "opsly-tenant"],
-    "integration": ["opsly-mcp"],
-    "ai": ["opsly-llm"],
-    "orchestration": ["opsly-orchestrator"],
+    "operations": ["opsly-tenant"],
+    "infrastructure": ["opsly-infra"],
+    "orchestration": ["opsly-orchestrator", "opsly-agent-teams"],
     "billing": ["opsly-billing"],
     "qa": ["opsly-qa"],
     "notifications": ["opsly-discord"],
-    "architecture": ["opsly-architect"]
+    "optimization": ["opsly-simplify"]
   },
   "quick_reference": {
-    "inicio_sesion": ["opsly-bootstrap", "opsly-skill-creator"],
-    "backend": ["opsly-api", "opsly-supabase"],
-    "frontend": ["opsly-frontend", "opsly-qa"],
-    "orquestacion": ["opsly-orchestrator", "opsly-llm"],
-    "billing": ["opsly-billing", "opsly-api"],
-    "infra": ["opsly-infra", "opsly-tenant", "opsly-discord"]
+    "nueva_sesion": ["opsly-context"],
+    "orquestacion": ["opsly-quantum"],
+    "autonomo": ["opsly-autonomous"],
+    "desarrollo_api": ["opsly-api", "opsly-bash"],
+    "ia_ml": ["opsly-llm", "opsly-feedback-ml", "opsly-notebooklm"],
+    "infra": ["opsly-infra", "opsly-tenant", "opsly-discord"],
+    "revision_arquitectura": ["opsly-architect-senior"]
+  },
+  "deprecated": {
+    "opsly-bootstrap": "Usar opsly-context",
+    "opsly-architect": "Usar opsly-architect-senior"
   }
 }

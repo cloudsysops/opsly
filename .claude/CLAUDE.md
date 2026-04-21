@@ -1,6 +1,7 @@
 ## PROTOCOLO — INICIO DE SESIÓN AUTÓNOMO
 
 1. **Cargar skills automáticamente:**
+
    ```bash
    # Detectar skills para el contexto
    node scripts/skill-finder.js "inicio sesión" --autonomous
@@ -27,12 +28,12 @@ OpenClaw es el **framework de orquestación multi-agente** de Opsly. Ver `.openc
 
 ### Componentes OpenClaw
 
-| Componente | Puerto |
-|------------|--------|
-| MCP Server | 3003 |
-| Orchestrator | 3011 |
-| LLM Gateway | 3010 |
-| Context Builder | 3012 |
+| Componente      | Puerto |
+| --------------- | ------ |
+| MCP Server      | 3003   |
+| Orchestrator    | 3011   |
+| LLM Gateway     | 3010   |
+| Context Builder | 3012   |
 
 ## Sistema de Skills (Auto-activación)
 
@@ -60,24 +61,34 @@ source scripts/skill-hooks.sh
 skill_autoload "mi query"
 ```
 
-### Índice de Skills (v2.2)
+### Índice de Skills (v3.0)
 
-| Priority | Skill | Triggers | Cross-Refs |
-|----------|-------|----------|------------|
-| CRITICAL | `opsly-bootstrap` | inicio, sesión, contexto, autónomo | skill-creator |
-| CRITICAL | `opsly-skill-creator` | crear skill, capturar workflow, normalizar | bootstrap, frontend, api |
-| HIGH | `opsly-api` | api, route, endpoint, handler | supabase, billing, mcp |
-| HIGH | `opsly-frontend` | portal, admin, ui, react, tailwind | api, qa, tenant |
-| HIGH | `opsly-supabase` | sql, migration, rls | api, billing, tenant |
-| HIGH | `opsly-infra` | docker, compose, vps, deploy | tenant, discord, qa |
-| HIGH | `opsly-mcp` | mcp, tool, oauth | api, orchestrator |
-| HIGH | `opsly-llm` | llm, model, routing, cache | orchestrator, billing |
-| HIGH | `opsly-tenant` | onboard, tenant, n8n, uptime | api, supabase, infra |
-| HIGH | `opsly-orchestrator` | oar, workflow, n8n, super-agent | api, llm, qa |
-| HIGH | `opsly-billing` | stripe, invoice, metering, plan | api, supabase, tenant |
-| MEDIUM | `opsly-qa` | testing, smoke, audit, regression | api, frontend, infra |
-| MEDIUM | `opsly-discord` | discord, webhook, alerta | infra, tenant, qa |
-| MEDIUM | `opsly-architect` | arquitectura, adr, tradeoff | bootstrap, api, infra |
+| Priority   | Skill                    | Category       | Usage                                      |
+| ---------- | ------------------------ | -------------- | ------------------------------------------ |
+| CRITICAL   | `opsly-context`          | bootstrap      | SIEMPRE al inicio de cualquier sesión      |
+| CRITICAL   | `opsly-quantum`          | master         | Visión completa del monorepo + diagnóstico |
+| CRITICAL   | `opsly-autonomous`       | autonomy       | Modo autónomo sin confirmación humana      |
+| CRITICAL   | `opsly-skill-creator`    | tooling        | Crear/mejorar skills                       |
+| HIGH       | `opsly-api`              | development    | Rutas en apps/api                          |
+| HIGH       | `opsly-bash`             | development    | Scripts en scripts/                        |
+| HIGH       | `opsly-frontend`         | development    | Portal, Admin, UI React                    |
+| HIGH       | `opsly-supabase`         | database       | Migraciones SQL, RLS                       |
+| HIGH       | `opsly-infra`            | infrastructure | Docker, Compose, VPS, deploy               |
+| HIGH       | `opsly-llm`              | ai             | LLM Gateway, providers, cache              |
+| HIGH       | `opsly-mcp`              | integration    | MCP OpenClaw tools                         |
+| HIGH       | `opsly-tenant`           | operations     | Onboarding, suspensión, stacks             |
+| HIGH       | `opsly-orchestrator`     | orchestration  | OAR, workflows, n8n                        |
+| HIGH       | `opsly-billing`          | billing        | Stripe subscriptions, invoices             |
+| HIGH       | `opsly-architect-senior` | architecture   | Diagnóstico, ADRs, riesgos                 |
+| MEDIUM     | `opsly-agent-teams`      | orchestration  | BullMQ, colas paralelas                    |
+| MEDIUM     | `opsly-qa`               | qa             | Testing, smoke, audit                      |
+| MEDIUM     | `opsly-discord`          | notifications  | Notificaciones Discord                     |
+| MEDIUM     | `opsly-feedback-ml`      | ai             | Feedback loop, decisiones ML               |
+| MEDIUM     | `opsly-google-cloud`     | integration    | Google Cloud services                      |
+| LOW        | `opsly-notebooklm`       | ai             | PDF→podcast (EXPERIMENTAL)                 |
+| LOW        | `opsly-simplify`         | optimization   | Docker/Compose optimization                |
+| DEPRECATED | `opsly-bootstrap`        | —              | Usar `opsly-context`                       |
+| DEPRECATED | `opsly-architect`        | —              | Usar `opsly-architect-senior`              |
 
 ### Templates Reutilizables
 
@@ -108,7 +119,7 @@ template-test.md           # Tests Vitest
 - `terraform apply`
 - Modificación de `.env` o Doppler
 - Creación de migración SQL nueva
--Cambios destructivos en Supabase
+  -Cambios destructivos en Supabase
 - Credentials en Doppler
 
 ### Escalation Automático
@@ -138,15 +149,15 @@ domain = "unknown" → Solicitar contexto adicional
 
 ## Stack
 
-| Servicio | Puerto |
-|----------|--------|
-| api | 3000 |
-| admin | 3001 |
-| portal | 3002 |
-| mcp | 3003 |
-| llm-gateway | 3010 |
-| orchestrator | 3011 |
-| context-builder | 3012 |
+| Servicio        | Puerto |
+| --------------- | ------ |
+| api             | 3000   |
+| admin           | 3001   |
+| portal          | 3002   |
+| mcp             | 3003   |
+| llm-gateway     | 3010   |
+| orchestrator    | 3011   |
+| context-builder | 3012   |
 
 ## Infraestructura
 
@@ -158,11 +169,11 @@ domain = "unknown" → Solicitar contexto adicional
 
 ## División Roles
 
-| Herramienta | Rol |
-|-------------|-----|
+| Herramienta | Rol                                              |
+| ----------- | ------------------------------------------------ |
 | Claude (tú) | Arquitectura, decisiones, desbloqueos, autonomía |
-| Cursor | Ejecución, código, commits |
-| AGENTS.md | Memoria compartida entre sesiones |
+| Cursor      | Ejecución, código, commits                       |
+| AGENTS.md   | Memoria compartida entre sesiones                |
 
 ## Antes de Proponer Código
 
