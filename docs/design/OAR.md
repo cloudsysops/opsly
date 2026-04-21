@@ -4,6 +4,16 @@
 **Autor:** Opsly Architecture Team  
 **Context:** Mejora de Producto #1 - Agentic Runtime
 
+## Actualización de gobierno (2026-04-21)
+
+Para la evolución "Super Agente", el OAR se gobierna con dos roles internos:
+
+- **`opsly_billy` (orquestador/ejecutor):** decide y ejecuta rutas internas o delegación a proveedores externos.
+- **`opsly_lili` (supervisor/policy engine):** valida riesgo, costo, compliance y permisos antes de permitir ejecución.
+
+Regla operativa: **ningún agente externo ejecuta directamente** sin pasar por Billy + validación de Lili.
+La integración externa se implementa mediante adapters (contrato `runTask/getStatus/cancel/normalizeResult`) sin romper el contrato OAR actual (`MemoryInterface`, `AgentActionPort`).
+
 ## 1. Objetivo
 
 Definir un **Runtime Estándar para Agentes** que normalice cómo Opsly ejecuta tareas complejas. En lugar de depender únicamente del "pensamiento implícito" de un LLM (ej. "piensa paso a paso"), el OAR impone **patrones de ejecución explícitos** (Loops) orquestados por código, garantizando previsibilidad, trazabilidad y capacidad de corrección.

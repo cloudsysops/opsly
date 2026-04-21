@@ -2,6 +2,14 @@
 
 Documento de **diseño orientativo** para una capa de orquestación de agentes y tareas de larga duración **alineada con el stack Opsly** (Redis, colas, API Next). No sustituye ADR existentes hasta que se apruebe implementación concreta.
 
+## Actualización 2026-04-21 (Super Agente + Shadow Deploy)
+
+- Se adopta patrón de control interno con roles lógicos:
+  - **`opsly_billy`**: orquestador/ejecutor.
+  - **`opsly_lili`**: supervisor de políticas (riesgo/costo/compliance).
+- Los agentes externos (Cursor/OpenClaude/Hermes/otros) se conectan como **providers** con adapter, nunca como segundo control plane.
+- Se habilita estrategia de **shadow deployment** para contexto/routing v2 (`context-builder-v2` y servicios v2 con puertos aislados) con rollback automático al stack actual.
+
 ## Objetivo
 
 - Centralizar **decisiones** sobre qué trabajo ejecuta un agente, cuándo y con qué presupuesto.

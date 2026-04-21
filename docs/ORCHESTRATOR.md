@@ -2,6 +2,13 @@
 
 Servicio Node (`apps/orchestrator`) que consume la cola BullMQ **`openclaw`** en Redis y ejecuta workers especializados.
 
+## Actualización 2026-04-21 (Modelo Billy/Lili)
+
+- **`opsly_billy`** se define como orquestador lógico de ejecución (routing interno/externo).
+- **`opsly_lili`** se define como supervisor lógico de política: aprobación por riesgo/costo y guardrails.
+- El orchestrator mantiene el patrón event-driven BullMQ actual; Billy/Lili se implementan como capas lógicas sobre `processIntent` y `DecisionEngine`, no como un segundo servicio paralelo.
+- Integraciones externas deben vivir detrás de adapters reversibles y observables (`request_id`, `tenant_slug`, provider).
+
 ## Arquitectura event-driven
 
 - **Entrada:** `processIntent()` en `engine.ts` traduce intenciones (`notify`, `execute_code`, `trigger_workflow`, `sync_drive`, `full_pipeline`, `remote_plan`, etc.) en uno o más jobs y los encola.

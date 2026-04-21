@@ -1,0 +1,150 @@
+services:
+  # Shadow stack v2: same infra dependencies, isolated service names and host ports.
+  context-builder-v2:
+    image: ${CONTEXT_BUILDER_IMAGE:-ghcr.io/cloudsysops/intcloudsysops-context-builder:latest}
+    container_name: opsly_context_builder_v2
+    env_file:
+      - ../.env
+    environment:
+      CONTEXT_BUILDER_PORT: "3112"
+      REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379/0
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+      OPS_REPO_ROOT: ${OPS_REPO_ROOT:-/opt/opsly}
+      KNOWLEDGE_INDEX_PATH: ${KNOWLEDGE_INDEX_PATH:-/opt/opsly/config/knowledge-index.json}
+    ports:
+      - "${SUPER_AGENT_CONTEXT_BUILDER_V2_HOST_BIND:-127.0.0.1}:${SUPER_AGENT_CONTEXT_BUILDER_V2_HOST_PORT:-3212}:3112"
+    volumes:
+      - ${OPS_REPO_HOST_PATH:-/opt/opsly}:/opt/opsly:ro
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - internal
+    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:3112/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  mcp-v2:
+    image: ${MCP_IMAGE:-ghcr.io/cloudsysops/intcloudsysops-mcp:latest}
+    container_name: opsly_mcp_v2
+    env_file:
+      - ../.env
+    environment:
+      OPSLY_API_URL: https://api.${PLATFORM_DOMAIN}
+      PLATFORM_ADMIN_TOKEN: ${PLATFORM_ADMIN_TOKEN}
+      GITHUB_TOKEN: ${GITHUB_TOKEN:-}
+      GITHUB_TOKEN_N8N: ${GITHUB_TOKEN_N8N:-}
+      PORT: "3103"
+      MCP_LLM_GATEWAY_URL: http://llm-gateway-v2:3110
+      MCP_ORCHESTRATOR_URL: http://orchestrator-v2:3111
+      MCP_CONTEXT_BUILDER_URL: http://context-builder-v2:3112
+    ports:
+      - "${SUPER_AGENT_MCP_V2_HOST_BIND:-127.0.0.1}:${SUPER_AGENT_MCP_V2_HOST_PORT:-3203}:3103"
+    depends_on:
+      llm-gateway-v2:
+        condition: service_started
+      orchestrator-v2:
+        condition: service_started
+    networks:
+      - internal
+    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:3103/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  llm-gateway-v2:
+    image: ${LLM_GATEWAY_IMAGE:-ghcr.io/cloudsysops/intcloudsysops-llm-gateway:latest}
+    container_name: opsly_llm_gateway_v2
+    env_file:
+      - ../.env
+    environment:
+      LLM_GATEWAY_PORT: "3110"
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+      REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379/0
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+      SUPABASE_URL: ${SUPABASE_URL}
+      SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY}
+      CONTEXT_BUILDER_URL: http://context-builder-v2:3112
+      LLM_GATEWAY_REPO_CONTEXT: "true"
+      OLLAMA_URL: ${OLLAMA_URL}
+      OLLAMA_MODEL: ${OLLAMA_MODEL}
+    ports:
+      - "${SUPER_AGENT_LLM_GATEWAY_V2_HOST_BIND:-127.0.0.1}:${SUPER_AGENT_LLM_GATEWAY_V2_HOST_PORT:-3210}:3110"
+    depends_on:
+      redis:
+        condition: service_healthy
+      context-builder-v2:
+        condition: service_started
+    networks:
+      - internal
+    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:3110/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  orchestrator-v2:
+    image: ${ORCHESTRATOR_IMAGE:-ghcr.io/cloudsysops/intcloudsysops-orchestrator:latest}
+    container_name: opsly_orchestrator_v2
+    env_file:
+      - ../.env
+    environment:
+      NODE_ENV: production
+      HERMES_ENABLED: ${HERMES_ENABLED:-false}
+      OPSLY_ORCHESTRATOR_ROLE: ${OPSLY_ORCHESTRATOR_ROLE:-control}
+      OPSLY_ORCHESTRATOR_MODE: ${OPSLY_ORCHESTRATOR_MODE:-queue-only}
+      ORCHESTRATOR_HEALTH_PORT: "3111"
+      ORCHESTRATOR_LLM_GATEWAY_URL: http://llm-gateway-v2:3110
+      OPSLY_API_INTERNAL_URL: ${OPSLY_API_INTERNAL_URL:-http://app:3000}
+      REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379/0
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+      PLATFORM_ADMIN_TOKEN: ${PLATFORM_ADMIN_TOKEN}
+    ports:
+      - "${SUPER_AGENT_ORCHESTRATOR_V2_HOST_BIND:-127.0.0.1}:${SUPER_AGENT_ORCHESTRATOR_V2_HOST_PORT:-3211}:3111"
+    depends_on:
+      redis:
+        condition: service_healthy
+      llm-gateway-v2:
+        condition: service_started
+    networks:
+      - internal
+    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:3111/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
