@@ -36,6 +36,8 @@ OpenClaw es el **framework de orquestación multi-agente** de Opsly. Ver `.openc
 
 ## Sistema de Skills (Auto-activación)
 
+**Regla central:** buscar skill existente primero; si no hay match adecuado, crear o extender skill por módulo usando `opsly-skill-creator`.
+
 ### CLI de Skills
 
 ```bash
@@ -56,27 +58,24 @@ source scripts/skill-hooks.sh
 skill_autoload "mi query"
 ```
 
-### Índice de Skills (v2.1)
+### Índice de Skills (v2.2)
 
 | Priority | Skill | Triggers | Cross-Refs |
 |----------|-------|----------|------------|
-| CRITICAL | `opsly-skill-creator` | crear skill, nueva skill, automatizar proceso, capturar workflow | quantum, context, autonomous |
-| CRITICAL | `opsly-context` | sesión, inicio, contexto | quantum, architect |
-| CRITICAL | `opsly-quantum` | orquestación, diagnóstico, maestro | todos |
-| CRITICAL | `opsly-autonomous` | autónomo, godmode, auto-fix | todos |
-| HIGH | `opsly-architect-senior` | arquitectura, ADR, riesgo | context, quantum |
-| HIGH | `opsly-api` | api, route, endpoint | supabase, mcp |
-| HIGH | `opsly-bash` | script, bash, shell | tenant, discord |
-| HIGH | `opsly-llm` | llm, ai, modelo, cache | feedback-ml, agent-teams |
-| HIGH | `opsly-mcp` | mcp, tool, oauth | api, tenant |
-| HIGH | `opsly-supabase` | sql, migration, rls | api, tenant |
-| HIGH | `opsly-tenant` | onboard, tenant, n8n | api, supabase, discord |
-| MEDIUM | `opsly-agent-teams` | bullmq, queue, job | quantum, api |
-| MEDIUM | `opsly-discord` | discord, webhook, alerta | bash, tenant |
-| MEDIUM | `opsly-feedback-ml` | feedback, ml, auto-implement | llm, api |
-| MEDIUM | `opsly-google-cloud` | gcp, drive, bigquery | bash, llm |
-| LOW | `opsly-notebooklm` | notebooklm, podcast, pdf | tenant, llm |
-| LOW | `opsly-simplify` | docker, compose, optimize | bash |
+| CRITICAL | `opsly-bootstrap` | inicio, sesión, contexto, autónomo | skill-creator |
+| CRITICAL | `opsly-skill-creator` | crear skill, capturar workflow, normalizar | bootstrap, frontend, api |
+| HIGH | `opsly-api` | api, route, endpoint, handler | supabase, billing, mcp |
+| HIGH | `opsly-frontend` | portal, admin, ui, react, tailwind | api, qa, tenant |
+| HIGH | `opsly-supabase` | sql, migration, rls | api, billing, tenant |
+| HIGH | `opsly-infra` | docker, compose, vps, deploy | tenant, discord, qa |
+| HIGH | `opsly-mcp` | mcp, tool, oauth | api, orchestrator |
+| HIGH | `opsly-llm` | llm, model, routing, cache | orchestrator, billing |
+| HIGH | `opsly-tenant` | onboard, tenant, n8n, uptime | api, supabase, infra |
+| HIGH | `opsly-orchestrator` | oar, workflow, n8n, super-agent | api, llm, qa |
+| HIGH | `opsly-billing` | stripe, invoice, metering, plan | api, supabase, tenant |
+| MEDIUM | `opsly-qa` | testing, smoke, audit, regression | api, frontend, infra |
+| MEDIUM | `opsly-discord` | discord, webhook, alerta | infra, tenant, qa |
+| MEDIUM | `opsly-architect` | arquitectura, adr, tradeoff | bootstrap, api, infra |
 
 ### Templates Reutilizables
 

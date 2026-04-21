@@ -136,27 +136,28 @@ node scripts/load-skills.js show opsly-api
 
 ### Por prioridad
 
-**CRITICAL** (siempre al inicio): `opsly-context` + `opsly-quantum`  
-**HIGH** (recomendados): `opsly-architect-senior`, `opsly-api`, `opsly-bash`, `opsly-llm`, `opsly-mcp`, `opsly-supabase`, `opsly-tenant`  
-**MEDIUM/LOW**: `opsly-agent-teams`, `opsly-discord`, `opsly-feedback-ml`, `opsly-google-cloud`, `opsly-notebooklm`, `opsly-simplify`
+**CRITICAL** (siempre al inicio): `opsly-bootstrap` + `opsly-skill-creator`
+**HIGH** (recomendados): `opsly-api`, `opsly-frontend`, `opsly-supabase`, `opsly-infra`, `opsly-mcp`, `opsly-llm`, `opsly-tenant`, `opsly-orchestrator`, `opsly-billing`
+**MEDIUM**: `opsly-qa`, `opsly-discord`, `opsly-architect`
+
+**Regla operativa obligatoria:** primero buscar y reutilizar skill existente; si no hay match adecuado, crear o extender una skill por módulo con `opsly-skill-creator`.
 
 | Skill                  | Path (repo)                           | Cuándo usar                                                      |
 | ---------------------- | ------------------------------------- | ---------------------------------------------------------------- |
-| opsly-context          | `skills/user/opsly-context/`          | **SIEMPRE** al inicio de sesión                                  |
-| opsly-quantum          | `skills/user/opsly-quantum/`          | Skill maestro: orquestación segura + `scripts/opsly-quantum.sh`  |
-| opsly-api              | `skills/user/opsly-api/`              | Rutas `apps/api/`                                                |
-| opsly-bash             | `skills/user/opsly-bash/`             | Scripts `scripts/`                                               |
-| opsly-llm              | `skills/user/opsly-llm/`              | Llamadas vía LLM Gateway                                         |
-| opsly-mcp              | `skills/user/opsly-mcp/`              | Tools MCP OpenClaw                                               |
-| opsly-supabase         | `skills/user/opsly-supabase/`         | Migraciones / SQL `platform`                                     |
-| opsly-discord          | `skills/user/opsly-discord/`          | `notify-discord.sh`                                              |
-| opsly-tenant           | `skills/user/opsly-tenant/`           | Onboarding / tenants                                             |
-| opsly-feedback-ml      | `skills/user/opsly-feedback-ml/`      | Feedback + ML                                                    |
-| opsly-agent-teams      | `skills/user/opsly-agent-teams/`      | BullMQ / TeamManager                                             |
-| opsly-notebooklm       | `skills/user/opsly-notebooklm/`       | Agente NotebookLM (notebooklm-py), contenido por tenant          |
-| opsly-architect-senior | `skills/user/opsly-architect-senior/` | Diagnóstico arquitectónico, riesgos, ADRs (tras `opsly-context`) |
-| opsly-google-cloud     | `skills/user/opsly-google-cloud/`     | Google Cloud: Drive, BigQuery, Vertex AI                         |
-| opsly-simplify         | `skills/user/opsly-simplify/`         | Docker & Compose optimization                                    |
+| opsly-bootstrap | `skills/user/opsly-bootstrap/` | **SIEMPRE** al inicio de sesión |
+| opsly-skill-creator | `skills/user/opsly-skill-creator/` | Crear/mejorar skills cuando falte proceso estándar |
+| opsly-api | `skills/user/opsly-api/` | Rutas `apps/api/` |
+| opsly-frontend | `skills/user/opsly-frontend/` | UI en `apps/portal`, `apps/admin`, `apps/web` |
+| opsly-supabase | `skills/user/opsly-supabase/` | Migraciones / SQL `platform` |
+| opsly-infra | `skills/user/opsly-infra/` | Docker, VPS, deploy, scripts de infra |
+| opsly-mcp | `skills/user/opsly-mcp/` | Tools MCP OpenClaw |
+| opsly-llm | `skills/user/opsly-llm/` | Llamadas vía LLM Gateway |
+| opsly-tenant | `skills/user/opsly-tenant/` | Onboarding / lifecycle tenant |
+| opsly-orchestrator | `skills/user/opsly-orchestrator/` | OAR + workflows n8n/super-agent |
+| opsly-billing | `skills/user/opsly-billing/` | Stripe subscriptions/invoices/metering |
+| opsly-qa | `skills/user/opsly-qa/` | Validación release, smoke, auditoría |
+| opsly-discord | `skills/user/opsly-discord/` | `notify-discord.sh` y alertas |
+| opsly-architect | `skills/user/opsly-architect/` | Decisiones de arquitectura / ADRs |
 
 ---
 

@@ -12,10 +12,18 @@ const context = process.argv.includes("--context") ? query : query;
 
 async function loadContextSkills() {
   console.log("\n⚡ Loading bootstrap skills...");
+  const matches = findSkills(context);
+  const top = matches[0];
+  const shouldCreateSkill = !top || top.score < 20;
 
   const chain = suggestChain(context);
 
   console.log(`   Chain: ${chain.join(" → ")}\n`);
+  if (shouldCreateSkill) {
+    console.log("   🧩 No hay skill suficientemente específica. Recomendación: crear/mejorar skill con opsly-skill-creator.\n");
+  } else {
+    console.log(`   ✅ Reutilizar skill principal existente: ${top.name} (score ${top.score})\n`);
+  }
 
   const skills = loadSkillsChain(chain);
 

@@ -1,0 +1,19 @@
+{
+  "name": "opsly-bootstrap",
+  "version": "1.0.0",
+  "description": "Bootstrap de sesión: carga contexto operativo, detecta gaps, auto-activa skills según tarea. Fusión de context+quantum+autonomous.",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "query": { "type": "string", "description": "Query del usuario para auto-detectar skills" }
+    },
+    "additionalProperties": true
+  },
+  "outputSchema": {
+    "type": "object",
+    "properties": {
+      "gaps": { "type": "array", "items": { "type": "string" } },
+      "skillsLoaded": { "type": "array", "items": { "type": "string" } }
+    }
+  }
+}

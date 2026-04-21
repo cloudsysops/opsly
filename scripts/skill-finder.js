@@ -10,6 +10,7 @@ import { fileURLToPath } from "url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const SKILLS_INDEX = join(__dirname, "../skills/index.json");
+const ADEQUATE_SCORE_THRESHOLD = 20;
 
 // Fuzzy matching simple
 function fuzzyMatch(str, pattern) {
@@ -68,15 +69,63 @@ export function findSkills(query) {
   return matches.sort((a, b) => b.score - a.score);
 }
 
+function inferModule(query) {
+  const q = query.toLowerCase();
+  const rules = [
+    { module: "frontend", keywords: ["frontend", "react", "next", "portal", "admin", "ui", "tailwind"] },
+    { module: "billing", keywords: ["billing", "stripe", "invoice", "subscription", "metering", "plan"] },
+    { module: "orchestration", keywords: ["orchestrator", "oar", "workflow", "n8n", "job", "agent"] },
+    { module: "database", keywords: ["supabase", "sql", "migration", "rls", "postgres"] },
+    { module: "operations", keywords: ["vps", "docker", "compose", "deploy", "infra", "tenant"] },
+    { module: "integration", keywords: ["mcp", "oauth", "pkce", "tool"] },
+    { module: "ai", keywords: ["llm", "model", "prompt", "cache", "routing"] },
+    { module: "qa", keywords: ["qa", "test", "smoke", "audit", "regression"] },
+    { module: "development", keywords: ["api", "endpoint", "route", "handler"] },
+    { module: "architecture", keywords: ["architecture", "arquitectura", "adr", "tradeoff", "diseño"] },
+  ];
+  for (const rule of rules) {
+    if (rule.keywords.some((k) => q.includes(k))) return rule.module;
+  }
+  return "tooling";
+}
+
+function evaluateAdequacy(matches, query) {
+  if (matches.length === 0) {
+    return {
+      hasAdequateMatch: false,
+      shouldCreateSkill: true,
+      reason: "No hay skills coincidentes en el índice.",
+      suggestedModule: inferModule(query),
+    };
+  }
+
+  const top = matches[0];
+  const hasAdequateMatch = top.score >= ADEQUATE_SCORE_THRESHOLD;
+  return {
+    hasAdequateMatch,
+    shouldCreateSkill: !hasAdequateMatch,
+    reason: hasAdequateMatch
+      ? `Skill existente adecuada: ${top.name} (score ${top.score}).`
+      : `No hay skill suficientemente específica (top: ${top.name}, score ${top.score}).`,
+    suggestedModule: hasAdequateMatch ? top.category : inferModule(query),
+  };
+}
+
 export function suggestChain(query) {
   const matches = findSkills(query);
-  if (matches.length === 0) return [];
+  const adequacy = evaluateAdequacy(matches, query);
+  if (!adequacy.hasAdequateMatch) return ["opsly-bootstrap", "opsly-skill-creator"];
 
   const chain = matches.map(s => s.name);
 
-  // Auto-add context if not present
-  if (!chain.includes("opsly-context") && matches[0].priority === "critical") {
-    chain.unshift("opsly-context");
+  // Bootstrap is always first for Opsly sessions.
+  if (!chain.includes("opsly-bootstrap")) {
+    chain.unshift("opsly-bootstrap");
+  }
+
+  // Skill creator stays available by default so agents can capture new workflows.
+  if (!chain.includes("opsly-skill-creator")) {
+    chain.push("opsly-skill-creator");
   }
 
   return chain;
@@ -113,8 +162,18 @@ export function loadSkillsChain(chain) {
 
 // CLI
 function formatOutput(matches, query, autonomous = false) {
+  const adequacy = evaluateAdequacy(matches, query);
+
   if (matches.length === 0) {
-    return { status: "no_match", query, skills: [] };
+    return {
+      status: "no_match",
+      query,
+      skills: [],
+      decision: {
+        action: "create_or_extend_skill",
+        ...adequacy,
+      },
+    };
   }
 
   if (autonomous) {
@@ -125,6 +184,10 @@ function formatOutput(matches, query, autonomous = false) {
       chain,
       primary: matches[0].name,
       confidence: matches[0].score > 30 ? "high" : matches[0].score > 15 ? "medium" : "low",
+      decision: {
+        action: adequacy.shouldCreateSkill ? "create_or_extend_skill" : "reuse_existing_skill",
+        ...adequacy,
+      },
       skills: matches.slice(0, 5).map(s => ({
         name: s.name,
         score: s.score,
@@ -136,6 +199,10 @@ function formatOutput(matches, query, autonomous = false) {
   return {
     status: "match",
     query,
+    decision: {
+      action: adequacy.shouldCreateSkill ? "create_or_extend_skill" : "reuse_existing_skill",
+      ...adequacy,
+    },
     skills: matches.map(s => ({
       name: s.name,
       priority: s.priority,

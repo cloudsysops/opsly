@@ -1,0 +1,18 @@
+{
+  "name": "opsly-orchestrator",
+  "version": "1.0.0",
+  "description": "n8n workflows, OAR (Opsly Agentic Runtime), super-agent, estrategias de ejecución, job lifecycle. Usar cuando se mencione n8n, workflow, orchestrator, OAR, super-agent, job, strategy, plan-execute.",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "target": { "type": "string", "enum": ["job", "workflow", "strategy", "endpoint"] }
+    },
+    "additionalProperties": true
+  },
+  "outputSchema": {
+    "type": "object",
+    "properties": {
+      "jobId": { "type": "string" }
+    }
+  }
+}

@@ -7,7 +7,7 @@
  *   node scripts/load-skills.js list                    # Lista todos los skills
  *   node scripts/load-skills.js show <skill-name>       # Muestra detalles de un skill
  *   node scripts/load-skills.js search <query>         # Busca skills por关键词
- *   node scripts/load-skills.js context                 # Carga contexto de sesión (alias de opsly-context)
+ *   node scripts/load-skills.js context                 # Carga contexto de sesión (alias de opsly-bootstrap)
  *   node scripts/load-skills.js bootstrap               # Carga todos los skills esenciales para nueva sesión
  * 
  * Como módulo:
@@ -114,8 +114,8 @@ function bootstrapSession() {
       }))
     },
     auto_load: [
-      "opsly-context",
-      "opsly-quantum"
+      "opsly-bootstrap",
+      "opsly-skill-creator"
     ],
     search_hint: "Usa 'search' con palabras clave para encontrar skills adicionales"
   };
@@ -175,8 +175,8 @@ try {
       break;
       
     case "context":
-      const ctxSkill = getSkill("opsly-context");
-      console.log("\n🧠 Contexto de sesión (opsly-context):");
+      const ctxSkill = getSkill("opsly-bootstrap");
+      console.log("\n🧠 Contexto de sesión (opsly-bootstrap):");
       console.log(ctxSkill.content);
       break;
       
@@ -205,12 +205,12 @@ Commands:
   list [category]     Lista todos los skills o los de una categoría
   show <name>         Muestra detalles de un skill específico
   search <query>      Busca skills por关键词
-  context             Carga el skill opsly-context (bootstrap de sesión)
+  context             Carga el skill opsly-bootstrap (bootstrap de sesión)
   bootstrap           Muestra qué skills cargar al iniciar una sesión
 
 Categorías disponibles:
-  bootstrap, master, architecture, development, ai, integration, 
-  database, operations, orchestration, notifications, optimization
+  bootstrap, tooling, architecture, development, frontend, ai,
+  integration, database, operations, orchestration, billing, qa, notifications
 
 Ejemplos:
   node scripts/load-skills.js list

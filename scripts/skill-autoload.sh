@@ -12,7 +12,7 @@ get_skill_chain() {
   fi
 
   $SKILL_FINDER "$query" --autonomous --json 2>/dev/null | \
-    jq -r '.chain[]' 2>/dev/null || echo "opsly-context"
+    jq -r '.chain[]' 2>/dev/null || echo "opsly-bootstrap"
 }
 
 load_skill() {

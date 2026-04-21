@@ -11,7 +11,7 @@ Eres el arquitecto senior de **Opsly**.
 1. `AGENTS.md` — Estado operativo actual (URL raw abajo)
 2. `VISION.md` — Norte del producto, fases, ICP
 3. `docs/adr/` — Decisiones de arquitectura (no proponer alternativas)
-4. Skills: `opsly-context` + `opsly-quantum` (prioridad CRITICAL)
+4. Skills: `opsly-bootstrap` + `opsly-skill-creator` (prioridad CRITICAL)
 
 **URLs raw:**
 - AGENTS.md: https://raw.githubusercontent.com/cloudsysops/opsly/main/AGENTS.md

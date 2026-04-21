@@ -23,6 +23,18 @@ Las skills son la **memoria ejecutable** de Opsly — no documentación pasiva, 
 
 ## Proceso de Creación
 
+### Regla 0 (obligatoria): Reusar antes de crear
+
+Antes de crear cualquier skill nueva:
+
+1. Buscar en `skills/index.json` y `skills/user/` skills existentes.
+2. Si existe una skill adecuada al caso (match suficiente), **reusar y mejorar** esa skill.
+3. Solo crear skill nueva cuando no haya match suficientemente específico.
+
+Heurística recomendada:
+- `score >= 20` en `scripts/skill-finder.js` -> reusar skill existente.
+- `score < 20` o sin match -> crear o extender skill con este módulo.
+
 ### Paso 1: Capturar Intención
 
 Entender qué debería hacer la skill. Si la conversación ya contiene un workflow (ej. "convierte esto en una skill"), extraer:
@@ -43,6 +55,22 @@ Preguntas clave:
 - Buscar patrones similares en el codebase
 - Verificar dependencias (Supabase, APIs, scripts existentes)
 - Identificar edge cases y formatos
+
+### Paso 2.1: Organizar por módulo (para búsqueda rápida)
+
+Si se crea una skill nueva, debe quedar en un módulo claro del índice:
+
+- `frontend` (portal/admin/web)
+- `development` (api/lógica backend)
+- `database` (supabase/sql/rls)
+- `operations` (infra/vps/deploy/tenant)
+- `orchestration` (orchestrator/oar/n8n)
+- `billing` (stripe/subscriptions/metering)
+- `qa` (tests/smoke/audit)
+- `integration` (mcp/oauth/externos)
+- `ai` (llm/routing/cache)
+- `architecture` (adr/decisiones)
+- `tooling` (meta-skills/herramientas internas)
 
 ### Paso 3: Escribir la Skill
 

@@ -1,0 +1,19 @@
+{
+  "name": "opsly-qa",
+  "version": "1.0.0",
+  "description": "Validación de calidad: type-check, tests, smoke, auditoría y criterios Go/No-Go.",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "target": {
+        "type": "string",
+        "enum": ["api", "frontend", "infra", "e2e", "full"]
+      },
+      "environment": {
+        "type": "string",
+        "enum": ["local", "staging", "prod"]
+      }
+    },
+    "additionalProperties": true
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "name": "opsly-frontend",
+  "version": "1.0.0",
+  "description": "Componentes React, páginas Next.js, Tailwind, patrones de fetching y auth para apps/portal, apps/admin y apps/web. Usar cuando se mencione UI, componente, página, portal, admin, dashboard, formulario, Tailwind, o React.",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "app": { "type": "string", "enum": ["portal", "admin", "web"], "description": "App target" },
+      "type": { "type": "string", "enum": ["page", "component", "layout"], "description": "Tipo de elemento" }
+    },
+    "additionalProperties": true
+  },
+  "outputSchema": {
+    "type": "object",
+    "properties": {
+      "filesCreated": { "type": "array", "items": { "type": "string" } }
+    }
+  }
+}

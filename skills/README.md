@@ -120,43 +120,42 @@ skill_validate
 skill_list
 ```
 
-## Skills Disponibles (16)
+## Skills Disponibles (14)
 
 ### Critical (2)
 
 | Skill | Triggers | Descripción |
 |-------|----------|-------------|
-| `opsly-autonomous` | autónomo, godmode, auto-fix | Sistema de autonomía completo |
-| `opsly-context` | sesión, inicio, contexto | Bootstrap de sesión |
+| `opsly-bootstrap` | sesión, inicio, contexto | Bootstrap de sesión modular |
+| `opsly-skill-creator` | crear skill, capturar workflow | Meta-skill de creación/normalización |
 
-### High (7)
+### High (9)
 
 | Skill | Triggers | Descripción |
 |-------|----------|-------------|
-| `opsly-quantum` | orquestación, diagnóstico | Skill maestro |
 | `opsly-api` | api, route, endpoint | Rutas API |
-| `opsly-bash` | script, bash, shell | Scripts Bash |
-| `opsly-llm` | llm, ai, modelo | LLM Gateway |
-| `opsly-mcp` | mcp, tool, oauth | MCP OpenClaw |
+| `opsly-frontend` | portal, admin, ui | Frontend apps |
 | `opsly-supabase` | sql, supabase, rls | Migraciones |
+| `opsly-infra` | docker, compose, vps | Infra + deploy |
+| `opsly-mcp` | mcp, tool, oauth | MCP OpenClaw |
+| `opsly-llm` | llm, ai, modelo | LLM Gateway |
 | `opsly-tenant` | tenant, onboard, n8n | Onboarding |
+| `opsly-orchestrator` | oar, workflow, n8n | Orquestador |
+| `opsly-billing` | stripe, metering, invoice | Billing |
 
-### Medium (5)
+### Medium (3)
 
 | Skill | Triggers | Descripción |
 |-------|----------|-------------|
-| `opsly-agent-teams` | bullmq, queue, job | BullMQ teams |
 | `opsly-discord` | discord, webhook | Notificaciones |
-| `opsly-feedback-ml` | feedback, ml, auto | Feedback + ML |
-| `opsly-google-cloud` | gcp, drive, bigquery | GCP |
-| `opsly-architect-senior` | arquitectura, ADR | Arquitectura |
+| `opsly-qa` | test, smoke, audit | QA y release |
+| `opsly-architect` | arquitectura, ADR | Arquitectura |
 
-### Low (2)
+### Low (0)
 
 | Skill | Triggers | Descripción |
 |-------|----------|-------------|
-| `opsly-notebooklm` | notebooklm, podcast | NotebookLM |
-| `opsly-simplify` | docker, compose | Docker optimization |
+No hay skills low en el set modular activo.
 
 ## Templates
 
@@ -205,13 +204,18 @@ node scripts/skill-finder.js --autonomous --json
 
 | Métrica | Target | Actual |
 |---------|--------|--------|
-| Skills con manifest.json | 100% | 16/16 ✅ |
-| Skills con triggers | 100% | 16/16 ✅ |
-| Skills con cross-refs | 100% | 16/16 ✅ |
+| Skills con manifest.json | 100% | 14/14 ✅ |
+| Skills con triggers | 100% | 14/14 ✅ |
+| Skills con cross-refs | 100% | 14/14 ✅ |
 | Avg triggers por skill | 5+ | 6.2 |
 | Templates disponibles | 5 | 5 ✅ |
 
 ## Changelog
+
+### v2.1 (2026-04-21)
+- Reorganización por módulos reales del monorepo
+- `opsly-bootstrap` + `opsly-skill-creator` como default
+- Nuevas skills: frontend, infra, orchestrator, billing, qa, architect
 
 ### v2.0 (2026-04-15)
 - Sistema de autonomía completo

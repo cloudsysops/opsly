@@ -1,0 +1,15 @@
+{
+  "name": "opsly-architect",
+  "version": "1.0.0",
+  "description": "Decisiones de arquitectura y ADRs para cambios transversales en la plataforma Opsly.",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "decisionScope": {
+        "type": "string",
+        "enum": ["api", "frontend", "infra", "orchestrator", "cross-cutting"]
+      }
+    },
+    "additionalProperties": true
+  }
+}
