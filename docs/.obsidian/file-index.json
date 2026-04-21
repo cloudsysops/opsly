@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-04-21T14:32:40Z",
-  "totalFiles": 183,
+  "lastIndexed": "2026-04-21T14:53:42Z",
+  "totalFiles": 185,
   "files": [
     "ACTIVE-PROMPT.md",
     "ADMIN-ECOSYSTEM.md",
@@ -85,6 +85,7 @@
     "IMPLEMENTATION-STATUS.md",
     "INCIDENT-2026-04-11-DISCO-LLENO.md",
     "INVITATIONS_RUNBOOK.md",
+    "KNOWLEDGE-BRAIN-SYSTEM.md",
     "KNOWLEDGE-SYSTEM.md",
     "LANIDEA-OPENCLAW.md",
     "LIBRARIES-INSTALLED.md",
@@ -104,6 +105,7 @@
     "NOTION-MCP-SERVER.md",
     "OAR.md",
     "OBSERVABILITY.md",
+    "OBSIDIAN-NOTEBOOKLM-N8N-INTEGRATION.md",
     "OBSIDIAN-README.md",
     "OLLAMA-DEPLOYMENT.md",
     "OPENCLAW-ARCHITECTURE.md",
