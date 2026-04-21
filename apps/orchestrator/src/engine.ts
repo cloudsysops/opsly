@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { buildConsciousAppendix } from "./agents/conscious-layer.js";
 import { createDefaultToolRegistry } from "./agents/tools/registry.js";
+import { evaluateAutomationPolicy } from "./agents/opsly-lili/policy-engine.js";
 import { MAX_PLANNER_ACTIONS } from "./constants-planner.js";
 import type { Queue } from "bullmq";
 import { logUsage } from "@intcloudsysops/llm-gateway";
@@ -138,12 +139,13 @@ export async function processIntent(
       if (!tenantSlug || tenantSlug.length === 0) {
         throw new Error("oar_react requires tenant_slug");
       }
-      const promptRaw =
-        typeof req.context.prompt === "string"
-          ? req.context.prompt.trim()
-          : typeof req.context.query === "string"
-            ? req.context.query.trim()
-            : "";
+      let promptSource = "";
+      if (typeof req.context.prompt === "string") {
+        promptSource = req.context.prompt;
+      } else if (typeof req.context.query === "string") {
+        promptSource = req.context.query;
+      }
+      const promptRaw = promptSource.trim();
       if (promptRaw.length === 0) {
         throw new Error("oar_react requires context.prompt or context.query (non-empty string)");
       }
@@ -195,18 +197,28 @@ export async function processIntent(
 
       const initialPrompt = `You are the Opsly OAR ReAct agent. Follow the JSON protocol in your instructions.\n\nUser task:\n${promptRaw}`;
 
+      const liliDecision = evaluateAutomationPolicy(promptRaw);
+      const policyInstructions =
+        liliDecision.useN8nAutomation
+          ? `\n\nPolicy (opsly_lili): ${liliDecision.reason}\nExecute with this plan:\n1) ${liliDecision.recommendedSteps[0]}\n2) ${liliDecision.recommendedSteps[1]}\n3) ${liliDecision.recommendedSteps[2]}\nAlways keep tenant_slug and request_id in actions.`
+          : "";
+      const effectivePrompt = `${initialPrompt}${policyInstructions}`;
+
       // Mode System: Select strategy based on tenant mode
       const tenantMode = typeof req.context.tenantMode === "string"
         ? req.context.tenantMode.toLowerCase()
         : "hacker";
 
-      const usesPlanExecute = tenantMode === "architect" || tenantMode === "developer";
+      const usesPlanExecute =
+        tenantMode === "architect" ||
+        tenantMode === "developer" ||
+        liliDecision.recommendedMode === "plan_execute";
 
       const oarResult = usesPlanExecute
         ? await runPlanExecuteStrategy(
             tenantSlug,
             sessionId,
-            initialPrompt,
+            effectivePrompt,
             actionPort,
             memory,
             llmClient,
@@ -215,7 +227,7 @@ export async function processIntent(
         : await runReActStrategy(
             tenantSlug,
             sessionId,
-            initialPrompt,
+            effectivePrompt,
             actionPort,
             memory,
             llmClient,
@@ -290,12 +302,12 @@ export async function processIntent(
       }
       const snapshot = buildPlannerContextSnapshot({ ...req, intent });
       const toolRegistry = createDefaultToolRegistry();
-      const intentHint =
-        typeof req.context.query === "string"
-          ? req.context.query
-          : typeof req.context.prompt === "string"
-            ? req.context.prompt
-            : "necesito calcular";
+      let intentHint = "necesito calcular";
+      if (typeof req.context.query === "string") {
+        intentHint = req.context.query;
+      } else if (typeof req.context.prompt === "string") {
+        intentHint = req.context.prompt;
+      }
       const discoveredTools = toolRegistry.search(intentHint);
       if (discoveredTools.length > 0) {
         process.stdout.write(
