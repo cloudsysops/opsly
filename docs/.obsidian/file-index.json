@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-04-21T14:19:03Z",
-  "totalFiles": 182,
+  "lastIndexed": "2026-04-21T14:32:40Z",
+  "totalFiles": 183,
   "files": [
     "ACTIVE-PROMPT.md",
     "ADMIN-ECOSYSTEM.md",
@@ -130,6 +130,7 @@
     "QUALITY-GATES.md",
     "QUICK-REFERENCE.md",
     "QUICKSTART-AGENTS.md",
+    "README.md",
     "README.md",
     "REFACTOR-CHECKLIST.md",
     "RETENTION-POLICY.md",
