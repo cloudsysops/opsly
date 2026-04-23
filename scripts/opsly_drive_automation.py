@@ -12,15 +12,21 @@ Auth:
 
 Scopes:
 - Defaults to drive (full) for folder creation + uploads. You can override with OPSLY_DRIVE_SCOPE.
+
+TLS:
+- macOS Python may need a CA bundle: `pip install certifi`, or SSL_CERT_FILE, or Homebrew OpenSSL paths.
+- Debug only: OPSLY_DRIVE_SSL_INSECURE=1
 """
 
 from __future__ import annotations
 
 import argparse
 import base64
+import http.client
 import json
 import os
 import shutil
+import ssl
 import subprocess
 import time
 import urllib.error
@@ -35,6 +41,30 @@ def _repo_root() -> Path:
     return Path(__file__).resolve().parents[1]
 
 
+def _https_context() -> ssl.SSLContext:
+    if os.environ.get("OPSLY_DRIVE_SSL_INSECURE", "").strip() in ("1", "true", "yes"):
+        ctx = ssl.create_default_context()
+        ctx.check_hostname = False
+        ctx.verify_mode = ssl.CERT_NONE
+        return ctx
+    try:
+        import certifi
+
+        return ssl.create_default_context(cafile=certifi.where())
+    except Exception:
+        pass
+    for ca in (
+        os.environ.get("SSL_CERT_FILE", "").strip(),
+        "/opt/homebrew/etc/openssl@3/cert.pem",
+        "/usr/local/etc/openssl@3/cert.pem",
+        "/etc/ssl/cert.pem",
+        "/private/etc/ssl/cert.pem",
+    ):
+        if ca and os.path.isfile(ca):
+            return ssl.create_default_context(cafile=ca)
+    return ssl.create_default_context()
+
+
 def _read_json_file(path: Path) -> dict[str, Any]:
     raw = path.read_text(encoding="utf-8").lstrip("\ufeff")
     return json.loads(raw)
@@ -45,6 +75,24 @@ def _load_drive_layout() -> dict[str, Any]:
     root = str(os.environ.get("OPSLY_DRIVE_ROOT_FOLDER_ID", "")).strip()
     if not root:
         root = str(layout.get("root_folder_id", "")).strip()
+    if not root and shutil.which("doppler"):
+        try:
+            root = subprocess.check_output(
+                [
+                    "doppler",
+                    "secrets",
+                    "get",
+                    "OPSLY_DRIVE_ROOT_FOLDER_ID",
+                    "--project",
+                    "ops-intcloudsysops",
+                    "--config",
+                    "prd",
+                    "--plain",
+                ],
+                text=True,
+            ).strip()
+        except Exception:
+            root = ""
     if not root:
         raise RuntimeError(
             "Missing Drive root folder id. Set OPSLY_DRIVE_ROOT_FOLDER_ID "
@@ -61,7 +109,6 @@ def _load_service_account_json() -> dict[str, Any]:
         if p:
             raw = Path(p).read_text(encoding="utf-8").strip()
     if not raw and shutil.which("doppler"):
-        # Best-effort: match other scripts' convention.
         try:
             raw = subprocess.check_output(
                 [
@@ -120,7 +167,6 @@ def _jwt_for_sa(sa: dict[str, Any], scope: str) -> str:
         "ascii"
     )
 
-    # openssl dgst -sha256 -sign <(printf '%s' "$private_key")
     import tempfile
 
     with tempfile.NamedTemporaryFile("w", encoding="utf-8", delete=False) as kf:
@@ -139,6 +185,34 @@ def _jwt_for_sa(sa: dict[str, Any], scope: str) -> str:
     return jwt
 
 
+def _oauth_token_via_curl(data: bytes, timeout_sec: int) -> dict[str, Any]:
+    if not shutil.which("curl"):
+        raise RuntimeError("curl not found for OAuth")
+    r = subprocess.run(
+        [
+            "curl",
+            "-sS",
+            "-m",
+            str(timeout_sec),
+            "-X",
+            "POST",
+            "https://oauth2.googleapis.com/token",
+            "-H",
+            "Content-Type: application/x-www-form-urlencoded",
+            "--data-binary",
+            "@-",
+        ],
+        input=data,
+        capture_output=True,
+        timeout=timeout_sec + 15,
+        check=False,
+    )
+    if r.returncode != 0:
+        err = (r.stderr or b"").decode("utf-8", errors="replace")
+        raise RuntimeError(f"curl OAuth exit {r.returncode}: {err[:2000]}")
+    return json.loads(r.stdout.decode("utf-8"))
+
+
 def _oauth_token_from_jwt(jwt: str) -> str:
     data = urllib.parse.urlencode(
         {
@@ -146,14 +220,39 @@ def _oauth_token_from_jwt(jwt: str) -> str:
             "assertion": jwt,
         }
     ).encode("utf-8")
-    req = urllib.request.Request(
-        "https://oauth2.googleapis.com/token",
-        data=data,
-        headers={"Content-Type": "application/x-www-form-urlencoded"},
-        method="POST",
+    oauth_timeout = int(os.environ.get("OPSLY_DRIVE_OAUTH_TIMEOUT", "120"))
+    use_curl = os.environ.get("OPSLY_DRIVE_OAUTH_PREFER_CURL", "1").strip().lower() not in (
+        "0",
+        "false",
+        "no",
     )
-    with urllib.request.urlopen(req, timeout=60) as resp:
-        payload = json.loads(resp.read().decode("utf-8"))
+    if use_curl and shutil.which("curl"):
+        payload = _oauth_token_via_curl(data, oauth_timeout)
+    else:
+        conn = http.client.HTTPSConnection(
+            "oauth2.googleapis.com",
+            context=_https_context(),
+            timeout=oauth_timeout,
+        )
+        try:
+            conn.request(
+                "POST",
+                "/token",
+                body=data,
+                headers={
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    "Content-Length": str(len(data)),
+                },
+            )
+            res = conn.getresponse()
+            raw = res.read()
+            if res.status >= 400:
+                raise RuntimeError(
+                    f"OAuth token HTTP {res.status}: {raw.decode('utf-8', errors='replace')[:2000]}"
+                )
+            payload = json.loads(raw.decode("utf-8"))
+        finally:
+            conn.close()
     token = payload.get("access_token", "")
     if not token:
         raise RuntimeError(f"Failed to obtain access_token: {payload}")
@@ -172,7 +271,7 @@ class DriveClient:
     def get_json(self, url: str) -> Any:
         req = urllib.request.Request(url, headers=self._headers(), method="GET")
         try:
-            with urllib.request.urlopen(req, timeout=120) as resp:
+            with urllib.request.urlopen(req, timeout=120, context=_https_context()) as resp:
                 return json.loads(resp.read().decode("utf-8"))
         except urllib.error.HTTPError as e:
             body = e.read().decode("utf-8", errors="replace")
@@ -186,7 +285,7 @@ class DriveClient:
             method=method,
         )
         try:
-            with urllib.request.urlopen(req, timeout=300) as resp:
+            with urllib.request.urlopen(req, timeout=300, context=_https_context()) as resp:
                 raw = resp.read().decode("utf-8")
                 return json.loads(raw) if raw else {}
         except urllib.error.HTTPError as e:
@@ -201,7 +300,7 @@ class DriveClient:
             method="PATCH",
         )
         try:
-            with urllib.request.urlopen(req, timeout=600) as resp:
+            with urllib.request.urlopen(req, timeout=600, context=_https_context()) as resp:
                 raw = resp.read().decode("utf-8")
                 return json.loads(raw) if raw else {}
         except urllib.error.HTTPError as e:
@@ -211,7 +310,7 @@ class DriveClient:
     def get_bytes(self, url: str) -> bytes:
         req = urllib.request.Request(url, headers=self._headers(), method="GET")
         try:
-            with urllib.request.urlopen(req, timeout=600) as resp:
+            with urllib.request.urlopen(req, timeout=600, context=_https_context()) as resp:
                 return resp.read()
         except urllib.error.HTTPError as e:
             err = e.read().decode("utf-8", errors="replace")
@@ -284,7 +383,6 @@ def upload_or_update_file(
         updated = client.patch_bytes(url, data, mime)
         return str(updated["id"])
 
-    # Create metadata (empty file) then upload media (simple/resilient).
     create_qs = urllib.parse.urlencode({"supportsAllDrives": "true"})
     create_url = f"https://www.googleapis.com/drive/v3/files?{create_qs}"
     meta = {"name": filename, "parents": [parent_id]}
@@ -324,7 +422,10 @@ def cmd_ensure_layout(_: argparse.Namespace) -> int:
 
     sa = _load_service_account_json()
     scope = os.environ.get("OPSLY_DRIVE_SCOPE", "https://www.googleapis.com/auth/drive")
-    token = _oauth_token_from_jwt(_jwt_for_sa(sa, scope))
+    print("[drive] Firmando JWT (service account)…", flush=True)
+    signed_jwt = _jwt_for_sa(sa, scope)
+    print("[drive] Solicitando access_token a Google OAuth…", flush=True)
+    token = _oauth_token_from_jwt(signed_jwt)
     client = DriveClient(token)
 
     for _, folder_name in folders.items():
@@ -341,7 +442,10 @@ def cmd_upload_tenant_pack(_: argparse.Namespace) -> int:
 
     sa = _load_service_account_json()
     scope = os.environ.get("OPSLY_DRIVE_SCOPE", "https://www.googleapis.com/auth/drive")
-    token = _oauth_token_from_jwt(_jwt_for_sa(sa, scope))
+    print("[drive] Firmando JWT (service account)…", flush=True)
+    signed_jwt = _jwt_for_sa(sa, scope)
+    print("[drive] Solicitando access_token a Google OAuth…", flush=True)
+    token = _oauth_token_from_jwt(signed_jwt)
     client = DriveClient(token)
 
     prompts_parent = ensure_child_folder(client, root_id, str(folder_names.get("prompts", "PROMPTS")))
@@ -365,7 +469,10 @@ def cmd_upload_tenant_pack(_: argparse.Namespace) -> int:
 def cmd_export_doc(ns: argparse.Namespace) -> int:
     sa = _load_service_account_json()
     scope = os.environ.get("OPSLY_DRIVE_IMPORT_SCOPE", "https://www.googleapis.com/auth/drive.readonly")
-    token = _oauth_token_from_jwt(_jwt_for_sa(sa, scope))
+    print("[drive] Firmando JWT (service account)…", flush=True)
+    signed_jwt = _jwt_for_sa(sa, scope)
+    print("[drive] Solicitando access_token a Google OAuth…", flush=True)
+    token = _oauth_token_from_jwt(signed_jwt)
     client = DriveClient(token)
 
     out = Path(ns.out)
