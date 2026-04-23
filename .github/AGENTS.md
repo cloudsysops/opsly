@@ -5,7 +5,8 @@
 > Al terminar: actualiza las secciones marcadas con 🔄.
 
 **📚 Wiki:** [`docs/README.md`](docs/README.md) — índice completo de documentación  
-**⚡ Cheatsheet:** [`docs/QUICK-REFERENCE.md`](docs/QUICK-REFERENCE.md) — SSH, comandos, vars, sprint actual
+**⚡ Cheatsheet:** [`docs/QUICK-REFERENCE.md`](docs/QUICK-REFERENCE.md) — SSH, comandos, vars, sprint actual  
+**🧠 Sistema de conocimiento:** [`docs/KNOWLEDGE-SYSTEM.md`](docs/KNOWLEDGE-SYSTEM.md) — NotebookLM + Obsidian, flujo para agentes
 
 **Mapa de documentación (evitar duplicar con `docs/AGENTS-GUIDE.md`):** `VISION.md` = norte de producto; **`AGENTS.md` (este archivo)** = estado operativo, próximo paso, bloqueantes e incrementos **por sesión**; **`docs/AGENTS-GUIDE.md`** = convenciones **solo** para varios asistentes/automatismos en paralelo (no sustituye AGENTS). `docs/adr/` = decisiones de arquitectura. No copiar tablas de límites por plan aquí: enlazar `AGENTS-GUIDE` + `VISION.md`.
 
@@ -76,6 +77,9 @@ npm run validate-skills
 
 # Update repo state JSON
 npm run update-state
+
+# Worker: comprobar / levantar Ollama local (compose opslyquantum, solo servicio ollama)
+npm run opsly:ensure-ollama -- --ensure
 ```
 
 **Lint rules:** ESLint staged only on `apps/api/app` + `apps/api/lib` after type-check.
@@ -87,10 +91,13 @@ npm run update-state
 ### Flujo con Claude (multi-agente)
 
 1. **Contexto:** misma **URL raw** de `AGENTS.md` (arriba) y, si aplica, `VISION.md` — referencias en `.claude/CLAUDE.md`.
-2. **Prompt operativo en VPS (opcional):** `docs/ACTIVE-PROMPT.md` — tras `git pull` en `/opt/opsly`, el servicio **`cursor-prompt-monitor`** (`scripts/cursor-prompt-monitor.sh`, unidad `infra/systemd/cursor-prompt-monitor.service`) detecta cambios cada **30 s** y ejecuta el contenido filtrado como shell. **Solo** líneas que no empiezan por `#` ni `---`; si todo es comentario, no ejecuta nada. **Riesgo RCE** si alguien no confiable puede editar ese archivo.
-3. **Logs en VPS:** `/opt/opsly/logs/cursor-prompt-monitor.log` (directorio `logs/` ignorado en git).
-4. **Docs de apoyo:** `docs/CLAUDE-WORKFLOW-OPTIMIZATION.md`, `docs/OPENCLAW-ARCHITECTURE.md`.
-5. **Espejo Google Drive (opcional):** `docs/GOOGLE-DRIVE-SYNC.md`, lista `docs/opsly-drive-files.list`, config `.opsly-drive-config.json` — útil si Claude (u otro asistente) tiene Drive conectado; la fuente de verdad sigue siendo git/GitHub.
+2. **Sistema de conocimiento:**
+   - [`docs/KNOWLEDGE-SYSTEM.md`](docs/KNOWLEDGE-SYSTEM.md) — LEER PRIMERO
+   - Query startup obligatorio: `"¿Cuál es el estado actual de Opsly?"` → NotebookLM
+3. **Prompt operativo en VPS (opcional):** `docs/ACTIVE-PROMPT.md` — tras `git pull` en `/opt/opsly`, el servicio **`cursor-prompt-monitor`** (`scripts/cursor-prompt-monitor.sh`, unidad `infra/systemd/cursor-prompt-monitor.service`) detecta cambios cada **30 s** y ejecuta el contenido filtrado como shell. **Solo** líneas que no empiezan por `#` ni `---`; si todo es comentario, no ejecuta nada. **Riesgo RCE** si alguien no confiable puede editar ese archivo.
+4. **Logs en VPS:** `/opt/opsly/logs/cursor-prompt-monitor.log` (directorio `logs/` ignorado en git).
+5. **Docs de apoyo:** `docs/CLAUDE-WORKFLOW-OPTIMIZATION.md`, `docs/OPENCLAW-ARCHITECTURE.md`.
+6. **Espejo Google Drive (opcional):** `docs/GOOGLE-DRIVE-SYNC.md`, lista `docs/opsly-drive-files.list`, config `.opsly-drive-config.json` — útil si Claude (u otro asistente) tiene Drive conectado; la fuente de verdad sigue siendo git/GitHub.
 
 ---
 
@@ -307,7 +314,11 @@ node scripts/load-skills.js show opsly-api
 
 <!-- Actualizar al final de cada sesión -->
 
-**Fecha última actualización:** 2026-04-14 UTC 01:45 — **Sprint:** Semana 1 (Fase 2 producto + IA), ventana **2026-04-14 → 2026-04-20**. Documentos: [`ROADMAP.md`](ROADMAP.md), [`docs/IMPLEMENTATION-IA-LAYER.md`](docs/IMPLEMENTATION-IA-LAYER.md).
+**Fecha última actualización:** 2026-04-15 — **Sprint:** Semana 1 (Fase 2 producto + IA), ventana **2026-04-14 → 2026-04-20**. Documentos: [`ROADMAP.md`](ROADMAP.md), [`docs/IMPLEMENTATION-IA-LAYER.md`](docs/IMPLEMENTATION-IA-LAYER.md).
+
+**Worker autónomo + Ollama local:** `scripts/ensure-ollama-local.sh`, unidad `infra/systemd/opsly-ollama.service`, `OPSLY_ENSURE_OLLAMA=1` en `.env.local` (carga antes del arranque en `run-worker-with-nvm.sh`). Runbook [`docs/AGENTS-AUTONOMOUS-RUNBOOK.md`](docs/AGENTS-AUTONOMOUS-RUNBOOK.md), ADR-024.
+
+**Hermes + LLM local (Cursor/Claude/Copilot en doc):** con `HERMES_DISPATCH_OPENCLAW=true` y `HERMES_LOCAL_LLM_FIRST=true`, tareas `decision` + esfuerzo `S` encolan job `ollama` (gateway `llama_local`). Matriz: [`docs/HERMES-LOCAL-AGENTS-STACK.md`](docs/HERMES-LOCAL-AGENTS-STACK.md).
 
 **Servicios VPS (2026-04-14 01:45 UTC):**
 
@@ -335,7 +346,7 @@ node scripts/load-skills.js show opsly-api
 
 **ADR-024 (Ollama worker):** [`docs/adr/ADR-024-ollama-local-worker-primary.md`](docs/adr/ADR-024-ollama-local-worker-primary.md) — Pendiente ejecución en opslyquantum (Mac 2011).
 
-**ADR-025 (NotebookLM):** [`docs/adr/ADR-025-notebooklm-knowledge-layer.md`](docs/adr/ADR-025-notebooklm-knowledge-layer.md) — Pendiente implementación.
+**ADR-025 (NotebookLM):** [`docs/adr/ADR-025-notebooklm-knowledge-layer.md`](docs/adr/ADR-025-notebooklm-knowledge-layer.md) — ✅ **CONFIGURADO** (notebook ID: `8447967c-f375-47d6-a920-c3100efd7e7b`)
 
 **Sesión 2026-04-13:**
 
@@ -1365,6 +1376,7 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 | 2026-04-08 | **Drive:** `GOOGLE_AUTH_STRATEGY` + OAuth usuario (`refresh_token`) además de SA; `drive-sync` default `user_first`                                                                                                                                                                                                                                                                                        | Escribir en Mi unidad sin Shared Drive usando cuota del usuario                                                                                                                                        |
 | 2026-04-08 | **Onboard:** flag `--name` en `onboard-tenant.sh` para `platform.tenants.name`                                                                                                                                                                                                                                                                                                                             | Invitaciones y UI con nombre comercial distinto del slug                                                                                                                                               |
 | 2026-04-08 | **Tester piloto** slug `jkboterolabs` / JK Botero Labs / jkbotero78@gmail.com                                                                                                                                                                                                                                                                                                                              | Validar stack multi-tenant; invitación email bloqueada por Resend hasta dominio                                                                                                                        |
+| 2026-04-15 | **ADR-025 & ADR-026: Parallel Orchestration enqueued** — 10 jobs (6 ADR-025 + 4 ADR-026) en BullMQ Redis queue, OpenClaw orchestrator monitoring | Redis authentication fixed via URI format; Job 001-006 (Cursor Docker/Ollama/Hermes + Copilot config); Job 007-010 (Supabase migration + tenant profile + seed data + E2E validation); ETA ~135-150 min total |
 
 ---
 
@@ -1397,6 +1409,8 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 │   ├── ml/                  # OpenClaw ML (RAG, clasificación, embeddings)
 │   ├── llm-gateway/         # OpenClaw LLM Gateway (cache/routing/cost)
 │   ├── context-builder/     # OpenClaw Context Builder (session+summary)
+│   ├── ingestion-service/    # Webhooks → Redis queue (bunker)
+│   ├── mission-control/      # Control plane para workers remotos
 │   └── notion-mcp/          # HTTP hacia Notion (tareas, standup, quality; Doppler)
 ├── config/
 │   └── opsly.config.json    # Infra/dominios/planes (sin secretos)
@@ -1424,4 +1438,26 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 ├── README.md
 ├── VISION.md                # Norte del producto (fases, ICP, límites agentes)
 └── AGENTS.md                # Este archivo
+
+---
+
+## 🔄 Estado Actual (2026-04-15 20:48 UTC)
+
+**Agente:** opencode (arquitecto)  
+**Tareas completadas:** ADR-025 NotebookLM checklist ✅  
+**Bloqueantes:** NO
+
+### Validación final
+- ✅ Tests orchestrator: 92 passed
+- ✅ Type-check: 13/14 workspaces (mission-control usa pnpm)
+- ✅ OpenAPI: 28 paths valid
+- ✅ Redis: 59 clients, 1234 BullMQ keys
+- ✅ Orchestrator: role=control, mode=queue-only
+- ✅ Mac 2011: Ollama 2 modelos
+
+### Servicios VPS (todos healthy)
+- opsly_orchestrator, opsly_llm_gateway, opsly_context_builder, opsly_hermes
+- infra-redis-1, infra-app-1, infra-app-2
+- opsly_portal, opsly_mcp (12 tools)
+- Prometheus, Grafana, cAdvisor, Watchtower
 ```

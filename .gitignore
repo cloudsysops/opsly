@@ -54,6 +54,9 @@ logs/
 # Supabase CLI local link metadata (regenerable)
 supabase/.temp/
 
+# Brainstorming visual companion artifacts
+.superpowers/
+
 # Playwright (apps/portal)
 apps/portal/test-results/
 apps/portal/playwright-report/
