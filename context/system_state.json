@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-04-15",
+  "last_updated": "2026-04-23",
   "phase": "fase-2-producto-ia",
   "vps": {
     "ip": "157.245.223.7",
@@ -28,7 +28,11 @@
     "project": "ops-intcloudsysops",
     "config": "prd",
     "status": "complete",
-    "missing": ["GOOGLE_CLOUD_PROJECT_ID", "BIGQUERY_DATASET", "VERTEX_AI_REGION"]
+    "missing": [
+      "GOOGLE_CLOUD_PROJECT_ID",
+      "BIGQUERY_DATASET",
+      "VERTEX_AI_REGION"
+    ]
   },
   "dns": {
     "base": "ops.smiletripcare.com",
@@ -36,11 +40,26 @@
     "status": "ok"
   },
   "tenants": [
-    { "slug": "smiletripcare", "status": "active" },
-    { "slug": "localrank", "status": "active" },
-    { "slug": "jkboterolabs", "status": "active" },
-    { "slug": "peskids", "status": "active" },
-    { "slug": "intcloudsysops", "status": "active" }
+    {
+      "slug": "smiletripcare",
+      "status": "active"
+    },
+    {
+      "slug": "localrank",
+      "status": "active"
+    },
+    {
+      "slug": "jkboterolabs",
+      "status": "active"
+    },
+    {
+      "slug": "peskids",
+      "status": "active"
+    },
+    {
+      "slug": "intcloudsysops",
+      "status": "active"
+    }
   ],
   "next_action": "Configurar GCP vars para ML - Vertex AI + BigQuery",
   "knowledge_system": {
@@ -72,26 +91,34 @@
     ],
     "gcp": {
       "status": "pending",
-      "vars_needed": ["GOOGLE_SERVICE_ACCOUNT_JSON", "VERTEX_AI_REGION", "BIGQUERY_DATASET", "GCLOUD_PROJECT_ID"]
+      "vars_needed": [
+        "GOOGLE_SERVICE_ACCOUNT_JSON",
+        "VERTEX_AI_REGION",
+        "BIGQUERY_DATASET",
+        "GCLOUD_PROJECT_ID"
+      ]
     }
   },
   "repo": {
     "apps": [
       "admin",
       "agents",
+      "ai-evolution",
       "api",
       "context-builder",
+      "context-builder-v2",
       "ingestion-service",
       "llm-gateway",
       "mcp",
+      "mission-control",
       "ml",
       "notion-mcp",
       "orchestrator",
       "portal",
       "web"
     ],
-    "scripts": 101,
-    "adrs": 25,
-    "migrations": 31
+    "scripts": 153,
+    "adrs": 31,
+    "migrations": 39
   }
 }

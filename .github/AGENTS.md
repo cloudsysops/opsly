@@ -5,11 +5,14 @@
 > Al terminar: actualiza las secciones marcadas con 🔄.
 
 **📚 Wiki:** [`docs/README.md`](docs/README.md) — índice completo de documentación  
-**⚡ Cheatsheet:** [`docs/QUICK-REFERENCE.md`](docs/QUICK-REFERENCE.md) — SSH, comandos, vars, sprint actual
+**⚡ Cheatsheet:** [`docs/QUICK-REFERENCE.md`](docs/QUICK-REFERENCE.md) — SSH, comandos, vars, sprint actual  
+**🧠 Sistema de conocimiento:** [`docs/KNOWLEDGE-SYSTEM.md`](docs/KNOWLEDGE-SYSTEM.md) — NotebookLM + Obsidian, flujo para agentes
 
 **Mapa de documentación (evitar duplicar con `docs/AGENTS-GUIDE.md`):** `VISION.md` = norte de producto; **`AGENTS.md` (este archivo)** = estado operativo, próximo paso, bloqueantes e incrementos **por sesión**; **`docs/AGENTS-GUIDE.md`** = convenciones **solo** para varios asistentes/automatismos en paralelo (no sustituye AGENTS). `docs/adr/` = decisiones de arquitectura. No copiar tablas de límites por plan aquí: enlazar `AGENTS-GUIDE` + `VISION.md`.
 
 **Planificación por sprint (IA + producto):** [`ROADMAP.md`](ROADMAP.md) (timeline semanal, milestones). **Guía técnica capa IA:** [`docs/IMPLEMENTATION-IA-LAYER.md`](docs/IMPLEMENTATION-IA-LAYER.md) (TypeScript, rutas reales en `apps/*`).
+
+**Shadow deployment Super Agent (nuevo):** [`docs/runbooks/SUPER-AGENT-SHADOW-DEPLOY.md`](docs/runbooks/SUPER-AGENT-SHADOW-DEPLOY.md), diseño `context-builder-v2` en `apps/context-builder-v2/src/design/architecture.md`, script `scripts/rollback-super-agent.sh`, overlay `infra/docker-compose.super-agent.yml`.
 
 ## ⚠️ Control de costos
 
@@ -76,6 +79,9 @@ npm run validate-skills
 
 # Update repo state JSON
 npm run update-state
+
+# Worker: comprobar / levantar Ollama local (compose opslyquantum, solo servicio ollama)
+npm run opsly:ensure-ollama -- --ensure
 ```
 
 **Lint rules:** ESLint staged only on `apps/api/app` + `apps/api/lib` after type-check.
@@ -87,10 +93,13 @@ npm run update-state
 ### Flujo con Claude (multi-agente)
 
 1. **Contexto:** misma **URL raw** de `AGENTS.md` (arriba) y, si aplica, `VISION.md` — referencias en `.claude/CLAUDE.md`.
-2. **Prompt operativo en VPS (opcional):** `docs/ACTIVE-PROMPT.md` — tras `git pull` en `/opt/opsly`, el servicio **`cursor-prompt-monitor`** (`scripts/cursor-prompt-monitor.sh`, unidad `infra/systemd/cursor-prompt-monitor.service`) detecta cambios cada **30 s** y ejecuta el contenido filtrado como shell. **Solo** líneas que no empiezan por `#` ni `---`; si todo es comentario, no ejecuta nada. **Riesgo RCE** si alguien no confiable puede editar ese archivo.
-3. **Logs en VPS:** `/opt/opsly/logs/cursor-prompt-monitor.log` (directorio `logs/` ignorado en git).
-4. **Docs de apoyo:** `docs/CLAUDE-WORKFLOW-OPTIMIZATION.md`, `docs/OPENCLAW-ARCHITECTURE.md`.
-5. **Espejo Google Drive (opcional):** `docs/GOOGLE-DRIVE-SYNC.md`, lista `docs/opsly-drive-files.list`, config `.opsly-drive-config.json` — útil si Claude (u otro asistente) tiene Drive conectado; la fuente de verdad sigue siendo git/GitHub.
+2. **Sistema de conocimiento:**
+   - [`docs/KNOWLEDGE-SYSTEM.md`](docs/KNOWLEDGE-SYSTEM.md) — LEER PRIMERO
+   - Query startup obligatorio: `"¿Cuál es el estado actual de Opsly?"` → NotebookLM
+3. **Prompt operativo en VPS (opcional):** `docs/ACTIVE-PROMPT.md` — tras `git pull` en `/opt/opsly`, el servicio **`cursor-prompt-monitor`** (`scripts/cursor-prompt-monitor.sh`, unidad `infra/systemd/cursor-prompt-monitor.service`) detecta cambios cada **30 s** y ejecuta el contenido filtrado como shell. **Solo** líneas que no empiezan por `#` ni `---`; si todo es comentario, no ejecuta nada. **Riesgo RCE** si alguien no confiable puede editar ese archivo.
+4. **Logs en VPS:** `/opt/opsly/logs/cursor-prompt-monitor.log` (directorio `logs/` ignorado en git).
+5. **Docs de apoyo:** `docs/CLAUDE-WORKFLOW-OPTIMIZATION.md`, `docs/OPENCLAW-ARCHITECTURE.md`.
+6. **Espejo Google Drive (opcional):** `docs/GOOGLE-DRIVE-SYNC.md`, lista `docs/opsly-drive-files.list`, config `.opsly-drive-config.json` — útil si Claude (u otro asistente) tiene Drive conectado; la fuente de verdad sigue siendo git/GitHub.
 
 ---
 
@@ -132,18 +141,18 @@ node scripts/load-skills.js search "docker"
 node scripts/load-skills.js show opsly-api
 ```
 
-Índice: **`skills/index.json`** (15 skills, categorías, triggers).
+Índice: **`skills/index.json`** (catálogo modular activo + skills legacy compatibles).
 
 ### Por prioridad
 
-**CRITICAL** (siempre al inicio): `opsly-bootstrap` + `opsly-skill-creator`
-**HIGH** (recomendados): `opsly-api`, `opsly-frontend`, `opsly-supabase`, `opsly-infra`, `opsly-mcp`, `opsly-llm`, `opsly-tenant`, `opsly-orchestrator`, `opsly-billing`
+**CRITICAL** (siempre al inicio): `opsly-bootstrap` + `opsly-skill-creator`  
+**HIGH** (recomendados): `opsly-api`, `opsly-frontend`, `opsly-supabase`, `opsly-infra`, `opsly-mcp`, `opsly-llm`, `opsly-tenant`, `opsly-orchestrator`, `opsly-billing`  
 **MEDIUM**: `opsly-qa`, `opsly-discord`, `opsly-architect`
 
 **Regla operativa obligatoria:** primero buscar y reutilizar skill existente; si no hay match adecuado, crear o extender una skill por módulo con `opsly-skill-creator`.
 
-| Skill                  | Path (repo)                           | Cuándo usar                                                      |
-| ---------------------- | ------------------------------------- | ---------------------------------------------------------------- |
+| Skill | Path (repo) | Cuándo usar |
+| --- | --- | --- |
 | opsly-bootstrap | `skills/user/opsly-bootstrap/` | **SIEMPRE** al inicio de sesión |
 | opsly-skill-creator | `skills/user/opsly-skill-creator/` | Crear/mejorar skills cuando falte proceso estándar |
 | opsly-api | `skills/user/opsly-api/` | Rutas `apps/api/` |
@@ -170,7 +179,7 @@ node scripts/load-skills.js show opsly-api
 - **Extender, no re-arquitecturar:** todo vive en el monorepo actual (`apps/*`, `skills/`, `infra/`, `scripts/`). No crear carpetas raíz tipo `agents/` paralelas ni un segundo sistema de orquestación.
 - **Compatibilidad hacia atrás:** APIs y jobs existentes siguen funcionando; nuevos campos y rutas son **opcionales** con defaults = comportamiento actual.
 - **Incrementos verificables:** cada PR debe poder validarse con `type-check`, tests donde existan, y criterio de smoke acotado.
-- **Sin infra nueva** salvo decisión explícita y alineación con `VISION.md` (_Nunca_ K8s/Swarm; escalar VPS antes que complejidad).
+- **Sin infra nueva** salvo decisión explícita y alineación con `VISION.md` (Compose por defecto; _Nunca_ big-bang K8s/Swarm para el control plane; excepción futura *compute plane* solo según [ADR-027](docs/adr/ADR-027-hybrid-compute-plane-k8s.md); escalar VPS antes que complejidad).
 
 ### Mapa — qué ya existe (no duplicar)
 
@@ -307,7 +316,25 @@ node scripts/load-skills.js show opsly-api
 
 <!-- Actualizar al final de cada sesión -->
 
-**Fecha última actualización:** 2026-04-14 UTC 01:45 — **Sprint:** Semana 1 (Fase 2 producto + IA), ventana **2026-04-14 → 2026-04-20**. Documentos: [`ROADMAP.md`](ROADMAP.md), [`docs/IMPLEMENTATION-IA-LAYER.md`](docs/IMPLEMENTATION-IA-LAYER.md).
+**Fecha última actualización:** 2026-04-20 — **Sprint:** Semana 5 (Feedback Loop), ventana **2026-04-26 → 2026-04-28** ✅ **COMPLETADO EN TIEMPO**. Documentos: [`docs/SEMANA-5-INFORME.md`](docs/SEMANA-5-INFORME.md), [`ROADMAP.md`](ROADMAP.md).
+
+**Siguiente fase:** Semana 6 (Segundo Cliente + E2E), ventana **2026-04-29 → 2026-05-03** ⏳ **EN PROGRESO**. Plan: [`docs/SEMANA-6-PLAN.md`](docs/SEMANA-6-PLAN.md).
+
+**Semana 5 — Feedback Loop API:** [`docs/SEMANA-5-INFORME.md`](docs/SEMANA-5-INFORME.md) — **✅ COMPLETADO**
+- ✅ `POST /api/feedback` — Recolección con Zero-Trust identity validation (tenant_slug + user_email desde sesión)
+- ✅ `GET /api/feedback` — Listado conversaciones para admin (status, limit filters)
+- ✅ `POST /api/feedback/approve` — Aprobación de decisiones por admin
+- ✅ ML Integration — `analyzeFeedback()` + `executeAutoImplement()` desde `@intcloudsysops/ml`
+- ✅ Discord Notifications — emoji criticality (🚨🔴🟡🟢) + decision routing
+- ✅ Branching Logic — Análisis si >100 chars O >2 mensajes; clarificación para mensajes cortos
+- ✅ Type-check — 14/14 workspaces en verde
+- ✅ Commit — `26b391f feat(semana-5): implement feedback loop API with zero-trust identity validation`
+
+**Agentic Runtime + infra híbrida (documentación):** [`docs/design/OAR.md`](docs/design/OAR.md) (OAR — contrato de comportamiento: loops ReAct / Plan-Execute / Reflection, `MemoryInterface`, `AgentActionPort`). [`docs/adr/ADR-027-hybrid-compute-plane-k8s.md`](docs/adr/ADR-027-hybrid-compute-plane-k8s.md) (compute plane opcional en K8s; control plane sigue en Compose por defecto). **✅ Implementación de código OAR COMPLETA** (Semana 1): ReAct `runReActStrategy()`, Plan-Execute `runPlanExecuteStrategy()`, Reflection `runWithReflection()` + Mode System selector en `engine.ts`.
+
+**Worker autónomo + Ollama local:** `scripts/ensure-ollama-local.sh`, unidad `infra/systemd/opsly-ollama.service`, `OPSLY_ENSURE_OLLAMA=1` en `.env.local` (carga antes del arranque en `run-worker-with-nvm.sh`). Runbook [`docs/AGENTS-AUTONOMOUS-RUNBOOK.md`](docs/AGENTS-AUTONOMOUS-RUNBOOK.md), ADR-024.
+
+**Hermes + LLM local (Cursor/Claude/Copilot en doc):** con `HERMES_DISPATCH_OPENCLAW=true` y `HERMES_LOCAL_LLM_FIRST=true`, tareas `decision` + esfuerzo `S` encolan job `ollama` (gateway `llama_local`). Matriz: [`docs/HERMES-LOCAL-AGENTS-STACK.md`](docs/HERMES-LOCAL-AGENTS-STACK.md).
 
 **Servicios VPS (2026-04-14 01:45 UTC):**
 
@@ -318,24 +345,63 @@ node scripts/load-skills.js show opsly-api
 | Admin         | ✅ Running    | 3001   | `admin.ops.smiletripcare.com`                   |
 | Portal        | ✅ Running    | 3002   | `portal.ops.smiletripcare.com`                  |
 | MCP           | ✅ Running    | 3003   | Herramientas disponibles                        |
-| Orchestrator  | ⚠️ Restarting | 3011   | Esperando rebuild CI (falta ML)                 |
+| Orchestrator  | ✅ Running    | 3011   | OAR + Mode System COMPLETO (Semana 1)           |
 | Redis         | ✅ Running    | 6379   | Sin password (bug compose)                      |
 | n8n (tenants) | ✅ Running    | -      | smiletripcare, localrank, jkboterolabs, peskids |
 | Uptime Kuma   | ✅ Running    | -      | Por tenant                                      |
 
-**Sesión 2026-04-14 (hoy):**
+**Sesión 2026-04-20 — Semana 5 Completada ✅ (Feedback Loop API)**
+
+**Completados en orden:**
+
+1. **Semana 1 (2026-04-14 → 2026-04-20) — Routing y costes visibles** ✅
+   - ✅ OAR Plan-Execute Strategy, Reflection Engine, Mode System Integration
+   - ✅ OAR Action Metering, LLM Gateway Metering confiriendo `request_id`
+   - ✅ Commits: `51d6e82`, `50bafeb`, `abe105b`, `6b478c0`
+
+2. **Semana 2-4 (Paralelo) — Ollama, NotebookLM, Cost Transparency** ✅
+   - ✅ ADR-024 (Ollama local worker) validado en prod
+   - ✅ ADR-025 (NotebookLM Knowledge Layer) configurado
+   - ✅ Cost Dashboard `/admin/costs` con presupuestos por tenant
+   - ✅ Health daemon, metering, tests coverage en verde
+
+3. **Semana 5 (2026-04-20, adelantado) — Feedback Loop API** ✅
+   - ✅ Rutas `/api/feedback` (POST portal, GET admin), `/api/feedback/approve`
+   - ✅ Service layer `lib/feedback/service.ts` (476L) con Zero-Trust identity validation
+   - ✅ Database: `platform.feedback_conversations`, `platform.feedback_messages`, `platform.feedback_decisions`
+   - ✅ ML Integration: `analyzeFeedback()`, `executeAutoImplement()` async
+   - ✅ Discord notifications emoji criticality + decision routing
+   - ✅ Branching logic: análisis si >100 chars O >2 mensajes; clarificación para cortos
+   - ✅ Type-check: 14/14 workspaces verde
+   - ✅ Commit: `26b391f feat(semana-5): implement feedback loop API with zero-trust identity validation`
+
+**Siguientes (Semana 6 en progreso):**
+- ⏳ Segundo cliente onboarding (`onboard-tenant.sh`)
+- ⏳ E2E validation (`test-e2e-invite-flow.sh`)
+- ⏳ Pre-Launch checklist (DNS, backups, Doppler vars)
+- ⏳ Documentación `SEMANA-6-PLAN.md`
+
+**Sesión 2026-04-14 (referencia):**
 
 - ✅ MCP verificado corriendo en puerto 3003 con tools
 - ✅ Traefik reiniciado con puertos 80/443 expuestos
 - ✅ Admin + Portal funcionando
 - ✅ .env VPS actualizado desde Doppler
 - ⏳ API error: `[id] !== [ref]` — carpeta duplicada en imagen GHCR (tenants/[ref] vs [id])
-- ⏳ Orchestrator: espera rebuild CI para incluir packages/ml
 - ✅ Fix commiteado: `llm-gateway` en orchestrator Dockerfile
 
-**ADR-024 (Ollama worker):** [`docs/adr/ADR-024-ollama-local-worker-primary.md`](docs/adr/ADR-024-ollama-local-worker-primary.md) — Pendiente ejecución en opslyquantum (Mac 2011).
+**ADR-024 (Ollama worker):** [`docs/adr/ADR-024-ollama-local-worker-primary.md`](docs/adr/ADR-024-ollama-local-worker-primary.md) — ✅ **VALIDADO Y COMPLETADO** (2026-04-20). Checklist:
+  - ✅ Doppler vars: `OLLAMA_URL`, `OLLAMA_MODEL`, `LLM_GATEWAY_EXPORT_BIND`, `REDIS_EXPORT_BIND` documentados
+  - ✅ Ollama local: Mac 2011 worker (100.80.41.29:11434) con modelos nemotron-3-nano + llama3.2 verificados
+  - ✅ Health Daemon: Implementado en `apps/llm-gateway/src/health-daemon.ts` — checks cada 30s, Redis TTL 300s, circuit breaker 3 fallos
+  - ✅ LLM Gateway metering: `request_id` + `tenant_slug` en todas las llamadas `logUsage()` (tracer correlativo)
+  - ✅ Orchestrator tests: 25 test suites, 137 tests PASSED (includes health-worker, plan-execute-engine, reflection-engine, oar-react-intent)
+  - ✅ LLM Gateway tests: 12 test suites, 56 tests PASSED (includes beast.test, routing-hints.test)
+  - ✅ Type-check: `npm run type-check` ✅ VERDE en 14 workspaces (portal TypeScript fixes aplicadas)
+  - ✅ Admin Ollama Demo endpoint: `POST /api/admin/ollama-demo` implementado con budget checking + orchestrator job enqueueing
+  - ✅ Docker Compose: llm-gateway expuesto en `LLM_GATEWAY_EXPORT_BIND` para acceso Tailscale desde VPS
 
-**ADR-025 (NotebookLM):** [`docs/adr/ADR-025-notebooklm-knowledge-layer.md`](docs/adr/ADR-025-notebooklm-knowledge-layer.md) — Pendiente implementación.
+**ADR-025 (NotebookLM):** [`docs/adr/ADR-025-notebooklm-knowledge-layer.md`](docs/adr/ADR-025-notebooklm-knowledge-layer.md) — ✅ **CONFIGURADO** (notebook ID: `8447967c-f375-47d6-a920-c3100efd7e7b`)
 
 **Sesión 2026-04-13:**
 
@@ -378,6 +444,54 @@ Validación: npm run type-check; tests del workspace tocado
 **Sesión previa 2026-04-11:** autenticación admin, BullMQ, feedback, costs, etc. **Type-check:** monorepo en verde según última sesión documentada.
 
 **Bloqueante operativo recurrente:** Cloudflare Proxy ON (origen); invitaciones/email según Resend.
+
+### Semana 2 — Infraestructura IA (Ollama + NotebookLM Knowledge Layer)
+
+**Ventana:** 2026-04-21 → 2026-04-27  
+**Objetivo:** Completar ADR-024 + ADR-025 + NotebookLM Knowledge Layer integrado en portal/admin  
+**Punto de partida:** Semana 1 ✅ COMPLETO (routing + costes + OAR metering)
+
+#### ADR-024 Go-Live — Validación Completada (2026-04-20)
+
+**Checklist de validación:**
+- ✅ **Variables Doppler prd configuradas:**
+  - OLLAMA_URL=http://100.80.41.29:11434 (Mac 2011 worker)
+  - OLLAMA_MODEL=llama3.2
+- ✅ **LLM Gateway routing implementado:**
+  - Health daemon checks `/api/tags` endpoint en Ollama (3s timeout)
+  - `llmCallDirect()` intenta llama_local primero (1s timeout)
+  - Fallback a chain de cloud providers (Haiku → GPT-4o Mini → OpenRouter)
+- ✅ **Orchestrator enqueue-ollama implementado:**
+  - `POST /internal/enqueue-ollama` en health-server.ts
+  - Validación de tenant_slug, prompt, plan, request_id
+  - Job type "ollama" → OllamaWorker
+- ✅ **OllamaWorker completo:**
+  - Fetch a `/v1/text` endpoint en LLM Gateway
+  - Metering con `meterPlannerLlmFireAndForget()`
+  - Soporte auto-commit para personas especiales (evolution-agent, notifier-desayuno, watcher-agent)
+- ✅ **Admin endpoint `/api/admin/ollama-demo` operativo:**
+  - POST: enqueue ollama job con tenant_slug + prompt
+  - GET: query job status vía orchestrator
+  - Token-based access (PLATFORM_ADMIN_TOKEN)
+- ✅ **Tests validados:**
+  - LLM Gateway: 56 tests ✅ (12 test files)
+  - Orchestrator: 137 tests ✅ (25 test files)
+  - Type-check: ✅ (solo warning turbo.json schema, no errores)
+
+**Tareas principales (Semana 2 continuación):**
+
+1. **ADR-024 E2E Testing:** Test manual `POST /api/admin/ollama-demo` desde VPS con prompt real → verify job execution en Mac 2011
+2. **NotebookLM Knowledge Layer:** Integrar base de conocimiento dinámico (ROADMAP.md + AGENTS.md) en NotebookLM; `POST /api/notebooklm/query` devuelve respuestas enriquecidas con contexto Opsly
+3. **Hermes Mode Routing:** `HERMES_LOCAL_LLM_FIRST=true` → jobs `decision` + esfuerzo `S` encolan `ollama` en lugar de Anthropic
+4. **Admin Dashboard:** Métricas Ollama (cache hits, latency, modelo usado) en `/admin/costs` + `/admin/metrics/llm`
+5. **Documentación:** `docs/OLLAMA-DEPLOYMENT.md` (runbook VPS), `docs/NOTEBOOKLM-INTEGRATION.md`, update `ROADMAP.md` con Semana 2 completada
+
+**Estado actual:**
+- ADR-024 infraestructura: ✅ LISTA para Go-Live
+- Validación E2E: ⏳ Próximo paso (test manual en VPS)
+- NotebookLM integration: ⏳ En queue
+- Admin metrics: ⏳ En queue
+- Documentación: ⏳ En queue
 
 **URL raw (sesión siguiente):** https://raw.githubusercontent.com/cloudsysops/opsly/main/AGENTS.md
 
@@ -867,7 +981,9 @@ _Auditoría TypeScript y correcciones de código (2026-04-05, sesión agente Cla
 
 <!-- Una sola tarea concreta. Actualizar al final de cada sesión -->
 
-### Ejecutar Plan Ollama Worker (ADR-024) — Sesión siguiente
+**Semana 2 (2026-04-21 → 2026-04-27):** Infraestructura IA (Ollama + NotebookLM Knowledge Layer)
+
+### Ejecutar Plan Ollama Worker (ADR-024) — Sesión siguiente (Semana 2)
 
 ```bash
 # FASE 1: Configurar Doppler prd
@@ -994,6 +1110,14 @@ ssh vps-dragon@100.120.151.91 "docker system df && sudo du -xh /var --max-depth=
 
 <!-- Qué está roto o bloqueado ahora mismo -->
 
+- [ ] **🚨 CRÍTICO: POST /api/tenants retorna 202 con UUID pero no crea tenant en DB** (2026-04-20 18:23 UTC)
+  - **Síntoma:** `curl -X POST https://api.ops.smiletripcare.com/api/tenants` devuelve `{"id":"...", "slug":"...", "status":"provisioning"}` (HTTP 202)
+  - **Realidad:** Tenant NO aparece en `GET /api/tenants` lista, ni en provisioning, ni en ningún status
+  - **Causa:** Unknown — possible: (a) `createTenantRecord()` en `apps/api/lib/orchestrator.ts` falla silenciosamente, (b) RLS policy bloquea insert, (c) transaction rollback en provisioning pipeline, (d) error catch silencioso
+  - **Bloqueado:** Semana 6 (onboarding segundo cliente) — imposible sin tenant provisioning
+  - **Workaround:** Investigar si hay método manual de creación o si necesita revert/fix crítico en orchestrator.ts
+  - **Notas:** onboard-tenant.sh está OK tras fix stripe_customer_id (commit 4334e57); error no es validación de payload
+  
 - [x] Bulk upload Doppler desde VPS `.env` (lista audit) — hecho 2026-04-05
 - [x] **validate-config** → LISTO PARA DEPLOY (2026-04-05, tras tokens plataforma/Redis + imágenes GHCR en Doppler)
 - [x] **GHCR en `prd` + login Docker en VPS** (2026-04-05): `GHCR_USER` / `GHCR_TOKEN` en `prd`; `docker login ghcr.io` con Doppler **solo** con `cd /opt/opsly`.
@@ -1235,6 +1359,7 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 | Decisión       | Valor                                            |
 | -------------- | ------------------------------------------------ |
 | Orquestación   | docker-compose por tenant (no Swarm)             |
+| Control plane  | Compose + Traefik en VPS por defecto; K8s solo como *compute plane* opcional futuro ([ADR-027](docs/adr/ADR-027-hybrid-compute-plane-k8s.md)) |
 | DB plataforma  | Supabase schema "platform"                       |
 | DB por tenant  | schema aislado "tenant\_{slug}"                  |
 | Proxy          | Traefik v3 (no nginx)                            |
@@ -1251,6 +1376,7 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 
 | Fecha      | Decisión                                                                                                                                                                                                                                                                                                                                                                                                   | Razón                                                                                                                                                                                                  |
 | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------- | -------------------------------------------------------------------------- |
+| 2026-04-18 | **Design Doc OAR** (`docs/design/OAR.md`): **Opsly Agentic Runtime** — loops explícitos (ReAct, Plan & Execute, Reflection), máquina de estados, `MemoryInterface` + `AgentActionPort` (tipado estricto, `tenant_slug`). Integración prevista con Mode System. **ADR-027** (`docs/adr/ADR-027-hybrid-compute-plane-k8s.md`): control plane en Compose por defecto; compute plane (workers, sandboxes, ML) candidato a K8s bajo criterios de activación. | Contrato de comportamiento entre orchestrator y LLM Gateway; estrategia híbrida sin big-bang K8s. |
 | 2026-04-14 | **ADR-025** (`docs/adr/ADR-025-notebooklm-knowledge-layer.md`): NotebookLM como **knowledge layer universal** para todos los agentes IA. Feed automático post-commit de AGENTS.md, ADRs, system_state.json, costos LLM. Query startup obligatorio ("estado operativo actual"). Routing LLM Gateway consulta NotebookLM si detecta keywords operativas. Feature flag `NOTEBOOKLM_ENABLED` + fallback local. | Agentes más inteligentes desde el primer segundo; contexto compartido sin duplicar estado; decisiones propagan automáticamente.                                                                        |
 | 2026-04-14 | **ADR-024** (`docs/adr/ADR-024-ollama-local-worker-primary.md`): Ollama local como provider primary en worker Mac 2011 (`opslyquantum`). VPS = control plane (`queue-only`). Worker Mac 2011 = worker plane (`worker-enabled`). Routing `cheap` → `llama_local` primary (costo $0), fallback cloud. LLM Gateway ya tiene `llama_local` configurado en `providers.ts`.                                      | Aliviar CPU VPS; costo $0 en tokens para tareas simples; worker Mac 2011 usa hardware ocioso.                                                                                                          |
 | 2026-04-12 | **ADR-020** (`docs/adr/ADR-020-orchestrator-worker-separation.md`): separación VPS **control** vs nodo **worker** ya soportada por `OPSLY_ORCHESTRATOR_ROLE`; alias opcional `OPSLY_ORCHESTRATOR_MODE` (`queue-only` / `worker-enabled`); Redis canónico en VPS con workers remotos vía mismo `REDIS_URL` (ver `docs/ARCHITECTURE-DISTRIBUTED.md`); health `/health` expone `role` + `mode`                | Formalizar decisión sin duplicar flags; alinear operación Tailscale/Mac con código existente                                                                                                           |
@@ -1365,6 +1491,7 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 | 2026-04-08 | **Drive:** `GOOGLE_AUTH_STRATEGY` + OAuth usuario (`refresh_token`) además de SA; `drive-sync` default `user_first`                                                                                                                                                                                                                                                                                        | Escribir en Mi unidad sin Shared Drive usando cuota del usuario                                                                                                                                        |
 | 2026-04-08 | **Onboard:** flag `--name` en `onboard-tenant.sh` para `platform.tenants.name`                                                                                                                                                                                                                                                                                                                             | Invitaciones y UI con nombre comercial distinto del slug                                                                                                                                               |
 | 2026-04-08 | **Tester piloto** slug `jkboterolabs` / JK Botero Labs / jkbotero78@gmail.com                                                                                                                                                                                                                                                                                                                              | Validar stack multi-tenant; invitación email bloqueada por Resend hasta dominio                                                                                                                        |
+| 2026-04-15 | **ADR-025 & ADR-026: Parallel Orchestration enqueued** — 10 jobs (6 ADR-025 + 4 ADR-026) en BullMQ Redis queue, OpenClaw orchestrator monitoring | Redis authentication fixed via URI format; Job 001-006 (Cursor Docker/Ollama/Hermes + Copilot config); Job 007-010 (Supabase migration + tenant profile + seed data + E2E validation); ETA ~135-150 min total |
 
 ---
 
@@ -1397,6 +1524,8 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 │   ├── ml/                  # OpenClaw ML (RAG, clasificación, embeddings)
 │   ├── llm-gateway/         # OpenClaw LLM Gateway (cache/routing/cost)
 │   ├── context-builder/     # OpenClaw Context Builder (session+summary)
+│   ├── ingestion-service/    # Webhooks → Redis queue (bunker)
+│   ├── mission-control/      # Control plane para workers remotos
 │   └── notion-mcp/          # HTTP hacia Notion (tareas, standup, quality; Doppler)
 ├── config/
 │   └── opsly.config.json    # Infra/dominios/planes (sin secretos)
@@ -1424,4 +1553,26 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 ├── README.md
 ├── VISION.md                # Norte del producto (fases, ICP, límites agentes)
 └── AGENTS.md                # Este archivo
+
+---
+
+## 🔄 Estado Actual (2026-04-15 20:48 UTC)
+
+**Agente:** opencode (arquitecto)  
+**Tareas completadas:** ADR-025 NotebookLM checklist ✅  
+**Bloqueantes:** NO
+
+### Validación final
+- ✅ Tests orchestrator: 92 passed
+- ✅ Type-check: 13/14 workspaces (mission-control usa pnpm)
+- ✅ OpenAPI: 28 paths valid
+- ✅ Redis: 59 clients, 1234 BullMQ keys
+- ✅ Orchestrator: role=control, mode=queue-only
+- ✅ Mac 2011: Ollama 2 modelos
+
+### Servicios VPS (todos healthy)
+- opsly_orchestrator, opsly_llm_gateway, opsly_context_builder, opsly_hermes
+- infra-redis-1, infra-app-1, infra-app-2
+- opsly_portal, opsly_mcp (12 tools)
+- Prometheus, Grafana, cAdvisor, Watchtower
 ```
