@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-04-23T04:50:18Z",
-  "totalFiles": 209,
+  "lastIndexed": "2026-04-23T21:49:26Z",
+  "totalFiles": 211,
   "files": [
     "2026-04-21.md",
     "6xk2xhn5f8hcllwj3npzaik36lqycdg0y3xw06lo.md",
@@ -21,8 +21,9 @@
     "ADR-013-google-cloud-openSource-strategy.md",
     "ADR-014-notebooklm-agent.md",
     "ADR-015-hermes-orchestrator-architecture.md",
-    "ADR-016-worker-teams-billing-roadmap.md",
+    "ADR-016-legalvial-multitenant-model.md",
     "ADR-017-prepaid-token-wallet-roadmap.md",
+    "ADR-017-worker-teams-billing-roadmap.md",
     "ADR-018-pgvector-embeddings-rag.md",
     "ADR-019-prometheus-grafana-observability.md",
     "ADR-020-orchestrator-worker-separation.md",
@@ -94,6 +95,7 @@
     "KNOWLEDGE-SYSTEM.md",
     "LANIDEA-OPENCLAW.md",
     "LAYERS-SANDBOX-QA-PROD.md",
+    "LEGALVIAL-ARCHITECTURE-DECISION.md",
     "LIBRARIES-INSTALLED.md",
     "LLM-GATEWAY-WORKPLAN.md",
     "LLM-GATEWAY.md",
