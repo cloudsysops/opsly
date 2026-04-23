@@ -67,6 +67,13 @@ append_obsidian_note() {
     return 0
   fi
 
+  # Por defecto: NO escribir notas en el repo (evita `?? docs/obsidian/inbox/*.md` tras cada commit).
+  # Actívalo explícitamente cuando quieras bitácora local:
+  #   OPSLY_AGENT_OBSIDIAN_INBOX=true
+  if [[ "${OPSLY_AGENT_OBSIDIAN_INBOX:-false}" != "true" ]]; then
+    return 0
+  fi
+
   if $DRY_RUN; then
     log "DRY-RUN: append Obsidian note -> $note_file"
     return 0
