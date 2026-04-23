@@ -203,7 +203,7 @@ curl -sf http://100.80.41.29:11434/api/tags | jq .
 
 | File | Purpose |
 |------|---------|
-| `docs/adr/ADR-025-token-optimization-ollama-primary.md` | Architecture decision |
+| `docs/adr/ADR-031-token-optimization-ollama-primary.md` | Architecture decision |
 | `config/parallel-agent-jobs.yaml` | Full job manifest with all payloads |
 | `scripts/execute-parallel-agents-adr025.sh` | BullMQ enqueuer script |
 | `scripts/verify-token-tracking.sh` | Hermes validation helper |

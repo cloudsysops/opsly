@@ -89,14 +89,22 @@ docs/SPRINT-ROADMAP.md   ← sprints 1-8, qué está hecho, qué sigue
 | [ADR-013](adr/ADR-013-google-cloud-openSource-strategy.md)   | Google Cloud + Open Source Integration Strategy                |
 | [ADR-014](adr/ADR-014-notebooklm-agent.md)                   | NotebookLM Agent (EXPERIMENTAL)                                |
 | [ADR-015](adr/ADR-015-hermes-orchestrator-architecture.md)   | Hermes como servicio Docker separado                           |
+| [ADR-016](adr/ADR-016-legalvial-multitenant-model.md)        | LegalVial — modelo multi-tenant / aislamiento (notas + enlaces) |
 | [ADR-017](adr/ADR-017-worker-teams-billing-roadmap.md)       | Equipos de workers por tenant y billing ampliado (roadmap)     |
-| [ADR-017](adr/ADR-017-prepaid-token-wallet-roadmap.md)       | Wallet prepago y “tokens” de cuenta (roadmap)                  |
 | [ADR-018](adr/ADR-018-pgvector-embeddings-rag.md)            | pgvector + Embeddings para RAG en decisiones Hermes            |
 | [ADR-019](adr/ADR-019-prometheus-grafana-observability.md)   | Prometheus + Grafana para observabilidad de plataforma         |
 | [ADR-020](adr/ADR-020-orchestrator-worker-separation.md)     | Separación control plane (VPS) ↔ worker plane (remoto)         |
 | [ADR-021](adr/ADR-021-predictive-bi-scalability.md)          | Escalabilidad — Predictive BI Engine                           |
 | [ADR-022](adr/ADR-022-di-pattern-testability.md)             | Dependency Injection sobre vi.mock para módulos con singletons |
 | [ADR-023](adr/ADR-023-approval-gate-phase1.md)               | Approval Gate — Fase 1 (MVP)                                   |
+| [ADR-024](adr/ADR-024-ollama-local-worker-primary.md)        | Ollama local como worker primario (costo/latencia)              |
+| [ADR-025](adr/ADR-025-notebooklm-knowledge-layer.md)          | NotebookLM como knowledge layer (EXPERIMENTAL)                   |
+| [ADR-026](adr/ADR-026-tenant-context-postgres-first.md)      | Contexto tenant: Postgres-first (cache/invalidación)           |
+| [ADR-027](adr/ADR-027-hybrid-compute-plane-k8s.md)           | Compute plane híbrido (K8s opcional) vs control plane Compose    |
+| [ADR-028](adr/ADR-028-tenant-onboarding-pattern.md)         | Onboarding por tenant: plantilla + `config/tenants/*.json`       |
+| [ADR-029](adr/ADR-029-infrastructure-layers-shared-vs-tenant.md) | Capas: plataforma compartida vs runtime dedicado por tenant   |
+| [ADR-030](adr/ADR-030-prepaid-token-wallet-roadmap.md)        | Wallet prepago y “tokens” de cuenta (roadmap)                  |
+| [ADR-031](adr/ADR-031-token-optimization-ollama-primary.md) | Optimización de tokens + Ollama primary (doc paralela; ver ADR-024) |
 
 ### 4. Infra y deploy
 

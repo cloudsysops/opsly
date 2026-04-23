@@ -1,5 +1,13 @@
 # LegalVial — Phase 2b automation prompt (fuente Drive)
 
+## Alcance (Opsly vs solo LegalVial)
+
+Este archivo es **la instancia LegalVial** del patrón genérico (Opción B):
+
+- Plantilla reusable: `docs/prompts/tenant-onboarding/TENANT-ONBOARDING-TEMPLATE.md`
+- Config del tenant: `config/tenants/legalvial.json` (+ schema `config/tenants/schema.tenant-config.json`)
+- Automatización Drive (layout + upload prompts/config): `npm run opsly:drive:ensure-layout` / `npm run opsly:drive:upload-tenant-onboarding`
+
 ## Fuente canónica (Google Drive)
 
 - Documento: `CURSOR-PHASE2b-AUTOMATION-PROMPT: Complete Execution Guide`

@@ -275,7 +275,7 @@ build_copilot_job_006() {
     "files": [
       "AGENTS.md",
       "docs/adr/ADR-024-ollama-local-worker-primary.md",
-      "docs/adr/ADR-025-token-optimization-ollama-primary.md"
+      "docs/adr/ADR-031-token-optimization-ollama-primary.md"
     ],
     "updates": [
       {
@@ -289,7 +289,7 @@ build_copilot_job_006() {
         "new_status": "COMPLETED"
       },
       {
-        "file": "docs/adr/ADR-025-token-optimization-ollama-primary.md",
+        "file": "docs/adr/ADR-031-token-optimization-ollama-primary.md",
         "action": "update-status",
         "new_status": "APPROVED"
       }

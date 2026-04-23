@@ -1,4 +1,4 @@
-# ADR-017 — Wallet prepago y “tokens” de cuenta (roadmap)
+# ADR-030 — Wallet prepago y “tokens” de cuenta (roadmap)
 
 ## Estado
 

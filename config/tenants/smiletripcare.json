@@ -1,0 +1,10 @@
+{
+  "tenant_name": "SmileTripCare",
+  "tenant_slug": "smiletripcare",
+  "schema_name": "smiletripcare",
+  "platform_domain": "ops.smiletripcare.com",
+  "workflows_count": 0,
+  "pricing_per_unit": 0,
+  "currency": "USD",
+  "notes": "Plantilla: el portal Opsly suele ser un host compartido (no inventar subdominios por tenant sin confirmación)."
+}

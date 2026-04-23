@@ -25,14 +25,15 @@ collect_md_paths() {
     -name dist -o \
     -name .next -o \
     -name coverage -o \
-    -name .turbo \
+    -name .turbo -o \
+    -path '*/.claude/worktrees/*' \
     \) -prune -o \
     -type f -name '*.md' -print0
 }
 
 if [[ "$DRY_RUN" == "true" ]]; then
   echo "[index-knowledge] DRY_RUN: OUT=$OUT OPSLY_ROOT=$OPSLY_ROOT"
-  n="$(find "$OPSLY_ROOT" \( -name node_modules -o -name .git -o -name dist -o -name .next -o -name coverage -o -name .turbo \) -prune -o -type f -name '*.md' -print | wc -l | tr -d ' ')"
+  n="$(find "$OPSLY_ROOT" \( -name node_modules -o -name .git -o -name dist -o -name .next -o -name coverage -o -name .turbo -o -path '*/.claude/worktrees/*' \) -prune -o -type f -name '*.md' -print | wc -l | tr -d ' ')"
   echo "[index-knowledge] DRY_RUN: ${n} archivos .md"
   tmp="$(mktemp)"
   collect_md_paths "$OPSLY_ROOT" | node "$SCRIPT_DIR/generate-knowledge-index.mjs" --stdin0 "$OPSLY_ROOT" >"$tmp"

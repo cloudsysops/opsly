@@ -1,0 +1,15 @@
+{
+  "root_folder_id": "",
+  "folders": {
+    "prompts": "PROMPTS",
+    "config": "CONFIG",
+    "executions": "EXECUTIONS",
+    "architecture": "ARCHITECTURE"
+  },
+  "notes": [
+    "Este archivo describe la convención de carpetas dentro del folder raíz de Opsly en Google Drive.",
+    "Los IDs de subcarpetas se resuelven en runtime (por nombre) vía Drive API para no hardcodear IDs frágiles.",
+    "Requiere compartir el folder raíz (y subcarpetas) con la Service Account usada por Opsly (GOOGLE_SERVICE_ACCOUNT_JSON).",
+    "Define el folder raíz con OPSLY_DRIVE_ROOT_FOLDER_ID (recomendado) o rellena root_folder_id aquí (solo local)."
+  ]
+}

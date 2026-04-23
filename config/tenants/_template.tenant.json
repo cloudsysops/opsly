@@ -1,0 +1,10 @@
+{
+  "tenant_name": "Example Tenant",
+  "tenant_slug": "example-tenant",
+  "schema_name": "example_tenant",
+  "platform_domain": "ops.example.com",
+  "workflows_count": 0,
+  "pricing_per_unit": 0,
+  "currency": "USD",
+  "notes": "Copia este archivo a `<slug>.json` y rellena valores reales."
+}

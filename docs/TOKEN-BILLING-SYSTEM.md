@@ -72,5 +72,5 @@ Si se implementara wallet prepago, una tabla **orientativa** podría mapear **ta
 - `docs/TOKEN-SYSTEM-GUIDE.md` (guía corta)
 - `docs/WORKER-TEAM-BILLING.md`
 - `docs/adr/ADR-017-worker-teams-billing-roadmap.md`
-- `docs/adr/ADR-017-prepaid-token-wallet-roadmap.md`
+- `docs/adr/ADR-030-prepaid-token-wallet-roadmap.md`
 - `apps/llm-gateway/src/budget.ts`

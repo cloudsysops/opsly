@@ -1,0 +1,12 @@
+{
+  "tenant_name": "LegalVial",
+  "tenant_slug": "legalvial",
+  "schema_name": "legalvial",
+  "platform_domain": "ops.smiletripcare.com",
+  "parent_tenant_slug": "localrank",
+  "client_slug": "legalvial",
+  "workflows_count": 6,
+  "pricing_per_unit": 0.5,
+  "currency": "USD",
+  "notes": "Modelo híbrido: LegalVial como producto/subcliente de LocalRank. En jobs/logs, incluir parent_tenant_slug + client_slug además del tenant_slug del stack."
+}

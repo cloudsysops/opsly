@@ -349,7 +349,7 @@ jobs:
           new_status: "COMPLETED"
           timestamp: "2026-04-15T00:00Z"
 
-        - file: "docs/adr/ADR-025-token-optimization-ollama-primary.md"
+        - file: "docs/adr/ADR-031-token-optimization-ollama-primary.md"
           action: "update-status"
           new_status: "APPROVED"
           timestamp: "2026-04-15T00:00Z"

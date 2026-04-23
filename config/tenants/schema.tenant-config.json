@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Opsly tenant onboarding config",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["tenant_name", "tenant_slug", "schema_name", "platform_domain"],
+  "properties": {
+    "tenant_name": { "type": "string", "minLength": 1 },
+    "tenant_slug": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]{1,28}[a-z0-9]$" },
+    "schema_name": { "type": "string", "minLength": 1 },
+    "platform_domain": { "type": "string", "minLength": 3 },
+    "portal_domain": { "type": "string" },
+    "parent_tenant_slug": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]{1,28}[a-z0-9]$"
+    },
+    "client_slug": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]{1,28}[a-z0-9]$"
+    },
+    "workflows_count": { "type": "integer", "minimum": 0 },
+    "pricing_per_unit": { "type": "number", "minimum": 0 },
+    "currency": { "type": "string", "minLength": 3, "maxLength": 3 },
+    "notes": { "type": "string" }
+  }
+}

@@ -1,6 +1,6 @@
 # Diagramas Mermaid — Billing USD (Opsly)
 
-> **Alcance:** sistema actual en **USD** (sin wallet prepago). Wallet prepago: pausado según [ADR-017](adr/ADR-017-prepaid-token-wallet-roadmap.md) y [WALLET-PREPAID-ROADMAP](WALLET-PREPAID-ROADMAP.md).  
+> **Alcance:** sistema actual en **USD** (sin wallet prepago). Wallet prepago: pausado según [ADR-030](adr/ADR-030-prepaid-token-wallet-roadmap.md) y [WALLET-PREPAID-ROADMAP](WALLET-PREPAID-ROADMAP.md).  
 > **UI admin:** `/costs` usa `BudgetAlertCard`, `LlmBudgetSummaryStrip`, `TenantBudgetBars` y datos de `GET /api/admin/costs` (incl. `tenant_budgets`, `llm_budget_summary`).  
 > **Umbrales UI:** 75% warning, 90% critical (`budget-thresholds.ts`). El enforcement de suspensión sigue la lógica de `checkTenantBudget` y políticas de tenant.
 
@@ -414,7 +414,7 @@ pie title Billing USD — visión aproximada
 
 ## Referencias
 
-- [ADR-017 — Wallet prepago](adr/ADR-017-prepaid-token-wallet-roadmap.md)
+- [ADR-030 — Wallet prepago](adr/ADR-030-prepaid-token-wallet-roadmap.md)
 - [WALLET-PREPAID-ROADMAP.md](WALLET-PREPAID-ROADMAP.md)
 - [TOKEN-BILLING-SYSTEM.md](TOKEN-BILLING-SYSTEM.md)
 - Código: `apps/api/lib/billing/budget-thresholds.ts`, `admin-costs-tenant-budgets.ts`, `apps/admin/app/costs/page.tsx`

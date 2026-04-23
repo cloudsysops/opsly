@@ -1,4 +1,6 @@
-# ADR-025: Token Optimization — Ollama Local Primary + Docker Resource Limits
+# ADR-031: Token Optimization — Ollama Local Primary + Docker Resource Limits
+
+> Nota: este documento quedó numerado como **ADR-031** para evitar colisión con `ADR-025-notebooklm-knowledge-layer.md`.
 
 **Date:** 2026-04-15  
 **Status:** APPROVED  
