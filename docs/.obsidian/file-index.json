@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-04-23T21:49:26Z",
-  "totalFiles": 211,
+  "lastIndexed": "2026-04-23T22:00:43Z",
+  "totalFiles": 216,
   "files": [
     "2026-04-21.md",
     "6xk2xhn5f8hcllwj3npzaik36lqycdg0y3xw06lo.md",
@@ -67,6 +67,7 @@
     "CURSOR-DAILY-CHECKLIST.md",
     "DECEPTICON-WORKER.md",
     "DEPLOY-VPS-AND-INDEX.md",
+    "DEPLOYMENT-VALIDATION.md",
     "DISK-USAGE-REPORT.md",
     "DISTRIBUTED-ARCHITECTURE.md",
     "DOPPLER-CI-RUNBOOK.md",
@@ -92,6 +93,7 @@
     "IMPLEMENTATION-IA-LAYER.md",
     "IMPLEMENTATION-STATUS.md",
     "INCIDENT-2026-04-11-DISCO-LLENO.md",
+    "INFRASTRUCTURE-SETUP.md",
     "INVITATIONS_RUNBOOK.md",
     "KNOWLEDGE-BRAIN-SYSTEM.md",
     "KNOWLEDGE-SYSTEM.md",
@@ -171,6 +173,7 @@
     "SUPER-AGENT-SHADOW-DEPLOY.md",
     "SUPERAGENTS-BOOTSTRAP.md",
     "TAILSCALE-NOMENCLATURA.md",
+    "TENANT-ONBOARDING-TEMPLATE.md",
     "TENANT-TESTING-GUIDE.md",
     "TENANT-TESTING-PLAN.md",
     "TEST_PLAN.md",
