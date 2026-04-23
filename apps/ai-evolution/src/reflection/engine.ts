@@ -1,4 +1,6 @@
 import type { CodeQuality, Improvement } from '../types.js';
+import { readdir, readFile } from 'node:fs/promises';
+import { join } from 'node:path';
 import { z } from 'zod';
 
 export interface ReflectionResult {
@@ -16,7 +18,7 @@ export class ReflectionEngine {
   }
 
   async analyzeFile(filePath: string): Promise<ReflectionResult> {
-    const content = await Bun.file(filePath).text();
+    const content = await readFile(filePath, 'utf8');
 
     const quality = this.assessCodeQuality(content, filePath);
     const improvements = this.identifyImprovements(content, filePath);
@@ -322,12 +324,13 @@ export class ReflectionEngine {
     const basePath = this.projectRoot;
 
     const walkDir = async (dir: string) => {
-      const entries = await Bun.file(dir).directory();
+      const entries = await readdir(dir, { withFileTypes: true });
 
-      for (const [name, entry] of Object.entries(entries)) {
-        const fullPath = `${dir}/${name}`;
+      for (const entry of entries) {
+        const name = entry.name;
+        const fullPath = join(dir, name);
 
-        if (entry.isDirectory) {
+        if (entry.isDirectory()) {
           if (!name.startsWith('.') && !name.includes('node_modules')) {
             await walkDir(fullPath);
           }
@@ -337,6 +340,7 @@ export class ReflectionEngine {
       }
     };
 
+    void pattern;
     await walkDir(basePath);
     return files;
   }

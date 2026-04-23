@@ -34,7 +34,7 @@ El sistema actual funciona con:
 ### Referencias
 
 - [ADR-017](adr/ADR-017-prepaid-token-wallet-roadmap.md) — prepaid token wallet roadmap
-- [ADR-016](adr/ADR-016-worker-teams-billing-roadmap.md) — worker teams billing
+- [ADR-017](adr/ADR-017-worker-teams-billing-roadmap.md) — worker teams billing
 - [TOKEN-BILLING-SYSTEM.md](TOKEN-BILLING-SYSTEM.md) — diseño futuro
 - [TOKEN-SYSTEM-GUIDE.md](TOKEN-SYSTEM-GUIDE.md) — diseño futuro
 

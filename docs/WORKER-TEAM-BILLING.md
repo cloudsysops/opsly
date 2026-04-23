@@ -40,7 +40,7 @@ Hasta entonces, el **proxy de coste** oficial para IA sigue siendo **USD vía LL
 
 ## APIs del prompt (`/api/workers/team`, `/api/workers/task`)
 
-**No implementadas** en esta tarea: requieren autenticación fuerte, persistencia y coherencia con `TeamManager`. Ver `docs/adr/ADR-016-worker-teams-billing-roadmap.md`.
+**No implementadas** en esta tarea: requieren autenticación fuerte, persistencia y coherencia con `TeamManager`. Ver `docs/adr/ADR-017-worker-teams-billing-roadmap.md`.
 
 ## Panel “Billing & Worker Teams” en admin
 

@@ -88,4 +88,4 @@ interface SharedContext {
 
 - `docs/WORKER-TEAM-BILLING.md` — medición y facturación.
 - `docs/WORKER-FLOWS.md` — control vs worker.
-- `docs/adr/ADR-016-worker-teams-billing-roadmap.md` — decisión de alcance.
+- `docs/adr/ADR-017-worker-teams-billing-roadmap.md` — decisión de alcance.

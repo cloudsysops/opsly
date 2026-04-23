@@ -89,7 +89,7 @@ docs/SPRINT-ROADMAP.md   ← sprints 1-8, qué está hecho, qué sigue
 | [ADR-013](adr/ADR-013-google-cloud-openSource-strategy.md)   | Google Cloud + Open Source Integration Strategy                |
 | [ADR-014](adr/ADR-014-notebooklm-agent.md)                   | NotebookLM Agent (EXPERIMENTAL)                                |
 | [ADR-015](adr/ADR-015-hermes-orchestrator-architecture.md)   | Hermes como servicio Docker separado                           |
-| [ADR-016](adr/ADR-016-worker-teams-billing-roadmap.md)       | Equipos de workers por tenant y billing ampliado (roadmap)     |
+| [ADR-017](adr/ADR-017-worker-teams-billing-roadmap.md)       | Equipos de workers por tenant y billing ampliado (roadmap)     |
 | [ADR-017](adr/ADR-017-prepaid-token-wallet-roadmap.md)       | Wallet prepago y “tokens” de cuenta (roadmap)                  |
 | [ADR-018](adr/ADR-018-pgvector-embeddings-rag.md)            | pgvector + Embeddings para RAG en decisiones Hermes            |
 | [ADR-019](adr/ADR-019-prometheus-grafana-observability.md)   | Prometheus + Grafana para observabilidad de plataforma         |
