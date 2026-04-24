@@ -196,5 +196,5 @@ supabase/migrations/0019_agent_sessions.sql
 
 → `docs/README.md` — índice completo categorizado  
 → `AGENTS.md` — estado de sesión y decisiones  
-→ `docs/SPRINT-ROADMAP.md` — roadmap 8 sprints  
+→ `SPRINT-TRACKER.md` — semana operativa; `ROADMAP.md` — plan; `docs/history/plans/SPRINT-ROADMAP.md` — snapshot archivado  
 → `docs/adr/` — 15 decisiones de arquitectura

@@ -1,3 +1,9 @@
+---
+status: canon
+owner: operations
+last_review: 2026-04-24
+---
+
 # Opsly — Contexto del Agente
 
 > Fuente de verdad para cada sesión nueva.

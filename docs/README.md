@@ -1,3 +1,9 @@
+---
+status: canon
+owner: architecture
+last_review: 2026-04-24
+---
+
 # Opsly — Wiki de Documentación
 
 > **Para agentes (Claude, Cursor, Copilot):** lee primero `QUICK-REFERENCE.md`, luego el doc de la categoría relevante.  
@@ -11,10 +17,11 @@
 AGENTS.md          ← estado de sesión, decisiones fijas, bloqueantes
 VISION.md          ← norte del producto, límites, fases
 ROADMAP.md         ← desglose semanal Fase 2–3, milestones (complementa VISION)
+SPRINT-TRACKER.md  ← vista semanal operativa (raíz; complementa ROADMAP)
 docs/IMPLEMENTATION-IA-LAYER.md ← guía técnica capa IA (TypeScript, rutas en apps/*)
 docs/QUICKSTART-AGENTS.md ← añadir tools MCP y probar sin duplicar tablas ni endpoints
 docs/QUICK-REFERENCE.md  ← SSH, comandos, env vars, URLs — LEER PRIMERO
-docs/SPRINT-ROADMAP.md   ← sprints 1-8, qué está hecho, qué sigue
+docs/generated/sprint-status.auto.md ← burndown generado (status.yaml; no editar)
 ```
 
 ---
@@ -30,13 +37,13 @@ docs/SPRINT-ROADMAP.md   ← sprints 1-8, qué está hecho, qué sigue
 
 ### 1. Estado y roadmap
 
+> **Note:** Legacy planning (`MASTER-PLAN*.md`, `SPRINT-ROADMAP.md`) is in [`history/plans/`](history/plans/) (ADR-033). Canon: [`../ROADMAP.md`](../ROADMAP.md), [`../SPRINT-TRACKER.md`](../SPRINT-TRACKER.md), [`../AGENTS.md`](../AGENTS.md); machine view: [`generated/sprint-status.auto.md`](generated/sprint-status.auto.md).
+
 | Doc                                                        | Cuándo usarlo                                            |
 | ---------------------------------------------------------- | -------------------------------------------------------- |
 | [`../ROADMAP.md`](../ROADMAP.md)                           | Plan semanal Fase 2–3, milestones; alineado a VISION     |
+| [`../SPRINT-TRACKER.md`](../SPRINT-TRACKER.md)            | Vista semanal operativa (checkboxes)                     |
 | [`IMPLEMENTATION-IA-LAYER.md`](IMPLEMENTATION-IA-LAYER.md) | Implementar capa IA en el monorepo (sin Python paralelo) |
-| [`SPRINT-ROADMAP.md`](SPRINT-ROADMAP.md)                   | Ver qué sprint está activo, entregables, estado          |
-| [`MASTER-PLAN-STATUS.md`](MASTER-PLAN-STATUS.md)           | Métricas consolidadas: tests, type-check, fases          |
-| [`MASTER-PLAN.md`](MASTER-PLAN.md)                         | Stack inventario, reglas de dependencias                 |
 | [`ACTIVE-PROMPT.md`](ACTIVE-PROMPT.md)                     | Prompt activo ejecutado por cursor-prompt-monitor        |
 
 ### 2. Arquitectura
@@ -105,6 +112,7 @@ docs/SPRINT-ROADMAP.md   ← sprints 1-8, qué está hecho, qué sigue
 | [ADR-029](adr/ADR-029-infrastructure-layers-shared-vs-tenant.md) | Capas: plataforma compartida vs runtime dedicado por tenant   |
 | [ADR-030](adr/ADR-030-prepaid-token-wallet-roadmap.md)        | Wallet prepago y “tokens” de cuenta (roadmap)                  |
 | [ADR-031](adr/ADR-031-token-optimization-ollama-primary.md) | Optimización de tokens + Ollama primary (doc paralela; ver ADR-024) |
+| [ADR-033](adr/ADR-033-docs-canonicalization.md) | Canon docs + `docs/generated/*.auto.md` + historial en `history/plans/` |
 
 ### 4. Infra y deploy
 
@@ -208,7 +216,7 @@ AGENTS.md ───────────────────────�
     │                                                       │
     ├── VISION.md (qué somos, límites)                      │
     ├── docs/QUICK-REFERENCE.md (comandos rápidos)          │
-    ├── docs/SPRINT-ROADMAP.md (qué construimos)            │
+    ├── SPRINT-TRACKER.md + ROADMAP.md (plan + semana)     │
     │                                                       │
     ├── Arquitectura                                        │
     │   ├── ARCHITECTURE.md                                 │

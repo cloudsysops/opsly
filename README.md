@@ -20,9 +20,8 @@ Plataforma multi-tenant **enterprise SaaS**: plano de control (API, billing, orq
 | [`VISION.md`](VISION.md) | Norte del producto, ICP, fases, límites |
 | [`ROADMAP.md`](ROADMAP.md) | Plan semanal Fase 2–3 (IA + producto), milestones |
 | [`docs/IMPLEMENTATION-IA-LAYER.md`](docs/IMPLEMENTATION-IA-LAYER.md) | Guía técnica capa IA (TypeScript; rutas en `apps/*`) |
-| [`docs/SPRINT-ROADMAP.md`](docs/SPRINT-ROADMAP.md) | Sprints enterprise 1–8 con entregables y estado |
-| [`docs/MASTER-PLAN-STATUS.md`](docs/MASTER-PLAN-STATUS.md) | Estado consolidado fases + sprints + métricas |
-| [`docs/MASTER-PLAN.md`](docs/MASTER-PLAN.md) | Stack inventario, reglas de dependencias |
+| [`SPRINT-TRACKER.md`](SPRINT-TRACKER.md) | Vista semanal operativa (canon) |
+| [`docs/history/plans/`](docs/history/plans/) | `MASTER-PLAN*`, `SPRINT-ROADMAP` archivados (referencia) — ver ADR-033 |
 
 ### Arquitectura
 | Doc | Descripción |
