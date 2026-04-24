@@ -166,6 +166,7 @@ class OnboardingOrchestrator {
 
   private async createTenantRecord(): Promise<string> {
     const db = getServiceClient();
+    console.warn('[createTenantRecord] Using service client, attempting insert for:', this.slug);
     const { data, error } = await db
       .schema('platform')
       .from('tenants')
@@ -182,6 +183,7 @@ class OnboardingOrchestrator {
       .single();
 
     if (error || !data) {
+      console.error('[createTenantRecord] Insert failed:', error?.code, error?.message);
       const err = new Error(error?.message ?? 'Failed to create tenant') as Error & {
         code?: string;
       };
@@ -191,6 +193,7 @@ class OnboardingOrchestrator {
       throw err;
     }
 
+    console.warn('[createTenantRecord] Insert SUCCESS, id:', data.id);
     return data.id;
   }
 
