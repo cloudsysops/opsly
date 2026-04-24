@@ -5,6 +5,9 @@ COPY package.json package-lock.json ./
 COPY packages/types/package.json ./packages/types/
 COPY apps/llm-gateway/package.json ./apps/llm-gateway/
 RUN npm ci --ignore-scripts
+RUN npm ci --ignore-scripts \
+  -w @intcloudsysops/types \
+  -w @intcloudsysops/llm-gateway
 
 FROM node:20-alpine AS builder
 
@@ -14,6 +17,9 @@ COPY --from=deps /app/package.json ./package.json
 COPY --from=deps /app/package-lock.json ./package-lock.json
 COPY packages/types ./packages/types
 COPY apps/llm-gateway ./apps/llm-gateway
+RUN npm ci --ignore-scripts \
+  -w @intcloudsysops/types \
+  -w @intcloudsysops/llm-gateway
 RUN npm run build -w @intcloudsysops/types && \
     npm run build -w @intcloudsysops/llm-gateway
 
