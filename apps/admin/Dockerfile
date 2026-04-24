@@ -5,11 +5,13 @@ FROM node:20-alpine AS deps
 WORKDIR /repo
 COPY package.json package-lock.json ./
 COPY apps/admin/package.json ./apps/admin/
-RUN npm ci --ignore-scripts --include=dev
+RUN npm ci --ignore-scripts
 
 FROM node:20-alpine AS builder
 WORKDIR /repo
 COPY --from=deps /repo/node_modules ./node_modules
+COPY --from=deps /repo/package.json ./package.json
+COPY --from=deps /repo/package-lock.json ./package-lock.json
 COPY apps/admin ./apps/admin
 RUN npm ci --ignore-scripts --include=dev -w @intcloudsysops/admin
 WORKDIR /repo/apps/admin
