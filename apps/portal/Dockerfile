@@ -5,7 +5,7 @@ FROM node:20-alpine AS deps
 WORKDIR /repo
 COPY package.json package-lock.json ./
 COPY apps/portal/package.json ./apps/portal/
-RUN npm ci --ignore-scripts -w @intcloudsysops/portal
+RUN npm ci --ignore-scripts
 
 FROM node:20-alpine AS builder
 WORKDIR /repo
