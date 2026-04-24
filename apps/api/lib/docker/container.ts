@@ -1,8 +1,9 @@
-import { join } from "node:path";
-import { execa } from "execa";
-import { getTenantsBaseDir } from "./paths";
+import { access } from 'node:fs/promises';
+import { join } from 'node:path';
+import { execa } from 'execa';
+import { getTenantsBaseDir } from './paths';
 
-type ContainerState = "running" | "stopped" | "error";
+type ContainerState = 'running' | 'stopped' | 'error';
 
 type DockerComposePsRow = {
   Service?: string;
@@ -17,7 +18,7 @@ function parseComposePsJson(stdout: string): DockerComposePsRow[] {
     return [];
   }
 
-  const lines = trimmed.split("\n").filter((line) => line.length > 0);
+  const lines = trimmed.split('\n').filter((line) => line.length > 0);
   const rows: DockerComposePsRow[] = [];
 
   for (const line of lines) {
@@ -33,57 +34,67 @@ function parseComposePsJson(stdout: string): DockerComposePsRow[] {
 
 function mapDockerState(state: string | undefined): ContainerState {
   if (!state) {
-    return "error";
+    return 'error';
   }
   const normalized = state.toLowerCase();
-  if (normalized.includes("running") || normalized === "up") {
-    return "running";
+  if (normalized.includes('running') || normalized === 'up') {
+    return 'running';
   }
-  if (normalized.includes("exited") || normalized.includes("dead")) {
-    return "stopped";
+  if (normalized.includes('exited') || normalized.includes('dead')) {
+    return 'stopped';
   }
-  return "error";
+  return 'error';
 }
 
 export function getTenantComposePath(slug: string): string {
-  return join(getTenantsBaseDir(), slug, "docker-compose.yml");
+  return join(getTenantsBaseDir(), slug, 'docker-compose.yml');
 }
 
-export async function startTenant(
-  slug: string,
-  composePath: string,
-): Promise<void> {
+export function getLegacyTenantComposePath(slug: string): string {
+  return join(getTenantsBaseDir(), `docker-compose.${slug}.yml`);
+}
+
+export async function resolveTenantComposePath(slug: string): Promise<string> {
+  const canonicalPath = getTenantComposePath(slug);
+  try {
+    await access(canonicalPath);
+    return canonicalPath;
+  } catch {
+    const legacyPath = getLegacyTenantComposePath(slug);
+    try {
+      await access(legacyPath);
+      return legacyPath;
+    } catch {
+      return canonicalPath;
+    }
+  }
+}
+
+export async function startTenant(slug: string, composePath: string): Promise<void> {
   void slug;
-  await execa("docker", ["compose", "-f", composePath, "up", "-d"], {
-    stdio: "pipe",
+  await execa('docker', ['compose', '-f', composePath, 'up', '-d'], {
+    stdio: 'pipe',
   });
 }
 
-export async function stopTenant(
-  slug: string,
-  composePath: string,
-): Promise<void> {
+export async function stopTenant(slug: string, composePath: string): Promise<void> {
   void slug;
-  await execa("docker", ["compose", "-f", composePath, "down"], {
-    stdio: "pipe",
+  await execa('docker', ['compose', '-f', composePath, 'down'], {
+    stdio: 'pipe',
   });
 }
 
-export async function getTenantStackStatus(
-  slug: string,
-): Promise<Record<string, ContainerState>> {
+export async function getTenantStackStatus(slug: string): Promise<Record<string, ContainerState>> {
   if (!process.env.PLATFORM_TENANTS_DIR?.length) {
     return {};
   }
-  const composePath = getTenantComposePath(slug);
+  const composePath = await resolveTenantComposePath(slug);
 
   let stdout: string;
   try {
-    const result = await execa(
-      "docker",
-      ["compose", "-f", composePath, "ps", "--format", "json"],
-      { stdio: "pipe" },
-    );
+    const result = await execa('docker', ['compose', '-f', composePath, 'ps', '--format', 'json'], {
+      stdio: 'pipe',
+    });
     stdout = result.stdout;
   } catch {
     return {};

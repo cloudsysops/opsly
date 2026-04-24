@@ -1,7 +1,7 @@
 import { z } from "zod";
 import {
-  getTenantComposePath,
   getTenantStatus,
+  resolveTenantComposePath,
   stopTenant,
 } from "../../../../lib/docker/container-manager";
 import { adminClient } from "../../../../lib/supabase/admin";
@@ -127,7 +127,7 @@ export async function DELETE(
     return Response.json({ error: "Not found" }, { status: 404 });
   }
 
-  const composePath = getTenantComposePath(tenant.slug);
+  const composePath = await resolveTenantComposePath(tenant.slug);
   await stopTenant(tenant.slug, composePath).catch(() => undefined);
 
   const { error: updateError } = await adminClient

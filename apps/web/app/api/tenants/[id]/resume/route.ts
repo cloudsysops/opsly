@@ -1,6 +1,6 @@
 import { z } from "zod";
 import {
-  getTenantComposePath,
+  resolveTenantComposePath,
   startTenant,
 } from "../../../../../lib/docker/container-manager";
 import { pollPortsUntilHealthy } from "../../../../../lib/onboarding/orchestrator";
@@ -48,7 +48,7 @@ export async function POST(
     return Response.json({ error: deployingError.message }, { status: 500 });
   }
 
-  const composePath = getTenantComposePath(tenant.slug);
+  const composePath = await resolveTenantComposePath(tenant.slug);
   try {
     await startTenant(tenant.slug, composePath);
   } catch (err) {

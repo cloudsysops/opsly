@@ -17,7 +17,10 @@ COPY apps/ml ./apps/ml
 COPY apps/llm-gateway ./apps/llm-gateway
 COPY apps/agents/notebooklm ./apps/agents/notebooklm
 COPY packages/types ./packages/types
-RUN npm run build -w @intcloudsysops/types && npm run build -w @intcloudsysops/llm-gateway && npm run build -w @intcloudsysops/ml && npm run build -w @intcloudsysops/notebooklm-agent
+RUN npm run build -w @intcloudsysops/types && \
+    npm run build -w @intcloudsysops/llm-gateway && \
+    npm run build -w @intcloudsysops/ml && \
+    npm run build -w @intcloudsysops/notebooklm-agent
 WORKDIR /repo/apps/api
 ENV NEXT_TELEMETRY_DISABLED=1
 # CORS en next.config: se resuelve en build (mismo origen admin = https://admin.${PLATFORM_DOMAIN})

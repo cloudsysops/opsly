@@ -1,3 +1,4 @@
+import { access } from "node:fs/promises";
 import { join } from "node:path";
 import { execa } from "execa";
 
@@ -48,6 +49,26 @@ export function getTenantComposePath(slug: string): string {
   return join("/opt/opsly/tenants", slug, "docker-compose.yml");
 }
 
+export function getLegacyTenantComposePath(slug: string): string {
+  return join("/opt/opsly/tenants", `docker-compose.${slug}.yml`);
+}
+
+export async function resolveTenantComposePath(slug: string): Promise<string> {
+  const canonicalPath = getTenantComposePath(slug);
+  try {
+    await access(canonicalPath);
+    return canonicalPath;
+  } catch {
+    const legacyPath = getLegacyTenantComposePath(slug);
+    try {
+      await access(legacyPath);
+      return legacyPath;
+    } catch {
+      return canonicalPath;
+    }
+  }
+}
+
 export async function startTenant(
   slug: string,
   composePath: string,
@@ -71,7 +92,7 @@ export async function stopTenant(
 export async function getTenantStatus(
   slug: string,
 ): Promise<Record<string, ContainerState>> {
-  const composePath = getTenantComposePath(slug);
+  const composePath = await resolveTenantComposePath(slug);
 
   let stdout: string;
   try {

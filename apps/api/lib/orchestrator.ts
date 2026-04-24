@@ -2,8 +2,9 @@ import { z } from 'zod';
 import { BUDGET_AUTO_SUSPEND_METADATA_KEY } from './billing/budget-constants';
 import { ONBOARDING_PIPELINE, ONBOARDING_ROLLBACK, ORCHESTRATION_HEALTH } from './constants';
 import { renderTenantComposeFromTemplate, writeComposeFile } from './docker/compose-generator';
-import { getTenantComposePath, startTenant, stopTenant } from './docker/container';
+import { resolveTenantComposePath, startTenant, stopTenant } from './docker/container';
 import { allocatePorts, releasePorts } from './docker/port-allocator';
+import { runTenantStructureHookSafe } from './docker/tenant-structure-hook';
 import { notifyTenantCreated, notifyTenantFailed } from './notifications';
 import { sendPortalInvitationForTenant } from './portal-invitations';
 import { PLAN_SERVICES } from './stripe/plans';
@@ -112,6 +113,16 @@ class OnboardingOrchestrator {
 
       const rendered = await renderTenantComposeFromTemplate(this.slug, this.ports);
       this.composePath = await writeComposeFile(this.slug, rendered.yaml);
+      const structureHook = await runTenantStructureHookSafe({
+        slug: this.slug,
+        composePath: this.composePath,
+      });
+      if (!structureHook.ok) {
+        console.warn('[tenant-structure-hook] warnings:', {
+          slug: this.slug,
+          errors: structureHook.errors,
+        });
+      }
       this.n8nBasicAuthUser = rendered.n8nBasicAuthUser;
       this.n8nBasicAuthPassword = rendered.n8nBasicAuthPassword;
       lastCompletedStep = ONBOARDING_PIPELINE.AFTER_COMPOSE_WRITTEN;
@@ -367,7 +378,7 @@ export async function deleteTenant(tenantId: string): Promise<void> {
     throw new Error('Tenant not found');
   }
 
-  const composePath = getTenantComposePath(tenant.slug);
+  const composePath = await resolveTenantComposePath(tenant.slug);
   await stopTenant(tenant.slug, composePath).catch(() => undefined);
 
   const { error: updateError } = await db
@@ -410,7 +421,7 @@ export async function suspendTenant(
     throw new Error('Tenant not found');
   }
 
-  const composePath = getTenantComposePath(tenant.slug);
+  const composePath = await resolveTenantComposePath(tenant.slug);
   await stopTenant(tenant.slug, composePath).catch(() => undefined);
 
   const updatePayload: { status: 'suspended'; metadata?: Json } = {
@@ -556,7 +567,7 @@ export async function resumeTenant(tenantId: string): Promise<void> {
   const tenant = await loadSuspendedTenantOrThrow(tenantId);
   await markTenantDeployingProgress(tenant.id);
 
-  const composePath = getTenantComposePath(tenant.slug);
+  const composePath = await resolveTenantComposePath(tenant.slug);
   await startTenant(tenant.slug, composePath);
 
   const ports = await buildPortsMapForTenant(tenant.id);

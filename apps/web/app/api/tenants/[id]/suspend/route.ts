@@ -1,6 +1,9 @@
 import { createHash } from "node:crypto";
 import { z } from "zod";
-import { getTenantComposePath, stopTenant } from "../../../../../lib/docker/container-manager";
+import {
+  resolveTenantComposePath,
+  stopTenant,
+} from "../../../../../lib/docker/container-manager";
 import { adminClient } from "../../../../../lib/supabase/admin";
 
 const idParamSchema = z.string().uuid();
@@ -40,7 +43,7 @@ export async function POST(
     return Response.json({ error: "Not found" }, { status: 404 });
   }
 
-  const composePath = getTenantComposePath(tenant.slug);
+  const composePath = await resolveTenantComposePath(tenant.slug);
   await stopTenant(tenant.slug, composePath).catch(() => undefined);
 
   const { error: updateError } = await adminClient
