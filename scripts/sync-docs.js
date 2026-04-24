@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 /**
- * Genera docs/IMPLEMENTATION-STATUS.md desde docs/implementation/status.yaml
+ * Genera docs/generated/implementation-progress.auto.md
+ * desde docs/implementation/status.yaml
  */
 const fs = require("fs");
 const path = require("path");
@@ -8,9 +9,10 @@ const yaml = require("js-yaml");
 
 const ROOT = path.join(__dirname, "..");
 const YAML_PATH = path.join(ROOT, "docs", "implementation", "status.yaml");
-const OUT_PATH = path.join(ROOT, "docs", "IMPLEMENTATION-STATUS.md");
+const OUT_PATH = path.join(ROOT, "docs", "generated", "implementation-progress.auto.md");
 const DOCS_DIR = path.join(ROOT, "docs");
 const IMPL_DIR = path.join(ROOT, "docs", "implementation");
+const GENERATED_DIR = path.join(ROOT, "docs", "generated");
 
 function ensureDir(dir) {
   if (!fs.existsSync(dir)) {
@@ -65,6 +67,7 @@ function main() {
 
   ensureDir(DOCS_DIR);
   ensureDir(IMPL_DIR);
+  ensureDir(GENERATED_DIR);
 
   const generatedAt = new Date().toISOString();
   const project = data.project ?? "Opsly";
@@ -72,9 +75,21 @@ function main() {
   const lastUpdated = data.last_updated ?? "—";
 
   const lines = [];
-  lines.push(`# ${project} — Implementation status`);
+  lines.push("---");
+  lines.push("status: generated");
+  lines.push("source: docs/implementation/status.yaml");
+  lines.push("generated_by: scripts/sync-docs.js");
+  lines.push("do_not_edit: true");
+  lines.push("---");
   lines.push("");
-  lines.push(`> **Generado automáticamente** — no editar a mano. Fuente: [\`docs/implementation/status.yaml\`](implementation/status.yaml).`);
+  lines.push("<!-- This file is auto-generated. Do not edit manually. -->");
+  lines.push("<!-- See docs/generated/README.md for details. -->");
+  lines.push("");
+  lines.push(`# ${project} — Implementation Progress (Auto-Generated)`);
+  lines.push("");
+  lines.push(
+    "> **Generado automáticamente** — no editar a mano. Fuente: [`docs/implementation/status.yaml`](../implementation/status.yaml).",
+  );
   lines.push("");
   lines.push(`| Campo | Valor |`);
   lines.push(`| --- | --- |`);
@@ -175,11 +190,14 @@ function main() {
   try {
     fs.writeFileSync(OUT_PATH, lines.join("\n") + "\n", "utf8");
   } catch (e) {
-    console.error("❌ Cannot write IMPLEMENTATION-STATUS.md:", e instanceof Error ? e.message : e);
+    console.error(
+      "❌ Cannot write docs/generated/implementation-progress.auto.md:",
+      e instanceof Error ? e.message : e,
+    );
     process.exit(1);
   }
 
-  console.log("✅ Generated docs/IMPLEMENTATION-STATUS.md");
+  console.log("✅ Generated docs/generated/implementation-progress.auto.md");
 }
 
 main();

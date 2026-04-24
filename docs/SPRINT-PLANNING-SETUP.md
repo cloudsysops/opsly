@@ -8,7 +8,7 @@ Sistema unificado: **Notion** como colaboración en tiempo real, **YAML + docs g
 |------|-----|
 | **Notion** (bases Tasks / Sprints) | Donde el equipo edita día a día |
 | **`docs/implementation/status.yaml`** | Vista consolidada para docs, hooks y PRs (puede poblar desde Notion con `npm run notion:fetch`) |
-| **`docs/IMPLEMENTATION-STATUS.md`**, **`SPRINT-TRACKING.md`**, **`AGENTS-ASSIGNMENTS.md`** | **Generados** — no editar a mano |
+| **`docs/generated/implementation-progress.auto.md`**, **`docs/generated/sprint-status.auto.md`**, **`docs/AGENTS-ASSIGNMENTS.md`** | **Generados** — no editar a mano; vista humana del sprint: **`SPRINT-TRACKER.md`** (raíz del repo) |
 | **GitHub Issues** | Tracking técnico y enlaces desde Notion (opcional) |
 
 Variables: ver [`docs/DOPPLER-VARS.md`](DOPPLER-VARS.md) (`NOTION_TOKEN`, `NOTION_DATABASE_TASKS`, …). No hardcodear IDs de base en código: usar env.
@@ -43,7 +43,7 @@ El workflow [`.github/workflows/github-project-sync.yml`](../.github/workflows/g
 
 | Script | Descripción |
 |--------|-------------|
-| `npm run docs:sync` | `IMPLEMENTATION-STATUS` + `SPRINT-TRACKING` + `AGENTS-ASSIGNMENTS` |
+| `npm run docs:sync` | `implementation-progress.auto.md` + `sprint-status.auto.md` + `AGENTS-ASSIGNMENTS` |
 | `npm run notion:fetch` | Notion Tasks → merge en `status.yaml` (`sprints[0].tasks`) |
 | `npm run notion:validate` | Valida schema de la base |
 | `npm run notion:sync` | `notion:fetch` + `docs:sync` |
@@ -54,7 +54,7 @@ El workflow [`.github/workflows/github-project-sync.yml`](../.github/workflows/g
 
 ## 5. Flujo diario / review
 
-1. **Standup:** leer `docs/SPRINT-TRACKING.md` y `docs/AGENTS-ASSIGNMENTS.md` (tras `npm run docs:sync`).
+1. **Standup:** leer `docs/generated/sprint-status.auto.md` y `docs/AGENTS-ASSIGNMENTS.md` (tras `npm run docs:sync`); para narrativa humana, **`SPRINT-TRACKER.md`**.
 2. **Sprint review:** métricas en YAML (`sprints[].burn_down`) y bloqueos en `blockers`.
 3. **Retrospectiva:** velocity orientativa (horas/puntos según defináis en Notion).
 

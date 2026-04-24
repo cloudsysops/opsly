@@ -7,7 +7,7 @@ Plataforma multi-tenant **enterprise SaaS**: plano de control (API, billing, orq
 ## Sprint planning y task management
 
 - **Colaboración:** Notion (bases Tasks / Sprints) + variables en Doppler — ver [`docs/DOPPLER-VARS.md`](docs/DOPPLER-VARS.md).
-- **Repo:** `docs/implementation/status.yaml` alimenta documentación generada (`IMPLEMENTATION-STATUS.md`, `SPRINT-TRACKING.md`, `AGENTS-ASSIGNMENTS.md`).
+- **Repo:** `docs/implementation/status.yaml` alimenta documentación generada (`docs/generated/implementation-progress.auto.md`, `docs/generated/sprint-status.auto.md`, `AGENTS-ASSIGNMENTS.md`); vista humana del sprint: `SPRINT-TRACKER.md`.
 - **Comandos:** `npm run docs:sync` · `npm run sync:all` (con `NOTION_TOKEN` / `GITHUB_TOKEN` según entorno) · `npm run sprint:burndown`.
 - **Guías:** [`docs/SPRINT-PLANNING-SETUP.md`](docs/SPRINT-PLANNING-SETUP.md) · [`docs/AGENTS-ORCHESTRATION.md`](docs/AGENTS-ORCHESTRATION.md).
 

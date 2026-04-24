@@ -36,7 +36,7 @@ jobs:
         run: node scripts/update-sprint-burndown.js
         continue-on-error: true
 
-      - name: Docs sync (implementation + sprint + agents)
+      - name: Docs sync (generated reports + agents)
         run: npm run docs:sync
 
       - name: Validate Notion schema (optional)
@@ -54,18 +54,18 @@ jobs:
             echo "Discord webhook not configured, skipping"
             exit 0
           fi
-          node scripts/discord-notify.js burndown '{"velocity":"n/a","target":"see SPRINT-TRACKING.md"}' || true
+          node scripts/discord-notify.js burndown '{"velocity":"n/a","target":"see docs/generated/sprint-status.auto.md"}' || true
         continue-on-error: true
 
       - name: Commit docs if changed
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add docs/implementation/status.yaml docs/IMPLEMENTATION-STATUS.md docs/SPRINT-TRACKING.md docs/AGENTS-ASSIGNMENTS.md
+          git add docs/implementation/status.yaml docs/generated/implementation-progress.auto.md docs/generated/sprint-status.auto.md docs/AGENTS-ASSIGNMENTS.md
           if git diff --cached --quiet; then
             echo "No doc changes."
             exit 0
           fi
-          git commit -m "chore(docs): sync-all burndown + generated docs [docs-sync]"
+          git commit -m "chore(docs): sync-all burndown + generated docs [skip ci]"
           git push origin "HEAD:${{ github.ref_name }}"
         continue-on-error: true

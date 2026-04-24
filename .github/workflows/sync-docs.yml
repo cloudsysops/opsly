@@ -1,4 +1,5 @@
-# Regenera docs/IMPLEMENTATION-STATUS.md y metadatos en status.yaml tras cambios relevantes.
+# Regenera reportes auto-generados en docs/generated/
+# y metadatos en status.yaml tras cambios relevantes.
 # Evita bucles: no corre si el último commit contiene [docs-sync].
 
 name: Sync Docs
@@ -49,7 +50,7 @@ jobs:
           GITHUB_SHA: ${{ github.sha }}
         run: node scripts/patch-status-yaml-ci.js
 
-      - name: Generate IMPLEMENTATION-STATUS.md
+      - name: Generate generated docs reports
         run: npm run docs:sync
 
       - name: Commit and push if changed
@@ -58,12 +59,12 @@ jobs:
           echo "changed=false" >> "$GITHUB_OUTPUT"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add docs/implementation/status.yaml docs/IMPLEMENTATION-STATUS.md docs/SPRINT-TRACKING.md docs/AGENTS-ASSIGNMENTS.md
+          git add docs/implementation/status.yaml docs/generated/implementation-progress.auto.md docs/generated/sprint-status.auto.md docs/AGENTS-ASSIGNMENTS.md
           if git diff --cached --quiet; then
             echo "No changes to commit."
             exit 0
           fi
-          git commit -m "chore(docs): auto-sync implementation status [docs-sync]"
+          git commit -m "chore(docs): auto-sync generated docs [docs-sync]"
           if git push origin "HEAD:${{ github.ref_name }}"; then
             echo "changed=true" >> "$GITHUB_OUTPUT"
           else
@@ -82,7 +83,7 @@ jobs:
             exit 0
           fi
           SHORT_SHA=$(echo "$GITHUB_SHA" | cut -c1-7)
-          DOCS_URL="https://github.com/${GITHUB_REPOSITORY}/blob/main/docs/IMPLEMENTATION-STATUS.md"
+          DOCS_URL="https://github.com/${GITHUB_REPOSITORY}/blob/main/docs/generated/implementation-progress.auto.md"
           export SHORT_SHA DOCS_URL
           PAYLOAD=$(python3 <<'PY'
           import json, os
@@ -91,7 +92,7 @@ jobs:
           body = {
             "embeds": [{
               "title": "Docs sincronizados",
-              "description": "Implementation status regenerado desde `status.yaml`.",
+              "description": "Implementation progress auto-generado desde `status.yaml`.",
               "color": 3066993,
               "fields": [
                 {"name": "Commit", "value": "`" + sha + "`", "inline": True},

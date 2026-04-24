@@ -11,12 +11,12 @@ if ! command -v npm >/dev/null 2>&1; then
   exit 0
 fi
 
-# Si docs/implementation/status.yaml está en el índice, regenerar IMPLEMENTATION-STATUS.md
+# Si docs/implementation/status.yaml está en el índice, regenerar docs generados (ADR-033)
 STAGED_STATUS=$(git diff --cached --name-only --diff-filter=ACM | grep -E '^docs/implementation/status\.yaml$' || true)
 if [ -n "$STAGED_STATUS" ]; then
   echo "pre-commit: docs:sync (status.yaml staged)…"
   npm run docs:sync
-  git add docs/IMPLEMENTATION-STATUS.md docs/SPRINT-TRACKING.md docs/AGENTS-ASSIGNMENTS.md
+  git add docs/generated/implementation-progress.auto.md docs/generated/sprint-status.auto.md docs/AGENTS-ASSIGNMENTS.md
 fi
 
 npm run type-check
