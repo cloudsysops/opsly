@@ -27,6 +27,7 @@ import json
 import os
 import shutil
 import ssl
+import tempfile
 import subprocess
 import time
 import urllib.error
@@ -259,6 +260,86 @@ def _oauth_token_from_jwt(jwt: str) -> str:
     return str(token)
 
 
+
+def _google_https_request_curl(
+    method: str,
+    url: str,
+    headers: dict[str, str],
+    body: bytes | None,
+    timeout: int,
+) -> tuple[int, bytes]:
+    """Call Google APIs via curl; Python TLS can hang in some IDE/sandbox shells."""
+    with tempfile.TemporaryDirectory() as tmp:
+        hpath = os.path.join(tmp, "headers.txt")
+        bpath = os.path.join(tmp, "body.bin")
+        cmd: list[str] = [
+            "curl",
+            "-sS",
+            "-m",
+            str(timeout),
+            "-X",
+            method,
+            url,
+            "-D",
+            hpath,
+            "-o",
+            bpath,
+        ]
+        for k, v in headers.items():
+            cmd.extend(["-H", f"{k}: {v}"])
+        if body is not None:
+            cmd.extend(["--data-binary", "@-"])
+        r = subprocess.run(
+            cmd,
+            input=body if body is not None else None,
+            capture_output=True,
+            timeout=timeout + 20,
+            check=False,
+        )
+        if r.returncode != 0 or not os.path.isfile(bpath) or not os.path.isfile(hpath):
+            err = (r.stderr or b"").decode("utf-8", errors="replace")
+            raise RuntimeError(f"curl {method} failed (exit {r.returncode}): {err[:2000]}")
+        h1 = open(hpath, encoding="utf-8", errors="replace").readline()
+        parts = h1.split()
+        status = int(parts[1]) if len(parts) > 1 else 0
+        raw = open(bpath, "rb").read()
+        return status, raw
+
+
+def _google_https_request(
+    method: str,
+    url: str,
+    headers: dict[str, str],
+    body: bytes | None,
+    timeout: int,
+) -> tuple[int, bytes]:
+    """Google APIs: prefer curl, else http.client."""
+    prefer = os.environ.get("OPSLY_GOOGLE_HTTPS_PREFER_CURL", "1").strip().lower() not in (
+        "0",
+        "false",
+        "no",
+    )
+    if prefer and shutil.which("curl"):
+        return _google_https_request_curl(method, url, headers, body, timeout)
+    par = urllib.parse.urlparse(url)
+    if par.scheme != "https":
+        raise RuntimeError("Only https:// URLs are supported for Google API requests")
+    host = par.netloc
+    path = par.path or "/"
+    if par.query:
+        path += "?" + par.query
+    h = dict(headers)
+    if body is not None:
+        h["Content-Length"] = str(len(body))
+    conn = http.client.HTTPSConnection(host, context=_https_context(), timeout=timeout)
+    try:
+        conn.request(method, path, body=body, headers=h)
+        res = conn.getresponse()
+        raw = res.read()
+        return res.status, raw
+    finally:
+        conn.close()
+
 @dataclass(frozen=True)
 class DriveClient:
     access_token: str
@@ -269,52 +350,34 @@ class DriveClient:
         }
 
     def get_json(self, url: str) -> Any:
-        req = urllib.request.Request(url, headers=self._headers(), method="GET")
-        try:
-            with urllib.request.urlopen(req, timeout=120, context=_https_context()) as resp:
-                return json.loads(resp.read().decode("utf-8"))
-        except urllib.error.HTTPError as e:
-            body = e.read().decode("utf-8", errors="replace")
-            raise RuntimeError(f"HTTP {e.code} GET {url}: {body[:2000]}") from e
+        status, raw = _google_https_request("GET", url, self._headers(), None, 120)
+        text = raw.decode("utf-8", errors="replace")
+        if status >= 400:
+            raise RuntimeError(f"HTTP {status} GET {url}: {text[:2000]}")
+        return json.loads(text)
 
     def post_json(self, url: str, body: bytes, content_type: str, method: str = "POST") -> Any:
-        req = urllib.request.Request(
-            url,
-            data=body,
-            headers={**self._headers(), "Content-Type": content_type},
-            method=method,
-        )
-        try:
-            with urllib.request.urlopen(req, timeout=300, context=_https_context()) as resp:
-                raw = resp.read().decode("utf-8")
-                return json.loads(raw) if raw else {}
-        except urllib.error.HTTPError as e:
-            err = e.read().decode("utf-8", errors="replace")
-            raise RuntimeError(f"HTTP {e.code} {method} {url}: {err[:2000]}") from e
+        headers = {**self._headers(), "Content-Type": content_type}
+        status, raw = _google_https_request(method, url, headers, body, 300)
+        text = raw.decode("utf-8", errors="replace")
+        if status >= 400:
+            raise RuntimeError(f"HTTP {status} {method} {url}: {text[:2000]}")
+        return json.loads(text) if text else {}
 
     def patch_bytes(self, url: str, data: bytes, content_type: str) -> Any:
-        req = urllib.request.Request(
-            url,
-            data=data,
-            headers={**self._headers(), "Content-Type": content_type},
-            method="PATCH",
-        )
-        try:
-            with urllib.request.urlopen(req, timeout=600, context=_https_context()) as resp:
-                raw = resp.read().decode("utf-8")
-                return json.loads(raw) if raw else {}
-        except urllib.error.HTTPError as e:
-            err = e.read().decode("utf-8", errors="replace")
-            raise RuntimeError(f"HTTP {e.code} PATCH {url}: {err[:2000]}") from e
+        headers = {**self._headers(), "Content-Type": content_type}
+        status, raw = _google_https_request("PATCH", url, headers, data, 600)
+        text = raw.decode("utf-8", errors="replace")
+        if status >= 400:
+            raise RuntimeError(f"HTTP {status} PATCH {url}: {text[:2000]}")
+        return json.loads(text) if text else {}
 
     def get_bytes(self, url: str) -> bytes:
-        req = urllib.request.Request(url, headers=self._headers(), method="GET")
-        try:
-            with urllib.request.urlopen(req, timeout=600, context=_https_context()) as resp:
-                return resp.read()
-        except urllib.error.HTTPError as e:
-            err = e.read().decode("utf-8", errors="replace")
-            raise RuntimeError(f"HTTP {e.code} GET {url}: {err[:2000]}") from e
+        status, raw = _google_https_request("GET", url, self._headers(), None, 600)
+        if status >= 400:
+            text = raw.decode("utf-8", errors="replace")
+            raise RuntimeError(f"HTTP {status} GET {url}: {text[:2000]}")
+        return raw
 
 
 def drive_query_files(client: DriveClient, q: str, fields: str) -> list[dict[str, Any]]:
