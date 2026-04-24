@@ -347,15 +347,26 @@ export async function provisionTenant(
 
   const id = await orchestrator.createAndBeginProvisioning();
 
-  void orchestrator
+  orchestrator
     .runProvisioningPipeline()
-    .then((result) => {
+    .then(async (result) => {
       if (!result.success) {
         console.error(`[onboarding] pipeline failed for ${input.slug}: ${result.error}`);
+        await getServiceClient()
+          .schema('platform')
+          .from('tenants')
+          .update({ status: 'failed', progress: 0 })
+          .eq('id', id);
       }
     })
-    .catch((err: unknown) => {
+    .catch(async (err: unknown) => {
       console.error(`[onboarding] unhandled pipeline error for ${input.slug}:`, err);
+      const errMsg = err instanceof Error ? err.message : 'Unknown error';
+      await getServiceClient()
+        .schema('platform')
+        .from('tenants')
+        .update({ status: 'failed', progress: 0, metadata: { error: errMsg } })
+        .eq('id', id);
     });
 
   return { id, slug: input.slug, status: 'provisioning' };
