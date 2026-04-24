@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-04-23T22:00:43Z",
-  "totalFiles": 216,
+  "lastIndexed": "2026-04-24T04:33:34Z",
+  "totalFiles": 218,
   "files": [
     "2026-04-21.md",
     "6xk2xhn5f8hcllwj3npzaik36lqycdg0y3xw06lo.md",
@@ -36,7 +36,9 @@
     "ADR-028-tenant-onboarding-pattern.md",
     "ADR-029-infrastructure-layers-shared-vs-tenant.md",
     "ADR-030-prepaid-token-wallet-roadmap.md",
+    "ADR-031-experimental-consolidation.md",
     "ADR-031-token-optimization-ollama-primary.md",
+    "ADR-032-scripts-organization.md",
     "AGENT-HOOKS-OBSIDIAN-NOTEBOOKLM-N8N.md",
     "AGENTS-ASSIGNMENTS.md",
     "AGENTS-AUTONOMOUS-RUNBOOK.md",
