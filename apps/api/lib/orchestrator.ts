@@ -164,10 +164,26 @@ class OnboardingOrchestrator {
     });
   }
 
+  private async verifyTenantPersisted(tenantId: string): Promise<void> {
+    const db = getServiceClient();
+    const { data: verification, error: verifyError } = await db
+      .schema('platform')
+      .from('tenants')
+      .select('id')
+      .eq('id', tenantId)
+      .single();
+
+    if (verifyError || !verification) {
+      const msg = `Tenant insert verification failed: record ${tenantId} not found in database`;
+      console.error('[createTenantRecord] Verification failed:', msg);
+      throw new Error(msg);
+    }
+  }
+
   private async createTenantRecord(): Promise<string> {
     const db = getServiceClient();
-    console.error('🚨🚨🚨 DEBUG_MARKER_CREATETENANTRECORD_START 🚨🚨🚨');
-    console.warn('[createTenantRecord] Using service client, attempting insert for:', this.slug);
+    console.warn('[createTenantRecord] Attempting insert for:', this.slug);
+
     const { data, error } = await db
       .schema('platform')
       .from('tenants')
@@ -194,8 +210,11 @@ class OnboardingOrchestrator {
       throw err;
     }
 
-    console.warn('[createTenantRecord] Insert SUCCESS, id:', data.id);
-    return data.id;
+    const tenantId = data.id;
+    console.warn('[createTenantRecord] Insert returned id:', tenantId);
+    await this.verifyTenantPersisted(tenantId);
+    console.warn('[createTenantRecord] Verification SUCCESS, id:', tenantId);
+    return tenantId;
   }
 
   private async logAudit(action: string): Promise<void> {
