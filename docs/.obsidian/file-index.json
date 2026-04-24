@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-04-24T22:28:10Z",
-  "totalFiles": 223,
+  "lastIndexed": "2026-04-24T23:56:18Z",
+  "totalFiles": 225,
   "files": [
     "2026-04-21.md",
     "6xk2xhn5f8hcllwj3npzaik36lqycdg0y3xw06lo.md",
@@ -123,6 +123,7 @@
     "OBSIDIAN-NOTEBOOKLM-N8N-INTEGRATION.md",
     "OBSIDIAN-README.md",
     "OLLAMA-DEPLOYMENT.md",
+    "ONBOARDING-NEW-CLIENT.md",
     "OPENCLAW-ARCHITECTURE.md",
     "OPENCLAW-TEAM-PLAN.md",
     "OPS-CLEANUP-PROCEDURES.md",
@@ -156,6 +157,7 @@
     "RTK.md",
     "RUNBOOK-AI-LOCAL-FIRST.md",
     "RUNBOOK-INSIGHTS-DEPLOY.md",
+    "SCRIPTS-AUDIT-2026-04-24.md",
     "SECURITY-MITIGATIONS-2026-04-09.md",
     "SECURITY_AUDIT_REPORT.md",
     "SECURITY_CHECKLIST.md",
