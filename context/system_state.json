@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-04-23",
+  "last_updated": "2026-04-24",
   "phase": "fase-2-producto-ia",
   "vps": {
     "ip": "157.245.223.7",
@@ -103,14 +103,12 @@
     "apps": [
       "admin",
       "agents",
-      "ai-evolution",
       "api",
       "context-builder",
       "context-builder-v2",
-      "ingestion-service",
+      "experimental",
       "llm-gateway",
       "mcp",
-      "mission-control",
       "ml",
       "notion-mcp",
       "orchestrator",
@@ -118,7 +116,7 @@
       "web"
     ],
     "scripts": 153,
-    "adrs": 31,
+    "adrs": 33,
     "migrations": 39
   }
 }

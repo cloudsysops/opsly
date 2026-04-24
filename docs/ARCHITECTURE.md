@@ -1,3 +1,58 @@
+# Opsly Architecture (Authority)
+
+This document is the single technical authority for runtime architecture at the platform level.
+
+## Runtime Topology
+
+- Control plane:
+  - `apps/api`
+  - `apps/admin`
+  - `apps/portal`
+  - `apps/orchestrator`
+  - `apps/llm-gateway`
+  - `apps/context-builder`
+  - `apps/mcp`
+- Data plane:
+  - Supabase (`platform` + tenant schemas)
+  - Redis/BullMQ
+- Edge plane:
+  - Traefik v3
+  - Cloudflare proxy (recommended)
+
+## App Classification
+
+### Active modules
+
+- `apps/api`
+- `apps/admin`
+- `apps/portal`
+- `apps/orchestrator`
+- `apps/llm-gateway`
+- `apps/context-builder`
+- `apps/mcp`
+- `apps/agents/notebooklm`
+- `apps/ml`
+
+### Deprecated/archived modules
+
+- `apps/context-builder-v2` (deprecated, see `.deprecation.yml`)
+- `apps/experimental/ai-evolution-archive`
+- `apps/experimental/ingestion-service-archive`
+- `apps/experimental/mission-control-archive`
+
+## Design Principles
+
+1. Extend existing modules; do not create parallel runtimes.
+2. Keep backward compatibility for APIs and queue contracts.
+3. Prefer incremental changes validated by type-check/tests.
+4. Route AI calls through orchestrator + llm-gateway patterns.
+
+## References
+
+- `VISION.md`
+- `AGENTS.md`
+- `docs/adr/ADR-031-experimental-consolidation.md`
+- `docs/adr/ADR-032-scripts-organization.md`
 # Opsly Architecture
 
 ## Control plane vs data plane

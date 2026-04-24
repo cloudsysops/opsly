@@ -5,7 +5,8 @@
 const fs = require('fs')
 const path = require('path')
 
-const ROOT = path.resolve(__dirname, '..')
+// Repo root: this file lives in scripts/utils/ (not scripts/).
+const ROOT = path.resolve(__dirname, '..', '..')
 const STATE_PATH = path.join(ROOT, 'context/system_state.json')
 
 const current = JSON.parse(fs.readFileSync(STATE_PATH, 'utf8'))
