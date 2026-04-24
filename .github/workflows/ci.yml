@@ -50,28 +50,6 @@ jobs:
           wait $pid8 || status=1
           exit $status
 
-      - name: TypeScript (api + admin + portal + mcp + orchestrator + ml + llm-gateway + context-builder)
-        run: |
-          set -euo pipefail
-          (cd apps/api && npx tsc --noEmit) & pid1=$!
-          (cd apps/admin && npx tsc --noEmit) & pid2=$!
-          (cd apps/portal && npx tsc --noEmit) & pid3=$!
-          (cd apps/mcp && npx tsc --noEmit) & pid4=$!
-          (cd apps/orchestrator && npx tsc --noEmit) & pid5=$!
-          (cd apps/ml && npx tsc --noEmit) & pid6=$!
-          (cd apps/llm-gateway && npx tsc --noEmit) & pid7=$!
-          (cd apps/context-builder && npx tsc --noEmit) & pid8=$!
-          status=0
-          wait $pid1 || status=1
-          wait $pid2 || status=1
-          wait $pid3 || status=1
-          wait $pid4 || status=1
-          wait $pid5 || status=1
-          wait $pid6 || status=1
-          wait $pid7 || status=1
-          wait $pid8 || status=1
-          exit $status
-
       - name: ESLint si existe config (paralelo)
         run: |
           set -euo pipefail
@@ -152,8 +130,8 @@ jobs:
           set -euo pipefail
           npm ci
           # Build internal packages first
-          cd apps/ml && npm run build
-          cd apps/llm-gateway && npm run build
+          (cd apps/ml && npm run build)
+          (cd apps/llm-gateway && npm run build)
           # Then build apps in parallel
           (cd apps/api && npm run build) & pid1=$!
           (cd apps/admin && npm run build) & pid2=$!
