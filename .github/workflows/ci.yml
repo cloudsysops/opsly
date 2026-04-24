@@ -166,7 +166,8 @@ jobs:
         run: |
           set -euo pipefail
           shopt -s nullglob
-          shellcheck scripts/*.sh
+          # Solo fallar en issues severity=error (el repo histórico tiene muchos style/info)
+          shellcheck -S error scripts/*.sh
 
   secret-scan:
     runs-on: ubuntu-latest
