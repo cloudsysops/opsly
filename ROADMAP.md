@@ -7,7 +7,7 @@ last_review: 2026-04-24
 # Opsly — Roadmap de implementación (semanal)
 
 > **Fuente de verdad de fases y principios:** [`VISION.md`](VISION.md) y [`AGENTS.md`](AGENTS.md).  
-> **Última actualización:** 2026-04-12  
+> **Última actualización:** 2026-04-24  
 > Este archivo es el **desglose ejecutable por sprint**; no sustituye decisiones fijas (Compose, Traefik, Supabase, sin K8s).
 
 ## Convenciones
@@ -21,8 +21,9 @@ last_review: 2026-04-24
 ## Estado respecto a VISION.md
 
 - **Fase 1 (Validación):** completada según `VISION.md` (health, tenant real, stack base).
-- **Fase 2 (Producto):** en progreso; pendiente **segundo cliente real** y endurecimiento staging/prod.
-- **Fase 4 (OpenClaw / IA):** incrementos en curso (MCP, orchestrator, LLM Gateway, planner remoto).
+- **Fase 2 (Producto):** en progreso; **segundo cliente real** (LegalVial via LocalRank) y endurecimiento staging/prod.
+- **Fase 4 (OpenClaw / IA):** incrementos completados (MCP, orchestrator, LLM Gateway, planner remoto, feedback loop).
+- **Consolidación arquitectónica:** context-builder-v2 archivado en `.archived/`.
 - **Multi-región / multi-cloud como producto:** solo en horizonte **Fase 6+**; no es sprint inmediato salvo ADR.
 
 ---
@@ -77,7 +78,7 @@ Ventana sugerida: **2026-04-14 → 2026-05-25** (ajustar según capacidad).
 
 **Checkpoint:** números coherentes con `usage_events` o fuente definida en código.
 
-### Semana 5 — Feedback loop (producto)
+### Semana 5 — Feedback loop (producto) ✅ COMPLETADO
 
 **Objetivo:** Cerrar bucle feedback → ML/mejoras sin romper Zero-Trust.
 
@@ -88,7 +89,7 @@ Ventana sugerida: **2026-04-14 → 2026-05-25** (ajustar según capacidad).
 
 **Checkpoint:** tests API feedback verdes; sin sustituir identidad tenant por cuerpo.
 
-### Semana 6 — Segundo cliente + validación E2E
+### Semana 6 — Segundo cliente + validación E2E 🟡 EN CURSO
 
 **Objetivo:** Segundo tenant real u homólogo de staging; E2E invitaciones + stacks.
 
@@ -97,6 +98,9 @@ Ventana sugerida: **2026-04-14 → 2026-05-25** (ajustar según capacidad).
 | Onboarding | `scripts/onboard-tenant.sh` |
 | E2E | `scripts/test-e2e-invite-flow.sh --api-url …` |
 | Staging → prod | Plan transversal (backups, DNS, Doppler); no migrar datos a ciegas |
+
+
+**Estado (2026-04-24):** LegalVial via LocalRank | smiletripcare/peskids/localrank activos | Pipeline fix aplicado | CI Docker fallando
 
 **Checkpoint:** checklist Pre-Launch en `VISION.md` / runbooks; cliente #2 o decisión explícita de aplazamiento.
 
