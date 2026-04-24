@@ -10,7 +10,9 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-REPO="$(cd "${1:-${OPSLY_REPO:-$SCRIPT_DIR/..}}" && pwd)"
+# Repo root: this file lives in scripts/utils/ (was scripts/; default must go up two levels).
+REPO_ROOT_DEFAULT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+REPO="$(cd "${1:-${OPSLY_REPO:-$REPO_ROOT_DEFAULT}}" && pwd)"
 BRANCH="${2:-}"
 
 if [[ ! -d "$REPO/.git" ]]; then

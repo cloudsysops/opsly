@@ -22,9 +22,9 @@ if [[ -f "${ROOT}/.env.worker" ]]; then
 fi
 
 if [[ "${OPSLY_SKIP_GIT_PULL:-0}" != "1" ]]; then
-  if [[ -x "${ROOT}/scripts/git-sync-repo.sh" ]]; then
-    "${ROOT}/scripts/git-sync-repo.sh" "${ROOT}" || {
-      echo "run-worker-with-nvm: git-sync-repo falló; arranque abortado. Corrige el repo o exporta OPSLY_SKIP_GIT_PULL=1" >&2
+  if [[ -x "${ROOT}/scripts/utils/git-sync.sh" ]]; then
+    "${ROOT}/scripts/utils/git-sync.sh" "${ROOT}" || {
+      echo "run-worker-with-nvm: git-sync falló; arranque abortado. Corrige el repo o exporta OPSLY_SKIP_GIT_PULL=1" >&2
       exit 1
     }
   fi

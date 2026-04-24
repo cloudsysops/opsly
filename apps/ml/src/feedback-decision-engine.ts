@@ -248,7 +248,7 @@ export async function executeAutoImplement(
     prompt,
     ``,
     `# Al terminar: notificar Discord con el resultado`,
-    `./scripts/notify-discord.sh \\`,
+    `./scripts/utils/notify-discord.sh \\`,
     `  "✅ Auto-implementado desde feedback" \\`,
     `  "Decision: ${decisionId}" \\`,
     `  "success"`,

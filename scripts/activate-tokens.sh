@@ -98,7 +98,7 @@ else
   exit 1
 fi
 
-./scripts/notify-discord.sh \
+./scripts/utils/notify-discord.sh \
   "🚀 Opsly totalmente activado" \
   "Todos los tokens configurados y validados. Sistema listo para producción." \
   "success"

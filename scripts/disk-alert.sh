@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Alertas por uso de disco en /. Opcional: Discord vía scripts/notify-discord.sh y DISCORD_WEBHOOK_URL.
+# Alertas por uso de disco en /. Opcional: Discord vía scripts/utils/notify-discord.sh y DISCORD_WEBHOOK_URL.
 # Uso en VPS (cron cada 5 min): source /opt/opsly/.env o export DISCORD_WEBHOOK_URL
 #
 # Umbrales: WARN 80%, CRITICAL 90%, EMERGENCY 95% (emergency ejecuta limpieza agresiva local).
@@ -46,9 +46,9 @@ send_discord() {
     CRITICAL) color="error" ;;
     WARNING) color="warning" ;;
   esac
-  if [[ -x "${REPO_ROOT}/scripts/notify-discord.sh" ]]; then
+  if [[ -x "${REPO_ROOT}/scripts/utils/notify-discord.sh" ]]; then
     DISCORD_WEBHOOK_URL="${DISCORD_WEBHOOK_URL:-}" \
-      "${REPO_ROOT}/scripts/notify-discord.sh" \
+      "${REPO_ROOT}/scripts/utils/notify-discord.sh" \
       "Disco VPS ${level}" \
       "${message} (uso ${DISK_USAGE}%, libre ${DISK_FREE})" \
       "${color}" || true

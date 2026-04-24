@@ -7,7 +7,7 @@ CHANGED=$(git diff-tree --no-commit-id -r --name-only HEAD 2>/dev/null || true)
 # Si cambió código → actualiza system_state.json
 if echo "$CHANGED" | grep -qE "^(infra|scripts|apps|supabase)/"; then
   echo "🔄 Detectado cambio en servicios, actualizando system_state.json..."
-  node "$ROOT/scripts/update-state.js" 2>/dev/null || true
+  node "$ROOT/scripts/utils/update-state.js" 2>/dev/null || true
 fi
 
 # Siempre sincroniza AGENTS.md a .github/
@@ -49,9 +49,9 @@ if echo "$CHANGED_AFTER" | rg -q "(AGENTS\\.md|VISION\\.md|docs/)"; then
   if rclone listremotes 2>/dev/null | grep -q "opsly-drive"; then
     rclone copy /tmp/opsly-drive-sync/ opsly-drive: --progress 2>/dev/null || true
   else
-    ./scripts/drive-sync.sh 2>/dev/null || true
+    "$ROOT/scripts/drive-sync.sh" 2>/dev/null || true
   fi
 fi
 
 # ─── Unified hooks for external/internal agents ─────────────
-./scripts/agent-hooks.sh post-commit 2>/dev/null || true
+"$ROOT/scripts/agent-hooks.sh" post-commit 2>/dev/null || true

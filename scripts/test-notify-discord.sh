@@ -5,7 +5,7 @@ set -euo pipefail
 
 PASS=0
 FAIL=0
-SCRIPT="./scripts/notify-discord.sh"
+SCRIPT="./scripts/utils/notify-discord.sh"
 
 assert() {
   local desc="$1"

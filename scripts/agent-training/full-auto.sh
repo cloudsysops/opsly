@@ -106,10 +106,10 @@ echo "==> [6/6] Discord (éxito)"
 if [[ "$SKIP_DISCORD" == "true" ]]; then
   echo "[SKIP] --skip-discord"
 elif [[ "$DRY_RUN" == "true" ]]; then
-  echo "[dry-run] ./scripts/notify-discord.sh ..."
+  echo "[dry-run] ./scripts/utils/notify-discord.sh ..."
 else
   MSG="Agent sandbox full-auto OK. Schema: sandbox. Redis namespace objetivo: opsly:sandbox:*. Tenant sandbox: intcloudsysops (OPSLY_CLASSIFIER_ALLOWED_TENANTS)."
-  bash "$ROOT/scripts/notify-discord.sh" \
+  bash "$ROOT/scripts/utils/notify-discord.sh" \
     "Opsly · Agent training sandbox" \
     "$MSG" \
     success || echo "[WARN] Discord no enviado (webhook vacío o error)"

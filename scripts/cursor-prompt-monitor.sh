@@ -69,7 +69,7 @@ while true; do
     log_line "Payload vacío tras filtrar #/---; no se ejecuta shell"
   else
     PREVIEW="$(head -2 "$PROMPT_FILE" | rg -v '^#' | head -1)"
-    "${SCRIPT_DIR}/notify-discord.sh" \
+    "${SCRIPT_DIR}/utils/notify-discord.sh" \
       "Cursor ejecutando tarea" \
       "${PREVIEW:-Prompt actualizado en ACTIVE-PROMPT.md}" \
       "info" 2>/dev/null || true
@@ -81,12 +81,12 @@ while true; do
     set -e
     if [[ "${_rc}" -ne 0 ]]; then
       log_line "Payload terminó con código ${_rc}"
-      "${SCRIPT_DIR}/notify-discord.sh" \
+      "${SCRIPT_DIR}/utils/notify-discord.sh" \
         "Error en ejecucion Cursor" \
         "Exit code: ${_rc} — revisar logs: /opt/opsly/logs/cursor-prompt-monitor.log" \
         "error" 2>/dev/null || true
     else
-      "${SCRIPT_DIR}/notify-discord.sh" \
+      "${SCRIPT_DIR}/utils/notify-discord.sh" \
         "Tarea completada por Cursor" \
         "Ejecutado en $(date +'%H:%M:%S')" \
         "success" 2>/dev/null || true
