@@ -4,14 +4,10 @@
 FROM node:20-alpine AS deps
 WORKDIR /repo
 COPY package.json package-lock.json ./
-COPY apps/api/package.json ./apps/api/
-COPY apps/ml/package.json ./apps/ml/
-COPY apps/llm-gateway/package.json ./apps/llm-gateway/
-COPY apps/agents/notebooklm/package.json ./apps/agents/notebooklm/
-COPY packages/types/package.json ./packages/types/
-RUN npm install --legacy-peer-deps --ignore-scripts
+RUN npm install
 
 FROM node:20-alpine AS builder
+
 WORKDIR /repo
 COPY --from=deps /repo/node_modules ./node_modules
 COPY --from=deps /repo/package.json ./package.json
