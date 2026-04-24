@@ -166,6 +166,7 @@ class OnboardingOrchestrator {
 
   private async createTenantRecord(): Promise<string> {
     const db = getServiceClient();
+    console.error('🚨🚨🚨 DEBUG_MARKER_CREATETENANTRECORD_START 🚨🚨🚨');
     console.warn('[createTenantRecord] Using service client, attempting insert for:', this.slug);
     const { data, error } = await db
       .schema('platform')
