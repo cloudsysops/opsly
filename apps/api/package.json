@@ -15,10 +15,11 @@
     "flush-billing": "tsx scripts/flush-billing-usage.ts"
   },
   "dependencies": {
-    "@intcloudsysops/notebooklm-agent": "*",
     "@aws-sdk/client-sts": "^3.1028.0",
+    "@aws-sdk/nested-clients": "^3.997.3",
     "@intcloudsysops/llm-gateway": "^1.0.0",
     "@intcloudsysops/ml": "^1.0.0",
+    "@intcloudsysops/notebooklm-agent": "*",
     "@supabase/supabase-js": "^2.49.1",
     "bullmq": "^5.73.3",
     "execa": "^9.5.2",
