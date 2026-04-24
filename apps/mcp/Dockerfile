@@ -6,6 +6,11 @@ COPY apps/mcp/package.json ./apps/mcp/
 COPY apps/llm-gateway/package.json ./apps/llm-gateway/
 COPY apps/agents/notebooklm/package.json ./apps/agents/notebooklm/
 RUN npm ci --ignore-scripts
+RUN npm ci --ignore-scripts \
+  -w @intcloudsysops/types \
+  -w @intcloudsysops/llm-gateway \
+  -w @intcloudsysops/notebooklm-agent \
+  -w @intcloudsysops/mcp
 
 FROM node:20-alpine AS builder
 WORKDIR /repo
