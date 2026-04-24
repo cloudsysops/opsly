@@ -9,7 +9,7 @@ COPY apps/ml/package.json ./apps/ml/
 COPY apps/llm-gateway/package.json ./apps/llm-gateway/
 COPY apps/agents/notebooklm/package.json ./apps/agents/notebooklm/
 COPY packages/types/package.json ./packages/types/
-RUN npm ci --ignore-scripts
+RUN npm install --legacy-peer-deps --ignore-scripts
 
 FROM node:20-alpine AS builder
 WORKDIR /repo

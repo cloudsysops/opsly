@@ -5,7 +5,7 @@ FROM node:20-alpine AS deps
 WORKDIR /repo
 COPY package.json package-lock.json ./
 COPY apps/admin/package.json ./apps/admin/
-RUN npm ci --ignore-scripts
+RUN npm install --legacy-peer-deps --ignore-scripts
 
 FROM node:20-alpine AS builder
 WORKDIR /repo
