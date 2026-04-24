@@ -11,6 +11,7 @@ FROM node:20-alpine AS builder
 WORKDIR /repo
 COPY --from=deps /repo/node_modules ./node_modules
 COPY apps/admin ./apps/admin
+RUN npm ci --ignore-scripts -w @intcloudsysops/admin
 WORKDIR /repo/apps/admin
 ENV NEXT_TELEMETRY_DISABLED=1
 # Demo sin login (familia/stakeholders). Override: docker build --build-arg NEXT_PUBLIC_ADMIN_PUBLIC_DEMO=false
