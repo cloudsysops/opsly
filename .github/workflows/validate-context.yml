@@ -18,6 +18,10 @@ jobs:
       - name: Instalar dependencias
         run: npm ci
 
+      # Work around npm optional-deps not always linking @rollup/* native on Linux (vitest/rollup)
+      - name: Ensure Rollup Linux native for Vitest
+        run: npm install @rollup/rollup-linux-x64-gnu@4.60.2 --no-save
+
       - name: OpenAPI YAML (parse + estructura mínima)
         run: npm run validate-openapi
 

@@ -1,3 +1,9 @@
+---
+status: canon
+owner: operations
+last_review: 2026-04-24
+---
+
 # Opsly — Sprint tracker (operativo)
 
 > **Sincronización:** este archivo es la **vista semanal editable** en git.  

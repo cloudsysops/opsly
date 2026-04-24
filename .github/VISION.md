@@ -355,7 +355,7 @@ Nunca añadir infra nueva sin cliente pagador que lo justifique.
 
 ### Inventario de librerías (npm vs necesidad)
 
-La fuente de verdad de qué paquetes **ya están** en el monorepo, qué falta **por fase** del roadmap y qué es **opcional / no ahora** está en **`docs/MASTER-PLAN.md`** (sección _STACK DE LIBRERÍAS — INVENTARIO vs NECESIDAD_). Evita duplicar frameworks o añadir dependencias masivas sin ADR.
+La fuente de verdad de qué paquetes **ya están** en el monorepo, qué falta **por fase** del roadmap y qué es **opcional / no ahora** está en **`docs/history/plans/MASTER-PLAN.md`** (sección _STACK DE LIBRERÍAS — INVENTARIO vs NECESIDAD_; archivado ADR-033). Evita duplicar frameworks o añadir dependencias masivas sin ADR.
 
 ### Reglas de integración
 

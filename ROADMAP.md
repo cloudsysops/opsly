@@ -1,3 +1,9 @@
+---
+status: canon
+owner: product
+last_review: 2026-04-24
+---
+
 # Opsly — Roadmap de implementación (semanal)
 
 > **Fuente de verdad de fases y principios:** [`VISION.md`](VISION.md) y [`AGENTS.md`](AGENTS.md).  

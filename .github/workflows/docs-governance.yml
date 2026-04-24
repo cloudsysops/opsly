@@ -1,0 +1,65 @@
+name: Docs Governance
+
+on:
+  pull_request:
+    paths:
+      - '**.md'
+  push:
+    branches: [main]
+    paths:
+      - '**.md'
+
+jobs:
+  check-canonical-sources:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Detect parallel sources of truth
+        run: |
+          FORBIDDEN=$(find . -name "*.md" \
+            -not -path "./docs/history/*" \
+            -not -path "./docs/generated/*" \
+            -not -path "./node_modules/*" \
+            -not -path "./.git/*" \
+            -not -path "./apps/experimental/*" \
+            -not -path "./.claude/*" \
+            | grep -iE "(master-plan|sprint-roadmap|sprint-tracking|implementation-status)" || true)
+
+          if [ -n "$FORBIDDEN" ]; then
+            echo "❌ Parallel source of truth detected:"
+            echo "$FORBIDDEN"
+            echo ""
+            echo "See docs/adr/ADR-033-docs-canonicalization.md"
+            exit 1
+          fi
+          echo "✅ No parallel sources detected"
+
+      - name: Verify canon docs have frontmatter
+        run: |
+          CANON_DOCS="VISION.md ROADMAP.md AGENTS.md SPRINT-TRACKER.md docs/README.md"
+          MISSING=""
+          for doc in $CANON_DOCS; do
+            [ ! -f "$doc" ] && continue
+            head -5 "$doc" | grep -q "status: canon" || MISSING="$MISSING $doc"
+          done
+          if [ -n "$MISSING" ]; then
+            echo "❌ Canon docs missing 'status: canon' frontmatter:$MISSING"
+            exit 1
+          fi
+          echo "✅ All canon docs have proper frontmatter"
+
+      - name: Verify generated docs have do_not_edit marker
+        run: |
+          if [ -d docs/generated ]; then
+            MISSING=""
+            for doc in docs/generated/*.auto.md; do
+              [ -f "$doc" ] || continue
+              grep -q "do_not_edit: true" "$doc" || MISSING="$MISSING $doc"
+            done
+            if [ -n "$MISSING" ]; then
+              echo "❌ Generated docs missing 'do_not_edit: true':$MISSING"
+              exit 1
+            fi
+            echo "✅ All generated docs have do_not_edit marker"
+          fi

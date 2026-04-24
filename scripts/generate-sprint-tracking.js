@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 /**
- * Genera docs/SPRINT-TRACKING.md desde docs/implementation/status.yaml (sección sprints).
+ * Genera docs/generated/sprint-status.auto.md desde
+ * docs/implementation/status.yaml (sección sprints).
  */
 const fs = require("fs");
 const path = require("path");
@@ -8,7 +9,7 @@ const yaml = require("js-yaml");
 
 const ROOT = path.join(__dirname, "..");
 const YAML_PATH = path.join(ROOT, "docs", "implementation", "status.yaml");
-const OUT = path.join(ROOT, "docs", "SPRINT-TRACKING.md");
+const OUT = path.join(ROOT, "docs", "generated", "sprint-status.auto.md");
 
 function asciiBurndown(rows) {
   if (!Array.isArray(rows) || rows.length === 0) {
@@ -40,10 +41,27 @@ function main() {
 
   const gen = new Date().toISOString();
   const project = data.project || "Opsly";
+  const outDir = path.dirname(OUT);
+  if (!fs.existsSync(outDir)) {
+    fs.mkdirSync(outDir, { recursive: true });
+  }
   const lines = [];
-  lines.push(`# ${project} — Sprint tracking`);
+  lines.push("---");
+  lines.push("status: generated");
+  lines.push("source: docs/implementation/status.yaml");
+  lines.push("generated_by: scripts/generate-sprint-tracking.js");
+  lines.push("do_not_edit: true");
+  lines.push("---");
   lines.push("");
-  lines.push(`> **Generado automáticamente** — fuente: [\`docs/implementation/status.yaml\`](implementation/status.yaml).`);
+  lines.push("<!-- This file is auto-generated. Do not edit manually. -->");
+  lines.push("<!-- See docs/generated/README.md for details. -->");
+  lines.push("<!-- For human-authored sprint execution, see ../../SPRINT-TRACKER.md -->");
+  lines.push("");
+  lines.push(`# ${project} — Sprint Status (Auto-Generated)`);
+  lines.push("");
+  lines.push(
+    `> **Generado automáticamente** — fuente: [\`docs/implementation/status.yaml\`](../implementation/status.yaml).`,
+  );
   lines.push(`> Generado: ${gen}`);
   lines.push("");
 
@@ -110,7 +128,7 @@ function main() {
   lines.push("");
   const blockers = Array.isArray(data.blockers) ? data.blockers : [];
   if (blockers.length === 0) {
-    lines.push("_Ver IMPLEMENTATION-STATUS.md._");
+    lines.push("_Ver docs/generated/implementation-progress.auto.md._");
   } else {
     for (const b of blockers) {
       lines.push(`- **${b.severity || "?"}:** ${b.title || "—"} — ${b.fix || ""}`);
@@ -123,7 +141,7 @@ function main() {
   lines.push("*No editar a mano — regenerar con `npm run docs:sync`.*");
 
   fs.writeFileSync(OUT, lines.join("\n") + "\n", "utf8");
-  console.log("✅ Generated docs/SPRINT-TRACKING.md");
+  console.log("✅ Generated docs/generated/sprint-status.auto.md");
 }
 
 main();

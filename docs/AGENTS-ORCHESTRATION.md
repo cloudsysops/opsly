@@ -38,15 +38,16 @@ Coordinación entre **Cursor**, **Claude**, **GitHub Actions** y el **product ow
 
 1. Definir ventana y objetivos en Notion (base Sprints) o en `sprints[]` del YAML.
 2. `npm run sprint:burndown` para serie diaria (o dejar que CI en `sync-all` lo haga).
-3. Revisión con `docs/SPRINT-TRACKING.md`.
+3. Revisión con `docs/generated/sprint-status.auto.md` (y `SPRINT-TRACKER.md` para vista humana).
 
 ## Artefactos generados
 
 | Archivo | Contenido |
 |---------|-----------|
 | `docs/AGENTS-ASSIGNMENTS.md` | Rol, capacidades y tareas por agente lógico |
-| `docs/SPRINT-TRACKING.md` | Sprints, burndown, tabla de tareas |
-| `docs/IMPLEMENTATION-STATUS.md` | Fases y componentes técnicos |
+| `docs/generated/sprint-status.auto.md` | Sprints, burndown, tabla de tareas (generado) |
+| `docs/generated/implementation-progress.auto.md` | Fases y componentes técnicos (generado) |
+| `SPRINT-TRACKER.md` (raíz) | Vista humana del sprint — no lo sobrescribe `docs:sync` |
 
 Regeneración: `npm run docs:sync` (ver [`AUTO-SYNC-DOCS-SETUP.md`](AUTO-SYNC-DOCS-SETUP.md)).
 

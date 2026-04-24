@@ -15,19 +15,19 @@ Sistema para mantener **estado de implementación** alineado al código sin edit
 ## 2. Generador: `npm run docs:sync`
 
 - Script: `scripts/sync-docs.js` (usa `js-yaml`).
-- Salida: **`docs/IMPLEMENTATION-STATUS.md`** (sobrescrito siempre).
-- **No edites** `IMPLEMENTATION-STATUS.md` manualmente: se regenera.
+- Salida: **`docs/generated/implementation-progress.auto.md`** y **`docs/generated/sprint-status.auto.md`** (sobrescritos siempre).
+- **No edites** esos `.auto.md` manualmente: se regeneran (frontmatter `do_not_edit: true`).
 
 ## 3. Flujo local
 
 1. Editá `docs/implementation/status.yaml`.
 2. Ejecutá `npm run docs:sync`.
-3. Revisá `docs/IMPLEMENTATION-STATUS.md`.
-4. Hacé commit de **ambos** archivos (o dejá que el pre-commit añada el `.md` si solo staged el YAML).
+3. Revisá `docs/generated/implementation-progress.auto.md` y `docs/generated/sprint-status.auto.md`.
+4. Hacé commit de **YAML + generados** (o dejá que el pre-commit añada los `.auto.md` si solo staged el YAML).
 
 ### Pre-commit (`.githooks/pre-commit`)
 
-El repo usa `git config core.hooksPath .githooks` (ver README). Si **solo** agregás al stage `docs/implementation/status.yaml`, el hook ejecuta `docs:sync` y hace `git add` de `docs/IMPLEMENTATION-STATUS.md`.
+El repo usa `git config core.hooksPath .githooks` (ver README). Si **solo** agregás al stage `docs/implementation/status.yaml`, el hook ejecuta `docs:sync` y hace `git add` de los `.auto.md` generados y `docs/AGENTS-ASSIGNMENTS.md`.
 
 ### Watch opcional
 
@@ -52,7 +52,7 @@ Si usás Husky en vez de `.githooks`, existe `.husky/pre-commit` que delega en `
 
 1. Editá la fase correspondiente en `status.yaml` y agregá un ítem en `components`.
 2. `npm run docs:sync`.
-3. Commit de `status.yaml` + `IMPLEMENTATION-STATUS.md`.
+3. Commit de `status.yaml` + `docs/generated/*.auto.md` (y `AGENTS-ASSIGNMENTS.md` si cambió).
 
 ## 6. Secreto GitHub `DISCORD_WEBHOOK_URL`
 

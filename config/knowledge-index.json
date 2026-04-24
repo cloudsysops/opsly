@@ -1,7 +1,7 @@
 {
   "version": 1,
   "root": "/Users/dragon/cboteros/proyectos/intcloudsysops",
-  "generated_at": "2026-04-23T21:57:32.010Z",
+  "generated_at": "2026-04-24T21:26:25.543Z",
   "files": [
     {
       "path": ".claude/CLAUDE.md",
@@ -111,7 +111,7 @@
         "supremo",
         "trabajo"
       ],
-      "size_bytes": 206003
+      "size_bytes": 217846
     },
     {
       "path": ".github/copilot-instructions.md",
@@ -238,7 +238,7 @@
         "transferible",
         "vision"
       ],
-      "size_bytes": 17376
+      "size_bytes": 17409
     },
     {
       "path": ".openclaw.md",
@@ -307,7 +307,7 @@
         "supremo",
         "trabajo"
       ],
-      "size_bytes": 217263
+      "size_bytes": 217911
     },
     {
       "path": "agents/prompts/claude-architect.md",
@@ -421,7 +421,36 @@
       "size_bytes": 4735
     },
     {
-      "path": "apps/ingestion-service/README.md",
+      "path": "apps/experimental/ai-evolution-archive/ARCHIVE.md",
+      "title": "ai-evolution Archive",
+      "keywords": [
+        "archive",
+        "archived",
+        "evolution",
+        "markdown",
+        "opsly",
+        "revive",
+        "why"
+      ],
+      "size_bytes": 419
+    },
+    {
+      "path": "apps/experimental/ingestion-service-archive/ARCHIVE.md",
+      "title": "ingestion-service Archive",
+      "keywords": [
+        "archive",
+        "archived",
+        "ingestion",
+        "markdown",
+        "opsly",
+        "revive",
+        "service",
+        "why"
+      ],
+      "size_bytes": 393
+    },
+    {
+      "path": "apps/experimental/ingestion-service-archive/README.md",
       "title": "Ingestion Bunker (`@intcloudsysops/ingestion-service`)",
       "keywords": [
         "bunker",
@@ -443,6 +472,21 @@
         "vps"
       ],
       "size_bytes": 1789
+    },
+    {
+      "path": "apps/experimental/mission-control-archive/ARCHIVE.md",
+      "title": "mission-control Archive",
+      "keywords": [
+        "archive",
+        "archived",
+        "control",
+        "markdown",
+        "mission",
+        "opsly",
+        "revive",
+        "why"
+      ],
+      "size_bytes": 397
     },
     {
       "path": "apps/mcp/README.md",
@@ -752,7 +796,7 @@
         "opsly",
         "prompt"
       ],
-      "size_bytes": 569
+      "size_bytes": 7888
     },
     {
       "path": "docs/ADMIN-ECOSYSTEM.md",
@@ -1585,6 +1629,33 @@
       "size_bytes": 1083
     },
     {
+      "path": "docs/adr/ADR-031-experimental-consolidation.md",
+      "title": "ADR-031: Consolidate Experimental Apps",
+      "keywords": [
+        "031",
+        "2026",
+        "adr",
+        "apps",
+        "consequences",
+        "consolidate",
+        "consolidation",
+        "context",
+        "decision",
+        "experimental",
+        "future",
+        "immediate",
+        "markdown",
+        "migration",
+        "next",
+        "notes",
+        "opsly",
+        "path",
+        "sprints",
+        "week"
+      ],
+      "size_bytes": 2032
+    },
+    {
       "path": "docs/adr/ADR-031-token-optimization-ollama-primary.md",
       "title": "ADR-031: Token Optimization — Ollama Local Primary + Docker Resource Limits",
       "keywords": [
@@ -1628,6 +1699,52 @@
         "yml"
       ],
       "size_bytes": 5191
+    },
+    {
+      "path": "docs/adr/ADR-032-scripts-organization.md",
+      "title": "ADR-032: Reorganize Scripts by Category",
+      "keywords": [
+        "032",
+        "adr",
+        "category",
+        "consequences",
+        "context",
+        "decision",
+        "decommission",
+        "implementation",
+        "markdown",
+        "migration",
+        "opsly",
+        "organization",
+        "path",
+        "phase",
+        "plan",
+        "reorganize",
+        "scripts",
+        "structure"
+      ],
+      "size_bytes": 1397
+    },
+    {
+      "path": "docs/adr/ADR-033-docs-canonicalization.md",
+      "title": "ADR-033: Documentation canonicalization",
+      "keywords": [
+        "033",
+        "adr",
+        "canonicalization",
+        "consequences",
+        "context",
+        "decision",
+        "divergent",
+        "docs",
+        "documentation",
+        "markdown",
+        "note",
+        "opsly",
+        "references",
+        "worktrees"
+      ],
+      "size_bytes": 1609
     },
     {
       "path": "docs/AGENT-HOOKS-OBSIDIAN-NOTEBOOKLM-N8N.md",
@@ -1821,7 +1938,7 @@
         "roles",
         "sprint"
       ],
-      "size_bytes": 2368
+      "size_bytes": 2567
     },
     {
       "path": "docs/AI-FRAMEWORKS.md",
@@ -1984,40 +2101,39 @@
     },
     {
       "path": "docs/ARCHITECTURE.md",
-      "title": "Opsly Architecture",
+      "title": "Opsly Architecture (Authority)",
       "keywords": [
-        "adapter",
+        "active",
         "allocation",
+        "app",
         "architecture",
-        "authorization",
+        "archived",
+        "authority",
         "backup",
-        "bunker",
-        "cloud",
+        "classification",
         "control",
-        "cost",
         "data",
+        "deprecated",
+        "design",
         "development",
-        "disaster",
         "environment",
         "flow",
-        "ingestion",
         "isolation",
         "markdown",
         "model",
-        "multi",
+        "modules",
         "onboarding",
         "opsly",
-        "patron",
         "plane",
         "port",
-        "provider",
-        "recepcion",
-        "recovery",
+        "principles",
+        "references",
+        "runtime",
         "strategy",
         "tenant",
-        "transparency"
+        "topology"
       ],
-      "size_bytes": 6852
+      "size_bytes": 8151
     },
     {
       "path": "docs/AUTO-PUSH-WATCHER.md",
@@ -2087,7 +2203,7 @@
         "yaml",
         "yml"
       ],
-      "size_bytes": 3817
+      "size_bytes": 4033
     },
     {
       "path": "docs/AUTOMATION-PLAN.md",
@@ -3130,6 +3246,89 @@
       "size_bytes": 2380
     },
     {
+      "path": "docs/generated/implementation-progress.auto.md",
+      "title": "Opsly — Implementation Progress (Auto-Generated)",
+      "keywords": [
+        "0026",
+        "0027",
+        "agent",
+        "aplicadas",
+        "approval",
+        "auto",
+        "blockers",
+        "configurados",
+        "doppler",
+        "endpoint",
+        "gate",
+        "gateway",
+        "gcp",
+        "generated",
+        "implementation",
+        "learning",
+        "llm",
+        "markdown",
+        "methods",
+        "migraciones",
+        "next",
+        "opsly",
+        "phase",
+        "prd",
+        "progress",
+        "remoto",
+        "secrets",
+        "steps",
+        "supabase",
+        "vertex"
+      ],
+      "size_bytes": 3747
+    },
+    {
+      "path": "docs/generated/README.md",
+      "title": "Generated Documentation",
+      "keywords": [
+        "033",
+        "adr",
+        "canon",
+        "docs",
+        "documentation",
+        "files",
+        "generated",
+        "generation",
+        "legacy",
+        "manually",
+        "markdown",
+        "opsly",
+        "pre",
+        "readme",
+        "regenerate",
+        "relationship",
+        "snapshots",
+        "stop"
+      ],
+      "size_bytes": 1563
+    },
+    {
+      "path": "docs/generated/sprint-status.auto.md",
+      "title": "Opsly — Sprint Status (Auto-Generated)",
+      "keywords": [
+        "approval",
+        "auto",
+        "blockers",
+        "burndown",
+        "gate",
+        "generated",
+        "markdown",
+        "opsly",
+        "resumen",
+        "serie",
+        "sprint",
+        "status",
+        "tasks",
+        "vertex"
+      ],
+      "size_bytes": 1854
+    },
+    {
       "path": "docs/GITHUB-SETTINGS.md",
       "title": "GitHub Settings — Opsly (`cloudsysops/opsly`)",
       "keywords": [
@@ -3398,6 +3597,234 @@
       "size_bytes": 2703
     },
     {
+      "path": "docs/history/plans/IMPLEMENTATION-STATUS.md",
+      "title": "Opsly — Implementation status",
+      "keywords": [
+        "0026",
+        "0027",
+        "agent",
+        "aplicadas",
+        "approval",
+        "blockers",
+        "configurados",
+        "doppler",
+        "endpoint",
+        "gate",
+        "gateway",
+        "gcp",
+        "implementation",
+        "learning",
+        "llm",
+        "markdown",
+        "methods",
+        "migraciones",
+        "next",
+        "opsly",
+        "phase",
+        "prd",
+        "remoto",
+        "secrets",
+        "status",
+        "steps",
+        "supabase",
+        "vertex"
+      ],
+      "size_bytes": 3493
+    },
+    {
+      "path": "docs/history/plans/MASTER-PLAN-STATUS.md",
+      "title": "MASTER PLAN — Estado actual",
+      "keywords": [
+        "2026",
+        "activos",
+        "actual",
+        "actualizacion",
+        "audit",
+        "backups",
+        "billing",
+        "bloqueantes",
+        "caps",
+        "checkout",
+        "context",
+        "cost",
+        "cve",
+        "drive",
+        "enterprise",
+        "estado",
+        "fase",
+        "fases",
+        "hardening",
+        "healing",
+        "health",
+        "hecho",
+        "historico",
+        "humanos",
+        "inmediato",
+        "landing",
+        "localrank",
+        "master",
+        "monitor",
+        "orchestrator",
+        "paso",
+        "persistence",
+        "plan",
+        "producto",
+        "progreso",
+        "proximo",
+        "recientemente",
+        "scanning",
+        "self",
+        "sha256",
+        "sprint",
+        "sprints",
+        "status",
+        "stripe",
+        "trail",
+        "ultima",
+        "upgrade",
+        "usage"
+      ],
+      "size_bytes": 5200
+    },
+    {
+      "path": "docs/history/plans/MASTER-PLAN.md",
+      "title": "OPSLY MASTER PLAN — Plan de trabajo completo",
+      "keywords": [
+        "activos",
+        "actual",
+        "actualizacion",
+        "adelante",
+        "anadir",
+        "bloqueantes",
+        "completo",
+        "core",
+        "cuando",
+        "cubierto",
+        "defecto",
+        "diseno",
+        "duplicar",
+        "ejecutivo",
+        "falta",
+        "fase",
+        "fecha",
+        "inmediato",
+        "integrado",
+        "integrar",
+        "markdown",
+        "mas",
+        "master",
+        "metricas",
+        "monorepo",
+        "nada",
+        "necesario",
+        "nombre",
+        "numero",
+        "opcionales",
+        "opsly",
+        "paso",
+        "plan",
+        "progreso",
+        "proximo",
+        "proyecto",
+        "reglas",
+        "resumen",
+        "romper",
+        "sistema",
+        "solo",
+        "toque",
+        "trabajo",
+        "ultima",
+        "util"
+      ],
+      "size_bytes": 22852
+    },
+    {
+      "path": "docs/history/plans/SPRINT-ROADMAP.md",
+      "title": "Opsly Enterprise — Sprint Roadmap",
+      "keywords": [
+        "api",
+        "audit",
+        "backups",
+        "billing",
+        "caps",
+        "checkout",
+        "cloudflare",
+        "context",
+        "cost",
+        "cross",
+        "cve",
+        "dashboard",
+        "disaster",
+        "enterprise",
+        "fine",
+        "hardening",
+        "healing",
+        "health",
+        "landing",
+        "limiting",
+        "monitor",
+        "multi",
+        "opsly",
+        "orchestrator",
+        "persistence",
+        "pipeline",
+        "plan",
+        "rag",
+        "rate",
+        "rbac",
+        "recovery",
+        "region",
+        "roadmap",
+        "scanning",
+        "self",
+        "session",
+        "sha256",
+        "slo",
+        "sprint",
+        "stripe",
+        "sync",
+        "tenant",
+        "trail",
+        "tuning",
+        "upgrade",
+        "usage",
+        "vector",
+        "vision"
+      ],
+      "size_bytes": 6474
+    },
+    {
+      "path": "docs/history/plans/SPRINT-TRACKING.md",
+      "title": "Opsly — Sprint tracking",
+      "keywords": [
+        "approval",
+        "blockers",
+        "burndown",
+        "gate",
+        "markdown",
+        "opsly",
+        "resumen",
+        "serie",
+        "sprint",
+        "tasks",
+        "tracking",
+        "vertex"
+      ],
+      "size_bytes": 1515
+    },
+    {
+      "path": "docs/history/README.md",
+      "title": "Historical documentation",
+      "keywords": [
+        "documentation",
+        "historical",
+        "markdown",
+        "opsly",
+        "readme"
+      ],
+      "size_bytes": 226
+    },
+    {
       "path": "docs/HOSTS-PATHS.md",
       "title": "Hosts and Project Paths",
       "keywords": [
@@ -3506,41 +3933,6 @@
         "utiles"
       ],
       "size_bytes": 3235
-    },
-    {
-      "path": "docs/IMPLEMENTATION-STATUS.md",
-      "title": "Opsly — Implementation status",
-      "keywords": [
-        "0026",
-        "0027",
-        "agent",
-        "aplicadas",
-        "approval",
-        "blockers",
-        "configurados",
-        "doppler",
-        "endpoint",
-        "gate",
-        "gateway",
-        "gcp",
-        "implementation",
-        "learning",
-        "llm",
-        "markdown",
-        "methods",
-        "migraciones",
-        "next",
-        "opsly",
-        "phase",
-        "prd",
-        "remoto",
-        "secrets",
-        "status",
-        "steps",
-        "supabase",
-        "vertex"
-      ],
-      "size_bytes": 3493
     },
     {
       "path": "docs/INCIDENT-2026-04-11-DISCO-LLENO.md",
@@ -3896,113 +4288,6 @@
         "tus"
       ],
       "size_bytes": 2182
-    },
-    {
-      "path": "docs/MASTER-PLAN-STATUS.md",
-      "title": "MASTER PLAN — Estado actual",
-      "keywords": [
-        "2026",
-        "activos",
-        "actual",
-        "actualizacion",
-        "audit",
-        "backups",
-        "billing",
-        "bloqueantes",
-        "caps",
-        "checkout",
-        "context",
-        "cost",
-        "cve",
-        "drive",
-        "enterprise",
-        "estado",
-        "fase",
-        "fases",
-        "hardening",
-        "healing",
-        "health",
-        "hecho",
-        "historico",
-        "humanos",
-        "inmediato",
-        "landing",
-        "localrank",
-        "master",
-        "monitor",
-        "orchestrator",
-        "paso",
-        "persistence",
-        "plan",
-        "producto",
-        "progreso",
-        "proximo",
-        "recientemente",
-        "scanning",
-        "self",
-        "sha256",
-        "sprint",
-        "sprints",
-        "status",
-        "stripe",
-        "trail",
-        "ultima",
-        "upgrade",
-        "usage"
-      ],
-      "size_bytes": 5200
-    },
-    {
-      "path": "docs/MASTER-PLAN.md",
-      "title": "OPSLY MASTER PLAN — Plan de trabajo completo",
-      "keywords": [
-        "activos",
-        "actual",
-        "actualizacion",
-        "adelante",
-        "anadir",
-        "bloqueantes",
-        "completo",
-        "core",
-        "cuando",
-        "cubierto",
-        "defecto",
-        "diseno",
-        "duplicar",
-        "ejecutivo",
-        "falta",
-        "fase",
-        "fecha",
-        "inmediato",
-        "integrado",
-        "integrar",
-        "markdown",
-        "mas",
-        "master",
-        "metricas",
-        "monorepo",
-        "nada",
-        "necesario",
-        "nombre",
-        "numero",
-        "opcionales",
-        "opsly",
-        "paso",
-        "plan",
-        "progreso",
-        "proximo",
-        "proyecto",
-        "reglas",
-        "resumen",
-        "romper",
-        "sistema",
-        "solo",
-        "toque",
-        "trabajo",
-        "ultima",
-        "util"
-      ],
-      "size_bytes": 22852
     },
     {
       "path": "docs/MCP-SERVERS.md",
@@ -5857,7 +6142,7 @@
         "vars",
         "vps"
       ],
-      "size_bytes": 6681
+      "size_bytes": 6761
     },
     {
       "path": "docs/QUICKSTART-AGENTS.md",
@@ -5928,7 +6213,7 @@
         "stripe",
         "wiki"
       ],
-      "size_bytes": 21474
+      "size_bytes": 21833
     },
     {
       "path": "docs/REFACTOR-CHECKLIST.md",
@@ -6820,81 +7105,7 @@
         "webhook",
         "workflows"
       ],
-      "size_bytes": 4215
-    },
-    {
-      "path": "docs/SPRINT-ROADMAP.md",
-      "title": "Opsly Enterprise — Sprint Roadmap",
-      "keywords": [
-        "api",
-        "audit",
-        "backups",
-        "billing",
-        "caps",
-        "checkout",
-        "cloudflare",
-        "context",
-        "cost",
-        "cross",
-        "cve",
-        "dashboard",
-        "disaster",
-        "enterprise",
-        "fine",
-        "hardening",
-        "healing",
-        "health",
-        "landing",
-        "limiting",
-        "monitor",
-        "multi",
-        "opsly",
-        "orchestrator",
-        "persistence",
-        "pipeline",
-        "plan",
-        "rag",
-        "rate",
-        "rbac",
-        "recovery",
-        "region",
-        "roadmap",
-        "scanning",
-        "self",
-        "session",
-        "sha256",
-        "slo",
-        "sprint",
-        "stripe",
-        "sync",
-        "tenant",
-        "trail",
-        "tuning",
-        "upgrade",
-        "usage",
-        "vector",
-        "vision"
-      ],
-      "size_bytes": 6474
-    },
-    {
-      "path": "docs/SPRINT-TRACKING.md",
-      "title": "Opsly — Sprint tracking",
-      "keywords": [
-        "approval",
-        "blockers",
-        "burndown",
-        "gate",
-        "markdown",
-        "opsly",
-        "resumen",
-        "serie",
-        "sprint",
-        "tasks",
-        "tracking",
-        "vertex"
-      ],
-      "size_bytes": 1492
+      "size_bytes": 4399
     },
     {
       "path": "docs/SSH-COMMANDS-LOCALRANK.md",
@@ -7701,7 +7912,7 @@
         "task",
         "test"
       ],
-      "size_bytes": 20112
+      "size_bytes": 20090
     },
     {
       "path": "ROADMAP.md",
@@ -7749,7 +7960,7 @@
         "viva",
         "workers"
       ],
-      "size_bytes": 5892
+      "size_bytes": 5954
     },
     {
       "path": "scripts/agent-training/README.md",
@@ -7785,6 +7996,33 @@
         "worker"
       ],
       "size_bytes": 2265
+    },
+    {
+      "path": "scripts/README.md",
+      "title": "Opsly Scripts Guide",
+      "keywords": [
+        "categories",
+        "compatibility",
+        "conventions",
+        "deployment",
+        "environment",
+        "guide",
+        "infrastructure",
+        "lifecycle",
+        "markdown",
+        "operations",
+        "opsly",
+        "quick",
+        "readme",
+        "script",
+        "scripts",
+        "setup",
+        "standards",
+        "start",
+        "tenant",
+        "utilities"
+      ],
+      "size_bytes": 1708
     },
     {
       "path": "skills/API.md",
@@ -8776,7 +9014,7 @@
         "tracker",
         "visibles"
       ],
-      "size_bytes": 2704
+      "size_bytes": 2769
     },
     {
       "path": "tools/usb-kit/README.md",
@@ -8900,7 +9138,7 @@
         "transferible",
         "vision"
       ],
-      "size_bytes": 19414
+      "size_bytes": 19509
     }
   ],
   "topics": {
@@ -8971,6 +9209,7 @@
       "docs/ORCHESTRATOR.md",
       "docs/design/OAR.md",
       "docs/AUTOMATION-PLAN.md",
+      "docs/adr/ADR-031-experimental-consolidation.md",
       "docs/adr/ADR-020-orchestrator-worker-separation.md",
       "docs/adr/ADR-011-event-driven-orchestrator.md",
       "docs/adr/ADR-024-ollama-local-worker-primary.md",
@@ -8985,7 +9224,7 @@
       "docs/SSH-COMMANDS-LOCALRANK.md",
       "docs/MCP-STATUS-ANALYSIS.md",
       "docs/SECURITY_CHECKLIST.md",
-      "docs/MASTER-PLAN-STATUS.md",
+      "docs/history/plans/MASTER-PLAN-STATUS.md",
       "docs/PLAN-SKILLS-TO-NOTEBOOKLM-2026-04-14.md",
       "docs/obsidian/inbox/2026-04-21.md",
       "docs/SECURITY-MITIGATIONS-2026-04-09.md",
@@ -9056,7 +9295,7 @@
       "docs/adr/ADR-028-tenant-onboarding-pattern.md",
       "docs/legalvial/LEGALVIAL-ARCHITECTURE-DECISION.md",
       "docs/README.md",
-      "docs/MASTER-PLAN-STATUS.md",
+      "docs/history/plans/MASTER-PLAN-STATUS.md",
       "docs/GOOGLE-CLOUD-SETUP.md",
       "docs/GOOGLE-DRIVE-SYNC.md"
     ],
@@ -9112,6 +9351,9 @@
       ".claude/CLAUDE.md",
       "agents/prompts/claude-architect.md",
       "agents/prompts/cursor-executor.md",
+      "docs/generated/sprint-status.auto.md",
+      "docs/generated/implementation-progress.auto.md",
+      "docs/generated/README.md",
       "docs/GCP-STANDBY-CONFIG.md",
       "docs/WORKER-SETUP-MAC2011.md",
       "docs/ARCHITECT-SECURITY-REVIEW.md",
@@ -9128,12 +9370,14 @@
       "docs/WORKER-TESTING.md",
       "docs/ARCHITECTURE-DISTRIBUTED-FINAL.md",
       "docs/adr/ADR-004-supabase-schema-por-tenant.md",
+      "docs/adr/ADR-031-experimental-consolidation.md",
       "docs/adr/ADR-021-predictive-bi-scalability.md",
       "docs/adr/ADR-020-orchestrator-worker-separation.md",
       "docs/adr/ADR-023-approval-gate-phase1.md",
       "docs/adr/ADR-015-hermes-orchestrator-architecture.md",
       "docs/adr/ADR-011-event-driven-orchestrator.md",
       "docs/adr/ADR-001-docker-compose-por-tenant.md",
+      "docs/adr/ADR-033-docs-canonicalization.md",
       "docs/adr/ADR-024-ollama-local-worker-primary.md",
       "docs/adr/ADR-022-di-pattern-testability.md",
       "docs/adr/ADR-009-openclaw-mcp-architecture.md",
@@ -9152,6 +9396,7 @@
       "docs/adr/ADR-016-legalvial-multitenant-model.md",
       "docs/adr/ADR-019-prometheus-grafana-observability.md",
       "docs/adr/ADR-027-hybrid-compute-plane-k8s.md",
+      "docs/adr/ADR-032-scripts-organization.md",
       "docs/adr/ADR-028-tenant-onboarding-pattern.md",
       "docs/adr/ADR-006-api-testing-vitest.md",
       "docs/adr/ADR-031-token-optimization-ollama-primary.md",
@@ -9174,12 +9419,10 @@
       "docs/AUTO-PUSH-WATCHER.md",
       "docs/TOKEN-BILLING-SYSTEM.md",
       "docs/INVITATIONS_RUNBOOK.md",
-      "docs/SPRINT-TRACKING.md",
       "docs/PARALLEL-AGENTS-ORCHESTRATION.md",
       "docs/SETUP-NOTION-MCP.md",
       "docs/TROUBLESHOOTING.md",
       "docs/OPS-CLEANUP-PROCEDURES.md",
-      "docs/IMPLEMENTATION-STATUS.md",
       "docs/OPENCLAW-ARCHITECTURE.md",
       "docs/SPRINT-PLANNING-SETUP.md",
       "docs/EXECUTION-PLAN-LOCALRANK-NOTEBOOKLM.md",
@@ -9249,6 +9492,10 @@
       "docs/ACTIVE-PROMPT.md",
       "docs/AGENTS-ASSIGNMENTS.md",
       "docs/SETUP-SUDOERS-CLOUDSYSOPS.md",
+      "docs/history/plans/SPRINT-TRACKING.md",
+      "docs/history/plans/IMPLEMENTATION-STATUS.md",
+      "docs/history/plans/MASTER-PLAN.md",
+      "docs/history/README.md",
       "docs/SEMANA-2-INFORME.md",
       "docs/N8N-IMPORT-GUIDE.md",
       "docs/OBSIDIAN-README.md",
@@ -9303,7 +9550,6 @@
       "docs/GITHUB-TOKEN.md",
       "docs/TENANT-TESTING-GUIDE.md",
       "docs/SUPERAGENTS-BOOTSTRAP.md",
-      "docs/MASTER-PLAN.md",
       "docs/MONITORING.md",
       "docs/GITHUB-SETTINGS.md",
       "docs/COST-DASHBOARD.md",
@@ -9326,6 +9572,7 @@
       "VISION.md",
       "ROADMAP.md",
       "scripts/agent-training/README.md",
+      "scripts/README.md",
       ".github/PULL_REQUEST_TEMPLATE.md",
       ".github/copilot-instructions.md",
       ".github/VISION.md",
@@ -9366,6 +9613,10 @@
       "skills/templates/template-api-route.md",
       "skills/templates/template-migration.md",
       "AGENTS.md",
+      "apps/experimental/mission-control-archive/ARCHIVE.md",
+      "apps/experimental/ingestion-service-archive/ARCHIVE.md",
+      "apps/experimental/ingestion-service-archive/README.md",
+      "apps/experimental/ai-evolution-archive/ARCHIVE.md",
       "apps/admin/INVITATIONS_UI.md",
       "apps/agents/notebooklm/README.md",
       "apps/mcp/README.md",
@@ -9385,7 +9636,6 @@
       "apps/ml/agents/classifier/.venv/lib/python3.13/site-packages/numpy-2.4.4.dist-info/licenses/numpy/random/src/splitmix64/LICENSE.md",
       "apps/ml/agents/classifier/.venv/lib/python3.13/site-packages/numpy-2.4.4.dist-info/licenses/numpy/random/src/distributions/LICENSE.md",
       "apps/ml/agents/classifier/.venv/lib/python3.13/site-packages/scipy/fft/_pocketfft/LICENSE.md",
-      "apps/ingestion-service/README.md",
       "apps/notion-mcp/README.md",
       "HANDOFF.md"
     ],
@@ -9403,6 +9653,9 @@
       ".claude/CLAUDE.md",
       "agents/prompts/claude-architect.md",
       "agents/prompts/cursor-executor.md",
+      "docs/generated/sprint-status.auto.md",
+      "docs/generated/implementation-progress.auto.md",
+      "docs/generated/README.md",
       "docs/GCP-STANDBY-CONFIG.md",
       "docs/WORKER-SETUP-MAC2011.md",
       "docs/ARCHITECT-SECURITY-REVIEW.md",
@@ -9419,12 +9672,14 @@
       "docs/WORKER-TESTING.md",
       "docs/ARCHITECTURE-DISTRIBUTED-FINAL.md",
       "docs/adr/ADR-004-supabase-schema-por-tenant.md",
+      "docs/adr/ADR-031-experimental-consolidation.md",
       "docs/adr/ADR-021-predictive-bi-scalability.md",
       "docs/adr/ADR-020-orchestrator-worker-separation.md",
       "docs/adr/ADR-023-approval-gate-phase1.md",
       "docs/adr/ADR-015-hermes-orchestrator-architecture.md",
       "docs/adr/ADR-011-event-driven-orchestrator.md",
       "docs/adr/ADR-001-docker-compose-por-tenant.md",
+      "docs/adr/ADR-033-docs-canonicalization.md",
       "docs/adr/ADR-024-ollama-local-worker-primary.md",
       "docs/adr/ADR-022-di-pattern-testability.md",
       "docs/adr/ADR-009-openclaw-mcp-architecture.md",
@@ -9443,6 +9698,7 @@
       "docs/adr/ADR-016-legalvial-multitenant-model.md",
       "docs/adr/ADR-019-prometheus-grafana-observability.md",
       "docs/adr/ADR-027-hybrid-compute-plane-k8s.md",
+      "docs/adr/ADR-032-scripts-organization.md",
       "docs/adr/ADR-028-tenant-onboarding-pattern.md",
       "docs/adr/ADR-006-api-testing-vitest.md",
       "docs/adr/ADR-031-token-optimization-ollama-primary.md",
@@ -9465,13 +9721,10 @@
       "docs/AUTO-PUSH-WATCHER.md",
       "docs/TOKEN-BILLING-SYSTEM.md",
       "docs/INVITATIONS_RUNBOOK.md",
-      "docs/SPRINT-TRACKING.md",
       "docs/PARALLEL-AGENTS-ORCHESTRATION.md",
       "docs/SETUP-NOTION-MCP.md",
       "docs/TROUBLESHOOTING.md",
       "docs/OPS-CLEANUP-PROCEDURES.md",
-      "docs/SPRINT-ROADMAP.md",
-      "docs/IMPLEMENTATION-STATUS.md",
       "docs/OPENCLAW-ARCHITECTURE.md",
       "docs/SPRINT-PLANNING-SETUP.md",
       "docs/EXECUTION-PLAN-LOCALRANK-NOTEBOOKLM.md",
@@ -9541,6 +9794,11 @@
       "docs/ACTIVE-PROMPT.md",
       "docs/AGENTS-ASSIGNMENTS.md",
       "docs/SETUP-SUDOERS-CLOUDSYSOPS.md",
+      "docs/history/plans/SPRINT-TRACKING.md",
+      "docs/history/plans/SPRINT-ROADMAP.md",
+      "docs/history/plans/IMPLEMENTATION-STATUS.md",
+      "docs/history/plans/MASTER-PLAN.md",
+      "docs/history/README.md",
       "docs/SEMANA-2-INFORME.md",
       "docs/N8N-IMPORT-GUIDE.md",
       "docs/OBSIDIAN-README.md",
@@ -9595,7 +9853,6 @@
       "docs/GITHUB-TOKEN.md",
       "docs/TENANT-TESTING-GUIDE.md",
       "docs/SUPERAGENTS-BOOTSTRAP.md",
-      "docs/MASTER-PLAN.md",
       "docs/MONITORING.md",
       "docs/GITHUB-SETTINGS.md",
       "docs/COST-DASHBOARD.md",
@@ -9619,6 +9876,7 @@
       "VISION.md",
       "ROADMAP.md",
       "scripts/agent-training/README.md",
+      "scripts/README.md",
       ".github/PULL_REQUEST_TEMPLATE.md",
       ".github/copilot-instructions.md",
       ".github/VISION.md",
@@ -9659,6 +9917,10 @@
       "skills/templates/template-api-route.md",
       "skills/templates/template-migration.md",
       "AGENTS.md",
+      "apps/experimental/mission-control-archive/ARCHIVE.md",
+      "apps/experimental/ingestion-service-archive/ARCHIVE.md",
+      "apps/experimental/ingestion-service-archive/README.md",
+      "apps/experimental/ai-evolution-archive/ARCHIVE.md",
       "apps/admin/INVITATIONS_UI.md",
       "apps/agents/notebooklm/README.md",
       "apps/mcp/README.md",
@@ -9678,13 +9940,14 @@
       "apps/ml/agents/classifier/.venv/lib/python3.13/site-packages/numpy-2.4.4.dist-info/licenses/numpy/random/src/splitmix64/LICENSE.md",
       "apps/ml/agents/classifier/.venv/lib/python3.13/site-packages/numpy-2.4.4.dist-info/licenses/numpy/random/src/distributions/LICENSE.md",
       "apps/ml/agents/classifier/.venv/lib/python3.13/site-packages/scipy/fft/_pocketfft/LICENSE.md",
-      "apps/ingestion-service/README.md",
       "apps/notion-mcp/README.md",
       "HANDOFF.md"
     ],
     "phase": [
       ".cursor/prompts/legalvial-phase2b-automation.md",
-      "docs/IMPLEMENTATION-STATUS.md",
+      "docs/generated/implementation-progress.auto.md",
+      "docs/adr/ADR-032-scripts-organization.md",
+      "docs/history/plans/IMPLEMENTATION-STATUS.md",
       "skills/user/opsly-simplify/SKILL.md"
     ],
     "phase2b": [
@@ -9745,8 +10008,8 @@
       "docs/OPS-CLEANUP-PROCEDURES.md",
       "docs/DOPPLER-VARS.md",
       "docs/CLAUDE-WORKFLOW-OPTIMIZATION.md",
+      "docs/history/plans/MASTER-PLAN.md",
       "docs/GITHUB-TOKEN.md",
-      "docs/MASTER-PLAN.md",
       "docs/DISK-USAGE-REPORT.md",
       ".github/PULL_REQUEST_TEMPLATE.md",
       "skills/user/opsly-feedback-ml/SKILL.md",
@@ -9772,20 +10035,23 @@
       "infra/terraform/.terraform/providers/registry.terraform.io/digitalocean/digitalocean/2.81.0/darwin_amd64/README.md",
       "infra/terraform/README.md",
       "tools/usb-kit/README.md",
+      "docs/generated/README.md",
       "docs/postman/README.md",
       "docs/README.md",
+      "docs/history/README.md",
       "docs/OBSIDIAN-README.md",
       "README.md",
       "scripts/agent-training/README.md",
+      "scripts/README.md",
       ".github/README-github-templates.md",
       "skills/README.md",
       "skills/templates/README.md",
+      "apps/experimental/ingestion-service-archive/README.md",
       "apps/agents/notebooklm/README.md",
       "apps/mcp/README.md",
       "apps/ml/agents/classifier/README.md",
       "apps/ml/agents/classifier/.venv/lib/python3.13/site-packages/sklearn/externals/array_api_compat/README.md",
       "apps/ml/agents/classifier/.venv/lib/python3.13/site-packages/sklearn/externals/array_api_extra/README.md",
-      "apps/ingestion-service/README.md",
       "apps/notion-mcp/README.md"
     ],
     "apply": [
@@ -9862,13 +10128,13 @@
       "docs/SEMANA-1-INFORME.md",
       "docs/MULTI-AGENT-ARCHITECTURE.md",
       "docs/AGENTS-ORCHESTRATION.md",
-      "docs/MASTER-PLAN-STATUS.md",
+      "docs/history/plans/MASTER-PLAN-STATUS.md",
+      "docs/history/plans/MASTER-PLAN.md",
       "docs/prompts/tenant-onboarding/TENANT-ONBOARDING-TEMPLATE.md",
       "docs/PLAN-SKILLS-TO-NOTEBOOKLM-2026-04-14.md",
       "docs/SECURITY-MITIGATIONS-2026-04-09.md",
       "docs/PLAN-ORCHESTRATOR-WORKER.md",
       "docs/PLAN-OLLAMA-WORKER-2026-04-14.md",
-      "docs/MASTER-PLAN.md",
       "docs/PLAN-NOTEBOOKLM-KNOWLEDGE-2026-04-14.md",
       "docs/reports/audit-2026-04-07.md",
       "VISION.md",
@@ -9958,7 +10224,7 @@
       "docs/CONTEXT-BUILDER.md",
       "docs/AUTO-SYNC-DOCS-SETUP.md",
       "docs/OLLAMA-DEPLOYMENT.md",
-      "apps/ingestion-service/README.md"
+      "apps/experimental/ingestion-service-archive/README.md"
     ],
     "plan": [
       "infra/terraform/README.md",
@@ -9968,9 +10234,9 @@
       "docs/design/OAR.md",
       "docs/AUTOMATION-PLAN.md",
       "docs/adr/ADR-008-terraform-digitalocean-plan.md",
+      "docs/adr/ADR-032-scripts-organization.md",
       "docs/AGENTS-GUIDE.md",
       "docs/PARALLEL-AGENTS-ORCHESTRATION.md",
-      "docs/SPRINT-ROADMAP.md",
       "docs/PLAN-SUPER-ARCHITECT-AGENT-2026-04-14.md",
       "docs/EXECUTION-PLAN-LOCALRANK-NOTEBOOKLM.md",
       "docs/LLM-GATEWAY-WORKPLAN.md",
@@ -9979,12 +10245,13 @@
       "docs/FAQ.md",
       "docs/TENANT-TESTING-PLAN.md",
       "docs/TEST_PLAN.md",
-      "docs/MASTER-PLAN-STATUS.md",
+      "docs/history/plans/SPRINT-ROADMAP.md",
+      "docs/history/plans/MASTER-PLAN-STATUS.md",
+      "docs/history/plans/MASTER-PLAN.md",
       "docs/SEMANA-2-INFORME.md",
       "docs/PLAN-SKILLS-TO-NOTEBOOKLM-2026-04-14.md",
       "docs/PLAN-ORCHESTRATOR-WORKER.md",
       "docs/PLAN-OLLAMA-WORKER-2026-04-14.md",
-      "docs/MASTER-PLAN.md",
       "docs/PLAN-NOTEBOOKLM-KNOWLEDGE-2026-04-14.md",
       "docs/reports/audit-2026-04-07.md",
       "docs/OPENCLAW-TEAM-PLAN.md",
@@ -10133,7 +10400,7 @@
       "scripts/agent-training/README.md",
       "skills/user/opsly-infra/SKILL.md",
       "skills/user/opsly-quantum/templates/runbook.md",
-      "apps/ingestion-service/README.md"
+      "apps/experimental/ingestion-service-archive/README.md"
     ],
     "alertas": [
       "infra/templates/n8n-workflows-template.md",
@@ -10286,9 +10553,9 @@
       "docs/TENANT-TESTING-PLAN.md",
       "docs/README.md",
       "docs/OPSLY-KNOWLEDGE-BASE.md",
-      "docs/MASTER-PLAN-STATUS.md",
       "docs/FAILOVER-RUNBOOK.md",
       "docs/ARCHITECTURE-DISTRIBUTED.md",
+      "docs/history/plans/MASTER-PLAN-STATUS.md",
       "docs/N8N-IMPORT-GUIDE.md",
       "docs/DECEPTICON-WORKER.md",
       "docs/OPENCLAW-TEAM-PLAN.md",
@@ -10403,7 +10670,6 @@
       "docs/adr/ADR-028-tenant-onboarding-pattern.md",
       "docs/ARCHITECTURE.md",
       "docs/TROUBLESHOOTING.md",
-      "docs/SPRINT-ROADMAP.md",
       "docs/POLICY-AI-LOCAL-FIRST.md",
       "docs/emails/tenant-welcome-email.md",
       "docs/LLM-GATEWAY-WORKPLAN.md",
@@ -10413,12 +10679,14 @@
       "docs/TENANT-TESTING-PLAN.md",
       "docs/SECURITY_CHECKLIST.md",
       "docs/TEST_PLAN.md",
+      "docs/history/plans/SPRINT-ROADMAP.md",
       "docs/prompts/tenant-onboarding/TENANT-ONBOARDING-TEMPLATE.md",
       "docs/prompts/tenant-onboarding/DEPLOYMENT-VALIDATION.md",
       "docs/CLIENTS-TO-INVITE.md",
       "docs/PLAN-SKILLS-TO-NOTEBOOKLM-2026-04-14.md",
       "docs/TENANT-TESTING-GUIDE.md",
       "docs/OPENCLAW-TEAM-PLAN.md",
+      "scripts/README.md",
       "skills/user/opsly-tenant/SKILL.md"
     ],
     "uptime": [
@@ -10541,17 +10809,18 @@
     ],
     "resumen": [
       "tools/usb-kit/README.md",
+      "docs/generated/sprint-status.auto.md",
       "docs/PLANNING.md",
       "docs/DISTRIBUTED-ARCHITECTURE.md",
       "docs/LLM-GATEWAY.md",
-      "docs/SPRINT-TRACKING.md",
       "docs/HOSTS-PATHS.md",
       "docs/LANIDEA-OPENCLAW.md",
       "docs/KNOWLEDGE-BRAIN-SYSTEM.md",
+      "docs/history/plans/SPRINT-TRACKING.md",
+      "docs/history/plans/MASTER-PLAN.md",
       "docs/HYBRID-OPSLY-ADMIN.md",
       "docs/SPRINT-CURSOR-PROMPTS.md",
       "docs/SECURITY-MITIGATIONS-2026-04-09.md",
-      "docs/MASTER-PLAN.md",
       "docs/DISK-USAGE-REPORT.md",
       "VISION.md",
       ".github/PULL_REQUEST_TEMPLATE.md",
@@ -10561,6 +10830,7 @@
     "scripts": [
       "tools/usb-kit/README.md",
       "docs/WORKER-TESTING.md",
+      "docs/adr/ADR-032-scripts-organization.md",
       "docs/ADMIN-ECOSYSTEM.md",
       "docs/SSH-USERS-FOR-AGENTS.md",
       "docs/KNOWLEDGE-SYSTEM.md",
@@ -10570,13 +10840,15 @@
       "docs/PLAN-NOTEBOOKLM-KNOWLEDGE-2026-04-14.md",
       "docs/NOTEBOOKLM-SETUP.md",
       "scripts/agent-training/README.md",
+      "scripts/README.md",
       "skills/user/opsly-infra/SKILL.md",
       "apps/mcp/README.md"
     ],
     "secrets": [
       "tools/usb-kit/README.md",
+      "docs/generated/implementation-progress.auto.md",
       "docs/adr/ADR-003-doppler-secrets.md",
-      "docs/IMPLEMENTATION-STATUS.md",
+      "docs/history/plans/IMPLEMENTATION-STATUS.md",
       "docs/GITHUB-SETTINGS.md"
     ],
     "ssh": [
@@ -10609,9 +10881,9 @@
       "docs/KNOWLEDGE-SYSTEM.md",
       "docs/CLAUDE-WORKFLOW-OPTIMIZATION.md",
       "docs/CICD-VPS.md",
+      "docs/history/plans/MASTER-PLAN.md",
       "docs/AGENTS-AUTONOMOUS-RUNBOOK.md",
       "docs/PLAN-ORCHESTRATOR-WORKER.md",
-      "docs/MASTER-PLAN.md",
       ".github/copilot-instructions.md",
       ".github/AGENTS.md",
       "AGENTS.md"
@@ -10640,11 +10912,11 @@
       "docs/BILLING-USD-DIAGRAMS.md",
       "docs/SECURITY_CHECKLIST.md",
       "docs/KNOWLEDGE-SYSTEM.md",
-      "docs/MASTER-PLAN-STATUS.md",
       "docs/FAILOVER-RUNBOOK.md",
+      "docs/history/plans/MASTER-PLAN-STATUS.md",
+      "docs/history/plans/MASTER-PLAN.md",
       "docs/N8N-IMPORT-GUIDE.md",
       "docs/AGENTS-GLOBAL-CONTEXT.md",
-      "docs/MASTER-PLAN.md",
       "docs/PLAN-NOTEBOOKLM-KNOWLEDGE-2026-04-14.md",
       "docs/OPENCLAW-TEAM-PLAN.md",
       "skills/user/opsly-tenant/SKILL.md",
@@ -10804,8 +11076,10 @@
     ],
     "blockers": [
       "VALIDATION-REPORT-2026-04-12.md",
-      "docs/SPRINT-TRACKING.md",
-      "docs/IMPLEMENTATION-STATUS.md"
+      "docs/generated/sprint-status.auto.md",
+      "docs/generated/implementation-progress.auto.md",
+      "docs/history/plans/SPRINT-TRACKING.md",
+      "docs/history/plans/IMPLEMENTATION-STATUS.md"
     ],
     "builder": [
       "VALIDATION-REPORT-2026-04-12.md",
@@ -10825,14 +11099,17 @@
     "context": [
       "VALIDATION-REPORT-2026-04-12.md",
       "docs/SEMANA-3-INFORME.md",
+      "docs/adr/ADR-031-experimental-consolidation.md",
+      "docs/adr/ADR-033-docs-canonicalization.md",
       "docs/adr/ADR-026-tenant-context-postgres-first.md",
+      "docs/adr/ADR-032-scripts-organization.md",
       "docs/adr/ADR-031-token-optimization-ollama-primary.md",
       "docs/adr/ADR-014-notebooklm-agent.md",
-      "docs/SPRINT-ROADMAP.md",
       "docs/MULTI-AGENT-ARCHITECTURE.md",
-      "docs/MASTER-PLAN-STATUS.md",
       "docs/DOPPLER-CI-RUNBOOK.md",
       "docs/IMPLEMENTATION-IA-LAYER.md",
+      "docs/history/plans/SPRINT-ROADMAP.md",
+      "docs/history/plans/MASTER-PLAN-STATUS.md",
       "docs/SEMANA-2-INFORME.md",
       "docs/AGENTS-GLOBAL-CONTEXT.md",
       "docs/CONTEXT-BUILDER.md",
@@ -10847,10 +11124,9 @@
     ],
     "cost": [
       "VALIDATION-REPORT-2026-04-12.md",
-      "docs/ARCHITECTURE.md",
-      "docs/SPRINT-ROADMAP.md",
       "docs/SEMANA-4-INFORME.md",
-      "docs/MASTER-PLAN-STATUS.md",
+      "docs/history/plans/SPRINT-ROADMAP.md",
+      "docs/history/plans/MASTER-PLAN-STATUS.md",
       "docs/COST-DASHBOARD.md",
       "ROADMAP.md"
     ],
@@ -10897,8 +11173,8 @@
       "docs/adr/ADR-019-prometheus-grafana-observability.md",
       "docs/adr/ADR-014-notebooklm-agent.md",
       "docs/LLM-GATEWAY-WORKPLAN.md",
+      "docs/history/plans/MASTER-PLAN.md",
       "docs/OBSERVABILITY.md",
-      "docs/MASTER-PLAN.md",
       "docs/INCIDENT-2026-04-11-DISCO-LLENO.md",
       "docs/PERFORMANCE_BASELINE.md",
       "skills/user/opsly-autonomous/SKILL.md",
@@ -10906,7 +11182,9 @@
     ],
     "next": [
       "VALIDATION-REPORT-2026-04-12.md",
-      "docs/IMPLEMENTATION-STATUS.md",
+      "docs/generated/implementation-progress.auto.md",
+      "docs/adr/ADR-031-experimental-consolidation.md",
+      "docs/history/plans/IMPLEMENTATION-STATUS.md",
       "docs/PERFORMANCE_BASELINE.md"
     ],
     "notebooklm": [
@@ -10958,11 +11236,11 @@
       "docs/adr/ADR-017-worker-teams-billing-roadmap.md",
       "docs/adr/ADR-030-prepaid-token-wallet-roadmap.md",
       "docs/WORKER-TEAM-BILLING.md",
-      "docs/SPRINT-ROADMAP.md",
       "docs/WALLET-PREPAID-ROADMAP.md",
       "docs/SEMANA-4-INFORME.md",
       "docs/WORKER-TEAM-ARCHITECTURE.md",
       "docs/README.md",
+      "docs/history/plans/SPRINT-ROADMAP.md",
       "README.md",
       "ROADMAP.md",
       "skills/user/opsly-architect-senior/SKILL.md"
@@ -11037,7 +11315,6 @@
     ],
     "transparency": [
       "VALIDATION-REPORT-2026-04-12.md",
-      "docs/ARCHITECTURE.md",
       "docs/SEMANA-4-INFORME.md",
       "ROADMAP.md"
     ],
@@ -11075,9 +11352,9 @@
     "audit": [
       "config/doppler-audit-2026-04-07.md",
       "docs/SECURITY_AUDIT_REPORT.md",
-      "docs/SPRINT-ROADMAP.md",
       "docs/runbooks/frontend-audit.md",
-      "docs/MASTER-PLAN-STATUS.md",
+      "docs/history/plans/SPRINT-ROADMAP.md",
+      "docs/history/plans/MASTER-PLAN-STATUS.md",
       "docs/reports/audit-2026-04-07.md"
     ],
     "auditoria": [
@@ -11092,18 +11369,19 @@
     ],
     "doppler": [
       "config/doppler-audit-2026-04-07.md",
+      "docs/generated/implementation-progress.auto.md",
       "docs/AUTOMATION-PLAN.md",
       "docs/NOTEBOOKLM-INTEGRATION.md",
       "docs/adr/ADR-003-doppler-secrets.md",
       "docs/QUICK-REFERENCE.md",
       "docs/ADMIN-ECOSYSTEM.md",
       "docs/SETUP-NOTION-MCP.md",
-      "docs/IMPLEMENTATION-STATUS.md",
       "docs/EXECUTION-PLAN-LOCALRANK-NOTEBOOKLM.md",
       "docs/SEMANA-6-PLAN.md",
       "docs/DOPPLER-VARS.md",
       "docs/DOPPLER-CI-RUNBOOK.md",
       "docs/RUNBOOK-INSIGHTS-DEPLOY.md",
+      "docs/history/plans/IMPLEMENTATION-STATUS.md",
       "docs/ops/runbook-redis.md",
       "docs/PLAN-OLLAMA-WORKER-2026-04-14.md",
       "docs/GITHUB-TOKEN.md",
@@ -11119,7 +11397,7 @@
       "docs/VERTEX-AI-SETUP.md",
       "docs/AI-FRAMEWORKS.md",
       "README.md",
-      "apps/ingestion-service/README.md",
+      "apps/experimental/ingestion-service-archive/README.md",
       "apps/notion-mcp/README.md"
     ],
     "inventario": [
@@ -11150,10 +11428,11 @@
     ],
     "prd": [
       "config/doppler-audit-2026-04-07.md",
+      "docs/generated/implementation-progress.auto.md",
       "docs/AUTOMATION-PLAN.md",
-      "docs/IMPLEMENTATION-STATUS.md",
       "docs/SEMANA-6-PLAN.md",
       "docs/DOPPLER-VARS.md",
+      "docs/history/plans/IMPLEMENTATION-STATUS.md",
       "docs/PLAN-OLLAMA-WORKER-2026-04-14.md",
       "docs/VERTEX-AI-SETUP.md",
       "docs/PLAN-NOTEBOOKLM-KNOWLEDGE-2026-04-14.md",
@@ -11208,7 +11487,7 @@
     ],
     "colas": [
       ".openclaw.md",
-      "apps/ingestion-service/README.md"
+      "apps/experimental/ingestion-service-archive/README.md"
     ],
     "configuracion": [
       ".openclaw.md",
@@ -11238,6 +11517,8 @@
     ],
     "docs": [
       ".openclaw.md",
+      "docs/generated/README.md",
+      "docs/adr/ADR-033-docs-canonicalization.md",
       "docs/AUTO-PUSH-WATCHER.md",
       "docs/OPSLY-KNOWLEDGE-BASE.md",
       "docs/OBSIDIAN-README.md",
@@ -11292,8 +11573,8 @@
       ".claude/CLAUDE.md",
       "docs/KNOWLEDGE-SYSTEM.md",
       "docs/OPSLY-KNOWLEDGE-BASE.md",
+      "docs/history/plans/MASTER-PLAN.md",
       "docs/AGENTS-GLOBAL-CONTEXT.md",
-      "docs/MASTER-PLAN.md",
       ".github/copilot-instructions.md",
       ".github/AGENTS.md",
       "skills/user/opsly-qa/SKILL.md",
@@ -11376,6 +11657,8 @@
     ],
     "auto": [
       ".claude/CLAUDE.md",
+      "docs/generated/sprint-status.auto.md",
+      "docs/generated/implementation-progress.auto.md",
       "docs/CODE-SNAPSHOTS.md",
       "docs/AUTO-PUSH-WATCHER.md",
       "docs/PLAN-SUPER-ARCHITECT-AGENT-2026-04-14.md",
@@ -11496,7 +11779,7 @@
       "skills/user/opsly-autonomous/SKILL.md",
       "skills/templates/template-bash-script.md",
       "skills/templates/template-migration.md",
-      "apps/ingestion-service/README.md"
+      "apps/experimental/ingestion-service-archive/README.md"
     ],
     "ejecutar": [
       ".claude/CLAUDE.md",
@@ -11567,7 +11850,7 @@
       "docs/README.md",
       "docs/KNOWLEDGE-SYSTEM.md",
       "docs/KNOWLEDGE-BRAIN-SYSTEM.md",
-      "docs/MASTER-PLAN.md",
+      "docs/history/plans/MASTER-PLAN.md",
       "docs/OPENCLAW-TEAM-PLAN.md",
       "skills/user/opsly-autonomous/SKILL.md",
       "skills/README.md"
@@ -11626,6 +11909,311 @@
     "executor": [
       "agents/prompts/cursor-executor.md"
     ],
+    "approval": [
+      "docs/generated/sprint-status.auto.md",
+      "docs/generated/implementation-progress.auto.md",
+      "docs/adr/ADR-023-approval-gate-phase1.md",
+      "docs/history/plans/SPRINT-TRACKING.md",
+      "docs/history/plans/IMPLEMENTATION-STATUS.md",
+      "docs/LAYERS-SANDBOX-QA-PROD.md",
+      "skills/user/opsly-feedback-ml/SKILL.md"
+    ],
+    "burndown": [
+      "docs/generated/sprint-status.auto.md",
+      "docs/history/plans/SPRINT-TRACKING.md"
+    ],
+    "gate": [
+      "docs/generated/sprint-status.auto.md",
+      "docs/generated/implementation-progress.auto.md",
+      "docs/adr/ADR-023-approval-gate-phase1.md",
+      "docs/history/plans/SPRINT-TRACKING.md",
+      "docs/history/plans/IMPLEMENTATION-STATUS.md",
+      "docs/SPRINT-CURSOR-PROMPTS.md",
+      "docs/LAYERS-SANDBOX-QA-PROD.md"
+    ],
+    "generated": [
+      "docs/generated/sprint-status.auto.md",
+      "docs/generated/implementation-progress.auto.md",
+      "docs/generated/README.md"
+    ],
+    "serie": [
+      "docs/generated/sprint-status.auto.md",
+      "docs/history/plans/SPRINT-TRACKING.md"
+    ],
+    "sprint": [
+      "docs/generated/sprint-status.auto.md",
+      "docs/adr/ADR-018-pgvector-embeddings-rag.md",
+      "docs/adr/ADR-019-prometheus-grafana-observability.md",
+      "docs/SPRINT-PLANNING-SETUP.md",
+      "docs/HERMES-SPRINT-PLAN.md",
+      "docs/AGENTS-ORCHESTRATION.md",
+      "docs/history/plans/SPRINT-TRACKING.md",
+      "docs/history/plans/SPRINT-ROADMAP.md",
+      "docs/history/plans/MASTER-PLAN-STATUS.md",
+      "docs/SPRINT-CURSOR-PROMPTS.md",
+      "README.md",
+      "SPRINT-TRACKER.md",
+      "skills/user/opsly-architect-senior/SKILL.md"
+    ],
+    "status": [
+      "docs/generated/sprint-status.auto.md",
+      "docs/PARALLEL-AGENTS-ORCHESTRATION.md",
+      "docs/MCP-STATUS-ANALYSIS.md",
+      "docs/history/plans/IMPLEMENTATION-STATUS.md",
+      "docs/history/plans/MASTER-PLAN-STATUS.md",
+      "docs/AUTO-SYNC-DOCS-SETUP.md"
+    ],
+    "tasks": [
+      "docs/generated/sprint-status.auto.md",
+      "docs/NOTION-MCP-SERVER.md",
+      "docs/history/plans/SPRINT-TRACKING.md"
+    ],
+    "vertex": [
+      "docs/generated/sprint-status.auto.md",
+      "docs/generated/implementation-progress.auto.md",
+      "docs/GOOGLE-CLOUD-ACTIVATION.md",
+      "docs/history/plans/SPRINT-TRACKING.md",
+      "docs/history/plans/IMPLEMENTATION-STATUS.md",
+      "docs/VERTEX-AI-SETUP.md"
+    ],
+    "0026": [
+      "docs/generated/implementation-progress.auto.md",
+      "docs/history/plans/IMPLEMENTATION-STATUS.md"
+    ],
+    "0027": [
+      "docs/generated/implementation-progress.auto.md",
+      "docs/history/plans/IMPLEMENTATION-STATUS.md"
+    ],
+    "agent": [
+      "docs/generated/implementation-progress.auto.md",
+      "docs/adr/ADR-014-notebooklm-agent.md",
+      "docs/PARALLEL-AGENTS-ORCHESTRATION.md",
+      "docs/PLAN-SUPER-ARCHITECT-AGENT-2026-04-14.md",
+      "docs/runbooks/SUPER-AGENT-SHADOW-DEPLOY.md",
+      "docs/MULTI-AGENT-ARCHITECTURE.md",
+      "docs/AGENT-HOOKS-OBSIDIAN-NOTEBOOKLM-N8N.md",
+      "docs/AGENTS-ORCHESTRATION.md",
+      "docs/AGENTS-ASSIGNMENTS.md",
+      "docs/history/plans/IMPLEMENTATION-STATUS.md",
+      "docs/obsidian/inbox/2026-04-21.md",
+      "scripts/agent-training/README.md",
+      "skills/user/opsly-notebooklm/SKILL.md",
+      "skills/user/opsly-agent-teams/SKILL.md",
+      "apps/agents/notebooklm/README.md",
+      "apps/context-builder-v2/src/design/architecture.md"
+    ],
+    "aplicadas": [
+      "docs/generated/implementation-progress.auto.md",
+      "docs/history/plans/IMPLEMENTATION-STATUS.md"
+    ],
+    "configurados": [
+      "docs/generated/implementation-progress.auto.md",
+      "docs/history/plans/IMPLEMENTATION-STATUS.md"
+    ],
+    "endpoint": [
+      "docs/generated/implementation-progress.auto.md",
+      "docs/OBSIDIAN-NOTEBOOKLM-N8N-INTEGRATION.md",
+      "docs/history/plans/IMPLEMENTATION-STATUS.md",
+      "skills/user/opsly-billing/SKILL.md"
+    ],
+    "gateway": [
+      "docs/generated/implementation-progress.auto.md",
+      "docs/adr/ADR-024-ollama-local-worker-primary.md",
+      "docs/adr/ADR-010-llm-gateway.md",
+      "docs/adr/ADR-031-token-optimization-ollama-primary.md",
+      "docs/LLM-GATEWAY.md",
+      "docs/PLAN-SUPER-ARCHITECT-AGENT-2026-04-14.md",
+      "docs/RUNBOOK-AI-LOCAL-FIRST.md",
+      "docs/POLICY-AI-LOCAL-FIRST.md",
+      "docs/LLM-GATEWAY-WORKPLAN.md",
+      "docs/SEMANA-1-INFORME.md",
+      "docs/MULTI-AGENT-ARCHITECTURE.md",
+      "docs/DOPPLER-VARS.md",
+      "docs/ORCHESTRATOR-FIXES-EXECUTION.md",
+      "docs/history/plans/IMPLEMENTATION-STATUS.md",
+      "docs/DECEPTICON-WORKER.md",
+      "docs/PLAN-OLLAMA-WORKER-2026-04-14.md",
+      "skills/user/opsly-llm/SKILL.md"
+    ],
+    "gcp": [
+      "docs/generated/implementation-progress.auto.md",
+      "docs/GCP-STANDBY-CONFIG.md",
+      "docs/GCP-ACTIVATION-CHECKLIST.md",
+      "docs/history/plans/IMPLEMENTATION-STATUS.md",
+      "docs/FAILOVER-GCP-ARCHITECTURE.md",
+      "docs/VERTEX-AI-SETUP.md",
+      "skills/user/opsly-google-cloud/SKILL.md"
+    ],
+    "implementation": [
+      "docs/generated/implementation-progress.auto.md",
+      "docs/adr/ADR-032-scripts-organization.md",
+      "docs/adr/ADR-031-token-optimization-ollama-primary.md",
+      "docs/adr/ADR-014-notebooklm-agent.md",
+      "docs/PARALLEL-AGENTS-ORCHESTRATION.md",
+      "docs/SEMANA-1-INFORME.md",
+      "docs/QA-REVIEW-COMPLETE.md",
+      "docs/IMPLEMENTATION-IA-LAYER.md",
+      "docs/history/plans/IMPLEMENTATION-STATUS.md",
+      "docs/SEMANA-5-INFORME.md",
+      "docs/AUTO-SYNC-DOCS-SETUP.md",
+      "skills/user/opsly-simplify/SKILL.md"
+    ],
+    "learning": [
+      "docs/generated/implementation-progress.auto.md",
+      "docs/history/plans/IMPLEMENTATION-STATUS.md"
+    ],
+    "llm": [
+      "docs/generated/implementation-progress.auto.md",
+      "docs/adr/ADR-024-ollama-local-worker-primary.md",
+      "docs/adr/ADR-010-llm-gateway.md",
+      "docs/adr/ADR-031-token-optimization-ollama-primary.md",
+      "docs/LLM-GATEWAY.md",
+      "docs/QUICKSTART-AGENTS.md",
+      "docs/PLAN-SUPER-ARCHITECT-AGENT-2026-04-14.md",
+      "docs/POLICY-AI-LOCAL-FIRST.md",
+      "docs/LLM-GATEWAY-WORKPLAN.md",
+      "docs/HERMES-LOCAL-AGENTS-STACK.md",
+      "docs/MULTI-AGENT-ARCHITECTURE.md",
+      "docs/DOPPLER-VARS.md",
+      "docs/ORCHESTRATOR-FIXES-EXECUTION.md",
+      "docs/history/plans/IMPLEMENTATION-STATUS.md",
+      "docs/DECEPTICON-WORKER.md",
+      "docs/PLAN-OLLAMA-WORKER-2026-04-14.md",
+      "docs/LIBRARIES-INSTALLED.md",
+      "docs/PLAN-NOTEBOOKLM-KNOWLEDGE-2026-04-14.md",
+      "skills/user/opsly-llm/SKILL.md"
+    ],
+    "methods": [
+      "docs/generated/implementation-progress.auto.md",
+      "docs/history/plans/IMPLEMENTATION-STATUS.md"
+    ],
+    "migraciones": [
+      "docs/generated/implementation-progress.auto.md",
+      "docs/history/plans/IMPLEMENTATION-STATUS.md",
+      "skills/user/opsly-supabase/SKILL.md"
+    ],
+    "progress": [
+      "docs/generated/implementation-progress.auto.md"
+    ],
+    "remoto": [
+      "docs/generated/implementation-progress.auto.md",
+      "docs/adr/ADR-020-orchestrator-worker-separation.md",
+      "docs/adr/ADR-024-ollama-local-worker-primary.md",
+      "docs/history/plans/IMPLEMENTATION-STATUS.md",
+      "docs/PLAN-ORCHESTRATOR-WORKER.md"
+    ],
+    "steps": [
+      "docs/generated/implementation-progress.auto.md",
+      "docs/history/plans/IMPLEMENTATION-STATUS.md",
+      "docs/obsidian/sources/archive/2026-04-21/jdo6safjptanvblfo772ajzohhy1vzo7f8u2svvc.md",
+      "skills/user/opsly-simplify/SKILL.md"
+    ],
+    "supabase": [
+      "docs/generated/implementation-progress.auto.md",
+      "docs/adr/ADR-004-supabase-schema-por-tenant.md",
+      "docs/QUICK-REFERENCE.md",
+      "docs/ADMIN-ECOSYSTEM.md",
+      "docs/SECURITY_AUDIT_REPORT.md",
+      "docs/SEMANA-6-PLAN.md",
+      "docs/SECURITY_CHECKLIST.md",
+      "docs/RUNBOOK-INSIGHTS-DEPLOY.md",
+      "docs/history/plans/IMPLEMENTATION-STATUS.md",
+      "docs/PLAN-ORCHESTRATOR-WORKER.md",
+      "docs/VERTEX-AI-SETUP.md",
+      "skills/user/opsly-simplify/SKILL.md",
+      "skills/user/opsly-supabase/SKILL.md"
+    ],
+    "033": [
+      "docs/generated/README.md",
+      "docs/adr/ADR-033-docs-canonicalization.md"
+    ],
+    "adr": [
+      "docs/generated/README.md",
+      "docs/adr/ADR-004-supabase-schema-por-tenant.md",
+      "docs/adr/ADR-031-experimental-consolidation.md",
+      "docs/adr/ADR-021-predictive-bi-scalability.md",
+      "docs/adr/ADR-020-orchestrator-worker-separation.md",
+      "docs/adr/ADR-023-approval-gate-phase1.md",
+      "docs/adr/ADR-015-hermes-orchestrator-architecture.md",
+      "docs/adr/ADR-011-event-driven-orchestrator.md",
+      "docs/adr/ADR-001-docker-compose-por-tenant.md",
+      "docs/adr/ADR-033-docs-canonicalization.md",
+      "docs/adr/ADR-024-ollama-local-worker-primary.md",
+      "docs/adr/ADR-022-di-pattern-testability.md",
+      "docs/adr/ADR-009-openclaw-mcp-architecture.md",
+      "docs/adr/ADR-026-tenant-context-postgres-first.md",
+      "docs/adr/ADR-013-google-cloud-openSource-strategy.md",
+      "docs/adr/ADR-017-worker-teams-billing-roadmap.md",
+      "docs/adr/ADR-002-traefik-sobre-nginx.md",
+      "docs/adr/ADR-030-prepaid-token-wallet-roadmap.md",
+      "docs/adr/ADR-010-llm-gateway.md",
+      "docs/adr/ADR-018-pgvector-embeddings-rag.md",
+      "docs/adr/ADR-025-notebooklm-knowledge-layer.md",
+      "docs/adr/ADR-007-runbooks-y-documentacion-operativa.md",
+      "docs/adr/ADR-029-infrastructure-layers-shared-vs-tenant.md",
+      "docs/adr/ADR-012-observability.md",
+      "docs/adr/ADR-008-terraform-digitalocean-plan.md",
+      "docs/adr/ADR-016-legalvial-multitenant-model.md",
+      "docs/adr/ADR-019-prometheus-grafana-observability.md",
+      "docs/adr/ADR-027-hybrid-compute-plane-k8s.md",
+      "docs/adr/ADR-032-scripts-organization.md",
+      "docs/adr/ADR-028-tenant-onboarding-pattern.md",
+      "docs/adr/ADR-006-api-testing-vitest.md",
+      "docs/adr/ADR-031-token-optimization-ollama-primary.md",
+      "docs/adr/ADR-003-doppler-secrets.md",
+      "docs/adr/ADR-005-traefik-v3-1-docker-api.md",
+      "docs/adr/ADR-014-notebooklm-agent.md",
+      "docs/PARALLEL-AGENTS-ORCHESTRATION.md",
+      "docs/WALLET-PREPAID-ROADMAP.md",
+      "docs/HERMES-SPRINT-PLAN.md",
+      "docs/KNOWLEDGE-SYSTEM.md",
+      "docs/OLLAMA-DEPLOYMENT.md",
+      "skills/user/opsly-architect-senior/SKILL.md"
+    ],
+    "canon": [
+      "docs/generated/README.md"
+    ],
+    "documentation": [
+      "docs/generated/README.md",
+      "docs/adr/ADR-033-docs-canonicalization.md",
+      "docs/QA-REVIEW-COMPLETE.md",
+      "docs/history/README.md"
+    ],
+    "files": [
+      "docs/generated/README.md"
+    ],
+    "generation": [
+      "docs/generated/README.md",
+      "docs/obsidian/sources/archive/2026-04-21/fourthgeneration02mart.md"
+    ],
+    "legacy": [
+      "docs/generated/README.md"
+    ],
+    "manually": [
+      "docs/generated/README.md"
+    ],
+    "pre": [
+      "docs/generated/README.md",
+      "docs/SETUP-NOTION-MCP.md",
+      "docs/SEMANA-6-PLAN.md",
+      "docs/N8N-IMPORT-GUIDE.md",
+      "docs/prompts/tenant-onboarding/TENANT-ONBOARDING-TEMPLATE.md",
+      "docs/ops/runbook-redis.md",
+      "docs/AUTO-SYNC-DOCS-SETUP.md"
+    ],
+    "regenerate": [
+      "docs/generated/README.md"
+    ],
+    "relationship": [
+      "docs/generated/README.md"
+    ],
+    "snapshots": [
+      "docs/generated/README.md",
+      "docs/CODE-SNAPSHOTS.md"
+    ],
+    "stop": [
+      "docs/generated/README.md"
+    ],
     "check": [
       "docs/GCP-STANDBY-CONFIG.md",
       "docs/SEMANA-4-INFORME.md",
@@ -11659,21 +12247,13 @@
       "docs/GCP-ACTIVATION-CHECKLIST.md",
       "docs/FAILOVER-GCP-ARCHITECTURE.md"
     ],
-    "gcp": [
-      "docs/GCP-STANDBY-CONFIG.md",
-      "docs/IMPLEMENTATION-STATUS.md",
-      "docs/GCP-ACTIVATION-CHECKLIST.md",
-      "docs/FAILOVER-GCP-ARCHITECTURE.md",
-      "docs/VERTEX-AI-SETUP.md",
-      "skills/user/opsly-google-cloud/SKILL.md"
-    ],
     "health": [
       "docs/GCP-STANDBY-CONFIG.md",
       "docs/ADMIN-ECOSYSTEM.md",
-      "docs/SPRINT-ROADMAP.md",
       "docs/LLM-GATEWAY-WORKPLAN.md",
       "docs/MCP-STATUS-ANALYSIS.md",
-      "docs/MASTER-PLAN-STATUS.md",
+      "docs/history/plans/SPRINT-ROADMAP.md",
+      "docs/history/plans/MASTER-PLAN-STATUS.md",
       "docs/OLLAMA-DEPLOYMENT.md",
       "skills/user/opsly-quantum/templates/runbook.md"
     ],
@@ -11781,8 +12361,8 @@
       "docs/DISTRIBUTED-ARCHITECTURE.md",
       "docs/QUALITY-GATES.md",
       "docs/IMPLEMENTATION-IA-LAYER.md",
+      "docs/history/plans/MASTER-PLAN.md",
       "docs/REFACTOR-CHECKLIST.md",
-      "docs/MASTER-PLAN.md",
       "apps/agents/notebooklm/README.md"
     ],
     "nodos": [
@@ -11829,12 +12409,12 @@
       "docs/adr/ADR-011-event-driven-orchestrator.md",
       "docs/adr/ADR-009-openclaw-mcp-architecture.md",
       "docs/adr/ADR-031-token-optimization-ollama-primary.md",
-      "docs/SPRINT-ROADMAP.md",
       "docs/MULTI-AGENT-ARCHITECTURE.md",
       "docs/MCP-STATUS-ANALYSIS.md",
       "docs/QA-REVIEW-COMPLETE.md",
-      "docs/MASTER-PLAN-STATUS.md",
       "docs/ORCHESTRATOR-FIXES-EXECUTION.md",
+      "docs/history/plans/SPRINT-ROADMAP.md",
+      "docs/history/plans/MASTER-PLAN-STATUS.md",
       "docs/SEMANA-2-INFORME.md",
       "docs/PLAN-ORCHESTRATOR-WORKER.md",
       "docs/PLAN-OLLAMA-WORKER-2026-04-14.md",
@@ -11910,6 +12490,7 @@
       "docs/VERTEX-AI-SETUP.md",
       "docs/AUTO-SYNC-DOCS-SETUP.md",
       "docs/NOTEBOOKLM-SETUP.md",
+      "scripts/README.md",
       "apps/ml/agents/classifier/README.md"
     ],
     "sudo": [
@@ -11922,7 +12503,7 @@
       "docs/WORKER-SERVICE-MAC2011.md",
       "docs/SESSION-GIT-SYNC.md",
       "docs/AGENTS-AUTONOMOUS-RUNBOOK.md",
-      "apps/ingestion-service/README.md"
+      "apps/experimental/ingestion-service-archive/README.md"
     ],
     "tmux": [
       "docs/WORKER-SETUP-MAC2011.md"
@@ -11982,7 +12563,7 @@
     "cloudflare": [
       "docs/ARCHITECT-SECURITY-REVIEW.md",
       "docs/CLOUDFLARE-PROXY-ACTIVATION.md",
-      "docs/SPRINT-ROADMAP.md",
+      "docs/history/plans/SPRINT-ROADMAP.md",
       "docs/SECURITY-MITIGATIONS-2026-04-09.md"
     ],
     "com": [
@@ -12070,14 +12651,13 @@
       "docs/ARCHITECT-SECURITY-REVIEW.md",
       "docs/adr/ADR-026-tenant-context-postgres-first.md",
       "docs/adr/ADR-016-legalvial-multitenant-model.md",
-      "docs/ARCHITECTURE.md",
-      "docs/SPRINT-ROADMAP.md",
       "docs/PLAN-SUPER-ARCHITECT-AGENT-2026-04-14.md",
       "docs/HERMES-SPRINT-PLAN.md",
       "docs/HOSTS-PATHS.md",
       "docs/MULTI-AGENT-ARCHITECTURE.md",
       "docs/SECURITY_CHECKLIST.md",
       "docs/PROVISIONING-SYSTEM.md",
+      "docs/history/plans/SPRINT-ROADMAP.md",
       "docs/SECURITY-MITIGATIONS-2026-04-09.md",
       "docs/OPENCLAW-TEAM-PLAN.md",
       ".github/AGENTS.md",
@@ -12179,8 +12759,8 @@
       "docs/GOOGLE-CLOUD-ACTIVATION.md",
       "docs/FAILOVER-RUNBOOK.md",
       "docs/CLAUDE-WORKFLOW-OPTIMIZATION.md",
+      "docs/history/plans/MASTER-PLAN.md",
       "docs/AGENTS-AUTONOMOUS-RUNBOOK.md",
-      "docs/MASTER-PLAN.md",
       "docs/GOOGLE-DRIVE-SYNC.md",
       "docs/DEPLOY-VPS-AND-INDEX.md",
       ".github/copilot-instructions.md",
@@ -12216,12 +12796,14 @@
     "decision": [
       "docs/HEAVY-SERVICES-DECISION.md",
       "docs/adr/ADR-004-supabase-schema-por-tenant.md",
+      "docs/adr/ADR-031-experimental-consolidation.md",
       "docs/adr/ADR-021-predictive-bi-scalability.md",
       "docs/adr/ADR-020-orchestrator-worker-separation.md",
       "docs/adr/ADR-023-approval-gate-phase1.md",
       "docs/adr/ADR-015-hermes-orchestrator-architecture.md",
       "docs/adr/ADR-011-event-driven-orchestrator.md",
       "docs/adr/ADR-001-docker-compose-por-tenant.md",
+      "docs/adr/ADR-033-docs-canonicalization.md",
       "docs/adr/ADR-024-ollama-local-worker-primary.md",
       "docs/adr/ADR-022-di-pattern-testability.md",
       "docs/adr/ADR-009-openclaw-mcp-architecture.md",
@@ -12239,6 +12821,7 @@
       "docs/adr/ADR-008-terraform-digitalocean-plan.md",
       "docs/adr/ADR-019-prometheus-grafana-observability.md",
       "docs/adr/ADR-027-hybrid-compute-plane-k8s.md",
+      "docs/adr/ADR-032-scripts-organization.md",
       "docs/adr/ADR-028-tenant-onboarding-pattern.md",
       "docs/adr/ADR-006-api-testing-vitest.md",
       "docs/adr/ADR-031-token-optimization-ollama-primary.md",
@@ -12290,7 +12873,7 @@
       "docs/HEAVY-SERVICES-DECISION.md",
       "docs/TOKEN-BILLING-SYSTEM.md",
       "docs/TENANT-TESTING-PLAN.md",
-      "docs/MASTER-PLAN-STATUS.md",
+      "docs/history/plans/MASTER-PLAN-STATUS.md",
       "docs/TENANT-TESTING-GUIDE.md",
       "ROADMAP.md",
       "skills/user/opsly-tenant/SKILL.md"
@@ -12327,8 +12910,8 @@
       "docs/ORCHESTRATOR.md",
       "docs/design/OAR.md",
       "docs/OPENCLAW-ARCHITECTURE.md",
-      "docs/MASTER-PLAN-STATUS.md",
-      "docs/MASTER-PLAN.md",
+      "docs/history/plans/MASTER-PLAN-STATUS.md",
+      "docs/history/plans/MASTER-PLAN.md",
       "docs/DISK-USAGE-REPORT.md"
     ],
     "agregar": [
@@ -12542,6 +13125,7 @@
     "design": [
       "docs/design/OAR.md",
       "docs/OPSLYQUANTUM-SKILL-DESIGN.md",
+      "docs/ARCHITECTURE.md",
       "docs/MCP-SERVERS.md"
     ],
     "doc": [
@@ -12654,13 +13238,14 @@
     ],
     "runtime": [
       "docs/design/OAR.md",
-      "docs/adr/ADR-029-infrastructure-layers-shared-vs-tenant.md"
+      "docs/adr/ADR-029-infrastructure-layers-shared-vs-tenant.md",
+      "docs/ARCHITECTURE.md"
     ],
     "self": [
       "docs/design/OAR.md",
-      "docs/SPRINT-ROADMAP.md",
       "docs/PLAN-SUPER-ARCHITECT-AGENT-2026-04-14.md",
-      "docs/MASTER-PLAN-STATUS.md"
+      "docs/history/plans/SPRINT-ROADMAP.md",
+      "docs/history/plans/MASTER-PLAN-STATUS.md"
     ],
     "system": [
       "docs/design/OAR.md",
@@ -12708,13 +13293,13 @@
       "docs/adr/ADR-018-pgvector-embeddings-rag.md",
       "docs/adr/ADR-012-observability.md",
       "docs/adr/ADR-019-prometheus-grafana-observability.md",
-      "docs/MASTER-PLAN.md",
+      "docs/history/plans/MASTER-PLAN.md",
       "docs/INCIDENT-2026-04-11-DISCO-LLENO.md"
     ],
     "progreso": [
       "docs/AUTOMATION-PLAN.md",
-      "docs/MASTER-PLAN-STATUS.md",
-      "docs/MASTER-PLAN.md"
+      "docs/history/plans/MASTER-PLAN-STATUS.md",
+      "docs/history/plans/MASTER-PLAN.md"
     ],
     "requeridas": [
       "docs/AUTOMATION-PLAN.md",
@@ -12753,8 +13338,8 @@
       "docs/NOTEBOOKLM-SETUP.md",
       "docs/reports/audit-2026-04-07.md",
       "docs/OLLAMA-DEPLOYMENT.md",
-      "apps/mcp/README.md",
-      "apps/ingestion-service/README.md"
+      "apps/experimental/ingestion-service-archive/README.md",
+      "apps/mcp/README.md"
     ],
     "version": [
       "docs/AUTOMATION-PLAN.md"
@@ -12773,6 +13358,7 @@
       "docs/MULTI-AGENT-ARCHITECTURE.md",
       "docs/LAYERS-SANDBOX-QA-PROD.md",
       "docs/OLLAMA-DEPLOYMENT.md",
+      "scripts/README.md",
       "skills/user/opsly-simplify/SKILL.md"
     ],
     "guide": [
@@ -12782,7 +13368,8 @@
       "docs/ORCHESTRATOR-FIXES-EXECUTION.md",
       "docs/N8N-IMPORT-GUIDE.md",
       "docs/LOCALRANK-TESTER-GUIDE.md",
-      "docs/TENANT-TESTING-GUIDE.md"
+      "docs/TENANT-TESTING-GUIDE.md",
+      "scripts/README.md"
     ],
     "integration": [
       "docs/NOTEBOOKLM-INTEGRATION.md",
@@ -12796,7 +13383,9 @@
       "skills/user/opsly-orchestrator/SKILL.md"
     ],
     "references": [
-      "docs/NOTEBOOKLM-INTEGRATION.md"
+      "docs/NOTEBOOKLM-INTEGRATION.md",
+      "docs/adr/ADR-033-docs-canonicalization.md",
+      "docs/ARCHITECTURE.md"
     ],
     "test": [
       "docs/NOTEBOOKLM-INTEGRATION.md",
@@ -12857,6 +13446,7 @@
     ],
     "apps": [
       "docs/CODE-SNAPSHOTS.md",
+      "docs/adr/ADR-031-experimental-consolidation.md",
       "docs/adr/ADR-009-openclaw-mcp-architecture.md",
       "docs/adr/ADR-031-token-optimization-ollama-primary.md",
       "docs/adr/ADR-014-notebooklm-agent.md",
@@ -12914,9 +13504,6 @@
     "packages": [
       "docs/CODE-SNAPSHOTS.md"
     ],
-    "snapshots": [
-      "docs/CODE-SNAPSHOTS.md"
-    ],
     "src": [
       "docs/CODE-SNAPSHOTS.md",
       "docs/adr/ADR-031-token-optimization-ollama-primary.md",
@@ -12949,10 +13536,10 @@
       "docs/SEMANA-3-INFORME.md",
       "docs/INVITATIONS_RUNBOOK.md",
       "docs/DOPPLER-VARS.md",
+      "docs/history/plans/MASTER-PLAN.md",
       "docs/GOOGLE-CLOUD-SETUP.md",
       "docs/LIBRARIES-INSTALLED.md",
-      "docs/SUPERAGENTS-BOOTSTRAP.md",
-      "docs/MASTER-PLAN.md"
+      "docs/SUPERAGENTS-BOOTSTRAP.md"
     ],
     "continuity": [
       "docs/SEMANA-3-INFORME.md"
@@ -13028,8 +13615,8 @@
     ],
     "persistence": [
       "docs/SEMANA-3-INFORME.md",
-      "docs/SPRINT-ROADMAP.md",
-      "docs/MASTER-PLAN-STATUS.md"
+      "docs/history/plans/SPRINT-ROADMAP.md",
+      "docs/history/plans/MASTER-PLAN-STATUS.md"
     ],
     "requerimientos": [
       "docs/SEMANA-3-INFORME.md",
@@ -13041,8 +13628,8 @@
     ],
     "session": [
       "docs/SEMANA-3-INFORME.md",
-      "docs/SPRINT-ROADMAP.md",
       "docs/SESSION-GIT-SYNC.md",
+      "docs/history/plans/SPRINT-ROADMAP.md",
       "docs/CONTEXT-BUILDER.md"
     ],
     "suite": [
@@ -13087,8 +13674,8 @@
       "docs/OPSLYQUANTUM-SKILL-DESIGN.md",
       "docs/TOKEN-BILLING-SYSTEM.md",
       "docs/OPSLYQUANTUM-USAGE.md",
-      "docs/DECEPTICON-WORKER.md",
-      "docs/MASTER-PLAN.md"
+      "docs/history/plans/MASTER-PLAN.md",
+      "docs/DECEPTICON-WORKER.md"
     ],
     "existentes": [
       "docs/OPSLYQUANTUM-SKILL-DESIGN.md"
@@ -13155,11 +13742,11 @@
     "vision": [
       "docs/OPSLYQUANTUM-SKILL-DESIGN.md",
       "docs/TOKEN-BILLING-SYSTEM.md",
-      "docs/SPRINT-ROADMAP.md",
       "docs/WORKER-TEAM-ARCHITECTURE.md",
       "docs/GOOGLE-CLOUD-ACTIVATION.md",
       "docs/KNOWLEDGE-SYSTEM.md",
       "docs/OBSIDIAN-NOTEBOOKLM-N8N-INTEGRATION.md",
+      "docs/history/plans/SPRINT-ROADMAP.md",
       "VISION.md",
       "ROADMAP.md",
       ".github/VISION.md"
@@ -13220,7 +13807,7 @@
     "fases": [
       "docs/PLANNING.md",
       "docs/PLAN-SUPER-ARCHITECT-AGENT-2026-04-14.md",
-      "docs/MASTER-PLAN-STATUS.md",
+      "docs/history/plans/MASTER-PLAN-STATUS.md",
       "docs/PERFORMANCE_BASELINE.md"
     ],
     "herramientas": [
@@ -13309,6 +13896,7 @@
       "docs/OPSLY-KNOWLEDGE-BASE.md",
       "docs/ORCHESTRATOR-FIXES-EXECUTION.md",
       "docs/OBSIDIAN-README.md",
+      "scripts/README.md",
       ".github/AGENTS.md",
       "skills/user/opsly-architect-senior/SKILL.md",
       "skills/README.md",
@@ -13324,6 +13912,7 @@
     "start": [
       "docs/WORKER-TESTING.md",
       "docs/OBSIDIAN-README.md",
+      "scripts/README.md",
       "skills/README.md"
     ],
     "terminal": [
@@ -13373,7 +13962,8 @@
       "docs/NOTION-MCP-SERVER.md",
       "docs/PLAN-OLLAMA-WORKER-2026-04-14.md",
       ".github/AGENTS.md",
-      "AGENTS.md"
+      "AGENTS.md",
+      "apps/experimental/mission-control-archive/ARCHIVE.md"
     ],
     "data": [
       "docs/ARCHITECTURE-DISTRIBUTED-FINAL.md",
@@ -13453,45 +14043,6 @@
     "004": [
       "docs/adr/ADR-004-supabase-schema-por-tenant.md"
     ],
-    "adr": [
-      "docs/adr/ADR-004-supabase-schema-por-tenant.md",
-      "docs/adr/ADR-021-predictive-bi-scalability.md",
-      "docs/adr/ADR-020-orchestrator-worker-separation.md",
-      "docs/adr/ADR-023-approval-gate-phase1.md",
-      "docs/adr/ADR-015-hermes-orchestrator-architecture.md",
-      "docs/adr/ADR-011-event-driven-orchestrator.md",
-      "docs/adr/ADR-001-docker-compose-por-tenant.md",
-      "docs/adr/ADR-024-ollama-local-worker-primary.md",
-      "docs/adr/ADR-022-di-pattern-testability.md",
-      "docs/adr/ADR-009-openclaw-mcp-architecture.md",
-      "docs/adr/ADR-026-tenant-context-postgres-first.md",
-      "docs/adr/ADR-013-google-cloud-openSource-strategy.md",
-      "docs/adr/ADR-017-worker-teams-billing-roadmap.md",
-      "docs/adr/ADR-002-traefik-sobre-nginx.md",
-      "docs/adr/ADR-030-prepaid-token-wallet-roadmap.md",
-      "docs/adr/ADR-010-llm-gateway.md",
-      "docs/adr/ADR-018-pgvector-embeddings-rag.md",
-      "docs/adr/ADR-025-notebooklm-knowledge-layer.md",
-      "docs/adr/ADR-007-runbooks-y-documentacion-operativa.md",
-      "docs/adr/ADR-029-infrastructure-layers-shared-vs-tenant.md",
-      "docs/adr/ADR-012-observability.md",
-      "docs/adr/ADR-008-terraform-digitalocean-plan.md",
-      "docs/adr/ADR-016-legalvial-multitenant-model.md",
-      "docs/adr/ADR-019-prometheus-grafana-observability.md",
-      "docs/adr/ADR-027-hybrid-compute-plane-k8s.md",
-      "docs/adr/ADR-028-tenant-onboarding-pattern.md",
-      "docs/adr/ADR-006-api-testing-vitest.md",
-      "docs/adr/ADR-031-token-optimization-ollama-primary.md",
-      "docs/adr/ADR-003-doppler-secrets.md",
-      "docs/adr/ADR-005-traefik-v3-1-docker-api.md",
-      "docs/adr/ADR-014-notebooklm-agent.md",
-      "docs/PARALLEL-AGENTS-ORCHESTRATION.md",
-      "docs/WALLET-PREPAID-ROADMAP.md",
-      "docs/HERMES-SPRINT-PLAN.md",
-      "docs/KNOWLEDGE-SYSTEM.md",
-      "docs/OLLAMA-DEPLOYMENT.md",
-      "skills/user/opsly-architect-senior/SKILL.md"
-    ],
     "consecuencias": [
       "docs/adr/ADR-004-supabase-schema-por-tenant.md",
       "docs/adr/ADR-020-orchestrator-worker-separation.md",
@@ -13536,19 +14087,61 @@
       "docs/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md",
       "skills/templates/template-mcp-tool.md"
     ],
-    "supabase": [
-      "docs/adr/ADR-004-supabase-schema-por-tenant.md",
-      "docs/QUICK-REFERENCE.md",
-      "docs/ADMIN-ECOSYSTEM.md",
-      "docs/SECURITY_AUDIT_REPORT.md",
-      "docs/IMPLEMENTATION-STATUS.md",
-      "docs/SEMANA-6-PLAN.md",
-      "docs/SECURITY_CHECKLIST.md",
-      "docs/RUNBOOK-INSIGHTS-DEPLOY.md",
-      "docs/PLAN-ORCHESTRATOR-WORKER.md",
-      "docs/VERTEX-AI-SETUP.md",
-      "skills/user/opsly-simplify/SKILL.md",
-      "skills/user/opsly-supabase/SKILL.md"
+    "031": [
+      "docs/adr/ADR-031-experimental-consolidation.md",
+      "docs/adr/ADR-031-token-optimization-ollama-primary.md"
+    ],
+    "consequences": [
+      "docs/adr/ADR-031-experimental-consolidation.md",
+      "docs/adr/ADR-033-docs-canonicalization.md",
+      "docs/adr/ADR-032-scripts-organization.md",
+      "docs/adr/ADR-031-token-optimization-ollama-primary.md",
+      "docs/adr/ADR-014-notebooklm-agent.md"
+    ],
+    "consolidate": [
+      "docs/adr/ADR-031-experimental-consolidation.md"
+    ],
+    "consolidation": [
+      "docs/adr/ADR-031-experimental-consolidation.md"
+    ],
+    "experimental": [
+      "docs/adr/ADR-031-experimental-consolidation.md",
+      "docs/adr/ADR-014-notebooklm-agent.md",
+      "docs/LOCALRANK-TESTER-GUIDE.md"
+    ],
+    "future": [
+      "docs/adr/ADR-031-experimental-consolidation.md",
+      "docs/adr/ADR-027-hybrid-compute-plane-k8s.md",
+      "docs/RUNBOOK-AI-LOCAL-FIRST.md"
+    ],
+    "immediate": [
+      "docs/adr/ADR-031-experimental-consolidation.md"
+    ],
+    "migration": [
+      "docs/adr/ADR-031-experimental-consolidation.md",
+      "docs/adr/ADR-032-scripts-organization.md",
+      "skills/templates/template-migration.md",
+      "apps/context-builder-v2/src/design/architecture.md"
+    ],
+    "notes": [
+      "docs/adr/ADR-031-experimental-consolidation.md"
+    ],
+    "path": [
+      "docs/adr/ADR-031-experimental-consolidation.md",
+      "docs/adr/ADR-032-scripts-organization.md",
+      "docs/QA-REVIEW-COMPLETE.md",
+      "skills/templates/template-api-route.md"
+    ],
+    "sprints": [
+      "docs/adr/ADR-031-experimental-consolidation.md",
+      "docs/NOTION-MCP-SERVER.md",
+      "docs/history/plans/MASTER-PLAN-STATUS.md"
+    ],
+    "week": [
+      "docs/adr/ADR-031-experimental-consolidation.md",
+      "docs/QA-REVIEW-COMPLETE.md",
+      "docs/ORCHESTRATOR-FIXES-EXECUTION.md",
+      "docs/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md"
     ],
     "021": [
       "docs/adr/ADR-021-predictive-bi-scalability.md"
@@ -13689,34 +14282,14 @@
       "docs/adr/ADR-012-observability.md",
       "docs/adr/ADR-019-prometheus-grafana-observability.md"
     ],
-    "remoto": [
-      "docs/adr/ADR-020-orchestrator-worker-separation.md",
-      "docs/adr/ADR-024-ollama-local-worker-primary.md",
-      "docs/IMPLEMENTATION-STATUS.md",
-      "docs/PLAN-ORCHESTRATOR-WORKER.md"
-    ],
     "separation": [
       "docs/adr/ADR-020-orchestrator-worker-separation.md"
     ],
     "023": [
       "docs/adr/ADR-023-approval-gate-phase1.md"
     ],
-    "approval": [
-      "docs/adr/ADR-023-approval-gate-phase1.md",
-      "docs/SPRINT-TRACKING.md",
-      "docs/IMPLEMENTATION-STATUS.md",
-      "docs/LAYERS-SANDBOX-QA-PROD.md",
-      "skills/user/opsly-feedback-ml/SKILL.md"
-    ],
     "fuera": [
       "docs/adr/ADR-023-approval-gate-phase1.md"
-    ],
-    "gate": [
-      "docs/adr/ADR-023-approval-gate-phase1.md",
-      "docs/SPRINT-TRACKING.md",
-      "docs/IMPLEMENTATION-STATUS.md",
-      "docs/SPRINT-CURSOR-PROMPTS.md",
-      "docs/LAYERS-SANDBOX-QA-PROD.md"
     ],
     "phase1": [
       "docs/adr/ADR-023-approval-gate-phase1.md"
@@ -13746,8 +14319,8 @@
       "skills/user/opsly-simplify/SKILL.md",
       "skills/user/opsly-infra/SKILL.md",
       "skills/user/opsly-quantum/templates/runbook.md",
-      "apps/agents/notebooklm/README.md",
-      "apps/ingestion-service/README.md"
+      "apps/experimental/ingestion-service-archive/README.md",
+      "apps/agents/notebooklm/README.md"
     ],
     "relacionado": [
       "docs/adr/ADR-015-hermes-orchestrator-architecture.md"
@@ -13787,11 +14360,23 @@
       "docs/AI-FRAMEWORKS.md",
       "skills/user/opsly-simplify/SKILL.md",
       "skills/user/opsly-infra/SKILL.md",
-      "apps/ingestion-service/README.md"
+      "apps/experimental/ingestion-service-archive/README.md"
     ],
     "rechazadas": [
       "docs/adr/ADR-001-docker-compose-por-tenant.md",
       "docs/adr/ADR-002-traefik-sobre-nginx.md"
+    ],
+    "canonicalization": [
+      "docs/adr/ADR-033-docs-canonicalization.md"
+    ],
+    "divergent": [
+      "docs/adr/ADR-033-docs-canonicalization.md"
+    ],
+    "note": [
+      "docs/adr/ADR-033-docs-canonicalization.md"
+    ],
+    "worktrees": [
+      "docs/adr/ADR-033-docs-canonicalization.md"
     ],
     "024": [
       "docs/adr/ADR-024-ollama-local-worker-primary.md",
@@ -13800,46 +14385,8 @@
     "capacidad": [
       "docs/adr/ADR-024-ollama-local-worker-primary.md"
     ],
-    "gateway": [
-      "docs/adr/ADR-024-ollama-local-worker-primary.md",
-      "docs/adr/ADR-010-llm-gateway.md",
-      "docs/adr/ADR-031-token-optimization-ollama-primary.md",
-      "docs/LLM-GATEWAY.md",
-      "docs/IMPLEMENTATION-STATUS.md",
-      "docs/PLAN-SUPER-ARCHITECT-AGENT-2026-04-14.md",
-      "docs/RUNBOOK-AI-LOCAL-FIRST.md",
-      "docs/POLICY-AI-LOCAL-FIRST.md",
-      "docs/LLM-GATEWAY-WORKPLAN.md",
-      "docs/SEMANA-1-INFORME.md",
-      "docs/MULTI-AGENT-ARCHITECTURE.md",
-      "docs/DOPPLER-VARS.md",
-      "docs/ORCHESTRATOR-FIXES-EXECUTION.md",
-      "docs/DECEPTICON-WORKER.md",
-      "docs/PLAN-OLLAMA-WORKER-2026-04-14.md",
-      "skills/user/opsly-llm/SKILL.md"
-    ],
     "inicial": [
       "docs/adr/ADR-024-ollama-local-worker-primary.md"
-    ],
-    "llm": [
-      "docs/adr/ADR-024-ollama-local-worker-primary.md",
-      "docs/adr/ADR-010-llm-gateway.md",
-      "docs/adr/ADR-031-token-optimization-ollama-primary.md",
-      "docs/LLM-GATEWAY.md",
-      "docs/QUICKSTART-AGENTS.md",
-      "docs/IMPLEMENTATION-STATUS.md",
-      "docs/PLAN-SUPER-ARCHITECT-AGENT-2026-04-14.md",
-      "docs/POLICY-AI-LOCAL-FIRST.md",
-      "docs/LLM-GATEWAY-WORKPLAN.md",
-      "docs/HERMES-LOCAL-AGENTS-STACK.md",
-      "docs/MULTI-AGENT-ARCHITECTURE.md",
-      "docs/DOPPLER-VARS.md",
-      "docs/ORCHESTRATOR-FIXES-EXECUTION.md",
-      "docs/DECEPTICON-WORKER.md",
-      "docs/PLAN-OLLAMA-WORKER-2026-04-14.md",
-      "docs/LIBRARIES-INSTALLED.md",
-      "docs/PLAN-NOTEBOOKLM-KNOWLEDGE-2026-04-14.md",
-      "skills/user/opsly-llm/SKILL.md"
     ],
     "ollama": [
       "docs/adr/ADR-024-ollama-local-worker-primary.md",
@@ -13857,7 +14404,6 @@
     ],
     "provider": [
       "docs/adr/ADR-024-ollama-local-worker-primary.md",
-      "docs/ARCHITECTURE.md",
       "docs/LLM-GATEWAY-WORKPLAN.md",
       "docs/PLAN-NOTEBOOKLM-KNOWLEDGE-2026-04-14.md"
     ],
@@ -13997,7 +14543,6 @@
     ],
     "cloud": [
       "docs/adr/ADR-013-google-cloud-openSource-strategy.md",
-      "docs/ARCHITECTURE.md",
       "docs/README.md",
       "docs/GOOGLE-CLOUD-ACTIVATION.md",
       "docs/GOOGLE-CLOUD-SETUP.md",
@@ -14034,8 +14579,8 @@
       "docs/adr/ADR-013-google-cloud-openSource-strategy.md",
       "docs/FAQ.md",
       "docs/OPSLYQUANTUM-USAGE.md",
+      "docs/history/plans/MASTER-PLAN.md",
       "docs/GOOGLE-CLOUD-SETUP.md",
-      "docs/MASTER-PLAN.md",
       "docs/VERTEX-AI-SETUP.md",
       ".github/README-github-templates.md",
       "skills/user/opsly-google-cloud/SKILL.md"
@@ -14085,13 +14630,13 @@
       "docs/adr/ADR-017-worker-teams-billing-roadmap.md",
       "docs/WORKER-TEAM-BILLING.md",
       "docs/TOKEN-BILLING-SYSTEM.md",
-      "docs/SPRINT-ROADMAP.md",
       "docs/BILLING-FLUSH-VERCEL.md",
       "docs/BILLING-USD-DIAGRAMS.md",
       "docs/README.md",
       "docs/GOOGLE-CLOUD-ACTIVATION.md",
       "docs/TEST_PLAN.md",
-      "docs/MASTER-PLAN-STATUS.md",
+      "docs/history/plans/SPRINT-ROADMAP.md",
+      "docs/history/plans/MASTER-PLAN-STATUS.md",
       "docs/GOOGLE-CLOUD-SETUP.md",
       "skills/user/opsly-google-cloud/SKILL.md",
       "skills/user/opsly-billing/SKILL.md"
@@ -14192,22 +14737,8 @@
     ],
     "rag": [
       "docs/adr/ADR-018-pgvector-embeddings-rag.md",
-      "docs/SPRINT-ROADMAP.md",
+      "docs/history/plans/SPRINT-ROADMAP.md",
       "docs/CONTEXT-BUILDER.md"
-    ],
-    "sprint": [
-      "docs/adr/ADR-018-pgvector-embeddings-rag.md",
-      "docs/adr/ADR-019-prometheus-grafana-observability.md",
-      "docs/SPRINT-TRACKING.md",
-      "docs/SPRINT-ROADMAP.md",
-      "docs/SPRINT-PLANNING-SETUP.md",
-      "docs/HERMES-SPRINT-PLAN.md",
-      "docs/AGENTS-ORCHESTRATION.md",
-      "docs/MASTER-PLAN-STATUS.md",
-      "docs/SPRINT-CURSOR-PROMPTS.md",
-      "README.md",
-      "SPRINT-TRACKER.md",
-      "skills/user/opsly-architect-senior/SKILL.md"
     ],
     "025": [
       "docs/adr/ADR-025-notebooklm-knowledge-layer.md",
@@ -14284,8 +14815,8 @@
     ],
     "pipeline": [
       "docs/adr/ADR-025-notebooklm-knowledge-layer.md",
-      "docs/SPRINT-ROADMAP.md",
       "docs/runbooks/SUPER-AGENT-SHADOW-DEPLOY.md",
+      "docs/history/plans/SPRINT-ROADMAP.md",
       "docs/PLAN-SKILLS-TO-NOTEBOOKLM-2026-04-14.md"
     ],
     "post": [
@@ -14330,6 +14861,7 @@
       "docs/PLAN-SKILLS-TO-NOTEBOOKLM-2026-04-14.md",
       "docs/AI-FRAMEWORKS.md",
       "docs/PLAN-NOTEBOOKLM-KNOWLEDGE-2026-04-14.md",
+      "scripts/README.md",
       "skills/user/opsly-bash/SKILL.md",
       "skills/templates/template-bash-script.md"
     ],
@@ -14340,11 +14872,11 @@
     ],
     "sync": [
       "docs/adr/ADR-025-notebooklm-knowledge-layer.md",
-      "docs/SPRINT-ROADMAP.md",
       "docs/SESSION-GIT-SYNC.md",
       "docs/.obsidian/PLUGINS-TO-INSTALL.md",
       "docs/KNOWLEDGE-SYSTEM.md",
       "docs/OBSIDIAN-NOTEBOOKLM-N8N-INTEGRATION.md",
+      "docs/history/plans/SPRINT-ROADMAP.md",
       "docs/OBSIDIAN-README.md",
       "docs/PLAN-SKILLS-TO-NOTEBOOKLM-2026-04-14.md",
       "docs/GOOGLE-CLOUD-SETUP.md",
@@ -14405,7 +14937,8 @@
       "docs/adr/ADR-029-infrastructure-layers-shared-vs-tenant.md",
       "docs/prompts/tenant-onboarding/INFRASTRUCTURE-SETUP.md",
       "docs/MCP-SERVERS.md",
-      "docs/OLLAMA-DEPLOYMENT.md"
+      "docs/OLLAMA-DEPLOYMENT.md",
+      "scripts/README.md"
     ],
     "layers": [
       "docs/adr/ADR-029-infrastructure-layers-shared-vs-tenant.md",
@@ -14453,7 +14986,7 @@
       "docs/adr/ADR-016-legalvial-multitenant-model.md",
       "docs/EXECUTION-PLAN-LOCALRANK-NOTEBOOKLM.md",
       "docs/SSH-COMMANDS-LOCALRANK.md",
-      "docs/MASTER-PLAN-STATUS.md",
+      "docs/history/plans/MASTER-PLAN-STATUS.md",
       "docs/LOCALRANK-TESTER-GUIDE.md",
       "docs/CLIENTS-TO-INVITE.md",
       "docs/SECURITY-MITIGATIONS-2026-04-09.md",
@@ -14509,10 +15042,6 @@
     "compute": [
       "docs/adr/ADR-027-hybrid-compute-plane-k8s.md"
     ],
-    "future": [
-      "docs/adr/ADR-027-hybrid-compute-plane-k8s.md",
-      "docs/RUNBOOK-AI-LOCAL-FIRST.md"
-    ],
     "hybrid": [
       "docs/adr/ADR-027-hybrid-compute-plane-k8s.md",
       "docs/runbooks/e2e-hybrid-write.md",
@@ -14523,6 +15052,24 @@
     ],
     "permanece": [
       "docs/adr/ADR-027-hybrid-compute-plane-k8s.md"
+    ],
+    "032": [
+      "docs/adr/ADR-032-scripts-organization.md"
+    ],
+    "category": [
+      "docs/adr/ADR-032-scripts-organization.md"
+    ],
+    "decommission": [
+      "docs/adr/ADR-032-scripts-organization.md"
+    ],
+    "organization": [
+      "docs/adr/ADR-032-scripts-organization.md"
+    ],
+    "reorganize": [
+      "docs/adr/ADR-032-scripts-organization.md"
+    ],
+    "structure": [
+      "docs/adr/ADR-032-scripts-organization.md"
     ],
     "028": [
       "docs/adr/ADR-028-tenant-onboarding-pattern.md"
@@ -14540,7 +15087,6 @@
     ],
     "patron": [
       "docs/adr/ADR-028-tenant-onboarding-pattern.md",
-      "docs/ARCHITECTURE.md",
       "docs/QUICKSTART-AGENTS.md",
       "VISION.md",
       ".github/VISION.md",
@@ -14559,7 +15105,6 @@
       "docs/WORKER-TEAM-BILLING.md",
       "docs/CLOUDFLARE-PROXY-ACTIVATION.md",
       "docs/TROUBLESHOOTING.md",
-      "docs/SPRINT-ROADMAP.md",
       "docs/BILLING-FLUSH-VERCEL.md",
       "docs/runbooks/e2e-hybrid-write.md",
       "docs/runbooks/admin.md",
@@ -14572,6 +15117,7 @@
       "docs/OBSIDIAN-NOTEBOOKLM-N8N-INTEGRATION.md",
       "docs/RUNBOOK-INSIGHTS-DEPLOY.md",
       "docs/OPSLYQUANTUM-USAGE.md",
+      "docs/history/plans/SPRINT-ROADMAP.md",
       "docs/CLIENTS-TO-INVITE.md",
       "docs/OBSERVABILITY.md",
       "docs/SEMANA-5-INFORME.md",
@@ -14598,9 +15144,6 @@
       "skills/user/opsly-api/SKILL.md",
       "skills/templates/template-test.md"
     ],
-    "031": [
-      "docs/adr/ADR-031-token-optimization-ollama-primary.md"
-    ],
     "cambios": [
       "docs/adr/ADR-031-token-optimization-ollama-primary.md",
       "docs/runbooks/SUPER-AGENT-SHADOW-DEPLOY.md",
@@ -14608,10 +15151,6 @@
     ],
     "concretos": [
       "docs/adr/ADR-031-token-optimization-ollama-primary.md"
-    ],
-    "consequences": [
-      "docs/adr/ADR-031-token-optimization-ollama-primary.md",
-      "docs/adr/ADR-014-notebooklm-agent.md"
     ],
     "env": [
       "docs/adr/ADR-031-token-optimization-ollama-primary.md",
@@ -14622,18 +15161,6 @@
     ],
     "hints": [
       "docs/adr/ADR-031-token-optimization-ollama-primary.md"
-    ],
-    "implementation": [
-      "docs/adr/ADR-031-token-optimization-ollama-primary.md",
-      "docs/adr/ADR-014-notebooklm-agent.md",
-      "docs/PARALLEL-AGENTS-ORCHESTRATION.md",
-      "docs/IMPLEMENTATION-STATUS.md",
-      "docs/SEMANA-1-INFORME.md",
-      "docs/QA-REVIEW-COMPLETE.md",
-      "docs/IMPLEMENTATION-IA-LAYER.md",
-      "docs/SEMANA-5-INFORME.md",
-      "docs/AUTO-SYNC-DOCS-SETUP.md",
-      "skills/user/opsly-simplify/SKILL.md"
     ],
     "infra": [
       "docs/adr/ADR-031-token-optimization-ollama-primary.md",
@@ -14676,7 +15203,7 @@
     ],
     "tracking": [
       "docs/adr/ADR-031-token-optimization-ollama-primary.md",
-      "docs/SPRINT-TRACKING.md"
+      "docs/history/plans/SPRINT-TRACKING.md"
     ],
     "yml": [
       "docs/adr/ADR-031-token-optimization-ollama-primary.md",
@@ -14711,23 +15238,6 @@
     "014": [
       "docs/adr/ADR-014-notebooklm-agent.md"
     ],
-    "agent": [
-      "docs/adr/ADR-014-notebooklm-agent.md",
-      "docs/PARALLEL-AGENTS-ORCHESTRATION.md",
-      "docs/IMPLEMENTATION-STATUS.md",
-      "docs/PLAN-SUPER-ARCHITECT-AGENT-2026-04-14.md",
-      "docs/runbooks/SUPER-AGENT-SHADOW-DEPLOY.md",
-      "docs/MULTI-AGENT-ARCHITECTURE.md",
-      "docs/AGENT-HOOKS-OBSIDIAN-NOTEBOOKLM-N8N.md",
-      "docs/AGENTS-ORCHESTRATION.md",
-      "docs/AGENTS-ASSIGNMENTS.md",
-      "docs/obsidian/inbox/2026-04-21.md",
-      "scripts/agent-training/README.md",
-      "skills/user/opsly-notebooklm/SKILL.md",
-      "skills/user/opsly-agent-teams/SKILL.md",
-      "apps/agents/notebooklm/README.md",
-      "apps/context-builder-v2/src/design/architecture.md"
-    ],
     "agents": [
       "docs/adr/ADR-014-notebooklm-agent.md",
       "docs/AGENTS-GUIDE.md",
@@ -14745,10 +15255,6 @@
       ".github/AGENTS.md",
       "skills/user/opsly-architect-senior/SKILL.md",
       "AGENTS.md"
-    ],
-    "experimental": [
-      "docs/adr/ADR-014-notebooklm-agent.md",
-      "docs/LOCALRANK-TESTER-GUIDE.md"
     ],
     "feature": [
       "docs/adr/ADR-014-notebooklm-agent.md",
@@ -14793,27 +15299,37 @@
     "wrapper": [
       "docs/adr/ADR-014-notebooklm-agent.md"
     ],
-    "adapter": [
-      "docs/ARCHITECTURE.md"
+    "active": [
+      "docs/ARCHITECTURE.md",
+      "docs/ACTIVE-PROMPT.md",
+      "docs/N8N-IMPORT-GUIDE.md"
     ],
     "allocation": [
       "docs/ARCHITECTURE.md"
     ],
-    "authorization": [
+    "app": [
+      "docs/ARCHITECTURE.md",
+      "docs/prompts/tenant-onboarding/TENANT-ONBOARDING-TEMPLATE.md"
+    ],
+    "archived": [
+      "docs/ARCHITECTURE.md",
+      "apps/experimental/mission-control-archive/ARCHIVE.md",
+      "apps/experimental/ingestion-service-archive/ARCHIVE.md",
+      "apps/experimental/ai-evolution-archive/ARCHIVE.md"
+    ],
+    "authority": [
       "docs/ARCHITECTURE.md"
     ],
-    "bunker": [
-      "docs/ARCHITECTURE.md",
-      "apps/ingestion-service/README.md"
+    "classification": [
+      "docs/ARCHITECTURE.md"
+    ],
+    "deprecated": [
+      "docs/ARCHITECTURE.md"
     ],
     "development": [
       "docs/ARCHITECTURE.md",
       "docs/obsidian/sources/archive/2026-04-21/embeddedsoftware0000mass.md",
       "docs/MCP-SERVERS.md"
-    ],
-    "disaster": [
-      "docs/ARCHITECTURE.md",
-      "docs/SPRINT-ROADMAP.md"
     ],
     "flow": [
       "docs/ARCHITECTURE.md",
@@ -14822,25 +15338,22 @@
       "docs/TEST_PLAN.md",
       "docs/OLLAMA-DEPLOYMENT.md"
     ],
-    "ingestion": [
-      "docs/ARCHITECTURE.md",
-      "apps/context-builder-v2/src/design/architecture.md",
-      "apps/ingestion-service/README.md"
-    ],
     "isolation": [
       "docs/ARCHITECTURE.md",
       "docs/TEST_PLAN.md",
       "apps/context-builder-v2/src/design/architecture.md"
     ],
+    "modules": [
+      "docs/ARCHITECTURE.md"
+    ],
     "port": [
       "docs/ARCHITECTURE.md"
     ],
-    "recepcion": [
+    "principles": [
       "docs/ARCHITECTURE.md"
     ],
-    "recovery": [
-      "docs/ARCHITECTURE.md",
-      "docs/SPRINT-ROADMAP.md"
+    "topology": [
+      "docs/ARCHITECTURE.md"
     ],
     "background": [
       "docs/PREDICTIVE-BI-SCALABILITY.md"
@@ -14878,16 +15391,16 @@
     ],
     "limiting": [
       "docs/PREDICTIVE-BI-SCALABILITY.md",
-      "docs/SPRINT-ROADMAP.md",
       "docs/LLM-GATEWAY-WORKPLAN.md",
       "docs/MCP-STATUS-ANALYSIS.md",
+      "docs/history/plans/SPRINT-ROADMAP.md",
       "docs/SEMANA-2-INFORME.md"
     ],
     "rate": [
       "docs/PREDICTIVE-BI-SCALABILITY.md",
-      "docs/SPRINT-ROADMAP.md",
       "docs/LLM-GATEWAY-WORKPLAN.md",
-      "docs/MCP-STATUS-ANALYSIS.md"
+      "docs/MCP-STATUS-ANALYSIS.md",
+      "docs/history/plans/SPRINT-ROADMAP.md"
     ],
     "recomendaciones": [
       "docs/PREDICTIVE-BI-SCALABILITY.md"
@@ -15065,8 +15578,8 @@
     ],
     "enterprise": [
       "docs/AGENTS-GUIDE.md",
-      "docs/SPRINT-ROADMAP.md",
-      "docs/MASTER-PLAN-STATUS.md"
+      "docs/history/plans/SPRINT-ROADMAP.md",
+      "docs/history/plans/MASTER-PLAN-STATUS.md"
     ],
     "guia": [
       "docs/AGENTS-GUIDE.md",
@@ -15149,8 +15662,8 @@
       "docs/LANIDEA-OPENCLAW.md",
       "docs/NOTION-MCP-SERVER.md",
       "docs/N8N-IMPORT-GUIDE.md",
-      "apps/mcp/README.md",
-      "apps/ingestion-service/README.md"
+      "apps/experimental/ingestion-service-archive/README.md",
+      "apps/mcp/README.md"
     ],
     "hace": [
       "docs/LLM-GATEWAY.md",
@@ -15231,7 +15744,7 @@
     ],
     "integrado": [
       "docs/QUALITY-GATES.md",
-      "docs/MASTER-PLAN.md"
+      "docs/history/plans/MASTER-PLAN.md"
     ],
     "merge": [
       "docs/QUALITY-GATES.md",
@@ -15310,7 +15823,7 @@
     "anadir": [
       "docs/QUICKSTART-AGENTS.md",
       "docs/CLOUDFLARE-PROXY-ACTIVATION.md",
-      "docs/MASTER-PLAN.md",
+      "docs/history/plans/MASTER-PLAN.md",
       "docs/AUTO-SYNC-DOCS-SETUP.md",
       "skills/templates/template-migration.md"
     ],
@@ -15329,8 +15842,8 @@
     "duplicar": [
       "docs/QUICKSTART-AGENTS.md",
       "docs/SPRINT-PLANNING-SETUP.md",
+      "docs/history/plans/MASTER-PLAN.md",
       "docs/TENANT-TESTING-GUIDE.md",
-      "docs/MASTER-PLAN.md",
       ".github/AGENTS.md",
       "AGENTS.md"
     ],
@@ -15395,9 +15908,9 @@
     "dashboard": [
       "docs/CLOUDFLARE-PROXY-ACTIVATION.md",
       "docs/TOKEN-BILLING-SYSTEM.md",
-      "docs/SPRINT-ROADMAP.md",
       "docs/SEMANA-4-INFORME.md",
       "docs/TEST_PLAN.md",
+      "docs/history/plans/SPRINT-ROADMAP.md",
       "docs/OBSERVABILITY.md",
       "docs/COST-DASHBOARD.md"
     ],
@@ -15414,7 +15927,7 @@
     ],
     "necesario": [
       "docs/CLOUDFLARE-PROXY-ACTIVATION.md",
-      "docs/MASTER-PLAN.md"
+      "docs/history/plans/MASTER-PLAN.md"
     ],
     "origen": [
       "docs/CLOUDFLARE-PROXY-ACTIVATION.md"
@@ -15489,7 +16002,7 @@
     ],
     "humanos": [
       "docs/SSH-USERS-FOR-AGENTS.md",
-      "docs/MASTER-PLAN-STATUS.md"
+      "docs/history/plans/MASTER-PLAN-STATUS.md"
     ],
     "nombres": [
       "docs/SSH-USERS-FOR-AGENTS.md",
@@ -15652,22 +16165,6 @@
       "docs/INVITATIONS_RUNBOOK.md",
       "apps/admin/INVITATIONS_UI.md"
     ],
-    "burndown": [
-      "docs/SPRINT-TRACKING.md"
-    ],
-    "serie": [
-      "docs/SPRINT-TRACKING.md"
-    ],
-    "tasks": [
-      "docs/SPRINT-TRACKING.md",
-      "docs/NOTION-MCP-SERVER.md"
-    ],
-    "vertex": [
-      "docs/SPRINT-TRACKING.md",
-      "docs/IMPLEMENTATION-STATUS.md",
-      "docs/GOOGLE-CLOUD-ACTIVATION.md",
-      "docs/VERTEX-AI-SETUP.md"
-    ],
     "copilot": [
       "docs/PARALLEL-AGENTS-ORCHESTRATION.md",
       "docs/HERMES-LOCAL-AGENTS-STACK.md",
@@ -15716,13 +16213,6 @@
       "docs/ops/runbook-redis.md",
       "docs/VPS-ARCHITECTURE.md"
     ],
-    "status": [
-      "docs/PARALLEL-AGENTS-ORCHESTRATION.md",
-      "docs/IMPLEMENTATION-STATUS.md",
-      "docs/MCP-STATUS-ANALYSIS.md",
-      "docs/MASTER-PLAN-STATUS.md",
-      "docs/AUTO-SYNC-DOCS-SETUP.md"
-    ],
     "success": [
       "docs/PARALLEL-AGENTS-ORCHESTRATION.md"
     ],
@@ -15768,20 +16258,12 @@
     ],
     "paso": [
       "docs/SETUP-NOTION-MCP.md",
-      "docs/MASTER-PLAN-STATUS.md",
       "docs/RUNBOOK-INSIGHTS-DEPLOY.md",
-      "docs/MASTER-PLAN.md",
+      "docs/history/plans/MASTER-PLAN-STATUS.md",
+      "docs/history/plans/MASTER-PLAN.md",
       "docs/PLAN-NOTEBOOKLM-KNOWLEDGE-2026-04-14.md",
       "docs/NOTEBOOKLM-SETUP.md",
       "skills/user/opsly-skill-creator/SKILL.md"
-    ],
-    "pre": [
-      "docs/SETUP-NOTION-MCP.md",
-      "docs/SEMANA-6-PLAN.md",
-      "docs/N8N-IMPORT-GUIDE.md",
-      "docs/prompts/tenant-onboarding/TENANT-ONBOARDING-TEMPLATE.md",
-      "docs/ops/runbook-redis.md",
-      "docs/AUTO-SYNC-DOCS-SETUP.md"
     ],
     "workspace": [
       "docs/SETUP-NOTION-MCP.md"
@@ -15820,13 +16302,13 @@
     ],
     "stripe": [
       "docs/TROUBLESHOOTING.md",
-      "docs/SPRINT-ROADMAP.md",
       "docs/SEMANA-6-PLAN.md",
       "docs/README.md",
       "docs/DOPPLER-VARS.md",
-      "docs/MASTER-PLAN-STATUS.md",
+      "docs/history/plans/SPRINT-ROADMAP.md",
+      "docs/history/plans/MASTER-PLAN-STATUS.md",
       "README.md",
-      "apps/ingestion-service/README.md"
+      "apps/experimental/ingestion-service-archive/README.md"
     ],
     "webhooks": [
       "docs/TROUBLESHOOTING.md",
@@ -15899,117 +16381,6 @@
     ],
     "volume": [
       "docs/OPS-CLEANUP-PROCEDURES.md"
-    ],
-    "backups": [
-      "docs/SPRINT-ROADMAP.md",
-      "docs/SEMANA-6-PLAN.md",
-      "docs/MASTER-PLAN-STATUS.md",
-      "docs/RETENTION-POLICY.md"
-    ],
-    "caps": [
-      "docs/SPRINT-ROADMAP.md",
-      "docs/MASTER-PLAN-STATUS.md"
-    ],
-    "checkout": [
-      "docs/SPRINT-ROADMAP.md",
-      "docs/MASTER-PLAN-STATUS.md"
-    ],
-    "cross": [
-      "docs/SPRINT-ROADMAP.md"
-    ],
-    "cve": [
-      "docs/SPRINT-ROADMAP.md",
-      "docs/MASTER-PLAN-STATUS.md"
-    ],
-    "fine": [
-      "docs/SPRINT-ROADMAP.md"
-    ],
-    "hardening": [
-      "docs/SPRINT-ROADMAP.md",
-      "docs/MASTER-PLAN-STATUS.md"
-    ],
-    "healing": [
-      "docs/SPRINT-ROADMAP.md",
-      "docs/MASTER-PLAN-STATUS.md"
-    ],
-    "landing": [
-      "docs/SPRINT-ROADMAP.md",
-      "docs/MASTER-PLAN-STATUS.md"
-    ],
-    "monitor": [
-      "docs/SPRINT-ROADMAP.md",
-      "docs/MASTER-PLAN-STATUS.md",
-      "docs/FAILOVER-RUNBOOK.md"
-    ],
-    "rbac": [
-      "docs/SPRINT-ROADMAP.md"
-    ],
-    "region": [
-      "docs/SPRINT-ROADMAP.md"
-    ],
-    "scanning": [
-      "docs/SPRINT-ROADMAP.md",
-      "docs/MASTER-PLAN-STATUS.md",
-      "docs/GITHUB-SETTINGS.md"
-    ],
-    "sha256": [
-      "docs/SPRINT-ROADMAP.md",
-      "docs/MASTER-PLAN-STATUS.md"
-    ],
-    "slo": [
-      "docs/SPRINT-ROADMAP.md"
-    ],
-    "trail": [
-      "docs/SPRINT-ROADMAP.md",
-      "docs/MASTER-PLAN-STATUS.md"
-    ],
-    "tuning": [
-      "docs/SPRINT-ROADMAP.md"
-    ],
-    "upgrade": [
-      "docs/SPRINT-ROADMAP.md",
-      "docs/MASTER-PLAN-STATUS.md"
-    ],
-    "usage": [
-      "docs/SPRINT-ROADMAP.md",
-      "docs/MASTER-PLAN-STATUS.md",
-      "docs/OPSLYQUANTUM-USAGE.md",
-      "docs/DISK-USAGE-REPORT.md"
-    ],
-    "vector": [
-      "docs/SPRINT-ROADMAP.md"
-    ],
-    "0026": [
-      "docs/IMPLEMENTATION-STATUS.md"
-    ],
-    "0027": [
-      "docs/IMPLEMENTATION-STATUS.md"
-    ],
-    "aplicadas": [
-      "docs/IMPLEMENTATION-STATUS.md"
-    ],
-    "configurados": [
-      "docs/IMPLEMENTATION-STATUS.md"
-    ],
-    "endpoint": [
-      "docs/IMPLEMENTATION-STATUS.md",
-      "docs/OBSIDIAN-NOTEBOOKLM-N8N-INTEGRATION.md",
-      "skills/user/opsly-billing/SKILL.md"
-    ],
-    "learning": [
-      "docs/IMPLEMENTATION-STATUS.md"
-    ],
-    "methods": [
-      "docs/IMPLEMENTATION-STATUS.md"
-    ],
-    "migraciones": [
-      "docs/IMPLEMENTATION-STATUS.md",
-      "skills/user/opsly-supabase/SKILL.md"
-    ],
-    "steps": [
-      "docs/IMPLEMENTATION-STATUS.md",
-      "docs/obsidian/sources/archive/2026-04-21/jdo6safjptanvblfo772ajzohhy1vzo7f8u2svvc.md",
-      "skills/user/opsly-simplify/SKILL.md"
     ],
     "avanzadas": [
       "docs/PLAN-SUPER-ARCHITECT-AGENT-2026-04-14.md"
@@ -16320,7 +16691,8 @@
       "skills/user/opsly-google-cloud/SKILL.md",
       "skills/user/opsly-quantum/templates/runbook.md",
       "skills/templates/template-test.md",
-      "apps/ingestion-service/README.md"
+      "apps/experimental/ingestion-service-archive/ARCHIVE.md",
+      "apps/experimental/ingestion-service-archive/README.md"
     ],
     "alternativos": [
       "docs/emails/tenant-welcome-email.md"
@@ -16476,6 +16848,12 @@
       "docs/SEMANA-6-PLAN.md",
       "docs/obsidian/sources/archive/2026-04-21/SFGTV_20181210_150000_Government_Access_Programming.md",
       "skills/user/opsly-google-cloud/SKILL.md"
+    ],
+    "backups": [
+      "docs/SEMANA-6-PLAN.md",
+      "docs/history/plans/SPRINT-ROADMAP.md",
+      "docs/history/plans/MASTER-PLAN-STATUS.md",
+      "docs/RETENTION-POLICY.md"
     ],
     "dominio": [
       "docs/SEMANA-6-PLAN.md"
@@ -16839,7 +17217,7 @@
     ],
     "romper": [
       "docs/SEMANA-4-INFORME.md",
-      "docs/MASTER-PLAN.md"
+      "docs/history/plans/MASTER-PLAN.md"
     ],
     "type": [
       "docs/SEMANA-4-INFORME.md",
@@ -16908,7 +17286,7 @@
     ],
     "mas": [
       "docs/TOKEN-SYSTEM-GUIDE.md",
-      "docs/MASTER-PLAN.md",
+      "docs/history/plans/MASTER-PLAN.md",
       "docs/DISK-USAGE-REPORT.md"
     ],
     "mide": [
@@ -16953,7 +17331,7 @@
     ],
     "core": [
       "docs/MCP-STATUS-ANALYSIS.md",
-      "docs/MASTER-PLAN.md",
+      "docs/history/plans/MASTER-PLAN.md",
       "VISION.md",
       ".github/VISION.md",
       "skills/user/opsly-orchestrator/SKILL.md"
@@ -16961,7 +17339,7 @@
     "falta": [
       "docs/MCP-STATUS-ANALYSIS.md",
       "docs/DOPPLER-CI-RUNBOOK.md",
-      "docs/MASTER-PLAN.md"
+      "docs/history/plans/MASTER-PLAN.md"
     ],
     "importante": [
       "docs/MCP-STATUS-ANALYSIS.md"
@@ -17066,9 +17444,6 @@
       "docs/ORCHESTRATOR-FIXES-EXECUTION.md",
       "docs/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md"
     ],
-    "documentation": [
-      "docs/QA-REVIEW-COMPLETE.md"
-    ],
     "executive": [
       "docs/QA-REVIEW-COMPLETE.md",
       "docs/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md"
@@ -17097,10 +17472,6 @@
     "parse": [
       "docs/QA-REVIEW-COMPLETE.md",
       "docs/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md"
-    ],
-    "path": [
-      "docs/QA-REVIEW-COMPLETE.md",
-      "skills/templates/template-api-route.md"
     ],
     "provided": [
       "docs/QA-REVIEW-COMPLETE.md"
@@ -17131,11 +17502,6 @@
     "use": [
       "docs/QA-REVIEW-COMPLETE.md",
       "docs/MCP-SERVERS.md"
-    ],
-    "week": [
-      "docs/QA-REVIEW-COMPLETE.md",
-      "docs/ORCHESTRATOR-FIXES-EXECUTION.md",
-      "docs/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md"
     ],
     "well": [
       "docs/QA-REVIEW-COMPLETE.md"
@@ -17184,7 +17550,8 @@
       "docs/LANIDEA-OPENCLAW.md"
     ],
     "mission": [
-      "docs/LANIDEA-OPENCLAW.md"
+      "docs/LANIDEA-OPENCLAW.md",
+      "apps/experimental/mission-control-archive/ARCHIVE.md"
     ],
     "clon": [
       "docs/DOPPLER-VARS.md"
@@ -17357,48 +17724,6 @@
     "provisioning": [
       "docs/PROVISIONING-SYSTEM.md"
     ],
-    "activos": [
-      "docs/MASTER-PLAN-STATUS.md",
-      "docs/MASTER-PLAN.md"
-    ],
-    "bloqueantes": [
-      "docs/MASTER-PLAN-STATUS.md",
-      "docs/CLAUDE-WORKFLOW-OPTIMIZATION.md",
-      "docs/MASTER-PLAN.md",
-      "docs/PLAN-NOTEBOOKLM-KNOWLEDGE-2026-04-14.md",
-      "skills/user/opsly-architect-senior/SKILL.md"
-    ],
-    "hecho": [
-      "docs/MASTER-PLAN-STATUS.md"
-    ],
-    "historico": [
-      "docs/MASTER-PLAN-STATUS.md"
-    ],
-    "inmediato": [
-      "docs/MASTER-PLAN-STATUS.md",
-      "docs/MASTER-PLAN.md"
-    ],
-    "master": [
-      "docs/MASTER-PLAN-STATUS.md",
-      "docs/obsidian/sources/archive/2026-04-21/indian-man-using-laptop-while-drinking-cup-coffee-outdoor-street-cafe.md",
-      "docs/MASTER-PLAN.md"
-    ],
-    "proximo": [
-      "docs/MASTER-PLAN-STATUS.md",
-      "docs/MASTER-PLAN.md",
-      "docs/PLAN-NOTEBOOKLM-KNOWLEDGE-2026-04-14.md"
-    ],
-    "recientemente": [
-      "docs/MASTER-PLAN-STATUS.md"
-    ],
-    "sprints": [
-      "docs/MASTER-PLAN-STATUS.md",
-      "docs/NOTION-MCP-SERVER.md"
-    ],
-    "ultima": [
-      "docs/MASTER-PLAN-STATUS.md",
-      "docs/MASTER-PLAN.md"
-    ],
     "deteccion": [
       "docs/FAILOVER-RUNBOOK.md",
       "skills/user/opsly-autonomous/SKILL.md"
@@ -17412,6 +17737,11 @@
     "hacia": [
       "docs/FAILOVER-RUNBOOK.md",
       "docs/VPS-SSH-WORKER-NODES.md"
+    ],
+    "monitor": [
+      "docs/FAILOVER-RUNBOOK.md",
+      "docs/history/plans/SPRINT-ROADMAP.md",
+      "docs/history/plans/MASTER-PLAN-STATUS.md"
     ],
     "mortem": [
       "docs/FAILOVER-RUNBOOK.md"
@@ -17512,6 +17842,13 @@
     "var": [
       "docs/DOPPLER-CI-RUNBOOK.md"
     ],
+    "bloqueantes": [
+      "docs/CLAUDE-WORKFLOW-OPTIMIZATION.md",
+      "docs/history/plans/MASTER-PLAN-STATUS.md",
+      "docs/history/plans/MASTER-PLAN.md",
+      "docs/PLAN-NOTEBOOKLM-KNOWLEDGE-2026-04-14.md",
+      "skills/user/opsly-architect-senior/SKILL.md"
+    ],
     "buscar": [
       "docs/CLAUDE-WORKFLOW-OPTIMIZATION.md"
     ],
@@ -17583,8 +17920,8 @@
     ],
     "opcionales": [
       "docs/OBSIDIAN-NOTEBOOKLM-N8N-INTEGRATION.md",
-      "docs/SECURITY-MITIGATIONS-2026-04-09.md",
-      "docs/MASTER-PLAN.md"
+      "docs/history/plans/MASTER-PLAN.md",
+      "docs/SECURITY-MITIGATIONS-2026-04-09.md"
     ],
     "requeridos": [
       "docs/OBSIDIAN-NOTEBOOKLM-N8N-INTEGRATION.md",
@@ -17722,6 +18059,12 @@
     "ubicacion": [
       "docs/OPSLYQUANTUM-USAGE.md"
     ],
+    "usage": [
+      "docs/OPSLYQUANTUM-USAGE.md",
+      "docs/history/plans/SPRINT-ROADMAP.md",
+      "docs/history/plans/MASTER-PLAN-STATUS.md",
+      "docs/DISK-USAGE-REPORT.md"
+    ],
     "add": [
       "docs/ORCHESTRATOR-FIXES-EXECUTION.md"
     ],
@@ -17769,10 +18112,6 @@
       "docs/obsidian/sources/archive/2026-04-21/lrhenfvaovhaled7lamamtt7zpt70uxo5ysjftoj.md",
       "docs/obsidian/sources/archive/2026-04-21/embeddedsoftware0000mass.md"
     ],
-    "active": [
-      "docs/ACTIVE-PROMPT.md",
-      "docs/N8N-IMPORT-GUIDE.md"
-    ],
     "assignments": [
       "docs/AGENTS-ASSIGNMENTS.md"
     ],
@@ -17788,6 +18127,146 @@
     ],
     "sudoers": [
       "docs/SETUP-SUDOERS-CLOUDSYSOPS.md"
+    ],
+    "caps": [
+      "docs/history/plans/SPRINT-ROADMAP.md",
+      "docs/history/plans/MASTER-PLAN-STATUS.md"
+    ],
+    "checkout": [
+      "docs/history/plans/SPRINT-ROADMAP.md",
+      "docs/history/plans/MASTER-PLAN-STATUS.md"
+    ],
+    "cross": [
+      "docs/history/plans/SPRINT-ROADMAP.md"
+    ],
+    "cve": [
+      "docs/history/plans/SPRINT-ROADMAP.md",
+      "docs/history/plans/MASTER-PLAN-STATUS.md"
+    ],
+    "disaster": [
+      "docs/history/plans/SPRINT-ROADMAP.md"
+    ],
+    "fine": [
+      "docs/history/plans/SPRINT-ROADMAP.md"
+    ],
+    "hardening": [
+      "docs/history/plans/SPRINT-ROADMAP.md",
+      "docs/history/plans/MASTER-PLAN-STATUS.md"
+    ],
+    "healing": [
+      "docs/history/plans/SPRINT-ROADMAP.md",
+      "docs/history/plans/MASTER-PLAN-STATUS.md"
+    ],
+    "landing": [
+      "docs/history/plans/SPRINT-ROADMAP.md",
+      "docs/history/plans/MASTER-PLAN-STATUS.md"
+    ],
+    "rbac": [
+      "docs/history/plans/SPRINT-ROADMAP.md"
+    ],
+    "recovery": [
+      "docs/history/plans/SPRINT-ROADMAP.md"
+    ],
+    "region": [
+      "docs/history/plans/SPRINT-ROADMAP.md"
+    ],
+    "scanning": [
+      "docs/history/plans/SPRINT-ROADMAP.md",
+      "docs/history/plans/MASTER-PLAN-STATUS.md",
+      "docs/GITHUB-SETTINGS.md"
+    ],
+    "sha256": [
+      "docs/history/plans/SPRINT-ROADMAP.md",
+      "docs/history/plans/MASTER-PLAN-STATUS.md"
+    ],
+    "slo": [
+      "docs/history/plans/SPRINT-ROADMAP.md"
+    ],
+    "trail": [
+      "docs/history/plans/SPRINT-ROADMAP.md",
+      "docs/history/plans/MASTER-PLAN-STATUS.md"
+    ],
+    "tuning": [
+      "docs/history/plans/SPRINT-ROADMAP.md"
+    ],
+    "upgrade": [
+      "docs/history/plans/SPRINT-ROADMAP.md",
+      "docs/history/plans/MASTER-PLAN-STATUS.md"
+    ],
+    "vector": [
+      "docs/history/plans/SPRINT-ROADMAP.md"
+    ],
+    "activos": [
+      "docs/history/plans/MASTER-PLAN-STATUS.md",
+      "docs/history/plans/MASTER-PLAN.md"
+    ],
+    "hecho": [
+      "docs/history/plans/MASTER-PLAN-STATUS.md"
+    ],
+    "historico": [
+      "docs/history/plans/MASTER-PLAN-STATUS.md"
+    ],
+    "inmediato": [
+      "docs/history/plans/MASTER-PLAN-STATUS.md",
+      "docs/history/plans/MASTER-PLAN.md"
+    ],
+    "master": [
+      "docs/history/plans/MASTER-PLAN-STATUS.md",
+      "docs/history/plans/MASTER-PLAN.md",
+      "docs/obsidian/sources/archive/2026-04-21/indian-man-using-laptop-while-drinking-cup-coffee-outdoor-street-cafe.md"
+    ],
+    "proximo": [
+      "docs/history/plans/MASTER-PLAN-STATUS.md",
+      "docs/history/plans/MASTER-PLAN.md",
+      "docs/PLAN-NOTEBOOKLM-KNOWLEDGE-2026-04-14.md"
+    ],
+    "recientemente": [
+      "docs/history/plans/MASTER-PLAN-STATUS.md"
+    ],
+    "ultima": [
+      "docs/history/plans/MASTER-PLAN-STATUS.md",
+      "docs/history/plans/MASTER-PLAN.md"
+    ],
+    "adelante": [
+      "docs/history/plans/MASTER-PLAN.md"
+    ],
+    "cubierto": [
+      "docs/history/plans/MASTER-PLAN.md"
+    ],
+    "defecto": [
+      "docs/history/plans/MASTER-PLAN.md",
+      "docs/AGENTS-GLOBAL-CONTEXT.md",
+      "docs/PLAN-OLLAMA-WORKER-2026-04-14.md",
+      "skills/user/opsly-qa/SKILL.md"
+    ],
+    "ejecutivo": [
+      "docs/history/plans/MASTER-PLAN.md",
+      "SPRINT-TRACKER.md"
+    ],
+    "integrar": [
+      "docs/history/plans/MASTER-PLAN.md",
+      "docs/CONTEXT-BUILDER.md"
+    ],
+    "nada": [
+      "docs/history/plans/MASTER-PLAN.md"
+    ],
+    "nombre": [
+      "docs/history/plans/MASTER-PLAN.md",
+      "docs/FIRST-OPENCLAW-AGENTS-MAC2011.md",
+      "docs/GITHUB-TOKEN.md"
+    ],
+    "numero": [
+      "docs/history/plans/MASTER-PLAN.md"
+    ],
+    "toque": [
+      "docs/history/plans/MASTER-PLAN.md"
+    ],
+    "util": [
+      "docs/history/plans/MASTER-PLAN.md",
+      "docs/DISK-USAGE-REPORT.md"
+    ],
+    "historical": [
+      "docs/history/README.md"
     ],
     "contextenricher": [
       "docs/SEMANA-2-INFORME.md"
@@ -17999,9 +18478,6 @@
     "trabajan": [
       "docs/AGENTS-AUTONOMOUS-RUNBOOK.md"
     ],
-    "app": [
-      "docs/prompts/tenant-onboarding/TENANT-ONBOARDING-TEMPLATE.md"
-    ],
     "esperada": [
       "docs/prompts/tenant-onboarding/TENANT-ONBOARDING-TEMPLATE.md",
       "skills/user/opsly-architect-senior/SKILL.md"
@@ -18027,6 +18503,7 @@
     "deployment": [
       "docs/prompts/tenant-onboarding/DEPLOYMENT-VALIDATION.md",
       "docs/OLLAMA-DEPLOYMENT.md",
+      "scripts/README.md",
       "apps/context-builder-v2/src/design/architecture.md"
     ],
     "evidencia": [
@@ -18059,12 +18536,6 @@
     ],
     "generacion": [
       "docs/LOCALRANK-TESTER-GUIDE.md"
-    ],
-    "defecto": [
-      "docs/AGENTS-GLOBAL-CONTEXT.md",
-      "docs/PLAN-OLLAMA-WORKER-2026-04-14.md",
-      "docs/MASTER-PLAN.md",
-      "skills/user/opsly-qa/SKILL.md"
     ],
     "formato": [
       "docs/AGENTS-GLOBAL-CONTEXT.md",
@@ -18459,7 +18930,10 @@
     ],
     "archive": [
       "docs/obsidian/sources/archive/2026-04-21/ARCHIVEIT-3519-QUARTERLY-JOB683486-SEED419215-20180924-00000.md",
-      "docs/obsidian/sources/archive/2026-04-21/ARCHIVEIT-3519-QUARTERLY-JOB1177123-SEED419213-20200602-00000.md"
+      "docs/obsidian/sources/archive/2026-04-21/ARCHIVEIT-3519-QUARTERLY-JOB1177123-SEED419213-20200602-00000.md",
+      "apps/experimental/mission-control-archive/ARCHIVE.md",
+      "apps/experimental/ingestion-service-archive/ARCHIVE.md",
+      "apps/experimental/ai-evolution-archive/ARCHIVE.md"
     ],
     "archiveit": [
       "docs/obsidian/sources/archive/2026-04-21/ARCHIVEIT-3519-QUARTERLY-JOB683486-SEED419215-20180924-00000.md",
@@ -18534,9 +19008,6 @@
       "docs/obsidian/sources/archive/2026-04-21/fourthgeneration02mart.md"
     ],
     "fourthgeneration02mart": [
-      "docs/obsidian/sources/archive/2026-04-21/fourthgeneration02mart.md"
-    ],
-    "generation": [
       "docs/obsidian/sources/archive/2026-04-21/fourthgeneration02mart.md"
     ],
     "languages": [
@@ -18704,11 +19175,6 @@
     "locales": [
       "docs/FIRST-OPENCLAW-AGENTS-MAC2011.md"
     ],
-    "nombre": [
-      "docs/FIRST-OPENCLAW-AGENTS-MAC2011.md",
-      "docs/GITHUB-TOKEN.md",
-      "docs/MASTER-PLAN.md"
-    ],
     "perfil": [
       "docs/FIRST-OPENCLAW-AGENTS-MAC2011.md"
     ],
@@ -18784,7 +19250,8 @@
       "docs/LIBRARIES-INSTALLED.md"
     ],
     "utilities": [
-      "docs/LIBRARIES-INSTALLED.md"
+      "docs/LIBRARIES-INSTALLED.md",
+      "scripts/README.md"
     ],
     "pat": [
       "docs/GITHUB-TOKEN.md"
@@ -18817,33 +19284,6 @@
     ],
     "superagents": [
       "docs/SUPERAGENTS-BOOTSTRAP.md"
-    ],
-    "adelante": [
-      "docs/MASTER-PLAN.md"
-    ],
-    "cubierto": [
-      "docs/MASTER-PLAN.md"
-    ],
-    "ejecutivo": [
-      "docs/MASTER-PLAN.md",
-      "SPRINT-TRACKER.md"
-    ],
-    "integrar": [
-      "docs/MASTER-PLAN.md",
-      "docs/CONTEXT-BUILDER.md"
-    ],
-    "nada": [
-      "docs/MASTER-PLAN.md"
-    ],
-    "numero": [
-      "docs/MASTER-PLAN.md"
-    ],
-    "toque": [
-      "docs/MASTER-PLAN.md"
-    ],
-    "util": [
-      "docs/MASTER-PLAN.md",
-      "docs/DISK-USAGE-REPORT.md"
     ],
     "exporter": [
       "docs/MONITORING.md",
@@ -19244,6 +19684,26 @@
     "training": [
       "scripts/agent-training/README.md"
     ],
+    "categories": [
+      "scripts/README.md"
+    ],
+    "compatibility": [
+      "scripts/README.md"
+    ],
+    "conventions": [
+      "scripts/README.md"
+    ],
+    "lifecycle": [
+      "scripts/README.md",
+      "skills/user/opsly-orchestrator/SKILL.md"
+    ],
+    "operations": [
+      "scripts/README.md",
+      "skills/user/opsly-tenant/SKILL.md"
+    ],
+    "standards": [
+      "scripts/README.md"
+    ],
     "revisa": [
       ".github/PULL_REQUEST_TEMPLATE.md"
     ],
@@ -19442,9 +19902,6 @@
     "abstracciones": [
       "skills/user/opsly-orchestrator/SKILL.md"
     ],
-    "lifecycle": [
-      "skills/user/opsly-orchestrator/SKILL.md"
-    ],
     "acciones": [
       "skills/user/opsly-notebooklm/SKILL.md"
     ],
@@ -19517,9 +19974,6 @@
     "marco": [
       "skills/user/opsly-architect/SKILL.md",
       "skills/user/opsly-architect-senior/SKILL.md"
-    ],
-    "operations": [
-      "skills/user/opsly-tenant/SKILL.md"
     ],
     "tipicas": [
       "skills/user/opsly-tenant/SKILL.md"
@@ -19674,15 +20128,32 @@
     "foreign": [
       "skills/templates/template-migration.md"
     ],
-    "migration": [
-      "skills/templates/template-migration.md",
-      "apps/context-builder-v2/src/design/architecture.md"
-    ],
     "migrations": [
       "skills/templates/template-migration.md"
     ],
     "seed": [
       "skills/templates/template-migration.md"
+    ],
+    "revive": [
+      "apps/experimental/mission-control-archive/ARCHIVE.md",
+      "apps/experimental/ingestion-service-archive/ARCHIVE.md",
+      "apps/experimental/ai-evolution-archive/ARCHIVE.md"
+    ],
+    "why": [
+      "apps/experimental/mission-control-archive/ARCHIVE.md",
+      "apps/experimental/ingestion-service-archive/ARCHIVE.md",
+      "apps/experimental/ai-evolution-archive/ARCHIVE.md"
+    ],
+    "ingestion": [
+      "apps/experimental/ingestion-service-archive/ARCHIVE.md",
+      "apps/experimental/ingestion-service-archive/README.md",
+      "apps/context-builder-v2/src/design/architecture.md"
+    ],
+    "bunker": [
+      "apps/experimental/ingestion-service-archive/README.md"
+    ],
+    "evolution": [
+      "apps/experimental/ai-evolution-archive/ARCHIVE.md"
     ],
     "formulario": [
       "apps/admin/INVITATIONS_UI.md"
@@ -19806,7 +20277,10 @@
     "apps/admin/INVITATIONS_UI.md",
     "apps/agents/notebooklm/README.md",
     "apps/context-builder-v2/src/design/architecture.md",
-    "apps/ingestion-service/README.md",
+    "apps/experimental/ai-evolution-archive/ARCHIVE.md",
+    "apps/experimental/ingestion-service-archive/ARCHIVE.md",
+    "apps/experimental/ingestion-service-archive/README.md",
+    "apps/experimental/mission-control-archive/ARCHIVE.md",
     "apps/mcp/README.md",
     "apps/ml/agents/classifier/.venv/lib/python3.13/site-packages/numpy-2.4.4.dist-info/licenses/numpy/_core/src/npysort/x86-simd-sort/LICENSE.md",
     "apps/ml/agents/classifier/.venv/lib/python3.13/site-packages/numpy-2.4.4.dist-info/licenses/numpy/fft/pocketfft/LICENSE.md",
@@ -19860,7 +20334,10 @@
     "docs/adr/ADR-028-tenant-onboarding-pattern.md",
     "docs/adr/ADR-029-infrastructure-layers-shared-vs-tenant.md",
     "docs/adr/ADR-030-prepaid-token-wallet-roadmap.md",
+    "docs/adr/ADR-031-experimental-consolidation.md",
     "docs/adr/ADR-031-token-optimization-ollama-primary.md",
+    "docs/adr/ADR-032-scripts-organization.md",
+    "docs/adr/ADR-033-docs-canonicalization.md",
     "docs/AGENT-HOOKS-OBSIDIAN-NOTEBOOKLM-N8N.md",
     "docs/AGENTS-ASSIGNMENTS.md",
     "docs/AGENTS-AUTONOMOUS-RUNBOOK.md",
@@ -19902,6 +20379,9 @@
     "docs/FIRST-OPENCLAW-AGENTS-MAC2011.md",
     "docs/GCP-ACTIVATION-CHECKLIST.md",
     "docs/GCP-STANDBY-CONFIG.md",
+    "docs/generated/implementation-progress.auto.md",
+    "docs/generated/README.md",
+    "docs/generated/sprint-status.auto.md",
     "docs/GITHUB-SETTINGS.md",
     "docs/GITHUB-TOKEN.md",
     "docs/GOOGLE-CLOUD-ACTIVATION.md",
@@ -19911,10 +20391,15 @@
     "docs/HERMES-INTEGRATION.md",
     "docs/HERMES-LOCAL-AGENTS-STACK.md",
     "docs/HERMES-SPRINT-PLAN.md",
+    "docs/history/plans/IMPLEMENTATION-STATUS.md",
+    "docs/history/plans/MASTER-PLAN-STATUS.md",
+    "docs/history/plans/MASTER-PLAN.md",
+    "docs/history/plans/SPRINT-ROADMAP.md",
+    "docs/history/plans/SPRINT-TRACKING.md",
+    "docs/history/README.md",
     "docs/HOSTS-PATHS.md",
     "docs/HYBRID-OPSLY-ADMIN.md",
     "docs/IMPLEMENTATION-IA-LAYER.md",
-    "docs/IMPLEMENTATION-STATUS.md",
     "docs/INCIDENT-2026-04-11-DISCO-LLENO.md",
     "docs/INVITATIONS_RUNBOOK.md",
     "docs/KNOWLEDGE-BRAIN-SYSTEM.md",
@@ -19926,8 +20411,6 @@
     "docs/LLM-GATEWAY-WORKPLAN.md",
     "docs/LLM-GATEWAY.md",
     "docs/LOCALRANK-TESTER-GUIDE.md",
-    "docs/MASTER-PLAN-STATUS.md",
-    "docs/MASTER-PLAN.md",
     "docs/MCP-SERVERS.md",
     "docs/MCP-STATUS-ANALYSIS.md",
     "docs/MONITORING.md",
@@ -20020,8 +20503,6 @@
     "docs/SETUP-SUDOERS-CLOUDSYSOPS.md",
     "docs/SPRINT-CURSOR-PROMPTS.md",
     "docs/SPRINT-PLANNING-SETUP.md",
-    "docs/SPRINT-ROADMAP.md",
-    "docs/SPRINT-TRACKING.md",
     "docs/SSH-COMMANDS-LOCALRANK.md",
     "docs/SSH-USERS-FOR-AGENTS.md",
     "docs/SUPERAGENTS-BOOTSTRAP.md",
@@ -20050,6 +20531,7 @@
     "README.md",
     "ROADMAP.md",
     "scripts/agent-training/README.md",
+    "scripts/README.md",
     "skills/API.md",
     "skills/README.md",
     "skills/templates/README.md",
