@@ -1,0 +1,23 @@
+status: DEPRECATED
+date: 2026-04-24
+reason: |
+  This module was a V2 redesign of context-builder, but after evaluation,
+  the V1 implementation (apps/context-builder) covers all use cases.
+  Both modules provided identical functionality; keeping both created
+  maintenance burden and confusion in prompt engineering.
+
+replacement: apps/context-builder
+
+migration:
+  - No code changes required; V1 is a drop-in replacement
+  - If you were using this: import from apps/context-builder instead
+  - Build will still work (import paths auto-resolve)
+
+archival:
+  - This folder will remain in git history for reference
+  - Target removal: 2026-05-31 (if no usage)
+  - To unarchive: create issue with use case
+
+references:
+  - ADR-031: Consolidate Experimental Apps
+  - Issue: architecture-consolidation-phase1
