@@ -15,14 +15,17 @@ RUN npm ci --ignore-scripts \
 FROM node:20-alpine AS builder
 WORKDIR /repo
 COPY --from=deps /repo/node_modules ./node_modules
-COPY --from=deps /repo/apps/llm-gateway/node_modules ./apps/llm-gateway/node_modules
-COPY --from=deps /repo/packages/types/node_modules ./packages/types/node_modules
 COPY --from=deps /repo/package.json ./package.json
 COPY --from=deps /repo/package-lock.json ./package-lock.json
 COPY packages/types ./packages/types
 COPY apps/mcp ./apps/mcp
 COPY apps/llm-gateway ./apps/llm-gateway
 COPY apps/agents/notebooklm ./apps/agents/notebooklm
+RUN npm ci --ignore-scripts \
+  -w @intcloudsysops/types \
+  -w @intcloudsysops/llm-gateway \
+  -w @intcloudsysops/notebooklm-agent \
+  -w @intcloudsysops/mcp
 # Build types first (required by llm-gateway), then other workspaces
 RUN npm run build -w @intcloudsysops/types && \
     npm run build -w @intcloudsysops/llm-gateway && \
