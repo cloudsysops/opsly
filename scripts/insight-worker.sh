@@ -2,7 +2,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-OPSLY_ROOT="${OPSLY_ROOT:-$(dirname "$SCRIPT_DIR")"
+OPSLY_ROOT="${OPSLY_ROOT:-$(dirname "$SCRIPT_DIR")}"
 
 echo "🤖 Insight Worker: Generando insights para todos los tenants..."
 
