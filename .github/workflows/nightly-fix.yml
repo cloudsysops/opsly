@@ -44,7 +44,8 @@ jobs:
       - name: npm ci
         run: npm ci
 
-      - name: TypeScript (api, admin, portal, mcp, orchestrator, ml, llm-gateway, context-builder) → errors.txt
+      - name: TypeScript (api, admin, portal, mcp, orchestrator, ml, llm-gateway,
+          context-builder) → errors.txt
         run: |
           set +e
           : > errors.txt
@@ -285,7 +286,7 @@ jobs:
 
   report:
     name: report
-    needs: [typecheck, auto-fix]
+    needs: [ typecheck, auto-fix ]
     if: always()
     runs-on: ubuntu-latest
     steps:

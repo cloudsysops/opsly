@@ -5,9 +5,9 @@ on:
     branches:
       - main
     paths:
-      - 'apps/api/**'
-      - 'apps/admin/**'
-      - 'scripts/**'
+      - "apps/api/**"
+      - "apps/admin/**"
+      - "scripts/**"
 
 permissions:
   contents: write
