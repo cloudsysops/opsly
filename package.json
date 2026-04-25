@@ -19,7 +19,7 @@
     "update-state": "node scripts/update-state.js",
     "sync-agents": "bash scripts/update-agents.sh",
     "validate-context": "python3 -m json.tool context/system_state.json > /dev/null",
-    "validate-openapi": "node scripts/validate-openapi-yaml.mjs",
+    "validate-openapi": "node scripts/ci/validate-openapi.mjs",
     "validate-structure": "node scripts/validate-repo-structure.mjs",
     "index-knowledge": "bash scripts/index-knowledge.sh",
     "validate-skills": "npm run validate-skills --prefix skills/manifest",
@@ -131,13 +131,5 @@
   "dependencies": {
     "@redis/client": "^1.6.1",
     "js-tiktoken": "^1.0.21"
-  },
-  "optionalDependencies": {
-    "@rollup/rollup-linux-x64-gnu": "4.60.2",
-    "@rollup/rollup-darwin-arm64": "4.60.2",
-    "@rollup/rollup-darwin-x64": "4.60.2"
-  },
-  "overrides": {
-    "rollup": "4.60.2"
   }
 }
