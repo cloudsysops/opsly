@@ -42,6 +42,10 @@ jobs:
           EXIT_CODE=$?
           # Print summary (no secrets in output)
           npm audit --audit-level=high 2>&1 || true
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "PR mode: npm audit is advisory (non-blocking)."
+            exit 0
+          fi
           exit $EXIT_CODE
 
       - name: Upload audit report

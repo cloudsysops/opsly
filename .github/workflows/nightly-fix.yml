@@ -44,7 +44,8 @@ jobs:
       - name: npm ci
         run: npm ci
 
-      - name: TypeScript (api, admin, portal, mcp, orchestrator, ml, llm-gateway, context-builder) → errors.txt
+      - name: TypeScript (api, admin, portal, mcp, orchestrator, ml, llm-gateway,
+          context-builder) → errors.txt
         run: |
           set +e
           : > errors.txt
@@ -146,10 +147,10 @@ jobs:
           if [ ! -f "$FILE" ]; then
             mkdir -p "$(dirname "$FILE")"
             cat > "$FILE" << 'EOF'
-export async function GET() {
-  return Response.json({ status: "ok", timestamp: new Date().toISOString() })
-}
-EOF
+            export async function GET() {
+              return Response.json({ status: "ok", timestamp: new Date().toISOString() })
+            }
+            EOF
             echo "created=true" >> "$GITHUB_OUTPUT"
           else
             echo "created=false" >> "$GITHUB_OUTPUT"
@@ -285,7 +286,7 @@ EOF
 
   report:
     name: report
-    needs: [typecheck, auto-fix]
+    needs: [ typecheck, auto-fix ]
     if: always()
     runs-on: ubuntu-latest
     steps:
