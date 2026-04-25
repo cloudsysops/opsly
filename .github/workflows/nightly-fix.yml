@@ -146,10 +146,10 @@ jobs:
           if [ ! -f "$FILE" ]; then
             mkdir -p "$(dirname "$FILE")"
             cat > "$FILE" << 'EOF'
-export async function GET() {
-  return Response.json({ status: "ok", timestamp: new Date().toISOString() })
-}
-EOF
+            export async function GET() {
+              return Response.json({ status: "ok", timestamp: new Date().toISOString() })
+            }
+            EOF
             echo "created=true" >> "$GITHUB_OUTPUT"
           else
             echo "created=false" >> "$GITHUB_OUTPUT"
