@@ -1,5 +1,7 @@
 # Guía de agentes en paralelo — Opsly
 
+> **Note on terminology:** "Agents" in this document refers to AI coding assistants used internally for development (Cursor, Claude Code). For Opsly's product agent — the autonomous DevOps agent we sell — see [VISION.md](../VISION.md).
+
 > **No es un segundo `AGENTS.md`.** La **fuente de verdad del estado operativo** (bloqueantes, próximo paso, URL raw, Fase 4) está en **`AGENTS.md`** en la raíz del repo — léelo **siempre** al iniciar trabajo. **Este documento** define únicamente **cómo coordinar varios asistentes o procesos** (Cursor, Claude, n8n, orchestrator) sin pisarse ni duplicar contexto.
 
 Convenciones para operar varios asistentes (Cursor, Claude, automatismos) sobre el mismo repo sin divergir del contexto publicado en `AGENTS.md` / `VISION.md`.

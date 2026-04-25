@@ -41,6 +41,14 @@ Ejecutor técnico senior. Filosofía: **Planificar → Documentar → Tests → 
 - Crear recurso → Factory pattern (`lib/factories/`)
 - Números mágicos → `lib/constants.ts`
 
+## Guardrails de estructura (obligatorio)
+
+- **No crear archivos ni carpetas nuevas sin aprobación explícita del usuario.**
+- Primero buscar y reutilizar archivos existentes (AGENTS, ROADMAP, docs/runbooks, scripts/*, skills/*).
+- Si se necesita un archivo nuevo, pedir permiso con ruta propuesta + motivo + alternativa de reutilización.
+- Prohibido crear `TODO.md`, `NOTES.md`, `PLAN.md` o archivos ad-hoc en raíz sin solicitud explícita.
+- No duplicar documentación: actualizar el documento canónico existente.
+
 ## Antes de bash
 
 `set -euo pipefail` · idempotente · `--dry-run` si modifica estado
