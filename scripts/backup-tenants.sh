@@ -124,8 +124,7 @@ while IFS= read -r slug; do
     continue
   fi
 
-  # Generar checksum SHA256 antes de subir
-  local tmp_sha="${tmp_sql_gz}.sha256"
+  tmp_sha="${tmp_sql_gz}.sha256"
   sha256sum "${tmp_sql_gz}" >"${tmp_sha}"
   log_info "SHA256: $(cat "${tmp_sha}")"
 
@@ -145,8 +144,8 @@ while IFS= read -r slug; do
   fi
 
   # Verificar integridad: descargar y comparar SHA256
-  local tmp_verify="${TMP_ROOT}/${slug}_verify.sql.gz"
-  local tmp_verify_sha="${tmp_verify}.sha256"
+  tmp_verify="${TMP_ROOT}/${slug}_verify.sql.gz"
+  tmp_verify_sha="${tmp_verify}.sha256"
   if ! aws s3 cp "${s3_uri}" "${tmp_verify}" --region "${AWS_REGION}" --quiet; then
     log_error "S3 download for verify failed for slug=${slug}"
     FAILED+=("${slug}")
@@ -154,7 +153,6 @@ while IFS= read -r slug; do
     continue
   fi
 
-  local expected_hash actual_hash
   expected_hash="$(awk '{print $1}' "${tmp_sha}")"
   actual_hash="$(sha256sum "${tmp_verify}" | awk '{print $1}')"
 
