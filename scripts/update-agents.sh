@@ -3,10 +3,7 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-SRC="${ROOT_DIR}/AGENTS.md"
-DST="${ROOT_DIR}/.github/AGENTS.md"
-
-cp "${SRC}" "${DST}"
+# AGENTS.md canónico solo en la raíz; .github/AGENTS.md es symlink (ADR-034) — no copiar.
 cp "${ROOT_DIR}/VISION.md" "${ROOT_DIR}/.github/VISION.md" 2>/dev/null || true
 cp "${ROOT_DIR}/context/system_state.json" \
   "${ROOT_DIR}/.github/system_state.json" 2>/dev/null || true
@@ -17,7 +14,6 @@ git -C "${ROOT_DIR}" add \
   context/system_state.json \
   docs/adr/ \
   agents/ \
-  .github/AGENTS.md \
   .github/VISION.md \
   .github/system_state.json \
   2>/dev/null || true

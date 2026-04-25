@@ -18,10 +18,6 @@ jobs:
       - name: Instalar dependencias
         run: npm ci
 
-      # Work around npm optional-deps not always linking @rollup/* native on Linux (vitest/rollup)
-      - name: Ensure Rollup Linux native for Vitest
-        run: npm install @rollup/rollup-linux-x64-gnu@4.60.2 --no-save
-
       - name: OpenAPI YAML (parse + estructura mínima)
         run: npm run validate-openapi
 
@@ -51,11 +47,15 @@ jobs:
           fi
           exit "$FAIL"
 
-      - name: AGENTS.md y .github/AGENTS.md sincronizados
+      - name: .github/AGENTS.md apunta a la fuente canónica
         run: |
+          if [ -L .github/AGENTS.md ] && [ "$(readlink .github/AGENTS.md)" = "../AGENTS.md" ]; then
+            echo "✅ .github/AGENTS.md → ../AGENTS.md (symlink, ADR-034)"
+            exit 0
+          fi
           if ! diff -q AGENTS.md .github/AGENTS.md > /dev/null 2>&1; then
-            echo "❌ AGENTS.md y .github/AGENTS.md están desincronizados"
-            echo "Corre: ./scripts/update-agents.sh o haz commit con hooks activos"
+            echo "❌ AGENTS.md y .github/AGENTS.md divergen (y no es symlink canónico)"
+            echo "Ver docs/adr/ADR-034-ci-hygiene.md"
             exit 1
           fi
-          echo "✅ AGENTS.md sincronizado"
+          echo "✅ Mismo contenido (modo legado); preferir symlink → ../AGENTS.md"

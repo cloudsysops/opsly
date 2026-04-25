@@ -10,9 +10,17 @@ if echo "$CHANGED" | grep -qE "^(infra|scripts|apps|supabase)/"; then
   node "$ROOT/scripts/utils/update-state.js" 2>/dev/null || true
 fi
 
-# Siempre sincroniza AGENTS.md a .github/
+# .github/AGENTS.md debe ser symlink a ../AGENTS.md (ADR-034); nunca copiar (rompería el symlink)
 if [ -f "$ROOT/AGENTS.md" ]; then
-  cp "$ROOT/AGENTS.md" "$ROOT/.github/AGENTS.md"
+  if [ -e "$ROOT/.github/AGENTS.md" ] && [ ! -L "$ROOT/.github/AGENTS.md" ]; then
+    rm -f "$ROOT/.github/AGENTS.md"
+  fi
+  if [ ! -e "$ROOT/.github/AGENTS.md" ]; then
+    (cd "$ROOT/.github" && ln -s ../AGENTS.md AGENTS.md)
+  elif [ -L "$ROOT/.github/AGENTS.md" ] && [ "$(readlink "$ROOT/.github/AGENTS.md")" != "../AGENTS.md" ]; then
+    rm -f "$ROOT/.github/AGENTS.md"
+    (cd "$ROOT/.github" && ln -s ../AGENTS.md AGENTS.md)
+  fi
 fi
 
 # Sincroniza context/ a .github/
