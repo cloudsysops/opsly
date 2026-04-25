@@ -12,7 +12,7 @@ do_not_edit: true
 # Opsly — Sprint Status (Auto-Generated)
 
 > **Generado automáticamente** — fuente: [`docs/implementation/status.yaml`](../implementation/status.yaml).
-> Generado: 2026-04-24T22:13:48.894Z
+> Generado: 2026-04-25T17:43:25.222Z
 
 ## Sprint 1: Approval Gate + Vertex AI
 
@@ -42,6 +42,7 @@ Day    Target  Actual
 2026-04-20    40     1
 2026-04-21    40     1
 2026-04-24    40     1
+2026-04-25    40     1
 ```
 
 ### Tasks
