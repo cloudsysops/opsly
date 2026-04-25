@@ -4,10 +4,13 @@ owner: architecture
 last_review: 2026-04-24
 ---
 
-# Opsly — Wiki de Documentación
+# Opsly Documentation
 
-> **Para agentes (Claude, Cursor, Copilot):** lee primero `QUICK-REFERENCE.md`, luego el doc de la categoría relevante.  
-> **Regla de oro:** si algo no está aquí, la fuente de verdad es `AGENTS.md` en la raíz.
+Navigation index for the autonomous DevOps agent platform.
+
+**For external visitors:** Start with [VISION.md](../VISION.md) (what we're building) and [PILOT.md](PILOT.md) (how to get access).
+
+**For maintainers:** Precedence order matters — when docs conflict, higher entries win.
 
 ---
 

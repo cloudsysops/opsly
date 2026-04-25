@@ -178,6 +178,7 @@
   },
   "active": "b49d7cadc22b48ed",
   "lastOpenFiles": [
+    "docs/PILOT.md",
     "TODO.md",
     "docs/PLAN-MAESTRO-NEXT-LEVEL-2026-04-24.md",
     "docs/SEMANA-4-INFORME.md",
@@ -212,7 +213,6 @@
     "node_modules/@turbo/darwin-64/README.md",
     "node_modules/@isaacs/cliui/node_modules/wrap-ansi/readme.md",
     "node_modules/@isaacs/cliui/node_modules/strip-ansi/readme.md",
-    "node_modules/@isaacs/cliui/node_modules/string-width/readme.md",
-    "node_modules/@isaacs/cliui/node_modules/emoji-regex/README.md"
+    "node_modules/@isaacs/cliui/node_modules/string-width/readme.md"
   ]
 }

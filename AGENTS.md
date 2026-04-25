@@ -6,6 +6,8 @@ last_review: 2026-04-25
 
 # Opsly — Contexto del Agente
 
+> **Scope of this document:** Internal operational state of the Opsly platform — current bloqueantes, infrastructure status, active work. For the product description (the autonomous DevOps agent we sell), see [VISION.md](VISION.md).
+
 > Fuente de verdad para cada sesión nueva.
 > Al iniciar: lee este archivo completo antes de cualquier acción.
 > Al terminar: actualiza las secciones marcadas con 🔄.
@@ -120,8 +122,11 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 - **DO:** todo tráfico IA pasa por OpenClaw → LLM Gateway (sin llamadas LLM directas fuera de ese flujo).
 - **DO:** incluir `tenant_slug` y `request_id` en cada job/orquestación para trazabilidad.
 - **DO:** tratar NotebookLM como **EXPERIMENTAL** (solo Business+ y `NOTEBOOKLM_ENABLED=true`).
+- **DO:** reutilizar archivos y rutas canónicas existentes antes de proponer nuevos.
 - **NO:** exponer SSH en IP pública; acceso admin solo por Tailscale `100.120.151.91`.
 - **NO:** hardcodear secrets, tokens o IPs en código/scripts/docs operativos.
+- **NO:** crear archivos/carpetas nuevas sin aprobación explícita del usuario.
+- **NO:** crear documentos ad-hoc en raíz (`TODO.md`, `PLAN.md`, `NOTES.md`) si no fueron solicitados.
 
 ---
 
