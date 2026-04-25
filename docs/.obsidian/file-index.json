@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-04-24T23:56:18Z",
-  "totalFiles": 225,
+  "lastIndexed": "2026-04-25T01:27:16Z",
+  "totalFiles": 226,
   "files": [
     "2026-04-21.md",
     "6xk2xhn5f8hcllwj3npzaik36lqycdg0y3xw06lo.md",
@@ -40,6 +40,7 @@
     "ADR-031-token-optimization-ollama-primary.md",
     "ADR-032-scripts-organization.md",
     "ADR-033-docs-canonicalization.md",
+    "ADR-034-ci-hygiene.md",
     "AGENT-HOOKS-OBSIDIAN-NOTEBOOKLM-N8N.md",
     "AGENTS-ASSIGNMENTS.md",
     "AGENTS-AUTONOMOUS-RUNBOOK.md",
