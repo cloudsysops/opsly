@@ -20,7 +20,7 @@ jobs:
           python-version: "3.12"
       - run: npm ci
       - name: Install notebooklm-py (optional)
-        continue-on: true
+        continue-on-error: true
         run: pip install "notebooklm-py[browser]" || pip install notebooklm-py || true
       - name: Generate code snapshots
         run: npm run docs:code-snapshots
