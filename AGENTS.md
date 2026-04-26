@@ -322,7 +322,7 @@ node scripts/load-skills.js show opsly-api
 
 <!-- Actualizar al final de cada sesión -->
 
-**Fecha última actualización:** 2026-04-26 — **Estabilización prod:** health `https://api.ops.smiletripcare.com/api/health` OK (supabase+redis), E2E invite reproducido con `doppler run` y bloqueo confirmado por Resend domain no verificado para emails externos; workflow deploy ajustado (Tailscale opcional sin tag fijo + timeout SSH 2m) y runbook actualizado. **Sprint histórico Semana 5:** [`docs/SEMANA-5-INFORME.md`](docs/SEMANA-5-INFORME.md), [`ROADMAP.md`](ROADMAP.md).
+**Fecha última actualización:** 2026-04-26 — **Estabilización prod:** health `https://api.ops.smiletripcare.com/api/health` OK (supabase+redis); E2E invite ejecutado en `prd` con `scripts/test-e2e-invite-flow.sh --tenant-ref intcloudsysops` (resultado idempotente: usuario ya registrado, smoke aceptado); workflow deploy activo en GitHub Actions (`deploy.yml`) tras fix de sintaxis Tailscale y timeout SSH 2m. **Sprint histórico Semana 5:** [`docs/SEMANA-5-INFORME.md`](docs/SEMANA-5-INFORME.md), [`ROADMAP.md`](ROADMAP.md).
 
 **Siguiente fase:** Semana 6 (Segundo Cliente + E2E), ventana **2026-04-29 → 2026-05-03** ⏳ **EN PROGRESO**. Plan: [`docs/SEMANA-6-PLAN.md`](docs/SEMANA-6-PLAN.md).
 

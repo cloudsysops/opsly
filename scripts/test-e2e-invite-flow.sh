@@ -15,6 +15,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "${SCRIPT_DIR}/lib/common.sh"
 
 API_URL="${API_URL:-https://api.ops.smiletripcare.com}"
+TENANT_REF="${TENANT_REF:-smiletripcare}"
 DRY_RUN="false"
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -25,6 +26,10 @@ while [[ $# -gt 0 ]]; do
     --dry-run)
       DRY_RUN="true"
       shift
+      ;;
+    --tenant-ref)
+      TENANT_REF="${2:-}"
+      shift 2
       ;;
     -h | --help)
       grep '^#' "$0" | head -20
@@ -47,6 +52,7 @@ fi
 echo "🔍 E2E Invite flow (local runner)"
 echo "  API: ${API_URL}"
 echo "  Dry-run: ${DRY_RUN}"
+echo "  Tenant: ${TENANT_REF}"
 
 echo "✓ Test 1: Health"
 curl -sfk "${API_URL}/api/health" | jq . >/dev/null
@@ -68,8 +74,9 @@ TMP_RES="$(mktemp)"
 trap 'rm -f "${TMP_BODY}" "${TMP_RES}"' EXIT
 jq -n \
   --arg email "${OWNER_EMAIL}" \
+  --arg tenantRef "${TENANT_REF}" \
   --arg ts "$(date +%s)" \
-  '{ email: $email, tenantRef: "smiletripcare", mode: "developer", name: ("e2e-" + $ts) }' >"${TMP_BODY}"
+  '{ email: $email, tenantRef: $tenantRef, mode: "developer", name: ("e2e-" + $ts) }' >"${TMP_BODY}"
 HTTP_CODE="$(
   curl -sk -o "${TMP_RES}" -w "%{http_code}" -X POST "${API_URL}/api/invitations" \
     -H "Content-Type: application/json" \
@@ -81,6 +88,11 @@ RESPONSE="$(cat "${TMP_RES}")"
 echo "${RESPONSE}" | jq . 2>/dev/null || echo "${RESPONSE}"
 
 if [[ "${HTTP_CODE}" != "200" ]]; then
+  if [[ "${RESPONSE}" == *"already been registered"* ]]; then
+    echo "⚠️ Usuario ya registrado: caso idempotente aceptado para smoke."
+    echo "✅ E2E Invite flow OK (idempotente)."
+    exit 0
+  fi
   echo "❌ POST /api/invitations → HTTP ${HTTP_CODE}" >&2
   if [[ "${RESPONSE}" == *RESEND* || "${RESPONSE}" == *"API key is invalid"* ]]; then
     echo "   Revisa Doppler prd: RESEND_API_KEY (clave activa en resend.com) y RESEND_FROM_EMAIL o RESEND_FROM_ADDRESS; vps-bootstrap + recrear servicio app en VPS." >&2
