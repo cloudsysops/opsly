@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-04-26T04:58:48Z",
-  "totalFiles": 226,
+  "lastIndexed": "2026-04-26T22:37:50Z",
+  "totalFiles": 229,
   "files": [
     "2026-04-21.md",
     "6xk2xhn5f8hcllwj3npzaik36lqycdg0y3xw06lo.md",
@@ -70,6 +70,7 @@
     "COST-DASHBOARD.md",
     "CURSOR-DAILY-CHECKLIST.md",
     "DECEPTICON-WORKER.md",
+    "DEPLOY-GITHUB-ACTIONS.md",
     "DEPLOY-VPS-AND-INDEX.md",
     "DEPLOYMENT-VALIDATION.md",
     "DISK-USAGE-REPORT.md",
@@ -144,6 +145,7 @@
     "PLUGINS-TO-INSTALL.md",
     "POLICY-AI-LOCAL-FIRST.md",
     "PREDICTIVE-BI-SCALABILITY.md",
+    "PRODUCTION-SECURITY-BASELINE.md",
     "PROVISIONING-SYSTEM.md",
     "QA-REVIEW-COMPLETE.md",
     "QUALITY-GATES.md",
@@ -182,6 +184,7 @@
     "SUPERAGENTS-BOOTSTRAP.md",
     "TAILSCALE-NOMENCLATURA.md",
     "TENANT-ONBOARDING-TEMPLATE.md",
+    "TENANT-ONBOARDING-TRIAGE.md",
     "TENANT-TESTING-GUIDE.md",
     "TENANT-TESTING-PLAN.md",
     "TEST_PLAN.md",
