@@ -26,6 +26,7 @@ vi.mock('../src/cache.js', () => ({
 vi.mock('../src/logger.js', () => ({
   logUsage: (...args: unknown[]) => logUsageMock(...args),
   getTenantUsage: (...args: unknown[]) => getTenantUsageMock(...args),
+  mergeUsageAttribution: (req: unknown, base: unknown) => base,
 }));
 
 vi.mock('../src/health-daemon.js', () => ({

@@ -1,5 +1,7 @@
 import { vi } from 'vitest';
 
+process.env.OPENROUTER_API_KEY ??= 'test-openrouter-key';
+
 const hoisted = vi.hoisted(() => ({
   childProcessExecFileMock: vi.fn((...args: unknown[]) => {
     const cb = args[args.length - 1] as (

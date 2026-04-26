@@ -25,6 +25,15 @@ vi.mock('../src/cache.js', () => ({
 
 vi.mock('../src/logger.js', () => ({
   logUsage: vi.fn(),
+  getTenantUsage: vi.fn().mockResolvedValue({
+    tokens_input: 0,
+    tokens_output: 0,
+    cost_usd: 0.01,
+    requests: 1,
+    cache_hits: 0,
+    top_model: null,
+  }),
+  mergeUsageAttribution: (req: unknown, base: unknown) => base,
 }));
 
 vi.mock('../src/structured-log.js', () => ({
@@ -39,10 +48,15 @@ describe('LLM Gateway', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.useFakeTimers();
+    vi.stubEnv('AI_PROFILE', 'hybrid');
+    vi.stubEnv('DAILY_BUDGET_TEST', '1.0');
+    vi.stubEnv('OPENAI_API_KEY', 'test-openai-key');
+    vi.stubEnv('ANTHROPIC_API_KEY', 'test-anthropic-key');
   });
 
   afterEach(() => {
     vi.useRealTimers();
+    vi.unstubAllEnvs();
   });
 
   it('retorna cache hit sin llamar a Anthropic', async () => {
