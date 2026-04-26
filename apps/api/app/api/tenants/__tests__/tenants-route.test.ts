@@ -34,6 +34,20 @@ function mockListChain(result: {
   return chain as ReturnType<typeof supabaseMod.getServiceClient>;
 }
 
+function mockTenantPostCheck(result: {
+  data: unknown;
+  error: unknown;
+}): ReturnType<typeof supabaseMod.getServiceClient> {
+  const chain = {
+    schema: () => chain,
+    from: () => chain,
+    select: () => chain,
+    eq: () => chain,
+    maybeSingle: () => Promise.resolve(result),
+  };
+  return chain as ReturnType<typeof supabaseMod.getServiceClient>;
+}
+
 describe('GET /api/tenants', () => {
   beforeAll(() => {
     process.env.PLATFORM_ADMIN_TOKEN = ADMIN;
@@ -140,6 +154,12 @@ describe('POST /api/tenants', () => {
       slug: 'newco',
       status: 'provisioning',
     });
+    vi.mocked(supabaseMod.getServiceClient).mockReturnValue(
+      mockTenantPostCheck({
+        data: { id: '550e8400-e29b-41d4-a716-446655440001', deleted_at: null },
+        error: null,
+      })
+    );
     const res = await POST(
       new Request('http://local/api/tenants', {
         method: 'POST',
@@ -154,6 +174,32 @@ describe('POST /api/tenants', () => {
     expect(res.status).toBe(202);
     const body = (await res.json()) as Record<string, unknown>;
     expect(body.slug).toBe('newco');
+  });
+
+  it('returns 500 when tenant post-check is missing', async () => {
+    vi.mocked(orchestratorMod.provisionTenant).mockResolvedValue({
+      id: '550e8400-e29b-41d4-a716-446655440001',
+      slug: 'ghost',
+      status: 'provisioning',
+    });
+    vi.mocked(supabaseMod.getServiceClient).mockReturnValue(
+      mockTenantPostCheck({
+        data: null,
+        error: null,
+      })
+    );
+    const res = await POST(
+      new Request('http://local/api/tenants', {
+        method: 'POST',
+        headers: { ...authHeaders(), 'content-type': 'application/json' },
+        body: JSON.stringify({
+          slug: 'ghost',
+          owner_email: 'owner@ghost.com',
+          plan: 'startup',
+        }),
+      })
+    );
+    expect(res.status).toBe(500);
   });
 
   it('returns 409 on unique violation', async () => {

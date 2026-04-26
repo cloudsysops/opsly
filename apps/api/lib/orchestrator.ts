@@ -5,6 +5,7 @@ import { renderTenantComposeFromTemplate, writeComposeFile } from './docker/comp
 import { resolveTenantComposePath, startTenant, stopTenant } from './docker/container';
 import { allocatePorts, releasePorts } from './docker/port-allocator';
 import { runTenantStructureHookSafe } from './docker/tenant-structure-hook';
+import { logger } from './logger';
 import { notifyTenantCreated, notifyTenantFailed } from './notifications';
 import { sendPortalInvitationForTenant } from './portal-invitations';
 import { PLAN_SERVICES } from './stripe/plans';
@@ -29,6 +30,148 @@ function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => {
     setTimeout(resolve, ms);
   });
+}
+
+const TENANT_PERSISTENCE_CHECK = {
+  MAX_ATTEMPTS: 5,
+  SLEEP_MS: 150,
+} as const;
+
+async function readTenantIdExists(
+  db: ReturnType<typeof getServiceClient>,
+  tenantId: string
+): Promise<{
+  ok: boolean;
+  verifyError: { code?: string; message: string } | null;
+}> {
+  const { data: verification, error: verifyError } = await db
+    .schema('platform')
+    .from('tenants')
+    .select('id')
+    .eq('id', tenantId)
+    .maybeSingle();
+
+  if (!verifyError && verification) {
+    return { ok: true, verifyError: null };
+  }
+
+  return { ok: false, verifyError: verifyError ?? null };
+}
+
+function formatTenantVerifyDetails(verifyError: { code?: string; message: string } | null): string {
+  if (!verifyError) {
+    return 'not-found';
+  }
+  return `${verifyError.code ?? 'unknown'}:${verifyError.message}`;
+}
+
+function throwTenantInsertVerifyFailed(params: {
+  tenantId: string;
+  slug: string;
+  attempts: number;
+  details: string;
+}): never {
+  const msg = `Tenant insert verification failed for ${params.tenantId} after ${String(
+    params.attempts
+  )} attempts (${params.details})`;
+  logger.error('tenant.provisioning.insert.verify_failed', {
+    slug: params.slug,
+    tenant_id: params.tenantId,
+    details: params.details,
+  });
+  throw new Error(msg);
+}
+
+async function verifyTenantReadableAttempt(
+  db: ReturnType<typeof getServiceClient>,
+  tenantId: string,
+  slug: string,
+  attempt: number
+): Promise<void> {
+  const { ok, verifyError } = await readTenantIdExists(db, tenantId);
+  if (ok) {
+    return;
+  }
+
+  const isLastAttempt = attempt === TENANT_PERSISTENCE_CHECK.MAX_ATTEMPTS;
+  if (!isLastAttempt) {
+    await sleep(TENANT_PERSISTENCE_CHECK.SLEEP_MS);
+    await verifyTenantReadableAttempt(db, tenantId, slug, attempt + 1);
+    return;
+  }
+
+  throwTenantInsertVerifyFailed({
+    tenantId,
+    slug,
+    attempts: TENANT_PERSISTENCE_CHECK.MAX_ATTEMPTS,
+    details: formatTenantVerifyDetails(verifyError),
+  });
+}
+
+async function waitForTenantIdReadable(
+  db: ReturnType<typeof getServiceClient>,
+  tenantId: string,
+  slug: string
+): Promise<void> {
+  await verifyTenantReadableAttempt(db, tenantId, slug, 1);
+}
+
+type TenantInsertRowInput = {
+  slug: string;
+  email: string;
+  plan: PlanKey;
+  stripeCustomerId: string | undefined;
+};
+
+type SupabaseInsertError = { code?: string; message?: string } | null;
+
+function buildTenantProvisioningInsertPayload(
+  input: TenantInsertRowInput
+): Record<string, unknown> {
+  return {
+    slug: input.slug,
+    name: input.slug,
+    owner_email: input.email,
+    plan: input.plan,
+    status: 'provisioning',
+    progress: 0,
+    stripe_customer_id: input.stripeCustomerId ?? null,
+  };
+}
+
+function mapSupabaseInsertErrorToThrowable(error: SupabaseInsertError): Error {
+  const err = new Error(error?.message ?? 'Failed to create tenant') as Error & {
+    code?: string;
+  };
+  if (error?.code) {
+    err.code = error.code;
+  }
+  return err;
+}
+
+function logTenantInsertFailure(slug: string, error: SupabaseInsertError): void {
+  logger.error('tenant.provisioning.insert.failed', {
+    slug,
+    code: error?.code ?? null,
+    message: error?.message ?? null,
+  });
+}
+
+async function insertTenantProvisioningRow(input: TenantInsertRowInput): Promise<string> {
+  const db = getServiceClient();
+  const { data, error } = await db
+    .schema('platform')
+    .from('tenants')
+    .insert(buildTenantProvisioningInsertPayload(input))
+    .select('id')
+    .single();
+
+  if (error || !data) {
+    logTenantInsertFailure(input.slug, error);
+    throw mapSupabaseInsertErrorToThrowable(error);
+  }
+
+  return data.id;
 }
 
 function mergeBudgetAutoSuspendFlag(metadata: Json): Json {
@@ -96,7 +239,17 @@ class OnboardingOrchestrator {
 
   async createAndBeginProvisioning(): Promise<string> {
     await this.validateInputs();
+    logger.info('tenant.provisioning.insert.start', {
+      slug: this.slug,
+      owner_email: this.email,
+      plan: this.plan,
+    });
     this.tenantId = await this.createTenantRecord();
+    logger.info('tenant.provisioning.insert.done', {
+      slug: this.slug,
+      tenant_id: this.tenantId,
+      plan: this.plan,
+    });
     await this.logAudit('onboarding_started');
     return this.tenantId;
   }
@@ -177,54 +330,21 @@ class OnboardingOrchestrator {
 
   private async verifyTenantPersisted(tenantId: string): Promise<void> {
     const db = getServiceClient();
-    const { data: verification, error: verifyError } = await db
-      .schema('platform')
-      .from('tenants')
-      .select('id')
-      .eq('id', tenantId)
-      .single();
-
-    if (verifyError || !verification) {
-      const msg = `Tenant insert verification failed: record ${tenantId} not found in database`;
-      console.error('[createTenantRecord] Verification failed:', msg);
-      throw new Error(msg);
-    }
+    await waitForTenantIdReadable(db, tenantId, this.slug);
   }
 
   private async createTenantRecord(): Promise<string> {
-    const db = getServiceClient();
-    console.warn('[createTenantRecord] Attempting insert for:', this.slug);
-
-    const { data, error } = await db
-      .schema('platform')
-      .from('tenants')
-      .insert({
-        slug: this.slug,
-        name: this.slug,
-        owner_email: this.email,
-        plan: this.plan,
-        status: 'provisioning',
-        progress: 0,
-        stripe_customer_id: this.stripeCustomerId ?? null,
-      })
-      .select('id')
-      .single();
-
-    if (error || !data) {
-      console.error('[createTenantRecord] Insert failed:', error?.code, error?.message);
-      const err = new Error(error?.message ?? 'Failed to create tenant') as Error & {
-        code?: string;
-      };
-      if (error?.code) {
-        err.code = error.code;
-      }
-      throw err;
-    }
-
-    const tenantId = data.id;
-    console.warn('[createTenantRecord] Insert returned id:', tenantId);
+    const tenantId = await insertTenantProvisioningRow({
+      slug: this.slug,
+      email: this.email,
+      plan: this.plan,
+      stripeCustomerId: this.stripeCustomerId,
+    });
     await this.verifyTenantPersisted(tenantId);
-    console.warn('[createTenantRecord] Verification SUCCESS, id:', tenantId);
+    logger.info('tenant.provisioning.insert.verified', {
+      slug: this.slug,
+      tenant_id: tenantId,
+    });
     return tenantId;
   }
 

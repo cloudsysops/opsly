@@ -1,6 +1,7 @@
 import { jsonError, parseJsonBody, serverErrorLogged, tryRoute } from '../../../lib/api-response';
 import { requireAdminAccess, requireAdminAccessUnlessDemoRead } from '../../../lib/auth';
 import { HTTP_STATUS } from '../../../lib/constants';
+import { logger } from '../../../lib/logger';
 import { provisionTenant } from '../../../lib/orchestrator';
 import { getServiceClient } from '../../../lib/supabase';
 import type { TenantStatus } from '../../../lib/supabase/types';
@@ -14,6 +15,46 @@ function isUniqueViolation(message: string, code: string | undefined): boolean {
   return (
     code === '23505' || message.includes('duplicate key') || message.includes('unique constraint')
   );
+}
+
+const TENANT_ROUTE_PERSISTENCE_CHECK = {
+  MAX_ATTEMPTS: 5,
+  SLEEP_MS: 150,
+} as const;
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
+
+async function assertTenantPersisted(tenantId: string): Promise<void> {
+  for (let attempt = 1; attempt <= TENANT_ROUTE_PERSISTENCE_CHECK.MAX_ATTEMPTS; attempt += 1) {
+    const { data, error } = await getServiceClient()
+      .schema('platform')
+      .from('tenants')
+      .select('id, deleted_at')
+      .eq('id', tenantId)
+      .maybeSingle();
+
+    if (error) {
+      throw new Error(`Tenant post-check failed: ${error.message}`);
+    }
+    if (data && data.deleted_at === null) {
+      return;
+    }
+    if (data && data.deleted_at !== null) {
+      throw new Error(`Tenant post-check failed: tenant ${tenantId} is soft-deleted`);
+    }
+    if (attempt < TENANT_ROUTE_PERSISTENCE_CHECK.MAX_ATTEMPTS) {
+      await sleep(TENANT_ROUTE_PERSISTENCE_CHECK.SLEEP_MS);
+    }
+  }
+  logger.error('tenant.route.post_check_not_found', {
+    tenant_id: tenantId,
+    attempts: TENANT_ROUTE_PERSISTENCE_CHECK.MAX_ATTEMPTS,
+  });
+  throw new Error(`Tenant post-check failed: tenant ${tenantId} not found`);
 }
 
 export function GET(request: Request): Promise<Response> {
@@ -82,12 +123,15 @@ export async function POST(request: Request): Promise<Response> {
   const { slug, owner_email, plan, stripe_customer_id } = parsed.data;
 
   try {
+    logger.info('tenant.route.create.request', { slug, owner_email, plan });
     const result = await provisionTenant({
       slug,
       owner_email,
       plan,
       stripe_customer_id,
     });
+    await assertTenantPersisted(result.id);
+    logger.info('tenant.route.create.accepted', { tenant_id: result.id, slug: result.slug });
     return Response.json(
       { id: result.id, slug: result.slug, status: result.status },
       { status: 202 }
