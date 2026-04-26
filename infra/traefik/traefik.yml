@@ -12,7 +12,7 @@ api:
 
 entryPoints:
   web:
-    address: ":80"
+    address: ':80'
     http:
       redirections:
         entryPoint:
@@ -20,13 +20,13 @@ entryPoints:
           scheme: https
           permanent: true
   websecure:
-    address: ":443"
+    address: ':443'
 
 # Provider Docker: endpoint explícito al socket del host
 # exposedByDefault: false = solo contenedores con traefik.enable=true; network = IP del backend en traefik-public.
 providers:
   docker:
-    endpoint: "unix:///var/run/docker.sock"
+    endpoint: 'unix:///var/run/docker.sock'
     exposedByDefault: false
     network: traefik-public
   file:
@@ -39,4 +39,4 @@ certificatesResolvers:
       storage: /letsencrypt/acme.json
       dnsChallenge:
         provider: cloudflare
-        delayBeforeCheck: "20"
+        delayBeforeCheck: '20'

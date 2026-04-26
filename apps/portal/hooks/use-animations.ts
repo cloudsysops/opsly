@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useState } from 'react';
 
 export function useFadeIn(duration = 300): {
   isVisible: boolean;
@@ -27,8 +27,8 @@ export function useFadeIn(duration = 300): {
 }
 
 export function useSlideIn(
-  direction: "up" | "down" | "left" | "right" = "up",
-  duration = 300,
+  direction: 'up' | 'down' | 'left' | 'right' = 'up',
+  duration = 300
 ): {
   isVisible: boolean;
   show: () => void;
@@ -44,11 +44,11 @@ export function useSlideIn(
     setIsVisible(false);
   }, []);
 
-  const transforms: Record<"up" | "down" | "left" | "right", string> = {
-    up: "translateY(20px)",
-    down: "translateY(-20px)",
-    left: "translateX(20px)",
-    right: "translateX(-20px)",
+  const transforms: Record<'up' | 'down' | 'left' | 'right', string> = {
+    up: 'translateY(20px)',
+    down: 'translateY(-20px)',
+    left: 'translateX(20px)',
+    right: 'translateX(-20px)',
   };
 
   return {
@@ -57,13 +57,16 @@ export function useSlideIn(
     hide,
     style: {
       opacity: isVisible ? 1 : 0,
-      transform: isVisible ? "none" : transforms[direction],
+      transform: isVisible ? 'none' : transforms[direction],
       transition: `opacity ${duration}ms ease-out, transform ${duration}ms ease-out`,
     },
   };
 }
 
-export function useStagger(childrenCount: number, staggerDelay = 50): Array<{ style: { animationDelay: string } }> {
+export function useStagger(
+  childrenCount: number,
+  staggerDelay = 50
+): Array<{ style: { animationDelay: string } }> {
   return Array.from({ length: childrenCount }, (_, i) => ({
     style: {
       animationDelay: `${i * staggerDelay}ms`,

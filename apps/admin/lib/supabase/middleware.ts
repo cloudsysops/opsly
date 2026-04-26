@@ -1,10 +1,8 @@
-import { createServerClient, type SetAllCookies } from "@supabase/ssr";
-import { type NextRequest, NextResponse } from "next/server";
+import { createServerClient, type SetAllCookies } from '@supabase/ssr';
+import { type NextRequest, NextResponse } from 'next/server';
 
-export async function updateSession(
-  request: NextRequest,
-): Promise<NextResponse> {
-  const publicDemo = process.env.NEXT_PUBLIC_ADMIN_PUBLIC_DEMO === "true";
+export async function updateSession(request: NextRequest): Promise<NextResponse> {
+  const publicDemo = process.env.NEXT_PUBLIC_ADMIN_PUBLIC_DEMO === 'true';
   if (publicDemo) {
     return NextResponse.next({ request });
   }
@@ -43,17 +41,17 @@ export async function updateSession(
   } = await supabase.auth.getUser();
 
   const pathname = request.nextUrl.pathname;
-  const isLogin = pathname === "/login" || pathname.startsWith("/login/");
+  const isLogin = pathname === '/login' || pathname.startsWith('/login/');
 
   if (!user && !isLogin) {
     const redirectUrl = request.nextUrl.clone();
-    redirectUrl.pathname = "/login";
+    redirectUrl.pathname = '/login';
     return NextResponse.redirect(redirectUrl);
   }
 
   if (user && isLogin) {
     const redirectUrl = request.nextUrl.clone();
-    redirectUrl.pathname = "/dashboard";
+    redirectUrl.pathname = '/dashboard';
     return NextResponse.redirect(redirectUrl);
   }
 

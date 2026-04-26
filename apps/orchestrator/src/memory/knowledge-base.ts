@@ -3,10 +3,10 @@
  * Tabla `public.opsly_knowledge_store` (ver migración SQL). Compatible con sustituir el
  * almacenamiento interno por `PGVectorStore` de `@llamaindex/postgres` cuando se unifique el embed model.
  */
-import pg from "pg";
+import pg from 'pg';
 
-const TABLE = "opsly_knowledge_store";
-const EMBED_MODEL = "text-embedding-3-small";
+const TABLE = 'opsly_knowledge_store';
+const EMBED_MODEL = 'text-embedding-3-small';
 const EMBED_DIM = 1536;
 const TOP_K = 5;
 
@@ -33,7 +33,7 @@ async function ensureSchema(client: pg.PoolClient): Promise<void> {
   if (schemaEnsured) {
     return;
   }
-  await client.query("CREATE EXTENSION IF NOT EXISTS vector");
+  await client.query('CREATE EXTENSION IF NOT EXISTS vector');
   await client.query(`
     CREATE TABLE IF NOT EXISTS public.${TABLE} (
       id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -58,13 +58,13 @@ async function ensureSchema(client: pg.PoolClient): Promise<void> {
 async function embedText(text: string): Promise<number[]> {
   const key = process.env.OPENAI_API_KEY?.trim();
   if (!key) {
-    throw new Error("OPENAI_API_KEY requerido para embeddings de knowledge-base");
+    throw new Error('OPENAI_API_KEY requerido para embeddings de knowledge-base');
   }
-  const res = await fetch("https://api.openai.com/v1/embeddings", {
-    method: "POST",
+  const res = await fetch('https://api.openai.com/v1/embeddings', {
+    method: 'POST',
     headers: {
       Authorization: `Bearer ${key}`,
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     },
     body: JSON.stringify({
       model: EMBED_MODEL,
@@ -80,13 +80,13 @@ async function embedText(text: string): Promise<number[]> {
   };
   const emb = body.data?.[0]?.embedding;
   if (!emb || emb.length !== EMBED_DIM) {
-    throw new Error("embedding inválido");
+    throw new Error('embedding inválido');
   }
   return emb;
 }
 
 function vectorLiteral(values: number[]): string {
-  return `[${values.join(",")}]`;
+  return `[${values.join(',')}]`;
 }
 
 /**
@@ -94,11 +94,11 @@ function vectorLiteral(values: number[]): string {
  */
 export async function indexDocument(
   text: string,
-  metadata: Record<string, unknown>,
+  metadata: Record<string, unknown>
 ): Promise<{ ok: boolean; error?: string }> {
   const p = getPool();
   if (!p) {
-    return { ok: false, error: "DATABASE_URL no configurado" };
+    return { ok: false, error: 'DATABASE_URL no configurado' };
   }
   const client = await p.connect();
   try {
@@ -107,7 +107,7 @@ export async function indexDocument(
     await client.query(
       `INSERT INTO public.${TABLE} (content, metadata, embedding)
        VALUES ($1, $2::jsonb, $3::vector)`,
-      [text, JSON.stringify(metadata), vectorLiteral(emb)],
+      [text, JSON.stringify(metadata), vectorLiteral(emb)]
     );
     return { ok: true };
   } catch (e) {
@@ -139,12 +139,12 @@ export async function retrieve(query: string): Promise<string[]> {
       `SELECT content FROM public.${TABLE}
        ORDER BY embedding <=> $1::vector
        LIMIT $2`,
-      [vec, TOP_K],
+      [vec, TOP_K]
     );
     return rows.map((r) => r.content);
   } catch (e) {
     process.stderr.write(
-      `[knowledge-base] retrieve: ${e instanceof Error ? e.message : String(e)}\n`,
+      `[knowledge-base] retrieve: ${e instanceof Error ? e.message : String(e)}\n`
     );
     return [];
   } finally {

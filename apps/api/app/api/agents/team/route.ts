@@ -63,9 +63,7 @@ async function loadTeamConfig(): Promise<TeamConfig> {
     }
   }
 
-  throw new Error(
-    `agents-team.json not found/readable (${String(lastError ?? 'unknown error')})`,
-  );
+  throw new Error(`agents-team.json not found/readable (${String(lastError ?? 'unknown error')})`);
 }
 
 export async function GET(req: NextRequest): Promise<Response> {
@@ -85,7 +83,7 @@ export async function GET(req: NextRequest): Promise<Response> {
       {
         error: error instanceof Error ? error.message : 'Unable to load agents team config',
       },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

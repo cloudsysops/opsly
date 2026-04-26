@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 export const approvalMetricsSchema = z.object({
   success_rate: z.number().min(0).max(100),
@@ -14,7 +14,7 @@ export const qualityGatesSchema = z.object({
 });
 
 export const approvalDecisionSchema = z.object({
-  status: z.enum(["APPROVE", "REJECT", "NEEDS_INFO"]),
+  status: z.enum(['APPROVE', 'REJECT', 'NEEDS_INFO']),
   confidence: z.number().int().min(0).max(100),
   reasoning: z.string().min(1),
   recommendations: z.array(z.string()).default([]),

@@ -53,17 +53,18 @@ This document is the single technical authority for runtime architecture at the 
 - `AGENTS.md`
 - `docs/adr/ADR-031-experimental-consolidation.md`
 - `docs/adr/ADR-032-scripts-organization.md`
+
 # Opsly Architecture
 
 ## Control plane vs data plane
 
-| Aspect | Control plane | Data plane |
-|--------|---------------|------------|
-| Role | Billing, tenancy metadata, orchestration, admin API | Per-tenant n8n, Uptime Kuma, and their persisted volumes |
-| Runs as | Next.js app + workers using BullMQ | Docker Compose stacks generated per tenant |
-| Data | Supabase `platform` schema, Stripe, Redis job metadata | Tenant Postgres schemas (`tenant_{slug}`), container volumes |
-| Ingress | Traefik → platform host (e.g. `admin.*`) | Traefik → per-tenant hosts (`n8n-{slug}.*`, `uptime-{slug}.*`) |
-| Scaling | Horizontal app replicas sharing Redis/Supabase | More tenants → more container sets; port pool limits concurrency |
+| Aspect  | Control plane                                          | Data plane                                                       |
+| ------- | ------------------------------------------------------ | ---------------------------------------------------------------- |
+| Role    | Billing, tenancy metadata, orchestration, admin API    | Per-tenant n8n, Uptime Kuma, and their persisted volumes         |
+| Runs as | Next.js app + workers using BullMQ                     | Docker Compose stacks generated per tenant                       |
+| Data    | Supabase `platform` schema, Stripe, Redis job metadata | Tenant Postgres schemas (`tenant_{slug}`), container volumes     |
+| Ingress | Traefik → platform host (e.g. `admin.*`)               | Traefik → per-tenant hosts (`n8n-{slug}.*`, `uptime-{slug}.*`)   |
+| Scaling | Horizontal app replicas sharing Redis/Supabase         | More tenants → more container sets; port pool limits concurrency |
 
 ## Onboarding flow
 

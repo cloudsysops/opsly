@@ -7,6 +7,7 @@
 
 Sin Cloudflare Proxy ON, la IP pública del VPS (`157.245.223.7`) queda expuesta en DNS.
 Con Proxy ON:
+
 - La IP origen queda **oculta** a atacantes.
 - Cloudflare actúa como **WAF** y absorbe ataques DDoS.
 - Traefik sigue resolviendo TLS mediante `dnsChallenge` (no `httpChallenge`), lo que funciona
@@ -16,12 +17,12 @@ Con Proxy ON:
 
 ## Prerequisitos
 
-| Requisito | Dónde verificar |
-|-----------|-----------------|
-| `CF_DNS_API_TOKEN` en Doppler `prd` | `doppler secrets get CF_DNS_API_TOKEN --plain` |
-| Traefik config usa `dnsChallenge.provider: cloudflare` | `infra/traefik/traefik.yml` |
-| `CF_DNS_API_TOKEN` en entorno del contenedor Traefik | `infra/docker-compose.platform.yml` |
-| Token CF tiene permisos **Zone:DNS:Edit** en la zona `ops.smiletripcare.com` | Dashboard CF → Profile → API Tokens |
+| Requisito                                                                    | Dónde verificar                                |
+| ---------------------------------------------------------------------------- | ---------------------------------------------- |
+| `CF_DNS_API_TOKEN` en Doppler `prd`                                          | `doppler secrets get CF_DNS_API_TOKEN --plain` |
+| Traefik config usa `dnsChallenge.provider: cloudflare`                       | `infra/traefik/traefik.yml`                    |
+| `CF_DNS_API_TOKEN` en entorno del contenedor Traefik                         | `infra/docker-compose.platform.yml`            |
+| Token CF tiene permisos **Zone:DNS:Edit** en la zona `ops.smiletripcare.com` | Dashboard CF → Profile → API Tokens            |
 
 ---
 
@@ -29,7 +30,7 @@ Con Proxy ON:
 
 1. Ir a **Cloudflare Dashboard → Profile → API Tokens → Create Token**.
 2. Usar plantilla **"Edit zone DNS"**.
-3. En *Zone Resources*: seleccionar `smiletripcare.com`.
+3. En _Zone Resources_: seleccionar `smiletripcare.com`.
 4. Guardar el token generado.
 5. Cargarlo en Doppler:
 
@@ -47,7 +48,7 @@ doppler secrets set CF_DNS_API_TOKEN --project ops-intcloudsysops --config prd
 1. Ir a **Cloudflare Dashboard → smiletripcare.com → DNS → Records**.
 2. Por cada registro que apunte a `157.245.223.7`:
    - `ops` (`A` → IP)
-   - `*.ops` (`A` → IP)  
+   - `*.ops` (`A` → IP)
    - `api.ops`, `admin.ops`, `portal.ops`, `web.ops` (si son registros explícitos)
 3. Hacer clic en la **nube gris** → cambiar a **nube naranja** (Proxy: ON).
 4. Guardar.
@@ -65,6 +66,7 @@ curl -sI https://api.ops.smiletripcare.com/api/health | grep -i cf-ray
 ```
 
 Respuesta esperada:
+
 ```
 cf-ray: 8a1b2c3d4e5f6789-MAD
 ```
@@ -113,6 +115,7 @@ https://www.cloudflare.com/ips/
 ## Estado del checklist de seguridad
 
 Tras completar esta guía, marcar en `docs/SECURITY_CHECKLIST.md`:
+
 - `[x]` Cloudflare Proxy ON para `*.ops.smiletripcare.com`
 - `[x]` `CF_DNS_API_TOKEN` en Doppler `prd`
 - `[x]` Traefik `api.insecure: false` (sin dashboard expuesto)

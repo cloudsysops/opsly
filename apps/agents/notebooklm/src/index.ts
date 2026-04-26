@@ -1,12 +1,12 @@
-import { spawn } from "node:child_process";
-import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
+import { spawn } from 'node:child_process';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 /** Resuelve client.py junto al JS compilado (dist/) o en desarrollo (src/). */
 export function resolvePythonClientPath(): string {
-  return join(__dirname, "client.py");
+  return join(__dirname, 'client.py');
 }
 
 export interface NotebookLMCommand {
@@ -23,12 +23,12 @@ export interface NotebookLMCommand {
   output_path?: string;
   quiz_output_path?: string;
   orientation?: string;
-  difficulty?: "easy" | "medium" | "hard";
-  mode?: "fast" | "deep";
+  difficulty?: 'easy' | 'medium' | 'hard';
+  mode?: 'fast' | 'deep';
   name?: string;
-  source_type?: "url" | "text" | "file";
+  source_type?: 'url' | 'text' | 'file';
   auto_import?: boolean;
-  research_source?: "web" | "drive";
+  research_source?: 'web' | 'drive';
 }
 
 export interface NotebookLMResult {
@@ -45,31 +45,31 @@ export interface NotebookLMResult {
 }
 
 export interface NotebookLMTool {
-  name: "notebooklm";
+  name: 'notebooklm';
   description: string;
-  requiredScope: "agents:write";
+  requiredScope: 'agents:write';
   execute: (command: NotebookLMCommand) => Promise<NotebookLMResult>;
 }
 
 function runPythonClient(command: NotebookLMCommand): Promise<string> {
   const script = resolvePythonClientPath();
   return new Promise((resolve, reject) => {
-    const child = spawn("python3", [script], {
-      stdio: ["pipe", "pipe", "pipe"],
+    const child = spawn('python3', [script], {
+      stdio: ['pipe', 'pipe', 'pipe'],
       env: { ...process.env },
     });
-    let out = "";
-    let err = "";
-    child.stdout.setEncoding("utf8");
-    child.stderr.setEncoding("utf8");
-    child.stdout.on("data", (c: string) => {
+    let out = '';
+    let err = '';
+    child.stdout.setEncoding('utf8');
+    child.stderr.setEncoding('utf8');
+    child.stdout.on('data', (c: string) => {
       out += c;
     });
-    child.stderr.on("data", (c: string) => {
+    child.stderr.on('data', (c: string) => {
       err += c;
     });
-    child.on("error", reject);
-    child.on("close", (code) => {
+    child.on('error', reject);
+    child.on('close', (code) => {
       if (code !== 0) {
         reject(new Error(err || `python3 exit ${code}`));
         return;
@@ -82,16 +82,14 @@ function runPythonClient(command: NotebookLMCommand): Promise<string> {
 }
 
 /** Invoca `client.py` vía stdin (sin shell) para evitar inyección en JSON. */
-export async function executeNotebookLM(
-  command: NotebookLMCommand,
-): Promise<NotebookLMResult> {
+export async function executeNotebookLM(command: NotebookLMCommand): Promise<NotebookLMResult> {
   try {
     const stdout = await runPythonClient(command);
     return JSON.parse(stdout) as NotebookLMResult;
   } catch (err) {
     return {
       success: false,
-      error: err instanceof Error ? err.message : "Error desconocido",
+      error: err instanceof Error ? err.message : 'Error desconocido',
     };
   }
 }
@@ -101,9 +99,9 @@ export async function executeNotebookLM(
  * Enforced as experimental through NOTEBOOKLM_ENABLED in Python client.
  */
 export const notebookLMTool: NotebookLMTool = {
-  name: "notebooklm",
+  name: 'notebooklm',
   description:
-    "NotebookLM experimental tool: create notebook, add sources, and generate artifacts.",
-  requiredScope: "agents:write",
+    'NotebookLM experimental tool: create notebook, add sources, and generate artifacts.',
+  requiredScope: 'agents:write',
   execute: executeNotebookLM,
 };

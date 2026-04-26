@@ -4,14 +4,14 @@ Referencia operativa para [`scripts/validate-doppler-vars.sh`](../scripts/valida
 
 ## Archivos
 
-| Archivo | Propósito |
-|---------|-----------|
-| `scripts/validate-doppler-vars.sh` | Valida token + presencia de variables (no imprime valores). |
-| `config/doppler-ci-required.txt` | Lista por defecto (usada si no hay archivo por config). |
-| `config/doppler-ci-required-prd.txt` | Opcional: solo `prd`. |
-| `config/doppler-ci-required-stg.txt` | Opcional: solo `stg` (menos exigente si `stg` no replica todo `prd`). |
-| `.github/workflows/validate-doppler.yml` | CI en cada push/PR. |
-| `docs/DOPPLER-VARS.md` | Variables y entornos. |
+| Archivo                                  | Propósito                                                             |
+| ---------------------------------------- | --------------------------------------------------------------------- |
+| `scripts/validate-doppler-vars.sh`       | Valida token + presencia de variables (no imprime valores).           |
+| `config/doppler-ci-required.txt`         | Lista por defecto (usada si no hay archivo por config).               |
+| `config/doppler-ci-required-prd.txt`     | Opcional: solo `prd`.                                                 |
+| `config/doppler-ci-required-stg.txt`     | Opcional: solo `stg` (menos exigente si `stg` no replica todo `prd`). |
+| `.github/workflows/validate-doppler.yml` | CI en cada push/PR.                                                   |
+| `docs/DOPPLER-VARS.md`                   | Variables y entornos.                                                 |
 
 **Uso del script (dos argumentos obligatorios):** `<project> <config>`
 

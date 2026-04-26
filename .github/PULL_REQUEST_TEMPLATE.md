@@ -1,11 +1,11 @@
-<!--
-================================================================================
-PLANTILLA DE PULL REQUEST — Opsly (.github/PULL_REQUEST_TEMPLATE.md)
-================================================================================
+# <!--
+
+# PLANTILLA DE PULL REQUEST — Opsly (.github/PULL_REQUEST_TEMPLATE.md)
+
 Qué hace: rellena el cuerpo del PR en GitHub con secciones y checklist comunes.
 Cuándo se activa: al crear un PR (GitHub inserta este texto en la descripción).
 Reutilizar en otro proyecto: copia el archivo, cambia checklist (scripts, CI) y
-  enlaces; renombra equipos/Doppler si aplica.
+enlaces; renombra equipos/Doppler si aplica.
 ================================================================================
 -->
 

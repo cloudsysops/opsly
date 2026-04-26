@@ -1,17 +1,11 @@
-import {
-  parsePortalMode,
-  parsePortalServices,
-  portalUrlReachable,
-} from "./portal-me";
-import type { TrustedPortalSession } from "./portal-trusted-identity";
+import { parsePortalMode, parsePortalServices, portalUrlReachable } from './portal-me';
+import type { TrustedPortalSession } from './portal-trusted-identity';
 
 /**
  * JSON de sesión portal (compartido por `GET /api/portal/me` y
  * `GET /api/portal/tenant/[slug]/me`).
  */
-export async function respondTrustedPortalMe(
-  session: TrustedPortalSession,
-): Promise<Response> {
+export async function respondTrustedPortalMe(session: TrustedPortalSession): Promise<Response> {
   const { user, tenant: lookup } = session;
   const svc = parsePortalServices(lookup.services);
   const [n8n_reachable, uptime_reachable] = await Promise.all([

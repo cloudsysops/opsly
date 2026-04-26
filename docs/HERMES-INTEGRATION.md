@@ -14,13 +14,13 @@ No se añade un workspace nuevo ni un segundo gateway LLM.
 
 ## Activación
 
-| Variable | Efecto |
-|----------|--------|
-| `HERMES_ENABLED=true` | Arranca `HermesOrchestrationWorker` y registra un job repetible `hermes-tick` cada 5 minutos (cron `*/5 * * * *`). |
-| `HERMES_SPRINT` | Número de sprint para filas en `hermes_metrics` (default `1`). |
-| `HERMES_DISPATCH_OPENCLAW` | Si `true`, en rutas `cursor` encola un job BullMQ `cursor` con metadata Hermes; en rutas `ollama` encola job `ollama` (LLM local vía gateway). |
-| `HERMES_LOCAL_LLM_FIRST` | Si `true`, tareas tipo `decision` con esfuerzo `S` se enrutan a `ollama` en lugar de `claude` (ADR-024). Requiere `HERMES_DISPATCH_OPENCLAW=true`, worker Ollama y `OLLAMA_URL` / gateway alineados. |
-| `HERMES_DISCORD_NOTIFY` | Si `true`, envía avisos Discord al avanzar tareas. |
+| Variable                   | Efecto                                                                                                                                                                                               |
+| -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `HERMES_ENABLED=true`      | Arranca `HermesOrchestrationWorker` y registra un job repetible `hermes-tick` cada 5 minutos (cron `*/5 * * * *`).                                                                                   |
+| `HERMES_SPRINT`            | Número de sprint para filas en `hermes_metrics` (default `1`).                                                                                                                                       |
+| `HERMES_DISPATCH_OPENCLAW` | Si `true`, en rutas `cursor` encola un job BullMQ `cursor` con metadata Hermes; en rutas `ollama` encola job `ollama` (LLM local vía gateway).                                                       |
+| `HERMES_LOCAL_LLM_FIRST`   | Si `true`, tareas tipo `decision` con esfuerzo `S` se enrutan a `ollama` en lugar de `claude` (ADR-024). Requiere `HERMES_DISPATCH_OPENCLAW=true`, worker Ollama y `OLLAMA_URL` / gateway alineados. |
+| `HERMES_DISCORD_NOTIFY`    | Si `true`, envía avisos Discord al avanzar tareas.                                                                                                                                                   |
 
 Requiere `SUPABASE_URL` (o `NEXT_PUBLIC_SUPABASE_URL`) y `SUPABASE_SERVICE_ROLE_KEY` para persistencia.
 

@@ -1,30 +1,24 @@
-"use client";
+'use client';
 
-import { useMemo, useState } from "react";
-import useSWR from "swr";
-import Link from "next/link";
-import {
-  ArrowLeft,
-  Boxes,
-  RefreshCw,
-  Search,
-  Server,
-} from "lucide-react";
-import { KpiCard } from "@/components/dashboard/KpiCard";
-import { Badge, badgeVariants } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Progress } from "@/components/ui/progress";
+import { useMemo, useState } from 'react';
+import useSWR from 'swr';
+import Link from 'next/link';
+import { ArrowLeft, Boxes, RefreshCw, Search, Server } from 'lucide-react';
+import { KpiCard } from '@/components/dashboard/KpiCard';
+import { Badge, badgeVariants } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Progress } from '@/components/ui/progress';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Separator } from "@/components/ui/separator";
-import { Skeleton } from "@/components/ui/skeleton";
+} from '@/components/ui/select';
+import { Separator } from '@/components/ui/separator';
+import { Skeleton } from '@/components/ui/skeleton';
 import {
   Table,
   TableBody,
@@ -32,35 +26,28 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { getDockerContainers } from "@/lib/api-client";
-import { cn } from "@/lib/utils";
-import type { AdminDockerContainerRow } from "@/lib/types";
-import type { VariantProps } from "class-variance-authority";
+} from '@/components/ui/table';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { getDockerContainers } from '@/lib/api-client';
+import { cn } from '@/lib/utils';
+import type { AdminDockerContainerRow } from '@/lib/types';
+import type { VariantProps } from 'class-variance-authority';
 
 const REFRESH_MS = 20_000;
-const SWR_KEY = "admin-docker-containers";
+const SWR_KEY = 'admin-docker-containers';
 
-function dockerStateVariant(
-  state: string,
-): VariantProps<typeof badgeVariants>["variant"] {
+function dockerStateVariant(state: string): VariantProps<typeof badgeVariants>['variant'] {
   const s = state.toLowerCase();
-  if (s === "running") {
-    return "green";
+  if (s === 'running') {
+    return 'green';
   }
-  if (s === "restarting" || s === "paused") {
-    return "yellow";
+  if (s === 'restarting' || s === 'paused') {
+    return 'yellow';
   }
-  if (s === "dead" || s === "error") {
-    return "red";
+  if (s === 'dead' || s === 'error') {
+    return 'red';
   }
-  return "gray";
+  return 'gray';
 }
 
 function DockerStateBadge({ state }: Readonly<{ state: string }>) {
@@ -77,10 +64,10 @@ function DockerStateBadge({ state }: Readonly<{ state: string }>) {
 function filterRows(
   rows: AdminDockerContainerRow[],
   q: string,
-  stateKey: string,
+  stateKey: string
 ): AdminDockerContainerRow[] {
   let next = rows;
-  if (stateKey !== "all") {
+  if (stateKey !== 'all') {
     next = next.filter((r) => r.state.toLowerCase() === stateKey);
   }
   const needle = q.trim().toLowerCase();
@@ -88,8 +75,8 @@ function filterRows(
     return next;
   }
   return next.filter((r) => {
-    const hay = [r.id, r.image, r.state, r.status, r.names.join(" "), r.ports]
-      .join(" ")
+    const hay = [r.id, r.image, r.state, r.status, r.names.join(' '), r.ports]
+      .join(' ')
       .toLowerCase();
     return hay.includes(needle);
   });
@@ -97,7 +84,7 @@ function filterRows(
 
 function countByState(rows: AdminDockerContainerRow[]): Record<string, number> {
   return rows.reduce<Record<string, number>>((acc, r) => {
-    const k = r.state.toLowerCase() || "unknown";
+    const k = r.state.toLowerCase() || 'unknown';
     acc[k] = (acc[k] ?? 0) + 1;
     return acc;
   }, {});
@@ -110,14 +97,14 @@ function TruncatedCell({
   children: string;
   className?: string;
 }>) {
-  const text = children.length > 0 ? children : "—";
+  const text = children.length > 0 ? children : '—';
   return (
     <Tooltip>
       <TooltipTrigger asChild>
         <span
           className={cn(
-            "block max-w-[min(280px,28vw)] cursor-default truncate font-mono text-xs",
-            className,
+            'block max-w-[min(280px,28vw)] cursor-default truncate font-mono text-xs',
+            className
           )}
         >
           {text}
@@ -148,24 +135,21 @@ function MachinesLoadingSkeleton() {
 }
 
 export function MachinesDockerView() {
-  const [query, setQuery] = useState("");
-  const [stateFilter, setStateFilter] = useState("all");
+  const [query, setQuery] = useState('');
+  const [stateFilter, setStateFilter] = useState('all');
 
   const { data, error, isLoading, mutate, isValidating } = useSWR(
     SWR_KEY,
     () => getDockerContainers(),
-    { refreshInterval: REFRESH_MS, revalidateOnFocus: false },
+    { refreshInterval: REFRESH_MS, revalidateOnFocus: false }
   );
 
   const totals = useMemo(() => countByState(data?.containers ?? []), [data?.containers]);
-  const stateKeys = useMemo(
-    () => Object.keys(totals).sort((a, b) => a.localeCompare(b)),
-    [totals],
-  );
+  const stateKeys = useMemo(() => Object.keys(totals).sort((a, b) => a.localeCompare(b)), [totals]);
 
   const filtered = useMemo(
     () => filterRows(data?.containers ?? [], query, stateFilter),
-    [data?.containers, query, stateFilter],
+    [data?.containers, query, stateFilter]
   );
 
   const total = data?.containers.length ?? 0;
@@ -181,23 +165,21 @@ export function MachinesDockerView() {
               <div className="flex h-9 w-9 items-center justify-center rounded border border-ops-border bg-ops-bg">
                 <Boxes className="h-5 w-5 text-ops-green" aria-hidden />
               </div>
-              <h1 className="font-mono text-lg tracking-tight text-ops-green">
-                Máquinas · Docker
-              </h1>
+              <h1 className="font-mono text-lg tracking-tight text-ops-green">Máquinas · Docker</h1>
             </div>
             <p className="max-w-2xl font-sans text-sm leading-relaxed text-ops-gray">
-              Inventario del host donde corre la API. Equivalente a{" "}
+              Inventario del host donde corre la API. Equivalente a{' '}
               <code className="rounded bg-ops-border/60 px-1.5 py-0.5 font-mono text-xs text-neutral-300">
                 docker ps -a
               </code>
-              . Requiere socket Docker en el servicio{" "}
+              . Requiere socket Docker en el servicio{' '}
               <code className="rounded bg-ops-border/60 px-1 font-mono text-xs">app</code>.
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
             {data?.generated_at ? (
               <span className="font-mono text-xs text-ops-gray">
-                {new Date(data.generated_at).toLocaleString("es")}
+                {new Date(data.generated_at).toLocaleString('es')}
               </span>
             ) : null}
             <Button
@@ -209,7 +191,7 @@ export function MachinesDockerView() {
               className="font-mono text-xs"
             >
               <RefreshCw
-                className={cn("h-3.5 w-3.5", isValidating && "animate-spin")}
+                className={cn('h-3.5 w-3.5', isValidating && 'animate-spin')}
                 aria-hidden
               />
               Actualizar
@@ -245,9 +227,9 @@ export function MachinesDockerView() {
               <CardTitle className="text-sm text-ops-yellow">Docker no disponible</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2 pb-4 pt-0">
-              <p className="font-sans text-sm text-neutral-300">{data.error ?? "Sin detalle"}</p>
+              <p className="font-sans text-sm text-neutral-300">{data.error ?? 'Sin detalle'}</p>
               <p className="font-sans text-xs text-ops-gray">
-                Local: Docker Desktop. VPS: montar{" "}
+                Local: Docker Desktop. VPS: montar{' '}
                 <code className="rounded bg-black/30 px-1 font-mono">/var/run/docker.sock</code>.
               </p>
             </CardContent>
@@ -260,15 +242,11 @@ export function MachinesDockerView() {
               <KpiCard
                 label="Total contenedores"
                 value={total}
-                color={data.truncated ? "ops-yellow" : "ops-gray"}
+                color={data.truncated ? 'ops-yellow' : 'ops-gray'}
                 unit={data.truncated ? `límite ${data.limit}` : undefined}
               />
               <KpiCard label="En ejecución" value={running} color="ops-green" />
-              <KpiCard
-                label="Estados distintos"
-                value={stateKeys.length}
-                color="ops-gray"
-              />
+              <KpiCard label="Estados distintos" value={stateKeys.length} color="ops-gray" />
               <Card className="border-ops-border bg-ops-surface">
                 <CardHeader className="pb-1 pt-3">
                   <CardTitle className="font-sans text-xs font-normal uppercase tracking-wide text-ops-gray">
@@ -303,7 +281,7 @@ export function MachinesDockerView() {
                   Contenedores
                   <span className="ml-2 font-mono text-neutral-300">
                     ({filtered.length}
-                    {filtered.length !== total ? ` / ${total}` : ""})
+                    {filtered.length !== total ? ` / ${total}` : ''})
                   </span>
                 </CardTitle>
                 <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:items-center">
@@ -354,14 +332,14 @@ export function MachinesDockerView() {
                         </TableCell>
                         <TableCell className="align-top text-neutral-200">
                           <TruncatedCell className="text-ops-green">
-                            {row.names.join(", ")}
+                            {row.names.join(', ')}
                           </TruncatedCell>
                         </TableCell>
                         <TableCell className="align-top text-ops-gray">
                           <TruncatedCell>{row.image}</TruncatedCell>
                         </TableCell>
                         <TableCell className="hidden align-top text-ops-gray md:table-cell">
-                          <TruncatedCell>{row.ports.length > 0 ? row.ports : "—"}</TruncatedCell>
+                          <TruncatedCell>{row.ports.length > 0 ? row.ports : '—'}</TruncatedCell>
                         </TableCell>
                         <TableCell className="max-w-[200px] align-top">
                           <p className="line-clamp-2 font-mono text-[11px] leading-snug text-neutral-400">
@@ -383,8 +361,8 @@ export function MachinesDockerView() {
                       className="mt-2"
                       type="button"
                       onClick={() => {
-                        setQuery("");
-                        setStateFilter("all");
+                        setQuery('');
+                        setStateFilter('all');
                       }}
                     >
                       Limpiar filtros

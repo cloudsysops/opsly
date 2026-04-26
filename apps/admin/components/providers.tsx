@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { SWRConfig } from "swr";
-import { TooltipProvider } from "@/components/ui/tooltip";
+import { SWRConfig } from 'swr';
+import { TooltipProvider } from '@/components/ui/tooltip';
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (

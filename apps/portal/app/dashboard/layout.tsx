@@ -1,4 +1,4 @@
-import { FeedbackChatMount } from "@/components/FeedbackChatMount";
+import { FeedbackChatMount } from '@/components/FeedbackChatMount';
 
 export default function DashboardLayout({
   children,

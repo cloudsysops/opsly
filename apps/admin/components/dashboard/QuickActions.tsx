@@ -1,58 +1,50 @@
-"use client";
+'use client';
 
-import { useRouter } from "next/navigation";
-import {
-  Plus,
-  MailPlus,
-  CreditCard,
-  Settings,
-  Users,
-  TrendingUp,
-  Boxes,
-} from "lucide-react";
+import { useRouter } from 'next/navigation';
+import { Plus, MailPlus, CreditCard, Settings, Users, TrendingUp, Boxes } from 'lucide-react';
 
 const actions = [
   {
-    label: "Nuevo Tenant",
-    href: "/tenants?new=true",
+    label: 'Nuevo Tenant',
+    href: '/tenants?new=true',
     icon: Plus,
-    color: "bg-ops-green/10 text-ops-green hover:bg-ops-green/20",
+    color: 'bg-ops-green/10 text-ops-green hover:bg-ops-green/20',
   },
   {
-    label: "Máquinas",
-    href: "/machines",
+    label: 'Máquinas',
+    href: '/machines',
     icon: Boxes,
-    color: "bg-cyan-500/10 text-cyan-400 hover:bg-cyan-500/20",
+    color: 'bg-cyan-500/10 text-cyan-400 hover:bg-cyan-500/20',
   },
   {
-    label: "Invitar",
-    href: "/invitations",
+    label: 'Invitar',
+    href: '/invitations',
     icon: MailPlus,
-    color: "bg-blue-500/10 text-blue-400 hover:bg-blue-500/20",
+    color: 'bg-blue-500/10 text-blue-400 hover:bg-blue-500/20',
   },
   {
-    label: "Costos",
-    href: "/costs",
+    label: 'Costos',
+    href: '/costs',
     icon: CreditCard,
-    color: "bg-yellow-500/10 text-yellow-400 hover:bg-yellow-500/20",
+    color: 'bg-yellow-500/10 text-yellow-400 hover:bg-yellow-500/20',
   },
   {
-    label: "Teams",
-    href: "/agents",
+    label: 'Teams',
+    href: '/agents',
     icon: Users,
-    color: "bg-purple-500/10 text-purple-400 hover:bg-purple-500/20",
+    color: 'bg-purple-500/10 text-purple-400 hover:bg-purple-500/20',
   },
   {
-    label: "Insights",
-    href: "/insights",
+    label: 'Insights',
+    href: '/insights',
     icon: TrendingUp,
-    color: "bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20",
+    color: 'bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20',
   },
   {
-    label: "Settings",
-    href: "/settings",
+    label: 'Settings',
+    href: '/settings',
     icon: Settings,
-    color: "bg-neutral-500/10 text-neutral-400 hover:bg-neutral-500/20",
+    color: 'bg-neutral-500/10 text-neutral-400 hover:bg-neutral-500/20',
   },
 ];
 
@@ -61,9 +53,7 @@ export function QuickActions() {
 
   return (
     <div className="space-y-3">
-      <h2 className="font-mono text-xs uppercase tracking-wider text-ops-gray">
-        Acciones rápidas
-      </h2>
+      <h2 className="font-mono text-xs uppercase tracking-wider text-ops-gray">Acciones rápidas</h2>
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-7">
         {actions.map((action) => {
           const Icon = action.icon;

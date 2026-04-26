@@ -1,9 +1,9 @@
-import Stripe from "stripe";
+import Stripe from 'stripe';
 
-const STRIPE_API_VERSION = "2024-06-20" as unknown as Stripe.LatestApiVersion;
+const STRIPE_API_VERSION = '2024-06-20' as unknown as Stripe.LatestApiVersion;
 
 function isProductionRuntime(): boolean {
-  return process.env.NODE_ENV === "production";
+  return process.env.NODE_ENV === 'production';
 }
 
 function requireEnv(name: string): string {
@@ -16,8 +16,8 @@ function requireEnv(name: string): string {
 
 function resolveStripeSecretKey(): string {
   return isProductionRuntime()
-    ? requireEnv("STRIPE_SECRET_KEY")
-    : requireEnv("STRIPE_TEST_SECRET_KEY");
+    ? requireEnv('STRIPE_SECRET_KEY')
+    : requireEnv('STRIPE_TEST_SECRET_KEY');
 }
 
 let stripeInstance: Stripe | null = null;
@@ -35,7 +35,7 @@ export const stripeClient: Stripe = new Proxy({} as Stripe, {
   get(_target, prop) {
     const stripe = getStripe();
     const value = Reflect.get(stripe, prop, stripe);
-    if (typeof value === "function") {
+    if (typeof value === 'function') {
       return value.bind(stripe);
     }
     return value;

@@ -1,7 +1,7 @@
 /**
  * Hermes InsightGenerator Worker
  * Capa 2: Predictive Business Intelligence Engine
- * 
+ *
  * Genera predicciones automáticas:
  * - Churn Prediction (riesgo de fuga)
  * - Revenue Forecast (proyección de ingresos)
@@ -23,14 +23,14 @@ export enum InsightType {
   ANOMALY_DETECTION = 'anomaly_detection',
   USAGE_PATTERN = 'usage_pattern',
   COST_OPTIMIZATION = 'cost_optimization',
-  GROWTH_OPPORTUNITY = 'growth_opportunity'
+  GROWTH_OPPORTUNITY = 'growth_opportunity',
 }
 
 export enum InsightStatus {
   ACTIVE = 'active',
   READ = 'read',
   ACTIONED = 'actioned',
-  DISMISSED = 'dismissed'
+  DISMISSED = 'dismissed',
 }
 
 export interface TenantInsight {
@@ -81,7 +81,7 @@ function getSupabaseAdmin(): SupabaseClient {
     const supabaseUrl = process.env.SUPABASE_URL!;
     const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
     supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
-      auth: { persistSession: false }
+      auth: { persistSession: false },
     });
   }
   return supabaseAdmin;
@@ -96,7 +96,7 @@ let redis: Redis | null = null;
 function getRedis(): Redis {
   if (!redis) {
     redis = new Redis(process.env.REDIS_URL || 'redis://localhost:6379', {
-      maxRetriesPerRequest: 3
+      maxRetriesPerRequest: 3,
     });
   }
   return redis;
@@ -141,7 +141,10 @@ export function calculateChurnRisk(metrics: TenantMetrics): {
   }
 
   // Factor 3: Engagement de mensajes
-  const messageDecline = ((metrics.message_count_90d - metrics.message_count_30d * 3) / Math.max(metrics.message_count_90d, 1)) * 100;
+  const messageDecline =
+    ((metrics.message_count_90d - metrics.message_count_30d * 3) /
+      Math.max(metrics.message_count_90d, 1)) *
+    100;
   if (messageDecline > 50) {
     riskScore += 0.2;
     factors.push(`Uso de mensajes bajó ${messageDecline.toFixed(0)}%`);
@@ -149,14 +152,14 @@ export function calculateChurnRisk(metrics: TenantMetrics): {
 
   // Normalizar a 0-1
   const normalizedScore = Math.min(1, riskScore);
-  
+
   // Calcular confianza basada en cantidad de datos
   const confidence = Math.min(0.95, 0.6 + (metrics.total_transactions / 100) * 0.2);
 
   return {
     score: normalizedScore,
     confidence,
-    factors
+    factors,
   };
 }
 
@@ -171,8 +174,8 @@ export function calculateRevenueForecast(metrics: TenantMetrics): {
   change_percent: number;
 } {
   const avgMonthly = metrics.total_revenue / 3; // Asumiendo 90 días de datos
-  const trendMultiplier = 1 + (metrics.transaction_trend / 100);
-  
+  const trendMultiplier = 1 + metrics.transaction_trend / 100;
+
   const forecast_30d = avgMonthly * trendMultiplier;
   const change_percent = ((forecast_30d - avgMonthly) / avgMonthly) * 100;
 
@@ -186,7 +189,7 @@ export function calculateRevenueForecast(metrics: TenantMetrics): {
     forecast_30d,
     confidence,
     trend,
-    change_percent
+    change_percent,
   };
 }
 
@@ -204,7 +207,8 @@ export function detectAnomalies(historicalValues: number[]): {
 
   const mean = historicalValues.reduce((a, b) => a + b, 0) / historicalValues.length;
   const stdDev = Math.sqrt(
-    historicalValues.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / historicalValues.length
+    historicalValues.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) /
+      historicalValues.length
   );
 
   if (stdDev === 0) {
@@ -212,10 +216,11 @@ export function detectAnomalies(historicalValues: number[]): {
   }
 
   const anomalies: { index: number; value: number; zScore: number }[] = [];
-  
+
   historicalValues.forEach((value, index) => {
     const zScore = Math.abs((value - mean) / stdDev);
-    if (zScore > 2) { // Umbral: 2 desviaciones estándar
+    if (zScore > 2) {
+      // Umbral: 2 desviaciones estándar
       anomalies.push({ index, value, zScore });
     }
   });
@@ -283,29 +288,40 @@ export class InsightGenerator {
 
     // Calcular métricas
     const txList = transactions || [];
-    const totalRevenue = txList.reduce((sum: number, tx: { amount: number }) => sum + (tx.amount || 0), 0);
-    
+    const totalRevenue = txList.reduce(
+      (sum: number, tx: { amount: number }) => sum + (tx.amount || 0),
+      0
+    );
+
     // Calcular tendencia (comparar última tercera parte con primera tercera parte)
     const thirdLen = Math.floor(txList.length / 3);
     const firstThird = txList.slice(0, thirdLen);
     const lastThird = txList.slice(-thirdLen);
-    
-    const firstThirdAvg = firstThird.length > 0 
-      ? firstThird.reduce((s: number, t: { amount: number }) => s + (t.amount || 0), 0) / firstThird.length
-      : 0;
-    const lastThirdAvg = lastThird.length > 0
-      ? lastThird.reduce((s: number, t: { amount: number }) => s + (t.amount || 0), 0) / lastThird.length
-      : 0;
-    
-    const transactionTrend = firstThirdAvg > 0 
-      ? ((lastThirdAvg - firstThirdAvg) / firstThirdAvg) * 100 
-      : 0;
+
+    const firstThirdAvg =
+      firstThird.length > 0
+        ? firstThird.reduce((s: number, t: { amount: number }) => s + (t.amount || 0), 0) /
+          firstThird.length
+        : 0;
+    const lastThirdAvg =
+      lastThird.length > 0
+        ? lastThird.reduce((s: number, t: { amount: number }) => s + (t.amount || 0), 0) /
+          lastThird.length
+        : 0;
+
+    const transactionTrend =
+      firstThirdAvg > 0 ? ((lastThirdAvg - firstThirdAvg) / firstThirdAvg) * 100 : 0;
 
     // Última actividad
     const allEvents = [...(events90d || [])];
-    const lastActivity = allEvents.length > 0
-      ? new Date(Math.max(...allEvents.map((e: { created_at: string }) => new Date(e.created_at).getTime())))
-      : new Date(0);
+    const lastActivity =
+      allEvents.length > 0
+        ? new Date(
+            Math.max(
+              ...allEvents.map((e: { created_at: string }) => new Date(e.created_at).getTime())
+            )
+          )
+        : new Date(0);
 
     const churnRisk = calculateChurnRisk({
       tenant_id: tenantId,
@@ -314,13 +330,15 @@ export class InsightGenerator {
       total_revenue: totalRevenue,
       avg_transaction_value: txList.length > 0 ? totalRevenue / txList.length : 0,
       last_activity: lastActivity,
-      days_since_last_activity: Math.floor((Date.now() - lastActivity.getTime()) / (1000 * 60 * 60 * 24)),
+      days_since_last_activity: Math.floor(
+        (Date.now() - lastActivity.getTime()) / (1000 * 60 * 60 * 24)
+      ),
       transaction_trend: transactionTrend,
       message_count_30d: (events30d || []).length,
       message_count_90d: (events90d || []).length,
       churn_risk_score: 0,
       predicted_revenue_30d: 0,
-      anomaly_score: 0
+      anomaly_score: 0,
     });
 
     const revenueForecast = calculateRevenueForecast({
@@ -330,13 +348,15 @@ export class InsightGenerator {
       total_revenue: totalRevenue,
       avg_transaction_value: txList.length > 0 ? totalRevenue / txList.length : 0,
       last_activity: lastActivity,
-      days_since_last_activity: Math.floor((Date.now() - lastActivity.getTime()) / (1000 * 60 * 60 * 24)),
+      days_since_last_activity: Math.floor(
+        (Date.now() - lastActivity.getTime()) / (1000 * 60 * 60 * 24)
+      ),
       transaction_trend: transactionTrend,
       message_count_30d: (events30d || []).length,
       message_count_90d: (events90d || []).length,
       churn_risk_score: 0,
       predicted_revenue_30d: 0,
-      anomaly_score: 0
+      anomaly_score: 0,
     });
 
     // Detectar anomalías en transacciones
@@ -350,13 +370,15 @@ export class InsightGenerator {
       total_revenue: totalRevenue,
       avg_transaction_value: txList.length > 0 ? totalRevenue / txList.length : 0,
       last_activity: lastActivity,
-      days_since_last_activity: Math.floor((Date.now() - lastActivity.getTime()) / (1000 * 60 * 60 * 24)),
+      days_since_last_activity: Math.floor(
+        (Date.now() - lastActivity.getTime()) / (1000 * 60 * 60 * 24)
+      ),
       transaction_trend: transactionTrend,
       message_count_30d: (events30d || []).length,
       message_count_90d: (events90d || []).length,
       churn_risk_score: churnRisk.score,
       predicted_revenue_30d: revenueForecast.forecast_30d,
-      anomaly_score: anomalyDetection.overall_anomaly_score
+      anomaly_score: anomalyDetection.overall_anomaly_score,
     };
   }
 
@@ -384,7 +406,7 @@ export class InsightGenerator {
           type: InsightType.CHURN_RISK,
           metrics,
           threshold: 0.3,
-          riskScore: metrics.churn_risk_score
+          riskScore: metrics.churn_risk_score,
         });
         insights.push(churnInsight);
       }
@@ -407,7 +429,6 @@ export class InsightGenerator {
 
       console.log(`Generated ${insights.length} insights for tenant ${tenantId}`);
       return insights;
-
     } finally {
       await redis.del(lockKey);
     }
@@ -418,7 +439,7 @@ export class InsightGenerator {
     data: { type: InsightType; metrics: TenantMetrics; threshold: number; riskScore: number }
   ): Promise<TenantInsight> {
     const { type, metrics, threshold, riskScore } = data;
-    
+
     let title = '';
     let description = '';
     let impact_score = 5;
@@ -446,12 +467,12 @@ export class InsightGenerator {
         metrics,
         threshold,
         riskScore,
-        generated_at: new Date().toISOString()
+        generated_at: new Date().toISOString(),
       },
       confidence: Math.min(0.9, 0.5 + riskScore * 0.3),
       impact_score,
       status: InsightStatus.ACTIVE,
-      expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7 días
+      expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 días
     };
 
     // Guardar en Supabase
@@ -472,7 +493,10 @@ export class InsightGenerator {
     return saved as TenantInsight;
   }
 
-  private async createRevenueInsight(tenantId: string, metrics: TenantMetrics): Promise<TenantInsight | null> {
+  private async createRevenueInsight(
+    tenantId: string,
+    metrics: TenantMetrics
+  ): Promise<TenantInsight | null> {
     const { forecast_30d, confidence, trend, change_percent } = calculateRevenueForecast(metrics);
 
     let title = '';
@@ -504,12 +528,12 @@ export class InsightGenerator {
         confidence,
         trend,
         change_percent,
-        generated_at: new Date().toISOString()
+        generated_at: new Date().toISOString(),
       },
       confidence,
       impact_score,
       status: InsightStatus.ACTIVE,
-      expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // 30 días
+      expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 días
     };
 
     const { data: saved, error } = await this.supabase
@@ -527,7 +551,10 @@ export class InsightGenerator {
     return saved as TenantInsight;
   }
 
-  private async createAnomalyInsight(tenantId: string, metrics: TenantMetrics): Promise<TenantInsight> {
+  private async createAnomalyInsight(
+    tenantId: string,
+    metrics: TenantMetrics
+  ): Promise<TenantInsight> {
     const title = 'Anomalía detectada';
     const description = `Se detectó un pico inusual en la actividad del tenant (score: ${(metrics.anomaly_score * 100).toFixed(0)}%). Esto podría indicar un ataque, un bug, o una oportunidad de viralidad.`;
 
@@ -539,12 +566,12 @@ export class InsightGenerator {
       payload: {
         anomaly_score: metrics.anomaly_score,
         transaction_trend: metrics.transaction_trend,
-        generated_at: new Date().toISOString()
+        generated_at: new Date().toISOString(),
       },
       confidence: 0.75,
       impact_score: 7,
       status: InsightStatus.ACTIVE,
-      expires_at: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000) // 3 días
+      expires_at: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // 3 días
     };
 
     const { data: saved, error } = await this.supabase
@@ -562,7 +589,10 @@ export class InsightGenerator {
     return saved as TenantInsight;
   }
 
-  private async createGrowthInsight(tenantId: string, metrics: TenantMetrics): Promise<TenantInsight> {
+  private async createGrowthInsight(
+    tenantId: string,
+    metrics: TenantMetrics
+  ): Promise<TenantInsight> {
     const title = '¡Momento de crecimiento!';
     const description = `El tenant está creciendo un ${metrics.transaction_trend.toFixed(0)}%. Es el momento ideal para ofrecer upgrade a plan superior o servicios adicionales.`;
 
@@ -575,12 +605,12 @@ export class InsightGenerator {
         current_plan: metrics.plan,
         growth_rate: metrics.transaction_trend,
         avg_transaction: metrics.avg_transaction_value,
-        generated_at: new Date().toISOString()
+        generated_at: new Date().toISOString(),
       },
       confidence: 0.8,
       impact_score: 6,
       status: InsightStatus.ACTIVE,
-      expires_at: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000) // 14 días
+      expires_at: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000), // 14 días
     };
 
     const { data: saved, error } = await this.supabase
@@ -598,15 +628,17 @@ export class InsightGenerator {
     return saved as TenantInsight;
   }
 
-  private async logInsightEvent(tenantId: string, insightId: string, eventType: string): Promise<void> {
-    await this.supabase
-      .from('platform.insight_events')
-      .insert({
-        tenant_id: tenantId,
-        insight_id: insightId,
-        event_type: eventType,
-        metadata: { source: 'hermes_insight_generator' }
-      });
+  private async logInsightEvent(
+    tenantId: string,
+    insightId: string,
+    eventType: string
+  ): Promise<void> {
+    await this.supabase.from('platform.insight_events').insert({
+      tenant_id: tenantId,
+      insight_id: insightId,
+      event_type: eventType,
+      metadata: { source: 'hermes_insight_generator' },
+    });
   }
 }
 
@@ -615,19 +647,23 @@ export class InsightGenerator {
 // ============================================
 
 const insightQueue = new Queue('insight-generation', {
-  connection: getRedis()
+  connection: getRedis(),
 });
 
 export async function enqueueInsightGeneration(tenantId: string): Promise<void> {
-  await insightQueue.add('generate', { tenantId }, {
-    attempts: 3,
-    backoff: { type: 'exponential', delay: 5000 }
-  });
+  await insightQueue.add(
+    'generate',
+    { tenantId },
+    {
+      attempts: 3,
+      backoff: { type: 'exponential', delay: 5000 },
+    }
+  );
 }
 
 export async function enqueueAllTenantInsights(): Promise<number> {
   const supabase = getSupabaseAdmin();
-  
+
   // Obtener todos los tenants activos
   const { data: tenants } = await supabase
     .from('platform.tenants')
@@ -656,7 +692,9 @@ const insightWorker = new Worker(
 );
 
 insightWorker.on('completed', (job, result) => {
-  console.log(`Insight generation completed for tenant ${result.tenantId}: ${result.insightsGenerated} insights`);
+  console.log(
+    `Insight generation completed for tenant ${result.tenantId}: ${result.insightsGenerated} insights`
+  );
 });
 
 insightWorker.on('failed', (job, err) => {
@@ -669,20 +707,21 @@ insightWorker.on('failed', (job, err) => {
 
 if (require.main === module) {
   const tenantId = process.argv[2];
-  
+
   if (!tenantId) {
     console.log('Usage: npx ts-node insight-generator.ts <tenant_id>');
     process.exit(1);
   }
 
   const generator = new InsightGenerator();
-  generator.generateInsights(tenantId)
-    .then(insights => {
+  generator
+    .generateInsights(tenantId)
+    .then((insights) => {
       console.log(`Generated ${insights.length} insights:`);
-      insights.forEach(i => console.log(`  - [${i.insight_type}] ${i.title}`));
+      insights.forEach((i) => console.log(`  - [${i.insight_type}] ${i.title}`));
       process.exit(0);
     })
-    .catch(err => {
+    .catch((err) => {
       console.error('Error:', err);
       process.exit(1);
     });

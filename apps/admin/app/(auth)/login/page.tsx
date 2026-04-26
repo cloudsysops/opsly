@@ -1,17 +1,17 @@
-"use client";
+'use client';
 
-import { Loader2 } from "lucide-react";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Loader2 } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { createClient } from '@/lib/supabase/client';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 export default function LoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -19,7 +19,7 @@ export default function LoginPage() {
     const supabase = createClient();
     void supabase.auth.getSession().then(({ data }) => {
       if (data.session) {
-        router.replace("/dashboard");
+        router.replace('/dashboard');
       }
     });
   }, [router]);
@@ -39,9 +39,9 @@ export default function LoginPage() {
         return;
       }
       router.refresh();
-      router.replace("/dashboard");
+      router.replace('/dashboard');
     } catch {
-      setError("Error de autenticación");
+      setError('Error de autenticación');
     } finally {
       setLoading(false);
     }
@@ -63,16 +63,10 @@ export default function LoginPage() {
           <CardTitle className="font-mono text-ops-green">
             <span className="text-neutral-500">$ </span>login
           </CardTitle>
-          <p className="pt-1 font-sans text-sm text-neutral-500">
-            Acceso al panel de operaciones.
-          </p>
+          <p className="pt-1 font-sans text-sm text-neutral-500">Acceso al panel de operaciones.</p>
         </CardHeader>
         <CardContent>
-          <form
-            onSubmit={(e) => void onSubmit(e)}
-            className="space-y-4"
-            aria-busy={loading}
-          >
+          <form onSubmit={(e) => void onSubmit(e)} className="space-y-4" aria-busy={loading}>
             {error ? (
               <div
                 role="alert"
@@ -82,10 +76,7 @@ export default function LoginPage() {
               </div>
             ) : null}
             <div className="space-y-1">
-              <label
-                className="font-sans text-xs text-ops-gray"
-                htmlFor="email"
-              >
+              <label className="font-sans text-xs text-ops-gray" htmlFor="email">
                 email
               </label>
               <div className="relative">
@@ -105,10 +96,7 @@ export default function LoginPage() {
               </div>
             </div>
             <div className="space-y-1">
-              <label
-                className="font-sans text-xs text-ops-gray"
-                htmlFor="password"
-              >
+              <label className="font-sans text-xs text-ops-gray" htmlFor="password">
                 password
               </label>
               <Input
@@ -120,19 +108,14 @@ export default function LoginPage() {
                 required
               />
             </div>
-            <Button
-              type="submit"
-              variant="primary"
-              className="w-full font-mono"
-              disabled={loading}
-            >
+            <Button type="submit" variant="primary" className="w-full font-mono" disabled={loading}>
               {loading ? (
                 <>
                   <Loader2 className="h-4 w-4 shrink-0 animate-spin" aria-hidden />
                   authenticate…
                 </>
               ) : (
-                "authenticate"
+                'authenticate'
               )}
             </Button>
           </form>

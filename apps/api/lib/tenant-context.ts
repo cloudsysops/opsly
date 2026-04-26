@@ -1,4 +1,4 @@
-import { AsyncLocalStorage } from "node:async_hooks";
+import { AsyncLocalStorage } from 'node:async_hooks';
 
 /**
  * Contexto de tenant obligatorio para el DAL tenant-aware.
@@ -13,10 +13,10 @@ const tenantStorage = new AsyncLocalStorage<TenantContext>();
 
 export class TenantContextMissingError extends Error {
   constructor(
-    message = "TENANT_CONTEXT_MISSING: ninguna petición activa estableció el tenant (use runWithTenantContext).",
+    message = 'TENANT_CONTEXT_MISSING: ninguna petición activa estableció el tenant (use runWithTenantContext).'
   ) {
     super(message);
-    this.name = "TenantContextMissingError";
+    this.name = 'TenantContextMissingError';
   }
 }
 
@@ -26,7 +26,7 @@ export class TenantContextMissingError extends Error {
  */
 export function runWithTenantContext<T>(
   context: TenantContext,
-  fn: () => T | Promise<T>,
+  fn: () => T | Promise<T>
 ): T | Promise<T> {
   return tenantStorage.run(context, fn);
 }
@@ -38,7 +38,7 @@ export function runWithTenantContext<T>(
 export function setTenantContext<T>(
   tenantId: string,
   tenantSlug: string,
-  fn: () => T | Promise<T>,
+  fn: () => T | Promise<T>
 ): T | Promise<T> {
   return runWithTenantContext({ tenantId, tenantSlug }, fn);
 }

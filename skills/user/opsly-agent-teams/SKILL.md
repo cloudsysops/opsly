@@ -19,8 +19,8 @@ Al encolar trabajo paralelo por especialización (BullMQ) o al extender `TeamMan
 ## Asignación (patrón)
 
 ```typescript
-await teamManager.assignToTeam("deploy", {
-  tenant_slug: "slug",
+await teamManager.assignToTeam('deploy', {
+  tenant_slug: 'slug',
   /* payload mínimo */
 });
 ```
@@ -39,11 +39,11 @@ Task types de ejemplo: `ui_fix`, `api_fix`, `deploy`, `model_update`, etc. (ver 
 
 ## Errores comunes
 
-| Error | Causa | Solución |
-|-------|-------|----------|
-| Queue full | Límite paralelos alcanzado | Esperar o ajustar team config |
-| Job stuck | Worker no responde | Revisar logs worker |
-| Redis timeout | Cola lenta | Monitor Redis connection |
+| Error         | Causa                      | Solución                      |
+| ------------- | -------------------------- | ----------------------------- |
+| Queue full    | Límite paralelos alcanzado | Esperar o ajustar team config |
+| Job stuck     | Worker no responde         | Revisar logs worker           |
+| Redis timeout | Cola lenta                 | Monitor Redis connection      |
 
 ## Testing
 

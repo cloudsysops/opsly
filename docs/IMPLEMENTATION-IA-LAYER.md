@@ -5,25 +5,25 @@
 
 ## 1. Nomenclatura (evitar confusiones)
 
-| Nombre | Qué es en Opsly |
-|--------|------------------|
-| **Hermes** | **Metering y billing IA** unificado (`usage_events`, costos por `tenant_slug` / `request_id`). Ver [`VISION.md`](../VISION.md) (*Sistema de Metering — Hermes*). |
+| Nombre                              | Qué es en Opsly                                                                                                                                                        |
+| ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Hermes**                          | **Metering y billing IA** unificado (`usage_events`, costos por `tenant_slug` / `request_id`). Ver [`VISION.md`](../VISION.md) (_Sistema de Metering — Hermes_).       |
 | **“Agente Hermes” tipo Nous / pip** | **No** está adoptado: el monorepo no añade `hermes-agent` en Python al orchestrator. La “inteligencia” de routing vive en **LLM Gateway + orchestrator** (TypeScript). |
-| **NotebookLM** | Agente/herramienta **experimental**; planes Business+ y flags. |
+| **NotebookLM**                      | Agente/herramienta **experimental**; planes Business+ y flags.                                                                                                         |
 
 ## 2. Dónde tocar código (mapa)
 
-| Capacidad | Ubicación |
-|-----------|-----------|
+| Capacidad                                            | Ubicación                                                                |
+| ---------------------------------------------------- | ------------------------------------------------------------------------ |
 | Routing multi-proveedor, fallback, costes declarados | `apps/llm-gateway/src/providers.ts`, `llm-direct.ts`, `routing-hints.ts` |
-| Llamada HTTP unificada | `apps/llm-gateway/src/gateway.ts` |
-| Planner remoto (orchestrator → gateway) | `apps/orchestrator/src/planner-client.ts` |
-| Respuesta planner JSON | `apps/llm-gateway/src/planner-route.ts` |
-| Cola BullMQ, jobs, workers | `apps/orchestrator/src/engine.ts`, `workers/` |
-| MCP, tools | `apps/mcp/` |
-| Contexto / continuidad | `apps/context-builder/` |
-| Feedback portal | `apps/api` (`/api/feedback`), Zero-Trust |
-| NotebookLM | `apps/agents/notebooklm/`, MCP |
+| Llamada HTTP unificada                               | `apps/llm-gateway/src/gateway.ts`                                        |
+| Planner remoto (orchestrator → gateway)              | `apps/orchestrator/src/planner-client.ts`                                |
+| Respuesta planner JSON                               | `apps/llm-gateway/src/planner-route.ts`                                  |
+| Cola BullMQ, jobs, workers                           | `apps/orchestrator/src/engine.ts`, `workers/`                            |
+| MCP, tools                                           | `apps/mcp/`                                                              |
+| Contexto / continuidad                               | `apps/context-builder/`                                                  |
+| Feedback portal                                      | `apps/api` (`/api/feedback`), Zero-Trust                                 |
+| NotebookLM                                           | `apps/agents/notebooklm/`, MCP                                           |
 
 ## 3. Semana 1 — Checklist técnico (sin nuevos repos)
 

@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { relativeTime } from "@/lib/time";
-import type { AuditLogEntry } from "@/lib/types";
-import { Skeleton } from "@/components/ui/skeleton";
+import { relativeTime } from '@/lib/time';
+import type { AuditLogEntry } from '@/lib/types';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export function ActivityFeed({
   entries,
@@ -32,9 +32,7 @@ export function ActivityFeed({
   }
 
   if (entries.length === 0) {
-    return (
-      <p className="font-sans text-sm text-ops-gray">Sin actividad reciente.</p>
-    );
+    return <p className="font-sans text-sm text-ops-gray">Sin actividad reciente.</p>;
   }
 
   return (
@@ -46,16 +44,10 @@ export function ActivityFeed({
         >
           <span className="text-ops-green">{e.action}</span>
           <span className="text-neutral-400">
-            {e.tenant_slug ? (
-              <span className="text-neutral-200">{e.tenant_slug}</span>
-            ) : (
-              "—"
-            )}
+            {e.tenant_slug ? <span className="text-neutral-200">{e.tenant_slug}</span> : '—'}
           </span>
           <span className="text-ops-gray">{e.actor}</span>
-          <span className="ml-auto text-ops-gray">
-            {relativeTime(e.created_at)}
-          </span>
+          <span className="ml-auto text-ops-gray">{relativeTime(e.created_at)}</span>
         </li>
       ))}
     </ul>

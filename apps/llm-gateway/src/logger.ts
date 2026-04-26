@@ -1,6 +1,6 @@
-import { createClient as createSupabaseClient } from "@supabase/supabase-js";
-import { platformSchema } from "./supabase-helpers.js";
-import type { LLMRequest, UsageEvent } from "./types.js";
+import { createClient as createSupabaseClient } from '@supabase/supabase-js';
+import { platformSchema } from './supabase-helpers.js';
+import type { LLMRequest, UsageEvent } from './types.js';
 
 let supabaseClient: ReturnType<typeof createSupabaseClient> | null = null;
 
@@ -45,15 +45,15 @@ export async function logUsage(event: UsageEvent): Promise<void> {
     if (!supabase) {
       return;
     }
-    await platformSchema(supabase).from("usage_events").insert(event);
+    await platformSchema(supabase).from('usage_events').insert(event);
   } catch (error) {
-    console.error("[llm-gateway] Error logging usage:", error);
+    console.error('[llm-gateway] Error logging usage:', error);
   }
 }
 
 export async function getTenantUsage(
   tenantSlug: string,
-  period: "today" | "month" = "today",
+  period: 'today' | 'month' = 'today'
 ): Promise<{
   tokens_input: number;
   tokens_output: number;
@@ -75,15 +75,15 @@ export async function getTenantUsage(
   }
   const now = new Date();
   const from =
-    period === "today"
+    period === 'today'
       ? new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString()
       : new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
 
   const { data } = await platformSchema(supabase)
-    .from("usage_events")
-    .select("tokens_input,tokens_output,cost_usd,cache_hit,model")
-    .eq("tenant_slug", tenantSlug)
-    .gte("created_at", from);
+    .from('usage_events')
+    .select('tokens_input,tokens_output,cost_usd,cache_hit,model')
+    .eq('tenant_slug', tenantSlug)
+    .gte('created_at', from);
 
   const rows: UsageRow[] = (data || []) as UsageRow[];
 
@@ -116,9 +116,7 @@ export async function getTenantUsage(
 /**
  * Agrega uso LLM de todos los tenants (`usage_events`) para el período.
  */
-export async function getPlatformLlmUsage(
-  period: "today" | "month" = "today",
-): Promise<{
+export async function getPlatformLlmUsage(period: 'today' | 'month' = 'today'): Promise<{
   tokens_input: number;
   tokens_output: number;
   cost_usd: number;
@@ -139,14 +137,14 @@ export async function getPlatformLlmUsage(
   }
   const now = new Date();
   const from =
-    period === "today"
+    period === 'today'
       ? new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString()
       : new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
 
   const { data } = await platformSchema(supabase)
-    .from("usage_events")
-    .select("tokens_input,tokens_output,cost_usd,cache_hit,model")
-    .gte("created_at", from);
+    .from('usage_events')
+    .select('tokens_input,tokens_output,cost_usd,cache_hit,model')
+    .gte('created_at', from);
 
   const rows: UsageRow[] = (data || []) as UsageRow[];
 

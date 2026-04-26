@@ -10,13 +10,13 @@
 
 Antes de iniciar el onboarding, verificar:
 
-| Requisito | Cómo verificar | Contacto/Referencia |
-| --------- | -------------- | ------------------- |
-| Dominio configurado | `dig +short n8n-test.ops.smiletripcare.com` → IP VPS | DNS en Cloudflare |
-| Doppler secrets cargados | `doppler secrets --only-names --project ops-intcloudsysops --config prd` | 50+ secrets должны быть |
-| Acceso SSH Tailscale | `ssh -o BatchMode=yes vps-dragon@100.120.151.91 "hostname"` | IP: 100.120.151.91 |
-| Credenciales Supabase | `doppler secrets get SUPABASE_SERVICE_ROLE_KEY --plain` | Proyecto: jkwykpldnitavhmtuzmo |
-| Stripe customer ID | Si es plan de pago, crear customer en Stripe | Dashboard Stripe |
+| Requisito                | Cómo verificar                                                           | Contacto/Referencia            |
+| ------------------------ | ------------------------------------------------------------------------ | ------------------------------ |
+| Dominio configurado      | `dig +short n8n-test.ops.smiletripcare.com` → IP VPS                     | DNS en Cloudflare              |
+| Doppler secrets cargados | `doppler secrets --only-names --project ops-intcloudsysops --config prd` | 50+ secrets должны быть        |
+| Acceso SSH Tailscale     | `ssh -o BatchMode=yes vps-dragon@100.120.151.91 "hostname"`              | IP: 100.120.151.91             |
+| Credenciales Supabase    | `doppler secrets get SUPABASE_SERVICE_ROLE_KEY --plain`                  | Proyecto: jkwykpldnitavhmtuzmo |
+| Stripe customer ID       | Si es plan de pago, crear customer en Stripe                             | Dashboard Stripe               |
 
 > [!WARNING]
 > No iniciar onboarding hasta tener al menos **dominio + SSH + Doppler** verificados. Sin estos, el script fallará y deixe el tenant en estado inconsistente.
@@ -127,12 +127,13 @@ docker compose -f tenants/nuevo-cliente/docker-compose.yml restart n8n
 
 ## 4. URLs Generadas
 
-| Servicio | URL | Puerto interno |
-| -------- | --- | --------------- |
-| n8n | `https://n8n-{slug}.ops.smiletripcare.com` | 5678 |
-| Uptime Kuma | `https://uptime-{slug}.ops.smiletripcare.com` | 3001 |
+| Servicio    | URL                                           | Puerto interno |
+| ----------- | --------------------------------------------- | -------------- |
+| n8n         | `https://n8n-{slug}.ops.smiletripcare.com`    | 5678           |
+| Uptime Kuma | `https://uptime-{slug}.ops.smiletripcare.com` | 3001           |
 
 **Ejemplo para cliente "acme-corp":**
+
 - n8n: https://n8n-acme-corp.ops.smiletripcare.com
 - Uptime: https://uptime-acme-corp.ops.smiletripcare.com
 
@@ -186,13 +187,13 @@ docker logs opsly_app_1 2>&1 | grep -i invitation
 
 ### 5.4 Errores Comunes
 
-| Error | Causa | Solución |
-| ----- | ----- | -------- |
-| `slug must be 3-30 characters` | Longitud inválida | Usar slug entre 3 y 30 caracteres |
-| `slug must match pattern` | Caracteres no válidos | Solo usar `a-z`, `0-9`, `-` (sin mayúsculas) |
-| `docker: invalid reference format` | slug con caracteres especiales | Normalizar slug a minúsculas |
-| `Conflict` en tenant creation | Tenant ya existe | Verificar con `GET /api/tenants` |
-| `401 Unauthorized` | Token admin inválido | Verificar `PLATFORM_ADMIN_TOKEN` en Doppler |
+| Error                              | Causa                          | Solución                                     |
+| ---------------------------------- | ------------------------------ | -------------------------------------------- |
+| `slug must be 3-30 characters`     | Longitud inválida              | Usar slug entre 3 y 30 caracteres            |
+| `slug must match pattern`          | Caracteres no válidos          | Solo usar `a-z`, `0-9`, `-` (sin mayúsculas) |
+| `docker: invalid reference format` | slug con caracteres especiales | Normalizar slug a minúsculas                 |
+| `Conflict` en tenant creation      | Tenant ya existe               | Verificar con `GET /api/tenants`             |
+| `401 Unauthorized`                 | Token admin inválido           | Verificar `PLATFORM_ADMIN_TOKEN` en Doppler  |
 
 ### 5.5 Verificación de Estado del Tenant
 
@@ -270,20 +271,20 @@ doppler secrets set N8N_WEBHOOK_URL_nuevo-cliente="https://..." \
 
 ### Variables de Entorno
 
-| Variable | Default | Descripción |
-| -------- | ------- | ----------- |
-| `PLATFORM_DOMAIN` | `ops.smiletripcare.com` | Dominio base de la plataforma |
-| `SSH_HOST` | `100.120.151.91` | IP Tailscale del VPS |
-| `TENANTS_PATH` | `./tenants` | Directorio donde se crean los compose |
-| `ADMIN_TOKEN` | - | Token de admin (obtener de Doppler) |
+| Variable          | Default                 | Descripción                           |
+| ----------------- | ----------------------- | ------------------------------------- |
+| `PLATFORM_DOMAIN` | `ops.smiletripcare.com` | Dominio base de la plataforma         |
+| `SSH_HOST`        | `100.120.151.91`        | IP Tailscale del VPS                  |
+| `TENANTS_PATH`    | `./tenants`             | Directorio donde se crean los compose |
+| `ADMIN_TOKEN`     | -                       | Token de admin (obtener de Doppler)   |
 
 ### Planes Disponibles
 
-| Plan | Precio USD | Puerto Base |
-| ---- | ---------- | ------------ |
-| startup | $49 | 8000 |
-| business | $149 | 9000 |
-| enterprise | $0 | 10000 |
+| Plan       | Precio USD | Puerto Base |
+| ---------- | ---------- | ----------- |
+| startup    | $49        | 8000        |
+| business   | $149       | 9000        |
+| enterprise | $0         | 10000       |
 
 ### Estructura de Archivos del Tenant
 
@@ -294,11 +295,11 @@ tenants/
 
 ### Scripts Relacionados
 
-| Script | Propósito |
-| ------ | --------- |
-| `./scripts/opsly.sh` | CLI unificado (create-tenant, start-tenant, status) |
-| `./scripts/send-tenant-invitation.sh` | Enviar invitación al portal |
-| `./scripts/notify-discord.sh` | Notificaciones Discord |
+| Script                                | Propósito                                           |
+| ------------------------------------- | --------------------------------------------------- |
+| `./scripts/opsly.sh`                  | CLI unificado (create-tenant, start-tenant, status) |
+| `./scripts/send-tenant-invitation.sh` | Enviar invitación al portal                         |
+| `./scripts/notify-discord.sh`         | Notificaciones Discord                              |
 
 ---
 

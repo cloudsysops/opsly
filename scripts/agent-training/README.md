@@ -26,11 +26,11 @@ Cola exportada en código: `agentClassifierQueue` (`apps/orchestrator/src/queue.
 
 ## Scripts
 
-| Script | Descripción |
-|--------|-------------|
-| `full-auto.sh` | `type-check` + tests ML + train Python + verify + opcional SSH + Discord |
-| `verify-sandbox.sh` | Requiere `DATABASE_URL` o `SUPABASE_DB_URL` + `psql` |
-| `rollback-sandbox.sh --confirm` | `DROP SCHEMA sandbox CASCADE` |
+| Script                          | Descripción                                                              |
+| ------------------------------- | ------------------------------------------------------------------------ |
+| `full-auto.sh`                  | `type-check` + tests ML + train Python + verify + opcional SSH + Discord |
+| `verify-sandbox.sh`             | Requiere `DATABASE_URL` o `SUPABASE_DB_URL` + `psql`                     |
+| `rollback-sandbox.sh --confirm` | `DROP SCHEMA sandbox CASCADE`                                            |
 
 ## Ejecución típica
 

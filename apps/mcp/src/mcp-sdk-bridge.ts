@@ -1,23 +1,23 @@
-import { McpServer, ResourceTemplate } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import { z } from "zod";
+import { McpServer, ResourceTemplate } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
+import { z } from 'zod';
 
 import {
   getAvailableStaticContextResources,
   listAdrResources,
   readAdrResource,
   readStaticContextResource,
-} from "./context-resources.js";
-import { MCP_SERVER_INFO } from "./lib/constants.js";
-import { TOOL_REQUIRED_SCOPES, type OpenClawMcpServer } from "./server.js";
-import type { ToolDefinition } from "./types/index.js";
+} from './context-resources.js';
+import { MCP_SERVER_INFO } from './lib/constants.js';
+import { TOOL_REQUIRED_SCOPES, type OpenClawMcpServer } from './server.js';
+import type { ToolDefinition } from './types/index.js';
 
 function isZodSchema(value: unknown): value is z.ZodType<unknown> {
   return (
     value !== null &&
-    typeof value === "object" &&
-    "safeParse" in value &&
-    typeof (value as { safeParse?: unknown }).safeParse === "function"
+    typeof value === 'object' &&
+    'safeParse' in value &&
+    typeof (value as { safeParse?: unknown }).safeParse === 'function'
   );
 }
 
@@ -33,11 +33,11 @@ function humanizeName(value: string): string {
     .split(/[_-]+/u)
     .filter(Boolean)
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join(" ");
+    .join(' ');
 }
 
 function asStructuredContent(result: unknown): Record<string, unknown> {
-  if (result !== null && typeof result === "object" && !Array.isArray(result)) {
+  if (result !== null && typeof result === 'object' && !Array.isArray(result)) {
     return result as Record<string, unknown>;
   }
   return { result };
@@ -45,7 +45,7 @@ function asStructuredContent(result: unknown): Record<string, unknown> {
 
 export function createSdkBridgeServer(
   openClaw: OpenClawMcpServer,
-  definitions: ToolDefinition<unknown, unknown>[],
+  definitions: ToolDefinition<unknown, unknown>[]
 ): McpServer {
   const mcp = new McpServer(
     {
@@ -54,9 +54,9 @@ export function createSdkBridgeServer(
     },
     {
       instructions:
-        "Usa tools para acciones sobre Opsly, resources para leer el contexto fuente de verdad " +
-        "y prompts para arrancar sesiones compartiendo estado entre agentes.",
-    },
+        'Usa tools para acciones sobre Opsly, resources para leer el contexto fuente de verdad ' +
+        'y prompts para arrancar sesiones compartiendo estado entre agentes.',
+    }
   );
 
   for (const def of definitions) {
@@ -77,19 +77,19 @@ export function createSdkBridgeServer(
               ? { authorization: `Bearer ${extra.authInfo.token}` }
               : {};
           const out = await openClaw.callTool(def.name, args ?? {}, auth);
-          const text = typeof out === "string" ? out : JSON.stringify(out, null, 2);
+          const text = typeof out === 'string' ? out : JSON.stringify(out, null, 2);
           return {
-            content: [{ type: "text", text }],
+            content: [{ type: 'text', text }],
             structuredContent: asStructuredContent(out),
           };
         } catch (err) {
           const message = err instanceof Error ? err.message : String(err);
           return {
-            content: [{ type: "text", text: `Error: ${message}` }],
+            content: [{ type: 'text', text: `Error: ${message}` }],
             isError: true,
           };
         }
-      },
+      }
     );
   }
 
@@ -113,11 +113,11 @@ export function createSdkBridgeServer(
             },
           ],
         };
-      },
+      }
     );
   }
 
-  const adrTemplate = new ResourceTemplate("opsly://adr/{slug}", {
+  const adrTemplate = new ResourceTemplate('opsly://adr/{slug}', {
     list: async () => ({
       resources: listAdrResources().map((resource) => ({
         uri: resource.uri,
@@ -130,15 +130,15 @@ export function createSdkBridgeServer(
   });
 
   mcp.registerResource(
-    "opsly-adr",
+    'opsly-adr',
     adrTemplate,
     {
-      title: "ADR documents",
-      description: "Architecture Decision Records from docs/adr.",
-      mimeType: "text/markdown",
+      title: 'ADR documents',
+      description: 'Architecture Decision Records from docs/adr.',
+      mimeType: 'text/markdown',
     },
     async (_uri, variables) => {
-      const slug = typeof variables.slug === "string" ? variables.slug : "";
+      const slug = typeof variables.slug === 'string' ? variables.slug : '';
       const entry = readAdrResource(slug);
       return {
         contents: [
@@ -149,54 +149,54 @@ export function createSdkBridgeServer(
           },
         ],
       };
-    },
+    }
   );
 
   mcp.registerPrompt(
-    "opsly_startup",
+    'opsly_startup',
     {
-      title: "Opsly Startup Context",
-      description: "Prompt de arranque para resumir decisiones, bloqueantes y prioridades.",
+      title: 'Opsly Startup Context',
+      description: 'Prompt de arranque para resumir decisiones, bloqueantes y prioridades.',
     },
     async () => ({
       messages: [
         {
-          role: "user",
+          role: 'user',
           content: {
-            type: "text",
+            type: 'text',
             text:
-              "Lee los resources `opsly://context/agents`, `opsly://context/vision`, " +
-              "`opsly://context/system-state` y los ADR relevantes. Resume en 5 bullets: " +
-              "decisiones recientes, bloqueantes, prioridades, optimizaciones y qué no hacer.",
+              'Lee los resources `opsly://context/agents`, `opsly://context/vision`, ' +
+              '`opsly://context/system-state` y los ADR relevantes. Resume en 5 bullets: ' +
+              'decisiones recientes, bloqueantes, prioridades, optimizaciones y qué no hacer.',
           },
         },
       ],
-    }),
+    })
   );
 
   mcp.registerPrompt(
-    "opsly_handoff",
+    'opsly_handoff',
     {
-      title: "Opsly Agent Handoff",
-      description: "Genera un handoff corto y accionable entre agentes.",
+      title: 'Opsly Agent Handoff',
+      description: 'Genera un handoff corto y accionable entre agentes.',
       argsSchema: {
-        target_agent: z.string().min(1).describe("Agente destino"),
-        task: z.string().min(5).describe("Tarea o frente delegado"),
+        target_agent: z.string().min(1).describe('Agente destino'),
+        task: z.string().min(5).describe('Tarea o frente delegado'),
       },
     },
     async ({ target_agent, task }) => ({
       messages: [
         {
-          role: "user",
+          role: 'user',
           content: {
-            type: "text",
+            type: 'text',
             text:
               `Prepara un handoff para ${target_agent} sobre ${task}. ` +
-              "Incluye contexto actual, bloqueantes, fuente de verdad a leer y siguiente paso verificable.",
+              'Incluye contexto actual, bloqueantes, fuente de verdad a leer y siguiente paso verificable.',
           },
         },
       ],
-    }),
+    })
   );
 
   return mcp;
@@ -207,7 +207,7 @@ export function createSdkBridgeServer(
  */
 export function createMcpSdkServer(
   openClaw: OpenClawMcpServer,
-  definitions: ToolDefinition<unknown, unknown>[],
+  definitions: ToolDefinition<unknown, unknown>[]
 ): McpServer {
   return createSdkBridgeServer(openClaw, definitions);
 }
@@ -218,7 +218,7 @@ export function createMcpSdkServer(
  */
 export async function startMcpStdioServer(
   openClaw: OpenClawMcpServer,
-  definitions: ToolDefinition<unknown, unknown>[],
+  definitions: ToolDefinition<unknown, unknown>[]
 ): Promise<void> {
   const mcp = createSdkBridgeServer(openClaw, definitions);
   const transport = new StdioServerTransport();

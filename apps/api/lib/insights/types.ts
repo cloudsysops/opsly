@@ -1,12 +1,9 @@
 /**
  * Predictive BI — tipos compartidos (API + cron). Sin LLM en el MVP heurístico.
  */
-export type InsightType =
-  | "churn_risk"
-  | "revenue_forecast"
-  | "usage_anomaly";
+export type InsightType = 'churn_risk' | 'revenue_forecast' | 'usage_anomaly';
 
-export type InsightStatus = "active" | "dismissed" | "actioned";
+export type InsightStatus = 'active' | 'dismissed' | 'actioned';
 
 export type TenantInsightRow = {
   id: string;
@@ -37,7 +34,7 @@ export type InsightPayloadForecast = {
 };
 
 export type InsightPayloadAnomaly = {
-  metric: "usage_events_daily_count";
+  metric: 'usage_events_daily_count';
   last_day_count: number;
   baseline_mean: number;
   baseline_std: number;

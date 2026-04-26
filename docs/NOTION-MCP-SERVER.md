@@ -49,20 +49,20 @@ Las propiedades deben coincidir con los nombres configurados en `apps/notion-mcp
 
 ### 1. Tasks
 
-| Propiedad        | Tipo           |
-|-----------------|----------------|
-| Name            | title          |
-| Sprint          | select         |
-| Status          | select         |
-| Owner           | people         |
-| Assignee        | people         |
-| DueDate         | date           |
-| EstimatedHours  | number         |
-| ActualHours     | number         |
-| Priority        | select         |
-| PR Link         | url            |
-| Description     | rich_text      |
-| Tags            | multi_select   |
+| Propiedad      | Tipo         |
+| -------------- | ------------ |
+| Name           | title        |
+| Sprint         | select       |
+| Status         | select       |
+| Owner          | people       |
+| Assignee       | people       |
+| DueDate        | date         |
+| EstimatedHours | number       |
+| ActualHours    | number       |
+| Priority       | select       |
+| PR Link        | url          |
+| Description    | rich_text    |
+| Tags           | multi_select |
 
 ### 2. Sprints
 
@@ -84,20 +84,20 @@ Las propiedades deben coincidir con los nombres configurados en `apps/notion-mcp
 
 Ver `apps/notion-mcp/.env.example`:
 
-- `NOTION_TOKEN` — integración interna (secret_…)
+- `NOTION_TOKEN` — integración interna (secret\_…)
 - `NOTION_DATABASE_*` — IDs de cada base
 - `MCP_PORT` — puerto HTTP (por defecto **3013**)
 
 ## Endpoints HTTP (v1)
 
-| Método | Ruta | Descripción |
-|--------|------|----------------|
-| GET | `/health` | Liveness |
-| POST | `/mcp/tasks/list` | Listar tareas (body: `{ sprint?, status? }`) |
-| POST | `/mcp/tasks/create` | Crear tarea |
-| POST | `/mcp/tasks/update` | Actualizar tarea |
-| POST | `/mcp/standup/add` | Registrar standup |
-| POST | `/mcp/quality-gate/record` | Registrar quality gate |
+| Método | Ruta                       | Descripción                                  |
+| ------ | -------------------------- | -------------------------------------------- |
+| GET    | `/health`                  | Liveness                                     |
+| POST   | `/mcp/tasks/list`          | Listar tareas (body: `{ sprint?, status? }`) |
+| POST   | `/mcp/tasks/create`        | Crear tarea                                  |
+| POST   | `/mcp/tasks/update`        | Actualizar tarea                             |
+| POST   | `/mcp/standup/add`         | Registrar standup                            |
+| POST   | `/mcp/quality-gate/record` | Registrar quality gate                       |
 
 ## Integración con el control plane (opcional)
 

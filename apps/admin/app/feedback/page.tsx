@@ -1,55 +1,50 @@
-"use client";
+'use client';
 
-import { useMemo, useState } from "react";
-import useSWR from "swr";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useMemo, useState } from 'react';
+import useSWR from 'swr';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from '@/components/ui/select';
 import {
   approveFeedbackDecision,
   listFeedback,
   type FeedbackConversationRow,
-} from "@/lib/api-client";
+} from '@/lib/api-client';
 
 function criticalityEmoji(c: string | undefined): string {
-  if (c === "critical") return "🚨";
-  if (c === "high") return "🔴";
-  if (c === "medium") return "🟡";
-  if (c === "low") return "🟢";
-  return "⚪";
+  if (c === 'critical') return '🚨';
+  if (c === 'high') return '🔴';
+  if (c === 'medium') return '🟡';
+  if (c === 'low') return '🟢';
+  return '⚪';
 }
 
 export default function FeedbackAdminPage() {
-  const [statusFilter, setStatusFilter] = useState<string>("pending_approval");
-  const [tenantFilter, setTenantFilter] = useState<string>("");
+  const [statusFilter, setStatusFilter] = useState<string>('pending_approval');
+  const [tenantFilter, setTenantFilter] = useState<string>('');
 
-  const key = useMemo(
-    () => ["feedback", statusFilter] as const,
-    [statusFilter],
-  );
+  const key = useMemo(() => ['feedback', statusFilter] as const, [statusFilter]);
 
   const { data, error, isLoading, mutate } = useSWR(
     key,
     () =>
       listFeedback({
-        status: statusFilter === "all" ? undefined : statusFilter,
+        status: statusFilter === 'all' ? undefined : statusFilter,
         limit: 80,
       }),
-    { revalidateOnFocus: false },
+    { revalidateOnFocus: false }
   );
 
   const rows = data?.feedbacks ?? [];
   const filtered = tenantFilter.trim()
-    ? rows.filter((r) =>
-        r.tenant_slug.includes(tenantFilter.trim().toLowerCase()),
-      )
+    ? rows.filter((r) => r.tenant_slug.includes(tenantFilter.trim().toLowerCase()))
     : rows;
 
   async function onApprove(decisionId: string, approved: boolean) {
@@ -60,9 +55,7 @@ export default function FeedbackAdminPage() {
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
-        <h1 className="font-mono text-lg tracking-tight text-ops-green">
-          Feedback
-        </h1>
+        <h1 className="font-mono text-lg tracking-tight text-ops-green">Feedback</h1>
         <div className="flex flex-wrap items-center gap-3">
           <Select value={statusFilter} onValueChange={setStatusFilter}>
             <SelectTrigger className="w-[200px] font-mono text-xs">
@@ -70,9 +63,7 @@ export default function FeedbackAdminPage() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Todos</SelectItem>
-              <SelectItem value="pending_approval">
-                Pendiente aprobación
-              </SelectItem>
+              <SelectItem value="pending_approval">Pendiente aprobación</SelectItem>
               <SelectItem value="implementing">Implementando</SelectItem>
               <SelectItem value="open">Abierto</SelectItem>
               <SelectItem value="analyzing">Analizando</SelectItem>
@@ -90,9 +81,7 @@ export default function FeedbackAdminPage() {
         </div>
       </div>
 
-      {error ? (
-        <p className="text-sm text-red-400">{String(error.message)}</p>
-      ) : null}
+      {error ? <p className="text-sm text-red-400">{String(error.message)}</p> : null}
       {isLoading ? <p className="text-sm text-ops-gray">Cargando…</p> : null}
 
       <div className="grid gap-4">
@@ -102,9 +91,7 @@ export default function FeedbackAdminPage() {
       </div>
 
       {!isLoading && filtered.length === 0 ? (
-        <p className="text-sm text-ops-gray">
-          No hay conversaciones con este filtro.
-        </p>
+        <p className="text-sm text-ops-gray">No hay conversaciones con este filtro.</p>
       ) : null}
     </div>
   );
@@ -120,11 +107,9 @@ function FeedbackRow({
   const decisions = useMemo(
     () =>
       [...(row.feedback_decisions ?? [])].sort(
-        (a, b) =>
-          new Date(b.created_at ?? 0).getTime() -
-          new Date(a.created_at ?? 0).getTime(),
+        (a, b) => new Date(b.created_at ?? 0).getTime() - new Date(a.created_at ?? 0).getTime()
       ),
-    [row.feedback_decisions],
+    [row.feedback_decisions]
   );
   const latest = decisions[0];
 
@@ -135,12 +120,10 @@ function FeedbackRow({
           <CardTitle className="font-mono text-sm text-neutral-200">
             {row.tenant_slug} · {row.user_email}
           </CardTitle>
-          <Badge className="font-mono text-[10px] uppercase">
-            {row.status}
-          </Badge>
+          <Badge className="font-mono text-[10px] uppercase">{row.status}</Badge>
         </div>
         <p className="font-mono text-[11px] text-ops-gray">
-          {new Date(row.created_at).toLocaleString("es")}
+          {new Date(row.created_at).toLocaleString('es')}
         </p>
       </CardHeader>
       <CardContent className="space-y-3">
@@ -153,16 +136,14 @@ function FeedbackRow({
               className="rounded border border-ops-border/60 p-3 text-sm"
             >
               <div className="flex flex-wrap items-center gap-2">
-                <span className="text-lg">
-                  {criticalityEmoji(d.criticality)}
-                </span>
+                <span className="text-lg">{criticalityEmoji(d.criticality)}</span>
                 <Badge variant="gray" className="font-mono text-[10px]">
                   {d.decision_type}
                 </Badge>
                 <span className="text-ops-gray">{d.criticality}</span>
               </div>
               <p className="mt-2 text-neutral-300">{d.reasoning}</p>
-              {d.id && row.status === "pending_approval" ? (
+              {d.id && row.status === 'pending_approval' ? (
                 <div className="mt-3 flex gap-2">
                   <Button
                     size="sm"
@@ -186,7 +167,7 @@ function FeedbackRow({
         )}
         {latest?.implemented_at ? (
           <p className="font-mono text-[11px] text-ops-green">
-            Implementado: {new Date(latest.implemented_at).toLocaleString("es")}
+            Implementado: {new Date(latest.implemented_at).toLocaleString('es')}
           </p>
         ) : null}
       </CardContent>

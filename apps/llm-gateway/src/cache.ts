@@ -1,7 +1,7 @@
-import { createClient } from "redis";
+import { createClient } from 'redis';
 
-const REDIS_URL = process.env.REDIS_URL || "redis://localhost:6379";
-const TTL_SECONDS = Number.parseInt(process.env.LLM_CACHE_TTL_SECONDS ?? "7200", 10) || 7200;
+const REDIS_URL = process.env.REDIS_URL || 'redis://localhost:6379';
+const TTL_SECONDS = Number.parseInt(process.env.LLM_CACHE_TTL_SECONDS ?? '7200', 10) || 7200;
 
 let client: ReturnType<typeof createClient> | null = null;
 
@@ -34,10 +34,7 @@ export async function closeRedisClient(): Promise<void> {
   }
 }
 
-export async function cacheGet(
-  tenantSlug: string,
-  promptHash: string,
-): Promise<string | null> {
+export async function cacheGet(tenantSlug: string, promptHash: string): Promise<string | null> {
   const redis = await getClient();
   const key = `tenant:${tenantSlug}:llm:cache:${promptHash}`;
   return redis.get(key);
@@ -46,7 +43,7 @@ export async function cacheGet(
 export async function cacheSet(
   tenantSlug: string,
   promptHash: string,
-  response: string,
+  response: string
 ): Promise<void> {
   const redis = await getClient();
   const key = `tenant:${tenantSlug}:llm:cache:${promptHash}`;

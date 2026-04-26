@@ -41,9 +41,9 @@
   --opsly-space-10: 4rem;
 
   /* === TYPOGRAPHY === */
-  --opsly-font-sans: var(--font-geist-sans), "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
-    sans-serif;
-  --opsly-font-mono: var(--font-geist-mono), "JetBrains Mono", "Fira Code", ui-monospace, monospace;
+  --opsly-font-sans:
+    var(--font-geist-sans), 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --opsly-font-mono: var(--font-geist-mono), 'JetBrains Mono', 'Fira Code', ui-monospace, monospace;
 
   --opsly-text-xs: 0.75rem;
   --opsly-text-sm: 0.875rem;

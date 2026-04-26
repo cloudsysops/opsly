@@ -1,6 +1,6 @@
-import { analyzeComplexity } from "./complexity.js";
-import { llmCallDirect } from "./llm-direct.js";
-import type { LLMRequest, LLMResponse } from "./types.js";
+import { analyzeComplexity } from './complexity.js';
+import { llmCallDirect } from './llm-direct.js';
+import type { LLMRequest, LLMResponse } from './types.js';
 
 export interface SubTask {
   id: string;
@@ -25,22 +25,22 @@ function coerceComplexity(n: unknown): 1 | 2 | 3 {
   return 2;
 }
 
-function subtaskModel(c: 1 | 2 | 3): NonNullable<LLMRequest["model"]> {
-  if (c === 3) return "sonnet";
-  return "haiku";
+function subtaskModel(c: 1 | 2 | 3): NonNullable<LLMRequest['model']> {
+  if (c === 3) return 'sonnet';
+  return 'haiku';
 }
 
 export async function decomposeAndExecute(original: LLMRequest): Promise<DecomposedResult> {
-  const originalPrompt = original.messages.at(-1)?.content ?? "";
+  const originalPrompt = original.messages.at(-1)?.content ?? '';
 
   const decomposition = await llmCallDirect({
     tenant_slug: original.tenant_slug,
-    model: "haiku",
+    model: 'haiku',
     temperature: 0,
     cache: true,
     messages: [
       {
-        role: "user",
+        role: 'user',
         content: `Eres un experto en dividir tareas complejas.
 Analiza esta tarea y divídela en 2-4 subtareas independientes.
 Cada subtarea debe ser más simple que el todo.
@@ -64,15 +64,15 @@ ${originalPrompt}`,
 
   let subtasks: SubTask[];
   try {
-    const clean = decomposition.content.replace(/```json|```/g, "").trim();
+    const clean = decomposition.content.replace(/```json|```/g, '').trim();
     const raw = JSON.parse(clean) as unknown;
-    if (!Array.isArray(raw)) throw new Error("not array");
+    if (!Array.isArray(raw)) throw new Error('not array');
     subtasks = raw.map((row) => {
       const o = row as Record<string, unknown>;
       return {
-        id: String(o.id ?? ""),
-        description: String(o.description ?? ""),
-        prompt: String(o.prompt ?? ""),
+        id: String(o.id ?? ''),
+        description: String(o.description ?? ''),
+        prompt: String(o.prompt ?? ''),
         complexity: coerceComplexity(o.complexity),
         depends_on: Array.isArray(o.depends_on) ? o.depends_on.map(String) : [],
       };
@@ -81,7 +81,7 @@ ${originalPrompt}`,
     const direct = await llmCallDirect(original);
     return {
       subtasks: [],
-      results: { "0": direct.content },
+      results: { '0': direct.content },
       merged: direct.content,
       total_cost_usd: direct.cost_usd,
       savings_vs_sonnet: 0,
@@ -97,30 +97,32 @@ ${originalPrompt}`,
   await Promise.all(
     independent.map(async (task) => {
       const analysis = analyzeComplexity(task.prompt);
-      let model: NonNullable<LLMRequest["model"]>;
-      if (task.complexity === 3) model = "sonnet";
-      else if (analysis.level === 1) model = "cheap";
+      let model: NonNullable<LLMRequest['model']>;
+      if (task.complexity === 3) model = 'sonnet';
+      else if (analysis.level === 1) model = 'cheap';
       else model = subtaskModel(task.complexity);
       const result: LLMResponse = await llmCallDirect({
         tenant_slug: original.tenant_slug,
         model,
         temperature: original.temperature ?? 0,
         cache: true,
-        messages: [{ role: "user", content: task.prompt }],
+        messages: [{ role: 'user', content: task.prompt }],
       });
       results[task.id] = result.content;
       totalCost += result.cost_usd;
-    }),
+    })
   );
 
   for (const task of dependent) {
-    const context = task.depends_on.map((id) => `Resultado subtarea ${id}: ${results[id] ?? ""}`).join("\n");
+    const context = task.depends_on
+      .map((id) => `Resultado subtarea ${id}: ${results[id] ?? ''}`)
+      .join('\n');
     const result = await llmCallDirect({
       tenant_slug: original.tenant_slug,
-      model: task.complexity === 3 ? "sonnet" : "haiku",
+      model: task.complexity === 3 ? 'sonnet' : 'haiku',
       temperature: 0,
       cache: true,
-      messages: [{ role: "user", content: `${context}\n\n${task.prompt}` }],
+      messages: [{ role: 'user', content: `${context}\n\n${task.prompt}` }],
     });
     results[task.id] = result.content;
     totalCost += result.cost_usd;
@@ -128,16 +130,16 @@ ${originalPrompt}`,
 
   const mergeResult = await llmCallDirect({
     tenant_slug: original.tenant_slug,
-    model: "haiku",
+    model: 'haiku',
     temperature: 0,
     messages: [
       {
-        role: "user",
+        role: 'user',
         content: `Combina estos resultados en una respuesta coherente:
 
 ${Object.entries(results)
   .map(([id, r]) => `Parte ${id}: ${r}`)
-  .join("\n\n")}
+  .join('\n\n')}
 
 Respuesta unificada:`,
       },

@@ -26,9 +26,9 @@ Al tomar decisiones estructurales: nuevos módulos, cambios de contrato entre se
 
 ## Errores comunes
 
-| Error | Causa | Solución |
-|-------|-------|----------|
-| Diseño "big-bang" | Ignora incrementalismo | Partir en slices verificables |
-| Propuesta sin pruebas | Se decide por intuición | Adjuntar criterios y señales |
-| Rompe compatibilidad | Falta análisis de callers | Revisar consumidores antes de cambiar contrato |
-| Duplica sistemas | No revisó código existente | Mapear primero los módulos ya presentes |
+| Error                 | Causa                      | Solución                                       |
+| --------------------- | -------------------------- | ---------------------------------------------- |
+| Diseño "big-bang"     | Ignora incrementalismo     | Partir en slices verificables                  |
+| Propuesta sin pruebas | Se decide por intuición    | Adjuntar criterios y señales                   |
+| Rompe compatibilidad  | Falta análisis de callers  | Revisar consumidores antes de cambiar contrato |
+| Duplica sistemas      | No revisó código existente | Mapear primero los módulos ya presentes        |

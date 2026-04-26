@@ -1,49 +1,49 @@
-"use client";
+'use client';
 
-import { createClient } from "@/lib/supabase";
-import { postPortalOnboarding } from "@/lib/tenant";
-import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { createClient } from '@/lib/supabase';
+import { postPortalOnboarding } from '@/lib/tenant';
+import { useRouter } from 'next/navigation';
+import { useEffect, useRef, useState } from 'react';
 
 function deriveSlug(name: string): string {
   return name
     .toLowerCase()
     .trim()
-    .replace(/\s+/g, "-")
-    .replace(/[^a-z0-9-]/g, "")
-    .replace(/-+/g, "-")
-    .replace(/^-|-$/g, "")
+    .replace(/\s+/g, '-')
+    .replace(/[^a-z0-9-]/g, '')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '')
     .slice(0, 30);
 }
 
 const SLUG_RE = /^[a-z0-9-]{3,30}$/;
 
-type Plan = "startup" | "business" | "enterprise";
+type Plan = 'startup' | 'business' | 'enterprise';
 
 const PLANS = [
   {
-    id: "startup" as Plan,
-    name: "Startup",
-    price: "Gratis",
-    features: ["1 agente n8n", "Monitoreo básico", "3 workflows"],
-    accent: "text-emerald-400",
-    border: "border-emerald-500/40",
+    id: 'startup' as Plan,
+    name: 'Startup',
+    price: 'Gratis',
+    features: ['1 agente n8n', 'Monitoreo básico', '3 workflows'],
+    accent: 'text-emerald-400',
+    border: 'border-emerald-500/40',
   },
   {
-    id: "business" as Plan,
-    name: "Business",
-    price: "$49/mes",
-    features: ["5 agentes n8n", "Uptime Kuma", "Workflows ilimitados"],
-    accent: "text-cyan-400",
-    border: "border-cyan-500/40",
+    id: 'business' as Plan,
+    name: 'Business',
+    price: '$49/mes',
+    features: ['5 agentes n8n', 'Uptime Kuma', 'Workflows ilimitados'],
+    accent: 'text-cyan-400',
+    border: 'border-cyan-500/40',
   },
   {
-    id: "enterprise" as Plan,
-    name: "Enterprise",
-    price: "Custom",
-    features: ["Agentes ilimitados", "SLA 99.9%", "Soporte dedicado"],
-    accent: "text-violet-400",
-    border: "border-violet-500/40",
+    id: 'enterprise' as Plan,
+    name: 'Enterprise',
+    price: 'Custom',
+    features: ['Agentes ilimitados', 'SLA 99.9%', 'Soporte dedicado'],
+    accent: 'text-violet-400',
+    border: 'border-violet-500/40',
   },
 ];
 
@@ -54,23 +54,23 @@ function StepBar({ current }: { current: 1 | 2 }) {
         <div key={n} className="flex items-center gap-2">
           <div
             className={[
-              "flex h-7 w-7 items-center justify-center rounded-full text-xs font-mono font-bold transition-all",
+              'flex h-7 w-7 items-center justify-center rounded-full text-xs font-mono font-bold transition-all',
               n === current
-                ? "bg-cyan-500 text-slate-950 shadow-[0_0_12px_rgba(6,182,212,0.6)]"
+                ? 'bg-cyan-500 text-slate-950 shadow-[0_0_12px_rgba(6,182,212,0.6)]'
                 : n < current
-                ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/40"
-                : "bg-slate-800 text-slate-500 border border-slate-700",
-            ].join(" ")}
+                  ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40'
+                  : 'bg-slate-800 text-slate-500 border border-slate-700',
+            ].join(' ')}
           >
-            {n < current ? "✓" : n}
+            {n < current ? '✓' : n}
           </div>
           <span
             className={[
-              "text-xs font-mono",
-              n === current ? "text-slate-200" : "text-slate-500",
-            ].join(" ")}
+              'text-xs font-mono',
+              n === current ? 'text-slate-200' : 'text-slate-500',
+            ].join(' ')}
           >
-            {n === 1 ? "Tu organización" : "Tu Agente"}
+            {n === 1 ? 'Tu organización' : 'Tu Agente'}
           </span>
           {n < 2 && <div className="w-8 h-px bg-slate-700" />}
         </div>
@@ -81,10 +81,10 @@ function StepBar({ current }: { current: 1 | 2 }) {
 
 export default function OnboardingStep1() {
   const router = useRouter();
-  const [orgName, setOrgName] = useState("");
-  const [slug, setSlug] = useState("");
+  const [orgName, setOrgName] = useState('');
+  const [slug, setSlug] = useState('');
   const [slugEdited, setSlugEdited] = useState(false);
-  const [plan, setPlan] = useState<Plan>("startup");
+  const [plan, setPlan] = useState<Plan>('startup');
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const slugRef = useRef<HTMLInputElement>(null);
@@ -102,20 +102,22 @@ export default function OnboardingStep1() {
     setErr(null);
 
     if (!orgName.trim()) {
-      setErr("El nombre de la organización es obligatorio");
+      setErr('El nombre de la organización es obligatorio');
       return;
     }
     if (!slugValid) {
-      setErr("El identificador debe tener 3-30 caracteres: letras minúsculas, números y guiones");
+      setErr('El identificador debe tener 3-30 caracteres: letras minúsculas, números y guiones');
       return;
     }
 
     setLoading(true);
     try {
       const supabase = createClient();
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
       if (!session) {
-        router.push("/login");
+        router.push('/login');
         return;
       }
 
@@ -132,9 +134,9 @@ export default function OnboardingStep1() {
         org: result.org_name,
         plan: result.plan,
       });
-      router.push("/onboarding/step-2?" + params.toString());
+      router.push('/onboarding/step-2?' + params.toString());
     } catch (error) {
-      setErr(error instanceof Error ? error.message : "Error al crear la organización");
+      setErr(error instanceof Error ? error.message : 'Error al crear la organización');
     } finally {
       setLoading(false);
     }
@@ -145,8 +147,8 @@ export default function OnboardingStep1() {
       <div
         className="pointer-events-none fixed inset-0 opacity-20"
         style={{
-          backgroundImage: "radial-gradient(circle, #334155 1px, transparent 1px)",
-          backgroundSize: "24px 24px",
+          backgroundImage: 'radial-gradient(circle, #334155 1px, transparent 1px)',
+          backgroundSize: '24px 24px',
         }}
       />
       <div className="pointer-events-none fixed inset-0">
@@ -157,9 +159,7 @@ export default function OnboardingStep1() {
       <div className="relative z-10 flex min-h-screen flex-col items-center justify-center px-4 py-12">
         <div className="w-full max-w-lg">
           <div className="mb-8 text-center">
-            <span className="font-mono text-lg font-bold tracking-widest text-cyan-400">
-              OPSLY
-            </span>
+            <span className="font-mono text-lg font-bold tracking-widest text-cyan-400">OPSLY</span>
             <p className="mt-1 text-xs font-mono text-slate-500 tracking-widest uppercase">
               Infrastructure Control
             </p>
@@ -168,16 +168,17 @@ export default function OnboardingStep1() {
           <StepBar current={1} />
 
           <div className="rounded-2xl border border-slate-700/50 bg-slate-900/50 p-8 shadow-xl shadow-black/50 backdrop-blur-xl">
-            <h1 className="mb-1 text-xl font-semibold text-slate-100">
-              Crea tu organización
-            </h1>
+            <h1 className="mb-1 text-xl font-semibold text-slate-100">Crea tu organización</h1>
             <p className="mb-6 text-sm text-slate-400">
               Tu espacio de automatización en Opsly. Solo tarda 30 segundos.
             </p>
 
             <form onSubmit={handleSubmit} className="space-y-6" noValidate>
               <div className="space-y-1.5">
-                <label htmlFor="org-name" className="text-xs font-mono text-slate-400 uppercase tracking-widest">
+                <label
+                  htmlFor="org-name"
+                  className="text-xs font-mono text-slate-400 uppercase tracking-widest"
+                >
                   Nombre de la organización
                 </label>
                 <input
@@ -194,7 +195,10 @@ export default function OnboardingStep1() {
               </div>
 
               <div className="space-y-1.5">
-                <label htmlFor="org-slug" className="text-xs font-mono text-slate-400 uppercase tracking-widest">
+                <label
+                  htmlFor="org-slug"
+                  className="text-xs font-mono text-slate-400 uppercase tracking-widest"
+                >
                   Identificador único
                 </label>
                 <div className="relative">
@@ -205,21 +209,21 @@ export default function OnboardingStep1() {
                     value={slug}
                     onChange={(e) => {
                       setSlugEdited(true);
-                      setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""));
+                      setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''));
                     }}
                     placeholder="acme-corp"
                     className={[
-                      "w-full rounded-lg border bg-slate-800/60 px-4 py-2.5 font-mono text-sm placeholder-slate-500 outline-none transition-all",
+                      'w-full rounded-lg border bg-slate-800/60 px-4 py-2.5 font-mono text-sm placeholder-slate-500 outline-none transition-all',
                       slug.length === 0
-                        ? "border-slate-700 text-slate-100"
+                        ? 'border-slate-700 text-slate-100'
                         : slugValid
-                        ? "border-emerald-500/50 text-emerald-300 focus:ring-1 focus:ring-emerald-500/30"
-                        : "border-rose-500/50 text-rose-300 focus:ring-1 focus:ring-rose-500/30",
-                    ].join(" ")}
+                          ? 'border-emerald-500/50 text-emerald-300 focus:ring-1 focus:ring-emerald-500/30'
+                          : 'border-rose-500/50 text-rose-300 focus:ring-1 focus:ring-rose-500/30',
+                    ].join(' ')}
                   />
                   {slug.length > 0 && (
                     <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs">
-                      {slugValid ? "✓" : "✗"}
+                      {slugValid ? '✓' : '✗'}
                     </span>
                   )}
                 </div>
@@ -239,18 +243,18 @@ export default function OnboardingStep1() {
                       type="button"
                       onClick={() => setPlan(p.id)}
                       className={[
-                        "relative flex flex-col items-start rounded-xl border p-3 text-left transition-all duration-200 hover:brightness-110",
+                        'relative flex flex-col items-start rounded-xl border p-3 text-left transition-all duration-200 hover:brightness-110',
                         plan === p.id
-                          ? p.border + " bg-slate-800/80 shadow-md"
-                          : "border-slate-700/50 bg-slate-800/30",
-                      ].join(" ")}
+                          ? p.border + ' bg-slate-800/80 shadow-md'
+                          : 'border-slate-700/50 bg-slate-800/30',
+                      ].join(' ')}
                     >
                       {plan === p.id && (
                         <span className="absolute right-2 top-2 text-[9px] font-mono text-emerald-400">
                           ✓
                         </span>
                       )}
-                      <span className={"text-xs font-semibold " + p.accent}>{p.name}</span>
+                      <span className={'text-xs font-semibold ' + p.accent}>{p.name}</span>
                       <span className="mt-0.5 text-[10px] font-mono text-slate-300">{p.price}</span>
                       <ul className="mt-1.5 space-y-0.5">
                         {p.features.map((f) => (
@@ -281,7 +285,7 @@ export default function OnboardingStep1() {
                     Creando organización...
                   </span>
                 ) : (
-                  "Continuar →"
+                  'Continuar →'
                 )}
               </button>
             </form>

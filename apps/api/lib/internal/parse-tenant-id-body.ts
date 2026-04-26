@@ -1,9 +1,9 @@
 export function parseTenantIdFromJsonBody(body: unknown): string | null {
   if (
     body === null ||
-    typeof body !== "object" ||
-    !("tenant_id" in body) ||
-    typeof (body as { tenant_id: unknown }).tenant_id !== "string"
+    typeof body !== 'object' ||
+    !('tenant_id' in body) ||
+    typeof (body as { tenant_id: unknown }).tenant_id !== 'string'
   ) {
     return null;
   }

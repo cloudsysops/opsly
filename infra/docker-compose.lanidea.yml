@@ -13,15 +13,15 @@ services:
     image: ollama/ollama:latest
     container_name: lanidea-ollama
     ports:
-      - "11434:11434"
+      - '11434:11434'
     volumes:
       - ollama_data:/root/.ollama
     environment:
-      OLLAMA_ORIGINS: "*"
-      OLLAMA_HOST: "0.0.0.0"
+      OLLAMA_ORIGINS: '*'
+      OLLAMA_HOST: '0.0.0.0'
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "curl -sf http://localhost:11434/api/tags || exit 1"]
+      test: ['CMD-SHELL', 'curl -sf http://localhost:11434/api/tags || exit 1']
       interval: 30s
       timeout: 10s
       retries: 5
@@ -31,7 +31,7 @@ services:
     image: ghcr.io/cloudsysops/intcloudsysops-orchestrator:latest
     container_name: lanidea-orchestrator
     ports:
-      - "3011:3011"
+      - '3011:3011'
     environment:
       - REDIS_URL=${REDIS_URL:-redis://:password@100.120.151.91:6379/0}
       - LLM_GATEWAY_URL=${LLM_GATEWAY_URL:-http://100.120.151.91:3010}
@@ -50,7 +50,7 @@ services:
     image: ghcr.io/cloudsysops/intcloudsysops-mission-control:latest
     container_name: lanidea-mission-control
     ports:
-      - "3015:3000"
+      - '3015:3000'
     environment:
       - NODE_ENV=production
       - PORT=3000

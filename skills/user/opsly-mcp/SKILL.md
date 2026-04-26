@@ -12,16 +12,15 @@ Al agregar o modificar tools del MCP OpenClaw en `apps/mcp/`.
 
 ```typescript
 // apps/mcp/src/tools/mi-feature.ts
-import { z } from "zod";
-import { opslyFetch } from "../lib/api-client.js";
-import type { ToolDefinition } from "../types/index.js";
+import { z } from 'zod';
+import { opslyFetch } from '../lib/api-client.js';
+import type { ToolDefinition } from '../types/index.js';
 
 export const miTool: ToolDefinition<{ param: string }, { result: unknown }> = {
-  name: "nombre_tool",
-  description:
-    "Qué hace, qué devuelve y cuándo usarla. Una o dos frases claras.",
+  name: 'nombre_tool',
+  description: 'Qué hace, qué devuelve y cuándo usarla. Una o dos frases claras.',
   inputSchema: z.object({
-    param: z.string().describe("Qué es este parámetro"),
+    param: z.string().describe('Qué es este parámetro'),
   }),
   handler: async (input) => {
     const data = await opslyFetch(`/api/endpoint/${encodeURIComponent(input.param)}`);
@@ -51,11 +50,11 @@ OAuth / PKCE: `apps/mcp/src/auth/` y `docs/adr/ADR-009-openclaw-mcp-architecture
 
 ## Errores comunes
 
-| Error | Causa | Solución |
-|-------|-------|----------|
-| Tool not found | No registrada en server.ts | Añadir en `registerTools` |
-| OAuth scope missing | No en TOOL_REQUIRED_SCOPES | Añadir scope |
-| 401 Unauthorized | Token expirado | Refresh OAuth token |
+| Error               | Causa                      | Solución                  |
+| ------------------- | -------------------------- | ------------------------- |
+| Tool not found      | No registrada en server.ts | Añadir en `registerTools` |
+| OAuth scope missing | No en TOOL_REQUIRED_SCOPES | Añadir scope              |
+| 401 Unauthorized    | Token expirado             | Refresh OAuth token       |
 
 ## Testing
 

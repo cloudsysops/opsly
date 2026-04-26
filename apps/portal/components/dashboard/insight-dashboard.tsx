@@ -1,19 +1,12 @@
-"use client";
+'use client';
 
-import type { ReactElement } from "react";
-import { useCallback, useMemo, useState } from "react";
-import {
-  Bar,
-  BarChart,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts";
-import { getApiBaseUrl } from "@/lib/api";
-import { createClient } from "@/lib/supabase/client";
-import { portalTenantInsightsUrl } from "@/lib/portal-api-paths";
-import type { PortalInsightItem } from "@/types";
+import type { ReactElement } from 'react';
+import { useCallback, useMemo, useState } from 'react';
+import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { getApiBaseUrl } from '@/lib/api';
+import { createClient } from '@/lib/supabase/client';
+import { portalTenantInsightsUrl } from '@/lib/portal-api-paths';
+import type { PortalInsightItem } from '@/types';
 
 type Props = {
   tenantSlug: string;
@@ -21,9 +14,9 @@ type Props = {
 };
 
 function insightLabel(type: string): string {
-  if (type === "churn_risk") return "Riesgo de desinterés";
-  if (type === "revenue_forecast") return "Tendencia gasto IA";
-  if (type === "usage_anomaly") return "Anomalía de uso";
+  if (type === 'churn_risk') return 'Riesgo de desinterés';
+  if (type === 'revenue_forecast') return 'Tendencia gasto IA';
+  if (type === 'usage_anomaly') return 'Anomalía de uso';
   return type;
 }
 
@@ -40,7 +33,7 @@ export function InsightDashboard({ tenantSlug, insights: initial }: Props): Reac
   }, [insights]);
 
   const patch = useCallback(
-    async (insightId: string, action: "read" | "dismiss" | "action") => {
+    async (insightId: string, action: 'read' | 'dismiss' | 'action') => {
       setBusyId(insightId);
       try {
         const supabase = createClient();
@@ -52,33 +45,31 @@ export function InsightDashboard({ tenantSlug, insights: initial }: Props): Reac
         }
         const url = portalTenantInsightsUrl(getApiBaseUrl(), tenantSlug);
         const res = await fetch(url, {
-          method: "PATCH",
+          method: 'PATCH',
           headers: {
             Authorization: `Bearer ${session.access_token}`,
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
           },
           body: JSON.stringify({
             insight_id: insightId,
-            action: action === "action" ? "action" : action,
+            action: action === 'action' ? 'action' : action,
           }),
         });
         if (!res.ok) {
           return;
         }
-        if (action === "dismiss" || action === "action") {
+        if (action === 'dismiss' || action === 'action') {
           setInsights((prev) => prev.filter((x) => x.id !== insightId));
         } else {
           setInsights((prev) =>
-            prev.map((x) =>
-              x.id === insightId ? { ...x, read_at: new Date().toISOString() } : x,
-            ),
+            prev.map((x) => (x.id === insightId ? { ...x, read_at: new Date().toISOString() } : x))
           );
         }
       } finally {
         setBusyId(null);
       }
     },
-    [tenantSlug],
+    [tenantSlug]
   );
 
   if (insights.length === 0) {
@@ -105,11 +96,11 @@ export function InsightDashboard({ tenantSlug, insights: initial }: Props): Reac
       <div className="h-48 w-full">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={chartData} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
-            <XAxis dataKey="name" tick={{ fill: "#a3a3a3", fontSize: 10 }} />
-            <YAxis tick={{ fill: "#a3a3a3", fontSize: 10 }} />
+            <XAxis dataKey="name" tick={{ fill: '#a3a3a3', fontSize: 10 }} />
+            <YAxis tick={{ fill: '#a3a3a3', fontSize: 10 }} />
             <Tooltip
-              contentStyle={{ background: "#171717", border: "1px solid #262626" }}
-              labelStyle={{ color: "#e5e5e5" }}
+              contentStyle={{ background: '#171717', border: '1px solid #262626' }}
+              labelStyle={{ color: '#e5e5e5' }}
             />
             <Bar dataKey="impacto" fill="#22c55e" name="Impacto" radius={[4, 4, 0, 0]} />
             <Bar dataKey="confianza" fill="#3b82f6" name="Confianza %" radius={[4, 4, 0, 0]} />
@@ -128,9 +119,9 @@ export function InsightDashboard({ tenantSlug, insights: initial }: Props): Reac
                 <p className="font-medium text-neutral-100">{insight.title}</p>
                 <p className="mt-1 text-neutral-400">{insight.summary}</p>
                 <p className="mt-2 text-xs text-ops-gray">
-                  Confianza {(insight.confidence * 100).toFixed(0)}% · Impacto{" "}
+                  Confianza {(insight.confidence * 100).toFixed(0)}% · Impacto{' '}
                   {insight.impact_score}
-                  {insight.read_at ? " · Leído" : ""}
+                  {insight.read_at ? ' · Leído' : ''}
                 </p>
               </div>
               <div className="flex flex-wrap gap-2">
@@ -138,7 +129,7 @@ export function InsightDashboard({ tenantSlug, insights: initial }: Props): Reac
                   type="button"
                   className="rounded border border-ops-border px-2 py-1 text-xs text-neutral-300 hover:bg-neutral-800 disabled:opacity-50"
                   disabled={busyId === insight.id || insight.read_at !== null}
-                  onClick={() => void patch(insight.id, "read")}
+                  onClick={() => void patch(insight.id, 'read')}
                 >
                   Marcar leído
                 </button>
@@ -146,7 +137,7 @@ export function InsightDashboard({ tenantSlug, insights: initial }: Props): Reac
                   type="button"
                   className="rounded border border-ops-border px-2 py-1 text-xs text-neutral-300 hover:bg-neutral-800 disabled:opacity-50"
                   disabled={busyId === insight.id}
-                  onClick={() => void patch(insight.id, "dismiss")}
+                  onClick={() => void patch(insight.id, 'dismiss')}
                 >
                   Descartar
                 </button>

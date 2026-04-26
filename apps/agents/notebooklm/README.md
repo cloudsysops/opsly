@@ -12,12 +12,12 @@ Integración **experimental** con [notebooklm-py](https://github.com/teng-lin/no
 ## Uso desde TypeScript (monorepo)
 
 ```typescript
-import { executeNotebookLM } from "@intcloudsysops/notebooklm-agent";
+import { executeNotebookLM } from '@intcloudsysops/notebooklm-agent';
 
 await executeNotebookLM({
-  action: "create_notebook",
-  tenant_slug: "localrank",
-  name: "Reporte",
+  action: 'create_notebook',
+  tenant_slug: 'localrank',
+  name: 'Reporte',
 });
 ```
 

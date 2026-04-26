@@ -1,6 +1,6 @@
 ---
-title: "API Route Template"
-description: "Plantilla para crear rutas API con tests asociados"
+title: 'API Route Template'
+description: 'Plantilla para crear rutas API con tests asociados'
 category: backend
 tags: [api, route, test, vitest, fastify]
 created_at: 2026-04-15
@@ -163,11 +163,13 @@ describe('{{routeName}} API Route', () => {
 ### GET /{{url-path}}
 
 **Input:**
+
 ```
 GET /{{url-path}}?page=1&limit=10
 ```
 
 **Output (200):**
+
 ```json
 {
   "success": true,
@@ -183,6 +185,7 @@ GET /{{url-path}}?page=1&limit=10
 ```
 
 **Output (400):**
+
 ```json
 {
   "success": false,

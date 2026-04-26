@@ -1,7 +1,7 @@
 # GitHub Settings — Opsly (`cloudsysops/opsly`)
 
 > Guía para configurar manualmente el repositorio. Estas settings **no se pueden
-> gestionar via código** (requieren acceso a *Settings* en GitHub UI o GitHub API
+> gestionar via código** (requieren acceso a _Settings_ en GitHub UI o GitHub API
 > con token de admin del repo).  
 > Revisar y aplicar al incorporar un colaborador nuevo o al crear un fork de producción.
 
@@ -11,19 +11,19 @@
 
 Ir a **Settings → Branches → Add branch protection rule** para `main`:
 
-| Setting | Valor recomendado | Razón |
-|---------|------------------|-------|
-| **Require a pull request before merging** | ✅ ON | Bloquea push directo a `main` |
-| • Require approvals | `1` (mínimo) | Code review obligatorio |
-| • Dismiss stale reviews when new commits pushed | ✅ ON | No aprobar código viejo |
-| • Require review from Code Owners (CODEOWNERS) | ✅ ON | `.github/CODEOWNERS` activo |
-| **Require status checks to pass** | ✅ ON | CI gates |
-| • Required checks | `lint`, `test`, `build`, `secret-scan` | Bloquear merge si falla CI |
-| • Require branches to be up to date | ✅ ON | Evita integraciones rotas |
-| **Require signed commits** | 🔶 Recomendado | Trazabilidad de autor |
-| **Include administrators** | ✅ ON | Sin excepciones para el owner |
-| **Allow force pushes** | ❌ OFF | Nunca reescribir historial de main |
-| **Allow deletions** | ❌ OFF | Main es permanente |
+| Setting                                         | Valor recomendado                      | Razón                              |
+| ----------------------------------------------- | -------------------------------------- | ---------------------------------- |
+| **Require a pull request before merging**       | ✅ ON                                  | Bloquea push directo a `main`      |
+| • Require approvals                             | `1` (mínimo)                           | Code review obligatorio            |
+| • Dismiss stale reviews when new commits pushed | ✅ ON                                  | No aprobar código viejo            |
+| • Require review from Code Owners (CODEOWNERS)  | ✅ ON                                  | `.github/CODEOWNERS` activo        |
+| **Require status checks to pass**               | ✅ ON                                  | CI gates                           |
+| • Required checks                               | `lint`, `test`, `build`, `secret-scan` | Bloquear merge si falla CI         |
+| • Require branches to be up to date             | ✅ ON                                  | Evita integraciones rotas          |
+| **Require signed commits**                      | 🔶 Recomendado                         | Trazabilidad de autor              |
+| **Include administrators**                      | ✅ ON                                  | Sin excepciones para el owner      |
+| **Allow force pushes**                          | ❌ OFF                                 | Nunca reescribir historial de main |
+| **Allow deletions**                             | ❌ OFF                                 | Main es permanente                 |
 
 ### Aplicar con GitHub CLI
 
@@ -43,16 +43,16 @@ gh api repos/cloudsysops/opsly/branches/main/protection \
 Los secretos se gestionan en **Doppler** (`ops-intcloudsysops / prd`).  
 Los siguientes deben estar configurados en GitHub Actions para que los workflows funcionen:
 
-| Secret | Usado en | Fuente |
-|--------|----------|--------|
-| `PLATFORM_DOMAIN` | deploy.yml, ci.yml | Doppler `PLATFORM_DOMAIN` |
-| `NEXT_PUBLIC_SUPABASE_URL` | deploy.yml | Doppler |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | deploy.yml | Doppler |
-| `NEXT_PUBLIC_SUPPORT_EMAIL` | deploy.yml | Doppler |
-| `VPS_HOST` | backup.yml, deploy.yml SSH | `100.120.151.91` (Tailscale) |
-| `VPS_USER` | backup.yml, deploy.yml SSH | `vps-dragon` |
-| `VPS_SSH_KEY` | backup.yml, deploy.yml SSH | ED25519 private key |
-| `DISCORD_WEBHOOK_URL` | backup.yml, security.yml, nightly-fix.yml | Doppler |
+| Secret                          | Usado en                                  | Fuente                       |
+| ------------------------------- | ----------------------------------------- | ---------------------------- |
+| `PLATFORM_DOMAIN`               | deploy.yml, ci.yml                        | Doppler `PLATFORM_DOMAIN`    |
+| `NEXT_PUBLIC_SUPABASE_URL`      | deploy.yml                                | Doppler                      |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | deploy.yml                                | Doppler                      |
+| `NEXT_PUBLIC_SUPPORT_EMAIL`     | deploy.yml                                | Doppler                      |
+| `VPS_HOST`                      | backup.yml, deploy.yml SSH                | `100.120.151.91` (Tailscale) |
+| `VPS_USER`                      | backup.yml, deploy.yml SSH                | `vps-dragon`                 |
+| `VPS_SSH_KEY`                   | backup.yml, deploy.yml SSH                | ED25519 private key          |
+| `DISCORD_WEBHOOK_URL`           | backup.yml, security.yml, nightly-fix.yml | Doppler                      |
 
 > **Nunca** poner secretos directamente en código, workflows ni documentación.
 
@@ -61,6 +61,7 @@ Los siguientes deben estar configurados en GitHub Actions para que los workflows
 ## Dependabot (Settings → Security → Dependabot)
 
 Habilitar:
+
 - **Dependabot alerts** ✅ — notifica CVEs en dependencias
 - **Dependabot security updates** ✅ — PRs automáticos para parches de seguridad
 - **Dependabot version updates** — opcional (puede generar ruido); si se activa, configurar `.github/dependabot.yml`
@@ -70,12 +71,12 @@ Archivo `dependabot.yml` sugerido (crear cuando sea necesario):
 ```yaml
 version: 2
 updates:
-  - package-ecosystem: "npm"
-    directory: "/"
+  - package-ecosystem: 'npm'
+    directory: '/'
     schedule:
-      interval: "weekly"
+      interval: 'weekly'
     open-pull-requests-limit: 5
-    labels: ["dependencies", "automated"]
+    labels: ['dependencies', 'automated']
 ```
 
 ---
@@ -94,9 +95,9 @@ updates:
 
 Ir a **Settings → Actions → General → Workflow permissions**:
 
-| Setting | Valor |
-|---------|-------|
-| Default permissions | `Read repository contents and packages` |
+| Setting                            | Valor                                    |
+| ---------------------------------- | ---------------------------------------- |
+| Default permissions                | `Read repository contents and packages`  |
 | Allow GitHub Actions to create PRs | ✅ ON (nightly-fix y auto-fix usan esto) |
 
 Los workflows que necesitan escribir (push imágenes, crear PRs) declaran sus propios
@@ -132,10 +133,10 @@ infra/terraform/         @cloudsysops/infra
 
 Configurar environment **`production`** para el job `deploy` en `deploy.yml`:
 
-| Setting | Valor |
-|---------|-------|
-| Required reviewers | `@cboteros` |
-| Deployment branches | `main` only |
+| Setting             | Valor                                                      |
+| ------------------- | ---------------------------------------------------------- |
+| Required reviewers  | `@cboteros`                                                |
+| Deployment branches | `main` only                                                |
 | Environment secrets | Los mismos que en Actions (sobrescriben si hay diferencia) |
 
 Esto agrega un gate humano antes de cada deploy a producción.

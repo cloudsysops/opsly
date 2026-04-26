@@ -32,7 +32,11 @@
   },
   "examples": [
     {
-      "input": { "action": "create", "scriptName": "deploy-tenant", "purpose": "Desplegar stack de un tenant" },
+      "input": {
+        "action": "create",
+        "scriptName": "deploy-tenant",
+        "purpose": "Desplegar stack de un tenant"
+      },
       "output": { "scriptCreated": true, "path": "scripts/deploy-tenant.sh", "dryRun": true }
     }
   ],

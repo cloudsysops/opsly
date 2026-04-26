@@ -3,7 +3,7 @@
 **Status:** EXPERIMENTAL  
 **Date:** 2026-04-09  
 **Decision Maker:** Architecture Team  
-**Affected Systems:** Apps/agents/notebooklm, MCP, Orchestrator  
+**Affected Systems:** Apps/agents/notebooklm, MCP, Orchestrator
 
 ---
 
@@ -48,13 +48,13 @@ La librería `notebooklm-py` (no oficial) proporciona acceso vía API/browser au
 
 ### ⚠️ Riesgos
 
-| Risk | Mitigation |
-|------|-----------|
-| API no oficial (Google puede romper) | Feature flag + tests con MockClient; fallback graceful |
-| Browser automation (Playwright) requiere recursos | Limite a Business+; queue con BullMQ (priority baja) |
-| Google auth complexity | OAuth scope `notebooklm.readwrite`; storage local (.notebooklm_storage) |
-| Latencia (10-30 min por reporte) | Jobs async; notificación Discord con status |
-| Contenido de baja calidad si docs malos | Validation: doc size, format, language detection |
+| Risk                                              | Mitigation                                                              |
+| ------------------------------------------------- | ----------------------------------------------------------------------- |
+| API no oficial (Google puede romper)              | Feature flag + tests con MockClient; fallback graceful                  |
+| Browser automation (Playwright) requiere recursos | Limite a Business+; queue con BullMQ (priority baja)                    |
+| Google auth complexity                            | OAuth scope `notebooklm.readwrite`; storage local (.notebooklm_storage) |
+| Latencia (10-30 min por reporte)                  | Jobs async; notificación Discord con status                             |
+| Contenido de baja calidad si docs malos           | Validation: doc size, format, language detection                        |
 
 ### 📊 Metricas & Monitoreo
 
@@ -78,6 +78,7 @@ doppler secrets set NOTEBOOKLM_STORAGE_PATH /opt/opsly/.notebooklm_storage
 ### 2. Python Client (`apps/agents/notebooklm/src/client.py`)
 
 Ver `client.py` para API:
+
 - `create_notebook(name, description)`
 - `add_source(notebook_id, source_type='url'|'text'|'file')`
 - `generate_audio(notebook_id, style, speakers)`
@@ -91,11 +92,10 @@ Ver `client.py` para API:
 import { spawnSync } from 'child_process';
 
 export async function notebookLMCommand(cmd: object): Promise<any> {
-  const result = spawnSync('python3', [
-    './src/client.py',
-    JSON.stringify(cmd),
-  ], { encoding: 'utf-8' });
-  
+  const result = spawnSync('python3', ['./src/client.py', JSON.stringify(cmd)], {
+    encoding: 'utf-8',
+  });
+
   if (result.error) throw result.error;
   return JSON.parse(result.stdout);
 }
@@ -111,7 +111,7 @@ server.tool('notebooklm', {
   handler: async (args: Record<string, any>) => {
     const { notebookLMCommand } = await import('@intcloudsysops/notebooklm-agent');
     return notebookLMCommand(args);
-  }
+  },
 });
 ```
 
@@ -141,16 +141,19 @@ export async function processNotebookLMJob(job: Job<NotebookLMJobData>) {
 ## Rollout Plan
 
 ### Phase 1: Soft Launch (Business+ only)
+
 - Feature flag en `prd` (admin puede habilitar)
 - Tests + MockClient verde
 - Piloto LocalRank solo cuando el tenant tenga plan Business o Enterprise
 
 ### Phase 2: General Availability
+
 - Documentación completa en LOCALRANK-TESTER-GUIDE.md
 - Runbooks para troubleshooting
 - Discord alerts para fallos
 
 ### Phase 3: Optimization
+
 - Caching de artifacts en S3/Supabase
 - Smart scheduling (evitar picos)
 - Cost tracking por tenant
@@ -160,12 +163,14 @@ export async function processNotebookLMJob(job: Job<NotebookLMJobData>) {
 ## Testing
 
 ### Unit Tests
+
 ```bash
 npm run test --workspace=@intcloudsysops/orchestrator
 # Should include notebooklm-worker.test.ts
 ```
 
 ### E2E (Manual)
+
 ```bash
 NOTEBOOKLM_ENABLED=true \
   ./scripts/test-notebooklm.sh \

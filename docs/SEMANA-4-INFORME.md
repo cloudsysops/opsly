@@ -7,6 +7,7 @@
 ## Objetivo Logrado
 
 Implementar dashboard de costos visible para administradores, con API endpoint unificado que expone:
+
 - Costos actuales (VPS, Cloudflare, Supabase, Resend)
 - Líneas propuestas (GCP failover, Cloudflare LB, VPS upgrade, Mac worker)
 - Decisiones de aprobación/rechazo persistidas en memoria
@@ -19,12 +20,14 @@ Implementar dashboard de costos visible para administradores, con API endpoint u
 ### 1. ✅ Validación de Infraestructura Existente
 
 **API Backend (`apps/api/app/api/admin/costs/route.ts`):**
+
 - GET endpoint: retorna `AdminCostsPayload` con costos, propuestas, alertas, presupuestos tenant
 - POST endpoint: acepta decisiones (`approve`/`reject`) y actualiza estado en memoria
 - Autenticación: `requireAdminAccessUnlessDemoRead()` (GET), `requireAdminAccess()` (POST)
 - Notificaciones Discord: webhook automático en aprobaciones/rechazos
 
 **Admin UI Frontend (`apps/admin/app/costs/page.tsx`):**
+
 - Cliente SWR con revalidación en foco
 - Tarjetas de costos actuales vs propuestos
 - Tabla interactiva de presupuestos por tenant con filtros/búsqueda
@@ -32,12 +35,14 @@ Implementar dashboard de costos visible para administradores, con API endpoint u
 - Acciones de aprobación/rechazo con validación
 
 **Utilidades de Costos (`apps/api/lib/admin-costs.ts`):**
+
 - Catálogo de líneas actuales (VPS, Cloudflare, Supabase, Resend)
 - Catálogo de líneas propuestas con requerimientos de aprobación
 - Cálculo de resumen mensual (actual + aprobadas)
 - Alertas de información/advertencia
 
 **Integración de Presupuestos Tenant (`apps/api/lib/admin-costs-tenant-budgets.ts`):**
+
 - Consulta a `platform.tenants` en Supabase
 - Verificación de presupuesto por tenant (LLM)
 - Cálculo de % usado, nivel de alerta, proyección mes fin
@@ -49,25 +54,26 @@ Implementar dashboard de costos visible para administradores, con API endpoint u
 
 **Tests GET /api/admin/costs:**
 
-| Test | Escenario | Validación | Status |
-|------|-----------|-----------|--------|
-| test 1 | "returns costs payload when authorized" | Status 200, buildAdminCostsPayloadAsync llamado, datos correctos | ✅ PASS |
-| test 2 | "returns auth error when not authorized" | Status 401 cuando auth falla | ✅ PASS |
-| test 3 | "includes tenant budgets in response" | `tenant_budgets` array presente, `ops` tenant incluido | ✅ PASS |
+| Test   | Escenario                                | Validación                                                       | Status  |
+| ------ | ---------------------------------------- | ---------------------------------------------------------------- | ------- |
+| test 1 | "returns costs payload when authorized"  | Status 200, buildAdminCostsPayloadAsync llamado, datos correctos | ✅ PASS |
+| test 2 | "returns auth error when not authorized" | Status 401 cuando auth falla                                     | ✅ PASS |
+| test 3 | "includes tenant budgets in response"    | `tenant_budgets` array presente, `ops` tenant incluido           | ✅ PASS |
 
 **Tests POST /api/admin/costs:**
 
-| Test | Escenario | Validación | Status |
-|------|-----------|-----------|--------|
-| test 4 | "approves cost line and sends Discord notification" | Status 200, `success: true`, Discord fetch called | ✅ PASS |
-| test 5 | "rejects cost line with reason and sends Discord notification" | Status 200, Discord message incluye reason | ✅ PASS |
-| test 6 | "returns 400 on invalid JSON" | Status 400, error message "Invalid JSON" | ✅ PASS |
-| test 7 | "returns 400 on missing service_id or action" | Status 400, error message "required" | ✅ PASS |
-| test 8 | "returns error from applyCostDecision" | Status 404, error "Service not found" | ✅ PASS |
-| test 9 | "returns auth error when not authorized" | Status 401 cuando auth falla en POST | ✅ PASS |
-| test 10 | "handles Discord webhook failure gracefully" | Status 200 a pesar de webhook error, no bloquea respuesta | ✅ PASS |
+| Test    | Escenario                                                      | Validación                                                | Status  |
+| ------- | -------------------------------------------------------------- | --------------------------------------------------------- | ------- |
+| test 4  | "approves cost line and sends Discord notification"            | Status 200, `success: true`, Discord fetch called         | ✅ PASS |
+| test 5  | "rejects cost line with reason and sends Discord notification" | Status 200, Discord message incluye reason                | ✅ PASS |
+| test 6  | "returns 400 on invalid JSON"                                  | Status 400, error message "Invalid JSON"                  | ✅ PASS |
+| test 7  | "returns 400 on missing service_id or action"                  | Status 400, error message "required"                      | ✅ PASS |
+| test 8  | "returns error from applyCostDecision"                         | Status 404, error "Service not found"                     | ✅ PASS |
+| test 9  | "returns auth error when not authorized"                       | Status 401 cuando auth falla en POST                      | ✅ PASS |
+| test 10 | "handles Discord webhook failure gracefully"                   | Status 200 a pesar de webhook error, no bloquea respuesta | ✅ PASS |
 
 **Cobertura de Scenarios:**
+
 - ✅ Autorización (GET sin token, POST sin token)
 - ✅ Payload correcto (costos, propuestas, alertas)
 - ✅ Integración tenant budgets (presupuesto, alertas por tenant)
@@ -78,6 +84,7 @@ Implementar dashboard de costos visible para administradores, con API endpoint u
 - ✅ Resiliencia en Discord (falla sin bloquear)
 
 **Test Run Results:**
+
 ```
 ✓ app/api/admin/costs/__tests__/route.test.ts (18 tests) 38ms
 Test Files  1 passed (1)
@@ -88,6 +95,7 @@ Test Files  1 passed (1)
 ### 3. ✅ Type-Check y Linting
 
 **TypeScript Validation:**
+
 ```
 ✅ PASS (0 TypeScript errors)
 Tasks: 14 successful, 14 total
@@ -95,6 +103,7 @@ Cached: 13 cached, 14 total
 ```
 
 **Code Style:**
+
 - ✅ Prettier: All files formatted correctly
 - ✅ ESLint: 0 errors, 0 warnings
 
@@ -102,32 +111,34 @@ Cached: 13 cached, 14 total
 
 **Verificaciones:**
 
-| Validación | Resultado | Evidencia |
-|-----------|----------|-----------|
-| GET /api/admin/costs retorna AdminCostsPayload | ✅ PASS | test 1 |
-| Costados actuales incluidos | ✅ PASS | test 1 (VPS DigitalOcean: $12/mo) |
-| Líneas propuestas incluidas | ✅ PASS | tests 4-5 (gcp_failover, vps_upgrade) |
-| Presupuestos por tenant integrados | ✅ PASS | test 3 (tenant_budgets array populated) |
-| Discord webhook notifications | ✅ PASS | tests 4-5 (fetch called with correct payload) |
-| POST aprueba línea | ✅ PASS | test 4 (`status: 200`, `success: true`) |
-| POST rechaza línea con reason | ✅ PASS | test 5 (reason propagado a Discord) |
-| Errores autenticación | ✅ PASS | tests 2, 9 (`status: 401`) |
-| Errores validación | ✅ PASS | tests 6-7 (`status: 400`) |
-| Errores servicio | ✅ PASS | test 8 (`status: 404`) |
-| Resiliencia Discord | ✅ PASS | test 10 (endpoint ok aunque webhook falla) |
-| Admin UI puede consumir API | ✅ PASS | `/costs/page.tsx` compatible con response shape |
+| Validación                                     | Resultado | Evidencia                                       |
+| ---------------------------------------------- | --------- | ----------------------------------------------- |
+| GET /api/admin/costs retorna AdminCostsPayload | ✅ PASS   | test 1                                          |
+| Costados actuales incluidos                    | ✅ PASS   | test 1 (VPS DigitalOcean: $12/mo)               |
+| Líneas propuestas incluidas                    | ✅ PASS   | tests 4-5 (gcp_failover, vps_upgrade)           |
+| Presupuestos por tenant integrados             | ✅ PASS   | test 3 (tenant_budgets array populated)         |
+| Discord webhook notifications                  | ✅ PASS   | tests 4-5 (fetch called with correct payload)   |
+| POST aprueba línea                             | ✅ PASS   | test 4 (`status: 200`, `success: true`)         |
+| POST rechaza línea con reason                  | ✅ PASS   | test 5 (reason propagado a Discord)             |
+| Errores autenticación                          | ✅ PASS   | tests 2, 9 (`status: 401`)                      |
+| Errores validación                             | ✅ PASS   | tests 6-7 (`status: 400`)                       |
+| Errores servicio                               | ✅ PASS   | test 8 (`status: 404`)                          |
+| Resiliencia Discord                            | ✅ PASS   | test 10 (endpoint ok aunque webhook falla)      |
+| Admin UI puede consumir API                    | ✅ PASS   | `/costs/page.tsx` compatible con response shape |
 
 ## Impacto Técnico
 
 ### Costo Transparency Enablement
 
 **Antes (Semana 3):**
+
 - No había API centralizada de costos
 - Admin no podía visualizar propuestas
 - Sin decisiones persistidas (excepto en memoria reiniciada)
 - Sin alertas de presupuesto por tenant
 
 **Después (Semana 4):**
+
 - GET /api/admin/costs expone catálogo completo
 - POST /api/admin/costs guarda decisiones (aprobación/rechazo)
 - Discord webhook notifica cambios en tiempo real

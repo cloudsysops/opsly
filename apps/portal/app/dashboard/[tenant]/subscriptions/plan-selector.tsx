@@ -70,11 +70,7 @@ export function PlanSelector({
   }
 
   if (plans.length === 0) {
-    return (
-      <p className="text-sm text-ops-gray">
-        No hay planes disponibles en este momento.
-      </p>
-    );
+    return <p className="text-sm text-ops-gray">No hay planes disponibles en este momento.</p>;
   }
 
   return (
@@ -104,16 +100,11 @@ export function PlanSelector({
         </button>
       </div>
 
-      {error ? (
-        <p className="mb-4 text-sm text-red-400">{error}</p>
-      ) : null}
+      {error ? <p className="mb-4 text-sm text-red-400">{error}</p> : null}
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {plans.map((plan) => {
-          const price =
-            period === 'yearly'
-              ? plan.yearly_price_cents
-              : plan.monthly_price_cents;
+          const price = period === 'yearly' ? plan.yearly_price_cents : plan.monthly_price_cents;
 
           return (
             <Card key={plan.id} variant="elevated">
@@ -124,13 +115,9 @@ export function PlanSelector({
                 <p className="font-mono text-2xl text-neutral-100">
                   {formatMoney(price, plan.currency)}
                 </p>
-                <p className="text-xs text-ops-gray">
-                  / {period === 'yearly' ? 'ano' : 'mes'}
-                </p>
+                <p className="text-xs text-ops-gray">/ {period === 'yearly' ? 'ano' : 'mes'}</p>
                 {plan.description ? (
-                  <p className="mt-3 text-sm text-ops-gray">
-                    {plan.description}
-                  </p>
+                  <p className="mt-3 text-sm text-ops-gray">{plan.description}</p>
                 ) : null}
                 <Button
                   variant="primary"

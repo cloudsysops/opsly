@@ -4,10 +4,10 @@
  * @see docs/design/OAR.md — Fase 3 Action Port Adapter
  */
 
-import axios, { type AxiosError } from "axios";
-import type { Queue } from "bullmq";
+import axios, { type AxiosError } from 'axios';
+import type { Queue } from 'bullmq';
 
-import type { AgentActionPort, ToolResult } from "../interfaces/agent-action-port.js";
+import type { AgentActionPort, ToolResult } from '../interfaces/agent-action-port.js';
 
 /** Callback para metering de acciones ejecutadas. */
 export type ActionMeteringCallback = (params: {
@@ -20,11 +20,11 @@ export type ActionMeteringCallback = (params: {
 
 /** Herramientas consideradas seguras para ejecución síncrona vía API (MVP). */
 export const DEFAULT_SAFE_SYNC_TOOLS: readonly string[] = [
-  "fs_read",
-  "fs_read_file",
-  "fs_write",
-  "fs_write_file",
-  "list_adrs",
+  'fs_read',
+  'fs_read_file',
+  'fs_write',
+  'fs_write_file',
+  'list_adrs',
 ];
 
 /** Cuerpo encolado para jobs OAR (serializable). */
@@ -61,45 +61,45 @@ export interface OpslyActionAdapterOptions {
 }
 
 function normalizeBaseUrl(baseUrl: string): string {
-  return baseUrl.replace(/\/$/, "");
+  return baseUrl.replace(/\/$/, '');
 }
 
 function sanitizeArgs(args: Record<string, unknown>): Record<string, unknown> {
   try {
     return structuredClone(args);
   } catch {
-    throw new Error("args must be JSON-serializable");
+    throw new Error('args must be JSON-serializable');
   }
 }
 
 function formatObservationPayload(data: unknown): string {
   if (data === null || data === undefined) {
-    return "";
+    return '';
   }
-  if (typeof data === "string") {
+  if (typeof data === 'string') {
     return data;
   }
-  if (typeof data === "object") {
+  if (typeof data === 'object') {
     try {
       return JSON.stringify(data);
     } catch {
-      return "[unserializable]";
+      return '[unserializable]';
     }
   }
-  if (typeof data === "number" || typeof data === "boolean" || typeof data === "bigint") {
+  if (typeof data === 'number' || typeof data === 'boolean' || typeof data === 'bigint') {
     return String(data);
   }
-  if (typeof data === "symbol") {
+  if (typeof data === 'symbol') {
     return data.toString();
   }
-  if (typeof data === "function") {
+  if (typeof data === 'function') {
     return `[function ${data.name}]`;
   }
-  return "";
+  return '';
 }
 
 function isSyncRoute(actionName: string, safeTools: readonly string[]): boolean {
-  if (actionName.startsWith("http_")) {
+  if (actionName.startsWith('http_')) {
     return true;
   }
   return safeTools.includes(actionName);
@@ -109,32 +109,32 @@ function unknownToErrorMessage(err: unknown): string {
   if (err instanceof Error) {
     return err.message;
   }
-  if (typeof err === "object" && err !== null) {
+  if (typeof err === 'object' && err !== null) {
     try {
       return JSON.stringify(err);
     } catch {
-      return "non-serializable error";
+      return 'non-serializable error';
     }
   }
-  if (typeof err === "string") {
+  if (typeof err === 'string') {
     return err;
   }
-  if (typeof err === "number" || typeof err === "boolean") {
+  if (typeof err === 'number' || typeof err === 'boolean') {
     return String(err);
   }
-  if (typeof err === "bigint") {
+  if (typeof err === 'bigint') {
     return err.toString();
   }
-  if (typeof err === "symbol") {
+  if (typeof err === 'symbol') {
     return err.toString();
   }
-  if (typeof err === "function") {
+  if (typeof err === 'function') {
     return `[function ${err.name}]`;
   }
   if (err === undefined) {
-    return "undefined";
+    return 'undefined';
   }
-  return "unknown error";
+  return 'unknown error';
 }
 
 function observationFromAxiosError(err: AxiosError<unknown>): string {
@@ -142,7 +142,7 @@ function observationFromAxiosError(err: AxiosError<unknown>): string {
   if (data === undefined || data === null) {
     return err.message;
   }
-  if (typeof data === "string") {
+  if (typeof data === 'string') {
     return data;
   }
   try {
@@ -164,7 +164,7 @@ export class OpslyActionAdapter implements AgentActionPort {
   constructor(
     private readonly apiConfig: OpslyActionAdapterApiConfig,
     private readonly queues: Record<string, Queue<OarEnqueueJobPayload>>,
-    private readonly options: OpslyActionAdapterOptions = {},
+    private readonly options: OpslyActionAdapterOptions = {}
   ) {
     this.safeSyncTools = options.safeSyncTools ?? DEFAULT_SAFE_SYNC_TOOLS;
     this.meteringCallback = options.meteringCallback;
@@ -175,7 +175,7 @@ export class OpslyActionAdapter implements AgentActionPort {
   async executeAction(
     tenantSlug: string,
     actionName: string,
-    args: Record<string, unknown>,
+    args: Record<string, unknown>
   ): Promise<ToolResult> {
     let sanitized: Record<string, unknown>;
     try {
@@ -202,7 +202,11 @@ export class OpslyActionAdapter implements AgentActionPort {
     return result;
   }
 
-  private async meterAction(tenantSlug: string, actionName: string, success: boolean): Promise<void> {
+  private async meterAction(
+    tenantSlug: string,
+    actionName: string,
+    success: boolean
+  ): Promise<void> {
     if (this.meteringCallback === undefined) {
       return;
     }
@@ -222,10 +226,10 @@ export class OpslyActionAdapter implements AgentActionPort {
   private async executeViaApi(
     tenantSlug: string,
     actionName: string,
-    args: Record<string, unknown>,
+    args: Record<string, unknown>
   ): Promise<ToolResult> {
-    const path = this.options.toolsExecutePath ?? "/api/tools/execute";
-    const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+    const path = this.options.toolsExecutePath ?? '/api/tools/execute';
+    const normalizedPath = path.startsWith('/') ? path : `/${path}`;
     const url = `${normalizeBaseUrl(this.apiConfig.baseUrl)}${normalizedPath}`;
 
     try {
@@ -239,11 +243,11 @@ export class OpslyActionAdapter implements AgentActionPort {
         {
           headers: {
             Authorization: `Bearer ${this.apiConfig.authToken}`,
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
           },
           timeout: 120_000,
           validateStatus: (status) => status < 500,
-        },
+        }
       );
 
       if (res.status >= 400) {
@@ -283,9 +287,9 @@ export class OpslyActionAdapter implements AgentActionPort {
   private async enqueueJob(
     tenantSlug: string,
     actionName: string,
-    args: Record<string, unknown>,
+    args: Record<string, unknown>
   ): Promise<ToolResult> {
-    const key = this.options.defaultQueueKey ?? "default";
+    const key = this.options.defaultQueueKey ?? 'default';
     const queue = this.queues[key];
     if (queue === undefined) {
       const msg = `No BullMQ queue registered for key "${key}".`;
@@ -307,11 +311,11 @@ export class OpslyActionAdapter implements AgentActionPort {
       removeOnFail: 500,
     });
 
-    const jobId = job.id === undefined ? "" : String(job.id);
+    const jobId = job.id === undefined ? '' : String(job.id);
     return {
       success: true,
       data: { jobId },
-      observation: "Job enqueued successfully",
+      observation: 'Job enqueued successfully',
     };
   }
 }

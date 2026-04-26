@@ -1,4 +1,4 @@
-export * from "./engine";
+export * from './engine';
 export type {
   InsightPayloadAnomaly,
   InsightPayloadChurn,
@@ -6,4 +6,4 @@ export type {
   InsightStatus,
   InsightType,
   TenantInsightRow,
-} from "./types";
+} from './types';

@@ -1,40 +1,40 @@
-import { randomUUID } from "node:crypto";
-import { buildConsciousAppendix } from "./agents/conscious-layer.js";
-import { createDefaultToolRegistry } from "./agents/tools/registry.js";
-import { evaluateAutomationPolicy } from "./agents/opsly-lili/policy-engine.js";
-import { MAX_PLANNER_ACTIONS } from "./constants-planner.js";
-import type { Queue } from "bullmq";
-import { logUsage } from "@intcloudsysops/llm-gateway";
+import { randomUUID } from 'node:crypto';
+import { buildConsciousAppendix } from './agents/conscious-layer.js';
+import { createDefaultToolRegistry } from './agents/tools/registry.js';
+import { evaluateAutomationPolicy } from './agents/opsly-lili/policy-engine.js';
+import { MAX_PLANNER_ACTIONS } from './constants-planner.js';
+import type { Queue } from 'bullmq';
+import { logUsage } from '@intcloudsysops/llm-gateway';
 import {
   type OarEnqueueJobPayload,
   OpslyActionAdapter,
-} from "./runtime/adapters/opsly-action-adapter.js";
-import { createOarTextCompletionClient } from "./runtime/llm/oar-text-completion-client.js";
-import { InMemoryMemory } from "./runtime/memory/in-memory-memory.js";
-import { runReActStrategy } from "./runtime/strategies/react-engine.js";
-import { runPlanExecuteStrategy } from "./runtime/strategies/plan-execute-engine.js";
+} from './runtime/adapters/opsly-action-adapter.js';
+import { createOarTextCompletionClient } from './runtime/llm/oar-text-completion-client.js';
+import { InMemoryMemory } from './runtime/memory/in-memory-memory.js';
+import { runReActStrategy } from './runtime/strategies/react-engine.js';
+import { runPlanExecuteStrategy } from './runtime/strategies/plan-execute-engine.js';
 import {
-    meterPlannerLlmFireAndForget,
-    meterRemotePlanWorkerFireAndForget,
-} from "./metering/usage-events-meter.js";
-import { logPlannerActionEnqueued, logPlannerUnknownTool } from "./observability/planner-log.js";
-import { parseOrchestratorRole, shouldRunControlPlane } from "./orchestrator-role.js";
-import { executeRemotePlanner } from "./planner-client.js";
+  meterPlannerLlmFireAndForget,
+  meterRemotePlanWorkerFireAndForget,
+} from './metering/usage-events-meter.js';
+import { logPlannerActionEnqueued, logPlannerUnknownTool } from './observability/planner-log.js';
+import { parseOrchestratorRole, shouldRunControlPlane } from './orchestrator-role.js';
+import { executeRemotePlanner } from './planner-client.js';
 import {
-    DEFAULT_PLANNER_TOOL_NAMES,
-    buildPlannerContextSnapshot,
-    plannerActionToOrchestratorJob,
-} from "./planner-map.js";
-import { enqueueJob, orchestratorQueue } from "./queue.js";
-import { SprintManager } from "./sprints/sprint-manager.js";
-import { setJobState } from "./state/store.js";
-import type { Intent, IntentRequest, OrchestratorJob } from "./types.js";
+  DEFAULT_PLANNER_TOOL_NAMES,
+  buildPlannerContextSnapshot,
+  plannerActionToOrchestratorJob,
+} from './planner-map.js';
+import { enqueueJob, orchestratorQueue } from './queue.js';
+import { SprintManager } from './sprints/sprint-manager.js';
+import { setJobState } from './state/store.js';
+import type { Intent, IntentRequest, OrchestratorJob } from './types.js';
 
 function enrichJob(
   req: IntentRequest,
-  base: Pick<OrchestratorJob, "type" | "payload" | "tenant_slug" | "initiated_by">,
+  base: Pick<OrchestratorJob, 'type' | 'payload' | 'tenant_slug' | 'initiated_by'>,
   batchIndex: number,
-  correlationId: string,
+  correlationId: string
 ): OrchestratorJob {
   return {
     ...base,
@@ -56,9 +56,9 @@ function resolveOarActionAdapterApiConfig(): { baseUrl: string; authToken: strin
   const baseUrl =
     process.env.OPSLY_API_INTERNAL_URL?.trim() ||
     process.env.OPSLY_API_URL?.trim() ||
-    "http://app:3000";
+    'http://app:3000';
   const authToken =
-    process.env.PLATFORM_ADMIN_TOKEN?.trim() || process.env.OPSLY_API_TOKEN?.trim() || "";
+    process.env.PLATFORM_ADMIN_TOKEN?.trim() || process.env.OPSLY_API_TOKEN?.trim() || '';
   return { baseUrl, authToken };
 }
 
@@ -70,11 +70,11 @@ function buildOarActionQueues(): Record<string, Queue<OarEnqueueJobPayload>> {
 }
 
 function effectiveIntent(req: IntentRequest): Intent {
-  if (req.intent === "sprint_plan") {
-    return "sprint_plan";
+  if (req.intent === 'sprint_plan') {
+    return 'sprint_plan';
   }
-  if (req.agent_role === "planner" && req.intent !== "remote_plan" && req.intent !== "oar_react") {
-    return "remote_plan";
+  if (req.agent_role === 'planner' && req.intent !== 'remote_plan' && req.intent !== 'oar_react') {
+    return 'remote_plan';
   }
   return req.intent;
 }
@@ -108,7 +108,7 @@ export interface ProcessIntentResult {
   };
   /** Presente cuando `intent === "oar_react"` (OAR ReAct). */
   oar?: {
-    state: "completed" | "failed";
+    state: 'completed' | 'failed';
     final_answer?: string;
     error_message?: string;
     steps_executed: number;
@@ -118,13 +118,13 @@ export interface ProcessIntentResult {
 
 export async function processIntent(
   req: IntentRequest,
-  options?: ProcessIntentOptions,
+  options?: ProcessIntentOptions
 ): Promise<ProcessIntentResult> {
   const intentPreview = effectiveIntent(req);
   const allowOarOnWorker =
-    options?.invokedFromIntentDispatchWorker === true && intentPreview === "oar_react";
+    options?.invokedFromIntentDispatchWorker === true && intentPreview === 'oar_react';
   if (!allowOarOnWorker && !shouldRunControlPlane(parseOrchestratorRole())) {
-    throw new Error("Cannot dispatch jobs from worker-only mode");
+    throw new Error('Cannot dispatch jobs from worker-only mode');
   }
 
   const correlationId = req.request_id ?? randomUUID();
@@ -134,60 +134,56 @@ export async function processIntent(
   const intent = effectiveIntent(req);
 
   switch (intent) {
-    case "oar_react": {
+    case 'oar_react': {
       const tenantSlug = req.tenant_slug?.trim();
       if (!tenantSlug || tenantSlug.length === 0) {
-        throw new Error("oar_react requires tenant_slug");
+        throw new Error('oar_react requires tenant_slug');
       }
-      let promptSource = "";
-      if (typeof req.context.prompt === "string") {
+      let promptSource = '';
+      if (typeof req.context.prompt === 'string') {
         promptSource = req.context.prompt;
-      } else if (typeof req.context.query === "string") {
+      } else if (typeof req.context.query === 'string') {
         promptSource = req.context.query;
       }
       const promptRaw = promptSource.trim();
       if (promptRaw.length === 0) {
-        throw new Error("oar_react requires context.prompt or context.query (non-empty string)");
+        throw new Error('oar_react requires context.prompt or context.query (non-empty string)');
       }
       const sessionId =
-        typeof req.context.session_id === "string" && req.context.session_id.trim().length > 0
+        typeof req.context.session_id === 'string' && req.context.session_id.trim().length > 0
           ? req.context.session_id.trim()
           : correlationId;
       let maxSteps: number | undefined;
       const ms = req.context.max_steps;
-      if (typeof ms === "number" && Number.isFinite(ms) && ms > 0) {
+      if (typeof ms === 'number' && Number.isFinite(ms) && ms > 0) {
         maxSteps = Math.min(100, Math.floor(ms));
       }
 
       const memory = new InMemoryMemory();
       const { baseUrl, authToken } = resolveOarActionAdapterApiConfig();
-      const actionPort = new OpslyActionAdapter(
-        { baseUrl, authToken },
-        buildOarActionQueues(),
-        {
-          toolsExecutePath: "/api/tools/execute",
-          defaultQueueKey: "default",
-          requestId: correlationId,
-          sessionId,
-          meteringCallback: async (params) => {
-            try {
-              await logUsage({
-                tenant_slug: params.tenantSlug,
-                model: `oar_action:${params.actionName}`,
-                tokens_input: 0,
-                tokens_output: 0,
-                cost_usd: 0,
-                cache_hit: false,
-                request_id: params.requestId,
-                session_id: params.sessionId,
-                created_at: new Date().toISOString(),
-              });
-            } catch {
-              // Silently ignore metering errors
-            }
-          },
+      const actionPort = new OpslyActionAdapter({ baseUrl, authToken }, buildOarActionQueues(), {
+        toolsExecutePath: '/api/tools/execute',
+        defaultQueueKey: 'default',
+        requestId: correlationId,
+        sessionId,
+        meteringCallback: async (params) => {
+          try {
+            await logUsage({
+              tenant_slug: params.tenantSlug,
+              model: `oar_action:${params.actionName}`,
+              tokens_input: 0,
+              tokens_output: 0,
+              cost_usd: 0,
+              cache_hit: false,
+              request_id: params.requestId,
+              session_id: params.sessionId,
+              created_at: new Date().toISOString(),
+            });
+          } catch {
+            // Silently ignore metering errors
+          }
         },
-      );
+      });
       const llmClient = createOarTextCompletionClient({
         tenantSlug,
         requestId: correlationId,
@@ -198,21 +194,21 @@ export async function processIntent(
       const initialPrompt = `You are the Opsly OAR ReAct agent. Follow the JSON protocol in your instructions.\n\nUser task:\n${promptRaw}`;
 
       const liliDecision = evaluateAutomationPolicy(promptRaw);
-      const policyInstructions =
-        liliDecision.useN8nAutomation
-          ? `\n\nPolicy (opsly_lili): ${liliDecision.reason}\nExecute with this plan:\n1) ${liliDecision.recommendedSteps[0]}\n2) ${liliDecision.recommendedSteps[1]}\n3) ${liliDecision.recommendedSteps[2]}\nAlways keep tenant_slug and request_id in actions.`
-          : "";
+      const policyInstructions = liliDecision.useN8nAutomation
+        ? `\n\nPolicy (opsly_lili): ${liliDecision.reason}\nExecute with this plan:\n1) ${liliDecision.recommendedSteps[0]}\n2) ${liliDecision.recommendedSteps[1]}\n3) ${liliDecision.recommendedSteps[2]}\nAlways keep tenant_slug and request_id in actions.`
+        : '';
       const effectivePrompt = `${initialPrompt}${policyInstructions}`;
 
       // Mode System: Select strategy based on tenant mode
-      const tenantMode = typeof req.context.tenantMode === "string"
-        ? req.context.tenantMode.toLowerCase()
-        : "hacker";
+      const tenantMode =
+        typeof req.context.tenantMode === 'string'
+          ? req.context.tenantMode.toLowerCase()
+          : 'hacker';
 
       const usesPlanExecute =
-        tenantMode === "architect" ||
-        tenantMode === "developer" ||
-        liliDecision.recommendedMode === "plan_execute";
+        tenantMode === 'architect' ||
+        tenantMode === 'developer' ||
+        liliDecision.recommendedMode === 'plan_execute';
 
       const oarResult = usesPlanExecute
         ? await runPlanExecuteStrategy(
@@ -222,7 +218,7 @@ export async function processIntent(
             actionPort,
             memory,
             llmClient,
-            { maxPlanSteps: maxSteps },
+            { maxPlanSteps: maxSteps }
           )
         : await runReActStrategy(
             tenantSlug,
@@ -231,17 +227,17 @@ export async function processIntent(
             actionPort,
             memory,
             llmClient,
-            { maxSteps },
+            { maxSteps }
           );
 
       process.stdout.write(
         `${JSON.stringify({
-          event: "oar_react_result",
+          event: 'oar_react_result',
           request_id: correlationId,
           tenant_slug: tenantSlug,
           state: oarResult.state,
           steps_executed: oarResult.stepsExecuted,
-        })}\n`,
+        })}\n`
       );
 
       return {
@@ -258,16 +254,15 @@ export async function processIntent(
         },
       };
     }
-    case "sprint_plan": {
-      const goal =
-        typeof req.context.goal === "string" ? req.context.goal.trim() : "";
+    case 'sprint_plan': {
+      const goal = typeof req.context.goal === 'string' ? req.context.goal.trim() : '';
       if (goal.length === 0) {
-        throw new Error("sprint_plan requires context.goal (string)");
+        throw new Error('sprint_plan requires context.goal (string)');
       }
       const tenantId = req.tenant_id?.trim();
       const tenantSlug = req.tenant_slug?.trim();
       if (!tenantId || !tenantSlug) {
-        throw new Error("sprint_plan requires tenant_id and tenant_slug");
+        throw new Error('sprint_plan requires tenant_id and tenant_slug');
       }
       const manager = new SprintManager();
       const { sprintId } = await manager.createSprint({
@@ -281,10 +276,10 @@ export async function processIntent(
       void manager.executeSprint(sprintId).catch((err) => {
         process.stderr.write(
           `${JSON.stringify({
-            event: "sprint_execute_error",
+            event: 'sprint_execute_error',
             sprint_id: sprintId,
             error: err instanceof Error ? err.message : String(err),
-          })}\n`,
+          })}\n`
         );
       });
       return {
@@ -295,37 +290,37 @@ export async function processIntent(
         sprint_id: sprintId,
       };
     }
-    case "remote_plan": {
+    case 'remote_plan': {
       const tenantSlug = req.tenant_slug;
       if (!tenantSlug || tenantSlug.length === 0) {
-        throw new Error("remote_plan requires tenant_slug (Hermes / tenant isolation)");
+        throw new Error('remote_plan requires tenant_slug (Hermes / tenant isolation)');
       }
       const snapshot = buildPlannerContextSnapshot({ ...req, intent });
       const toolRegistry = createDefaultToolRegistry();
-      let intentHint = "necesito calcular";
-      if (typeof req.context.query === "string") {
+      let intentHint = 'necesito calcular';
+      if (typeof req.context.query === 'string') {
         intentHint = req.context.query;
-      } else if (typeof req.context.prompt === "string") {
+      } else if (typeof req.context.prompt === 'string') {
         intentHint = req.context.prompt;
       }
       const discoveredTools = toolRegistry.search(intentHint);
       if (discoveredTools.length > 0) {
         process.stdout.write(
           `${JSON.stringify({
-            event: "tool_registry_match",
+            event: 'tool_registry_match',
             request_id: correlationId,
             query: intentHint,
             tools: discoveredTools.map((t) => t.name),
-          })}\n`,
+          })}\n`
         );
       }
       const plannerTools = Array.from(
-        new Set([...DEFAULT_PLANNER_TOOL_NAMES, ...toolRegistry.listToolNames()]),
+        new Set([...DEFAULT_PLANNER_TOOL_NAMES, ...toolRegistry.listToolNames()])
       );
       let contextStr = JSON.stringify(snapshot, null, 2);
       const consciousAppendix = await buildConsciousAppendix({
         intentHint,
-        tenantId: req.tenant_id ?? "",
+        tenantId: req.tenant_id ?? '',
         requestId: correlationId,
         toolRegistry,
       });
@@ -347,15 +342,15 @@ export async function processIntent(
 
         process.stdout.write(
           `${JSON.stringify({
-            event: "planner_response",
+            event: 'planner_response',
             request_id: correlationId,
             tenant_slug: tenantSlug,
             planner: gw.planner,
-          })}\n`,
+          })}\n`
         );
 
         if (gw.planner.actions.length > MAX_PLANNER_ACTIONS) {
-          throw new Error("Plan demasiado complejo: más de 5 acciones");
+          throw new Error('Plan demasiado complejo: más de 5 acciones');
         }
 
         const plannedJobs: OrchestratorJob[] = [];
@@ -369,11 +364,11 @@ export async function processIntent(
           if (localTool) {
             const toolOutput = await localTool.execute(action.params);
             plannedJobs.push({
-              type: "notify",
+              type: 'notify',
               payload: {
                 title: `Tool: ${localTool.name}`,
                 message: JSON.stringify(toolOutput),
-                type: "info",
+                type: 'info',
                 planner_tool: localTool.name,
               },
               tenant_slug: req.tenant_slug,
@@ -382,7 +377,7 @@ export async function processIntent(
               plan: req.plan,
               request_id: correlationId,
               idempotency_key: `${correlationId}::planner::${localTool.name}::${i}`,
-              agent_role: "tool",
+              agent_role: 'tool',
               metadata: req.metadata,
             });
             enqueuedPlannerTools.push(localTool.name);
@@ -391,7 +386,7 @@ export async function processIntent(
           const mapped = plannerActionToOrchestratorJob(action, req, correlationId, i);
           if (!mapped) {
             logPlannerUnknownTool({
-              event: "planner_unknown_tool",
+              event: 'planner_unknown_tool',
               tool: action.tool,
               tenant_slug: tenantSlug,
               request_id: correlationId,
@@ -402,7 +397,7 @@ export async function processIntent(
           plannedJobs.push({
             ...mapped,
             cost_budget_usd: req.cost_budget_usd,
-            agent_role: "executor",
+            agent_role: 'executor',
             taskId: req.taskId,
             metadata: req.metadata,
           });
@@ -418,8 +413,8 @@ export async function processIntent(
             }
             const jobId = String(job.id);
             logPlannerActionEnqueued({
-              event: "planner_action_enqueued",
-              tool: enqueuedPlannerTools[index] ?? "unknown",
+              event: 'planner_action_enqueued',
+              tool: enqueuedPlannerTools[index] ?? 'unknown',
               tenant_slug: tenantSlug,
               action_id: index,
               request_id: correlationId,
@@ -429,7 +424,7 @@ export async function processIntent(
             await setJobState(jobId, {
               id: jobId,
               type: queuedJob.type,
-              status: "pending",
+              status: 'pending',
               task_id: queuedJob.taskId,
               tenant_slug: queuedJob.tenant_slug,
               tenant_id: queuedJob.tenant_id,
@@ -441,7 +436,7 @@ export async function processIntent(
               metadata: queuedJob.metadata,
               started_at: new Date().toISOString(),
             });
-          }),
+          })
         );
 
         return {
@@ -459,105 +454,105 @@ export async function processIntent(
         meterRemotePlanWorkerFireAndForget(
           tenantSlug,
           req.tenant_id,
-          (Date.now() - remotePlanStartedAt) / 1000,
+          (Date.now() - remotePlanStartedAt) / 1000
         );
       }
     }
-    case "execute_code":
+    case 'execute_code':
       jobs.push(
         enrichJob(
           req,
           {
-            type: "cursor",
+            type: 'cursor',
             payload: req.context,
             tenant_slug: req.tenant_slug,
             initiated_by: req.initiated_by,
           },
           batchIndex++,
-          correlationId,
-        ),
+          correlationId
+        )
       );
       break;
-    case "trigger_workflow":
+    case 'trigger_workflow':
       jobs.push(
         enrichJob(
           req,
           {
-            type: "n8n",
+            type: 'n8n',
             payload: req.context,
             tenant_slug: req.tenant_slug,
             initiated_by: req.initiated_by,
           },
           batchIndex++,
-          correlationId,
-        ),
+          correlationId
+        )
       );
       break;
-    case "notify":
+    case 'notify':
       jobs.push(
         enrichJob(
           req,
           {
-            type: "notify",
+            type: 'notify',
             payload: req.context,
             tenant_slug: req.tenant_slug,
             initiated_by: req.initiated_by,
           },
           batchIndex++,
-          correlationId,
-        ),
+          correlationId
+        )
       );
       break;
-    case "sync_drive":
+    case 'sync_drive':
       jobs.push(
         enrichJob(
           req,
           {
-            type: "drive",
+            type: 'drive',
             payload: {},
             tenant_slug: req.tenant_slug,
             initiated_by: req.initiated_by,
           },
           batchIndex++,
-          correlationId,
-        ),
+          correlationId
+        )
       );
       break;
-    case "full_pipeline":
+    case 'full_pipeline':
       jobs.push(
         enrichJob(
           req,
           {
-            type: "cursor",
+            type: 'cursor',
             payload: req.context,
             tenant_slug: req.tenant_slug,
             initiated_by: req.initiated_by,
           },
           batchIndex++,
-          correlationId,
+          correlationId
         ),
         enrichJob(
           req,
           {
-            type: "notify",
-            payload: { message: "Pipeline iniciado" },
+            type: 'notify',
+            payload: { message: 'Pipeline iniciado' },
             tenant_slug: req.tenant_slug,
             initiated_by: req.initiated_by,
           },
           batchIndex++,
-          correlationId,
+          correlationId
         ),
         enrichJob(
           req,
           {
-            type: "drive",
+            type: 'drive',
             payload: {},
             tenant_slug: req.tenant_slug,
             initiated_by: req.initiated_by,
           },
           batchIndex++,
-          correlationId,
-        ),
+          correlationId
+        )
       );
       break;
   }
@@ -569,7 +564,7 @@ export async function processIntent(
       await setJobState(String(job.id), {
         id: String(job.id),
         type: queuedJob.type,
-        status: "pending",
+        status: 'pending',
         task_id: queuedJob.taskId,
         tenant_slug: queuedJob.tenant_slug,
         tenant_id: queuedJob.tenant_id,
@@ -581,7 +576,7 @@ export async function processIntent(
         metadata: queuedJob.metadata,
         started_at: new Date().toISOString(),
       });
-    }),
+    })
   );
   return {
     jobs_enqueued: enqueued.length,

@@ -2,44 +2,36 @@ import type {
   ApprovalMetrics,
   EmbeddingResponse,
   VertexEmbeddingResponse,
-} from "@intcloudsysops/types";
-import { JWT } from "google-auth-library";
+} from '@intcloudsysops/types';
+import { JWT } from 'google-auth-library';
 
 /** text-embedding-004 (Vertex) — dimensión fija en la API actual. */
 export const VERTEX_TEXT_EMBEDDING_004_DIM = 768;
 
-const PREDICT_SCOPE = "https://www.googleapis.com/auth/cloud-platform";
+const PREDICT_SCOPE = 'https://www.googleapis.com/auth/cloud-platform';
 
 function resolveProjectId(): string {
-  return (
-    process.env.GCLOUD_PROJECT_ID?.trim() ||
-    process.env.GOOGLE_CLOUD_PROJECT_ID?.trim() ||
-    ""
-  );
+  return process.env.GCLOUD_PROJECT_ID?.trim() || process.env.GOOGLE_CLOUD_PROJECT_ID?.trim() || '';
 }
 
 function resolveRegion(): string {
-  return (
-    process.env.GCLOUD_REGION?.trim() ||
-    process.env.VERTEX_AI_REGION?.trim() ||
-    "us-central1"
-  );
+  return process.env.GCLOUD_REGION?.trim() || process.env.VERTEX_AI_REGION?.trim() || 'us-central1';
 }
 
 function resolveServiceAccountJson(): string {
   return (
     process.env.GCLOUD_SERVICE_ACCOUNT_JSON?.trim() ||
     process.env.GOOGLE_SERVICE_ACCOUNT_JSON?.trim() ||
-    ""
+    ''
   );
 }
 
 function resolveModelId(): string {
-  return process.env.VERTEX_AI_EMBEDDING_MODEL?.trim() || "text-embedding-004";
+  return process.env.VERTEX_AI_EMBEDDING_MODEL?.trim() || 'text-embedding-004';
 }
 
 export function isVertexEmbeddingConfigured(): boolean {
-  if (process.env.VERTEX_AI_EMBED_ENABLED !== "true") {
+  if (process.env.VERTEX_AI_EMBED_ENABLED !== 'true') {
     return false;
   }
   return (
@@ -55,8 +47,8 @@ export function formatApprovalMetricsEmbeddingText(metrics: ApprovalMetrics): st
     `Success Rate: ${metrics.success_rate}%`,
     `Response Time: ${metrics.avg_response_time_ms}ms`,
     `Critical Errors: ${metrics.critical_errors}`,
-    `Test Coverage: ${metrics.test_coverage.join(", ")}`,
-  ].join("\n");
+    `Test Coverage: ${metrics.test_coverage.join(', ')}`,
+  ].join('\n');
 }
 
 function sleep(ms: number): Promise<void> {
@@ -78,16 +70,18 @@ export class VertexAIClient {
     const projectId = resolveProjectId();
     const jsonRaw = resolveServiceAccountJson();
     if (projectId.length === 0 || jsonRaw.length < 20) {
-      throw new Error("VertexAIClient: missing GCLOUD_PROJECT_ID/GOOGLE_CLOUD_PROJECT_ID or service account JSON");
+      throw new Error(
+        'VertexAIClient: missing GCLOUD_PROJECT_ID/GOOGLE_CLOUD_PROJECT_ID or service account JSON'
+      );
     }
     let creds: { client_email?: string; private_key?: string };
     try {
       creds = JSON.parse(jsonRaw) as { client_email?: string; private_key?: string };
     } catch {
-      throw new Error("VertexAIClient: invalid service account JSON");
+      throw new Error('VertexAIClient: invalid service account JSON');
     }
-    if (typeof creds.client_email !== "string" || typeof creds.private_key !== "string") {
-      throw new Error("VertexAIClient: service account JSON missing client_email/private_key");
+    if (typeof creds.client_email !== 'string' || typeof creds.private_key !== 'string') {
+      throw new Error('VertexAIClient: service account JSON missing client_email/private_key');
     }
     this.projectId = projectId;
     this.region = resolveRegion();
@@ -107,8 +101,8 @@ export class VertexAIClient {
     const res = await this.jwt.getAccessToken();
     const tok = res.token;
     const exp = this.jwt.credentials.expiry_date ?? now + 3_600_000;
-    if (typeof tok !== "string" || tok.length === 0) {
-      throw new Error("VertexAIClient: empty access_token");
+    if (typeof tok !== 'string' || tok.length === 0) {
+      throw new Error('VertexAIClient: empty access_token');
     }
     this.tokenCache = { token: tok, until: exp };
     return tok;
@@ -124,7 +118,7 @@ export class VertexAIClient {
   public async embedText(text: string): Promise<EmbeddingResponse> {
     const trimmed = text.trim();
     if (trimmed.length === 0) {
-      throw new Error("VertexAIClient: embedText requires non-empty text");
+      throw new Error('VertexAIClient: embedText requires non-empty text');
     }
     const token = await this.getAccessToken();
     const url = this.predictUrl();
@@ -134,10 +128,10 @@ export class VertexAIClient {
     for (let attempt = 0; attempt < 3; attempt += 1) {
       try {
         const res = await fetch(url, {
-          method: "POST",
+          method: 'POST',
           headers: {
             Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
           },
           body,
           signal: AbortSignal.timeout(60_000),
@@ -150,16 +144,16 @@ export class VertexAIClient {
         try {
           parsed = JSON.parse(raw) as unknown;
         } catch {
-          throw new Error("Vertex predict: invalid JSON body");
+          throw new Error('Vertex predict: invalid JSON body');
         }
         const pred = parsed as VertexEmbeddingResponse;
         const values = pred.predictions?.[0]?.embeddings?.values;
         if (!Array.isArray(values) || values.length === 0) {
-          throw new Error("Vertex predict: missing predictions[0].embeddings.values");
+          throw new Error('Vertex predict: missing predictions[0].embeddings.values');
         }
         if (values.length !== VERTEX_TEXT_EMBEDDING_004_DIM) {
           console.warn(
-            `[VertexAI] unexpected embedding dim ${String(values.length)}, expected ${String(VERTEX_TEXT_EMBEDDING_004_DIM)}`,
+            `[VertexAI] unexpected embedding dim ${String(values.length)}, expected ${String(VERTEX_TEXT_EMBEDDING_004_DIM)}`
           );
         }
         return {

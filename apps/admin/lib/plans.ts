@@ -1,4 +1,4 @@
-import type { PlanKey } from "./types";
+import type { PlanKey } from './types';
 
 export const PLAN_MRR_USD: Record<PlanKey, number> = {
   startup: 49,
@@ -7,7 +7,7 @@ export const PLAN_MRR_USD: Record<PlanKey, number> = {
   demo: 0,
 };
 
-export const PLAN_PORT_BASE: Record<Exclude<PlanKey, "demo">, number> = {
+export const PLAN_PORT_BASE: Record<Exclude<PlanKey, 'demo'>, number> = {
   startup: 8000,
   business: 9000,
   enterprise: 10000,

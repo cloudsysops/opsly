@@ -1,5 +1,5 @@
-import { getApiBaseUrl } from "./api";
-import { requestPortalApi } from "./http";
+import { getApiBaseUrl } from './api';
+import { requestPortalApi } from './http';
 import {
   portalHealthUrl,
   portalOnboardingUrl,
@@ -7,7 +7,7 @@ import {
   portalTenantMeUrl,
   portalTenantModeUrl,
   portalTenantUsageUrl,
-} from "./portal-api-paths";
+} from './portal-api-paths';
 import type {
   OnboardingRequest,
   OnboardingResponse,
@@ -17,23 +17,23 @@ import type {
   PortalTenantPayload,
   PortalUsagePayload,
   PortalUsagePeriod,
-} from "./types";
+} from './types';
 
 /**
  * Lee `tenant_slug` del JWT de Supabase cuando está presente (invitaciones / portal).
  */
 export function tenantSlugFromUserMetadata(
-  user: { user_metadata?: unknown } | null | undefined,
+  user: { user_metadata?: unknown } | null | undefined
 ): string | undefined {
   if (
     !user?.user_metadata ||
-    typeof user.user_metadata !== "object" ||
+    typeof user.user_metadata !== 'object' ||
     Array.isArray(user.user_metadata)
   ) {
     return undefined;
   }
   const ts = (user.user_metadata as Record<string, unknown>).tenant_slug;
-  if (typeof ts !== "string") {
+  if (typeof ts !== 'string') {
     return undefined;
   }
   const trimmed = ts.trim();
@@ -47,16 +47,16 @@ export function tenantSlugFromUserMetadata(
  */
 export async function fetchPortalTenant(
   accessToken: string,
-  tenantSlug?: string,
+  tenantSlug?: string
 ): Promise<PortalTenantPayload> {
   const path = portalTenantMeUrl(getApiBaseUrl(), tenantSlug);
   return requestPortalApi<PortalTenantPayload>(path, {
-    method: "GET",
+    method: 'GET',
     headers: {
       Authorization: `Bearer ${accessToken}`,
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     },
-    cache: "no-store",
+    cache: 'no-store',
   });
 }
 
@@ -68,14 +68,14 @@ export async function fetchPortalTenant(
 export async function postPortalMode(
   accessToken: string,
   mode: PortalMode,
-  tenantSlug?: string,
+  tenantSlug?: string
 ): Promise<void> {
   const path = portalTenantModeUrl(getApiBaseUrl(), tenantSlug);
   await requestPortalApi(path, {
-    method: "POST",
+    method: 'POST',
     headers: {
       Authorization: `Bearer ${accessToken}`,
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     },
     body: JSON.stringify({ mode }),
   });
@@ -88,17 +88,17 @@ export async function postPortalMode(
  */
 export async function fetchPortalUsage(
   accessToken: string,
-  period: PortalUsagePeriod = "today",
-  tenantSlug?: string,
+  period: PortalUsagePeriod = 'today',
+  tenantSlug?: string
 ): Promise<PortalUsagePayload> {
   const path = portalTenantUsageUrl(getApiBaseUrl(), period, tenantSlug);
   return requestPortalApi<PortalUsagePayload>(path, {
-    method: "GET",
+    method: 'GET',
     headers: {
       Authorization: `Bearer ${accessToken}`,
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     },
-    cache: "no-store",
+    cache: 'no-store',
   });
 }
 
@@ -107,16 +107,16 @@ export async function fetchPortalUsage(
  */
 export async function fetchPortalInsights(
   accessToken: string,
-  tenantSlug: string,
+  tenantSlug: string
 ): Promise<PortalInsightsPayload> {
   const path = portalTenantInsightsUrl(getApiBaseUrl(), tenantSlug);
   return requestPortalApi<PortalInsightsPayload>(path, {
-    method: "GET",
+    method: 'GET',
     headers: {
       Authorization: `Bearer ${accessToken}`,
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     },
-    cache: "no-store",
+    cache: 'no-store',
   });
 }
 
@@ -126,16 +126,16 @@ export async function fetchPortalInsights(
  */
 export async function fetchPortalHealth(
   accessToken: string,
-  tenantSlug: string,
+  tenantSlug: string
 ): Promise<PortalHealthPayload> {
   const path = portalHealthUrl(getApiBaseUrl(), tenantSlug);
   return requestPortalApi<PortalHealthPayload>(path, {
-    method: "GET",
+    method: 'GET',
     headers: {
       Authorization: `Bearer ${accessToken}`,
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     },
-    cache: "no-store",
+    cache: 'no-store',
   });
 }
 
@@ -145,14 +145,14 @@ export async function fetchPortalHealth(
  */
 export async function postPortalOnboarding(
   accessToken: string,
-  body: OnboardingRequest,
+  body: OnboardingRequest
 ): Promise<OnboardingResponse> {
   const path = portalOnboardingUrl(getApiBaseUrl());
   return requestPortalApi<OnboardingResponse>(path, {
-    method: "POST",
+    method: 'POST',
     headers: {
       Authorization: `Bearer ${accessToken}`,
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     },
     body: JSON.stringify(body),
   });

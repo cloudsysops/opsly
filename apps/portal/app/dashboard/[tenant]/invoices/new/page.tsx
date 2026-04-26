@@ -20,9 +20,7 @@ export default async function NewInvoicePage({
           <Button variant="ghost" size="sm" asChild>
             <Link href={`/dashboard/${tenant}/invoices`}>← Facturas</Link>
           </Button>
-          <h1 className="font-sans text-xl font-semibold text-neutral-100">
-            Nueva Factura
-          </h1>
+          <h1 className="font-sans text-xl font-semibold text-neutral-100">Nueva Factura</h1>
         </div>
 
         <Card className="mt-6">

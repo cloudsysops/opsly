@@ -4,11 +4,11 @@ Tres conceptos distintos: **hostname del SO** (`/etc/hostname`), **nombre en Tai
 
 ## Nombres fijos (tailnet)
 
-| Rol | Nombre en Tailscale = base MagicDNS | IP 100.x (referencia) | SSH (usuario remoto) |
-|-----|--------------------------------------|------------------------|-------------------------|
-| Mac principal (Cursor, repo) | **`opsly-admin`** | `100.89.38.3` | `ssh opsly-admin` → usuario local típico **`cboteros`** (ver plantilla abajo) |
-| Worker Ubuntu (orchestrator, etc.) | **`opsly-worker`** | `100.80.41.29` | `ssh opsly-worker` → **`opslyquantum`** |
-| VPS Opsly | `vps-dragon` | `100.120.151.91` | `ssh vps-dragon` → **`vps-dragon`** |
+| Rol                                | Nombre en Tailscale = base MagicDNS | IP 100.x (referencia) | SSH (usuario remoto)                                                          |
+| ---------------------------------- | ----------------------------------- | --------------------- | ----------------------------------------------------------------------------- |
+| Mac principal (Cursor, repo)       | **`opsly-admin`**                   | `100.89.38.3`         | `ssh opsly-admin` → usuario local típico **`cboteros`** (ver plantilla abajo) |
+| Worker Ubuntu (orchestrator, etc.) | **`opsly-worker`**                  | `100.80.41.29`        | `ssh opsly-worker` → **`opslyquantum`**                                       |
+| VPS Opsly                          | `vps-dragon`                        | `100.120.151.91`      | `ssh vps-dragon` → **`vps-dragon`**                                           |
 
 **Qué usuario usar en cada `ssh` (agentes):** [`SSH-USERS-FOR-AGENTS.md`](SSH-USERS-FOR-AGENTS.md) — no hace falta cambiar el usuario de la Mac; sí usar el usuario remoto correcto en el comando.
 

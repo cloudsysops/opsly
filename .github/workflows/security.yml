@@ -10,12 +10,12 @@ on:
     branches: [main]
   schedule:
     # Weekly Monday 06:00 UTC — catches new CVEs without a code change
-    - cron: "0 6 * * 1"
+    - cron: '0 6 * * 1'
   workflow_dispatch:
 
 permissions:
   contents: read
-  security-events: write   # for SARIF upload (optional future use)
+  security-events: write # for SARIF upload (optional future use)
   pull-requests: write
 
 jobs:
@@ -27,7 +27,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: '20'
           cache: npm
           cache-dependency-path: package-lock.json
 

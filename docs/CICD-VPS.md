@@ -2,10 +2,10 @@
 
 ## Flujo automático (workflow **Deploy**)
 
-| Rama | Tras `lint-and-typecheck` | Imágenes GHCR | VPS |
-|------|---------------------------|---------------|-----|
-| **`staging`** | Sí | Tags **`:staging`** y `:sha` | `/opt/opsly-staging` — `git` en rama `staging`, `docker compose ... up` |
-| **`main`** | Sí | Tags **`:latest`** y `:sha` | `/opt/opsly` — `git` en `main`, compose producción |
+| Rama          | Tras `lint-and-typecheck` | Imágenes GHCR                | VPS                                                                     |
+| ------------- | ------------------------- | ---------------------------- | ----------------------------------------------------------------------- |
+| **`staging`** | Sí                        | Tags **`:staging`** y `:sha` | `/opt/opsly-staging` — `git` en rama `staging`, `docker compose ... up` |
+| **`main`**    | Sí                        | Tags **`:latest`** y `:sha`  | `/opt/opsly` — `git` en `main`, compose producción                      |
 
 - **Staging primero:** integrá cambios en la rama `staging` y hacé **push**; si el workflow pasa, el VPS staging recibe el compose sin tocar producción.
 - **Producción:** merge (o push) a **`main`** cuando el código esté validado; el mismo workflow construye y despliega **prod** solo para `main`.
@@ -18,12 +18,12 @@ Antes de editar archivos, ejecutar scripts o `compose` a mano: **`git pull` / `.
 
 ## Secretos GitHub (repositorio o entornos)
 
-| Secret | Uso |
-|--------|-----|
-| `VPS_HOST`, `VPS_USER`, `VPS_SSH_KEY` | SSH al VPS |
-| `PLATFORM_DOMAIN` | Prod: dominio base; health `https://api.$PLATFORM_DOMAIN/api/health` |
-| `STAGING_PLATFORM_DOMAIN` | Staging: mismo concepto que `PLATFORM_DOMAIN` pero para el stack en `/opt/opsly-staging` (DNS + Traefik). Si falta, el build staging usa `PLATFORM_DOMAIN` con **warning** en Actions. |
-| `NEXT_PUBLIC_*`, etc. | Igual que hoy para builds |
+| Secret                                | Uso                                                                                                                                                                                    |
+| ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `VPS_HOST`, `VPS_USER`, `VPS_SSH_KEY` | SSH al VPS                                                                                                                                                                             |
+| `PLATFORM_DOMAIN`                     | Prod: dominio base; health `https://api.$PLATFORM_DOMAIN/api/health`                                                                                                                   |
+| `STAGING_PLATFORM_DOMAIN`             | Staging: mismo concepto que `PLATFORM_DOMAIN` pero para el stack en `/opt/opsly-staging` (DNS + Traefik). Si falta, el build staging usa `PLATFORM_DOMAIN` con **warning** en Actions. |
+| `NEXT_PUBLIC_*`, etc.                 | Igual que hoy para builds                                                                                                                                                              |
 
 Entornos recomendados en GitHub: **`staging`** (deploy staging) y **`production`** (deploy prod) para reglas de aprobación opcionales.
 

@@ -18,6 +18,7 @@ estructuradas no es posible:
 Docker Compose (ya en `infra/docker-compose.platform.yml` desde 2026-04-12).
 
 Arquitectura:
+
 ```
 Servicios Opsly → exponen /metrics (prom-client)
        ↓
@@ -29,11 +30,13 @@ Alerting (reglas en prometheus.yml → notifica Discord)
 ```
 
 Exporters adicionales:
+
 - **redis-exporter**: métricas BullMQ queue depth, hit rate, memory
 - **node-exporter**: métricas del host VPS (CPU, RAM, disco)
 - **cAdvisor**: métricas por contenedor (mem_limit, CPU throttling)
 
 **Rechazado:**
+
 - DataDog: $15/host/mes, vendor lock-in, overkill para MVP
 - New Relic: similar a DataDog
 - CloudWatch: solo AWS, no aplica
@@ -58,6 +61,7 @@ const metrics = {
 Archivo: `infra/monitoring/grafana/dashboards/opsly-overview.json`
 
 Sprint 4 añade:
+
 - `opsly-tenants.json`: usage por tenant, billing events, error rate
 - `opsly-workers.json`: latency por worker, queue depth, circuit breaker
 - `opsly-llm.json`: tokens/min, costo estimado, provider health
@@ -73,23 +77,25 @@ groups:
         expr: rate(hermes_tasks_total{status="error"}[5m]) > 0.05
         for: 2m
         annotations:
-          summary: "Error rate > 5% on {{ $labels.tenant }}"
+          summary: 'Error rate > 5% on {{ $labels.tenant }}'
       - alert: CircuitBreakerOpen
         expr: circuit_breaker_state == 1
         for: 30s
         annotations:
-          summary: "Circuit breaker OPEN for {{ $labels.provider }}"
+          summary: 'Circuit breaker OPEN for {{ $labels.provider }}'
 ```
 
 ## Consecuencias
 
 **Positivas:**
+
 - Visibilidad total del stack en tiempo real
 - Alertas proactivas antes de que cliente reporte
 - Datos para optimizar routing y costos de LLM
 - Dashboard ya live en `grafana.${PLATFORM_DOMAIN}` post-deploy
 
 **Negativas:**
+
 - +~256MB RAM para Grafana + Prometheus data (ya en compose con límites)
 - Requiere instrumentación de cada servicio con `prom-client`
 - Retención de 15 días (suficiente para MVP, expandir en Sprint 6)

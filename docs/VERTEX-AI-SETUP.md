@@ -51,13 +51,13 @@ gcloud iam service-accounts keys create /tmp/opsly-vertex-sa.json \
 
 Variables soportadas por el orquestador (aliases incluidos):
 
-| Variable | Descripción |
-|----------|----------------|
-| `GCLOUD_PROJECT_ID` o `GOOGLE_CLOUD_PROJECT_ID` | ID del proyecto |
-| `GCLOUD_REGION` o `VERTEX_AI_REGION` | Región (ej. `us-central1`) |
+| Variable                                                      | Descripción                                          |
+| ------------------------------------------------------------- | ---------------------------------------------------- |
+| `GCLOUD_PROJECT_ID` o `GOOGLE_CLOUD_PROJECT_ID`               | ID del proyecto                                      |
+| `GCLOUD_REGION` o `VERTEX_AI_REGION`                          | Región (ej. `us-central1`)                           |
 | `GCLOUD_SERVICE_ACCOUNT_JSON` o `GOOGLE_SERVICE_ACCOUNT_JSON` | JSON de la cuenta de servicio en una línea (`jq -c`) |
-| `VERTEX_AI_EMBED_ENABLED` | `true` para generar embeddings en el worker |
-| `VERTEX_AI_EMBEDDING_MODEL` | Opcional; default `text-embedding-004` |
+| `VERTEX_AI_EMBED_ENABLED`                                     | `true` para generar embeddings en el worker          |
+| `VERTEX_AI_EMBEDDING_MODEL`                                   | Opcional; default `text-embedding-004`               |
 
 Ejemplo:
 

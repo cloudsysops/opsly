@@ -1,34 +1,32 @@
-"use client";
+'use client';
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import {
   inviteActivationErrorMessage,
   validateInviteActivationForm,
-} from "@/lib/invite-activation-validation";
-import { createClient } from "@/lib/supabase";
-import { useParams, useRouter, useSearchParams } from "next/navigation";
-import { useMemo, useState } from "react";
+} from '@/lib/invite-activation-validation';
+import { createClient } from '@/lib/supabase';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
+import { useMemo, useState } from 'react';
 
-type FormSubmitEvent = Parameters<
-  NonNullable<React.ComponentProps<"form">["onSubmit"]>
->[0];
+type FormSubmitEvent = Parameters<NonNullable<React.ComponentProps<'form'>['onSubmit']>>[0];
 
 export function InviteActivate() {
   const params = useParams();
   const searchParams = useSearchParams();
   const router = useRouter();
-  const tokenRaw = typeof params.token === "string" ? params.token : "";
+  const tokenRaw = typeof params.token === 'string' ? params.token : '';
   const token = useMemo(() => decodeURIComponent(tokenRaw), [tokenRaw]);
-  const email = searchParams.get("email") ?? "";
-  const code = searchParams.get("code");
+  const email = searchParams.get('email') ?? '';
+  const code = searchParams.get('code');
 
-  const [password, setPassword] = useState("");
-  const [confirm, setConfirm] = useState("");
+  const [password, setPassword] = useState('');
+  const [confirm, setConfirm] = useState('');
   const [err, setErr] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const displayName = email.includes("@") ? email.split("@")[0] : "equipo";
+  const displayName = email.includes('@') ? email.split('@')[0] : 'equipo';
 
   async function onSubmit(e: FormSubmitEvent) {
     e.preventDefault();
@@ -57,7 +55,7 @@ export function InviteActivate() {
         const { error: otpError } = await supabase.auth.verifyOtp({
           email,
           token,
-          type: "invite",
+          type: 'invite',
         });
         if (otpError) {
           setErr(otpError.message);
@@ -71,10 +69,10 @@ export function InviteActivate() {
         setErr(pwError.message);
         return;
       }
-      router.push("/dashboard");
+      router.push('/dashboard');
       router.refresh();
     } catch (error) {
-      setErr(error instanceof Error ? error.message : "No se pudo activar la cuenta");
+      setErr(error instanceof Error ? error.message : 'No se pudo activar la cuenta');
     } finally {
       setLoading(false);
     }
@@ -126,13 +124,8 @@ export function InviteActivate() {
               minLength={8}
             />
           </div>
-          <Button
-            type="submit"
-            variant="primary"
-            className="w-full"
-            disabled={loading}
-          >
-            {loading ? "Activando..." : "Activar mi cuenta"}
+          <Button type="submit" variant="primary" className="w-full" disabled={loading}>
+            {loading ? 'Activando...' : 'Activar mi cuenta'}
           </Button>
         </form>
       </div>

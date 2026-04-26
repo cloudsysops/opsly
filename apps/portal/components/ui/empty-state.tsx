@@ -1,7 +1,7 @@
-import type { ReactElement, ReactNode } from "react";
-import { AlertTriangle, Building2, Search } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import type { ReactElement, ReactNode } from 'react';
+import { AlertTriangle, Building2, Search } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 export interface EmptyStateProps {
   icon?: ReactNode;
@@ -20,10 +20,7 @@ export function EmptyState({
 }: EmptyStateProps): ReactElement {
   return (
     <div
-      className={cn(
-        "flex flex-col items-center justify-center px-4 py-12 text-center",
-        className,
-      )}
+      className={cn('flex flex-col items-center justify-center px-4 py-12 text-center', className)}
     >
       {icon !== undefined && icon !== null ? (
         <div className="mb-4 rounded-full border border-ops-border bg-ops-surface p-3 text-ops-gray">
@@ -72,9 +69,7 @@ export function EmptyError(props: { onRetry?: () => void }): ReactElement {
   const { onRetry } = props;
   return (
     <EmptyState
-      icon={
-        <AlertTriangle className="h-8 w-8 text-ops-red" strokeWidth={1.5} aria-hidden />
-      }
+      icon={<AlertTriangle className="h-8 w-8 text-ops-red" strokeWidth={1.5} aria-hidden />}
       title="Error al cargar"
       description="Hubo un problema al cargar los datos. Reintenta en unos segundos."
       action={

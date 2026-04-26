@@ -109,12 +109,12 @@ Basado en: AGENTS.md, ROADMAP.md, y las últimas decisiones en docs/adr/"
 
 ## Variables requerida
 
-| Variable | Valor |
-|----------|-------|
-| `NOTEBOOKLM_ENABLED` | `true` |
-| `NOTEBOOKLM_NOTEBOOK_ID` | ID del notebook principal |
-| `NOTEBOOKLM_DEFAULT_TENANT_SLUG` | `platform` |
-| `NOTEBOOKLM_SYNC_ON_COMMIT` | `true` (default) |
+| Variable                         | Valor                     |
+| -------------------------------- | ------------------------- |
+| `NOTEBOOKLM_ENABLED`             | `true`                    |
+| `NOTEBOOKLM_NOTEBOOK_ID`         | ID del notebook principal |
+| `NOTEBOOKLM_DEFAULT_TENANT_SLUG` | `platform`                |
+| `NOTEBOOKLM_SYNC_ON_COMMIT`      | `true` (default)          |
 
 ---
 
@@ -125,9 +125,9 @@ Basado en: AGENTS.md, ROADMAP.md, y las últimas decisiones en docs/adr/"
 export function getNotebookLMContext(query: string): string | undefined {
   // Si la query menciona "bloqueante", "prioridad", "decisión"
   // → consultar NotebookLM para contexto
-  const keywords = ["bloqueante", "bloqueado", "prioridad", "qué hacer", "state"];
-  if (keywords.some(k => query.toLowerCase().includes(k))) {
-    return "[Consultar NotebookLM: estado operativo actual]";
+  const keywords = ['bloqueante', 'bloqueado', 'prioridad', 'qué hacer', 'state'];
+  if (keywords.some((k) => query.toLowerCase().includes(k))) {
+    return '[Consultar NotebookLM: estado operativo actual]';
   }
 }
 ```
@@ -151,17 +151,20 @@ export function getNotebookLMContext(query: string): string | undefined {
 ## Consecuencias
 
 **Positivo:**
+
 - Agentes más inteligentes desde el primer segundo
 - Contexto compartido sin duplicar estado
 - Decisiones propagan automáticamente a todos los agentes
 - Reducción de trabajo redundante entre agentes
 
 **Negativo:**
+
 - Dependencia de NotebookLM (API no oficial — fallback a contexto local)
 - Latencia adicional al inicio de sesión (~2-5s por consulta)
 - Storage de credenciales Google (OAuth o SA)
 
 **Mitigaciones:**
+
 - Feature flag `NOTEBOOKLM_ENABLED`
 - Cache 5 min local
 - Fallback: leer AGENTS.md directamente si NotebookLM falla

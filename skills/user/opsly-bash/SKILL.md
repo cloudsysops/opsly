@@ -52,11 +52,11 @@ main "$@"
 
 ## Errores comunes
 
-| Error | Causa | Solución |
-|-------|-------|----------|
-| pipefail exit | Comando falla sin `set -e` | Añadir `set -euo pipefail` |
-| secrets leaked | echo sin sanitizar | Usar `log` sin valores sensibles |
-| docker prune | Sin --dry-run | Siempre `--dry-run` primero |
+| Error          | Causa                      | Solución                         |
+| -------------- | -------------------------- | -------------------------------- |
+| pipefail exit  | Comando falla sin `set -e` | Añadir `set -euo pipefail`       |
+| secrets leaked | echo sin sanitizar         | Usar `log` sin valores sensibles |
+| docker prune   | Sin --dry-run              | Siempre `--dry-run` primero      |
 
 ## Testing
 

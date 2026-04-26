@@ -13,14 +13,14 @@
 
 ## Fuentes de verdad (no contradecir)
 
-| Documento | Rol |
-|-----------|-----|
-| `VISION.md` | Norte comercial y fases |
-| `AGENTS.md` | Estado operativo, bloqueantes, sprint |
-| `ROADMAP.md` | Ventana semanal |
-| `docs/IMPLEMENTATION-IA-LAYER.md` | Capa IA en TS |
-| `docs/adr/` | Decisiones ya tomadas |
-| `docs/SECURITY_CHECKLIST.md` | Zero-Trust y rutas sensibles |
+| Documento                         | Rol                                   |
+| --------------------------------- | ------------------------------------- |
+| `VISION.md`                       | Norte comercial y fases               |
+| `AGENTS.md`                       | Estado operativo, bloqueantes, sprint |
+| `ROADMAP.md`                      | Ventana semanal                       |
+| `docs/IMPLEMENTATION-IA-LAYER.md` | Capa IA en TS                         |
+| `docs/adr/`                       | Decisiones ya tomadas                 |
+| `docs/SECURITY_CHECKLIST.md`      | Zero-Trust y rutas sensibles          |
 
 ## Decisiones fijas (innegociables en Opsly)
 
@@ -61,9 +61,9 @@ No listar secretos ni tokens en el análisis; usar `scripts/check-tokens.sh` y D
 
 ## Matriz de riesgo (plantilla)
 
-| Riesgo | Probabilidad | Impacto | Mitigación | Esfuerzo | Owner |
-|--------|--------------|---------|------------|----------|-------|
-| … | baja/media/alta | bajo/alto/crítico | acción concreta | h | |
+| Riesgo | Probabilidad    | Impacto           | Mitigación      | Esfuerzo | Owner |
+| ------ | --------------- | ----------------- | --------------- | -------- | ----- |
+| …      | baja/media/alta | bajo/alto/crítico | acción concreta | h        |       |
 
 ## Roadmap 30 / 60 / 90 días (orientativo)
 
@@ -102,9 +102,9 @@ No listar secretos ni tokens en el análisis; usar `scripts/check-tokens.sh` y D
 
 ## Errores comunes
 
-| Error | Causa | Solución |
-|-------|-------|----------|
-| ADR sin contexto | No leyó AGENTS.md antes | Cargar `opsly-context` primero |
-| Riesgo sin mitigación | Análisis incompleto | Usar plantilla de matriz de riesgo |
-| Prioridad desalineada | Ignoró fase actual en VISION | Verificar fase antes de priorizar |
-| Secreto en análisis | Copy-paste de logs/config | Usar `scripts/check-tokens.sh` |
+| Error                 | Causa                        | Solución                           |
+| --------------------- | ---------------------------- | ---------------------------------- |
+| ADR sin contexto      | No leyó AGENTS.md antes      | Cargar `opsly-context` primero     |
+| Riesgo sin mitigación | Análisis incompleto          | Usar plantilla de matriz de riesgo |
+| Prioridad desalineada | Ignoró fase actual en VISION | Verificar fase antes de priorizar  |
+| Secreto en análisis   | Copy-paste de logs/config    | Usar `scripts/check-tokens.sh`     |

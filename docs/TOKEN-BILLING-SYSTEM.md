@@ -20,25 +20,25 @@ Si en el futuro se introduce **prepago**, los “tokens” del cliente pueden se
 
 ## Lo que ya optimiza costos (implementado)
 
-| Mecanismo | Dónde |
-|-----------|--------|
-| Caché por hash + tenant | `apps/llm-gateway` — `LLM_CACHE_TTL_SECONDS` |
-| Cadena de proveedores (cheap → Haiku → Sonnet) | `llmCall` / `buildChain` |
-| `routing_bias`: `cost` \| `balanced` \| `quality` | `LLM-GATEWAY.md`, `routing-hints.ts` |
-| Límites por plan (tokens/coste mensual) | `PLAN_BUDGETS` en `budget.ts` |
-| Forzar modelo barato al acercarse al tope | `force_cheap` en `BudgetStatus` |
-| Presupuesto mensual USD por tenant | `tenant_budgets` + API portal budget |
+| Mecanismo                                         | Dónde                                        |
+| ------------------------------------------------- | -------------------------------------------- |
+| Caché por hash + tenant                           | `apps/llm-gateway` — `LLM_CACHE_TTL_SECONDS` |
+| Cadena de proveedores (cheap → Haiku → Sonnet)    | `llmCall` / `buildChain`                     |
+| `routing_bias`: `cost` \| `balanced` \| `quality` | `LLM-GATEWAY.md`, `routing-hints.ts`         |
+| Límites por plan (tokens/coste mensual)           | `PLAN_BUDGETS` en `budget.ts`                |
+| Forzar modelo barato al acercarse al tope         | `force_cheap` en `BudgetStatus`              |
+| Presupuesto mensual USD por tenant                | `tenant_budgets` + API portal budget         |
 
 ## Jerarquía de modelos (orientativa)
 
 Los nombres comerciales del prompt (GPT-4o, Gemini, etc.) son **ejemplos**. En el repo los hints son **`cheap`**, **`haiku`**, **`sonnet`**, más Ollama local — ver tabla en `docs/LLM-GATEWAY.md`.
 
-| Tier conceptual | Rol | Equivalente Opsly |
-|-----------------|-----|-------------------|
-| FREE / barato | Consultas simples, caché | `cheap`, Ollama, cache hit |
-| MEDIO | Refactors moderados | Haiku, OpenRouter económico |
-| ALTO | Arquitectura, código complejo | Sonnet, GPT-4o según cadena |
-| PREMIUM | Crítico (si política lo permite) | Extremo de cadena + `quality` |
+| Tier conceptual | Rol                              | Equivalente Opsly             |
+| --------------- | -------------------------------- | ----------------------------- |
+| FREE / barato   | Consultas simples, caché         | `cheap`, Ollama, cache hit    |
+| MEDIO           | Refactors moderados              | Haiku, OpenRouter económico   |
+| ALTO            | Arquitectura, código complejo    | Sonnet, GPT-4o según cadena   |
+| PREMIUM         | Crítico (si política lo permite) | Extremo de cadena + `quality` |
 
 **Default “barato”:** ya se favorece cuando `routing_bias` es `cost` o cuando el presupuesto fuerza `force_cheap`.
 
@@ -46,12 +46,12 @@ Los nombres comerciales del prompt (GPT-4o, Gemini, etc.) son **ejemplos**. En e
 
 Si se implementara wallet prepago, una tabla **orientativa** podría mapear **tareas** → **créditos internos** (no confundir con tokens de facturación de Anthropic/OpenAI):
 
-| Operación | Créditos ejemplo | Nota |
-|-----------|------------------|------|
-| Consulta con cache hit | 0 | Ya ahorra coste real |
-| Tarea simple (cheap) | 0–5 créditos | |
-| Tarea media | 10–20 | |
-| Tarea compleja | 50–200 | Confirmación antes de gastar |
+| Operación              | Créditos ejemplo | Nota                         |
+| ---------------------- | ---------------- | ---------------------------- |
+| Consulta con cache hit | 0                | Ya ahorra coste real         |
+| Tarea simple (cheap)   | 0–5 créditos     |                              |
+| Tarea media            | 10–20            |                              |
+| Tarea compleja         | 50–200           | Confirmación antes de gastar |
 
 **Regla:** los créditos deberían derivarse de **coste USD esperado** o de tokens de proveedor, no de números fijos sin calibración.
 

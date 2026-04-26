@@ -22,29 +22,29 @@ Los **clientes (tenants)** consumen automatización e IA a través del **control
 
 ## Qué existe hoy en código
 
-| Pieza | Ubicación | Rol |
-|-------|-----------|-----|
-| Equipos por **especialidad** (frontend, backend, ml, infra) | `apps/orchestrator/src/teams/TeamManager.ts` | Colas `team-*`, workers BullMQ |
-| Jobs OpenClaw / intent | `apps/orchestrator/src/engine.ts`, cola `openclaw` | Orquestación de trabajo |
-| Límites por plan (agentes paralelos, orientativo) | `docs/AGENTS-GUIDE.md` | Producto; aplicación en runtime = política + colas |
-| Presupuesto LLM / tenant | `tenant_budgets`, API portal budget, `SuspensionWorker` | USD mensual, umbral alerta |
-| Costo por uso LLM | `apps/llm-gateway`, `usage_events` | Fuente de verdad de facturación por uso IA |
-| Skill maestro (procedimientos) | `skills/user/opsly-quantum/SKILL.md` | Orquestación **humana/agente**, no un microservicio aparte |
+| Pieza                                                       | Ubicación                                               | Rol                                                        |
+| ----------------------------------------------------------- | ------------------------------------------------------- | ---------------------------------------------------------- |
+| Equipos por **especialidad** (frontend, backend, ml, infra) | `apps/orchestrator/src/teams/TeamManager.ts`            | Colas `team-*`, workers BullMQ                             |
+| Jobs OpenClaw / intent                                      | `apps/orchestrator/src/engine.ts`, cola `openclaw`      | Orquestación de trabajo                                    |
+| Límites por plan (agentes paralelos, orientativo)           | `docs/AGENTS-GUIDE.md`                                  | Producto; aplicación en runtime = política + colas         |
+| Presupuesto LLM / tenant                                    | `tenant_budgets`, API portal budget, `SuspensionWorker` | USD mensual, umbral alerta                                 |
+| Costo por uso LLM                                           | `apps/llm-gateway`, `usage_events`                      | Fuente de verdad de facturación por uso IA                 |
+| Skill maestro (procedimientos)                              | `skills/user/opsly-quantum/SKILL.md`                    | Orquestación **humana/agente**, no un microservicio aparte |
 
 ## Roles de worker (conceptuales)
 
 Los **8 roles** del prompt son **personas operativas** para agentes (Claude/Cursor), no procesos separados obligatorios. Se mapean a **skills** y a **tipos de tarea** que `TeamManager` ya enruta por `handles`:
 
-| Rol conceptual | Skill / procedimiento | Equipo BullMQ típico |
-|----------------|------------------------|----------------------|
-| Lead Developer | `opsly-quantum`, `opsly-context`, decisiones en ADR | backend / infra |
-| Code Developer | `opsly-api`, código en `apps/*` | backend / frontend |
-| Code Reviewer | revisión humana + CI | — |
-| Tester | Vitest/Playwright por workspace | backend / frontend |
-| Doc Writer | `AGENTS.md`, `docs/` | — |
-| Security Guardian | `docs/SECURITY_CHECKLIST.md` | infra |
-| Performance Analyzer | métricas API, LLM | ml / infra |
-| DevOps Helper | scripts `scripts/`, VPS por Tailscale | infra |
+| Rol conceptual       | Skill / procedimiento                               | Equipo BullMQ típico |
+| -------------------- | --------------------------------------------------- | -------------------- |
+| Lead Developer       | `opsly-quantum`, `opsly-context`, decisiones en ADR | backend / infra      |
+| Code Developer       | `opsly-api`, código en `apps/*`                     | backend / frontend   |
+| Code Reviewer        | revisión humana + CI                                | —                    |
+| Tester               | Vitest/Playwright por workspace                     | backend / frontend   |
+| Doc Writer           | `AGENTS.md`, `docs/`                                | —                    |
+| Security Guardian    | `docs/SECURITY_CHECKLIST.md`                        | infra                |
+| Performance Analyzer | métricas API, LLM                                   | ml / infra           |
+| DevOps Helper        | scripts `scripts/`, VPS por Tailscale               | infra                |
 
 **OpenClaw** no expone hoy un HTTP estable `localhost:8000/execute` genérico en el repo: la integración real pasa por **orchestrator + gateway + MCP** según `docs/OPENCLAW-ARCHITECTURE.md`.
 

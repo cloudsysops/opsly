@@ -6,7 +6,7 @@ export interface ToolManifest {
   readonly name: string;
   readonly description: string;
   readonly capabilities: string[];
-  readonly riskLevel: "low" | "medium" | "high";
+  readonly riskLevel: 'low' | 'medium' | 'high';
   execute(input: unknown): Promise<unknown>;
 }
 

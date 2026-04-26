@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import type { ReactElement } from "react";
-import { useCallback, useState } from "react";
-import { Button } from "@/components/ui/button";
+import type { ReactElement } from 'react';
+import { useCallback, useState } from 'react';
+import { Button } from '@/components/ui/button';
 
 type DeveloperActionsProps = {
   n8nUrl: string | null;
@@ -23,7 +23,7 @@ export function DeveloperActions({
       setMsg(`${label} copiado`);
       window.setTimeout(() => setMsg(null), 2500);
     } catch {
-      setMsg("No se pudo copiar");
+      setMsg('No se pudo copiar');
     }
   }, []);
 
@@ -36,7 +36,7 @@ export function DeveloperActions({
             type="button"
             variant="ghost"
             size="sm"
-            onClick={() => void copyText("URL", n8nUrl)}
+            onClick={() => void copyText('URL', n8nUrl)}
           >
             Copiar URL n8n
           </Button>
@@ -46,9 +46,7 @@ export function DeveloperActions({
             type="button"
             variant="ghost"
             size="sm"
-            onClick={() =>
-              void copyText("Credenciales", `${n8nUser}:${n8nPassword}`)
-            }
+            onClick={() => void copyText('Credenciales', `${n8nUser}:${n8nPassword}`)}
           >
             Copiar credenciales
           </Button>

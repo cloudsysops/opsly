@@ -23,13 +23,13 @@ ssh opslyquantum@100.80.41.29          # worker Ubuntu (opsly-mac2011)
 
 ## 📍 URLs clave
 
-| Servicio | URL |
-|----------|-----|
-| API | `https://api.ops.smiletripcare.com` |
-| Admin | `https://admin.ops.smiletripcare.com` |
-| Portal | `https://portal.ops.smiletripcare.com` |
-| Health check | `https://api.ops.smiletripcare.com/api/health` |
-| Traefik dashboard | `http://100.120.151.91:8080` (solo Tailscale) |
+| Servicio          | URL                                            |
+| ----------------- | ---------------------------------------------- |
+| API               | `https://api.ops.smiletripcare.com`            |
+| Admin             | `https://admin.ops.smiletripcare.com`          |
+| Portal            | `https://portal.ops.smiletripcare.com`         |
+| Health check      | `https://api.ops.smiletripcare.com/api/health` |
+| Traefik dashboard | `http://100.120.151.91:8080` (solo Tailscale)  |
 
 ---
 
@@ -47,6 +47,7 @@ curl -sf http://127.0.0.1:3011/health
 ## ⚡ Comandos frecuentes
 
 ### Desarrollo local
+
 ```bash
 # RTK — menos tokens en salidas de terminal (Cursor hooks): ver docs/RTK.md
 # rtk --version   # ~/.local/bin/rtk tras install.sh oficial
@@ -60,6 +61,7 @@ npm run validate-skills              # Valida skills manifests
 ```
 
 ### Deploy y VPS
+
 ```bash
 # Acceder al VPS
 ssh vps-dragon@100.120.151.91
@@ -77,6 +79,7 @@ curl -sfk https://api.ops.smiletripcare.com/api/health
 ```
 
 ### Doppler
+
 ```bash
 # Ver vars (sin imprimir valores)
 doppler secrets --only-names --project ops-intcloudsysops --config prd
@@ -92,6 +95,7 @@ doppler secrets download --no-file --format env --project ops-intcloudsysops --c
 ```
 
 ### Supabase
+
 ```bash
 npx supabase link --project-ref jkwykpldnitavhmtuzmo
 npx supabase db push
@@ -99,6 +103,7 @@ npx supabase db push --dry-run   # preview sin aplicar
 ```
 
 ### Git / commits
+
 ```bash
 git config core.hooksPath .githooks   # activar hooks (una vez por clon)
 git add -A && git commit -m "tipo(scope): descripción"
@@ -109,18 +114,18 @@ git add -A && git commit -m "tipo(scope): descripción"
 
 ## 🏗️ Stack fijo (no proponer alternativas)
 
-| Componente | Valor |
-|------------|-------|
-| Orquestación | Docker Compose por tenant |
-| Proxy | Traefik v3 |
-| DB plataforma | Supabase schema `platform` |
-| DB por tenant | Schema `tenant_{slug}` |
-| Secretos | Doppler proyecto `ops-intcloudsysops` config `prd` |
-| Cola | Redis + BullMQ |
-| Email | Resend |
-| IA | LLM Gateway → Anthropic / OpenAI |
-| TypeScript | Sin `any`, strict |
-| Bash | `set -euo pipefail`, idempotente, con `--dry-run` |
+| Componente    | Valor                                              |
+| ------------- | -------------------------------------------------- |
+| Orquestación  | Docker Compose por tenant                          |
+| Proxy         | Traefik v3                                         |
+| DB plataforma | Supabase schema `platform`                         |
+| DB por tenant | Schema `tenant_{slug}`                             |
+| Secretos      | Doppler proyecto `ops-intcloudsysops` config `prd` |
+| Cola          | Redis + BullMQ                                     |
+| Email         | Resend                                             |
+| IA            | LLM Gateway → Anthropic / OpenAI                   |
+| TypeScript    | Sin `any`, strict                                  |
+| Bash          | `set -euo pipefail`, idempotente, con `--dry-run`  |
 
 ---
 
@@ -141,34 +146,35 @@ apps/
 
 ## 🔑 Doppler vars críticas
 
-| Var | Para qué |
-|-----|----------|
-| `SUPABASE_URL` | Cliente Supabase |
-| `SUPABASE_SERVICE_ROLE_KEY` | Operaciones admin |
-| `STRIPE_SECRET_KEY` | Billing |
-| `RESEND_API_KEY` | Emails (invitaciones) |
-| `PLATFORM_ADMIN_TOKEN` | Rutas admin API |
-| `DISCORD_WEBHOOK_URL` | Notificaciones |
-| `GITHUB_TOKEN` | PAT GitHub (API: ACTIVE-PROMPT, etc.); preferido frente a `GITHUB_TOKEN_N8N` (legado) |
-| `ANTHROPIC_API_KEY` | LLM gateway |
-| `GOOGLE_SERVICE_ACCOUNT_JSON` | Drive sync |
-| `REDIS_URL` | Cola + cache |
-| `CRON_SECRET` | Cron endpoints protegidos |
-| `DOCKER_GID` | GID grupo docker en VPS |
-| `PLATFORM_DOMAIN` | Dominio base (ops.smiletripcare.com) |
+| Var                           | Para qué                                                                              |
+| ----------------------------- | ------------------------------------------------------------------------------------- |
+| `SUPABASE_URL`                | Cliente Supabase                                                                      |
+| `SUPABASE_SERVICE_ROLE_KEY`   | Operaciones admin                                                                     |
+| `STRIPE_SECRET_KEY`           | Billing                                                                               |
+| `RESEND_API_KEY`              | Emails (invitaciones)                                                                 |
+| `PLATFORM_ADMIN_TOKEN`        | Rutas admin API                                                                       |
+| `DISCORD_WEBHOOK_URL`         | Notificaciones                                                                        |
+| `GITHUB_TOKEN`                | PAT GitHub (API: ACTIVE-PROMPT, etc.); preferido frente a `GITHUB_TOKEN_N8N` (legado) |
+| `ANTHROPIC_API_KEY`           | LLM gateway                                                                           |
+| `GOOGLE_SERVICE_ACCOUNT_JSON` | Drive sync                                                                            |
+| `REDIS_URL`                   | Cola + cache                                                                          |
+| `CRON_SECRET`                 | Cron endpoints protegidos                                                             |
+| `DOCKER_GID`                  | GID grupo docker en VPS                                                               |
+| `PLATFORM_DOMAIN`             | Dominio base (ops.smiletripcare.com)                                                  |
 
 ---
 
 ## 🏃 Sprint actual
 
-| Sprint | Estado | Commit |
-|--------|--------|--------|
-| Sprint 1 — Hardening + Stripe Checkout | ✅ | `feat(sprint1)` |
-| Sprint 2 — Backups SHA256 + Health Monitor | ✅ | `feat(sprint2)` |
-| Sprint 3 — Usage Billing + Plan Upgrade + AI Cost Caps | ✅ | `2644a03` |
-| **Sprint 4 — Self-Healing + Context Persistence + CVE** | 🔄 | — |
+| Sprint                                                  | Estado | Commit          |
+| ------------------------------------------------------- | ------ | --------------- |
+| Sprint 1 — Hardening + Stripe Checkout                  | ✅     | `feat(sprint1)` |
+| Sprint 2 — Backups SHA256 + Health Monitor              | ✅     | `feat(sprint2)` |
+| Sprint 3 — Usage Billing + Plan Upgrade + AI Cost Caps  | ✅     | `2644a03`       |
+| **Sprint 4 — Self-Healing + Context Persistence + CVE** | 🔄     | —               |
 
 ### Sprint 4 — próximos archivos
+
 ```
 apps/orchestrator/src/resilience/circuit-breaker.ts
 apps/orchestrator/src/resilience/retry-policy.ts

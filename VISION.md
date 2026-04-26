@@ -88,7 +88,7 @@ El detalle vive en **Roadmap por fases** más abajo (y en [`ROADMAP.md`](ROADMAP
 
 Cada tenant es un docker-compose aislado. **Despliegue por defecto:** Docker Compose + Traefik en VPS — **sin Kubernetes ni Swarm** como stack principal del control plane. Simplicidad operativa sobre escala teórica; escalar = más VPS antes que más complejidad.
 
-**Excepción estratégica (futura, no por defecto):** una **fase opcional** de *compute plane* (workers BullMQ, sandboxes de ejecución, ML/GPU) podrá usar **Kubernetes** solo cuando se cumplan criterios de negocio/seguridad documentados — ver [`docs/adr/ADR-027-hybrid-compute-plane-k8s.md`](docs/adr/ADR-027-hybrid-compute-plane-k8s.md). El **control plane** (API, portal, admin, MCP HTTP, web) permanece en Compose salvo nueva decisión explícita.
+**Excepción estratégica (futura, no por defecto):** una **fase opcional** de _compute plane_ (workers BullMQ, sandboxes de ejecución, ML/GPU) podrá usar **Kubernetes** solo cuando se cumplan criterios de negocio/seguridad documentados — ver [`docs/adr/ADR-027-hybrid-compute-plane-k8s.md`](docs/adr/ADR-027-hybrid-compute-plane-k8s.md). El **control plane** (API, portal, admin, MCP HTTP, web) permanece en Compose salvo nueva decisión explícita.
 
 ## Principios de Arquitectura
 
@@ -113,7 +113,7 @@ Cada tenant es un docker-compose aislado. **Despliegue por defecto:** Docker Com
 
 ## Lo que un agente NUNCA debe hacer
 
-- Proponer **migración masiva** a Kubernetes o Swarm **sin ADR** y sin criterios de activación (el despliegue por defecto sigue siendo Compose; la excepción *compute plane* está en [ADR-027](docs/adr/ADR-027-hybrid-compute-plane-k8s.md))
+- Proponer **migración masiva** a Kubernetes o Swarm **sin ADR** y sin criterios de activación (el despliegue por defecto sigue siendo Compose; la excepción _compute plane_ está en [ADR-027](docs/adr/ADR-027-hybrid-compute-plane-k8s.md))
 - Hardcodear secrets (todo va a Doppler)
 - Usar `any` en TypeScript
 - Crear scripts no idempotentes

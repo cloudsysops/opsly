@@ -1,7 +1,11 @@
 # Opsly — Cursor Prompts por Sprint
+
 # ====================================
+
 # Cada bloque es el prompt exacto para Cursor al inicio del sprint.
+
 # Claude genera el prompt. Cursor ejecuta autónomamente.
+
 # Cristian: pega el bloque completo en Cursor como contexto inicial.
 
 ---
@@ -9,6 +13,7 @@
 ## SPRINT 0 GATE — Lunes 14 abril 11 AM
 
 **Cristian ejecuta (VPS):**
+
 ```bash
 ssh vps-dragon@100.120.151.91 "echo 'SSH OK'"
 doppler secrets get HERMES_ENABLED --project ops-intcloudsysops --config prd --plain
@@ -17,6 +22,7 @@ docker compose -f infra/docker-compose.platform.yml up -d --pull always
 ```
 
 **Claude ejecuta (local):**
+
 ```bash
 pnpm run type-check   # target: 13/13 ✅
 bash scripts/hermes-smoke-test.sh  # target: health OK
@@ -24,12 +30,14 @@ bash scripts/test-hermes-integration.sh  # target: 14/14 ✅
 ```
 
 **Resultado gate:**
+
 - PASS → Sprint 1 kickoff martes 15 abril
 - FAIL → identificar blocker, re-test martes/miércoles
 
 ---
 
 ## SPRINT 1 — Martes 15 abril → Viernes 18 abril
+
 **Tema: Persistent Hermes State Cache**
 
 ```
@@ -78,6 +86,7 @@ GATE: pnpm run type-check 13/13 ✅ + test suite 18/18 ✅
 ---
 
 ## SPRINT 2 — Lunes 21 abril → Viernes 25 abril
+
 **Tema: Adaptive Multi-Worker Routing + Auto-Approval**
 
 ```
@@ -133,6 +142,7 @@ GATE: pnpm run type-check 13/13 ✅ + test suite 22/22 ✅
 ---
 
 ## SPRINT 3 — Lunes 28 abril → Viernes 2 mayo
+
 **Tema: RAG + pgvector Embeddings**
 
 ```
@@ -187,6 +197,7 @@ GATE: pnpm run type-check 13/13 ✅ + test suite 26/26 ✅
 ---
 
 ## SPRINT 4 — Lunes 5 mayo → Viernes 9 mayo
+
 **Tema: Observabilidad + Prometheus Metrics**
 
 ```
@@ -254,6 +265,7 @@ GATE: pnpm run type-check 13/13 ✅ + test suite 28/28 ✅ + grafana.domain live
 ---
 
 ## SPRINT 5 — Lunes 12 mayo → Viernes 16 mayo
+
 **Tema: Multi-Provider LLM Routing**
 
 ```
@@ -314,6 +326,7 @@ GATE: pnpm run type-check 13/13 ✅ + test suite 32/32 ✅ + cost dashboard live
 ---
 
 ## SPRINT 6 — Lunes 19 mayo → Lunes 26 mayo
+
 **Tema: MVP Polish + First Paying Customer**
 
 ```
@@ -382,12 +395,12 @@ GATE FINAL (Lunes 26 mayo 5 PM):
 
 ## RESUMEN DE GATES
 
-| Sprint | Fecha | Tests | Gate |
-|--------|-------|-------|------|
-| S0 | Lun 14 abr | 14/14 | VPS live + smoke ✅ |
-| S1 | Vie 18 abr | 18/18 | Cache hit/miss ✅ |
-| S2 | Vie 25 abr | 22/22 | Auto-routing matrix ✅ |
-| S3 | Vie 2 may | 26/26 | RAG retrieval ✅ |
-| S4 | Vie 9 may | 28/28 | Grafana dashboard live ✅ |
-| S5 | Vie 16 may | 32/32 | Cost dashboard live ✅ |
-| S6 | Lun 26 may | 40/40 + E2E | MVP launch 🚀 |
+| Sprint | Fecha      | Tests       | Gate                      |
+| ------ | ---------- | ----------- | ------------------------- |
+| S0     | Lun 14 abr | 14/14       | VPS live + smoke ✅       |
+| S1     | Vie 18 abr | 18/18       | Cache hit/miss ✅         |
+| S2     | Vie 25 abr | 22/22       | Auto-routing matrix ✅    |
+| S3     | Vie 2 may  | 26/26       | RAG retrieval ✅          |
+| S4     | Vie 9 may  | 28/28       | Grafana dashboard live ✅ |
+| S5     | Vie 16 may | 32/32       | Cost dashboard live ✅    |
+| S6     | Lun 26 may | 40/40 + E2E | MVP launch 🚀             |

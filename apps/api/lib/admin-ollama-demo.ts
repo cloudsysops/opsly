@@ -1,40 +1,40 @@
-import { randomUUID } from "node:crypto";
-import { checkTenantBudget } from "./billing/budget-enforcer";
-import { HTTP_STATUS } from "./constants";
-import { logger } from "./logger";
-import { getServiceClient } from "./supabase";
-import type { PlanKey } from "./supabase/types";
+import { randomUUID } from 'node:crypto';
+import { checkTenantBudget } from './billing/budget-enforcer';
+import { HTTP_STATUS } from './constants';
+import { logger } from './logger';
+import { getServiceClient } from './supabase';
+import type { PlanKey } from './supabase/types';
 
 const PAYMENT_REQUIRED = 402;
 
 export const ORCHESTRATOR_INTERNAL_URL =
-  process.env.ORCHESTRATOR_INTERNAL_URL ?? "http://127.0.0.1:3011";
+  process.env.ORCHESTRATOR_INTERNAL_URL ?? 'http://127.0.0.1:3011';
 
 export function toOrchestratorPlan(
-  plan: PlanKey,
-): "startup" | "business" | "enterprise" | undefined {
-  if (plan === "business") {
-    return "business";
+  plan: PlanKey
+): 'startup' | 'business' | 'enterprise' | undefined {
+  if (plan === 'business') {
+    return 'business';
   }
-  if (plan === "enterprise") {
-    return "enterprise";
+  if (plan === 'enterprise') {
+    return 'enterprise';
   }
-  if (plan === "startup" || plan === "demo") {
-    return "startup";
+  if (plan === 'startup' || plan === 'demo') {
+    return 'startup';
   }
   return undefined;
 }
 
 export async function resolveTenantBySlug(
-  slug: string,
+  slug: string
 ): Promise<{ id: string; plan: PlanKey } | null> {
   const db = getServiceClient();
   const { data, error } = await db
-    .schema("platform")
-    .from("tenants")
-    .select("id, plan")
-    .eq("slug", slug)
-    .is("deleted_at", null)
+    .schema('platform')
+    .from('tenants')
+    .select('id, plan')
+    .eq('slug', slug)
+    .is('deleted_at', null)
     .maybeSingle();
 
   if (error || !data?.id) {
@@ -44,61 +44,47 @@ export async function resolveTenantBySlug(
   return { id: data.id as string, plan };
 }
 
-export function parseTaskType(
-  raw: unknown,
-): "analyze" | "generate" | "review" | "summarize" {
-  if (
-    raw === "analyze" ||
-    raw === "generate" ||
-    raw === "review" ||
-    raw === "summarize"
-  ) {
+export function parseTaskType(raw: unknown): 'analyze' | 'generate' | 'review' | 'summarize' {
+  if (raw === 'analyze' || raw === 'generate' || raw === 'review' || raw === 'summarize') {
     return raw;
   }
-  return "summarize";
+  return 'summarize';
 }
 
 /** PostgREST / migración 0015: tabla ausente → no bloquear el demo admin. */
 function isBillingUsageSchemaMissingError(message: string): boolean {
   const m = message.toLowerCase();
   return (
-    m.includes("billing_usage") &&
-    (m.includes("schema cache") || m.includes("could not find the table"))
+    m.includes('billing_usage') &&
+    (m.includes('schema cache') || m.includes('could not find the table'))
   );
 }
 
 export async function checkBudgetForOllamaDemo(
   tenantId: string,
-  tenantSlug: string,
+  tenantSlug: string
 ): Promise<Response | null> {
   try {
     const budget = await checkTenantBudget(tenantId);
     if (budget.isOverBudget && !budget.enforcementSkipped) {
       return Response.json(
         {
-          error: "Monthly budget exceeded",
+          error: 'Monthly budget exceeded',
           tenant_slug: tenantSlug,
         },
-        { status: PAYMENT_REQUIRED },
+        { status: PAYMENT_REQUIRED }
       );
     }
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     if (isBillingUsageSchemaMissingError(message)) {
-      logger.warn(
-        "admin ollama-demo: billing_usage unavailable; skipping budget check",
-        { tenant_slug: tenantSlug },
-      );
+      logger.warn('admin ollama-demo: billing_usage unavailable; skipping budget check', {
+        tenant_slug: tenantSlug,
+      });
       return null;
     }
-    logger.error(
-      "admin ollama-demo budget check",
-      err instanceof Error ? err : new Error(message),
-    );
-    return Response.json(
-      { error: message },
-      { status: HTTP_STATUS.INTERNAL_ERROR },
-    );
+    logger.error('admin ollama-demo budget check', err instanceof Error ? err : new Error(message));
+    return Response.json({ error: message }, { status: HTTP_STATUS.INTERNAL_ERROR });
   }
   return null;
 }
@@ -106,7 +92,7 @@ export async function checkBudgetForOllamaDemo(
 export type OllamaEnqueueParams = {
   tenantSlug: string;
   tenantId: string;
-  taskType: "analyze" | "generate" | "review" | "summarize";
+  taskType: 'analyze' | 'generate' | 'review' | 'summarize';
   prompt: string;
   plan: PlanKey;
   requestId: string;
@@ -114,12 +100,12 @@ export type OllamaEnqueueParams = {
 
 async function postEnqueueOllamaRequest(
   adminToken: string,
-  params: OllamaEnqueueParams,
+  params: OllamaEnqueueParams
 ): Promise<Response> {
   return fetch(`${ORCHESTRATOR_INTERNAL_URL}/internal/enqueue-ollama`, {
-    method: "POST",
+    method: 'POST',
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
       Authorization: `Bearer ${adminToken}`,
     },
     body: JSON.stringify({
@@ -133,22 +119,17 @@ async function postEnqueueOllamaRequest(
   });
 }
 
-async function mapEnqueueResponse(
-  orchRes: Response,
-  requestId: string,
-): Promise<Response> {
+async function mapEnqueueResponse(orchRes: Response, requestId: string): Promise<Response> {
   const payload: unknown = await orchRes.json().catch(() => null);
   if (!orchRes.ok) {
     const status =
-      orchRes.status >= HTTP_STATUS.BAD_REQUEST
-        ? orchRes.status
-        : HTTP_STATUS.INTERNAL_ERROR;
+      orchRes.status >= HTTP_STATUS.BAD_REQUEST ? orchRes.status : HTTP_STATUS.INTERNAL_ERROR;
     return Response.json(
       {
-        error: "enqueue failed",
+        error: 'enqueue failed',
         detail: payload,
       },
-      { status },
+      { status }
     );
   }
 
@@ -156,17 +137,17 @@ async function mapEnqueueResponse(
     {
       ok: true,
       request_id: requestId,
-      ...(typeof payload === "object" && payload !== null
+      ...(typeof payload === 'object' && payload !== null
         ? (payload as Record<string, unknown>)
         : {}),
     },
-    { status: HTTP_STATUS.CREATED },
+    { status: HTTP_STATUS.CREATED }
   );
 }
 
 export async function callOrchestratorEnqueueOllama(
   adminToken: string,
-  params: OllamaEnqueueParams,
+  params: OllamaEnqueueParams
 ): Promise<Response> {
   let orchRes: Response;
   try {
@@ -175,7 +156,7 @@ export async function callOrchestratorEnqueueOllama(
     const message = err instanceof Error ? err.message : String(err);
     return Response.json(
       { error: `orchestrator unreachable: ${message}` },
-      { status: HTTP_STATUS.SERVICE_UNAVAILABLE },
+      { status: HTTP_STATUS.SERVICE_UNAVAILABLE }
     );
   }
 

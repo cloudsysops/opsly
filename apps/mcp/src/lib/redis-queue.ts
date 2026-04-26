@@ -17,10 +17,10 @@ export function getOpenclawQueueConnection(): BullmqConnection | null {
   }
   try {
     const redisUrl = new URL(raw);
-    const passwordFromUrl = redisUrl.password ? decodeURIComponent(redisUrl.password) : "";
+    const passwordFromUrl = redisUrl.password ? decodeURIComponent(redisUrl.password) : '';
     return {
       host: redisUrl.hostname,
-      port: Number(redisUrl.port || "6379"),
+      port: Number(redisUrl.port || '6379'),
       password: process.env.REDIS_PASSWORD?.trim() || passwordFromUrl || undefined,
     };
   } catch {

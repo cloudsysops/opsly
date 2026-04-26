@@ -1,5 +1,5 @@
-import { NotionClient } from "../notion-client.js";
-import type { QualityGate } from "../types.js";
+import { NotionClient } from '../notion-client.js';
+import type { QualityGate } from '../types.js';
 
 export interface QualityGateResult {
   readonly success: true;
@@ -8,7 +8,7 @@ export interface QualityGateResult {
 }
 
 export async function handleQualityGate(
-  params: Omit<QualityGate, "id" | "lastChecked">,
+  params: Omit<QualityGate, 'id' | 'lastChecked'>
 ): Promise<QualityGateResult> {
   const notion = new NotionClient();
   const gate = await notion.recordQualityGate(params);

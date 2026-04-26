@@ -12,16 +12,16 @@ Cuando el agente necesita **visión completa** del monorepo Opsly: contexto, dia
 
 ## Superpoderes (mapeo a repo real)
 
-| Poder | Qué hacer en Opsly |
-|-------|---------------------|
-| **Context master** | Leer `AGENTS.md`, `VISION.md`, `config/opsly.config.json`, `docs/adr/` según la tarea. |
+| Poder                 | Qué hacer en Opsly                                                                                                                            |
+| --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Context master**    | Leer `AGENTS.md`, `VISION.md`, `config/opsly.config.json`, `docs/adr/` según la tarea.                                                        |
 | **Diagnostic wizard** | `./scripts/verify-platform-smoke.sh`; VPS solo Tailscale `100.120.151.91`; disco: `scripts/disk-alert.sh` / `docs/OPS-CLEANUP-PROCEDURES.md`. |
-| **Deploy / infra** | CI: `.github/workflows/deploy.yml`; VPS: runbooks en `docs/` — **no** `docker` destructivo sin runbook. |
-| **Métricas** | API admin/metrics según producto; LLM: `apps/llm-gateway`; costos en dashboard si aplica. |
-| **Seguridad** | `docs/SECURITY_CHECKLIST.md`; sin escanear el repo con regex agresiva de “secretos” (falsos positivos). Secretos: Doppler. |
-| **Documentación** | Actualizar `AGENTS.md` al **cierre de sesión** según protocolo; ADRs en `docs/adr/`. |
-| **Tests** | `npm run type-check`; tests por workspace (`npm run test --workspace=@intcloudsysops/api`, etc.). |
-| **Builder** | Patrones en `.github/copilot-instructions.md`; API: `skills/user/opsly-api/SKILL.md`. |
+| **Deploy / infra**    | CI: `.github/workflows/deploy.yml`; VPS: runbooks en `docs/` — **no** `docker` destructivo sin runbook.                                       |
+| **Métricas**          | API admin/metrics según producto; LLM: `apps/llm-gateway`; costos en dashboard si aplica.                                                     |
+| **Seguridad**         | `docs/SECURITY_CHECKLIST.md`; sin escanear el repo con regex agresiva de “secretos” (falsos positivos). Secretos: Doppler.                    |
+| **Documentación**     | Actualizar `AGENTS.md` al **cierre de sesión** según protocolo; ADRs en `docs/adr/`.                                                          |
+| **Tests**             | `npm run type-check`; tests por workspace (`npm run test --workspace=@intcloudsysops/api`, etc.).                                             |
+| **Builder**           | Patrones en `.github/copilot-instructions.md`; API: `skills/user/opsly-api/SKILL.md`.                                                         |
 
 ## Skills que combina (lectura)
 
@@ -60,12 +60,12 @@ Cuando el agente necesita **visión completa** del monorepo Opsly: contexto, dia
 
 ## Errores comunes
 
-| Error | Causa | Solución |
-|-------|-------|----------|
-| Script no existe | Inventó un comando | Verificar `ls scripts/` antes de ejecutar |
-| Deploy sin runbook | Saltó validación | Buscar runbook en `docs/` primero |
-| Diagnóstico incompleto | No cargó contexto | Ejecutar `opsly-context` antes |
-| Secreto expuesto | Leyó config directo | Usar Doppler, nunca cat de .env |
+| Error                  | Causa               | Solución                                  |
+| ---------------------- | ------------------- | ----------------------------------------- |
+| Script no existe       | Inventó un comando  | Verificar `ls scripts/` antes de ejecutar |
+| Deploy sin runbook     | Saltó validación    | Buscar runbook en `docs/` primero         |
+| Diagnóstico incompleto | No cargó contexto   | Ejecutar `opsly-context` antes            |
+| Secreto expuesto       | Leyó config directo | Usar Doppler, nunca cat de .env           |
 
 ## Referencias
 

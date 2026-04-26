@@ -1,5 +1,5 @@
-import { resolveTrustedPortalSession } from "./portal-trusted-identity";
-import { runWithTenantContext } from "./tenant-context";
+import { resolveTrustedPortalSession } from './portal-trusted-identity';
+import { runWithTenantContext } from './tenant-context';
 
 /**
  * Integración DAL + rutas API (Node runtime): envuelve el handler tras resolver la sesión portal
@@ -10,7 +10,7 @@ import { runWithTenantContext } from "./tenant-context";
  */
 export async function runTrustedPortalDal<T>(
   request: Request,
-  fn: () => T | Promise<T>,
+  fn: () => T | Promise<T>
 ): Promise<T | Response> {
   const resolved = await resolveTrustedPortalSession(request);
   if (!resolved.ok) {

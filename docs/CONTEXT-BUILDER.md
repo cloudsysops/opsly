@@ -21,9 +21,14 @@ import {
   buildContextForLLM,
   saveSessionContext,
   getSessionContext,
-} from "@intcloudsysops/context-builder";
+} from '@intcloudsysops/context-builder';
 
-const built = await buildContextForLLM("acme", sessionId, "Nueva pregunta", "Eres un asistente útil.");
+const built = await buildContextForLLM(
+  'acme',
+  sessionId,
+  'Nueva pregunta',
+  'Eres un asistente útil.'
+);
 // usar built.messages y built.system con llmCall
 ```
 

@@ -1,10 +1,10 @@
-import { executeNotebookLM } from "@intcloudsysops/notebooklm-agent";
-import type { NotebookQueryResponse } from "@intcloudsysops/types";
+import { executeNotebookLM } from '@intcloudsysops/notebooklm-agent';
+import type { NotebookQueryResponse } from '@intcloudsysops/types';
 
 const TIMEOUT_MS = 30_000;
 
 function tenant(): string {
-  return process.env.NOTEBOOKLM_DEFAULT_TENANT_SLUG?.trim() || "platform";
+  return process.env.NOTEBOOKLM_DEFAULT_TENANT_SLUG?.trim() || 'platform';
 }
 
 function notebookId(): string | undefined {
@@ -13,7 +13,7 @@ function notebookId(): string | undefined {
 }
 
 function enabled(): boolean {
-  return process.env.NOTEBOOKLM_ENABLED?.trim().toLowerCase() === "true";
+  return process.env.NOTEBOOKLM_ENABLED?.trim().toLowerCase() === 'true';
 }
 
 async function withTimeout<T>(p: Promise<T>, ms: number): Promise<T> {
@@ -36,31 +36,30 @@ async function withTimeout<T>(p: Promise<T>, ms: number): Promise<T> {
 
 export async function queryNotebookLmForApi(
   question: string,
-  context?: string,
+  context?: string
 ): Promise<NotebookQueryResponse> {
   if (!enabled() || !notebookId()) {
     return {
-      answer: "",
+      answer: '',
       sources: [],
       confidence: 0,
     };
   }
   const nb = notebookId() as string;
-  const full =
-    context && context.length > 0 ? `${question}\n\nContexto:\n${context}` : question;
+  const full = context && context.length > 0 ? `${question}\n\nContexto:\n${context}` : question;
   const t0 = Date.now();
   const result = await withTimeout(
     executeNotebookLM({
-      action: "ask",
+      action: 'ask',
       tenant_slug: tenant(),
       notebook_id: nb,
       question: full,
     }),
-    TIMEOUT_MS,
+    TIMEOUT_MS
   );
   if (!result.success || result.answer === undefined) {
     return {
-      answer: "",
+      answer: '',
       sources: [],
       confidence: 0,
       latency_ms: Date.now() - t0,

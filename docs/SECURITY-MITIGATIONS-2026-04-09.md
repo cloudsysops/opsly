@@ -8,7 +8,7 @@
 
 ## 🔴 CRÍTICAS (Esta Noche)
 
-### 1. Cloudflare Proxy para *.ops.smiletripcare.com
+### 1. Cloudflare Proxy para \*.ops.smiletripcare.com
 
 **Objetivo:** Ocultar IP pública del VPS (157.245.223.7) y habilitar WAF.
 
@@ -24,23 +24,24 @@
    - uptime-smiletripcare.ops.smiletripcare.com (157.245.223.7)
    - n8n-localrank.ops.smiletripcare.com (157.245.223.7)
    - uptime-localrank.ops.smiletripcare.com (157.245.223.7)
-   
+
    Haz clic en el ícono nube:
    - Naranja (Proxied): ACTIVA Cloudflare
    - Gris (DNS only): Actual
-   
+
 3. Cambia a Naranja para TODOS los *.ops.smiletripcare.com
 
 4. Ve a Security → WAF Rules y habilita:
    - Managed Rulesets: Cloudflare Managed Challenge
    - Rate Limiting: 100 req/min para rutas admin
-   
+
 5. SSL/TLS:
    - Encryption mode: Full (strict)
    - Always use HTTPS: ON
 ```
 
 **Verificación (Mac local):**
+
 ```bash
 # Antes (IP pública visible):
 dig api.ops.smiletripcare.com +short
@@ -56,6 +57,7 @@ curl -sfk https://api.ops.smiletripcare.com/api/health
 ```
 
 **Impacto:**
+
 - ✅ IP VPS oculta (157.245.223.7 no visible públicamente)
 - ✅ WAF protege contra bot/SQL injection/XSS
 - ✅ DDoS mitigation automático
@@ -75,7 +77,7 @@ curl -sfk https://api.ops.smiletripcare.com/api/health
 ssh vps-dragon@157.245.223.7 << 'EOF'
 set -euo pipefail
 
-echo "=== Verificando ufw ===" 
+echo "=== Verificando ufw ==="
 sudo ufw status || echo "ufw no instalado"
 
 echo "=== Instalando ufw ==="
@@ -120,6 +122,7 @@ ssh vps-dragon@100.120.151.91
 ```
 
 **Impacto:**
+
 - ✅ SSH solo accesible desde Tailscale
 - ✅ HTTP/HTTPS (puerto 80/443) públicos y funcionales
 - ✅ Otros puertos bloqueados (no debe afectar n8n, uptime que van vía HTTP/HTTPS)
@@ -136,6 +139,7 @@ ssh vps-dragon@100.120.151.91
 **Objetivo:** Acceso seguro a VPS desde Tailscale VPN (no IP pública).
 
 **Paso 1: Instalar Tailscale en Mac**
+
 ```bash
 # Descargar e instalar
 curl -fsSL https://tailscale.com/install.sh | sh
@@ -153,6 +157,7 @@ tailscale ip -4
 ```
 
 **Paso 2: Verificar Conectividad VPS en Tailscale**
+
 ```bash
 # Desde Mac, con Tailscale activo:
 ping 100.120.151.91
@@ -164,6 +169,7 @@ tailscale status
 ```
 
 **Paso 3: SSH vía Tailscale**
+
 ```bash
 # SSH directo a IP Tailscale
 ssh vps-dragon@100.120.151.91
@@ -174,10 +180,12 @@ ssh -o ConnectTimeout=3 vps-dragon@157.245.223.7
 ```
 
 **Verificación en AGENTS.md:**
+
 - SSH_HOST en onboard-tenant.sh ya defaultea a `100.120.151.91` ✅
 - Una vez ufw está en VPS, solo Tailscale funciona ✅
 
 **Impacto:**
+
 - ✅ SSH solo accessible desde VPN personal
 - ✅ IP pública no expuesta
 - ✅ Retrocompatible con scripts (usan Tailscale IP por defecto)
@@ -207,7 +215,7 @@ sudo tailscale up --advertise-exit-node
 
 # El comando anterior imprime una URL tipo:
 # https://login.tailscale.com/a/XXXXX
-# 
+#
 # Cópiala y pégala en navegador para autorizar VPS
 
 echo "=== Esperando autorización (máx 30s) ==="
@@ -222,6 +230,7 @@ EOF
 ```
 
 **Verificación:**
+
 ```bash
 # Desde Mac con Tailscale:
 tailscale status | grep vps-dragon
@@ -232,6 +241,7 @@ ping 100.120.151.91
 ```
 
 **Impacto:**
+
 - ✅ VPS accesible vía Tailscale IP privada
 - ✅ No requiere exponer SSH a Internet
 - ✅ Automático si Tailscale admin (cboteros) autoriza el dispositivo
@@ -246,6 +256,7 @@ ping 100.120.151.91
 **Objetivo:** Verificar que todas las rutas nuevas que requieren tenant validation usan `tenantSlugMatchesSession`.
 
 **Comando (grep):**
+
 ```bash
 cd /Users/dragon/cboteros/proyectos/intcloudsysops
 
@@ -266,26 +277,32 @@ done
 ```
 
 **Rutas que ya tienen validación (✅):**
+
 - `/api/portal/tenant/[slug]/me` ✅
 - `/api/portal/tenant/[slug]/usage` ✅
 - `/api/portal/tenant/[slug]/mode` ✅
 - `/api/portal/tenant/[slug]/health` ✅
 
 **Checklist para futuras rutas:**
+
 - [ ] Ruta nueva bajo `/api/portal/tenant/[slug]/*` → agregar `tenantSlugMatchesSession` check
 - [ ] Template (copiar de `mode/route.ts`):
+
 ```typescript
-import { tenantSlugMatchesSession, resolveTrustedPortalSession } from "@/lib/portal-trusted-identity";
+import {
+  tenantSlugMatchesSession,
+  resolveTrustedPortalSession,
+} from '@/lib/portal-trusted-identity';
 
 export async function GET(req: Request, { params }: { params: Promise<{ slug: string }> }) {
   const { ok, session, response } = await resolveTrustedPortalSession(req);
   if (!ok) return response;
-  
+
   const { slug } = await params;
   if (!tenantSlugMatchesSession(session, slug)) {
-    return Response.json({ error: "Forbidden" }, { status: 403 });
+    return Response.json({ error: 'Forbidden' }, { status: 403 });
   }
-  
+
   // ... rest of logic
 }
 ```
@@ -301,6 +318,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ slug: st
 **Objetivo:** Automated security scanning en PR/merge.
 
 **Implementación (Fase 2):**
+
 ```yaml
 # .github/workflows/security-scan.yml
 name: OWASP ZAP Scan
@@ -374,14 +392,14 @@ curl -sfk https://api.ops.smiletripcare.com/api/health
 
 ## 📊 RESUMEN POST-MITIGACIONES
 
-| Capa | Antes | Después | Estado |
-|------|-------|---------|--------|
-| SSH | IP pública (157.245.223.7) | Tailscale only (100.120.151.91) | 🟢 Seguro |
-| Firewall | Abierto (nada) | ufw drop incoming + whitelist | 🟢 Seguro |
-| IP VPS | Expuesta | Cloudflare Proxy (naranja) | 🟢 Oculta |
-| WAF | Nada | Cloudflare Managed Challenge + rate limit | 🟢 Protegido |
-| API Validation | ✅ (código OK) | ✅ (auditoría completada) | 🟢 Seguro |
-| Secrets | Doppler + tests | Doppler + auditoría | 🟢 Seguro |
+| Capa           | Antes                      | Después                                   | Estado       |
+| -------------- | -------------------------- | ----------------------------------------- | ------------ |
+| SSH            | IP pública (157.245.223.7) | Tailscale only (100.120.151.91)           | 🟢 Seguro    |
+| Firewall       | Abierto (nada)             | ufw drop incoming + whitelist             | 🟢 Seguro    |
+| IP VPS         | Expuesta                   | Cloudflare Proxy (naranja)                | 🟢 Oculta    |
+| WAF            | Nada                       | Cloudflare Managed Challenge + rate limit | 🟢 Protegido |
+| API Validation | ✅ (código OK)             | ✅ (auditoría completada)                 | 🟢 Seguro    |
+| Secrets        | Doppler + tests            | Doppler + auditoría                       | 🟢 Seguro    |
 
 ---
 
@@ -406,4 +424,3 @@ sudo ufw status
 **Generated:** 2026-04-09  
 **Status:** Ready to execute  
 **Prerequisite:** Tailscale installed on Mac + authorized
-

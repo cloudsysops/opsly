@@ -6,13 +6,13 @@ services:
     env_file:
       - ../.env
     environment:
-      CONTEXT_BUILDER_PORT: "3112"
+      CONTEXT_BUILDER_PORT: '3112'
       REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379/0
       REDIS_PASSWORD: ${REDIS_PASSWORD}
       OPS_REPO_ROOT: ${OPS_REPO_ROOT:-/opt/opsly}
       KNOWLEDGE_INDEX_PATH: ${KNOWLEDGE_INDEX_PATH:-/opt/opsly/config/knowledge-index.json}
     ports:
-      - "${SUPER_AGENT_CONTEXT_BUILDER_V2_HOST_BIND:-127.0.0.1}:${SUPER_AGENT_CONTEXT_BUILDER_V2_HOST_PORT:-3212}:3112"
+      - '${SUPER_AGENT_CONTEXT_BUILDER_V2_HOST_BIND:-127.0.0.1}:${SUPER_AGENT_CONTEXT_BUILDER_V2_HOST_PORT:-3212}:3112'
     volumes:
       - ${OPS_REPO_HOST_PATH:-/opt/opsly}:/opt/opsly:ro
     depends_on:
@@ -24,9 +24,9 @@ services:
     healthcheck:
       test:
         [
-          "CMD",
-          "node",
-          "-e",
+          'CMD',
+          'node',
+          '-e',
           "fetch('http://127.0.0.1:3112/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
         ]
       interval: 30s
@@ -44,12 +44,12 @@ services:
       PLATFORM_ADMIN_TOKEN: ${PLATFORM_ADMIN_TOKEN}
       GITHUB_TOKEN: ${GITHUB_TOKEN:-}
       GITHUB_TOKEN_N8N: ${GITHUB_TOKEN_N8N:-}
-      PORT: "3103"
+      PORT: '3103'
       MCP_LLM_GATEWAY_URL: http://llm-gateway-v2:3110
       MCP_ORCHESTRATOR_URL: http://orchestrator-v2:3111
       MCP_CONTEXT_BUILDER_URL: http://context-builder-v2:3112
     ports:
-      - "${SUPER_AGENT_MCP_V2_HOST_BIND:-127.0.0.1}:${SUPER_AGENT_MCP_V2_HOST_PORT:-3203}:3103"
+      - '${SUPER_AGENT_MCP_V2_HOST_BIND:-127.0.0.1}:${SUPER_AGENT_MCP_V2_HOST_PORT:-3203}:3103'
     depends_on:
       llm-gateway-v2:
         condition: service_started
@@ -61,9 +61,9 @@ services:
     healthcheck:
       test:
         [
-          "CMD",
-          "node",
-          "-e",
+          'CMD',
+          'node',
+          '-e',
           "fetch('http://127.0.0.1:3103/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
         ]
       interval: 30s
@@ -77,18 +77,18 @@ services:
     env_file:
       - ../.env
     environment:
-      LLM_GATEWAY_PORT: "3110"
+      LLM_GATEWAY_PORT: '3110'
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
       REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379/0
       REDIS_PASSWORD: ${REDIS_PASSWORD}
       SUPABASE_URL: ${SUPABASE_URL}
       SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY}
       CONTEXT_BUILDER_URL: http://context-builder-v2:3112
-      LLM_GATEWAY_REPO_CONTEXT: "true"
+      LLM_GATEWAY_REPO_CONTEXT: 'true'
       OLLAMA_URL: ${OLLAMA_URL}
       OLLAMA_MODEL: ${OLLAMA_MODEL}
     ports:
-      - "${SUPER_AGENT_LLM_GATEWAY_V2_HOST_BIND:-127.0.0.1}:${SUPER_AGENT_LLM_GATEWAY_V2_HOST_PORT:-3210}:3110"
+      - '${SUPER_AGENT_LLM_GATEWAY_V2_HOST_BIND:-127.0.0.1}:${SUPER_AGENT_LLM_GATEWAY_V2_HOST_PORT:-3210}:3110'
     depends_on:
       redis:
         condition: service_healthy
@@ -100,9 +100,9 @@ services:
     healthcheck:
       test:
         [
-          "CMD",
-          "node",
-          "-e",
+          'CMD',
+          'node',
+          '-e',
           "fetch('http://127.0.0.1:3110/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
         ]
       interval: 30s
@@ -120,14 +120,14 @@ services:
       HERMES_ENABLED: ${HERMES_ENABLED:-false}
       OPSLY_ORCHESTRATOR_ROLE: ${OPSLY_ORCHESTRATOR_ROLE:-control}
       OPSLY_ORCHESTRATOR_MODE: ${OPSLY_ORCHESTRATOR_MODE:-queue-only}
-      ORCHESTRATOR_HEALTH_PORT: "3111"
+      ORCHESTRATOR_HEALTH_PORT: '3111'
       ORCHESTRATOR_LLM_GATEWAY_URL: http://llm-gateway-v2:3110
       OPSLY_API_INTERNAL_URL: ${OPSLY_API_INTERNAL_URL:-http://app:3000}
       REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379/0
       REDIS_PASSWORD: ${REDIS_PASSWORD}
       PLATFORM_ADMIN_TOKEN: ${PLATFORM_ADMIN_TOKEN}
     ports:
-      - "${SUPER_AGENT_ORCHESTRATOR_V2_HOST_BIND:-127.0.0.1}:${SUPER_AGENT_ORCHESTRATOR_V2_HOST_PORT:-3211}:3111"
+      - '${SUPER_AGENT_ORCHESTRATOR_V2_HOST_BIND:-127.0.0.1}:${SUPER_AGENT_ORCHESTRATOR_V2_HOST_PORT:-3211}:3111'
     depends_on:
       redis:
         condition: service_healthy
@@ -139,9 +139,9 @@ services:
     healthcheck:
       test:
         [
-          "CMD",
-          "node",
-          "-e",
+          'CMD',
+          'node',
+          '-e',
           "fetch('http://127.0.0.1:3111/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
         ]
       interval: 30s

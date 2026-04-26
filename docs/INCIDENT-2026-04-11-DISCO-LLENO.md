@@ -34,14 +34,14 @@ Orden de **tens de minutos** (incl. análisis y documentación).
 
 ## Prevención (en repo)
 
-| Medida | Ubicación |
-|--------|-----------|
-| Limpieza programada (ligera / diaria / agresiva semanal) | `infra/cron/opsly-cleanup`, `scripts/vps-cleanup-robust.sh`, `scripts/install-vps-cleanup.sh` |
-| Alertas por umbral de disco (80 / 90 / 95 %) + Discord opcional | `scripts/disk-alert.sh` |
-| Política de retención | `docs/RETENTION-POLICY.md` |
-| Informe de uso de disco | `docs/DISK-USAGE-REPORT.md` |
-| Servicios pesados (Ollama / OpenClaw / migración) | `docs/HEAVY-SERVICES-DECISION.md` |
-| Smoke post-cambios | `scripts/verify-platform-smoke.sh` |
+| Medida                                                          | Ubicación                                                                                     |
+| --------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| Limpieza programada (ligera / diaria / agresiva semanal)        | `infra/cron/opsly-cleanup`, `scripts/vps-cleanup-robust.sh`, `scripts/install-vps-cleanup.sh` |
+| Alertas por umbral de disco (80 / 90 / 95 %) + Discord opcional | `scripts/disk-alert.sh`                                                                       |
+| Política de retención                                           | `docs/RETENTION-POLICY.md`                                                                    |
+| Informe de uso de disco                                         | `docs/DISK-USAGE-REPORT.md`                                                                   |
+| Servicios pesados (Ollama / OpenClaw / migración)               | `docs/HEAVY-SERVICES-DECISION.md`                                                             |
+| Smoke post-cambios                                              | `scripts/verify-platform-smoke.sh`                                                            |
 
 **Instalación en el VPS:** el cron y logrotate requieren **`sudo bash /opt/opsly/scripts/install-vps-cleanup.sh`** si aún no se ejecutó (ver `docs/OPS-CLEANUP-PROCEDURES.md`).
 
@@ -49,11 +49,11 @@ Orden de **tens de minutos** (incl. análisis y documentación).
 
 ## Métricas (orden de magnitud)
 
-| Métrica | Antes (crítico) | Después |
-|---------|------------------|---------|
-| Uso `df /` | ~98–99 % | ~82 % |
-| Libre | ~0,8–1,3 GiB | ~9 GiB |
-| Imágenes (`docker images`) | 47 | 33 |
+| Métrica                    | Antes (crítico) | Después |
+| -------------------------- | --------------- | ------- |
+| Uso `df /`                 | ~98–99 %        | ~82 %   |
+| Libre                      | ~0,8–1,3 GiB    | ~9 GiB  |
+| Imágenes (`docker images`) | 47              | 33      |
 
 ## Lecciones
 

@@ -9,11 +9,11 @@
  *
  * ESLint 9 usa este archivo; .eslintrc.json se integra vía FlatCompat para una sola fuente de reglas.
  */
-import { FlatCompat } from "@eslint/eslintrc";
-import js from "@eslint/js";
-import { createRequire } from "node:module";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
+import { FlatCompat } from '@eslint/eslintrc';
+import js from '@eslint/js';
+import { createRequire } from 'node:module';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const require = createRequire(import.meta.url);
@@ -23,18 +23,18 @@ const compat = new FlatCompat({
   allConfig: js.configs.all,
 });
 
-const eslintrc = require("./.eslintrc.json");
+const eslintrc = require('./.eslintrc.json');
 
 export default [
   {
     ignores: [
-      "apps/admin/**",
-      "apps/web/**",
-      "**/node_modules/**",
-      "**/.next/**",
-      "**/dist/**",
-      "coverage/**",
-      "apps/api/next-env.d.ts",
+      'apps/admin/**',
+      'apps/web/**',
+      '**/node_modules/**',
+      '**/.next/**',
+      '**/dist/**',
+      'coverage/**',
+      'apps/api/next-env.d.ts',
     ],
   },
   ...compat.config(eslintrc),

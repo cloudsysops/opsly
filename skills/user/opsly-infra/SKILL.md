@@ -82,13 +82,13 @@ CMD ["node", "dist/src/server.js"]
 
 Todos los servicios **deben** tener `deploy.resources.limits.memory`. Valores típicos:
 
-| Servicio | Memory | Servicio | Memory |
-|---|---|---|---|
-| api | 768M | llm-gateway | 1G |
-| admin | 512M | orchestrator | 1G |
-| portal | 512M | hermes | 512M |
-| mcp | 256M | redis | 384M |
-| traefik | 256M | n8n | 512M |
+| Servicio | Memory | Servicio     | Memory |
+| -------- | ------ | ------------ | ------ |
+| api      | 768M   | llm-gateway  | 1G     |
+| admin    | 512M   | orchestrator | 1G     |
+| portal   | 512M   | hermes       | 512M   |
+| mcp      | 256M   | redis        | 384M   |
+| traefik  | 256M   | n8n          | 512M   |
 
 ## VPS — Operaciones
 
@@ -129,11 +129,11 @@ ssh vps-dragon@100.120.151.91 "df -h / && docker system df"
 
 ## Errores comunes
 
-| Error | Causa | Solución |
-|-------|-------|----------|
-| Invalid YAML | Anchor mal formado | `docker-compose config` para validar |
-| OOM killed | Sin memory limit | Agregar `deploy.resources.limits.memory` |
-| SSH timeout | IP pública en vez de Tailscale | Usar `100.120.151.91` |
-| pipefail exit | Comando falla sin set -e | `set -euo pipefail` siempre |
-| secrets leaked | echo de variable sensible | Usar `log` sin valores, Doppler para secrets |
-| Multi-stage roto | Runner sin artifacts | Copiar `node_modules` desde builder |
+| Error            | Causa                          | Solución                                     |
+| ---------------- | ------------------------------ | -------------------------------------------- |
+| Invalid YAML     | Anchor mal formado             | `docker-compose config` para validar         |
+| OOM killed       | Sin memory limit               | Agregar `deploy.resources.limits.memory`     |
+| SSH timeout      | IP pública en vez de Tailscale | Usar `100.120.151.91`                        |
+| pipefail exit    | Comando falla sin set -e       | `set -euo pipefail` siempre                  |
+| secrets leaked   | echo de variable sensible      | Usar `log` sin valores, Doppler para secrets |
+| Multi-stage roto | Runner sin artifacts           | Copiar `node_modules` desde builder          |

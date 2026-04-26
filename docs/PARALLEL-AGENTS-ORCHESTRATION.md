@@ -19,14 +19,14 @@ This document explains how **6 jobs are executed in parallel** across Cursor (co
 
 ## Job Registry
 
-| Job ID | Type | Assignee | Priority | Depends On | Timeout |
-|--------|------|----------|----------|-----------|---------|
-| **001** | code-task | Cursor #1 | 0 (HIGH) | none | 30m |
-| **002** | ssh-script | Cursor #1 | 0 (HIGH) | none | 25m |
-| **003** | code-task | Cursor #2 | 10k | 002 | 40m |
-| **004** | env-config | Copilot | 0 (HIGH) | none | 5m |
-| **005** | test-suite | Copilot | 0 (HIGH) | 001,002,003,004 | 20m |
-| **006** | docs-update | Copilot | 50k | 005 | 10m |
+| Job ID  | Type        | Assignee  | Priority | Depends On      | Timeout |
+| ------- | ----------- | --------- | -------- | --------------- | ------- |
+| **001** | code-task   | Cursor #1 | 0 (HIGH) | none            | 30m     |
+| **002** | ssh-script  | Cursor #1 | 0 (HIGH) | none            | 25m     |
+| **003** | code-task   | Cursor #2 | 10k      | 002             | 40m     |
+| **004** | env-config  | Copilot   | 0 (HIGH) | none            | 5m      |
+| **005** | test-suite  | Copilot   | 0 (HIGH) | 001,002,003,004 | 20m     |
+| **006** | docs-update | Copilot   | 50k      | 005             | 10m     |
 
 ---
 
@@ -62,15 +62,19 @@ COMPLETION (~90 minutes from start of execution)
 ### For Cursor (Code Agent)
 
 1. **Check BullMQ queue:**
+
    ```bash
    redis-cli -n 0 ZRANGE bull:openclaw:pending 0 -1
    ```
+
    You'll see: `job-001-docker-optimize`, `job-002-ollama-worker-setup`, etc.
 
 2. **Read job payload:**
+
    ```bash
    redis-cli -n 0 HGET bull:openclaw:job-001-docker-optimize data
    ```
+
    Payload includes: `title`, `files`, `instructions`, `validation` steps.
 
 3. **Execute the task:**
@@ -128,6 +132,7 @@ All payloads are stored as Redis HASHES. Each contains:
 3. **Dependency tracking** — stored in `job.depends_on` array for external orchestration
 
 **Timeline guarantees:**
+
 - Jobs 001-002 start immediately (priority=0, no deps)
 - Job 003 can start after 002 completes (Cursor sequencing)
 - Jobs 004 starts immediately (priority=0, no deps)
@@ -201,15 +206,15 @@ curl -sf http://100.80.41.29:11434/api/tags | jq .
 
 ## Reference Files
 
-| File | Purpose |
-|------|---------|
-| `docs/adr/ADR-031-token-optimization-ollama-primary.md` | Architecture decision |
-| `config/parallel-agent-jobs.yaml` | Full job manifest with all payloads |
-| `scripts/execute-parallel-agents-adr025.sh` | BullMQ enqueuer script |
-| `scripts/verify-token-tracking.sh` | Hermes validation helper |
-| `scripts/test-fallback-claude.sh` | Fallback scenario test |
-| `docs/PLAN-OLLAMA-WORKER-2026-04-14.md` | Detailed ADR-024 phases |
-| `docs/AGENTS.md` | Session state + decisions log |
+| File                                                    | Purpose                             |
+| ------------------------------------------------------- | ----------------------------------- |
+| `docs/adr/ADR-031-token-optimization-ollama-primary.md` | Architecture decision               |
+| `config/parallel-agent-jobs.yaml`                       | Full job manifest with all payloads |
+| `scripts/execute-parallel-agents-adr025.sh`             | BullMQ enqueuer script              |
+| `scripts/verify-token-tracking.sh`                      | Hermes validation helper            |
+| `scripts/test-fallback-claude.sh`                       | Fallback scenario test              |
+| `docs/PLAN-OLLAMA-WORKER-2026-04-14.md`                 | Detailed ADR-024 phases             |
+| `docs/AGENTS.md`                                        | Session state + decisions log       |
 
 ---
 
@@ -233,6 +238,7 @@ redis-cli -n 0 ZRANGE bull:openclaw:pending 0 -1
 ## Troubleshooting
 
 ### "redis-cli not found"
+
 ```bash
 # Install redis-tools (Debian/Ubuntu)
 apt-get install redis-tools
@@ -242,17 +248,20 @@ docker exec opsly-redis redis-cli -n 0 ZRANGE bull:openclaw:pending 0 -1
 ```
 
 ### "Job stuck in pending"
+
 1. Check Cursor/Copilot agent is running
 2. Verify worker process: `ps aux | grep orchestrator`
 3. Check logs for error messages
 4. Re-enqueue job: `./scripts/execute-parallel-agents-adr025.sh`
 
 ### "Cost tracking not working"
+
 1. Verify hermes.ts has cost_usd field
 2. Check llm-gateway logs: `grep -i cost logs/llm-gateway.log`
 3. Query Supabase: `SELECT * FROM platform.usage_events LIMIT 1`
 
 ### "Ollama fallback not triggered"
+
 1. Manually stop Ollama: `docker compose down ollama`
 2. Enqueue test job
 3. Check gateway logs for fallback message

@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import useSWR from "swr";
-import { getTenants } from "@/lib/api-client";
+import useSWR from 'swr';
+import { getTenants } from '@/lib/api-client';
 
 export function useFailedTenantCount(): {
   count: number | undefined;
@@ -9,9 +9,9 @@ export function useFailedTenantCount(): {
   isLoading: boolean;
 } {
   const { data, error, isLoading } = useSWR(
-    ["tenants-failed-count"],
-    () => getTenants({ page: 1, limit: 1, status: "failed" }),
-    { revalidateOnFocus: false, refreshInterval: 60_000 },
+    ['tenants-failed-count'],
+    () => getTenants({ page: 1, limit: 1, status: 'failed' }),
+    { revalidateOnFocus: false, refreshInterval: 60_000 }
   );
   return {
     count: data?.total,

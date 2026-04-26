@@ -61,14 +61,14 @@ flowchart TB
 
 ## Especificaciones orientativas (e2-micro)
 
-| Componente | Valor típico |
-|------------|----------------|
-| Tipo de VM | `e2-micro` |
-| vCPU | Compartida (elegibilidad Free Tier según región/cuenta) |
-| RAM | 1 GB |
-| Disco boot | 30 GB estándar (pd-standard) |
-| Región ejemplo | `us-central1` (ajustar a tu LB y latencia) |
-| Costo | Depende de cuenta; no asumir “$0 para siempre” |
+| Componente     | Valor típico                                            |
+| -------------- | ------------------------------------------------------- |
+| Tipo de VM     | `e2-micro`                                              |
+| vCPU           | Compartida (elegibilidad Free Tier según región/cuenta) |
+| RAM            | 1 GB                                                    |
+| Disco boot     | 30 GB estándar (pd-standard)                            |
+| Región ejemplo | `us-central1` (ajustar a tu LB y latencia)              |
+| Costo          | Depende de cuenta; no asumir “$0 para siempre”          |
 
 ## Limitaciones operativas
 
@@ -91,21 +91,21 @@ Validar cuotas y facturación antes de escalar.
 
 ## Artefactos en el repo
 
-| Artefacto | Uso |
-|-----------|-----|
-| `infra/provision-gcp-failover.sh` | Crear VM y APIs (con `--dry-run`) |
-| `infra/gcp-failover-startup.sh` | Script de arranque referenciado por metadata |
-| `scripts/sync-to-gcp.sh` | Sincronización código/artefactos (requiere SSH y política aprobada) |
-| `scripts/configure-cloudflare-lb.sh` | Actualizar orígenes del pool (con `--dry-run`) |
-| `GET /api/health/lightweight` | Health mínimo para LB barato en CPU |
+| Artefacto                            | Uso                                                                 |
+| ------------------------------------ | ------------------------------------------------------------------- |
+| `infra/provision-gcp-failover.sh`    | Crear VM y APIs (con `--dry-run`)                                   |
+| `infra/gcp-failover-startup.sh`      | Script de arranque referenciado por metadata                        |
+| `scripts/sync-to-gcp.sh`             | Sincronización código/artefactos (requiere SSH y política aprobada) |
+| `scripts/configure-cloudflare-lb.sh` | Actualizar orígenes del pool (con `--dry-run`)                      |
+| `GET /api/health/lightweight`        | Health mínimo para LB barato en CPU                                 |
 
 ## Comparación rápida con segundo VPS DO
 
-| | GCP e2-micro (standby) | Segundo DO 4 GB |
-|--|------------------------|------------------|
-| Coste | Variable (créditos/free tier) | Fijo mensual |
-| Paridad con primario | Suele ser menor (RAM) | Alta |
-| Complejidad | Dos proveedores + facturación GCP | Homogéneo DO |
+|                      | GCP e2-micro (standby)            | Segundo DO 4 GB |
+| -------------------- | --------------------------------- | --------------- |
+| Coste                | Variable (créditos/free tier)     | Fijo mensual    |
+| Paridad con primario | Suele ser menor (RAM)             | Alta            |
+| Complejidad          | Dos proveedores + facturación GCP | Homogéneo DO    |
 
 ---
 

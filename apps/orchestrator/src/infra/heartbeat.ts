@@ -1,10 +1,10 @@
-import { getOrchestratorRedis } from "../metering/redis-client.js";
+import { getOrchestratorRedis } from '../metering/redis-client.js';
 
 const HEARTBEAT_TTL_SECONDS = 60;
 
 export async function recordOrchestratorHeartbeat(
   serviceName: string,
-  metadata: Record<string, unknown> = {},
+  metadata: Record<string, unknown> = {}
 ): Promise<void> {
   const redis = getOrchestratorRedis();
   if (!redis) {
@@ -15,5 +15,5 @@ export async function recordOrchestratorHeartbeat(
     ts: Date.now(),
     metadata,
   });
-  await redis.set(key, payload, "EX", HEARTBEAT_TTL_SECONDS);
+  await redis.set(key, payload, 'EX', HEARTBEAT_TTL_SECONDS);
 }

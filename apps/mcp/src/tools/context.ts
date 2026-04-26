@@ -1,11 +1,11 @@
-import { z } from "zod";
+import { z } from 'zod';
 import {
   getAvailableStaticContextResources,
   listAdrResources,
   readAdrResource,
   readStaticContextResource,
-} from "../context-resources.js";
-import type { ToolDefinition } from "../types/index.js";
+} from '../context-resources.js';
+import type { ToolDefinition } from '../types/index.js';
 
 type ReadContextInput = {
   uri: string;
@@ -19,12 +19,12 @@ export const contextTools: [
   ToolDefinition<Record<string, never>, { resources: unknown[] }>,
   ToolDefinition<ReadContextInput, { resource: unknown; text: string }>,
   ToolDefinition<Record<string, never>, { adrs: unknown[] }>,
-  ToolDefinition<ReadAdrInput, { adr: unknown; text: string }>
+  ToolDefinition<ReadAdrInput, { adr: unknown; text: string }>,
 ] = [
   {
-    name: "list_context_resources",
+    name: 'list_context_resources',
     description:
-      "Lista resources de contexto estático de Opsly (AGENTS, VISION, system_state, etc.)",
+      'Lista resources de contexto estático de Opsly (AGENTS, VISION, system_state, etc.)',
     inputSchema: z.object({}),
     handler: async () => {
       const resources = getAvailableStaticContextResources().map((entry) => ({
@@ -38,10 +38,10 @@ export const contextTools: [
     },
   },
   {
-    name: "read_context_resource",
-    description: "Lee un resource de contexto estático por URI",
+    name: 'read_context_resource',
+    description: 'Lee un resource de contexto estático por URI',
     inputSchema: z.object({
-      uri: z.string().min(1).describe("URI (ej. opsly://context/agents)"),
+      uri: z.string().min(1).describe('URI (ej. opsly://context/agents)'),
     }),
     handler: async ({ uri }: ReadContextInput) => {
       const { resource, text } = readStaticContextResource(uri);
@@ -58,8 +58,8 @@ export const contextTools: [
     },
   },
   {
-    name: "list_adrs",
-    description: "Lista Architecture Decision Records disponibles en docs/adr",
+    name: 'list_adrs',
+    description: 'Lista Architecture Decision Records disponibles en docs/adr',
     inputSchema: z.object({}),
     handler: async () => {
       const adrs = listAdrResources().map((entry) => ({
@@ -73,10 +73,10 @@ export const contextTools: [
     },
   },
   {
-    name: "read_adr",
-    description: "Lee un ADR por slug o nombre de archivo",
+    name: 'read_adr',
+    description: 'Lee un ADR por slug o nombre de archivo',
     inputSchema: z.object({
-      slug: z.string().min(1).describe("Ej: ADR-024-ollama-local-worker-primary"),
+      slug: z.string().min(1).describe('Ej: ADR-024-ollama-local-worker-primary'),
     }),
     handler: async ({ slug }: ReadAdrInput) => {
       const { resource, text } = readAdrResource(slug);

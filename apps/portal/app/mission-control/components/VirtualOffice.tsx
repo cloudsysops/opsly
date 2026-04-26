@@ -1,17 +1,17 @@
-"use client";
+'use client';
 
-import { Grid, OrbitControls } from "@react-three/drei";
-import { Canvas } from "@react-three/fiber";
-import { Suspense, useCallback, useMemo, useState } from "react";
-import useSWR from "swr";
+import { Grid, OrbitControls } from '@react-three/drei';
+import { Canvas } from '@react-three/fiber';
+import { Suspense, useCallback, useMemo, useState } from 'react';
+import useSWR from 'swr';
 
 import {
   apiSprintToAvatar,
   type ActiveSprint,
   type ActiveSprintsPayload,
-} from "@/lib/mission-control-types";
+} from '@/lib/mission-control-types';
 
-import { AgentAvatar } from "./AgentAvatar";
+import { AgentAvatar } from './AgentAvatar';
 
 export type VirtualOfficeProps = {
   readonly accessToken: string;
@@ -26,15 +26,12 @@ function layoutPositions(count: number): [number, number, number][] {
   return Array.from({ length: count }, (_, i) => [start + i * spacing, 0.5, 0]);
 }
 
-async function fetchActiveSprints(
-  url: string,
-  token: string,
-): Promise<ActiveSprintsPayload> {
+async function fetchActiveSprints(url: string, token: string): Promise<ActiveSprintsPayload> {
   const res = await fetch(url, {
-    cache: "no-store",
+    cache: 'no-store',
     headers: {
       Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     },
   });
   if (!res.ok) {
@@ -55,7 +52,7 @@ function OfficeScene({ sprints, selectedId, onSelect }: OfficeSceneProps) {
 
   return (
     <>
-      <color attach="background" args={["#020617"]} />
+      <color attach="background" args={['#020617']} />
       <ambientLight intensity={0.5} />
       <directionalLight
         castShadow
@@ -109,9 +106,7 @@ function OfficeScene({ sprints, selectedId, onSelect }: OfficeSceneProps) {
 export function VirtualOffice({ accessToken }: VirtualOfficeProps) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
-  const swrKey = accessToken
-    ? (["/api/sprints/active", accessToken] as const)
-    : null;
+  const swrKey = accessToken ? (['/api/sprints/active', accessToken] as const) : null;
 
   const { data, error, isLoading } = useSWR(
     swrKey,
@@ -120,12 +115,12 @@ export function VirtualOffice({ accessToken }: VirtualOfficeProps) {
       dedupingInterval: 3_000,
       keepPreviousData: true,
       revalidateOnFocus: true,
-    },
+    }
   );
 
   const sprints: ActiveSprint[] = useMemo(
     () => (data?.sprints ?? []).map(apiSprintToAvatar),
-    [data?.sprints],
+    [data?.sprints]
   );
 
   const clearSelection = useCallback(() => {
@@ -144,7 +139,7 @@ export function VirtualOffice({ accessToken }: VirtualOfficeProps) {
     return (
       <div className="flex h-[min(70vh,560px)] w-full flex-col items-center justify-center gap-3 rounded-2xl border border-rose-500/30 bg-rose-950/20 p-6 text-center">
         <p className="font-mono text-sm text-rose-300">
-          {error instanceof Error ? error.message : "Error al cargar sprints"}
+          {error instanceof Error ? error.message : 'Error al cargar sprints'}
         </p>
       </div>
     );
@@ -155,16 +150,12 @@ export function VirtualOffice({ accessToken }: VirtualOfficeProps) {
       <Canvas
         camera={{ fov: 42, position: [0, 3.2, 9], near: 0.1, far: 80 }}
         dpr={[1, 1.75]}
-        gl={{ alpha: false, antialias: true, powerPreference: "high-performance" }}
+        gl={{ alpha: false, antialias: true, powerPreference: 'high-performance' }}
         onPointerMissed={clearSelection}
         shadows
       >
         <Suspense fallback={null}>
-          <OfficeScene
-            onSelect={setSelectedId}
-            selectedId={selectedId}
-            sprints={sprints}
-          />
+          <OfficeScene onSelect={setSelectedId} selectedId={selectedId} sprints={sprints} />
         </Suspense>
       </Canvas>
       {sprints.length === 0 ? (

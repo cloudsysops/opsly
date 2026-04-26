@@ -7,20 +7,13 @@
     "policy": "local-first",
     "providers": {
       "primary": "ollama",
-      "fallback": [
-        "openrouter",
-        "anthropic"
-      ]
+      "fallback": ["openrouter", "anthropic"]
     }
   },
   "constraints": {
     "max_total_daily_budget_usd": 5,
     "max_concurrent_agents": 3,
-    "require_approval_for": [
-      "delete_file",
-      "git_push_main",
-      "infra_change"
-    ]
+    "require_approval_for": ["delete_file", "git_push_main", "infra_change"]
   },
   "agents": [
     {
@@ -35,18 +28,8 @@
         "requests_per_minute": 6,
         "tokens_per_minute": 12000
       },
-      "allowed_tools": [
-        "plan",
-        "delegate",
-        "summarize",
-        "route_task"
-      ],
-      "allowed_paths": [
-        "apps/",
-        "config/",
-        "docs/",
-        "scripts/"
-      ]
+      "allowed_tools": ["plan", "delegate", "summarize", "route_task"],
+      "allowed_paths": ["apps/", "config/", "docs/", "scripts/"]
     },
     {
       "id": "backend-worker",
@@ -60,17 +43,8 @@
         "requests_per_minute": 5,
         "tokens_per_minute": 10000
       },
-      "allowed_tools": [
-        "read_file",
-        "write_file",
-        "run_tests",
-        "enqueue_job"
-      ],
-      "allowed_paths": [
-        "apps/api/",
-        "apps/orchestrator/",
-        "apps/llm-gateway/"
-      ]
+      "allowed_tools": ["read_file", "write_file", "run_tests", "enqueue_job"],
+      "allowed_paths": ["apps/api/", "apps/orchestrator/", "apps/llm-gateway/"]
     },
     {
       "id": "frontend-worker",
@@ -84,15 +58,8 @@
         "requests_per_minute": 5,
         "tokens_per_minute": 8000
       },
-      "allowed_tools": [
-        "read_file",
-        "write_file",
-        "run_tests"
-      ],
-      "allowed_paths": [
-        "apps/admin/",
-        "apps/portal/"
-      ]
+      "allowed_tools": ["read_file", "write_file", "run_tests"],
+      "allowed_paths": ["apps/admin/", "apps/portal/"]
     },
     {
       "id": "infra-worker",
@@ -106,17 +73,8 @@
         "requests_per_minute": 3,
         "tokens_per_minute": 6000
       },
-      "allowed_tools": [
-        "bash",
-        "docker_ps",
-        "health_check",
-        "logs_tail"
-      ],
-      "allowed_paths": [
-        "infra/",
-        "scripts/",
-        "docs/"
-      ]
+      "allowed_tools": ["bash", "docker_ps", "health_check", "logs_tail"],
+      "allowed_paths": ["infra/", "scripts/", "docs/"]
     }
   ]
 }

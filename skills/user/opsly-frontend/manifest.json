@@ -6,7 +6,11 @@
     "type": "object",
     "properties": {
       "app": { "type": "string", "enum": ["portal", "admin", "web"], "description": "App target" },
-      "type": { "type": "string", "enum": ["page", "component", "layout"], "description": "Tipo de elemento" }
+      "type": {
+        "type": "string",
+        "enum": ["page", "component", "layout"],
+        "description": "Tipo de elemento"
+      }
     },
     "additionalProperties": true
   },

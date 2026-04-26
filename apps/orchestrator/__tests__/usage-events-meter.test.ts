@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const { redis, resolveTenantUuid, getOrchestratorRedis } = vi.hoisted(() => ({
   redis: {
@@ -9,11 +9,11 @@ const { redis, resolveTenantUuid, getOrchestratorRedis } = vi.hoisted(() => ({
   getOrchestratorRedis: vi.fn(),
 }));
 
-vi.mock("../src/metering/tenant-id.js", () => ({
+vi.mock('../src/metering/tenant-id.js', () => ({
   resolveTenantUuid,
 }));
 
-vi.mock("../src/metering/redis-client.js", () => ({
+vi.mock('../src/metering/redis-client.js', () => ({
   getOrchestratorRedis,
 }));
 
@@ -21,11 +21,11 @@ import {
   drainMeteringOperations,
   meterPlannerLlmFireAndForget,
   meterRemotePlanWorkerFireAndForget,
-} from "../src/metering/usage-events-meter.js";
+} from '../src/metering/usage-events-meter.js';
 
-describe("usage-events-meter", () => {
+describe('usage-events-meter', () => {
   beforeEach(() => {
-    resolveTenantUuid.mockResolvedValue("tenant-uuid");
+    resolveTenantUuid.mockResolvedValue('tenant-uuid');
     getOrchestratorRedis.mockReturnValue(redis);
   });
 
@@ -34,9 +34,9 @@ describe("usage-events-meter", () => {
     vi.clearAllMocks();
   });
 
-  it("drains pending planner metering before shutdown", async () => {
-    meterPlannerLlmFireAndForget("acme", undefined, {
-      model_used: "haiku",
+  it('drains pending planner metering before shutdown', async () => {
+    meterPlannerLlmFireAndForget('acme', undefined, {
+      model_used: 'haiku',
       tokens_input: 10,
       tokens_output: 5,
     });
@@ -45,16 +45,16 @@ describe("usage-events-meter", () => {
 
     await drainMeteringOperations();
 
-    expect(resolveTenantUuid).toHaveBeenCalledWith("acme", undefined);
-    expect(redis.incrby).toHaveBeenCalledWith("usage:tenant-uuid:ai_tokens", 15);
+    expect(resolveTenantUuid).toHaveBeenCalledWith('acme', undefined);
+    expect(redis.incrby).toHaveBeenCalledWith('usage:tenant-uuid:ai_tokens', 15);
   });
 
-  it("drains pending cpu metering before shutdown", async () => {
-    meterRemotePlanWorkerFireAndForget("acme", "tenant-hint", 3.5);
+  it('drains pending cpu metering before shutdown', async () => {
+    meterRemotePlanWorkerFireAndForget('acme', 'tenant-hint', 3.5);
 
     await drainMeteringOperations();
 
-    expect(resolveTenantUuid).toHaveBeenCalledWith("acme", "tenant-hint");
-    expect(redis.incrbyfloat).toHaveBeenCalledWith("usage:tenant-uuid:cpu_seconds", 3.5);
+    expect(resolveTenantUuid).toHaveBeenCalledWith('acme', 'tenant-hint');
+    expect(redis.incrbyfloat).toHaveBeenCalledWith('usage:tenant-uuid:cpu_seconds', 3.5);
   });
 });

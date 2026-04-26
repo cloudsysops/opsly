@@ -1,13 +1,13 @@
-import { randomUUID } from "node:crypto";
-import type { IncomingMessage, ServerResponse } from "node:http";
+import { randomUUID } from 'node:crypto';
+import type { IncomingMessage, ServerResponse } from 'node:http';
 import {
   approvalDecisionSchema,
   approvalGateRequestSchema,
   type ApprovalGateResponse,
-} from "@intcloudsysops/types";
-import { analyzeComplexity } from "./complexity.js";
-import { llmCallDirect } from "./llm-direct.js";
-import type { LLMRequest } from "./types.js";
+} from '@intcloudsysops/types';
+import { analyzeComplexity } from './complexity.js';
+import { llmCallDirect } from './llm-direct.js';
+import type { LLMRequest } from './types.js';
 
 const DEFAULT_GATES = {
   min_success_rate: 95,
@@ -26,13 +26,13 @@ Rules:
 function readBody(req: IncomingMessage): Promise<string> {
   return new Promise((resolve, reject) => {
     const chunks: Buffer[] = [];
-    req.on("data", (c: Buffer) => {
+    req.on('data', (c: Buffer) => {
       chunks.push(c);
     });
-    req.on("end", () => {
-      resolve(Buffer.concat(chunks).toString("utf8"));
+    req.on('end', () => {
+      resolve(Buffer.concat(chunks).toString('utf8'));
     });
-    req.on("error", reject);
+    req.on('error', reject);
   });
 }
 
@@ -57,27 +57,27 @@ function buildUserPrompt(
     min_success_rate: number;
     max_response_time_ms: number;
     max_critical_errors: number;
-  },
+  }
 ): string {
   return [
     `sandbox_run_id: ${sandbox_run_id}`,
-    "",
-    "Metrics:",
+    '',
+    'Metrics:',
     JSON.stringify(metrics, null, 2),
-    "",
-    "Quality gates (thresholds):",
+    '',
+    'Quality gates (thresholds):',
     JSON.stringify(gates, null, 2),
-    "",
-    "Decide whether this run should proceed toward QA deployment.",
-  ].join("\n");
+    '',
+    'Decide whether this run should proceed toward QA deployment.',
+  ].join('\n');
 }
 
 export async function handleApprovalAnalyzeHttp(
   req: IncomingMessage,
-  res: ServerResponse,
+  res: ServerResponse
 ): Promise<boolean> {
-  const pathOnly = req.url?.split("?")[0] ?? "/";
-  if (pathOnly !== "/v1/approval-analyze" || req.method !== "POST") {
+  const pathOnly = req.url?.split('?')[0] ?? '/';
+  if (pathOnly !== '/v1/approval-analyze' || req.method !== 'POST') {
     return false;
   }
 
@@ -85,8 +85,8 @@ export async function handleApprovalAnalyzeHttp(
   try {
     bodyRaw = await readBody(req);
   } catch {
-    res.writeHead(400, { "Content-Type": "application/json" });
-    res.end(JSON.stringify({ error: "invalid body" }));
+    res.writeHead(400, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'invalid body' }));
     return true;
   }
 
@@ -94,19 +94,19 @@ export async function handleApprovalAnalyzeHttp(
   try {
     parsed = JSON.parse(bodyRaw) as unknown;
   } catch {
-    res.writeHead(400, { "Content-Type": "application/json" });
-    res.end(JSON.stringify({ error: "JSON parse error" }));
+    res.writeHead(400, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'JSON parse error' }));
     return true;
   }
 
   const requestCheck = approvalGateRequestSchema.safeParse(parsed);
   if (!requestCheck.success) {
-    res.writeHead(400, { "Content-Type": "application/json" });
+    res.writeHead(400, { 'Content-Type': 'application/json' });
     res.end(
       JSON.stringify({
-        error: "validation_error",
+        error: 'validation_error',
         details: requestCheck.error.flatten(),
-      }),
+      })
     );
     return true;
   }
@@ -123,13 +123,13 @@ export async function handleApprovalAnalyzeHttp(
   });
 
   const llmReq: LLMRequest = {
-    tenant_slug: "platform",
+    tenant_slug: 'platform',
     request_id: randomUUID(),
-    model: "sonnet",
-    messages: [{ role: "user", content: userPrompt }],
+    model: 'sonnet',
+    messages: [{ role: 'user', content: userPrompt }],
     system: APPROVAL_SYSTEM,
     legacy_pipeline: true,
-    routing_bias: "quality",
+    routing_bias: 'quality',
     max_tokens: 500,
     temperature: 0,
     skip_repo_context: true,
@@ -142,19 +142,21 @@ export async function handleApprovalAnalyzeHttp(
     try {
       jsonParsed = JSON.parse(inner) as unknown;
     } catch {
-      res.writeHead(502, { "Content-Type": "application/json" });
-      res.end(JSON.stringify({ error: "approval_invalid_json", message: "LLM did not return JSON" }));
+      res.writeHead(502, { 'Content-Type': 'application/json' });
+      res.end(
+        JSON.stringify({ error: 'approval_invalid_json', message: 'LLM did not return JSON' })
+      );
       return true;
     }
 
     const decisionCheck = approvalDecisionSchema.safeParse(jsonParsed);
     if (!decisionCheck.success) {
-      res.writeHead(502, { "Content-Type": "application/json" });
+      res.writeHead(502, { 'Content-Type': 'application/json' });
       res.end(
         JSON.stringify({
-          error: "approval_invalid_shape",
+          error: 'approval_invalid_shape',
           details: decisionCheck.error.flatten(),
-        }),
+        })
       );
       return true;
     }
@@ -167,12 +169,12 @@ export async function handleApprovalAnalyzeHttp(
       timestamp: new Date().toISOString(),
     };
 
-    res.writeHead(200, { "Content-Type": "application/json" });
+    res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify(payload));
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
-    res.writeHead(502, { "Content-Type": "application/json" });
-    res.end(JSON.stringify({ error: "approval_analyze_failed", message: msg }));
+    res.writeHead(502, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'approval_analyze_failed', message: msg }));
   }
   return true;
 }

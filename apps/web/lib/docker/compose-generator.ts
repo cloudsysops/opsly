@@ -1,5 +1,5 @@
-import { mkdir, writeFile } from "node:fs/promises";
-import { join } from "node:path";
+import { mkdir, writeFile } from 'node:fs/promises';
+import { join } from 'node:path';
 
 function requireEnv(name: string): string {
   const value = process.env[name];
@@ -10,21 +10,21 @@ function requireEnv(name: string): string {
 }
 
 function yamlDoubleQuoted(value: string): string {
-  const escaped = value.replaceAll("\\", "\\\\").replaceAll('"', '\\"');
+  const escaped = value.replaceAll('\\', '\\\\').replaceAll('"', '\\"');
   return `"${escaped}"`;
 }
 
 export function generateCompose(slug: string, ports: Record<string, number>): string {
-  const baseDomain = requireEnv("PLATFORM_BASE_DOMAIN");
+  const baseDomain = requireEnv('PLATFORM_BASE_DOMAIN');
   const n8nPort = ports.n8n;
   const uptimePort = ports.uptime_kuma;
 
-  if (typeof n8nPort !== "number" || typeof uptimePort !== "number") {
-    throw new Error("compose requires ports.n8n and ports.uptime_kuma");
+  if (typeof n8nPort !== 'number' || typeof uptimePort !== 'number') {
+    throw new Error('compose requires ports.n8n and ports.uptime_kuma');
   }
 
-  const n8nService = `n8n_${slug.replace(/-/g, "_")}`;
-  const uptimeService = `uptime_${slug.replace(/-/g, "_")}`;
+  const n8nService = `n8n_${slug.replace(/-/g, '_')}`;
+  const uptimeService = `uptime_${slug.replace(/-/g, '_')}`;
   const n8nHost = `n8n.${slug}.${baseDomain}`;
   const statusHost = `status.${slug}.${baseDomain}`;
 
@@ -64,13 +64,10 @@ export function generateCompose(slug: string, ports: Record<string, number>): st
 `;
 }
 
-export async function writeComposeFile(
-  slug: string,
-  content: string,
-): Promise<string> {
-  const dir = join("/opt/opsly/tenants", slug);
+export async function writeComposeFile(slug: string, content: string): Promise<string> {
+  const dir = join('/opt/opsly/tenants', slug);
   await mkdir(dir, { recursive: true });
-  const filePath = join(dir, "docker-compose.yml");
-  await writeFile(filePath, content, "utf8");
+  const filePath = join(dir, 'docker-compose.yml');
+  await writeFile(filePath, content, 'utf8');
   return filePath;
 }

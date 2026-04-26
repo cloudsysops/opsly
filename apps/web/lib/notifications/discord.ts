@@ -1,4 +1,4 @@
-import type { Tenant } from "../supabase/types";
+import type { Tenant } from '../supabase/types';
 
 function getWebhookUrl(): string | null {
   const url = process.env.DISCORD_WEBHOOK_URL;
@@ -12,8 +12,8 @@ async function postDiscord(content: string): Promise<void> {
   }
 
   const response = await fetch(webhookUrl, {
-    method: "POST",
-    headers: { "content-type": "application/json" },
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
     body: JSON.stringify({ content }),
   });
 
@@ -25,7 +25,7 @@ async function postDiscord(content: string): Promise<void> {
 
 export async function notifyTenantCreated(tenant: Tenant): Promise<void> {
   await postDiscord(
-    `**Tenant created** — \`${tenant.slug}\` (${tenant.plan}) for ${tenant.owner_email}`,
+    `**Tenant created** — \`${tenant.slug}\` (${tenant.plan}) for ${tenant.owner_email}`
   );
 }
 

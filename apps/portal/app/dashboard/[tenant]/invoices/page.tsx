@@ -28,18 +28,12 @@ interface InvoiceListResponse {
   limit: number;
 }
 
-async function fetchInvoices(
-  token: string,
-  tenantId: string,
-): Promise<InvoiceListResponse> {
+async function fetchInvoices(token: string, tenantId: string): Promise<InvoiceListResponse> {
   const base = getApiBaseUrl();
-  const res = await fetch(
-    `${base}/api/billing/invoices?tenant_id=${tenantId}&limit=50`,
-    {
-      headers: { Authorization: `Bearer ${token}` },
-      cache: 'no-store',
-    },
-  );
+  const res = await fetch(`${base}/api/billing/invoices?tenant_id=${tenantId}&limit=50`, {
+    headers: { Authorization: `Bearer ${token}` },
+    cache: 'no-store',
+  });
 
   if (!res.ok) {
     return { data: [], total: 0, page: 1, limit: 50 };
@@ -48,10 +42,7 @@ async function fetchInvoices(
   return (await res.json()) as InvoiceListResponse;
 }
 
-async function resolveTenantId(
-  token: string,
-  slug: string,
-): Promise<string | null> {
+async function resolveTenantId(token: string, slug: string): Promise<string | null> {
   const base = getApiBaseUrl();
   const res = await fetch(`${base}/api/tenants?status=active&limit=100`, {
     headers: { Authorization: `Bearer ${token}` },
@@ -88,13 +79,9 @@ export default async function InvoicesPage({
     <PortalShell title={`Facturación — ${tenant}`} showModeLink>
       <DashboardShell>
         <div className="flex items-center justify-between">
-          <h1 className="font-sans text-xl font-semibold text-neutral-100">
-            Facturas
-          </h1>
+          <h1 className="font-sans text-xl font-semibold text-neutral-100">Facturas</h1>
           <Button variant="primary" size="sm" asChild>
-            <Link href={`/dashboard/${tenant}/invoices/new`}>
-              + Nueva Factura
-            </Link>
+            <Link href={`/dashboard/${tenant}/invoices/new`}>+ Nueva Factura</Link>
           </Button>
         </div>
 

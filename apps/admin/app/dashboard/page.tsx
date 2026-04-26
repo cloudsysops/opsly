@@ -1,14 +1,14 @@
-"use client";
+'use client';
 
-import { ActivityChart } from "@/components/dashboard/ActivityChart";
-import { ActivityFeed } from "@/components/dashboard/ActivityFeed";
-import { CpuGauge } from "@/components/dashboard/CpuGauge";
-import { PlatformOverview } from "@/components/dashboard/PlatformOverview";
-import { QuickActions } from "@/components/dashboard/QuickActions";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
-import { useAuditLog } from "@/hooks/useAuditLog";
-import { useSystemMetrics } from "@/hooks/useSystemMetrics";
+import { ActivityChart } from '@/components/dashboard/ActivityChart';
+import { ActivityFeed } from '@/components/dashboard/ActivityFeed';
+import { CpuGauge } from '@/components/dashboard/CpuGauge';
+import { PlatformOverview } from '@/components/dashboard/PlatformOverview';
+import { QuickActions } from '@/components/dashboard/QuickActions';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
+import { useAuditLog } from '@/hooks/useAuditLog';
+import { useSystemMetrics } from '@/hooks/useSystemMetrics';
 
 function formatUptime(seconds: number): string {
   const d = Math.floor(seconds / 86_400);
@@ -25,21 +25,17 @@ function formatUptime(seconds: number): string {
 
 function barTone(pct: number): string {
   if (pct < 70) {
-    return "bg-[#22c55e]";
+    return 'bg-[#22c55e]';
   }
   if (pct < 90) {
-    return "bg-[#eab308]";
+    return 'bg-[#eab308]';
   }
-  return "bg-[#ef4444]";
+  return 'bg-[#ef4444]';
 }
 
 export default function DashboardPage() {
   const { data, error, isLoading } = useSystemMetrics();
-  const {
-    data: auditData,
-    error: auditError,
-    isLoading: auditLoading,
-  } = useAuditLog();
+  const { data: auditData, error: auditError, isLoading: auditLoading } = useAuditLog();
 
   const ramPct =
     data !== undefined && data.ram_total_gb > 0
@@ -55,9 +51,7 @@ export default function DashboardPage() {
       <QuickActions />
 
       <div className="flex flex-wrap items-end justify-between gap-4">
-        <h1 className="font-mono text-lg tracking-tight text-ops-green">
-          Dashboard
-        </h1>
+        <h1 className="font-mono text-lg tracking-tight text-ops-green">Dashboard</h1>
         {data?.mock === true ? (
           <span className="rounded border border-ops-yellow/40 bg-ops-yellow/10 px-2 py-1 font-mono text-xs text-ops-yellow">
             datos simulados (Prometheus no alcanzable)
@@ -106,27 +100,19 @@ export default function DashboardPage() {
                   <div className="mb-2 flex justify-between font-mono text-sm">
                     <span className="text-neutral-300">RAM</span>
                     <span className="tabular-nums text-neutral-100">
-                      {data.ram_used_gb.toFixed(2)} /{" "}
-                      {data.ram_total_gb.toFixed(2)} GB
+                      {data.ram_used_gb.toFixed(2)} / {data.ram_total_gb.toFixed(2)} GB
                     </span>
                   </div>
-                  <Progress
-                    value={ramPct}
-                    indicatorClassName={barTone(ramPct)}
-                  />
+                  <Progress value={ramPct} indicatorClassName={barTone(ramPct)} />
                 </div>
                 <div>
                   <div className="mb-2 flex justify-between font-mono text-sm">
                     <span className="text-neutral-300">Disco</span>
                     <span className="tabular-nums text-neutral-100">
-                      {data.disk_used_gb.toFixed(2)} /{" "}
-                      {data.disk_total_gb.toFixed(2)} GB
+                      {data.disk_used_gb.toFixed(2)} / {data.disk_total_gb.toFixed(2)} GB
                     </span>
                   </div>
-                  <Progress
-                    value={diskPct}
-                    indicatorClassName={barTone(diskPct)}
-                  />
+                  <Progress value={diskPct} indicatorClassName={barTone(diskPct)} />
                 </div>
               </>
             )}
@@ -143,7 +129,7 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent>
             <p className="font-mono text-2xl tabular-nums text-neutral-100">
-              {isLoading || !data ? "—" : formatUptime(data.uptime_seconds)}
+              {isLoading || !data ? '—' : formatUptime(data.uptime_seconds)}
             </p>
           </CardContent>
         </Card>
@@ -155,7 +141,7 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent>
             <p className="font-mono text-2xl tabular-nums text-ops-green">
-              {isLoading || !data ? "—" : data.active_tenants}
+              {isLoading || !data ? '—' : data.active_tenants}
             </p>
           </CardContent>
         </Card>
@@ -167,7 +153,7 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent>
             <p className="font-mono text-2xl tabular-nums text-neutral-100">
-              {isLoading || !data ? "—" : data.containers_running}
+              {isLoading || !data ? '—' : data.containers_running}
             </p>
           </CardContent>
         </Card>
@@ -178,9 +164,7 @@ export default function DashboardPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="font-mono text-sm text-neutral-300">
-              Cada 30 s vía API → Prometheus
-            </p>
+            <p className="font-mono text-sm text-neutral-300">Cada 30 s vía API → Prometheus</p>
           </CardContent>
         </Card>
       </div>
@@ -190,15 +174,8 @@ export default function DashboardPage() {
         <h2 className="font-mono text-xs uppercase tracking-wider text-ops-gray">
           Actividad reciente
         </h2>
-        <ActivityChart
-          buckets={auditData?.buckets}
-          isLoading={auditLoading}
-        />
-        <ActivityFeed
-          entries={auditData?.entries}
-          isLoading={auditLoading}
-          error={auditError}
-        />
+        <ActivityChart buckets={auditData?.buckets} isLoading={auditLoading} />
+        <ActivityFeed entries={auditData?.entries} isLoading={auditLoading} error={auditError} />
       </div>
     </div>
   );

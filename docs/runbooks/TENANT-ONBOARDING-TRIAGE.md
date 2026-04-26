@@ -8,14 +8,14 @@ La ruta hace `provisionTenant` y luego **post-check** en `platform.tenants` ante
 
 Eventos de log útiles (JSON / logger):
 
-| Evento | Significado |
-|--------|-------------|
-| `tenant.route.create.request` | Entrada con `slug`, `owner_email`, `plan`. |
-| `tenant.route.create.accepted` | Post-check OK; fila visible en DB. |
-| `tenant.route.post_check_not_found` | Tras reintentos no aparece la fila → revisar insert/RLS/Supabase. |
-| `tenant.provisioning.insert.start` / `insert.done` / `insert.verified` | Insert y verificación en orquestador. |
-| `tenant.provisioning.pipeline.start` | Inicio pipeline async (puertos, compose, health). |
-| `tenant.provisioning.pipeline.failed` | Fallo en pipeline; incluye `last_completed_step`, `tenant_id`, `slug`, `error`. |
+| Evento                                                                 | Significado                                                                     |
+| ---------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| `tenant.route.create.request`                                          | Entrada con `slug`, `owner_email`, `plan`.                                      |
+| `tenant.route.create.accepted`                                         | Post-check OK; fila visible en DB.                                              |
+| `tenant.route.post_check_not_found`                                    | Tras reintentos no aparece la fila → revisar insert/RLS/Supabase.               |
+| `tenant.provisioning.insert.start` / `insert.done` / `insert.verified` | Insert y verificación en orquestador.                                           |
+| `tenant.provisioning.pipeline.start`                                   | Inicio pipeline async (puertos, compose, health).                               |
+| `tenant.provisioning.pipeline.failed`                                  | Fallo en pipeline; incluye `last_completed_step`, `tenant_id`, `slug`, `error`. |
 
 Comandos típicos en VPS (logs del contenedor API):
 

@@ -42,10 +42,10 @@ Edita el array `EXCLUDE_VARS` en el script si quieres preservar más overrides e
 
 Útil para un **espejo inicial**; si `upload` falla, usa el pipeline `jq` más abajo. Para mantener `stg` al día sin pisar overrides, prefiere **`sync-doppler-prd-to-stg.sh`** (arriba).
 
-| Paso | Acción |
-|------|--------|
-| **A** | Descargar JSON de `prd` a un fichero temporal (contiene secretos: bórralo después). |
-| **B** | Subir ese JSON a la config `stg`. |
+| Paso  | Acción                                                                                                                          |
+| ----- | ------------------------------------------------------------------------------------------------------------------------------- |
+| **A** | Descargar JSON de `prd` a un fichero temporal (contiene secretos: bórralo después).                                             |
+| **B** | Subir ese JSON a la config `stg`.                                                                                               |
 | **C** | Si el upload falla, usar **solo** el pipeline de normalización (paso B2) — no hace falta listar ni revisar valores en terminal. |
 
 **A — Descarga**
@@ -60,7 +60,7 @@ doppler secrets download --project ops-intcloudsysops --config prd --format=json
 doppler secrets upload /tmp/opsly-prd-secrets.json --project ops-intcloudsysops --config stg
 ```
 
-**B2 — Si el upload rechaza nombres de variables** (mensaje tipo *name may not start with a number*): Doppler exige nombres `LIKE_THIS` (empiezan por letra o `_`). El export puede traer entradas que no son nombres válidos o valores anidados. Normaliza y vuelve a subir **sin imprimir nada en pantalla**:
+**B2 — Si el upload rechaza nombres de variables** (mensaje tipo _name may not start with a number_): Doppler exige nombres `LIKE_THIS` (empiezan por letra o `_`). El export puede traer entradas que no son nombres válidos o valores anidados. Normaliza y vuelve a subir **sin imprimir nada en pantalla**:
 
 ```bash
 jq '
@@ -116,32 +116,32 @@ Esperado: `status: ok` y títulos de las cinco bases (mismas variables `NOTION_D
 
 ## LLM Gateway (Beast Mode v2)
 
-| Variable | Uso |
-|----------|-----|
-| `ANTHROPIC_API_KEY` | Anthropic (Haiku / Sonnet). |
-| `REDIS_URL` | Cache de respuestas + estado de salud de proveedores. |
-| `REDIS_PASSWORD` | Si el cliente Redis lo requiere aparte de la URL. |
-| `LLM_GATEWAY_PORT` | Puerto del HTTP `/health` del proceso gateway (default `3010`). |
-| `LLM_CACHE_TTL_SECONDS` | TTL del cache Redis de prompts (default `7200`). |
-| `OLLAMA_URL` | Base URL de Ollama (default `http://localhost:11434`). |
-| `OLLAMA_MODEL` | Modelo Ollama por defecto (default `nemotron-3-nano:4b`; override p. ej. `nemotron-3-nano:30b`). |
-| `OPENROUTER_API_KEY` | OpenRouter (fallback económico). |
-| `OPENAI_API_KEY` | OpenAI (`gpt-4o`, `gpt-4o-mini`) como fallback. |
-| `OPENROUTER_HTTP_REFERER` | Opcional: cabecera HTTP-Referer para OpenRouter. |
-| `DISCORD_WEBHOOK_URL` | Alertas cuando un proveedor pasa a `down` o se recupera. |
-| `SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY` | Opcional: `usage_events`. |
+| Variable                                     | Uso                                                                                              |
+| -------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| `ANTHROPIC_API_KEY`                          | Anthropic (Haiku / Sonnet).                                                                      |
+| `REDIS_URL`                                  | Cache de respuestas + estado de salud de proveedores.                                            |
+| `REDIS_PASSWORD`                             | Si el cliente Redis lo requiere aparte de la URL.                                                |
+| `LLM_GATEWAY_PORT`                           | Puerto del HTTP `/health` del proceso gateway (default `3010`).                                  |
+| `LLM_CACHE_TTL_SECONDS`                      | TTL del cache Redis de prompts (default `7200`).                                                 |
+| `OLLAMA_URL`                                 | Base URL de Ollama (default `http://localhost:11434`).                                           |
+| `OLLAMA_MODEL`                               | Modelo Ollama por defecto (default `nemotron-3-nano:4b`; override p. ej. `nemotron-3-nano:30b`). |
+| `OPENROUTER_API_KEY`                         | OpenRouter (fallback económico).                                                                 |
+| `OPENAI_API_KEY`                             | OpenAI (`gpt-4o`, `gpt-4o-mini`) como fallback.                                                  |
+| `OPENROUTER_HTTP_REFERER`                    | Opcional: cabecera HTTP-Referer para OpenRouter.                                                 |
+| `DISCORD_WEBHOOK_URL`                        | Alertas cuando un proveedor pasa a `down` o se recupera.                                         |
+| `SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY` | Opcional: `usage_events`.                                                                        |
 
 ## Notion MCP (`apps/notion-mcp`)
 
-| Variable | Uso |
-|----------|-----|
-| `NOTION_TOKEN` | Secret de integración interna (`secret_…`) desde [my-integrations](https://www.notion.so/my-integrations). |
-| `NOTION_DATABASE_TASKS` | UUID de la base **Tasks** (conexión de la integración a la página). |
-| `NOTION_DATABASE_SPRINTS` | Base **Sprints**. |
-| `NOTION_DATABASE_STANDUP` | Base **Daily Standup**. |
-| `NOTION_DATABASE_QUALITY` | Base **Quality Gates**. |
-| `NOTION_DATABASE_METRICS` | Base **Metrics**. |
-| `MCP_PORT` | Puerto HTTP del servicio (default `3013`). |
+| Variable                  | Uso                                                                                                        |
+| ------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `NOTION_TOKEN`            | Secret de integración interna (`secret_…`) desde [my-integrations](https://www.notion.so/my-integrations). |
+| `NOTION_DATABASE_TASKS`   | UUID de la base **Tasks** (conexión de la integración a la página).                                        |
+| `NOTION_DATABASE_SPRINTS` | Base **Sprints**.                                                                                          |
+| `NOTION_DATABASE_STANDUP` | Base **Daily Standup**.                                                                                    |
+| `NOTION_DATABASE_QUALITY` | Base **Quality Gates**.                                                                                    |
+| `NOTION_DATABASE_METRICS` | Base **Metrics**.                                                                                          |
+| `MCP_PORT`                | Puerto HTTP del servicio (default `3013`).                                                                 |
 
 Arranque local con secretos: `npm run dev:notion-mcp` (inyecta Doppler `prd`). Comprobar: `GET /ready` debe devolver los títulos de las cinco bases.
 
@@ -152,12 +152,12 @@ Objetivo: mismo `NOTION_TOKEN` que prod (o uno con acceso al workspace QA) y cin
 **Importante — nombres de variables en Doppler:** el servicio solo lee estas claves (no existen `NOTION_DATABASE_TENANTS`, etc. en el código). En **qa** debes guardar los UUID de tus bases QA **usando obligatoriamente** `TASKS` / `SPRINTS` / `STANDUP` / `QUALITY` / `METRICS`. Los títulos en Notion pueden ser otros; `/ready` mostrará el título real de cada base.
 
 | Variable Doppler (fija en código) | Base sugerida en Notion QA (nombre visible) |
-|-----------------------------------|---------------------------------------------|
-| `NOTION_DATABASE_TASKS` | Tenants (QA) |
-| `NOTION_DATABASE_SPRINTS` | Agents (QA) |
-| `NOTION_DATABASE_STANDUP` | FeedbackChat (QA) |
-| `NOTION_DATABASE_QUALITY` | Logs (QA) |
-| `NOTION_DATABASE_METRICS` | Config (QA) |
+| --------------------------------- | ------------------------------------------- |
+| `NOTION_DATABASE_TASKS`           | Tenants (QA)                                |
+| `NOTION_DATABASE_SPRINTS`         | Agents (QA)                                 |
+| `NOTION_DATABASE_STANDUP`         | FeedbackChat (QA)                           |
+| `NOTION_DATABASE_QUALITY`         | Logs (QA)                                   |
+| `NOTION_DATABASE_METRICS`         | Config (QA)                                 |
 
 Cada base debe tener la integración Notion **conectada** (Connections → tu integration).
 

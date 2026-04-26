@@ -4,14 +4,14 @@
  * @see apps/orchestrator/src/runtime/interfaces/memory.interface.ts
  */
 
-import { createOpenAI } from "@ai-sdk/openai";
-import { embed } from "ai";
-import { createClient, type SupabaseClient } from "@supabase/supabase-js";
-import type { Redis } from "ioredis";
+import { createOpenAI } from '@ai-sdk/openai';
+import { embed } from 'ai';
+import { createClient, type SupabaseClient } from '@supabase/supabase-js';
+import type { Redis } from 'ioredis';
 
-import type { MemoryFragment, MemoryInterface } from "../interfaces/memory.interface.js";
+import type { MemoryFragment, MemoryInterface } from '../interfaces/memory.interface.js';
 
-const EMBED_MODEL = "text-embedding-3-small";
+const EMBED_MODEL = 'text-embedding-3-small';
 const EMBED_DIM = 1536;
 
 export interface SupabaseMemoryAdapterOptions {
@@ -42,7 +42,7 @@ export class SupabaseMemoryAdapter implements MemoryInterface {
   constructor(
     private readonly redis: Redis,
     private readonly supabase: SupabaseClient,
-    options: SupabaseMemoryAdapterOptions = {},
+    options: SupabaseMemoryAdapterOptions = {}
   ) {
     this.matchThreshold = options.matchThreshold ?? 0.72;
     this.defaultSemanticLimit = options.defaultSemanticLimit ?? 5;
@@ -75,24 +75,25 @@ export class SupabaseMemoryAdapter implements MemoryInterface {
     tenantSlug: string,
     sessionId: string,
     step: number,
-    content: string,
+    content: string
   ): Promise<void> {
-    const { error } = await this.supabase
-      .schema("platform")
-      .from("agent_episode_logs")
-      .insert({
-        tenant_slug: tenantSlug,
-        session_id: sessionId,
-        step_index: step,
-        content,
-        metadata: {},
-      });
+    const { error } = await this.supabase.schema('platform').from('agent_episode_logs').insert({
+      tenant_slug: tenantSlug,
+      session_id: sessionId,
+      step_index: step,
+      content,
+      metadata: {},
+    });
     if (error) {
       throw new Error(`agent_episode_logs: ${error.message}`);
     }
   }
 
-  async querySemantic(tenantSlug: string, query: string, limit?: number): Promise<MemoryFragment[]> {
+  async querySemantic(
+    tenantSlug: string,
+    query: string,
+    limit?: number
+  ): Promise<MemoryFragment[]> {
     const apiKey = this.openaiApiKey;
     if (!apiKey || query.trim().length === 0) {
       return [];
@@ -110,11 +111,11 @@ export class SupabaseMemoryAdapter implements MemoryInterface {
     }
 
     const matchCount =
-      typeof limit === "number" && Number.isFinite(limit) && limit > 0
+      typeof limit === 'number' && Number.isFinite(limit) && limit > 0
         ? Math.min(50, Math.floor(limit))
         : this.defaultSemanticLimit;
 
-    const { data, error } = await this.supabase.rpc("match_tenant_embeddings", {
+    const { data, error } = await this.supabase.rpc('match_tenant_embeddings', {
       query_embedding: embedding,
       match_threshold: this.matchThreshold,
       match_count: matchCount,
@@ -129,7 +130,7 @@ export class SupabaseMemoryAdapter implements MemoryInterface {
     return rows.map((row: MatchTenantEmbeddingRow) => ({
       source: String(row.id),
       content: row.content,
-      relevanceScore: typeof row.similarity === "number" ? row.similarity : 0,
+      relevanceScore: typeof row.similarity === 'number' ? row.similarity : 0,
     }));
   }
 }

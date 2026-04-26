@@ -1,11 +1,7 @@
 /* eslint-disable no-magic-numbers, max-lines-per-function */
-import { getServiceClient } from "../supabase/client";
-import type { PlanKey, TenantStatus } from "../supabase/types";
-import {
-  churnRiskFromLastUsage,
-  linearForecastNext,
-  zScoreAnomaly,
-} from "./heuristics";
+import { getServiceClient } from '../supabase/client';
+import type { PlanKey, TenantStatus } from '../supabase/types';
+import { churnRiskFromLastUsage, linearForecastNext, zScoreAnomaly } from './heuristics';
 import type {
   InsightPayloadAnomaly,
   InsightPayloadChurn,
@@ -13,9 +9,9 @@ import type {
   InsightStatus,
   InsightType,
   TenantInsightRow,
-} from "./types";
+} from './types';
 
-export type { InsightType, TenantInsightRow } from "./types";
+export type { InsightType, TenantInsightRow } from './types';
 
 const WINDOW_DAYS = 90;
 const CHURN_INACTIVE_DAYS = 7;
@@ -35,17 +31,14 @@ function startIso(days: number): string {
 /**
  * Agrega usage_events por día (últimos `days`). Solo datos del tenant (tenant_slug).
  */
-export async function fetchUsageDailySeries(
-  tenantSlug: string,
-  days: number,
-): Promise<DailyAgg[]> {
+export async function fetchUsageDailySeries(tenantSlug: string, days: number): Promise<DailyAgg[]> {
   const db = getServiceClient();
   const { data, error } = await db
-    .schema("platform")
-    .from("usage_events")
-    .select("created_at, cost_usd")
-    .eq("tenant_slug", tenantSlug)
-    .gte("created_at", startIso(days));
+    .schema('platform')
+    .from('usage_events')
+    .select('created_at, cost_usd')
+    .eq('tenant_slug', tenantSlug)
+    .gte('created_at', startIso(days));
 
   if (error) {
     throw new Error(`usage_events: ${error.message}`);
@@ -67,11 +60,11 @@ export async function fetchUsageDailySeries(
 async function fetchLastUsageAt(tenantSlug: string): Promise<string | null> {
   const db = getServiceClient();
   const { data, error } = await db
-    .schema("platform")
-    .from("usage_events")
-    .select("created_at")
-    .eq("tenant_slug", tenantSlug)
-    .order("created_at", { ascending: false })
+    .schema('platform')
+    .from('usage_events')
+    .select('created_at')
+    .eq('tenant_slug', tenantSlug)
+    .order('created_at', { ascending: false })
     .limit(1)
     .maybeSingle();
 
@@ -91,8 +84,8 @@ function buildChurnRow(params: {
   status: TenantStatus;
   lastUsageAt: string | null;
   nowIso: string;
-}): Omit<TenantInsightRow, "id" | "created_at" | "read_at" | "actioned_at"> | null {
-  if (params.status !== "active") {
+}): Omit<TenantInsightRow, 'id' | 'created_at' | 'read_at' | 'actioned_at'> | null {
+  if (params.status !== 'active') {
     return null;
   }
   const churn = churnRiskFromLastUsage({
@@ -112,38 +105,36 @@ function buildChurnRow(params: {
   const impact = Math.round(churn.risk * 100);
   return {
     tenant_id: params.tenantId,
-    insight_type: "churn_risk",
-    title: "Riesgo de desinterés en uso de IA",
+    insight_type: 'churn_risk',
+    title: 'Riesgo de desinterés en uso de IA',
     summary:
       `Sin actividad de uso LLM reciente (${churn.daysSince} días). ` +
       `Plan ${params.plan}. Revisa workflows o contacta al equipo.`,
     payload: payload as unknown as Record<string, unknown>,
     confidence,
     impact_score: impact,
-    status: "active",
+    status: 'active',
   };
 }
 
 function buildForecastRow(params: {
   tenantId: string;
   daily: DailyAgg[];
-}): Omit<TenantInsightRow, "id" | "created_at" | "read_at" | "actioned_at"> | null {
+}): Omit<TenantInsightRow, 'id' | 'created_at' | 'read_at' | 'actioned_at'> | null {
   const costs = params.daily.map((d) => d.costUsd);
   const forecast = linearForecastNext(costs);
   if (forecast === null) {
     return null;
   }
-  const observedAvg =
-    costs.reduce((s, x) => s + x, 0) / Math.max(1, costs.length);
+  const observedAvg = costs.reduce((s, x) => s + x, 0) / Math.max(1, costs.length);
   const next7 = forecast.next * 7;
   const payload: InsightPayloadForecast = {
-    currency: "USD",
+    currency: 'USD',
     observed_daily_avg_usd: Math.round(observedAvg * 10000) / 10000,
     forecast_next_7d_usd: Math.round(next7 * 10000) / 10000,
     series_days: costs.length,
   };
-  const growth =
-    observedAvg > 0 ? (forecast.next - observedAvg) / observedAvg : 0;
+  const growth = observedAvg > 0 ? (forecast.next - observedAvg) / observedAvg : 0;
   if (Math.abs(growth) < 0.07) {
     return null;
   }
@@ -152,41 +143,41 @@ function buildForecastRow(params: {
   const impact = Math.round(Math.min(100, Math.abs(growth) * 200));
   return {
     tenant_id: params.tenantId,
-    insight_type: "revenue_forecast",
-    title: up ? "Tendencia al alza en gasto IA" : "Tendencia a la baja en gasto IA",
+    insight_type: 'revenue_forecast',
+    title: up ? 'Tendencia al alza en gasto IA' : 'Tendencia a la baja en gasto IA',
     summary:
       `Basado en ${params.daily.length} días con datos: promedio diario ~$${payload.observed_daily_avg_usd.toFixed(2)} USD; ` +
       `proyección lineal próximos 7 días ~$${payload.forecast_next_7d_usd.toFixed(2)} USD (coste acumulado).`,
     payload: payload as unknown as Record<string, unknown>,
     confidence,
     impact_score: impact,
-    status: "active",
+    status: 'active',
   };
 }
 
 function buildAnomalyRow(params: {
   tenantId: string;
   daily: DailyAgg[];
-}): Omit<TenantInsightRow, "id" | "created_at" | "read_at" | "actioned_at"> | null {
+}): Omit<TenantInsightRow, 'id' | 'created_at' | 'read_at' | 'actioned_at'> | null {
   const counts = params.daily.map((d) => d.count);
   const z = zScoreAnomaly(counts);
   if (z === null || Math.abs(z.z) < ANOMALY_Z_THRESHOLD) {
     return null;
   }
   const payload: InsightPayloadAnomaly = {
-    metric: "usage_events_daily_count",
+    metric: 'usage_events_daily_count',
     last_day_count: z.last,
     baseline_mean: Math.round(z.mean * 100) / 100,
     baseline_std: Math.round(z.std * 100) / 100,
     z_score: Math.round(z.z * 100) / 100,
     window_days: counts.length,
   };
-  const severity = Math.abs(z.z) >= 3.5 ? "pico extremo" : "pico inusual";
+  const severity = Math.abs(z.z) >= 3.5 ? 'pico extremo' : 'pico inusual';
   const confidence = Math.min(0.92, 0.5 + Math.min(0.42, Math.abs(z.z) / 10));
   const impact = Math.round(Math.min(100, Math.abs(z.z) * 18));
   return {
     tenant_id: params.tenantId,
-    insight_type: "usage_anomaly",
+    insight_type: 'usage_anomaly',
     title: `Anomalía en volumen de uso (${severity})`,
     summary:
       `El último día registró ${z.last} eventos frente a media ~${z.mean.toFixed(1)} ` +
@@ -194,25 +185,22 @@ function buildAnomalyRow(params: {
     payload: payload as unknown as Record<string, unknown>,
     confidence,
     impact_score: impact,
-    status: "active",
+    status: 'active',
   };
 }
 
-async function deleteActiveInsightsForTypes(
-  tenantId: string,
-  types: InsightType[],
-): Promise<void> {
+async function deleteActiveInsightsForTypes(tenantId: string, types: InsightType[]): Promise<void> {
   if (types.length === 0) {
     return;
   }
   const db = getServiceClient();
   const { error } = await db
-    .schema("platform")
-    .from("tenant_insights")
+    .schema('platform')
+    .from('tenant_insights')
     .delete()
-    .eq("tenant_id", tenantId)
-    .eq("status", "active")
-    .in("insight_type", types);
+    .eq('tenant_id', tenantId)
+    .eq('status', 'active')
+    .in('insight_type', types);
 
   if (error) {
     throw new Error(`tenant_insights delete: ${error.message}`);
@@ -229,13 +217,13 @@ async function insertInsightRows(
     confidence: number;
     impact_score: number;
     status: InsightStatus;
-  }>,
+  }>
 ): Promise<void> {
   if (rows.length === 0) {
     return;
   }
   const db = getServiceClient();
-  const { error } = await db.schema("platform").from("tenant_insights").insert(rows);
+  const { error } = await db.schema('platform').from('tenant_insights').insert(rows);
   if (error) {
     throw new Error(`tenant_insights insert: ${error.message}`);
   }
@@ -254,11 +242,7 @@ export async function generateInsightsForTenant(params: {
   const daily = await fetchUsageDailySeries(params.slug, WINDOW_DAYS);
   const lastUsage = await fetchLastUsageAt(params.slug);
 
-  const types: InsightType[] = [
-    "churn_risk",
-    "revenue_forecast",
-    "usage_anomaly",
-  ];
+  const types: InsightType[] = ['churn_risk', 'revenue_forecast', 'usage_anomaly'];
   await deleteActiveInsightsForTypes(params.tenantId, types);
 
   const rows: Array<{
@@ -334,10 +318,10 @@ export async function generateInsightsForAllActiveTenants(): Promise<{
 }> {
   const db = getServiceClient();
   const { data, error } = await db
-    .schema("platform")
-    .from("tenants")
-    .select("id, slug, plan, status")
-    .eq("status", "active");
+    .schema('platform')
+    .from('tenants')
+    .select('id, slug, plan, status')
+    .eq('status', 'active');
 
   if (error) {
     throw new Error(`tenants list: ${error.message}`);
@@ -348,7 +332,7 @@ export async function generateInsightsForAllActiveTenants(): Promise<{
     const r = await generateInsightsForTenant({
       tenantId: t.id as string,
       slug: t.slug as string,
-      plan: (t.plan as PlanKey) ?? "startup",
+      plan: (t.plan as PlanKey) ?? 'startup',
       status: t.status as TenantStatus,
     });
     totalInserted += r.inserted;
@@ -358,22 +342,22 @@ export async function generateInsightsForAllActiveTenants(): Promise<{
 
 export async function getInsightsForTenant(
   tenantId: string,
-  options: { includeRead?: boolean; limit?: number } = {},
+  options: { includeRead?: boolean; limit?: number } = {}
 ): Promise<TenantInsightRow[]> {
   const limit = options.limit ?? 24;
   const includeRead = options.includeRead ?? false;
   const db = getServiceClient();
   let q = db
-    .schema("platform")
-    .from("tenant_insights")
-    .select("*")
-    .eq("tenant_id", tenantId)
-    .eq("status", "active")
-    .order("created_at", { ascending: false })
+    .schema('platform')
+    .from('tenant_insights')
+    .select('*')
+    .eq('tenant_id', tenantId)
+    .eq('status', 'active')
+    .order('created_at', { ascending: false })
     .limit(limit);
 
   if (!includeRead) {
-    q = q.is("read_at", null);
+    q = q.is('read_at', null);
   }
 
   const { data, error } = await q;
@@ -381,32 +365,26 @@ export async function getInsightsForTenant(
     throw new Error(`tenant_insights list: ${error.message}`);
   }
   const rows = (data ?? []) as TenantInsightRow[];
-  return rows.sort(
-    (a, b) =>
-      b.impact_score * b.confidence - a.impact_score * a.confidence,
-  );
+  return rows.sort((a, b) => b.impact_score * b.confidence - a.impact_score * a.confidence);
 }
 
-export async function markInsightRead(
-  insightId: string,
-  tenantId: string,
-): Promise<void> {
+export async function markInsightRead(insightId: string, tenantId: string): Promise<void> {
   const db = getServiceClient();
   const now = new Date().toISOString();
   const { data, error } = await db
-    .schema("platform")
-    .from("tenant_insights")
+    .schema('platform')
+    .from('tenant_insights')
     .update({ read_at: now })
-    .eq("id", insightId)
-    .eq("tenant_id", tenantId)
-    .select("id")
+    .eq('id', insightId)
+    .eq('tenant_id', tenantId)
+    .select('id')
     .maybeSingle();
 
   if (error) {
     throw new Error(`mark read: ${error.message}`);
   }
   if (!data) {
-    throw new Error("Insight not found");
+    throw new Error('Insight not found');
   }
 }
 
@@ -418,26 +396,26 @@ export async function markInsightStatus(params: {
   const db = getServiceClient();
   const now = new Date().toISOString();
   const patch: Record<string, unknown> = { status: params.status };
-  if (params.status === "actioned") {
+  if (params.status === 'actioned') {
     patch.actioned_at = now;
     patch.read_at = now;
   }
-  if (params.status === "dismissed") {
+  if (params.status === 'dismissed') {
     patch.read_at = now;
   }
   const { data, error } = await db
-    .schema("platform")
-    .from("tenant_insights")
+    .schema('platform')
+    .from('tenant_insights')
     .update(patch)
-    .eq("id", params.insightId)
-    .eq("tenant_id", params.tenantId)
-    .select("id")
+    .eq('id', params.insightId)
+    .eq('tenant_id', params.tenantId)
+    .select('id')
     .maybeSingle();
 
   if (error) {
     throw new Error(`mark status: ${error.message}`);
   }
   if (!data) {
-    throw new Error("Insight not found");
+    throw new Error('Insight not found');
   }
 }

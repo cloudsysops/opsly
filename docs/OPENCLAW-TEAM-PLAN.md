@@ -8,23 +8,23 @@
 
 ### ✅ Ya Operando
 
-| Componente | Estado | Notas |
-|-----------|--------|--------|
-| OpenClaw MCP | ✅ 14 tools | tenants, metrics, notebooklm, etc |
-| Orchestrator | ✅ BullMQ | Jobs encolados |
-| LLM Gateway | ✅ Cache+Routing | Redis cache |
-| ML Workspace | ✅ Compila | classifier, RAG, insights |
-| NotebookLM | ✅ Configurado | Knowledge layer |
-| Skills Obsidian | ✅ 23 docs | Organizados |
-| Docker Compose | ✅ 9 servicios | Todos healthy |
+| Componente      | Estado           | Notas                             |
+| --------------- | ---------------- | --------------------------------- |
+| OpenClaw MCP    | ✅ 14 tools      | tenants, metrics, notebooklm, etc |
+| Orchestrator    | ✅ BullMQ        | Jobs encolados                    |
+| LLM Gateway     | ✅ Cache+Routing | Redis cache                       |
+| ML Workspace    | ✅ Compila       | classifier, RAG, insights         |
+| NotebookLM      | ✅ Configurado   | Knowledge layer                   |
+| Skills Obsidian | ✅ 23 docs       | Organizados                       |
+| Docker Compose  | ✅ 9 servicios   | Todos healthy                     |
 
 ### ⏳ Pendiente
 
-| Componente | Estado | Owner |
-|-----------|--------|-------|
-| GCP ML | ⏳ Config | Vars en Doppler |
-| BigQuery Sync | ⏳ Setup | Scripts listos |
-| SSH Keys | ❌ Tailscale | Config keys |
+| Componente    | Estado       | Owner           |
+| ------------- | ------------ | --------------- |
+| GCP ML        | ⏳ Config    | Vars en Doppler |
+| BigQuery Sync | ⏳ Setup     | Scripts listos  |
+| SSH Keys      | ❌ Tailscale | Config keys     |
 
 ---
 
@@ -134,13 +134,13 @@
 
 ## 📋 KPI s Semanales
 
-| KPI | Semana 1 | Semana 2 | Semana 3 | Semana 4 |
-|-----|---------|---------|---------|--------|
-| Uptime | 99% | 99.5% | 99.9% | 99.9% |
-| ML Cost | $0 | $5 | $10 | $20 |
-| Agents Ready | 14 | 20 | 30 | 40 |
-| Tenants | 5 | 10 | 20 | 50 |
-| Auto-heal | No | Partial | Full | Full |
+| KPI          | Semana 1 | Semana 2 | Semana 3 | Semana 4 |
+| ------------ | -------- | -------- | -------- | -------- |
+| Uptime       | 99%      | 99.5%    | 99.9%    | 99.9%    |
+| ML Cost      | $0       | $5       | $10      | $20      |
+| Agents Ready | 14       | 20       | 30       | 40       |
+| Tenants      | 5        | 10       | 20       | 50       |
+| Auto-heal    | No       | Partial  | Full     | Full     |
 
 ---
 
@@ -197,21 +197,25 @@
 ## 🎖️ Milestones
 
 ### Milestone 1: 🌱 germination (Día 7)
+
 - [ ] GCP configurado
 - [ ] BigQuery sync working
 - [ ] SSH operativos
 
 ### Milestone 2: 🌿 growth (Día 14)
+
 - [ ] NotebookLM → todos agentes
 - [ ] RAG pipeline completo
 - [ ] Dashboard ML
 
 ### Milestone 3: 🌳 thriving (Día 21)
+
 - [ ] Self-healing activo
 - [ ] Cost optimization
 - [ ] Monitoring full
 
 ### Milestone 4: 🌲 takeover (Día 30)
+
 - [ ] 50 tenants
 - [ ] 99.9% uptime
 - [ ] Zero human touch
@@ -247,13 +251,13 @@ node scripts/query-notebooklm.mjs "¿Estado de Opsly?"
 
 ## 🤝 Team Roles
 
-| Rol | Responsable | Herramientas |
-|-----|-----------|------------|
-|Architect | Senior | AGENTS.md, VISION.md |
-|ML Engineer | System | apps/ml, Vertex AI |
-|Infrastructure | Ops | VPS, Docker, Traefik |
-|API Developer | Routes | apps/api, Supabase |
-|Agent Dev | MCP | apps/mcp, tools |
+| Rol            | Responsable | Herramientas         |
+| -------------- | ----------- | -------------------- |
+| Architect      | Senior      | AGENTS.md, VISION.md |
+| ML Engineer    | System      | apps/ml, Vertex AI   |
+| Infrastructure | Ops         | VPS, Docker, Traefik |
+| API Developer  | Routes      | apps/api, Supabase   |
+| Agent Dev      | MCP         | apps/mcp, tools      |
 
 ---
 

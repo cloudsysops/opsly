@@ -1,44 +1,48 @@
-import { randomUUID } from "node:crypto";
-import { batchedLLMCall } from "./batcher.js";
-import { checkBudget, resolveTenantPlan } from "./budget.js";
-import { analyzeComplexity } from "./complexity.js";
-import { enrichContext } from "./context-enricher.js";
-import { decomposeAndExecute } from "./decomposer.js";
-import { detectIntent } from "./intent-detector.js";
-import { llmCallDirect } from "./llm-direct.js";
-import { logUsage, mergeUsageAttribution } from "./logger.js";
-import { buildPrompt } from "./prompt-builder.js";
-import { scoreQuality } from "./quality-scorer.js";
-import { formatResponse } from "./response-formatter.js";
-import { semanticCacheGetExact, semanticCacheGetSimilar, semanticCacheSet } from "./semantic-cache.js";
-import { hashPrompt } from "./hash.js";
-import { logGatewayEvent } from "./structured-log.js";
-import { fetchRepoContextBlock } from "./repo-context-client.js";
-import type { LLMMessage, LLMRequest, LLMResponse } from "./types.js";
+import { randomUUID } from 'node:crypto';
+import { batchedLLMCall } from './batcher.js';
+import { checkBudget, resolveTenantPlan } from './budget.js';
+import { analyzeComplexity } from './complexity.js';
+import { enrichContext } from './context-enricher.js';
+import { decomposeAndExecute } from './decomposer.js';
+import { detectIntent } from './intent-detector.js';
+import { llmCallDirect } from './llm-direct.js';
+import { logUsage, mergeUsageAttribution } from './logger.js';
+import { buildPrompt } from './prompt-builder.js';
+import { scoreQuality } from './quality-scorer.js';
+import { formatResponse } from './response-formatter.js';
+import {
+  semanticCacheGetExact,
+  semanticCacheGetSimilar,
+  semanticCacheSet,
+} from './semantic-cache.js';
+import { hashPrompt } from './hash.js';
+import { logGatewayEvent } from './structured-log.js';
+import { fetchRepoContextBlock } from './repo-context-client.js';
+import type { LLMMessage, LLMRequest, LLMResponse } from './types.js';
 
 function contextLength(req: LLMRequest): number {
   return req.messages.reduce((s, m) => s + m.content.length, 0);
 }
 
-export { llmCallDirect } from "./llm-direct.js";
+export { llmCallDirect } from './llm-direct.js';
 
 function isLegacyMode(req: LLMRequest): boolean {
   if (req.legacy_pipeline === true) {
     return true;
   }
-  return process.env.LLM_GATEWAY_LEGACY === "true";
+  return process.env.LLM_GATEWAY_LEGACY === 'true';
 }
 
 /** Camino v1 (Beast Mode sin pipeline v3). */
 export async function legacyLlmCall(req: LLMRequest): Promise<LLMResponse> {
-  const last = req.messages.at(-1)?.content ?? "";
+  const last = req.messages.at(-1)?.content ?? '';
   const analysis = analyzeComplexity(last, { context_length: contextLength(req) });
 
   if (analysis.should_decompose) {
     const decomposed = await decomposeAndExecute(req);
     return {
       content: decomposed.merged,
-      model_used: "decomposed",
+      model_used: 'decomposed',
       tokens_input: 0,
       tokens_output: 0,
       cost_usd: decomposed.total_cost_usd,
@@ -60,10 +64,10 @@ async function mergeRepoContext(req: LLMRequest): Promise<LLMRequest> {
   if (req.skip_repo_context === true) {
     return req;
   }
-  if (process.env.LLM_GATEWAY_REPO_CONTEXT !== "true") {
+  if (process.env.LLM_GATEWAY_REPO_CONTEXT !== 'true') {
     return req;
   }
-  const query = req.messages.at(-1)?.content ?? "";
+  const query = req.messages.at(-1)?.content ?? '';
   if (!query.trim()) {
     return req;
   }
@@ -71,17 +75,19 @@ async function mergeRepoContext(req: LLMRequest): Promise<LLMRequest> {
   if (!block) {
     return req;
   }
-  const system = [req.system, "## Repo context (Opsly knowledge)\n", block].filter(Boolean).join("\n\n");
+  const system = [req.system, '## Repo context (Opsly knowledge)\n', block]
+    .filter(Boolean)
+    .join('\n\n');
   return { ...req, system };
 }
 
 export async function v3Pipeline(req: LLMRequest): Promise<LLMResponse> {
   const start = Date.now();
-  const userMsg = req.messages.at(-1)?.content ?? "";
+  const userMsg = req.messages.at(-1)?.content ?? '';
   const intent = await detectIntent(req.tenant_slug, userMsg);
   const ctx = await enrichContext(req.tenant_slug, userMsg, intent);
   const structuredPrompt = buildPrompt(userMsg, intent, ctx);
-  const structuredMessages: LLMMessage[] = [{ role: "user", content: structuredPrompt }];
+  const structuredMessages: LLMMessage[] = [{ role: 'user', content: structuredPrompt }];
   const promptHash = hashPrompt(structuredMessages, req.system);
 
   const exact = await semanticCacheGetExact(req.tenant_slug, promptHash);
@@ -92,7 +98,7 @@ export async function v3Pipeline(req: LLMRequest): Promise<LLMResponse> {
     });
     return {
       content: fmt.content,
-      model_used: exact.model_used ?? "semantic_cache_exact",
+      model_used: exact.model_used ?? 'semantic_cache_exact',
       tokens_input: 0,
       tokens_output: 0,
       cost_usd: 0,
@@ -113,7 +119,7 @@ export async function v3Pipeline(req: LLMRequest): Promise<LLMResponse> {
     });
     return {
       content: fmt.content,
-      model_used: "semantic_cache_similar",
+      model_used: 'semantic_cache_similar',
       tokens_input: 0,
       tokens_output: 0,
       cost_usd: 0,
@@ -132,7 +138,7 @@ export async function v3Pipeline(req: LLMRequest): Promise<LLMResponse> {
     const msg = `Presupuesto LLM del tenant agotado para el mes (plan ${plan}). Contacta soporte o actualiza plan.`;
     return {
       content: msg,
-      model_used: "gateway_budget",
+      model_used: 'gateway_budget',
       tokens_input: 0,
       tokens_output: 0,
       cost_usd: 0,
@@ -155,7 +161,7 @@ export async function v3Pipeline(req: LLMRequest): Promise<LLMResponse> {
   };
 
   if (budget.force_cheap) {
-    innerReq = { ...innerReq, model: "cheap" };
+    innerReq = { ...innerReq, model: 'cheap' };
   }
 
   let response: LLMResponse;
@@ -163,7 +169,7 @@ export async function v3Pipeline(req: LLMRequest): Promise<LLMResponse> {
     const decomposed = await decomposeAndExecute(innerReq);
     response = {
       content: decomposed.merged,
-      model_used: "decomposed",
+      model_used: 'decomposed',
       tokens_input: estimateTokensFromText(structuredPrompt),
       tokens_output: estimateTokensFromText(decomposed.merged),
       cost_usd: decomposed.total_cost_usd,
@@ -176,14 +182,14 @@ export async function v3Pipeline(req: LLMRequest): Promise<LLMResponse> {
   }
 
   const constraintsSummary =
-    "Sin any; bash set -euo pipefail; sin secretos hardcodeados; Traefik v3; schema platform.";
+    'Sin any; bash set -euo pipefail; sin secretos hardcodeados; Traefik v3; schema platform.';
   let q = await scoreQuality(req.tenant_slug, userMsg, constraintsSummary, response.content);
   let attempts = 0;
   while (q.score < 60 && attempts < 2) {
     attempts += 1;
     const retryReq: LLMRequest = {
       ...innerReq,
-      model: "sonnet",
+      model: 'sonnet',
       cache: false,
       skip_usage_log: true,
     };
@@ -203,7 +209,7 @@ export async function v3Pipeline(req: LLMRequest): Promise<LLMResponse> {
       request_id: req.request_id,
       created_at: new Date().toISOString(),
       quality_score: q.score,
-    }),
+    })
   );
 
   if (req.cache !== false) {
@@ -251,7 +257,7 @@ export async function llmCall(req: LLMRequest): Promise<LLMResponse> {
     const withContext = await mergeRepoContext(req);
     const res = await llmCallPipeline(withContext);
     logGatewayEvent({
-      event: "llm_call_complete",
+      event: 'llm_call_complete',
       tenant_slug: req.tenant_slug,
       request_id,
       model_used: res.model_used,
@@ -267,7 +273,7 @@ export async function llmCall(req: LLMRequest): Promise<LLMResponse> {
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     logGatewayEvent({
-      event: "llm_call_error",
+      event: 'llm_call_error',
       tenant_slug: req.tenant_slug,
       request_id,
       latency_ms: Date.now() - start,

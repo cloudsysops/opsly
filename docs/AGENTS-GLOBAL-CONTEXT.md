@@ -15,6 +15,7 @@
 > Ver: [`docs/adr/ADR-025-notebooklm-knowledge-layer.md`](../adr/ADR-025-notebooklm-knowledge-layer.md)
 
 **Query de startup obligatorio:**
+
 ```
 "Eres el arquitecto senior de Opsly. Resume en 5 bullets:
 1. Qué se decidió hoy
@@ -28,11 +29,11 @@ Basado en: AGENTS.md, ROADMAP.md, y las últimas decisiones en docs/adr/"
 
 **Sync automático:** `npm run notebooklm:sync` tras cada commit (hook post-commit).
 
-| Acción | Comando |
-|--------|---------|
-| Sync docs → NotebookLM | `npm run notebooklm:sync` |
-| Query NotebookLM | `npm run notebooklm:query "<pregunta>"` |
-| Feed single doc | `npm run docs:to-notebooklm` |
+| Acción                 | Comando                                 |
+| ---------------------- | --------------------------------------- |
+| Sync docs → NotebookLM | `npm run notebooklm:sync`               |
+| Query NotebookLM       | `npm run notebooklm:query "<pregunta>"` |
+| Feed single doc        | `npm run docs:to-notebooklm`            |
 
 **Keywords que activan consulta NotebookLM:**
 `bloqueante`, `prioridad`, `estado actual`, `qué hacer`, `next`, `decisión`
@@ -55,25 +56,25 @@ npm run type-check
 
 ## ⚡ Skills por tarea
 
-| Agente / Herramienta | Skill |
-|---------------------|-------|
-| **Claude** | `.claude/CLAUDE.md` + `/mnt/skills/index.json` + `/mnt/skills/user/*` |
-| **Cursor** | `.cursor/rules/opsly.mdc` + `/mnt/skills/index.json` + `/mnt/skills/user/*` |
-| **Copilot** | `.github/copilot-instructions.md` + `/mnt/skills/index.json` |
-| **OpenCode** | `/mnt/skills/index.json` + `/mnt/skills/user/*` |
-| **Hermes** | `docs/IMPLEMENTATION-IA-LAYER.md` + `/mnt/skills/index.json` |
-| **Decepticon / OpenClaude / nuevos agentes** | `/mnt/skills/index.json` + `/mnt/skills/user/*` |
-| **Nuevo agente** | Leer `AGENTS.md` + `VISION.md` + **consultar NotebookLM** |
+| Agente / Herramienta                         | Skill                                                                       |
+| -------------------------------------------- | --------------------------------------------------------------------------- |
+| **Claude**                                   | `.claude/CLAUDE.md` + `/mnt/skills/index.json` + `/mnt/skills/user/*`       |
+| **Cursor**                                   | `.cursor/rules/opsly.mdc` + `/mnt/skills/index.json` + `/mnt/skills/user/*` |
+| **Copilot**                                  | `.github/copilot-instructions.md` + `/mnt/skills/index.json`                |
+| **OpenCode**                                 | `/mnt/skills/index.json` + `/mnt/skills/user/*`                             |
+| **Hermes**                                   | `docs/IMPLEMENTATION-IA-LAYER.md` + `/mnt/skills/index.json`                |
+| **Decepticon / OpenClaude / nuevos agentes** | `/mnt/skills/index.json` + `/mnt/skills/user/*`                             |
+| **Nuevo agente**                             | Leer `AGENTS.md` + `VISION.md` + **consultar NotebookLM**                   |
 
 ## 📁 Archivos de contexto por defecto
 
-| Archivo | Propósito | Obligatorio |
-|---------|----------|------------|
-| `AGENTS.md` | Estado operativo, bloqueantes, decisiones sesión | ✅ SIEMPRE |
-| `VISION.md` | Norte de producto, fases, ICP | ✅ Al inicio |
-| `docs/adr/*.md` | Decisiones de arquitectura | Si toca arquitectura |
-| `/mnt/skills/index.json` | Catálogo unificado de skills | ✅ SIEMPRE |
-| `/mnt/skills/user/opsly-*/SKILL.md` | Procedimientos operativos | Por skill |
+| Archivo                             | Propósito                                        | Obligatorio          |
+| ----------------------------------- | ------------------------------------------------ | -------------------- |
+| `AGENTS.md`                         | Estado operativo, bloqueantes, decisiones sesión | ✅ SIEMPRE           |
+| `VISION.md`                         | Norte de producto, fases, ICP                    | ✅ Al inicio         |
+| `docs/adr/*.md`                     | Decisiones de arquitectura                       | Si toca arquitectura |
+| `/mnt/skills/index.json`            | Catálogo unificado de skills                     | ✅ SIEMPRE           |
+| `/mnt/skills/user/opsly-*/SKILL.md` | Procedimientos operativos                        | Por skill            |
 
 ## 🔁 Publicación de skills para todos los agentes
 
@@ -96,6 +97,7 @@ npm run agents:hooks:bootstrap:external
 ```
 
 Referencia completa:
+
 - `docs/AGENT-HOOKS-OBSIDIAN-NOTEBOOKLM-N8N.md`
 
 ## 🔐 Reglas globales para todos los agentes
@@ -131,22 +133,22 @@ VPS (control plane)                    Worker Mac 2011
 
 ## 📝 Formato de decisiones
 
-| Campo | Valor |
-|-------|-------|
-| Fecha | YYYY-MM-DD |
-| Decisión | Descripción clara |
-| Razón | Por qué se tomó |
-| Archivos | Paths afectados |
-| Alternativas descartadas | Por qué no |
+| Campo                    | Valor             |
+| ------------------------ | ----------------- |
+| Fecha                    | YYYY-MM-DD        |
+| Decisión                 | Descripción clara |
+| Razón                    | Por qué se tomó   |
+| Archivos                 | Paths afectados   |
+| Alternativas descartadas | Por qué no        |
 
 ## 🔗 Enlaces críticos
 
-| Recurso | URL |
-|---------|-----|
-| Repo GitHub | https://github.com/cloudsysops/opsly |
+| Recurso       | URL                                                                |
+| ------------- | ------------------------------------------------------------------ |
+| Repo GitHub   | https://github.com/cloudsysops/opsly                               |
 | AGENTS.md raw | https://raw.githubusercontent.com/cloudsysops/opsly/main/AGENTS.md |
 | VISION.md raw | https://raw.githubusercontent.com/cloudsysops/opsly/main/VISION.md |
-| Admin | https://admin.ops.smiletripcare.com |
-| Portal | https://portal.ops.smiletripcare.com |
-| API | https://api.ops.smiletripcare.com |
-| VPS SSH | `ssh vps-dragon@100.120.151.91` |
+| Admin         | https://admin.ops.smiletripcare.com                                |
+| Portal        | https://portal.ops.smiletripcare.com                               |
+| API           | https://api.ops.smiletripcare.com                                  |
+| VPS SSH       | `ssh vps-dragon@100.120.151.91`                                    |

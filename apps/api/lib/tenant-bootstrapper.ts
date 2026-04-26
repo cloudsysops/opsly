@@ -4,7 +4,7 @@
  */
 
 export interface ProvisionJobRef {
-  readonly provider: "kubernetes" | "terraform" | "compose";
+  readonly provider: 'kubernetes' | 'terraform' | 'compose';
   readonly jobName: string;
   readonly workersRequested: number;
 }
@@ -16,10 +16,7 @@ export interface ProvisionResult {
 }
 
 export interface WorkerProvisionAdapter {
-  readonly apply: (input: {
-    tenantId: string;
-    workerCount: number;
-  }) => Promise<ProvisionJobRef>;
+  readonly apply: (input: { tenantId: string; workerCount: number }) => Promise<ProvisionJobRef>;
 }
 
 /** Simula apply Terraform/K8s: sustituir por llamada real a tu control plane. */
@@ -29,7 +26,7 @@ async function defaultSimulatedApply(input: {
 }): Promise<ProvisionJobRef> {
   const jobName = `tenant-${input.tenantId}-workers-${input.workerCount}`;
   return {
-    provider: "kubernetes",
+    provider: 'kubernetes',
     jobName,
     workersRequested: input.workerCount,
   };
@@ -51,7 +48,7 @@ export class TenantBootstrapper {
   async provisionResources(tenantId: string): Promise<ProvisionResult> {
     const trimmed = tenantId.trim();
     if (trimmed.length === 0) {
-      throw new Error("tenantId requerido");
+      throw new Error('tenantId requerido');
     }
     const job = await this.adapter.apply({
       tenantId: trimmed,

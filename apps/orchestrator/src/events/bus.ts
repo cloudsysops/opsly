@@ -1,7 +1,7 @@
-import { createClient } from "redis";
-import type { OpslyEvent } from "./types.js";
+import { createClient } from 'redis';
+import type { OpslyEvent } from './types.js';
 
-const REDIS_URL = process.env.REDIS_URL || "redis://localhost:6379";
+const REDIS_URL = process.env.REDIS_URL || 'redis://localhost:6379';
 
 function buildClient() {
   return createClient({
@@ -16,27 +16,27 @@ export interface EventSubscriptionHandle {
 
 export async function publishEvent(
   event: OpslyEvent,
-  data: Record<string, unknown>,
+  data: Record<string, unknown>
 ): Promise<void> {
   const publisher = buildClient();
   await publisher.connect();
   await publisher.publish(
-    "opsly:events",
+    'opsly:events',
     JSON.stringify({
       event,
       data,
       timestamp: new Date().toISOString(),
-    }),
+    })
   );
   await publisher.disconnect();
 }
 
 export async function subscribeEvents(
-  handler: (event: OpslyEvent, data: Record<string, unknown>) => Promise<void>,
+  handler: (event: OpslyEvent, data: Record<string, unknown>) => Promise<void>
 ): Promise<EventSubscriptionHandle> {
   const subscriber = buildClient();
   await subscriber.connect();
-  await subscriber.subscribe("opsly:events", async (message) => {
+  await subscriber.subscribe('opsly:events', async (message) => {
     const parsed = JSON.parse(message) as {
       event: OpslyEvent;
       data: Record<string, unknown>;
@@ -46,7 +46,7 @@ export async function subscribeEvents(
 
   return {
     async close(): Promise<void> {
-      await subscriber.unsubscribe("opsly:events");
+      await subscriber.unsubscribe('opsly:events');
       if (subscriber.isOpen) {
         await subscriber.disconnect();
       }

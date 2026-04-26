@@ -1,13 +1,13 @@
-import { getTenantUsage } from "../logger.js";
+import { getTenantUsage } from '../logger.js';
 
-export type AiProfile = "free-always" | "hybrid" | "cloud-only";
+export type AiProfile = 'free-always' | 'hybrid' | 'cloud-only';
 
-const DEFAULT_AI_PROFILE: AiProfile = "hybrid";
+const DEFAULT_AI_PROFILE: AiProfile = 'hybrid';
 const WARN_FRACTION = 0.8;
 const TENANT_DEFAULT_PROFILES: Record<string, AiProfile> = {
-  smiletripcare: "hybrid",
-  peskids: "hybrid",
-  intcloudsysops: "free-always",
+  smiletripcare: 'hybrid',
+  peskids: 'hybrid',
+  intcloudsysops: 'free-always',
 };
 
 export interface DailyBudgetStatus {
@@ -23,11 +23,14 @@ function normalizeTenantSlug(tenantSlug: string): string {
 }
 
 function normalizeEnvTenant(tenantSlug: string): string {
-  return tenantSlug.trim().replace(/[^a-zA-Z0-9]/g, "_").toUpperCase();
+  return tenantSlug
+    .trim()
+    .replace(/[^a-zA-Z0-9]/g, '_')
+    .toUpperCase();
 }
 
 function parseProfile(raw: string | undefined): AiProfile | null {
-  if (raw === "free-always" || raw === "hybrid" || raw === "cloud-only") {
+  if (raw === 'free-always' || raw === 'hybrid' || raw === 'cloud-only') {
     return raw;
   }
   return null;
@@ -72,7 +75,7 @@ export async function checkDailyBudget(tenantSlug: string): Promise<DailyBudgetS
       usageFraction: 0,
     };
   }
-  const usage = await getTenantUsage(tenantSlug, "today");
+  const usage = await getTenantUsage(tenantSlug, 'today');
   const usedUsd = usage.cost_usd;
   const usageFraction = budgetUsd > 0 ? usedUsd / budgetUsd : Number.POSITIVE_INFINITY;
   return {

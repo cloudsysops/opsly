@@ -6,10 +6,10 @@
  * Usa `action: "set"` para reportar el acumulado del período — idempotente.
  */
 
-import type Stripe from "stripe";
-import { getStripe } from "./client";
-import { getServiceClient } from "../supabase/client";
-import { logger } from "../logger";
+import type Stripe from 'stripe';
+import { getStripe } from './client';
+import { getServiceClient } from '../supabase/client';
+import { logger } from '../logger';
 
 // --- tipos de dependencias (inyección para tests) -------------------------
 
@@ -28,52 +28,43 @@ interface TenantSubRow {
   stripe_subscription_id: string;
 }
 
-async function getActiveSubscribedTenants(
-  db: DbClient,
-): Promise<TenantSubRow[]> {
+async function getActiveSubscribedTenants(db: DbClient): Promise<TenantSubRow[]> {
   const { data, error } = await db
-    .schema("platform")
-    .from("tenants")
-    .select("slug, stripe_subscription_id")
-    .eq("status", "active")
-    .not("stripe_subscription_id", "is", null)
-    .is("deleted_at", null);
+    .schema('platform')
+    .from('tenants')
+    .select('slug, stripe_subscription_id')
+    .eq('status', 'active')
+    .not('stripe_subscription_id', 'is', null)
+    .is('deleted_at', null);
 
   if (error) {
-    logger.error("usage-sync getActiveSubscribedTenants", error);
+    logger.error('usage-sync getActiveSubscribedTenants', error);
     return [];
   }
   return (data ?? []) as TenantSubRow[];
 }
 
-async function sumTenantTokensSince(
-  db: DbClient,
-  slug: string,
-  from: Date,
-): Promise<number> {
+async function sumTenantTokensSince(db: DbClient, slug: string, from: Date): Promise<number> {
   const { data, error } = await db
-    .schema("platform")
-    .from("usage_events")
-    .select("tokens_input, tokens_output")
-    .eq("tenant_slug", slug)
-    .gte("created_at", from.toISOString());
+    .schema('platform')
+    .from('usage_events')
+    .select('tokens_input, tokens_output')
+    .eq('tenant_slug', slug)
+    .gte('created_at', from.toISOString());
 
   if (error) {
-    logger.error("usage-sync sumTenantTokensSince", { slug, error });
+    logger.error('usage-sync sumTenantTokensSince', { slug, error });
     return 0;
   }
   type Row = { tokens_input: number; tokens_output: number };
-  return ((data ?? []) as Row[]).reduce(
-    (sum, r) => sum + r.tokens_input + r.tokens_output,
-    0,
-  );
+  return ((data ?? []) as Row[]).reduce((sum, r) => sum + r.tokens_input + r.tokens_output, 0);
 }
 
 // --- helpers de Stripe ---------------------------------------------------
 
 function findMeteredItem(
   items: Stripe.SubscriptionItem[],
-  priceId: string,
+  priceId: string
 ): Stripe.SubscriptionItem | undefined {
   return items.find((item) => item.price.id === priceId);
 }
@@ -81,22 +72,22 @@ function findMeteredItem(
 async function reportUsageRecord(
   stripe: StripeClient,
   itemId: string,
-  quantity: number,
+  quantity: number
 ): Promise<void> {
   const timestampSec = Math.floor(Date.now() / 1_000);
   await stripe.subscriptionItems.createUsageRecord(itemId, {
     quantity,
     timestamp: timestampSec,
-    action: "set",
+    action: 'set',
   });
 }
 
 async function retrieveExpandedSubscription(
   stripe: StripeClient,
-  subId: string,
+  subId: string
 ): Promise<Stripe.Subscription> {
   return stripe.subscriptions.retrieve(subId, {
-    expand: ["items.data.price"],
+    expand: ['items.data.price'],
   });
 }
 
@@ -112,13 +103,13 @@ async function syncOneTenant(
   tenant: TenantSubRow,
   meteredPriceId: string,
   db: DbClient,
-  stripe: StripeClient,
+  stripe: StripeClient
 ): Promise<TenantSyncResult> {
   let sub: Stripe.Subscription;
   try {
     sub = await retrieveExpandedSubscription(stripe, tenant.stripe_subscription_id);
   } catch (e) {
-    logger.error("usage-sync retrieve subscription", {
+    logger.error('usage-sync retrieve subscription', {
       slug: tenant.slug,
       error: e,
     });
@@ -137,7 +128,7 @@ async function syncOneTenant(
   try {
     await reportUsageRecord(stripe, item.id, tokens);
   } catch (e) {
-    logger.error("usage-sync reportUsageRecord", { slug: tenant.slug, error: e });
+    logger.error('usage-sync reportUsageRecord', { slug: tenant.slug, error: e });
     return { slug: tenant.slug, synced: false };
   }
 
@@ -153,10 +144,7 @@ export interface UsageSyncResult {
   errors: string[];
 }
 
-function applyTenantResult(
-  result: UsageSyncResult,
-  r: TenantSyncResult,
-): void {
+function applyTenantResult(result: UsageSyncResult, r: TenantSyncResult): void {
   if (r.synced) {
     result.tenants_synced++;
     result.total_tokens += r.tokens ?? 0;
@@ -165,12 +153,8 @@ function applyTenantResult(
   }
 }
 
-export async function syncAllTenantsUsage(
-  deps?: SyncDeps,
-): Promise<UsageSyncResult> {
-  const meteredPriceId = (
-    process.env.STRIPE_METERED_PRICE_ID_TOKENS ?? ""
-  ).trim();
+export async function syncAllTenantsUsage(deps?: SyncDeps): Promise<UsageSyncResult> {
+  const meteredPriceId = (process.env.STRIPE_METERED_PRICE_ID_TOKENS ?? '').trim();
 
   const result: UsageSyncResult = {
     tenants_synced: 0,

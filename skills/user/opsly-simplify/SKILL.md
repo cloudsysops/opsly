@@ -22,12 +22,14 @@ Al optimizar Dockerfiles y docker-compose.yaml del monorepo: multi-stage builds,
 ### Dockerfile Patterns (Multi-Stage Builds)
 
 **npm dependency management:**
+
 - ✅ Use `npm ci` (deterministic) instead of `npm install`
 - ✅ Add `--ignore-scripts` to skip postinstall scripts (unless needed; verify per package)
 - ✅ Add `--omit=dev` in production images to exclude dev dependencies
 - ⚠️ If runner stage needs node_modules, copy from builder stage — avoids reinstall
 
 **Example pattern:**
+
 ```dockerfile
 FROM node:20-alpine AS builder
 WORKDIR /app
@@ -44,6 +46,7 @@ CMD ["node", "dist/src/server.js"]
 ```
 
 **Checklist:**
+
 - [ ] Runner stage copies node_modules from builder (not reinstalling)
 - [ ] Unnecessary npm ci removed from runner stage
 - [ ] Build cache layers ordered: package files → install → source → build
@@ -66,6 +69,7 @@ x-healthcheck-node: &healthcheck-node
 ```
 
 **Usage in services:**
+
 ```yaml
 app:
   healthcheck:
@@ -85,6 +89,7 @@ admin:
 #### Supabase Environment Anchor
 
 **Problem:** orchestrator and hermes services repeat identical Supabase config with fallback logic:
+
 ```yaml
 SUPABASE_URL: ${SUPABASE_URL:-${NEXT_PUBLIC_SUPABASE_URL:-}}
 SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY:-}
@@ -100,6 +105,7 @@ x-env-supabase: &env-supabase
 ```
 
 **Usage:**
+
 ```yaml
 orchestrator:
   environment:
@@ -115,11 +121,12 @@ hermes:
 #### Resource Limits Verification
 
 **All 17 services should have memory limits** to prevent OOM:
+
 ```yaml
 deploy:
   resources:
     limits:
-      memory: 512M  # or service-appropriate value
+      memory: 512M # or service-appropriate value
 ```
 
 **Expected services and typical limits:**
@@ -190,21 +197,25 @@ deploy:
 ## Known Patterns & Decisions
 
 ### When to use anchors:
+
 - **Exact match:** interval=30s, timeout=10s, retries=3 for Node healthchecks → anchor
 - **Fallback chains:** Supabase config with `${VAR:-${OTHER_VAR:-}}` → anchor
 - **Repeated sections with variations:** healthcheck test, start_period vary; everything else identical → anchor
 
 ### When NOT to create anchors:
+
 - Single occurrence (no duplication)
 - Highly service-specific (will only be used once)
 - Values diverge significantly across uses
 
 ### Resource limits notes:
+
 - All 17 services already have limits in place (as of 2026-04-13)
 - Limits prevent runaway memory consumption and kernel OOM killer
 - Never exceed host available memory
 
 ### Healthcheck test commands:
+
 - Node services: `node -e "fetch('http://localhost:PORT/health')"`
 - Each service has unique PORT
 - start_period varies: 15s (fast), 30s (normal), 45s+ (slow startup)
@@ -250,11 +261,11 @@ deploy:
 
 ## Errores comunes
 
-| Error | Causa | Solución |
-|-------|-------|----------|
-| Invalid YAML | Anchor mal formado | `docker-compose config` para validar |
-| No memory limit | OOM kills | Añadir `deploy.resources.limits.memory` |
-| Multi-stage broken | Runner sin artifacts | Copiar desde builder stage |
+| Error              | Causa                | Solución                                |
+| ------------------ | -------------------- | --------------------------------------- |
+| Invalid YAML       | Anchor mal formado   | `docker-compose config` para validar    |
+| No memory limit    | OOM kills            | Añadir `deploy.resources.limits.memory` |
+| Multi-stage broken | Runner sin artifacts | Copiar desde builder stage              |
 
 ## Testing
 

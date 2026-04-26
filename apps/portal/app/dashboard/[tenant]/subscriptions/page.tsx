@@ -36,18 +36,12 @@ interface SubscriptionResponse {
   plans: BillingPlan[];
 }
 
-async function fetchSubscription(
-  token: string,
-  tenantId: string,
-): Promise<SubscriptionResponse> {
+async function fetchSubscription(token: string, tenantId: string): Promise<SubscriptionResponse> {
   const base = getApiBaseUrl();
-  const res = await fetch(
-    `${base}/api/billing/subscriptions?tenant_id=${tenantId}`,
-    {
-      headers: { Authorization: `Bearer ${token}` },
-      cache: 'no-store',
-    },
-  );
+  const res = await fetch(`${base}/api/billing/subscriptions?tenant_id=${tenantId}`, {
+    headers: { Authorization: `Bearer ${token}` },
+    cache: 'no-store',
+  });
 
   if (!res.ok) {
     return { subscription: null, plans: [] };
@@ -56,10 +50,7 @@ async function fetchSubscription(
   return (await res.json()) as SubscriptionResponse;
 }
 
-async function resolveTenantId(
-  token: string,
-  slug: string,
-): Promise<string | null> {
+async function resolveTenantId(token: string, slug: string): Promise<string | null> {
   const base = getApiBaseUrl();
   const res = await fetch(`${base}/api/tenants?status=active&limit=100`, {
     headers: { Authorization: `Bearer ${token}` },
@@ -92,30 +83,18 @@ export default async function SubscriptionsPage({
   return (
     <PortalShell title={`Suscripcion — ${tenant}`} showModeLink>
       <DashboardShell>
-        <h1 className="font-sans text-xl font-semibold text-neutral-100">
-          Suscripcion
-        </h1>
+        <h1 className="font-sans text-xl font-semibold text-neutral-100">Suscripcion</h1>
 
         {subscription ? (
-          <SubscriptionCard
-            subscription={subscription}
-            plans={plans}
-            tenant={tenant}
-          />
+          <SubscriptionCard subscription={subscription} plans={plans} tenant={tenant} />
         ) : (
           <Card className="mt-6">
             <CardHeader>
               <CardTitle>Sin suscripcion activa</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="mb-6 text-sm text-ops-gray">
-                Selecciona un plan para comenzar.
-              </p>
-              <PlanSelector
-                plans={plans}
-                tenant={tenant}
-                tenantId={tenantId ?? ''}
-              />
+              <p className="mb-6 text-sm text-ops-gray">Selecciona un plan para comenzar.</p>
+              <PlanSelector plans={plans} tenant={tenant} tenantId={tenantId ?? ''} />
             </CardContent>
           </Card>
         )}

@@ -39,16 +39,17 @@ export interface SyncDeps {
 
 // Función acepta deps opcionales; produce defaults en producción
 export async function syncAllTenantsUsage(deps?: SyncDeps): Promise<UsageSyncResult> {
-  const db   = deps?.db     ?? getServiceClient();
+  const db = deps?.db ?? getServiceClient();
   const stripe = deps?.stripe ?? getStripe();
   // ...
 }
 ```
 
 Los tests pasan mocks directamente:
+
 ```ts
 const result = await syncAllTenantsUsage({
-  db:     makeSupabase([...tenantsData]),
+  db: makeSupabase([...tenantsData]),
   stripe: makeStripe({ retrieveExpanded: mockSub }),
 });
 ```
@@ -58,12 +59,14 @@ const result = await syncAllTenantsUsage({
 ## Consecuencias
 
 **Positivas:**
+
 - Tests **100% deterministas** — no dependen de la resolución de rutas de Vitest
 - **Cero acoplamiento** entre el sistema de módulos y la testabilidad
 - El código de producción sin `deps` funciona exactamente igual (defaults intactos)
 - Patrón reutilizable para cualquier módulo con cliente Supabase, Stripe, Redis o HTTP
 
 **Negativas:**
+
 - Firma de la función pública cambia (es `backward-compatible` — `deps` es opcional)
 - Requiere definir la interfaz `SyncDeps` explícitamente
 
@@ -76,9 +79,9 @@ campo opcional para ser testeable sin `vi.mock`.
 
 ## Alternativas descartadas
 
-| Alternativa | Razón de descarte |
-|------------|-------------------|
-| Corregir paths de `vi.mock` | Frágil ante cambios de tsconfig o reorganización |
-| `vi.doMock` dinámico | Requiere `await import()` especial en cada test |
-| Extraer a barrel re-export | No resuelve el singleton; solo mueve el problema |
-| Jest en vez de Vitest | Cambio de herramienta desproporcionado para el problema |
+| Alternativa                 | Razón de descarte                                       |
+| --------------------------- | ------------------------------------------------------- |
+| Corregir paths de `vi.mock` | Frágil ante cambios de tsconfig o reorganización        |
+| `vi.doMock` dinámico        | Requiere `await import()` especial en cada test         |
+| Extraer a barrel re-export  | No resuelve el singleton; solo mueve el problema        |
+| Jest en vez de Vitest       | Cambio de herramienta desproporcionado para el problema |

@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import type { ReactNode } from "react";
-import { Badge } from "@/components/ui/badge";
-import type { TenantBudgetSnapshot } from "@/lib/types";
+import type { ReactNode } from 'react';
+import { Badge } from '@/components/ui/badge';
+import type { TenantBudgetSnapshot } from '@/lib/types';
 
 type TenantBudgetBarsProps = {
   readonly snapshots: TenantBudgetSnapshot[];
@@ -10,52 +10,48 @@ type TenantBudgetBarsProps = {
 
 function barColor(s: TenantBudgetSnapshot): string {
   if (s.enforcement_skipped) {
-    return "bg-slate-500";
+    return 'bg-slate-500';
   }
-  if (s.alert_level === "critical") {
-    return "bg-red-500";
+  if (s.alert_level === 'critical') {
+    return 'bg-red-500';
   }
-  if (s.alert_level === "warning") {
-    return "bg-amber-500";
+  if (s.alert_level === 'warning') {
+    return 'bg-amber-500';
   }
-  return "bg-emerald-500";
+  return 'bg-emerald-500';
 }
 
-function alertVariant(
-  snapshot: TenantBudgetSnapshot,
-): "green" | "yellow" | "red" | "gray" {
+function alertVariant(snapshot: TenantBudgetSnapshot): 'green' | 'yellow' | 'red' | 'gray' {
   if (snapshot.enforcement_skipped) {
-    return "gray";
+    return 'gray';
   }
-  if (snapshot.alert_level === "critical") {
-    return "red";
+  if (snapshot.alert_level === 'critical') {
+    return 'red';
   }
-  if (snapshot.alert_level === "warning") {
-    return "yellow";
+  if (snapshot.alert_level === 'warning') {
+    return 'yellow';
   }
-  return "green";
+  return 'green';
 }
 
 function alertLabel(snapshot: TenantBudgetSnapshot): string {
   if (snapshot.enforcement_skipped) {
-    return "Enforcement omitido";
+    return 'Enforcement omitido';
   }
-  if (snapshot.alert_level === "critical") {
-    return "Critical";
+  if (snapshot.alert_level === 'critical') {
+    return 'Critical';
   }
-  if (snapshot.alert_level === "warning") {
-    return "Warning";
+  if (snapshot.alert_level === 'warning') {
+    return 'Warning';
   }
-  return "OK";
+  return 'OK';
 }
 
 export function TenantBudgetBars({ snapshots }: TenantBudgetBarsProps): ReactNode {
   if (snapshots.length === 0) {
     return (
       <div className="rounded-lg border border-ops-border bg-ops-card p-6">
-        <p className="text-sm text-ops-muted">
-          No hay tenants que coincidan con el filtro actual.
-        </p>
+        <p className="text-sm text-ops-muted">No hay tenants que coincidan con el filtro actual.</p>
       </div>
     );
   }
@@ -80,9 +76,7 @@ export function TenantBudgetBars({ snapshots }: TenantBudgetBarsProps): ReactNod
                     <Badge variant="blue">Proyección supera límite</Badge>
                   ) : null}
                 </div>
-                <p className="mt-1 font-mono text-xs text-ops-muted">
-                  {s.tenant_slug}
-                </p>
+                <p className="mt-1 font-mono text-xs text-ops-muted">{s.tenant_slug}</p>
               </div>
               <span className="font-mono text-sm text-ops-muted">
                 ${s.current_spend_usd.toFixed(2)} / ${s.limit_usd.toFixed(2)} (

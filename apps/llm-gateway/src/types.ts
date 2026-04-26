@@ -1,21 +1,21 @@
-import type { RoutingBias } from "./routing-hints.js";
+import type { RoutingBias } from './routing-hints.js';
 
-export type OutputChannel = "api" | "discord" | "portal_chat" | "cursor" | "email";
+export type OutputChannel = 'api' | 'discord' | 'portal_chat' | 'cursor' | 'email';
 
-export type TenantPlan = "startup" | "business" | "enterprise";
+export type TenantPlan = 'startup' | 'business' | 'enterprise';
 
 export type IntentKind =
-  | "bug_fix"
-  | "feature_request"
-  | "refactor"
-  | "question"
-  | "deploy"
-  | "analysis"
-  | "config";
+  | 'bug_fix'
+  | 'feature_request'
+  | 'refactor'
+  | 'question'
+  | 'deploy'
+  | 'analysis'
+  | 'config';
 
-export type AffectedArea = "frontend" | "backend" | "infra" | "ml";
+export type AffectedArea = 'frontend' | 'backend' | 'infra' | 'ml';
 
-export type UrgencyLevel = "low" | "medium" | "high" | "critical";
+export type UrgencyLevel = 'low' | 'medium' | 'high' | 'critical';
 
 export interface DetectedIntent {
   intent: IntentKind;
@@ -26,7 +26,7 @@ export interface DetectedIntent {
 }
 
 export interface LLMMessage {
-  role: "user" | "assistant";
+  role: 'user' | 'assistant';
   content: string;
 }
 

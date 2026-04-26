@@ -1,31 +1,21 @@
-import { HTTP_STATUS } from "./constants";
-import {
-  fetchPortalTenantRowBySlug,
-  parsePortalServices,
-  portalUrlReachable,
-} from "./portal-me";
+import { HTTP_STATUS } from './constants';
+import { fetchPortalTenantRowBySlug, parsePortalServices, portalUrlReachable } from './portal-me';
 
 /**
  * Respuesta JSON de health para un tenant (compartida por
  * `GET /api/portal/health` y `GET /api/portal/tenant/[slug]/health`).
  */
-export async function respondPortalTenantHealth(
-  tenantSlug: string,
-): Promise<Response> {
+export async function respondPortalTenantHealth(tenantSlug: string): Promise<Response> {
   const lookup = await fetchPortalTenantRowBySlug(tenantSlug);
 
   if (!lookup.ok) {
     return Response.json(
       {
-        error:
-          lookup.reason === "not_found" ? "Tenant not found" : "Database error",
+        error: lookup.reason === 'not_found' ? 'Tenant not found' : 'Database error',
       },
       {
-        status:
-          lookup.reason === "not_found"
-            ? HTTP_STATUS.NOT_FOUND
-            : HTTP_STATUS.INTERNAL_ERROR,
-      },
+        status: lookup.reason === 'not_found' ? HTTP_STATUS.NOT_FOUND : HTTP_STATUS.INTERNAL_ERROR,
+      }
     );
   }
 

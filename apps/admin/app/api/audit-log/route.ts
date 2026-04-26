@@ -1,6 +1,6 @@
-import { createClient } from "@supabase/supabase-js";
-import { NextResponse } from "next/server";
-import { createServerSupabase } from "@/lib/supabase/server";
+import { createClient } from '@supabase/supabase-js';
+import { NextResponse } from 'next/server';
+import { createServerSupabase } from '@/lib/supabase/server';
 
 function utcDay(d: Date): string {
   return d.toISOString().slice(0, 10);
@@ -8,14 +8,14 @@ function utcDay(d: Date): string {
 
 export async function GET(): Promise<NextResponse> {
   try {
-    const publicDemo = process.env.NEXT_PUBLIC_ADMIN_PUBLIC_DEMO === "true";
+    const publicDemo = process.env.NEXT_PUBLIC_ADMIN_PUBLIC_DEMO === 'true';
     const userClient = await createServerSupabase();
     if (!publicDemo) {
       const {
         data: { user },
       } = await userClient.auth.getUser();
       if (!user) {
-        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
       }
     }
 
@@ -23,8 +23,8 @@ export async function GET(): Promise<NextResponse> {
     const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
     if (!url || !serviceKey) {
       return NextResponse.json(
-        { error: "Server missing SUPABASE_SERVICE_ROLE_KEY" },
-        { status: 500 },
+        { error: 'Server missing SUPABASE_SERVICE_ROLE_KEY' },
+        { status: 500 }
       );
     }
 
@@ -33,10 +33,10 @@ export async function GET(): Promise<NextResponse> {
     });
 
     const { data: logs, error } = await admin
-      .schema("platform")
-      .from("audit_log")
-      .select("id, action, actor, metadata, created_at, tenant_id")
-      .order("created_at", { ascending: false })
+      .schema('platform')
+      .from('audit_log')
+      .select('id, action, actor, metadata, created_at, tenant_id')
+      .order('created_at', { ascending: false })
       .limit(500);
 
     if (error) {
@@ -48,19 +48,17 @@ export async function GET(): Promise<NextResponse> {
       ...new Set(
         rows
           .map((r) => r.tenant_id)
-          .filter(
-            (id): id is string => typeof id === "string" && id.length > 0,
-          ),
+          .filter((id): id is string => typeof id === 'string' && id.length > 0)
       ),
     ];
 
     const slugById = new Map<string, string>();
     if (tenantIds.length > 0) {
       const { data: tenants } = await admin
-        .schema("platform")
-        .from("tenants")
-        .select("id, slug")
-        .in("id", tenantIds);
+        .schema('platform')
+        .from('tenants')
+        .select('id, slug')
+        .in('id', tenantIds);
       for (const t of tenants ?? []) {
         slugById.set(t.id, t.slug);
       }
@@ -68,11 +66,9 @@ export async function GET(): Promise<NextResponse> {
 
     const entries = rows.slice(0, 20).map((r) => {
       const meta = r.metadata as Record<string, unknown> | null;
-      const slugFromMeta =
-        meta && typeof meta.slug === "string" ? meta.slug : null;
+      const slugFromMeta = meta && typeof meta.slug === 'string' ? meta.slug : null;
       const tid = r.tenant_id;
-      const slug =
-        tid && slugById.has(tid) ? (slugById.get(tid) ?? null) : slugFromMeta;
+      const slug = tid && slugById.has(tid) ? (slugById.get(tid) ?? null) : slugFromMeta;
       return {
         id: r.id,
         action: r.action,
@@ -95,13 +91,11 @@ export async function GET(): Promise<NextResponse> {
         bucketMap.set(day, (bucketMap.get(day) ?? 0) + 1);
       }
     }
-    const buckets = [...bucketMap.entries()]
-      .map(([date, count]) => ({ date, count }))
-      .reverse();
+    const buckets = [...bucketMap.entries()].map(([date, count]) => ({ date, count })).reverse();
 
     return NextResponse.json({ entries, buckets });
   } catch (e) {
-    const msg = e instanceof Error ? e.message : "Internal error";
+    const msg = e instanceof Error ? e.message : 'Internal error';
     return NextResponse.json({ error: msg }, { status: 500 });
   }
 }

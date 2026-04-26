@@ -18,32 +18,32 @@
  * - `failed` — FAILED: tarea fallida (límite de iteraciones o error crítico).
  */
 export type OarLifecycleState =
-  | "pending"
-  | "strategizing"
-  | "thinking"
-  | "acting"
-  | "observing"
-  | "reflecting"
-  | "completed"
-  | "failed";
+  | 'pending'
+  | 'strategizing'
+  | 'thinking'
+  | 'acting'
+  | 'observing'
+  | 'reflecting'
+  | 'completed'
+  | 'failed';
 
 /**
  * Constantes de estado para comparaciones y switches exhaustivos en implementaciones.
  */
 export const OAR_LIFECYCLE: { readonly [K in OarLifecycleState]: K } = {
-  pending: "pending",
-  strategizing: "strategizing",
-  thinking: "thinking",
-  acting: "acting",
-  observing: "observing",
-  reflecting: "reflecting",
-  completed: "completed",
-  failed: "failed",
+  pending: 'pending',
+  strategizing: 'strategizing',
+  thinking: 'thinking',
+  acting: 'acting',
+  observing: 'observing',
+  reflecting: 'reflecting',
+  completed: 'completed',
+  failed: 'failed',
 } as const;
 
 /**
  * Indica si el estado es terminal (no hay más transiciones salvo un nuevo job).
  */
 export function isOarTerminalState(state: OarLifecycleState): boolean {
-  return state === "completed" || state === "failed";
+  return state === 'completed' || state === 'failed';
 }

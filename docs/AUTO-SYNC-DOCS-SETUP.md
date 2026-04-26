@@ -64,13 +64,13 @@ Si usás Husky en vez de `.githooks`, existe `.husky/pre-commit` que delega en `
 
 ## 7. Troubleshooting
 
-| Problema | Qué hacer |
-|----------|-----------|
-| `docs:sync` falla | Validá sintaxis YAML (indentación, comillas en fechas ISO). |
-| No llega notificación a Discord | Comprobá que exista `DISCORD_WEBHOOK_URL` en Secrets del repo. |
-| El workflow no corre | Revisá que el push incluya algún path listado en `on.push.paths` del workflow. |
-| “Auto-commit loop” | No uses `git push --force` para “arreglar”. El diseño evita bucles con `[docs-sync]` en el mensaje del commit automático. |
-| Pre-commit no regenera docs | Verificá `core.hooksPath=.githooks` y que `status.yaml` esté en el stage. |
+| Problema                        | Qué hacer                                                                                                                 |
+| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| `docs:sync` falla               | Validá sintaxis YAML (indentación, comillas en fechas ISO).                                                               |
+| No llega notificación a Discord | Comprobá que exista `DISCORD_WEBHOOK_URL` en Secrets del repo.                                                            |
+| El workflow no corre            | Revisá que el push incluya algún path listado en `on.push.paths` del workflow.                                            |
+| “Auto-commit loop”              | No uses `git push --force` para “arreglar”. El diseño evita bucles con `[docs-sync]` en el mensaje del commit automático. |
+| Pre-commit no regenera docs     | Verificá `core.hooksPath=.githooks` y que `status.yaml` esté en el stage.                                                 |
 
 ## 8. Prueba rápida
 

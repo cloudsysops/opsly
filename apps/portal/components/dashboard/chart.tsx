@@ -1,15 +1,15 @@
-"use client";
+'use client';
 
-import type { ReactElement } from "react";
-import { cn } from "@/lib/utils";
+import type { ReactElement } from 'react';
+import { cn } from '@/lib/utils';
 
 export interface ChartProps {
   data?: number[];
   labels?: string[];
-  type?: "line" | "bar";
+  type?: 'line' | 'bar';
 }
 
-export function Chart({ data = [], labels = [], type = "line" }: ChartProps): ReactElement {
+export function Chart({ data = [], labels = [], type = 'line' }: ChartProps): ReactElement {
   const safe = data.length > 0 ? data : [1];
   const max = Math.max(...safe, 1);
 
@@ -19,10 +19,10 @@ export function Chart({ data = [], labels = [], type = "line" }: ChartProps): Re
         <div key={i} className="flex min-h-0 flex-1 flex-col items-center gap-1">
           <div
             className={cn(
-              "w-full min-h-[4px] rounded-t transition-all duration-300",
-              type === "bar"
-                ? "bg-gradient-to-t from-blue-600 to-blue-400"
-                : "rounded-sm bg-sky-500/90",
+              'w-full min-h-[4px] rounded-t transition-all duration-300',
+              type === 'bar'
+                ? 'bg-gradient-to-t from-blue-600 to-blue-400'
+                : 'rounded-sm bg-sky-500/90'
             )}
             style={{ height: `${Math.max(8, (value / max) * 100)}%` }}
           />

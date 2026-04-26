@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
 import {
   Table,
   TableBody,
@@ -10,16 +10,16 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { PLAN_MRR_USD, PLAN_PORT_BASE } from "@/lib/plans";
-import { useState } from "react";
+} from '@/components/ui/table';
+import { PLAN_MRR_USD, PLAN_PORT_BASE } from '@/lib/plans';
+import { useState } from 'react';
 
 function maskUrl(url: string | undefined): string {
   if (!url) {
-    return "—";
+    return '—';
   }
   if (url.length <= 24) {
-    return "••••••••";
+    return '••••••••';
   }
   return `${url.slice(0, 12)}…${url.slice(-6)}`;
 }
@@ -36,10 +36,10 @@ function parseJsonSafe(text: string): { error?: string } {
 }
 
 export default function SettingsPage() {
-  const domain = process.env.NEXT_PUBLIC_PLATFORM_DOMAIN ?? "—";
-  const version = process.env.NEXT_PUBLIC_APP_VERSION ?? "0.0.0";
-  const discord = process.env.NEXT_PUBLIC_DISCORD_WEBHOOK_URL ?? "";
-  const stripeOk = process.env.NEXT_PUBLIC_STRIPE_WEBHOOK_CONFIGURED === "true";
+  const domain = process.env.NEXT_PUBLIC_PLATFORM_DOMAIN ?? '—';
+  const version = process.env.NEXT_PUBLIC_APP_VERSION ?? '0.0.0';
+  const discord = process.env.NEXT_PUBLIC_DISCORD_WEBHOOK_URL ?? '';
+  const stripeOk = process.env.NEXT_PUBLIC_STRIPE_WEBHOOK_CONFIGURED === 'true';
   const [backupMsg, setBackupMsg] = useState<string | null>(null);
   const [backupErr, setBackupErr] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -49,16 +49,16 @@ export default function SettingsPage() {
     setBackupErr(null);
     setBusy(true);
     try {
-      const res = await fetch("/api/backup", { method: "POST" });
+      const res = await fetch('/api/backup', { method: 'POST' });
       const text = await res.text();
       const body = parseJsonSafe(text);
       if (!res.ok) {
         setBackupErr(body.error ?? `HTTP ${res.status}`);
         return;
       }
-      setBackupMsg("Backup solicitado correctamente.");
+      setBackupMsg('Backup solicitado correctamente.');
     } catch (e) {
-      setBackupErr(e instanceof Error ? e.message : "Error");
+      setBackupErr(e instanceof Error ? e.message : 'Error');
     } finally {
       setBusy(false);
     }
@@ -98,13 +98,11 @@ export default function SettingsPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {(["startup", "business", "enterprise"] as const).map((p) => (
+              {(['startup', 'business', 'enterprise'] as const).map((p) => (
                 <TableRow key={p}>
                   <TableCell className="font-mono">{p}</TableCell>
                   <TableCell className="font-mono">{PLAN_MRR_USD[p]}</TableCell>
-                  <TableCell className="font-mono">
-                    {PLAN_PORT_BASE[p]}
-                  </TableCell>
+                  <TableCell className="font-mono">{PLAN_PORT_BASE[p]}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -119,16 +117,12 @@ export default function SettingsPage() {
         <CardContent className="space-y-2 font-sans text-sm">
           <div>
             <span className="text-ops-gray">Discord (masked) </span>
-            <span className="font-mono text-neutral-200">
-              {maskUrl(discord)}
-            </span>
+            <span className="font-mono text-neutral-200">{maskUrl(discord)}</span>
           </div>
           <div>
             <span className="text-ops-gray">Stripe webhook </span>
             <span className="font-mono text-neutral-200">
-              {stripeOk
-                ? "configured (flag)"
-                : "verificar en API / dashboard Stripe"}
+              {stripeOk ? 'configured (flag)' : 'verificar en API / dashboard Stripe'}
             </span>
           </div>
         </CardContent>
@@ -140,24 +134,15 @@ export default function SettingsPage() {
         </CardHeader>
         <CardContent className="space-y-3">
           <p className="font-sans text-sm text-ops-gray">
-            Intenta disparar el backup remoto por API. Si el backend no expone
-            ese endpoint, debes usar el script operativo.
+            Intenta disparar el backup remoto por API. Si el backend no expone ese endpoint, debes
+            usar el script operativo.
           </p>
           <Separator />
-          <Button
-            variant="destructive"
-            size="sm"
-            disabled={busy}
-            onClick={() => void runBackup()}
-          >
+          <Button variant="destructive" size="sm" disabled={busy} onClick={() => void runBackup()}>
             Run backup now
           </Button>
-          {backupMsg ? (
-            <p className="font-sans text-sm text-ops-green">{backupMsg}</p>
-          ) : null}
-          {backupErr ? (
-            <p className="font-sans text-sm text-ops-red">{backupErr}</p>
-          ) : null}
+          {backupMsg ? <p className="font-sans text-sm text-ops-green">{backupMsg}</p> : null}
+          {backupErr ? <p className="font-sans text-sm text-ops-red">{backupErr}</p> : null}
         </CardContent>
       </Card>
     </div>

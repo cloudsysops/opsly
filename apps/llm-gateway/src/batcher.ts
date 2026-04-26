@@ -1,5 +1,5 @@
-import { llmCallDirect } from "./llm-direct.js";
-import type { LLMRequest, LLMResponse } from "./types.js";
+import { llmCallDirect } from './llm-direct.js';
+import type { LLMRequest, LLMResponse } from './types.js';
 
 interface BatchItem {
   request: LLMRequest;
@@ -10,23 +10,23 @@ interface BatchItem {
 
 /** Mayor número = mayor prioridad en flush (enterprise antes que startup). */
 function planPriority(tenantPlan: string | undefined): number {
-  if (tenantPlan === "enterprise") {
+  if (tenantPlan === 'enterprise') {
     return 3;
   }
-  if (tenantPlan === "business") {
+  if (tenantPlan === 'business') {
     return 2;
   }
   return 1;
 }
 
 const BATCH_CONFIG = {
-  1: { max_size: 10, window_ms: 50, label: "Llama/simple" },
-  2: { max_size: 5, window_ms: 100, label: "Haiku/moderate" },
-  3: { max_size: 3, window_ms: 200, label: "Sonnet/complex" },
+  1: { max_size: 10, window_ms: 50, label: 'Llama/simple' },
+  2: { max_size: 5, window_ms: 100, label: 'Haiku/moderate' },
+  3: { max_size: 3, window_ms: 200, label: 'Sonnet/complex' },
 } as const;
 
 function windowFor(level: 1 | 2 | 3): number {
-  const scale = Number(process.env.LLM_BATCH_WINDOW_SCALE ?? "1");
+  const scale = Number(process.env.LLM_BATCH_WINDOW_SCALE ?? '1');
   const raw = BATCH_CONFIG[level].window_ms * scale;
   return Math.max(0, Math.round(raw));
 }
@@ -68,9 +68,7 @@ async function flushQueue(level: 1 | 2 | 3): Promise<void> {
   const batch = queues[level].splice(0);
   if (batch.length === 0) return;
 
-  batch.sort(
-    (a, b) => planPriority(b.request.tenant_plan) - planPriority(a.request.tenant_plan),
-  );
+  batch.sort((a, b) => planPriority(b.request.tenant_plan) - planPriority(a.request.tenant_plan));
 
   if (batch.length === 1) {
     try {
@@ -97,15 +95,15 @@ async function batchExecute(items: BatchItem[], level: 1 | 2 | 3): Promise<LLMRe
   }
 
   const combinedPrompt = items
-    .map((item, i) => `--- TAREA ${i + 1} ---\n${item.request.messages.at(-1)?.content ?? ""}`)
-    .join("\n\n");
+    .map((item, i) => `--- TAREA ${i + 1} ---\n${item.request.messages.at(-1)?.content ?? ''}`)
+    .join('\n\n');
 
   const combined = await llmCallDirect({
     ...items[0].request,
-    model: "sonnet",
+    model: 'sonnet',
     messages: [
       {
-        role: "user",
+        role: 'user',
         content: `Responde CADA tarea numerada por separado.
 Formato: {"task_1": "...", "task_2": "...", ...}
 

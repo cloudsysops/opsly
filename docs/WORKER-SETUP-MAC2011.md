@@ -17,10 +17,10 @@ Guía para usar un equipo **Ubuntu** (p. ej. Mac 2011 con Linux) como **worker**
 
 ## Especificaciones (referencia Opsly)
 
-| Equipo | Rol | Tailscale |
-|--------|-----|-----------|
-| Mac principal | Cursor, clon del repo | **`opsly-admin`** → p. ej. `100.89.38.3` |
-| Mac 2011 + Ubuntu | Worker: Docker opcional, Node, orchestrator | **`opsly-worker`** → `100.80.41.29` |
+| Equipo            | Rol                                         | Tailscale                                |
+| ----------------- | ------------------------------------------- | ---------------------------------------- |
+| Mac principal     | Cursor, clon del repo                       | **`opsly-admin`** → p. ej. `100.89.38.3` |
+| Mac 2011 + Ubuntu | Worker: Docker opcional, Node, orchestrator | **`opsly-worker`** → `100.80.41.29`      |
 
 Ajusta rutas: el repo puede llamarse `intcloudsysops` o `opsly` según dónde clones.
 
@@ -116,9 +116,9 @@ scp .env.local opsly-worker:~/opsly/.env.local
 
 En este repo **no** existe `npm run start:worker` en la raíz. El orchestrator usa:
 
-| Paso | Comando |
-|------|---------|
-| Build | `npm run build --workspace=@intcloudsysops/orchestrator` |
+| Paso     | Comando                                                  |
+| -------- | -------------------------------------------------------- |
+| Build    | `npm run build --workspace=@intcloudsysops/orchestrator` |
 | Arranque | `npm run start --workspace=@intcloudsysops/orchestrator` |
 
 **Script recomendado (carga `.env.local` si existe):**
@@ -236,16 +236,16 @@ ssh opsly-worker "
 
 ## Checklist de estado (rellenar tú)
 
-| # | Pregunta | Respuesta |
-|---|----------|-----------|
-| 1 | ¿IP Tailscale de `opsly-worker` (100.80.41.29)? | |
-| 2 | ¿SSH OK desde la Mac principal (`opsly-admin`)? | |
-| 3 | ¿Docker instalado (si lo necesitas)? | |
-| 4 | ¿Repo clonado y `npm ci` hecho? | |
-| 5 | ¿`.env` con `REDIS_URL` válido para el worker? | |
-| 6 | ¿Orchestrator arranca (`build` + `start` workspace)? | |
-| 7 | ¿systemd activo (opcional)? | |
-| 8 | ¿Remote SSH abre el repo? | |
+| #   | Pregunta                                             | Respuesta |
+| --- | ---------------------------------------------------- | --------- |
+| 1   | ¿IP Tailscale de `opsly-worker` (100.80.41.29)?      |           |
+| 2   | ¿SSH OK desde la Mac principal (`opsly-admin`)?      |           |
+| 3   | ¿Docker instalado (si lo necesitas)?                 |           |
+| 4   | ¿Repo clonado y `npm ci` hecho?                      |           |
+| 5   | ¿`.env` con `REDIS_URL` válido para el worker?       |           |
+| 6   | ¿Orchestrator arranca (`build` + `start` workspace)? |           |
+| 7   | ¿systemd activo (opcional)?                          |           |
+| 8   | ¿Remote SSH abre el repo?                            |           |
 
 ---
 

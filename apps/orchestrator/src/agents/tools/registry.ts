@@ -1,8 +1,8 @@
-import { DummySquareTool } from "./dummy.tool.js";
-import { GetServerStatusTool, RestartContainerTool } from "./internal-tools.js";
-import { ShellCommandTool } from "./shell-command.tool.js";
-import { TavilyTool } from "./tavily-tool.js";
-import type { ToolManifest, ToolRegistry } from "./types.js";
+import { DummySquareTool } from './dummy.tool.js';
+import { GetServerStatusTool, RestartContainerTool } from './internal-tools.js';
+import { ShellCommandTool } from './shell-command.tool.js';
+import { TavilyTool } from './tavily-tool.js';
+import type { ToolManifest, ToolRegistry } from './types.js';
 
 function normalized(text: string): string {
   return text.trim().toLowerCase();
@@ -36,8 +36,7 @@ export class InMemoryToolRegistry implements ToolRegistry {
         return true;
       }
       return words.some(
-        (w) =>
-          description.includes(w) || capabilities.some((capability) => capability.includes(w)),
+        (w) => description.includes(w) || capabilities.some((capability) => capability.includes(w))
       );
     });
   }
@@ -48,7 +47,7 @@ export class InMemoryToolRegistry implements ToolRegistry {
 }
 
 function toolEnabledByEnv(toolName: string): boolean {
-  if (toolName === "tavily_search") {
+  if (toolName === 'tavily_search') {
     return Boolean(process.env.TAVILY_API_KEY?.trim());
   }
   return true;

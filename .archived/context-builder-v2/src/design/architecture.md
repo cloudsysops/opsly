@@ -96,7 +96,9 @@ Given `max_context_tokens`, reserve budgets:
   },
   "context": {
     "code": [{ "source": "git-diff", "path": "apps/api/...", "content": "...", "score": 0.91 }],
-    "architecture": [{ "source": "adr", "path": "docs/adr/ADR-024-...", "content": "...", "score": 0.86 }],
+    "architecture": [
+      { "source": "adr", "path": "docs/adr/ADR-024-...", "content": "...", "score": 0.86 }
+    ],
     "operations": [{ "source": "redis-state", "content": "...", "score": 0.72 }],
     "web": [{ "source": "hermes-web", "url": "https://...", "content": "...", "confidence": 0.78 }]
   },
@@ -104,10 +106,7 @@ Given `max_context_tokens`, reserve budgets:
     { "kind": "file", "ref": "docs/adr/ADR-024-..." },
     { "kind": "url", "ref": "https://..." }
   ],
-  "warnings": [
-    "web_enrichment_disabled",
-    "token_budget_truncated"
-  ]
+  "warnings": ["web_enrichment_disabled", "token_budget_truncated"]
 }
 ```
 

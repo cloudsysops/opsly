@@ -56,11 +56,11 @@ Si anon/authenticated acceden por PostgREST, añadir políticas explícitas; si 
 
 ## Errores comunes
 
-| Error | Causa | Solución |
-|-------|-------|----------|
-| duplicate key version | Migración con mismo número | Renombrar a versión siguiente |
-| permission denied | Schema no expuesto | `GRANT USAGE ON SCHEMA platform` |
-| RLS blocked | Políticas restrictivas | Verificar policies para service_role |
+| Error                 | Causa                      | Solución                             |
+| --------------------- | -------------------------- | ------------------------------------ |
+| duplicate key version | Migración con mismo número | Renombrar a versión siguiente        |
+| permission denied     | Schema no expuesto         | `GRANT USAGE ON SCHEMA platform`     |
+| RLS blocked           | Políticas restrictivas     | Verificar policies para service_role |
 
 ## Testing
 

@@ -1,13 +1,13 @@
 // Tipos compartidos para el sistema de webhooks outbound
 export type WebhookEventType =
-  | "tenant.created"
-  | "tenant.suspended"
-  | "tenant.resumed"
-  | "billing.paid"
-  | "billing.failed"
-  | "backup.completed"
-  | "backup.failed"
-  | "usage.threshold_reached";
+  | 'tenant.created'
+  | 'tenant.suspended'
+  | 'tenant.resumed'
+  | 'billing.paid'
+  | 'billing.failed'
+  | 'backup.completed'
+  | 'backup.failed'
+  | 'usage.threshold_reached';
 
 export interface WebhookPayload {
   event: WebhookEventType;

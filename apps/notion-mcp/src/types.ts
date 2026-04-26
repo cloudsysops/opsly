@@ -1,11 +1,6 @@
-export type TaskStatus =
-  | "Backlog"
-  | "Ready"
-  | "In Progress"
-  | "In Review"
-  | "Done";
+export type TaskStatus = 'Backlog' | 'Ready' | 'In Progress' | 'In Review' | 'Done';
 
-export type TaskPriority = "Low" | "Medium" | "High" | "Blocker";
+export type TaskPriority = 'Low' | 'Medium' | 'High' | 'Blocker';
 
 export interface Task {
   readonly id: string;
@@ -26,9 +21,9 @@ export interface Task {
   readonly updated: string;
 }
 
-export type SprintPhase = "Fase 1" | "Fase 2" | "Fase 3";
+export type SprintPhase = 'Fase 1' | 'Fase 2' | 'Fase 3';
 
-export type SprintStatus = "Planned" | "Active" | "Completed";
+export type SprintStatus = 'Planned' | 'Active' | 'Completed';
 
 export interface Sprint {
   readonly id: string;
@@ -54,7 +49,7 @@ export interface DailyStandup {
   readonly notes?: string;
 }
 
-export type QualityStatus = "Pass" | "Warn" | "Fail";
+export type QualityStatus = 'Pass' | 'Warn' | 'Fail';
 
 export interface QualityGate {
   readonly id: string;

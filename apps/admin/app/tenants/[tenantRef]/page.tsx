@@ -1,18 +1,18 @@
-"use client";
+'use client';
 
-import { useParams, useRouter } from "next/navigation";
-import { useState } from "react";
-import { ContainerStatusGrid } from "@/components/tenants/ContainerStatusGrid";
-import { PlanBadge } from "@/components/tenants/PlanBadge";
-import { TenantActions } from "@/components/tenants/TenantActions";
-import { TenantStatusBadge } from "@/components/tenants/TenantStatusBadge";
-import { useTenant } from "@/hooks/useTenant";
-import { parseServiceUrls, uptimeStatusPageUrl } from "@/lib/service-urls";
-import { stackRecordToContainers } from "@/lib/stack-map";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
-import { ExternalLink } from "lucide-react";
+import { useParams, useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { ContainerStatusGrid } from '@/components/tenants/ContainerStatusGrid';
+import { PlanBadge } from '@/components/tenants/PlanBadge';
+import { TenantActions } from '@/components/tenants/TenantActions';
+import { TenantStatusBadge } from '@/components/tenants/TenantStatusBadge';
+import { useTenant } from '@/hooks/useTenant';
+import { parseServiceUrls, uptimeStatusPageUrl } from '@/lib/service-urls';
+import { stackRecordToContainers } from '@/lib/stack-map';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
+import { ExternalLink } from 'lucide-react';
 
 function CopyUrlButton({ url }: { url: string }) {
   const [ok, setOk] = useState(false);
@@ -29,15 +29,14 @@ function CopyUrlButton({ url }: { url: string }) {
         });
       }}
     >
-      {ok ? "copied" : "copy"}
+      {ok ? 'copied' : 'copy'}
     </Button>
   );
 }
 
 export default function TenantDetailPage() {
   const params = useParams();
-  const tenantRef =
-    typeof params.tenantRef === "string" ? params.tenantRef : "";
+  const tenantRef = typeof params.tenantRef === 'string' ? params.tenantRef : '';
   const router = useRouter();
   const { data, error, isLoading, mutate } = useTenant(tenantRef);
 
@@ -62,8 +61,7 @@ export default function TenantDetailPage() {
   const { tenant, stack_status } = data;
   const containers = stackRecordToContainers(stack_status);
   const urls = parseServiceUrls(tenant.services);
-  const statusEmbed =
-    urls.uptime !== null ? uptimeStatusPageUrl(urls.uptime, tenant.slug) : null;
+  const statusEmbed = urls.uptime !== null ? uptimeStatusPageUrl(urls.uptime, tenant.slug) : null;
 
   return (
     <div className="space-y-8">
@@ -80,7 +78,7 @@ export default function TenantDetailPage() {
           slug={tenant.slug}
           status={tenant.status}
           onMutate={() => void mutate()}
-          onDeleted={() => router.push("/tenants")}
+          onDeleted={() => router.push('/tenants')}
         />
       </div>
 
@@ -102,9 +100,7 @@ export default function TenantDetailPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="break-all font-mono text-sm text-neutral-200">
-              {tenant.owner_email}
-            </p>
+            <p className="break-all font-mono text-sm text-neutral-200">{tenant.owner_email}</p>
           </CardContent>
         </Card>
         <Card>
@@ -115,7 +111,7 @@ export default function TenantDetailPage() {
           </CardHeader>
           <CardContent>
             <p className="font-mono text-sm text-neutral-200">
-              {new Date(tenant.created_at).toLocaleString("es")}
+              {new Date(tenant.created_at).toLocaleString('es')}
             </p>
           </CardContent>
         </Card>
@@ -123,9 +119,7 @@ export default function TenantDetailPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle className="font-sans text-sm text-ops-gray">
-            Accesos directos
-          </CardTitle>
+          <CardTitle className="font-sans text-sm text-ops-gray">Accesos directos</CardTitle>
         </CardHeader>
         <CardContent className="flex flex-wrap gap-3">
           {urls.n8n ? (
@@ -176,8 +170,8 @@ export default function TenantDetailPage() {
             Estado (embed)
           </h2>
           <p className="font-sans text-xs text-ops-gray">
-            Si no carga, el servidor puede bloquear iframes (X-Frame-Options);
-            usa el enlace de status page.
+            Si no carga, el servidor puede bloquear iframes (X-Frame-Options); usa el enlace de
+            status page.
           </p>
           <div className="overflow-hidden rounded border border-ops-border bg-black/40">
             <iframe
@@ -191,9 +185,7 @@ export default function TenantDetailPage() {
       ) : null}
 
       <section>
-        <h2 className="mb-3 font-sans text-xs uppercase tracking-wide text-ops-gray">
-          Containers
-        </h2>
+        <h2 className="mb-3 font-sans text-xs uppercase tracking-wide text-ops-gray">Containers</h2>
         <ContainerStatusGrid containers={containers} />
       </section>
 
@@ -233,9 +225,7 @@ export default function TenantDetailPage() {
             </div>
           ) : null}
           {!urls.n8n && !urls.uptime ? (
-            <p className="font-sans text-sm text-ops-gray">
-              Sin URLs en services.
-            </p>
+            <p className="font-sans text-sm text-ops-gray">Sin URLs en services.</p>
           ) : null}
         </div>
       </section>

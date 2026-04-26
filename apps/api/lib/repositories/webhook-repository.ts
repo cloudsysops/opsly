@@ -1,4 +1,4 @@
-import { getServiceClient } from "../supabase";
+import { getServiceClient } from '../supabase';
 
 export interface TenantWebhook {
   id: string;
@@ -18,17 +18,17 @@ export type CreateWebhookInput = {
   events: string[];
 };
 
-const TABLE = "tenant_webhooks";
-const SCHEMA = "platform";
+const TABLE = 'tenant_webhooks';
+const SCHEMA = 'platform';
 
 export async function listWebhooks(tenantSlug: string): Promise<TenantWebhook[]> {
   const supabase = getServiceClient();
   const { data, error } = await supabase
     .schema(SCHEMA)
     .from(TABLE)
-    .select("*")
-    .eq("tenant_slug", tenantSlug)
-    .order("created_at", { ascending: false });
+    .select('*')
+    .eq('tenant_slug', tenantSlug)
+    .order('created_at', { ascending: false });
 
   if (error) throw new Error(error.message);
   return (data ?? []) as TenantWebhook[];
@@ -36,12 +36,7 @@ export async function listWebhooks(tenantSlug: string): Promise<TenantWebhook[]>
 
 export async function createWebhook(input: CreateWebhookInput): Promise<TenantWebhook> {
   const supabase = getServiceClient();
-  const { data, error } = await supabase
-    .schema(SCHEMA)
-    .from(TABLE)
-    .insert(input)
-    .select()
-    .single();
+  const { data, error } = await supabase.schema(SCHEMA).from(TABLE).insert(input).select().single();
 
   if (error) throw new Error(error.message);
   return data as TenantWebhook;
@@ -53,24 +48,24 @@ export async function deleteWebhook(id: string, tenantSlug: string): Promise<voi
     .schema(SCHEMA)
     .from(TABLE)
     .delete()
-    .eq("id", id)
-    .eq("tenant_slug", tenantSlug); // enforce ownership
+    .eq('id', id)
+    .eq('tenant_slug', tenantSlug); // enforce ownership
 
   if (error) throw new Error(error.message);
 }
 
 export async function listActiveWebhooksByEvent(
   tenantSlug: string,
-  event: string,
+  event: string
 ): Promise<TenantWebhook[]> {
   const supabase = getServiceClient();
   const { data, error } = await supabase
     .schema(SCHEMA)
     .from(TABLE)
-    .select("*")
-    .eq("tenant_slug", tenantSlug)
-    .eq("active", true)
-    .contains("events", [event]);
+    .select('*')
+    .eq('tenant_slug', tenantSlug)
+    .eq('active', true)
+    .contains('events', [event]);
 
   if (error) throw new Error(error.message);
   return (data ?? []) as TenantWebhook[];

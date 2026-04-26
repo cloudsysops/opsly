@@ -1,5 +1,5 @@
-import { createServerClient, type SetAllCookies } from "@supabase/ssr";
-import { type NextRequest, NextResponse } from "next/server";
+import { createServerClient, type SetAllCookies } from '@supabase/ssr';
+import { type NextRequest, NextResponse } from 'next/server';
 
 export async function updateSession(request: NextRequest): Promise<NextResponse> {
   let supabaseResponse = NextResponse.next({
@@ -36,21 +36,26 @@ export async function updateSession(request: NextRequest): Promise<NextResponse>
   } = await supabase.auth.getUser();
 
   const pathname = request.nextUrl.pathname;
-  const isLogin = pathname === "/login" || pathname.startsWith("/login/");
-  const isInvite = pathname.startsWith("/invite/");
-  const isOnboarding = pathname.startsWith("/onboarding/");
+  const isLogin = pathname === '/login' || pathname.startsWith('/login/');
+  const isInvite = pathname.startsWith('/invite/');
+  const isOnboarding = pathname.startsWith('/onboarding/');
 
-  const isAdmin = pathname.startsWith("/admin");
+  const isAdmin = pathname.startsWith('/admin');
 
-  if (!user && !isLogin && !isInvite && (pathname.startsWith("/dashboard") || isOnboarding || isAdmin)) {
+  if (
+    !user &&
+    !isLogin &&
+    !isInvite &&
+    (pathname.startsWith('/dashboard') || isOnboarding || isAdmin)
+  ) {
     const redirectUrl = request.nextUrl.clone();
-    redirectUrl.pathname = "/login";
+    redirectUrl.pathname = '/login';
     return NextResponse.redirect(redirectUrl);
   }
 
   if (user && isLogin) {
     const redirectUrl = request.nextUrl.clone();
-    redirectUrl.pathname = "/dashboard";
+    redirectUrl.pathname = '/dashboard';
     return NextResponse.redirect(redirectUrl);
   }
 

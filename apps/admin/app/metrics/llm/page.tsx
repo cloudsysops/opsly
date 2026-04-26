@@ -1,16 +1,16 @@
-"use client";
+'use client';
 
-import { useMemo, useState } from "react";
-import useSWR from "swr";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { getTenantUsageMetrics, getTenants } from "@/lib/api-client";
-import type { Tenant, TenantUsageMetricsResponse } from "@/lib/types";
+import { useMemo, useState } from 'react';
+import useSWR from 'swr';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { getTenantUsageMetrics, getTenants } from '@/lib/api-client';
+import type { Tenant, TenantUsageMetricsResponse } from '@/lib/types';
 
 function fmtUsd(n: number): string {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
     maximumFractionDigits: 4,
   }).format(n);
 }
@@ -20,13 +20,13 @@ function percent(n: number): string {
 }
 
 export default function AdminLlmMetricsPage() {
-  const [period, setPeriod] = useState<"today" | "month">("today");
+  const [period, setPeriod] = useState<'today' | 'month'>('today');
 
   const {
     data: tenantsData,
     error: tenantsError,
     isLoading: tenantsLoading,
-  } = useSWR(["tenants", 1], () => getTenants({ page: 1, limit: 100 }), {
+  } = useSWR(['tenants', 1], () => getTenants({ page: 1, limit: 100 }), {
     revalidateOnFocus: false,
     refreshInterval: 60_000,
   });
@@ -39,17 +39,17 @@ export default function AdminLlmMetricsPage() {
     error: metricsError,
     isLoading: metricsLoading,
   } = useSWR(
-    ["tenant-usage", period, ...slugs],
+    ['tenant-usage', period, ...slugs],
     async () => {
       const out: Record<string, TenantUsageMetricsResponse> = {};
       await Promise.all(
         slugs.map(async (slug) => {
           out[slug] = await getTenantUsageMetrics(slug, period);
-        }),
+        })
       );
       return out;
     },
-    { revalidateOnFocus: false, refreshInterval: 60_000 },
+    { revalidateOnFocus: false, refreshInterval: 60_000 }
   );
 
   const rows = useMemo(() => {
@@ -78,77 +78,60 @@ export default function AdminLlmMetricsPage() {
         cost_usd: 0,
         requests: 0,
         cache_hits: 0,
-      },
+      }
     );
   }, [metricsMap]);
 
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
-        <h1 className="font-mono text-lg tracking-tight text-ops-green">
-          LLM Metrics
-        </h1>
+        <h1 className="font-mono text-lg tracking-tight text-ops-green">LLM Metrics</h1>
         <div className="flex items-center gap-2">
           <button
             className={`rounded border px-3 py-1 font-mono text-xs ${
-              period === "today"
-                ? "border-ops-green text-ops-green"
-                : "border-ops-border text-neutral-300 hover:text-neutral-100"
+              period === 'today'
+                ? 'border-ops-green text-ops-green'
+                : 'border-ops-border text-neutral-300 hover:text-neutral-100'
             }`}
-            onClick={() => setPeriod("today")}
+            onClick={() => setPeriod('today')}
           >
             Hoy
           </button>
           <button
             className={`rounded border px-3 py-1 font-mono text-xs ${
-              period === "month"
-                ? "border-ops-green text-ops-green"
-                : "border-ops-border text-neutral-300 hover:text-neutral-100"
+              period === 'month'
+                ? 'border-ops-green text-ops-green'
+                : 'border-ops-border text-neutral-300 hover:text-neutral-100'
             }`}
-            onClick={() => setPeriod("month")}
+            onClick={() => setPeriod('month')}
           >
             Mes
           </button>
         </div>
       </div>
 
-      {tenantsError ? (
-        <p className="text-sm text-red-400">{String(tenantsError.message)}</p>
-      ) : null}
-      {metricsError ? (
-        <p className="text-sm text-red-400">{String(metricsError.message)}</p>
-      ) : null}
+      {tenantsError ? <p className="text-sm text-red-400">{String(tenantsError.message)}</p> : null}
+      {metricsError ? <p className="text-sm text-red-400">{String(metricsError.message)}</p> : null}
 
       <Card className="border-ops-border bg-ops-surface">
         <CardHeader className="pb-2">
-          <CardTitle className="font-mono text-sm text-neutral-200">
-            Totales ({period})
-          </CardTitle>
+          <CardTitle className="font-mono text-sm text-neutral-200">Totales ({period})</CardTitle>
         </CardHeader>
         <CardContent className="grid gap-3 md:grid-cols-5">
           <Stat label="Requests" value={String(total.requests)} />
           <Stat label="Cache hits" value={String(total.cache_hits)} />
           <Stat
             label="Cache hit rate"
-            value={percent(
-              total.requests > 0
-                ? (total.cache_hits / total.requests) * 100
-                : 0,
-            )}
+            value={percent(total.requests > 0 ? (total.cache_hits / total.requests) * 100 : 0)}
           />
-          <Stat
-            label="Tokens (in/out)"
-            value={`${total.tokens_input}/${total.tokens_output}`}
-          />
+          <Stat label="Tokens (in/out)" value={`${total.tokens_input}/${total.tokens_output}`} />
           <Stat label="Cost USD" value={fmtUsd(total.cost_usd)} />
         </CardContent>
       </Card>
 
       <Card className="border-ops-border bg-ops-surface">
         <CardHeader className="pb-2">
-          <CardTitle className="font-mono text-sm text-neutral-200">
-            Por tenant
-          </CardTitle>
+          <CardTitle className="font-mono text-sm text-neutral-200">Por tenant</CardTitle>
         </CardHeader>
         <CardContent>
           {tenantsLoading || metricsLoading ? (
@@ -205,21 +188,15 @@ function TenantRow({
           {tenant.plan}
         </Badge>
       </td>
+      <td className="py-2 pr-3 font-mono text-neutral-200">{usage ? usage.requests : '—'}</td>
+      <td className="py-2 pr-3 font-mono text-neutral-200">{usage ? `${cacheHitRate}%` : '—'}</td>
       <td className="py-2 pr-3 font-mono text-neutral-200">
-        {usage ? usage.requests : "—"}
-      </td>
-      <td className="py-2 pr-3 font-mono text-neutral-200">
-        {usage ? `${cacheHitRate}%` : "—"}
-      </td>
-      <td className="py-2 pr-3 font-mono text-neutral-200">
-        {usage ? `${usage.tokens_input}/${usage.tokens_output}` : "—"}
+        {usage ? `${usage.tokens_input}/${usage.tokens_output}` : '—'}
       </td>
       <td className="py-2 pr-3 font-mono text-neutral-200">
-        {usage ? fmtUsd(usage.cost_usd) : "—"}
+        {usage ? fmtUsd(usage.cost_usd) : '—'}
       </td>
-      <td className="py-2 pr-3 font-mono text-ops-gray">
-        {usage?.top_model ?? "—"}
-      </td>
+      <td className="py-2 pr-3 font-mono text-ops-gray">{usage?.top_model ?? '—'}</td>
     </tr>
   );
 }

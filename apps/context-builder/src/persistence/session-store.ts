@@ -10,13 +10,13 @@
  *   startup: 24h  |  business: 7d  |  enterprise: 30d
  */
 
-import { getSessionExpiry, isExpired, type TenantPlan } from "./ttl-policy.js";
+import { getSessionExpiry, isExpired, type TenantPlan } from './ttl-policy.js';
 
 export interface AgentSession {
   id?: string;
   tenant_slug: string;
   session_key: string;
-  agent_role: "planner" | "executor" | "tool" | "notifier";
+  agent_role: 'planner' | 'executor' | 'tool' | 'notifier';
   summary: string;
   open_items: unknown[];
   decisions: unknown[];
@@ -26,19 +26,19 @@ export interface AgentSession {
   expires_at?: string;
 }
 
-const SUPABASE_URL = process.env.SUPABASE_URL ?? "";
-const SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY ?? "";
-const TABLE = "agent_sessions";
-const SCHEMA = "platform";
+const SUPABASE_URL = process.env.SUPABASE_URL ?? '';
+const SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY ?? '';
+const TABLE = 'agent_sessions';
+const SCHEMA = 'platform';
 
 function headers(): Record<string, string> {
   return {
-    "Content-Type": "application/json",
-    "Authorization": `Bearer ${SERVICE_ROLE_KEY}`,
-    "apikey": SERVICE_ROLE_KEY,
-    "Accept-Profile": SCHEMA,
-    "Content-Profile": SCHEMA,
-    "Prefer": "return=representation",
+    'Content-Type': 'application/json',
+    Authorization: `Bearer ${SERVICE_ROLE_KEY}`,
+    apikey: SERVICE_ROLE_KEY,
+    'Accept-Profile': SCHEMA,
+    'Content-Profile': SCHEMA,
+    Prefer: 'return=representation',
   };
 }
 
@@ -52,7 +52,7 @@ function tableUrl(): string {
  */
 export async function getSession(
   tenantSlug: string,
-  sessionKey: string,
+  sessionKey: string
 ): Promise<AgentSession | null> {
   if (!SUPABASE_URL || !SERVICE_ROLE_KEY) return null;
 
@@ -62,7 +62,7 @@ export async function getSession(
     const res = await fetch(url, { headers: headers() });
     if (!res.ok) return null;
 
-    const rows = await res.json() as AgentSession[];
+    const rows = (await res.json()) as AgentSession[];
     if (!rows.length) return null;
 
     const session = rows[0];
@@ -82,8 +82,8 @@ export async function getSession(
  * Si ya existe (tenant_slug + session_key), hace UPSERT y renueva `expires_at` según el plan.
  */
 export async function saveSession(
-  session: Omit<AgentSession, "id" | "created_at" | "updated_at">,
-  plan: TenantPlan,
+  session: Omit<AgentSession, 'id' | 'created_at' | 'updated_at'>,
+  plan: TenantPlan
 ): Promise<AgentSession | null> {
   if (!SUPABASE_URL || !SERVICE_ROLE_KEY) return null;
 
@@ -94,10 +94,10 @@ export async function saveSession(
 
   try {
     const res = await fetch(tableUrl(), {
-      method: "POST",
+      method: 'POST',
       headers: {
         ...headers(),
-        "Prefer": "return=representation,resolution=merge-duplicates",
+        Prefer: 'return=representation,resolution=merge-duplicates',
       },
       body: JSON.stringify(payload),
     });
@@ -106,26 +106,26 @@ export async function saveSession(
       const err = await res.text();
       console.error(
         JSON.stringify({
-          event: "session_store_error",
-          action: "save",
+          event: 'session_store_error',
+          action: 'save',
           status: res.status,
           error: err,
           ts: new Date().toISOString(),
-        }),
+        })
       );
       return null;
     }
 
-    const rows = await res.json() as AgentSession[];
+    const rows = (await res.json()) as AgentSession[];
     return rows[0] ?? null;
   } catch (err) {
     console.error(
       JSON.stringify({
-        event: "session_store_error",
-        action: "save",
+        event: 'session_store_error',
+        action: 'save',
         error: err instanceof Error ? err.message : String(err),
         ts: new Date().toISOString(),
-      }),
+      })
     );
     return null;
   }
@@ -138,8 +138,8 @@ export async function saveSession(
 export async function updateSession(
   tenantSlug: string,
   sessionKey: string,
-  patch: Partial<Pick<AgentSession, "summary" | "open_items" | "decisions" | "metadata">>,
-  plan?: TenantPlan,
+  patch: Partial<Pick<AgentSession, 'summary' | 'open_items' | 'decisions' | 'metadata'>>,
+  plan?: TenantPlan
 ): Promise<boolean> {
   if (!SUPABASE_URL || !SERVICE_ROLE_KEY) return false;
 
@@ -150,7 +150,7 @@ export async function updateSession(
 
   try {
     const res = await fetch(url, {
-      method: "PATCH",
+      method: 'PATCH',
       headers: headers(),
       body: JSON.stringify(payload),
     });
@@ -167,7 +167,7 @@ export async function deleteSession(tenantSlug: string, sessionKey: string): Pro
   const url = `${tableUrl()}?tenant_slug=eq.${encodeURIComponent(tenantSlug)}&session_key=eq.${encodeURIComponent(sessionKey)}`;
 
   try {
-    const res = await fetch(url, { method: "DELETE", headers: headers() });
+    const res = await fetch(url, { method: 'DELETE', headers: headers() });
     return res.ok;
   } catch {
     return false;
@@ -182,7 +182,7 @@ export async function purgeExpiredSessions(tenantSlug: string): Promise<boolean>
   const url = `${tableUrl()}?tenant_slug=eq.${encodeURIComponent(tenantSlug)}&expires_at=lt.${now}`;
 
   try {
-    const res = await fetch(url, { method: "DELETE", headers: headers() });
+    const res = await fetch(url, { method: 'DELETE', headers: headers() });
     return res.ok;
   } catch {
     return false;

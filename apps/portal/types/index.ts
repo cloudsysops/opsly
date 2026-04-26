@@ -3,7 +3,7 @@
  * Importar desde `@/types` o vía re-export en `@/lib/types`.
  */
 
-export type PortalMode = "developer" | "managed" | "security_defense";
+export type PortalMode = 'developer' | 'managed' | 'security_defense';
 
 export type PortalTenantPayload = {
   slug: string;
@@ -25,7 +25,7 @@ export type PortalTenantPayload = {
   };
 };
 
-export type PortalUsagePeriod = "today" | "month";
+export type PortalUsagePeriod = 'today' | 'month';
 
 /** Respuesta de `GET /api/portal/usage` (alineada con la API). */
 export type PortalUsagePayload = {
@@ -96,7 +96,7 @@ export type AdminInvitationResponse = {
 export type OnboardingRequest = {
   org_name: string;
   slug: string;
-  plan: "startup" | "business" | "enterprise";
+  plan: 'startup' | 'business' | 'enterprise';
 };
 
 /** Respuesta de POST /api/portal/onboarding. */
@@ -105,7 +105,7 @@ export type OnboardingResponse = {
   tenant_id: string;
   slug: string;
   org_name: string;
-  plan: "startup" | "business" | "enterprise";
+  plan: 'startup' | 'business' | 'enterprise';
   bootstrap: {
     workers_deployed: number;
     job_name: string;
@@ -114,8 +114,8 @@ export type OnboardingResponse = {
 
 /** Body de POST /api/provisioning/quote. */
 export type ProvisioningQuoteRequest = {
-  provider: "aws" | "azure" | "gcp";
-  plan: "free-tier" | "serverless-starter";
+  provider: 'aws' | 'azure' | 'gcp';
+  plan: 'free-tier' | 'serverless-starter';
 };
 
 /** Respuesta de POST /api/provisioning/quote. */

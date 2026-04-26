@@ -4,12 +4,12 @@ Coordinación entre **Cursor**, **Claude**, **GitHub Actions** y el **product ow
 
 ## Roles y responsabilidades
 
-| Agente | Rol principal | Entradas | Salidas |
-|--------|----------------|----------|---------|
-| **Cursor** | Implementación | Prompts, `status.yaml`, código existente | PRs, migraciones, scripts |
-| **Claude** | Diseño y criterios | `AGENTS.md`, `VISION.md`, ADRs | ADRs, prompts, revisión |
-| **GitHub Actions** | Automatización | Push, cron, secrets | CI, imágenes, docs sync, notificaciones |
-| **Cristian** | Producto y prioridad | Notion, métricas, riesgos | Sprint, aprobaciones |
+| Agente             | Rol principal        | Entradas                                 | Salidas                                 |
+| ------------------ | -------------------- | ---------------------------------------- | --------------------------------------- |
+| **Cursor**         | Implementación       | Prompts, `status.yaml`, código existente | PRs, migraciones, scripts               |
+| **Claude**         | Diseño y criterios   | `AGENTS.md`, `VISION.md`, ADRs           | ADRs, prompts, revisión                 |
+| **GitHub Actions** | Automatización       | Push, cron, secrets                      | CI, imágenes, docs sync, notificaciones |
+| **Cristian**       | Producto y prioridad | Notion, métricas, riesgos                | Sprint, aprobaciones                    |
 
 ## Autonomía y límites
 
@@ -42,12 +42,12 @@ Coordinación entre **Cursor**, **Claude**, **GitHub Actions** y el **product ow
 
 ## Artefactos generados
 
-| Archivo | Contenido |
-|---------|-----------|
-| `docs/AGENTS-ASSIGNMENTS.md` | Rol, capacidades y tareas por agente lógico |
-| `docs/generated/sprint-status.auto.md` | Sprints, burndown, tabla de tareas (generado) |
-| `docs/generated/implementation-progress.auto.md` | Fases y componentes técnicos (generado) |
-| `SPRINT-TRACKER.md` (raíz) | Vista humana del sprint — no lo sobrescribe `docs:sync` |
+| Archivo                                          | Contenido                                               |
+| ------------------------------------------------ | ------------------------------------------------------- |
+| `docs/AGENTS-ASSIGNMENTS.md`                     | Rol, capacidades y tareas por agente lógico             |
+| `docs/generated/sprint-status.auto.md`           | Sprints, burndown, tabla de tareas (generado)           |
+| `docs/generated/implementation-progress.auto.md` | Fases y componentes técnicos (generado)                 |
+| `SPRINT-TRACKER.md` (raíz)                       | Vista humana del sprint — no lo sobrescribe `docs:sync` |
 
 Regeneración: `npm run docs:sync` (ver [`AUTO-SYNC-DOCS-SETUP.md`](AUTO-SYNC-DOCS-SETUP.md)).
 

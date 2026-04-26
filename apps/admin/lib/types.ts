@@ -1,21 +1,15 @@
 export type TenantStatus =
-  | "provisioning"
-  | "configuring"
-  | "deploying"
-  | "active"
-  | "suspended"
-  | "failed"
-  | "deleted";
+  | 'provisioning'
+  | 'configuring'
+  | 'deploying'
+  | 'active'
+  | 'suspended'
+  | 'failed'
+  | 'deleted';
 
-export type PlanKey = "startup" | "business" | "enterprise" | "demo";
+export type PlanKey = 'startup' | 'business' | 'enterprise' | 'demo';
 
-export type Json =
-  | string
-  | number
-  | boolean
-  | null
-  | { [key: string]: Json | undefined }
-  | Json[];
+export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
 export type Tenant = {
   id: string;
@@ -37,7 +31,7 @@ export type Tenant = {
   deleted_at: string | null;
 };
 
-export type DockerContainerState = "running" | "stopped" | "error";
+export type DockerContainerState = 'running' | 'stopped' | 'error';
 
 export type ContainerStatus = {
   name: string;
@@ -66,7 +60,7 @@ export type MetricsResponse = {
   };
 };
 
-export type TenantUsagePeriod = "today" | "month";
+export type TenantUsagePeriod = 'today' | 'month';
 
 export type TenantUsageMetricsResponse = {
   tenant: string;
@@ -80,7 +74,7 @@ export type TenantUsageMetricsResponse = {
   top_model: string | null;
 };
 
-export type TeamStatus = "active" | "idle" | "busy";
+export type TeamStatus = 'active' | 'idle' | 'busy';
 
 export type TeamMetrics = {
   name: string;
@@ -172,12 +166,7 @@ export type AuditLogEntry = {
   tenant_slug: string | null;
 };
 
-export type CostLineStatus =
-  | "active"
-  | "approved"
-  | "pending_approval"
-  | "rejected"
-  | "available";
+export type CostLineStatus = 'active' | 'approved' | 'pending_approval' | 'rejected' | 'available';
 
 export type CostLineItem = {
   name: string;
@@ -193,12 +182,12 @@ export type CostLineItem = {
 };
 
 export type CostAlert = {
-  level: "info" | "warning";
+  level: 'info' | 'warning';
   message: string;
   action: string;
 };
 
-export type BudgetAlertLevel = "ok" | "warning" | "critical";
+export type BudgetAlertLevel = 'ok' | 'warning' | 'critical';
 
 export type TenantBudgetSnapshot = {
   tenant_slug: string;
@@ -235,7 +224,7 @@ export type AdminCostsResponse = {
 export type CostDecisionResponse = {
   success: boolean;
   proposed?: CostLineItem;
-  summary: AdminCostsResponse["summary"];
+  summary: AdminCostsResponse['summary'];
 };
 
 /** JSON de `scripts/mac2011-monitor.sh` expuesto por GET /api/monitoring/mac2011 */
@@ -303,7 +292,7 @@ export type AdminOverviewVpsHost = {
 export type AdminOverviewQueueRow = {
   id: string;
   label: string;
-  role: "orchestrator" | "agent_team";
+  role: 'orchestrator' | 'agent_team';
   waiting: number;
   active: number;
 };

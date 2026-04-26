@@ -50,10 +50,10 @@ redis-cli -u "$REDIS_URL" ping
 
 ## Arranque rápido
 
-| Ubicación | Variable | Comando |
-|-----------|----------|---------|
-| VPS `.env` / Doppler | `OPSLY_ORCHESTRATOR_MODE=queue-only` | `docker compose ... up -d orchestrator` |
-| Mac `.env.local` | `REDIS_URL=...` y `OPSLY_ORCHESTRATOR_MODE=worker-enabled` | `./scripts/run-orchestrator-worker.sh` o `./scripts/start-workers-mac2011.sh` |
+| Ubicación            | Variable                                                   | Comando                                                                       |
+| -------------------- | ---------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| VPS `.env` / Doppler | `OPSLY_ORCHESTRATOR_MODE=queue-only`                       | `docker compose ... up -d orchestrator`                                       |
+| Mac `.env.local`     | `REDIS_URL=...` y `OPSLY_ORCHESTRATOR_MODE=worker-enabled` | `./scripts/run-orchestrator-worker.sh` o `./scripts/start-workers-mac2011.sh` |
 
 Scripts de ayuda: `scripts/setup-vps-control-plane.sh`, `scripts/start-workers-mac2011.sh`.
 

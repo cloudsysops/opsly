@@ -40,11 +40,11 @@ Sustituir `PLATFORM_DOMAIN` por el dominio base del entorno (ej. `ops.smiletripc
 
 ## Errores comunes
 
-| Error | Causa | Solución |
-|-------|-------|----------|
-| Stack failed | Credenciales no generadas | Revisar Doppler `prd` |
-| n8n 502 | Contenedor caído | `docker ps | grep n8n` |
-| Invite failed | Resend dominio | Verificar `RESEND_FROM_EMAIL` |
+| Error         | Causa                     | Solución                      |
+| ------------- | ------------------------- | ----------------------------- | --------- |
+| Stack failed  | Credenciales no generadas | Revisar Doppler `prd`         |
+| n8n 502       | Contenedor caído          | `docker ps                    | grep n8n` |
+| Invite failed | Resend dominio            | Verificar `RESEND_FROM_EMAIL` |
 
 ## Testing
 

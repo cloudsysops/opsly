@@ -76,10 +76,10 @@ El equipo de Opsly
 
 ## Variables a reemplazar
 
-| Variable | Ejemplo |
-|----------|---------|
-| `{NOMBRE_CLIENTE}` | Nombre del contacto o comercial |
-| `{TU_SLUG}` | Slug del tenant (`localrank`, `jkboterolabs`, …) |
+| Variable           | Ejemplo                                          |
+| ------------------ | ------------------------------------------------ |
+| `{NOMBRE_CLIENTE}` | Nombre del contacto o comercial                  |
+| `{TU_SLUG}`        | Slug del tenant (`localrank`, `jkboterolabs`, …) |
 
 ## Emails alternativos
 

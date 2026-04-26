@@ -15,9 +15,9 @@ Scope típico: **`repo`** (classic) o permisos de **Contents** en el repo `cloud
 
 ## Nombre en Doppler / `.env`
 
-| Variable | Uso |
-|----------|-----|
-| **`GITHUB_TOKEN`** | **Nombre recomendado.** Alineado con convenciones habituales y con `gh auth login` / CLI. |
+| Variable               | Uso                                                                                                                                           |
+| ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`GITHUB_TOKEN`**     | **Nombre recomendado.** Alineado con convenciones habituales y con `gh auth login` / CLI.                                                     |
 | **`GITHUB_TOKEN_N8N`** | **Legado.** Nombre histórico cuando el flujo pasaba por **n8n** llamando a la API de GitHub. Sigue siendo leída si `GITHUB_TOKEN` está vacío. |
 
 El código resuelve el PAT así: **`GITHUB_TOKEN` primero, luego `GITHUB_TOKEN_N8N`.**

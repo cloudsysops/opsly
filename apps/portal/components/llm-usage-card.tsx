@@ -1,23 +1,20 @@
-import type { ReactElement } from "react";
-import type { PortalUsagePayload, PortalUsageSnapshot } from "@/types";
+import type { ReactElement } from 'react';
+import type { PortalUsagePayload, PortalUsageSnapshot } from '@/types';
 
 function formatUsd(n: number): string {
-  return new Intl.NumberFormat("es", {
-    style: "currency",
-    currency: "USD",
+  return new Intl.NumberFormat('es', {
+    style: 'currency',
+    currency: 'USD',
     minimumFractionDigits: 2,
     maximumFractionDigits: 4,
   }).format(n);
 }
 
 function formatInt(n: number): string {
-  return new Intl.NumberFormat("es").format(n);
+  return new Intl.NumberFormat('es').format(n);
 }
 
-function UsageBlock(props: {
-  title: string;
-  data: PortalUsagePayload | null;
-}): ReactElement {
+function UsageBlock(props: { title: string; data: PortalUsagePayload | null }): ReactElement {
   const { title, data } = props;
   if (data === null) {
     return (
@@ -62,7 +59,9 @@ export function LlmUsageCard(props: { usage: PortalUsageSnapshot }): ReactElemen
   return (
     <section className="space-y-3 rounded-lg border border-ops-border bg-ops-surface p-5">
       <div>
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-ops-gray">Uso de IA (LLM)</h2>
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-ops-gray">
+          Uso de IA (LLM)
+        </h2>
         <p className="mt-1 text-xs text-ops-gray">
           Agregado de tu tenant vía API; períodos calendario (hoy / mes en curso).
         </p>

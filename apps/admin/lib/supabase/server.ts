@@ -1,13 +1,13 @@
-import { createServerClient, type SetAllCookies } from "@supabase/ssr";
-import { cookies } from "next/headers";
-import type { SupabaseClient } from "@supabase/supabase-js";
+import { createServerClient, type SetAllCookies } from '@supabase/ssr';
+import { cookies } from 'next/headers';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
 export async function createServerSupabase(): Promise<SupabaseClient> {
   const cookieStore = await cookies();
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   if (!url || !anon) {
-    throw new Error("Missing Supabase URL or anon key");
+    throw new Error('Missing Supabase URL or anon key');
   }
   return createServerClient(url, anon, {
     cookies: {

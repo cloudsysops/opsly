@@ -37,20 +37,13 @@ export function CreateInvoiceForm({ tenant }: { tenant: string }) {
     setLineItems((prev) => prev.filter((_, i) => i !== index));
   }
 
-  function updateLineItem(
-    index: number,
-    field: keyof LineItemInput,
-    value: string | number,
-  ) {
+  function updateLineItem(index: number, field: keyof LineItemInput, value: string | number) {
     setLineItems((prev) =>
-      prev.map((item, i) => (i === index ? { ...item, [field]: value } : item)),
+      prev.map((item, i) => (i === index ? { ...item, [field]: value } : item))
     );
   }
 
-  const subtotal = lineItems.reduce(
-    (sum, li) => sum + li.quantity * li.unit_price_cents,
-    0,
-  );
+  const subtotal = lineItems.reduce((sum, li) => sum + li.quantity * li.unit_price_cents, 0);
   const tax = Math.round(subtotal * (taxRate / 100));
   const total = subtotal + tax;
 
@@ -69,7 +62,7 @@ export function CreateInvoiceForm({ tenant }: { tenant: string }) {
     setLoading(true);
 
     const validLineItems = lineItems.filter(
-      (li) => li.description.trim().length > 0 && li.unit_price_cents > 0,
+      (li) => li.description.trim().length > 0 && li.unit_price_cents > 0
     );
 
     if (validLineItems.length === 0) {
@@ -128,9 +121,7 @@ export function CreateInvoiceForm({ tenant }: { tenant: string }) {
       {/* Customer */}
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
-          <label className="mb-1 block text-xs text-ops-gray">
-            Email del cliente *
-          </label>
+          <label className="mb-1 block text-xs text-ops-gray">Email del cliente *</label>
           <input
             type="email"
             required
@@ -141,9 +132,7 @@ export function CreateInvoiceForm({ tenant }: { tenant: string }) {
           />
         </div>
         <div>
-          <label className="mb-1 block text-xs text-ops-gray">
-            Nombre del cliente
-          </label>
+          <label className="mb-1 block text-xs text-ops-gray">Nombre del cliente</label>
           <input
             type="text"
             className={inputClass}
@@ -157,9 +146,7 @@ export function CreateInvoiceForm({ tenant }: { tenant: string }) {
       {/* Dates & currency */}
       <div className="grid gap-4 sm:grid-cols-3">
         <div>
-          <label className="mb-1 block text-xs text-ops-gray">
-            Fecha vencimiento
-          </label>
+          <label className="mb-1 block text-xs text-ops-gray">Fecha vencimiento</label>
           <input
             type="date"
             className={inputClass}
@@ -179,9 +166,7 @@ export function CreateInvoiceForm({ tenant }: { tenant: string }) {
           </select>
         </div>
         <div>
-          <label className="mb-1 block text-xs text-ops-gray">
-            IVA (%)
-          </label>
+          <label className="mb-1 block text-xs text-ops-gray">IVA (%)</label>
           <input
             type="number"
             min={0}
@@ -197,9 +182,7 @@ export function CreateInvoiceForm({ tenant }: { tenant: string }) {
       {/* Line items */}
       <div>
         <div className="mb-2 flex items-center justify-between">
-          <label className="text-xs uppercase tracking-wider text-ops-gray">
-            Items
-          </label>
+          <label className="text-xs uppercase tracking-wider text-ops-gray">Items</label>
           <Button type="button" variant="ghost" size="sm" onClick={addLineItem}>
             + Agregar item
           </Button>
@@ -216,9 +199,7 @@ export function CreateInvoiceForm({ tenant }: { tenant: string }) {
                 className={inputClass}
                 placeholder="Descripción"
                 value={li.description}
-                onChange={(e) =>
-                  updateLineItem(idx, 'description', e.target.value)
-                }
+                onChange={(e) => updateLineItem(idx, 'description', e.target.value)}
               />
               <input
                 type="number"
@@ -226,9 +207,7 @@ export function CreateInvoiceForm({ tenant }: { tenant: string }) {
                 className={inputClass}
                 placeholder="Cant"
                 value={li.quantity}
-                onChange={(e) =>
-                  updateLineItem(idx, 'quantity', Number(e.target.value))
-                }
+                onChange={(e) => updateLineItem(idx, 'quantity', Number(e.target.value))}
               />
               <input
                 type="number"
@@ -236,22 +215,14 @@ export function CreateInvoiceForm({ tenant }: { tenant: string }) {
                 className={inputClass}
                 placeholder="Precio (centavos)"
                 value={li.unit_price_cents || ''}
-                onChange={(e) =>
-                  updateLineItem(
-                    idx,
-                    'unit_price_cents',
-                    Number(e.target.value),
-                  )
-                }
+                onChange={(e) => updateLineItem(idx, 'unit_price_cents', Number(e.target.value))}
               />
               <input
                 type="text"
                 className={inputClass}
                 placeholder="Categoría"
                 value={li.category}
-                onChange={(e) =>
-                  updateLineItem(idx, 'category', e.target.value)
-                }
+                onChange={(e) => updateLineItem(idx, 'category', e.target.value)}
               />
               {lineItems.length > 1 ? (
                 <button
@@ -285,23 +256,17 @@ export function CreateInvoiceForm({ tenant }: { tenant: string }) {
       <div className="flex flex-col items-end gap-1 text-sm">
         <div className="flex w-48 justify-between">
           <span className="text-ops-gray">Subtotal</span>
-          <span className="font-mono text-neutral-200">
-            {formatDisplay(subtotal)}
-          </span>
+          <span className="font-mono text-neutral-200">{formatDisplay(subtotal)}</span>
         </div>
         {tax > 0 ? (
           <div className="flex w-48 justify-between">
             <span className="text-ops-gray">IVA ({taxRate}%)</span>
-            <span className="font-mono text-neutral-200">
-              {formatDisplay(tax)}
-            </span>
+            <span className="font-mono text-neutral-200">{formatDisplay(tax)}</span>
           </div>
         ) : null}
         <div className="flex w-48 justify-between border-t border-ops-border pt-1">
           <span className="font-semibold text-neutral-100">Total</span>
-          <span className="font-mono font-semibold text-ops-green">
-            {formatDisplay(total)}
-          </span>
+          <span className="font-mono font-semibold text-ops-green">{formatDisplay(total)}</span>
         </div>
       </div>
 

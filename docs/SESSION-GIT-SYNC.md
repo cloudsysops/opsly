@@ -4,11 +4,11 @@
 
 ## Hosts
 
-| Host | Rol | Ruta típica del repo | Rama típica |
-|------|-----|----------------------|-------------|
-| **opsly-admin** | Mac principal (Cursor / desarrollo) | `~/…/intcloudsysops` o `~/opsly` | `main`, `staging`, feature |
-| **opsly-worker** | Ubuntu (Mac 2011), orchestrator systemd | `~/opsly` | Alineada a prod/staging (p. ej. `main`) |
-| **VPS** (`vps-dragon`) | Producción / staging Docker | `/opt/opsly`, `/opt/opsly-staging` | `main` / `staging` |
+| Host                   | Rol                                     | Ruta típica del repo               | Rama típica                             |
+| ---------------------- | --------------------------------------- | ---------------------------------- | --------------------------------------- |
+| **opsly-admin**        | Mac principal (Cursor / desarrollo)     | `~/…/intcloudsysops` o `~/opsly`   | `main`, `staging`, feature              |
+| **opsly-worker**       | Ubuntu (Mac 2011), orchestrator systemd | `~/opsly`                          | Alineada a prod/staging (p. ej. `main`) |
+| **VPS** (`vps-dragon`) | Producción / staging Docker             | `/opt/opsly`, `/opt/opsly-staging` | `main` / `staging`                      |
 
 Los despliegues por **GitHub Actions** ya hacen `git reset --hard` en el VPS en el job de deploy; este documento cubre **trabajo manual** y **sesiones locales**.
 

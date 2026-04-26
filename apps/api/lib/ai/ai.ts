@@ -1,12 +1,12 @@
-import { createLangChainModel, type LangChainModelConfig } from "./langchain";
+import { createLangChainModel, type LangChainModelConfig } from './langchain';
 import {
   applyLlamaIndexDefaults,
   createLlamaIndexConfig,
   type LlamaIndexConfig,
-} from "./llamaindex";
+} from './llamaindex';
 
 export interface AiFrameworkConfig {
-  provider: "anthropic" | "openai";
+  provider: 'anthropic' | 'openai';
   model: string;
   temperature?: number;
   maxTokens?: number;

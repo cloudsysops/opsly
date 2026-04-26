@@ -4,12 +4,12 @@
 
 ## Clasificación rápida
 
-| Síntoma | Comprobar primero |
-|--------|-------------------|
-| API 5xx / timeout | Salud del contenedor `app`, Redis, logs `docker compose logs` |
-| 404 en subdominios | Traefik, reglas, certificados, DNS `*.ops.<dominio>` |
+| Síntoma             | Comprobar primero                                                     |
+| ------------------- | --------------------------------------------------------------------- |
+| API 5xx / timeout   | Salud del contenedor `app`, Redis, logs `docker compose logs`         |
+| 404 en subdominios  | Traefik, reglas, certificados, DNS `*.ops.<dominio>`                  |
 | Onboarding atascado | Colas BullMQ, logs API, estado tenant en DB `provisioning` / `failed` |
-| Pull GHCR fallido | `docker login ghcr.io` en VPS; secretos `GHCR_*` en Doppler |
+| Pull GHCR fallido   | `docker login ghcr.io` en VPS; secretos `GHCR_*` en Doppler           |
 
 ## Orden de diagnóstico
 

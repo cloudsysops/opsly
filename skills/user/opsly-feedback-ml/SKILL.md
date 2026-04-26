@@ -36,10 +36,10 @@ Al tocar el flujo de feedback de usuarios, decisiones ML o tablas `feedback_*` /
 
 ## Errores comunes
 
-| Error | Causa | Solución |
-|-------|-------|----------|
-| needs_approval siempre | criticality alta | Verificar engine decision |
-| auto_implement falló | write-active-prompt | Verificar permisos GitHub |
+| Error                  | Causa               | Solución                  |
+| ---------------------- | ------------------- | ------------------------- |
+| needs_approval siempre | criticality alta    | Verificar engine decision |
+| auto_implement falló   | write-active-prompt | Verificar permisos GitHub |
 
 ## Testing
 

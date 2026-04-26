@@ -1,4 +1,5 @@
 # Plan: Super Architect Agent — Orquestador OpenClaw Nivel Claude/Hermes/OpenCode
+
 **Fecha:** 2026-04-14
 **Status:** PROPUESTO
 **ADR:** Nuevo (pendiente numerar)
@@ -8,16 +9,16 @@
 
 ## Diagnóstico: Estado Actual del Orquestador
 
-| Componente | Estado actual | Gap vs Super Agent |
-|-----------|--------------|-------------------|
-| **Planner** | `planner-client.ts` → LLM Gateway (JSON actions) | ⚠️ Sin memoria, sin contexto rico |
-| **Tools** | 6 herramientas básicas (shell, server, tavily, etc.) | ⚠️ Limitadas, sin acceso a repo/docs |
-| **Memory** | Ninguna (solo Redis job state) | ❌ Sin conocimiento acumulado |
-| **Reasoning** | Decomposición simple (llm-direct) | ⚠️ Sin multi-step planning |
-| **Context** | Solo job payload | ⚠️ Sin AGENTS.md, ADRs, VISION |
-| **Self-improvement** | Ninguno | ❌ Sin feedback loop |
-| **Multi-agent** | Workers separados (Cursor, N8n, etc.) | ⚠️ Sin jerarquía |
-| **Metacognition** | Ninguna | ❌ Sin auto-evaluación |
+| Componente           | Estado actual                                        | Gap vs Super Agent                   |
+| -------------------- | ---------------------------------------------------- | ------------------------------------ |
+| **Planner**          | `planner-client.ts` → LLM Gateway (JSON actions)     | ⚠️ Sin memoria, sin contexto rico    |
+| **Tools**            | 6 herramientas básicas (shell, server, tavily, etc.) | ⚠️ Limitadas, sin acceso a repo/docs |
+| **Memory**           | Ninguna (solo Redis job state)                       | ❌ Sin conocimiento acumulado        |
+| **Reasoning**        | Decomposición simple (llm-direct)                    | ⚠️ Sin multi-step planning           |
+| **Context**          | Solo job payload                                     | ⚠️ Sin AGENTS.md, ADRs, VISION       |
+| **Self-improvement** | Ninguno                                              | ❌ Sin feedback loop                 |
+| **Multi-agent**      | Workers separados (Cursor, N8n, etc.)                | ⚠️ Sin jerarquía                     |
+| **Metacognition**    | Ninguna                                              | ❌ Sin auto-evaluación               |
 
 ---
 
@@ -105,32 +106,32 @@ class SuperArchitectMemory {
 
 ### 2. 🔧 Herramientas Avanzadas (Tool Registry++)
 
-| Tool | Qué hace | Prioridad |
-|------|----------|-----------|
-| `repo_search` | Buscar en código del repo | 🔴 CRÍTICA |
-| `repo_read` | Leer archivo con contexto | 🔴 CRÍTICA |
-| `git_operations` | git log, diff, status, commit | 🔴 CRÍTICA |
-| `docker_manage` | docker ps, logs, restart | 🔴 CRÍTICA |
-| `ssh_execute` | Ejecutar en VPS/Mac via Tailscale | 🔴 CRÍTICA |
-| `notebooklm_query` | Consultar knowledge layer | 🔴 CRÍTICA |
-| `notebooklm_feed` | Alimentar NotebookLM con decisiones | 🔴 CRÍTICA |
-| `doppler_get` | Leer secretos de Doppler | 🟡 ALTA |
-| `supabase_query` | Query SQL a Supabase | 🟡 ALTA |
-| `llm_gateway_call` | Llamar LLM con routing inteligente | 🔴 CRÍTICA |
-| `skill_router` | Seleccionar skill correcto | 🟡 ALTA |
-| `plan_review` | Revisar y evaluar planes | 🟡 ALTA |
-| `discord_notify` | Notificar a Discord | 🟢 MEDIA |
-| `notion_update` | Actualizar Notion | 🟢 MEDIA |
+| Tool               | Qué hace                            | Prioridad  |
+| ------------------ | ----------------------------------- | ---------- |
+| `repo_search`      | Buscar en código del repo           | 🔴 CRÍTICA |
+| `repo_read`        | Leer archivo con contexto           | 🔴 CRÍTICA |
+| `git_operations`   | git log, diff, status, commit       | 🔴 CRÍTICA |
+| `docker_manage`    | docker ps, logs, restart            | 🔴 CRÍTICA |
+| `ssh_execute`      | Ejecutar en VPS/Mac via Tailscale   | 🔴 CRÍTICA |
+| `notebooklm_query` | Consultar knowledge layer           | 🔴 CRÍTICA |
+| `notebooklm_feed`  | Alimentar NotebookLM con decisiones | 🔴 CRÍTICA |
+| `doppler_get`      | Leer secretos de Doppler            | 🟡 ALTA    |
+| `supabase_query`   | Query SQL a Supabase                | 🟡 ALTA    |
+| `llm_gateway_call` | Llamar LLM con routing inteligente  | 🔴 CRÍTICA |
+| `skill_router`     | Seleccionar skill correcto          | 🟡 ALTA    |
+| `plan_review`      | Revisar y evaluar planes            | 🟡 ALTA    |
+| `discord_notify`   | Notificar a Discord                 | 🟢 MEDIA   |
+| `notion_update`    | Actualizar Notion                   | 🟢 MEDIA   |
 
 ### 3. 🧩 Razonamiento Multi-Step (Chain of Thought)
 
 ```typescript
 // apps/orchestrator/src/agents/reasoning/
 interface ReasoningStep {
-  thought: string;      // Qué pienso hacer
-  action: string;        // Qué herramienta uso
-  observation: string;   // Qué observé
-  reflection: string;    // Qué aprendí
+  thought: string; // Qué pienso hacer
+  action: string; // Qué herramienta uso
+  observation: string; // Qué observé
+  reflection: string; // Qué aprendí
 }
 
 class SuperArchitectReasoning {
@@ -178,7 +179,7 @@ async function feedbackLoop(job: OrchestratorJob, result: Result): Promise<void>
   if (!result.success) {
     // Alimentar NotebookLM con el error
     await notebookLM.feed({
-      topic: "fallo",
+      topic: 'fallo',
       content: `Tarea: ${job.type}\nError: ${result.error}\nContexto: ${job.payload}`,
     });
   }
@@ -192,11 +193,11 @@ async function feedbackLoop(job: OrchestratorJob, result: Result): Promise<void>
 
 // El Super Architect coordina sub-agentes:
 interface SubAgent {
-  name: string;           // speculator, executor, reviewer, reporter
-  role: string;           // Rol en el team
-  capabilities: string[];  // Qué puede hacer
-  tools: string[];         // Qué herramientas tiene
-  model: ProviderId;       // Qué modelo usa
+  name: string; // speculator, executor, reviewer, reporter
+  role: string; // Rol en el team
+  capabilities: string[]; // Qué puede hacer
+  tools: string[]; // Qué herramientas tiene
+  model: ProviderId; // Qué modelo usa
 }
 
 // Speculator: analiza el problema, propone opciones
@@ -222,19 +223,19 @@ class AgentTeam {
 // apps/llm-gateway/src/routing-hints.ts
 
 const AGENT_MODEL_ROUTING = {
-  "super-architect": {
-    "reasoning": "sonnet",       // Pensamiento complejo
-    "simple": "haiku",           // Preguntas simples
-    "coding": "claude-sonnet",   // Código
-    "cheap": "llama_local",      // Tareas cheap
+  'super-architect': {
+    reasoning: 'sonnet', // Pensamiento complejo
+    simple: 'haiku', // Preguntas simples
+    coding: 'claude-sonnet', // Código
+    cheap: 'llama_local', // Tareas cheap
   },
-  "speculator": {
-    "analysis": "sonnet",
-    "quick": "haiku",
+  speculator: {
+    analysis: 'sonnet',
+    quick: 'haiku',
   },
-  "reviewer": {
-    "quality": "sonnet",
-    "fast": "haiku",
+  reviewer: {
+    quality: 'sonnet',
+    fast: 'haiku',
   },
 };
 
@@ -258,7 +259,7 @@ interface SelfAwareness {
   // - ¿Cuál es el riesgo?
   // - ¿Cuánto costará?
   // - ¿Cuánto tiempo tomará?
-  
+
   async preflightCheck(task: Task): Promise<PreflightResult> {
     return {
       understanding: await self.testUnderstanding(task),
@@ -301,6 +302,7 @@ interface SelfAwareness {
 ```
 
 **Entregables:**
+
 - `apps/orchestrator/src/agents/memory/` (nuevo)
 - `apps/orchestrator/src/lib/notebooklm-client.ts` (ya existe ✅, mejorar)
 - Hook de inicio de sesión que consulta NotebookLM
@@ -316,26 +318,27 @@ interface ToolManifest {
   description: string;
   capabilities: string[];
   execute: (params: Record<string, unknown>) => Promise<ToolResult>;
-  costEstimate: number;  // USD estimado por uso
-  riskLevel: "low" | "medium" | "high";
+  costEstimate: number; // USD estimado por uso
+  riskLevel: 'low' | 'medium' | 'high';
   requiresApproval: boolean;
 }
 
 // Tools prioritarias:
 const SUPER_ARCHITECT_TOOLS: ToolManifest[] = [
-  repoSearchTool,    // Buscar en código
-  repoReadTool,      // Leer archivos
+  repoSearchTool, // Buscar en código
+  repoReadTool, // Leer archivos
   gitOperationsTool, // git log/diff/status
-  dockerManageTool,  // docker ps/logs/restart
-  sshExecuteTool,    // SSH a VPS/Mac
+  dockerManageTool, // docker ps/logs/restart
+  sshExecuteTool, // SSH a VPS/Mac
   notebooklmQueryTool, // Consultar NotebookLM
-  notebooklmFeedTool,  // Alimentar NotebookLM
-  dopplerGetTool,    // Leer secretos
+  notebooklmFeedTool, // Alimentar NotebookLM
+  dopplerGetTool, // Leer secretos
   supabaseQueryTool, // Query SQL
 ];
 ```
 
 **Entregables:**
+
 - `apps/orchestrator/src/agents/tools/repo-tools.ts`
 - `apps/orchestrator/src/agents/tools/docker-tools.ts`
 - `apps/orchestrator/src/agents/tools/ssh-tools.ts`
@@ -399,6 +402,7 @@ RESPONDE en formato JSON:
 ```
 
 **Entregables:**
+
 - `apps/orchestrator/src/agents/reasoning/` (nuevo)
 - Prompt del Super Architect Agent
 - Chain of Thought implementation
@@ -421,41 +425,42 @@ interface SubAgentConfig {
 
 const SUB_AGENTS: SubAgentConfig[] = [
   {
-    name: "speculator",
-    role: "Analiza problemas y propone opciones",
+    name: 'speculator',
+    role: 'Analiza problemas y propone opciones',
     systemPrompt: SPECULATOR_PROMPT,
-    tools: ["notebooklm_query", "repo_search", "skill_router"],
-    model: "claude_sonnet",
+    tools: ['notebooklm_query', 'repo_search', 'skill_router'],
+    model: 'claude_sonnet',
     maxIterations: 3,
   },
   {
-    name: "reviewer",
-    role: "Evalúa calidad, costo y riesgo de planes",
+    name: 'reviewer',
+    role: 'Evalúa calidad, costo y riesgo de planes',
     systemPrompt: REVIEWER_PROMPT,
-    tools: ["llm_gateway_call", "cost_estimator"],
-    model: "claude_haiku",
+    tools: ['llm_gateway_call', 'cost_estimator'],
+    model: 'claude_haiku',
     maxIterations: 2,
   },
   {
-    name: "executor",
-    role: "Ejecuta acciones via workers existentes",
+    name: 'executor',
+    role: 'Ejecuta acciones via workers existentes',
     systemPrompt: EXECUTOR_PROMPT,
-    tools: ["repo_read", "docker_manage", "ssh_execute", "doppler_get"],
-    model: "llama_local",
+    tools: ['repo_read', 'docker_manage', 'ssh_execute', 'doppler_get'],
+    model: 'llama_local',
     maxIterations: 10,
   },
   {
-    name: "reporter",
-    role: "Comunica resultados a Discord/Notion",
+    name: 'reporter',
+    role: 'Comunica resultados a Discord/Notion',
     systemPrompt: REPORTER_PROMPT,
-    tools: ["discord_notify", "notion_update", "notebooklm_feed"],
-    model: "claude_haiku",
+    tools: ['discord_notify', 'notion_update', 'notebooklm_feed'],
+    model: 'claude_haiku',
     maxIterations: 1,
   },
 ];
 ```
 
 **Entregables:**
+
 - `apps/orchestrator/src/agents/team/super-architect-team.ts`
 - Integración con `engine.ts` existente
 
@@ -471,7 +476,7 @@ class SelfAwareness {
     const notebookCtx = await this.notebookLM.queryNotebook(
       `Sobre esta tarea: "${task}". ¿Qué sé? ¿Qué skills aplican?`
     );
-    
+
     return {
       understanding: await this.testUnderstanding(task),
       knowledgeGaps: notebookCtx.gaps || [],
@@ -492,8 +497,8 @@ class SelfAwareness {
     // Alimentar NotebookLM con lecciones aprendidas
     if (!result.success || result.lessons.length > 0) {
       await this.notebookLM.feed({
-        topic: "lección",
-        content: `Tarea: ${job.type}\nResultado: ${result.success ? "OK" : "FALLO"}\nLecciones: ${result.lessons.join(", ")}`,
+        topic: 'lección',
+        content: `Tarea: ${job.type}\nResultado: ${result.success ? 'OK' : 'FALLO'}\nLecciones: ${result.lessons.join(', ')}`,
       });
     }
   }
@@ -501,6 +506,7 @@ class SelfAwareness {
 ```
 
 **Entregables:**
+
 - `apps/orchestrator/src/agents/metacognition/` (nuevo)
 - Hook de feedback en `engine.ts`
 - Métricas de auto-evaluación
@@ -509,18 +515,18 @@ class SelfAwareness {
 
 ## Comparativa: Antes vs Después
 
-| Capacidad | Antes (Orquestador v1) | Después (Super Architect) |
-|-----------|------------------------|---------------------------|
-| Memoria | ❌ Ninguna | ✅ NotebookLM + Redis |
-| Conocimiento | ⚠️ Job payload | ✅ AGENTS.md, ADRs, VISION, Skills |
-| Herramientas | 6 básicas | ✅ 14+ incluyendo repo, git, docker |
-| Razonamiento | ⚠️ Decomposición simple | ✅ Chain of Thought + feedback loop |
-| Contexto | ⚠️ Sesión actual | ✅ Contexto histórico + largo plazo |
-| Auto-mejora | ❌ Ninguna | ✅ Feedback loop + postmortem |
-| Multi-agente | ⚠️ Workers separados | ✅ Jerarquía coordinada |
-| Routing LLM | ⚠️ Por complejidad | ✅ Por task + agent + costo |
-| Metacognición | ❌ Ninguna | ✅ Preflight + postmortem |
-| Metricas | ⚠️ Jobs completados | ✅ Calidad + costo + satisfacción |
+| Capacidad     | Antes (Orquestador v1)  | Después (Super Architect)           |
+| ------------- | ----------------------- | ----------------------------------- |
+| Memoria       | ❌ Ninguna              | ✅ NotebookLM + Redis               |
+| Conocimiento  | ⚠️ Job payload          | ✅ AGENTS.md, ADRs, VISION, Skills  |
+| Herramientas  | 6 básicas               | ✅ 14+ incluyendo repo, git, docker |
+| Razonamiento  | ⚠️ Decomposición simple | ✅ Chain of Thought + feedback loop |
+| Contexto      | ⚠️ Sesión actual        | ✅ Contexto histórico + largo plazo |
+| Auto-mejora   | ❌ Ninguna              | ✅ Feedback loop + postmortem       |
+| Multi-agente  | ⚠️ Workers separados    | ✅ Jerarquía coordinada             |
+| Routing LLM   | ⚠️ Por complejidad      | ✅ Por task + agent + costo         |
+| Metacognición | ❌ Ninguna              | ✅ Preflight + postmortem           |
+| Metricas      | ⚠️ Jobs completados     | ✅ Calidad + costo + satisfacción   |
 
 ---
 

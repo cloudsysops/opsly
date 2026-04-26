@@ -1,7 +1,7 @@
-import type { PortalUsagePeriod } from "./types";
+import type { PortalUsagePeriod } from './types';
 
 function normalizeApiBase(apiBaseUrl: string): string {
-  return apiBaseUrl.replace(/\/$/, "");
+  return apiBaseUrl.replace(/\/$/, '');
 }
 
 function hasNonEmptyTenantSlug(tenantSlug?: string): tenantSlug is string {
@@ -9,10 +9,7 @@ function hasNonEmptyTenantSlug(tenantSlug?: string): tenantSlug is string {
 }
 
 /** URL absoluta `GET` perfil portal (`/me` o `/tenant/[slug]/me`). */
-export function portalTenantMeUrl(
-  apiBaseUrl: string,
-  tenantSlug?: string,
-): string {
+export function portalTenantMeUrl(apiBaseUrl: string, tenantSlug?: string): string {
   const base = normalizeApiBase(apiBaseUrl);
   if (hasNonEmptyTenantSlug(tenantSlug)) {
     return `${base}/api/portal/tenant/${encodeURIComponent(tenantSlug)}/me`;
@@ -21,10 +18,7 @@ export function portalTenantMeUrl(
 }
 
 /** URL absoluta `POST` modo (`/mode` o `/tenant/[slug]/mode`). */
-export function portalTenantModeUrl(
-  apiBaseUrl: string,
-  tenantSlug?: string,
-): string {
+export function portalTenantModeUrl(apiBaseUrl: string, tenantSlug?: string): string {
   const base = normalizeApiBase(apiBaseUrl);
   if (hasNonEmptyTenantSlug(tenantSlug)) {
     return `${base}/api/portal/tenant/${encodeURIComponent(tenantSlug)}/mode`;
@@ -36,7 +30,7 @@ export function portalTenantModeUrl(
 export function portalTenantUsageUrl(
   apiBaseUrl: string,
   period: PortalUsagePeriod,
-  tenantSlug?: string,
+  tenantSlug?: string
 ): string {
   const qs = new URLSearchParams({ period }).toString();
   const base = normalizeApiBase(apiBaseUrl);
@@ -47,10 +41,7 @@ export function portalTenantUsageUrl(
 }
 
 /** URL absoluta `GET/PATCH` insights — `/api/portal/tenant/[slug]/insights`. */
-export function portalTenantInsightsUrl(
-  apiBaseUrl: string,
-  tenantSlug: string,
-): string {
+export function portalTenantInsightsUrl(apiBaseUrl: string, tenantSlug: string): string {
   const base = normalizeApiBase(apiBaseUrl);
   return `${base}/api/portal/tenant/${encodeURIComponent(tenantSlug)}/insights`;
 }

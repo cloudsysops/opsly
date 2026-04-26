@@ -42,11 +42,11 @@ doppler secrets set NOTEBOOKLM_SYNC_ON_COMMIT=true \
 
 ```javascript
 // Convierte system_state.json a markdown legible y sube a NotebookLM
-import { readFileSync } from "node:fs";
-import { executeNotebookLM } from "@intcloudsysops/notebooklm-agent";
+import { readFileSync } from 'node:fs';
+import { executeNotebookLM } from '@intcloudsysops/notebooklm-agent';
 
-const state = JSON.parse(readFileSync("context/system_state.json", "utf8"));
-const markdown = `# System State — ${new Date().toISOString().split("T")[0]}
+const state = JSON.parse(readFileSync('context/system_state.json', 'utf8'));
+const markdown = `# System State — ${new Date().toISOString().split('T')[0]}
 
 ## Fase actual
 - Fase: ${state.fase}
@@ -54,21 +54,21 @@ const markdown = `# System State — ${new Date().toISOString().split("T")[0]}
 - Doppler: ${state.doppler.status}
 
 ## Decisiones recientes
-${state.decisions?.map(d => `- ${d}`).join("\n") || "Sin decisiones registradas"}
+${state.decisions?.map((d) => `- ${d}`).join('\n') || 'Sin decisiones registradas'}
 
 ## Bloqueantes
-${state.bloqueantes?.map(b => `- ${b}`).join("\n") || "Sin bloqueantes"}
+${state.bloqueantes?.map((b) => `- ${b}`).join('\n') || 'Sin bloqueantes'}
 
 ## Próximo paso
 ${state.next_action}
 `;
 
 await executeNotebookLM({
-  action: "add_source",
-  tenant_slug: "platform",
+  action: 'add_source',
+  tenant_slug: 'platform',
   notebook_id: process.env.NOTEBOOKLM_NOTEBOOK_ID,
-  source_type: "text",
-  title: "system_state.md",
+  source_type: 'text',
+  title: 'system_state.md',
   text: markdown,
 });
 ```
@@ -77,14 +77,16 @@ await executeNotebookLM({
 
 ```javascript
 // Sube resumen de costos/routing LLM de los últimos 7 días
-import { readFileSync } from "node:fs";
-import { executeNotebookLM } from "@intcloudsysops/notebooklm-agent";
+import { readFileSync } from 'node:fs';
+import { executeNotebookLM } from '@intcloudsysops/notebooklm-agent';
 
-const usage = JSON.parse(readFileSync("context/llm-usage-7d.json", "utf8") || "{}");
+const usage = JSON.parse(readFileSync('context/llm-usage-7d.json', 'utf8') || '{}');
 const markdown = `# LLM Usage — Últimos 7 días
 
 ## Costos por provider
-${Object.entries(usage.cost_by_provider || {}).map(([p, c]) => `- ${p}: $${c}`).join("\n")}
+${Object.entries(usage.cost_by_provider || {})
+  .map(([p, c]) => `- ${p}: $${c}`)
+  .join('\n')}
 
 ## Routing stats
 - Requests total: ${usage.total_requests}
@@ -92,15 +94,15 @@ ${Object.entries(usage.cost_by_provider || {}).map(([p, c]) => `- ${p}: $${c}`).
 - Ollama local: ${usage.llama_local_calls} ($${usage.llama_local_cost})
 
 ## Top tenants
-${(usage.top_tenants || []).map(t => `- ${t.slug}: $${t.cost}`).join("\n")}
+${(usage.top_tenants || []).map((t) => `- ${t.slug}: $${t.cost}`).join('\n')}
 `;
 
 await executeNotebookLM({
-  action: "add_source",
-  tenant_slug: "platform",
+  action: 'add_source',
+  tenant_slug: 'platform',
   notebook_id: process.env.NOTEBOOKLM_NOTEBOOK_ID,
-  source_type: "text",
-  title: "llm-usage-7d.md",
+  source_type: 'text',
+  title: 'llm-usage-7d.md',
   text: markdown,
 });
 ```
@@ -155,7 +157,7 @@ notebooklm_fallback: AGENTS.md → VISION.md → docs/adr/
 ### 4.1 Enhancement en `apps/llm-gateway/src/routing-hints.ts`
 
 ```typescript
-import { getNotebookLMContext } from "./notebooklm-routing.js";
+import { getNotebookLMContext } from './notebooklm-routing.js';
 
 export function buildPromptContext(routingHint: RoutingHint): string {
   const base = `Routing: ${routingHint.preference} | Model: ${routingHint.model}`;
@@ -172,21 +174,32 @@ export function buildPromptContext(routingHint: RoutingHint): string {
 ### 4.2 Nueva función `apps/llm-gateway/src/notebooklm-routing.ts`
 
 ```typescript
-import { NotebookLMClient } from "../../orchestrator/src/lib/notebooklm-client.js";
+import { NotebookLMClient } from '../../orchestrator/src/lib/notebooklm-client.js';
 
 const nlClient = new NotebookLMClient();
 
 export function getNotebookLMContext(query: string): string | undefined {
   const keywords = [
-    "bloqueante", "bloqueado", "bloqueo", "prioridad", "prioritario",
-    "estado actual", "qué hacer", "next", "siguiente paso",
-    "bloqueos", "blocked", "qué priorizar", "decisión", "decidir"
+    'bloqueante',
+    'bloqueado',
+    'bloqueo',
+    'prioridad',
+    'prioritario',
+    'estado actual',
+    'qué hacer',
+    'next',
+    'siguiente paso',
+    'bloqueos',
+    'blocked',
+    'qué priorizar',
+    'decisión',
+    'decidir',
   ];
 
-  if (keywords.some(k => query.toLowerCase().includes(k))) {
+  if (keywords.some((k) => query.toLowerCase().includes(k))) {
     // Síncrono: devuelve hint para enriquecer prompt
     // No bloquea routing — fallback es contexto vacío
-    return "[NotebookLM: consultar estado operativo para contexto]";
+    return '[NotebookLM: consultar estado operativo para contexto]';
   }
 
   return undefined;

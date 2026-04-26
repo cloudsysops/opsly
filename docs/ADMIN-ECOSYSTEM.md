@@ -8,14 +8,14 @@
 
 ## 1. Mapa del sistema
 
-| Capa | Qué es |
-|------|--------|
+| Capa              | Qué es                                                                           |
+| ----------------- | -------------------------------------------------------------------------------- |
 | **Control plane** | API Next (`app`), Admin, Portal, LLM Gateway, MCP, Orchestrator, Context Builder |
-| **Edge** | Traefik v3 (TLS Let’s Encrypt, DNS Cloudflare si aplica) |
-| **Datos** | Supabase (Postgres `platform` + schemas por tenant), Redis (BullMQ, caché) |
-| **Secretos** | Doppler — **nunca** en git ni en este documento |
-| **CI/CD** | GitHub Actions: build imágenes GHCR → deploy SSH al VPS |
-| **Tenants** | Un stack Docker Compose por cliente (`--project-name tenant_<slug>`) |
+| **Edge**          | Traefik v3 (TLS Let’s Encrypt, DNS Cloudflare si aplica)                         |
+| **Datos**         | Supabase (Postgres `platform` + schemas por tenant), Redis (BullMQ, caché)       |
+| **Secretos**      | Doppler — **nunca** en git ni en este documento                                  |
+| **CI/CD**         | GitHub Actions: build imágenes GHCR → deploy SSH al VPS                          |
+| **Tenants**       | Un stack Docker Compose por cliente (`--project-name tenant_<slug>`)             |
 
 ---
 
@@ -106,12 +106,12 @@ Luego recrear servicios que lean esas variables (compose `up` como arriba).
 
 ## 6. Git y despliegue
 
-| Acción | Dónde |
-|--------|--------|
-| Código fuente | `main` en `github.com/cloudsysops/opsly` |
-| Imágenes | GHCR `ghcr.io/cloudsysops/intcloudsysops-*` |
-| Deploy automático | Workflow **Deploy** en `.github/workflows/deploy.yml` (tras push a `main` y build OK) |
-| Estado operativo humano | `AGENTS.md` (URL raw para agentes) |
+| Acción                  | Dónde                                                                                 |
+| ----------------------- | ------------------------------------------------------------------------------------- |
+| Código fuente           | `main` en `github.com/cloudsysops/opsly`                                              |
+| Imágenes                | GHCR `ghcr.io/cloudsysops/intcloudsysops-*`                                           |
+| Deploy automático       | Workflow **Deploy** en `.github/workflows/deploy.yml` (tras push a `main` y build OK) |
+| Estado operativo humano | `AGENTS.md` (URL raw para agentes)                                                    |
 
 En el VPS el deploy hace `git fetch` + `reset --hard` a `main` y `docker compose pull/up` — no confundir con `opsly-watcher` (eso empuja docs **desde** el VPS a GitHub).
 
@@ -121,15 +121,15 @@ En el VPS el deploy hace `git fetch` + `reset --hard` a `main` y `docker compose
 
 Ejecutar en **Mac** con repo clonado o en **`/opt/opsly`** en el VPS según el script.
 
-| Script | Uso |
-|--------|-----|
-| `./scripts/validate-config.sh` | Comprueba JSON, DNS, SSH, Doppler (sin volcar secretos) |
-| `./scripts/vps-bootstrap.sh` | Genera/actualiza `/opt/opsly/.env` desde Doppler |
-| `./scripts/vps-first-run.sh` | Primer arranque / pulls (ver prerequisitos en repo) |
-| `./scripts/index-knowledge.sh` | Regenera `config/knowledge-index.json` (Context Builder / RAG) |
-| `./scripts/onboard-tenant.sh` | Alta de tenant + stack (ver `--help`) |
-| `./scripts/opsly.sh` | `status`, `start-tenant`, `create-tenant` (wrapper; `SSH_HOST` por defecto Tailscale) |
-| `./scripts/notify-discord.sh` | Notificación (requiere webhook en Doppler) |
+| Script                         | Uso                                                                                   |
+| ------------------------------ | ------------------------------------------------------------------------------------- |
+| `./scripts/validate-config.sh` | Comprueba JSON, DNS, SSH, Doppler (sin volcar secretos)                               |
+| `./scripts/vps-bootstrap.sh`   | Genera/actualiza `/opt/opsly/.env` desde Doppler                                      |
+| `./scripts/vps-first-run.sh`   | Primer arranque / pulls (ver prerequisitos en repo)                                   |
+| `./scripts/index-knowledge.sh` | Regenera `config/knowledge-index.json` (Context Builder / RAG)                        |
+| `./scripts/onboard-tenant.sh`  | Alta de tenant + stack (ver `--help`)                                                 |
+| `./scripts/opsly.sh`           | `status`, `start-tenant`, `create-tenant` (wrapper; `SSH_HOST` por defecto Tailscale) |
+| `./scripts/notify-discord.sh`  | Notificación (requiere webhook en Doppler)                                            |
 
 **Dry-run** donde el script lo soporte: `--dry-run` o `DRY_RUN=true`.
 
@@ -175,17 +175,17 @@ URLs esperadas (plantilla): `https://n8n-<slug>.<PLATFORM_DOMAIN>/`, `https://up
 
 ## 12. Documentación relacionada
 
-| Doc | Contenido |
-|-----|-----------|
-| `AGENTS.md` | Estado vivo del proyecto, bloqueantes, URL raw |
-| `VISION.md` | Producto y fases |
-| `docs/runbooks/admin.md` | Runbook corto admin |
-| `docs/runbooks/incident.md` | Incidentes |
-| `docs/AUTO-PUSH-WATCHER.md` | Servicio `opsly-watcher` |
-| `docs/DEPLOY-VPS-AND-INDEX.md` | Deploy CI vs índice de conocimiento |
-| `docs/SECURITY_CHECKLIST.md` | Seguridad |
-| `docs/CONTEXT-BUILDER.md` | Context builder + índice |
-| `docs/OPENCLAW-ARCHITECTURE.md` | OpenClaw / colas |
+| Doc                             | Contenido                                      |
+| ------------------------------- | ---------------------------------------------- |
+| `AGENTS.md`                     | Estado vivo del proyecto, bloqueantes, URL raw |
+| `VISION.md`                     | Producto y fases                               |
+| `docs/runbooks/admin.md`        | Runbook corto admin                            |
+| `docs/runbooks/incident.md`     | Incidentes                                     |
+| `docs/AUTO-PUSH-WATCHER.md`     | Servicio `opsly-watcher`                       |
+| `docs/DEPLOY-VPS-AND-INDEX.md`  | Deploy CI vs índice de conocimiento            |
+| `docs/SECURITY_CHECKLIST.md`    | Seguridad                                      |
+| `docs/CONTEXT-BUILDER.md`       | Context builder + índice                       |
+| `docs/OPENCLAW-ARCHITECTURE.md` | OpenClaw / colas                               |
 
 ---
 
@@ -198,4 +198,4 @@ URLs esperadas (plantilla): `https://n8n-<slug>.<PLATFORM_DOMAIN>/`, `https://up
 
 ---
 
-*Última revisión alineada al monorepo Opsly; las IPs y dominios de ejemplo deben sustituirse por los de tu entorno.*
+_Última revisión alineada al monorepo Opsly; las IPs y dominios de ejemplo deben sustituirse por los de tu entorno._

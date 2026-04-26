@@ -1,14 +1,11 @@
-import { scheduleMeteringProcessing } from "./metering-record";
-import type { BillingMetricType, MeteringOperationKind } from "./types";
+import { scheduleMeteringProcessing } from './metering-record';
+import type { BillingMetricType, MeteringOperationKind } from './types';
 
 export interface MeteringRouteOptions {
   readonly resolveTenantId: (request: Request) => string | null;
   readonly operation: string;
   readonly kind: MeteringOperationKind;
-  readonly resolveMetricType: (
-    request: Request,
-    response: Response,
-  ) => BillingMetricType;
+  readonly resolveMetricType: (request: Request, response: Response) => BillingMetricType;
   readonly resolveQuantity?: (request: Request, response: Response) => number;
   readonly persistLine?: boolean;
   readonly unitCostUsd?: number;
@@ -20,7 +17,7 @@ export interface MeteringRouteOptions {
  */
 export function withMetering<TContext>(
   handler: (request: Request, context: TContext) => Promise<Response>,
-  options: MeteringRouteOptions,
+  options: MeteringRouteOptions
 ): (request: Request, context: TContext) => Promise<Response> {
   return async (request: Request, context: TContext): Promise<Response> => {
     const response = await handler(request, context);
@@ -29,7 +26,7 @@ export function withMetering<TContext>(
       if (tenantId) {
         const metricType = options.resolveMetricType(request, response);
         const quantity = options.resolveQuantity?.(request, response) ?? 1;
-        const requestId = request.headers.get("x-request-id") ?? undefined;
+        const requestId = request.headers.get('x-request-id') ?? undefined;
         scheduleMeteringProcessing(
           {
             tenantId,
@@ -42,7 +39,7 @@ export function withMetering<TContext>(
           {
             persistLine: options.persistLine,
             unitCostUsd: options.unitCostUsd,
-          },
+          }
         );
       }
     }

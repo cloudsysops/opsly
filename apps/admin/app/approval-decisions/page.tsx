@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 
 type MetricsJson = {
   success_rate?: number;
@@ -24,23 +24,23 @@ type ApprovalDecisionRow = {
 };
 
 function statusBadgeClass(status: string): string {
-  if (status === "APPROVE") {
-    return "bg-emerald-500/20 text-emerald-400 border-emerald-500/40";
+  if (status === 'APPROVE') {
+    return 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40';
   }
-  if (status === "REJECT") {
-    return "bg-red-500/20 text-red-400 border-red-500/40";
+  if (status === 'REJECT') {
+    return 'bg-red-500/20 text-red-400 border-red-500/40';
   }
-  return "bg-amber-500/20 text-amber-400 border-amber-500/40";
+  return 'bg-amber-500/20 text-amber-400 border-amber-500/40';
 }
 
 function statusLabel(status: string): string {
-  if (status === "APPROVE") {
-    return "✅ APPROVE";
+  if (status === 'APPROVE') {
+    return '✅ APPROVE';
   }
-  if (status === "REJECT") {
-    return "🔴 REJECT";
+  if (status === 'REJECT') {
+    return '🔴 REJECT';
   }
-  return "⚠️ NEEDS_INFO";
+  return '⚠️ NEEDS_INFO';
 }
 
 export default function ApprovalDecisionsPage() {
@@ -52,20 +52,20 @@ export default function ApprovalDecisionsPage() {
     let cancelled = false;
     void (async () => {
       try {
-        const res = await fetch("/api/approval-decisions");
+        const res = await fetch('/api/approval-decisions');
         const json = (await res.json()) as {
           decisions?: ApprovalDecisionRow[];
           error?: string;
         };
         if (!res.ok) {
-          setError(json.error ?? "Request failed");
+          setError(json.error ?? 'Request failed');
           return;
         }
         if (!cancelled) {
           setDecisions(json.decisions ?? []);
         }
       } catch (e) {
-        setError(e instanceof Error ? e.message : "Unknown error");
+        setError(e instanceof Error ? e.message : 'Unknown error');
       } finally {
         if (!cancelled) {
           setLoading(false);
@@ -87,9 +87,7 @@ export default function ApprovalDecisionsPage() {
           Historial read-only (fase 1). Decisiones Sonnet vía llm-gateway.
         </p>
 
-        {loading ? (
-          <p className="text-neutral-400">Cargando…</p>
-        ) : null}
+        {loading ? <p className="text-neutral-400">Cargando…</p> : null}
 
         {error ? (
           <div className="rounded border border-red-500/40 bg-red-500/10 px-4 py-3 text-red-300">
@@ -116,9 +114,7 @@ export default function ApprovalDecisionsPage() {
                   >
                     {statusLabel(d.status)}
                   </span>
-                  <span className="font-mono text-[10px] text-neutral-500">
-                    {d.sandbox_run_id}
-                  </span>
+                  <span className="font-mono text-[10px] text-neutral-500">{d.sandbox_run_id}</span>
                 </div>
                 <p className="mb-4 text-sm leading-relaxed text-neutral-300">{d.reasoning}</p>
                 <div className="mb-4 grid grid-cols-2 gap-3 text-sm md:grid-cols-4">
@@ -129,21 +125,21 @@ export default function ApprovalDecisionsPage() {
                   <div>
                     <div className="text-[10px] uppercase text-neutral-500">Success rate</div>
                     <div className="font-mono text-neutral-200">
-                      {typeof m.success_rate === "number" ? `${m.success_rate}%` : "—"}
+                      {typeof m.success_rate === 'number' ? `${m.success_rate}%` : '—'}
                     </div>
                   </div>
                   <div>
                     <div className="text-[10px] uppercase text-neutral-500">Response time</div>
                     <div className="font-mono text-neutral-200">
-                      {typeof m.avg_response_time_ms === "number"
+                      {typeof m.avg_response_time_ms === 'number'
                         ? `${m.avg_response_time_ms} ms`
-                        : "—"}
+                        : '—'}
                     </div>
                   </div>
                   <div>
                     <div className="text-[10px] uppercase text-neutral-500">Coverage</div>
                     <div className="font-mono text-xs text-neutral-200">
-                      {coverage.length > 0 ? coverage.join(", ") : "—"}
+                      {coverage.length > 0 ? coverage.join(', ') : '—'}
                     </div>
                   </div>
                 </div>
@@ -159,8 +155,8 @@ export default function ApprovalDecisionsPage() {
                   <span>complexity: {d.complexity}</span>
                   <span>
                     {new Date(d.created_at).toLocaleString(undefined, {
-                      dateStyle: "medium",
-                      timeStyle: "short",
+                      dateStyle: 'medium',
+                      timeStyle: 'short',
                     })}
                   </span>
                 </div>

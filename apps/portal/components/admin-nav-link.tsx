@@ -1,18 +1,18 @@
-"use client";
+'use client';
 
-import type { ReactElement } from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
-import { createClient } from "@/lib/supabase";
-import { isSuperAdminUser } from "@/lib/super-admin";
+import type { ReactElement } from 'react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { createClient } from '@/lib/supabase';
+import { isSuperAdminUser } from '@/lib/super-admin';
 
 export function AdminNavLink(): ReactElement | null {
   const pathname = usePathname();
   const [show, setShow] = useState(false);
 
   useEffect(() => {
-    if (pathname?.startsWith("/admin")) {
+    if (pathname?.startsWith('/admin')) {
       setShow(false);
       return;
     }
@@ -28,10 +28,7 @@ export function AdminNavLink(): ReactElement | null {
   }
 
   return (
-    <Link
-      href="/admin/dashboard"
-      className="font-mono text-sm text-ops-green hover:underline"
-    >
+    <Link href="/admin/dashboard" className="font-mono text-sm text-ops-green hover:underline">
       Super Admin
     </Link>
   );

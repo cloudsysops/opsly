@@ -1,17 +1,17 @@
-import { z } from "zod";
-import { generateCompose, writeComposeFile } from "../docker/compose-generator";
-import { allocatePorts, releasePorts } from "../docker/port-allocator";
-import { startTenant, stopTenant } from "../docker/container-manager";
-import { notifyTenantCreated, notifyTenantFailed } from "../notifications/discord";
-import { sendWelcomeEmail } from "../notifications/email";
-import { adminClient } from "../supabase/admin";
-import type { Json, PlanKey, Tenant } from "../supabase/types";
-import { PLANS } from "../stripe/plans";
+import { z } from 'zod';
+import { generateCompose, writeComposeFile } from '../docker/compose-generator';
+import { allocatePorts, releasePorts } from '../docker/port-allocator';
+import { startTenant, stopTenant } from '../docker/container-manager';
+import { notifyTenantCreated, notifyTenantFailed } from '../notifications/discord';
+import { sendWelcomeEmail } from '../notifications/email';
+import { adminClient } from '../supabase/admin';
+import type { Json, PlanKey, Tenant } from '../supabase/types';
+import { PLANS } from '../stripe/plans';
 
 const onboardingInputSchema = z.object({
   slug: z.string().regex(/^[a-z0-9-]{3,30}$/),
   email: z.string().email(),
-  plan: z.enum(["startup", "business", "enterprise", "demo"]),
+  plan: z.enum(['startup', 'business', 'enterprise', 'demo']),
   stripeCustomerId: z.string().min(1).optional(),
 });
 
@@ -28,12 +28,8 @@ function sleep(ms: number): Promise<void> {
   });
 }
 
-export async function pollPortsUntilHealthy(
-  ports: Record<string, number>,
-): Promise<void> {
-  const urls = Object.values(ports).map(
-    (port) => `http://127.0.0.1:${port}/healthz`,
-  );
+export async function pollPortsUntilHealthy(ports: Record<string, number>): Promise<void> {
+  const urls = Object.values(ports).map((port) => `http://127.0.0.1:${port}/healthz`);
 
   for (let attempt = 0; attempt < 12; attempt += 1) {
     const checks = await Promise.all(
@@ -46,7 +42,7 @@ export async function pollPortsUntilHealthy(
         } catch {
           return false;
         }
-      }),
+      })
     );
 
     if (checks.every(Boolean)) {
@@ -56,7 +52,7 @@ export async function pollPortsUntilHealthy(
     await sleep(5000);
   }
 
-  throw new Error("Health checks did not pass within the allotted time");
+  throw new Error('Health checks did not pass within the allotted time');
 }
 
 export class OnboardingOrchestrator {
@@ -70,13 +66,13 @@ export class OnboardingOrchestrator {
     private readonly slug: string,
     private readonly email: string,
     private readonly plan: PlanKey,
-    private readonly stripeCustomerId: string | undefined,
+    private readonly stripeCustomerId: string | undefined
   ) {}
 
   async createAndBeginProvisioning(): Promise<string> {
     await this.validateInputs();
     this.tenantId = await this.createTenantRecord();
-    await this.logAudit("onboarding_started");
+    await this.logAudit('onboarding_started');
     return this.tenantId;
   }
 
@@ -84,7 +80,7 @@ export class OnboardingOrchestrator {
     let lastCompletedStep = 3;
     try {
       if (!this.tenantId) {
-        throw new Error("Tenant identifier missing before provisioning pipeline");
+        throw new Error('Tenant identifier missing before provisioning pipeline');
       }
 
       this.ports = await allocatePorts(this.tenantId, [...PLANS[this.plan].services]);
@@ -117,7 +113,7 @@ export class OnboardingOrchestrator {
         services: tenant.services as object,
       };
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Unknown onboarding error";
+      const message = err instanceof Error ? err.message : 'Unknown onboarding error';
       await this.rollback(lastCompletedStep).catch(() => undefined);
       await notifyTenantFailed(this.slug, message).catch(() => undefined);
       return { success: false, error: message };
@@ -140,22 +136,22 @@ export class OnboardingOrchestrator {
 
   private async createTenantRecord(): Promise<string> {
     const { data, error } = await adminClient
-      .schema("platform")
-      .from("tenants")
+      .schema('platform')
+      .from('tenants')
       .insert({
         slug: this.slug,
         name: this.slug,
         owner_email: this.email,
         plan: this.plan,
-        status: "provisioning",
+        status: 'provisioning',
         progress: 0,
         stripe_customer_id: this.stripeCustomerId ?? null,
       })
-      .select("id")
+      .select('id')
       .single();
 
     if (error || !data) {
-      throw new Error(error?.message ?? "Failed to create tenant");
+      throw new Error(error?.message ?? 'Failed to create tenant');
     }
 
     return data.id;
@@ -166,12 +162,15 @@ export class OnboardingOrchestrator {
       return;
     }
 
-    const { error } = await adminClient.schema("platform").from("audit_log").insert({
-      tenant_id: this.tenantId,
-      action,
-      actor: "onboarding-orchestrator",
-      metadata: { slug: this.slug },
-    });
+    const { error } = await adminClient
+      .schema('platform')
+      .from('audit_log')
+      .insert({
+        tenant_id: this.tenantId,
+        action,
+        actor: 'onboarding-orchestrator',
+        metadata: { slug: this.slug },
+      });
 
     if (error) {
       throw new Error(`Failed to write audit log: ${error.message}`);
@@ -181,10 +180,10 @@ export class OnboardingOrchestrator {
   private async updateTenantActive(): Promise<void> {
     const domain = process.env.PLATFORM_BASE_DOMAIN;
     if (!domain) {
-      throw new Error("Missing PLATFORM_BASE_DOMAIN");
+      throw new Error('Missing PLATFORM_BASE_DOMAIN');
     }
     if (!this.tenantId) {
-      throw new Error("Tenant not initialized");
+      throw new Error('Tenant not initialized');
     }
 
     const services: Json = {
@@ -193,14 +192,14 @@ export class OnboardingOrchestrator {
     };
 
     const { error } = await adminClient
-      .schema("platform")
-      .from("tenants")
+      .schema('platform')
+      .from('tenants')
       .update({
-        status: "active",
+        status: 'active',
         progress: 100,
         services,
       })
-      .eq("id", this.tenantId);
+      .eq('id', this.tenantId);
 
     if (error) {
       throw new Error(`Failed to finalize tenant: ${error.message}`);
@@ -209,18 +208,18 @@ export class OnboardingOrchestrator {
 
   private async fetchTenantRow(): Promise<Tenant> {
     if (!this.tenantId) {
-      throw new Error("Tenant not initialized");
+      throw new Error('Tenant not initialized');
     }
 
     const { data, error } = await adminClient
-      .schema("platform")
-      .from("tenants")
-      .select("*")
-      .eq("id", this.tenantId)
+      .schema('platform')
+      .from('tenants')
+      .select('*')
+      .eq('id', this.tenantId)
       .single();
 
     if (error || !data) {
-      throw new Error(error?.message ?? "Failed to load tenant");
+      throw new Error(error?.message ?? 'Failed to load tenant');
     }
 
     return data;
@@ -237,13 +236,13 @@ export class OnboardingOrchestrator {
 
     if (step >= 8) {
       await adminClient
-        .schema("platform")
-        .from("tenants")
+        .schema('platform')
+        .from('tenants')
         .update({
-          status: "failed",
+          status: 'failed',
           progress: 0,
         })
-        .eq("id", this.tenantId);
+        .eq('id', this.tenantId);
 
       if (step >= 4) {
         await releasePorts(this.tenantId).catch(() => undefined);
@@ -256,7 +255,7 @@ export class OnboardingOrchestrator {
     }
 
     if (step >= 2) {
-      await adminClient.schema("platform").from("tenants").delete().eq("id", this.tenantId);
+      await adminClient.schema('platform').from('tenants').delete().eq('id', this.tenantId);
     }
   }
 }

@@ -1,5 +1,5 @@
-import type { ReactElement } from "react";
-import { Skeleton, SkeletonCard } from "@/components/ui/skeleton";
+import type { ReactElement } from 'react';
+import { Skeleton, SkeletonCard } from '@/components/ui/skeleton';
 
 export default function DashboardLoading(): ReactElement {
   return (

@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useRouter, useSearchParams } from "next/navigation";
-import { Suspense } from "react";
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Suspense } from 'react';
 
 function ServicePreview({
   icon,
@@ -17,7 +17,7 @@ function ServicePreview({
   return (
     <div
       className={
-        "flex items-center gap-3 rounded-xl border bg-slate-800/50 p-4 transition-all duration-300 hover:scale-[1.02] " +
+        'flex items-center gap-3 rounded-xl border bg-slate-800/50 p-4 transition-all duration-300 hover:scale-[1.02] ' +
         color
       }
     >
@@ -51,9 +51,9 @@ function QuickStep({ n, title, desc }: { n: number; title: string; desc: string 
 function Step2Content() {
   const router = useRouter();
   const params = useSearchParams();
-  const slug = params.get("slug") ?? "tu-org";
-  const org = params.get("org") ?? "Tu Organizaci\u00f3n";
-  const plan = params.get("plan") ?? "startup";
+  const slug = params.get('slug') ?? 'tu-org';
+  const org = params.get('org') ?? 'Tu Organizaci\u00f3n';
+  const plan = params.get('plan') ?? 'startup';
 
   const n8nUrl = `n8n-${slug}.ops.smiletripcare.com`;
   const uptimeUrl = `uptime-${slug}.ops.smiletripcare.com`;
@@ -63,8 +63,8 @@ function Step2Content() {
       <div
         className="pointer-events-none fixed inset-0 opacity-20"
         style={{
-          backgroundImage: "radial-gradient(circle, #334155 1px, transparent 1px)",
-          backgroundSize: "24px 24px",
+          backgroundImage: 'radial-gradient(circle, #334155 1px, transparent 1px)',
+          backgroundSize: '24px 24px',
         }}
       />
       <div className="pointer-events-none fixed inset-0">
@@ -77,7 +77,9 @@ function Step2Content() {
         <div className="w-full max-w-lg space-y-6">
           <div className="text-center">
             <span className="font-mono text-lg font-bold tracking-widest text-cyan-400">OPSLY</span>
-            <p className="mt-1 text-xs font-mono text-slate-500 tracking-widest uppercase">Infrastructure Control</p>
+            <p className="mt-1 text-xs font-mono text-slate-500 tracking-widest uppercase">
+              Infrastructure Control
+            </p>
           </div>
 
           <div className="flex items-center gap-3">
@@ -85,16 +87,21 @@ function Step2Content() {
               <div key={n} className="flex items-center gap-2">
                 <div
                   className={[
-                    "flex h-7 w-7 items-center justify-center rounded-full text-xs font-mono font-bold transition-all",
+                    'flex h-7 w-7 items-center justify-center rounded-full text-xs font-mono font-bold transition-all',
                     n === 2
-                      ? "bg-cyan-500 text-slate-950 shadow-[0_0_12px_rgba(6,182,212,0.6)]"
-                      : "bg-emerald-500/20 text-emerald-400 border border-emerald-500/40",
-                  ].join(" ")}
+                      ? 'bg-cyan-500 text-slate-950 shadow-[0_0_12px_rgba(6,182,212,0.6)]'
+                      : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40',
+                  ].join(' ')}
                 >
-                  {n < 2 ? "\u2713" : 2}
+                  {n < 2 ? '\u2713' : 2}
                 </div>
-                <span className={["text-xs font-mono", n === 2 ? "text-slate-200" : "text-slate-500"].join(" ")}>
-                  {n === 1 ? "Tu organizaci\u00f3n" : "Tu Agente"}
+                <span
+                  className={[
+                    'text-xs font-mono',
+                    n === 2 ? 'text-slate-200' : 'text-slate-500',
+                  ].join(' ')}
+                >
+                  {n === 1 ? 'Tu organizaci\u00f3n' : 'Tu Agente'}
                 </span>
                 {n < 2 && <div className="w-8 h-px bg-slate-700" />}
               </div>
@@ -109,7 +116,9 @@ function Step2Content() {
               </div>
             </div>
             <h1 className="text-2xl font-bold text-slate-100">
-              {"\u00a1"}{org}{" est\u00e1 lista!"}
+              {'\u00a1'}
+              {org}
+              {' est\u00e1 lista!'}
             </h1>
             <p className="mt-1 text-sm text-slate-400">
               Tu infraestructura se est\u00e1 aprovisionando en segundo plano.
@@ -117,7 +126,7 @@ function Step2Content() {
             <div className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-slate-700 bg-slate-800/60 px-3 py-1 text-xs font-mono">
               <span className="text-slate-400">plan:</span>
               <span className="font-bold text-cyan-300 capitalize">{plan}</span>
-              <span className="mx-1 text-slate-600">{"\u00b7"}</span>
+              <span className="mx-1 text-slate-600">{'\u00b7'}</span>
               <span className="text-slate-400">id:</span>
               <span className="text-emerald-300">{slug}</span>
             </div>
@@ -142,7 +151,9 @@ function Step2Content() {
               />
             </div>
             <p className="mt-3 text-[11px] font-mono text-slate-500">
-              {"Los servicios estar\u00e1n disponibles en \u223c2 minutos. Puedes monitorear el progreso desde el dashboard."}
+              {
+                'Los servicios estar\u00e1n disponibles en \u223c2 minutos. Puedes monitorear el progreso desde el dashboard.'
+              }
             </p>
           </div>
 
@@ -154,12 +165,12 @@ function Step2Content() {
               <QuickStep
                 n={1}
                 title="Accede a tu panel n8n"
-                desc={"Crea tu primer workflow de automatizaci\u00f3n en https://" + n8nUrl}
+                desc={'Crea tu primer workflow de automatizaci\u00f3n en https://' + n8nUrl}
               />
               <QuickStep
                 n={2}
                 title="Configura monitores"
-                desc={"A\u00f1ade tus URLs cr\u00edticas a Uptime Kuma en https://" + uptimeUrl}
+                desc={'A\u00f1ade tus URLs cr\u00edticas a Uptime Kuma en https://' + uptimeUrl}
               />
               <QuickStep
                 n={3}
@@ -170,10 +181,10 @@ function Step2Content() {
           </div>
 
           <button
-            onClick={() => router.push("/dashboard")}
+            onClick={() => router.push('/dashboard')}
             className="w-full rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-500 py-3.5 text-sm font-semibold text-white shadow-lg transition-all duration-200 hover:from-cyan-400 hover:to-indigo-400 hover:shadow-cyan-500/25"
           >
-            {"Ir al Dashboard \u2192"}
+            {'Ir al Dashboard \u2192'}
           </button>
         </div>
       </div>

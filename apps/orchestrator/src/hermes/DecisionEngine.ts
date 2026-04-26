@@ -3,7 +3,7 @@ import type {
   HermesRoutingDecision,
   HermesTask,
   HermesTaskType,
-} from "@intcloudsysops/types";
+} from '@intcloudsysops/types';
 
 /**
  * Enruta tareas Hermes a colas BullMQ existentes (sin nuevo bus).
@@ -27,7 +27,7 @@ export class DecisionEngine {
     }
 
     const summary = enriched.notebooklm.answer.slice(0, 240);
-    if (enriched.notebooklm.confidence >= 0.5 && t === "decision") {
+    if (enriched.notebooklm.confidence >= 0.5 && t === 'decision') {
       return {
         ...base,
         priority: Math.min(base.priority ?? 50_000, 5_000),
@@ -41,48 +41,48 @@ export class DecisionEngine {
     };
   }
 
-  private baseRoute(t: HermesTaskType, effort: HermesTask["effort"]): HermesRoutingDecision {
-    const localLlmFirst = process.env.HERMES_LOCAL_LLM_FIRST === "true";
+  private baseRoute(t: HermesTaskType, effort: HermesTask['effort']): HermesRoutingDecision {
+    const localLlmFirst = process.env.HERMES_LOCAL_LLM_FIRST === 'true';
 
     /** Decisiones rápidas (esfuerzo S) → Ollama local primero si está activado (ADR-024). */
-    if (localLlmFirst && t === "decision" && effort === "S") {
-      return { agentType: "ollama", queueName: "openclaw", priority: 0 };
+    if (localLlmFirst && t === 'decision' && effort === 'S') {
+      return { agentType: 'ollama', queueName: 'openclaw', priority: 0 };
     }
 
-    if (t === "feature" && (effort === "M" || effort === "L" || effort === "XL")) {
+    if (t === 'feature' && (effort === 'M' || effort === 'L' || effort === 'XL')) {
       return {
-        agentType: "cursor",
-        queueName: "openclaw",
+        agentType: 'cursor',
+        queueName: 'openclaw',
         priority: 10_000,
-        secondary_agent: "claude",
+        secondary_agent: 'claude',
       };
     }
-    if (t === "feature") {
-      return { agentType: "cursor", queueName: "openclaw", priority: 50_000 };
+    if (t === 'feature') {
+      return { agentType: 'cursor', queueName: 'openclaw', priority: 50_000 };
     }
-    if (t === "adr") {
-      return { agentType: "claude", queueName: "openclaw", priority: 50_000 };
+    if (t === 'adr') {
+      return { agentType: 'claude', queueName: 'openclaw', priority: 50_000 };
     }
-    if (t === "infra") {
+    if (t === 'infra') {
       return {
-        agentType: "github_actions",
-        queueName: "hermes-orchestration",
+        agentType: 'github_actions',
+        queueName: 'hermes-orchestration',
         priority: 50_000,
       };
     }
-    if (t === "task-management") {
+    if (t === 'task-management') {
       return {
-        agentType: "notion",
-        queueName: "hermes-orchestration",
+        agentType: 'notion',
+        queueName: 'hermes-orchestration',
         priority: 50_000,
       };
     }
-    if (t === "decision") {
-      return { agentType: "claude", queueName: "openclaw", priority: 0 };
+    if (t === 'decision') {
+      return { agentType: 'claude', queueName: 'openclaw', priority: 0 };
     }
     return {
-      agentType: "none",
-      queueName: "hermes-orchestration",
+      agentType: 'none',
+      queueName: 'hermes-orchestration',
       priority: 50_000,
     };
   }

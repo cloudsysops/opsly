@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState, type RefObject } from "react";
+import { useCallback, useRef, useState, type RefObject } from 'react';
 
 export function useFocus<T extends HTMLElement>(): {
   ref: RefObject<T | null>;
@@ -51,7 +51,7 @@ export function useFocusRing(): {
       },
     },
     focusClasses: isFocused
-      ? "ring-2 ring-ops-green/80 ring-offset-2 ring-offset-ops-bg outline-none"
-      : "",
+      ? 'ring-2 ring-ops-green/80 ring-offset-2 ring-offset-ops-bg outline-none'
+      : '',
   };
 }

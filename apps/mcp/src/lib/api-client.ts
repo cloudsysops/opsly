@@ -1,11 +1,8 @@
-import { HTTP_TIMEOUT_MS, OPSLY_API_URL } from "./constants.js";
+import { HTTP_TIMEOUT_MS, OPSLY_API_URL } from './constants.js';
 
-const ADMIN_TOKEN = process.env.PLATFORM_ADMIN_TOKEN || "";
+const ADMIN_TOKEN = process.env.PLATFORM_ADMIN_TOKEN || '';
 
-export async function opslyFetch(
-  path: string,
-  options: RequestInit = {}
-): Promise<unknown> {
+export async function opslyFetch(path: string, options: RequestInit = {}): Promise<unknown> {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), HTTP_TIMEOUT_MS);
   const url = `${OPSLY_API_URL}${path}`;
@@ -15,11 +12,11 @@ export async function opslyFetch(
       ...options,
       signal: controller.signal,
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
         Authorization: `Bearer ${ADMIN_TOKEN}`,
-        "x-admin-token": ADMIN_TOKEN,
-        ...(options.headers || {})
-      }
+        'x-admin-token': ADMIN_TOKEN,
+        ...(options.headers || {}),
+      },
     });
 
     if (!response.ok) {

@@ -1,4 +1,4 @@
-import { resolveTrustedPortalSession } from "./portal-trusted-identity";
+import { resolveTrustedPortalSession } from './portal-trusted-identity';
 
 export type TrustedFeedbackIdentity = {
   tenant_slug: string;
@@ -9,11 +9,8 @@ export type TrustedFeedbackIdentity = {
  * Identidad para `POST /api/feedback` — delega en `resolveTrustedPortalSession`.
  */
 export async function resolveTrustedFeedbackIdentity(
-  request: Request,
-): Promise<
-  | { ok: true; identity: TrustedFeedbackIdentity }
-  | { ok: false; response: Response }
-> {
+  request: Request
+): Promise<{ ok: true; identity: TrustedFeedbackIdentity } | { ok: false; response: Response }> {
   const r = await resolveTrustedPortalSession(request);
   if (!r.ok) {
     return r;

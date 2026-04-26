@@ -1,6 +1,6 @@
 ---
-title: "Vitest Test Template"
-description: "Plantilla para tests unitarios con Vitest"
+title: 'Vitest Test Template'
+description: 'Plantilla para tests unitarios con Vitest'
 category: testing
 tags: [test, vitest, unit, integration, mock]
 created_at: 2026-04-15
@@ -34,12 +34,12 @@ describe('{{ModuleName}}', () => {
   // ============================================================
   // SETUP: Variables reutilizables en todos los tests
   // ============================================================
-  
+
   describe('{{functionName}}', () => {
     // ============================================================
     // TEST: Comportamiento esperado con input válido
     // ============================================================
-    
+
     it('debería retornar resultado esperado cuando el input es válido', () => {
       // Arrange
       const input = 'test-input';
@@ -55,7 +55,7 @@ describe('{{ModuleName}}', () => {
     // ============================================================
     // TEST: Comportamiento con edge cases
     // ============================================================
-    
+
     it('debería manejar input vacío correctamente', () => {
       const result = {{functionName}}('');
       expect(result).toBe('');
@@ -64,7 +64,7 @@ describe('{{ModuleName}}', () => {
     // ============================================================
     // TEST: Comportamiento con tipos de datos específicos
     // ============================================================
-    
+
     it('debería lanzar error con input inválido', () => {
       // Arrange
       const invalidInput = null;
@@ -105,7 +105,7 @@ describe('{{ServiceName}}Service', () => {
   // ============================================================
   // SETUP: Inicializar servicio antes de cada test
   // ============================================================
-  
+
   beforeEach(() => {
     service = new {{ServiceName}}Service();
     // Resetear todos los mocks antes de cada test
@@ -116,7 +116,7 @@ describe('{{ServiceName}}Service', () => {
     // ============================================================
     // TEST: Crear usuario exitosamente
     // ============================================================
-    
+
     it('debería crear un usuario y retornar el resultado', async () => {
       // Arrange
       const mockUserData = {
@@ -154,7 +154,7 @@ describe('{{ServiceName}}Service', () => {
     // ============================================================
     // TEST: Manejar error de API
     // ============================================================
-    
+
     it('debería lanzar error cuando la API falla', async () => {
       // Arrange
       const { ExternalApi } = await import('../external-api.ts');
@@ -172,12 +172,12 @@ describe('{{ServiceName}}Service', () => {
     // ============================================================
     // TEST: Obtener usuario por ID
     // ============================================================
-    
+
     it('debería obtener un usuario por ID', async () => {
       // Arrange
       const userId = 'user-123';
       const { ExternalApi } = await import('../external-api.ts');
-      
+
       vi.mocked(ExternalApi.fetch).mockResolvedValue({
         id: userId,
         name: 'John Doe',
@@ -196,7 +196,7 @@ describe('{{ServiceName}}Service', () => {
     // ============================================================
     // TEST: Retornar null si el usuario no existe
     // ============================================================
-    
+
     it('debería retornar null si el usuario no existe', async () => {
       // Arrange
       const { ExternalApi } = await import('../external-api.ts');
@@ -224,7 +224,7 @@ describe('{{ComponentName}}', () => {
   // ============================================================
   // TEST: Renderizado del componente
   // ============================================================
-  
+
   it('debería renderizar el componente correctamente', () => {
     render({{ComponentName}}, {
       props: {
@@ -238,10 +238,10 @@ describe('{{ComponentName}}', () => {
   // ============================================================
   // TEST: Interacción del usuario (click)
   // ============================================================
-  
+
   it('debería llamar a onClick cuando se hace click', async () => {
     const onClick = vi.fn();
-    
+
     render({{ComponentName}}, {
       props: {
         onClick,
@@ -249,14 +249,14 @@ describe('{{ComponentName}}', () => {
     });
 
     await fireEvent.click(screen.getByRole('button'));
-    
+
     expect(onClick).toHaveBeenCalledTimes(1);
   });
 
   // ============================================================
   // TEST: Estado del componente
   // ============================================================
-  
+
   it('debería mostrar estado de loading cuando está cargando', () => {
     render({{ComponentName}}, {
       props: {
@@ -284,7 +284,7 @@ describe('API Integration: {{route}}', () => {
   // ============================================================
   // SETUP: Inicializar Fastify para tests de integración
   // ============================================================
-  
+
   beforeAll(async () => {
     await app.register(routePlugin);
     await app.ready();
@@ -298,7 +298,7 @@ describe('API Integration: {{route}}', () => {
   // ============================================================
   // TEST: Endpoint GET exitoso
   // ============================================================
-  
+
   it('GET /{{path}} debería retornar 200 con datos', async () => {
     const response = await client.get('/{{path}}');
 
@@ -309,7 +309,7 @@ describe('API Integration: {{route}}', () => {
   // ============================================================
   // TEST: Endpoint POST con validación
   // ============================================================
-  
+
   it('POST /{{path}} debería retornar 400 con payload inválido', async () => {
     const response = await client.post('/{{path}}').send({
       invalidField: 'value',
@@ -355,14 +355,14 @@ it('debería actualizar el DOM después de async operation', async () => {
 // ============================================================
 it('debería ejecutar callback después de delay', async () => {
   vi.useFakeTimers();
-  
+
   const callback = vi.fn();
   setTimeout(callback, 1000);
-  
+
   vi.advanceTimersByTime(1000);
-  
+
   expect(callback).toHaveBeenCalled();
-  
+
   vi.useRealTimers();
 });
 ```

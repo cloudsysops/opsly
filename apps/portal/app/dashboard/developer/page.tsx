@@ -1,25 +1,24 @@
-import type { ReactElement } from "react";
-import { redirect } from "next/navigation";
-import { CredentialReveal } from "@/components/credential-reveal";
-import { DashboardShell, PageLead } from "@/components/dashboard/premium-dashboard";
-import { DeveloperActions } from "@/components/developer-actions";
-import { LlmUsageCard } from "@/components/llm-usage-card";
-import { InsightDashboard } from "@/components/dashboard/insight-dashboard";
-import { PortalShell } from "@/components/layout/portal-shell";
-import { ServiceCard } from "@/components/service-card";
-import { healthFromReachable } from "@/components/status-badge";
-import { requirePortalPayloadWithUsageAndInsights } from "@/lib/portal-server";
+import type { ReactElement } from 'react';
+import { redirect } from 'next/navigation';
+import { CredentialReveal } from '@/components/credential-reveal';
+import { DashboardShell, PageLead } from '@/components/dashboard/premium-dashboard';
+import { DeveloperActions } from '@/components/developer-actions';
+import { LlmUsageCard } from '@/components/llm-usage-card';
+import { InsightDashboard } from '@/components/dashboard/insight-dashboard';
+import { PortalShell } from '@/components/layout/portal-shell';
+import { ServiceCard } from '@/components/service-card';
+import { healthFromReachable } from '@/components/status-badge';
+import { requirePortalPayloadWithUsageAndInsights } from '@/lib/portal-server';
 
-const DEFAULT_N8N_USER = "admin";
+const DEFAULT_N8N_USER = 'admin';
 
 export default async function DeveloperDashboardPage(): Promise<ReactElement> {
-  const { payload: data, usage, insights } =
-    await requirePortalPayloadWithUsageAndInsights();
-  if (data.mode === "managed") {
-    redirect("/dashboard/managed");
+  const { payload: data, usage, insights } = await requirePortalPayloadWithUsageAndInsights();
+  if (data.mode === 'managed') {
+    redirect('/dashboard/managed');
   }
   if (data.mode === null) {
-    redirect("/dashboard");
+    redirect('/dashboard');
   }
 
   const n8nUser = data.services.n8n_user ?? DEFAULT_N8N_USER;
@@ -28,16 +27,14 @@ export default async function DeveloperDashboardPage(): Promise<ReactElement> {
     <PortalShell title={`Panel Developer — ${data.slug}`} showModeLink>
       <DashboardShell>
         <PageLead>
-          Servicios, uso de IA e información técnica de tu tenant. Las URLs se abren en una pestaña nueva.
+          Servicios, uso de IA e información técnica de tu tenant. Las URLs se abren en una pestaña
+          nueva.
         </PageLead>
         <div className="stagger-children space-y-8">
           <LlmUsageCard usage={usage} />
 
           {insights !== null ? (
-            <InsightDashboard
-              tenantSlug={data.slug}
-              insights={insights.insights}
-            />
+            <InsightDashboard tenantSlug={data.slug} insights={insights.insights} />
           ) : null}
 
           <section className="space-y-4">
@@ -49,7 +46,7 @@ export default async function DeveloperDashboardPage(): Promise<ReactElement> {
                 actionLabel="Abrir n8n"
                 showHealth
                 health={healthFromReachable(data.health.n8n_reachable)}
-                healthLabel={data.health.n8n_reachable ? "Activo" : "Inactivo"}
+                healthLabel={data.health.n8n_reachable ? 'Activo' : 'Inactivo'}
               >
                 <div className="space-y-2 text-sm">
                   <p>
@@ -69,7 +66,7 @@ export default async function DeveloperDashboardPage(): Promise<ReactElement> {
                 actionLabel="Abrir Uptime"
                 showHealth
                 health={healthFromReachable(data.health.uptime_reachable)}
-                healthLabel={data.health.uptime_reachable ? "healthy" : "unhealthy"}
+                healthLabel={data.health.uptime_reachable ? 'healthy' : 'unhealthy'}
               />
             </div>
           </section>
@@ -91,7 +88,7 @@ export default async function DeveloperDashboardPage(): Promise<ReactElement> {
               </li>
               <li>
                 <span className="text-ops-gray">Creado: </span>
-                {new Date(data.created_at).toLocaleString("es")}
+                {new Date(data.created_at).toLocaleString('es')}
               </li>
             </ul>
           </section>

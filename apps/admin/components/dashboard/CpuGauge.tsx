@@ -1,16 +1,16 @@
-"use client";
+'use client';
 
 const R = 52;
 const C = 2 * Math.PI * R;
 
 function gaugeColor(percent: number): string {
   if (percent < 60) {
-    return "#22c55e";
+    return '#22c55e';
   }
   if (percent < 85) {
-    return "#eab308";
+    return '#eab308';
   }
-  return "#ef4444";
+  return '#ef4444';
 }
 
 export function CpuGauge({ percent }: { percent: number }) {
@@ -20,20 +20,8 @@ export function CpuGauge({ percent }: { percent: number }) {
 
   return (
     <div className="relative mx-auto flex h-44 w-44 items-center justify-center">
-      <svg
-        className="-rotate-90"
-        width="160"
-        height="160"
-        viewBox="0 0 120 120"
-      >
-        <circle
-          cx="60"
-          cy="60"
-          r={R}
-          fill="none"
-          stroke="#1e1e1e"
-          strokeWidth="10"
-        />
+      <svg className="-rotate-90" width="160" height="160" viewBox="0 0 120 120">
+        <circle cx="60" cy="60" r={R} fill="none" stroke="#1e1e1e" strokeWidth="10" />
         <circle
           cx="60"
           cy="60"

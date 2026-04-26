@@ -1,7 +1,7 @@
 /**
  * InsightDashboard Component
  * Capa 2: Predictive Business Intelligence Dashboard
- * 
+ *
  * Muestra:
  * - Cards de insights por tipo
  * - Gráfico de tendencia vs predicción
@@ -11,20 +11,20 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { 
-  LineChart, 
-  Line, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
   ResponsiveContainer,
   AreaChart,
-  Area
+  Area,
 } from 'recharts';
-import { 
-  AlertTriangle, 
-  TrendingUp, 
+import {
+  AlertTriangle,
+  TrendingUp,
   TrendingDown,
   Activity,
   DollarSign,
@@ -34,7 +34,7 @@ import {
   X,
   Eye,
   ChevronRight,
-  Loader2
+  Loader2,
 } from 'lucide-react';
 
 // ============================================
@@ -47,14 +47,14 @@ export enum InsightType {
   ANOMALY_DETECTION = 'anomaly_detection',
   USAGE_PATTERN = 'usage_pattern',
   COST_OPTIMIZATION = 'cost_optimization',
-  GROWTH_OPPORTUNITY = 'growth_opportunity'
+  GROWTH_OPPORTUNITY = 'growth_opportunity',
 }
 
 export enum InsightStatus {
   ACTIVE = 'active',
   READ = 'read',
   ACTIONED = 'actioned',
-  DISMISSED = 'dismissed'
+  DISMISSED = 'dismissed',
 }
 
 export interface RevenueForecastPayload {
@@ -110,48 +110,51 @@ interface InsightDashboardProps {
 // UTILITY FUNCTIONS
 // ============================================
 
-const insightTypeConfig: Record<InsightType, { 
-  label: string; 
-  color: string; 
-  bgColor: string;
-  icon: React.ComponentType<{ className?: string }>;
-}> = {
+const insightTypeConfig: Record<
+  InsightType,
+  {
+    label: string;
+    color: string;
+    bgColor: string;
+    icon: React.ComponentType<{ className?: string }>;
+  }
+> = {
   [InsightType.CHURN_RISK]: {
     label: 'Riesgo de Fuga',
     color: 'text-red-500',
     bgColor: 'bg-red-500/10',
-    icon: AlertTriangle
+    icon: AlertTriangle,
   },
   [InsightType.REVENUE_FORECAST]: {
     label: 'Proyección de Ingresos',
     color: 'text-green-500',
     bgColor: 'bg-green-500/10',
-    icon: DollarSign
+    icon: DollarSign,
   },
   [InsightType.ANOMALY_DETECTION]: {
     label: 'Anomalía Detectada',
     color: 'text-yellow-500',
     bgColor: 'bg-yellow-500/10',
-    icon: Activity
+    icon: Activity,
   },
   [InsightType.USAGE_PATTERN]: {
     label: 'Patrón de Uso',
     color: 'text-blue-500',
     bgColor: 'bg-blue-500/10',
-    icon: TrendingUp
+    icon: TrendingUp,
   },
   [InsightType.COST_OPTIMIZATION]: {
     label: 'Optimización de Costos',
     color: 'text-purple-500',
     bgColor: 'bg-purple-500/10',
-    icon: Zap
+    icon: Zap,
   },
   [InsightType.GROWTH_OPPORTUNITY]: {
     label: 'Oportunidad de Crecimiento',
     color: 'text-emerald-500',
     bgColor: 'bg-emerald-500/10',
-    icon: TrendingUp
-  }
+    icon: TrendingUp,
+  },
 };
 
 function getConfidenceColor(confidence: number): string {
@@ -183,9 +186,9 @@ async function fetchInsights(
 
   const response = await fetch(url.toString(), {
     headers: {
-      'Authorization': `Bearer ${accessToken}`,
-      'Content-Type': 'application/json'
-    }
+      Authorization: `Bearer ${accessToken}`,
+      'Content-Type': 'application/json',
+    },
   });
 
   if (!response.ok) {
@@ -205,10 +208,10 @@ async function updateInsight(
   const response = await fetch(`${apiBaseUrl}/api/tenants/${tenantId}/insights`, {
     method: 'POST',
     headers: {
-      'Authorization': `Bearer ${accessToken}`,
-      'Content-Type': 'application/json'
+      Authorization: `Bearer ${accessToken}`,
+      'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ action, insight_id: insightId })
+    body: JSON.stringify({ action, insight_id: insightId }),
   });
 
   if (!response.ok) {
@@ -224,10 +227,10 @@ async function regenerateInsights(
   const response = await fetch(`${apiBaseUrl}/api/tenants/${tenantId}/insights`, {
     method: 'POST',
     headers: {
-      'Authorization': `Bearer ${accessToken}`,
-      'Content-Type': 'application/json'
+      Authorization: `Bearer ${accessToken}`,
+      'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ action: 'generate' })
+    body: JSON.stringify({ action: 'generate' }),
   });
 
   if (!response.ok) {
@@ -243,12 +246,13 @@ async function regenerateInsights(
 
 function InsightCard({
   insight,
-  onAction
+  onAction,
 }: {
   insight: TenantInsight;
   onAction: (action: 'mark_read' | 'action' | 'dismiss', insightId: string) => void;
 }) {
-  const config = insightTypeConfig[insight.insight_type] || insightTypeConfig[InsightType.USAGE_PATTERN];
+  const config =
+    insightTypeConfig[insight.insight_type] || insightTypeConfig[InsightType.USAGE_PATTERN];
   const Icon = config.icon;
   const [loading, setLoading] = useState<string | null>(null);
 
@@ -264,11 +268,13 @@ function InsightCard({
   const confidencePercent = (insight.confidence * 100).toFixed(0);
 
   return (
-    <div className={`
+    <div
+      className={`
       relative overflow-hidden rounded-lg border p-4
       ${config.bgColor} border-white/10
       ${insight.status !== InsightStatus.ACTIVE ? 'opacity-60' : ''}
-    `}>
+    `}
+    >
       {/* Header */}
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center gap-2">
@@ -280,66 +286,82 @@ function InsightCard({
             <p className="text-xs text-white/60">{config.label}</p>
           </div>
         </div>
-        
+
         {/* Impact Badge */}
-        <span className={`
+        <span
+          className={`
           px-2 py-1 rounded-full text-xs font-medium border
           ${getImpactBadgeClass(insight.impact_score)}
-        `}>
+        `}
+        >
           Impacto {insight.impact_score}/10
         </span>
       </div>
 
       {/* Description */}
-      <p className="text-sm text-white/80 mb-4 line-clamp-3">
-        {insight.description}
-      </p>
+      <p className="text-sm text-white/80 mb-4 line-clamp-3">{insight.description}</p>
 
       {/* Payload visualization for revenue forecast */}
-      {insight.insight_type === InsightType.REVENUE_FORECAST && (insight.payload as RevenueForecastPayload).forecast_30d && (
-        <div className="mb-4 p-3 rounded-lg bg-black/20">
-          <div className="flex items-center justify-between">
-            <span className="text-xs text-white/60">Proyección 30 días</span>
-            <span className="text-lg font-mono text-white">
-              ${Number((insight.payload as RevenueForecastPayload).forecast_30d).toLocaleString()}
-            </span>
-          </div>
-          {(insight.payload as RevenueForecastPayload).change_percent && (
-            <div className={`
+      {insight.insight_type === InsightType.REVENUE_FORECAST &&
+        (insight.payload as RevenueForecastPayload).forecast_30d && (
+          <div className="mb-4 p-3 rounded-lg bg-black/20">
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-white/60">Proyección 30 días</span>
+              <span className="text-lg font-mono text-white">
+                ${Number((insight.payload as RevenueForecastPayload).forecast_30d).toLocaleString()}
+              </span>
+            </div>
+            {(insight.payload as RevenueForecastPayload).change_percent && (
+              <div
+                className={`
               flex items-center gap-1 mt-1 text-xs
               ${Number((insight.payload as RevenueForecastPayload).change_percent) > 0 ? 'text-green-400' : 'text-red-400'}
-            `}>
-              {Number((insight.payload as RevenueForecastPayload).change_percent) > 0 ? (
-                <TrendingUp className="w-3 h-3" />
-              ) : (
-                <TrendingDown className="w-3 h-3" />
-              )}
-              {Math.abs(Number((insight.payload as RevenueForecastPayload).change_percent)).toFixed(1)}%
-            </div>
-          )}
-        </div>
-      )}
+            `}
+              >
+                {Number((insight.payload as RevenueForecastPayload).change_percent) > 0 ? (
+                  <TrendingUp className="w-3 h-3" />
+                ) : (
+                  <TrendingDown className="w-3 h-3" />
+                )}
+                {Math.abs(
+                  Number((insight.payload as RevenueForecastPayload).change_percent)
+                ).toFixed(1)}
+                %
+              </div>
+            )}
+          </div>
+        )}
 
       {/* Churn risk visualization */}
-      {insight.insight_type === InsightType.CHURN_RISK && (insight.payload as ChurnRiskPayload).riskScore && (
-        <div className="mb-4">
-          <div className="flex items-center justify-between text-xs mb-1">
-            <span className="text-white/60">Nivel de riesgo</span>
-            <span className={getConfidenceColor(Number((insight.payload as ChurnRiskPayload).riskScore))}>
-              {(Number((insight.payload as ChurnRiskPayload).riskScore) * 100).toFixed(0)}%
-            </span>
+      {insight.insight_type === InsightType.CHURN_RISK &&
+        (insight.payload as ChurnRiskPayload).riskScore && (
+          <div className="mb-4">
+            <div className="flex items-center justify-between text-xs mb-1">
+              <span className="text-white/60">Nivel de riesgo</span>
+              <span
+                className={getConfidenceColor(
+                  Number((insight.payload as ChurnRiskPayload).riskScore)
+                )}
+              >
+                {(Number((insight.payload as ChurnRiskPayload).riskScore) * 100).toFixed(0)}%
+              </span>
+            </div>
+            <div className="h-2 bg-white/10 rounded-full overflow-hidden">
+              <div
+                className={`h-full rounded-full transition-all ${
+                  Number((insight.payload as ChurnRiskPayload).riskScore) > 0.7
+                    ? 'bg-red-500'
+                    : Number((insight.payload as ChurnRiskPayload).riskScore) > 0.4
+                      ? 'bg-yellow-500'
+                      : 'bg-green-500'
+                }`}
+                style={{
+                  width: `${Number((insight.payload as ChurnRiskPayload).riskScore) * 100}%`,
+                }}
+              />
+            </div>
           </div>
-          <div className="h-2 bg-white/10 rounded-full overflow-hidden">
-            <div 
-              className={`h-full rounded-full transition-all ${
-                Number((insight.payload as ChurnRiskPayload).riskScore) > 0.7 ? 'bg-red-500' :
-                Number((insight.payload as ChurnRiskPayload).riskScore) > 0.4 ? 'bg-yellow-500' : 'bg-green-500'
-              }`}
-              style={{ width: `${Number((insight.payload as ChurnRiskPayload).riskScore) * 100}%` }}
-            />
-          </div>
-        </div>
-      )}
+        )}
 
       {/* Footer */}
       <div className="flex items-center justify-between pt-3 border-t border-white/10">
@@ -347,9 +369,7 @@ function InsightCard({
           <span className={getConfidenceColor(insight.confidence)}>
             {confidencePercent}% confianza
           </span>
-          <span>
-            {new Date(insight.created_at).toLocaleDateString()}
-          </span>
+          <span>{new Date(insight.created_at).toLocaleDateString()}</span>
         </div>
 
         {/* Actions */}
@@ -400,7 +420,7 @@ function InsightCard({
 
 function SummaryCards({
   summary,
-  onFilter
+  onFilter,
 }: {
   summary: Record<string, number>;
   onFilter: (type: string | null) => void;
@@ -418,9 +438,10 @@ function SummaryCards({
         onClick={() => handleClick(null)}
         className={`
           p-4 rounded-lg border text-left transition-all
-          ${activeFilter === null 
-            ? 'bg-white/10 border-white/30' 
-            : 'bg-white/5 border-white/10 hover:bg-white/10'
+          ${
+            activeFilter === null
+              ? 'bg-white/10 border-white/30'
+              : 'bg-white/5 border-white/10 hover:bg-white/10'
           }
         `}
       >
@@ -441,9 +462,10 @@ function SummaryCards({
             onClick={() => handleClick(type)}
             className={`
               p-4 rounded-lg border text-left transition-all
-              ${activeFilter === type 
-                ? `${config.bgColor} border-${config.color.split('-')[1]}-500/50` 
-                : 'bg-white/5 border-white/10 hover:bg-white/10'
+              ${
+                activeFilter === type
+                  ? `${config.bgColor} border-${config.color.split('-')[1]}-500/50`
+                  : 'bg-white/5 border-white/10 hover:bg-white/10'
               }
             `}
           >
@@ -460,10 +482,8 @@ function SummaryCards({
 }
 
 function RevenueForecastChart({ insights }: { insights: TenantInsight[] }) {
-  const revenueInsight = insights.find(
-    i => i.insight_type === InsightType.REVENUE_FORECAST
-  );
-  
+  const revenueInsight = insights.find((i) => i.insight_type === InsightType.REVENUE_FORECAST);
+
   if (!revenueInsight) return null;
 
   const payload = revenueInsight.payload as RevenueForecastPayload;
@@ -474,7 +494,7 @@ function RevenueForecastChart({ insights }: { insights: TenantInsight[] }) {
     { name: 'Mes -3', valor: currentRevenue * 0.85 },
     { name: 'Mes -2', valor: currentRevenue * 0.92 },
     { name: 'Mes -1', valor: currentRevenue },
-    { name: 'Proyectado', valor: forecast, proyectado: true }
+    { name: 'Proyectado', valor: forecast, proyectado: true },
   ];
 
   return (
@@ -488,22 +508,22 @@ function RevenueForecastChart({ insights }: { insights: TenantInsight[] }) {
           <AreaChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
             <defs>
               <linearGradient id="colorValor" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#22c55e" stopOpacity={0.3}/>
-                <stop offset="95%" stopColor="#22c55e" stopOpacity={0}/>
+                <stop offset="5%" stopColor="#22c55e" stopOpacity={0.3} />
+                <stop offset="95%" stopColor="#22c55e" stopOpacity={0} />
               </linearGradient>
               <linearGradient id="colorProyectado" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#60a5fa" stopOpacity={0.3}/>
-                <stop offset="95%" stopColor="#60a5fa" stopOpacity={0}/>
+                <stop offset="5%" stopColor="#60a5fa" stopOpacity={0.3} />
+                <stop offset="95%" stopColor="#60a5fa" stopOpacity={0} />
               </linearGradient>
             </defs>
             <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" />
             <XAxis dataKey="name" stroke="#ffffff60" fontSize={12} />
             <YAxis stroke="#ffffff60" fontSize={12} tickFormatter={(v) => `$${v}`} />
-            <Tooltip 
-              contentStyle={{ 
-                backgroundColor: '#1a1a1a', 
+            <Tooltip
+              contentStyle={{
+                backgroundColor: '#1a1a1a',
                 border: '1px solid #ffffff20',
-                borderRadius: '8px'
+                borderRadius: '8px',
               }}
               formatter={(value: number) => [`$${value.toLocaleString()}`, 'Valor']}
             />
@@ -521,7 +541,7 @@ function RevenueForecastChart({ insights }: { insights: TenantInsight[] }) {
               stroke="#60a5fa"
               strokeDasharray="5 5"
               fillOpacity={0}
-              data={data.filter(d => d.proyectado)}
+              data={data.filter((d) => d.proyectado)}
               name="Proyectado"
             />
           </AreaChart>
@@ -539,7 +559,7 @@ export function InsightDashboard({
   tenantId,
   accessToken,
   apiBaseUrl = '',
-  onInsightActioned
+  onInsightActioned,
 }: InsightDashboardProps) {
   const [insights, setInsights] = useState<TenantInsight[]>([]);
   const [summary, setSummary] = useState<Record<string, number>>({});
@@ -555,7 +575,7 @@ export function InsightDashboard({
       const response = await fetchInsights(tenantId, accessToken, apiBaseUrl, {
         status: 'active',
         type: typeFilter || undefined,
-        limit: 50
+        limit: 50,
       });
       setInsights(response.data);
       setSummary(response.summary.by_type);
@@ -573,9 +593,9 @@ export function InsightDashboard({
   const handleAction = async (action: 'mark_read' | 'action' | 'dismiss', insightId: string) => {
     try {
       await updateInsight(tenantId, insightId, action, accessToken, apiBaseUrl);
-      
+
       if (action === 'action' && onInsightActioned) {
-        const insight = insights.find(i => i.id === insightId);
+        const insight = insights.find((i) => i.id === insightId);
         if (insight) onInsightActioned(insight);
       }
 
@@ -631,9 +651,7 @@ export function InsightDashboard({
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-xl font-semibold text-white">Business Intelligence</h2>
-          <p className="text-sm text-white/60">
-            Insights predictivos generados por IA
-          </p>
+          <p className="text-sm text-white/60">Insights predictivos generados por IA</p>
         </div>
         <button
           onClick={handleRegenerate}
@@ -665,11 +683,7 @@ export function InsightDashboard({
       ) : (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {insights.map((insight) => (
-            <InsightCard
-              key={insight.id}
-              insight={insight}
-              onAction={handleAction}
-            />
+            <InsightCard key={insight.id} insight={insight} onAction={handleAction} />
           ))}
         </div>
       )}

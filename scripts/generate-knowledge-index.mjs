@@ -3,71 +3,68 @@
  * Índice Repo-First (wikilinks estilo Obsidian): escanea *.md, título (#), keywords (## + ruta + título).
  * Invocado por scripts/index-knowledge.sh (find | node) o directamente con raíz del repo.
  */
-import { readFile, stat } from "node:fs/promises";
-import { basename, join, relative, resolve } from "node:path";
+import { readFile, stat } from 'node:fs/promises';
+import { basename, join, relative, resolve } from 'node:path';
 
 const MAX_KEYWORDS_PER_FILE = 48;
 const STOP = new Set([
-  "the",
-  "and",
-  "for",
-  "are",
-  "but",
-  "not",
-  "you",
-  "all",
-  "can",
-  "her",
-  "was",
-  "one",
-  "our",
-  "out",
-  "day",
-  "get",
-  "has",
-  "him",
-  "his",
-  "how",
-  "its",
-  "may",
-  "new",
-  "now",
-  "old",
-  "see",
-  "two",
-  "way",
-  "who",
-  "boy",
-  "did",
-  "el",
-  "la",
-  "de",
-  "en",
-  "un",
-  "una",
-  "los",
-  "las",
-  "del",
-  "por",
-  "con",
-  "que",
-  "como",
-  "para",
+  'the',
+  'and',
+  'for',
+  'are',
+  'but',
+  'not',
+  'you',
+  'all',
+  'can',
+  'her',
+  'was',
+  'one',
+  'our',
+  'out',
+  'day',
+  'get',
+  'has',
+  'him',
+  'his',
+  'how',
+  'its',
+  'may',
+  'new',
+  'now',
+  'old',
+  'see',
+  'two',
+  'way',
+  'who',
+  'boy',
+  'did',
+  'el',
+  'la',
+  'de',
+  'en',
+  'un',
+  'una',
+  'los',
+  'las',
+  'del',
+  'por',
+  'con',
+  'que',
+  'como',
+  'para',
 ]);
 
 function normKeyword(s) {
   return String(s)
     .toLowerCase()
-    .normalize("NFD")
-    .replace(/\p{M}/gu, "")
-    .replace(/[^a-z0-9]+/g, "");
+    .normalize('NFD')
+    .replace(/\p{M}/gu, '')
+    .replace(/[^a-z0-9]+/g, '');
 }
 
 function wordsFromText(text) {
-  const raw = String(text)
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/\p{M}/gu, "");
+  const raw = String(text).toLowerCase().normalize('NFD').replace(/\p{M}/gu, '');
   const parts = raw.split(/[^a-z0-9]+/).filter((p) => p.length >= 3);
   const out = [];
   for (const p of parts) {
@@ -80,8 +77,8 @@ function wordsFromText(text) {
 }
 
 function stemKeywords(relPath) {
-  const base = basename(relPath, ".md");
-  return wordsFromText(base.replace(/[-_]+/g, " "));
+  const base = basename(relPath, '.md');
+  return wordsFromText(base.replace(/[-_]+/g, ' '));
 }
 
 function uniqueLimited(words) {
@@ -106,7 +103,7 @@ function uniqueLimited(words) {
  */
 function extractTitleAndHeaders(content) {
   const lines = content.split(/\r?\n/);
-  let title = "";
+  let title = '';
   const headerLines = [];
   for (const line of lines) {
     const h1 = line.match(/^\s*#\s+(.+)$/);
@@ -134,7 +131,7 @@ function buildKeywords(relPath, title, headerLines) {
       collected.push(w);
     }
   }
-  collected.push("opsly", "markdown");
+  collected.push('opsly', 'markdown');
   const sorted = uniqueLimited(collected);
   return sorted.sort();
 }
@@ -163,22 +160,22 @@ function topicsFromKeywords(topics, relPath, keywords) {
  * @param {string} root
  */
 async function indexOneFile(absPath, root) {
-  const rel = relative(root, absPath).replace(/\\/g, "/");
+  const rel = relative(root, absPath).replace(/\\/g, '/');
   let st;
   try {
     st = await stat(absPath);
   } catch {
     return null;
   }
-  let raw = "";
+  let raw = '';
   try {
-    raw = await readFile(absPath, "utf8");
+    raw = await readFile(absPath, 'utf8');
   } catch {
     return null;
   }
   const head = raw.length > 120_000 ? raw.slice(0, 120_000) : raw;
   const { title: rawTitle, headerLines } = extractTitleAndHeaders(head);
-  const stem = basename(rel, ".md");
+  const stem = basename(rel, '.md');
   const title = rawTitle || stem;
   const keywords = buildKeywords(rel, title, headerLines);
   return {
@@ -195,8 +192,8 @@ async function readStdinPaths() {
     chunks.push(chunk);
   }
   const buf = Buffer.concat(chunks);
-  const s = buf.toString("utf8");
-  return s.split("\0").filter(Boolean);
+  const s = buf.toString('utf8');
+  return s.split('\0').filter(Boolean);
 }
 
 async function main() {
@@ -204,10 +201,10 @@ async function main() {
   let root = process.cwd();
   let fromStdin = false;
 
-  if (args[0] === "--stdin0" && args[1]) {
+  if (args[0] === '--stdin0' && args[1]) {
     fromStdin = true;
     root = resolve(args[1]);
-  } else if (args[0] && !args[0].startsWith("-")) {
+  } else if (args[0] && !args[0].startsWith('-')) {
     root = resolve(args[0]);
   }
 
@@ -216,16 +213,8 @@ async function main() {
   if (fromStdin) {
     absPaths = await readStdinPaths();
   } else {
-    const { readdir } = await import("node:fs/promises");
-    const skip = new Set([
-      "node_modules",
-      ".git",
-      "dist",
-      ".next",
-      "coverage",
-      ".turbo",
-      "build",
-    ]);
+    const { readdir } = await import('node:fs/promises');
+    const skip = new Set(['node_modules', '.git', 'dist', '.next', 'coverage', '.turbo', 'build']);
 
     async function walk(dir) {
       let entries;
@@ -241,7 +230,7 @@ async function main() {
             continue;
           }
           await walk(p);
-        } else if (e.isFile() && e.name.toLowerCase().endsWith(".md")) {
+        } else if (e.isFile() && e.name.toLowerCase().endsWith('.md')) {
           absPaths.push(p);
         }
       }
@@ -270,7 +259,7 @@ async function main() {
 
   const out = {
     version: 1,
-    root: root.replace(/\\/g, "/"),
+    root: root.replace(/\\/g, '/'),
     generated_at: new Date().toISOString(),
     files: fileEntries,
     topics,

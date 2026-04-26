@@ -1,21 +1,21 @@
-import type { Job } from "bullmq";
-import type { OrchestratorJob } from "../types.js";
+import type { Job } from 'bullmq';
+import type { OrchestratorJob } from '../types.js';
 
 export type WorkerName =
-  | "cursor"
-  | "n8n"
-  | "notify"
-  | "drive"
-  | "backup"
-  | "health"
-  | "ollama"
-  | "budget"
-  | "webhooks-processing"
-  | "general-events"
-  | "agent-classifier"
-  | "approval-gate"
-  | "hermes-orchestration"
-  | "intent_dispatch";
+  | 'cursor'
+  | 'n8n'
+  | 'notify'
+  | 'drive'
+  | 'backup'
+  | 'health'
+  | 'ollama'
+  | 'budget'
+  | 'webhooks-processing'
+  | 'general-events'
+  | 'agent-classifier'
+  | 'approval-gate'
+  | 'hermes-orchestration'
+  | 'intent_dispatch';
 
 export function extractJobContext(job: Job): {
   task_id?: string;
@@ -41,16 +41,16 @@ export function extractJobContext(job: Job): {
 }
 
 export function logWorkerLifecycle(
-  phase: "start" | "complete" | "fail",
+  phase: 'start' | 'complete' | 'fail',
   worker: WorkerName,
   job: Job,
-  extra?: { duration_ms?: number; error?: string },
+  extra?: { duration_ms?: number; error?: string }
 ): void {
   const ctx = extractJobContext(job);
-  const status = phase === "start" ? "started" : phase === "complete" ? "completed" : "failed";
+  const status = phase === 'start' ? 'started' : phase === 'complete' ? 'completed' : 'failed';
   const line = JSON.stringify({
     ts: new Date().toISOString(),
-    service: "orchestrator",
+    service: 'orchestrator',
     event: `worker_${phase}`,
     worker,
     bullmq_job_id: String(job.id),

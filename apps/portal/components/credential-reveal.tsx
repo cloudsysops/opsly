@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import type { ReactElement } from "react";
-import { useCallback, useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
+import type { ReactElement } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import { Button } from '@/components/ui/button';
 
 const REVEAL_SECONDS = 30;
 
@@ -44,9 +44,7 @@ export function CredentialReveal({ password }: CredentialRevealProps): ReactElem
 
   return (
     <div className="flex flex-wrap items-center gap-2">
-      <span className="font-mono text-sm">
-        {visible ? password : "••••••••"}
-      </span>
+      <span className="font-mono text-sm">{visible ? password : '••••••••'}</span>
       {visible && secondsLeft > 0 ? (
         <span className="text-xs text-ops-gray">({secondsLeft}s)</span>
       ) : null}

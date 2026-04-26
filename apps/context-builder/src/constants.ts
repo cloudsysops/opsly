@@ -1,5 +1,5 @@
 /** Prefijo Redis para caché de contexto Repo-First (24h). */
-export const REDIS_CTX_PREFIX = "opsly:ctx:";
+export const REDIS_CTX_PREFIX = 'opsly:ctx:';
 
 /** TTL del contexto ensamblado (segundos) — 24 h. */
 export const CONTEXT_CACHE_TTL_SECONDS = 86_400;

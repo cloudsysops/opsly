@@ -1,21 +1,21 @@
-import type { Metadata } from "next";
-import { Inter, JetBrains_Mono } from "next/font/google";
-import type { ReactElement, ReactNode } from "react";
-import "./globals.css";
+import type { Metadata } from 'next';
+import { Inter, JetBrains_Mono } from 'next/font/google';
+import type { ReactElement, ReactNode } from 'react';
+import './globals.css';
 
 const sans = Inter({
-  subsets: ["latin"],
-  variable: "--font-geist-sans",
+  subsets: ['latin'],
+  variable: '--font-geist-sans',
 });
 
 const mono = JetBrains_Mono({
-  subsets: ["latin"],
-  variable: "--font-geist-mono",
+  subsets: ['latin'],
+  variable: '--font-geist-mono',
 });
 
 export const metadata: Metadata = {
-  title: "Opsly — Portal de Cliente",
-  description: "Portal de cliente Opsly",
+  title: 'Opsly — Portal de Cliente',
+  description: 'Portal de cliente Opsly',
 };
 
 export default function RootLayout({

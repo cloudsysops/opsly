@@ -4,10 +4,10 @@ Seguimiento manual; la fuente de verdad de tenants sigue siendo `platform.tenant
 
 ## Tenants piloto
 
-| Slug         | Email (debe ser `owner_email`) | Nombre / notas        | Estado     |
-|-------------|----------------------------------|------------------------|------------|
-| localrank   | jkbotero78@gmail.com             | Juan Carlos (ajustar)  | Pendiente  |
-| jkboterolabs| Mismo u otro según fila en DB    | Completar desde Supabase | Pendiente |
+| Slug         | Email (debe ser `owner_email`) | Nombre / notas           | Estado    |
+| ------------ | ------------------------------ | ------------------------ | --------- |
+| localrank    | jkbotero78@gmail.com           | Juan Carlos (ajustar)    | Pendiente |
+| jkboterolabs | Mismo u otro según fila en DB  | Completar desde Supabase | Pendiente |
 
 > **Importante:** `POST /api/invitations` solo acepta el email si coincide exactamente con `owner_email` del tenant (ver `docs/INVITATIONS_RUNBOOK.md`).
 
@@ -51,11 +51,11 @@ Ver ejemplo en `docs/INVITATIONS_RUNBOOK.md` (`tenantRef` + `email` + `mode`).
 
 ### LocalRank
 
-- Portal: https://portal.ops.smiletripcare.com  
-- n8n: https://n8n-localrank.ops.smiletripcare.com  
-- Uptime: https://uptime-localrank.ops.smiletripcare.com  
+- Portal: https://portal.ops.smiletripcare.com
+- n8n: https://n8n-localrank.ops.smiletripcare.com
+- Uptime: https://uptime-localrank.ops.smiletripcare.com
 
 ### jkboterolabs
 
-- n8n: https://n8n-jkboterolabs.ops.smiletripcare.com  
-- Uptime: https://uptime-jkboterolabs.ops.smiletripcare.com  
+- n8n: https://n8n-jkboterolabs.ops.smiletripcare.com
+- Uptime: https://uptime-jkboterolabs.ops.smiletripcare.com

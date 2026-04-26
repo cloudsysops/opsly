@@ -28,11 +28,7 @@
     "project": "ops-intcloudsysops",
     "config": "prd",
     "status": "complete",
-    "missing": [
-      "GOOGLE_CLOUD_PROJECT_ID",
-      "BIGQUERY_DATASET",
-      "VERTEX_AI_REGION"
-    ]
+    "missing": ["GOOGLE_CLOUD_PROJECT_ID", "BIGQUERY_DATASET", "VERTEX_AI_REGION"]
   },
   "dns": {
     "base": "ops.smiletripcare.com",
@@ -82,13 +78,7 @@
   "ml": {
     "workspace": "apps/ml",
     "status": "compiles",
-    "components": [
-      "classifier",
-      "feedback-decision-engine",
-      "insight-engine",
-      "rag",
-      "embeddings"
-    ],
+    "components": ["classifier", "feedback-decision-engine", "insight-engine", "rag", "embeddings"],
     "gcp": {
       "status": "pending",
       "vars_needed": [

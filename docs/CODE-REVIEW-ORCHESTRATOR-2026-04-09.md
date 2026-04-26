@@ -8,19 +8,20 @@
 
 ## Executive Summary
 
-| Aspect | Status | Impact |
-|--------|--------|--------|
-| **TypeScript** | ✅ All 11 packages pass type-check | High |
-| **Security** | 🟡 No exposed secrets, but needs validation | Medium |
-| **Reliability** | 🚨 3 critical issues: timeout, error handling, race condition | High |
-| **Logging** | 🟡 Structured format OK, but should use logger module | Low |
-| **Production Ready** | ❌ Fix critical issues first (2-3 hours work) | Blocker |
+| Aspect               | Status                                                        | Impact  |
+| -------------------- | ------------------------------------------------------------- | ------- |
+| **TypeScript**       | ✅ All 11 packages pass type-check                            | High    |
+| **Security**         | 🟡 No exposed secrets, but needs validation                   | Medium  |
+| **Reliability**      | 🚨 3 critical issues: timeout, error handling, race condition | High    |
+| **Logging**          | 🟡 Structured format OK, but should use logger module         | Low     |
+| **Production Ready** | ❌ Fix critical issues first (2-3 hours work)                 | Blocker |
 
 ---
 
 ## 🚨 Critical Issues (Fix Tonight)
 
 ### Issue #1: NO TIMEOUT ON FETCH (CRITICAL)
+
 **File:** `apps/orchestrator/src/llm-gateway-client.ts:42`  
 **Severity:** CRITICAL  
 **Risk:** If LLM gateway hangs, orchestrator job hangs forever → BullMQ queue stalls
@@ -50,11 +51,12 @@ try {
 ```
 
 **Fix Time:** 5 minutes  
-**Test:** Run `npm run test --workspace=@intcloudsysops/orchestrator`  
+**Test:** Run `npm run test --workspace=@intcloudsysops/orchestrator`
 
 ---
 
 ### Issue #2: JSON.PARSE WITHOUT TRY-CATCH (CRITICAL)
+
 **File:** `apps/orchestrator/src/llm-gateway-client.ts:63`  
 **Severity:** CRITICAL  
 **Risk:** Malformed JSON from gateway crashes worker → job fails without retry
@@ -79,16 +81,18 @@ if (!validation.success) {
 ```
 
 **Why Zod?**
+
 - Replaces incomplete manual checks (only checked `planner.reasoning`)
 - Validates entire response structure (planner, llm, actions array)
 - Type-safe: `validation.data` is guaranteed correct type
 
 **Fix Time:** 10 minutes (add Zod schema)  
-**Test:** `npm run test llm-gateway-client.test.ts`  
+**Test:** `npm run test llm-gateway-client.test.ts`
 
 ---
 
 ### Issue #3: DEFAULT CASE MISSING IN SWITCH (CRITICAL)
+
 **File:** `apps/orchestrator/src/planner-map.ts:51-90`  
 **Severity:** CRITICAL  
 **Risk:** Unknown tool silently returns `undefined` → job type is invalid
@@ -120,13 +124,14 @@ switch (tool) {
 ```
 
 **Fix Time:** 2 minutes  
-**Test:** Add unit test for invalid tool name  
+**Test:** Add unit test for invalid tool name
 
 ---
 
 ## 🟡 Important Issues (This Week)
 
 ### Issue #4: ARRAY INDEX RACE CONDITION (IMPORTANT)
+
 **File:** `apps/orchestrator/src/engine.ts:103-124`  
 **Severity:** IMPORTANT  
 **Risk:** If `enqueueJob()` results reorder, `jobs[index]` mismatch → wrong metadata stored
@@ -160,14 +165,16 @@ await Promise.allSettled(
 ```
 
 **Why Promise.allSettled?**
+
 - If 1 state update fails, don't crash entire batch
 - Log failed entries separately
 
-**Fix Time:** 15 minutes  
+**Fix Time:** 15 minutes
 
 ---
 
 ### Issue #5: PROMISE.ALL WITHOUT ALLSETTLED (IMPORTANT)
+
 **File:** `apps/orchestrator/src/engine.ts:103`  
 **Severity:** IMPORTANT  
 **Risk:** 1 failed enqueue → entire job batch fails → BullMQ inconsistent state
@@ -190,11 +197,12 @@ for (const job of jobs) {
 }
 ```
 
-**Fix Time:** 5 minutes  
+**Fix Time:** 5 minutes
 
 ---
 
 ### Issue #6: MISSING HEALTHCHECKS IN DOCKER (IMPORTANT)
+
 **File:** `infra/docker-compose.platform.yml:69+`  
 **Severity:** IMPORTANT  
 **Risk:** Docker can't detect app failure → orchestrator jobs silently fail
@@ -219,21 +227,22 @@ app:
 ```
 
 **API Endpoint Required:** `GET /api/health` must return 200 OK  
-**Current Status:** ✅ Exists at `apps/api/app/api/health/route.ts`  
+**Current Status:** ✅ Exists at `apps/api/app/api/health/route.ts`
 
-**Fix Time:** 10 minutes  
+**Fix Time:** 10 minutes
 
 ---
 
 ### Issue #7: INCOMPLETE VALIDATION SCHEMA (IMPORTANT)
+
 **File:** `apps/orchestrator/src/llm-gateway-client.ts:64-66`  
 **Severity:** IMPORTANT  
 **Risk:** Missing fields silently pass → downstream code crashes
 
 ```typescript
 // ❌ BEFORE (partial check):
-if (!parsed.planner || typeof parsed.planner.reasoning !== "string") {
-  throw new Error("llm-gateway planner: invalid response body");
+if (!parsed.planner || typeof parsed.planner.reasoning !== 'string') {
+  throw new Error('llm-gateway planner: invalid response body');
 }
 // ❌ Doesn't validate:
 // - planner.actions array (could be null/undefined)
@@ -244,10 +253,12 @@ if (!parsed.planner || typeof parsed.planner.reasoning !== "string") {
 const PlannerGatewayResponseSchema = z.object({
   planner: z.object({
     reasoning: z.string(),
-    actions: z.array(z.object({
-      tool: z.string(),
-      params: z.record(z.unknown()),
-    })),
+    actions: z.array(
+      z.object({
+        tool: z.string(),
+        params: z.record(z.unknown()),
+      })
+    ),
   }),
   llm: z.object({
     model_used: z.string(),
@@ -267,28 +278,32 @@ if (!validation.success) {
 return validation.data;
 ```
 
-**Fix Time:** 10 minutes  
+**Fix Time:** 10 minutes
 
 ---
 
 ## 🟢 Code Quality Observations (GOOD)
 
 ### ✅ TypeScript Strict
+
 - No `any` types found
 - All 11 packages pass type-check
 - Interfaces properly defined (PlannerGatewayRequest, PlannerGatewayResponseBody)
 
 ### ✅ Structured Logging Format
+
 - Uses consistent format: `"[component] message"`
 - Compatible with `observability/worker-log.ts` pattern
 - Suggestion: Replace `console.log` with logger module for consistency
 
 ### ✅ Error Messages
+
 - Descriptive error messages ("Unknown tool: X")
 - Includes context (tenant_slug, request_id in headers)
 - HTTP status included in error responses
 
 ### ✅ Code Organization
+
 - Clear separation: client → gateway, engine → jobs
 - Planner map is well-structured for tool→job mapping
 - Good use of interfaces for type safety
@@ -298,17 +313,18 @@ return validation.data;
 ## 📋 Detailed Recommendations
 
 ### Logging Consolidation
+
 Replace 8x `console.log` with structured logger:
 
 ```typescript
-import { observabilityLog } from "./observability/worker-log.ts";
+import { observabilityLog } from './observability/worker-log.ts';
 
 // ❌ Instead of:
 console.log(`[orchestrator] Evento: ${event}`, eventData);
 
 // ✅ Use:
 observabilityLog({
-  event: "orchestrator_event_received",
+  event: 'orchestrator_event_received',
   event_type: event,
   data: eventData,
   request_id: eventData.request_id,
@@ -317,6 +333,7 @@ observabilityLog({
 ```
 
 **Files Affected:**
+
 - `apps/orchestrator/src/index.ts` (8 log statements)
 - `apps/orchestrator/src/teams/TeamManager.ts` (1 log statement)
 
@@ -325,6 +342,7 @@ observabilityLog({
 ---
 
 ### Job Type Naming
+
 Current mapping mixes concerns:
 
 ```typescript
@@ -334,6 +352,7 @@ case "check_service_health":
 ```
 
 **Recommendation:** Create separate job types:
+
 - `type: "read_only"` — Health checks, metrics queries (no side effects)
 - `type: "notify"` — Notifications, alerts
 - `type: "admin"` — Restart, suspend, dangerous operations
@@ -368,12 +387,14 @@ curl --max-time 35 http://localhost:3010/v1/planner -X POST \
 ## 📈 Implementation Order
 
 ### Tonight (Critical - 30 min total)
+
 1. **llm-gateway-client.ts:** Add timeout + try-catch + Zod (10 min)
 2. **planner-map.ts:** Add default case (2 min)
 3. **Tests pass:** Run full suite (5 min)
 4. **Commit:** `fix(orchestrator): critical timeout, validation, default case`
 
 ### Tomorrow (Important - 1 hour total)
+
 5. **engine.ts:** Replace array index with Map + Promise.allSettled (15 min)
 6. **docker-compose.platform.yml:** Add healthchecks (10 min)
 7. **Logging:** Replace console.log with logger module (15 min)
@@ -384,16 +405,16 @@ curl --max-time 35 http://localhost:3010/v1/planner -X POST \
 
 ## Final Assessment
 
-| Category | Rating | Reason |
-|----------|--------|--------|
-| **Code Style** | 🟢 A | Consistent, readable, good naming |
-| **Type Safety** | 🟢 A | Strict TypeScript, no `any` |
-| **Error Handling** | 🟡 C | Missing timeout, incomplete validation |
-| **Resilience** | 🟡 C | Race condition risk, no circuit breaker |
-| **Testing** | 🟢 A | 155 tests pass, good coverage |
-| **Logging** | 🟡 B | Format OK, should use logger module |
-| **Security** | 🟢 B+ | No secrets exposed, but needs validation |
-| **Documentation** | 🟡 B | Code is clear, but comments could explain WHY |
+| Category           | Rating | Reason                                        |
+| ------------------ | ------ | --------------------------------------------- |
+| **Code Style**     | 🟢 A   | Consistent, readable, good naming             |
+| **Type Safety**    | 🟢 A   | Strict TypeScript, no `any`                   |
+| **Error Handling** | 🟡 C   | Missing timeout, incomplete validation        |
+| **Resilience**     | 🟡 C   | Race condition risk, no circuit breaker       |
+| **Testing**        | 🟢 A   | 155 tests pass, good coverage                 |
+| **Logging**        | 🟡 B   | Format OK, should use logger module           |
+| **Security**       | 🟢 B+  | No secrets exposed, but needs validation      |
+| **Documentation**  | 🟡 B   | Code is clear, but comments could explain WHY |
 
 **Overall:** 🟢 **GOOD** (Fundamentals solid, needs reliability hardening)
 
@@ -412,12 +433,15 @@ curl --max-time 35 http://localhost:3010/v1/planner -X POST \
 ## Appendix: Code Samples
 
 ### Sample 1: llm-gateway-client.ts (FIXED)
+
 See `/tmp/llm-gateway-client-FIXED.ts` for complete fixed version.
 
 ### Sample 2: engine.ts (Fixed Lines 103-136)
+
 See `/tmp/engine-FIXES.ts` for Map-based correlation pattern.
 
 ### Sample 3: planner-map.ts (Add Default Case)
+
 ```typescript
 default: {
   throw new Error(

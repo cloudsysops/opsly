@@ -2,16 +2,11 @@
  * Catálogo orientativo de costos plataforma (sin secretos).
  * Estado de aprobación en memoria del proceso (se pierde al reiniciar el contenedor).
  */
-import type { LlmBudgetSummary, TenantBudgetSnapshot } from "./admin-costs-types";
-import { fetchTenantBudgetOverview } from "./admin-costs-tenant-budgets";
-import { HTTP_STATUS } from "./constants";
+import type { LlmBudgetSummary, TenantBudgetSnapshot } from './admin-costs-types';
+import { fetchTenantBudgetOverview } from './admin-costs-tenant-budgets';
+import { HTTP_STATUS } from './constants';
 
-export type CostLineStatus =
-  | "active"
-  | "approved"
-  | "pending_approval"
-  | "rejected"
-  | "available";
+export type CostLineStatus = 'active' | 'approved' | 'pending_approval' | 'rejected' | 'available';
 
 export type CostLineItem = {
   name: string;
@@ -28,12 +23,12 @@ export type CostLineItem = {
 };
 
 export type CostAlert = {
-  level: "info" | "warning";
+  level: 'info' | 'warning';
   message: string;
   action: string;
 };
 
-export type { LlmBudgetSummary, TenantBudgetSnapshot } from "./admin-costs-types";
+export type { LlmBudgetSummary, TenantBudgetSnapshot } from './admin-costs-types';
 
 function emptyLlmBudgetSummary(): LlmBudgetSummary {
   return {
@@ -46,73 +41,73 @@ function emptyLlmBudgetSummary(): LlmBudgetSummary {
 
 const CURRENT: Record<string, CostLineItem> = {
   vps_digitalocean: {
-    name: "VPS DigitalOcean",
+    name: 'VPS DigitalOcean',
     cost: 12,
-    period: "month",
-    status: "active",
-    description: "VPS principal — ~2 GB RAM (orden de magnitud; revisar factura DO).",
+    period: 'month',
+    status: 'active',
+    description: 'VPS principal — ~2 GB RAM (orden de magnitud; revisar factura DO).',
   },
   cloudflare_proxy: {
-    name: "Cloudflare Proxy",
+    name: 'Cloudflare Proxy',
     cost: 0,
-    period: "month",
-    status: "active",
-    description: "CDN y protección DDoS (plan Free típico).",
+    period: 'month',
+    status: 'active',
+    description: 'CDN y protección DDoS (plan Free típico).',
   },
   supabase: {
-    name: "Supabase",
+    name: 'Supabase',
     cost: 0,
-    period: "month",
-    status: "active",
-    description: "Base de datos y autenticación (tier según cuenta).",
+    period: 'month',
+    status: 'active',
+    description: 'Base de datos y autenticación (tier según cuenta).',
   },
   resend: {
-    name: "Resend",
+    name: 'Resend',
     cost: 0,
-    period: "month",
-    status: "active",
-    description: "Envío de emails (free tier / dominio verificado).",
+    period: 'month',
+    status: 'active',
+    description: 'Envío de emails (free tier / dominio verificado).',
   },
 };
 
 const PROPOSED_BASE: Record<string, CostLineItem> = {
   mac2011_worker: {
-    name: "Mac 2011 Worker",
+    name: 'Mac 2011 Worker',
     cost: 0,
-    period: "month",
-    status: "available",
+    period: 'month',
+    status: 'available',
     requires_approval: false,
     description:
-      "Worker distribuido (orchestrator BullMQ) contra Redis del control plane; sin coste de proveedor adicional.",
-    specs: "16 GB RAM, Ubuntu 22.04, Tailscale (ajustar según equipo real).",
+      'Worker distribuido (orchestrator BullMQ) contra Redis del control plane; sin coste de proveedor adicional.',
+    specs: '16 GB RAM, Ubuntu 22.04, Tailscale (ajustar según equipo real).',
   },
   gcp_failover: {
-    name: "GCP e2-micro Failover",
+    name: 'GCP e2-micro Failover',
     cost: 0,
-    period: "month",
-    duration: "12 months free (según cuenta GCP)",
-    status: "pending_approval",
+    period: 'month',
+    duration: '12 months free (según cuenta GCP)',
+    status: 'pending_approval',
     requires_approval: true,
     requires_credit_card: true,
-    future_cost: "~$7–10/mes tras 12 meses (revisar precios Compute)",
+    future_cost: '~$7–10/mes tras 12 meses (revisar precios Compute)',
     description:
-      "VM failover en Google Cloud — proyecto GCP de referencia: opslyquantum. Ver docs/FAILOVER-GCP-ARCHITECTURE.md.",
+      'VM failover en Google Cloud — proyecto GCP de referencia: opslyquantum. Ver docs/FAILOVER-GCP-ARCHITECTURE.md.',
   },
   cloudflare_lb: {
-    name: "Cloudflare Load Balancer",
+    name: 'Cloudflare Load Balancer',
     cost: 5,
-    period: "month",
-    status: "pending_approval",
+    period: 'month',
+    status: 'pending_approval',
     requires_approval: true,
-    description: "LB multi-origen (importe orientativo; ver facturación Cloudflare).",
+    description: 'LB multi-origen (importe orientativo; ver facturación Cloudflare).',
   },
   vps_upgrade: {
-    name: "VPS Upgrade (4 GB)",
+    name: 'VPS Upgrade (4 GB)',
     cost: 24,
-    period: "month",
-    status: "pending_approval",
+    period: 'month',
+    status: 'pending_approval',
     requires_approval: true,
-    description: "Subir plan DO (estimación; confirmar en panel).",
+    description: 'Subir plan DO (estimación; confirmar en panel).',
   },
 };
 
@@ -122,8 +117,7 @@ function mergeProposed(): Record<string, CostLineItem> {
   const out: Record<string, CostLineItem> = {};
   for (const [id, item] of Object.entries(PROPOSED_BASE)) {
     const override = approvalByServiceId.get(id);
-    out[id] =
-      override === undefined ? { ...item } : { ...item, status: override };
+    out[id] = override === undefined ? { ...item } : { ...item, status: override };
   }
   return out;
 }
@@ -134,7 +128,7 @@ function sumCurrentMonthly(): number {
 
 function sumApprovedProposedMonthly(proposed: Record<string, CostLineItem>): number {
   return Object.values(proposed)
-    .filter((i) => i.status === "approved")
+    .filter((i) => i.status === 'approved')
     .reduce((s, i) => s + i.cost, 0);
 }
 
@@ -168,16 +162,15 @@ export function getAdminCostsPayload(): AdminCostsPayload {
     },
     alerts: [
       {
-        level: "info",
-        message:
-          "Mac 2011 Worker disponible sin costo adicional de proveedor (misma cola Redis).",
-        action: "enable_mac2011_worker",
+        level: 'info',
+        message: 'Mac 2011 Worker disponible sin costo adicional de proveedor (misma cola Redis).',
+        action: 'enable_mac2011_worker',
       },
       {
-        level: "warning",
+        level: 'warning',
         message:
-          "GCP Failover (opslyquantum) puede requerir tarjeta para activar cuenta; sin cargo típico en período free según GCP.",
-        action: "review_gcp",
+          'GCP Failover (opslyquantum) puede requerir tarjeta para activar cuenta; sin cargo típico en período free según GCP.',
+        action: 'review_gcp',
       },
     ],
     lastUpdated: new Date().toISOString(),
@@ -198,20 +191,19 @@ export async function buildAdminCostsPayloadAsync(): Promise<AdminCostsPayload> 
 
 export type CostDecisionBody = {
   service_id: string;
-  action: "approve" | "reject";
+  action: 'approve' | 'reject';
   reason?: string;
 };
 
 export function parseCostDecisionBody(raw: unknown): CostDecisionBody | null {
-  if (raw === null || typeof raw !== "object" || Array.isArray(raw)) {
+  if (raw === null || typeof raw !== 'object' || Array.isArray(raw)) {
     return null;
   }
   const o = raw as Record<string, unknown>;
-  const service_id = typeof o.service_id === "string" ? o.service_id.trim() : "";
+  const service_id = typeof o.service_id === 'string' ? o.service_id.trim() : '';
   const actionRaw = o.action;
-  const action =
-    actionRaw === "approve" || actionRaw === "reject" ? actionRaw : null;
-  const reason = typeof o.reason === "string" ? o.reason : undefined;
+  const action = actionRaw === 'approve' || actionRaw === 'reject' ? actionRaw : null;
+  const reason = typeof o.reason === 'string' ? o.reason : undefined;
   if (service_id.length === 0 || action === null) {
     return null;
   }
@@ -219,25 +211,25 @@ export function parseCostDecisionBody(raw: unknown): CostDecisionBody | null {
 }
 
 export function applyCostDecision(
-  body: CostDecisionBody,
+  body: CostDecisionBody
 ): { ok: true } | { ok: false; status: number; error: string } {
   const { service_id, action } = body;
   if (!service_id || service_id.length === 0) {
-    return { ok: false, status: HTTP_STATUS.BAD_REQUEST, error: "service_id required" };
+    return { ok: false, status: HTTP_STATUS.BAD_REQUEST, error: 'service_id required' };
   }
-  if (action !== "approve" && action !== "reject") {
-    return { ok: false, status: HTTP_STATUS.BAD_REQUEST, error: "invalid action" };
+  if (action !== 'approve' && action !== 'reject') {
+    return { ok: false, status: HTTP_STATUS.BAD_REQUEST, error: 'invalid action' };
   }
 
   const proposed = PROPOSED_BASE[service_id];
   if (!proposed) {
-    return { ok: false, status: HTTP_STATUS.NOT_FOUND, error: "Service not found" };
+    return { ok: false, status: HTTP_STATUS.NOT_FOUND, error: 'Service not found' };
   }
 
-  if (action === "approve") {
-    approvalByServiceId.set(service_id, "approved");
+  if (action === 'approve') {
+    approvalByServiceId.set(service_id, 'approved');
   } else {
-    approvalByServiceId.set(service_id, "rejected");
+    approvalByServiceId.set(service_id, 'rejected');
   }
   return { ok: true };
 }

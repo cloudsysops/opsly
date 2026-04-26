@@ -1,6 +1,6 @@
 ---
-title: "SQL Migration Template"
-description: "Plantilla para migraciones SQL idempotentes con rollback"
+title: 'SQL Migration Template'
+description: 'Plantilla para migraciones SQL idempotentes con rollback'
 category: database
 tags: [sql, migration, postgres, schema, rollback]
 created_at: 2026-04-15
@@ -36,40 +36,40 @@ migrations/
 DO $$
 BEGIN
   IF NOT EXISTS (
-    SELECT FROM pg_tables 
-    WHERE schemaname = 'public' 
+    SELECT FROM pg_tables
+    WHERE schemaname = 'public'
     AND tablename = '{{table_name}}'
   ) THEN
     CREATE TABLE {{table_name}} (
       -- Primary key
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-      
+
       -- Timestamps con timezone
       created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
       updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-      
+
       -- Datos de la tabla (ajustar según necesidad)
       -- Ejemplo:
       -- name VARCHAR(255) NOT NULL,
       -- email VARCHAR(255) UNIQUE NOT NULL,
       -- status VARCHAR(50) DEFAULT 'active',
       -- metadata JSONB DEFAULT '{}'::jsonb,
-      
+
       -- Foreign keys (si aplica)
       -- organization_id UUID REFERENCES organizations(id) ON DELETE CASCADE,
-      
+
       -- Constraints
       -- CONSTRAINT {{table_name}}_pkey PRIMARY KEY (id)
     );
 
     -- Agregar comentarios para documentación
     COMMENT ON TABLE {{table_name}} IS 'Tabla para almacenar {{description}}';
-    
+
     -- Crear índices para optimizar queries comunes
     -- CREATE INDEX idx_{{table_name}}_organization_id ON {{table_name}}(organization_id);
     -- CREATE INDEX idx_{{table_name}}_status ON {{table_name}}(status);
     -- CREATE UNIQUE INDEX idx_{{table_name}}_email ON {{table_name}}(email) WHERE deleted_at IS NULL;
-    
+
     RAISE NOTICE 'Table {{table_name}} created successfully';
   ELSE
     RAISE NOTICE 'Table {{table_name}} already exists, skipping';
@@ -96,8 +96,8 @@ DROP TABLE IF EXISTS {{table_name}} CASCADE;
 DO $$
 BEGIN
   IF NOT EXISTS (
-    SELECT FROM pg_tables 
-    WHERE schemaname = 'public' 
+    SELECT FROM pg_tables
+    WHERE schemaname = 'public'
     AND tablename = 'users'
   ) THEN
     CREATE TABLE users (
@@ -159,17 +159,17 @@ END $$;
 DO $$
 BEGIN
   IF NOT EXISTS (
-    SELECT 1 FROM information_schema.columns 
-    WHERE table_name = '{{table_name}}' 
+    SELECT 1 FROM information_schema.columns
+    WHERE table_name = '{{table_name}}'
     AND column_name = '{{column_name}}'
   ) THEN
-    ALTER TABLE {{table_name}} 
+    ALTER TABLE {{table_name}}
     ADD COLUMN {{column_name}} {{data_type}} {{constraints}};
-    
+
     -- Ejemplo:
     -- ALTER TABLE users ADD COLUMN phone VARCHAR(20);
     -- ALTER TABLE users ADD COLUMN metadata JSONB DEFAULT '{}'::jsonb;
-    
+
     COMMENT ON COLUMN {{table_name}}.{{column_name}} IS '{{description}}';
     RAISE NOTICE 'Column {{column_name}} added to {{table_name}}';
   ELSE
@@ -201,7 +201,7 @@ DO $$
 BEGIN
   -- Verificar que no exista ya la constraint
   IF NOT EXISTS (
-    SELECT 1 FROM information_schema.table_constraints 
+    SELECT 1 FROM information_schema.table_constraints
     WHERE constraint_name = '{{table_name}}_{{column_name}}_fkey'
   ) THEN
     ALTER TABLE {{table_name}}
@@ -210,7 +210,7 @@ BEGIN
     REFERENCES {{referenced_table}}(id)
     ON DELETE {{on_delete}}  -- CASCADE, SET NULL, RESTRICT, NO ACTION
     ON UPDATE {{on_update}}; -- CASCADE, SET NULL, RESTRICT, NO ACTION
-    
+
     RAISE NOTICE 'Foreign key {{table_name}}_{{column_name}}_fkey created';
   ELSE
     RAISE NOTICE 'Foreign key already exists, skipping';
@@ -242,12 +242,12 @@ DO $$
 BEGIN
   IF NOT EXISTS (SELECT 1 FROM {{table_name}} LIMIT 1) THEN
     INSERT INTO {{table_name}} (id, name, description, created_at, updated_at)
-    VALUES 
+    VALUES
       ('11111111-1111-1111-1111-111111111111', 'Admin', 'Rol de administrador', NOW(), NOW()),
       ('22222222-2222-2222-2222-222222222222', 'User', 'Rol de usuario estándar', NOW(), NOW()),
       ('33333333-3333-3333-3333-333333333333', 'Guest', 'Rol de invitado', NOW(), NOW())
     ON CONFLICT DO NOTHING;
-    
+
     RAISE NOTICE 'Seed data inserted into {{table_name}}';
   ELSE
     RAISE NOTICE 'Table {{table_name}} already has data, skipping seed';

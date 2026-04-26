@@ -15,8 +15,8 @@ services:
       - --entrypoints.web.address=:80
       - --log.level=DEBUG
     ports:
-      - "80:80"
-      - "8080:8080"
+      - '80:80'
+      - '8080:8080'
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     networks:
@@ -27,7 +27,7 @@ services:
     container_name: redis-local
     command: redis-server --requirepass ${REDIS_PASSWORD:-localredis}
     ports:
-      - "6379:6379"
+      - '6379:6379'
     networks:
       - internal
 
@@ -38,7 +38,7 @@ services:
     container_name: api-local
     environment:
       NODE_ENV: development
-      PORT: "3000"
+      PORT: '3000'
     env_file:
       - ../.env.local
     volumes:
@@ -63,7 +63,7 @@ services:
       dockerfile: apps/admin/Dockerfile
     container_name: admin-local
     environment:
-      PORT: "3001"
+      PORT: '3001'
     env_file:
       - ../.env.local
     labels:
@@ -98,7 +98,7 @@ services:
       VECTOR_STORE: weaviate
       WEAVIATE_ENDPOINT: ${DIFY_WEAVIATE_ENDPOINT:-http://host.docker.internal:8081}
     ports:
-      - "5001:5001"
+      - '5001:5001'
     networks:
       - internal
     depends_on:

@@ -13,11 +13,11 @@ Infraestructura como código para el droplet de **producción** (importado, no r
 
 ## Comandos básicos
 
-| Comando | Qué hace |
-|--------|-----------|
-| `terraform init` | Descarga el proveedor `digitalocean` y prepara el backend local (`.terraform/`). **Ejecútalo una vez** por máquina/clon. |
-| `terraform plan` | Muestra el plan de cambios **sin aplicar**; revisa siempre antes de `apply`. |
-| `terraform apply` | Aplica los cambios aprobados (crea/modifica/destruye según el plan). |
+| Comando             | Qué hace                                                                                                                                            |
+| ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `terraform init`    | Descarga el proveedor `digitalocean` y prepara el backend local (`.terraform/`). **Ejecútalo una vez** por máquina/clon.                            |
+| `terraform plan`    | Muestra el plan de cambios **sin aplicar**; revisa siempre antes de `apply`.                                                                        |
+| `terraform apply`   | Aplica los cambios aprobados (crea/modifica/destruye según el plan).                                                                                |
 | `terraform destroy` | **Elimina todos** los recursos gestionados por este directorio. Peligroso en producción: revisa el plan y usa `-target` solo si sabes lo que haces. |
 
 ## Importar el VPS de producción existente
@@ -61,11 +61,11 @@ terraform destroy -target=digitalocean_droplet.staging[0] -target=digitalocean_r
 
 ## Qué ignorar en git (`.gitignore` en la raíz del repo)
 
-| Patrón | Motivo |
-|--------|--------|
-| `.terraform/` | Plugins y caché del proveedor; regenerable con `init`. |
+| Patrón                           | Motivo                                                           |
+| -------------------------------- | ---------------------------------------------------------------- |
+| `.terraform/`                    | Plugins y caché del proveedor; regenerable con `init`.           |
 | `terraform.tfstate` / `*.backup` | Estado con mapeo real ↔ código; sensible y personal por entorno. |
-| `*.tfvars` | Suelen contener secretos si alguien los usa localmente. |
+| `*.tfvars`                       | Suelen contener secretos si alguien los usa localmente.          |
 
 **`.terraform.lock.hcl`**: conviene **versionarlo** en git para fijar versiones del proveedor; no está ignorado.
 

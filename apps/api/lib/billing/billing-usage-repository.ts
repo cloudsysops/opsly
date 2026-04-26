@@ -1,5 +1,5 @@
-import { getServiceClient } from "../supabase/client";
-import type { BillingMetricType } from "./types";
+import { getServiceClient } from '../supabase/client';
+import type { BillingMetricType } from './types';
 
 export interface BillingUsageInsert {
   readonly tenantId: string;
@@ -13,14 +13,12 @@ export interface BillingUsageInsert {
  * Persiste una línea en `platform.billing_usage` (service role).
  * Errores: solo log; no lanza (uso desde medición async).
  */
-export async function insertBillingUsageLine(
-  row: BillingUsageInsert,
-): Promise<void> {
+export async function insertBillingUsageLine(row: BillingUsageInsert): Promise<void> {
   try {
     const supabase = getServiceClient();
     const { error } = await supabase
-      .schema("platform")
-      .from("billing_usage")
+      .schema('platform')
+      .from('billing_usage')
       .insert({
         tenant_id: row.tenantId,
         metric_type: row.metricType,
@@ -29,9 +27,9 @@ export async function insertBillingUsageLine(
         metadata: row.metadata ?? {},
       });
     if (error) {
-      console.error("[billing_usage] insert failed", error.message);
+      console.error('[billing_usage] insert failed', error.message);
     }
   } catch (e) {
-    console.error("[billing_usage] insert exception", e);
+    console.error('[billing_usage] insert exception', e);
   }
 }

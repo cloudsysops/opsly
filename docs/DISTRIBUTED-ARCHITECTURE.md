@@ -26,21 +26,21 @@ Mac 2011 Worker (Tailscale)
 
 Sustituye `BASE` por tu `domains.base` (ej. `ops.smiletripcare.com`):
 
-| Uso | URL |
-|-----|-----|
-| API | `https://api.BASE` |
-| Admin | `https://admin.BASE` |
-| Portal | `https://portal.BASE` |
-| MCP (si está en VPS) | `https://mcp.BASE` |
+| Uso                  | URL                   |
+| -------------------- | --------------------- |
+| API                  | `https://api.BASE`    |
+| Admin                | `https://admin.BASE`  |
+| Portal               | `https://portal.BASE` |
+| MCP (si está en VPS) | `https://mcp.BASE`    |
 
 Si **migras** servicios al worker y los expones por Traefik en el VPS, añade **DNS** y routers (no documentar rutas concretas hasta que existan en `infra/`).
 
 ### Tailscale (diagnóstico)
 
-| Destino | Ejemplo |
-|---------|---------|
-| VPS | `100.120.151.91` (verificar en `tailscale status`) |
-| Mac 2011 | `100.80.41.29` (`opsly-worker`) |
+| Destino  | Ejemplo                                            |
+| -------- | -------------------------------------------------- |
+| VPS      | `100.120.151.91` (verificar en `tailscale status`) |
+| Mac 2011 | `100.80.41.29` (`opsly-worker`)                    |
 
 **Redis:** usar la URL completa con contraseña desde Doppler / `.env.worker` (no pegar en chat).
 
@@ -108,11 +108,11 @@ Reducir modelo, o mover inferencia a proveedor vía LLM Gateway.
 
 ## Mantenimiento
 
-| Frecuencia | Acción |
-|------------|--------|
-| Diaria | `df` en VPS; revisar `docs/OPS-CLEANUP-PROCEDURES.md` si >90 % |
-| Semanal | Logs, `docker system df` en VPS |
-| Tras cambios | `./scripts/verify-platform-smoke.sh` |
+| Frecuencia   | Acción                                                         |
+| ------------ | -------------------------------------------------------------- |
+| Diaria       | `df` en VPS; revisar `docs/OPS-CLEANUP-PROCEDURES.md` si >90 % |
+| Semanal      | Logs, `docker system df` en VPS                                |
+| Tras cambios | `./scripts/verify-platform-smoke.sh`                           |
 
 ## Referencias cruzadas
 

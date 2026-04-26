@@ -41,10 +41,7 @@ const DEFAULTS = {
  *   shouldRetry: (err) => isTransient(err),
  * });
  */
-export async function withRetry<T>(
-  fn: () => Promise<T>,
-  options: RetryOptions = {},
-): Promise<T> {
+export async function withRetry<T>(fn: () => Promise<T>, options: RetryOptions = {}): Promise<T> {
   const maxAttempts = options.maxAttempts ?? DEFAULTS.maxAttempts;
   const baseDelayMs = options.baseDelayMs ?? DEFAULTS.baseDelayMs;
   const maxDelayMs = options.maxDelayMs ?? DEFAULTS.maxDelayMs;
@@ -71,13 +68,13 @@ export async function withRetry<T>(
       } else {
         console.warn(
           JSON.stringify({
-            event: "retry_attempt",
+            event: 'retry_attempt',
             attempt,
             maxAttempts,
             delayMs: delay,
             error: err instanceof Error ? err.message : String(err),
             ts: new Date().toISOString(),
-          }),
+          })
         );
       }
 
@@ -93,7 +90,7 @@ export function computeDelay(
   attempt: number,
   baseDelayMs: number,
   maxDelayMs: number,
-  jitterMs: number,
+  jitterMs: number
 ): number {
   const exponential = baseDelayMs * Math.pow(2, attempt - 1);
   const capped = Math.min(exponential, maxDelayMs);
@@ -108,7 +105,7 @@ export function isTransientError(err: unknown): boolean {
 
   const msg = err.message.toLowerCase();
   // Network/DNS errors
-  if (msg.includes("fetch failed") || msg.includes("econnreset") || msg.includes("enotfound")) {
+  if (msg.includes('fetch failed') || msg.includes('econnreset') || msg.includes('enotfound')) {
     return true;
   }
   // HTTP status in message (common pattern in this codebase)
@@ -118,9 +115,12 @@ export function isTransientError(err: unknown): boolean {
 
 /** Marca explícitamente un error como transitorio. */
 export class TransientError extends Error {
-  constructor(message: string, public readonly cause?: unknown) {
+  constructor(
+    message: string,
+    public readonly cause?: unknown
+  ) {
     super(message);
-    this.name = "TransientError";
+    this.name = 'TransientError';
   }
 }
 

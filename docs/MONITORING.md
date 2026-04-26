@@ -2,9 +2,9 @@
 
 Stack **versionado en el repo** bajo `infra/monitoring/` y servicios en `infra/docker-compose.platform.yml`:
 
-| Servicio | Imagen | Función |
-|----------|--------|---------|
-| `prometheus` (`opsly_prometheus`) | `prom/prometheus` | TSDB + API `/api/v1/query` |
+| Servicio                                | Imagen               | Función                                              |
+| --------------------------------------- | -------------------- | ---------------------------------------------------- |
+| `prometheus` (`opsly_prometheus`)       | `prom/prometheus`    | TSDB + API `/api/v1/query`                           |
 | `node-exporter` (`opsly_node_exporter`) | `prom/node-exporter` | Métricas `node_*` del host (CPU, RAM, disco, uptime) |
 
 La API (`app`) usa **`PROMETHEUS_BASE_URL`** (por defecto **`http://prometheus:9090`**) para `GET /api/metrics/system` en el Admin. Si Prometheus no responde, el endpoint devuelve datos **mock** (`mock: true`). Detalle de consultas: [`OBSERVABILITY.md`](./OBSERVABILITY.md).
@@ -29,10 +29,10 @@ El directorio home **`~/smiletrip/monitoring`** era ajeno al repo y contenía Gr
 
 ## Variables
 
-| Variable | Uso |
-|----------|-----|
-| `PROMETHEUS_BASE_URL` | URL que usa el contenedor API (default `http://prometheus:9090`). |
-| `PROMETHEUS_HOST_PORT` | Puerto host para `127.0.0.1` → Prometheus (default `9090`). |
+| Variable               | Uso                                                               |
+| ---------------------- | ----------------------------------------------------------------- |
+| `PROMETHEUS_BASE_URL`  | URL que usa el contenedor API (default `http://prometheus:9090`). |
+| `PROMETHEUS_HOST_PORT` | Puerto host para `127.0.0.1` → Prometheus (default `9090`).       |
 
 ## Retención y volumen
 

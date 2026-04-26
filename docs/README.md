@@ -42,80 +42,80 @@ docs/generated/sprint-status.auto.md ← burndown generado (status.yaml; no edit
 | Doc                                                        | Cuándo usarlo                                            |
 | ---------------------------------------------------------- | -------------------------------------------------------- |
 | [`../ROADMAP.md`](../ROADMAP.md)                           | Plan semanal Fase 2–3, milestones; alineado a VISION     |
-| [`../SPRINT-TRACKER.md`](../SPRINT-TRACKER.md)            | Vista semanal operativa (checkboxes)                     |
+| [`../SPRINT-TRACKER.md`](../SPRINT-TRACKER.md)             | Vista semanal operativa (checkboxes)                     |
 | [`IMPLEMENTATION-IA-LAYER.md`](IMPLEMENTATION-IA-LAYER.md) | Implementar capa IA en el monorepo (sin Python paralelo) |
 | [`ACTIVE-PROMPT.md`](ACTIVE-PROMPT.md)                     | Prompt activo ejecutado por cursor-prompt-monitor        |
 
 ### 2. Arquitectura
 
-| Doc                                                          | Cuándo usarlo                                                      |
-| ------------------------------------------------------------ | ------------------------------------------------------------------ |
-| [`ARCHITECTURE.md`](ARCHITECTURE.md)                         | Control plane vs data plane, Traefik, redes                        |
-| [`ARCHITECTURE-DISTRIBUTED.md`](ARCHITECTURE-DISTRIBUTED.md) | VPS control + workers remotos (Mac 2011), Redis Tailscale          |
-| [`HYBRID-OPSLY-ADMIN.md`](HYBRID-OPSLY-ADMIN.md) | **Centro de mando** (Mac `opsly-admin`): Cursor, MCP, Git, DragonB, SSH |
-| [`runbooks/e2e-hybrid-write.md`](runbooks/e2e-hybrid-write.md) | E2E escritura API `/api/tools/execute`, deploy `app`, Trivy |
-| [`runbooks/VPS-DISK-SECURITY-SCAN.md`](runbooks/VPS-DISK-SECURITY-SCAN.md) | Disco VPS, Trivy, `cleanup-vps.sh` |
-| [`runbooks/DEPLOY-GITHUB-ACTIONS.md`](runbooks/DEPLOY-GITHUB-ACTIONS.md) | Deploy CI → VPS (Tailscale, `VPS_HOST`, rollback imagen) |
-| [`runbooks/TENANT-ONBOARDING-TRIAGE.md`](runbooks/TENANT-ONBOARDING-TRIAGE.md) | Triage onboarding tenants (logs, DB, cola, Docker) |
-| [`runbooks/PRODUCTION-SECURITY-BASELINE.md`](runbooks/PRODUCTION-SECURITY-BASELINE.md) | Checklist mínimo red/secretos/apps en `prd` |
-| [`VPS-SSH-WORKER-NODES.md`](VPS-SSH-WORKER-NODES.md) | Clave SSH VPS → workers (`authorized_keys`), solo Tailscale        |
-| [`SSH-USERS-FOR-AGENTS.md`](SSH-USERS-FOR-AGENTS.md) | **Qué usuario SSH usar** (VPS, worker, Mac) — agentes y humanos      |
-| [`AGENTS-AUTONOMOUS-RUNBOOK.md`](AGENTS-AUTONOMOUS-RUNBOOK.md) | Workers autónomos: systemd, Ollama, cola `openclaw`, verificación   |
-| [`FIRST-OPENCLAW-AGENTS-MAC2011.md`](FIRST-OPENCLAW-AGENTS-MAC2011.md) | Primer arranque workers OpenClaw en Mac 2011 (SSH, Redis, E2E)      |
-| [`DECEPTICON-WORKER.md`](DECEPTICON-WORKER.md)                         | Decepticon en worker Ubuntu (instalación, seguridad, vs LLM Gateway Opsly) |
-| [`RTK.md`](RTK.md)                                                     | RTK: reducción de tokens en contexto de agente (Cursor/VPS/worker)          |
-| [`WORKER-FLOWS.md`](WORKER-FLOWS.md)                         | Quién corre TeamManager vs workers BullMQ                          |
-| [`OPENCLAW-ARCHITECTURE.md`](OPENCLAW-ARCHITECTURE.md)       | MCP + Orchestrator + LLM Gateway + Context Builder                 |
-| [`design/OAR.md`](design/OAR.md)                             | Opsly Agentic Runtime (OAR): loops, MemoryInterface, AgentActionPort |
-| [`adr/ADR-027-hybrid-compute-plane-k8s.md`](adr/ADR-027-hybrid-compute-plane-k8s.md) | Control plane Compose vs compute plane K8s (futuro, criterios)     |
-| [`QUICKSTART-AGENTS.md`](QUICKSTART-AGENTS.md)               | Añadir tools MCP OpenClaw, tests, qué no duplicar                   |
-| [`ORCHESTRATOR.md`](ORCHESTRATOR.md)                         | BullMQ jobs, workers, circuit breaker, prioridades                 |
-| [`LLM-GATEWAY.md`](LLM-GATEWAY.md)                           | Cache Redis, routing bias, cost tracking                           |
-| [`TOKEN-BILLING-SYSTEM.md`](TOKEN-BILLING-SYSTEM.md)         | Tokens/créditos vs USD; qué existe hoy vs wallet prepago (roadmap) |
-| [`TOKEN-SYSTEM-GUIDE.md`](TOKEN-SYSTEM-GUIDE.md)             | Guía corta: ahorro, routing, presupuestos                          |
-| [`CONTEXT-BUILDER.md`](CONTEXT-BUILDER.md)                   | Sesiones de agentes, TTL por plan, persistencia                    |
-| [`AGENTS-GUIDE.md`](AGENTS-GUIDE.md)                         | Agentes paralelos, roles, límites por plan                         |
-| [`WORKER-TEAM-ARCHITECTURE.md`](WORKER-TEAM-ARCHITECTURE.md) | Equipos OpenClaw / roles vs `TeamManager` (roadmap)                |
-| [`WORKER-TEAM-BILLING.md`](WORKER-TEAM-BILLING.md)           | Billing workers: uso LLM, budgets, qué falta (CPU/mem)             |
+| Doc                                                                                    | Cuándo usarlo                                                              |
+| -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| [`ARCHITECTURE.md`](ARCHITECTURE.md)                                                   | Control plane vs data plane, Traefik, redes                                |
+| [`ARCHITECTURE-DISTRIBUTED.md`](ARCHITECTURE-DISTRIBUTED.md)                           | VPS control + workers remotos (Mac 2011), Redis Tailscale                  |
+| [`HYBRID-OPSLY-ADMIN.md`](HYBRID-OPSLY-ADMIN.md)                                       | **Centro de mando** (Mac `opsly-admin`): Cursor, MCP, Git, DragonB, SSH    |
+| [`runbooks/e2e-hybrid-write.md`](runbooks/e2e-hybrid-write.md)                         | E2E escritura API `/api/tools/execute`, deploy `app`, Trivy                |
+| [`runbooks/VPS-DISK-SECURITY-SCAN.md`](runbooks/VPS-DISK-SECURITY-SCAN.md)             | Disco VPS, Trivy, `cleanup-vps.sh`                                         |
+| [`runbooks/DEPLOY-GITHUB-ACTIONS.md`](runbooks/DEPLOY-GITHUB-ACTIONS.md)               | Deploy CI → VPS (Tailscale, `VPS_HOST`, rollback imagen)                   |
+| [`runbooks/TENANT-ONBOARDING-TRIAGE.md`](runbooks/TENANT-ONBOARDING-TRIAGE.md)         | Triage onboarding tenants (logs, DB, cola, Docker)                         |
+| [`runbooks/PRODUCTION-SECURITY-BASELINE.md`](runbooks/PRODUCTION-SECURITY-BASELINE.md) | Checklist mínimo red/secretos/apps en `prd`                                |
+| [`VPS-SSH-WORKER-NODES.md`](VPS-SSH-WORKER-NODES.md)                                   | Clave SSH VPS → workers (`authorized_keys`), solo Tailscale                |
+| [`SSH-USERS-FOR-AGENTS.md`](SSH-USERS-FOR-AGENTS.md)                                   | **Qué usuario SSH usar** (VPS, worker, Mac) — agentes y humanos            |
+| [`AGENTS-AUTONOMOUS-RUNBOOK.md`](AGENTS-AUTONOMOUS-RUNBOOK.md)                         | Workers autónomos: systemd, Ollama, cola `openclaw`, verificación          |
+| [`FIRST-OPENCLAW-AGENTS-MAC2011.md`](FIRST-OPENCLAW-AGENTS-MAC2011.md)                 | Primer arranque workers OpenClaw en Mac 2011 (SSH, Redis, E2E)             |
+| [`DECEPTICON-WORKER.md`](DECEPTICON-WORKER.md)                                         | Decepticon en worker Ubuntu (instalación, seguridad, vs LLM Gateway Opsly) |
+| [`RTK.md`](RTK.md)                                                                     | RTK: reducción de tokens en contexto de agente (Cursor/VPS/worker)         |
+| [`WORKER-FLOWS.md`](WORKER-FLOWS.md)                                                   | Quién corre TeamManager vs workers BullMQ                                  |
+| [`OPENCLAW-ARCHITECTURE.md`](OPENCLAW-ARCHITECTURE.md)                                 | MCP + Orchestrator + LLM Gateway + Context Builder                         |
+| [`design/OAR.md`](design/OAR.md)                                                       | Opsly Agentic Runtime (OAR): loops, MemoryInterface, AgentActionPort       |
+| [`adr/ADR-027-hybrid-compute-plane-k8s.md`](adr/ADR-027-hybrid-compute-plane-k8s.md)   | Control plane Compose vs compute plane K8s (futuro, criterios)             |
+| [`QUICKSTART-AGENTS.md`](QUICKSTART-AGENTS.md)                                         | Añadir tools MCP OpenClaw, tests, qué no duplicar                          |
+| [`ORCHESTRATOR.md`](ORCHESTRATOR.md)                                                   | BullMQ jobs, workers, circuit breaker, prioridades                         |
+| [`LLM-GATEWAY.md`](LLM-GATEWAY.md)                                                     | Cache Redis, routing bias, cost tracking                                   |
+| [`TOKEN-BILLING-SYSTEM.md`](TOKEN-BILLING-SYSTEM.md)                                   | Tokens/créditos vs USD; qué existe hoy vs wallet prepago (roadmap)         |
+| [`TOKEN-SYSTEM-GUIDE.md`](TOKEN-SYSTEM-GUIDE.md)                                       | Guía corta: ahorro, routing, presupuestos                                  |
+| [`CONTEXT-BUILDER.md`](CONTEXT-BUILDER.md)                                             | Sesiones de agentes, TTL por plan, persistencia                            |
+| [`AGENTS-GUIDE.md`](AGENTS-GUIDE.md)                                                   | Agentes paralelos, roles, límites por plan                                 |
+| [`WORKER-TEAM-ARCHITECTURE.md`](WORKER-TEAM-ARCHITECTURE.md)                           | Equipos OpenClaw / roles vs `TeamManager` (roadmap)                        |
+| [`WORKER-TEAM-BILLING.md`](WORKER-TEAM-BILLING.md)                                     | Billing workers: uso LLM, budgets, qué falta (CPU/mem)                     |
 
 ### 3. Decisiones de arquitectura (ADRs)
 
 Índice completo de `docs/adr/` (un número = un archivo; sin duplicados).
 
-| ADR                                                          | Decisión clave                                                 |
-| ------------------------------------------------------------ | -------------------------------------------------------------- |
-| [ADR-001](adr/ADR-001-docker-compose-por-tenant.md)          | Docker Compose por tenant (no Swarm/K8s)                       |
-| [ADR-002](adr/ADR-002-traefik-sobre-nginx.md)                | Traefik v3 como reverse proxy                                  |
-| [ADR-003](adr/ADR-003-doppler-secrets.md)                    | Doppler como gestor de secrets                                 |
-| [ADR-004](adr/ADR-004-supabase-schema-por-tenant.md)         | Supabase con schema por tenant                                 |
-| [ADR-005](adr/ADR-005-traefik-v3-1-docker-api.md)            | Traefik v3.3+ frente a Docker Engine 29.x                      |
-| [ADR-006](adr/ADR-006-api-testing-vitest.md)                 | Tests de API con Vitest (Node)                                 |
-| [ADR-007](adr/ADR-007-runbooks-y-documentacion-operativa.md) | Estructura de runbooks y documentación operativa               |
-| [ADR-008](adr/ADR-008-terraform-digitalocean-plan.md)        | Terraform en DigitalOcean (plan sin apply automático)          |
-| [ADR-009](adr/ADR-009-openclaw-mcp-architecture.md)          | OpenClaw MCP Server Architecture                               |
-| [ADR-010](adr/ADR-010-llm-gateway.md)                        | LLM Gateway con Cache Redis                                    |
-| [ADR-011](adr/ADR-011-event-driven-orchestrator.md)          | Orchestrator Event-Driven con BullMQ                           |
-| [ADR-012](adr/ADR-012-observability.md)                      | Observabilidad por tenant                                      |
-| [ADR-013](adr/ADR-013-google-cloud-openSource-strategy.md)   | Google Cloud + Open Source Integration Strategy                |
-| [ADR-014](adr/ADR-014-notebooklm-agent.md)                   | NotebookLM Agent (EXPERIMENTAL)                                |
-| [ADR-015](adr/ADR-015-hermes-orchestrator-architecture.md)   | Hermes como servicio Docker separado                           |
-| [ADR-016](adr/ADR-016-legalvial-multitenant-model.md)        | LegalVial — modelo multi-tenant / aislamiento (notas + enlaces) |
-| [ADR-017](adr/ADR-017-worker-teams-billing-roadmap.md)       | Equipos de workers por tenant y billing ampliado (roadmap)     |
-| [ADR-018](adr/ADR-018-pgvector-embeddings-rag.md)            | pgvector + Embeddings para RAG en decisiones Hermes            |
-| [ADR-019](adr/ADR-019-prometheus-grafana-observability.md)   | Prometheus + Grafana para observabilidad de plataforma         |
-| [ADR-020](adr/ADR-020-orchestrator-worker-separation.md)     | Separación control plane (VPS) ↔ worker plane (remoto)         |
-| [ADR-021](adr/ADR-021-predictive-bi-scalability.md)          | Escalabilidad — Predictive BI Engine                           |
-| [ADR-022](adr/ADR-022-di-pattern-testability.md)             | Dependency Injection sobre vi.mock para módulos con singletons |
-| [ADR-023](adr/ADR-023-approval-gate-phase1.md)               | Approval Gate — Fase 1 (MVP)                                   |
-| [ADR-024](adr/ADR-024-ollama-local-worker-primary.md)        | Ollama local como worker primario (costo/latencia)              |
-| [ADR-025](adr/ADR-025-notebooklm-knowledge-layer.md)          | NotebookLM como knowledge layer (EXPERIMENTAL)                   |
-| [ADR-026](adr/ADR-026-tenant-context-postgres-first.md)      | Contexto tenant: Postgres-first (cache/invalidación)           |
-| [ADR-027](adr/ADR-027-hybrid-compute-plane-k8s.md)           | Compute plane híbrido (K8s opcional) vs control plane Compose    |
-| [ADR-028](adr/ADR-028-tenant-onboarding-pattern.md)         | Onboarding por tenant: plantilla + `config/tenants/*.json`       |
-| [ADR-029](adr/ADR-029-infrastructure-layers-shared-vs-tenant.md) | Capas: plataforma compartida vs runtime dedicado por tenant   |
-| [ADR-030](adr/ADR-030-prepaid-token-wallet-roadmap.md)        | Wallet prepago y “tokens” de cuenta (roadmap)                  |
-| [ADR-031](adr/ADR-031-token-optimization-ollama-primary.md) | Optimización de tokens + Ollama primary (doc paralela; ver ADR-024) |
-| [ADR-033](adr/ADR-033-docs-canonicalization.md) | Canon docs + `docs/generated/*.auto.md` + historial en `history/plans/` |
+| ADR                                                              | Decisión clave                                                          |
+| ---------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| [ADR-001](adr/ADR-001-docker-compose-por-tenant.md)              | Docker Compose por tenant (no Swarm/K8s)                                |
+| [ADR-002](adr/ADR-002-traefik-sobre-nginx.md)                    | Traefik v3 como reverse proxy                                           |
+| [ADR-003](adr/ADR-003-doppler-secrets.md)                        | Doppler como gestor de secrets                                          |
+| [ADR-004](adr/ADR-004-supabase-schema-por-tenant.md)             | Supabase con schema por tenant                                          |
+| [ADR-005](adr/ADR-005-traefik-v3-1-docker-api.md)                | Traefik v3.3+ frente a Docker Engine 29.x                               |
+| [ADR-006](adr/ADR-006-api-testing-vitest.md)                     | Tests de API con Vitest (Node)                                          |
+| [ADR-007](adr/ADR-007-runbooks-y-documentacion-operativa.md)     | Estructura de runbooks y documentación operativa                        |
+| [ADR-008](adr/ADR-008-terraform-digitalocean-plan.md)            | Terraform en DigitalOcean (plan sin apply automático)                   |
+| [ADR-009](adr/ADR-009-openclaw-mcp-architecture.md)              | OpenClaw MCP Server Architecture                                        |
+| [ADR-010](adr/ADR-010-llm-gateway.md)                            | LLM Gateway con Cache Redis                                             |
+| [ADR-011](adr/ADR-011-event-driven-orchestrator.md)              | Orchestrator Event-Driven con BullMQ                                    |
+| [ADR-012](adr/ADR-012-observability.md)                          | Observabilidad por tenant                                               |
+| [ADR-013](adr/ADR-013-google-cloud-openSource-strategy.md)       | Google Cloud + Open Source Integration Strategy                         |
+| [ADR-014](adr/ADR-014-notebooklm-agent.md)                       | NotebookLM Agent (EXPERIMENTAL)                                         |
+| [ADR-015](adr/ADR-015-hermes-orchestrator-architecture.md)       | Hermes como servicio Docker separado                                    |
+| [ADR-016](adr/ADR-016-legalvial-multitenant-model.md)            | LegalVial — modelo multi-tenant / aislamiento (notas + enlaces)         |
+| [ADR-017](adr/ADR-017-worker-teams-billing-roadmap.md)           | Equipos de workers por tenant y billing ampliado (roadmap)              |
+| [ADR-018](adr/ADR-018-pgvector-embeddings-rag.md)                | pgvector + Embeddings para RAG en decisiones Hermes                     |
+| [ADR-019](adr/ADR-019-prometheus-grafana-observability.md)       | Prometheus + Grafana para observabilidad de plataforma                  |
+| [ADR-020](adr/ADR-020-orchestrator-worker-separation.md)         | Separación control plane (VPS) ↔ worker plane (remoto)                  |
+| [ADR-021](adr/ADR-021-predictive-bi-scalability.md)              | Escalabilidad — Predictive BI Engine                                    |
+| [ADR-022](adr/ADR-022-di-pattern-testability.md)                 | Dependency Injection sobre vi.mock para módulos con singletons          |
+| [ADR-023](adr/ADR-023-approval-gate-phase1.md)                   | Approval Gate — Fase 1 (MVP)                                            |
+| [ADR-024](adr/ADR-024-ollama-local-worker-primary.md)            | Ollama local como worker primario (costo/latencia)                      |
+| [ADR-025](adr/ADR-025-notebooklm-knowledge-layer.md)             | NotebookLM como knowledge layer (EXPERIMENTAL)                          |
+| [ADR-026](adr/ADR-026-tenant-context-postgres-first.md)          | Contexto tenant: Postgres-first (cache/invalidación)                    |
+| [ADR-027](adr/ADR-027-hybrid-compute-plane-k8s.md)               | Compute plane híbrido (K8s opcional) vs control plane Compose           |
+| [ADR-028](adr/ADR-028-tenant-onboarding-pattern.md)              | Onboarding por tenant: plantilla + `config/tenants/*.json`              |
+| [ADR-029](adr/ADR-029-infrastructure-layers-shared-vs-tenant.md) | Capas: plataforma compartida vs runtime dedicado por tenant             |
+| [ADR-030](adr/ADR-030-prepaid-token-wallet-roadmap.md)           | Wallet prepago y “tokens” de cuenta (roadmap)                           |
+| [ADR-031](adr/ADR-031-token-optimization-ollama-primary.md)      | Optimización de tokens + Ollama primary (doc paralela; ver ADR-024)     |
+| [ADR-033](adr/ADR-033-docs-canonicalization.md)                  | Canon docs + `docs/generated/*.auto.md` + historial en `history/plans/` |
 
 ### 4. Infra y deploy
 

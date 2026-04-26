@@ -29,7 +29,7 @@ export function analyzeComplexity(
     is_customer_facing?: boolean;
     has_code?: boolean;
     context_length?: number;
-  },
+  }
 ): ComplexityAnalysis {
   let score1 = 0;
   let score3 = 0;

@@ -89,12 +89,12 @@ Next.js 15 · TypeScript · Tailwind · Supabase · Stripe · Docker Compose · 
 
 ## Errores comunes
 
-| Error | Causa | Solución |
-|-------|-------|----------|
-| `[id] !== [ref]` | Imagen GHCR con carpeta duplicada | Rebuild CI, `docker container prune` |
-| API Error 500 | Resend sin dominio verificado | Verificar dominio en Resend |
-| SSH timeout | IP pública expuesta, no Tailscale | Usar `100.120.151.91` |
-| Doppler fails | Token sin scope | `doppler configure set token --scope /opt/opsly` |
+| Error            | Causa                             | Solución                                         |
+| ---------------- | --------------------------------- | ------------------------------------------------ |
+| `[id] !== [ref]` | Imagen GHCR con carpeta duplicada | Rebuild CI, `docker container prune`             |
+| API Error 500    | Resend sin dominio verificado     | Verificar dominio en Resend                      |
+| SSH timeout      | IP pública expuesta, no Tailscale | Usar `100.120.151.91`                            |
+| Doppler fails    | Token sin scope                   | `doppler configure set token --scope /opt/opsly` |
 
 ## Testing
 

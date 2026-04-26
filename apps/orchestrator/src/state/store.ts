@@ -1,12 +1,12 @@
-import { createClient } from "redis";
+import { createClient } from 'redis';
 
-const REDIS_URL = process.env.REDIS_URL || "redis://localhost:6379";
+const REDIS_URL = process.env.REDIS_URL || 'redis://localhost:6379';
 const JOB_TTL_SECONDS = 86400;
 
 export interface JobState {
   id: string;
   type: string;
-  status: "pending" | "running" | "completed" | "failed";
+  status: 'pending' | 'running' | 'completed' | 'failed';
   task_id?: string;
   tenant_slug?: string;
   tenant_id?: string;

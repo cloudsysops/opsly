@@ -1,5 +1,5 @@
-import { adminClient } from "../../../lib/supabase/admin";
-import { PLANS } from "../../../lib/stripe/plans";
+import { adminClient } from '../../../lib/supabase/admin';
+import { PLANS } from '../../../lib/stripe/plans';
 
 function daysAgoIso(days: number): string {
   const d = new Date();
@@ -26,70 +26,70 @@ export async function GET(request: Request): Promise<Response> {
     completedRes,
   ] = await Promise.all([
     adminClient
-      .schema("platform")
-      .from("tenants")
-      .select("*", { count: "exact", head: true })
-      .is("deleted_at", null),
+      .schema('platform')
+      .from('tenants')
+      .select('*', { count: 'exact', head: true })
+      .is('deleted_at', null),
     adminClient
-      .schema("platform")
-      .from("tenants")
-      .select("*", { count: "exact", head: true })
-      .is("deleted_at", null)
-      .eq("status", "active"),
+      .schema('platform')
+      .from('tenants')
+      .select('*', { count: 'exact', head: true })
+      .is('deleted_at', null)
+      .eq('status', 'active'),
     adminClient
-      .schema("platform")
-      .from("tenants")
-      .select("*", { count: "exact", head: true })
-      .is("deleted_at", null)
-      .eq("status", "suspended"),
+      .schema('platform')
+      .from('tenants')
+      .select('*', { count: 'exact', head: true })
+      .is('deleted_at', null)
+      .eq('status', 'suspended'),
     adminClient
-      .schema("platform")
-      .from("tenants")
-      .select("*", { count: "exact", head: true })
-      .is("deleted_at", null)
-      .eq("is_demo", true),
+      .schema('platform')
+      .from('tenants')
+      .select('*', { count: 'exact', head: true })
+      .is('deleted_at', null)
+      .eq('is_demo', true),
     adminClient
-      .schema("platform")
-      .from("tenants")
-      .select("*", { count: "exact", head: true })
-      .is("deleted_at", null)
-      .eq("status", "failed"),
+      .schema('platform')
+      .from('tenants')
+      .select('*', { count: 'exact', head: true })
+      .is('deleted_at', null)
+      .eq('status', 'failed'),
     adminClient
-      .schema("platform")
-      .from("tenants")
-      .select("*", { count: "exact", head: true })
-      .is("deleted_at", null)
-      .eq("plan", "startup"),
+      .schema('platform')
+      .from('tenants')
+      .select('*', { count: 'exact', head: true })
+      .is('deleted_at', null)
+      .eq('plan', 'startup'),
     adminClient
-      .schema("platform")
-      .from("tenants")
-      .select("*", { count: "exact", head: true })
-      .is("deleted_at", null)
-      .eq("plan", "business"),
+      .schema('platform')
+      .from('tenants')
+      .select('*', { count: 'exact', head: true })
+      .is('deleted_at', null)
+      .eq('plan', 'business'),
     adminClient
-      .schema("platform")
-      .from("tenants")
-      .select("*", { count: "exact", head: true })
-      .is("deleted_at", null)
-      .eq("plan", "enterprise"),
+      .schema('platform')
+      .from('tenants')
+      .select('*', { count: 'exact', head: true })
+      .is('deleted_at', null)
+      .eq('plan', 'enterprise'),
     adminClient
-      .schema("platform")
-      .from("tenants")
-      .select("plan, is_demo")
-      .is("deleted_at", null)
-      .eq("status", "active"),
+      .schema('platform')
+      .from('tenants')
+      .select('plan, is_demo')
+      .is('deleted_at', null)
+      .eq('status', 'active'),
     adminClient
-      .schema("platform")
-      .from("conversion_events")
-      .select("*", { count: "exact", head: true })
-      .eq("event", "onboard_started")
-      .gte("created_at", since),
+      .schema('platform')
+      .from('conversion_events')
+      .select('*', { count: 'exact', head: true })
+      .eq('event', 'onboard_started')
+      .gte('created_at', since),
     adminClient
-      .schema("platform")
-      .from("conversion_events")
-      .select("*", { count: "exact", head: true })
-      .eq("event", "onboard_completed")
-      .gte("created_at", since),
+      .schema('platform')
+      .from('conversion_events')
+      .select('*', { count: 'exact', head: true })
+      .eq('event', 'onboard_completed')
+      .gte('created_at', since),
   ]);
 
   const errors = [
@@ -107,7 +107,7 @@ export async function GET(request: Request): Promise<Response> {
   ].filter(Boolean);
 
   if (errors.length > 0) {
-    return Response.json({ error: errors[0]?.message ?? "Query failed" }, { status: 500 });
+    return Response.json({ error: errors[0]?.message ?? 'Query failed' }, { status: 500 });
   }
 
   let mrr = 0;
@@ -116,7 +116,7 @@ export async function GET(request: Request): Promise<Response> {
     if (row.is_demo === true) {
       continue;
     }
-    if (plan === "demo") {
+    if (plan === 'demo') {
       continue;
     }
     if (plan in PLANS) {

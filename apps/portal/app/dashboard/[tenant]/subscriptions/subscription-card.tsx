@@ -52,9 +52,7 @@ function formatMoney(cents: number, currency: string): string {
 function StatusBadge({ status }: { status: string }) {
   const colors = STATUS_COLORS[status] ?? 'text-neutral-400 bg-neutral-800';
   return (
-    <span
-      className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium ${colors}`}
-    >
+    <span className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium ${colors}`}>
       {status}
     </span>
   );
@@ -122,23 +120,18 @@ export function SubscriptionCard({
           <div>
             <p className="text-xs uppercase tracking-wider text-ops-gray">Periodo actual</p>
             <p className="mt-1 text-sm text-neutral-200">
-              {subscription.current_period_start ?? '—'} →{' '}
-              {subscription.current_period_end ?? '—'}
+              {subscription.current_period_start ?? '—'} → {subscription.current_period_end ?? '—'}
             </p>
           </div>
 
           <div>
             <p className="text-xs uppercase tracking-wider text-ops-gray">Auto-renovacion</p>
-            <p className="mt-1 text-sm text-neutral-200">
-              {subscription.auto_renew ? 'Si' : 'No'}
-            </p>
+            <p className="mt-1 text-sm text-neutral-200">{subscription.auto_renew ? 'Si' : 'No'}</p>
           </div>
 
           <div>
             <p className="text-xs uppercase tracking-wider text-ops-gray">Desde</p>
-            <p className="mt-1 text-sm text-neutral-200">
-              {subscription.created_at.slice(0, 10)}
-            </p>
+            <p className="mt-1 text-sm text-neutral-200">{subscription.created_at.slice(0, 10)}</p>
           </div>
         </div>
 
@@ -146,18 +139,11 @@ export function SubscriptionCard({
           <p className="mt-4 text-sm text-ops-gray">{plan.description}</p>
         ) : null}
 
-        {error ? (
-          <p className="mt-4 text-sm text-red-400">{error}</p>
-        ) : null}
+        {error ? <p className="mt-4 text-sm text-red-400">{error}</p> : null}
 
         {!cancelled && subscription.status === 'active' ? (
           <div className="mt-6 flex justify-end">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleCancel}
-              disabled={cancelling}
-            >
+            <Button variant="ghost" size="sm" onClick={handleCancel} disabled={cancelling}>
               {cancelling ? 'Cancelando...' : 'Cancelar suscripcion'}
             </Button>
           </div>

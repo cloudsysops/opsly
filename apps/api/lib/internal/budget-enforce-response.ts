@@ -1,10 +1,7 @@
-import type { TenantBudgetCheckResult } from "../billing/budget-enforcer";
-import { resumeTenant, suspendTenant } from "../orchestrator";
+import type { TenantBudgetCheckResult } from '../billing/budget-enforcer';
+import { resumeTenant, suspendTenant } from '../orchestrator';
 
-function baseFields(
-  tenantId: string,
-  result: TenantBudgetCheckResult,
-): Record<string, unknown> {
+function baseFields(tenantId: string, result: TenantBudgetCheckResult): Record<string, unknown> {
   return {
     ok: true,
     tenant_id: tenantId,
@@ -18,37 +15,37 @@ function baseFields(
  */
 export async function executeBudgetEnforcement(
   tenantId: string,
-  result: TenantBudgetCheckResult,
+  result: TenantBudgetCheckResult
 ): Promise<Record<string, unknown>> {
   if (result.enforcementSkipped) {
     return {
       ...baseFields(tenantId, result),
-      action: "skipped_enforcement",
+      action: 'skipped_enforcement',
     };
   }
 
   if (result.isOverBudget) {
-    if (result.tenantStatus === "active") {
-      await suspendTenant(tenantId, "budget-enforcer", {
+    if (result.tenantStatus === 'active') {
+      await suspendTenant(tenantId, 'budget-enforcer', {
         budgetAutoSuspended: true,
       });
-      return { ...baseFields(tenantId, result), action: "suspended" };
+      return { ...baseFields(tenantId, result), action: 'suspended' };
     }
     return {
       ...baseFields(tenantId, result),
-      action: "already_suspended_or_inactive",
+      action: 'already_suspended_or_inactive',
       status: result.tenantStatus,
     };
   }
 
-  if (result.tenantStatus === "suspended" && result.budgetAutoSuspended) {
+  if (result.tenantStatus === 'suspended' && result.budgetAutoSuspended) {
     await resumeTenant(tenantId);
-    return { ...baseFields(tenantId, result), action: "resumed" };
+    return { ...baseFields(tenantId, result), action: 'resumed' };
   }
 
   return {
     ...baseFields(tenantId, result),
-    action: "noop",
+    action: 'noop',
     status: result.tenantStatus,
   };
 }

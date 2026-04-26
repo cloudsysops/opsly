@@ -2,7 +2,7 @@
  * Cliente Redis dedicado a medición (`usage:{tenantUuid}:{metric}`), alineado al flush en `apps/api`.
  * Usa `ioredis` (patrón distinto al paquete `redis` v4 usado por BullMQ / workers).
  */
-import Redis from "ioredis";
+import Redis from 'ioredis';
 
 let client: Redis | null = null;
 
@@ -24,8 +24,8 @@ export function getOrchestratorRedis(): Redis | null {
       maxRetriesPerRequest: 2,
       enableReadyCheck: true,
     });
-    client.on("error", (err: Error) => {
-      console.error("[orchestrator-redis]", err.message);
+    client.on('error', (err: Error) => {
+      console.error('[orchestrator-redis]', err.message);
     });
   }
   return client;

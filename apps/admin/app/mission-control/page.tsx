@@ -1,13 +1,13 @@
-"use client";
+'use client';
 
-import { useCallback, useMemo, useState } from "react";
-import useSWR from "swr";
+import { useCallback, useMemo, useState } from 'react';
+import useSWR from 'swr';
 
-import { getBaseUrl } from "../../lib/api-client";
+import { getBaseUrl } from '../../lib/api-client';
 
 type AgentTeam = {
   name: string;
-  status: "active" | "idle" | "error";
+  status: 'active' | 'idle' | 'error';
   lastTask: string | null;
   completedTasks: number;
   failedTasks: number;
@@ -35,9 +35,9 @@ const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
 export default function MissionControlPage() {
   const [selectedTeam, setSelectedTeam] = useState<string | null>(null);
-  
+
   const baseUrl = useMemo(() => getBaseUrl(), []);
-  
+
   const { data: teamsData, error: teamsError } = useSWR<AgentTeamsResponse>(
     `${baseUrl}/api/admin/mission-control/teams`,
     fetcher,
@@ -97,11 +97,15 @@ export default function MissionControlPage() {
               </div>
               <div className="bg-gray-900/50 border border-gray-800 rounded-lg p-4">
                 <div className="text-gray-400 text-sm">Queue Waiting</div>
-                <div className="text-xl font-mono text-yellow-400">{orchestratorData.queue.waiting}</div>
+                <div className="text-xl font-mono text-yellow-400">
+                  {orchestratorData.queue.waiting}
+                </div>
               </div>
               <div className="bg-gray-900/50 border border-gray-800 rounded-lg p-4">
                 <div className="text-gray-400 text-sm">Queue Active</div>
-                <div className="text-xl font-mono text-purple-400">{orchestratorData.queue.active}</div>
+                <div className="text-xl font-mono text-purple-400">
+                  {orchestratorData.queue.active}
+                </div>
               </div>
             </div>
           )}
@@ -114,19 +118,27 @@ export default function MissionControlPage() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="bg-gray-900/50 border border-gray-800 rounded-lg p-4">
                 <div className="text-gray-400 text-sm">Waiting</div>
-                <div className="text-2xl font-mono text-yellow-400">{orchestratorData.queue.waiting}</div>
+                <div className="text-2xl font-mono text-yellow-400">
+                  {orchestratorData.queue.waiting}
+                </div>
               </div>
               <div className="bg-gray-900/50 border border-gray-800 rounded-lg p-4">
                 <div className="text-gray-400 text-sm">Active</div>
-                <div className="text-2xl font-mono text-green-400">{orchestratorData.queue.active}</div>
+                <div className="text-2xl font-mono text-green-400">
+                  {orchestratorData.queue.active}
+                </div>
               </div>
               <div className="bg-gray-900/50 border border-gray-800 rounded-lg p-4">
                 <div className="text-gray-400 text-sm">Completed</div>
-                <div className="text-2xl font-mono text-blue-400">{orchestratorData.queue.completed}</div>
+                <div className="text-2xl font-mono text-blue-400">
+                  {orchestratorData.queue.completed}
+                </div>
               </div>
               <div className="bg-gray-900/50 border border-gray-800 rounded-lg p-4">
                 <div className="text-gray-400 text-sm">Failed</div>
-                <div className="text-2xl font-mono text-red-400">{orchestratorData.queue.failed}</div>
+                <div className="text-2xl font-mono text-red-400">
+                  {orchestratorData.queue.failed}
+                </div>
               </div>
             </div>
           ) : (
@@ -172,23 +184,27 @@ export default function MissionControlPage() {
                   key={team.name}
                   onClick={() => setSelectedTeam(team.name === selectedTeam ? null : team.name)}
                   className={`text-left bg-gray-900/50 border rounded-lg p-4 transition-all ${
-                    selectedTeam === team.name 
-                      ? "border-blue-500 ring-2 ring-blue-500/20" 
-                      : "border-gray-800 hover:border-gray-700"
+                    selectedTeam === team.name
+                      ? 'border-blue-500 ring-2 ring-blue-500/20'
+                      : 'border-gray-800 hover:border-gray-700'
                   }`}
                 >
                   <div className="flex justify-between items-start mb-3">
                     <div className="font-mono text-lg text-blue-400">{team.name}</div>
-                    <span className={`px-2 py-1 rounded text-xs font-medium ${
-                      team.status === "active" ? "bg-green-900/50 text-green-400" :
-                      team.status === "error" ? "bg-red-900/50 text-red-400" :
-                      "bg-gray-700 text-gray-400"
-                    }`}>
+                    <span
+                      className={`px-2 py-1 rounded text-xs font-medium ${
+                        team.status === 'active'
+                          ? 'bg-green-900/50 text-green-400'
+                          : team.status === 'error'
+                            ? 'bg-red-900/50 text-red-400'
+                            : 'bg-gray-700 text-gray-400'
+                      }`}
+                    >
                       {team.status}
                     </span>
                   </div>
                   <div className="text-sm text-gray-400 space-y-1">
-                    <div>Last Task: {team.lastTask ?? "none"}</div>
+                    <div>Last Task: {team.lastTask ?? 'none'}</div>
                     <div className="flex gap-4 mt-2">
                       <span className="text-green-400">✓ {team.completedTasks}</span>
                       <span className="text-red-400">✗ {team.failedTasks}</span>
@@ -227,7 +243,10 @@ export default function MissionControlPage() {
             </div>
           </div>
           <div className="mt-4 text-sm text-gray-400">
-            Use: <code className="bg-gray-800 px-2 py-1 rounded">./scripts/create-lanidea-agents.sh --tenant &lt;slug&gt; --goal "..."</code>
+            Use:{' '}
+            <code className="bg-gray-800 px-2 py-1 rounded">
+              ./scripts/create-lanidea-agents.sh --tenant &lt;slug&gt; --goal "..."
+            </code>
           </div>
         </div>
 

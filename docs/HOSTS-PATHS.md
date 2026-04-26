@@ -12,12 +12,12 @@ Estado general: sistema ordenado y consistente para operación multi-host.
 
 ## Inventario de hosts
 
-| Host lógico | Acceso | Ruta proyecto | Estado |
-|---|---|---|---|
-| `opsly-admin` | local (`dragon`) | `/Users/dragon/cboteros/proyectos/intcloudsysops` | ✅ |
-| `opsly-worker` | `opslyquantum@opsly-mac2011` | `/home/opslyquantum/opsly` | ✅ |
-| `vps-dragon` | `vps-dragon@vps-dragon` | `/opt/opsly` | ✅ |
-| `vps-dragon` (workspace adicional) | `vps-dragon@vps-dragon` | `/home/vps-dragon/dev/cloudsysops` | ✅ |
+| Host lógico                        | Acceso                       | Ruta proyecto                                     | Estado |
+| ---------------------------------- | ---------------------------- | ------------------------------------------------- | ------ |
+| `opsly-admin`                      | local (`dragon`)             | `/Users/dragon/cboteros/proyectos/intcloudsysops` | ✅     |
+| `opsly-worker`                     | `opslyquantum@opsly-mac2011` | `/home/opslyquantum/opsly`                        | ✅     |
+| `vps-dragon`                       | `vps-dragon@vps-dragon`      | `/opt/opsly`                                      | ✅     |
+| `vps-dragon` (workspace adicional) | `vps-dragon@vps-dragon`      | `/home/vps-dragon/dev/cloudsysops`                | ✅     |
 
 ## Estándar de identidad de sistema
 

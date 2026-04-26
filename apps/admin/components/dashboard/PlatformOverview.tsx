@@ -1,25 +1,25 @@
-"use client";
+'use client';
 
-import type { ReactElement } from "react";
-import Link from "next/link";
-import useSWR from "swr";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { getAdminOverview } from "@/lib/api-client";
-import type { AdminOverviewResponse } from "@/lib/types";
-import { KpiCard } from "@/components/dashboard/KpiCard";
+import type { ReactElement } from 'react';
+import Link from 'next/link';
+import useSWR from 'swr';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { getAdminOverview } from '@/lib/api-client';
+import type { AdminOverviewResponse } from '@/lib/types';
+import { KpiCard } from '@/components/dashboard/KpiCard';
 
 const REFRESH_MS = 30_000;
 
 function fmtUsd(n: number): string {
-  return new Intl.NumberFormat("es", {
-    style: "currency",
-    currency: "USD",
+  return new Intl.NumberFormat('es', {
+    style: 'currency',
+    currency: 'USD',
     maximumFractionDigits: 4,
   }).format(n);
 }
 
 function fmtInt(n: number): string {
-  return new Intl.NumberFormat("es").format(Math.round(n));
+  return new Intl.NumberFormat('es').format(Math.round(n));
 }
 
 function formatUptime(seconds: number): string {
@@ -37,9 +37,9 @@ function formatUptime(seconds: number): string {
 
 export function PlatformOverview(): React.ReactElement {
   const { data, error, isLoading } = useSWR<AdminOverviewResponse>(
-    ["admin-overview"],
+    ['admin-overview'],
     () => getAdminOverview(),
-    { refreshInterval: REFRESH_MS, revalidateOnFocus: false },
+    { refreshInterval: REFRESH_MS, revalidateOnFocus: false }
   );
 
   if (error) {
@@ -69,16 +69,12 @@ export function PlatformOverview(): React.ReactElement {
           Plataforma · VPS, local, orquestación y LLM
         </h2>
         <span className="font-mono text-[10px] text-ops-gray">
-          Actualizado {new Date(data.generated_at).toLocaleString("es")}
+          Actualizado {new Date(data.generated_at).toLocaleString('es')}
         </span>
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4 2xl:grid-cols-6">
-        <KpiCard
-          label="Respuestas LLM (mes)"
-          value={fmtInt(m.requests)}
-          color="ops-green"
-        />
+        <KpiCard label="Respuestas LLM (mes)" value={fmtInt(m.requests)} color="ops-green" />
         <KpiCard
           label="Tokens (mes) in + out"
           value={fmtInt(m.tokens_input + m.tokens_output)}
@@ -90,21 +86,11 @@ export function PlatformOverview(): React.ReactElement {
           value={fmtUsd(llm.savings_estimate_usd_month)}
           color="ops-green"
         />
-        <KpiCard
-          label="Hit rate caché (mes)"
-          value={`${m.cache_hit_rate}%`}
-          color="ops-gray"
-        />
-        <KpiCard
-          label="Peticiones hoy"
-          value={fmtInt(t.requests)}
-          color="ops-gray"
-        />
+        <KpiCard label="Hit rate caché (mes)" value={`${m.cache_hit_rate}%`} color="ops-gray" />
+        <KpiCard label="Peticiones hoy" value={fmtInt(t.requests)} color="ops-gray" />
       </div>
 
-      <p className="font-sans text-xs leading-relaxed text-ops-gray">
-        {llm.savings_note}
-      </p>
+      <p className="font-sans text-xs leading-relaxed text-ops-gray">{llm.savings_note}</p>
 
       <div className="grid gap-4 lg:grid-cols-3">
         <Card className="lg:col-span-1">
@@ -114,9 +100,7 @@ export function PlatformOverview(): React.ReactElement {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-2 font-mono text-sm text-neutral-200">
-            {vps.mock ? (
-              <p className="text-ops-yellow">Sin Prometheus · valores demo</p>
-            ) : null}
+            {vps.mock ? <p className="text-ops-yellow">Sin Prometheus · valores demo</p> : null}
             <p>
               <span className="text-ops-gray">CPU </span>
               {vps.cpu_percent.toFixed(1)}%
@@ -138,10 +122,7 @@ export function PlatformOverview(): React.ReactElement {
               {vps.containers_running}
             </p>
             <p className="pt-1">
-              <Link
-                href="/machines"
-                className="text-ops-green underline-offset-4 hover:underline"
-              >
+              <Link href="/machines" className="text-ops-green underline-offset-4 hover:underline">
                 Listado Docker (ps -a) →
               </Link>
             </p>
@@ -168,29 +149,29 @@ export function PlatformOverview(): React.ReactElement {
               <>
                 <p>
                   <span className="text-ops-gray">Host </span>
-                  {local?.hostname ?? "—"}
+                  {local?.hostname ?? '—'}
                 </p>
                 <p>
                   <span className="text-ops-gray">CPU </span>
-                  {local?.cpu_usage !== undefined ? `${local.cpu_usage}%` : "—"}
+                  {local?.cpu_usage !== undefined ? `${local.cpu_usage}%` : '—'}
                 </p>
                 <p>
                   <span className="text-ops-gray">Mem / disco </span>
-                  {local?.memory_usage !== undefined ? `${local.memory_usage}%` : "—"} /{" "}
-                  {local?.disk_usage !== undefined ? `${local.disk_usage}%` : "—"}
+                  {local?.memory_usage !== undefined ? `${local.memory_usage}%` : '—'} /{' '}
+                  {local?.disk_usage !== undefined ? `${local.disk_usage}%` : '—'}
                 </p>
                 <p>
                   <span className="text-ops-gray">Docker </span>
-                  {local?.docker?.containers ?? "—"} cont.
+                  {local?.docker?.containers ?? '—'} cont.
                 </p>
                 <p>
                   <span className="text-ops-gray">Workers </span>
-                  Ollama {local?.workers?.ollama ?? "—"} · opsly{" "}
-                  {local?.workers?.opsly_worker ?? "—"}
+                  Ollama {local?.workers?.ollama ?? '—'} · opsly{' '}
+                  {local?.workers?.opsly_worker ?? '—'}
                 </p>
                 <p>
                   <span className="text-ops-gray">Red → VPS </span>
-                  {local?.network?.vps_connection ?? "—"}
+                  {local?.network?.vps_connection ?? '—'}
                 </p>
               </>
             )}
@@ -206,7 +187,7 @@ export function PlatformOverview(): React.ReactElement {
           <CardContent className="space-y-2 font-mono text-sm text-neutral-200">
             <p>
               <span className="text-ops-gray">Redis </span>
-              {workers.redis_available ? "conectado" : "no disponible"}
+              {workers.redis_available ? 'conectado' : 'no disponible'}
             </p>
             <p>
               <span className="text-ops-gray">Orquestador (jobs) </span>
@@ -245,7 +226,7 @@ export function PlatformOverview(): React.ReactElement {
                 <tr key={q.id} className="border-b border-ops-border/60 text-neutral-200">
                   <td className="py-2 pr-4">{q.label}</td>
                   <td className="py-2 pr-4 text-ops-gray">
-                    {q.role === "orchestrator" ? "Orquestador" : "Agentes"}
+                    {q.role === 'orchestrator' ? 'Orquestador' : 'Agentes'}
                   </td>
                   <td className="py-2 pr-4 tabular-nums">{q.waiting}</td>
                   <td className="py-2 tabular-nums">{q.active}</td>

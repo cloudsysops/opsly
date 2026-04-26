@@ -47,10 +47,7 @@ function formatMoney(cents: number, currency: string): string {
   }).format(amount);
 }
 
-async function fetchInvoice(
-  token: string,
-  invoiceId: string,
-): Promise<Invoice | null> {
+async function fetchInvoice(token: string, invoiceId: string): Promise<Invoice | null> {
   const base = getApiBaseUrl();
   const res = await fetch(`${base}/api/billing/invoices/${invoiceId}`, {
     headers: { Authorization: `Bearer ${token}` },
@@ -84,9 +81,7 @@ export default async function InvoiceDetailPage({
         <div className="flex items-center justify-between">
           <div>
             <Button variant="ghost" size="sm" asChild>
-              <Link href={`/dashboard/${tenant}/invoices`}>
-                ← Facturas
-              </Link>
+              <Link href={`/dashboard/${tenant}/invoices`}>← Facturas</Link>
             </Button>
           </div>
           <InvoiceStatusActions
@@ -99,9 +94,7 @@ export default async function InvoiceDetailPage({
         <Card className="mt-4">
           <CardHeader>
             <div className="flex items-center justify-between">
-              <CardTitle className="font-mono text-lg">
-                {invoice.invoice_number}
-              </CardTitle>
+              <CardTitle className="font-mono text-lg">{invoice.invoice_number}</CardTitle>
               <span
                 className={`rounded-full px-3 py-1 text-xs font-medium ${
                   invoice.status === 'paid'
@@ -123,22 +116,16 @@ export default async function InvoiceDetailPage({
                   {invoice.customer_name ?? invoice.customer_email}
                 </div>
                 {invoice.customer_name ? (
-                  <div className="text-xs text-ops-gray">
-                    {invoice.customer_email}
-                  </div>
+                  <div className="text-xs text-ops-gray">{invoice.customer_email}</div>
                 ) : null}
               </div>
               <div>
                 <div className="text-ops-gray">Fecha emisión</div>
-                <div className="mt-1 text-neutral-200">
-                  {invoice.issue_date ?? '—'}
-                </div>
+                <div className="mt-1 text-neutral-200">{invoice.issue_date ?? '—'}</div>
               </div>
               <div>
                 <div className="text-ops-gray">Vencimiento</div>
-                <div className="mt-1 text-neutral-200">
-                  {invoice.due_date ?? '—'}
-                </div>
+                <div className="mt-1 text-neutral-200">{invoice.due_date ?? '—'}</div>
               </div>
               <div>
                 <div className="text-ops-gray">Moneda</div>
@@ -153,24 +140,17 @@ export default async function InvoiceDetailPage({
                   <tr className="border-b border-ops-border text-xs uppercase tracking-wider text-ops-gray">
                     <th className="pb-2 pr-4 font-medium">Descripción</th>
                     <th className="pb-2 pr-4 font-medium text-right">Cant</th>
-                    <th className="pb-2 pr-4 font-medium text-right">
-                      Precio Unit
-                    </th>
+                    <th className="pb-2 pr-4 font-medium text-right">Precio Unit</th>
                     <th className="pb-2 font-medium text-right">Total</th>
                   </tr>
                 </thead>
                 <tbody>
                   {invoice.line_items.map((li) => (
-                    <tr
-                      key={li.id}
-                      className="border-b border-ops-border/30"
-                    >
+                    <tr key={li.id} className="border-b border-ops-border/30">
                       <td className="py-2 pr-4 text-neutral-200">
                         {li.description}
                         {li.category ? (
-                          <span className="ml-2 text-xs text-ops-gray">
-                            [{li.category}]
-                          </span>
+                          <span className="ml-2 text-xs text-ops-gray">[{li.category}]</span>
                         ) : null}
                       </td>
                       <td className="py-2 pr-4 text-right font-mono text-neutral-300">
@@ -198,9 +178,7 @@ export default async function InvoiceDetailPage({
               </div>
               {invoice.tax_cents > 0 ? (
                 <div className="flex w-48 justify-between">
-                  <span className="text-ops-gray">
-                    IVA ({invoice.tax_rate_percent}%)
-                  </span>
+                  <span className="text-ops-gray">IVA ({invoice.tax_rate_percent}%)</span>
                   <span className="font-mono text-neutral-200">
                     {formatMoney(invoice.tax_cents, invoice.currency)}
                   </span>
@@ -216,17 +194,13 @@ export default async function InvoiceDetailPage({
 
             {invoice.notes ? (
               <div className="mt-6 rounded-lg border border-ops-border/50 bg-ops-surface/50 p-3 text-sm text-ops-gray">
-                <div className="mb-1 text-xs uppercase tracking-wider">
-                  Notas
-                </div>
+                <div className="mb-1 text-xs uppercase tracking-wider">Notas</div>
                 {invoice.notes}
               </div>
             ) : null}
 
             {invoice.paid_date ? (
-              <div className="mt-4 text-xs text-green-400">
-                Pagada el {invoice.paid_date}
-              </div>
+              <div className="mt-4 text-xs text-green-400">Pagada el {invoice.paid_date}</div>
             ) : null}
           </CardContent>
         </Card>

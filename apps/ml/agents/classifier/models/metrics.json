@@ -5,12 +5,6 @@
   "f1": 0.7522203947368421,
   "num_samples": 40,
   "num_features": 134,
-  "categories": [
-    "infra",
-    "billing",
-    "ai_task",
-    "support",
-    "onboarding"
-  ],
+  "categories": ["infra", "billing", "ai_task", "support", "onboarding"],
   "trained_at": "2026-04-12T14:27:01.732894+00:00"
 }

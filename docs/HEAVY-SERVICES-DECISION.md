@@ -11,12 +11,12 @@ El disco raíz es **48 GB**. Con **Ollama (~9–10 GB imagen)**, **OpenClaw 
 
 ## Opciones (sin comprometer el producto)
 
-| Opción | Descripción | Pros | Contras |
-|--------|-------------|------|---------|
-| **A — Desacoplar Ollama** | Ejecutar Ollama solo donde haga falta inferencia local; no en el mismo disco que producción multi-tenant | Libera la imagen más pesada si no se usa | Hay que apuntar clientes/workers al nuevo host |
-| **B — OpenClaw en otro host** | Mover el contenedor OpenClaw a máquina con más espacio (p. ej. Mac 2011 en LAN/Tailscale) | Reduce GB en VPS | Latencia y firewall; un nodo más que vigilar |
-| **C — VM / cloud dedicada** | Stack “AI/labs” en GCP/AWS/DO separado | Aislamiento y escalado | Coste y operación |
-| **D — Ampliar volumen** | Aumentar disco en DigitalOcean | Menos reingeniería | Coste mensual |
+| Opción                        | Descripción                                                                                              | Pros                                     | Contras                                        |
+| ----------------------------- | -------------------------------------------------------------------------------------------------------- | ---------------------------------------- | ---------------------------------------------- |
+| **A — Desacoplar Ollama**     | Ejecutar Ollama solo donde haga falta inferencia local; no en el mismo disco que producción multi-tenant | Libera la imagen más pesada si no se usa | Hay que apuntar clientes/workers al nuevo host |
+| **B — OpenClaw en otro host** | Mover el contenedor OpenClaw a máquina con más espacio (p. ej. Mac 2011 en LAN/Tailscale)                | Reduce GB en VPS                         | Latencia y firewall; un nodo más que vigilar   |
+| **C — VM / cloud dedicada**   | Stack “AI/labs” en GCP/AWS/DO separado                                                                   | Aislamiento y escalado                   | Coste y operación                              |
+| **D — Ampliar volumen**       | Aumentar disco en DigitalOcean                                                                           | Menos reingeniería                       | Coste mensual                                  |
 
 ## Recomendación práctica
 

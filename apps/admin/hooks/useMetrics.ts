@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import useSWR from "swr";
-import { getMetrics } from "@/lib/api-client";
-import type { MetricsResponse } from "@/lib/types";
+import useSWR from 'swr';
+import { getMetrics } from '@/lib/api-client';
+import type { MetricsResponse } from '@/lib/types';
 
 export function useMetrics(): {
   data: MetricsResponse | undefined;
@@ -11,12 +11,12 @@ export function useMetrics(): {
   mutate: () => void;
 } {
   const { data, error, isLoading, mutate } = useSWR<MetricsResponse>(
-    ["metrics"],
+    ['metrics'],
     () => getMetrics(),
     {
       refreshInterval: 60_000,
       revalidateOnFocus: false,
-    },
+    }
   );
   return { data, error: error as Error | undefined, isLoading, mutate };
 }

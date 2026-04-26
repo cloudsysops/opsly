@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import useSWR from "swr";
+import { useEffect, useState } from 'react';
+import useSWR from 'swr';
 
 interface OllamaMetric {
   tenant_slug: string;
@@ -26,11 +26,11 @@ interface OllamaTotalMetrics {
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
 export default function AdminOllamaMetricsPage() {
-  const { data: metrics, error, isLoading } = useSWR<OllamaTotalMetrics>(
-    "/api/admin/metrics/ollama",
-    fetcher,
-    { refreshInterval: 30000 }
-  );
+  const {
+    data: metrics,
+    error,
+    isLoading,
+  } = useSWR<OllamaTotalMetrics>('/api/admin/metrics/ollama', fetcher, { refreshInterval: 30000 });
 
   if (isLoading) return <div className="p-8">Loading metrics...</div>;
   if (error) return <div className="p-8 text-red-600">Error loading metrics: {error.message}</div>;
@@ -59,12 +59,12 @@ export default function AdminOllamaMetricsPage() {
         <MetricCard
           label="Avg Latency"
           value={metrics?.avg_latency_ms ?? 0}
-          format={(v) => v.toFixed(0) + "ms"}
+          format={(v) => v.toFixed(0) + 'ms'}
         />
         <MetricCard
           label="Success Rate"
           value={metrics?.success_rate ?? 0}
-          format={(v) => (v * 100).toFixed(1) + "%"}
+          format={(v) => (v * 100).toFixed(1) + '%'}
         />
       </div>
 
@@ -88,16 +88,21 @@ export default function AdminOllamaMetricsPage() {
               {metrics?.by_tenant.map((tenant) => (
                 <tr key={tenant.tenant_slug} className="hover:bg-gray-50">
                   <td className="border p-3 font-mono">{tenant.tenant_slug}</td>
-                  <td className="border p-3 text-right">{tenant.total_requests.toLocaleString()}</td>
                   <td className="border p-3 text-right">
-                    {tenant.total_tokens_input.toLocaleString()} / {tenant.total_tokens_output.toLocaleString()}
+                    {tenant.total_requests.toLocaleString()}
+                  </td>
+                  <td className="border p-3 text-right">
+                    {tenant.total_tokens_input.toLocaleString()} /{' '}
+                    {tenant.total_tokens_output.toLocaleString()}
                   </td>
                   <td className="border p-3 text-right">
                     {((tenant.cache_hits / Math.max(tenant.total_requests, 1)) * 100).toFixed(1)}%
                   </td>
                   <td className="border p-3 text-right">{tenant.avg_latency_ms.toFixed(0)}ms</td>
-                  <td className="border p-3 text-right">{(tenant.success_rate * 100).toFixed(1)}%</td>
-                  <td className="border p-3 text-sm">{tenant.models_used.join(", ")}</td>
+                  <td className="border p-3 text-right">
+                    {(tenant.success_rate * 100).toFixed(1)}%
+                  </td>
+                  <td className="border p-3 text-sm">{tenant.models_used.join(', ')}</td>
                 </tr>
               ))}
             </tbody>
@@ -122,7 +127,8 @@ export default function AdminOllamaMetricsPage() {
             <strong>Circuit Breaker:</strong> 3 consecutive failures → marked down
           </li>
           <li>
-            <strong>Hermes Mode:</strong> Routes decision+S tasks to Ollama when HERMES_LOCAL_LLM_FIRST=true
+            <strong>Hermes Mode:</strong> Routes decision+S tasks to Ollama when
+            HERMES_LOCAL_LLM_FIRST=true
           </li>
         </ul>
       </div>

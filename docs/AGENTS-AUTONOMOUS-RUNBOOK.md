@@ -8,11 +8,11 @@ No implica “IA sin supervisión”: los jobs siguen entrando por API, Hermes, 
 
 ## 1. Topología mínima
 
-| Rol | Dónde | Qué hace |
-|-----|--------|----------|
-| **Control plane** | VPS `/opt/opsly` | Redis, API, Traefik, opc. orchestrator `queue-only` / TeamManager |
-| **Worker plane** | Mac 2011 / `opslyquantum` `~/opsly` | Proceso orchestrator con **workers** (cursor, ollama, n8n, notify, …) |
-| **Inferencia local** | Mismo worker o Docker | Ollama `:11434`; el gateway usa `OLLAMA_URL` |
+| Rol                  | Dónde                               | Qué hace                                                              |
+| -------------------- | ----------------------------------- | --------------------------------------------------------------------- |
+| **Control plane**    | VPS `/opt/opsly`                    | Redis, API, Traefik, opc. orchestrator `queue-only` / TeamManager     |
+| **Worker plane**     | Mac 2011 / `opslyquantum` `~/opsly` | Proceso orchestrator con **workers** (cursor, ollama, n8n, notify, …) |
+| **Inferencia local** | Mismo worker o Docker               | Ollama `:11434`; el gateway usa `OLLAMA_URL`                          |
 
 Detalle: [`ARCHITECTURE-DISTRIBUTED.md`](ARCHITECTURE-DISTRIBUTED.md), [`ORCHESTRATOR.md`](ORCHESTRATOR.md).
 
@@ -82,12 +82,12 @@ WORKER_SSH=opslyquantum@100.80.41.29 ./scripts/verify-distributed-stack.sh
 
 ## 6. Meter trabajo en la cola (los “agentes” trabajan cuando hay jobs)
 
-| Origen | Notas |
-|--------|--------|
-| **Smoke** | `doppler run ... ./scripts/test-worker-e2e.sh <tenant> --notify` (job `notify`) |
-| **Squad Ollama** | `npx tsx scripts/enqueue-ollama-squad.ts --tenant <slug> --goal "..."` (varios jobs `ollama`) |
-| **Hermes / cron** | Tareas que encolan a OpenClaw cuando corresponde (ver `HermesOrchestrator`) |
-| **MCP / API** | Según rutas y tokens de plataforma |
+| Origen            | Notas                                                                                         |
+| ----------------- | --------------------------------------------------------------------------------------------- |
+| **Smoke**         | `doppler run ... ./scripts/test-worker-e2e.sh <tenant> --notify` (job `notify`)               |
+| **Squad Ollama**  | `npx tsx scripts/enqueue-ollama-squad.ts --tenant <slug> --goal "..."` (varios jobs `ollama`) |
+| **Hermes / cron** | Tareas que encolan a OpenClaw cuando corresponde (ver `HermesOrchestrator`)                   |
+| **MCP / API**     | Según rutas y tokens de plataforma                                                            |
 
 Configuración declarativa del equipo (roles, presupuestos, herramientas): [`config/agents-team.json`](../config/agents-team.json) y **Admin** `/agents-team`; **API** `GET /api/agents/team` (solo sesión admin).
 

@@ -1,5 +1,5 @@
-import type { KnowledgeFileEntry, KnowledgeIndexFile } from "./knowledge-index.js";
-import { loadKnowledgeIndex, normalizeFileEntries } from "./knowledge-index.js";
+import type { KnowledgeFileEntry, KnowledgeIndexFile } from './knowledge-index.js';
+import { loadKnowledgeIndex, normalizeFileEntries } from './knowledge-index.js';
 
 /**
  * Carga el índice de conocimiento desde `KNOWLEDGE_INDEX_PATH` (o `config/knowledge-index.json` bajo `OPS_REPO_ROOT`).
@@ -17,7 +17,7 @@ function matchesQuery(entry: KnowledgeFileEntry, tokens: string[]): boolean {
   if (tokens.length === 0) {
     return true;
   }
-  const hay = `${entry.title} ${entry.keywords.join(" ")} ${entry.path}`.toLowerCase();
+  const hay = `${entry.title} ${entry.keywords.join(' ')} ${entry.path}`.toLowerCase();
   return tokens.some((t) => hay.includes(t));
 }
 

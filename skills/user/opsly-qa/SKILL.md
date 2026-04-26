@@ -38,6 +38,7 @@ npm run validate-openapi
 - `LOW`: deuda o inconsistencia no bloqueante
 
 Cada hallazgo debe incluir:
+
 - Ruta/endpoint
 - esperado vs actual
 - evidencia reproducible
@@ -53,9 +54,9 @@ Cada hallazgo debe incluir:
 
 ## Errores comunes
 
-| Error | Causa | Solución |
-|-------|-------|----------|
-| "Todo OK" sin comando ejecutado | Falta disciplina de verificación | Adjuntar comandos y resultado |
-| 401 generalizado | Token no propagado desde frontend | Revisar `api-client`/headers de auth |
-| 404 endpoint esperado | Ruta no desplegada o mal documentada | Reconcilia código, OpenAPI y deploy |
-| React hook/hydration errors en prod | Patrón incorrecto de render | Corregir hooks/SSR y revalidar en build |
+| Error                               | Causa                                | Solución                                |
+| ----------------------------------- | ------------------------------------ | --------------------------------------- |
+| "Todo OK" sin comando ejecutado     | Falta disciplina de verificación     | Adjuntar comandos y resultado           |
+| 401 generalizado                    | Token no propagado desde frontend    | Revisar `api-client`/headers de auth    |
+| 404 endpoint esperado               | Ruta no desplegada o mal documentada | Reconcilia código, OpenAPI y deploy     |
+| React hook/hydration errors en prod | Patrón incorrecto de render          | Corregir hooks/SSR y revalidar en build |

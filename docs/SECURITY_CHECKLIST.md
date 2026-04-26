@@ -29,7 +29,7 @@ Lista operativa para releases y revisiones periódicas. Marca ítems según tu p
 
 ## Aplicación
 
-- [x] **CSP Headers implementados** — `apps/api/middleware.ts` (matcher `/api/:path*`; CSP, `X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy`) — **2026-04-11**. *(Next.js resuelve el middleware en la raíz del app; no usar `apps/api/src/middleware.ts` en este repo.)*
+- [x] **CSP Headers implementados** — `apps/api/middleware.ts` (matcher `/api/:path*`; CSP, `X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy`) — **2026-04-11**. _(Next.js resuelve el middleware en la raíz del app; no usar `apps/api/src/middleware.ts` en este repo.)_
 - [ ] CORS en API acotado a orígenes conocidos (admin, portal).
 - [ ] Webhooks Stripe validados con firma.
 - [ ] Rate limiting / reCAPTCHA: evaluar según exposición pública (fase de producto).
@@ -50,18 +50,19 @@ Sí, el backend está **bien separado por tenant para la fase actual** (staging 
 
 ### Arquitectura Actual: Separación por Tenant
 
-| Capa | Nivel de Aislamiento | Fortalezas | Riesgos Restantes | Mitigación Recomendada |
-|------|----------------------|-----------|------------------|------------------------|
-| **Contenedores** | Alto | Proyecto Docker separado (`--project-name tenant_<slug>`) por tenant; redes Docker internas aisladas | Kernel compartido en VPS; posibilidad de escape | ufw + reglas iptables; Tailscale solo para SSH (no IP pública); auditoría de CVEs Docker |
-| **Base de Datos** | Medio-Alto | Schemas separados (`platform` + `tenant_<slug>`); RLS por tenant/user en `platform.*` | Service role key global; exposición = acceso a todos los schemas | Doppler secrets + rotación por exposición; auditar logs Supabase; considerar políticas de IP en Supabase Enterprise |
-| **API / Backend** | Alto | `tenantSlugMatchesSession(session, slug)` en todas rutas `[slug]`; 403 si no coincide; `resolveTrustedPortalSession` reutilizable | Misconfiguración CORS; olvido de validación en ruta nueva | CORS orígenes explícitos; pre-commit ESLint para detectar sin validación; documentar patrón en ADR |
-| **Red / Exposición** | Medio | Traefik v3 con reglas `Host(\`n8n-<slug>.ops.smiletripcare.com\`)` por subdominio; TLS obligatorio | IP pública del VPS visible; DNS A record sin Cloudflare Proxy | Cloudflare Proxy (naranja ON) en todos `*.ops.smiletripcare.com` + WAF rules; registrar IPs VPS en Cloudflare |
-| **SSH / Admin** | Bajo (Actual) | `-` | SSH banner timeout; IP pública expuesta; sin restricción de origen | SSH solo desde Tailscale (100.64.0.0/10); ufw default DROP; whitelist IPs Tailscale en VPS |
-| **NotebookLM / Google Auth** | EXPERIMENTAL | Feature flag `NOTEBOOKLM_ENABLED` (Business+ only); scope MCP `agents:write` admin-only | Service account JSON o user OAuth credentials; Google API rate limits | Doppler secrets; test con cuenta sandbox; feature flag default OFF |
+| Capa                         | Nivel de Aislamiento | Fortalezas                                                                                                                        | Riesgos Restantes                                                     | Mitigación Recomendada                                                                                              |
+| ---------------------------- | -------------------- | --------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| **Contenedores**             | Alto                 | Proyecto Docker separado (`--project-name tenant_<slug>`) por tenant; redes Docker internas aisladas                              | Kernel compartido en VPS; posibilidad de escape                       | ufw + reglas iptables; Tailscale solo para SSH (no IP pública); auditoría de CVEs Docker                            |
+| **Base de Datos**            | Medio-Alto           | Schemas separados (`platform` + `tenant_<slug>`); RLS por tenant/user en `platform.*`                                             | Service role key global; exposición = acceso a todos los schemas      | Doppler secrets + rotación por exposición; auditar logs Supabase; considerar políticas de IP en Supabase Enterprise |
+| **API / Backend**            | Alto                 | `tenantSlugMatchesSession(session, slug)` en todas rutas `[slug]`; 403 si no coincide; `resolveTrustedPortalSession` reutilizable | Misconfiguración CORS; olvido de validación en ruta nueva             | CORS orígenes explícitos; pre-commit ESLint para detectar sin validación; documentar patrón en ADR                  |
+| **Red / Exposición**         | Medio                | Traefik v3 con reglas `Host(\`n8n-<slug>.ops.smiletripcare.com\`)` por subdominio; TLS obligatorio                                | IP pública del VPS visible; DNS A record sin Cloudflare Proxy         | Cloudflare Proxy (naranja ON) en todos `*.ops.smiletripcare.com` + WAF rules; registrar IPs VPS en Cloudflare       |
+| **SSH / Admin**              | Bajo (Actual)        | `-`                                                                                                                               | SSH banner timeout; IP pública expuesta; sin restricción de origen    | SSH solo desde Tailscale (100.64.0.0/10); ufw default DROP; whitelist IPs Tailscale en VPS                          |
+| **NotebookLM / Google Auth** | EXPERIMENTAL         | Feature flag `NOTEBOOKLM_ENABLED` (Business+ only); scope MCP `agents:write` admin-only                                           | Service account JSON o user OAuth credentials; Google API rate limits | Doppler secrets; test con cuenta sandbox; feature flag default OFF                                                  |
 
 ### Checklist Multi-Tenancy (2026-04-09)
 
 #### Contenedores
+
 - [x] Docker Compose por tenant: `--project-name tenant_<slug>` en `docker_compose()`
 - [x] Redes Docker internas: `internal_network_<slug>` sin exposición a host network
 - [x] ufw firewall: drop incoming por defecto; SSH solo Tailscale (`100.64.0.0/10`), HTTP/HTTPS público
@@ -69,6 +70,7 @@ Sí, el backend está **bien separado por tenant para la fase actual** (staging 
 - [ ] **TODO:** Auditoría CVEs Docker: `docker scan` en pipeline CI
 
 #### Base de Datos
+
 - [x] RLS en `platform.tenants`, `platform.subscriptions`, `platform.usage_events` (migración 0007)
 - [x] Schemas aislados: `platform` (global) + `tenant_<slug>` (por tenant)
 - [x] Service role key solo en backend (Doppler `prd`)
@@ -76,6 +78,7 @@ Sí, el backend está **bien separado por tenant para la fase actual** (staging 
 - [ ] **TODO:** Considerar IP whitelist en Supabase (si plan Premium disponible)
 
 #### API / Backend
+
 - [x] `tenantSlugMatchesSession` en 4 rutas: `/api/portal/tenant/[slug]/{me,usage,mode,health}`
 - [x] `resolveTrustedPortalSession` = JWT + `platform.tenants.owner_email` match
 - [x] CORS en middleware: orígenes explícitos (`NEXT_PUBLIC_ADMIN_URL`, `https://admin.${PLATFORM_DOMAIN}`)
@@ -84,6 +87,7 @@ Sí, el backend está **bien separado por tenant para la fase actual** (staging 
 - [ ] **TODO:** Documentar patrón en ADR-002 o crear ADR-015 "Multi-Tenant API Security"
 
 #### Red / Exposición
+
 - [x] Traefik v3: reglas `Host()` por subdominio (`n8n-<slug>.ops.smiletripcare.com`)
 - [x] TLS obligatorio vía Let's Encrypt + ACME
 - [x] **HECHO:** Cloudflare Proxy (naranja ON) para todos `*.ops.smiletripcare.com`
@@ -93,6 +97,7 @@ Sí, el backend está **bien separado por tenant para la fase actual** (staging 
   - Runbook: `docs/CLOUDFLARE-PROXY-ACTIVATION.md`
 
 #### SSH / Admin
+
 - [x] SSH **exclusivamente vía Tailscale** — `ssh vps-dragon@100.120.151.91` (IP pública bloqueada)
 - [x] Script onboard: `SSH_HOST=${SSH_HOST:-100.120.151.91}` (Tailscale por defecto)
 - [x] ufw firewall activo: SSH solo desde `100.64.0.0/10` (red Tailscale), HTTP/HTTPS público
@@ -100,12 +105,14 @@ Sí, el backend está **bien separado por tenant para la fase actual** (staging 
 - [x] Traefik `api.insecure` eliminado (sin dashboard HTTP expuesto en `:8080`)
 
 #### Secrets / Doppler
+
 - [x] Doppler proyecto `ops-intcloudsysops`, config `prd`
 - [x] `PLATFORM_ADMIN_TOKEN`, `SUPABASE_SERVICE_ROLE_KEY`, `STRIPE_SECRET_KEY` en `prd` only
 - [ ] **TODO:** `GOOGLE_SERVICE_ACCOUNT_JSON` para NotebookLM (si aplica)
 - [ ] **TODO:** Rotación post-exposición: política clara, audit logs en Doppler
 
 #### Tests / CI
+
 - [x] `npm run test`: 155/155 passing (incluye portal + feedback security tests)
 - [x] `npm run type-check`: 11/11 packages (TypeScript strict, sin `any`)
 - [x] ESLint: 0 warnings en `apps/api`
@@ -114,6 +121,7 @@ Sí, el backend está **bien separado por tenant para la fase actual** (staging 
 ### Recomendaciones Inmediatas (Ordenadas por Prioridad)
 
 #### 🔴 CRÍTICA (Esta noche - LocalRank pilot)
+
 1. **Cloudflare Proxy** para `*.ops.smiletripcare.com`
    - Protege IP VPS pública
    - Habilita WAF rules para ataques comunes
@@ -123,9 +131,11 @@ Sí, el backend está **bien separado por tenant para la fase actual** (staging 
    - Drop incoming por defecto
    - Whitelist SSH desde Tailscale range 100.64.0.0/10
    - Allow HTTP/HTTPS públicos
-  - Command recomendado: `./scripts/vps-secure.sh --ssh-host 100.120.151.91`
+
+- Command recomendado: `./scripts/vps-secure.sh --ssh-host 100.120.151.91`
 
 #### 🟡 IMPORTANTE (Esta semana)
+
 3. **Tailscale SSH en VPS**
    - Instalación: `curl ... | sh`
    - Test SSH: `ssh vps-dragon@100.120.151.91` (IP Tailscale)
@@ -146,6 +156,7 @@ Sí, el backend está **bien separado por tenant para la fase actual** (staging 
   - ~~CSP + cabeceras HTTP en API~~ — hecho **2026-04-11** (`apps/api/middleware.ts`).
 
 #### 🟢 OPCIONAL (Fase 2+)
+
 5. **OWASP ZAP scanning** en CI
 6. **IP Whitelist en Supabase** (Enterprise plan)
 7. **Auditoría de logs Supabase** vía Cloud Logging

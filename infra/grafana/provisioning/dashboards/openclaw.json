@@ -22,22 +22,27 @@
       "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
-          "color": {"mode": "thresholds"},
-          "mappings": [{"type": "value", "options": {}}],
+          "color": { "mode": "thresholds" },
+          "mappings": [{ "type": "value", "options": {} }],
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              {"color": "green", "value": null},
-              {"color": "yellow", "value": 10},
-              {"color": "red", "value": 20}
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 10 },
+              { "color": "red", "value": 20 }
             ]
           },
           "unit": "short"
         }
       },
-      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0},
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
       "id": 1,
-      "options": {"orientation": "auto", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "showThresholdLabels": false, "showThresholdMarkers": true},
+      "options": {
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      },
       "pluginVersion": "8.0.0",
       "targets": [
         {
@@ -52,16 +57,19 @@
       "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
-          "color": {"mode": "palette-classic"},
-          "custom": {"lineWidth": 1, "pointSize": 5},
+          "color": { "mode": "palette-classic" },
+          "custom": { "lineWidth": 1, "pointSize": 5 },
           "mappings": [],
-          "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}]},
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }] },
           "unit": "ms"
         }
       },
-      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0},
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
       "id": 2,
-      "options": {"legend": {"calcs": [], "displayMode": "list", "placement": "bottom"}, "tooltip": {"mode": "single"}},
+      "options": {
+        "legend": { "calcs": [], "displayMode": "list", "placement": "bottom" },
+        "tooltip": { "mode": "single" }
+      },
       "pluginVersion": "8.0.0",
       "targets": [
         {
@@ -77,21 +85,26 @@
       "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
-          "color": {"mode": "thresholds"},
+          "color": { "mode": "thresholds" },
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              {"color": "green", "value": null},
-              {"color": "yellow", "value": 50},
-              {"color": "red", "value": 100}
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 50 },
+              { "color": "red", "value": 100 }
             ]
           }
         }
       },
-      "gridPos": {"h": 8, "w": 24, "x": 0, "y": 8},
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 8 },
       "id": 3,
-      "options": {"displayMode": "gradient", "orientation": "horizontal", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "showUnfilled": true},
+      "options": {
+        "displayMode": "gradient",
+        "orientation": "horizontal",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "showUnfilled": true
+      },
       "pluginVersion": "8.0.0",
       "targets": [
         {
@@ -106,8 +119,8 @@
   "schemaVersion": 27,
   "style": "dark",
   "tags": ["openclaw", "orchestrator"],
-  "templating": {"list": []},
-  "time": {"from": "now-1h", "to": "now"},
+  "templating": { "list": [] },
+  "time": { "from": "now-1h", "to": "now" },
   "timepicker": {},
   "timezone": "",
   "title": "OpenClaw Orchestrator",

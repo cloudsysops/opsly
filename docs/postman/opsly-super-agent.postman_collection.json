@@ -32,9 +32,7 @@
           "name": "GET /api/metrics",
           "request": {
             "method": "GET",
-            "header": [
-              { "key": "Authorization", "value": "Bearer {{platform_admin_token}}" }
-            ],
+            "header": [{ "key": "Authorization", "value": "Bearer {{platform_admin_token}}" }],
             "url": "{{api_base}}/api/metrics"
           }
         },
@@ -42,9 +40,7 @@
           "name": "GET /api/admin/overview",
           "request": {
             "method": "GET",
-            "header": [
-              { "key": "Authorization", "value": "Bearer {{platform_admin_token}}" }
-            ],
+            "header": [{ "key": "Authorization", "value": "Bearer {{platform_admin_token}}" }],
             "url": "{{api_base}}/api/admin/overview"
           }
         }
@@ -92,9 +88,7 @@
           "name": "GET /api/portal/me",
           "request": {
             "method": "GET",
-            "header": [
-              { "key": "Authorization", "value": "Bearer {{supabase_access_token}}" }
-            ],
+            "header": [{ "key": "Authorization", "value": "Bearer {{supabase_access_token}}" }],
             "url": "{{api_base}}/api/portal/me"
           }
         },
@@ -102,9 +96,7 @@
           "name": "GET /api/portal/usage",
           "request": {
             "method": "GET",
-            "header": [
-              { "key": "Authorization", "value": "Bearer {{supabase_access_token}}" }
-            ],
+            "header": [{ "key": "Authorization", "value": "Bearer {{supabase_access_token}}" }],
             "url": "{{api_base}}/api/portal/usage?period=today"
           }
         }

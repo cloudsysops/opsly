@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 /** ADR resumido para inyección en prompts (OpenClaw / orchestrator). */
 export const ContextPackAdrSchema = z.object({

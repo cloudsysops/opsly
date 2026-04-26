@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import * as SelectPrimitive from "@radix-ui/react-select";
-import { Check, ChevronDown } from "lucide-react";
-import * as React from "react";
-import { cn } from "@/lib/utils";
+import * as SelectPrimitive from '@radix-ui/react-select';
+import { Check, ChevronDown } from 'lucide-react';
+import * as React from 'react';
+import { cn } from '@/lib/utils';
 
 const Select = SelectPrimitive.Root;
 const SelectGroup = SelectPrimitive.Group;
@@ -16,8 +16,8 @@ const SelectTrigger = React.forwardRef<
   <SelectPrimitive.Trigger
     ref={ref}
     className={cn(
-      "flex h-9 w-full items-center justify-between rounded border border-ops-border bg-ops-bg px-3 py-1 font-sans text-sm text-neutral-100 focus:outline-none focus:ring-1 focus:ring-ops-green disabled:cursor-not-allowed disabled:opacity-50",
-      className,
+      'flex h-9 w-full items-center justify-between rounded border border-ops-border bg-ops-bg px-3 py-1 font-sans text-sm text-neutral-100 focus:outline-none focus:ring-1 focus:ring-ops-green disabled:cursor-not-allowed disabled:opacity-50',
+      className
     )}
     {...props}
   >
@@ -32,24 +32,23 @@ SelectTrigger.displayName = SelectPrimitive.Trigger.displayName;
 const SelectContent = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof SelectPrimitive.Content>
->(({ className, children, position = "popper", ...props }, ref) => (
+>(({ className, children, position = 'popper', ...props }, ref) => (
   <SelectPrimitive.Portal>
     <SelectPrimitive.Content
       ref={ref}
       className={cn(
-        "relative z-50 max-h-96 min-w-[8rem] overflow-hidden rounded border border-ops-border bg-ops-surface text-neutral-100 shadow-md data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
-        position === "popper" &&
-          "data-[side=bottom]:translate-y-1 data-[side=top]:-translate-y-1",
-        className,
+        'relative z-50 max-h-96 min-w-[8rem] overflow-hidden rounded border border-ops-border bg-ops-surface text-neutral-100 shadow-md data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0',
+        position === 'popper' && 'data-[side=bottom]:translate-y-1 data-[side=top]:-translate-y-1',
+        className
       )}
       position={position}
       {...props}
     >
       <SelectPrimitive.Viewport
         className={cn(
-          "p-1",
-          position === "popper" &&
-            "h-[var(--radix-select-trigger-height)] w-full min-w-[var(--radix-select-trigger-width)]",
+          'p-1',
+          position === 'popper' &&
+            'h-[var(--radix-select-trigger-height)] w-full min-w-[var(--radix-select-trigger-width)]'
         )}
       >
         {children}
@@ -66,8 +65,8 @@ const SelectItem = React.forwardRef<
   <SelectPrimitive.Item
     ref={ref}
     className={cn(
-      "relative flex w-full cursor-default select-none items-center rounded py-1.5 pl-8 pr-2 font-sans text-sm outline-none focus:bg-ops-border/40 data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
-      className,
+      'relative flex w-full cursor-default select-none items-center rounded py-1.5 pl-8 pr-2 font-sans text-sm outline-none focus:bg-ops-border/40 data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
+      className
     )}
     {...props}
   >
@@ -81,11 +80,4 @@ const SelectItem = React.forwardRef<
 ));
 SelectItem.displayName = SelectPrimitive.Item.displayName;
 
-export {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-};
+export { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue };

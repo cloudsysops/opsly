@@ -4,19 +4,12 @@
  * Uso: npm run create-tool -- <slug-kebab>
  * Ejemplo: npm run create-tool -- browserbase
  */
-const fs = require("fs");
-const path = require("path");
+const fs = require('fs');
+const path = require('path');
 
-const REPO_ROOT = path.resolve(__dirname, "..");
-const TOOLS_ROOT = path.join(
-  REPO_ROOT,
-  "apps",
-  "orchestrator",
-  "src",
-  "agents",
-  "tools",
-);
-const REGISTRY_PATH = path.join(TOOLS_ROOT, "registry.ts");
+const REPO_ROOT = path.resolve(__dirname, '..');
+const TOOLS_ROOT = path.join(REPO_ROOT, 'apps', 'orchestrator', 'src', 'agents', 'tools');
+const REGISTRY_PATH = path.join(TOOLS_ROOT, 'registry.ts');
 
 function die(msg) {
   console.error(`create-tool: ${msg}`);
@@ -38,10 +31,10 @@ function normalizeSlug(raw) {
  */
 function slugToPascal(slug) {
   return slug
-    .split("-")
+    .split('-')
     .filter(Boolean)
     .map((part) => part[0].toUpperCase() + part.slice(1).toLowerCase())
-    .join("");
+    .join('');
 }
 
 /**
@@ -49,7 +42,7 @@ function slugToPascal(slug) {
  * @returns {string}
  */
 function toolNameFromSlug(slug) {
-  return slug.replace(/-/g, "_");
+  return slug.replace(/-/g, '_');
 }
 
 /**
@@ -155,10 +148,10 @@ Generado con \`npm run create-tool -- ${slug}\`.
 4. \`npm run type-check --workspace=@intcloudsysops/orchestrator\` y \`npm run test:tools\`.
 `;
 
-  fs.writeFileSync(path.join(dir, `${slug}.tool.ts`), toolTs, "utf8");
-  fs.writeFileSync(path.join(dir, `${slug}.schema.ts`), schemaTs, "utf8");
-  fs.writeFileSync(path.join(dir, `${slug}.test.ts`), testTs, "utf8");
-  fs.writeFileSync(path.join(dir, "README.md"), readme, "utf8");
+  fs.writeFileSync(path.join(dir, `${slug}.tool.ts`), toolTs, 'utf8');
+  fs.writeFileSync(path.join(dir, `${slug}.schema.ts`), schemaTs, 'utf8');
+  fs.writeFileSync(path.join(dir, `${slug}.test.ts`), testTs, 'utf8');
+  fs.writeFileSync(path.join(dir, 'README.md'), readme, 'utf8');
 }
 
 /**
@@ -168,7 +161,7 @@ Generado con \`npm run create-tool -- ${slug}\`.
 function patchRegistry(slug, pascal) {
   const className = `${pascal}Tool`;
   const importLine = `import { ${className} } from "./${slug}/${slug}.tool.js";`;
-  let content = fs.readFileSync(REGISTRY_PATH, "utf8");
+  let content = fs.readFileSync(REGISTRY_PATH, 'utf8');
 
   if (content.includes(importLine)) {
     die(`registry.ts ya importa ${className}`);
@@ -177,7 +170,7 @@ function patchRegistry(slug, pascal) {
   const afterTavily = `import { TavilyTool } from "./tavily-tool.js";`;
   if (!content.includes(afterTavily)) {
     die(
-      "no se encontró el ancla de import en registry.ts (import TavilyTool); actualiza create-tool.js",
+      'no se encontró el ancla de import en registry.ts (import TavilyTool); actualiza create-tool.js'
     );
   }
 
@@ -186,34 +179,29 @@ function patchRegistry(slug, pascal) {
   const afterBuiltin = `    new TavilyTool(),`;
   if (!content.includes(afterBuiltin)) {
     die(
-      "no se encontró el ancla builtins en registry.ts (new TavilyTool()); actualiza create-tool.js",
+      'no se encontró el ancla builtins en registry.ts (new TavilyTool()); actualiza create-tool.js'
     );
   }
 
-  content = content.replace(
-    afterBuiltin,
-    `${afterBuiltin}\n    new ${className}(),`,
-  );
+  content = content.replace(afterBuiltin, `${afterBuiltin}\n    new ${className}(),`);
 
-  fs.writeFileSync(REGISTRY_PATH, content, "utf8");
+  fs.writeFileSync(REGISTRY_PATH, content, 'utf8');
 }
 
 function main() {
   const raw = process.argv[2];
   if (!raw || !String(raw).trim()) {
-    die("pasá un nombre: npm run create-tool -- <slug-kebab>  (ej: browserbase)");
+    die('pasá un nombre: npm run create-tool -- <slug-kebab>  (ej: browserbase)');
   }
 
   const slug = normalizeSlug(raw);
   if (!/^[a-z][a-z0-9]*(-[a-z0-9]+)*$/.test(slug)) {
-    die(
-      "slug inválido: solo minúsculas, números y guiones (ej: browserbase, my-integration)",
-    );
+    die('slug inválido: solo minúsculas, números y guiones (ej: browserbase, my-integration)');
   }
 
   const pascal = slugToPascal(slug);
   if (!pascal) {
-    die("no se pudo derivar el nombre de clase");
+    die('no se pudo derivar el nombre de clase');
   }
 
   const toolName = toolNameFromSlug(slug);
@@ -221,14 +209,14 @@ function main() {
   writeToolFiles(slug, pascal, toolName);
   patchRegistry(slug, pascal);
 
-  console.log("");
+  console.log('');
   console.log(`✓ Camino dorado: herramienta ${pascal} creada en`);
   console.log(`  apps/orchestrator/src/agents/tools/${slug}/`);
-  console.log("");
-  console.log("Siguiente: revisar description/capabilities, implementar execute(), luego:");
-  console.log("  npm run type-check --workspace=@intcloudsysops/orchestrator");
-  console.log("  npm run test:tools");
-  console.log("");
+  console.log('');
+  console.log('Siguiente: revisar description/capabilities, implementar execute(), luego:');
+  console.log('  npm run type-check --workspace=@intcloudsysops/orchestrator');
+  console.log('  npm run test:tools');
+  console.log('');
 }
 
 main();

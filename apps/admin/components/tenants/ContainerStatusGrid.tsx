@@ -1,19 +1,9 @@
-import type { ContainerStatus } from "@/lib/types";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import type { ContainerStatus } from '@/lib/types';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
-function Dot({
-  state,
-  health,
-}: {
-  state: ContainerStatus["state"];
-  health: string;
-}) {
-  const starting =
-    state === "running" && health !== "healthy" && health !== "ok";
-  if (
-    state === "running" &&
-    (health === "healthy" || health === "ok" || !health)
-  ) {
+function Dot({ state, health }: { state: ContainerStatus['state']; health: string }) {
+  const starting = state === 'running' && health !== 'healthy' && health !== 'ok';
+  if (state === 'running' && (health === 'healthy' || health === 'ok' || !health)) {
     return (
       <span className="relative flex h-3 w-3">
         <span className="absolute inline-flex h-full w-full rounded-full bg-ops-green opacity-40" />
@@ -29,17 +19,13 @@ function Dot({
       </span>
     );
   }
-  if (state === "stopped") {
+  if (state === 'stopped') {
     return <span className="h-3 w-3 rounded-full bg-ops-red" />;
   }
   return <span className="h-3 w-3 rounded-full bg-ops-gray" />;
 }
 
-export function ContainerStatusGrid({
-  containers,
-}: {
-  containers: ContainerStatus[];
-}) {
+export function ContainerStatusGrid({ containers }: { containers: ContainerStatus[] }) {
   if (containers.length === 0) {
     return (
       <p className="font-sans text-sm text-ops-gray">
@@ -61,14 +47,10 @@ export function ContainerStatusGrid({
           <CardContent>
             <div className="font-sans text-xs text-ops-gray">
               <div>
-                status:{" "}
-                <span className="font-mono text-neutral-300">{c.state}</span>
+                status: <span className="font-mono text-neutral-300">{c.state}</span>
               </div>
               <div>
-                health:{" "}
-                <span className="font-mono text-neutral-300">
-                  {c.health || "—"}
-                </span>
+                health: <span className="font-mono text-neutral-300">{c.health || '—'}</span>
               </div>
             </div>
           </CardContent>

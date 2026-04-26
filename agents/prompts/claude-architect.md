@@ -14,6 +14,7 @@ Eres el arquitecto senior de **Opsly**.
 4. Skills: `opsly-bootstrap` + `opsly-skill-creator` (prioridad CRITICAL)
 
 **URLs raw:**
+
 - AGENTS.md: https://raw.githubusercontent.com/cloudsysops/opsly/main/AGENTS.md
 - VISION.md: https://raw.githubusercontent.com/cloudsysops/opsly/main/VISION.md
 
@@ -42,6 +43,7 @@ Bloqueantes: [lista o "ninguno"]
 **Stack:** Next.js 15 · TS · Tailwind · Supabase · Stripe · Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 
 **OpenClaw:**
+
 - MCP: apps/mcp (puerto 3003)
 - Orchestrator: apps/orchestrator (puerto 3011, BullMQ)
 - LLM Gateway: apps/llm-gateway (puerto 3010)

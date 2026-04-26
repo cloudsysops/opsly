@@ -1,7 +1,7 @@
-import Redis from "ioredis";
-import { z } from "zod";
-import { adminClient } from "../../../../../lib/supabase/admin";
-import type { Json } from "../../../../../lib/supabase/types";
+import Redis from 'ioredis';
+import { z } from 'zod';
+import { adminClient } from '../../../../../lib/supabase/admin';
+import type { Json } from '../../../../../lib/supabase/types';
 
 const querySchema = z.object({
   email: z.string().email(),
@@ -16,7 +16,7 @@ function getRedis(): Redis {
   if (!redisSingleton) {
     const url = process.env.REDIS_URL;
     if (!url) {
-      throw new Error("Missing REDIS_URL");
+      throw new Error('Missing REDIS_URL');
     }
     redisSingleton = new Redis(url);
   }
@@ -24,18 +24,18 @@ function getRedis(): Redis {
 }
 
 function clientIp(request: Request): string {
-  const forwarded = request.headers.get("x-forwarded-for");
+  const forwarded = request.headers.get('x-forwarded-for');
   if (forwarded) {
-    const first = forwarded.split(",")[0]?.trim();
+    const first = forwarded.split(',')[0]?.trim();
     if (first) {
       return first;
     }
   }
-  const realIp = request.headers.get("x-real-ip");
+  const realIp = request.headers.get('x-real-ip');
   if (realIp) {
     return realIp.trim();
   }
-  return "unknown";
+  return 'unknown';
 }
 
 export async function GET(request: Request): Promise<Response> {
@@ -49,7 +49,7 @@ export async function GET(request: Request): Promise<Response> {
   try {
     redis = getRedis();
   } catch {
-    return Response.json({ error: "Rate limiting unavailable" }, { status: 503 });
+    return Response.json({ error: 'Rate limiting unavailable' }, { status: 503 });
   }
 
   const ip = clientIp(request);
@@ -60,16 +60,16 @@ export async function GET(request: Request): Promise<Response> {
     await redis.expire(key, RATE_WINDOW_SECONDS);
   }
   if (count > RATE_MAX) {
-    return Response.json({ error: "Too many requests" }, { status: 429 });
+    return Response.json({ error: 'Too many requests' }, { status: 429 });
   }
 
   const { data: tenant, error } = await adminClient
-    .schema("platform")
-    .from("tenants")
-    .select("status, progress, services")
-    .eq("owner_email", parsed.data.email)
-    .is("deleted_at", null)
-    .order("created_at", { ascending: false })
+    .schema('platform')
+    .from('tenants')
+    .select('status, progress, services')
+    .eq('owner_email', parsed.data.email)
+    .is('deleted_at', null)
+    .order('created_at', { ascending: false })
     .limit(1)
     .maybeSingle();
 
@@ -78,7 +78,7 @@ export async function GET(request: Request): Promise<Response> {
   }
 
   if (!tenant) {
-    return Response.json({ status: "not_found" as const });
+    return Response.json({ status: 'not_found' as const });
   }
 
   return Response.json({

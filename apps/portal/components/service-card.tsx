@@ -1,9 +1,9 @@
-import type { ReactNode } from "react";
-import Link from "next/link";
-import { ExternalLink } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { StatusBadge, type ServiceHealth } from "@/components/status-badge";
+import type { ReactNode } from 'react';
+import Link from 'next/link';
+import { ExternalLink } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { StatusBadge, type ServiceHealth } from '@/components/status-badge';
 
 export function ServiceCard(props: {
   title: string;
@@ -15,16 +15,7 @@ export function ServiceCard(props: {
   showHealth?: boolean;
   children?: ReactNode;
 }) {
-  const {
-    title,
-    description,
-    url,
-    actionLabel,
-    health,
-    healthLabel,
-    showHealth,
-    children,
-  } = props;
+  const { title, description, url, actionLabel, health, healthLabel, showHealth, children } = props;
 
   return (
     <Card>
@@ -35,9 +26,7 @@ export function ServiceCard(props: {
             <StatusBadge state={health} label={healthLabel} />
           ) : null}
         </div>
-        {description ? (
-          <p className="font-sans text-sm text-ops-gray">{description}</p>
-        ) : null}
+        {description ? <p className="font-sans text-sm text-ops-gray">{description}</p> : null}
       </CardHeader>
       <CardContent className="space-y-3">
         {url ? (

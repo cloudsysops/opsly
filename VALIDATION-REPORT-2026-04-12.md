@@ -8,31 +8,31 @@
 
 ## 1. Summary por sección
 
-| Sección | Estado | Notas |
-|---------|--------|--------|
-| 1.1 Estructura crítica | ✅ | ADR-020, `orchestrator-role`, `health-server`, `model.pkl`, `ARCHITECTURE-DISTRIBUTED.md`, tests en `src/__tests__/` (no en `apps/orchestrator/__tests__/`) |
-| 1.2 Type-check | ✅ | 12/12 workspaces |
-| 1.3 Lint | 🟡 | `npm run lint` falla en `@intcloudsysops/web` (config ESLint / paths) |
-| 1.4 Build orchestrator | ✅ | `tsc` OK |
-| 1.5 Tests orchestrator | ✅ | 12 archivos, **70** tests; cobertura global **~35%** líneas (no >80% global) |
-| 1.6 Tests ML | ✅ | **5** tests en 3 archivos |
-| 1.7 Vars `.env.example` | 🟡 | No hay líneas `OPSLY_ORCHESTRATOR_*` / `ORCHESTRATOR_HEALTH_PORT` en `.env.example` (documentar en backlog) |
-| 1.8 Docker | ✅ | `apps/orchestrator/Dockerfile`; compose bajo `infra/` |
-| 1.9 Git | ✅ | `main` limpio salvo `apps/orchestrator/coverage/` sin trackear (post `--coverage`) |
-| 1.10 Tailscale | ✅ | `opsly-quantum`, `vps-dragon` visibles en `tailscale status` |
-| 1.11 Doppler CLI | ✅ | CLI responde (`doppler projects`; nombre de proyecto puede diferir de `ops-intcloudsysops` en docs) |
+| Sección                 | Estado | Notas                                                                                                                                                       |
+| ----------------------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1.1 Estructura crítica  | ✅     | ADR-020, `orchestrator-role`, `health-server`, `model.pkl`, `ARCHITECTURE-DISTRIBUTED.md`, tests en `src/__tests__/` (no en `apps/orchestrator/__tests__/`) |
+| 1.2 Type-check          | ✅     | 12/12 workspaces                                                                                                                                            |
+| 1.3 Lint                | 🟡     | `npm run lint` falla en `@intcloudsysops/web` (config ESLint / paths)                                                                                       |
+| 1.4 Build orchestrator  | ✅     | `tsc` OK                                                                                                                                                    |
+| 1.5 Tests orchestrator  | ✅     | 12 archivos, **70** tests; cobertura global **~35%** líneas (no >80% global)                                                                                |
+| 1.6 Tests ML            | ✅     | **5** tests en 3 archivos                                                                                                                                   |
+| 1.7 Vars `.env.example` | 🟡     | No hay líneas `OPSLY_ORCHESTRATOR_*` / `ORCHESTRATOR_HEALTH_PORT` en `.env.example` (documentar en backlog)                                                 |
+| 1.8 Docker              | ✅     | `apps/orchestrator/Dockerfile`; compose bajo `infra/`                                                                                                       |
+| 1.9 Git                 | ✅     | `main` limpio salvo `apps/orchestrator/coverage/` sin trackear (post `--coverage`)                                                                          |
+| 1.10 Tailscale          | ✅     | `opsly-quantum`, `vps-dragon` visibles en `tailscale status`                                                                                                |
+| 1.11 Doppler CLI        | ✅     | CLI responde (`doppler projects`; nombre de proyecto puede diferir de `ops-intcloudsysops` en docs)                                                         |
 
 ---
 
 ## 2. Métricas
 
-| Métrica | Valor |
-|---------|--------|
-| `npm run type-check` | 12/12 OK |
-| Orchestrator tests | 70 passed |
+| Métrica                           | Valor                                                      |
+| --------------------------------- | ---------------------------------------------------------- |
+| `npm run type-check`              | 12/12 OK                                                   |
+| Orchestrator tests                | 70 passed                                                  |
 | Orchestrator coverage (All files) | ~35.37% statements / ~73.57% branches (promedio reportado) |
-| ML tests | 5 passed |
-| ADR-020 menciones en `AGENTS.md` | 2 |
+| ML tests                          | 5 passed                                                   |
+| ADR-020 menciones en `AGENTS.md`  | 2                                                          |
 
 **Nota:** No existe `health-server.test.ts`; el health se ejerce vía integración/manual. La cobertura global baja por workers y módulos no ejercidos en unit tests.
 
@@ -40,28 +40,28 @@
 
 ## 3. Blockers (priorizados)
 
-| # | Bloqueante | Severidad | Mitigación |
-|---|------------|-----------|------------|
-| 1 | Cloudflare Proxy OFF en DNS staging | Alto | Activar proxy naranja en registros acordes (`AGENTS.md`) |
-| 2 | Resend dominio no verificado | Alto | CNAME en DNS; invitaciones externas pueden 500 |
-| 3 | Imagen orchestrator ADR-020 en VPS | Medio | Verificar último deploy GH Actions + `curl` health en nodo orchestrator (`ORCHESTRATOR_HEALTH_PORT`, default 3011) |
-| 4 | `npm run lint` monorepo | Bajo | Aislar: lint por workspace o arreglar `apps/web` ESLint |
-| 5 | `.env.example` sin vars orchestrator | Bajo | Añadir placeholders documentados (sin secretos) |
+| #   | Bloqueante                           | Severidad | Mitigación                                                                                                         |
+| --- | ------------------------------------ | --------- | ------------------------------------------------------------------------------------------------------------------ |
+| 1   | Cloudflare Proxy OFF en DNS staging  | Alto      | Activar proxy naranja en registros acordes (`AGENTS.md`)                                                           |
+| 2   | Resend dominio no verificado         | Alto      | CNAME en DNS; invitaciones externas pueden 500                                                                     |
+| 3   | Imagen orchestrator ADR-020 en VPS   | Medio     | Verificar último deploy GH Actions + `curl` health en nodo orchestrator (`ORCHESTRATOR_HEALTH_PORT`, default 3011) |
+| 4   | `npm run lint` monorepo              | Bajo      | Aislar: lint por workspace o arreglar `apps/web` ESLint                                                            |
+| 5   | `.env.example` sin vars orchestrator | Bajo      | Añadir placeholders documentados (sin secretos)                                                                    |
 
 ---
 
 ## 4. Matriz componente → estado (Semana referencia ROADMAP)
 
-| Componente | Status | Verificación | Semana (ROADMAP) |
-|------------|--------|--------------|------------------|
-| Orchestrator role/mode | 🟢 | Tests + código | — |
-| Health `GET /health` | 🟢 | `health-server.ts` | — |
-| ADR-020 | 🟢 | `docs/adr/ADR-020-*.md` | — |
-| Classifier sandbox | 🟢 | `model.pkl` + ML tests | — |
-| LLM Gateway / metering Semana 1 | 🟡 | Ejecutar tareas `ROADMAP.md` § Semana 1 | 1 |
-| VPS deploy / validación | 🟡 | Manual / CI | 1 |
-| Workers remotos + Tailscale | 🟡 | `ARCHITECTURE-DISTRIBUTED.md` | 1–2 |
-| Feedback loop producto | ⏳ | `ROADMAP` Semana 5 | Posterior |
+| Componente                      | Status | Verificación                            | Semana (ROADMAP) |
+| ------------------------------- | ------ | --------------------------------------- | ---------------- |
+| Orchestrator role/mode          | 🟢     | Tests + código                          | —                |
+| Health `GET /health`            | 🟢     | `health-server.ts`                      | —                |
+| ADR-020                         | 🟢     | `docs/adr/ADR-020-*.md`                 | —                |
+| Classifier sandbox              | 🟢     | `model.pkl` + ML tests                  | —                |
+| LLM Gateway / metering Semana 1 | 🟡     | Ejecutar tareas `ROADMAP.md` § Semana 1 | 1                |
+| VPS deploy / validación         | 🟡     | Manual / CI                             | 1                |
+| Workers remotos + Tailscale     | 🟡     | `ARCHITECTURE-DISTRIBUTED.md`           | 1–2              |
+| Feedback loop producto          | ⏳     | `ROADMAP` Semana 5                      | Posterior        |
 
 ---
 
@@ -86,7 +86,7 @@
 
 - `GET /api/admin/costs`, coherencia con datos reales.
 
-*(Semanas 2–4 del prompt del usuario “Router agent / load testing” son orientativas; priorizar filas explícitas en `ROADMAP.md` antes de ADR-021/022 no escritos.)*
+_(Semanas 2–4 del prompt del usuario “Router agent / load testing” son orientativas; priorizar filas explícitas en `ROADMAP.md` antes de ADR-021/022 no escritos.)_
 
 ---
 
@@ -102,12 +102,12 @@
 
 ## 7. Decisiones / ADRs pendientes
 
-| ID | Tema | Estado |
-|----|------|--------|
-| ADR-020 | Control vs worker + alias MODE | ✅ Aceptado en repo |
-| ADR-021 | Agent Router (prompt usuario) | No iniciado — requiere problema + alcance |
-| ADR-022 | Feedback loop ML | Parcialmente cubierto por roadmap Fase 2 |
-| ADR-023 | Multi-VPS HA | Diferido (`VISION.md` / reglas AGENTS) |
+| ID      | Tema                           | Estado                                    |
+| ------- | ------------------------------ | ----------------------------------------- |
+| ADR-020 | Control vs worker + alias MODE | ✅ Aceptado en repo                       |
+| ADR-021 | Agent Router (prompt usuario)  | No iniciado — requiere problema + alcance |
+| ADR-022 | Feedback loop ML               | Parcialmente cubierto por roadmap Fase 2  |
+| ADR-023 | Multi-VPS HA                   | Diferido (`VISION.md` / reglas AGENTS)    |
 
 ---
 
@@ -140,4 +140,4 @@ REPORTE: este archivo
 
 ---
 
-*Fin del informe.*
+_Fin del informe._

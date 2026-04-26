@@ -1,11 +1,8 @@
-import { createClient } from "redis";
+import { createClient } from 'redis';
 
-const REDIS_URL = process.env.REDIS_URL || "redis://localhost:6379";
+const REDIS_URL = process.env.REDIS_URL || 'redis://localhost:6379';
 
-export async function getSessionRaw(
-  tenantSlug: string,
-  sessionId: string,
-): Promise<string | null> {
+export async function getSessionRaw(tenantSlug: string, sessionId: string): Promise<string | null> {
   const redis = createClient({
     url: REDIS_URL,
     password: process.env.REDIS_PASSWORD,

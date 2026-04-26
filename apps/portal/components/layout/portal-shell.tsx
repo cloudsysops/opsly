@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import type { ReactNode } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { AdminNavLink } from "@/components/admin-nav-link";
-import { SkipLink } from "@/components/ui/accessibility";
-import { Button } from "@/components/ui/button";
-import { createClient } from "@/lib/supabase";
+import type { ReactNode } from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { AdminNavLink } from '@/components/admin-nav-link';
+import { SkipLink } from '@/components/ui/accessibility';
+import { Button } from '@/components/ui/button';
+import { createClient } from '@/lib/supabase';
 
 export function PortalShell({
   title,
@@ -22,7 +22,7 @@ export function PortalShell({
   async function signOut() {
     const supabase = createClient();
     await supabase.auth.signOut();
-    router.push("/login");
+    router.push('/login');
     router.refresh();
   }
 
@@ -55,13 +55,17 @@ export function PortalShell({
           </div>
         </div>
       </header>
-      <main id="main-content" className="mx-auto max-w-5xl px-4 py-6 sm:px-6 sm:py-10" tabIndex={-1}>
+      <main
+        id="main-content"
+        className="mx-auto max-w-5xl px-4 py-6 sm:px-6 sm:py-10"
+        tabIndex={-1}
+      >
         {children}
       </main>
       <footer className="border-t border-ops-border px-6 py-4 text-center font-mono text-[11px] text-ops-gray">
         {(() => {
           const d = process.env.NEXT_PUBLIC_PLATFORM_DOMAIN?.trim();
-          return d && d.length > 0 ? `Opsly · ${d}` : "Opsly";
+          return d && d.length > 0 ? `Opsly · ${d}` : 'Opsly';
         })()}
       </footer>
     </div>

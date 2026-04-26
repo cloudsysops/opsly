@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { createClient } from "@supabase/supabase-js";
+import { createClient } from '@supabase/supabase-js';
 
 export type InsightType =
-  | "churn_risk"
-  | "revenue_forecast"
-  | "anomaly_detection"
-  | "usage_pattern"
-  | "cost_optimization"
-  | "growth_opportunity";
+  | 'churn_risk'
+  | 'revenue_forecast'
+  | 'anomaly_detection'
+  | 'usage_pattern'
+  | 'cost_optimization'
+  | 'growth_opportunity';
 
 export interface TenantInsight {
   id?: string;
@@ -19,7 +19,7 @@ export interface TenantInsight {
   payload: any;
   confidence: number;
   impact_score: number;
-  status?: "active" | "read" | "actioned" | "dismissed";
+  status?: 'active' | 'read' | 'actioned' | 'dismissed';
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   metadata?: any;
   expires_at?: string;
@@ -61,8 +61,8 @@ interface InsightEngineConfig {
 }
 
 const DEFAULT_CONFIG: InsightEngineConfig = {
-  supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL || "",
-  supabaseServiceKey: process.env.SUPABASE_SERVICE_ROLE_KEY || "",
+  supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL || '',
+  supabaseServiceKey: process.env.SUPABASE_SERVICE_ROLE_KEY || '',
   idleDaysThreshold: 7,
   churnConfidenceWeights: {
     idle_days: 0.4,
@@ -83,10 +83,7 @@ export class InsightEngine {
 
   constructor(config: Partial<InsightEngineConfig> = {}) {
     this.config = { ...DEFAULT_CONFIG, ...config };
-    this.supabase = createClient(
-      this.config.supabaseUrl,
-      this.config.supabaseServiceKey
-    );
+    this.supabase = createClient(this.config.supabaseUrl, this.config.supabaseServiceKey);
   }
 
   async generateChurnPrediction(tenantId: string): Promise<TenantInsight | null> {
@@ -94,11 +91,11 @@ export class InsightEngine {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data: usageEvents, error } = await (this.supabase as any)
-      .from("platform.usage_events")
-      .select("created_at, event_type")
-      .eq("tenant_id", tenantId)
-      .gte("created_at", new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString())
-      .order("created_at", { ascending: false });
+      .from('platform.usage_events')
+      .select('created_at, event_type')
+      .eq('tenant_id', tenantId)
+      .gte('created_at', new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString())
+      .order('created_at', { ascending: false });
 
     if (error || !usageEvents?.length) {
       return null;
@@ -106,9 +103,7 @@ export class InsightEngine {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const lastEvent = new Date((usageEvents as any[])[0]?.created_at || Date.now());
-    const daysInactive = Math.floor(
-      (Date.now() - lastEvent.getTime()) / (1000 * 60 * 60 * 24)
-    );
+    const daysInactive = Math.floor((Date.now() - lastEvent.getTime()) / (1000 * 60 * 60 * 24));
 
     let riskScore = 0;
     const factors: string[] = [];
@@ -120,13 +115,12 @@ export class InsightEngine {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const recentEvents = (usageEvents as any[]).filter(
-      (e: any) =>
-        new Date(e.created_at).getTime() > Date.now() - 14 * 24 * 60 * 60 * 1000
+      (e: any) => new Date(e.created_at).getTime() > Date.now() - 14 * 24 * 60 * 60 * 1000
     );
 
     if (recentEvents.length < 5) {
       riskScore += weights.low_usage;
-      factors.push("Uso bajo en últimos 14 días");
+      factors.push('Uso bajo en últimos 14 días');
     }
 
     const normalizedRisk = Math.min(riskScore, 1);
@@ -145,12 +139,12 @@ export class InsightEngine {
 
     return {
       tenant_id: tenantId,
-      insight_type: "churn_risk",
+      insight_type: 'churn_risk',
       title: `Riesgo de fuga: ${Math.round(normalizedRisk * 100)}%`,
       description:
         normalizedRisk > 0.7
-          ? "Alta probabilidad de cancelación. Se recomienda intervención inmediata."
-          : "Moderada probabilidad de fuga. Considera contactar al cliente.",
+          ? 'Alta probabilidad de cancelación. Se recomienda intervención inmediata.'
+          : 'Moderada probabilidad de fuga. Considera contactar al cliente.',
       payload: prediction,
       confidence: normalizedRisk,
       impact_score: normalizedRisk > 0.7 ? 9 : 6,
@@ -158,15 +152,13 @@ export class InsightEngine {
     };
   }
 
-  async generateRevenueForecast(
-    tenantId: string
-  ): Promise<TenantInsight | null> {
+  async generateRevenueForecast(tenantId: string): Promise<TenantInsight | null> {
     const { data: subscriptions } = await this.supabase
-      .from("platform.subscriptions")
-      .select("id, status, current_period_end, plan_id")
-      .eq("tenant_id", tenantId)
-      .eq("status", "active")
-      .order("created_at", { ascending: false })
+      .from('platform.subscriptions')
+      .select('id, status, current_period_end, plan_id')
+      .eq('tenant_id', tenantId)
+      .eq('status', 'active')
+      .order('created_at', { ascending: false })
       .limit(1);
 
     if (!subscriptions?.length) {
@@ -176,9 +168,7 @@ export class InsightEngine {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const sub = subscriptions[0] as any;
     const periodEnd = new Date(sub.current_period_end || Date.now() + 30 * 24 * 60 * 60 * 1000);
-    const daysUntilRenewal = Math.floor(
-      (periodEnd.getTime() - Date.now()) / (1000 * 60 * 60 * 24)
-    );
+    const daysUntilRenewal = Math.floor((periodEnd.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
 
     const estimatedMRR = 49;
     const forecastGrowth = daysUntilRenewal < 14 ? 0.05 : 0;
@@ -187,23 +177,23 @@ export class InsightEngine {
       current_mrr: estimatedMRR,
       forecast_mrr: estimatedMRR * (1 + forecastGrowth),
       growth_rate: forecastGrowth,
-      trend: forecastGrowth > 0.02 ? "up" : forecastGrowth < -0.02 ? "down" : "stable",
+      trend: forecastGrowth > 0.02 ? 'up' : forecastGrowth < -0.02 ? 'down' : 'stable',
       confidence: 0.7,
     };
 
     return {
       tenant_id: tenantId,
-      insight_type: "revenue_forecast",
+      insight_type: 'revenue_forecast',
       title: `Pronóstico de ingresos: $${Math.round(prediction.forecast_mrr)}/mes`,
       description:
-        prediction.trend === "up"
-          ? "Tendencia positiva proyectada para los próximos 30 días."
-          : prediction.trend === "down"
-          ? "Riesgo de decremento detectado. Revisa las métricas."
-          : "Ingresos estables proyectados.",
+        prediction.trend === 'up'
+          ? 'Tendencia positiva proyectada para los próximos 30 días.'
+          : prediction.trend === 'down'
+            ? 'Riesgo de decremento detectado. Revisa las métricas.'
+            : 'Ingresos estables proyectados.',
       payload: prediction,
       confidence: prediction.confidence,
-      impact_score: prediction.trend === "down" ? 8 : 5,
+      impact_score: prediction.trend === 'down' ? 8 : 5,
       expires_at: new Date(
         Date.now() + this.config.forecastHorizonDays * 24 * 60 * 60 * 1000
       ).toISOString(),
@@ -212,41 +202,39 @@ export class InsightEngine {
 
   async generateAnomalyDetection(
     tenantId: string,
-    metric: string = "api_calls",
+    metric: string = 'api_calls',
     lookbackDays: number = 7
   ): Promise<TenantInsight | null> {
     const { data: events } = await this.supabase
-      .from("platform.usage_events")
-      .select("created_at, tokens_used")
-      .eq("tenant_id", tenantId)
-      .gte("created_at", new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString())
-      .order("created_at", { ascending: true });
+      .from('platform.usage_events')
+      .select('created_at, tokens_used')
+      .eq('tenant_id', tenantId)
+      .gte('created_at', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString())
+      .order('created_at', { ascending: true });
 
     if (!events?.length || events.length < 10) {
       return null;
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const values = events.map((e: any) => (metric === "tokens" ? e.tokens_used || 0 : 1));
+    const values = events.map((e: any) => (metric === 'tokens' ? e.tokens_used || 0 : 1));
     const n = values.length;
     const mean = values.reduce((a, b) => a + b, 0) / n;
-    const std = Math.sqrt(
-      values.reduce((sq, n) => sq + Math.pow(n - mean, 2), 0) / n
-    );
+    const std = Math.sqrt(values.reduce((sq, n) => sq + Math.pow(n - mean, 2), 0) / n);
 
     const recentValues = values.slice(-lookbackDays);
     const recentMean = recentValues.reduce((a, b) => a + b, 0) / recentValues.length;
     const zScore = std > 0 ? Math.abs((recentMean - mean) / std) : 0;
 
     const thresholds = this.config.anomalyThresholds;
-    let severity: "low" | "medium" | "high" = "low";
+    let severity: 'low' | 'medium' | 'high' = 'low';
     let impactScore = 3;
 
     if (zScore >= thresholds.z_score_high) {
-      severity = "high";
+      severity = 'high';
       impactScore = 9;
     } else if (zScore >= thresholds.z_score_medium) {
-      severity = "medium";
+      severity = 'medium';
       impactScore = 6;
     }
 
@@ -265,18 +253,16 @@ const values = events.map((e: any) => (metric === "tokens" ? e.tokens_used || 0 
 
     return {
       tenant_id: tenantId,
-      insight_type: "anomaly_detection",
+      insight_type: 'anomaly_detection',
       title: `Anomalía detectada en ${metric}`,
       description:
-        severity === "high"
+        severity === 'high'
           ? `Pico significativo detectado (${zScore.toFixed(1)}σ). Requiere atención inmediata.`
           : `Variación detectada (${zScore.toFixed(1)}σ). Monitorear en próximos días.`,
       payload: prediction as Record<string, unknown>,
       confidence: Math.min(zScore / 3, 1),
       impact_score: impactScore,
-      expires_at: new Date(
-        Date.now() + 2 * 24 * 60 * 60 * 1000
-      ).toISOString(),
+      expires_at: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(),
     };
   }
 
@@ -297,22 +283,28 @@ const values = events.map((e: any) => (metric === "tokens" ? e.tokens_used || 0 
 
   async saveInsight(insight: TenantInsight): Promise<{ data: unknown; error: unknown }> {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return (this.supabase as any).from("platform.tenant_insights").insert([insight]);
+    return (this.supabase as any).from('platform.tenant_insights').insert([insight]);
   }
 
   async saveInsights(insights: TenantInsight[]): Promise<{ data: unknown; error: unknown }> {
     if (!insights.length) return { data: null, error: null };
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return (this.supabase as any).from("platform.tenant_insights").insert(insights);
+    return (this.supabase as any).from('platform.tenant_insights').insert(insights);
   }
 
   async logInsightEvent(
     tenantId: string,
     insightId: string,
-    eventType: "generated" | "viewed" | "actioned" | "dismissed" | "feedback_positive" | "feedback_negative"
+    eventType:
+      | 'generated'
+      | 'viewed'
+      | 'actioned'
+      | 'dismissed'
+      | 'feedback_positive'
+      | 'feedback_negative'
   ): Promise<{ data: unknown; error: unknown }> {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return (this.supabase as any).from("platform.insight_events").insert([
+    return (this.supabase as any).from('platform.insight_events').insert([
       {
         tenant_id: tenantId,
         insight_id: insightId,

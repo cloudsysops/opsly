@@ -1,5 +1,5 @@
-import type { createClient } from "redis";
-import { getMeteringRedis } from "../billing/redis-metering";
+import type { createClient } from 'redis';
+import { getMeteringRedis } from '../billing/redis-metering';
 
 type RedisClient = ReturnType<typeof createClient>;
 
@@ -8,7 +8,7 @@ const REDIS_TIMEOUT_MS = 1500;
 /** Redis TTL value returned when key does not exist. */
 const REDIS_TTL_KEY_NOT_FOUND = -2;
 
-export type HeartbeatStatus = "healthy" | "degraded" | "down";
+export type HeartbeatStatus = 'healthy' | 'degraded' | 'down';
 
 export type HeartbeatPayload = {
   readonly ts: number;
@@ -41,24 +41,22 @@ function withTimeout<T>(promise: Promise<T>, timeoutMs: number): Promise<T> {
 
 export async function recordHeartbeat(
   serviceName: string,
-  metadata: Record<string, unknown> = {},
+  metadata: Record<string, unknown> = {}
 ): Promise<void> {
   const redis = await getMeteringRedis();
   if (!redis) {
     return;
   }
   const payload: HeartbeatPayload = { ts: Date.now(), metadata };
-  await redis.set(
-    heartbeatKey(serviceName),
-    JSON.stringify(payload),
-    { EX: HEARTBEAT_TTL_SECONDS },
-  );
+  await redis.set(heartbeatKey(serviceName), JSON.stringify(payload), {
+    EX: HEARTBEAT_TTL_SECONDS,
+  });
 }
 
 export async function requireHeartbeatRedis(): Promise<RedisClient> {
   const redis = await withTimeout(getMeteringRedis(), REDIS_TIMEOUT_MS);
   if (!redis) {
-    throw new Error("redis unavailable");
+    throw new Error('redis unavailable');
   }
   return redis;
 }
@@ -71,14 +69,12 @@ function parseHeartbeatPayload(raw: string | null): HeartbeatPayload | null {
     const parsed = JSON.parse(raw) as Record<string, unknown>;
     const tsRaw = parsed.ts;
     const metadataRaw = parsed.metadata;
-    const ts = typeof tsRaw === "number" ? tsRaw : Number.NaN;
+    const ts = typeof tsRaw === 'number' ? tsRaw : Number.NaN;
     if (!Number.isFinite(ts)) {
       return null;
     }
     const metadata =
-      typeof metadataRaw === "object" &&
-      metadataRaw !== null &&
-      !Array.isArray(metadataRaw)
+      typeof metadataRaw === 'object' && metadataRaw !== null && !Array.isArray(metadataRaw)
         ? (metadataRaw as Record<string, unknown>)
         : {};
     return { ts, metadata };
@@ -95,7 +91,7 @@ function buildResult(
   status: HeartbeatStatus,
   lastSeenSeconds: number | null,
   ttlSeconds: number | null,
-  metadata: Record<string, unknown>,
+  metadata: Record<string, unknown>
 ): ServiceHeartbeatStatus {
   return { name, status, lastSeenSeconds, ttlSeconds, metadata };
 }
@@ -103,31 +99,29 @@ function buildResult(
 function resolveStatus(
   ttlSeconds: number | null,
   lastSeenSeconds: number | null,
-  missing: boolean,
+  missing: boolean
 ): HeartbeatStatus {
   if (missing || (lastSeenSeconds !== null && lastSeenSeconds > STALE_THRESHOLD_S)) {
-    return "down";
+    return 'down';
   }
   if (
     (ttlSeconds !== null && ttlSeconds > HEALTHY_TTL_S) ||
     (lastSeenSeconds !== null && lastSeenSeconds < HEALTHY_TTL_S)
   ) {
-    return "healthy";
+    return 'healthy';
   }
-  return "degraded";
+  return 'degraded';
 }
 
 export function classifyHeartbeat(
   name: string,
   raw: string | null,
   ttlSeconds: number | null,
-  nowMs: number,
+  nowMs: number
 ): ServiceHeartbeatStatus {
   const payload = parseHeartbeatPayload(raw);
   const lastSeenSeconds =
-    payload && payload.ts > 0
-      ? Math.max(0, Math.floor((nowMs - payload.ts) / 1000))
-      : null;
+    payload && payload.ts > 0 ? Math.max(0, Math.floor((nowMs - payload.ts) / 1000)) : null;
 
   const missing = ttlSeconds === null || ttlSeconds === REDIS_TTL_KEY_NOT_FOUND || !payload;
   const status = resolveStatus(ttlSeconds, lastSeenSeconds, missing);

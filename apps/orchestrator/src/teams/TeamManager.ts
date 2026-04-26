@@ -2,8 +2,8 @@
  * Orquesta equipos paralelos de agentes (BullMQ) por especialización.
  * La ejecución efectiva puede delegarse en cursor-prompt-monitor u otros workers.
  */
-import { Queue, Worker, type Job, type ConnectionOptions } from "bullmq";
-import { publishEvent } from "../events/bus.js";
+import { Queue, Worker, type Job, type ConnectionOptions } from 'bullmq';
+import { publishEvent } from '../events/bus.js';
 
 export interface AgentTeam {
   id: string;
@@ -16,28 +16,28 @@ export interface AgentTeam {
 
 const TEAM_CONFIGS = [
   {
-    name: "frontend-team",
-    specialization: "frontend",
+    name: 'frontend-team',
+    specialization: 'frontend',
     max_parallel: 2,
-    handles: ["ui_fix", "style_change", "component_update"],
+    handles: ['ui_fix', 'style_change', 'component_update'],
   },
   {
-    name: "backend-team",
-    specialization: "backend",
+    name: 'backend-team',
+    specialization: 'backend',
     max_parallel: 3,
-    handles: ["api_fix", "logic_change", "migration"],
+    handles: ['api_fix', 'logic_change', 'migration'],
   },
   {
-    name: "ml-team",
-    specialization: "ml",
+    name: 'ml-team',
+    specialization: 'ml',
     max_parallel: 2,
-    handles: ["model_update", "prompt_optimization", "cache_warming"],
+    handles: ['model_update', 'prompt_optimization', 'cache_warming'],
   },
   {
-    name: "infra-team",
-    specialization: "infra",
+    name: 'infra-team',
+    specialization: 'infra',
     max_parallel: 1,
-    handles: ["deploy", "config_change", "scaling"],
+    handles: ['deploy', 'config_change', 'scaling'],
   },
 ] as const;
 
@@ -65,7 +65,7 @@ export class TeamManager {
           {
             connection: this.connection,
             concurrency: 1,
-          },
+          }
         );
       });
 
@@ -82,7 +82,8 @@ export class TeamManager {
 
   async assignToTeam(taskType: string, payload: Record<string, unknown>): Promise<string> {
     const teamConfig =
-      TEAM_CONFIGS.find((t) => (t.handles as readonly string[]).includes(taskType)) ?? TEAM_CONFIGS[1];
+      TEAM_CONFIGS.find((t) => (t.handles as readonly string[]).includes(taskType)) ??
+      TEAM_CONFIGS[1];
 
     const team = this.teams.get(teamConfig.name);
     if (!team) {
@@ -91,13 +92,13 @@ export class TeamManager {
 
     const job = await team.queue.add(taskType, payload);
 
-    await publishEvent("job.completed", {
+    await publishEvent('job.completed', {
       team: teamConfig.name,
       task_type: taskType,
       job_id: job.id ?? null,
     });
 
-    return job.id != null ? String(job.id) : "";
+    return job.id != null ? String(job.id) : '';
   }
 
   private async executeJob(job: Job, specialization: string): Promise<void> {

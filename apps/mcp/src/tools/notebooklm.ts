@@ -1,17 +1,17 @@
-import { z } from "zod";
-import type { ToolDefinition } from "../types/index.js";
+import { z } from 'zod';
+import type { ToolDefinition } from '../types/index.js';
 
 const inputSchema = z.object({
   action: z.enum([
-    "create_notebook",
-    "add_source",
-    "generate_podcast",
-    "generate_slides",
-    "generate_quiz",
-    "generate_mindmap",
-    "generate_infographic",
-    "ask",
-    "research",
+    'create_notebook',
+    'add_source',
+    'generate_podcast',
+    'generate_slides',
+    'generate_quiz',
+    'generate_mindmap',
+    'generate_infographic',
+    'ask',
+    'research',
   ]),
   tenant_slug: z.string().min(1),
   notebook_id: z.string().optional(),
@@ -25,12 +25,12 @@ const inputSchema = z.object({
   output_path: z.string().optional(),
   quiz_output_path: z.string().optional(),
   orientation: z.string().optional(),
-  difficulty: z.enum(["easy", "medium", "hard"]).optional(),
-  mode: z.enum(["fast", "deep"]).optional(),
+  difficulty: z.enum(['easy', 'medium', 'hard']).optional(),
+  mode: z.enum(['fast', 'deep']).optional(),
   name: z.string().optional(),
-  source_type: z.enum(["url", "text", "file"]).optional(),
+  source_type: z.enum(['url', 'text', 'file']).optional(),
   auto_import: z.boolean().optional(),
-  research_source: z.enum(["web", "drive"]).optional(),
+  research_source: z.enum(['web', 'drive']).optional(),
 });
 
 type NotebookLMInput = z.infer<typeof inputSchema>;
@@ -43,15 +43,16 @@ let notebookLmModulePromise: Promise<NotebookLMModule> | undefined;
 
 async function loadNotebookLmModule(): Promise<NotebookLMModule> {
   if (!notebookLmModulePromise) {
-    notebookLmModulePromise = import("@intcloudsysops/notebooklm-agent")
+    notebookLmModulePromise = import('@intcloudsysops/notebooklm-agent')
       .then((module) => ({
-        executeNotebookLM: module.executeNotebookLM as unknown as NotebookLMModule["executeNotebookLM"],
+        executeNotebookLM:
+          module.executeNotebookLM as unknown as NotebookLMModule['executeNotebookLM'],
       }))
       .catch((error: unknown) => {
         notebookLmModulePromise = undefined;
         const message = error instanceof Error ? error.message : String(error);
         throw new Error(
-          `NotebookLM agent package is unavailable. Build or install @intcloudsysops/notebooklm-agent before invoking this tool. Root cause: ${message}`,
+          `NotebookLM agent package is unavailable. Build or install @intcloudsysops/notebooklm-agent before invoking this tool. Root cause: ${message}`
         );
       });
   }
@@ -60,11 +61,11 @@ async function loadNotebookLmModule(): Promise<NotebookLMModule> {
 }
 
 export const notebooklmTool: ToolDefinition<NotebookLMInput, Record<string, unknown>> = {
-  name: "notebooklm",
+  name: 'notebooklm',
   description:
-    "Agente experimental NotebookLM: crear notebooks, fuentes (url/texto/archivo), " +
-    "podcast/slides/quiz/mindmap/infografía, chat ask, investigación web. " +
-    "Requiere NOTEBOOKLM_ENABLED y credenciales Google (notebooklm-py).",
+    'Agente experimental NotebookLM: crear notebooks, fuentes (url/texto/archivo), ' +
+    'podcast/slides/quiz/mindmap/infografía, chat ask, investigación web. ' +
+    'Requiere NOTEBOOKLM_ENABLED y credenciales Google (notebooklm-py).',
   inputSchema,
   handler: async (input: NotebookLMInput) => {
     const { executeNotebookLM } = await loadNotebookLmModule();

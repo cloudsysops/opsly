@@ -1,38 +1,38 @@
-import { Queue } from "bullmq";
-import { getBullmqRedisConnection } from "./bullmq-redis";
+import { Queue } from 'bullmq';
+import { getBullmqRedisConnection } from './bullmq-redis';
 
 const QUEUE_DEFS = [
   {
-    name: "openclaw",
-    label: "Orquestador OpenClaw",
-    role: "orchestrator" as const,
+    name: 'openclaw',
+    label: 'Orquestador OpenClaw',
+    role: 'orchestrator' as const,
   },
   {
-    name: "team-frontend-team",
-    label: "Agentes · frontend",
-    role: "agent_team" as const,
+    name: 'team-frontend-team',
+    label: 'Agentes · frontend',
+    role: 'agent_team' as const,
   },
   {
-    name: "team-backend-team",
-    label: "Agentes · backend",
-    role: "agent_team" as const,
+    name: 'team-backend-team',
+    label: 'Agentes · backend',
+    role: 'agent_team' as const,
   },
   {
-    name: "team-ml-team",
-    label: "Agentes · ML",
-    role: "agent_team" as const,
+    name: 'team-ml-team',
+    label: 'Agentes · ML',
+    role: 'agent_team' as const,
   },
   {
-    name: "team-infra-team",
-    label: "Agentes · infra",
-    role: "agent_team" as const,
+    name: 'team-infra-team',
+    label: 'Agentes · infra',
+    role: 'agent_team' as const,
   },
 ] as const;
 
 export type BullmqQueueDetail = {
   id: string;
   label: string;
-  role: "orchestrator" | "agent_team";
+  role: 'orchestrator' | 'agent_team';
   waiting: number;
   active: number;
 };

@@ -14,10 +14,10 @@
   - Integrate Notion + GitHub
 - **Capacity (h):** 40
 
-| Métrica | Valor |
-| --- | --- |
-| Target | 40 |
-| Actual (último) | 1 |
+| Métrica         | Valor |
+| --------------- | ----- |
+| Target          | 40    |
+| Actual (último) | 1     |
 
 ### Burndown (serie)
 
@@ -35,17 +35,17 @@ Day    Target  Actual
 
 ### Tasks
 
-| id | name | type | status | assignee | effort |
-| --- | --- | --- | --- | --- | --- |
-| approval-gate-worker | ApprovalGateWorker implementation | feature | ✅ DONE | Cursor | M |
-| doppler-secrets | Configure Doppler secrets (GCP) | infra | ⏳ PENDING | Cristian | XS |
-| supabase-migrations | Apply Supabase migrations | infra | ⏳ PENDING | Cristian | S |
+| id                   | name                              | type    | status     | assignee | effort |
+| -------------------- | --------------------------------- | ------- | ---------- | -------- | ------ |
+| approval-gate-worker | ApprovalGateWorker implementation | feature | ✅ DONE    | Cursor   | M      |
+| doppler-secrets      | Configure Doppler secrets (GCP)   | infra   | ⏳ PENDING | Cristian | XS     |
+| supabase-migrations  | Apply Supabase migrations         | infra   | ⏳ PENDING | Cristian | S      |
 
 ## Blockers (resumen)
 
-- **CRITICAL:** Doppler secrets GCP / Vertex no configurados en prd — Seguir docs/VERTEX-AI-SETUP.md; doppler secrets set GCLOUD_* y JSON SA.
+- **CRITICAL:** Doppler secrets GCP / Vertex no configurados en prd — Seguir docs/VERTEX-AI-SETUP.md; doppler secrets set GCLOUD\_\* y JSON SA.
 - **CRITICAL:** Migraciones 0026/0027 no aplicadas en Supabase remoto — npx supabase db push (o pipeline migraciones) contra proyecto enlazado.
 
 ---
 
-*No editar a mano — regenerar con `npm run docs:sync`.*
+_No editar a mano — regenerar con `npm run docs:sync`._

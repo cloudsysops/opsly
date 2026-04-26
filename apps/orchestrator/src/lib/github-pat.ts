@@ -5,5 +5,5 @@
 export function resolveGithubPat(): string {
   const a = process.env.GITHUB_TOKEN?.trim();
   const b = process.env.GITHUB_TOKEN_N8N?.trim();
-  return a || b || "";
+  return a || b || '';
 }

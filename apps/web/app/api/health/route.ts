@@ -1,7 +1,7 @@
 export async function GET(): Promise<Response> {
   return Response.json({
-    status: "ok",
+    status: 'ok',
     timestamp: new Date().toISOString(),
-    version: "1.0.0",
+    version: '1.0.0',
   });
 }

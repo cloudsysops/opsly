@@ -1,38 +1,38 @@
-import { Queue } from "bullmq";
-import { logJobEnqueue } from "./observability/job-log.js";
-import { buildQueueAddOptions } from "./queue-opts.js";
-import type { OrchestratorJob } from "./types.js";
+import { Queue } from 'bullmq';
+import { logJobEnqueue } from './observability/job-log.js';
+import { buildQueueAddOptions } from './queue-opts.js';
+import type { OrchestratorJob } from './types.js';
 
-const REDIS_URL = process.env.REDIS_URL || "redis://localhost:6379";
+const REDIS_URL = process.env.REDIS_URL || 'redis://localhost:6379';
 const redisUrl = new URL(REDIS_URL);
-const passwordFromUrl = redisUrl.password ? decodeURIComponent(redisUrl.password) : "";
+const passwordFromUrl = redisUrl.password ? decodeURIComponent(redisUrl.password) : '';
 
 export const connection = {
   host: redisUrl.hostname,
-  port: Number(redisUrl.port || "6379"),
+  port: Number(redisUrl.port || '6379'),
   password: process.env.REDIS_PASSWORD || passwordFromUrl || undefined,
 };
 
-export const orchestratorQueue = new Queue("openclaw", { connection });
+export const orchestratorQueue = new Queue('openclaw', { connection });
 
 /** Cola sandbox clasificador de tareas (worker opcional: `OPSLY_AGENT_CLASSIFIER_WORKER_ENABLED`). */
-export const agentClassifierQueue = new Queue("agent-classifier", { connection });
+export const agentClassifierQueue = new Queue('agent-classifier', { connection });
 
 /** Approval Gate Phase 1: decisión Sonnet sobre métricas sandbox (worker opcional: `OPSLY_APPROVAL_GATE_WORKER_ENABLED`). */
-export const approvalGateQueue = new Queue("approval-gate", {
+export const approvalGateQueue = new Queue('approval-gate', {
   connection,
   defaultJobOptions: {
     attempts: 2,
-    backoff: { type: "exponential", delay: 2000 },
+    backoff: { type: 'exponential', delay: 2000 },
   },
 });
 
 /** Cola Hermes: tick periódico vía worker `HermesOrchestrationWorker` (`HERMES_ENABLED`). */
-export const hermesOrchestrationQueue = new Queue("hermes-orchestration", {
+export const hermesOrchestrationQueue = new Queue('hermes-orchestration', {
   connection,
   defaultJobOptions: {
     attempts: 2,
-    backoff: { type: "fixed", delay: 5000 },
+    backoff: { type: 'fixed', delay: 5000 },
   },
 });
 
@@ -41,7 +41,7 @@ export async function enqueueJob(job: OrchestratorJob) {
   const bull = await orchestratorQueue.add(job.type, job, opts);
 
   logJobEnqueue({
-    event: "job_enqueue",
+    event: 'job_enqueue',
     job_type: job.type,
     task_id: job.taskId,
     tenant_slug: job.tenant_slug,

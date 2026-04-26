@@ -10,17 +10,17 @@ Este directorio agrupa **automatización** (`workflows/`), **plantillas** (issue
 
 ## Tabla rápida
 
-| Archivo | Propósito | Cuándo se activa | Quién lo ve |
-|--------|-----------|------------------|-------------|
-| `CODEOWNERS` | Asigna revisores por ruta | Al abrir o actualizar un PR que toca esas rutas | GitHub solicita review a usuarios/equipos indicados |
-| `PULL_REQUEST_TEMPLATE.md` | Estructura y checklist del PR | Al crear un PR | Autor del PR y revisores |
-| `ISSUE_TEMPLATE/bug_report.yml` | Formulario de bug | New issue → Reporte de bug | Maintainers y quien reporta |
-| `ISSUE_TEMPLATE/feature_request.yml` | Formulario de mejora | New issue → Solicitud de funcionalidad | Producto / equipo técnico |
-| `ISSUE_TEMPLATE/tenant_issue.yml` | Incidencia por tenant | New issue → Incidencia de tenant | Operaciones / backend |
-| `ISSUE_TEMPLATE/config.yml` | Issues en blanco y enlaces de ayuda | Pantalla “New issue” | Todos |
-| `copilot-instructions.md` | Límites y convenciones para Copilot | Al generar sugerencias en el editor | Copilot / IDE |
-| `workflows/*.yml` | CI/CD y validaciones | Push, PR, cron según cada workflow | GitHub Actions (no documentados aquí en detalle) |
-| `AGENTS.md`, `VISION.md`, `system_state.json` | Espejo de contexto (opcional) | Lectura por humanos o agentes | Equipo + validación en CI si aplica |
+| Archivo                                       | Propósito                           | Cuándo se activa                                | Quién lo ve                                         |
+| --------------------------------------------- | ----------------------------------- | ----------------------------------------------- | --------------------------------------------------- |
+| `CODEOWNERS`                                  | Asigna revisores por ruta           | Al abrir o actualizar un PR que toca esas rutas | GitHub solicita review a usuarios/equipos indicados |
+| `PULL_REQUEST_TEMPLATE.md`                    | Estructura y checklist del PR       | Al crear un PR                                  | Autor del PR y revisores                            |
+| `ISSUE_TEMPLATE/bug_report.yml`               | Formulario de bug                   | New issue → Reporte de bug                      | Maintainers y quien reporta                         |
+| `ISSUE_TEMPLATE/feature_request.yml`          | Formulario de mejora                | New issue → Solicitud de funcionalidad          | Producto / equipo técnico                           |
+| `ISSUE_TEMPLATE/tenant_issue.yml`             | Incidencia por tenant               | New issue → Incidencia de tenant                | Operaciones / backend                               |
+| `ISSUE_TEMPLATE/config.yml`                   | Issues en blanco y enlaces de ayuda | Pantalla “New issue”                            | Todos                                               |
+| `copilot-instructions.md`                     | Límites y convenciones para Copilot | Al generar sugerencias en el editor             | Copilot / IDE                                       |
+| `workflows/*.yml`                             | CI/CD y validaciones                | Push, PR, cron según cada workflow              | GitHub Actions (no documentados aquí en detalle)    |
+| `AGENTS.md`, `VISION.md`, `system_state.json` | Espejo de contexto (opcional)       | Lectura por humanos o agentes                   | Equipo + validación en CI si aplica                 |
 
 ## Cómo reutilizar estas plantillas en un proyecto nuevo
 

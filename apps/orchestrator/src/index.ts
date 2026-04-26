@@ -1,37 +1,37 @@
-import { setupLangSmithTracing } from "./agents/langsmith.js";
-import { processIntent } from "./engine.js";
-import { subscribeEvents } from "./events/bus.js";
-import { startOrchestratorHealthServer } from "./health-server.js";
-import { drainMeteringOperations } from "./metering/usage-events-meter.js";
-import { closeOrchestratorRedis } from "./metering/redis-client.js";
+import { setupLangSmithTracing } from './agents/langsmith.js';
+import { processIntent } from './engine.js';
+import { subscribeEvents } from './events/bus.js';
+import { startOrchestratorHealthServer } from './health-server.js';
+import { drainMeteringOperations } from './metering/usage-events-meter.js';
+import { closeOrchestratorRedis } from './metering/redis-client.js';
 import {
   orchestratorModeLabel,
   parseOrchestratorRole,
   shouldRunControlPlane,
   shouldRunWorkers,
-} from "./orchestrator-role.js";
+} from './orchestrator-role.js';
 import {
   agentClassifierQueue,
   connection,
   hermesOrchestrationQueue,
   orchestratorQueue,
-} from "./queue.js";
-import { closeCircuitBreakerRedis } from "./resilience/circuit-breaker.js";
-import { closeJobStateStore } from "./state/store.js";
-import { TeamManager } from "./teams/TeamManager.js";
-import { startBackupWorker } from "./workers/BackupWorker.js";
-import { startCursorWorker } from "./workers/CursorWorker.js";
-import { startDriveWorker } from "./workers/DriveWorker.js";
-import { startHealthWorker } from "./workers/HealthWorker.js";
-import { startN8nWorker } from "./workers/N8nWorker.js";
-import { startNotifyWorker } from "./workers/NotifyWorker.js";
-import { startAgentClassifierWorker } from "./workers/AgentClassifierWorker.js";
-import { startOllamaWorker } from "./workers/OllamaWorker.js";
-import { startSuspensionWorker } from "./workers/SuspensionWorker.js";
-import { startGeneralEventsWorker } from "./workers/GeneralEventsWorker.js";
-import { startIntentDispatchWorker } from "./workers/IntentDispatchWorker.js";
-import { closeWebhookQueue, createWebhookWorker } from "./workers/WebhookWorker.js";
-import { startWebhooksProcessingWorker } from "./workers/WebhooksProcessingWorker.js";
+} from './queue.js';
+import { closeCircuitBreakerRedis } from './resilience/circuit-breaker.js';
+import { closeJobStateStore } from './state/store.js';
+import { TeamManager } from './teams/TeamManager.js';
+import { startBackupWorker } from './workers/BackupWorker.js';
+import { startCursorWorker } from './workers/CursorWorker.js';
+import { startDriveWorker } from './workers/DriveWorker.js';
+import { startHealthWorker } from './workers/HealthWorker.js';
+import { startN8nWorker } from './workers/N8nWorker.js';
+import { startNotifyWorker } from './workers/NotifyWorker.js';
+import { startAgentClassifierWorker } from './workers/AgentClassifierWorker.js';
+import { startOllamaWorker } from './workers/OllamaWorker.js';
+import { startSuspensionWorker } from './workers/SuspensionWorker.js';
+import { startGeneralEventsWorker } from './workers/GeneralEventsWorker.js';
+import { startIntentDispatchWorker } from './workers/IntentDispatchWorker.js';
+import { closeWebhookQueue, createWebhookWorker } from './workers/WebhookWorker.js';
+import { startWebhooksProcessingWorker } from './workers/WebhooksProcessingWorker.js';
 
 type AsyncCleanup = () => Promise<void>;
 
@@ -40,17 +40,17 @@ async function runEventSubscription(teamManager: TeamManager): Promise<AsyncClea
     console.log(`[orchestrator] Evento: ${event}`, eventData);
 
     switch (event) {
-      case "tenant.onboarded": {
+      case 'tenant.onboarded': {
         try {
-          const jobId = await teamManager.assignToTeam("deploy", eventData);
-          console.log("[orchestrator] tenant.onboarded → team deploy job", jobId);
+          const jobId = await teamManager.assignToTeam('deploy', eventData);
+          console.log('[orchestrator] tenant.onboarded → team deploy job', jobId);
         } catch (err) {
-          console.error("[orchestrator] assignToTeam(deploy) failed", err);
+          console.error('[orchestrator] assignToTeam(deploy) failed', err);
         }
         break;
       }
-      case "job.completed": {
-        console.log(`[orchestrator] Job completado: ${String(eventData.job_id ?? "")}`);
+      case 'job.completed': {
+        console.log(`[orchestrator] Job completado: ${String(eventData.job_id ?? '')}`);
         break;
       }
       default: {
@@ -77,13 +77,9 @@ function startAllWorkers(): AsyncCleanup[] {
   const intentDispatchWorker = startIntentDispatchWorker(connection);
 
   let agentClassifierCleanup: AsyncCleanup[] = [];
-  if (process.env.OPSLY_AGENT_CLASSIFIER_WORKER_ENABLED === "true") {
-    const { worker: agentClassifierWorker, closeRedis } =
-      startAgentClassifierWorker(connection);
-    agentClassifierCleanup = [
-      async () => agentClassifierWorker.close(),
-      closeRedis,
-    ];
+  if (process.env.OPSLY_AGENT_CLASSIFIER_WORKER_ENABLED === 'true') {
+    const { worker: agentClassifierWorker, closeRedis } = startAgentClassifierWorker(connection);
+    agentClassifierCleanup = [async () => agentClassifierWorker.close(), closeRedis];
   }
 
   cleanup.push(
@@ -99,21 +95,19 @@ function startAllWorkers(): AsyncCleanup[] {
     async () => generalEventsWorker.close(),
     async () => ollamaWorker.close(),
     async () => intentDispatchWorker.close(),
-    ...agentClassifierCleanup,
+    ...agentClassifierCleanup
   );
 
   console.log(
-    "[orchestrator] Workers: cursor, n8n, notify, drive, backup, health, budget, opsly-webhooks, webhooks-processing, general-events, ollama, intent_dispatch" +
-      (process.env.OPSLY_AGENT_CLASSIFIER_WORKER_ENABLED === "true"
-        ? ", agent-classifier"
-        : "") +
-      "; Hermes tick → servicio opsly-hermes (no este proceso).",
+    '[orchestrator] Workers: cursor, n8n, notify, drive, backup, health, budget, opsly-webhooks, webhooks-processing, general-events, ollama, intent_dispatch' +
+      (process.env.OPSLY_AGENT_CLASSIFIER_WORKER_ENABLED === 'true' ? ', agent-classifier' : '') +
+      '; Hermes tick → servicio opsly-hermes (no este proceso).'
   );
   return cleanup;
 }
 
 async function closeHttpServer(
-  server: ReturnType<typeof startOrchestratorHealthServer>,
+  server: ReturnType<typeof startOrchestratorHealthServer>
 ): Promise<void> {
   await new Promise<void>((resolve, reject) => {
     server.close((err) => {
@@ -129,16 +123,14 @@ async function closeHttpServer(
 async function main(): Promise<void> {
   setupLangSmithTracing();
   const role = parseOrchestratorRole();
-  console.log(
-    `[orchestrator] Iniciando… role=${role} mode=${orchestratorModeLabel(role)}`,
-  );
+  console.log(`[orchestrator] Iniciando… role=${role} mode=${orchestratorModeLabel(role)}`);
 
   let teamManager: TeamManager | undefined;
   const cleanupTasks: AsyncCleanup[] = [];
 
   if (shouldRunControlPlane(role)) {
     teamManager = new TeamManager(connection);
-    console.log("[orchestrator] TeamManager: 4 equipos BullMQ activos");
+    console.log('[orchestrator] TeamManager: 4 equipos BullMQ activos');
     cleanupTasks.push(async () => teamManager?.close());
   }
 
@@ -157,7 +149,7 @@ async function main(): Promise<void> {
     try {
       cleanupTasks.push(await runEventSubscription(teamManager));
     } catch (err) {
-      console.error("[orchestrator] runEventSubscription", err);
+      console.error('[orchestrator] runEventSubscription', err);
     }
   }
 
@@ -173,29 +165,27 @@ async function main(): Promise<void> {
     shutdownStarted = true;
     void (async () => {
       console.log(`[orchestrator] Shutdown (${signal})`);
-      const results = await Promise.allSettled(
-        cleanupTasks.map(async (cleanup) => cleanup()),
-      );
+      const results = await Promise.allSettled(cleanupTasks.map(async (cleanup) => cleanup()));
       for (const result of results) {
-        if (result.status === "rejected") {
-          console.error("[orchestrator] cleanup failed", result.reason);
+        if (result.status === 'rejected') {
+          console.error('[orchestrator] cleanup failed', result.reason);
         }
       }
       process.exit(0);
     })().catch((err) => {
-      console.error("[orchestrator] shutdown failed", err);
+      console.error('[orchestrator] shutdown failed', err);
       process.exit(1);
     });
   };
 
-  process.on("SIGTERM", () => shutdown("SIGTERM"));
-  process.on("SIGINT", () => shutdown("SIGINT"));
+  process.on('SIGTERM', () => shutdown('SIGTERM'));
+  process.on('SIGINT', () => shutdown('SIGINT'));
 
   if (shouldRunControlPlane(role)) {
     const result = await processIntent({
-      intent: "notify",
-      context: { title: "OpenClaw", message: "orchestrator started", type: "info" },
-      initiated_by: "system",
+      intent: 'notify',
+      context: { title: 'OpenClaw', message: 'orchestrator started', type: 'info' },
+      initiated_by: 'system',
     });
     process.stdout.write(`${JSON.stringify(result)}\n`);
   }

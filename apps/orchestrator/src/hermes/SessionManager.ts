@@ -10,13 +10,13 @@
  *   startup: 24h | business: 7d | enterprise: 30d
  */
 
-import type { HermesTask } from "@intcloudsysops/types";
+import type { HermesTask } from '@intcloudsysops/types';
 import {
   buildSessionKey,
   getAgentSession,
   saveAgentSession,
   type AgentSessionResponse,
-} from "./context-builder-client.js";
+} from './context-builder-client.js';
 
 export interface DecisionRecord {
   task_id: string;
@@ -37,7 +37,7 @@ export class SessionManager {
   async recordDecision(
     tenantSlug: string,
     task: HermesTask,
-    decision: DecisionRecord,
+    decision: DecisionRecord
   ): Promise<boolean> {
     try {
       // Recuperar sesión existente para agregar al historial
@@ -55,7 +55,7 @@ export class SessionManager {
 
       // Guardar sesión actualizada
       const result = await saveAgentSession(tenantSlug, task, {
-        agent_role: "executor",
+        agent_role: 'executor',
         summary: `Last decision for task ${task.id}: ${decision.agent_type}`,
         decisions: updatedDecisions,
         open_items: existing?.open_items ?? [],
@@ -70,12 +70,12 @@ export class SessionManager {
     } catch (err) {
       console.error(
         JSON.stringify({
-          event: "session_manager_record_error",
+          event: 'session_manager_record_error',
           task_id: task.id,
           request_id: task.request_id,
           error: err instanceof Error ? err.message : String(err),
           ts: new Date().toISOString(),
-        }),
+        })
       );
       return false;
     }
@@ -84,7 +84,10 @@ export class SessionManager {
   /**
    * Recupera el contexto de sesión anterior (si existe y no expiró).
    */
-  async getSessionContext(tenantSlug: string, task: HermesTask): Promise<AgentSessionResponse | null> {
+  async getSessionContext(
+    tenantSlug: string,
+    task: HermesTask
+  ): Promise<AgentSessionResponse | null> {
     try {
       return await getAgentSession(tenantSlug, task);
     } catch {

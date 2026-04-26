@@ -15,11 +15,11 @@ Cliente MCP / orquestador
 
 Persistencia ya definida en **schema `platform`** (no inventar tablas paralelas de “agentes”):
 
-| Recurso | Migración de referencia |
-|--------|-------------------------|
-| Sesiones de agente / contexto | `supabase/migrations/0019_agent_sessions.sql` |
-| Estado y métricas Hermes | `supabase/migrations/0028_hermes_tables.sql` |
-| Sprints (Mission Control) | `supabase/migrations/0021_platform_sprints.sql` |
+| Recurso                       | Migración de referencia                         |
+| ----------------------------- | ----------------------------------------------- |
+| Sesiones de agente / contexto | `supabase/migrations/0019_agent_sessions.sql`   |
+| Estado y métricas Hermes      | `supabase/migrations/0028_hermes_tables.sql`    |
+| Sprints (Mission Control)     | `supabase/migrations/0021_platform_sprints.sql` |
 
 Decisiones de capa MCP: `docs/adr/ADR-009-openclaw-mcp-architecture.md`.  
 Diseño orientativo OpenClaw: `docs/OPENCLAW-ARCHITECTURE.md`.
@@ -38,25 +38,20 @@ Diseño orientativo OpenClaw: `docs/OPENCLAW-ARCHITECTURE.md`.
 Las tools son objetos `ToolDefinition` con `name`, `description`, `inputSchema` (Zod con `.safeParse` compatible) y `handler`. Ejemplo mínimo (patrón real en `apps/mcp/src/tools/metrics.ts`):
 
 ```typescript
-import { z } from "zod";
-import { opslyFetch } from "../lib/api-client.js";
-import type { ToolDefinition } from "../types/index.js";
+import { z } from 'zod';
+import { opslyFetch } from '../lib/api-client.js';
+import type { ToolDefinition } from '../types/index.js';
 
 const inputSchema = z.object({
   ref: z.string().min(1),
 });
 
-export const miToolDeEjemplo: ToolDefinition<
-  z.infer<typeof inputSchema>,
-  unknown
-> = {
-  name: "mi_tool",
-  description: "Breve descripción para el cliente MCP",
+export const miToolDeEjemplo: ToolDefinition<z.infer<typeof inputSchema>, unknown> = {
+  name: 'mi_tool',
+  description: 'Breve descripción para el cliente MCP',
   inputSchema,
   handler: async (input) => {
-    return opslyFetch(
-      `/api/ruta/existente/${encodeURIComponent(input.ref)}`,
-    );
+    return opslyFetch(`/api/ruta/existente/${encodeURIComponent(input.ref)}`);
   },
 };
 ```
@@ -82,10 +77,10 @@ Los nombres de scopes convencionales están alineados con `docs/adr/ADR-009-open
 **Servidor MCP** (patrón en `apps/mcp/__tests__/server.test.ts` y `server-scope.test.ts`):
 
 ```typescript
-import { createServer } from "../src/server.js";
+import { createServer } from '../src/server.js';
 
 const server = createServer();
-const out = await server.callTool("get_health", {});
+const out = await server.callTool('get_health', {});
 // Tools con scope requieren el tercer argumento { authorization: "Bearer ..." } cuando TOOL_REQUIRED_SCOPES[name] está definido
 ```
 
@@ -121,12 +116,12 @@ En local, el admin suele estar en el puerto **3001** (`next dev -p 3001`):
 
 ## Checklist rápido
 
-| Pregunta | Respuesta esperada |
-|----------|-------------------|
-| ¿La guía usa solo componentes existentes? | Sí: MCP Node, `ToolDefinition`, `createServer`, tests Vitest, tablas `platform.*` citadas |
-| ¿Propone tablas nuevas? | No |
+| Pregunta                                    | Respuesta esperada                                                                                              |
+| ------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| ¿La guía usa solo componentes existentes?   | Sí: MCP Node, `ToolDefinition`, `createServer`, tests Vitest, tablas `platform.*` citadas                       |
+| ¿Propone tablas nuevas?                     | No                                                                                                              |
 | ¿Los comandos y rutas HTTP citados existen? | Sí: `npm run test --workspace=@intcloudsysops/mcp`, `GET /health` en MCP; no se documentan endpoints inventados |
 
 ---
 
-*Última alineación: monorepo Opsly — `apps/mcp` como fuente de verdad para tools.*
+_Última alineación: monorepo Opsly — `apps/mcp` como fuente de verdad para tools._

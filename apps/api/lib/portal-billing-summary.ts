@@ -1,14 +1,11 @@
-import { unitCostUsdForMetric } from "./billing-meter-pricing";
-import { parseUsageRedisKey } from "./billing/flush-billing-usage";
-import { getMeteringRedis } from "./billing/redis-metering";
+import { unitCostUsdForMetric } from './billing-meter-pricing';
+import { parseUsageRedisKey } from './billing/flush-billing-usage';
+import { getMeteringRedis } from './billing/redis-metering';
 
 const CENTS = 100;
 const ISO_DATE_SLICE = 10;
 
-type ConnectedMeteringRedis = NonNullable<
-  Awaited<ReturnType<typeof getMeteringRedis>>
->;
-
+type ConnectedMeteringRedis = NonNullable<Awaited<ReturnType<typeof getMeteringRedis>>>;
 
 /** Evita saturar logs en Vercel / serverless (una advertencia por ventana). */
 const BILLING_REDIS_WARN_INTERVAL_MS = 60_000;
@@ -21,7 +18,7 @@ export function resetBillingRedisWarningThrottleForTests(): void {
 }
 
 const BILLING_REDIS_STDERR_MSG =
-  "[BILLING WARNING] Redis unreachable. Real-time billing disabled. Data may be delayed.";
+  '[BILLING WARNING] Redis unreachable. Real-time billing disabled. Data may be delayed.';
 
 function warnBillingRedisDegraded(detail: string): void {
   const now = Date.now();
@@ -64,7 +61,7 @@ export function getBillingMonthBoundsUtc(now: Date): BillingMonthBounds {
 }
 
 function parseQuantity(raw: string | undefined): number {
-  if (raw === undefined || raw === null || raw === "") {
+  if (raw === undefined || raw === null || raw === '') {
     return 0;
   }
   const n = Number.parseFloat(raw);
@@ -73,7 +70,7 @@ function parseQuantity(raw: string | undefined): number {
 
 async function aggregatePendingUsdForTenant(
   redis: ConnectedMeteringRedis,
-  tenantId: string,
+  tenantId: string
 ): Promise<number> {
   const pattern = `usage:${tenantId}:*`;
   let pending = 0;
@@ -82,7 +79,7 @@ async function aggregatePendingUsdForTenant(
       MATCH: pattern,
       COUNT: 100,
     })) {
-      if (typeof key !== "string") {
+      if (typeof key !== 'string') {
         continue;
       }
       const parsed = parseUsageRedisKey(key);
@@ -117,10 +114,10 @@ export async function sumPendingRedisUsageUsd(tenantId: string): Promise<number>
   }
   if (redisUrlConfigured) {
     warnBillingRedisDegraded(
-      "(connection failed, timeout, or client closed — check REDIS_URL and Redis availability)",
+      '(connection failed, timeout, or client closed — check REDIS_URL and Redis availability)'
     );
   } else {
-    warnBillingRedisDegraded("(REDIS_URL not set)");
+    warnBillingRedisDegraded('(REDIS_URL not set)');
   }
   return 0;
 }

@@ -16,14 +16,14 @@ En **contenedor** (`Dockerfile`), el proceso escucha **GET `/health`** en `LLM_G
 
 Definidos en `apps/llm-gateway/src/providers.ts` y costes en `router.ts` / `estimateCost`.
 
-| Proveedor | Nivel típico | Coste orientativo / 1k tokens | Uso |
-|-----------|----------------|-------------------------------|-----|
-| Llama local | 1 | $0 | Clasificación, extracción, tareas baratas (`model: "cheap"` o complejidad 1) |
-| Claude Haiku | 2 | ~$0.00025 in / $0.00125 out | Moderado, RAG simple |
-| OpenRouter (Mistral 7B) | 2 | ~$0.00002 in / $0.00006 out | Fallback económico |
-| GPT-4o mini | 2 | ~$0.00015 in / $0.0006 out | Fallback OpenAI |
-| Claude Sonnet | 3 | ~$0.003 in / $0.015 out | Arquitectura, código complejo |
-| GPT-4o | 3 | ~$0.005 in / $0.015 out | Fallback si Sonnet no disponible |
+| Proveedor               | Nivel típico | Coste orientativo / 1k tokens | Uso                                                                          |
+| ----------------------- | ------------ | ----------------------------- | ---------------------------------------------------------------------------- |
+| Llama local             | 1            | $0                            | Clasificación, extracción, tareas baratas (`model: "cheap"` o complejidad 1) |
+| Claude Haiku            | 2            | ~$0.00025 in / $0.00125 out   | Moderado, RAG simple                                                         |
+| OpenRouter (Mistral 7B) | 2            | ~$0.00002 in / $0.00006 out   | Fallback económico                                                           |
+| GPT-4o mini             | 2            | ~$0.00015 in / $0.0006 out    | Fallback OpenAI                                                              |
+| Claude Sonnet           | 3            | ~$0.003 in / $0.015 out       | Arquitectura, código complejo                                                |
+| GPT-4o                  | 3            | ~$0.005 in / $0.015 out       | Fallback si Sonnet no disponible                                             |
 
 Salud en Redis se agrupa por **API**: `anthropic`, `llama_local`, `openrouter`, `openai`.
 
@@ -36,12 +36,12 @@ Salud en Redis se agrupa por **API**: `anthropic`, `llama_local`, `openrouter`, 
 ## Uso desde otro servicio
 
 ```typescript
-import { llmCall } from "@intcloudsysops/llm-gateway";
+import { llmCall } from '@intcloudsysops/llm-gateway';
 
 const out = await llmCall({
-  tenant_slug: "acme",
-  messages: [{ role: "user", content: "Hola" }],
-  model: "haiku",
+  tenant_slug: 'acme',
+  messages: [{ role: 'user', content: 'Hola' }],
+  model: 'haiku',
   temperature: 0,
 });
 ```
@@ -57,12 +57,12 @@ const out = await llmCall({
 Ejemplo:
 
 ```typescript
-import { llmCall, parseLlmGatewayRoutingParams } from "@intcloudsysops/llm-gateway";
+import { llmCall, parseLlmGatewayRoutingParams } from '@intcloudsysops/llm-gateway';
 
 const hints = parseLlmGatewayRoutingParams(request.nextUrl.searchParams);
 await llmCall({
-  tenant_slug: "acme",
-  messages: [{ role: "user", content: "…" }],
+  tenant_slug: 'acme',
+  messages: [{ role: 'user', content: '…' }],
   ...hints,
 });
 ```

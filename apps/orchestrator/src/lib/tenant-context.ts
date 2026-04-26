@@ -1,4 +1,4 @@
-import { AsyncLocalStorage } from "node:async_hooks";
+import { AsyncLocalStorage } from 'node:async_hooks';
 
 /**
  * Espejo de `apps/api/lib/tenant-context.ts` para el plano worker (orquestador).
@@ -13,16 +13,16 @@ const tenantStorage = new AsyncLocalStorage<TenantContext>();
 
 export class TenantContextMissingError extends Error {
   constructor(
-    message = "TENANT_CONTEXT_MISSING: ningún tenant activo (use runWithTenantContext).",
+    message = 'TENANT_CONTEXT_MISSING: ningún tenant activo (use runWithTenantContext).'
   ) {
     super(message);
-    this.name = "TenantContextMissingError";
+    this.name = 'TenantContextMissingError';
   }
 }
 
 export function runWithTenantContext<T>(
   context: TenantContext,
-  fn: () => T | Promise<T>,
+  fn: () => T | Promise<T>
 ): T | Promise<T> {
   return tenantStorage.run(context, fn);
 }

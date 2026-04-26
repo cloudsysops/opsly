@@ -1,7 +1,7 @@
-import { createServer } from "node:http";
-import { handleApprovalAnalyzeHttp } from "./approval-route.js";
-import { handlePlannerHttp } from "./planner-route.js";
-import { handleTextCompletionHttp } from "./text-completion-route.js";
+import { createServer } from 'node:http';
+import { handleApprovalAnalyzeHttp } from './approval-route.js';
+import { handlePlannerHttp } from './planner-route.js';
+import { handleTextCompletionHttp } from './text-completion-route.js';
 
 const DEFAULT_PORT = 3010;
 
@@ -29,24 +29,24 @@ export function createHealthServer(port?: number): void {
         if (handled) {
           return;
         }
-        const pathOnly = req.url?.split("?")[0] ?? "/";
-        if (req.method === "GET" && pathOnly === "/health") {
-          res.writeHead(200, { "Content-Type": "application/json" });
-          res.end(JSON.stringify({ status: "ok", service: "llm-gateway" }));
+        const pathOnly = req.url?.split('?')[0] ?? '/';
+        if (req.method === 'GET' && pathOnly === '/health') {
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ status: 'ok', service: 'llm-gateway' }));
           return;
         }
         res.writeHead(404);
         res.end();
       } catch (err) {
         const msg = err instanceof Error ? err.message : String(err);
-        res.writeHead(500, { "Content-Type": "application/json" });
-        res.end(JSON.stringify({ error: "internal_error", message: msg }));
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'internal_error', message: msg }));
       }
     })();
   });
-  server.listen(p, "0.0.0.0", () => {
+  server.listen(p, '0.0.0.0', () => {
     process.stdout.write(
-      JSON.stringify({ service: "llm-gateway", http: "listening", port: p, path: "/health" }) + "\n",
+      JSON.stringify({ service: 'llm-gateway', http: 'listening', port: p, path: '/health' }) + '\n'
     );
   });
 }

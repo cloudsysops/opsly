@@ -175,7 +175,9 @@ context:   https://raw.githubusercontent.com/cloudsysops/opsly/main/context/syst
 ---
 
 _Documento generado automáticamente — actualizar tras cada sesión._
+
 ### opsly-agent-teams
+
 # Opsly Agent Teams Skill
 
 ## Cuándo usar
@@ -193,8 +195,8 @@ Al encolar trabajo paralelo por especialización (BullMQ) o al extender `TeamMan
 ## Asignación (patrón)
 
 ```typescript
-await teamManager.assignToTeam("deploy", {
-  tenant_slug: "slug",
+await teamManager.assignToTeam('deploy', {
+  tenant_slug: 'slug',
   /* payload mínimo */
 });
 ```
@@ -212,6 +214,7 @@ Task types de ejemplo: `ui_fix`, `api_fix`, `deploy`, `model_update`, etc. (ver 
 - `GET /api/metrics/teams` — configuración estática / estado (ver implementación actual en `apps/api`).
 
 ### opsly-api
+
 # Opsly API Skill
 
 ## Cuándo usar
@@ -224,9 +227,9 @@ En este monorepo las importaciones suelen ser **relativas** (`../../../lib/auth`
 
 ```typescript
 // apps/api/app/api/[feature]/route.ts
-import type { NextRequest } from "next/server";
-import { requireAdminToken } from "../../../lib/auth";
-import { HTTP_STATUS } from "../../../lib/constants";
+import type { NextRequest } from 'next/server';
+import { requireAdminToken } from '../../../lib/auth';
+import { HTTP_STATUS } from '../../../lib/constants';
 
 export async function GET(req: NextRequest): Promise<Response> {
   const authError = requireAdminToken(req);
@@ -236,7 +239,7 @@ export async function GET(req: NextRequest): Promise<Response> {
     // lógica
     return Response.json({ data: {} });
   } catch (err) {
-    const message = err instanceof Error ? err.message : "Error";
+    const message = err instanceof Error ? err.message : 'Error';
     return Response.json({ error: message }, { status: HTTP_STATUS.INTERNAL_ERROR });
   }
 }
@@ -260,6 +263,7 @@ Para lectura pública en demo admin, usar `requireAdminTokenUnlessDemoRead` dond
 - 500 con error de DB mockeado si aplica.
 
 ### opsly-architect-senior
+
 # Opsly — Arquitecto senior (diagnóstico y priorización)
 
 ## Cuándo usar
@@ -271,14 +275,14 @@ Para lectura pública en demo admin, usar `requireAdminTokenUnlessDemoRead` dond
 
 ## Fuentes de verdad (no contradecir)
 
-| Documento | Rol |
-|-----------|-----|
-| `VISION.md` | Norte comercial y fases |
-| `AGENTS.md` | Estado operativo, bloqueantes, sprint |
-| `ROADMAP.md` | Ventana semanal |
-| `docs/IMPLEMENTATION-IA-LAYER.md` | Capa IA en TS |
-| `docs/adr/` | Decisiones ya tomadas |
-| `docs/SECURITY_CHECKLIST.md` | Zero-Trust y rutas sensibles |
+| Documento                         | Rol                                   |
+| --------------------------------- | ------------------------------------- |
+| `VISION.md`                       | Norte comercial y fases               |
+| `AGENTS.md`                       | Estado operativo, bloqueantes, sprint |
+| `ROADMAP.md`                      | Ventana semanal                       |
+| `docs/IMPLEMENTATION-IA-LAYER.md` | Capa IA en TS                         |
+| `docs/adr/`                       | Decisiones ya tomadas                 |
+| `docs/SECURITY_CHECKLIST.md`      | Zero-Trust y rutas sensibles          |
 
 ## Decisiones fijas (innegociables en Opsly)
 
@@ -319,9 +323,9 @@ No listar secretos ni tokens en el análisis; usar `scripts/check-tokens.sh` y D
 
 ## Matriz de riesgo (plantilla)
 
-| Riesgo | Probabilidad | Impacto | Mitigación | Esfuerzo | Owner |
-|--------|--------------|---------|------------|----------|-------|
-| … | baja/media/alta | bajo/alto/crítico | acción concreta | h | |
+| Riesgo | Probabilidad    | Impacto           | Mitigación      | Esfuerzo | Owner |
+| ------ | --------------- | ----------------- | --------------- | -------- | ----- |
+| …      | baja/media/alta | bajo/alto/crítico | acción concreta | h        |       |
 
 ## Roadmap 30 / 60 / 90 días (orientativo)
 
@@ -353,6 +357,7 @@ No listar secretos ni tokens en el análisis; usar `scripts/check-tokens.sh` y D
 **Versión skill:** 1.0.0 · Revisar cuando cambie fase en `VISION.md` o cierre de sprint en `ROADMAP.md`.
 
 ### opsly-bash
+
 # Opsly Bash Script Skill
 
 ## Cuándo usar
@@ -402,6 +407,7 @@ main "$@"
 - Notificaciones Discord: `notify-discord.sh` debe poder hacer no-op si falta webhook (ya implementado en Opsly).
 
 ### opsly-context
+
 # Opsly Context Skill
 
 ## Cuándo usar
@@ -450,6 +456,7 @@ Next.js 15 · TypeScript · Tailwind · Supabase · Stripe · Docker Compose · 
 - Doppler: `ops-intcloudsysops` / `prd`
 
 ### opsly-discord
+
 # Opsly Discord Notifications Skill
 
 ## Cuándo usar
@@ -467,12 +474,12 @@ Al notificar eventos operativos (deploy, errores, commits, monitor) sin filtrar 
 
 ## Tipos
 
-| Tipo | Uso típico |
-|------|------------|
-| `success` | Deploy OK, tarea completada |
-| `error` | Fallo crítico, provider caído |
-| `warning` | Disco alto, degradación |
-| `info` | Commit, sync, mensajes generales |
+| Tipo      | Uso típico                       |
+| --------- | -------------------------------- |
+| `success` | Deploy OK, tarea completada      |
+| `error`   | Fallo crítico, provider caído    |
+| `warning` | Disco alto, degradación          |
+| `info`    | Commit, sync, mensajes generales |
 
 ## Reglas
 
@@ -481,6 +488,7 @@ Al notificar eventos operativos (deploy, errores, commits, monitor) sin filtrar 
 - Webhook vacío → el script hace **no-op** con warning y **exit 0** (no romper hooks).
 
 ### opsly-feedback-ml
+
 # Opsly Feedback ML Skill
 
 ## Cuándo usar
@@ -514,12 +522,15 @@ Al tocar el flujo de feedback de usuarios, decisiones ML o tablas `feedback_*` /
 - `apps/api/lib/feedback/`, `apps/portal/components/FeedbackChat*.tsx`, migraciones `0010` / `0011`.
 
 ### opsly-google-cloud
+
 # Opsly Google Cloud Skill
 
 ## Cuándo usar
+
 Al integrar cualquier servicio de Google Cloud en Opsly.
 
 ## Proyecto GCP
+
 - Nombre: opsly-platform
 - Sin organización (cuenta personal Gmail)
 - Service Account: opsly-drive-sync
@@ -546,16 +557,17 @@ get_google_token() {
 
 ## APIs disponibles y cuándo usarlas
 
-| API | Cuándo | Free tier |
-|-----|--------|-----------|
-| Drive API | Sync docs | 1B requests/día |
-| Sheets API | Reportes | 500 requests/100s |
-| BigQuery | Analytics > 100k rows | 1TB queries/mes |
-| Cloud Run | Workers sin servidor | 2M requests/mes |
-| Vertex AI | Fine-tuning ML | $300 créditos |
-| Speech-to-Text | Audio → texto | 60 min/mes |
+| API            | Cuándo                | Free tier         |
+| -------------- | --------------------- | ----------------- |
+| Drive API      | Sync docs             | 1B requests/día   |
+| Sheets API     | Reportes              | 500 requests/100s |
+| BigQuery       | Analytics > 100k rows | 1TB queries/mes   |
+| Cloud Run      | Workers sin servidor  | 2M requests/mes   |
+| Vertex AI      | Fine-tuning ML        | $300 créditos     |
+| Speech-to-Text | Audio → texto         | 60 min/mes        |
 
 ## Reglas
+
 - SIEMPRE service account (no OAuth personal)
 - SIEMPRE token desde `GOOGLE_SERVICE_ACCOUNT_JSON`
 - NUNCA hardcodear `project_id` (usar variable)
@@ -563,6 +575,7 @@ get_google_token() {
 - Habilitar API antes de usar (`console.cloud.google.com`)
 
 ## Billing alert — configurar una vez
+
 ```
 console.cloud.google.com
 → Billing → Budgets & Alerts
@@ -572,8 +585,8 @@ console.cloud.google.com
 → Email: cboteros1@gmail.com
 ```
 
-
 ### opsly-llm
+
 # Opsly LLM Gateway Skill
 
 ## Cuándo usar
@@ -583,12 +596,12 @@ Al hacer cualquier llamada a un LLM desde código del monorepo Opsly: **no** lla
 ## Uso correcto
 
 ```typescript
-import { llmCall } from "@intcloudsysops/llm-gateway";
+import { llmCall } from '@intcloudsysops/llm-gateway';
 
 const result = await llmCall({
-  tenant_slug: "mi-tenant",
-  messages: [{ role: "user", content: prompt }],
-  model: "haiku",
+  tenant_slug: 'mi-tenant',
+  messages: [{ role: 'user', content: prompt }],
+  model: 'haiku',
   temperature: 0,
   cache: true,
 });
@@ -596,12 +609,12 @@ const result = await llmCall({
 
 ## Selección de modelo (orientativo)
 
-| Tarea | Modelo | Notas |
-|-------|--------|--------|
-| Clasificar, extraer, formatear | `haiku` | Barato / rápido |
-| RAG moderado | `haiku` | Subir a `sonnet` si falla calidad |
-| Arquitectura / código complejo | `sonnet` | Coste mayor |
-| Feedback en tiempo real | `haiku`, `cache: false` | Respuestas frescas |
+| Tarea                          | Modelo                  | Notas                             |
+| ------------------------------ | ----------------------- | --------------------------------- |
+| Clasificar, extraer, formatear | `haiku`                 | Barato / rápido                   |
+| RAG moderado                   | `haiku`                 | Subir a `sonnet` si falla calidad |
+| Arquitectura / código complejo | `sonnet`                | Coste mayor                       |
+| Feedback en tiempo real        | `haiku`, `cache: false` | Respuestas frescas                |
 
 Detalle de proveedores, health daemon y batching: `docs/LLM-GATEWAY.md`.
 
@@ -617,6 +630,7 @@ Detalle de proveedores, health daemon y batching: `docs/LLM-GATEWAY.md`.
 - Variables: `docs/DOPPLER-VARS.md` y `AGENTS.md`.
 
 ### opsly-mcp
+
 # Opsly MCP Tool Skill
 
 ## Cuándo usar
@@ -627,16 +641,15 @@ Al agregar o modificar tools del MCP OpenClaw en `apps/mcp/`.
 
 ```typescript
 // apps/mcp/src/tools/mi-feature.ts
-import { z } from "zod";
-import { opslyFetch } from "../lib/api-client.js";
-import type { ToolDefinition } from "../types/index.js";
+import { z } from 'zod';
+import { opslyFetch } from '../lib/api-client.js';
+import type { ToolDefinition } from '../types/index.js';
 
 export const miTool: ToolDefinition<{ param: string }, { result: unknown }> = {
-  name: "nombre_tool",
-  description:
-    "Qué hace, qué devuelve y cuándo usarla. Una o dos frases claras.",
+  name: 'nombre_tool',
+  description: 'Qué hace, qué devuelve y cuándo usarla. Una o dos frases claras.',
   inputSchema: z.object({
-    param: z.string().describe("Qué es este parámetro"),
+    param: z.string().describe('Qué es este parámetro'),
   }),
   handler: async (input) => {
     const data = await opslyFetch(`/api/endpoint/${encodeURIComponent(input.param)}`);
@@ -665,6 +678,7 @@ OAuth / PKCE: `apps/mcp/src/auth/` y `docs/adr/ADR-009-openclaw-mcp-architecture
 - Tests: mock de `opslyFetch` en `apps/mcp/__tests__/`.
 
 ### opsly-notebooklm
+
 # Opsly NotebookLM Agent Skill
 
 ## Cuándo usar
@@ -682,28 +696,28 @@ Requiere `NOTEBOOKLM_ENABLED=true` y credenciales notebooklm-py (Google). **API 
 El paquete `@intcloudsysops/notebooklm-agent` expone `executeNotebookLM`:
 
 ```typescript
-import { executeNotebookLM } from "@intcloudsysops/notebooklm-agent";
+import { executeNotebookLM } from '@intcloudsysops/notebooklm-agent';
 
 await executeNotebookLM({
-  action: "create_notebook",
-  tenant_slug: "localrank",
-  name: "Reporte Enero 2026",
+  action: 'create_notebook',
+  tenant_slug: 'localrank',
+  name: 'Reporte Enero 2026',
 });
 
 await executeNotebookLM({
-  action: "add_source",
-  tenant_slug: "localrank",
-  notebook_id: "nb_xxx",
-  source_type: "url",
-  url: "https://example.com/doc",
+  action: 'add_source',
+  tenant_slug: 'localrank',
+  notebook_id: 'nb_xxx',
+  source_type: 'url',
+  url: 'https://example.com/doc',
 });
 
 await executeNotebookLM({
-  action: "generate_podcast",
-  tenant_slug: "localrank",
-  notebook_id: "nb_xxx",
-  instructions: "Resumen ejecutivo 10 min",
-  output_path: "/tmp/localrank-podcast.mp3",
+  action: 'generate_podcast',
+  tenant_slug: 'localrank',
+  notebook_id: 'nb_xxx',
+  instructions: 'Resumen ejecutivo 10 min',
+  output_path: '/tmp/localrank-podcast.mp3',
 });
 ```
 
@@ -729,6 +743,7 @@ CLI interactivo: `npx skills add teng-lin/notebooklm-py` (elegir agente destino)
 Python: `pip install "notebooklm-py[browser]"` y autenticación según docs del proyecto.
 
 ### opsly-quantum
+
 # Opsly Quantum — skill maestro
 
 ## Cuándo usar
@@ -739,16 +754,16 @@ Cuando el agente necesita **visión completa** del monorepo Opsly: contexto, dia
 
 ## Superpoderes (mapeo a repo real)
 
-| Poder | Qué hacer en Opsly |
-|-------|---------------------|
-| **Context master** | Leer `AGENTS.md`, `VISION.md`, `config/opsly.config.json`, `docs/adr/` según la tarea. |
+| Poder                 | Qué hacer en Opsly                                                                                                                            |
+| --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Context master**    | Leer `AGENTS.md`, `VISION.md`, `config/opsly.config.json`, `docs/adr/` según la tarea.                                                        |
 | **Diagnostic wizard** | `./scripts/verify-platform-smoke.sh`; VPS solo Tailscale `100.120.151.91`; disco: `scripts/disk-alert.sh` / `docs/OPS-CLEANUP-PROCEDURES.md`. |
-| **Deploy / infra** | CI: `.github/workflows/deploy.yml`; VPS: runbooks en `docs/` — **no** `docker` destructivo sin runbook. |
-| **Métricas** | API admin/metrics según producto; LLM: `apps/llm-gateway`; costos en dashboard si aplica. |
-| **Seguridad** | `docs/SECURITY_CHECKLIST.md`; sin escanear el repo con regex agresiva de “secretos” (falsos positivos). Secretos: Doppler. |
-| **Documentación** | Actualizar `AGENTS.md` al **cierre de sesión** según protocolo; ADRs en `docs/adr/`. |
-| **Tests** | `npm run type-check`; tests por workspace (`npm run test --workspace=@intcloudsysops/api`, etc.). |
-| **Builder** | Patrones en `.github/copilot-instructions.md`; API: `skills/user/opsly-api/SKILL.md`. |
+| **Deploy / infra**    | CI: `.github/workflows/deploy.yml`; VPS: runbooks en `docs/` — **no** `docker` destructivo sin runbook.                                       |
+| **Métricas**          | API admin/metrics según producto; LLM: `apps/llm-gateway`; costos en dashboard si aplica.                                                     |
+| **Seguridad**         | `docs/SECURITY_CHECKLIST.md`; sin escanear el repo con regex agresiva de “secretos” (falsos positivos). Secretos: Doppler.                    |
+| **Documentación**     | Actualizar `AGENTS.md` al **cierre de sesión** según protocolo; ADRs en `docs/adr/`.                                                          |
+| **Tests**             | `npm run type-check`; tests por workspace (`npm run test --workspace=@intcloudsysops/api`, etc.).                                             |
+| **Builder**           | Patrones en `.github/copilot-instructions.md`; API: `skills/user/opsly-api/SKILL.md`.                                                         |
 
 ## Skills que combina (lectura)
 
@@ -784,6 +799,7 @@ Cuando el agente necesita **visión completa** del monorepo Opsly: contexto, dia
 - `skills/user/opsly-quantum/templates/runbook.md`
 
 ### opsly-simplify
+
 # opsly-simplify: Docker & Docker Compose Optimization
 
 ## Overview
@@ -799,12 +815,14 @@ Systematic code simplification and optimization for opsly's Docker and docker-co
 ### Dockerfile Patterns (Multi-Stage Builds)
 
 **npm dependency management:**
+
 - ✅ Use `npm ci` (deterministic) instead of `npm install`
 - ✅ Add `--ignore-scripts` to skip postinstall scripts (unless needed; verify per package)
 - ✅ Add `--omit=dev` in production images to exclude dev dependencies
 - ⚠️ If runner stage needs node_modules, copy from builder stage — avoids reinstall
 
 **Example pattern:**
+
 ```dockerfile
 FROM node:20-alpine AS builder
 WORKDIR /app
@@ -821,6 +839,7 @@ CMD ["node", "dist/src/server.js"]
 ```
 
 **Checklist:**
+
 - [ ] Runner stage copies node_modules from builder (not reinstalling)
 - [ ] Unnecessary npm ci removed from runner stage
 - [ ] Build cache layers ordered: package files → install → source → build
@@ -843,6 +862,7 @@ x-healthcheck-node: &healthcheck-node
 ```
 
 **Usage in services:**
+
 ```yaml
 app:
   healthcheck:
@@ -862,6 +882,7 @@ admin:
 #### Supabase Environment Anchor
 
 **Problem:** orchestrator and hermes services repeat identical Supabase config with fallback logic:
+
 ```yaml
 SUPABASE_URL: ${SUPABASE_URL:-${NEXT_PUBLIC_SUPABASE_URL:-}}
 SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY:-}
@@ -877,6 +898,7 @@ x-env-supabase: &env-supabase
 ```
 
 **Usage:**
+
 ```yaml
 orchestrator:
   environment:
@@ -892,11 +914,12 @@ hermes:
 #### Resource Limits Verification
 
 **All 17 services should have memory limits** to prevent OOM:
+
 ```yaml
 deploy:
   resources:
     limits:
-      memory: 512M  # or service-appropriate value
+      memory: 512M # or service-appropriate value
 ```
 
 **Expected services and typical limits:**
@@ -967,21 +990,25 @@ deploy:
 ## Known Patterns & Decisions
 
 ### When to use anchors:
+
 - **Exact match:** interval=30s, timeout=10s, retries=3 for Node healthchecks → anchor
 - **Fallback chains:** Supabase config with `${VAR:-${OTHER_VAR:-}}` → anchor
 - **Repeated sections with variations:** healthcheck test, start_period vary; everything else identical → anchor
 
 ### When NOT to create anchors:
+
 - Single occurrence (no duplication)
 - Highly service-specific (will only be used once)
 - Values diverge significantly across uses
 
 ### Resource limits notes:
+
 - All 17 services already have limits in place (as of 2026-04-13)
 - Limits prevent runaway memory consumption and kernel OOM killer
 - Never exceed host available memory
 
 ### Healthcheck test commands:
+
 - Node services: `node -e "fetch('http://localhost:PORT/health')"`
 - Each service has unique PORT
 - start_period varies: 15s (fast), 30s (normal), 45s+ (slow startup)
@@ -1026,6 +1053,7 @@ deploy:
 - **YAML anchors:** https://yaml.org/type/merge.html
 
 ### opsly-supabase
+
 # Opsly Supabase Skill
 
 ## Cuándo usar
@@ -1079,6 +1107,7 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON platform.mi_tabla TO service_role;
 Si anon/authenticated acceden por PostgREST, añadir políticas explícitas; si solo `service_role` vía backend, documentar en el ADR o en el comentario de la migración.
 
 ### opsly-tenant
+
 # Opsly Tenant Operations Skill
 
 ## Cuándo usar
@@ -1114,4 +1143,3 @@ Usar `--dry-run` primero si el entorno no está validado. Variables Supabase/pat
 - Portal: `https://portal.{PLATFORM_DOMAIN}`
 
 Sustituir `PLATFORM_DOMAIN` por el dominio base del entorno (ej. `ops.smiletripcare.com`).
-

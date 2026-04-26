@@ -4,11 +4,11 @@
 
 ## Ya integrado en el repo
 
-| Mecanismo | Qué hace |
-|-----------|----------|
-| [`.githooks/pre-commit`](.githooks/pre-commit) | `npm run type-check` (Turbo) + ESLint en archivos **staged** bajo `apps/api/app` y `apps/api/lib` |
-| [`.github/workflows/ci.yml`](../.github/workflows/ci.yml) | Type-check, tests por workspaces, validaciones |
-| Reglas TypeScript | Sin `any` (API y convención Opsly) |
+| Mecanismo                                                 | Qué hace                                                                                          |
+| --------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| [`.githooks/pre-commit`](.githooks/pre-commit)            | `npm run type-check` (Turbo) + ESLint en archivos **staged** bajo `apps/api/app` y `apps/api/lib` |
+| [`.github/workflows/ci.yml`](../.github/workflows/ci.yml) | Type-check, tests por workspaces, validaciones                                                    |
+| Reglas TypeScript                                         | Sin `any` (API y convención Opsly)                                                                |
 
 **Hooks:** `git config core.hooksPath .githooks` (si no están activos).
 

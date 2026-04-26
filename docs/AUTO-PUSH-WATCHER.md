@@ -52,12 +52,12 @@ Opciones: `--dry-run`, `--poll N`, `--debounce N`, `--branch main`, `--no-verify
 
 ## Solución de problemas
 
-| Síntoma | Causa probable | Acción |
-|--------|----------------|--------|
-| `Exiting (no watch)` | Rama distinta de `main` | `git checkout main` o `WATCH_BRANCH` en la unidad |
-| `commit/push failed` | Hook falla (type-check), auth SSH, o remoto | `journalctl -u opsly-watcher`; probar `git push` manual |
-| Commits vacíos / no hace nada | Sin cambios en rutas vigiladas | Normal si solo tocas otros paths |
-| Bucles de commit | Editor que reescribe archivos al foco | Aumentar `DEBOUNCE` o excluir herramientas que tocan `docs/` |
+| Síntoma                       | Causa probable                              | Acción                                                       |
+| ----------------------------- | ------------------------------------------- | ------------------------------------------------------------ |
+| `Exiting (no watch)`          | Rama distinta de `main`                     | `git checkout main` o `WATCH_BRANCH` en la unidad            |
+| `commit/push failed`          | Hook falla (type-check), auth SSH, o remoto | `journalctl -u opsly-watcher`; probar `git push` manual      |
+| Commits vacíos / no hace nada | Sin cambios en rutas vigiladas              | Normal si solo tocas otros paths                             |
+| Bucles de commit              | Editor que reescribe archivos al foco       | Aumentar `DEBOUNCE` o excluir herramientas que tocan `docs/` |
 
 ## Referencias
 

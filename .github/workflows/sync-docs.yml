@@ -8,15 +8,15 @@ on:
   push:
     branches: [main]
     paths:
-      - "docs/implementation/status.yaml"
-      - "apps/orchestrator/src/workers/ApprovalGateWorker.ts"
-      - "packages/types/src/approval.ts"
-      - "supabase/migrations/**"
-      - "scripts/sync-docs.js"
-      - "scripts/generate-sprint-tracking.js"
-      - "scripts/generate-agents-assignments.js"
-      - "scripts/patch-status-yaml-ci.js"
-      - ".github/workflows/sync-docs.yml"
+      - 'docs/implementation/status.yaml'
+      - 'apps/orchestrator/src/workers/ApprovalGateWorker.ts'
+      - 'packages/types/src/approval.ts'
+      - 'supabase/migrations/**'
+      - 'scripts/sync-docs.js'
+      - 'scripts/generate-sprint-tracking.js'
+      - 'scripts/generate-agents-assignments.js'
+      - 'scripts/patch-status-yaml-ci.js'
+      - '.github/workflows/sync-docs.yml'
 
 permissions:
   contents: write
@@ -39,7 +39,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: "18"
+          node-version: '18'
           cache: npm
 
       - name: Install dependencies

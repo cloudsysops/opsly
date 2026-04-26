@@ -3,7 +3,7 @@
  * Evita duplicar `{ error: string }` + status y centraliza logging de 500.
  */
 
-import { HTTP_STATUS } from "./constants";
+import { HTTP_STATUS } from './constants';
 
 export type ApiErrorBody = {
   error: string;
@@ -15,7 +15,7 @@ export function jsonError(message: string, status: number): Response {
 }
 
 export async function parseJsonBody(
-  request: Request,
+  request: Request
 ): Promise<{ ok: true; body: unknown } | { ok: false; response: Response }> {
   try {
     const body = await request.json();
@@ -23,7 +23,7 @@ export async function parseJsonBody(
   } catch {
     return {
       ok: false,
-      response: jsonError("Invalid JSON body", HTTP_STATUS.BAD_REQUEST),
+      response: jsonError('Invalid JSON body', HTTP_STATUS.BAD_REQUEST),
     };
   }
 }
@@ -31,7 +31,7 @@ export async function parseJsonBody(
 /** Registra `err` y devuelve 500 con mensaje genérico al cliente. */
 export function serverErrorLogged(context: string, err: unknown): Response {
   console.error(context, err);
-  return jsonError("Internal server error", HTTP_STATUS.INTERNAL_ERROR);
+  return jsonError('Internal server error', HTTP_STATUS.INTERNAL_ERROR);
 }
 
 /**
@@ -40,7 +40,7 @@ export function serverErrorLogged(context: string, err: unknown): Response {
  */
 export async function tryRoute(
   context: string,
-  handler: () => Promise<Response>,
+  handler: () => Promise<Response>
 ): Promise<Response> {
   try {
     return await handler();

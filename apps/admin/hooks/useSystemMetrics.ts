@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import useSWR from "swr";
-import { getSystemMetrics } from "@/lib/api-client";
-import type { SystemMetricsResponse } from "@/lib/types";
+import useSWR from 'swr';
+import { getSystemMetrics } from '@/lib/api-client';
+import type { SystemMetricsResponse } from '@/lib/types';
 
 const REFRESH_MS = 30_000;
 
@@ -13,12 +13,12 @@ export function useSystemMetrics(): {
   mutate: () => void;
 } {
   const { data, error, isLoading, mutate } = useSWR<SystemMetricsResponse>(
-    ["system-metrics"],
+    ['system-metrics'],
     () => getSystemMetrics(),
     {
       refreshInterval: REFRESH_MS,
       revalidateOnFocus: false,
-    },
+    }
   );
   return { data, error: error as Error | undefined, isLoading, mutate };
 }

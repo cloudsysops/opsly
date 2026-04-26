@@ -389,14 +389,16 @@ jobs:
     permissions:
       contents: read
       packages: read
+    env:
+      TAILSCALE_AUTHKEY: ${{ secrets.TAILSCALE_AUTHKEY }}
     steps:
       - uses: actions/checkout@v4
 
       - name: Connect Tailscale for SSH to VPS (tailnet)
-        if: ${{ secrets.TAILSCALE_AUTHKEY != '' }}
+        if: ${{ env.TAILSCALE_AUTHKEY != '' }}
         uses: tailscale/github-action@v2
         with:
-          authkey: ${{ secrets.TAILSCALE_AUTHKEY }}
+          authkey: ${{ env.TAILSCALE_AUTHKEY }}
           version: 1.94.2
 
       - name: Deploy staging via SSH (compose)
@@ -546,14 +548,16 @@ jobs:
     permissions:
       contents: read
       packages: read
+    env:
+      TAILSCALE_AUTHKEY: ${{ secrets.TAILSCALE_AUTHKEY }}
     steps:
       - uses: actions/checkout@v4
 
       - name: Connect Tailscale for SSH to VPS (tailnet)
-        if: ${{ secrets.TAILSCALE_AUTHKEY != '' }}
+        if: ${{ env.TAILSCALE_AUTHKEY != '' }}
         uses: tailscale/github-action@v2
         with:
-          authkey: ${{ secrets.TAILSCALE_AUTHKEY }}
+          authkey: ${{ env.TAILSCALE_AUTHKEY }}
           version: 1.94.2
 
       - name: Deploy via SSH

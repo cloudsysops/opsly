@@ -1,34 +1,30 @@
-import type { HermesTask } from "@intcloudsysops/types";
-import { NotebookLMClient } from "../lib/notebooklm-client.js";
-import { enqueueJob } from "../queue.js";
-import { getOrchestratorRedis } from "../metering/redis-client.js";
-import {
-  ContextEnricher,
-  createContextEnricher,
-  enrichTaskLocalOnly,
-} from "./ContextEnricher.js";
-import { DecisionEngine } from "./DecisionEngine.js";
-import { DiscordNotifier } from "./DiscordNotifier.js";
-import { logHermesEvent } from "./hermes-log.js";
-import { MetricsCollector } from "./MetricsCollector.js";
-import { getHermesSupabase } from "./supabase-client.js";
-import { TaskStateManager } from "./TaskStateManager.js";
-import { resolveHermesTenantContext } from "./resolve-hermes-tenant.js";
+import type { HermesTask } from '@intcloudsysops/types';
+import { NotebookLMClient } from '../lib/notebooklm-client.js';
+import { enqueueJob } from '../queue.js';
+import { getOrchestratorRedis } from '../metering/redis-client.js';
+import { ContextEnricher, createContextEnricher, enrichTaskLocalOnly } from './ContextEnricher.js';
+import { DecisionEngine } from './DecisionEngine.js';
+import { DiscordNotifier } from './DiscordNotifier.js';
+import { logHermesEvent } from './hermes-log.js';
+import { MetricsCollector } from './MetricsCollector.js';
+import { getHermesSupabase } from './supabase-client.js';
+import { TaskStateManager } from './TaskStateManager.js';
+import { resolveHermesTenantContext } from './resolve-hermes-tenant.js';
 
-const HEARTBEAT_KEY = "hermes:heartbeat";
+const HEARTBEAT_KEY = 'hermes:heartbeat';
 
 function parseSprint(): number {
-  const raw = process.env.HERMES_SPRINT?.trim() ?? "1";
+  const raw = process.env.HERMES_SPRINT?.trim() ?? '1';
   const n = Number.parseInt(raw, 10);
   return Number.isFinite(n) && n >= 0 ? n : 1;
 }
 
 function shouldNotifyDiscord(): boolean {
-  return process.env.HERMES_DISCORD_NOTIFY === "true";
+  return process.env.HERMES_DISCORD_NOTIFY === 'true';
 }
 
 function shouldDispatchOpenclaw(): boolean {
-  return process.env.HERMES_DISPATCH_OPENCLAW === "true";
+  return process.env.HERMES_DISPATCH_OPENCLAW === 'true';
 }
 
 export class HermesOrchestrator {
@@ -41,14 +37,14 @@ export class HermesOrchestrator {
   private enricher: ContextEnricher | null = createContextEnricher(this.supabase ?? undefined);
 
   async initialize(): Promise<void> {
-    logHermesEvent("hermes_orchestrator_init", { ok: true });
+    logHermesEvent('hermes_orchestrator_init', { ok: true });
     const client = new NotebookLMClient();
     if (client.isAvailable()) {
       const docs = await client.listDocuments();
-      logHermesEvent("hermes_notebooklm_ready", { list_len: docs.length });
+      logHermesEvent('hermes_notebooklm_ready', { list_len: docs.length });
     } else {
-      logHermesEvent("hermes_notebooklm_skip", {
-        reason: "NOTEBOOKLM_ENABLED/NOTEBOOKLM_NOTEBOOK_ID",
+      logHermesEvent('hermes_notebooklm_skip', {
+        reason: 'NOTEBOOKLM_ENABLED/NOTEBOOKLM_NOTEBOOK_ID',
       });
     }
   }
@@ -57,8 +53,8 @@ export class HermesOrchestrator {
     const errors: string[] = [];
     const supabase = getHermesSupabase();
     if (!supabase) {
-      logHermesEvent("hermes_tick_skip", { reason: "no_supabase" });
-      return { processed: 0, errors: ["SUPABASE_URL/SUPABASE_SERVICE_ROLE_KEY missing"] };
+      logHermesEvent('hermes_tick_skip', { reason: 'no_supabase' });
+      return { processed: 0, errors: ['SUPABASE_URL/SUPABASE_SERVICE_ROLE_KEY missing'] };
     }
 
     const tsm = new TaskStateManager(supabase);
@@ -67,17 +63,17 @@ export class HermesOrchestrator {
 
     let pending: HermesTask[] = [];
     try {
-      pending = await tsm.listTasksByStatus("PENDING");
+      pending = await tsm.listTasksByStatus('PENDING');
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
       errors.push(msg);
-      logHermesEvent("hermes_tick_error", { phase: "list", message: msg });
+      logHermesEvent('hermes_tick_error', { phase: 'list', message: msg });
       return { processed: 0, errors };
     }
 
     const redis = getOrchestratorRedis();
     if (redis) {
-      await redis.set(HEARTBEAT_KEY, new Date().toISOString(), "EX", 600).catch(() => {
+      await redis.set(HEARTBEAT_KEY, new Date().toISOString(), 'EX', 600).catch(() => {
         // no-op
       });
     }
@@ -99,27 +95,27 @@ export class HermesOrchestrator {
           await this.discord.notifyTaskStart(task);
         }
 
-        await tsm.updateTaskState(task.id, "PENDING", "ROUTED", {
-          agent: route.agentType === "none" ? null : route.agentType,
+        await tsm.updateTaskState(task.id, 'PENDING', 'ROUTED', {
+          agent: route.agentType === 'none' ? null : route.agentType,
         });
 
         const now = new Date().toISOString();
-        await tsm.updateTaskState(task.id, "ROUTED", "EXECUTING", {
+        await tsm.updateTaskState(task.id, 'ROUTED', 'EXECUTING', {
           started_at: now,
         });
 
-        if (shouldDispatchOpenclaw() && route.agentType === "cursor") {
+        if (shouldDispatchOpenclaw() && route.agentType === 'cursor') {
           await enqueueJob({
-            type: "cursor",
+            type: 'cursor',
             payload: {
               hermes_task_id: task.id,
               hermes_route: route,
-              source: "hermes",
+              source: 'hermes',
               notebooklm_context: enriched.suggestedApproach,
               notebooklm_answer: enriched.notebooklm?.answer?.slice(0, 2000),
               hermes_enrichment_summary: route.enrichment_summary,
             },
-            initiated_by: "cron",
+            initiated_by: 'cron',
             taskId: task.id,
             tenant_id: task.tenant_id,
             request_id: task.request_id,
@@ -128,29 +124,27 @@ export class HermesOrchestrator {
           });
         }
 
-        if (shouldDispatchOpenclaw() && route.agentType === "ollama") {
+        if (shouldDispatchOpenclaw() && route.agentType === 'ollama') {
           const tenantCtx = await resolveHermesTenantContext(task, supabase);
           const tenantSlug =
-            tenantCtx?.tenantSlug ??
-            process.env.HERMES_FALLBACK_TENANT_SLUG?.trim() ??
-            "platform";
+            tenantCtx?.tenantSlug ?? process.env.HERMES_FALLBACK_TENANT_SLUG?.trim() ?? 'platform';
           const tenantId = tenantCtx?.tenantId ?? task.tenant_id;
           const prompt = [
             `Tarea Hermes: ${task.name}`,
             `Tipo: ${task.type} · esfuerzo: ${task.effort}`,
-            enriched.suggestedApproach?.slice(0, 4000) ?? "",
-            route.enrichment_summary ? `Contexto: ${route.enrichment_summary}` : "",
+            enriched.suggestedApproach?.slice(0, 4000) ?? '',
+            route.enrichment_summary ? `Contexto: ${route.enrichment_summary}` : '',
           ]
             .filter((line) => line.length > 0)
-            .join("\n");
+            .join('\n');
 
           await enqueueJob({
-            type: "ollama",
+            type: 'ollama',
             payload: {
-              task_type: "analyze",
+              task_type: 'analyze',
               prompt,
             },
-            initiated_by: "cron",
+            initiated_by: 'cron',
             taskId: task.id,
             tenant_id: tenantId,
             tenant_slug: tenantSlug,
@@ -158,22 +152,22 @@ export class HermesOrchestrator {
             idempotency_key: task.idempotency_key ?? `hermes:ollama:${task.id}`,
             metadata: {
               hermes: true,
-              hermes_agent: "ollama",
+              hermes_agent: 'ollama',
               notebooklm: Boolean(nb?.answer),
             },
           });
         }
 
         const resultPayload = {
-          mode: "v1_stub",
+          mode: 'v1_stub',
           queue: route.queueName,
           agent: route.agentType,
-          enrichment: route.enrichment_summary ?? "",
+          enrichment: route.enrichment_summary ?? '',
         };
         await tsm.recordExecution(task.id, route.agentType, resultPayload);
 
         const done = new Date().toISOString();
-        await tsm.updateTaskState(task.id, "EXECUTING", "COMPLETED", {
+        await tsm.updateTaskState(task.id, 'EXECUTING', 'COMPLETED', {
           completed_at: done,
           result: resultPayload,
         });
@@ -196,7 +190,7 @@ export class HermesOrchestrator {
       } catch (e) {
         const msg = e instanceof Error ? e.message : String(e);
         errors.push(`${task.id}: ${msg}`);
-        logHermesEvent("hermes_task_error", { task_id: task.id, message: msg });
+        logHermesEvent('hermes_task_error', { task_id: task.id, message: msg });
         const latest = await tsm.getTask(task.id);
         const st = latest?.state;
         const failPatch = {
@@ -204,12 +198,12 @@ export class HermesOrchestrator {
           completed_at: new Date().toISOString(),
         };
         try {
-          if (st === "EXECUTING") {
-            await tsm.updateTaskState(task.id, "EXECUTING", "FAILED", failPatch);
-          } else if (st === "ROUTED") {
-            await tsm.updateTaskState(task.id, "ROUTED", "FAILED", failPatch);
-          } else if (st === "PENDING") {
-            await tsm.updateTaskState(task.id, "PENDING", "FAILED", failPatch);
+          if (st === 'EXECUTING') {
+            await tsm.updateTaskState(task.id, 'EXECUTING', 'FAILED', failPatch);
+          } else if (st === 'ROUTED') {
+            await tsm.updateTaskState(task.id, 'ROUTED', 'FAILED', failPatch);
+          } else if (st === 'PENDING') {
+            await tsm.updateTaskState(task.id, 'PENDING', 'FAILED', failPatch);
           }
         } catch {
           // best-effort: estado intermedio desconocido
@@ -220,7 +214,7 @@ export class HermesOrchestrator {
       }
     }
 
-    logHermesEvent("hermes_tick_complete", { processed, error_count: errors.length });
+    logHermesEvent('hermes_tick_complete', { processed, error_count: errors.length });
     return { processed, errors };
   }
 }

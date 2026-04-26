@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const {
   mockOrder,
@@ -30,28 +30,27 @@ const {
   };
 });
 
-vi.mock("../supabase", () => ({
+vi.mock('../supabase', () => ({
   getServiceClient: () => ({
     schema: mockSchema,
   }),
 }));
 
-vi.mock("../billing/budget-enforcer", async (importOriginal) => {
-  const actual =
-    await importOriginal<typeof import("../billing/budget-enforcer")>();
+vi.mock('../billing/budget-enforcer', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../billing/budget-enforcer')>();
   return {
     ...actual,
     checkTenantBudget: mockCheckTenantBudget,
   };
 });
 
-vi.mock("../logger", () => ({
+vi.mock('../logger', () => ({
   logger: {
     error: mockLoggerError,
   },
 }));
 
-import { fetchTenantBudgetOverview } from "../admin-costs-tenant-budgets";
+import { fetchTenantBudgetOverview } from '../admin-costs-tenant-budgets';
 
 function mockTenantList(rows: Array<{ id: string; slug: string; name: string }>) {
   mockFrom.mockReturnValue({
@@ -62,15 +61,15 @@ function mockTenantList(rows: Array<{ id: string; slug: string; name: string }>)
   });
 }
 
-describe("fetchTenantBudgetOverview", () => {
+describe('fetchTenantBudgetOverview', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it("counts warning and critical tenants even when enforcement is skipped", async () => {
+  it('counts warning and critical tenants even when enforcement is skipped', async () => {
     mockTenantList([
-      { id: "t-1", slug: "ops", name: "Ops" },
-      { id: "t-2", slug: "acme", name: "Acme" },
+      { id: 't-1', slug: 'ops', name: 'Ops' },
+      { id: 't-2', slug: 'acme', name: 'Acme' },
     ]);
 
     mockCheckTenantBudget
@@ -89,8 +88,8 @@ describe("fetchTenantBudgetOverview", () => {
 
     expect(payload.tenant_budgets).toHaveLength(2);
     expect(payload.tenant_budgets[0]).toMatchObject({
-      tenant_slug: "ops",
-      alert_level: "critical",
+      tenant_slug: 'ops',
+      alert_level: 'critical',
       enforcement_skipped: true,
     });
     expect(payload.llm_budget_summary).toMatchObject({
@@ -101,21 +100,21 @@ describe("fetchTenantBudgetOverview", () => {
     });
   });
 
-  it("logs and skips a tenant when budget lookup fails", async () => {
-    mockTenantList([{ id: "t-1", slug: "ops", name: "Ops" }]);
-    mockCheckTenantBudget.mockRejectedValue(new Error("boom"));
+  it('logs and skips a tenant when budget lookup fails', async () => {
+    mockTenantList([{ id: 't-1', slug: 'ops', name: 'Ops' }]);
+    mockCheckTenantBudget.mockRejectedValue(new Error('boom'));
 
     const payload = await fetchTenantBudgetOverview();
 
     expect(payload.tenant_budgets).toEqual([]);
     expect(payload.llm_budget_summary.tenant_count).toBe(0);
     expect(mockLoggerError).toHaveBeenCalledWith(
-      "admin costs tenant budget check failed",
+      'admin costs tenant budget check failed',
       expect.objectContaining({
-        tenantId: "t-1",
-        tenantSlug: "ops",
-        error: "boom",
-      }),
+        tenantId: 't-1',
+        tenantSlug: 'ops',
+        error: 'boom',
+      })
     );
   });
 });

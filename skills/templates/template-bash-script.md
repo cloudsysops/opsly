@@ -1,6 +1,6 @@
 ---
-title: "Bash Script Template"
-description: "Plantilla para scripts bash idempotentes y seguros"
+title: 'Bash Script Template'
+description: 'Plantilla para scripts bash idempotentes y seguros'
 category: devops
 tags: [bash, script, idempotent, cli]
 created_at: 2026-04-15
@@ -87,21 +87,21 @@ check_prerequisites() {
 
 do_something() {
   local arg="$1"
-  
+
   log_info "Executing main logic..."
-  
+
   if [[ "$DRY_RUN" == "true" ]]; then
     log_warn "DRY RUN: Would have executed with arg: $arg"
     return 0
   fi
-  
+
   # Implementar lógica aquí
   # Usar idempotency: verificar si ya existe antes de crear
   if [[ -f "/path/to/file" ]]; then
     log_info "File already exists, skipping"
     return 0
   fi
-  
+
   # Log the action
   log_debug "Creating file: /path/to/file"
 }
@@ -160,17 +160,17 @@ parse_args() {
 
 main() {
   log_info "Starting {{script-name}}.sh"
-  
+
   # Parsear argumentos
   parse_args "$@"
-  
+
   # Validar precondiciones
   check_dependencies "jq" "curl"  # Agregar dependencias necesarias
   check_prerequisites
-  
+
   # Ejecutar lógica principal
   do_something "some-arg"
-  
+
   log_info "Completed successfully"
 }
 
@@ -181,22 +181,26 @@ main "$@"
 ## Ejemplos de Uso
 
 ### Ejecución Normal
+
 ```bash
 chmod +x {{script-name}}.sh
 ./{{script-name}}.sh
 ```
 
 ### Dry Run (ver qué harías sin ejecutar)
+
 ```bash
 ./{{script-name}}.sh --dry-run
 ```
 
 ### Verbose Mode
+
 ```bash
 ./{{script-name}}.sh --verbose
 ```
 
 ### Combinar opciones
+
 ```bash
 DRY_RUN=true VERBOSE=true ./{{script-name}}.sh --force
 ```

@@ -2,7 +2,7 @@
  * Líneas JSON en stdout para agregación (mismo espíritu que orchestrator job-log).
  */
 export interface GatewayLogFields {
-  event: "llm_call_complete" | "llm_call_error";
+  event: 'llm_call_complete' | 'llm_call_error';
   tenant_slug: string;
   request_id: string;
   model_used?: string;
@@ -20,7 +20,7 @@ export function logGatewayEvent(fields: GatewayLogFields): void {
   const line = JSON.stringify({
     ...fields,
     ts: new Date().toISOString(),
-    service: "llm-gateway",
+    service: 'llm-gateway',
   });
   process.stdout.write(`${line}\n`);
 }

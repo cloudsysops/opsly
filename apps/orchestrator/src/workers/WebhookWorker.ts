@@ -1,10 +1,10 @@
-import { createHmac } from "node:crypto";
-import { Job, Queue, Worker } from "bullmq";
-import { connection } from "../queue.js";
-import { getWorkerConcurrency } from "../worker-concurrency.js";
-import type { WebhookPayload } from "./webhook-types.js";
+import { createHmac } from 'node:crypto';
+import { Job, Queue, Worker } from 'bullmq';
+import { connection } from '../queue.js';
+import { getWorkerConcurrency } from '../worker-concurrency.js';
+import type { WebhookPayload } from './webhook-types.js';
 
-export const WEBHOOK_QUEUE = "opsly-webhooks";
+export const WEBHOOK_QUEUE = 'opsly-webhooks';
 
 export interface WebhookJobData {
   webhookId: string;
@@ -16,7 +16,7 @@ export interface WebhookJobData {
 export const webhookQueue = new Queue<WebhookJobData>(WEBHOOK_QUEUE, { connection });
 
 function signPayload(secret: string, body: string): string {
-  return `sha256=${createHmac("sha256", secret).update(body).digest("hex")}`;
+  return `sha256=${createHmac('sha256', secret).update(body).digest('hex')}`;
 }
 
 async function deliverWebhook(job: Job<WebhookJobData>): Promise<void> {
@@ -25,12 +25,12 @@ async function deliverWebhook(job: Job<WebhookJobData>): Promise<void> {
   const signature = signPayload(secret, body);
 
   const res = await fetch(url, {
-    method: "POST",
+    method: 'POST',
     headers: {
-      "Content-Type": "application/json",
-      "X-Opsly-Signature": signature,
-      "X-Opsly-Event": payload.event,
-      "X-Opsly-Delivery": job.id ?? "unknown",
+      'Content-Type': 'application/json',
+      'X-Opsly-Signature': signature,
+      'X-Opsly-Event': payload.event,
+      'X-Opsly-Delivery': job.id ?? 'unknown',
     },
     body,
     signal: AbortSignal.timeout(10_000),
@@ -42,40 +42,46 @@ async function deliverWebhook(job: Job<WebhookJobData>): Promise<void> {
 }
 
 export function createWebhookWorker(): Worker<WebhookJobData> {
-  const concurrency = getWorkerConcurrency("webhook");
+  const concurrency = getWorkerConcurrency('webhook');
   const worker = new Worker<WebhookJobData>(WEBHOOK_QUEUE, deliverWebhook, {
     connection,
     concurrency,
   });
 
-  worker.on("active", (job) => {
-    console.log(JSON.stringify({
-      event: "worker_start",
-      worker: "WebhookWorker",
-      jobId: job.id,
-      webhookId: job.data.webhookId,
-      webhookEvent: job.data.payload.event,
-    }));
+  worker.on('active', (job) => {
+    console.log(
+      JSON.stringify({
+        event: 'worker_start',
+        worker: 'WebhookWorker',
+        jobId: job.id,
+        webhookId: job.data.webhookId,
+        webhookEvent: job.data.payload.event,
+      })
+    );
   });
 
-  worker.on("completed", (job) => {
-    console.log(JSON.stringify({
-      event: "worker_complete",
-      worker: "WebhookWorker",
-      jobId: job.id,
-      webhookId: job.data.webhookId,
-    }));
+  worker.on('completed', (job) => {
+    console.log(
+      JSON.stringify({
+        event: 'worker_complete',
+        worker: 'WebhookWorker',
+        jobId: job.id,
+        webhookId: job.data.webhookId,
+      })
+    );
   });
 
-  worker.on("failed", (job, err) => {
-    console.error(JSON.stringify({
-      event: "worker_fail",
-      worker: "WebhookWorker",
-      jobId: job?.id,
-      webhookId: job?.data.webhookId,
-      error: err.message,
-      attemptsMade: job?.attemptsMade,
-    }));
+  worker.on('failed', (job, err) => {
+    console.error(
+      JSON.stringify({
+        event: 'worker_fail',
+        worker: 'WebhookWorker',
+        jobId: job?.id,
+        webhookId: job?.data.webhookId,
+        error: err.message,
+        attemptsMade: job?.attemptsMade,
+      })
+    );
   });
 
   return worker;
@@ -87,10 +93,10 @@ export async function closeWebhookQueue(): Promise<void> {
 
 // Encolar un webhook job con 3 reintentos y backoff exponencial
 export async function enqueueWebhookJob(data: WebhookJobData): Promise<void> {
-  await webhookQueue.add("deliver", data, {
+  await webhookQueue.add('deliver', data, {
     jobId: `${data.webhookId}-${data.payload.event}-${data.payload.timestamp}`,
     attempts: 3,
-    backoff: { type: "exponential", delay: 5_000 },
+    backoff: { type: 'exponential', delay: 5_000 },
     removeOnComplete: { count: 200 },
     removeOnFail: { count: 100 },
   });

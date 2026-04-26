@@ -19,32 +19,32 @@ last_review: 2026-04-24
 
 ### Resumen ejecutivo
 
-| Métrica | Meta | Actual | Notas |
-|---------|------|--------|--------|
-| Tareas ROADMAP completadas | 3 bloques (proveedores/health, metering, tests gateway) | ☐ | Marcar al cerrar |
-| `npm run type-check` | Verde | ☐ | En CI + local |
-| Tests `llm-gateway` | Suite verde | ☐ | `npm run test --workspace=@intcloudsysops/llm-gateway` |
-| Eventos con `tenant_slug` + `request_id` | Donde aplique gateway | ☐ | Ver logs estructurados |
+| Métrica                                  | Meta                                                    | Actual | Notas                                                  |
+| ---------------------------------------- | ------------------------------------------------------- | ------ | ------------------------------------------------------ |
+| Tareas ROADMAP completadas               | 3 bloques (proveedores/health, metering, tests gateway) | ☐      | Marcar al cerrar                                       |
+| `npm run type-check`                     | Verde                                                   | ☐      | En CI + local                                          |
+| Tests `llm-gateway`                      | Suite verde                                             | ☐      | `npm run test --workspace=@intcloudsysops/llm-gateway` |
+| Eventos con `tenant_slug` + `request_id` | Donde aplique gateway                                   | ☐      | Ver logs estructurados                                 |
 
 ### Entregables (alineados al repo real)
 
-| ID | Tarea | Referencia código | Estado |
-|----|--------|-------------------|--------|
-| **S1.A** | Revisar cadena de proveedores y health | `apps/llm-gateway/src/providers.ts`, `llm-direct.ts`, `health-daemon.ts` | ☐ |
-| **S1.B** | Verificar metering / `usage_events` / logger gateway | `VISION.md` (Hermes metering), `apps/llm-gateway/src/logger.ts`, paquetes compartidos | ☐ |
-| **S1.C** | Tests regresión gateway | `apps/llm-gateway/__tests__/` | ☐ |
+| ID       | Tarea                                                | Referencia código                                                                     | Estado |
+| -------- | ---------------------------------------------------- | ------------------------------------------------------------------------------------- | ------ |
+| **S1.A** | Revisar cadena de proveedores y health               | `apps/llm-gateway/src/providers.ts`, `llm-direct.ts`, `health-daemon.ts`              | ☐      |
+| **S1.B** | Verificar metering / `usage_events` / logger gateway | `VISION.md` (Hermes metering), `apps/llm-gateway/src/logger.ts`, paquetes compartidos | ☐      |
+| **S1.C** | Tests regresión gateway                              | `apps/llm-gateway/__tests__/`                                                         | ☐      |
 
 **No es obligatorio esta semana:** crear `llm-router.ts` ni `execute-task.ts` si no están en el plan técnico acordado — ver [`docs/IMPLEMENTATION-IA-LAYER.md`](docs/IMPLEMENTATION-IA-LAYER.md).
 
 ### Checklist diario (opcional)
 
-| Día | Enfoque | Hecho |
-|-----|---------|-------|
-| Lun | S1.A inventario + notas | ☐ |
-| Mar | S1.A ajustes menores + type-check | ☐ |
-| Mié | S1.B revisión trazas / eventos | ☐ |
-| Jue | S1.C tests nuevos o reforzados | ☐ |
-| Vie | Resumen + `./scripts/weekly-sprint-report.sh` | ☐ |
+| Día | Enfoque                                       | Hecho |
+| --- | --------------------------------------------- | ----- |
+| Lun | S1.A inventario + notas                       | ☐     |
+| Mar | S1.A ajustes menores + type-check             | ☐     |
+| Mié | S1.B revisión trazas / eventos                | ☐     |
+| Jue | S1.C tests nuevos o reforzados                | ☐     |
+| Vie | Resumen + `./scripts/weekly-sprint-report.sh` | ☐     |
 
 ### Integración externa (manual)
 
@@ -58,9 +58,9 @@ last_review: 2026-04-24
 **Ventana:** _YYYY-MM-DD → YYYY-MM-DD_  
 **Objetivo ROADMAP:** _Planner + workers + NotebookLM (límites)_
 
-| ID | Tarea | Referencia | Estado |
-|----|--------|------------|--------|
-| S2.A | … | `planner-client.ts`, `planner-route.ts` | ☐ |
+| ID   | Tarea | Referencia                              | Estado |
+| ---- | ----- | --------------------------------------- | ------ |
+| S2.A | …     | `planner-client.ts`, `planner-route.ts` | ☐      |
 
 ---
 

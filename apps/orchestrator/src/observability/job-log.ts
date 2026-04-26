@@ -1,8 +1,8 @@
-import type { OrchestratorJob } from "../types.js";
+import type { OrchestratorJob } from '../types.js';
 
 export interface JobEnqueueLogFields {
-  event: "job_enqueue";
-  job_type: OrchestratorJob["type"];
+  event: 'job_enqueue';
+  job_type: OrchestratorJob['type'];
   task_id?: string;
   tenant_slug?: string;
   tenant_id?: string;
@@ -11,7 +11,7 @@ export interface JobEnqueueLogFields {
   idempotency_key?: string;
   /** Presente si BullMQ usa jobId fijo. */
   bullmq_job_id_custom?: boolean;
-  initiated_by: OrchestratorJob["initiated_by"];
+  initiated_by: OrchestratorJob['initiated_by'];
   agent_role?: string;
   cost_budget_usd?: number;
   /** Prioridad BullMQ (0 = máxima); ver `planToQueuePriority` en `queue-opts.ts`. */
@@ -26,7 +26,7 @@ export function logJobEnqueue(fields: JobEnqueueLogFields): void {
   const line = JSON.stringify({
     ...fields,
     ts: new Date().toISOString(),
-    service: "orchestrator",
+    service: 'orchestrator',
   });
   process.stdout.write(`${line}\n`);
 }

@@ -1,13 +1,13 @@
-import { startMcpHttpHealth } from "./http-health.js";
-import { startMcpStdioServer } from "./mcp-sdk-bridge.js";
-import { createServer, getAllToolDefinitions } from "./server.js";
+import { startMcpHttpHealth } from './http-health.js';
+import { startMcpStdioServer } from './mcp-sdk-bridge.js';
+import { createServer, getAllToolDefinitions } from './server.js';
 
 function useStdioTransport(): boolean {
   const env = process.env.MCP_TRANSPORT?.trim().toLowerCase();
-  if (env === "stdio") {
+  if (env === 'stdio') {
     return true;
   }
-  return process.argv.includes("--stdio");
+  return process.argv.includes('--stdio');
 }
 
 async function main(): Promise<void> {
@@ -25,9 +25,9 @@ async function main(): Promise<void> {
       service: openClaw.name,
       version: openClaw.version,
       tools: openClaw.listTools(),
-      status: "running",
-      transport: "http",
-    }) + "\n",
+      status: 'running',
+      transport: 'http',
+    }) + '\n'
   );
 }
 

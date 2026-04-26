@@ -22,7 +22,7 @@ services:
     image: redis:7-alpine
     container_name: openclaw-redis
     ports:
-      - "6379:6379"
+      - '6379:6379'
     volumes:
       - redis_data:/data
     command: >
@@ -34,7 +34,7 @@ services:
       --save 60 10000
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ['CMD', 'redis-cli', 'ping']
       interval: 15s
       timeout: 5s
       retries: 3
@@ -46,7 +46,7 @@ services:
     image: ghcr.io/cloudsysops/intcloudsysops-llm-gateway:latest
     container_name: openclaw-llm-gateway
     ports:
-      - "3010:3010"
+      - '3010:3010'
     environment:
       - REDIS_URL=redis://redis:6379/0
       - NODE_ENV=production
@@ -58,7 +58,7 @@ services:
         condition: service_healthy
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "curl -sf http://localhost:3010/health || exit 1"]
+      test: ['CMD-SHELL', 'curl -sf http://localhost:3010/health || exit 1']
       interval: 30s
       timeout: 10s
       retries: 3
@@ -70,7 +70,7 @@ services:
     image: ollama/ollama:latest
     container_name: openclaw-ollama
     ports:
-      - "11434:11434"
+      - '11434:11434'
     volumes:
       - ollama_data:/root/.ollama
     environment:
@@ -84,7 +84,7 @@ services:
         reservations:
           memory: 2G
     healthcheck:
-      test: ["CMD-SHELL", "curl -sf http://localhost:11434/api/tags || exit 1"]
+      test: ['CMD-SHELL', 'curl -sf http://localhost:11434/api/tags || exit 1']
       interval: 30s
       timeout: 15s
       retries: 5
@@ -96,7 +96,7 @@ services:
     image: ghcr.io/cloudsysops/intcloudsysops-orchestrator:latest
     container_name: openclaw-orchestrator
     ports:
-      - "3011:3011"
+      - '3011:3011'
     environment:
       - REDIS_URL=redis://redis:6379/0
       - LLM_GATEWAY_URL=http://llm-gateway:3010
@@ -124,7 +124,7 @@ services:
         reservations:
           memory: 1G
     healthcheck:
-      test: ["CMD-SHELL", "curl -sf http://localhost:3011/health || exit 1"]
+      test: ['CMD-SHELL', 'curl -sf http://localhost:3011/health || exit 1']
       interval: 30s
       timeout: 10s
       retries: 3
@@ -136,14 +136,14 @@ services:
     image: ghcr.io/cloudsysops/intcloudsysops-mcp:latest
     container_name: openclaw-mcp
     ports:
-      - "3003:3003"
+      - '3003:3003'
     environment:
       - NODE_ENV=production
       - PORT=3003
       - OPSLY_API_URL=http://api:3000
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "curl -sf http://localhost:3003/health || exit 1"]
+      test: ['CMD-SHELL', 'curl -sf http://localhost:3003/health || exit 1']
       interval: 30s
       timeout: 10s
       retries: 3
@@ -155,7 +155,7 @@ services:
     image: ghcr.io/cloudsysops/intcloudsysops-mission-control:latest
     container_name: openclaw-mission-control
     ports:
-      - "3015:3000"
+      - '3015:3000'
     environment:
       - NODE_ENV=production
       - PORT=3000
@@ -173,7 +173,7 @@ services:
     image: prom/prometheus:latest
     container_name: openclaw-prometheus
     ports:
-      - "9090:9090"
+      - '9090:9090'
     volumes:
       - ./prometheus.openclaw.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus_data:/prometheus
@@ -192,7 +192,7 @@ services:
     image: grafana/grafana:latest
     container_name: openclaw-grafana
     ports:
-      - "3030:3000"
+      - '3030:3000'
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin123}
       - GF_USERS_ALLOW_SIGN_UP=false

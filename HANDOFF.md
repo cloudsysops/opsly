@@ -26,10 +26,10 @@ ssh -o BatchMode=yes vps-dragon@100.120.151.91 "ls -la /opt/opsly/tenants/"
 
 ## URLs de testing (staging)
 
-- LocalRank n8n: https://n8n-localrank.ops.smiletripcare.com  
-- LocalRank uptime: https://uptime-localrank.ops.smiletripcare.com  
-- jkboterolabs n8n: https://n8n-jkboterolabs.ops.smiletripcare.com  
-- jkboterolabs uptime: https://uptime-jkboterolabs.ops.smiletripcare.com  
+- LocalRank n8n: https://n8n-localrank.ops.smiletripcare.com
+- LocalRank uptime: https://uptime-localrank.ops.smiletripcare.com
+- jkboterolabs n8n: https://n8n-jkboterolabs.ops.smiletripcare.com
+- jkboterolabs uptime: https://uptime-jkboterolabs.ops.smiletripcare.com
 
 ## Referencias de código
 

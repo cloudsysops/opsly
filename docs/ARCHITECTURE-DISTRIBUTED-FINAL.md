@@ -43,21 +43,21 @@
 
 ### VPS (control plane + edge)
 
-| Rol | Contenido típico |
-|-----|-------------------|
-| API pública | `apps/api`, HTTPS vía Traefik |
-| Redis + BullMQ | Colas; **no** exponer `6379` a Internet |
-| Traefik | TLS, routers por host |
-| Admin / Portal | Dashboards cliente y operador |
-| Tenants | Stacks `n8n` / Uptime por `tenant_<slug>` |
+| Rol            | Contenido típico                          |
+| -------------- | ----------------------------------------- |
+| API pública    | `apps/api`, HTTPS vía Traefik             |
+| Redis + BullMQ | Colas; **no** exponer `6379` a Internet   |
+| Traefik        | TLS, routers por host                     |
+| Admin / Portal | Dashboards cliente y operador             |
+| Tenants        | Stacks `n8n` / Uptime por `tenant_<slug>` |
 
 ### Worker Mac 2011 (data plane / workers)
 
-| Rol | Contenido típico |
-|-----|-------------------|
-| Workers BullMQ | Procesos que consumen Redis del VPS (`REDIS_URL` en `.env.worker`) |
-| Ollama (opcional) | Modelos locales; gran consumo de disco en el VPS si se co-ubica |
-| OpenClaw / labs | Solo si el producto lo exige; preferir imagen y versión alineadas al VPS |
+| Rol               | Contenido típico                                                         |
+| ----------------- | ------------------------------------------------------------------------ |
+| Workers BullMQ    | Procesos que consumen Redis del VPS (`REDIS_URL` en `.env.worker`)       |
+| Ollama (opcional) | Modelos locales; gran consumo de disco en el VPS si se co-ubica          |
+| OpenClaw / labs   | Solo si el producto lo exige; preferir imagen y versión alineadas al VPS |
 
 **Referencias:** `docs/WORKER-SETUP-MAC2011.md`, `scripts/start-workers-mac2011.sh`.
 
@@ -65,16 +65,16 @@
 
 Evitar confusiones con el borrador “3001 = LLM Gateway”: en **`infra/docker-compose.platform.yml`** el **Admin** usa **3001** en su servicio; el **LLM Gateway** escucha en **3010** dentro de la red Docker.
 
-| Servicio | Puerto interno (compose) | Notas |
-|----------|---------------------------|--------|
-| API (`app`) | 3000 | |
-| Admin | 3001 | |
-| Portal | 3002 | |
-| MCP | 3003 | Traefik `mcp.${PLATFORM_DOMAIN}` |
-| LLM Gateway | 3010 | `ORCHESTRATOR_LLM_GATEWAY_URL` → `http://llm-gateway:3010` |
-| Orchestrator (health) | 3011 | |
-| Context Builder | 3012 | |
-| Ollama (típico) | 11434 | Solo si se despliega |
+| Servicio              | Puerto interno (compose) | Notas                                                      |
+| --------------------- | ------------------------ | ---------------------------------------------------------- |
+| API (`app`)           | 3000                     |                                                            |
+| Admin                 | 3001                     |                                                            |
+| Portal                | 3002                     |                                                            |
+| MCP                   | 3003                     | Traefik `mcp.${PLATFORM_DOMAIN}`                           |
+| LLM Gateway           | 3010                     | `ORCHESTRATOR_LLM_GATEWAY_URL` → `http://llm-gateway:3010` |
+| Orchestrator (health) | 3011                     |                                                            |
+| Context Builder       | 3012                     |                                                            |
+| Ollama (típico)       | 11434                    | Solo si se despliega                                       |
 
 Si se **mueve** LLM Gateway / MCP / Context Builder al worker, hay que **reapuntar** variables de entorno y DNS/Traefik; no basta con copiar puertos del diagrama antiguo.
 
@@ -97,10 +97,10 @@ La ruta exacta depende de si el orchestrator y el LLM Gateway siguen en el VPS o
 
 ## Recursos (orden de magnitud)
 
-| Nodo | Disco | RAM | Observación |
-|------|-------|-----|-------------|
-| VPS DO | 48 GiB | ~4 GiB | Crítico si se acumulan imágenes Docker |
-| Mac 2011 (ejemplo medido) | ~200 GiB+ libre típico | 16 GiB | Adecuado para modelos y workers |
+| Nodo                      | Disco                  | RAM    | Observación                            |
+| ------------------------- | ---------------------- | ------ | -------------------------------------- |
+| VPS DO                    | 48 GiB                 | ~4 GiB | Crítico si se acumulan imágenes Docker |
+| Mac 2011 (ejemplo medido) | ~200 GiB+ libre típico | 16 GiB | Adecuado para modelos y workers        |
 
 ## Comunicación
 
@@ -134,20 +134,20 @@ Si se publica Ollama u OpenClaw por HTTPS, usar **Traefik en el VPS** con backen
 
 ## Costes (indicativos)
 
-| Concepto | Notas |
-|----------|--------|
-| VPS | Plan actual (DigitalOcean, etc.) |
-| Mac 2011 | Hardware existente |
+| Concepto       | Notas                                             |
+| -------------- | ------------------------------------------------- |
+| VPS            | Plan actual (DigitalOcean, etc.)                  |
+| Mac 2011       | Hardware existente                                |
 | Cloud opcional | Solo si se añade failover o inferencia gestionada |
 
 **Totales:** no fijar cifras en doc; dependen del plan y región.
 
 ## Estado de implementación
 
-| Ítem | Estado |
-|------|--------|
-| Documentación objetivo | Este archivo |
-| Worker BullMQ en Mac 2011 | Guía viva `WORKER-SETUP-MAC2011.md` |
+| Ítem                                        | Estado                                                                    |
+| ------------------------------------------- | ------------------------------------------------------------------------- |
+| Documentación objetivo                      | Este archivo                                                              |
+| Worker BullMQ en Mac 2011                   | Guía viva `WORKER-SETUP-MAC2011.md`                                       |
 | Migración Ollama/OpenClaw/compose al worker | **Manual**, ventana de mantenimiento; seguir `HEAVY-SERVICES-DECISION.md` |
 
 ## Referencias

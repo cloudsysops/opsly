@@ -1,5 +1,5 @@
-import { escapeHtml, getInviteFromEmail, sendHtmlEmail } from "./email";
-import { getServiceClient } from "./supabase";
+import { escapeHtml, getInviteFromEmail, sendHtmlEmail } from './email';
+import { getServiceClient } from './supabase';
 
 export type PortalInviteParams = {
   email: string;
@@ -49,54 +49,48 @@ function requireEnv(name: string): string {
 export function getPortalSiteUrl(): string {
   const explicit = process.env.PORTAL_SITE_URL?.trim();
   if (explicit && explicit.length > 0) {
-    return explicit.replace(/\/$/, "");
+    return explicit.replace(/\/$/, '');
   }
-  const domain =
-    process.env.PLATFORM_DOMAIN?.trim() ??
-    process.env.PLATFORM_BASE_DOMAIN?.trim();
+  const domain = process.env.PLATFORM_DOMAIN?.trim() ?? process.env.PLATFORM_BASE_DOMAIN?.trim();
   if (domain && domain.length > 0) {
     return `https://portal.${domain}`;
   }
-  throw new Error(
-    "PORTAL_SITE_URL or PLATFORM_DOMAIN is required for portal invites",
-  );
+  throw new Error('PORTAL_SITE_URL or PLATFORM_DOMAIN is required for portal invites');
 }
 
 function parseInviteTokenFromActionLink(actionLink: string): string | null {
   try {
     const u = new URL(actionLink);
-    return u.searchParams.get("token");
+    return u.searchParams.get('token');
   } catch {
     return null;
   }
 }
 
 function footerLineFromEnv(): string {
-  const domain =
-    process.env.PLATFORM_DOMAIN?.trim() ??
-    process.env.PLATFORM_BASE_DOMAIN?.trim();
+  const domain = process.env.PLATFORM_DOMAIN?.trim() ?? process.env.PLATFORM_BASE_DOMAIN?.trim();
   if (domain && domain.length > 0) {
     return `Opsly · ${domain}`;
   }
-  return "Opsly";
+  return 'Opsly';
 }
 
 function buildPortalInviteHtml(
   displayName: string,
   companyName: string,
   activateUrl: string,
-  portalHomeUrl: string,
+  portalHomeUrl: string
 ): string {
   const safeName = escapeHtml(displayName);
   const safeCompany = escapeHtml(companyName);
   const safeUrl = escapeHtml(activateUrl);
   const safePortal = escapeHtml(portalHomeUrl);
   const safeFooter = escapeHtml(footerLineFromEnv());
-  return PORTAL_INVITE_HTML_TEMPLATE.replace("{displayName}", safeName)
-    .replace("{companyName}", safeCompany)
-    .replace("{activateUrl}", safeUrl)
-    .replace("{portalHomeUrl}", safePortal)
-    .replace("{footerLine}", safeFooter);
+  return PORTAL_INVITE_HTML_TEMPLATE.replace('{displayName}', safeName)
+    .replace('{companyName}', safeCompany)
+    .replace('{activateUrl}', safeUrl)
+    .replace('{portalHomeUrl}', safePortal)
+    .replace('{footerLine}', safeFooter);
 }
 
 export type PortalInviteLinkResult = {
@@ -108,7 +102,7 @@ async function generateInviteLink(
   email: string,
   name: string,
   slug: string,
-  mode?: "developer" | "managed",
+  mode?: 'developer' | 'managed'
 ): Promise<PortalInviteLinkResult> {
   const admin = getServiceClient();
   const portalBase = getPortalSiteUrl();
@@ -122,7 +116,7 @@ async function generateInviteLink(
   }
 
   const { data, error } = await admin.auth.admin.generateLink({
-    type: "invite",
+    type: 'invite',
     email,
     options: {
       data: userData,
@@ -135,12 +129,12 @@ async function generateInviteLink(
   }
   const actionLink = data.properties?.action_link;
   if (!actionLink || actionLink.length === 0) {
-    throw new Error("generateLink did not return action_link");
+    throw new Error('generateLink did not return action_link');
   }
 
   const token = parseInviteTokenFromActionLink(actionLink);
   if (!token || token.length === 0) {
-    throw new Error("Could not parse invite token from action_link");
+    throw new Error('Could not parse invite token from action_link');
   }
 
   const link = `${portalBase}/invite/${encodeURIComponent(token)}?email=${encodeURIComponent(email)}`;
@@ -148,25 +142,20 @@ async function generateInviteLink(
 }
 
 export async function sendPortalInvitationForTenant(
-  params: PortalInviteParams & { mode?: "developer" | "managed" },
+  params: PortalInviteParams & { mode?: 'developer' | 'managed' }
 ): Promise<PortalInviteLinkResult> {
-  requireEnv("NEXT_PUBLIC_SUPABASE_URL");
-  requireEnv("SUPABASE_SERVICE_ROLE_KEY");
+  requireEnv('NEXT_PUBLIC_SUPABASE_URL');
+  requireEnv('SUPABASE_SERVICE_ROLE_KEY');
 
   const { link: activateUrl, token } = await generateInviteLink(
     params.email,
     params.name,
     params.slug,
-    params.mode,
+    params.mode
   );
 
   const portalHome = getPortalSiteUrl();
-  const html = buildPortalInviteHtml(
-    params.name,
-    params.name,
-    activateUrl,
-    portalHome,
-  );
+  const html = buildPortalInviteHtml(params.name, params.name, activateUrl, portalHome);
 
   await sendHtmlEmail({
     to: params.email,

@@ -1,10 +1,10 @@
-import type { ReactElement } from "react";
-import { redirect } from "next/navigation";
-import { PortalShell } from "@/components/layout/portal-shell";
-import { SuperAdminDashboard } from "@/components/super-admin-dashboard";
-import { fetchSuperAdminMetrics, fetchSuperAdminTenants } from "@/lib/admin-api";
-import { getApiBaseUrlServer } from "@/lib/api-server";
-import { createServerSupabase } from "@/lib/supabase/server";
+import type { ReactElement } from 'react';
+import { redirect } from 'next/navigation';
+import { PortalShell } from '@/components/layout/portal-shell';
+import { SuperAdminDashboard } from '@/components/super-admin-dashboard';
+import { fetchSuperAdminMetrics, fetchSuperAdminTenants } from '@/lib/admin-api';
+import { getApiBaseUrlServer } from '@/lib/api-server';
+import { createServerSupabase } from '@/lib/supabase/server';
 
 export default async function SuperAdminDashboardPage(): Promise<ReactElement> {
   const supabase = await createServerSupabase();
@@ -12,7 +12,7 @@ export default async function SuperAdminDashboardPage(): Promise<ReactElement> {
     data: { session },
   } = await supabase.auth.getSession();
   if (!session?.access_token) {
-    redirect("/login");
+    redirect('/login');
   }
 
   const apiBase = await getApiBaseUrlServer();

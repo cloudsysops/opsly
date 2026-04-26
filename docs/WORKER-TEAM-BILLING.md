@@ -5,13 +5,13 @@
 
 ## Componentes reales hoy
 
-| Capacidad | Implementación |
-|-----------|----------------|
-| Uso LLM por tenant | `apps/llm-gateway` → agregados / `usage_events` |
-| Tope mensual USD | `platform.tenant_budgets` + API `GET/PUT /api/portal/tenant/[slug]/budget` |
-| Refuerzo de presupuesto | Cola `opsly-budget-enforcement`, `SuspensionWorker`, `POST /api/internal/budget-enforce` |
-| Facturación Stripe (producto) | Webhooks y planes en `apps/web` / Doppler — ver `VISION.md` |
-| Paralelismo por plan (orientativo) | `docs/AGENTS-GUIDE.md` (startup: 2, business: 5, enterprise: ∞) |
+| Capacidad                          | Implementación                                                                           |
+| ---------------------------------- | ---------------------------------------------------------------------------------------- |
+| Uso LLM por tenant                 | `apps/llm-gateway` → agregados / `usage_events`                                          |
+| Tope mensual USD                   | `platform.tenant_budgets` + API `GET/PUT /api/portal/tenant/[slug]/budget`               |
+| Refuerzo de presupuesto            | Cola `opsly-budget-enforcement`, `SuspensionWorker`, `POST /api/internal/budget-enforce` |
+| Facturación Stripe (producto)      | Webhooks y planes en `apps/web` / Doppler — ver `VISION.md`                              |
+| Paralelismo por plan (orientativo) | `docs/AGENTS-GUIDE.md` (startup: 2, business: 5, enterprise: ∞)                          |
 
 ## Modelo ampliado (roadmap): CPU / memoria / workers
 
@@ -25,11 +25,11 @@ Hasta entonces, el **proxy de coste** oficial para IA sigue siendo **USD vía LL
 
 ### Tabla ilustrativa (no contractual en código)
 
-| Concepto | Notas |
-|--------|--------|
-| Plan mensual base | Stripe + `VISION.md` |
-| Incluido | Tokens/USD o jobs según plan |
-| Exceso | `usage_events` + alertas; suspensión opcional vía budget |
+| Concepto          | Notas                                                    |
+| ----------------- | -------------------------------------------------------- |
+| Plan mensual base | Stripe + `VISION.md`                                     |
+| Incluido          | Tokens/USD o jobs según plan                             |
+| Exceso            | `usage_events` + alertas; suspensión opcional vía budget |
 
 ## Flujo cliente (lógico)
 

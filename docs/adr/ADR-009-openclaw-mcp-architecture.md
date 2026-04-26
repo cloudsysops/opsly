@@ -101,12 +101,12 @@ Adoptamos el estándar OAuth 2.0 + PKCE descrito para MCP en:
 
 **Herramientas y scopes**
 
-| Tool | Scope |
-|------|--------|
-| `get_tenants`, `get_tenant` | `tenants:read` |
-| `onboard_tenant`, `suspend_tenant`, `resume_tenant` | `tenants:write` |
-| `get_health`, `get_metrics` | `metrics:read` |
-| `send_invitation` | `invitations:write` |
-| `execute_prompt` | `executor:write` |
+| Tool                                                | Scope               |
+| --------------------------------------------------- | ------------------- |
+| `get_tenants`, `get_tenant`                         | `tenants:read`      |
+| `onboard_tenant`, `suspend_tenant`, `resume_tenant` | `tenants:write`     |
+| `get_health`, `get_metrics`                         | `metrics:read`      |
+| `send_invitation`                                   | `invitations:write` |
+| `execute_prompt`                                    | `executor:write`    |
 
 La verificación de scope aplica cuando el transporte hacia `callTool` incluye `Authorization`. Las llamadas in-process sin header conservan el comportamiento previo (tests y runners locales).

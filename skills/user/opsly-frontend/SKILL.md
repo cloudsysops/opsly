@@ -23,20 +23,18 @@ Al crear o modificar componentes, páginas o lógica client-side en `apps/portal
 
 ```tsx
 // apps/portal/app/dashboard/page.tsx
-import { redirect } from "next/navigation";
-import { createServerSupabase } from "@/lib/supabase-server";
-import { PortalShell } from "@/components/portal-shell";
+import { redirect } from 'next/navigation';
+import { createServerSupabase } from '@/lib/supabase-server';
+import { PortalShell } from '@/components/portal-shell';
 
 export default async function DashboardPage(): Promise<ReactElement> {
   const supabase = await createServerSupabase();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect('/login');
 
-  return (
-    <PortalShell>
-      {/* contenido */}
-    </PortalShell>
-  );
+  return <PortalShell>{/* contenido */}</PortalShell>;
 }
 ```
 
@@ -44,11 +42,11 @@ export default async function DashboardPage(): Promise<ReactElement> {
 
 ```tsx
 // apps/portal/components/mi-componente.tsx
-"use client";
+'use client';
 
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import type { MiTipo } from "@/types";
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import type { MiTipo } from '@/types';
 
 interface Props {
   dato: MiTipo;
@@ -66,7 +64,7 @@ export function MiComponente({ dato, onAction }: Props): ReactElement {
       // lógica async
       onAction?.();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Error desconocido");
+      setError(err instanceof Error ? err.message : 'Error desconocido');
     } finally {
       setLoading(false);
     }
@@ -76,7 +74,7 @@ export function MiComponente({ dato, onAction }: Props): ReactElement {
     <div className="mx-auto max-w-4xl space-y-4">
       {error && <p className="text-ops-red text-sm">{error}</p>}
       <Button onClick={handleAction} disabled={loading}>
-        {loading ? "Procesando..." : "Acción"}
+        {loading ? 'Procesando...' : 'Acción'}
       </Button>
     </div>
   );
@@ -89,7 +87,7 @@ El admin usa un wrapper centralizado en `apps/admin/lib/api-client.ts`:
 
 ```tsx
 // Siempre usar las funciones exportadas, nunca fetch directo
-import { getTenants, getMetrics } from "@/lib/api-client";
+import { getTenants, getMetrics } from '@/lib/api-client';
 
 // El client agrega automáticamente:
 // - Content-Type: application/json
@@ -102,34 +100,38 @@ Para portal, las llamadas van directo a Supabase con `createClient()`.
 
 Ubicación: `apps/{portal,admin}/components/ui/`
 
-| Componente | Variantes | Uso |
-|---|---|---|
-| `Button` | `primary`, `default`, `ghost`, `link` + sizes `sm`, `default`, `lg` | Acciones |
-| `Card` | — | Contenedores con borde |
-| `Input` | — | Formularios |
-| `Badge` | `default`, `success`, `warning`, `error` | Estados |
-| `Dialog` | — | Modales (Radix) |
+| Componente | Variantes                                                           | Uso                    |
+| ---------- | ------------------------------------------------------------------- | ---------------------- |
+| `Button`   | `primary`, `default`, `ghost`, `link` + sizes `sm`, `default`, `lg` | Acciones               |
+| `Card`     | —                                                                   | Contenedores con borde |
+| `Input`    | —                                                                   | Formularios            |
+| `Badge`    | `default`, `success`, `warning`, `error`                            | Estados                |
+| `Dialog`   | —                                                                   | Modales (Radix)        |
 
 ## Prevenir errores React comunes
 
 ### Hydration mismatch (#418)
+
 - No usar `Date.now()`, `Math.random()`, o `window` en el render inicial de client components
 - Si necesitas datos dinámicos, usar `useEffect` para setearlos después del mount
 
 ### Hooks violation (#310)
+
 - **NUNCA** retornar antes de un hook. Todos los `useState`, `useMemo`, `useEffect` deben ejecutarse siempre, en el mismo orden
 - Si necesitas condicionar, usa el hook y condiciona el valor:
+
   ```tsx
   // MAL
   if (!data) return null;
   const processed = useMemo(() => transform(data), [data]);
 
   // BIEN
-  const processed = useMemo(() => data ? transform(data) : null, [data]);
+  const processed = useMemo(() => (data ? transform(data) : null), [data]);
   if (!processed) return null;
   ```
 
 ### Auth token en Admin
+
 - Siempre usar `api-client.ts` que inyecta `Authorization: Bearer` automáticamente
 - Si creas un endpoint admin nuevo, verificar que el client pasa el token
 
@@ -144,10 +146,10 @@ Ubicación: `apps/{portal,admin}/components/ui/`
 
 ## Errores comunes
 
-| Error | Causa | Solución |
-|-------|-------|----------|
-| React #418 | Hydration mismatch | Mover datos dinámicos a `useEffect` |
-| React #310 | Hook después de return condicional | Mover hooks antes de cualquier return |
-| 401 en Admin | Token no enviado | Usar `api-client.ts`, no fetch directo |
-| Estilos rotos | Clase Tailwind inexistente | Usar tokens `ops-*` definidos en config |
-| FOUC | Client component pesado | Considerar server component + streaming |
+| Error         | Causa                              | Solución                                |
+| ------------- | ---------------------------------- | --------------------------------------- |
+| React #418    | Hydration mismatch                 | Mover datos dinámicos a `useEffect`     |
+| React #310    | Hook después de return condicional | Mover hooks antes de cualquier return   |
+| 401 en Admin  | Token no enviado                   | Usar `api-client.ts`, no fetch directo  |
+| Estilos rotos | Clase Tailwind inexistente         | Usar tokens `ops-*` definidos en config |
+| FOUC          | Client component pesado            | Considerar server component + streaming |

@@ -1,11 +1,13 @@
-import type { ApprovalGateRequest, ApprovalGateResponse } from "@intcloudsysops/types";
+import type { ApprovalGateRequest, ApprovalGateResponse } from '@intcloudsysops/types';
 
 const DEFAULT_TIMEOUT_MS = 30_000;
 
 function gatewayBaseUrl(): string {
   const raw =
-    process.env.LLM_GATEWAY_URL ?? process.env.ORCHESTRATOR_LLM_GATEWAY_URL ?? "http://127.0.0.1:3010";
-  return raw.replace(/\/$/, "");
+    process.env.LLM_GATEWAY_URL ??
+    process.env.ORCHESTRATOR_LLM_GATEWAY_URL ??
+    'http://127.0.0.1:3010';
+  return raw.replace(/\/$/, '');
 }
 
 export class ApprovalGateClient {
@@ -14,7 +16,7 @@ export class ApprovalGateClient {
   private readonly timeoutMs: number;
 
   public constructor(endpoint?: string, timeoutMs: number = DEFAULT_TIMEOUT_MS) {
-    this.endpoint = (endpoint ?? gatewayBaseUrl()).replace(/\/$/, "");
+    this.endpoint = (endpoint ?? gatewayBaseUrl()).replace(/\/$/, '');
     this.timeoutMs = timeoutMs;
   }
 
@@ -24,8 +26,8 @@ export class ApprovalGateClient {
     const timeoutId = setTimeout(() => controller.abort(), this.timeoutMs);
     try {
       const res = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(request),
         signal: controller.signal,
       });

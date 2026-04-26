@@ -17,17 +17,17 @@
  *   monitor.start();
  */
 
-import { Worker } from "bullmq";
-import Redis from "ioredis";
+import { Worker } from 'bullmq';
+import Redis from 'ioredis';
 
-const CHECK_INTERVAL_MS = 5 * 60 * 1_000;  // check cada 5 min
-const MAX_SILENT_MS     = 15 * 60 * 1_000; // worker considerado "muerto" si lleva 15 min sin actividad
+const CHECK_INTERVAL_MS = 5 * 60 * 1_000; // check cada 5 min
+const MAX_SILENT_MS = 15 * 60 * 1_000; // worker considerado "muerto" si lleva 15 min sin actividad
 const STALLED_JOB_AGE_MS = 10 * 60 * 1_000; // job activo > 10 min → stalled
 
 let _redis: Redis | null = null;
 function getRedis(): Redis {
   if (!_redis) {
-    const url = process.env.REDIS_URL ?? "redis://localhost:6379";
+    const url = process.env.REDIS_URL ?? 'redis://localhost:6379';
     const parsed = new URL(url);
     _redis = new Redis({
       host: parsed.hostname,
@@ -57,21 +57,27 @@ export class WorkerHealthMonitor {
     this.entries.set(name, entry);
 
     // Actualizar lastSeen cuando el worker procesa algo
-    worker.on("completed", () => { entry.lastSeen = Date.now(); });
-    worker.on("failed", () => { entry.lastSeen = Date.now(); });
+    worker.on('completed', () => {
+      entry.lastSeen = Date.now();
+    });
+    worker.on('failed', () => {
+      entry.lastSeen = Date.now();
+    });
   }
 
   /** Inicia los checks periódicos. */
   start(): void {
     if (this.timer) return;
-    this.timer = setInterval(() => { void this.runChecks(); }, CHECK_INTERVAL_MS);
+    this.timer = setInterval(() => {
+      void this.runChecks();
+    }, CHECK_INTERVAL_MS);
     console.info(
       JSON.stringify({
-        event: "worker_health_monitor_started",
+        event: 'worker_health_monitor_started',
         workers: [...this.entries.keys()],
         check_interval_ms: CHECK_INTERVAL_MS,
         ts: new Date().toISOString(),
-      }),
+      })
     );
   }
 
@@ -96,13 +102,13 @@ export class WorkerHealthMonitor {
 
     console.info(
       JSON.stringify({
-        event: "worker_health_check",
+        event: 'worker_health_check',
         worker: name,
         running: isRunning,
         silent_ms: silent,
         restarts: entry.restarts,
         ts: new Date().toISOString(),
-      }),
+      })
     );
 
     if (!isRunning || silent > MAX_SILENT_MS) {
@@ -114,11 +120,11 @@ export class WorkerHealthMonitor {
     entry.restarts++;
     console.warn(
       JSON.stringify({
-        event: "worker_restarted",
+        event: 'worker_restarted',
         worker: name,
         restarts: entry.restarts,
         ts: new Date().toISOString(),
-      }),
+      })
     );
 
     try {
@@ -132,20 +138,24 @@ export class WorkerHealthMonitor {
       entry.worker = fresh;
       entry.lastSeen = Date.now();
       // Re-attach lifecycle listeners
-      fresh.on("completed", () => { entry.lastSeen = Date.now(); });
-      fresh.on("failed", () => { entry.lastSeen = Date.now(); });
+      fresh.on('completed', () => {
+        entry.lastSeen = Date.now();
+      });
+      fresh.on('failed', () => {
+        entry.lastSeen = Date.now();
+      });
     } catch (err) {
       console.error(
         JSON.stringify({
-          event: "worker_unresponsive",
+          event: 'worker_unresponsive',
           worker: name,
           restarts: entry.restarts,
           error: err instanceof Error ? err.message : String(err),
           ts: new Date().toISOString(),
-        }),
+        })
       );
       await this.notifyDiscord(
-        `🔴 Worker \`${name}\` unresponsive after ${entry.restarts} restarts`,
+        `🔴 Worker \`${name}\` unresponsive after ${entry.restarts} restarts`
       );
     }
   }
@@ -158,19 +168,19 @@ export class WorkerHealthMonitor {
     let stalled = 0;
 
     for (const id of activeIds) {
-      const tsRaw = await redis.hget(`bull:${queueName}:${id}`, "processedOn");
+      const tsRaw = await redis.hget(`bull:${queueName}:${id}`, 'processedOn');
       if (!tsRaw) continue;
       const age = Date.now() - Number(tsRaw);
       if (age > STALLED_JOB_AGE_MS) {
         stalled++;
         console.warn(
           JSON.stringify({
-            event: "stalled_job_detected",
+            event: 'stalled_job_detected',
             queue: queueName,
             job_id: id,
             age_ms: age,
             ts: new Date().toISOString(),
-          }),
+          })
         );
       }
     }
@@ -183,8 +193,8 @@ export class WorkerHealthMonitor {
     if (!url) return;
     try {
       await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           embeds: [{ title: message, color: 0xe74c3c, timestamp: new Date().toISOString() }],
         }),

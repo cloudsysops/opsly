@@ -26,11 +26,11 @@ O bien: copiar el SQL de `0030_tenant_insights.sql` al **SQL Editor** de Supabas
 
 ## PASO 2 — Variables (Doppler / `.env` del API)
 
-| Variable | Uso |
-|----------|-----|
-| `CRON_SECRET` | Protege `GET/POST /api/cron/generate-insights` (y otros cron). |
-| `SUPABASE_SERVICE_ROLE_KEY` | Lectura/escritura en `platform.*` desde la API. |
-| `NEXT_PUBLIC_SUPABASE_URL` / `SUPABASE_URL` | Cliente Supabase en servidor. |
+| Variable                                    | Uso                                                            |
+| ------------------------------------------- | -------------------------------------------------------------- |
+| `CRON_SECRET`                               | Protege `GET/POST /api/cron/generate-insights` (y otros cron). |
+| `SUPABASE_SERVICE_ROLE_KEY`                 | Lectura/escritura en `platform.*` desde la API.                |
+| `NEXT_PUBLIC_SUPABASE_URL` / `SUPABASE_URL` | Cliente Supabase en servidor.                                  |
 
 Generar secreto (local, no commitear el valor):
 
@@ -126,9 +126,9 @@ Respuesta esperada: JSON con `ok`, `tenants`, `totalInserted` (números según d
 
 ## Entornos: ¿cuál primero?
 
-| Orden sugerido | Motivo |
-|----------------|--------|
-| **1. Staging / local** | Validar `db push`, semilla y `curl` sin riesgo en prod. |
+| Orden sugerido          | Motivo                                                                                                                       |
+| ----------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| **1. Staging / local**  | Validar `db push`, semilla y `curl` sin riesgo en prod.                                                                      |
 | **2. Producción (VPS)** | Tras imagen API desplegada con este código + Doppler con `CRON_SECRET` + migración aplicada en el proyecto Supabase de prod. |
 
 Si algo falla, revisa logs del contenedor `app` y respuesta JSON del cron (401 → `CRON_SECRET` no coincide o vacío).

@@ -1,35 +1,33 @@
 /* @vitest-environment jsdom */
-import "@testing-library/jest-dom/vitest";
+import '@testing-library/jest-dom/vitest';
 
 // @ts-ignore - screen is exported from @testing-library/react but TypeScript doesn't resolve it
-import { render, screen } from "@testing-library/react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { render, screen } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { createClient } from "@/lib/supabase/client";
-import useSWR from "swr";
-import MissionControlPage from "./page";
+import { createClient } from '@/lib/supabase/client';
+import useSWR from 'swr';
+import MissionControlPage from './page';
 
-vi.mock("@/lib/api", () => ({
-  getApiBaseUrl: () => "https://api.opsly.test",
+vi.mock('@/lib/api', () => ({
+  getApiBaseUrl: () => 'https://api.opsly.test',
 }));
 
-vi.mock("@/lib/supabase/client", () => ({
+vi.mock('@/lib/supabase/client', () => ({
   createClient: vi.fn(),
 }));
 
-vi.mock("swr", () => ({
+vi.mock('swr', () => ({
   default: vi.fn(),
 }));
 
-describe("Mission Control auth regression", () => {
+describe('Mission Control auth regression', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it("shows Unauthorized and does not fetch infra status without session", () => {
-    const fetchSpy = vi
-      .spyOn(globalThis, "fetch")
-      .mockRejectedValue(new Error("should-not-fetch"));
+  it('shows Unauthorized and does not fetch infra status without session', () => {
+    const fetchSpy = vi.spyOn(globalThis, 'fetch').mockRejectedValue(new Error('should-not-fetch'));
 
     vi.mocked(createClient).mockReturnValue({
       auth: {
@@ -41,10 +39,10 @@ describe("Mission Control auth regression", () => {
     } as never);
 
     vi.mocked(useSWR).mockImplementation(((key: string | null) => {
-      if (key === "mission-control-access-token") {
+      if (key === 'mission-control-access-token') {
         return {
           data: undefined,
-          error: new Error("Unauthorized"),
+          error: new Error('Unauthorized'),
           isLoading: false,
           isValidating: false,
           mutate: vi.fn(),
@@ -66,20 +64,20 @@ describe("Mission Control auth regression", () => {
     fetchSpy.mockRestore();
   });
 
-  it("renders API and Orchestrator cards with valid session", () => {
+  it('renders API and Orchestrator cards with valid session', () => {
     vi.mocked(createClient).mockReturnValue({
       auth: {
         getSession: vi.fn().mockResolvedValue({
-          data: { session: { access_token: "valid-token" } },
+          data: { session: { access_token: 'valid-token' } },
           error: null,
         }),
       },
     } as never);
 
     vi.mocked(useSWR).mockImplementation(((key: string | null) => {
-      if (key === "mission-control-access-token") {
+      if (key === 'mission-control-access-token') {
         return {
-          data: "valid-token",
+          data: 'valid-token',
           error: undefined,
           isLoading: false,
           isValidating: false,
@@ -91,18 +89,18 @@ describe("Mission Control auth regression", () => {
           generated_at: new Date().toISOString(),
           services: [
             {
-              name: "api",
-              status: "healthy",
+              name: 'api',
+              status: 'healthy',
               lastSeenSeconds: 3,
               ttlSeconds: 57,
               metadata: {},
             },
             {
-              name: "orchestrator",
-              status: "healthy",
+              name: 'orchestrator',
+              status: 'healthy',
               lastSeenSeconds: 8,
               ttlSeconds: 52,
-              metadata: { uptime: "120" },
+              metadata: { uptime: '120' },
             },
           ],
         },
@@ -115,7 +113,7 @@ describe("Mission Control auth regression", () => {
 
     render(<MissionControlPage />);
 
-    expect(screen.getByText("api")).toBeInTheDocument();
-    expect(screen.getByText("orchestrator")).toBeInTheDocument();
+    expect(screen.getByText('api')).toBeInTheDocument();
+    expect(screen.getByText('orchestrator')).toBeInTheDocument();
   });
 });

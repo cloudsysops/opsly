@@ -1,8 +1,8 @@
-# Runbook — Operaciones *managed* (cliente / tenant)
+# Runbook — Operaciones _managed_ (cliente / tenant)
 
 **Audiencia:** equipo que atiende tenants con stack desplegado (n8n, Uptime Kuma, etc.) según plan.
 
-## Límites del servicio *managed*
+## Límites del servicio _managed_
 
 - Cambios de infra por tenant siguen el modelo compose por tenant (ADR-001)
 - No se ofrece SSH al cliente; intervenciones vía API/support interno

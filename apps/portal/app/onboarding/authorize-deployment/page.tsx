@@ -1,27 +1,27 @@
-"use client";
+'use client';
 
-import { fetchProvisioningQuote } from "@/lib/provisioning-quote";
-import type { ProvisioningQuoteResponse } from "@/types";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useState, Suspense } from "react";
+import { fetchProvisioningQuote } from '@/lib/provisioning-quote';
+import type { ProvisioningQuoteResponse } from '@/types';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useCallback, useEffect, useState, Suspense } from 'react';
 
 function formatUsd(n: number): string {
-  return n.toLocaleString("en-US", {
-    style: "currency",
-    currency: "USD",
+  return n.toLocaleString('en-US', {
+    style: 'currency',
+    currency: 'USD',
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   });
 }
 
-function infraLabelForProvider(provider: "aws" | "azure" | "gcp"): string {
-  if (provider === "aws") {
-    return "Costo de Infraestructura (AWS)";
+function infraLabelForProvider(provider: 'aws' | 'azure' | 'gcp'): string {
+  if (provider === 'aws') {
+    return 'Costo de Infraestructura (AWS)';
   }
-  if (provider === "azure") {
-    return "Costo de Infraestructura (Azure)";
+  if (provider === 'azure') {
+    return 'Costo de Infraestructura (Azure)';
   }
-  return "Costo de Infraestructura (GCP)";
+  return 'Costo de Infraestructura (GCP)';
 }
 
 function formatInfraDisplay(quote: ProvisioningQuoteResponse): string {
@@ -42,13 +42,11 @@ export default function AuthorizeDeploymentPage() {
 function AuthorizeDeploymentContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const providerParam = searchParams.get("provider");
-  const planParam = searchParams.get("plan");
+  const providerParam = searchParams.get('provider');
+  const planParam = searchParams.get('plan');
 
-  const provider =
-    providerParam === "azure" || providerParam === "gcp" ? providerParam : "aws";
-  const plan =
-    planParam === "serverless-starter" ? "serverless-starter" : "free-tier";
+  const provider = providerParam === 'azure' || providerParam === 'gcp' ? providerParam : 'aws';
+  const plan = planParam === 'serverless-starter' ? 'serverless-starter' : 'free-tier';
 
   const [quote, setQuote] = useState<ProvisioningQuoteResponse | null>(null);
   const [loading, setLoading] = useState(true);
@@ -64,7 +62,7 @@ function AuthorizeDeploymentContent() {
       setQuote(q);
     } catch (e) {
       setQuote(null);
-      setError(e instanceof Error ? e.message : "No se pudo cargar la cotización");
+      setError(e instanceof Error ? e.message : 'No se pudo cargar la cotización');
     } finally {
       setLoading(false);
     }
@@ -82,22 +80,22 @@ function AuthorizeDeploymentContent() {
     try {
       // MVP: siguiente iteración llamará a POST de aprovisionamiento con credenciales del cliente.
       await new Promise((r) => setTimeout(r, 400));
-      router.push("/dashboard");
+      router.push('/dashboard');
     } finally {
       setDeploying(false);
     }
   }
 
   const infraLabel = infraLabelForProvider(provider);
-  const infraDisplay = quote === null ? "—" : formatInfraDisplay(quote);
+  const infraDisplay = quote === null ? '—' : formatInfraDisplay(quote);
 
   return (
     <div className="relative min-h-screen bg-slate-950 text-slate-100 overflow-hidden">
       <div
         className="pointer-events-none fixed inset-0 opacity-20"
         style={{
-          backgroundImage: "radial-gradient(circle, #334155 1px, transparent 1px)",
-          backgroundSize: "24px 24px",
+          backgroundImage: 'radial-gradient(circle, #334155 1px, transparent 1px)',
+          backgroundSize: '24px 24px',
         }}
       />
       <div className="pointer-events-none fixed inset-0">
@@ -108,9 +106,7 @@ function AuthorizeDeploymentContent() {
       <div className="relative z-10 flex min-h-screen flex-col items-center justify-center px-4 py-12">
         <div className="w-full max-w-lg">
           <div className="mb-8 text-center">
-            <span className="font-mono text-lg font-bold tracking-widest text-cyan-400">
-              OPSLY
-            </span>
+            <span className="font-mono text-lg font-bold tracking-widest text-cyan-400">OPSLY</span>
             <p className="mt-1 text-xs font-mono text-slate-500 tracking-widest uppercase">
               Autorización de despliegue
             </p>
@@ -144,9 +140,7 @@ function AuthorizeDeploymentContent() {
                   </div>
                   <div className="flex justify-between gap-4">
                     <dt className="text-slate-400">Fee de Gestión Opsly</dt>
-                    <dd className="text-right text-cyan-300">
-                      {formatUsd(quote.opsly_fee_usd)}
-                    </dd>
+                    <dd className="text-right text-cyan-300">{formatUsd(quote.opsly_fee_usd)}</dd>
                   </div>
                   <div className="border-t border-slate-700 pt-3 flex justify-between gap-4 font-semibold">
                     <dt className="text-slate-200">Total estimado / mes</dt>
@@ -188,14 +182,14 @@ function AuthorizeDeploymentContent() {
                   onClick={() => void handleDeploy()}
                   className="mt-6 w-full rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-500 py-3 text-sm font-semibold text-white shadow-lg transition-all duration-200 hover:from-cyan-400 hover:to-indigo-400 hover:shadow-cyan-500/25 disabled:cursor-not-allowed disabled:opacity-40"
                 >
-                  {deploying ? "Procesando…" : "Desplegar Infraestructura"}
+                  {deploying ? 'Procesando…' : 'Desplegar Infraestructura'}
                 </button>
               </>
             )}
           </div>
 
           <p className="mt-6 text-center text-[11px] text-slate-600">
-            Plan: <span className="font-mono text-slate-500">{plan}</span> · Proveedor:{" "}
+            Plan: <span className="font-mono text-slate-500">{plan}</span> · Proveedor:{' '}
             <span className="font-mono text-slate-500">{provider}</span>
           </p>
         </div>

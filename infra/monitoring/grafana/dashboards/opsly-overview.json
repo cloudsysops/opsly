@@ -14,56 +14,143 @@
     {
       "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
-        "defaults": { "unit": "percent", "min": 0, "max": 100, "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 70 }, { "color": "red", "value": 90 }] } },
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 70 },
+              { "color": "red", "value": 90 }
+            ]
+          }
+        },
         "overrides": []
       },
       "gridPos": { "h": 4, "w": 6, "x": 0, "y": 0 },
       "id": 1,
-      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "orientation": "auto", "textMode": "auto", "colorMode": "background" },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "orientation": "auto",
+        "textMode": "auto",
+        "colorMode": "background"
+      },
       "pluginVersion": "11.4.0",
-      "targets": [{ "datasource": { "type": "prometheus" }, "expr": "100 - (avg by (instance) (rate(node_cpu_seconds_total{mode=\"idle\"}[5m])) * 100)", "legendFormat": "CPU %" }],
+      "targets": [
+        {
+          "datasource": { "type": "prometheus" },
+          "expr": "100 - (avg by (instance) (rate(node_cpu_seconds_total{mode=\"idle\"}[5m])) * 100)",
+          "legendFormat": "CPU %"
+        }
+      ],
       "title": "CPU Usage",
       "type": "stat"
     },
     {
       "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
-        "defaults": { "unit": "percent", "min": 0, "max": 100, "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 70 }, { "color": "red", "value": 90 }] } },
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 70 },
+              { "color": "red", "value": 90 }
+            ]
+          }
+        },
         "overrides": []
       },
       "gridPos": { "h": 4, "w": 6, "x": 6, "y": 0 },
       "id": 2,
-      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "orientation": "auto", "textMode": "auto", "colorMode": "background" },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "orientation": "auto",
+        "textMode": "auto",
+        "colorMode": "background"
+      },
       "pluginVersion": "11.4.0",
-      "targets": [{ "datasource": { "type": "prometheus" }, "expr": "(1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100", "legendFormat": "Memory %" }],
+      "targets": [
+        {
+          "datasource": { "type": "prometheus" },
+          "expr": "(1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100",
+          "legendFormat": "Memory %"
+        }
+      ],
       "title": "Memory Usage",
       "type": "stat"
     },
     {
       "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
-        "defaults": { "unit": "bytes", "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "red", "value": 85 }] } },
+        "defaults": {
+          "unit": "bytes",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "red", "value": 85 }
+            ]
+          }
+        },
         "overrides": []
       },
       "gridPos": { "h": 4, "w": 6, "x": 12, "y": 0 },
       "id": 3,
-      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "orientation": "auto", "textMode": "auto", "colorMode": "value" },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "orientation": "auto",
+        "textMode": "auto",
+        "colorMode": "value"
+      },
       "pluginVersion": "11.4.0",
-      "targets": [{ "datasource": { "type": "prometheus" }, "expr": "redis_memory_used_bytes", "legendFormat": "Redis Memory" }],
+      "targets": [
+        {
+          "datasource": { "type": "prometheus" },
+          "expr": "redis_memory_used_bytes",
+          "legendFormat": "Redis Memory"
+        }
+      ],
       "title": "Redis Memory",
       "type": "stat"
     },
     {
       "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
-        "defaults": { "unit": "short", "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 1000 }, { "color": "red", "value": 5000 }] } },
+        "defaults": {
+          "unit": "short",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 1000 },
+              { "color": "red", "value": 5000 }
+            ]
+          }
+        },
         "overrides": []
       },
       "gridPos": { "h": 4, "w": 6, "x": 18, "y": 0 },
       "id": 4,
-      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "orientation": "auto", "textMode": "auto", "colorMode": "background" },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "orientation": "auto",
+        "textMode": "auto",
+        "colorMode": "background"
+      },
       "pluginVersion": "11.4.0",
-      "targets": [{ "datasource": { "type": "prometheus" }, "expr": "redis_db_keys{db=\"db0\"}", "legendFormat": "Redis Keys" }],
+      "targets": [
+        {
+          "datasource": { "type": "prometheus" },
+          "expr": "redis_db_keys{db=\"db0\"}",
+          "legendFormat": "Redis Keys"
+        }
+      ],
       "title": "Redis Keys",
       "type": "stat"
     },
@@ -72,11 +159,21 @@
       "fieldConfig": { "defaults": { "unit": "percent" }, "overrides": [] },
       "gridPos": { "h": 8, "w": 12, "x": 0, "y": 4 },
       "id": 5,
-      "options": { "legend": { "calcs": [], "displayMode": "list", "placement": "bottom", "showLegend": true } },
+      "options": {
+        "legend": { "calcs": [], "displayMode": "list", "placement": "bottom", "showLegend": true }
+      },
       "pluginVersion": "11.4.0",
       "targets": [
-        { "datasource": { "type": "prometheus" }, "expr": "100 - (avg by (instance) (rate(node_cpu_seconds_total{mode=\"idle\"}[5m])) * 100)", "legendFormat": "CPU %" },
-        { "datasource": { "type": "prometheus" }, "expr": "(1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100", "legendFormat": "Memory %" }
+        {
+          "datasource": { "type": "prometheus" },
+          "expr": "100 - (avg by (instance) (rate(node_cpu_seconds_total{mode=\"idle\"}[5m])) * 100)",
+          "legendFormat": "CPU %"
+        },
+        {
+          "datasource": { "type": "prometheus" },
+          "expr": "(1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100",
+          "legendFormat": "Memory %"
+        }
       ],
       "title": "CPU & Memory Over Time",
       "type": "timeseries"
@@ -86,11 +183,21 @@
       "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] },
       "gridPos": { "h": 8, "w": 12, "x": 12, "y": 4 },
       "id": 6,
-      "options": { "legend": { "calcs": [], "displayMode": "list", "placement": "bottom", "showLegend": true } },
+      "options": {
+        "legend": { "calcs": [], "displayMode": "list", "placement": "bottom", "showLegend": true }
+      },
       "pluginVersion": "11.4.0",
       "targets": [
-        { "datasource": { "type": "prometheus" }, "expr": "redis_connected_clients", "legendFormat": "Connected Clients" },
-        { "datasource": { "type": "prometheus" }, "expr": "redis_blocked_clients", "legendFormat": "Blocked Clients" }
+        {
+          "datasource": { "type": "prometheus" },
+          "expr": "redis_connected_clients",
+          "legendFormat": "Connected Clients"
+        },
+        {
+          "datasource": { "type": "prometheus" },
+          "expr": "redis_blocked_clients",
+          "legendFormat": "Blocked Clients"
+        }
       ],
       "title": "Redis Clients",
       "type": "timeseries"
@@ -100,9 +207,17 @@
       "fieldConfig": { "defaults": { "unit": "bytes" }, "overrides": [] },
       "gridPos": { "h": 8, "w": 12, "x": 0, "y": 12 },
       "id": 7,
-      "options": { "legend": { "calcs": [], "displayMode": "list", "placement": "bottom", "showLegend": true } },
+      "options": {
+        "legend": { "calcs": [], "displayMode": "list", "placement": "bottom", "showLegend": true }
+      },
       "pluginVersion": "11.4.0",
-      "targets": [{ "datasource": { "type": "prometheus" }, "expr": "container_memory_working_set_bytes{name=~\"opsly_.*\"}", "legendFormat": "{{name}}" }],
+      "targets": [
+        {
+          "datasource": { "type": "prometheus" },
+          "expr": "container_memory_working_set_bytes{name=~\"opsly_.*\"}",
+          "legendFormat": "{{name}}"
+        }
+      ],
       "title": "Container Memory (Opsly Services)",
       "type": "timeseries"
     },
@@ -111,9 +226,17 @@
       "fieldConfig": { "defaults": { "unit": "percent" }, "overrides": [] },
       "gridPos": { "h": 8, "w": 12, "x": 12, "y": 12 },
       "id": 8,
-      "options": { "legend": { "calcs": [], "displayMode": "list", "placement": "bottom", "showLegend": true } },
+      "options": {
+        "legend": { "calcs": [], "displayMode": "list", "placement": "bottom", "showLegend": true }
+      },
       "pluginVersion": "11.4.0",
-      "targets": [{ "datasource": { "type": "prometheus" }, "expr": "rate(container_cpu_usage_seconds_total{name=~\"opsly_.*\"}[5m]) * 100", "legendFormat": "{{name}}" }],
+      "targets": [
+        {
+          "datasource": { "type": "prometheus" },
+          "expr": "rate(container_cpu_usage_seconds_total{name=~\"opsly_.*\"}[5m]) * 100",
+          "legendFormat": "{{name}}"
+        }
+      ],
       "title": "Container CPU (Opsly Services)",
       "type": "timeseries"
     }

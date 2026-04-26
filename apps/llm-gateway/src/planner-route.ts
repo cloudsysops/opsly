@@ -1,8 +1,8 @@
-import { randomUUID } from "node:crypto";
-import type { IncomingMessage, ServerResponse } from "node:http";
-import { llmCall } from "./gateway.js";
-import { GatewayHttpError } from "./llm-direct.js";
-import type { LLMMessage, LLMRequest } from "./types.js";
+import { randomUUID } from 'node:crypto';
+import type { IncomingMessage, ServerResponse } from 'node:http';
+import { llmCall } from './gateway.js';
+import { GatewayHttpError } from './llm-direct.js';
+import type { LLMMessage, LLMRequest } from './types.js';
 
 /** Contrato alineado con apps/orchestrator (Remote Planner / Chat.z). */
 export interface PlannerResponseShape {
@@ -16,7 +16,7 @@ export interface PlannerResponseShape {
 export interface PlannerHttpRequestBody {
   tenant_slug: string;
   request_id?: string;
-  tenant_plan?: "startup" | "business" | "enterprise";
+  tenant_plan?: 'startup' | 'business' | 'enterprise';
   context: Record<string, unknown>;
   available_tools: string[];
 }
@@ -26,7 +26,7 @@ export interface ChatCompletionsPlannerBody {
   model?: string;
   tenant_slug: string;
   request_id?: string;
-  tenant_plan?: "startup" | "business" | "enterprise";
+  tenant_plan?: 'startup' | 'business' | 'enterprise';
   messages: Array<{ role: string; content: string }>;
   user_id?: string;
   feature?: string;
@@ -36,13 +36,13 @@ export interface ChatCompletionsPlannerBody {
 function readBody(req: IncomingMessage): Promise<string> {
   return new Promise((resolve, reject) => {
     const chunks: Buffer[] = [];
-    req.on("data", (c: Buffer) => {
+    req.on('data', (c: Buffer) => {
       chunks.push(c);
     });
-    req.on("end", () => {
-      resolve(Buffer.concat(chunks).toString("utf8"));
+    req.on('end', () => {
+      resolve(Buffer.concat(chunks).toString('utf8'));
     });
-    req.on("error", reject);
+    req.on('error', reject);
   });
 }
 
@@ -59,31 +59,31 @@ function parsePlannerJson(content: string): PlannerResponseShape {
   const inner = stripJsonFences(content);
   const parsed: unknown = JSON.parse(inner);
   if (
-    typeof parsed !== "object" ||
+    typeof parsed !== 'object' ||
     parsed === null ||
-    !("reasoning" in parsed) ||
-    !("actions" in parsed)
+    !('reasoning' in parsed) ||
+    !('actions' in parsed)
   ) {
-    throw new Error("planner: invalid JSON shape");
+    throw new Error('planner: invalid JSON shape');
   }
   const p = parsed as { reasoning: unknown; actions: unknown };
-  if (typeof p.reasoning !== "string" || !Array.isArray(p.actions)) {
-    throw new Error("planner: reasoning/actions types invalid");
+  if (typeof p.reasoning !== 'string' || !Array.isArray(p.actions)) {
+    throw new Error('planner: reasoning/actions types invalid');
   }
-  const actions: PlannerResponseShape["actions"] = [];
+  const actions: PlannerResponseShape['actions'] = [];
   for (const a of p.actions) {
-    if (typeof a !== "object" || a === null || !("tool" in a)) {
+    if (typeof a !== 'object' || a === null || !('tool' in a)) {
       continue;
     }
     const tool = (a as { tool: unknown }).tool;
     const params = (a as { params?: unknown }).params;
-    if (typeof tool !== "string") {
+    if (typeof tool !== 'string') {
       continue;
     }
     actions.push({
       tool,
       params:
-        typeof params === "object" && params !== null && !Array.isArray(params)
+        typeof params === 'object' && params !== null && !Array.isArray(params)
           ? (params as Record<string, unknown>)
           : {},
     });
@@ -101,17 +101,17 @@ function chatBodyToLlmRequest(body: ChatCompletionsPlannerBody, requestId: strin
   const systemParts: string[] = [];
   const conv: LLMMessage[] = [];
   for (const m of body.messages) {
-    if (m.role === "system") {
+    if (m.role === 'system') {
       systemParts.push(m.content);
-    } else if (m.role === "user" || m.role === "assistant") {
+    } else if (m.role === 'user' || m.role === 'assistant') {
       conv.push({ role: m.role, content: m.content });
     }
   }
-  const system = systemParts.join("\n\n") || PLANNER_SYSTEM;
+  const system = systemParts.join('\n\n') || PLANNER_SYSTEM;
   const messages: LLMMessage[] =
     conv.length > 0
       ? conv
-      : [{ role: "user", content: "(planner: no user/assistant messages in request)" }];
+      : [{ role: 'user', content: '(planner: no user/assistant messages in request)' }];
   return {
     tenant_slug: body.tenant_slug,
     request_id: requestId,
@@ -119,18 +119,14 @@ function chatBodyToLlmRequest(body: ChatCompletionsPlannerBody, requestId: strin
     messages,
     system,
     legacy_pipeline: true,
-    routing_bias: "cost",
+    routing_bias: 'cost',
     max_tokens: 2048,
     temperature: 0.2,
     skip_repo_context: true,
-    ...(body.user_id !== undefined && body.user_id.length > 0
-      ? { user_id: body.user_id }
-      : {}),
-    ...(body.feature !== undefined && body.feature.length > 0
-      ? { feature: body.feature }
-      : {}),
+    ...(body.user_id !== undefined && body.user_id.length > 0 ? { user_id: body.user_id } : {}),
+    ...(body.feature !== undefined && body.feature.length > 0 ? { feature: body.feature } : {}),
     ...(body.usage_metadata !== undefined &&
-    typeof body.usage_metadata === "object" &&
+    typeof body.usage_metadata === 'object' &&
     !Array.isArray(body.usage_metadata) &&
     body.usage_metadata !== null &&
     Object.keys(body.usage_metadata).length > 0
@@ -142,11 +138,11 @@ function chatBodyToLlmRequest(body: ChatCompletionsPlannerBody, requestId: strin
 async function sendPlannerJsonResponse(
   res: ServerResponse,
   llmReq: LLMRequest,
-  requestId: string,
+  requestId: string
 ): Promise<void> {
   const llmRes = await llmCall(llmReq);
   const planner = parsePlannerJson(llmRes.content);
-  res.writeHead(200, { "Content-Type": "application/json" });
+  res.writeHead(200, { 'Content-Type': 'application/json' });
   res.end(
     JSON.stringify({
       planner,
@@ -159,20 +155,20 @@ async function sendPlannerJsonResponse(
         cache_hit: llmRes.cache_hit,
       },
       request_id: requestId,
-    }),
+    })
   );
 }
 
 async function handleChatCompletionsPlanner(
   req: IncomingMessage,
-  res: ServerResponse,
+  res: ServerResponse
 ): Promise<boolean> {
   let bodyRaw: string;
   try {
     bodyRaw = await readBody(req);
   } catch {
-    res.writeHead(400, { "Content-Type": "application/json" });
-    res.end(JSON.stringify({ error: "invalid body" }));
+    res.writeHead(400, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'invalid body' }));
     return true;
   }
 
@@ -180,19 +176,19 @@ async function handleChatCompletionsPlanner(
   try {
     body = JSON.parse(bodyRaw) as ChatCompletionsPlannerBody;
   } catch {
-    res.writeHead(400, { "Content-Type": "application/json" });
-    res.end(JSON.stringify({ error: "JSON parse error" }));
+    res.writeHead(400, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'JSON parse error' }));
     return true;
   }
 
   if (
-    typeof body.tenant_slug !== "string" ||
+    typeof body.tenant_slug !== 'string' ||
     body.tenant_slug.length === 0 ||
     !Array.isArray(body.messages) ||
     body.messages.length === 0
   ) {
-    res.writeHead(400, { "Content-Type": "application/json" });
-    res.end(JSON.stringify({ error: "tenant_slug and non-empty messages required" }));
+    res.writeHead(400, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'tenant_slug and non-empty messages required' }));
     return true;
   }
 
@@ -204,11 +200,9 @@ async function handleChatCompletionsPlanner(
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     const status =
-      err instanceof GatewayHttpError && Number.isInteger(err.statusCode)
-        ? err.statusCode
-        : 502;
-    res.writeHead(status, { "Content-Type": "application/json" });
-    res.end(JSON.stringify({ error: "planner_failed", message: msg }));
+      err instanceof GatewayHttpError && Number.isInteger(err.statusCode) ? err.statusCode : 502;
+    res.writeHead(status, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'planner_failed', message: msg }));
   }
   return true;
 }
@@ -218,8 +212,8 @@ async function handleLegacyPlanner(req: IncomingMessage, res: ServerResponse): P
   try {
     bodyRaw = await readBody(req);
   } catch {
-    res.writeHead(400, { "Content-Type": "application/json" });
-    res.end(JSON.stringify({ error: "invalid body" }));
+    res.writeHead(400, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'invalid body' }));
     return true;
   }
 
@@ -227,20 +221,20 @@ async function handleLegacyPlanner(req: IncomingMessage, res: ServerResponse): P
   try {
     body = JSON.parse(bodyRaw) as PlannerHttpRequestBody;
   } catch {
-    res.writeHead(400, { "Content-Type": "application/json" });
-    res.end(JSON.stringify({ error: "JSON parse error" }));
+    res.writeHead(400, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'JSON parse error' }));
     return true;
   }
 
   if (
-    typeof body.tenant_slug !== "string" ||
+    typeof body.tenant_slug !== 'string' ||
     body.tenant_slug.length === 0 ||
-    typeof body.context !== "object" ||
+    typeof body.context !== 'object' ||
     body.context === null ||
     !Array.isArray(body.available_tools)
   ) {
-    res.writeHead(400, { "Content-Type": "application/json" });
-    res.end(JSON.stringify({ error: "tenant_slug, context, available_tools required" }));
+    res.writeHead(400, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'tenant_slug, context, available_tools required' }));
     return true;
   }
 
@@ -251,17 +245,17 @@ async function handleLegacyPlanner(req: IncomingMessage, res: ServerResponse): P
       available_tools: body.available_tools,
     },
     null,
-    2,
+    2
   );
 
   const llmReq: LLMRequest = {
     tenant_slug: body.tenant_slug,
     request_id: requestId,
     tenant_plan: body.tenant_plan,
-    messages: [{ role: "user", content: userContent }],
+    messages: [{ role: 'user', content: userContent }],
     system: PLANNER_SYSTEM,
     legacy_pipeline: true,
-    routing_bias: "cost",
+    routing_bias: 'cost',
     max_tokens: 2048,
     temperature: 0.2,
     skip_repo_context: true,
@@ -272,27 +266,25 @@ async function handleLegacyPlanner(req: IncomingMessage, res: ServerResponse): P
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     const status =
-      err instanceof GatewayHttpError && Number.isInteger(err.statusCode)
-        ? err.statusCode
-        : 502;
-    res.writeHead(status, { "Content-Type": "application/json" });
-    res.end(JSON.stringify({ error: "planner_failed", message: msg }));
+      err instanceof GatewayHttpError && Number.isInteger(err.statusCode) ? err.statusCode : 502;
+    res.writeHead(status, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'planner_failed', message: msg }));
   }
   return true;
 }
 
 export async function handlePlannerHttp(
   req: IncomingMessage,
-  res: ServerResponse,
+  res: ServerResponse
 ): Promise<boolean> {
-  const pathOnly = req.url?.split("?")[0] ?? "/";
-  if (req.method !== "POST") {
+  const pathOnly = req.url?.split('?')[0] ?? '/';
+  if (req.method !== 'POST') {
     return false;
   }
-  if (pathOnly === "/v1/chat/completions") {
+  if (pathOnly === '/v1/chat/completions') {
     return handleChatCompletionsPlanner(req, res);
   }
-  if (pathOnly === "/v1/planner") {
+  if (pathOnly === '/v1/planner') {
     return handleLegacyPlanner(req, res);
   }
   return false;

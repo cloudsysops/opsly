@@ -5,7 +5,13 @@
 
 import { createServerSupabase } from '@/lib/supabase/server';
 
-type InsightType = 'churn_risk' | 'revenue_forecast' | 'anomaly_detection' | 'usage_pattern' | 'cost_optimization' | 'growth_opportunity';
+type InsightType =
+  | 'churn_risk'
+  | 'revenue_forecast'
+  | 'anomaly_detection'
+  | 'usage_pattern'
+  | 'cost_optimization'
+  | 'growth_opportunity';
 
 interface TenantInsight {
   id: string;
@@ -25,7 +31,11 @@ const typeStyles: Record<string, { bg: string; icon: string; label: string }> = 
   revenue_forecast: { bg: 'bg-emerald-900/50 border-emerald-500', icon: '📈', label: 'Proyección' },
   anomaly_detection: { bg: 'bg-yellow-900/50 border-yellow-500', icon: '🔔', label: 'Anomalía' },
   usage_pattern: { bg: 'bg-blue-900/50 border-blue-500', icon: '📊', label: 'Patrón' },
-  cost_optimization: { bg: 'bg-purple-900/50 border-purple-500', icon: '💰', label: 'Optimización' },
+  cost_optimization: {
+    bg: 'bg-purple-900/50 border-purple-500',
+    icon: '💰',
+    label: 'Optimización',
+  },
   growth_opportunity: { bg: 'bg-cyan-900/50 border-cyan-500', icon: '🚀', label: 'Crecimiento' },
 };
 
@@ -102,14 +112,14 @@ export default async function InsightsPage({
 
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/tenants/${tenantSlug}/insights?status=active&limit=50`,
-        { 
-          headers: { 
-            Authorization: `Bearer ${process.env.ADMIN_SESSION_TOKEN || ''}` 
+        {
+          headers: {
+            Authorization: `Bearer ${process.env.ADMIN_SESSION_TOKEN || ''}`,
           },
-          cache: 'no-store'
+          cache: 'no-store',
         }
       );
-      
+
       if (response.ok) {
         const data = await response.json();
         insights = data.data || [];
@@ -122,9 +132,7 @@ export default async function InsightsPage({
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold">📊 Insights Predictivos</h1>
-          {tenantName && (
-            <p className="text-sm text-white/60 mt-1">{tenantName}</p>
-          )}
+          {tenantName && <p className="text-sm text-white/60 mt-1">{tenantName}</p>}
         </div>
         <a
           href="/tenants"
@@ -165,10 +173,18 @@ export default async function InsightsPage({
           Los insights se generan automáticamente usando análisis heurístico y estadístico:
         </p>
         <ul className="text-sm opacity-70 mt-2 space-y-1">
-          <li>• <strong>Churn Risk</strong>: Basado en días sin actividad + tendencia de transacciones</li>
-          <li>• <strong>Revenue Forecast</strong>: Proyección lineal basada en histórico de Stripe</li>
-          <li>• <strong>Anomaly Detection</strong>: Z-Score para detectar picos inusuales</li>
-          <li>• <strong>Growth Opportunity</strong>: Detecta momento óptimo para upgrade de plan</li>
+          <li>
+            • <strong>Churn Risk</strong>: Basado en días sin actividad + tendencia de transacciones
+          </li>
+          <li>
+            • <strong>Revenue Forecast</strong>: Proyección lineal basada en histórico de Stripe
+          </li>
+          <li>
+            • <strong>Anomaly Detection</strong>: Z-Score para detectar picos inusuales
+          </li>
+          <li>
+            • <strong>Growth Opportunity</strong>: Detecta momento óptimo para upgrade de plan
+          </li>
         </ul>
       </div>
     </div>

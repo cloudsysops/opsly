@@ -5,20 +5,20 @@
  * @see docs/design/OAR.md — §3.3 Reflection Loop
  */
 
-import { z } from "zod";
+import { z } from 'zod';
 
-import type { AgentActionPort } from "../interfaces/agent-action-port.js";
-import type { MemoryInterface } from "../interfaces/memory.interface.js";
-import type { OarTracer } from "../observability/tracer.js";
-import { traceOar } from "../observability/tracer.js";
-import { OAR_LIFECYCLE } from "../types.js";
+import type { AgentActionPort } from '../interfaces/agent-action-port.js';
+import type { MemoryInterface } from '../interfaces/memory.interface.js';
+import type { OarTracer } from '../observability/tracer.js';
+import { traceOar } from '../observability/tracer.js';
+import { OAR_LIFECYCLE } from '../types.js';
 
-import type { RunPlanExecuteResult } from "./plan-execute-engine.js";
+import type { RunPlanExecuteResult } from './plan-execute-engine.js';
 import {
   DEFAULT_REACT_MODEL,
   type ReActLlmGatewayClient,
   type RunReActStrategyResult,
-} from "./react-engine.js";
+} from './react-engine.js';
 
 /** Resultado terminal común a ReAct y Plan & Execute (extensible). */
 export type StrategyTerminalResult = RunReActStrategyResult | RunPlanExecuteResult;
@@ -49,18 +49,18 @@ export function createReflectionContext(
   initialPrompt: string,
   actionPort: AgentActionPort,
   memory: MemoryInterface,
-  llmGatewayClient: ReActLlmGatewayClient,
+  llmGatewayClient: ReActLlmGatewayClient
 ): ReflectionRunContext {
   return { tenantSlug, sessionId, initialPrompt, actionPort, memory, llmGatewayClient };
 }
 
 export type PrimaryStrategyRunner<T extends StrategyTerminalResult> = (
-  initialPrompt: string,
+  initialPrompt: string
 ) => Promise<T>;
 
-const CritiqueResponseSchema = z.discriminatedUnion("verdict", [
-  z.object({ verdict: z.literal("pass") }),
-  z.object({ verdict: z.literal("fail"), reason: z.string() }),
+const CritiqueResponseSchema = z.discriminatedUnion('verdict', [
+  z.object({ verdict: z.literal('pass') }),
+  z.object({ verdict: z.literal('fail'), reason: z.string() }),
 ]);
 
 type CritiqueResponse = z.infer<typeof CritiqueResponseSchema>;
@@ -76,7 +76,9 @@ function stripCodeFences(raw: string): string {
   return trimmed;
 }
 
-function parseCritiqueResponse(raw: string): { ok: true; value: CritiqueResponse } | { ok: false; message: string } {
+function parseCritiqueResponse(
+  raw: string
+): { ok: true; value: CritiqueResponse } | { ok: false; message: string } {
   const text = stripCodeFences(raw);
   let parsed: unknown;
   try {
@@ -93,35 +95,35 @@ function parseCritiqueResponse(raw: string): { ok: true; value: CritiqueResponse
 }
 
 function unknownToBriefString(err: unknown): string {
-  if (typeof err === "string") {
+  if (typeof err === 'string') {
     return err;
   }
   if (err instanceof Error) {
     return err.message;
   }
-  if (typeof err === "object" && err !== null) {
+  if (typeof err === 'object' && err !== null) {
     try {
       return JSON.stringify(err);
     } catch {
-      return "non-serializable error";
+      return 'non-serializable error';
     }
   }
-  if (typeof err === "bigint") {
+  if (typeof err === 'bigint') {
     return err.toString();
   }
-  if (typeof err === "symbol") {
+  if (typeof err === 'symbol') {
     return err.toString();
   }
-  if (typeof err === "function") {
+  if (typeof err === 'function') {
     return `[function ${err.name}]`;
   }
-  if (typeof err === "number" || typeof err === "boolean") {
+  if (typeof err === 'number' || typeof err === 'boolean') {
     return String(err);
   }
   if (err === undefined) {
-    return "undefined";
+    return 'undefined';
   }
-  return "unknown";
+  return 'unknown';
 }
 
 function buildCritiquePrompt(originalTask: string, candidateAnswer: string): string {
@@ -149,7 +151,7 @@ ${critiqueReason}`;
 function strategyFailureFromCrash<T extends StrategyTerminalResult>(err: unknown): T {
   const msg = unknownToBriefString(err);
   return {
-    state: "failed",
+    state: 'failed',
     errorMessage: `Primary strategy crashed: ${msg}`,
     stepsExecuted: 0,
     lastLifecycleState: OAR_LIFECYCLE.failed,
@@ -159,15 +161,15 @@ function strategyFailureFromCrash<T extends StrategyTerminalResult>(err: unknown
 function maxReflectionsFailure<T extends StrategyTerminalResult>(last: T): T {
   return {
     ...last,
-    state: "failed",
-    errorMessage: "Max reflections reached without reviewer pass.",
+    state: 'failed',
+    errorMessage: 'Max reflections reached without reviewer pass.',
     lastLifecycleState: OAR_LIFECYCLE.failed,
   } as T;
 }
 
 type ReflectionLoopControl<T extends StrategyTerminalResult> =
-  | { action: "return"; value: T }
-  | { action: "retry"; nextPrompt: string };
+  | { action: 'return'; value: T }
+  | { action: 'retry'; nextPrompt: string };
 
 interface ReflectionRoundParams<T extends StrategyTerminalResult> {
   primaryStrategyFunction: PrimaryStrategyRunner<T>;
@@ -184,9 +186,9 @@ interface ReflectionRoundParams<T extends StrategyTerminalResult> {
 }
 
 async function runOneReflectionRound<T extends StrategyTerminalResult>(
-  p: ReflectionRoundParams<T>,
+  p: ReflectionRoundParams<T>
 ): Promise<ReflectionLoopControl<T>> {
-  traceOar(p.tracer, p.sessionId, p.tenantSlug, "reflection_loop", {
+  traceOar(p.tracer, p.sessionId, p.tenantSlug, 'reflection_loop', {
     attemptIndex: p.reflectionRound,
   });
 
@@ -194,16 +196,16 @@ async function runOneReflectionRound<T extends StrategyTerminalResult>(
   try {
     result = await p.primaryStrategyFunction(p.currentPrompt);
   } catch (err) {
-    return { action: "return", value: strategyFailureFromCrash<T>(err) };
+    return { action: 'return', value: strategyFailureFromCrash<T>(err) };
   }
 
-  if (result.state === "failed") {
-    return { action: "return", value: result };
+  if (result.state === 'failed') {
+    return { action: 'return', value: result };
   }
 
   const answer = result.finalAnswer;
-  if (answer === undefined || answer.trim() === "") {
-    return { action: "return", value: result };
+  if (answer === undefined || answer.trim() === '') {
+    return { action: 'return', value: result };
   }
 
   const critiquePrompt = buildCritiquePrompt(p.initialPrompt, answer);
@@ -211,40 +213,45 @@ async function runOneReflectionRound<T extends StrategyTerminalResult>(
   const parsed = parseCritiqueResponse(critiqueRaw);
 
   if (!parsed.ok) {
-    traceOar(p.tracer, p.sessionId, p.tenantSlug, "reflection_result", {
-      verdict: "parse_error",
+    traceOar(p.tracer, p.sessionId, p.tenantSlug, 'reflection_result', {
+      verdict: 'parse_error',
       message: parsed.message,
     });
     const note = `[reflection] Critique parse failed: ${parsed.message}. Raw (truncated): ${critiqueRaw.slice(0, 400)}`;
-    await p.memory.appendObservation(p.tenantSlug, p.sessionId, REFLECTION_MEMORY_OFFSET + p.reflectionRound, note);
+    await p.memory.appendObservation(
+      p.tenantSlug,
+      p.sessionId,
+      REFLECTION_MEMORY_OFFSET + p.reflectionRound,
+      note
+    );
     if (p.reflectionRound >= p.maxRetries) {
-      return { action: "return", value: maxReflectionsFailure(result) };
+      return { action: 'return', value: maxReflectionsFailure(result) };
     }
-    return { action: "retry", nextPrompt: augmentPromptForRetry(p.initialPrompt, note) };
+    return { action: 'retry', nextPrompt: augmentPromptForRetry(p.initialPrompt, note) };
   }
 
-  if (parsed.value.verdict === "pass") {
-    traceOar(p.tracer, p.sessionId, p.tenantSlug, "reflection_result", { verdict: "pass" });
-    return { action: "return", value: result };
+  if (parsed.value.verdict === 'pass') {
+    traceOar(p.tracer, p.sessionId, p.tenantSlug, 'reflection_result', { verdict: 'pass' });
+    return { action: 'return', value: result };
   }
 
   const reason = parsed.value.reason;
-  traceOar(p.tracer, p.sessionId, p.tenantSlug, "reflection_result", {
-    verdict: "fail",
+  traceOar(p.tracer, p.sessionId, p.tenantSlug, 'reflection_result', {
+    verdict: 'fail',
     reason,
   });
   await p.memory.appendObservation(
     p.tenantSlug,
     p.sessionId,
     REFLECTION_MEMORY_OFFSET + p.reflectionRound,
-    `[reflection] Reviewer rejected output: ${reason}`,
+    `[reflection] Reviewer rejected output: ${reason}`
   );
 
   if (p.reflectionRound >= p.maxRetries) {
-    return { action: "return", value: maxReflectionsFailure(result) };
+    return { action: 'return', value: maxReflectionsFailure(result) };
   }
 
-  return { action: "retry", nextPrompt: augmentPromptForRetry(p.initialPrompt, reason) };
+  return { action: 'retry', nextPrompt: augmentPromptForRetry(p.initialPrompt, reason) };
 }
 
 /**
@@ -256,7 +263,7 @@ async function runOneReflectionRound<T extends StrategyTerminalResult>(
 export async function runWithReflection<T extends StrategyTerminalResult>(
   primaryStrategyFunction: PrimaryStrategyRunner<T>,
   ctx: ReflectionRunContext,
-  options: ReflectionOptions,
+  options: ReflectionOptions
 ): Promise<T> {
   const critiqueModel = options.critiqueModel ?? DEFAULT_REACT_MODEL;
   const maxRetries = Math.max(0, options.maxReflections);
@@ -280,12 +287,12 @@ export async function runWithReflection<T extends StrategyTerminalResult>(
       tracer,
     });
 
-    if (step.action === "return") {
+    if (step.action === 'return') {
       return step.value;
     }
 
     currentPrompt = step.nextPrompt;
   }
 
-  throw new Error("runWithReflection: unexpected exit");
+  throw new Error('runWithReflection: unexpected exit');
 }

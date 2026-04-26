@@ -1,5 +1,5 @@
-import { AwsCloudProvider } from "./aws-provider";
-import type { CloudProvider, CloudProviderId } from "./interface";
+import { AwsCloudProvider } from './aws-provider';
+import type { CloudProvider, CloudProviderId } from './interface';
 
 const cache = new Map<CloudProviderId, CloudProvider>();
 
@@ -13,11 +13,11 @@ export function getCloudProvider(id: CloudProviderId): CloudProvider {
   }
   let created: CloudProvider;
   switch (id) {
-    case "aws":
+    case 'aws':
       created = new AwsCloudProvider();
       break;
-    case "azure":
-    case "gcp":
+    case 'azure':
+    case 'gcp':
       throw new Error(`Proveedor ${id}: implementación pendiente`);
     default: {
       const _never: never = id;
@@ -29,5 +29,5 @@ export function getCloudProvider(id: CloudProviderId): CloudProvider {
 }
 
 export function isCloudProviderId(value: string): value is CloudProviderId {
-  return value === "aws" || value === "azure" || value === "gcp";
+  return value === 'aws' || value === 'azure' || value === 'gcp';
 }

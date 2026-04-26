@@ -1,11 +1,11 @@
-import type { User } from "@supabase/supabase-js";
-import { HTTP_STATUS } from "./constants";
-import { getUserFromAuthorizationHeader } from "./portal-auth";
+import type { User } from '@supabase/supabase-js';
+import { HTTP_STATUS } from './constants';
+import { getUserFromAuthorizationHeader } from './portal-auth';
 import {
   fetchPortalTenantRowBySlug,
   readPortalTenantSlugFromUser,
   type PortalTenantRow,
-} from "./portal-me";
+} from './portal-me';
 
 /** Sesión portal verificada: JWT + `platform.tenants.owner_email` alineado al usuario. */
 export type TrustedPortalSession = {
@@ -24,40 +24,31 @@ function jsonFail(status: number, error: string): Fail {
  * Zero-trust base para rutas portal: misma regla que `GET /api/portal/me`.
  * Reutilizar en feedback, mode, y futuras rutas bajo `/api/portal/*`.
  */
-export async function resolveTrustedPortalSession(
-  request: Request,
-): Promise<Ok | Fail> {
+export async function resolveTrustedPortalSession(request: Request): Promise<Ok | Fail> {
   const user = await getUserFromAuthorizationHeader(request);
   if (!user) {
-    return jsonFail(HTTP_STATUS.UNAUTHORIZED, "Unauthorized");
+    return jsonFail(HTTP_STATUS.UNAUTHORIZED, 'Unauthorized');
   }
 
   const slug = readPortalTenantSlugFromUser(user);
   if (!slug) {
-    return jsonFail(
-      HTTP_STATUS.FORBIDDEN,
-      "No tenant associated with this account",
-    );
+    return jsonFail(HTTP_STATUS.FORBIDDEN, 'No tenant associated with this account');
   }
 
-  const emailNorm = user.email?.toLowerCase() ?? "";
+  const emailNorm = user.email?.toLowerCase() ?? '';
   if (emailNorm.length === 0) {
-    return jsonFail(HTTP_STATUS.FORBIDDEN, "Forbidden");
+    return jsonFail(HTTP_STATUS.FORBIDDEN, 'Forbidden');
   }
 
   const lookup = await fetchPortalTenantRowBySlug(slug);
   if (!lookup.ok) {
-    const status =
-      lookup.reason === "db"
-        ? HTTP_STATUS.INTERNAL_ERROR
-        : HTTP_STATUS.NOT_FOUND;
-    const message =
-      lookup.reason === "db" ? "Internal server error" : "Tenant not found";
+    const status = lookup.reason === 'db' ? HTTP_STATUS.INTERNAL_ERROR : HTTP_STATUS.NOT_FOUND;
+    const message = lookup.reason === 'db' ? 'Internal server error' : 'Tenant not found';
     return jsonFail(status, message);
   }
 
   if (lookup.row.owner_email.toLowerCase() !== emailNorm) {
-    return jsonFail(HTTP_STATUS.FORBIDDEN, "Forbidden");
+    return jsonFail(HTTP_STATUS.FORBIDDEN, 'Forbidden');
   }
 
   return {
@@ -70,9 +61,6 @@ export async function resolveTrustedPortalSession(
  * Compara un `slug` (p. ej. de `params` en App Router) con el tenant ya verificado.
  * No sustituye `resolveTrustedPortalSession`: úsalo después de obtener la sesión.
  */
-export function tenantSlugMatchesSession(
-  session: TrustedPortalSession,
-  slug: string,
-): boolean {
+export function tenantSlugMatchesSession(session: TrustedPortalSession, slug: string): boolean {
   return session.tenant.slug === slug;
 }

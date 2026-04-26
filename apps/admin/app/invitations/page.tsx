@@ -1,30 +1,28 @@
-"use client";
+'use client';
 
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Skeleton } from "@/components/ui/skeleton";
-import { useTenants } from "@/hooks/useTenants";
-import { sendInvitation } from "@/lib/api-client";
-import { useEffect, useMemo, useState, type ReactElement } from "react";
+} from '@/components/ui/select';
+import { Skeleton } from '@/components/ui/skeleton';
+import { useTenants } from '@/hooks/useTenants';
+import { sendInvitation } from '@/lib/api-client';
+import { useEffect, useMemo, useState, type ReactElement } from 'react';
 
-type FormSubmitEvent = Parameters<
-  NonNullable<React.ComponentProps<"form">["onSubmit"]>
->[0];
+type FormSubmitEvent = Parameters<NonNullable<React.ComponentProps<'form'>['onSubmit']>>[0];
 
 export default function InvitationsPage(): ReactElement {
   const { data, error, isLoading } = useTenants({ page: 1, limit: 100 });
-  const [tenantRef, setTenantRef] = useState("");
-  const [email, setEmail] = useState("");
-  const [mode, setMode] = useState<"developer" | "managed">("developer");
-  const [displayName, setDisplayName] = useState("");
+  const [tenantRef, setTenantRef] = useState('');
+  const [email, setEmail] = useState('');
+  const [mode, setMode] = useState<'developer' | 'managed'>('developer');
+  const [displayName, setDisplayName] = useState('');
   const [busy, setBusy] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const [successLink, setSuccessLink] = useState<string | null>(null);
@@ -35,7 +33,7 @@ export default function InvitationsPage(): ReactElement {
     if (tenantRef.length > 0 || tenantOptions.length === 0) {
       return;
     }
-    setTenantRef(tenantOptions[0]?.slug ?? "");
+    setTenantRef(tenantOptions[0]?.slug ?? '');
   }, [tenantOptions, tenantRef]);
 
   const onSubmit = async (e: FormSubmitEvent): Promise<void> => {
@@ -43,7 +41,7 @@ export default function InvitationsPage(): ReactElement {
     setFormError(null);
     setSuccessLink(null);
     if (!tenantRef || !email.trim()) {
-      setFormError("Selecciona tenant e introduce el email del propietario.");
+      setFormError('Selecciona tenant e introduce el email del propietario.');
       return;
     }
     setBusy(true);
@@ -56,7 +54,7 @@ export default function InvitationsPage(): ReactElement {
       });
       setSuccessLink(res.link);
     } catch (err) {
-      setFormError(err instanceof Error ? err.message : "Error al enviar");
+      setFormError(err instanceof Error ? err.message : 'Error al enviar');
     } finally {
       setBusy(false);
     }
@@ -69,9 +67,7 @@ export default function InvitationsPage(): ReactElement {
     try {
       await navigator.clipboard.writeText(successLink);
     } catch {
-      setFormError(
-        "No se pudo copiar automáticamente. Copia el enlace manualmente.",
-      );
+      setFormError('No se pudo copiar automáticamente. Copia el enlace manualmente.');
     }
   };
 
@@ -79,11 +75,9 @@ export default function InvitationsPage(): ReactElement {
     <div className="max-w-xl space-y-4">
       <h1 className="font-mono text-lg text-ops-green">invitations</h1>
       <p className="font-sans text-sm text-ops-gray">
-        El email debe coincidir con{" "}
-        <code className="text-ops-green">owner_email</code> del tenant en
-        Supabase. Para enviar invitaciones necesitas una sesión admin válida en
-        el panel y que el API esté accesible desde{" "}
-        <code className="text-neutral-400">NEXT_PUBLIC_API_URL</code>.
+        El email debe coincidir con <code className="text-ops-green">owner_email</code> del tenant
+        en Supabase. Para enviar invitaciones necesitas una sesión admin válida en el panel y que el
+        API esté accesible desde <code className="text-neutral-400">NEXT_PUBLIC_API_URL</code>.
       </p>
 
       {error ? (
@@ -104,10 +98,7 @@ export default function InvitationsPage(): ReactElement {
           ) : (
             <form onSubmit={onSubmit} className="space-y-4">
               <div className="space-y-1">
-                <label
-                  className="font-sans text-xs text-ops-gray"
-                  htmlFor="tenant"
-                >
+                <label className="font-sans text-xs text-ops-gray" htmlFor="tenant">
                   tenant
                 </label>
                 <Select value={tenantRef} onValueChange={setTenantRef}>
@@ -125,10 +116,7 @@ export default function InvitationsPage(): ReactElement {
               </div>
 
               <div className="space-y-1">
-                <label
-                  className="font-sans text-xs text-ops-gray"
-                  htmlFor="email"
-                >
+                <label className="font-sans text-xs text-ops-gray" htmlFor="email">
                   email (owner)
                 </label>
                 <Input
@@ -137,25 +125,16 @@ export default function InvitationsPage(): ReactElement {
                   autoComplete="email"
                   value={email}
                   onChange={(ev) => setEmail(ev.target.value)}
-                  placeholder={
-                    tenantOptions.find((t) => t.slug === tenantRef)
-                      ?.owner_email ?? ""
-                  }
+                  placeholder={tenantOptions.find((t) => t.slug === tenantRef)?.owner_email ?? ''}
                   required
                 />
               </div>
 
               <div className="space-y-1">
-                <label
-                  className="font-sans text-xs text-ops-gray"
-                  htmlFor="mode"
-                >
+                <label className="font-sans text-xs text-ops-gray" htmlFor="mode">
                   modo portal
                 </label>
-                <Select
-                  value={mode}
-                  onValueChange={(v) => setMode(v as "developer" | "managed")}
-                >
+                <Select value={mode} onValueChange={(v) => setMode(v as 'developer' | 'managed')}>
                   <SelectTrigger id="mode">
                     <SelectValue />
                   </SelectTrigger>
@@ -167,10 +146,7 @@ export default function InvitationsPage(): ReactElement {
               </div>
 
               <div className="space-y-1">
-                <label
-                  className="font-sans text-xs text-ops-gray"
-                  htmlFor="name"
-                >
+                <label className="font-sans text-xs text-ops-gray" htmlFor="name">
                   nombre en email (opcional)
                 </label>
                 <Input
@@ -190,12 +166,9 @@ export default function InvitationsPage(): ReactElement {
               {successLink ? (
                 <div className="space-y-2 rounded border border-ops-green/40 bg-ops-green/10 px-3 py-2">
                   <p className="font-sans text-xs text-ops-green">
-                    Invitación enviada. Enlace (copiar y pegar en ventana
-                    privada):
+                    Invitación enviada. Enlace (copiar y pegar en ventana privada):
                   </p>
-                  <p className="break-all font-mono text-[11px] text-neutral-300">
-                    {successLink}
-                  </p>
+                  <p className="break-all font-mono text-[11px] text-neutral-300">{successLink}</p>
                   <Button
                     type="button"
                     variant="ghost"
@@ -207,11 +180,8 @@ export default function InvitationsPage(): ReactElement {
                 </div>
               ) : null}
 
-              <Button
-                type="submit"
-                disabled={busy || tenantOptions.length === 0}
-              >
-                {busy ? "Enviando…" : "Enviar invitación"}
+              <Button type="submit" disabled={busy || tenantOptions.length === 0}>
+                {busy ? 'Enviando…' : 'Enviar invitación'}
               </Button>
             </form>
           )}

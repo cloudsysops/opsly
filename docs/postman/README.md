@@ -23,17 +23,17 @@
 - Opcion C (DevTools -> Console) para endpoints autenticados:
 
 ```js
-await fetch("https://api.ops.smiletripcare.com/api/n8n/decide", {
-  method: "POST",
+await fetch('https://api.ops.smiletripcare.com/api/n8n/decide', {
+  method: 'POST',
   headers: {
-    "Content-Type": "application/json",
-    "Authorization": "Bearer " + localStorage.getItem("opsly_admin_token")
+    'Content-Type': 'application/json',
+    Authorization: 'Bearer ' + localStorage.getItem('opsly_admin_token'),
   },
   body: JSON.stringify({
-    task_description: "automatizar deploy y notificacion de errores",
-    constraints: { security_level: "safe", cost_limit: 25 }
-  })
-}).then(r => r.json())
+    task_description: 'automatizar deploy y notificacion de errores',
+    constraints: { security_level: 'safe', cost_limit: 25 },
+  }),
+}).then((r) => r.json());
 ```
 
 Guarda los tokens localmente en tu entorno, no en prompts compartidos.

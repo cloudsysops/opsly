@@ -18,14 +18,14 @@ Decepticon es una herramienta de **red team** autónoma. **No** la uses contra s
 
 Comprobaciones puntuales vía SSH (`opslyquantum@100.80.41.29`):
 
-| Comprobación | Resultado típico |
-|--------------|-------------------|
-| Disco `/` | Suficiente si hay decenas de GB libres (Decepticon + imágenes Docker son pesadas) |
-| RAM | ~16 GiB en referencia Opsly; conviene dejar margen si ya corre **Ollama** + orchestrator |
-| `docker` | Instalado; usuario en grupo `docker` |
+| Comprobación          | Resultado típico                                                                                                                                                          |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Disco `/`             | Suficiente si hay decenas de GB libres (Decepticon + imágenes Docker son pesadas)                                                                                         |
+| RAM                   | ~16 GiB en referencia Opsly; conviene dejar margen si ya corre **Ollama** + orchestrator                                                                                  |
+| `docker`              | Instalado; usuario en grupo `docker`                                                                                                                                      |
 | **Docker Compose v2** | El instalador oficial exige `docker compose version`. En un host solo con el paquete `docker.io` puede **faltar** el plugin: instalar `docker-compose-plugin` (ver abajo) |
-| Puertos locales | `11434` suele estar en uso (**Ollama**). `3000` / `4000` / `2024` suelen estar **libres** para Decepticon; verificar con `ss -tlnp` antes del primer arranque |
-| Conflicto con Opsly | El API Next de Opsly corre en el **VPS**, no en el worker; el riesgo es **competencia de CPU/RAM/disco** entre stacks Docker del mismo host |
+| Puertos locales       | `11434` suele estar en uso (**Ollama**). `3000` / `4000` / `2024` suelen estar **libres** para Decepticon; verificar con `ss -tlnp` antes del primer arranque             |
+| Conflicto con Opsly   | El API Next de Opsly corre en el **VPS**, no en el worker; el riesgo es **competencia de CPU/RAM/disco** entre stacks Docker del mismo host                               |
 
 ---
 
@@ -110,13 +110,13 @@ docker compose version
 
 ## Rutas y puertos (referencia)
 
-| Ruta / variable | Uso |
-|-----------------|-----|
-| `~/.decepticon/` | Configuración, `docker-compose.yml`, `.env`, `config/litellm.yaml`, `workspace/` |
-| `~/.local/bin/decepticon` | Launcher |
-| `WEB_PORT` (default 3000) | Dashboard web |
-| `LITELLM_PORT` (default 4000) | Proxy LiteLLM **interno** de Decepticon |
-| `LANGGRAPH_PORT` (default 2024) | Servicio LangGraph (según `.env.example` upstream) |
+| Ruta / variable                 | Uso                                                                              |
+| ------------------------------- | -------------------------------------------------------------------------------- |
+| `~/.decepticon/`                | Configuración, `docker-compose.yml`, `.env`, `config/litellm.yaml`, `workspace/` |
+| `~/.local/bin/decepticon`       | Launcher                                                                         |
+| `WEB_PORT` (default 3000)       | Dashboard web                                                                    |
+| `LITELLM_PORT` (default 4000)   | Proxy LiteLLM **interno** de Decepticon                                          |
+| `LANGGRAPH_PORT` (default 2024) | Servicio LangGraph (según `.env.example` upstream)                               |
 
 Si un puerto choca con otro servicio, fíjalo en `~/.decepticon/.env` **antes** de levantar el stack.
 
@@ -138,10 +138,10 @@ Por tanto, **LiteLLM dentro de Decepticon no puede apuntar “tal cual”** al g
 
 ### Dos planos LLM (estado recomendado hasta nuevo diseño)
 
-| Plano | Dónde | Facturación / trazabilidad Opsly |
-|-------|--------|----------------------------------|
-| **Opsly** | `LLM_GATEWAY_URL` → VPS `:3010`, uso desde orchestrator, API, workers | `tenant_slug`, `request_id`, `usage_events` cuando aplica |
-| **Decepticon** | LiteLLM local + claves en `~/.decepticon/.env` | Coste y uso según proveedores directos; **no** unificado con métricas Opsly salvo trabajo manual o ETL |
+| Plano          | Dónde                                                                 | Facturación / trazabilidad Opsly                                                                       |
+| -------------- | --------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| **Opsly**      | `LLM_GATEWAY_URL` → VPS `:3010`, uso desde orchestrator, API, workers | `tenant_slug`, `request_id`, `usage_events` cuando aplica                                              |
+| **Decepticon** | LiteLLM local + claves en `~/.decepticon/.env`                        | Coste y uso según proveedores directos; **no** unificado con métricas Opsly salvo trabajo manual o ETL |
 
 ### Si en el futuro se unifica
 

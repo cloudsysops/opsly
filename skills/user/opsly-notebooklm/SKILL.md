@@ -20,28 +20,28 @@ Requiere `NOTEBOOKLM_ENABLED=true` y credenciales notebooklm-py (Google). **API 
 El paquete `@intcloudsysops/notebooklm-agent` expone `executeNotebookLM`:
 
 ```typescript
-import { executeNotebookLM } from "@intcloudsysops/notebooklm-agent";
+import { executeNotebookLM } from '@intcloudsysops/notebooklm-agent';
 
 await executeNotebookLM({
-  action: "create_notebook",
-  tenant_slug: "localrank",
-  name: "Reporte Enero 2026",
+  action: 'create_notebook',
+  tenant_slug: 'localrank',
+  name: 'Reporte Enero 2026',
 });
 
 await executeNotebookLM({
-  action: "add_source",
-  tenant_slug: "localrank",
-  notebook_id: "nb_xxx",
-  source_type: "url",
-  url: "https://example.com/doc",
+  action: 'add_source',
+  tenant_slug: 'localrank',
+  notebook_id: 'nb_xxx',
+  source_type: 'url',
+  url: 'https://example.com/doc',
 });
 
 await executeNotebookLM({
-  action: "generate_podcast",
-  tenant_slug: "localrank",
-  notebook_id: "nb_xxx",
-  instructions: "Resumen ejecutivo 10 min",
-  output_path: "/tmp/localrank-podcast.mp3",
+  action: 'generate_podcast',
+  tenant_slug: 'localrank',
+  notebook_id: 'nb_xxx',
+  instructions: 'Resumen ejecutivo 10 min',
+  output_path: '/tmp/localrank-podcast.mp3',
 });
 ```
 
@@ -68,11 +68,11 @@ Python: `pip install "notebooklm-py[browser]"` y autenticación según docs del 
 
 ## Errores comunes
 
-| Error | Causa | Solución |
-|-------|-------|----------|
-| NOT_ENABLED | Feature flag off | `NOTEBOOKLM_ENABLED=true` en Doppler |
-| PLAN_REQUIRED | Tier bajo | Solo business/enterprise |
-| API changed | Google actualizó API | ADR-014, reverificar |
+| Error         | Causa                | Solución                             |
+| ------------- | -------------------- | ------------------------------------ |
+| NOT_ENABLED   | Feature flag off     | `NOTEBOOKLM_ENABLED=true` en Doppler |
+| PLAN_REQUIRED | Tier bajo            | Solo business/enterprise             |
+| API changed   | Google actualizó API | ADR-014, reverificar                 |
 
 ## Testing
 

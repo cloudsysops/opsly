@@ -23,7 +23,7 @@ Opsly evolves from Orchestrator (BullMQ jobs) → **LangGraph DAG orchestration*
 
 ```typescript
 // Orchestrator: Job → LangGraph Node Chain
-import { Graph, StateGraph } from "@langgraph/core";
+import { Graph, StateGraph } from '@langgraph/core';
 
 interface JobState {
   jobId: string;
@@ -36,26 +36,26 @@ interface JobState {
   cost: number;
 }
 
-const workflow = new StateGraph<JobState>("job_orchestration");
+const workflow = new StateGraph<JobState>('job_orchestration');
 
 // Node 1: Load context
-workflow.addNode("load_context", async (state) => {
+workflow.addNode('load_context', async (state) => {
   const ctx = await contextBuilder.retrieve(state.jobId, state.tenantId);
   return { ...state, context: ctx };
 });
 
 // Node 2: Route to LLM (LiteLLM)
-workflow.addNode("route_model", async (state) => {
+workflow.addNode('route_model', async (state) => {
   const route = await liteLLMRouter.selectModel({
     skill: state.skill,
     cost_target: state.plan,
-    latency_requirement: "normal",
+    latency_requirement: 'normal',
   });
   return { ...state, modelRoute: route };
 });
 
 // Node 3: Execute skill
-workflow.addNode("execute_skill", async (state) => {
+workflow.addNode('execute_skill', async (state) => {
   const skill = skills[state.skill];
   const result = await skill(state.input, {
     context: state.context,
@@ -69,19 +69,20 @@ workflow.addNode("execute_skill", async (state) => {
 });
 
 // Conditional edge: retry or complete
-workflow.addConditionalEdges("execute_skill", (state) => {
-  if (state.results.length < 3) return "execute_skill";
-  return "complete";
+workflow.addConditionalEdges('execute_skill', (state) => {
+  if (state.results.length < 3) return 'execute_skill';
+  return 'complete';
 });
 
-workflow.addNode("complete", (state) => state);
-workflow.setEntryPoint("load_context");
-workflow.setFinishPoint("complete");
+workflow.addNode('complete', (state) => state);
+workflow.setEntryPoint('load_context');
+workflow.setFinishPoint('complete');
 
 const graph = workflow.compile();
 ```
 
 **Integration with Orchestrator:**
+
 ```typescript
 // In orchestrator job handler
 const jobState: JobState = {
@@ -90,14 +91,14 @@ const jobState: JobState = {
   skill: job.data.skill,
   input: job.data.payload,
   context: [],
-  modelRoute: "",
+  modelRoute: '',
   results: [],
   cost: 0,
 };
 
 const output = await graph.invoke(jobState);
 job.updateProgress(output.results.length / 3);
-job.log({ event: "dag_complete", cost: output.cost });
+job.log({ event: 'dag_complete', cost: output.cost });
 ```
 
 ---
@@ -110,32 +111,32 @@ job.log({ event: "dag_complete", cost: output.cost });
 
 ```typescript
 // apps/llm-gateway/src/router.ts
-import { LiteLLMRouter } from "litellm";
+import { LiteLLMRouter } from 'litellm';
 
 export const llmRouter = new LiteLLMRouter({
-  fallback_baton: "claude-3-5-sonnet", // Default model
-  routing_strategy: "cost-optimized", // or "latency-optimized"
+  fallback_baton: 'claude-3-5-sonnet', // Default model
+  routing_strategy: 'cost-optimized', // or "latency-optimized"
   providers: [
     {
-      model: "gpt-4-turbo",
+      model: 'gpt-4-turbo',
       cost_per_1k_input: 0.03,
       cost_per_1k_output: 0.06,
     },
     {
-      model: "claude-3-5-sonnet",
+      model: 'claude-3-5-sonnet',
       cost_per_1k_input: 0.003,
       cost_per_1k_output: 0.015,
     },
     {
-      model: "llama-3.1-405b",
+      model: 'llama-3.1-405b',
       cost_per_1k_input: 0.0009,
       cost_per_1k_output: 0.0009,
     },
   ],
   cost_bias: {
     // Prefer cheaper models for low-priority tasks
-    low: { llama: 1.5, sonnet: 1.0, "gpt-4": 0.1 },
-    high: { llama: 1.0, sonnet: 1.0, "gpt-4": 2.0 },
+    low: { llama: 1.5, sonnet: 1.0, 'gpt-4': 0.1 },
+    high: { llama: 1.0, sonnet: 1.0, 'gpt-4': 2.0 },
   },
 });
 
@@ -143,7 +144,7 @@ export const llmRouter = new LiteLLMRouter({
 export async function route(req: {
   prompt: string;
   skill: string;
-  plan: "free" | "pro" | "enterprise";
+  plan: 'free' | 'pro' | 'enterprise';
 }): Promise<string> {
   const selected = await llmRouter.selectModel({
     context: req.prompt,
@@ -151,13 +152,13 @@ export async function route(req: {
     max_cost_per_request: {
       free: 0.01,
       pro: 0.05,
-      enterprise: 0.50,
+      enterprise: 0.5,
     },
   });
 
   const response = await liteLLM.completion({
     model: selected,
-    messages: [{ role: "user", content: req.prompt }],
+    messages: [{ role: 'user', content: req.prompt }],
     metadata: { skill: req.skill, plan: req.plan },
   });
 
@@ -166,6 +167,7 @@ export async function route(req: {
 ```
 
 **LiteLLM Integration:**
+
 - Automatic fallback if primary model fails
 - Cost tracking per request
 - Rate limiting per tenant
@@ -181,8 +183,8 @@ export async function route(req: {
 
 ```typescript
 // apps/context-builder/src/builder.ts
-import { VectorStoreIndex } from "llamaindex";
-import { PostgresVectorStore } from "@llamaindex/postgres";
+import { VectorStoreIndex } from 'llamaindex';
+import { PostgresVectorStore } from '@llamaindex/postgres';
 
 export class ContextBuilder {
   private index: VectorStoreIndex;
@@ -190,19 +192,15 @@ export class ContextBuilder {
   constructor(pgPool: pg.Pool) {
     const vectorStore = new PostgresVectorStore({
       client: pgPool,
-      tableName: "document_embeddings",
+      tableName: 'document_embeddings',
     });
     this.index = new VectorStoreIndex({
       vectorStore,
-      embedModel: "default", // Uses OpenAI by default
+      embedModel: 'default', // Uses OpenAI by default
     });
   }
 
-  async ingestDocuments(
-    tenantId: string,
-    documents: Document[],
-    metadata: Record<string, any>
-  ) {
+  async ingestDocuments(tenantId: string, documents: Document[], metadata: Record<string, any>) {
     // Store documents with tenant isolation
     await this.index.insertNodes(
       documents.map((doc) => ({
@@ -212,21 +210,16 @@ export class ContextBuilder {
     );
   }
 
-  async retrieve(
-    tenantId: string,
-    query: string,
-    topK: number = 5
-  ): Promise<string[]> {
+  async retrieve(tenantId: string, query: string, topK: number = 5): Promise<string[]> {
     const results = await this.index.asRetriever({ similarityTopK: topK }).retrieve(query);
     // Filter by tenant
-    return results
-      .filter((r) => r.metadata?.tenantId === tenantId)
-      .map((r) => r.getText());
+    return results.filter((r) => r.metadata?.tenantId === tenantId).map((r) => r.getText());
   }
 }
 ```
 
 **RAG Pipeline:**
+
 1. **Ingest:** Documents → embeddings → pgvector
 2. **Retrieve:** Query → semantic search → top-K results
 3. **Augment:** Context injected into skill prompt
@@ -242,16 +235,16 @@ export class ContextBuilder {
 
 ```typescript
 // Global tracer setup
-import Langfuse from "langfuse";
+import Langfuse from 'langfuse';
 
 export const langfuse = new Langfuse({
   publicKey: process.env.LANGFUSE_PUBLIC_KEY,
   secretKey: process.env.LANGFUSE_SECRET_KEY,
-  baseUrl: process.env.LANGFUSE_BASEURL || "https://cloud.langfuse.com",
+  baseUrl: process.env.LANGFUSE_BASEURL || 'https://cloud.langfuse.com',
 });
 
 // In orchestrator DAG nodes
-workflow.addNode("execute_skill", async (state) => {
+workflow.addNode('execute_skill', async (state) => {
   const trace = langfuse.trace({
     name: `skill:${state.skill}`,
     userId: state.tenantId,
@@ -287,6 +280,7 @@ workflow.addNode("execute_skill", async (state) => {
 ```
 
 **Langfuse Dashboard Queries:**
+
 - "Which skills are most expensive?"
 - "Where are latency bottlenecks?"
 - "What's the cost breakdown by tenant?"
@@ -298,21 +292,21 @@ workflow.addNode("execute_skill", async (state) => {
 
 ### Orchestrator → LangGraph Conversion
 
-| Current (BullMQ) | New (LangGraph) | Migration |
-| --- | --- | --- |
-| Job type routing | Graph edges | Define conditional logic in edge functions |
-| Job progress | Node execution | `node.addProgress()` |
-| Retry logic | Conditional edge loop | Add max-iteration check |
-| Context passing | StateGraph state | Keep same data structure |
-| Logging | Langfuse traces | Wrap node in trace block |
+| Current (BullMQ) | New (LangGraph)       | Migration                                  |
+| ---------------- | --------------------- | ------------------------------------------ |
+| Job type routing | Graph edges           | Define conditional logic in edge functions |
+| Job progress     | Node execution        | `node.addProgress()`                       |
+| Retry logic      | Conditional edge loop | Add max-iteration check                    |
+| Context passing  | StateGraph state      | Keep same data structure                   |
+| Logging          | Langfuse traces       | Wrap node in trace block                   |
 
 ### API → LangGraph
 
 ```typescript
 // apps/api/src/routes/jobs.ts
-import { graph } from "@intcloudsysops/orchestrator/dag";
+import { graph } from '@intcloudsysops/orchestrator/dag';
 
-app.post("/api/jobs", async (req, res) => {
+app.post('/api/jobs', async (req, res) => {
   const job = await orchestrator.enqueue({
     skill: req.body.skill,
     tenantId: req.user.tenantId,
@@ -320,7 +314,7 @@ app.post("/api/jobs", async (req, res) => {
   });
 
   // If async workflow: return job ID
-  if (req.query.async === "true") {
+  if (req.query.async === 'true') {
     return res.json({ jobId: job.id });
   }
 
@@ -331,7 +325,7 @@ app.post("/api/jobs", async (req, res) => {
     skill: req.body.skill,
     input: req.body.input,
     context: [],
-    modelRoute: "",
+    modelRoute: '',
     results: [],
     cost: 0,
   });

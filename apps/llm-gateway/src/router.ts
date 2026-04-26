@@ -1,4 +1,4 @@
-import { PROVIDERS } from "./providers.js";
+import { PROVIDERS } from './providers.js';
 
 export const MODEL_CONFIG = {
   sonnet: {
@@ -20,7 +20,10 @@ export type Costable = {
   cost_per_1k_output: number;
 };
 
-export function selectModel(preference: "sonnet" | "haiku" = "sonnet", fallback = false): ModelConfig {
+export function selectModel(
+  preference: 'sonnet' | 'haiku' = 'sonnet',
+  fallback = false
+): ModelConfig {
   if (fallback) {
     return MODEL_CONFIG.haiku;
   }
@@ -30,7 +33,7 @@ export function selectModel(preference: "sonnet" | "haiku" = "sonnet", fallback 
 export function estimateCost(
   model: ModelConfig | Costable,
   tokensInput: number,
-  tokensOutput: number,
+  tokensOutput: number
 ): number {
   const inputCost = (tokensInput / 1000) * model.cost_per_1k_input;
   const outputCost = (tokensOutput / 1000) * model.cost_per_1k_output;

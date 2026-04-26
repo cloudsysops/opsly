@@ -99,12 +99,7 @@
 }
 
 .animate-shimmer {
-  background: linear-gradient(
-    90deg,
-    #1a1a1a 12%,
-    #262626 50%,
-    #1a1a1a 88%
-  );
+  background: linear-gradient(90deg, #1a1a1a 12%, #262626 50%, #1a1a1a 88%);
   background-size: 200% 100%;
   animation: opsly-shimmer 1.5s ease-in-out infinite;
 }

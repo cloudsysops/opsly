@@ -9,4 +9,4 @@ datasources:
     editable: false
     jsonData:
       httpMethod: POST
-      timeInterval: "30s"
+      timeInterval: '30s'

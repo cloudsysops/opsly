@@ -1,9 +1,9 @@
-import { createServerClient, type CookieOptions } from "@supabase/ssr";
-import { type NextRequest, NextResponse } from "next/server";
-import type { User } from "@supabase/supabase-js";
+import { createServerClient, type CookieOptions } from '@supabase/ssr';
+import { type NextRequest, NextResponse } from 'next/server';
+import type { User } from '@supabase/supabase-js';
 
 function json401(): NextResponse {
-  return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 }
 
 function requireEnv(name: string): string {
@@ -15,16 +15,13 @@ function requireEnv(name: string): string {
 }
 
 function isPublicApiPath(pathname: string): boolean {
-  if (pathname === "/api/health" || pathname.startsWith("/api/health/")) {
+  if (pathname === '/api/health' || pathname.startsWith('/api/health/')) {
     return true;
   }
-  if (
-    pathname === "/api/webhooks/stripe" ||
-    pathname.startsWith("/api/webhooks/stripe/")
-  ) {
+  if (pathname === '/api/webhooks/stripe' || pathname.startsWith('/api/webhooks/stripe/')) {
     return true;
   }
-  if (pathname.startsWith("/api/public/")) {
+  if (pathname.startsWith('/api/public/')) {
     return true;
   }
   return false;
@@ -42,17 +39,14 @@ function isPlatformAdminUser(user: User): boolean {
 export async function middleware(request: NextRequest): Promise<NextResponse> {
   const { pathname } = request.nextUrl;
 
-  if (pathname.startsWith("/admin")) {
+  if (pathname.startsWith('/admin')) {
     let url: string;
     let anonKey: string;
     try {
-      url = requireEnv("NEXT_PUBLIC_SUPABASE_URL");
-      anonKey = requireEnv("NEXT_PUBLIC_SUPABASE_ANON_KEY");
+      url = requireEnv('NEXT_PUBLIC_SUPABASE_URL');
+      anonKey = requireEnv('NEXT_PUBLIC_SUPABASE_ANON_KEY');
     } catch {
-      return NextResponse.json(
-        { error: "Server misconfiguration" },
-        { status: 500 },
-      );
+      return NextResponse.json({ error: 'Server misconfiguration' }, { status: 500 });
     }
 
     let response = NextResponse.next({ request });
@@ -63,9 +57,11 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
           return request.cookies.getAll();
         },
         setAll(cookiesToSet: { name: string; value: string; options: CookieOptions }[]) {
-          cookiesToSet.forEach(({ name, value, options }: { name: string; value: string; options: CookieOptions }) => {
-            response.cookies.set(name, value, options);
-          });
+          cookiesToSet.forEach(
+            ({ name, value, options }: { name: string; value: string; options: CookieOptions }) => {
+              response.cookies.set(name, value, options);
+            }
+          );
         },
       },
     });
@@ -82,24 +78,19 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
     return response;
   }
 
-  if (pathname.startsWith("/api")) {
+  if (pathname.startsWith('/api')) {
     if (isPublicApiPath(pathname)) {
       return NextResponse.next({ request });
     }
 
     const adminToken = process.env.PLATFORM_ADMIN_TOKEN;
     if (!adminToken) {
-      return NextResponse.json(
-        { error: "Server misconfiguration" },
-        { status: 500 },
-      );
+      return NextResponse.json({ error: 'Server misconfiguration' }, { status: 500 });
     }
 
-    const authHeader = request.headers.get("authorization");
+    const authHeader = request.headers.get('authorization');
     const bearer =
-      authHeader?.startsWith("Bearer ") === true
-        ? authHeader.slice("Bearer ".length).trim()
-        : null;
+      authHeader?.startsWith('Bearer ') === true ? authHeader.slice('Bearer '.length).trim() : null;
 
     if (!bearer || bearer !== adminToken) {
       return json401();
@@ -112,5 +103,5 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
 }
 
 export const config = {
-  matcher: ["/admin/:path*", "/api/:path*"],
+  matcher: ['/admin/:path*', '/api/:path*'],
 };

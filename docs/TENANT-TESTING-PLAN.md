@@ -7,30 +7,30 @@
 
 Checklist rápido antes de invitar a tenants:
 
-| Componente | Verificación |
-|------------|----------------|
-| API | `GET https://api.ops.smiletripcare.com/api/health` → `status: ok`, `checks.supabase` / `checks.redis` |
-| Costes (admin) | `https://admin.ops.smiletripcare.com/costs` (requiere sesión admin / token según despliegue) |
-| Redis (plataforma) | En VPS: contenedor `infra-redis-1` healthy |
-| Worker remoto | Opcional: nodo Mac 2011 u otro worker con cola BullMQ (ver `docs/WORKER-SETUP-MAC2011.md`) |
+| Componente         | Verificación                                                                                          |
+| ------------------ | ----------------------------------------------------------------------------------------------------- |
+| API                | `GET https://api.ops.smiletripcare.com/api/health` → `status: ok`, `checks.supabase` / `checks.redis` |
+| Costes (admin)     | `https://admin.ops.smiletripcare.com/costs` (requiere sesión admin / token según despliegue)          |
+| Redis (plataforma) | En VPS: contenedor `infra-redis-1` healthy                                                            |
+| Worker remoto      | Opcional: nodo Mac 2011 u otro worker con cola BullMQ (ver `docs/WORKER-SETUP-MAC2011.md`)            |
 
 ## URLs para probar
 
-| Recurso | URL |
-|---------|-----|
-| Health API | `https://api.ops.smiletripcare.com/api/health` |
-| Admin | `https://admin.ops.smiletripcare.com` |
-| Portal | `https://portal.ops.smiletripcare.com` (si el servicio portal está desplegado) |
-| Dashboard costos | `https://admin.ops.smiletripcare.com/costs` |
+| Recurso          | URL                                                                            |
+| ---------------- | ------------------------------------------------------------------------------ |
+| Health API       | `https://api.ops.smiletripcare.com/api/health`                                 |
+| Admin            | `https://admin.ops.smiletripcare.com`                                          |
+| Portal           | `https://portal.ops.smiletripcare.com` (si el servicio portal está desplegado) |
+| Dashboard costos | `https://admin.ops.smiletripcare.com/costs`                                    |
 
 ## Tenants de referencia (ejemplos)
 
-| Tenant | n8n | Uptime Kuma |
-|--------|-----|-------------|
-| localrank | `https://n8n-localrank.ops.smiletripcare.com` | `https://uptime-localrank.ops.smiletripcare.com` |
+| Tenant       | n8n                                              | Uptime Kuma                                         |
+| ------------ | ------------------------------------------------ | --------------------------------------------------- |
+| localrank    | `https://n8n-localrank.ops.smiletripcare.com`    | `https://uptime-localrank.ops.smiletripcare.com`    |
 | jkboterolabs | `https://n8n-jkboterolabs.ops.smiletripcare.com` | `https://uptime-jkboterolabs.ops.smiletripcare.com` |
 
-*Esperado típico:* n8n **200** en raíz; Uptime **302** hacia login.
+_Esperado típico:_ n8n **200** en raíz; Uptime **302** hacia login.
 
 ## Pasos para el tenant
 

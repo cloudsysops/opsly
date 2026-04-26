@@ -21,13 +21,13 @@ doppler run --project ops-intcloudsysops --config prd -- ./scripts/test-worker-e
 
 ## Scripts
 
-| Script | Descripción |
-|--------|-------------|
-| `scripts/enqueue-test-job.ts` | Encola en BullMQ `openclaw`, espera hasta 60s, poll cada 2s. |
-| `scripts/enqueue-test-job.sh` | Wrapper con Doppler. |
-| `scripts/monitor-redis-jobs.sh` | SSH + `redis-cli` en el VPS: conteos waiting/active/completed/failed. |
-| `scripts/monitor-worker-logs.sh` | SSH + `docker logs` del contenedor `opsly_orchestrator` (filtrado). |
-| `scripts/test-worker-e2e.sh` | Ejecuta encolado + espera en un solo proceso. |
+| Script                           | Descripción                                                           |
+| -------------------------------- | --------------------------------------------------------------------- |
+| `scripts/enqueue-test-job.ts`    | Encola en BullMQ `openclaw`, espera hasta 60s, poll cada 2s.          |
+| `scripts/enqueue-test-job.sh`    | Wrapper con Doppler.                                                  |
+| `scripts/monitor-redis-jobs.sh`  | SSH + `redis-cli` en el VPS: conteos waiting/active/completed/failed. |
+| `scripts/monitor-worker-logs.sh` | SSH + `docker logs` del contenedor `opsly_orchestrator` (filtrado).   |
+| `scripts/test-worker-e2e.sh`     | Ejecuta encolado + espera en un solo proceso.                         |
 
 ### Encolar manualmente
 
@@ -57,11 +57,11 @@ doppler run --project ops-intcloudsysops --config prd -- ./scripts/monitor-redis
 
 ## Códigos de salida (`enqueue-test-job.ts`)
 
-| Código | Significado |
-|--------|-------------|
-| 0 | Job `completed` |
-| 1 | Error de configuración, fallo al encolar o job `failed` |
-| 124 | Timeout 60s sin estado terminal |
+| Código | Significado                                             |
+| ------ | ------------------------------------------------------- |
+| 0      | Job `completed`                                         |
+| 1      | Error de configuración, fallo al encolar o job `failed` |
+| 124    | Timeout 60s sin estado terminal                         |
 
 ## Troubleshooting
 

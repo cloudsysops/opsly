@@ -5,24 +5,20 @@
  * @see docs/design/OAR.md — Fase 6 Tracing
  */
 
-import type { Redis } from "ioredis";
-import { Langfuse } from "langfuse";
-import type {
-  LangfuseGenerationClient,
-  LangfuseSpanClient,
-  LangfuseTraceClient,
-} from "langfuse";
+import type { Redis } from 'ioredis';
+import { Langfuse } from 'langfuse';
+import type { LangfuseGenerationClient, LangfuseSpanClient, LangfuseTraceClient } from 'langfuse';
 
 /** Canal Pub/Sub para reconstruir el árbol de decisión del agente. */
-export const OAR_TRACE_CHANNEL = "opsly:oar:trace";
+export const OAR_TRACE_CHANNEL = 'opsly:oar:trace';
 
 export type OarTraceEventType =
-  | "strategy_start"
-  | "llm_call"
-  | "tool_call"
-  | "reflection_loop"
-  | "reflection_result"
-  | "strategy_end";
+  | 'strategy_start'
+  | 'llm_call'
+  | 'tool_call'
+  | 'reflection_loop'
+  | 'reflection_result'
+  | 'strategy_end';
 
 /**
  * Metadatos de eventos X-Ray. Las claves `input` / `output` / `toolResult` alimentan Langfuse
@@ -43,12 +39,12 @@ type SessionTraceState = {
   lastGeneration: LangfuseGenerationClient | null;
   /** Span abierto para emparejar reflection_loop → reflection_result. */
   reflectionSpan: LangfuseSpanClient | null;
-  strategyKind: "react" | "plan_execute" | "unknown";
+  strategyKind: 'react' | 'plan_execute' | 'unknown';
 };
 
 function readString(meta: Record<string, unknown>, key: string): string | undefined {
   const v = meta[key];
-  return typeof v === "string" ? v : undefined;
+  return typeof v === 'string' ? v : undefined;
 }
 
 /** Entrada de la generación Langfuse: prioriza `metadata.input` del trace OAR. */
@@ -56,11 +52,7 @@ function langfuseGenerationInput(meta: OarTraceMetadata): unknown {
   if (meta.input !== undefined) {
     return meta.input;
   }
-  return (
-    readString(meta, "prompt") ??
-    readString(meta, "planningPrompt") ??
-    meta
-  );
+  return readString(meta, 'prompt') ?? readString(meta, 'planningPrompt') ?? meta;
 }
 
 /** Salida de la generación Langfuse: prioriza `metadata.output` del trace OAR. */
@@ -69,9 +61,7 @@ function langfuseGenerationOutput(meta: OarTraceMetadata): unknown {
     return meta.output;
   }
   return (
-    readString(meta, "completion") ??
-    readString(meta, "raw") ??
-    readString(meta, "synthesisRaw")
+    readString(meta, 'completion') ?? readString(meta, 'raw') ?? readString(meta, 'synthesisRaw')
   );
 }
 
@@ -88,11 +78,7 @@ function langfuseToolInput(meta: OarTraceMetadata): unknown {
 }
 
 function resolveLangfuseBaseUrl(): string {
-  return (
-    process.env.LANGFUSE_HOST ??
-    process.env.LANGFUSE_BASE_URL ??
-    "http://localhost:3000"
-  );
+  return process.env.LANGFUSE_HOST ?? process.env.LANGFUSE_BASE_URL ?? 'http://localhost:3000';
 }
 
 export class OarTracer {
@@ -110,7 +96,7 @@ export class OarTracer {
           baseUrl: resolveLangfuseBaseUrl(),
         });
       } catch (err) {
-        console.error("[OarTracer] Langfuse client init failed:", err);
+        console.error('[OarTracer] Langfuse client init failed:', err);
       }
     }
   }
@@ -123,7 +109,7 @@ export class OarTracer {
     sessionId: string,
     tenantSlug: string,
     eventType: OarTraceEventType,
-    metadata: OarTraceMetadata,
+    metadata: OarTraceMetadata
   ): void {
     try {
       const envelope = {
@@ -140,7 +126,7 @@ export class OarTracer {
     }
 
     void this.ingestLangfuse(sessionId, tenantSlug, eventType, metadata).catch((err: unknown) => {
-      console.error("[OarTracer] Langfuse ingest failed:", err);
+      console.error('[OarTracer] Langfuse ingest failed:', err);
     });
   }
 
@@ -148,7 +134,7 @@ export class OarTracer {
     sessionId: string,
     tenantSlug: string,
     eventType: OarTraceEventType,
-    metadata: OarTraceMetadata,
+    metadata: OarTraceMetadata
   ): Promise<void> {
     const client = this.langfuse;
     if (client === undefined) {
@@ -156,21 +142,21 @@ export class OarTracer {
     }
 
     try {
-      if (eventType === "strategy_start") {
+      if (eventType === 'strategy_start') {
         this.langfuseStrategyStart(client, sessionId, tenantSlug, metadata);
-      } else if (eventType === "strategy_end") {
+      } else if (eventType === 'strategy_end') {
         await this.langfuseStrategyEnd(client, sessionId, metadata);
-      } else if (eventType === "llm_call") {
+      } else if (eventType === 'llm_call') {
         this.langfuseLlmCall(client, sessionId, tenantSlug, metadata);
-      } else if (eventType === "tool_call") {
+      } else if (eventType === 'tool_call') {
         this.langfuseToolCall(client, sessionId, tenantSlug, metadata);
-      } else if (eventType === "reflection_loop") {
+      } else if (eventType === 'reflection_loop') {
         this.langfuseReflectionLoop(client, sessionId, tenantSlug, metadata);
-      } else if (eventType === "reflection_result") {
+      } else if (eventType === 'reflection_result') {
         this.langfuseReflectionResult(sessionId, metadata);
       }
     } catch (err) {
-      console.error("[OarTracer] Langfuse ingest error:", err);
+      console.error('[OarTracer] Langfuse ingest error:', err);
     }
   }
 
@@ -178,14 +164,13 @@ export class OarTracer {
     client: Langfuse,
     sessionId: string,
     tenantSlug: string,
-    metadata: OarTraceMetadata,
+    metadata: OarTraceMetadata
   ): void {
     const kindRaw = metadata.type;
-    const strategyKind =
-      kindRaw === "react" || kindRaw === "plan_execute" ? kindRaw : "unknown";
+    const strategyKind = kindRaw === 'react' || kindRaw === 'plan_execute' ? kindRaw : 'unknown';
     const trace = client.trace({
       id: sessionId,
-      name: "OAR Execution",
+      name: 'OAR Execution',
       userId: tenantSlug,
       sessionId,
       metadata,
@@ -201,13 +186,13 @@ export class OarTracer {
   private async langfuseStrategyEnd(
     client: Langfuse,
     sessionId: string,
-    metadata: OarTraceMetadata,
+    metadata: OarTraceMetadata
   ): Promise<void> {
     const state = this.sessions.get(sessionId);
     if (state !== undefined) {
       state.trace.update({ output: metadata });
       if (state.reflectionSpan !== null) {
-        state.reflectionSpan.end({ output: { closed: "strategy_end" } });
+        state.reflectionSpan.end({ output: { closed: 'strategy_end' } });
       }
       this.sessions.delete(sessionId);
     }
@@ -218,12 +203,12 @@ export class OarTracer {
     client: Langfuse,
     sessionId: string,
     tenantSlug: string,
-    metadata: OarTraceMetadata,
+    metadata: OarTraceMetadata
   ): void {
     const state = this.ensureTrace(client, sessionId, tenantSlug);
-    const model = readString(metadata, "model");
-    const phaseLabel = readString(metadata, "phase");
-    const name = phaseLabel === undefined ? "llm_call" : `llm_call:${phaseLabel}`;
+    const model = readString(metadata, 'model');
+    const phaseLabel = readString(metadata, 'phase');
+    const name = phaseLabel === undefined ? 'llm_call' : `llm_call:${phaseLabel}`;
     const generation = state.trace.generation({
       name,
       model,
@@ -231,10 +216,10 @@ export class OarTracer {
       output: langfuseGenerationOutput(metadata),
       metadata,
     });
-    const phase = readString(metadata, "phase");
-    if (phase === "planning") {
+    const phase = readString(metadata, 'phase');
+    if (phase === 'planning') {
       state.lastGeneration = null;
-    } else if (state.strategyKind === "react") {
+    } else if (state.strategyKind === 'react') {
       state.lastGeneration = generation;
     } else {
       state.lastGeneration = null;
@@ -245,12 +230,12 @@ export class OarTracer {
     client: Langfuse,
     sessionId: string,
     tenantSlug: string,
-    metadata: OarTraceMetadata,
+    metadata: OarTraceMetadata
   ): void {
     const state = this.ensureTrace(client, sessionId, tenantSlug);
-    const toolName = readString(metadata, "toolName") ?? "tool_call";
+    const toolName = readString(metadata, 'toolName') ?? 'tool_call';
     const parent =
-      state.strategyKind === "react" && state.lastGeneration !== null
+      state.strategyKind === 'react' && state.lastGeneration !== null
         ? state.lastGeneration
         : state.trace;
     const span = parent.span({
@@ -269,14 +254,14 @@ export class OarTracer {
     client: Langfuse,
     sessionId: string,
     tenantSlug: string,
-    metadata: OarTraceMetadata,
+    metadata: OarTraceMetadata
   ): void {
     const state = this.ensureTrace(client, sessionId, tenantSlug);
     if (state.reflectionSpan !== null) {
-      state.reflectionSpan.end({ output: { note: "superseded by new reflection_loop" } });
+      state.reflectionSpan.end({ output: { note: 'superseded by new reflection_loop' } });
     }
     state.reflectionSpan = state.trace.span({
-      name: "reflection_loop",
+      name: 'reflection_loop',
       input: metadata,
     });
   }
@@ -291,21 +276,17 @@ export class OarTracer {
       state.reflectionSpan = null;
       return;
     }
-    state.trace.span({ name: "reflection_result", input: metadata }).end();
+    state.trace.span({ name: 'reflection_result', input: metadata }).end();
   }
 
-  private ensureTrace(
-    client: Langfuse,
-    sessionId: string,
-    tenantSlug: string,
-  ): SessionTraceState {
+  private ensureTrace(client: Langfuse, sessionId: string, tenantSlug: string): SessionTraceState {
     const existing = this.sessions.get(sessionId);
     if (existing !== undefined) {
       return existing;
     }
     const trace = client.trace({
       id: sessionId,
-      name: "OAR Execution",
+      name: 'OAR Execution',
       userId: tenantSlug,
       sessionId,
       metadata: { recovered: true },
@@ -314,7 +295,7 @@ export class OarTracer {
       trace,
       lastGeneration: null,
       reflectionSpan: null,
-      strategyKind: "unknown",
+      strategyKind: 'unknown',
     };
     this.sessions.set(sessionId, state);
     return state;
@@ -327,7 +308,7 @@ export function traceOar(
   sessionId: string,
   tenantSlug: string,
   eventType: OarTraceEventType,
-  metadata: OarTraceMetadata,
+  metadata: OarTraceMetadata
 ): void {
   if (tracer === undefined) {
     return;

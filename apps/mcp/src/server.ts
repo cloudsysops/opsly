@@ -1,19 +1,19 @@
-import { requireMCPAuth } from "./auth/middleware.js";
-import { MCP_SERVER_INFO } from "./lib/constants.js";
-import { aiIntegrationsTools } from "./tools/ai-integrations.js";
-import { contextTools } from "./tools/context.js";
-import { executorTool } from "./tools/executor.js";
-import { invitationsTool } from "./tools/invitations.js";
-import { metricsTool } from "./tools/metrics.js";
-import { notebooklmTool } from "./tools/notebooklm.js";
-import { opsStubsTools } from "./tools/ops-stubs.js";
-import { onboardTool } from "./tools/onboard.js";
-import { getJobStatusTool } from "./tools/get-job-status.tool.js";
-import { n8nCreateWorkflowTool } from "./tools/n8n-create-workflow.tool.js";
-import { runAgentTaskTool } from "./tools/run-agent-task.tool.js";
-import { suspendTools } from "./tools/suspend.js";
-import { tenantsTools } from "./tools/tenants.js";
-import type { ToolDefinition } from "./types/index.js";
+import { requireMCPAuth } from './auth/middleware.js';
+import { MCP_SERVER_INFO } from './lib/constants.js';
+import { aiIntegrationsTools } from './tools/ai-integrations.js';
+import { contextTools } from './tools/context.js';
+import { executorTool } from './tools/executor.js';
+import { invitationsTool } from './tools/invitations.js';
+import { metricsTool } from './tools/metrics.js';
+import { notebooklmTool } from './tools/notebooklm.js';
+import { opsStubsTools } from './tools/ops-stubs.js';
+import { onboardTool } from './tools/onboard.js';
+import { getJobStatusTool } from './tools/get-job-status.tool.js';
+import { n8nCreateWorkflowTool } from './tools/n8n-create-workflow.tool.js';
+import { runAgentTaskTool } from './tools/run-agent-task.tool.js';
+import { suspendTools } from './tools/suspend.js';
+import { tenantsTools } from './tools/tenants.js';
+import type { ToolDefinition } from './types/index.js';
 
 interface RegisteredTool {
   name: string;
@@ -30,28 +30,28 @@ type SchemaWithSafeParse = {
 
 /** Scope OAuth requerido por tool cuando se envía `Authorization` en `callTool`. */
 export const TOOL_REQUIRED_SCOPES: Record<string, string> = {
-  get_tenants: "tenants:read",
-  get_tenant: "tenants:read",
-  onboard_tenant: "tenants:write",
-  suspend_tenant: "tenants:write",
-  resume_tenant: "tenants:write",
-  send_invitation: "invitations:write",
-  get_health: "metrics:read",
-  get_metrics: "metrics:read",
-  execute_prompt: "executor:write",
-  notebooklm: "agents:write",
-  run_agent_task: "agents:write",
-  get_job_status: "agents:write",
-  n8n_create_workflow: "agents:write",
-  check_service_health: "metrics:read",
-  restart_container: "tenants:write",
-  list_ai_integrations: "metrics:read",
-  probe_platform_component: "metrics:read",
-  get_docker_containers: "metrics:read",
-  list_context_resources: "metrics:read",
-  read_context_resource: "metrics:read",
-  list_adrs: "metrics:read",
-  read_adr: "metrics:read",
+  get_tenants: 'tenants:read',
+  get_tenant: 'tenants:read',
+  onboard_tenant: 'tenants:write',
+  suspend_tenant: 'tenants:write',
+  resume_tenant: 'tenants:write',
+  send_invitation: 'invitations:write',
+  get_health: 'metrics:read',
+  get_metrics: 'metrics:read',
+  execute_prompt: 'executor:write',
+  notebooklm: 'agents:write',
+  run_agent_task: 'agents:write',
+  get_job_status: 'agents:write',
+  n8n_create_workflow: 'agents:write',
+  check_service_health: 'metrics:read',
+  restart_container: 'tenants:write',
+  list_ai_integrations: 'metrics:read',
+  probe_platform_component: 'metrics:read',
+  get_docker_containers: 'metrics:read',
+  list_context_resources: 'metrics:read',
+  read_context_resource: 'metrics:read',
+  list_adrs: 'metrics:read',
+  read_adr: 'metrics:read',
 };
 
 export type CallToolOptions = {
@@ -61,15 +61,13 @@ export type CallToolOptions = {
 function isSchemaWithSafeParse(value: unknown): value is SchemaWithSafeParse {
   return (
     value !== null &&
-    typeof value === "object" &&
-    "safeParse" in value &&
-    typeof (value as { safeParse?: unknown }).safeParse === "function"
+    typeof value === 'object' &&
+    'safeParse' in value &&
+    typeof (value as { safeParse?: unknown }).safeParse === 'function'
   );
 }
 
-function adaptTool<TInput, TOutput>(
-  tool: ToolDefinition<TInput, TOutput>,
-): RegisteredTool {
+function adaptTool<TInput, TOutput>(tool: ToolDefinition<TInput, TOutput>): RegisteredTool {
   return {
     name: tool.name,
     handler: async (input: unknown) => {

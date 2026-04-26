@@ -1,6 +1,1 @@
-export {
-  getTenantComposePath,
-  startTenant,
-  stopTenant,
-  getTenantStackStatus,
-} from "./container";
+export { getTenantComposePath, startTenant, stopTenant, getTenantStackStatus } from './container';

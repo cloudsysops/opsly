@@ -1,16 +1,16 @@
-"use client";
+'use client';
 
-import type { FormEvent, ReactElement } from "react";
-import { Loader2 } from "lucide-react";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { createClient } from "@/lib/supabase";
+import type { FormEvent, ReactElement } from 'react';
+import { Loader2 } from 'lucide-react';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { Button } from '@/components/ui/button';
+import { createClient } from '@/lib/supabase';
 
 export default function LoginPage(): ReactElement {
   const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -29,10 +29,10 @@ export default function LoginPage(): ReactElement {
         setLoading(false);
         return;
       }
-      router.push("/dashboard");
+      router.push('/dashboard');
       router.refresh();
     } catch {
-      setError("Error al iniciar sesión");
+      setError('Error al iniciar sesión');
     } finally {
       setLoading(false);
     }
@@ -51,9 +51,7 @@ export default function LoginPage(): ReactElement {
       </a>
       <div className="relative w-full max-w-sm space-y-8">
         <div className="text-center">
-          <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-ops-gray">
-            Opsly
-          </p>
+          <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-ops-gray">Opsly</p>
           <h1 className="mt-2 text-2xl font-bold tracking-tight text-neutral-100">
             Portal de cliente
           </h1>
@@ -75,7 +73,10 @@ export default function LoginPage(): ReactElement {
             </p>
           ) : null}
           <div>
-            <label htmlFor="email" className="mb-1 block text-xs uppercase tracking-wide text-ops-gray">
+            <label
+              htmlFor="email"
+              className="mb-1 block text-xs uppercase tracking-wide text-ops-gray"
+            >
               Email
             </label>
             <input
@@ -90,7 +91,10 @@ export default function LoginPage(): ReactElement {
             />
           </div>
           <div>
-            <label htmlFor="password" className="mb-1 block text-xs uppercase tracking-wide text-ops-gray">
+            <label
+              htmlFor="password"
+              className="mb-1 block text-xs uppercase tracking-wide text-ops-gray"
+            >
               Contraseña
             </label>
             <input
@@ -111,7 +115,7 @@ export default function LoginPage(): ReactElement {
                 Entrando…
               </>
             ) : (
-              "Entrar"
+              'Entrar'
             )}
           </Button>
         </form>

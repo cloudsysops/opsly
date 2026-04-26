@@ -1,40 +1,30 @@
-import type { SupabaseClient } from "@supabase/supabase-js";
-import type { Database } from "./supabase/types";
-import { getTenantContext } from "./tenant-context";
+import type { SupabaseClient } from '@supabase/supabase-js';
+import type { Database } from './supabase/types';
+import { getTenantContext } from './tenant-context';
 
-const PLATFORM_SCHEMA = "platform" as const;
+const PLATFORM_SCHEMA = 'platform' as const;
 
 /** Tablas PostgREST bajo `platform.*` definidas en `Database`. */
-export type PlatformTableName = keyof Database["platform"]["Tables"];
+export type PlatformTableName = keyof Database['platform']['Tables'];
 
-export type TenantColumn = "tenant_id" | "tenant_slug";
+export type TenantColumn = 'tenant_id' | 'tenant_slug';
 
 export type BaseRepositoryOptions = {
   /** Columna usada para aislar filas (default `tenant_id`). */
   tenantColumn?: TenantColumn;
 };
 
-function tenantValue(
-  column: TenantColumn,
-  tenantId: string,
-  tenantSlug: string,
-): string {
-  return column === "tenant_id" ? tenantId : tenantSlug;
+function tenantValue(column: TenantColumn, tenantId: string, tenantSlug: string): string {
+  return column === 'tenant_id' ? tenantId : tenantSlug;
 }
 
 function assertNoTenantOverride(
   data: Record<string, unknown>,
   column: TenantColumn,
-  expected: string,
+  expected: string
 ): void {
-  if (
-    column in data &&
-    data[column] !== undefined &&
-    data[column] !== expected
-  ) {
-    throw new Error(
-      `TENANT_MISMATCH: ${column} en datos no coincide con el contexto de tenant`,
-    );
+  if (column in data && data[column] !== undefined && data[column] !== expected) {
+    throw new Error(`TENANT_MISMATCH: ${column} en datos no coincide con el contexto de tenant`);
   }
 }
 
@@ -52,31 +42,19 @@ export class BaseRepository {
   /**
    * SELECT con `.eq` automático por tenant.
    */
-  select(
-    table: PlatformTableName,
-    columns: string,
-    options?: BaseRepositoryOptions,
-  ) {
+  select(table: PlatformTableName, columns: string, options?: BaseRepositoryOptions) {
     const { tenantId, tenantSlug } = getTenantContext();
-    const col = options?.tenantColumn ?? "tenant_id";
+    const col = options?.tenantColumn ?? 'tenant_id';
     const value = tenantValue(col, tenantId, tenantSlug);
-    return this.client
-      .schema(PLATFORM_SCHEMA)
-      .from(table)
-      .select(columns)
-      .eq(col, value);
+    return this.client.schema(PLATFORM_SCHEMA).from(table).select(columns).eq(col, value);
   }
 
   /**
    * INSERT con `tenant_id` o `tenant_slug` inyectado y sin permitir suplantación.
    */
-  insert(
-    table: PlatformTableName,
-    data: Record<string, unknown>,
-    options?: BaseRepositoryOptions,
-  ) {
+  insert(table: PlatformTableName, data: Record<string, unknown>, options?: BaseRepositoryOptions) {
     const { tenantId, tenantSlug } = getTenantContext();
-    const col = options?.tenantColumn ?? "tenant_id";
+    const col = options?.tenantColumn ?? 'tenant_id';
     assertNoTenantOverride(data, col, tenantValue(col, tenantId, tenantSlug));
     const payload = {
       ...data,
@@ -88,13 +66,9 @@ export class BaseRepository {
   /**
    * UPDATE con `.eq` por tenant obligatorio.
    */
-  update(
-    table: PlatformTableName,
-    data: Record<string, unknown>,
-    options?: BaseRepositoryOptions,
-  ) {
+  update(table: PlatformTableName, data: Record<string, unknown>, options?: BaseRepositoryOptions) {
     const { tenantId, tenantSlug } = getTenantContext();
-    const col = options?.tenantColumn ?? "tenant_id";
+    const col = options?.tenantColumn ?? 'tenant_id';
     assertNoTenantOverride(data, col, tenantValue(col, tenantId, tenantSlug));
     const payload = { ...data };
     if (col in payload) {
@@ -112,7 +86,7 @@ export class BaseRepository {
    */
   delete(table: PlatformTableName, options?: BaseRepositoryOptions) {
     const { tenantId, tenantSlug } = getTenantContext();
-    const col = options?.tenantColumn ?? "tenant_id";
+    const col = options?.tenantColumn ?? 'tenant_id';
     return this.client
       .schema(PLATFORM_SCHEMA)
       .from(table)

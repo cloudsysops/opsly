@@ -30,10 +30,7 @@ export function churnRiskFromLastUsage(params: {
     return null;
   }
   const capped = Math.min(daysSince, 60);
-  const risk = Math.min(
-    0.95,
-    0.45 + (capped - params.inactiveDaysThreshold) * 0.012,
-  );
+  const risk = Math.min(0.95, 0.45 + (capped - params.inactiveDaysThreshold) * 0.012);
   return { risk, daysSince };
 }
 
@@ -41,7 +38,7 @@ export function churnRiskFromLastUsage(params: {
  * Regresión lineal y = a + b x sobre los últimos puntos (x = 0..n-1).
  */
 export function linearForecastNext(
-  dailyTotals: number[],
+  dailyTotals: number[]
 ): { slope: number; intercept: number; next: number } | null {
   const n = dailyTotals.length;
   if (n < 3) {
@@ -73,7 +70,7 @@ export function linearForecastNext(
  * Z-score del último valor vs media/std de la ventana previa (sin el último punto).
  */
 export function zScoreAnomaly(
-  series: number[],
+  series: number[]
 ): { z: number; mean: number; std: number; last: number } | null {
   if (series.length < 8) {
     return null;
@@ -81,8 +78,7 @@ export function zScoreAnomaly(
   const last = series[series.length - 1] ?? 0;
   const rest = series.slice(0, -1);
   const mean = rest.reduce((s, x) => s + x, 0) / rest.length;
-  const variance =
-    rest.reduce((s, x) => s + (x - mean) ** 2, 0) / Math.max(1, rest.length - 1);
+  const variance = rest.reduce((s, x) => s + (x - mean) ** 2, 0) / Math.max(1, rest.length - 1);
   const std = Math.sqrt(Math.max(variance, 1e-9));
   const z = (last - mean) / std;
   return { z, mean, std, last };

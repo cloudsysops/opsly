@@ -41,7 +41,7 @@ export interface MemoryInterface {
     tenantSlug: string,
     sessionId: string,
     step: number,
-    content: string,
+    content: string
   ): Promise<void>;
 
   /**

@@ -1,18 +1,18 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import { createClient } from "@/lib/supabase";
-import { usePortalTenant } from "@/hooks/usePortalTenant";
-import { FeedbackChat } from "@/components/FeedbackChat";
+import { useEffect, useState } from 'react';
+import { createClient } from '@/lib/supabase';
+import { usePortalTenant } from '@/hooks/usePortalTenant';
+import { FeedbackChat } from '@/components/FeedbackChat';
 
 export function FeedbackChatMount() {
   const { data, error, isLoading } = usePortalTenant();
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState('');
 
   useEffect(() => {
     const supabase = createClient();
     void supabase.auth.getUser().then(({ data: u }) => {
-      setEmail(u.user?.email ?? "");
+      setEmail(u.user?.email ?? '');
     });
   }, []);
 

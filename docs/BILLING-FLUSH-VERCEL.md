@@ -10,10 +10,10 @@ openssl rand -base64 32
 
 **Dónde configurarlo**
 
-| Entorno | Acción |
-|--------|--------|
+| Entorno                           | Acción                                                                                                                                                                                                 |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | **Vercel (producción / preview)** | Project → **Settings** → **Environment Variables** → nombre `CRON_SECRET`, valor el string generado, entornos deseados (Production, Preview, Development). **Redeploy** tras crear o rotar el secreto. |
-| **Local** | En `apps/api/.env.local` (no commitear): `CRON_SECRET=<mismo valor o uno distinto solo para dev>`. |
+| **Local**                         | En `apps/api/.env.local` (no commitear): `CRON_SECRET=<mismo valor o uno distinto solo para dev>`.                                                                                                     |
 
 Vercel envía automáticamente este valor en las invocaciones programadas como cabecera:
 

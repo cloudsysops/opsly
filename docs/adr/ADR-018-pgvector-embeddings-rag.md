@@ -16,6 +16,7 @@ idénticas se re-computan desde cero. Se necesita memoria semántica para:
 
 Usar **pgvector** (extensión PostgreSQL) en el proyecto Supabase existente para
 almacenar embeddings de:
+
 - Prompts de tareas Hermes (vector de la tarea input)
 - Decisiones exitosas (resultado + worker + confianza)
 - Configuraciones de tenants (perfil semántico)
@@ -65,11 +66,13 @@ interface RAGContext {
 ## Consecuencias
 
 **Positivas:**
+
 - Accuracy de routing mejora ~40% (baseline vs contexto histórico)
 - Elimina re-cómputo de tareas idénticas
 - Zero dependencia nueva (pgvector en Supabase, Claude API ya existe)
 
 **Negativas:**
+
 - Añade latencia ~50ms por embedding generation en tareas nuevas
 - Requiere migration + schema change (no-op para tenants existentes)
 - Cache de embeddings necesario para evitar llamadas duplicadas a API

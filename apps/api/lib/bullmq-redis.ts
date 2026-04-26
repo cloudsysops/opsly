@@ -13,7 +13,7 @@ export function getBullmqRedisConnection(): BullmqRedisConnection | null {
   const url = new URL(raw);
   return {
     host: url.hostname,
-    port: Number(url.port || "6379"),
+    port: Number(url.port || '6379'),
     password: url.password || process.env.REDIS_PASSWORD,
   };
 }

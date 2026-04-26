@@ -117,7 +117,7 @@ Ejemplo:
 Escalar inmediatamente cuando:
 
 - 3 fallos consecutivos de health check.
-- >30 minutos con 402 masivo para tenants productivos.
+- > 30 minutos con 402 masivo para tenants productivos.
 - fallback cloud también falla para `hybrid`.
 
 Canal primario:

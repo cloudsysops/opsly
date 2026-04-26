@@ -3,10 +3,10 @@
  * El core de Opsly solo depende de esta interfaz; cada adaptador vive en su archivo.
  */
 
-export type CloudProviderId = "aws" | "azure" | "gcp";
+export type CloudProviderId = 'aws' | 'azure' | 'gcp';
 
 /** Planes de aprovisionamiento reconocidos por la API (extensible). */
-export type ProvisioningPlan = "free-tier" | "serverless-starter";
+export type ProvisioningPlan = 'free-tier' | 'serverless-starter';
 
 export interface ProvisioningCostEstimate {
   readonly monthlyEstimate: number;
@@ -40,7 +40,7 @@ export interface CloudProvider {
    */
   provisionResources(
     tenantId: string,
-    config: ProvisioningConfig,
+    config: ProvisioningConfig
   ): Promise<ProvisionResourcesResult>;
 
   /**

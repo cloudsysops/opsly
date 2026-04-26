@@ -88,14 +88,10 @@ export type DockerPsListResult =
  */
 export async function listDockerContainers(): Promise<DockerPsListResult> {
   try {
-    const result = await execa(
-      'docker',
-      ['ps', '-a', '--no-trunc', '--format', '{{json .}}'],
-      {
-        reject: false,
-        maxBuffer: 12 * 1024 * 1024,
-      },
-    );
+    const result = await execa('docker', ['ps', '-a', '--no-trunc', '--format', '{{json .}}'], {
+      reject: false,
+      maxBuffer: DOCKER_PS_LIST_MAX_BUFFER_BYTES,
+    });
     if (result.exitCode !== 0) {
       const err =
         typeof result.stderr === 'string' && result.stderr.length > 0

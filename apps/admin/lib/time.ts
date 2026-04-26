@@ -5,7 +5,7 @@ export function relativeTime(iso: string): string {
   }
   const sec = Math.floor((Date.now() - t) / 1000);
   if (sec < 5) {
-    return "hace un momento";
+    return 'hace un momento';
   }
   if (sec < 60) {
     return `hace ${sec}s`;

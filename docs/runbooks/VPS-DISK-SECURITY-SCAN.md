@@ -18,12 +18,12 @@ docker ps -a --format '{{.Image}}' | sort -u
 
 ### Hallazgos típicos (Opsly)
 
-| Área | Notas |
-|------|--------|
-| **`/var/lib/docker`** | Suele ser el mayor consumidor; `docker system df` muestra imágenes reclamables. |
-| **`journalctl`** | A menudo moderado; `--vacuum-time=7d` ayuda si crece. |
+| Área                          | Notas                                                                                                       |
+| ----------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| **`/var/lib/docker`**         | Suele ser el mayor consumidor; `docker system df` muestra imágenes reclamables.                             |
+| **`journalctl`**              | A menudo moderado; `--vacuum-time=7d` ayuda si crece.                                                       |
 | **`/opt/opsly/node_modules`** | En el host (si existe `npm ci` en disco) puede ser ~1 GB+; no borrar a ciegas si el deploy depende de ello. |
-| **Imágenes GHCR** | Varias etiquetas `latest`; prune libera capas viejas. |
+| **Imágenes GHCR**             | Varias etiquetas `latest`; prune libera capas viejas.                                                       |
 
 ---
 

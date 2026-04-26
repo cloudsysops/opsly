@@ -1,4 +1,4 @@
-import { getServiceClient } from "./client";
+import { getServiceClient } from './client';
 
 export { getServiceClient };
 export type {
@@ -9,7 +9,7 @@ export type {
   TenantStatus,
   TenantInsert,
   TenantUpdate,
-} from "./types";
+} from './types';
 
 // Singleton supabase client for backward compatibility
 export { getServiceClient as supabase };

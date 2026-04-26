@@ -1,5 +1,5 @@
 function envOrEmpty(name: string): string {
-  return process.env[name] || "";
+  return process.env[name] || '';
 }
 
 type PlanDefinition = {
@@ -14,44 +14,41 @@ type PlanDefinition = {
 
 export const PLANS = {
   startup: {
-    name: "Startup",
+    name: 'Startup',
     price_usd: 49,
-    stripe_price_id: envOrEmpty("STRIPE_PRICE_ID_STARTUP"),
-    services: ["n8n", "uptime_kuma"],
+    stripe_price_id: envOrEmpty('STRIPE_PRICE_ID_STARTUP'),
+    services: ['n8n', 'uptime_kuma'],
     port_range: [8000, 9999] as const,
     max_workflows: 10,
-    support: "email",
+    support: 'email',
   },
   business: {
-    name: "Business",
+    name: 'Business',
     price_usd: 149,
-    stripe_price_id: envOrEmpty("STRIPE_PRICE_ID_BUSINESS"),
-    services: ["n8n", "uptime_kuma"],
+    stripe_price_id: envOrEmpty('STRIPE_PRICE_ID_BUSINESS'),
+    services: ['n8n', 'uptime_kuma'],
     port_range: [10000, 13999] as const,
     max_workflows: 50,
-    support: "priority_email",
+    support: 'priority_email',
   },
   enterprise: {
-    name: "Enterprise",
+    name: 'Enterprise',
     price_usd: 499,
-    stripe_price_id: envOrEmpty("STRIPE_PRICE_ID_ENTERPRISE"),
-    services: ["n8n", "uptime_kuma"],
+    stripe_price_id: envOrEmpty('STRIPE_PRICE_ID_ENTERPRISE'),
+    services: ['n8n', 'uptime_kuma'],
     port_range: [14000, 17999] as const,
     max_workflows: 500,
-    support: "dedicated_slack",
+    support: 'dedicated_slack',
   },
   demo: {
-    name: "Demo",
+    name: 'Demo',
     price_usd: 0,
-    stripe_price_id: envOrEmpty("STRIPE_PRICE_ID_DEMO"),
-    services: ["n8n", "uptime_kuma"],
+    stripe_price_id: envOrEmpty('STRIPE_PRICE_ID_DEMO'),
+    services: ['n8n', 'uptime_kuma'],
     port_range: [18000, 19999] as const,
     max_workflows: 3,
-    support: "community",
+    support: 'community',
   },
-} as const satisfies Record<
-  "startup" | "business" | "enterprise" | "demo",
-  PlanDefinition
->;
+} as const satisfies Record<'startup' | 'business' | 'enterprise' | 'demo', PlanDefinition>;
 
 export type PlanKey = keyof typeof PLANS;

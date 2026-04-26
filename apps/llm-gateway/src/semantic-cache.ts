@@ -1,8 +1,8 @@
-import { createClient } from "@supabase/supabase-js";
-import { embedText } from "./embeddings.js";
-import { hashPrompt } from "./hash.js";
-import { platformSchema, supabaseRpc } from "./supabase-helpers.js";
-import type { LLMMessage } from "./types.js";
+import { createClient } from '@supabase/supabase-js';
+import { embedText } from './embeddings.js';
+import { hashPrompt } from './hash.js';
+import { platformSchema, supabaseRpc } from './supabase-helpers.js';
+import type { LLMMessage } from './types.js';
 
 function client() {
   const url = process.env.SUPABASE_URL?.trim();
@@ -22,17 +22,17 @@ export interface SemanticCacheHit {
 
 export async function semanticCacheGetExact(
   tenant_slug: string,
-  promptHash: string,
+  promptHash: string
 ): Promise<SemanticCacheHit | null> {
   const sb = client();
   if (!sb) {
     return null;
   }
   const { data, error } = await platformSchema(sb)
-    .from("llm_cache")
-    .select("response, model_used, quality_score")
-    .eq("tenant_slug", tenant_slug)
-    .eq("prompt_hash", promptHash)
+    .from('llm_cache')
+    .select('response, model_used, quality_score')
+    .eq('tenant_slug', tenant_slug)
+    .eq('prompt_hash', promptHash)
     .maybeSingle();
 
   if (error || !data) {
@@ -55,7 +55,7 @@ export async function semanticCacheGetExact(
 export async function semanticCacheGetSimilar(
   tenant_slug: string,
   promptText: string,
-  threshold = 0.88,
+  threshold = 0.88
 ): Promise<SemanticCacheHit | null> {
   const vec = await embedText(promptText);
   if (!vec) {
@@ -67,7 +67,7 @@ export async function semanticCacheGetSimilar(
   }
   const { data, error } = await supabaseRpc<
     Array<{ id: string; response: string; similarity: number }>
-  >(sb, "match_cached_responses", {
+  >(sb, 'match_cached_responses', {
     query_embedding: vec,
     match_threshold: threshold,
     match_count: 1,
@@ -101,16 +101,18 @@ export async function semanticCacheSet(params: {
   const promptHash = hashPrompt(params.messages, params.system);
   const emb = await embedText(params.promptText);
 
-  await platformSchema(sb).from("llm_cache").upsert(
-    {
-      tenant_slug: params.tenant_slug,
-      prompt_hash: promptHash,
-      prompt_embedding: emb,
-      prompt_text: params.promptText.slice(0, 32000),
-      response: params.response.slice(0, 500000),
-      model_used: params.model_used,
-      quality_score: params.quality_score ?? null,
-    },
-    { onConflict: "tenant_slug,prompt_hash" },
-  );
+  await platformSchema(sb)
+    .from('llm_cache')
+    .upsert(
+      {
+        tenant_slug: params.tenant_slug,
+        prompt_hash: promptHash,
+        prompt_embedding: emb,
+        prompt_text: params.promptText.slice(0, 32000),
+        response: params.response.slice(0, 500000),
+        model_used: params.model_used,
+        quality_score: params.quality_score ?? null,
+      },
+      { onConflict: 'tenant_slug,prompt_hash' }
+    );
 }

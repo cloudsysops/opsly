@@ -1,50 +1,44 @@
-"use client";
+'use client';
 
-import { useMemo, useState } from "react";
-import { useTenants } from "@/hooks/useTenants";
-import type { PlanKey, TenantStatus } from "@/lib/types";
-import { TenantTable } from "@/components/tenants/TenantTable";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { useMemo, useState } from 'react';
+import { useTenants } from '@/hooks/useTenants';
+import type { PlanKey, TenantStatus } from '@/lib/types';
+import { TenantTable } from '@/components/tenants/TenantTable';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Skeleton } from "@/components/ui/skeleton";
+} from '@/components/ui/select';
+import { Skeleton } from '@/components/ui/skeleton';
 
-const PLANS: (PlanKey | "all")[] = [
-  "all",
-  "startup",
-  "business",
-  "enterprise",
-  "demo",
-];
-const STATUSES: (TenantStatus | "all")[] = [
-  "all",
-  "active",
-  "suspended",
-  "provisioning",
-  "failed",
-  "deleted",
+const PLANS: (PlanKey | 'all')[] = ['all', 'startup', 'business', 'enterprise', 'demo'];
+const STATUSES: (TenantStatus | 'all')[] = [
+  'all',
+  'active',
+  'suspended',
+  'provisioning',
+  'failed',
+  'deleted',
 ];
 
 export default function TenantsPage() {
   const [page, setPage] = useState(1);
-  const [search, setSearch] = useState("");
-  const [plan, setPlan] = useState<PlanKey | "all">("all");
-  const [status, setStatus] = useState<TenantStatus | "all">("all");
+  const [search, setSearch] = useState('');
+  const [plan, setPlan] = useState<PlanKey | 'all'>('all');
+  const [status, setStatus] = useState<TenantStatus | 'all'>('all');
 
   const params = useMemo(
     () => ({
       page,
       limit: 20,
-      plan: plan === "all" ? undefined : plan,
-      status: status === "all" ? undefined : status,
+      plan: plan === 'all' ? undefined : plan,
+      status: status === 'all' ? undefined : status,
     }),
-    [page, plan, status],
+    [page, plan, status]
   );
 
   const { data, error, isLoading } = useTenants(params);
@@ -73,7 +67,7 @@ export default function TenantsPage() {
           <Select
             value={plan}
             onValueChange={(v) => {
-              setPlan(v as PlanKey | "all");
+              setPlan(v as PlanKey | 'all');
               setPage(1);
             }}
           >
@@ -94,7 +88,7 @@ export default function TenantsPage() {
           <Select
             value={status}
             onValueChange={(v) => {
-              setStatus(v as TenantStatus | "all");
+              setStatus(v as TenantStatus | 'all');
               setPage(1);
             }}
           >
@@ -125,8 +119,8 @@ export default function TenantsPage() {
       {data ? (
         <div className="flex items-center justify-between font-mono text-xs text-ops-gray">
           <span>
-            page {data.page} / {Math.max(1, Math.ceil(data.total / data.limit))}{" "}
-            — {data.total} total
+            page {data.page} / {Math.max(1, Math.ceil(data.total / data.limit))} — {data.total}{' '}
+            total
           </span>
           <div className="flex gap-2">
             <Button

@@ -23,14 +23,14 @@ El sistema de skills permite que el agente **decida SOLO** qué skills cargar ba
 
 ### Componentes
 
-| Componente | Ubicación | Función |
-|------------|-----------|---------|
-| `skill-finder.js` | `scripts/` | Búsqueda con fuzzy matching + scoring |
-| `skill-loader.js` | `scripts/` | Auto-carga de skills en cadena |
-| `skill-autonomous.ts` | `skills/manifest/src/` | Análisis de contexto y decisiones |
-| `skill-hooks.sh` | `scripts/` | Hooks Bash para integración |
-| `skill-validator.ts` | `skills/manifest/src/` | Validación completa de skills |
-| `skill-doc-gen.js` | `scripts/` | Generación de documentación |
+| Componente            | Ubicación              | Función                               |
+| --------------------- | ---------------------- | ------------------------------------- |
+| `skill-finder.js`     | `scripts/`             | Búsqueda con fuzzy matching + scoring |
+| `skill-loader.js`     | `scripts/`             | Auto-carga de skills en cadena        |
+| `skill-autonomous.ts` | `skills/manifest/src/` | Análisis de contexto y decisiones     |
+| `skill-hooks.sh`      | `scripts/`             | Hooks Bash para integración           |
+| `skill-validator.ts`  | `skills/manifest/src/` | Validación completa de skills         |
+| `skill-doc-gen.js`    | `scripts/`             | Generación de documentación           |
 
 ### Flujo Autónomo
 
@@ -124,50 +124,51 @@ skill_list
 
 ### Critical (2)
 
-| Skill | Triggers | Descripción |
-|-------|----------|-------------|
-| `opsly-bootstrap` | sesión, inicio, contexto | Bootstrap de sesión modular |
+| Skill                 | Triggers                       | Descripción                          |
+| --------------------- | ------------------------------ | ------------------------------------ |
+| `opsly-bootstrap`     | sesión, inicio, contexto       | Bootstrap de sesión modular          |
 | `opsly-skill-creator` | crear skill, capturar workflow | Meta-skill de creación/normalización |
 
 ### High (9)
 
-| Skill | Triggers | Descripción |
-|-------|----------|-------------|
-| `opsly-api` | api, route, endpoint | Rutas API |
-| `opsly-frontend` | portal, admin, ui | Frontend apps |
-| `opsly-supabase` | sql, supabase, rls | Migraciones |
-| `opsly-infra` | docker, compose, vps | Infra + deploy |
-| `opsly-mcp` | mcp, tool, oauth | MCP OpenClaw |
-| `opsly-llm` | llm, ai, modelo | LLM Gateway |
-| `opsly-tenant` | tenant, onboard, n8n | Onboarding |
-| `opsly-orchestrator` | oar, workflow, n8n | Orquestador |
-| `opsly-billing` | stripe, metering, invoice | Billing |
+| Skill                | Triggers                  | Descripción    |
+| -------------------- | ------------------------- | -------------- |
+| `opsly-api`          | api, route, endpoint      | Rutas API      |
+| `opsly-frontend`     | portal, admin, ui         | Frontend apps  |
+| `opsly-supabase`     | sql, supabase, rls        | Migraciones    |
+| `opsly-infra`        | docker, compose, vps      | Infra + deploy |
+| `opsly-mcp`          | mcp, tool, oauth          | MCP OpenClaw   |
+| `opsly-llm`          | llm, ai, modelo           | LLM Gateway    |
+| `opsly-tenant`       | tenant, onboard, n8n      | Onboarding     |
+| `opsly-orchestrator` | oar, workflow, n8n        | Orquestador    |
+| `opsly-billing`      | stripe, metering, invoice | Billing        |
 
 ### Medium (3)
 
-| Skill | Triggers | Descripción |
-|-------|----------|-------------|
-| `opsly-discord` | discord, webhook | Notificaciones |
-| `opsly-qa` | test, smoke, audit | QA y release |
-| `opsly-architect` | arquitectura, ADR | Arquitectura |
+| Skill             | Triggers           | Descripción    |
+| ----------------- | ------------------ | -------------- |
+| `opsly-discord`   | discord, webhook   | Notificaciones |
+| `opsly-qa`        | test, smoke, audit | QA y release   |
+| `opsly-architect` | arquitectura, ADR  | Arquitectura   |
 
 ### Low (0)
 
 | Skill | Triggers | Descripción |
-|-------|----------|-------------|
+| ----- | -------- | ----------- |
+
 No hay skills low en el set modular activo.
 
 ## Templates
 
 En `skills/templates/`:
 
-| Template | Uso |
-|----------|-----|
-| `template-api-route.md` | Rutas API con tests |
+| Template                  | Uso                  |
+| ------------------------- | -------------------- |
+| `template-api-route.md`   | Rutas API con tests  |
 | `template-bash-script.md` | Scripts idempotentes |
-| `template-mcp-tool.md` | Tools MCP con OAuth |
-| `template-migration.md` | Migraciones SQL |
-| `template-test.md` | Tests Vitest |
+| `template-mcp-tool.md`    | Tools MCP con OAuth  |
+| `template-migration.md`   | Migraciones SQL      |
+| `template-test.md`        | Tests Vitest         |
 
 ## Integración
 
@@ -194,11 +195,13 @@ bash scripts/sync-skills-external.sh --target /tmp/opsly-skills
 ```
 
 Estructura publicada:
+
 - `/mnt/skills/user/*` (cada skill)
 - `/mnt/skills/index.json` (índice unificado)
 - `/mnt/skills/README.md` (guía de uso)
 
 Regla de uso para cualquier herramienta nueva:
+
 1. Buscar skill existente en `index.json`
 2. Reusar/mejorar skill si el match es adecuado
 3. Crear/expandir skill con `opsly-skill-creator` si no hay match suficiente
@@ -224,22 +227,24 @@ node scripts/skill-finder.js --autonomous --json
 
 ## Métricas de Autonomía
 
-| Métrica | Target | Actual |
-|---------|--------|--------|
-| Skills con manifest.json | 100% | 14/14 ✅ |
-| Skills con triggers | 100% | 14/14 ✅ |
-| Skills con cross-refs | 100% | 14/14 ✅ |
-| Avg triggers por skill | 5+ | 6.2 |
-| Templates disponibles | 5 | 5 ✅ |
+| Métrica                  | Target | Actual   |
+| ------------------------ | ------ | -------- |
+| Skills con manifest.json | 100%   | 14/14 ✅ |
+| Skills con triggers      | 100%   | 14/14 ✅ |
+| Skills con cross-refs    | 100%   | 14/14 ✅ |
+| Avg triggers por skill   | 5+     | 6.2      |
+| Templates disponibles    | 5      | 5 ✅     |
 
 ## Changelog
 
 ### v2.1 (2026-04-21)
+
 - Reorganización por módulos reales del monorepo
 - `opsly-bootstrap` + `opsly-skill-creator` como default
 - Nuevas skills: frontend, infra, orchestrator, billing, qa, architect
 
 ### v2.0 (2026-04-15)
+
 - Sistema de autonomía completo
 - 16 skills con manifest.json
 - Fuzzy matching en búsqueda
@@ -249,5 +254,6 @@ node scripts/skill-finder.js --autonomous --json
 - CLI completo
 
 ### v1.0 (2026-04-14)
+
 - 15 skills básicos
 - SKILL.md simples

@@ -4,12 +4,12 @@ Este documento alinea **roles** y **cómo encajan** con Opsly: no añade un bus 
 
 ## Roles
 
-| Actor | Qué es | Cómo se conecta |
-|--------|--------|-----------------|
-| **Cursor** | IDE + agente de código | Jobs BullMQ `cursor` (OpenClaw) cuando Hermes enruta `feature` → `cursor` y `HERMES_DISPATCH_OPENCLAW=true`. |
-| **Claude** | Modelo en la nube | Vía **LLM Gateway** (`/v1/text`, `/v1/chat/completions`, etc.); Hermes enruta `decision` (sin modo local-first) y `adr` → agente lógico `claude`. |
-| **GitHub Copilot** | Asistente en el IDE (Microsoft) | **No** hay backend Copilot en este repo: es cliente del editor. Las tareas que requieran CI van a **GitHub Actions** (`agentType: github_actions`). |
-| **LLM local (Ollama)** | Inferencia on-prem / worker | Cola BullMQ `ollama` → `OllamaWorker` → `POST` al **LLM Gateway** (`llama_local` / `OLLAMA_*`). Ver ADR-024. |
+| Actor                  | Qué es                          | Cómo se conecta                                                                                                                                     |
+| ---------------------- | ------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Cursor**             | IDE + agente de código          | Jobs BullMQ `cursor` (OpenClaw) cuando Hermes enruta `feature` → `cursor` y `HERMES_DISPATCH_OPENCLAW=true`.                                        |
+| **Claude**             | Modelo en la nube               | Vía **LLM Gateway** (`/v1/text`, `/v1/chat/completions`, etc.); Hermes enruta `decision` (sin modo local-first) y `adr` → agente lógico `claude`.   |
+| **GitHub Copilot**     | Asistente en el IDE (Microsoft) | **No** hay backend Copilot en este repo: es cliente del editor. Las tareas que requieran CI van a **GitHub Actions** (`agentType: github_actions`). |
+| **LLM local (Ollama)** | Inferencia on-prem / worker     | Cola BullMQ `ollama` → `OllamaWorker` → `POST` al **LLM Gateway** (`llama_local` / `OLLAMA_*`). Ver ADR-024.                                        |
 
 ## Activar decisiones rápidas con modelo local
 

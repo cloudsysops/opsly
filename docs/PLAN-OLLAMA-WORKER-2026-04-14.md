@@ -8,6 +8,7 @@
 ## Objetivo
 
 Dejar operativo:
+
 - **VPS** = control plane (API, Redis, LLM Gateway, orchestrator `queue-only`)
 - **Mac 2011** (`opslyquantum` en `opsly-mac2011`) = worker plane (Ollama local, BullMQ workers)
 - **LLM Gateway** = routing centralizado con `llama_local` como provider primary y fallback cloud siempre disponible
@@ -41,6 +42,7 @@ doppler secrets set OLLAMA_MODEL=nemotron-3-nano:4b \
 ### 1.2 Routing bias por defecto
 
 El LLM Gateway ya tiene `routing_bias` en `routing-hints.ts`. Por defecto:
+
 - Tareas simples (complexity 1) → `cheap` → `llama_local` primary
 - Tareas complejas (complexity 3) → `sonnet` → Claude
 

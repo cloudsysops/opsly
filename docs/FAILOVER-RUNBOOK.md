@@ -16,12 +16,12 @@ Este documento describe **detección**, **alerta** y **pasos manuales**. La auto
 
 ## Detección (operador)
 
-| Señal | Qué mirar |
-|--------|-----------|
-| API caída | `curl -sf --max-time 15 "https://api.${PLATFORM_DOMAIN}/api/health"` |
-| SSH admin | Solo Tailscale: `ssh vps-dragon@100.120.151.91` (no IP pública SSH) |
-| Traefik / app | En el VPS: `docker compose ... ps`, logs `infra-app-*` |
-| Cola BullMQ | Redis caído → orchestrator afectado; no es “failover DNS” por sí solo |
+| Señal         | Qué mirar                                                             |
+| ------------- | --------------------------------------------------------------------- |
+| API caída     | `curl -sf --max-time 15 "https://api.${PLATFORM_DOMAIN}/api/health"`  |
+| SSH admin     | Solo Tailscale: `ssh vps-dragon@100.120.151.91` (no IP pública SSH)   |
+| Traefik / app | En el VPS: `docker compose ... ps`, logs `infra-app-*`                |
+| Cola BullMQ   | Redis caído → orchestrator afectado; no es “failover DNS” por sí solo |
 
 ---
 
@@ -63,15 +63,15 @@ Solo aplicable si tuviste **replicación** o backups coherentes:
 - Mitigaciones red: `docs/SECURITY-MITIGATIONS-2026-04-09.md`
 - Estado producto: `AGENTS.md`
 
-| Métrica | Objetivo orientativo |
-|--------|----------------------|
+| Métrica   | Objetivo orientativo                               |
+| --------- | -------------------------------------------------- |
 | Detección | Depende del intervalo del monitor (p. ej. 30–60 s) |
-| RTO/RPO | Definir por negocio cuando exista segundo origen |
+| RTO/RPO   | Definir por negocio cuando exista segundo origen   |
 
 ---
 
 ## Post-mortem (recomendado)
 
-1. Causa raíz  
-2. Tiempo de detección y de recuperación  
-3. Acciones para evitar repetición  
+1. Causa raíz
+2. Tiempo de detección y de recuperación
+3. Acciones para evitar repetición

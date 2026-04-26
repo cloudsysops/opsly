@@ -1,6 +1,6 @@
 ---
-title: "MCP Tool Template"
-description: "Plantilla para tools MCP con OAuth y autenticación"
+title: 'MCP Tool Template'
+description: 'Plantilla para tools MCP con OAuth y autenticación'
 category: mcp
 tags: [mcp, tool, oauth, authentication, claude]
 created_at: 2026-04-15
@@ -224,7 +224,7 @@ describe('{{toolName}} MCP Tool', () => {
   // ============================================================
   it('debería lanzar error con input inválido', async () => {
     const invalidInput = { resource_id: '' }; // Vacío, no es válido
-    
+
     expect(() => {
       {{toolName}}InputSchema.parse(invalidInput);
     }).toThrow();

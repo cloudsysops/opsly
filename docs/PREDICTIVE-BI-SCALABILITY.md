@@ -25,10 +25,10 @@ export interface InsightJob {
   forceRegenerate?: boolean;
 }
 
-export const INSIGHT_QUEUE = "insights";
+export const INSIGHT_QUEUE = 'insights';
 
 // Cron expression: daily at 2am UTC
-const CRON_EXPRESSION = "0 2 * * *";
+const CRON_EXPRESSION = '0 2 * * *';
 ```
 
 ### 3. Rate Limiting
@@ -43,7 +43,7 @@ const CRON_EXPRESSION = "0 2 * * *";
 -- No calcular desde cero cada vez
 -- Usar vista materializada para stats agregados
 CREATE MATERIALIZED VIEW platform.tenant_daily_stats AS
-SELECT 
+SELECT
   tenant_id,
   date_trunc('day', created_at) as day,
   count(*) as event_count,
@@ -65,7 +65,7 @@ async function getCachedInsight(tenantId: string, type: InsightType) {
   const cacheKey = `insight:${tenantId}:${type}`;
   const cached = await redis.get(cacheKey);
   if (cached) return JSON.parse(cached);
-  
+
   const insight = await computeInsight(tenantId, type);
   await redis.setex(cacheKey, INSIGHT_CACHE_TTL, JSON.stringify(insight));
   return insight;
@@ -74,11 +74,11 @@ async function getCachedInsight(tenantId: string, type: InsightType) {
 
 ### 6. Horizontals Caling
 
-| Tenants | Workers | Redis | Notas |
-|--------|--------|-------|-------|-------|
-| 1-50 | 1 | 1 | Todo en un worker |
-| 50-200 | 2 | 1 | Workers paralelos |
-| 200-1000 | 5+ | Redis Cluster | Sharding por tenant |
+| Tenants  | Workers | Redis         | Notas               |
+| -------- | ------- | ------------- | ------------------- |
+| 1-50     | 1       | 1             | Todo en un worker   |
+| 50-200   | 2       | 1             | Workers paralelos   |
+| 200-1000 | 5+      | Redis Cluster | Sharding por tenant |
 
 ### 7. Fallback para DB lenta
 
@@ -91,9 +91,7 @@ async function getInsightWithFallback(tenantId: string) {
   try {
     const result = await Promise.race([
       computeInsight(tenantId),
-      new Promise((_, reject) => 
-        setTimeout(() => reject(new Error("timeout")), DB_TIMEOUT)
-      ),
+      new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), DB_TIMEOUT)),
     ]);
     return result;
   } catch {
@@ -107,11 +105,11 @@ async function getInsightWithFallback(tenantId: string) {
 
 ## Costos Estimados
 
-| Recurso | 50 tenants | 500 tenants | 1000 tenants |
-|--------|-----------|------------|--------------|
-| Redis | $0/mes | $15/mes | $30/mes |
-| Worker CPU | 0.1 vCPU | 0.5 vCPU | 1 vCPU |
-| DB queries | 50/day | 500/day | 1000/day |
+| Recurso    | 50 tenants | 500 tenants | 1000 tenants |
+| ---------- | ---------- | ----------- | ------------ |
+| Redis      | $0/mes     | $15/mes     | $30/mes      |
+| Worker CPU | 0.1 vCPU   | 0.5 vCPU    | 1 vCPU       |
+| DB queries | 50/day     | 500/day     | 1000/day     |
 
 ## Recomendaciones
 

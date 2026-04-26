@@ -1,5 +1,5 @@
-import { readFile } from "node:fs/promises";
-import { basename, join } from "node:path";
+import { readFile } from 'node:fs/promises';
+import { basename, join } from 'node:path';
 
 export interface KnowledgeFileEntry {
   path: string;
@@ -19,18 +19,20 @@ export interface KnowledgeIndexFile {
 }
 
 let cachedIndex: KnowledgeIndexFile | null = null;
-let cachedPath = "";
+let cachedPath = '';
 
 export function repoRoot(): string {
   return process.env.OPS_REPO_ROOT?.trim() || process.cwd();
 }
 
 export function knowledgeIndexPath(): string {
-  return process.env.KNOWLEDGE_INDEX_PATH?.trim() || join(repoRoot(), "config", "knowledge-index.json");
+  return (
+    process.env.KNOWLEDGE_INDEX_PATH?.trim() || join(repoRoot(), 'config', 'knowledge-index.json')
+  );
 }
 
-function isRichFiles(files: KnowledgeIndexFile["files"]): files is KnowledgeFileEntry[] {
-  return files.length > 0 && typeof files[0] !== "string";
+function isRichFiles(files: KnowledgeIndexFile['files']): files is KnowledgeFileEntry[] {
+  return files.length > 0 && typeof files[0] !== 'string';
 }
 
 /**
@@ -45,7 +47,7 @@ export function normalizeFileEntries(index: KnowledgeIndexFile): KnowledgeFileEn
   }
   return (index.files as string[]).map((path) => ({
     path,
-    title: basename(path, ".md"),
+    title: basename(path, '.md'),
     keywords: [],
     size_bytes: 0,
   }));
@@ -57,12 +59,12 @@ export async function loadKnowledgeIndex(): Promise<KnowledgeIndexFile | null> {
     return cachedIndex;
   }
   try {
-    const raw = await readFile(path, "utf8");
+    const raw = await readFile(path, 'utf8');
     const parsed = JSON.parse(raw) as KnowledgeIndexFile;
-    if (typeof parsed !== "object" || parsed === null) {
+    if (typeof parsed !== 'object' || parsed === null) {
       return null;
     }
-    if (!parsed.topics || typeof parsed.topics !== "object") {
+    if (!parsed.topics || typeof parsed.topics !== 'object') {
       return null;
     }
     if (!Array.isArray(parsed.files)) {

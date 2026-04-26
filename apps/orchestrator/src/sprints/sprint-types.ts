@@ -1,5 +1,5 @@
 /** Paso persistido en `platform.sprints.steps` (jsonb). */
-export type SprintStepStatus = "pending" | "running" | "done" | "failed";
+export type SprintStepStatus = 'pending' | 'running' | 'done' | 'failed';
 
 export type SprintStepJson = {
   readonly id: string;
@@ -10,7 +10,7 @@ export type SprintStepJson = {
   readonly output?: unknown;
 };
 
-export type SprintRowStatus = "planning" | "running" | "completed" | "failed";
+export type SprintRowStatus = 'planning' | 'running' | 'completed' | 'failed';
 
 export type SprintRow = {
   readonly id: string;

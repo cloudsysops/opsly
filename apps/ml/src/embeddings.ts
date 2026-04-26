@@ -1,5 +1,5 @@
 export async function embedText(_text: string): Promise<number[]> {
-  throw new Error("Embeddings endpoint pendiente — definir proveedor en ADR futuro");
+  throw new Error('Embeddings endpoint pendiente — definir proveedor en ADR futuro');
 }
 
 export async function storeEmbedding(
@@ -10,7 +10,7 @@ export async function storeEmbedding(
   const payloadPreview = {
     tenantSlug,
     contentLength: content.length,
-    metadataKeys: Object.keys(metadata)
+    metadataKeys: Object.keys(metadata),
   };
   process.stdout.write(`[ml] storeEmbedding pending: ${JSON.stringify(payloadPreview)}\n`);
 }

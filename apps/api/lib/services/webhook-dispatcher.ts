@@ -1,15 +1,15 @@
-import { listActiveWebhooksByEvent } from "../repositories/webhook-repository";
+import { listActiveWebhooksByEvent } from '../repositories/webhook-repository';
 
 // Tipos de eventos soportados por Opsly webhooks
 export type WebhookEvent =
-  | "tenant.created"
-  | "tenant.suspended"
-  | "tenant.resumed"
-  | "billing.paid"
-  | "billing.failed"
-  | "backup.completed"
-  | "backup.failed"
-  | "usage.threshold_reached";
+  | 'tenant.created'
+  | 'tenant.suspended'
+  | 'tenant.resumed'
+  | 'billing.paid'
+  | 'billing.failed'
+  | 'backup.completed'
+  | 'backup.failed'
+  | 'usage.threshold_reached';
 
 export interface WebhookPayload {
   event: WebhookEvent;
@@ -20,13 +20,12 @@ export interface WebhookPayload {
 
 // Encola webhooks en BullMQ via HTTP para no crear dep circular con orchestrator.
 // El WebhookWorker (apps/orchestrator) consume esta cola.
-const ORCHESTRATOR_INTERNAL_URL =
-  process.env.ORCHESTRATOR_INTERNAL_URL ?? "http://localhost:3011";
+const ORCHESTRATOR_INTERNAL_URL = process.env.ORCHESTRATOR_INTERNAL_URL ?? 'http://localhost:3011';
 
 export async function dispatchWebhookEvent(
   tenantSlug: string,
   event: WebhookEvent,
-  data: Record<string, unknown>,
+  data: Record<string, unknown>
 ): Promise<void> {
   const webhooks = await listActiveWebhooksByEvent(tenantSlug, event);
   if (webhooks.length === 0) return;
@@ -42,15 +41,15 @@ export async function dispatchWebhookEvent(
   await Promise.allSettled(
     webhooks.map((wh) =>
       fetch(`${ORCHESTRATOR_INTERNAL_URL}/internal/enqueue-webhook`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           webhookId: wh.id,
           url: wh.url,
           secret: wh.secret,
           payload,
         }),
-      }),
-    ),
+      })
+    )
   );
 }

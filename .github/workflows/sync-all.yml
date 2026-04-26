@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
   schedule:
     # Diario ~17:00 UTC — burndown; ajustar en repo si hace falta
-    - cron: "0 17 * * *"
+    - cron: '0 17 * * *'
 
 permissions:
   contents: write
@@ -26,7 +26,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: '20'
           cache: npm
 
       - name: Install

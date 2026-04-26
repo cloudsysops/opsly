@@ -1,10 +1,10 @@
-import { getServiceClient } from "../supabase";
+import { getServiceClient } from '../supabase';
 
-const AVAILABLE_SERVICE_MARKER = "available";
+const AVAILABLE_SERVICE_MARKER = 'available';
 
 export async function allocatePorts(
   tenantId: string,
-  services: string[],
+  services: string[]
 ): Promise<Record<string, number>> {
   if (services.length === 0) {
     return {};
@@ -13,11 +13,11 @@ export async function allocatePorts(
   const adminClient = getServiceClient();
 
   const { data: rows, error: selectError } = await adminClient
-    .schema("platform")
-    .from("port_allocations")
-    .select("port, tenant_id, service, allocated_at")
-    .is("tenant_id", null)
-    .order("port", { ascending: true })
+    .schema('platform')
+    .from('port_allocations')
+    .select('port, tenant_id, service, allocated_at')
+    .is('tenant_id', null)
+    .order('port', { ascending: true })
     .limit(services.length);
 
   if (selectError) {
@@ -25,7 +25,7 @@ export async function allocatePorts(
   }
 
   if (!rows || rows.length < services.length) {
-    throw new Error("Not enough free ports available for this tenant");
+    throw new Error('Not enough free ports available for this tenant');
   }
 
   const result: Record<string, number> = {};
@@ -34,22 +34,20 @@ export async function allocatePorts(
     const row = rows[i];
     const serviceName = services[i];
     if (!row) {
-      throw new Error("Port allocation row missing");
+      throw new Error('Port allocation row missing');
     }
 
     const { error: updateError } = await adminClient
-      .schema("platform")
-      .from("port_allocations")
+      .schema('platform')
+      .from('port_allocations')
       .update({
         tenant_id: tenantId,
         service: serviceName,
       })
-      .eq("port", row.port);
+      .eq('port', row.port);
 
     if (updateError) {
-      throw new Error(
-        `Failed to assign port ${row.port}: ${updateError.message}`,
-      );
+      throw new Error(`Failed to assign port ${row.port}: ${updateError.message}`);
     }
 
     result[serviceName] = row.port;
@@ -60,13 +58,13 @@ export async function allocatePorts(
 
 export async function releasePorts(tenantId: string): Promise<void> {
   const { error } = await getServiceClient()
-    .schema("platform")
-    .from("port_allocations")
+    .schema('platform')
+    .from('port_allocations')
     .update({
       tenant_id: null,
       service: AVAILABLE_SERVICE_MARKER,
     })
-    .eq("tenant_id", tenantId);
+    .eq('tenant_id', tenantId);
 
   if (error) {
     throw new Error(`Failed to release ports: ${error.message}`);

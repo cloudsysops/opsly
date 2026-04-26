@@ -3,7 +3,17 @@
   "version": "1.0.0",
   "description": "Sistema de auto-activación de skills basado en keywords y contexto. Decide SOLO qué skills cargar sin preguntar.",
   "priority": "critical",
-  "triggers": ["autónomo", "autonomous", "godmode", "auto", "self-healing", "auto-fix", "auto-ejecutar", "sin preguntar", "ejecutar solo"],
+  "triggers": [
+    "autónomo",
+    "autonomous",
+    "godmode",
+    "auto",
+    "self-healing",
+    "auto-fix",
+    "auto-ejecutar",
+    "sin preguntar",
+    "ejecutar solo"
+  ],
   "autoActivation": {
     "enabled": true,
     "mode": "contextual_routing",

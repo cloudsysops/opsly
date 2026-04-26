@@ -10,13 +10,13 @@
  * No duplica la cadena interna de `llmCallDirect` — la extiende con memoria cross-llamada.
  */
 
-import type { LLMRequest, LLMResponse } from "./types.js";
-import { llmCallDirect } from "./llm-direct.js";
-import { getProvidersByPreference, resolveRoutingPreference } from "./providers.js";
-import { applyRoutingBias } from "./routing-hints.js";
-import { getRedisClient } from "./cache.js";
+import type { LLMRequest, LLMResponse } from './types.js';
+import { llmCallDirect } from './llm-direct.js';
+import { getProvidersByPreference, resolveRoutingPreference } from './providers.js';
+import { applyRoutingBias } from './routing-hints.js';
+import { getRedisClient } from './cache.js';
 
-const PROVIDER_CIRCUIT_PREFIX = "circuit:llm:";
+const PROVIDER_CIRCUIT_PREFIX = 'circuit:llm:';
 const FAILURE_THRESHOLD = 3;
 const OPEN_DURATION_MS = 60_000;
 
@@ -46,7 +46,7 @@ async function recordProviderFailure(healthKey: string): Promise<void> {
     await redis.set(
       `${PROVIDER_CIRCUIT_PREFIX}${healthKey}`,
       JSON.stringify({ failures, openedAt }),
-      { EX: ttlSeconds },
+      { EX: ttlSeconds }
     );
   } catch {
     // degraded mode
@@ -69,8 +69,8 @@ function isProviderOpen(health: ProviderHealth): boolean {
 
 /** Preferencia degradada: sonnet → haiku → cheap → cheap (sin más degradación). */
 function degradePreference(current: string): string {
-  if (current === "sonnet") return "haiku";
-  return "cheap";
+  if (current === 'sonnet') return 'haiku';
+  return 'cheap';
 }
 
 /**
@@ -79,9 +79,7 @@ function degradePreference(current: string): string {
  */
 export async function llmCallWithFallback(req: LLMRequest): Promise<LLMResponse> {
   const base = resolveRoutingPreference(req.model, 2);
-  const preference = req.routing_bias
-    ? applyRoutingBias(base, 2, req.routing_bias)
-    : base;
+  const preference = req.routing_bias ? applyRoutingBias(base, 2, req.routing_bias) : base;
   const chain = getProvidersByPreference(preference);
   const primary = chain[0];
 
@@ -91,12 +89,12 @@ export async function llmCallWithFallback(req: LLMRequest): Promise<LLMResponse>
     const fallbackPref = degradePreference(preference);
     console.warn(
       JSON.stringify({
-        event: "fallback_activated",
-        reason: "circuit_open",
+        event: 'fallback_activated',
+        reason: 'circuit_open',
         failed_provider: primary.id,
         fallback_preference: fallbackPref,
         ts: new Date().toISOString(),
-      }),
+      })
     );
     return llmCallDirect({ ...req, model: fallbackPref, routing_bias: undefined });
   }
@@ -111,16 +109,15 @@ export async function llmCallWithFallback(req: LLMRequest): Promise<LLMResponse>
     const fallbackPref = degradePreference(preference);
     console.warn(
       JSON.stringify({
-        event: "fallback_activated",
-        reason: "provider_error",
+        event: 'fallback_activated',
+        reason: 'provider_error',
         failed_provider: primary.id,
         fallback_preference: fallbackPref,
         error: err instanceof Error ? err.message : String(err),
         ts: new Date().toISOString(),
-      }),
+      })
     );
 
     return llmCallDirect({ ...req, model: fallbackPref, routing_bias: undefined });
   }
 }
-

@@ -167,12 +167,12 @@ Cada tarea (Job de BullMQ) gestionada por el OAR pasa por estos estados:
 
 El `ModeContext` (que persistes en Redis) inyecta configuración al OAR:
 
-| Modo          | Estrategia por Defecto          | Configuración OAR                               |
-| :------------ | :------------------------------ | :---------------------------------------------- |
-| **Architect** | `PlanAndExecute`              | `maxSteps: 20`, `allowReplanning: true`         |
-| **Developer** | `PlanAndExecute`              | `maxSteps: 15`, `toolTimeout: 30s`            |
-| **Hacker**    | `ReAct`                       | `maxSteps: 50`, `fastMode: true`                |
-| **Security**  | `PlanAndExecute + Reflection` | `maxReflections: 2`, `criticalChecks: true` |
+| Modo          | Estrategia por Defecto        | Configuración OAR                                                         |
+| :------------ | :---------------------------- | :------------------------------------------------------------------------ |
+| **Architect** | `PlanAndExecute`              | `maxSteps: 20`, `allowReplanning: true`                                   |
+| **Developer** | `PlanAndExecute`              | `maxSteps: 15`, `toolTimeout: 30s`                                        |
+| **Hacker**    | `ReAct`                       | `maxSteps: 50`, `fastMode: true`                                          |
+| **Security**  | `PlanAndExecute + Reflection` | `maxReflections: 2`, `criticalChecks: true`                               |
 | **Quantum**   | `Ensemble` (Special)          | Delega a `execute_quantum` tool, pero usa OAR para orquestar la síntesis. |
 
 ## 7. Plan de Implementación

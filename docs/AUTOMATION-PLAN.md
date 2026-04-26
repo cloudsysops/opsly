@@ -1,4 +1,5 @@
 # Plan de Automatizacion Opsly
+
 ## Version: 1.0 | Fecha: 2026-04-07 | Estado: EN PROGRESO
 
 ## El flujo objetivo
@@ -46,24 +47,24 @@
 
 ## Componentes a construir
 
-| # | Componente | Archivo | Prioridad | Tests |
-|---|-----------|---------|-----------|-------|
-| 1 | Discord notifier | `scripts/notify-discord.sh` | Alta | `scripts/test-notify-discord.sh` |
-| 2 | Drive sync | `scripts/drive-sync.sh` | Alta | `scripts/test-drive-sync.sh` |
-| 3 | post-commit mejorado | `.githooks/post-commit` | Alta | manual |
-| 4 | cursor-prompt-monitor + Discord | `scripts/cursor-prompt-monitor.sh` | Media | manual |
-| 5 | n8n workflow Discord→GitHub | export JSON + docs | Media | `scripts/test-n8n-webhook.sh` |
-| 6 | GitHub PAT para n8n | Doppler `GITHUB_TOKEN` (legado: `GITHUB_TOKEN_N8N`) | Media | n/a |
-| 7 | Google Drive token | Doppler `GOOGLE_DRIVE_TOKEN` | Baja | `scripts/test-drive-sync.sh` |
-| 8 | MCP server Opsly | `apps/mcp/` | Futura | vitest |
+| #   | Componente                      | Archivo                                             | Prioridad | Tests                            |
+| --- | ------------------------------- | --------------------------------------------------- | --------- | -------------------------------- |
+| 1   | Discord notifier                | `scripts/notify-discord.sh`                         | Alta      | `scripts/test-notify-discord.sh` |
+| 2   | Drive sync                      | `scripts/drive-sync.sh`                             | Alta      | `scripts/test-drive-sync.sh`     |
+| 3   | post-commit mejorado            | `.githooks/post-commit`                             | Alta      | manual                           |
+| 4   | cursor-prompt-monitor + Discord | `scripts/cursor-prompt-monitor.sh`                  | Media     | manual                           |
+| 5   | n8n workflow Discord→GitHub     | export JSON + docs                                  | Media     | `scripts/test-n8n-webhook.sh`    |
+| 6   | GitHub PAT para n8n             | Doppler `GITHUB_TOKEN` (legado: `GITHUB_TOKEN_N8N`) | Media     | n/a                              |
+| 7   | Google Drive token              | Doppler `GOOGLE_DRIVE_TOKEN`                        | Baja      | `scripts/test-drive-sync.sh`     |
+| 8   | MCP server Opsly                | `apps/mcp/`                                         | Futura    | vitest                           |
 
 ## Variables requeridas en Doppler prd
 
-| Variable | Proposito | Como obtener |
-|----------|-----------|--------------|
-| DISCORD_WEBHOOK_URL | Notificaciones | Discord -> Integraciones -> Webhooks |
-| `GITHUB_TOKEN` | n8n / API GitHub (ACTIVE-PROMPT, etc.) | GitHub -> Settings -> Tokens (`repo` / Contents). Ver `docs/GITHUB-TOKEN.md` |
-| GOOGLE_DRIVE_TOKEN | Subir docs a Drive | Google Cloud -> Service Account -> JSON key/token |
+| Variable            | Proposito                              | Como obtener                                                                 |
+| ------------------- | -------------------------------------- | ---------------------------------------------------------------------------- |
+| DISCORD_WEBHOOK_URL | Notificaciones                         | Discord -> Integraciones -> Webhooks                                         |
+| `GITHUB_TOKEN`      | n8n / API GitHub (ACTIVE-PROMPT, etc.) | GitHub -> Settings -> Tokens (`repo` / Contents). Ver `docs/GITHUB-TOKEN.md` |
+| GOOGLE_DRIVE_TOKEN  | Subir docs a Drive                     | Google Cloud -> Service Account -> JSON key/token                            |
 
 ## Restricciones de seguridad
 

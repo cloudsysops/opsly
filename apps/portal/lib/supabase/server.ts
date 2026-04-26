@@ -1,14 +1,14 @@
-import { createServerClient, type SetAllCookies } from "@supabase/ssr";
-import { cookies } from "next/headers";
-import type { SupabaseClient } from "@supabase/supabase-js";
+import { createServerClient, type SetAllCookies } from '@supabase/ssr';
+import { cookies } from 'next/headers';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
 export async function createServerSupabase(): Promise<SupabaseClient> {
   const cookieStore = await cookies();
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   if (!url || !anon) {
-    const fallbackUrl = "https://placeholder.supabase.co";
-    const fallbackAnon = "placeholder";
+    const fallbackUrl = 'https://placeholder.supabase.co';
+    const fallbackAnon = 'placeholder';
     return createServerClient(fallbackUrl, fallbackAnon, {
       cookies: {
         getAll() {

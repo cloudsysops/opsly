@@ -1,5 +1,5 @@
-import { NotionClient } from "../notion-client.js";
-import type { DailyStandup } from "../types.js";
+import { NotionClient } from '../notion-client.js';
+import type { DailyStandup } from '../types.js';
 
 export interface AddStandupResult {
   readonly success: true;
@@ -8,7 +8,7 @@ export interface AddStandupResult {
 }
 
 export async function handleAddStandup(
-  params: Omit<DailyStandup, "id">,
+  params: Omit<DailyStandup, 'id'>
 ): Promise<AddStandupResult> {
   const notion = new NotionClient();
   const standup = await notion.addStandup(params);

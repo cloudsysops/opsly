@@ -1,22 +1,16 @@
-"use client";
+'use client';
 
-import { useCallback, useState } from "react";
-import {
-  getOllamaDemoJob,
-  postOllamaDemo,
-  type OllamaDemoJobStatus,
-} from "@/lib/api-client";
+import { useCallback, useState } from 'react';
+import { getOllamaDemoJob, postOllamaDemo, type OllamaDemoJobStatus } from '@/lib/api-client';
 
-const DEFAULT_TENANT = "localrank";
+const DEFAULT_TENANT = 'localrank';
 
 export default function WorkersOllamaPage() {
   const [tenantSlug, setTenantSlug] = useState(DEFAULT_TENANT);
-  const [prompt, setPrompt] = useState(
-    "Explain what a BullMQ worker does in one sentence.",
+  const [prompt, setPrompt] = useState('Explain what a BullMQ worker does in one sentence.');
+  const [taskType, setTaskType] = useState<'analyze' | 'generate' | 'review' | 'summarize'>(
+    'summarize'
   );
-  const [taskType, setTaskType] = useState<
-    "analyze" | "generate" | "review" | "summarize"
-  >("summarize");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [jobId, setJobId] = useState<string | null>(null);
@@ -32,10 +26,7 @@ export default function WorkersOllamaPage() {
         prompt: prompt.trim(),
         task_type: taskType,
       });
-      const id =
-        typeof res.job_id === "string" && res.job_id.length > 0
-          ? res.job_id
-          : null;
+      const id = typeof res.job_id === 'string' && res.job_id.length > 0 ? res.job_id : null;
       setJobId(id);
       if (id) {
         const s = await getOllamaDemoJob(id);
@@ -70,17 +61,13 @@ export default function WorkersOllamaPage() {
         Workers — Ollama (demo)
       </h1>
       <p className="mb-6 text-sm text-neutral-400">
-        Encola un job en el orchestrator: worker → LLM Gateway{" "}
-        <code className="text-neutral-300">/v1/text</code> → cadena cheap (Ollama
-        si está sano). El uso se registra en{" "}
-        <code className="text-neutral-300">usage_events</code> y métricas Redis.
+        Encola un job en el orchestrator: worker → LLM Gateway{' '}
+        <code className="text-neutral-300">/v1/text</code> → cadena cheap (Ollama si está sano). El
+        uso se registra en <code className="text-neutral-300">usage_events</code> y métricas Redis.
       </p>
 
       <div className="mb-4 space-y-3 rounded border border-ops-border bg-ops-surface p-4">
-        <label
-          htmlFor="ollama-demo-tenant"
-          className="block text-xs uppercase text-neutral-500"
-        >
+        <label htmlFor="ollama-demo-tenant" className="block text-xs uppercase text-neutral-500">
           Tenant slug
         </label>
         <input
@@ -92,10 +79,7 @@ export default function WorkersOllamaPage() {
           value={tenantSlug}
           onChange={(e) => setTenantSlug(e.target.value)}
         />
-        <label
-          htmlFor="ollama-demo-task"
-          className="block text-xs uppercase text-neutral-500"
-        >
+        <label htmlFor="ollama-demo-task" className="block text-xs uppercase text-neutral-500">
           Task type
         </label>
         <select
@@ -103,19 +87,14 @@ export default function WorkersOllamaPage() {
           name="task_type"
           className="w-full rounded border border-ops-border bg-black/40 px-3 py-2 text-sm text-neutral-200"
           value={taskType}
-          onChange={(e) =>
-            setTaskType(e.target.value as typeof taskType)
-          }
+          onChange={(e) => setTaskType(e.target.value as typeof taskType)}
         >
           <option value="summarize">summarize</option>
           <option value="analyze">analyze</option>
           <option value="generate">generate</option>
           <option value="review">review</option>
         </select>
-        <label
-          htmlFor="ollama-demo-prompt"
-          className="block text-xs uppercase text-neutral-500"
-        >
+        <label htmlFor="ollama-demo-prompt" className="block text-xs uppercase text-neutral-500">
           Prompt
         </label>
         <textarea
@@ -132,7 +111,7 @@ export default function WorkersOllamaPage() {
           onClick={() => void enqueue()}
           className="rounded bg-ops-green px-4 py-2 font-mono text-sm font-medium text-black hover:bg-ops-green/90 disabled:opacity-50"
         >
-          {loading ? "…" : "Enqueue job"}
+          {loading ? '…' : 'Enqueue job'}
         </button>
       </div>
 

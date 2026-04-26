@@ -1,8 +1,8 @@
-import { getRedisClient } from "@intcloudsysops/llm-gateway/cache";
-import type { IncomingMessage, ServerResponse } from "node:http";
-import { verifyCodeChallenge } from "./pkce.js";
-import { generateAccessToken, generateAuthCode } from "./tokens.js";
-import { buildAuthorizationServerMetadata } from "./well-known.js";
+import { getRedisClient } from '@intcloudsysops/llm-gateway/cache';
+import type { IncomingMessage, ServerResponse } from 'node:http';
+import { verifyCodeChallenge } from './pkce.js';
+import { generateAccessToken, generateAuthCode } from './tokens.js';
+import { buildAuthorizationServerMetadata } from './well-known.js';
 
 export type RegisteredOAuthClient = {
   name: string;
@@ -12,16 +12,16 @@ export type RegisteredOAuthClient = {
 
 /** Clientes públicos (PKCE); en producción se pueden externalizar a Supabase. */
 export const REGISTERED_CLIENTS: Record<string, RegisteredOAuthClient> = {
-  "claude-ai": {
-    name: "Claude.ai",
-    redirect_uris: ["https://claude.ai/oauth/callback", "http://localhost:3000/oauth/callback"],
+  'claude-ai': {
+    name: 'Claude.ai',
+    redirect_uris: ['https://claude.ai/oauth/callback', 'http://localhost:3000/oauth/callback'],
     scopes: [
-      "tenants:read",
-      "tenants:write",
-      "metrics:read",
-      "invitations:write",
-      "executor:write",
-      "agents:write",
+      'tenants:read',
+      'tenants:write',
+      'metrics:read',
+      'invitations:write',
+      'executor:write',
+      'agents:write',
     ],
   },
 };
@@ -46,25 +46,25 @@ function oauthCodeKey(code: string): string {
 function oauthIssuerBase(): string {
   const explicit = process.env.MCP_PUBLIC_URL?.trim();
   if (explicit) {
-    return explicit.replace(/\/$/, "");
+    return explicit.replace(/\/$/, '');
   }
   const domain = process.env.PLATFORM_DOMAIN?.trim();
   if (domain) {
-    return `https://mcp.${domain}`.replace(/\/$/, "");
+    return `https://mcp.${domain}`.replace(/\/$/, '');
   }
-  const port = process.env.PORT?.trim() || "3003";
+  const port = process.env.PORT?.trim() || '3003';
   return `http://127.0.0.1:${port}`;
 }
 
 function json(res: ServerResponse, status: number, body: unknown): void {
-  res.setHeader("Content-Type", "application/json; charset=utf-8");
-  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader('Content-Type', 'application/json; charset=utf-8');
+  res.setHeader('Access-Control-Allow-Origin', '*');
   res.writeHead(status);
   res.end(JSON.stringify(body));
 }
 
 function redirect(res: ServerResponse, location: string): void {
-  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader('Access-Control-Allow-Origin', '*');
   res.writeHead(302, { Location: location });
   res.end();
 }
@@ -78,78 +78,81 @@ export async function handleOAuthRequest(
   res: ServerResponse,
   pathname: string,
   searchParams: URLSearchParams,
-  body: string,
+  body: string
 ): Promise<boolean> {
-  if (pathname === "/.well-known/oauth-authorization-server") {
+  if (pathname === '/.well-known/oauth-authorization-server') {
     const base = oauthIssuerBase();
-    res.setHeader("Content-Type", "application/json; charset=utf-8");
-    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader('Content-Type', 'application/json; charset=utf-8');
+    res.setHeader('Access-Control-Allow-Origin', '*');
     res.writeHead(200);
     res.end(JSON.stringify(buildAuthorizationServerMetadata(base)));
     return true;
   }
 
-  if (pathname === "/oauth/authorize" && req.method === "GET") {
-    const responseType = searchParams.get("response_type");
-    if (responseType !== "code") {
+  if (pathname === '/oauth/authorize' && req.method === 'GET') {
+    const responseType = searchParams.get('response_type');
+    if (responseType !== 'code') {
       json(res, 400, {
-        error: responseType === null || responseType === "" ? "invalid_request" : "unsupported_response_type",
+        error:
+          responseType === null || responseType === ''
+            ? 'invalid_request'
+            : 'unsupported_response_type',
       });
       return true;
     }
 
-    const clientId = searchParams.get("client_id");
-    const redirectUri = searchParams.get("redirect_uri");
-    const codeChallenge = searchParams.get("code_challenge");
-    const codeChallengeMethod = searchParams.get("code_challenge_method") || "S256";
-    const scope = searchParams.get("scope") || "tenants:read";
-    const state = searchParams.get("state") || "";
+    const clientId = searchParams.get('client_id');
+    const redirectUri = searchParams.get('redirect_uri');
+    const codeChallenge = searchParams.get('code_challenge');
+    const codeChallengeMethod = searchParams.get('code_challenge_method') || 'S256';
+    const scope = searchParams.get('scope') || 'tenants:read';
+    const state = searchParams.get('state') || '';
 
     if (!clientId || !codeChallenge || !redirectUri) {
-      json(res, 400, { error: "invalid_request" });
+      json(res, 400, { error: 'invalid_request' });
       return true;
     }
 
     const client = REGISTERED_CLIENTS[clientId];
     if (!client || !client.redirect_uris.includes(redirectUri)) {
-      json(res, 400, { error: "unauthorized_client" });
+      json(res, 400, { error: 'unauthorized_client' });
       return true;
     }
 
     const requestedScopes = scope.split(/\s+/).filter(Boolean);
     const allowed = new Set(client.scopes);
     if (requestedScopes.some((s) => !allowed.has(s))) {
-      json(res, 400, { error: "invalid_scope" });
+      json(res, 400, { error: 'invalid_scope' });
       return true;
     }
-    const scopesToGrant = requestedScopes.length > 0 ? requestedScopes : ["tenants:read"];
+    const scopesToGrant = requestedScopes.length > 0 ? requestedScopes : ['tenants:read'];
 
     const code = generateAuthCode();
     const stored: StoredAuthCode = {
       client_id: clientId,
       code_challenge: codeChallenge,
       code_challenge_method: codeChallengeMethod,
-      scope: scopesToGrant.join(" "),
+      scope: scopesToGrant.join(' '),
       expires_at: Date.now() + AUTH_CODE_TTL_MS,
     };
     const redis = await getRedisClient();
     await redis.setEx(oauthCodeKey(code), AUTH_CODE_TTL_SECONDS, JSON.stringify(stored));
 
     const callbackUrl = new URL(redirectUri);
-    callbackUrl.searchParams.set("code", code);
+    callbackUrl.searchParams.set('code', code);
     if (state) {
-      callbackUrl.searchParams.set("state", state);
+      callbackUrl.searchParams.set('state', state);
     }
     redirect(res, callbackUrl.toString());
     return true;
   }
 
-  if (pathname === "/oauth/token" && req.method === "POST") {
-    const contentType = req.headers["content-type"] ?? "";
-    if (!contentType.toLowerCase().includes("application/x-www-form-urlencoded")) {
+  if (pathname === '/oauth/token' && req.method === 'POST') {
+    const contentType = req.headers['content-type'] ?? '';
+    if (!contentType.toLowerCase().includes('application/x-www-form-urlencoded')) {
       json(res, 400, {
-        error: "invalid_request",
-        error_description: "Content-Type must be application/x-www-form-urlencoded",
+        error: 'invalid_request',
+        error_description: 'Content-Type must be application/x-www-form-urlencoded',
       });
       return true;
     }
@@ -158,7 +161,7 @@ export async function handleOAuthRequest(
     try {
       params = Object.fromEntries(new URLSearchParams(body));
     } catch {
-      json(res, 400, { error: "invalid_request" });
+      json(res, 400, { error: 'invalid_request' });
       return true;
     }
 
@@ -167,13 +170,13 @@ export async function handleOAuthRequest(
     const clientId = params.client_id;
     const grantType = params.grant_type;
 
-    if (grantType !== "authorization_code") {
-      json(res, 400, { error: "unsupported_grant_type" });
+    if (grantType !== 'authorization_code') {
+      json(res, 400, { error: 'unsupported_grant_type' });
       return true;
     }
 
     if (!code || !codeVerifier || !clientId) {
-      json(res, 400, { error: "invalid_request" });
+      json(res, 400, { error: 'invalid_request' });
       return true;
     }
 
@@ -188,20 +191,19 @@ export async function handleOAuthRequest(
       }
     }
     if (!stored || stored.expires_at < Date.now()) {
-      json(res, 400, { error: "invalid_grant" });
+      json(res, 400, { error: 'invalid_grant' });
       return true;
     }
 
     if (stored.client_id !== clientId) {
-      json(res, 400, { error: "invalid_client" });
+      json(res, 400, { error: 'invalid_client' });
       return true;
     }
 
-    const method =
-      stored.code_challenge_method === "plain" ? "plain" : ("S256" as const);
+    const method = stored.code_challenge_method === 'plain' ? 'plain' : ('S256' as const);
     const valid = verifyCodeChallenge(codeVerifier, stored.code_challenge, method);
     if (!valid) {
-      json(res, 400, { error: "invalid_grant" });
+      json(res, 400, { error: 'invalid_grant' });
       return true;
     }
 
@@ -210,17 +212,17 @@ export async function handleOAuthRequest(
     const scopeList = stored.scope.split(/\s+/).filter(Boolean);
     const accessToken = generateAccessToken(clientId, scopeList);
 
-    res.setHeader("Content-Type", "application/json; charset=utf-8");
-    res.setHeader("Access-Control-Allow-Origin", "*");
-    res.setHeader("Cache-Control", "no-store");
+    res.setHeader('Content-Type', 'application/json; charset=utf-8');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Cache-Control', 'no-store');
     res.writeHead(200);
     res.end(
       JSON.stringify({
         access_token: accessToken,
-        token_type: "Bearer",
+        token_type: 'Bearer',
         expires_in: 3600,
         scope: stored.scope,
-      }),
+      })
     );
     return true;
   }

@@ -4,20 +4,20 @@ Servicio **ligero** (Express, sin Next.js) que recibe webhooks y eventos y los *
 
 ## Colas
 
-| Cola | Uso |
-|------|-----|
-| `webhooks-processing` | `POST /ingest/stripe` (cuerpo crudo) |
-| `general-events` | `POST /ingest/event` (`type`, `tenantId`, `data`) |
+| Cola                  | Uso                                               |
+| --------------------- | ------------------------------------------------- |
+| `webhooks-processing` | `POST /ingest/stripe` (cuerpo crudo)              |
+| `general-events`      | `POST /ingest/event` (`type`, `tenantId`, `data`) |
 
 El **orchestrator** consume ambas colas: verifica Stripe y reenvía a la API interna; los eventos generales se registran o reenvían (ver `OPSLY_GENERAL_EVENTS_FORWARD_URL`).
 
 ## Variables de entorno
 
-| Variable | Descripción |
-|----------|-------------|
-| `PORT` o `INGESTION_PORT` | Puerto HTTP (default **3040**) |
-| `REDIS_URL` | Misma URL que `app` / orchestrator (ej. `redis://:PASS@redis:6379/0`) |
-| `REDIS_PASSWORD` | Debe coincidir con el Redis de plataforma |
+| Variable                  | Descripción                                                           |
+| ------------------------- | --------------------------------------------------------------------- |
+| `PORT` o `INGESTION_PORT` | Puerto HTTP (default **3040**)                                        |
+| `REDIS_URL`               | Misma URL que `app` / orchestrator (ej. `redis://:PASS@redis:6379/0`) |
+| `REDIS_PASSWORD`          | Debe coincidir con el Redis de plataforma                             |
 
 ## Ejecución local
 

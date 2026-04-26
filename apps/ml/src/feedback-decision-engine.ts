@@ -1,9 +1,9 @@
 /**
  * ML Decision Engine — clasifica feedback y persiste decisión en Supabase.
  */
-import { createClient, type SupabaseClient } from "@supabase/supabase-js";
-import { llmCall } from "@intcloudsysops/llm-gateway";
-import { writeActivePrompt } from "./write-active-prompt.js";
+import { createClient, type SupabaseClient } from '@supabase/supabase-js';
+import { llmCall } from '@intcloudsysops/llm-gateway';
+import { writeActivePrompt } from './write-active-prompt.js';
 
 function requireEnv(name: string): string {
   const v = process.env[name];
@@ -17,9 +17,13 @@ let supabaseSingleton: SupabaseClient | null = null;
 
 function getSupabase(): SupabaseClient {
   if (!supabaseSingleton) {
-    supabaseSingleton = createClient(requireEnv("SUPABASE_URL"), requireEnv("SUPABASE_SERVICE_ROLE_KEY"), {
-      auth: { autoRefreshToken: false, persistSession: false },
-    });
+    supabaseSingleton = createClient(
+      requireEnv('SUPABASE_URL'),
+      requireEnv('SUPABASE_SERVICE_ROLE_KEY'),
+      {
+        auth: { autoRefreshToken: false, persistSession: false },
+      }
+    );
   }
   return supabaseSingleton;
 }
@@ -31,8 +35,8 @@ export interface FeedbackInput {
   messages: Array<{ role: string; content: string }>;
 }
 
-export type DecisionType = "auto_implement" | "needs_approval" | "rejected" | "scheduled";
-export type Criticality = "low" | "medium" | "high" | "critical";
+export type DecisionType = 'auto_implement' | 'needs_approval' | 'rejected' | 'scheduled';
+export type Criticality = 'low' | 'medium' | 'high' | 'critical';
 
 export interface DecisionOutput {
   decision_type: DecisionType;
@@ -44,100 +48,95 @@ export interface DecisionOutput {
 }
 
 const AUTO_IMPLEMENT_RULES = [
-  "typo en texto de UI",
-  "color o estilo visual menor",
-  "texto de botón confuso",
-  "mensaje de error poco claro",
-  "falta traducción",
-  "link roto en documentación",
+  'typo en texto de UI',
+  'color o estilo visual menor',
+  'texto de botón confuso',
+  'mensaje de error poco claro',
+  'falta traducción',
+  'link roto en documentación',
 ];
 
 const NEEDS_APPROVAL_RULES = [
-  "nueva funcionalidad",
-  "cambio de flujo de usuario",
-  "cambio en lógica de negocio",
-  "cambio en pricing o planes",
-  "integración con servicio externo",
-  "cambio en permisos o seguridad",
+  'nueva funcionalidad',
+  'cambio de flujo de usuario',
+  'cambio en lógica de negocio',
+  'cambio en pricing o planes',
+  'integración con servicio externo',
+  'cambio en permisos o seguridad',
 ];
 
 const CRITICAL_RULES = [
-  "vulnerabilidad de seguridad",
-  "pérdida de datos",
-  "falla en producción",
-  "error en facturación",
-  "tenant no puede acceder",
+  'vulnerabilidad de seguridad',
+  'pérdida de datos',
+  'falla en producción',
+  'error en facturación',
+  'tenant no puede acceder',
 ];
 
 function isDecisionType(v: unknown): v is DecisionType {
-  return (
-    v === "auto_implement" ||
-    v === "needs_approval" ||
-    v === "rejected" ||
-    v === "scheduled"
-  );
+  return v === 'auto_implement' || v === 'needs_approval' || v === 'rejected' || v === 'scheduled';
 }
 
 function isCriticality(v: unknown): v is Criticality {
-  return v === "low" || v === "medium" || v === "high" || v === "critical";
+  return v === 'low' || v === 'medium' || v === 'high' || v === 'critical';
 }
 
 function conversationStatusForDecision(d: DecisionType): string {
   switch (d) {
-    case "auto_implement":
-      return "implementing";
-    case "needs_approval":
-      return "pending_approval";
-    case "rejected":
-      return "rejected";
-    case "scheduled":
-      return "analyzing";
+    case 'auto_implement':
+      return 'implementing';
+    case 'needs_approval':
+      return 'pending_approval';
+    case 'rejected':
+      return 'rejected';
+    case 'scheduled':
+      return 'analyzing';
     default:
-      return "open";
+      return 'open';
   }
 }
 
-function parseDecisionFromLlm(content: string): Omit<DecisionOutput, "notify_discord"> {
-  const clean = content.replace(/```json|```/g, "").trim();
+function parseDecisionFromLlm(content: string): Omit<DecisionOutput, 'notify_discord'> {
+  const clean = content.replace(/```json|```/g, '').trim();
   let raw: unknown;
   try {
     raw = JSON.parse(clean) as unknown;
   } catch {
     return {
-      decision_type: "needs_approval",
-      criticality: "medium",
-      reasoning: "No se pudo analizar automáticamente",
-      user_response: "Gracias por tu feedback. Lo revisaremos pronto.",
+      decision_type: 'needs_approval',
+      criticality: 'medium',
+      reasoning: 'No se pudo analizar automáticamente',
+      user_response: 'Gracias por tu feedback. Lo revisaremos pronto.',
     };
   }
-  if (raw === null || typeof raw !== "object") {
+  if (raw === null || typeof raw !== 'object') {
     return {
-      decision_type: "needs_approval",
-      criticality: "medium",
-      reasoning: "Respuesta ML inválida",
-      user_response: "Gracias por tu feedback. Lo revisaremos pronto.",
+      decision_type: 'needs_approval',
+      criticality: 'medium',
+      reasoning: 'Respuesta ML inválida',
+      user_response: 'Gracias por tu feedback. Lo revisaremos pronto.',
     };
   }
   const o = raw as Record<string, unknown>;
-  const decision_type = isDecisionType(o.decision_type) ? o.decision_type : "needs_approval";
-  const criticality = isCriticality(o.criticality) ? o.criticality : "medium";
-  const reasoning = typeof o.reasoning === "string" ? o.reasoning : "Sin razonamiento";
+  const decision_type = isDecisionType(o.decision_type) ? o.decision_type : 'needs_approval';
+  const criticality = isCriticality(o.criticality) ? o.criticality : 'medium';
+  const reasoning = typeof o.reasoning === 'string' ? o.reasoning : 'Sin razonamiento';
   const implementation_prompt =
-    typeof o.implementation_prompt === "string" ? o.implementation_prompt : undefined;
+    typeof o.implementation_prompt === 'string' ? o.implementation_prompt : undefined;
   const user_response =
-    typeof o.user_response === "string"
+    typeof o.user_response === 'string'
       ? o.user_response
-      : "Gracias por tu feedback. Lo revisaremos pronto.";
+      : 'Gracias por tu feedback. Lo revisaremos pronto.';
 
-  let out: Omit<DecisionOutput, "notify_discord"> = {
+  let out: Omit<DecisionOutput, 'notify_discord'> = {
     decision_type,
     criticality,
     reasoning,
     implementation_prompt,
     user_response,
   };
-  if (out.criticality === "critical") {
-    out = { ...out, decision_type: "needs_approval" };
+  if (out.criticality === 'critical') {
+    out = { ...out, decision_type: 'needs_approval' };
   }
   return out;
 }
@@ -149,28 +148,28 @@ export interface AnalyzeFeedbackResult {
 
 export async function analyzeFeedback(
   input: FeedbackInput,
-  supabase: SupabaseClient = getSupabase(),
+  supabase: SupabaseClient = getSupabase()
 ): Promise<AnalyzeFeedbackResult> {
-  const conversation = input.messages.map((m) => `${m.role}: ${m.content}`).join("\n");
+  const conversation = input.messages.map((m) => `${m.role}: ${m.content}`).join('\n');
 
   const analysis = await llmCall({
-    tenant_slug: "platform",
-    model: "haiku",
+    tenant_slug: 'platform',
+    model: 'haiku',
     temperature: 0,
     cache: false,
     messages: [
       {
-        role: "user",
+        role: 'user',
         content: `Analiza este feedback de usuario y decide qué hacer.
 
 AUTO_IMPLEMENT (implementar solo, sin aprobación):
-${AUTO_IMPLEMENT_RULES.map((r) => `- ${r}`).join("\n")}
+${AUTO_IMPLEMENT_RULES.map((r) => `- ${r}`).join('\n')}
 
 NEEDS_APPROVAL (requiere aprobación humana):
-${NEEDS_APPROVAL_RULES.map((r) => `- ${r}`).join("\n")}
+${NEEDS_APPROVAL_RULES.map((r) => `- ${r}`).join('\n')}
 
 CRITICAL (urgente, notificar inmediatamente):
-${CRITICAL_RULES.map((r) => `- ${r}`).join("\n")}
+${CRITICAL_RULES.map((r) => `- ${r}`).join('\n')}
 
 REJECTED: si no aplica, es spam, o está fuera de scope.
 
@@ -194,12 +193,12 @@ Responde SOLO en JSON:
   const base = parseDecisionFromLlm(analysis.content);
   const output: DecisionOutput = {
     ...base,
-    notify_discord: base.criticality !== "low",
+    notify_discord: base.criticality !== 'low',
   };
 
   const { data: inserted, error: insErr } = await supabase
-    .schema("platform")
-    .from("feedback_decisions")
+    .schema('platform')
+    .from('feedback_decisions')
     .insert({
       conversation_id: input.conversation_id,
       decision_type: output.decision_type,
@@ -207,26 +206,27 @@ Responde SOLO en JSON:
       reasoning: output.reasoning,
       implementation_prompt: output.implementation_prompt ?? null,
     })
-    .select("id")
+    .select('id')
     .single();
 
   if (insErr) {
-    console.error("[feedback-decision-engine] insert decision:", insErr);
+    console.error('[feedback-decision-engine] insert decision:', insErr);
   }
 
-  const decision_id = inserted && typeof inserted === "object" && "id" in inserted ? String(inserted.id) : null;
+  const decision_id =
+    inserted && typeof inserted === 'object' && 'id' in inserted ? String(inserted.id) : null;
 
   const { error: updErr } = await supabase
-    .schema("platform")
-    .from("feedback_conversations")
+    .schema('platform')
+    .from('feedback_conversations')
     .update({
       status: conversationStatusForDecision(output.decision_type),
       updated_at: new Date().toISOString(),
     })
-    .eq("id", input.conversation_id);
+    .eq('id', input.conversation_id);
 
   if (updErr) {
-    console.error("[feedback-decision-engine] update conversation:", updErr);
+    console.error('[feedback-decision-engine] update conversation:', updErr);
   }
 
   return { output, decision_id };
@@ -235,7 +235,7 @@ Responde SOLO en JSON:
 export async function executeAutoImplement(
   decisionId: string,
   prompt: string,
-  tenantSlug: string,
+  tenantSlug: string
 ): Promise<void> {
   const fullPrompt = [
     `# Auto-implementación desde feedback`,
@@ -252,7 +252,7 @@ export async function executeAutoImplement(
     `  "✅ Auto-implementado desde feedback" \\`,
     `  "Decision: ${decisionId}" \\`,
     `  "success"`,
-  ].join("\n");
+  ].join('\n');
 
   await writeActivePrompt(fullPrompt);
 }

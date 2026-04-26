@@ -3,20 +3,21 @@
  * POST /v1/planner — Hermes vía gateway (usage_events en el proceso gateway).
  */
 
-import { z } from "zod";
+import { z } from 'zod';
 
-const DEFAULT_BASE = "http://127.0.0.1:3010";
+const DEFAULT_BASE = 'http://127.0.0.1:3010';
 const PLANNER_TIMEOUT_MS = 30_000; // 30 segundos timeout
 
 function gatewayBaseUrl(): string {
-  const raw = process.env.LLM_GATEWAY_URL ?? process.env.ORCHESTRATOR_LLM_GATEWAY_URL ?? DEFAULT_BASE;
-  return raw.replace(/\/$/, "");
+  const raw =
+    process.env.LLM_GATEWAY_URL ?? process.env.ORCHESTRATOR_LLM_GATEWAY_URL ?? DEFAULT_BASE;
+  return raw.replace(/\/$/, '');
 }
 
 export interface PlannerGatewayRequest {
   tenant_slug: string;
   request_id?: string;
-  tenant_plan?: "startup" | "business" | "enterprise";
+  tenant_plan?: 'startup' | 'business' | 'enterprise';
   context: Record<string, unknown>;
   available_tools: string[];
 }
@@ -63,21 +64,21 @@ const PlannerGatewayResponseSchema = z.object({
 
 export async function callRemotePlanner(
   body: PlannerGatewayRequest,
-  headers: { requestId: string; tenantSlug: string },
+  headers: { requestId: string; tenantSlug: string }
 ): Promise<PlannerGatewayResponseBody> {
   const url = `${gatewayBaseUrl()}/v1/planner`;
-  
+
   // 🟢 NEW: AbortController for timeout
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), PLANNER_TIMEOUT_MS);
 
   try {
     const res = await fetch(url, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
-        "x-request-id": headers.requestId,
-        "x-tenant-slug": headers.tenantSlug,
+        'Content-Type': 'application/json',
+        'x-request-id': headers.requestId,
+        'x-tenant-slug': headers.tenantSlug,
       },
       body: JSON.stringify({
         tenant_slug: body.tenant_slug,
@@ -105,18 +106,14 @@ export async function callRemotePlanner(
     // 🟢 NEW: Full schema validation (replaces partial checks)
     const validation = PlannerGatewayResponseSchema.safeParse(parsed);
     if (!validation.success) {
-      throw new Error(
-        `llm-gateway planner: invalid response schema: ${validation.error.message}`,
-      );
+      throw new Error(`llm-gateway planner: invalid response schema: ${validation.error.message}`);
     }
 
     return validation.data;
   } catch (err) {
     // Handle AbortError from timeout specifically
-    if (err instanceof Error && err.name === "AbortError") {
-      throw new Error(
-        `llm-gateway planner: request timeout after ${PLANNER_TIMEOUT_MS}ms`,
-      );
+    if (err instanceof Error && err.name === 'AbortError') {
+      throw new Error(`llm-gateway planner: request timeout after ${PLANNER_TIMEOUT_MS}ms`);
     }
     throw err;
   } finally {

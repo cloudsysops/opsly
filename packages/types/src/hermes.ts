@@ -1,41 +1,41 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 /** Estados del ciclo de vida Hermes (tarea). */
 export const hermesTaskStateSchema = z.enum([
-  "PENDING",
-  "ROUTED",
-  "EXECUTING",
-  "COMPLETED",
-  "FAILED",
-  "BLOCKED",
+  'PENDING',
+  'ROUTED',
+  'EXECUTING',
+  'COMPLETED',
+  'FAILED',
+  'BLOCKED',
 ]);
 
 export type HermesTaskState = z.infer<typeof hermesTaskStateSchema>;
 
 /** Tipos de tarea para enrutado (DecisionEngine). */
 export const hermesTaskTypeSchema = z.enum([
-  "feature",
-  "adr",
-  "infra",
-  "task-management",
-  "decision",
-  "unknown",
+  'feature',
+  'adr',
+  'infra',
+  'task-management',
+  'decision',
+  'unknown',
 ]);
 
 export type HermesTaskType = z.infer<typeof hermesTaskTypeSchema>;
 
-export const hermesEffortSchema = z.enum(["S", "M", "L", "XL", "unknown"]);
+export const hermesEffortSchema = z.enum(['S', 'M', 'L', 'XL', 'unknown']);
 
 export type HermesEffort = z.infer<typeof hermesEffortSchema>;
 
 export const hermesAgentKindSchema = z.enum([
-  "cursor",
-  "claude",
+  'cursor',
+  'claude',
   /** Inferencia vía worker `ollama` → LLM Gateway (`llama_local` / Ollama). */
-  "ollama",
-  "github_actions",
-  "notion",
-  "none",
+  'ollama',
+  'github_actions',
+  'notion',
+  'none',
 ]);
 
 export type HermesAgentKind = z.infer<typeof hermesAgentKindSchema>;
@@ -47,7 +47,7 @@ export const hermesTaskSchema = z.object({
   type: hermesTaskTypeSchema,
   state: hermesTaskStateSchema,
   assignee: z.string().optional(),
-  effort: hermesEffortSchema.default("unknown"),
+  effort: hermesEffortSchema.default('unknown'),
   tenant_id: z.string().min(1).optional(),
   request_id: z.string().min(1).optional(),
   idempotency_key: z.string().min(1).max(256).optional(),
@@ -61,7 +61,7 @@ export type HermesTask = z.infer<typeof hermesTaskSchema>;
 export const hermesAgentSchema = z.object({
   name: z.string().min(1),
   capabilities: z.array(z.string()).default([]),
-  autonomy: z.enum(["low", "medium", "high"]).default("medium"),
+  autonomy: z.enum(['low', 'medium', 'high']).default('medium'),
 });
 
 export type HermesAgent = z.infer<typeof hermesAgentSchema>;

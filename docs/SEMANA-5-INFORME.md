@@ -7,6 +7,7 @@
 ## Objetivo Logrado
 
 Implementar sistema de feedback integrado end-to-end con:
+
 - API endpoints para recolección y análisis de feedback
 - Zero-Trust identity validation (tenant_slug y user_email desde sesión, no request body)
 - Integración con ML engine para análisis y clasificación
@@ -19,11 +20,13 @@ Implementar sistema de feedback integrado end-to-end con:
 ### 1. ✅ API Routes Implementation
 
 **Rutas principales:**
+
 - `POST /api/feedback` — Envío de feedback con validación Zero-Trust
 - `GET /api/feedback` — Listado de conversaciones (admin)
 - `POST /api/feedback/approve` — Aprobación de feedback (admin)
 
 **Autenticación:**
+
 - Portal: Bearer token con sesión Supabase (`resolveTrustedPortalSession`)
 - Admin: Bearer token + `requireAdminAccess()`
 - **Zero-Trust:** tenant_slug y user_email extraídos de sesión, nunca del body
@@ -33,6 +36,7 @@ Implementar sistema de feedback integrado end-to-end con:
 **Archivo:** `/apps/api/lib/feedback/service.ts` (476 líneas)
 
 **Funciones principales:**
+
 - `handleFeedbackPost()` — Procesar nuevo feedback con branching
   - **Análisis branch:** Si mensaje >100 chars O >2 mensajes previos → ML classification
   - **Clarificación branch:** Si mensaje corto → LLM pregunta de clarificación
@@ -41,29 +45,34 @@ Implementar sistema de feedback integrado end-to-end con:
 - `runClarifyBranch()` — LLM asistente para preguntas de clarificación
 
 **Modelos de decisión:**
+
 ```typescript
-type DecisionType = 'auto_implement' | 'needs_approval' | 'rejected' | 'scheduled'
-type Criticality = 'low' | 'medium' | 'high' | 'critical'
+type DecisionType = 'auto_implement' | 'needs_approval' | 'rejected' | 'scheduled';
+type Criticality = 'low' | 'medium' | 'high' | 'critical';
 ```
 
 ### 3. ✅ Database Integration
 
 **Tablas persistidas:**
+
 - `platform.feedback_conversations` — Conversaciones por tenant+user
 - `platform.feedback_messages` — Historial de mensajes (user/assistant)
 - `platform.feedback_decisions` — Decisiones ML con timestamp
 
 **Relaciones:**
+
 - `conversation_id` ForeignKey garantiza integridad referencial
 - `created_at` timestamps para auditoría y ordenamiento
 
 ### 4. ✅ ML Engine Integration
 
 **Importaciones:**
+
 - `analyzeFeedback()` de `@intcloudsysops/ml` — clasificación y decisión
 - `executeAutoImplement()` de `@intcloudsysops/ml` — ejecución de cambios
 
 **Flujo:**
+
 1. Feedback entra a conversación existente o nueva
 2. Historial cargado desde DB (`loadMessageHistory()`)
 3. Si suficientes mensajes → `analyzeFeedback()` con contexto completo
@@ -73,12 +82,14 @@ type Criticality = 'low' | 'medium' | 'high' | 'critical'
 ### 5. ✅ Discord Notifications
 
 **Implementación:**
+
 - `notifyDecordFeedback()` en `lib/feedback-notify.ts`
 - Emoji criticidad: 🚨 critical, 🔴 high, 🟡 medium, 🟢 low
 - Campos: usuario, criticidad, razón, tipo de decisión
 - No bloqueante (fire-and-forget, no espera respuesta)
 
 **Contexto en mensaje:**
+
 ```
 [emoji] Feedback [decision_type]: [tenant_slug]
 Usuario: [email]
@@ -90,6 +101,7 @@ Razón: [reasoning]
 ### 6. ✅ Type-Check Validation
 
 **Status:** ✅ PASS (14/14 workspaces)
+
 - `@intcloudsysops/api` compila sin errores
 - `@intcloudsysops/portal` compila sin errores
 - Importaciones de `@intcloudsysops/ml` resuelven correctamente
@@ -99,23 +111,25 @@ Razón: [reasoning]
 
 **Validaciones implementadas:**
 
-| Escenario | Validación | Nivel |
-|-----------|-----------|-------|
-| POST /api/feedback sin token | Rechaza 401 | API Gateway |
-| POST /api/feedback + token inválido | Rechaza 401 | `resolveTrustedPortalSession` |
-| POST /api/feedback + tenant_slug en body ≠ session | Rechaza 403 | `parseFeedbackPostFields` |
-| POST /api/feedback + user_email en body ≠ session | Rechaza 403 | `parseFeedbackPostFields` |
-| GET /api/feedback sin admin token | Rechaza 401 | `requireAdminAccess` |
-| GET /api/feedback + conversation_id fake | Rechaza 404 | `verifyConversationBelongsToUser` |
+| Escenario                                          | Validación  | Nivel                             |
+| -------------------------------------------------- | ----------- | --------------------------------- |
+| POST /api/feedback sin token                       | Rechaza 401 | API Gateway                       |
+| POST /api/feedback + token inválido                | Rechaza 401 | `resolveTrustedPortalSession`     |
+| POST /api/feedback + tenant_slug en body ≠ session | Rechaza 403 | `parseFeedbackPostFields`         |
+| POST /api/feedback + user_email en body ≠ session  | Rechaza 403 | `parseFeedbackPostFields`         |
+| GET /api/feedback sin admin token                  | Rechaza 401 | `requireAdminAccess`              |
+| GET /api/feedback + conversation_id fake           | Rechaza 404 | `verifyConversationBelongsToUser` |
 
 ## Impacto Técnico
 
 ### Antes (Semana 4)
+
 - No había API de feedback integrada con ML
 - Decisiones manuales sin persistencia entre sesiones
 - Sin notificaciones en tiempo real a admin
 
 ### Después (Semana 5)
+
 - `POST /api/feedback` recolecta feedback con Zero-Trust
 - `GET /api/feedback` expone historial a admin
 - ML classification automática para análisis
@@ -174,14 +188,14 @@ API route.ts:GET
 
 ## Validación
 
-| Validación | Estado |
-|-----------|--------|
+| Validación                 | Estado  |
+| -------------------------- | ------- |
 | Type-check (14 workspaces) | ✅ PASS |
 | Route handlers compilables | ✅ PASS |
-| ML imports resolubles | ✅ PASS |
+| ML imports resolubles      | ✅ PASS |
 | Supabase schema compatible | ✅ PASS |
 | Discord webhook integrable | ✅ PASS |
-| Zero-Trust validations | ✅ PASS |
+| Zero-Trust validations     | ✅ PASS |
 
 ## Próximos Pasos (Semana 6)
 

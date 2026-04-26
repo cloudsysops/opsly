@@ -1,27 +1,27 @@
-import type { SkillMetadata } from "./types.js";
+import type { SkillMetadata } from './types.js';
 
 function isPlainObject(v: unknown): v is Record<string, unknown> {
-  return typeof v === "object" && v !== null && !Array.isArray(v);
+  return typeof v === 'object' && v !== null && !Array.isArray(v);
 }
 
 /** Parsea manifest.json; valida forma mínima. */
 export function parseManifestJsonObject(raw: unknown): SkillMetadata {
   if (!isPlainObject(raw)) {
-    throw new Error("manifest.json debe ser un objeto JSON");
+    throw new Error('manifest.json debe ser un objeto JSON');
   }
   const name = raw.name;
-  if (typeof name !== "string" || name.trim() === "") {
+  if (typeof name !== 'string' || name.trim() === '') {
     throw new Error('manifest.json requiere "name" (string no vacío)');
   }
   const out: SkillMetadata = { name: name.trim() };
   if (raw.version !== undefined) {
-    if (typeof raw.version !== "string") {
+    if (typeof raw.version !== 'string') {
       throw new Error('"version" debe ser string');
     }
     out.version = raw.version;
   }
   if (raw.description !== undefined) {
-    if (typeof raw.description !== "string") {
+    if (typeof raw.description !== 'string') {
       throw new Error('"description" debe ser string');
     }
     out.description = raw.description;

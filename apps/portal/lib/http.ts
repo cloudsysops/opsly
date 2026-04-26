@@ -1,13 +1,13 @@
 function parseErrorMessage(data: unknown): string {
   if (
     data !== null &&
-    typeof data === "object" &&
-    "error" in data &&
-    typeof (data as { error: unknown }).error === "string"
+    typeof data === 'object' &&
+    'error' in data &&
+    typeof (data as { error: unknown }).error === 'string'
   ) {
     return (data as { error: string }).error;
   }
-  return "Request failed";
+  return 'Request failed';
 }
 
 async function parseJson(res: Response): Promise<unknown> {
@@ -18,13 +18,13 @@ async function parseJson(res: Response): Promise<unknown> {
   try {
     return JSON.parse(text) as unknown;
   } catch {
-    throw new Error("Invalid JSON response");
+    throw new Error('Invalid JSON response');
   }
 }
 
 export async function requestPortalApi<T>(
   input: RequestInfo | URL,
-  init?: RequestInit,
+  init?: RequestInit
 ): Promise<T> {
   const res = await fetch(input, init);
   const data = await parseJson(res);

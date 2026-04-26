@@ -1,8 +1,8 @@
-import type { SupabaseClient } from "@supabase/supabase-js";
-import { BaseRepository } from "../base-repository";
-import { BILLING_METER_UNIT_COST_USD } from "../billing-meter-pricing";
-import { getServiceClient } from "../supabase";
-import type { Database, Json } from "../supabase/types";
+import type { SupabaseClient } from '@supabase/supabase-js';
+import { BaseRepository } from '../base-repository';
+import { BILLING_METER_UNIT_COST_USD } from '../billing-meter-pricing';
+import { getServiceClient } from '../supabase';
+import type { Database, Json } from '../supabase/types';
 
 type UsageRow = {
   tokens_input: number;
@@ -19,7 +19,7 @@ export type UsageMonthSummary = {
   cache_hits: number;
 };
 
-export type UsageMeterEventType = "ai_tokens" | "cpu_time";
+export type UsageMeterEventType = 'ai_tokens' | 'cpu_time';
 
 /**
  * Registro de consumo para `platform.usage_events` (DAL inyecta `tenant_slug`).
@@ -43,19 +43,15 @@ export type RecordUsageEventParams = {
 };
 
 function defaultModelLabel(eventType: UsageMeterEventType): string {
-  return eventType === "cpu_time" ? "meter:cpu_time" : "meter:ai_tokens";
+  return eventType === 'cpu_time' ? 'meter:cpu_time' : 'meter:ai_tokens';
 }
 
 function sessionIdFromMetadata(metadata: Json | undefined): string | null {
-  if (
-    metadata === null ||
-    typeof metadata !== "object" ||
-    Array.isArray(metadata)
-  ) {
+  if (metadata === null || typeof metadata !== 'object' || Array.isArray(metadata)) {
     return null;
   }
   const sid = (metadata as Record<string, unknown>).session_id;
-  return typeof sid === "string" && sid.length > 0 ? sid : null;
+  return typeof sid === 'string' && sid.length > 0 ? sid : null;
 }
 
 /**
@@ -72,7 +68,7 @@ export class UsageRepository extends BaseRepository {
    */
   async recordEvent(params: RecordUsageEventParams): Promise<void> {
     const baseUnit =
-      params.eventType === "ai_tokens"
+      params.eventType === 'ai_tokens'
         ? BILLING_METER_UNIT_COST_USD.AI_TOKEN
         : BILLING_METER_UNIT_COST_USD.CPU_SECOND;
     const unitCostUsd = params.unitCostUsd ?? baseUnit;
@@ -80,11 +76,8 @@ export class UsageRepository extends BaseRepository {
 
     let tokensInput = 0;
     let tokensOutput = 0;
-    if (params.eventType === "ai_tokens") {
-      if (
-        params.tokensInput !== undefined ||
-        params.tokensOutput !== undefined
-      ) {
+    if (params.eventType === 'ai_tokens') {
+      if (params.tokensInput !== undefined || params.tokensOutput !== undefined) {
         tokensInput = params.tokensInput ?? 0;
         tokensOutput = params.tokensOutput ?? 0;
       } else {
@@ -96,7 +89,7 @@ export class UsageRepository extends BaseRepository {
     const model = params.model ?? defaultModelLabel(params.eventType);
 
     const { error } = await this.insert(
-      "usage_events",
+      'usage_events',
       {
         model,
         tokens_input: tokensInput,
@@ -105,7 +98,7 @@ export class UsageRepository extends BaseRepository {
         cache_hit: false,
         session_id: sessionIdFromMetadata(params.metadata),
       },
-      { tenantColumn: "tenant_slug" },
+      { tenantColumn: 'tenant_slug' }
     );
 
     if (error) {
@@ -121,10 +114,10 @@ export class UsageRepository extends BaseRepository {
     const from = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
 
     const { data, error } = await this.select(
-      "usage_events",
-      "tokens_input,tokens_output,cost_usd,cache_hit",
-      { tenantColumn: "tenant_slug" },
-    ).gte("created_at", from);
+      'usage_events',
+      'tokens_input,tokens_output,cost_usd,cache_hit',
+      { tenantColumn: 'tenant_slug' }
+    ).gte('created_at', from);
 
     if (error) {
       throw new Error(`usage_events select: ${error.message}`);

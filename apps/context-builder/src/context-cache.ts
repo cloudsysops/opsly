@@ -1,7 +1,7 @@
-import { createClient } from "redis";
-import { REDIS_CTX_PREFIX } from "./constants.js";
+import { createClient } from 'redis';
+import { REDIS_CTX_PREFIX } from './constants.js';
 
-const REDIS_URL = process.env.REDIS_URL || "redis://localhost:6379";
+const REDIS_URL = process.env.REDIS_URL || 'redis://localhost:6379';
 
 let client: ReturnType<typeof createClient> | null = null;
 
@@ -25,7 +25,11 @@ export async function getCachedContext(digestHex: string): Promise<string | null
   }
 }
 
-export async function setCachedContext(digestHex: string, value: string, ttlSeconds: number): Promise<void> {
+export async function setCachedContext(
+  digestHex: string,
+  value: string,
+  ttlSeconds: number
+): Promise<void> {
   try {
     const redis = await getRedis();
     await redis.setEx(`${REDIS_CTX_PREFIX}${digestHex}`, ttlSeconds, value);

@@ -1,7 +1,7 @@
-import Link from "next/link";
+import Link from 'next/link';
 
 export const metadata = {
-  title: "Pago cancelado — Opsly",
+  title: 'Pago cancelado — Opsly',
 };
 
 export default function CheckoutCancelPage() {
@@ -13,18 +13,14 @@ export default function CheckoutCancelPage() {
         <h1 className="text-3xl font-extrabold mb-4">Pago cancelado</h1>
 
         <p className="text-white/60 text-lg mb-8">
-          No te preocupes, no se realizó ningún cargo.
-          Puedes intentarlo de nuevo cuando quieras.
+          No te preocupes, no se realizó ningún cargo. Puedes intentarlo de nuevo cuando quieras.
         </p>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Link href="/#pricing" className="ops-btn-primary text-center">
             Ver planes de nuevo →
           </Link>
-          <a
-            href="mailto:hola@opsly.io"
-            className="ops-btn-ghost text-center"
-          >
+          <a href="mailto:hola@opsly.io" className="ops-btn-ghost text-center">
             ¿Tienes preguntas?
           </a>
         </div>

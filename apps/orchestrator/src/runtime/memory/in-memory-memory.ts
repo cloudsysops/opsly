@@ -4,7 +4,7 @@
  * @see docs/design/OAR.md — §4.1 MemoryInterface
  */
 
-import type { MemoryFragment, MemoryInterface } from "../interfaces/memory.interface.js";
+import type { MemoryFragment, MemoryInterface } from '../interfaces/memory.interface.js';
 
 type SessionBucket = {
   readonly working: Record<string, unknown>;
@@ -27,7 +27,7 @@ export class InMemoryMemory implements MemoryInterface {
     tenantSlug: string,
     sessionId: string,
     step: number,
-    content: string,
+    content: string
   ): Promise<void> {
     const k = sessionKey(tenantSlug, sessionId);
     const prev = this.sessions.get(k);
@@ -42,7 +42,7 @@ export class InMemoryMemory implements MemoryInterface {
   async querySemantic(
     _tenantSlug: string,
     _query: string,
-    _limit?: number,
+    _limit?: number
   ): Promise<MemoryFragment[]> {
     return [];
   }

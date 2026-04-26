@@ -1,4 +1,4 @@
-import type { PlanKey } from "../supabase/types";
+import type { PlanKey } from '../supabase/types';
 
 /** Límite mensual por defecto (USD) cuando no hay fila en `tenant_budgets` ni plan reconocido. */
 export const FREE_TIER_FALLBACK_MONTHLY_USD = 25;
@@ -15,7 +15,7 @@ export const DEFAULT_MONTHLY_BUDGET_USD_BY_PLAN: Record<PlanKey, number> = {
 };
 
 /** Clave en `tenants.metadata`: la suspensión automática por presupuesto puede reactivarse sola al bajar el gasto. */
-export const BUDGET_AUTO_SUSPEND_METADATA_KEY = "budget_auto_suspended" as const;
+export const BUDGET_AUTO_SUSPEND_METADATA_KEY = 'budget_auto_suspended' as const;
 
 /** Ventana de deduplicación de jobs `check_budget` en Redis (ms). */
 export const BUDGET_CHECK_DEDUP_WINDOW_MS = 30_000;
@@ -25,11 +25,11 @@ export const BUDGET_CHECK_DEDUP_WINDOW_MS = 30_000;
  * Ej.: `ops,admin,smiletripcare`
  */
 export function budgetEnforcementBypassSlugs(): Set<string> {
-  const raw = process.env.BUDGET_ENFORCEMENT_BYPASS_SLUGS ?? "";
+  const raw = process.env.BUDGET_ENFORCEMENT_BYPASS_SLUGS ?? '';
   return new Set(
     raw
-      .split(",")
+      .split(',')
       .map((s) => s.trim().toLowerCase())
-      .filter((s) => s.length > 0),
+      .filter((s) => s.length > 0)
   );
 }

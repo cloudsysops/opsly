@@ -1,8 +1,8 @@
-import { getApiBaseUrl } from "./api";
+import { getApiBaseUrl } from './api';
 
 function resolveBase(override?: string): string {
   if (override && override.length > 0) {
-    return override.replace(/\/$/, "");
+    return override.replace(/\/$/, '');
   }
   return getApiBaseUrl();
 }
@@ -39,20 +39,20 @@ export type SuperAdminTenantsPayload = {
 
 export async function fetchSuperAdminMetrics(
   accessToken: string,
-  baseUrl?: string,
+  baseUrl?: string
 ): Promise<SuperAdminMetricsPayload> {
   const base = resolveBase(baseUrl);
   const res = await fetch(`${base}/api/admin/metrics`, {
     headers: { Authorization: `Bearer ${accessToken}` },
-    cache: "no-store",
+    cache: 'no-store',
   });
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
     const msg =
-      typeof err === "object" && err !== null && "error" in err
+      typeof err === 'object' && err !== null && 'error' in err
         ? String((err as { error: unknown }).error)
         : res.statusText;
-    throw new Error(msg || "Failed to load admin metrics");
+    throw new Error(msg || 'Failed to load admin metrics');
   }
   return res.json() as Promise<SuperAdminMetricsPayload>;
 }
@@ -61,7 +61,7 @@ export async function fetchSuperAdminTenants(
   accessToken: string,
   limit: number,
   offset: number,
-  baseUrl?: string,
+  baseUrl?: string
 ): Promise<SuperAdminTenantsPayload> {
   const base = resolveBase(baseUrl);
   const q = new URLSearchParams({
@@ -70,15 +70,15 @@ export async function fetchSuperAdminTenants(
   });
   const res = await fetch(`${base}/api/admin/tenants?${q.toString()}`, {
     headers: { Authorization: `Bearer ${accessToken}` },
-    cache: "no-store",
+    cache: 'no-store',
   });
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
     const msg =
-      typeof err === "object" && err !== null && "error" in err
+      typeof err === 'object' && err !== null && 'error' in err
         ? String((err as { error: unknown }).error)
         : res.statusText;
-    throw new Error(msg || "Failed to load tenants");
+    throw new Error(msg || 'Failed to load tenants');
   }
   return res.json() as Promise<SuperAdminTenantsPayload>;
 }

@@ -1,52 +1,52 @@
-import type { IntentRequest, OrchestratorJob, PlannerAction } from "./types.js";
+import type { IntentRequest, OrchestratorJob, PlannerAction } from './types.js';
 
 /**
  * Herramientas MCP expuestas al planner (lista para prompt; ejecución real vía jobs).
  * Incluye stubs operativos para health/restart.
  */
 export const DEFAULT_PLANNER_TOOL_NAMES: string[] = [
-  "get_health",
-  "get_metrics",
-  "get_tenants",
-  "get_tenant",
-  "execute_prompt",
-  "send_invitation",
-  "onboard_tenant",
-  "suspend_tenant",
-  "resume_tenant",
-  "notebooklm",
-  "check_service_health",
-  "restart_container",
-  "notify",
-  "sync_drive",
-  "tavily_search",
-  "get_server_status",
+  'get_health',
+  'get_metrics',
+  'get_tenants',
+  'get_tenant',
+  'execute_prompt',
+  'send_invitation',
+  'onboard_tenant',
+  'suspend_tenant',
+  'resume_tenant',
+  'notebooklm',
+  'check_service_health',
+  'restart_container',
+  'notify',
+  'sync_drive',
+  'tavily_search',
+  'get_server_status',
 ];
 
 /** Mapa legible: herramienta planner → cola BullMQ = tipo de job (`openclaw` queue) + rol. */
 export const PLANNER_TOOL_MAP: Record<
   string,
-  { job_type: OrchestratorJob["type"]; label: string }
+  { job_type: OrchestratorJob['type']; label: string }
 > = {
-  execute_prompt: { job_type: "cursor", label: "cursor_worker" },
-  send_invitation: { job_type: "n8n", label: "n8n_webhook" },
-  notify: { job_type: "notify", label: "notify_worker" },
-  get_health: { job_type: "notify", label: "planner_stub_notify" },
-  get_metrics: { job_type: "notify", label: "planner_stub_notify" },
-  get_tenants: { job_type: "notify", label: "planner_stub_notify" },
-  get_tenant: { job_type: "notify", label: "planner_stub_notify" },
-  check_service_health: { job_type: "notify", label: "planner_stub_notify" },
-  restart_container: { job_type: "notify", label: "planner_stub_notify" },
-  onboard_tenant: { job_type: "n8n", label: "n8n_onboard" },
-  suspend_tenant: { job_type: "n8n", label: "n8n_suspend" },
-  resume_tenant: { job_type: "n8n", label: "n8n_resume" },
-  notebooklm: { job_type: "drive", label: "drive_notebooklm" },
-  sync_drive: { job_type: "drive", label: "drive_sync" },
-  tavily_search: { job_type: "notify", label: "local_tool_result" },
-  get_server_status: { job_type: "notify", label: "local_tool_result" },
+  execute_prompt: { job_type: 'cursor', label: 'cursor_worker' },
+  send_invitation: { job_type: 'n8n', label: 'n8n_webhook' },
+  notify: { job_type: 'notify', label: 'notify_worker' },
+  get_health: { job_type: 'notify', label: 'planner_stub_notify' },
+  get_metrics: { job_type: 'notify', label: 'planner_stub_notify' },
+  get_tenants: { job_type: 'notify', label: 'planner_stub_notify' },
+  get_tenant: { job_type: 'notify', label: 'planner_stub_notify' },
+  check_service_health: { job_type: 'notify', label: 'planner_stub_notify' },
+  restart_container: { job_type: 'notify', label: 'planner_stub_notify' },
+  onboard_tenant: { job_type: 'n8n', label: 'n8n_onboard' },
+  suspend_tenant: { job_type: 'n8n', label: 'n8n_suspend' },
+  resume_tenant: { job_type: 'n8n', label: 'n8n_resume' },
+  notebooklm: { job_type: 'drive', label: 'drive_notebooklm' },
+  sync_drive: { job_type: 'drive', label: 'drive_sync' },
+  tavily_search: { job_type: 'notify', label: 'local_tool_result' },
+  get_server_status: { job_type: 'notify', label: 'local_tool_result' },
 };
 
-const FORBIDDEN_PLANNER_PARAM_KEYS = new Set(["tenant_slug", "request_id", "tenant_id"]);
+const FORBIDDEN_PLANNER_PARAM_KEYS = new Set(['tenant_slug', 'request_id', 'tenant_id']);
 
 /** Zero-Trust: el planner no puede sobrescribir identidad del intent por params. */
 export function sanitizePlannerParams(params: Record<string, unknown>): Record<string, unknown> {
@@ -70,9 +70,9 @@ export function isKnownPlannerTool(tool: string): boolean {
  */
 export function plannerActionToOrchestratorJob(
   action: PlannerAction,
-  req: Pick<IntentRequest, "tenant_slug" | "initiated_by" | "plan" | "tenant_id">,
+  req: Pick<IntentRequest, 'tenant_slug' | 'initiated_by' | 'plan' | 'tenant_id'>,
   correlationId: string,
-  batchIndex: number,
+  batchIndex: number
 ): OrchestratorJob | null {
   const { tool } = action;
   const params = sanitizePlannerParams(action.params);
@@ -85,83 +85,83 @@ export function plannerActionToOrchestratorJob(
 
   const common: Pick<
     OrchestratorJob,
-    | "tenant_slug"
-    | "tenant_id"
-    | "plan"
-    | "request_id"
-    | "initiated_by"
-    | "agent_role"
-    | "idempotency_key"
+    | 'tenant_slug'
+    | 'tenant_id'
+    | 'plan'
+    | 'request_id'
+    | 'initiated_by'
+    | 'agent_role'
+    | 'idempotency_key'
   > = {
     tenant_slug: req.tenant_slug,
     tenant_id: req.tenant_id,
     plan: req.plan,
     request_id: correlationId,
     initiated_by: req.initiated_by,
-    agent_role: "executor",
+    agent_role: 'executor',
     idempotency_key: idempotencyKey,
   };
 
   switch (tool) {
-    case "execute_prompt":
+    case 'execute_prompt':
       return {
-        type: "cursor",
+        type: 'cursor',
         payload: { ...params, planner_tool: tool },
         ...common,
       };
-    case "send_invitation":
-    case "onboard_tenant":
-    case "suspend_tenant":
-    case "resume_tenant":
+    case 'send_invitation':
+    case 'onboard_tenant':
+    case 'suspend_tenant':
+    case 'resume_tenant':
       return {
-        type: "n8n",
+        type: 'n8n',
         payload: { ...params, planner_tool: tool },
         ...common,
       };
-    case "notify":
+    case 'notify':
       return {
-        type: "notify",
+        type: 'notify',
         payload: { ...params, planner_tool: tool },
         ...common,
       };
-    case "get_health":
-    case "get_metrics":
-    case "get_tenants":
-    case "get_tenant":
-    case "check_service_health":
-    case "restart_container":
+    case 'get_health':
+    case 'get_metrics':
+    case 'get_tenants':
+    case 'get_tenant':
+    case 'check_service_health':
+    case 'restart_container':
       return {
-        type: "notify",
+        type: 'notify',
         payload: {
-          title: "Planner action",
+          title: 'Planner action',
           message: JSON.stringify({ tool, params }),
-          type: "info",
+          type: 'info',
           planner_tool: tool,
         },
         ...common,
       };
-    case "sync_drive":
-    case "notebooklm":
+    case 'sync_drive':
+    case 'notebooklm':
       return {
-        type: "drive",
+        type: 'drive',
         payload: { ...params, planner_tool: tool },
         ...common,
       };
-    case "tavily_search":
-    case "get_server_status":
+    case 'tavily_search':
+    case 'get_server_status':
       return {
-        type: "notify",
+        type: 'notify',
         payload: {
-          title: "Planner local tool",
+          title: 'Planner local tool',
           message: JSON.stringify({ tool, params }),
-          type: "info",
+          type: 'info',
           planner_tool: tool,
         },
         ...common,
       };
     default: {
       throw new Error(
-        `plannerActionToOrchestratorJob: unknown tool "${tool}" - available: ${DEFAULT_PLANNER_TOOL_NAMES.join(", ")}`,
+        `plannerActionToOrchestratorJob: unknown tool "${tool}" - available: ${DEFAULT_PLANNER_TOOL_NAMES.join(', ')}`
       );
     }
   }

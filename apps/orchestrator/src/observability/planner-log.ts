@@ -1,12 +1,12 @@
-import type { OrchestratorJob } from "../types.js";
+import type { OrchestratorJob } from '../types.js';
 
 export interface PlannerActionEnqueuedFields {
-  event: "planner_action_enqueued";
+  event: 'planner_action_enqueued';
   tool: string;
   tenant_slug: string;
   action_id: number;
   request_id: string;
-  job_type: OrchestratorJob["type"];
+  job_type: OrchestratorJob['type'];
   bullmq_job_id: string;
 }
 
@@ -17,13 +17,13 @@ export function logPlannerActionEnqueued(fields: PlannerActionEnqueuedFields): v
   const line = JSON.stringify({
     ...fields,
     ts: new Date().toISOString(),
-    service: "orchestrator",
+    service: 'orchestrator',
   });
   process.stdout.write(`${line}\n`);
 }
 
 export interface PlannerUnknownToolFields {
-  event: "planner_unknown_tool";
+  event: 'planner_unknown_tool';
   tool: string;
   tenant_slug: string;
   request_id: string;
@@ -34,7 +34,7 @@ export function logPlannerUnknownTool(fields: PlannerUnknownToolFields): void {
   const line = JSON.stringify({
     ...fields,
     ts: new Date().toISOString(),
-    service: "orchestrator",
+    service: 'orchestrator',
   });
   process.stdout.write(`${line}\n`);
 }

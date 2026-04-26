@@ -18,13 +18,22 @@ El Opsly Agentic Runtime normaliza cómo se ejecutan tareas complejas con patron
 // Memory — contexto de trabajo por tenant/sesión
 interface MemoryInterface {
   getWorkingContext(tenantSlug: string, sessionId: string): Promise<Record<string, unknown>>;
-  appendObservation(tenantSlug: string, sessionId: string, step: number, content: string): Promise<void>;
+  appendObservation(
+    tenantSlug: string,
+    sessionId: string,
+    step: number,
+    content: string
+  ): Promise<void>;
   querySemantic(tenantSlug: string, query: string, limit?: number): Promise<MemoryFragment[]>;
 }
 
 // Actions — ejecución de herramientas
 interface AgentActionPort {
-  executeAction(tenantSlug: string, actionName: string, args: Record<string, unknown>): Promise<ToolResult>;
+  executeAction(
+    tenantSlug: string,
+    actionName: string,
+    args: Record<string, unknown>
+  ): Promise<ToolResult>;
 }
 ```
 
@@ -36,16 +45,17 @@ PENDING → STRATEGIZING → THINKING → ACTING → OBSERVING → REFLECTING �
 
 ### Estrategias por modo
 
-| Modo | Estrategia | maxSteps | Notas |
-|---|---|---|---|
-| Architect | PlanAndExecute | 20 | allowReplanning |
-| Developer | PlanAndExecute | 15 | toolTimeout: 30s |
-| Hacker | ReAct | 50 | fastMode |
-| Security | PlanAndExecute + Reflection | — | maxReflections: 2 |
+| Modo      | Estrategia                  | maxSteps | Notas             |
+| --------- | --------------------------- | -------- | ----------------- |
+| Architect | PlanAndExecute              | 20       | allowReplanning   |
+| Developer | PlanAndExecute              | 15       | toolTimeout: 30s  |
+| Hacker    | ReAct                       | 50       | fastMode          |
+| Security  | PlanAndExecute + Reflection | —        | maxReflections: 2 |
 
 ### Engine principal
 
 El engine en `apps/orchestrator/src/engine.ts` sigue este flujo:
+
 1. `enrichJob()` — enriquecer con contexto
 2. `processIntent()` — clasificar intención
 3. Router a estrategia: `runReActStrategy()` o `runPlanExecuteStrategy()`
@@ -65,6 +75,7 @@ POST /api/n8n/execute   → Ejecuta un plan aprobado
 Ubicación de definiciones: `docs/n8n-workflows/`
 
 Un workflow típico:
+
 1. Trigger (webhook/schedule)
 2. Decision node → llama a `/api/n8n/decide`
 3. Approval gate (opcional)
@@ -75,11 +86,11 @@ Un workflow típico:
 
 ```typescript
 // apps/orchestrator/src/jobs/mi-job.ts
-import { Job } from "../types";
-import { setJobState } from "../state";
+import { Job } from '../types';
+import { setJobState } from '../state';
 
 export async function processMiJob(job: Job): Promise<void> {
-  await setJobState(job.id, "STRATEGIZING");
+  await setJobState(job.id, 'STRATEGIZING');
 
   // 1. Enriquecer contexto
   const context = await memory.getWorkingContext(job.tenantSlug, job.sessionId);
@@ -88,13 +99,13 @@ export async function processMiJob(job: Job): Promise<void> {
   const strategy = selectStrategy(job.mode);
 
   // 3. Ejecutar
-  await setJobState(job.id, "ACTING");
+  await setJobState(job.id, 'ACTING');
   const result = await strategy.execute(context, job.params);
 
   // 4. Observar y reflejar
   await memory.appendObservation(job.tenantSlug, job.sessionId, job.step, JSON.stringify(result));
 
-  await setJobState(job.id, "COMPLETED");
+  await setJobState(job.id, 'COMPLETED');
 }
 ```
 
@@ -108,9 +119,9 @@ export async function processMiJob(job: Job): Promise<void> {
 
 ## Errores comunes
 
-| Error | Causa | Solución |
-|-------|-------|----------|
-| 404 en /api/n8n/decide | Ruta no desplegada | Verificar build e incluir en deployment |
-| Job stuck en THINKING | LLM timeout | Configurar `toolTimeout` en estrategia |
-| Memory vacío | No se cargó contexto | Verificar `enrichJob()` antes de ejecutar |
-| Metering faltante | No llamó meter* | Agregar metering en cada llamada LLM |
+| Error                  | Causa                | Solución                                  |
+| ---------------------- | -------------------- | ----------------------------------------- |
+| 404 en /api/n8n/decide | Ruta no desplegada   | Verificar build e incluir en deployment   |
+| Job stuck en THINKING  | LLM timeout          | Configurar `toolTimeout` en estrategia    |
+| Memory vacío           | No se cargó contexto | Verificar `enrichJob()` antes de ejecutar |
+| Metering faltante      | No llamó meter\*     | Agregar metering en cada llamada LLM      |

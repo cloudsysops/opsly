@@ -69,9 +69,7 @@ export default function AgentsTeamPage() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="font-mono text-lg tracking-tight text-ops-green">
-            Agents Team
-          </h1>
+          <h1 className="font-mono text-lg tracking-tight text-ops-green">Agents Team</h1>
           <p className="mt-1 text-xs text-ops-gray">
             Supervisor + workers especializados (OpenClaw)
           </p>
@@ -102,24 +100,17 @@ export default function AgentsTeamPage() {
 
       <Card className="border-ops-border bg-ops-surface">
         <CardHeader className="pb-2">
-          <CardTitle className="font-mono text-sm text-neutral-200">
-            Routing y límites
-          </CardTitle>
+          <CardTitle className="font-mono text-sm text-neutral-200">Routing y límites</CardTitle>
         </CardHeader>
         <CardContent className="grid gap-2 font-mono text-xs text-ops-gray">
           <div>policy: {data?.routing.policy ?? '—'}</div>
           <div>primary: {data?.routing.providers.primary ?? '—'}</div>
           <div>fallback: {(data?.routing.providers.fallback ?? []).join(', ') || '—'}</div>
+          <div>max concurrent agents: {data?.constraints.max_concurrent_agents ?? '—'}</div>
           <div>
-            max concurrent agents: {data?.constraints.max_concurrent_agents ?? '—'}
+            max daily budget: ${data?.constraints.max_total_daily_budget_usd?.toFixed(2) ?? '—'}
           </div>
-          <div>
-            max daily budget: $
-            {data?.constraints.max_total_daily_budget_usd?.toFixed(2) ?? '—'}
-          </div>
-          <div>
-            approvals: {(data?.constraints.require_approval_for ?? []).join(', ') || '—'}
-          </div>
+          <div>approvals: {(data?.constraints.require_approval_for ?? []).join(', ') || '—'}</div>
         </CardContent>
       </Card>
     </div>

@@ -1,11 +1,7 @@
-import type {
-  HermesTask,
-  HermesTaskState,
-  HermesTaskType,
-} from "@intcloudsysops/types";
-import type { SupabaseClient } from "@supabase/supabase-js";
+import type { HermesTask, HermesTaskState, HermesTaskType } from '@intcloudsysops/types';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
-import { getTenantContext } from "../lib/tenant-context.js";
+import { getTenantContext } from '../lib/tenant-context.js';
 
 function rowToTask(row: {
   task_id: string;
@@ -25,16 +21,13 @@ function rowToTask(row: {
   return {
     id: row.task_id,
     name: row.name,
-    type: (row.task_type as HermesTaskType) ?? "unknown",
+    type: (row.task_type as HermesTaskType) ?? 'unknown',
     state: row.state as HermesTaskState,
     assignee: row.assignee ?? undefined,
     effort:
-      row.effort === "S" ||
-      row.effort === "M" ||
-      row.effort === "L" ||
-      row.effort === "XL"
+      row.effort === 'S' || row.effort === 'M' || row.effort === 'L' || row.effort === 'XL'
         ? row.effort
-        : "unknown",
+        : 'unknown',
     idempotency_key: row.idempotency_key ?? undefined,
     request_id: row.request_id ?? undefined,
     tenant_id: row.tenant_id ?? undefined,
@@ -51,7 +44,7 @@ export class HermesStateRepository {
   constructor(private readonly supabase: SupabaseClient) {}
 
   private get platform() {
-    return this.supabase.schema("platform");
+    return this.supabase.schema('platform');
   }
 
   /**
@@ -60,10 +53,10 @@ export class HermesStateRepository {
   async findByTaskId(taskId: string): Promise<HermesTask | null> {
     const { tenantId } = getTenantContext();
     const { data, error } = await this.platform
-      .from("hermes_state")
-      .select("*")
-      .eq("task_id", taskId)
-      .eq("tenant_id", tenantId)
+      .from('hermes_state')
+      .select('*')
+      .eq('task_id', taskId)
+      .eq('tenant_id', tenantId)
       .maybeSingle();
 
     if (error) {

@@ -1,25 +1,25 @@
-import { callLLM } from "../llm/gateway.js";
-import { retrieve } from "../memory/knowledge-base.js";
-import type { InMemoryToolRegistry } from "./tools/registry.js";
-import type { ToolManifest } from "./tools/types.js";
+import { callLLM } from '../llm/gateway.js';
+import { retrieve } from '../memory/knowledge-base.js';
+import type { InMemoryToolRegistry } from './tools/registry.js';
+import type { ToolManifest } from './tools/types.js';
 
 function toolsToContext(tools: ToolManifest[]): string {
   if (tools.length === 0) {
-    return "";
+    return '';
   }
   return tools
     .map(
       (t) =>
-        `- ${t.name} [${t.riskLevel}]: ${t.description} | capacidades: ${t.capabilities.join(", ")}`,
+        `- ${t.name} [${t.riskLevel}]: ${t.description} | capacidades: ${t.capabilities.join(', ')}`
     )
-    .join("\n");
+    .join('\n');
 }
 
 function memoryToContext(snippets: string[]): string {
   if (snippets.length === 0) {
-    return "";
+    return '';
   }
-  return snippets.map((s, i) => `[${i + 1}] ${s}`).join("\n\n");
+  return snippets.map((s, i) => `[${i + 1}] ${s}`).join('\n\n');
 }
 
 /**
@@ -34,8 +34,8 @@ export async function buildConsciousAppendix(params: {
   readonly requestId: string;
   readonly toolRegistry: InMemoryToolRegistry;
 }): Promise<string> {
-  if (process.env.ORCHESTRATOR_CONSCIOUS_LAYER !== "true") {
-    return "";
+  if (process.env.ORCHESTRATOR_CONSCIOUS_LAYER !== 'true') {
+    return '';
   }
 
   const memorySnippets = await retrieve(params.intentHint);
@@ -46,10 +46,10 @@ export async function buildConsciousAppendix(params: {
   if (!process.env.OPENAI_API_KEY?.trim()) {
     process.stdout.write(
       `${JSON.stringify({
-        event: "conscious_layer_skip",
-        reason: "missing_OPENAI_API_KEY",
+        event: 'conscious_layer_skip',
+        reason: 'missing_OPENAI_API_KEY',
         request_id: params.requestId,
-      })}\n`,
+      })}\n`
     );
     return `\n---\n[Conscious: memoria + herramientas sin coach LLM]\n${memoryContext}\n${toolsContext}\n`;
   }
@@ -63,7 +63,7 @@ export async function buildConsciousAppendix(params: {
         tenantId: params.tenantId,
         requestId: params.requestId,
       },
-      { temperature: 0.2 },
+      { temperature: 0.2 }
     );
     return `\n---\n[Conscious layer — coach]\n${coach}\n---\n[Memoria RAG]\n${memoryContext}\n---\n[Herramientas coincidentes]\n${toolsContext}\n`;
   } catch (e) {

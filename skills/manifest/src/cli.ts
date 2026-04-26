@@ -1,13 +1,13 @@
-import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
-import { validateAllUserSkills } from "./load.js";
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { validateAllUserSkills } from './load.js';
 
-const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
-const userSkills = join(root, "skills", "user");
+const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..', '..');
+const userSkills = join(root, 'skills', 'user');
 
 const r = validateAllUserSkills(userSkills);
 for (const s of r.skills) {
-  const v = s.version ? ` (${s.version})` : "";
+  const v = s.version ? ` (${s.version})` : '';
   console.log(`  ✓ ${s.folder}${v}`);
 }
 if (!r.ok) {

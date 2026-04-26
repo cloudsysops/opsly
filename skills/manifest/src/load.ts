@@ -1,8 +1,8 @@
-import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
-import { join } from "node:path";
-import { parseSimpleFrontmatter } from "./parse-frontmatter.js";
-import { parseManifestJsonObject } from "./manifest-json.js";
-import type { LoadedSkillMetadata, SkillMetadata } from "./types.js";
+import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
+import { join } from 'node:path';
+import { parseSimpleFrontmatter } from './parse-frontmatter.js';
+import { parseManifestJsonObject } from './manifest-json.js';
+import type { LoadedSkillMetadata, SkillMetadata } from './types.js';
 
 function frontmatterToMetadata(fm: Record<string, string>): Partial<SkillMetadata> {
   const out: Partial<SkillMetadata> = {};
@@ -21,7 +21,7 @@ function frontmatterToMetadata(fm: Record<string, string>): Partial<SkillMetadat
 function mergeMetadata(
   fromFm: Partial<SkillMetadata>,
   fromJson: SkillMetadata | undefined,
-  folderName: string,
+  folderName: string
 ): SkillMetadata {
   const baseName = fromJson?.name ?? fromFm.name ?? folderName;
   return {
@@ -37,21 +37,21 @@ function mergeMetadata(
  * Carga SKILL.md + manifest.json opcional bajo un directorio de skill.
  */
 export function loadSkillMetadata(skillDir: string, folderName: string): LoadedSkillMetadata {
-  const skillMd = join(skillDir, "SKILL.md");
-  const manifestPath = join(skillDir, "manifest.json");
+  const skillMd = join(skillDir, 'SKILL.md');
+  const manifestPath = join(skillDir, 'manifest.json');
 
   if (!existsSync(skillMd)) {
     throw new Error(`Falta SKILL.md en ${skillDir}`);
   }
 
-  const mdContent = readFileSync(skillMd, "utf8");
+  const mdContent = readFileSync(skillMd, 'utf8');
   const { frontmatter, body } = parseSimpleFrontmatter(mdContent);
   const fmMeta = frontmatterToMetadata(frontmatter);
 
   let manifest: SkillMetadata | undefined;
   let manifestJsonPath: string | undefined;
   if (existsSync(manifestPath)) {
-    const raw = JSON.parse(readFileSync(manifestPath, "utf8")) as unknown;
+    const raw = JSON.parse(readFileSync(manifestPath, 'utf8')) as unknown;
     manifest = parseManifestJsonObject(raw);
     manifestJsonPath = manifestPath;
   }
@@ -91,7 +91,7 @@ export function validateAllUserSkills(userSkillsRoot: string): ValidateSkillsRes
     if (!statSync(dir).isDirectory()) {
       continue;
     }
-    const skillMd = join(dir, "SKILL.md");
+    const skillMd = join(dir, 'SKILL.md');
     if (!existsSync(skillMd)) {
       errors.push(`${name}: sin SKILL.md`);
       continue;
@@ -100,7 +100,7 @@ export function validateAllUserSkills(userSkillsRoot: string): ValidateSkillsRes
       const loaded = loadSkillMetadata(dir, name);
       if (loaded.metadata.name !== name) {
         errors.push(
-          `${name}: metadata.name "${loaded.metadata.name}" no coincide con directorio (recomendado: mismo nombre)`,
+          `${name}: metadata.name "${loaded.metadata.name}" no coincide con directorio (recomendado: mismo nombre)`
         );
       }
       skills.push({

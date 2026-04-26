@@ -1,21 +1,21 @@
-import { createClient } from "redis";
-import { getSessionRaw } from "./retriever.js";
-import { summarizeSession } from "./summarizer.js";
+import { createClient } from 'redis';
+import { getSessionRaw } from './retriever.js';
+import { summarizeSession } from './summarizer.js';
 
-const REDIS_URL = process.env.REDIS_URL || "redis://localhost:6379";
+const REDIS_URL = process.env.REDIS_URL || 'redis://localhost:6379';
 const SESSION_TTL = 3600;
 
 export interface SessionContext {
   tenant_slug: string;
   session_id: string;
-  messages: Array<{ role: "user" | "assistant"; content: string }>;
+  messages: Array<{ role: 'user' | 'assistant'; content: string }>;
   summary?: string;
   metadata?: Record<string, unknown>;
 }
 
 export async function getSessionContext(
   tenantSlug: string,
-  sessionId: string,
+  sessionId: string
 ): Promise<SessionContext | null> {
   const raw = await getSessionRaw(tenantSlug, sessionId);
   if (!raw) {
@@ -46,16 +46,16 @@ export async function buildContextForLLM(
   tenantSlug: string,
   sessionId: string,
   newMessage: string,
-  systemPrompt?: string,
+  systemPrompt?: string
 ): Promise<{
-  messages: Array<{ role: "user" | "assistant"; content: string }>;
+  messages: Array<{ role: 'user' | 'assistant'; content: string }>;
   system: string;
   estimated_tokens: number;
 }> {
   const session = await getSessionContext(tenantSlug, sessionId);
 
-  let messages: Array<{ role: "user" | "assistant"; content: string }> = [];
-  let system = systemPrompt || "";
+  let messages: Array<{ role: 'user' | 'assistant'; content: string }> = [];
+  let system = systemPrompt || '';
 
   if (session) {
     if (session.summary) {
@@ -64,7 +64,7 @@ export async function buildContextForLLM(
     messages = [...session.messages];
   }
 
-  messages.push({ role: "user", content: newMessage });
+  messages.push({ role: 'user', content: newMessage });
 
   const totalChars =
     messages.reduce((sum, message) => sum + message.content.length, 0) + system.length;

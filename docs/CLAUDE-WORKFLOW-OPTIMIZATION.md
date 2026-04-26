@@ -44,12 +44,12 @@ Exploración de código en paralelo (subagentes) cuando las rutas no compiten po
 
 ## Checklist rápido (copiar en PR)
 
-- [ ] `AGENTS.md` / handoff actualizado si afecta operación  
-- [ ] `npm run type-check` verde  
-- [ ] Sin secretos en diff  
-- [ ] Scripts nuevos: `set -euo pipefail` y `--dry-run` si aplica  
+- [ ] `AGENTS.md` / handoff actualizado si afecta operación
+- [ ] `npm run type-check` verde
+- [ ] Sin secretos en diff
+- [ ] Scripts nuevos: `set -euo pipefail` y `--dry-run` si aplica
 
 ## Referencias
 
-- `.cursor/rules/opsly.mdc` — reglas Cursor Opsly  
-- `agents/prompts/cursor-executor.md` — plantilla ejecutor  
+- `.cursor/rules/opsly.mdc` — reglas Cursor Opsly
+- `agents/prompts/cursor-executor.md` — plantilla ejecutor

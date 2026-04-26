@@ -8,12 +8,12 @@
  * | enterprise | 30 d  |
  */
 
-export type TenantPlan = "startup" | "business" | "enterprise";
+export type TenantPlan = 'startup' | 'business' | 'enterprise';
 
 const TTL_MS: Record<TenantPlan, number> = {
-  startup:    24 * 60 * 60 * 1_000,        // 24 h
-  business:   7 * 24 * 60 * 60 * 1_000,    // 7 d
-  enterprise: 30 * 24 * 60 * 60 * 1_000,   // 30 d
+  startup: 24 * 60 * 60 * 1_000, // 24 h
+  business: 7 * 24 * 60 * 60 * 1_000, // 7 d
+  enterprise: 30 * 24 * 60 * 60 * 1_000, // 30 d
 };
 
 /** Retorna la fecha de expiración para el plan dado. */

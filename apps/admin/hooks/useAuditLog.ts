@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import useSWR from "swr";
-import type { AuditLogEntry } from "@/lib/types";
+import useSWR from 'swr';
+import type { AuditLogEntry } from '@/lib/types';
 
 type AuditResponse = {
   entries: AuditLogEntry[];
@@ -9,14 +9,14 @@ type AuditResponse = {
 };
 
 async function fetchAudit(): Promise<AuditResponse> {
-  const res = await fetch("/api/audit-log", { credentials: "same-origin" });
+  const res = await fetch('/api/audit-log', { credentials: 'same-origin' });
   const text = await res.text();
   const data = text ? (JSON.parse(text) as unknown) : {};
   if (!res.ok) {
     const msg =
-      typeof data === "object" && data !== null && "error" in data
+      typeof data === 'object' && data !== null && 'error' in data
         ? String((data as { error: string }).error)
-        : "Failed to load audit log";
+        : 'Failed to load audit log';
     throw new Error(msg);
   }
   return data as AuditResponse;
@@ -28,13 +28,9 @@ export function useAuditLog(): {
   isLoading: boolean;
   mutate: () => void;
 } {
-  const { data, error, isLoading, mutate } = useSWR<AuditResponse>(
-    ["audit-log"],
-    fetchAudit,
-    {
-      refreshInterval: 30_000,
-      revalidateOnFocus: false,
-    },
-  );
+  const { data, error, isLoading, mutate } = useSWR<AuditResponse>(['audit-log'], fetchAudit, {
+    refreshInterval: 30_000,
+    revalidateOnFocus: false,
+  });
   return { data, error: error as Error | undefined, isLoading, mutate };
 }

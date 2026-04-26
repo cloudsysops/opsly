@@ -1,11 +1,11 @@
-import { Job, Worker } from "bullmq";
-import Redis from "ioredis";
-import { classifyTaskCategory } from "@intcloudsysops/ml";
-import { logWorkerLifecycle } from "../observability/worker-log.js";
-import { getWorkerConcurrency } from "../worker-concurrency.js";
+import { Job, Worker } from 'bullmq';
+import Redis from 'ioredis';
+import { classifyTaskCategory } from '@intcloudsysops/ml';
+import { logWorkerLifecycle } from '../observability/worker-log.js';
+import { getWorkerConcurrency } from '../worker-concurrency.js';
 
 /** Hash Redis para predicciones sandbox (namespace opsly:sandbox:*). */
-const SANDBOX_PREDICTIONS_KEY = "opsly:sandbox:classifier:predictions";
+const SANDBOX_PREDICTIONS_KEY = 'opsly:sandbox:classifier:predictions';
 
 export interface AgentClassifierJobPayload {
   taskDescription: string;
@@ -18,21 +18,21 @@ function parsePayload(job: Job): AgentClassifierJobPayload {
     payload?: Partial<AgentClassifierJobPayload>;
   };
   const taskDescription =
-    typeof data.taskDescription === "string"
+    typeof data.taskDescription === 'string'
       ? data.taskDescription
-      : typeof data.payload?.taskDescription === "string"
+      : typeof data.payload?.taskDescription === 'string'
         ? data.payload.taskDescription
-        : "";
+        : '';
   const tenantSlug =
-    typeof data.tenantSlug === "string"
+    typeof data.tenantSlug === 'string'
       ? data.tenantSlug
-      : typeof data.payload?.tenantSlug === "string"
+      : typeof data.payload?.tenantSlug === 'string'
         ? data.payload.tenantSlug
-        : "intcloudsysops";
+        : 'intcloudsysops';
   const request_id =
-    typeof data.request_id === "string"
+    typeof data.request_id === 'string'
       ? data.request_id
-      : typeof data.payload?.request_id === "string"
+      : typeof data.payload?.request_id === 'string'
         ? data.payload.request_id
         : undefined;
   return { taskDescription: taskDescription.trim(), tenantSlug, request_id };
@@ -43,27 +43,28 @@ function parsePayload(job: Job): AgentClassifierJobPayload {
  * Requiere Python + modelo en runtime (ver `apps/ml/agents/classifier`).
  * Activar solo con OPSLY_AGENT_CLASSIFIER_WORKER_ENABLED=true.
  */
-export function startAgentClassifierWorker(
-  connection: object
-): { worker: Worker; closeRedis: () => Promise<void> } {
-  const redis = new Redis(process.env.REDIS_URL ?? "redis://127.0.0.1:6379");
-  const concurrency = getWorkerConcurrency("agent-classifier");
+export function startAgentClassifierWorker(connection: object): {
+  worker: Worker;
+  closeRedis: () => Promise<void>;
+} {
+  const redis = new Redis(process.env.REDIS_URL ?? 'redis://127.0.0.1:6379');
+  const concurrency = getWorkerConcurrency('agent-classifier');
 
   const worker = new Worker<AgentClassifierJobPayload>(
-    "agent-classifier",
+    'agent-classifier',
     async (job: Job<AgentClassifierJobPayload>) => {
       const t0 = Date.now();
-      logWorkerLifecycle("start", "agent-classifier", job);
+      logWorkerLifecycle('start', 'agent-classifier', job);
       const { taskDescription, tenantSlug, request_id } = parsePayload(job);
       if (taskDescription.length === 0) {
-        logWorkerLifecycle("fail", "agent-classifier", job, {
+        logWorkerLifecycle('fail', 'agent-classifier', job, {
           duration_ms: Date.now() - t0,
-          error: "taskDescription required",
+          error: 'taskDescription required',
         });
-        throw new Error("agent-classifier: taskDescription required");
+        throw new Error('agent-classifier: taskDescription required');
       }
 
-      const slug = tenantSlug ?? "intcloudsysops";
+      const slug = tenantSlug ?? 'intcloudsysops';
 
       try {
         const out = await classifyTaskCategory({
@@ -81,7 +82,7 @@ export function startAgentClassifierWorker(
         });
         await redis.hset(SANDBOX_PREDICTIONS_KEY, `${Date.now()}-${String(job.id)}`, record);
 
-        logWorkerLifecycle("complete", "agent-classifier", job, {
+        logWorkerLifecycle('complete', 'agent-classifier', job, {
           duration_ms: executionTimeMs,
         });
 
@@ -92,7 +93,7 @@ export function startAgentClassifierWorker(
         };
       } catch (err) {
         const msg = err instanceof Error ? err.message : String(err);
-        logWorkerLifecycle("fail", "agent-classifier", job, {
+        logWorkerLifecycle('fail', 'agent-classifier', job, {
           duration_ms: Date.now() - t0,
           error: msg,
         });

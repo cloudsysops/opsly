@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -8,11 +8,11 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { deleteTenant, resumeTenant, suspendTenant } from "@/lib/api-client";
-import type { TenantStatus } from "@/lib/types";
-import { useState } from "react";
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { deleteTenant, resumeTenant, suspendTenant } from '@/lib/api-client';
+import type { TenantStatus } from '@/lib/types';
+import { useState } from 'react';
 
 export function TenantActions({
   tenantId,
@@ -30,7 +30,7 @@ export function TenantActions({
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const [delOpen, setDelOpen] = useState(false);
-  const [confirmSlug, setConfirmSlug] = useState("");
+  const [confirmSlug, setConfirmSlug] = useState('');
 
   async function handleSuspend() {
     setErr(null);
@@ -39,7 +39,7 @@ export function TenantActions({
       await suspendTenant(tenantId);
       onMutate();
     } catch (e) {
-      setErr(e instanceof Error ? e.message : "Error");
+      setErr(e instanceof Error ? e.message : 'Error');
     } finally {
       setBusy(false);
     }
@@ -52,7 +52,7 @@ export function TenantActions({
       await resumeTenant(tenantId);
       onMutate();
     } catch (e) {
-      setErr(e instanceof Error ? e.message : "Error");
+      setErr(e instanceof Error ? e.message : 'Error');
     } finally {
       setBusy(false);
     }
@@ -60,7 +60,7 @@ export function TenantActions({
 
   async function handleDelete() {
     if (confirmSlug !== slug) {
-      setErr("El slug no coincide.");
+      setErr('El slug no coincide.');
       return;
     }
     setErr(null);
@@ -71,7 +71,7 @@ export function TenantActions({
       onMutate();
       onDeleted?.();
     } catch (e) {
-      setErr(e instanceof Error ? e.message : "Error");
+      setErr(e instanceof Error ? e.message : 'Error');
     } finally {
       setBusy(false);
     }
@@ -84,7 +84,7 @@ export function TenantActions({
           {err}
         </div>
       ) : null}
-      {status === "active" ? (
+      {status === 'active' ? (
         <Button
           variant="destructive"
           size="sm"
@@ -94,13 +94,8 @@ export function TenantActions({
           Suspend
         </Button>
       ) : null}
-      {status === "suspended" ? (
-        <Button
-          variant="primary"
-          size="sm"
-          disabled={busy}
-          onClick={() => void handleResume()}
-        >
+      {status === 'suspended' ? (
+        <Button variant="primary" size="sm" disabled={busy} onClick={() => void handleResume()}>
           Resume
         </Button>
       ) : null}
@@ -109,7 +104,7 @@ export function TenantActions({
         size="sm"
         disabled={busy}
         onClick={() => {
-          setConfirmSlug("");
+          setConfirmSlug('');
           setErr(null);
           setDelOpen(true);
         }}
@@ -122,8 +117,7 @@ export function TenantActions({
           <DialogHeader>
             <DialogTitle>Eliminar tenant</DialogTitle>
             <DialogDescription>
-              Escribe el slug{" "}
-              <span className="font-mono text-ops-yellow">{slug}</span> para
+              Escribe el slug <span className="font-mono text-ops-yellow">{slug}</span> para
               confirmar. Esta acción marca el tenant como eliminado en la API.
             </DialogDescription>
           </DialogHeader>
@@ -134,11 +128,7 @@ export function TenantActions({
             className="font-mono"
           />
           <DialogFooter className="gap-2 sm:gap-0">
-            <Button
-              variant="ghost"
-              disabled={busy}
-              onClick={() => setDelOpen(false)}
-            >
+            <Button variant="ghost" disabled={busy} onClick={() => setDelOpen(false)}>
               Cancelar
             </Button>
             <Button
@@ -146,7 +136,7 @@ export function TenantActions({
               disabled={busy || confirmSlug !== slug}
               onClick={() => void handleDelete()}
             >
-              {busy ? "Eliminando..." : "Eliminar"}
+              {busy ? 'Eliminando...' : 'Eliminar'}
             </Button>
           </DialogFooter>
         </DialogContent>

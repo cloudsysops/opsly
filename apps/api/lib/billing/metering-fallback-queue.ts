@@ -1,4 +1,4 @@
-import type { MeteringEventPayload } from "./types";
+import type { MeteringEventPayload } from './types';
 
 const MAX_FALLBACK = 500;
 const queue: MeteringEventPayload[] = [];

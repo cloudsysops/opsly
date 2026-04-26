@@ -15,11 +15,7 @@
  */
 
 import type { OrchestratorJob } from './types.js';
-import {
-  orchestratorQueue,
-  agentClassifierQueue,
-  hermesOrchestrationQueue,
-} from './queue.js';
+import { orchestratorQueue, agentClassifierQueue, hermesOrchestrationQueue } from './queue.js';
 
 interface Event {
   event: string;

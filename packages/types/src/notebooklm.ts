@@ -1,4 +1,4 @@
-import type { HermesEffort, HermesTask } from "./hermes.js";
+import type { HermesEffort, HermesTask } from './hermes.js';
 
 export interface NotebookDocument {
   id: string;

@@ -38,12 +38,12 @@ sudo /opt/opsly/scripts/vps-cleanup-robust.sh --dry-run
 
 El archivo de ejemplo `infra/cron/opsly-cleanup` define:
 
-| Cuándo | Qué |
-|--------|-----|
-| Cada 6 h | `--light` |
-| Diario 03:00 | Limpieza completa |
-| Domingo 04:00 | `--aggressive` |
-| Cada 5 min | `disk-alert.sh` |
+| Cuándo        | Qué               |
+| ------------- | ----------------- |
+| Cada 6 h      | `--light`         |
+| Diario 03:00  | Limpieza completa |
+| Domingo 04:00 | `--aggressive`    |
+| Cada 5 min    | `disk-alert.sh`   |
 
 Instalación en el VPS (como root):
 

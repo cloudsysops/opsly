@@ -3,9 +3,9 @@
  * Valida: manifest.json, triggers, cross-references, ejemplos
  */
 
-import { existsSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
-import { join, dirname } from "node:path";
-import { fileURLToPath } from "node:url";
+import { existsSync, readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs';
+import { join, dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -13,7 +13,7 @@ interface ValidationError {
   skill: string;
   field: string;
   message: string;
-  severity: "error" | "warning" | "info";
+  severity: 'error' | 'warning' | 'info';
 }
 
 interface ValidationResult {
@@ -24,8 +24,8 @@ interface ValidationResult {
   suggestions: string[];
 }
 
-const REQUIRED_MANIFEST_FIELDS = ["name", "version", "description", "triggers"];
-const SUGGESTED_FIELDS = ["inputSchema", "outputSchema", "crossReferences", "examples"];
+const REQUIRED_MANIFEST_FIELDS = ['name', 'version', 'description', 'triggers'];
+const SUGGESTED_FIELDS = ['inputSchema', 'outputSchema', 'crossReferences', 'examples'];
 
 export function validateManifest(manifestPath: string, skillName: string): ValidationError[] {
   const errors: ValidationError[] = [];
@@ -33,15 +33,15 @@ export function validateManifest(manifestPath: string, skillName: string): Valid
   if (!existsSync(manifestPath)) {
     errors.push({
       skill: skillName,
-      field: "manifest.json",
-      message: "manifest.json no existe",
-      severity: "error"
+      field: 'manifest.json',
+      message: 'manifest.json no existe',
+      severity: 'error',
     });
     return errors;
   }
 
   try {
-    const manifest = JSON.parse(readFileSync(manifestPath, "utf-8"));
+    const manifest = JSON.parse(readFileSync(manifestPath, 'utf-8'));
 
     for (const field of REQUIRED_MANIFEST_FIELDS) {
       if (!manifest[field]) {
@@ -49,7 +49,7 @@ export function validateManifest(manifestPath: string, skillName: string): Valid
           skill: skillName,
           field,
           message: `Campo requerido '${field}' falta en manifest.json`,
-          severity: "error"
+          severity: 'error',
         });
       }
     }
@@ -60,7 +60,7 @@ export function validateManifest(manifestPath: string, skillName: string): Valid
           skill: skillName,
           field,
           message: `Campo sugerido '${field}' no presente`,
-          severity: "warning"
+          severity: 'warning',
         });
       }
     }
@@ -68,45 +68,44 @@ export function validateManifest(manifestPath: string, skillName: string): Valid
     if (manifest.triggers && !Array.isArray(manifest.triggers)) {
       errors.push({
         skill: skillName,
-        field: "triggers",
-        message: "triggers debe ser un array",
-        severity: "error"
+        field: 'triggers',
+        message: 'triggers debe ser un array',
+        severity: 'error',
       });
     }
 
     if (manifest.triggers && manifest.triggers.length < 3) {
       errors.push({
         skill: skillName,
-        field: "triggers",
+        field: 'triggers',
         message: `Solo ${manifest.triggers.length} triggers — mínimo recomendado: 5`,
-        severity: "warning"
+        severity: 'warning',
       });
     }
 
     if (manifest.crossReferences && !Array.isArray(manifest.crossReferences)) {
       errors.push({
         skill: skillName,
-        field: "crossReferences",
-        message: "crossReferences debe ser un array",
-        severity: "error"
+        field: 'crossReferences',
+        message: 'crossReferences debe ser un array',
+        severity: 'error',
       });
     }
 
     if (manifest.examples && !Array.isArray(manifest.examples)) {
       errors.push({
         skill: skillName,
-        field: "examples",
-        message: "examples debe ser un array",
-        severity: "error"
+        field: 'examples',
+        message: 'examples debe ser un array',
+        severity: 'error',
       });
     }
-
   } catch (e) {
     errors.push({
       skill: skillName,
-      field: "manifest.json",
+      field: 'manifest.json',
       message: `JSON inválido: ${e instanceof Error ? e.message : String(e)}`,
-      severity: "error"
+      severity: 'error',
     });
   }
 
@@ -119,42 +118,42 @@ export function validateSkillMd(mdPath: string, skillName: string): ValidationEr
   if (!existsSync(mdPath)) {
     errors.push({
       skill: skillName,
-      field: "SKILL.md",
-      message: "SKILL.md no existe",
-      severity: "error"
+      field: 'SKILL.md',
+      message: 'SKILL.md no existe',
+      severity: 'error',
     });
     return errors;
   }
 
-  const content = readFileSync(mdPath, "utf-8");
+  const content = readFileSync(mdPath, 'utf-8');
 
   if (content.length < 200) {
     errors.push({
       skill: skillName,
-      field: "SKILL.md",
-      message: "SKILL.md muy corto (<200 chars)",
-      severity: "warning"
+      field: 'SKILL.md',
+      message: 'SKILL.md muy corto (<200 chars)',
+      severity: 'warning',
     });
   }
 
-  const requiredSections = ["Cuándo usar", "Reglas"];
+  const requiredSections = ['Cuándo usar', 'Reglas'];
   for (const section of requiredSections) {
     if (!content.includes(section)) {
       errors.push({
         skill: skillName,
-        field: "SKILL.md",
+        field: 'SKILL.md',
         message: `Sección '${section}' no encontrada`,
-        severity: "warning"
+        severity: 'warning',
       });
     }
   }
 
-  if (!content.includes("> **Triggers:**")) {
+  if (!content.includes('> **Triggers:**')) {
     errors.push({
       skill: skillName,
-      field: "SKILL.md",
-      message: "Encabezado con triggers no encontrado (formato: > **Triggers:** ...)",
-      severity: "warning"
+      field: 'SKILL.md',
+      message: 'Encabezado con triggers no encontrado (formato: > **Triggers:** ...)',
+      severity: 'warning',
     });
   }
 
@@ -176,9 +175,9 @@ export function validateCrossReferences(
     if (!allSkills.includes(ref)) {
       errors.push({
         skill: skillName,
-        field: "crossReferences",
+        field: 'crossReferences',
         message: `Referencia '${ref}' no existe en el índice de skills`,
-        severity: "error"
+        severity: 'error',
       });
     }
   }
@@ -195,10 +194,10 @@ export function validateAllSkills(skillsRoot: string, indexPath?: string): Valid
   let allSkillNames: string[] = [];
   if (indexPath && existsSync(indexPath)) {
     try {
-      const index = JSON.parse(readFileSync(indexPath, "utf-8"));
+      const index = JSON.parse(readFileSync(indexPath, 'utf-8'));
       allSkillNames = index.skills?.map((s: { name: string }) => s.name) || [];
     } catch {
-      suggestions.push("No se pudo leer skills/index.json");
+      suggestions.push('No se pudo leer skills/index.json');
     }
   }
 
@@ -206,9 +205,16 @@ export function validateAllSkills(skillsRoot: string, indexPath?: string): Valid
     return {
       ok: false,
       skills: [],
-      errors: [{ skill: "", field: "", message: `Skills root no existe: ${skillsRoot}`, severity: "error" }],
+      errors: [
+        {
+          skill: '',
+          field: '',
+          message: `Skills root no existe: ${skillsRoot}`,
+          severity: 'error',
+        },
+      ],
       warnings: [],
-      suggestions: []
+      suggestions: [],
     };
   }
 
@@ -219,20 +225,20 @@ export function validateAllSkills(skillsRoot: string, indexPath?: string): Valid
 
     skills.push(name);
 
-    const manifestPath = join(dir, "manifest.json");
-    const mdPath = join(dir, "SKILL.md");
+    const manifestPath = join(dir, 'manifest.json');
+    const mdPath = join(dir, 'SKILL.md');
 
     const manifestErrors = validateManifest(manifestPath, name);
     const mdErrors = validateSkillMd(mdPath, name);
 
     for (const e of [...manifestErrors, ...mdErrors]) {
-      if (e.severity === "error") errors.push(e);
+      if (e.severity === 'error') errors.push(e);
       else warnings.push(e);
     }
 
     if (existsSync(manifestPath)) {
       try {
-        const manifest = JSON.parse(readFileSync(manifestPath, "utf-8"));
+        const manifest = JSON.parse(readFileSync(manifestPath, 'utf-8'));
         const refErrors = validateCrossReferences(manifest, allSkillNames, name);
         errors.push(...refErrors);
       } catch {}
@@ -248,19 +254,19 @@ export function validateAllSkills(skillsRoot: string, indexPath?: string): Valid
     skills,
     errors,
     warnings,
-    suggestions
+    suggestions,
   };
 }
 
 export function generateReport(result: ValidationResult): string {
   const lines: string[] = [];
 
-  lines.push("\n" + "═".repeat(60));
-  lines.push("REPORTE DE VALIDACIÓN DE SKILLS");
-  lines.push("═".repeat(60));
+  lines.push('\n' + '═'.repeat(60));
+  lines.push('REPORTE DE VALIDACIÓN DE SKILLS');
+  lines.push('═'.repeat(60));
 
   lines.push(`\n📦 Skills encontrados: ${result.skills.length}`);
-  lines.push(`✅ Estado: ${result.ok ? "VÁLIDO" : "CON ERRORES"}`);
+  lines.push(`✅ Estado: ${result.ok ? 'VÁLIDO' : 'CON ERRORES'}`);
 
   if (result.errors.length > 0) {
     lines.push(`\n❌ Errores (${result.errors.length}):`);
@@ -283,15 +289,15 @@ export function generateReport(result: ValidationResult): string {
     }
   }
 
-  lines.push("\n" + "═".repeat(60));
+  lines.push('\n' + '═'.repeat(60));
 
-  return lines.join("\n");
+  return lines.join('\n');
 }
 
 // CLI
-if (import.meta.url.endsWith(process.argv[1]?.replace(/^file:\/\//, "") || "")) {
-  const skillsRoot = join(__dirname, "..", "..", "..", "skills", "user");
-  const indexPath = join(__dirname, "..", "..", "..", "skills", "index.json");
+if (import.meta.url.endsWith(process.argv[1]?.replace(/^file:\/\//, '') || '')) {
+  const skillsRoot = join(__dirname, '..', '..', '..', 'skills', 'user');
+  const indexPath = join(__dirname, '..', '..', '..', 'skills', 'index.json');
 
   const result = validateAllSkills(skillsRoot, indexPath);
   console.log(generateReport(result));

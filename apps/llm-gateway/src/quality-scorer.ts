@@ -1,4 +1,4 @@
-import { llmCallDirect } from "./llm-direct.js";
+import { llmCallDirect } from './llm-direct.js';
 
 export interface QualityScoreResult {
   score: number;
@@ -9,7 +9,7 @@ export async function scoreQuality(
   tenant_slug: string,
   originalRequest: string,
   constraintsSummary: string,
-  responseContent: string,
+  responseContent: string
 ): Promise<QualityScoreResult> {
   const prompt = `Eres un auditor de calidad de respuestas de LLM para un equipo de ingeniería.
 
@@ -38,21 +38,21 @@ ${responseContent.slice(0, 8000)}
   try {
     const res = await llmCallDirect({
       tenant_slug,
-      model: "haiku",
+      model: 'haiku',
       temperature: 0,
       cache: false,
       skip_usage_log: true,
-      messages: [{ role: "user", content: prompt }],
+      messages: [{ role: 'user', content: prompt }],
     });
-    const clean = res.content.replace(/```json|```/g, "").trim();
+    const clean = res.content.replace(/```json|```/g, '').trim();
     const parsed = JSON.parse(clean) as { score?: number; breakdown?: string };
     const s = Number(parsed.score);
     const score = Number.isFinite(s) ? Math.min(100, Math.max(0, Math.round(s))) : 65;
     return {
       score,
-      breakdown: String(parsed.breakdown ?? "").slice(0, 500),
+      breakdown: String(parsed.breakdown ?? '').slice(0, 500),
     };
   } catch {
-    return { score: 70, breakdown: "fallback (scorer error)" };
+    return { score: 70, breakdown: 'fallback (scorer error)' };
   }
 }

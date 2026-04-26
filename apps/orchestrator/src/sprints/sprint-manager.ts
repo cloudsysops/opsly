@@ -1,16 +1,16 @@
-import { createDefaultToolRegistry } from "../agents/tools/registry.js";
-import { buildPlannerContextSnapshot } from "../planner-map.js";
-import { executeRemotePlanner } from "../planner-client.js";
-import type { IntentRequest, PlannerAction } from "../types.js";
-import { fetchSprintById, insertSprint, updateSprint } from "./sprint-repository.js";
-import type { SprintRow, SprintStepJson } from "./sprint-types.js";
+import { createDefaultToolRegistry } from '../agents/tools/registry.js';
+import { buildPlannerContextSnapshot } from '../planner-map.js';
+import { executeRemotePlanner } from '../planner-client.js';
+import type { IntentRequest, PlannerAction } from '../types.js';
+import { fetchSprintById, insertSprint, updateSprint } from './sprint-repository.js';
+import type { SprintRow, SprintStepJson } from './sprint-types.js';
 
 export type CreateSprintParams = {
   readonly tenantId: string;
   readonly tenantSlug: string;
   readonly goal: string;
   readonly requestId: string;
-  readonly plan?: IntentRequest["plan"];
+  readonly plan?: IntentRequest['plan'];
   readonly intentRequest: IntentRequest;
 };
 
@@ -20,18 +20,18 @@ function actionsToSteps(actions: PlannerAction[]): SprintStepJson[] {
     description: `${a.tool}: ${JSON.stringify(a.params)}`,
     tool_name: a.tool,
     params: a.params,
-    status: "pending" as const,
+    status: 'pending' as const,
   }));
 }
 
 function fallbackSteps(): SprintStepJson[] {
   return [
     {
-      id: "step-1",
-      description: "dummy_square: validación mínima del pipeline",
-      tool_name: "dummy_square",
+      id: 'step-1',
+      description: 'dummy_square: validación mínima del pipeline',
+      tool_name: 'dummy_square',
       params: { value: 2 },
-      status: "pending",
+      status: 'pending',
     },
   ];
 }
@@ -49,10 +49,10 @@ export class SprintManager {
         ...snapshot,
         sprint_goal: params.goal,
         instruction:
-          "Genera un plan LINEAL corto (máx. 6 acciones). Cada acción usa exactamente un nombre de herramienta de la lista.",
+          'Genera un plan LINEAL corto (máx. 6 acciones). Cada acción usa exactamente un nombre de herramienta de la lista.',
       },
       null,
-      2,
+      2
     );
 
     const gw = await executeRemotePlanner(contextStr, tools, {
@@ -62,14 +62,12 @@ export class SprintManager {
     });
 
     const steps =
-      gw.planner.actions.length > 0
-        ? actionsToSteps(gw.planner.actions)
-        : fallbackSteps();
+      gw.planner.actions.length > 0 ? actionsToSteps(gw.planner.actions) : fallbackSteps();
 
     const { id } = await insertSprint({
       tenantId: params.tenantId,
       goal: params.goal,
-      status: "planning",
+      status: 'planning',
       steps,
     });
 
@@ -85,7 +83,7 @@ export class SprintManager {
     const toolRegistry = createDefaultToolRegistry();
     let steps: SprintStepJson[] = [...row.steps];
 
-    await updateSprint(sprintId, { status: "running", steps });
+    await updateSprint(sprintId, { status: 'running', steps });
 
     for (let i = 0; i < steps.length; i++) {
       const step = steps[i];
@@ -93,17 +91,17 @@ export class SprintManager {
         continue;
       }
 
-      steps[i] = { ...step, status: "running" };
-      await updateSprint(sprintId, { steps, status: "running" });
+      steps[i] = { ...step, status: 'running' };
+      await updateSprint(sprintId, { steps, status: 'running' });
 
       const tool = toolRegistry.get(step.tool_name);
       if (!tool) {
         steps[i] = {
           ...step,
-          status: "failed",
-          output: { ok: false, error: "unknown_tool" },
+          status: 'failed',
+          output: { ok: false, error: 'unknown_tool' },
         };
-        await updateSprint(sprintId, { steps, status: "failed" });
+        await updateSprint(sprintId, { steps, status: 'failed' });
         return;
       }
 
@@ -111,25 +109,25 @@ export class SprintManager {
         const out = await tool.execute(step.params);
         steps[i] = {
           ...step,
-          status: "done",
+          status: 'done',
           output: out,
         };
-        await updateSprint(sprintId, { steps, status: "running" });
+        await updateSprint(sprintId, { steps, status: 'running' });
       } catch (err) {
         steps[i] = {
           ...step,
-          status: "failed",
+          status: 'failed',
           output: {
             ok: false,
             error: err instanceof Error ? err.message : String(err),
           },
         };
-        await updateSprint(sprintId, { steps, status: "failed" });
+        await updateSprint(sprintId, { steps, status: 'failed' });
         return;
       }
     }
 
-    await updateSprint(sprintId, { status: "completed", steps });
+    await updateSprint(sprintId, { status: 'completed', steps });
   }
 }
 

@@ -3,11 +3,11 @@ export async function GET(): Promise<Response> {
 
   return Response.json(
     {
-      status: "ok",
-      app: "admin",
+      status: 'ok',
+      app: 'admin',
       timestamp,
-      version: process.env.NEXT_PUBLIC_APP_VERSION || "unknown",
+      version: process.env.NEXT_PUBLIC_APP_VERSION || 'unknown',
     },
-    { status: 200 },
+    { status: 200 }
   );
 }

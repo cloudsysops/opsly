@@ -1,7 +1,7 @@
-import { spawn } from "node:child_process";
-import { existsSync } from "node:fs";
-import path from "node:path";
-import { z } from "zod";
+import { spawn } from 'node:child_process';
+import { existsSync } from 'node:fs';
+import path from 'node:path';
+import { z } from 'zod';
 
 const OutputSchema = z.object({
   category: z.string(),
@@ -25,15 +25,15 @@ export interface TaskCategoryOutput {
 
 function classifierAgentDir(): string {
   const fromEnv = process.env.OPSLY_CLASSIFIER_HOME;
-  if (fromEnv && existsSync(path.join(fromEnv, "infer.py"))) {
+  if (fromEnv && existsSync(path.join(fromEnv, 'infer.py'))) {
     return fromEnv;
   }
   const candidates = [
-    path.join(process.cwd(), "apps", "ml", "agents", "classifier"),
-    path.join(process.cwd(), "agents", "classifier"),
+    path.join(process.cwd(), 'apps', 'ml', 'agents', 'classifier'),
+    path.join(process.cwd(), 'agents', 'classifier'),
   ];
   for (const c of candidates) {
-    if (existsSync(path.join(c, "infer.py"))) {
+    if (existsSync(path.join(c, 'infer.py'))) {
       return c;
     }
   }
@@ -42,11 +42,11 @@ function classifierAgentDir(): string {
 
 function assertAllowedTenant(slug: string): void {
   const raw = process.env.OPSLY_CLASSIFIER_ALLOWED_TENANTS;
-  if (raw === undefined || raw.trim() === "") {
+  if (raw === undefined || raw.trim() === '') {
     return;
   }
   const allowed = raw
-    .split(",")
+    .split(',')
     .map((s) => s.trim())
     .filter((s) => s.length > 0);
   if (!allowed.includes(slug)) {
@@ -70,14 +70,12 @@ function parseStdout(stdout: string): TaskCategoryOutput {
  * Clasifica texto de tarea usando el modelo sklearn en `agents/classifier/models/model.pkl`.
  * Requiere `python3`, dependencias (`pip install -r requirements.txt`) y haber ejecutado `train.py`.
  */
-export async function classifyTaskCategory(
-  input: TaskCategoryInput
-): Promise<TaskCategoryOutput> {
+export async function classifyTaskCategory(input: TaskCategoryInput): Promise<TaskCategoryOutput> {
   assertAllowedTenant(input.tenantSlug);
 
   const dir = classifierAgentDir();
-  const inferScript = path.join(dir, "infer.py");
-  const py = process.env.OPSLY_CLASSIFIER_PYTHON ?? "python3";
+  const inferScript = path.join(dir, 'infer.py');
+  const py = process.env.OPSLY_CLASSIFIER_PYTHON ?? 'python3';
 
   const payload = JSON.stringify({
     taskDescription: input.taskDescription,
@@ -87,37 +85,35 @@ export async function classifyTaskCategory(
   return await new Promise((resolve, reject) => {
     const child = spawn(py, [inferScript], {
       cwd: dir,
-      stdio: ["pipe", "pipe", "pipe"],
+      stdio: ['pipe', 'pipe', 'pipe'],
     });
 
-    let stdout = "";
-    let stderr = "";
+    let stdout = '';
+    let stderr = '';
 
-    child.stdout?.on("data", (chunk: Buffer) => {
-      stdout += chunk.toString("utf-8");
+    child.stdout?.on('data', (chunk: Buffer) => {
+      stdout += chunk.toString('utf-8');
     });
-    child.stderr?.on("data", (chunk: Buffer) => {
-      stderr += chunk.toString("utf-8");
+    child.stderr?.on('data', (chunk: Buffer) => {
+      stderr += chunk.toString('utf-8');
     });
 
-    const timeoutMs = Number(process.env.OPSLY_CLASSIFIER_TIMEOUT_MS ?? "15000");
+    const timeoutMs = Number(process.env.OPSLY_CLASSIFIER_TIMEOUT_MS ?? '15000');
     const timer = setTimeout(() => {
-      child.kill("SIGTERM");
+      child.kill('SIGTERM');
       reject(new Error(`classifier infer timeout after ${timeoutMs}ms`));
     }, timeoutMs);
 
-    child.on("error", (err) => {
+    child.on('error', (err) => {
       clearTimeout(timer);
       reject(err);
     });
 
-    child.on("close", (code) => {
+    child.on('close', (code) => {
       clearTimeout(timer);
       if (code !== 0) {
         reject(
-          new Error(
-            stderr.trim() || `classifier infer exited with code ${code ?? "unknown"}`
-          )
+          new Error(stderr.trim() || `classifier infer exited with code ${code ?? 'unknown'}`)
         );
         return;
       }
@@ -128,7 +124,7 @@ export async function classifyTaskCategory(
       }
     });
 
-    child.stdin?.write(payload, "utf-8");
+    child.stdin?.write(payload, 'utf-8');
     child.stdin?.end();
   });
 }

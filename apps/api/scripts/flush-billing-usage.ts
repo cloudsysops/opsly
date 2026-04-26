@@ -4,7 +4,7 @@
  *
  * Ejecutar: `npm run flush-billing --workspace=@intcloudsysops/api`
  */
-import { runFlushBillingUsage } from "../lib/billing/flush-billing-usage";
+import { runFlushBillingUsage } from '../lib/billing/flush-billing-usage';
 
 async function main(): Promise<void> {
   const result = await runFlushBillingUsage();

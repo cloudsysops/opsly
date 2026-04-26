@@ -1,4 +1,4 @@
-import type { BudgetAlertLevel } from "./billing/budget-thresholds";
+import type { BudgetAlertLevel } from './billing/budget-thresholds';
 
 /** Vista admin: gasto LLM del mes vs límite (USD), sin wallet prepago. */
 export type TenantBudgetSnapshot = {

@@ -16,13 +16,13 @@ Usuario Linux típico: **`opslyquantum`**. IP de referencia Tailscale: **`100.80
 
 ## Checklist previo
 
-| Paso | Comando / acción |
-|------|------------------|
-| Tailscale | `tailscale status` — debe verse el worker |
-| Repo | `~/opsly` o `~/proyectos/intcloudsysops` con `git pull --ff-only` y `npm ci` |
-| Node | Alineado al monorepo (ver `.nvmrc` / `docs/WORKER-SETUP-MAC2011.md`) |
-| Redis | Misma **`REDIS_URL`** que Doppler `ops-intcloudsysops` / `prd` (el worker debe alcanzar Redis del VPS por red/Tailscale; no pegues la URL en chats) |
-| VPS | Con **`OPSLY_ORCHESTRATOR_MODE=queue-only`** (o `OPSLY_ORCHESTRATOR_ROLE=control`) para no duplicar workers en el mismo Redis |
+| Paso      | Comando / acción                                                                                                                                    |
+| --------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Tailscale | `tailscale status` — debe verse el worker                                                                                                           |
+| Repo      | `~/opsly` o `~/proyectos/intcloudsysops` con `git pull --ff-only` y `npm ci`                                                                        |
+| Node      | Alineado al monorepo (ver `.nvmrc` / `docs/WORKER-SETUP-MAC2011.md`)                                                                                |
+| Redis     | Misma **`REDIS_URL`** que Doppler `ops-intcloudsysops` / `prd` (el worker debe alcanzar Redis del VPS por red/Tailscale; no pegues la URL en chats) |
+| VPS       | Con **`OPSLY_ORCHESTRATOR_MODE=queue-only`** (o `OPSLY_ORCHESTRATOR_ROLE=control`) para no duplicar workers en el mismo Redis                       |
 
 ## 1. Variables en el worker
 
@@ -109,9 +109,9 @@ Tip: usa `--dry-run` para revisar payloads antes de encolar.
 
 ## Referencias rápidas
 
-| Tema | Doc |
-|------|-----|
-| Redis + roles control/worker | [`ARCHITECTURE-DISTRIBUTED.md`](ARCHITECTURE-DISTRIBUTED.md) |
-| Cola, jobs, prioridades | [`ORCHESTRATOR.md`](ORCHESTRATOR.md) |
-| MCP / tools (otro frente OpenClaw) | [`QUICKSTART-AGENTS.md`](QUICKSTART-AGENTS.md) |
-| ADR Ollama worker | [`adr/ADR-024-ollama-local-worker-primary.md`](adr/ADR-024-ollama-local-worker-primary.md) |
+| Tema                               | Doc                                                                                        |
+| ---------------------------------- | ------------------------------------------------------------------------------------------ |
+| Redis + roles control/worker       | [`ARCHITECTURE-DISTRIBUTED.md`](ARCHITECTURE-DISTRIBUTED.md)                               |
+| Cola, jobs, prioridades            | [`ORCHESTRATOR.md`](ORCHESTRATOR.md)                                                       |
+| MCP / tools (otro frente OpenClaw) | [`QUICKSTART-AGENTS.md`](QUICKSTART-AGENTS.md)                                             |
+| ADR Ollama worker                  | [`adr/ADR-024-ollama-local-worker-primary.md`](adr/ADR-024-ollama-local-worker-primary.md) |

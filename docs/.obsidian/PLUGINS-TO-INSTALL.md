@@ -5,6 +5,7 @@ These plugins enhance Obsidian sync + productivity. Install via Obsidian UI.
 ## Essential (Required for Auto-Sync)
 
 ### Obsidian Git (by Vinzent03)
+
 - **Purpose:** Auto-commit + push changes to GitHub
 - **Install:** Settings → Community plugins → Browse → Search "Obsidian Git" → Install → Enable
 - **Configure:**
@@ -17,13 +18,16 @@ These plugins enhance Obsidian sync + productivity. Install via Obsidian UI.
 ## Optional (Nice to Have)
 
 ### Dataview
+
 - Query .md files as databases
 - Show backlinks in a table
 
 ### Templater
+
 - Advanced template variables with date/time formatting
 
 ### Excalidraw
+
 - Whiteboard diagrams embedded in notes
 - Good for architecture sketches
 
@@ -42,6 +46,7 @@ These plugins enhance Obsidian sync + productivity. Install via Obsidian UI.
 ## Testing Auto-Sync (Obsidian Git)
 
 After installing:
+
 1. Edit any .md file in Obsidian
 2. Press Cmd+S (Mac) / Ctrl+S (Windows)
 3. Wait 5–10 seconds

@@ -2,11 +2,11 @@
  * Consulta estado de un job BullMQ en la cola `openclaw` (p. ej. tras `run_agent_task`).
  */
 
-import { Queue } from "bullmq";
-import { z } from "zod";
+import { Queue } from 'bullmq';
+import { z } from 'zod';
 
-import { getOpenclawQueueConnection } from "../lib/redis-queue.js";
-import type { ToolDefinition } from "../types/index.js";
+import { getOpenclawQueueConnection } from '../lib/redis-queue.js';
+import type { ToolDefinition } from '../types/index.js';
 
 const getJobStatusInputSchema = z.object({
   jobId: z.string().min(1),
@@ -41,27 +41,27 @@ export type GetJobStatusOutput =
     };
 
 function normalizeProgress(progress: unknown): number {
-  if (typeof progress === "number" && Number.isFinite(progress)) {
+  if (typeof progress === 'number' && Number.isFinite(progress)) {
     return Math.min(100, Math.max(0, progress));
   }
   return 0;
 }
 
 export const getJobStatusTool: ToolDefinition<GetJobStatusInput, GetJobStatusOutput> = {
-  name: "get_job_status",
+  name: 'get_job_status',
   description:
-    "Consulta el estado de un trabajo de agente disparado previamente. Devuelve el progreso, resultado final o errores.",
+    'Consulta el estado de un trabajo de agente disparado previamente. Devuelve el progreso, resultado final o errores.',
   inputSchema: getJobStatusInputSchema,
   handler: async (input): Promise<GetJobStatusOutput> => {
     const conn = getOpenclawQueueConnection();
     if (conn === null) {
       return {
         success: false,
-        error: "Redis no configurado (REDIS_URL). No se puede consultar el estado del job.",
+        error: 'Redis no configurado (REDIS_URL). No se puede consultar el estado del job.',
       };
     }
 
-    const queue = new Queue("openclaw", { connection: conn });
+    const queue = new Queue('openclaw', { connection: conn });
     try {
       const job = await queue.getJob(input.jobId);
       if (job === undefined) {
@@ -69,7 +69,8 @@ export const getJobStatusTool: ToolDefinition<GetJobStatusInput, GetJobStatusOut
           success: true,
           found: false,
           jobId: input.jobId,
-          message: "No existe un job con ese id en la cola openclaw (o ya expiró por removeOnComplete/removeOnFail).",
+          message:
+            'No existe un job con ese id en la cola openclaw (o ya expiró por removeOnComplete/removeOnFail).',
         };
       }
 
@@ -77,7 +78,7 @@ export const getJobStatusTool: ToolDefinition<GetJobStatusInput, GetJobStatusOut
       return {
         success: true,
         found: true,
-        id: String(job.id ?? ""),
+        id: String(job.id ?? ''),
         state,
         progress: normalizeProgress(job.progress),
         returnvalue: job.returnvalue ?? null,

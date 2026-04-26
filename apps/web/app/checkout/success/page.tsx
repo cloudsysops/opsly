@@ -1,7 +1,7 @@
-import Link from "next/link";
+import Link from 'next/link';
 
 export const metadata = {
-  title: "¡Bienvenido a Opsly! — Tu workspace está siendo preparado",
+  title: '¡Bienvenido a Opsly! — Tu workspace está siendo preparado',
 };
 
 export default function CheckoutSuccessPage() {
@@ -15,33 +15,30 @@ export default function CheckoutSuccessPage() {
       <div className="max-w-lg w-full text-center">
         <div className="text-6xl mb-6">🎉</div>
 
-        <h1 className="text-4xl font-extrabold mb-4">
-          ¡Pago completado!
-        </h1>
+        <h1 className="text-4xl font-extrabold mb-4">¡Pago completado!</h1>
 
         <p className="text-white/60 text-lg mb-8 leading-relaxed">
-          Estamos preparando tu workspace. Recibirás un email con tus
-          credenciales de acceso en los próximos{" "}
-          <strong className="text-white">5 minutos</strong>.
+          Estamos preparando tu workspace. Recibirás un email con tus credenciales de acceso en los
+          próximos <strong className="text-white">5 minutos</strong>.
         </p>
 
         <div className="bg-[#111] border border-white/10 rounded-2xl p-6 text-left mb-8 space-y-3">
           <h2 className="font-semibold text-white mb-4">¿Qué pasa ahora?</h2>
           {[
             {
-              step: "1",
-              title: "Desplegamos tu stack",
-              body: "n8n + Uptime Kuma en tu VPS dedicado, con TLS automático.",
+              step: '1',
+              title: 'Desplegamos tu stack',
+              body: 'n8n + Uptime Kuma en tu VPS dedicado, con TLS automático.',
             },
             {
-              step: "2",
-              title: "Te enviamos el email",
-              body: "Recibirás un enlace de activación para configurar tu contraseña.",
+              step: '2',
+              title: 'Te enviamos el email',
+              body: 'Recibirás un enlace de activación para configurar tu contraseña.',
             },
             {
-              step: "3",
-              title: "Accedes a tu portal",
-              body: "Dashboard con todas tus herramientas listas para automatizar.",
+              step: '3',
+              title: 'Accedes a tu portal',
+              body: 'Dashboard con todas tus herramientas listas para automatizar.',
             },
           ].map(({ step, title, body }) => (
             <div key={step} className="flex gap-4">
@@ -57,7 +54,7 @@ export default function CheckoutSuccessPage() {
         </div>
 
         <p className="text-white/40 text-sm mb-8">
-          ¿No recibes el email en 10 minutos?{" "}
+          ¿No recibes el email en 10 minutos?{' '}
           <a
             href="mailto:soporte@opsly.io"
             className="text-violet-400 hover:text-violet-300 underline"
@@ -67,10 +64,7 @@ export default function CheckoutSuccessPage() {
           .
         </p>
 
-        <Link
-          href="/"
-          className="text-white/40 hover:text-white/60 text-sm transition-colors"
-        >
+        <Link href="/" className="text-white/40 hover:text-white/60 text-sm transition-colors">
           ← Volver al inicio
         </Link>
       </div>

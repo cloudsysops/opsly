@@ -6,7 +6,10 @@
     "type": "object",
     "properties": {
       "intent": { "type": "string", "description": "Qué debería hacer la skill" },
-      "source": { "type": "string", "description": "De dónde viene la idea: conversation, qa-audit, agent-discovery, user-request" },
+      "source": {
+        "type": "string",
+        "description": "De dónde viene la idea: conversation, qa-audit, agent-discovery, user-request"
+      },
       "existingSkill": { "type": "string", "description": "Nombre de skill existente si es mejora" }
     },
     "additionalProperties": true

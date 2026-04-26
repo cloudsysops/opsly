@@ -58,12 +58,7 @@
       }
     }
   ],
-  "autoImplementable": [
-    "typos UI",
-    "estilos menores",
-    "textos de botón/error",
-    "enlaces en docs"
-  ],
+  "autoImplementable": ["typos UI", "estilos menores", "textos de botón/error", "enlaces en docs"],
   "alwaysApproval": [
     "nuevas features",
     "lógica de negocio",

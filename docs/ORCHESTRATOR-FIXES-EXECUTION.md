@@ -2,7 +2,7 @@
 
 **Target:** Fix 3 critical issues + 4 important issues  
 **Time:** ~1.5 hours  
-**Verification:** All tests pass + type-check green  
+**Verification:** All tests pass + type-check green
 
 ---
 
@@ -31,6 +31,7 @@ npm run type-check -- --workspace=@intcloudsysops/orchestrator
 ```
 
 **Changes Applied:**
+
 - ✅ Added AbortController with 30s timeout
 - ✅ Added try-catch on JSON.parse
 - ✅ Added Zod validation schema (LLMMetricsSchema, PlannerActionSchema, etc.)
@@ -60,6 +61,7 @@ npm run type-check -- --workspace=@intcloudsysops/orchestrator
 ```
 
 **Visual Guide:**
+
 ```typescript
     case "notify":
       // ... return notify job ...
@@ -216,6 +218,7 @@ docker-compose -f infra/docker-compose.platform.yml config > /dev/null && echo "
 ```
 
 **Why healthcheck?**
+
 - Docker Compose can detect service failures
 - Orchestrator can check service health via Docker API
 - Helps with auto-recovery and alerting
@@ -358,15 +361,15 @@ ORCHESTRATOR_LLM_GATEWAY_URL=http://localhost:9999 npm run test -- __tests__/llm
 
 ## Time Estimate
 
-| Phase | Task | Time | Cumulative |
-|-------|------|------|-----------|
-| 1 | Fix timeout + validation | 10 min | 10 min |
-| 2 | Add default case | 2 min | 12 min |
-| 3 | Test + commit critical | 5 min | 17 min |
-| 4 | Fix engine.ts Map + Promise | 15 min | 32 min |
-| 5 | Add healthchecks | 10 min | 42 min |
-| 6 | Update logging | 15 min | 57 min |
-| 7 | Final tests + commit | 5 min | 62 min |
+| Phase | Task                        | Time   | Cumulative |
+| ----- | --------------------------- | ------ | ---------- |
+| 1     | Fix timeout + validation    | 10 min | 10 min     |
+| 2     | Add default case            | 2 min  | 12 min     |
+| 3     | Test + commit critical      | 5 min  | 17 min     |
+| 4     | Fix engine.ts Map + Promise | 15 min | 32 min     |
+| 5     | Add healthchecks            | 10 min | 42 min     |
+| 6     | Update logging              | 15 min | 57 min     |
+| 7     | Final tests + commit        | 5 min  | 62 min     |
 
 **Total:** ~1 hour (leaves 30 min buffer for debugging)
 
@@ -396,7 +399,6 @@ ORCHESTRATOR_LLM_GATEWAY_URL=http://localhost:9999 npm run test -- __tests__/llm
 ✅ Tests: 155/155 passing  
 ✅ ESLint: 0 warnings  
 ✅ 2 commits pushed to main  
-✅ Code review complete  
+✅ Code review complete
 
 **Estimated Readiness:** Ready for staging deployment after these fixes + manual integration testing
-

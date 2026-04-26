@@ -1,6 +1,6 @@
-import { createClient } from "redis";
+import { createClient } from 'redis';
 
-import type { BillingMetricType } from "./types";
+import type { BillingMetricType } from './types';
 
 type RedisClient = ReturnType<typeof createClient>;
 
@@ -24,14 +24,14 @@ export async function getMeteringRedis(): Promise<RedisClient | null> {
     connectPromise = (async (): Promise<RedisClient | null> => {
       try {
         const c = createClient({ url });
-        c.on("error", (err: Error) => {
-          console.error("[metering-redis]", err.message);
+        c.on('error', (err: Error) => {
+          console.error('[metering-redis]', err.message);
         });
         await c.connect();
         client = c;
         return c;
       } catch (e) {
-        console.error("[metering-redis] connect failed", e);
+        console.error('[metering-redis] connect failed', e);
         client = null;
         return null;
       } finally {
@@ -53,7 +53,7 @@ function usageKey(tenantId: string, metric: BillingMetricType): string {
 export async function incrementUsageCounter(
   tenantId: string,
   metric: BillingMetricType,
-  delta: number,
+  delta: number
 ): Promise<boolean> {
   if (!Number.isFinite(delta) || delta <= 0) {
     return true;
@@ -64,7 +64,7 @@ export async function incrementUsageCounter(
   }
   const key = usageKey(tenantId, metric);
   try {
-    if (metric === "ai_tokens") {
+    if (metric === 'ai_tokens') {
       const n = Math.round(delta);
       if (n <= 0) {
         return true;
@@ -75,7 +75,7 @@ export async function incrementUsageCounter(
     }
     return true;
   } catch (e) {
-    console.error("[metering-redis] incr failed", e);
+    console.error('[metering-redis] incr failed', e);
     return false;
   }
 }

@@ -1,7 +1,7 @@
 const QUERY_TIMEOUT_MS = 8_000;
 
 export type PromVectorResult = {
-  status: "success" | "error";
+  status: 'success' | 'error';
   data?: {
     resultType: string;
     result: Array<{
@@ -17,9 +17,9 @@ function parsePromJson(text: string): PromVectorResult | null {
     const parsed: unknown = JSON.parse(text);
     if (
       parsed === null ||
-      typeof parsed !== "object" ||
-      !("status" in parsed) ||
-      typeof (parsed as { status: unknown }).status !== "string"
+      typeof parsed !== 'object' ||
+      !('status' in parsed) ||
+      typeof (parsed as { status: unknown }).status !== 'string'
     ) {
       return null;
     }
@@ -32,9 +32,9 @@ function parsePromJson(text: string): PromVectorResult | null {
 /** Suma valores de un instant vector; si hay varias series, promedia (p. ej. CPU por core). */
 export function aggregateInstantVector(
   payload: PromVectorResult,
-  mode: "sum" | "avg",
+  mode: 'sum' | 'avg'
 ): number | null {
-  if (payload.status !== "success" || payload.data?.resultType !== "vector") {
+  if (payload.status !== 'success' || payload.data?.resultType !== 'vector') {
     return null;
   }
   const result = payload.data.result;
@@ -51,7 +51,7 @@ export function aggregateInstantVector(
   if (nums.length === 0) {
     return null;
   }
-  if (mode === "sum") {
+  if (mode === 'sum') {
     return nums.reduce((a, b) => a + b, 0);
   }
   return nums.reduce((a, b) => a + b, 0) / nums.length;
@@ -59,14 +59,14 @@ export function aggregateInstantVector(
 
 export async function promInstantQuery(
   baseUrl: string,
-  query: string,
+  query: string
 ): Promise<PromVectorResult | null> {
-  const trimmed = baseUrl.replace(/\/$/, "");
-  const url = new URL("/api/v1/query", `${trimmed}/`);
-  url.searchParams.set("query", query);
+  const trimmed = baseUrl.replace(/\/$/, '');
+  const url = new URL('/api/v1/query', `${trimmed}/`);
+  url.searchParams.set('query', query);
   try {
     const res = await fetch(url.toString(), {
-      cache: "no-store",
+      cache: 'no-store',
       signal: AbortSignal.timeout(QUERY_TIMEOUT_MS),
     });
     if (!res.ok) {
@@ -82,7 +82,7 @@ export async function promInstantQuery(
 export function getPrometheusBaseUrl(): string {
   const fromEnv = process.env.PROMETHEUS_BASE_URL;
   if (fromEnv && fromEnv.length > 0) {
-    return fromEnv.replace(/\/$/, "");
+    return fromEnv.replace(/\/$/, '');
   }
-  return "http://127.0.0.1:9090";
+  return 'http://127.0.0.1:9090';
 }

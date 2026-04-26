@@ -26,14 +26,15 @@ Next.js 15 · TypeScript · Tailwind · Supabase · Stripe · Docker Compose · 
 
 Todo el trabajo de agentes debe usar la arquitectura OpenClaw:
 
-| Componente | Puerto | Path |
-|------------|--------|------|
-| MCP Server | 3003 | `apps/mcp` |
-| Orchestrator | 3011 | `apps/orchestrator` |
-| LLM Gateway | 3010 | `apps/llm-gateway` |
-| Context Builder | 3012 | `apps/context-builder` |
+| Componente      | Puerto | Path                   |
+| --------------- | ------ | ---------------------- |
+| MCP Server      | 3003   | `apps/mcp`             |
+| Orchestrator    | 3011   | `apps/orchestrator`    |
+| LLM Gateway     | 3010   | `apps/llm-gateway`     |
+| Context Builder | 3012   | `apps/context-builder` |
 
 **Reglas OpenClaw:**
+
 - Todo tráfico IA pasa por LLM Gateway (no llamadas directas)
 - Jobs orchestrator: incluir `tenant_slug` y `request_id`
 - Prioridad BullMQ: Enterprise 0, Business 10000, Startup 50000
@@ -41,13 +42,13 @@ Todo el trabajo de agentes debe usar la arquitectura OpenClaw:
 
 ## Decisiones fijas (NO proponer alternativas)
 
-| Decisión | Valor |
-|----------|-------|
-| Orquestación | docker-compose por tenant |
-| DB | Supabase schema `platform` |
-| Proxy | Traefik v3 |
-| Secrets | Doppler `ops-intcloudsysops/prd` |
-| SSH | solo Tailscale `100.120.151.91` |
+| Decisión     | Valor                            |
+| ------------ | -------------------------------- |
+| Orquestación | docker-compose por tenant        |
+| DB           | Supabase schema `platform`       |
+| Proxy        | Traefik v3                       |
+| Secrets      | Doppler `ops-intcloudsysops/prd` |
+| SSH          | solo Tailscale `100.120.151.91`  |
 
 ## NO hacer
 
@@ -61,6 +62,7 @@ Todo el trabajo de agentes debe usar la arquitectura OpenClaw:
 ## Git workflow (obligatorio)
 
 **Tras completar cada tarea:**
+
 ```bash
 git add -A
 git commit -m "type(scope): descripción corta"
@@ -129,13 +131,13 @@ Toda ruta bajo `/api/portal/**` debe seguir este esquema. No instanciar Supabase
 
 ```typescript
 // app/api/portal/tenant/[slug]/mi-ruta/route.ts
-import { resolveTrustedPortalSession, tenantSlugMatchesSession } from "@/lib/portal-trusted-identity";
-import { HTTP_STATUS } from "@/lib/constants";
+import {
+  resolveTrustedPortalSession,
+  tenantSlugMatchesSession,
+} from '@/lib/portal-trusted-identity';
+import { HTTP_STATUS } from '@/lib/constants';
 
-export async function GET(
-  request: NextRequest,
-  context: { params: Promise<{ slug: string }> },
-) {
+export async function GET(request: NextRequest, context: { params: Promise<{ slug: string }> }) {
   // 1. Resolver sesión Zero-Trust (JWT → tenant → owner_email)
   const trusted = await resolveTrustedPortalSession(request);
   if (!trusted.ok) return trusted.response; // 401 / 403 / 404
@@ -143,7 +145,7 @@ export async function GET(
   // 2. Validar que el slug del path coincide con el tenant de la sesión
   const { slug } = await context.params;
   if (!tenantSlugMatchesSession(trusted.session, slug)) {
-    return Response.json({ error: "Forbidden" }, { status: HTTP_STATUS.FORBIDDEN });
+    return Response.json({ error: 'Forbidden' }, { status: HTTP_STATUS.FORBIDDEN });
   }
 
   // 3. Lógica — delegar a lib/ (helper JSON compartido o repositorio)
@@ -248,43 +250,44 @@ git config core.hooksPath .githooks
 
 ```typescript
 // __tests__/mi-ruta.test.ts
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { NextRequest } from "next/server";
-import { GET } from "../app/api/portal/tenant/[slug]/mi-ruta/route";
-import * as supabaseMod from "../lib/supabase";
-import * as identityMod from "../lib/portal-trusted-identity";
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { NextRequest } from 'next/server';
+import { GET } from '../app/api/portal/tenant/[slug]/mi-ruta/route';
+import * as supabaseMod from '../lib/supabase';
+import * as identityMod from '../lib/portal-trusted-identity';
 
 // Mockear módulos antes de importar el handler
-vi.mock("../lib/supabase", () => ({ getServiceClient: vi.fn() }));
-vi.mock("../lib/portal-trusted-identity", () => ({
+vi.mock('../lib/supabase', () => ({ getServiceClient: vi.fn() }));
+vi.mock('../lib/portal-trusted-identity', () => ({
   resolveTrustedPortalSession: vi.fn(),
   tenantSlugMatchesSession: vi.fn(),
 }));
 
-function makeReq(token = "Bearer test-token") {
-  return new NextRequest("http://localhost/api/portal/tenant/acme/mi-ruta", {
+function makeReq(token = 'Bearer test-token') {
+  return new NextRequest('http://localhost/api/portal/tenant/acme/mi-ruta', {
     headers: { Authorization: token },
   });
 }
 
-describe("GET /api/portal/tenant/[slug]/mi-ruta", () => {
+describe('GET /api/portal/tenant/[slug]/mi-ruta', () => {
   beforeEach(() => vi.clearAllMocks());
 
-  it("returns 401 when no session", async () => {
+  it('returns 401 when no session', async () => {
     vi.mocked(identityMod.resolveTrustedPortalSession).mockResolvedValue({
       ok: false,
-      response: Response.json({ error: "Unauthorized" }, { status: 401 }),
+      response: Response.json({ error: 'Unauthorized' }, { status: 401 }),
     });
-    const res = await GET(makeReq(), { params: Promise.resolve({ slug: "acme" }) });
+    const res = await GET(makeReq(), { params: Promise.resolve({ slug: 'acme' }) });
     expect(res.status).toBe(401);
   });
 
-  it("returns 403 when slug mismatch", async () => {
+  it('returns 403 when slug mismatch', async () => {
     vi.mocked(identityMod.resolveTrustedPortalSession).mockResolvedValue({
-      ok: true, session: { user: { email: "a@acme.com" }, tenant: { slug: "other" } } as any,
+      ok: true,
+      session: { user: { email: 'a@acme.com' }, tenant: { slug: 'other' } } as any,
     });
     vi.mocked(identityMod.tenantSlugMatchesSession).mockReturnValue(false);
-    const res = await GET(makeReq(), { params: Promise.resolve({ slug: "acme" }) });
+    const res = await GET(makeReq(), { params: Promise.resolve({ slug: 'acme' }) });
     expect(res.status).toBe(403);
   });
 });
@@ -307,10 +310,10 @@ npm run validate-openapi          # Valida openapi-opsly-api.yaml: paths, estruc
 
 > **Regla de oro:** el SSH al VPS va **SIEMPRE** por Tailscale. Nunca usar la IP pública `157.245.223.7` para conectarse.
 
-| Propósito | Dirección | Nota |
-|-----------|-----------|------|
-| SSH / admin | `vps-dragon@100.120.151.91` | Tailscale VPN — única vía válida |
-| HTTP/HTTPS público | `157.245.223.7` (detrás de Cloudflare) | Solo tráfico de usuarios |
+| Propósito          | Dirección                              | Nota                             |
+| ------------------ | -------------------------------------- | -------------------------------- |
+| SSH / admin        | `vps-dragon@100.120.151.91`            | Tailscale VPN — única vía válida |
+| HTTP/HTTPS público | `157.245.223.7` (detrás de Cloudflare) | Solo tráfico de usuarios         |
 
 ```bash
 # ✅ CORRECTO — siempre así
@@ -437,14 +440,14 @@ Documentación: `docs/OPENCLAW-ARCHITECTURE.md`, `docs/ORCHESTRATOR.md`, `docs/L
 
 ## Decisiones fijas (ADRs)
 
-| ADR | Decisión | Razón |
-|-----|----------|-------|
+| ADR     | Decisión                             | Razón                                             |
+| ------- | ------------------------------------ | ------------------------------------------------- |
 | ADR-001 | Docker Compose por tenant (no Swarm) | Simplicidad, aislamiento claro, escalado vertical |
-| ADR-002 | Traefik v3 (no nginx) | TLS automático, routing dinámico, no reinitialize |
-| ADR-003 | Doppler para secrets (no .env local) | Rotación centralizada, audit, CI/CD integrado |
-| ADR-004 | Supabase schema aislado por tenant | RLS + GRANT granular, backups por cliente |
-| ADR-009 | MCP para herramientas + OAuth 2.0 | Estándar OpenClaw, alineado con Claude |
-| ADR-011 | BullMQ cola por plan (prioridad) | Enterprise `0` → startup `50_000` |
+| ADR-002 | Traefik v3 (no nginx)                | TLS automático, routing dinámico, no reinitialize |
+| ADR-003 | Doppler para secrets (no .env local) | Rotación centralizada, audit, CI/CD integrado     |
+| ADR-004 | Supabase schema aislado por tenant   | RLS + GRANT granular, backups por cliente         |
+| ADR-009 | MCP para herramientas + OAuth 2.0    | Estándar OpenClaw, alineado con Claude            |
+| ADR-011 | BullMQ cola por plan (prioridad)     | Enterprise `0` → startup `50_000`                 |
 
 Consulta `docs/adr/` para detalle.
 

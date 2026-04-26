@@ -19,12 +19,12 @@ Al notificar eventos operativos (deploy, errores, commits, monitor) sin filtrar 
 
 ## Tipos
 
-| Tipo | Uso típico |
-|------|------------|
-| `success` | Deploy OK, tarea completada |
-| `error` | Fallo crítico, provider caído |
-| `warning` | Disco alto, degradación |
-| `info` | Commit, sync, mensajes generales |
+| Tipo      | Uso típico                       |
+| --------- | -------------------------------- |
+| `success` | Deploy OK, tarea completada      |
+| `error`   | Fallo crítico, provider caído    |
+| `warning` | Disco alto, degradación          |
+| `info`    | Commit, sync, mensajes generales |
 
 ## Reglas
 
@@ -34,11 +34,11 @@ Al notificar eventos operativos (deploy, errores, commits, monitor) sin filtrar 
 
 ## Errores comunes
 
-| Error | Causa | Solución |
-|-------|-------|----------|
-| curl: (3) URL rejected | Webhook vacío | Script hace no-op, no es error |
-| 400 Bad Request | Embed > 6000 chars | Acortar descripción |
-| Action failed | secrets en if: | Comprobar en bash, no en workflow |
+| Error                  | Causa              | Solución                          |
+| ---------------------- | ------------------ | --------------------------------- |
+| curl: (3) URL rejected | Webhook vacío      | Script hace no-op, no es error    |
+| 400 Bad Request        | Embed > 6000 chars | Acortar descripción               |
+| Action failed          | secrets en if:     | Comprobar en bash, no en workflow |
 
 ## Testing
 

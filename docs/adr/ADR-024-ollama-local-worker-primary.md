@@ -49,15 +49,15 @@
 
 ## Variables requeridas
 
-| Variable | Dónde | Valor ejemplo |
-|----------|-------|---------------|
-| `OLLAMA_URL` | LLM Gateway (VPS) + Doppler prd | `http://<tailscale-worker-ip>:11434` |
-| `OLLAMA_MODEL` | Doppler prd | `nemotron-3-nano:4b` (default código), o `nemotron-3-nano:30b` / `qwen2.5-coder` según RAM |
-| `REDIS_EXPORT_BIND` | VPS + Doppler prd | `100.120.151.91` |
-| `LLM_GATEWAY_EXPORT_BIND` | VPS + Doppler prd | `100.120.151.91` |
-| `REDIS_URL` | Worker Mac 2011 | `redis://:PASSWORD@<tailscale-vps-ip>:6379/0` |
-| `LLM_GATEWAY_URL` | Worker Mac 2011 | `http://<tailscale-vps-ip>:3010` |
-| `OPSLY_ORCHESTRATOR_MODE` | Worker Mac 2011 | `worker-enabled` |
+| Variable                  | Dónde                           | Valor ejemplo                                                                              |
+| ------------------------- | ------------------------------- | ------------------------------------------------------------------------------------------ |
+| `OLLAMA_URL`              | LLM Gateway (VPS) + Doppler prd | `http://<tailscale-worker-ip>:11434`                                                       |
+| `OLLAMA_MODEL`            | Doppler prd                     | `nemotron-3-nano:4b` (default código), o `nemotron-3-nano:30b` / `qwen2.5-coder` según RAM |
+| `REDIS_EXPORT_BIND`       | VPS + Doppler prd               | `100.120.151.91`                                                                           |
+| `LLM_GATEWAY_EXPORT_BIND` | VPS + Doppler prd               | `100.120.151.91`                                                                           |
+| `REDIS_URL`               | Worker Mac 2011                 | `redis://:PASSWORD@<tailscale-vps-ip>:6379/0`                                              |
+| `LLM_GATEWAY_URL`         | Worker Mac 2011                 | `http://<tailscale-vps-ip>:3010`                                                           |
+| `OPSLY_ORCHESTRATOR_MODE` | Worker Mac 2011                 | `worker-enabled`                                                                           |
 
 ## Capacidad inicial recomendada
 
@@ -75,20 +75,22 @@ Subir concurrencia solo cuando CPU sostenida, cola `waiting` y latencia del gate
 // apps/llm-gateway/src/providers.ts
 export function resolveRoutingPreference(explicitModel, complexityLevel): RoutingPreference {
   // Por defecto: cheap = llama_local primary
-  if (complexityLevel === 1) return "cheap";
-  if (complexityLevel === 3) return "sonnet";
-  return "haiku";
+  if (complexityLevel === 1) return 'cheap';
+  if (complexityLevel === 3) return 'sonnet';
+  return 'haiku';
 }
 ```
 
 ## Consecuencias
 
 **Positivo:**
+
 - Costo $0 en tokens para tareas simples (routing `cheap` → `llama_local`)
 - VPS alivia CPU (sin Ollama, sin workers BullMQ)
 - Worker Mac 2011 usa hardware ocioso
 
 **Negativo:**
+
 - Latencia Ollama por red si worker y VPS en diferentes geografías
 - Worker Mac 2011 depende de energía/conectividad
 - Modelo local limitado a lo que corre Ollama (sin function calling advanced)

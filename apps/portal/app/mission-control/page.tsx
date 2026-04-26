@@ -1,20 +1,20 @@
-"use client";
+'use client';
 
-import dynamic from "next/dynamic";
-import { useMemo, useState } from "react";
-import useSWR from "swr";
+import dynamic from 'next/dynamic';
+import { useMemo, useState } from 'react';
+import useSWR from 'swr';
 
-import { getApiBaseUrl } from "@/lib/api";
-import { infraStatusUrl } from "@/lib/portal-api-paths";
-import { createClient } from "@/lib/supabase/client";
+import { getApiBaseUrl } from '@/lib/api';
+import { infraStatusUrl } from '@/lib/portal-api-paths';
+import { createClient } from '@/lib/supabase/client';
 
-import { ActiveSprintsFlow } from "./components/ActiveSprintsFlow";
+import { ActiveSprintsFlow } from './components/ActiveSprintsFlow';
 
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
 
-type InfraServiceStatus = "healthy" | "degraded" | "down";
+type InfraServiceStatus = 'healthy' | 'degraded' | 'down';
 
 type InfraService = {
   readonly name: string;
@@ -43,7 +43,7 @@ const SKELETON_COUNT = 6;
 
 const VirtualOffice = dynamic(
   () =>
-    import("./components/VirtualOffice").then((m) => ({
+    import('./components/VirtualOffice').then((m) => ({
       default: m.VirtualOffice,
     })),
   {
@@ -53,12 +53,12 @@ const VirtualOffice = dynamic(
       </div>
     ),
     ssr: false,
-  },
+  }
 );
 
-type MissionViewMode = "2d" | "3d";
+type MissionViewMode = '2d' | '3d';
 
-type MissionSection = "infra" | "sprints";
+type MissionSection = 'infra' | 'sprints';
 
 // ---------------------------------------------------------------------------
 // Utilities
@@ -66,29 +66,24 @@ type MissionSection = "infra" | "sprints";
 
 /** Convierte segundos transcurridos en texto relativo amigable. */
 function formatTimeAgo(seconds: number | null): string {
-  if (seconds === null) return "sin latido";
-  if (seconds < 60) return "Justo ahora";
+  if (seconds === null) return 'sin latido';
+  if (seconds < 60) return 'Justo ahora';
   if (seconds < 3600) return `hace ${Math.floor(seconds / 60)} min`;
   return `hace ${Math.floor(seconds / 3600)} horas`;
 }
 
-function fetchInfraStatus(
-  url: string,
-  accessToken: string,
-): Promise<InfraStatusPayload> {
+function fetchInfraStatus(url: string, accessToken: string): Promise<InfraStatusPayload> {
   return fetch(url, {
-    cache: "no-store",
+    cache: 'no-store',
     headers: {
       Authorization: `Bearer ${accessToken}`,
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     },
   }).then(async (res) => {
     if (!res.ok) {
       const body = (await res.json().catch(() => ({}))) as InfraStatusError;
       const reason =
-        res.status === 401
-          ? "Unauthorized"
-          : body.message ?? body.error ?? `HTTP ${res.status}`;
+        res.status === 401 ? 'Unauthorized' : (body.message ?? body.error ?? `HTTP ${res.status}`);
       throw new Error(reason);
     }
     return (await res.json()) as InfraStatusPayload;
@@ -104,7 +99,7 @@ type StatusIndicatorProps = {
 };
 
 function StatusIndicator({ status }: StatusIndicatorProps) {
-  if (status === "healthy") {
+  if (status === 'healthy') {
     return (
       <span className="relative flex h-3.5 w-3.5" aria-label="Healthy">
         <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-50" />
@@ -112,7 +107,7 @@ function StatusIndicator({ status }: StatusIndicatorProps) {
       </span>
     );
   }
-  if (status === "degraded") {
+  if (status === 'degraded') {
     return (
       <span className="relative flex h-3.5 w-3.5" aria-label="Degraded">
         <span className="relative inline-flex h-3.5 w-3.5 rounded-full bg-amber-400 shadow-[0_0_10px_rgba(234,179,8,0.7)]" />
@@ -123,7 +118,7 @@ function StatusIndicator({ status }: StatusIndicatorProps) {
     <span className="relative flex h-3.5 w-3.5" aria-label="Down">
       <span
         className="absolute inline-flex h-full w-full animate-ping rounded-full bg-rose-500 opacity-75"
-        style={{ animationDuration: "0.7s" }}
+        style={{ animationDuration: '0.7s' }}
       />
       <span className="relative inline-flex h-3.5 w-3.5 rounded-full bg-rose-500 shadow-[0_0_14px_rgba(239,68,68,0.9)]" />
     </span>
@@ -141,13 +136,13 @@ type StatusConfig = {
 };
 
 function resolveStatusConfig(status: InfraServiceStatus): StatusConfig {
-  if (status === "healthy") {
-    return { label: "HEALTHY", textColor: "text-emerald-400", isDown: false };
+  if (status === 'healthy') {
+    return { label: 'HEALTHY', textColor: 'text-emerald-400', isDown: false };
   }
-  if (status === "degraded") {
-    return { label: "DEGRADED", textColor: "text-amber-400", isDown: false };
+  if (status === 'degraded') {
+    return { label: 'DEGRADED', textColor: 'text-amber-400', isDown: false };
   }
-  return { label: "DOWN", textColor: "text-rose-400", isDown: true };
+  return { label: 'DOWN', textColor: 'text-rose-400', isDown: true };
 }
 
 // ---------------------------------------------------------------------------
@@ -248,18 +243,20 @@ function ServiceCard({ service }: ServiceCardProps) {
           </div>
         </div>
         <p
-          className={"mt-2 font-mono text-[11px] font-semibold uppercase tracking-widest " + cfg.textColor}
+          className={
+            'mt-2 font-mono text-[11px] font-semibold uppercase tracking-widest ' + cfg.textColor
+          }
         >
           {cfg.label}
         </p>
         <div className="mt-3 space-y-1">
           <p className="font-mono text-xs text-slate-500">
-            <span className="text-slate-700">latido</span>{" "}
+            <span className="text-slate-700">latido</span>{' '}
             <span className="text-slate-400">{formatTimeAgo(service.lastSeenSeconds)}</span>
           </p>
           <p className="font-mono text-xs text-slate-600">
-            <span className="text-slate-700">TTL Redis</span>{" "}
-            {service.ttlSeconds === null ? "N/A" : service.ttlSeconds + "s"}
+            <span className="text-slate-700">TTL Redis</span>{' '}
+            {service.ttlSeconds === null ? 'N/A' : service.ttlSeconds + 's'}
           </p>
         </div>
         <pre className="mt-4 max-h-28 overflow-auto rounded-lg border border-slate-800/70 bg-slate-950/60 p-3 font-mono text-[10px] leading-relaxed text-cyan-300/80">
@@ -279,17 +276,17 @@ function ServiceCard({ service }: ServiceCardProps) {
 // ---------------------------------------------------------------------------
 
 export default function MissionControlPage() {
-  const [section, setSection] = useState<MissionSection>("infra");
-  const [viewMode, setViewMode] = useState<MissionViewMode>("2d");
+  const [section, setSection] = useState<MissionSection>('infra');
+  const [viewMode, setViewMode] = useState<MissionViewMode>('2d');
   const url = infraStatusUrl(getApiBaseUrl());
   const supabase = useMemo(() => createClient(), []);
 
   const { data: tokenData, error: tokenError } = useSWR<string, Error>(
-    "mission-control-access-token",
+    'mission-control-access-token',
     async () => {
       const { data, error } = await supabase.auth.getSession();
       if (error || !data.session?.access_token) {
-        throw new Error("Unauthorized");
+        throw new Error('Unauthorized');
       }
       return data.session.access_token;
     },
@@ -297,12 +294,10 @@ export default function MissionControlPage() {
       refreshInterval: REFRESH_MS,
       revalidateOnFocus: true,
       dedupingInterval: 2_000,
-    },
+    }
   );
 
-  const infraStatusKey = tokenData
-    ? { targetUrl: url, accessToken: tokenData }
-    : null;
+  const infraStatusKey = tokenData ? { targetUrl: url, accessToken: tokenData } : null;
 
   const { data, error, isLoading, mutate } = useSWR<InfraStatusPayload, Error>(
     infraStatusKey,
@@ -312,7 +307,7 @@ export default function MissionControlPage() {
       revalidateOnFocus: true,
       dedupingInterval: 2_000,
       keepPreviousData: true,
-    },
+    }
   );
 
   const services = useMemo(() => data?.services ?? [], [data]);
@@ -323,8 +318,8 @@ export default function MissionControlPage() {
       <div
         className="pointer-events-none absolute inset-0 opacity-[0.04]"
         style={{
-          backgroundImage: "radial-gradient(circle at 1px 1px, currentColor 1px, transparent 0)",
-          backgroundSize: "24px 24px",
+          backgroundImage: 'radial-gradient(circle at 1px 1px, currentColor 1px, transparent 0)',
+          backgroundSize: '24px 24px',
         }}
         aria-hidden="true"
       />
@@ -333,9 +328,9 @@ export default function MissionControlPage() {
         className="pointer-events-none absolute inset-0"
         style={{
           backgroundImage: [
-            "radial-gradient(ellipse at 15% 55%, rgba(56,189,248,0.04) 0%, transparent 45%)",
-            "radial-gradient(ellipse at 85% 15%, rgba(99,102,241,0.05) 0%, transparent 40%)",
-          ].join(", "),
+            'radial-gradient(ellipse at 15% 55%, rgba(56,189,248,0.04) 0%, transparent 45%)',
+            'radial-gradient(ellipse at 85% 15%, rgba(99,102,241,0.05) 0%, transparent 40%)',
+          ].join(', '),
         }}
         aria-hidden="true"
       />
@@ -350,13 +345,13 @@ export default function MissionControlPage() {
             <div className="h-px flex-1 bg-gradient-to-l from-transparent via-cyan-500/25 to-transparent" />
           </div>
           <h1 className="bg-gradient-to-r from-slate-100 to-slate-400 bg-clip-text text-4xl font-semibold tracking-tight text-transparent">
-            {section === "infra" ? "Infra Heartbeat" : "Plan & Sprints"}
+            {section === 'infra' ? 'Infra Heartbeat' : 'Plan & Sprints'}
           </h1>
           <p className="mt-3 font-mono text-sm text-slate-600">
-            {section === "infra" ? (
+            {section === 'infra' ? (
               <>
                 Polling cada {REFRESH_MS / 1_000}s · Redis live
-                {data ? " · " + services.length + " servicios" : ""}
+                {data ? ' · ' + services.length + ' servicios' : ''}
               </>
             ) : (
               <>Sprints activos desde la API · flujo React Flow en tiempo real</>
@@ -371,13 +366,13 @@ export default function MissionControlPage() {
                 <button
                   type="button"
                   onClick={() => {
-                    setSection("infra");
+                    setSection('infra');
                   }}
                   className={
-                    "rounded-md px-3 py-1.5 font-mono text-xs transition-colors " +
-                    (section === "infra"
-                      ? "bg-cyan-500/15 text-cyan-300 shadow-[0_0_12px_rgba(34,211,238,0.15)]"
-                      : "text-slate-500 hover:text-slate-300")
+                    'rounded-md px-3 py-1.5 font-mono text-xs transition-colors ' +
+                    (section === 'infra'
+                      ? 'bg-cyan-500/15 text-cyan-300 shadow-[0_0_12px_rgba(34,211,238,0.15)]'
+                      : 'text-slate-500 hover:text-slate-300')
                   }
                 >
                   Infra
@@ -385,13 +380,13 @@ export default function MissionControlPage() {
                 <button
                   type="button"
                   onClick={() => {
-                    setSection("sprints");
+                    setSection('sprints');
                   }}
                   className={
-                    "rounded-md px-3 py-1.5 font-mono text-xs transition-colors " +
-                    (section === "sprints"
-                      ? "bg-indigo-500/15 text-indigo-300 shadow-[0_0_12px_rgba(129,140,248,0.2)]"
-                      : "text-slate-500 hover:text-slate-300")
+                    'rounded-md px-3 py-1.5 font-mono text-xs transition-colors ' +
+                    (section === 'sprints'
+                      ? 'bg-indigo-500/15 text-indigo-300 shadow-[0_0_12px_rgba(129,140,248,0.2)]'
+                      : 'text-slate-500 hover:text-slate-300')
                   }
                 >
                   Active Sprints
@@ -399,7 +394,7 @@ export default function MissionControlPage() {
               </div>
             </div>
           ) : null}
-          {tokenData && section === "infra" ? (
+          {tokenData && section === 'infra' ? (
             <div className="mt-4 flex flex-wrap items-center gap-2">
               <span className="font-mono text-[10px] uppercase tracking-widest text-slate-500">
                 Modo
@@ -408,13 +403,13 @@ export default function MissionControlPage() {
                 <button
                   type="button"
                   onClick={() => {
-                    setViewMode("2d");
+                    setViewMode('2d');
                   }}
                   className={
-                    "rounded-md px-3 py-1.5 font-mono text-xs transition-colors " +
-                    (viewMode === "2d"
-                      ? "bg-cyan-500/15 text-cyan-300 shadow-[0_0_12px_rgba(34,211,238,0.15)]"
-                      : "text-slate-500 hover:text-slate-300")
+                    'rounded-md px-3 py-1.5 font-mono text-xs transition-colors ' +
+                    (viewMode === '2d'
+                      ? 'bg-cyan-500/15 text-cyan-300 shadow-[0_0_12px_rgba(34,211,238,0.15)]'
+                      : 'text-slate-500 hover:text-slate-300')
                   }
                 >
                   2D Technical
@@ -422,13 +417,13 @@ export default function MissionControlPage() {
                 <button
                   type="button"
                   onClick={() => {
-                    setViewMode("3d");
+                    setViewMode('3d');
                   }}
                   className={
-                    "rounded-md px-3 py-1.5 font-mono text-xs transition-colors " +
-                    (viewMode === "3d"
-                      ? "bg-violet-500/15 text-violet-300 shadow-[0_0_12px_rgba(167,139,250,0.2)]"
-                      : "text-slate-500 hover:text-slate-300")
+                    'rounded-md px-3 py-1.5 font-mono text-xs transition-colors ' +
+                    (viewMode === '3d'
+                      ? 'bg-violet-500/15 text-violet-300 shadow-[0_0_12px_rgba(167,139,250,0.2)]'
+                      : 'text-slate-500 hover:text-slate-300')
                   }
                 >
                   3D Virtual
@@ -440,18 +435,18 @@ export default function MissionControlPage() {
 
         {tokenError || error ? (
           <SystemAlert
-            message={(tokenError ?? error)?.message ?? "Unauthorized"}
+            message={(tokenError ?? error)?.message ?? 'Unauthorized'}
             onRetry={() => void mutate()}
           />
         ) : (
           <>
-            {section === "sprints" && tokenData ? (
+            {section === 'sprints' && tokenData ? (
               <ActiveSprintsFlow accessToken={tokenData} />
             ) : null}
 
-            {section === "infra" ? (
+            {section === 'infra' ? (
               <>
-                {viewMode === "3d" && tokenData ? (
+                {viewMode === '3d' && tokenData ? (
                   <VirtualOffice accessToken={tokenData} />
                 ) : (
                   <>
@@ -474,7 +469,7 @@ export default function MissionControlPage() {
                   </>
                 )}
 
-                {data && viewMode === "2d" ? (
+                {data && viewMode === '2d' ? (
                   <footer className="mt-10 flex items-center justify-between border-t border-slate-800/50 pt-5 font-mono text-xs text-slate-600">
                     <span>snapshot {data.generated_at}</span>
                     <span className="flex items-center gap-2">

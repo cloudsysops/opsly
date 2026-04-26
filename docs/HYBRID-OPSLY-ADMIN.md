@@ -8,11 +8,11 @@
 
 ## Resumen de arquitectura (roles de máquina)
 
-| Máquina | Nombre | Rol | Servicios clave |
-| :--- | :--- | :--- | :--- |
-| **Mac principal** | `opsly-admin` | **Centro de mando** (humano + Cursor) | Desarrollo, Git, Docker Desktop (DragonB), CLI Opsly |
-| **VPS** | `vps-dragon` | **Control plane** (cerebro de red) | Traefik, API, Admin, Portal, MCP (HTTP), Redis, LLM Gateway |
-| **Worker** | `opsly-worker` | **Compute plane** (músculo) | Orchestrator (worker), Ollama, cargas pesadas opcionales |
+| Máquina           | Nombre         | Rol                                   | Servicios clave                                             |
+| :---------------- | :------------- | :------------------------------------ | :---------------------------------------------------------- |
+| **Mac principal** | `opsly-admin`  | **Centro de mando** (humano + Cursor) | Desarrollo, Git, Docker Desktop (DragonB), CLI Opsly        |
+| **VPS**           | `vps-dragon`   | **Control plane** (cerebro de red)    | Traefik, API, Admin, Portal, MCP (HTTP), Redis, LLM Gateway |
+| **Worker**        | `opsly-worker` | **Compute plane** (músculo)           | Orchestrator (worker), Ollama, cargas pesadas opcionales    |
 
 ---
 

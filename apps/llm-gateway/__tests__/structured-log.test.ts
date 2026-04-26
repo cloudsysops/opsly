@@ -1,18 +1,18 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
-import { logGatewayEvent } from "../src/structured-log.js";
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { logGatewayEvent } from '../src/structured-log.js';
 
-describe("structured-log", () => {
+describe('structured-log', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });
 
-  it("logGatewayEvent writes llm_call_complete JSON line", () => {
-    const write = vi.spyOn(process.stdout, "write").mockImplementation(() => true);
+  it('logGatewayEvent writes llm_call_complete JSON line', () => {
+    const write = vi.spyOn(process.stdout, 'write').mockImplementation(() => true);
     logGatewayEvent({
-      event: "llm_call_complete",
-      tenant_slug: "t1",
-      request_id: "r1",
-      model_used: "haiku",
+      event: 'llm_call_complete',
+      tenant_slug: 't1',
+      request_id: 'r1',
+      model_used: 'haiku',
       tokens_input: 10,
       tokens_output: 5,
       cost_usd: 0.01,
@@ -22,10 +22,10 @@ describe("structured-log", () => {
     });
     const line = write.mock.calls[0][0] as string;
     const parsed: Record<string, unknown> = JSON.parse(line.trim());
-    expect(parsed.service).toBe("llm-gateway");
-    expect(parsed.event).toBe("llm_call_complete");
-    expect(parsed.tenant_slug).toBe("t1");
-    expect(parsed.request_id).toBe("r1");
-    expect(parsed.model_used).toBe("haiku");
+    expect(parsed.service).toBe('llm-gateway');
+    expect(parsed.event).toBe('llm_call_complete');
+    expect(parsed.tenant_slug).toBe('t1');
+    expect(parsed.request_id).toBe('r1');
+    expect(parsed.model_used).toBe('haiku');
   });
 });

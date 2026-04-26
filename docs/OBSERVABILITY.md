@@ -11,14 +11,14 @@ Documentación alineada con el código en `apps/api/lib/fetch-host-metrics-prome
 
 Copiar en la UI de Prometheus o en Grafana (panel instant / range según caso).
 
-| Métrica lógica | PromQL |
-|----------------|--------|
-| CPU % (aprox.) | `100 - (avg(rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100)` |
-| RAM usada (bytes) | `sum(node_memory_MemTotal_bytes) - sum(node_memory_MemAvailable_bytes)` |
-| RAM total (bytes) | `sum(node_memory_MemTotal_bytes)` |
+| Métrica lógica          | PromQL                                                                                              |
+| ----------------------- | --------------------------------------------------------------------------------------------------- |
+| CPU % (aprox.)          | `100 - (avg(rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100)`                                  |
+| RAM usada (bytes)       | `sum(node_memory_MemTotal_bytes) - sum(node_memory_MemAvailable_bytes)`                             |
+| RAM total (bytes)       | `sum(node_memory_MemTotal_bytes)`                                                                   |
 | Disco usado `/` (bytes) | `sum(node_filesystem_size_bytes{mountpoint="/"}) - sum(node_filesystem_free_bytes{mountpoint="/"})` |
-| Disco total `/` (bytes) | `sum(node_filesystem_size_bytes{mountpoint="/"})` |
-| Uptime (s) | `time() - node_boot_time_seconds` |
+| Disco total `/` (bytes) | `sum(node_filesystem_size_bytes{mountpoint="/"})`                                                   |
+| Uptime (s)              | `time() - node_boot_time_seconds`                                                                   |
 
 **Notas:**
 

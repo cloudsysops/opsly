@@ -27,9 +27,9 @@ Al crear o modificar lógica de facturación en `apps/api` y `apps/portal`: susc
 
 ```ts
 // apps/api/app/api/billing/subscriptions/route.ts
-import { NextResponse } from "next/server";
-import { requireAdminToken } from "@/lib/auth";
-import { syncSubscriptionForTenant } from "@/lib/billing/subscription-service";
+import { NextResponse } from 'next/server';
+import { requireAdminToken } from '@/lib/auth';
+import { syncSubscriptionForTenant } from '@/lib/billing/subscription-service';
 
 export async function POST(request: Request): Promise<Response> {
   requireAdminToken(request);
@@ -49,9 +49,9 @@ export async function POST(request: Request): Promise<Response> {
 
 ## Errores comunes
 
-| Error | Causa | Solución |
-|-------|-------|----------|
-| `signature verification failed` | Secret inválido o payload alterado | Verificar `STRIPE_WEBHOOK_SECRET` y raw body |
-| Doble cobro | Falta idempotencia | Usar `idempotency_key` + upsert defensivo |
-| Plan no refleja en portal | Sync incompleto API→DB | Asegurar update en `subscription-service` y re-fetch UI |
-| 500 en invoice creation | Tenant sin customer Stripe | Crear/validar `stripe_customer_id` antes de facturar |
+| Error                           | Causa                              | Solución                                                |
+| ------------------------------- | ---------------------------------- | ------------------------------------------------------- |
+| `signature verification failed` | Secret inválido o payload alterado | Verificar `STRIPE_WEBHOOK_SECRET` y raw body            |
+| Doble cobro                     | Falta idempotencia                 | Usar `idempotency_key` + upsert defensivo               |
+| Plan no refleja en portal       | Sync incompleto API→DB             | Asegurar update en `subscription-service` y re-fetch UI |
+| 500 en invoice creation         | Tenant sin customer Stripe         | Crear/validar `stripe_customer_id` antes de facturar    |

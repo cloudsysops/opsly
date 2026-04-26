@@ -1,5 +1,5 @@
-import { NotionClient } from "../notion-client.js";
-import type { Task } from "../types.js";
+import { NotionClient } from '../notion-client.js';
+import type { Task } from '../types.js';
 
 export interface CreateTaskResult {
   readonly success: true;
@@ -8,7 +8,7 @@ export interface CreateTaskResult {
 }
 
 export async function handleCreateTask(
-  params: Omit<Task, "id" | "created" | "updated">,
+  params: Omit<Task, 'id' | 'created' | 'updated'>
 ): Promise<CreateTaskResult> {
   const notion = new NotionClient();
   const task = await notion.createTask(params);

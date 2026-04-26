@@ -2,7 +2,18 @@
   "name": "opsly-llm",
   "version": "1.0.0",
   "description": "LLM Gateway: llmCall, proveedores, caché, routing",
-  "triggers": ["llm", "anthropic", "openai", "modelo", "cache", "ai", "llmcall", "gemini", "sonnet", "haiku"],
+  "triggers": [
+    "llm",
+    "anthropic",
+    "openai",
+    "modelo",
+    "cache",
+    "ai",
+    "llmcall",
+    "gemini",
+    "sonnet",
+    "haiku"
+  ],
   "inputSchema": {
     "type": "object",
     "properties": {

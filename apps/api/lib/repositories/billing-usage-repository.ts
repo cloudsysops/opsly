@@ -1,9 +1,9 @@
-import type { SupabaseClient } from "@supabase/supabase-js";
+import type { SupabaseClient } from '@supabase/supabase-js';
 
-import { BaseRepository } from "../base-repository";
-import type { BillingMetricType } from "../billing/types";
-import { getServiceClient } from "../supabase";
-import type { Database, Json } from "../supabase/types";
+import { BaseRepository } from '../base-repository';
+import type { BillingMetricType } from '../billing/types';
+import { getServiceClient } from '../supabase';
+import type { Database, Json } from '../supabase/types';
 
 export type InsertBillingUsageMeteredParams = {
   readonly metricType: BillingMetricType;
@@ -24,17 +24,17 @@ export class BillingUsageRepository extends BaseRepository {
    * Inserta una fila de consumo consolidado (requiere `runWithTenantContext`).
    */
   async insertMeteredUsage(
-    params: InsertBillingUsageMeteredParams,
+    params: InsertBillingUsageMeteredParams
   ): Promise<{ error: Error | null }> {
     const { error } = await this.insert(
-      "billing_usage",
+      'billing_usage',
       {
         metric_type: params.metricType,
         quantity: params.quantity,
         unit_cost: params.unitCostUsd,
         metadata: params.metadata ?? {},
       },
-      { tenantColumn: "tenant_id" },
+      { tenantColumn: 'tenant_id' }
     );
     return { error: error ? new Error(error.message) : null };
   }
@@ -44,13 +44,11 @@ export class BillingUsageRepository extends BaseRepository {
    * Requiere `runWithTenantContext` / `runTrustedPortalDal`.
    */
   async sumSettledTotalAmountSince(
-    recordedAtGteIso: string,
+    recordedAtGteIso: string
   ): Promise<{ value: number; error: Error | null }> {
-    const { data, error } = await this.select(
-      "billing_usage",
-      "total_amount.sum()",
-      { tenantColumn: "tenant_id" },
-    ).gte("recorded_at", recordedAtGteIso);
+    const { data, error } = await this.select('billing_usage', 'total_amount.sum()', {
+      tenantColumn: 'tenant_id',
+    }).gte('recorded_at', recordedAtGteIso);
 
     if (error) {
       return { value: 0, error: new Error(error.message) };

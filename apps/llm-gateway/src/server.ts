@@ -1,10 +1,10 @@
-import { closeRedisClient } from "./cache.js";
-import { healthDaemon } from "./health-daemon.js";
-import { createHealthServer } from "./health-server.js";
+import { closeRedisClient } from './cache.js';
+import { healthDaemon } from './health-daemon.js';
+import { createHealthServer } from './health-server.js';
 
 async function main(): Promise<void> {
   await healthDaemon.start();
-  console.log("[llm-gateway] Health daemon iniciado");
+  console.log('[llm-gateway] Health daemon iniciado');
 
   createHealthServer();
 
@@ -19,13 +19,13 @@ async function main(): Promise<void> {
       await Promise.allSettled([healthDaemon.stop(), closeRedisClient()]);
       process.exit(0);
     })().catch((e) => {
-      console.error("[llm-gateway] shutdown failed", e);
+      console.error('[llm-gateway] shutdown failed', e);
       process.exit(1);
     });
   };
 
-  process.on("SIGTERM", () => shutdown("SIGTERM"));
-  process.on("SIGINT", () => shutdown("SIGINT"));
+  process.on('SIGTERM', () => shutdown('SIGTERM'));
+  process.on('SIGINT', () => shutdown('SIGINT'));
 }
 
 main().catch((e) => {

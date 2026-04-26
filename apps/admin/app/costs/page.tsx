@@ -1,27 +1,27 @@
-"use client";
+'use client';
 
-import { useCallback, useMemo, useState } from "react";
-import useSWR from "swr";
-import { BudgetAlertCard } from "@/components/billing/BudgetAlertCard";
-import { LlmBudgetSummaryStrip } from "@/components/billing/LlmBudgetSummaryStrip";
-import { TenantBudgetBars } from "@/components/billing/TenantBudgetBars";
-import { CostCard } from "@/components/costs/CostCard";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
+import { useCallback, useMemo, useState } from 'react';
+import useSWR from 'swr';
+import { BudgetAlertCard } from '@/components/billing/BudgetAlertCard';
+import { LlmBudgetSummaryStrip } from '@/components/billing/LlmBudgetSummaryStrip';
+import { TenantBudgetBars } from '@/components/billing/TenantBudgetBars';
+import { CostCard } from '@/components/costs/CostCard';
+import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { getAdminCosts, postCostDecision } from "@/lib/api-client";
-import type { AdminCostsResponse } from "@/lib/types";
+} from '@/components/ui/select';
+import { getAdminCosts, postCostDecision } from '@/lib/api-client';
+import type { AdminCostsResponse } from '@/lib/types';
 
 const fetcher = (): Promise<AdminCostsResponse> => getAdminCosts();
 
-type BudgetFilterValue = "all" | "critical" | "warning" | "ok" | "skipped";
-type BudgetSortValue = "percent_desc" | "projected_desc" | "name_asc";
+type BudgetFilterValue = 'all' | 'critical' | 'warning' | 'ok' | 'skipped';
+type BudgetSortValue = 'percent_desc' | 'projected_desc' | 'name_asc';
 
 function formatUsd(value: number): string {
   return `$${value.toFixed(2)}`;
@@ -29,32 +29,32 @@ function formatUsd(value: number): string {
 
 function deltaValueClass(value: number): string {
   if (value > 0) {
-    return "text-amber-400";
+    return 'text-amber-400';
   }
   if (value < 0) {
-    return "text-emerald-400";
+    return 'text-emerald-400';
   }
-  return "text-ops-text";
+  return 'text-ops-text';
 }
 
 export default function CostsPage() {
-  const { data, error, isLoading, mutate } = useSWR("admin-costs", fetcher, {
+  const { data, error, isLoading, mutate } = useSWR('admin-costs', fetcher, {
     revalidateOnFocus: true,
   });
   const [actionError, setActionError] = useState<string | null>(null);
-  const [budgetQuery, setBudgetQuery] = useState("");
-  const [budgetFilter, setBudgetFilter] = useState<BudgetFilterValue>("all");
-  const [budgetSort, setBudgetSort] = useState<BudgetSortValue>("percent_desc");
+  const [budgetQuery, setBudgetQuery] = useState('');
+  const [budgetFilter, setBudgetFilter] = useState<BudgetFilterValue>('all');
+  const [budgetSort, setBudgetSort] = useState<BudgetSortValue>('percent_desc');
   const tenantBudgets = data?.tenant_budgets ?? [];
 
   const handleApprove = useCallback(
     async (serviceId: string) => {
       setActionError(null);
       try {
-        await postCostDecision({ service_id: serviceId, action: "approve" });
+        await postCostDecision({ service_id: serviceId, action: 'approve' });
         await mutate();
       } catch {
-        setActionError("No se pudo aprobar el servicio.");
+        setActionError('No se pudo aprobar el servicio.');
       }
     },
     [mutate]
@@ -66,12 +66,12 @@ export default function CostsPage() {
       try {
         await postCostDecision({
           service_id: serviceId,
-          action: "reject",
+          action: 'reject',
           reason: reason.trim() || undefined,
         });
         await mutate();
       } catch {
-        setActionError("No se pudo rechazar el servicio.");
+        setActionError('No se pudo rechazar el servicio.');
       }
     },
     [mutate]
@@ -83,36 +83,36 @@ export default function CostsPage() {
       if (snapshot.enforcement_skipped) {
         counts.skipped += 1;
       }
-      if (snapshot.alert_level === "critical") {
+      if (snapshot.alert_level === 'critical') {
         counts.critical += 1;
-      } else if (snapshot.alert_level === "warning") {
+      } else if (snapshot.alert_level === 'warning') {
         counts.warning += 1;
       } else {
         counts.ok += 1;
       }
       return counts;
     },
-    { total: 0, critical: 0, warning: 0, ok: 0, skipped: 0 },
+    { total: 0, critical: 0, warning: 0, ok: 0, skipped: 0 }
   );
   const filteredBudgetSnapshots = useMemo(() => {
     const normalizedQuery = budgetQuery.trim().toLowerCase();
 
-    const matchesFilter = (snapshot: AdminCostsResponse["tenant_budgets"][number]): boolean => {
+    const matchesFilter = (snapshot: AdminCostsResponse['tenant_budgets'][number]): boolean => {
       switch (budgetFilter) {
-        case "critical":
-          return snapshot.alert_level === "critical";
-        case "warning":
-          return snapshot.alert_level === "warning";
-        case "ok":
-          return snapshot.alert_level === "ok" && !snapshot.enforcement_skipped;
-        case "skipped":
+        case 'critical':
+          return snapshot.alert_level === 'critical';
+        case 'warning':
+          return snapshot.alert_level === 'warning';
+        case 'ok':
+          return snapshot.alert_level === 'ok' && !snapshot.enforcement_skipped;
+        case 'skipped':
           return snapshot.enforcement_skipped;
         default:
           return true;
       }
     };
 
-    const matchesQuery = (snapshot: AdminCostsResponse["tenant_budgets"][number]): boolean => {
+    const matchesQuery = (snapshot: AdminCostsResponse['tenant_budgets'][number]): boolean => {
       if (normalizedQuery.length === 0) {
         return true;
       }
@@ -127,11 +127,11 @@ export default function CostsPage() {
       .filter((snapshot) => matchesFilter(snapshot) && matchesQuery(snapshot))
       .sort((left, right) => {
         switch (budgetSort) {
-          case "name_asc":
+          case 'name_asc':
             return left.tenant_name.localeCompare(right.tenant_name);
-          case "projected_desc":
+          case 'projected_desc':
             return right.projected_month_end_usd - left.projected_month_end_usd;
-          case "percent_desc":
+          case 'percent_desc':
           default:
             return right.percent_used - left.percent_used;
         }
@@ -161,9 +161,8 @@ export default function CostsPage() {
       <div className="p-8">
         <div className="rounded-lg border border-red-500/40 bg-red-500/10 px-4 py-3">
           <p className="text-red-300">
-            No se pudieron cargar los costos. Comprueba{" "}
-            <code className="text-ops-muted">NEXT_PUBLIC_API_URL</code> y tu
-            sesión admin.
+            No se pudieron cargar los costos. Comprueba{' '}
+            <code className="text-ops-muted">NEXT_PUBLIC_API_URL</code> y tu sesión admin.
           </p>
           <button
             type="button"
@@ -180,20 +179,16 @@ export default function CostsPage() {
   const currentCount = Object.keys(data.current).length;
   const deltaMonthly = data.summary.proposedMonthly - data.summary.currentMonthly;
   const updatedLabel =
-    data.lastUpdated.length > 0
-      ? new Date(data.lastUpdated).toLocaleString()
-      : "—";
+    data.lastUpdated.length > 0 ? new Date(data.lastUpdated).toLocaleString() : '—';
 
   return (
     <div className="mx-auto max-w-7xl p-8">
       <div className="mb-8 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-ops-text">
-          Gestión de costos
-          </h1>
+          <h1 className="text-3xl font-bold text-ops-text">Gestión de costos</h1>
           <p className="mt-1 text-ops-muted">
-            Control y aprobación de servicios (estimación; no sustituye facturación
-            real). Actualizado: {updatedLabel}
+            Control y aprobación de servicios (estimación; no sustituye facturación real).
+            Actualizado: {updatedLabel}
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
@@ -230,15 +225,13 @@ export default function CostsPage() {
         <div className="rounded-lg border border-ops-border bg-ops-card p-4">
           <p className="text-sm text-ops-muted">Cambio neto si apruebas</p>
           <p className={`font-mono text-3xl font-bold ${deltaValueClass(deltaMonthly)}`}>
-            {deltaMonthly >= 0 ? "+" : ""}
+            {deltaMonthly >= 0 ? '+' : ''}
             {formatUsd(deltaMonthly)}
           </p>
         </div>
         <div className="rounded-lg border border-ops-border bg-ops-card p-4">
           <p className="text-sm text-ops-muted">Servicios activos (catálogo)</p>
-          <p className="font-mono text-3xl font-bold text-emerald-400">
-            {currentCount}
-          </p>
+          <p className="font-mono text-3xl font-bold text-emerald-400">{currentCount}</p>
         </div>
       </div>
 
@@ -248,12 +241,10 @@ export default function CostsPage() {
       <div className="mb-8">
         <div className="mb-4 flex flex-col gap-4 rounded-lg border border-ops-border bg-ops-card p-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <h2 className="text-xl font-semibold text-ops-text">
-              Presupuesto LLM por tenant
-            </h2>
+            <h2 className="text-xl font-semibold text-ops-text">Presupuesto LLM por tenant</h2>
             <p className="mt-1 text-sm text-ops-muted">
-              Prioriza tenants con proyección de sobreconsumo antes de tocar límites o
-              activar enforcement.
+              Prioriza tenants con proyección de sobreconsumo antes de tocar límites o activar
+              enforcement.
             </p>
           </div>
           <div className="grid grid-cols-1 gap-3 md:grid-cols-3 lg:min-w-[720px]">
@@ -315,9 +306,7 @@ export default function CostsPage() {
           <Badge variant="default">
             Mostrando {filteredBudgetSnapshots.length} de {budgetCounts.total}
           </Badge>
-          {budgetFilter === "all" ? null : (
-            <Badge variant="blue">Filtro: {budgetFilter}</Badge>
-          )}
+          {budgetFilter === 'all' ? null : <Badge variant="blue">Filtro: {budgetFilter}</Badge>}
           {budgetQuery.trim().length > 0 ? (
             <Badge variant="gray">Busqueda: {budgetQuery.trim()}</Badge>
           ) : null}
@@ -326,12 +315,10 @@ export default function CostsPage() {
       </div>
 
       <div className="mb-8 rounded-lg border border-blue-500/30 bg-blue-500/10 p-4">
-        <p className="text-sm font-medium text-blue-200">
-          Wallet prepago / tokens
-        </p>
+        <p className="text-sm font-medium text-blue-200">Wallet prepago / tokens</p>
         <p className="mt-1 text-xs text-blue-300/90">
-          No implementado: requiere ledger y conciliación (ADR-017). Hoy: USD +
-          Stripe + límites mensuales.
+          No implementado: requiere ledger y conciliación (ADR-017). Hoy: USD + Stripe + límites
+          mensuales.
         </p>
         <a
           href="https://github.com/cloudsysops/opsly/blob/main/docs/WALLET-PREPAID-ROADMAP.md"
@@ -349,23 +336,23 @@ export default function CostsPage() {
             <div
               key={`${alert.action}-${alert.message}`}
               className={`flex flex-wrap items-center justify-between gap-2 rounded-lg border p-4 ${
-                alert.level === "warning"
-                  ? "border-amber-500/40 bg-amber-500/10"
-                  : "border-blue-500/30 bg-blue-500/10"
+                alert.level === 'warning'
+                  ? 'border-amber-500/40 bg-amber-500/10'
+                  : 'border-blue-500/30 bg-blue-500/10'
               }`}
             >
               <p
                 className={`text-sm ${
-                  alert.level === "warning" ? "text-amber-200" : "text-blue-200"
+                  alert.level === 'warning' ? 'text-amber-200' : 'text-blue-200'
                 }`}
               >
-                {alert.level === "warning" ? "⚠ " : "ℹ "}
+                {alert.level === 'warning' ? '⚠ ' : 'ℹ '}
                 {alert.message}
               </p>
-              {alert.action === "enable_mac2011_worker" && (
+              {alert.action === 'enable_mac2011_worker' && (
                 <button
                   type="button"
-                  onClick={() => void handleApprove("mac2011_worker")}
+                  onClick={() => void handleApprove('mac2011_worker')}
                   className="rounded bg-purple-600 px-4 py-1 text-sm text-white hover:bg-purple-700"
                 >
                   Activar
@@ -377,9 +364,7 @@ export default function CostsPage() {
       )}
 
       <div className="mb-8">
-        <h2 className="mb-4 text-xl font-semibold text-ops-text">
-          Servicios activos
-        </h2>
+        <h2 className="mb-4 text-xl font-semibold text-ops-text">Servicios activos</h2>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
           {Object.entries(data.current).map(([id, service]) => (
             <CostCard
@@ -394,9 +379,7 @@ export default function CostsPage() {
       </div>
 
       <div>
-        <h2 className="mb-4 text-xl font-semibold text-ops-text">
-          Disponibles / pendientes
-        </h2>
+        <h2 className="mb-4 text-xl font-semibold text-ops-text">Disponibles / pendientes</h2>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
           {Object.entries(data.proposed).map(([id, service]) => (
             <CostCard
@@ -412,10 +395,9 @@ export default function CostsPage() {
 
       <div className="mt-8 rounded-lg border border-amber-500/30 bg-amber-500/10 p-4">
         <p className="text-sm text-amber-200">
-          <strong className="text-amber-100">Importante:</strong> ningún
-          servicio con costo se activa automáticamente; las aprobaciones aquí son
-          registro operativo. El estado se reinicia al reiniciar la API salvo
-          persistencia futura.
+          <strong className="text-amber-100">Importante:</strong> ningún servicio con costo se
+          activa automáticamente; las aprobaciones aquí son registro operativo. El estado se
+          reinicia al reiniciar la API salvo persistencia futura.
         </p>
       </div>
     </div>

@@ -6,19 +6,19 @@
 
 ## Fases (resumen)
 
-| Fase | Documento | Contenido |
-|------|-----------|-----------|
-| Producto / comercial | [`VISION.md`](../VISION.md) | ICP, fases, límites, “Nunca” |
-| Operación sesión a sesión | [`AGENTS.md`](../AGENTS.md) | Bloqueantes, decisiones, URL raw |
-| Semanas 1–6 + milestones | [`ROADMAP.md`](../ROADMAP.md) | Tareas por semana |
-| Esta semana (checkboxes) | [`SPRINT-TRACKER.md`](../SPRINT-TRACKER.md) | Progreso y métricas |
+| Fase                      | Documento                                   | Contenido                        |
+| ------------------------- | ------------------------------------------- | -------------------------------- |
+| Producto / comercial      | [`VISION.md`](../VISION.md)                 | ICP, fases, límites, “Nunca”     |
+| Operación sesión a sesión | [`AGENTS.md`](../AGENTS.md)                 | Bloqueantes, decisiones, URL raw |
+| Semanas 1–6 + milestones  | [`ROADMAP.md`](../ROADMAP.md)               | Tareas por semana                |
+| Esta semana (checkboxes)  | [`SPRINT-TRACKER.md`](../SPRINT-TRACKER.md) | Progreso y métricas              |
 
 ## Herramientas recomendadas
 
-| Opción | Cuándo usarla |
-|--------|----------------|
-| **GitHub Projects** | Tablero junto a PRs e issues; sin coste extra en GitHub |
-| **Issues + labels** | `roadmap`, `week-1`, área (`api`, `llm-gateway`, …) |
+| Opción              | Cuándo usarla                                                      |
+| ------------------- | ------------------------------------------------------------------ |
+| **GitHub Projects** | Tablero junto a PRs e issues; sin coste extra en GitHub            |
+| **Issues + labels** | `roadmap`, `week-1`, área (`api`, `llm-gateway`, …)                |
 | **Notion / Linear** | Si el equipo ya las usa; **no** sustituyen `ROADMAP.md` en el repo |
 
 ## Automatización en este repo

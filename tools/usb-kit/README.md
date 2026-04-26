@@ -25,10 +25,10 @@ USB (disk4 o partición datos)/
 └── (opcional) ISO / Ventoy en otro volumen
 ```
 
-| Identificador | Rol sugerido |
-|---------------|----------------|
-| **disk3** (macOS `diskutil`) | Instalador **Ubuntu booteable** |
-| **disk4** o partición datos | Clon del repo + `tools/usb-kit/secrets/*.age` |
+| Identificador                | Rol sugerido                                  |
+| ---------------------------- | --------------------------------------------- |
+| **disk3** (macOS `diskutil`) | Instalador **Ubuntu booteable**               |
+| **disk4** o partición datos  | Clon del repo + `tools/usb-kit/secrets/*.age` |
 
 En Linux: `lsblk` para identificar el dispositivo (`/dev/sdX`).
 
@@ -54,13 +54,13 @@ La passphrase **solo** con `read -s` en el script; nunca como argumento en la l�
 
 ## Flujos de recuperación
 
-| Escenario | Script / acción | Tiempo aprox. | Qué necesitás del USB |
-|-----------|-----------------|---------------|------------------------|
-| Mac nueva sin herramientas | `./pen-recover.sh` → opción 1 | 45–90 min | Clon del repo; opcional `secrets/*.age` |
-| VPS reseteado (misma máquina) | `./pen-recover.sh` → opción 2 | 30–60 min | Acceso SSH al servidor; red para `git clone` |
-| Sin Doppler | `./pen-recover.sh` → opción 3 | 15–30 min + rotación | `secrets/*.age` + passphrase age |
-| VPS destruido (Terraform) | `./pen-recover.sh` → opción 4 | 30–120 min | Repo con `infra/terraform/`; token DO vía Doppler (`TF_VAR_*`) |
-| Peor caso (todo) | `./pen-recover.sh` → opción 5 | Varios pasos | Clon completo + secrets cifrados + documentación |
+| Escenario                     | Script / acción               | Tiempo aprox.        | Qué necesitás del USB                                          |
+| ----------------------------- | ----------------------------- | -------------------- | -------------------------------------------------------------- |
+| Mac nueva sin herramientas    | `./pen-recover.sh` → opción 1 | 45–90 min            | Clon del repo; opcional `secrets/*.age`                        |
+| VPS reseteado (misma máquina) | `./pen-recover.sh` → opción 2 | 30–60 min            | Acceso SSH al servidor; red para `git clone`                   |
+| Sin Doppler                   | `./pen-recover.sh` → opción 3 | 15–30 min + rotación | `secrets/*.age` + passphrase age                               |
+| VPS destruido (Terraform)     | `./pen-recover.sh` → opción 4 | 30–120 min           | Repo con `infra/terraform/`; token DO vía Doppler (`TF_VAR_*`) |
+| Peor caso (todo)              | `./pen-recover.sh` → opción 5 | Varios pasos         | Clon completo + secrets cifrados + documentación               |
 
 `pen-recover.sh` **no ejecuta** comandos: solo muestra texto listo para copiar y pegar.
 
@@ -79,9 +79,9 @@ El token de DigitalOcean no forma parte de `pen-secrets` por defecto: mantenelo 
 
 ## Discos de referencia (resumen)
 
-| Identificador | Rol sugerido |
-|---------------|----------------|
-| **disk3** (macOS `diskutil`) | Instalador **Ubuntu booteable** |
+| Identificador                  | Rol sugerido                         |
+| ------------------------------ | ------------------------------------ |
+| **disk3** (macOS `diskutil`)   | Instalador **Ubuntu booteable**      |
 | Partición de datos / **disk4** | Clon del repo + scripts + `secrets/` |
 
 Ejecutá `./pen-hint-disks.sh` antes de particionar o montar.
@@ -99,14 +99,14 @@ chmod +x pen-*.sh
 
 ## Scripts
 
-| Script | Descripción |
-|--------|-------------|
-| `pen-hint-disks.sh` | Lista discos (`diskutil` / `lsblk`) |
-| `pen-check-tools.sh` | Verifica CLI útiles y que exista el repo |
-| `pen-sync-repo.sh` | `git fetch` + `merge --ff-only` |
-| `pen-ssh-vps.sh` | SSH al VPS vía `opsly.config.json` o `pen.local.json` |
-| `pen-secrets.sh` | Cifrado age de .env emergencia, clave SSH y PAT → `secrets/` |
-| `pen-recover.sh` | Menú de escenarios de recuperación (solo texto) |
+| Script               | Descripción                                                  |
+| -------------------- | ------------------------------------------------------------ |
+| `pen-hint-disks.sh`  | Lista discos (`diskutil` / `lsblk`)                          |
+| `pen-check-tools.sh` | Verifica CLI útiles y que exista el repo                     |
+| `pen-sync-repo.sh`   | `git fetch` + `merge --ff-only`                              |
+| `pen-ssh-vps.sh`     | SSH al VPS vía `opsly.config.json` o `pen.local.json`        |
+| `pen-secrets.sh`     | Cifrado age de .env emergencia, clave SSH y PAT → `secrets/` |
+| `pen-recover.sh`     | Menú de escenarios de recuperación (solo texto)              |
 
 Dry-run:
 

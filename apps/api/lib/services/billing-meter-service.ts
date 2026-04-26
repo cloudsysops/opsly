@@ -1,13 +1,10 @@
-import {
-    aiModelCostMultiplier,
-    BILLING_METER_UNIT_COST_USD,
-} from "../billing-meter-pricing";
-import { insertBillingUsageLine } from "../billing/billing-usage-repository";
-import { scheduleBudgetCheckJob } from "../billing/budget-check-queue";
-import { runWithMeteringTenantContext } from "../metering-tenant-context";
-import { UsageRepository } from "../repositories/usage-repository";
-import type { Json } from "../supabase/types";
-import { getTenantContext } from "../tenant-context";
+import { aiModelCostMultiplier, BILLING_METER_UNIT_COST_USD } from '../billing-meter-pricing';
+import { insertBillingUsageLine } from '../billing/billing-usage-repository';
+import { scheduleBudgetCheckJob } from '../billing/budget-check-queue';
+import { runWithMeteringTenantContext } from '../metering-tenant-context';
+import { UsageRepository } from '../repositories/usage-repository';
+import type { Json } from '../supabase/types';
+import { getTenantContext } from '../tenant-context';
 
 function logMeteringError(context: string, error: unknown): void {
   const message = error instanceof Error ? error.message : String(error);
@@ -27,18 +24,17 @@ export class BillingMeterService {
     inputTokens: number,
     outputTokens: number,
     modelName: string,
-    options?: { tenantId?: string; metadata?: Json },
+    options?: { tenantId?: string; metadata?: Json }
   ): Promise<void> {
     const totalTokens = Math.max(0, inputTokens) + Math.max(0, outputTokens);
-    const unitCostUsd =
-      BILLING_METER_UNIT_COST_USD.AI_TOKEN * aiModelCostMultiplier(modelName);
+    const unitCostUsd = BILLING_METER_UNIT_COST_USD.AI_TOKEN * aiModelCostMultiplier(modelName);
 
     await runWithMeteringTenantContext(
       tenantSlug,
       async () => {
         const repo = new UsageRepository();
         await repo.recordEvent({
-          eventType: "ai_tokens",
+          eventType: 'ai_tokens',
           quantity: totalTokens,
           unitCostUsd,
           tokensInput: Math.max(0, inputTokens),
@@ -49,14 +45,14 @@ export class BillingMeterService {
         const ctx = getTenantContext();
         await insertBillingUsageLine({
           tenantId: ctx.tenantId,
-          metricType: "ai_tokens",
+          metricType: 'ai_tokens',
           quantity: totalTokens,
           unitCost: unitCostUsd,
-          metadata: { source: "billing_meter_service", model: modelName },
+          metadata: { source: 'billing_meter_service', model: modelName },
         });
         scheduleBudgetCheckJob(ctx.tenantId, ctx.tenantSlug);
       },
-      { tenantId: options?.tenantId },
+      { tenantId: options?.tenantId }
     );
   }
 
@@ -66,7 +62,7 @@ export class BillingMeterService {
   static async trackWorkerExecution(
     tenantSlug: string,
     durationSeconds: number,
-    options?: { tenantId?: string; metadata?: Json },
+    options?: { tenantId?: string; metadata?: Json }
   ): Promise<void> {
     const seconds = Math.max(0, durationSeconds);
 
@@ -76,23 +72,23 @@ export class BillingMeterService {
         const repo = new UsageRepository();
         const unitCostUsd = BILLING_METER_UNIT_COST_USD.CPU_SECOND;
         await repo.recordEvent({
-          eventType: "cpu_time",
+          eventType: 'cpu_time',
           quantity: seconds,
           unitCostUsd,
           metadata: options?.metadata,
-          model: "meter:worker_cpu",
+          model: 'meter:worker_cpu',
         });
         const ctx = getTenantContext();
         await insertBillingUsageLine({
           tenantId: ctx.tenantId,
-          metricType: "worker_seconds",
+          metricType: 'worker_seconds',
           quantity: seconds,
           unitCost: unitCostUsd,
-          metadata: { source: "billing_meter_service" },
+          metadata: { source: 'billing_meter_service' },
         });
         scheduleBudgetCheckJob(ctx.tenantId, ctx.tenantSlug);
       },
-      { tenantId: options?.tenantId },
+      { tenantId: options?.tenantId }
     );
   }
 
@@ -104,7 +100,7 @@ export class BillingMeterService {
     inputTokens: number,
     outputTokens: number,
     modelName: string,
-    options?: { tenantId?: string; metadata?: Json },
+    options?: { tenantId?: string; metadata?: Json }
   ): void {
     setImmediate(() => {
       void BillingMeterService.trackAIUsage(
@@ -112,9 +108,9 @@ export class BillingMeterService {
         inputTokens,
         outputTokens,
         modelName,
-        options,
+        options
       ).catch((err: unknown) => {
-        logMeteringError("trackAIUsage", err);
+        logMeteringError('trackAIUsage', err);
       });
     });
   }
@@ -122,16 +118,14 @@ export class BillingMeterService {
   static trackWorkerExecutionFireAndForget(
     tenantSlug: string,
     durationSeconds: number,
-    options?: { tenantId?: string; metadata?: Json },
+    options?: { tenantId?: string; metadata?: Json }
   ): void {
     setImmediate(() => {
-      void BillingMeterService.trackWorkerExecution(
-        tenantSlug,
-        durationSeconds,
-        options,
-      ).catch((err: unknown) => {
-        logMeteringError("trackWorkerExecution", err);
-      });
+      void BillingMeterService.trackWorkerExecution(tenantSlug, durationSeconds, options).catch(
+        (err: unknown) => {
+          logMeteringError('trackWorkerExecution', err);
+        }
+      );
     });
   }
 }

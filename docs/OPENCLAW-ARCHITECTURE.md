@@ -27,12 +27,12 @@ Así se alivia CPU en el VPS sin cambiar el modelo de cola única (`openclaw` en
 
 ## Componentes propuestos
 
-| Pieza | Rol |
-|--------|-----|
-| **Redis** | Colas de jobs, locks distribuidos, TTL de idempotencia, métricas ligeras de contadores. |
+| Pieza                   | Rol                                                                                                                                      |
+| ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| **Redis**               | Colas de jobs, locks distribuidos, TTL de idempotencia, métricas ligeras de contadores.                                                  |
 | **Motor de decisiones** | Reglas declarativas (prioridad tenant, plan, SLA, costo estimado) que eligen entre: ejecutar ahora, encolar, rechazar, delegar a humano. |
-| **Workers** | Procesos que consumen colas (mismo patrón que orquestación de tenants en `apps/api`). |
-| **API control plane** | Endpoints admin para pausar colas, ver backlog y políticas (sin exponer secretos). |
+| **Workers**             | Procesos que consumen colas (mismo patrón que orquestación de tenants en `apps/api`).                                                    |
+| **API control plane**   | Endpoints admin para pausar colas, ver backlog y políticas (sin exponer secretos).                                                       |
 
 ## Flujo simplificado
 

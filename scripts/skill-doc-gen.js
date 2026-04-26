@@ -4,58 +4,60 @@
  * Genera README, API docs, y matrices de skills
  */
 
-import { readFileSync, writeFileSync, existsSync } from "fs";
-import { join, dirname } from "path";
-import { fileURLToPath } from "url";
+import { readFileSync, writeFileSync, existsSync } from 'fs';
+import { join, dirname } from 'path';
+import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const SKILLS_ROOT = join(__dirname, "..", "skills");
-const USER_SKILLS = join(SKILLS_ROOT, "user");
-const INDEX_PATH = join(SKILLS_ROOT, "index.json");
+const SKILLS_ROOT = join(__dirname, '..', 'skills');
+const USER_SKILLS = join(SKILLS_ROOT, 'user');
+const INDEX_PATH = join(SKILLS_ROOT, 'index.json');
 
 function loadIndex() {
-  return JSON.parse(readFileSync(INDEX_PATH, "utf-8"));
+  return JSON.parse(readFileSync(INDEX_PATH, 'utf-8'));
 }
 
 function loadSkill(name) {
-  const mdPath = join(USER_SKILLS, name, "SKILL.md");
-  const manifestPath = join(USER_SKILLS, name, "manifest.json");
+  const mdPath = join(USER_SKILLS, name, 'SKILL.md');
+  const manifestPath = join(USER_SKILLS, name, 'manifest.json');
 
   return {
     name,
-    content: existsSync(mdPath) ? readFileSync(mdPath, "utf-8") : null,
-    manifest: existsSync(manifestPath) ? JSON.parse(readFileSync(manifestPath, "utf-8")) : null
+    content: existsSync(mdPath) ? readFileSync(mdPath, 'utf-8') : null,
+    manifest: existsSync(manifestPath) ? JSON.parse(readFileSync(manifestPath, 'utf-8')) : null,
   };
 }
 
 function generateTable(skills) {
   const rows = [
-    "| Priority | Skill | Description | Triggers |",
-    "|----------|-------|-------------|----------|"
+    '| Priority | Skill | Description | Triggers |',
+    '|----------|-------|-------------|----------|',
   ];
 
   for (const s of skills) {
-    const triggers = (s.manifest?.triggers || []).slice(0, 3).join(", ");
-    rows.push(`| ${s.manifest?.priority || "?"} | \`${s.name}\` | ${s.manifest?.description || ""} | ${triggers} |`);
+    const triggers = (s.manifest?.triggers || []).slice(0, 3).join(', ');
+    rows.push(
+      `| ${s.manifest?.priority || '?'} | \`${s.name}\` | ${s.manifest?.description || ''} | ${triggers} |`
+    );
   }
 
-  return rows.join("\n");
+  return rows.join('\n');
 }
 
 function generateCrossRefMatrix(skills) {
-  const names = skills.map(s => s.name);
-  const matrix = [["", ...names.map(n => n.replace("opsly-", ""))]];
+  const names = skills.map((s) => s.name);
+  const matrix = [['', ...names.map((n) => n.replace('opsly-', ''))]];
 
   for (const skill of skills) {
     const refs = skill.manifest?.crossReferences || [];
-    const row = [skill.name.replace("opsly-", "")];
+    const row = [skill.name.replace('opsly-', '')];
     for (const other of skills) {
-      row.push(refs.includes(other.name) ? "✅" : "");
+      row.push(refs.includes(other.name) ? '✅' : '');
     }
     matrix.push(row);
   }
 
-  return matrix.map(r => `| ${r.join(" | ")} |`).join("\n");
+  return matrix.map((r) => `| ${r.join(' | ')} |`).join('\n');
 }
 
 function generateTriggerMap(skills) {
@@ -70,61 +72,61 @@ function generateTriggerMap(skills) {
     }
   }
 
-  const lines = ["## Trigger → Skills Map", "", "| Trigger | Skills |", "|---------|-------|"];
+  const lines = ['## Trigger → Skills Map', '', '| Trigger | Skills |', '|---------|-------|'];
 
   const sorted = Object.entries(triggerMap).sort((a, b) => b[1].length - a[1].length);
   for (const [trigger, skillNames] of sorted) {
-    lines.push(`| \`${trigger}\` | ${skillNames.join(", ")} |`);
+    lines.push(`| \`${trigger}\` | ${skillNames.join(', ')} |`);
   }
 
-  return lines.join("\n");
+  return lines.join('\n');
 }
 
 function generateSkillDetail(skill) {
   const lines = [
     `# ${skill.name}`,
-    "",
-    skill.manifest?.description || "",
-    "",
-    "## Metadata",
-    "",
-    `- Priority: ${skill.manifest?.priority || "?"}`,
-    `- Version: ${skill.manifest?.version || "?"}`,
-    `- Category: ${skill.manifest?.category || "?"}`,
-    ""
+    '',
+    skill.manifest?.description || '',
+    '',
+    '## Metadata',
+    '',
+    `- Priority: ${skill.manifest?.priority || '?'}`,
+    `- Version: ${skill.manifest?.version || '?'}`,
+    `- Category: ${skill.manifest?.category || '?'}`,
+    '',
   ];
 
   if (skill.manifest?.triggers?.length > 0) {
-    lines.push("## Triggers");
-    lines.push("");
-    lines.push(skill.manifest.triggers.map(t => `- \`${t}\``).join("\n"));
-    lines.push("");
+    lines.push('## Triggers');
+    lines.push('');
+    lines.push(skill.manifest.triggers.map((t) => `- \`${t}\``).join('\n'));
+    lines.push('');
   }
 
   if (skill.manifest?.crossReferences?.length > 0) {
-    lines.push("## Related Skills");
-    lines.push("");
-    lines.push(skill.manifest.crossReferences.map(s => `- \`${s}\``).join("\n"));
-    lines.push("");
+    lines.push('## Related Skills');
+    lines.push('');
+    lines.push(skill.manifest.crossReferences.map((s) => `- \`${s}\``).join('\n'));
+    lines.push('');
   }
 
   if (skill.manifest?.examples?.length > 0) {
-    lines.push("## Examples");
-    lines.push("");
+    lines.push('## Examples');
+    lines.push('');
     for (const ex of skill.manifest.examples) {
-      lines.push("```json");
+      lines.push('```json');
       lines.push(JSON.stringify(ex, null, 2));
-      lines.push("```");
-      lines.push("");
+      lines.push('```');
+      lines.push('');
     }
   }
 
-  return lines.join("\n");
+  return lines.join('\n');
 }
 
 function generateCompleteDoc() {
   const index = loadIndex();
-  const skills = index.skills.map(s => loadSkill(s.name));
+  const skills = index.skills.map((s) => loadSkill(s.name));
 
   const readme = `# Skills Opsly
 
@@ -154,7 +156,7 @@ ${generateCrossRefMatrix(skills)}
 
 function generateApiDoc() {
   const index = loadIndex();
-  const skills = index.skills.map(s => loadSkill(s.name));
+  const skills = index.skills.map((s) => loadSkill(s.name));
 
   const apiDoc = `# Skills API
 
@@ -258,10 +260,10 @@ bash scripts/skill-autoload.sh validate
   return apiDoc;
 }
 
-const cmd = process.argv[2] || "all";
+const cmd = process.argv[2] || 'all';
 const outputPath = process.argv[3];
 
-if (cmd === "readme" || cmd === "all") {
+if (cmd === 'readme' || cmd === 'all') {
   const content = generateCompleteDoc();
   if (outputPath) {
     writeFileSync(outputPath, content);
@@ -271,21 +273,21 @@ if (cmd === "readme" || cmd === "all") {
   }
 }
 
-if (cmd === "api" || cmd === "all") {
+if (cmd === 'api' || cmd === 'all') {
   const content = generateApiDoc();
-  const path = outputPath || join(SKILLS_ROOT, "API.md");
+  const path = outputPath || join(SKILLS_ROOT, 'API.md');
   writeFileSync(path, content);
   console.log(`✅ API docs generadas: ${path}`);
 }
 
-if (cmd === "triggers") {
+if (cmd === 'triggers') {
   const index = loadIndex();
-  const skills = index.skills.map(s => loadSkill(s.name));
+  const skills = index.skills.map((s) => loadSkill(s.name));
   console.log(generateTriggerMap(skills));
 }
 
-if (cmd === "matrix") {
+if (cmd === 'matrix') {
   const index = loadIndex();
-  const skills = index.skills.map(s => loadSkill(s.name));
+  const skills = index.skills.map((s) => loadSkill(s.name));
   console.log(generateCrossRefMatrix(skills));
 }

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 
 export function useMediaQuery(query: string): boolean {
   const [matches, setMatches] = useState(false);
@@ -9,9 +9,9 @@ export function useMediaQuery(query: string): boolean {
     const listener = (): void => {
       setMatches(media.matches);
     };
-    media.addEventListener("change", listener);
+    media.addEventListener('change', listener);
     return () => {
-      media.removeEventListener("change", listener);
+      media.removeEventListener('change', listener);
     };
   }, [query]);
 
@@ -23,22 +23,22 @@ export function useBreakpoint(): {
   isTablet: boolean;
   isDesktop: boolean;
   isLargeDesktop: boolean;
-  current: "mobile" | "tablet" | "desktop" | "large";
+  current: 'mobile' | 'tablet' | 'desktop' | 'large';
 } {
-  const isMobile = useMediaQuery("(max-width: 639px)");
-  const isTablet = useMediaQuery("(min-width: 640px) and (max-width: 1023px)");
-  const isDesktop = useMediaQuery("(min-width: 1024px)");
-  const isLargeDesktop = useMediaQuery("(min-width: 1280px)");
+  const isMobile = useMediaQuery('(max-width: 639px)');
+  const isTablet = useMediaQuery('(min-width: 640px) and (max-width: 1023px)');
+  const isDesktop = useMediaQuery('(min-width: 1024px)');
+  const isLargeDesktop = useMediaQuery('(min-width: 1280px)');
 
-  let current: "mobile" | "tablet" | "desktop" | "large" = "desktop";
+  let current: 'mobile' | 'tablet' | 'desktop' | 'large' = 'desktop';
   if (isMobile) {
-    current = "mobile";
+    current = 'mobile';
   } else if (isTablet) {
-    current = "tablet";
+    current = 'tablet';
   } else if (isLargeDesktop) {
-    current = "large";
+    current = 'large';
   } else {
-    current = "desktop";
+    current = 'desktop';
   }
 
   return {
@@ -65,9 +65,9 @@ export function useContainerSize(): { width: number; height: number } {
     };
 
     handleResize();
-    window.addEventListener("resize", handleResize);
+    window.addEventListener('resize', handleResize);
     return () => {
-      window.removeEventListener("resize", handleResize);
+      window.removeEventListener('resize', handleResize);
     };
   }, []);
 

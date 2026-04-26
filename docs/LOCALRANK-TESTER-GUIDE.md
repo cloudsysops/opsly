@@ -6,13 +6,13 @@ Eres uno de nuestros primeros testers externos: tu feedback ayuda a definir el p
 
 ## Tus servicios
 
-| Servicio | URL |
-|----------|-----|
-| Portal | https://portal.ops.smiletripcare.com |
-| n8n | https://n8n-localrank.ops.smiletripcare.com |
+| Servicio    | URL                                            |
+| ----------- | ---------------------------------------------- |
+| Portal      | https://portal.ops.smiletripcare.com           |
+| n8n         | https://n8n-localrank.ops.smiletripcare.com    |
 | Uptime Kuma | https://uptime-localrank.ops.smiletripcare.com |
 
-*(Las URLs asumen el tenant `localrank` desplegado en el VPS de staging.)*
+_(Las URLs asumen el tenant `localrank` desplegado en el VPS de staging.)_
 
 **Nota de seguridad:** acceso SSH de administración solo por Tailscale (`100.120.151.91`).
 Las webs públicas están detrás de Cloudflare (Proxy ON recomendado para `*.ops.smiletripcare.com`).
@@ -58,5 +58,5 @@ Usa el botón de feedback en el portal. El sistema clasifica mensajes para prior
 
 ## Contacto
 
-- **Tu cuenta:** jkbotero78@gmail.com  
+- **Tu cuenta:** jkbotero78@gmail.com
 - **Fundador:** cboteros1@gmail.com (Cristian)

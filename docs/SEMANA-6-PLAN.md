@@ -25,11 +25,13 @@
 **Duración:** ~5 min
 
 **Opciones:**
+
 - **A) Staging test tenant:** Usar `localrank` o `jkboterolabs` (ya mencionados en AGENTS.md)
 - **B) Cliente real:** Nuevo dominio cliente B pagador
 - **C) Homólogo interno:** e.g. `test-opsly-internal` para validación sin cliente externo
 
 **Comando:**
+
 ```bash
 export PLATFORM_ADMIN_TOKEN="$(doppler run --config prd -- echo $PLATFORM_ADMIN_TOKEN)"
 export NEXT_PUBLIC_APP_URL="https://api.ops.smiletripcare.com"  # O staging según env
@@ -42,6 +44,7 @@ export NEXT_PUBLIC_APP_URL="https://api.ops.smiletripcare.com"  # O staging seg�
 ```
 
 **Validaciones:**
+
 - ✅ Tenant creado en `platform.tenants` Supabase
 - ✅ Schema tenant creado (schema `test_client_b`)
 - ✅ n8n container lanzado (`docker ps | grep n8n`)
@@ -56,11 +59,13 @@ export NEXT_PUBLIC_APP_URL="https://api.ops.smiletripcare.com"  # O staging seg�
 **Duración:** ~10 min
 
 **Precondiciones:**
+
 - Segundo tenant creado (Tarea 1)
 - `PLATFORM_ADMIN_TOKEN` disponible (Doppler)
 - `NEXT_PUBLIC_APP_URL` apunta a ambiente de prueba
 
 **Comando:**
+
 ```bash
 export ADMIN_TOKEN="$(doppler run --config prd -- echo $PLATFORM_ADMIN_TOKEN)"
 export OWNER_EMAIL="owner-b@example.com"  # Email owner del tenant #2
@@ -71,6 +76,7 @@ export OWNER_EMAIL="owner-b@example.com"  # Email owner del tenant #2
 ```
 
 **Flujo validado:**
+
 1. POST `/api/invitations` → invitación con JWT
 2. GET `/api/invitations/{id}` → token verificable
 3. Portal: `/invite/{token}` → formulario pre-relleno
@@ -79,6 +85,7 @@ export OWNER_EMAIL="owner-b@example.com"  # Email owner del tenant #2
 6. GET `/api/portal/usage` → métricas (inicialmente 0)
 
 **Checklist E2E:**
+
 - ✅ Status 200 en POST invitations
 - ✅ JWT en respuesta contiene tenant+email
 - ✅ GET /invite/{token} renderiza sin error
@@ -113,6 +120,7 @@ export OWNER_EMAIL="owner-b@example.com"  # Email owner del tenant #2
 #### 3.3 Doppler Configuration (`prd`)
 
 **Variables críticas presentes:**
+
 - [ ] `PLATFORM_DOMAIN` = `ops.smiletripcare.com`
 - [ ] `PLATFORM_ADMIN_TOKEN` (SECRETO, >32 chars)
 - [ ] `SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY`
@@ -124,6 +132,7 @@ export OWNER_EMAIL="owner-b@example.com"  # Email owner del tenant #2
 - [ ] `OLLAMA_URL` + `OLLAMA_MODEL` (si Fase 2 activada)
 
 **Verificación:**
+
 ```bash
 doppler run --config prd -- ./scripts/check-tokens.sh
 ```
@@ -173,25 +182,26 @@ doppler run --config prd -- ./scripts/check-tokens.sh
 ssh vps-dragon@100.120.151.91 << 'EOF'
   # Health checks
   docker ps --format "table {{.Names}}\t{{.Status}}"
-  
+
   # Disk usage
   df -h | grep -E "/$|/opt"
-  
+
   # Memory
   free -h
-  
+
   # Load
   uptime
-  
+
   # Traefik running
   curl -s http://localhost/api/health || echo "Traefik down"
-  
+
   # Compose status
   cd /opt/opsly && docker compose ps
 EOF
 ```
 
 **Checklist VPS:**
+
 - [ ] All core services running (app, admin, portal, orchestrator, redis, postgres)
 - [ ] Disk usage < 80% (`/` y `/opt`)
 - [ ] Load < 4 (normal en background tasks)
@@ -206,6 +216,7 @@ EOF
 **Duración:** ~15 min
 
 **Archivos a crear/actualizar:**
+
 - [ ] `docs/SECOND-CLIENT-ONBOARDING.md` — paso a paso para próximos clientes
 - [ ] `docs/PRE-LAUNCH-CHECKLIST.md` — lista de validación antes de prod
 - [ ] `docs/INCIDENT-RUNBOOKS.md` — guías para problemas comunes
@@ -215,13 +226,13 @@ EOF
 
 ## 🔗 Dependencias y Bloqueantes
 
-| Bloqueante | Estado | Mitigación |
-|-----------|--------|-----------|
-| Cloudflare Proxy OFF | ⚠️ Si está OFF, IP 157.245.223.7 expuesta | Activar Proxy en dashboard CF |
-| Doppler `prd` missing vars | ⚠️ Si variables incompletas, deploy falla | Completar según checklist 3.3 |
-| Supabase rate limits | ⚠️ Si E2E muy agresivo | Usar `--dry-run` primero |
-| RESEND quota | ⚠️ Si se agotan invitaciones diarias | Verificar con equipo Resend |
-| Tailscale VPN | ⚠️ Si no conecta, SSH imposible | Verificar IP `100.120.151.91` reachable |
+| Bloqueante                 | Estado                                    | Mitigación                              |
+| -------------------------- | ----------------------------------------- | --------------------------------------- |
+| Cloudflare Proxy OFF       | ⚠️ Si está OFF, IP 157.245.223.7 expuesta | Activar Proxy en dashboard CF           |
+| Doppler `prd` missing vars | ⚠️ Si variables incompletas, deploy falla | Completar según checklist 3.3           |
+| Supabase rate limits       | ⚠️ Si E2E muy agresivo                    | Usar `--dry-run` primero                |
+| RESEND quota               | ⚠️ Si se agotan invitaciones diarias      | Verificar con equipo Resend             |
+| Tailscale VPN              | ⚠️ Si no conecta, SSH imposible           | Verificar IP `100.120.151.91` reachable |
 
 ---
 
@@ -229,48 +240,52 @@ EOF
 
 **Al completar Semana 6:**
 
-| Métrica | Target | Validación |
-|---------|--------|-----------|
-| Tenants activos | ≥ 2 | `SELECT COUNT(*) FROM platform.tenants` |
-| Invitaciones exitosas | 100% | POST + activate sin error |
-| E2E flow time | < 5 min | Timing end-to-end |
-| API latency (p50) | < 200ms | Gateway logs |
-| Type-check | PASS | `npm run type-check` |
-| Test suite | PASS | `npm run test --workspace=...` |
+| Métrica               | Target  | Validación                              |
+| --------------------- | ------- | --------------------------------------- |
+| Tenants activos       | ≥ 2     | `SELECT COUNT(*) FROM platform.tenants` |
+| Invitaciones exitosas | 100%    | POST + activate sin error               |
+| E2E flow time         | < 5 min | Timing end-to-end                       |
+| API latency (p50)     | < 200ms | Gateway logs                            |
+| Type-check            | PASS    | `npm run type-check`                    |
+| Test suite            | PASS    | `npm run test --workspace=...`          |
 
 ---
 
 ## ⏱️ Timeline Estimado
 
-| Tarea | Duración | Status |
-|-------|----------|--------|
-| Tarea 1: Onboard T2 | 5 min | ⏳ |
-| Tarea 2: E2E Invite Flow | 10 min | ⏳ |
-| Tarea 3: Pre-Launch Checklist | 20 min | ⏳ |
-| Tarea 4: VPS Health | 10 min | ⏳ |
-| Tarea 5: Docs | 15 min | ⏳ |
-| **Total** | **60 min** | ⏳ |
+| Tarea                         | Duración   | Status |
+| ----------------------------- | ---------- | ------ |
+| Tarea 1: Onboard T2           | 5 min      | ⏳     |
+| Tarea 2: E2E Invite Flow      | 10 min     | ⏳     |
+| Tarea 3: Pre-Launch Checklist | 20 min     | ⏳     |
+| Tarea 4: VPS Health           | 10 min     | ⏳     |
+| Tarea 5: Docs                 | 15 min     | ⏳     |
+| **Total**                     | **60 min** | ⏳     |
 
 ---
 
 ## 🎬 Ejecución Autónoma (sin parar)
 
 ### Fase A: Setup (sin confirmación)
+
 1. `onboard-tenant.sh --slug ... --email ... --plan ...`
 2. Verificar `docker ps | grep n8n`
 3. Verificar Supabase schema creado
 
 ### Fase B: E2E Validation (requiere confirmación si hay errores)
+
 1. `test-e2e-invite-flow.sh --dry-run` (sin mutations)
 2. `test-e2e-invite-flow.sh` (con POST invitations)
 3. Validar 200 OK en todos los pasos
 
 ### Fase C: Checklist (manual)
+
 1. Ejecutar script validación Doppler
 2. SSH health checks
 3. Completar checklist 3.x
 
 ### Fase D: Documentation (automático)
+
 1. Crear `docs/SECOND-CLIENT-ONBOARDING.md`
 2. Crear `docs/PRE-LAUNCH-CHECKLIST.md`
 3. Actualizar `AGENTS.md` sección 🔄
@@ -278,4 +293,3 @@ EOF
 ---
 
 **Próximo estado esperado:** Semana 6 ✅ COMPLETADO → Ready for Go-Live o siguiente sprint
-

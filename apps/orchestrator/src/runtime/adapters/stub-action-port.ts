@@ -4,13 +4,13 @@
  * @see docs/design/OAR.md — §4.2 AgentActionPort
  */
 
-import type { AgentActionPort, ToolResult } from "../interfaces/agent-action-port.js";
+import type { AgentActionPort, ToolResult } from '../interfaces/agent-action-port.js';
 
 export class StubAgentActionPort implements AgentActionPort {
   async executeAction(
     _tenantSlug: string,
     actionName: string,
-    _args: Record<string, unknown>,
+    _args: Record<string, unknown>
   ): Promise<ToolResult> {
     return {
       success: true,

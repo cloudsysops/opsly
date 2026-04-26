@@ -37,6 +37,6 @@ export interface AgentActionPort {
   executeAction(
     tenantSlug: string,
     actionName: string,
-    args: Record<string, unknown>,
+    args: Record<string, unknown>
   ): Promise<ToolResult>;
 }

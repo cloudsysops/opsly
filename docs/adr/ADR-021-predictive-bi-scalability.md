@@ -26,10 +26,12 @@
 **Descripción:** Calcular insights en el momento que el usuario los solicita.
 
 **Pros:**
+
 - Siempre datos actualizados
 - Sin almacenamiento de predicciones
 
 **Contras:**
+
 - ❌ Latencia alta en primera consulta
 - ❌ Picos de CPU/DB impredecibles
 - ❌ Timeout en requests HTTP
@@ -40,6 +42,7 @@
 **Descripción:** Generar insights en background jobs programados (BullMQ), guardar en tabla `tenant_insights`, servir desde cache.
 
 **Pros:**
+
 - ✅ Consultas rápidas (< 100ms)
 - ✅ Consumo predecible de recursos
 - ✅ Aislado por tenant
@@ -47,6 +50,7 @@
 - ✅ Priorización por plan (enterprise primero)
 
 **Contras:**
+
 - ⚠️ Datos pueden tener hasta X horas de antigüedad
 - ⚠️ Requiere infraestructura de colas
 
@@ -55,10 +59,12 @@
 **Descripción:** Usar PostgreSQL materialized views para pre-calcular agregaciones y pgvector para clustering de comportamientos.
 
 **Pros:**
+
 - ✅ Consultas SQL optimizadas
 - ✅ Pattern matching vectorial
 
 **Contras:**
+
 - ⚠️ Requiere extensión pgvector habilitada
 - ⚠️ Más complejo de mantener
 
@@ -86,6 +92,7 @@ Implementación en fases:
 ```
 
 **Configuración:**
+
 - Worker concurrency: 5
 - Job retry: 3 intentos con backoff exponencial
 - Lock por tenant para evitar duplicación
@@ -111,6 +118,7 @@ Implementación en fases:
 ```
 
 **Mejoras:**
+
 - Colas separadas por prioridad (plan del tenant)
 - Más workers para tenants enterprise
 - Rate limiting por tenant
@@ -137,6 +145,7 @@ Implementación en fases:
 ```
 
 **Características:**
+
 - Auto-scaling basado en queue depth
 - Workers en containers separados
 - Límite de concurrencia global
@@ -165,13 +174,13 @@ CREATE TABLE platform.tenant_insights_0 PARTITION OF platform.tenant_insights
 
 ```sql
 -- Índice compuesto para consultas frecuentes
-CREATE INDEX idx_insights_tenant_active 
-    ON platform.tenant_insights (tenant_id, status) 
+CREATE INDEX idx_insights_tenant_active
+    ON platform.tenant_insights (tenant_id, status)
     WHERE status = 'active';
 
 -- Índice para limpieza periódica
-CREATE INDEX idx_insights_expires 
-    ON platform.tenant_insights (expires_at) 
+CREATE INDEX idx_insights_expires
+    ON platform.tenant_insights (expires_at)
     WHERE expires_at IS NOT NULL;
 ```
 
@@ -187,7 +196,7 @@ BEGIN
     DELETE FROM platform.tenant_insights
     WHERE expires_at < NOW() - INTERVAL '7 days'
       AND status != 'actioned';
-    
+
     GET DIAGNOSTICS deleted = ROW_COUNT;
     RETURN deleted;
 END;
@@ -214,7 +223,11 @@ interface TenantComputationBudget {
 const BUDGETS = {
   startup: { max_computation_time_ms: 500, max_data_points: 1000, max_insights_per_cycle: 5 },
   business: { max_computation_time_ms: 2000, max_data_points: 10000, max_insights_per_cycle: 10 },
-  enterprise: { max_computation_time_ms: 10000, max_data_points: 100000, max_insights_per_cycle: 20 }
+  enterprise: {
+    max_computation_time_ms: 10000,
+    max_data_points: 100000,
+    max_insights_per_cycle: 20,
+  },
 };
 ```
 
@@ -225,7 +238,7 @@ const BUDGETS = {
 const RATE_LIMITS = {
   startup: { max_jobs_per_hour: 2, max_concurrent: 1 },
   business: { max_jobs_per_hour: 5, max_concurrent: 2 },
-  enterprise: { max_jobs_per_hour: 20, max_concurrent: 5 }
+  enterprise: { max_jobs_per_hour: 20, max_concurrent: 5 },
 };
 ```
 
@@ -240,18 +253,18 @@ const METRICS = {
   // Latencia
   'insight.generation.duration': 'histogram',
   'insight.generation.tenant.count': 'counter',
-  
+
   // Errores
   'insight.generation.errors': 'counter',
   'insight.generation.timeout': 'counter',
-  
+
   // Queue
   'insight.queue.depth': 'gauge',
   'insight.queue.wait_time': 'histogram',
-  
+
   // Calidad
   'insight.action.rate': 'counter', // Cuántos insights son "actioned"
-  'insight.dismiss.rate': 'counter' // Cuántos son "dismissed"
+  'insight.dismiss.rate': 'counter', // Cuántos son "dismissed"
 };
 ```
 
@@ -262,11 +275,11 @@ alerts:
   - name: HighQueueDepth
     condition: queue_depth > 1000
     severity: warning
-    
+
   - name: GenerationLatencyHigh
     condition: p95_generation_time > 5s
     severity: warning
-    
+
   - name: HighErrorRate
     condition: error_rate > 5%
     severity: critical
@@ -290,13 +303,13 @@ alerts:
 async function generateInsights(tenantId: string) {
   // 1. Obtener SOLO datos del tenant específico
   const metrics = await getTenantMetrics(tenantId); // WHERE tenant_id = ?
-  
+
   // 2. Calcular insights SOLO para ese tenant
   const insights = calculateInsights(metrics); // Sin acceso a otros datos
-  
+
   // 3. Guardar SOLO con el tenant_id correcto
   await saveInsights(tenantId, insights); // INSERT ... tenant_id = ?
-  
+
   return insights;
 }
 ```
@@ -305,14 +318,14 @@ async function generateInsights(tenantId: string) {
 
 ## Cronograma de Implementación
 
-| Fase | Alcance | Tiempo | Complexity |
-|------|---------|--------|------------|
-| 1 | MVP - BullMQ worker básico | 1 semana | Baja |
-| 2 | Priorización por plan | 2-3 días | Baja |
-| 3 | Rate limiting | 1 semana | Media |
-| 4 | Auto-scaling config | 1 semana | Alta |
-| 5 | Particionamiento BD | 2 días | Media |
-| 6 | Monitoreo completo | 1 semana | Media |
+| Fase | Alcance                    | Tiempo   | Complexity |
+| ---- | -------------------------- | -------- | ---------- |
+| 1    | MVP - BullMQ worker básico | 1 semana | Baja       |
+| 2    | Priorización por plan      | 2-3 días | Baja       |
+| 3    | Rate limiting              | 1 semana | Media      |
+| 4    | Auto-scaling config        | 1 semana | Alta       |
+| 5    | Particionamiento BD        | 2 días   | Media      |
+| 6    | Monitoreo completo         | 1 semana | Media      |
 
 ---
 

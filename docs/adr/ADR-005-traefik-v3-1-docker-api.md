@@ -5,7 +5,7 @@
 
 ## Contexto
 
-Traefik **v3.0.x** y **v3.1** pueden negociar una **API version 1.24** con el daemon; **Docker Engine 29.x** puede rechazarla (*client version 1.24 is too old. Minimum supported API version is 1.40*). La variable de entorno `DOCKER_API_VERSION` en el contenedor Traefik **no** corrige el cliente Go embebido del provider Docker (solo afecta al CLI).
+Traefik **v3.0.x** y **v3.1** pueden negociar una **API version 1.24** con el daemon; **Docker Engine 29.x** puede rechazarla (_client version 1.24 is too old. Minimum supported API version is 1.40_). La variable de entorno `DOCKER_API_VERSION` en el contenedor Traefik **no** corrige el cliente Go embebido del provider Docker (solo afecta al CLI).
 
 ## Decisión
 

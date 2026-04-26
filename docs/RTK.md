@@ -51,10 +51,10 @@ RTK **no** es un servicio Docker del control plane: se instala en la cuenta Linu
 
 **Instalación ya aplicada en:**
 
-| Host | Usuario | Binario |
-|------|---------|---------|
+| Host                        | Usuario        | Binario            |
+| --------------------------- | -------------- | ------------------ |
 | Worker Mac 2011 (Tailscale) | `opslyquantum` | `~/.local/bin/rtk` |
-| VPS (Tailscale) | `vps-dragon` | `~/.local/bin/rtk` |
+| VPS (Tailscale)             | `vps-dragon`   | `~/.local/bin/rtk` |
 
 `PATH` debe incluir `~/.local/bin` (p. ej. en `~/.bashrc`). Comprobar: `rtk --version`.
 
@@ -84,8 +84,8 @@ La telemetría RTK está **desactivada por defecto**; opt-in explícito. Ver [do
 
 ## Relación con Opsly
 
-| Componente | RTK |
-|------------|-----|
-| `apps/llm-gateway` | No integrado; distinto propósito |
-| Desarrollo local / Cursor | Sí: hooks + binario |
-| Tenants / portal | No aplica |
+| Componente                | RTK                              |
+| ------------------------- | -------------------------------- |
+| `apps/llm-gateway`        | No integrado; distinto propósito |
+| Desarrollo local / Cursor | Sí: hooks + binario              |
+| Tenants / portal          | No aplica                        |

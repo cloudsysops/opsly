@@ -4,16 +4,16 @@
  * @see docs/design/OAR.md — §3.2 Plan & Execute
  */
 
-import { z } from "zod";
+import { z } from 'zod';
 
-import type { AgentActionPort } from "../interfaces/agent-action-port.js";
-import type { MemoryInterface } from "../interfaces/memory.interface.js";
-import type { OarTracer } from "../observability/tracer.js";
-import { traceOar } from "../observability/tracer.js";
-import type { OarLifecycleState } from "../types.js";
-import { OAR_LIFECYCLE } from "../types.js";
+import type { AgentActionPort } from '../interfaces/agent-action-port.js';
+import type { MemoryInterface } from '../interfaces/memory.interface.js';
+import type { OarTracer } from '../observability/tracer.js';
+import { traceOar } from '../observability/tracer.js';
+import type { OarLifecycleState } from '../types.js';
+import { OAR_LIFECYCLE } from '../types.js';
 
-import type { ReActLlmGatewayClient } from "./react-engine.js";
+import type { ReActLlmGatewayClient } from './react-engine.js';
 
 /** Máximo de pasos del plan que se ejecutarán (protección ante arrays enormes). */
 export const DEFAULT_MAX_PLAN_STEPS = 50;
@@ -21,7 +21,7 @@ export const DEFAULT_MAX_PLAN_STEPS = 50;
 /** Reintentos pidiendo al LLM que corrija el JSON del plan tras parse/validación fallidos. */
 export const DEFAULT_MAX_PLAN_PARSE_RETRIES = 3;
 
-export const DEFAULT_PLAN_EXECUTE_MODEL = "plan-execute-orchestrator-default";
+export const DEFAULT_PLAN_EXECUTE_MODEL = 'plan-execute-orchestrator-default';
 
 export interface RunPlanExecuteStrategyOptions {
   model?: string;
@@ -34,7 +34,7 @@ export interface RunPlanExecuteStrategyOptions {
 }
 
 export interface RunPlanExecuteResult {
-  state: Extract<OarLifecycleState, "completed" | "failed">;
+  state: Extract<OarLifecycleState, 'completed' | 'failed'>;
   finalAnswer?: string;
   errorMessage?: string;
   /** Pasos de acción ejecutados con éxito (no incluye planning/síntesis). */
@@ -68,7 +68,7 @@ function formatContextPrefix(context: Record<string, unknown>): string {
   try {
     return JSON.stringify(context, null, 2);
   } catch {
-    return "[unserializable working context]";
+    return '[unserializable working context]';
   }
 }
 
@@ -102,8 +102,8 @@ ${correction}`;
 function buildSynthesisPrompt(initialPrompt: string, executionLog: readonly string[]): string {
   const logText =
     executionLog.length === 0
-      ? "(no steps executed)"
-      : executionLog.map((line, i) => `${i + 1}. ${line}`).join("\n");
+      ? '(no steps executed)'
+      : executionLog.map((line, i) => `${i + 1}. ${line}`).join('\n');
 
   return `${initialPrompt}
 
@@ -114,7 +114,9 @@ SYNTHESIS: Write a concise final summary in plain language of what was done and 
 }
 
 /** Expuesto para tests: sanea fences y valida con Zod antes de ejecutar acciones. */
-export function parseAndValidatePlan(raw: string): { ok: true; plan: PlanStep[] } | { ok: false; message: string } {
+export function parseAndValidatePlan(
+  raw: string
+): { ok: true; plan: PlanStep[] } | { ok: false; message: string } {
   const text = stripCodeFences(raw);
   let parsed: unknown;
   try {
@@ -128,7 +130,7 @@ export function parseAndValidatePlan(raw: string): { ok: true; plan: PlanStep[] 
   if (!validated.success) {
     return {
       ok: false,
-      message: validated.error.flatten().formErrors.join("; ") || validated.error.message,
+      message: validated.error.flatten().formErrors.join('; ') || validated.error.message,
     };
   }
 
@@ -144,7 +146,7 @@ async function persistPlanSummary(
   memory: MemoryInterface,
   tenantSlug: string,
   sessionId: string,
-  steps: readonly PlanStep[],
+  steps: readonly PlanStep[]
 ): Promise<void> {
   const summary = steps.map((s) => ({ stepId: s.stepId, action: s.action, thought: s.thought }));
   await memory.appendObservation(tenantSlug, sessionId, 0, `[plan] ${JSON.stringify(summary)}`);
@@ -156,11 +158,8 @@ async function executePlanSteps(
   steps: readonly PlanStep[],
   actionPort: AgentActionPort,
   memory: MemoryInterface,
-  tracer: OarTracer | undefined,
-): Promise<
-  | { ok: true; executionLog: string[] }
-  | { ok: false; result: RunPlanExecuteResult }
-> {
+  tracer: OarTracer | undefined
+): Promise<{ ok: true; executionLog: string[] } | { ok: false; result: RunPlanExecuteResult }> {
   const executionLog: string[] = [];
   let stepMemoryIndex = 1;
 
@@ -172,7 +171,7 @@ async function executePlanSteps(
       return {
         ok: false,
         result: {
-          state: "failed",
+          state: 'failed',
           errorMessage: `Step ${String(step.stepId)}: args are not serializable.`,
           stepsExecuted: executionLog.length,
           lastLifecycleState: OAR_LIFECYCLE.failed,
@@ -184,8 +183,8 @@ async function executePlanSteps(
     const toolResult = await actionPort.executeAction(tenantSlug, step.action, args);
     const observationForTrace = toolResult.success
       ? toolResult.observation
-      : `[action error] ${toolResult.error ?? "unknown error"}. Observation: ${toolResult.observation}`;
-    traceOar(tracer, sessionId, tenantSlug, "tool_call", {
+      : `[action error] ${toolResult.error ?? 'unknown error'}. Observation: ${toolResult.observation}`;
+    traceOar(tracer, sessionId, tenantSlug, 'tool_call', {
       stepId: step.stepId,
       toolName: step.action,
       args,
@@ -201,7 +200,7 @@ async function executePlanSteps(
       return {
         ok: false,
         result: {
-          state: "failed",
+          state: 'failed',
           errorMessage: `Step ${String(step.stepId)} (${step.action}) failed: ${toolResult.error ?? toolResult.observation}`,
           stepsExecuted: executionLog.length,
           lastLifecycleState: OAR_LIFECYCLE.failed,
@@ -224,28 +223,27 @@ export async function runPlanExecuteStrategy(
   actionPort: AgentActionPort,
   memory: MemoryInterface,
   llmGatewayClient: ReActLlmGatewayClient,
-  options?: RunPlanExecuteStrategyOptions,
+  options?: RunPlanExecuteStrategyOptions
 ): Promise<RunPlanExecuteResult> {
   const model = options?.model ?? DEFAULT_PLAN_EXECUTE_MODEL;
   const maxParseRetries = options?.maxPlanParseRetries ?? DEFAULT_MAX_PLAN_PARSE_RETRIES;
   const maxPlanSteps = Math.max(0, options?.maxPlanSteps ?? DEFAULT_MAX_PLAN_STEPS);
   const tracer = options?.tracer;
 
-  traceOar(tracer, sessionId, tenantSlug, "strategy_start", { type: "plan_execute" });
+  traceOar(tracer, sessionId, tenantSlug, 'strategy_start', { type: 'plan_execute' });
 
   const working = await memory.getWorkingContext(tenantSlug, sessionId);
   const contextBlock =
     Object.keys(working).length > 0
       ? `Working context (from memory):\n${formatContextPrefix(working)}\n\n`
-      : "";
+      : '';
 
-  let planRaw = "";
-  let lastParseError = "";
+  let planRaw = '';
+  let lastParseError = '';
 
   for (let attempt = 0; attempt < maxParseRetries; attempt += 1) {
     const planningPrompt =
-      contextBlock +
-      buildPlanningPrompt(initialPrompt, attempt === 0 ? undefined : lastParseError);
+      contextBlock + buildPlanningPrompt(initialPrompt, attempt === 0 ? undefined : lastParseError);
 
     planRaw = await llmGatewayClient.complete(model, planningPrompt);
     const parsed = parseAndValidatePlan(planRaw);
@@ -257,21 +255,21 @@ export async function runPlanExecuteStrategy(
 
     const capped = parsed.plan.slice(0, maxPlanSteps);
     if (capped.length === 0) {
-      traceOar(tracer, sessionId, tenantSlug, "strategy_end", {
-        state: "failed",
-        errorMessage: "Plan is empty after applying maxPlanSteps.",
+      traceOar(tracer, sessionId, tenantSlug, 'strategy_end', {
+        state: 'failed',
+        errorMessage: 'Plan is empty after applying maxPlanSteps.',
       });
       return {
-        state: "failed",
-        errorMessage: "Plan is empty after applying maxPlanSteps.",
+        state: 'failed',
+        errorMessage: 'Plan is empty after applying maxPlanSteps.',
         stepsExecuted: 0,
         lastLifecycleState: OAR_LIFECYCLE.failed,
         planStepCount: 0,
       };
     }
 
-    traceOar(tracer, sessionId, tenantSlug, "llm_call", {
-      phase: "planning",
+    traceOar(tracer, sessionId, tenantSlug, 'llm_call', {
+      phase: 'planning',
       stepsCount: capped.length,
       attempt,
       input: planningPrompt,
@@ -282,7 +280,7 @@ export async function runPlanExecuteStrategy(
 
     const ran = await executePlanSteps(tenantSlug, sessionId, capped, actionPort, memory, tracer);
     if (!ran.ok) {
-      traceOar(tracer, sessionId, tenantSlug, "strategy_end", {
+      traceOar(tracer, sessionId, tenantSlug, 'strategy_end', {
         state: ran.result.state,
         stepsExecuted: ran.result.stepsExecuted,
         planStepCount: ran.result.planStepCount,
@@ -293,20 +291,20 @@ export async function runPlanExecuteStrategy(
 
     const synthesisPrompt = contextBlock + buildSynthesisPrompt(initialPrompt, ran.executionLog);
     const synthesisRaw = await llmGatewayClient.complete(model, synthesisPrompt);
-    traceOar(tracer, sessionId, tenantSlug, "llm_call", {
-      phase: "synthesis",
+    traceOar(tracer, sessionId, tenantSlug, 'llm_call', {
+      phase: 'synthesis',
       input: synthesisPrompt,
       output: synthesisRaw,
     });
     const finalAnswer = stripCodeFences(synthesisRaw).trim();
 
-    traceOar(tracer, sessionId, tenantSlug, "strategy_end", {
-      state: "completed",
+    traceOar(tracer, sessionId, tenantSlug, 'strategy_end', {
+      state: 'completed',
       stepsExecuted: ran.executionLog.length,
       planStepCount: capped.length,
     });
     return {
-      state: "completed",
+      state: 'completed',
       finalAnswer,
       stepsExecuted: ran.executionLog.length,
       lastLifecycleState: OAR_LIFECYCLE.completed,
@@ -314,12 +312,12 @@ export async function runPlanExecuteStrategy(
     };
   }
 
-  traceOar(tracer, sessionId, tenantSlug, "strategy_end", {
-    state: "failed",
+  traceOar(tracer, sessionId, tenantSlug, 'strategy_end', {
+    state: 'failed',
     errorMessage: `Could not obtain a valid plan after ${String(maxParseRetries)} attempt(s).`,
   });
   return {
-    state: "failed",
+    state: 'failed',
     errorMessage: `Could not obtain a valid plan after ${String(maxParseRetries)} attempt(s). Last error: ${lastParseError}`,
     stepsExecuted: 0,
     lastLifecycleState: OAR_LIFECYCLE.failed,

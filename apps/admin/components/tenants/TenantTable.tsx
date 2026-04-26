@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { Fragment, useMemo, useState } from "react";
-import { ChevronDown, ChevronRight, ExternalLink } from "lucide-react";
-import type { Tenant } from "@/lib/types";
-import { parseServiceUrls } from "@/lib/service-urls";
-import { Button } from "@/components/ui/button";
+import Link from 'next/link';
+import { Fragment, useMemo, useState } from 'react';
+import { ChevronDown, ChevronRight, ExternalLink } from 'lucide-react';
+import type { Tenant } from '@/lib/types';
+import { parseServiceUrls } from '@/lib/service-urls';
+import { Button } from '@/components/ui/button';
 import {
   Table,
   TableBody,
@@ -13,17 +13,11 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { PlanBadge } from "@/components/tenants/PlanBadge";
-import { TenantStatusBadge } from "@/components/tenants/TenantStatusBadge";
+} from '@/components/ui/table';
+import { PlanBadge } from '@/components/tenants/PlanBadge';
+import { TenantStatusBadge } from '@/components/tenants/TenantStatusBadge';
 
-export function TenantTable({
-  tenants,
-  search,
-}: {
-  tenants: Tenant[];
-  search: string;
-}) {
+export function TenantTable({ tenants, search }: { tenants: Tenant[]; search: string }) {
   const [expandedSlug, setExpandedSlug] = useState<string | null>(null);
   const q = search.trim().toLowerCase();
 
@@ -32,8 +26,7 @@ export function TenantTable({
       return tenants;
     }
     return tenants.filter(
-      (t) =>
-        t.slug.toLowerCase().includes(q) || t.name.toLowerCase().includes(q),
+      (t) => t.slug.toLowerCase().includes(q) || t.name.toLowerCase().includes(q)
     );
   }, [tenants, q]);
 
@@ -81,10 +74,7 @@ export function TenantTable({
                   <TenantStatusBadge status={t.status} />
                 </TableCell>
                 <TableCell className="font-mono text-xs text-ops-gray">
-                  {new Date(t.created_at)
-                    .toISOString()
-                    .slice(0, 19)
-                    .replace("T", " ")}
+                  {new Date(t.created_at).toISOString().slice(0, 19).replace('T', ' ')}
                 </TableCell>
               </TableRow>
               {open ? (
@@ -93,14 +83,12 @@ export function TenantTable({
                     <div className="flex flex-col gap-3 font-sans text-sm sm:flex-row sm:flex-wrap sm:items-center sm:gap-6">
                       <div>
                         <div className="text-xs text-ops-gray">owner_email</div>
-                        <div className="font-mono text-neutral-200">
-                          {t.owner_email}
-                        </div>
+                        <div className="font-mono text-neutral-200">{t.owner_email}</div>
                       </div>
                       <div>
                         <div className="text-xs text-ops-gray">creado</div>
                         <div className="font-mono text-xs text-neutral-300">
-                          {new Date(t.created_at).toLocaleString("es")}
+                          {new Date(t.created_at).toLocaleString('es')}
                         </div>
                       </div>
                       <div className="flex flex-wrap gap-2">
@@ -133,10 +121,7 @@ export function TenantTable({
                           </Button>
                         ) : null}
                         <Button variant="ghost" size="sm" asChild>
-                          <Link
-                            href={`/tenants/${t.slug}`}
-                            onClick={(e) => e.stopPropagation()}
-                          >
+                          <Link href={`/tenants/${t.slug}`} onClick={(e) => e.stopPropagation()}>
                             Ver detalle
                           </Link>
                         </Button>

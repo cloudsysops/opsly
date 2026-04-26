@@ -3,6 +3,7 @@
 ## What is This?
 
 `docs/` is an **Obsidian Vault**. Obsidian is a local Markdown editor with:
+
 - **Graph View:** Visualize how docs relate to each other
 - **Backlinks:** See what references each document
 - **Fast Search:** Find any doc instantly
@@ -43,12 +44,12 @@ Configure:
 
 ## Navigation Shortcuts
 
-| Action          | Mac           | Windows       |
-|-----------------|---------------|---------------|
-| Search docs     | Cmd+Shift+F   | Ctrl+Shift+F  |
-| Toggle graph    | Cmd+Shift+G   | Ctrl+Shift+G  |
-| New note        | Cmd+N         | Ctrl+N        |
-| Command palette | Cmd+P         | Ctrl+P        |
+| Action          | Mac         | Windows      |
+| --------------- | ----------- | ------------ |
+| Search docs     | Cmd+Shift+F | Ctrl+Shift+F |
+| Toggle graph    | Cmd+Shift+G | Ctrl+Shift+G |
+| New note        | Cmd+N       | Ctrl+N       |
+| Command palette | Cmd+P       | Ctrl+P       |
 
 ---
 
@@ -80,9 +81,9 @@ Agents (Claude, Cursor) read latest docs
 ## Wikilink Syntax
 
 ```markdown
-[[MASTER-PLAN]]                    # Link to doc
-[[MASTER-PLAN|click here]]        # Custom link text
-[[HERMES-SPRINT-PLAN#Sprint 0]]   # Link to section
+[[MASTER-PLAN]] # Link to doc
+[[MASTER-PLAN|click here]] # Custom link text
+[[HERMES-SPRINT-PLAN#Sprint 0]] # Link to section
 ```
 
 File naming: `[[My Doc]]` → looks for `docs/My-Doc.md` (spaces → hyphens)

@@ -1,5 +1,5 @@
-import { Suspense } from "react";
-import { InviteActivate } from "./invite-activate";
+import { Suspense } from 'react';
+import { InviteActivate } from './invite-activate';
 
 export default function InvitePage() {
   return (

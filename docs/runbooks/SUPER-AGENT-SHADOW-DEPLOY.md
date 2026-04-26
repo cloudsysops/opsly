@@ -17,12 +17,12 @@ Se usa `docker-compose.platform.yml` como base + `docker-compose.super-agent.yml
 
 Los servicios v2 exponen puertos locales (loopback) para comparación sin colisión:
 
-| Servicio v2 | Puerto interno | Host loopback |
-| --- | ---: | ---: |
-| `context-builder-v2` | `3112` | `3212` |
-| `mcp-v2` | `3103` | `3203` |
-| `llm-gateway-v2` | `3110` | `3210` |
-| `orchestrator-v2` | `3111` | `3211` |
+| Servicio v2          | Puerto interno | Host loopback |
+| -------------------- | -------------: | ------------: |
+| `context-builder-v2` |         `3112` |        `3212` |
+| `mcp-v2`             |         `3103` |        `3203` |
+| `llm-gateway-v2`     |         `3110` |        `3210` |
+| `orchestrator-v2`    |         `3111` |        `3211` |
 
 ## Requisitos
 
@@ -98,4 +98,3 @@ Si el health check final falla en modo super-agent:
 - Sin rutas Traefik públicas en v2
 - Secretos solo en `.env`/Doppler
 - Recomendado ejecutar primero en `--dry-run`
-

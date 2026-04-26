@@ -1,8 +1,8 @@
-const js = require("@eslint/js");
+const js = require('@eslint/js');
 
 module.exports = [
   {
-    ignores: [".next/**", "node_modules/**", "eslint.config.js"],
+    ignores: ['.next/**', 'node_modules/**', 'eslint.config.js'],
   },
   js.configs.recommended,
 ];

@@ -8,11 +8,11 @@ Documento **canónico** para que agentes (Cursor, Claude, automatismos) y person
 
 ## Tabla rápida
 
-| Destino | Usuario SSH | IP / nombre Tailscale | Uso típico |
-|---------|---------------|------------------------|------------|
-| **VPS** (control plane, `/opt/opsly`) | **`vps-dragon`** | `100.120.151.91` (Tailscale) | Docker plataforma, Traefik, API, Redis, deploy |
-| **Worker Ubuntu** (Mac 2011, datos plane) | **`opslyquantum`** | `100.80.41.29` o `opsly-worker.<suffix>.ts.net` | Ollama, orchestrator `worker-enabled`, repo `~/opsly`, Decepticon/RTK en usuario |
-| **Mac principal** (desarrollo) | **`cboteros`** (ejemplo; el tuyo puede otro) | `opsly-admin` / `100.89.38.3` | Cursor, clon del repo; **no** es el usuario del worker |
+| Destino                                   | Usuario SSH                                  | IP / nombre Tailscale                           | Uso típico                                                                       |
+| ----------------------------------------- | -------------------------------------------- | ----------------------------------------------- | -------------------------------------------------------------------------------- |
+| **VPS** (control plane, `/opt/opsly`)     | **`vps-dragon`**                             | `100.120.151.91` (Tailscale)                    | Docker plataforma, Traefik, API, Redis, deploy                                   |
+| **Worker Ubuntu** (Mac 2011, datos plane) | **`opslyquantum`**                           | `100.80.41.29` o `opsly-worker.<suffix>.ts.net` | Ollama, orchestrator `worker-enabled`, repo `~/opsly`, Decepticon/RTK en usuario |
+| **Mac principal** (desarrollo)            | **`cboteros`** (ejemplo; el tuyo puede otro) | `opsly-admin` / `100.89.38.3`                   | Cursor, clon del repo; **no** es el usuario del worker                           |
 
 Comandos de referencia:
 
@@ -45,12 +45,12 @@ Detalle y endurecimiento: [`VPS-SSH-WORKER-NODES.md`](VPS-SSH-WORKER-NODES.md).
 
 ## Nombres que suelen confundir
 
-| Nombre | Qué es |
-|--------|--------|
-| **`opslyquantum`** | Usuario **Linux** en el worker Ubuntu (repo, Ollama, workers). **Usar** en SSH al worker. |
-| **opsly-quantum** (skill) | Procedimiento en `skills/user/`; **no** es un usuario UNIX. |
-| **`dragon`** | Aparece en configs antiguas o en el hostname; **no** usar como usuario Linux del worker en documentación nueva si el sistema está con **`opslyquantum`**. |
-| **`cboteros`** | Usuario humano típico en la Mac admin; **no** sustituye a `opslyquantum` en el worker. |
+| Nombre                    | Qué es                                                                                                                                                    |
+| ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`opslyquantum`**        | Usuario **Linux** en el worker Ubuntu (repo, Ollama, workers). **Usar** en SSH al worker.                                                                 |
+| **opsly-quantum** (skill) | Procedimiento en `skills/user/`; **no** es un usuario UNIX.                                                                                               |
+| **`dragon`**              | Aparece en configs antiguas o en el hostname; **no** usar como usuario Linux del worker en documentación nueva si el sistema está con **`opslyquantum`**. |
+| **`cboteros`**            | Usuario humano típico en la Mac admin; **no** sustituye a `opslyquantum` en el worker.                                                                    |
 
 ---
 

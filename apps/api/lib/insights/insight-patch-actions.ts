@@ -1,4 +1,4 @@
-import { markInsightRead, markInsightStatus } from "./engine";
+import { markInsightRead, markInsightStatus } from './engine';
 
 /**
  * Aplica una acción sobre un insight (portal y admin).
@@ -7,7 +7,7 @@ import { markInsightRead, markInsightStatus } from "./engine";
 export async function applyInsightPatchAction(
   action: string,
   insightId: string,
-  tenantId: string,
+  tenantId: string
 ): Promise<boolean> {
   const handlers: Record<string, () => Promise<void>> = {
     read: async () => {
@@ -17,14 +17,14 @@ export async function applyInsightPatchAction(
       await markInsightStatus({
         insightId,
         tenantId,
-        status: "dismissed",
+        status: 'dismissed',
       });
     },
     action: async () => {
       await markInsightStatus({
         insightId,
         tenantId,
-        status: "actioned",
+        status: 'actioned',
       });
     },
   };

@@ -1,17 +1,17 @@
-import { createClient } from "@supabase/supabase-js";
-import { NextResponse } from "next/server";
-import { createServerSupabase } from "@/lib/supabase/server";
+import { createClient } from '@supabase/supabase-js';
+import { NextResponse } from 'next/server';
+import { createServerSupabase } from '@/lib/supabase/server';
 
 export async function GET(): Promise<NextResponse> {
   try {
-    const publicDemo = process.env.NEXT_PUBLIC_ADMIN_PUBLIC_DEMO === "true";
+    const publicDemo = process.env.NEXT_PUBLIC_ADMIN_PUBLIC_DEMO === 'true';
     const userClient = await createServerSupabase();
     if (!publicDemo) {
       const {
         data: { user },
       } = await userClient.auth.getUser();
       if (!user) {
-        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
       }
     }
 
@@ -19,8 +19,8 @@ export async function GET(): Promise<NextResponse> {
     const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
     if (!url || !serviceKey) {
       return NextResponse.json(
-        { error: "Server missing SUPABASE_SERVICE_ROLE_KEY" },
-        { status: 500 },
+        { error: 'Server missing SUPABASE_SERVICE_ROLE_KEY' },
+        { status: 500 }
       );
     }
 
@@ -29,12 +29,12 @@ export async function GET(): Promise<NextResponse> {
     });
 
     const { data, error } = await admin
-      .schema("platform")
-      .from("approval_gate_decisions")
+      .schema('platform')
+      .from('approval_gate_decisions')
       .select(
-        "id, sandbox_run_id, deployment_id, status, confidence, reasoning, recommendations, metrics, model_used, complexity, created_at",
+        'id, sandbox_run_id, deployment_id, status, confidence, reasoning, recommendations, metrics, model_used, complexity, created_at'
       )
-      .order("created_at", { ascending: false })
+      .order('created_at', { ascending: false })
       .limit(20);
 
     if (error) {
@@ -43,7 +43,7 @@ export async function GET(): Promise<NextResponse> {
 
     return NextResponse.json({ decisions: data ?? [] });
   } catch (e) {
-    const msg = e instanceof Error ? e.message : "Internal error";
+    const msg = e instanceof Error ? e.message : 'Internal error';
     return NextResponse.json({ error: msg }, { status: 500 });
   }
 }

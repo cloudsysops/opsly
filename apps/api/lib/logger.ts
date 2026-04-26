@@ -4,10 +4,10 @@
  */
 
 export enum LogLevel {
-  DEBUG = "DEBUG",
-  INFO = "INFO",
-  WARN = "WARN",
-  ERROR = "ERROR",
+  DEBUG = 'DEBUG',
+  INFO = 'INFO',
+  WARN = 'WARN',
+  ERROR = 'ERROR',
 }
 
 interface LogEntry {
@@ -26,7 +26,7 @@ class Logger {
   private formatLogEntry(
     level: LogLevel,
     message: string,
-    context?: Record<string, unknown> | Error,
+    context?: Record<string, unknown> | Error
   ): LogEntry {
     const timestamp = new Date().toISOString();
 
@@ -58,7 +58,7 @@ class Logger {
     // - CloudWatch
     // - File system
     // For now, console output with structured JSON
-    console.log(JSON.stringify(entry));
+    console.warn(JSON.stringify(entry));
   }
 
   debug(message: string, context?: Record<string, unknown>): void {

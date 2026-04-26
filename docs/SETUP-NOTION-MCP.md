@@ -132,8 +132,8 @@ Cursor no llama solo al HTTP; o bien usas **MCP** configurado en el IDE apuntand
 
 ## Solución de problemas
 
-| Síntoma | Acción |
-|---------|--------|
-| 401 / object_not_found | Conectar integración a la base (paso 4) y revisar IDs |
-| Propiedades no encontradas | Alinear nombres con `constants.ts` |
-| people / Owner vacío | Los IDs de usuario Notion son distintos a email; rellenar en UI o pasar IDs válidos en create |
+| Síntoma                    | Acción                                                                                        |
+| -------------------------- | --------------------------------------------------------------------------------------------- |
+| 401 / object_not_found     | Conectar integración a la base (paso 4) y revisar IDs                                         |
+| Propiedades no encontradas | Alinear nombres con `constants.ts`                                                            |
+| people / Owner vacío       | Los IDs de usuario Notion son distintos a email; rellenar en UI o pasar IDs válidos en create |

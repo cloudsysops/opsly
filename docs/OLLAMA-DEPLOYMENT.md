@@ -73,6 +73,7 @@ FALLBACK_PROVIDERS=claude_haiku,gpt4o_mini,openrouter_cheap
 ```
 
 **Note:** To activate in Doppler:
+
 ```bash
 doppler run --project ops-intcloudsysops --config prd -- \
   doppler secrets set HERMES_LOCAL_LLM_FIRST=true
@@ -85,6 +86,7 @@ doppler run --project ops-intcloudsysops --config prd -- \
 The LLM Gateway's HealthDaemon runs every 30 seconds and:
 
 1. **Checks Ollama availability:**
+
    ```
    GET http://100.80.41.29:11434/api/tags HTTP/1.1
    Timeout: 3s
@@ -105,6 +107,7 @@ The LLM Gateway's HealthDaemon runs every 30 seconds and:
 ### Manual Health Check
 
 From VPS:
+
 ```bash
 # Check Ollama directly
 curl -v http://100.80.41.29:11434/api/tags
@@ -137,6 +140,7 @@ Content-Type: application/json
 ```
 
 **Orchestrator response:** `202 Accepted`
+
 ```json
 {
   "job_id": "job_xyz789",
@@ -148,6 +152,7 @@ Content-Type: application/json
 ### 2. Orchestrator → Redis Queue
 
 Orchestrator creates a BullMQ job:
+
 - Type: `ollama`
 - Data: `{ tenant_slug, prompt, plan, request_id, ... }`
 - Priority: 0 (highest)
@@ -170,6 +175,7 @@ OllamaWorker.process(job):
 Job completed, response stored in Redis under job_id.
 
 **Status check:**
+
 ```bash
 GET /internal/openclaw-job?job_id=job_xyz789
 ```
@@ -205,7 +211,7 @@ for i in {1..30}; do
     -H "Authorization: Bearer $ADMIN_TOKEN" \
     "http://localhost:3002/api/admin/ollama-demo?job_id=$JOB" \
     | jq -r .status)
-  
+
   if [ "$STATUS" = "completed" ]; then
     echo "✅ Job completed!"
     curl -s \
@@ -213,7 +219,7 @@ for i in {1..30}; do
       "http://localhost:3002/api/admin/ollama-demo?job_id=$JOB" | jq .
     exit 0
   fi
-  
+
   echo "Status: $STATUS (attempt $i/30)"
   sleep 2
 done
@@ -242,6 +248,7 @@ npm run test --workspace=@intcloudsysops/api -- --grep "ollama-demo"
 **Symptom:** Job timeouts, health daemon marks provider as "down"
 
 **Diagnosis:**
+
 ```bash
 # Check Mac 2011 SSH connection
 ssh -i ~/.ssh/tailscale jkbotero@100.80.41.29 "ps aux | grep ollama"
@@ -255,6 +262,7 @@ ssh -i ~/.ssh/tailscale jkbotero@100.80.41.29 \
 ```
 
 **Solutions:**
+
 1. Restart Ollama: `pkill -f ollama && sleep 2 && ollama serve`
 2. Check VPN: Verify Tailscale connection is active on both sides
 3. Check firewall: Ensure UFW on Mac allows port 11434 from VPS
@@ -262,6 +270,7 @@ ssh -i ~/.ssh/tailscale jkbotero@100.80.41.29 \
 ### High latency (>5s per request)
 
 **Diagnosis:**
+
 ```bash
 # Check Mac CPU/Memory
 ssh -i ~/.ssh/tailscale jkbotero@100.80.41.29 "top -l1"
@@ -271,6 +280,7 @@ ping 100.80.41.29
 ```
 
 **Solutions:**
+
 1. Reduce model size (try `llama3.2` instruct variant)
 2. Add more VRAM if available
 3. Monitor queue depth: `redis-cli LLEN queue:ollama`
@@ -278,6 +288,7 @@ ping 100.80.41.29
 ### VPS → Ollama connectivity lost
 
 **Diagnosis:**
+
 ```bash
 # From VPS
 docker exec infra-app-1 curl -v http://100.80.41.29:11434/api/tags
@@ -290,6 +301,7 @@ docker exec infra-app-1 nslookup ollama.tailscale.local
 ```
 
 **Solutions:**
+
 1. Verify Tailscale status on VPS: `tailscale status`
 2. Verify Tailscale on Mac: `tailscale status`
 3. Re-authenticate if needed: `tailscale login`
@@ -311,6 +323,7 @@ docker exec infra-app-1 nslookup ollama.tailscale.local
 Available at: `https://admin.opsly.dev/metrics/ollama` (requires `PLATFORM_ADMIN_TOKEN`)
 
 **Metrics displayed:**
+
 - Total requests to Ollama
 - Average latency
 - Cache hit rate
@@ -356,13 +369,16 @@ psql "$DATABASE_URL" -c "
 If Ollama fails and needs to be disabled:
 
 1. **Set fallback-only mode:**
+
    ```bash
    doppler run --project ops-intcloudsysops --config prd -- \
      doppler secrets set OLLAMA_CIRCUIT_BREAKER_THRESHOLD=1
    ```
+
    This makes health daemon mark provider down after 1 failure instead of 3.
 
 2. **Or disable in gateway:**
+
    ```bash
    # Modify: apps/llm-gateway/src/llm-direct.ts
    # Comment out: if (await healthDaemon.isAvailable('llama_local'))

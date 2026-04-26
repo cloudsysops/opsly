@@ -6,19 +6,19 @@ Stack Docker Compose para ejecutar equipos de **agentes Lanidea** con Ollama loc
 
 ## Estructura del equipo
 
-| Rol | Persona | Descripción |
-|-----|---------|-------------|
-| **Desayuno** | planner-desayuno | Planifica y analiza el objetivo |
-| **Desayuno** | executor-desayuno | Ejecuta las tareas asignadas |
-| **Desayuno** | notifier-desayuno | Resume estado y siguiente acción |
-| **Líder** | lider-arquitecto | Evalúa, identifica riesgos, toma decisiones |
+| Rol          | Persona           | Descripción                                 |
+| ------------ | ----------------- | ------------------------------------------- |
+| **Desayuno** | planner-desayuno  | Planifica y analiza el objetivo             |
+| **Desayuno** | executor-desayuno | Ejecuta las tareas asignadas                |
+| **Desayuno** | notifier-desayuno | Resume estado y siguiente acción            |
+| **Líder**    | lider-arquitecto  | Evalúa, identifica riesgos, toma decisiones |
 
 ## Archivos creados
 
-| Archivo | Descripción |
-|---------|-------------|
+| Archivo                            | Descripción                                         |
+| ---------------------------------- | --------------------------------------------------- |
 | `infra/docker-compose.lanidea.yml` | Compose con Ollama + Orchestrator + Mission Control |
-| `scripts/create-lanidea-agents.sh` | Script para encolar equipos de trabajo |
+| `scripts/create-lanidea-agents.sh` | Script para encolar equipos de trabajo              |
 
 ## Uso rápido
 
@@ -50,15 +50,16 @@ docker compose -f infra/docker-compose.lanidea.yml logs -f ollama
 
 ## Variables de entorno requeridas
 
-| Variable | Descripción | Ejemplo |
-|----------|-------------|---------|
-| `REDIS_URL` | Redis del VPS (Tailscale) | `redis://:password@100.120.151.91:6379/0` |
-| `LLM_GATEWAY_URL` | LLM Gateway del VPS | `http://100.120.151.91:3010` |
-| `PLATFORM_ADMIN_TOKEN` | Token para encolar jobs |Desde Doppler |
+| Variable               | Descripción               | Ejemplo                                   |
+| ---------------------- | ------------------------- | ----------------------------------------- |
+| `REDIS_URL`            | Redis del VPS (Tailscale) | `redis://:password@100.120.151.91:6379/0` |
+| `LLM_GATEWAY_URL`      | LLM Gateway del VPS       | `http://100.120.151.91:3010`              |
+| `PLATFORM_ADMIN_TOKEN` | Token para encolar jobs   | Desde Doppler                             |
 
 ## Auto-gestión (commit/pull)
 
 Los agentes tienen flag `auto_commit` en sus metadatos. Al completar:
+
 1. El worker de Ollama registra el resultado en Redis
 2. El script de monitoring detecta completion y ejecuta:
    - `git add -A && git commit` si hay cambios
@@ -67,6 +68,7 @@ Los agentes tienen flag `auto_commit` en sus metadatos. Al completar:
 ## Mission Control
 
 Dashboard en `http://localhost:3015` para ver:
+
 - Equipos activos
 - Jobs en cola
 - Resultados de agentes

@@ -4,12 +4,12 @@ Referencia **orientativa** para Fase 1 de validación; no sustituye APM ni prueb
 
 ## API (Next.js route handlers)
 
-| Área | Objetivo orientativo | Notas |
-|------|----------------------|--------|
-| `GET /api/health` | &lt; 300 ms p95 (red hacia Supabase incluida) | Timeout interno de probe ~2 s. |
-| `GET /api/metrics` | &lt; 2 s p95 con Supabase cola de conteos | Varios `head: true` en paralelo. |
-| `GET /api/metrics/system` | &lt; 3 s p95 si Prometheus alcanzable | Fallback mock si Prom no responde. |
-| Onboarding (`provisionTenant`) | Minutos (I/O Docker, health interno) | No comparable a request corto. |
+| Área                           | Objetivo orientativo                          | Notas                              |
+| ------------------------------ | --------------------------------------------- | ---------------------------------- |
+| `GET /api/health`              | &lt; 300 ms p95 (red hacia Supabase incluida) | Timeout interno de probe ~2 s.     |
+| `GET /api/metrics`             | &lt; 2 s p95 con Supabase cola de conteos     | Varios `head: true` en paralelo.   |
+| `GET /api/metrics/system`      | &lt; 3 s p95 si Prometheus alcanzable         | Fallback mock si Prom no responde. |
+| Onboarding (`provisionTenant`) | Minutos (I/O Docker, health interno)          | No comparable a request corto.     |
 
 ## Métricas de host (Prometheus / node_exporter)
 

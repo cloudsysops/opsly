@@ -1,5 +1,5 @@
-import { NotionClient } from "../notion-client.js";
-import type { Task } from "../types.js";
+import { NotionClient } from '../notion-client.js';
+import type { Task } from '../types.js';
 
 export interface ListTasksResult {
   readonly success: true;

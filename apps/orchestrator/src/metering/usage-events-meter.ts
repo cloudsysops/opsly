@@ -3,16 +3,13 @@
  * Alineado con `apps/api/lib/billing/redis-metering.ts` (ai_tokens → INCR entero, cpu_seconds → INCRBYFLOAT).
  * Ya no escribe en `platform.usage_events` desde el orchestrator.
  */
-import { getOrchestratorRedis } from "./redis-client.js";
-import { resolveTenantUuid } from "./tenant-id.js";
+import { getOrchestratorRedis } from './redis-client.js';
+import { resolveTenantUuid } from './tenant-id.js';
 
 /** Métricas compatibles con `BillingMetricType` en la API (subset usado aquí). */
-export type OrchestratorMeterMetric = "ai_tokens" | "cpu_seconds";
+export type OrchestratorMeterMetric = 'ai_tokens' | 'cpu_seconds';
 
-export function usageRedisKey(
-  tenantId: string,
-  metric: OrchestratorMeterMetric,
-): string {
+export function usageRedisKey(tenantId: string, metric: OrchestratorMeterMetric): string {
   return `usage:${tenantId}:${metric}`;
 }
 
@@ -30,7 +27,7 @@ function scheduleMetering(fn: () => Promise<void>): void {
       void fn()
         .catch((e: unknown) => {
           const msg = e instanceof Error ? e.message : String(e);
-          console.error("[orchestrator-meter]", msg);
+          console.error('[orchestrator-meter]', msg);
         })
         .finally(resolve);
     });
@@ -55,7 +52,7 @@ export async function drainMeteringOperations(): Promise<void> {
 export function meterHermesTaskCpuFireAndForget(
   tenantSlug: string,
   tenantIdHint: string | undefined,
-  durationMs: number,
+  durationMs: number
 ): void {
   const sec = Math.max(0, durationMs / 1000);
   meterRemotePlanWorkerFireAndForget(tenantSlug, tenantIdHint, sec);
@@ -67,7 +64,7 @@ export function meterHermesTaskCpuFireAndForget(
 export function meterPlannerLlmFireAndForget(
   tenantSlug: string,
   tenantIdHint: string | undefined,
-  metrics: PlannerLlmMetrics,
+  metrics: PlannerLlmMetrics
 ): void {
   scheduleMetering(async () => {
     const tenantId = await resolveTenantUuid(tenantSlug, tenantIdHint);
@@ -79,12 +76,12 @@ export function meterPlannerLlmFireAndForget(
       return;
     }
     const total = Math.round(
-      Math.max(0, metrics.tokens_input) + Math.max(0, metrics.tokens_output),
+      Math.max(0, metrics.tokens_input) + Math.max(0, metrics.tokens_output)
     );
     if (total <= 0) {
       return;
     }
-    const key = usageRedisKey(tenantId, "ai_tokens");
+    const key = usageRedisKey(tenantId, 'ai_tokens');
     await redis.incrby(key, total);
   });
 }
@@ -95,7 +92,7 @@ export function meterPlannerLlmFireAndForget(
 export function meterRemotePlanWorkerFireAndForget(
   tenantSlug: string,
   tenantIdHint: string | undefined,
-  durationSeconds: number,
+  durationSeconds: number
 ): void {
   scheduleMetering(async () => {
     const tenantId = await resolveTenantUuid(tenantSlug, tenantIdHint);
@@ -110,7 +107,7 @@ export function meterRemotePlanWorkerFireAndForget(
     if (delta <= 0) {
       return;
     }
-    const key = usageRedisKey(tenantId, "cpu_seconds");
+    const key = usageRedisKey(tenantId, 'cpu_seconds');
     await redis.incrbyfloat(key, delta);
   });
 }

@@ -11,12 +11,12 @@ Al hacer cualquier llamada a un LLM desde código del monorepo Opsly: **no** lla
 ## Uso correcto
 
 ```typescript
-import { llmCall } from "@intcloudsysops/llm-gateway";
+import { llmCall } from '@intcloudsysops/llm-gateway';
 
 const result = await llmCall({
-  tenant_slug: "mi-tenant",
-  messages: [{ role: "user", content: prompt }],
-  model: "haiku",
+  tenant_slug: 'mi-tenant',
+  messages: [{ role: 'user', content: prompt }],
+  model: 'haiku',
   temperature: 0,
   cache: true,
 });
@@ -24,12 +24,12 @@ const result = await llmCall({
 
 ## Selección de modelo (orientativo)
 
-| Tarea | Modelo | Notas |
-|-------|--------|--------|
-| Clasificar, extraer, formatear | `haiku` | Barato / rápido |
-| RAG moderado | `haiku` | Subir a `sonnet` si falla calidad |
-| Arquitectura / código complejo | `sonnet` | Coste mayor |
-| Feedback en tiempo real | `haiku`, `cache: false` | Respuestas frescas |
+| Tarea                          | Modelo                  | Notas                             |
+| ------------------------------ | ----------------------- | --------------------------------- |
+| Clasificar, extraer, formatear | `haiku`                 | Barato / rápido                   |
+| RAG moderado                   | `haiku`                 | Subir a `sonnet` si falla calidad |
+| Arquitectura / código complejo | `sonnet`                | Coste mayor                       |
+| Feedback en tiempo real        | `haiku`, `cache: false` | Respuestas frescas                |
 
 Detalle de proveedores, health daemon y batching: `docs/LLM-GATEWAY.md`.
 
@@ -46,11 +46,11 @@ Detalle de proveedores, health daemon y batching: `docs/LLM-GATEWAY.md`.
 
 ## Errores comunes
 
-| Error | Causa | Solución |
-|-------|-------|----------|
-| 429 rate limit | Demasiadas requests | Implementar backoff exponencial |
-| cache miss | temperature > 0 | Usar `temperature: 0` para caching |
-| invalid model | Nombre incorrecto | Usar `haiku`, `sonnet` o `gemini` |
+| Error          | Causa               | Solución                           |
+| -------------- | ------------------- | ---------------------------------- |
+| 429 rate limit | Demasiadas requests | Implementar backoff exponencial    |
+| cache miss     | temperature > 0     | Usar `temperature: 0` para caching |
+| invalid model  | Nombre incorrecto   | Usar `haiku`, `sonnet` o `gemini`  |
 
 ## Testing
 

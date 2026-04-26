@@ -7,6 +7,7 @@
 ## Cuándo usar
 
 Usar **siempre** que:
+
 - Un agente o usuario identifique un proceso repetitivo que debería automatizarse
 - Se quiera crear una nueva skill desde cero
 - Se quiera mejorar o iterar sobre una skill existente
@@ -32,18 +33,21 @@ Antes de crear cualquier skill nueva:
 3. Solo crear skill nueva cuando no haya match suficientemente específico.
 
 Heurística recomendada:
+
 - `score >= 20` en `scripts/skill-finder.js` -> reusar skill existente.
 - `score < 20` o sin match -> crear o extender skill con este módulo.
 
 ### Paso 1: Capturar Intención
 
 Entender qué debería hacer la skill. Si la conversación ya contiene un workflow (ej. "convierte esto en una skill"), extraer:
+
 - Tools usados y secuencia de pasos
 - Correcciones del usuario durante el proceso
 - Formatos de input/output observados
 - Condiciones de éxito
 
 Preguntas clave:
+
 1. Qué debería permitirle hacer a Claude esta skill?
 2. Cuándo debería activarse? (frases, contextos)
 3. Cuál es el formato de output esperado?
@@ -109,7 +113,7 @@ Instrucciones claras, imperativas, con el "por qué" detrás de cada paso.
 ## Errores comunes
 
 | Error | Causa | Solución |
-|-------|-------|----------|
+| ----- | ----- | -------- |
 ```
 
 #### manifest.json — Formato Opsly
@@ -231,21 +235,21 @@ Cuando un agente identifica un proceso que debería ser skill, puede crearla aut
 
 ## Referencia de Categorías
 
-| Categoría | Uso |
-|-----------|-----|
-| bootstrap | Inicio de sesión, contexto |
-| master | Orquestación, visión global |
-| architecture | Decisiones, ADRs, riesgos |
-| development | Código, APIs, scripts |
-| ai | LLM, ML, modelos |
-| integration | MCP, servicios externos |
-| database | SQL, migraciones, schema |
-| operations | Tenants, deploy, uptime |
-| orchestration | Colas, jobs, paralelismo |
-| notifications | Discord, alertas |
-| optimization | Performance, Docker |
-| qa | Testing, auditoría, seguridad |
-| tooling | Herramientas internas, skill-creator |
+| Categoría     | Uso                                  |
+| ------------- | ------------------------------------ |
+| bootstrap     | Inicio de sesión, contexto           |
+| master        | Orquestación, visión global          |
+| architecture  | Decisiones, ADRs, riesgos            |
+| development   | Código, APIs, scripts                |
+| ai            | LLM, ML, modelos                     |
+| integration   | MCP, servicios externos              |
+| database      | SQL, migraciones, schema             |
+| operations    | Tenants, deploy, uptime              |
+| orchestration | Colas, jobs, paralelismo             |
+| notifications | Discord, alertas                     |
+| optimization  | Performance, Docker                  |
+| qa            | Testing, auditoría, seguridad        |
+| tooling       | Herramientas internas, skill-creator |
 
 ## Reglas
 
@@ -257,9 +261,9 @@ Cuando un agente identifica un proceso que debería ser skill, puede crearla aut
 
 ## Errores comunes
 
-| Error | Causa | Solución |
-|-------|-------|----------|
-| Skill no se activa | Descripción muy estrecha | Ampliar triggers y descripción en manifest |
-| Skill duplicada | No verificó existentes | Revisar `skills/user/` antes de crear |
-| SKILL.md muy largo | Toda la info en un archivo | Mover detalles a `references/` |
-| Skill sobreajustada | Escrita para un caso específico | Generalizar instrucciones y ejemplos |
+| Error               | Causa                           | Solución                                   |
+| ------------------- | ------------------------------- | ------------------------------------------ |
+| Skill no se activa  | Descripción muy estrecha        | Ampliar triggers y descripción en manifest |
+| Skill duplicada     | No verificó existentes          | Revisar `skills/user/` antes de crear      |
+| SKILL.md muy largo  | Toda la info en un archivo      | Mover detalles a `references/`             |
+| Skill sobreajustada | Escrita para un caso específico | Generalizar instrucciones y ejemplos       |

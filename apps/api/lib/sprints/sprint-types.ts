@@ -1,5 +1,5 @@
 /** Copiado conceptualmente del orchestrator — contrato HTTP Mission Control. */
-export type SprintStepStatus = "pending" | "running" | "done" | "failed";
+export type SprintStepStatus = 'pending' | 'running' | 'done' | 'failed';
 
 export type SprintStepJson = {
   readonly id: string;

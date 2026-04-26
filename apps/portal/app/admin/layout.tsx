@@ -1,7 +1,7 @@
-import type { ReactNode } from "react";
-import { redirect } from "next/navigation";
-import { createServerSupabase } from "@/lib/supabase/server";
-import { isSuperAdminUser } from "@/lib/super-admin";
+import type { ReactNode } from 'react';
+import { redirect } from 'next/navigation';
+import { createServerSupabase } from '@/lib/supabase/server';
+import { isSuperAdminUser } from '@/lib/super-admin';
 
 export default async function AdminSectionLayout({
   children,
@@ -13,10 +13,10 @@ export default async function AdminSectionLayout({
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) {
-    redirect("/login");
+    redirect('/login');
   }
   if (!isSuperAdminUser(user)) {
-    redirect("/dashboard");
+    redirect('/dashboard');
   }
   return children;
 }

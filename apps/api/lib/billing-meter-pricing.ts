@@ -1,4 +1,4 @@
-import type { BillingMetricType } from "./billing/types";
+import type { BillingMetricType } from './billing/types';
 
 /**
  * Precios unitarios por defecto para medición (sin secretos).
@@ -16,12 +16,12 @@ export const BILLING_METER_UNIT_COST_USD = {
 /** Coste unitario USD por tipo de métrica (`platform.billing_usage`). */
 export function unitCostUsdForMetric(metric: BillingMetricType): number {
   switch (metric) {
-    case "ai_tokens":
+    case 'ai_tokens':
       return BILLING_METER_UNIT_COST_USD.AI_TOKEN;
-    case "cpu_seconds":
-    case "worker_seconds":
+    case 'cpu_seconds':
+    case 'worker_seconds':
       return BILLING_METER_UNIT_COST_USD.CPU_SECOND;
-    case "storage_gb":
+    case 'storage_gb':
       return BILLING_METER_UNIT_COST_USD.STORAGE_GB;
   }
 }
@@ -36,13 +36,13 @@ const AI_MULT_TIER_DEFAULT = 2;
  */
 export function aiModelCostMultiplier(modelName: string): number {
   const m = modelName.toLowerCase();
-  if (m.includes("gpt-4") || m.includes("opus")) {
+  if (m.includes('gpt-4') || m.includes('opus')) {
     return AI_MULT_TIER_PREMIUM;
   }
-  if (m.includes("gpt-3.5") || m.includes("haiku") || m.includes("3.5")) {
+  if (m.includes('gpt-3.5') || m.includes('haiku') || m.includes('3.5')) {
     return AI_MULT_TIER_LOW;
   }
-  if (m.includes("sonnet") || m.includes("gpt-4o-mini")) {
+  if (m.includes('sonnet') || m.includes('gpt-4o-mini')) {
     return AI_MULT_TIER_MID;
   }
   return AI_MULT_TIER_DEFAULT;

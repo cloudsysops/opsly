@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import { createClient } from "@/lib/supabase";
-import { fetchPortalTenant, tenantSlugFromUserMetadata } from "@/lib/tenant";
-import type { PortalTenantPayload } from "@/types";
+import { useEffect, useState } from 'react';
+import { createClient } from '@/lib/supabase';
+import { fetchPortalTenant, tenantSlugFromUserMetadata } from '@/lib/tenant';
+import type { PortalTenantPayload } from '@/types';
 
 export function usePortalTenant(): {
   data: PortalTenantPayload | undefined;
@@ -24,22 +24,18 @@ export function usePortalTenant(): {
     void (async () => {
       try {
         const supabase = createClient();
-        const { data: sessionData, error: sessionError } =
-          await supabase.auth.getSession();
+        const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
         if (sessionError || !sessionData.session) {
-          throw new Error("No hay sesión");
+          throw new Error('No hay sesión');
         }
         const slug = tenantSlugFromUserMetadata(sessionData.session.user);
-        const payload = await fetchPortalTenant(
-          sessionData.session.access_token,
-          slug,
-        );
+        const payload = await fetchPortalTenant(sessionData.session.access_token, slug);
         if (!cancelled) {
           setData(payload);
         }
       } catch (e) {
         if (!cancelled) {
-          setError(e instanceof Error ? e : new Error("Error al cargar"));
+          setError(e instanceof Error ? e : new Error('Error al cargar'));
         }
       } finally {
         if (!cancelled) {

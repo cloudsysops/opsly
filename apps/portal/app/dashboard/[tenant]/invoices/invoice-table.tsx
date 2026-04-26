@@ -36,21 +36,13 @@ function formatMoney(cents: number, currency: string): string {
 function StatusBadge({ status }: { status: string }) {
   const colors = STATUS_COLORS[status] ?? 'text-neutral-400 bg-neutral-800';
   return (
-    <span
-      className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium ${colors}`}
-    >
+    <span className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium ${colors}`}>
       {status}
     </span>
   );
 }
 
-export function InvoiceTable({
-  invoices,
-  tenant,
-}: {
-  invoices: Invoice[];
-  tenant: string;
-}) {
+export function InvoiceTable({ invoices, tenant }: { invoices: Invoice[]; tenant: string }) {
   if (invoices.length === 0) {
     return (
       <div className="px-4 py-12 text-center text-sm text-ops-gray">
@@ -86,13 +78,9 @@ export function InvoiceTable({
                 </Link>
               </td>
               <td className="px-4 py-3">
-                <div className="text-neutral-200">
-                  {inv.customer_name ?? inv.customer_email}
-                </div>
+                <div className="text-neutral-200">{inv.customer_name ?? inv.customer_email}</div>
                 {inv.customer_name ? (
-                  <div className="text-xs text-ops-gray">
-                    {inv.customer_email}
-                  </div>
+                  <div className="text-xs text-ops-gray">{inv.customer_email}</div>
                 ) : null}
               </td>
               <td className="px-4 py-3">
@@ -101,9 +89,7 @@ export function InvoiceTable({
               <td className="px-4 py-3 text-right font-mono text-neutral-100">
                 {formatMoney(inv.total_cents, inv.currency)}
               </td>
-              <td className="px-4 py-3 text-ops-gray">
-                {inv.due_date ?? '—'}
-              </td>
+              <td className="px-4 py-3 text-ops-gray">{inv.due_date ?? '—'}</td>
             </tr>
           ))}
         </tbody>

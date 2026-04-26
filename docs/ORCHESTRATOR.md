@@ -20,13 +20,13 @@ El contenedor expone **GET `/health`** en `ORCHESTRATOR_HEALTH_PORT` (por defect
 
 ## Rol del proceso (`OPSLY_ORCHESTRATOR_ROLE` / `OPSLY_ORCHESTRATOR_MODE`)
 
-| Variable | Valor | Dónde | Qué arranca |
-|--------|--------|--------|-------------|
-| `OPSLY_ORCHESTRATOR_ROLE` | *(omitido)* / `full` | Por defecto | TeamManager + suscripción a eventos + **todos** los workers (comportamiento histórico). |
-| `OPSLY_ORCHESTRATOR_ROLE` | `control` | VPS (control plane) | TeamManager + eventos + health; **sin** workers BullMQ (consumo en otro host). |
-| `OPSLY_ORCHESTRATOR_ROLE` | `worker` | Mac 2011 / nodo remoto | Solo workers + health; **sin** TeamManager. |
-| `OPSLY_ORCHESTRATOR_MODE` | `queue-only` | Alias legible | Equivale a `control` cuando `ROLE` no está definido. |
-| `OPSLY_ORCHESTRATOR_MODE` | `worker-enabled` | Alias legible | Equivale a `worker` cuando `ROLE` no está definido. |
+| Variable                  | Valor                | Dónde                  | Qué arranca                                                                             |
+| ------------------------- | -------------------- | ---------------------- | --------------------------------------------------------------------------------------- |
+| `OPSLY_ORCHESTRATOR_ROLE` | _(omitido)_ / `full` | Por defecto            | TeamManager + suscripción a eventos + **todos** los workers (comportamiento histórico). |
+| `OPSLY_ORCHESTRATOR_ROLE` | `control`            | VPS (control plane)    | TeamManager + eventos + health; **sin** workers BullMQ (consumo en otro host).          |
+| `OPSLY_ORCHESTRATOR_ROLE` | `worker`             | Mac 2011 / nodo remoto | Solo workers + health; **sin** TeamManager.                                             |
+| `OPSLY_ORCHESTRATOR_MODE` | `queue-only`         | Alias legible          | Equivale a `control` cuando `ROLE` no está definido.                                    |
+| `OPSLY_ORCHESTRATOR_MODE` | `worker-enabled`     | Alias legible          | Equivale a `worker` cuando `ROLE` no está definido.                                     |
 
 Misma imagen Docker / mismo `node dist/index.js`; ver `apps/orchestrator/src/orchestrator-role.ts` y `docs/ARCHITECTURE-DISTRIBUTED.md`.
 
@@ -36,31 +36,31 @@ Misma imagen Docker / mismo `node dist/index.js`; ver `apps/orchestrator/src/orc
 
 Cuando `shouldRunWorkers` es verdadero (`full` o `worker` / `worker-enabled`), se arrancan en este orden (ver `apps/orchestrator/src/index.ts` → `startAllWorkers`):
 
-| Orden | Cola / ámbito | Módulo | Notas |
-|------|----------------|--------|--------|
-| 1 | `openclaw` · jobs `cursor` | `CursorWorker` | |
-| 2 | `openclaw` · `n8n` | `N8nWorker` | |
-| 3 | `openclaw` · `notify` | `NotifyWorker` | |
-| 4 | `openclaw` · `drive` | `DriveWorker` | |
-| 5 | `openclaw` · backup | `BackupWorker` | |
-| 6 | health / métricas | `HealthWorker` | |
-| 7 | `opsly-budget-enforcement` | `SuspensionWorker` | Logs internos `worker: budget`; concurrencia `ORCHESTRATOR_BUDGET_CONCURRENCY` |
-| 8 | webhooks tenant | `WebhookWorker` | |
-| 9 | `webhooks-processing` | `WebhooksProcessingWorker` | |
-| 10 | eventos generales | `GeneralEventsWorker` | |
-| 11 | Ollama local | `OllamaWorker` | |
-| opt. | `agent-classifier` | `AgentClassifierWorker` | Solo si `OPSLY_AGENT_CLASSIFIER_WORKER_ENABLED=true` |
+| Orden | Cola / ámbito              | Módulo                     | Notas                                                                          |
+| ----- | -------------------------- | -------------------------- | ------------------------------------------------------------------------------ |
+| 1     | `openclaw` · jobs `cursor` | `CursorWorker`             |                                                                                |
+| 2     | `openclaw` · `n8n`         | `N8nWorker`                |                                                                                |
+| 3     | `openclaw` · `notify`      | `NotifyWorker`             |                                                                                |
+| 4     | `openclaw` · `drive`       | `DriveWorker`              |                                                                                |
+| 5     | `openclaw` · backup        | `BackupWorker`             |                                                                                |
+| 6     | health / métricas          | `HealthWorker`             |                                                                                |
+| 7     | `opsly-budget-enforcement` | `SuspensionWorker`         | Logs internos `worker: budget`; concurrencia `ORCHESTRATOR_BUDGET_CONCURRENCY` |
+| 8     | webhooks tenant            | `WebhookWorker`            |                                                                                |
+| 9     | `webhooks-processing`      | `WebhooksProcessingWorker` |                                                                                |
+| 10    | eventos generales          | `GeneralEventsWorker`      |                                                                                |
+| 11    | Ollama local               | `OllamaWorker`             |                                                                                |
+| opt.  | `agent-classifier`         | `AgentClassifierWorker`    | Solo si `OPSLY_AGENT_CLASSIFIER_WORKER_ENABLED=true`                           |
 
 **No** se registra aquí `HermesOrchestrationWorker`: la cola `hermes-orchestration` la consume el **contenedor** `hermes` (imagen `Dockerfile.hermes`, entrypoint `infra/hermes/docker-entrypoint.sh`). Evita duplicar ticks Hermes en el mismo host que el servicio `hermes` (ver comentario en `infra/docker-compose.platform.yml`). El proceso principal solo instancia el cliente `Queue` en `queue.ts` y lo cierra en shutdown; el **Worker** BullMQ de Hermes vive en opsly-hermes.
 
 ## Jobs disponibles
 
-| Nombre job (BullMQ) | Worker | Rol |
-|---------------------|--------|-----|
-| `cursor` | `CursorWorker` | Escribe `docs/ACTIVE-PROMPT.md` en GitHub vía API (requiere `GITHUB_TOKEN` o `GITHUB_TOKEN_N8N` legado; ver `docs/GITHUB-TOKEN.md`). |
-| `n8n` | `N8nWorker` | Disparar flujos / integraciones n8n según payload. |
-| `notify` | `NotifyWorker` | Notificaciones Discord u otros canales. |
-| `drive` | `DriveWorker` | Sincronización con Drive (cuando token configurado). |
+| Nombre job (BullMQ) | Worker         | Rol                                                                                                                                  |
+| ------------------- | -------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `cursor`            | `CursorWorker` | Escribe `docs/ACTIVE-PROMPT.md` en GitHub vía API (requiere `GITHUB_TOKEN` o `GITHUB_TOKEN_N8N` legado; ver `docs/GITHUB-TOKEN.md`). |
+| `n8n`               | `N8nWorker`    | Disparar flujos / integraciones n8n según payload.                                                                                   |
+| `notify`            | `NotifyWorker` | Notificaciones Discord u otros canales.                                                                                              |
+| `drive`             | `DriveWorker`  | Sincronización con Drive (cuando token configurado).                                                                                 |
 
 ## Cómo agregar un worker nuevo
 
@@ -116,10 +116,10 @@ Cada job lleva `priority` en las opciones de `Queue.add` (BullMQ: **0 = máxima 
 1. El orchestrator recibe un `IntentRequest` (exige `tenant_slug` para aislamiento Hermes).
 2. Llama a `executeRemotePlanner` → **LLM Gateway** (`POST /v1/chat/completions` o equivalente interno).
 3. El JSON devuelto se valida; cada acción se mapea con `planner-map.ts` a un `OrchestratorJob` y se encola en BullMQ vía `enqueueJob` (cola `openclaw`, tipos `cursor` \| `n8n` \| `notify` \| `drive` según herramienta). Los `params` del planner pasan por `sanitizePlannerParams` (no pueden sobrescribir `tenant_slug`, `request_id` ni `tenant_id`).
-4. **Límites de seguridad:** máximo **5** acciones por plan (`MAX_PLANNER_ACTIONS`); si se supera → error *Plan demasiado complejo*. Herramientas desconocidas → log `planner_unknown_tool` y se omiten (fail-safe).
+4. **Límites de seguridad:** máximo **5** acciones por plan (`MAX_PLANNER_ACTIONS`); si se supera → error _Plan demasiado complejo_. Herramientas desconocidas → log `planner_unknown_tool` y se omiten (fail-safe).
 5. **Observabilidad:** línea JSON `planner_response` en stdout; por cada job encolado, `planner_action_enqueued` (`observability/planner-log.ts`); estado inicial en Redis con `setJobState`.
 
-*Nota histórica:* el código legacy de solo simulación (`console.log` sin encolar) fue sustituido por encolado real (`enqueueJob` / `queue.add` con opciones de `queue-opts.ts`).
+_Nota histórica:_ el código legacy de solo simulación (`console.log` sin encolar) fue sustituido por encolado real (`enqueueJob` / `queue.add` con opciones de `queue-opts.ts`).
 
 - **Red Docker:** definir `ORCHESTRATOR_LLM_GATEWAY_URL=http://llm-gateway:3010` (ya en `infra/docker-compose.platform.yml`).
 

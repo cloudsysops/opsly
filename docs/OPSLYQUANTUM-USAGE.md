@@ -22,12 +22,12 @@ Desde la raíz del monorepo:
 ./scripts/opsly-quantum.sh skills
 ```
 
-| Comando | Efecto |
-|---------|--------|
-| `context` | Resumen de rutas clave y recordatorios (sin secretos). |
-| `status` | `npm run type-check` (Turbo). |
-| `smoke` | `./scripts/verify-platform-smoke.sh` (requiere red/SSH según `API_URL` / VPS). |
-| `skills` | Lista directorios en `skills/user/`. |
+| Comando   | Efecto                                                                         |
+| --------- | ------------------------------------------------------------------------------ |
+| `context` | Resumen de rutas clave y recordatorios (sin secretos).                         |
+| `status`  | `npm run type-check` (Turbo).                                                  |
+| `smoke`   | `./scripts/verify-platform-smoke.sh` (requiere red/SSH según `API_URL` / VPS). |
+| `skills`  | Lista directorios en `skills/user/`.                                           |
 
 ## Ejemplos de diálogo
 

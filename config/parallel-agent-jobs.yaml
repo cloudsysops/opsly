@@ -3,34 +3,34 @@
 # Generado: 2026-04-15
 # Source: ADR-025 + ADR-024
 
-version: "1.0"
-tenant: "opsly"
-sprint: "2026-04-15-adr025-implementation"
+version: '1.0'
+tenant: 'opsly'
+sprint: '2026-04-15-adr025-implementation'
 priority_base: 100
 
 jobs:
   # ============================================================================
   # BLOQUE B1: CURSOR — Docker Compose Optimization (HIGH PRIORITY)
   # ============================================================================
-  - id: "job-001-docker-optimize"
-    type: "cursor-code-task"
-    priority: 0  # Enterprise-level
-    status: "queued"
+  - id: 'job-001-docker-optimize'
+    type: 'cursor-code-task'
+    priority: 0 # Enterprise-level
+    status: 'queued'
     depends_on: []
     timeout_minutes: 30
-    assignee: "cursor-worker-1"
+    assignee: 'cursor-worker-1'
 
     metadata:
-      adr: "ADR-025"
-      phase: "implementation-1"
-      complexity: "low"
+      adr: 'ADR-025'
+      phase: 'implementation-1'
+      complexity: 'low'
       files_affected:
-        - "infra/docker-compose.platform.yml"
-        - "infra/docker-compose.opslyquantum.yml"
-        - "apps/orchestrator/.env.worker"
+        - 'infra/docker-compose.platform.yml'
+        - 'infra/docker-compose.opslyquantum.yml'
+        - 'apps/orchestrator/.env.worker'
 
     task:
-      title: "Add memory limits to 7 Docker services"
+      title: 'Add memory limits to 7 Docker services'
       description: |
         Apply resource limits to prevent OOM and improve stability.
         Use YAML anchors to reduce duplication.
@@ -57,41 +57,41 @@ jobs:
         4. Commit: infra(resources): add memory limits (ADR-025)
 
       validation:
-        - type: "npm"
-          command: "npm run validate-config"
-          expected: "exit-0"
-        - type: "file-check"
+        - type: 'npm'
+          command: 'npm run validate-config'
+          expected: 'exit-0'
+        - type: 'file-check'
           files:
-            - "infra/docker-compose.platform.yml"
+            - 'infra/docker-compose.platform.yml'
           pattern: 'memory: \d+M'
           count_min: 7
 
   # ============================================================================
   # BLOQUE B2: CURSOR — Ollama Worker Setup (HIGH PRIORITY)
   # ============================================================================
-  - id: "job-002-ollama-worker-setup"
-    type: "cursor-ssh-script"
+  - id: 'job-002-ollama-worker-setup'
+    type: 'cursor-ssh-script'
     priority: 0
-    status: "queued"
-    depends_on: ["job-001-docker-optimize"]
+    status: 'queued'
+    depends_on: ['job-001-docker-optimize']
     timeout_minutes: 25
-    assignee: "cursor-worker-1"
+    assignee: 'cursor-worker-1'
 
     metadata:
-      adr: "ADR-024"
-      phase: "execution-phases-1-4"
-      target_host: "opslyquantum@100.80.41.29"
-      complexity: "high"
+      adr: 'ADR-024'
+      phase: 'execution-phases-1-4'
+      target_host: 'opslyquantum@100.80.41.29'
+      complexity: 'high'
 
     task:
-      title: "Execute ADR-024 phases 1-4: Ollama + Orchestrator worker"
+      title: 'Execute ADR-024 phases 1-4: Ollama + Orchestrator worker'
       description: |
         Setup Mac2011 worker as Ollama primary for simple tasks.
         Executes 4 sequential phases with health checks.
 
       phases:
         - phase: 1
-          name: "Doppler Configuration"
+          name: 'Doppler Configuration'
           commands:
             - 'doppler secrets set OLLAMA_URL=http://100.80.41.29:11434'
             - 'doppler secrets set REDIS_EXPORT_BIND=100.120.151.91'
@@ -100,8 +100,8 @@ jobs:
           timeout: 2
 
         - phase: 2
-          name: "Worker Mac2011 Setup"
-          ssh_target: "opslyquantum@100.80.41.29"
+          name: 'Worker Mac2011 Setup'
+          ssh_target: 'opslyquantum@100.80.41.29'
           commands:
             - 'curl -sf http://127.0.0.1:11434/api/tags'
             - 'docker ps | grep ollama || docker compose -f infra/docker-compose.opslyquantum.yml up -d ollama'
@@ -110,8 +110,8 @@ jobs:
           timeout: 15
 
         - phase: 3
-          name: "VPS Control Plane Setup"
-          ssh_target: "vps-dragon@100.120.151.91"
+          name: 'VPS Control Plane Setup'
+          ssh_target: 'vps-dragon@100.120.151.91'
           commands:
             - 'cd /opt/opsly && ./scripts/vps-bootstrap.sh'
             - 'perl -0pi -e "s/^OPSLY_ORCHESTRATOR_MODE=.*\n//mg; s/\z/\nOPSLY_ORCHESTRATOR_MODE=queue-only\n/s unless /OPSLY_ORCHESTRATOR_MODE=/" .env'
@@ -119,8 +119,8 @@ jobs:
           timeout: 10
 
         - phase: 4
-          name: "Validation & Health Checks"
-          ssh_target: "vps-dragon@100.120.151.91"
+          name: 'Validation & Health Checks'
+          ssh_target: 'vps-dragon@100.120.151.91'
           commands:
             - 'curl -sf --max-time 5 http://100.80.41.29:11434/api/tags'
             - 'curl -sf http://127.0.0.1:3010/health | jq ".providers.llama_local"'
@@ -129,7 +129,7 @@ jobs:
           timeout: 10
 
       rollback:
-        - phase: "restore-full-mode"
+        - phase: 'restore-full-mode'
           commands:
             - 'perl -0pi -e "s/^OPSLY_ORCHESTRATOR_MODE=queue-only\n//mg" .env'
             - 'docker compose up -d --force-recreate orchestrator'
@@ -138,25 +138,25 @@ jobs:
   # ============================================================================
   # BLOQUE B3: CURSOR — Hermes Token Tracking (MEDIUM PRIORITY)
   # ============================================================================
-  - id: "job-003-hermes-token-tracking"
-    type: "cursor-code-task"
-    priority: 10000  # Business-level
-    status: "queued"
-    depends_on: ["job-002-ollama-worker-setup"]
+  - id: 'job-003-hermes-token-tracking'
+    type: 'cursor-code-task'
+    priority: 10000 # Business-level
+    status: 'queued'
+    depends_on: ['job-002-ollama-worker-setup']
     timeout_minutes: 40
-    assignee: "cursor-worker-2"
+    assignee: 'cursor-worker-2'
 
     metadata:
-      adr: "ADR-025"
-      phase: "token-audit"
-      complexity: "medium"
+      adr: 'ADR-025'
+      phase: 'token-audit'
+      complexity: 'medium'
       files_affected:
-        - "apps/llm-gateway/src/hermes.ts"
-        - "apps/llm-gateway/src/providers.ts"
-        - "apps/api/routes/admin/insights.ts"
+        - 'apps/llm-gateway/src/hermes.ts'
+        - 'apps/llm-gateway/src/providers.ts'
+        - 'apps/api/routes/admin/insights.ts'
 
     task:
-      title: "Implement provider-scoped cost tracking in Hermes"
+      title: 'Implement provider-scoped cost tracking in Hermes'
       description: |
         Track token cost discriminated by LLM provider (llama_local=$0, claude=$cost).
         Add dashboard widget for cost per tenant and model.
@@ -182,187 +182,194 @@ jobs:
         5. Commit: feat(hermes): provider-scoped cost tracking (ADR-025)
 
       validation:
-        - type: "npm"
-          command: "npm run test --workspace=@intcloudsysops/llm-gateway"
-          expected: "exit-0"
-        - type: "grep"
-          files: ["apps/llm-gateway/src/hermes.ts"]
-          pattern: "cost_usd.*provider"
-        - type: "endpoint-check"
-          url: "http://127.0.0.1:3010/health"
-          json_path: "providers.llama_local.available"
+        - type: 'npm'
+          command: 'npm run test --workspace=@intcloudsysops/llm-gateway'
+          expected: 'exit-0'
+        - type: 'grep'
+          files: ['apps/llm-gateway/src/hermes.ts']
+          pattern: 'cost_usd.*provider'
+        - type: 'endpoint-check'
+          url: 'http://127.0.0.1:3010/health'
+          json_path: 'providers.llama_local.available'
 
   # ============================================================================
   # BLOQUE C4: COPILOT — Doppler Environment Configuration (HIGH PRIORITY)
   # ============================================================================
-  - id: "job-004-redis-export-bind"
-    type: "copilot-env-config"
+  - id: 'job-004-redis-export-bind'
+    type: 'copilot-env-config'
     priority: 0
-    status: "queued"
+    status: 'queued'
     depends_on: []
     timeout_minutes: 5
-    assignee: "copilot-secrets"
+    assignee: 'copilot-secrets'
 
     metadata:
-      adr: "ADR-024, ADR-025"
-      phase: "secrets-setup"
-      complexity: "trivial"
-      provider: "doppler"
-      project: "ops-intcloudsysops"
-      config: "prd"
+      adr: 'ADR-024, ADR-025'
+      phase: 'secrets-setup'
+      complexity: 'trivial'
+      provider: 'doppler'
+      project: 'ops-intcloudsysops'
+      config: 'prd'
 
     task:
-      title: "Set Doppler environment variables for Ollama + Redis export"
-      description: "Configure secrets needed for distributed worker setup."
+      title: 'Set Doppler environment variables for Ollama + Redis export'
+      description: 'Configure secrets needed for distributed worker setup.'
 
       steps:
-        - key: "REDIS_EXPORT_BIND"
-          value: "100.120.151.91"
-          reason: "Tailscale IP for Redis cluster export on VPS"
+        - key: 'REDIS_EXPORT_BIND'
+          value: '100.120.151.91'
+          reason: 'Tailscale IP for Redis cluster export on VPS'
 
-        - key: "LLM_GATEWAY_EXPORT_BIND"
-          value: "100.120.151.91"
-          reason: "Tailscale IP for LLM Gateway in distributed mode"
+        - key: 'LLM_GATEWAY_EXPORT_BIND'
+          value: '100.120.151.91'
+          reason: 'Tailscale IP for LLM Gateway in distributed mode'
 
-        - key: "OLLAMA_URL"
-          value: "http://100.80.41.29:11434"
-          reason: "Mac2011 Ollama local worker endpoint"
+        - key: 'OLLAMA_URL'
+          value: 'http://100.80.41.29:11434'
+          reason: 'Mac2011 Ollama local worker endpoint'
 
-        - key: "OLLAMA_MODEL"
-          value: "llama3.2"
-          reason: "Model for local inference (fast startup)"
+        - key: 'OLLAMA_MODEL'
+          value: 'llama3.2'
+          reason: 'Model for local inference (fast startup)'
 
       validation:
-        - type: "doppler-secrets-list"
-          filter: "REDIS_EXPORT|OLLAMA|LLM_GATEWAY_EXPORT"
+        - type: 'doppler-secrets-list'
+          filter: 'REDIS_EXPORT|OLLAMA|LLM_GATEWAY_EXPORT'
           expected_count: 4
 
   # ============================================================================
   # BLOQUE C5: COPILOT — E2E Validation Suite (HIGH PRIORITY)
   # ============================================================================
-  - id: "job-005-validation-e2e"
-    type: "copilot-test-suite"
+  - id: 'job-005-validation-e2e'
+    type: 'copilot-test-suite'
     priority: 0
-    status: "queued"
-    depends_on: ["job-002-ollama-worker-setup", "job-003-hermes-token-tracking", "job-004-redis-export-bind"]
+    status: 'queued'
+    depends_on:
+      ['job-002-ollama-worker-setup', 'job-003-hermes-token-tracking', 'job-004-redis-export-bind']
     timeout_minutes: 20
-    assignee: "copilot-validator"
+    assignee: 'copilot-validator'
 
     metadata:
-      adr: "ADR-024, ADR-025"
-      phase: "end-to-end-validation"
-      complexity: "high"
-      scope: ["health", "routing", "cost", "fallback"]
+      adr: 'ADR-024, ADR-025'
+      phase: 'end-to-end-validation'
+      complexity: 'high'
+      scope: ['health', 'routing', 'cost', 'fallback']
 
     task:
-      title: "End-to-end validation: Ollama routing, token cost, fallback"
+      title: 'End-to-end validation: Ollama routing, token cost, fallback'
       description: |
         Validate full stack: Ollama health, routing bias, cost tracking, fallback.
 
       tests:
-        - name: "health-check-all"
-          script: "./scripts/validate-ai-health-all.sh"
+        - name: 'health-check-all'
+          script: './scripts/validate-ai-health-all.sh'
           assertions:
-            - "Ollama (Mac2011): HTTP 200"
-            - "LLM Gateway: providers.llama_local.available=true"
-            - "Orchestrator (Mac2011): HTTP 200"
+            - 'Ollama (Mac2011): HTTP 200'
+            - 'LLM Gateway: providers.llama_local.available=true'
+            - 'Orchestrator (Mac2011): HTTP 200'
           timeout: 5
 
-        - name: "health-check-vps"
-          script: "curl -sf http://127.0.0.1:3010/health"
+        - name: 'health-check-vps'
+          script: 'curl -sf http://127.0.0.1:3010/health'
           assertions:
             - "jq '.status' == ok"
-            - "jq '.providers | keys | any(. == \"llama_local\")' == true"
+            - 'jq ''.providers | keys | any(. == "llama_local")'' == true'
           timeout: 3
 
-        - name: "demo-job-simple"
-          script: "./scripts/test-worker-e2e.sh smiletripcare --job-type simple"
+        - name: 'demo-job-simple'
+          script: './scripts/test-worker-e2e.sh smiletripcare --job-type simple'
           assertions:
-            - "Job queued on queue openclaw"
-            - "Worker accepted job (OLLAMA concurrency)"
-            - "Job completed with status=success"
+            - 'Job queued on queue openclaw'
+            - 'Worker accepted job (OLLAMA concurrency)'
+            - 'Job completed with status=success'
           timeout: 10
 
-        - name: "cost-tracking-verify"
-          script: "./scripts/verify-token-tracking.sh"
+        - name: 'cost-tracking-verify'
+          script: './scripts/verify-token-tracking.sh'
           assertions:
-            - "Query platform.usage_events for llama_local entries"
-            - "cost_usd=0 for all llama_local rows"
-            - "cost_usd > 0 for claude entries"
+            - 'Query platform.usage_events for llama_local entries'
+            - 'cost_usd=0 for all llama_local rows'
+            - 'cost_usd > 0 for claude entries'
           timeout: 5
 
-        - name: "fallback-test"
-          script: "./scripts/test-fallback-claude.sh"
+        - name: 'fallback-test'
+          script: './scripts/test-fallback-claude.sh'
           instructions: |
             1. Kill Ollama on Mac2011
             2. Enqueue simple job (complexity=1)
             3. Verify: routed to Claude (fallback)
             4. Job succeeds with cost_usd > 0
           assertions:
-            - "Provider logs show: llama_local unavailable"
-            - "Provider logs show: fallback to claude"
-            - "Job status=success"
+            - 'Provider logs show: llama_local unavailable'
+            - 'Provider logs show: fallback to claude'
+            - 'Job status=success'
           timeout: 10
 
-        - name: "redis-queue-check"
+        - name: 'redis-queue-check'
           script: 'redis-cli -a "$REDIS_PASSWORD" -n 0 LLEN bull:openclaw:wait'
           assertions:
-            - "Queue length > 0 (jobs pending)"
+            - 'Queue length > 0 (jobs pending)'
           timeout: 2
 
       post_validation:
-        - "Summary: all tests passed ✓"
-        - "Cost reduction verified: llama_local=$0"
-        - "Fallback working: no task loss"
+        - 'Summary: all tests passed ✓'
+        - 'Cost reduction verified: llama_local=$0'
+        - 'Fallback working: no task loss'
 
   # ============================================================================
   # BLOQUE C6: COPILOT — Documentation Sync (MEDIUM PRIORITY)
   # ============================================================================
-  - id: "job-006-docs-sync"
-    type: "copilot-docs-update"
+  - id: 'job-006-docs-sync'
+    type: 'copilot-docs-update'
     priority: 10000
-    status: "queued"
-    depends_on: ["job-001-docker-optimize", "job-002-ollama-worker-setup", "job-003-hermes-token-tracking", "job-005-validation-e2e"]
+    status: 'queued'
+    depends_on:
+      [
+        'job-001-docker-optimize',
+        'job-002-ollama-worker-setup',
+        'job-003-hermes-token-tracking',
+        'job-005-validation-e2e',
+      ]
     timeout_minutes: 10
-    assignee: "copilot-docs"
+    assignee: 'copilot-docs'
 
     metadata:
-      adr: "ADR-024, ADR-025"
-      phase: "documentation"
-      complexity: "low"
-      git_branch: "main"
+      adr: 'ADR-024, ADR-025'
+      phase: 'documentation'
+      complexity: 'low'
+      git_branch: 'main'
 
     task:
-      title: "Update AGENTS.md and ADR status post-implementation"
-      description: "Reflect completed work in project memory and ADR tracking."
+      title: 'Update AGENTS.md and ADR status post-implementation'
+      description: 'Reflect completed work in project memory and ADR tracking.'
 
       updates:
-        - file: "AGENTS.md"
-          section: "🔄 Decisiones tomadas"
-          action: "add-row"
+        - file: 'AGENTS.md'
+          section: '🔄 Decisiones tomadas'
+          action: 'add-row'
           content: |
             | 2026-04-15 | ADR-025: Token Optimization (Ollama primary + Docker limits) | 40% LLM cost reduction; Mac2011 Ollama for simple tasks |
             | 2026-04-15 | ADR-024: Ollama Worker on Mac2011 | Phase 1-4 complete; routing via LLM Gateway |
 
-        - file: "docs/adr/ADR-024-ollama-local-worker-primary.md"
-          action: "update-status"
-          new_status: "COMPLETED"
-          timestamp: "2026-04-15T00:00Z"
+        - file: 'docs/adr/ADR-024-ollama-local-worker-primary.md'
+          action: 'update-status'
+          new_status: 'COMPLETED'
+          timestamp: '2026-04-15T00:00Z'
 
-        - file: "docs/adr/ADR-031-token-optimization-ollama-primary.md"
-          action: "update-status"
-          new_status: "APPROVED"
-          timestamp: "2026-04-15T00:00Z"
+        - file: 'docs/adr/ADR-031-token-optimization-ollama-primary.md'
+          action: 'update-status'
+          new_status: 'APPROVED'
+          timestamp: '2026-04-15T00:00Z'
 
-        - file: "AGENTS.md"
-          section: "⚡ Quick Commands"
-          action: "add-command"
+        - file: 'AGENTS.md'
+          section: '⚡ Quick Commands'
+          action: 'add-command'
           content: |
             # Validate Ollama routing + costs
             ./scripts/validate-ai-health-all.sh && ./scripts/verify-token-tracking.sh
 
       git:
-        branch: "main"
+        branch: 'main'
         commit_message: |
           docs(agents): session 2026-04-15 ADR-024/025 COMPLETED
 
@@ -378,35 +385,35 @@ jobs:
 # ORCHESTRATION RULES
 # ============================================================================
 orchestration:
-  mode: "parallel"
-  queue: "openclaw"
+  mode: 'parallel'
+  queue: 'openclaw'
 
   execution_order:
     phase_1_arch:
-      - "job-001-docker-optimize"
-      - "job-002-ollama-worker-setup"
+      - 'job-001-docker-optimize'
+      - 'job-002-ollama-worker-setup'
     phase_2_exec:
-      - "job-003-hermes-token-tracking"
-      - "job-004-redis-export-bind"
+      - 'job-003-hermes-token-tracking'
+      - 'job-004-redis-export-bind'
     phase_3_validate:
-      - "job-005-validation-e2e"
+      - 'job-005-validation-e2e'
     phase_4_finalize:
-      - "job-006-docs-sync"
+      - 'job-006-docs-sync'
 
   error_handling:
-    on_failure: "halt"
-    rollback_job_id: "job-002-ollama-worker-setup"  # ADR-024 has rollback
+    on_failure: 'halt'
+    rollback_job_id: 'job-002-ollama-worker-setup' # ADR-024 has rollback
     notify:
-      - channel: "discord"
-        webhook_env: "DISCORD_WEBHOOK_URL"
-        message_template: "ADR-025 implementation failed at {job_id}: {error}"
+      - channel: 'discord'
+        webhook_env: 'DISCORD_WEBHOOK_URL'
+        message_template: 'ADR-025 implementation failed at {job_id}: {error}'
 
   success_criteria:
-    - "All 6 jobs completed"
-    - "E2E validation passing"
-    - "AGENTS.md updated"
-    - "Cost reduction 40% verified"
+    - 'All 6 jobs completed'
+    - 'E2E validation passing'
+    - 'AGENTS.md updated'
+    - 'Cost reduction 40% verified'
 
   sla:
-    total_time_max: 90  # minutes
+    total_time_max: 90 # minutes
     notification_at_80_percent: true

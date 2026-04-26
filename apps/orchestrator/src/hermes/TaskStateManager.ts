@@ -1,11 +1,7 @@
-import type {
-  HermesTask,
-  HermesTaskState,
-  HermesTaskType,
-} from "@intcloudsysops/types";
-import type { SupabaseClient } from "@supabase/supabase-js";
-import { logHermesEvent } from "./hermes-log.js";
-import { isValidHermesTransition } from "./task-state-transitions.js";
+import type { HermesTask, HermesTaskState, HermesTaskType } from '@intcloudsysops/types';
+import type { SupabaseClient } from '@supabase/supabase-js';
+import { logHermesEvent } from './hermes-log.js';
+import { isValidHermesTransition } from './task-state-transitions.js';
 
 function rowToTask(row: {
   task_id: string;
@@ -25,16 +21,13 @@ function rowToTask(row: {
   return {
     id: row.task_id,
     name: row.name,
-    type: (row.task_type as HermesTaskType) ?? "unknown",
+    type: (row.task_type as HermesTaskType) ?? 'unknown',
     state: row.state as HermesTaskState,
     assignee: row.assignee ?? undefined,
     effort:
-      row.effort === "S" ||
-      row.effort === "M" ||
-      row.effort === "L" ||
-      row.effort === "XL"
+      row.effort === 'S' || row.effort === 'M' || row.effort === 'L' || row.effort === 'XL'
         ? row.effort
-        : "unknown",
+        : 'unknown',
     idempotency_key: row.idempotency_key ?? undefined,
     request_id: row.request_id ?? undefined,
     tenant_id: row.tenant_id ?? undefined,
@@ -48,14 +41,14 @@ export class TaskStateManager {
   constructor(private readonly supabase: SupabaseClient) {}
 
   private get platform() {
-    return this.supabase.schema("platform");
+    return this.supabase.schema('platform');
   }
 
   async getTask(taskId: string): Promise<HermesTask | null> {
     const { data, error } = await this.platform
-      .from("hermes_state")
-      .select("*")
-      .eq("task_id", taskId)
+      .from('hermes_state')
+      .select('*')
+      .eq('task_id', taskId)
       .maybeSingle();
     if (error) {
       throw new Error(`hermes_state get: ${error.message}`);
@@ -68,15 +61,13 @@ export class TaskStateManager {
 
   async listTasksByStatus(status: HermesTaskState): Promise<HermesTask[]> {
     const { data, error } = await this.platform
-      .from("hermes_state")
-      .select("*")
-      .eq("state", status);
+      .from('hermes_state')
+      .select('*')
+      .eq('state', status);
     if (error) {
       throw new Error(`hermes_state list: ${error.message}`);
     }
-    return (data ?? []).map((r) =>
-      rowToTask(r as Parameters<typeof rowToTask>[0]),
-    );
+    return (data ?? []).map((r) => rowToTask(r as Parameters<typeof rowToTask>[0]));
   }
 
   async updateTaskState(
@@ -88,16 +79,14 @@ export class TaskStateManager {
       result?: Record<string, unknown> | null;
       started_at?: string | null;
       completed_at?: string | null;
-    } = {},
+    } = {}
   ): Promise<void> {
     if (!isValidHermesTransition(currentState, newState)) {
-      throw new Error(
-        `Invalid Hermes transition ${currentState} → ${newState} for ${taskId}`,
-      );
+      throw new Error(`Invalid Hermes transition ${currentState} → ${newState} for ${taskId}`);
     }
     const now = new Date().toISOString();
     const { error } = await this.platform
-      .from("hermes_state")
+      .from('hermes_state')
       .update({
         state: newState,
         updated_at: now,
@@ -106,12 +95,12 @@ export class TaskStateManager {
         started_at: patch.started_at,
         completed_at: patch.completed_at,
       })
-      .eq("task_id", taskId)
-      .eq("state", currentState);
+      .eq('task_id', taskId)
+      .eq('state', currentState);
     if (error) {
       throw new Error(`hermes_state update: ${error.message}`);
     }
-    logHermesEvent("hermes_task_state", {
+    logHermesEvent('hermes_task_state', {
       task_id: taskId,
       from: currentState,
       to: newState,
@@ -121,10 +110,10 @@ export class TaskStateManager {
   async recordExecution(
     taskId: string,
     agent: string,
-    result: Record<string, unknown>,
+    result: Record<string, unknown>
   ): Promise<void> {
-    const { error } = await this.platform.from("hermes_audit").insert({
-      event_type: "execution",
+    const { error } = await this.platform.from('hermes_audit').insert({
+      event_type: 'execution',
       task_id: taskId,
       agent,
       change: result,

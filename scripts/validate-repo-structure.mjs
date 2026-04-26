@@ -1,5 +1,5 @@
-import fs from "node:fs/promises";
-import path from "node:path";
+import fs from 'node:fs/promises';
+import path from 'node:path';
 
 const ROOT = process.cwd();
 
@@ -19,7 +19,7 @@ async function walkMarkdownFiles(dir) {
       out.push(...(await walkMarkdownFiles(full)));
       continue;
     }
-    if (ent.isFile() && ent.name.toLowerCase().endsWith(".md")) {
+    if (ent.isFile() && ent.name.toLowerCase().endsWith('.md')) {
       out.push(full);
     }
   }
@@ -28,7 +28,7 @@ async function walkMarkdownFiles(dir) {
 }
 
 async function main() {
-  const archiveRoot = path.join(ROOT, "docs", "obsidian", "sources", "archive");
+  const archiveRoot = path.join(ROOT, 'docs', 'obsidian', 'sources', 'archive');
 
   let files = [];
   try {
@@ -36,7 +36,7 @@ async function main() {
     files = await walkMarkdownFiles(archiveRoot);
   } catch {
     // If the vault path isn't present in this checkout, don't block dev machines.
-    console.log("Structure validation passed (no Obsidian archive tree).");
+    console.log('Structure validation passed (no Obsidian archive tree).');
     return;
   }
 
@@ -52,13 +52,15 @@ async function main() {
 
   const dupes = [...byBase.entries()].filter(([, paths]) => paths.length > 1);
   if (dupes.length === 0) {
-    console.log("Structure validation passed.");
+    console.log('Structure validation passed.');
     return;
   }
 
-  console.error("Structure validation failed:");
+  console.error('Structure validation failed:');
   for (const [name, paths] of dupes.sort((a, b) => a[0].localeCompare(b[0]))) {
-    console.error(`- Duplicate archive identifier file "${name}" found in multiple locations: ${paths.join(" | ")}`);
+    console.error(
+      `- Duplicate archive identifier file "${name}" found in multiple locations: ${paths.join(' | ')}`
+    );
   }
   process.exitCode = 1;
 }

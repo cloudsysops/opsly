@@ -1,19 +1,19 @@
-import { getServiceClient } from "./supabase";
-import { runWithTenantContext, tryGetTenantContext } from "./tenant-context";
+import { getServiceClient } from './supabase';
+import { runWithTenantContext, tryGetTenantContext } from './tenant-context';
 
 /**
  * Resuelve `id` + `slug` en DB y ejecuta `fn` dentro de ALS (workers sin request HTTP).
  */
 export async function runWithResolvedTenantContext<T>(
   tenantSlug: string,
-  fn: () => T | Promise<T>,
+  fn: () => T | Promise<T>
 ): Promise<T> {
   const { data, error } = await getServiceClient()
-    .schema("platform")
-    .from("tenants")
-    .select("id, slug")
-    .eq("slug", tenantSlug)
-    .is("deleted_at", null)
+    .schema('platform')
+    .from('tenants')
+    .select('id, slug')
+    .eq('slug', tenantSlug)
+    .is('deleted_at', null)
     .maybeSingle();
 
   if (error) {
@@ -35,12 +35,12 @@ export async function runWithResolvedTenantContext<T>(
 export async function runWithMeteringTenantContext<T>(
   tenantSlug: string,
   fn: () => T | Promise<T>,
-  options?: { tenantId?: string },
+  options?: { tenantId?: string }
 ): Promise<T> {
   const current = tryGetTenantContext();
   if (current?.tenantSlug === tenantSlug) {
     if (options?.tenantId && options.tenantId !== current.tenantId) {
-      throw new Error("metering: tenantId no coincide con el contexto ALS");
+      throw new Error('metering: tenantId no coincide con el contexto ALS');
     }
     return fn();
   }
