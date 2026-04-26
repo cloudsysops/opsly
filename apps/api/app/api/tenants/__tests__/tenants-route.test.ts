@@ -202,6 +202,32 @@ describe('POST /api/tenants', () => {
     expect(res.status).toBe(500);
   });
 
+  it('returns 500 when tenant post-check finds soft-deleted row', async () => {
+    vi.mocked(orchestratorMod.provisionTenant).mockResolvedValue({
+      id: '550e8400-e29b-41d4-a716-446655440002',
+      slug: 'deletedco',
+      status: 'provisioning',
+    });
+    vi.mocked(supabaseMod.getServiceClient).mockReturnValue(
+      mockTenantPostCheck({
+        data: { id: '550e8400-e29b-41d4-a716-446655440002', deleted_at: '2026-01-01T00:00:00Z' },
+        error: null,
+      })
+    );
+    const res = await POST(
+      new Request('http://local/api/tenants', {
+        method: 'POST',
+        headers: { ...authHeaders(), 'content-type': 'application/json' },
+        body: JSON.stringify({
+          slug: 'deletedco',
+          owner_email: 'owner@deletedco.com',
+          plan: 'startup',
+        }),
+      })
+    );
+    expect(res.status).toBe(500);
+  });
+
   it('returns 409 on unique violation', async () => {
     const err = new Error('duplicate key value violates unique constraint');
     Object.assign(err, { code: '23505' });

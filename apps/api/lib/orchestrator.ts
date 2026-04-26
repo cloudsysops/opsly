@@ -255,63 +255,88 @@ class OnboardingOrchestrator {
   }
 
   async runProvisioningPipeline(): Promise<OnboardingResult> {
-    let lastCompletedStep: number = ONBOARDING_PIPELINE.INITIAL;
+    const progress = { step: ONBOARDING_PIPELINE.INITIAL };
     try {
       if (!this.tenantId) {
         throw new Error('Tenant identifier missing before provisioning pipeline');
       }
 
-      this.ports = await allocatePorts(this.tenantId, [...PLAN_SERVICES[this.plan]]);
-      lastCompletedStep = ONBOARDING_PIPELINE.AFTER_PORTS;
-
-      const rendered = await renderTenantComposeFromTemplate(this.slug, this.ports);
-      this.composePath = await writeComposeFile(this.slug, rendered.yaml);
-      const structureHook = await runTenantStructureHookSafe({
+      logger.info('tenant.provisioning.pipeline.start', {
+        tenant_id: this.tenantId,
         slug: this.slug,
-        composePath: this.composePath,
+        plan: this.plan,
       });
-      if (!structureHook.ok) {
-        console.warn('[tenant-structure-hook] warnings:', {
-          slug: this.slug,
-          errors: structureHook.errors,
-        });
-      }
-      this.n8nBasicAuthUser = rendered.n8nBasicAuthUser;
-      this.n8nBasicAuthPassword = rendered.n8nBasicAuthPassword;
-      lastCompletedStep = ONBOARDING_PIPELINE.AFTER_COMPOSE_WRITTEN;
 
-      await startTenant(this.slug, this.composePath);
-      lastCompletedStep = ONBOARDING_PIPELINE.AFTER_COMPOSE_STARTED;
-
-      await pollPortsUntilHealthy(this.ports);
-      lastCompletedStep = ONBOARDING_PIPELINE.AFTER_HEALTH;
-
-      await this.updateTenantActive();
-      lastCompletedStep = ONBOARDING_PIPELINE.AFTER_ACTIVE_DB;
-
-      const tenant = await this.fetchTenantRow();
-
-      await sendPortalInvitationForTenant({
-        email: tenant.owner_email,
-        name: tenant.name,
-        slug: tenant.slug,
-      });
-      lastCompletedStep = ONBOARDING_PIPELINE.AFTER_EMAIL;
-
-      await notifyTenantCreated(tenant);
-      lastCompletedStep = ONBOARDING_PIPELINE.AFTER_NOTIFY;
+      await this.provisionTenantStack(progress);
+      const services = await this.finalizeTenantAndNotify(progress);
 
       return {
         success: true,
         tenantId: this.tenantId,
-        services: tenant.services as object,
+        services,
       };
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Unknown onboarding error';
-      await this.rollback(lastCompletedStep).catch(() => undefined);
+      logger.error('tenant.provisioning.pipeline.failed', {
+        tenant_id: this.tenantId,
+        slug: this.slug,
+        last_completed_step: progress.step,
+        error: message,
+      });
+      await this.rollback(progress.step).catch(() => undefined);
       await notifyTenantFailed(this.slug, message).catch(() => undefined);
       return { success: false, error: message };
     }
+  }
+
+  private async provisionTenantStack(progress: { step: number }): Promise<void> {
+    this.ports = await allocatePorts(this.tenantId as string, [...PLAN_SERVICES[this.plan]]);
+    progress.step = ONBOARDING_PIPELINE.AFTER_PORTS;
+
+    const rendered = await renderTenantComposeFromTemplate(this.slug, this.ports);
+    this.composePath = await writeComposeFile(this.slug, rendered.yaml);
+    const structureHook = await runTenantStructureHookSafe({
+      slug: this.slug,
+      composePath: this.composePath,
+    });
+    if (!structureHook.ok) {
+      console.warn('[tenant-structure-hook] warnings:', {
+        slug: this.slug,
+        errors: structureHook.errors,
+      });
+    }
+    this.n8nBasicAuthUser = rendered.n8nBasicAuthUser;
+    this.n8nBasicAuthPassword = rendered.n8nBasicAuthPassword;
+    progress.step = ONBOARDING_PIPELINE.AFTER_COMPOSE_WRITTEN;
+
+    await startTenant(this.slug, this.composePath);
+    progress.step = ONBOARDING_PIPELINE.AFTER_COMPOSE_STARTED;
+  }
+
+  private async finalizeTenantAndNotify(progress: { step: number }): Promise<object> {
+    if (!this.ports) {
+      throw new Error('Ports missing before health polling');
+    }
+
+    await pollPortsUntilHealthy(this.ports);
+    progress.step = ONBOARDING_PIPELINE.AFTER_HEALTH;
+
+    await this.updateTenantActive();
+    progress.step = ONBOARDING_PIPELINE.AFTER_ACTIVE_DB;
+
+    const tenant = await this.fetchTenantRow();
+
+    await sendPortalInvitationForTenant({
+      email: tenant.owner_email,
+      name: tenant.name,
+      slug: tenant.slug,
+    });
+    progress.step = ONBOARDING_PIPELINE.AFTER_EMAIL;
+
+    await notifyTenantCreated(tenant);
+    progress.step = ONBOARDING_PIPELINE.AFTER_NOTIFY;
+
+    return tenant.services as object;
   }
 
   async run(): Promise<OnboardingResult> {

@@ -1,5 +1,10 @@
 # Secrets requeridos (repository o environment "production"):
 #   VPS_HOST, VPS_USER, VPS_SSH_KEY, PLATFORM_DOMAIN
+#   TAILSCALE_AUTHKEY (opcional pero recomendado si SSH del VPS es solo tailnet / UFW bloquea 22 público):
+#     clave reusable+ephemeral + tag (p. ej. tag:github-actions) autorizado en políticas Tailscale.
+#     Tras el paso "Connect Tailscale", el runner alcanza VPS_HOST si es la IP MagicDNS / Tailscale del VPS.
+#   VPS_SSH_HOST (opcional): si está definido, appleboy usa este host en lugar de VPS_HOST (útil: IP Tailscale
+#     para SSH mientras VPS_HOST se usa solo para health/DNS en otros contextos).
 #   Pull GHCR en el VPS (job deploy): usa github.token + github.actor (permiso packages:read del workflow).
 #     Los paquetes intcloudsysops-* están ligados a este repo → el token del Actions puede hacer pull.
 #   GHCR_PAT / GHCR_USER (opcional): solo para login manual en el VPS fuera de Actions; ver doppler / docs.
@@ -385,6 +390,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Connect Tailscale for SSH to VPS (tailnet)
+        if: ${{ secrets.TAILSCALE_AUTHKEY != '' }}
+        uses: tailscale/github-action@v2
+        with:
+          authkey: ${{ secrets.TAILSCALE_AUTHKEY }}
+          tags: tag:github-actions
+          version: 1.94.2
+
       - name: Deploy staging via SSH (compose)
         uses: appleboy/ssh-action@v1.0.3
         env:
@@ -393,7 +406,7 @@ jobs:
           GITHUB_DEPLOY_TOKEN: ${{ github.token }}
           GITHUB_DEPLOY_ACTOR: ${{ github.actor }}
         with:
-          host: ${{ secrets.VPS_HOST }}
+          host: ${{ secrets.VPS_SSH_HOST || secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
           envs: STAGING_PLATFORM_DOMAIN,PLATFORM_DOMAIN_FALLBACK,GITHUB_DEPLOY_TOKEN,GITHUB_DEPLOY_ACTOR
@@ -534,6 +547,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Connect Tailscale for SSH to VPS (tailnet)
+        if: ${{ secrets.TAILSCALE_AUTHKEY != '' }}
+        uses: tailscale/github-action@v2
+        with:
+          authkey: ${{ secrets.TAILSCALE_AUTHKEY }}
+          tags: tag:github-actions
+          version: 1.94.2
+
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.0.3
         env:
@@ -541,7 +562,7 @@ jobs:
           GITHUB_DEPLOY_TOKEN: ${{ github.token }}
           GITHUB_DEPLOY_ACTOR: ${{ github.actor }}
         with:
-          host: ${{ secrets.VPS_HOST }}
+          host: ${{ secrets.VPS_SSH_HOST || secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
           envs: PLATFORM_DOMAIN,GITHUB_DEPLOY_TOKEN,GITHUB_DEPLOY_ACTOR

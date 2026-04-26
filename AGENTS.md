@@ -1,7 +1,7 @@
 ---
 status: canon
 owner: operations
-last_review: 2026-04-24
+last_review: 2026-04-26
 ---
 
 # Opsly — Contexto del Agente
@@ -322,7 +322,7 @@ node scripts/load-skills.js show opsly-api
 
 <!-- Actualizar al final de cada sesión -->
 
-**Fecha última actualización:** 2026-04-20 — **Sprint:** Semana 5 (Feedback Loop), ventana **2026-04-26 → 2026-04-28** ✅ **COMPLETADO EN TIEMPO**. Documentos: [`docs/SEMANA-5-INFORME.md`](docs/SEMANA-5-INFORME.md), [`ROADMAP.md`](ROADMAP.md).
+**Fecha última actualización:** 2026-04-26 — **Estabilización prod:** runbooks deploy/onboarding/seguridad + CI OpenAPI gate + workflow Deploy con Tailscale opcional; ver bloqueantes y [`docs/runbooks/DEPLOY-GITHUB-ACTIONS.md`](docs/runbooks/DEPLOY-GITHUB-ACTIONS.md). **Sprint histórico Semana 5:** [`docs/SEMANA-5-INFORME.md`](docs/SEMANA-5-INFORME.md), [`ROADMAP.md`](ROADMAP.md).
 
 **Siguiente fase:** Semana 6 (Segundo Cliente + E2E), ventana **2026-04-29 → 2026-05-03** ⏳ **EN PROGRESO**. Plan: [`docs/SEMANA-6-PLAN.md`](docs/SEMANA-6-PLAN.md).
 
@@ -1116,13 +1116,10 @@ ssh vps-dragon@100.120.151.91 "docker system df && sudo du -xh /var --max-depth=
 
 <!-- Qué está roto o bloqueado ahora mismo -->
 
-- [ ] **🚨 CRÍTICO: POST /api/tenants retorna 202 con UUID pero no crea tenant en DB** (2026-04-20 18:23 UTC)
-  - **Síntoma:** `curl -X POST https://api.ops.smiletripcare.com/api/tenants` devuelve `{"id":"...", "slug":"...", "status":"provisioning"}` (HTTP 202)
-  - **Realidad:** Tenant NO aparece en `GET /api/tenants` lista, ni en provisioning, ni en ningún status
-  - **Causa:** Unknown — possible: (a) `createTenantRecord()` en `apps/api/lib/orchestrator.ts` falla silenciosamente, (b) RLS policy bloquea insert, (c) transaction rollback en provisioning pipeline, (d) error catch silencioso
-  - **Bloqueado:** Semana 6 (onboarding segundo cliente) — imposible sin tenant provisioning
-  - **Workaround:** Investigar si hay método manual de creación o si necesita revert/fix crítico en orchestrator.ts
-  - **Notas:** onboard-tenant.sh está OK tras fix stripe_customer_id (commit 4334e57); error no es validación de payload
+- [x] **POST /api/tenants — falso 202 sin fila en DB** (mitigado en código 2026-04)
+  - **Qué se hizo:** post-check con reintentos en `apps/api/app/api/tenants/route.ts` + verificación tras insert en `apps/api/lib/orchestrator.ts` + tests en `tenants-route.test.ts`.
+  - **Pendiente operativo:** desplegar imagen API en `prd` y smoke real (`POST` + `GET /api/tenants`). Runbook: [`docs/runbooks/TENANT-ONBOARDING-TRIAGE.md`](docs/runbooks/TENANT-ONBOARDING-TRIAGE.md).
+- [ ] **Deploy GitHub Actions → VPS (SSH timeout)** — si el job **Deploy** falla con `dial tcp …:22: i/o timeout`, configurar `TAILSCALE_AUTHKEY` + `VPS_HOST` alcanzable desde el runner (típ. IP Tailscale del VPS) o abrir SSH según política. Ver [`docs/runbooks/DEPLOY-GITHUB-ACTIONS.md`](docs/runbooks/DEPLOY-GITHUB-ACTIONS.md).
 
 - [x] 🟠 **CONSOLIDACIÓN ARQUITECTURA (2026-04-24)**
   - ADR-031: deprecación/archivo de apps experimentales (`context-builder-v2`, `ai-evolution`, `ingestion-service`, `mission-control`).
@@ -1159,7 +1156,7 @@ ssh vps-dragon@100.120.151.91 "docker system df && sudo du -xh /var --max-depth=
 - [ ] **Verificar email tester** — confirmar recepción/activación de invitación para `jkbotero78@gmail.com` tras onboarding de `localrank`.
 - [x] **`GOOGLE_DRIVE_TOKEN`** — confirmado 2026-04-10: Drive usa `GOOGLE_SERVICE_ACCOUNT_JSON` (2361 chars, válido). No es un gap real; la variable legacy no se usa.
 - [ ] **Resend dominio verificado** — sin ello, envío a emails fuera de la cuenta de prueba Resend → **500** en `POST /api/invitations` (ver mensaje API `verify a domain`).
-- [ ] **Imágenes GHCR / workflow Deploy** — desplegar API con plantilla invitación nueva (`portal-invitations.ts`); pendiente **success** de pipeline si aplica.
+- [ ] **Imágenes GHCR / workflow Deploy** — tras configurar SSH/Tailscale (ver runbook deploy), confirmar run **Deploy** en verde y API con fix de tenants en `prd`.
 - [x] **Fix Dockerfile MCP** — añadido `apps/agents/notebooklm` al COPY en deps/builder/runner stages + `packages/types` al deps stage + `npm run build -w @intcloudsysops/types` antes de otros workspaces (completado 2026-04-13, commit `ae7ee0e`).
 - [ ] **`STRIPE_PRICE_ID_*` en Doppler `prd` / secrets de CI** — necesarios para billing/checkout real en `apps/web`; el build puede completarse sin ellos (`envOrEmpty` en `apps/web/lib/stripe/plans.ts`), pero Stripe fallará en runtime si faltan.
 

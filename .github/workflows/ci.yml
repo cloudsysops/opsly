@@ -50,6 +50,9 @@ jobs:
           wait $pid8 || status=1
           exit $status
 
+      - name: OpenAPI subset (CI gate; duplica validate-context para fallo temprano en PR)
+        run: npm run validate-openapi
+
       - name: ESLint si existe config (paralelo)
         run: |
           set -euo pipefail
