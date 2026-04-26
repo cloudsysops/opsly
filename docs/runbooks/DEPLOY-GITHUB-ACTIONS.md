@@ -8,15 +8,15 @@ El runner de GitHub **no está en tu tailnet**. Si el VPS solo acepta SSH desde 
 
 ## Configuración recomendada (SSH vía Tailscale)
 
-1. En [Tailscale admin](https://login.tailscale.com/admin/settings/keys): crear **auth key** reusable + ephemeral, con tags acordes a tu ACL (ej. `tag:github-actions`).
-2. En la política ACL de Tailscale, permitir que nodos con `tag:github-actions` lleguen al nodo del VPS (tag o usuario `vps-dragon`, según tu modelo).
+1. En [Tailscale admin](https://login.tailscale.com/admin/settings/keys): crear **auth key** reusable + ephemeral. El tag (si aplica) puede ir **en la clave** y en la ACL; el workflow **no** fuerza `tag:github-actions` — evita fallos si tu red no declara ese tag. Si tu instalación exige pasar tags al `tailscale up` del action, añade el input en el workflow o usa una clave pre-etiquetada según la doc de Tailscale.
+2. En la política ACL de Tailscale, permitir que el nodo del runner (una vez unido) llegue al nodo del VPS (por tag, usuario o `autogroup:member` según tu modelo).
 3. En GitHub → **Settings → Secrets and variables → Actions** (entornos `production` / `staging` si aplica):
    - `TAILSCALE_AUTHKEY`: la clave del paso 1.
    - `VPS_HOST`: dirección alcanzable **después** del join (típicamente IP Tailscale del VPS, p. ej. `100.120.151.91`, o nombre MagicDNS si está habilitado).
    - Opcional: `VPS_SSH_HOST`: si lo defines, `appleboy/ssh-action` usa **solo** este valor como host SSH; si no, usa `VPS_HOST`. Útil si quieres separar “host para health/DNS” de “host para SSH”.
    - `VPS_USER`, `VPS_SSH_KEY`: sin cambios.
 
-El workflow ejecuta `tailscale/github-action@v2` **solo** cuando `TAILSCALE_AUTHKEY` no está vacío; si no usas Tailscale en CI, deja el secreto vacío y abre SSH al runner (menos recomendado).
+El workflow ejecuta `tailscale/github-action@v2` **solo** cuando `TAILSCALE_AUTHKEY` no está vacío; si no usas Tailscale en CI, deja el secreto vacío y abre SSH al runner (menos recomendado). El paso SSH usa **timeout de conexión 2m** (antes 30s) para redes lentas.
 
 ## Rollback rápido de imagen API
 

@@ -1119,7 +1119,7 @@ ssh vps-dragon@100.120.151.91 "docker system df && sudo du -xh /var --max-depth=
 - [x] **POST /api/tenants — falso 202 sin fila en DB** (mitigado en código 2026-04)
   - **Qué se hizo:** post-check con reintentos en `apps/api/app/api/tenants/route.ts` + verificación tras insert en `apps/api/lib/orchestrator.ts` + tests en `tenants-route.test.ts`.
   - **Pendiente operativo:** desplegar imagen API en `prd` y smoke real (`POST` + `GET /api/tenants`). Runbook: [`docs/runbooks/TENANT-ONBOARDING-TRIAGE.md`](docs/runbooks/TENANT-ONBOARDING-TRIAGE.md).
-- [ ] **Deploy GitHub Actions → VPS (SSH timeout)** — si el job **Deploy** falla con `dial tcp …:22: i/o timeout`, configurar `TAILSCALE_AUTHKEY` + `VPS_HOST` alcanzable desde el runner (típ. IP Tailscale del VPS) o abrir SSH según política. Ver [`docs/runbooks/DEPLOY-GITHUB-ACTIONS.md`](docs/runbooks/DEPLOY-GITHUB-ACTIONS.md).
+- [ ] **Deploy GitHub Actions → VPS (SSH timeout)** — si el job **Deploy** falla: (1) `TAILSCALE_AUTHKEY` + `VPS_HOST` / `VPS_SSH_HOST` = IP tailnet del VPS; (2) el workflow **no** impone un tag fijo de Tailscale (evita fallos de ACL); (3) `timeout: 2m` en el paso SSH. Ver [`docs/runbooks/DEPLOY-GITHUB-ACTIONS.md`](docs/runbooks/DEPLOY-GITHUB-ACTIONS.md).
 
 - [x] 🟠 **CONSOLIDACIÓN ARQUITECTURA (2026-04-24)**
   - ADR-031: deprecación/archivo de apps experimentales (`context-builder-v2`, `ai-evolution`, `ingestion-service`, `mission-control`).
