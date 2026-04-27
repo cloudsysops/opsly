@@ -38,6 +38,12 @@ This document is the single technical authority for runtime architecture at the 
 - `packages/skills` (skills catalog + manifest tooling)
 - `runtime/context/system_state.json` (runtime operational state)
 
+### Legacy compatibility layer (temporary)
+
+- `skills -> packages/skills` symlink remains temporarily to avoid breaking dynamic loaders and indexed knowledge paths during migration.
+- `context -> runtime/context` symlink remains temporarily until all scripts/resources move to `runtime/context/*`.
+- Target: remove both symlinks in a dedicated cleanup sprint after static+dynamic reference migration.
+
 ### Deprecated/archived modules
 
 - `apps/context-builder-v2` (deprecated, see `.deprecation.yml`)

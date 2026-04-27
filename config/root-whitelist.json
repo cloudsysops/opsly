@@ -75,6 +75,20 @@
     ".mypy_cache",
     ".ruff_cache"
   ],
+  "allowed_hidden_folders": [
+    ".git",
+    ".github",
+    ".husky",
+    ".githooks",
+    ".cursor",
+    ".claude",
+    ".vscode",
+    ".obsidian",
+    ".archived",
+    ".turbo",
+    ".mypy_cache",
+    ".ruff_cache"
+  ],
   "allowed_extensions_in_root": [],
   "blocked_patterns": [
     "*.md.tmp",
@@ -87,6 +101,17 @@
     "*.orig",
     "*.swp",
     "*~"
+  ],
+  "blocked_hidden_patterns": [
+    ".cache*",
+    ".temp*",
+    ".tmp*",
+    ".backup*",
+    ".bak*",
+    ".old*",
+    ".test*",
+    ".local*",
+    ".data*"
   ],
   "exceptions": {
     "allow_ci_configs": true,

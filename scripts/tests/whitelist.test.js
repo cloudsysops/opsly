@@ -42,6 +42,61 @@ function testRootFilesCompliance() {
   return blockedIssues === 0;
 }
 
+function testRootFoldersCompliance() {
+  console.log('\n📁 Verificando carpetas en raíz...');
+
+  const whitelist = JSON.parse(fs.readFileSync(WHITELIST_PATH, 'utf8'));
+  const rootEntries = fs.readdirSync(ROOT, { withFileTypes: true });
+  const rootFolders = rootEntries.filter((e) => e.isDirectory()).map((e) => e.name);
+
+  for (const folder of rootFolders) {
+    if (whitelist.allowed_folders.includes(folder)) {
+      console.log(`  ✅ ${folder}/`);
+    } else if (folder.startsWith('.')) {
+      // Se valida en testHiddenFoldersCompliance.
+      continue;
+    } else {
+      console.log(`  ⚠️ ${folder}/ (no está en allowed_folders, advertencia)`);
+    }
+  }
+
+  return true;
+}
+
+function testHiddenFoldersCompliance() {
+  console.log('\n🔒 Verificando carpetas ocultas en raíz...');
+
+  const whitelist = JSON.parse(fs.readFileSync(WHITELIST_PATH, 'utf8'));
+  const rootEntries = fs.readdirSync(ROOT, { withFileTypes: true });
+  const hiddenFolders = rootEntries
+    .filter((e) => e.isDirectory() && e.name.startsWith('.'))
+    .map((e) => e.name);
+
+  let issues = 0;
+
+  for (const folder of hiddenFolders) {
+    if ((whitelist.allowed_hidden_folders ?? []).includes(folder)) {
+      console.log(`  ✅ ${folder}/`);
+      continue;
+    }
+
+    const isBlocked =
+      (whitelist.blocked_hidden_patterns ?? []).some((pattern) => {
+        const regex = new RegExp(`^${pattern.replace(/\*/g, '.*')}$`);
+        return regex.test(folder);
+      });
+
+    if (isBlocked) {
+      console.log(`  ❌ ${folder}/ (patrón bloqueado)`);
+      issues++;
+    } else {
+      console.log(`  ⚠️ ${folder}/ (no está en allowed_hidden_folders)`);
+    }
+  }
+
+  return issues === 0;
+}
+
 function testBlockedPatterns() {
   console.log('\n🚫 Verificando patrones bloqueados...');
   const whitelist = JSON.parse(fs.readFileSync(WHITELIST_PATH, 'utf8'));
@@ -71,6 +126,8 @@ console.log('══════════════════════�
 const results = {
   exists: testWhitelistExists(),
   compliance: testRootFilesCompliance(),
+  folders: testRootFoldersCompliance(),
+  hidden: testHiddenFoldersCompliance(),
   patterns: testBlockedPatterns(),
 };
 
