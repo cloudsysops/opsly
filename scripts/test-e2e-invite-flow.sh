@@ -45,10 +45,6 @@ if [[ "${API_URL}" == "" ]]; then
   die "--api-url no puede estar vacío" 1
 fi
 
-if [[ -z "${ADMIN_TOKEN:-}" ]]; then
-  die "ADMIN_TOKEN vacío. Exporta PLATFORM_ADMIN_TOKEN desde Doppler (no lo pegues en chat)." 1
-fi
-
 echo "🔍 E2E Invite flow (local runner)"
 echo "  API: ${API_URL}"
 echo "  Dry-run: ${DRY_RUN}"
@@ -61,6 +57,10 @@ if [[ "${DRY_RUN}" == "true" ]]; then
   echo "✓ Dry-run: omitiendo POST /api/invitations"
   echo "✅ Completado (solo health)."
   exit 0
+fi
+
+if [[ -z "${ADMIN_TOKEN:-}" ]]; then
+  die "ADMIN_TOKEN vacío. Exporta PLATFORM_ADMIN_TOKEN desde Doppler (no lo pegues en chat)." 1
 fi
 
 if [[ -z "${OWNER_EMAIL:-}" ]]; then

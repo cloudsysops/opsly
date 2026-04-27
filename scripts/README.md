@@ -51,6 +51,18 @@ This directory contains operational and deployment scripts organized by category
 ./scripts/utils/notify-discord.sh "Title" "Message" "success"
 ```
 
+### Python CLI automations
+
+```bash
+python3 scripts/opsly_cli.py health --api-url https://api.ops.smiletripcare.com
+python3 scripts/opsly_cli.py deploy-last
+python3 scripts/opsly_cli.py deploy-status 24970035820
+python3 scripts/opsly_cli.py deploy-watch 24970035820
+python3 scripts/opsly_cli.py secret-rotation --secrets TAILSCALE_AUTHKEY DOPPLER_TOKEN_PRD DOPPLER_TOKEN_STG
+python3 scripts/opsly_cli.py scripts-list --category utils
+python3 scripts/opsly_cli.py script-run test-e2e-invite-flow -- --dry-run --api-url https://api.ops.smiletripcare.com
+```
+
 ## Compatibility
 
 Legacy script paths in `scripts/*.sh` remain available as wrappers and forward to the canonical location.
