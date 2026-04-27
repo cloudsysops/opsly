@@ -6,10 +6,10 @@ Plataforma multi-tenant **enterprise SaaS**: plano de control (API, billing, orq
 
 ## Sprint planning y task management
 
-- **Colaboración:** Notion (bases Tasks / Sprints) + variables en Doppler — ver [`docs/DOPPLER-VARS.md`](docs/DOPPLER-VARS.md).
+- **Colaboración:** Notion (bases Tasks / Sprints) + variables en Doppler — ver [`docs/DOPPLER-VARS.md`](docs/04-infrastructure/DOPPLER-VARS.md).
 - **Repo:** `docs/implementation/status.yaml` alimenta documentación generada (`docs/generated/implementation-progress.auto.md`, `docs/generated/sprint-status.auto.md`, `AGENTS-ASSIGNMENTS.md`); vista humana del sprint: `SPRINT-TRACKER.md`.
 - **Comandos:** `npm run docs:sync` · `npm run sync:all` (con `NOTION_TOKEN` / `GITHUB_TOKEN` según entorno) · `npm run sprint:burndown`.
-- **Guías:** [`docs/SPRINT-PLANNING-SETUP.md`](docs/SPRINT-PLANNING-SETUP.md) · [`docs/AGENTS-ORCHESTRATION.md`](docs/AGENTS-ORCHESTRATION.md).
+- **Guías:** [`docs/SPRINT-PLANNING-SETUP.md`](docs/01-development/SPRINT-PLANNING-SETUP.md) · [`docs/AGENTS-ORCHESTRATION.md`](docs/03-agents/AGENTS-ORCHESTRATION.md).
 
 ## 📚 Índice de documentación
 
@@ -17,23 +17,23 @@ Plataforma multi-tenant **enterprise SaaS**: plano de control (API, billing, orq
 
 | Doc                                                                  | Descripción                                                             |
 | -------------------------------------------------------------------- | ----------------------------------------------------------------------- |
-| [`AGENTS.md`](AGENTS.md)                                             | **Fuente de verdad** operativa — estado sesión, decisiones, bloqueantes |
-| [`VISION.md`](VISION.md)                                             | Norte del producto, ICP, fases, límites                                 |
-| [`ROADMAP.md`](ROADMAP.md)                                           | Plan semanal Fase 2–3 (IA + producto), milestones                       |
-| [`docs/IMPLEMENTATION-IA-LAYER.md`](docs/IMPLEMENTATION-IA-LAYER.md) | Guía técnica capa IA (TypeScript; rutas en `apps/*`)                    |
-| [`SPRINT-TRACKER.md`](SPRINT-TRACKER.md)                             | Vista semanal operativa (canon)                                         |
+| [`AGENTS.md`](docs/03-agents/AGENTS.md)                                             | **Fuente de verdad** operativa — estado sesión, decisiones, bloqueantes |
+| [`VISION.md`](docs/01-development/VISION.md)                                             | Norte del producto, ICP, fases, límites                                 |
+| [`ROADMAP.md`](docs/01-development/ROADMAP.md)                                           | Plan semanal Fase 2–3 (IA + producto), milestones                       |
+| [`docs/IMPLEMENTATION-IA-LAYER.md`](docs/01-development/IMPLEMENTATION-IA-LAYER.md) | Guía técnica capa IA (TypeScript; rutas en `apps/*`)                    |
+| [`SPRINT-TRACKER.md`](docs/01-development/SPRINT-TRACKER.md)                             | Vista semanal operativa (canon)                                         |
 | [`docs/history/plans/`](docs/history/plans/)                         | `MASTER-PLAN*`, `SPRINT-ROADMAP` archivados (referencia) — ver ADR-033  |
 
 ### Arquitectura
 
 | Doc                                                              | Descripción                                               |
 | ---------------------------------------------------------------- | --------------------------------------------------------- |
-| [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)                   | Control plane vs data plane, flujos, aislamiento          |
-| [`docs/OPENCLAW-ARCHITECTURE.md`](docs/OPENCLAW-ARCHITECTURE.md) | OpenClaw: MCP, Orchestrator, LLM Gateway, Context Builder |
-| [`docs/LLM-GATEWAY.md`](docs/LLM-GATEWAY.md)                     | Cache, routing, modelos, env vars                         |
-| [`docs/ORCHESTRATOR.md`](docs/ORCHESTRATOR.md)                   | BullMQ jobs, workers, circuit breaker (Sprint 4)          |
-| [`docs/CONTEXT-BUILDER.md`](docs/CONTEXT-BUILDER.md)             | Sesión, TTL, resúmenes, persistencia (Sprint 4)           |
-| [`docs/AGENTS-GUIDE.md`](docs/AGENTS-GUIDE.md)                   | Agentes paralelos y límites por plan                      |
+| [`docs/ARCHITECTURE.md`](docs/00-architecture/ARCHITECTURE.md)                   | Control plane vs data plane, flujos, aislamiento          |
+| [`docs/OPENCLAW-ARCHITECTURE.md`](docs/00-architecture/OPENCLAW-ARCHITECTURE.md) | OpenClaw: MCP, Orchestrator, LLM Gateway, Context Builder |
+| [`docs/LLM-GATEWAY.md`](docs/00-architecture/LLM-GATEWAY.md)                     | Cache, routing, modelos, env vars                         |
+| [`docs/ORCHESTRATOR.md`](docs/00-architecture/ORCHESTRATOR.md)                   | BullMQ jobs, workers, circuit breaker (Sprint 4)          |
+| [`docs/CONTEXT-BUILDER.md`](docs/00-architecture/CONTEXT-BUILDER.md)             | Sesión, TTL, resúmenes, persistencia (Sprint 4)           |
+| [`docs/AGENTS-GUIDE.md`](docs/03-agents/AGENTS-GUIDE.md)                   | Agentes paralelos y límites por plan                      |
 
 ### Decisiones de arquitectura (ADRs)
 
@@ -56,32 +56,32 @@ Plataforma multi-tenant **enterprise SaaS**: plano de control (API, billing, orq
 | [`docs/runbooks/admin.md`](docs/runbooks/admin.md)                                   | Runbook administrador plataforma                                                     |
 | [`docs/runbooks/dev.md`](docs/runbooks/dev.md)                                       | Runbook desarrollador                                                                |
 | [`docs/runbooks/incident.md`](docs/runbooks/incident.md)                             | Runbook incidentes                                                                   |
-| [`docs/INVITATIONS_RUNBOOK.md`](docs/INVITATIONS_RUNBOOK.md)                         | Flujo de invitaciones portal                                                         |
-| [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md)                                 | Diagnóstico y soluciones comunes                                                     |
-| [`docs/SECURITY_CHECKLIST.md`](docs/SECURITY_CHECKLIST.md)                           | Checklist Zero-Trust por ruta                                                        |
-| [`docs/SECURITY-MITIGATIONS-2026-04-09.md`](docs/SECURITY-MITIGATIONS-2026-04-09.md) | Mitigaciones UFW + Tailscale + CF                                                    |
-| [`docs/SESSION-GIT-SYNC.md`](docs/SESSION-GIT-SYNC.md)                               | `git pull` / `git-sync-repo.sh` en opsly-admin, opsly-worker y VPS antes de cambios  |
-| [`docs/TAILSCALE-NOMENCLATURA.md`](docs/TAILSCALE-NOMENCLATURA.md)                   | Tailscale + SSH: **`opsly-admin`** (Mac dev), **`opsly-worker`** (100.80.41.29), VPS |
-| [`docs/WORKER-SETUP-MAC2011.md`](docs/WORKER-SETUP-MAC2011.md)                       | Worker Ubuntu en Mac 2011 (`opsly-worker`) + orchestrator                            |
-| [`docs/WORKER-SERVICE-MAC2011.md`](docs/WORKER-SERVICE-MAC2011.md)                   | Worker como servicio **systemd** (persistente, reinicio automático)                  |
+| [`docs/INVITATIONS_RUNBOOK.md`](docs/04-infrastructure/INVITATIONS_RUNBOOK.md)                         | Flujo de invitaciones portal                                                         |
+| [`docs/TROUBLESHOOTING.md`](docs/01-development/TROUBLESHOOTING.md)                                 | Diagnóstico y soluciones comunes                                                     |
+| [`docs/SECURITY_CHECKLIST.md`](docs/04-infrastructure/SECURITY_CHECKLIST.md)                           | Checklist Zero-Trust por ruta                                                        |
+| [`docs/SECURITY-MITIGATIONS-2026-04-09.md`](docs/04-infrastructure/SECURITY-MITIGATIONS-2026-04-09.md) | Mitigaciones UFW + Tailscale + CF                                                    |
+| [`docs/SESSION-GIT-SYNC.md`](docs/01-development/SESSION-GIT-SYNC.md)                               | `git pull` / `git-sync-repo.sh` en opsly-admin, opsly-worker y VPS antes de cambios  |
+| [`docs/TAILSCALE-NOMENCLATURA.md`](docs/04-infrastructure/TAILSCALE-NOMENCLATURA.md)                   | Tailscale + SSH: **`opsly-admin`** (Mac dev), **`opsly-worker`** (100.80.41.29), VPS |
+| [`docs/WORKER-SETUP-MAC2011.md`](docs/04-infrastructure/WORKER-SETUP-MAC2011.md)                       | Worker Ubuntu en Mac 2011 (`opsly-worker`) + orchestrator                            |
+| [`docs/WORKER-SERVICE-MAC2011.md`](docs/04-infrastructure/WORKER-SERVICE-MAC2011.md)                   | Worker como servicio **systemd** (persistente, reinicio automático)                  |
 
 ### Infra y deploy
 
 | Doc                                                            | Descripción                                                               |
 | -------------------------------------------------------------- | ------------------------------------------------------------------------- |
-| [`docs/VPS-ARCHITECTURE.md`](docs/VPS-ARCHITECTURE.md)         | Topología VPS, Traefik, redes                                             |
-| [`docs/DOPPLER-VARS.md`](docs/DOPPLER-VARS.md)                 | Variables Doppler por entorno                                             |
-| [`docs/DOPPLER-CI-RUNBOOK.md`](docs/DOPPLER-CI-RUNBOOK.md)     | CI + local: validar Doppler (`validate-doppler-vars.sh`, secretos GitHub) |
-| [`docs/BILLING-FLUSH-VERCEL.md`](docs/BILLING-FLUSH-VERCEL.md) | Cron billing sync (Sprint 3)                                              |
+| [`docs/VPS-ARCHITECTURE.md`](docs/04-infrastructure/VPS-ARCHITECTURE.md)         | Topología VPS, Traefik, redes                                             |
+| [`docs/DOPPLER-VARS.md`](docs/04-infrastructure/DOPPLER-VARS.md)                 | Variables Doppler por entorno                                             |
+| [`docs/DOPPLER-CI-RUNBOOK.md`](docs/04-infrastructure/DOPPLER-CI-RUNBOOK.md)     | CI + local: validar Doppler (`validate-doppler-vars.sh`, secretos GitHub) |
+| [`docs/BILLING-FLUSH-VERCEL.md`](docs/04-infrastructure/BILLING-FLUSH-VERCEL.md) | Cron billing sync (Sprint 3)                                              |
 | [`infra/terraform/README.md`](infra/terraform/README.md)       | IaC Terraform DigitalOcean                                                |
 
 ### Automatización y IA
 
 | Doc                                                        | Descripción                    |
 | ---------------------------------------------------------- | ------------------------------ |
-| [`docs/AUTOMATION-PLAN.md`](docs/AUTOMATION-PLAN.md)       | Discord → GitHub → Cursor loop |
-| [`docs/N8N-SETUP.md`](docs/N8N-SETUP.md)                   | n8n workflows y secretos       |
-| [`docs/GOOGLE-CLOUD-SETUP.md`](docs/GOOGLE-CLOUD-SETUP.md) | Google Cloud + Drive sync      |
+| [`docs/AUTOMATION-PLAN.md`](docs/01-development/AUTOMATION-PLAN.md)       | Discord → GitHub → Cursor loop |
+| [`docs/N8N-SETUP.md`](docs/01-development/N8N-SETUP.md)                   | n8n workflows y secretos       |
+| [`docs/GOOGLE-CLOUD-SETUP.md`](docs/04-infrastructure/GOOGLE-CLOUD-SETUP.md) | Google Cloud + Drive sync      |
 | [`skills/README.md`](skills/README.md)                     | Skills Claude y manifests      |
 
 ## Stripe (Live vs Test)
@@ -134,10 +134,10 @@ Capa opcional de **orquestación multi-agente**, LLM unificado y contexto de ses
 
 | Doc                                                | Contenido                            |
 | -------------------------------------------------- | ------------------------------------ |
-| [docs/LLM-GATEWAY.md](docs/LLM-GATEWAY.md)         | Cache, modelos, env vars             |
-| [docs/ORCHESTRATOR.md](docs/ORCHESTRATOR.md)       | Jobs, workers, estados               |
-| [docs/CONTEXT-BUILDER.md](docs/CONTEXT-BUILDER.md) | Sesión, TTL, resúmenes               |
-| [docs/AGENTS-GUIDE.md](docs/AGENTS-GUIDE.md)       | Agentes paralelos y límites por plan |
+| [docs/LLM-GATEWAY.md](docs/00-architecture/LLM-GATEWAY.md)         | Cache, modelos, env vars             |
+| [docs/ORCHESTRATOR.md](docs/00-architecture/ORCHESTRATOR.md)       | Jobs, workers, estados               |
+| [docs/CONTEXT-BUILDER.md](docs/00-architecture/CONTEXT-BUILDER.md) | Sesión, TTL, resúmenes               |
+| [docs/AGENTS-GUIDE.md](docs/03-agents/AGENTS-GUIDE.md)       | Agentes paralelos y límites por plan |
 
 **Tabla de servicios (puertos de proceso / contenedor)**
 
