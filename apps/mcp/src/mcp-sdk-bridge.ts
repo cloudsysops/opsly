@@ -11,6 +11,7 @@ import {
 import { MCP_SERVER_INFO } from './lib/constants.js';
 import { TOOL_REQUIRED_SCOPES, type OpenClawMcpServer } from './server.js';
 import type { ToolDefinition } from './types/index.js';
+import type { ToolContext } from './types/tools.types.js';
 
 function isZodSchema(value: unknown): value is z.ZodType<unknown> {
   return (
@@ -41,6 +42,26 @@ function asStructuredContent(result: unknown): Record<string, unknown> {
     return result as Record<string, unknown>;
   }
   return { result };
+}
+
+function asRecord(value: unknown): Record<string, unknown> {
+  return value !== null && typeof value === 'object' ? (value as Record<string, unknown>) : {};
+}
+
+function stringValue(value: unknown): string | undefined {
+  return typeof value === 'string' && value.trim().length > 0 ? value : undefined;
+}
+
+function resolveToolContext(args: unknown): ToolContext {
+  const input = asRecord(args);
+  const tenantId =
+    stringValue(input.tenantId) ??
+    stringValue(input.tenant_id) ??
+    stringValue(input.tenant_slug) ??
+    'tenant_001';
+  const mode = stringValue(input.mode) ?? 'developer';
+  const workspaceRoot = process.env.WORKSPACE_ROOT ?? './tools/workspaces';
+  return { tenantId, mode, workspaceRoot };
 }
 
 export function createSdkBridgeServer(
@@ -76,7 +97,10 @@ export function createSdkBridgeServer(
             extra.authInfo?.token !== undefined
               ? { authorization: `Bearer ${extra.authInfo.token}` }
               : {};
-          const out = await openClaw.callTool(def.name, args ?? {}, auth);
+          const out = await openClaw.callTool(def.name, args ?? {}, {
+            ...auth,
+            toolContext: resolveToolContext(args),
+          });
           const text = typeof out === 'string' ? out : JSON.stringify(out, null, 2);
           return {
             content: [{ type: 'text', text }],
@@ -104,6 +128,11 @@ export function createSdkBridgeServer(
       },
       async () => {
         const entry = readStaticContextResource(resource.uri);
+        if (!entry) {
+          return {
+            contents: [],
+          };
+        }
         return {
           contents: [
             {
@@ -140,6 +169,11 @@ export function createSdkBridgeServer(
     async (_uri, variables) => {
       const slug = typeof variables.slug === 'string' ? variables.slug : '';
       const entry = readAdrResource(slug);
+      if (!entry) {
+        return {
+          contents: [],
+        };
+      }
       return {
         contents: [
           {

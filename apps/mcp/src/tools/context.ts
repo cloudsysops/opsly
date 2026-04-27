@@ -44,16 +44,22 @@ export const contextTools: [
       uri: z.string().min(1).describe('URI (ej. opsly://context/agents)'),
     }),
     handler: async ({ uri }: ReadContextInput) => {
-      const { resource, text } = readStaticContextResource(uri);
+      const entry = readStaticContextResource(uri);
+      if (!entry) {
+        return {
+          resource: null,
+          text: '',
+        };
+      }
       return {
         resource: {
-          uri: resource.uri,
-          name: resource.name,
-          title: resource.title,
-          description: resource.description,
-          mimeType: resource.mimeType,
+          uri: entry.resource.uri,
+          name: entry.resource.name,
+          title: entry.resource.title,
+          description: entry.resource.description,
+          mimeType: entry.resource.mimeType,
         },
-        text,
+        text: entry.text,
       };
     },
   },
@@ -79,16 +85,22 @@ export const contextTools: [
       slug: z.string().min(1).describe('Ej: ADR-024-ollama-local-worker-primary'),
     }),
     handler: async ({ slug }: ReadAdrInput) => {
-      const { resource, text } = readAdrResource(slug);
+      const entry = readAdrResource(slug);
+      if (!entry) {
+        return {
+          adr: null,
+          text: '',
+        };
+      }
       return {
         adr: {
-          uri: resource.uri,
-          name: resource.name,
-          title: resource.title,
-          description: resource.description,
-          mimeType: resource.mimeType,
+          uri: entry.resource.uri,
+          name: entry.resource.name,
+          title: entry.resource.title,
+          description: entry.resource.description,
+          mimeType: entry.resource.mimeType,
         },
-        text,
+        text: entry.text,
       };
     },
   },

@@ -64,7 +64,7 @@ const STATIC_CONTEXT_RESOURCES: StaticContextResource[] = [
   },
 ];
 
-function findRepoRoot(): string {
+function findRepoRoot(): string | null {
   let current = __dirname;
 
   for (let i = 0; i < 8; i += 1) {
@@ -82,35 +82,46 @@ function findRepoRoot(): string {
     return process.cwd();
   }
 
-  throw new Error('Could not locate Opsly repository root from apps/mcp');
+  return null;
 }
 
 const REPO_ROOT = findRepoRoot();
 
-function repoPath(relativePath: string): string {
-  return join(REPO_ROOT, relativePath);
+function repoPath(relativePath: string): string | null {
+  return REPO_ROOT ? join(REPO_ROOT, relativePath) : null;
 }
 
-function readUtf8(relativePath: string): string {
-  return readFileSync(repoPath(relativePath), 'utf8');
+function readUtf8(relativePath: string): string | null {
+  const path = repoPath(relativePath);
+  return path && existsSync(path) ? readFileSync(path, 'utf8') : null;
 }
 
 export function getAvailableStaticContextResources(): StaticContextResource[] {
-  return STATIC_CONTEXT_RESOURCES.filter((resource) => existsSync(repoPath(resource.relativePath)));
+  if (!REPO_ROOT) return [];
+  return STATIC_CONTEXT_RESOURCES.filter((resource) => {
+    const path = repoPath(resource.relativePath);
+    return path && existsSync(path);
+  });
 }
 
 export function readStaticContextResource(uri: string): {
   resource: StaticContextResource;
   text: string;
-} {
-  const resource = getAvailableStaticContextResources().find((entry) => entry.uri === uri);
+} | null {
+  const available = getAvailableStaticContextResources();
+  const resource = available.find((entry) => entry.uri === uri);
   if (!resource) {
-    throw new Error(`Unknown static context resource: ${uri}`);
+    return null;
+  }
+
+  const text = readUtf8(resource.relativePath);
+  if (!text) {
+    return null;
   }
 
   return {
     resource,
-    text: readUtf8(resource.relativePath),
+    text,
   };
 }
 
@@ -128,7 +139,7 @@ function normalizeAdrFileName(slug: string): string {
 
 export function listAdrResources(): AdrResource[] {
   const adrRoot = repoPath(ADR_DIR);
-  if (!existsSync(adrRoot)) {
+  if (!adrRoot || !existsSync(adrRoot)) {
     return [];
   }
 
@@ -148,15 +159,21 @@ export function listAdrResources(): AdrResource[] {
 export function readAdrResource(slug: string): {
   resource: AdrResource;
   text: string;
-} {
+} | null {
   const fileName = normalizeAdrFileName(slug);
-  const resource = listAdrResources().find((entry) => entry.relativePath.endsWith(`/${fileName}`));
+  const resources = listAdrResources();
+  const resource = resources.find((entry) => entry.relativePath.endsWith(`/${fileName}`));
   if (!resource) {
-    throw new Error(`ADR not found: ${slug}`);
+    return null;
+  }
+
+  const text = readUtf8(resource.relativePath);
+  if (!text) {
+    return null;
   }
 
   return {
     resource,
-    text: readUtf8(resource.relativePath),
+    text,
   };
 }
