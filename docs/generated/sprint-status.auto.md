@@ -12,7 +12,7 @@ do_not_edit: true
 # Opsly — Sprint Status (Auto-Generated)
 
 > **Generado automáticamente** — fuente: [`docs/implementation/status.yaml`](../implementation/status.yaml).
-> Generado: 2026-04-26T17:46:15.046Z
+> Generado: 2026-04-27T18:07:40.054Z
 
 ## Sprint 1: Approval Gate + Vertex AI
 
@@ -25,10 +25,10 @@ do_not_edit: true
   - Integrate Notion + GitHub
 - **Capacity (h):** 40
 
-| Métrica         | Valor |
-| --------------- | ----- |
-| Target          | 40    |
-| Actual (último) | 1     |
+| Métrica | Valor |
+| --- | --- |
+| Target | 40 |
+| Actual (último) | 1 |
 
 ### Burndown (serie)
 
@@ -44,21 +44,22 @@ Day    Target  Actual
 2026-04-24    40     1
 2026-04-25    40     1
 2026-04-26    40     1
+2026-04-27    40     1
 ```
 
 ### Tasks
 
-| id                   | name                              | type    | status     | assignee | effort |
-| -------------------- | --------------------------------- | ------- | ---------- | -------- | ------ |
-| approval-gate-worker | ApprovalGateWorker implementation | feature | ✅ DONE    | Cursor   | M      |
-| doppler-secrets      | Configure Doppler secrets (GCP)   | infra   | ⏳ PENDING | Cristian | XS     |
-| supabase-migrations  | Apply Supabase migrations         | infra   | ⏳ PENDING | Cristian | S      |
+| id | name | type | status | assignee | effort |
+| --- | --- | --- | --- | --- | --- |
+| approval-gate-worker | ApprovalGateWorker implementation | feature | ✅ DONE | Cursor | M |
+| doppler-secrets | Configure Doppler secrets (GCP) | infra | ⏳ PENDING | Cristian | XS |
+| supabase-migrations | Apply Supabase migrations | infra | ⏳ PENDING | Cristian | S |
 
 ## Blockers (resumen)
 
-- **CRITICAL:** Doppler secrets GCP / Vertex no configurados en prd — Seguir docs/VERTEX-AI-SETUP.md; doppler secrets set GCLOUD\_\* y JSON SA.
+- **CRITICAL:** Doppler secrets GCP / Vertex no configurados en prd — Seguir docs/VERTEX-AI-SETUP.md; doppler secrets set GCLOUD_* y JSON SA.
 - **CRITICAL:** Migraciones 0026/0027 no aplicadas en Supabase remoto — npx supabase db push (o pipeline migraciones) contra proyecto enlazado.
 
 ---
 
-_No editar a mano — regenerar con `npm run docs:sync`._
+*No editar a mano — regenerar con `npm run docs:sync`.*

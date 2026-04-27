@@ -62,6 +62,10 @@ sprints:
           completed: 1
           actual: 1
           target: 40
+        - date: '2026-04-27'
+          completed: 1
+          actual: 1
+          target: 40
     completed: 1
     in_progress: 0
     blocked: 0
