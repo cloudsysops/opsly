@@ -187,6 +187,116 @@ async function handleEnqueueWebhook(req: IncomingMessage, res: ServerResponse): 
   }
 }
 
+async function handleEnqueueSandbox(req: IncomingMessage, res: ServerResponse): Promise<void> {
+  if (!verifyPlatformAdminToken(req)) {
+    res.writeHead(401, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'unauthorized' }));
+    return;
+  }
+
+  let body: unknown;
+  try {
+    body = await readBody(req);
+  } catch {
+    res.writeHead(400, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'Invalid JSON' }));
+    return;
+  }
+  if (typeof body !== 'object' || body === null) {
+    res.writeHead(400, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'invalid body' }));
+    return;
+  }
+  const b = body as Record<string, unknown>;
+  const command = typeof b.command === 'string' ? b.command.trim() : '';
+  const tenantSlug = typeof b.tenant_slug === 'string' ? b.tenant_slug.trim() : '';
+  const requestId =
+    typeof b.request_id === 'string' && b.request_id.length > 0 ? b.request_id : randomUUID();
+  if (command.length === 0 || tenantSlug.length === 0) {
+    res.writeHead(400, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'command and tenant_slug required' }));
+    return;
+  }
+
+  const image = typeof b.image === 'string' && b.image.length > 0 ? b.image : 'alpine:latest';
+  const timeoutRaw = b.timeout;
+  const timeout =
+    typeof timeoutRaw === 'number' && Number.isFinite(timeoutRaw) ? Math.floor(timeoutRaw) : 300;
+  const allowNetwork = b.allowNetwork === true;
+
+  const job: OrchestratorJob = {
+    type: 'sandbox_execution',
+    payload: {
+      type: 'sandbox_execution',
+      command,
+      image,
+      timeout,
+      allowNetwork,
+      tenant_slug: tenantSlug,
+      request_id: requestId,
+    },
+    tenant_slug: tenantSlug,
+    initiated_by: 'system',
+    request_id: requestId,
+    metadata: { labels: ['sandbox'] },
+  };
+
+  try {
+    const bull = await enqueueJob(job);
+    res.writeHead(202, { 'Content-Type': 'application/json' });
+    res.end(
+      JSON.stringify({
+        success: true,
+        job_id: bull.id != null ? String(bull.id) : null,
+        request_id: requestId,
+      })
+    );
+  } catch (err) {
+    res.writeHead(500, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: String(err) }));
+  }
+}
+
+async function handleJobById(req: IncomingMessage, res: ServerResponse, pathOnly: string): Promise<void> {
+  if (!verifyPlatformAdminToken(req)) {
+    res.writeHead(401, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'unauthorized' }));
+    return;
+  }
+  const prefix = '/internal/job/';
+  const jobId = decodeURIComponent(pathOnly.slice(prefix.length)).trim();
+  if (jobId.length === 0) {
+    res.writeHead(400, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'job id required' }));
+    return;
+  }
+  try {
+    const j = await orchestratorQueue.getJob(jobId);
+    if (!j) {
+      res.writeHead(404, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'not found' }));
+      return;
+    }
+    const state = await j.getState();
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(
+      JSON.stringify({
+        success: true,
+        job_id: j.id != null ? String(j.id) : null,
+        name: j.name,
+        state,
+        progress: j.progress,
+        returnvalue: j.returnvalue,
+        failedReason: j.failedReason,
+        timestamp: j.timestamp,
+      })
+    );
+  } catch (err) {
+    res.writeHead(500, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: String(err) }));
+  }
+}
+
 /** HTTP liveness + internal webhook enqueue endpoint. */
 export function startOrchestratorHealthServer(): Server {
   const port = parsePort();
@@ -222,6 +332,16 @@ export function startOrchestratorHealthServer(): Server {
 
     if (req.method === 'POST' && pathOnly === '/internal/enqueue-ollama') {
       await handleEnqueueOllama(req, res);
+      return;
+    }
+
+    if (req.method === 'POST' && pathOnly === '/internal/enqueue-sandbox') {
+      await handleEnqueueSandbox(req, res);
+      return;
+    }
+
+    if (req.method === 'GET' && pathOnly.startsWith('/internal/job/')) {
+      await handleJobById(req, res, pathOnly);
       return;
     }
 

@@ -58,6 +58,14 @@
     }
   ],
   "next_action": "Configurar GCP vars para ML - Vertex AI + BigQuery",
+  "growth_loop": {
+    "enabled": true,
+    "niche": "agencias-digitales-b2b",
+    "last_strategy_report": "docs/reports/ACG-STRATEGY-30-DAYS.md",
+    "leads_generated": 0,
+    "projected_revenue": 297,
+    "conversion_rate": 0.3
+  },
   "knowledge_system": {
     "notebooklm": {
       "enabled": true,

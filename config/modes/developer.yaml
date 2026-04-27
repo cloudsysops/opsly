@@ -1,0 +1,28 @@
+name: developer
+description: Desarrollo diario y refactoring.
+skills:
+  - opsly-api
+  - opsly-frontend
+  - opsly-qa
+environment_vars:
+  NODE_ENV: development
+permissions:
+  - code:write
+  - tests:execute
+tools:
+  - name: git
+    verify_bin: git
+    install_command: [brew, install, git]
+    category: scm
+  - name: node
+    verify_bin: node
+    install_command: [brew, install, node]
+    category: runtime
+  - name: python
+    verify_bin: python3
+    install_command: [brew, install, python]
+    category: runtime
+  - name: gh
+    verify_bin: gh
+    install_command: [brew, install, gh]
+    category: scm

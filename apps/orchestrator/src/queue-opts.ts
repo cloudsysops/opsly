@@ -42,12 +42,25 @@ function isPlannerDerivedJob(job: OrchestratorJob): boolean {
   return 'planner_tool' in p && typeof (p as { planner_tool?: unknown }).planner_tool === 'string';
 }
 
+function isGrowthCritical(job: OrchestratorJob): boolean {
+  const metadata = job.metadata;
+  if (!metadata) {
+    return false;
+  }
+  const labels = metadata.labels;
+  if (!Array.isArray(labels)) {
+    return false;
+  }
+  return labels.includes('growth-critical');
+}
+
 /**
  * Jobs generados tras Remote Planner: suben prioridad relativa (BullMQ: menor número = antes).
  */
 export function buildQueueAddOptions(job: OrchestratorJob): JobsOptions {
   const basePriority = planToQueuePriority(job.plan);
-  const boosted = isPlannerDerivedJob(job) ? Math.max(0, basePriority - 5000) : basePriority;
+  const plannerBoosted = isPlannerDerivedJob(job) ? Math.max(0, basePriority - 5000) : basePriority;
+  const boosted = isGrowthCritical(job) ? Math.max(0, plannerBoosted - 15_000) : plannerBoosted;
   const opts: JobsOptions = {
     attempts: 3,
     backoff: { type: 'exponential', delay: 2000 },

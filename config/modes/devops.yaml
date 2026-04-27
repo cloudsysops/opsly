@@ -1,0 +1,28 @@
+name: devops
+description: Infraestructura, despliegues y operaciones.
+skills:
+  - opsly-infra
+  - opsly-orchestrator
+  - opsly-mcp
+environment_vars:
+  TF_VAR_environment: dev
+permissions:
+  - infrastructure:write
+  - deploy:execute
+tools:
+  - name: docker
+    verify_bin: docker
+    install_command: [brew, install, --cask, docker]
+    category: runtime
+  - name: kubectl
+    verify_bin: kubectl
+    install_command: [brew, install, kubectl]
+    category: k8s
+  - name: helm
+    verify_bin: helm
+    install_command: [brew, install, helm]
+    category: k8s
+  - name: terraform
+    verify_bin: terraform
+    install_command: [brew, install, terraform]
+    category: iac

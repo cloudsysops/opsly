@@ -1,0 +1,17 @@
+FROM python:3.11-slim
+
+RUN apt-get update && apt-get install -y \
+  git \
+  curl \
+  build-essential \
+  nodejs \
+  npm \
+  && rm -rf /var/lib/apt/lists/*
+
+RUN useradd -m sandboxuser
+USER sandboxuser
+WORKDIR /home/sandboxuser/workspace
+
+COPY sandbox-entrypoint.sh /usr/local/bin/sandbox-entrypoint.sh
+
+ENTRYPOINT ["sandbox-entrypoint.sh"]

@@ -1,0 +1,18 @@
+name: security
+description: Escaneo y hardening de seguridad.
+skills:
+  - opsly-infra
+  - opsly-architect
+environment_vars:
+  SECURITY_SCAN_DEPTH: deep
+permissions:
+  - security:scan
+tools:
+  - name: nmap
+    verify_bin: nmap
+    install_command: [brew, install, nmap]
+    category: scanner
+  - name: sqlmap
+    verify_bin: sqlmap
+    install_command: [python3, -m, pip, install, sqlmap]
+    category: scanner

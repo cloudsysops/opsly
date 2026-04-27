@@ -12,6 +12,31 @@ Punto único para llamadas a modelos desde `apps/ml`, `apps/context-builder` y c
 
 En **contenedor** (`Dockerfile`), el proceso escucha **GET `/health`** en `LLM_GATEWAY_PORT` (default `3010`).
 
+## Endpoint de búsqueda web (`/v1/search`)
+
+Para investigación técnica automatizada (Sprint 1 de autonomía), el gateway expone:
+
+- **`POST /v1/search`**
+- Body mínimo:
+  - `tenant_slug` (string)
+  - `query` (string)
+- Opcionales:
+  - `max_results` (1..10, default 5)
+  - `include_raw` (boolean, default false)
+
+Respuesta:
+
+- `query`
+- `answer` (si lo devuelve Tavily)
+- `results[]` con `title`, `url`, `content`, `score` (y `raw_content` si `include_raw=true`)
+
+Flags requeridos:
+
+- `LLM_GATEWAY_SEARCH_ENABLED=true`
+- `TAVILY_API_KEY=<secret>`
+
+Si falta configuración, responde `503 search_disabled` o `500 search_misconfigured`.
+
 ## Proveedores y niveles (resumen)
 
 Definidos en `apps/llm-gateway/src/providers.ts` y costes en `router.ts` / `estimateCost`.

@@ -120,7 +120,7 @@ class OpslyReActAgent:
             system=(
                 self._system_prompt()
                 + " Return the final answer in Spanish. "
-                + "Do not call tools now; just provide the final response."
+                "Do not call tools now; just provide the final response."
             ),
             tools=anthropic_tools,
             messages=messages,
@@ -133,26 +133,26 @@ class OpslyReActAgent:
 
         return full_text.strip()
 
-    def _to_anthropic_tool(self, tool: MCPTool) -> dict[str, Any]:
-        return {
-            "name": tool.name,
-            "description": tool.description or f"MCP tool {tool.name}",
-            "input_schema": tool.input_schema if tool.input_schema else {"type": "object", "properties": {}},
-        }
-
     def _system_prompt(self) -> str:
         base = (
             "You are Opsly Hacker Agent. Think concisely. "
             "When you need system data, use MCP tools. "
             "Always provide a final answer in Spanish."
         )
-        by_mode = {
-            "planner": "Prioritize architecture decisions and implementation plans.",
-            "executor": "Prioritize concrete execution and practical steps.",
-            "verifier": "Prioritize tests, validation and regression risks.",
-            "ops": "Prioritize production safety, observability and incident handling.",
+        hints = {
+            "planner": "Prioritize architecture and execution plans.",
+            "executor": "Prioritize concrete execution and direct actions.",
+            "verifier": "Prioritize validation, tests, and regression safety.",
+            "ops": "Prioritize production safety and observability.",
         }
-        return f"{base} {by_mode.get(self._agent_mode, by_mode['executor'])}"
+        return f"{base} {hints.get(self._agent_mode, hints['executor'])}"
+
+    def _to_anthropic_tool(self, tool: MCPTool) -> dict[str, Any]:
+        return {
+            "name": tool.name,
+            "description": tool.description or f"MCP tool {tool.name}",
+            "input_schema": tool.input_schema if tool.input_schema else {"type": "object", "properties": {}},
+        }
 
     def _collect_text(self, message: Message) -> str:
         parts: list[str] = []

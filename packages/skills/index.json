@@ -219,6 +219,24 @@
       "priority": "low",
       "usage": "Optimizar Dockerfiles y docker-compose.yaml",
       "path": "skills/user/opsly-simplify/"
+    },
+    {
+      "name": "opsly-niche-solution",
+      "version": "1.0.0",
+      "description": "Skill de solucion comercial por nicho: convertir dolor operativo en oferta ejecutable 48h.",
+      "category": "growth",
+      "priority": "high",
+      "usage": "Diseño de propuesta vertical para conversion comercial",
+      "path": "skills/user/opsly-niche-solution/"
+    },
+    {
+      "name": "opsly-researcher",
+      "version": "1.0.0",
+      "description": "Investigación web asistida vía llm-gateway /v1/search para comparar librerías, docs y alternativas técnicas.",
+      "category": "research",
+      "priority": "medium",
+      "usage": "Análisis comparativo de herramientas y documentación externa",
+      "path": "skills/user/opsly-researcher/"
     }
   ],
   "categories": {
@@ -237,7 +255,9 @@
     "billing": ["opsly-billing"],
     "qa": ["opsly-qa"],
     "notifications": ["opsly-discord"],
-    "optimization": ["opsly-simplify"]
+    "optimization": ["opsly-simplify"],
+    "research": ["opsly-researcher"],
+    "growth": ["opsly-niche-solution"]
   },
   "quick_reference": {
     "nueva_sesion": ["opsly-context"],
@@ -246,7 +266,9 @@
     "desarrollo_api": ["opsly-api", "opsly-bash"],
     "ia_ml": ["opsly-llm", "opsly-feedback-ml", "opsly-notebooklm"],
     "infra": ["opsly-infra", "opsly-tenant", "opsly-discord"],
-    "revision_arquitectura": ["opsly-architect-senior"]
+    "revision_arquitectura": ["opsly-architect-senior"],
+    "investigacion_externa": ["opsly-researcher"],
+    "crecimiento_nicho": ["opsly-niche-solution"]
   },
   "deprecated": {
     "opsly-bootstrap": "Usar opsly-context",

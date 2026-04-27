@@ -1,0 +1,13 @@
+name: doc
+description: Documentación técnica y runbooks.
+skills:
+  - opsly-bootstrap
+environment_vars:
+  DOC_MODE: "true"
+permissions:
+  - docs:write
+tools:
+  - name: markdownlint
+    verify_bin: markdownlint
+    install_command: [brew, install, markdownlint-cli]
+    category: docs

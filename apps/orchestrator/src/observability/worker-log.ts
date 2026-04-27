@@ -9,13 +9,15 @@ export type WorkerName =
   | 'backup'
   | 'health'
   | 'ollama'
+  | 'sandbox'
   | 'budget'
   | 'webhooks-processing'
   | 'general-events'
   | 'agent-classifier'
   | 'approval-gate'
   | 'hermes-orchestration'
-  | 'intent_dispatch';
+  | 'intent_dispatch'
+  | 'evolution';
 
 export function extractJobContext(job: Job): {
   task_id?: string;

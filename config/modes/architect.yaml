@@ -1,0 +1,14 @@
+name: architect
+description: Diseño de arquitectura y ADRs.
+skills:
+  - opsly-architect
+  - opsly-infra
+environment_vars:
+  ARCH_MODE: "true"
+permissions:
+  - design:write
+tools:
+  - name: python
+    verify_bin: python3
+    install_command: [brew, install, python]
+    category: runtime

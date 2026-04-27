@@ -1,0 +1,88 @@
+name: Evolution Pipeline
+
+on:
+  workflow_dispatch:
+    inputs:
+      evolution_type:
+        description: "Tipo de evolución"
+        required: true
+        default: "skill"
+        type: choice
+        options:
+          - skill
+          - infrastructure
+          - security
+          - optimization
+      tenant_slug:
+        description: "Tenant para trazabilidad"
+        required: false
+        default: "tenant_001"
+      request_id:
+        description: "Correlación opcional (UUID)"
+        required: false
+        default: ""
+
+jobs:
+  sandbox-testing:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: npm ci
+        run: npm ci
+
+      - name: Run sandbox stage
+        env:
+          REQUEST_ID: ${{ inputs.request_id }}
+          TENANT_SLUG: ${{ inputs.tenant_slug }}
+          EVOLUTION_TYPE: ${{ inputs.evolution_type }}
+        run: |
+          set -euo pipefail
+          RID="${REQUEST_ID:-sandbox-${GITHUB_RUN_ID}}"
+          echo "sandbox request_id=${RID} tenant_slug=${TENANT_SLUG} type=${EVOLUTION_TYPE}"
+          python3 tools/cli/main.py pipeline-run \
+            --objective "evolution:${EVOLUTION_TYPE}" \
+            --mode developer \
+            --tenant-slug "${TENANT_SLUG}" \
+            --no-approve-prod \
+            --dry-run
+
+  qa-validation:
+    needs: sandbox-testing
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: npm ci
+        run: npm ci
+
+      - name: Validate OpenAPI + critical checks
+        run: |
+          set -euo pipefail
+          npm run validate-openapi
+          npm run type-check
+
+  prod-deployment:
+    needs: qa-validation
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Human approval gate
+        run: |
+          set -euo pipefail
+          echo "Manual approval is enforced by environment protection rules."
+          echo "Approved deployment request for evolution pipeline."

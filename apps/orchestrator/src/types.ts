@@ -6,8 +6,19 @@ export type JobType =
   | 'backup'
   | 'health'
   | 'ollama'
+  | 'sandbox_execution'
   /** Payload: `{ intent_request: IntentRequest }` — ejecuta `processIntent` (p. ej. `oar_react`) en worker. */
   | 'intent_dispatch';
+
+export interface SandboxExecutionPayload {
+  type: 'sandbox_execution';
+  command: string;
+  image?: string;
+  timeout?: number;
+  allowNetwork?: boolean;
+  tenant_slug: string;
+  request_id: string;
+}
 
 /** Rol convencional para trazabilidad (no framework aparte). */
 export type AgentRole = 'planner' | 'executor' | 'tool' | 'notifier';

@@ -8,10 +8,12 @@ export type WorkerConcurrencyKey =
   | 'backup'
   | 'budget'
   | 'ollama'
+  | 'sandbox'
   | 'webhook'
   | 'webhooks-processing'
   | 'general-events'
-  | 'agent-classifier';
+  | 'agent-classifier'
+  | 'evolution';
 
 const FULL_STACK_DEFAULTS: Record<WorkerConcurrencyKey, number> = {
   cursor: 3,
@@ -21,10 +23,12 @@ const FULL_STACK_DEFAULTS: Record<WorkerConcurrencyKey, number> = {
   backup: 1,
   budget: 2,
   ollama: 2,
+  sandbox: 1,
   webhook: 10,
   'webhooks-processing': 3,
   'general-events': 10,
   'agent-classifier': 2,
+  evolution: 1,
 };
 
 const DISTRIBUTED_WORKER_DEFAULTS: Record<WorkerConcurrencyKey, number> = {
@@ -35,10 +39,12 @@ const DISTRIBUTED_WORKER_DEFAULTS: Record<WorkerConcurrencyKey, number> = {
   backup: 1,
   budget: 1,
   ollama: 1,
+  sandbox: 1,
   webhook: 1,
   'webhooks-processing': 1,
   'general-events': 1,
   'agent-classifier': 1,
+  evolution: 1,
 };
 
 const ENV_NAMES: Record<WorkerConcurrencyKey, string> = {
@@ -49,10 +55,12 @@ const ENV_NAMES: Record<WorkerConcurrencyKey, string> = {
   backup: 'ORCHESTRATOR_BACKUP_CONCURRENCY',
   budget: 'ORCHESTRATOR_BUDGET_CONCURRENCY',
   ollama: 'ORCHESTRATOR_OLLAMA_CONCURRENCY',
+  sandbox: 'ORCHESTRATOR_SANDBOX_CONCURRENCY',
   webhook: 'ORCHESTRATOR_WEBHOOK_CONCURRENCY',
   'webhooks-processing': 'ORCHESTRATOR_WEBHOOKS_PROCESSING_CONCURRENCY',
   'general-events': 'ORCHESTRATOR_GENERAL_EVENTS_CONCURRENCY',
   'agent-classifier': 'ORCHESTRATOR_AGENT_CLASSIFIER_CONCURRENCY',
+  evolution: 'ORCHESTRATOR_EVOLUTION_CONCURRENCY',
 };
 
 function parsePositiveInt(raw: string | undefined): number | null {

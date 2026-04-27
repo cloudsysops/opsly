@@ -1,0 +1,58 @@
+services:
+  airflow-postgres:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+      POSTGRES_DB: airflow
+    volumes:
+      - airflow-db-data:/var/lib/postgresql/data
+    networks:
+      - airflow-net
+    restart: unless-stopped
+
+  airflow-webserver:
+    image: apache/airflow:2.8.0
+    depends_on:
+      - airflow-postgres
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@airflow-postgres/airflow
+      AIRFLOW__CORE__FERNET_KEY: ${AIRFLOW_FERNET_KEY:-replace-this}
+      AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "true"
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+      AIRFLOW__API__AUTH_BACKENDS: airflow.api.auth.backend.basic_auth
+      AIRFLOW__WEBSERVER__EXPOSE_CONFIG: "false"
+    volumes:
+      - ../apps/airflow/dags:/opt/airflow/dags
+      - airflow-logs:/opt/airflow/logs
+    ports:
+      - "127.0.0.1:8081:8080"
+    command: webserver
+    networks:
+      - airflow-net
+    restart: unless-stopped
+
+  airflow-scheduler:
+    image: apache/airflow:2.8.0
+    depends_on:
+      - airflow-webserver
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@airflow-postgres/airflow
+      AIRFLOW__CORE__FERNET_KEY: ${AIRFLOW_FERNET_KEY:-replace-this}
+    volumes:
+      - ../apps/airflow/dags:/opt/airflow/dags
+      - airflow-logs:/opt/airflow/logs
+    command: scheduler
+    networks:
+      - airflow-net
+    restart: unless-stopped
+
+networks:
+  airflow-net:
+    driver: bridge
+
+volumes:
+  airflow-db-data:
+  airflow-logs:

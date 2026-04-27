@@ -7,6 +7,8 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any
 
+import yaml
+
 
 @dataclass(frozen=True)
 class ToolSpec:
@@ -20,6 +22,7 @@ class ToolSpec:
 class ModeConfig:
     name: str
     description: str
+    skills: tuple[str, ...]
     tools: tuple[ToolSpec, ...]
     environment_vars: dict[str, str]
     permissions: tuple[str, ...]
@@ -39,6 +42,7 @@ class ModeSwitchResult:
     missing_tools: tuple[str, ...]
     installed_tools: tuple[ToolInstallResult, ...]
     active_tools: tuple[str, ...]
+    active_skills: tuple[str, ...]
 
 
 class ModeManager:
@@ -64,75 +68,44 @@ class ModeManager:
         self._state_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
 
     def _build_mode_configs(self) -> dict[str, ModeConfig]:
-        return {
-            "devops": ModeConfig(
-                name="devops",
-                description="Infraestructura, despliegues, operaciones.",
-                tools=(
-                    ToolSpec("docker", "docker", ("brew", "install", "--cask", "docker"), "runtime"),
-                    ToolSpec("kubectl", "kubectl", ("brew", "install", "kubectl"), "k8s"),
-                    ToolSpec("helm", "helm", ("brew", "install", "helm"), "k8s"),
-                    ToolSpec("terraform", "terraform", ("brew", "install", "terraform"), "iac"),
-                ),
-                environment_vars={"TF_VAR_environment": "dev"},
-                permissions=("infrastructure:write", "deploy:execute"),
-            ),
-            "developer": ModeConfig(
-                name="developer",
-                description="Desarrollo diario y refactoring.",
-                tools=(
-                    ToolSpec("git", "git", ("brew", "install", "git"), "scm"),
-                    ToolSpec("node", "node", ("brew", "install", "node"), "runtime"),
-                    ToolSpec("python", "python3", ("brew", "install", "python"), "runtime"),
-                    ToolSpec("gh", "gh", ("brew", "install", "gh"), "scm"),
-                ),
-                environment_vars={"NODE_ENV": "development"},
-                permissions=("code:write", "tests:execute"),
-            ),
-            "security": ModeConfig(
-                name="security",
-                description="Escaneo y hardening de seguridad.",
-                tools=(
-                    ToolSpec("nmap", "nmap", ("brew", "install", "nmap"), "scanner"),
+        config_dir = self._workspace_root / "config" / "modes"
+        loaded: dict[str, ModeConfig] = {}
+        for file_path in sorted(config_dir.glob("*.yaml")):
+            raw = yaml.safe_load(file_path.read_text(encoding="utf-8"))
+            if not isinstance(raw, dict):
+                continue
+            tools_raw = raw.get("tools", [])
+            if not isinstance(tools_raw, list):
+                tools_raw = []
+            tools: list[ToolSpec] = []
+            for item in tools_raw:
+                if not isinstance(item, dict):
+                    continue
+                install = item.get("install_command", [])
+                if not isinstance(install, list):
+                    continue
+                tools.append(
                     ToolSpec(
-                        "sqlmap",
-                        "sqlmap",
-                        ("python3", "-m", "pip", "install", "sqlmap"),
-                        "scanner",
-                    ),
-                ),
-                environment_vars={"SECURITY_SCAN_DEPTH": "deep"},
-                permissions=("security:scan",),
-            ),
-            "doc": ModeConfig(
-                name="doc",
-                description="Documentación técnica y runbooks.",
-                tools=(
-                    ToolSpec("markdownlint", "markdownlint", ("brew", "install", "markdownlint-cli"), "docs"),
-                ),
-                environment_vars={"DOC_MODE": "true"},
-                permissions=("docs:write",),
-            ),
-            "architect": ModeConfig(
-                name="architect",
-                description="Diseño de arquitectura y ADRs.",
-                tools=(
-                    ToolSpec("python", "python3", ("brew", "install", "python"), "runtime"),
-                ),
-                environment_vars={"ARCH_MODE": "true"},
-                permissions=("design:write",),
-            ),
-            "hacker": ModeConfig(
-                name="hacker",
-                description="Investigación avanzada y debugging profundo.",
-                tools=(
-                    ToolSpec("rg", "rg", ("brew", "install", "ripgrep"), "search"),
-                    ToolSpec("jq", "jq", ("brew", "install", "jq"), "data"),
-                ),
-                environment_vars={"HACKER_MODE": "true"},
-                permissions=("analysis:advanced",),
-            ),
-        }
+                        name=str(item.get("name", "")),
+                        verify_bin=str(item.get("verify_bin", "")),
+                        install_command=tuple(str(v) for v in install),
+                        category=str(item.get("category", "misc")),
+                    )
+                )
+            name = str(raw.get("name", file_path.stem))
+            loaded[name] = ModeConfig(
+                name=name,
+                description=str(raw.get("description", "")),
+                skills=tuple(str(s) for s in raw.get("skills", [])),
+                tools=tuple(tools),
+                environment_vars={
+                    str(k): str(v)
+                    for k, v in (raw.get("environment_vars", {}) or {}).items()
+                    if isinstance(k, str)
+                },
+                permissions=tuple(str(p) for p in raw.get("permissions", [])),
+            )
+        return loaded
 
     def list_modes(self) -> list[ModeConfig]:
         return [self._configs[key] for key in sorted(self._configs.keys())]
@@ -175,6 +148,7 @@ class ModeManager:
             missing_tools=tuple(tool.name for tool in missing),
             installed_tools=tuple(installed),
             active_tools=tuple(tool.name for tool in config.tools),
+            active_skills=config.skills,
         )
 
     def install_tools(self, tools: list[ToolSpec], dry_run: bool) -> list[ToolInstallResult]:

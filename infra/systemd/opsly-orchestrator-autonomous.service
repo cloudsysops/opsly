@@ -1,0 +1,31 @@
+# Instalacion sugerida en VPS:
+#   sudo cp infra/systemd/opsly-orchestrator-autonomous.service /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now opsly-orchestrator-autonomous
+#
+# Requiere:
+# - Repo en /opt/opsly
+# - Doppler CLI instalada
+# - DOPPLER_TOKEN configurado en /etc/default/opsly-orchestrator (EnvironmentFile)
+
+[Unit]
+Description=Opsly Orchestrator Autonomous Service
+After=network-online.target docker.service
+Wants=network-online.target docker.service
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/opsly
+EnvironmentFile=-/etc/default/opsly-orchestrator
+Environment=NODE_ENV=production
+Environment=OPSLY_AUTONOMOUS_SCHEDULER_ENABLED=true
+ExecStartPre=/usr/local/bin/doppler run --scope /opt/opsly -- /opt/opsly/scripts/health-check-autostart.sh
+ExecStart=/usr/local/bin/doppler run --scope /opt/opsly -- node /opt/opsly/apps/orchestrator/dist/index.js
+Restart=always
+RestartSec=10
+StandardOutput=append:/opt/opsly/runtime/logs/orchestrator.log
+StandardError=append:/opt/opsly/runtime/logs/orchestrator-error.log
+
+[Install]
+WantedBy=multi-user.target

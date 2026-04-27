@@ -49,6 +49,8 @@ This directory contains operational and deployment scripts organized by category
 ./scripts/utils/validate.sh
 ./scripts/utils/git-sync.sh
 ./scripts/utils/notify-discord.sh "Title" "Message" "success"
+./scripts/health-check-autostart.sh
+./scripts/generate-daily-report.sh
 ```
 
 ### Python CLI automations
@@ -59,8 +61,6 @@ python3 scripts/opsly_cli.py deploy-last
 python3 scripts/opsly_cli.py deploy-status 24970035820
 python3 scripts/opsly_cli.py deploy-watch 24970035820
 python3 scripts/opsly_cli.py secret-rotation --secrets TAILSCALE_AUTHKEY DOPPLER_TOKEN_PRD DOPPLER_TOKEN_STG
-python3 scripts/opsly_cli.py scripts-list --category utils
-python3 scripts/opsly_cli.py script-run test-e2e-invite-flow -- --dry-run --api-url https://api.ops.smiletripcare.com
 ```
 
 ## Compatibility
