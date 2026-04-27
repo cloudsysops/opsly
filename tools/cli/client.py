@@ -27,7 +27,7 @@ class OpslyMCPClient:
         self._next_id = 1
         self._io_lock = threading.Lock()
 
-    def connect(self) -> None:
+    def connect(self, timeout_seconds: float = 8.0) -> None:
         if self._proc is not None:
             return
         self._proc = subprocess.Popen(
@@ -37,22 +37,37 @@ class OpslyMCPClient:
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
         )
-        try:
-            init_result = self._request(
-                "initialize",
-                {
-                    "protocolVersion": "2024-11-05",
-                    "capabilities": {},
-                    "clientInfo": {"name": "opsly-hacker-cli", "version": "0.1.0"},
-                },
-            )
-            if not isinstance(init_result, dict):
-                raise MCPClientError("Invalid initialize response from MCP server")
+        init_error: list[Exception] = []
+        init_ok = threading.Event()
 
-            self._notify("notifications/initialized", {})
-        except Exception:
-            self.close()
-            raise
+        def _initialize() -> None:
+            try:
+                init_result = self._request(
+                    "initialize",
+                    {
+                        "protocolVersion": "2024-11-05",
+                        "capabilities": {},
+                        "clientInfo": {"name": "opsly-hacker-cli", "version": "0.1.0"},
+                    },
+                )
+                if not isinstance(init_result, dict):
+                    raise MCPClientError("Invalid initialize response from MCP server")
+                self._notify("notifications/initialized", {})
+                init_ok.set()
+            except Exception as exc:  # noqa: BLE001
+                init_error.append(exc)
+
+        thread = threading.Thread(target=_initialize, daemon=True)
+        thread.start()
+        thread.join(timeout=timeout_seconds)
+
+        if init_ok.is_set():
+            return
+
+        self.close()
+        if len(init_error) > 0:
+            raise init_error[0]
+        raise MCPClientError(f"Timeout connecting to MCP server ({timeout_seconds:.1f}s)")
 
     def close(self) -> None:
         if self._proc is None:
@@ -124,10 +139,11 @@ class OpslyMCPClient:
     def _write_message(self, payload: dict[str, Any]) -> None:
         if self._proc is None or self._proc.stdin is None:
             raise MCPClientError("MCP server is not connected")
-        encoded = json.dumps(payload, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
-        header = f"Content-Length: {len(encoded)}\r\n\r\n".encode("ascii")
+        encoded = (json.dumps(payload, separators=(",", ":"), ensure_ascii=False) + "\n").encode(
+            "utf-8"
+        )
         try:
-            self._proc.stdin.write(header + encoded)
+            self._proc.stdin.write(encoded)
             self._proc.stdin.flush()
         except BrokenPipeError as exc:
             raise MCPClientError("MCP server closed the stdin pipe") from exc
@@ -136,33 +152,22 @@ class OpslyMCPClient:
         if self._proc is None or self._proc.stdout is None:
             raise MCPClientError("MCP server is not connected")
 
-        content_length: int | None = None
-        while True:
-            line = self._proc.stdout.readline()
-            if line == b"":
-                stderr = b""
-                if self._proc.stderr is not None:
-                    stderr = self._proc.stderr.read() or b""
-                extra = stderr.decode("utf-8", errors="replace").strip()
-                msg = "MCP server process ended unexpectedly"
-                if extra != "":
-                    msg = f"{msg}: {extra}"
-                raise MCPClientError(msg)
+        line = self._proc.stdout.readline()
+        if line == b"":
+            stderr = b""
+            if self._proc.stderr is not None:
+                stderr = self._proc.stderr.read() or b""
+            extra = stderr.decode("utf-8", errors="replace").strip()
+            exit_code = self._proc.poll()
+            msg = f"MCP server process ended unexpectedly (exit_code={exit_code})"
+            if extra != "":
+                msg = f"{msg}: {extra}"
+            raise MCPClientError(msg)
 
-            stripped = line.strip()
-            if stripped == b"":
-                break
-            if stripped.lower().startswith(b"content-length:"):
-                raw = stripped.split(b":", 1)[1].strip()
-                content_length = int(raw.decode("ascii"))
-
-        if content_length is None:
-            raise MCPClientError("Invalid MCP frame: missing Content-Length header")
-
-        body = self._proc.stdout.read(content_length)
-        if body is None or len(body) != content_length:
-            raise MCPClientError("Invalid MCP frame: incomplete body")
-        decoded = json.loads(body.decode("utf-8"))
+        raw = line.decode("utf-8", errors="replace").strip()
+        if raw == "":
+            raise MCPClientError("Invalid MCP frame: empty line")
+        decoded = json.loads(raw)
         if not isinstance(decoded, dict):
             raise MCPClientError("Invalid MCP frame: body is not an object")
         return decoded

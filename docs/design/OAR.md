@@ -4,6 +4,30 @@
 **Autor:** Opsly Architecture Team  
 **Context:** Mejora de Producto #1 - Agentic Runtime
 
+## Actualización técnica (2026-04-26) — CLI Meta-Orchestrator Bridge
+
+Se implementó una primera capa operativa en `tools/cli` para conectar el diseño OAR con ejecución multi-modo y pipeline seguro. Esta capa no reemplaza `apps/orchestrator`; actúa como **control shell** para acelerar experimentación y validación de patrones de runtime.
+
+### Capacidades nuevas alineadas con OAR
+
+- **Mode System dinámico (CLI):** `devops`, `developer`, `security`, `doc`, `architect`, `hacker` con verificación de herramientas y auto-instalación segura en `dry-run`.
+- **Pipeline seguro:** comando `pipeline-run` con etapas `sandbox -> qa -> prod` y bloqueo de promoción a `prod` sin aprobación explícita.
+- **Worker orchestration:** `workers-run` para descomposición de tareas y ejecución paralela (simulada por defecto).
+- **Multi-agent control plane:** `multi-run` para fan-out de prompts a múltiples CLIs (`claude`, `opencode`, `cursor`, `copilot`) y consolidación de salida.
+- **Guardrails base:** validación de paths sensibles y límites de intentos en `GuardianSystem`.
+
+### Estado de madurez
+
+- **Hecho (fase segura):** diseño ejecutable en `dry-run` con trazas locales y comandos operativos.
+- **Pendiente (fase productiva):** promoción real no simulada con sandbox remoto (E2B/Blaxel), rollback automático y auditoría fuerte por política.
+
+### Comandos de referencia
+
+- `python3 tools/cli/main.py mode-switch --mode security --auto-install --dry-run`
+- `python3 tools/cli/main.py pipeline-run --objective "security scan app" --mode security --no-approve-prod --dry-run`
+- `python3 tools/cli/main.py workers-run --objective "analiza 4 modulos" --workers 3 --dry-run`
+- `python3 tools/cli/main.py multi-run --prompt "review de seguridad" --providers "claude,opencode,cursor,copilot"`
+
 ## Actualización de gobierno (2026-04-21)
 
 Para la evolución "Super Agente", el OAR se gobierna con dos roles internos:

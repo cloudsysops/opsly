@@ -257,4 +257,7 @@ export async function startMcpStdioServer(
   const mcp = createSdkBridgeServer(openClaw, definitions);
   const transport = new StdioServerTransport();
   await mcp.connect(transport);
+  await new Promise<void>(() => {
+    // Keep stdio transport alive for interactive MCP clients.
+  });
 }

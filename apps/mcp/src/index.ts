@@ -13,13 +13,16 @@ function useStdioTransport(): boolean {
 async function main(): Promise<void> {
   const openClaw = createServer();
   const definitions = getAllToolDefinitions();
-  startMcpHttpHealth();
-  console.log(`Opsly MCP Server initialized with ${definitions.length} tools`);
 
   if (useStdioTransport()) {
+    // STDIO mode must remain protocol-clean: no HTTP sidecar, no extra stdout noise.
     await startMcpStdioServer(openClaw, definitions);
     return;
   }
+
+  // HTTP mode for health/OAuth endpoints and local diagnostics.
+  startMcpHttpHealth();
+  process.stderr.write(`Opsly MCP Server initialized with ${definitions.length} tools\n`);
 
   process.stdout.write(
     JSON.stringify({

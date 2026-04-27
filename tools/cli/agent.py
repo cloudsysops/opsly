@@ -1,12 +1,14 @@
 from __future__ import annotations
 
 import json
+import os
 from dataclasses import dataclass
-from typing import Any, Callable, Optional
+from typing import Any, Callable
+
+from anthropic import Anthropic
+from anthropic.types import Message
 
 from .client import MCPTool, OpslyMCPClient
-from .providers import BaseProvider
-from .providers.factory import create_provider
 
 
 @dataclass(frozen=True)
@@ -22,43 +24,58 @@ class OpslyReActAgent:
     def __init__(
         self,
         mcp_client: OpslyMCPClient,
-        provider: str = "anthropic",
-        model: Optional[str] = None,
+        model: str | None = None,
+        agent_mode: str = "executor",
     ) -> None:
         self._mcp_client = mcp_client
-        self._provider: BaseProvider = create_provider(provider, model)
-        self._provider_id = provider.lower()
-        self.conversation_history: list[dict[str, Any]] = []
+        self._anthropic = Anthropic()
+        self._model = model or os.getenv("ANTHROPIC_MODEL", "claude-sonnet-4-20250514")
+        self._agent_mode = agent_mode
 
-    async def run(
+    def run(
         self,
-        user_input: str,
+        user_prompt: str,
         max_steps: int = 8,
-        on_final_chunk: Callable[[list[str]], None] | None = None,
+        on_final_chunk: Callable[[str], None] | None = None,
     ) -> list[AgentStep]:
-        tools = self._get_mcp_tools()
+        tools = self._mcp_client.list_tools()
+        anthropic_tools = [self._to_anthropic_tool(tool) for tool in tools]
         steps: list[AgentStep] = []
-        self.conversation_history.append({"role": "user", "content": user_input})
+
+        messages: list[dict[str, Any]] = [
+            {
+                "role": "user",
+                "content": user_prompt,
+            }
+        ]
 
         for _ in range(max_steps):
-            response = self._provider.create_response(
-                messages=self.conversation_history,
-                tools=tools,
-                system_prompt=self._get_system_prompt(),
+            response = self._anthropic.messages.create(
+                model=self._model,
+                max_tokens=1000,
+                system=self._system_prompt(),
+                tools=anthropic_tools,
+                messages=messages,
             )
+
             steps.extend(self._extract_thought_steps(response))
-            tool_uses = self._provider.parse_tool_calls(response)
+            tool_uses = [block for block in response.content if block.type == "tool_use"]
+
+            messages.append(
+                {
+                    "role": "assistant",
+                    "content": self._message_content_to_dict(response),
+                }
+            )
 
             if len(tool_uses) == 0:
-                final_text = await self._stream_final_answer(on_final_chunk)
+                final_text = self._stream_final_answer(messages, anthropic_tools, on_final_chunk)
                 steps.append(AgentStep(thought="Respuesta final lista.", final_answer=final_text))
-                self.conversation_history.append({"role": "assistant", "content": final_text})
                 return steps
 
-            self._append_assistant_tool_turn(tool_uses)
             for tool_block in tool_uses:
-                tool_name = str(tool_block["name"])
-                tool_input = dict(tool_block["input"])
+                tool_name = tool_block.name
+                tool_input = dict(tool_block.input)
                 tool_result = self._mcp_client.call_tool(tool_name, tool_input)
                 steps.append(
                     AgentStep(
@@ -68,7 +85,19 @@ class OpslyReActAgent:
                         tool_output=tool_result,
                     )
                 )
-                self._append_tool_result(str(tool_block["id"]), tool_result)
+
+                messages.append(
+                    {
+                        "role": "user",
+                        "content": [
+                            {
+                                "type": "tool_result",
+                                "tool_use_id": tool_block.id,
+                                "content": json.dumps(tool_result, ensure_ascii=False),
+                            }
+                        ],
+                    }
+                )
 
         steps.append(
             AgentStep(
@@ -78,61 +107,31 @@ class OpslyReActAgent:
         )
         return steps
 
-    async def _stream_final_answer(self, on_final_chunk: Callable[[list[str]], None] | None) -> str:
+    def _stream_final_answer(
+        self,
+        messages: list[dict[str, Any]],
+        anthropic_tools: list[dict[str, Any]],
+        on_final_chunk: Callable[[str], None] | None,
+    ) -> str:
         full_text = ""
-        async for chunk in self._provider.stream_response(
-            messages=self.conversation_history,
-            tools=[],
-            system_prompt=(
-                "Eres un agente de operaciones de infraestructura. "
-                "Entrega respuesta final en español sin tool calls."
+        with self._anthropic.messages.stream(
+            model=self._model,
+            max_tokens=1000,
+            system=(
+                self._system_prompt()
+                + " Return the final answer in Spanish. "
+                + "Do not call tools now; just provide the final response."
             ),
-        ):
-            full_text += chunk
-            if on_final_chunk is not None:
-                on_final_chunk([chunk])
+            tools=anthropic_tools,
+            messages=messages,
+        ) as stream:
+            for chunk in stream.text_stream:
+                full_text += chunk
+                if on_final_chunk is not None:
+                    on_final_chunk(chunk)
+            stream.until_done()
+
         return full_text.strip()
-
-    def _extract_thought_steps(self, response: Any) -> list[AgentStep]:
-        thoughts: list[AgentStep] = []
-        if hasattr(response, "content"):
-            for block in response.content:
-                if getattr(block, "type", None) == "text":
-                    content = str(getattr(block, "text", "")).strip()
-                    if content != "":
-                        thoughts.append(AgentStep(thought=content))
-            return thoughts
-
-        if getattr(response, "choices", None):
-            content = str(response.choices[0].message.content or "").strip()
-            if content != "":
-                thoughts.append(AgentStep(thought=content))
-        return thoughts
-
-    def _get_system_prompt(self) -> str:
-        return (
-            "Eres un agente de operaciones de infraestructura. "
-            "Gestiona sistemas, contenedores y servicios. "
-            "Responde de forma concisa y técnica en español."
-        )
-
-    def _get_mcp_tools(self) -> list[dict[str, Any]]:
-        mcp_tools = self._mcp_client.list_tools()
-        if self._provider_id == "openai":
-            return [
-                {
-                    "type": "function",
-                    "function": {
-                        "name": tool.name,
-                        "description": tool.description or f"MCP tool {tool.name}",
-                        "parameters": tool.input_schema
-                        if tool.input_schema
-                        else {"type": "object", "properties": {}},
-                    },
-                }
-                for tool in mcp_tools
-            ]
-        return [self._to_anthropic_tool(tool) for tool in mcp_tools]
 
     def _to_anthropic_tool(self, tool: MCPTool) -> dict[str, Any]:
         return {
@@ -141,58 +140,48 @@ class OpslyReActAgent:
             "input_schema": tool.input_schema if tool.input_schema else {"type": "object", "properties": {}},
         }
 
-    def _append_assistant_tool_turn(self, tool_calls: list[dict[str, Any]]) -> None:
-        if self._provider_id == "openai":
-            self.conversation_history.append(
-                {
-                    "role": "assistant",
-                    "content": None,
-                    "tool_calls": [
-                        {
-                            "id": call["id"],
-                            "type": "function",
-                            "function": {
-                                "name": call["name"],
-                                "arguments": json.dumps(call["input"], ensure_ascii=False),
-                            },
-                        }
-                        for call in tool_calls
-                    ],
-                }
-            )
-            return
-        self.conversation_history.append(
-            {
-                "role": "assistant",
-                "content": [
-                    {"type": "tool_use", "id": call["id"], "name": call["name"], "input": call["input"]}
-                    for call in tool_calls
-                ],
-            }
+    def _system_prompt(self) -> str:
+        base = (
+            "You are Opsly Hacker Agent. Think concisely. "
+            "When you need system data, use MCP tools. "
+            "Always provide a final answer in Spanish."
         )
+        by_mode = {
+            "planner": "Prioritize architecture decisions and implementation plans.",
+            "executor": "Prioritize concrete execution and practical steps.",
+            "verifier": "Prioritize tests, validation and regression risks.",
+            "ops": "Prioritize production safety, observability and incident handling.",
+        }
+        return f"{base} {by_mode.get(self._agent_mode, by_mode['executor'])}"
 
-    def _append_tool_result(self, tool_use_id: str, tool_result: dict[str, Any]) -> None:
-        if self._provider_id == "openai":
-            self.conversation_history.append(
-                {
-                    "role": "tool",
-                    "tool_call_id": tool_use_id,
-                    "content": json.dumps(tool_result, ensure_ascii=False),
-                }
-            )
-            return
-        self.conversation_history.append(
-            {
-                "role": "user",
-                "content": [
+    def _collect_text(self, message: Message) -> str:
+        parts: list[str] = []
+        for block in message.content:
+            if block.type == "text":
+                parts.append(block.text)
+        return "\n".join(part for part in parts if part.strip() != "").strip()
+
+    def _extract_thought_steps(self, message: Message) -> list[AgentStep]:
+        thoughts: list[AgentStep] = []
+        for block in message.content:
+            if block.type == "text":
+                content = block.text.strip()
+                if content != "":
+                    thoughts.append(AgentStep(thought=content))
+        return thoughts
+
+    def _message_content_to_dict(self, message: Message) -> list[dict[str, Any]]:
+        content: list[dict[str, Any]] = []
+        for block in message.content:
+            if block.type == "text":
+                content.append({"type": "text", "text": block.text})
+            elif block.type == "tool_use":
+                content.append(
                     {
-                        "type": "tool_result",
-                        "tool_use_id": tool_use_id,
-                        "content": json.dumps(tool_result, ensure_ascii=False),
+                        "type": "tool_use",
+                        "id": block.id,
+                        "name": block.name,
+                        "input": dict(block.input),
                     }
-                ],
-            }
-        )
-
-    def get_model_name(self) -> str:
-        return self._provider.get_model_name()
+                )
+        return content

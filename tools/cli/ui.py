@@ -1,8 +1,6 @@
 from __future__ import annotations
 
 import json
-import sys
-import time
 from contextlib import contextmanager
 from typing import Iterator
 
@@ -21,46 +19,21 @@ def thinking_spinner(message: str = "AGENT THINKING...") -> Iterator[None]:
         yield
 
 
-def print_matrix_header() -> None:
-    banner = """
-╔═══════════════════════════════════════════════════════════╗
-║                                                           ║
-║   ██████╗ ██████╗  ██████╗ ██╗  ██╗██╗   ██╗             ║
-║   ██╔══██╗██╔══██╗██╔═══██╗╚██╗██╔╝╚██╗ ██╔╝             ║
-║   ██║  ██║██████╔╝██║   ██║ ╚███╔╝  ╚████╔╝              ║
-║   ██║  ██║██╔══██╗██║   ██║ ██╔██╗   ╚██╔╝               ║
-║   ██████╔╝██║  ██║╚██████╔╝██╔╝ ██╗   ██║                ║
-║   ╚═════╝ ╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═╝   ╚═╝                ║
-║                                                           ║
-║   [ SYSTEM AGENT v1.0 ] - Matrix Mode Activated          ║
-╚═══════════════════════════════════════════════════════════╝
-"""
-    console.print(banner, style="bold green")
-
-
 def print_banner() -> None:
-    print_matrix_header()
+    ascii_art = r"""
+  ____  ____  ____  _  __   __    _    ____ _____ _   _ _____
+ / __ \|  _ \/ ___|| | \ \ / /   / \  / ___| ____| \ | |_   _|
+| |  | | |_) \___ \| |  \ V /   / _ \| |  _|  _| |  \| | | |
+| |__| |  __/ ___) | |___| |   / ___ \ |_| | |___| |\  | | |
+ \____/|_|   |____/|_____|_|  /_/   \_\____|_____|_| \_| |_|
+"""
+    console.print(f"[bold green]{ascii_art}[/bold green]")
     console.print("[bold green][⚡] Opsly Hacker Agent Initialized. Connected to MCP.[/bold green]")
     console.print("[bold green][⚡] Type 'exit' or 'quit' to close.[/bold green]")
 
 
-def print_provider_info(provider_name: str, model: str) -> None:
-    console.print(
-        f"[dim white]Provider:[/dim white] [bold yellow]{provider_name}[/bold yellow] | "
-        f"[dim white]Model:[/dim white] [bold yellow]{model}[/bold yellow]"
-    )
-
-
-def print_streaming_text(
-    text_stream: list[str],
-    delay: float = 0.005,
-    color: str = "bold green",
-) -> None:
-    for chunk in text_stream:
-        for char in chunk:
-            console.print(char, end="", style=color)
-            sys.stdout.flush()
-            time.sleep(delay)
+def print_streaming_text(text_stream: str) -> None:
+    console.print(f"[bold green]{text_stream}[/bold green]", end="")
 
 
 def print_hacker_response(step: AgentStep) -> None:
@@ -87,6 +60,8 @@ def print_hacker_response(step: AgentStep) -> None:
         return
 
     if step.final_answer is not None:
+        if step.final_answer.strip() == "":
+            return
         console.print()
         console.print(
             Panel(
