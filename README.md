@@ -1,5 +1,7 @@
 # intcloudsysops — Opsly
 
+![Structure Validation](https://github.com/cloudsysops/opsly/workflows/Structure%20Validation/badge.svg)
+
 Plataforma multi-tenant **enterprise SaaS**: plano de control (API, billing, orquestación, IA) y plano de datos (stacks Docker aislados por cliente detrás de Traefik).
 
 **Estado actual:** Sprint 3 ✅ (Usage Billing + Plan Upgrade + AI Cost Caps) → Sprint 4 🔄 (Self-Healing + Context Persistence + CVE)

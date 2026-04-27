@@ -40,14 +40,14 @@ npm run sync-references
 
 | Ruta Antigua         | Ruta Nueva                     | Estado    |
 | -------------------- | ------------------------------ | --------- |
-| `./logs/`            | `./runtime/logs/`              | Bloqueado |
-| `./tenants/`         | `./runtime/tenants/`           | Bloqueado |
-| `./letsencrypt/`     | `./runtime/letsencrypt/`       | Bloqueado |
-| `agents/prompts`     | `tools/agents/prompts`         | Bloqueado |
+| `./runtime/logs/`            | `./runtime/logs/`              | Bloqueado |
+| `./runtime/tenants/`         | `./runtime/tenants/`           | Bloqueado |
+| `./runtime/letsencrypt/`     | `./runtime/letsencrypt/`       | Bloqueado |
+| `tools/agents/prompts`     | `tools/tools/agents/prompts`         | Bloqueado |
 | `workspaces/` (raíz) | `tools/workspaces/`            | Bloqueado |
 | `cli/` (raíz)        | `tools/cli/`                   | Bloqueado |
-| `/opt/opsly/logs`    | `/opt/opsly/runtime/logs`      | Bloqueado |
-| `/opt/opsly/tenants` | `/opt/opsly/runtime/tenants`   | Bloqueado |
+| `/opt/opsly/runtime/logs`    | `/opt/opsly/runtime/logs`      | Bloqueado |
+| `/opt/opsly/runtime/tenants` | `/opt/opsly/runtime/tenants`   | Bloqueado |
 
 ## Flujo de Trabajo
 
@@ -56,23 +56,30 @@ npm run sync-references
 3. Para migraciones de estructura, ejecutar `npm run sync-references`.
 4. Confirmar con `npm run test-structure`.
 
-## Whitelist de Raíz
+## CI Validation
 
-La whitelist vive en `config/root-whitelist.json` y controla:
+Every PR is automatically validated against structure rules.
 
-- Archivos permitidos en raíz (`allowed_files`)
-- Carpetas permitidas en raíz (`allowed_folders`)
-- Carpetas ocultas permitidas (`allowed_hidden_folders`)
-- Patrones bloqueados (`blocked_patterns`, `blocked_hidden_patterns`)
-
-### Comandos útiles
+### Local validation
 
 ```bash
-npm run whitelist:list
-npm run whitelist:add NUEVO_ARCHIVO.md
-npm run whitelist:check README.md
-node scripts/manage-whitelist.js add-folder nueva-carpeta
-node scripts/manage-whitelist.js remove-folder carpeta-obsoleta
-node scripts/manage-whitelist.js add-hidden .nueva-carpeta
-node scripts/manage-whitelist.js remove-hidden .nueva-carpeta
+npm run validate:strict
 ```
+
+### CI validation (strict mode)
+
+In CI mode, warnings become errors. Any file/folder not in whitelist fails the build.
+
+```bash
+npm run validate:strict:ci
+```
+
+### What CI validates
+
+1. Required directories exist.
+2. No forbidden directories in root.
+3. All files in root are whitelisted.
+4. All folders in root are whitelisted.
+5. All hidden folders are authorized.
+6. No legacy path references.
+7. Symlink status report.

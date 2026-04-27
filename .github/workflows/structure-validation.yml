@@ -1,0 +1,32 @@
+name: Structure Validation
+
+on:
+  pull_request:
+    branches: [main, develop]
+  push:
+    branches: [main]
+  workflow_call:
+
+jobs:
+  validate-structure:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate structure (strict CI mode)
+        run: npm run validate:strict:ci
+
+      - name: Report results
+        if: failure()
+        run: |
+          echo "::error::Structure validation failed. Check the logs for details."
+          echo "Run 'npm run validate:strict' locally to inspect issues."
