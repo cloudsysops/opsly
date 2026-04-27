@@ -50,7 +50,7 @@ Instalación en el VPS (como root):
 ```bash
 sudo cp /opt/opsly/infra/cron/opsly-cleanup /etc/cron.d/opsly-cleanup
 sudo chmod 644 /etc/cron.d/opsly-cleanup
-sudo mkdir -p /opt/opsly/logs
+sudo mkdir -p /opt/opsly/runtime/logs/
 sudo cp /opt/opsly/infra/cron/logrotate-opsly-cleanup.conf /etc/logrotate.d/opsly-cleanup
 ```
 
@@ -63,7 +63,7 @@ O usar el instalador: `sudo bash /opt/opsly/scripts/install-vps-cleanup.sh`.
 sudo -E bash /opt/opsly/scripts/disk-alert.sh
 ```
 
-Logs: `/opt/opsly/logs/opsly-disk-alerts.log`, `/opt/opsly/logs/opsly-disk-monitor.log`.
+Logs: `/opt/opsly/runtime/logs//opsly-disk-alerts.log`, `/opt/opsly/runtime/logs//opsly-disk-monitor.log`.
 
 ## Systemd (opcional)
 

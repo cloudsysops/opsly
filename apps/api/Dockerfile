@@ -7,7 +7,7 @@ COPY package.json package-lock.json ./
 COPY apps/api/package.json ./apps/api/
 COPY apps/ml/package.json ./apps/ml/
 COPY apps/llm-gateway/package.json ./apps/llm-gateway/
-COPY apps/agents/notebooklm/package.json ./apps/agents/notebooklm/
+COPY apps/notebooklm-agent/package.json ./apps/notebooklm-agent/
 COPY packages/types/package.json ./packages/types/
 RUN npm ci --ignore-scripts
 RUN npm ci --ignore-scripts \
@@ -26,7 +26,7 @@ COPY --from=deps /repo/package-lock.json ./package-lock.json
 COPY apps/api ./apps/api
 COPY apps/ml ./apps/ml
 COPY apps/llm-gateway ./apps/llm-gateway
-COPY apps/agents/notebooklm ./apps/agents/notebooklm
+COPY apps/notebooklm-agent ./apps/notebooklm-agent
 COPY packages/types ./packages/types
 RUN npm ci --ignore-scripts \
   -w @intcloudsysops/types \

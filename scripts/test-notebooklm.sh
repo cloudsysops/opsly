@@ -115,7 +115,7 @@ fi
 
 # Execute workflow
 log "Executing workflow..."
-python3 "${_SCRIPT_DIR}/../apps/agents/notebooklm/src/workflows/report-to-podcast.py" \
+python3 "${_SCRIPT_DIR}/../apps/notebooklm-agent/src/workflows/report-to-podcast.py" \
   --pdf-path "${PDF_PATH}" \
   --notebook-name "${NOTEBOOK_NAME}" \
   --storage-path "${HOME}/.notebooklm_storage" \

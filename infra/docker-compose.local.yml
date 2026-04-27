@@ -43,7 +43,7 @@ services:
       - ../.env.local
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ${TENANTS_PATH:-/tmp/opsly/tenants}:/opt/opsly/tenants
+      - ${TENANTS_PATH:-/tmp/opsly/runtime/tenants}:/opt/opsly/runtime/tenants/
       - ../infra/templates:/opt/opsly/templates:ro
     labels:
       - traefik.enable=true

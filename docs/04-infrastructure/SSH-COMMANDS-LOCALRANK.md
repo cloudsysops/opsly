@@ -9,13 +9,13 @@ ssh vps-dragon@100.120.151.91 'cd /opt/opsly && echo "=== Checking Supabase ==="
 ## BLOQUE B: NOTEBOOKLM SETUP (SSH to VPS)
 
 ```bash
-ssh vps-dragon@100.120.151.91 'cd /opt/opsly && echo "=== Creating storage ===" && mkdir -p .notebooklm_storage && echo "=== Installing Python deps ===" && python3 -m pip install --upgrade -r apps/agents/notebooklm/requirements.txt && echo "=== Verifying notebooklm-py ===" && python3 -c "import notebooklm; print(\"✅ notebooklm-py installed\")"'
+ssh vps-dragon@100.120.151.91 'cd /opt/opsly && echo "=== Creating storage ===" && mkdir -p .notebooklm_storage && echo "=== Installing Python deps ===" && python3 -m pip install --upgrade -r apps/notebooklm-agent/requirements.txt && echo "=== Verifying notebooklm-py ===" && python3 -c "import notebooklm; print(\"✅ notebooklm-py installed\")"'
 ```
 
 ## BLOQUE C: TEST NOTEBOOKLM WORKFLOW (SSH to VPS)
 
 ```bash
-ssh vps-dragon@100.120.151.91 'cd /opt/opsly && echo "=== Running NotebookLM workflow ===" && doppler run -- python3 apps/agents/notebooklm/src/workflows/report-to-podcast.py --pdf-path /tmp/localrank-report.pdf --notebook-name "LocalRank Q1 Report" --storage-path /opt/opsly/.notebooklm_storage --output-dir /tmp/localrank-output && echo "" && echo "=== Output files ===" && ls -lh /tmp/localrank-output/ 2>/dev/null || echo "No output (check logs)"'
+ssh vps-dragon@100.120.151.91 'cd /opt/opsly && echo "=== Running NotebookLM workflow ===" && doppler run -- python3 apps/notebooklm-agent/src/workflows/report-to-podcast.py --pdf-path /tmp/localrank-report.pdf --notebook-name "LocalRank Q1 Report" --storage-path /opt/opsly/.notebooklm_storage --output-dir /tmp/localrank-output && echo "" && echo "=== Output files ===" && ls -lh /tmp/localrank-output/ 2>/dev/null || echo "No output (check logs)"'
 ```
 
 ## BLOQUE D: DOCKER LOGS (If something fails)

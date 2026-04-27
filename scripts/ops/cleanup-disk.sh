@@ -122,8 +122,8 @@ else
 fi
 echo ""
 
-# --- 5) Logs de aplicación en /opt/opsly/logs ---
-OPS_LOG_DIR="/opt/opsly/logs"
+# --- 5) Logs de aplicación en /opt/opsly/runtime/logs/ ---
+OPS_LOG_DIR="/opt/opsly/runtime/logs/"
 if [[ -d "${OPS_LOG_DIR}" ]]; then
   echo "----------------------------------------------------------------"
   echo "PASO 5 — Comprimir logs .log antiguos en ${OPS_LOG_DIR}"

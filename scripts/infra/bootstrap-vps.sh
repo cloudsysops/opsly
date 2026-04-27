@@ -70,9 +70,9 @@ log_info "[c] Directorios bajo ${OPS_ROOT}"
 if [[ ! -d "${OPS_ROOT}" ]]; then
   die "Crea ${OPS_ROOT} y clona el repo (p. ej. sudo mkdir -p ${OPS_ROOT} && sudo chown -R vps-dragon:vps-dragon ${OPS_ROOT})" 1
 fi
-run mkdir -p "${OPS_ROOT}/tenants" "${OPS_ROOT}/letsencrypt"
-run chmod 700 "${OPS_ROOT}/letsencrypt"
-run chmod 755 "${OPS_ROOT}/tenants"
+run mkdir -p "${OPS_ROOT}/runtime/tenants" "${OPS_ROOT}/runtime/letsencrypt"
+run chmod 700 "${OPS_ROOT}/runtime/letsencrypt"
+run chmod 755 "${OPS_ROOT}/runtime/tenants"
 
 DOPPLER_PROJECT="${DOPPLER_PROJECT:-}"
 DOPPLER_CONFIG="${DOPPLER_CONFIG:-}"
@@ -129,10 +129,10 @@ if (( ${#missing[@]} > 0 )); then
 fi
 
 log_info "[g] acme.json (host, permisos; Traefik usa volumen nombrado en compose)"
-if [[ ! -f "${OPS_ROOT}/letsencrypt/acme.json" ]]; then
-  run touch "${OPS_ROOT}/letsencrypt/acme.json"
+if [[ ! -f "${OPS_ROOT}/runtime/letsencrypt/acme.json" ]]; then
+  run touch "${OPS_ROOT}/runtime/letsencrypt/acme.json"
 fi
-run chmod 600 "${OPS_ROOT}/letsencrypt/acme.json"
+run chmod 600 "${OPS_ROOT}/runtime/letsencrypt/acme.json"
 
 log_info "[i] DOCKER_GID — GID del socket Docker para Traefik (group_add en compose)"
 # Traefik necesita el mismo GID numérico que el grupo propietario de /var/run/docker.sock en el host.
@@ -213,8 +213,8 @@ echo "--- Nombres de variables en .env (sin valores) ---"
 run grep -E '^[A-Za-z_][A-Za-z0-9_]*=' "${ENV_FILE}" | cut -d= -f1 | sort -u || true
 echo ""
 echo "--- Directorios ---"
-echo "  ${OPS_ROOT}/tenants"
-echo "  ${OPS_ROOT}/letsencrypt"
+echo "  ${OPS_ROOT}/runtime/tenants"
+echo "  ${OPS_ROOT}/runtime/letsencrypt"
 echo ""
 echo "--- Red ---"
 docker network inspect traefik-public --format '{{.Name}}' 2>/dev/null || true

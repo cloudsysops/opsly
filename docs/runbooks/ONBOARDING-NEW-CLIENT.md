@@ -275,7 +275,7 @@ doppler secrets set N8N_WEBHOOK_URL_nuevo-cliente="https://..." \
 | ----------------- | ----------------------- | ------------------------------------- |
 | `PLATFORM_DOMAIN` | `ops.smiletripcare.com` | Dominio base de la plataforma         |
 | `SSH_HOST`        | `100.120.151.91`        | IP Tailscale del VPS                  |
-| `TENANTS_PATH`    | `./tenants`             | Directorio donde se crean los compose |
+| `TENANTS_PATH`    | `./runtime/tenants/`             | Directorio donde se crean los compose |
 | `ADMIN_TOKEN`     | -                       | Token de admin (obtener de Doppler)   |
 
 ### Planes Disponibles

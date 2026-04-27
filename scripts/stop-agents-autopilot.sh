@@ -4,7 +4,7 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 
-PID_FILE="${PID_FILE:-logs/agents-autopilot.pid}"
+PID_FILE="${PID_FILE:-runtime/logs/agents-autopilot.pid}"
 
 if [[ ! -f "$PID_FILE" ]]; then
   echo "agents-autopilot no está corriendo (sin pid file)"

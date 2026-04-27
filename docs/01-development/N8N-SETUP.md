@@ -110,4 +110,4 @@ doppler run --project ops-intcloudsysops --config prd -- \
 - **401/403 GitHub API**: revisar `GITHUB_TOKEN` (o `GITHUB_TOKEN_N8N`) y scope `repo` / Contents.
 - **No llega confirmacion a Discord**: revisar `DISCORD_WEBHOOK_URL`.
 - **Webhook responde 200 pero no actualiza archivo**: validar obtencion de `sha` actual.
-- **Cursor no ejecuta**: verificar `cursor-prompt-monitor` activo y logs en `/opt/opsly/logs/cursor-prompt-monitor.log`.
+- **Cursor no ejecuta**: verificar `cursor-prompt-monitor` activo y logs en `/opt/opsly/runtime/logs//cursor-prompt-monitor.log`.

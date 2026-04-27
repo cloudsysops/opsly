@@ -8,7 +8,7 @@
 
 Tras mergear ADR-033 se identificaron 3 problemas de CI que afectan la calidad de la señal:
 
-1. `@rollup/rollup-linux-x64-gnu` requería install manual en cada job por [bug conocido de npm con optional dependencies](https://github.com/npm/cli/issues/4828).
+1. `@rollup/rollup-linux-x64-gnu` requería install manual en cada job por [bug conocido de npm con optional dependencies](https://github.com/npm/tools/cli/issues/4828).
 2. Duplicación de `AGENTS.md` en `.github/AGENTS.md` sin mecanismo claro de autoridad.
 3. Múltiples checks fallan por falta de secretos (Doppler, LLM keys) → PRs se mergean rutinariamente con `--admin`, degradando la señal.
 

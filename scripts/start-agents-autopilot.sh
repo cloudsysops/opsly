@@ -4,9 +4,9 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 
-mkdir -p logs
-PID_FILE="${PID_FILE:-logs/agents-autopilot.pid}"
-LOG_FILE="${LOG_FILE:-logs/agents-autopilot.log}"
+mkdir -p runtime/logs
+PID_FILE="${PID_FILE:-runtime/logs/agents-autopilot.pid}"
+LOG_FILE="${LOG_FILE:-runtime/logs/agents-autopilot.log}"
 
 if [[ -f "$PID_FILE" ]]; then
   old_pid="$(cat "$PID_FILE" 2>/dev/null || true)"

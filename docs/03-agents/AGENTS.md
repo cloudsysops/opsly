@@ -18,7 +18,7 @@ last_review: 2026-04-27
 
 **Planificación por sprint (IA + producto):** [`ROADMAP.md`](ROADMAP.md) (timeline semanal, milestones). **Guía técnica capa IA:** [`docs/IMPLEMENTATION-IA-LAYER.md`](docs/IMPLEMENTATION-IA-LAYER.md) (TypeScript, rutas reales en `apps/*`).
 
-**Shadow deployment Super Agent (nuevo):** [`docs/runbooks/SUPER-AGENT-SHADOW-DEPLOY.md`](docs/runbooks/SUPER-AGENT-SHADOW-DEPLOY.md), diseño `context-builder-v2` en `apps/context-builder-v2/src/design/architecture.md`, script `scripts/rollback-super-agent.sh`, overlay `infra/docker-compose.super-agent.yml`.
+**Shadow deployment Super Agent (nuevo):** [`docs/runbooks/SUPER-AGENT-SHADOW-DEPLOY.md`](docs/runbooks/SUPER-AGENT-SHADOW-DEPLOY.md), diseño `context-builder-v2` en `apps/experimental/context-builder-v2-archive/src/design/architecture.md`, script `scripts/rollback-super-agent.sh`, overlay `infra/docker-compose.super-agent.yml`.
 
 ## ⚠️ Control de costos
 
@@ -103,7 +103,7 @@ npm run opsly:ensure-ollama -- --ensure
    - [`docs/KNOWLEDGE-SYSTEM.md`](docs/KNOWLEDGE-SYSTEM.md) — LEER PRIMERO
    - Query startup obligatorio: `"¿Cuál es el estado actual de Opsly?"` → NotebookLM
 3. **Prompt operativo en VPS (opcional):** `docs/ACTIVE-PROMPT.md` — tras `git pull` en `/opt/opsly`, el servicio **`cursor-prompt-monitor`** (`scripts/cursor-prompt-monitor.sh`, unidad `infra/systemd/cursor-prompt-monitor.service`) detecta cambios cada **30 s** y ejecuta el contenido filtrado como shell. **Solo** líneas que no empiezan por `#` ni `---`; si todo es comentario, no ejecuta nada. **Riesgo RCE** si alguien no confiable puede editar ese archivo.
-4. **Logs en VPS:** `/opt/opsly/logs/cursor-prompt-monitor.log` (directorio `logs/` ignorado en git).
+4. **Logs en VPS:** `/opt/opsly/runtime/logs//cursor-prompt-monitor.log` (directorio `logs/` ignorado en git).
 5. **Docs de apoyo:** `docs/CLAUDE-WORKFLOW-OPTIMIZATION.md`, `docs/OPENCLAW-ARCHITECTURE.md`.
 6. **Espejo Google Drive (opcional):** `docs/GOOGLE-DRIVE-SYNC.md`, lista `docs/opsly-drive-files.list`, config `.opsly-drive-config.json` — útil si Claude (u otro asistente) tiene Drive conectado; la fuente de verdad sigue siendo git/GitHub.
 
@@ -518,7 +518,7 @@ OpenClaw opera como **control plane IA** de Opsly: estandariza entrada (MCP/API)
 | Context Builder   | `apps/context-builder`         | Construcción de contexto y continuidad entre interacciones             |
 | ML Services       | `apps/ml`                      | Clasificación, embeddings, soporte a decisiones IA                     |
 | API Control Plane | `apps/api`                     | Identidad Zero-Trust, validación tenant/session, contratos HTTP        |
-| NotebookLM Tool   | `apps/agents/notebooklm` + MCP | Generación de artefactos (podcast/slides/infografía), **EXPERIMENTAL** |
+| NotebookLM Tool   | `apps/notebooklm-agent` + MCP | Generación de artefactos (podcast/slides/infografía), **EXPERIMENTAL** |
 
 ```mermaid
 flowchart LR
@@ -885,9 +885,9 @@ _Contexto y flujo para agentes (abr 2026):_
 - `.claude/CLAUDE.md` — URLs raw de `AGENTS.md` y `VISION.md`
 - **GitHub:** repo `cloudsysops/opsly` **público** para que Claude u otros lean sin clonar; plantillas en `.github/` documentadas en `README-github-templates.md`
 - `docs/adr/` — ADR-001 (compose por tenant), ADR-002 (Traefik v3), ADR-003 (Doppler), ADR-004 (Supabase schema por tenant)
-- `agents/prompts/` — `claude-architect.md`, `cursor-executor.md`
+- `tools/tools/tools/tools/agents/prompts/` — `claude-architect.md`, `cursor-executor.md`
 - `context/system_state.json` — fase, VPS, DNS, `deploy_staging`, `doppler`, `repo` (vía `update-state.js`); `next_action` según bloqueo actual; espejo `.github/system_state.json` vía `update-agents.sh` / post-commit
-- `.gitignore` — `context/doppler-ready.json`, `agents/prompts/secrets-*.md` (sin secretos en repo)
+- `.gitignore` — `context/doppler-ready.json`, `tools/tools/tools/tools/agents/prompts/secrets-*.md` (sin secretos en repo)
 - `scripts/update-agents.sh` — copia `AGENTS.md`, `VISION.md`, `context/system_state.json` → `.github/`; `git add` de espejos y `docs/adr/`, `agents/` (sin `git add .github/` completo)
 
 _Código e infra en repo (resumen):_
@@ -1051,7 +1051,7 @@ curl -I "https://uptime-localrank.ops.smiletripcare.com"
 
 # 5) NotebookLM EXPERIMENTAL (solo business+)
 doppler secrets set NOTEBOOKLM_ENABLED true --project ops-intcloudsysops --config prd
-python3 apps/agents/notebooklm/src/workflows/report-to-podcast.py /tmp/reporte.pdf localrank "LocalRank"
+python3 apps/notebooklm-agent/src/workflows/report-to-podcast.py /tmp/reporte.pdf localrank "LocalRank"
 ```
 
 ### Fase 10 — arranque inmediato (Google Cloud + BigQuery)
@@ -1161,7 +1161,7 @@ ssh vps-dragon@100.120.151.91 "docker system df && sudo du -xh /var --max-depth=
 - [x] **`GOOGLE_DRIVE_TOKEN`** — confirmado 2026-04-10: Drive usa `GOOGLE_SERVICE_ACCOUNT_JSON` (2361 chars, válido). No es un gap real; la variable legacy no se usa.
 - [ ] **Resend dominio verificado** — sin ello, envío a emails fuera de la cuenta de prueba Resend → **500** en `POST /api/invitations` (ver mensaje API `verify a domain`).
 - [ ] **Imágenes GHCR MCP + context-builder** — contenedores falling por missing `@intcloudsysops/types` en imagen; hacer rebuild con fix `ae7ee0e` y redeploy.
-- [x] **Fix Dockerfile MCP** — añadido `apps/agents/notebooklm` al COPY en deps/builder/runner stages + `packages/types` al deps stage + `npm run build -w @intcloudsysops/types` antes de otros workspaces (completado 2026-04-13, commit `ae7ee0e`).
+- [x] **Fix Dockerfile MCP** — añadido `apps/notebooklm-agent` al COPY en deps/builder/runner stages + `packages/types` al deps stage + `npm run build -w @intcloudsysops/types` antes de otros workspaces (completado 2026-04-13, commit `ae7ee0e`).
 - [ ] **`STRIPE_PRICE_ID_*` en Doppler `prd` / secrets de CI** — necesarios para billing/checkout real en `apps/web`; el build puede completarse sin ellos (`envOrEmpty` en `apps/web/lib/stripe/plans.ts`), pero Stripe fallará en runtime si faltan.
 
 ---
@@ -1543,7 +1543,7 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 │   └── notion-mcp/          # HTTP hacia Notion (tareas, standup, quality; Doppler)
 ├── config/
 │   └── opsly.config.json    # Infra/dominios/planes (sin secretos)
-├── agents/prompts/          # Plantillas Claude / Cursor
+├── tools/tools/tools/tools/agents/prompts/          # Plantillas Claude / Cursor
 ├── skills/                  # Skills Claude (user/*); sync opcional a /mnt/skills/user
 ├── context/                 # system_state.json (sin secretos)
 ├── docs/                    # Arquitectura, ADRs, DNS, tests, VPS

@@ -38,14 +38,14 @@ main() {
   check_file "config/knowledge-index.json"
   check_file ".opsly/superagents/bootstrap-chain.txt"
 
-  if [[ -f logs/agents-autopilot.pid ]]; then
+  if [[ -f runtime/logs/agents-autopilot.pid ]]; then
     if ./scripts/status-agents-autopilot.sh >/dev/null 2>&1; then
       pass "autopilot: running"
     else
       warn "autopilot: stale pid/logs"
     fi
   else
-    warn "autopilot: not started (logs/agents-autopilot.pid missing)"
+    warn "autopilot: not started (runtime/logs/agents-autopilot.pid missing)"
   fi
 
   if command -v code >/dev/null 2>&1; then

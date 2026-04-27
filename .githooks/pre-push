@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+echo "🚀 Validando antes de push..."
+npm run validate-structure --silent
+bash scripts/hooks/structure-guard.sh
+echo "✅ Listo para push"

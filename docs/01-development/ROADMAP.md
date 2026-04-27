@@ -16,7 +16,7 @@ last_review: 2026-04-24
 | ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Hermes**              | Sistema de **metering/billing IA** (ledger `usage_events`, costos por tenant). Ver `VISION.md` — _no_ es un paquete Python externo obligatorio. |
 | **Capa de decisión IA** | Lógica en **TypeScript** (`apps/llm-gateway`, `apps/orchestrator`): routing, fallback, presupuesto — extender lo existente.                     |
-| **NotebookLM**          | **EXPERIMENTAL**, planes superiores + flag; ver `apps/agents/notebooklm`, MCP.                                                                  |
+| **NotebookLM**          | **EXPERIMENTAL**, planes superiores + flag; ver `apps/notebooklm-agent`, MCP.                                                                  |
 
 ## Estado respecto a VISION.md
 

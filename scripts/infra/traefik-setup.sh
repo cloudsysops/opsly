@@ -104,7 +104,7 @@ cat <<'VARS'
   TRAEFIK_DASHBOARD_BASIC_AUTH_USERS  (htpasswd, escapa $ en Compose)
   REDIS_PASSWORD
   APP_IMAGE / ADMIN_APP_IMAGE
-  PLATFORM_TENANTS_HOST_PATH=/home/vps-dragon/opsly/tenants
+  PLATFORM_TENANTS_HOST_PATH=/home/vps-dragon/opsly/runtime/tenants
   NEXT_PUBLIC_* (admin), SUPABASE_*, STRIPE_*, PLATFORM_ADMIN_TOKEN, etc.
 VARS
 
@@ -115,10 +115,10 @@ fi
 
 # --- g (parcial). letsencrypt en host (documentación / backups); el runtime usa volumen Compose ---
 log_info "[g] Directorios letsencrypt en ${OPS_HOME}"
-run mkdir -p "${OPS_HOME}/letsencrypt"
-if [[ ! -f "${OPS_HOME}/letsencrypt/acme.json" ]]; then
-  run touch "${OPS_HOME}/letsencrypt/acme.json"
-  run chmod 600 "${OPS_HOME}/letsencrypt/acme.json"
+run mkdir -p "${OPS_HOME}/runtime/letsencrypt"
+if [[ ! -f "${OPS_HOME}/runtime/letsencrypt/acme.json" ]]; then
+  run touch "${OPS_HOME}/runtime/letsencrypt/acme.json"
+  run chmod 600 "${OPS_HOME}/runtime/letsencrypt/acme.json"
 fi
 
 # --- c (runtime): Traefik necesita puertos 80/443 libres ---
@@ -203,7 +203,7 @@ fi
 
 # --- g (tenants) ---
 log_info "[g] Directorio tenants Opsly"
-run mkdir -p "${OPS_HOME}/tenants"
+run mkdir -p "${OPS_HOME}/runtime/tenants"
 
 # --- h. Redis + app (+ admin) Opsly ---
 log_info "[h] Levantar Redis, API y Admin Opsly"

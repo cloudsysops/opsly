@@ -6,7 +6,7 @@ Este runbook permite probar un stack **v2** (`context-builder-v2`, `mcp-v2`, `ll
 
 - Compose shadow: `infra/docker-compose.super-agent.yml`
 - Script swap/rollback: `scripts/rollback-super-agent.sh`
-- Diseño v2: `apps/context-builder-v2/src/design/architecture.md`
+- Diseño v2: `apps/experimental/context-builder-v2-archive/src/design/architecture.md`
 
 ## Modelo de despliegue
 

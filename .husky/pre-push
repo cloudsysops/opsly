@@ -1,0 +1,9 @@
+#!/usr/bin/env sh
+set -e
+ROOT="$(git rev-parse --show-toplevel)"
+cd "$ROOT" || exit 1
+if [ -x "$ROOT/.githooks/pre-push" ]; then
+  exec "$ROOT/.githooks/pre-push" "$@"
+fi
+echo "husky pre-push: .githooks/pre-push no encontrado o sin permisos" >&2
+exit 1

@@ -24,8 +24,8 @@ RestartSec=15
 StartLimitIntervalSec=300
 StartLimitBurst=5
 
-StandardOutput=append:/home/opslyquantum/opsly/logs/worker.log
-StandardError=append:/home/opslyquantum/opsly/logs/worker-error.log
+StandardOutput=append:/home/opslyquantum/opsly/runtime/logs/worker.log
+StandardError=append:/home/opslyquantum/opsly/runtime/logs/worker-error.log
 
 Environment=NODE_ENV=production
 

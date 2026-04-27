@@ -14,6 +14,7 @@ async function main(): Promise<void> {
   const openClaw = createServer();
   const definitions = getAllToolDefinitions();
   startMcpHttpHealth();
+  console.log(`Opsly MCP Server initialized with ${definitions.length} tools`);
 
   if (useStdioTransport()) {
     await startMcpStdioServer(openClaw, definitions);

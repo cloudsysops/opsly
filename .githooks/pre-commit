@@ -11,6 +11,10 @@ if ! command -v npm >/dev/null 2>&1; then
   exit 0
 fi
 
+echo "pre-commit: validando estructura estándar..."
+npm run validate-structure
+bash scripts/hooks/structure-guard.sh
+
 # Si docs/implementation/status.yaml está en el índice, regenerar docs generados (ADR-033)
 STAGED_STATUS=$(git diff --cached --name-only --diff-filter=ACM | grep -E '^docs/implementation/status\.yaml$' || true)
 if [ -n "$STAGED_STATUS" ]; then

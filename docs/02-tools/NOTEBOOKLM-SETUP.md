@@ -87,8 +87,8 @@ npm run update-state  # regenera knowledge-index.json
 ### Generar podcast desde doc
 
 ```python
-# apps/agents/notebooklm/src/workflows/report-to-podcast.py
-python apps/agents/notebooklm/src/workflows/report-to-podcast.py \
+# apps/notebooklm-agent/src/workflows/report-to-podcast.py
+python apps/notebooklm-agent/src/workflows/report-to-podcast.py \
   --input /tmp/reporte.pdf \
   --tenant localrank \
   --output /tmp/localrank-podcast.mp3
@@ -119,7 +119,7 @@ node scripts/query-notebooklm.mjs "¿Qué incidentes hay pendientes en el VPS?"
 
 ```bash
 # Generar podcast desde PDF de métricas
-python apps/agents/notebooklm/src/workflows/report-to-podcast.py \
+python apps/notebooklm-agent/src/workflows/report-to-podcast.py \
   --input docs/reports/monthly-2026-03.pdf \
   --tenant smiletripcare \
   --output /tmp/smiletripcare-march-podcast.mp3

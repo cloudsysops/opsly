@@ -46,11 +46,11 @@ function mapDockerState(state: string | undefined): ContainerState {
 }
 
 export function getTenantComposePath(slug: string): string {
-  return join('/opt/opsly/tenants', slug, 'docker-compose.yml');
+  return join('/opt/opsly/runtime/tenants/', slug, 'docker-compose.yml');
 }
 
 export function getLegacyTenantComposePath(slug: string): string {
-  return join('/opt/opsly/tenants', `docker-compose.${slug}.yml`);
+  return join('/opt/opsly/runtime/tenants/', `docker-compose.${slug}.yml`);
 }
 
 export async function resolveTenantComposePath(slug: string): Promise<string> {

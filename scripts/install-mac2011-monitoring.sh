@@ -28,7 +28,7 @@ echo ""
 
 if [[ "$(uname -s)" == "Darwin" ]]; then
   LAUNCH_AGENTS="${HOME}/Library/LaunchAgents"
-  LOG_DIR="${REPO_ROOT}/logs"
+  LOG_DIR="${REPO_ROOT}/runtime/logs"
   run mkdir -p "${LOG_DIR}"
   run mkdir -p "${HOME}/opsly/scripts"
   run cp "${REPO_ROOT}/scripts/mac2011-cleanup-robust.sh" "${HOME}/opsly/scripts/"
@@ -51,8 +51,8 @@ if [[ "$(uname -s)" == "Darwin" ]]; then
 
   echo ""
   echo "✅ macOS: LaunchAgents instalados."
-  echo "   Logs: ${REPO_ROOT}/logs/"
-  echo "   Estado JSON: ${REPO_ROOT}/logs/mac2011-status.json (tras ejecutar monitor)"
+  echo "   Logs: ${REPO_ROOT}/runtime/logs/"
+  echo "   Estado JSON: ${REPO_ROOT}/runtime/logs/mac2011-status.json (tras ejecutar monitor)"
   echo "   Discord: export DISCORD_WEBHOOK_URL en el entorno (o añadir Variable a plist)."
   echo ""
   echo "API (VPS): copiar JSON al servidor o exponer URL:"

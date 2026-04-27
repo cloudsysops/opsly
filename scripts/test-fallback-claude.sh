@@ -71,9 +71,9 @@ EXPECTED
 
   # Step 5: Check logs
   log_info "Step 5: Verify logs show fallback decision..."
-  if [[ -f "$REPO_ROOT/logs/llm-gateway.log" ]]; then
-    log_success "LLM Gateway logs available at: $REPO_ROOT/logs/llm-gateway.log"
-    log_info "  Run: tail -n 50 $REPO_ROOT/logs/llm-gateway.log | grep -E 'fallback|provider|claude'"
+  if [[ -f "$REPO_ROOT/runtime/logs/llm-gateway.log" ]]; then
+    log_success "LLM Gateway logs available at: $REPO_ROOT/runtime/logs/llm-gateway.log"
+    log_info "  Run: tail -n 50 $REPO_ROOT/runtime/logs/llm-gateway.log | grep -E 'fallback|provider|claude'"
   else
     log_error "Log file not found; check gateway startup"
   fi

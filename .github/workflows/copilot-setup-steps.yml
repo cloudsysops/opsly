@@ -38,14 +38,14 @@ jobs:
           cache: pip
           cache-dependency-path: |
             apps/ml/agents/classifier/requirements.txt
-            apps/agents/notebooklm/requirements.txt
+            apps/notebooklm-agent/requirements.txt
 
       - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip
           python -m pip install \
             -r apps/ml/agents/classifier/requirements.txt \
-            -r apps/agents/notebooklm/requirements.txt
+            -r apps/notebooklm-agent/requirements.txt
 
       - name: Install Playwright browser
         run: python -m playwright install --with-deps chromium

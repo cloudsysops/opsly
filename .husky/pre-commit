@@ -3,14 +3,10 @@ set -e
 ROOT="$(git rev-parse --show-toplevel)"
 cd "$ROOT" || exit 1
 
-npx --no -- turbo run type-check --filter=@intcloudsysops/api --filter=@intcloudsysops/admin --filter=@intcloudsysops/portal
-
-# ESLint: solo TypeScript staged bajo apps/api/app y apps/api/lib (alineado a .githooks/pre-commit y AGENTS.md).
-if command -v npx >/dev/null 2>&1 && [ -f eslint.config.mjs ]; then
-  STAGED_API=$(git diff --cached --name-only --diff-filter=ACM | grep -E '^apps/api/(app|lib)/.*\.(tsx?)$' || true)
-  if [ -n "$STAGED_API" ]; then
-    echo "pre-commit: ESLint (staged apps/api app/lib, --max-warnings 0)…"
-    # shellcheck disable=SC2086
-    echo "$STAGED_API" | xargs npx eslint --max-warnings 0
-  fi
+# Fuente única de verdad para hooks de pre-commit.
+if [ -x "$ROOT/.githooks/pre-commit" ]; then
+  exec "$ROOT/.githooks/pre-commit" "$@"
 fi
+
+echo "husky pre-commit: .githooks/pre-commit no encontrado o sin permisos" >&2
+exit 1

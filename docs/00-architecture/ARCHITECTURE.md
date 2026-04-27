@@ -30,8 +30,13 @@ This document is the single technical authority for runtime architecture at the 
 - `apps/llm-gateway`
 - `apps/context-builder`
 - `apps/mcp`
-- `apps/agents/notebooklm`
+- `apps/notebooklm-agent`
 - `apps/ml`
+
+### Shared packages and runtime state
+
+- `packages/skills` (skills catalog + manifest tooling)
+- `runtime/context/system_state.json` (runtime operational state)
 
 ### Deprecated/archived modules
 

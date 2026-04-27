@@ -13,8 +13,8 @@ if [[ "${EUID}" -ne 0 ]]; then
   exit 1
 fi
 install -m 0644 "${UNIT_SRC}" /etc/systemd/system/opsly-worker.service
-mkdir -p /home/opslyquantum/opsly/logs
-chown opslyquantum:opslyquantum /home/opslyquantum/opsly/logs
+mkdir -p /home/opslyquantum/opsly/runtime/logs
+chown opslyquantum:opslyquantum /home/opslyquantum/opsly/runtime/logs
 systemctl daemon-reload
 systemctl enable opsly-worker.service
 systemctl restart opsly-worker.service

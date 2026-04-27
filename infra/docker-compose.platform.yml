@@ -195,7 +195,7 @@ services:
       OPSLY_ORCHESTRATOR_MODE: ${OPSLY_ORCHESTRATOR_MODE:-queue-only}
       # Raíz del monorepo montada en volumes (OAR /api/tools/execute fs_read, list_adrs)
       OPSLY_REPO_ROOT: ${OPSLY_REPO_ROOT:-/opt/opsly}
-      PLATFORM_TENANTS_DIR: /opt/opsly/tenants
+      PLATFORM_TENANTS_DIR: /opt/opsly/runtime/tenants/
       TEMPLATE_PATH: /opt/opsly/templates/docker-compose.tenant.yml.tpl
       # Prometheus como servicio en la red internal (opsly_prometheus). Override si usas Prom externo.
       PROMETHEUS_BASE_URL: ${PROMETHEUS_BASE_URL:-http://prometheus:9090}
@@ -207,7 +207,7 @@ services:
       # Monorepo: RW para OAR `POST /api/tools/execute` (fs_write bajo raíz; path traversal mitigado en código).
       # Revisar `docs/runbooks/e2e-hybrid-write.md` y endurecer token admin tras habilitar escritura.
       - ../:/opt/opsly
-      - ${PLATFORM_TENANTS_HOST_PATH:-/opt/opsly/tenants}:/opt/opsly/tenants
+      - ${PLATFORM_TENANTS_HOST_PATH:-/opt/opsly/runtime/tenants/}:/opt/opsly/runtime/tenants/
       - ./templates:/opt/opsly/templates:ro
     depends_on:
       redis:

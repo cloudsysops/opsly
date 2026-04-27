@@ -1,3 +1,3 @@
 # VISION.md
 
-Este documento fue reubicado a [`docs/01-development/VISION.md`](docs/01-development/VISION.md).
+Ver [`docs/VISION.md`](docs/VISION.md) para mas detalles.

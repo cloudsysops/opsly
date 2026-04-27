@@ -8,8 +8,8 @@ case "${1:-}" in
   stop) sudo systemctl stop "${SVC}" && echo "OK: stopped" ;;
   restart) sudo systemctl restart "${SVC}" && echo "OK: restarted" ;;
   status) sudo systemctl status "${SVC}" --no-pager ;;
-  logs) tail -f "${HOME}/opsly/logs/worker.log" ;;
-  logs-error) tail -f "${HOME}/opsly/logs/worker-error.log" ;;
+  logs) tail -f "${HOME}/opsly/runtime/logs/worker.log" ;;
+  logs-error) tail -f "${HOME}/opsly/runtime/logs/worker-error.log" ;;
   journal) sudo journalctl -u "${SVC}" -f ;;
   enable) sudo systemctl enable "${SVC}" && echo "OK: enabled" ;;
   disable) sudo systemctl disable "${SVC}" && echo "OK: disabled" ;;

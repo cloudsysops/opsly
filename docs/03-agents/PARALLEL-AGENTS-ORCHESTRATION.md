@@ -187,8 +187,8 @@ redis-cli -n 0 ZRANGE bull:openclaw:pending 0 -1 WITHSCORES
 
 - **Cursor execution:** IDE logs, GitHub Actions
 - **Copilot execution:** Copilot CLI or API logs
-- **Orchestrator:** `/opt/opsly/logs/orchestrator.log` (if running)
-- **LLM Gateway:** `/opt/opsly/logs/llm-gateway.log` (if running)
+- **Orchestrator:** `/opt/opsly/runtime/logs//orchestrator.log` (if running)
+- **LLM Gateway:** `/opt/opsly/runtime/logs//llm-gateway.log` (if running)
 
 ### Health Checks
 

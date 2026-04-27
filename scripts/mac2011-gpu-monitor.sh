@@ -5,7 +5,7 @@
 
 set -euo pipefail
 
-OPSLY_LOG_DIR="${OPSLY_LOG_DIR:-${HOME}/opsly/logs}"
+OPSLY_LOG_DIR="${OPSLY_LOG_DIR:-${HOME}/opsly/runtime/logs}"
 mkdir -p "${OPSLY_LOG_DIR}"
 LOG_FILE="${OPSLY_LOG_DIR}/opsly-mac2011-gpu.log"
 

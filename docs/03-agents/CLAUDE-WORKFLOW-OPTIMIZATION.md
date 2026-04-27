@@ -52,4 +52,4 @@ Exploración de código en paralelo (subagentes) cuando las rutas no compiten po
 ## Referencias
 
 - `.cursor/rules/opsly.mdc` — reglas Cursor Opsly
-- `agents/prompts/cursor-executor.md` — plantilla ejecutor
+- `tools/tools/tools/tools/agents/prompts/cursor-executor.md` — plantilla ejecutor

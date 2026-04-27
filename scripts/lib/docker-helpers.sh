@@ -21,7 +21,7 @@ compose_down() {
 
 compose_status() {
   local slug="${1:?slug required}"
-  local compose_file="/opt/opsly/tenants/${slug}/docker-compose.yml"
+  local compose_file="/opt/opsly/runtime/tenants//${slug}/docker-compose.yml"
   log_info "compose ps: slug=${slug}"
   docker compose -f "${compose_file}" ps
 }

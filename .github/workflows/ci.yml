@@ -106,7 +106,7 @@ jobs:
           (cd apps/orchestrator && npm run build)
           (cd apps/mcp && npm run build)
           (cd apps/context-builder && npm run build)
-          (cd apps/agents/notebooklm && npm run build) 2>/dev/null || true
+          (cd apps/notebooklm-agent && npm run build) 2>/dev/null || true
           # api: 241+ tests — critical to run on every PR
           (cd apps/api && npm test) & pid_api=$!
           (cd apps/portal && npm test) & pid0=$!
@@ -145,7 +145,7 @@ jobs:
           (cd apps/orchestrator && npm run build)
           (cd apps/mcp && npm run build)
           (cd apps/context-builder && npm run build)
-          (cd apps/agents/notebooklm && npm run build) 2>/dev/null || true
+          (cd apps/notebooklm-agent && npm run build) 2>/dev/null || true
           # Then build apps in parallel
           (cd apps/api && npm run build) & pid1=$!
           (cd apps/admin && npm run build) & pid2=$!

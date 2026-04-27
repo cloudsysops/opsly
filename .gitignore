@@ -19,7 +19,7 @@ infra/Untitled.canvas
 
 # Agent context (no secrets)
 context/doppler-ready.json
-agents/prompts/secrets-*.md
+tools/tools/agents/prompts/secrets-*.md
 
 # Cursor / entorno local
 .cursor/mcp.json
@@ -47,9 +47,16 @@ terraform.tfstate
 terraform.tfstate.backup
 *.tfvars
 infra/terraform/tfplan
+infra/terraform/tfplan.txt
+*.tfplan
 
-# Cursor prompt monitor (VPS/local runtime log)
-logs/
+# Runtime directories (VPS/local runtime)
+runtime/logs/*
+runtime/letsencrypt/*
+runtime/tenants/*
+!runtime/logs/.gitkeep
+!runtime/letsencrypt/.gitkeep
+!runtime/tenants/.gitkeep
 
 # Supabase CLI local link metadata (regenerable)
 supabase/.temp/

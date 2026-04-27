@@ -32,7 +32,7 @@ La librería `notebooklm-py` (no oficial) proporciona acceso vía API/browser au
 - **Feature flag:** `NOTEBOOKLM_ENABLED` (solo en Doppler prd, solo para Business+)
 - **Scope MCP:** `agents:write` (requiere token admin)
 - **Límite:** Business y Enterprise plans solo (Startup bloqueado por policy)
-- **Ubicación:** `apps/agents/notebooklm/` (workspace con Python + TypeScript wrapper)
+- **Ubicación:** `apps/notebooklm-agent/` (workspace con Python + TypeScript wrapper)
 - **Workflow principal:** PDF reporte → notebook → podcast + slides + infographic
 
 ---
@@ -75,7 +75,7 @@ doppler secrets set NOTEBOOKLM_ENABLED true
 doppler secrets set NOTEBOOKLM_STORAGE_PATH /opt/opsly/.notebooklm_storage
 ```
 
-### 2. Python Client (`apps/agents/notebooklm/src/client.py`)
+### 2. Python Client (`apps/notebooklm-agent/src/client.py`)
 
 Ver `client.py` para API:
 
@@ -86,7 +86,7 @@ Ver `client.py` para API:
 - `chat.ask(question)`
 - `wait_for_completion(notebook_id, task_id, timeout)`
 
-### 3. TypeScript Wrapper (`apps/agents/notebooklm/src/index.ts`)
+### 3. TypeScript Wrapper (`apps/notebooklm-agent/src/index.ts`)
 
 ```typescript
 import { spawnSync } from 'child_process';

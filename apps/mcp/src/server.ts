@@ -9,15 +9,17 @@ import { notebooklmTool } from './tools/notebooklm.js';
 import { opsStubsTools } from './tools/ops-stubs.js';
 import { onboardTool } from './tools/onboard.js';
 import { getJobStatusTool } from './tools/get-job-status.tool.js';
+import { fsTools } from './tools/hands/fs-tools.js';
 import { n8nCreateWorkflowTool } from './tools/n8n-create-workflow.tool.js';
+import { skillTools } from './tools/nerves/skill-bridge.js';
 import { runAgentTaskTool } from './tools/run-agent-task.tool.js';
 import { suspendTools } from './tools/suspend.js';
 import { tenantsTools } from './tools/tenants.js';
-import type { ToolDefinition } from './types/index.js';
+import type { ToolContext, ToolDefinition } from './types/index.js';
 
 interface RegisteredTool {
   name: string;
-  handler: (input: unknown) => Promise<unknown>;
+  handler: (input: unknown, context?: ToolContext) => Promise<unknown>;
 }
 
 type ParseResult =
@@ -52,10 +54,15 @@ export const TOOL_REQUIRED_SCOPES: Record<string, string> = {
   read_context_resource: 'metrics:read',
   list_adrs: 'metrics:read',
   read_adr: 'metrics:read',
+  fs_read_file: 'agents:write',
+  fs_write_file: 'agents:write',
+  execute_skill: 'agents:write',
+  get_skill_job_status: 'agents:write',
 };
 
 export type CallToolOptions = {
   authorization?: string;
+  toolContext?: ToolContext;
 };
 
 function isSchemaWithSafeParse(value: unknown): value is SchemaWithSafeParse {
@@ -70,15 +77,15 @@ function isSchemaWithSafeParse(value: unknown): value is SchemaWithSafeParse {
 function adaptTool<TInput, TOutput>(tool: ToolDefinition<TInput, TOutput>): RegisteredTool {
   return {
     name: tool.name,
-    handler: async (input: unknown) => {
+    handler: async (input: unknown, context?: ToolContext) => {
       if (isSchemaWithSafeParse(tool.inputSchema)) {
         const parsed = tool.inputSchema.safeParse(input);
         if (!parsed.success) {
           throw new Error(`Invalid input for ${tool.name}: ${parsed.error.message}`);
         }
-        return tool.handler(parsed.data as TInput);
+        return tool.handler(parsed.data as TInput, context);
       }
-      return tool.handler(input as TInput);
+      return tool.handler(input as TInput, context);
     },
   };
 }
@@ -108,7 +115,7 @@ export class OpenClawMcpServer {
         throw new Error(`Unauthorized: ${name} requires scope ${requiredScope}`);
       }
     }
-    return tool.handler(input);
+    return tool.handler(input, options?.toolContext);
   }
 
   listTools(): string[] {
@@ -128,6 +135,8 @@ export function getAllToolDefinitions(): ToolDefinition<unknown, unknown>[] {
   const [checkServiceHealthTool, restartContainerTool] = opsStubsTools;
   const [listAiIntegrationsTool, probePlatformComponentTool, getDockerContainersTool] =
     aiIntegrationsTools;
+  const [fsReadTool, fsWriteTool] = fsTools;
+  const [executeSkillTool, getSkillJobStatusTool] = skillTools;
   return [
     getTenantsTool,
     getTenantTool,
@@ -151,6 +160,10 @@ export function getAllToolDefinitions(): ToolDefinition<unknown, unknown>[] {
     listAiIntegrationsTool,
     probePlatformComponentTool,
     getDockerContainersTool,
+    fsReadTool,
+    fsWriteTool,
+    executeSkillTool,
+    getSkillJobStatusTool,
   ] as ToolDefinition<unknown, unknown>[];
 }
 

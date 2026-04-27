@@ -310,13 +310,13 @@
       "size_bytes": 217911
     },
     {
-      "path": "agents/prompts/claude-architect.md",
+      "path": "tools/tools/tools/tools/tools/agents/prompts/claude-architect.md",
       "title": "Claude — Prompt Arquitecto Opsly",
       "keywords": ["architect", "arquitecto", "claude", "markdown", "opsly", "prompt"],
       "size_bytes": 1684
     },
     {
-      "path": "agents/prompts/cursor-executor.md",
+      "path": "tools/tools/tools/tools/tools/agents/prompts/cursor-executor.md",
       "title": "Cursor — Prompt Ejecutor Opsly",
       "keywords": ["cursor", "ejecutor", "executor", "markdown", "opsly", "prompt"],
       "size_bytes": 1277
@@ -346,7 +346,7 @@
       "size_bytes": 2282
     },
     {
-      "path": "apps/agents/notebooklm/README.md",
+      "path": "apps/notebooklm-agent/README.md",
       "title": "NotebookLM Agent (Opsly)",
       "keywords": [
         "agent",
@@ -365,7 +365,7 @@
       "size_bytes": 1110
     },
     {
-      "path": "apps/context-builder-v2/src/design/architecture.md",
+      "path": "apps/experimental/context-builder-v2-archive/src/design/architecture.md",
       "title": "Context Builder v2 (Super Agent) — Architecture",
       "keywords": [
         "agent",
@@ -9201,8 +9201,8 @@
       "config/doppler-audit-2026-04-07.md",
       ".openclaw.md",
       ".claude/CLAUDE.md",
-      "agents/prompts/claude-architect.md",
-      "agents/prompts/cursor-executor.md",
+      "tools/tools/tools/tools/tools/agents/prompts/claude-architect.md",
+      "tools/tools/tools/tools/tools/agents/prompts/cursor-executor.md",
       "docs/generated/sprint-status.auto.md",
       "docs/generated/implementation-progress.auto.md",
       "docs/generated/README.md",
@@ -9470,9 +9470,9 @@
       "apps/experimental/ingestion-service-archive/README.md",
       "apps/experimental/ai-evolution-archive/ARCHIVE.md",
       "apps/admin/INVITATIONS_UI.md",
-      "apps/agents/notebooklm/README.md",
+      "apps/notebooklm-agent/README.md",
       "apps/mcp/README.md",
-      "apps/context-builder-v2/src/design/architecture.md",
+      "apps/experimental/context-builder-v2-archive/src/design/architecture.md",
       "apps/ml/agents/classifier/README.md",
       "apps/ml/agents/classifier/.venv/lib/python3.13/site-packages/pip-25.2.dist-info/licenses/src/pip/_vendor/idna/LICENSE.md",
       "apps/ml/agents/classifier/.venv/lib/python3.13/site-packages/numpy/random/LICENSE.md",
@@ -9503,8 +9503,8 @@
       "config/doppler-audit-2026-04-07.md",
       ".openclaw.md",
       ".claude/CLAUDE.md",
-      "agents/prompts/claude-architect.md",
-      "agents/prompts/cursor-executor.md",
+      "tools/tools/tools/tools/tools/agents/prompts/claude-architect.md",
+      "tools/tools/tools/tools/tools/agents/prompts/cursor-executor.md",
       "docs/generated/sprint-status.auto.md",
       "docs/generated/implementation-progress.auto.md",
       "docs/generated/README.md",
@@ -9774,9 +9774,9 @@
       "apps/experimental/ingestion-service-archive/README.md",
       "apps/experimental/ai-evolution-archive/ARCHIVE.md",
       "apps/admin/INVITATIONS_UI.md",
-      "apps/agents/notebooklm/README.md",
+      "apps/notebooklm-agent/README.md",
       "apps/mcp/README.md",
-      "apps/context-builder-v2/src/design/architecture.md",
+      "apps/experimental/context-builder-v2-archive/src/design/architecture.md",
       "apps/ml/agents/classifier/README.md",
       "apps/ml/agents/classifier/.venv/lib/python3.13/site-packages/pip-25.2.dist-info/licenses/src/pip/_vendor/idna/LICENSE.md",
       "apps/ml/agents/classifier/.venv/lib/python3.13/site-packages/numpy/random/LICENSE.md",
@@ -9811,8 +9811,8 @@
     ],
     "prompt": [
       ".cursor/prompts/legalvial-phase2b-automation.md",
-      "agents/prompts/claude-architect.md",
-      "agents/prompts/cursor-executor.md",
+      "tools/tools/tools/tools/tools/agents/prompts/claude-architect.md",
+      "tools/tools/tools/tools/tools/agents/prompts/cursor-executor.md",
       "docs/WORKER-TEAM-BILLING.md",
       "docs/TOKEN-BILLING-SYSTEM.md",
       "docs/ACTIVE-PROMPT.md",
@@ -9897,7 +9897,7 @@
       "skills/README.md",
       "skills/templates/README.md",
       "apps/experimental/ingestion-service-archive/README.md",
-      "apps/agents/notebooklm/README.md",
+      "apps/notebooklm-agent/README.md",
       "apps/mcp/README.md",
       "apps/ml/agents/classifier/README.md",
       "apps/ml/agents/classifier/.venv/lib/python3.13/site-packages/sklearn/externals/array_api_compat/README.md",
@@ -10125,7 +10125,7 @@
       "docs/runbooks/SUPER-AGENT-SHADOW-DEPLOY.md",
       "docs/ARCHITECTURE-DISTRIBUTED.md",
       "docs/NOTEBOOKLM-SETUP.md",
-      "apps/agents/notebooklm/README.md",
+      "apps/notebooklm-agent/README.md",
       "apps/notion-mcp/README.md"
     ],
     "servidor": ["infra/terraform/README.md", "docs/runbooks/VPS-DISK-SECURITY-SCAN.md"],
@@ -10340,7 +10340,7 @@
       ".github/VISION.md",
       "skills/user/opsly-google-cloud/SKILL.md",
       "skills/templates/template-mcp-tool.md",
-      "apps/agents/notebooklm/README.md"
+      "apps/notebooklm-agent/README.md"
     ],
     "estado": [
       "infra/templates/n8n-workflows-template.md",
@@ -10720,7 +10720,7 @@
       "docs/VPS-ARCHITECTURE.md",
       "docs/FAILOVER-GCP-ARCHITECTURE.md",
       "README.md",
-      "apps/context-builder-v2/src/design/architecture.md"
+      "apps/experimental/context-builder-v2-archive/src/design/architecture.md"
     ],
     "instaladas": ["ARCHITECTURE.md", "docs/LIBRARIES-INSTALLED.md"],
     "internas": ["ARCHITECTURE.md"],
@@ -10857,7 +10857,7 @@
       "docs/IMPLEMENTATION-IA-LAYER.md",
       "docs/CONTEXT-BUILDER.md",
       "ROADMAP.md",
-      "apps/context-builder-v2/src/design/architecture.md"
+      "apps/experimental/context-builder-v2-archive/src/design/architecture.md"
     ],
     "componente": [
       "VALIDATION-REPORT-2026-04-12.md",
@@ -10884,7 +10884,7 @@
       "docs/CONTEXT-BUILDER.md",
       "ROADMAP.md",
       "skills/user/opsly-context/SKILL.md",
-      "apps/context-builder-v2/src/design/architecture.md"
+      "apps/experimental/context-builder-v2-archive/src/design/architecture.md"
     ],
     "continuidad": ["VALIDATION-REPORT-2026-04-12.md", "docs/SEMANA-3-INFORME.md", "ROADMAP.md"],
     "cost": [
@@ -10967,7 +10967,7 @@
       "docs/NOTEBOOKLM-SETUP.md",
       "ROADMAP.md",
       "skills/user/opsly-notebooklm/SKILL.md",
-      "apps/agents/notebooklm/README.md"
+      "apps/notebooklm-agent/README.md"
     ],
     "pendientes": [
       "VALIDATION-REPORT-2026-04-12.md",
@@ -11417,7 +11417,7 @@
     ],
     "claude": [
       ".claude/CLAUDE.md",
-      "agents/prompts/claude-architect.md",
+      "tools/tools/tools/tools/tools/agents/prompts/claude-architect.md",
       "docs/PLAN-SUPER-ARCHITECT-AGENT-2026-04-14.md",
       "docs/HERMES-LOCAL-AGENTS-STACK.md",
       "docs/RTK.md",
@@ -11585,15 +11585,15 @@
       "HANDOFF.md"
     ],
     "architect": [
-      "agents/prompts/claude-architect.md",
+      "tools/tools/tools/tools/tools/agents/prompts/claude-architect.md",
       "docs/ARCHITECT-SECURITY-REVIEW.md",
       "docs/PLAN-SUPER-ARCHITECT-AGENT-2026-04-14.md",
       "skills/user/opsly-architect/SKILL.md",
       "skills/user/opsly-architect-senior/SKILL.md"
     ],
-    "arquitecto": ["agents/prompts/claude-architect.md", "docs/ARCHITECT-SECURITY-REVIEW.md"],
+    "arquitecto": ["tools/tools/tools/tools/tools/agents/prompts/claude-architect.md", "docs/ARCHITECT-SECURITY-REVIEW.md"],
     "cursor": [
-      "agents/prompts/cursor-executor.md",
+      "tools/tools/tools/tools/tools/agents/prompts/cursor-executor.md",
       "docs/SSH-USERS-FOR-AGENTS.md",
       "docs/PARALLEL-AGENTS-ORCHESTRATION.md",
       "docs/SETUP-NOTION-MCP.md",
@@ -11614,8 +11614,8 @@
       ".github/AGENTS.md",
       "AGENTS.md"
     ],
-    "ejecutor": ["agents/prompts/cursor-executor.md"],
-    "executor": ["agents/prompts/cursor-executor.md"],
+    "ejecutor": ["tools/tools/tools/tools/tools/agents/prompts/cursor-executor.md"],
+    "executor": ["tools/tools/tools/tools/tools/agents/prompts/cursor-executor.md"],
     "approval": [
       "docs/generated/sprint-status.auto.md",
       "docs/generated/implementation-progress.auto.md",
@@ -11700,8 +11700,8 @@
       "scripts/agent-training/README.md",
       "skills/user/opsly-notebooklm/SKILL.md",
       "skills/user/opsly-agent-teams/SKILL.md",
-      "apps/agents/notebooklm/README.md",
-      "apps/context-builder-v2/src/design/architecture.md"
+      "apps/notebooklm-agent/README.md",
+      "apps/experimental/context-builder-v2-archive/src/design/architecture.md"
     ],
     "aplicadas": [
       "docs/generated/implementation-progress.auto.md",
@@ -12016,7 +12016,7 @@
       "docs/IMPLEMENTATION-IA-LAYER.md",
       "docs/history/plans/MASTER-PLAN.md",
       "docs/REFACTOR-CHECKLIST.md",
-      "apps/agents/notebooklm/README.md"
+      "apps/notebooklm-agent/README.md"
     ],
     "nodos": [
       "docs/WORKER-SETUP-MAC2011.md",
@@ -12968,7 +12968,7 @@
       "docs/HERMES-LOCAL-AGENTS-STACK.md",
       "docs/HERMES-INTEGRATION.md",
       "docs/AGENTS-AUTONOMOUS-RUNBOOK.md",
-      "apps/context-builder-v2/src/design/architecture.md"
+      "apps/experimental/context-builder-v2-archive/src/design/architecture.md"
     ],
     "hermesorchestrator": [
       "docs/CODE-SNAPSHOTS.md",
@@ -13474,7 +13474,7 @@
       "docs/adr/ADR-031-experimental-consolidation.md",
       "docs/adr/ADR-032-scripts-organization.md",
       "skills/templates/template-migration.md",
-      "apps/context-builder-v2/src/design/architecture.md"
+      "apps/experimental/context-builder-v2-archive/src/design/architecture.md"
     ],
     "notes": ["docs/adr/ADR-031-experimental-consolidation.md"],
     "path": [
@@ -13635,7 +13635,7 @@
       "skills/user/opsly-infra/SKILL.md",
       "skills/user/opsly-quantum/templates/runbook.md",
       "apps/experimental/ingestion-service-archive/README.md",
-      "apps/agents/notebooklm/README.md"
+      "apps/notebooklm-agent/README.md"
     ],
     "relacionado": ["docs/adr/ADR-015-hermes-orchestrator-architecture.md"],
     "separado": ["docs/adr/ADR-015-hermes-orchestrator-architecture.md"],
@@ -13796,7 +13796,7 @@
       "docs/POLICY-AI-LOCAL-FIRST.md",
       "docs/FIRST-OPENCLAW-AGENTS-MAC2011.md",
       "docs/CONTEXT-BUILDER.md",
-      "apps/context-builder-v2/src/design/architecture.md"
+      "apps/experimental/context-builder-v2-archive/src/design/architecture.md"
     ],
     "nativo": ["docs/adr/ADR-026-tenant-context-postgres-first.md", "docs/MCP-STATUS-ANALYSIS.md"],
     "postgres": ["docs/adr/ADR-026-tenant-context-postgres-first.md"],
@@ -13872,7 +13872,7 @@
       "docs/adr/ADR-027-hybrid-compute-plane-k8s.md",
       "docs/ARCHITECTURE.md",
       "docs/PREDICTIVE-BI-SCALABILITY.md",
-      "apps/context-builder-v2/src/design/architecture.md"
+      "apps/experimental/context-builder-v2-archive/src/design/architecture.md"
     ],
     "017": ["docs/adr/ADR-017-worker-teams-billing-roadmap.md", "docs/WALLET-PREPAID-ROADMAP.md"],
     "ampliado": ["docs/adr/ADR-017-worker-teams-billing-roadmap.md", "docs/WORKER-TEAM-BILLING.md"],
@@ -13933,7 +13933,7 @@
       "docs/GITHUB-TOKEN.md",
       "skills/user/opsly-google-cloud/SKILL.md",
       "skills/user/opsly-frontend/SKILL.md",
-      "apps/context-builder-v2/src/design/architecture.md"
+      "apps/experimental/context-builder-v2-archive/src/design/architecture.md"
     ],
     "tokens": [
       "docs/adr/ADR-030-prepaid-token-wallet-roadmap.md",
@@ -14427,7 +14427,7 @@
       "docs/SEMANA-1-INFORME.md",
       "docs/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md",
       "skills/user/opsly-notebooklm/SKILL.md",
-      "apps/agents/notebooklm/README.md"
+      "apps/notebooklm-agent/README.md"
     ],
     "wrapper": ["docs/adr/ADR-014-notebooklm-agent.md"],
     "active": ["docs/ARCHITECTURE.md", "docs/ACTIVE-PROMPT.md", "docs/N8N-IMPORT-GUIDE.md"],
@@ -14457,7 +14457,7 @@
     "isolation": [
       "docs/ARCHITECTURE.md",
       "docs/TEST_PLAN.md",
-      "apps/context-builder-v2/src/design/architecture.md"
+      "apps/experimental/context-builder-v2-archive/src/design/architecture.md"
     ],
     "modules": ["docs/ARCHITECTURE.md"],
     "port": ["docs/ARCHITECTURE.md"],
@@ -14726,7 +14726,7 @@
       "skills/user/opsly-notebooklm/SKILL.md",
       "skills/user/opsly-discord/SKILL.md",
       "skills/templates/template-bash-script.md",
-      "apps/agents/notebooklm/README.md"
+      "apps/notebooklm-agent/README.md"
     ],
     "adicionales": ["docs/QUALITY-GATES.md"],
     "antes": [
@@ -15228,7 +15228,7 @@
       "docs/PLAN-SUPER-ARCHITECT-AGENT-2026-04-14.md",
       "docs/OPENCLAW-ARCHITECTURE.md",
       "docs/runbooks/SUPER-AGENT-SHADOW-DEPLOY.md",
-      "apps/context-builder-v2/src/design/architecture.md"
+      "apps/experimental/context-builder-v2-archive/src/design/architecture.md"
     ],
     "thought": ["docs/PLAN-SUPER-ARCHITECT-AGENT-2026-04-14.md"],
     "total": ["docs/PLAN-SUPER-ARCHITECT-AGENT-2026-04-14.md"],
@@ -15239,7 +15239,7 @@
     "shadow": [
       "docs/OPENCLAW-ARCHITECTURE.md",
       "docs/runbooks/SUPER-AGENT-SHADOW-DEPLOY.md",
-      "apps/context-builder-v2/src/design/architecture.md"
+      "apps/experimental/context-builder-v2-archive/src/design/architecture.md"
     ],
     "tecnicos": ["docs/OPENCLAW-ARCHITECTURE.md"],
     "diario": [
@@ -15310,7 +15310,7 @@
       "docs/RUNBOOK-AI-LOCAL-FIRST.md",
       "docs/POLICY-AI-LOCAL-FIRST.md",
       "docs/LLM-GATEWAY-WORKPLAN.md",
-      "apps/context-builder-v2/src/design/architecture.md"
+      "apps/experimental/context-builder-v2-archive/src/design/architecture.md"
     ],
     "error": [
       "docs/RUNBOOK-AI-LOCAL-FIRST.md",
@@ -15340,7 +15340,7 @@
       "docs/GOOGLE-CLOUD-SETUP.md",
       "docs/VERTEX-AI-SETUP.md",
       "docs/CODE-REVIEW-ORCHESTRATOR-2026-04-09.md",
-      "apps/context-builder-v2/src/design/architecture.md"
+      "apps/experimental/context-builder-v2-archive/src/design/architecture.md"
     ],
     "logging": [
       "docs/BILLING-FLUSH-VERCEL.md",
@@ -15599,7 +15599,7 @@
     "siguiente": ["docs/runbooks/frontend-audit.md", "docs/CLAUDE-WORKFLOW-OPTIMIZATION.md"],
     "web": [
       "docs/runbooks/frontend-audit.md",
-      "apps/context-builder-v2/src/design/architecture.md"
+      "apps/experimental/context-builder-v2-archive/src/design/architecture.md"
     ],
     "dev": ["docs/runbooks/dev.md"],
     "hooks": [
@@ -16327,7 +16327,7 @@
     "hardcodear": ["docs/prompts/tenant-onboarding/TENANT-ONBOARDING-TEMPLATE.md"],
     "inputs": [
       "docs/prompts/tenant-onboarding/TENANT-ONBOARDING-TEMPLATE.md",
-      "apps/context-builder-v2/src/design/architecture.md"
+      "apps/experimental/context-builder-v2-archive/src/design/architecture.md"
     ],
     "minimo": [
       "docs/prompts/tenant-onboarding/INFRASTRUCTURE-SETUP.md",
@@ -16338,7 +16338,7 @@
       "docs/prompts/tenant-onboarding/DEPLOYMENT-VALIDATION.md",
       "docs/OLLAMA-DEPLOYMENT.md",
       "scripts/README.md",
-      "apps/context-builder-v2/src/design/architecture.md"
+      "apps/experimental/context-builder-v2-archive/src/design/architecture.md"
     ],
     "evidencia": ["docs/prompts/tenant-onboarding/DEPLOYMENT-VALIDATION.md"],
     "minimos": ["docs/prompts/tenant-onboarding/DEPLOYMENT-VALIDATION.md"],
@@ -16954,7 +16954,7 @@
       "VISION.md",
       ".github/VISION.md",
       "skills/user/opsly-tenant/SKILL.md",
-      "apps/agents/notebooklm/README.md"
+      "apps/notebooklm-agent/README.md"
     ],
     "primer": ["VISION.md", ".github/VISION.md"],
     "quien": ["VISION.md", ".github/PULL_REQUEST_TEMPLATE.md", ".github/VISION.md"],
@@ -17136,7 +17136,7 @@
     "output": [
       "skills/templates/template-mcp-tool.md",
       "skills/templates/template-api-route.md",
-      "apps/context-builder-v2/src/design/architecture.md"
+      "apps/experimental/context-builder-v2-archive/src/design/architecture.md"
     ],
     "unitarios": [
       "skills/templates/template-mcp-tool.md",
@@ -17164,27 +17164,27 @@
     "ingestion": [
       "apps/experimental/ingestion-service-archive/ARCHIVE.md",
       "apps/experimental/ingestion-service-archive/README.md",
-      "apps/context-builder-v2/src/design/architecture.md"
+      "apps/experimental/context-builder-v2-archive/src/design/architecture.md"
     ],
     "bunker": ["apps/experimental/ingestion-service-archive/README.md"],
     "evolution": ["apps/experimental/ai-evolution-archive/ARCHIVE.md"],
     "formulario": ["apps/admin/INVITATIONS_UI.md"],
     "validaciones": ["apps/admin/INVITATIONS_UI.md"],
     "resources": ["apps/mcp/README.md"],
-    "algorithm": ["apps/context-builder-v2/src/design/architecture.md"],
-    "chunks": ["apps/context-builder-v2/src/design/architecture.md"],
-    "compression": ["apps/context-builder-v2/src/design/architecture.md"],
-    "contract": ["apps/context-builder-v2/src/design/architecture.md"],
-    "goal": ["apps/context-builder-v2/src/design/architecture.md"],
-    "goals": ["apps/context-builder-v2/src/design/architecture.md"],
-    "non": ["apps/context-builder-v2/src/design/architecture.md"],
-    "normalize": ["apps/context-builder-v2/src/design/architecture.md"],
-    "packing": ["apps/context-builder-v2/src/design/architecture.md"],
-    "placeholder": ["apps/context-builder-v2/src/design/architecture.md"],
-    "priority": ["apps/context-builder-v2/src/design/architecture.md"],
-    "score": ["apps/context-builder-v2/src/design/architecture.md"],
-    "stages": ["apps/context-builder-v2/src/design/architecture.md"],
-    "tiers": ["apps/context-builder-v2/src/design/architecture.md"],
+    "algorithm": ["apps/experimental/context-builder-v2-archive/src/design/architecture.md"],
+    "chunks": ["apps/experimental/context-builder-v2-archive/src/design/architecture.md"],
+    "compression": ["apps/experimental/context-builder-v2-archive/src/design/architecture.md"],
+    "contract": ["apps/experimental/context-builder-v2-archive/src/design/architecture.md"],
+    "goal": ["apps/experimental/context-builder-v2-archive/src/design/architecture.md"],
+    "goals": ["apps/experimental/context-builder-v2-archive/src/design/architecture.md"],
+    "non": ["apps/experimental/context-builder-v2-archive/src/design/architecture.md"],
+    "normalize": ["apps/experimental/context-builder-v2-archive/src/design/architecture.md"],
+    "packing": ["apps/experimental/context-builder-v2-archive/src/design/architecture.md"],
+    "placeholder": ["apps/experimental/context-builder-v2-archive/src/design/architecture.md"],
+    "priority": ["apps/experimental/context-builder-v2-archive/src/design/architecture.md"],
+    "score": ["apps/experimental/context-builder-v2-archive/src/design/architecture.md"],
+    "stages": ["apps/experimental/context-builder-v2-archive/src/design/architecture.md"],
+    "tiers": ["apps/experimental/context-builder-v2-archive/src/design/architecture.md"],
     "classifier": ["apps/ml/agents/classifier/README.md"],
     "inferencia": ["apps/ml/agents/classifier/README.md"],
     "license": [
@@ -17243,11 +17243,11 @@
     ".github/VISION.md",
     ".openclaw.md",
     "AGENTS.md",
-    "agents/prompts/claude-architect.md",
-    "agents/prompts/cursor-executor.md",
+    "tools/tools/tools/tools/tools/agents/prompts/claude-architect.md",
+    "tools/tools/tools/tools/tools/agents/prompts/cursor-executor.md",
     "apps/admin/INVITATIONS_UI.md",
-    "apps/agents/notebooklm/README.md",
-    "apps/context-builder-v2/src/design/architecture.md",
+    "apps/notebooklm-agent/README.md",
+    "apps/experimental/context-builder-v2-archive/src/design/architecture.md",
     "apps/experimental/ai-evolution-archive/ARCHIVE.md",
     "apps/experimental/ingestion-service-archive/ARCHIVE.md",
     "apps/experimental/ingestion-service-archive/README.md",

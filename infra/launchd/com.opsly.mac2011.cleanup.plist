@@ -12,7 +12,7 @@
   <key>EnvironmentVariables</key>
   <dict>
     <key>OPSLY_LOG_DIR</key>
-    <string>__OPSLY_ROOT__/logs</string>
+    <string>__OPSLY_ROOT__/runtime/logs</string>
   </dict>
   <key>StartCalendarInterval</key>
   <dict>
@@ -22,8 +22,8 @@
     <integer>0</integer>
   </dict>
   <key>StandardOutPath</key>
-  <string>__OPSLY_ROOT__/logs/launchd-mac2011-cleanup.out</string>
+  <string>__OPSLY_ROOT__/runtime/logs/launchd-mac2011-cleanup.out</string>
   <key>StandardErrorPath</key>
-  <string>__OPSLY_ROOT__/logs/launchd-mac2011-cleanup.err</string>
+  <string>__OPSLY_ROOT__/runtime/logs/launchd-mac2011-cleanup.err</string>
 </dict>
 </plist>

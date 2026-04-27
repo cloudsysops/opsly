@@ -84,8 +84,8 @@ fi
 sudo mkdir -p "${OPS_ROOT}" || mkdir -p "${OPS_ROOT}"
 sudo chown -R "$(whoami):$(whoami)" "${OPS_ROOT}" 2>/dev/null || true
 
-mkdir -p "${OPS_ROOT}/tenants"
-mkdir -p "${OPS_ROOT}/letsencrypt"
+mkdir -p "${OPS_ROOT}/runtime/tenants"
+mkdir -p "${OPS_ROOT}/runtime/letsencrypt"
 mkdir -p "${OPS_ROOT}/infra/templates"
 
 if [[ ! -d "${OPS_ROOT}/.git" ]]; then

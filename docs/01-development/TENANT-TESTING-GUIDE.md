@@ -16,7 +16,7 @@ curl -sI --max-time 10 "https://n8n-<slug>.ops.smiletripcare.com" | head -3
 curl -sI --max-time 10 "https://uptime-<slug>.ops.smiletripcare.com" | head -3
 ```
 
-En el servidor (compose por tenant), los compose viven bajo `/opt/opsly/tenants/` como `docker-compose.<slug>.yml`.
+En el servidor (compose por tenant), los compose viven bajo `/opt/opsly/runtime/tenants//` como `docker-compose.<slug>.yml`.
 
 ## 2. Acceder a n8n
 

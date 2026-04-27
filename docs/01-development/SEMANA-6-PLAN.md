@@ -166,7 +166,7 @@ doppler run --config prd -- ./scripts/check-tokens.sh
 
 #### 3.8 Logs & Observability
 
-- [ ] `/opt/opsly/logs/` existe en VPS
+- [ ] `/opt/opsly/runtime/logs//` existe en VPS
 - [ ] Compose logs accesibles: `docker compose logs --tail=100 app`
 - [ ] LLM Gateway logs estructurados (request_id present)
 - [ ] Orchestrator job logs persistidos

@@ -23,7 +23,7 @@
 | MCP, tools                                           | `apps/mcp/`                                                              |
 | Contexto / continuidad                               | `apps/context-builder/`                                                  |
 | Feedback portal                                      | `apps/api` (`/api/feedback`), Zero-Trust                                 |
-| NotebookLM                                           | `apps/agents/notebooklm/`, MCP                                           |
+| NotebookLM                                           | `apps/notebooklm-agent/`, MCP                                           |
 
 ## 3. Semana 1 — Checklist técnico (sin nuevos repos)
 

@@ -109,7 +109,7 @@ Objetivo: health check cada 6 horas.
 Ejemplo:
 
 ```bash
-0 */6 * * * /opt/opsly/scripts/validate-ai-health-all.sh >> /opt/opsly/logs/ai-health.log 2>&1
+0 */6 * * * /opt/opsly/scripts/validate-ai-health-all.sh >> /opt/opsly/runtime/logs//ai-health.log 2>&1
 ```
 
 ## Escalation

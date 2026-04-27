@@ -12,7 +12,7 @@
   <key>EnvironmentVariables</key>
   <dict>
     <key>OPSLY_LOG_DIR</key>
-    <string>__OPSLY_ROOT__/logs</string>
+    <string>__OPSLY_ROOT__/runtime/logs</string>
     <key>OPSLY_ROOT</key>
     <string>__OPSLY_ROOT__</string>
   </dict>
@@ -21,8 +21,8 @@
   <key>RunAtLoad</key>
   <true/>
   <key>StandardOutPath</key>
-  <string>__OPSLY_ROOT__/logs/launchd-mac2011-monitor.out</string>
+  <string>__OPSLY_ROOT__/runtime/logs/launchd-mac2011-monitor.out</string>
   <key>StandardErrorPath</key>
-  <string>__OPSLY_ROOT__/logs/launchd-mac2011-monitor.err</string>
+  <string>__OPSLY_ROOT__/runtime/logs/launchd-mac2011-monitor.err</string>
 </dict>
 </plist>

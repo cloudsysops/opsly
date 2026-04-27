@@ -23,7 +23,7 @@ Impact of current sprawl: longer builds, unclear ownership, and higher maintenan
    - `apps/ai-evolution` -> `apps/experimental/ai-evolution-archive`
    - `apps/ingestion-service` -> `apps/experimental/ingestion-service-archive`
    - `apps/mission-control` -> `apps/experimental/mission-control-archive`
-3. Keep `apps/agents/notebooklm` active (it is used and not empty).
+3. Keep `apps/notebooklm-agent` active (it is used and not empty).
 4. Add archive README notes for reactivation guidance.
 
 ### Future (Next 2 sprints)
@@ -49,4 +49,4 @@ git mv apps/mission-control apps/experimental/mission-control-archive
 
 ## Notes
 
-`apps/agents` was not deleted in this ADR because `apps/agents/notebooklm` is an active module.
+`apps/agents` was not deleted in this ADR because `apps/notebooklm-agent` is an active module.

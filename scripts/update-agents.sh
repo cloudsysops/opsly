@@ -13,7 +13,7 @@ git -C "${ROOT_DIR}" add \
   VISION.md \
   context/system_state.json \
   docs/adr/ \
-  agents/ \
+  tools/agents/ \
   .github/VISION.md \
   .github/system_state.json \
   2>/dev/null || true

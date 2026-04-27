@@ -82,7 +82,7 @@ Plataforma multi-tenant **enterprise SaaS**: plano de control (API, billing, orq
 | [`docs/AUTOMATION-PLAN.md`](docs/01-development/AUTOMATION-PLAN.md)       | Discord → GitHub → Cursor loop |
 | [`docs/N8N-SETUP.md`](docs/01-development/N8N-SETUP.md)                   | n8n workflows y secretos       |
 | [`docs/GOOGLE-CLOUD-SETUP.md`](docs/04-infrastructure/GOOGLE-CLOUD-SETUP.md) | Google Cloud + Drive sync      |
-| [`skills/README.md`](skills/README.md)                     | Skills Claude y manifests      |
+| [`packages/skills/README.md`](packages/skills/README.md)   | Skills Claude y manifests      |
 
 ## Stripe (Live vs Test)
 

@@ -20,8 +20,8 @@ ExecStart=/home/opslyquantum/opsly/scripts/run-worker-with-nvm.sh
 Restart=always
 RestartSec=15
 
-StandardOutput=append:/home/opslyquantum/opsly/logs/worker.log
-StandardError=append:/home/opslyquantum/opsly/logs/worker-error.log
+StandardOutput=append:/home/opslyquantum/opsly/runtime/logs/worker.log
+StandardError=append:/home/opslyquantum/opsly/runtime/logs/worker-error.log
 
 [Install]
 WantedBy=multi-user.target

@@ -3,7 +3,7 @@
 ## Completado
 
 - Diagnóstico **SSH** por Tailscale (`100.120.151.91`): servicios de plataforma y stacks **localrank** / **jkboterolabs** visibles; `curl` a n8n **200**, uptime **302** (esperado).
-- Directorio de compose en VPS: `/opt/opsly/tenants/` con `docker-compose.localrank.yml`, `docker-compose.jkboterolabs.yml`, etc.
+- Directorio de compose en VPS: `/opt/opsly/runtime/tenants//` con `docker-compose.localrank.yml`, `docker-compose.jkboterolabs.yml`, etc.
 - **Causa de `checks.supabase: degraded` en `/api/health`:** el probe llama a `.../auth/v1/health`; en proyecto Supabase hosted la respuesta puede ser **401** sin credenciales, y el handler anterior marcaba `degraded`. **Corregido** en `apps/api/app/api/health/route.ts`: **401/403** se consideran alcanzabilidad OK.
 - Documentación **`docs/TENANT-TESTING-GUIDE.md`** (URLs, comandos, feedback existente, sin duplicar `/api/tenant-feedback`).
 - **No** se creó tabla nueva ni ruta `tenant-feedback`: se mantiene **`POST/GET /api/feedback`**.
@@ -21,7 +21,7 @@
 curl -sS --max-time 10 "https://api.ops.smiletripcare.com/api/health" | jq .
 
 # Tenants en VPS
-ssh -o BatchMode=yes vps-dragon@100.120.151.91 "ls -la /opt/opsly/tenants/"
+ssh -o BatchMode=yes vps-dragon@100.120.151.91 "ls -la /opt/opsly/runtime/tenants//"
 ```
 
 ## URLs de testing (staging)

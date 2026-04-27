@@ -19,7 +19,7 @@ while [[ $# -gt 0 ]]; do
   shift
 done
 
-OPSLY_LOG_DIR="${OPSLY_LOG_DIR:-${HOME}/opsly/logs}"
+OPSLY_LOG_DIR="${OPSLY_LOG_DIR:-${HOME}/opsly/runtime/logs}"
 mkdir -p "${OPSLY_LOG_DIR}"
 LOG_FILE="${OPSLY_LOG_DIR}/opsly-mac2011-cleanup.log"
 
@@ -73,8 +73,8 @@ fi
 
 log ""
 log "📝 LOGS OPSLY / APP:"
-if [[ -d "${HOME}/opsly/logs" ]]; then
-  run_cmd "find \"${HOME}/opsly/logs\" -type f -name '*.log' -mtime +7 -delete"
+if [[ -d "${HOME}/opsly/runtime/logs" ]]; then
+  run_cmd "find \"${HOME}/opsly/runtime/logs\" -type f -name '*.log' -mtime +7 -delete"
 fi
 # macOS: logs del sistema suelen requerir sudo; no borrar /var/log por defecto
 if [[ "${AGGRESSIVE}" == true ]] && [[ -w /var/log ]]; then

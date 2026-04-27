@@ -34,11 +34,11 @@ set +a
 require_env PLATFORM_DOMAIN
 
 log_info "[b] acme.json en host (permisos)"
-run mkdir -p "${OPS_ROOT}/letsencrypt"
-if [[ ! -f "${OPS_ROOT}/letsencrypt/acme.json" ]]; then
-  run touch "${OPS_ROOT}/letsencrypt/acme.json"
+run mkdir -p "${OPS_ROOT}/runtime/letsencrypt"
+if [[ ! -f "${OPS_ROOT}/runtime/letsencrypt/acme.json" ]]; then
+  run touch "${OPS_ROOT}/runtime/letsencrypt/acme.json"
 fi
-run chmod 600 "${OPS_ROOT}/letsencrypt/acme.json"
+run chmod 600 "${OPS_ROOT}/runtime/letsencrypt/acme.json"
 
 log_info "[c] Levantar stack completo (traefik, redis, app, admin)"
 run cd "${OPS_ROOT}"

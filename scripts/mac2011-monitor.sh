@@ -7,7 +7,7 @@
 set -euo pipefail
 export LC_NUMERIC=C
 
-OPSLY_LOG_DIR="${OPSLY_LOG_DIR:-${HOME}/opsly/logs}"
+OPSLY_LOG_DIR="${OPSLY_LOG_DIR:-${HOME}/opsly/runtime/logs}"
 mkdir -p "${OPSLY_LOG_DIR}"
 LOG_FILE="${OPSLY_LOG_DIR}/opsly-mac2011-monitor.log"
 STATUS_JSON="${OPSLY_LOG_DIR}/mac2011-status.json"

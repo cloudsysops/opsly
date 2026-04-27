@@ -65,7 +65,7 @@ export function generateCompose(slug: string, ports: Record<string, number>): st
 }
 
 export async function writeComposeFile(slug: string, content: string): Promise<string> {
-  const dir = join('/opt/opsly/tenants', slug);
+  const dir = join('/opt/opsly/runtime/tenants/', slug);
   await mkdir(dir, { recursive: true });
   const filePath = join(dir, 'docker-compose.yml');
   await writeFile(filePath, content, 'utf8');

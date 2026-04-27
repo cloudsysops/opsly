@@ -23,7 +23,7 @@ git status --short  # Should be clean
 export SUPABASE_URL="$(doppler secrets get SUPABASE_URL --project ops-intcloudsysops --config prd --plain)"
 export SUPABASE_SERVICE_ROLE_KEY="$(doppler secrets get SUPABASE_SERVICE_ROLE_KEY --project ops-intcloudsysops --config prd --plain)"
 export PLATFORM_DOMAIN="ops.smiletripcare.com"
-export TENANTS_PATH="/opt/opsly/tenants"
+export TENANTS_PATH="/opt/opsly/runtime/tenants/"
 export TEMPLATE_PATH="/opt/opsly/infra/templates/docker-compose.tenant.yml"
 
 # Verify
@@ -112,7 +112,7 @@ ssh vps-dragon@100.120.151.91
   # Inside VPS:
   cd /opt/opsly
   mkdir -p .notebooklm_storage
-  python3 -m pip install --upgrade -r apps/agents/notebooklm/requirements.txt
+  python3 -m pip install --upgrade -r apps/notebooklm-agent/requirements.txt
   python3 -c "import notebooklm; print('OK')"
 ```
 
@@ -153,7 +153,7 @@ NOTEBOOKLM_ENABLED=true ./scripts/test-notebooklm.sh --pdf-path /tmp/localrank-r
 ssh vps-dragon@100.120.151.91
   # Inside VPS:
   cd /opt/opsly
-  doppler run -- python3 apps/agents/notebooklm/src/workflows/report-to-podcast.py \
+  doppler run -- python3 apps/notebooklm-agent/src/workflows/report-to-podcast.py \
     --pdf-path /tmp/localrank-report.pdf \
     --notebook-name "LocalRank Q1 Report" \
     --storage-path /opt/opsly/.notebooklm_storage \

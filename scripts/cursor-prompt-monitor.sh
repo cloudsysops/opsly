@@ -83,7 +83,7 @@ while true; do
       log_line "Payload terminó con código ${_rc}"
       "${SCRIPT_DIR}/utils/notify-discord.sh" \
         "Error en ejecucion Cursor" \
-        "Exit code: ${_rc} — revisar logs: /opt/opsly/logs/cursor-prompt-monitor.log" \
+        "Exit code: ${_rc} — revisar logs: /opt/opsly/runtime/logs//cursor-prompt-monitor.log" \
         "error" 2>/dev/null || true
     else
       "${SCRIPT_DIR}/utils/notify-discord.sh" \
