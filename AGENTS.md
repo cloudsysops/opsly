@@ -1,7 +1,7 @@
 ---
 status: canon
 owner: operations
-last_review: 2026-04-26
+last_review: 2026-04-27
 ---
 
 # Opsly — Contexto del Agente
@@ -1160,7 +1160,7 @@ ssh vps-dragon@100.120.151.91 "docker system df && sudo du -xh /var --max-depth=
 - [ ] **Verificar email tester** — confirmar recepción/activación de invitación para `jkbotero78@gmail.com` tras onboarding de `localrank`.
 - [x] **`GOOGLE_DRIVE_TOKEN`** — confirmado 2026-04-10: Drive usa `GOOGLE_SERVICE_ACCOUNT_JSON` (2361 chars, válido). No es un gap real; la variable legacy no se usa.
 - [ ] **Resend dominio verificado** — sin ello, envío a emails fuera de la cuenta de prueba Resend → **500** en `POST /api/invitations` (ver mensaje API `verify a domain`).
-- [ ] **Imágenes GHCR / workflow Deploy** — tras configurar SSH/Tailscale (ver runbook deploy), confirmar run **Deploy** en verde y API con fix de tenants en `prd`.
+- [ ] **Imágenes GHCR MCP + context-builder** — contenedores falling por missing `@intcloudsysops/types` en imagen; hacer rebuild con fix `ae7ee0e` y redeploy.
 - [x] **Fix Dockerfile MCP** — añadido `apps/agents/notebooklm` al COPY en deps/builder/runner stages + `packages/types` al deps stage + `npm run build -w @intcloudsysops/types` antes de otros workspaces (completado 2026-04-13, commit `ae7ee0e`).
 - [ ] **`STRIPE_PRICE_ID_*` en Doppler `prd` / secrets de CI** — necesarios para billing/checkout real en `apps/web`; el build puede completarse sin ellos (`envOrEmpty` en `apps/web/lib/stripe/plans.ts`), pero Stripe fallará en runtime si faltan.
 
@@ -1570,23 +1570,31 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 
 ---
 
-## 🔄 Estado Actual (2026-04-15 20:48 UTC)
+## 🔄 Estado Actual (2026-04-27 00:14 UTC)
 
-**Agente:** opencode (arquitecto)
-**Tareas completadas:** ADR-025 NotebookLM checklist ✅
-**Bloqueantes:** NO
+**Agente:** opencode (arquitecto)  
+**Tareas completadas:** Pre-check Pre-Launch ✅  
+**Bloqueantes:** MCP + context-builder images necesitan rebuild GHCR
 
-### Validación final
-- ✅ Tests orchestrator: 92 passed
-- ✅ Type-check: 13/14 workspaces (mission-control usa pnpm)
+### Validación Pre-Launch (2026-04-27)
+- ✅ Type-check: 13/13 workspaces
 - ✅ OpenAPI: 28 paths valid
-- ✅ Redis: 59 clients, 1234 BullMQ keys
-- ✅ Orchestrator: role=control, mode=queue-only
-- ✅ Mac 2011: Ollama 2 modelos
+- ✅ API tests: 325/325 passed
+- ✅ VPS: SSH OK, load 0.65
+- ✅ API health: supabase+redis OK
+- ✅ Portal: login render OK
+- ✅ Admin: dashboard OK
+- ✅ System metrics: 22% CPU, 52% disk, 5 tenants
+- ⚠️ MCP: contenedor reiniciando (falta @intcloudsysops/types en imagen)
+- ⚠️ Context-builder: reiniciando (falta @intcloudsysops/types en imagen)
 
 ### Servicios VPS (todos healthy)
-- opsly_orchestrator, opsly_llm_gateway, opsly_context_builder, opsly_hermes
-- infra-redis-1, infra-app-1, infra-app-2
-- opsly_portal, opsly_mcp (12 tools)
-- Prometheus, Grafana, cAdvisor, Watchtower
+- opsly_orchestrator ✅
+- opsly_llm_gateway ✅
+- opsly_hermes ✅
+- infra-redis-1 ✅
+- infra-app-1/2 ✅
+- opsly_portal ✅
+- opsly_admin ✅
+- Prometheus/Grafana ✅
 ```
