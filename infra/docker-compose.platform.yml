@@ -186,7 +186,7 @@ services:
     deploy: *deploy-small
 
   app:
-    image: ${APP_IMAGE:-ghcr.io/cloudsysops/intcloudsysops-api:latest}
+    image: ${APP_IMAGE:-ghcr.io/cloudsysops/intcloudsysops-api:${APP_IMAGE_TAG:-v0.42.0}}
     env_file:
       - ../.env
     environment:
@@ -246,7 +246,7 @@ services:
           memory: 768M
 
   admin:
-    image: ${ADMIN_APP_IMAGE:-ghcr.io/cloudsysops/intcloudsysops-admin:latest}
+    image: ${ADMIN_APP_IMAGE:-ghcr.io/cloudsysops/intcloudsysops-admin:${ADMIN_IMAGE_TAG:-v0.42.0}}
     container_name: opsly_admin
     env_file:
       - ../.env
@@ -278,7 +278,7 @@ services:
     deploy: *deploy-large
 
   portal:
-    image: ${PORTAL_APP_IMAGE:-ghcr.io/cloudsysops/intcloudsysops-portal:latest}
+    image: ${PORTAL_APP_IMAGE:-ghcr.io/cloudsysops/intcloudsysops-portal:${PORTAL_IMAGE_TAG:-v0.42.0}}
     container_name: opsly_portal
     env_file:
       - ../.env
@@ -315,7 +315,7 @@ services:
     deploy: *deploy-large
 
   mcp:
-    image: ${MCP_IMAGE:-ghcr.io/cloudsysops/intcloudsysops-mcp:latest}
+    image: ${MCP_IMAGE:-ghcr.io/cloudsysops/intcloudsysops-mcp:${MCP_IMAGE_TAG:-v0.42.0}}
     container_name: opsly_mcp
     env_file:
       - ../.env
@@ -356,7 +356,7 @@ services:
     deploy: *deploy-medium
 
   llm-gateway:
-    image: ${LLM_GATEWAY_IMAGE:-ghcr.io/cloudsysops/intcloudsysops-llm-gateway:latest}
+    image: ${LLM_GATEWAY_IMAGE:-ghcr.io/cloudsysops/intcloudsysops-llm-gateway:${LLM_GATEWAY_IMAGE_TAG:-v0.42.0}}
     container_name: opsly_llm_gateway
     env_file:
       - ../.env
@@ -435,7 +435,7 @@ services:
   #     start_period: 15s
 
   orchestrator:
-    image: ${ORCHESTRATOR_IMAGE:-ghcr.io/cloudsysops/intcloudsysops-orchestrator:latest}
+    image: ${ORCHESTRATOR_IMAGE:-ghcr.io/cloudsysops/intcloudsysops-orchestrator:${ORCHESTRATOR_IMAGE_TAG:-v0.42.0}}
     container_name: opsly_orchestrator
     env_file:
       - ../.env
@@ -487,7 +487,7 @@ services:
   # Con este servicio activo, en Doppler/VPS establecer HERMES_ENABLED=false en el servicio `orchestrator`
   # para no duplicar el worker Hermes en el mismo host.
   hermes:
-    image: ${HERMES_IMAGE:-ghcr.io/cloudsysops/intcloudsysops-hermes:latest}
+    image: ${HERMES_IMAGE:-ghcr.io/cloudsysops/intcloudsysops-hermes:${HERMES_IMAGE_TAG:-v0.42.0}}
     container_name: opsly_hermes
     env_file:
       - ../.env
@@ -535,7 +535,7 @@ services:
     deploy: *deploy-xxlarge
 
   context-builder:
-    image: ${CONTEXT_BUILDER_IMAGE:-ghcr.io/cloudsysops/intcloudsysops-context-builder:latest}
+    image: ${CONTEXT_BUILDER_IMAGE:-ghcr.io/cloudsysops/intcloudsysops-context-builder:${CONTEXT_BUILDER_IMAGE_TAG:-v0.42.0}}
     container_name: opsly_context_builder
     env_file:
       - ../.env
