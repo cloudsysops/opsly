@@ -17,6 +17,7 @@ source "${SCRIPT_DIR}/lib/common.sh"
 
 TENANT=""
 EXTRA=()
+LOCAL_REDIS_URL="${LOCAL_REDIS_URL:-redis://localhost:6379}"
 if [[ $# -ge 1 ]] && [[ "$1" =~ ^(prd|stg|dev)$ ]]; then
   export DOPPLER_CONFIG="$1"
   TENANT="${2:?Uso: $0 [prd|stg|dev] <tenant_slug> [--notify]}"
@@ -31,6 +32,34 @@ fi
 require_cmd npx
 cd "${REPO_ROOT}"
 
+redis_host_from_url() {
+  local url="${1:-}"
+  if [[ -z "${url}" ]]; then
+    return 1
+  fi
+  python3 - <<'PY' "${url}"
+import sys
+from urllib.parse import urlparse
+u = urlparse(sys.argv[1])
+print(u.hostname or "")
+PY
+}
+
+resolve_runtime_redis_url() {
+  local candidate="${1:-}"
+  local host=""
+  host="$(redis_host_from_url "${candidate}" 2>/dev/null || true)"
+  if [[ "${host}" != "redis" ]]; then
+    echo "${candidate}"
+    return
+  fi
+  if command -v redis-cli >/dev/null 2>&1 && redis-cli -h localhost ping >/dev/null 2>&1; then
+    echo "${LOCAL_REDIS_URL}"
+    return
+  fi
+  echo "${candidate}"
+}
+
 echo ""
 echo "🎯 E2E Test Job Processor (BullMQ openclaw)"
 echo "==========================================="
@@ -40,10 +69,12 @@ echo ""
 
 set +e
 if command -v doppler >/dev/null 2>&1 && doppler secrets get REDIS_URL --project "${DOPPLER_PROJECT:-ops-intcloudsysops}" --config "${DOPPLER_CONFIG:-prd}" --plain >/dev/null 2>&1; then
-  if [[ -n "${REDIS_URL:-}" ]]; then
+  doppler_redis_url="$(doppler secrets get REDIS_URL --project "${DOPPLER_PROJECT:-ops-intcloudsysops}" --config "${DOPPLER_CONFIG:-prd}" --plain 2>/dev/null || true)"
+  runtime_redis_url="$(resolve_runtime_redis_url "${REDIS_URL:-${doppler_redis_url}}")"
+  if [[ -n "${runtime_redis_url}" ]]; then
     local_redis_password="${LOCAL_REDIS_PASSWORD:-}"
     doppler run --project "${DOPPLER_PROJECT:-ops-intcloudsysops}" --config "${DOPPLER_CONFIG:-prd}" -- \
-      env REDIS_URL="${REDIS_URL}" \
+      env REDIS_URL="${runtime_redis_url}" \
       REDIS_PASSWORD="${REDIS_PASSWORD:-${local_redis_password}}" \
       npx tsx --tsconfig scripts/tsconfig.enqueue.json scripts/enqueue-test-job.ts "${TENANT}" "${EXTRA[@]}"
   else
