@@ -1,7 +1,7 @@
 ---
 status: canon
 owner: operations
-last_review: 2026-04-27
+last_review: 2026-04-26
 ---
 
 # Opsly — Contexto del Agente
@@ -987,11 +987,9 @@ _Auditoría TypeScript y correcciones de código (2026-04-05, sesión agente Cla
 
 <!-- Una sola tarea concreta. Actualizar al final de cada sesión -->
 
-**2026-04-27 — Autonomía (Fase 1 cerrada → Fase 2):** activar `OPSLY_CORTEX_ENABLED=true` con intervalo conservador (`OPSLY_CORTEX_INTERVAL_MINUTES>=15`), `ORCHESTRATOR_LLM_GATEWAY_URL` al llm-gateway, y validar E2E `sandbox_execution` + `GET /internal/job/:id` con orchestrator en marcha. Opcional: `TAVILY_API_KEY` para `/v1/search` sin degradado.
+**Semana 2 (2026-04-21 → 2026-04-27):** Infraestructura IA (Ollama + NotebookLM Knowledge Layer)
 
-### Histórico — Semana 2 (referencia Ollama / NotebookLM)
-
-### Ejecutar Plan Ollama Worker (ADR-024) — referencia
+### Ejecutar Plan Ollama Worker (ADR-024) — Sesión siguiente (Semana 2)
 
 ```bash
 # FASE 1: Configurar Doppler prd
@@ -1568,14 +1566,23 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 
 ---
 
-## 🔄 Estado Actual (2026-04-27)
+## 🔄 Estado Actual (2026-04-15 20:48 UTC)
 
-**Sesión:** cierre Fase 1 del plan [`docs/plans/AUTONOMY-COMPLETION-PLAN-2026-04-27.md`](docs/plans/AUTONOMY-COMPLETION-PLAN-2026-04-27.md); código: Cortex + SandboxWorker en orchestrator; 3x `research-run` con evidencias en `docs/research/`.
+**Agente:** opencode (arquitecto)  
+**Tareas completadas:** ADR-025 NotebookLM checklist ✅  
+**Bloqueantes:** NO
 
-### Hecho
-- `apps/orchestrator/src/index.ts`: `SandboxWorker` en pool de workers; `OpslyCortex` con `OPSLY_CORTEX_ENABLED`.
-- Evidencia CLI: tres informes `research-*.md` consecutivos; tests orchestrator y type-check monorepo en verde en el commit `feat(orchestrator): wire cortex and sandbox worker for autonomy phase1`.
+### Validación final
+- ✅ Tests orchestrator: 92 passed
+- ✅ Type-check: 13/14 workspaces (mission-control usa pnpm)
+- ✅ OpenAPI: 28 paths valid
+- ✅ Redis: 59 clients, 1234 BullMQ keys
+- ✅ Orchestrator: role=control, mode=queue-only
+- ✅ Mac 2011: Ollama 2 modelos
 
-### Notas
-- `/v1/search` puede seguir en modo degradado sin `TAVILY_API_KEY`.
-- Cadena sandbox + estado de job requiere orchestrator HTTP activo (validación Fase 2).
+### Servicios VPS (todos healthy)
+- opsly_orchestrator, opsly_llm_gateway, opsly_context_builder, opsly_hermes
+- infra-redis-1, infra-app-1, infra-app-2
+- opsly_portal, opsly_mcp (12 tools)
+- Prometheus, Grafana, cAdvisor, Watchtower
+```

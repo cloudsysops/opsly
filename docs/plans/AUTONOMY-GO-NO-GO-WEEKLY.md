@@ -37,3 +37,14 @@ This checklist decides whether Opsly can increase autonomous execution scope for
 - Keep `OPSLY_CORTEX_INTERVAL_MINUTES=15` while stabilizing.
 - Keep expansion scope limited to existing `intent_dispatch` and `sandbox_execution` flow.
 - Prioritize Redis and llm-gateway reliability before new autonomous surfaces.
+
+## Latest Weekly Check
+
+- Date: `2026-04-28`
+- Result: `GO (controlled scope)`
+- Evidence:
+  - `npm run type-check` passed.
+  - `npm run test --workspace=@intcloudsysops/orchestrator` passed (137 tests).
+  - `DRY_RUN=true ITERATIONS=1 ENABLE_HERMES_TICK=true ENABLE_WORKER_SMOKE=true ./scripts/agents-autopilot.sh` passed.
+- Constraints kept:
+  - `search_mode` remains `degraded` until `TAVILY_API_KEY` is available.
