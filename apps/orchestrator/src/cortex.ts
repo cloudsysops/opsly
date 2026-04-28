@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { readFile, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
+import { GoalGenerator } from './goal-generator.js';
 import { enqueueJob } from './queue.js';
 import type { OrchestratorJob } from './types.js';
 
@@ -29,6 +30,7 @@ interface CognitiveState {
 interface CortexRuntimeState {
   lastStrategicDate?: string;
   lastReflectionWeek?: string;
+  lastGoalBacklogDate?: string;
 }
 
 function parsePositiveIntEnv(name: string, fallback: number): number {
@@ -55,10 +57,12 @@ function clamp01(value: number): number {
 
 export class OpslyCortex {
   private readonly statePath = resolve(process.cwd(), 'runtime/context/system_state.json');
-  private readonly intervalMs = parsePositiveIntEnv('OPSLY_CORTEX_INTERVAL_MINUTES', 15) * 60 * 1000;
+  private readonly intervalMs =
+    Math.max(5, parsePositiveIntEnv('OPSLY_CORTEX_INTERVAL_MINUTES', 15)) * 60 * 1000;
   private readonly strategicHourUtc = parsePositiveIntEnv('OPSLY_CORTEX_STRATEGIC_HOUR_UTC', 5);
   private readonly reflectionHourUtc = parsePositiveIntEnv('OPSLY_CORTEX_REFLECTION_HOUR_UTC', 20);
   private readonly gatewayUrl = process.env.ORCHESTRATOR_LLM_GATEWAY_URL ?? 'http://llm-gateway:3010';
+  private readonly goalGenerator = new GoalGenerator();
   private timer: NodeJS.Timeout | null = null;
   private running = false;
   private runtimeState: CortexRuntimeState = {};
@@ -107,6 +111,7 @@ export class OpslyCortex {
     try {
       await this.oodaCycle();
       await this.runDailyStrategicSessionIfDue();
+      await this.syncGoalsToBacklogIfDue();
       await this.runWeeklyReflectionIfDue();
     } catch (error) {
       console.error('[orchestrator] cortex tick failed', error);
@@ -245,7 +250,8 @@ export class OpslyCortex {
   private async enqueueCognitiveIntent(
     priority: 'critical' | 'high' | 'medium',
     analysis: SituationAnalysis,
-    source: string
+    source: string,
+    idempotencyKeyOverride?: string
   ): Promise<void> {
     const now = new Date().toISOString();
     const job: OrchestratorJob = {
@@ -254,7 +260,7 @@ export class OpslyCortex {
       plan: 'startup',
       tenant_slug: 'platform',
       taskId: `cortex-${Date.now()}`,
-      idempotency_key: `cortex:${source}:${now.slice(0, 13)}`,
+      idempotency_key: idempotencyKeyOverride ?? `cortex:${source}:${now.slice(0, 13)}`,
       request_id: `cortex-${randomUUID()}`,
       agent_role: 'planner',
       payload: {
@@ -290,6 +296,42 @@ export class OpslyCortex {
     const strategy = await this.generateStrategicTheme();
     this.cognitiveState.currentStrategy = strategy;
     console.log(`[orchestrator] cortex strategic theme: ${strategy}`);
+  }
+
+  private async syncGoalsToBacklogIfDue(): Promise<void> {
+    const now = new Date();
+    const today = now.toISOString().slice(0, 10);
+    if (this.runtimeState.lastGoalBacklogDate === today) {
+      return;
+    }
+    this.runtimeState.lastGoalBacklogDate = today;
+    const goals = await this.goalGenerator.generateQuarterlyGoals({
+      activeUsers: Number(process.env.OPSLY_GOAL_CONTEXT_ACTIVE_USERS ?? '0') || 0,
+      mrrUsd: Number(process.env.OPSLY_GOAL_CONTEXT_MRR_USD ?? '0') || 0,
+      techHealth: 'degraded',
+      marketSignals: ['cortex_daily_backlog_sync'],
+    });
+    for (const [index, goal] of goals.entries()) {
+      const recommendedFocus = [
+        `Objetivo: ${goal.name}`,
+        goal.description,
+        `Rationale: ${goal.rationale}`,
+        `Riesgo: ${goal.riskLevel}`,
+      ].join('\n');
+      await this.enqueueCognitiveIntent(
+        goal.riskLevel === 'high' ? 'high' : 'medium',
+        {
+          systemHealth: goal.riskLevel === 'high' ? 'degraded' : 'optimal',
+          opportunityScore: goal.riskLevel === 'low' ? 0.8 : 0.55,
+          threats: goal.riskLevel === 'high' ? ['goal_high_risk'] : [],
+          opportunities: [goal.name],
+          recommendedFocus,
+          urgency: goal.riskLevel === 'high' ? 'medium' : 'low',
+        },
+        `cortex_goal_backlog_${index + 1}`,
+        `cortex:goal:${today}:${index + 1}`
+      );
+    }
   }
 
   private async runWeeklyReflectionIfDue(): Promise<void> {

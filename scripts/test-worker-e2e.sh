@@ -43,7 +43,8 @@ if command -v doppler >/dev/null 2>&1 && doppler secrets get REDIS_URL --project
   if [[ -n "${REDIS_URL:-}" ]]; then
     local_redis_password="${LOCAL_REDIS_PASSWORD:-}"
     doppler run --project "${DOPPLER_PROJECT:-ops-intcloudsysops}" --config "${DOPPLER_CONFIG:-prd}" -- \
-      env REDIS_URL="${REDIS_URL}" REDIS_PASSWORD="${REDIS_PASSWORD:-${local_redis_password}}" \
+      env REDIS_URL="${REDIS_URL}" \
+      REDIS_PASSWORD="${REDIS_PASSWORD:-${local_redis_password}}" \
       npx tsx --tsconfig scripts/tsconfig.enqueue.json scripts/enqueue-test-job.ts "${TENANT}" "${EXTRA[@]}"
   else
     doppler run --project "${DOPPLER_PROJECT:-ops-intcloudsysops}" --config "${DOPPLER_CONFIG:-prd}" -- \

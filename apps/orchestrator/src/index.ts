@@ -19,9 +19,9 @@ import {
 import { closeCircuitBreakerRedis } from './resilience/circuit-breaker.js';
 import { closeJobStateStore } from './state/store.js';
 import { TeamManager } from './teams/TeamManager.js';
-import { OpslyCortex } from './cortex.js';
 import { AutonomousScheduler } from './schedulers/autonomous-scheduler.js';
 import { CursorCopilotBridge } from './lib/cursor-copilot-bridge.js';
+import { OpslyCortex } from './cortex.js';
 import { startBackupWorker } from './workers/BackupWorker.js';
 import { startCursorWorker } from './workers/CursorWorker.js';
 import { startDriveWorker } from './workers/DriveWorker.js';
@@ -105,7 +105,7 @@ function startAllWorkers(): AsyncCleanup[] {
   );
 
   console.log(
-    '[orchestrator] Workers: cursor, n8n, notify, drive, backup, health, budget, opsly-webhooks, webhooks-processing, general-events, ollama, intent_dispatch, sandbox' +
+    '[orchestrator] Workers: cursor, n8n, notify, drive, backup, health, budget, opsly-webhooks, webhooks-processing, general-events, ollama, intent_dispatch, sandbox_execution' +
       (process.env.OPSLY_AGENT_CLASSIFIER_WORKER_ENABLED === 'true' ? ', agent-classifier' : '') +
       '; Hermes tick → servicio opsly-hermes (no este proceso).'
   );
@@ -134,7 +134,7 @@ async function main(): Promise<void> {
   let teamManager: TeamManager | undefined;
   let autonomousScheduler: AutonomousScheduler | undefined;
   let cursorCopilotBridge: CursorCopilotBridge | undefined;
-  let cortex: OpslyCortex | undefined;
+  let opslyCortex: OpslyCortex | undefined;
   const cleanupTasks: AsyncCleanup[] = [];
 
   if (shouldRunControlPlane(role)) {
@@ -175,9 +175,9 @@ async function main(): Promise<void> {
   }
 
   if (shouldRunControlPlane(role) && process.env.OPSLY_CORTEX_ENABLED === 'true') {
-    cortex = new OpslyCortex();
-    cortex.start();
-    cleanupTasks.push(async () => cortex?.stop());
+    opslyCortex = new OpslyCortex();
+    opslyCortex.start();
+    cleanupTasks.push(async () => opslyCortex?.stop());
   }
 
   if (shouldRunWorkers(role)) {
