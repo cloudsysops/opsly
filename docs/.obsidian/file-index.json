@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-04-28T00:57:57Z",
-  "totalFiles": 257,
+  "lastIndexed": "2026-04-28T03:10:39Z",
+  "totalFiles": 258,
   "files": [
     ".openclaw.md",
     "2026-04-21.md",
@@ -65,6 +65,7 @@
     "AUTOMATION-PLAN.md",
     "AUTONOMY-COMPLETION-PLAN-2026-04-27.md",
     "AUTONOMY-GAP-ANALYSIS-2026-04-26.md",
+    "AUTONOMY-GO-NO-GO-WEEKLY.md",
     "BILLING-FLUSH-VERCEL.md",
     "BILLING-USD-DIAGRAMS.md",
     "CICD-VPS.md",
