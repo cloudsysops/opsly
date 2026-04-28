@@ -49,6 +49,10 @@ function isSearchEnabled(): boolean {
   return process.env.LLM_GATEWAY_SEARCH_ENABLED === 'true';
 }
 
+function allowDegradedSearch(): boolean {
+  return process.env.LLM_GATEWAY_SEARCH_ALLOW_DEGRADED === 'true';
+}
+
 /**
  * Minimal HTTP search tool for Opsly research workflows.
  * Uses Tavily API if enabled; otherwise returns 503.
@@ -67,6 +71,22 @@ export async function handleSearchHttp(req: IncomingMessage, res: ServerResponse
 
   const apiKey = process.env.TAVILY_API_KEY?.trim() ?? '';
   if (apiKey.length === 0) {
+    if (allowDegradedSearch()) {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(
+        JSON.stringify({
+          tenant_slug: 'platform',
+          query: '',
+          answer:
+            'Search provider is unavailable (missing TAVILY_API_KEY). Running in degraded mode without external results.',
+          results: [],
+          response_time_ms: null,
+          degraded: true,
+          degraded_reason: 'missing_tavily_api_key',
+        })
+      );
+      return true;
+    }
     res.writeHead(500, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ error: 'search_misconfigured', message: 'Missing TAVILY_API_KEY' }));
     return true;

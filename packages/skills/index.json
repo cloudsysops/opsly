@@ -237,6 +237,15 @@
       "priority": "medium",
       "usage": "Análisis comparativo de herramientas y documentación externa",
       "path": "skills/user/opsly-researcher/"
+    },
+    {
+      "name": "opsly-economist",
+      "version": "1.0.0",
+      "description": "Gestión económica autónoma: control de costos, optimización de routing y decisiones de inversión de bajo riesgo.",
+      "category": "growth",
+      "priority": "high",
+      "usage": "Optimización de costos operativos y propuestas de eficiencia financiera",
+      "path": "skills/user/opsly-economist/"
     }
   ],
   "categories": {
@@ -257,7 +266,7 @@
     "notifications": ["opsly-discord"],
     "optimization": ["opsly-simplify"],
     "research": ["opsly-researcher"],
-    "growth": ["opsly-niche-solution"]
+    "growth": ["opsly-niche-solution", "opsly-economist"]
   },
   "quick_reference": {
     "nueva_sesion": ["opsly-context"],
@@ -268,7 +277,8 @@
     "infra": ["opsly-infra", "opsly-tenant", "opsly-discord"],
     "revision_arquitectura": ["opsly-architect-senior"],
     "investigacion_externa": ["opsly-researcher"],
-    "crecimiento_nicho": ["opsly-niche-solution"]
+    "crecimiento_nicho": ["opsly-niche-solution"],
+    "economia_autonoma": ["opsly-economist"]
   },
   "deprecated": {
     "opsly-bootstrap": "Usar opsly-context",

@@ -9,6 +9,29 @@ SYSTEM_STATE_PATH="${ROOT_DIR}/context/system_state.json"
 ORCH_LOG="${ROOT_DIR}/runtime/logs/orchestrator.log"
 GATEWAY_LOG="${ROOT_DIR}/runtime/logs/llm-gateway.log"
 
+get_load_avg() {
+  if [[ -f /proc/loadavg ]]; then
+    awk '{print $1", "$2", "$3}' /proc/loadavg
+    return
+  fi
+  uptime | sed -E 's/.*load averages?: //; s/,/, /g'
+}
+
+get_memory_used_pct() {
+  if command -v free >/dev/null 2>&1; then
+    free -m | awk '/Mem/{printf "%.1f%%", $3/$2*100}'
+    return
+  fi
+  local pages_free pages_inactive pages_speculative total_pages used_pages
+  pages_free="$(vm_stat | awk '/Pages free/{gsub("\\.", "", $3); print $3}')"
+  pages_inactive="$(vm_stat | awk '/Pages inactive/{gsub("\\.", "", $3); print $3}')"
+  pages_speculative="$(vm_stat | awk '/Pages speculative/{gsub("\\.", "", $3); print $3}')"
+  total_pages="$(sysctl -n hw.memsize)"
+  total_pages="$(( total_pages / 4096 ))"
+  used_pages="$(( total_pages - pages_free - pages_inactive - pages_speculative ))"
+  awk -v used="${used_pages}" -v total="${total_pages}" 'BEGIN{printf "%.1f%%", (used/total)*100}'
+}
+
 mkdir -p "${REPORT_DIR}"
 
 completed_tasks="0"
@@ -65,8 +88,8 @@ fi
   fi
   echo
   echo "## Metricas host"
-  echo "- Load avg: $(awk '{print $1", "$2", "$3}' /proc/loadavg)"
-  echo "- Memoria usada: $(free -m | awk '/Mem/{printf "%.1f%%", $3/$2*100}')"
+  echo "- Load avg: $(get_load_avg)"
+  echo "- Memoria usada: $(get_memory_used_pct)"
   echo "- Disco raiz: $(df -h / | awk 'NR==2{print $5}')"
   echo
   echo "## Proximo paso sugerido"
