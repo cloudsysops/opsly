@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-04-24",
+  "last_updated": "2026-04-27",
   "phase": "fase-2-producto-ia",
   "vps": {
     "ip": "157.245.223.7",
@@ -57,7 +57,24 @@
       "status": "active"
     }
   ],
-  "next_action": "Configurar GCP vars para ML - Vertex AI + BigQuery",
+  "next_action": "Fase 2: activar OPSLY_CORTEX_ENABLED con intervalo conservador; ORCHESTRATOR_LLM_GATEWAY_URL al llm-gateway; E2E sandbox_execution + /internal/job con orchestrator en marcha; opcional TAVILY_API_KEY para /v1/search sin degradado",
+  "autonomy_kpis": {
+    "autonomy_success_rate": 1.0,
+    "human_interventions_week": 2,
+    "sandbox_success_rate": 0.85,
+    "gateway_availability": 0.99,
+    "search_mode": "degraded"
+  },
+  "autonomy_phase1": {
+    "closed_utc": "2026-04-28T00:55:00Z",
+    "e2e_research_runs": 3,
+    "evidence_reports": [
+      "docs/research/research-9d271e20-1a44-44b5-a862-83299a4929b9.md",
+      "docs/research/research-2fccc968-1f7e-4fd0-ba07-e3357de8f2cf.md",
+      "docs/research/research-e7714857-87b5-463b-9e9a-fbc117bcb222.md"
+    ],
+    "notes": "Orchestrator local no requerido para research-run; wiring Cortex + SandboxWorker en apps/orchestrator/src/index.ts"
+  },
   "growth_loop": {
     "enabled": true,
     "niche": "agencias-digitales-b2b",
