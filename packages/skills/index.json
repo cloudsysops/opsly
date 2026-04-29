@@ -157,6 +157,15 @@
       "path": "skills/user/opsly-orchestrator/"
     },
     {
+      "name": "opsly-jcode",
+      "version": "1.0.0",
+      "description": "Integración de jcode para generación de código autónoma en sandbox vía jobs jcode_execution.",
+      "category": "orchestration",
+      "priority": "high",
+      "usage": "Generación/refactor de código con jcode en flujo seguro",
+      "path": "skills/user/opsly-jcode/"
+    },
+    {
       "name": "opsly-qa",
       "version": "1.0.0",
       "description": "Testing, smoke, audit, regression. Testing y validación de calidad.",
@@ -221,15 +230,6 @@
       "path": "skills/user/opsly-simplify/"
     },
     {
-      "name": "opsly-niche-solution",
-      "version": "1.0.0",
-      "description": "Skill de solucion comercial por nicho: convertir dolor operativo en oferta ejecutable 48h.",
-      "category": "growth",
-      "priority": "high",
-      "usage": "Diseño de propuesta vertical para conversion comercial",
-      "path": "skills/user/opsly-niche-solution/"
-    },
-    {
       "name": "opsly-researcher",
       "version": "1.0.0",
       "description": "Investigación web asistida vía llm-gateway /v1/search para comparar librerías, docs y alternativas técnicas.",
@@ -237,15 +237,6 @@
       "priority": "medium",
       "usage": "Análisis comparativo de herramientas y documentación externa",
       "path": "skills/user/opsly-researcher/"
-    },
-    {
-      "name": "opsly-economist",
-      "version": "1.0.0",
-      "description": "Gestión económica autónoma: control de costos, optimización de routing y decisiones de inversión de bajo riesgo.",
-      "category": "growth",
-      "priority": "high",
-      "usage": "Optimización de costos operativos y propuestas de eficiencia financiera",
-      "path": "skills/user/opsly-economist/"
     }
   ],
   "categories": {
@@ -260,25 +251,22 @@
     "database": ["opsly-supabase"],
     "operations": ["opsly-tenant"],
     "infrastructure": ["opsly-infra"],
-    "orchestration": ["opsly-orchestrator", "opsly-agent-teams"],
+    "orchestration": ["opsly-orchestrator", "opsly-agent-teams", "opsly-jcode"],
     "billing": ["opsly-billing"],
     "qa": ["opsly-qa"],
     "notifications": ["opsly-discord"],
     "optimization": ["opsly-simplify"],
-    "research": ["opsly-researcher"],
-    "growth": ["opsly-niche-solution", "opsly-economist"]
+    "research": ["opsly-researcher"]
   },
   "quick_reference": {
     "nueva_sesion": ["opsly-context"],
     "orquestacion": ["opsly-quantum"],
     "autonomo": ["opsly-autonomous"],
-    "desarrollo_api": ["opsly-api", "opsly-bash"],
+    "desarrollo_api": ["opsly-api", "opsly-bash", "opsly-jcode"],
     "ia_ml": ["opsly-llm", "opsly-feedback-ml", "opsly-notebooklm"],
     "infra": ["opsly-infra", "opsly-tenant", "opsly-discord"],
     "revision_arquitectura": ["opsly-architect-senior"],
-    "investigacion_externa": ["opsly-researcher"],
-    "crecimiento_nicho": ["opsly-niche-solution"],
-    "economia_autonoma": ["opsly-economist"]
+    "investigacion_externa": ["opsly-researcher"]
   },
   "deprecated": {
     "opsly-bootstrap": "Usar opsly-context",

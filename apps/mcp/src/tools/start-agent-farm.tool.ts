@@ -20,7 +20,7 @@ async function executeAgentFarm(params: AgentFarmParams): Promise<AgentFarmResul
   try {
     const p = params;
 
-    const response = await fetch('http://localhost:3011/api/jobs/enqueue', {
+    const response = await fetch('http://localhost:3011/internal/enqueue-agent-farm', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

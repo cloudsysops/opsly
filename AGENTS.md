@@ -103,7 +103,7 @@ npm run opsly:ensure-ollama -- --ensure
    - [`docs/KNOWLEDGE-SYSTEM.md`](docs/KNOWLEDGE-SYSTEM.md) — LEER PRIMERO
    - Query startup obligatorio: `"¿Cuál es el estado actual de Opsly?"` → NotebookLM
 3. **Prompt operativo en VPS (opcional):** `docs/ACTIVE-PROMPT.md` — tras `git pull` en `/opt/opsly`, el servicio **`cursor-prompt-monitor`** (`scripts/cursor-prompt-monitor.sh`, unidad `infra/systemd/cursor-prompt-monitor.service`) detecta cambios cada **30 s** y ejecuta el contenido filtrado como shell. **Solo** líneas que no empiezan por `#` ni `---`; si todo es comentario, no ejecuta nada. **Riesgo RCE** si alguien no confiable puede editar ese archivo.
-4. **Logs en VPS:** `/opt/opsly/runtime/logs/cursor-prompt-monitor.log` (directorio `runtime/logs/` fuera de git).
+4. **Logs en VPS:** `/opt/opsly/runtime/logs/cursor-prompt-monitor.log` (directorio `runtime/logs/` ignorado en git).
 5. **Docs de apoyo:** `docs/CLAUDE-WORKFLOW-OPTIMIZATION.md`, `docs/OPENCLAW-ARCHITECTURE.md`.
 6. **Espejo Google Drive (opcional):** `docs/GOOGLE-DRIVE-SYNC.md`, lista `docs/opsly-drive-files.list`, config `.opsly-drive-config.json` — útil si Claude (u otro asistente) tiene Drive conectado; la fuente de verdad sigue siendo git/GitHub.
 
@@ -152,7 +152,7 @@ node scripts/load-skills.js show opsly-api
 ### Por prioridad
 
 **CRITICAL** (siempre al inicio): `opsly-bootstrap` + `opsly-skill-creator`  
-**HIGH** (recomendados): `opsly-api`, `opsly-frontend`, `opsly-supabase`, `opsly-infra`, `opsly-mcp`, `opsly-llm`, `opsly-tenant`, `opsly-orchestrator`, `opsly-billing`  
+**HIGH** (recomendados): `opsly-api`, `opsly-frontend`, `opsly-supabase`, `opsly-infra`, `opsly-mcp`, `opsly-llm`, `opsly-tenant`, `opsly-orchestrator`, `opsly-jcode`, `opsly-billing`
 **MEDIUM**: `opsly-qa`, `opsly-discord`, `opsly-architect`
 
 **Regla operativa obligatoria:** primero buscar y reutilizar skill existente; si no hay match adecuado, crear o extender una skill por módulo con `opsly-skill-creator`.
@@ -169,6 +169,7 @@ node scripts/load-skills.js show opsly-api
 | opsly-llm | `skills/user/opsly-llm/` | Llamadas vía LLM Gateway |
 | opsly-tenant | `skills/user/opsly-tenant/` | Onboarding / lifecycle tenant |
 | opsly-orchestrator | `skills/user/opsly-orchestrator/` | OAR + workflows n8n/super-agent |
+| opsly-jcode | `skills/user/opsly-jcode/` | Generación de código autónoma con `jcode` en sandbox (`jcode_execution`) |
 | opsly-billing | `skills/user/opsly-billing/` | Stripe subscriptions/invoices/metering |
 | opsly-qa | `skills/user/opsly-qa/` | Validación release, smoke, auditoría |
 | opsly-discord | `skills/user/opsly-discord/` | `notify-discord.sh` y alertas |

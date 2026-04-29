@@ -130,6 +130,9 @@ Esperado: `status: ok` y títulos de las cinco bases (mismas variables `NOTION_D
 | `OPENROUTER_HTTP_REFERER`                    | Opcional: cabecera HTTP-Referer para OpenRouter.                                                 |
 | `DISCORD_WEBHOOK_URL`                        | Alertas cuando un proveedor pasa a `down` o se recupera.                                         |
 | `SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY` | Opcional: `usage_events`.                                                                        |
+| `JCODE_API_KEY`                              | API key para proveedor directo usado por `jcode` (si aplica).                                    |
+| `JCODE_MODEL`                                | Modelo por defecto para `jcode` (`jcode_execution`).                                             |
+| `JCODE_PROVIDER`                             | Proveedor por defecto para `jcode` (`claude`, `openai`, `openrouter`, etc.).                    |
 
 ## Notion MCP (`apps/notion-mcp`)
 

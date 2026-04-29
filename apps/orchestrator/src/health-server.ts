@@ -257,6 +257,80 @@ async function handleEnqueueSandbox(req: IncomingMessage, res: ServerResponse): 
   }
 }
 
+async function handleEnqueueJcode(req: IncomingMessage, res: ServerResponse): Promise<void> {
+  if (!verifyPlatformAdminToken(req)) {
+    res.writeHead(401, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'unauthorized' }));
+    return;
+  }
+
+  let body: unknown;
+  try {
+    body = await readBody(req);
+  } catch {
+    res.writeHead(400, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'Invalid JSON' }));
+    return;
+  }
+
+  if (typeof body !== 'object' || body === null) {
+    res.writeHead(400, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'invalid body' }));
+    return;
+  }
+
+  const b = body as Record<string, unknown>;
+  const prompt = typeof b.prompt === 'string' ? b.prompt.trim() : '';
+  const tenantSlug = typeof b.tenant_slug === 'string' ? b.tenant_slug.trim() : '';
+  const requestId =
+    typeof b.request_id === 'string' && b.request_id.length > 0 ? b.request_id : randomUUID();
+  if (prompt.length === 0 || tenantSlug.length === 0) {
+    res.writeHead(400, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'prompt and tenant_slug required' }));
+    return;
+  }
+
+  const timeoutRaw = b.timeout;
+  const timeout =
+    typeof timeoutRaw === 'number' && Number.isFinite(timeoutRaw) ? Math.floor(timeoutRaw) : 900;
+  const allowNetwork = b.allowNetwork === true;
+  const model = typeof b.model === 'string' && b.model.length > 0 ? b.model : undefined;
+  const provider = typeof b.provider === 'string' && b.provider.length > 0 ? b.provider : undefined;
+  const sandboxImage =
+    typeof b.sandboxImage === 'string' && b.sandboxImage.length > 0 ? b.sandboxImage : undefined;
+
+  const job: OrchestratorJob = {
+    type: 'jcode_execution',
+    payload: {
+      prompt,
+      model,
+      provider,
+      timeout,
+      allowNetwork,
+      sandboxImage,
+    },
+    tenant_slug: tenantSlug,
+    initiated_by: 'system',
+    request_id: requestId,
+    metadata: { labels: ['jcode', 'sandbox'] },
+  };
+
+  try {
+    const bull = await enqueueJob(job);
+    res.writeHead(202, { 'Content-Type': 'application/json' });
+    res.end(
+      JSON.stringify({
+        success: true,
+        job_id: bull.id != null ? String(bull.id) : null,
+        request_id: requestId,
+      })
+    );
+  } catch (err) {
+    res.writeHead(500, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: String(err) }));
+  }
+}
+
 async function handleJobById(req: IncomingMessage, res: ServerResponse, pathOnly: string): Promise<void> {
   if (!verifyPlatformAdminToken(req)) {
     res.writeHead(401, { 'Content-Type': 'application/json' });
@@ -337,6 +411,11 @@ export function startOrchestratorHealthServer(): Server {
 
     if (req.method === 'POST' && pathOnly === '/internal/enqueue-sandbox') {
       await handleEnqueueSandbox(req, res);
+      return;
+    }
+
+    if (req.method === 'POST' && pathOnly === '/internal/jcode') {
+      await handleEnqueueJcode(req, res);
       return;
     }
 
