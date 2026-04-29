@@ -4,4 +4,9 @@ set -euo pipefail
 echo "🚀 Validando antes de push..."
 npm run validate-structure --silent
 bash scripts/hooks/structure-guard.sh
+echo "🧪 Validando contexto y contratos..."
+npm run validate-openapi --silent
+npm run validate-skills --silent
+npm run test-skills-manifest --silent
+python3 -m json.tool context/system_state.json > /dev/null
 echo "✅ Listo para push"

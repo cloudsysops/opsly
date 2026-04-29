@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT_DIR="$(git rev-parse --show-toplevel)"
+cd "$ROOT_DIR"
+
+MSG_FILE="${1:-}"
+if [[ -z "$MSG_FILE" || ! -f "$MSG_FILE" ]]; then
+  echo "[commit-msg] Missing commit message file"
+  exit 1
+fi
+
+if npx --yes commitlint --version >/dev/null 2>&1; then
+  npx commitlint --edit "$MSG_FILE"
+else
+  echo "[commit-msg] commitlint not available, skipping."
+fi

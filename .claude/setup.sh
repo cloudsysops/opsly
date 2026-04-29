@@ -1,90 +1,75 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# setup.sh — Configuración automática del entorno Opsly
-# Uso: ./claude/setup.sh
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+HOOKS_DIR="$ROOT_DIR/.claude/4-hooks"
 
-echo "🚀 Configurando entorno Opsly para Claude Code..."
+DRY_RUN=0
+SKIP_INSTALL=0
 
-# 1. Dar permisos de ejecución a hooks
-echo "📝 Configurando permisos de hooks..."
-chmod +x .claude/4-hooks/*.sh
-echo "   ✅ Permisos otorgados a .claude/4-hooks/*.sh"
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --dry-run)
+      DRY_RUN=1
+      shift
+      ;;
+    --skip-install)
+      SKIP_INSTALL=1
+      shift
+      ;;
+    *)
+      echo "Unknown argument: $1"
+      echo "Usage: .claude/setup.sh [--dry-run] [--skip-install]"
+      exit 1
+      ;;
+  esac
+done
 
-# 2. Configurar git hooksPath
-echo "🔗 Configurando git hooks..."
-git config core.hooksPath .claude/4-hooks
-CURRENT_HOOKS_PATH=$(git config core.hooksPath)
-if [[ "$CURRENT_HOOKS_PATH" == ".claude/4-hooks" ]]; then
-  echo "   ✅ Git hooks configurado: $CURRENT_HOOKS_PATH"
-else
-  echo "   ❌ Error al configurar git hooks."
+run_cmd() {
+  if [[ "$DRY_RUN" -eq 1 ]]; then
+    echo "[dry-run] $*"
+    return 0
+  fi
+  "$@"
+}
+
+echo "[setup] Root: $ROOT_DIR"
+cd "$ROOT_DIR"
+
+echo "[setup] Checking required tools..."
+command -v git >/dev/null
+command -v node >/dev/null
+command -v npm >/dev/null
+
+if [[ ! -d "$HOOKS_DIR" ]]; then
+  echo "[setup] Missing hooks directory: $HOOKS_DIR"
   exit 1
 fi
 
-# 3. Instalar dependencias del proyecto
-echo "📦 Instalando dependencias (npm ci)..."
-if [[ -f "package-lock.json" ]]; then
-  npm ci
-  echo "   ✅ Dependencias instaladas."
+echo "[setup] Installing dependencies..."
+if [[ "$SKIP_INSTALL" -eq 1 ]]; then
+  echo "[setup] --skip-install enabled"
 else
-  echo "   ⚠️  No se encontró package-lock.json. Omitiendo npm ci."
+  run_cmd npm ci
 fi
 
-# 4. Validar entorno
-echo "🔍 Validando entorno..."
+echo "[setup] Setting hooks path..."
+run_cmd git config core.hooksPath .claude/4-hooks
 
-# Type-check
-if grep -q '"type-check"' package.json 2>/dev/null; then
-  echo "   Ejecutando type-check..."
-  npm run type-check
-  if [[ $? -eq 0 ]]; then
-    echo "   ✅ Type-check passed."
-  else
-    echo "   ❌ Type-check failed. Revisa errores de TypeScript."
-  fi
+echo "[setup] Ensuring hook scripts are executable..."
+run_cmd chmod +x .claude/4-hooks/pre-commit
+run_cmd chmod +x .claude/4-hooks/commit-msg
+run_cmd chmod +x .claude/4-hooks/pre-push
+
+echo "[setup] Validating environment..."
+run_cmd git config --get core.hooksPath
+
+if npm run validate-structure >/dev/null 2>&1; then
+  run_cmd npm run validate-structure
 fi
 
-# 5. Verificar herramientas requeridas
-echo "🛠️  Verificando herramientas..."
-TOOLS=("node" "npm" "git" "docker")
-for tool in "${TOOLS[@]}"; do
-  if command -v "$tool" &>/dev/null; then
-    VERSION=$($tool --version 2>/dev/null | head -1 || echo "unknown")
-    echo "   ✅ $tool: $VERSION"
-  else
-    echo "   ❌ $tool no encontrado. Instálalo antes de continuar."
-  fi
-done
-
-# 6. Verificar .gitignore tiene CLAUDE.local.md
-echo "📝 Verificando .gitignore..."
-if ! grep -q "CLAUDE.local.md" .gitignore 2>/dev/null; then
-  echo "   ➕ Añadiendo CLAUDE.local.md a .gitignore..."
-  echo "" >> .gitignore
-  echo "# Claude local config (ignored)" >> .gitignore
-  echo ".claude/2-context-management/CLAUDE.local.md" >> .gitignore
-  echo "   ✅ .gitignore actualizado."
-else
-  echo "   ✅ CLAUDE.local.md ya está en .gitignore."
+if npm run type-check >/dev/null 2>&1; then
+  run_cmd npm run type-check
 fi
 
-# 7. Crear CLAUDE.local.md si no existe
-if [[ ! -f ".claude/2-context-management/CLAUDE.local.md" ]]; then
-  echo "📄 Creando ejemplo CLAUDE.local.md..."
-  cp .claude/2-context-management/CLAUDE.local.md .claude/2-context-management/CLAUDE.local.md.example 2>/dev/null || true
-  echo "   ✅ Revisa .claude/2-context-management/CLAUDE.local.md (gitignored)."
-fi
-
-echo ""
-echo "✅ Configuración completada."
-echo ""
-echo "📚 Próximos pasos:"
-echo "   1. Revisar .claude/README.md para entender la estructura"
-echo "   2. Usar comandos slash: /deploy, /tenant, /ai-cost"
-echo "   3. Verificar hooks: git config core.hooksPath"
-echo "   4. Leer AGENTS.md al iniciar Claude"
-echo ""
-echo "🔗 Enlaces rápidos:"
-echo "   - AGENTS.md: https://raw.githubusercontent.com/cloudsysops/opsly/main/AGENTS.md"
-echo "   - VISION.md: https://raw.githubusercontent.com/cloudsysops/opsly/main/VISION.md"
+echo "[setup] Completed successfully."

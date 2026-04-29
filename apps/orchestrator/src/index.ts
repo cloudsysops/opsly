@@ -21,7 +21,6 @@ import { closeJobStateStore } from './state/store.js';
 import { TeamManager } from './teams/TeamManager.js';
 import { AutonomousScheduler } from './schedulers/autonomous-scheduler.js';
 import { CursorCopilotBridge } from './lib/cursor-copilot-bridge.js';
-import { Supervisor } from './agents/supervisor/supervisor.js';
 import { startBackupWorker } from './workers/BackupWorker.js';
 import { startCursorWorker } from './workers/CursorWorker.js';
 import { startDriveWorker } from './workers/DriveWorker.js';
@@ -36,6 +35,7 @@ import { startIntentDispatchWorker } from './workers/IntentDispatchWorker.js';
 import { startJcodeWorker } from './workers/JcodeWorker.js';
 import { closeWebhookQueue, createWebhookWorker } from './workers/WebhookWorker.js';
 import { startWebhooksProcessingWorker } from './workers/WebhooksProcessingWorker.js';
+import { startHiveWorker } from './workers/HiveWorker.js';
 
 type AsyncCleanup = () => Promise<void>;
 
@@ -80,6 +80,7 @@ function startAllWorkers(): AsyncCleanup[] {
   const ollamaWorker = startOllamaWorker(connection);
   const intentDispatchWorker = startIntentDispatchWorker(connection);
   const jcodeWorker = startJcodeWorker(connection);
+  const hiveWorker = startHiveWorker(connection);
 
   let agentClassifierCleanup: AsyncCleanup[] = [];
   if (process.env.OPSLY_AGENT_CLASSIFIER_WORKER_ENABLED === 'true') {
@@ -101,11 +102,12 @@ function startAllWorkers(): AsyncCleanup[] {
     async () => ollamaWorker.close(),
     async () => intentDispatchWorker.close(),
     async () => jcodeWorker.close(),
+    async () => hiveWorker.close(),
     ...agentClassifierCleanup
   );
 
   console.log(
-    '[orchestrator] Workers: cursor, n8n, notify, drive, backup, health, budget, opsly-webhooks, webhooks-processing, general-events, ollama, intent_dispatch, jcode_execution' +
+    '[orchestrator] Workers: cursor, n8n, notify, drive, backup, health, budget, opsly-webhooks, webhooks-processing, general-events, ollama, intent_dispatch, jcode, hive' +
       (process.env.OPSLY_AGENT_CLASSIFIER_WORKER_ENABLED === 'true' ? ', agent-classifier' : '') +
       '; Hermes tick → servicio opsly-hermes (no este proceso).'
   );
@@ -134,19 +136,12 @@ async function main(): Promise<void> {
   let teamManager: TeamManager | undefined;
   let autonomousScheduler: AutonomousScheduler | undefined;
   let cursorCopilotBridge: CursorCopilotBridge | undefined;
-  let supervisor: Supervisor | undefined;
   const cleanupTasks: AsyncCleanup[] = [];
 
   if (shouldRunControlPlane(role)) {
     teamManager = new TeamManager(connection);
     console.log('[orchestrator] TeamManager: 4 equipos BullMQ activos');
     cleanupTasks.push(async () => teamManager?.close());
-  }
-
-  if (shouldRunControlPlane(role) && process.env.OPSLY_SUPERVISOR_ENABLED === 'true') {
-    supervisor = new Supervisor(300000);
-    supervisor.start();
-    cleanupTasks.push(async () => supervisor?.stop());
   }
 
   const healthServer = startOrchestratorHealthServer();

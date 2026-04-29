@@ -103,7 +103,7 @@ npm run opsly:ensure-ollama -- --ensure
    - [`docs/KNOWLEDGE-SYSTEM.md`](docs/KNOWLEDGE-SYSTEM.md) — LEER PRIMERO
    - Query startup obligatorio: `"¿Cuál es el estado actual de Opsly?"` → NotebookLM
 3. **Prompt operativo en VPS (opcional):** `docs/ACTIVE-PROMPT.md` — tras `git pull` en `/opt/opsly`, el servicio **`cursor-prompt-monitor`** (`scripts/cursor-prompt-monitor.sh`, unidad `infra/systemd/cursor-prompt-monitor.service`) detecta cambios cada **30 s** y ejecuta el contenido filtrado como shell. **Solo** líneas que no empiezan por `#` ni `---`; si todo es comentario, no ejecuta nada. **Riesgo RCE** si alguien no confiable puede editar ese archivo.
-4. **Logs en VPS:** `/opt/opsly/runtime/logs/cursor-prompt-monitor.log` (directorio `runtime/logs/` fuera de git).
+4. **Logs en VPS:** `/opt/opsly/logs/cursor-prompt-monitor.log` (directorio `logs/` ignorado en git).
 5. **Docs de apoyo:** `docs/CLAUDE-WORKFLOW-OPTIMIZATION.md`, `docs/OPENCLAW-ARCHITECTURE.md`.
 6. **Espejo Google Drive (opcional):** `docs/GOOGLE-DRIVE-SYNC.md`, lista `docs/opsly-drive-files.list`, config `.opsly-drive-config.json` — útil si Claude (u otro asistente) tiene Drive conectado; la fuente de verdad sigue siendo git/GitHub.
 
@@ -312,7 +312,10 @@ node scripts/load-skills.js show opsly-api
 23. ~~**OpenAPI — `/api/feedback`** (`openapi-opsly-api.yaml`, `REQUIRED_FEEDBACK_PATHS`).~~ ✅
 24. ~~**Portal — health API + Playwright smoke** (`portal-health-json`, `portal-api-paths`, `e2e/portal.spec.ts`).~~ ✅
 25. ~~**Dashboard de costos + workers Mac 2011** — `docs/COST-DASHBOARD.md`, `/api/admin/costs`, `start-workers-mac2011.sh`.~~ ✅ (2026-04-11)
-26. **Siguiente capacidad Fase 4** — Seguir [`ROADMAP.md`](ROADMAP.md) Semana 1+; E2E invite con credenciales en CI; más handlers bajo `/api/portal/tenant/[slug]/`; redeploy admin/API si aplica; o VPS según `VISION.md`.
+26. ~~**Siguiente capacidad Fase 4** — Seguir [`ROADMAP.md`](ROADMAP.md) Semana 1+; E2E invite con credenciales en CI; más handlers bajo `/api/portal/tenant/[slug]/`; redeploy admin/API si aplica; o VPS según `VISION.md`.~~ ✅ (2026-04-28)
+27. **✅ SwarmOps base (Hive of Bots) en orchestrator** — _Hecho (2026-04-28)._ Se consolidó la base en `apps/orchestrator/src/hive` con `QueenBee`, `HiveOrchestrator`, canal de feromonas (`PheromoneChannel`), estado compartido Redis (`HiveStateStore`) y endpoint interno `POST /internal/hive/objective` con status por `taskId` (`GET /internal/hive/objective/:taskId` y alias `GET /internal/hive/task/:taskId`).
+28. **✅ Hardening Hive retry/reasignación** — _Hecho (2026-04-28)._ La Queen reintenta subtareas fallidas con límite (`MAX_SUBTASK_RETRIES`) y reasigna cuando hay capacidad; endpoint de control manual `POST /internal/hive/task/:taskId/retry/:subtaskId` para recuperación operativa.
+29. **Siguiente capacidad Fase 4** — tests integrados de ciclo completo (submit objective → asignación → task_complete/error → retry automático/manual) y métricas de retry en `hive/stats`.
 
 **Relación con `VISION.md`:** las fases 1–3 del producto siguen siendo el norte comercial; esta **Fase 4** documenta la **plataforma multi-agente incremental** y la **documentación operativa** que las alimentan. El detalle económico y de roadmap largo plazo sigue en `VISION.md` → _Evolución arquitectónica — AI Platform_.
 

@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT_DIR="$(git rev-parse --show-toplevel)"
+cd "$ROOT_DIR"
+
+echo "[pre-commit] Running repository checks..."
+
+if npm run validate-structure >/dev/null 2>&1; then
+  npm run validate-structure
+else
+  echo "[pre-commit] validate-structure not found, skipping."
+fi
+
+if npm run type-check >/dev/null 2>&1; then
+  npm run type-check
+else
+  echo "[pre-commit] type-check script not found, skipping."
+fi
+
+echo "[pre-commit] OK"

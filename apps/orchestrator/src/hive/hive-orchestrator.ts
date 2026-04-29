@@ -109,16 +109,19 @@ export class HiveOrchestrator {
           completedSubtasks: completed,
           totalSubtasks: total,
           progress: total > 0 ? Math.round((completed / total) * 100) : 0,
+          subtasks: task.subtasks.map((s) => ({
+            id: s.id,
+            description: s.description,
+            status: s.status,
+            assignedBotRole: s.assignedBotRole ?? null,
+            assignedBotId: s.assignedBotId ?? null,
+          })),
         },
       };
     } catch (error) {
       console.error(`[HiveOrchestrator] Error obteniendo estado:`, error);
       return null;
     }
-  }
-
-  async retrySubtask(taskId: string, subtaskId: string): Promise<boolean> {
-    return this.queensBee.retrySubtask(taskId, subtaskId);
   }
 
   async listActiveBots(): Promise<Array<{ id: string; role: string; status: string }>> {
@@ -136,6 +139,7 @@ export class HiveOrchestrator {
     completedTasks: number;
     totalSubtasks: number;
     completedSubtasks: number;
+    failedSubtasks: number;
   }> {
     const state = await this.stateStore.getState();
 
@@ -144,6 +148,9 @@ export class HiveOrchestrator {
     ).length;
 
     const totalSubtasks = state.tasks.flatMap((t) => t.subtasks).length;
+    const failedSubtasks = state.tasks.flatMap((t) =>
+      t.subtasks.filter((s) => s.status === 'failed')
+    ).length;
 
     return {
       activeBots: Object.values(state.bots).filter((b: Bot) => b.status === 'working').length,
@@ -151,7 +158,12 @@ export class HiveOrchestrator {
       completedTasks: state.tasks.filter((t) => t.status === 'completed').length,
       totalSubtasks,
       completedSubtasks,
+      failedSubtasks,
     };
+  }
+
+  async retrySubtask(taskId: string, subtaskId: string): Promise<boolean> {
+    return this.queensBee.retrySubtask(taskId, subtaskId);
   }
 
   async shutdown(): Promise<void> {

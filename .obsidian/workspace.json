@@ -181,14 +181,15 @@
     "logs/launchd-validate-structure.out.log",
     "logs/launchd-validate-structure.err.log",
     "logs",
-    "supabase/migrations/supabase",
-    "supabase/migrations/0047_evolution_governance.sql",
-    "supabase/migrations/0046_research_artifacts.sql",
-    "supabase/migrations/0045_sandbox_execution_audit.sql",
-    "supabase/migrations/0044_evolution_governance.sql",
-    "supabase/migrations/0043_research_artifacts.sql",
-    "apps/orchestrator/src/workers/ResearchWorker.ts",
-    "apps/orchestrator/src/workers/sandbox-policy.ts",
+    "apps/orchestrator/dist/workers/HiveWorker.js",
+    "apps/orchestrator/dist/workers/sandbox-policy.js",
+    "apps/orchestrator/dist/workers/evolution-worker.js",
+    "apps/orchestrator/dist/workers/base-worker.js",
+    "apps/orchestrator/dist/workers/SandboxWorker.js",
+    "apps/orchestrator/dist/workers/ResearchWorker.js",
+    "apps/orchestrator/dist/workers/AgentFarmWorker.js",
+    "apps/orchestrator/dist/bridges/kafka-client.js",
+    "packages/skills/user/opsly-jcode/SKILL.md",
     "docs/plans/AUTONOMY-GO-NO-GO-WEEKLY.md",
     "docs/AGENTS-ASSIGNMENTS.md",
     "docs/research/research-e7714857-87b5-463b-9e9a-fbc117bcb222.md",
@@ -212,7 +213,6 @@
     "node_modules/kafkajs/CONTRIBUTING.md",
     "node_modules/kafkajs/CHANGELOG.md",
     "docs/runbooks/KAFKA-AIRFLOW-BOOTSTRAP.md",
-    "docs/SECURITY-AUTONOMOUS-EXECUTION-POLICY.md",
-    "docs/adr/ADR-035-safe-autonomous-evolution-framework.md"
+    "docs/SECURITY-AUTONOMOUS-EXECUTION-POLICY.md"
   ]
 }
