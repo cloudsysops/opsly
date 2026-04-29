@@ -15,6 +15,7 @@ import {
   handleShutdownHive,
 } from './hive/http-handler.js';
 import { getTerminalSession, stopTerminalSession } from './workers/terminal-session-store.js';
+import { metricsStore } from './meta/orchestrator-metrics-store.js';
 
 const DEFAULT_PORT = 3011;
 const TENANT_SLUG_REGEX = /^[a-z0-9-]{3,64}$/;
@@ -864,6 +865,18 @@ export function startOrchestratorHealthServer(): Server {
         res.writeHead(500, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ error: String(err) }));
       }
+      return;
+    }
+
+    if (req.method === 'GET' && pathOnly === '/internal/meta-optimizer/metrics') {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(
+        JSON.stringify({
+          success: true,
+          summary: metricsStore.getSummary(),
+          recent_metrics: metricsStore.getAllMetrics().slice(0, 20),
+        })
+      );
       return;
     }
 
