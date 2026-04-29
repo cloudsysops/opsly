@@ -1,0 +1,39 @@
+{
+  "active_workflows": 3,
+  "workflows": {
+    "discord-to-github": {
+      "status": "active",
+      "last_run": "2026-04-29T12:00:00Z",
+      "trigger": "webhook",
+      "target": "github-api"
+    },
+    "backup-workflow": {
+      "status": "active",
+      "last_run": "2026-04-29T02:00:00Z",
+      "trigger": "cron",
+      "schedule": "0 2 * * *"
+    },
+    "tenant-onboard": {
+      "status": "active",
+      "last_run": "2026-04-28T15:30:00Z",
+      "trigger": "api"
+    }
+  },
+  "webhooks": {
+    "discord": {
+      "url": "https://n8n-smiletripcare.ops.smiletripcare.com/webhook/opsly-discord-task",
+      "secret_env": "N8N_WEBHOOK_SECRET_GH",
+      "methods": ["POST"]
+    }
+  },
+  "n8n_instances": [
+    {
+      "tenant_slug": "smiletripcare",
+      "url": "https://n8n-smiletripcare.ops.smiletripcare.com",
+      "status": "running",
+      "containers": ["tenant_smiletripcare_n8n_1"]
+    }
+  ],
+  "last_sync": "2026-04-29T15:30:00Z",
+  "sync_source": "/opt/opsly/context/system_state.json"
+}
