@@ -10,6 +10,10 @@ RUN npm ci --ignore-scripts
 COPY packages/types ./packages/types
 COPY apps/llm-gateway ./apps/llm-gateway
 COPY apps/context-builder ./apps/context-builder
+COPY AGENTS.md ./AGENTS.md
+COPY VISION.md ./VISION.md
+COPY docs ./docs
+COPY config/knowledge-index.json ./config/knowledge-index.json
 RUN npm ci --ignore-scripts \
   -w @intcloudsysops/types \
   -w @intcloudsysops/llm-gateway \

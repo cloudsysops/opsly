@@ -7,7 +7,7 @@ COPY package.json package-lock.json ./
 COPY apps/api/package.json ./apps/api/
 COPY apps/ml/package.json ./apps/ml/
 COPY apps/llm-gateway/package.json ./apps/llm-gateway/
-COPY apps/notebooklm-agent/package.json ./apps/notebooklm-agent/
+COPY apps/agents/notebooklm/package.json ./apps/agents/notebooklm/
 COPY packages/types/package.json ./packages/types/
 RUN npm ci --ignore-scripts
 RUN npm ci --ignore-scripts \
@@ -26,18 +26,18 @@ COPY --from=deps /repo/package-lock.json ./package-lock.json
 COPY apps/api ./apps/api
 COPY apps/ml ./apps/ml
 COPY apps/llm-gateway ./apps/llm-gateway
-COPY apps/notebooklm-agent ./apps/notebooklm-agent
+COPY apps/agents/notebooklm ./apps/agents/notebooklm
 COPY packages/types ./packages/types
 RUN npm ci --ignore-scripts \
   -w @intcloudsysops/types \
   -w @intcloudsysops/llm-gateway \
   -w @intcloudsysops/ml \
-  -w @intcloudsysops/notebooklm-agent \
+  -w @intcloudsysops/agents/notebooklm \
   -w @intcloudsysops/api
 RUN npm run build -w @intcloudsysops/types && \
     npm run build -w @intcloudsysops/llm-gateway && \
     npm run build -w @intcloudsysops/ml && \
-    npm run build -w @intcloudsysops/notebooklm-agent
+    npm run build -w @intcloudsysops/agents/notebooklm
 WORKDIR /repo/apps/api
 ENV NEXT_TELEMETRY_DISABLED=1
 # CORS en next.config: se resuelve en build (mismo origen admin = https://admin.${PLATFORM_DOMAIN})
