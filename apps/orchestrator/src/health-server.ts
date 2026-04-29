@@ -562,33 +562,75 @@ export function startOrchestratorHealthServer(): Server {
     }
 
     if (req.method === 'POST' && pathOnly === '/internal/hive/objective') {
-      await handleSubmitObjective(req, res);
+      await handleHiveObjective(req, res);
       return;
     }
 
     if (req.method === 'GET' && pathOnly.startsWith('/internal/hive/objective/')) {
+      if (!verifyPlatformAdminToken(req)) {
+        res.writeHead(401, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'unauthorized' }));
+        return;
+      }
+      await initializeHiveHandler();
       const prefix = '/internal/hive/objective/';
       const taskId = decodeURIComponent(pathOnly.slice(prefix.length)).trim();
       await handleGetObjectiveStatus(req, res, taskId);
       return;
     }
 
+    if (req.method === 'GET' && pathOnly.startsWith('/internal/hive/task/')) {
+      if (!verifyPlatformAdminToken(req)) {
+        res.writeHead(401, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'unauthorized' }));
+        return;
+      }
+      await initializeHiveHandler();
+      const prefix = '/internal/hive/task/';
+      const taskId = decodeURIComponent(pathOnly.slice(prefix.length)).trim();
+      await handleGetObjectiveStatus(req, res, taskId);
+      return;
+    }
+
     if (req.method === 'GET' && pathOnly === '/internal/hive/bots') {
+      if (!verifyPlatformAdminToken(req)) {
+        res.writeHead(401, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'unauthorized' }));
+        return;
+      }
+      await initializeHiveHandler();
       await handleListActiveBots(req, res);
       return;
     }
 
     if (req.method === 'GET' && pathOnly === '/internal/hive/stats') {
+      if (!verifyPlatformAdminToken(req)) {
+        res.writeHead(401, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'unauthorized' }));
+        return;
+      }
+      await initializeHiveHandler();
       await handleGetHiveStats(req, res);
       return;
     }
 
     if (req.method === 'POST' && pathOnly === '/internal/hive/shutdown') {
+      if (!verifyPlatformAdminToken(req)) {
+        res.writeHead(401, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'unauthorized' }));
+        return;
+      }
+      await initializeHiveHandler();
       await handleShutdownHive(req, res);
       return;
     }
 
     if (req.method === 'POST' && pathOnly === '/internal/hive/init') {
+      if (!verifyPlatformAdminToken(req)) {
+        res.writeHead(401, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'unauthorized' }));
+        return;
+      }
       try {
         await initializeHiveHandler();
         res.writeHead(200, { 'Content-Type': 'application/json' });
