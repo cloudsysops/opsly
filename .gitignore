@@ -1,3 +1,6 @@
+# Git worktrees (isolated development)
+.worktrees/
+
 # USB kit: overrides locales (SSH Host, etc.)
 tools/usb-kit/pen.local.json
 # Cifrados age de emergencia (.env, SSH, PAT) — nunca al repo
