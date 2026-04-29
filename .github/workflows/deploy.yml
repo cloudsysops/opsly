@@ -389,16 +389,45 @@ jobs:
     permissions:
       contents: read
       packages: read
-    env:
-      TAILSCALE_AUTHKEY: ${{ secrets.TAILSCALE_AUTHKEY }}
     steps:
       - uses: actions/checkout@v4
 
+      - name: Validate required deploy secrets (staging)
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_SSH_HOST: ${{ secrets.VPS_SSH_HOST }}
+          VPS_USER: ${{ secrets.VPS_USER }}
+          VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+          PLATFORM_DOMAIN: ${{ secrets.PLATFORM_DOMAIN }}
+          STAGING_PLATFORM_DOMAIN: ${{ secrets.STAGING_PLATFORM_DOMAIN }}
+        run: |
+          set -euo pipefail
+          missing=0
+          if [ -z "${VPS_USER:-}" ]; then
+            echo "Missing required secret: VPS_USER" >&2
+            missing=1
+          fi
+          if [ -z "${VPS_SSH_KEY:-}" ]; then
+            echo "Missing required secret: VPS_SSH_KEY" >&2
+            missing=1
+          fi
+          if [ -z "${VPS_SSH_HOST:-}" ] && [ -z "${VPS_HOST:-}" ]; then
+            echo "Missing required secret: VPS_SSH_HOST or VPS_HOST" >&2
+            missing=1
+          fi
+          if [ -z "${STAGING_PLATFORM_DOMAIN:-}" ] && [ -z "${PLATFORM_DOMAIN:-}" ]; then
+            echo "Missing required secret: STAGING_PLATFORM_DOMAIN or PLATFORM_DOMAIN" >&2
+            missing=1
+          fi
+          if [ "$missing" -ne 0 ]; then
+            exit 1
+          fi
+
       - name: Connect Tailscale for SSH to VPS (tailnet)
-        if: ${{ env.TAILSCALE_AUTHKEY != '' }}
+        if: ${{ secrets.TAILSCALE_AUTHKEY != '' }}
         uses: tailscale/github-action@v2
         with:
-          authkey: ${{ env.TAILSCALE_AUTHKEY }}
+          authkey: ${{ secrets.TAILSCALE_AUTHKEY }}
           version: 1.94.2
 
       - name: Deploy staging via SSH (compose)
@@ -548,16 +577,44 @@ jobs:
     permissions:
       contents: read
       packages: read
-    env:
-      TAILSCALE_AUTHKEY: ${{ secrets.TAILSCALE_AUTHKEY }}
     steps:
       - uses: actions/checkout@v4
 
+      - name: Validate required deploy secrets (production)
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_SSH_HOST: ${{ secrets.VPS_SSH_HOST }}
+          VPS_USER: ${{ secrets.VPS_USER }}
+          VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+          PLATFORM_DOMAIN: ${{ secrets.PLATFORM_DOMAIN }}
+        run: |
+          set -euo pipefail
+          missing=0
+          if [ -z "${VPS_USER:-}" ]; then
+            echo "Missing required secret: VPS_USER" >&2
+            missing=1
+          fi
+          if [ -z "${VPS_SSH_KEY:-}" ]; then
+            echo "Missing required secret: VPS_SSH_KEY" >&2
+            missing=1
+          fi
+          if [ -z "${VPS_SSH_HOST:-}" ] && [ -z "${VPS_HOST:-}" ]; then
+            echo "Missing required secret: VPS_SSH_HOST or VPS_HOST" >&2
+            missing=1
+          fi
+          if [ -z "${PLATFORM_DOMAIN:-}" ]; then
+            echo "Missing required secret: PLATFORM_DOMAIN" >&2
+            missing=1
+          fi
+          if [ "$missing" -ne 0 ]; then
+            exit 1
+          fi
+
       - name: Connect Tailscale for SSH to VPS (tailnet)
-        if: ${{ env.TAILSCALE_AUTHKEY != '' }}
+        if: ${{ secrets.TAILSCALE_AUTHKEY != '' }}
         uses: tailscale/github-action@v2
         with:
-          authkey: ${{ env.TAILSCALE_AUTHKEY }}
+          authkey: ${{ secrets.TAILSCALE_AUTHKEY }}
           version: 1.94.2
 
       - name: Deploy via SSH
