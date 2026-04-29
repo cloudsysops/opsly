@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import { createServer, type IncomingMessage, type Server, type ServerResponse } from 'node:http';
+import { resolveAutonomyPolicy } from './autonomy/policy.js';
 import { orchestratorModeLabel, parseOrchestratorRole } from './orchestrator-role.js';
 import { enqueueJob, orchestratorQueue } from './queue.js';
 import type { OrchestratorJob } from './types.js';
@@ -9,13 +10,14 @@ import {
   initializeHiveHandler,
   handleSubmitObjective,
   handleGetObjectiveStatus,
-  handleRetrySubtask,
   handleListActiveBots,
   handleGetHiveStats,
   handleShutdownHive,
 } from './hive/http-handler.js';
+import { getTerminalSession, stopTerminalSession } from './workers/terminal-session-store.js';
 
 const DEFAULT_PORT = 3011;
+const TENANT_SLUG_REGEX = /^[a-z0-9-]{3,64}$/;
 
 function parsePort(): number {
   const raw = process.env.ORCHESTRATOR_HEALTH_PORT || String(DEFAULT_PORT);
@@ -53,6 +55,51 @@ function verifyPlatformAdminToken(req: IncomingMessage): boolean {
   return bearer.length > 0 && bearer === expected;
 }
 
+function assertTenantSlugOrThrow(tenantSlug: string): void {
+  if (!TENANT_SLUG_REGEX.test(tenantSlug)) {
+    throw new Error(`invalid tenant_slug: ${tenantSlug}`);
+  }
+}
+
+function hasExplicitAutonomyApproval(req: IncomingMessage): boolean {
+  const raw = req.headers['x-autonomy-approved'];
+  if (Array.isArray(raw)) {
+    return raw.includes('true');
+  }
+  return raw === 'true';
+}
+
+function enrichAutonomyMetadata(req: IncomingMessage, job: OrchestratorJob): {
+  ok: true;
+} | {
+  ok: false;
+  status: number;
+  payload: Record<string, unknown>;
+} {
+  const policy = resolveAutonomyPolicy(job.type, job.autonomy_risk);
+  const metadata = {
+    ...(job.metadata ?? {}),
+    autonomy_risk: policy.riskLevel,
+    autonomy_requires_approval: policy.requiresApproval,
+    autonomy_auto_rollback: policy.allowAutoRollback,
+  };
+
+  if (policy.requiresApproval && !hasExplicitAutonomyApproval(req)) {
+    return {
+      ok: false,
+      status: 403,
+      payload: {
+        error: 'autonomy_approval_required',
+        autonomy_risk: policy.riskLevel,
+      },
+    };
+  }
+
+  job.autonomy_risk = policy.riskLevel;
+  job.metadata = metadata;
+  return { ok: true };
+}
+
 async function handleEnqueueOllama(req: IncomingMessage, res: ServerResponse): Promise<void> {
   if (!verifyPlatformAdminToken(req)) {
     res.writeHead(401, { 'Content-Type': 'application/json' });
@@ -78,6 +125,13 @@ async function handleEnqueueOllama(req: IncomingMessage, res: ServerResponse): P
   if (tenantSlug.length === 0 || prompt.length === 0) {
     res.writeHead(400, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ error: 'tenant_slug and prompt required' }));
+    return;
+  }
+  try {
+    assertTenantSlugOrThrow(tenantSlug);
+  } catch (err) {
+    res.writeHead(400, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: err instanceof Error ? err.message : String(err) }));
     return;
   }
   const taskRaw = b.task_type;
@@ -128,6 +182,12 @@ async function handleEnqueueOllama(req: IncomingMessage, res: ServerResponse): P
   };
 
   try {
+    const policyCheck = enrichAutonomyMetadata(req, job);
+    if (!policyCheck.ok) {
+      res.writeHead(policyCheck.status, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(policyCheck.payload));
+      return;
+    }
     const bull = await enqueueJob(job);
     res.writeHead(202, { 'Content-Type': 'application/json' });
     res.end(
@@ -226,6 +286,13 @@ async function handleEnqueueSandbox(req: IncomingMessage, res: ServerResponse): 
     res.end(JSON.stringify({ error: 'command and tenant_slug required' }));
     return;
   }
+  try {
+    assertTenantSlugOrThrow(tenantSlug);
+  } catch (err) {
+    res.writeHead(400, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: err instanceof Error ? err.message : String(err) }));
+    return;
+  }
 
   const image = typeof b.image === 'string' && b.image.length > 0 ? b.image : 'alpine:latest';
   const timeoutRaw = b.timeout;
@@ -251,6 +318,12 @@ async function handleEnqueueSandbox(req: IncomingMessage, res: ServerResponse): 
   };
 
   try {
+    const policyCheck = enrichAutonomyMetadata(req, job);
+    if (!policyCheck.ok) {
+      res.writeHead(policyCheck.status, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(policyCheck.payload));
+      return;
+    }
     const bull = await enqueueJob(job);
     res.writeHead(202, { 'Content-Type': 'application/json' });
     res.end(
@@ -298,6 +371,13 @@ async function handleEnqueueJcode(req: IncomingMessage, res: ServerResponse): Pr
     res.end(JSON.stringify({ error: 'prompt and tenant_slug required' }));
     return;
   }
+  try {
+    assertTenantSlugOrThrow(tenantSlug);
+  } catch (err) {
+    res.writeHead(400, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: err instanceof Error ? err.message : String(err) }));
+    return;
+  }
 
   const timeoutRaw = b.timeout;
   const timeout =
@@ -325,6 +405,12 @@ async function handleEnqueueJcode(req: IncomingMessage, res: ServerResponse): Pr
   };
 
   try {
+    const policyCheck = enrichAutonomyMetadata(req, job);
+    if (!policyCheck.ok) {
+      res.writeHead(policyCheck.status, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(policyCheck.payload));
+      return;
+    }
     const bull = await enqueueJob(job);
     res.writeHead(202, { 'Content-Type': 'application/json' });
     res.end(
@@ -346,8 +432,69 @@ async function handleHiveObjective(req: IncomingMessage, res: ServerResponse): P
     res.end(JSON.stringify({ error: 'unauthorized' }));
     return;
   }
-  await initializeHiveHandler();
-  await handleSubmitObjective(req, res);
+  let body: unknown;
+  try {
+    body = await readBody(req);
+  } catch {
+    res.writeHead(400, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'Invalid JSON' }));
+    return;
+  }
+  if (typeof body !== 'object' || body === null) {
+    res.writeHead(400, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'invalid body' }));
+    return;
+  }
+  const b = body as Record<string, unknown>;
+  const objective = typeof b.objective === 'string' ? b.objective.trim() : '';
+  const tenantSlug = typeof b.tenant_slug === 'string' ? b.tenant_slug.trim() : '';
+  const requestId =
+    typeof b.request_id === 'string' && b.request_id.length > 0 ? b.request_id : randomUUID();
+  if (objective.length === 0 || tenantSlug.length === 0) {
+    res.writeHead(400, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'objective and tenant_slug required' }));
+    return;
+  }
+  try {
+    assertTenantSlugOrThrow(tenantSlug);
+  } catch (err) {
+    res.writeHead(400, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: err instanceof Error ? err.message : String(err) }));
+    return;
+  }
+  const job: OrchestratorJob = {
+    type: 'hive_objective',
+    payload: {
+      objective,
+      tenant_slug: tenantSlug,
+      request_id: requestId,
+    },
+    tenant_slug: tenantSlug,
+    initiated_by: 'system',
+    request_id: requestId,
+    metadata: { labels: ['hive', 'swarmops', 'queen'] },
+  };
+
+  try {
+    const policyCheck = enrichAutonomyMetadata(req, job);
+    if (!policyCheck.ok) {
+      res.writeHead(policyCheck.status, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(policyCheck.payload));
+      return;
+    }
+    const bull = await enqueueJob(job);
+    res.writeHead(202, { 'Content-Type': 'application/json' });
+    res.end(
+      JSON.stringify({
+        success: true,
+        taskId: bull.id != null ? String(bull.id) : null,
+        request_id: requestId,
+      })
+    );
+  } catch (err) {
+    res.writeHead(500, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: String(err) }));
+  }
 }
 
 async function handleEnqueueAgentFarm(req: IncomingMessage, res: ServerResponse): Promise<void> {
@@ -381,6 +528,13 @@ async function handleEnqueueAgentFarm(req: IncomingMessage, res: ServerResponse)
     res.end(JSON.stringify({ error: 'task required' }));
     return;
   }
+  try {
+    assertTenantSlugOrThrow(tenantSlug);
+  } catch (err) {
+    res.writeHead(400, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: err instanceof Error ? err.message : String(err) }));
+    return;
+  }
 
   const requestId =
     typeof b.request_id === 'string' && b.request_id.length > 0 ? b.request_id : randomUUID();
@@ -401,6 +555,12 @@ async function handleEnqueueAgentFarm(req: IncomingMessage, res: ServerResponse)
   };
 
   try {
+    const policyCheck = enrichAutonomyMetadata(req, job);
+    if (!policyCheck.ok) {
+      res.writeHead(policyCheck.status, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(policyCheck.payload));
+      return;
+    }
     const bull = await enqueueJob(job);
     res.writeHead(202, { 'Content-Type': 'application/json' });
     res.end(
@@ -414,6 +574,140 @@ async function handleEnqueueAgentFarm(req: IncomingMessage, res: ServerResponse)
     res.writeHead(500, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ error: String(err) }));
   }
+}
+
+async function handleStartTerminalTask(req: IncomingMessage, res: ServerResponse): Promise<void> {
+  if (!verifyPlatformAdminToken(req)) {
+    res.writeHead(401, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'unauthorized' }));
+    return;
+  }
+
+  let body: unknown;
+  try {
+    body = await readBody(req);
+  } catch {
+    res.writeHead(400, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'Invalid JSON' }));
+    return;
+  }
+  if (typeof body !== 'object' || body === null) {
+    res.writeHead(400, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'invalid body' }));
+    return;
+  }
+  const b = body as Record<string, unknown>;
+  const agentId = typeof b.agent_id === 'string' ? b.agent_id.trim() : '';
+  const tenantSlug = typeof b.tenant_slug === 'string' ? b.tenant_slug.trim() : '';
+  const commands = Array.isArray(b.commands)
+    ? b.commands.filter((cmd): cmd is string => typeof cmd === 'string').map((cmd) => cmd.trim())
+    : [];
+
+  if (agentId.length === 0 || tenantSlug.length === 0 || commands.length === 0) {
+    res.writeHead(400, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'agent_id, tenant_slug and commands[] are required' }));
+    return;
+  }
+  try {
+    assertTenantSlugOrThrow(tenantSlug);
+  } catch (err) {
+    res.writeHead(400, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: err instanceof Error ? err.message : String(err) }));
+    return;
+  }
+
+  const timeoutSeconds =
+    typeof b.timeout_seconds === 'number' && Number.isFinite(b.timeout_seconds)
+      ? Math.floor(b.timeout_seconds)
+      : undefined;
+  const cwd = typeof b.cwd === 'string' && b.cwd.length > 0 ? b.cwd : undefined;
+  const requestId =
+    typeof b.request_id === 'string' && b.request_id.length > 0 ? b.request_id : randomUUID();
+
+  const job: OrchestratorJob = {
+    type: 'terminal_task',
+    payload: {
+      agent_id: agentId,
+      tenant_slug: tenantSlug,
+      commands,
+      timeout_seconds: timeoutSeconds,
+      cwd,
+    },
+    tenant_slug: tenantSlug,
+    initiated_by: 'system',
+    request_id: requestId,
+    metadata: { labels: ['terminal', 'autonomous-agent'] },
+  };
+
+  try {
+    const bull = await enqueueJob(job);
+    res.writeHead(202, { 'Content-Type': 'application/json' });
+    res.end(
+      JSON.stringify({
+        success: true,
+        job_id: bull.id != null ? String(bull.id) : null,
+        request_id: requestId,
+        agent_id: agentId,
+      })
+    );
+  } catch (err) {
+    res.writeHead(500, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: String(err) }));
+  }
+}
+
+async function handleTerminalStatus(
+  req: IncomingMessage,
+  res: ServerResponse,
+  pathOnly: string
+): Promise<void> {
+  if (!verifyPlatformAdminToken(req)) {
+    res.writeHead(401, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'unauthorized' }));
+    return;
+  }
+  const prefix = '/internal/terminal/status/';
+  const agentId = decodeURIComponent(pathOnly.slice(prefix.length)).trim();
+  if (agentId.length === 0) {
+    res.writeHead(400, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'agent_id required' }));
+    return;
+  }
+  const session = getTerminalSession(agentId);
+  if (!session) {
+    res.writeHead(404, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'session_not_found' }));
+    return;
+  }
+  res.writeHead(200, { 'Content-Type': 'application/json' });
+  res.end(JSON.stringify({ success: true, session }));
+}
+
+async function handleTerminalStop(
+  req: IncomingMessage,
+  res: ServerResponse,
+  pathOnly: string
+): Promise<void> {
+  if (!verifyPlatformAdminToken(req)) {
+    res.writeHead(401, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'unauthorized' }));
+    return;
+  }
+  const prefix = '/internal/terminal/stop/';
+  const agentId = decodeURIComponent(pathOnly.slice(prefix.length)).trim();
+  if (agentId.length === 0) {
+    res.writeHead(400, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'agent_id required' }));
+    return;
+  }
+  const result = stopTerminalSession(agentId);
+  if (!result.success) {
+    res.writeHead(404, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: result.reason ?? 'session_not_found' }));
+    return;
+  }
+  res.writeHead(200, { 'Content-Type': 'application/json' });
+  res.end(JSON.stringify({ success: true, agent_id: agentId, status: 'stopped' }));
 }
 
 async function handleJobById(req: IncomingMessage, res: ServerResponse, pathOnly: string): Promise<void> {
@@ -504,8 +798,28 @@ export function startOrchestratorHealthServer(): Server {
       return;
     }
 
+    if (req.method === 'POST' && pathOnly === '/internal/hive/objective') {
+      await handleHiveObjective(req, res);
+      return;
+    }
+
     if (req.method === 'POST' && pathOnly === '/internal/enqueue-agent-farm') {
       await handleEnqueueAgentFarm(req, res);
+      return;
+    }
+
+    if (req.method === 'POST' && pathOnly === '/internal/terminal/start') {
+      await handleStartTerminalTask(req, res);
+      return;
+    }
+
+    if (req.method === 'GET' && pathOnly.startsWith('/internal/terminal/status/')) {
+      await handleTerminalStatus(req, res, pathOnly);
+      return;
+    }
+
+    if (req.method === 'POST' && pathOnly.startsWith('/internal/terminal/stop/')) {
+      await handleTerminalStop(req, res, pathOnly);
       return;
     }
 
@@ -520,90 +834,28 @@ export function startOrchestratorHealthServer(): Server {
     }
 
     if (req.method === 'GET' && pathOnly.startsWith('/internal/hive/objective/')) {
-      if (!verifyPlatformAdminToken(req)) {
-        res.writeHead(401, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ error: 'unauthorized' }));
-        return;
-      }
-      await initializeHiveHandler();
       const prefix = '/internal/hive/objective/';
       const taskId = decodeURIComponent(pathOnly.slice(prefix.length)).trim();
       await handleGetObjectiveStatus(req, res, taskId);
       return;
     }
 
-    if (req.method === 'GET' && pathOnly.startsWith('/internal/hive/task/')) {
-      if (!verifyPlatformAdminToken(req)) {
-        res.writeHead(401, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ error: 'unauthorized' }));
-        return;
-      }
-      await initializeHiveHandler();
-      const prefix = '/internal/hive/task/';
-      const taskId = decodeURIComponent(pathOnly.slice(prefix.length)).trim();
-      await handleGetObjectiveStatus(req, res, taskId);
-      return;
-    }
-
-    if (
-      req.method === 'POST' &&
-      pathOnly.startsWith('/internal/hive/task/') &&
-      pathOnly.includes('/retry/')
-    ) {
-      if (!verifyPlatformAdminToken(req)) {
-        res.writeHead(401, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ error: 'unauthorized' }));
-        return;
-      }
-      await initializeHiveHandler();
-      const prefix = '/internal/hive/task/';
-      const rest = decodeURIComponent(pathOnly.slice(prefix.length)).trim();
-      const parts = rest.split('/retry/');
-      const taskId = parts[0]?.trim() ?? '';
-      const subtaskId = parts[1]?.trim() ?? '';
-      await handleRetrySubtask(req, res, taskId, subtaskId);
-      return;
-    }
-
     if (req.method === 'GET' && pathOnly === '/internal/hive/bots') {
-      if (!verifyPlatformAdminToken(req)) {
-        res.writeHead(401, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ error: 'unauthorized' }));
-        return;
-      }
-      await initializeHiveHandler();
       await handleListActiveBots(req, res);
       return;
     }
 
     if (req.method === 'GET' && pathOnly === '/internal/hive/stats') {
-      if (!verifyPlatformAdminToken(req)) {
-        res.writeHead(401, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ error: 'unauthorized' }));
-        return;
-      }
-      await initializeHiveHandler();
       await handleGetHiveStats(req, res);
       return;
     }
 
     if (req.method === 'POST' && pathOnly === '/internal/hive/shutdown') {
-      if (!verifyPlatformAdminToken(req)) {
-        res.writeHead(401, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ error: 'unauthorized' }));
-        return;
-      }
-      await initializeHiveHandler();
       await handleShutdownHive(req, res);
       return;
     }
 
     if (req.method === 'POST' && pathOnly === '/internal/hive/init') {
-      if (!verifyPlatformAdminToken(req)) {
-        res.writeHead(401, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ error: 'unauthorized' }));
-        return;
-      }
       try {
         await initializeHiveHandler();
         res.writeHead(200, { 'Content-Type': 'application/json' });

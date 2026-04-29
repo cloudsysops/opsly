@@ -1,0 +1,35 @@
+name: Tenant Onboarding Readiness
+
+on:
+  workflow_dispatch:
+    inputs:
+      tenant_slug:
+        description: "Tenant slug a validar"
+        required: true
+        type: string
+      api_url:
+        description: "API base URL (opcional)"
+        required: false
+        type: string
+
+jobs:
+  readiness:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Run tenant onboarding readiness checks
+        env:
+          API_URL: ${{ inputs.api_url }}
+        run: |
+          set -euo pipefail
+          if [ -z "${API_URL:-}" ]; then
+            API_URL="https://api.ops.smiletripcare.com"
+          fi
+          bash scripts/tenant/onboarding-readiness.sh --tenant-slug "${{ inputs.tenant_slug }}" --api-url "${API_URL}"

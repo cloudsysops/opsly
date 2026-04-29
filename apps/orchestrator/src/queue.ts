@@ -53,6 +53,7 @@ export async function enqueueJob(job: OrchestratorJob) {
     initiated_by: job.initiated_by,
     agent_role: job.agent_role,
     cost_budget_usd: job.cost_budget_usd,
+    autonomy_risk: job.autonomy_risk,
     queue_priority: opts.priority,
     metadata: job.metadata,
   });

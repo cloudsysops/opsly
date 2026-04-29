@@ -1,0 +1,31 @@
+{
+  "name": "context-builder",
+  "version": "1.0.0",
+  "description": "Construcción de contexto operativo y memoria de investigación por tenant para agentes OpenClaw.",
+  "role": "researcher",
+  "costTier": "balanced",
+  "tenantAccess": ["self", "cross-tenant-read"],
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "tenant_slug": { "type": "string" },
+      "request_id": { "type": "string" },
+      "query": { "type": "string" }
+    },
+    "additionalProperties": true
+  },
+  "outputSchema": {
+    "type": "object",
+    "properties": {
+      "context": { "type": "string" },
+      "sources": {
+        "type": "array",
+        "items": { "type": "string" }
+      },
+      "memory_tags": {
+        "type": "array",
+        "items": { "type": "string" }
+      }
+    }
+  }
+}

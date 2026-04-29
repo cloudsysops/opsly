@@ -24,8 +24,8 @@ Uso:
   ./scripts/opsly.sh <comando> [args]
 
 Comandos:
-  create-tenant <slug> --email <owner@email> --plan startup|business|enterprise [--name "Nombre"] [--dry-run]
-      Wrapper de onboard-tenant.sh para crear + desplegar tenant.
+  create-tenant <slug> --email <owner@email> --plan startup|business|enterprise [--dry-run]
+      Wrapper de tenant/onboard.sh para alta inicial del tenant.
 
   start-tenant <slug> [--wait] [--wait-seconds <n>] [--dry-run]
       Inicia stack existente desde TENANTS_PATH/docker-compose.<slug>.yml
@@ -144,7 +144,7 @@ case "${command}" in
     fi
     slug="$1"
     shift
-    exec "${_SCRIPT_DIR}/onboard-tenant.sh" --slug "${slug}" --ssh-host "${SSH_HOST}" "$@"
+    exec "${_SCRIPT_DIR}/tenant/onboard.sh" --slug "${slug}" "$@"
     ;;
   start-tenant)
     if [[ $# -lt 1 ]]; then
@@ -152,7 +152,7 @@ case "${command}" in
     fi
     slug="$1"
     shift
-    exec "${_SCRIPT_DIR}/start-tenant.sh" --slug "${slug}" "$@"
+    exec "${_SCRIPT_DIR}/deploy/rollout-tenant.sh" --slug "${slug}" "$@"
     ;;
   status)
     status_cmd "$@"

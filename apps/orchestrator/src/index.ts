@@ -32,10 +32,9 @@ import { startOllamaWorker } from './workers/OllamaWorker.js';
 import { startSuspensionWorker } from './workers/SuspensionWorker.js';
 import { startGeneralEventsWorker } from './workers/GeneralEventsWorker.js';
 import { startIntentDispatchWorker } from './workers/IntentDispatchWorker.js';
-import { startJcodeWorker } from './workers/JcodeWorker.js';
+import { startTerminalWorker } from './workers/TerminalWorker.js';
 import { closeWebhookQueue, createWebhookWorker } from './workers/WebhookWorker.js';
 import { startWebhooksProcessingWorker } from './workers/WebhooksProcessingWorker.js';
-import { startHiveWorker } from './workers/HiveWorker.js';
 
 type AsyncCleanup = () => Promise<void>;
 
@@ -79,8 +78,7 @@ function startAllWorkers(): AsyncCleanup[] {
   const generalEventsWorker = startGeneralEventsWorker();
   const ollamaWorker = startOllamaWorker(connection);
   const intentDispatchWorker = startIntentDispatchWorker(connection);
-  const jcodeWorker = startJcodeWorker(connection);
-  const hiveWorker = startHiveWorker(connection);
+  const terminalWorker = startTerminalWorker(connection);
 
   let agentClassifierCleanup: AsyncCleanup[] = [];
   if (process.env.OPSLY_AGENT_CLASSIFIER_WORKER_ENABLED === 'true') {
@@ -101,13 +99,12 @@ function startAllWorkers(): AsyncCleanup[] {
     async () => generalEventsWorker.close(),
     async () => ollamaWorker.close(),
     async () => intentDispatchWorker.close(),
-    async () => jcodeWorker.close(),
-    async () => hiveWorker.close(),
+    async () => terminalWorker.close(),
     ...agentClassifierCleanup
   );
 
   console.log(
-    '[orchestrator] Workers: cursor, n8n, notify, drive, backup, health, budget, opsly-webhooks, webhooks-processing, general-events, ollama, intent_dispatch, jcode, hive' +
+    '[orchestrator] Workers: cursor, n8n, notify, drive, backup, health, budget, opsly-webhooks, webhooks-processing, general-events, ollama, intent_dispatch, terminal_task' +
       (process.env.OPSLY_AGENT_CLASSIFIER_WORKER_ENABLED === 'true' ? ', agent-classifier' : '') +
       '; Hermes tick → servicio opsly-hermes (no este proceso).'
   );

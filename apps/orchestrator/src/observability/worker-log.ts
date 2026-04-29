@@ -1,5 +1,6 @@
 import type { Job } from 'bullmq';
 import type { OrchestratorJob } from '../types.js';
+import { parseAutonomyRiskLevel } from '../autonomy/policy.js';
 
 export type WorkerName =
   | 'cursor'
@@ -19,7 +20,8 @@ export type WorkerName =
   | 'intent_dispatch'
   | 'evolution'
   | 'hive'
-  | 'jcode';
+  | 'jcode'
+  | 'terminal';
 
 export function extractJobContext(job: Job): {
   task_id?: string;
@@ -29,10 +31,14 @@ export function extractJobContext(job: Job): {
   plan?: string;
   idempotency_key?: string;
   metadata?: Record<string, unknown>;
+  autonomy_risk?: 'low' | 'medium' | 'high';
 } {
   const d = job.data as Partial<OrchestratorJob> & {
     payload?: { tenant_id?: string; tenant_slug?: string };
   };
+  const autonomyRisk =
+    parseAutonomyRiskLevel(d.autonomy_risk) ??
+    parseAutonomyRiskLevel(d.metadata?.autonomy_risk);
   return {
     task_id: d.taskId,
     tenant_slug: d.tenant_slug ?? d.payload?.tenant_slug,
@@ -41,6 +47,7 @@ export function extractJobContext(job: Job): {
     plan: d.plan,
     idempotency_key: d.idempotency_key,
     metadata: d.metadata,
+    autonomy_risk: autonomyRisk,
   };
 }
 
@@ -60,6 +67,12 @@ export function logWorkerLifecycle(
     bullmq_job_id: String(job.id),
     status,
     ...ctx,
+    kpi_dimension: {
+      tenant_slug: ctx.tenant_slug ?? 'unknown',
+      request_id: ctx.request_id ?? 'unknown',
+      autonomy_risk: ctx.autonomy_risk ?? 'unknown',
+      success: phase === 'complete',
+    },
     ...extra,
   });
   process.stdout.write(`${line}\n`);

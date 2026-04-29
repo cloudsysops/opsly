@@ -1,0 +1,42 @@
+name: Promote Production Canary
+
+on:
+  workflow_dispatch:
+    inputs:
+      staging_api_url:
+        description: "Staging API URL"
+        required: false
+        type: string
+      production_api_url:
+        description: "Production API URL"
+        required: false
+        type: string
+      rollback_on_fail:
+        description: "Activar rollback si falla canary"
+        required: false
+        type: boolean
+        default: true
+
+jobs:
+  promote-canary:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run production canary promotion gate
+        env:
+          STAGING_API_URL: ${{ inputs.staging_api_url }}
+          PROD_API_URL: ${{ inputs.production_api_url }}
+          ROLLBACK_ON_FAIL: ${{ inputs.rollback_on_fail }}
+        run: |
+          set -euo pipefail
+          if [ -z "${STAGING_API_URL:-}" ]; then
+            STAGING_API_URL="https://api.ops.smiletripcare.com"
+          fi
+          if [ -z "${PROD_API_URL:-}" ]; then
+            PROD_API_URL="https://api.ops.smiletripcare.com"
+          fi
+          bash scripts/deploy/promote-canary.sh \
+            --staging-api-url "${STAGING_API_URL}" \
+            --prod-api-url "${PROD_API_URL}" \
+            $( [ "${ROLLBACK_ON_FAIL}" = "true" ] && echo "--rollback-on-fail" )

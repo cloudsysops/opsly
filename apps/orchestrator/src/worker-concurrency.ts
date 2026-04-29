@@ -15,7 +15,8 @@ export type WorkerConcurrencyKey =
   | 'webhooks-processing'
   | 'general-events'
   | 'agent-classifier'
-  | 'evolution';
+  | 'evolution'
+  | 'terminal';
 
 const FULL_STACK_DEFAULTS: Record<WorkerConcurrencyKey, number> = {
   cursor: 3,
@@ -33,6 +34,7 @@ const FULL_STACK_DEFAULTS: Record<WorkerConcurrencyKey, number> = {
   'general-events': 10,
   'agent-classifier': 2,
   evolution: 1,
+  terminal: 2,
 };
 
 const DISTRIBUTED_WORKER_DEFAULTS: Record<WorkerConcurrencyKey, number> = {
@@ -51,6 +53,7 @@ const DISTRIBUTED_WORKER_DEFAULTS: Record<WorkerConcurrencyKey, number> = {
   'general-events': 1,
   'agent-classifier': 1,
   evolution: 1,
+  terminal: 1,
 };
 
 const ENV_NAMES: Record<WorkerConcurrencyKey, string> = {
@@ -69,6 +72,7 @@ const ENV_NAMES: Record<WorkerConcurrencyKey, string> = {
   'general-events': 'ORCHESTRATOR_GENERAL_EVENTS_CONCURRENCY',
   'agent-classifier': 'ORCHESTRATOR_AGENT_CLASSIFIER_CONCURRENCY',
   evolution: 'ORCHESTRATOR_EVOLUTION_CONCURRENCY',
+  terminal: 'ORCHESTRATOR_TERMINAL_CONCURRENCY',
 };
 
 function parsePositiveInt(raw: string | undefined): number | null {

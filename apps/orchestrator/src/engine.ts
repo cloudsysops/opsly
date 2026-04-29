@@ -20,6 +20,8 @@ import {
 import { logPlannerActionEnqueued, logPlannerUnknownTool } from './observability/planner-log.js';
 import { parseOrchestratorRole, shouldRunControlPlane } from './orchestrator-role.js';
 import { executeRemotePlanner } from './planner-client.js';
+import { runOpenClawController } from './openclaw/controller.js';
+import { logOpenClawEvent } from './openclaw/observability.js';
 import {
   DEFAULT_PLANNER_TOOL_NAMES,
   buildPlannerContextSnapshot,
@@ -69,16 +71,6 @@ function buildOarActionQueues(): Record<string, Queue<OarEnqueueJobPayload>> {
   };
 }
 
-function effectiveIntent(req: IntentRequest): Intent {
-  if (req.intent === 'sprint_plan') {
-    return 'sprint_plan';
-  }
-  if (req.agent_role === 'planner' && req.intent !== 'remote_plan' && req.intent !== 'oar_react') {
-    return 'remote_plan';
-  }
-  return req.intent;
-}
-
 export interface ProcessIntentOptions {
   /**
    * Solo para jobs `intent_dispatch` en worker: permite `oar_react` sin control plane local
@@ -120,7 +112,8 @@ export async function processIntent(
   req: IntentRequest,
   options?: ProcessIntentOptions
 ): Promise<ProcessIntentResult> {
-  const intentPreview = effectiveIntent(req);
+  const routing = runOpenClawController(req);
+  const intentPreview = routing.intent;
   const allowOarOnWorker =
     options?.invokedFromIntentDispatchWorker === true && intentPreview === 'oar_react';
   if (!allowOarOnWorker && !shouldRunControlPlane(parseOrchestratorRole())) {
@@ -131,7 +124,28 @@ export async function processIntent(
   const jobs: OrchestratorJob[] = [];
   let batchIndex = 0;
 
-  const intent = effectiveIntent(req);
+  const intent = routing.intent;
+  logOpenClawEvent('openclaw_router_decision', {
+    request_id: req.request_id ?? null,
+    tenant_slug: req.tenant_slug ?? null,
+    agent_role: req.agent_role ?? null,
+    source_intent: req.intent,
+    routed_intent: intent,
+    reason: routing.reason,
+    execution_target: routing.execution.target,
+    execution_transport: routing.execution.transport,
+    execution_queue: routing.execution.queue,
+    execution_skill: routing.execution.skill,
+    execution_mcp_server: routing.execution.mcp?.server ?? null,
+    execution_mcp_tool: routing.execution.mcp?.tool ?? null,
+    llm_routing_bias: routing.llm.routing_bias,
+    routed_agent_id: routing.agent.id,
+    routed_agent_role: routing.agent.role,
+    routed_agent_skill_binding: routing.agent.skill_binding,
+    routed_model_tier: routing.agent.model_tier,
+    routed_targets: routing.agent.targets,
+    routed_tenant_permissions: routing.agent.tenant_permissions,
+  });
 
   switch (intent) {
     case 'oar_react': {
@@ -189,6 +203,7 @@ export async function processIntent(
         requestId: correlationId,
         tenantId: req.tenant_id,
         tenantPlan: req.plan,
+        routingBias: routing.llm.routing_bias ?? undefined,
       });
 
       const initialPrompt = `You are the Opsly OAR ReAct agent. Follow the JSON protocol in your instructions.\n\nUser task:\n${promptRaw}`;
@@ -240,7 +255,7 @@ export async function processIntent(
         })}\n`
       );
 
-      return {
+      const result = {
         jobs_enqueued: 0,
         job_ids: [],
         intent,
@@ -253,6 +268,14 @@ export async function processIntent(
           last_lifecycle_state: oarResult.lastLifecycleState,
         },
       };
+      logOpenClawEvent('openclaw_intent_result', {
+        request_id: correlationId,
+        tenant_slug: tenantSlug,
+        intent,
+        jobs_enqueued: result.jobs_enqueued,
+        oar_state: oarResult.state,
+      });
+      return result;
     }
     case 'sprint_plan': {
       const goal = typeof req.context.goal === 'string' ? req.context.goal.trim() : '';
@@ -282,13 +305,21 @@ export async function processIntent(
           })}\n`
         );
       });
-      return {
+      const result = {
         jobs_enqueued: 0,
         job_ids: [],
         intent,
         request_id: correlationId,
         sprint_id: sprintId,
       };
+      logOpenClawEvent('openclaw_intent_result', {
+        request_id: correlationId,
+        tenant_slug: tenantSlug,
+        intent,
+        jobs_enqueued: result.jobs_enqueued,
+        sprint_id: sprintId,
+      });
+      return result;
     }
     case 'remote_plan': {
       const tenantSlug = req.tenant_slug;
@@ -333,6 +364,7 @@ export async function processIntent(
           tenantSlug,
           requestId: correlationId,
           tenantPlan: req.plan,
+          routingBias: routing.llm.routing_bias ?? undefined,
         });
         meterPlannerLlmFireAndForget(tenantSlug, req.tenant_id, {
           model_used: gw.llm.model_used,
@@ -439,7 +471,7 @@ export async function processIntent(
           })
         );
 
-        return {
+        const result = {
           jobs_enqueued: enqueued.length,
           job_ids: enqueued.map((job) => String(job.id)),
           intent,
@@ -450,6 +482,14 @@ export async function processIntent(
             llm: gw.llm,
           },
         };
+        logOpenClawEvent('openclaw_intent_result', {
+          request_id: correlationId,
+          tenant_slug: tenantSlug,
+          intent,
+          jobs_enqueued: result.jobs_enqueued,
+          planner_actions: gw.planner.actions.length,
+        });
+        return result;
       } finally {
         meterRemotePlanWorkerFireAndForget(
           tenantSlug,
@@ -578,10 +618,17 @@ export async function processIntent(
       });
     })
   );
-  return {
+  const result = {
     jobs_enqueued: enqueued.length,
     job_ids: enqueued.map((job) => String(job.id)),
     intent,
     request_id: correlationId,
   };
+  logOpenClawEvent('openclaw_intent_result', {
+    request_id: correlationId,
+    tenant_slug: req.tenant_slug ?? null,
+    intent,
+    jobs_enqueued: result.jobs_enqueued,
+  });
+  return result;
 }
