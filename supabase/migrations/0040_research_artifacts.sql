@@ -37,6 +37,11 @@ CREATE INDEX IF NOT EXISTS idx_research_artifacts_query
 ALTER TABLE platform.research_artifacts ENABLE ROW LEVEL SECURITY;
 GRANT ALL ON TABLE platform.research_artifacts TO service_role;
 
-CREATE POLICY "orchestrator_all"
-  ON platform.research_artifacts
-  FOR ALL USING (true) WITH CHECK (true);
+DO $$
+BEGIN
+  CREATE POLICY "orchestrator_all"
+    ON platform.research_artifacts
+    FOR ALL USING (true) WITH CHECK (true);
+EXCEPTION WHEN duplicate_object THEN
+  NULL;
+END $$;

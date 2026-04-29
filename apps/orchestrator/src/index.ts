@@ -21,7 +21,6 @@ import { closeJobStateStore } from './state/store.js';
 import { TeamManager } from './teams/TeamManager.js';
 import { AutonomousScheduler } from './schedulers/autonomous-scheduler.js';
 import { CursorCopilotBridge } from './lib/cursor-copilot-bridge.js';
-import { OpslyCortex } from './cortex.js';
 import { startBackupWorker } from './workers/BackupWorker.js';
 import { startCursorWorker } from './workers/CursorWorker.js';
 import { startDriveWorker } from './workers/DriveWorker.js';
@@ -33,7 +32,7 @@ import { startOllamaWorker } from './workers/OllamaWorker.js';
 import { startSuspensionWorker } from './workers/SuspensionWorker.js';
 import { startGeneralEventsWorker } from './workers/GeneralEventsWorker.js';
 import { startIntentDispatchWorker } from './workers/IntentDispatchWorker.js';
-import { startSandboxWorker } from './workers/SandboxWorker.js';
+import { startAgentFarmWorker } from './workers/AgentFarmWorker.js';
 import { closeWebhookQueue, createWebhookWorker } from './workers/WebhookWorker.js';
 import { startWebhooksProcessingWorker } from './workers/WebhooksProcessingWorker.js';
 
@@ -67,6 +66,7 @@ async function runEventSubscription(teamManager: TeamManager): Promise<AsyncClea
 
 function startAllWorkers(): AsyncCleanup[] {
   const cleanup: AsyncCleanup[] = [];
+  const agentFarmWorker = startAgentFarmWorker();
   const cursorWorker = startCursorWorker(connection);
   const n8nWorker = startN8nWorker(connection);
   const notifyWorker = startNotifyWorker(connection);
@@ -79,7 +79,6 @@ function startAllWorkers(): AsyncCleanup[] {
   const generalEventsWorker = startGeneralEventsWorker();
   const ollamaWorker = startOllamaWorker(connection);
   const intentDispatchWorker = startIntentDispatchWorker(connection);
-  const sandboxWorker = startSandboxWorker(connection);
 
   let agentClassifierCleanup: AsyncCleanup[] = [];
   if (process.env.OPSLY_AGENT_CLASSIFIER_WORKER_ENABLED === 'true') {
@@ -88,6 +87,7 @@ function startAllWorkers(): AsyncCleanup[] {
   }
 
   cleanup.push(
+    async () => agentFarmWorker.close(),
     async () => cursorWorker.close(),
     async () => n8nWorker.close(),
     async () => notifyWorker.close(),
@@ -100,12 +100,11 @@ function startAllWorkers(): AsyncCleanup[] {
     async () => generalEventsWorker.close(),
     async () => ollamaWorker.close(),
     async () => intentDispatchWorker.close(),
-    async () => sandboxWorker.close(),
     ...agentClassifierCleanup
   );
 
   console.log(
-    '[orchestrator] Workers: cursor, n8n, notify, drive, backup, health, budget, opsly-webhooks, webhooks-processing, general-events, ollama, intent_dispatch, sandbox_execution' +
+    '[orchestrator] Workers: agent-farm, cursor, n8n, notify, drive, backup, health, budget, opsly-webhooks, webhooks-processing, general-events, ollama, intent_dispatch' +
       (process.env.OPSLY_AGENT_CLASSIFIER_WORKER_ENABLED === 'true' ? ', agent-classifier' : '') +
       '; Hermes tick → servicio opsly-hermes (no este proceso).'
   );
@@ -134,7 +133,6 @@ async function main(): Promise<void> {
   let teamManager: TeamManager | undefined;
   let autonomousScheduler: AutonomousScheduler | undefined;
   let cursorCopilotBridge: CursorCopilotBridge | undefined;
-  let opslyCortex: OpslyCortex | undefined;
   const cleanupTasks: AsyncCleanup[] = [];
 
   if (shouldRunControlPlane(role)) {
@@ -172,12 +170,6 @@ async function main(): Promise<void> {
     cursorCopilotBridge = new CursorCopilotBridge();
     await cursorCopilotBridge.start();
     cleanupTasks.push(async () => cursorCopilotBridge?.stop());
-  }
-
-  if (shouldRunControlPlane(role) && process.env.OPSLY_CORTEX_ENABLED === 'true') {
-    opslyCortex = new OpslyCortex();
-    opslyCortex.start();
-    cleanupTasks.push(async () => opslyCortex?.stop());
   }
 
   if (shouldRunWorkers(role)) {

@@ -8,7 +8,9 @@ export type JobType =
   | 'ollama'
   | 'sandbox_execution'
   /** Payload: `{ intent_request: IntentRequest }` — ejecuta `processIntent` (p. ej. `oar_react`) en worker. */
-  | 'intent_dispatch';
+  | 'intent_dispatch'
+  /** Payload: `{ role: 'dev-api' | 'dev-ui' | 'devops', task: string, max_steps: number, tenant_slug: string }` */
+  | 'agent_farm';
 
 export interface SandboxExecutionPayload {
   type: 'sandbox_execution';

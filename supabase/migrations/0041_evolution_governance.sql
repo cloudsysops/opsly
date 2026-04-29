@@ -38,10 +38,20 @@ ALTER TABLE platform.evolution_proposals ENABLE ROW LEVEL SECURITY;
 GRANT ALL ON TABLE platform.evolution_gap_analyses TO service_role;
 GRANT ALL ON TABLE platform.evolution_proposals TO service_role;
 
-CREATE POLICY "orchestrator_gaps"
-  ON platform.evolution_gap_analyses
-  FOR ALL USING (true) WITH CHECK (true);
+DO $$
+BEGIN
+  CREATE POLICY "orchestrator_gaps"
+    ON platform.evolution_gap_analyses
+    FOR ALL USING (true) WITH CHECK (true);
+EXCEPTION WHEN duplicate_object THEN
+  NULL;
+END $$;
 
-CREATE POLICY "orchestrator_proposals"
-  ON platform.evolution_proposals
-  FOR ALL USING (true) WITH CHECK (true);
+DO $$
+BEGIN
+  CREATE POLICY "orchestrator_proposals"
+    ON platform.evolution_proposals
+    FOR ALL USING (true) WITH CHECK (true);
+EXCEPTION WHEN duplicate_object THEN
+  NULL;
+END $$;
