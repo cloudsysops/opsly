@@ -339,6 +339,64 @@ async function handleEnqueueJcode(req: IncomingMessage, res: ServerResponse): Pr
   }
 }
 
+async function handleHiveObjective(req: IncomingMessage, res: ServerResponse): Promise<void> {
+  if (!verifyPlatformAdminToken(req)) {
+    res.writeHead(401, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'unauthorized' }));
+    return;
+  }
+  let body: unknown;
+  try {
+    body = await readBody(req);
+  } catch {
+    res.writeHead(400, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'Invalid JSON' }));
+    return;
+  }
+  if (typeof body !== 'object' || body === null) {
+    res.writeHead(400, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'invalid body' }));
+    return;
+  }
+  const b = body as Record<string, unknown>;
+  const objective = typeof b.objective === 'string' ? b.objective.trim() : '';
+  const tenantSlug = typeof b.tenant_slug === 'string' ? b.tenant_slug.trim() : '';
+  const requestId =
+    typeof b.request_id === 'string' && b.request_id.length > 0 ? b.request_id : randomUUID();
+  if (objective.length === 0 || tenantSlug.length === 0) {
+    res.writeHead(400, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'objective and tenant_slug required' }));
+    return;
+  }
+  const job: OrchestratorJob = {
+    type: 'hive_objective',
+    payload: {
+      objective,
+      tenant_slug: tenantSlug,
+      request_id: requestId,
+    },
+    tenant_slug: tenantSlug,
+    initiated_by: 'system',
+    request_id: requestId,
+    metadata: { labels: ['hive', 'swarmops', 'queen'] },
+  };
+
+  try {
+    const bull = await enqueueJob(job);
+    res.writeHead(202, { 'Content-Type': 'application/json' });
+    res.end(
+      JSON.stringify({
+        success: true,
+        taskId: bull.id != null ? String(bull.id) : null,
+        request_id: requestId,
+      })
+    );
+  } catch (err) {
+    res.writeHead(500, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: String(err) }));
+  }
+}
+
 async function handleEnqueueAgentFarm(req: IncomingMessage, res: ServerResponse): Promise<void> {
   let body: unknown;
   try {
@@ -504,22 +562,12 @@ export function startOrchestratorHealthServer(): Server {
     }
 
     if (req.method === 'POST' && pathOnly === '/internal/hive/objective') {
-      await initializeHiveHandler();
       await handleSubmitObjective(req, res);
       return;
     }
 
     if (req.method === 'GET' && pathOnly.startsWith('/internal/hive/objective/')) {
-      await initializeHiveHandler();
       const prefix = '/internal/hive/objective/';
-      const taskId = decodeURIComponent(pathOnly.slice(prefix.length)).trim();
-      await handleGetObjectiveStatus(req, res, taskId);
-      return;
-    }
-
-    if (req.method === 'GET' && pathOnly.startsWith('/internal/hive/task/')) {
-      await initializeHiveHandler();
-      const prefix = '/internal/hive/task/';
       const taskId = decodeURIComponent(pathOnly.slice(prefix.length)).trim();
       await handleGetObjectiveStatus(req, res, taskId);
       return;
