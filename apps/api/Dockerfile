@@ -9,7 +9,6 @@ COPY apps/ml/package.json ./apps/ml/
 COPY apps/llm-gateway/package.json ./apps/llm-gateway/
 COPY apps/agents/notebooklm/package.json ./apps/agents/notebooklm/
 COPY packages/types/package.json ./packages/types/
-RUN npm ci --ignore-scripts
 RUN npm ci --ignore-scripts \
   -w @intcloudsysops/types \
   -w @intcloudsysops/llm-gateway \
@@ -32,12 +31,12 @@ RUN npm ci --ignore-scripts \
   -w @intcloudsysops/types \
   -w @intcloudsysops/llm-gateway \
   -w @intcloudsysops/ml \
-  -w @intcloudsysops/agents/notebooklm \
+  -w @intcloudsysops/notebooklm-agent \
   -w @intcloudsysops/api
 RUN npm run build -w @intcloudsysops/types && \
     npm run build -w @intcloudsysops/llm-gateway && \
     npm run build -w @intcloudsysops/ml && \
-    npm run build -w @intcloudsysops/agents/notebooklm
+    npm run build -w @intcloudsysops/notebooklm-agent
 WORKDIR /repo/apps/api
 ENV NEXT_TELEMETRY_DISABLED=1
 # CORS en next.config: se resuelve en build (mismo origen admin = https://admin.${PLATFORM_DOMAIN})

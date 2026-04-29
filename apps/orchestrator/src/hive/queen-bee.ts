@@ -25,6 +25,24 @@ export function inferBotRoleFromDescription(description: string): BotRole {
   return 'coder';
 }
 
+export function decomposeObjectiveIntoSubtasks(objective: string, hiveTaskId: string): Subtask[] {
+  const baseParts = objective
+    .split(/\n|;|\.(?=\s+[A-ZÁÉÍÓÚÑa-záéíóúñ])/g)
+    .map((p) => p.trim())
+    .filter((p) => p.length > 0);
+  const parts = baseParts.length > 0 ? baseParts : [objective.trim()];
+  return parts.map((description, index) => ({
+    id: `${hiveTaskId}-subtask-${index + 1}`,
+    taskId: hiveTaskId,
+    parentTaskId: hiveTaskId,
+    description,
+    assignedBotRole: inferBotRoleFromDescription(description),
+    status: 'pending' as const,
+    dependencies: index === 0 ? [] : [`${hiveTaskId}-subtask-${index}`],
+    createdAt: new Date(),
+  }));
+}
+
 export class QueenBee {
   private readonly hiveState: HiveStateStore;
   private readonly pheromones: PheromoneChannel;
@@ -46,21 +64,7 @@ export class QueenBee {
   }
 
   private decomposeObjective(objective: string, hiveTaskId: string): Subtask[] {
-    const baseParts = objective
-      .split(/\n|;|\.(?=\s+[A-ZÁÉÍÓÚÑa-záéíóúñ])/g)
-      .map((p) => p.trim())
-      .filter((p) => p.length > 0);
-    const parts = baseParts.length > 0 ? baseParts : [objective.trim()];
-    return parts.map((description, index) => ({
-      id: `${hiveTaskId}-subtask-${index + 1}`,
-      taskId: hiveTaskId,
-      parentTaskId: hiveTaskId,
-      description,
-      assignedBotRole: inferBotRoleFromDescription(description),
-      status: 'pending' as const,
-      dependencies: index === 0 ? [] : [`${hiveTaskId}-subtask-${index}`],
-      createdAt: new Date(),
-    }));
+    return decomposeObjectiveIntoSubtasks(objective, hiveTaskId);
   }
 
   private pickAvailableBotId(
@@ -81,7 +85,6 @@ export class QueenBee {
     const snapshot = await this.hiveState.getState();
     const role = subtask.assignedBotRole ?? 'coder';
     const botId = this.pickAvailableBotId(role, snapshot.bots);
-    
     if (!botId) {
       await this.pheromones.publish({
         from: 'queen',
