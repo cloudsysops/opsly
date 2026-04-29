@@ -5,11 +5,10 @@ COPY packages/types/package.json ./packages/types/
 COPY apps/mcp/package.json ./apps/mcp/
 COPY apps/llm-gateway/package.json ./apps/llm-gateway/
 COPY apps/agents/notebooklm/package.json ./apps/agents/notebooklm/
-RUN npm ci --ignore-scripts
 RUN npm ci --ignore-scripts \
   -w @intcloudsysops/types \
   -w @intcloudsysops/llm-gateway \
-  -w @intcloudsysops/notebooklm-agent \
+  -w @intcloudsysops/agents/notebooklm \
   -w @intcloudsysops/mcp
 
 FROM node:20-alpine AS builder
@@ -24,7 +23,7 @@ COPY apps/agents/notebooklm ./apps/agents/notebooklm
 RUN npm ci --ignore-scripts \
   -w @intcloudsysops/types \
   -w @intcloudsysops/llm-gateway \
-  -w @intcloudsysops/notebooklm-agent \
+  -w @intcloudsysops/agents/notebooklm \
   -w @intcloudsysops/mcp
 # Build types first (required by llm-gateway), then other workspaces
 RUN npm run build -w @intcloudsysops/types && \

@@ -29,10 +29,11 @@ import { startN8nWorker } from './workers/N8nWorker.js';
 import { startNotifyWorker } from './workers/NotifyWorker.js';
 import { startAgentClassifierWorker } from './workers/AgentClassifierWorker.js';
 import { startOllamaWorker } from './workers/OllamaWorker.js';
+import { createResearchWorker } from './workers/ResearchWorker.js';
 import { startSuspensionWorker } from './workers/SuspensionWorker.js';
 import { startGeneralEventsWorker } from './workers/GeneralEventsWorker.js';
 import { startIntentDispatchWorker } from './workers/IntentDispatchWorker.js';
-import { startAgentFarmWorker } from './workers/AgentFarmWorker.js';
+import { startEvolutionWorker } from './workers/evolution-worker.js';
 import { closeWebhookQueue, createWebhookWorker } from './workers/WebhookWorker.js';
 import { startWebhooksProcessingWorker } from './workers/WebhooksProcessingWorker.js';
 
@@ -66,7 +67,6 @@ async function runEventSubscription(teamManager: TeamManager): Promise<AsyncClea
 
 function startAllWorkers(): AsyncCleanup[] {
   const cleanup: AsyncCleanup[] = [];
-  const agentFarmWorker = startAgentFarmWorker();
   const cursorWorker = startCursorWorker(connection);
   const n8nWorker = startN8nWorker(connection);
   const notifyWorker = startNotifyWorker(connection);
@@ -79,6 +79,8 @@ function startAllWorkers(): AsyncCleanup[] {
   const generalEventsWorker = startGeneralEventsWorker();
   const ollamaWorker = startOllamaWorker(connection);
   const intentDispatchWorker = startIntentDispatchWorker(connection);
+  const researchWorker = createResearchWorker(connection);
+  const evolutionWorker = startEvolutionWorker(connection);
 
   let agentClassifierCleanup: AsyncCleanup[] = [];
   if (process.env.OPSLY_AGENT_CLASSIFIER_WORKER_ENABLED === 'true') {
@@ -87,7 +89,6 @@ function startAllWorkers(): AsyncCleanup[] {
   }
 
   cleanup.push(
-    async () => agentFarmWorker.close(),
     async () => cursorWorker.close(),
     async () => n8nWorker.close(),
     async () => notifyWorker.close(),
@@ -100,11 +101,13 @@ function startAllWorkers(): AsyncCleanup[] {
     async () => generalEventsWorker.close(),
     async () => ollamaWorker.close(),
     async () => intentDispatchWorker.close(),
+    async () => researchWorker.close(),
+    async () => evolutionWorker.close(),
     ...agentClassifierCleanup
   );
 
   console.log(
-    '[orchestrator] Workers: agent-farm, cursor, n8n, notify, drive, backup, health, budget, opsly-webhooks, webhooks-processing, general-events, ollama, intent_dispatch' +
+    '[orchestrator] Workers: cursor, n8n, notify, drive, backup, health, budget, opsly-webhooks, webhooks-processing, general-events, ollama, intent_dispatch, research, evolution' +
       (process.env.OPSLY_AGENT_CLASSIFIER_WORKER_ENABLED === 'true' ? ', agent-classifier' : '') +
       '; Hermes tick → servicio opsly-hermes (no este proceso).'
   );

@@ -6,6 +6,8 @@ export type JobType =
   | 'backup'
   | 'health'
   | 'ollama'
+  | 'research'
+  | 'evolution'
   | 'sandbox_execution'
   /** Payload: `{ intent_request: IntentRequest }` — ejecuta `processIntent` (p. ej. `oar_react`) en worker. */
   | 'intent_dispatch'
