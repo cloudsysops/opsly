@@ -139,6 +139,7 @@ export async function processIntent(
     execution_mcp_server: routing.execution.mcp?.server ?? null,
     execution_mcp_tool: routing.execution.mcp?.tool ?? null,
     llm_routing_bias: routing.llm.routing_bias,
+    llm_provider_hint: routing.llm.provider_hint,
     routed_agent_id: routing.agent.id,
     routed_agent_role: routing.agent.role,
     routed_agent_skill_binding: routing.agent.skill_binding,
@@ -204,6 +205,7 @@ export async function processIntent(
         tenantId: req.tenant_id,
         tenantPlan: req.plan,
         routingBias: routing.llm.routing_bias ?? undefined,
+        providerHint: routing.llm.provider_hint ?? undefined,
       });
 
       const initialPrompt = `You are the Opsly OAR ReAct agent. Follow the JSON protocol in your instructions.\n\nUser task:\n${promptRaw}`;
@@ -365,6 +367,7 @@ export async function processIntent(
           requestId: correlationId,
           tenantPlan: req.plan,
           routingBias: routing.llm.routing_bias ?? undefined,
+          providerHint: routing.llm.provider_hint ?? undefined,
         });
         meterPlannerLlmFireAndForget(tenantSlug, req.tenant_id, {
           model_used: gw.llm.model_used,

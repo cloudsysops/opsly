@@ -5,6 +5,10 @@ const ROLE_ALLOWED_INTENTS: Record<AgentRole, readonly Intent[]> = {
   executor: ['execute_code', 'trigger_workflow', 'sync_drive', 'full_pipeline', 'oar_react'],
   tool: ['notify', 'sync_drive'],
   notifier: ['notify'],
+  builder: ['execute_code', 'trigger_workflow', 'full_pipeline', 'remote_plan', 'oar_react'],
+  skeptic: ['notify', 'remote_plan', 'oar_react', 'execute_code', 'full_pipeline'],
+  validator: ['notify', 'remote_plan', 'sprint_plan', 'full_pipeline'],
+  researcher: ['notify', 'remote_plan', 'sync_drive', 'full_pipeline'],
 };
 
 export function getAllowedIntentsForRole(role: AgentRole): readonly Intent[] {

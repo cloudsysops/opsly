@@ -49,8 +49,20 @@ Definidos en `apps/llm-gateway/src/providers.ts` y costes en `router.ts` / `esti
 | GPT-4o mini             | 2            | ~$0.00015 in / $0.0006 out    | Fallback OpenAI                                                              |
 | Claude Sonnet           | 3            | ~$0.003 in / $0.015 out       | Arquitectura, código complejo                                                |
 | GPT-4o                  | 3            | ~$0.005 in / $0.015 out       | Fallback si Sonnet no disponible                                             |
+| **DeepSeek** (`deepseek_chat`) | 2       | Bajo (API compatible OpenAI) | Cadena cloud vía `llmCallDirect`: primero con `routing_bias=cost` o `provider_hint=deepseek` si hay `DEEPSEEK_API_KEY` |
 
-Salud en Redis se agrupa por **API**: `anthropic`, `llama_local`, `openrouter`, `openai`.
+Salud en Redis se agrupa por **API**: `anthropic`, `llama_local`, `openrouter`, `openai`, y **`deepseek`** si la clave está configurada.
+
+### DeepSeek (OpenAI-compatible)
+
+- **Variables:** `DEEPSEEK_API_KEY` (obligatoria para activar el proveedor), `DEEPSEEK_BASE_URL` (default `https://api.deepseek.com/v1`), `DEEPSEEK_MODEL` (default `deepseek-chat` — ajustar en Doppler cuando DeepSeek publique el id exacto de V4).
+- **Id de proveedor interno:** `deepseek_chat` (definido en `apps/llm-gateway/src/providers.ts`).
+- **Orden en cadena cloud** (`apps/llm-gateway/src/cloud-chain.ts`):
+  - `routing_bias=cost` **o** `provider_hint=deepseek` → DeepSeek primero (si hay clave).
+  - `balanced` → Haiku, DeepSeek, GPT-4o mini, OpenRouter cheap.
+  - `quality` → Haiku, mini, OpenRouter, DeepSeek al final.
+- **HTTP:** `POST /v1/chat/completions` y `POST /v1/text` aceptan `routing_bias` y `provider_hint: "deepseek"` en el JSON.
+- **OpenClaw:** el rol **`skeptic`** fija `provider_hint=deepseek` en la decisión de control (`control-layer.ts`) para priorizar DeepSeek en planner y OAR vía gateway, sin hardcodear secretos.
 
 ## Flujo
 

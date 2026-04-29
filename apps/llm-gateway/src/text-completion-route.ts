@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import type { IncomingMessage, ServerResponse } from 'node:http';
 import { GatewayHttpError, llmCallDirect } from './llm-direct.js';
+import type { RoutingBias } from './routing-hints.js';
 import type { LLMRequest, TenantPlan } from './types.js';
 
 export type OllamaTaskType = 'analyze' | 'generate' | 'review' | 'summarize';
@@ -11,6 +12,8 @@ export interface TextCompletionBody {
   request_id?: string;
   task_type?: OllamaTaskType;
   prompt: string;
+  routing_bias?: RoutingBias;
+  provider_hint?: 'deepseek';
   user_id?: string;
   feature?: string;
   usage_metadata?: Record<string, unknown>;
@@ -132,6 +135,13 @@ export async function handleTextCompletionHttp(
     typeof body.feature === 'string' && body.feature.length > 0 ? body.feature : undefined;
   const usageMeta = parseUsageMetadataField(body.usage_metadata);
 
+  const routingRaw = body.routing_bias;
+  const routingBias: RoutingBias | undefined =
+    routingRaw === 'cost' || routingRaw === 'balanced' || routingRaw === 'quality'
+      ? routingRaw
+      : undefined;
+  const providerHint = body.provider_hint === 'deepseek' ? 'deepseek' : undefined;
+
   const userContent = `${prefixForTask(taskType)}${prompt.trim()}`;
   const llmReq: LLMRequest = {
     tenant_slug: tenantSlug,
@@ -140,7 +150,8 @@ export async function handleTextCompletionHttp(
     messages: [{ role: 'user', content: userContent }],
     legacy_pipeline: true,
     model: 'cheap',
-    routing_bias: 'cost',
+    routing_bias: routingBias ?? 'cost',
+    ...(providerHint !== undefined ? { provider_hint: providerHint } : {}),
     max_tokens: 1024,
     temperature: 0.2,
     skip_repo_context: true,

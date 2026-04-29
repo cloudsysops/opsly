@@ -112,12 +112,14 @@ export function applyOpenClawControlLayer(req: IntentRequest): OpenClawControlDe
             }
           : { target: null, transport: null, queue: null, skill: null, mcp: null };
   const routingBias = modelTierToRoutingBias(agent?.modelTier ?? null);
+  const providerHint = agent?.role === 'skeptic' ? ('deepseek' as const) : null;
   return {
     intent: routing.intent,
     reason: routing.reason,
     execution,
     llm: {
       routing_bias: routingBias,
+      provider_hint: providerHint,
     },
     agent: {
       id: agent?.id ?? null,

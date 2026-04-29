@@ -36,8 +36,19 @@ export interface TerminalTaskPayload {
   cwd?: string;
 }
 
-/** Rol convencional para trazabilidad (no framework aparte). */
-export type AgentRole = 'planner' | 'executor' | 'tool' | 'notifier';
+/**
+ * Rol convencional para trazabilidad (no framework aparte).
+ * Incluye roles extendidos OpenClaw (`registry.ts`) usados en control layer y jobs.
+ */
+export type AgentRole =
+  | 'planner'
+  | 'executor'
+  | 'tool'
+  | 'notifier'
+  | 'builder'
+  | 'skeptic'
+  | 'validator'
+  | 'researcher';
 export type AutonomyRiskLevel = 'low' | 'medium' | 'high';
 
 export interface OrchestratorJob {

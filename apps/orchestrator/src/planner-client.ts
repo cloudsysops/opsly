@@ -39,6 +39,7 @@ export interface ExecuteRemotePlannerOptions {
   requestId: string;
   tenantPlan?: 'startup' | 'business' | 'enterprise';
   routingBias?: 'cost' | 'balanced' | 'quality';
+  providerHint?: 'deepseek';
 }
 
 function normalizeActions(raw: unknown): PlannerResponse['actions'] {
@@ -84,6 +85,7 @@ export async function executeRemotePlanner(
     request_id: options.requestId,
     tenant_plan: options.tenantPlan,
     routing_bias: options.routingBias,
+    ...(options.providerHint === 'deepseek' ? { provider_hint: 'deepseek' as const } : {}),
     messages: [
       { role: 'system', content: REMOTE_PLANNER_SYSTEM_PROMPT },
       { role: 'user', content: userContent },

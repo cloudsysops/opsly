@@ -35,6 +35,14 @@ describe('openclaw router + contracts', () => {
     expect(result.execution.skill).toBeNull();
     expect(result.execution.mcp).toBeNull();
     expect(result.llm.routing_bias).toBe('balanced');
+    expect(result.llm.provider_hint).toBeNull();
+  });
+
+  it('sets DeepSeek provider hint for skeptic role', () => {
+    const result = applyOpenClawControlLayer(baseRequest({ intent: 'notify', agent_role: 'skeptic' }));
+    expect(result.agent.role).toBe('skeptic');
+    expect(result.llm.provider_hint).toBe('deepseek');
+    expect(result.llm.routing_bias).toBe('quality');
   });
 
   it('supports MCP execution for tool role when requested', () => {

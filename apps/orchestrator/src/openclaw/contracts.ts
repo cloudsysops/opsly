@@ -30,6 +30,8 @@ export interface OpenClawControlDecisionContract {
   };
   llm: {
     routing_bias: 'cost' | 'balanced' | 'quality' | null;
+    /** Prioriza DeepSeek en la cadena cloud del LLM Gateway (p. ej. rol skeptic). */
+    provider_hint: 'deepseek' | null;
   };
   agent: {
     id: string | null;

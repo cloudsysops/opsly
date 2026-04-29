@@ -2,12 +2,8 @@ import { runOpenClawController } from './controller.js';
 import type { OpenClawControllerContract } from './contracts.js';
 import type { AgentRole } from '../types.js';
 
-export type OpenClawAgentRole =
-  | AgentRole
-  | 'builder'
-  | 'skeptic'
-  | 'validator'
-  | 'researcher';
+/** Alias de `AgentRole` del orchestrator (incluye roles extendidos OpenClaw). */
+export type OpenClawAgentRole = AgentRole;
 export type OpenClawAgentTarget = 'queue' | 'skill' | 'mcp';
 export type OpenClawModelTier = 'cheap' | 'balanced' | 'premium';
 export type OpenClawTenantPermission = 'self' | 'cross-tenant-read' | 'cross-tenant-write';

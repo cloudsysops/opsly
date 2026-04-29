@@ -21,6 +21,7 @@ export interface CreateOarTextCompletionClientOptions {
   tenantId?: string;
   tenantPlan?: 'startup' | 'business' | 'enterprise';
   routingBias?: 'cost' | 'balanced' | 'quality';
+  providerHint?: 'deepseek';
   /** Override base URL (tests). */
   baseUrl?: string;
   /** Desactiva Hermes / Redis metering (tests). */
@@ -47,6 +48,7 @@ export function createOarTextCompletionClient(
           request_id: options.requestId,
           tenant_plan: options.tenantPlan,
           routing_bias: options.routingBias,
+          ...(options.providerHint === 'deepseek' ? { provider_hint: 'deepseek' } : {}),
           prompt,
         }),
       });
