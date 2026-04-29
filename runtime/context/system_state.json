@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-04-28",
-  "phase": "fase-2-producto-ia",
+  "last_updated": "2026-04-29",
+  "phase": "fase-2-producto-ia-autonomy-phase3",
   "vps": {
     "ip": "157.245.223.7",
     "tailscale": "100.120.151.91",
@@ -76,6 +76,31 @@
     "leads_generated": 0,
     "projected_revenue": 297,
     "conversion_rate": 0.3
+  },
+  "economics": {
+    "weekly_report_generated": "2026-04-29T20:00:00Z",
+    "top_cost_drivers": [
+      {"service": "llm-gateway", "cost_pct": 35, "optimization": "batch requests"},
+      {"service": "context-builder", "cost_pct": 25, "optimization": "cache embeddings"},
+      {"service": "orchestrator", "cost_pct": 20, "optimization": "queue batching"}
+    ],
+    "low_risk_optimizations": [
+      {"name": "batch-embedding-requests", "expected_savings_pct": 15, "risk": "low"},
+      {"name": "cache-search-results", "expected_savings_pct": 10, "risk": "low"},
+      {"name": "reduce-polling-frequency", "expected_savings_pct": 8, "risk": "medium"}
+    ],
+    "current_monthly_cost_estimate": 1240,
+    "projected_monthly_with_optimizations": 1050,
+    "projected_savings": 190
+  },
+  "growth_experiments": {
+    "week_1": {
+      "name": "outreach-to-agencias-tier1",
+      "status": "scheduled",
+      "target_contacts": 15,
+      "expected_conversion": 0.2,
+      "projected_arpu": 299
+    }
   },
   "knowledge_system": {
     "notebooklm": {
