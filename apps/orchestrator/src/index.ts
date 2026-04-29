@@ -21,6 +21,7 @@ import { closeJobStateStore } from './state/store.js';
 import { TeamManager } from './teams/TeamManager.js';
 import { AutonomousScheduler } from './schedulers/autonomous-scheduler.js';
 import { CursorCopilotBridge } from './lib/cursor-copilot-bridge.js';
+import { Supervisor } from './agents/supervisor/supervisor.js';
 import { startBackupWorker } from './workers/BackupWorker.js';
 import { startCursorWorker } from './workers/CursorWorker.js';
 import { startDriveWorker } from './workers/DriveWorker.js';
@@ -133,12 +134,19 @@ async function main(): Promise<void> {
   let teamManager: TeamManager | undefined;
   let autonomousScheduler: AutonomousScheduler | undefined;
   let cursorCopilotBridge: CursorCopilotBridge | undefined;
+  let supervisor: Supervisor | undefined;
   const cleanupTasks: AsyncCleanup[] = [];
 
   if (shouldRunControlPlane(role)) {
     teamManager = new TeamManager(connection);
     console.log('[orchestrator] TeamManager: 4 equipos BullMQ activos');
     cleanupTasks.push(async () => teamManager?.close());
+  }
+
+  if (shouldRunControlPlane(role) && process.env.OPSLY_SUPERVISOR_ENABLED === 'true') {
+    supervisor = new Supervisor(300000);
+    supervisor.start();
+    cleanupTasks.push(async () => supervisor?.stop());
   }
 
   const healthServer = startOrchestratorHealthServer();
