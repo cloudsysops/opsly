@@ -1,8 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import {
-  decomposeObjectiveIntoSubtasks,
-  inferBotRoleFromDescription,
-} from '../src/hive/queen-bee.js';
+import { decomposeObjectiveIntoSubtasks, inferBotRoleFromDescription } from '../src/hive/queen-bee.js';
 
 describe('queen bee utils', () => {
   it('infers researcher role from description', () => {

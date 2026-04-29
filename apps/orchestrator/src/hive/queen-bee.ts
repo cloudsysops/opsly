@@ -1,27 +1,17 @@
 import { randomUUID } from 'node:crypto';
 import { PheromoneChannel } from './pheromone-channel.js';
 import { HiveStateStore } from './hive-state.js';
-import type { BotRole, HiveTask, Subtask } from './types.js';
+import type { BotRole, HiveTask, PheromoneMessage, Subtask } from './types.js';
 
 const MAX_SUBTASK_RETRIES = 2;
 
 export function inferBotRoleFromDescription(description: string): BotRole {
   const d = description.toLowerCase();
-  if (d.includes('test') || d.includes('spec')) {
-    return 'tester';
-  }
-  if (d.includes('deploy') || d.includes('release')) {
-    return 'deployer';
-  }
-  if (d.includes('document') || d.includes('readme')) {
-    return 'doc-writer';
-  }
-  if (d.includes('security') || d.includes('vulnerab')) {
-    return 'security';
-  }
-  if (d.includes('research') || d.includes('investiga')) {
-    return 'researcher';
-  }
+  if (d.includes('test') || d.includes('spec')) return 'tester';
+  if (d.includes('deploy') || d.includes('release')) return 'deployer';
+  if (d.includes('document') || d.includes('readme')) return 'doc-writer';
+  if (d.includes('security') || d.includes('vulnerab')) return 'security';
+  if (d.includes('research') || d.includes('investiga')) return 'researcher';
   return 'coder';
 }
 
@@ -44,44 +34,26 @@ export function decomposeObjectiveIntoSubtasks(objective: string, hiveTaskId: st
 }
 
 export class QueenBee {
-  private readonly hiveState: HiveStateStore;
-  private readonly pheromones: PheromoneChannel;
+  private readonly hiveState = new HiveStateStore();
+  private readonly pheromones = new PheromoneChannel();
   private subscribed = false;
 
-  constructor() {
-    this.hiveState = new HiveStateStore();
-    this.pheromones = new PheromoneChannel();
-  }
-
   async start(): Promise<void> {
-    if (this.subscribed) {
-      return;
-    }
+    if (this.subscribed) return;
     await this.pheromones.subscribe('queen', ['task_complete', 'error'], (message) => {
       void this.handlePheromone(message);
     });
     this.subscribed = true;
   }
 
-  private decomposeObjective(objective: string, hiveTaskId: string): Subtask[] {
-    return decomposeObjectiveIntoSubtasks(objective, hiveTaskId);
-  }
-
   private pickAvailableBotId(
     role: BotRole,
     bots: Record<string, { role: BotRole; status: string }>
   ): string | undefined {
-    const chosen = Object.entries(bots).find(
-      ([, b]) => b.role === role && b.status === 'idle'
-    );
-    return chosen?.[0];
+    return Object.entries(bots).find(([, b]) => b.role === role && b.status === 'idle')?.[0];
   }
 
-  private async assignSubtask(
-    hiveTask: HiveTask,
-    subtask: Subtask,
-    _tenantSlug: string
-  ): Promise<void> {
+  private async assignSubtask(hiveTask: HiveTask, subtask: Subtask, _tenantSlug: string): Promise<void> {
     const snapshot = await this.hiveState.getState();
     const role = subtask.assignedBotRole ?? 'coder';
     const botId = this.pickAvailableBotId(role, snapshot.bots);
@@ -116,91 +88,75 @@ export class QueenBee {
   }
 
   private async assignReadySubtasks(hiveTask: HiveTask, tenantSlug: string): Promise<void> {
-    const completed = new Set(
-      hiveTask.subtasks.filter((s) => s.status === 'completed').map((s) => s.id)
-    );
-
+    const completed = new Set(hiveTask.subtasks.filter((s) => s.status === 'completed').map((s) => s.id));
     for (const subtask of hiveTask.subtasks) {
-      if (subtask.status === 'pending') {
-        const canStart =
-          subtask.dependencies.length === 0 ||
-          subtask.dependencies.every((dep) => completed.has(dep));
-
-        if (canStart) {
-          await this.assignSubtask(hiveTask, subtask, tenantSlug);
-        }
-      }
+      if (subtask.status !== 'pending') continue;
+      const canStart =
+        subtask.dependencies.length === 0 ||
+        subtask.dependencies.every((dep) => completed.has(dep));
+      if (canStart) await this.assignSubtask(hiveTask, subtask, tenantSlug);
     }
   }
 
-  private async handlePheromone(message: { type: string; payload?: unknown }): Promise<void> {
+  private async handlePheromone(message: PheromoneMessage): Promise<void> {
     const payload = (message.payload ?? {}) as Record<string, unknown>;
     const taskId = typeof payload.taskId === 'string' ? payload.taskId : '';
     const subtaskId = typeof payload.subtaskId === 'string' ? payload.subtaskId : '';
-    if (taskId.length === 0 || subtaskId.length === 0) {
-      return;
-    }
+    if (taskId.length === 0 || subtaskId.length === 0) return;
+
     const hiveTask = await this.hiveState.getTask(taskId);
-    if (!hiveTask) {
-      return;
-    }
+    if (!hiveTask) return;
 
     if (message.type === 'task_complete') {
       const subtasks = hiveTask.subtasks.map((s) =>
-        s.id === subtaskId ? { ...s, status: 'completed' as const, completedAt: new Date() } : s
+        s.id === subtaskId ? ({ ...s, status: 'completed' as const, completedAt: new Date() }) : s
       );
       const allDone = subtasks.every((s) => s.status === 'completed');
-      await this.hiveState.updateTask(hiveTask.id, {
-        subtasks,
+      await this.hiveState.updateTask(taskId, {
+        subtasks: subtasks as Subtask[],
         status: allDone ? 'completed' : 'in_progress',
         completedAt: allDone ? new Date() : undefined,
       });
       if (!allDone) {
-        const refreshed = await this.hiveState.getTask(hiveTask.id);
-        if (refreshed) {
-          await this.assignReadySubtasks(refreshed, 'opsly-internal');
-        }
+        const refreshed = await this.hiveState.getTask(taskId);
+        if (refreshed) await this.assignReadySubtasks(refreshed, 'opsly-internal');
       }
       return;
     }
 
     if (message.type === 'error') {
-      const subtask = hiveTask.subtasks.find((s) => s.id === subtaskId);
-      if (!subtask) {
-        return;
-      }
-      const retries =
-        typeof subtask.result === 'object' && subtask.result !== null
-          ? Number((subtask.result as Record<string, unknown>).retryCount ?? 0)
+      const target = hiveTask.subtasks.find((s) => s.id === subtaskId);
+      if (!target) return;
+      const retryCount =
+        typeof target.result === 'object' && target.result !== null
+          ? Number((target.result as Record<string, unknown>).retryCount ?? 0)
           : 0;
-      const nextRetryCount = retries + 1;
-      if (nextRetryCount <= MAX_SUBTASK_RETRIES) {
-        const subtasks = hiveTask.subtasks.map((s) =>
-          s.id === subtaskId
-            ? {
-                ...s,
-                status: 'pending' as const,
-                assignedBotId: undefined,
-                result: { retryCount: nextRetryCount, lastError: payload.error ?? 'unknown' },
-              }
-            : s
-        );
-        await this.hiveState.updateTask(hiveTask.id, { subtasks, status: 'in_progress' });
-        const refreshed = await this.hiveState.getTask(hiveTask.id);
+      const nextRetry = retryCount + 1;
+      if (nextRetry <= MAX_SUBTASK_RETRIES) {
+        await this.hiveState.updateTask(taskId, {
+          subtasks: hiveTask.subtasks.map((s) =>
+            s.id === subtaskId
+              ? {
+                  ...s,
+                  status: 'pending',
+                  assignedBotId: undefined,
+                  result: { retryCount: nextRetry, lastError: payload.error ?? 'unknown' },
+                }
+              : s
+          ),
+          status: 'in_progress',
+        });
+        const refreshed = await this.hiveState.getTask(taskId);
         if (refreshed) {
-          const failedSubtask = refreshed.subtasks.find((s) => s.id === subtaskId);
-          if (failedSubtask) {
-            await this.assignSubtask(refreshed, failedSubtask, 'opsly-internal');
-          }
+          const pending = refreshed.subtasks.find((s) => s.id === subtaskId);
+          if (pending) await this.assignSubtask(refreshed, pending, 'opsly-internal');
         }
         return;
       }
 
-      await this.hiveState.updateTask(hiveTask.id, {
+      await this.hiveState.updateTask(taskId, {
         subtasks: hiveTask.subtasks.map((s) =>
-          s.id === subtaskId
-            ? { ...s, status: 'failed' as const, result: { retryCount: nextRetryCount } }
-            : s
+          s.id === subtaskId ? { ...s, status: 'failed', result: { retryCount: nextRetry } } : s
         ),
         status: 'failed',
       });
@@ -217,16 +173,12 @@ export class QueenBee {
     const hiveTask: HiveTask = {
       id: taskId,
       objective: req.objective,
-      subtasks: this.decomposeObjective(req.objective, taskId),
+      subtasks: decomposeObjectiveIntoSubtasks(req.objective, taskId),
       status: 'in_progress',
       createdAt: new Date(),
     };
-
     await this.hiveState.addTask(hiveTask);
-    console.log(`[QueenBee] Tarea ${taskId} creada con ${hiveTask.subtasks.length} subtareas`);
-
     await this.assignReadySubtasks(hiveTask, 'opsly-internal');
-
     return hiveTask;
   }
 

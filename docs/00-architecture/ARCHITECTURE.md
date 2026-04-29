@@ -52,6 +52,22 @@ This document is the single technical authority for runtime architecture at the 
 3. Prefer incremental changes validated by type-check/tests.
 4. Route AI calls through orchestrator + llm-gateway patterns.
 
+## Hive / SwarmOps Runtime (2026-04-28)
+
+- The orchestrator now includes a Hive coordination layer in `apps/orchestrator/src/hive`.
+- Core components:
+  - `QueenBee` for objective decomposition and role-based subtask assignment.
+  - `HiveStateStore` for shared runtime state in Redis.
+  - `PheromoneChannel` for inter-bot signaling via Redis Pub/Sub.
+  - Specialized bot roles (`coder`, `researcher`, `tester`, `deployer`, `doc-writer`, `security`).
+- Internal control-plane endpoints:
+  - `POST /internal/hive/objective`
+  - `GET /internal/hive/objective/:taskId`
+  - `GET /internal/hive/task/:taskId` (alias)
+  - `GET /internal/hive/bots`
+  - `GET /internal/hive/stats`
+- Security posture: internal Hive endpoints require admin bearer token and initialize Hive handler before operations.
+
 ## References
 
 - `VISION.md`
@@ -145,47 +161,3 @@ Si el API principal (`app`, p. ej. en Vercel o el contenedor Next) no está disp
 - **Endpoints:** `POST /ingest/stripe` (cuerpo crudo → cola `webhooks-processing`), `POST /ingest/event` (JSON `{ type, tenantId, data }` → cola `general-events`). Respuestas **202 Accepted** con encolado inmediato.
 - **Orquestador:** workers `WebhooksProcessingWorker` y `GeneralEventsWorker` consumen esas colas. El de Stripe **verifica la firma** con `STRIPE_WEBHOOK_SECRET` y reenvía el cuerpo a `OPSLY_API_INTERNAL_URL` (p. ej. `http://app:3000`) en `/api/webhooks/stripe`, donde corre la lógica de negocio existente. Los eventos generales se loguean o se reenvían si `OPSLY_GENERAL_EVENTS_FORWARD_URL` está definida.
 - **Despliegue:** compose `ingestion-bunker` en `infra/docker-compose.platform.yml` (host público opcional `ingest.${PLATFORM_DOMAIN}`); alternativa **systemd** en `infra/systemd/ingestion-bunker.service.example`. Ver `apps/ingestion-service/README.md`.
-
-## Secure Sandbox Worker
-
-- **Worker:** `apps/orchestrator/src/workers/SandboxWorker.ts`
-- **Job type:** `sandbox_execution`
-- **Queue:** `openclaw` (consumido por worker dedicado con filtro por nombre de job)
-- **Endpoint interno:** `POST /internal/enqueue-sandbox`
-- **Status endpoint:** `GET /internal/job/:jobId`
-
-Payload esperado:
-
-```json
-{
-  "command": "echo hello sandbox",
-  "image": "alpine:latest",
-  "timeout": 300,
-  "allowNetwork": false,
-  "tenant_slug": "platform",
-  "request_id": "req-123"
-}
-```
-
-Controles de seguridad:
-
-- Red deshabilitada por defecto (`run-in-sandbox.sh` usa `--network none` salvo `allowNetwork=true`).
-- Timeout de ejecución aplicado por worker (máximo 1800s).
-- Logs estructurados `worker_start|complete|fail` con worker `sandbox`.
-
-## Research CLI Command
-
-- **CLI:** `tools/cli/main.py`
-- **Comando:** `research-run`
-- **Fuente de datos:** `POST /v1/search` vía `tools/cli/research_client.py`
-- **Salida:** reporte Markdown en `docs/research/` y artefactos opcionales JSON.
-
-Uso:
-
-```bash
-python -m tools.cli.main research-run \
-  --query "como implementar caching en llm gateway" \
-  --tenant platform \
-  --depth 2 \
-  --save-artifacts
-```
