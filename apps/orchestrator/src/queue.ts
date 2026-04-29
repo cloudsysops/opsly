@@ -14,6 +14,8 @@ export const connection = {
 };
 
 export const orchestratorQueue = new Queue('openclaw', { connection });
+export const plannerQueue = new Queue('queue:planner', { connection });
+export const skepticQueue = new Queue('queue:skeptic', { connection });
 
 /** Cola sandbox clasificador de tareas (worker opcional: `OPSLY_AGENT_CLASSIFIER_WORKER_ENABLED`). */
 export const agentClassifierQueue = new Queue('agent-classifier', { connection });
@@ -58,4 +60,28 @@ export async function enqueueJob(job: OrchestratorJob) {
   });
 
   return bull;
+}
+
+export interface OpenClawQueueTask {
+  request_id: string;
+  tenant_id: string;
+  tenant_slug: string;
+  objective: string;
+  initiated_by: OrchestratorJob['initiated_by'];
+  plan?: OrchestratorJob['plan'];
+  metadata?: Record<string, unknown>;
+}
+
+export async function enqueuePlannerTask(task: OpenClawQueueTask) {
+  return plannerQueue.add('planner_task', task, {
+    removeOnComplete: true,
+    removeOnFail: false,
+  });
+}
+
+export async function enqueueSkepticTask(task: OpenClawQueueTask) {
+  return skepticQueue.add('skeptic_task', task, {
+    removeOnComplete: true,
+    removeOnFail: false,
+  });
 }

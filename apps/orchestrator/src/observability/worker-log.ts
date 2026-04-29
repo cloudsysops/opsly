@@ -17,6 +17,8 @@ export type WorkerName =
   | 'approval-gate'
   | 'hermes-orchestration'
   | 'intent_dispatch'
+  | 'openclaw-planner'
+  | 'openclaw-skeptic'
   | 'evolution';
 
 export function extractJobContext(job: Job): {
