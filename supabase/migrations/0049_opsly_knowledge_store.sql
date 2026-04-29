@@ -1,3 +1,4 @@
+-- Migration: 0049_opsly_knowledge_store.sql (renumbered from 0016; idempotent)
 -- Memoria global Opsly Brain (orchestrator RAG / pgvector)
 -- Conexión recomendada: DATABASE_URL con rol que pueda CREATE en public (p. ej. service role en sesiones de migración).
 CREATE EXTENSION IF NOT EXISTS vector;

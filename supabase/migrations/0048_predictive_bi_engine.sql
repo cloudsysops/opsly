@@ -1,4 +1,4 @@
--- Migration: 0014_predictive_bi_engine.sql
+-- Migration: 0048_predictive_bi_engine.sql (renumbered from 0014; idempotent for drift)
 -- Capa 2: Predictive Business Intelligence Engine
 -- Tables: tenant_insights, ml_model_snapshots
 
@@ -34,13 +34,13 @@ CREATE TABLE IF NOT EXISTS platform.tenant_insights (
     CONSTRAINT tenant_insights_tenant_type_unique UNIQUE (tenant_id, insight_type, created_at)
 );
 
--- Índices optimizados
-CREATE INDEX idx_tenant_insights_tenant_id ON platform.tenant_insights(tenant_id);
-CREATE INDEX idx_tenant_insights_type ON platform.tenant_insights(insight_type);
-CREATE INDEX idx_tenant_insights_status ON platform.tenant_insights(status) WHERE status = 'active';
-CREATE INDEX idx_tenant_insights_created_at ON platform.tenant_insights(created_at DESC);
-CREATE INDEX idx_tenant_insights_confidence ON platform.tenant_insights(confidence DESC) WHERE status = 'active';
-CREATE INDEX idx_tenant_insights_expires ON platform.tenant_insights(expires_at) WHERE expires_at IS NOT NULL;
+-- Índices optimizados (idempotente: re-ejecución segura tras drift histórico)
+CREATE INDEX IF NOT EXISTS idx_tenant_insights_tenant_id ON platform.tenant_insights(tenant_id);
+CREATE INDEX IF NOT EXISTS idx_tenant_insights_type ON platform.tenant_insights(insight_type);
+CREATE INDEX IF NOT EXISTS idx_tenant_insights_status ON platform.tenant_insights(status) WHERE status = 'active';
+CREATE INDEX IF NOT EXISTS idx_tenant_insights_created_at ON platform.tenant_insights(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_tenant_insights_confidence ON platform.tenant_insights(confidence DESC) WHERE status = 'active';
+CREATE INDEX IF NOT EXISTS idx_tenant_insights_expires ON platform.tenant_insights(expires_at) WHERE expires_at IS NOT NULL;
 
 -- Trigger para updated_at automático
 CREATE OR REPLACE FUNCTION update_updated_at_column()
@@ -51,6 +51,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS trigger_tenant_insights_updated_at ON platform.tenant_insights;
 CREATE TRIGGER trigger_tenant_insights_updated_at
     BEFORE UPDATE ON platform.tenant_insights
     FOR EACH ROW
@@ -76,8 +77,8 @@ CREATE TABLE IF NOT EXISTS platform.ml_model_snapshots (
 );
 
 -- Índices
-CREATE INDEX idx_ml_snapshots_active ON platform.ml_model_snapshots(model_name) WHERE is_active = true;
-CREATE INDEX idx_ml_snapshots_created ON platform.ml_model_snapshots(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_ml_snapshots_active ON platform.ml_model_snapshots(model_name) WHERE is_active = true;
+CREATE INDEX IF NOT EXISTS idx_ml_snapshots_created ON platform.ml_model_snapshots(created_at DESC);
 
 -- ============================================
 -- Tabla: insight_events
@@ -100,10 +101,10 @@ CREATE TABLE IF NOT EXISTS platform.insight_events (
 );
 
 -- Índices
-CREATE INDEX idx_insight_events_tenant ON platform.insight_events(tenant_id);
-CREATE INDEX idx_insight_events_insight ON platform.insight_events(insight_id);
-CREATE INDEX idx_insight_events_type ON platform.insight_events(event_type);
-CREATE INDEX idx_insight_events_created ON platform.insight_events(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_insight_events_tenant ON platform.insight_events(tenant_id);
+CREATE INDEX IF NOT EXISTS idx_insight_events_insight ON platform.insight_events(insight_id);
+CREATE INDEX IF NOT EXISTS idx_insight_events_type ON platform.insight_events(event_type);
+CREATE INDEX IF NOT EXISTS idx_insight_events_created ON platform.insight_events(created_at DESC);
 
 -- ============================================
 -- Función: Cleanup de insights expirados
@@ -159,12 +160,20 @@ ALTER TABLE platform.tenant_insights ENABLE ROW LEVEL SECURITY;
 ALTER TABLE platform.ml_model_snapshots ENABLE ROW LEVEL SECURITY;
 ALTER TABLE platform.insight_events ENABLE ROW LEVEL SECURITY;
 
+-- Políticas idempotentes (re-push seguro)
+DROP POLICY IF EXISTS tenant_insights_select ON platform.tenant_insights;
+DROP POLICY IF EXISTS tenant_insights_insert ON platform.tenant_insights;
+DROP POLICY IF EXISTS tenant_insights_update ON platform.tenant_insights;
+DROP POLICY IF EXISTS ml_snapshots_select ON platform.ml_model_snapshots;
+DROP POLICY IF EXISTS insight_events_insert ON platform.insight_events;
+DROP POLICY IF EXISTS insight_events_select ON platform.insight_events;
+
 -- Tenant puede ver sus propios insights
 CREATE POLICY tenant_insights_select ON platform.tenant_insights
     FOR SELECT USING (
         tenant_id IN (
             SELECT t.id FROM platform.tenants t
-            WHERE t.owner_id = auth.uid()
+            WHERE t.owner_email = (auth.jwt() ->> 'email')
         )
     );
 
@@ -175,7 +184,7 @@ CREATE POLICY tenant_insights_update ON platform.tenant_insights
     FOR UPDATE USING (
         tenant_id IN (
             SELECT t.id FROM platform.tenants t
-            WHERE t.owner_id = auth.uid()
+            WHERE t.owner_email = (auth.jwt() ->> 'email')
         )
     );
 
@@ -191,7 +200,7 @@ CREATE POLICY insight_events_select ON platform.insight_events
     FOR SELECT USING (
         tenant_id IN (
             SELECT t.id FROM platform.tenants t
-            WHERE t.owner_id = auth.uid()
+            WHERE t.owner_email = (auth.jwt() ->> 'email')
         )
     );
 
