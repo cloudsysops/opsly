@@ -8,7 +8,9 @@ export type JobType =
   | 'ollama'
   | 'sandbox_execution'
   /** Payload: `{ intent_request: IntentRequest }` — ejecuta `processIntent` (p. ej. `oar_react`) en worker. */
-  | 'intent_dispatch';
+  | 'intent_dispatch'
+  /** SwarmOps — despacha una HiveTask a la Queen Bee; payload: HiveDispatchPayload. */
+  | 'hive_dispatch';
 
 export interface SandboxExecutionPayload {
   type: 'sandbox_execution';
@@ -58,7 +60,12 @@ export type Intent =
    * Opsly Agentic Runtime — estrategia ReAct vía LLM Gateway `/v1/text` + memoria en proceso.
    * Requiere `tenant_slug` y `context.prompt` o `context.query`.
    */
-  | 'oar_react';
+  | 'oar_react'
+  /**
+   * SwarmOps — lanza una Colmena de Bots (Hive) para objetivos complejos.
+   * Requiere `tenant_slug` y `context.objective` (string).
+   */
+  | 'hive_dispatch';
 
 export interface IntentRequest {
   intent: Intent;

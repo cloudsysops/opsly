@@ -8,6 +8,7 @@ export type WorkerConcurrencyKey =
   | 'backup'
   | 'budget'
   | 'ollama'
+  | 'hive'
   | 'sandbox'
   | 'webhook'
   | 'webhooks-processing'
@@ -23,6 +24,7 @@ const FULL_STACK_DEFAULTS: Record<WorkerConcurrencyKey, number> = {
   backup: 1,
   budget: 2,
   ollama: 2,
+  hive: 4,
   sandbox: 1,
   webhook: 10,
   'webhooks-processing': 3,
@@ -39,6 +41,7 @@ const DISTRIBUTED_WORKER_DEFAULTS: Record<WorkerConcurrencyKey, number> = {
   backup: 1,
   budget: 1,
   ollama: 1,
+  hive: 2,
   sandbox: 1,
   webhook: 1,
   'webhooks-processing': 1,
@@ -55,6 +58,7 @@ const ENV_NAMES: Record<WorkerConcurrencyKey, string> = {
   backup: 'ORCHESTRATOR_BACKUP_CONCURRENCY',
   budget: 'ORCHESTRATOR_BUDGET_CONCURRENCY',
   ollama: 'ORCHESTRATOR_OLLAMA_CONCURRENCY',
+  hive: 'ORCHESTRATOR_HIVE_CONCURRENCY',
   sandbox: 'ORCHESTRATOR_SANDBOX_CONCURRENCY',
   webhook: 'ORCHESTRATOR_WEBHOOK_CONCURRENCY',
   'webhooks-processing': 'ORCHESTRATOR_WEBHOOKS_PROCESSING_CONCURRENCY',

@@ -36,6 +36,7 @@ import { startIntentDispatchWorker } from './workers/IntentDispatchWorker.js';
 import { startSandboxWorker } from './workers/SandboxWorker.js';
 import { closeWebhookQueue, createWebhookWorker } from './workers/WebhookWorker.js';
 import { startWebhooksProcessingWorker } from './workers/WebhooksProcessingWorker.js';
+import { startHiveWorker } from './workers/HiveWorker.js';
 
 type AsyncCleanup = () => Promise<void>;
 
@@ -80,6 +81,7 @@ function startAllWorkers(): AsyncCleanup[] {
   const ollamaWorker = startOllamaWorker(connection);
   const intentDispatchWorker = startIntentDispatchWorker(connection);
   const sandboxWorker = startSandboxWorker(connection);
+  const hiveWorker = startHiveWorker({ connection });
 
   let agentClassifierCleanup: AsyncCleanup[] = [];
   if (process.env.OPSLY_AGENT_CLASSIFIER_WORKER_ENABLED === 'true') {
@@ -101,11 +103,12 @@ function startAllWorkers(): AsyncCleanup[] {
     async () => ollamaWorker.close(),
     async () => intentDispatchWorker.close(),
     async () => sandboxWorker.close(),
+    async () => hiveWorker.close(),
     ...agentClassifierCleanup
   );
 
   console.log(
-    '[orchestrator] Workers: cursor, n8n, notify, drive, backup, health, budget, opsly-webhooks, webhooks-processing, general-events, ollama, intent_dispatch, sandbox_execution' +
+    '[orchestrator] Workers: cursor, n8n, notify, drive, backup, health, budget, opsly-webhooks, webhooks-processing, general-events, ollama, intent_dispatch, sandbox_execution, hive' +
       (process.env.OPSLY_AGENT_CLASSIFIER_WORKER_ENABLED === 'true' ? ', agent-classifier' : '') +
       '; Hermes tick → servicio opsly-hermes (no este proceso).'
   );

@@ -29,6 +29,8 @@ import { enqueueJob, orchestratorQueue } from './queue.js';
 import { SprintManager } from './sprints/sprint-manager.js';
 import { setJobState } from './state/store.js';
 import type { Intent, IntentRequest, OrchestratorJob } from './types.js';
+import { QueenBee } from './hive/queen-bee.js';
+import type { HiveDispatchPayload } from './hive/types.js';
 
 function enrichJob(
   req: IntentRequest,
@@ -72,6 +74,9 @@ function buildOarActionQueues(): Record<string, Queue<OarEnqueueJobPayload>> {
 function effectiveIntent(req: IntentRequest): Intent {
   if (req.intent === 'sprint_plan') {
     return 'sprint_plan';
+  }
+  if (req.intent === 'hive_dispatch') {
+    return 'hive_dispatch';
   }
   if (req.agent_role === 'planner' && req.intent !== 'remote_plan' && req.intent !== 'oar_react') {
     return 'remote_plan';
@@ -288,6 +293,50 @@ export async function processIntent(
         intent,
         request_id: correlationId,
         sprint_id: sprintId,
+      };
+    }
+    case 'hive_dispatch': {
+      const tenantSlug = req.tenant_slug?.trim();
+      if (!tenantSlug || tenantSlug.length === 0) {
+        throw new Error('hive_dispatch requires tenant_slug');
+      }
+      const objective =
+        typeof req.context.objective === 'string' ? req.context.objective.trim() : '';
+      if (objective.length === 0) {
+        throw new Error('hive_dispatch requires context.objective (non-empty string)');
+      }
+
+      const hivePayload: HiveDispatchPayload = {
+        objective,
+        tenant_slug: tenantSlug,
+        request_id: correlationId,
+        required_roles: Array.isArray(req.context.required_roles)
+          ? (req.context.required_roles as string[]).filter(Boolean) as HiveDispatchPayload['required_roles']
+          : undefined,
+        cost_budget_usd: req.cost_budget_usd,
+        metadata: req.metadata,
+      };
+
+      const queenBee = new QueenBee({ queue: orchestratorQueue });
+      const hiveResult = await queenBee.dispatch(hivePayload);
+
+      process.stdout.write(
+        `${JSON.stringify({
+          ts: new Date().toISOString(),
+          event: 'hive_dispatch_result',
+          request_id: correlationId,
+          tenant_slug: tenantSlug,
+          hive_task_id: hiveResult.hive_task_id,
+          subtasks_count: hiveResult.subtasks_count,
+          status: hiveResult.status,
+        })}\n`
+      );
+
+      return {
+        jobs_enqueued: hiveResult.subtasks_count,
+        job_ids: [],
+        intent,
+        request_id: correlationId,
       };
     }
     case 'remote_plan': {
