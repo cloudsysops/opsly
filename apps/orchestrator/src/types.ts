@@ -9,6 +9,7 @@ export type JobType =
   | 'research'
   | 'evolution'
   | 'sandbox_execution'
+  | 'jcode_execution'
   /** Payload: `{ intent_request: IntentRequest }` — ejecuta `processIntent` (p. ej. `oar_react`) en worker. */
   | 'intent_dispatch'
   /** Payload: `{ role: 'dev-api' | 'dev-ui' | 'devops', task: string, max_steps: number, tenant_slug: string }` */

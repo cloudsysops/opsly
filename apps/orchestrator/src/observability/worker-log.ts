@@ -17,7 +17,8 @@ export type WorkerName =
   | 'approval-gate'
   | 'hermes-orchestration'
   | 'intent_dispatch'
-  | 'evolution';
+  | 'evolution'
+  | 'jcode';
 
 export function extractJobContext(job: Job): {
   task_id?: string;

@@ -25,7 +25,7 @@ const TEAM_CONFIGS = [
     name: 'backend-team',
     specialization: 'backend',
     max_parallel: 3,
-    handles: ['api_fix', 'logic_change', 'migration'],
+    handles: ['api_fix', 'logic_change', 'migration', 'jcode_execution'],
   },
   {
     name: 'ml-team',
