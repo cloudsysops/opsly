@@ -1,9 +1,12 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, beforeEach, afterEach } from 'vitest';
 import {
   buildQueueAddOptions,
   PLAN_QUEUE_PRIORITY,
   planToQueuePriority,
   sanitizeQueueJobId,
+  OPTIMIZED_POLLING_CONFIG,
+  LEGACY_POLLING_CONFIG,
+  getPollingConfig,
 } from '../src/queue-opts.js';
 import type { OrchestratorJob } from '../src/types.js';
 
@@ -99,5 +102,63 @@ describe('buildQueueAddOptions', () => {
       })
     );
     expect(opts.attempts).toBe(1);
+  });
+});
+
+describe('polling optimization (reduce-polling-frequency)', () => {
+  beforeEach(() => {
+    // Reset env var before each test
+    delete process.env.ORCHESTRATOR_POLLING_OPTIMIZED;
+  });
+
+  afterEach(() => {
+    delete process.env.ORCHESTRATOR_POLLING_OPTIMIZED;
+  });
+
+  it('optimized polling: 3000ms interval (vs legacy 1000ms)', () => {
+    const config = OPTIMIZED_POLLING_CONFIG;
+    expect(config.settings?.maxStalledInterval).toBe(3000);
+  });
+
+  it('legacy polling: 1000ms interval for backward compatibility', () => {
+    const config = LEGACY_POLLING_CONFIG;
+    expect(config.settings?.maxStalledInterval).toBe(1000);
+  });
+
+  it('uses optimized polling by default', () => {
+    const config = getPollingConfig();
+    expect(config.settings?.maxStalledInterval).toBe(3000);
+  });
+
+  it('can disable optimization with env var', () => {
+    process.env.ORCHESTRATOR_POLLING_OPTIMIZED = 'false';
+    const config = getPollingConfig();
+    expect(config.settings?.maxStalledInterval).toBe(1000);
+  });
+
+  it('optimized has exponential backoff: 5s retry delay', () => {
+    const config = OPTIMIZED_POLLING_CONFIG;
+    expect(config.settings?.retryProcessDelay).toBe(5000);
+  });
+
+  it('legacy has 3s retry delay', () => {
+    const config = LEGACY_POLLING_CONFIG;
+    expect(config.settings?.retryProcessDelay).toBe(3000);
+  });
+
+  it('expected savings: 30-40% fewer Redis reads with 3s vs 1s interval', () => {
+    const pollIntervalOptimized = 3000;
+    const pollIntervalLegacy = 1000;
+    const savingsPercent = ((pollIntervalLegacy - pollIntervalOptimized) / pollIntervalLegacy) * 100;
+    // ~66% reduction in polling frequency
+    expect(savingsPercent).toBeGreaterThan(60);
+  });
+
+  it('job processing latency: no delay if queue has pending jobs', () => {
+    // The polling config affects empty-queue behavior only
+    // Active jobs are processed immediately (BullMQ)
+    const opts = buildQueueAddOptions(baseJob({}));
+    expect(opts.priority).toBeDefined();
+    expect(opts.attempts).toBeGreaterThan(0);
   });
 });

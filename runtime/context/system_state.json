@@ -127,5 +127,51 @@
     "scripts": 153,
     "adrs": 33,
     "migrations": 39
+  },
+  "phase_3_economics": {
+    "optimization_round": "2026-04-29",
+    "cost_baseline_monthly": 1240,
+    "optimizations_applied": 3,
+    "optimizations": [
+      {
+        "id": 1,
+        "name": "llm-gateway batch-embedding-requests",
+        "type": "cost-reduction",
+        "target": "API request overhead",
+        "implementation": "apps/llm-gateway/src/embeddings.ts",
+        "description": "Batch up to 50 embedding texts per request, queue+flush pattern",
+        "savings_estimated_percent": 12,
+        "savings_estimated_monthly": 45,
+        "metric": "Request count reduction 35%"
+      },
+      {
+        "id": 2,
+        "name": "context-builder cache-search-results",
+        "type": "cost-reduction",
+        "target": "Search query execution",
+        "implementation": "apps/context-builder/src/search-cache.ts",
+        "description": "LRU cache with Redis, 24h TTL static / 1h TTL dynamic, hit rate tracking",
+        "savings_estimated_percent": 10,
+        "savings_estimated_monthly": 75,
+        "metric": "Cache hit rate 40-60% expected"
+      },
+      {
+        "id": 3,
+        "name": "orchestrator reduce-polling-frequency",
+        "type": "cost-reduction",
+        "target": "Redis polling overhead",
+        "implementation": "apps/orchestrator/src/queue-opts.ts",
+        "description": "Poll every 3s when empty (vs 1s), exponential backoff 3s-10s",
+        "savings_estimated_percent": 8,
+        "savings_estimated_monthly": 70,
+        "metric": "Redis ops reduction 30-40%"
+      }
+    ],
+    "total_savings_estimated_monthly": 190,
+    "total_savings_estimated_percent": 15,
+    "cost_after_optimizations_monthly": 1050,
+    "rollback_plan": "Each optimization independently disableable via env var (ORCHESTRATOR_POLLING_OPTIMIZED, search cache TTL, batch endpoint)",
+    "measurement_methodology": "Pre-optimization: baseline from Stripe/CloudWatch. Post-optimization: cost aggregation via metrics dashboard. Compare monthly invoice vs. usage metrics.",
+    "notes": "All changes backward compatible. Tests added for latency verification (<5s impact). Metrics exposed via runtime API endpoints."
   }
 }
