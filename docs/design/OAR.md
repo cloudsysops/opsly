@@ -13,13 +13,13 @@ Se añadió una base operativa de **Hive of Bots** en `apps/orchestrator/src/hiv
 - **Queen orchestration:** `QueenBee` descompone objetivos en subtareas y asigna por rol (`coder`, `researcher`, `tester`, `deployer`, `doc-writer`, `security`).
 - **Pheromone channel:** `PheromoneChannel` en Redis Pub/Sub para señales `subtask_assignment`, `task_complete`, `error`, `request_help`.
 - **Hive shared state:** `HiveStateStore` mantiene estado global de tareas/bots en Redis para inspección y continuidad.
-- **Worker + API interna:** job `hive_objective` y endpoint `POST /internal/hive/objective` con status por `taskId` (`GET /internal/hive/objective/:taskId`, alias `GET /internal/hive/task/:taskId`).
+- **Worker + API interna:** job `hive_objective` y endpoint `POST /internal/hive/objective` con status por `taskId` (`GET /internal/hive/objective/:taskId`, alias `GET /internal/hive/task/:taskId`) y retry manual por subtarea (`POST /internal/hive/task/:taskId/retry/:subtaskId`).
 - **Guardrail operacional:** inicialización centralizada del handler Hive antes de consultas/acciones internas de Hive.
 
 ### Estado de madurez
 
-- **Hecho:** base funcional de coordinación y observación para objetivos Hive.
-- **Pendiente:** política explícita de retry/reasignación por subtarea con endpoint dedicado y tests de integración E2E del ciclo completo.
+- **Hecho:** base funcional de coordinación/observación + retry/reasignación de subtareas fallidas (automático con límite y manual por endpoint).
+- **Pendiente:** tests de integración E2E del ciclo completo y métricas explícitas de retry/fallback por task/subtask.
 
 ## Actualización técnica (2026-04-26) — CLI Meta-Orchestrator Bridge
 

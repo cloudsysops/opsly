@@ -93,6 +93,41 @@ export async function handleGetObjectiveStatus(
   }
 }
 
+export async function handleRetrySubtask(
+  _req: IncomingMessage,
+  res: ServerResponse,
+  taskId: string,
+  subtaskId: string
+): Promise<void> {
+  if (!orchestrator) {
+    res.writeHead(503, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'Hive orchestrator no inicializado' }));
+    return;
+  }
+
+  if (taskId.length === 0 || subtaskId.length === 0) {
+    res.writeHead(400, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'taskId y subtaskId son requeridos' }));
+    return;
+  }
+
+  try {
+    const ok = await orchestrator.retrySubtask(taskId, subtaskId);
+    if (!ok) {
+      res.writeHead(404, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'task/subtask no encontrado' }));
+      return;
+    }
+    res.writeHead(202, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ status: 'retry_queued', taskId, subtaskId }));
+  } catch (error) {
+    const msg = error instanceof Error ? error.message : String(error);
+    console.error('[HiveHandler] Error retrying subtask:', msg);
+    res.writeHead(500, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: msg }));
+  }
+}
+
 export async function handleListActiveBots(req: IncomingMessage, res: ServerResponse): Promise<void> {
   if (!orchestrator) {
     res.writeHead(503, { 'Content-Type': 'application/json' });

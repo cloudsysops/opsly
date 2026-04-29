@@ -117,6 +117,10 @@ export class HiveOrchestrator {
     }
   }
 
+  async retrySubtask(taskId: string, subtaskId: string): Promise<boolean> {
+    return this.queensBee.retrySubtask(taskId, subtaskId);
+  }
+
   async listActiveBots(): Promise<Array<{ id: string; role: string; status: string }>> {
     const state = await this.stateStore.getState();
     return Object.values(state.bots).map((bot: Bot) => ({
