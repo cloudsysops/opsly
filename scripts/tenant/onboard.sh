@@ -3,7 +3,7 @@ set -euo pipefail
 
 _SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=scripts/lib/common.sh
-source "${_SCRIPT_DIR}/lib/common.sh"
+source "${_SCRIPT_DIR}/../lib/common.sh"
 
 SLUG=""
 EMAIL=""
