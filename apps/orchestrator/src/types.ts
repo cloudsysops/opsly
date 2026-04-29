@@ -10,6 +10,7 @@ export type JobType =
   | 'evolution'
   | 'sandbox_execution'
   | 'jcode_execution'
+  | 'hive_objective'
   /** Payload: `{ intent_request: IntentRequest }` — ejecuta `processIntent` (p. ej. `oar_react`) en worker. */
   | 'intent_dispatch'
   /** Payload: `{ role: 'dev-api' | 'dev-ui' | 'devops', task: string, max_steps: number, tenant_slug: string }` */

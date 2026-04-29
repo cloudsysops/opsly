@@ -18,6 +18,7 @@ export type WorkerName =
   | 'hermes-orchestration'
   | 'intent_dispatch'
   | 'evolution'
+  | 'hive'
   | 'jcode';
 
 export function extractJobContext(job: Job): {
