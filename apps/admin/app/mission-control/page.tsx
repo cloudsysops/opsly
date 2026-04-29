@@ -31,10 +31,47 @@ type AgentTeamsResponse = {
   generated_at: string;
 };
 
+type OpenClawIntentRuntime = {
+  request_id: string;
+  tenant_slug: string | null;
+  intent: string | null;
+  status: string;
+  current_stage: string | null;
+  started_at: string | null;
+  updated_at: string | null;
+  last_error: string | null;
+};
+
+type OpenClawPolicyViolation = {
+  request_id: string | null;
+  tenant_slug: string | null;
+  reason: string;
+  intent: string;
+  agent_role: string | null;
+  timestamp: string;
+};
+
+type OpenClawSnapshot = {
+  intents: OpenClawIntentRuntime[];
+  intents_in_progress: OpenClawIntentRuntime[];
+  recent_policy_violations: OpenClawPolicyViolation[];
+  agent_metrics: Record<string, number>;
+  generated_at: string;
+};
+
+type OpenClawExecutionResponse = {
+  success?: boolean;
+  request_id?: string;
+  job_id?: string | null;
+  intent?: string;
+};
+
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
 export default function MissionControlPage() {
   const [selectedTeam, setSelectedTeam] = useState<string | null>(null);
+  const [launchingIntent, setLaunchingIntent] = useState(false);
+  const [launchMessage, setLaunchMessage] = useState<string | null>(null);
 
   const baseUrl = useMemo(() => getBaseUrl(), []);
 
@@ -49,6 +86,13 @@ export default function MissionControlPage() {
     fetcher,
     { refreshInterval: 5000 }
   );
+  const {
+    data: openClawData,
+    error: openClawError,
+    mutate: mutateOpenClaw,
+  } = useSWR<OpenClawSnapshot>(`${baseUrl}/api/admin/mission-control/openclaw`, fetcher, {
+    refreshInterval: 3000,
+  });
 
   const teams = teamsData?.teams ?? [];
   const generatedAt = teamsData?.generated_at;
@@ -56,6 +100,36 @@ export default function MissionControlPage() {
   const handleRefresh = useCallback(() => {
     window.location.reload();
   }, []);
+
+  const handleLaunchDocsFlow = useCallback(async () => {
+    setLaunchingIntent(true);
+    setLaunchMessage(null);
+    try {
+      const response = await fetch(`${baseUrl}/api/admin/mission-control/openclaw/execute`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          tenant_slug: 'smiletripcare',
+          objective: 'Improve tenant onboarding documentation and clarify rollback criteria',
+        }),
+      });
+      const payload = (await response.json()) as OpenClawExecutionResponse & { error?: string };
+      if (!response.ok) {
+        setLaunchMessage(payload.error ?? 'Failed to enqueue improve_documentation');
+        return;
+      }
+      setLaunchMessage(
+        `Intent running. request_id=${payload.request_id ?? 'unknown'} job_id=${payload.job_id ?? 'unknown'}`
+      );
+      await mutateOpenClaw();
+    } catch (error) {
+      setLaunchMessage(error instanceof Error ? error.message : 'Unexpected error');
+    } finally {
+      setLaunchingIntent(false);
+    }
+  }, [baseUrl, mutateOpenClaw]);
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white p-6">
@@ -248,6 +322,128 @@ export default function MissionControlPage() {
               ./scripts/create-lanidea-agents.sh --tenant &lt;slug&gt; --goal "..."
             </code>
           </div>
+        </div>
+
+        {/* OpenClaw Runtime */}
+        <div className="mt-8">
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+            <h2 className="text-xl font-semibold">OpenClaw Runtime</h2>
+            <button
+              onClick={() => {
+                void handleLaunchDocsFlow();
+              }}
+              disabled={launchingIntent}
+              className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-60 rounded-lg font-medium transition-colors"
+            >
+              {launchingIntent ? 'Launching...' : 'Run improve_documentation'}
+            </button>
+          </div>
+          {launchMessage && (
+            <div className="mb-4 rounded-lg border border-emerald-700/60 bg-emerald-900/20 p-3 text-sm text-emerald-300">
+              {launchMessage}
+            </div>
+          )}
+          {openClawError ? (
+            <div className="bg-red-900/20 border border-red-800 rounded-lg p-4 text-red-400">
+              Error loading OpenClaw runtime snapshot
+            </div>
+          ) : !openClawData ? (
+            <div className="bg-gray-900/50 border border-gray-800 rounded-lg p-4 text-gray-500">
+              Loading OpenClaw runtime...
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="bg-gray-900/50 border border-gray-800 rounded-lg p-4">
+                  <div className="text-gray-400 text-sm">Intents In Progress</div>
+                  <div className="text-2xl font-mono text-cyan-400">
+                    {openClawData.intents_in_progress.length}
+                  </div>
+                </div>
+                <div className="bg-gray-900/50 border border-gray-800 rounded-lg p-4">
+                  <div className="text-gray-400 text-sm">Recent Violations</div>
+                  <div className="text-2xl font-mono text-rose-400">
+                    {openClawData.recent_policy_violations.length}
+                  </div>
+                </div>
+                <div className="bg-gray-900/50 border border-gray-800 rounded-lg p-4">
+                  <div className="text-gray-400 text-sm">Metric Keys</div>
+                  <div className="text-2xl font-mono text-amber-400">
+                    {Object.keys(openClawData.agent_metrics).length}
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-gray-900/50 border border-gray-800 rounded-lg p-4">
+                <h3 className="mb-3 text-sm uppercase tracking-wide text-gray-400">Intents</h3>
+                <div className="space-y-2">
+                  {openClawData.intents.slice(0, 8).map((intentRow) => (
+                    <div
+                      key={intentRow.request_id}
+                      className="rounded-md border border-gray-800/80 p-3 text-sm text-gray-300"
+                    >
+                      <div className="font-mono text-cyan-300">{intentRow.request_id}</div>
+                      <div>
+                        {intentRow.intent ?? 'unknown-intent'} | stage={intentRow.current_stage ?? 'n/a'} |
+                        status={intentRow.status}
+                      </div>
+                      <div className="text-xs text-gray-500">
+                        tenant={intentRow.tenant_slug ?? 'n/a'} updated=
+                        {intentRow.updated_at ? new Date(intentRow.updated_at).toLocaleTimeString() : 'n/a'}
+                      </div>
+                    </div>
+                  ))}
+                  {openClawData.intents.length === 0 && (
+                    <div className="text-gray-500 text-sm">No runtime intents yet.</div>
+                  )}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <div className="bg-gray-900/50 border border-gray-800 rounded-lg p-4">
+                  <h3 className="mb-3 text-sm uppercase tracking-wide text-gray-400">
+                    Policy Violations
+                  </h3>
+                  <div className="space-y-2">
+                    {openClawData.recent_policy_violations.slice(0, 6).map((violation) => (
+                      <div
+                        key={`${violation.timestamp}-${violation.reason}`}
+                        className="rounded-md border border-rose-800/60 bg-rose-950/20 p-3 text-sm text-rose-200"
+                      >
+                        <div>{violation.reason}</div>
+                        <div className="text-xs text-rose-300/80">
+                          intent={violation.intent} tenant={violation.tenant_slug ?? 'n/a'}
+                        </div>
+                      </div>
+                    ))}
+                    {openClawData.recent_policy_violations.length === 0 && (
+                      <div className="text-gray-500 text-sm">No violations detected.</div>
+                    )}
+                  </div>
+                </div>
+
+                <div className="bg-gray-900/50 border border-gray-800 rounded-lg p-4">
+                  <h3 className="mb-3 text-sm uppercase tracking-wide text-gray-400">
+                    Agent Metrics
+                  </h3>
+                  <div className="space-y-2">
+                    {Object.entries(openClawData.agent_metrics).map(([metricKey, value]) => (
+                      <div
+                        key={metricKey}
+                        className="flex items-center justify-between rounded-md border border-gray-800/80 px-3 py-2 text-sm"
+                      >
+                        <span className="font-mono text-gray-300">{metricKey}</span>
+                        <span className="font-mono text-amber-300">{value}</span>
+                      </div>
+                    ))}
+                    {Object.keys(openClawData.agent_metrics).length === 0 && (
+                      <div className="text-gray-500 text-sm">No metrics yet.</div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Footer */}

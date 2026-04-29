@@ -57,6 +57,7 @@
     "scripts",
     "config",
     "docs",
+    "data",
     "runtime",
     "skills",
     "supabase",

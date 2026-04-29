@@ -31,7 +31,6 @@ export async function GET(_req: Request, { params }: RouteParams): Promise<Respo
     const { ref: tenantSlug } = await params;
     const webhooks = await listWebhooks(tenantSlug);
     const safe = webhooks.map((w) => {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { secret: _secret, ...rest } = w;
       return rest;
     });

@@ -31,6 +31,8 @@ API_BASE_URL="${NEXT_PUBLIC_API_URL:-http://localhost:3000}"
 # Resend configuration
 RESEND_API_KEY="${RESEND_API_KEY:-}"
 RESEND_FROM_EMAIL="${RESEND_FROM_EMAIL:-growth@ops.smiletripcare.com}"
+TEST_MODE="${TEST_MODE:-false}"
+TEST_EMAIL="cboteros1@gmail.com"
 
 # Flags
 DRY_RUN="${1:-}"
@@ -135,9 +137,16 @@ Opsly Growth Team"
 
   if [[ -z "${DRY_RUN}" ]]; then
     # Actually send the email (use jq to safely escape JSON)
+    # In TEST_MODE, send to test email instead of actual recipient
+    SEND_TO="${EMAIL}"
+    if [[ "${TEST_MODE}" == "true" ]]; then
+      SEND_TO="${TEST_EMAIL}"
+      log_info "[TEST_MODE] Will send to ${TEST_EMAIL} instead of ${EMAIL}"
+    fi
+
     PAYLOAD=$(jq -n \
       --arg from "${RESEND_FROM_EMAIL}" \
-      --arg to "${EMAIL}" \
+      --arg to "${SEND_TO}" \
       --arg subject "${SUBJECT}" \
       --arg text "${BODY}" \
       --arg reply_to "growth@opsly.io" \

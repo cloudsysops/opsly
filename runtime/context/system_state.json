@@ -96,10 +96,19 @@
   "growth_experiments": {
     "week_1": {
       "name": "outreach-to-agencias-tier1",
-      "status": "scheduled",
+      "status": "test-complete",
       "target_contacts": 15,
       "expected_conversion": 0.2,
-      "projected_arpu": 299
+      "projected_arpu": 299,
+      "template_version": "1.0",
+      "outreach_count": 15,
+      "last_run": "2026-04-29T18:07:24Z",
+      "test_mode": true,
+      "test_recipient": "cboteros1@gmail.com",
+      "script_location": "scripts/growth-outreach.sh",
+      "targets_file": "data/growth/tier1-targets.json",
+      "logs_location": "runtime/logs/growth/week-1-outreach.log",
+      "next_step": "Verify domain in Resend dashboard, then execute with production domain for external delivery"
     }
   },
   "knowledge_system": {

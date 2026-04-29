@@ -1,6 +1,7 @@
 import type { IntentRequest } from '../types.js';
 import { assertAgentRoleContract } from './agent-role-contracts.js';
 import type { OpenClawTenantPermission } from './registry.js';
+import { recordPolicyViolation } from './runtime-events.js';
 import { assertTenantAwarePermissions } from './tenant-aware-permissions.js';
 
 export interface OpenClawPolicyResult {
@@ -36,6 +37,7 @@ function readRequestedTargetTenant(req: IntentRequest): string | null {
 
 function assertTenantGovernance(
   req: IntentRequest,
+  resolvedIntent: IntentRequest['intent'],
   tenantPermissions: readonly OpenClawTenantPermission[]
 ): void {
   const sourceTenant = readString(req.tenant_slug);
@@ -49,14 +51,35 @@ function assertTenantGovernance(
   }
 
   if (!hasTenantGovernanceApproval(req)) {
+    void recordPolicyViolation({
+      requestId: typeof req.request_id === 'string' ? req.request_id : undefined,
+      tenantSlug: sourceTenant,
+      reason: 'cross-tenant access requires explicit approval',
+      intent: resolvedIntent,
+      agentRole: req.agent_role ?? null,
+    });
     throw new Error('tenant governance: cross-tenant access requires explicit approval');
   }
 
   const mode = readCrossTenantMode(req);
   if (mode === 'write' && !tenantPermissions.includes('cross-tenant-write')) {
+    void recordPolicyViolation({
+      requestId: typeof req.request_id === 'string' ? req.request_id : undefined,
+      tenantSlug: sourceTenant,
+      reason: 'cross-tenant-write permission required',
+      intent: resolvedIntent,
+      agentRole: req.agent_role ?? null,
+    });
     throw new Error('tenant governance: cross-tenant-write permission required');
   }
   if (mode === 'read' && !tenantPermissions.includes('cross-tenant-read')) {
+    void recordPolicyViolation({
+      requestId: typeof req.request_id === 'string' ? req.request_id : undefined,
+      tenantSlug: sourceTenant,
+      reason: 'cross-tenant-read permission required',
+      intent: resolvedIntent,
+      agentRole: req.agent_role ?? null,
+    });
     throw new Error('tenant governance: cross-tenant-read permission required');
   }
 }
@@ -70,6 +93,6 @@ export function applyOpenClawPolicies(
   if (isCoreAgentRole(req.agent_role)) {
     assertAgentRoleContract(req.agent_role, resolvedIntent);
   }
-  assertTenantGovernance(req, tenantPermissions);
+  assertTenantGovernance(req, resolvedIntent, tenantPermissions);
   return { ok: true };
 }

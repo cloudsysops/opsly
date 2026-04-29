@@ -16,6 +16,7 @@ import {
 } from './hive/http-handler.js';
 import { getTerminalSession, stopTerminalSession } from './workers/terminal-session-store.js';
 import { metricsStore } from './meta/orchestrator-metrics-store.js';
+import { recordOpenClawIntentQueued } from './openclaw/runtime-events.js';
 
 const DEFAULT_PORT = 3011;
 const TENANT_SLUG_REGEX = /^[a-z0-9-]{3,64}$/;
@@ -577,6 +578,129 @@ async function handleEnqueueAgentFarm(req: IncomingMessage, res: ServerResponse)
   }
 }
 
+async function handleOpenClawImproveDocumentation(
+  req: IncomingMessage,
+  res: ServerResponse
+): Promise<void> {
+  if (!verifyPlatformAdminToken(req)) {
+    res.writeHead(401, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'unauthorized' }));
+    return;
+  }
+
+  let body: unknown;
+  try {
+    body = await readBody(req);
+  } catch {
+    res.writeHead(400, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'Invalid JSON' }));
+    return;
+  }
+  if (typeof body !== 'object' || body === null) {
+    res.writeHead(400, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'invalid body' }));
+    return;
+  }
+
+  const payload = body as Record<string, unknown>;
+  const tenantSlug = typeof payload.tenant_slug === 'string' ? payload.tenant_slug.trim() : '';
+  if (tenantSlug.length === 0) {
+    res.writeHead(400, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'tenant_slug required' }));
+    return;
+  }
+  try {
+    assertTenantSlugOrThrow(tenantSlug);
+  } catch (err) {
+    res.writeHead(400, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: err instanceof Error ? err.message : String(err) }));
+    return;
+  }
+
+  const objective =
+    typeof payload.objective === 'string' && payload.objective.trim().length > 0
+      ? payload.objective.trim()
+      : `Improve operational documentation for tenant ${tenantSlug}`;
+  const requestId =
+    typeof payload.request_id === 'string' && payload.request_id.length > 0
+      ? payload.request_id
+      : randomUUID();
+  const sourceDoc =
+    typeof payload.source_doc === 'string' && payload.source_doc.trim().length > 0
+      ? payload.source_doc.trim()
+      : null;
+  const targetDoc =
+    typeof payload.target_doc === 'string' && payload.target_doc.trim().length > 0
+      ? payload.target_doc.trim()
+      : null;
+
+  const intentRequest: Record<string, unknown> = {
+    intent: 'oar_react',
+    initiated_by: 'system',
+    plan: 'business',
+    request_id: requestId,
+    taskId: `improve-docs-${requestId}`,
+    tenant_slug: tenantSlug,
+    agent_role: 'planner',
+    context: {
+      prompt: objective,
+      task: 'improve_documentation',
+      openclaw_pipeline: ['planner', 'skeptic', 'validator'],
+      source_doc: sourceDoc,
+      target_doc: targetDoc,
+    },
+    metadata: {
+      openclaw_pipeline: ['planner', 'skeptic', 'validator'],
+      mission_control: true,
+      triggered_by: 'internal/openclaw/improve-documentation',
+    },
+  };
+
+  const job: OrchestratorJob = {
+    type: 'intent_dispatch',
+    payload: { intent_request: intentRequest },
+    tenant_slug: tenantSlug,
+    initiated_by: 'system',
+    request_id: requestId,
+    plan: 'business',
+    agent_role: 'planner',
+    metadata: {
+      labels: ['openclaw', 'mission-control', 'improve-documentation'],
+    },
+  };
+
+  try {
+    const policyCheck = enrichAutonomyMetadata(req, job);
+    if (!policyCheck.ok) {
+      res.writeHead(policyCheck.status, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(policyCheck.payload));
+      return;
+    }
+    const bull = await enqueueJob(job);
+    const jobId = bull.id != null ? String(bull.id) : null;
+    await recordOpenClawIntentQueued({
+      requestId,
+      tenantSlug,
+      intent: 'improve_documentation',
+      jobId,
+    });
+
+    res.writeHead(202, { 'Content-Type': 'application/json' });
+    res.end(
+      JSON.stringify({
+        success: true,
+        request_id: requestId,
+        job_id: jobId,
+        intent: 'improve_documentation',
+        pipeline: ['planner', 'skeptic', 'validator'],
+      })
+    );
+  } catch (err) {
+    res.writeHead(500, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: String(err) }));
+  }
+}
+
 async function handleStartTerminalTask(req: IncomingMessage, res: ServerResponse): Promise<void> {
   if (!verifyPlatformAdminToken(req)) {
     res.writeHead(401, { 'Content-Type': 'application/json' });
@@ -806,6 +930,11 @@ export function startOrchestratorHealthServer(): Server {
 
     if (req.method === 'POST' && pathOnly === '/internal/enqueue-agent-farm') {
       await handleEnqueueAgentFarm(req, res);
+      return;
+    }
+
+    if (req.method === 'POST' && pathOnly === '/internal/openclaw/improve-documentation') {
+      await handleOpenClawImproveDocumentation(req, res);
       return;
     }
 

@@ -55,20 +55,8 @@ export class BillingUsageRepository extends BaseRepository {
     }
 
     // Calculate sum in application code to avoid RLS aggregate restriction
-    const rows = Array.isArray(data) ? data as Array<{ total_amount?: number }> : [];
+    const rows = Array.isArray(data) ? (data as Array<{ total_amount?: number }>) : [];
     const sum = rows.reduce((acc, row) => acc + (Number(row.total_amount) || 0), 0);
     return { value: sum, error: null };
   }
-}
-
-function extractAggregateSum(data: unknown): number {
-  if (!Array.isArray(data) || data.length === 0) {
-    return 0;
-  }
-  const row = data[0] as Record<string, unknown>;
-  if (row.sum !== undefined && row.sum !== null) {
-    const n = Number(row.sum);
-    return Number.isFinite(n) ? n : 0;
-  }
-  return 0;
 }

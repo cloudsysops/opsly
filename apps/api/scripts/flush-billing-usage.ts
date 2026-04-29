@@ -16,7 +16,6 @@ async function main(): Promise<void> {
 }
 
 void main().catch((e: unknown) => {
-  // eslint-disable-next-line no-console -- CLI
   console.error(e);
   process.exit(1);
 });

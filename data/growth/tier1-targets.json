@@ -1,0 +1,137 @@
+[
+  {
+    "name": "María García",
+    "email": "maria@agenciax.com",
+    "company": "Agencia X",
+    "company_size": "15-30",
+    "revenue_range": "500k-1M",
+    "specialization": "ecommerce",
+    "region": "LATAM"
+  },
+  {
+    "name": "Carlos López",
+    "email": "carlos@digitalpro.com",
+    "company": "Digital Pro",
+    "company_size": "20-40",
+    "revenue_range": "1M-2M",
+    "specialization": "marketing-automation",
+    "region": "LATAM"
+  },
+  {
+    "name": "Ana Martínez",
+    "email": "ana@creativestudio.com",
+    "company": "Creative Studio",
+    "company_size": "10-25",
+    "revenue_range": "400k-900k",
+    "specialization": "web-design",
+    "region": "LATAM"
+  },
+  {
+    "name": "Roberto Silva",
+    "email": "roberto@datadriven.com",
+    "company": "DataDriven Solutions",
+    "company_size": "25-50",
+    "revenue_range": "1.5M-3M",
+    "specialization": "data-analytics",
+    "region": "LATAM"
+  },
+  {
+    "name": "Sofía Rodríguez",
+    "email": "sofia@cloudnative.com",
+    "company": "CloudNative Experts",
+    "company_size": "12-35",
+    "revenue_range": "600k-1.5M",
+    "specialization": "cloud-infrastructure",
+    "region": "LATAM"
+  },
+  {
+    "name": "Diego Fernández",
+    "email": "diego@automationhub.com",
+    "company": "Automation Hub",
+    "company_size": "8-20",
+    "revenue_range": "300k-700k",
+    "specialization": "workflow-automation",
+    "region": "LATAM"
+  },
+  {
+    "name": "Marcela Gómez",
+    "email": "marcela@agenciatecnology.com",
+    "company": "Agencia Technology",
+    "company_size": "30-60",
+    "revenue_range": "2M-4M",
+    "specialization": "custom-development",
+    "region": "LATAM"
+  },
+  {
+    "name": "Pablo Ramírez",
+    "email": "pablo@integrationpros.com",
+    "company": "Integration Pros",
+    "company_size": "15-35",
+    "revenue_range": "800k-1.8M",
+    "specialization": "api-integration",
+    "region": "LATAM"
+  },
+  {
+    "name": "Alejandra Moreno",
+    "email": "alejandra@mobilefirst.com",
+    "company": "Mobile First Agency",
+    "company_size": "12-28",
+    "revenue_range": "500k-1.2M",
+    "specialization": "mobile-development",
+    "region": "LATAM"
+  },
+  {
+    "name": "Fernando Juárez",
+    "email": "fernando@seoexperts.com",
+    "company": "SEO Experts",
+    "company_size": "18-40",
+    "revenue_range": "700k-1.6M",
+    "specialization": "digital-marketing",
+    "region": "LATAM"
+  },
+  {
+    "name": "Gabriela Sánchez",
+    "email": "gabriela@contentmasters.com",
+    "company": "Content Masters",
+    "company_size": "10-22",
+    "revenue_range": "400k-850k",
+    "specialization": "content-management",
+    "region": "LATAM"
+  },
+  {
+    "name": "Javier Castillo",
+    "email": "javier@designinnovation.com",
+    "company": "Design Innovation Lab",
+    "company_size": "14-32",
+    "revenue_range": "600k-1.4M",
+    "specialization": "ui-ux-design",
+    "region": "LATAM"
+  },
+  {
+    "name": "Valentina Torres",
+    "email": "valentina@businessprocess.com",
+    "company": "Business Process Solutions",
+    "company_size": "20-45",
+    "revenue_range": "1M-2.5M",
+    "specialization": "process-automation",
+    "region": "LATAM"
+  },
+  {
+    "name": "Manuel Herradura",
+    "email": "manuel@securityfirst.com",
+    "company": "Security First Consulting",
+    "company_size": "16-38",
+    "revenue_range": "900k-2M",
+    "specialization": "cybersecurity",
+    "region": "LATAM"
+  },
+  {
+    "name": "Catalina Flores",
+    "email": "catalina@enterprisesolutions.com",
+    "company": "Enterprise Solutions Inc",
+    "company_size": "35-70",
+    "revenue_range": "2.5M-5M",
+    "specialization": "enterprise-consulting",
+    "region": "LATAM"
+  }
+]
