@@ -79,3 +79,6 @@ docs/.obsidian/plugins/recent-files-obsidian/data.json
 !docs/.obsidian/hotkeys.json
 !docs/.obsidian/file-index.json
 !docs/.obsidian/plugins/obsidian-git/data.json
+
+# Claude local config (ignored)
+.claude/2-context-management/CLAUDE.local.md

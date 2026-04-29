@@ -1,0 +1,80 @@
+{
+  "name": "discord-to-github",
+  "meta": {
+    "description": "Workflow: Discord webhook → validación → GitHub ACTIVE-PROMPT.md update",
+    "version": "1.0.0",
+    "owner": "opsly",
+    "trigger": "POST /webhook/opsly-discord-task"
+  },
+  "nodes": [
+    {
+      "name": "Discord Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "opsly-discord-task",
+        "responseMode": "responseNode"
+      }
+    },
+    {
+      "name": "Validate Message",
+      "type": "n8n-nodes-base.if",
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json.body.content || ''}}",
+              "operation": "notEmpty"
+            }
+          ],
+          "number": [
+            {
+              "value1": "={{($json.body.content || '').length}}",
+              "operation": "larger",
+              "value2": 10
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Prepare ACTIVE-PROMPT",
+      "type": "n8n-nodes-base.code",
+      "parameters": {
+        "language": "javascript",
+        "jsCode": "const body = $json.body || {};\nconst content = body.content || '';\nconst author = body.author?.username || 'Cristian';\nconst mentionTarget = /^\\s*@claude(\\s|$)/i.test(content) ? 'claude' : (/^\\s*@billy(\\s|$)/i.test(content) ? 'billy' : 'billy');\nconst target = body.target || mentionTarget;\nconst formatted = `# Tarea recibida desde Discord\\n# Fecha: ${new Date().toISOString()}\\n# Autor: ${author}\\n# Target: ${target}\\n\\n${content}\\n`;\nreturn [{ json: { ...body, target, formatted_content: formatted } }];"
+      }
+    },
+    {
+      "name": "Get ACTIVE-PROMPT SHA",
+      "type": "n8n-nodes-base.httpRequest",
+      "parameters": {
+        "method": "GET",
+        "url": "https://api.github.com/repos/cloudsysops/opsly/contents/docs/ACTIVE-PROMPT.md",
+        "authentication": "predefined",
+        "authId": "github-auth"
+      }
+    },
+    {
+      "name": "Update ACTIVE-PROMPT",
+      "type": "n8n-nodes-base.github",
+      "parameters": {
+        "operation": "updateFile",
+        "repository": "cloudsysops/opsly",
+        "filePath": "docs/ACTIVE-PROMPT.md",
+        "content": "={{$json.formatted_content}}",
+        "sha": "={{$node['Get ACTIVE-PROMPT SHA'].json.sha}}",
+        "commitMessage": "chore(active-prompt): update from Discord [skip ci]"
+      }
+    },
+    {
+      "name": "Notify Discord Success",
+      "type": "n8n-nodes-base.discord",
+      "parameters": {
+        "operation": "sendMessage",
+        "channel": "={{$json.channel_id || ''}}",
+        "content": "✅ Tarea enviada a {{$json.target}}: {{$json.content.substring(0,100)}}..."
+      }
+    }
+  ]
+}
