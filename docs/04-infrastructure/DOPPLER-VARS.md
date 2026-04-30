@@ -212,6 +212,16 @@ curl -s http://127.0.0.1:3014/ready | python3 -m json.tool
 
 Esperado: `status: ok` y en `notion.databases` los cinco títulos (p. ej. «Tenants (QA)», …).
 
+## n8n-mcp (opcional — Cursor / overlay Docker)
+
+Claves útiles para el MCP [czlonkowski/n8n-mcp](https://github.com/czlonkowski/n8n-mcp) (no confundir con `apps/mcp` OpenClaw). Detalle: [`docs/02-tools/N8N-MCP-INTEGRATION.md`](../02-tools/N8N-MCP-INTEGRATION.md).
+
+| Variable | Obligatorio | Notas |
+| -------- | ----------- | ----- |
+| `N8N_API_URL` | Para herramientas `n8n_*` | Base URL HTTPS de la instancia n8n (p. ej. tenant staging). |
+| `N8N_API_KEY` | Para herramientas `n8n_*` | API key de n8n (Settings → API). Rotar si se expone. |
+| `N8N_MCP_AUTH_TOKEN` | Si expones HTTP (`infra/docker-compose.n8n-mcp.yml`) | Token que el contenedor pasa como `AUTH_TOKEN` al servidor MCP upstream. |
+
 ## Plataforma (otros)
 
 Ver también `scripts/check-tokens.sh` para la lista de variables validadas contra Doppler `prd`.

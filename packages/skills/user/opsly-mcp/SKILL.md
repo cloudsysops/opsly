@@ -56,6 +56,10 @@ OAuth / PKCE: `apps/mcp/src/auth/` y `docs/adr/ADR-009-openclaw-mcp-architecture
 | OAuth scope missing | No en TOOL_REQUIRED_SCOPES | Añadir scope              |
 | 401 Unauthorized    | Token expirado             | Refresh OAuth token       |
 
+## MCP externo n8n (no es `apps/mcp`)
+
+El proyecto [n8n-mcp](https://github.com/czlonkowski/n8n-mcp) es un **segundo servidor MCP** para nodos/plantillas n8n. Configuración Opsly: **`docs/02-tools/N8N-MCP-INTEGRATION.md`**. No registrar sus tools dentro de `apps/mcp` salvo ADR explícito.
+
 ## Testing
 
 ```bash

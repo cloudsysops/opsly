@@ -36,6 +36,10 @@ Available MCP servers for Claude integrations:
   - Designs, components, files
   - Use: `@figma get design context`
 
+- **n8n-MCP (community)** — [czlonkowski/n8n-mcp](https://github.com/czlonkowski/n8n-mcp)
+  - MCP dedicado: nodos, plantillas, validación y API n8n (`N8N_API_URL` + `N8N_API_KEY`).
+  - Integración Opsly: **[N8N-MCP-INTEGRATION.md](./N8N-MCP-INTEGRATION.md)** (Cursor + compose opcional).
+
 - **n8n** (https://vps.smiletripcare.com/mcp-server/http)
   - Workflows, executions, triggers
   - Use: `@n8n get workflow status`
@@ -65,13 +69,13 @@ Available MCP servers for Claude integrations:
 
 ## For Cursor / CLI
 
-MCP servers are NOT directly available in Cursor CLI yet.
-Use via:
+En **Cursor**, los MCP se configuran en **`.cursor/mcp.json`** (local, no versionado). Ver ejemplo Opsly en `apps/mcp/README.md` y fragmento **n8n-mcp** en `docs/02-tools/examples/cursor-mcp-n8n-mcp.fragment.json`.
 
-- Direct API calls (curl, fetch)
-- SDK packages (npm install @supabase/supabase-js, etc.)
-- Shell commands (doppler, aws cli, etc.)
-- This repo's scripts in `scripts/` directory
+Sin MCP en CLI:
+
+- API directa (`curl`, `fetch`)
+- Paquetes SDK (`npm install …`)
+- Scripts en `scripts/`
 
 ## Opsly-Specific MCP Tools
 

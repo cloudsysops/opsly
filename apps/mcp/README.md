@@ -47,6 +47,10 @@ En contenedor **no** uses stdio; deja el default HTTP y enruta Traefik al servic
 - **Integraciones / red Docker (opcional):** `MCP_LLM_GATEWAY_URL`, `MCP_ORCHESTRATOR_URL`, `MCP_CONTEXT_BUILDER_URL` — bases HTTP para `probe_platform_component` y snapshots en `list_ai_integrations` (misma red Compose que en `infra/docker-compose.platform.yml`).
 - **Catálogo extra (solo metadatos):** `MCP_EXTRA_INTEGRATIONS_JSON` — JSON `[{ "id", "label", "description", "notes?" }]` para documentar herramientas de IA adicionales sin ejecutar código arbitrario.
 
+## MCP externo n8n (czlonkowski)
+
+Para **diseño de workflows n8n** con otro servidor MCP (`n8n-mcp`), sin mezclarlo con este repo: guía **[`docs/02-tools/N8N-MCP-INTEGRATION.md`](../../docs/02-tools/N8N-MCP-INTEGRATION.md)** y fragmento Cursor en `docs/02-tools/examples/cursor-mcp-n8n-mcp.fragment.json`.
+
 ## Herramientas nuevas (v1.1)
 
 | Tool                       | Uso                                                                                                        |
