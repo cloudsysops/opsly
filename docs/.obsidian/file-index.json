@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-04-30T01:10:39Z",
-  "totalFiles": 271,
+  "lastIndexed": "2026-04-30T04:20:35Z",
+  "totalFiles": 272,
   "files": [
     ".openclaw.md",
     "2026-04-21.md",
@@ -133,6 +133,7 @@
     "MONITORING.md",
     "MULTI-AGENT-ARCHITECTURE.md",
     "N8N-IMPORT-GUIDE.md",
+    "N8N-MCP-INTEGRATION.md",
     "N8N-SETUP.md",
     "NOTEBOOKLM-INTEGRATION.md",
     "NOTEBOOKLM-SETUP.md",
