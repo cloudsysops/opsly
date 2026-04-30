@@ -60,8 +60,27 @@ Los webhooks n8n se configuran automáticamente en los tenants vía `scripts/onb
 | Workflow | Propósito | Trigger |
 |----------|-----------|---------|
 | discord-to-github | Discord → GitHub ACTIVE-PROMPT | `POST /webhook/opsly-discord-task` |
+| crm-lead-capture | Captura y normaliza leads CRM | `POST /webhook/opsly-crm-lead` |
+| crm-hot-lead-alert | Alerta leads calientes | `POST /webhook/opsly-crm-hot-lead` |
+| crm-follow-up-reminder | Recordatorio diario de ventas | Cron L-V 09:00 |
+| crm-daily-pipeline-digest | Digest diario de pipeline | Cron L-V 17:30 |
 | backup-workflow | Backup automático diario | Cron: `0 2 * * *` |
 | tenant-onboard | Onboarding automático | API call / evento |
+
+### CRM Starter Pack
+
+```bash
+# Validar sin importar
+./scripts/install-crm-workflows.sh --tenant <slug> --dry-run
+
+# Importar al n8n del tenant
+./scripts/install-crm-workflows.sh --tenant <slug>
+
+# Importar en todos los contenedores n8n_* requiere confirmacion explicita
+./scripts/install-crm-workflows.sh --all-running --force
+```
+
+Detalle: `docs/n8n-workflows/crm/README.md`.
 
 ## Integración con Claude Code
 

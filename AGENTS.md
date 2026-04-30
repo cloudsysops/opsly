@@ -103,7 +103,7 @@ npm run opsly:ensure-ollama -- --ensure
    - [`docs/KNOWLEDGE-SYSTEM.md`](docs/KNOWLEDGE-SYSTEM.md) — LEER PRIMERO
    - Query startup obligatorio: `"¿Cuál es el estado actual de Opsly?"` → NotebookLM
 3. **Prompt operativo en VPS (opcional):** `docs/ACTIVE-PROMPT.md` — tras `git pull` en `/opt/opsly`, el servicio **`cursor-prompt-monitor`** (`scripts/cursor-prompt-monitor.sh`, unidad `infra/systemd/cursor-prompt-monitor.service`) detecta cambios cada **30 s** y ejecuta el contenido filtrado como shell. **Solo** líneas que no empiezan por `#` ni `---`; si todo es comentario, no ejecuta nada. **Riesgo RCE** si alguien no confiable puede editar ese archivo.
-4. **Logs en VPS:** `/opt/opsly/logs/cursor-prompt-monitor.log` (directorio `logs/` ignorado en git).
+4. **Logs en VPS:** `/opt/opsly/runtime/logs/cursor-prompt-monitor.log` (directorio `runtime/logs/` ignorado en git).
 5. **Docs de apoyo:** `docs/CLAUDE-WORKFLOW-OPTIMIZATION.md`, `docs/OPENCLAW-ARCHITECTURE.md`.
 6. **Espejo Google Drive (opcional):** `docs/GOOGLE-DRIVE-SYNC.md`, lista `docs/opsly-drive-files.list`, config `.opsly-drive-config.json` — útil si Claude (u otro asistente) tiene Drive conectado; la fuente de verdad sigue siendo git/GitHub.
 
@@ -325,9 +325,29 @@ node scripts/load-skills.js show opsly-api
 
 <!-- Actualizar al final de cada sesión -->
 
-**Fecha última actualización:** 2026-04-26 — **Estabilización prod:** runbooks deploy/onboarding/seguridad + CI OpenAPI gate + workflow Deploy con Tailscale opcional; ver bloqueantes y [`docs/runbooks/DEPLOY-GITHUB-ACTIONS.md`](docs/runbooks/DEPLOY-GITHUB-ACTIONS.md). **Sprint histórico Semana 5:** [`docs/SEMANA-5-INFORME.md`](docs/SEMANA-5-INFORME.md), [`ROADMAP.md`](ROADMAP.md).
+**Fecha última actualización:** 2026-04-30 — **CRM Starter Pack aplicado en n8n tenants + marketplace v1 + DeepSeek V4/OpenClaw reforzado:** 6 contenedores n8n del VPS tienen los 4 workflows CRM importados; portal incluye `/dashboard/[tenant]/workflows`; LLM Gateway default DeepSeek V4 y trazabilidad `request_id` reforzada.
 
 **Siguiente fase:** Semana 6 (Segundo Cliente + E2E), ventana **2026-04-29 → 2026-05-03** ⏳ **EN PROGRESO**. Plan: [`docs/SEMANA-6-PLAN.md`](docs/SEMANA-6-PLAN.md).
+
+**Sesión 2026-04-30 — CRM por defecto + marketplace n8n + DeepSeek/OpenClaw ✅**
+- ✅ CRM Starter Pack agregado: lead capture, hot lead alert, follow-up reminder y daily pipeline digest en `.n8n/1-workflows/crm/`.
+- ✅ Instalador `scripts/install-crm-workflows.sh`: valida JSON/id/name, slugs/contenedores, omite existentes salvo `--force`; `--all-running` exige `--force` si no es dry-run.
+- ✅ VPS `vps-dragon`: verificados `n8n_legalvial`, `n8n_localrank`, `n8n_jkboterolabs`, `n8n_peskids`, `n8n_smiletripcare`, `n8n_intcloudsysops` con los 4 workflows `Opsly CRM`.
+- ✅ Marketplace v1: `config/n8n-workflows/catalog.json`, `apps/portal/lib/n8n-workflow-catalog.ts`, pagina `apps/portal/app/dashboard/[tenant]/workflows/page.tsx`.
+- ✅ DeepSeek V4: default `deepseek-v4-flash`, docs/env actualizados, `provider_hint` en logs estructurados, `request_id` generado propagado a usage logging.
+- ✅ `ResearchWorker`: `/v1/text` ahora manda `tenant_slug` + `request_id` y lee `content` del gateway.
+- ✅ Multi-agente externo controlado en `tmux` `opsly-agents` (Claude, Codex, Copilot, OpenCode) en modo auditoria/plan; logs en `logs/agents/`.
+- ✅ Validación: portal `type-check`, `lint`, `build`; llm-gateway `type-check` + 63 tests; orchestrator `type-check` + `openclaw-router-contracts` 9 tests; CRM dry-run OK.
+
+**Sesión 2026-04-29 — Bootstrap local Opsly/OpenClaw ✅**
+- ✅ Local `mac2011`: API `3000`, Admin `3001`, Portal `3002`, MCP `3003`, LLM Gateway `3010`, Orchestrator `3011` en `queue-only`, Context Builder `3012`.
+- ✅ Redis local/túnel `127.0.0.1:6379` responde `PONG`; no levantar Redis Docker adicional en ese puerto.
+- ✅ Hive inicializado: `/internal/hive/init`, `/internal/hive/stats`, `/internal/hive/bots` OK; endpoint `/internal/hive/objective` requiere `Authorization: Bearer`.
+- ✅ `vps-dragon`: `opsly_orchestrator`, `opsly_llm_gateway`, `opsly_mcp`, `infra-redis-1` healthy; Traefik running.
+- ✅ Worker: alias funcional `opsly-mac2011` (`100.80.41.29`) con `opsly-redis`, `infra-worker-primary-1`, `opslyquantum-ollama`; alias `opsly-worker` MagicDNS no resuelve.
+- ✅ Fix runtime: `openclaw/controller.ts` exporta función hoisted para evitar TDZ con `registry.ts`.
+- ✅ Fix dev: `apps/context-builder` `dev` apunta a `src/index.ts` para abrir HTTP `3012`.
+- ✅ Validación: `validate-structure`, `validate-openapi`, `validate-skills`, type-check/build focales `context-builder`/`orchestrator`.
 
 **Semana 5 — Feedback Loop API:** [`docs/SEMANA-5-INFORME.md`](docs/SEMANA-5-INFORME.md) — **✅ COMPLETADO**
 - ✅ `POST /api/feedback` — Recolección con Zero-Trust identity validation (tenant_slug + user_email desde sesión)
@@ -990,7 +1010,9 @@ _Auditoría TypeScript y correcciones de código (2026-04-05, sesión agente Cla
 
 <!-- Una sola tarea concreta. Actualizar al final de cada sesión -->
 
-**Semana 2 (2026-04-21 → 2026-04-27):** Infraestructura IA (Ollama + NotebookLM Knowledge Layer)
+**Inmediato (2026-04-30):** convertir marketplace n8n v1 en autoservicio completo: API portal `install/activate`, persistencia de installs por tenant, enforcement de `plan_min`, y smoke real DeepSeek con `DEEPSEEK_API_KEY` via `/v1/text`/`/v1/chat/completions`.
+
+**Histórico Semana 2 (2026-04-21 → 2026-04-27):** Infraestructura IA (Ollama + NotebookLM Knowledge Layer)
 
 ### Ejecutar Plan Ollama Worker (ADR-024) — Sesión siguiente (Semana 2)
 
@@ -1123,6 +1145,7 @@ ssh vps-dragon@100.120.151.91 "docker system df && sudo du -xh /var --max-depth=
   - **Qué se hizo:** post-check con reintentos en `apps/api/app/api/tenants/route.ts` + verificación tras insert en `apps/api/lib/orchestrator.ts` + tests en `tenants-route.test.ts`.
   - **Pendiente operativo:** desplegar imagen API en `prd` y smoke real (`POST` + `GET /api/tenants`). Runbook: [`docs/runbooks/TENANT-ONBOARDING-TRIAGE.md`](docs/runbooks/TENANT-ONBOARDING-TRIAGE.md).
 - [ ] **Deploy GitHub Actions → VPS (SSH timeout)** — si el job **Deploy** falla: (1) `TAILSCALE_AUTHKEY` + `VPS_HOST` / `VPS_SSH_HOST` = IP tailnet del VPS; (2) el workflow **no** impone un tag fijo de Tailscale (evita fallos de ACL); (3) `timeout: 2m` en el paso SSH. Ver [`docs/runbooks/DEPLOY-GITHUB-ACTIONS.md`](docs/runbooks/DEPLOY-GITHUB-ACTIONS.md).
+- [ ] **Llamadas IA directas fuera de OpenClaw/LLM Gateway** — auditoria 2026-04-30 detecto rutas legacy en `apps/orchestrator/src/memory/knowledge-base.ts`, `apps/orchestrator/src/runtime/adapters/supabase-memory-adapter.ts` y `apps/orchestrator/src/llm/gateway.ts`. Migrar a LLM Gateway/embeddings gateway o documentar ADR de excepcion.
 
 - [x] 🟠 **CONSOLIDACIÓN ARQUITECTURA (2026-04-24)**
   - ADR-031: deprecación/archivo de apps experimentales (`context-builder-v2`, `ai-evolution`, `ingestion-service`, `mission-control`).
