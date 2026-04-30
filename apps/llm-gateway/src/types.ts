@@ -41,6 +41,8 @@ export interface LLMRequest {
    * `cost` baja un escalón; `quality` sube; `balanced` = comportamiento por defecto.
    */
   routing_bias?: RoutingBias;
+  /** Prioriza DeepSeek en la cadena cloud cuando hay `DEEPSEEK_API_KEY`. */
+  provider_hint?: 'deepseek';
   max_tokens?: number;
   temperature?: number;
   cache?: boolean;

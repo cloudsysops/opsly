@@ -10,6 +10,7 @@ import {
   notifyBudgetWarning,
   notifyProviderRateLimit,
 } from './providers/discord.js';
+import { buildLlmDirectCloudChain } from './cloud-chain.js';
 import { PROVIDERS, type ProviderChainEntry, type ProviderDefinition } from './providers.js';
 import { estimateCost } from './router.js';
 import type { LLMMessage, LLMRequest, LLMResponse } from './types.js';
@@ -159,14 +160,15 @@ async function runProvider(
     });
     return { ...out, model_used: def.model, billing: def };
   }
-  const key = process.env.OPENAI_API_KEY ?? '';
-  if (!key) throw new Error('OPENAI_API_KEY no configurada');
-  const out = await invokeOpenAiCompatible(
-    'https://api.openai.com/v1/chat/completions',
-    key,
-    def.model,
-    req
-  );
+  const isDeepseek = entry.id === 'deepseek_chat';
+  const key = isDeepseek ? (process.env.DEEPSEEK_API_KEY ?? '') : (process.env.OPENAI_API_KEY ?? '');
+  if (!key) {
+    throw new Error(isDeepseek ? 'DEEPSEEK_API_KEY no configurada' : 'OPENAI_API_KEY no configurada');
+  }
+  const endpoint = isDeepseek
+    ? `${(def.baseUrl ?? 'https://api.deepseek.com').replace(/\/$/, '')}/v1/chat/completions`
+    : 'https://api.openai.com/v1/chat/completions';
+  const out = await invokeOpenAiCompatible(endpoint, key, def.model, req);
   return { ...out, model_used: def.model, billing: def };
 }
 
@@ -296,19 +298,7 @@ export async function llmCallDirect(req: LLMRequest): Promise<LLMResponse> {
     );
   }
 
-  const cloudChain: ProviderChainEntry[] = [
-    {
-      id: 'claude_haiku',
-      healthKey: PROVIDERS.claude_haiku.healthKey,
-      def: PROVIDERS.claude_haiku,
-    },
-    { id: 'gpt4o_mini', healthKey: PROVIDERS.gpt4o_mini.healthKey, def: PROVIDERS.gpt4o_mini },
-    {
-      id: 'openrouter_cheap',
-      healthKey: PROVIDERS.openrouter_cheap.healthKey,
-      def: PROVIDERS.openrouter_cheap,
-    },
-  ];
+  const cloudChain = buildLlmDirectCloudChain(req);
 
   for (const entry of cloudChain) {
     const healthy = await healthDaemon.isAvailable(entry.healthKey);

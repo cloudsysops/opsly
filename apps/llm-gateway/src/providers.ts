@@ -14,6 +14,7 @@ export interface ProviderDefinition {
 
 const ollamaBase = process.env.OLLAMA_URL ?? 'http://localhost:11434';
 const openRouterBase = 'https://openrouter.ai/api/v1';
+const deepseekBase = (process.env.DEEPSEEK_BASE_URL ?? 'https://api.deepseek.com').replace(/\/$/, '');
 
 export const PROVIDERS = {
   claude_haiku: {
@@ -58,6 +59,15 @@ export const PROVIDERS = {
     kind: 'openai',
     cost_per_1k_input: 0.005,
     cost_per_1k_output: 0.015,
+    healthKey: 'openai',
+  },
+  /** OpenAI-compatible API (DeepSeek); requiere `DEEPSEEK_API_KEY`. */
+  deepseek_chat: {
+    model: process.env.DEEPSEEK_MODEL ?? 'deepseek-chat',
+    kind: 'openai',
+    cost_per_1k_input: 0.00014,
+    cost_per_1k_output: 0.00028,
+    baseUrl: deepseekBase,
     healthKey: 'openai',
   },
 } as const satisfies Record<string, ProviderDefinition>;

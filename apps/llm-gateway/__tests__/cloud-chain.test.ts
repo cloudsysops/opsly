@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { buildLlmDirectCloudChain } from '../src/cloud-chain.js';
+import type { ProviderChainEntry } from '../src/providers.js';
 import type { LLMRequest } from '../src/types.js';
 
 function minimalReq(overrides: Partial<LLMRequest> = {}): LLMRequest {
@@ -28,7 +29,12 @@ describe('buildLlmDirectCloudChain', () => {
   it('puts DeepSeek first when provider_hint is deepseek', () => {
     const chain = buildLlmDirectCloudChain(minimalReq({ provider_hint: 'deepseek' }));
     expect(chain[0]?.id).toBe('deepseek_chat');
-    expect(chain.map((e) => e.id)).toEqual(['deepseek_chat', 'claude_haiku', 'gpt4o_mini', 'openrouter_cheap']);
+    expect(chain.map((e: ProviderChainEntry) => e.id)).toEqual([
+      'deepseek_chat',
+      'claude_haiku',
+      'gpt4o_mini',
+      'openrouter_cheap',
+    ]);
   });
 
   it('puts DeepSeek first when routing_bias is cost', () => {
@@ -44,7 +50,7 @@ describe('buildLlmDirectCloudChain', () => {
   it('omits DeepSeek when API key is unset', () => {
     delete process.env.DEEPSEEK_API_KEY;
     const chain = buildLlmDirectCloudChain(minimalReq({ routing_bias: 'cost' }));
-    expect(chain.some((e) => e.id === 'deepseek_chat')).toBe(false);
+    expect(chain.some((e: ProviderChainEntry) => e.id === 'deepseek_chat')).toBe(false);
     expect(chain[0]?.id).toBe('claude_haiku');
   });
 });

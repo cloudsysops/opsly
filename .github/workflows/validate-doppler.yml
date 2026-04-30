@@ -22,6 +22,10 @@ jobs:
         env:
           DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN_PRD }}
         run: |
+          if [ -z "${DOPPLER_TOKEN:-}" ]; then
+            echo "Skipping Doppler prd: secret DOPPLER_TOKEN_PRD is not configured."
+            exit 0
+          fi
           chmod +x scripts/validate-doppler-vars.sh
           ./scripts/validate-doppler-vars.sh ops-intcloudsysops prd
 
@@ -29,5 +33,9 @@ jobs:
         env:
           DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN_STG }}
         run: |
+          if [ -z "${DOPPLER_TOKEN:-}" ]; then
+            echo "Skipping Doppler stg: secret DOPPLER_TOKEN_STG is not configured."
+            exit 0
+          fi
           chmod +x scripts/validate-doppler-vars.sh
           ./scripts/validate-doppler-vars.sh ops-intcloudsysops stg
