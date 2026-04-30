@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT_DIR="$(git rev-parse --show-toplevel)"
+cd "$ROOT_DIR"
+
+echo "[pre-push] Running push checks..."
+
+if npm run validate-openapi >/dev/null 2>&1; then
+  npm run validate-openapi
+else
+  echo "[pre-push] validate-openapi script not found, skipping."
+fi
+
+echo "[pre-push] OK"

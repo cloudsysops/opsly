@@ -1,12 +1,12 @@
 ---
 status: canon
 owner: product
-last_review: 2026-04-24
+last_review: 2026-04-28
 ---
 
 # Opsly — Visión y Objetivos
 
-> Última revisión: 2026-04-18
+> Última revisión: 2026-04-28
 
 **Planificación ejecutable por sprint:** [`ROADMAP.md`](ROADMAP.md) (semanas, milestones).  
 **Guía técnica capa IA (monorepo):** [`docs/IMPLEMENTATION-IA-LAYER.md`](docs/IMPLEMENTATION-IA-LAYER.md).  
@@ -162,6 +162,8 @@ Objetivo: unificar herramientas, orquestación y capa de costos IA bajo un contr
 - [ ] Context Builder integrado para continuidad entre sesiones.
 - [ ] NotebookLM disponible como EXPERIMENTAL con feature flag en planes superiores.
 - [x] Planner externo (Chat.z): delegar planes de ejecución a LLMs remotos vía LLM Gateway (`/v1/chat/completions` / `/v1/planner`), con razonamiento complejo sin añadir infraestructura pesada fuera de Compose.
+- [x] Base SwarmOps/Hive en orchestrator: `QueenBee` + bots especializados + `HiveStateStore` + `PheromoneChannel`, endpoint interno `POST /internal/hive/objective` y status por `taskId`.
+- [ ] Endurecer SwarmOps: retries/reasignación explícita por subtarea y pruebas integradas de ciclo completo.
 
 ### Fase 5 — Ecosistema IA Madura
 

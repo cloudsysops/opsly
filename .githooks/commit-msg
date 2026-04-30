@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT="$(git rev-parse --show-toplevel)"
+MSG_FILE="${1:-}"
+
+if [[ -z "$MSG_FILE" || ! -f "$MSG_FILE" ]]; then
+  echo "commit-msg: missing commit message file"
+  exit 1
+fi
+
+cd "$ROOT"
+
+if ! command -v npx >/dev/null 2>&1; then
+  echo "commit-msg: npx no disponible, omitiendo commitlint"
+  exit 0
+fi
+
+npx commitlint --edit "$MSG_FILE"

@@ -1,0 +1,21 @@
+{
+  "hooks": {
+    "pre-commit": {
+      "command": "bash .claude/4-hooks/lint-on-save.sh",
+      "description": "Lint archivos staged de apps/api con ESLint (max-warnings 0)"
+    },
+    "post-commit": {
+      "command": "bash scripts/update-agents.sh",
+      "description": "Sync mirrors de AGENTS.md, VISION.md y system_state.json"
+    },
+    "post-merge": {
+      "command": "bash .claude/4-hooks/post-merge.sh",
+      "description": "Reinstalar dependencias si cambió package-lock.json"
+    }
+  },
+  "notes": {
+    "setup": "Ejecutar: git config core.hooksPath .claude/4-hooks",
+    "permissions": "chmod +x .claude/4-hooks/*.sh",
+    "auto-commit": "No usar auto-commit.sh en main. Crear rama primero."
+  }
+}

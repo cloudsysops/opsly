@@ -1,106 +1,185 @@
-import type { OpenClawAgentDefinition, OpenClawAgentRole } from './contracts.js';
+import { runOpenClawController } from './controller.js';
+import type { OpenClawControllerContract } from './contracts.js';
+import type { AgentRole } from '../types.js';
 
-const DEFAULT_AGENTS: Record<OpenClawAgentRole, OpenClawAgentDefinition> = {
-  planner: {
-    role: 'planner',
-    queueName: 'queue:planner',
-    skill: 'skills/user/opsly-orchestrator',
-    modelTier: 'balanced',
-    tenantPermissions: {
-      enabledByDefault: true,
-      allowedPlans: ['startup', 'business', 'enterprise'],
-      defaultMaxBudgetUsd: 1.5,
-      defaultConcurrencyLimit: 1,
-    },
-  },
-  builder: {
-    role: 'builder',
-    queueName: 'openclaw',
-    skill: 'skills/user/opsly-api',
-    modelTier: 'balanced',
-    tenantPermissions: {
-      enabledByDefault: true,
-      allowedPlans: ['business', 'enterprise'],
-      defaultMaxBudgetUsd: 2,
-      defaultConcurrencyLimit: 2,
-    },
-  },
-  skeptic: {
-    role: 'skeptic',
-    queueName: 'queue:skeptic',
-    skill: 'skills/user/hermes-skeptic',
-    modelTier: 'quality',
-    tenantPermissions: {
-      enabledByDefault: true,
-      allowedPlans: ['business', 'enterprise'],
-      defaultMaxBudgetUsd: 1,
-      defaultConcurrencyLimit: 1,
-    },
-  },
-  validator: {
-    role: 'validator',
-    queueName: 'openclaw',
-    skill: 'skills/user/opsly-qa',
-    modelTier: 'balanced',
-    tenantPermissions: {
-      enabledByDefault: true,
-      allowedPlans: ['startup', 'business', 'enterprise'],
-      defaultMaxBudgetUsd: 0.8,
-      defaultConcurrencyLimit: 2,
-    },
-  },
-  researcher: {
-    role: 'researcher',
-    queueName: 'openclaw',
-    skill: 'skills/user/opsly-context',
-    modelTier: 'cheap',
-    tenantPermissions: {
-      enabledByDefault: true,
-      allowedPlans: ['startup', 'business', 'enterprise'],
-      defaultMaxBudgetUsd: 0.5,
-      defaultConcurrencyLimit: 2,
-    },
-  },
-  deploy: {
-    role: 'deploy',
-    queueName: 'openclaw',
-    skill: 'skills/user/opsly-infra',
-    modelTier: 'balanced',
-    tenantPermissions: {
-      enabledByDefault: true,
-      allowedPlans: ['business', 'enterprise'],
-      defaultMaxBudgetUsd: 1,
-      defaultConcurrencyLimit: 1,
-    },
-  },
-};
+/** Alias de `AgentRole` del orchestrator (incluye roles extendidos OpenClaw). */
+export type OpenClawAgentRole = AgentRole;
+export type OpenClawAgentTarget = 'queue' | 'skill' | 'mcp';
+export type OpenClawModelTier = 'cheap' | 'balanced' | 'premium';
+export type OpenClawTenantPermission = 'self' | 'cross-tenant-read' | 'cross-tenant-write';
+export type OpenClawSkillBinding =
+  | 'opsly-orchestrator'
+  | 'opsly-architect'
+  | 'opsly-qa'
+  | 'opsly-api'
+  | 'opsly-llm'
+  | 'opsly-discord';
 
-export class OpenClawRegistry {
-  private readonly agents: Record<OpenClawAgentRole, OpenClawAgentDefinition>;
-
-  public constructor(seed?: Partial<Record<OpenClawAgentRole, OpenClawAgentDefinition>>) {
-    this.agents = { ...DEFAULT_AGENTS, ...(seed ?? {}) };
-  }
-
-  public listAgents(): OpenClawAgentDefinition[] {
-    return Object.values(this.agents);
-  }
-
-  public getAgent(role: OpenClawAgentRole): OpenClawAgentDefinition {
-    return this.agents[role];
-  }
+export interface OpenClawAgentDescriptor {
+  id: string;
+  role: OpenClawAgentRole;
+  capabilities: readonly string[];
+  skillBinding: OpenClawSkillBinding;
+  targets: readonly OpenClawAgentTarget[];
+  modelTier: OpenClawModelTier;
+  tenantPermissions: readonly OpenClawTenantPermission[];
+  defaultController: string;
+  enabled: boolean;
 }
 
-export function createOpenClawRegistry(): OpenClawRegistry {
-  return new OpenClawRegistry();
+/**
+ * Command-layer registry for OpenClaw control handlers.
+ * This allows extending control behavior without touching execution runtime modules.
+ */
+const REGISTRY = new Map<string, OpenClawControllerContract>([['default', runOpenClawController]]);
+const AGENT_REGISTRY = new Map<string, OpenClawAgentDescriptor>([
+  [
+    'planner-default',
+    {
+      id: 'planner-default',
+      role: 'planner',
+      capabilities: ['route-intents', 'build-plan', 'handoff-execution'],
+      skillBinding: 'opsly-orchestrator',
+      targets: ['queue', 'skill'],
+      modelTier: 'balanced',
+      tenantPermissions: ['self'],
+      defaultController: 'default',
+      enabled: true,
+    },
+  ],
+  [
+    'executor-default',
+    {
+      id: 'executor-default',
+      role: 'executor',
+      capabilities: ['run-jobs', 'dispatch-workflow', 'execute-oar'],
+      skillBinding: 'opsly-api',
+      targets: ['queue', 'skill'],
+      modelTier: 'cheap',
+      tenantPermissions: ['self'],
+      defaultController: 'default',
+      enabled: true,
+    },
+  ],
+  [
+    'tool-default',
+    {
+      id: 'tool-default',
+      role: 'tool',
+      capabilities: ['tool-invocation', 'notify', 'sync-drive'],
+      skillBinding: 'opsly-llm',
+      targets: ['queue', 'skill', 'mcp'],
+      modelTier: 'cheap',
+      tenantPermissions: ['self'],
+      defaultController: 'default',
+      enabled: true,
+    },
+  ],
+  [
+    'notifier-default',
+    {
+      id: 'notifier-default',
+      role: 'notifier',
+      capabilities: ['notify'],
+      skillBinding: 'opsly-discord',
+      targets: ['queue', 'skill'],
+      modelTier: 'cheap',
+      tenantPermissions: ['self'],
+      defaultController: 'default',
+      enabled: true,
+    },
+  ],
+  [
+    'builder-default',
+    {
+      id: 'builder-default',
+      role: 'builder',
+      capabilities: ['compose-work-plan', 'decompose-tasks', 'prepare-handoff'],
+      skillBinding: 'opsly-architect',
+      targets: ['queue', 'skill'],
+      modelTier: 'balanced',
+      tenantPermissions: ['self'],
+      defaultController: 'default',
+      enabled: true,
+    },
+  ],
+  [
+    'skeptic-default',
+    {
+      id: 'skeptic-default',
+      role: 'skeptic',
+      capabilities: ['challenge-assumptions', 'risk-check', 'failure-mode-review'],
+      skillBinding: 'opsly-qa',
+      targets: ['queue', 'skill'],
+      modelTier: 'premium',
+      tenantPermissions: ['self', 'cross-tenant-read'],
+      defaultController: 'default',
+      enabled: true,
+    },
+  ],
+  [
+    'validator-default',
+    {
+      id: 'validator-default',
+      role: 'validator',
+      capabilities: ['validate-plan', 'verify-constraints', 'gate-readiness-check'],
+      skillBinding: 'opsly-qa',
+      targets: ['queue', 'skill'],
+      modelTier: 'balanced',
+      tenantPermissions: ['self', 'cross-tenant-read'],
+      defaultController: 'default',
+      enabled: true,
+    },
+  ],
+  [
+    'researcher-default',
+    {
+      id: 'researcher-default',
+      role: 'researcher',
+      capabilities: ['collect-context', 'gather-evidence', 'summarize-findings'],
+      skillBinding: 'opsly-architect',
+      targets: ['queue', 'skill'],
+      modelTier: 'premium',
+      tenantPermissions: ['self', 'cross-tenant-read'],
+      defaultController: 'default',
+      enabled: true,
+    },
+  ],
+]);
+
+export function getOpenClawController(name = 'default'): OpenClawControllerContract {
+  return REGISTRY.get(name) ?? runOpenClawController;
 }
 
-const openClawRegistry = createOpenClawRegistry();
-
-export function resolveOpenClawAgentConfig(role: OpenClawAgentRole): OpenClawAgentDefinition {
-  return openClawRegistry.getAgent(role);
+export function registerOpenClawController(
+  name: string,
+  controller: OpenClawControllerContract
+): void {
+  REGISTRY.set(name, controller);
 }
 
-export function resolveAgentDefinition(role: OpenClawAgentRole): OpenClawAgentDefinition {
-  return resolveOpenClawAgentConfig(role);
+export function registerOpenClawAgent(agent: OpenClawAgentDescriptor): void {
+  AGENT_REGISTRY.set(agent.id, agent);
+}
+
+export function getOpenClawAgent(agentId: string): OpenClawAgentDescriptor | undefined {
+  return AGENT_REGISTRY.get(agentId);
+}
+
+export function listOpenClawAgents(): OpenClawAgentDescriptor[] {
+  return Array.from(AGENT_REGISTRY.values());
+}
+
+export function listOpenClawAgentsByRole(role: OpenClawAgentRole): OpenClawAgentDescriptor[] {
+  return listOpenClawAgents().filter((agent) => agent.role === role && agent.enabled);
+}
+
+export function resolveOpenClawAgentForRole(role: OpenClawAgentRole): OpenClawAgentDescriptor | null {
+  return listOpenClawAgentsByRole(role)[0] ?? null;
+}
+
+export function resolveOpenClawControllerForRole(role: OpenClawAgentRole): OpenClawControllerContract {
+  const firstEnabledForRole = listOpenClawAgentsByRole(role)[0];
+  const controllerName = firstEnabledForRole?.defaultController ?? 'default';
+  return getOpenClawController(controllerName);
 }

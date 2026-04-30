@@ -1,4 +1,5 @@
 import type { JobsOptions } from 'bullmq';
+import { parseAutonomyRiskLevel, resolveAutonomyPolicy } from './autonomy/policy.js';
 import type { OrchestratorJob } from './types.js';
 
 const MAX_JOB_ID_LEN = 128;
@@ -58,12 +59,16 @@ function isGrowthCritical(job: OrchestratorJob): boolean {
  * Jobs generados tras Remote Planner: suben prioridad relativa (BullMQ: menor número = antes).
  */
 export function buildQueueAddOptions(job: OrchestratorJob): JobsOptions {
+  const riskFromMetadata = parseAutonomyRiskLevel(job.metadata?.autonomy_risk);
+  const policy = resolveAutonomyPolicy(job.type, job.autonomy_risk ?? riskFromMetadata);
   const basePriority = planToQueuePriority(job.plan);
   const plannerBoosted = isPlannerDerivedJob(job) ? Math.max(0, basePriority - 5000) : basePriority;
-  const boosted = isGrowthCritical(job) ? Math.max(0, plannerBoosted - 15_000) : plannerBoosted;
+  const growthBoosted = isGrowthCritical(job) ? Math.max(0, plannerBoosted - 15_000) : plannerBoosted;
+  const boosted =
+    policy.riskLevel === 'high' ? Math.max(0, growthBoosted - 10_000) : growthBoosted;
   const opts: JobsOptions = {
-    attempts: 3,
-    backoff: { type: 'exponential', delay: 2000 },
+    attempts: policy.maxAttempts,
+    backoff: { type: 'exponential', delay: policy.backoffDelayMs },
     priority: boosted,
   };
 

@@ -175,6 +175,7 @@ docs/generated/sprint-status.auto.md ← burndown generado (status.yaml; no edit
 | [`AUTOMATION-PLAN.md`](AUTOMATION-PLAN.md)                           | Loop Discord → GitHub → Cursor                                                    |
 | [`N8N-SETUP.md`](N8N-SETUP.md)                                       | n8n Discord→GitHub; Doppler `N8N_WEBHOOK_SECRET_GH` (legado `N8N_WEBHOOK_SECRET`) |
 | [`N8N-IMPORT-GUIDE.md`](N8N-IMPORT-GUIDE.md)                         | Importar workflows n8n                                                            |
+| [`02-tools/N8N-MCP-INTEGRATION.md`](02-tools/N8N-MCP-INTEGRATION.md) | MCP **n8n-mcp** (Cursor + Docker opcional) junto a OpenClaw                       |
 | [`OBSERVABILITY.md`](OBSERVABILITY.md)                               | Métricas, logs, alertas, Prometheus                                               |
 | [`PERFORMANCE_BASELINE.md`](PERFORMANCE_BASELINE.md)                 | Baselines de performance por endpoint                                             |
 | [`CLAUDE-WORKFLOW-OPTIMIZATION.md`](CLAUDE-WORKFLOW-OPTIMIZATION.md) | Optimización de sesiones con Claude                                               |

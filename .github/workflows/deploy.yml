@@ -53,7 +53,7 @@ on:
         default: false
 
 jobs:
-  lint-and-typecheck:
+  release-gate:
     if: github.event_name != 'workflow_dispatch' || inputs.skip_tests != true
     runs-on: ubuntu-latest
     steps:
@@ -65,27 +65,20 @@ jobs:
           cache: npm
           cache-dependency-path: package-lock.json
 
-      - name: npm ci (workspace)
-        run: npm ci
-
-      - name: Typecheck (parallel)
+      - name: Run release gate (staging/main)
         run: |
           set -euo pipefail
-          (cd apps/api && npx tsc --noEmit) & pid1=$!
-          (cd apps/admin && npx tsc --noEmit) & pid2=$!
-          (cd apps/portal && npx tsc --noEmit) & pid3=$!
-          (cd apps/mcp && npx tsc --noEmit) & pid4=$!
-          (cd apps/orchestrator && npx tsc --noEmit) & pid5=$!
-          (cd apps/ml && npx tsc --noEmit) & pid6=$!
-          (cd apps/llm-gateway && npx tsc --noEmit) & pid7=$!
-          (cd apps/context-builder && npx tsc --noEmit) & pid8=$!
-          wait $pid1 $pid2 $pid3 $pid4 $pid5 $pid6 $pid7 $pid8
+          if [ "${{ github.ref_name }}" = "staging" ]; then
+            bash scripts/ci/release-gate.sh staging
+          else
+            bash scripts/ci/release-gate.sh production
+          fi
 
   build-and-push:
-    needs: lint-and-typecheck
+    needs: release-gate
     if: |
       always() &&
-      (needs.lint-and-typecheck.result == 'success' || needs.lint-and-typecheck.result == 'skipped') &&
+      (needs.release-gate.result == 'success' || needs.release-gate.result == 'skipped') &&
       github.ref_name == 'main'
     runs-on: ubuntu-latest
     permissions:
@@ -202,10 +195,10 @@ jobs:
             ghcr.io/cloudsysops/intcloudsysops-context-builder:${{ github.sha }}
 
   build-mcp:
-    needs: lint-and-typecheck
+    needs: release-gate
     if: |
       always() &&
-      (needs.lint-and-typecheck.result == 'success' || needs.lint-and-typecheck.result == 'skipped') &&
+      (needs.release-gate.result == 'success' || needs.release-gate.result == 'skipped') &&
       github.ref_name == 'main'
     runs-on: ubuntu-latest
     permissions:
@@ -231,10 +224,10 @@ jobs:
 
   # --- Staging: imágenes etiqueta :staging (solo rama staging) ---
   build-and-push-staging:
-    needs: lint-and-typecheck
+    needs: release-gate
     if: |
       always() &&
-      (needs.lint-and-typecheck.result == 'success' || needs.lint-and-typecheck.result == 'skipped') &&
+      (needs.release-gate.result == 'success' || needs.release-gate.result == 'skipped') &&
       github.ref_name == 'staging'
     runs-on: ubuntu-latest
     permissions:
@@ -350,10 +343,10 @@ jobs:
             ghcr.io/cloudsysops/intcloudsysops-context-builder:${{ github.sha }}
 
   build-mcp-staging:
-    needs: lint-and-typecheck
+    needs: release-gate
     if: |
       always() &&
-      (needs.lint-and-typecheck.result == 'success' || needs.lint-and-typecheck.result == 'skipped') &&
+      (needs.release-gate.result == 'success' || needs.release-gate.result == 'skipped') &&
       github.ref_name == 'staging'
     runs-on: ubuntu-latest
     permissions:
@@ -424,7 +417,7 @@ jobs:
           fi
 
       - name: Connect Tailscale for SSH to VPS (tailnet)
-        if: ${{ secrets.TAILSCALE_AUTHKEY != '' }}
+        if: secrets.TAILSCALE_AUTHKEY != ''
         uses: tailscale/github-action@v2
         with:
           authkey: ${{ secrets.TAILSCALE_AUTHKEY }}
@@ -611,7 +604,7 @@ jobs:
           fi
 
       - name: Connect Tailscale for SSH to VPS (tailnet)
-        if: ${{ secrets.TAILSCALE_AUTHKEY != '' }}
+        if: secrets.TAILSCALE_AUTHKEY != ''
         uses: tailscale/github-action@v2
         with:
           authkey: ${{ secrets.TAILSCALE_AUTHKEY }}

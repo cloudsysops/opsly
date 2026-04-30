@@ -1,79 +1,98 @@
-import type {
-  OpenClawExecutionContext,
-  OpenClawExecutionPolicy,
-  OpenClawAgentDefinition,
-} from './contracts.js';
+import type { IntentRequest } from '../types.js';
+import { assertAgentRoleContract } from './agent-role-contracts.js';
+import type { OpenClawTenantPermission } from './registry.js';
+import { recordPolicyViolation } from './runtime-events.js';
+import { assertTenantAwarePermissions } from './tenant-aware-permissions.js';
 
-const DEFAULT_CONCURRENCY_LIMIT = 1;
-const DEFAULT_MAX_BUDGET_USD = 5;
-
-function parseFiniteNumber(value: unknown): number | undefined {
-  if (typeof value !== 'number' || !Number.isFinite(value)) {
-    return undefined;
-  }
-  return value;
+export interface OpenClawPolicyResult {
+  ok: true;
 }
 
-function parsePermissionRecord(permissionData: unknown): Record<string, unknown> {
-  if (!permissionData || typeof permissionData !== 'object' || Array.isArray(permissionData)) {
-    return {};
-  }
-  return permissionData as Record<string, unknown>;
+function readString(value: unknown): string | null {
+  return typeof value === 'string' && value.trim().length > 0 ? value.trim() : null;
 }
 
-function parseEnabled(permissionData: Record<string, unknown>): boolean {
-  if (typeof permissionData.enabled !== 'boolean') {
-    return true;
-  }
-  return permissionData.enabled;
+function isCoreAgentRole(
+  role: IntentRequest['agent_role']
+): role is 'planner' | 'executor' | 'tool' | 'notifier' {
+  return role === 'planner' || role === 'executor' || role === 'tool' || role === 'notifier';
 }
 
-function parseMaxBudgetUsd(permissionData: Record<string, unknown>): number {
-  const parsed = parseFiniteNumber(permissionData.max_budget);
-  if (parsed === undefined || parsed <= 0) {
-    return DEFAULT_MAX_BUDGET_USD;
-  }
-  return parsed;
+function readCrossTenantMode(req: IntentRequest): 'read' | 'write' {
+  const fromContext = readString(req.context.cross_tenant_mode);
+  const fromMetadata = readString(req.metadata?.cross_tenant_mode);
+  const mode = fromContext ?? fromMetadata;
+  return mode === 'write' ? 'write' : 'read';
 }
 
-function parseConcurrencyLimit(permissionData: Record<string, unknown>): number {
-  const parsed = parseFiniteNumber(permissionData.concurrency_limit);
-  if (parsed === undefined || parsed < 1) {
-    return DEFAULT_CONCURRENCY_LIMIT;
-  }
-  return Math.floor(parsed);
+function hasTenantGovernanceApproval(req: IntentRequest): boolean {
+  return req.context.tenant_governance_approved === true || req.metadata?.tenant_governance_approved === true;
 }
 
-/**
- * Evalua la política tenant-aware para un rol sin acoplarse a Supabase.
- * `tenantPermissionsByRole` puede venir desde API/DB o metadata del request.
- */
-export function resolveOpenClawExecutionPolicy(
-  context: OpenClawExecutionContext
-): OpenClawExecutionPolicy {
-  const permissionData = parsePermissionRecord(context.tenantPermissionsByRole[context.role]);
-  return {
-    enabled: parseEnabled(permissionData),
-    maxBudgetUsd: parseMaxBudgetUsd(permissionData),
-    concurrencyLimit: parseConcurrencyLimit(permissionData),
-  };
+function readRequestedTargetTenant(req: IntentRequest): string | null {
+  const contextTarget = readString(req.context.target_tenant_slug);
+  const metadataTarget = readString(req.metadata?.target_tenant_slug);
+  return contextTarget ?? metadataTarget;
 }
 
-export function evaluateTenantAgentPolicy(input: {
-  tenantSlug: string;
-  role: OpenClawExecutionContext['role'];
-  definition: OpenClawAgentDefinition;
-  tenantPermissionsByRole?: Record<string, unknown>;
-}): OpenClawExecutionPolicy & { reason?: string } {
-  const resolved = resolveOpenClawExecutionPolicy({
-    role: input.role,
-    tenantPermissionsByRole: input.tenantPermissionsByRole ?? {},
-  });
-  if (!input.definition.tenantPermissions.allowedPlans.includes('startup')) {
-    return {
-      ...resolved,
-      reason: 'role_restricted_by_default_policy',
-    };
+function assertTenantGovernance(
+  req: IntentRequest,
+  resolvedIntent: IntentRequest['intent'],
+  tenantPermissions: readonly OpenClawTenantPermission[]
+): void {
+  const sourceTenant = readString(req.tenant_slug);
+  if (!sourceTenant) {
+    // Backward-compatible: legacy requests without tenant slug.
+    return;
   }
-  return resolved;
+  const targetTenant = readRequestedTargetTenant(req);
+  if (!targetTenant || targetTenant === sourceTenant) {
+    return;
+  }
+
+  if (!hasTenantGovernanceApproval(req)) {
+    void recordPolicyViolation({
+      requestId: typeof req.request_id === 'string' ? req.request_id : undefined,
+      tenantSlug: sourceTenant,
+      reason: 'cross-tenant access requires explicit approval',
+      intent: resolvedIntent,
+      agentRole: req.agent_role ?? null,
+    });
+    throw new Error('tenant governance: cross-tenant access requires explicit approval');
+  }
+
+  const mode = readCrossTenantMode(req);
+  if (mode === 'write' && !tenantPermissions.includes('cross-tenant-write')) {
+    void recordPolicyViolation({
+      requestId: typeof req.request_id === 'string' ? req.request_id : undefined,
+      tenantSlug: sourceTenant,
+      reason: 'cross-tenant-write permission required',
+      intent: resolvedIntent,
+      agentRole: req.agent_role ?? null,
+    });
+    throw new Error('tenant governance: cross-tenant-write permission required');
+  }
+  if (mode === 'read' && !tenantPermissions.includes('cross-tenant-read')) {
+    void recordPolicyViolation({
+      requestId: typeof req.request_id === 'string' ? req.request_id : undefined,
+      tenantSlug: sourceTenant,
+      reason: 'cross-tenant-read permission required',
+      intent: resolvedIntent,
+      agentRole: req.agent_role ?? null,
+    });
+    throw new Error('tenant governance: cross-tenant-read permission required');
+  }
+}
+
+export function applyOpenClawPolicies(
+  req: IntentRequest,
+  resolvedIntent: IntentRequest['intent'],
+  tenantPermissions: readonly OpenClawTenantPermission[]
+): OpenClawPolicyResult {
+  assertTenantAwarePermissions(req);
+  if (isCoreAgentRole(req.agent_role)) {
+    assertAgentRoleContract(req.agent_role, resolvedIntent);
+  }
+  assertTenantGovernance(req, resolvedIntent, tenantPermissions);
+  return { ok: true };
 }

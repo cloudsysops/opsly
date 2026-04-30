@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 # Pre-commit: docs auto-sync (status.yaml) + type-check + ESLint API si aplica.
-set -e
+set -euo pipefail
 ROOT="$(git rev-parse --show-toplevel)"
 cd "$ROOT" || exit 1
 if [ ! -f package.json ]; then

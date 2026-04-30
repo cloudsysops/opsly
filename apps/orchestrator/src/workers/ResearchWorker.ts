@@ -157,8 +157,17 @@ Formato: texto plano, sin markdown.
 }
 
 export function createResearchWorker(connection: any): Worker {
-  return new Worker('openclaw', processResearchJob, {
-    connection,
-    concurrency: 2,
-  });
+  return new Worker(
+    'openclaw',
+    async (job: Job) => {
+      if (job.name !== 'research') {
+        return;
+      }
+      return processResearchJob(job as Job<ResearchExecutionPayload>);
+    },
+    {
+      connection,
+      concurrency: 2,
+    }
+  );
 }

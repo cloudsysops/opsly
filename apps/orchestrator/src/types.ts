@@ -6,9 +6,17 @@ export type JobType =
   | 'backup'
   | 'health'
   | 'ollama'
+  | 'research'
+  | 'evolution'
   | 'sandbox_execution'
+  | 'jcode_execution'
+  | 'hive_objective'
   /** Payload: `{ intent_request: IntentRequest }` — ejecuta `processIntent` (p. ej. `oar_react`) en worker. */
-  | 'intent_dispatch';
+  | 'intent_dispatch'
+  /** Payload: `{ role: 'dev-api' | 'dev-ui' | 'devops', task: string, max_steps: number, tenant_slug: string }` */
+  | 'agent_farm'
+  /** Payload: `{ agent_id, commands[], tenant_slug, timeout_seconds? }` */
+  | 'terminal_task';
 
 export interface SandboxExecutionPayload {
   type: 'sandbox_execution';
@@ -20,8 +28,28 @@ export interface SandboxExecutionPayload {
   request_id: string;
 }
 
-/** Rol convencional para trazabilidad (no framework aparte). */
-export type AgentRole = 'planner' | 'executor' | 'tool' | 'notifier';
+export interface TerminalTaskPayload {
+  agent_id: string;
+  commands: string[];
+  tenant_slug: string;
+  timeout_seconds?: number;
+  cwd?: string;
+}
+
+/**
+ * Rol convencional para trazabilidad (no framework aparte).
+ * Incluye roles extendidos OpenClaw (`registry.ts`) usados en control layer y jobs.
+ */
+export type AgentRole =
+  | 'planner'
+  | 'executor'
+  | 'tool'
+  | 'notifier'
+  | 'builder'
+  | 'skeptic'
+  | 'validator'
+  | 'researcher';
+export type AutonomyRiskLevel = 'low' | 'medium' | 'high';
 
 export interface OrchestratorJob {
   type: JobType;
@@ -42,6 +70,8 @@ export interface OrchestratorJob {
   agent_role?: AgentRole;
   /** Metadatos adicionales para extensibilidad. */
   metadata?: Record<string, unknown>;
+  /** Nivel de riesgo operacional para políticas de autonomía. */
+  autonomy_risk?: AutonomyRiskLevel;
 }
 
 export type Intent =
@@ -73,6 +103,7 @@ export interface IntentRequest {
   cost_budget_usd?: number;
   agent_role?: AgentRole;
   metadata?: Record<string, unknown>;
+  autonomy_risk?: AutonomyRiskLevel;
 }
 
 /** Params por acción devuelta por el Remote Planner (JSON vía LLM Gateway). Sin `any`. */

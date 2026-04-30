@@ -2,6 +2,7 @@ import { randomUUID } from 'node:crypto';
 import type { IncomingMessage, ServerResponse } from 'node:http';
 import { llmCall } from './gateway.js';
 import { GatewayHttpError } from './llm-direct.js';
+import type { RoutingBias } from './routing-hints.js';
 import type { LLMMessage, LLMRequest } from './types.js';
 
 /** Contrato alineado con apps/orchestrator (Remote Planner / Chat.z). */
@@ -27,6 +28,8 @@ export interface ChatCompletionsPlannerBody {
   tenant_slug: string;
   request_id?: string;
   tenant_plan?: 'startup' | 'business' | 'enterprise';
+  routing_bias?: RoutingBias;
+  provider_hint?: 'deepseek';
   messages: Array<{ role: string; content: string }>;
   user_id?: string;
   feature?: string;
@@ -112,6 +115,12 @@ function chatBodyToLlmRequest(body: ChatCompletionsPlannerBody, requestId: strin
     conv.length > 0
       ? conv
       : [{ role: 'user', content: '(planner: no user/assistant messages in request)' }];
+  const routingBias: RoutingBias =
+    body.routing_bias === 'balanced' || body.routing_bias === 'quality' || body.routing_bias === 'cost'
+      ? body.routing_bias
+      : 'cost';
+  const providerHint = body.provider_hint === 'deepseek' ? 'deepseek' : undefined;
+
   return {
     tenant_slug: body.tenant_slug,
     request_id: requestId,
@@ -119,7 +128,8 @@ function chatBodyToLlmRequest(body: ChatCompletionsPlannerBody, requestId: strin
     messages,
     system,
     legacy_pipeline: true,
-    routing_bias: 'cost',
+    routing_bias: routingBias,
+    ...(providerHint !== undefined ? { provider_hint: providerHint } : {}),
     max_tokens: 2048,
     temperature: 0.2,
     skip_repo_context: true,

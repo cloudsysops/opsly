@@ -1,0 +1,34 @@
+{
+  "description": "Disparadores por eventos para n8n agents",
+  "events": [
+    {
+      "name": "discord-mention",
+      "type": "webhook",
+      "trigger_on": "Discord message with @claude or @billy mention",
+      "workflow": "discord-to-github",
+      "enabled": true
+    },
+    {
+      "name": "github-push-main",
+      "type": "webhook",
+      "trigger_on": "Git push to main branch",
+      "action": "sync-context-to-n8n",
+      "enabled": false
+    },
+    {
+      "name": "vps-prompt-change",
+      "type": "filesystem",
+      "trigger_on": "docs/ACTIVE-PROMPT.md modified on VPS",
+      "monitor": "scripts/billy-prompt-monitor.sh",
+      "interval_seconds": 30,
+      "enabled": true
+    },
+    {
+      "name": "tenant-onboard-complete",
+      "type": "api",
+      "trigger_on": "POST /api/invitations - successful invitation sent",
+      "action": "notify-discord",
+      "enabled": true
+    }
+  ]
+}

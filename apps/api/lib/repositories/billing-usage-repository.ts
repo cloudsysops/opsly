@@ -46,25 +46,17 @@ export class BillingUsageRepository extends BaseRepository {
   async sumSettledTotalAmountSince(
     recordedAtGteIso: string
   ): Promise<{ value: number; error: Error | null }> {
-    const { data, error } = await this.select('billing_usage', 'total_amount.sum()', {
+    const { data, error } = await this.select('billing_usage', 'total_amount, recorded_at', {
       tenantColumn: 'tenant_id',
     }).gte('recorded_at', recordedAtGteIso);
 
     if (error) {
       return { value: 0, error: new Error(error.message) };
     }
-    return { value: extractAggregateSum(data), error: null };
-  }
-}
 
-function extractAggregateSum(data: unknown): number {
-  if (!Array.isArray(data) || data.length === 0) {
-    return 0;
+    // Calculate sum in application code to avoid RLS aggregate restriction
+    const rows = Array.isArray(data) ? (data as Array<{ total_amount?: number }>) : [];
+    const sum = rows.reduce((acc, row) => acc + (Number(row.total_amount) || 0), 0);
+    return { value: sum, error: null };
   }
-  const row = data[0] as Record<string, unknown>;
-  if (row.sum !== undefined && row.sum !== null) {
-    const n = Number(row.sum);
-    return Number.isFinite(n) ? n : 0;
-  }
-  return 0;
 }

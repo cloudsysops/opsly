@@ -83,4 +83,21 @@ describe('buildQueueAddOptions', () => {
       ).priority ?? 0;
     expect(boosted).toBeLessThan(base);
   });
+
+  it('aplica política de autonomía por tipo de job (medium/high)', () => {
+    const medium = buildQueueAddOptions(baseJob({ type: 'cursor' }));
+    const high = buildQueueAddOptions(baseJob({ type: 'hive_objective' }));
+    expect(medium.attempts).toBe(2);
+    expect(high.attempts).toBe(1);
+  });
+
+  it('respeta override de riesgo explícito', () => {
+    const opts = buildQueueAddOptions(
+      baseJob({
+        type: 'notify',
+        autonomy_risk: 'high',
+      })
+    );
+    expect(opts.attempts).toBe(1);
+  });
 });

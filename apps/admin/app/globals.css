@@ -7,12 +7,150 @@
 }
 
 body {
-  @apply bg-ops-bg text-neutral-200 antialiased;
+  @apply bg-ops-bg text-neutral-100 antialiased;
+  background-image:
+    radial-gradient(130% 90% at 50% -10%, rgba(0, 255, 255, 0.18), transparent 52%),
+    radial-gradient(70% 70% at 100% 10%, rgba(157, 0, 255, 0.16), transparent 55%),
+    radial-gradient(70% 70% at 0% 100%, rgba(255, 0, 255, 0.12), transparent 50%),
+    linear-gradient(135deg, #0a0e27 0%, #101734 48%, #0a0e27 100%);
+}
+
+.cyber-grid-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(0, 255, 255, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(157, 0, 255, 0.08) 1px, transparent 1px);
+  background-size: 44px 44px;
+  opacity: 0.4;
+  animation: grid-pan 16s linear infinite;
+}
+
+.cyber-grid-bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, transparent, rgba(0, 255, 255, 0.2), transparent);
+  mix-blend-mode: screen;
+  animation: scanline 8s linear infinite;
+  opacity: 0.25;
+}
+
+.neon-glow {
+  box-shadow:
+    0 0 0 1px rgba(0, 255, 255, 0.45),
+    0 0 20px rgba(0, 255, 255, 0.2),
+    0 0 40px rgba(157, 0, 255, 0.2);
+}
+
+.holo-border {
+  border: 1px solid transparent;
+  background:
+    linear-gradient(#101734, #101734) padding-box,
+    linear-gradient(120deg, rgba(0, 255, 255, 0.7), rgba(255, 0, 255, 0.65), rgba(157, 0, 255, 0.7))
+      border-box;
+}
+
+.digital-readout {
+  font-family: var(--font-ops-display), var(--font-geist-mono), ui-monospace, monospace;
+  letter-spacing: 0.08em;
+  text-shadow:
+    0 0 8px rgba(0, 255, 255, 0.5),
+    0 0 18px rgba(157, 0, 255, 0.35);
+}
+
+.glitch-text {
+  position: relative;
+  animation: neon-flicker 2.4s ease-in-out infinite;
+}
+
+.glitch-text::before {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  color: rgba(255, 0, 255, 0.65);
+  transform: translate(1px, -1px);
+  clip-path: inset(0 0 50% 0);
+  pointer-events: none;
+}
+
+.glitch-text::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  color: rgba(0, 255, 255, 0.65);
+  transform: translate(-1px, 1px);
+  clip-path: inset(48% 0 0 0);
+  pointer-events: none;
+}
+
+.stagger-fade {
+  opacity: 0;
+  transform: translateY(12px);
+  animation: stagger-fade 0.5s ease forwards;
+}
+
+@keyframes stagger-fade {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.cyber-hover {
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+}
+
+.cyber-hover:hover {
+  transform: translateY(-2px);
+  border-color: rgba(0, 255, 255, 0.7);
+  box-shadow:
+    0 0 0 1px rgba(0, 255, 255, 0.7),
+    0 0 22px rgba(0, 255, 255, 0.28);
+}
+
+.data-stream-links {
+  position: relative;
+}
+
+.data-stream-links::before {
+  content: '';
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  top: -18px;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(0, 255, 255, 0.65) 20%,
+    rgba(255, 0, 255, 0.7) 50%,
+    rgba(157, 0, 255, 0.65) 80%,
+    transparent
+  );
+  filter: drop-shadow(0 0 8px rgba(0, 255, 255, 0.7));
+  animation: data-stream 2.8s linear infinite;
+}
+
+@keyframes data-stream {
+  0% {
+    transform: translateX(-8%);
+    opacity: 0.45;
+  }
+  50% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: translateX(8%);
+    opacity: 0.45;
+  }
 }
 
 @layer base {
   ::selection {
-    @apply bg-ops-green/25 text-neutral-100;
+    @apply bg-ops-cyan/25 text-neutral-100;
   }
 }
 
@@ -23,9 +161,9 @@ body {
 
 .ops-auth-backdrop {
   background:
-    radial-gradient(ellipse 90% 55% at 50% -15%, rgba(34, 197, 94, 0.14), transparent 55%),
-    radial-gradient(ellipse 60% 40% at 100% 100%, rgba(51, 136, 255, 0.06), transparent 45%),
-    #0a0a0a;
+    radial-gradient(ellipse 90% 55% at 50% -15%, rgba(0, 255, 255, 0.16), transparent 55%),
+    radial-gradient(ellipse 60% 40% at 100% 100%, rgba(157, 0, 255, 0.12), transparent 45%),
+    #0a0e27;
 }
 
 @media (prefers-reduced-motion: reduce) {

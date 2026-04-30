@@ -1,0 +1,34 @@
+{
+  "description": "Trabajos programados para n8n agents",
+  "timezone": "UTC",
+  "jobs": [
+    {
+      "name": "sync-active-prompt",
+      "schedule": "*/30 * * * *",
+      "description": "Verificar cambios en docs/ACTIVE-PROMPT.md vía GitHub API",
+      "workflow": "discord-to-github",
+      "enabled": true
+    },
+    {
+      "name": "backup-workflows",
+      "schedule": "0 2 * * *",
+      "description": "Backup diario de workflows n8n a Google Drive",
+      "script": "scripts/drive-sync.sh",
+      "enabled": true
+    },
+    {
+      "name": "validate-discord-webhook",
+      "schedule": "0 */6 * * *",
+      "description": "Verificar que el webhook Discord responde",
+      "test_script": "scripts/test-n8n-webhook.sh",
+      "enabled": true
+    },
+    {
+      "name": "sync-n8n-context",
+      "schedule": "0 3 * * *",
+      "description": "Sincronizar .n8n/2-context/ con docs/ y context/",
+      "command": "cd /opt/opsly && cp docs/ACTIVE-PROMPT.md .n8n/2-context/ACTIVE-PROMPT.md && cp context/system_state.json .n8n/2-context/system_state.json",
+      "enabled": true
+    }
+  ]
+}

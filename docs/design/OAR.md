@@ -4,6 +4,23 @@
 **Autor:** Opsly Architecture Team  
 **Context:** Mejora de Producto #1 - Agentic Runtime
 
+## Actualización técnica (2026-04-28) — SwarmOps / Hive Orchestration
+
+Se añadió una base operativa de **Hive of Bots** en `apps/orchestrator/src/hive` alineada al OAR como patrón de coordinación multi-agente por subtareas.
+
+### Capacidades nuevas
+
+- **Queen orchestration:** `QueenBee` descompone objetivos en subtareas y asigna por rol (`coder`, `researcher`, `tester`, `deployer`, `doc-writer`, `security`).
+- **Pheromone channel:** `PheromoneChannel` en Redis Pub/Sub para señales `subtask_assignment`, `task_complete`, `error`, `request_help`.
+- **Hive shared state:** `HiveStateStore` mantiene estado global de tareas/bots en Redis para inspección y continuidad.
+- **Worker + API interna:** job `hive_objective` y endpoint `POST /internal/hive/objective` con status por `taskId` (`GET /internal/hive/objective/:taskId`, alias `GET /internal/hive/task/:taskId`) y retry manual por subtarea (`POST /internal/hive/task/:taskId/retry/:subtaskId`).
+- **Guardrail operacional:** inicialización centralizada del handler Hive antes de consultas/acciones internas de Hive.
+
+### Estado de madurez
+
+- **Hecho:** base funcional de coordinación/observación + retry/reasignación de subtareas fallidas (automático con límite y manual por endpoint).
+- **Pendiente:** tests de integración E2E del ciclo completo y métricas explícitas de retry/fallback por task/subtask.
+
 ## Actualización técnica (2026-04-26) — CLI Meta-Orchestrator Bridge
 
 Se implementó una primera capa operativa en `tools/cli` para conectar el diseño OAR con ejecución multi-modo y pipeline seguro. Esta capa no reemplaza `apps/orchestrator`; actúa como **control shell** para acelerar experimentación y validación de patrones de runtime.

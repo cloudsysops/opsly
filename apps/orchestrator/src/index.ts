@@ -21,7 +21,6 @@ import { closeJobStateStore } from './state/store.js';
 import { TeamManager } from './teams/TeamManager.js';
 import { AutonomousScheduler } from './schedulers/autonomous-scheduler.js';
 import { CursorCopilotBridge } from './lib/cursor-copilot-bridge.js';
-import { OpslyCortex } from './cortex.js';
 import { startBackupWorker } from './workers/BackupWorker.js';
 import { startCursorWorker } from './workers/CursorWorker.js';
 import { startDriveWorker } from './workers/DriveWorker.js';
@@ -35,7 +34,7 @@ import { startOpenClawSkepticWorker } from './workers/OpenClawSkepticWorker.js';
 import { startSuspensionWorker } from './workers/SuspensionWorker.js';
 import { startGeneralEventsWorker } from './workers/GeneralEventsWorker.js';
 import { startIntentDispatchWorker } from './workers/IntentDispatchWorker.js';
-import { startSandboxWorker } from './workers/SandboxWorker.js';
+import { startTerminalWorker } from './workers/TerminalWorker.js';
 import { closeWebhookQueue, createWebhookWorker } from './workers/WebhookWorker.js';
 import { startWebhooksProcessingWorker } from './workers/WebhooksProcessingWorker.js';
 
@@ -83,7 +82,7 @@ function startAllWorkers(): AsyncCleanup[] {
   const openclawPlannerWorker = startOpenClawPlannerWorker(connection);
   const openclawSkepticWorker = startOpenClawSkepticWorker(connection);
   const intentDispatchWorker = startIntentDispatchWorker(connection);
-  const sandboxWorker = startSandboxWorker(connection);
+  const terminalWorker = startTerminalWorker(connection);
 
   let agentClassifierCleanup: AsyncCleanup[] = [];
   if (process.env.OPSLY_AGENT_CLASSIFIER_WORKER_ENABLED === 'true') {
@@ -106,12 +105,12 @@ function startAllWorkers(): AsyncCleanup[] {
     async () => openclawPlannerWorker.close(),
     async () => openclawSkepticWorker.close(),
     async () => intentDispatchWorker.close(),
-    async () => sandboxWorker.close(),
+    async () => terminalWorker.close(),
     ...agentClassifierCleanup
   );
 
   console.log(
-    '[orchestrator] Workers: cursor, n8n, notify, drive, backup, health, budget, opsly-webhooks, webhooks-processing, general-events, ollama, openclaw-planner, openclaw-skeptic, intent_dispatch, sandbox_execution' +
+    '[orchestrator] Workers: cursor, n8n, notify, drive, backup, health, budget, opsly-webhooks, webhooks-processing, general-events, ollama, openclaw-planner, openclaw-skeptic, intent_dispatch, terminal_task' +
       (process.env.OPSLY_AGENT_CLASSIFIER_WORKER_ENABLED === 'true' ? ', agent-classifier' : '') +
       '; Hermes tick → servicio opsly-hermes (no este proceso).'
   );
@@ -140,7 +139,6 @@ async function main(): Promise<void> {
   let teamManager: TeamManager | undefined;
   let autonomousScheduler: AutonomousScheduler | undefined;
   let cursorCopilotBridge: CursorCopilotBridge | undefined;
-  let opslyCortex: OpslyCortex | undefined;
   const cleanupTasks: AsyncCleanup[] = [];
 
   if (shouldRunControlPlane(role)) {
@@ -178,12 +176,6 @@ async function main(): Promise<void> {
     cursorCopilotBridge = new CursorCopilotBridge();
     await cursorCopilotBridge.start();
     cleanupTasks.push(async () => cursorCopilotBridge?.stop());
-  }
-
-  if (shouldRunControlPlane(role) && process.env.OPSLY_CORTEX_ENABLED === 'true') {
-    opslyCortex = new OpslyCortex();
-    opslyCortex.start();
-    cleanupTasks.push(async () => opslyCortex?.stop());
   }
 
   if (shouldRunWorkers(role)) {

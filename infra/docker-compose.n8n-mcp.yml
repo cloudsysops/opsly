@@ -1,0 +1,26 @@
+# Overlay opcional: servidor MCP n8n (czlonkowski/n8n-mcp) en HTTP.
+# No forma parte del compose por defecto. Activar con profile `n8n-mcp`.
+#
+#   cd infra && docker compose --env-file ../.env \
+#     -f docker-compose.platform.yml -f docker-compose.n8n-mcp.yml \
+#     --profile n8n-mcp up -d n8n-mcp
+#
+# Documentación: docs/02-tools/N8N-MCP-INTEGRATION.md
+
+services:
+  n8n-mcp:
+    image: ghcr.io/czlonkowski/n8n-mcp:2.49.0
+    container_name: opsly_n8n_mcp
+    profiles:
+      - n8n-mcp
+    env_file:
+      - ../.env
+    environment:
+      MCP_MODE: http
+      PORT: '3000'
+      AUTH_TOKEN: ${N8N_MCP_AUTH_TOKEN:-}
+      N8N_API_URL: ${N8N_API_URL:-}
+      N8N_API_KEY: ${N8N_API_KEY:-}
+    ports:
+      - '127.0.0.1:3020:3000'
+    restart: unless-stopped

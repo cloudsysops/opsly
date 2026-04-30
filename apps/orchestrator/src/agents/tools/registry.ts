@@ -1,7 +1,11 @@
+import { BacklogReaderTool } from './backlog-reader.tool.js';
 import { DummySquareTool } from './dummy.tool.js';
+import { GitTool } from './git.tool.js';
 import { GetServerStatusTool, RestartContainerTool } from './internal-tools.js';
+import { RunTestsTool } from './run-tests.tool.js';
 import { ShellCommandTool } from './shell-command.tool.js';
 import { TavilyTool } from './tavily-tool.js';
+import { TypeCheckTool } from './type-check.tool.js';
 import type { ToolManifest, ToolRegistry } from './types.js';
 
 function normalized(text: string): string {
@@ -61,6 +65,10 @@ export function createDefaultToolRegistry(): InMemoryToolRegistry {
     new GetServerStatusTool(),
     new RestartContainerTool(),
     new TavilyTool(),
+    RunTestsTool,
+    TypeCheckTool,
+    GitTool,
+    BacklogReaderTool,
   ];
   for (const tool of builtins) {
     if (!toolEnabledByEnv(tool.name)) {

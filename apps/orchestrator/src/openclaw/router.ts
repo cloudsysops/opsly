@@ -1,41 +1,25 @@
-import type { OpenClawPlannedTask } from './contracts.js';
-import { resolveOpenClawAgentConfig } from './registry.js';
+import type { Intent, IntentRequest } from '../types.js';
 
-export interface RoutedAgentTask {
-  role: OpenClawPlannedTask['role'];
-  queue: string;
-  task: OpenClawPlannedTask;
+export interface OpenClawRoutingDecision {
+  intent: Intent;
+  reason: string;
 }
 
-export function routeTasks(tasks: OpenClawPlannedTask[]): RoutedAgentTask[] {
-  return tasks.map((task) => {
-    const definition = resolveOpenClawAgentConfig(task.role);
-    return {
-      role: task.role,
-      queue: definition.queueName,
-      task,
-    };
-  });
-}
+export function routeOpenClawIntent(req: IntentRequest): OpenClawRoutingDecision {
+  let resolvedIntent: Intent = req.intent;
+  let reason = 'direct';
 
-export interface OpenClawControllerLogEvent {
-  event: 'openclaw_route_enqueued' | 'openclaw_route_skipped';
-  request_id: string;
-  tenant_slug: string;
-  agent_role: string;
-  queue?: string;
-  skill?: string;
-  model_tier?: string;
-  bullmq_job_id?: string;
-  reason?: string;
-}
+  if (req.intent === 'sprint_plan') {
+    resolvedIntent = 'sprint_plan';
+    reason = 'explicit_sprint_plan';
+  } else if (
+    req.agent_role === 'planner' &&
+    req.intent !== 'remote_plan' &&
+    req.intent !== 'oar_react'
+  ) {
+    resolvedIntent = 'remote_plan';
+    reason = 'planner_role_redirect';
+  }
 
-export function logOpenClawControllerEvent(event: OpenClawControllerLogEvent): void {
-  process.stdout.write(
-    `${JSON.stringify({
-      ...event,
-      ts: new Date().toISOString(),
-      service: 'orchestrator',
-    })}\n`
-  );
+  return { intent: resolvedIntent, reason };
 }

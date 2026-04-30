@@ -175,6 +175,31 @@ domain = "unknown" → Solicitar contexto adicional
 | Cursor      | Ejecución, código, commits                       |
 | AGENTS.md   | Memoria compartida entre sesiones                |
 
+## agent_teams
+
+Configuración de equipos de agentes (reemplaza `enable-flag.json`):
+
+- **OrchestratorAgent**: coordina tareas vía BullMQ/Temporal
+  - Modos: `queue-only` (VPS control plane), `worker-enabled` (remotos)
+  - Estrategias OAR: ReAct, Plan-Execute, Reflection
+  - Ver: `1-agent-teams/orchestrator.md`
+- **OpsAgent**: onboarding, health checks, deployments
+  - Ver: `1-agent-teams/ops-agent.md`
+- **BillingAgent**: Stripe, metering, cost alerts
+  - Ver: `1-agent-teams/billing-agent.md`
+- **SecurityAgent**: Zero-Trust, access review
+  - Ver: `1-agent-teams/security-agent.md`
+
+**Configuración en VPS:**
+```bash
+# Control plane (VPS)
+OPSLY_ORCHESTRATOR_MODE=queue-only
+
+# Worker remoto (Mac 2011)
+OPSLY_ORCHESTRATOR_MODE=worker-enabled
+REDIS_URL=redis://100.120.151.91:6379
+```
+
 ## Antes de Proponer Código
 
 1. Verificar si existe en `lib/` → reutilizar

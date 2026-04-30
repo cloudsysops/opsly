@@ -1,0 +1,31 @@
+{
+  "name": "hermes-skeptic",
+  "version": "1.0.0",
+  "description": "Revisión crítica de planes y decisiones con foco en riesgos, supuestos y failure modes.",
+  "role": "skeptic",
+  "costTier": "premium",
+  "tenantAccess": ["self", "cross-tenant-read"],
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "goal": { "type": "string" },
+      "plan": { "type": "string" },
+      "tenant_slug": { "type": "string" }
+    },
+    "additionalProperties": true
+  },
+  "outputSchema": {
+    "type": "object",
+    "properties": {
+      "risks": {
+        "type": "array",
+        "items": { "type": "string" }
+      },
+      "assumptions": {
+        "type": "array",
+        "items": { "type": "string" }
+      },
+      "recommendation": { "type": "string" }
+    }
+  }
+}

@@ -15,6 +15,7 @@ import { skillTools } from './tools/nerves/skill-bridge.js';
 import { runAgentTaskTool } from './tools/run-agent-task.tool.js';
 import { suspendTools } from './tools/suspend.js';
 import { tenantsTools } from './tools/tenants.js';
+import { StartAgentFarmTool } from './tools/start-agent-farm.tool.js';
 import type { ToolContext, ToolDefinition } from './types/index.js';
 
 interface RegisteredTool {
@@ -58,6 +59,7 @@ export const TOOL_REQUIRED_SCOPES: Record<string, string> = {
   fs_write_file: 'agents:write',
   execute_skill: 'agents:write',
   get_skill_job_status: 'agents:write',
+  start_agent_farm: 'agents:write',
 };
 
 export type CallToolOptions = {
@@ -164,6 +166,7 @@ export function getAllToolDefinitions(): ToolDefinition<unknown, unknown>[] {
     fsWriteTool,
     executeSkillTool,
     getSkillJobStatusTool,
+    StartAgentFarmTool,
   ] as ToolDefinition<unknown, unknown>[];
 }
 

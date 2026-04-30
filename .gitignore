@@ -1,3 +1,6 @@
+# Git worktrees (isolated development)
+.worktrees/
+
 # USB kit: overrides locales (SSH Host, etc.)
 tools/usb-kit/pen.local.json
 # Cifrados age de emergencia (.env, SSH, PAT) — nunca al repo
@@ -19,7 +22,7 @@ infra/Untitled.canvas
 
 # Agent context (no secrets)
 context/doppler-ready.json
-tools/tools/agents/prompts/secrets-*.md
+tools/agents/prompts/secrets-*.md
 
 # Cursor / entorno local
 .cursor/mcp.json
@@ -47,8 +50,9 @@ terraform.tfstate
 terraform.tfstate.backup
 *.tfvars
 infra/terraform/tfplan
-infra/terraform/tfplan.txt
-*.tfplan
+
+# Raíz: nunca `logs/` aquí (structure-guard + usar runtime/logs/)
+/logs/
 
 # Runtime directories (VPS/local runtime)
 runtime/logs/*
@@ -60,6 +64,7 @@ runtime/tenants/*
 
 # Supabase CLI local link metadata (regenerable)
 supabase/.temp/
+supabase/migrations/supabase/.temp/
 
 # Playwright (apps/portal)
 apps/portal/test-results/
@@ -80,4 +85,6 @@ docs/.obsidian/plugins/recent-files-obsidian/data.json
 !docs/.obsidian/hotkeys.json
 !docs/.obsidian/file-index.json
 !docs/.obsidian/plugins/obsidian-git/data.json
-logs/
+
+# Claude local config (ignored)
+.claude/2-context-management/CLAUDE.local.md

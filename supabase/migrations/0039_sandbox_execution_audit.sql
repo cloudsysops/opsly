@@ -38,6 +38,11 @@ CREATE INDEX IF NOT EXISTS idx_sandbox_logs_approval
 ALTER TABLE platform.sandbox_execution_logs ENABLE ROW LEVEL SECURITY;
 GRANT ALL ON TABLE platform.sandbox_execution_logs TO service_role;
 
-CREATE POLICY "orchestrator_all"
-  ON platform.sandbox_execution_logs
-  FOR ALL USING (true) WITH CHECK (true);
+DO $$
+BEGIN
+  CREATE POLICY "orchestrator_all"
+    ON platform.sandbox_execution_logs
+    FOR ALL USING (true) WITH CHECK (true);
+EXCEPTION WHEN duplicate_object THEN
+  NULL;
+END $$;
