@@ -2,11 +2,14 @@
 
 import { ActivityChart } from '@/components/dashboard/ActivityChart';
 import { ActivityFeed } from '@/components/dashboard/ActivityFeed';
+import { AIChatAssistant } from '@/components/dashboard/AIChatAssistant';
+import { AIInsightsPanel } from '@/components/dashboard/AIInsightsPanel';
 import { CpuGauge } from '@/components/dashboard/CpuGauge';
 import { PlatformOverview } from '@/components/dashboard/PlatformOverview';
 import { QuickActions } from '@/components/dashboard/QuickActions';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
+import { Bot, Radar, Sparkles } from 'lucide-react';
 import { useAuditLog } from '@/hooks/useAuditLog';
 import { useSystemMetrics } from '@/hooks/useSystemMetrics';
 
@@ -50,27 +53,44 @@ export default function DashboardPage() {
     <div className="space-y-8">
       <QuickActions />
 
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <h1 className="font-mono text-lg tracking-tight text-ops-green">Dashboard</h1>
+      <div className="stagger-fade flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <h1 data-text="CYBERPUNK CONTROL DECK" className="glitch-text font-display text-2xl text-ops-cyan">
+            CYBERPUNK CONTROL DECK
+          </h1>
+          <p className="mt-1 text-xs uppercase tracking-[0.2em] text-ops-magenta">
+            Neural Operations Matrix
+          </p>
+        </div>
+        <div className="holo-border flex items-center gap-3 rounded-xl bg-ops-bg/50 px-3 py-2 text-xs text-ops-cyan">
+          <Radar className="h-4 w-4 animate-pulse-dot" />
+          <span className="digital-readout">NEURAL SYNC ACTIVE</span>
+          <Sparkles className="h-4 w-4 animate-neon-flicker text-ops-magenta" />
+        </div>
         {data?.mock === true ? (
-          <span className="rounded border border-ops-yellow/40 bg-ops-yellow/10 px-2 py-1 font-mono text-xs text-ops-yellow">
+          <span className="holo-border rounded-lg bg-ops-yellow/10 px-2 py-1 font-mono text-xs text-ops-yellow">
             datos simulados (Prometheus no alcanzable)
           </span>
         ) : null}
       </div>
 
       {error ? (
-        <div className="rounded border border-ops-red/50 bg-ops-red/10 px-3 py-2 font-sans text-sm text-ops-red">
+        <div className="holo-border rounded-xl bg-ops-red/15 px-3 py-2 font-sans text-sm text-ops-red">
           {error.message}
         </div>
       ) : null}
 
       <PlatformOverview />
+      <AIInsightsPanel
+        cpuPercent={data?.cpu_percent ?? 0}
+        activeTenants={data?.active_tenants ?? 0}
+        containers={data?.containers_running ?? 0}
+      />
 
       <div className="grid gap-4 lg:grid-cols-3">
-        <Card className="lg:col-span-1">
+        <Card className="stagger-fade lg:col-span-1 [animation-delay:60ms]">
           <CardHeader className="pb-2">
-            <CardTitle className="font-sans text-xs font-normal uppercase tracking-wide text-ops-gray">
+            <CardTitle className="text-xs font-normal tracking-wide text-ops-gray">
               CPU
             </CardTitle>
           </CardHeader>
@@ -85,9 +105,9 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
 
-        <Card className="lg:col-span-2">
+        <Card className="stagger-fade lg:col-span-2 [animation-delay:120ms]">
           <CardHeader className="pb-2">
-            <CardTitle className="font-sans text-xs font-normal uppercase tracking-wide text-ops-gray">
+            <CardTitle className="text-xs font-normal tracking-wide text-ops-gray">
               Memoria y disco
             </CardTitle>
           </CardHeader>
@@ -99,7 +119,7 @@ export default function DashboardPage() {
                 <div>
                   <div className="mb-2 flex justify-between font-mono text-sm">
                     <span className="text-neutral-300">RAM</span>
-                    <span className="tabular-nums text-neutral-100">
+                    <span className="digital-readout tabular-nums text-neutral-100">
                       {data.ram_used_gb.toFixed(2)} / {data.ram_total_gb.toFixed(2)} GB
                     </span>
                   </div>
@@ -108,7 +128,7 @@ export default function DashboardPage() {
                 <div>
                   <div className="mb-2 flex justify-between font-mono text-sm">
                     <span className="text-neutral-300">Disco</span>
-                    <span className="tabular-nums text-neutral-100">
+                    <span className="digital-readout tabular-nums text-neutral-100">
                       {data.disk_used_gb.toFixed(2)} / {data.disk_total_gb.toFixed(2)} GB
                     </span>
                   </div>
@@ -121,45 +141,45 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <Card>
+        <Card className="stagger-fade [animation-delay:170ms]">
           <CardHeader className="pb-1">
-            <CardTitle className="font-sans text-xs font-normal uppercase tracking-wide text-ops-gray">
+            <CardTitle className="text-xs font-normal tracking-wide text-ops-gray">
               Uptime
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="font-mono text-2xl tabular-nums text-neutral-100">
+            <p className="digital-readout text-2xl tabular-nums text-neutral-100">
               {isLoading || !data ? '—' : formatUptime(data.uptime_seconds)}
             </p>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="stagger-fade [animation-delay:210ms]">
           <CardHeader className="pb-1">
-            <CardTitle className="font-sans text-xs font-normal uppercase tracking-wide text-ops-gray">
+            <CardTitle className="text-xs font-normal tracking-wide text-ops-gray">
               Tenants activos
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="font-mono text-2xl tabular-nums text-ops-green">
+            <p className="digital-readout text-2xl tabular-nums text-ops-cyan">
               {isLoading || !data ? '—' : data.active_tenants}
             </p>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="stagger-fade [animation-delay:260ms]">
           <CardHeader className="pb-1">
-            <CardTitle className="font-sans text-xs font-normal uppercase tracking-wide text-ops-gray">
+            <CardTitle className="text-xs font-normal tracking-wide text-ops-gray">
               Contenedores
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="font-mono text-2xl tabular-nums text-neutral-100">
+            <p className="digital-readout text-2xl tabular-nums text-neutral-100">
               {isLoading || !data ? '—' : data.containers_running}
             </p>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="stagger-fade [animation-delay:310ms]">
           <CardHeader className="pb-1">
-            <CardTitle className="font-sans text-xs font-normal uppercase tracking-wide text-ops-gray">
+            <CardTitle className="text-xs font-normal tracking-wide text-ops-gray">
               Actualización
             </CardTitle>
           </CardHeader>
@@ -169,13 +189,17 @@ export default function DashboardPage() {
         </Card>
       </div>
 
-      {/* Actividad reciente — audit_log 7 días */}
-      <div className="space-y-3">
-        <h2 className="font-mono text-xs uppercase tracking-wider text-ops-gray">
-          Actividad reciente
-        </h2>
-        <ActivityChart buckets={auditData?.buckets} isLoading={auditLoading} />
-        <ActivityFeed entries={auditData?.entries} isLoading={auditLoading} error={auditError} />
+      <div className="grid gap-4 xl:grid-cols-[1.4fr_1fr]">
+        {/* Actividad reciente — audit_log 7 días */}
+        <div className="space-y-3">
+          <h2 className="flex items-center gap-2 font-display text-xs tracking-[0.18em] text-ops-gray">
+            <Bot className="h-4 w-4 text-ops-magenta" />
+            Actividad + análisis predictivo
+          </h2>
+          <ActivityChart buckets={auditData?.buckets} isLoading={auditLoading} />
+          <ActivityFeed entries={auditData?.entries} isLoading={auditLoading} error={auditError} />
+        </div>
+        <AIChatAssistant />
       </div>
     </div>
   );

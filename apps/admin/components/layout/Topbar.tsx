@@ -35,19 +35,19 @@ export function Topbar() {
   });
 
   return (
-    <header className="sticky top-0 z-30 flex h-12 items-center gap-3 border-b border-ops-border bg-ops-bg/95 px-6 backdrop-blur">
+    <header className="holo-border neon-glow sticky top-0 z-30 mx-6 mt-4 flex h-12 items-center gap-3 rounded-xl bg-ops-bg/85 px-6 backdrop-blur">
       <nav className="flex flex-1 items-center gap-2 font-sans text-xs text-ops-gray">
         {crumbs.map((c, i) => (
           <span key={c.path} className="flex items-center gap-2">
-            {i > 0 ? <span className="text-ops-border">/</span> : null}
-            <span className={i === crumbs.length - 1 ? 'text-neutral-200' : 'text-ops-gray'}>
+            {i > 0 ? <span className="text-ops-purple">/</span> : null}
+            <span className={i === crumbs.length - 1 ? 'text-ops-cyan' : 'text-ops-gray'}>
               {c.label}
             </span>
           </span>
         ))}
       </nav>
       <Separator orientation="vertical" className="h-6" />
-      <div className="max-w-[200px] truncate font-mono text-xs text-ops-green">{email || '—'}</div>
+      <div className="digital-readout max-w-[220px] truncate text-xs text-ops-magenta">{email || '—'}</div>
     </header>
   );
 }
