@@ -161,3 +161,90 @@ Si el API principal (`app`, p. ej. en Vercel o el contenedor Next) no está disp
 - **Endpoints:** `POST /ingest/stripe` (cuerpo crudo → cola `webhooks-processing`), `POST /ingest/event` (JSON `{ type, tenantId, data }` → cola `general-events`). Respuestas **202 Accepted** con encolado inmediato.
 - **Orquestador:** workers `WebhooksProcessingWorker` y `GeneralEventsWorker` consumen esas colas. El de Stripe **verifica la firma** con `STRIPE_WEBHOOK_SECRET` y reenvía el cuerpo a `OPSLY_API_INTERNAL_URL` (p. ej. `http://app:3000`) en `/api/webhooks/stripe`, donde corre la lógica de negocio existente. Los eventos generales se loguean o se reenvían si `OPSLY_GENERAL_EVENTS_FORWARD_URL` está definida.
 - **Despliegue:** compose `ingestion-bunker` en `infra/docker-compose.platform.yml` (host público opcional `ingest.${PLATFORM_DOMAIN}`); alternativa **systemd** en `infra/systemd/ingestion-bunker.service.example`. Ver `apps/ingestion-service/README.md`.
+
+## OpenClaw per-tenant (Context Builder + MCP aislados)
+
+La infraestructura OpenClaw (Context Builder + MCP) puede desplegarse **per-tenant** para agentes IA dedicados, mientras que **Orchestrator** y **LLM Gateway** permanecen centrales.
+
+### Topología
+
+```
+                    VPS (Control Plane)
+    ┌─────────────────────────────────────────┐
+    │                                         │
+    │  ┌─────────────────────────────────┐   │
+    │  │ Orchestrator (centralizado)     │   │
+    │  │ + LLM Gateway (centralizado)    │   │
+    │  │ (Redis namespace: global:*)     │   │
+    │  └─────────────────────────────────┘   │
+    │              │    │                     │
+    └──────────────┼────┼─────────────────────┘
+                   │    │
+         ┌─────────┘    └──────────┐
+         │                         │
+    ┌────▼─────────┐       ┌──────▼────────┐
+    │ Tenant Alice  │       │ Tenant Bob     │
+    │ Compose Stack │       │ Compose Stack  │
+    │               │       │                │
+    │ ┌───────────┐ │       │ ┌───────────┐  │
+    │ │Context    │ │       │ │Context    │  │
+    │ │Builder    │ │       │ │Builder    │  │
+    │ │Port 3012  │ │       │ │Port 3012  │  │
+    │ └───────────┘ │       │ └───────────┘  │
+    │ ┌───────────┐ │       │ ┌───────────┐  │
+    │ │MCP        │ │       │ │MCP        │  │
+    │ │Port 3003  │ │       │ │Port 3003  │  │
+    │ └───────────┘ │       │ └───────────┘  │
+    │               │       │                │
+    │ Redis NS:     │       │ Redis NS:      │
+    │ tenant_alice  │       │ tenant_bob     │
+    │ Schema:       │       │ Schema:        │
+    │ tenant_alice  │       │ tenant_bob     │
+    └───────────────┘       └────────────────┘
+```
+
+### Arquitectura
+
+1. **Orchestrator centralizado**: coordina tareas globales vía BullMQ (redis `global:*` namespace).
+2. **LLM Gateway centralizado**: cachea respuestas, enruta a proveedores LLM.
+3. **Context Builder per-tenant**: se inicia en cada `docker-compose.tenant.yml`, aislado:
+   - Env var: `TENANT_SLUG`, `REDIS_NAMESPACE=tenant_{slug}:openclaw`
+   - Accede al schema Supabase `tenant_{slug}`
+   - Captura contexto de: workflows n8n, eventos, logs, credenciales
+4. **MCP per-tenant**: servidor MCP en cada tenant compose, aislado:
+   - Env var: `TENANT_SLUG`, `MCP_PORT=3003`
+   - Expone herramientas para agentes IA (leer workflows, ejecutar tareas n8n, etc.)
+   - Networking: accesible desde Orchestrator via `mcp-{slug}:3003` (Docker network)
+
+### Aislamiento
+
+| Nivel          | Mecanismo                              | Ejemplo                          |
+| -------------- | -------------------------------------- | -------------------------------- |
+| **Redis**      | Namespace prefix per-tenant            | `tenant_alice:openclaw:*`        |
+| **Supabase**   | Schema aislado per tenant + RLS        | Schema `tenant_alice` con RLS    |
+| **Networking** | Docker network aislado per tenant      | Compose network `tenant_alice`   |
+| **Secretos**   | Inyectados en Compose via `env_file`   | `secrets/tenant_{slug}.env`      |
+| **Logs**       | Etiquetados con `TENANT_SLUG`          | CloudWatch `tenant_slug=alice`   |
+
+### Variables Doppler
+
+Ver `docs/04-infrastructure/DOPPLER-VARS.md` sección "OpenClaw per-tenant variables":
+
+- `OPENCLAW_ENABLED`: habilita framework global
+- `OPENCLAW_MODE`: `shared` (centralizado, legacy), `isolated` (per-tenant), `hybrid`
+- `CONTEXT_BUILDER_TENANT_AWARE`: boolean
+- `LLM_GATEWAY_TENANT_AWARE`: boolean (opcional; por ahora centralizado)
+
+### Decisión de diseño
+
+Ver **ADR-035** para rationale completa, alternativas y plan de rollout.
+
+### Monitoreo
+
+Agregar dimensión `tenant_slug` a métricas:
+
+```
+openclaw.context_builder.latency_ms{tenant_slug="alice"}
+openclaw.mcp.tool_calls_total{tenant_slug="alice"}
+openclaw.redis.namespace_bytes{tenant_slug="alice"}
+```

@@ -222,6 +222,42 @@ Claves útiles para el MCP [czlonkowski/n8n-mcp](https://github.com/czlonkowski/
 | `N8N_API_KEY` | Para herramientas `n8n_*` | API key de n8n (Settings → API). Rotar si se expone. |
 | `N8N_MCP_AUTH_TOKEN` | Si expones HTTP (`infra/docker-compose.n8n-mcp.yml`) | Token que el contenedor pasa como `AUTH_TOKEN` al servidor MCP upstream. |
 
+## OpenClaw per-tenant (Context Builder + MCP aislados)
+
+Variables de configuración para despliegue **per-tenant** de Context Builder y MCP (ver ADR-035 y `docs/00-architecture/ARCHITECTURE.md`).
+
+| Variable                           | Obligatorio | Default         | Uso                                                                                          |
+| ---------------------------------- | ----------- | --------------- | -------------------------------------------------------------------------------------------- |
+| `OPENCLAW_ENABLED`                 | No          | `false`         | Habilita framework OpenClaw globalmente (si `false`, no se cargan ningún componente).        |
+| `OPENCLAW_MODE`                    | No          | `shared`        | Modo de despliegue: `shared` (centralizado, legacy), `isolated` (per-tenant), `hybrid`.      |
+| `CONTEXT_BUILDER_TENANT_AWARE`     | No          | `false`         | Si `true`, Context Builder se despliega per-tenant y usa namespace Redis + schema per-tenant. |
+| `LLM_GATEWAY_TENANT_AWARE`         | No          | `false`         | Reservado: opcional. Por ahora LLM Gateway permanece centralizado.                          |
+| `OPENCLAW_CONTEXT_TTL_SECONDS`     | No          | `3600`          | TTL para snapshots de contexto en Redis.                                                    |
+| `OPENCLAW_REDIS_NAMESPACE_PREFIX`  | No          | `tenant_`       | Prefijo para namespace Redis per-tenant (p. ej. `tenant_{slug}:openclaw:*`).               |
+| `OPENCLAW_LOG_LEVEL`               | No          | `info`          | Nivel de logs: `debug`, `info`, `warn`, `error`.                                            |
+| `OPENCLAW_FEATURE_FLAG_ROLLBACK`   | No          | `false`         | Si `true`, ignora `CONTEXT_BUILDER_TENANT_AWARE` y usa stack centralizado (safety fallback). |
+
+### Validación
+
+El script `scripts/validate-openclaw-vars.sh` verifica:
+
+1. Si `OPENCLAW_ENABLED=true`: `CONTEXT_BUILDER_TENANT_AWARE` debe estar definido.
+2. Si `OPENCLAW_MODE=isolated`: `CONTEXT_BUILDER_TENANT_AWARE` debe ser `true`.
+3. Redis URL accesible (health check).
+4. Puertos en rango correcto (Context Builder: 3012, MCP: 3003).
+
+Ejecución:
+
+```bash
+./scripts/validate-openclaw-vars.sh
+```
+
+Si Doppler está configurado:
+
+```bash
+doppler run --project ops-intcloudsysops --config prd -- ./scripts/validate-openclaw-vars.sh
+```
+
 ## Plataforma (otros)
 
 Ver también `scripts/check-tokens.sh` para la lista de variables validadas contra Doppler `prd`.
