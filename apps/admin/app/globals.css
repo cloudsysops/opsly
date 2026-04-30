@@ -111,6 +111,43 @@ body {
     0 0 22px rgba(0, 255, 255, 0.28);
 }
 
+.data-stream-links {
+  position: relative;
+}
+
+.data-stream-links::before {
+  content: '';
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  top: -18px;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(0, 255, 255, 0.65) 20%,
+    rgba(255, 0, 255, 0.7) 50%,
+    rgba(157, 0, 255, 0.65) 80%,
+    transparent
+  );
+  filter: drop-shadow(0 0 8px rgba(0, 255, 255, 0.7));
+  animation: data-stream 2.8s linear infinite;
+}
+
+@keyframes data-stream {
+  0% {
+    transform: translateX(-8%);
+    opacity: 0.45;
+  }
+  50% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: translateX(8%);
+    opacity: 0.45;
+  }
+}
+
 @layer base {
   ::selection {
     @apply bg-ops-cyan/25 text-neutral-100;

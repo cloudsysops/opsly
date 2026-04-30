@@ -4,6 +4,7 @@ import { ActivityChart } from '@/components/dashboard/ActivityChart';
 import { ActivityFeed } from '@/components/dashboard/ActivityFeed';
 import { AIChatAssistant } from '@/components/dashboard/AIChatAssistant';
 import { AIInsightsPanel } from '@/components/dashboard/AIInsightsPanel';
+import { HackerNotificationModal } from '@/components/dashboard/HackerNotificationModal';
 import { CpuGauge } from '@/components/dashboard/CpuGauge';
 import { PlatformOverview } from '@/components/dashboard/PlatformOverview';
 import { QuickActions } from '@/components/dashboard/QuickActions';
@@ -51,6 +52,7 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-8">
+      <HackerNotificationModal />
       <QuickActions />
 
       <div className="stagger-fade flex flex-wrap items-end justify-between gap-4">
@@ -140,7 +142,7 @@ export default function DashboardPage() {
         </Card>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="data-stream-links grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <Card className="stagger-fade [animation-delay:170ms]">
           <CardHeader className="pb-1">
             <CardTitle className="text-xs font-normal tracking-wide text-ops-gray">
@@ -189,7 +191,7 @@ export default function DashboardPage() {
         </Card>
       </div>
 
-      <div className="grid gap-4 xl:grid-cols-[1.4fr_1fr]">
+      <div className="data-stream-links grid gap-4 xl:grid-cols-[1.4fr_1fr]">
         {/* Actividad reciente — audit_log 7 días */}
         <div className="space-y-3">
           <h2 className="flex items-center gap-2 font-display text-xs tracking-[0.18em] text-ops-gray">

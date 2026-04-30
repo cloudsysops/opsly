@@ -1,6 +1,7 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
+import { CyberParticles } from '@/components/layout/CyberParticles';
 import { Sidebar } from '@/components/layout/Sidebar';
 import { Topbar } from '@/components/layout/Topbar';
 
@@ -12,6 +13,7 @@ export function AppChrome({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-ops-bg">
       <div className="cyber-grid-bg" />
+      <CyberParticles />
       <Sidebar />
       <div className="ml-[240px] flex min-h-screen min-w-0 flex-1 flex-col">
         <Topbar />
