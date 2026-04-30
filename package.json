@@ -4,8 +4,8 @@
   "packageManager": "npm@10.5.0",
   "workspaces": [
     "apps/*",
-    "apps/agents/notebooklm",
-    "skills/manifest",
+    "apps/notebooklm-agent",
+    "packages/skills/manifest",
     "packages/*"
   ],
   "scripts": {
@@ -21,9 +21,10 @@
     "validate-context": "python3 -m json.tool context/system_state.json > /dev/null",
     "validate-openapi": "node scripts/ci/validate-openapi.mjs",
     "validate-structure": "node scripts/validate-structure.js",
+    "validate:strict:ci": "npm run validate-structure",
     "index-knowledge": "bash scripts/index-knowledge.sh",
-    "validate-skills": "npm run validate-skills --prefix skills/manifest",
-    "test-skills-manifest": "npm test --prefix skills/manifest",
+    "validate-skills": "npm run validate-skills --prefix packages/skills/manifest",
+    "test-skills-manifest": "npm test --prefix packages/skills/manifest",
     "skills:list": "node scripts/load-skills.js list",
     "skills:bootstrap": "node scripts/load-skills.js bootstrap",
     "skills:sync:external": "bash scripts/sync-skills-external.sh",
