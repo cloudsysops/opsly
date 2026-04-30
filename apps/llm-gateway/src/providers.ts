@@ -1,4 +1,4 @@
-export type ProviderKind = 'anthropic' | 'ollama' | 'openrouter' | 'openai';
+export type ProviderKind = 'anthropic' | 'ollama' | 'openrouter' | 'openai' | 'deepseek';
 
 export interface ProviderDefinition {
   /** Model id for the upstream API */
@@ -14,6 +14,11 @@ export interface ProviderDefinition {
 
 const ollamaBase = process.env.OLLAMA_URL ?? 'http://localhost:11434';
 const openRouterBase = 'https://openrouter.ai/api/v1';
+const deepseekBase = (process.env.DEEPSEEK_BASE_URL ?? 'https://api.deepseek.com/v1').replace(/\/$/, '');
+const deepseekModel =
+  process.env.DEEPSEEK_MODEL?.trim() && process.env.DEEPSEEK_MODEL.trim().length > 0
+    ? process.env.DEEPSEEK_MODEL.trim()
+    : 'deepseek-v4-flash';
 
 export const PROVIDERS = {
   claude_haiku: {
@@ -37,6 +42,18 @@ export const PROVIDERS = {
     cost_per_1k_output: 0,
     baseUrl: ollamaBase.replace(/\/$/, ''),
     healthKey: 'llama_local',
+  },
+  /**
+   * DeepSeek (API compatible OpenAI). Modelo por defecto V4 Flash.
+   * Override: `DEEPSEEK_MODEL`, base: `DEEPSEEK_BASE_URL`.
+   */
+  deepseek_chat: {
+    model: deepseekModel,
+    kind: 'deepseek',
+    cost_per_1k_input: 0.00014,
+    cost_per_1k_output: 0.00028,
+    baseUrl: deepseekBase,
+    healthKey: 'deepseek',
   },
   openrouter_cheap: {
     model: 'mistralai/mistral-7b-instruct',
@@ -72,18 +89,34 @@ export interface ProviderChainEntry {
 
 export type RoutingPreference = 'sonnet' | 'haiku' | 'cheap';
 
+function deepseekChainEntry(): ProviderChainEntry | null {
+  if (!process.env.DEEPSEEK_API_KEY?.trim()) {
+    return null;
+  }
+  return {
+    id: 'deepseek_chat',
+    healthKey: PROVIDERS.deepseek_chat.healthKey,
+    def: PROVIDERS.deepseek_chat,
+  };
+}
+
 export function getProvidersByPreference(preference: RoutingPreference): ProviderChainEntry[] {
   const e = (id: ProviderId): ProviderChainEntry => ({
     id,
     healthKey: PROVIDERS[id].healthKey,
     def: PROVIDERS[id],
   });
+  const ds = deepseekChainEntry();
 
   if (preference === 'sonnet') {
     return [e('claude_sonnet'), e('gpt4o'), e('claude_haiku')];
   }
   if (preference === 'haiku') {
-    return [e('claude_haiku'), e('llama_local'), e('openrouter_cheap'), e('gpt4o_mini')];
+    const tail = [e('llama_local'), e('openrouter_cheap'), e('gpt4o_mini')];
+    return ds ? [e('claude_haiku'), ds, ...tail] : [e('claude_haiku'), ...tail];
+  }
+  if (ds) {
+    return [e('llama_local'), ds, e('claude_haiku'), e('openrouter_cheap')];
   }
   return [e('llama_local'), e('claude_haiku'), e('openrouter_cheap')];
 }

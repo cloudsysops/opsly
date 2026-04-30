@@ -36,7 +36,7 @@ Comandos:
   help
 
 Variables:
-  TENANTS_PATH, PLATFORM_DOMAIN, SSH_HOST (default: 100.120.151.91), SSH_USER, SSH_CONNECT_TIMEOUT (default: 15)
+  TENANTS_PATH, PLATFORM_DOMAIN, TENANT_BASE_DOMAIN, SSH_HOST (default: 100.120.151.91), SSH_USER, SSH_CONNECT_TIMEOUT (default: 15)
 
 EOF
 }
@@ -81,9 +81,10 @@ status_cmd() {
       state="missing"
     fi
 
-    if [[ -n "${PLATFORM_DOMAIN:-}" ]]; then
-      n8n_url="https://n8n-${slug}.${PLATFORM_DOMAIN}/"
-      uptime_url="https://uptime-${slug}.${PLATFORM_DOMAIN}/"
+    local tenant_domain="${TENANT_BASE_DOMAIN:-${PLATFORM_DOMAIN:-}}"
+    if [[ -n "${tenant_domain}" ]]; then
+      n8n_url="https://n8n-${slug}.${tenant_domain}/"
+      uptime_url="https://uptime-${slug}.${tenant_domain}/"
     else
       n8n_url=""
       uptime_url=""

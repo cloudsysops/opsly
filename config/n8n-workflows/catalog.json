@@ -1,0 +1,26 @@
+{
+  "version": "1.0.0",
+  "items": [
+    {
+      "id": "crm-starter-pack",
+      "name": "CRM Starter Pack",
+      "description": "Captura leads, alerta oportunidades calientes, recuerda follow-ups y envia digest diario de pipeline.",
+      "category": "crm",
+      "plan_min": "startup",
+      "version": "1.0.0",
+      "source_files": [
+        ".n8n/1-workflows/crm/crm-lead-capture.json",
+        ".n8n/1-workflows/crm/crm-hot-lead-alert.json",
+        ".n8n/1-workflows/crm/crm-follow-up-reminder.json",
+        ".n8n/1-workflows/crm/crm-daily-pipeline-digest.json"
+      ],
+      "required_env": ["TENANT_SLUG", "OPSLY_CRM_NOTIFY_WEBHOOK_URL"],
+      "webhooks": [
+        "POST /webhook/opsly-crm-lead",
+        "POST /webhook/opsly-crm-hot-lead"
+      ],
+      "default_active": false,
+      "installed_by_default": true
+    }
+  ]
+}

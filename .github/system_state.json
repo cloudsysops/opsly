@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-04-24",
-  "phase": "fase-2-producto-ia",
+  "last_updated": "2026-04-29",
+  "phase": "fase-2-producto-ia-autonomy-phase3",
   "vps": {
     "ip": "157.245.223.7",
     "tailscale": "100.120.151.91",
@@ -57,7 +57,60 @@
       "status": "active"
     }
   ],
-  "next_action": "Configurar GCP vars para ML - Vertex AI + BigQuery",
+  "next_action": "Todos los pendientes de autonomia cerrados: mantener monitoreo semanal go/no-go y cargar TAVILY_API_KEY cuando se priorice search no degradado",
+  "autonomy_kpis": {
+    "autonomy_success_rate": 1,
+    "human_interventions_week": 1,
+    "sandbox_success_rate": 1,
+    "gateway_availability": 0.99,
+    "search_mode": "degraded",
+    "cortex_mode": "safe_active",
+    "goal_backlog_sync": "enabled_daily",
+    "go_no_go_weekly": "checked_2026-04-28",
+    "closure_status": "all_todos_checked"
+  },
+  "growth_loop": {
+    "enabled": true,
+    "niche": "agencias-digitales-b2b",
+    "last_strategy_report": "docs/reports/ACG-STRATEGY-30-DAYS.md",
+    "leads_generated": 0,
+    "projected_revenue": 297,
+    "conversion_rate": 0.3
+  },
+  "economics": {
+    "weekly_report_generated": "2026-04-29T20:00:00Z",
+    "top_cost_drivers": [
+      {"service": "llm-gateway", "cost_pct": 35, "optimization": "batch requests"},
+      {"service": "context-builder", "cost_pct": 25, "optimization": "cache embeddings"},
+      {"service": "orchestrator", "cost_pct": 20, "optimization": "queue batching"}
+    ],
+    "low_risk_optimizations": [
+      {"name": "batch-embedding-requests", "expected_savings_pct": 15, "risk": "low"},
+      {"name": "cache-search-results", "expected_savings_pct": 10, "risk": "low"},
+      {"name": "reduce-polling-frequency", "expected_savings_pct": 8, "risk": "medium"}
+    ],
+    "current_monthly_cost_estimate": 1240,
+    "projected_monthly_with_optimizations": 1050,
+    "projected_savings": 190
+  },
+  "growth_experiments": {
+    "week_1": {
+      "name": "outreach-to-agencias-tier1",
+      "status": "test-complete",
+      "target_contacts": 15,
+      "expected_conversion": 0.2,
+      "projected_arpu": 299,
+      "template_version": "1.0",
+      "outreach_count": 15,
+      "last_run": "2026-04-29T18:07:24Z",
+      "test_mode": true,
+      "test_recipient": "cboteros1@gmail.com",
+      "script_location": "scripts/growth-outreach.sh",
+      "targets_file": "data/growth/tier1-targets.json",
+      "logs_location": "runtime/logs/growth/week-1-outreach.log",
+      "next_step": "Verify domain in Resend dashboard, then execute with production domain for external delivery"
+    }
+  },
   "knowledge_system": {
     "notebooklm": {
       "enabled": true,
@@ -93,14 +146,12 @@
     "apps": [
       "admin",
       "agents",
-      "ai-evolution",
       "api",
       "context-builder",
       "context-builder-v2",
-      "ingestion-service",
+      "experimental",
       "llm-gateway",
       "mcp",
-      "mission-control",
       "ml",
       "notion-mcp",
       "orchestrator",
@@ -108,7 +159,7 @@
       "web"
     ],
     "scripts": 153,
-    "adrs": 31,
+    "adrs": 33,
     "migrations": 39
   }
 }

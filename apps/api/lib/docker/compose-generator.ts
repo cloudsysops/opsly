@@ -17,6 +17,14 @@ function optionalEnv(name: string, fallback: string): string {
   return value && value.length > 0 ? value : fallback;
 }
 
+function resolveTenantBaseDomain(): string {
+  const tenantDomain = process.env.TENANT_BASE_DOMAIN;
+  if (tenantDomain && tenantDomain.length > 0) {
+    return tenantDomain;
+  }
+  return requireEnv('PLATFORM_DOMAIN');
+}
+
 /**
  * Renders infra/templates/docker-compose.tenant.yml.tpl using the same
  * {{PLACEHOLDER}} set as scripts/onboard-tenant.sh (CHECK 6).
@@ -38,7 +46,9 @@ export async function renderTenantComposeFromTemplate(
     throw new Error('compose template requires ports.n8n and ports.uptime_kuma');
   }
 
-  const domain = requireEnv('PLATFORM_DOMAIN');
+  // Tenants can run on a dedicated customer-facing base domain while
+  // control-plane services (api/admin/portal) use PLATFORM_DOMAIN.
+  const domain = resolveTenantBaseDomain();
   const traefikNetwork = optionalEnv('TRAEFIK_NETWORK', 'traefik-public');
   const n8nUser = optionalEnv('N8N_BASIC_AUTH_USER', 'admin');
   const n8nPassword = randomBytes(COMPOSE_CRYPTO.N8N_PASSWORD_RANDOM_BYTES).toString('hex');

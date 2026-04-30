@@ -15,6 +15,8 @@ services:
       N8N_HOST: n8n-{{SLUG}}.{{DOMAIN}}
       N8N_PROTOCOL: https
       WEBHOOK_URL: https://n8n-{{SLUG}}.{{DOMAIN}}/
+      TENANT_SLUG: {{SLUG}}
+      OPSLY_CRM_NOTIFY_WEBHOOK_URL: ""
       DB_TYPE: sqlite
     volumes:
       - n8n_data_{{SLUG}}:/home/node/.n8n

@@ -59,6 +59,7 @@ export function Sidebar() {
             <Link
               key={href}
               href={href}
+              prefetch={false}
               className={cn(
                 'cyber-hover flex items-center gap-2 rounded-lg border border-transparent px-3 py-2 font-sans text-sm transition-colors',
                 active

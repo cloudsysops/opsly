@@ -124,4 +124,30 @@ describe('LLM Gateway', () => {
       })
     );
   });
+
+  it('propaga request_id generado a logUsage', async () => {
+    vi.mocked(cache.cacheGet).mockResolvedValueOnce(null);
+    createMock.mockResolvedValueOnce({
+      content: [{ type: 'text', text: 'respuesta modelo' }],
+      usage: { input_tokens: 100, output_tokens: 50 },
+    });
+
+    const resultPromise = llmCall({
+      tenant_slug: 'test-tenant',
+      legacy_pipeline: true,
+      messages: [{ role: 'user', content: 'hola' }],
+    });
+    await vi.runAllTimersAsync();
+    const result = await resultPromise;
+
+    expect(result.cache_hit).toBe(false);
+    expect(logger.logUsage).toHaveBeenCalledWith(
+      expect.objectContaining({
+        tenant_slug: 'test-tenant',
+        request_id: expect.stringMatching(
+          /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
+        ),
+      })
+    );
+  });
 });

@@ -41,6 +41,10 @@ export interface LLMRequest {
    * `cost` baja un escalón; `quality` sube; `balanced` = comportamiento por defecto.
    */
   routing_bias?: RoutingBias;
+  /**
+   * Prioriza un proveedor cloud concreto en `llmCallDirect` (p. ej. OpenClaw rol `skeptic` → DeepSeek).
+   */
+  provider_hint?: 'deepseek';
   max_tokens?: number;
   temperature?: number;
   cache?: boolean;

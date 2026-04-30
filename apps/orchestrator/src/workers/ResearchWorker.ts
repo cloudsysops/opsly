@@ -11,7 +11,13 @@ export interface ResearchExecutionPayload {
   initiated_by: string;
 }
 
-async function llmCall(prompt: string, model: string, maxTokens: number): Promise<string> {
+async function llmCall(
+  prompt: string,
+  model: string,
+  maxTokens: number,
+  tenantSlug: string,
+  requestId: string
+): Promise<string> {
   const response = await fetch(`${process.env.ORCHESTRATOR_LLM_GATEWAY_URL || 'http://llm-gateway:3010'}/v1/text`, {
     method: 'POST',
     headers: {
@@ -19,18 +25,25 @@ async function llmCall(prompt: string, model: string, maxTokens: number): Promis
       Authorization: `Bearer ${process.env.ANTHROPIC_API_KEY || ''}`,
     },
     body: JSON.stringify({
+      tenant_slug: tenantSlug,
+      request_id: requestId,
       prompt,
-      model,
-      max_tokens: maxTokens,
+      task_type: 'summarize',
+      routing_bias: 'cost',
+      usage_metadata: {
+        requested_model: model,
+        requested_max_tokens: maxTokens,
+        worker: 'research',
+      },
     }),
   });
 
-  const data = (await response.json()) as { text?: string; error?: string };
+  const data = (await response.json()) as { content?: string; text?: string; error?: string; message?: string };
   if (data.error) {
-    throw new Error(`LLM call failed: ${data.error}`);
+    throw new Error(`LLM call failed: ${data.message ?? data.error}`);
   }
 
-  return data.text || '';
+  return data.content ?? data.text ?? '';
 }
 
 interface TavilyResult {
@@ -121,7 +134,13 @@ Incluye al final una sección "Evidencia" con los URLs.
 Formato: texto plano, sin markdown.
     `;
 
-    const synthesis = await llmCall(synthesisPrompt, 'claude-haiku-4-5-20251001', 300);
+    const synthesis = await llmCall(
+      synthesisPrompt,
+      'claude-haiku-4-5-20251001',
+      300,
+      tenant_slug,
+      request_id
+    );
 
     const duration = Date.now() - startTime;
     const avgRelevance = scoredResults.length > 0 ? scoredResults.reduce((acc, r) => acc + r.relevance_score, 0) / scoredResults.length : 0;

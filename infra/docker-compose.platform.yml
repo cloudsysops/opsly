@@ -292,7 +292,7 @@ services:
     labels:
       - 'traefik.enable=true'
       - 'traefik.docker.network=traefik-public'
-      - 'traefik.http.routers.portal.rule=Host(`portal.${PLATFORM_DOMAIN}`)'
+      - 'traefik.http.routers.portal.rule=Host(`portal.${PLATFORM_DOMAIN}`) || Host(`app.${PLATFORM_DOMAIN}`) || Host(`${PLATFORM_DOMAIN}`)'
       - 'traefik.http.routers.portal.entrypoints=websecure'
       - 'traefik.http.routers.portal.tls=true'
       - 'traefik.http.routers.portal.tls.certresolver=letsencrypt'

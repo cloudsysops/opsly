@@ -55,7 +55,7 @@ Salud en Redis se agrupa por **API**: `anthropic`, `llama_local`, `openrouter`, 
 
 ### DeepSeek (OpenAI-compatible)
 
-- **Variables:** `DEEPSEEK_API_KEY` (obligatoria para activar el proveedor), `DEEPSEEK_BASE_URL` (default `https://api.deepseek.com/v1`), `DEEPSEEK_MODEL` (default `deepseek-chat` — ajustar en Doppler cuando DeepSeek publique el id exacto de V4).
+- **Variables:** `DEEPSEEK_API_KEY` (obligatoria para activar el proveedor), `DEEPSEEK_BASE_URL` (default `https://api.deepseek.com/v1`), `DEEPSEEK_MODEL` (default `deepseek-v4-flash`; usar `deepseek-v4-pro` para mayor calidad). DeepSeek V4 mantiene el base URL y cambia solo el `model`.
 - **Id de proveedor interno:** `deepseek_chat` (definido en `apps/llm-gateway/src/providers.ts`).
 - **Orden en cadena cloud** (`apps/llm-gateway/src/cloud-chain.ts`):
   - `routing_bias=cost` **o** `provider_hint=deepseek` → DeepSeek primero (si hay clave).

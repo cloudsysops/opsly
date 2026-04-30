@@ -82,6 +82,19 @@ function throwTenantInsertVerifyFailed(params: {
   throw new Error(msg);
 }
 
+function resolveTenantServicesDomain(): string {
+  const tenantDomain =
+    process.env.TENANT_BASE_DOMAIN?.trim() ?? process.env.PLATFORM_BASE_DOMAIN?.trim();
+  if (tenantDomain && tenantDomain.length > 0) {
+    return tenantDomain;
+  }
+  const platformDomain = process.env.PLATFORM_DOMAIN?.trim();
+  if (platformDomain && platformDomain.length > 0) {
+    return platformDomain;
+  }
+  throw new Error('Missing TENANT_BASE_DOMAIN or PLATFORM_DOMAIN');
+}
+
 async function verifyTenantReadableAttempt(
   db: ReturnType<typeof getServiceClient>,
   tenantId: string,
@@ -394,10 +407,7 @@ class OnboardingOrchestrator {
   }
 
   private async updateTenantActive(): Promise<void> {
-    const domain = process.env.PLATFORM_DOMAIN ?? process.env.PLATFORM_BASE_DOMAIN;
-    if (!domain) {
-      throw new Error('Missing PLATFORM_DOMAIN or PLATFORM_BASE_DOMAIN');
-    }
+    const domain = resolveTenantServicesDomain();
     if (!this.tenantId) {
       throw new Error('Tenant not initialized');
     }
