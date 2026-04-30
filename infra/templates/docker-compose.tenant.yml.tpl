@@ -65,6 +65,52 @@ services:
       retries: 3
       start_period: 30s
 
+  context-builder_{{SLUG}}:
+    image: ghcr.io/cloudsysops/intcloudsysops-context-builder:latest
+    container_name: ctx_{{SLUG}}
+    ports:
+      - "{{PORT_CONTEXT_BUILDER}}:3012"
+    environment:
+      CONTEXT_BUILDER_REDIS_NAMESPACE: tenant:{{SLUG}}:ctx
+      OPS_REPO_ROOT: /data
+      NODE_ENV: production
+      LOG_LEVEL: info
+    volumes:
+      - /opt/opsly:/data:ro
+    networks:
+      - {{TRAEFIK_NETWORK}}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:3012/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  mcp_{{SLUG}}:
+    image: ghcr.io/cloudsysops/intcloudsysops-mcp:latest
+    container_name: mcp_{{SLUG}}
+    ports:
+      - "{{PORT_MCP}}:3003"
+    environment:
+      MCP_TENANT_SLUG: {{SLUG}}
+      MCP_JWT_SECRET: {{MCP_JWT_SECRET}}
+      MCP_CONTEXT_BUILDER_URL: http://context-builder_{{SLUG}}:3012
+      NODE_ENV: production
+      LOG_LEVEL: info
+    networks:
+      - {{TRAEFIK_NETWORK}}
+    depends_on:
+      context-builder_{{SLUG}}:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:3003/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
 volumes:
   n8n_data_{{SLUG}}:
   uptime_data_{{SLUG}}:

@@ -42,8 +42,13 @@ export async function renderTenantComposeFromTemplate(
   const templatePath = requireEnv('TEMPLATE_PATH');
   const n8nPort = ports.n8n;
   const uptimePort = ports.uptime_kuma;
+  const contextBuilderPort = ports.context_builder;
+  const mcpPort = ports.mcp;
   if (typeof n8nPort !== 'number' || typeof uptimePort !== 'number') {
     throw new Error('compose template requires ports.n8n and ports.uptime_kuma');
+  }
+  if (typeof contextBuilderPort !== 'number' || typeof mcpPort !== 'number') {
+    throw new Error('compose template requires ports.context_builder and ports.mcp');
   }
 
   // Tenants can run on a dedicated customer-facing base domain while
@@ -55,14 +60,18 @@ export async function renderTenantComposeFromTemplate(
   const n8nEncryptionKey = randomBytes(COMPOSE_CRYPTO.N8N_ENCRYPTION_KEY_RANDOM_BYTES).toString(
     'hex'
   );
+  const mcpJwtSecret = randomBytes(32).toString('hex');
 
   let yaml = await readFile(templatePath, 'utf8');
   yaml = yaml.replaceAll('{{SLUG}}', slug);
   yaml = yaml.replaceAll('{{PORT_N8N}}', String(n8nPort));
   yaml = yaml.replaceAll('{{PORT_UPTIME}}', String(uptimePort));
+  yaml = yaml.replaceAll('{{PORT_CONTEXT_BUILDER}}', String(contextBuilderPort));
+  yaml = yaml.replaceAll('{{PORT_MCP}}', String(mcpPort));
   yaml = yaml.replaceAll('{{N8N_BASIC_AUTH_USER}}', n8nUser);
   yaml = yaml.replaceAll('{{N8N_BASIC_AUTH_PASSWORD}}', n8nPassword);
   yaml = yaml.replaceAll('{{N8N_ENCRYPTION_KEY}}', n8nEncryptionKey);
+  yaml = yaml.replaceAll('{{MCP_JWT_SECRET}}', mcpJwtSecret);
   yaml = yaml.replaceAll('{{DOMAIN}}', domain);
   yaml = yaml.replaceAll('{{TRAEFIK_NETWORK}}', traefikNetwork);
   return {

@@ -1,10 +1,10 @@
 import type { PlanKey } from '../supabase/types';
 
 export const PLAN_SERVICES: Record<PlanKey, readonly string[]> = {
-  startup: ['n8n', 'uptime_kuma'],
-  business: ['n8n', 'uptime_kuma'],
-  enterprise: ['n8n', 'uptime_kuma'],
-  demo: ['n8n', 'uptime_kuma'],
+  startup: ['n8n', 'uptime_kuma', 'context_builder', 'mcp'],
+  business: ['n8n', 'uptime_kuma', 'context_builder', 'mcp'],
+  enterprise: ['n8n', 'uptime_kuma', 'context_builder', 'mcp'],
+  demo: ['n8n', 'uptime_kuma', 'context_builder', 'mcp'],
 };
 
 /** Monthly recurring revenue in USD (list prices), excluding demo tenants. */
