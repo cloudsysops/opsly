@@ -1,3 +1,9 @@
+---
+status: canon
+owner: product
+last_review: 2026-04-28
+---
+
 # VISION
 
 Documento canónico: [`docs/01-development/VISION.md`](docs/01-development/VISION.md).
