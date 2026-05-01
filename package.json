@@ -42,6 +42,8 @@
     "opsly:drive:upload-tenant-onboarding": "python3 scripts/opsly_drive_automation.py upload-tenant-pack",
     "opsly:chat": "python3 tools/cli/main.py chat",
     "test": "turbo run test",
+    "test:unit": "npm run test --workspace=@intcloudsysops/api && npm run test --workspace=@intcloudsysops/portal && npm run test --workspace=@intcloudsysops/mcp && npm run test --workspace=@intcloudsysops/ml && npm run test --workspace=@intcloudsysops/llm-gateway",
+    "test:integration": "npm run test --workspace=@intcloudsysops/orchestrator",
     "test:coverage": "turbo run test -- --coverage",
     "test:e2e": "turbo run test:e2e",
     "dev:notion-mcp": "doppler run --project ops-intcloudsysops --config prd -- npm run dev --workspace=@intcloudsysops/notion-mcp",
