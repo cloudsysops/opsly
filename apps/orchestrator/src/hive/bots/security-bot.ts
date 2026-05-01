@@ -2,6 +2,7 @@ import type { Bot, Subtask, PheromoneMessage } from '../types.js';
 import { PheromoneChannel } from '../pheromone-channel.js';
 import { HiveStateStore } from '../hive-state.js';
 import { processIntent } from '../../engine.js';
+import { getInternalPlatformTenantSlug } from '../../tenant-defaults.js';
 
 export class SecurityBot implements Bot {
   id: string;
@@ -94,7 +95,12 @@ export class SecurityBot implements Bot {
 
   private async executeScan(subtask: Subtask): Promise<unknown> {
     const prompt = `Escaneo seguridad: ${subtask.description}\nResponde con { critical, high, findings }`;
-    return processIntent({ intent: 'oar_react', context: { prompt }, initiated_by: 'system' });
+    return processIntent({
+      intent: 'oar_react',
+      context: { prompt },
+      initiated_by: 'system',
+      tenant_slug: getInternalPlatformTenantSlug(),
+    });
   }
 
   async stop(): Promise<void> {

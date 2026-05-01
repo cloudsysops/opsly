@@ -37,6 +37,7 @@ import { startIntentDispatchWorker } from './workers/IntentDispatchWorker.js';
 import { startTerminalWorker } from './workers/TerminalWorker.js';
 import { closeWebhookQueue, createWebhookWorker } from './workers/WebhookWorker.js';
 import { startWebhooksProcessingWorker } from './workers/WebhooksProcessingWorker.js';
+import { getInternalPlatformTenantSlug } from './tenant-defaults.js';
 
 type AsyncCleanup = () => Promise<void>;
 
@@ -211,6 +212,7 @@ async function main(): Promise<void> {
       intent: 'notify',
       context: { title: 'OpenClaw', message: 'orchestrator started', type: 'info' },
       initiated_by: 'system',
+      tenant_slug: getInternalPlatformTenantSlug(),
     });
     process.stdout.write(`${JSON.stringify(result)}\n`);
   }
