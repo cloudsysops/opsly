@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-05-01T05:41:29Z",
-  "totalFiles": 279,
+  "lastIndexed": "2026-05-01T12:17:01Z",
+  "totalFiles": 281,
   "files": [
     ".openclaw.md",
     "2026-04-21.md",
@@ -147,6 +147,7 @@
     "OLLAMA-DEPLOYMENT.md",
     "ONBOARDING-NEW-CLIENT.md",
     "OPENCLAW-ARCHITECTURE.md",
+    "OPENCLAW-OBSERVABILITY.md",
     "OPENCLAW-TEAM-PLAN.md",
     "OPS-CLEANUP-PROCEDURES.md",
     "OPSLY-KNOWLEDGE-BASE.md",
@@ -214,6 +215,7 @@
     "SPRINT-ROADMAP.md",
     "SPRINT-TRACKER.md",
     "SPRINT-TRACKING.md",
+    "SPRINTS_13_14.md",
     "SSH-COMMANDS-LOCALRANK.md",
     "SSH-USERS-FOR-AGENTS.md",
     "SUPER-AGENT-SHADOW-DEPLOY.md",
