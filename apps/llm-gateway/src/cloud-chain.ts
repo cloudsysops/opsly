@@ -1,7 +1,11 @@
-import { PROVIDERS, type ProviderChainEntry } from './providers.js';
 import type { LLMRequest } from './types.js';
+import { PROVIDERS, type ProviderChainEntry, type ProviderId } from './providers.js';
 
-function chainEntry(id: keyof typeof PROVIDERS): ProviderChainEntry {
+function hasDeepseekCredentials(): boolean {
+  return Boolean(process.env.DEEPSEEK_API_KEY?.trim());
+}
+
+function entry(id: ProviderId): ProviderChainEntry {
   return {
     id,
     healthKey: PROVIDERS[id].healthKey,
@@ -9,36 +13,40 @@ function chainEntry(id: keyof typeof PROVIDERS): ProviderChainEntry {
   };
 }
 
+function deepseekEntry(): ProviderChainEntry | null {
+  if (!hasDeepseekCredentials()) {
+    return null;
+  }
+  return entry('deepseek_chat');
+}
+
 /**
- * Orden de proveedores cloud para `llmCallDirect` (sin filtrar por health).
- * DeepSeek solo entra si existe `DEEPSEEK_API_KEY` y la petición pide sesgo coste,
- * calidad, o hint explícito.
+ * Orden de proveedores cloud en `llmCallDirect` (después de Ollama local si aplica).
+ * - `routing_bias=cost` o `provider_hint=deepseek`: DeepSeek primero cuando hay API key.
+ * - `balanced` / sin sesgo explícito: Haiku, luego DeepSeek, luego OpenAI mini, OpenRouter.
+ * - `quality`: Haiku → OpenAI → OpenRouter → DeepSeek (último recurso barato).
  */
 export function buildLlmDirectCloudChain(req: LLMRequest): ProviderChainEntry[] {
-  const base: ProviderChainEntry[] = [
-    chainEntry('claude_haiku'),
-    chainEntry('gpt4o_mini'),
-    chainEntry('openrouter_cheap'),
-  ];
+  const ds = deepseekEntry();
+  const haiku = entry('claude_haiku');
+  const mini = entry('gpt4o_mini');
+  const orCheap = entry('openrouter_cheap');
 
-  const deepseekKey = process.env.DEEPSEEK_API_KEY ?? '';
-  if (deepseekKey.length === 0) {
-    return base;
+  const hintDeepseek = req.provider_hint === 'deepseek';
+  const bias = req.routing_bias;
+
+  if (hintDeepseek && ds) {
+    return [ds, haiku, mini, orCheap];
   }
-
-  const useDeepseek =
-    req.provider_hint === 'deepseek' ||
-    req.routing_bias === 'cost' ||
-    req.routing_bias === 'quality';
-  if (!useDeepseek) {
-    return base;
+  if (bias === 'cost' && ds) {
+    return [ds, haiku, mini, orCheap];
   }
-
-  const deepseek = chainEntry('deepseek_chat');
-
-  if (req.routing_bias === 'quality') {
-    return [...base, deepseek];
+  if (bias === 'quality') {
+    const base = [haiku, mini, orCheap];
+    return ds ? [...base, ds] : base;
   }
-
-  return [deepseek, ...base];
+  if (ds) {
+    return [haiku, ds, mini, orCheap];
+  }
+  return [haiku, mini, orCheap];
 }

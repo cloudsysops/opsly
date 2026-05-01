@@ -56,7 +56,8 @@ export interface OrchestratorJob {
   payload: Record<string, unknown>;
   /** Identificador de tarea para trazabilidad; opcional. */
   taskId?: string;
-  tenant_slug?: string;
+  /** REQUIRED: Identificador del tenant para aislamiento y seguimiento (tenant-aware orchestration). */
+  tenant_slug: string;
   /** UUID tenant en Supabase cuando exista; opcional. */
   tenant_id?: string;
   initiated_by: 'claude' | 'discord' | 'cron' | 'system';
@@ -94,7 +95,8 @@ export interface IntentRequest {
   intent: Intent;
   context: Record<string, unknown>;
   taskId?: string;
-  tenant_slug?: string;
+  /** REQUIRED: Tenant identifier for request scoping and isolation. */
+  tenant_slug: string;
   tenant_id?: string;
   initiated_by: OrchestratorJob['initiated_by'];
   plan?: OrchestratorJob['plan'];

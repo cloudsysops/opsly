@@ -4,7 +4,8 @@ export interface JobEnqueueLogFields {
   event: 'job_enqueue';
   job_type: OrchestratorJob['type'];
   task_id?: string;
-  tenant_slug?: string;
+  /** REQUIRED: Tenant slug for all enqueued jobs (tenant-aware orchestration). */
+  tenant_slug: string;
   tenant_id?: string;
   plan?: string;
   request_id?: string;

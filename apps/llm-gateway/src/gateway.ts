@@ -251,14 +251,15 @@ async function llmCallPipeline(req: LLMRequest): Promise<LLMResponse> {
 /** Entrada pública: pipeline v3 por defecto; Beast Mode v1 con LLM_GATEWAY_LEGACY=true o legacy_pipeline. */
 export async function llmCall(req: LLMRequest): Promise<LLMResponse> {
   const request_id = req.request_id ?? randomUUID();
+  const requestWithId: LLMRequest = { ...req, request_id };
   const legacy_pipeline = isLegacyMode(req);
   const start = Date.now();
   try {
-    const withContext = await mergeRepoContext(req);
+    const withContext = await mergeRepoContext(requestWithId);
     const res = await llmCallPipeline(withContext);
     logGatewayEvent({
       event: 'llm_call_complete',
-      tenant_slug: req.tenant_slug,
+      tenant_slug: requestWithId.tenant_slug,
       request_id,
       model_used: res.model_used,
       tokens_input: res.tokens_input,
@@ -267,18 +268,20 @@ export async function llmCall(req: LLMRequest): Promise<LLMResponse> {
       cache_hit: res.cache_hit,
       latency_ms: Date.now() - start,
       legacy_pipeline,
-      ...(req.routing_bias !== undefined ? { routing_bias: req.routing_bias } : {}),
+      ...(requestWithId.routing_bias !== undefined ? { routing_bias: requestWithId.routing_bias } : {}),
+      ...(requestWithId.provider_hint !== undefined ? { provider_hint: requestWithId.provider_hint } : {}),
     });
     return res;
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     logGatewayEvent({
       event: 'llm_call_error',
-      tenant_slug: req.tenant_slug,
+      tenant_slug: requestWithId.tenant_slug,
       request_id,
       latency_ms: Date.now() - start,
       legacy_pipeline,
-      ...(req.routing_bias !== undefined ? { routing_bias: req.routing_bias } : {}),
+      ...(requestWithId.routing_bias !== undefined ? { routing_bias: requestWithId.routing_bias } : {}),
+      ...(requestWithId.provider_hint !== undefined ? { provider_hint: requestWithId.provider_hint } : {}),
       error: msg,
     });
     throw err;

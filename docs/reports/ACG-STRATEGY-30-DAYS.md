@@ -14,35 +14,49 @@ Opsly tiene una UVP clara: despliegue y operacion de automatizaciones multi-tena
 
 ## Propuesta de valor para el nicho
 
-1. Onboarding rapido de workflows y monitoreo por cliente.
-2. Reduccion de horas operativas con automatizaciones guiadas.
-3. Costos predecibles con plan startup/business.
+1. Operacion gestionada de automatizaciones por cliente sin que la agencia mantenga servidores.
+2. Reduccion de horas operativas con monitoreo, alertas, backups y reportes recurrentes.
+3. Agentes internos read-only para revisar fallos, costos y oportunidades antes de escalar a autonomia completa.
+
+## Oferta comercial v1
+
+| Paquete | Precio | Setup | Cliente ideal |
+| --- | ---: | ---: | --- |
+| Managed Automation | $299/mes | $750 | Agencia que necesita n8n + monitoreo estable para 1-3 cuentas |
+| Autonomous Ops | $699/mes | $1,500 | Agencia con varias cuentas y soporte operativo recurrente |
+| Done-For-You | desde $1,500/mes | $3,000+ | Agencia que quiere delegar implementacion y mejora continua |
+
+**Regla de margen:** no vender pilotos gratis. El piloto puede tener descuento fundador, pero debe incluir setup para pagar implementacion.
 
 ## Plan de ataque (30 dias)
 
 ### Semana 1 — Oferta y adquisicion minima
 
 - Landing de nicho (`/para-agencias`) con CTA claro.
-- Primer set de contenido tecnico-comercial (3 piezas).
+- Primer set de contenido tecnico-comercial (3 piezas) orientado a ROI operativo.
 - Flujo outbound etico: deteccion de leads + draft de correo para revision humana.
+- Meta: 15 contactos calificados y 5 respuestas.
 
 ### Semana 2 — Activacion y prueba social
 
 - Demo guiada para 5 agencias.
 - Skill de solucion de nicho para reporte a clientes.
 - Medicion de activacion: signup -> primer flujo desplegado.
+- Meta: 2 pilotos pagados con setup.
 
 ### Semana 3 — Conversion
 
 - Iterar copy con A/B simple en landing.
-- Propuesta comercial estandar (Free/Pro/Enterprise).
+- Propuesta comercial estandar (Managed Automation / Autonomous Ops / Done-For-You).
 - 2 casos de uso documentados.
+- Meta: primer caso de estudio interno.
 
 ### Semana 4 — Escala operativa
 
 - Automatizar reporte diario de crecimiento.
 - Refinar outbound por segmento.
 - Consolidar tablero con leads, conversion y revenue proyectado.
+- Meta: 3 pilotos pagados y al menos $897 MRR comprometido.
 
 ## Plan de contenido (semana 1)
 
@@ -60,9 +74,9 @@ Opsly tiene una UVP clara: despliegue y operacion de automatizaciones multi-tena
 
 ## Modelo de precios propuesto
 
-- **Free:** 1 tenant demo, limites basicos, comunidad.
-- **Pro ($99/mes):** multi-workflow, reportes, soporte prioritario.
-- **Enterprise (custom):** onboarding asistido, SLA, integraciones avanzadas.
+- **Managed Automation ($299/mes + $750 setup):** n8n administrado, Uptime Kuma, backups, alertas, reporte mensual.
+- **Autonomous Ops ($699/mes + $1,500 setup):** Managed + agentes read-only, Mission Control, recomendaciones semanales.
+- **Done-For-You (desde $1,500/mes + $3,000 setup):** implementacion, operacion y mejora continua.
 
 ## Proyeccion simple (simulada)
 
@@ -70,7 +84,8 @@ Opsly tiene una UVP clara: despliegue y operacion de automatizaciones multi-tena
 - 5% signup -> 50 trials.
 - 20% activacion -> 10 cuentas activas.
 - 30% conversion pago -> 3 cuentas pago.
-- Ticket promedio inicial: $99 -> **$297 MRR** en primera iteracion.
+- Ticket promedio inicial: $299 -> **$897 MRR** en primera iteracion.
+- Setup esperado: 3 x $750 -> **$2,250 cash inicial**.
 
 ## Restricciones aplicadas
 

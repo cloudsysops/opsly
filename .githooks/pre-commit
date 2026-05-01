@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/bin/bash
 # Pre-commit: docs auto-sync (status.yaml) + type-check + ESLint API si aplica.
 set -euo pipefail
 ROOT="$(git rev-parse --show-toplevel)"

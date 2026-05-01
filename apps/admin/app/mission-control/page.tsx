@@ -1,63 +1,15 @@
 'use client';
 
+import Link from 'next/link';
 import { useCallback, useMemo, useState } from 'react';
 import useSWR from 'swr';
 
 import { getBaseUrl } from '../../lib/api-client';
-
-type AgentTeam = {
-  name: string;
-  status: 'active' | 'idle' | 'error';
-  lastTask: string | null;
-  completedTasks: number;
-  failedTasks: number;
-  avgDurationMs: number;
-};
-
-type OrchestratorStatus = {
-  mode: string;
-  role: string;
-  workers: Record<string, { concurrency: number; active: number }>;
-  queue: {
-    waiting: number;
-    active: number;
-    completed: number;
-    failed: number;
-  };
-};
-
-type AgentTeamsResponse = {
-  teams: AgentTeam[];
-  generated_at: string;
-};
-
-type OpenClawIntentRuntime = {
-  request_id: string;
-  tenant_slug: string | null;
-  intent: string | null;
-  status: string;
-  current_stage: string | null;
-  started_at: string | null;
-  updated_at: string | null;
-  last_error: string | null;
-};
-
-type OpenClawPolicyViolation = {
-  request_id: string | null;
-  tenant_slug: string | null;
-  reason: string;
-  intent: string;
-  agent_role: string | null;
-  timestamp: string;
-};
-
-type OpenClawSnapshot = {
-  intents: OpenClawIntentRuntime[];
-  intents_in_progress: OpenClawIntentRuntime[];
-  recent_policy_violations: OpenClawPolicyViolation[];
-  agent_metrics: Record<string, number>;
-  generated_at: string;
-};
+import type {
+  AgentTeamsResponse,
+  OpenClawSnapshot,
+  OrchestratorStatus,
+} from '../../lib/mission-control-types';
 
 type OpenClawExecutionResponse = {
   success?: boolean;
@@ -135,17 +87,25 @@ export default function MissionControlPage() {
     <div className="min-h-screen bg-[#0a0a0a] text-white p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="flex justify-between items-center mb-8">
+        <div className="flex justify-between items-center mb-8 flex-wrap gap-4">
           <div>
             <h1 className="text-3xl font-bold text-white">Mission Control</h1>
             <p className="text-gray-400 mt-1">OpenClaw Orchestrator Dashboard</p>
           </div>
-          <button
-            onClick={handleRefresh}
-            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg font-medium transition-colors"
-          >
-            Refresh
-          </button>
+          <div className="flex flex-wrap gap-2">
+            <Link
+              href="/mission-control/office"
+              className="px-4 py-2 rounded-lg font-medium transition-colors bg-emerald-700/90 hover:bg-emerald-600 text-white border border-emerald-500/40"
+            >
+              Office (HQ map)
+            </Link>
+            <button
+              onClick={handleRefresh}
+              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg font-medium transition-colors"
+            >
+              Refresh
+            </button>
+          </div>
         </div>
 
         {/* Orchestrator Status */}

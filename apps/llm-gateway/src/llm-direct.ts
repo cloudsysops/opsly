@@ -104,7 +104,8 @@ async function invokeOpenAiCompatible(
   apiKey: string,
   model: string,
   req: LLMRequest,
-  extraHeaders?: Record<string, string>
+  extraHeaders?: Record<string, string>,
+  timeoutMs = 60_000
 ): Promise<{ content: string; tokens_in: number; tokens_out: number }> {
   const res = await fetch(endpoint, {
     method: 'POST',
@@ -119,7 +120,7 @@ async function invokeOpenAiCompatible(
       max_tokens: req.max_tokens ?? 1000,
       temperature: req.temperature ?? 0,
     }),
-    signal: AbortSignal.timeout(60_000),
+    signal: AbortSignal.timeout(timeoutMs),
   });
   if (!res.ok) throw new Error(`OpenAI-compat HTTP ${res.status}`);
   const data = (await res.json()) as OpenAICompatResponse;
@@ -160,15 +161,35 @@ async function runProvider(
     });
     return { ...out, model_used: def.model, billing: def };
   }
-  const isDeepseek = entry.id === 'deepseek_chat';
-  const key = isDeepseek ? (process.env.DEEPSEEK_API_KEY ?? '') : (process.env.OPENAI_API_KEY ?? '');
-  if (!key) {
-    throw new Error(isDeepseek ? 'DEEPSEEK_API_KEY no configurada' : 'OPENAI_API_KEY no configurada');
+  if (def.kind === 'deepseek') {
+    const key = process.env.DEEPSEEK_API_KEY?.trim() ?? '';
+    if (!key) throw new Error('DEEPSEEK_API_KEY no configurada');
+    const base = (def.baseUrl ?? 'https://api.deepseek.com/v1').replace(/\/$/, '');
+    const endpoint = `${base}/chat/completions`;
+    let lastErr: unknown;
+    for (let attempt = 0; attempt < 3; attempt += 1) {
+      try {
+        const out = await invokeOpenAiCompatible(endpoint, key, def.model, req, undefined, 90_000);
+        return { ...out, model_used: def.model, billing: def };
+      } catch (err) {
+        lastErr = err;
+        if (isRateLimitError(err) && attempt < 2) {
+          await new Promise((resolve) => setTimeout(resolve, 400 * 2 ** attempt));
+          continue;
+        }
+        throw err;
+      }
+    }
+    throw lastErr instanceof Error ? lastErr : new Error(String(lastErr));
   }
-  const endpoint = isDeepseek
-    ? `${(def.baseUrl ?? 'https://api.deepseek.com').replace(/\/$/, '')}/v1/chat/completions`
-    : 'https://api.openai.com/v1/chat/completions';
-  const out = await invokeOpenAiCompatible(endpoint, key, def.model, req);
+  const key = process.env.OPENAI_API_KEY ?? '';
+  if (!key) throw new Error('OPENAI_API_KEY no configurada');
+  const out = await invokeOpenAiCompatible(
+    'https://api.openai.com/v1/chat/completions',
+    key,
+    def.model,
+    req
+  );
   return { ...out, model_used: def.model, billing: def };
 }
 

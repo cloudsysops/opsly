@@ -13,6 +13,7 @@ export interface GatewayLogFields {
   latency_ms?: number;
   legacy_pipeline?: boolean;
   routing_bias?: string;
+  provider_hint?: string;
   error?: string;
 }
 

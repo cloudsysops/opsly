@@ -1,7 +1,7 @@
 # Plantilla de workflows n8n por tenant
 
 Referencia para Fase 2: qué automatizar por defecto en cada stack tenant (p. ej. `smiletripcare`, `peskids`).  
-Los workflows **no** se versionan aquí como JSON; se documentan para crearlos en la UI de n8n.
+Los workflows CRM base ya se versionan como JSON importable en `.n8n/1-workflows/crm/`.
 
 ## Cómo crear en la UI de n8n
 
@@ -11,6 +11,16 @@ Los workflows **no** se versionan aquí como JSON; se documentan para crearlos e
 4. Activar el workflow y probar con **Execute workflow**.
 
 ## Workflows sugeridos
+
+### 0. CRM Starter Pack
+
+| Campo           | Valor                                                                 |
+| --------------- | --------------------------------------------------------------------- |
+| **Trigger**     | Webhook + Cron                                                        |
+| **Acción**      | Capturar leads, puntuar oportunidades, recordar follow-up, digest CRM |
+| **Estado**      | READY                                                                 |
+| **Tipo tenant** | todos                                                                 |
+| **Instalacion** | `./scripts/install-crm-workflows.sh --tenant <slug> --dry-run`        |
 
 ### 1. Sincronización de datos críticos
 

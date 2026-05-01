@@ -16,7 +16,7 @@ export interface ProviderHealth {
 
 type HealthCheckFn = () => Promise<number>;
 
-const HEALTH_CHECKS: Record<string, HealthCheckFn> = {
+const BASE_HEALTH_CHECKS: Record<string, HealthCheckFn> = {
   anthropic: async () => {
     const start = Date.now();
     const res = await fetch('https://api.anthropic.com/v1/models', {
@@ -63,6 +63,29 @@ const HEALTH_CHECKS: Record<string, HealthCheckFn> = {
     if (!res.ok) throw new Error(`OpenAI HTTP ${res.status}`);
     return Date.now() - start;
   },
+};
+
+const DEEPSEEK_HEALTH_CHECK: Record<
+  'deepseek',
+  HealthCheckFn
+> = {
+  deepseek: async () => {
+    const start = Date.now();
+    const base = (process.env.DEEPSEEK_BASE_URL ?? 'https://api.deepseek.com/v1').replace(/\/$/, '');
+    const res = await fetch(`${base}/models`, {
+      headers: {
+        Authorization: `Bearer ${process.env.DEEPSEEK_API_KEY ?? ''}`,
+      },
+      signal: AbortSignal.timeout(5000),
+    });
+    if (!res.ok) throw new Error(`DeepSeek HTTP ${res.status}`);
+    return Date.now() - start;
+  },
+};
+
+const HEALTH_CHECKS: Record<string, HealthCheckFn> = {
+  ...BASE_HEALTH_CHECKS,
+  ...(process.env.DEEPSEEK_API_KEY?.trim() ? DEEPSEEK_HEALTH_CHECK : {}),
 };
 
 export class HealthDaemon {

@@ -41,7 +41,10 @@ export interface LLMRequest {
    * `cost` baja un escalón; `quality` sube; `balanced` = comportamiento por defecto.
    */
   routing_bias?: RoutingBias;
-  /** Prioriza DeepSeek en la cadena cloud cuando hay `DEEPSEEK_API_KEY`. */
+  /**
+   * Prioriza un proveedor cloud en `llmCallDirect` (p. ej. OpenClaw rol `skeptic` → DeepSeek).
+   * Requiere `DEEPSEEK_API_KEY` para efecto en la cadena.
+   */
   provider_hint?: 'deepseek';
   max_tokens?: number;
   temperature?: number;

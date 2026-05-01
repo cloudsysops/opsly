@@ -82,6 +82,19 @@ function throwTenantInsertVerifyFailed(params: {
   throw new Error(msg);
 }
 
+function resolveTenantServicesDomain(): string {
+  const tenantDomain =
+    process.env.TENANT_BASE_DOMAIN?.trim() ?? process.env.PLATFORM_BASE_DOMAIN?.trim();
+  if (tenantDomain && tenantDomain.length > 0) {
+    return tenantDomain;
+  }
+  const platformDomain = process.env.PLATFORM_DOMAIN?.trim();
+  if (platformDomain && platformDomain.length > 0) {
+    return platformDomain;
+  }
+  throw new Error('Missing TENANT_BASE_DOMAIN or PLATFORM_DOMAIN');
+}
+
 async function verifyTenantReadableAttempt(
   db: ReturnType<typeof getServiceClient>,
   tenantId: string,
@@ -193,11 +206,17 @@ function stripBudgetAutoSuspendFlag(metadata: Json): Json {
 }
 
 export async function pollPortsUntilHealthy(ports: Record<string, number>): Promise<void> {
-  const urls = Object.values(ports).map((port) => `http://127.0.0.1:${port}/healthz`);
+  // Build health check URLs based on service type
+  const healthCheckUrls = Object.entries(ports).map(([service, port]) => {
+    const isContextBuilderOrMcp =
+      service === 'context_builder' || service === 'mcp';
+    const endpoint = isContextBuilderOrMcp ? '/health' : '/healthz';
+    return `http://127.0.0.1:${port}${endpoint}`;
+  });
 
   for (let attempt = 0; attempt < ORCHESTRATION_HEALTH.MAX_ATTEMPTS; attempt += 1) {
     const checks = await Promise.all(
-      urls.map(async (url) => {
+      healthCheckUrls.map(async (url) => {
         try {
           const response = await fetch(url, {
             signal: AbortSignal.timeout(ORCHESTRATION_HEALTH.FETCH_TIMEOUT_MS),
@@ -394,21 +413,23 @@ class OnboardingOrchestrator {
   }
 
   private async updateTenantActive(): Promise<void> {
-    const domain = process.env.PLATFORM_DOMAIN ?? process.env.PLATFORM_BASE_DOMAIN;
-    if (!domain) {
-      throw new Error('Missing PLATFORM_DOMAIN or PLATFORM_BASE_DOMAIN');
-    }
+    const domain = resolveTenantServicesDomain();
     if (!this.tenantId) {
       throw new Error('Tenant not initialized');
     }
     if (this.n8nBasicAuthUser === undefined || this.n8nBasicAuthPassword === undefined) {
       throw new Error('n8n basic auth credentials missing after compose render');
     }
+    if (!this.ports) {
+      throw new Error('Ports missing when finalizing tenant');
+    }
 
     // Hostnames match infra/templates/docker-compose.tenant.yml.tpl (Traefik rules).
     const services: Json = {
       n8n: `https://n8n-${this.slug}.${domain}/`,
       uptime_kuma: `https://uptime-${this.slug}.${domain}/`,
+      context_builder_port: this.ports.context_builder,
+      mcp_port: this.ports.mcp,
       n8n_basic_auth_user: this.n8nBasicAuthUser,
       n8n_basic_auth_password: this.n8nBasicAuthPassword,
     };
