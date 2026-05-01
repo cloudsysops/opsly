@@ -196,6 +196,8 @@ node scripts/load-skills.js show opsly-api
 | LLM Gateway (cache, routing opcional Fase 4) | `apps/llm-gateway`                                                                                                                               |
 | Context pipeline (servicio)                  | `apps/context-builder` — integrar como **cliente** al servicio existente; no crear un segundo “context builder” embebido en orchestrator sin ADR |
 | API control plane + tenants                  | `apps/api`                                                                                                                                       |
+| NotebookLM agent (Knowledge Layer)           | `apps/notebooklm-agent` — integración con Google NotebookLM para conocimiento por tenant (Sprint 9, ADR-025)                                    |
+| Airflow orchestration (experimental)         | `apps/airflow` — alternativa a BullMQ para orquestación de workflows complejos                                                                    |
 | Skills operativos                            | `skills/user/*`, `skills/README.md`; metadata opcional `skills/manifest` (`@intcloudsysops/skills-manifest`)                                     |
 | Diseño OpenClaw / costos                     | `docs/OPENCLAW-ARCHITECTURE.md`                                                                                                                  |
 | Docker tenant aislado                        | `scripts/lib/docker-helpers.sh` — `--project-name tenant_<slug>`                                                                                 |
