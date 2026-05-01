@@ -49,7 +49,18 @@ Ejecutor técnico senior. Filosofía: **Planificar → Documentar → Tests → 
 
 `npm run type-check` pasa · sin `any` nuevo · sin secretos
 
-##Workflow — tarea completada
+## Zonas delicadas (agentes) — obligatorio
+
+Documento detallado: `docs/03-agents/AGENT-GUARDRAILS.md`. Resumen:
+
+- **Sin tocar sin humano explícito:** migraciones Supabase aplicables a prod, workflows de deploy, compose/Traefik de plataforma, `config/root-whitelist.json`, secretos Doppler, `docs/ACTIVE-PROMPT.md` en hosts donde corre `cursor-prompt-monitor`, Stripe live, SSH/UFW/DNS de producción.
+- **Secretos:** nunca en código, commits, docs ni chat; solo Doppler; sin volcar `doppler secrets get` a logs.
+- **Portal/API nuevas:** Zero-Trust (`resolveTrustedPortalSession`, `tenantSlugMatchesSession`); OpenAPI si aplica al subset CI.
+- **Ramas:** preferir PR + review para rojo/ámbar; no `--force` a `main`.
+
+## Workflow — tarea completada
+
+Si el cambio toca **zona roja o ámbar** en `docs/03-agents/AGENT-GUARDRAILS.md`, usar **rama + PR** y no `git push origin main` hasta revisión humana.
 
 1. **Inmediatamente** después de completar una tarea:
    ```bash

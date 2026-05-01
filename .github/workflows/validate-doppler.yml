@@ -22,12 +22,12 @@ jobs:
         env:
           DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN_PRD }}
         run: |
-          chmod +x scripts/validate-doppler-vars.sh
-          ./scripts/validate-doppler-vars.sh ops-intcloudsysops prd
+          chmod +x scripts/ci/validate-doppler-vars.sh
+          ./scripts/ci/validate-doppler-vars.sh ops-intcloudsysops prd
 
       - name: Validate Doppler stg
         env:
           DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN_STG }}
         run: |
-          chmod +x scripts/validate-doppler-vars.sh
-          ./scripts/validate-doppler-vars.sh ops-intcloudsysops stg
+          chmod +x scripts/ci/validate-doppler-vars.sh
+          ./scripts/ci/validate-doppler-vars.sh ops-intcloudsysops stg
