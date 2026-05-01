@@ -54,10 +54,10 @@ async function markSourcesForResync(
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ): Promise<NextResponse> {
   try {
-    const { slug } = params;
+    const { slug } = await params;
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 
     // Validar que el tenant existe
@@ -113,10 +113,10 @@ export async function GET(
  */
 export async function POST(
   request: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ): Promise<NextResponse> {
   try {
-    const { slug } = params;
+    const { slug } = await params;
     const body = await request.json().catch(() => ({}));
     const { action } = body;
 
