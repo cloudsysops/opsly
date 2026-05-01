@@ -1,3 +1,13 @@
+---
+status: deprecated
+superseded_by: ../../generated/implementation-progress.auto.md
+source_truth: ../../implementation/status.yaml
+last_review: 2026-04-30
+note: Copia archivada (ADR-033). Vista actual en docs/generated/*.auto.md.
+---
+
+> **Deprecated — snapshot archivado.** La vista generada actual está en [`docs/generated/implementation-progress.auto.md`](../../generated/implementation-progress.auto.md). Fuente YAML: [`docs/implementation/status.yaml`](../../implementation/status.yaml).
+
 # Opsly — Implementation status
 
 > **Generado automáticamente** — no editar a mano. Fuente: [`docs/implementation/status.yaml`](implementation/status.yaml).
