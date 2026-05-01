@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-04-30T22:45:05Z",
-  "totalFiles": 276,
+  "lastIndexed": "2026-05-01T01:54:59Z",
+  "totalFiles": 279,
   "files": [
     ".openclaw.md",
     "2026-04-21.md",
@@ -43,6 +43,7 @@
     "ADR-032-scripts-organization.md",
     "ADR-033-docs-canonicalization.md",
     "ADR-034-ci-hygiene.md",
+    "ADR-035-openclaw-per-tenant.md",
     "ADR-035-safe-autonomous-evolution-framework.md",
     "ADR-036-cli-consolidation-tools-cli-first.md",
     "AGENT-HOOKS-OBSIDIAN-NOTEBOOKLM-N8N.md",
@@ -182,6 +183,7 @@
     "README.md",
     "README.md",
     "README.md",
+    "REDIS_NAMESPACE_ISOLATION.md",
     "REFACTOR-CHECKLIST.md",
     "RETENTION-POLICY.md",
     "REVENUE-EXECUTION-30D.md",
@@ -191,6 +193,7 @@
     "RUNBOOK-AI-LOCAL-FIRST.md",
     "RUNBOOK-INSIGHTS-DEPLOY.md",
     "SCRIPTS-AUDIT-2026-04-24.md",
+    "SECRET-ROTATION-AFTER-EXPOSURE.md",
     "SECURITY-AUTONOMOUS-EXECUTION-POLICY.md",
     "SECURITY-MITIGATIONS-2026-04-09.md",
     "SECURITY_AUDIT_REPORT.md",
