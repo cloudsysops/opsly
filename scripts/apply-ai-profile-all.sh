@@ -35,7 +35,7 @@ run_cmd() {
 
 apply_vps() {
   run_cmd "doppler secrets set AI_PROFILE $PROFILE --project ops-intcloudsysops --config prd"
-  run_cmd "ssh vps-dragon@100.120.151.91 \"cd /opt/opsly/infra && docker compose -f docker-compose.platform.yml up -d --no-deps app\""
+  run_cmd "ssh vps-dragon@100.120.151.91 \"cd /opt/opsly/infra && docker compose --env-file /opt/opsly/.env -f docker-compose.platform.yml up -d --no-deps app\""
   run_cmd "ssh vps-dragon@100.120.151.91 \"curl -sf http://127.0.0.1:3010/health >/dev/null\""
 }
 

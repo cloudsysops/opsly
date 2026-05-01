@@ -7,7 +7,7 @@ Lista operativa para releases y revisiones periódicas. Marca ítems según tu p
 - [ ] Ningún secreto en Git (`git grep`, hooks, revisión de PR).
 - [ ] Secretos solo en **Doppler** (config `prd` / `stg`); `.env` del VPS no se sube al repo.
 - [ ] `PLATFORM_ADMIN_TOKEN`, `STRIPE_*`, claves Supabase **service** solo en backend; **anon** solo en front con RLS adecuado.
-- [ ] Rotación tras exposición en logs, tickets o chat.
+- [ ] Rotación tras exposición en logs, tickets o chat (runbook: [SECRET-ROTATION-AFTER-EXPOSURE.md](../runbooks/SECRET-ROTATION-AFTER-EXPOSURE.md)).
 - [ ] PAT GitHub / GHCR con alcance mínimo (`read:packages` donde baste).
 
 ## Supabase

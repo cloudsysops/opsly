@@ -17,7 +17,7 @@ This directory contains operational and deployment scripts organized by category
 
 ```bash
 ./scripts/infra/bootstrap-vps.sh
-./scripts/infra/security-hardening.sh
+./scripts/vps-secure.sh --help   # alias → scripts/infra/security-hardening.sh (UFW / Tailscale SSH)
 ```
 
 ### Deployment
