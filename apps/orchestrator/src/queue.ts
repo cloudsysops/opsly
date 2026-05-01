@@ -1,6 +1,7 @@
 import { Queue } from 'bullmq';
 import { logJobEnqueue } from './observability/job-log.js';
 import { buildQueueAddOptions } from './queue-opts.js';
+import { getJobTenantSlug } from './lib/tenant-context.js';
 import type { OrchestratorJob } from './types.js';
 
 const REDIS_URL = process.env.REDIS_URL || 'redis://localhost:6379';
@@ -44,7 +45,7 @@ export async function enqueueJob(job: OrchestratorJob) {
     event: 'job_enqueue',
     job_type: job.type,
     task_id: job.taskId,
-    tenant_slug: job.tenant_slug,
+    tenant_slug: getJobTenantSlug(job),
     tenant_id: job.tenant_id,
     plan: job.plan,
     request_id: job.request_id,
