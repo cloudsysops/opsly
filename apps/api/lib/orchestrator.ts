@@ -208,8 +208,7 @@ function stripBudgetAutoSuspendFlag(metadata: Json): Json {
 export async function pollPortsUntilHealthy(ports: Record<string, number>): Promise<void> {
   // Build health check URLs based on service type
   const healthCheckUrls = Object.entries(ports).map(([service, port]) => {
-    const isContextBuilderOrMcp =
-      service === 'context_builder' || service === 'mcp';
+    const isContextBuilderOrMcp = service === 'context_builder' || service === 'mcp';
     const endpoint = isContextBuilderOrMcp ? '/health' : '/healthz';
     return `http://127.0.0.1:${port}${endpoint}`;
   });

@@ -1,7 +1,6 @@
 import type { Bot, Subtask, PheromoneMessage } from '../types.js';
 import { PheromoneChannel } from '../pheromone-channel.js';
 import { HiveStateStore } from '../hive-state.js';
-import { resolveInternalControlPlaneTenantSlug } from '../../lib/tenant-context.js';
 import { processIntent } from '../../engine.js';
 
 export class ResearcherBot implements Bot {
@@ -126,7 +125,7 @@ Responde con JSON:
       intent: 'oar_react',
       context: { prompt },
       initiated_by: 'system',
-      tenant_slug: resolveInternalControlPlaneTenantSlug(),
+      tenant_slug: 'opsly',
     });
 
     return result;

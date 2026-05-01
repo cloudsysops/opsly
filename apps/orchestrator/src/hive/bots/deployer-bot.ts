@@ -1,7 +1,6 @@
 import type { Bot, Subtask, PheromoneMessage } from '../types.js';
 import { PheromoneChannel } from '../pheromone-channel.js';
 import { HiveStateStore } from '../hive-state.js';
-import { resolveInternalControlPlaneTenantSlug } from '../../lib/tenant-context.js';
 import { processIntent } from '../../engine.js';
 
 export class DeployerBot implements Bot {
@@ -95,12 +94,7 @@ export class DeployerBot implements Bot {
 
   private async executeDeploy(subtask: Subtask): Promise<unknown> {
     const prompt = `Deploy: ${subtask.description}\nResponde con { status, version, healthChecks }`;
-    return processIntent({
-      intent: 'oar_react',
-      context: { prompt },
-      initiated_by: 'system',
-      tenant_slug: resolveInternalControlPlaneTenantSlug(),
-    });
+    return processIntent({ intent: 'oar_react', context: { prompt }, initiated_by: 'system', tenant_slug: 'opsly' });
   }
 
   async stop(): Promise<void> {
