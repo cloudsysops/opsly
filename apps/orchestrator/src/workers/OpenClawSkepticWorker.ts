@@ -9,7 +9,7 @@ interface SkepticWorkerPayload {
 
 export function startOpenClawSkepticWorker(connection: object): Worker {
   return new Worker(
-    'queue:skeptic',
+    'queue-skeptic',
     async (job: Job) => {
       const t0 = Date.now();
       logWorkerLifecycle('start', 'openclaw-skeptic', job);

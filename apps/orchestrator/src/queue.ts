@@ -15,8 +15,8 @@ export const connection = {
 };
 
 export const orchestratorQueue = new Queue('openclaw', { connection });
-export const plannerQueue = new Queue('queue:planner', { connection });
-export const skepticQueue = new Queue('queue:skeptic', { connection });
+export const plannerQueue = new Queue('queue-planner', { connection });
+export const skepticQueue = new Queue('queue-skeptic', { connection });
 
 /** Cola sandbox clasificador de tareas (worker opcional: `OPSLY_AGENT_CLASSIFIER_WORKER_ENABLED`). */
 export const agentClassifierQueue = new Queue('agent-classifier', { connection });

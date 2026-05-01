@@ -9,7 +9,7 @@ function buildPlannerIntentRequest(task: OpenClawQueueTask) {
     context: {
       query: task.objective,
       openclaw_role: 'planner',
-      openclaw_source_queue: 'queue:planner',
+      openclaw_source_queue: 'queue-planner',
     },
     tenant_slug: task.tenant_slug,
     tenant_id: task.tenant_id,
@@ -23,7 +23,7 @@ function buildPlannerIntentRequest(task: OpenClawQueueTask) {
 
 export function startOpenClawPlannerWorker(connection: object): Worker<OpenClawQueueTask> {
   return new Worker<OpenClawQueueTask>(
-    'queue:planner',
+    'queue-planner',
     async (job: Job<OpenClawQueueTask>) => {
       const t0 = Date.now();
       logWorkerLifecycle('start', 'openclaw-planner', job);

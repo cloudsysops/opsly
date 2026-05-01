@@ -15,7 +15,8 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "${SCRIPT_DIR}/lib/common.sh"
 
 API_URL="${API_URL:-https://api.ops.smiletripcare.com}"
-TENANT_REF="${TENANT_REF:-smiletripcare}"
+# Backward compatible: prefer TENANT_REF, fallback to legacy TENANT_SLUG.
+TENANT_REF="${TENANT_REF:-${TENANT_SLUG:-smiletripcare}}"
 DRY_RUN="false"
 while [[ $# -gt 0 ]]; do
   case "$1" in
