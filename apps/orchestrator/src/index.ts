@@ -18,6 +18,7 @@ import {
 } from './queue.js';
 import { closeCircuitBreakerRedis } from './resilience/circuit-breaker.js';
 import { closeJobStateStore } from './state/store.js';
+import { resolveInternalControlPlaneTenantSlug } from './lib/tenant-context.js';
 import { TeamManager } from './teams/TeamManager.js';
 import { AutonomousScheduler } from './schedulers/autonomous-scheduler.js';
 import { CursorCopilotBridge } from './lib/cursor-copilot-bridge.js';
@@ -205,6 +206,7 @@ async function main(): Promise<void> {
       intent: 'notify',
       context: { title: 'OpenClaw', message: 'orchestrator started', type: 'info' },
       initiated_by: 'system',
+      tenant_slug: resolveInternalControlPlaneTenantSlug(),
     });
     process.stdout.write(`${JSON.stringify(result)}\n`);
   }

@@ -1,6 +1,7 @@
 import type { Bot, Subtask, PheromoneMessage } from '../types.js';
 import { PheromoneChannel } from '../pheromone-channel.js';
 import { HiveStateStore } from '../hive-state.js';
+import { resolveInternalControlPlaneTenantSlug } from '../../lib/tenant-context.js';
 import { processIntent } from '../../engine.js';
 
 export class TesterBot implements Bot {
@@ -94,7 +95,12 @@ export class TesterBot implements Bot {
 
   private async executeTest(subtask: Subtask): Promise<unknown> {
     const prompt = `Ejecuta tests para: ${subtask.description}\nResponde con { passed, failed, coverage }`;
-    return processIntent({ intent: 'oar_react', context: { prompt }, initiated_by: 'system' });
+    return processIntent({
+      intent: 'oar_react',
+      context: { prompt },
+      initiated_by: 'system',
+      tenant_slug: resolveInternalControlPlaneTenantSlug(),
+    });
   }
 
   async stop(): Promise<void> {

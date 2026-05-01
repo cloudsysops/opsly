@@ -7,7 +7,7 @@ set -euo pipefail
 REPO_PATH="${REPO_PATH:-/opt/opsly}"
 PROMPT_FILE="${PROMPT_FILE:-$REPO_PATH/docs/ACTIVE-PROMPT.md}"
 CHECK_INTERVAL="${CHECK_INTERVAL:-30}"
-LOG_DIR="${LOG_DIR:-$REPO_PATH/logs}"
+LOG_DIR="${LOG_DIR:-$REPO_PATH/runtime/logs}"
 LOG_FILE="${LOG_FILE:-$LOG_DIR/billy-prompt-monitor.log}"
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
