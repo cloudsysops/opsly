@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-05-01T12:17:01Z",
-  "totalFiles": 281,
+  "lastIndexed": "2026-05-01T12:22:04Z",
+  "totalFiles": 283,
   "files": [
     ".openclaw.md",
     "2026-04-21.md",
@@ -114,6 +114,7 @@
     "HYBRID-OPSLY-ADMIN.md",
     "IMPLEMENTATION-IA-LAYER.md",
     "IMPLEMENTATION-STATUS.md",
+    "IMPLEMENTATION-STATUS.md",
     "INCIDENT-2026-04-11-DISCO-LLENO.md",
     "INFRASTRUCTURE-SETUP.md",
     "INVITATIONS_RUNBOOK.md",
@@ -148,6 +149,7 @@
     "ONBOARDING-NEW-CLIENT.md",
     "OPENCLAW-ARCHITECTURE.md",
     "OPENCLAW-OBSERVABILITY.md",
+    "OPENCLAW-STAGING-ACTIVATION.md",
     "OPENCLAW-TEAM-PLAN.md",
     "OPS-CLEANUP-PROCEDURES.md",
     "OPSLY-KNOWLEDGE-BASE.md",
