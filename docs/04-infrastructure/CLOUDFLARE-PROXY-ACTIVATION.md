@@ -26,6 +26,21 @@ Con Proxy ON:
 
 ---
 
+## DNS autoritativo y ACME (bloqueo típico)
+
+Traefik usa **`dnsChallenge` con provider Cloudflare**: Let's Encrypt pide un registro TXT y Traefik lo crea vía **API de Cloudflare** en la zona gestionada ahí.
+
+Si **`dig NS ops.smiletripcare.com`** (o el dominio base que uses) **no** devuelve nameservers de Cloudflare (p. ej. solo `ns1.vercel-dns.com`), la zona pública **no** está en Cloudflare: el token `CF_DNS_API_TOKEN` **no puede** crear los TXT necesarios y verás errores ACME del tipo *Unable to obtain certificate* aunque el token sea válido.
+
+**Opciones:**
+
+1. **Delegar DNS a Cloudflare** para ese dominio (o subzona), crear la zona en Cloudflare y apuntar los NS en el registrador — alineado con este runbook y `infra/traefik/traefik.yml`.
+2. **Mantener DNS en otro proveedor (p. ej. Vercel)** y cambiar la estrategia de certificados: por ejemplo `httpChallenge` / TLS-ALPN en Traefik si el puerto 443 llega al origen, u otro borde TLS; no depender de `CF_DNS_API_TOKEN` para esa zona.
+
+Ver también [DOMAIN-CUTOVER-OP-SLY.md](DOMAIN-CUTOVER-OP-SLY.md) (cutover con NS en Cloudflare).
+
+---
+
 ## Crear el CF API Token (una sola vez)
 
 1. Ir a **Cloudflare Dashboard → Profile → API Tokens → Create Token**.
@@ -87,8 +102,16 @@ Traefik hace la validación ACME vía DNS en lugar de HTTP, por lo que Cloudflar
 
 Si el token se añadió **después** del último `compose up`:
 
+Desde el directorio del repo en el VPS, Compose debe leer **`/opt/opsly/.env`** (las variables `${CF_DNS_API_TOKEN}` se interpolan al crear el contenedor; sin `--env-file` suele aparecer el warning *Defaulting to a blank string*):
+
 ```bash
-ssh vps-dragon@100.120.151.91 "cd /opt/opsly && doppler run -- docker compose -f infra/docker-compose.platform.yml up -d --force-recreate traefik"
+ssh vps-dragon@100.120.151.91 "cd /opt/opsly && docker compose --env-file /opt/opsly/.env -f infra/docker-compose.platform.yml up -d --force-recreate traefik"
+```
+
+Alternativa si el VPS tiene Doppler configurado con scope en `/opt/opsly`:
+
+```bash
+ssh vps-dragon@100.120.151.91 "cd /opt/opsly && doppler run -- docker compose --env-file /opt/opsly/.env -f infra/docker-compose.platform.yml up -d --force-recreate traefik"
 ```
 
 ---

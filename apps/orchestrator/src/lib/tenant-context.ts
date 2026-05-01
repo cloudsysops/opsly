@@ -1,14 +1,23 @@
 import { AsyncLocalStorage } from 'node:async_hooks';
-import { createClient } from '@supabase/supabase-js';
+import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import type { OrchestratorJob } from '../types.js';
 import type { TenantPlan } from '../decision-engine.js';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+let tenantSupabase: SupabaseClient | null | undefined;
 
-const supabase = createClient(supabaseUrl, supabaseKey, {
-  auth: { persistSession: false },
-});
+function getTenantSupabase(): SupabaseClient | null {
+  if (tenantSupabase !== undefined) return tenantSupabase;
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim() ?? '';
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY?.trim() ?? '';
+  if (!url) {
+    tenantSupabase = null;
+    return null;
+  }
+  tenantSupabase = createClient(url, key, {
+    auth: { persistSession: false },
+  });
+  return tenantSupabase;
+}
 
 /**
  * Contexto de tenant para AsyncLocalStorage (ALS) — usado por Hermes y otros.
@@ -50,6 +59,8 @@ export async function withTenantContext<T>(
  * Returns 'free' if tenant not found (graceful degradation).
  */
 export async function getTenantPlan(tenantSlug: string): Promise<TenantPlan> {
+  const supabase = getTenantSupabase();
+  if (!supabase) return 'free';
   try {
     const { data, error } = await supabase
       .from('tenants')
@@ -73,6 +84,8 @@ export async function getTenantPlan(tenantSlug: string): Promise<TenantPlan> {
  * Check if tenant is active (not suspended or deleted).
  */
 export async function isTenantActive(tenantSlug: string): Promise<boolean> {
+  const supabase = getTenantSupabase();
+  if (!supabase) return false;
   try {
     const { data, error } = await supabase
       .from('tenants')
@@ -88,6 +101,19 @@ export async function isTenantActive(tenantSlug: string): Promise<boolean> {
   } catch {
     return false;
   }
+}
+
+/**
+ * Slug para jobs internos (Hive, notify de arranque) cuando no hay tenant de producto en el payload.
+ * Prioridad: `OPSLY_INTERNAL_TENANT_SLUG` (explícito control plane) → Hermes / NotebookLM → `platform`.
+ */
+export function resolveInternalControlPlaneTenantSlug(): string {
+  return (
+    process.env.OPSLY_INTERNAL_TENANT_SLUG?.trim() ||
+    process.env.HERMES_FALLBACK_TENANT_SLUG?.trim() ||
+    process.env.NOTEBOOKLM_DEFAULT_TENANT_SLUG?.trim() ||
+    'platform'
+  );
 }
 
 /**

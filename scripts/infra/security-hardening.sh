@@ -29,6 +29,7 @@ while [[ $# -gt 0 ]]; do
       cat <<'EOF'
 Uso:
   ./scripts/vps-secure.sh [--dry-run] [--reset-ufw] [--ssh-host 100.120.151.91] [--ssh-user vps-dragon]
+  # (equivalente: este archivo scripts/infra/security-hardening.sh con los mismos flags)
 
 Acciones:
   - Configura UFW para permitir SSH solo desde 100.64.0.0/10 (Tailscale).

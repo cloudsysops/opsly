@@ -131,7 +131,7 @@ fi
 
 log_info "[c] Levantar solo Traefik (compose)"
 cd "${INFRA_DIR}"
-run docker compose -f docker-compose.platform.yml up -d traefik
+run docker compose --env-file "${OPS_HOME}/.env" -f docker-compose.platform.yml up -d traefik
 
 # --- d. SmileTrip n8n detrás de Traefik ---
 log_info "[d] SmileTrip → Traefik (override generado, sin editar docker-compose.yml original)"
@@ -208,7 +208,7 @@ run mkdir -p "${OPS_HOME}/runtime/tenants"
 # --- h. Redis + app (+ admin) Opsly ---
 log_info "[h] Levantar Redis, API y Admin Opsly"
 cd "${INFRA_DIR}"
-run docker compose -f docker-compose.platform.yml up -d redis app admin
+run docker compose --env-file "${OPS_HOME}/.env" -f docker-compose.platform.yml up -d redis app admin
 
 log_info "Esperando 30s arranque…"
 sleep 30
@@ -219,7 +219,7 @@ if [[ -n "${APP_CID}" ]]; then
     'wget -qO- --timeout=10 http://127.0.0.1:3000/api/health 2>/dev/null || curl -fsS --max-time 10 http://127.0.0.1:3000/api/health'; then
     log_info "Health API OK (wget/curl en contenedor app)"
   else
-    log_warn "Health interno falló; revisa logs: docker compose -f ${COMPOSE_PLATFORM} logs app"
+    log_warn "Health interno falló; revisa logs: docker compose --env-file ${OPS_HOME}/.env -f ${COMPOSE_PLATFORM} logs app"
   fi
 else
   log_warn "No se encontró contenedor app"
@@ -238,4 +238,4 @@ printf "%-20s %-10s %s\n" "Opsly API" "$(docker ps --filter label=com.docker.com
 printf "%-20s %-10s %s\n" "Opsly Admin" "$(docker ps --filter name=opsly_admin --format '{{.Status}}' 2>/dev/null || echo n/a)" "https://admin.\${PLATFORM_DOMAIN}/"
 echo ""
 log_info "Rollback rápido: docker stop traefik && docker start ${SMILETRIP_NGINX_CONTAINER}"
-log_info "Logs Traefik: cd ${INFRA_DIR} && docker compose -f docker-compose.platform.yml logs -f traefik"
+log_info "Logs Traefik: cd ${INFRA_DIR} && docker compose --env-file ${OPS_HOME}/.env -f docker-compose.platform.yml logs -f traefik"

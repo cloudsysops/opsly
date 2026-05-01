@@ -18,6 +18,7 @@ import {
 } from './queue.js';
 import { closeCircuitBreakerRedis } from './resilience/circuit-breaker.js';
 import { closeJobStateStore } from './state/store.js';
+import { resolveInternalControlPlaneTenantSlug } from './lib/tenant-context.js';
 import { TeamManager } from './teams/TeamManager.js';
 import { AutonomousScheduler } from './schedulers/autonomous-scheduler.js';
 import { CursorCopilotBridge } from './lib/cursor-copilot-bridge.js';
@@ -37,7 +38,6 @@ import { startIntentDispatchWorker } from './workers/IntentDispatchWorker.js';
 import { startTerminalWorker } from './workers/TerminalWorker.js';
 import { closeWebhookQueue, createWebhookWorker } from './workers/WebhookWorker.js';
 import { startWebhooksProcessingWorker } from './workers/WebhooksProcessingWorker.js';
-import { getInternalPlatformTenantSlug } from './tenant-defaults.js';
 
 type AsyncCleanup = () => Promise<void>;
 
@@ -212,7 +212,7 @@ async function main(): Promise<void> {
       intent: 'notify',
       context: { title: 'OpenClaw', message: 'orchestrator started', type: 'info' },
       initiated_by: 'system',
-      tenant_slug: getInternalPlatformTenantSlug(),
+      tenant_slug: resolveInternalControlPlaneTenantSlug(),
     });
     process.stdout.write(`${JSON.stringify(result)}\n`);
   }

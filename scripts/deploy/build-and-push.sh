@@ -116,14 +116,14 @@ fi
 docker network create traefik-public 2>/dev/null || true
 
 cd "${OPS_ROOT}/infra"
-if ! docker compose -f docker-compose.platform.yml config >/dev/null 2>&1; then
+if ! docker compose --env-file "${OPS_ROOT}/.env" -f docker-compose.platform.yml config >/dev/null 2>&1; then
   echo "ERROR: docker compose config inválido. Revisa .env en ${OPS_ROOT}" >&2
   exit 1
 fi
 
 log "Levantando stack (docker-compose.platform.yml)"
-docker compose -f docker-compose.platform.yml pull 2>/dev/null || true
-docker compose -f docker-compose.platform.yml up -d
+docker compose --env-file "${OPS_ROOT}/.env" -f docker-compose.platform.yml pull 2>/dev/null || true
+docker compose --env-file "${OPS_ROOT}/.env" -f docker-compose.platform.yml up -d
 
 sleep 8
 
@@ -144,11 +144,11 @@ if [[ -n "${APP_CID}" ]]; then
 fi
 
 if [[ "${HEALTH_OK}" -eq 0 ]]; then
-  log "WARN: no se pudo verificar /api/health vía contenedor; revisa logs: docker compose -f ${OPS_ROOT}/infra/docker-compose.platform.yml logs app"
+  log "WARN: no se pudo verificar /api/health vía contenedor; revisa logs: docker compose --env-file ${OPS_ROOT}/.env -f ${OPS_ROOT}/infra/docker-compose.platform.yml logs app"
 fi
 
 log "Contenedores Opsly:"
-docker compose -f docker-compose.platform.yml ps
+docker compose --env-file "${OPS_ROOT}/.env" -f docker-compose.platform.yml ps
 
 REMOTE_EOF
 }

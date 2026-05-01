@@ -22,7 +22,11 @@ fi
 if command -v redis-cli >/dev/null 2>&1; then
   if ! redis-cli -h 127.0.0.1 -p 6379 ping 2>/dev/null | grep -q "^PONG$"; then
     log_warn "Redis local no responde; intentando levantar servicio redis"
-    docker compose -f "${ROOT_DIR}/infra/docker-compose.platform.yml" up -d redis
+    COMPOSE_ENV=()
+    if [[ -f "${ROOT_DIR}/.env" ]]; then
+      COMPOSE_ENV=(--env-file "${ROOT_DIR}/.env")
+    fi
+    docker compose "${COMPOSE_ENV[@]}" -f "${ROOT_DIR}/infra/docker-compose.platform.yml" up -d redis
     sleep 5
   fi
 else

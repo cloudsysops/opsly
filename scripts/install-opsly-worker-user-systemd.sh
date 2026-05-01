@@ -20,7 +20,7 @@ if [[ "${EUID}" -eq 0 ]]; then
   exit 1
 fi
 
-mkdir -p "${ROOT}/logs"
+mkdir -p "${ROOT}/runtime/logs"
 mkdir -p "${USER_UNIT_DIR}"
 install -m 0644 "${UNIT_SRC}" "${UNIT_DST}"
 chmod +x "${ROOT}/scripts/run-worker-with-nvm.sh" "${ROOT}/scripts/start-worker.sh" "${ROOT}/scripts/run-orchestrator-worker.sh" 2>/dev/null || true
