@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-05-01T12:22:04Z",
-  "totalFiles": 283,
+  "lastIndexed": "2026-05-01T13:19:37Z",
+  "totalFiles": 284,
   "files": [
     ".openclaw.md",
     "2026-04-21.md",
@@ -170,6 +170,7 @@
     "POLICY-AI-LOCAL-FIRST.md",
     "PREDICTIVE-BI-SCALABILITY.md",
     "PRODUCTION-DEPLOYMENT-ROADMAP.md",
+    "PRODUCTION-READINESS.md",
     "PRODUCTION-SECURITY-BASELINE.md",
     "PROVISIONING-SYSTEM.md",
     "QA-REVIEW-COMPLETE.md",
