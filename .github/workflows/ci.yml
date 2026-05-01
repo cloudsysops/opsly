@@ -126,7 +126,7 @@ jobs:
           (cd apps/portal && npm test) & pid0=$!
           (cd apps/mcp && npm test) & pid1=$!
           (cd apps/ml && npm test) & pid3=$!
-          (cd apps/llm-gateway && npm test) & pid4=$!
+          (cd apps/llm-gateway && npm test -- --exclude __tests__/cache-namespace.test.ts) & pid4=$!
           status=0
           wait $pid_api || status=1
           wait $pid0 || status=1
@@ -155,9 +155,10 @@ jobs:
           node-version: '20'
           cache: npm
           cache-dependency-path: package-lock.json
-      - name: npm ci + integration tests (orchestrator with Redis)
+      - name: npm ci + integration tests (orchestrator + llm-gateway cache namespace with Redis)
         run: |
           set -euo pipefail
+          export REDIS_URL="${REDIS_URL:-redis://127.0.0.1:6379}"
           npm ci
           # Build ALL internal packages first (required for tests that import them)
           (cd apps/ml && npm run build)
@@ -165,8 +166,9 @@ jobs:
           (cd apps/orchestrator && npm run build)
           (cd apps/context-builder && npm run build)
           (cd apps/notebooklm-agent && npm run build) 2>/dev/null || true
-          # Integration suite requiring Redis
+          # Integration suites requiring Redis
           (cd apps/orchestrator && npm test)
+          (cd apps/llm-gateway && npm test -- --run __tests__/cache-namespace.test.ts)
 
   build:
     needs: lint
