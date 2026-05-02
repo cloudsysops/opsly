@@ -208,6 +208,38 @@ REDIS_URL=redis://100.120.151.91:6379
 4. Crear recurso → Factory pattern en `lib/factories/`
 5. Números mágicos → `lib/constants.ts`
 
+## Git Operations — Protocolo Obligatorio
+
+**⚠️ CRÍTICO:** Después de CADA tarea completada, SIEMPRE:
+
+```bash
+# 1. Revisar cambios
+git status
+
+# 2. Agregar cambios
+git add -A
+
+# 3. Commitear con mensaje descriptivo (en inglés)
+git commit -m "feat(scope): descripción clara"
+# Ejemplos:
+#   git commit -m "feat(local-services): add migration for services, customers, bookings"
+#   git commit -m "fix(api): resolve tenant isolation in quotes endpoint"
+#   git commit -m "docs(adr): add ADR-037 multi-tenant architecture decision"
+
+# 4. Pushear a rama asignada
+git push origin <branch-name>
+```
+
+**Por qué:** 
+- ✅ GitHub refleja siempre estado actual del código
+- ✅ Fácil trackear progreso por commits
+- ✅ Evita "cambios perdidos" cuando agentes rotan
+- ✅ CI corre automáticamente en cada push
+
+**Aplica a:** Cursor, Claude, Codex, cualquier agente que modifique código.
+
+---
+
 ## Workflow Autónimo Típico
 
 ```bash
@@ -224,6 +256,8 @@ node scripts/skill-loader.js --context "crear migration"
 npm run type-check
 npm run test --workspace=@intcloudsysops/api
 
-# 5. Commit
-git add -A && git commit -m "feat(supabase): nueva migration"
+# 5. COMMIT + PUSH (obligatorio, no opcional)
+git add -A
+git commit -m "feat(supabase): nueva migration"
+git push origin <branch-name>
 ```
