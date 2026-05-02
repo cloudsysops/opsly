@@ -6,7 +6,8 @@ last_review: 2026-04-30
 
 # Opsly — Visión y Objetivos
 
-> Última revisión: 2026-04-28
+> Última revisión: 2026-05-02  
+> **Pivote estratégico (2026-04-28+):** Opsly Guardian Grid — Autonomous Defense Operating System
 
 **Planificación ejecutable por sprint:** [`ROADMAP.md`](ROADMAP.md) (semanas, milestones).  
 **Guía técnica capa IA (monorepo):** [`docs/IMPLEMENTATION-IA-LAYER.md`](docs/IMPLEMENTATION-IA-LAYER.md).  
@@ -16,20 +17,31 @@ last_review: 2026-04-30
 
 ## Qué es Opsly
 
-Plataforma multi-tenant SaaS que despliega y gestiona stacks de agentes
-autónomos (n8n, Uptime Kuma) por cliente, con facturación Stripe,
-backups automáticos y dashboard de administración global.
+**Opsly = Autonomous Defense Operating System**
+
+Plataforma multi-tenant SaaS que despliega y gestiona:
+
+1. **Opsly Automation** — stacks de agentes autónomos (n8n, Uptime Kuma) para automatización de procesos
+2. **Opsly Shield** — Guardian Bots defensivos (Blue Team AI) para seguridad 24/7 sin SOC dedicado
+
+Ambos con facturación Stripe, backups automáticos, dashboard global y orquestación via OpenClaw.
 
 ## Para quién
 
-Agencias digitales y equipos de operaciones que necesitan:
-
-- Automatización de procesos sin gestionar infraestructura
+### Opsly Automation
+- Agencias digitales y equipos de operaciones que necesitan automatización sin gestionar infra
 - Monitoreo de uptime para sus clientes
 - Facturación recurrente con planes diferenciados
-- Dashboard unificado para operar múltiples clientes
+
+### Opsly Shield (NUEVO — norte estratégico)
+- **SMBs que no pueden pagar SOC enterprise** (~$1k-5k/mes típico)
+- Pequeños negocios que necesitan defensa digital 24/7
+- Familias y startups en modalidad personal
+- **Propuesta clave:** "Opsly protege negocios que no pueden pagar un SOC real."
 
 ## Planes
+
+### Opsly Automation (originales)
 
 | Plan       | Precio   | Incluye                                 |
 | ---------- | -------- | --------------------------------------- |
@@ -37,12 +49,56 @@ Agencias digitales y equipos de operaciones que necesitan:
 | Business   | $149/mes | Todo Startup + backups diarios, soporte |
 | Enterprise | Custom   | Multi-región, SLA, onboarding dedicado  |
 
-## Primer cliente real
+### Opsly Shield (NUEVO — línea defensiva)
 
-- Tenant: smiletripcare
-- Plan: Startup
-- Dominio: ops.smiletripcare.com
-- Propósito: validar el stack completo en producción
+| Plan       | Precio   | Incluye                                      | Público                    |
+| ---------- | -------- | -------------------------------------------- | -------------------------- |
+| Starter    | $49/mes  | Monitoreo web, alertas phishing, backups     | Pequeños negocios          |
+| Business   | $199/mes | Starter + SIEM lite, bots defensivos, uptime | SMBs con datos sensibles   |
+| Enterprise | $999/mes | Business + agentes SOC completos, compliance | Empresas con requisitos SLA |
+| Personal   | $19/mes  | Protección identidad, breaches, fraude       | Familias, freelancers      |
+
+## Clientes Reales y Validación
+
+### Opsly Automation
+- **Tenant:** smiletripcare
+- **Plan:** Startup ($49/mes)
+- **Dominio:** ops.smiletripcare.com
+- **Propósito:** validar stack completo en producción
+
+### Opsly Shield (PRÓXIMO)
+- **Target:** Primera SMB + una startup personalmente
+- **Plan aspiracional:** Business ($199/mes) + Personal ($19/mes)
+- **Métrica de éxito:** detección de breach/anomalía real en primer mes
+
+## Estrategia de Mercado
+
+### Por qué Opsly Shield gana
+
+1. **Competidores existentes (SOC-as-a-Service):** $1k-5k/mes, requieren integración compleja
+2. **Opsly Shield:** $49-999/mes, despliega en 5 min, IA + humano en bucle feedback
+3. **Diferenciador:** "Protege negocios que no pueden pagar un SOC real"
+
+### Go-to-Market Fase 1 (30 días)
+- [ ] Uptime Kuma + security alerts (MVP)
+- [ ] Secrets scanner automático
+- [ ] Dashboard Security Score (0-100)
+- [ ] Discord notifications
+- [ ] Blog post: "Why SMBs Get Breached and How Opsly Shield Stops It"
+
+### Go-to-Market Fase 2 (90 días)
+- [ ] Guardian Bots (5/8 implementados)
+- [ ] Auto-Response Engine (feature flag)
+- [ ] Compliance checklists
+- [ ] HN post: "Building an Accessible SOC for SMBs"
+- [ ] 5-10 clientes en MRR
+
+### Revenue Projection (anual)
+```
+Mes 1-3:  MVP validation    →  $500 MRR (1-2 clientes)
+Mes 4-6:  Guardian full     →  $3k MRR (8-12 clientes)
+Mes 7-12: Product-market fit → $20k+ MRR (50-100 SMBs)
+```
 
 ## Stack transferible desde smiletripcare
 
@@ -90,6 +146,21 @@ Cada tenant es un docker-compose aislado. **Despliegue por defecto:** Docker Com
 
 **Excepción estratégica (futura, no por defecto):** una **fase opcional** de _compute plane_ (workers BullMQ, sandboxes de ejecución, ML/GPU) podrá usar **Kubernetes** solo cuando se cumplan criterios de negocio/seguridad documentados — ver [`docs/adr/ADR-027-hybrid-compute-plane-k8s.md`](docs/adr/ADR-027-hybrid-compute-plane-k8s.md). El **control plane** (API, portal, admin, MCP HTTP, web) permanece en Compose salvo nueva decisión explícita.
 
+## Principios Morales y Operacionales
+
+> **Construir escudos atrae clientes.  
+> Construir armas ofensivas atrae problemas.**
+
+Opsly es defensa ética:
+
+- Guardianes autónomos Blue Team, no ofensiva
+- Seguridad transparente, nunca encubierta
+- SMBs + familias como prioridad (acceso democrático a seguridad)
+- Escalar a humano antes que acciones destructivas
+- Auditoría completa de cada acción automática
+
+---
+
 ## Principios de Arquitectura
 
 - Aislamiento por tenant con Docker Compose + Traefik por subdominio.
@@ -132,38 +203,146 @@ Objetivo: un tenant real corriendo en producción.
 - [x] Stripe webhook configurado (pendiente eventos reales en producción)
 - [x] Backup automático (script backup-tenants.sh disponible, requiere S3)
 
-### Fase 2 — Producto (EN PROGRESO)
+### Fase 2 — Producto Dual (EN PROGRESO)
 
-Objetivo: onboarding sin intervención manual.
+Objetivo: onboarding sin intervención manual + Guardian Grid MVP.
 
+**Opsly Automation (existente):**
 - [x] Stripe → webhook → tenant desplegado automáticamente
 - [x] Dashboard admin operativo
 - [x] Redis memory layer para contexto de agentes
-- [x] Emails transaccionales (Resend) — probar dominio verificado
+- [x] Emails transaccionales (Resend)
 - [ ] Segundo cliente real
 
-### Fase 3 — Escala (cuando Fase 2 esté estable)
+**Opsly Shield (nuevo):**
+- [ ] Uptime Kuma + alertas defensivas en portal
+- [ ] Secrets scanner básico (repos públicos, hardcoded env vars)
+- [ ] Security Score dashboard (MVP)
+- [ ] Discord webhook para alerts
+- [ ] Primer cliente Shield (MVP → validación)
 
-Objetivo: plataforma que vende sola.
+### Fase 3 — Escala y PMF (cuando Fase 2 esté estable)
 
-- [ ] Self-service completo
+Objetivo: plataforma defensiva + automatización que vende sola, PMF claro en Shield.
+
+**Opsly Shield (prioridad defensiva):**
+- [ ] Guardian Bots completamente funcionales (DNS, Email, Logs, Cloud, Billing, Secrets, API)
+- [ ] Auto-Response Engine con toggles por plan y confidence threshold
+- [ ] Breach intelligence + threat feeds integradas
+- [ ] Compliance checklists automatizados (GDPR, SOC2, ISO)
+- [ ] 3+ clientes pagando Shield en plan Business/Enterprise
+
+**Opsly Automation (complementario):**
+- [ ] Self-service completo para workflow tenants
+- [ ] Marketplace de templates n8n
+- [ ] Multi-VPS si el primero no alcanza
+
+**Ambas líneas:**
 - [ ] Observabilidad: métricas por tenant
 - [ ] Vector DB para memoria semántica de agentes
 - [ ] API docs públicas
-- [ ] Multi-VPS si el primero no alcanza
 
-### Fase 4 — Multi-agente con OpenClaw (actual)
+### Fase 4 — Multi-agente con OpenClaw + Guardian Grid (actual)
 
-Objetivo: unificar herramientas, orquestación y capa de costos IA bajo un control plane único.
+Objetivo: unificar herramientas, orquestación, defensa y capa de costos IA bajo un control plane único.
 
+**OpenClaw Core (multi-agente):**
 - [ ] MCP como entrypoint estándar de herramientas para agentes.
 - [ ] Orchestrator BullMQ con prioridad por plan (`startup|business|enterprise`).
 - [ ] LLM Gateway como punto único de routing, cache y métricas de costo.
 - [ ] Context Builder integrado para continuidad entre sesiones.
 - [ ] NotebookLM disponible como EXPERIMENTAL con feature flag en planes superiores.
-- [x] Planner externo (Chat.z): delegar planes de ejecución a LLMs remotos vía LLM Gateway (`/v1/chat/completions` / `/v1/planner`), con razonamiento complejo sin añadir infraestructura pesada fuera de Compose.
-- [x] Base SwarmOps/Hive en orchestrator: `QueenBee` + bots especializados + `HiveStateStore` + `PheromoneChannel`, endpoint interno `POST /internal/hive/objective` y status por `taskId`.
-- [ ] Endurecer SwarmOps: retries/reasignación explícita por subtarea y pruebas integradas de ciclo completo.
+- [x] Planner externo (Chat.z): delegar planes de ejecución a LLMs remotos vía LLM Gateway.
+- [x] Base SwarmOps/Hive en orchestrator: `QueenBee` + bots especializados + coordinación.
+- [ ] Endurecer SwarmOps: retries/reasignación explícita por subtarea y pruebas integradas.
+
+**Guardian Grid (NUEVO — defensa 24/7):**
+- [ ] Guardian Bots base: Bot DNS, Bot Email, Bot Logs, Bot Cloud, Bot Billing, Bot Secrets, Bot API, Bot Compliance.
+- [ ] Security Swarm coordinado: microbots en cooperación via Opsly Core.
+- [ ] Auto-Response Engine: bloqueo IP, rotación credenciales, aislamiento automático de tenant.
+- [ ] Security Score Live: dashboard de postura en tiempo real por tenant.
+- [ ] Integración Uptime Kuma + alertas defensivas (phishing, dominios falsos, endpoints caídos, abuso API, costos anormales).
+- [ ] Secrets scanner automático en repos y configuraciones.
+- [ ] Breach detection + breach intelligence para usuarios (Personal Shield).
+- [ ] Compliance tracker (GDPR, SOC2, ISO27001 checklists por tenant).
+
+---
+
+## Opsly Guardian Grid — Arquitectura Defensiva
+
+### Principios de Defensa Ética
+
+- **Guardianes autónomos**, no "hackers bots"
+- **Blue Team AI** (defensa): detectar, alertar, remediar
+- **Seguridad soberana:** cada tenant aislado, datos nunca compartidos entre clientes
+- **Transparencia:** Security Score Live + audit trail de todas las acciones automáticas
+- **Escalación humana:** cuando confidence < 0.8, escalar a usuario antes de remediar
+
+### Componentes Guardian Grid
+
+#### 1. Guardian Bots (especialización)
+Cada bot monitorea un dominio de seguridad 24/7:
+
+```
+BotDNS         → Registros DNS, expiración dominios
+BotEmail       → Phishing, spoofing, delegación insegura
+BotLogs        → Anomalías en logs de aplicación, auth inusuales
+BotCloud       → Postura cloud (IAM permisivo, buckets expuestos, snapshots públicas)
+BotBilling     → Costos anormales, recursos fantasma, abuse de APIs
+BotSecrets     → Scans de repos, variables hardcoded, token leakage
+BotAPI         → Rate limiting abuse, auth failure spike, endpoints caídos
+BotCompliance  → Checklists GDPR/SOC2/ISO27001, requisitos regulatorios
+```
+
+#### 2. Security Swarm
+Microbots coordinados por `QueenBee` (orquestador), comunicación via `PheromoneChannel`:
+- Cooperación paralela: múltiples bots investigan el mismo incidente
+- Priorización inteligente: severidad + tenant + plan
+- State sharing: contexto compartido para reasignación automática
+
+#### 3. Auto-Response Engine
+Remediaciónauto cuando confidence > threshold:
+- **Red:** bloquear IP / dominio
+- **Orange:** rotación de credenciales, reset 2FA
+- **Yellow:** apagar servicio comprometido temporalmente, crear backup inmediato
+- **Green:** alert-only (información, sin acción)
+
+#### 4. Security Score Live
+Dashboard por tenant actualizado en tiempo real:
+- Postura actual (0-100)
+- Riesgos identificados (severidad)
+- Uptime última 7 días
+- Vulnerabilidades conocidas
+- Cumplimiento normativo (%)
+- Costos infraestructura
+
+#### 5. Intelligence Feed
+Conectores a:
+- Breach databases (HaveIBeenPwned, etc.)
+- Threat intel feeds (públicos + privados según plan)
+- CVE tracking (vulnerabilidades de 3rd party)
+- Abuse detection networks (IP reputation, spam, malware)
+
+### Integración con OpenClaw
+
+```
+QueenBee + Guardian Bots ↔ Orchestrator BullMQ
+                         ↔ LLM Gateway (análisis de logs, decisiones)
+                         ↔ Context Builder (histórico de incidentes)
+                         ↔ MCP Tools (integración con terceros)
+```
+
+**Flujo típico incidente:**
+
+1. BotLogs detecciona 100 failed logins en 2 min
+2. Envía alert a QueenBee con contexto
+3. QueenBee activa BotSecrets (verificar tokens) + BotCloud (revisar IAM)
+4. LLM Gateway analiza contexto vs histórico de tenant
+5. Si confidence > 0.8 → BotAPI bloquea la IP automáticamente
+6. Crear incidente en Supabase + notificar tenant via Discord/email
+7. Security Score baja a "orange" hasta remediación confirmada
+
+---
 
 ### Fase 5 — Ecosistema IA Madura
 
@@ -202,7 +381,7 @@ Antes de proponer cualquier feature nuevo, verificar:
 
 ## Evolución arquitectónica — AI Platform
 
-### Diagrama de Arquitectura High-Level
+### Diagrama de Arquitectura High-Level (Dual Platform)
 
 ```mermaid
 flowchart TB
@@ -223,12 +402,23 @@ flowchart TB
   OC --> LLMG
   OC --> CB
 
+  ORCH --> GUARD[Guardian Grid]
+  subgraph GUARD["🛡️ Guardian Grid (Security Swarm)"]
+    QB["QueenBee (Orchestrator)"]
+    BOTS["Guardian Bots<br/>DNS|Email|Logs|Cloud|Billing|Secrets|API|Compliance"]
+    AUTO["Auto-Response Engine"]
+    SCORE["Security Score Live"]
+  end
+
   ORCH --> TEN[Tenants Docker Compose]
   TEN --> N8N[n8n per tenant]
   TEN --> UK[Uptime Kuma per tenant]
   MCP --> NB[NotebookLM EXPERIMENTAL]
   API --> SUP[(Supabase platform + tenant schemas)]
   LLMG --> MODELS[LLM Providers]
+  
+  UK -.->|security alerts| BOTS
+  BOTS -.->|incident events| API
 ```
 
 ### Visión de escalonamiento

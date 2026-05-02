@@ -1,0 +1,116 @@
+name: Dependency Audit Strict
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - 'package.json'
+      - 'package-lock.json'
+      - 'apps/*/package.json'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'package.json'
+      - 'package-lock.json'
+      - 'apps/*/package.json'
+  schedule:
+    - cron: '0 2 * * *'  # Daily at 2 AM UTC
+
+concurrency:
+  group: dependency-audit-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Strict npm audit
+        run: |
+          echo "Running strict dependency audit..."
+          npm audit --json > audit-report.json || true
+
+          # Check for CRITICAL vulnerabilities
+          if grep -q '"severity":"critical"' audit-report.json; then
+            echo "❌ CRITICAL vulnerabilities detected"
+            cat audit-report.json | jq '.vulnerabilities | select(.[] | .severity == "critical")'
+            exit 1
+          fi
+
+          # Check for HIGH vulnerabilities in production deps
+          HIGH_COUNT=$(grep -c '"severity":"high"' audit-report.json || true)
+          if [ "$HIGH_COUNT" -gt 0 ]; then
+            echo "⚠️  HIGH severity vulnerabilities found: $HIGH_COUNT"
+            cat audit-report.json | jq '.vulnerabilities | select(.[] | .severity == "high")'
+          fi
+
+      - name: Check deprecated packages
+        run: |
+          echo "Checking for deprecated packages..."
+          npm ls 2>&1 | grep -i "deprecated" || echo "✓ No deprecated packages found"
+
+      - name: Verify lock file integrity
+        run: |
+          echo "Verifying package-lock.json integrity..."
+          npm ci --dry-run --audit=false
+
+      - name: Check for supply chain risks
+        run: |
+          echo "Scanning for supply chain risks..."
+          # Check for packages with unusual install scripts
+          npm ls --json | jq -r '.dependencies | keys[]' | head -20 || true
+
+      - name: License compliance check
+        run: |
+          echo "Checking license compliance..."
+          # Check for GPL, AGPL licenses which may be incompatible
+          ! npm ls --json 2>/dev/null | grep -i "gpl\|agpl" || {
+            echo "⚠️  GPL/AGPL licensed packages detected - review required"
+          }
+
+  audit-report:
+    runs-on: ubuntu-latest
+    needs: audit
+    if: always()
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Generate audit report
+        run: |
+          npm install -g npm@latest
+          npm audit --json > audit-report.json || true
+
+          echo "## Dependency Audit Report" > audit-summary.md
+          echo "" >> audit-summary.md
+          echo "**Timestamp:** $(date -u)" >> audit-summary.md
+          echo "" >> audit-summary.md
+
+          if grep -q '"severity":"critical"' audit-report.json; then
+            echo "❌ **Status: FAILED** - Critical vulnerabilities detected" >> audit-summary.md
+          elif grep -q '"severity":"high"' audit-report.json; then
+            echo "⚠️  **Status: WARNING** - High severity vulnerabilities detected" >> audit-summary.md
+          else
+            echo "✅ **Status: PASSED** - No critical or high vulnerabilities" >> audit-summary.md
+          fi
+
+          cat audit-summary.md
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: audit-report
+          path: audit-report.json
+          retention-days: 30

@@ -1,0 +1,115 @@
+name: Autonomy Safety Check
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - '.cursor/**'
+      - '1-agent-teams/**'
+      - '.claude/**'
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - '.cursor/**'
+      - '1-agent-teams/**'
+      - '.claude/**'
+
+concurrency:
+  group: autonomy-safety-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check-autonomous-configs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check for hardcoded credentials in prompts
+        run: |
+          echo "Scanning for hardcoded secrets in autonomous prompts..."
+          ! grep -r -i "password\|secret\|token\|key=" .cursor/prompts/ || exit 1
+          ! grep -r "BEGIN RSA PRIVATE KEY\|BEGIN OPENSSH PRIVATE KEY" .cursor/prompts/ || exit 1
+
+      - name: Validate autonomy manifest files
+        run: |
+          if [ -f ".claude/CLAUDE.md" ]; then
+            grep -q "opsly-autonomous\|autonomy-safety" .claude/CLAUDE.md || {
+              echo "WARNING: autonomy guidance not found in CLAUDE.md"
+              exit 1
+            }
+          fi
+
+      - name: Check for dangerous git operations in prompts
+        run: |
+          echo "Checking for unsafe git operations..."
+          ! grep -r "git reset --hard\|git push --force\|git clean -fd" .cursor/prompts/ || exit 1
+
+      - name: Verify Task Orchestrator config
+        run: |
+          if [ -d "apps/task-orchestrator" ]; then
+            test -f "apps/task-orchestrator/package.json" || exit 1
+            grep -q "@supabase/supabase-js\|bullmq\|redis" apps/task-orchestrator/package.json || {
+              echo "ERROR: Required dependencies missing from task-orchestrator"
+              exit 1
+            }
+          fi
+
+      - name: Check agent team configurations
+        run: |
+          if [ -d "1-agent-teams" ]; then
+            echo "Validating agent team structure..."
+            test -d "1-agent-teams" && ls -la 1-agent-teams/ || exit 1
+          fi
+
+      - name: Validate environment isolation
+        run: |
+          echo "Checking for proper env separation..."
+          grep -r "process.env.DOPPLER\|doppler run" .cursor/prompts/ && echo "✓ Doppler isolation configured" || echo "⚠ Doppler configuration not found"
+
+  branch-safety:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Verify branch naming convention
+        run: |
+          BRANCH="${{ github.head_ref }}"
+          if [[ $BRANCH =~ ^(claude|cursor|automation)/ ]]; then
+            echo "✓ Autonomous branch pattern: $BRANCH"
+          else
+            echo "⚠ Non-standard autonomous branch: $BRANCH"
+          fi
+
+      - name: Check for destructive commits
+        run: |
+          echo "Scanning commits for suspicious patterns..."
+          ! git log --oneline origin/main..HEAD | grep -i "force\|delete all\|wipe\|destroy" || {
+            echo "WARNING: Potentially destructive commit messages detected"
+            exit 1
+          }
+
+  documentation-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify autonomy documentation
+        run: |
+          echo "Checking VISION.md for autonomy guidance..."
+          test -f VISION.md || exit 1
+
+          echo "Checking AGENTS.md exists..."
+          test -f AGENTS.md || echo "⚠ AGENTS.md not found"
+
+      - name: Validate task definitions
+        run: |
+          if [ -f "apps/task-orchestrator/src/types/task.ts" ]; then
+            echo "✓ Task type definitions exist"
+            grep -q "TaskStatus\|TaskQueue\|Worker" apps/task-orchestrator/src/types/task.ts || {
+              echo "ERROR: Missing task type definitions"
+              exit 1
+            }
+          fi
