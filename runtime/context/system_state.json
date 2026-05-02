@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-04-29",
+  "last_updated": "2026-05-02",
   "phase": "fase-2-producto-ia-autonomy-phase3",
   "vps": {
     "ip": "157.245.223.7",
@@ -28,7 +28,11 @@
     "project": "ops-intcloudsysops",
     "config": "prd",
     "status": "complete",
-    "missing": ["GOOGLE_CLOUD_PROJECT_ID", "BIGQUERY_DATASET", "VERTEX_AI_REGION"]
+    "missing": [
+      "GOOGLE_CLOUD_PROJECT_ID",
+      "BIGQUERY_DATASET",
+      "VERTEX_AI_REGION"
+    ]
   },
   "dns": {
     "base": "ops.smiletripcare.com",
@@ -80,14 +84,38 @@
   "economics": {
     "weekly_report_generated": "2026-04-29T20:00:00Z",
     "top_cost_drivers": [
-      {"service": "llm-gateway", "cost_pct": 35, "optimization": "batch requests"},
-      {"service": "context-builder", "cost_pct": 25, "optimization": "cache embeddings"},
-      {"service": "orchestrator", "cost_pct": 20, "optimization": "queue batching"}
+      {
+        "service": "llm-gateway",
+        "cost_pct": 35,
+        "optimization": "batch requests"
+      },
+      {
+        "service": "context-builder",
+        "cost_pct": 25,
+        "optimization": "cache embeddings"
+      },
+      {
+        "service": "orchestrator",
+        "cost_pct": 20,
+        "optimization": "queue batching"
+      }
     ],
     "low_risk_optimizations": [
-      {"name": "batch-embedding-requests", "expected_savings_pct": 15, "risk": "low"},
-      {"name": "cache-search-results", "expected_savings_pct": 10, "risk": "low"},
-      {"name": "reduce-polling-frequency", "expected_savings_pct": 8, "risk": "medium"}
+      {
+        "name": "batch-embedding-requests",
+        "expected_savings_pct": 15,
+        "risk": "low"
+      },
+      {
+        "name": "cache-search-results",
+        "expected_savings_pct": 10,
+        "risk": "low"
+      },
+      {
+        "name": "reduce-polling-frequency",
+        "expected_savings_pct": 8,
+        "risk": "medium"
+      }
     ],
     "current_monthly_cost_estimate": 1240,
     "projected_monthly_with_optimizations": 1050,
@@ -131,7 +159,13 @@
   "ml": {
     "workspace": "apps/ml",
     "status": "compiles",
-    "components": ["classifier", "feedback-decision-engine", "insight-engine", "rag", "embeddings"],
+    "components": [
+      "classifier",
+      "feedback-decision-engine",
+      "insight-engine",
+      "rag",
+      "embeddings"
+    ],
     "gcp": {
       "status": "pending",
       "vars_needed": [
@@ -146,20 +180,23 @@
     "apps": [
       "admin",
       "agents",
+      "airflow",
       "api",
       "context-builder",
-      "context-builder-v2",
       "experimental",
       "llm-gateway",
+      "local-services",
       "mcp",
       "ml",
+      "notebooklm-agent",
       "notion-mcp",
       "orchestrator",
       "portal",
+      "task-orchestrator",
       "web"
     ],
-    "scripts": 153,
-    "adrs": 33,
-    "migrations": 39
+    "scripts": 148,
+    "adrs": 42,
+    "migrations": 42
   }
 }
