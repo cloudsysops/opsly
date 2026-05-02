@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-05-02T04:58:03Z",
-  "totalFiles": 285,
+  "lastIndexed": "2026-05-02T14:12:42Z",
+  "totalFiles": 287,
   "files": [
     ".openclaw.md",
     "2026-04-21.md",
@@ -46,6 +46,7 @@
     "ADR-035-openclaw-per-tenant.md",
     "ADR-035-safe-autonomous-evolution-framework.md",
     "ADR-036-cli-consolidation-tools-cli-first.md",
+    "AGENT-GUARDRAILS.md",
     "AGENT-HOOKS-OBSIDIAN-NOTEBOOKLM-N8N.md",
     "AGENTS-ASSIGNMENTS.md",
     "AGENTS-ASSIGNMENTS.md",
@@ -190,6 +191,7 @@
     "README.md",
     "REDIS_NAMESPACE_ISOLATION.md",
     "REFACTOR-CHECKLIST.md",
+    "REPO-MAP.md",
     "RETENTION-POLICY.md",
     "REVENUE-EXECUTION-30D.md",
     "ROADMAP.md",
