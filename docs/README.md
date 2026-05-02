@@ -14,11 +14,11 @@ last_review: 2026-04-30
 ## 🚀 Inicio rápido para agentes
 
 ```
-AGENTS.md          ← estado de sesión, decisiones fijas, bloqueantes
-VISION.md          ← norte del producto, límites, fases
-ROADMAP.md         ← desglose semanal Fase 2–3, milestones (complementa VISION)
-SPRINT-TRACKER.md  ← vista semanal operativa (raíz; complementa ROADMAP)
-docs/IMPLEMENTATION-IA-LAYER.md ← guía técnica capa IA (TypeScript, rutas en apps/*)
+AGENTS.md          ← estado de sesión, decisiones fijas, bloqueantes (raíz del repo)
+VISION.md          ← stub → docs/01-development/VISION.md (norte, límites, índice de planes)
+ROADMAP.md         ← stub → docs/01-development/ROADMAP.md (semanal; complementa VISION)
+SPRINT-TRACKER.md  ← stub → docs/01-development/SPRINT-TRACKER.md (complementa ROADMAP)
+docs/01-development/IMPLEMENTATION-IA-LAYER.md ← guía técnica capa IA (TypeScript, rutas en apps/*)
 docs/QUICKSTART-AGENTS.md ← añadir tools MCP y probar sin duplicar tablas ni endpoints
 docs/QUICK-REFERENCE.md  ← SSH, comandos, env vars, URLs — LEER PRIMERO
 docs/generated/sprint-status.auto.md ← burndown generado (status.yaml; no editar)
@@ -41,10 +41,11 @@ docs/generated/sprint-status.auto.md ← burndown generado (status.yaml; no edit
 
 | Doc                                                        | Cuándo usarlo                                            |
 | ---------------------------------------------------------- | -------------------------------------------------------- |
-| [`../ROADMAP.md`](../ROADMAP.md)                           | Plan semanal Fase 2–3, milestones; alineado a VISION     |
-| [`../SPRINT-TRACKER.md`](../SPRINT-TRACKER.md)             | Vista semanal operativa (checkboxes)                     |
+| [`01-development/VISION.md`](01-development/VISION.md)     | Norte producto, fases, límites; **índice canon vs planes temáticos** |
+| [`../ROADMAP.md`](../ROADMAP.md)                           | Stub raíz → `docs/01-development/ROADMAP.md` (plan semanal) |
+| [`../SPRINT-TRACKER.md`](../SPRINT-TRACKER.md)             | Stub raíz → `docs/01-development/SPRINT-TRACKER.md` (checkboxes) |
 | [`plans/README.md`](plans/README.md)                       | Índice de planes temáticos (autonomía, CLI, go/no-go)    |
-| [`IMPLEMENTATION-IA-LAYER.md`](IMPLEMENTATION-IA-LAYER.md) | Implementar capa IA en el monorepo (sin Python paralelo) |
+| [`01-development/IMPLEMENTATION-IA-LAYER.md`](01-development/IMPLEMENTATION-IA-LAYER.md) | Implementar capa IA en el monorepo (sin Python paralelo) |
 | [`ACTIVE-PROMPT.md`](ACTIVE-PROMPT.md)                     | Prompt activo ejecutado por cursor-prompt-monitor        |
 
 ### 2. Arquitectura

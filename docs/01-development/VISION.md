@@ -1,18 +1,33 @@
 ---
 status: canon
 owner: product
-last_review: 2026-04-28
+last_review: 2026-05-02
 ---
 
 # Opsly — Visión y Objetivos
 
-> Última revisión: 2026-04-28
+> Última revisión: 2026-05-02
 
 **Planificación ejecutable por sprint:** [`ROADMAP.md`](ROADMAP.md) (semanas, milestones).  
-**Guía técnica capa IA (monorepo):** [`docs/IMPLEMENTATION-IA-LAYER.md`](docs/IMPLEMENTATION-IA-LAYER.md).  
-**Runtime agéntico (borrador):** [`docs/design/OAR.md`](docs/design/OAR.md) — Opsly Agentic Runtime (OAR).  
-**Infra híbrida futura (opcional):** [`docs/adr/ADR-027-hybrid-compute-plane-k8s.md`](docs/adr/ADR-027-hybrid-compute-plane-k8s.md).
-**Shadow deploy Super Agent:** [`docs/runbooks/SUPER-AGENT-SHADOW-DEPLOY.md`](docs/runbooks/SUPER-AGENT-SHADOW-DEPLOY.md).
+**Guía técnica capa IA (monorepo):** [`IMPLEMENTATION-IA-LAYER.md`](IMPLEMENTATION-IA-LAYER.md).  
+**Runtime agéntico (borrador):** [`../design/OAR.md`](../design/OAR.md) — Opsly Agentic Runtime (OAR).  
+**Infra híbrida futura (opcional):** [`../adr/ADR-027-hybrid-compute-plane-k8s.md`](../adr/ADR-027-hybrid-compute-plane-k8s.md).  
+**Shadow deploy Super Agent:** [`../runbooks/SUPER-AGENT-SHADOW-DEPLOY.md`](../runbooks/SUPER-AGENT-SHADOW-DEPLOY.md).
+
+## Índice de planificación (canon vs temático)
+
+| Rol | Documento | Notas |
+| --- | --- | --- |
+| **Norte y fases** | Este archivo (`VISION.md`) | ICP, límites, checklist Fase 1–6, reglas para agentes |
+| **Sprint semanal** | [`ROADMAP.md`](ROADMAP.md) | Tareas por semana; alineado a las fases de arriba |
+| **Checkboxes de la semana** | [`SPRINT-TRACKER.md`](SPRINT-TRACKER.md) | Progreso operativo editable |
+| **Sesión y bloqueantes** | [`../../AGENTS.md`](../../AGENTS.md) (raíz del repo) | Estado vivo; no duplicar tablas de límites aquí |
+| **Macro + herramientas** | [`PLANNING.md`](PLANNING.md) | Cómo planificar (GitHub Projects, CI, calidad) |
+| **Planes temáticos** | [`../plans/README.md`](../plans/README.md) | Autonomía, CLI, go/no-go; no sustituyen ROADMAP |
+| **Semana 6 (detalle)** | [`SEMANA-6-PLAN.md`](SEMANA-6-PLAN.md) | Playbook segundo cliente + E2E; informe: [`../SEMANA-6-INFORME.md`](../SEMANA-6-INFORME.md) |
+| **Histórico** | [`../history/plans/`](../history/plans/) | `MASTER-PLAN*.md` y similares — **deprecated** (ADR-033); solo contexto |
+
+La **raíz del repo** expone stubs que apuntan aquí: [`../../VISION.md`](../../VISION.md), [`../../ROADMAP.md`](../../ROADMAP.md).
 
 ## Qué es Opsly
 
@@ -370,7 +385,7 @@ Nunca añadir infra nueva sin cliente pagador que lo justifique.
 
 ### Inventario de librerías (npm vs necesidad)
 
-La fuente de verdad de qué paquetes **ya están** en el monorepo, qué falta **por fase** del roadmap y qué es **opcional / no ahora** está en **`docs/history/plans/MASTER-PLAN.md`** (sección _STACK DE LIBRERÍAS — INVENTARIO vs NECESIDAD_; archivado ADR-033). Evita duplicar frameworks o añadir dependencias masivas sin ADR.
+Snapshot archivado (ADR-033, **no** fuente de verdad del roadmap): [`../history/plans/MASTER-PLAN.md`](../history/plans/MASTER-PLAN.md) — sección _STACK DE LIBRERÍAS — INVENTARIO vs NECESIDAD_. Para el estado vivo del monorepo, preferir `package.json` / workspaces y decisiones en `docs/adr/`. Evita duplicar frameworks o añadir dependencias masivas sin ADR.
 
 ### Reglas de integración
 

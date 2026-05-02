@@ -1,17 +1,18 @@
 # Opsly — Planificación macro (herramientas + enlaces)
 
-> **Roadmap semanal ejecutable:** [`../ROADMAP.md`](../ROADMAP.md)  
-> **Tracker editable por sprint:** [`../SPRINT-TRACKER.md`](../SPRINT-TRACKER.md)  
+> **Roadmap semanal ejecutable:** [`ROADMAP.md`](ROADMAP.md) (canon en esta carpeta)  
+> **Tracker editable por sprint:** [`SPRINT-TRACKER.md`](SPRINT-TRACKER.md)  
 > **Guía técnica IA:** [`IMPLEMENTATION-IA-LAYER.md`](IMPLEMENTATION-IA-LAYER.md)
 
 ## Fases (resumen)
 
 | Fase                      | Documento                                   | Contenido                        |
 | ------------------------- | ------------------------------------------- | -------------------------------- |
-| Producto / comercial      | [`VISION.md`](../VISION.md)                 | ICP, fases, límites, “Nunca”     |
-| Operación sesión a sesión | [`AGENTS.md`](../AGENTS.md)                 | Bloqueantes, decisiones, URL raw |
-| Semanas 1–6 + milestones  | [`ROADMAP.md`](../ROADMAP.md)               | Tareas por semana                |
-| Esta semana (checkboxes)  | [`SPRINT-TRACKER.md`](../SPRINT-TRACKER.md) | Progreso y métricas              |
+| Producto / comercial      | [`VISION.md`](VISION.md)                    | ICP, fases, límites, “Nunca”; **índice de planes** |
+| Operación sesión a sesión | [`../../AGENTS.md`](../../AGENTS.md)        | Bloqueantes, decisiones, URL raw |
+| Semanas 1–6 + milestones  | [`ROADMAP.md`](ROADMAP.md)                  | Tareas por semana                |
+| Esta semana (checkboxes)  | [`SPRINT-TRACKER.md`](SPRINT-TRACKER.md)    | Progreso y métricas              |
+| Planes temáticos          | [`../plans/README.md`](../plans/README.md)  | Autonomía, CLI, go/no-go         |
 
 ## Herramientas recomendadas
 
