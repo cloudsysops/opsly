@@ -67,6 +67,9 @@ const REQUIRED_SPRINT5_PATHS = [
   '/api/tenants/{id}/webhooks/{webhookId}',
 ];
 
+/** Opsly Shield / Guardian Grid (Phase 2 MVP) */
+const REQUIRED_SHIELD_PATHS = ['/api/shield/alerts/config'];
+
 for (const p of REQUIRED_FEEDBACK_PATHS) {
   if (!Object.prototype.hasOwnProperty.call(doc.paths, p)) {
     console.error(`validate-openapi-yaml: falta path obligatorio en spec: ${p}`);
@@ -88,7 +91,14 @@ for (const p of REQUIRED_SPRINT5_PATHS) {
   }
 }
 
+for (const p of REQUIRED_SHIELD_PATHS) {
+  if (!Object.prototype.hasOwnProperty.call(doc.paths, p)) {
+    console.error(`validate-openapi-yaml: falta path shield en spec: ${p}`);
+    process.exit(1);
+  }
+}
+
 const n = Object.keys(doc.paths).length;
 console.log(
-  `validate-openapi-yaml: OK (OpenAPI ${doc.openapi}, ${n} paths, portal ${REQUIRED_PORTAL_PATHS.length} + feedback ${REQUIRED_FEEDBACK_PATHS.length} + admin ${REQUIRED_ADMIN_PATHS.length} + sprint5 ${REQUIRED_SPRINT5_PATHS.length} requeridos)`
+  `validate-openapi-yaml: OK (OpenAPI ${doc.openapi}, ${n} paths, portal ${REQUIRED_PORTAL_PATHS.length} + feedback ${REQUIRED_FEEDBACK_PATHS.length} + admin ${REQUIRED_ADMIN_PATHS.length} + sprint5 ${REQUIRED_SPRINT5_PATHS.length} + shield ${REQUIRED_SHIELD_PATHS.length} requeridos)`
 );

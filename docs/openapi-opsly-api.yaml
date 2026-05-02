@@ -854,6 +854,81 @@ paths:
         '500':
           $ref: '#/components/responses/InternalError'
 
+  /api/shield/alerts/config:
+    post:
+      summary: Opsly Shield — configurar alerta defensiva por tenant (Discord)
+      description: >
+        JWT portal obligatorio. `tenant_slug` debe coincidir con el tenant de la sesión.
+        Webhook Discord explícito en el cuerpo o vía `SHIELD_ALERTS_DISCORD_WEBHOOK_URL` / `DISCORD_WEBHOOK_URL`.
+      operationId: postShieldAlertConfig
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [tenant_slug, alert_type]
+              properties:
+                tenant_slug:
+                  type: string
+                  pattern: '^[a-z0-9-]{3,30}$'
+                alert_type:
+                  type: string
+                  enum:
+                    - phishing
+                    - dominio_falso
+                    - endpoint_caido
+                    - abuse_api
+                    - costo_anormal
+                webhook_url:
+                  type: string
+                  format: uri
+                  description: Opcional si hay webhook de plataforma en env
+                threshold:
+                  type: object
+                  additionalProperties: true
+                  description: Umbrales opcionales (p. ej. cpu, response_time)
+                enabled:
+                  type: boolean
+                  default: true
+      responses:
+        '200':
+          description: Configuración guardada
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [alert_id, status, webhook_url]
+                properties:
+                  alert_id:
+                    type: string
+                    format: uuid
+                  status:
+                    type: string
+                    enum: [active, disabled]
+                  webhook_url:
+                    type: string
+                    format: uri
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          description: Falta webhook (cuerpo y env)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '500':
+          $ref: '#/components/responses/InternalError'
+
   /api/docs:
     get:
       summary: Swagger UI interactiva

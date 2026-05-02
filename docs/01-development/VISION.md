@@ -20,6 +20,10 @@ Plataforma multi-tenant SaaS que despliega y gestiona stacks de agentes
 autónomos (n8n, Uptime Kuma) por cliente, con facturación Stripe,
 backups automáticos y dashboard de administración global.
 
+### Opsly Shield — Guardian Grid (pivot defensivo)
+
+**Guardian Grid** es la propuesta de producto defensiva 24/7 para SMBs que no pueden asumir un SOC tradicional: monitorización (p. ej. Uptime Kuma ya en stack tenant) más **alertas accionables** (Discord/webhook). La configuración por tenant vive en `platform.shield_alert_config`; API portal Zero-Trust: `POST /api/shield/alerts/config` (tipos: phishing, dominio_falso, endpoint_caido, abuse_api, costo_anormal). **Phase 2 MVP** prioriza este bloque antes de ampliar superficie.
+
 ## Para quién
 
 Agencias digitales y equipos de operaciones que necesitan:
