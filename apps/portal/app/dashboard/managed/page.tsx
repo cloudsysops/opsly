@@ -22,7 +22,7 @@ export default async function ManagedDashboardPage(): Promise<ReactElement> {
   const supportEmail = process.env.NEXT_PUBLIC_SUPPORT_EMAIL?.trim() ?? '';
 
   return (
-    <PortalShell title={`Tus Automatizaciones — ${displayName}`} showModeLink>
+    <PortalShell title={`Tus Automatizaciones - ${displayName}`} showModeLink tenantSlug={data.slug}>
       <DashboardShell>
         <PageLead>
           Vista resumida: estado de servicios, uso de IA y canal de soporte cuando esté configurado.

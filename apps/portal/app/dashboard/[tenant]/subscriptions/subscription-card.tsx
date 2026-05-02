@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 import { getApiBaseUrl } from '@/lib/api';
+import { PORTAL_DEMO_COOKIE } from '@/lib/demo-tenant';
 
 interface Subscription {
   id: string;
@@ -80,6 +81,13 @@ export function SubscriptionCard({
     setCancelling(true);
     setError(null);
     try {
+      const hasDemoSession =
+        document.cookie.includes(`${PORTAL_DEMO_COOKIE}=1`) &&
+        (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+      if (hasDemoSession) {
+        setCancelled(true);
+        return;
+      }
       const base = getApiBaseUrl();
       const res = await fetch(`${base}/api/billing/subscriptions?tenant_id=${tenant}`, {
         method: 'DELETE',

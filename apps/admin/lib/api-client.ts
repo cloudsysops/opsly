@@ -17,6 +17,8 @@ import type {
   TenantsListResponse,
 } from './types';
 
+const REQUEST_TIMEOUT_MS = 2_000;
+
 function inferApiBaseFromAdminHost(hostname: string): string | null {
   if (hostname === 'localhost' || hostname === '127.0.0.1') {
     return 'http://127.0.0.1:3000';
@@ -42,6 +44,14 @@ function getBaseUrl(): string {
 }
 
 export { getBaseUrl };
+
+function shouldUseLocalDemoData(): boolean {
+  if (globalThis.window === undefined) {
+    return false;
+  }
+  const { hostname } = globalThis.window.location;
+  return hostname === 'localhost' || hostname === '127.0.0.1';
+}
 
 async function buildHeaders(initHeaders: HeadersInit | undefined): Promise<Headers> {
   const headers = new Headers(initHeaders);
@@ -85,11 +95,24 @@ function getErrorMessage(data: unknown): string {
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const headers = await buildHeaders(init?.headers);
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
 
-  const res = await fetch(`${getBaseUrl()}${path}`, {
-    ...init,
-    headers,
-  });
+  let res: Response;
+  try {
+    res = await fetch(`${getBaseUrl()}${path}`, {
+      ...init,
+      headers,
+      signal: init?.signal ?? controller.signal,
+    });
+  } catch (err) {
+    if (err instanceof Error && err.name === 'AbortError') {
+      throw new Error(`API timeout after ${REQUEST_TIMEOUT_MS / 1000}s: ${path}`);
+    }
+    throw err;
+  } finally {
+    clearTimeout(timeout);
+  }
 
   if (res.status === 204) {
     return undefined as T;
@@ -111,7 +134,176 @@ export type ListTenantsParams = {
   plan?: string;
 };
 
+function demoTenant(slug: string, plan: Tenant['plan'], status: Tenant['status']): Tenant {
+  const now = new Date().toISOString();
+  return {
+    id: `demo-${slug}`,
+    slug,
+    name: slug.replaceAll('-', ' '),
+    owner_email: `owner+${slug}@opsly.local`,
+    plan,
+    status,
+    progress: status === 'active' ? 100 : 65,
+    stripe_customer_id: null,
+    stripe_subscription_id: null,
+    doppler_project: null,
+    services: {
+      n8n_url: `https://n8n-${slug}.ops.smiletripcare.com`,
+      uptime_url: `https://uptime-${slug}.ops.smiletripcare.com`,
+    },
+    is_demo: true,
+    demo_expires_at: null,
+    metadata: { source: 'admin-local-fallback' },
+    created_at: now,
+    updated_at: now,
+    deleted_at: null,
+  };
+}
+
+function demoTenants(): TenantsListResponse {
+  const data = [
+    demoTenant('smiletripcare', 'business', 'active'),
+    demoTenant('localrank', 'startup', 'active'),
+    demoTenant('legalvial', 'startup', 'active'),
+    demoTenant('peskids', 'business', 'active'),
+  ];
+  return {
+    data,
+    total: data.length,
+    page: 1,
+    limit: 20,
+  };
+}
+
+export function demoSystemMetrics(): SystemMetricsResponse {
+  return {
+    cpu_percent: 18,
+    ram_used_gb: 5.8,
+    ram_total_gb: 16,
+    disk_used_gb: 128,
+    disk_total_gb: 512,
+    uptime_seconds: 86400 * 12 + 3600 * 4,
+    active_tenants: 4,
+    containers_running: 18,
+    mock: true,
+  };
+}
+
+export function demoAdminOverview(): AdminOverviewResponse {
+  return {
+    generated_at: '2026-05-02T00:00:00.000Z',
+    sources: { mode: 'admin-local-fallback' },
+    vps_host: {
+      mock: true,
+      cpu_percent: 22,
+      ram_used_gb: 1.8,
+      ram_total_gb: 2,
+      disk_used_gb: 38,
+      disk_total_gb: 80,
+      uptime_seconds: 86400 * 10,
+      active_tenants: 6,
+      containers_running: 22,
+    },
+    local_machine: null,
+    local_machine_configured: false,
+    workers: {
+      redis_available: false,
+      queues: [
+        { id: 'openclaw', label: 'OpenClaw', role: 'orchestrator', waiting: 0, active: 0 },
+        { id: 'agents', label: 'Agent Teams', role: 'agent_team', waiting: 0, active: 0 },
+      ],
+      totals: {
+        orchestrator_jobs: 0,
+        agent_team_jobs: 0,
+        all_waiting: 0,
+        all_active: 0,
+      },
+    },
+    llm: {
+      today: {
+        tokens_input: 0,
+        tokens_output: 0,
+        cost_usd: 0,
+        requests: 0,
+        cache_hits: 0,
+        top_model: null,
+        cache_hit_rate: 0,
+      },
+      month: {
+        tokens_input: 0,
+        tokens_output: 0,
+        cost_usd: 0,
+        requests: 0,
+        cache_hits: 0,
+        top_model: null,
+        cache_hit_rate: 0,
+      },
+      savings_estimate_usd_month: 0,
+      savings_note: 'Fallback local: conecta NEXT_PUBLIC_API_URL para métricas reales.',
+    },
+  };
+}
+
+function demoAdminCosts(): AdminCostsResponse {
+  return {
+    current: {
+      vps: {
+        name: 'DigitalOcean VPS',
+        cost: 12,
+        period: 'monthly',
+        status: 'active',
+        description: 'Servidor actual de control plane.',
+        specs: 'Fallback local',
+      },
+    },
+    proposed: {
+      cloudflare_lb: {
+        name: 'Cloudflare Load Balancer',
+        cost: 5,
+        period: 'monthly',
+        status: 'pending_approval',
+        requires_approval: true,
+        description: 'Alta disponibilidad futura; pendiente de aprobación humana.',
+      },
+    },
+    summary: {
+      currentMonthly: 12,
+      proposedMonthly: 17,
+      potentialSavings: 0,
+    },
+    alerts: [
+      {
+        level: 'info',
+        message: 'Fallback local: API no disponible o sin sesión admin.',
+        action: 'Configura NEXT_PUBLIC_API_URL para datos reales.',
+      },
+    ],
+    lastUpdated: new Date().toISOString(),
+    tenant_budgets: [
+      {
+        tenant_slug: 'smiletripcare',
+        tenant_name: 'SmileTripCare',
+        current_spend_usd: 0,
+        limit_usd: 25,
+        percent_used: 0,
+        alert_level: 'ok',
+        enforcement_skipped: true,
+        projected_month_end_usd: 0,
+      },
+    ],
+    llm_budget_summary: {
+      tenant_count: 1,
+      tenants_at_warning: 0,
+      tenants_at_critical: 0,
+      total_spend_usd: 0,
+    },
+  };
+}
+
 export async function getTenants(params: ListTenantsParams = {}): Promise<TenantsListResponse> {
+  if (shouldUseLocalDemoData()) {
+    return demoTenants();
+  }
   const search = new URLSearchParams();
   search.set('page', String(params.page ?? 1));
   search.set('limit', String(params.limit ?? 20));
@@ -121,7 +313,11 @@ export async function getTenants(params: ListTenantsParams = {}): Promise<Tenant
   if (params.plan) {
     search.set('plan', params.plan);
   }
-  return request<TenantsListResponse>(`/api/tenants?${search.toString()}`);
+  try {
+    return await request<TenantsListResponse>(`/api/tenants?${search.toString()}`);
+  } catch {
+    return demoTenants();
+  }
 }
 
 export async function getTenant(idOrSlug: string): Promise<TenantDetailResponse> {
@@ -173,7 +369,14 @@ export async function getMetrics(): Promise<MetricsResponse> {
 }
 
 export async function getSystemMetrics(): Promise<SystemMetricsResponse> {
-  return request<SystemMetricsResponse>('/api/metrics/system');
+  if (shouldUseLocalDemoData()) {
+    return demoSystemMetrics();
+  }
+  try {
+    return await request<SystemMetricsResponse>('/api/metrics/system');
+  } catch {
+    return demoSystemMetrics();
+  }
 }
 
 export async function getTeamMetrics(): Promise<TeamMetricsResponse> {
@@ -185,7 +388,14 @@ export async function getAgentsTeam(): Promise<AgentsTeamResponse> {
 }
 
 export async function getAdminOverview(): Promise<AdminOverviewResponse> {
-  return request<AdminOverviewResponse>('/api/admin/overview');
+  if (shouldUseLocalDemoData()) {
+    return demoAdminOverview();
+  }
+  try {
+    return await request<AdminOverviewResponse>('/api/admin/overview');
+  } catch {
+    return demoAdminOverview();
+  }
 }
 
 export async function getDockerContainers(): Promise<AdminDockerContainersResponse> {
@@ -267,7 +477,14 @@ export async function approveFeedbackDecision(body: {
 }
 
 export async function getAdminCosts(): Promise<AdminCostsResponse> {
-  return request<AdminCostsResponse>('/api/admin/costs');
+  if (shouldUseLocalDemoData()) {
+    return demoAdminCosts();
+  }
+  try {
+    return await request<AdminCostsResponse>('/api/admin/costs');
+  } catch {
+    return demoAdminCosts();
+  }
 }
 
 export async function postCostDecision(body: {

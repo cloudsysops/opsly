@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import type { ReactElement } from 'react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { PORTAL_DEMO_COOKIE, PORTAL_DEMO_MODE_COOKIE } from '@/lib/demo-tenant';
 import { createClient } from '@/lib/supabase';
 import { fetchPortalTenant, postPortalMode, tenantSlugFromUserMetadata } from '@/lib/tenant';
 import type { PortalMode } from '@/types';
@@ -18,6 +19,21 @@ export function ModeSelector(): ReactElement {
     setError(null);
     setLoading(mode);
     try {
+      const hasDemoSession =
+        document.cookie.includes(`${PORTAL_DEMO_COOKIE}=1`) &&
+        (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+      if (hasDemoSession) {
+        document.cookie = `${PORTAL_DEMO_MODE_COOKIE}=${mode}; path=/; max-age=86400; SameSite=Lax`;
+        const target =
+          mode === 'managed'
+            ? '/dashboard/managed'
+            : mode === 'security_defense'
+              ? '/dashboard/security-defense'
+              : '/dashboard/developer';
+        router.push(target);
+        router.refresh();
+        return;
+      }
       const supabase = createClient();
       const { data, error: sessionError } = await supabase.auth.getSession();
       if (sessionError || !data.session?.access_token) {
@@ -29,7 +45,12 @@ export function ModeSelector(): ReactElement {
       const slug = tenantSlugFromUserMetadata(data.session.user);
       const tenant = await fetchPortalTenant(token, slug);
       await postPortalMode(token, mode, tenant.slug);
-      const target = mode === 'managed' ? '/dashboard/managed' : '/dashboard/developer';
+      const target =
+        mode === 'managed'
+          ? '/dashboard/managed'
+          : mode === 'security_defense'
+            ? '/dashboard/security-defense'
+            : '/dashboard/developer';
       router.push(target);
       router.refresh();
     } catch (e) {

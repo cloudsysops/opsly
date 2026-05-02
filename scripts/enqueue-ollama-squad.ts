@@ -16,6 +16,7 @@
  */
 
 import { randomUUID } from 'node:crypto';
+import net from 'node:net';
 import { Queue, type JobsOptions } from 'bullmq';
 
 type Plan = 'startup' | 'business' | 'enterprise';
@@ -112,11 +113,44 @@ function parseArgs(argv: string[]): {
   return { tenant, goal, profile, plan, runId };
 }
 
-function redisConnectionFromEnv(): { host: string; port: number; password?: string } {
-  const raw = process.env.REDIS_URL?.trim();
-  if (!raw) {
-    throw new Error('REDIS_URL is required');
+const LOCAL_REDIS_URL_DEFAULT = 'redis://127.0.0.1:6379';
+
+function canConnectTcp(host: string, port: number, timeoutMs: number): Promise<boolean> {
+  return new Promise((resolve) => {
+    const socket = net.createConnection({ host, port });
+    const timer = setTimeout(() => {
+      socket.destroy();
+      resolve(false);
+    }, timeoutMs);
+    socket.once('connect', () => {
+      clearTimeout(timer);
+      socket.destroy();
+      resolve(true);
+    });
+    socket.once('error', () => {
+      clearTimeout(timer);
+      resolve(false);
+    });
+  });
+}
+
+/**
+ * En Docker Compose el hostname suele ser `redis`; en la Mac admin suele ser un túnel a `127.0.0.1`.
+ * Misma idea que `resolve_runtime_redis_url` en `scripts/test-worker-e2e.sh`.
+ */
+async function resolveRuntimeRedisUrl(rawUrl: string): Promise<string> {
+  const parsed = new URL(rawUrl);
+  if (parsed.hostname !== 'redis') {
+    return rawUrl;
   }
+  const localUrl = process.env.LOCAL_REDIS_URL?.trim() || LOCAL_REDIS_URL_DEFAULT;
+  const localParsed = new URL(localUrl);
+  const localPort = Number(localParsed.port || '6379');
+  const reachable = await canConnectTcp(localParsed.hostname, localPort, 600);
+  return reachable ? localUrl : rawUrl;
+}
+
+function redisConnectionFromUrl(raw: string): { host: string; port: number; password?: string } {
   const parsed = new URL(raw);
   const pwdFromUrl = parsed.password ? decodeURIComponent(parsed.password) : '';
   return {
@@ -187,7 +221,12 @@ function queuePriority(plan: Plan): number {
 
 async function main(): Promise<void> {
   const { tenant, goal, profile, plan, runId } = parseArgs(process.argv);
-  const connection = redisConnectionFromEnv();
+  const rawRedis = process.env.REDIS_URL?.trim();
+  if (!rawRedis) {
+    throw new Error('REDIS_URL is required');
+  }
+  const runtimeRedis = await resolveRuntimeRedisUrl(rawRedis);
+  const connection = redisConnectionFromUrl(runtimeRedis);
   const queue = new Queue('openclaw', { connection });
   const requestPrefix = `ollama-local-${tenant}-${runId}`;
   const specs = buildSpecs(goal, profile);

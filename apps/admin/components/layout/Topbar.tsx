@@ -5,6 +5,8 @@ import { usePathname } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { Separator } from '@/components/ui/separator';
 
+const AUTH_TIMEOUT_MS = 1_500;
+
 const labels: Record<string, string> = {
   dashboard: 'Dashboard',
   tenants: 'Tenants',
@@ -14,7 +16,25 @@ const labels: Record<string, string> = {
   invitations: 'Invitations',
   metrics: 'Metrics',
   agents: 'Agent Teams',
+  costs: 'Costos',
+  'api-surface': 'API Surface',
 };
+
+function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error('auth timeout')), ms);
+    promise.then(
+      (value) => {
+        clearTimeout(timer);
+        resolve(value);
+      },
+      (err: unknown) => {
+        clearTimeout(timer);
+        reject(err);
+      }
+    );
+  });
+}
 
 export function Topbar() {
   const pathname = usePathname();
@@ -23,9 +43,13 @@ export function Topbar() {
 
   useEffect(() => {
     const supabase = createClient();
-    void supabase.auth.getUser().then(({ data }) => {
-      setEmail(data.user?.email ?? '');
-    });
+    void withTimeout(supabase.auth.getUser(), AUTH_TIMEOUT_MS)
+      .then(({ data }) => {
+        setEmail(data.user?.email ?? '');
+      })
+      .catch(() => {
+        setEmail('');
+      });
   }, []);
 
   const crumbs = segments.map((seg, i) => {

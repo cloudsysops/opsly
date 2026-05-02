@@ -8,6 +8,8 @@ import { DashboardShell } from '@/components/dashboard/premium-dashboard';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { InvoiceStatusActions } from './invoice-actions';
+import { demoInvoices } from '@/lib/demo-tenant';
+import { isPortalDemoSession } from '@/lib/demo-session';
 
 interface LineItem {
   id: string;
@@ -63,6 +65,10 @@ export default async function InvoiceDetailPage({
   params: Promise<{ tenant: string; id: string }>;
 }): Promise<ReactElement> {
   const { tenant, id } = await params;
+  if (await isPortalDemoSession()) {
+    const demoInvoice = demoInvoices().find((invoice) => invoice.id === id) ?? demoInvoices()[0];
+    return renderInvoiceDetail(demoInvoice, tenant);
+  }
   const supabase = await createServerSupabase();
   const {
     data: { session },
@@ -75,8 +81,12 @@ export default async function InvoiceDetailPage({
     notFound();
   }
 
+  return renderInvoiceDetail(invoice, tenant);
+}
+
+function renderInvoiceDetail(invoice: Invoice, tenant: string): ReactElement {
   return (
-    <PortalShell title={invoice.invoice_number} showModeLink>
+    <PortalShell title={invoice.invoice_number} showModeLink tenantSlug={tenant}>
       <DashboardShell>
         <div className="flex items-center justify-between">
           <div>

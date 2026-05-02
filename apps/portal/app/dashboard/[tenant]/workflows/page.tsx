@@ -16,15 +16,10 @@ export default async function WorkflowsMarketplacePage({
   const { tenant } = await params;
   const payload = await requirePortalPayload();
   const catalog = getN8nWorkflowCatalog();
-  const n8nUrl =
-    typeof payload.services === 'object' &&
-    payload.services !== null &&
-    typeof (payload.services as Record<string, unknown>).n8n === 'string'
-      ? ((payload.services as Record<string, unknown>).n8n as string)
-      : null;
+  const n8nUrl = payload.services.n8n_url;
 
   return (
-    <PortalShell title={`Marketplace - ${tenant}`} showModeLink>
+    <PortalShell title={`Marketplace - ${tenant}`} showModeLink tenantSlug={tenant}>
       <DashboardShell>
         <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
           <div>
