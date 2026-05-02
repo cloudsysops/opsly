@@ -135,6 +135,16 @@ domain = "unknown" → Solicitar contexto adicional
 - AGENTS.md: https://raw.githubusercontent.com/cloudsysops/opsly/main/AGENTS.md
 - VISION.md: https://raw.githubusercontent.com/cloudsysops/opsly/main/VISION.md
 
+## Política unificada (Claude, OpenCode, agentes internos/externos)
+
+Estas reglas aplican igual para Claude, OpenCode, Cursor, Copilot y automatismos:
+
+- Fuente de verdad operativa: `AGENTS.md`.
+- Guardrails transversales: `docs/03-agents/AGENT-GUARDRAILS.md`.
+- Flujo Git oficial: `docs/01-development/GIT-WORKFLOW.md`.
+
+Regla Git clave: **código/infra/tests por PR** (`feat/*` o `fix/*`), no push directo a `main` salvo cierres documentales permitidos por política del repo.
+
 ## Reglas Absolutas
 
 - **NUNCA** K8s, Swarm, nginx (salvo ADR)
@@ -143,9 +153,9 @@ domain = "unknown" → Solicitar contexto adicional
 - **NUNCA** saltarse `validate-config.sh` antes de deploy
 - **NUNCA** terraform apply sin plan
 - **SIEMPRE** leer AGENTS.md al iniciar
-- **SIEMPRE** git add + git commit tras cada tarea completada
 - **SIEMPRE** usar OpenClaw como framework de trabajo
 - **SIEMPRE** usar skill-finder para detectar skills necesarios
+- **SIEMPRE** seguir `docs/01-development/GIT-WORKFLOW.md` para ramas/PR/merge
 
 ## Stack
 
