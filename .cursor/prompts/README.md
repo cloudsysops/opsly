@@ -4,7 +4,8 @@ Uso recomendado para **automatizar** el puente arquitectura → implementación:
 
 | Archivo | Cuándo usarlo |
 |--------|----------------|
-| `local-services-tech-builder.md` | Vertical Local Services (Week 1: migración 0046, API, book, tests). `@` en chat + regla `local-services-builder` al editar esas rutas. |
+| `local-services-tech-builder.md` | Vertical Local Services (Week 1: migración 0046, API, book, tests). **Incluye trato como tenant Opsly nuevo** (`local-services`). `@` en chat + regla `local-services-builder` al editar esas rutas. |
+| `tenants/local-services/piloto-automatizaciones.md` | Solo tenant piloto Local Services (limpieza + upgrade + pruebas automatización). Combinar con el tech-builder. |
 | `legalvial-phase2b-automation.md` | Tenant LegalVial + Drive import (ver comentarios dentro del archivo). |
 
 ## Flujo sugerido (con arquitectos)

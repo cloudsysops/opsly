@@ -1,6 +1,6 @@
 ---
 description: Local Services vertical — DB migrations, API, booking UI, tenant isolation (tenant-context)
-globs: apps/api/app/api/local-services/**,apps/local-services/**,supabase/migrations/*local_services*,supabase/migrations/0046*.sql
+globs: apps/api/app/api/local-services/**,apps/local-services/**,supabase/migrations/*local_services*,supabase/migrations/0046*.sql,.cursor/prompts/tenants/local-services/**,config/tenants/local-services.json
 alwaysApply: false
 ---
 

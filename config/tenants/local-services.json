@@ -1,0 +1,10 @@
+{
+  "tenant_name": "Local Services (piloto — limpieza de equipos y upgrade)",
+  "tenant_slug": "local-services",
+  "schema_name": "local_services",
+  "platform_domain": "ops.smiletripcare.com",
+  "workflows_count": 0,
+  "pricing_per_unit": 0,
+  "currency": "USD",
+  "notes": "Tenant piloto para producto Local Services y prueba de automatizaciones. Sustituir platform_domain si el staging usa otro dominio. Onboarding: scripts/onboard-tenant.sh --slug local-services --email <owner> --plan startup|business --name \"...\" --yes"
+}

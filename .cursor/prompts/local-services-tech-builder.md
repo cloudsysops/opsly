@@ -2,6 +2,13 @@
 
 Canal de trabajo para Cursor Agent: **pegar este archivo con `@`** al iniciar la tarea o abrir un chat dedicado a Local Services.
 
+## Trato: **tenant Opsly nuevo** (no “solo un microservicio”)
+
+**Local Services** es un **tenant piloto** de la plataforma: negocio de **limpieza de equipos + upgrade**, aprestamiento del servicio y **banco de pruebas para automatizaciones** (n8n, integraciones, flujos). Debe existir como cualquier otro tenant: `platform.tenants`, schema, stack estándar tras `onboard-tenant.slug`, portal con `tenant_slug` en JWT, aislamiento estricto en API/DAL (`tenant-context`).
+
+- Config placeholder: `config/tenants/local-services.json`
+- Contexto de negocio + piloto: `@.cursor/prompts/tenants/local-services/piloto-automatizaciones.md`
+
 ## Fuente de verdad en repo
 
 - Estado y bloqueantes: `AGENTS.md` (raíz)
@@ -30,7 +37,7 @@ Canal de trabajo para Cursor Agent: **pegar este archivo con `@`** al iniciar la
 ## Mensaje corto para pegar en cada sesión
 
 ```
-@AGENTS.md @apps/api/lib/tenant-context.ts @.cursor/prompts/local-services-tech-builder.md
-Sprint Local Services Week 1: [migración 0046 | rutas API | form book | tests aislamiento].
+@AGENTS.md @apps/api/lib/tenant-context.ts @.cursor/prompts/local-services-tech-builder.md @.cursor/prompts/tenants/local-services/piloto-automatizaciones.md
+Sprint Local Services Week 1 (tenant local-services): [migración 0046 | rutas API | form book | tests aislamiento].
 Rama: cursor/local-services-week1-* — commit convencional al cerrar cada sub-tarea.
 ```
