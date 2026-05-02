@@ -1,12 +1,15 @@
 import type { ReactElement } from 'react';
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import { Bot, CheckCircle2, ExternalLink, PlugZap, ShieldCheck } from 'lucide-react';
 import { DashboardShell } from '@/components/dashboard/premium-dashboard';
 import { PortalShell } from '@/components/layout/portal-shell';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { getN8nWorkflowCatalog } from '@/lib/n8n-workflow-catalog';
-import { requirePortalPayload } from '@/lib/portal-server';
+import { requirePortalPayloadWithToken } from '@/lib/portal-server';
+import { fetchPortalN8nMarketplaceInstalls } from '@/lib/tenant';
+import { MarketplacePackActions } from './marketplace-pack-actions';
 
 export default async function WorkflowsMarketplacePage({
   params,
@@ -14,9 +17,24 @@ export default async function WorkflowsMarketplacePage({
   params: Promise<{ tenant: string }>;
 }): Promise<ReactElement> {
   const { tenant } = await params;
-  const payload = await requirePortalPayload();
+  const { payload, accessToken } = await requirePortalPayloadWithToken();
+  if (tenant !== payload.slug) {
+    redirect(`/dashboard/${payload.slug}/workflows`);
+  }
   const catalog = getN8nWorkflowCatalog();
   const n8nUrl = payload.services.n8n_url;
+
+  const activatedIds = new Set<string>();
+  if (accessToken.length > 0) {
+    try {
+      const installs = await fetchPortalN8nMarketplaceInstalls(accessToken, tenant);
+      for (const row of installs.installs) {
+        activatedIds.add(row.catalog_item_id);
+      }
+    } catch {
+      /* degradación: catálogo sigue visible sin estado remoto */
+    }
+  }
 
   return (
     <PortalShell title={`Marketplace - ${tenant}`} showModeLink tenantSlug={tenant}>
@@ -100,18 +118,31 @@ export default async function WorkflowsMarketplacePage({
                   </ul>
                 </div>
 
-                <div className="flex flex-wrap gap-3">
-                  {n8nUrl ? (
-                    <Button asChild variant="primary">
-                      <a href={n8nUrl} target="_blank" rel="noreferrer">
-                        Abrir n8n
-                        <ExternalLink className="h-4 w-4" aria-hidden />
-                      </a>
+                <div className="flex flex-col gap-4">
+                  <MarketplacePackActions
+                    tenantSlug={tenant}
+                    catalogItemId={item.id}
+                    planMin={item.plan_min}
+                    tenantPlan={payload.plan}
+                    installedByDefault={item.installed_by_default}
+                    accessToken={accessToken}
+                    initiallyActivated={
+                      item.installed_by_default || activatedIds.has(item.id)
+                    }
+                  />
+                  <div className="flex flex-wrap gap-3">
+                    {n8nUrl ? (
+                      <Button asChild variant="primary">
+                        <a href={n8nUrl} target="_blank" rel="noreferrer">
+                          Abrir n8n
+                          <ExternalLink className="h-4 w-4" aria-hidden />
+                        </a>
+                      </Button>
+                    ) : null}
+                    <Button asChild variant="default">
+                      <Link href="/landing">Solicitar nuevo pack</Link>
                     </Button>
-                  ) : null}
-                  <Button asChild variant="default">
-                    <Link href="/landing">Solicitar nuevo pack</Link>
-                  </Button>
+                  </div>
                 </div>
               </CardContent>
             </Card>

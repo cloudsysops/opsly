@@ -68,3 +68,9 @@ export function infraStatusUrl(apiBaseUrl: string): string {
   const base = normalizeApiBase(apiBaseUrl);
   return `${base}/api/infra/status`;
 }
+
+/** URL absoluta `GET|POST` marketplace n8n — Zero-Trust por `[slug]`. */
+export function portalTenantN8nMarketplaceInstallsUrl(apiBaseUrl: string, tenantSlug: string): string {
+  const base = normalizeApiBase(apiBaseUrl);
+  return `${base}/api/portal/tenant/${encodeURIComponent(tenantSlug)}/n8n-marketplace/installs`;
+}

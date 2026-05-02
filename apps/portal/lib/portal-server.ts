@@ -57,6 +57,36 @@ export async function requirePortalPayload(): Promise<PortalTenantPayload> {
   }
 }
 
+/** Igual que `requirePortalPayload` pero expone el Bearer para llamadas API desde el cliente. */
+export async function requirePortalPayloadWithToken(): Promise<{
+  payload: PortalTenantPayload;
+  accessToken: string;
+}> {
+  if (await isPortalDemoSession()) {
+    return {
+      payload: demoPortalTenantPayload(await getPortalDemoMode()),
+      accessToken: '',
+    };
+  }
+  const supabase = await createServerSupabase();
+  const {
+    data: { session },
+  } = await withPortalTimeout(supabase.auth.getSession(), 'portal session');
+  if (!session?.access_token) {
+    redirect('/login');
+  }
+  try {
+    const {
+      data: { user },
+    } = await withPortalTimeout(supabase.auth.getUser(), 'portal user');
+    const slug = tenantSlugFromUserMetadata(user);
+    const payload = await fetchPortalTenant(session.access_token, slug);
+    return { payload, accessToken: session.access_token };
+  } catch {
+    redirect('/login');
+  }
+}
+
 /**
  * Sesión portal + métricas LLM vía `GET /api/portal/tenant/[slug]/usage` (slug del payload).
  * Si la API de uso falla, devuelve `null` por periodo sin invalidar el dashboard.

@@ -22,6 +22,7 @@ COPY --from=deps /repo/node_modules ./node_modules
 COPY --from=deps /repo/package.json ./package.json
 COPY --from=deps /repo/package-lock.json ./package-lock.json
 COPY apps/api ./apps/api
+COPY config/n8n-workflows/catalog.json ./config/n8n-workflows/catalog.json
 COPY apps/ml ./apps/ml
 COPY apps/llm-gateway ./apps/llm-gateway
 COPY apps/agents/notebooklm ./apps/agents/notebooklm
