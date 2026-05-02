@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-05-02T16:31:01Z",
-  "totalFiles": 288,
+  "lastIndexed": "2026-05-02T22:58:35Z",
+  "totalFiles": 292,
   "files": [
     ".openclaw.md",
     "2026-04-21.md",
@@ -46,6 +46,10 @@
     "ADR-035-openclaw-per-tenant.md",
     "ADR-035-safe-autonomous-evolution-framework.md",
     "ADR-036-cli-consolidation-tools-cli-first.md",
+    "ADR-037-opsly-local-services-multi-tenant.md",
+    "ADR-038-custom-quotes-vs-fixed-pricing.md",
+    "ADR-039-sales-channels-email-whatsapp.md",
+    "ADR-040-technician-scaling-solo-to-assistant.md",
     "AGENT-GUARDRAILS.md",
     "AGENT-HOOKS-OBSIDIAN-NOTEBOOKLM-N8N.md",
     "AGENTS-ASSIGNMENTS.md",
