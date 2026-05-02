@@ -25,7 +25,7 @@ CLI: `npm run skills:list` · `npm run skills:bootstrap` · `node scripts/load-s
 ## Inicio (obligatorio)
 
 1. Leer AGENTS.md (URL raw: https://raw.githubusercontent.com/cloudsysops/opsly/main/AGENTS.md)
-2. `git pull --ff-only` antes de editar
+2. `git fetch origin` y `git pull --ff-only` en la rama de trabajo (detalle: `docs/01-development/SESSION-GIT-SYNC.md`, política: `docs/01-development/GIT-WORKFLOW.md`)
 3. SSH solo Tailscale `100.120.151.91` — nunca IP pública
 4. Secrets via Doppler (`ops-intcloudsysops/prd`)
 
@@ -70,17 +70,24 @@ Documento detallado: `docs/03-agents/AGENT-GUARDRAILS.md`. Resumen:
 
 ## Workflow — tarea completada
 
-Si el cambio toca **zona roja o ámbar** en `docs/03-agents/AGENT-GUARDRAILS.md`, usar **rama + PR** y no `git push origin main` hasta revisión humana.
+- **Código, infra, tests, contratos API:** rama `feat/*` o `fix/*` → **Pull Request** a `main`. No `git push --force` a `main`. Ver `.cursor/rules/git-workflow.mdc` y `docs/01-development/GIT-WORKFLOW.md`.
+- **Zona roja o ámbar** (`docs/03-agents/AGENT-GUARDRAILS.md`): siempre **PR** y revisión humana antes de merge.
+- **Solo cierre documental** (p. ej. actualizar secciones 🔄 de `AGENTS.md` y espejos según el bloque «Al cerrar» de `AGENTS.md`): un commit claro; push a `main` solo si la política del repo lo permite (muchas veces también vía PR).
 
-1. **Inmediatamente** después de completar una tarea:
-   ```bash
-   git add -A
-   git commit -m "type(scope): descripción corta de lo hecho"
-   git push origin main
-   ```
-2. **No acumular cambios** — cada tarea = un commit separado
-3. Si la tarea modifica `AGENTS.md` → incluir en el mismo commit
+Pasos típicos en rama de trabajo:
+
+```bash
+git add -A
+git commit -m "type(scope): descripción corta de lo hecho"
+git push -u origin "$(git branch --show-current)"
+```
+
+Luego abrir PR en GitHub. **No acumular** mezclas de tareas no relacionadas en un solo commit.
 
 ## Al cerrar
 
-AGENTS.md actualizado → commit → push main
+`AGENTS.md` (secciones 🔄) actualizado cuando corresponda → commit → PR o push según política arriba.
+
+## Higiene de ramas (opcional)
+
+`./scripts/git-branch-hygiene.sh` — listado de remotas mergeables vs `main` y divergencia (no borra nada).
