@@ -4,7 +4,7 @@ Canal de trabajo para Cursor Agent: **pegar este archivo con `@`** al iniciar la
 
 ## Trato: **tenant Opsly nuevo** (no “solo un microservicio”)
 
-**Local Services** es un **tenant piloto** de la plataforma: negocio de **limpieza de equipos + upgrade**, aprestamiento del servicio y **banco de pruebas para automatizaciones** (n8n, integraciones, flujos). Debe existir como cualquier otro tenant: `platform.tenants`, schema, stack estándar tras `onboard-tenant.slug`, portal con `tenant_slug` en JWT, aislamiento estricto en API/DAL (`tenant-context`).
+**Equipa** (marca) vive en el tenant **`local-services`**: **limpieza de equipos + upgrade** en campo, **oferta productiva** y **banco de pruebas de automatizaciones** (n8n, integraciones, flujos). Debe existir como cualquier otro tenant: `platform.tenants`, schema, stack estándar tras onboard, portal con `tenant_slug` en JWT, aislamiento estricto en API/DAL (`tenant-context`). Go-live: `docs/runbooks/LOCAL-SERVICES-GO-LIVE.md`.
 
 - Config placeholder: `config/tenants/local-services.json`
 - Contexto de negocio + piloto: `@.cursor/prompts/tenants/local-services/piloto-automatizaciones.md`

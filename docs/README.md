@@ -58,6 +58,7 @@ docs/generated/sprint-status.auto.md ← burndown generado (status.yaml; no edit
 | [`runbooks/VPS-DISK-SECURITY-SCAN.md`](runbooks/VPS-DISK-SECURITY-SCAN.md)             | Disco VPS, Trivy, `cleanup-vps.sh`                                         |
 | [`runbooks/DEPLOY-GITHUB-ACTIONS.md`](runbooks/DEPLOY-GITHUB-ACTIONS.md)               | Deploy CI → VPS (Tailscale, `VPS_HOST`, rollback imagen)                   |
 | [`runbooks/TENANT-ONBOARDING-TRIAGE.md`](runbooks/TENANT-ONBOARDING-TRIAGE.md)         | Triage onboarding tenants (logs, DB, cola, Docker)                         |
+| [`runbooks/LOCAL-SERVICES-GO-LIVE.md`](runbooks/LOCAL-SERVICES-GO-LIVE.md)             | Go-live tenant **Equipa** (`local-services`) — oferta limpieza + upgrade   |
 | [`runbooks/PRODUCTION-SECURITY-BASELINE.md`](runbooks/PRODUCTION-SECURITY-BASELINE.md) | Checklist mínimo red/secretos/apps en `prd`                                |
 | [`VPS-SSH-WORKER-NODES.md`](VPS-SSH-WORKER-NODES.md)                                   | Clave SSH VPS → workers (`authorized_keys`), solo Tailscale                |
 | [`SSH-USERS-FOR-AGENTS.md`](SSH-USERS-FOR-AGENTS.md)                                   | **Qué usuario SSH usar** (VPS, worker, Mac) — agentes y humanos            |
