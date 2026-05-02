@@ -1,0 +1,434 @@
+# Phase 1: Opsly Local Services Infrastructure
+
+**Status:** Ready for Cursor execution  
+**Branch:** `claude/opsly-phase1-local-services`  
+**Prompt:** `.cursor/prompts/local-services-tech-builder.md`  
+**Estimated Duration:** 2-3 days  
+**Last Updated:** 2026-05-02
+
+---
+
+## Overview
+
+Phase 1 builds the complete backend infrastructure and frontend forms for Opsly Local Services. This phase delivers a functional MVP that accepts bookings, manages customers, and generates quotes.
+
+---
+
+## Prerequisites ✅
+
+- Phase 0 documentation complete (ADRs 037-040 + 4 Cursor prompts)
+- Git hook configured for phase detection + Discord notifications
+- Working on branch: `claude/opsly-phase1-local-services`
+- Git protocol: `git add → commit → push` after each task (no exceptions)
+
+---
+
+## Deliverables
+
+### 1. Database Migration (Supabase)
+
+**File:** `supabase/migrations/0046_local_services_core.sql`
+
+**Schema:**
+```sql
+-- Services catalog per tenant
+CREATE TABLE local_services.services (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  tenant_id uuid REFERENCES platform.tenants NOT NULL,
+  name TEXT NOT NULL,
+  description TEXT,
+  base_price DECIMAL(10,2),
+  duration_minutes INT,
+  category TEXT, -- 'gamer', 'office', 'home', 'mac', 'wifi'
+  active BOOLEAN DEFAULT true,
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+
+-- Customers (tenant's customers, not platform.users)
+CREATE TABLE local_services.customers (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  tenant_id uuid REFERENCES platform.tenants NOT NULL,
+  email TEXT NOT NULL,
+  phone TEXT,
+  full_name TEXT,
+  address TEXT,
+  customer_type TEXT, -- 'home', 'business'
+  notes TEXT,
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+
+-- Bookings / Appointments
+CREATE TABLE local_services.bookings (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  tenant_id uuid REFERENCES platform.tenants NOT NULL,
+  customer_id uuid REFERENCES local_services.customers NOT NULL,
+  service_ids uuid[] NOT NULL,
+  scheduled_at TIMESTAMPTZ NOT NULL,
+  status TEXT DEFAULT 'pending', -- pending, confirmed, en_route, completed, cancelled
+  notes TEXT,
+  assigned_to UUID,  -- technician assignment
+  created_at TIMESTAMPTZ DEFAULT now(),
+  updated_at TIMESTAMPTZ DEFAULT now()
+);
+
+-- Quotes (formal pricing proposals)
+CREATE TABLE local_services.quotes (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  tenant_id uuid REFERENCES platform.tenants NOT NULL,
+  customer_id uuid REFERENCES local_services.customers,
+  service_ids uuid[] NOT NULL,
+  total_price DECIMAL(10,2) NOT NULL,
+  options JSONB, -- A, B, C pricing tiers
+  valid_until TIMESTAMPTZ NOT NULL,
+  status TEXT DEFAULT 'pending', -- pending, accepted, rejected, expired
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+
+-- Service Reports (post-visit summary)
+CREATE TABLE local_services.service_reports (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  tenant_id uuid REFERENCES platform.tenants NOT NULL,
+  booking_id uuid REFERENCES local_services.bookings NOT NULL,
+  description TEXT,
+  findings TEXT,
+  recommendations TEXT,
+  duration_minutes INT,
+  completed_at TIMESTAMPTZ DEFAULT now()
+);
+```
+
+**RLS Policies:**
+- All tables require tenant_id filtering
+- Row-level security prevents cross-tenant data access
+- Service role exempt for seed operations
+
+**Indexes:**
+- `(tenant_id, status)` on bookings
+- `(tenant_id, created_at)` on all tables
+- `(customer_id)` on bookings and quotes for customer lookups
+
+---
+
+### 2. API Routes
+
+**Location:** `/apps/api/app/api/local-services/`
+
+#### Services API
+```typescript
+// route.ts
+POST /api/local-services/services
+  Body: { name, description, base_price, duration_minutes, category }
+  Returns: { id, tenant_id, ... }
+
+GET /api/local-services/services
+  Returns: Service[] filtered by tenant_id
+
+PUT /api/local-services/services/[id]
+  Update service details
+
+DELETE /api/local-services/services/[id]
+  Archive service
+```
+
+#### Customers API
+```typescript
+POST /api/local-services/customers
+  Body: { email, phone, full_name, address, customer_type }
+  Returns: Customer
+
+GET /api/local-services/customers
+  Returns: Customer[] paginated
+
+PUT /api/local-services/customers/[id]
+  Update customer info
+
+GET /api/local-services/customers/[id]
+  Fetch single customer + booking history
+```
+
+#### Bookings API
+```typescript
+POST /api/local-services/bookings
+  Body: { customer_id, service_ids[], scheduled_at, notes }
+  Returns: Booking with auto-assigned status
+
+GET /api/local-services/bookings
+  Returns: Booking[] filtered by status/date
+
+PATCH /api/local-services/bookings/[id]
+  Body: { status, notes, assigned_to }
+  Update booking status (pending → confirmed → en_route → completed)
+
+GET /api/local-services/bookings/[id]
+  Fetch booking + customer + services details
+```
+
+#### Quotes API
+```typescript
+POST /api/local-services/quotes
+  Body: { customer_id, service_ids[], base_price }
+  Returns: Quote with A/B/C options generated by Ops Agent (Claude)
+
+GET /api/local-services/quotes/[id]
+  Fetch quote + validity
+
+PATCH /api/local-services/quotes/[id]
+  Body: { status: 'accepted' | 'rejected' }
+  Accept quote → creates booking
+```
+
+#### Reports API
+```typescript
+POST /api/local-services/reports
+  Body: { booking_id, description, findings, recommendations, duration_minutes }
+  Returns: ServiceReport
+
+GET /api/local-services/reports/[id]
+  Fetch report
+```
+
+#### Dashboard API
+```typescript
+GET /api/local-services/dashboard
+  Returns: {
+    revenue: { weekly, monthly, year_to_date },
+    bookings: { total, by_status, upcoming_count },
+    customers: { total, repeat_rate, avg_rating },
+    services: { top_3, average_price }
+  }
+```
+
+**Implementation Notes:**
+- Use `TenantContext` from `/apps/api/lib/tenant-context.ts` for tenant isolation
+- Extend `BaseRepository` from `/apps/api/lib/base-repository.ts`
+- Validate all input with Zod (no any types)
+- Return proper HTTP status codes (201 for POST, 400 for validation, 404 for not found, 500 for server errors)
+- Log all operations via existing Opsly logging infrastructure
+
+---
+
+### 3. Frontend: Public Booking Page
+
+**File:** `apps/local-services/app/book/page.tsx`
+
+**Features:**
+- Service selector (radio buttons: Gamer PC, Laptop Speed-Up, Office Support)
+- Date/time picker (disable past dates, show availability)
+- Auto-calculated quote display (updates as user selects services)
+- Customer info form (email, phone, full name, address)
+- Submit button → creates booking, sends confirmation email
+
+**Styling:**
+- Use Tailwind CSS (reuse classes from `/apps/portal/`)
+- Mobile-friendly (responsive grid)
+- Dark mode support if tenant configured
+
+**Behavior:**
+- Service selection → fetch quote via API
+- Show loading state while fetching
+- Display A/B/C pricing options (if multiple)
+- Email validation (real-time)
+- On submit → POST /api/local-services/bookings
+- Redirect to confirmation page or show success message
+
+---
+
+### 4. Frontend: Customer Dashboard
+
+**Location:** `apps/local-services/app/dashboard/`
+
+#### Main Dashboard (`page.tsx`)
+- Login with Supabase magic link (email sent to customer email)
+- Welcome message with upcoming bookings
+- Quick links to bookings, invoices, recommendations
+
+#### Bookings (`bookings/page.tsx`)
+- Table: Date, Service, Status, Technician, Actions
+- Filter by status (upcoming, completed, cancelled)
+- View booking details (time, address, technician notes)
+- Mark as complete (from technician view only)
+
+#### Invoices (`invoices/page.tsx`)
+- Table: Date, Service, Amount, Status, Download
+- Download PDF invoice
+- Download service report PDF
+- View payment status
+
+#### Recommendations (`recommendations/page.tsx`)
+- Auto-generated from service reports
+- "Next maintenance suggested: Date"
+- "Upgrade options" from Ops Agent
+- One-click booking for recommendations
+
+---
+
+### 5. Admin Dashboard Extension
+
+**File:** `apps/admin/app/local-services/page.tsx`
+
+**Sections:**
+- Revenue dashboard (weekly, monthly, YTD charts)
+- Active bookings (real-time status board)
+- Customer list with filter (by type, activity, rating)
+- Service catalog editor (add/edit/archive services)
+- Automation triggers (enable/disable followup sequences)
+- Analytics (conversion rate, repeat rate, NPS)
+
+---
+
+### 6. Testing
+
+**File:** `apps/api/__tests__/local-services.test.ts`
+
+**Test Suites:**
+- Tenant isolation (tenant A cannot see tenant B's data)
+- API validation (Zod schema enforcement)
+- Booking workflow (pending → confirmed → completed)
+- Quote generation (price calculations)
+- Customer filtering (only same-tenant customers appear)
+
+**Run Locally:**
+```bash
+npm run test --workspace=@intcloudsysops/api -- local-services
+```
+
+---
+
+## Implementation Notes
+
+### Patterns to Reuse
+
+1. **Tenant Context** (existing)
+   ```typescript
+   import { getTenantId } from '@intcloudsysops/api/lib/tenant-context';
+   const tenantId = getTenantId();
+   const bookings = await repository.getBookings(tenantId);
+   ```
+
+2. **Base Repository** (existing)
+   ```typescript
+   export class LocalServicesRepository extends BaseRepository {
+     async getBookings(tenantId: string) {
+       return this.query('SELECT * FROM local_services.bookings WHERE tenant_id = $1', [tenantId]);
+     }
+   }
+   ```
+
+3. **API Route Pattern** (existing)
+   ```typescript
+   // /apps/api/app/api/local-services/bookings/route.ts
+   import { getTenantId } from '@intcloudsysops/api/lib/tenant-context';
+   import { LocalServicesRepository } from '@intcloudsysops/api/lib/repositories/local-services-repository';
+   
+   export async function POST(req: Request) {
+     const tenantId = getTenantId();
+     const body = await req.json();
+     const result = await repository.createBooking(tenantId, body);
+     return Response.json(result, { status: 201 });
+   }
+   ```
+
+4. **Frontend Component** (reuse from portal)
+   ```typescript
+   // apps/local-services/app/book/page.tsx
+   import { Button, Card, Form } from '@intcloudsysops/portal/components';
+   ```
+
+### What NOT to Do
+
+- ❌ Do NOT create new component library (reuse portal components)
+- ❌ Do NOT use `any` in TypeScript (strict typing)
+- ❌ Do NOT hardcode tenant IDs (always use getTenantId())
+- ❌ Do NOT skip RLS policies in migrations
+- ❌ Do NOT create new dependencies (use existing tech stack)
+- ❌ Do NOT merge to main until Phase 1 complete (stay on phase1 branch)
+
+---
+
+## Git Protocol (Mandatory)
+
+After each task, execute:
+```bash
+git add -A
+git commit -m "feat(local-services): [description]"
+git push origin claude/opsly-phase1-local-services
+```
+
+**Examples:**
+```
+git commit -m "feat(local-services): create migration for core tables"
+git commit -m "feat(local-services): add bookings API routes"
+git commit -m "feat(local-services): build public booking form"
+git commit -m "test(local-services): add tenant isolation tests"
+```
+
+---
+
+## Phase Completion Detection
+
+When all Phase 1 files exist and are committed:
+- ✅ `.githooks/post-commit` detects completion
+- ✅ Sends Discord notification to configured webhook
+- ✅ Triggers Phase 2 workflow creation
+
+**Files Triggering Phase 1 Complete:**
+```
+supabase/migrations/0046_local_services_core.sql
+apps/api/app/api/local-services/route.ts (main router)
+apps/local-services/app/book/page.tsx
+apps/local-services/app/dashboard/page.tsx
+apps/api/__tests__/local-services.test.ts
+```
+
+---
+
+## Success Criteria
+
+✅ All API routes respond correctly with tenant filtering  
+✅ Booking form captures data and creates bookings  
+✅ Customer dashboard displays bookings and invoices  
+✅ Database migration creates all tables with RLS policies  
+✅ Tests verify tenant isolation (zero cross-tenant leaks)  
+✅ Type checking passes (`npm run type-check`)  
+✅ All commits pushed to phase1 branch  
+✅ Discord notification sent when complete  
+
+---
+
+## Timeline
+
+- **Day 1-2:** Database migration + API routes
+- **Day 2-3:** Frontend (booking form + dashboard)
+- **Day 3:** Testing + final review + commit/push
+
+---
+
+## Next Steps (After Phase 1)
+
+**Phase 2:** Automation + Testing
+- n8n workflows (booking confirmations, post-service reports)
+- Email integration (SendGrid templates)
+- Google Calendar sync
+- Stripe subscription management
+
+**Phase 3:** Scaling + Analytics
+- Technician portal (field view)
+- Auto-assignment logic (you vs assistant)
+- Revenue analytics
+- Performance dashboards
+
+---
+
+## Questions or Blockers?
+
+Reference the Cursor prompt: `.cursor/prompts/local-services-tech-builder.md`
+
+For technical questions:
+- Tenant isolation: See `/apps/api/lib/tenant-context.ts`
+- API patterns: See `/apps/api/app/api/billing/` (similar structure)
+- Frontend components: See `/apps/portal/components/`
+- Database: See `supabase/migrations/` (existing structure)
+
+---
+
+**Status:** Ready for Cursor to execute Phase 1 🚀
