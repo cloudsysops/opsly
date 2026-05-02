@@ -208,7 +208,7 @@ REDIS_URL=redis://100.120.151.91:6379
 4. Crear recurso → Factory pattern en `lib/factories/`
 5. Números mágicos → `lib/constants.ts`
 
-## Git Operations — Protocolo Obligatorio
+## Git Operations — Protocolo Obligatorio para TODOS los agentes
 
 **⚠️ CRÍTICO:** Después de CADA tarea completada, SIEMPRE:
 
@@ -236,7 +236,15 @@ git push origin <branch-name>
 - ✅ Evita "cambios perdidos" cuando agentes rotan
 - ✅ CI corre automáticamente en cada push
 
-**Aplica a:** Cursor, Claude, Codex, cualquier agente que modifique código.
+**APLICA A (sin excepciones):**
+- ✅ Claude (AI en Claude Code)
+- ✅ Cursor (AI en Cursor IDE)
+- ✅ Codex (AI en Copilot)
+- ✅ GitHub Copilot
+- ✅ Cualquier agente externo que modifique código
+- ✅ Cualquier script automatizado
+
+**NO EXCEPTIONS:** Todo código que entre al repo debe pasar por: `git add → git commit → git push`
 
 ---
 
