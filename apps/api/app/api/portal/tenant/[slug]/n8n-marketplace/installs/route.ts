@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { HTTP_STATUS } from '../../../../../../../lib/constants';
 import {
   activateN8nMarketplacePack,
+  countN8nMarketplaceMeteringThisMonth,
   listN8nMarketplaceInstallsForTenant,
 } from '../../../../../../../lib/n8n-marketplace-installs-service';
 import { N8N_CATALOG_ITEM_ID_MAX_LEN } from '../../../../../../../lib/n8n-workflow-catalog-api';
@@ -71,7 +72,10 @@ export async function GET(
     return access.response;
   }
   try {
-    const installs = await listN8nMarketplaceInstallsForTenant(access.session.tenant.id);
+    const [installs, packMeteringThisMonth] = await Promise.all([
+      listN8nMarketplaceInstallsForTenant(access.session.tenant.id),
+      countN8nMarketplaceMeteringThisMonth(access.session.tenant.id),
+    ]);
     return Response.json({
       tenant: access.slug,
       installs: installs.map((r) => ({
@@ -80,6 +84,9 @@ export async function GET(
         status: r.status,
         activated_at: r.created_at,
       })),
+      billing_usage: {
+        pack_metering_events_this_month: packMeteringThisMonth,
+      },
     });
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Internal server error';

@@ -74,3 +74,8 @@ export function portalTenantN8nMarketplaceInstallsUrl(apiBaseUrl: string, tenant
   const base = normalizeApiBase(apiBaseUrl);
   return `${base}/api/portal/tenant/${encodeURIComponent(tenantSlug)}/n8n-marketplace/installs`;
 }
+
+/** URL absoluta `GET /api/portal/billing/summary` (sesión → tenant actual). */
+export function portalBillingSummaryUrl(apiBaseUrl: string): string {
+  return `${normalizeApiBase(apiBaseUrl)}/api/portal/billing/summary`;
+}

@@ -53,6 +53,21 @@ export type PortalN8nMarketplaceInstallsPayload = {
     status: string;
     activated_at: string;
   }[];
+  billing_usage?: {
+    pack_metering_events_this_month: number;
+  };
+};
+
+/** Respuesta `GET /api/portal/billing/summary` (uso asentado + pendiente, USD). */
+export type PortalBillingSummaryPayload = {
+  period_start: string;
+  period_end: string;
+  currency: string;
+  settled_cost_usd: number;
+  pending_cost_usd: number;
+  current_total_usd: number;
+  projected_month_end_usd: number;
+  daily_average_usd: number;
 };
 
 /** Ítem de `GET /api/portal/tenant/[slug]/insights`. */

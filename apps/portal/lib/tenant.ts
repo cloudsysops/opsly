@@ -1,6 +1,7 @@
 import { getApiBaseUrl } from './api';
 import { requestPortalApi } from './http';
 import {
+  portalBillingSummaryUrl,
   portalHealthUrl,
   portalOnboardingUrl,
   portalTenantInsightsUrl,
@@ -12,6 +13,7 @@ import {
 import type {
   OnboardingRequest,
   OnboardingResponse,
+  PortalBillingSummaryPayload,
   PortalHealthPayload,
   PortalInsightsPayload,
   PortalMode,
@@ -112,6 +114,20 @@ export async function fetchPortalN8nMarketplaceInstalls(
 ): Promise<PortalN8nMarketplaceInstallsPayload> {
   const path = portalTenantN8nMarketplaceInstallsUrl(getApiBaseUrl(), tenantSlug);
   return requestPortalApi<PortalN8nMarketplaceInstallsPayload>(path, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      'Content-Type': 'application/json',
+    },
+    cache: 'no-store',
+  });
+}
+
+export async function fetchPortalBillingSummary(
+  accessToken: string
+): Promise<PortalBillingSummaryPayload> {
+  const path = portalBillingSummaryUrl(getApiBaseUrl());
+  return requestPortalApi<PortalBillingSummaryPayload>(path, {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${accessToken}`,

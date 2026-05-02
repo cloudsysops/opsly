@@ -1,15 +1,25 @@
 import type { ReactElement } from 'react';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
-import { Bot, CheckCircle2, ExternalLink, PlugZap, ShieldCheck } from 'lucide-react';
+import { Banknote, Bot, CheckCircle2, ExternalLink, PlugZap, ShieldCheck } from 'lucide-react';
 import { DashboardShell } from '@/components/dashboard/premium-dashboard';
 import { PortalShell } from '@/components/layout/portal-shell';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { getN8nWorkflowCatalog } from '@/lib/n8n-workflow-catalog';
 import { requirePortalPayloadWithToken } from '@/lib/portal-server';
-import { fetchPortalN8nMarketplaceInstalls } from '@/lib/tenant';
+import { fetchPortalBillingSummary, fetchPortalN8nMarketplaceInstalls } from '@/lib/tenant';
+import type { PortalBillingSummaryPayload } from '@/types';
 import { MarketplacePackActions } from './marketplace-pack-actions';
+
+function formatUsd(value: number): string {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(value);
+}
 
 export default async function WorkflowsMarketplacePage({
   params,
@@ -25,14 +35,22 @@ export default async function WorkflowsMarketplacePage({
   const n8nUrl = payload.services.n8n_url;
 
   const activatedIds = new Set<string>();
+  let billingSummary: PortalBillingSummaryPayload | null = null;
+  let packMeteringThisMonth = 0;
   if (accessToken.length > 0) {
-    try {
-      const installs = await fetchPortalN8nMarketplaceInstalls(accessToken, tenant);
-      for (const row of installs.installs) {
+    const [billingResult, installsResult] = await Promise.allSettled([
+      fetchPortalBillingSummary(accessToken),
+      fetchPortalN8nMarketplaceInstalls(accessToken, tenant),
+    ]);
+    if (billingResult.status === 'fulfilled') {
+      billingSummary = billingResult.value;
+    }
+    if (installsResult.status === 'fulfilled') {
+      const body = installsResult.value;
+      for (const row of body.installs) {
         activatedIds.add(row.catalog_item_id);
       }
-    } catch {
-      /* degradación: catálogo sigue visible sin estado remoto */
+      packMeteringThisMonth = body.billing_usage?.pack_metering_events_this_month ?? 0;
     }
   }
 
@@ -51,6 +69,70 @@ export default async function WorkflowsMarketplacePage({
               Packs listos para instalar en n8n. El CRM Starter Pack ya queda aplicado por defecto
               en tenants activos y se importa inactivo para que puedas revisarlo antes de activar.
             </p>
+            {accessToken.length > 0 ? (
+              <div className="mt-6 grid gap-4 sm:grid-cols-2">
+                <Card variant="elevated">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="flex items-center gap-2 text-sm font-medium text-neutral-200">
+                      <Banknote className="h-4 w-4 text-ops-green" aria-hidden />
+                      Uso facturable (mes)
+                    </CardTitle>
+                    <CardDescription className="text-xs">
+                      Datos desde la API (Postgres + Redis pendiente).
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-2 text-sm">
+                    {billingSummary ? (
+                      <>
+                        <p className="text-neutral-300">
+                          Total mes hasta hoy:{' '}
+                          <span className="font-mono text-ops-green">
+                            {formatUsd(billingSummary.current_total_usd)}
+                          </span>
+                        </p>
+                        <p className="text-xs text-ops-gray">
+                          Asentado {formatUsd(billingSummary.settled_cost_usd)} · Pendiente{' '}
+                          {formatUsd(billingSummary.pending_cost_usd)}
+                        </p>
+                        <p className="text-xs text-ops-gray">
+                          Proyección fin de mes:{' '}
+                          <span className="font-mono text-neutral-200">
+                            {formatUsd(billingSummary.projected_month_end_usd)}
+                          </span>
+                        </p>
+                      </>
+                    ) : (
+                      <p className="text-xs text-amber-400/90">
+                        No se pudo cargar el resumen de billing. Revisa sesión y API.
+                      </p>
+                    )}
+                    <Button asChild variant="default" className="mt-2 w-full sm:w-auto">
+                      <Link href={`/dashboard/${tenant}/subscriptions`}>Suscripciones y planes</Link>
+                    </Button>
+                  </CardContent>
+                </Card>
+                <Card variant="elevated">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-sm font-medium text-neutral-200">
+                      Marketplace (medición)
+                    </CardTitle>
+                    <CardDescription className="text-xs">
+                      Activaciones de pack registradas en metering este mes.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="font-mono text-2xl text-ops-green">{packMeteringThisMonth}</p>
+                    <p className="mt-1 text-xs text-ops-gray">
+                      Instalaciones persistidas: {activatedIds.size}
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+            ) : (
+              <p className="mt-4 text-xs text-ops-gray">
+                Inicia sesión con tu cuenta (no modo demo) para ver uso facturable y metering real.
+              </p>
+            )}
           </div>
           <Card>
             <CardHeader>

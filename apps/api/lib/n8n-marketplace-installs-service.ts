@@ -19,6 +19,31 @@ export type N8nMarketplaceInstallRow = {
 const INSTALL_SELECT =
   'id, tenant_id, catalog_item_id, catalog_version, status, created_at, updated_at' as const;
 
+const ISO_MONTH_PAD = 2;
+
+function currentBillingPeriodMonthFirstDay(): string {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(ISO_MONTH_PAD, '0')}-01`;
+}
+
+/** Eventos `metering_events` del mes en curso para activaciones marketplace (datos reales). */
+export async function countN8nMarketplaceMeteringThisMonth(tenantId: string): Promise<number> {
+  const db = getServiceClient();
+  const periodMonth = currentBillingPeriodMonthFirstDay();
+  const { count, error } = await db
+    .schema('platform')
+    .from('metering_events')
+    .select('*', { count: 'exact', head: true })
+    .eq('tenant_id', tenantId)
+    .eq('metric_type', N8N_MARKETPLACE_PACK_METERING_TYPE)
+    .eq('period_month', periodMonth);
+
+  if (error) {
+    throw new Error(`Failed to count marketplace metering: ${error.message}`);
+  }
+  return count ?? 0;
+}
+
 export async function listN8nMarketplaceInstallsForTenant(
   tenantId: string
 ): Promise<N8nMarketplaceInstallRow[]> {

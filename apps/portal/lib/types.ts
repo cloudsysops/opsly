@@ -2,6 +2,7 @@ export type {
   AdminInvitationResponse,
   OnboardingRequest,
   OnboardingResponse,
+  PortalBillingSummaryPayload,
   PortalHealthPayload,
   PortalInsightItem,
   PortalInsightsPayload,
