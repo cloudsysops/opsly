@@ -11,6 +11,7 @@ on:
 jobs:
   validate-doppler:
     runs-on: ubuntu-latest
+    # Skip on non-main branches if secrets not available (expected for feature branches)
     steps:
       - uses: actions/checkout@v4
 
@@ -22,6 +23,11 @@ jobs:
         env:
           DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN_PRD }}
         run: |
+          if [ -z "$DOPPLER_TOKEN" ]; then
+            echo "⚠️ Doppler token not available (feature branch - expected)"
+            echo "Skipping validation - will run on main branch"
+            exit 0
+          fi
           chmod +x scripts/ci/validate-doppler-vars.sh
           ./scripts/ci/validate-doppler-vars.sh ops-intcloudsysops prd
 
@@ -29,5 +35,10 @@ jobs:
         env:
           DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN_STG }}
         run: |
+          if [ -z "$DOPPLER_TOKEN" ]; then
+            echo "⚠️ Doppler token not available (feature branch - expected)"
+            echo "Skipping validation - will run on main branch"
+            exit 0
+          fi
           chmod +x scripts/ci/validate-doppler-vars.sh
           ./scripts/ci/validate-doppler-vars.sh ops-intcloudsysops stg
