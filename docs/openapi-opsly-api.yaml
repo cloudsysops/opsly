@@ -935,6 +935,151 @@ paths:
         '500':
           $ref: '#/components/responses/InternalError'
 
+  /api/local-services/tenants/{slug}/services:
+    get:
+      summary: Local Services — listar servicios (JWT portal, slug sesión)
+      operationId: getLocalServicesServices
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Lista de servicios del tenant
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /api/local-services/tenants/{slug}/customers:
+    get:
+      summary: Local Services — listar clientes
+      operationId: getLocalServicesCustomers
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Lista de clientes
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /api/local-services/tenants/{slug}/bookings:
+    get:
+      summary: Local Services — listar reservas
+      operationId: getLocalServicesBookings
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Lista de reservas
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /api/local-services/tenants/{slug}/quotes:
+    get:
+      summary: Local Services — listar cotizaciones
+      operationId: getLocalServicesQuotes
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Lista de cotizaciones
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /api/local-services/tenants/{slug}/reports:
+    get:
+      summary: Local Services — listar reportes
+      operationId: getLocalServicesReports
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Lista de reportes
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /api/local-services/public/tenants/{slug}/bookings:
+    post:
+      summary: Local Services — reserva pública (sin JWT)
+      operationId: postLocalServicesPublicBooking
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [customer_name, customer_email]
+              properties:
+                customer_name:
+                  type: string
+                customer_email:
+                  type: string
+                  format: email
+                customer_phone:
+                  type: string
+                service_id:
+                  type: string
+                  format: uuid
+                scheduled_at:
+                  type: string
+                  format: date-time
+                notes:
+                  type: string
+      responses:
+        '201':
+          description: Reserva creada
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
   /api/shield/alerts/config:
     post:
       summary: Opsly Shield — configurar alerta defensiva por tenant (Discord)
