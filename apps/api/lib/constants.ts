@@ -17,6 +17,7 @@ export const HTTP_STATUS = {
   UNAUTHORIZED: 401,
   FORBIDDEN: 403,
   NOT_FOUND: 404,
+  METHOD_NOT_ALLOWED: 405,
   CONFLICT: 409,
   /** Proveedor cloud aún no implementado (p. ej. Azure/GCP). */
   NOT_IMPLEMENTED: 501,

@@ -132,9 +132,30 @@
   },
   "overrides": {
     "postcss": "8.5.13",
+    "next": {
+      "postcss": "8.5.13"
+    },
+    "autoprefixer": {
+      "postcss": "8.5.13"
+    },
     "lodash": "^4.18.1",
     "tmp": "^0.2.4",
-    "uuid": "^14.0.0"
+    "uuid": "14.0.0",
+    "mermaid": {
+      "uuid": "14.0.0"
+    },
+    "gaxios": {
+      "uuid": "14.0.0"
+    },
+    "@langchain/langgraph-checkpoint": {
+      "uuid": "14.0.0"
+    },
+    "@langchain/langgraph": {
+      "uuid": "14.0.0"
+    },
+    "@langchain/langgraph-sdk": {
+      "uuid": "14.0.0"
+    }
   },
   "dependencies": {
     "@redis/client": "^1.6.1",

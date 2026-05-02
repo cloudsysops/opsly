@@ -29,6 +29,7 @@ export default [
   {
     ignores: [
       'apps/admin/**',
+      'apps/local-services/**',
       'apps/web/**',
       '**/node_modules/**',
       '**/.next/**',

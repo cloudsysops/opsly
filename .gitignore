@@ -1,5 +1,8 @@
 # Git worktrees (isolated development)
 .worktrees/
+.claude/worktrees/
+# Ephemeral root logs (validate-structure forbids ./logs); use runtime/logs
+/logs/
 
 # USB kit: overrides locales (SSH Host, etc.)
 tools/usb-kit/pen.local.json

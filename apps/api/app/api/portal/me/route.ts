@@ -1,11 +1,6 @@
 import { respondTrustedPortalMe } from '../../../../lib/portal-me-json';
-import { resolveTrustedPortalSession } from '../../../../lib/portal-trusted-identity';
+import { runTrustedPortalDal } from '../../../../lib/portal-tenant-dal';
 
 export async function GET(request: Request): Promise<Response> {
-  const trusted = await resolveTrustedPortalSession(request);
-  if (!trusted.ok) {
-    return trusted.response;
-  }
-
-  return respondTrustedPortalMe(trusted.session);
+  return runTrustedPortalDal(request, (session) => respondTrustedPortalMe(session));
 }

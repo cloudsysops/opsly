@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import * as heartbeatMod from '../../../../lib/infra/heartbeat';
 import * as portalDalMod from '../../../../lib/portal-tenant-dal';
+import type { TrustedPortalSession } from '../../../../lib/portal-trusted-identity';
 import { GET as infraStatusGet } from './route';
 
 vi.mock('../../../../lib/portal-tenant-dal', () => ({
@@ -38,7 +39,7 @@ describe('GET /api/infra/status', () => {
 
   it('returns services with valid token/session', async () => {
     vi.mocked(portalDalMod.runTrustedPortalDal).mockImplementation(async (_req, fn) => {
-      return fn();
+      return fn({} as TrustedPortalSession);
     });
 
     const redisMock = {

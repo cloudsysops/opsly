@@ -2,10 +2,7 @@ import { NextRequest } from 'next/server';
 import { HTTP_STATUS } from '../../../../../../lib/constants';
 import { getInsightsForTenant } from '../../../../../../lib/insights/engine';
 import { applyInsightPatchAction } from '../../../../../../lib/insights/insight-patch-actions';
-import {
-  resolveTrustedPortalSession,
-  tenantSlugMatchesSession,
-} from '../../../../../../lib/portal-trusted-identity';
+import { runTrustedPortalDalForPathSlug } from '../../../../../../lib/portal-tenant-dal';
 
 type PortalInsightRow = {
   id: string;
@@ -58,40 +55,6 @@ function normalizeInsight(row: PortalInsightRow): PortalInsightResponse {
     read_at: row.read_at,
     actioned_at: row.actioned_at,
     created_at: row.created_at,
-  };
-}
-
-async function resolveTrustedTenant(
-  request: NextRequest,
-  context: { params: Promise<{ slug: string }> }
-): Promise<
-  | {
-      ok: true;
-      slug: string;
-      tenantId: string;
-    }
-  | { ok: false; response: Response }
-> {
-  const trusted = await resolveTrustedPortalSession(request);
-  if (!trusted.ok) {
-    return { ok: false, response: trusted.response };
-  }
-
-  const { slug } = await context.params;
-  if (!tenantSlugMatchesSession(trusted.session, slug)) {
-    return {
-      ok: false,
-      response: Response.json(
-        { error: 'Tenant slug does not match session' },
-        { status: HTTP_STATUS.FORBIDDEN }
-      ),
-    };
-  }
-
-  return {
-    ok: true,
-    slug,
-    tenantId: trusted.session.tenant.id,
   };
 }
 
@@ -154,19 +117,17 @@ export async function GET(
   request: NextRequest,
   context: { params: Promise<{ slug: string }> }
 ): Promise<Response> {
-  const trustedTenant = await resolveTrustedTenant(request, context);
-  if (!trustedTenant.ok) {
-    return trustedTenant.response;
-  }
+  const { slug } = await context.params;
+  return runTrustedPortalDalForPathSlug(request, slug, async (session) => {
+    const rows = await getInsightsForTenant(session.tenant.id, {
+      includeRead: true,
+      limit: 40,
+    });
 
-  const rows = await getInsightsForTenant(trustedTenant.tenantId, {
-    includeRead: true,
-    limit: 40,
-  });
-
-  return Response.json({
-    tenant_slug: trustedTenant.slug,
-    insights: rows.map(normalizeInsight),
+    return Response.json({
+      tenant_slug: slug,
+      insights: rows.map(normalizeInsight),
+    });
   });
 }
 
@@ -174,33 +135,31 @@ export async function PATCH(
   request: NextRequest,
   context: { params: Promise<{ slug: string }> }
 ): Promise<Response> {
-  const trustedTenant = await resolveTrustedTenant(request, context);
-  if (!trustedTenant.ok) {
-    return trustedTenant.response;
-  }
-
-  const parsedBody = await parsePatchBody(request);
-  if (!parsedBody.ok) {
-    return parsedBody.response;
-  }
-
-  const validatedPatch = validateInsightPatchBody(parsedBody.body);
-  if (!validatedPatch.ok) {
-    return validatedPatch.response;
-  }
-
-  try {
-    const applied = await applyInsightPatchAction(
-      validatedPatch.action,
-      validatedPatch.insightId,
-      trustedTenant.tenantId
-    );
-    if (!applied) {
-      return invalidInsightActionResponse();
+  const { slug } = await context.params;
+  return runTrustedPortalDalForPathSlug(request, slug, async (session) => {
+    const parsedBody = await parsePatchBody(request);
+    if (!parsedBody.ok) {
+      return parsedBody.response;
     }
 
-    return Response.json({ ok: true });
-  } catch (e) {
-    return insightPatchErrorResponse(e);
-  }
+    const validatedPatch = validateInsightPatchBody(parsedBody.body);
+    if (!validatedPatch.ok) {
+      return validatedPatch.response;
+    }
+
+    try {
+      const applied = await applyInsightPatchAction(
+        validatedPatch.action,
+        validatedPatch.insightId,
+        session.tenant.id
+      );
+      if (!applied) {
+        return invalidInsightActionResponse();
+      }
+
+      return Response.json({ ok: true });
+    } catch (e) {
+      return insightPatchErrorResponse(e);
+    }
+  });
 }

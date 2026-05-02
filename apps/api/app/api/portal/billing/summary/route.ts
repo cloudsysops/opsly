@@ -14,7 +14,7 @@ import { getTenantContext } from '../../../../../lib/tenant-context';
  * Resumen de facturación del tenant: asentado (Postgres) + pendiente (Redis) + proyección fin de mes.
  */
 export async function GET(request: Request): Promise<Response> {
-  const out = await runTrustedPortalDal(request, async () => {
+  const out = await runTrustedPortalDal(request, async (_session) => {
     const { tenantId } = getTenantContext();
     const bounds = getBillingMonthBoundsUtc(new Date());
     const repo = new BillingUsageRepository();
