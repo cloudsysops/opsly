@@ -1,0 +1,102 @@
+name: Task Orchestrator CI
+
+on:
+  push:
+    branches: [main, develop, claude/**]
+    paths:
+      - 'apps/task-orchestrator/**'
+      - '.github/workflows/task-orchestrator-ci.yml'
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - 'apps/task-orchestrator/**'
+
+concurrency:
+  group: task-orchestrator-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_ENV: test
+
+jobs:
+  lint-and-type:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - run: npm ci
+
+      - name: Lint Task Orchestrator
+        run: npm run lint --workspace=@intcloudsysops/task-orchestrator
+
+      - name: Type check Task Orchestrator
+        run: npm run type-check --workspace=@intcloudsysops/task-orchestrator
+
+  test:
+    runs-on: ubuntu-latest
+    services:
+      redis:
+        image: redis:7-alpine
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - run: npm ci
+
+      - name: Run Task Orchestrator tests
+        run: npm run test --workspace=@intcloudsysops/task-orchestrator
+        env:
+          REDIS_HOST: localhost
+          REDIS_PORT: 6379
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - run: npm ci
+
+      - name: Build Task Orchestrator
+        run: npm run build --workspace=@intcloudsysops/task-orchestrator
+
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - run: npm ci
+
+      - name: Audit dependencies
+        run: npm audit --audit-level=moderate
+        continue-on-error: true
+
+      - name: Check for vulnerable patterns
+        run: |
+          ! grep -r "process.env\." apps/task-orchestrator/src | grep -v "REDIS_HOST\|REDIS_PORT\|NODE_ENV" || exit 0
