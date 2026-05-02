@@ -1,15 +1,37 @@
 import { startServer } from './server';
+import { taskQueue } from './services/queue';
 
-startServer()
-  .then(() => {
-    console.log('🚀 Task Orchestrator started successfully');
-  })
-  .catch(error => {
-    console.error('❌ Failed to start server:', error);
+async function main() {
+  try {
+    // Initialize task queue
+    await taskQueue.connect();
+    console.log('✅ Redis connected');
+
+    // Start Express server
+    const server = await startServer();
+
+    // Graceful shutdown
+    process.on('SIGINT', async () => {
+      console.log('\n⏹️ Shutting down gracefully...');
+      await taskQueue.disconnect();
+      server.close(() => {
+        console.log('✅ Server closed');
+        process.exit(0);
+      });
+    });
+
+    process.on('SIGTERM', async () => {
+      console.log('\n⏹️ Shutting down (SIGTERM)...');
+      await taskQueue.disconnect();
+      server.close(() => {
+        console.log('✅ Server closed');
+        process.exit(0);
+      });
+    });
+  } catch (error) {
+    console.error('❌ Failed to start:', error);
     process.exit(1);
-  });
+  }
+}
 
-process.on('SIGINT', () => {
-  console.log('\n👋 Shutting down gracefully...');
-  process.exit(0);
-});
+main();
