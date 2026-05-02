@@ -4,6 +4,7 @@ import { HTTP_STATUS } from './constants';
 import { logger } from './logger';
 import { resolveTrustedPortalSession } from './portal-trusted-identity';
 import { resolveShieldDiscordWebhook, shieldAlertConfigBodySchema } from './shield-alert-config';
+import { meterShieldApiCall } from './shield-metering';
 import { getServiceClient } from './supabase';
 
 interface ShieldAlertRow {
@@ -80,7 +81,7 @@ export async function postShieldAlertConfig(request: NextRequest): Promise<Respo
     return Response.json(
       {
         error:
-          'webhook_url required or set SHIELD_ALERTS_DISCORD_WEBHOOK_URL / DISCORD_WEBHOOK_URL',
+          'webhook_url required or set SHIELD_ALERTS_DISCORD_WEBHOOK_URL / DISCORD_WEBHOOK_SHIELD / DISCORD_WEBHOOK_URL',
       },
       { status: HTTP_STATUS.UNPROCESSABLE }
     );
@@ -93,6 +94,14 @@ export async function postShieldAlertConfig(request: NextRequest): Promise<Respo
       { status: HTTP_STATUS.INTERNAL_ERROR }
     );
   }
+
+  const hdrId = request.headers.get('x-request-id')?.trim();
+  void meterShieldApiCall({
+    tenant_slug: parsed.tenant_slug,
+    ...(hdrId !== undefined && hdrId.length > 0 ? { request_id: hdrId } : {}),
+    feature: 'shield_alert_config_upsert',
+    metadata: { alert_type: parsed.alert_type },
+  });
 
   return Response.json({
     alert_id: row.id,

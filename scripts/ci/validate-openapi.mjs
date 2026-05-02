@@ -45,6 +45,9 @@ const REQUIRED_PORTAL_PATHS = [
   '/api/portal/tenant/{slug}/budget',
   '/api/portal/tenant/{slug}/subscription/upgrade',
   '/api/portal/tenant/{slug}/insights',
+  '/api/portal/tenant/{slug}/shield/secrets',
+  '/api/portal/tenant/{slug}/shield/secrets/{findingId}',
+  '/api/portal/tenant/{slug}/shield/score',
 ];
 
 for (const p of REQUIRED_PORTAL_PATHS) {
@@ -68,7 +71,7 @@ const REQUIRED_SPRINT5_PATHS = [
 ];
 
 /** Opsly Shield / Guardian Grid (Phase 2 MVP) */
-const REQUIRED_SHIELD_PATHS = ['/api/shield/alerts/config'];
+const REQUIRED_SHIELD_PATHS = ['/api/shield/alerts/config', '/api/cron/shield-secret-scan'];
 
 for (const p of REQUIRED_FEEDBACK_PATHS) {
   if (!Object.prototype.hasOwnProperty.call(doc.paths, p)) {

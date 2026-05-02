@@ -10,4 +10,7 @@ export type {
   PortalUsagePayload,
   PortalUsagePeriod,
   PortalUsageSnapshot,
+  ShieldScorePayload,
+  ShieldScorePoint,
+  ShieldSecretFinding,
 } from '../types';

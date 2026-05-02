@@ -6,6 +6,8 @@ import {
   portalTenantInsightsUrl,
   portalTenantMeUrl,
   portalTenantModeUrl,
+  portalTenantShieldScoreUrl,
+  portalTenantShieldSecretsUrl,
   portalTenantUsageUrl,
 } from './portal-api-paths';
 import type {
@@ -17,7 +19,9 @@ import type {
   PortalTenantPayload,
   PortalUsagePayload,
   PortalUsagePeriod,
-} from './types';
+  ShieldScorePayload,
+  ShieldSecretFinding,
+} from '@/types';
 
 /**
  * Lee `tenant_slug` del JWT de Supabase cuando está presente (invitaciones / portal).
@@ -130,6 +134,36 @@ export async function fetchPortalHealth(
 ): Promise<PortalHealthPayload> {
   const path = portalHealthUrl(getApiBaseUrl(), tenantSlug);
   return requestPortalApi<PortalHealthPayload>(path, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      'Content-Type': 'application/json',
+    },
+    cache: 'no-store',
+  });
+}
+
+export async function fetchShieldSecrets(
+  accessToken: string,
+  tenantSlug: string
+): Promise<{ tenant_slug: string; findings: ShieldSecretFinding[] }> {
+  const path = portalTenantShieldSecretsUrl(getApiBaseUrl(), tenantSlug);
+  return requestPortalApi(path, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      'Content-Type': 'application/json',
+    },
+    cache: 'no-store',
+  });
+}
+
+export async function fetchShieldScore(
+  accessToken: string,
+  tenantSlug: string
+): Promise<ShieldScorePayload> {
+  const path = portalTenantShieldScoreUrl(getApiBaseUrl(), tenantSlug);
+  return requestPortalApi(path, {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${accessToken}`,

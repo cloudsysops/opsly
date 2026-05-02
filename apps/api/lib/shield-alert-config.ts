@@ -22,16 +22,29 @@ export const shieldAlertConfigBodySchema = z.object({
 
 export type ShieldAlertConfigBody = z.infer<typeof shieldAlertConfigBodySchema>;
 
+const SHIELD_WEBHOOK_ENV_KEYS = [
+  'SHIELD_ALERTS_DISCORD_WEBHOOK_URL',
+  'DISCORD_WEBHOOK_SHIELD',
+  'DISCORD_WEBHOOK_URL',
+] as const;
+
+function firstNonEmptyEnv(keys: readonly string[]): string | null {
+  for (const key of keys) {
+    const v = process.env[key]?.trim();
+    if (v !== undefined && v.length > 0) {
+      return v;
+    }
+  }
+  return null;
+}
+
 /**
- * Resolves Discord webhook: explicit body URL, then SHIELD_ALERTS_DISCORD_WEBHOOK_URL, then DISCORD_WEBHOOK_URL.
+ * Resolves Discord webhook: explicit body URL, then Doppler env keys in order.
  */
 export function resolveShieldDiscordWebhook(requested?: string): string | null {
   const trimmed = requested?.trim();
   if (trimmed !== undefined && trimmed.length > 0) {
     return trimmed;
   }
-  const fromEnv =
-    process.env.SHIELD_ALERTS_DISCORD_WEBHOOK_URL?.trim() ||
-    process.env.DISCORD_WEBHOOK_URL?.trim();
-  return fromEnv !== undefined && fromEnv.length > 0 ? fromEnv : null;
+  return firstNonEmptyEnv(SHIELD_WEBHOOK_ENV_KEYS);
 }

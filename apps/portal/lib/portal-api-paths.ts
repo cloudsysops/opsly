@@ -46,6 +46,18 @@ export function portalTenantInsightsUrl(apiBaseUrl: string, tenantSlug: string):
   return `${base}/api/portal/tenant/${encodeURIComponent(tenantSlug)}/insights`;
 }
 
+/** Shield — list secret findings (Zero-Trust). */
+export function portalTenantShieldSecretsUrl(apiBaseUrl: string, tenantSlug: string): string {
+  const base = normalizeApiBase(apiBaseUrl);
+  return `${base}/api/portal/tenant/${encodeURIComponent(tenantSlug)}/shield/secrets`;
+}
+
+/** Shield — security score + 7d trend (Zero-Trust). */
+export function portalTenantShieldScoreUrl(apiBaseUrl: string, tenantSlug: string): string {
+  const base = normalizeApiBase(apiBaseUrl);
+  return `${base}/api/portal/tenant/${encodeURIComponent(tenantSlug)}/shield/score`;
+}
+
 /** URL absoluta `GET` health con JWT — `/api/portal/tenant/[slug]/health` (Zero-Trust). */
 export function portalHealthUrl(apiBaseUrl: string, tenantSlug: string): string {
   const base = normalizeApiBase(apiBaseUrl);

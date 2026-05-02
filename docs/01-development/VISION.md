@@ -22,7 +22,17 @@ backups automáticos y dashboard de administración global.
 
 ### Opsly Shield — Guardian Grid (pivot defensivo)
 
-**Guardian Grid** es la propuesta de producto defensiva 24/7 para SMBs que no pueden asumir un SOC tradicional: monitorización (p. ej. Uptime Kuma ya en stack tenant) más **alertas accionables** (Discord/webhook). La configuración por tenant vive en `platform.shield_alert_config`; API portal Zero-Trust: `POST /api/shield/alerts/config` (tipos: phishing, dominio_falso, endpoint_caido, abuse_api, costo_anormal). **Phase 2 MVP** prioriza este bloque antes de ampliar superficie.
+**Guardian Grid** es la propuesta de producto defensiva 24/7 para SMBs que no pueden asumir un SOC tradicional: monitorización (p. ej. Uptime Kuma ya en stack tenant) más **alertas accionables** (Discord/webhook) y **postura de seguridad** visible en el portal.
+
+**Phase 2 MVP — checklist (estado en repo)**
+
+- [x] Tablas Supabase: `platform.shield_alert_config`, `platform.shield_score_history`, `platform.shield_secret_findings` (RLS: `service_role` en API/workers; `authenticated` SELECT propio tenant vía `auth.jwt() -> user_metadata.tenant_slug` en tablas score/findings).
+- [x] Alertas Discord: `POST /api/shield/alerts/config` (JWT portal); webhooks desde Doppler (`DISCORD_WEBHOOK_SHIELD`, `SHIELD_ALERTS_DISCORD_WEBHOOK_URL` o `DISCORD_WEBHOOK_URL`), nunca en código.
+- [x] Score + hallazgos: `GET /api/portal/tenant/{slug}/shield/score`, `GET /api/portal/tenant/{slug}/shield/secrets`, `PATCH …/shield/secrets/{findingId}` (Zero-Trust).
+- [x] Observabilidad Hermes: rutas Shield llaman `logUsage` con `tenant_slug` y `request_id` correlativo (`shield:{slug}:…` o cabecera `x-request-id`).
+- [x] Cron escaneo diario: `GET|POST /api/cron/shield-secret-scan` (`CRON_SECRET`); MVP simulado con `SHIELD_SECRET_SCAN_SIMULATE=true` (sin escanear repos reales hasta integración).
+- [x] Worker opcional orchestrator: `OPSLY_SHIELD_SCAN_WORKER_ENABLED=true` → `POST` al cron cada 24h (requiere `CRON_SECRET` + URL API alcanzable).
+- [x] Portal: `/shield/dashboard` (gauge, breakdown, tendencia 7d, badge de riesgo, lista de hallazgos).
 
 ## Para quién
 

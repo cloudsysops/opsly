@@ -516,6 +516,87 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 
+  /api/portal/tenant/{slug}/shield/secrets:
+    get:
+      summary: Opsly Shield — listar hallazgos de secretos (Zero-Trust)
+      operationId: getPortalTenantShieldSecrets
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Lista de hallazgos
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /api/portal/tenant/{slug}/shield/secrets/{findingId}:
+    patch:
+      summary: Opsly Shield — actualizar estado de un hallazgo
+      operationId: patchPortalTenantShieldSecret
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: findingId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status:
+                  type: string
+                  enum: [open, resolved, false_positive]
+      responses:
+        '200':
+          description: Actualizado
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/portal/tenant/{slug}/shield/score:
+    get:
+      summary: Opsly Shield — puntuación de seguridad y tendencia 7d (Zero-Trust)
+      operationId: getPortalTenantShieldScore
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Score actual, historial y nivel de riesgo
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
   /api/portal/health:
     get:
       summary: Health check público (Uptime Kuma) — requiere ?slug= del tenant
@@ -859,7 +940,7 @@ paths:
       summary: Opsly Shield — configurar alerta defensiva por tenant (Discord)
       description: >
         JWT portal obligatorio. `tenant_slug` debe coincidir con el tenant de la sesión.
-        Webhook Discord explícito en el cuerpo o vía `SHIELD_ALERTS_DISCORD_WEBHOOK_URL` / `DISCORD_WEBHOOK_URL`.
+        Webhook Discord explícito en el cuerpo o vía `SHIELD_ALERTS_DISCORD_WEBHOOK_URL` / `DISCORD_WEBHOOK_SHIELD` / `DISCORD_WEBHOOK_URL`.
       operationId: postShieldAlertConfig
       security:
         - bearerAuth: []
@@ -926,6 +1007,35 @@ paths:
                 properties:
                   error:
                     type: string
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /api/cron/shield-secret-scan:
+    get:
+      summary: Cron — escaneo Shield (MVP) + recomputo de score por tenant activo
+      operationId: getCronShieldSecretScan
+      security:
+        - bearerAuth: []
+      description: >
+        Requiere `Authorization: Bearer <CRON_SECRET>` o cabecera `x-cron-secret`.
+        Simulación de hallazgos si `SHIELD_SECRET_SCAN_SIMULATE=true` en la API.
+      responses:
+        '200':
+          description: Resumen de tenants procesados
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    post:
+      summary: Igual que GET (cron schedulers)
+      operationId: postCronShieldSecretScan
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Resumen de tenants procesados
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '500':
           $ref: '#/components/responses/InternalError'
 

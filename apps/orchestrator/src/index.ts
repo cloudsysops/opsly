@@ -31,6 +31,7 @@ import { startAgentClassifierWorker } from './workers/AgentClassifierWorker.js';
 import { startOllamaWorker } from './workers/OllamaWorker.js';
 import { startOpenClawPlannerWorker } from './workers/OpenClawPlannerWorker.js';
 import { startOpenClawSkepticWorker } from './workers/OpenClawSkepticWorker.js';
+import { startShieldScanWorker } from './workers/ShieldScanWorker.js';
 import { startSuspensionWorker } from './workers/SuspensionWorker.js';
 import { startGeneralEventsWorker } from './workers/GeneralEventsWorker.js';
 import { startIntentDispatchWorker } from './workers/IntentDispatchWorker.js';
@@ -74,6 +75,8 @@ function startAllWorkers(): AsyncCleanup[] {
   const driveWorker = startDriveWorker(connection);
   const backupWorker = startBackupWorker(connection);
   const healthWorker = startHealthWorker(connection);
+  const shieldScanWorker =
+    process.env.OPSLY_SHIELD_SCAN_WORKER_ENABLED === 'true' ? startShieldScanWorker() : null;
   const suspensionWorker = startSuspensionWorker(connection);
   const webhookWorker = createWebhookWorker();
   const webhooksProcessingWorker = startWebhooksProcessingWorker();
@@ -97,6 +100,7 @@ function startAllWorkers(): AsyncCleanup[] {
     async () => driveWorker.close(),
     async () => backupWorker.close(),
     async () => healthWorker.stop(),
+    async () => (shieldScanWorker !== null ? shieldScanWorker.stop() : Promise.resolve()),
     async () => suspensionWorker.close(),
     async () => webhookWorker.close(),
     async () => webhooksProcessingWorker.close(),
@@ -110,7 +114,9 @@ function startAllWorkers(): AsyncCleanup[] {
   );
 
   console.log(
-    '[orchestrator] Workers: cursor, n8n, notify, drive, backup, health, budget, opsly-webhooks, webhooks-processing, general-events, ollama, openclaw-planner, openclaw-skeptic, intent_dispatch, terminal_task' +
+    '[orchestrator] Workers: cursor, n8n, notify, drive, backup, health' +
+      (process.env.OPSLY_SHIELD_SCAN_WORKER_ENABLED === 'true' ? ', shield-scan' : '') +
+      ', budget, opsly-webhooks, webhooks-processing, general-events, ollama, openclaw-planner, openclaw-skeptic, intent_dispatch, terminal_task' +
       (process.env.OPSLY_AGENT_CLASSIFIER_WORKER_ENABLED === 'true' ? ', agent-classifier' : '') +
       '; Hermes tick → servicio opsly-hermes (no este proceso).'
   );

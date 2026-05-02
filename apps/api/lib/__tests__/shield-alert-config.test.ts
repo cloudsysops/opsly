@@ -24,6 +24,7 @@ describe('shieldAlertConfigBodySchema', () => {
 describe('resolveShieldDiscordWebhook', () => {
   afterEach(() => {
     delete process.env.SHIELD_ALERTS_DISCORD_WEBHOOK_URL;
+    delete process.env.DISCORD_WEBHOOK_SHIELD;
     delete process.env.DISCORD_WEBHOOK_URL;
   });
 
@@ -42,6 +43,12 @@ describe('resolveShieldDiscordWebhook', () => {
   it('falls back to DISCORD_WEBHOOK_URL', () => {
     process.env.DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/global';
     expect(resolveShieldDiscordWebhook()).toBe('https://discord.com/api/webhooks/global');
+  });
+
+  it('prefers DISCORD_WEBHOOK_SHIELD over DISCORD_WEBHOOK_URL', () => {
+    process.env.DISCORD_WEBHOOK_SHIELD = 'https://discord.com/api/webhooks/shield';
+    process.env.DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/global';
+    expect(resolveShieldDiscordWebhook()).toBe('https://discord.com/api/webhooks/shield');
   });
 
   it('returns null when nothing set', () => {
