@@ -4,7 +4,7 @@ import type { ReactElement } from 'react';
 import Link from 'next/link';
 import useSWR from 'swr';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { getAdminOverview } from '@/lib/api-client';
+import { demoAdminOverview, getAdminOverview } from '@/lib/api-client';
 import type { AdminOverviewResponse } from '@/lib/types';
 import { KpiCard } from '@/components/dashboard/KpiCard';
 
@@ -36,11 +36,12 @@ function formatUptime(seconds: number): string {
 }
 
 export function PlatformOverview(): React.ReactElement {
-  const { data, error, isLoading } = useSWR<AdminOverviewResponse>(
+  const { data, error } = useSWR<AdminOverviewResponse>(
     ['admin-overview'],
     () => getAdminOverview(),
-    { refreshInterval: REFRESH_MS, revalidateOnFocus: false }
+    { fallbackData: demoAdminOverview(), refreshInterval: REFRESH_MS, revalidateOnFocus: false }
   );
+  const overview = data ?? demoAdminOverview();
 
   if (error) {
     return (
@@ -50,15 +51,7 @@ export function PlatformOverview(): React.ReactElement {
     );
   }
 
-  if (isLoading || data === undefined) {
-    return (
-      <div className="rounded border border-ops-border bg-ops-surface px-4 py-8 text-center font-mono text-sm text-ops-gray">
-        Cargando métricas de plataforma (VPS, workers, LLM)…
-      </div>
-    );
-  }
-
-  const { vps_host: vps, local_machine: local, workers, llm } = data;
+  const { vps_host: vps, local_machine: local, workers, llm } = overview;
   const m = llm.month;
   const t = llm.today;
 
@@ -69,7 +62,7 @@ export function PlatformOverview(): React.ReactElement {
           Plataforma · VPS, local, orquestación y LLM
         </h2>
         <span className="font-mono text-[10px] text-ops-gray">
-          Actualizado {new Date(data.generated_at).toLocaleString('es')}
+          Actualizado {new Date(overview.generated_at).toLocaleString('es')}
         </span>
       </div>
 
@@ -140,7 +133,7 @@ export function PlatformOverview(): React.ReactElement {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-2 font-mono text-sm text-neutral-200">
-            {!data.local_machine_configured ? (
+            {!overview.local_machine_configured ? (
               <p className="text-ops-gray">
                 Sin `MAC2011_STATUS_URL` en la API. Expone el JSON de mac2011-monitor para ver CPU,
                 Docker y workers Ollama aquí.
@@ -240,7 +233,7 @@ export function PlatformOverview(): React.ReactElement {
       <details className="rounded border border-ops-border bg-ops-surface/50 px-3 py-2 font-sans text-xs text-ops-gray">
         <summary className="cursor-pointer font-mono text-ops-green">Fuentes de datos</summary>
         <ul className="mt-2 list-inside list-disc space-y-1">
-          {Object.entries(data.sources).map(([k, v]) => (
+          {Object.entries(overview.sources).map(([k, v]) => (
             <li key={k}>
               <span className="text-neutral-400">{k}: </span>
               {v}

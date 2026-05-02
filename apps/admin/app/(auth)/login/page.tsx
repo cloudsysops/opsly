@@ -17,11 +17,16 @@ export default function LoginPage() {
 
   useEffect(() => {
     const supabase = createClient();
-    void supabase.auth.getSession().then(({ data }) => {
-      if (data.session) {
-        router.replace('/dashboard');
-      }
-    });
+    void supabase.auth
+      .getSession()
+      .then(({ data }) => {
+        if (data.session) {
+          router.replace('/dashboard');
+        }
+      })
+      .catch(() => {
+        // Local demo mode can run without Supabase public env vars.
+      });
   }, [router]);
 
   async function onSubmit(e: React.FormEvent) {

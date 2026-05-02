@@ -38,6 +38,12 @@ gh api repos/cloudsysops/opsly/branches/main/protection \
 
 ---
 
+## Pull Requests — borrar ramas al mergear
+
+En **Settings → General → Pull Requests**, activar **Automatically delete head branches**. Así las ramas de PR ya integradas en `main` se eliminan en `origin` y el listado de ramas queda legible. Política detallada: [`GIT-WORKFLOW.md`](./GIT-WORKFLOW.md).
+
+---
+
 ## Secrets requeridos (Settings → Secrets → Actions)
 
 Los secretos se gestionan en **Doppler** (`ops-intcloudsysops / prd`).  

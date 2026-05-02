@@ -1,7 +1,7 @@
 ---
 status: canon
 owner: product
-last_review: 2026-04-28
+last_review: 2026-05-02
 ---
 
 # VISION

@@ -7,6 +7,8 @@ import { DashboardShell } from '@/components/dashboard/premium-dashboard';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { InvoiceTable } from './invoice-table';
+import { demoInvoices } from '@/lib/demo-tenant';
+import { isPortalDemoSession } from '@/lib/demo-session';
 
 interface InvoiceRow {
   id: string;
@@ -60,6 +62,33 @@ export default async function InvoicesPage({
   params: Promise<{ tenant: string }>;
 }): Promise<ReactElement> {
   const { tenant } = await params;
+  if (await isPortalDemoSession()) {
+    const rows = demoInvoices();
+    const invoices = { data: rows, total: rows.length, page: 1, limit: 50 };
+    return (
+      <PortalShell title={`Facturacion - ${tenant}`} showModeLink tenantSlug={tenant}>
+        <DashboardShell>
+          <div className="flex items-center justify-between">
+            <h1 className="font-sans text-xl font-semibold text-neutral-100">Facturas</h1>
+            <Button variant="primary" size="sm" asChild>
+              <Link href={`/dashboard/${tenant}/invoices/new`}>+ Nueva Factura</Link>
+            </Button>
+          </div>
+
+          <Card className="mt-6">
+            <CardHeader>
+              <CardTitle>
+                {invoices.total} factura{invoices.total !== 1 ? 's' : ''}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-0">
+              <InvoiceTable invoices={invoices.data} tenant={tenant} />
+            </CardContent>
+          </Card>
+        </DashboardShell>
+      </PortalShell>
+    );
+  }
   const supabase = await createServerSupabase();
   const {
     data: { session },
@@ -76,7 +105,7 @@ export default async function InvoicesPage({
     : { data: [], total: 0, page: 1, limit: 50 };
 
   return (
-    <PortalShell title={`Facturación — ${tenant}`} showModeLink>
+    <PortalShell title={`Facturacion - ${tenant}`} showModeLink tenantSlug={tenant}>
       <DashboardShell>
         <div className="flex items-center justify-between">
           <h1 className="font-sans text-xl font-semibold text-neutral-100">Facturas</h1>

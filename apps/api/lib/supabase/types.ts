@@ -446,6 +446,31 @@ export type Database = {
         Insert: Record<string, unknown>;
         Update: Record<string, unknown>;
       };
+      n8n_marketplace_installs: {
+        Row: {
+          id: string;
+          tenant_id: string;
+          catalog_item_id: string;
+          catalog_version: string;
+          status: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          tenant_id: string;
+          catalog_item_id: string;
+          catalog_version?: string;
+          status?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<{
+          catalog_version: string;
+          status: string;
+          updated_at: string;
+        }>;
+      };
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;

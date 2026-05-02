@@ -1,6 +1,6 @@
 'use client';
 
-import { FormEvent, useMemo, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 import { Mic, Send, Bot, User, TerminalSquare } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
@@ -48,8 +48,11 @@ export function AIChatAssistant() {
   const [messages, setMessages] = useState<ChatMessage[]>(INITIAL_MESSAGES);
   const [input, setInput] = useState('');
   const [listening, setListening] = useState(false);
+  const [speechAvailable, setSpeechAvailable] = useState(false);
 
-  const speechAvailable = useMemo(() => typeof window !== 'undefined' && Boolean(window.webkitSpeechRecognition), []);
+  useEffect(() => {
+    setSpeechAvailable(Boolean(window.webkitSpeechRecognition));
+  }, []);
 
   function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();

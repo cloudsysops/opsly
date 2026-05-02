@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { getApiBaseUrl } from '@/lib/api';
+import { PORTAL_DEMO_COOKIE } from '@/lib/demo-tenant';
 
 interface LineItemInput {
   description: string;
@@ -72,6 +73,13 @@ export function CreateInvoiceForm({ tenant }: { tenant: string }) {
     }
 
     try {
+      const hasDemoSession =
+        document.cookie.includes(`${PORTAL_DEMO_COOKIE}=1`) &&
+        (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+      if (hasDemoSession) {
+        router.push(`/dashboard/${tenant}/invoices/inv_demo_001`);
+        return;
+      }
       const base = getApiBaseUrl();
       const res = await fetch(`${base}/api/billing/invoices`, {
         method: 'POST',

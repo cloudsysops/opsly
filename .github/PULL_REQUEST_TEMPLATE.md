@@ -52,6 +52,7 @@ Cada ítem ayuda a mantener calidad y seguridad del monorepo.
 - validate-config: valida JSON, DNS, Doppler mínimo y SSH según entorno local.
 - AGENTS.md: obligatorio si cambias arquitectura, flujo de deploy o decisiones fijas.
 - Terraform: si tocáis infra/terraform/, el plan debe revisarse antes de aplicar.
+- Git: tras merge, borrar rama o dejar que GitHub la borre si está activado “Automatically delete head branches”.
 -->
 
 - [ ] `npm run type-check` (o el type-check del monorepo) pasó localmente
@@ -59,6 +60,8 @@ Cada ítem ayuda a mantener calidad y seguridad del monorepo.
 - [ ] `./scripts/validate-config.sh` pasó cuando aplica (deploy / DNS / Doppler configurados en la máquina)
 - [ ] `AGENTS.md` actualizado si cambió arquitectura, flujos o decisiones de sesión
 - [ ] Si toqué `infra/terraform/`: revisé `terraform plan` (o equivalente) y lo enlazo o describo abajo
+- [ ] Rama actualizada con `main` (rebase o merge de `origin/main`) si el PR llevaba abierto varios días
+- [ ] Tras merge: borrar rama remota si GitHub no lo hace automático; ver `docs/01-development/GIT-WORKFLOW.md`
 
 ## Cómo probar
 

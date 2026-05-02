@@ -4,6 +4,8 @@
 
 Convenciones para operar varios asistentes (Cursor, Claude, automatismos) sobre el mismo repo sin divergir del contexto publicado en `AGENTS.md` / `VISION.md`.
 
+**Guardrails legales y operativos (producción, secretos, infra):** lee siempre [`AGENT-GUARDRAILS.md`](AGENT-GUARDRAILS.md) — qué un agente **no** debe modificar sin humano.
+
 ### SSH y usuarios remotos
 
 Antes de proponer comandos `ssh`, leer **[`SSH-USERS-FOR-AGENTS.md`](SSH-USERS-FOR-AGENTS.md)** (`vps-dragon` en el VPS, `opslyquantum` en el worker Ubuntu, `cboteros` solo como ejemplo de usuario en la Mac admin). El humano **no** debe cambiar de usuario local en la Mac para usar Cursor; el agente sí debe usar el usuario **remoto** correcto en cada host.

@@ -25,13 +25,23 @@ CLI: `npm run skills:list` · `npm run skills:bootstrap` · `node scripts/load-s
 ## Inicio (obligatorio)
 
 1. Leer AGENTS.md (URL raw: https://raw.githubusercontent.com/cloudsysops/opsly/main/AGENTS.md)
-2. `git pull --ff-only` antes de editar
+2. `git fetch origin` y `git pull --ff-only` en la rama de trabajo (detalle: `docs/01-development/SESSION-GIT-SYNC.md`, política: `docs/01-development/GIT-WORKFLOW.md`)
 3. SSH solo Tailscale `100.120.151.91` — nunca IP pública
 4. Secrets via Doppler (`ops-intcloudsysops/prd`)
 
 ## Identidad
 
 Ejecutor técnico senior. Filosofía: **Planificar → Documentar → Tests → Implementar → Validar → Notificar**
+
+## Cuando el usuario pide un «plan»
+
+**No** sustituir el plan canónico del repo con un documento nuevo o una hoja de ruta paralela. **Sí** leer y **desglosar en pasos accionables** (checklist, orden, criterios de hecho) lo que ya define:
+
+1. **`AGENTS.md`** — sección **🔄 Próximo paso inmediato** y, si aplica, **🔄 Estado actual** / bloqueantes.
+2. **`ROADMAP.md`** (y el detalle en **`docs/01-development/ROADMAP.md`** si existe en el clon) — sprint/semana activa.
+3. **Doc de sprint referenciado en AGENTS** (p. ej. Semana 6: plan en `docs/01-development/SEMANA-6-PLAN.md`; la ruta en AGENTS puede ser un stub — resolver al archivo real bajo `docs/`).
+
+Citar explícitamente qué fuente alimenta cada bloque del plan. **Excepción:** crear **ADR**, runbook o doc **nuevo** solo si el usuario lo pide de forma explícita (no por el mero hecho de pedir «un plan»).
 
 ## Antes de código
 
@@ -49,17 +59,35 @@ Ejecutor técnico senior. Filosofía: **Planificar → Documentar → Tests → 
 
 `npm run type-check` pasa · sin `any` nuevo · sin secretos
 
-##Workflow — tarea completada
+## Zonas delicadas (agentes) — obligatorio
 
-1. **Inmediatamente** después de completar una tarea:
-   ```bash
-   git add -A
-   git commit -m "type(scope): descripción corta de lo hecho"
-   git push origin main
-   ```
-2. **No acumular cambios** — cada tarea = un commit separado
-3. Si la tarea modifica `AGENTS.md` → incluir en el mismo commit
+Documento detallado: `docs/03-agents/AGENT-GUARDRAILS.md`. Resumen:
+
+- **Sin tocar sin humano explícito:** migraciones Supabase aplicables a prod, workflows de deploy, compose/Traefik de plataforma, `config/root-whitelist.json`, secretos Doppler, `docs/ACTIVE-PROMPT.md` en hosts donde corre `cursor-prompt-monitor`, Stripe live, SSH/UFW/DNS de producción.
+- **Secretos:** nunca en código, commits, docs ni chat; solo Doppler; sin volcar `doppler secrets get` a logs.
+- **Portal/API nuevas:** Zero-Trust (`resolveTrustedPortalSession`, `tenantSlugMatchesSession`); OpenAPI si aplica al subset CI.
+- **Ramas:** preferir PR + review para rojo/ámbar; no `--force` a `main`.
+
+## Workflow — tarea completada
+
+- **Código, infra, tests, contratos API:** rama `feat/*` o `fix/*` → **Pull Request** a `main`. No `git push --force` a `main`. Ver `.cursor/rules/git-workflow.mdc` y `docs/01-development/GIT-WORKFLOW.md`.
+- **Zona roja o ámbar** (`docs/03-agents/AGENT-GUARDRAILS.md`): siempre **PR** y revisión humana antes de merge.
+- **Solo cierre documental** (p. ej. actualizar secciones 🔄 de `AGENTS.md` y espejos según el bloque «Al cerrar» de `AGENTS.md`): un commit claro; push a `main` solo si la política del repo lo permite (muchas veces también vía PR).
+
+Pasos típicos en rama de trabajo:
+
+```bash
+git add -A
+git commit -m "type(scope): descripción corta de lo hecho"
+git push -u origin "$(git branch --show-current)"
+```
+
+Luego abrir PR en GitHub. **No acumular** mezclas de tareas no relacionadas en un solo commit.
 
 ## Al cerrar
 
-AGENTS.md actualizado → commit → push main
+`AGENTS.md` (secciones 🔄) actualizado cuando corresponda → commit → PR o push según política arriba.
+
+## Higiene de ramas (opcional)
+
+`./scripts/git-branch-hygiene.sh` — listado de remotas mergeables vs `main` y divergencia (no borra nada).

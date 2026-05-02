@@ -90,7 +90,11 @@ export default function MissionControlPage() {
         <div className="flex justify-between items-center mb-8 flex-wrap gap-4">
           <div>
             <h1 className="text-3xl font-bold text-white">Mission Control</h1>
-            <p className="text-gray-400 mt-1">OpenClaw Orchestrator Dashboard</p>
+            <p className="text-gray-400 mt-1">
+              OpenClaw Orchestrator Dashboard — modo/rol desde <code className="text-gray-300">GET /health</code> del
+              servicio (<code className="text-gray-300">ORCHESTRATOR_INTERNAL_URL</code>); cola BullMQ desde Redis
+              compartido.
+            </p>
           </div>
           <div className="flex flex-wrap gap-2">
             <Link

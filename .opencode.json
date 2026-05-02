@@ -19,7 +19,9 @@
     "contextBuilder": "apps/context-builder"
   },
   "rules": {
-    "gitWorkflow": "commit after each task",
+    "gitWorkflow": "PR-first for code/infra/tests; direct main only for allowed documentation closures",
+    "gitWorkflowDoc": "docs/01-development/GIT-WORKFLOW.md",
+    "guardrailsDoc": "docs/03-agents/AGENT-GUARDRAILS.md",
     "noSecrets": "use Doppler only",
     "noAny": "strict TypeScript",
     "ssh": "Tailscale only 100.120.151.91"

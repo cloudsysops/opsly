@@ -5,6 +5,12 @@ import { Loader2 } from 'lucide-react';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
+import {
+  isValidPortalDemoLogin,
+  PORTAL_DEMO_COOKIE,
+  PORTAL_DEMO_MODE_COOKIE,
+  PORTAL_DEMO_TENANT_SLUG,
+} from '@/lib/demo-tenant';
 import { createClient } from '@/lib/supabase';
 
 export default function LoginPage(): ReactElement {
@@ -19,6 +25,14 @@ export default function LoginPage(): ReactElement {
     setError(null);
     setLoading(true);
     try {
+      if (isValidPortalDemoLogin(email, password, window.location.hostname)) {
+        document.cookie = `${PORTAL_DEMO_COOKIE}=1; path=/; max-age=86400; SameSite=Lax`;
+        document.cookie = `${PORTAL_DEMO_MODE_COOKIE}=managed; path=/; max-age=86400; SameSite=Lax`;
+        document.cookie = `opsly_portal_demo_tenant=${PORTAL_DEMO_TENANT_SLUG}; path=/; max-age=86400; SameSite=Lax`;
+        router.push('/dashboard');
+        router.refresh();
+        return;
+      }
       const supabase = createClient();
       const { error: signError } = await supabase.auth.signInWithPassword({
         email: email.trim(),

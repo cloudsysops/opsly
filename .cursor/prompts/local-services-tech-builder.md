@@ -38,3 +38,7 @@ Canal de trabajo para Cursor Agent: **pegar este archivo con `@`** al iniciar la
 Sprint Local Services Week 1 (tenant local-services): [migración 0046 | rutas API | form book | tests aislamiento].
 Rama: cursor/local-services-week1-* — commit convencional al cerrar cada sub-tarea.
 ```
+
+## Referencia: prompts ampliados (producto)
+
+Para ventas, ops, automatización y roadmap multi-semana, usar los prompts dedicados en `.cursor/prompts/` (p. ej. `local-services-sales-closer.md`, `local-services-ops-admin.md`, `local-services-automation.md`, `local-services-mvp.md`). El esquema canónico en código es **`platform.ls_*`** y las rutas bajo `/api/local-services/…`, no un schema SQL separado `local_services.*` salvo que un ADR lo defina.
