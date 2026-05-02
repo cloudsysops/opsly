@@ -11,43 +11,34 @@ on:
 jobs:
   validate-doppler:
     runs-on: ubuntu-latest
+    # Skip on non-main branches if secrets not available (expected for feature branches)
     steps:
       - uses: actions/checkout@v4
 
-      - name: Check Doppler token availability
-        id: check-token
-        run: |
-          if [ -z "${{ secrets.DOPPLER_TOKEN_PRD }}" ]; then
-            echo "available=false" >> $GITHUB_OUTPUT
-            echo "⚠️ Doppler tokens not available on this branch (expected on feature branches)"
-          else
-            echo "available=true" >> $GITHUB_OUTPUT
-            echo "✓ Doppler tokens available"
-          fi
-
       - name: Install Doppler CLI
-        if: steps.check-token.outputs.available == 'true'
         run: |
           curl -Ls --tlsv1.2 --proto "=https" --retry 3 https://cli.doppler.com/install.sh | sudo sh
 
       - name: Validate Doppler prd
-        if: steps.check-token.outputs.available == 'true'
         env:
           DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN_PRD }}
         run: |
+          if [ -z "$DOPPLER_TOKEN" ]; then
+            echo "⚠️ Doppler token not available (feature branch - expected)"
+            echo "Skipping validation - will run on main branch"
+            exit 0
+          fi
           chmod +x scripts/ci/validate-doppler-vars.sh
           ./scripts/ci/validate-doppler-vars.sh ops-intcloudsysops prd
 
       - name: Validate Doppler stg
-        if: steps.check-token.outputs.available == 'true'
         env:
           DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN_STG }}
         run: |
+          if [ -z "$DOPPLER_TOKEN" ]; then
+            echo "⚠️ Doppler token not available (feature branch - expected)"
+            echo "Skipping validation - will run on main branch"
+            exit 0
+          fi
           chmod +x scripts/ci/validate-doppler-vars.sh
           ./scripts/ci/validate-doppler-vars.sh ops-intcloudsysops stg
-
-      - name: Skip validation on feature branch
-        if: steps.check-token.outputs.available == 'false'
-        run: |
-          echo "✅ Doppler validation skipped (feature branch - tokens only on main)"
-          echo "Full validation will run when PR is merged to main"
