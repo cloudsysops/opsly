@@ -103,12 +103,16 @@ for file in "${PHASE_2_FILES[@]}"; do
   [ ! -f "$file" ] && PHASE_2_COMPLETE=false
 done
 
-# Send phase completion notifications
+# Send phase completion notifications to Discord + Slack
 if [ "$PHASE_0_COMPLETE" = "true" ] && [ "$BRANCH" = "main" ]; then
   if ! grep -q "PHASE_0_NOTIFIED=true" "$ROOT/context/system_state.json" 2>/dev/null; then
     node "$ROOT/scripts/discord-notify.js" \
       "✅ Phase 0: Documentation Complete" \
       "**Opsly Local Services** documentation ready\n\n📋 **Deliverables:**\n• ADR-037 (Multi-tenant)\n• ADR-038 (Custom Quotes)\n• ADR-039 (Sales Channels)\n• ADR-040 (Technician Scaling)\n• 4 Cursor Prompts (Tech, Ops, Sales, Automation)\n\n📍 **Next:** Cursor Phase 1 API + Database" \
+      "success" 2>/dev/null || true
+    node "$ROOT/scripts/slack-notify.js" \
+      "✅ Phase 0: Documentation Complete" \
+      "Opsly Local Services documentation ready\n\n📋 *Deliverables:*\n• ADR-037 (Multi-tenant)\n• ADR-038 (Custom Quotes)\n• ADR-039 (Sales Channels)\n• ADR-040 (Technician Scaling)\n• 4 Cursor Prompts (Tech, Ops, Sales, Automation)\n\n📍 *Next:* Cursor Phase 1 API + Database" \
       "success" 2>/dev/null || true
   fi
 fi
@@ -119,6 +123,10 @@ if [ "$PHASE_1_COMPLETE" = "true" ] && [ "$BRANCH" = "main" ]; then
       "✅ Phase 1: Infrastructure Ready" \
       "**Opsly Local Services** API + Database deployed\n\n🔧 **Deliverables:**\n• Supabase migration (services, customers, bookings, quotes)\n• 5 API routes (/api/local-services/*)\n• Public booking form\n• Customer dashboard\n• Tests for tenant isolation\n\n📍 **Next:** Cursor Phase 2 automation + testing" \
       "success" 2>/dev/null || true
+    node "$ROOT/scripts/slack-notify.js" \
+      "✅ Phase 1: Infrastructure Ready" \
+      "Opsly Local Services API + Database deployed\n\n🔧 *Deliverables:*\n• Supabase migration (services, customers, bookings, quotes)\n• 5 API routes (/api/local-services/*)\n• Public booking form\n• Customer dashboard\n• Tests for tenant isolation\n\n📍 *Next:* Cursor Phase 2 automation + testing" \
+      "success" 2>/dev/null || true
   fi
 fi
 
@@ -127,6 +135,10 @@ if [ "$PHASE_2_COMPLETE" = "true" ] && [ "$BRANCH" = "main" ]; then
     node "$ROOT/scripts/discord-notify.js" \
       "✅ Phase 2: Automation Ready" \
       "**Opsly Local Services** n8n workflows + integration tests deployed\n\n⚙️ **Deliverables:**\n• Booking confirmation workflow\n• Post-service report automation\n• Integration tests\n• Technician portal\n\n📍 **Next:** Phase 3 assistant scaling + analytics" \
+      "success" 2>/dev/null || true
+    node "$ROOT/scripts/slack-notify.js" \
+      "✅ Phase 2: Automation Ready" \
+      "Opsly Local Services n8n workflows + integration tests deployed\n\n⚙️ *Deliverables:*\n• Booking confirmation workflow\n• Post-service report automation\n• Integration tests\n• Technician portal\n\n📍 *Next:* Phase 3 assistant scaling + analytics" \
       "success" 2>/dev/null || true
   fi
 fi
