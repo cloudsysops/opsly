@@ -82,6 +82,20 @@ export const PORTAL_URL_PROBE = {
   STATUS_EXCLUSIVE_MAX: 600,
 } as const;
 
+/** GET /api/local/services — sondas opcionales (`?probe=1`). */
+export const LOCAL_SERVICES_API = {
+  PROBE_TIMEOUT_MS: 2_000,
+  DEFAULT_HOST: '127.0.0.1',
+  DEFAULT_PORT_API: 3000,
+  DEFAULT_PORT_ADMIN: 3001,
+  DEFAULT_PORT_PORTAL: 3002,
+  DEFAULT_PORT_MCP: 3003,
+  DEFAULT_PORT_LLM_GATEWAY: 3010,
+  DEFAULT_PORT_ORCHESTRATOR: 3011,
+  DEFAULT_PORT_CONTEXT_BUILDER: 3012,
+  PORT_MAX_EXCLUSIVE: 65_536,
+} as const;
+
 /** Fees por defecto en cotización / aprovisionamiento cloud (USD/mes). */
 export const PROVISIONING_OPSLY_FEE_USD = {
   FREE_TIER_DEFAULT: 29,
