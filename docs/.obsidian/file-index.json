@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-05-02T14:12:42Z",
-  "totalFiles": 287,
+  "lastIndexed": "2026-05-02T16:08:21Z",
+  "totalFiles": 288,
   "files": [
     ".openclaw.md",
     "2026-04-21.md",
@@ -101,6 +101,7 @@
     "FIRST-OPENCLAW-AGENTS-MAC2011.md",
     "GCP-ACTIVATION-CHECKLIST.md",
     "GCP-STANDBY-CONFIG.md",
+    "GIT-WORKFLOW.md",
     "GITHUB-SETTINGS.md",
     "GITHUB-TOKEN.md",
     "GOOGLE-CLOUD-ACTIVATION.md",
