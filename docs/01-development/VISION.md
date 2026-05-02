@@ -1,7 +1,7 @@
 ---
 status: canon
 owner: product
-last_review: 2026-04-28
+last_review: 2026-04-30
 ---
 
 # Opsly — Visión y Objetivos
@@ -403,3 +403,13 @@ Con 12 meses de datos + Vertex AI + Llama base:
 - **Claves obligatorias por evento:** `tenant_slug`, `request_id`, `agent_role`, `model`, `tokens_in`, `tokens_out`, `cost_usd`, `latency_ms`, `cache_hit`.
 - **Regla operativa:** ninguna llamada de agente/LLM entra a producción sin evento de metering trazable.
 - **Objetivo Fase 5:** budget caps por tenant, alertas automáticas y reconciliación mensual de margen.
+
+### Vista operativa — capa agentic (consolidada 2026-04)
+
+Texto que antes vivía solo en `docs/VISION.md`; la visión larga sigue siendo este archivo; los stubs en raíz y `.github/` solo enlazan aquí.
+
+1. **Control plane estable** en `apps/*` (API, Orchestrator, MCP, LLM Gateway).
+2. **Shell de aceleración operativa** en `tools/cli` para validar patrones de autonomía: modos dinámicos, selección de skills, pipeline seguro sandbox/qa/prod, coordinación de workers, orquestación multi-agente.
+3. **Gobernanza por fases:** fase actual `dry-run` + guardrails (sin despliegues destructivos automáticos); fase siguiente sandbox remoto + rollback + evidencia auditable.
+
+**Principio:** autonomía progresiva con seguridad por defecto. Toda capacidad de auto-construcción o auto-evolución inicia en modo seguro (`dry-run`) y solo se promueve con aprobación explícita y trazabilidad.

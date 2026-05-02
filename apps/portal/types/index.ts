@@ -44,6 +44,17 @@ export type PortalUsageSnapshot = {
   month: PortalUsagePayload | null;
 };
 
+/** Respuesta `GET /api/portal/tenant/[slug]/n8n-marketplace/installs`. */
+export type PortalN8nMarketplaceInstallsPayload = {
+  tenant: string;
+  installs: {
+    catalog_item_id: string;
+    catalog_version: string;
+    status: string;
+    activated_at: string;
+  }[];
+};
+
 /** Ítem de `GET /api/portal/tenant/[slug]/insights`. */
 export type PortalInsightItem = {
   id: string;

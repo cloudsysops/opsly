@@ -33,6 +33,16 @@ CLI: `npm run skills:list` · `npm run skills:bootstrap` · `node scripts/load-s
 
 Ejecutor técnico senior. Filosofía: **Planificar → Documentar → Tests → Implementar → Validar → Notificar**
 
+## Cuando el usuario pide un «plan»
+
+**No** sustituir el plan canónico del repo con un documento nuevo o una hoja de ruta paralela. **Sí** leer y **desglosar en pasos accionables** (checklist, orden, criterios de hecho) lo que ya define:
+
+1. **`AGENTS.md`** — sección **🔄 Próximo paso inmediato** y, si aplica, **🔄 Estado actual** / bloqueantes.
+2. **`ROADMAP.md`** (y el detalle en **`docs/01-development/ROADMAP.md`** si existe en el clon) — sprint/semana activa.
+3. **Doc de sprint referenciado en AGENTS** (p. ej. Semana 6: plan en `docs/01-development/SEMANA-6-PLAN.md`; la ruta en AGENTS puede ser un stub — resolver al archivo real bajo `docs/`).
+
+Citar explícitamente qué fuente alimenta cada bloque del plan. **Excepción:** crear **ADR**, runbook o doc **nuevo** solo si el usuario lo pide de forma explícita (no por el mero hecho de pedir «un plan»).
+
 ## Antes de código
 
 - ¿Existe en `lib/`? → reutilizar
@@ -49,7 +59,18 @@ Ejecutor técnico senior. Filosofía: **Planificar → Documentar → Tests → 
 
 `npm run type-check` pasa · sin `any` nuevo · sin secretos
 
-##Workflow — tarea completada
+## Zonas delicadas (agentes) — obligatorio
+
+Documento detallado: `docs/03-agents/AGENT-GUARDRAILS.md`. Resumen:
+
+- **Sin tocar sin humano explícito:** migraciones Supabase aplicables a prod, workflows de deploy, compose/Traefik de plataforma, `config/root-whitelist.json`, secretos Doppler, `docs/ACTIVE-PROMPT.md` en hosts donde corre `cursor-prompt-monitor`, Stripe live, SSH/UFW/DNS de producción.
+- **Secretos:** nunca en código, commits, docs ni chat; solo Doppler; sin volcar `doppler secrets get` a logs.
+- **Portal/API nuevas:** Zero-Trust (`resolveTrustedPortalSession`, `tenantSlugMatchesSession`); OpenAPI si aplica al subset CI.
+- **Ramas:** preferir PR + review para rojo/ámbar; no `--force` a `main`.
+
+## Workflow — tarea completada
+
+Si el cambio toca **zona roja o ámbar** en `docs/03-agents/AGENT-GUARDRAILS.md`, usar **rama + PR** y no `git push origin main` hasta revisión humana.
 
 1. **Inmediatamente** después de completar una tarea:
    ```bash

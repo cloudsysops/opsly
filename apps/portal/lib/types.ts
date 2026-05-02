@@ -6,6 +6,7 @@ export type {
   PortalInsightItem,
   PortalInsightsPayload,
   PortalMode,
+  PortalN8nMarketplaceInstallsPayload,
   PortalTenantPayload,
   PortalUsagePayload,
   PortalUsagePeriod,

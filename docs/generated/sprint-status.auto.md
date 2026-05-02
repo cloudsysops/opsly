@@ -12,7 +12,7 @@ do_not_edit: true
 # Opsly — Sprint Status (Auto-Generated)
 
 > **Generado automáticamente** — fuente: [`docs/implementation/status.yaml`](../implementation/status.yaml).
-> Generado: 2026-05-01T18:03:18.887Z
+> Generado: 2026-05-02T14:10:32.258Z
 
 ## Sprint 1: Approval Gate + Vertex AI
 

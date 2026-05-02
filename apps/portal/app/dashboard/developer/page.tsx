@@ -24,7 +24,7 @@ export default async function DeveloperDashboardPage(): Promise<ReactElement> {
   const n8nUser = data.services.n8n_user ?? DEFAULT_N8N_USER;
 
   return (
-    <PortalShell title={`Panel Developer — ${data.slug}`} showModeLink>
+    <PortalShell title={`Panel Developer - ${data.slug}`} showModeLink tenantSlug={data.slug}>
       <DashboardShell>
         <PageLead>
           Servicios, uso de IA e información técnica de tu tenant. Las URLs se abren en una pestaña
@@ -53,10 +53,10 @@ export default async function DeveloperDashboardPage(): Promise<ReactElement> {
                     <span className="text-ops-gray">Usuario: </span>
                     <span className="font-mono">{n8nUser}</span>
                   </p>
-                  <p className="flex flex-wrap items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-2">
                     <span className="text-ops-gray">Password: </span>
                     <CredentialReveal password={data.services.n8n_password} />
-                  </p>
+                  </div>
                 </div>
               </ServiceCard>
 

@@ -6,6 +6,7 @@ import {
   portalTenantInsightsUrl,
   portalTenantMeUrl,
   portalTenantModeUrl,
+  portalTenantN8nMarketplaceInstallsUrl,
   portalTenantUsageUrl,
 } from './portal-api-paths';
 import type {
@@ -14,6 +15,7 @@ import type {
   PortalHealthPayload,
   PortalInsightsPayload,
   PortalMode,
+  PortalN8nMarketplaceInstallsPayload,
   PortalTenantPayload,
   PortalUsagePayload,
   PortalUsagePeriod,
@@ -100,6 +102,87 @@ export async function fetchPortalUsage(
     },
     cache: 'no-store',
   });
+}
+
+const N8N_MARKETPLACE_POST_TIMEOUT_MS = 15_000;
+
+export async function fetchPortalN8nMarketplaceInstalls(
+  accessToken: string,
+  tenantSlug: string
+): Promise<PortalN8nMarketplaceInstallsPayload> {
+  const path = portalTenantN8nMarketplaceInstallsUrl(getApiBaseUrl(), tenantSlug);
+  return requestPortalApi<PortalN8nMarketplaceInstallsPayload>(path, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      'Content-Type': 'application/json',
+    },
+    cache: 'no-store',
+  });
+}
+
+export type PortalN8nMarketplaceActivateResponse = {
+  ok: true;
+  already: boolean;
+  install: {
+    catalog_item_id: string;
+    catalog_version: string;
+    status: string;
+    activated_at: string;
+  };
+};
+
+function parsePortalApiError(data: unknown): string {
+  if (
+    data !== null &&
+    typeof data === 'object' &&
+    'error' in data &&
+    typeof (data as { error: unknown }).error === 'string'
+  ) {
+    return (data as { error: string }).error;
+  }
+  return 'Request failed';
+}
+
+export async function postPortalN8nMarketplaceInstall(
+  accessToken: string,
+  tenantSlug: string,
+  catalogItemId: string
+): Promise<PortalN8nMarketplaceActivateResponse> {
+  const path = portalTenantN8nMarketplaceInstallsUrl(getApiBaseUrl(), tenantSlug);
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), N8N_MARKETPLACE_POST_TIMEOUT_MS);
+  let res: Response;
+  try {
+    res = await fetch(path, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ catalog_item_id: catalogItemId }),
+      signal: controller.signal,
+    });
+  } catch (err) {
+    if (err instanceof Error && err.name === 'AbortError') {
+      throw new Error(
+        `Portal API timeout after ${N8N_MARKETPLACE_POST_TIMEOUT_MS / 1000}s`
+      );
+    }
+    throw err;
+  } finally {
+    clearTimeout(timeout);
+  }
+  let data: unknown = null;
+  try {
+    data = await res.json();
+  } catch {
+    data = null;
+  }
+  if (!res.ok) {
+    throw new Error(parsePortalApiError(data));
+  }
+  return data as PortalN8nMarketplaceActivateResponse;
 }
 
 /**

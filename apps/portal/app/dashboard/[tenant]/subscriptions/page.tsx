@@ -6,6 +6,12 @@ import { DashboardShell } from '@/components/dashboard/premium-dashboard';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { SubscriptionCard } from './subscription-card';
 import { PlanSelector } from './plan-selector';
+import {
+  demoBillingPlans,
+  demoSubscription,
+  PORTAL_DEMO_TENANT_SLUG,
+} from '@/lib/demo-tenant';
+import { isPortalDemoSession } from '@/lib/demo-session';
 
 interface BillingPlan {
   id: string;
@@ -68,6 +74,17 @@ export default async function SubscriptionsPage({
   params: Promise<{ tenant: string }>;
 }): Promise<ReactElement> {
   const { tenant } = await params;
+  if (await isPortalDemoSession()) {
+    const plans = demoBillingPlans();
+    return (
+      <PortalShell title={`Suscripcion - ${tenant}`} showModeLink tenantSlug={tenant}>
+        <DashboardShell>
+          <h1 className="font-sans text-xl font-semibold text-neutral-100">Suscripcion</h1>
+          <SubscriptionCard subscription={demoSubscription()} plans={plans} tenant={tenant} />
+        </DashboardShell>
+      </PortalShell>
+    );
+  }
   const supabase = await createServerSupabase();
   const {
     data: { session },
@@ -81,7 +98,7 @@ export default async function SubscriptionsPage({
     : { subscription: null, plans: [] };
 
   return (
-    <PortalShell title={`Suscripcion — ${tenant}`} showModeLink>
+    <PortalShell title={`Suscripcion - ${tenant}`} showModeLink tenantSlug={tenant}>
       <DashboardShell>
         <h1 className="font-sans text-xl font-semibold text-neutral-100">Suscripcion</h1>
 
@@ -94,7 +111,11 @@ export default async function SubscriptionsPage({
             </CardHeader>
             <CardContent>
               <p className="mb-6 text-sm text-ops-gray">Selecciona un plan para comenzar.</p>
-              <PlanSelector plans={plans} tenant={tenant} tenantId={tenantId ?? ''} />
+              <PlanSelector
+                plans={plans}
+                tenant={tenant}
+                tenantId={tenantId ?? PORTAL_DEMO_TENANT_SLUG}
+              />
             </CardContent>
           </Card>
         )}

@@ -1,5 +1,6 @@
 import { createServerClient, type SetAllCookies } from '@supabase/ssr';
 import { type NextRequest, NextResponse } from 'next/server';
+import { PORTAL_DEMO_COOKIE } from '@/lib/demo-tenant';
 
 export async function updateSession(request: NextRequest): Promise<NextResponse> {
   let supabaseResponse = NextResponse.next({
@@ -41,9 +42,19 @@ export async function updateSession(request: NextRequest): Promise<NextResponse>
   const isOnboarding = pathname.startsWith('/onboarding/');
 
   const isAdmin = pathname.startsWith('/admin');
+  const hasDemoSession =
+    request.cookies.get(PORTAL_DEMO_COOKIE)?.value === '1' &&
+    (request.nextUrl.hostname === 'localhost' || request.nextUrl.hostname === '127.0.0.1');
+
+  if (hasDemoSession && isLogin) {
+    const redirectUrl = request.nextUrl.clone();
+    redirectUrl.pathname = '/dashboard';
+    return NextResponse.redirect(redirectUrl);
+  }
 
   if (
     !user &&
+    !hasDemoSession &&
     !isLogin &&
     !isInvite &&
     (pathname.startsWith('/dashboard') || isOnboarding || isAdmin)
@@ -53,7 +64,7 @@ export async function updateSession(request: NextRequest): Promise<NextResponse>
     return NextResponse.redirect(redirectUrl);
   }
 
-  if (user && isLogin) {
+  if ((user || hasDemoSession) && isLogin) {
     const redirectUrl = request.nextUrl.clone();
     redirectUrl.pathname = '/dashboard';
     return NextResponse.redirect(redirectUrl);

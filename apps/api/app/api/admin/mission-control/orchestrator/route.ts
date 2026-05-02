@@ -1,8 +1,59 @@
 import { NextResponse } from 'next/server';
 import type { RedisClientType } from 'redis';
 
+const ORCHESTRATOR_HEALTH_FETCH_MS = 2000;
+
 function getRedisUrl(): string {
   return process.env.REDIS_URL ?? 'redis://localhost:6379';
+}
+
+function getOrchestratorInternalBaseUrl(): string {
+  const raw = process.env.ORCHESTRATOR_INTERNAL_URL?.trim();
+  if (raw && raw.length > 0) {
+    return raw.replace(/\/+$/, '');
+  }
+  return 'http://orchestrator:3011';
+}
+
+type OrchestratorHealthPayload = {
+  mode: string;
+  role: string;
+};
+
+async function fetchOrchestratorHealth(): Promise<OrchestratorHealthPayload | null> {
+  const base = getOrchestratorInternalBaseUrl();
+  const url = `${base}/health`;
+  const controller = new AbortController();
+  const timeout = setTimeout(() => {
+    controller.abort();
+  }, ORCHESTRATOR_HEALTH_FETCH_MS);
+  try {
+    const res = await fetch(url, {
+      method: 'GET',
+      headers: { Accept: 'application/json' },
+      signal: controller.signal,
+    });
+    if (!res.ok) {
+      return null;
+    }
+    const body = (await res.json()) as Record<string, unknown>;
+    const mode = typeof body.mode === 'string' ? body.mode.trim() : '';
+    const role = typeof body.role === 'string' ? body.role.trim() : '';
+    if (mode.length === 0 || role.length === 0) {
+      return null;
+    }
+    return { mode, role };
+  } catch {
+    return null;
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+function fallbackModeAndRoleFromApiEnv(): OrchestratorHealthPayload {
+  const mode = process.env.OPSLY_ORCHESTRATOR_MODE ?? 'worker-enabled';
+  const role = mode === 'worker-enabled' ? 'worker' : 'control';
+  return { mode, role };
 }
 
 async function createRedis(): Promise<RedisClientType> {
@@ -57,8 +108,8 @@ export async function GET(): Promise<Response> {
     const queue = await readOpenclawQueueLengths(redis);
     await redis.disconnect();
 
-    const mode = process.env.OPSLY_ORCHESTRATOR_MODE ?? 'worker-enabled';
-    const role = mode === 'worker-enabled' ? 'worker' : 'control';
+    const health = await fetchOrchestratorHealth();
+    const { mode, role } = health ?? fallbackModeAndRoleFromApiEnv();
 
     return NextResponse.json({
       mode,
