@@ -1,0 +1,13 @@
+---
+description: Local Services vertical — DB migrations, API, booking UI, tenant isolation (tenant-context)
+globs: apps/api/app/api/local-services/**,apps/local-services/**,supabase/migrations/*local_services*,supabase/migrations/0046*.sql
+alwaysApply: false
+---
+
+# Local Services (Cursor)
+
+- **Tenant isolation:** usar `runWithTenantContext` / `getTenantContext` desde `apps/api/lib/tenant-context.ts` en el DAL; no confiar solo en `tenant_slug` del body sin validar sesión.
+- **Supabase:** migraciones numeradas; RLS explícitas; FK a `platform.tenants` donde corresponda.
+- **API:** Next.js App Router en `apps/api/app/api/`; seguir convenciones ESLint del repo (sin `any`, complejidad acotada).
+- **Tests:** Vitest; casos mínimos cross-tenant (tenant A vs B).
+- **Prompt maestro:** `@.cursor/prompts/local-services-tech-builder.md` para alcance Week 1.
