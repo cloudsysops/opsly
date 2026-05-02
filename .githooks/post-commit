@@ -61,5 +61,75 @@ if echo "$CHANGED_AFTER" | rg -q "(AGENTS\\.md|VISION\\.md|docs/)"; then
   fi
 fi
 
+# ─── Phase Detection for Opsly Local Services ─────────────
+# Detect Phase 0: Documentation (ADRs + Prompts)
+PHASE_0_FILES=(
+  "$ROOT/docs/adr/ADR-037-opsly-local-services-multi-tenant.md"
+  "$ROOT/docs/adr/ADR-038-custom-quotes-vs-fixed-pricing.md"
+  "$ROOT/docs/adr/ADR-039-sales-channels-email-whatsapp.md"
+  "$ROOT/docs/adr/ADR-040-technician-scaling-solo-to-assistant.md"
+  "$ROOT/.cursor/prompts/local-services-tech-builder.md"
+  "$ROOT/.cursor/prompts/local-services-ops-admin.md"
+  "$ROOT/.cursor/prompts/local-services-sales-closer.md"
+  "$ROOT/.cursor/prompts/local-services-automation.md"
+)
+
+PHASE_0_COMPLETE=true
+for file in "${PHASE_0_FILES[@]}"; do
+  [ ! -f "$file" ] && PHASE_0_COMPLETE=false
+done
+
+# Detect Phase 1: API + Database (Core Infrastructure)
+PHASE_1_FILES=(
+  "$ROOT/supabase/migrations/0046_local_services_core.sql"
+  "$ROOT/apps/api/app/api/local-services/route.ts"
+  "$ROOT/apps/local-services/app/book/page.tsx"
+  "$ROOT/apps/local-services/app/dashboard/page.tsx"
+)
+
+PHASE_1_COMPLETE=true
+for file in "${PHASE_1_FILES[@]}"; do
+  [ ! -f "$file" ] && PHASE_1_COMPLETE=false
+done
+
+# Detect Phase 2: Testing + Automation (Integration)
+PHASE_2_FILES=(
+  "$ROOT/apps/api/__tests__/local-services.test.ts"
+  "$ROOT/.n8n/1-workflows/local-services-booking-confirmation.json"
+)
+
+PHASE_2_COMPLETE=true
+for file in "${PHASE_2_FILES[@]}"; do
+  [ ! -f "$file" ] && PHASE_2_COMPLETE=false
+done
+
+# Send phase completion notifications
+if [ "$PHASE_0_COMPLETE" = "true" ] && [ "$BRANCH" = "main" ]; then
+  if ! grep -q "PHASE_0_NOTIFIED=true" "$ROOT/context/system_state.json" 2>/dev/null; then
+    node "$ROOT/scripts/discord-notify.js" \
+      "✅ Phase 0: Documentation Complete" \
+      "**Opsly Local Services** documentation ready\n\n📋 **Deliverables:**\n• ADR-037 (Multi-tenant)\n• ADR-038 (Custom Quotes)\n• ADR-039 (Sales Channels)\n• ADR-040 (Technician Scaling)\n• 4 Cursor Prompts (Tech, Ops, Sales, Automation)\n\n📍 **Next:** Cursor Phase 1 API + Database" \
+      "success" 2>/dev/null || true
+  fi
+fi
+
+if [ "$PHASE_1_COMPLETE" = "true" ] && [ "$BRANCH" = "main" ]; then
+  if ! grep -q "PHASE_1_NOTIFIED=true" "$ROOT/context/system_state.json" 2>/dev/null; then
+    node "$ROOT/scripts/discord-notify.js" \
+      "✅ Phase 1: Infrastructure Ready" \
+      "**Opsly Local Services** API + Database deployed\n\n🔧 **Deliverables:**\n• Supabase migration (services, customers, bookings, quotes)\n• 5 API routes (/api/local-services/*)\n• Public booking form\n• Customer dashboard\n• Tests for tenant isolation\n\n📍 **Next:** Cursor Phase 2 automation + testing" \
+      "success" 2>/dev/null || true
+  fi
+fi
+
+if [ "$PHASE_2_COMPLETE" = "true" ] && [ "$BRANCH" = "main" ]; then
+  if ! grep -q "PHASE_2_NOTIFIED=true" "$ROOT/context/system_state.json" 2>/dev/null; then
+    node "$ROOT/scripts/discord-notify.js" \
+      "✅ Phase 2: Automation Ready" \
+      "**Opsly Local Services** n8n workflows + integration tests deployed\n\n⚙️ **Deliverables:**\n• Booking confirmation workflow\n• Post-service report automation\n• Integration tests\n• Technician portal\n\n📍 **Next:** Phase 3 assistant scaling + analytics" \
+      "success" 2>/dev/null || true
+  fi
+fi
+
 # ─── Unified hooks for external/internal agents ─────────────
 "$ROOT/scripts/agent-hooks.sh" post-commit 2>/dev/null || true
