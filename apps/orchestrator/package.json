@@ -9,7 +9,8 @@
     "test": "vitest run",
     "test:tools": "vitest run --passWithNoTests src/agents/tools",
     "type-check": "tsc --noEmit",
-    "hive-run": "tsx src/hive/hive-run.ts"
+    "hive-run": "tsx src/hive/hive-run.ts",
+    "iteration-watch": "tsx scripts/iteration-watch-responses.ts"
   },
   "dependencies": {
     "@ai-sdk/openai": "^3.0.53",

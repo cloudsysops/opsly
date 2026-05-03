@@ -29,7 +29,8 @@ export type WorkerName =
   | 'local_copilot'
   | 'local_opencode'
   | 'cloudsysops_agents'
-  | 'defense_audit';
+  | 'defense_audit'
+  | 'test_validation';
 
 export function extractJobContext(job: Job): {
   task_id?: string;

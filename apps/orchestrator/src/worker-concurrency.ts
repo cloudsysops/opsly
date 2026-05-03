@@ -22,7 +22,8 @@ export type WorkerConcurrencyKey =
   | 'local_copilot'
   | 'local_opencode'
   | 'defense_audit'
-  | 'cloudsysops_agents';
+  | 'cloudsysops_agents'
+  | 'test_validation';
 
 const FULL_STACK_DEFAULTS: Record<WorkerConcurrencyKey, number> = {
   cursor: 3,
@@ -47,6 +48,7 @@ const FULL_STACK_DEFAULTS: Record<WorkerConcurrencyKey, number> = {
   local_opencode: 1,
   defense_audit: 1,
   cloudsysops_agents: 2,
+  test_validation: 1,
 };
 
 const DISTRIBUTED_WORKER_DEFAULTS: Record<WorkerConcurrencyKey, number> = {
@@ -72,6 +74,7 @@ const DISTRIBUTED_WORKER_DEFAULTS: Record<WorkerConcurrencyKey, number> = {
   local_opencode: 1,
   defense_audit: 1,
   cloudsysops_agents: 1,
+  test_validation: 1,
 };
 
 const ENV_NAMES: Record<WorkerConcurrencyKey, string> = {
@@ -97,6 +100,7 @@ const ENV_NAMES: Record<WorkerConcurrencyKey, string> = {
   local_opencode: 'ORCHESTRATOR_LOCAL_OPENCODE_CONCURRENCY',
   defense_audit: 'ORCHESTRATOR_DEFENSE_AUDIT_CONCURRENCY',
   cloudsysops_agents: 'ORCHESTRATOR_CLOUDSYSOPS_AGENTS_CONCURRENCY',
+  test_validation: 'ORCHESTRATOR_TEST_VALIDATION_CONCURRENCY',
 };
 
 function parsePositiveInt(raw: string | undefined): number | null {

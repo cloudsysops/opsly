@@ -57,7 +57,8 @@ export function resolveAutonomyPolicy(
     jobType === 'ollama' ||
     jobType === 'defense_audit' ||
     jobType === 'cloudsysops_sales_message' ||
-    jobType === 'cloudsysops_ops_complete'
+    jobType === 'cloudsysops_ops_complete' ||
+    jobType === 'test_validation'
   ) {
     return MEDIUM_RISK_POLICY;
   }

@@ -25,7 +25,21 @@ export type JobType =
   /** CloudSysOps OpenClaw: mensaje canal ventas → LLM Gateway (cola `cloudsysops-agents`). */
   | 'cloudsysops_sales_message'
   /** CloudSysOps OpenClaw: cierre de servicio → informe vía LLM Gateway (cola `cloudsysops-agents`). */
-  | 'cloudsysops_ops_complete';
+  | 'cloudsysops_ops_complete'
+  /** Validación npm (type-check / test / build) en `repo_root`; escribe `.cursor/responses/validation-*.json`. */
+  | 'test_validation';
+
+export interface TestValidationPayload {
+  type: 'test_validation';
+  repo_root: string;
+  tenant_slug: string;
+  request_id: string;
+  correlation_id: string;
+  attempt: number;
+  steps?: Array<'type-check' | 'test' | 'build'>;
+  npm_workspace?: string;
+  source_prompt_path?: string;
+}
 
 export interface SandboxExecutionPayload {
   type: 'sandbox_execution';
