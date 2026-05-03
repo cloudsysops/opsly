@@ -12,6 +12,7 @@ import {
 } from './orchestrator-role.js';
 import {
   agentClassifierQueue,
+  cloudsysopsAgentsQueue,
   connection,
   hermesOrchestrationQueue,
   localAgentQueue,
@@ -37,6 +38,8 @@ import { startShieldScanWorker } from './workers/ShieldScanWorker.js';
 import { startSuspensionWorker } from './workers/SuspensionWorker.js';
 import { startGeneralEventsWorker } from './workers/GeneralEventsWorker.js';
 import { startIntentDispatchWorker } from './workers/IntentDispatchWorker.js';
+import { startCloudSysOpsAgentsWorker } from './workers/CloudSysOpsAgentsWorker.js';
+import { startDefenseAuditWorker } from './workers/DefenseAuditWorker.js';
 import { startTerminalWorker } from './workers/TerminalWorker.js';
 import { closeWebhookQueue, createWebhookWorker } from './workers/WebhookWorker.js';
 import { startWebhooksProcessingWorker } from './workers/WebhooksProcessingWorker.js';
@@ -89,6 +92,12 @@ function startAllWorkers(): AsyncCleanup[] {
   const intentDispatchWorker = startIntentDispatchWorker(connection);
   const terminalWorker = startTerminalWorker(connection);
   const localAgentsWorker = startLocalAgentsUnifiedWorker(connection);
+  const defenseAuditWorker = startDefenseAuditWorker(connection);
+  const cloudSysOpsAgentsWorker =
+    process.env.OPSLY_CLOUDSYSOPS_AGENTS_WORKER_ENABLED === 'true'
+      ? startCloudSysOpsAgentsWorker(connection)
+      : null;
+
 
   let agentClassifierCleanup: AsyncCleanup[] = [];
   if (process.env.OPSLY_AGENT_CLASSIFIER_WORKER_ENABLED === 'true') {
@@ -114,6 +123,9 @@ function startAllWorkers(): AsyncCleanup[] {
     async () => intentDispatchWorker.close(),
     async () => terminalWorker.close(),
     async () => localAgentsWorker.close(),
+    async () => defenseAuditWorker.close(),
+    async () =>
+      cloudSysOpsAgentsWorker !== null ? cloudSysOpsAgentsWorker.close() : Promise.resolve(),
     ...agentClassifierCleanup
   );
 
@@ -121,6 +133,10 @@ function startAllWorkers(): AsyncCleanup[] {
     '[orchestrator] Workers: cursor, n8n, notify, drive, backup, health' +
       (process.env.OPSLY_SHIELD_SCAN_WORKER_ENABLED === 'true' ? ', shield-scan' : '') +
       ', budget, opsly-webhooks, webhooks-processing, general-events, ollama, openclaw-planner, openclaw-skeptic, intent_dispatch, terminal_task' +
+      ', defense_audit' +
+      (process.env.OPSLY_CLOUDSYSOPS_AGENTS_WORKER_ENABLED === 'true'
+        ? ', cloudsysops-agents'
+        : '') +
       ', local-agents (unified)' +
       (process.env.OPSLY_AGENT_CLASSIFIER_WORKER_ENABLED === 'true' ? ', agent-classifier' : '') +
       '; Hermes tick → servicio opsly-hermes (no este proceso).'
@@ -163,6 +179,7 @@ async function main(): Promise<void> {
   cleanupTasks.push(async () => drainMeteringOperations());
   cleanupTasks.push(async () => orchestratorQueue.close());
   cleanupTasks.push(async () => localAgentQueue.close());
+  cleanupTasks.push(async () => cloudsysopsAgentsQueue.close());
   cleanupTasks.push(async () => agentClassifierQueue.close());
   cleanupTasks.push(async () => hermesOrchestrationQueue.close());
   cleanupTasks.push(async () => closeWebhookQueue());

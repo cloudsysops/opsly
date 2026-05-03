@@ -2,13 +2,21 @@ import { randomUUID } from 'node:crypto';
 import { createServer, type IncomingMessage, type Server, type ServerResponse } from 'node:http';
 import { resolveAutonomyPolicy } from './autonomy/policy.js';
 import { orchestratorModeLabel, parseOrchestratorRole } from './orchestrator-role.js';
-import { enqueueJob, enqueueLocalAgentJob, localAgentQueue, orchestratorQueue } from './queue.js';
+import {
+  cloudsysopsAgentsQueue,
+  enqueueCloudSysOpsAgentJob,
+  enqueueJob,
+  enqueueLocalAgentJob,
+  localAgentQueue,
+  orchestratorQueue,
+} from './queue.js';
 import type { OrchestratorJob } from './types.js';
 import {
   jobTypeForLocalAgent,
   normalizeLocalAgentKind,
   readPromptInput,
 } from './lib/local-worker-utils.js';
+import { parseOpsAgentPayload, parseSalesAgentPayload } from './agents/cloudsysops/payloads.js';
 import { enqueueWebhookJob } from './workers/WebhookWorker.js';
 import type { WebhookJobData } from './workers/WebhookWorker.js';
 import {
@@ -105,6 +113,324 @@ function enrichAutonomyMetadata(req: IncomingMessage, job: OrchestratorJob): {
   job.autonomy_risk = policy.riskLevel;
   job.metadata = metadata;
   return { ok: true };
+}
+
+async function getJobFromPlatformQueues(jobId: string) {
+  return (
+    (await orchestratorQueue.getJob(jobId)) ??
+    (await localAgentQueue.getJob(jobId)) ??
+    (await cloudsysopsAgentsQueue.getJob(jobId))
+  );
+}
+
+async function handleEnqueueDefenseAudit(req: IncomingMessage, res: ServerResponse): Promise<void> {
+  if (!verifyPlatformAdminToken(req)) {
+    res.writeHead(401, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'unauthorized' }));
+    return;
+  }
+  let body: unknown;
+  try {
+    body = await readBody(req);
+  } catch {
+    res.writeHead(400, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'Invalid JSON' }));
+    return;
+  }
+  if (typeof body !== 'object' || body === null) {
+    res.writeHead(400, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'invalid body' }));
+    return;
+  }
+  const b = body as Record<string, unknown>;
+  const auditId = typeof b.audit_id === 'string' ? b.audit_id.trim() : '';
+  const tenantId = typeof b.tenant_id === 'string' ? b.tenant_id.trim() : '';
+  const tenantSlug = typeof b.tenant_slug === 'string' ? b.tenant_slug.trim() : '';
+  const auditTypeRaw = typeof b.audit_type === 'string' ? b.audit_type.trim() : '';
+  const auditType = auditTypeRaw.length > 0 ? auditTypeRaw : 'security';
+  const framework = typeof b.framework === 'string' ? b.framework.trim() : '';
+  const scopeRaw = b.scope;
+  const scope = Array.isArray(scopeRaw)
+    ? scopeRaw.filter((s): s is string => typeof s === 'string').map((s) => s.trim())
+    : undefined;
+  if (auditId.length === 0 || tenantId.length === 0 || tenantSlug.length === 0) {
+    res.writeHead(400, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'audit_id, tenant_id, and tenant_slug required' }));
+    return;
+  }
+  try {
+    assertTenantSlugOrThrow(tenantSlug);
+  } catch (err) {
+    res.writeHead(400, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: err instanceof Error ? err.message : String(err) }));
+    return;
+  }
+  let plan: OrchestratorJob['plan'];
+  const p = b.plan;
+  if (p === 'startup' || p === 'business' || p === 'enterprise') {
+    plan = p;
+  } else if (p === 'demo') {
+    plan = 'startup';
+  }
+  const requestId =
+    typeof b.request_id === 'string' && b.request_id.length > 0 ? b.request_id : randomUUID();
+  const idempotencyKey =
+    typeof b.idempotency_key === 'string' && b.idempotency_key.length > 0
+      ? b.idempotency_key
+      : undefined;
+  const agentRoleRaw = b.agent_role;
+  const agentRole =
+    agentRoleRaw === 'planner' ||
+    agentRoleRaw === 'executor' ||
+    agentRoleRaw === 'tool' ||
+    agentRoleRaw === 'notifier'
+      ? agentRoleRaw
+      : undefined;
+  const metadata =
+    typeof b.metadata === 'object' && b.metadata !== null
+      ? (b.metadata as Record<string, unknown>)
+      : undefined;
+
+  const job: OrchestratorJob = {
+    type: 'defense_audit',
+    payload: {
+      audit_id: auditId,
+      audit_type: auditType,
+      ...(framework.length > 0 ? { framework } : {}),
+      ...(scope !== undefined && scope.length > 0 ? { scope } : {}),
+    },
+    tenant_slug: tenantSlug,
+    tenant_id: tenantId,
+    plan,
+    initiated_by: 'system',
+    request_id: requestId,
+    idempotency_key: idempotencyKey,
+    agent_role: agentRole,
+    metadata,
+  };
+
+  try {
+    const policyCheck = enrichAutonomyMetadata(req, job);
+    if (!policyCheck.ok) {
+      res.writeHead(policyCheck.status, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(policyCheck.payload));
+      return;
+    }
+    const bull = await enqueueJob(job);
+    res.writeHead(202, { 'Content-Type': 'application/json' });
+    res.end(
+      JSON.stringify({
+        ok: true,
+        job_id: bull.id != null ? String(bull.id) : null,
+        request_id: requestId,
+      })
+    );
+  } catch (err) {
+    res.writeHead(500, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: String(err) }));
+  }
+}
+
+async function handleEnqueueCloudSysOpsSales(req: IncomingMessage, res: ServerResponse): Promise<void> {
+  if (!verifyPlatformAdminToken(req)) {
+    res.writeHead(401, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'unauthorized' }));
+    return;
+  }
+  let body: unknown;
+  try {
+    body = await readBody(req);
+  } catch {
+    res.writeHead(400, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'Invalid JSON' }));
+    return;
+  }
+  if (typeof body !== 'object' || body === null) {
+    res.writeHead(400, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'invalid body' }));
+    return;
+  }
+  const b = body as Record<string, unknown>;
+  const tenantSlug = typeof b.tenant_slug === 'string' ? b.tenant_slug.trim() : '';
+  try {
+    assertTenantSlugOrThrow(tenantSlug);
+  } catch (err) {
+    res.writeHead(400, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: err instanceof Error ? err.message : String(err) }));
+    return;
+  }
+  const payload: Record<string, unknown> = {
+    message: b.message,
+    customer_id: b.customer_id,
+    tenant_id: b.tenant_id,
+    conversation_history: b.conversation_history,
+    context_block: b.context_block,
+  };
+  const parsed = parseSalesAgentPayload(payload);
+  if (!parsed) {
+    res.writeHead(400, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'invalid sales payload (message, customer_id, tenant_id)' }));
+    return;
+  }
+  const tenantId = typeof b.tenant_id === 'string' ? b.tenant_id.trim() : '';
+  const requestId =
+    typeof b.request_id === 'string' && b.request_id.length > 0 ? b.request_id : randomUUID();
+  const idempotencyKey =
+    typeof b.idempotency_key === 'string' && b.idempotency_key.length > 0
+      ? b.idempotency_key
+      : undefined;
+  const plan =
+    b.plan === 'startup' || b.plan === 'business' || b.plan === 'enterprise' ? b.plan : undefined;
+  const metadata =
+    typeof b.metadata === 'object' && b.metadata !== null
+      ? (b.metadata as Record<string, unknown>)
+      : undefined;
+
+  const job: OrchestratorJob = {
+    type: 'cloudsysops_sales_message',
+    payload: {
+      message: parsed.message,
+      customer_id: parsed.customerId,
+      tenant_id: parsed.tenantId,
+      conversation_history: parsed.conversationHistory,
+      ...(parsed.contextBlock !== undefined ? { context_block: parsed.contextBlock } : {}),
+    },
+    tenant_slug: tenantSlug,
+    tenant_id: tenantId.length > 0 ? tenantId : undefined,
+    plan,
+    initiated_by: 'system',
+    request_id: requestId,
+    idempotency_key: idempotencyKey,
+    metadata,
+  };
+
+  try {
+    const policyCheck = enrichAutonomyMetadata(req, job);
+    if (!policyCheck.ok) {
+      res.writeHead(policyCheck.status, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(policyCheck.payload));
+      return;
+    }
+    const bull = await enqueueCloudSysOpsAgentJob(job);
+    res.writeHead(202, { 'Content-Type': 'application/json' });
+    res.end(
+      JSON.stringify({
+        ok: true,
+        job_id: bull.id != null ? String(bull.id) : null,
+        request_id: requestId,
+      })
+    );
+  } catch (err) {
+    res.writeHead(500, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: String(err) }));
+  }
+}
+
+async function handleEnqueueCloudSysOpsOps(req: IncomingMessage, res: ServerResponse): Promise<void> {
+  if (!verifyPlatformAdminToken(req)) {
+    res.writeHead(401, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'unauthorized' }));
+    return;
+  }
+  let body: unknown;
+  try {
+    body = await readBody(req);
+  } catch {
+    res.writeHead(400, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'Invalid JSON' }));
+    return;
+  }
+  if (typeof body !== 'object' || body === null) {
+    res.writeHead(400, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'invalid body' }));
+    return;
+  }
+  const b = body as Record<string, unknown>;
+  const tenantSlug = typeof b.tenant_slug === 'string' ? b.tenant_slug.trim() : '';
+  try {
+    assertTenantSlugOrThrow(tenantSlug);
+  } catch (err) {
+    res.writeHead(400, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: err instanceof Error ? err.message : String(err) }));
+    return;
+  }
+  const payload: Record<string, unknown> = {
+    booking_id: b.booking_id,
+    tenant_id: b.tenant_id,
+    service_type: b.service_type,
+    findings: b.findings,
+    actions_performed: b.actions_performed,
+    metrics_before_after: b.metrics_before_after,
+    customer_satisfaction: b.customer_satisfaction,
+  };
+  const parsed = parseOpsAgentPayload(payload);
+  if (!parsed) {
+    res.writeHead(400, { 'Content-Type': 'application/json' });
+    res.end(
+      JSON.stringify({
+        error:
+          'invalid ops payload (booking_id, tenant_id, service_type, findings, actions_performed, metrics_before_after, customer_satisfaction 1-5)',
+      })
+    );
+    return;
+  }
+  const tenantId = typeof b.tenant_id === 'string' ? b.tenant_id.trim() : '';
+  const requestId =
+    typeof b.request_id === 'string' && b.request_id.length > 0 ? b.request_id : randomUUID();
+  const idempotencyKey =
+    typeof b.idempotency_key === 'string' && b.idempotency_key.length > 0
+      ? b.idempotency_key
+      : undefined;
+  const plan =
+    b.plan === 'startup' || b.plan === 'business' || b.plan === 'enterprise' ? b.plan : undefined;
+  const metadata =
+    typeof b.metadata === 'object' && b.metadata !== null
+      ? (b.metadata as Record<string, unknown>)
+      : undefined;
+
+  const job: OrchestratorJob = {
+    type: 'cloudsysops_ops_complete',
+    payload: {
+      booking_id: parsed.bookingId,
+      tenant_id: parsed.tenantId,
+      service_type: parsed.serviceType,
+      findings: parsed.findings,
+      actions_performed: parsed.actionsPerformed,
+      metrics_before_after: {
+        before: parsed.metricsBeforeAfter.before,
+        after: parsed.metricsBeforeAfter.after,
+      },
+      customer_satisfaction: parsed.customerSatisfaction,
+    },
+    tenant_slug: tenantSlug,
+    tenant_id: tenantId.length > 0 ? tenantId : undefined,
+    plan,
+    initiated_by: 'system',
+    request_id: requestId,
+    idempotency_key: idempotencyKey,
+    metadata,
+  };
+
+  try {
+    const policyCheck = enrichAutonomyMetadata(req, job);
+    if (!policyCheck.ok) {
+      res.writeHead(policyCheck.status, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(policyCheck.payload));
+      return;
+    }
+    const bull = await enqueueCloudSysOpsAgentJob(job);
+    res.writeHead(202, { 'Content-Type': 'application/json' });
+    res.end(
+      JSON.stringify({
+        ok: true,
+        job_id: bull.id != null ? String(bull.id) : null,
+        request_id: requestId,
+      })
+    );
+  } catch (err) {
+    res.writeHead(500, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: String(err) }));
+  }
 }
 
 async function handleEnqueueOllama(req: IncomingMessage, res: ServerResponse): Promise<void> {
@@ -228,7 +554,7 @@ async function handleOpenclawJobStatus(
     return;
   }
   try {
-    const j = (await orchestratorQueue.getJob(jobId)) ?? (await localAgentQueue.getJob(jobId));
+    const j = await getJobFromPlatformQueues(jobId);
     if (!j) {
       res.writeHead(404, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: 'not found' }));
@@ -979,7 +1305,7 @@ async function handleJobById(req: IncomingMessage, res: ServerResponse, pathOnly
     return;
   }
   try {
-    const j = (await orchestratorQueue.getJob(jobId)) ?? (await localAgentQueue.getJob(jobId));
+    const j = await getJobFromPlatformQueues(jobId);
     if (!j) {
       res.writeHead(404, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: 'not found' }));
@@ -1040,6 +1366,11 @@ export function startOrchestratorHealthServer(): Server {
 
     if (req.method === 'POST' && pathOnly === '/internal/enqueue-ollama') {
       await handleEnqueueOllama(req, res);
+      return;
+    }
+
+    if (req.method === 'POST' && pathOnly === '/internal/enqueue-defense-audit') {
+      await handleEnqueueDefenseAudit(req, res);
       return;
     }
 
