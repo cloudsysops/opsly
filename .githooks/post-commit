@@ -63,3 +63,9 @@ fi
 
 # ─── Unified hooks for external/internal agents ─────────────
 "$ROOT/scripts/agent-hooks.sh" post-commit 2>/dev/null || true
+
+# ─── Phase Detector: Notify on Local Services phase transitions ─────────────
+if [ -f "$ROOT/scripts/phase-detector.sh" ]; then
+  chmod +x "$ROOT/scripts/phase-detector.sh"
+  "$ROOT/scripts/phase-detector.sh" 2>/dev/null || true
+fi
