@@ -89,6 +89,13 @@ defaults:
 # Scaling configuration (for future remote/Docker deployments)
 # Example: Move Cursor to different machine by changing URL
 environments:
+  # Mock services for local testing (no real agents needed)
+  mock:
+    cursor: "http://localhost:5001"
+    claude: "http://localhost:5002"
+    copilot: "http://localhost:5003"
+    opencode: "http://localhost:5004"
+
   local:
     cursor: "http://localhost:5001"
     claude: "http://localhost:5002"
