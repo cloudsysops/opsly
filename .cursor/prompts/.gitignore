@@ -1,0 +1,14 @@
+# Local execution metadata
+.metadata.json
+.metadata.json.*
+
+# Auto-generated responses
+responses/
+*.response
+
+# Temporary files
+*.tmp
+*.swp
+*.swo
+*~
+.DS_Store

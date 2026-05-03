@@ -875,6 +875,87 @@ async function handleJobById(req: IncomingMessage, res: ServerResponse, pathOnly
   }
 }
 
+async function handleLocalPromptSubmit(req: IncomingMessage, res: ServerResponse): Promise<void> {
+  if (!verifyPlatformAdminToken(req)) {
+    res.writeHead(401, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'unauthorized' }));
+    return;
+  }
+
+  let body: unknown;
+  try {
+    body = await readBody(req);
+  } catch {
+    res.writeHead(400, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'Invalid JSON' }));
+    return;
+  }
+
+  if (typeof body !== 'object' || body === null) {
+    res.writeHead(400, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'invalid body' }));
+    return;
+  }
+
+  const b = body as Record<string, unknown>;
+  const agentRole = (typeof b.agent_role === 'string' ? b.agent_role : 'executor').trim();
+  const promptBody = typeof b.prompt_body === 'string' ? b.prompt_body.trim() : '';
+  const goal = typeof b.goal === 'string' ? b.goal.trim() : '';
+  const maxSteps = typeof b.max_steps === 'number' ? b.max_steps : 10;
+  const context =
+    typeof b.context === 'object' && b.context !== null ? (b.context as Record<string, unknown>) : {};
+  const priority = typeof b.priority === 'number' ? b.priority : 50000;
+  const requestId = typeof b.request_id === 'string' && b.request_id.length > 0 ? b.request_id : randomUUID();
+
+  if (promptBody.length === 0) {
+    res.writeHead(400, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'prompt_body required' }));
+    return;
+  }
+
+  // Create intent_dispatch job for local execution
+  const job: OrchestratorJob = {
+    type: 'intent_dispatch',
+    payload: {
+      intent: 'execute_local_prompt',
+      agent_role: agentRole,
+      prompt: promptBody,
+      goal,
+      max_steps: maxSteps,
+      context,
+    },
+    tenant_slug: 'opsly',
+    initiated_by: 'system',
+    request_id: requestId,
+    agent_role: agentRole as any,
+    metadata: {
+      local_execution: true,
+      source: 'local-agent-watcher',
+    },
+  };
+
+  try {
+    const bull = await enqueueJob(job);
+    recordOpenClawIntentQueued({
+      requestId,
+      intent: 'execute_local_prompt',
+      tenantSlug: 'opsly',
+      jobId: bull.id ? String(bull.id) : null,
+    });
+    res.writeHead(202, { 'Content-Type': 'application/json' });
+    res.end(
+      JSON.stringify({
+        ok: true,
+        job_id: bull.id != null ? String(bull.id) : null,
+        request_id: requestId,
+      })
+    );
+  } catch (err) {
+    res.writeHead(500, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: String(err) }));
+  }
+}
+
 /** HTTP liveness + internal webhook enqueue endpoint. */
 export function startOrchestratorHealthServer(): Server {
   const port = parsePort();
@@ -1006,6 +1087,18 @@ export function startOrchestratorHealthServer(): Server {
           recent_metrics: metricsStore.getAllMetrics().slice(0, 20),
         })
       );
+      return;
+    }
+
+    if (req.method === 'POST' && pathOnly === '/api/local/prompt-submit') {
+      await handleLocalPromptSubmit(req, res);
+      return;
+    }
+
+    if (req.method === 'GET' && pathOnly.startsWith('/api/job-status/')) {
+      const prefix = '/api/job-status/';
+      const jobId = decodeURIComponent(pathOnly.slice(prefix.length)).trim();
+      await handleJobById(req, res, `/internal/job/${jobId}`);
       return;
     }
 
