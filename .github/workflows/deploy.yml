@@ -417,8 +417,19 @@ jobs:
             exit 1
           fi
 
+      - name: Tailscale auth key present (staging)
+        id: tailscale_staging
+        env:
+          TAILSCALE_AUTHKEY: ${{ secrets.TAILSCALE_AUTHKEY }}
+        run: |
+          if [ -n "${TAILSCALE_AUTHKEY:-}" ]; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Connect Tailscale for SSH to VPS (tailnet)
-        if: secrets.TAILSCALE_AUTHKEY != ''
+        if: steps.tailscale_staging.outputs.enabled == 'true'
         uses: tailscale/github-action@v2
         with:
           authkey: ${{ secrets.TAILSCALE_AUTHKEY }}
@@ -604,8 +615,19 @@ jobs:
             exit 1
           fi
 
+      - name: Tailscale auth key present (production)
+        id: tailscale_production
+        env:
+          TAILSCALE_AUTHKEY: ${{ secrets.TAILSCALE_AUTHKEY }}
+        run: |
+          if [ -n "${TAILSCALE_AUTHKEY:-}" ]; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Connect Tailscale for SSH to VPS (tailnet)
-        if: secrets.TAILSCALE_AUTHKEY != ''
+        if: steps.tailscale_production.outputs.enabled == 'true'
         uses: tailscale/github-action@v2
         with:
           authkey: ${{ secrets.TAILSCALE_AUTHKEY }}
