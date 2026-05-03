@@ -12,14 +12,14 @@
 
 - **Timeline orientativo:** ~2 semanas por incremento verificable (ajustar en [`ROADMAP.md`](../../ROADMAP.md)).
 - **Foco:** reservas / técnico / slots públicos, API bajo `apps/api/app/api/`, migraciones Supabase, n8n, admin si aplica.
-- **Orquestación:** jobs ya encajados en [`apps/orchestrator`](../00-architecture/ORCHESTRATOR.md) (p. ej. colas existentes; extender tipos y workers según necesidad).
+- **Orquestación:** código en [`apps/orchestrator`](../../apps/orchestrator); contrato en [`docs/00-architecture/ORCHESTRATOR.md`](../00-architecture/ORCHESTRATOR.md); colas BullMQ en [`apps/orchestrator/src/queue.ts`](../../apps/orchestrator/src/queue.ts) (extender tipos y workers según necesidad).
 - **IA:** herramientas MCP en [`apps/mcp`](../../apps/mcp) y llamadas LLM solo vía [`apps/llm-gateway`](../../apps/llm-gateway).
 
 ### Ruta B — Paralelo CloudSysOps + Defense
 
 - **Timeline:** 4–5 semanas en paralelo solo si hay capacidad (2 flujos de PR).
 - **Defense:** schema `defense` en Supabase, rutas `apps/api/app/api/defense/`, UI admin bajo `apps/admin`, jobs de auditoría en orchestrator cuando existan.
-- **ADR:** cualquier decisión nueva usa el **siguiente número libre** en [`docs/adr/`](../adr/) (el id `020` ya está ocupado por worker separation).
+- **ADR:** nueva decisión de arquitectura → **siguiente id libre** en [`docs/adr/`](../adr/) (revisar prefijos existentes; no reutilizar **020**, reservado a [`ADR-020-orchestrator-worker-separation.md`](../adr/ADR-020-orchestrator-worker-separation.md)). Un ADR “defense platform” u otro tema paralelo usaría el siguiente número disponible (p. ej. **ADR-0XX** hasta que exista el archivo).
 
 ### Ruta C — A + B + más agentes OpenClaw (Sales/Ops, etc.)
 

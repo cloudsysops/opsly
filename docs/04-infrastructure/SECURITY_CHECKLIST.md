@@ -163,7 +163,9 @@ Sí, el backend está **bien separado por tenant para la fase actual** (staging 
 
 ---
 
-## Abuso de API, bots y rate limiting (hardening planificado)
+## Abuso de API / rate limiting (planificado o parcial)
+
+**Capas:** mitigación en **edge** (Cloudflare: WAF, rate, bot) frente a **`apps/api` middleware** (429 por IP/tenant, token bucket en Redis). Componer ambas sin duplicar la misma política dos veces sin documentarlo; edge absorbe picos; API aplica identidad y límites por tenant donde exista sesión o clave.
 
 Objetivo: reducir **OWASP API4/API6** (consumo descontrolado y flujos de negocio abusados) sin romper integraciones legítimas (CI, webhooks, MCP).
 

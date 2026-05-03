@@ -1,7 +1,7 @@
 ---
 status: canon
 owner: operations
-last_review: 2026-04-30
+last_review: 2026-05-03
 ---
 
 # Opsly — Contexto del Agente
