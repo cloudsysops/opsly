@@ -50,7 +50,15 @@ export function resolveAutonomyPolicy(
     return LOW_RISK_POLICY;
   }
 
-  if (jobType === 'cursor' || jobType === 'n8n' || jobType === 'research' || jobType === 'ollama') {
+  if (
+    jobType === 'cursor' ||
+    jobType === 'n8n' ||
+    jobType === 'research' ||
+    jobType === 'ollama' ||
+    jobType === 'defense_audit' ||
+    jobType === 'cloudsysops_sales_message' ||
+    jobType === 'cloudsysops_ops_complete'
+  ) {
     return MEDIUM_RISK_POLICY;
   }
 

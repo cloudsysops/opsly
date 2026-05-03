@@ -5,7 +5,7 @@ import { HTTP_STATUS } from '../../../../lib/constants';
 import { getTenantStackStatus } from '../../../../lib/docker';
 import { deleteTenant } from '../../../../lib/orchestrator';
 import { getServiceClient } from '../../../../lib/supabase';
-import type { Tenant } from '../../../../lib/supabase/types';
+import type { Json, Tenant } from '../../../../lib/supabase/types';
 import {
   TenantRefParamSchema,
   UpdateTenantSchema,
@@ -14,9 +14,17 @@ import {
 
 const idParamSchema = z.string().uuid();
 
+function mergeTenantMetadata(existing: Json | null | undefined, patch: Record<string, unknown>): Json {
+  const base =
+    existing !== null && existing !== undefined && typeof existing === 'object' && !Array.isArray(existing)
+      ? { ...(existing as Record<string, unknown>) }
+      : {};
+  return { ...base, ...patch } as Json;
+}
+
 async function patchTenantRecord(
   tenantId: string,
-  updates: Partial<Pick<Tenant, 'name' | 'plan'>>
+  updates: Partial<Pick<Tenant, 'name' | 'plan' | 'metadata'>>
 ): Promise<Response> {
   const { data, error } = await getServiceClient()
     .schema('platform')
@@ -103,12 +111,28 @@ export async function PATCH(
     return jsonError(formatZodError(parsed.error), HTTP_STATUS.BAD_REQUEST);
   }
 
-  const updates: Partial<Pick<Tenant, 'name' | 'plan'>> = {};
+  const updates: Partial<Pick<Tenant, 'name' | 'plan' | 'metadata'>> = {};
   if (parsed.data.name !== undefined) {
     updates.name = parsed.data.name;
   }
   if (parsed.data.plan !== undefined) {
     updates.plan = parsed.data.plan;
+  }
+  if (parsed.data.metadata !== undefined) {
+    const { data: row, error: fetchErr } = await getServiceClient()
+      .schema('platform')
+      .from('tenants')
+      .select('metadata')
+      .eq('id', idParsed.data)
+      .is('deleted_at', null)
+      .maybeSingle();
+    if (fetchErr) {
+      return serverErrorLogged('PATCH tenant metadata fetch:', fetchErr);
+    }
+    if (!row) {
+      return jsonError('Tenant not found', HTTP_STATUS.NOT_FOUND);
+    }
+    updates.metadata = mergeTenantMetadata((row as { metadata: Json | null }).metadata, parsed.data.metadata);
   }
 
   return patchTenantRecord(idParsed.data, updates);

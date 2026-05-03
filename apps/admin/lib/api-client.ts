@@ -15,6 +15,10 @@ import type {
   TenantDetailResponse,
   TenantUsageMetricsResponse,
   TenantsListResponse,
+  DefenseAuditsListResponse,
+  DefenseAuditDetail,
+  DefenseAuditRow,
+  DefensePricingResponse,
 } from './types';
 
 const REQUEST_TIMEOUT_MS = 2_000;
@@ -539,6 +543,35 @@ export async function postOllamaDemo(body: PostOllamaDemoBody): Promise<PostOlla
 
 export async function getOllamaDemoJob(jobId: string): Promise<OllamaDemoJobStatus> {
   return request<OllamaDemoJobStatus>(`/api/admin/ollama-demo?job_id=${encodeURIComponent(jobId)}`);
+}
+
+export async function getDefenseAudits(tenantId?: string): Promise<DefenseAuditsListResponse> {
+  const q = tenantId && tenantId.length > 0 ? `?tenant_id=${encodeURIComponent(tenantId)}` : '';
+  return request<DefenseAuditsListResponse>(`/api/defense/audits${q}`);
+}
+
+export async function getDefenseAuditDetail(id: string): Promise<DefenseAuditDetail> {
+  return request<DefenseAuditDetail>(`/api/defense/audits/${encodeURIComponent(id)}`);
+}
+
+export async function getDefensePricing(): Promise<DefensePricingResponse> {
+  return request<DefensePricingResponse>('/api/defense/pricing');
+}
+
+export type CreateDefenseAuditPayload = {
+  tenant_id: string;
+  audit_type: 'security' | 'compliance' | 'pentest' | 'code_review';
+  framework?: string;
+  scope?: string[];
+};
+
+export async function createDefenseAudit(
+  body: CreateDefenseAuditPayload
+): Promise<{ success: boolean; audit: DefenseAuditRow; orchestrator?: { queued: boolean; detail?: string } }> {
+  return request(`/api/defense/audits`, {
+    method: 'POST',
+    body: JSON.stringify(body),
+  });
 }
 
 export type { OllamaDemoJobStatus } from './types';

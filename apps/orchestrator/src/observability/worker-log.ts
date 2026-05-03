@@ -27,7 +27,9 @@ export type WorkerName =
   | 'local_cursor'
   | 'local_claude'
   | 'local_copilot'
-  | 'local_opencode';
+  | 'local_opencode'
+  | 'cloudsysops_agents'
+  | 'defense_audit';
 
 export function extractJobContext(job: Job): {
   task_id?: string;

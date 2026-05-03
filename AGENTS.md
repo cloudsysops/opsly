@@ -1030,7 +1030,7 @@ _Auditoría TypeScript y correcciones de código (2026-04-05, sesión agente Cla
 
 <!-- Una sola tarea concreta. Actualizar al final de cada sesión -->
 
-**Inmediato (2026-05-03):** smoke end-to-end local workers: arrancar orchestrator, `scripts/cursor-agent-service.ts`, `scripts/local-agent-watcher.ts` y `scripts/local-git-auto-commit.ts`; crear prompt pequeño en `.cursor/prompts/`; verificar job en `local-agents`, apertura de Cursor, respuesta en `.cursor/responses/` y commit local. Luego reparar `node_modules` para desbloquear Vitest (`@rollup/rollup-darwin-x64`).
+**Inmediato (2026-05-03):** smoke end-to-end local workers: arrancar orchestrator, `scripts/cursor-agent-service.ts`, `scripts/local-agent-watcher.ts` y `scripts/local-git-auto-commit.ts`; crear prompt pequeño en `.cursor/prompts/`; verificar job en **cola BullMQ `local-agents`** con **`job.name`** `local_cursor` \| `local_claude` \| `local_copilot` \| `local_opencode` (no en `openclaw`); `POST /internal/enqueue-sandbox` sigue en **`openclaw`**. Contrato en Vitest: `npm run test --workspace=@intcloudsysops/orchestrator -- --run health-server-local-prompt-queue`. Luego reparar `node_modules` si Vitest global sigue bloqueado por Rollup opcional (`@rollup/rollup-darwin-x64`).
 
 **Siguiente producto (pendiente):** convertir marketplace n8n v1 en autoservicio completo: API portal `install/activate`, persistencia de installs por tenant, enforcement de `plan_min`, y smoke real DeepSeek con `DEEPSEEK_API_KEY` via `/v1/text`/`/v1/chat/completions`.
 

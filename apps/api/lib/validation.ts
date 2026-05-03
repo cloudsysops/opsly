@@ -45,9 +45,10 @@ export const UpdateTenantSchema = z
   .object({
     name: z.string().min(1).optional(),
     plan: planEnum.optional(),
+    metadata: z.record(z.unknown()).optional(),
   })
-  .refine((v) => v.name !== undefined || v.plan !== undefined, {
-    message: 'At least one of name or plan is required',
+  .refine((v) => v.name !== undefined || v.plan !== undefined || v.metadata !== undefined, {
+    message: 'At least one of name, plan, or metadata is required',
   });
 
 export function formatZodError(error: z.ZodError): string {

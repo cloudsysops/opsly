@@ -40,6 +40,9 @@ export const hermesOrchestrationQueue = new Queue('hermes-orchestration', {
   },
 });
 
+/** CloudSysOps Sales + Ops agents (worker opcional `OPSLY_CLOUDSYSOPS_AGENTS_WORKER_ENABLED`). */
+export const cloudsysopsAgentsQueue = new Queue('cloudsysops-agents', { connection });
+
 export async function enqueueJob(job: OrchestratorJob) {
   const opts = buildQueueAddOptions(job);
   const bull = await orchestratorQueue.add(job.type, job, opts);
@@ -60,6 +63,34 @@ export async function enqueueJob(job: OrchestratorJob) {
     autonomy_risk: job.autonomy_risk,
     queue_priority: opts.priority,
     metadata: job.metadata,
+  });
+
+  return bull;
+}
+
+export async function enqueueCloudSysOpsAgentJob(job: OrchestratorJob) {
+  if (job.type !== 'cloudsysops_sales_message' && job.type !== 'cloudsysops_ops_complete') {
+    throw new Error(`enqueueCloudSysOpsAgentJob: unsupported type ${job.type}`);
+  }
+  const opts = buildQueueAddOptions(job);
+  const bull = await cloudsysopsAgentsQueue.add(job.type, job, opts);
+
+  logJobEnqueue({
+    event: 'job_enqueue',
+    job_type: job.type,
+    task_id: job.taskId,
+    tenant_slug: getJobTenantSlug(job),
+    tenant_id: job.tenant_id,
+    plan: job.plan,
+    request_id: job.request_id,
+    idempotency_key: job.idempotency_key,
+    bullmq_job_id_custom: Boolean(opts.jobId),
+    initiated_by: job.initiated_by,
+    agent_role: job.agent_role,
+    cost_budget_usd: job.cost_budget_usd,
+    autonomy_risk: job.autonomy_risk,
+    queue_priority: opts.priority,
+    metadata: { ...(job.metadata ?? {}), queue: 'cloudsysops-agents' },
   });
 
   return bull;

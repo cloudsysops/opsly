@@ -323,3 +323,49 @@ export type AdminOverviewResponse = {
 
 /** Estado devuelto por GET /api/admin/ollama-demo?job_id= (proxy al orchestrator). */
 export type OllamaDemoJobStatus = Record<string, unknown>;
+
+export type DefenseAuditRow = {
+  id: string;
+  tenant_id: string;
+  audit_type: string;
+  framework: string | null;
+  status: string;
+  scheduled_at: string | null;
+  started_at: string | null;
+  completed_at: string | null;
+  total_findings: number;
+  critical_count: number;
+  high_count: number;
+  created_at: string;
+};
+
+export type DefenseVulnerabilityRow = {
+  id: string;
+  audit_id: string;
+  title: string;
+  severity: string | null;
+  status: string;
+  cvss_score: string | null;
+  remediation: string | null;
+  created_at: string;
+};
+
+export type DefenseAuditDetail = DefenseAuditRow & {
+  vulnerabilities: DefenseVulnerabilityRow[];
+};
+
+export type DefenseAuditsListResponse = {
+  audits: DefenseAuditRow[];
+};
+
+export type DefensePricingResponse = {
+  plans: Record<
+    string,
+    {
+      name: string;
+      priceUsd: number | null;
+      interval: string;
+      features: readonly string[];
+    }
+  >;
+};

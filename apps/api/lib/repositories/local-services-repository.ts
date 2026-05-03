@@ -135,6 +135,37 @@ export async function lsListReports(): Promise<LsReportRow[]> {
   return (data ?? []) as LsReportRow[];
 }
 
+export async function lsResolveServiceIdByExternalKey(params: {
+  tenantSlug: string;
+  externalKey: string;
+}): Promise<string | null> {
+  const row = await lsGetServiceByExternalKey(params);
+  return row?.id ?? null;
+}
+
+export async function lsGetServiceByExternalKey(params: {
+  tenantSlug: string;
+  externalKey: string;
+}): Promise<{ id: string; duration_minutes: number | null } | null> {
+  const db = getServiceClient();
+  const { data, error } = await db
+    .schema('platform')
+    .from('ls_services')
+    .select('id, duration_minutes')
+    .eq('tenant_slug', params.tenantSlug)
+    .eq('external_key', params.externalKey)
+    .maybeSingle();
+
+  if (error !== null) {
+    logger.error('ls_resolve_service_external', error);
+    return null;
+  }
+  if (data === null) {
+    return null;
+  }
+  return data as { id: string; duration_minutes: number | null };
+}
+
 export async function lsInsertBookingForTenantSlug(params: {
   tenantSlug: string;
   customerName: string;
@@ -143,6 +174,12 @@ export async function lsInsertBookingForTenantSlug(params: {
   serviceId?: string | null;
   scheduledAt?: string | null;
   notes?: string | null;
+  serviceLocation?: string | null;
+  address?: string | null;
+  latitude?: number | null;
+  longitude?: number | null;
+  estimatedTravelTimeMinutes?: number | null;
+  equipmentNeeded?: string[] | null;
 }): Promise<{ ok: true; id: string } | { ok: false; error: string }> {
   const emailNorm = params.customerEmail.trim().toLowerCase();
   const cust = await lsUpsertCustomerForBooking({
@@ -161,6 +198,12 @@ export async function lsInsertBookingForTenantSlug(params: {
     serviceId: params.serviceId ?? null,
     scheduledAt: params.scheduledAt ?? null,
     notes: params.notes?.trim() ?? null,
+    serviceLocation: params.serviceLocation ?? null,
+    address: params.address ?? null,
+    latitude: params.latitude ?? null,
+    longitude: params.longitude ?? null,
+    estimatedTravelTimeMinutes: params.estimatedTravelTimeMinutes ?? null,
+    equipmentNeeded: params.equipmentNeeded ?? null,
   });
   if (!booking.ok) {
     return { ok: false, error: 'booking_insert_failed' };
@@ -176,7 +219,9 @@ export async function lsGetBookingByIdForTenantSlug(params: {
   const { data, error } = await db
     .schema('platform')
     .from('ls_bookings')
-    .select('id, tenant_slug, customer_id, service_id, scheduled_at, status, notes, created_at')
+    .select(
+      'id, tenant_slug, customer_id, service_id, scheduled_at, status, notes, created_at, address, service_location'
+    )
     .eq('tenant_slug', params.tenantSlug)
     .eq('id', params.bookingId)
     .maybeSingle();
@@ -195,12 +240,17 @@ export async function lsSetBookingStatusForTenantSlug(params: {
   tenantSlug: string;
   bookingId: string;
   status: 'requested' | 'confirmed' | 'completed' | 'cancelled';
+  completedAtIso?: string | null;
 }): Promise<{ ok: true } | { ok: false }> {
   const db = getServiceClient();
+  const patch: Record<string, unknown> = { status: params.status };
+  if (params.status === 'completed') {
+    patch.completed_at = params.completedAtIso ?? new Date().toISOString();
+  }
   const { data, error } = await db
     .schema('platform')
     .from('ls_bookings')
-    .update({ status: params.status })
+    .update(patch)
     .eq('tenant_slug', params.tenantSlug)
     .eq('id', params.bookingId)
     .select('id')
@@ -235,6 +285,59 @@ export async function lsInsertReportForTenantSlug(params: {
 
   if (error !== null) {
     logger.error('ls_insert_report_webhook', error);
+    return { ok: false };
+  }
+  if (data === null) {
+    return { ok: false };
+  }
+  return { ok: true, id: (data as { id: string }).id };
+}
+
+export type LsTechnicianServiceReportInput = {
+  bookingId: string;
+  tenantSlug: string;
+  findings?: string | null;
+  actionsTaken?: string | null;
+  metricsBefore?: Record<string, unknown> | null;
+  metricsAfter?: Record<string, unknown> | null;
+  recommendations?: string | null;
+  equipmentUsed?: string[] | null;
+  timeSpentMinutes?: number | null;
+  travelDistanceMiles?: number | null;
+  customerSatisfaction?: number | null;
+  upsellOffered?: string | null;
+  nextMaintenanceDate?: string | null;
+  pdfUrl?: string | null;
+};
+
+export async function lsInsertTechnicianServiceReport(
+  params: LsTechnicianServiceReportInput
+): Promise<{ ok: true; id: string } | { ok: false }> {
+  const db = getServiceClient();
+  const { data, error } = await db
+    .schema('platform')
+    .from('ls_technician_service_reports')
+    .insert({
+      booking_id: params.bookingId,
+      tenant_slug: params.tenantSlug,
+      findings: params.findings ?? null,
+      actions_taken: params.actionsTaken ?? null,
+      metrics_before: params.metricsBefore ?? null,
+      metrics_after: params.metricsAfter ?? null,
+      recommendations: params.recommendations ?? null,
+      equipment_used: params.equipmentUsed ?? null,
+      time_spent_minutes: params.timeSpentMinutes ?? null,
+      travel_distance_miles: params.travelDistanceMiles ?? null,
+      customer_satisfaction: params.customerSatisfaction ?? null,
+      upsell_offered: params.upsellOffered ?? null,
+      next_maintenance_date: params.nextMaintenanceDate ?? null,
+      pdf_url: params.pdfUrl ?? null,
+    })
+    .select('id')
+    .maybeSingle();
+
+  if (error !== null) {
+    logger.error('ls_insert_technician_service_report', error);
     return { ok: false };
   }
   if (data === null) {

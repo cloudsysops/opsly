@@ -41,5 +41,8 @@ describe('getWorkerConcurrency', () => {
 
   it('exposes the env name for documentation', () => {
     expect(getWorkerConcurrencyEnvName('drive')).toBe('ORCHESTRATOR_DRIVE_CONCURRENCY');
+    expect(getWorkerConcurrencyEnvName('cloudsysops_agents')).toBe(
+      'ORCHESTRATOR_CLOUDSYSOPS_AGENTS_CONCURRENCY'
+    );
   });
 });

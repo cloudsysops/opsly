@@ -16,6 +16,10 @@ import { runAgentTaskTool } from './tools/run-agent-task.tool.js';
 import { suspendTools } from './tools/suspend.js';
 import { tenantsTools } from './tools/tenants.js';
 import { StartAgentFarmTool } from './tools/start-agent-farm.tool.js';
+import {
+  enqueueCloudSysOpsOpsCompleteTool,
+  enqueueCloudSysOpsSalesMessageTool,
+} from './tools/cloudsysops-agents.tool.js';
 import type { ToolContext, ToolDefinition } from './types/index.js';
 
 interface RegisteredTool {
@@ -60,6 +64,8 @@ export const TOOL_REQUIRED_SCOPES: Record<string, string> = {
   execute_skill: 'agents:write',
   get_skill_job_status: 'agents:write',
   start_agent_farm: 'agents:write',
+  enqueue_cloudsysops_sales_message: 'agents:write',
+  enqueue_cloudsysops_ops_complete: 'agents:write',
 };
 
 export type CallToolOptions = {
@@ -167,6 +173,8 @@ export function getAllToolDefinitions(): ToolDefinition<unknown, unknown>[] {
     executeSkillTool,
     getSkillJobStatusTool,
     StartAgentFarmTool,
+    enqueueCloudSysOpsSalesMessageTool,
+    enqueueCloudSysOpsOpsCompleteTool,
   ] as ToolDefinition<unknown, unknown>[];
 }
 

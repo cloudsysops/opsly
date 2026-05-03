@@ -14,13 +14,18 @@ export type JobType =
   | 'local_claude'
   | 'local_copilot'
   | 'local_opencode'
+  | 'defense_audit'
   | 'hive_objective'
   /** Payload: `{ intent_request: IntentRequest }` — ejecuta `processIntent` (p. ej. `oar_react`) en worker. */
   | 'intent_dispatch'
   /** Payload: `{ role: 'dev-api' | 'dev-ui' | 'devops', task: string, max_steps: number, tenant_slug: string }` */
   | 'agent_farm'
   /** Payload: `{ agent_id, commands[], tenant_slug, timeout_seconds? }` */
-  | 'terminal_task';
+  | 'terminal_task'
+  /** CloudSysOps OpenClaw: mensaje canal ventas → LLM Gateway (cola `cloudsysops-agents`). */
+  | 'cloudsysops_sales_message'
+  /** CloudSysOps OpenClaw: cierre de servicio → informe vía LLM Gateway (cola `cloudsysops-agents`). */
+  | 'cloudsysops_ops_complete';
 
 export interface SandboxExecutionPayload {
   type: 'sandbox_execution';

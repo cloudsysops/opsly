@@ -10,6 +10,7 @@ EMAIL=""
 PLAN=""
 STRIPE_ID=""
 DRY_RUN=0
+TENANT_TYPE="default"
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -32,6 +33,10 @@ while [[ $# -gt 0 ]]; do
     --dry-run)
       DRY_RUN=1
       shift
+      ;;
+    --tenant-type)
+      TENANT_TYPE="${2:-default}"
+      shift 2
       ;;
     *)
       log_error "Unknown argument: $1"
@@ -79,6 +84,7 @@ fi
 if [[ "${DRY_RUN}" -eq 1 ]]; then
   log_info "DRY RUN: POST /api/tenants"
   log_info "Payload: ${PAYLOAD}"
+  log_info "TENANT_TYPE: ${TENANT_TYPE}"
   exit 0
 fi
 
@@ -91,3 +97,36 @@ RESPONSE="$(
 )"
 
 log_info "Response: ${RESPONSE}"
+
+if [[ "${TENANT_TYPE}" == "technician" ]]; then
+  TECH_META_FILE="${_SCRIPT_DIR}/../../config/technician-tenant/cloudsysops.metadata.json"
+  if [[ ! -f "${TECH_META_FILE}" ]]; then
+    log_error "Missing metadata template: ${TECH_META_FILE}"
+    exit 1
+  fi
+  TENANT_ID="$(echo "${RESPONSE}" | jq -r '.id // empty')"
+  if [[ -z "${TENANT_ID}" || "${TENANT_ID}" == "null" ]]; then
+    log_error "technician post-steps: could not read .id from POST /api/tenants response"
+    exit 1
+  fi
+  PATCH_BODY="$(jq -n --argjson meta "$(jq -c . "${TECH_META_FILE}")" '{metadata: $meta}')"
+  log_info "PATCH /api/tenants/${TENANT_ID} (technician metadata)"
+  PATCH_RES="$(
+    curl -sS -X PATCH \
+      "${NEXT_PUBLIC_APP_URL}/api/tenants/${TENANT_ID}" \
+      -H "Content-Type: application/json" \
+      -H "Authorization: Bearer ${PLATFORM_ADMIN_TOKEN}" \
+      -d "${PATCH_BODY}"
+  )"
+  log_info "PATCH response: ${PATCH_RES}"
+  SEED_BODY="$(jq -n --arg s "${SLUG}" '{slug: $s}')"
+  log_info "POST /api/admin/local-services/technician-seed"
+  SEED_RES="$(
+    curl -sS -X POST \
+      "${NEXT_PUBLIC_APP_URL}/api/admin/local-services/technician-seed" \
+      -H "Content-Type: application/json" \
+      -H "Authorization: Bearer ${PLATFORM_ADMIN_TOKEN}" \
+      -d "${SEED_BODY}"
+  )"
+  log_info "Seed response: ${SEED_RES}"
+fi

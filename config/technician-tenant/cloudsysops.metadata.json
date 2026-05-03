@@ -1,0 +1,39 @@
+{
+  "local_services_profile": "technician",
+  "technician": {
+    "type": "technician",
+    "services": [
+      {
+        "external_key": "pc-cleanup",
+        "name": "PC/Laptop Cleanup",
+        "description": "Tune-up, temp files, startup, security basics.",
+        "price_cents": 14900,
+        "duration_minutes": 90
+      },
+      {
+        "external_key": "gaming-optimization",
+        "name": "Gaming PC Optimization",
+        "description": "Drivers, power plan, thermal and game-ready tweaks.",
+        "price_cents": 19900,
+        "duration_minutes": 120
+      },
+      {
+        "external_key": "office-support",
+        "name": "Office IT Support",
+        "description": "Workstation, printer, Wi‑Fi, and productivity stack.",
+        "price_cents": 29900,
+        "duration_minutes": 120
+      }
+    ],
+    "availability": {
+      "weekdays": { "start": "18:00", "end": "21:00", "days": ["Mon", "Tue", "Wed", "Thu", "Fri"] },
+      "weekends": { "start": "10:00", "end": "18:00", "days": ["Sat", "Sun"] }
+    },
+    "service_area": {
+      "states": ["RI", "MA", "CT"],
+      "initial_focus": "RI",
+      "travel_radius_miles": 30,
+      "travel_fee_cents": 2500
+    }
+  }
+}

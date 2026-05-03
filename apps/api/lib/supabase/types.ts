@@ -520,6 +520,16 @@ export type Database = {
         Insert: Record<string, unknown>;
         Update: Record<string, unknown>;
       };
+      ls_technician_schedules: {
+        Row: Record<string, unknown>;
+        Insert: Record<string, unknown>;
+        Update: Record<string, unknown>;
+      };
+      ls_technician_service_reports: {
+        Row: Record<string, unknown>;
+        Insert: Record<string, unknown>;
+        Update: Record<string, unknown>;
+      };
       n8n_marketplace_installs: {
         Row: {
           id: string;
@@ -544,6 +554,150 @@ export type Database = {
           status: string;
           updated_at: string;
         }>;
+      };
+    };
+    Views: Record<string, never>;
+    Functions: Record<string, never>;
+    Enums: Record<string, never>;
+  };
+  defense: {
+    Tables: {
+      audits: {
+        Row: {
+          id: string;
+          tenant_id: string;
+          audit_type: string;
+          framework: string | null;
+          status: string;
+          scheduled_at: string | null;
+          started_at: string | null;
+          completed_at: string | null;
+          scope: string | null;
+          severity_level: number | null;
+          findings: Json | null;
+          total_findings: number;
+          critical_count: number;
+          high_count: number;
+          report_url: string | null;
+          pdf_generated: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          tenant_id: string;
+          audit_type: string;
+          framework?: string | null;
+          status?: string;
+          scheduled_at?: string | null;
+          started_at?: string | null;
+          completed_at?: string | null;
+          scope?: string | null;
+          severity_level?: number | null;
+          findings?: Json | null;
+          total_findings?: number;
+          critical_count?: number;
+          high_count?: number;
+          report_url?: string | null;
+          pdf_generated?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<{
+          framework: string | null;
+          status: string;
+          scheduled_at: string | null;
+          started_at: string | null;
+          completed_at: string | null;
+          scope: string | null;
+          severity_level: number | null;
+          findings: Json | null;
+          total_findings: number;
+          critical_count: number;
+          high_count: number;
+          report_url: string | null;
+          pdf_generated: boolean;
+          updated_at: string;
+        }>;
+      };
+      vulnerabilities: {
+        Row: {
+          id: string;
+          audit_id: string;
+          tenant_id: string;
+          title: string;
+          description: string | null;
+          cvss_score: string | null;
+          severity: string | null;
+          affected_component: string | null;
+          cve_id: string | null;
+          cwe_id: string | null;
+          status: string;
+          remediation: string | null;
+          remediation_deadline: string | null;
+          evidence: string | null;
+          poc_url: string | null;
+          assigned_to: string | null;
+          priority: number | null;
+          created_at: string;
+          updated_at: string;
+          fixed_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          audit_id: string;
+          tenant_id: string;
+          title: string;
+          description?: string | null;
+          cvss_score?: string | null;
+          severity?: string | null;
+          affected_component?: string | null;
+          cve_id?: string | null;
+          cwe_id?: string | null;
+          status?: string;
+          remediation?: string | null;
+          remediation_deadline?: string | null;
+          evidence?: string | null;
+          poc_url?: string | null;
+          assigned_to?: string | null;
+          priority?: number | null;
+          created_at?: string;
+          updated_at?: string;
+          fixed_at?: string | null;
+        };
+        Update: Partial<{
+          title: string;
+          description: string | null;
+          cvss_score: string | null;
+          severity: string | null;
+          affected_component: string | null;
+          cve_id: string | null;
+          cwe_id: string | null;
+          status: string;
+          remediation: string | null;
+          remediation_deadline: string | null;
+          evidence: string | null;
+          poc_url: string | null;
+          assigned_to: string | null;
+          priority: number | null;
+          updated_at: string;
+          fixed_at: string | null;
+        }>;
+      };
+      compliance_requirements: {
+        Row: Record<string, unknown>;
+        Insert: Record<string, unknown>;
+        Update: Record<string, unknown>;
+      };
+      security_events: {
+        Row: Record<string, unknown>;
+        Insert: Record<string, unknown>;
+        Update: Record<string, unknown>;
+      };
+      pentest_results: {
+        Row: Record<string, unknown>;
+        Insert: Record<string, unknown>;
+        Update: Record<string, unknown>;
       };
     };
     Views: Record<string, never>;

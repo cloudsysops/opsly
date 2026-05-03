@@ -16,6 +16,7 @@ import {
   MessageSquare,
   Server,
   Settings,
+  ShieldAlert,
   ShieldCheck,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -35,6 +36,7 @@ const nav = [
   { href: '/notebooklm', label: 'NotebookLM', icon: BookOpen },
   { href: '/feedback', label: 'Feedback', icon: MessageSquare },
   { href: '/approval-decisions', label: 'Approval Gate', icon: ShieldCheck },
+  { href: '/defense-platform', label: 'Defense', icon: ShieldAlert },
   { href: '/settings', label: 'Settings', icon: Settings },
 ];
 
