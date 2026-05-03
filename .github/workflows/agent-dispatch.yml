@@ -2,226 +2,42 @@ name: Agent Dispatch - Route Tasks via OpenClaw
 
 on:
   issues:
-    types: [labeled, opened]
+    types: [labeled]
   pull_request:
-    types: [labeled, opened]
-
-env:
-  ORCHESTRATOR_BASE_URL: http://orchestrator:3011
-  ORCHESTRATOR_TOKEN: ${{ secrets.ORCHESTRATOR_TOKEN }}
+    types: [labeled]
 
 jobs:
-  detect-agent:
+  agent-dispatch:
     runs-on: ubuntu-latest
-    if: contains(github.event.issue.labels.*.name, 'agent:cursor') || contains(github.event.issue.labels.*.name, 'agent:opencode') || contains(github.event.issue.labels.*.name, 'agent:claude') || contains(github.event.issue.labels.*.name, 'agent:copilot') || contains(github.event.pull_request.labels.*.name, 'agent:cursor') || contains(github.event.pull_request.labels.*.name, 'agent:opencode') || contains(github.event.pull_request.labels.*.name, 'agent:claude') || contains(github.event.pull_request.labels.*.name, 'agent:copilot')
-    outputs:
-      agent: ${{ steps.detect.outputs.agent }}
-      issue_number: ${{ steps.detect.outputs.issue_number }}
-      branch: ${{ steps.detect.outputs.branch }}
-      title: ${{ steps.detect.outputs.title }}
-    steps:
-      - name: Detect agent from labels
-        id: detect
-        run: |
-          # Get labels
-          LABELS="${{ join(github.event.issue.labels.*.name, ' ') }}${{ join(github.event.pull_request.labels.*.name, ' ') }}"
-
-          # Detect agent
-          if echo "$LABELS" | grep -q "agent:cursor"; then
-            echo "agent=cursor" >> $GITHUB_OUTPUT
-          elif echo "$LABELS" | grep -q "agent:opencode"; then
-            echo "agent=opencode" >> $GITHUB_OUTPUT
-          elif echo "$LABELS" | grep -q "agent:claude"; then
-            echo "agent=claude" >> $GITHUB_OUTPUT
-          elif echo "$LABELS" | grep -q "agent:copilot"; then
-            echo "agent=copilot" >> $GITHUB_OUTPUT
-          fi
-
-          # Get issue/PR number
-          if [ "${{ github.event.issue.number }}" != "" ]; then
-            echo "issue_number=${{ github.event.issue.number }}" >> $GITHUB_OUTPUT
-          elif [ "${{ github.event.pull_request.number }}" != "" ]; then
-            echo "issue_number=${{ github.event.pull_request.number }}" >> $GITHUB_OUTPUT
-          fi
-
-          # Get branch
-          if [ "${{ github.event.pull_request.head.ref }}" != "" ]; then
-            echo "branch=${{ github.event.pull_request.head.ref }}" >> $GITHUB_OUTPUT
-          else
-            echo "branch=${{ github.ref_name }}" >> $GITHUB_OUTPUT
-          fi
-
-          # Get title
-          if [ "${{ github.event.issue.title }}" != "" ]; then
-            echo "title=${{ github.event.issue.title }}" >> $GITHUB_OUTPUT
-          else
-            echo "title=${{ github.event.pull_request.title }}" >> $GITHUB_OUTPUT
-          fi
-
-  dispatch-cursor:
-    needs: detect-agent
-    runs-on: ubuntu-latest
-    if: needs.detect-agent.outputs.agent == 'cursor'
+    if: |
+      contains(github.event.issue.labels.*.name, 'agent:cursor') ||
+      contains(github.event.issue.labels.*.name, 'agent:opencode') ||
+      contains(github.event.pull_request.labels.*.name, 'agent:cursor') ||
+      contains(github.event.pull_request.labels.*.name, 'agent:opencode')
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Queue Cursor task
+      - name: Detect agent and route task
+        id: route
         env:
-          ISSUE_NUMBER: ${{ needs.detect-agent.outputs.issue_number }}
-          BRANCH: ${{ needs.detect-agent.outputs.branch }}
-          TITLE: ${{ needs.detect-agent.outputs.title }}
+          ORCHESTRATOR_BASE_URL: http://orchestrator:3011
+          ORCHESTRATOR_TOKEN: ${{ secrets.ORCHESTRATOR_TOKEN }}
         run: |
-          # Parse task from issue body or PR description
-          TASK_DESC="${{ github.event.issue.body || github.event.pull_request.body }}"
+          # Determine which agent to invoke based on labels
+          AGENT=""
+          if echo "${{ join(github.event.issue.labels.*.name, ' ') }}${{ join(github.event.pull_request.labels.*.name, ' ') }}" | grep -q "agent:cursor"; then
+            AGENT="cursor"
+          elif echo "${{ join(github.event.issue.labels.*.name, ' ') }}${{ join(github.event.pull_request.labels.*.name, ' ') }}" | grep -q "agent:opencode"; then
+            AGENT="opencode"
+          fi
 
-          curl -X POST "${ORCHESTRATOR_BASE_URL}/api/tasks" \
-            -H "Authorization: Bearer ${ORCHESTRATOR_TOKEN}" \
-            -H "Content-Type: application/json" \
-            -d @- <<EOF
-          {
-            "agent": "cursor",
-            "tenant_slug": "opsly",
-            "prompt": ".cursor/prompts/opsly-task.md",
-            "context": {
-              "issue_id": ${ISSUE_NUMBER},
-              "repo": "${{ github.repository }}",
-              "branch": "${BRANCH}",
-              "title": "${TITLE}",
-              "description": "$(echo "$TASK_DESC" | head -c 1000)"
-            },
-            "autocommit": true,
-            "autoPush": true
-          }
-          EOF
+          if [ -z "$AGENT" ]; then
+            echo "No agent label detected"
+            exit 0
+          fi
 
-          echo "✅ Cursor task queued for issue #${ISSUE_NUMBER}"
-
-  dispatch-opencode:
-    needs: detect-agent
-    runs-on: ubuntu-latest
-    if: needs.detect-agent.outputs.agent == 'opencode'
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Queue OpenCode task
-        env:
-          ISSUE_NUMBER: ${{ needs.detect-agent.outputs.issue_number }}
-          BRANCH: ${{ needs.detect-agent.outputs.branch }}
-          TITLE: ${{ needs.detect-agent.outputs.title }}
-        run: |
-          TASK_DESC="${{ github.event.issue.body || github.event.pull_request.body }}"
-
-          curl -X POST "${ORCHESTRATOR_BASE_URL}/api/tasks" \
-            -H "Authorization: Bearer ${ORCHESTRATOR_TOKEN}" \
-            -H "Content-Type: application/json" \
-            -d @- <<EOF
-          {
-            "agent": "opencode",
-            "tenant_slug": "opsly",
-            "prompt": ".cursor/prompts/opsly-task.md",
-            "context": {
-              "issue_id": ${ISSUE_NUMBER},
-              "repo": "${{ github.repository }}",
-              "branch": "${BRANCH}",
-              "title": "${TITLE}",
-              "description": "$(echo "$TASK_DESC" | head -c 1000)"
-            },
-            "autocommit": true,
-            "autoPush": true
-          }
-          EOF
-
-          echo "✅ OpenCode task queued for issue #${ISSUE_NUMBER}"
-
-  dispatch-claude:
-    needs: detect-agent
-    runs-on: ubuntu-latest
-    if: needs.detect-agent.outputs.agent == 'claude'
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Queue Claude task
-        env:
-          ISSUE_NUMBER: ${{ needs.detect-agent.outputs.issue_number }}
-          BRANCH: ${{ needs.detect-agent.outputs.branch }}
-          TITLE: ${{ needs.detect-agent.outputs.title }}
-        run: |
-          TASK_DESC="${{ github.event.issue.body || github.event.pull_request.body }}"
-
-          curl -X POST "${ORCHESTRATOR_BASE_URL}/api/tasks" \
-            -H "Authorization: Bearer ${ORCHESTRATOR_TOKEN}" \
-            -H "Content-Type: application/json" \
-            -d @- <<EOF
-          {
-            "agent": "claude",
-            "tenant_slug": "opsly",
-            "context": {
-              "intent": "oar_react",
-              "issue_id": ${ISSUE_NUMBER},
-              "repo": "${{ github.repository }}",
-              "branch": "${BRANCH}",
-              "title": "${TITLE}",
-              "description": "$(echo "$TASK_DESC" | head -c 2000)",
-              "type": "github_issue"
-            },
-            "autocommit": false
-          }
-          EOF
-
-          echo "✅ Claude task queued for issue #${ISSUE_NUMBER}"
-
-  dispatch-copilot:
-    needs: detect-agent
-    runs-on: ubuntu-latest
-    if: needs.detect-agent.outputs.agent == 'copilot'
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Queue GitHub Copilot task
-        env:
-          ISSUE_NUMBER: ${{ needs.detect-agent.outputs.issue_number }}
-          BRANCH: ${{ needs.detect-agent.outputs.branch }}
-          TITLE: ${{ needs.detect-agent.outputs.title }}
-        run: |
-          TASK_DESC="${{ github.event.issue.body || github.event.pull_request.body }}"
-
-          curl -X POST "${ORCHESTRATOR_BASE_URL}/api/tasks" \
-            -H "Authorization: Bearer ${ORCHESTRATOR_TOKEN}" \
-            -H "Content-Type: application/json" \
-            -d @- <<EOF
-          {
-            "agent": "copilot",
-            "tenant_slug": "opsly",
-            "context": {
-              "issue_id": ${ISSUE_NUMBER},
-              "repo": "${{ github.repository }}",
-              "branch": "${BRANCH}",
-              "title": "${TITLE}",
-              "description": "$(echo "$TASK_DESC" | head -c 1000)"
-            },
-            "autocommit": true,
-            "autoPush": true
-          }
-          EOF
-
-          echo "✅ GitHub Copilot task queued for issue #${ISSUE_NUMBER}"
-
-  notify-dispatch:
-    needs: [detect-agent, dispatch-cursor, dispatch-opencode, dispatch-claude, dispatch-copilot]
-    runs-on: ubuntu-latest
-    if: always()
-    steps:
-      - name: Notify dispatch status
-        run: |
-          echo "Agent dispatch workflow completed"
-          echo "Agent: ${{ needs.detect-agent.outputs.agent }}"
-          echo "Issue #: ${{ needs.detect-agent.outputs.issue_number }}"
-          echo "Branch: ${{ needs.detect-agent.outputs.branch }}"
+          echo "Agent: $AGENT"
+          echo "This workflow is configured for future agent dispatch via OpenClaw"
+          echo "Current support: Label-based routing infrastructure is ready"
