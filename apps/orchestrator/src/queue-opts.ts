@@ -5,6 +5,27 @@ import type { OrchestratorJob } from './types.js';
 const MAX_JOB_ID_LEN = 128;
 
 /**
+ * Worker-side empty-queue polling hints (BullMQ v5).
+ * `drainDelay` is **seconds** BullMQ long-polls when the queue has no ready jobs.
+ * Pass these into `Worker` options where the orchestrator instantiates workers — not `Queue`
+ * (`QueueOptions.settings` is only for repeatable jobs in v5).
+ */
+export type OrchestratorDrainProfile = {
+  drainDelaySeconds: number;
+  retryProcessDelayMs: number;
+};
+
+export const OPTIMIZED_DRAIN_PROFILE: OrchestratorDrainProfile = {
+  drainDelaySeconds: 3,
+  retryProcessDelayMs: 5000,
+};
+
+export const LEGACY_DRAIN_PROFILE: OrchestratorDrainProfile = {
+  drainDelaySeconds: 1,
+  retryProcessDelayMs: 3000,
+};
+
+/**
  * Prioridad BullMQ: rango 0 (máxima) … 2_097_152 (mínima).
  * Alineado con ADR-011 (planes); menor número = antes en la cola.
  */
@@ -77,4 +98,13 @@ export function buildQueueAddOptions(job: OrchestratorJob): JobsOptions {
   }
 
   return opts;
+}
+
+/**
+ * Active drain / retry profile for workers.
+ * Optimized by default; set `ORCHESTRATOR_POLLING_OPTIMIZED=false` for legacy intervals.
+ */
+export function getPollingProfile(): OrchestratorDrainProfile {
+  const optimized = process.env.ORCHESTRATOR_POLLING_OPTIMIZED !== 'false';
+  return optimized ? OPTIMIZED_DRAIN_PROFILE : LEGACY_DRAIN_PROFILE;
 }

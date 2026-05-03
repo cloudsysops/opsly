@@ -1,5 +1,6 @@
 export { cacheGet, cacheSet, closeRedisClient, getCacheStats } from './cache.js';
 export { analyzeComplexity } from './complexity.js';
+export { embedText, embedTexts } from './embeddings.js';
 export { llmCall, llmCallDirect } from './gateway.js';
 export { fetchRepoContextBlock } from './repo-context-client.js';
 export { hashPrompt } from './hash.js';

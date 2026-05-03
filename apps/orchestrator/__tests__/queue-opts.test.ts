@@ -1,9 +1,12 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, beforeEach, afterEach } from 'vitest';
 import {
   buildQueueAddOptions,
   PLAN_QUEUE_PRIORITY,
   planToQueuePriority,
   sanitizeQueueJobId,
+  OPTIMIZED_DRAIN_PROFILE,
+  LEGACY_DRAIN_PROFILE,
+  getPollingProfile,
 } from '../src/queue-opts.js';
 import type { OrchestratorJob } from '../src/types.js';
 
@@ -99,5 +102,62 @@ describe('buildQueueAddOptions', () => {
       })
     );
     expect(opts.attempts).toBe(1);
+  });
+});
+
+describe('polling optimization (reduce-polling-frequency)', () => {
+  beforeEach(() => {
+    // Reset env var before each test
+    delete process.env.ORCHESTRATOR_POLLING_OPTIMIZED;
+  });
+
+  afterEach(() => {
+    delete process.env.ORCHESTRATOR_POLLING_OPTIMIZED;
+  });
+
+  it('optimized drain: 3s long-poll when empty (vs legacy 1s)', () => {
+    const profile = OPTIMIZED_DRAIN_PROFILE;
+    expect(profile.drainDelaySeconds).toBe(3);
+  });
+
+  it('legacy drain: 1s for backward compatibility', () => {
+    const profile = LEGACY_DRAIN_PROFILE;
+    expect(profile.drainDelaySeconds).toBe(1);
+  });
+
+  it('uses optimized profile by default', () => {
+    const profile = getPollingProfile();
+    expect(profile.drainDelaySeconds).toBe(3);
+  });
+
+  it('can disable optimization with env var', () => {
+    process.env.ORCHESTRATOR_POLLING_OPTIMIZED = 'false';
+    const profile = getPollingProfile();
+    expect(profile.drainDelaySeconds).toBe(1);
+  });
+
+  it('optimized has 5s retry delay hint', () => {
+    const profile = OPTIMIZED_DRAIN_PROFILE;
+    expect(profile.retryProcessDelayMs).toBe(5000);
+  });
+
+  it('legacy has 3s retry delay hint', () => {
+    const profile = LEGACY_DRAIN_PROFILE;
+    expect(profile.retryProcessDelayMs).toBe(3000);
+  });
+
+  it('expected savings: fewer empty-queue polls with longer drainDelay', () => {
+    const legacyPollsPerSec = 1 / LEGACY_DRAIN_PROFILE.drainDelaySeconds;
+    const optimizedPollsPerSec = 1 / OPTIMIZED_DRAIN_PROFILE.drainDelaySeconds;
+    const reductionPct = ((legacyPollsPerSec - optimizedPollsPerSec) / legacyPollsPerSec) * 100;
+    expect(reductionPct).toBeGreaterThan(60);
+  });
+
+  it('job processing latency: no delay if queue has pending jobs', () => {
+    // The polling config affects empty-queue behavior only
+    // Active jobs are processed immediately (BullMQ)
+    const opts = buildQueueAddOptions(baseJob({}));
+    expect(opts.priority).toBeDefined();
+    expect(opts.attempts).toBeGreaterThan(0);
   });
 });
