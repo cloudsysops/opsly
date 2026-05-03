@@ -1,0 +1,339 @@
+import { promises as fsp } from 'fs';
+import * as path from 'path';
+
+interface ValidationError {
+  type: 'type-check' | 'test' | 'build';
+  message: string;
+}
+
+interface ValidationReport {
+  job_id: string;
+  timestamp: string;
+  attempt: number;
+  validations: Array<{
+    type: 'type-check' | 'test' | 'build';
+    status: 'passed' | 'failed' | 'skipped';
+    error?: string;
+  }>;
+  overall_status: 'passed' | 'failed' | 'partial';
+  can_retry: boolean;
+  next_action: 'commit' | 'iterate' | 'escalate';
+  errors: ValidationError[];
+}
+
+export interface IterationResult {
+  shouldRetry: boolean;
+  nextPrompt?: string;
+  escalationReason?: string;
+  suggestions: string[];
+}
+
+export class IterationManager {
+  private cursorDir: string;
+
+  constructor(cursorDir: string = '.cursor') {
+    this.cursorDir = cursorDir;
+  }
+
+  async analyzeAndRefactor(
+    jobId: string,
+    attempt: number,
+    errors: ValidationError[],
+    originalPrompt: string,
+    responseContent: string,
+  ): Promise<IterationResult> {
+    // Max attempts reached
+    if (attempt >= 3) {
+      return {
+        shouldRetry: false,
+        escalationReason: `Max retries (3) exceeded. Last errors:\n${errors.map((e) => `- [${e.type}] ${e.message}`).join('\n')}`,
+        suggestions: [
+          'Review error logs for common patterns',
+          'Consider breaking task into smaller subtasks',
+          'Escalate to human for manual intervention',
+        ],
+      };
+    }
+
+    // Analyze error patterns
+    const errorPatterns = errors.map((e) => ({
+      type: e.type,
+      message: e.message,
+      suggestion: this.suggestFix(e),
+    }));
+
+    // Generate refactoring prompt
+    const nextPrompt = this.generateRefactoringPrompt(
+      originalPrompt,
+      responseContent,
+      errorPatterns,
+      attempt,
+    );
+
+    const suggestions = errorPatterns.map((p) => `[${p.type}] ${p.suggestion}`);
+
+    return {
+      shouldRetry: true,
+      nextPrompt,
+      suggestions,
+    };
+  }
+
+  private suggestFix(error: ValidationError): string {
+    const { type, message } = error;
+
+    if (type === 'type-check') {
+      if (message.includes('Cannot find module')) {
+        return 'Import all required dependencies and check module paths';
+      }
+      if (message.includes('Type')) {
+        return 'Review TypeScript type annotations - ensure all parameters and returns are properly typed';
+      }
+      if (message.includes('is not assignable')) {
+        return 'Check type compatibility - ensure variables are used with correct types';
+      }
+    }
+
+    if (type === 'test') {
+      if (message.includes('Cannot find module')) {
+        return 'Ensure all imports in test files are correct and dependencies are installed';
+      }
+      if (message.includes('expected')) {
+        return 'Review test assertions - they should match the actual behavior of your implementation';
+      }
+      if (message.includes('ReferenceError')) {
+        return 'Check that all variables and functions referenced in tests are defined';
+      }
+    }
+
+    if (type === 'build') {
+      if (message.includes('ENOENT')) {
+        return 'Check that all required files exist - ensure no missing file references';
+      }
+      if (message.includes('permission')) {
+        return 'Check file permissions and ensure build output directory is writable';
+      }
+    }
+
+    return 'Review the error message carefully and fix the root cause - re-read the original requirement';
+  }
+
+  private generateRefactoringPrompt(
+    originalPrompt: string,
+    responseContent: string,
+    errorPatterns: Array<{ type: string; message: string; suggestion: string }>,
+    attempt: number,
+  ): string {
+    return `
+# Refactoring Request (Attempt ${attempt + 1}/3)
+
+The previous code had validation errors that need to be fixed.
+
+## Validation Errors Found:
+
+${errorPatterns.map((p) => `- **[${p.type}]** ${p.message}\n  **Suggestion:** ${p.suggestion}`).join('\n\n')}
+
+## Original Request:
+
+\`\`\`
+${originalPrompt}
+\`\`\`
+
+## Previous Implementation (attempt ${attempt}):
+
+\`\`\`
+${responseContent}
+\`\`\`
+
+## What You Need to Do:
+
+1. Carefully review each error listed above
+2. Fix the issues in your code
+3. Ensure the code passes:
+   - TypeScript type checking (\`npm run type-check\`)
+   - Unit tests (\`npm run test\`)
+   - Build validation (\`npm run build\`)
+
+4. Provide the corrected code that addresses all validation errors
+
+Please provide the fixed implementation that will pass all validations.
+`;
+  }
+
+  async generateRetryPrompt(
+    jobId: string,
+    validationReport: ValidationReport,
+    originalPrompt: string,
+  ): Promise<string> {
+    const attempt = validationReport.attempt;
+
+    // Collect all error messages
+    const errorMessages = validationReport.errors
+      .map((e) => `[${e.type}] ${e.message}`)
+      .join('\n');
+
+    // Generate refactoring suggestions
+    const suggestions = validationReport.errors
+      .map((e) => {
+        const fix = this.suggestFix(e);
+        return `- **${e.type}**: ${fix}`;
+      })
+      .join('\n');
+
+    return `
+# Code Refinement Required (Attempt ${attempt + 1}/3)
+
+Your previous implementation has validation errors. Please fix them and provide corrected code.
+
+## Errors to Fix:
+
+\`\`\`
+${errorMessages}
+\`\`\`
+
+## Suggested Fixes:
+
+${suggestions}
+
+## Original Task:
+
+${originalPrompt}
+
+## Instructions:
+
+1. Review each error carefully
+2. Fix the root causes
+3. Ensure your code passes:
+   - Type checking
+   - Tests
+   - Build
+
+Provide the corrected implementation.
+`;
+  }
+
+  async writeRetryPrompt(
+    jobId: string,
+    attempt: number,
+    promptContent: string,
+  ): Promise<string> {
+    const promptsDir = path.join(this.cursorDir, 'prompts');
+    const retryFilename = `retry-${jobId}-attempt-${attempt + 1}.md`;
+    const retryPath = path.join(promptsDir, retryFilename);
+
+    try {
+      await fsp.mkdir(promptsDir, { recursive: true });
+      await fsp.writeFile(
+        retryPath,
+        this.formatRetryPrompt(promptContent),
+        'utf-8',
+      );
+
+      console.log(
+        `[IterationManager] ✅ Created retry prompt: ${retryFilename}`,
+      );
+      return retryPath;
+    } catch (err) {
+      console.error('[IterationManager] ❌ Failed to write retry prompt:', err);
+      throw err;
+    }
+  }
+
+  private formatRetryPrompt(promptContent: string): string {
+    // Add frontmatter if not present
+    if (!promptContent.startsWith('---')) {
+      return `---
+agent_role: executor
+max_steps: 5
+goal: "Fix validation errors and refactor code"
+---
+
+${promptContent}`;
+    }
+    return promptContent;
+  }
+
+  async readValidationReport(
+    responsePath: string,
+  ): Promise<ValidationReport | null> {
+    const validationPath = responsePath.replace(/\.md$/, '.validation.json');
+
+    try {
+      const content = await fsp.readFile(validationPath, 'utf-8');
+      return JSON.parse(content) as ValidationReport;
+    } catch (err) {
+      console.log(
+        `[IterationManager] No validation report found: ${validationPath}`,
+      );
+      return null;
+    }
+  }
+
+  async shouldEscalate(validation: ValidationReport): Promise<boolean> {
+    return validation.attempt >= 3 && validation.overall_status === 'failed';
+  }
+
+  async processValidationResult(
+    responsePath: string,
+    originalPrompt: string,
+  ): Promise<{
+    action: 'commit' | 'iterate' | 'escalate';
+    nextPromptPath?: string;
+    reason: string;
+  }> {
+    const validation = await this.readValidationReport(responsePath);
+
+    if (!validation) {
+      return {
+        action: 'escalate',
+        reason: 'No validation report found',
+      };
+    }
+
+    // All passed
+    if (validation.overall_status === 'passed') {
+      return {
+        action: 'commit',
+        reason: `All validations passed on attempt ${validation.attempt}`,
+      };
+    }
+
+    // Check if we should escalate
+    if (await this.shouldEscalate(validation)) {
+      return {
+        action: 'escalate',
+        reason: `Max attempts (3) exceeded. Final errors: ${validation.errors.map((e) => e.message).join('; ')}`,
+      };
+    }
+
+    // Generate retry
+    const nextPrompt = await this.generateRetryPrompt(
+      validation.job_id,
+      validation,
+      originalPrompt,
+    );
+
+    const nextPromptPath = await this.writeRetryPrompt(
+      validation.job_id,
+      validation.attempt,
+      nextPrompt,
+    );
+
+    return {
+      action: 'iterate',
+      nextPromptPath,
+      reason: `Validation failed on attempt ${validation.attempt}. Generated retry prompt.`,
+    };
+  }
+}
+
+let instance: IterationManager | null = null;
+
+export function getIterationManager(
+  cursorDir?: string,
+): IterationManager {
+  if (!instance) {
+    instance = new IterationManager(cursorDir);
+  }
+  return instance;
+}

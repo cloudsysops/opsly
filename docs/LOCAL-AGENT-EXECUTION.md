@@ -166,7 +166,15 @@ export PLATFORM_ADMIN_TOKEN="local-dev"
 npx tsx scripts/local-prompt-watcher.ts
 ```
 
-### Setup (Terminal 4: Git Auto-Commit)
+### Setup (Terminal 4: Iteration Watcher)
+
+```bash
+npx tsx scripts/iteration-watch-responses.ts
+```
+
+This monitors validation results and automatically generates retry prompts when validation fails.
+
+### Setup (Terminal 5: Git Auto-Commit)
 
 ```bash
 npx tsx scripts/local-git-auto-commit.ts
