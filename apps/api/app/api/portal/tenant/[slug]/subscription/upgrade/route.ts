@@ -1,10 +1,7 @@
 import { NextRequest } from 'next/server';
 import { z } from 'zod';
 import { HTTP_STATUS } from '../../../../../../../lib/constants';
-import {
-  resolveTrustedPortalSession,
-  tenantSlugMatchesSession,
-} from '../../../../../../../lib/portal-trusted-identity';
+import { runTrustedPortalDalForPathSlug } from '../../../../../../../lib/portal-tenant-dal';
 import { getServiceClient } from '../../../../../../../lib/supabase';
 import { getStripe } from '../../../../../../../lib/stripe';
 import { logger } from '../../../../../../../lib/logger';
@@ -101,55 +98,46 @@ export async function POST(
   request: NextRequest,
   context: { params: Promise<{ slug: string }> }
 ): Promise<Response> {
-  const trusted = await resolveTrustedPortalSession(request);
-  if (!trusted.ok) {
-    return trusted.response;
-  }
-
   const { slug } = await context.params;
-  if (!tenantSlugMatchesSession(trusted.session, slug)) {
-    return Response.json(
-      { error: 'Tenant slug does not match session' },
-      { status: HTTP_STATUS.FORBIDDEN }
-    );
-  }
 
-  const bodyResult = await parseUpgradeBody(request);
-  if (!bodyResult.ok) {
-    return bodyResult.response;
-  }
+  return runTrustedPortalDalForPathSlug(request, slug, async (session) => {
+    const bodyResult = await parseUpgradeBody(request);
+    if (!bodyResult.ok) {
+      return bodyResult.response;
+    }
 
-  const { plan } = bodyResult;
-  const priceId = getUpgradePriceId(plan);
-  if (!priceId) {
-    return Response.json(
-      { error: `STRIPE_PRICE_ID_${plan.toUpperCase()} not configured` },
-      { status: HTTP_STATUS.INTERNAL_ERROR }
-    );
-  }
+    const { plan } = bodyResult;
+    const priceId = getUpgradePriceId(plan);
+    if (!priceId) {
+      return Response.json(
+        { error: `STRIPE_PRICE_ID_${plan.toUpperCase()} not configured` },
+        { status: HTTP_STATUS.INTERNAL_ERROR }
+      );
+    }
 
-  const subId = await getTenantStripeSubId(trusted.session.tenant.id);
-  if (!subId) {
-    return Response.json(
-      { error: 'No active subscription found' },
-      { status: HTTP_STATUS.BAD_REQUEST }
-    );
-  }
+    const subId = await getTenantStripeSubId(session.tenant.id);
+    if (!subId) {
+      return Response.json(
+        { error: 'No active subscription found' },
+        { status: HTTP_STATUS.BAD_REQUEST }
+      );
+    }
 
-  try {
-    await upgradeStripeSubscription(subId, priceId, plan);
-  } catch (e) {
-    logger.error(
-      'upgrade upgradeStripeSubscription',
-      e instanceof Error ? e : { error: String(e) }
-    );
-    return Response.json(
-      { error: 'Failed to upgrade subscription' },
-      { status: HTTP_STATUS.INTERNAL_ERROR }
-    );
-  }
+    try {
+      await upgradeStripeSubscription(subId, priceId, plan);
+    } catch (e) {
+      logger.error(
+        'upgrade upgradeStripeSubscription',
+        e instanceof Error ? e : { error: String(e) }
+      );
+      return Response.json(
+        { error: 'Failed to upgrade subscription' },
+        { status: HTTP_STATUS.INTERNAL_ERROR }
+      );
+    }
 
-  await updateTenantPlan(trusted.session.tenant.id, plan);
+    await updateTenantPlan(session.tenant.id, plan);
 
-  return Response.json({ ok: true, plan });
+    return Response.json({ ok: true, plan });
+  });
 }

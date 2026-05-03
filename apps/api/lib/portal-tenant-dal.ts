@@ -1,4 +1,9 @@
-import { resolveTrustedPortalSession } from './portal-trusted-identity';
+import { HTTP_STATUS } from './constants';
+import {
+  resolveTrustedPortalSession,
+  tenantSlugMatchesSession,
+  type TrustedPortalSession,
+} from './portal-trusted-identity';
 import { runWithTenantContext } from './tenant-context';
 
 /**
@@ -10,12 +15,39 @@ import { runWithTenantContext } from './tenant-context';
  */
 export async function runTrustedPortalDal<T>(
   request: Request,
-  fn: () => T | Promise<T>
+  fn: (session: TrustedPortalSession) => T | Promise<T>
 ): Promise<T | Response> {
   const resolved = await resolveTrustedPortalSession(request);
   if (!resolved.ok) {
     return resolved.response;
   }
   const { id, slug } = resolved.session.tenant;
-  return runWithTenantContext({ tenantId: id, tenantSlug: slug }, fn);
+  return runWithTenantContext({ tenantId: id, tenantSlug: slug }, () =>
+    fn(resolved.session)
+  );
+}
+
+/**
+ * Igual que `runTrustedPortalDal`, pero exige que `pathSlug` coincida con el tenant del JWT
+ * (`tenantSlugMatchesSession`) antes de fijar el ALS. Para rutas `app/api/portal/tenant/[slug]/*`.
+ */
+export async function runTrustedPortalDalForPathSlug<T>(
+  request: Request,
+  pathSlug: string,
+  fn: (session: TrustedPortalSession) => T | Promise<T>
+): Promise<T | Response> {
+  const resolved = await resolveTrustedPortalSession(request);
+  if (!resolved.ok) {
+    return resolved.response;
+  }
+  if (!tenantSlugMatchesSession(resolved.session, pathSlug)) {
+    return Response.json(
+      { error: 'Tenant slug does not match session' },
+      { status: HTTP_STATUS.FORBIDDEN }
+    );
+  }
+  const { id, slug } = resolved.session.tenant;
+  return runWithTenantContext({ tenantId: id, tenantSlug: slug }, () =>
+    fn(resolved.session)
+  );
 }

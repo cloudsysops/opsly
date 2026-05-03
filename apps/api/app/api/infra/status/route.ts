@@ -13,7 +13,7 @@ export const runtime = 'nodejs';
 const EXPECTED_SERVICES = ['api', 'orchestrator'] as const;
 
 export async function GET(request: Request): Promise<Response> {
-  const out = await runTrustedPortalDal(request, async () => {
+  const out = await runTrustedPortalDal(request, async (_session) => {
     try {
       const redis = await requireHeartbeatRedis();
       const now = Date.now();

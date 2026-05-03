@@ -1,10 +1,7 @@
 import { NextRequest } from 'next/server';
 import { z } from 'zod';
 import { HTTP_STATUS } from '../../../../../../lib/constants';
-import {
-  resolveTrustedPortalSession,
-  tenantSlugMatchesSession,
-} from '../../../../../../lib/portal-trusted-identity';
+import { runTrustedPortalDalForPathSlug } from '../../../../../../lib/portal-tenant-dal';
 import { getServiceClient } from '../../../../../../lib/supabase';
 import { logger } from '../../../../../../lib/logger';
 
@@ -54,33 +51,6 @@ async function upsertBudget(slug: string, row: BudgetRow): Promise<boolean> {
   return true;
 }
 
-function buildGuardResponse(
-  request: NextRequest,
-  slug: string
-): Promise<
-  | { ok: false; response: Response }
-  | {
-      ok: true;
-      response: null;
-    }
-> {
-  return resolveTrustedPortalSession(request).then((trusted) => {
-    if (!trusted.ok) {
-      return { ok: false, response: trusted.response };
-    }
-    if (!tenantSlugMatchesSession(trusted.session, slug)) {
-      return {
-        ok: false,
-        response: Response.json(
-          { error: 'Tenant slug does not match session' },
-          { status: HTTP_STATUS.FORBIDDEN }
-        ),
-      };
-    }
-    return { ok: true, response: null };
-  });
-}
-
 /**
  * GET /api/portal/tenant/[slug]/budget
  *
@@ -91,16 +61,13 @@ export async function GET(
   context: { params: Promise<{ slug: string }> }
 ): Promise<Response> {
   const { slug } = await context.params;
-  const guard = await buildGuardResponse(request, slug);
-  if (!guard.ok) {
-    return guard.response as Response;
-  }
-
-  const budget = await fetchBudget(slug);
-  return Response.json({
-    slug,
-    monthly_cap_usd: budget?.monthly_cap_usd ?? null,
-    alert_threshold_pct: budget?.alert_threshold_pct ?? DEFAULT_ALERT_THRESHOLD_PCT,
+  return runTrustedPortalDalForPathSlug(request, slug, async () => {
+    const budget = await fetchBudget(slug);
+    return Response.json({
+      slug,
+      monthly_cap_usd: budget?.monthly_cap_usd ?? null,
+      alert_threshold_pct: budget?.alert_threshold_pct ?? DEFAULT_ALERT_THRESHOLD_PCT,
+    });
   });
 }
 
@@ -114,37 +81,35 @@ export async function PUT(
   context: { params: Promise<{ slug: string }> }
 ): Promise<Response> {
   const { slug } = await context.params;
-  const guard = await buildGuardResponse(request, slug);
-  if (!guard.ok) {
-    return guard.response as Response;
-  }
 
-  let body: unknown;
-  try {
-    body = await request.json();
-  } catch {
-    return Response.json({ error: 'Invalid JSON body' }, { status: HTTP_STATUS.BAD_REQUEST });
-  }
+  return runTrustedPortalDalForPathSlug(request, slug, async () => {
+    let body: unknown;
+    try {
+      body = await request.json();
+    } catch {
+      return Response.json({ error: 'Invalid JSON body' }, { status: HTTP_STATUS.BAD_REQUEST });
+    }
 
-  const parsed = budgetBodySchema.safeParse(body);
-  if (!parsed.success) {
-    return Response.json(
-      { error: parsed.error.issues[0]?.message ?? 'Invalid body' },
-      { status: HTTP_STATUS.BAD_REQUEST }
-    );
-  }
+    const parsed = budgetBodySchema.safeParse(body);
+    if (!parsed.success) {
+      return Response.json(
+        { error: parsed.error.issues[0]?.message ?? 'Invalid body' },
+        { status: HTTP_STATUS.BAD_REQUEST }
+      );
+    }
 
-  const saved = await upsertBudget(slug, {
-    monthly_cap_usd: parsed.data.monthly_cap_usd,
-    alert_threshold_pct: parsed.data.alert_threshold_pct,
+    const saved = await upsertBudget(slug, {
+      monthly_cap_usd: parsed.data.monthly_cap_usd,
+      alert_threshold_pct: parsed.data.alert_threshold_pct,
+    });
+
+    if (!saved) {
+      return Response.json(
+        { error: 'Failed to save budget' },
+        { status: HTTP_STATUS.INTERNAL_ERROR }
+      );
+    }
+
+    return Response.json({ ok: true, slug, ...parsed.data });
   });
-
-  if (!saved) {
-    return Response.json(
-      { error: 'Failed to save budget' },
-      { status: HTTP_STATUS.INTERNAL_ERROR }
-    );
-  }
-
-  return Response.json({ ok: true, slug, ...parsed.data });
 }
