@@ -1,3 +1,4 @@
+-- Renumbered from 0042: remote already had 0042 (n8n_marketplace_installs); one version per prefix.
 -- Opsly Shield / Guardian Grid — alert configuration per tenant (Phase 2 MVP)
 -- Uptime Kuma + defensive alerts (Discord webhook outbound)
 
