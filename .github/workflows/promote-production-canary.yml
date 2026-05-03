@@ -37,7 +37,11 @@ jobs:
           if [ -z "${PROD_API_URL:-}" ]; then
             PROD_API_URL="https://api.ops.smiletripcare.com"
           fi
+          ROLLBACK_FLAG=()
+          if [ "${ROLLBACK_ON_FAIL}" = "true" ]; then
+            ROLLBACK_FLAG=(--rollback-on-fail)
+          fi
           bash scripts/deploy/promote-canary.sh \
             --staging-api-url "${STAGING_API_URL}" \
             --prod-api-url "${PROD_API_URL}" \
-            $( [ "${ROLLBACK_ON_FAIL}" = "true" ] && echo "--rollback-on-fail" )
+            "${ROLLBACK_FLAG[@]}"

@@ -1,7 +1,6 @@
 # Auditoría de workflows GitHub — Opsly
 
 **Relacionado (Maestro #3):** [`workflows-index.md`](./workflows-index.md) · [`workflows-catalog.tsv`](./workflows-catalog.tsv) · `scripts/generate-workflows-catalog.sh` · `scripts/archive-plan.sh`
-
 **Generado:** 2026-05-03T19:18Z (API `gh run list`, última ejecución con conclusión success cuando exista).
 
 | Workflow | Última run exitosa (UTC) | ¿Se usa? | Decisión |

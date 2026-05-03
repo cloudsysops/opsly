@@ -52,6 +52,7 @@ jobs:
       - name: Open PR if changes (never commit directly to main)
         env:
           GH_TOKEN: ${{ github.token }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
           set -euo pipefail
 
@@ -79,15 +80,16 @@ jobs:
           PR_COUNT="$(gh pr list --repo "${{ github.repository }}" \
             --head "${BRANCH}" --state open --json number --jq 'length')"
           if [ "${PR_COUNT}" = "0" ]; then
+            PR_BODY="$(printf '%s\n\n%s\n\n%s' \
+              "Automated ESLint/Prettier fixes triggered by push to main." \
+              "Triggered by commit \`${SHA_SHORT}\`. Review before merging." \
+              "Workflow: ${RUN_URL}")"
             gh pr create \
               --repo "${{ github.repository }}" \
               --base main \
               --head "${BRANCH}" \
               --title "chore: auto-fix code quality (${DATE} ${SHA_SHORT})" \
-              --body "Automated ESLint/Prettier fixes triggered by push to main.
-Triggered by commit \`${SHA_SHORT}\`. Review before merging.
-
-Workflow: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+              --body "${PR_BODY}"
           else
             echo "PR already open for ${BRANCH}; skipping."
           fi
