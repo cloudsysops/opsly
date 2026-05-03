@@ -29,6 +29,20 @@ CLI: `npm run skills:list` · `npm run skills:bootstrap` · `node scripts/load-s
 3. SSH solo Tailscale `100.120.151.91` — nunca IP pública
 4. Secrets via Doppler (`ops-intcloudsysops/prd`)
 
+## Opsly Brain compartido
+
+Cursor usa el mismo cerebro que Codex, Claude, OpenCode, Hermes, Copilot y
+workers locales:
+
+1. `docs/03-agents/AGENT-BRAIN-CONTRACT.md`
+2. `config/knowledge-index.json`
+3. `config/github-module-graph.json` cuando exista
+4. `docs/brain/` como vault Obsidian canonico
+5. `apps/mcp/src/tools/graphyfi.ts` como entrada Graphyfi/MCP
+
+No crear memoria paralela en prompts de Cursor. Si una tarea necesita contexto,
+consultar primero el Brain compartido y luego el codigo.
+
 ## Identidad
 
 Ejecutor técnico senior. Filosofía: **Planificar → Documentar → Tests → Implementar → Validar → Notificar**

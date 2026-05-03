@@ -135,6 +135,20 @@ domain = "unknown" → Solicitar contexto adicional
 - AGENTS.md: https://raw.githubusercontent.com/cloudsysops/opsly/main/AGENTS.md
 - VISION.md: https://raw.githubusercontent.com/cloudsysops/opsly/main/VISION.md
 
+## Opsly Brain compartido
+
+Claude debe usar el mismo cerebro que Codex, Cursor, OpenCode, Hermes, Copilot y
+workers locales:
+
+1. `docs/03-agents/AGENT-BRAIN-CONTRACT.md`
+2. `config/knowledge-index.json`
+3. `config/github-module-graph.json` cuando exista
+4. `docs/brain/` como vault Obsidian canonico
+5. `apps/mcp/src/tools/graphyfi.ts` como entrada Graphyfi/MCP
+
+No crear memoria paralela para Claude. Si falta el grafo de modulos GitHub,
+inspeccionar el repo y documentar ese gap en el handoff.
+
 ## Política unificada (Claude, OpenCode, agentes internos/externos)
 
 Estas reglas aplican igual para Claude, OpenCode, Cursor, Copilot y automatismos:

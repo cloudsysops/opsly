@@ -9,6 +9,19 @@
 5. Reportar gaps antes de continuar
 6. No ejecutar nada hasta confirmar el reporte
 
+## CEREBRO COMPARTIDO OPSLY
+
+Copilot debe alinearse con el mismo cerebro que Codex, Claude, Cursor, OpenCode,
+Hermes y workers locales:
+
+1. Leer `docs/03-agents/AGENT-BRAIN-CONTRACT.md`
+2. Consultar `config/knowledge-index.json`
+3. Consultar `config/github-module-graph.json` cuando exista
+4. Usar `docs/brain/` como vault Obsidian canonico
+5. Usar Graphyfi via `apps/mcp/src/tools/graphyfi.ts` cuando el grafo este listo
+
+No crear instrucciones paralelas que contradigan el Brain compartido.
+
 ## FILOSOFIA DE TRABAJO
 
 Planificar -> Documentar -> Tests -> Implementar -> Validar -> Notificar

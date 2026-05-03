@@ -10,7 +10,12 @@
   "context": {
     "agentsMd": "https://raw.githubusercontent.com/cloudsysops/opsly/main/AGENTS.md",
     "visionMd": "https://raw.githubusercontent.com/cloudsysops/opsly/main/VISION.md",
-    "openapiSpec": "docs/openapi-opsly-api.yaml"
+    "openapiSpec": "docs/openapi-opsly-api.yaml",
+    "brainContract": "docs/03-agents/AGENT-BRAIN-CONTRACT.md",
+    "obsidianBrain": "docs/brain/",
+    "knowledgeIndex": "config/knowledge-index.json",
+    "githubModuleGraph": "config/github-module-graph.json",
+    "graphyfiTool": "apps/mcp/src/tools/graphyfi.ts"
   },
   "openclaw": {
     "mcpServer": "apps/mcp",
