@@ -272,7 +272,54 @@ git push origin <branch-name>
 
 ---
 
-## Workflow Autónimo Típico
+## 🚀 Automatic Phase Notifications (Opsly Local Services)
+
+**What:** Automatic detection and notification of Local Services development phases.
+
+**Where:** `scripts/phase-detector.sh` (runs via `.githooks/post-commit`)
+
+**Triggered by:**
+- Phase 0 Complete: ADRs + prompts created
+- Phase 1 Complete: API infrastructure + migrations deployed
+- Phase 2 Complete: n8n workflows + webhooks + Stripe integration deployed
+
+**Notifies:**
+- Internal team: Discord / Slack channels
+- Developer: Branch, commit hash, author
+- Next phase: What comes after current phase
+
+**Example notifications:**
+```
+✅ Phase 1 Complete: API Infrastructure
+Database migrations, tenant isolation, booking endpoints, and Next.js UI deployed.
+
+Branch: main | Commit: 274dbde | Author: Cursor
+
+→ Next: Phase 2: Cursor builds automation workflows (n8n, webhooks, integrations)
+```
+
+**Setup required (one time):**
+```bash
+# Ensure webhooks are in Doppler
+doppler secrets get DISCORD_WEBHOOK_URL
+doppler secrets get SLACK_WEBHOOK_URL
+
+# Script is auto-called by .githooks/post-commit
+# No manual invocation needed
+```
+
+**How to test:**
+```bash
+# Manually trigger phase detection
+bash scripts/phase-detector.sh
+
+# View phase state
+cat .github/phase-state.json
+```
+
+---
+
+## Workflow Autónomo Típico
 
 ```bash
 # 1. Detectar skills necesarios
