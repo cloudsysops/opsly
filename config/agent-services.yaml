@@ -93,6 +93,12 @@ environments:
     cursor: "http://localhost:5001"
     claude: "http://localhost:5002"
 
+  tailscale:
+    cursor: "http://opsly-mac2011:5001"     # MacBook via Tailscale
+    cursor_backup: "http://opsly-admin:5001"  # Admin machine backup
+    claude: "http://opsly-admin:5002"       # Claude on admin machine
+    # Orchestrator stays on VPS via normal config
+
   remote:
     cursor: "http://192.168.1.100:5001"  # Different machine
     claude: "http://192.168.1.100:5002"

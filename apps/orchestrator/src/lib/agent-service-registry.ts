@@ -84,12 +84,19 @@ export class AgentServiceRegistry {
    * Get service URL for making HTTP requests
    * Supports environment override
    */
+  getEnvironment(): string {
+    return process.env.AGENT_ENVIRONMENT || 'local';
+  }
+
   async getServiceUrl(serviceName: string, environment?: string): Promise<string | null> {
     const config = await this.getConfig();
 
+    // Use provided environment, or fall back to AGENT_ENVIRONMENT
+    const env = environment || this.getEnvironment();
+
     // Check environment override first
-    if (environment && config.environments?.[environment]?.[serviceName]) {
-      return config.environments[environment][serviceName];
+    if (env && config.environments?.[env]?.[serviceName]) {
+      return config.environments[env][serviceName];
     }
 
     // Fall back to service config
