@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { getApiBaseUrl } from '@/lib/api';
+import { PORTAL_DEMO_COOKIE } from '@/lib/demo-tenant';
 
 const NEXT_STATUS: Record<string, { label: string; status: string }[]> = {
   draft: [
@@ -38,6 +39,13 @@ export function InvoiceStatusActions({
   async function updateStatus(newStatus: string) {
     setLoading(true);
     try {
+      const hasDemoSession =
+        document.cookie.includes(`${PORTAL_DEMO_COOKIE}=1`) &&
+        (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+      if (hasDemoSession) {
+        router.refresh();
+        return;
+      }
       const base = getApiBaseUrl();
       const res = await fetch(`${base}/api/billing/invoices/${invoiceId}`, {
         method: 'PATCH',

@@ -4,24 +4,91 @@ import {
   fetchPortalInsights,
   fetchPortalTenant,
   fetchPortalUsage,
+  fetchShieldScore,
   tenantSlugFromUserMetadata,
 } from '@/lib/tenant';
-import type { PortalInsightsPayload, PortalTenantPayload, PortalUsageSnapshot } from '@/types';
+import type {
+  PortalInsightsPayload,
+  PortalTenantPayload,
+  PortalUsageSnapshot,
+  ShieldScorePayload,
+} from '@/types';
+import {
+  demoPortalInsights,
+  demoPortalShieldScore,
+  demoPortalTenantPayload,
+  demoPortalUsageSnapshot,
+} from '@/lib/demo-tenant';
+import { getPortalDemoMode, isPortalDemoSession } from '@/lib/demo-session';
+
+const PORTAL_AUTH_TIMEOUT_MS = 2_000;
+
+async function withPortalTimeout<T>(promise: Promise<T>, label: string): Promise<T> {
+  let timeout: ReturnType<typeof setTimeout> | undefined;
+  try {
+    return await Promise.race([
+      promise,
+      new Promise<never>((_, reject) => {
+        timeout = setTimeout(
+          () => reject(new Error(`${label} timeout after ${PORTAL_AUTH_TIMEOUT_MS / 1000}s`)),
+          PORTAL_AUTH_TIMEOUT_MS
+        );
+      }),
+    ]);
+  } finally {
+    if (timeout !== undefined) {
+      clearTimeout(timeout);
+    }
+  }
+}
 
 export async function requirePortalPayload(): Promise<PortalTenantPayload> {
+  if (await isPortalDemoSession()) {
+    return demoPortalTenantPayload(await getPortalDemoMode());
+  }
   const supabase = await createServerSupabase();
   const {
     data: { session },
-  } = await supabase.auth.getSession();
+  } = await withPortalTimeout(supabase.auth.getSession(), 'portal session');
   if (!session?.access_token) {
     redirect('/login');
   }
   try {
     const {
       data: { user },
-    } = await supabase.auth.getUser();
+    } = await withPortalTimeout(supabase.auth.getUser(), 'portal user');
     const slug = tenantSlugFromUserMetadata(user);
     return await fetchPortalTenant(session.access_token, slug);
+  } catch {
+    redirect('/login');
+  }
+}
+
+/** Igual que `requirePortalPayload` pero expone el Bearer para llamadas API desde el cliente. */
+export async function requirePortalPayloadWithToken(): Promise<{
+  payload: PortalTenantPayload;
+  accessToken: string;
+}> {
+  if (await isPortalDemoSession()) {
+    return {
+      payload: demoPortalTenantPayload(await getPortalDemoMode()),
+      accessToken: '',
+    };
+  }
+  const supabase = await createServerSupabase();
+  const {
+    data: { session },
+  } = await withPortalTimeout(supabase.auth.getSession(), 'portal session');
+  if (!session?.access_token) {
+    redirect('/login');
+  }
+  try {
+    const {
+      data: { user },
+    } = await withPortalTimeout(supabase.auth.getUser(), 'portal user');
+    const slug = tenantSlugFromUserMetadata(user);
+    const payload = await fetchPortalTenant(session.access_token, slug);
+    return { payload, accessToken: session.access_token };
   } catch {
     redirect('/login');
   }
@@ -35,10 +102,16 @@ export async function requirePortalPayloadWithUsage(): Promise<{
   payload: PortalTenantPayload;
   usage: PortalUsageSnapshot;
 }> {
+  if (await isPortalDemoSession()) {
+    return {
+      payload: demoPortalTenantPayload(await getPortalDemoMode()),
+      usage: demoPortalUsageSnapshot(),
+    };
+  }
   const supabase = await createServerSupabase();
   const {
     data: { session },
-  } = await supabase.auth.getSession();
+  } = await withPortalTimeout(supabase.auth.getSession(), 'portal session');
   if (!session?.access_token) {
     redirect('/login');
   }
@@ -46,7 +119,7 @@ export async function requirePortalPayloadWithUsage(): Promise<{
   try {
     const {
       data: { user },
-    } = await supabase.auth.getUser();
+    } = await withPortalTimeout(supabase.auth.getUser(), 'portal user');
     const slugFromJwt = tenantSlugFromUserMetadata(user);
     const payload = await fetchPortalTenant(token, slugFromJwt);
     const slug = payload.slug;
@@ -68,10 +141,17 @@ export async function requirePortalPayloadWithUsageAndInsights(): Promise<{
   usage: PortalUsageSnapshot;
   insights: PortalInsightsPayload | null;
 }> {
+  if (await isPortalDemoSession()) {
+    return {
+      payload: demoPortalTenantPayload(await getPortalDemoMode()),
+      usage: demoPortalUsageSnapshot(),
+      insights: demoPortalInsights(),
+    };
+  }
   const supabase = await createServerSupabase();
   const {
     data: { session },
-  } = await supabase.auth.getSession();
+  } = await withPortalTimeout(supabase.auth.getSession(), 'portal session');
   if (!session?.access_token) {
     redirect('/login');
   }
@@ -79,7 +159,7 @@ export async function requirePortalPayloadWithUsageAndInsights(): Promise<{
   try {
     const {
       data: { user },
-    } = await supabase.auth.getUser();
+    } = await withPortalTimeout(supabase.auth.getUser(), 'portal user');
     const slugFromJwt = tenantSlugFromUserMetadata(user);
     const payload = await fetchPortalTenant(token, slugFromJwt);
     const slug = payload.slug;
@@ -93,6 +173,39 @@ export async function requirePortalPayloadWithUsageAndInsights(): Promise<{
       usage: { today, month },
       insights,
     };
+  } catch {
+    redirect('/login');
+  }
+}
+
+/** Shield dashboard: tenant + score (secrets section loads client-side). */
+export async function requirePortalPayloadWithShield(): Promise<{
+  payload: PortalTenantPayload;
+  shieldScore: ShieldScorePayload | null;
+}> {
+  if (await isPortalDemoSession()) {
+    return {
+      payload: demoPortalTenantPayload(await getPortalDemoMode()),
+      shieldScore: demoPortalShieldScore(),
+    };
+  }
+  const supabase = await createServerSupabase();
+  const {
+    data: { session },
+  } = await withPortalTimeout(supabase.auth.getSession(), 'portal session');
+  if (!session?.access_token) {
+    redirect('/login');
+  }
+  const token = session.access_token;
+  try {
+    const {
+      data: { user },
+    } = await withPortalTimeout(supabase.auth.getUser(), 'portal user');
+    const slugFromJwt = tenantSlugFromUserMetadata(user);
+    const payload = await fetchPortalTenant(token, slugFromJwt);
+    const slug = payload.slug;
+    const shieldScore = await fetchShieldScore(token, slug).catch((): null => null);
+    return { payload, shieldScore };
   } catch {
     redirect('/login');
   }

@@ -10,6 +10,8 @@ function parseErrorMessage(data: unknown): string {
   return 'Request failed';
 }
 
+const PORTAL_REQUEST_TIMEOUT_MS = 2_000;
+
 async function parseJson(res: Response): Promise<unknown> {
   const text = await res.text();
   if (!text) {
@@ -26,7 +28,22 @@ export async function requestPortalApi<T>(
   input: RequestInfo | URL,
   init?: RequestInit
 ): Promise<T> {
-  const res = await fetch(input, init);
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), PORTAL_REQUEST_TIMEOUT_MS);
+  let res: Response;
+  try {
+    res = await fetch(input, {
+      ...init,
+      signal: init?.signal ?? controller.signal,
+    });
+  } catch (err) {
+    if (err instanceof Error && err.name === 'AbortError') {
+      throw new Error(`Portal API timeout after ${PORTAL_REQUEST_TIMEOUT_MS / 1000}s`);
+    }
+    throw err;
+  } finally {
+    clearTimeout(timeout);
+  }
   const data = await parseJson(res);
 
   if (!res.ok) {

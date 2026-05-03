@@ -516,6 +516,87 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 
+  /api/portal/tenant/{slug}/shield/secrets:
+    get:
+      summary: Opsly Shield — listar hallazgos de secretos (Zero-Trust)
+      operationId: getPortalTenantShieldSecrets
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Lista de hallazgos
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /api/portal/tenant/{slug}/shield/secrets/{findingId}:
+    patch:
+      summary: Opsly Shield — actualizar estado de un hallazgo
+      operationId: patchPortalTenantShieldSecret
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: findingId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status:
+                  type: string
+                  enum: [open, resolved, false_positive]
+      responses:
+        '200':
+          description: Actualizado
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/portal/tenant/{slug}/shield/score:
+    get:
+      summary: Opsly Shield — puntuación de seguridad y tendencia 7d (Zero-Trust)
+      operationId: getPortalTenantShieldScore
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Score actual, historial y nivel de riesgo
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
   /api/portal/health:
     get:
       summary: Health check público (Uptime Kuma) — requiere ?slug= del tenant
@@ -849,6 +930,371 @@ paths:
                     type: array
                     items:
                       type: object
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /api/local-services/tenants/{slug}/services:
+    get:
+      summary: Local Services — listar servicios (JWT portal, slug sesión)
+      operationId: getLocalServicesServices
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Lista de servicios del tenant
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /api/local-services/tenants/{slug}/customers:
+    get:
+      summary: Local Services — listar clientes
+      operationId: getLocalServicesCustomers
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Lista de clientes
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /api/local-services/tenants/{slug}/bookings:
+    get:
+      summary: Local Services — listar reservas
+      operationId: getLocalServicesBookings
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Lista de reservas
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /api/local-services/tenants/{slug}/quotes:
+    get:
+      summary: Local Services — listar cotizaciones
+      operationId: getLocalServicesQuotes
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Lista de cotizaciones
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /api/local-services/tenants/{slug}/reports:
+    get:
+      summary: Local Services — listar reportes
+      operationId: getLocalServicesReports
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Lista de reportes
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /api/local-services/public/tenants/{slug}/bookings:
+    post:
+      summary: Local Services — reserva pública (sin JWT)
+      operationId: postLocalServicesPublicBooking
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [customer_name, customer_email]
+              properties:
+                customer_name:
+                  type: string
+                customer_email:
+                  type: string
+                  format: email
+                customer_phone:
+                  type: string
+                service_id:
+                  type: string
+                  format: uuid
+                scheduled_at:
+                  type: string
+                  format: date-time
+                notes:
+                  type: string
+      responses:
+        '201':
+          description: Reserva creada
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /api/local-services/webhooks/{slug}/booking-created:
+    post:
+      summary: Local Services — webhook booking creado (HMAC, n8n)
+      description: >
+        Cabecera `X-Opsly-Signature: sha256=<hex>` = HMAC-SHA256 del cuerpo raw con
+        `LOCAL_SERVICES_WEBHOOK_SECRET` o `LOCAL_SERVICES_WEBHOOK_SECRET_<SLUG>`.
+        El tenant del path debe existir y estar activo. Cuerpo JSON con `booking_id` (UUID).
+      operationId: postLocalServicesWebhookBookingCreated
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [booking_id]
+              properties:
+                booking_id:
+                  type: string
+                  format: uuid
+                event:
+                  type: string
+      responses:
+        '200':
+          description: Webhook aceptado
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /api/local-services/webhooks/{slug}/booking-completed:
+    post:
+      summary: Local Services — webhook booking completado (HMAC)
+      description: Igual autenticación que booking-created; marca la reserva como `completed`.
+      operationId: postLocalServicesWebhookBookingCompleted
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [booking_id]
+              properties:
+                booking_id:
+                  type: string
+                  format: uuid
+                status:
+                  type: string
+                  enum: [completed]
+      responses:
+        '200':
+          description: Estado actualizado
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /api/local-services/webhooks/{slug}/reports/create:
+    post:
+      summary: Local Services — webhook crear reporte (HMAC)
+      description: Inserta fila en `ls_reports` para el slug del path.
+      operationId: postLocalServicesWebhookReportCreate
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title]
+              properties:
+                title:
+                  type: string
+                body:
+                  type: object
+                  additionalProperties: true
+      responses:
+        '200':
+          description: Reporte creado
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /api/shield/alerts/config:
+    post:
+      summary: Opsly Shield — configurar alerta defensiva por tenant (Discord)
+      description: >
+        JWT portal obligatorio. `tenant_slug` debe coincidir con el tenant de la sesión.
+        Webhook Discord explícito en el cuerpo o vía `SHIELD_ALERTS_DISCORD_WEBHOOK_URL` / `DISCORD_WEBHOOK_SHIELD` / `DISCORD_WEBHOOK_URL`.
+      operationId: postShieldAlertConfig
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [tenant_slug, alert_type]
+              properties:
+                tenant_slug:
+                  type: string
+                  pattern: '^[a-z0-9-]{3,30}$'
+                alert_type:
+                  type: string
+                  enum:
+                    - phishing
+                    - dominio_falso
+                    - endpoint_caido
+                    - abuse_api
+                    - costo_anormal
+                webhook_url:
+                  type: string
+                  format: uri
+                  description: Opcional si hay webhook de plataforma en env
+                threshold:
+                  type: object
+                  additionalProperties: true
+                  description: Umbrales opcionales (p. ej. cpu, response_time)
+                enabled:
+                  type: boolean
+                  default: true
+      responses:
+        '200':
+          description: Configuración guardada
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [alert_id, status, webhook_url]
+                properties:
+                  alert_id:
+                    type: string
+                    format: uuid
+                  status:
+                    type: string
+                    enum: [active, disabled]
+                  webhook_url:
+                    type: string
+                    format: uri
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          description: Falta webhook (cuerpo y env)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /api/cron/shield-secret-scan:
+    get:
+      summary: Cron — escaneo Shield (MVP) + recomputo de score por tenant activo
+      operationId: getCronShieldSecretScan
+      security:
+        - bearerAuth: []
+      description: >
+        Requiere `Authorization: Bearer <CRON_SECRET>` o cabecera `x-cron-secret`.
+        Simulación de hallazgos si `SHIELD_SECRET_SCAN_SIMULATE=true` en la API.
+      responses:
+        '200':
+          description: Resumen de tenants procesados
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    post:
+      summary: Igual que GET (cron schedulers)
+      operationId: postCronShieldSecretScan
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Resumen de tenants procesados
         '401':
           $ref: '#/components/responses/Unauthorized'
         '500':

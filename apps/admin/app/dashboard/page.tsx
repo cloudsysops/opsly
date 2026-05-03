@@ -4,7 +4,6 @@ import { ActivityChart } from '@/components/dashboard/ActivityChart';
 import { ActivityFeed } from '@/components/dashboard/ActivityFeed';
 import { AIChatAssistant } from '@/components/dashboard/AIChatAssistant';
 import { AIInsightsPanel } from '@/components/dashboard/AIInsightsPanel';
-import { HackerNotificationModal } from '@/components/dashboard/HackerNotificationModal';
 import { CpuGauge } from '@/components/dashboard/CpuGauge';
 import { PlatformOverview } from '@/components/dashboard/PlatformOverview';
 import { QuickActions } from '@/components/dashboard/QuickActions';
@@ -52,7 +51,6 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-8">
-      <HackerNotificationModal />
       <QuickActions />
 
       <div className="stagger-fade flex flex-wrap items-end justify-between gap-4">

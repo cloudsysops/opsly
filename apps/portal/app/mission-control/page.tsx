@@ -352,6 +352,8 @@ export default function MissionControlPage() {
               <>
                 Polling cada {REFRESH_MS / 1_000}s · Redis live
                 {data ? ' · ' + services.length + ' servicios' : ''}
+                {' · '}
+                Cola OpenClaw / equipos: usar Mission Control en Admin (HQ), no esta vista.
               </>
             ) : (
               <>Sprints activos desde la API · flujo React Flow en tiempo real</>

@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 import { getApiBaseUrl } from '@/lib/api';
 import { useRouter } from 'next/navigation';
+import { PORTAL_DEMO_COOKIE } from '@/lib/demo-tenant';
 
 interface BillingPlan {
   id: string;
@@ -46,6 +47,13 @@ export function PlanSelector({
     setSubscribing(planId);
     setError(null);
     try {
+      const hasDemoSession =
+        document.cookie.includes(`${PORTAL_DEMO_COOKIE}=1`) &&
+        (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+      if (hasDemoSession) {
+        router.refresh();
+        return;
+      }
       const base = getApiBaseUrl();
       const res = await fetch(`${base}/api/billing/subscriptions`, {
         method: 'POST',

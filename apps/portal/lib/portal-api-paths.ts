@@ -46,6 +46,18 @@ export function portalTenantInsightsUrl(apiBaseUrl: string, tenantSlug: string):
   return `${base}/api/portal/tenant/${encodeURIComponent(tenantSlug)}/insights`;
 }
 
+/** Shield — list secret findings (Zero-Trust). */
+export function portalTenantShieldSecretsUrl(apiBaseUrl: string, tenantSlug: string): string {
+  const base = normalizeApiBase(apiBaseUrl);
+  return `${base}/api/portal/tenant/${encodeURIComponent(tenantSlug)}/shield/secrets`;
+}
+
+/** Shield — security score + 7d trend (Zero-Trust). */
+export function portalTenantShieldScoreUrl(apiBaseUrl: string, tenantSlug: string): string {
+  const base = normalizeApiBase(apiBaseUrl);
+  return `${base}/api/portal/tenant/${encodeURIComponent(tenantSlug)}/shield/score`;
+}
+
 /** URL absoluta `GET` health con JWT — `/api/portal/tenant/[slug]/health` (Zero-Trust). */
 export function portalHealthUrl(apiBaseUrl: string, tenantSlug: string): string {
   const base = normalizeApiBase(apiBaseUrl);
@@ -67,4 +79,15 @@ export function portalOnboardingUrl(apiBaseUrl: string): string {
 export function infraStatusUrl(apiBaseUrl: string): string {
   const base = normalizeApiBase(apiBaseUrl);
   return `${base}/api/infra/status`;
+}
+
+/** URL absoluta `GET|POST` marketplace n8n — Zero-Trust por `[slug]`. */
+export function portalTenantN8nMarketplaceInstallsUrl(apiBaseUrl: string, tenantSlug: string): string {
+  const base = normalizeApiBase(apiBaseUrl);
+  return `${base}/api/portal/tenant/${encodeURIComponent(tenantSlug)}/n8n-marketplace/installs`;
+}
+
+/** URL absoluta `GET /api/portal/billing/summary` (sesión → tenant actual). */
+export function portalBillingSummaryUrl(apiBaseUrl: string): string {
+  return `${normalizeApiBase(apiBaseUrl)}/api/portal/billing/summary`;
 }

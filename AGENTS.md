@@ -327,7 +327,9 @@ node scripts/load-skills.js show opsly-api
 
 <!-- Actualizar al final de cada sesión -->
 
-**Fecha última actualización:** 2026-04-30 — **CRM Starter Pack aplicado en n8n tenants + marketplace v1 + DeepSeek V4/OpenClaw reforzado:** 6 contenedores n8n del VPS tienen los 4 workflows CRM importados; portal incluye `/dashboard/[tenant]/workflows`; LLM Gateway default DeepSeek V4 y trazabilidad `request_id` reforzada.
+**Fecha última actualización:** 2026-05-02 — **Opsly Shield / Guardian Grid Phase 2 (MVP código):** migraciones `shield_alert_config`, `shield_score_history`, `shield_secret_findings`; API `POST /api/shield/alerts/config`, rutas portal Zero-Trust bajo `/api/portal/tenant/[slug]/shield/*`, cron `/api/cron/shield-secret-scan`, worker opcional `OPSLY_SHIELD_SCAN_WORKER_ENABLED`, portal `/shield/dashboard`; metering vía `logUsage` (`shield_api_observability`). Aplicar migraciones en Supabase y Doppler: `DISCORD_WEBHOOK_SHIELD` / `CRON_SECRET`; simulación escaneo `SHIELD_SECRET_SCAN_SIMULATE=true` hasta scanner real.
+
+**Fecha referencia anterior:** 2026-04-30 — **CRM Starter Pack aplicado en n8n tenants + marketplace v1 + DeepSeek V4/OpenClaw reforzado:** 6 contenedores n8n del VPS tienen los 4 workflows CRM importados; portal incluye `/dashboard/[tenant]/workflows`; LLM Gateway default DeepSeek V4 y trazabilidad `request_id` reforzada.
 
 **Siguiente fase:** Semana 6 (Segundo Cliente + E2E), ventana **2026-04-29 → 2026-05-03** ⏳ **EN PROGRESO**. Plan: [`docs/SEMANA-6-PLAN.md`](docs/SEMANA-6-PLAN.md).
 

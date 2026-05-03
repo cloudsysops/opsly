@@ -45,6 +45,9 @@ const REQUIRED_PORTAL_PATHS = [
   '/api/portal/tenant/{slug}/budget',
   '/api/portal/tenant/{slug}/subscription/upgrade',
   '/api/portal/tenant/{slug}/insights',
+  '/api/portal/tenant/{slug}/shield/secrets',
+  '/api/portal/tenant/{slug}/shield/secrets/{findingId}',
+  '/api/portal/tenant/{slug}/shield/score',
 ];
 
 for (const p of REQUIRED_PORTAL_PATHS) {
@@ -65,6 +68,22 @@ const REQUIRED_SPRINT5_PATHS = [
   '/api/v1',
   '/api/tenants/{id}/webhooks',
   '/api/tenants/{id}/webhooks/{webhookId}',
+];
+
+/** Opsly Shield / Guardian Grid (Phase 2 MVP) */
+const REQUIRED_SHIELD_PATHS = ['/api/shield/alerts/config', '/api/cron/shield-secret-scan'];
+
+/** Local Services (Equipa) — Phase 1 */
+const REQUIRED_LOCAL_SERVICES_PATHS = [
+  '/api/local-services/tenants/{slug}/services',
+  '/api/local-services/tenants/{slug}/customers',
+  '/api/local-services/tenants/{slug}/bookings',
+  '/api/local-services/tenants/{slug}/quotes',
+  '/api/local-services/tenants/{slug}/reports',
+  '/api/local-services/public/tenants/{slug}/bookings',
+  '/api/local-services/webhooks/{slug}/booking-created',
+  '/api/local-services/webhooks/{slug}/booking-completed',
+  '/api/local-services/webhooks/{slug}/reports/create',
 ];
 
 for (const p of REQUIRED_FEEDBACK_PATHS) {
@@ -88,7 +107,21 @@ for (const p of REQUIRED_SPRINT5_PATHS) {
   }
 }
 
+for (const p of REQUIRED_SHIELD_PATHS) {
+  if (!Object.prototype.hasOwnProperty.call(doc.paths, p)) {
+    console.error(`validate-openapi-yaml: falta path shield en spec: ${p}`);
+    process.exit(1);
+  }
+}
+
+for (const p of REQUIRED_LOCAL_SERVICES_PATHS) {
+  if (!Object.prototype.hasOwnProperty.call(doc.paths, p)) {
+    console.error(`validate-openapi-yaml: falta path local-services en spec: ${p}`);
+    process.exit(1);
+  }
+}
+
 const n = Object.keys(doc.paths).length;
 console.log(
-  `validate-openapi-yaml: OK (OpenAPI ${doc.openapi}, ${n} paths, portal ${REQUIRED_PORTAL_PATHS.length} + feedback ${REQUIRED_FEEDBACK_PATHS.length} + admin ${REQUIRED_ADMIN_PATHS.length} + sprint5 ${REQUIRED_SPRINT5_PATHS.length} requeridos)`
+  `validate-openapi-yaml: OK (OpenAPI ${doc.openapi}, ${n} paths, portal ${REQUIRED_PORTAL_PATHS.length} + feedback ${REQUIRED_FEEDBACK_PATHS.length} + admin ${REQUIRED_ADMIN_PATHS.length} + sprint5 ${REQUIRED_SPRINT5_PATHS.length} + shield ${REQUIRED_SHIELD_PATHS.length} + local-services ${REQUIRED_LOCAL_SERVICES_PATHS.length} requeridos)`
 );

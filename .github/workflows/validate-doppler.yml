@@ -11,6 +11,7 @@ on:
 jobs:
   validate-doppler:
     runs-on: ubuntu-latest
+    # Skip on non-main branches if secrets not available (expected for feature branches)
     steps:
       - uses: actions/checkout@v4
 
@@ -26,8 +27,8 @@ jobs:
             echo "Skipping Doppler prd: secret DOPPLER_TOKEN_PRD is not configured."
             exit 0
           fi
-          chmod +x scripts/validate-doppler-vars.sh
-          if ! ./scripts/validate-doppler-vars.sh ops-intcloudsysops prd; then
+          chmod +x scripts/ci/validate-doppler-vars.sh
+          if ! ./scripts/ci/validate-doppler-vars.sh ops-intcloudsysops prd; then
             echo "::warning::Skipping Doppler prd validation: token invalid or missing project access."
             exit 0
           fi
@@ -40,8 +41,8 @@ jobs:
             echo "Skipping Doppler stg: secret DOPPLER_TOKEN_STG is not configured."
             exit 0
           fi
-          chmod +x scripts/validate-doppler-vars.sh
-          if ! ./scripts/validate-doppler-vars.sh ops-intcloudsysops stg; then
+          chmod +x scripts/ci/validate-doppler-vars.sh
+          if ! ./scripts/ci/validate-doppler-vars.sh ops-intcloudsysops stg; then
             echo "::warning::Skipping Doppler stg validation: token invalid or missing project access."
             exit 0
           fi

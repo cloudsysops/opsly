@@ -7,17 +7,20 @@ last_review: 2026-04-30
 # Opsly — Wiki de Documentación
 
 > **Para agentes (Claude, Cursor, Copilot):** lee primero `QUICK-REFERENCE.md`, luego el doc de la categoría relevante.  
-> **Regla de oro:** si algo no está aquí, la fuente de verdad es `AGENTS.md` en la raíz.
+> **Regla de oro:** si algo no está aquí, la fuente de verdad es `AGENTS.md` en la raíz.  
+> **Mapa de carpetas y duplicados:** [`REPO-MAP.md`](REPO-MAP.md) — qué archivo editar (VISION/AGENTS, raíz vs CI).
 
 ---
 
 ## 🚀 Inicio rápido para agentes
 
 ```
-AGENTS.md          ← estado de sesión, decisiones fijas, bloqueantes (raíz del repo)
-VISION.md          ← stub → docs/01-development/VISION.md (norte, límites, índice de planes)
-ROADMAP.md         ← stub → docs/01-development/ROADMAP.md (semanal; complementa VISION)
-SPRINT-TRACKER.md  ← stub → docs/01-development/SPRINT-TRACKER.md (complementa ROADMAP)
+AGENTS.md (raíz)   ← estado de sesión, decisiones fijas, bloqueantes (editar aquí)
+docs/01-development/VISION.md ← VISION completa: producto, límites, fases (editar aquí)
+VISION.md (raíz)   ← stub: solo enlaces; mismo texto que .github/VISION.md y docs/VISION.md
+ROADMAP.md         ← desglose semanal Fase 2–3, milestones (complementa VISION)
+SPRINT-TRACKER.md  ← vista semanal operativa (raíz; complementa ROADMAP)
+docs/REPO-MAP.md   ← mapa monorepo, whitelist raíz, scripts (evitar editar el archivo equivocado)
 docs/01-development/IMPLEMENTATION-IA-LAYER.md ← guía técnica capa IA (TypeScript, rutas en apps/*)
 docs/QUICKSTART-AGENTS.md ← añadir tools MCP y probar sin duplicar tablas ni endpoints
 docs/QUICK-REFERENCE.md  ← SSH, comandos, env vars, URLs — LEER PRIMERO
@@ -52,6 +55,7 @@ docs/generated/sprint-status.auto.md ← burndown generado (status.yaml; no edit
 
 | Doc                                                                                    | Cuándo usarlo                                                              |
 | -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| [`REPO-MAP.md`](REPO-MAP.md)                                                           | **Estructura del monorepo:** qué editar (VISION/AGENTS), whitelist raíz, scripts |
 | [`ARCHITECTURE.md`](ARCHITECTURE.md)                                                   | Control plane vs data plane, Traefik, redes                                |
 | [`ARCHITECTURE-DISTRIBUTED.md`](ARCHITECTURE-DISTRIBUTED.md)                           | VPS control + workers remotos (Mac 2011), Redis Tailscale                  |
 | [`HYBRID-OPSLY-ADMIN.md`](HYBRID-OPSLY-ADMIN.md)                                       | **Centro de mando** (Mac `opsly-admin`): Cursor, MCP, Git, DragonB, SSH    |
@@ -59,6 +63,7 @@ docs/generated/sprint-status.auto.md ← burndown generado (status.yaml; no edit
 | [`runbooks/VPS-DISK-SECURITY-SCAN.md`](runbooks/VPS-DISK-SECURITY-SCAN.md)             | Disco VPS, Trivy, `cleanup-vps.sh`                                         |
 | [`runbooks/DEPLOY-GITHUB-ACTIONS.md`](runbooks/DEPLOY-GITHUB-ACTIONS.md)               | Deploy CI → VPS (Tailscale, `VPS_HOST`, rollback imagen)                   |
 | [`runbooks/TENANT-ONBOARDING-TRIAGE.md`](runbooks/TENANT-ONBOARDING-TRIAGE.md)         | Triage onboarding tenants (logs, DB, cola, Docker)                         |
+| [`runbooks/LOCAL-SERVICES-GO-LIVE.md`](runbooks/LOCAL-SERVICES-GO-LIVE.md)             | Go-live tenant **Equipa** (`local-services`) — oferta limpieza + upgrade   |
 | [`runbooks/PRODUCTION-SECURITY-BASELINE.md`](runbooks/PRODUCTION-SECURITY-BASELINE.md) | Checklist mínimo red/secretos/apps en `prd`                                |
 | [`VPS-SSH-WORKER-NODES.md`](VPS-SSH-WORKER-NODES.md)                                   | Clave SSH VPS → workers (`authorized_keys`), solo Tailscale                |
 | [`SSH-USERS-FOR-AGENTS.md`](SSH-USERS-FOR-AGENTS.md)                                   | **Qué usuario SSH usar** (VPS, worker, Mac) — agentes y humanos            |

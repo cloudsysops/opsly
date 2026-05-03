@@ -5,6 +5,7 @@
     "CHANGELOG.md",
     "CONTRIBUTING.md",
     "SECURITY.md",
+    "CODEOWNERS",
     "package.json",
     "package-lock.json",
     "tsconfig.json",

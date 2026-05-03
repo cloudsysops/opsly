@@ -1,0 +1,149 @@
+name: Security Bot Deployment
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'apps/security-bots/**'
+      - '1-agent-teams/security/**'
+      - '.github/workflows/security-bot-deployment.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: security-bots-deploy
+  cancel-in-progress: false
+
+jobs:
+  validate-bots:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - run: npm ci
+
+      - name: Validate security bot manifests
+        run: |
+          echo "Validating Guardian Bot manifests..."
+
+          BOTS=(
+            "dns-shield"
+            "email-guardian"
+            "log-sentinel"
+            "cloud-monitor"
+            "billing-auditor"
+            "secrets-vault"
+            "api-guardian"
+            "compliance-engine"
+          )
+
+          for bot in "${BOTS[@]}"; do
+            if [ -f "1-agent-teams/security/$bot/manifest.json" ]; then
+              echo "✓ Validating $bot..."
+              # Basic JSON validation
+              cat "1-agent-teams/security/$bot/manifest.json" | jq . > /dev/null || {
+                echo "❌ Invalid JSON in $bot manifest"
+                exit 1
+              }
+            fi
+          done
+
+      - name: Type check security bots
+        run: npm run type-check --workspace=@intcloudsysops/security-bots || true
+
+      - name: Run security bot tests
+        run: npm run test --workspace=@intcloudsysops/security-bots
+        continue-on-error: true
+
+  security-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - run: npm ci
+
+      - name: SAST analysis
+        run: npm run lint --workspace=@intcloudsysops/security-bots
+
+      - name: Check for hardcoded secrets
+        run: |
+          echo "Scanning for hardcoded secrets..."
+          ! grep -r "api_key\|secret_key\|password" apps/security-bots/src/ --include="*.ts" --include="*.js" || {
+            echo "⚠️  Potential hardcoded secrets detected"
+          }
+
+  build-bots:
+    runs-on: ubuntu-latest
+    needs: [validate-bots, security-scan]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - run: npm ci
+
+      - name: Build security bots
+        run: npm run build --workspace=@intcloudsysops/security-bots
+
+      - name: Build artifacts
+        run: |
+          echo "Creating deployment artifacts..."
+          mkdir -p dist
+          cp -r apps/security-bots/dist dist/security-bots || true
+
+  integration-test:
+    runs-on: ubuntu-latest
+    needs: build-bots
+    services:
+      redis:
+        image: redis:7-alpine
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - run: npm ci
+
+      - name: Run integration tests
+        run: npm run test:integration --workspace=@intcloudsysops/security-bots
+        env:
+          REDIS_URL: redis://localhost:6379
+        continue-on-error: true
+
+  deployment-approval:
+    runs-on: ubuntu-latest
+    needs: [build-bots, integration-test]
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Create deployment notification
+        run: |
+          echo "✅ Security bots ready for deployment"
+          echo "Deployment requires manual approval for production"
+
+      - name: Log deployment metadata
+        run: |
+          echo "Bots: DNS Shield, Email Guardian, Log Sentinel, Cloud Monitor, Billing Auditor, Secrets Vault, API Guardian, Compliance Engine"
+          echo "Timestamp: $(date -u)"

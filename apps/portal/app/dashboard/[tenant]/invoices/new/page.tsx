@@ -14,7 +14,7 @@ export default async function NewInvoicePage({
   const { tenant } = await params;
 
   return (
-    <PortalShell title="Nueva Factura" showModeLink>
+    <PortalShell title="Nueva Factura" showModeLink tenantSlug={tenant}>
       <DashboardShell>
         <div className="flex items-center gap-3">
           <Button variant="ghost" size="sm" asChild>

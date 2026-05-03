@@ -5,6 +5,8 @@ import {
   portalTenantInsightsUrl,
   portalTenantMeUrl,
   portalTenantModeUrl,
+  portalTenantShieldScoreUrl,
+  portalTenantShieldSecretsUrl,
   portalTenantUsageUrl,
 } from '../portal-api-paths';
 
@@ -81,6 +83,17 @@ describe('portalPublicHealthUrl', () => {
     );
     expect(portalPublicHealthUrl(BASE, 'a b')).toBe(
       `${BASE}/api/portal/health?slug=${encodeURIComponent('a b')}`
+    );
+  });
+});
+
+describe('portalTenantShieldUrls', () => {
+  it('shield secrets y score codifican slug', () => {
+    expect(portalTenantShieldSecretsUrl(BASE, 'acme')).toBe(
+      `${BASE}/api/portal/tenant/acme/shield/secrets`
+    );
+    expect(portalTenantShieldScoreUrl(BASE, 'a/b')).toBe(
+      `${BASE}/api/portal/tenant/${encodeURIComponent('a/b')}/shield/score`
     );
   });
 });

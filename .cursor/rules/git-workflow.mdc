@@ -1,0 +1,24 @@
+---
+description: Git — ramas, PRs e higiene (Opsly)
+alwaysApply: true
+---
+
+# Git workflow (Cursor)
+
+## Principios
+
+- **Fuente de verdad:** `main` en `origin`. Antes de editar: `git fetch origin` y `git pull --ff-only` en la rama de trabajo (ver `docs/01-development/SESSION-GIT-SYNC.md`).
+- **Cambios de código / infra / tests:** rama `feat/*` o `fix/*` desde `main` → **Pull Request** → merge. No empujar `--force` a `main`.
+- **Ramas de agente** (`cursor/*`, `claude/*`): temporales; integrar vía PR o descartar; no dejar docenas de ramas divergentes sin revisión.
+- **Auditoría sin riesgo:** `./scripts/git-branch-hygiene.sh` (solo lectura; lista mergeadas y divergencia).
+- **Documentación completa:** `docs/01-development/GIT-WORKFLOW.md`.
+
+## Al cerrar una tarea (agente)
+
+1. Si el cambio toca **zona roja/ámbar** en `docs/03-agents/AGENT-GUARDRAILS.md`: **PR**, no push directo a `main`.
+2. Si es **solo** actualización de `AGENTS.md` / espejos según cierre de sesión en `AGENTS.md`: puede ser commit en `main` según política del repo.
+3. Tras merge: recordar borrar rama remota si GitHub no lo hace automático.
+
+## Contradicciones
+
+Si otra regla dice «push a `main`» tras cada tarea, **priorizar esta regla** para cambios que no sean únicamente el cierre documental de sesión.

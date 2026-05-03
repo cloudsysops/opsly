@@ -1,0 +1,47 @@
+# GitHub CODEOWNERS Configuration
+# Auto-request reviews from these teams/users for matching paths
+
+# Guardian Grid & Defensive Platform
+/apps/guardian-shield/ @cloudsysops/guardian-team
+/apps/security-bots/ @cloudsysops/security-team
+/1-agent-teams/ @cloudsysops/agent-team
+
+# Task Orchestration & Autonomous Execution
+/apps/task-orchestrator/ @cloudsysops/platform-team
+/apps/orchestrator-api/ @cloudsysops/platform-team
+/.cursor/prompts/ @cloudsysops/automation-team
+
+# Core Infrastructure
+/apps/api/ @cloudsysops/api-team @cloudsysops/security-team
+/apps/admin/ @cloudsysops/frontend-team
+/apps/portal/ @cloudsysops/frontend-team
+/infrastructure/ @cloudsysops/infra-team @cloudsysops/devops-team
+/docker-compose.yml @cloudsysops/infra-team
+
+# Database & Data Layer
+/migrations/ @cloudsysops/data-team
+/supabase/ @cloudsysops/data-team
+*.sql @cloudsysops/data-team
+
+# Billing & Business Logic
+/apps/billing/ @cloudsysops/billing-team
+/lib/billing/ @cloudsysops/billing-team
+
+# Documentation & Vision
+/docs/VISION.md @cloudsysops/architects
+/VISION.md @cloudsysops/architects
+/AGENTS.md @cloudsysops/leadership
+/.claude/CLAUDE.md @cloudsysops/architects @cloudsysops/devops-team
+
+# Security & Compliance
+/security/ @cloudsysops/security-team
+/.github/ @cloudsysops/security-team @cloudsysops/devops-team
+/scripts/ @cloudsysops/devops-team
+
+# Dependency Management
+/package.json @cloudsysops/platform-team
+/package-lock.json @cloudsysops/platform-team
+/tsconfig.json @cloudsysops/platform-team
+
+# Default for all other files
+* @cloudsysops/core-team

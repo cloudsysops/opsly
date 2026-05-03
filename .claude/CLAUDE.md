@@ -135,6 +135,16 @@ domain = "unknown" → Solicitar contexto adicional
 - AGENTS.md: https://raw.githubusercontent.com/cloudsysops/opsly/main/AGENTS.md
 - VISION.md: https://raw.githubusercontent.com/cloudsysops/opsly/main/VISION.md
 
+## Política unificada (Claude, OpenCode, agentes internos/externos)
+
+Estas reglas aplican igual para Claude, OpenCode, Cursor, Copilot y automatismos:
+
+- Fuente de verdad operativa: `AGENTS.md`.
+- Guardrails transversales: `docs/03-agents/AGENT-GUARDRAILS.md`.
+- Flujo Git oficial: `docs/01-development/GIT-WORKFLOW.md`.
+
+Regla Git clave: **código/infra/tests por PR** (`feat/*` o `fix/*`), no push directo a `main` salvo cierres documentales permitidos por política del repo.
+
 ## Reglas Absolutas
 
 - **NUNCA** K8s, Swarm, nginx (salvo ADR)
@@ -143,9 +153,9 @@ domain = "unknown" → Solicitar contexto adicional
 - **NUNCA** saltarse `validate-config.sh` antes de deploy
 - **NUNCA** terraform apply sin plan
 - **SIEMPRE** leer AGENTS.md al iniciar
-- **SIEMPRE** git add + git commit tras cada tarea completada
 - **SIEMPRE** usar OpenClaw como framework de trabajo
 - **SIEMPRE** usar skill-finder para detectar skills necesarios
+- **SIEMPRE** seguir `docs/01-development/GIT-WORKFLOW.md` para ramas/PR/merge
 
 ## Stack
 
@@ -208,6 +218,46 @@ REDIS_URL=redis://100.120.151.91:6379
 4. Crear recurso → Factory pattern en `lib/factories/`
 5. Números mágicos → `lib/constants.ts`
 
+## Git Operations — Protocolo Obligatorio para TODOS los agentes
+
+**⚠️ CRÍTICO:** Después de CADA tarea completada, SIEMPRE:
+
+```bash
+# 1. Revisar cambios
+git status
+
+# 2. Agregar cambios
+git add -A
+
+# 3. Commitear con mensaje descriptivo (en inglés)
+git commit -m "feat(scope): descripción clara"
+# Ejemplos:
+#   git commit -m "feat(local-services): add migration for services, customers, bookings"
+#   git commit -m "fix(api): resolve tenant isolation in quotes endpoint"
+#   git commit -m "docs(adr): add ADR-037 multi-tenant architecture decision"
+
+# 4. Pushear a rama asignada
+git push origin <branch-name>
+```
+
+**Por qué:** 
+- ✅ GitHub refleja siempre estado actual del código
+- ✅ Fácil trackear progreso por commits
+- ✅ Evita "cambios perdidos" cuando agentes rotan
+- ✅ CI corre automáticamente en cada push
+
+**APLICA A (sin excepciones):**
+- ✅ Claude (AI en Claude Code)
+- ✅ Cursor (AI en Cursor IDE)
+- ✅ Codex (AI en Copilot)
+- ✅ GitHub Copilot
+- ✅ Cualquier agente externo que modifique código
+- ✅ Cualquier script automatizado
+
+**NO EXCEPTIONS:** Todo código que entre al repo debe pasar por: `git add → git commit → git push`
+
+---
+
 ## Workflow Autónimo Típico
 
 ```bash
@@ -224,6 +274,8 @@ node scripts/skill-loader.js --context "crear migration"
 npm run type-check
 npm run test --workspace=@intcloudsysops/api
 
-# 5. Commit
-git add -A && git commit -m "feat(supabase): nueva migration"
+# 5. COMMIT + PUSH (obligatorio, no opcional)
+git add -A
+git commit -m "feat(supabase): nueva migration"
+git push origin <branch-name>
 ```

@@ -44,6 +44,32 @@ export type PortalUsageSnapshot = {
   month: PortalUsagePayload | null;
 };
 
+/** Respuesta `GET /api/portal/tenant/[slug]/n8n-marketplace/installs`. */
+export type PortalN8nMarketplaceInstallsPayload = {
+  tenant: string;
+  installs: {
+    catalog_item_id: string;
+    catalog_version: string;
+    status: string;
+    activated_at: string;
+  }[];
+  billing_usage?: {
+    pack_metering_events_this_month: number;
+  };
+};
+
+/** Respuesta `GET /api/portal/billing/summary` (uso asentado + pendiente, USD). */
+export type PortalBillingSummaryPayload = {
+  period_start: string;
+  period_end: string;
+  currency: string;
+  settled_cost_usd: number;
+  pending_cost_usd: number;
+  current_total_usd: number;
+  projected_month_end_usd: number;
+  daily_average_usd: number;
+};
+
 /** Ítem de `GET /api/portal/tenant/[slug]/insights`. */
 export type PortalInsightItem = {
   id: string;
@@ -63,6 +89,34 @@ export type PortalInsightItem = {
 export type PortalInsightsPayload = {
   tenant_slug: string;
   insights: PortalInsightItem[];
+};
+
+export type ShieldSecretFinding = {
+  id: string;
+  tenant_slug: string;
+  repo_url: string | null;
+  secret_type: string | null;
+  file_path: string | null;
+  line_number: number | null;
+  severity: string;
+  status: string;
+  created_at: string;
+};
+
+export type ShieldScorePoint = {
+  score: number | null;
+  created_at: string;
+};
+
+export type ShieldScorePayload = {
+  tenant_slug: string;
+  current: {
+    score: number;
+    breakdown: Record<string, unknown>;
+    created_at: string | null;
+  };
+  history: ShieldScorePoint[];
+  risk_level: 'green' | 'yellow' | 'red';
 };
 
 export type PortalHealthPayload = {

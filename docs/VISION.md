@@ -1,23 +1,14 @@
+---
+status: canon
+owner: product
+last_review: 2026-05-02
+---
+
 # VISION
 
-Ver [`docs/01-development/VISION.md`](01-development/VISION.md) para mas detalles.
+Documento canónico: [`docs/01-development/VISION.md`](01-development/VISION.md).
 
-## Actualización de visión operativa (2026-04-26)
+Actualización operativa relacionada (2026-04-28):
 
-La visión de Opsly para la capa agentic se consolida en un enfoque de **Meta-Orquestador incremental**:
-
-1. **Control plane estable** en `apps/*` (API, Orchestrator, MCP, LLM Gateway).
-2. **Shell de aceleración operativa** en `tools/cli` para validar patrones de autonomía:
-   - modos dinámicos,
-   - selección inteligente de skills,
-   - pipeline seguro sandbox/qa/prod,
-   - coordinación de workers,
-   - orquestación multi-agente.
-3. **Gobernanza por fases**:
-   - fase actual: `dry-run` + guardrails (sin despliegues destructivos automáticos),
-   - fase siguiente: sandbox remoto + rollback + evidencia auditable.
-
-### Principio rector
-
-**Autonomía progresiva con seguridad por defecto.**  
-Toda capacidad de auto-construcción/auto-evolución inicia en modo seguro (`dry-run`) y solo se promueve con controles explícitos de aprobación y trazabilidad.
+- La base **SwarmOps / Hive of Bots** quedó integrada en orchestrator.
+- El detalle técnico y de contrato runtime vive en [`docs/design/OAR.md`](design/OAR.md) y estado de sesión en [`AGENTS.md`](../AGENTS.md).
