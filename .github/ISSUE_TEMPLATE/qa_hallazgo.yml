@@ -3,6 +3,7 @@ description: "Registro estructurado de prueba manual (portal / admin / web) para
 title: "[qa-ui] "
 labels:
   - bug
+  - qa-ui
 body:
   - type: markdown
     attributes:
