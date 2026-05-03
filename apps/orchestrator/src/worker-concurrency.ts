@@ -18,7 +18,9 @@ export type WorkerConcurrencyKey =
   | 'evolution'
   | 'terminal'
   | 'local-cursor'
-  | 'local-claude';
+  | 'local-claude'
+  | 'local-copilot'
+  | 'local-opencode';
 
 const FULL_STACK_DEFAULTS: Record<WorkerConcurrencyKey, number> = {
   cursor: 3,
@@ -39,6 +41,8 @@ const FULL_STACK_DEFAULTS: Record<WorkerConcurrencyKey, number> = {
   terminal: 2,
   'local-cursor': 2,
   'local-claude': 2,
+  'local-copilot': 1,
+  'local-opencode': 1,
 };
 
 const DISTRIBUTED_WORKER_DEFAULTS: Record<WorkerConcurrencyKey, number> = {
@@ -60,6 +64,8 @@ const DISTRIBUTED_WORKER_DEFAULTS: Record<WorkerConcurrencyKey, number> = {
   terminal: 1,
   'local-cursor': 1,
   'local-claude': 1,
+  'local-copilot': 1,
+  'local-opencode': 1,
 };
 
 const ENV_NAMES: Record<WorkerConcurrencyKey, string> = {
@@ -81,6 +87,8 @@ const ENV_NAMES: Record<WorkerConcurrencyKey, string> = {
   terminal: 'ORCHESTRATOR_TERMINAL_CONCURRENCY',
   'local-cursor': 'ORCHESTRATOR_LOCAL_CURSOR_CONCURRENCY',
   'local-claude': 'ORCHESTRATOR_LOCAL_CLAUDE_CONCURRENCY',
+  'local-copilot': 'ORCHESTRATOR_LOCAL_COPILOT_CONCURRENCY',
+  'local-opencode': 'ORCHESTRATOR_LOCAL_OPENCODE_CONCURRENCY',
 };
 
 function parsePositiveInt(raw: string | undefined): number | null {

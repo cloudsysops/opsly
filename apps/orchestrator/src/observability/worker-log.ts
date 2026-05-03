@@ -23,7 +23,8 @@ export type WorkerName =
   | 'jcode'
   | 'terminal'
   | 'local-cursor'
-  | 'local-claude';
+  | 'local-claude'
+  | 'local-agents';
 
 export function extractJobContext(job: Job): {
   task_id?: string;
