@@ -1,6 +1,9 @@
 import { NextRequest } from 'next/server';
 import { respondTrustedPortalMe } from '../../../../../../lib/portal-me-json';
-import { runTrustedPortalDalForPathSlug } from '../../../../../../lib/portal-tenant-dal';
+import {
+  PORTAL_READ_ACCESS,
+  runTrustedPortalDalForPathSlug,
+} from '../../../../../../lib/portal-tenant-dal';
 
 /**
  * Mismo JSON que `GET /api/portal/me`, pero el segmento `[slug]` debe coincidir
@@ -11,7 +14,10 @@ export async function GET(
   context: { params: Promise<{ slug: string }> }
 ): Promise<Response> {
   const { slug } = await context.params;
-  return runTrustedPortalDalForPathSlug(request, slug, (session) =>
-    respondTrustedPortalMe(session)
+  return runTrustedPortalDalForPathSlug(
+    request,
+    slug,
+    (session) => respondTrustedPortalMe(session),
+    PORTAL_READ_ACCESS
   );
 }

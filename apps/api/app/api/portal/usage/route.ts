@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import { runTrustedPortalDal } from '../../../../lib/portal-tenant-dal';
+import { PORTAL_READ_ACCESS, runTrustedPortalDal } from '../../../../lib/portal-tenant-dal';
 import { respondPortalTenantUsage } from '../../../../lib/portal-usage-json';
 
 /**
@@ -7,7 +7,9 @@ import { respondPortalTenantUsage } from '../../../../lib/portal-usage-json';
  * pero sin slug en URL: solo el tenant vinculado al JWT).
  */
 export async function GET(request: NextRequest): Promise<Response> {
-  return runTrustedPortalDal(request, (session) =>
-    respondPortalTenantUsage(request, session.tenant.slug)
+  return runTrustedPortalDal(
+    request,
+    (session) => respondPortalTenantUsage(request, session.tenant.slug),
+    PORTAL_READ_ACCESS
   );
 }

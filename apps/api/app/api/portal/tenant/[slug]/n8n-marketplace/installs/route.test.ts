@@ -8,10 +8,15 @@ import {
 } from '../../../../../../../lib/portal-trusted-identity';
 import { GET as marketplaceInstallsGet, POST as marketplaceInstallsPost } from './route';
 
-vi.mock('../../../../../../../lib/portal-trusted-identity', () => ({
-  resolveTrustedPortalSession: vi.fn(),
-  tenantSlugMatchesSession: vi.fn(),
-}));
+vi.mock('../../../../../../../lib/portal-trusted-identity', async (importOriginal) => {
+  const actual =
+    await importOriginal<typeof import('../../../../../../../lib/portal-trusted-identity')>();
+  return {
+    ...actual,
+    resolveTrustedPortalSession: vi.fn(),
+    tenantSlugMatchesSession: vi.fn(),
+  };
+});
 
 vi.mock('../../../../../../../lib/n8n-marketplace-installs-service', () => ({
   listN8nMarketplaceInstallsForTenant: vi.fn(),

@@ -1,10 +1,16 @@
 import { HTTP_STATUS } from './constants';
 import {
+  PORTAL_READ_ROLES,
   resolveTrustedPortalSession,
   tenantSlugMatchesSession,
   type TrustedPortalSession,
+  type TrustedPortalSessionOptions,
 } from './portal-trusted-identity';
 import { runWithTenantContext } from './tenant-context';
+
+export const PORTAL_READ_ACCESS: TrustedPortalSessionOptions = {
+  allowedRoles: PORTAL_READ_ROLES,
+};
 
 /**
  * Integración DAL + rutas API (Node runtime): envuelve el handler tras resolver la sesión portal
@@ -15,16 +21,15 @@ import { runWithTenantContext } from './tenant-context';
  */
 export async function runTrustedPortalDal<T>(
   request: Request,
-  fn: (session: TrustedPortalSession) => T | Promise<T>
+  fn: (session: TrustedPortalSession) => T | Promise<T>,
+  options?: TrustedPortalSessionOptions
 ): Promise<T | Response> {
-  const resolved = await resolveTrustedPortalSession(request);
+  const resolved = await resolveTrustedPortalSession(request, options);
   if (!resolved.ok) {
     return resolved.response;
   }
   const { id, slug } = resolved.session.tenant;
-  return runWithTenantContext({ tenantId: id, tenantSlug: slug }, () =>
-    fn(resolved.session)
-  );
+  return runWithTenantContext({ tenantId: id, tenantSlug: slug }, () => fn(resolved.session));
 }
 
 /**
@@ -34,9 +39,10 @@ export async function runTrustedPortalDal<T>(
 export async function runTrustedPortalDalForPathSlug<T>(
   request: Request,
   pathSlug: string,
-  fn: (session: TrustedPortalSession) => T | Promise<T>
+  fn: (session: TrustedPortalSession) => T | Promise<T>,
+  options?: TrustedPortalSessionOptions
 ): Promise<T | Response> {
-  const resolved = await resolveTrustedPortalSession(request);
+  const resolved = await resolveTrustedPortalSession(request, options);
   if (!resolved.ok) {
     return resolved.response;
   }
@@ -47,7 +53,5 @@ export async function runTrustedPortalDalForPathSlug<T>(
     );
   }
   const { id, slug } = resolved.session.tenant;
-  return runWithTenantContext({ tenantId: id, tenantSlug: slug }, () =>
-    fn(resolved.session)
-  );
+  return runWithTenantContext({ tenantId: id, tenantSlug: slug }, () => fn(resolved.session));
 }

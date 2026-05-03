@@ -26,6 +26,7 @@ vi.mock('../../../../lib/portal-me', async (importOriginal) => {
   return {
     ...actual,
     fetchPortalTenantRowBySlug: vi.fn(),
+    fetchPortalTenantMembership: vi.fn(),
     portalUrlReachable: vi.fn(),
   };
 });
@@ -45,10 +46,19 @@ const row = {
   created_at: '2026-01-01',
 };
 
+/** Sin fila en `tenant_memberships`: la sesión sigue siendo válida vía `owner_email` legacy. */
+function mockMembershipNotFoundLegacyOwner(): void {
+  vi.mocked(portalMeLib.fetchPortalTenantMembership).mockResolvedValue({
+    ok: false,
+    reason: 'not_found',
+  });
+}
+
 describe('GET /api/portal/me', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.mocked(portalMeLib.portalUrlReachable).mockResolvedValue(false);
+    mockMembershipNotFoundLegacyOwner();
   });
 
   it('returns 401 when no user', async () => {
@@ -146,6 +156,7 @@ describe('GET /api/portal/tenant/[slug]/me', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.mocked(portalMeLib.portalUrlReachable).mockResolvedValue(false);
+    mockMembershipNotFoundLegacyOwner();
   });
 
   it('returns 401 without user', async () => {
@@ -205,6 +216,7 @@ describe('GET /api/portal/tenant/[slug]/me', () => {
 describe('POST /api/portal/mode', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockMembershipNotFoundLegacyOwner();
   });
 
   /** Sesión válida para `resolveTrustedPortalSession` (tenant + owner). */
@@ -341,6 +353,7 @@ describe('POST /api/portal/mode', () => {
 describe('POST /api/portal/tenant/[slug]/mode', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockMembershipNotFoundLegacyOwner();
   });
 
   function mockValidPortalModeSession() {
@@ -418,6 +431,7 @@ describe('POST /api/portal/tenant/[slug]/mode', () => {
 describe('GET /api/portal/usage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockMembershipNotFoundLegacyOwner();
   });
 
   function mockValidPortalUsageSession() {
@@ -466,6 +480,7 @@ describe('GET /api/portal/usage', () => {
 describe('GET /api/portal/tenant/[slug]/usage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockMembershipNotFoundLegacyOwner();
   });
 
   function mockValidPortalUsageSession() {
@@ -574,6 +589,7 @@ describe('GET /api/portal/tenant/[slug]/health', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.mocked(portalMeLib.portalUrlReachable).mockResolvedValue(false);
+    mockMembershipNotFoundLegacyOwner();
   });
 
   function mockValidSession() {

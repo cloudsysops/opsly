@@ -11,6 +11,12 @@ export type TenantStatus =
 
 export type PlanKey = 'startup' | 'business' | 'enterprise' | 'demo';
 
+export type TenantMemberRole = 'owner' | 'admin' | 'operator' | 'viewer';
+export type TenantMembershipStatus = 'invited' | 'active' | 'disabled';
+export type TenantServiceAccountKind = 'agent' | 'mcp_tool' | 'integration';
+export type TenantServiceAccountStatus = 'active' | 'disabled' | 'rotated';
+export type TenantServiceAccountAgentRole = 'planner' | 'executor' | 'tool' | 'notifier';
+
 export type Tenant = {
   id: string;
   slug: string;
@@ -75,6 +81,64 @@ export type SubscriptionInsert = {
 
 export type SubscriptionUpdate = Partial<Omit<Subscription, 'id' | 'tenant_id'>>;
 
+export type TenantMembership = {
+  id: string;
+  tenant_id: string;
+  user_id: string | null;
+  email: string;
+  role: TenantMemberRole;
+  status: TenantMembershipStatus;
+  invited_by: string | null;
+  metadata: Json;
+  created_at: string;
+  updated_at: string;
+};
+
+export type TenantMembershipInsert = {
+  id?: string;
+  tenant_id: string;
+  user_id?: string | null;
+  email: string;
+  role: TenantMemberRole;
+  status?: TenantMembershipStatus;
+  invited_by?: string | null;
+  metadata?: Json;
+  created_at?: string;
+  updated_at?: string;
+};
+
+export type TenantMembershipUpdate = Partial<Omit<TenantMembership, 'id' | 'tenant_id'>>;
+
+export type TenantServiceAccount = {
+  id: string;
+  tenant_id: string;
+  name: string;
+  kind: TenantServiceAccountKind;
+  agent_role: TenantServiceAccountAgentRole | null;
+  status: TenantServiceAccountStatus;
+  scopes: string[];
+  metadata: Json;
+  last_used_at: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type TenantServiceAccountInsert = {
+  id?: string;
+  tenant_id: string;
+  name: string;
+  kind?: TenantServiceAccountKind;
+  agent_role?: TenantServiceAccountAgentRole | null;
+  status?: TenantServiceAccountStatus;
+  scopes?: string[];
+  metadata?: Json;
+  last_used_at?: string | null;
+  created_at?: string;
+  updated_at?: string;
+};
+
+export type TenantServiceAccountUpdate = Partial<Omit<TenantServiceAccount, 'id' | 'tenant_id'>>;
+
 export type AuditLogInsert = {
   id?: string;
   tenant_id?: string | null;
@@ -131,6 +195,16 @@ export type Database = {
         Row: Subscription;
         Insert: SubscriptionInsert;
         Update: SubscriptionUpdate;
+      };
+      tenant_memberships: {
+        Row: TenantMembership;
+        Insert: TenantMembershipInsert;
+        Update: TenantMembershipUpdate;
+      };
+      tenant_service_accounts: {
+        Row: TenantServiceAccount;
+        Insert: TenantServiceAccountInsert;
+        Update: TenantServiceAccountUpdate;
       };
       audit_log: {
         Row: {

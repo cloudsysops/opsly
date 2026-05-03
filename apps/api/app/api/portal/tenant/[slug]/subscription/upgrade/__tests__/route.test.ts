@@ -1,9 +1,14 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-vi.mock('../../../../../../../../lib/portal-trusted-identity', () => ({
-  resolveTrustedPortalSession: vi.fn(),
-  tenantSlugMatchesSession: vi.fn(),
-}));
+vi.mock('../../../../../../../../lib/portal-trusted-identity', async (importOriginal) => {
+  const actual =
+    await importOriginal<typeof import('../../../../../../../../lib/portal-trusted-identity')>();
+  return {
+    ...actual,
+    resolveTrustedPortalSession: vi.fn(),
+    tenantSlugMatchesSession: vi.fn(),
+  };
+});
 vi.mock('../../../../../../../../lib/supabase', () => ({
   getServiceClient: vi.fn(),
 }));

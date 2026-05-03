@@ -21,6 +21,7 @@ export async function respondTrustedPortalMe(session: TrustedPortalSession): Pro
     plan: lookup.plan,
     status: lookup.status,
     mode,
+    role: session.membership.role,
     created_at: lookup.created_at,
     services: svc,
     health: { n8n_reachable, uptime_reachable },

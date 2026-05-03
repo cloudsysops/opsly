@@ -12,6 +12,7 @@ vi.mock('../portal-me', async () => {
   return {
     ...actual,
     fetchPortalTenantRowBySlug: vi.fn(),
+    fetchPortalTenantMembership: vi.fn(),
   };
 });
 
@@ -29,6 +30,10 @@ const tenantRow = {
 describe('resolveTrustedPortalSession', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.mocked(portalMe.fetchPortalTenantMembership).mockResolvedValue({
+      ok: false,
+      reason: 'not_found',
+    });
   });
 
   it('sin JWT → 401', async () => {

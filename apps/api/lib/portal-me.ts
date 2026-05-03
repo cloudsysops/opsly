@@ -1,6 +1,6 @@
 import { PORTAL_URL_PROBE } from './constants';
 import { getServiceClient } from './supabase';
-import type { Json, Tenant } from './supabase/types';
+import type { Json, Tenant, TenantMembership } from './supabase/types';
 
 type PortalMode = 'developer' | 'managed' | 'security_defense';
 
@@ -77,6 +77,15 @@ export type PortalTenantLookup =
   | { ok: true; row: PortalTenantRow }
   | { ok: false; reason: 'db' | 'not_found' };
 
+export type PortalTenantMembershipRow = Pick<
+  TenantMembership,
+  'id' | 'tenant_id' | 'user_id' | 'email' | 'role' | 'status'
+>;
+
+export type PortalTenantMembershipLookup =
+  | { ok: true; row: PortalTenantMembershipRow }
+  | { ok: false; reason: 'db' | 'not_found' };
+
 function tenantSlugFromMetadata(metadata: unknown): string | null {
   if (metadata === null || typeof metadata !== 'object' || Array.isArray(metadata)) {
     return null;
@@ -109,4 +118,52 @@ export async function fetchPortalTenantRowBySlug(slug: string): Promise<PortalTe
     return { ok: false, reason: 'not_found' };
   }
   return { ok: true, row: tenant as PortalTenantRow };
+}
+
+export async function fetchPortalTenantMembership(params: {
+  tenantId: string;
+  userId: string;
+  email: string;
+}): Promise<PortalTenantMembershipLookup> {
+  const emailNorm = params.email.toLowerCase();
+  const select = 'id, tenant_id, user_id, email, role, status';
+
+  const byUser = await getServiceClient()
+    .schema('platform')
+    .from('tenant_memberships')
+    .select(select)
+    .eq('tenant_id', params.tenantId)
+    .eq('user_id', params.userId)
+    .eq('status', 'active')
+    .maybeSingle();
+
+  if (byUser.error) {
+    console.error('portal membership lookup by user:', byUser.error);
+    return { ok: false, reason: 'db' };
+  }
+  if (byUser.data) {
+    return { ok: true, row: byUser.data as PortalTenantMembershipRow };
+  }
+
+  const byEmail = await getServiceClient()
+    .schema('platform')
+    .from('tenant_memberships')
+    .select(select)
+    .eq('tenant_id', params.tenantId)
+    .eq('email', emailNorm)
+    .eq('status', 'active')
+    .maybeSingle();
+
+  if (byEmail.error) {
+    console.error('portal membership lookup by email:', byEmail.error);
+    return { ok: false, reason: 'db' };
+  }
+  if (!byEmail.data) {
+    return { ok: false, reason: 'not_found' };
+  }
+  return { ok: true, row: byEmail.data as PortalTenantMembershipRow };
+}
+
+export function ownerEmailFallbackRole(tenant: PortalTenantRow, email: string): 'owner' | null {
+  return tenant.owner_email.toLowerCase() === email.toLowerCase() ? 'owner' : null;
 }
