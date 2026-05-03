@@ -693,6 +693,89 @@ paths:
         '500':
           $ref: '#/components/responses/InternalError'
 
+  /api/portal/tenant/{slug}/n8n-marketplace/installs:
+    get:
+      summary: Lista activaciones marketplace n8n del tenant (Zero-Trust)
+      operationId: getPortalTenantN8nMarketplaceInstalls
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Installs y conteo de metering del mes en curso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  tenant:
+                    type: string
+                  installs:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        catalog_item_id:
+                          type: string
+                        catalog_version:
+                          type: string
+                        status:
+                          type: string
+                        activated_at:
+                          type: string
+                  billing_usage:
+                    type: object
+                    properties:
+                      pack_metering_events_this_month:
+                        type: integer
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    post:
+      summary: Activa un pack del catálogo (registro en DB + metering)
+      operationId: postPortalTenantN8nMarketplaceInstall
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [catalog_item_id]
+              properties:
+                catalog_item_id:
+                  type: string
+      responses:
+        '200':
+          description: Activación registrada o idempotente (already)
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          description: Ítem de catálogo no encontrado
+        '422':
+          description: Pack incluido por defecto en n8n (no activable vía API)
+        '500':
+          $ref: '#/components/responses/InternalError'
+
   /api/portal/tenant/{slug}/budget:
     get:
       summary: Presupuesto IA mensual del tenant (Zero-Trust)
