@@ -1557,6 +1557,7 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 │   ├── admin/               # Next.js dashboard admin
 │   ├── portal/              # Next.js portal cliente (login, invitación, modos)
 │   ├── web/                 # App web (workspace)
+│   ├── local-services/      # Next.js app para Opsly Local Services (booking, customers, quotes, reports)
 │   ├── mcp/                 # OpenClaw MCP server (tools → API / GitHub)
 │   ├── orchestrator/        # OpenClaw BullMQ + processIntent
 │   ├── ml/                  # OpenClaw ML (RAG, clasificación, embeddings)
@@ -1564,7 +1565,8 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 │   ├── context-builder/     # OpenClaw Context Builder (session+summary)
 │   ├── ingestion-service/    # Webhooks → Redis queue (bunker)
 │   ├── mission-control/      # Control plane para workers remotos
-│   └── notion-mcp/          # HTTP hacia Notion (tareas, standup, quality; Doppler)
+│   ├── notion-mcp/          # HTTP hacia Notion (tareas, standup, quality; Doppler)
+│   └── task-orchestrator/   # Autonomous task execution and worker coordination system
 ├── config/
 │   └── opsly.config.json    # Infra/dominios/planes (sin secretos)
 ├── agents/prompts/          # Plantillas Claude / Cursor
