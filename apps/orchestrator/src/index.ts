@@ -35,6 +35,8 @@ import { startIntentDispatchWorker } from './workers/IntentDispatchWorker.js';
 import { startTerminalWorker } from './workers/TerminalWorker.js';
 import { closeWebhookQueue, createWebhookWorker } from './workers/WebhookWorker.js';
 import { startWebhooksProcessingWorker } from './workers/WebhooksProcessingWorker.js';
+import { startLocalCursorWorker } from './workers/LocalCursorWorker.js';
+import { startLocalClaudeWorker } from './workers/LocalClaudeWorker.js';
 
 type AsyncCleanup = () => Promise<void>;
 
@@ -79,6 +81,8 @@ function startAllWorkers(): AsyncCleanup[] {
   const ollamaWorker = startOllamaWorker(connection);
   const intentDispatchWorker = startIntentDispatchWorker(connection);
   const terminalWorker = startTerminalWorker(connection);
+  const localCursorWorker = startLocalCursorWorker(connection);
+  const localClaudeWorker = startLocalClaudeWorker(connection);
 
   let agentClassifierCleanup: AsyncCleanup[] = [];
   if (process.env.OPSLY_AGENT_CLASSIFIER_WORKER_ENABLED === 'true') {
@@ -100,11 +104,13 @@ function startAllWorkers(): AsyncCleanup[] {
     async () => ollamaWorker.close(),
     async () => intentDispatchWorker.close(),
     async () => terminalWorker.close(),
+    async () => localCursorWorker.close(),
+    async () => localClaudeWorker.close(),
     ...agentClassifierCleanup
   );
 
   console.log(
-    '[orchestrator] Workers: cursor, n8n, notify, drive, backup, health, budget, opsly-webhooks, webhooks-processing, general-events, ollama, intent_dispatch, terminal_task' +
+    '[orchestrator] Workers: cursor, n8n, notify, drive, backup, health, budget, opsly-webhooks, webhooks-processing, general-events, ollama, intent_dispatch, terminal_task, local-cursor, local-claude' +
       (process.env.OPSLY_AGENT_CLASSIFIER_WORKER_ENABLED === 'true' ? ', agent-classifier' : '') +
       '; Hermes tick → servicio opsly-hermes (no este proceso).'
   );

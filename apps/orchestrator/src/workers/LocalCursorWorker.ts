@@ -1,206 +1,182 @@
-import { Worker } from 'bullmq';
+import { Job, Worker } from 'bullmq';
 import { promises as fsp } from 'fs';
 import * as path from 'path';
-import { getAgentServiceRegistry } from '../lib/agent-service-registry';
-
-export interface LocalCursorWorkerPayload {
-  prompt_path: string;
-  prompt_content: string;
-  agent_role: string;
-  max_steps: number;
-  job_id: string;
-}
-
-export interface CursorExecutionRequest {
-  prompt_path: string;
-  prompt_content: string;
-  agent_role: string;
-  max_steps: number;
-  job_id: string;
-}
+import { getAgentServiceRegistry } from '../lib/agent-service-registry.js';
+import { logWorkerLifecycle } from '../observability/worker-log.js';
+import { getWorkerConcurrency } from '../worker-concurrency.js';
 
 export interface CursorExecutionResponse {
   success: boolean;
   response_path?: string;
   error?: string;
-  output?: string;
   execution_time_ms?: number;
 }
 
 /**
  * LocalCursorWorker
  *
+ * Listens on 'openclaw' queue for jobs with name='local-cursor'
  * Invokes the Cursor IDE agent service (running on MacBook, port 5001)
  * Flow:
- * 1. Receives job with prompt_path and content
+ * 1. Receives job with prompt content
  * 2. Looks up Cursor service endpoint from AgentServiceRegistry
  * 3. POSTs prompt to CursorAgent Service HTTP endpoint
- * 4. Polls for response in .cursor/responses/ folder
+ * 4. Waits for response in .cursor/responses/ folder
  * 5. Returns response path to orchestrator
  *
  * Depends on:
- * - config/agent-services.yaml (curl: http://localhost:5001)
+ * - config/agent-services.yaml (cursor: http://localhost:5001)
  * - scripts/cursor-agent-service.ts running on MacBook
  * - .cursor/responses/ directory for result files
  */
-export class LocalCursorWorker {
-  private worker: Worker<LocalCursorWorkerPayload> | null = null;
-  private registry = getAgentServiceRegistry();
-  private responsePollInterval = 1000; // ms between polling for response
-  private responsePollTimeout = 60000; // max 60 sec to wait for response
 
-  constructor(
-    private queueName: string = 'local-cursor',
-    private redisUrl: string = process.env.REDIS_URL || 'redis://localhost:6379',
-  ) {}
+async function processLocalCursorJob(
+  promptContent: string,
+  jobId: string,
+  agentRole: string,
+  maxSteps: number,
+  registry: ReturnType<typeof getAgentServiceRegistry>
+): Promise<CursorExecutionResponse> {
+  const startTime = Date.now();
 
-  /**
-   * Start the worker to listen for jobs
-   */
-  async start(): Promise<void> {
-    await this.registry.loadConfig();
+  console.log(`[LocalCursorWorker] Processing job ${jobId}: ${agentRole}`);
 
-    this.worker = new Worker<LocalCursorWorkerPayload>(this.queueName, this.processJob.bind(this), {
-      connection: {
-        url: this.redisUrl,
-      },
-    });
-
-    this.worker.on('completed', (job) => {
-      console.log(`[LocalCursorWorker] ✅ Job ${job.id} completed`);
-    });
-
-    this.worker.on('failed', (job, err) => {
-      console.error(`[LocalCursorWorker] ❌ Job ${job?.id} failed:`, err);
-    });
-
-    console.log(`[LocalCursorWorker] 🚀 Started on queue: ${this.queueName}`);
-  }
-
-  /**
-   * Process a job: invoke Cursor service and wait for response
-   */
-  private async processJob(job: any): Promise<CursorExecutionResponse> {
-    const startTime = Date.now();
-    const payload = job.data as LocalCursorWorkerPayload;
-    const { prompt_path, prompt_content, agent_role, max_steps, job_id } = payload;
-
-    console.log(`[LocalCursorWorker] Processing job ${job_id}: ${prompt_path}`);
-
-    try {
-      console.log(`[LocalCursorWorker] Starting job ${job_id} with agent role: ${agent_role}`);
-
-      // Get Cursor service endpoint from registry
-      const cursorService = await this.registry.getService('cursor');
-      if (!cursorService) {
-        throw new Error('Cursor service not configured or disabled');
-      }
-
-      const cursorUrl = await this.registry.getServiceUrl('cursor');
-      if (!cursorUrl) {
-        throw new Error('Cursor service URL not found');
-      }
-
-      // Check if service is healthy
-      const isHealthy = await this.registry.isServiceHealthy('cursor');
-      if (!isHealthy) {
-        throw new Error('Cursor service is not responding to health checks');
-      }
-
-      // Prepare execution request
-      const request: CursorExecutionRequest = {
-        prompt_path,
-        prompt_content,
-        agent_role,
-        max_steps,
-        job_id,
-      };
-
-      console.log(`[LocalCursorWorker] Invoking Cursor at ${cursorUrl}/execute`);
-
-      // Call Cursor Agent Service via HTTP
-      const response = await this.invokeCursorService(cursorUrl, request, cursorService.timeout_ms);
-
-      if (!response.success) {
-        throw new Error(`Cursor service error: ${response.error}`);
-      }
-
-      const executionTime = Date.now() - startTime;
-
-      console.log(`[LocalCursorWorker] Job ${job_id} completed in ${executionTime}ms`);
-
-      console.log(`[LocalCursorWorker] ✅ Job ${job_id} completed in ${executionTime}ms`);
-      console.log(`[LocalCursorWorker] Response: ${response.response_path}`);
-
-      return {
-        success: true,
-        response_path: response.response_path,
-        execution_time_ms: executionTime,
-      };
-    } catch (err) {
-      const executionTime = Date.now() - startTime;
-      const errorMsg = err instanceof Error ? err.message : String(err);
-
-      console.error(`[LocalCursorWorker] ❌ Job ${job_id} failed:`, errorMsg);
-
-      console.error(`[LocalCursorWorker] Job ${job_id} error: ${errorMsg}`);
-
-      return {
-        success: false,
-        error: errorMsg,
-        execution_time_ms: executionTime,
-      };
+  try {
+    // Get Cursor service endpoint from registry
+    const cursorService = await registry.getService('cursor');
+    if (!cursorService) {
+      throw new Error('Cursor service not configured or disabled');
     }
-  }
 
-  /**
-   * Make HTTP request to CursorAgent Service
-   */
-  private async invokeCursorService(
-    serviceUrl: string,
-    request: CursorExecutionRequest,
-    timeoutMs: number,
-  ): Promise<CursorExecutionResponse> {
+    const cursorUrl = await registry.getServiceUrl('cursor');
+    if (!cursorUrl) {
+      throw new Error('Cursor service URL not found');
+    }
+
+    // Check if service is healthy
+    const isHealthy = await registry.isServiceHealthy('cursor');
+    if (!isHealthy) {
+      throw new Error('Cursor service is not responding to health checks');
+    }
+
+    // Prepare execution request
+    const request = {
+      prompt_content: promptContent,
+      job_id: jobId,
+      agent_role: agentRole,
+      max_steps: maxSteps,
+    };
+
+    console.log(`[LocalCursorWorker] Invoking Cursor at ${cursorUrl}/execute`);
+
+    // Call Cursor Agent Service via HTTP
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), timeoutMs);
+    const timeout = setTimeout(
+      () => controller.abort(),
+      cursorService.timeout_ms
+    );
 
-    try {
-      const response = await fetch(`${serviceUrl}/execute`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(request),
-        signal: controller.signal,
-      });
+    const response = await fetch(`${cursorUrl}/execute`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(request),
+      signal: controller.signal,
+    });
 
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-      }
+    clearTimeout(timeout);
 
-      const result = (await response.json()) as CursorExecutionResponse;
-      return result;
-    } finally {
-      clearTimeout(timeout);
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
-  }
 
-  /**
-   * Stop the worker
-   */
-  async stop(): Promise<void> {
-    if (this.worker) {
-      await this.worker.close();
-      console.log('[LocalCursorWorker] Stopped');
+    const result = (await response.json()) as CursorExecutionResponse;
+
+    if (!result.success) {
+      throw new Error(`Cursor service error: ${result.error}`);
     }
+
+    const executionTime = Date.now() - startTime;
+
+    console.log(
+      `[LocalCursorWorker] ✅ Job ${jobId} completed in ${executionTime}ms`
+    );
+    console.log(`[LocalCursorWorker] Response: ${result.response_path}`);
+
+    return {
+      success: true,
+      response_path: result.response_path,
+      execution_time_ms: executionTime,
+    };
+  } catch (err) {
+    const executionTime = Date.now() - startTime;
+    const errorMsg = err instanceof Error ? err.message : String(err);
+
+    console.error(`[LocalCursorWorker] ❌ Job ${jobId} failed:`, errorMsg);
+
+    return {
+      success: false,
+      error: errorMsg,
+      execution_time_ms: executionTime,
+    };
   }
 }
 
-/**
- * Create and start a LocalCursorWorker instance
- */
-export async function startLocalCursorWorker(): Promise<LocalCursorWorker> {
-  const worker = new LocalCursorWorker();
-  await worker.start();
-  return worker;
+export function startLocalCursorWorker(connection: object) {
+  const concurrency = getWorkerConcurrency('local-cursor') || 2;
+  const registry = getAgentServiceRegistry();
+
+  return new Worker(
+    'openclaw',
+    async (job: Job) => {
+      if (job.name !== 'local-cursor') {
+        return;
+      }
+
+      const t0 = Date.now();
+      logWorkerLifecycle('start', 'local-cursor', job);
+
+      const payload = job.data.payload as {
+        prompt_content?: string;
+        agent_role?: string;
+        max_steps?: number;
+        job_id?: string;
+      };
+
+      const prompt_content = payload.prompt_content || '';
+      const agent_role = payload.agent_role || 'executor';
+      const max_steps = payload.max_steps || 5;
+      const job_id = payload.job_id || job.id?.toString() || '';
+
+      try {
+        await registry.loadConfig();
+
+        const result = await processLocalCursorJob(
+          prompt_content,
+          job_id,
+          agent_role,
+          max_steps,
+          registry
+        );
+
+        const elapsed = Date.now() - t0;
+        logWorkerLifecycle('complete', 'local-cursor', job, { duration_ms: elapsed });
+
+        return result;
+      } catch (err) {
+        const elapsed = Date.now() - t0;
+        const errorMsg = err instanceof Error ? err.message : String(err);
+
+        console.error(`[LocalCursorWorker] ❌ Job ${job.id} error:`, errorMsg);
+        logWorkerLifecycle('fail', 'local-cursor', job, { duration_ms: elapsed, error: errorMsg });
+
+        throw err;
+      }
+    },
+    {
+      connection,
+      concurrency,
+    }
+  );
 }

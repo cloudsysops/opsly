@@ -21,7 +21,9 @@ export type WorkerName =
   | 'evolution'
   | 'hive'
   | 'jcode'
-  | 'terminal';
+  | 'terminal'
+  | 'local-cursor'
+  | 'local-claude';
 
 export function extractJobContext(job: Job): {
   task_id?: string;
