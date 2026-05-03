@@ -338,6 +338,7 @@ node scripts/load-skills.js show opsly-api
 **Sesión 2026-05-03 — Git/GitHub limpio + flujo agentes ✅**
 - ✅ `main` como única rama remota; PRs archivados (#174, #180, #184); integración docs/vision en `main` previa a esta sesión.
 - ✅ PR **#185** mergeado: `GIT-WORKFLOW.md`, `git-branch-hygiene.sh`, regla Cursor `git-workflow.mdc`.
+- ✅ **Checklist paralelo** (GitHub + clon) integrado en `GIT-WORKFLOW.md`; `SESSION-GIT-SYNC.md` enlaza la sección; `git-branch-hygiene.sh` ahora lista worktrees, recuento de PRs abiertos (`gh`) y stashes (sin borrar).
 - ⏳ Worktrees locales (`mystifying-curie`, `autonomy-phase2`): retirar cuando no hagan falta (`git worktree remove`).
 
 **Sesión 2026-04-30 — CRM por defecto + marketplace n8n + DeepSeek/OpenClaw ✅**

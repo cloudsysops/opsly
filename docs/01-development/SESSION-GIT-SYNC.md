@@ -50,7 +50,7 @@ No hagas `git pull` sin `--ff-only` si la política del equipo es evitar merges 
 
 ## Referencias
 
-- Política de ramas y PRs: [`GIT-WORKFLOW.md`](./GIT-WORKFLOW.md) · auditoría local: `./scripts/git-branch-hygiene.sh`
+- Política de ramas y PRs: [`GIT-WORKFLOW.md`](./GIT-WORKFLOW.md) (incluye **Checklist paralelo** GitHub + clon) · auditoría local: `./scripts/git-branch-hygiene.sh`
 - Tailscale / nombres: [`TAILSCALE-NOMENCLATURA.md`](./TAILSCALE-NOMENCLATURA.md)
 - Worker: [`WORKER-SETUP-MAC2011.md`](./WORKER-SETUP-MAC2011.md), [`WORKER-SERVICE-MAC2011.md`](./WORKER-SERVICE-MAC2011.md)
 - CI/CD VPS: [`CICD-VPS.md`](./CICD-VPS.md)

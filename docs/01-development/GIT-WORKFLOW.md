@@ -48,6 +48,20 @@ git branch -r --merged origin/main
 git branch -r --no-merged origin/main
 ```
 
+## Checklist paralelo (GitHub + clon)
+
+Objetivo: en **una pasada corta** (varios terminales o agentes en paralelo) comprobar que **GitHub** no tenga PRs ni ramas colgantes y que el **clon** quede alineado a `main`.
+
+| Canal | Comando | Listo cuando… |
+|-------|---------|----------------|
+| **PRs** | `gh pr list --state open` | No quedan PRs abiertos que deban mergearse o cerrarse con comentario. |
+| **Ramas remotas** | `git fetch origin --prune` y `git branch -r` | Solo `origin/main` (salvo ramas de release acordadas explícitamente). |
+| **Ramas locales** | `./scripts/git-branch-hygiene.sh` | Sin remotas mergeadas basura; sin locales `[gone]` sin resolver. |
+| **Worktrees** | `git worktree list` y en cada ruta `git status -sb` | Árbol limpio; si el contexto ya no aplica: `git worktree remove <path>` antes de borrar la rama. |
+| **Stash** | `git stash list` | Revisión humana; **no** purgar en automático (`drop`/`clear` solo tras confirmar). |
+
+Si corrés todo en paralelo, sincronizá resultados en un solo lugar (p. ej. comentario en issue interno o línea en `AGENTS.md` al cierre de sesión).
+
 ## Auditoría local (sin borrar nada)
 
 ```bash
