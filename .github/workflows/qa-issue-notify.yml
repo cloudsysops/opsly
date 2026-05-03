@@ -1,0 +1,45 @@
+# Notifica a Discord cuando hay un issue de QA UI (label qa-ui).
+# El canal es el del webhook configurado en DISCORD_WEBHOOK_URL (repo u org).
+
+name: QA issue → Discord
+
+on:
+  issues:
+    types: [opened, labeled]
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    if: ${{ secrets.DISCORD_WEBHOOK_URL != '' }}
+    steps:
+      - name: Decide if this issue is QA UI
+        id: gate
+        env:
+          ACTION: ${{ github.event.action }}
+          LABEL_NAME: ${{ github.event.label.name }}
+          ISSUE_LABELS_JSON: ${{ toJson(github.event.issue.labels) }}
+        run: |
+          set -euo pipefail
+          notify=false
+          if [ "${ACTION}" = "labeled" ] && [ "${LABEL_NAME}" = "qa-ui" ]; then
+            notify=true
+          elif [ "${ACTION}" = "opened" ] && echo "${ISSUE_LABELS_JSON}" | jq -e 'any(.[]; .name == "qa-ui")' >/dev/null 2>&1; then
+            notify=true
+          fi
+          echo "notify=${notify}" >> "${GITHUB_OUTPUT}"
+
+      - name: Post to Discord
+        if: steps.gate.outputs.notify == 'true'
+        env:
+          WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          TITLE: ${{ github.event.issue.title }}
+          URL: ${{ github.event.issue.html_url }}
+          AUTHOR: ${{ github.event.issue.user.login }}
+        run: |
+          set -euo pipefail
+          jq -n \
+            --arg title "${TITLE}" \
+            --arg url "${URL}" \
+            --arg author "${AUTHOR}" \
+            '{content: (":mag: **QA UI**\n**" + $title + "**\n" + $url + "\n_Autor:_ `" + $author + "`\n_Detalles en el issue (GitHub)._")}' \
+            | curl -fsS -X POST "${WEBHOOK_URL}" -H 'Content-Type: application/json' -d @-
