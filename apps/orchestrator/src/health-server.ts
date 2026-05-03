@@ -331,7 +331,7 @@ async function handleEnqueueSandbox(req: IncomingMessage, res: ServerResponse): 
       res.end(JSON.stringify(policyCheck.payload));
       return;
     }
-    const bull = await enqueueLocalAgentJob(job);
+    const bull = await enqueueJob(job);
     res.writeHead(202, { 'Content-Type': 'application/json' });
     res.end(
       JSON.stringify({
@@ -541,7 +541,7 @@ async function handleLocalPromptSubmit(req: IncomingMessage, res: ServerResponse
       res.end(JSON.stringify(policyCheck.payload));
       return;
     }
-    const bull = await enqueueJob(job);
+    const bull = await enqueueLocalAgentJob(job);
     res.writeHead(202, { 'Content-Type': 'application/json' });
     res.end(
       JSON.stringify({
