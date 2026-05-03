@@ -1,4 +1,5 @@
 import { startServer } from './server';
+import { notifyOrchestratorReady } from './notify-orchestrator-ready';
 import { taskQueue } from './services/queue';
 
 async function main() {
@@ -9,6 +10,8 @@ async function main() {
 
     // Start Express server
     const server = await startServer();
+    const port = Number(process.env.PORT || 3015);
+    notifyOrchestratorReady(port);
 
     // Graceful shutdown
     process.on('SIGINT', async () => {
