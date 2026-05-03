@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { execSync, spawn } from 'child_process';
 import { promises as fsp } from 'fs';
-import path from 'path';
+import * as path from 'path';
 import { watch } from 'chokidar';
 
 interface GitAutoCommitOptions {
