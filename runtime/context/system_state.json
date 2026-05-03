@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-05-02",
+  "last_updated": "2026-05-03",
   "phase": "fase-2-producto-ia-autonomy-phase3",
   "vps": {
     "ip": "157.245.223.7",
@@ -195,7 +195,7 @@
       "task-orchestrator",
       "web"
     ],
-    "scripts": 148,
+    "scripts": 149,
     "adrs": 42,
     "migrations": 42
   },
