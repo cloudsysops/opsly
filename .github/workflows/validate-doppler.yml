@@ -11,7 +11,8 @@ on:
 jobs:
   validate-doppler:
     runs-on: ubuntu-latest
-    # Skip on non-main branches if secrets not available (expected for feature branches)
+    # Skip on non-main branches (feature branches don't have Doppler secrets configured)
+    if: github.ref == 'refs/heads/main'
     steps:
       - uses: actions/checkout@v4
 
