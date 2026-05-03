@@ -1,6 +1,6 @@
 import { jsonError } from '../../../../../../lib/api-response';
 import { remediateVulnerabilityBodySchema } from '../../../../../../lib/defense/validation';
-import { HTTP_STATUS } from '../../../../../../lib/constants';
+import { DEFENSE_API, HTTP_STATUS } from '../../../../../../lib/constants';
 import { requireAdminAccess } from '../../../../../../lib/auth';
 import { getServiceClient } from '../../../../../../lib/supabase';
 
@@ -15,7 +15,7 @@ export async function POST(request: Request, ctx: RouteParams): Promise<Response
   }
 
   const { id } = await ctx.params;
-  if (!id || id.length < 10) {
+  if (!id || id.length < DEFENSE_API.MIN_PATH_ID_LEN) {
     return jsonError('Invalid id', HTTP_STATUS.BAD_REQUEST);
   }
 

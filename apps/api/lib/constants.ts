@@ -169,3 +169,57 @@ export const TOOLS_EXECUTE_LIMITS = {
   REPO_ROOT_MAX_PARENT_HOPS: 14,
   KNOWLEDGE_INDEX_SLICE: 500,
 } as const;
+
+/** Listados defense (admin). */
+export const DEFENSE_API = {
+  AUDITS_LIST_MAX: 100,
+  /** Longitud mínima heurística para `:id` en rutas defense (evita probes triviales). */
+  MIN_PATH_ID_LEN: 10,
+} as const;
+
+/** Cliente HTTP hacia orchestrator al encolar defense audit. */
+export const DEFENSE_ORCHESTRATOR_ENQUEUE = {
+  FETCH_TIMEOUT_MS: 8_000,
+  RESPONSE_DETAIL_MAX_CHARS: 500,
+} as const;
+
+/** Límites Zod: defense audits + remediation. */
+export const DEFENSE_SCHEMA_LIMITS = {
+  FRAMEWORK_MAX_LEN: 64,
+  SCOPE_ITEM_MAX_LEN: 64,
+  SCOPE_MAX_ITEMS: 32,
+  REMEDIATION_EVIDENCE_MAX: 16_000,
+  REMEDIATION_NOTES_MAX: 8_000,
+} as const;
+
+/** Límites Zod: POST complete technician booking (admin). */
+export const TECHNICIAN_COMPLETE_SCHEMA = {
+  TEXT_FIELD_MAX: 20_000,
+  EQUIPMENT_STRING_MAX: 200,
+  EQUIPMENT_MAX_COUNT: 50,
+  HOURS_PER_DAY: 24,
+  MINUTES_PER_HOUR: 60,
+  SATISFACTION_MIN: 1,
+  SATISFACTION_MAX: 5,
+  STRING_URL_MAX: 2_000,
+} as const;
+
+/** Slots públicos technician (defaults si falta duración en DB). */
+export const LOCAL_SERVICES_PUBLIC = {
+  DEFAULT_SERVICE_DURATION_MINUTES: 90,
+  SLOT_STEP_MINUTES: 30,
+} as const;
+
+/** Conversión tiempo HH:MM ↔ minutos. */
+export const TIME_PARSING = {
+  MINUTES_PER_HOUR: 60,
+  /** Longitud `HH:MM` al cortar `time` tipo `09:00:00`. */
+  HHMM_PREFIX_LEN: 5,
+  /** Ancho fijo `padStart` para hora/minuto en grid de slots. */
+  TIME_COMPONENT_PAD: 2,
+} as const;
+
+/** Heurística solapes en grid de slots (buffer mínimo implícito en comparación). */
+export const TECHNICIAN_SLOT_GRID = {
+  BUSY_STATUSES: ['requested', 'confirmed'] as const,
+} as const;

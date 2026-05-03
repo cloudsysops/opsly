@@ -1,4 +1,5 @@
 import { randomUUID } from 'node:crypto';
+import { DEFENSE_ORCHESTRATOR_ENQUEUE } from '../constants';
 
 const ORCHESTRATOR_INTERNAL_URL =
   process.env.ORCHESTRATOR_INTERNAL_URL?.trim() ?? 'http://127.0.0.1:3011';
@@ -41,21 +42,24 @@ export async function tryEnqueueDefenseAuditJob(input: EnqueueDefenseAuditInput)
     request_id: requestId,
   };
 
+  const enqueueUrl = `${ORCHESTRATOR_INTERNAL_URL.replace(/\/$/, '')}/internal/enqueue-defense-audit`;
+
   try {
-    const res = await fetch(
-      `${ORCHESTRATOR_INTERNAL_URL.replace(/\/$/, '')}/internal/enqueue-defense-audit`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(body),
-        signal: AbortSignal.timeout(8000),
-      }
-    );
+    const res = await fetch(enqueueUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(body),
+      signal: AbortSignal.timeout(DEFENSE_ORCHESTRATOR_ENQUEUE.FETCH_TIMEOUT_MS),
+    });
     const text = await res.text();
-    return { ok: res.ok, status: res.status, detail: text.slice(0, 500) };
+    return {
+      ok: res.ok,
+      status: res.status,
+      detail: text.slice(0, DEFENSE_ORCHESTRATOR_ENQUEUE.RESPONSE_DETAIL_MAX_CHARS),
+    };
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
     return { ok: false, status: 0, detail: msg };

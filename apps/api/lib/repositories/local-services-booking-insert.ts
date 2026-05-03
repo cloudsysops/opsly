@@ -1,6 +1,12 @@
 import { logger } from '../logger';
 import { getServiceClient } from '../supabase';
 
+function setIfDefined(row: Record<string, unknown>, key: string, value: unknown): void {
+  if (value !== undefined && value !== null) {
+    row[key] = value;
+  }
+}
+
 export async function lsUpsertCustomerForBooking(params: {
   tenantSlug: string;
   name: string;
@@ -55,27 +61,12 @@ export async function lsInsertBookingRow(params: {
     status: 'requested',
     notes: params.notes,
   };
-  if (params.serviceLocation !== undefined && params.serviceLocation !== null) {
-    row.service_location = params.serviceLocation;
-  }
-  if (params.address !== undefined && params.address !== null) {
-    row.address = params.address;
-  }
-  if (params.latitude !== undefined && params.latitude !== null) {
-    row.latitude = params.latitude;
-  }
-  if (params.longitude !== undefined && params.longitude !== null) {
-    row.longitude = params.longitude;
-  }
-  if (
-    params.estimatedTravelTimeMinutes !== undefined &&
-    params.estimatedTravelTimeMinutes !== null
-  ) {
-    row.estimated_travel_time_minutes = params.estimatedTravelTimeMinutes;
-  }
-  if (params.equipmentNeeded !== undefined && params.equipmentNeeded !== null) {
-    row.equipment_needed = params.equipmentNeeded;
-  }
+  setIfDefined(row, 'service_location', params.serviceLocation);
+  setIfDefined(row, 'address', params.address);
+  setIfDefined(row, 'latitude', params.latitude);
+  setIfDefined(row, 'longitude', params.longitude);
+  setIfDefined(row, 'estimated_travel_time_minutes', params.estimatedTravelTimeMinutes);
+  setIfDefined(row, 'equipment_needed', params.equipmentNeeded);
 
   const { data, error } = await db
     .schema('platform')

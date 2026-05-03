@@ -1,28 +1,32 @@
+import { TECHNICIAN_SLOT_GRID, TIME_PARSING } from './constants';
 import { getServiceClient } from './supabase';
 import { logger } from './logger';
 
 export type TechnicianSlot = { time: string; available: boolean };
 
+const MPH = TIME_PARSING.MINUTES_PER_HOUR;
+const HHMM_LEN = TIME_PARSING.HHMM_PREFIX_LEN;
+const PAD = TIME_PARSING.TIME_COMPONENT_PAD;
+
 function parseTimeToMinutes(t: string): number {
   const parts = t.split(':');
   const h = Number.parseInt(parts[0] ?? '0', 10);
   const m = Number.parseInt(parts[1] ?? '0', 10);
-  return h * 60 + m;
+  return h * MPH + m;
 }
 
 function minutesToHHMM(total: number): string {
-  const h = Math.floor(total / 60);
-  const m = total % 60;
-  return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+  const h = Math.floor(total / MPH);
+  const m = total % MPH;
+  return `${String(h).padStart(PAD, '0')}:${String(m).padStart(PAD, '0')}`;
 }
 
-export async function computeTechnicianSlots(params: {
+type ScheduleRow = { start_time: string; end_time: string };
+
+async function loadTechnicianScheduleForDay(params: {
   tenantSlug: string;
-  dateOnly: string;
   dayOfWeek: number;
-  slotStepMinutes: number;
-  serviceDurationMinutes: number;
-}): Promise<TechnicianSlot[]> {
+}): Promise<ScheduleRow | null> {
   const db = getServiceClient();
   const { data: sched, error: sErr } = await db
     .schema('platform')
@@ -35,17 +39,20 @@ export async function computeTechnicianSlots(params: {
 
   if (sErr !== null) {
     logger.error('technician_slots_schedule', { error: sErr, slug: params.tenantSlug });
-    return [];
+    return null;
   }
   if (sched === null) {
-    return [];
+    return null;
   }
+  return sched as ScheduleRow;
+}
 
-  const startRaw = String((sched as { start_time: string }).start_time);
-  const endRaw = String((sched as { end_time: string }).end_time);
-  const startM = parseTimeToMinutes(startRaw.slice(0, 5));
-  const endM = parseTimeToMinutes(endRaw.slice(0, 5));
-
+async function loadBusyIntervalsUtc(params: {
+  tenantSlug: string;
+  dateOnly: string;
+  serviceDurationMinutes: number;
+}): Promise<Array<{ start: number; end: number }>> {
+  const db = getServiceClient();
   const dayStart = `${params.dateOnly}T00:00:00.000Z`;
   const dayEnd = `${params.dateOnly}T23:59:59.999Z`;
 
@@ -56,7 +63,7 @@ export async function computeTechnicianSlots(params: {
     .eq('tenant_slug', params.tenantSlug)
     .gte('scheduled_at', dayStart)
     .lte('scheduled_at', dayEnd)
-    .in('status', ['requested', 'confirmed']);
+    .in('status', [...TECHNICIAN_SLOT_GRID.BUSY_STATUSES]);
 
   if (bErr !== null) {
     logger.error('technician_slots_bookings', { error: bErr, slug: params.tenantSlug });
@@ -70,18 +77,66 @@ export async function computeTechnicianSlots(params: {
       continue;
     }
     const d = new Date(at);
-    const mins = d.getUTCHours() * 60 + d.getUTCMinutes();
+    const mins = d.getUTCHours() * MPH + d.getUTCMinutes();
     busy.push({
       start: mins,
       end: mins + params.serviceDurationMinutes,
     });
   }
+  return busy;
+}
 
+function buildSlotGrid(params: {
+  startM: number;
+  endM: number;
+  slotStepMinutes: number;
+  serviceDurationMinutes: number;
+  busy: Array<{ start: number; end: number }>;
+}): TechnicianSlot[] {
   const slots: TechnicianSlot[] = [];
-  for (let t = startM; t + params.serviceDurationMinutes <= endM; t += params.slotStepMinutes) {
+  for (
+    let t = params.startM;
+    t + params.serviceDurationMinutes <= params.endM;
+    t += params.slotStepMinutes
+  ) {
     const slotEnd = t + params.serviceDurationMinutes;
-    const overlaps = busy.some((b) => !(slotEnd <= b.start || t >= b.end));
+    const overlaps = params.busy.some((b) => !(slotEnd <= b.start || t >= b.end));
     slots.push({ time: minutesToHHMM(t), available: !overlaps });
   }
   return slots;
+}
+
+export async function computeTechnicianSlots(params: {
+  tenantSlug: string;
+  dateOnly: string;
+  dayOfWeek: number;
+  slotStepMinutes: number;
+  serviceDurationMinutes: number;
+}): Promise<TechnicianSlot[]> {
+  const sched = await loadTechnicianScheduleForDay({
+    tenantSlug: params.tenantSlug,
+    dayOfWeek: params.dayOfWeek,
+  });
+  if (sched === null) {
+    return [];
+  }
+
+  const startRaw = String(sched.start_time);
+  const endRaw = String(sched.end_time);
+  const startM = parseTimeToMinutes(startRaw.slice(0, HHMM_LEN));
+  const endM = parseTimeToMinutes(endRaw.slice(0, HHMM_LEN));
+
+  const busy = await loadBusyIntervalsUtc({
+    tenantSlug: params.tenantSlug,
+    dateOnly: params.dateOnly,
+    serviceDurationMinutes: params.serviceDurationMinutes,
+  });
+
+  return buildSlotGrid({
+    startM,
+    endM,
+    slotStepMinutes: params.slotStepMinutes,
+    serviceDurationMinutes: params.serviceDurationMinutes,
+    busy,
+  });
 }

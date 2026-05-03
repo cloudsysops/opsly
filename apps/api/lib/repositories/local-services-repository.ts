@@ -1,7 +1,54 @@
 import { getTenantContext } from '../tenant-context';
 import { getServiceClient } from '../supabase';
 import { logger } from '../logger';
+import { coalesceNull } from '../nullish';
 import { lsInsertBookingRow, lsUpsertCustomerForBooking } from './local-services-booking-insert';
+
+export type LsTechnicianServiceReportInput = {
+  bookingId: string;
+  tenantSlug: string;
+  findings?: string | null;
+  actionsTaken?: string | null;
+  metricsBefore?: Record<string, unknown> | null;
+  metricsAfter?: Record<string, unknown> | null;
+  recommendations?: string | null;
+  equipmentUsed?: string[] | null;
+  timeSpentMinutes?: number | null;
+  travelDistanceMiles?: number | null;
+  customerSatisfaction?: number | null;
+  upsellOffered?: string | null;
+  nextMaintenanceDate?: string | null;
+  pdfUrl?: string | null;
+};
+
+function trimNotesOrNull(value: string | undefined | null): string | null {
+  if (value === undefined || value === null) {
+    return null;
+  }
+  const t = value.trim();
+  return t.length === 0 ? null : t;
+}
+
+function buildTechnicianReportInsertRow(
+  p: LsTechnicianServiceReportInput
+): Record<string, unknown> {
+  return {
+    booking_id: p.bookingId,
+    tenant_slug: p.tenantSlug,
+    findings: coalesceNull(p.findings),
+    actions_taken: coalesceNull(p.actionsTaken),
+    metrics_before: coalesceNull(p.metricsBefore),
+    metrics_after: coalesceNull(p.metricsAfter),
+    recommendations: coalesceNull(p.recommendations),
+    equipment_used: coalesceNull(p.equipmentUsed),
+    time_spent_minutes: coalesceNull(p.timeSpentMinutes),
+    travel_distance_miles: coalesceNull(p.travelDistanceMiles),
+    customer_satisfaction: coalesceNull(p.customerSatisfaction),
+    upsell_offered: coalesceNull(p.upsellOffered),
+    next_maintenance_date: coalesceNull(p.nextMaintenanceDate),
+    pdf_url: coalesceNull(p.pdfUrl),
+  };
+}
 
 export type LsServiceRow = {
   id: string;
@@ -195,15 +242,15 @@ export async function lsInsertBookingForTenantSlug(params: {
   const booking = await lsInsertBookingRow({
     tenantSlug: params.tenantSlug,
     customerId: cust.id,
-    serviceId: params.serviceId ?? null,
-    scheduledAt: params.scheduledAt ?? null,
-    notes: params.notes?.trim() ?? null,
-    serviceLocation: params.serviceLocation ?? null,
-    address: params.address ?? null,
-    latitude: params.latitude ?? null,
-    longitude: params.longitude ?? null,
-    estimatedTravelTimeMinutes: params.estimatedTravelTimeMinutes ?? null,
-    equipmentNeeded: params.equipmentNeeded ?? null,
+    serviceId: coalesceNull(params.serviceId),
+    scheduledAt: coalesceNull(params.scheduledAt),
+    notes: trimNotesOrNull(params.notes),
+    serviceLocation: coalesceNull(params.serviceLocation),
+    address: coalesceNull(params.address),
+    latitude: coalesceNull(params.latitude),
+    longitude: coalesceNull(params.longitude),
+    estimatedTravelTimeMinutes: coalesceNull(params.estimatedTravelTimeMinutes),
+    equipmentNeeded: coalesceNull(params.equipmentNeeded),
   });
   if (!booking.ok) {
     return { ok: false, error: 'booking_insert_failed' };
@@ -293,23 +340,6 @@ export async function lsInsertReportForTenantSlug(params: {
   return { ok: true, id: (data as { id: string }).id };
 }
 
-export type LsTechnicianServiceReportInput = {
-  bookingId: string;
-  tenantSlug: string;
-  findings?: string | null;
-  actionsTaken?: string | null;
-  metricsBefore?: Record<string, unknown> | null;
-  metricsAfter?: Record<string, unknown> | null;
-  recommendations?: string | null;
-  equipmentUsed?: string[] | null;
-  timeSpentMinutes?: number | null;
-  travelDistanceMiles?: number | null;
-  customerSatisfaction?: number | null;
-  upsellOffered?: string | null;
-  nextMaintenanceDate?: string | null;
-  pdfUrl?: string | null;
-};
-
 export async function lsInsertTechnicianServiceReport(
   params: LsTechnicianServiceReportInput
 ): Promise<{ ok: true; id: string } | { ok: false }> {
@@ -317,22 +347,7 @@ export async function lsInsertTechnicianServiceReport(
   const { data, error } = await db
     .schema('platform')
     .from('ls_technician_service_reports')
-    .insert({
-      booking_id: params.bookingId,
-      tenant_slug: params.tenantSlug,
-      findings: params.findings ?? null,
-      actions_taken: params.actionsTaken ?? null,
-      metrics_before: params.metricsBefore ?? null,
-      metrics_after: params.metricsAfter ?? null,
-      recommendations: params.recommendations ?? null,
-      equipment_used: params.equipmentUsed ?? null,
-      time_spent_minutes: params.timeSpentMinutes ?? null,
-      travel_distance_miles: params.travelDistanceMiles ?? null,
-      customer_satisfaction: params.customerSatisfaction ?? null,
-      upsell_offered: params.upsellOffered ?? null,
-      next_maintenance_date: params.nextMaintenanceDate ?? null,
-      pdf_url: params.pdfUrl ?? null,
-    })
+    .insert(buildTechnicianReportInsertRow(params))
     .select('id')
     .maybeSingle();
 
