@@ -163,6 +163,20 @@ Sí, el backend está **bien separado por tenant para la fase actual** (staging 
 
 ---
 
+## Abuso de API, bots y rate limiting (hardening planificado)
+
+Objetivo: reducir **OWASP API4/API6** (consumo descontrolado y flujos de negocio abusados) sin romper integraciones legítimas (CI, webhooks, MCP).
+
+- [ ] **Edge:** reglas en Cloudflare (rate, WAF, bot fight) delante de Traefik para tráfico público masivo.
+- [ ] **API (`apps/api`):** rate limit por **IP** y, donde aplique, por **tenant** o identidad (Redis / token bucket); responder **429** con política clara; documentar en OpenAPI cuando existan límites estables.
+- [ ] **Redis:** usar prefijos de clave acotados; **evitar** `KEYS` en rutas calientes; preferir `SCAN` o contadores por prefijo si hace falta inventario.
+- [ ] **Heurísticas “bot”:** no penalizar por User-Agent genérico (`curl`, runtime de CI) a clientes autenticados; priorizar señales de abuso (volumen, patrón de coste, IP) y listas denegadas explícitas.
+- [ ] **Geo / país:** evitar bloqueos por país como política por defecto (falsos positivos y cumplimiento); si alguna regla geo se adopta, documentarla y revisarla legalmente.
+- [ ] **Alertas:** reutilizar webhooks existentes (p. ej. Discord) para umbrales críticos; no bloquear el request en `await` largo a terceros — encolar notificación.
+- [ ] **Índice de orquestación / rutas de producto:** [`docs/design/AGENT-ORCHESTRATION-INDEX.md`](../design/AGENT-ORCHESTRATION-INDEX.md) (endpoints públicos CloudSysOps / webhooks deben cumplir esta sección antes de GA).
+
+---
+
 ## Informes
 
 - [ ] Revisar [SECURITY_AUDIT_REPORT.md](SECURITY_AUDIT_REPORT.md) y actualizar tras cambios mayores en RLS o dependencias.

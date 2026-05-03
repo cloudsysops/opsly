@@ -1,7 +1,7 @@
 ---
 status: canon
 owner: operations
-last_review: 2026-04-26
+last_review: 2026-04-30
 ---
 
 # Opsly — Contexto del Agente
@@ -17,6 +17,8 @@ last_review: 2026-04-26
 **Mapa de documentación (evitar duplicar con `docs/AGENTS-GUIDE.md`):** `VISION.md` = norte de producto; **`AGENTS.md` (este archivo)** = estado operativo, próximo paso, bloqueantes e incrementos **por sesión**; **`docs/AGENTS-GUIDE.md`** = convenciones **solo** para varios asistentes/automatismos en paralelo (no sustituye AGENTS). `docs/adr/` = decisiones de arquitectura. No copiar tablas de límites por plan aquí: enlazar `AGENTS-GUIDE` + `VISION.md`.
 
 **Planificación por sprint (IA + producto):** [`ROADMAP.md`](ROADMAP.md) (timeline semanal, milestones). **Guía técnica capa IA:** [`docs/IMPLEMENTATION-IA-LAYER.md`](docs/IMPLEMENTATION-IA-LAYER.md) (TypeScript, rutas reales en `apps/*`).
+
+**Orquestación de agentes (rutas A/B/C, fallover, vendor):** [`docs/design/AGENT-ORCHESTRATION-INDEX.md`](docs/design/AGENT-ORCHESTRATION-INDEX.md) — índice maestro; cola de reparación (diseño): [`docs/orchestrator/REPAIR-QUEUE.md`](docs/orchestrator/REPAIR-QUEUE.md).
 
 **Shadow deployment Super Agent (nuevo):** [`docs/runbooks/SUPER-AGENT-SHADOW-DEPLOY.md`](docs/runbooks/SUPER-AGENT-SHADOW-DEPLOY.md), diseño `context-builder-v2` en `apps/context-builder-v2/src/design/architecture.md`, script `scripts/rollback-super-agent.sh`, overlay `infra/docker-compose.super-agent.yml`.
 
@@ -1035,6 +1037,8 @@ _Auditoría TypeScript y correcciones de código (2026-04-05, sesión agente Cla
 **Siguiente producto (pendiente):** convertir marketplace n8n v1 en autoservicio completo: API portal `install/activate`, persistencia de installs por tenant, enforcement de `plan_min`, y smoke real DeepSeek con `DEEPSEEK_API_KEY` via `/v1/text`/`/v1/chat/completions`.
 
 **Operación repo (2026-05-03):** flujo canónico para humanos y agentes en [`docs/01-development/GIT-WORKFLOW.md`](docs/01-development/GIT-WORKFLOW.md); auditoría local `./scripts/git-branch-hygiene.sh`.
+
+**Planning agentes (2026-04-30):** elegir foco ruta A/B/C según capacidad; fuente única [`docs/design/AGENT-ORCHESTRATION-INDEX.md`](docs/design/AGENT-ORCHESTRATION-INDEX.md), fallover [`docs/orchestrator/REPAIR-QUEUE.md`](docs/orchestrator/REPAIR-QUEUE.md).
 
 **Histórico Semana 2 (2026-04-21 → 2026-04-27):** Infraestructura IA (Ollama + NotebookLM Knowledge Layer)
 
