@@ -4,6 +4,11 @@ import { taskQueue } from './services/queue';
 
 async function main() {
   try {
+    // Initialize task queue
+    await taskQueue.connect();
+    console.log('✅ Redis connected');
+
+    // Start Express server
     const server = await startServer();
     const port = Number(process.env.PORT || 3015);
     notifyOrchestratorReady(port);
