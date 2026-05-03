@@ -113,27 +113,28 @@ rules:
       skip_cost_optimization: true
       log_override: true
 
-  # Fallback chain when primary provider is down
-  fallback_chain:
-    deepseek_v4:
-      - deepseek_chat
-      - claude_sonnet
-      - gpt4o_mini
 
-    codellama_local:
-      - llama_local
-      - deepseek_chat
-      - gpt4o_mini
+# Fallback chain when primary provider is down
+fallback_chain:
+  deepseek_v4:
+    - deepseek_chat
+    - claude_sonnet
+    - gpt4o_mini
 
-    deepseek_chat:
-      - gpt4o_mini
-      - claude_haiku
-      - ollama_local
+  codellama_local:
+    - llama_local
+    - deepseek_chat
+    - gpt4o_mini
 
-    gpt4o:
-      - claude_sonnet
-      - deepseek_v4
-      - gpt4o_mini
+  deepseek_chat:
+    - gpt4o_mini
+    - claude_haiku
+    - ollama_local
+
+  gpt4o:
+    - claude_sonnet
+    - deepseek_v4
+    - gpt4o_mini
 
 # Model tier definitions
 model_tiers:
