@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-05-03T05:30:01Z",
-  "totalFiles": 296,
+  "lastIndexed": "2026-05-03T13:10:57Z",
+  "totalFiles": 298,
   "files": [
     ".openclaw.md",
     "2026-04-21.md",
@@ -52,6 +52,7 @@
     "ADR-040-technician-scaling-solo-to-assistant.md",
     "ADR-041-local-services-phase-1-tenant-api.md",
     "ADR-042-local-services-phase-2-webhooks.md",
+    "AGENT-BRAIN-CONTRACT.md",
     "AGENT-GUARDRAILS.md",
     "AGENT-HOOKS-OBSIDIAN-NOTEBOOKLM-N8N.md",
     "AGENTS-ASSIGNMENTS.md",
@@ -187,6 +188,7 @@
     "QUALITY-GATES.md",
     "QUICK-REFERENCE.md",
     "QUICKSTART-AGENTS.md",
+    "README.md",
     "README.md",
     "README.md",
     "README.md",
