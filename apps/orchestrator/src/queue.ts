@@ -15,6 +15,7 @@ export const connection = {
 };
 
 export const orchestratorQueue = new Queue('openclaw', { connection });
+export const localAgentQueue = new Queue('local-agents', { connection });
 export const plannerQueue = new Queue('queue-planner', { connection });
 export const skepticQueue = new Queue('queue-skeptic', { connection });
 
@@ -59,6 +60,31 @@ export async function enqueueJob(job: OrchestratorJob) {
     autonomy_risk: job.autonomy_risk,
     queue_priority: opts.priority,
     metadata: job.metadata,
+  });
+
+  return bull;
+}
+
+export async function enqueueLocalAgentJob(job: OrchestratorJob) {
+  const opts = buildQueueAddOptions(job);
+  const bull = await localAgentQueue.add(job.type, job, opts);
+
+  logJobEnqueue({
+    event: 'job_enqueue',
+    job_type: job.type,
+    task_id: job.taskId,
+    tenant_slug: getJobTenantSlug(job),
+    tenant_id: job.tenant_id,
+    plan: job.plan,
+    request_id: job.request_id,
+    idempotency_key: job.idempotency_key,
+    bullmq_job_id_custom: Boolean(opts.jobId),
+    initiated_by: job.initiated_by,
+    agent_role: job.agent_role,
+    cost_budget_usd: job.cost_budget_usd,
+    autonomy_risk: job.autonomy_risk,
+    queue_priority: opts.priority,
+    metadata: { ...(job.metadata ?? {}), queue: 'local-agents' },
   });
 
   return bull;

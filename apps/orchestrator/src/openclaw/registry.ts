@@ -145,6 +145,62 @@ const AGENT_REGISTRY = new Map<string, OpenClawAgentDescriptor>([
       enabled: true,
     },
   ],
+  [
+    'local-cursor',
+    {
+      id: 'local-cursor',
+      role: 'executor',
+      capabilities: ['execute-local-prompt', 'open-cursor-ide', 'write-local-response'],
+      skillBinding: 'opsly-orchestrator',
+      targets: ['queue'],
+      modelTier: 'balanced',
+      tenantPermissions: ['self'],
+      defaultController: 'default',
+      enabled: true,
+    },
+  ],
+  [
+    'local-claude',
+    {
+      id: 'local-claude',
+      role: 'executor',
+      capabilities: ['execute-local-prompt', 'call-claude-agent-service', 'write-local-response'],
+      skillBinding: 'opsly-orchestrator',
+      targets: ['queue'],
+      modelTier: 'premium',
+      tenantPermissions: ['self'],
+      defaultController: 'default',
+      enabled: true,
+    },
+  ],
+  [
+    'local-copilot',
+    {
+      id: 'local-copilot',
+      role: 'executor',
+      capabilities: ['execute-local-prompt', 'call-copilot-agent-service', 'write-local-response'],
+      skillBinding: 'opsly-orchestrator',
+      targets: ['queue'],
+      modelTier: 'balanced',
+      tenantPermissions: ['self'],
+      defaultController: 'default',
+      enabled: true,
+    },
+  ],
+  [
+    'local-opencode',
+    {
+      id: 'local-opencode',
+      role: 'executor',
+      capabilities: ['execute-local-prompt', 'call-opencode-agent-service', 'write-local-response'],
+      skillBinding: 'opsly-orchestrator',
+      targets: ['queue'],
+      modelTier: 'balanced',
+      tenantPermissions: ['self'],
+      defaultController: 'default',
+      enabled: true,
+    },
+  ],
 ]);
 
 export function getOpenClawController(name = 'default'): OpenClawControllerContract {

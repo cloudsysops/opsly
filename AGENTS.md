@@ -1,7 +1,7 @@
 ---
 status: canon
 owner: operations
-last_review: 2026-05-03
+last_review: 2026-04-26
 ---
 
 # Opsly — Contexto del Agente
@@ -327,7 +327,9 @@ node scripts/load-skills.js show opsly-api
 
 <!-- Actualizar al final de cada sesión -->
 
-**Fecha última actualización:** 2026-05-03 — **Merge `autonomy/phase2-activation` → `main`:** `217afbd` — search-cache (context-builder), embeddings por lotes (llm-gateway), `phase_3_economics` en `runtime/context/system_state.json`, [`docs/reports/PARALLEL-EXECUTION-2026-04-29.md`](docs/reports/PARALLEL-EXECUTION-2026-04-29.md). BullMQ v5: `getPollingProfile()` / `OrchestratorDrainProfile` en `apps/orchestrator/src/queue-opts.ts`. Worktrees locales retirados; ramas `autonomy/phase2-activation` y `claude/mystifying-curie-74e91d` borradas (`git branch -d`). **Misma fecha (referencia):** higiene Git — solo `main`, PRs #174/#180/#184 archivados, **#185** `GIT-WORKFLOW.md` + `git-branch-hygiene.sh` + `git-workflow.mdc`.
+**Fecha última actualización:** 2026-05-03 — **Local Agent Execution System / Workers MVP:** agregado submit local `POST /api/local/prompt-submit`, cola dedicada `local-agents` para evitar que workers genéricos consuman jobs por `job.name`, workers HTTP `local_cursor`, `local_claude`, `local_copilot`, `local_opencode`, registry configurable `config/agent-services.json`, servicio `scripts/cursor-agent-service.ts`, watcher `scripts/local-agent-watcher.ts` y auto-commit daemon `scripts/local-git-auto-commit.ts`. Validación: `tsc --noEmit -p apps/orchestrator/tsconfig.json` OK; scripts TS standalone OK. Vitest local bloqueado por binario opcional Rollup (`@rollup/rollup-darwin-x64`) con firma inválida en `node_modules`.
+
+**Fecha referencia anterior:** 2026-05-03 — **Higiene Git/GitHub + flujo para agentes:** en `origin` quedó solo `main`; PRs **#174**, **#180**, **#184** cerrados con comentario de archivo; ramas remotas de integración/archivo eliminadas; **PR #185** mergeado (squash): [`docs/01-development/GIT-WORKFLOW.md`](docs/01-development/GIT-WORKFLOW.md) con orden **commit → push → PR → merge → borrar rama**, checklist para ramas pendientes, [`scripts/git-branch-hygiene.sh`](scripts/git-branch-hygiene.sh) operativo, [`.cursor/rules/git-workflow.mdc`](.cursor/rules/git-workflow.mdc) alineado. Pendiente local opcional: worktrees `claude/mystifying-curie-74e91d` y `autonomy/phase2-activation` (quitar con `git worktree remove` cuando no se usen).
 
 **Fecha referencia anterior:** 2026-05-02 — **Opsly Shield / Guardian Grid Phase 2 (MVP código):** migraciones `shield_alert_config`, `shield_score_history`, `shield_secret_findings`; API `POST /api/shield/alerts/config`, rutas portal Zero-Trust bajo `/api/portal/tenant/[slug]/shield/*`, cron `/api/cron/shield-secret-scan`, worker opcional `OPSLY_SHIELD_SCAN_WORKER_ENABLED`, portal `/shield/dashboard`; metering vía `logUsage` (`shield_api_observability`). Aplicar migraciones en Supabase y Doppler: `DISCORD_WEBHOOK_SHIELD` / `CRON_SECRET`; simulación escaneo `SHIELD_SECRET_SCAN_SIMULATE=true` hasta scanner real.
 
@@ -338,11 +340,14 @@ node scripts/load-skills.js show opsly-api
 **Sesión 2026-05-03 — Git/GitHub limpio + flujo agentes ✅**
 - ✅ `main` como única rama remota; PRs archivados (#174, #180, #184); integración docs/vision en `main` previa a esta sesión.
 - ✅ PR **#185** mergeado: `GIT-WORKFLOW.md`, `git-branch-hygiene.sh`, regla Cursor `git-workflow.mdc`.
-- ✅ PR **#186** mergeado: checklist paralelo GitHub + clon híbrido (`docs/01-development/`).
+- ⏳ Worktrees locales (`mystifying-curie`, `autonomy-phase2`): retirar cuando no hagan falta (`git worktree remove`).
 
-**Sesión 2026-05-03 (continuación) — merge autonomy + worktrees ✅**
-- ✅ Merge `autonomy/phase2-activation` en `main` (`217afbd`); `validate-structure`, type-check, tests orchestrator/context-builder/llm-gateway en verde.
-- ✅ `git worktree remove` de `.claude/worktrees/mystifying-curie-74e91d` y `.worktrees/autonomy-phase2-activation`; `git branch -d` de las ramas locales asociadas.
+**Sesión 2026-05-03 — Local Workers MVP ✅**
+- ✅ `apps/orchestrator`: nuevos job types `local_cursor`, `local_claude`, `local_copilot`, `local_opencode`; cola dedicada `local-agents`; workers HTTP registrados en `index.ts`; `worker-log`/concurrencia ampliados.
+- ✅ `POST /api/local/prompt-submit`: acepta `prompt_path` o `prompt_content`, frontmatter simple (`agent`, `agent_role`, `max_steps`), `tenant_slug`, y encola al agente local correcto.
+- ✅ `config/agent-services.json`: endpoints localhost `5001..5004`, sobreescribibles por env (`OPSLY_CURSOR_AGENT_URL`, etc.).
+- ✅ Scripts locales: `cursor-agent-service.ts` abre Cursor con `open -a Cursor`; `local-agent-watcher.ts` vigila `.cursor/prompts`; `local-git-auto-commit.ts` commitea respuestas en `.cursor/responses`.
+- ✅ Validación: TypeScript orchestrator + scripts standalone OK. Pendiente: Vitest tras reparar `node_modules`/Rollup opcional en Mac.
 
 **Sesión 2026-04-30 — CRM por defecto + marketplace n8n + DeepSeek/OpenClaw ✅**
 - ✅ CRM Starter Pack agregado: lead capture, hot lead alert, follow-up reminder y daily pipeline digest en `.n8n/1-workflows/crm/`.
@@ -1025,9 +1030,11 @@ _Auditoría TypeScript y correcciones de código (2026-04-05, sesión agente Cla
 
 <!-- Una sola tarea concreta. Actualizar al final de cada sesión -->
 
-**Inmediato (2026-04-30):** convertir marketplace n8n v1 en autoservicio completo: API portal `install/activate`, persistencia de installs por tenant, enforcement de `plan_min`, y smoke real DeepSeek con `DEEPSEEK_API_KEY` via `/v1/text`/`/v1/chat/completions`.
+**Inmediato (2026-05-03):** smoke end-to-end local workers: arrancar orchestrator, `scripts/cursor-agent-service.ts`, `scripts/local-agent-watcher.ts` y `scripts/local-git-auto-commit.ts`; crear prompt pequeño en `.cursor/prompts/`; verificar job en `local-agents`, apertura de Cursor, respuesta en `.cursor/responses/` y commit local. Luego reparar `node_modules` para desbloquear Vitest (`@rollup/rollup-darwin-x64`).
 
-**Operación repo (2026-05-03):** flujo canónico en [`docs/01-development/GIT-WORKFLOW.md`](docs/01-development/GIT-WORKFLOW.md); auditoría `./scripts/git-branch-hygiene.sh`. Rama `autonomy/phase2-activation` integrada en `main`; sin worktrees huérfanos en este clon.
+**Siguiente producto (pendiente):** convertir marketplace n8n v1 en autoservicio completo: API portal `install/activate`, persistencia de installs por tenant, enforcement de `plan_min`, y smoke real DeepSeek con `DEEPSEEK_API_KEY` via `/v1/text`/`/v1/chat/completions`.
+
+**Operación repo (2026-05-03):** flujo canónico para humanos y agentes en [`docs/01-development/GIT-WORKFLOW.md`](docs/01-development/GIT-WORKFLOW.md); auditoría local `./scripts/git-branch-hygiene.sh`.
 
 **Histórico Semana 2 (2026-04-21 → 2026-04-27):** Infraestructura IA (Ollama + NotebookLM Knowledge Layer)
 

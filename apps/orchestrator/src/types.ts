@@ -10,6 +10,10 @@ export type JobType =
   | 'evolution'
   | 'sandbox_execution'
   | 'jcode_execution'
+  | 'local_cursor'
+  | 'local_claude'
+  | 'local_copilot'
+  | 'local_opencode'
   | 'hive_objective'
   /** Payload: `{ intent_request: IntentRequest }` — ejecuta `processIntent` (p. ej. `oar_react`) en worker. */
   | 'intent_dispatch'

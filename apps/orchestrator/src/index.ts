@@ -14,6 +14,7 @@ import {
   agentClassifierQueue,
   connection,
   hermesOrchestrationQueue,
+  localAgentQueue,
   orchestratorQueue,
 } from './queue.js';
 import { closeCircuitBreakerRedis } from './resilience/circuit-breaker.js';
@@ -25,6 +26,10 @@ import { startBackupWorker } from './workers/BackupWorker.js';
 import { startCursorWorker } from './workers/CursorWorker.js';
 import { startDriveWorker } from './workers/DriveWorker.js';
 import { startHealthWorker } from './workers/HealthWorker.js';
+import { startLocalClaudeWorker } from './workers/LocalClaudeWorker.js';
+import { startLocalCopilotWorker } from './workers/LocalCopilotWorker.js';
+import { startLocalCursorWorker } from './workers/LocalCursorWorker.js';
+import { startLocalOpenCodeWorker } from './workers/LocalOpenCodeWorker.js';
 import { startN8nWorker } from './workers/N8nWorker.js';
 import { startNotifyWorker } from './workers/NotifyWorker.js';
 import { startAgentClassifierWorker } from './workers/AgentClassifierWorker.js';
@@ -86,6 +91,10 @@ function startAllWorkers(): AsyncCleanup[] {
   const openclawSkepticWorker = startOpenClawSkepticWorker(connection);
   const intentDispatchWorker = startIntentDispatchWorker(connection);
   const terminalWorker = startTerminalWorker(connection);
+  const localCursorWorker = startLocalCursorWorker(connection);
+  const localClaudeWorker = startLocalClaudeWorker(connection);
+  const localCopilotWorker = startLocalCopilotWorker(connection);
+  const localOpenCodeWorker = startLocalOpenCodeWorker(connection);
 
   let agentClassifierCleanup: AsyncCleanup[] = [];
   if (process.env.OPSLY_AGENT_CLASSIFIER_WORKER_ENABLED === 'true') {
@@ -110,6 +119,10 @@ function startAllWorkers(): AsyncCleanup[] {
     async () => openclawSkepticWorker.close(),
     async () => intentDispatchWorker.close(),
     async () => terminalWorker.close(),
+    async () => localCursorWorker.close(),
+    async () => localClaudeWorker.close(),
+    async () => localCopilotWorker.close(),
+    async () => localOpenCodeWorker.close(),
     ...agentClassifierCleanup
   );
 
@@ -117,6 +130,7 @@ function startAllWorkers(): AsyncCleanup[] {
     '[orchestrator] Workers: cursor, n8n, notify, drive, backup, health' +
       (process.env.OPSLY_SHIELD_SCAN_WORKER_ENABLED === 'true' ? ', shield-scan' : '') +
       ', budget, opsly-webhooks, webhooks-processing, general-events, ollama, openclaw-planner, openclaw-skeptic, intent_dispatch, terminal_task' +
+      ', local_cursor, local_claude, local_copilot, local_opencode' +
       (process.env.OPSLY_AGENT_CLASSIFIER_WORKER_ENABLED === 'true' ? ', agent-classifier' : '') +
       '; Hermes tick → servicio opsly-hermes (no este proceso).'
   );
@@ -157,6 +171,7 @@ async function main(): Promise<void> {
   cleanupTasks.push(async () => closeHttpServer(healthServer));
   cleanupTasks.push(async () => drainMeteringOperations());
   cleanupTasks.push(async () => orchestratorQueue.close());
+  cleanupTasks.push(async () => localAgentQueue.close());
   cleanupTasks.push(async () => agentClassifierQueue.close());
   cleanupTasks.push(async () => hermesOrchestrationQueue.close());
   cleanupTasks.push(async () => closeWebhookQueue());

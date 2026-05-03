@@ -1,0 +1,28 @@
+{
+  "services": {
+    "cursor": {
+      "url": "http://localhost:5001",
+      "type": "http",
+      "timeoutMs": 60000,
+      "retries": 1
+    },
+    "claude": {
+      "url": "http://localhost:5002",
+      "type": "http",
+      "timeoutMs": 120000,
+      "retries": 1
+    },
+    "copilot": {
+      "url": "http://localhost:5003",
+      "type": "http",
+      "timeoutMs": 120000,
+      "retries": 1
+    },
+    "opencode": {
+      "url": "http://localhost:5004",
+      "type": "http",
+      "timeoutMs": 120000,
+      "retries": 1
+    }
+  }
+}

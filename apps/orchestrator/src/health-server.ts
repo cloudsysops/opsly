@@ -2,8 +2,13 @@ import { randomUUID } from 'node:crypto';
 import { createServer, type IncomingMessage, type Server, type ServerResponse } from 'node:http';
 import { resolveAutonomyPolicy } from './autonomy/policy.js';
 import { orchestratorModeLabel, parseOrchestratorRole } from './orchestrator-role.js';
-import { enqueueJob, orchestratorQueue } from './queue.js';
+import { enqueueJob, enqueueLocalAgentJob, localAgentQueue, orchestratorQueue } from './queue.js';
 import type { OrchestratorJob } from './types.js';
+import {
+  jobTypeForLocalAgent,
+  normalizeLocalAgentKind,
+  readPromptInput,
+} from './lib/local-worker-utils.js';
 import { enqueueWebhookJob } from './workers/WebhookWorker.js';
 import type { WebhookJobData } from './workers/WebhookWorker.js';
 import {
@@ -223,7 +228,7 @@ async function handleOpenclawJobStatus(
     return;
   }
   try {
-    const j = await orchestratorQueue.getJob(jobId);
+    const j = (await orchestratorQueue.getJob(jobId)) ?? (await localAgentQueue.getJob(jobId));
     if (!j) {
       res.writeHead(404, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: 'not found' }));
@@ -326,7 +331,7 @@ async function handleEnqueueSandbox(req: IncomingMessage, res: ServerResponse): 
       res.end(JSON.stringify(policyCheck.payload));
       return;
     }
-    const bull = await enqueueJob(job);
+    const bull = await enqueueLocalAgentJob(job);
     res.writeHead(202, { 'Content-Type': 'application/json' });
     res.end(
       JSON.stringify({
@@ -420,6 +425,131 @@ async function handleEnqueueJcode(req: IncomingMessage, res: ServerResponse): Pr
         success: true,
         job_id: bull.id != null ? String(bull.id) : null,
         request_id: requestId,
+      })
+    );
+  } catch (err) {
+    res.writeHead(500, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: String(err) }));
+  }
+}
+
+async function handleLocalPromptSubmit(req: IncomingMessage, res: ServerResponse): Promise<void> {
+  if (!verifyPlatformAdminToken(req)) {
+    res.writeHead(401, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'unauthorized' }));
+    return;
+  }
+
+  let body: unknown;
+  try {
+    body = await readBody(req);
+  } catch {
+    res.writeHead(400, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'Invalid JSON' }));
+    return;
+  }
+  if (typeof body !== 'object' || body === null) {
+    res.writeHead(400, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'invalid body' }));
+    return;
+  }
+
+  const b = body as Record<string, unknown>;
+  const tenantSlug =
+    typeof b.tenant_slug === 'string' && b.tenant_slug.trim().length > 0
+      ? b.tenant_slug.trim()
+      : 'opsly';
+  try {
+    assertTenantSlugOrThrow(tenantSlug);
+  } catch (err) {
+    res.writeHead(400, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: err instanceof Error ? err.message : String(err) }));
+    return;
+  }
+
+  const promptPath =
+    typeof b.prompt_path === 'string' && b.prompt_path.trim().length > 0
+      ? b.prompt_path.trim()
+      : undefined;
+  const promptContent =
+    typeof b.prompt_content === 'string' && b.prompt_content.trim().length > 0
+      ? b.prompt_content
+      : undefined;
+
+  let parsedMetadata: Record<string, string> = {};
+  try {
+    const parsed = await readPromptInput({ promptPath, promptContent });
+    parsedMetadata = parsed.metadata;
+  } catch (err) {
+    res.writeHead(400, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: err instanceof Error ? err.message : String(err) }));
+    return;
+  }
+
+  const localAgent = normalizeLocalAgentKind(b.local_agent ?? b.agent ?? parsedMetadata.agent);
+  const jobType = jobTypeForLocalAgent(localAgent);
+  const requestId =
+    typeof b.request_id === 'string' && b.request_id.length > 0 ? b.request_id : randomUUID();
+  const idempotencyKey =
+    typeof b.idempotency_key === 'string' && b.idempotency_key.length > 0
+      ? b.idempotency_key
+      : promptPath
+        ? `local:${localAgent}:${promptPath}`
+        : undefined;
+  const maxStepsRaw = b.max_steps ?? parsedMetadata.max_steps;
+  const maxSteps =
+    typeof maxStepsRaw === 'number' && Number.isFinite(maxStepsRaw)
+      ? Math.max(1, Math.floor(maxStepsRaw))
+      : typeof maxStepsRaw === 'string' && Number.isFinite(Number.parseInt(maxStepsRaw, 10))
+        ? Math.max(1, Number.parseInt(maxStepsRaw, 10))
+        : 5;
+  const localAgentRole =
+    typeof b.agent_role === 'string' && b.agent_role.trim().length > 0
+      ? b.agent_role.trim()
+      : parsedMetadata.agent_role || 'executor';
+  const metadata =
+    typeof b.metadata === 'object' && b.metadata !== null
+      ? (b.metadata as Record<string, unknown>)
+      : {};
+
+  const job: OrchestratorJob = {
+    type: jobType,
+    payload: {
+      prompt_path: promptPath,
+      prompt_content: promptContent,
+      agent: localAgent,
+      agent_role: localAgentRole,
+      max_steps: maxSteps,
+    },
+    tenant_slug: tenantSlug,
+    initiated_by: 'system',
+    request_id: requestId,
+    idempotency_key: idempotencyKey,
+    agent_role: 'executor',
+    metadata: {
+      ...metadata,
+      source: 'local-prompt-submit',
+      local_agent: localAgent,
+      prompt_metadata: parsedMetadata,
+    },
+  };
+
+  try {
+    const policyCheck = enrichAutonomyMetadata(req, job);
+    if (!policyCheck.ok) {
+      res.writeHead(policyCheck.status, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(policyCheck.payload));
+      return;
+    }
+    const bull = await enqueueJob(job);
+    res.writeHead(202, { 'Content-Type': 'application/json' });
+    res.end(
+      JSON.stringify({
+        success: true,
+        job_id: bull.id != null ? String(bull.id) : null,
+        request_id: requestId,
+        agent: localAgent,
+        job_type: jobType,
       })
     );
   } catch (err) {
@@ -849,7 +979,7 @@ async function handleJobById(req: IncomingMessage, res: ServerResponse, pathOnly
     return;
   }
   try {
-    const j = await orchestratorQueue.getJob(jobId);
+    const j = (await orchestratorQueue.getJob(jobId)) ?? (await localAgentQueue.getJob(jobId));
     if (!j) {
       res.writeHead(404, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: 'not found' }));
@@ -920,6 +1050,11 @@ export function startOrchestratorHealthServer(): Server {
 
     if (req.method === 'POST' && pathOnly === '/internal/jcode') {
       await handleEnqueueJcode(req, res);
+      return;
+    }
+
+    if (req.method === 'POST' && pathOnly === '/api/local/prompt-submit') {
+      await handleLocalPromptSubmit(req, res);
       return;
     }
 

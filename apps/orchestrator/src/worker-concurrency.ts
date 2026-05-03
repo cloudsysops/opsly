@@ -16,7 +16,11 @@ export type WorkerConcurrencyKey =
   | 'general-events'
   | 'agent-classifier'
   | 'evolution'
-  | 'terminal';
+  | 'terminal'
+  | 'local_cursor'
+  | 'local_claude'
+  | 'local_copilot'
+  | 'local_opencode';
 
 const FULL_STACK_DEFAULTS: Record<WorkerConcurrencyKey, number> = {
   cursor: 3,
@@ -35,6 +39,10 @@ const FULL_STACK_DEFAULTS: Record<WorkerConcurrencyKey, number> = {
   'agent-classifier': 2,
   evolution: 1,
   terminal: 2,
+  local_cursor: 1,
+  local_claude: 1,
+  local_copilot: 1,
+  local_opencode: 1,
 };
 
 const DISTRIBUTED_WORKER_DEFAULTS: Record<WorkerConcurrencyKey, number> = {
@@ -54,6 +62,10 @@ const DISTRIBUTED_WORKER_DEFAULTS: Record<WorkerConcurrencyKey, number> = {
   'agent-classifier': 1,
   evolution: 1,
   terminal: 1,
+  local_cursor: 1,
+  local_claude: 1,
+  local_copilot: 1,
+  local_opencode: 1,
 };
 
 const ENV_NAMES: Record<WorkerConcurrencyKey, string> = {
@@ -73,6 +85,10 @@ const ENV_NAMES: Record<WorkerConcurrencyKey, string> = {
   'agent-classifier': 'ORCHESTRATOR_AGENT_CLASSIFIER_CONCURRENCY',
   evolution: 'ORCHESTRATOR_EVOLUTION_CONCURRENCY',
   terminal: 'ORCHESTRATOR_TERMINAL_CONCURRENCY',
+  local_cursor: 'ORCHESTRATOR_LOCAL_CURSOR_CONCURRENCY',
+  local_claude: 'ORCHESTRATOR_LOCAL_CLAUDE_CONCURRENCY',
+  local_copilot: 'ORCHESTRATOR_LOCAL_COPILOT_CONCURRENCY',
+  local_opencode: 'ORCHESTRATOR_LOCAL_OPENCODE_CONCURRENCY',
 };
 
 function parsePositiveInt(raw: string | undefined): number | null {
