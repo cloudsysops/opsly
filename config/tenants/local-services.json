@@ -1,0 +1,10 @@
+{
+  "tenant_name": "Equipa",
+  "tenant_slug": "local-services",
+  "schema_name": "local_services",
+  "platform_domain": "ops.smiletripcare.com",
+  "workflows_count": 0,
+  "pricing_per_unit": 0,
+  "currency": "USD",
+  "notes": "Marca comercial Equipa — limpieza de equipos y upgrade en campo. Slug técnico local-services (no renombrar tras onboard). Go-live: docs/runbooks/LOCAL-SERVICES-GO-LIVE.md. Onboarding: ./scripts/opsly.sh create-tenant local-services --email <owner> --plan startup|business --name \"Equipa\" [--ssh-host 100.120.151.91]"
+}

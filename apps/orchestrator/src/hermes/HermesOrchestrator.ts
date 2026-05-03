@@ -81,6 +81,11 @@ export class HermesOrchestrator {
     for (const task of pending) {
       const t0 = Date.now();
       try {
+        const tenantCtx = await resolveHermesTenantContext(task, supabase);
+        const tenantSlug =
+          tenantCtx?.tenantSlug ?? process.env.HERMES_FALLBACK_TENANT_SLUG?.trim() ?? 'platform';
+        const tenantId = tenantCtx?.tenantId ?? task.tenant_id;
+
         const enriched = this.enricher
           ? await this.enricher.enrichTaskContext(task)
           : await enrichTaskLocalOnly(task);
@@ -105,9 +110,6 @@ export class HermesOrchestrator {
         });
 
         if (shouldDispatchOpenclaw() && route.agentType === 'cursor') {
-          const tenantCtx = await resolveHermesTenantContext(task, supabase);
-          const tenantSlug =
-            tenantCtx?.tenantSlug ?? process.env.HERMES_FALLBACK_TENANT_SLUG?.trim() ?? 'platform';
           await enqueueJob({
             type: 'cursor',
             payload: {
@@ -120,8 +122,8 @@ export class HermesOrchestrator {
             },
             initiated_by: 'cron',
             taskId: task.id,
+            tenant_id: tenantId,
             tenant_slug: tenantSlug,
-            tenant_id: task.tenant_id,
             request_id: task.request_id,
             idempotency_key: task.idempotency_key ?? `hermes:${task.id}`,
             metadata: { hermes: true, notebooklm: Boolean(nb?.answer) },
@@ -129,10 +131,6 @@ export class HermesOrchestrator {
         }
 
         if (shouldDispatchOpenclaw() && route.agentType === 'ollama') {
-          const tenantCtx = await resolveHermesTenantContext(task, supabase);
-          const tenantSlug =
-            tenantCtx?.tenantSlug ?? process.env.HERMES_FALLBACK_TENANT_SLUG?.trim() ?? 'platform';
-          const tenantId = tenantCtx?.tenantId ?? task.tenant_id;
           const prompt = [
             `Tarea Hermes: ${task.name}`,
             `Tipo: ${task.type} · esfuerzo: ${task.effort}`,

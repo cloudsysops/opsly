@@ -91,6 +91,34 @@ export type PortalInsightsPayload = {
   insights: PortalInsightItem[];
 };
 
+export type ShieldSecretFinding = {
+  id: string;
+  tenant_slug: string;
+  repo_url: string | null;
+  secret_type: string | null;
+  file_path: string | null;
+  line_number: number | null;
+  severity: string;
+  status: string;
+  created_at: string;
+};
+
+export type ShieldScorePoint = {
+  score: number | null;
+  created_at: string;
+};
+
+export type ShieldScorePayload = {
+  tenant_slug: string;
+  current: {
+    score: number;
+    breakdown: Record<string, unknown>;
+    created_at: string | null;
+  };
+  history: ShieldScorePoint[];
+  risk_level: 'green' | 'yellow' | 'red';
+};
+
 export type PortalHealthPayload = {
   slug: string;
   name: string;

@@ -5,6 +5,7 @@ import type {
   PortalTenantPayload,
   PortalUsagePayload,
   PortalUsageSnapshot,
+  ShieldScorePayload,
 } from '@/types';
 
 export const PORTAL_DEMO_COOKIE = 'opsly_portal_demo';
@@ -75,6 +76,23 @@ export function demoPortalUsageSnapshot(): PortalUsageSnapshot {
   return {
     today: demoPortalUsage('today'),
     month: demoPortalUsage('month'),
+  };
+}
+
+export function demoPortalShieldScore(): ShieldScorePayload {
+  const now = '2026-05-02T00:00:00.000Z';
+  return {
+    tenant_slug: PORTAL_DEMO_TENANT_SLUG,
+    current: {
+      score: 82,
+      breakdown: { critical: 0, high: 1, medium: 2, low: 0 },
+      created_at: now,
+    },
+    history: [
+      { score: 78, created_at: '2026-05-01T00:00:00.000Z' },
+      { score: 82, created_at: now },
+    ],
+    risk_level: 'yellow',
   };
 }
 

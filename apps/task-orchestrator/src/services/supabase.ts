@@ -55,7 +55,7 @@ export class SupabaseService {
       throw new Error(`Failed to fetch task: ${error.message}`);
     }
 
-    return data ? this.mapDbTaskToTask(data) : null;
+    return data ? this.mapDbTaskToTask(data as Record<string, unknown>) : null;
   }
 
   async getTasks(status?: string): Promise<Task[]> {
@@ -67,7 +67,7 @@ export class SupabaseService {
     const { data, error } = await query;
     if (error) throw new Error(`Failed to fetch tasks: ${error.message}`);
 
-    return (data || []).map(row => this.mapDbTaskToTask(row));
+    return (data || []).map(row => this.mapDbTaskToTask(row as Record<string, unknown>));
   }
 
   async saveWorker(worker: Worker): Promise<void> {
@@ -101,7 +101,7 @@ export class SupabaseService {
       throw new Error(`Failed to fetch worker: ${error.message}`);
     }
 
-    return data ? this.mapDbWorkerToWorker(data) : null;
+    return data ? this.mapDbWorkerToWorker(data as Record<string, unknown>) : null;
   }
 
   async addLog(taskId: string, log: TaskLog): Promise<void> {
@@ -138,39 +138,45 @@ export class SupabaseService {
     }));
   }
 
-  private mapDbTaskToTask(dbTask: any): Task {
+  private mapDbTaskToTask(dbTask: Record<string, unknown>): Task {
+    const deps = dbTask.dependencies;
     return {
-      id: dbTask.id,
-      type: dbTask.task_type,
-      title: dbTask.title,
-      description: dbTask.description,
-      prompt: dbTask.prompt,
-      priority: dbTask.priority,
-      status: dbTask.status,
-      assigned_worker: dbTask.assigned_worker,
-      worker_id: dbTask.worker_id,
-      created_by: dbTask.created_by,
-      created_at: dbTask.created_at,
-      started_at: dbTask.started_at,
-      completed_at: dbTask.completed_at,
-      estimated_days: dbTask.estimated_days,
-      dependencies: dbTask.dependencies || [],
+      id: String(dbTask.id),
+      type: dbTask.task_type as Task['type'],
+      title: String(dbTask.title ?? ''),
+      description: String(dbTask.description ?? ''),
+      prompt: String(dbTask.prompt ?? ''),
+      priority: dbTask.priority as Task['priority'],
+      status: dbTask.status as Task['status'],
+      assigned_worker: dbTask.assigned_worker as Task['assigned_worker'],
+      worker_id: dbTask.worker_id !== undefined && dbTask.worker_id !== null ? String(dbTask.worker_id) : undefined,
+      created_by: String(dbTask.created_by ?? ''),
+      created_at: String(dbTask.created_at ?? ''),
+      started_at: dbTask.started_at !== undefined && dbTask.started_at !== null ? String(dbTask.started_at) : undefined,
+      completed_at:
+        dbTask.completed_at !== undefined && dbTask.completed_at !== null ? String(dbTask.completed_at) : undefined,
+      estimated_days:
+        typeof dbTask.estimated_days === 'number' ? dbTask.estimated_days : undefined,
+      dependencies: Array.isArray(deps) ? deps.map(String) : [],
       logs: [],
-      result: dbTask.result,
-      branch: dbTask.git_branch,
-      metadata: dbTask.metadata,
+      result: dbTask.result as Task['result'],
+      branch: dbTask.git_branch !== undefined && dbTask.git_branch !== null ? String(dbTask.git_branch) : undefined,
+      metadata: dbTask.metadata as Task['metadata'],
     };
   }
 
-  private mapDbWorkerToWorker(dbWorker: any): Worker {
+  private mapDbWorkerToWorker(dbWorker: Record<string, unknown>): Worker {
     return {
-      id: dbWorker.id,
-      type: dbWorker.worker_type,
-      status: dbWorker.status,
-      current_task_id: dbWorker.current_task_id,
-      last_heartbeat: dbWorker.last_heartbeat,
-      capacity: dbWorker.capacity,
-      metadata: dbWorker.metadata,
+      id: String(dbWorker.id),
+      type: dbWorker.worker_type as Worker['type'],
+      status: dbWorker.status as Worker['status'],
+      current_task_id:
+        dbWorker.current_task_id !== undefined && dbWorker.current_task_id !== null
+          ? String(dbWorker.current_task_id)
+          : undefined,
+      last_heartbeat: String(dbWorker.last_heartbeat ?? ''),
+      capacity: typeof dbWorker.capacity === 'number' ? dbWorker.capacity : 1,
+      metadata: dbWorker.metadata as Worker['metadata'],
     };
   }
 }

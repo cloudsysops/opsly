@@ -40,12 +40,13 @@ docs/generated/sprint-status.auto.md ← burndown generado (status.yaml; no edit
 
 ### 1. Estado y roadmap
 
-> **Note:** Legacy planning (`MASTER-PLAN*.md`, `SPRINT-ROADMAP.md`) is in [`history/plans/`](history/plans/) (ADR-033). Canon: [`../ROADMAP.md`](../ROADMAP.md), [`../SPRINT-TRACKER.md`](../SPRINT-TRACKER.md), [`../AGENTS.md`](../AGENTS.md); machine view: [`generated/sprint-status.auto.md`](generated/sprint-status.auto.md).
+> **Note:** Legacy planning (`MASTER-PLAN*.md`, `SPRINT-ROADMAP.md`) is in [`history/plans/`](history/plans/) — **deprecated snapshots** (ADR-033). Canon: [`../ROADMAP.md`](../ROADMAP.md), [`../SPRINT-TRACKER.md`](../SPRINT-TRACKER.md), [`../AGENTS.md`](../AGENTS.md); machine view: [`generated/sprint-status.auto.md`](generated/sprint-status.auto.md), [`generated/implementation-progress.auto.md`](generated/implementation-progress.auto.md).
 
 | Doc                                                        | Cuándo usarlo                                            |
 | ---------------------------------------------------------- | -------------------------------------------------------- |
 | [`../ROADMAP.md`](../ROADMAP.md)                           | Plan semanal Fase 2–3, milestones; alineado a VISION     |
 | [`../SPRINT-TRACKER.md`](../SPRINT-TRACKER.md)             | Vista semanal operativa (checkboxes)                     |
+| [`plans/README.md`](plans/README.md)                       | Índice de planes temáticos (autonomía, CLI, go/no-go)    |
 | [`IMPLEMENTATION-IA-LAYER.md`](IMPLEMENTATION-IA-LAYER.md) | Implementar capa IA en el monorepo (sin Python paralelo) |
 | [`ACTIVE-PROMPT.md`](ACTIVE-PROMPT.md)                     | Prompt activo ejecutado por cursor-prompt-monitor        |
 
@@ -61,6 +62,7 @@ docs/generated/sprint-status.auto.md ← burndown generado (status.yaml; no edit
 | [`runbooks/VPS-DISK-SECURITY-SCAN.md`](runbooks/VPS-DISK-SECURITY-SCAN.md)             | Disco VPS, Trivy, `cleanup-vps.sh`                                         |
 | [`runbooks/DEPLOY-GITHUB-ACTIONS.md`](runbooks/DEPLOY-GITHUB-ACTIONS.md)               | Deploy CI → VPS (Tailscale, `VPS_HOST`, rollback imagen)                   |
 | [`runbooks/TENANT-ONBOARDING-TRIAGE.md`](runbooks/TENANT-ONBOARDING-TRIAGE.md)         | Triage onboarding tenants (logs, DB, cola, Docker)                         |
+| [`runbooks/LOCAL-SERVICES-GO-LIVE.md`](runbooks/LOCAL-SERVICES-GO-LIVE.md)             | Go-live tenant **Equipa** (`local-services`) — oferta limpieza + upgrade   |
 | [`runbooks/PRODUCTION-SECURITY-BASELINE.md`](runbooks/PRODUCTION-SECURITY-BASELINE.md) | Checklist mínimo red/secretos/apps en `prd`                                |
 | [`VPS-SSH-WORKER-NODES.md`](VPS-SSH-WORKER-NODES.md)                                   | Clave SSH VPS → workers (`authorized_keys`), solo Tailscale                |
 | [`SSH-USERS-FOR-AGENTS.md`](SSH-USERS-FOR-AGENTS.md)                                   | **Qué usuario SSH usar** (VPS, worker, Mac) — agentes y humanos            |
@@ -119,7 +121,11 @@ docs/generated/sprint-status.auto.md ← burndown generado (status.yaml; no edit
 | [ADR-029](adr/ADR-029-infrastructure-layers-shared-vs-tenant.md) | Capas: plataforma compartida vs runtime dedicado por tenant             |
 | [ADR-030](adr/ADR-030-prepaid-token-wallet-roadmap.md)           | Wallet prepago y “tokens” de cuenta (roadmap)                           |
 | [ADR-031](adr/ADR-031-token-optimization-ollama-primary.md)      | Optimización de tokens + Ollama primary (doc paralela; ver ADR-024)     |
+| [ADR-032](adr/ADR-032-scripts-organization.md)                   | Scripts por categoría + wrappers compatibilidad                         |
 | [ADR-033](adr/ADR-033-docs-canonicalization.md)                  | Canon docs + `docs/generated/*.auto.md` + historial en `history/plans/` |
+| [ADR-034](adr/ADR-034-ci-hygiene.md)                             | Higiene CI y docs-governance (relacionado con ADR-033)                   |
+| [ADR-035](adr/ADR-035-openclaw-per-tenant.md)                    | OpenClaw Context Builder + MCP per-tenant (PROPOSED)                    |
+| [ADR-036](adr/ADR-036-cli-consolidation-tools-cli-first.md)      | Consolidación CLI `tools/cli` → `apps/cli` (propuesto)                  |
 
 ### 4. Infra y deploy
 

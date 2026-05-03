@@ -4,7 +4,7 @@
 #
 # Uso:
 #   export DOPPLER_TOKEN=...
-#   ./scripts/validate-doppler-vars.sh ops-intcloudsysops prd
+#   ./scripts/ci/validate-doppler-vars.sh ops-intcloudsysops prd
 #
 # Archivos opcionales (primero gana el específico por config):
 #   config/doppler-ci-required-<config>.txt  (ej. doppler-ci-required-stg.txt)
@@ -14,7 +14,7 @@
 #
 set -euo pipefail
 
-ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 cd "$ROOT_DIR"
 
 log() { echo "[validate-doppler] $*"; }

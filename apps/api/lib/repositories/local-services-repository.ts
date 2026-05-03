@@ -167,3 +167,79 @@ export async function lsInsertBookingForTenantSlug(params: {
   }
   return { ok: true, id: booking.id };
 }
+
+
+export async function lsGetBookingByIdForTenantSlug(params: {
+  tenantSlug: string;
+  bookingId: string;
+}): Promise<LsBookingRow | null> {
+  const db = getServiceClient();
+  const { data, error } = await db
+    .schema('platform')
+    .from('ls_bookings')
+    .select('id, tenant_slug, customer_id, service_id, scheduled_at, status, notes, created_at')
+    .eq('tenant_slug', params.tenantSlug)
+    .eq('id', params.bookingId)
+    .maybeSingle();
+
+  if (error !== null) {
+    logger.error('ls_get_booking_by_id', error);
+    return null;
+  }
+  if (data === null) {
+    return null;
+  }
+  return data as LsBookingRow;
+}
+
+export async function lsSetBookingStatusForTenantSlug(params: {
+  tenantSlug: string;
+  bookingId: string;
+  status: 'requested' | 'confirmed' | 'completed' | 'cancelled';
+}): Promise<{ ok: true } | { ok: false }> {
+  const db = getServiceClient();
+  const { data, error } = await db
+    .schema('platform')
+    .from('ls_bookings')
+    .update({ status: params.status })
+    .eq('tenant_slug', params.tenantSlug)
+    .eq('id', params.bookingId)
+    .select('id')
+    .maybeSingle();
+
+  if (error !== null) {
+    logger.error('ls_set_booking_status', error);
+    return { ok: false };
+  }
+  if (data === null) {
+    return { ok: false };
+  }
+  return { ok: true };
+}
+
+export async function lsInsertReportForTenantSlug(params: {
+  tenantSlug: string;
+  title: string;
+  body: Record<string, unknown>;
+}): Promise<{ ok: true; id: string } | { ok: false }> {
+  const db = getServiceClient();
+  const { data, error } = await db
+    .schema('platform')
+    .from('ls_reports')
+    .insert({
+      tenant_slug: params.tenantSlug,
+      title: params.title,
+      body: params.body,
+    })
+    .select('id')
+    .maybeSingle();
+
+  if (error !== null) {
+    logger.error('ls_insert_report_webhook', error);
+    return { ok: false };
+  }
+  if (data === null) {
+    return { ok: false };
+  }
+  return { ok: true, id: (data as { id: string }).id };
+}

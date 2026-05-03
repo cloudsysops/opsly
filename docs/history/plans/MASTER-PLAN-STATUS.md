@@ -1,3 +1,13 @@
+---
+status: deprecated
+superseded_by: ../../../ROADMAP.md
+related_canon: ../../../SPRINT-TRACKER.md, ../../../AGENTS.md
+last_review: 2026-04-30
+note: Snapshot histórico (ADR-033). No actualizar como fuente de verdad.
+---
+
+> **Deprecated — histórico.** Estado vivo: [`ROADMAP.md`](../../../ROADMAP.md), [`SPRINT-TRACKER.md`](../../../SPRINT-TRACKER.md), [`AGENTS.md`](../../../AGENTS.md). Índice de planes: [`docs/plans/README.md`](../../plans/README.md).
+
 # MASTER PLAN — Estado actual
 
 ## Última actualización: 2026-04-10 (Sprint 3 ✅ | Sprint 4 en progreso)

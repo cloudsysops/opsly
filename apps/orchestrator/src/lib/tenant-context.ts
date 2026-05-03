@@ -105,10 +105,15 @@ export async function isTenantActive(tenantSlug: string): Promise<boolean> {
 
 /**
  * Slug para jobs internos (Hive, notify de arranque) cuando no hay tenant de producto en el payload.
- * Override: OPSLY_INTERNAL_TENANT_SLUG
+ * Prioridad: `OPSLY_INTERNAL_TENANT_SLUG` (explícito control plane) → Hermes / NotebookLM → `platform`.
  */
 export function resolveInternalControlPlaneTenantSlug(): string {
-  return process.env.OPSLY_INTERNAL_TENANT_SLUG?.trim() ?? 'platform';
+  return (
+    process.env.OPSLY_INTERNAL_TENANT_SLUG?.trim() ||
+    process.env.HERMES_FALLBACK_TENANT_SLUG?.trim() ||
+    process.env.NOTEBOOKLM_DEFAULT_TENANT_SLUG?.trim() ||
+    'platform'
+  );
 }
 
 /**

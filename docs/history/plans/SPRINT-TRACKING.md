@@ -1,3 +1,13 @@
+---
+status: deprecated
+superseded_by: ../../generated/sprint-status.auto.md
+source_truth: ../../implementation/status.yaml
+last_review: 2026-04-30
+note: Copia archivada (ADR-033). Vista actual en docs/generated/*.auto.md.
+---
+
+> **Deprecated — snapshot archivado.** La vista generada actual está en [`docs/generated/sprint-status.auto.md`](../../generated/sprint-status.auto.md). Canon humano: [`SPRINT-TRACKER.md`](../../../SPRINT-TRACKER.md).
+
 # Opsly — Sprint tracking
 
 > **Generado automáticamente** — fuente: [`docs/implementation/status.yaml`](implementation/status.yaml).

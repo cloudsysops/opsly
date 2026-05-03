@@ -29,6 +29,9 @@ import { startN8nWorker } from './workers/N8nWorker.js';
 import { startNotifyWorker } from './workers/NotifyWorker.js';
 import { startAgentClassifierWorker } from './workers/AgentClassifierWorker.js';
 import { startOllamaWorker } from './workers/OllamaWorker.js';
+import { startOpenClawPlannerWorker } from './workers/OpenClawPlannerWorker.js';
+import { startOpenClawSkepticWorker } from './workers/OpenClawSkepticWorker.js';
+import { startShieldScanWorker } from './workers/ShieldScanWorker.js';
 import { startSuspensionWorker } from './workers/SuspensionWorker.js';
 import { startGeneralEventsWorker } from './workers/GeneralEventsWorker.js';
 import { startIntentDispatchWorker } from './workers/IntentDispatchWorker.js';
@@ -72,11 +75,15 @@ function startAllWorkers(): AsyncCleanup[] {
   const driveWorker = startDriveWorker(connection);
   const backupWorker = startBackupWorker(connection);
   const healthWorker = startHealthWorker(connection);
+  const shieldScanWorker =
+    process.env.OPSLY_SHIELD_SCAN_WORKER_ENABLED === 'true' ? startShieldScanWorker() : null;
   const suspensionWorker = startSuspensionWorker(connection);
   const webhookWorker = createWebhookWorker();
   const webhooksProcessingWorker = startWebhooksProcessingWorker();
   const generalEventsWorker = startGeneralEventsWorker();
   const ollamaWorker = startOllamaWorker(connection);
+  const openclawPlannerWorker = startOpenClawPlannerWorker(connection);
+  const openclawSkepticWorker = startOpenClawSkepticWorker(connection);
   const intentDispatchWorker = startIntentDispatchWorker(connection);
   const terminalWorker = startTerminalWorker(connection);
 
@@ -93,18 +100,23 @@ function startAllWorkers(): AsyncCleanup[] {
     async () => driveWorker.close(),
     async () => backupWorker.close(),
     async () => healthWorker.stop(),
+    async () => (shieldScanWorker !== null ? shieldScanWorker.stop() : Promise.resolve()),
     async () => suspensionWorker.close(),
     async () => webhookWorker.close(),
     async () => webhooksProcessingWorker.close(),
     async () => generalEventsWorker.close(),
     async () => ollamaWorker.close(),
+    async () => openclawPlannerWorker.close(),
+    async () => openclawSkepticWorker.close(),
     async () => intentDispatchWorker.close(),
     async () => terminalWorker.close(),
     ...agentClassifierCleanup
   );
 
   console.log(
-    '[orchestrator] Workers: cursor, n8n, notify, drive, backup, health, budget, opsly-webhooks, webhooks-processing, general-events, ollama, intent_dispatch, terminal_task' +
+    '[orchestrator] Workers: cursor, n8n, notify, drive, backup, health' +
+      (process.env.OPSLY_SHIELD_SCAN_WORKER_ENABLED === 'true' ? ', shield-scan' : '') +
+      ', budget, opsly-webhooks, webhooks-processing, general-events, ollama, openclaw-planner, openclaw-skeptic, intent_dispatch, terminal_task' +
       (process.env.OPSLY_AGENT_CLASSIFIER_WORKER_ENABLED === 'true' ? ', agent-classifier' : '') +
       '; Hermes tick → servicio opsly-hermes (no este proceso).'
   );

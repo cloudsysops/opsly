@@ -1,14 +1,19 @@
-import { Worker, Task } from '../types/task';
+import { Worker, Task, type TaskResult } from '../types/task';
 import { supabaseService } from './supabase';
 import { taskQueue } from './queue';
 
 const workers = new Map<string, Worker>();
 
 export class WorkerManager {
-  async registerWorker(workerId: string, workerType: string, capacity: number = 1, metadata?: Record<string, any>): Promise<Worker> {
+  async registerWorker(
+    workerId: string,
+    workerType: string,
+    capacity: number = 1,
+    metadata?: Record<string, unknown>
+  ): Promise<Worker> {
     const worker: Worker = {
       id: workerId,
-      type: workerType as any,
+      type: workerType as Worker['type'],
       status: 'idle',
       last_heartbeat: new Date().toISOString(),
       capacity,
@@ -37,12 +42,13 @@ export class WorkerManager {
   }
 
   async updateWorkerStatus(workerId: string, status: 'idle' | 'working' | 'offline', currentTaskId?: string): Promise<Worker> {
-    let worker = workers.get(workerId);
+    let worker: Worker | undefined = workers.get(workerId);
     if (!worker) {
-      worker = await supabaseService.getWorker(workerId);
-      if (!worker) {
+      const fetched = await supabaseService.getWorker(workerId);
+      if (!fetched) {
         throw new Error(`Worker ${workerId} not found`);
       }
+      worker = fetched;
     }
 
     worker.status = status;
@@ -81,35 +87,41 @@ export class WorkerManager {
     await this.updateWorkerStatus(workerId, 'working', task.id);
   }
 
-  async completeTask(taskId: string, workerId: string, result: any): Promise<void> {
-    // Update task status
+  async completeTask(taskId: string, workerId: string, result: TaskResult): Promise<void> {
+    const taskBefore =
+      (await taskQueue.getTask(taskId)) ?? (await supabaseService.getTask(taskId));
     await taskQueue.completeTask(taskId, result);
-
-    // Update worker status
-    await this.updateWorkerStatus(workerId, 'idle');
-
-    // Fetch and save updated task
-    const task = await taskQueue.getTask(taskId);
-    if (task) {
-      await supabaseService.saveTask(task);
+    if (taskBefore) {
+      await supabaseService.saveTask({
+        ...taskBefore,
+        status: 'completed',
+        completed_at: new Date().toISOString(),
+        result,
+      });
     }
+    await this.updateWorkerStatus(workerId, 'idle');
   }
 
   async failTask(taskId: string, workerId: string, error: string): Promise<void> {
-    // Update task status
+    const taskBefore =
+      (await taskQueue.getTask(taskId)) ?? (await supabaseService.getTask(taskId));
     await taskQueue.failTask(taskId, error);
-
-    // Update worker status
-    await this.updateWorkerStatus(workerId, 'idle');
-
-    // Fetch and save updated task
-    const task = await taskQueue.getTask(taskId);
-    if (task) {
-      await supabaseService.saveTask(task);
+    if (taskBefore) {
+      await supabaseService.saveTask({
+        ...taskBefore,
+        status: 'failed',
+        completed_at: new Date().toISOString(),
+        result: { success: false, error },
+      });
     }
+    await this.updateWorkerStatus(workerId, 'idle');
   }
 
-  async heartbeat(workerId: string, status: 'idle' | 'working', currentTaskId?: string): Promise<Worker> {
+  async heartbeat(
+    workerId: string,
+    status: 'idle' | 'working' | 'offline',
+    currentTaskId?: string
+  ): Promise<Worker> {
     let worker = await this.getWorker(workerId);
     if (!worker) {
       throw new Error(`Worker ${workerId} not found`);

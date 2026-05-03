@@ -23,7 +23,7 @@ function deepseekEntry(): ProviderChainEntry | null {
 /**
  * Orden de proveedores cloud en `llmCallDirect` (después de Ollama local si aplica).
  * - `routing_bias=cost` o `provider_hint=deepseek`: DeepSeek primero cuando hay API key.
- * - `balanced`: Haiku, luego DeepSeek, luego OpenAI mini, OpenRouter.
+ * - `balanced` / sin sesgo explícito: Haiku, luego DeepSeek, luego OpenAI mini, OpenRouter.
  * - `quality`: Haiku → OpenAI → OpenRouter → DeepSeek (último recurso barato).
  */
 export function buildLlmDirectCloudChain(req: LLMRequest): ProviderChainEntry[] {

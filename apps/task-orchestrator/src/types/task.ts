@@ -6,7 +6,7 @@ export interface TaskLog {
   timestamp: string;
   level: 'info' | 'warn' | 'error' | 'debug';
   message: string;
-  context?: Record<string, any>;
+  context?: Record<string, unknown>;
 }
 
 export interface TaskResult {
@@ -38,7 +38,7 @@ export interface Task {
   logs: TaskLog[];
   result?: TaskResult;
   branch?: string; // Git branch for work
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 export interface Worker {
@@ -48,10 +48,11 @@ export interface Worker {
   current_task_id?: string;
   last_heartbeat: string;
   capacity: number; // How many parallel tasks
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
-export interface TaskQueue {
+/** Vista en memoria de buckets (no confundir con la clase `TaskQueue` del servicio BullMQ). */
+export interface TaskQueueState {
   pending: Task[];
   executing: Map<string, Task>; // taskId -> Task
   completed: Task[];

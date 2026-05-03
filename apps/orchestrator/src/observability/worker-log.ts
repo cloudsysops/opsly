@@ -18,6 +18,8 @@ export type WorkerName =
   | 'approval-gate'
   | 'hermes-orchestration'
   | 'intent_dispatch'
+  | 'openclaw-planner'
+  | 'openclaw-skeptic'
   | 'evolution'
   | 'hive'
   | 'jcode'

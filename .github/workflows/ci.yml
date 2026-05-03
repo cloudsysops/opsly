@@ -14,8 +14,19 @@ jobs:
     name: Structure Integrity
     uses: ./.github/workflows/structure-validation.yml
 
-  lint:
+  workflow-lint:
+    name: Workflow Lint
     needs: structure-validation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Lint GitHub Actions workflows
+        uses: rhysd/actionlint@v1
+
+  lint:
+    needs:
+      - structure-validation
+      - workflow-lint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -91,7 +102,7 @@ jobs:
           wait $pid8 || status=1
           exit $status
 
-  test:
+  test-unit:
     needs: lint
     runs-on: ubuntu-latest
     steps:
@@ -101,32 +112,63 @@ jobs:
           node-version: '20'
           cache: npm
           cache-dependency-path: package-lock.json
-      - name: npm ci + tests (api/portal/mcp/orchestrator/ml/llm-gateway)
+      - name: npm ci + unit tests (api/portal/mcp/ml/llm-gateway)
         run: |
           set -euo pipefail
+          npm ci
+          # Build internal packages first (required for tests that import them)
+          (cd apps/ml && npm run build)
+          (cd apps/llm-gateway && npm run build)
+          (cd apps/mcp && npm run build)
+          (cd apps/context-builder && npm run build)
+          # Unit-oriented suites (without Redis service dependency)
+          (cd apps/api && npm test) & pid_api=$!
+          (cd apps/portal && npm test) & pid0=$!
+          (cd apps/mcp && npm test) & pid1=$!
+          (cd apps/ml && npm test) & pid3=$!
+          (cd apps/llm-gateway && npm test -- --exclude __tests__/cache-namespace.test.ts) & pid4=$!
+          status=0
+          wait $pid_api || status=1
+          wait $pid0 || status=1
+          wait $pid1 || status=1
+          wait $pid3 || status=1
+          wait $pid4 || status=1
+          exit $status
+
+  test-integration:
+    needs: lint
+    runs-on: ubuntu-latest
+    services:
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping || exit 1"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: package-lock.json
+      - name: npm ci + integration tests (orchestrator + llm-gateway cache namespace with Redis)
+        run: |
+          set -euo pipefail
+          export REDIS_URL="${REDIS_URL:-redis://127.0.0.1:6379}"
           npm ci
           # Build ALL internal packages first (required for tests that import them)
           (cd apps/ml && npm run build)
           (cd apps/llm-gateway && npm run build)
           (cd apps/orchestrator && npm run build)
-          (cd apps/mcp && npm run build)
           (cd apps/context-builder && npm run build)
           (cd apps/notebooklm-agent && npm run build) 2>/dev/null || true
-          # api: 241+ tests — critical to run on every PR
-          (cd apps/api && npm test) & pid_api=$!
-          (cd apps/portal && npm test) & pid0=$!
-          (cd apps/mcp && npm test) & pid1=$!
-          (cd apps/orchestrator && npm test) & pid2=$!
-          (cd apps/ml && npm test) & pid3=$!
-          (cd apps/llm-gateway && npm test) & pid4=$!
-          status=0
-          wait $pid_api || status=1
-          wait $pid0 || status=1
-          wait $pid1 || status=1
-          wait $pid2 || status=1
-          wait $pid3 || status=1
-          wait $pid4 || status=1
-          exit $status
+          # Integration suites requiring Redis
+          (cd apps/orchestrator && npm test)
+          (cd apps/llm-gateway && npm test -- --run __tests__/cache-namespace.test.ts)
 
   build:
     needs: lint
@@ -203,9 +245,12 @@ jobs:
           extra_args: --only-verified
 
   e2e-invite:
-    needs: lint
+    needs:
+      - lint
+      - test-unit
+      - test-integration
+      - build
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
     steps:
       - uses: actions/checkout@v4
 
@@ -218,6 +263,12 @@ jobs:
       - name: npm ci
         run: |
           npm ci
+      - name: Validate E2E required secrets
+        run: |
+          set -euo pipefail
+          test -n "${{ secrets.PLATFORM_ADMIN_TOKEN }}"
+          test -n "${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}"
+          test -n "${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}"
       - name: Run E2E invite script
         run: |
           export ADMIN_TOKEN="${{ secrets.PLATFORM_ADMIN_TOKEN }}"

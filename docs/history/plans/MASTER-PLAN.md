@@ -1,14 +1,24 @@
+---
+status: deprecated
+superseded_by: ../../../ROADMAP.md
+related_canon: ../../../VISION.md, ../../../SPRINT-TRACKER.md, ../../../AGENTS.md
+last_review: 2026-04-30
+note: Inventario largoplazo archivado (ADR-033). Roadmap vivo en raíz del repo.
+---
+
+> **Deprecated — histórico.** No usar como fuente de verdad del roadmap. Canon: [`ROADMAP.md`](../../../ROADMAP.md), [`VISION.md`](../../../VISION.md), [`SPRINT-TRACKER.md`](../../../SPRINT-TRACKER.md), [`AGENTS.md`](../../../AGENTS.md). Índice planes: [`docs/plans/README.md`](../../plans/README.md).
+
 # OPSLY MASTER PLAN — Plan de trabajo completo
 
 # =============================================
 
-# Este archivo es la fuente de verdad del roadmap.
+# ~~Este archivo era referencia de trabajo extendido; el roadmap vivo está en ROADMAP.md (raíz).~~
 
 # Cursor ejecuta. Claude coordina. Cristian decide.
 
 #
 
-# CÓMO USAR:
+# CÓMO USAR (histórico):
 
 # Cuando Claude tenga límites → Cursor continúa solo
 

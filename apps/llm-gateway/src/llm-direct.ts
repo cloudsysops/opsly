@@ -319,7 +319,7 @@ export async function llmCallDirect(req: LLMRequest): Promise<LLMResponse> {
     );
   }
 
-  const cloudChain: ProviderChainEntry[] = buildLlmDirectCloudChain(req);
+  const cloudChain = buildLlmDirectCloudChain(req);
 
   for (const entry of cloudChain) {
     const healthy = await healthDaemon.isAvailable(entry.healthKey);

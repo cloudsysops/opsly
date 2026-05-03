@@ -1,5 +1,6 @@
 import express, { Express, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
+import { ZodError } from 'zod';
 import { taskQueue } from './services/queue';
 import { supabaseService } from './services/supabase';
 import { workerManager } from './services/workers';
@@ -13,18 +14,21 @@ import {
   taskLogSchema,
 } from './validation/schemas';
 
+function errorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : 'Unknown error';
+}
+
 const app: Express = express();
 app.use(cors());
 app.use(express.json());
 
 // Error handling middleware
-app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
   console.error('Error:', err);
-  if (err.issues) {
-    // Zod validation error
+  if (err instanceof ZodError) {
     return res.status(400).json({ error: 'Validation failed', details: err.issues });
   }
-  res.status(500).json({ error: err.message || 'Internal server error' });
+  res.status(500).json({ error: errorMessage(err) });
 });
 
 // GET /api/health
@@ -41,7 +45,7 @@ app.post('/api/tasks', async (req: Request, res: Response) => {
       id: uuidv4(),
       type: validated.type,
       title: validated.title,
-      description: validated.description,
+      description: validated.description ?? '',
       prompt: validated.prompt,
       priority: validated.priority,
       status: 'pending',
@@ -58,11 +62,11 @@ app.post('/api/tasks', async (req: Request, res: Response) => {
     await supabaseService.saveTask(task);
 
     res.status(201).json(task);
-  } catch (error: any) {
-    if (error.issues) {
+  } catch (error: unknown) {
+    if (error instanceof ZodError) {
       return res.status(400).json({ error: 'Validation failed', details: error.issues });
     }
-    res.status(400).json({ error: error.message });
+    res.status(400).json({ error: errorMessage(error) });
   }
 });
 
@@ -85,8 +89,8 @@ app.get('/api/tasks', async (req: Request, res: Response) => {
     }
 
     res.json(tasks);
-  } catch (error: any) {
-    res.status(500).json({ error: error.message });
+  } catch (error: unknown) {
+    res.status(500).json({ error: errorMessage(error) });
   }
 });
 
@@ -109,8 +113,8 @@ app.get('/api/tasks/:id', async (req: Request, res: Response) => {
     }
 
     res.json(task);
-  } catch (error: any) {
-    res.status(500).json({ error: error.message });
+  } catch (error: unknown) {
+    res.status(500).json({ error: errorMessage(error) });
   }
 });
 
@@ -142,28 +146,30 @@ app.patch('/api/tasks/:id', async (req: Request, res: Response) => {
 
     const updated = await taskQueue.getTask(taskId);
     res.json(updated);
-  } catch (error: any) {
-    if (error.issues) {
+  } catch (error: unknown) {
+    if (error instanceof ZodError) {
       return res.status(400).json({ error: 'Validation failed', details: error.issues });
     }
-    res.status(400).json({ error: error.message });
+    res.status(400).json({ error: errorMessage(error) });
   }
 });
 
 // DELETE /api/tasks/:id
 app.delete('/api/tasks/:id', async (req: Request, res: Response) => {
   try {
-    await taskQueue.cancelTask(req.params.id);
-
-    const task = await taskQueue.getTask(req.params.id);
-    if (task) {
-      task.status = 'cancelled';
-      await supabaseService.saveTask(task);
+    const id = req.params.id;
+    let task = await taskQueue.getTask(id);
+    if (!task) {
+      task = await supabaseService.getTask(id);
     }
-
+    if (!task) {
+      return res.status(404).json({ error: 'Task not found' });
+    }
+    await taskQueue.cancelTask(id);
+    await supabaseService.saveTask({ ...task, status: 'cancelled' });
     res.json({ status: 'cancelled' });
-  } catch (error: any) {
-    res.status(400).json({ error: error.message });
+  } catch (error: unknown) {
+    res.status(400).json({ error: errorMessage(error) });
   }
 });
 
@@ -178,11 +184,11 @@ app.post('/api/workers/register', async (req: Request, res: Response) => {
       validated.metadata
     );
     res.status(201).json(worker);
-  } catch (error: any) {
-    if (error.issues) {
+  } catch (error: unknown) {
+    if (error instanceof ZodError) {
       return res.status(400).json({ error: 'Validation failed', details: error.issues });
     }
-    res.status(400).json({ error: error.message });
+    res.status(400).json({ error: errorMessage(error) });
   }
 });
 
@@ -207,8 +213,8 @@ app.get('/api/workers/:id/next-task', async (req: Request, res: Response) => {
     await workerManager.assignTaskToWorker(nextTask, workerId);
 
     res.json(nextTask);
-  } catch (error: any) {
-    res.status(500).json({ error: error.message });
+  } catch (error: unknown) {
+    res.status(500).json({ error: errorMessage(error) });
   }
 });
 
@@ -222,11 +228,11 @@ app.post('/api/workers/:id/heartbeat', async (req: Request, res: Response) => {
       validated.current_task_id
     );
     res.json(worker);
-  } catch (error: any) {
-    if (error.issues) {
+  } catch (error: unknown) {
+    if (error instanceof ZodError) {
       return res.status(400).json({ error: 'Validation failed', details: error.issues });
     }
-    res.status(400).json({ error: error.message });
+    res.status(400).json({ error: errorMessage(error) });
   }
 });
 
@@ -236,8 +242,8 @@ app.get('/api/workers', (req: Request, res: Response) => {
     const workers = workerManager.getAllWorkers();
     const stats = workerManager.getWorkerStats();
     res.json({ workers, stats });
-  } catch (error: any) {
-    res.status(500).json({ error: error.message });
+  } catch (error: unknown) {
+    res.status(500).json({ error: errorMessage(error) });
   }
 });
 
@@ -262,11 +268,11 @@ app.post('/api/tasks/:id/log', async (req: Request, res: Response) => {
     await taskQueue.updateTaskStatus(req.params.id, task.status);
 
     res.json({ status: 'logged' });
-  } catch (error: any) {
-    if (error.issues) {
+  } catch (error: unknown) {
+    if (error instanceof ZodError) {
       return res.status(400).json({ error: 'Validation failed', details: error.issues });
     }
-    res.status(400).json({ error: error.message });
+    res.status(400).json({ error: errorMessage(error) });
   }
 });
 

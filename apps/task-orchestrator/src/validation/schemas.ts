@@ -16,7 +16,7 @@ export const createTaskSchema = z.object({
   estimated_days: z.number().positive().optional(),
   dependencies: z.array(z.string().uuid()).default([]),
   branch: z.string().optional(),
-  metadata: z.record(z.any()).optional(),
+  metadata: z.record(z.unknown()).optional(),
 });
 
 export const updateTaskSchema = z.object({
@@ -31,26 +31,26 @@ export const updateTaskSchema = z.object({
     pr_url: z.string().optional(),
     duration_ms: z.number().optional(),
   }).optional(),
-  metadata: z.record(z.any()).optional(),
+  metadata: z.record(z.unknown()).optional(),
 });
 
 export const registerWorkerSchema = z.object({
   id: z.string().min(1),
   type: workerTypeSchema,
   capacity: z.number().positive().default(1),
-  metadata: z.record(z.any()).optional(),
+  metadata: z.record(z.unknown()).optional(),
 });
 
 export const workerHeartbeatSchema = z.object({
   status: z.enum(['idle', 'working', 'offline']),
   current_task_id: z.string().uuid().optional(),
-  metadata: z.record(z.any()).optional(),
+  metadata: z.record(z.unknown()).optional(),
 });
 
 export const taskLogSchema = z.object({
   level: logLevelSchema.default('info'),
   message: z.string().min(1),
-  context: z.record(z.any()).optional(),
+  context: z.record(z.unknown()).optional(),
 });
 
 export type CreateTaskInput = z.infer<typeof createTaskSchema>;

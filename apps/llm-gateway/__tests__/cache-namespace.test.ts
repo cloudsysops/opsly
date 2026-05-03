@@ -10,13 +10,20 @@ describe('LLM Gateway - Cache with Namespace', () => {
   const RESPONSE_2 = 'Response for tenant beta';
 
   beforeAll(async () => {
-    const redis = await getRedisClient();
-    expect(redis).toBeDefined();
-  });
+    try {
+      const redis = await getRedisClient();
+      expect(redis).toBeDefined();
+      await redis.ping();
+    } catch {
+      throw new Error(
+        'Redis no disponible en REDIS_URL (p. ej. redis://127.0.0.1:6379). Arranca Redis o usa CI con servicio redis.'
+      );
+    }
+  }, 15_000);
 
   afterAll(async () => {
     await closeRedisClient();
-  });
+  }, 15_000);
 
   it('should cache response for a tenant', async () => {
     await cacheSet(TENANT_1, PROMPT_HASH_1, RESPONSE_1);
