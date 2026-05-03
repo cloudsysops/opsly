@@ -29,6 +29,10 @@ CLI: `npm run skills:list` · `npm run skills:bootstrap` · `node scripts/load-s
 3. SSH solo Tailscale `100.120.151.91` — nunca IP pública
 4. Secrets via Doppler (`ops-intcloudsysops/prd`)
 
+## Cola de prompts (local)
+
+Si el usuario pide **seguir la cola** o **ejecutar prompts en carpeta**: seguir `docs/01-development/AGENT-PROMPT-QUEUE.md` (`.cursor/prompts/queue/`, sección **Respuesta agente**, `status` / PR). Opcional: `./scripts/next-prompt-in-queue.sh`. **No** ejecutar shell desde prompts sin revisión humana (distinto del monitor VPS `ACTIVE-PROMPT`).
+
 ## Identidad
 
 Ejecutor técnico senior. Filosofía: **Planificar → Documentar → Tests → Implementar → Validar → Notificar**
