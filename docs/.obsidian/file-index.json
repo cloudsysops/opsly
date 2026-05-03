@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-05-03T13:10:57Z",
-  "totalFiles": 298,
+  "lastIndexed": "2026-05-03T13:21:22Z",
+  "totalFiles": 299,
   "files": [
     ".openclaw.md",
     "2026-04-21.md",
@@ -55,6 +55,7 @@
     "AGENT-BRAIN-CONTRACT.md",
     "AGENT-GUARDRAILS.md",
     "AGENT-HOOKS-OBSIDIAN-NOTEBOOKLM-N8N.md",
+    "AGENT-PROMPT-QUEUE.md",
     "AGENTS-ASSIGNMENTS.md",
     "AGENTS-ASSIGNMENTS.md",
     "AGENTS-AUTONOMOUS-RUNBOOK.md",
