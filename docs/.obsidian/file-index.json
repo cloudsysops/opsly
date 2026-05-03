@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-05-03T02:56:19Z",
-  "totalFiles": 295,
+  "lastIndexed": "2026-05-03T03:14:21Z",
+  "totalFiles": 296,
   "files": [
     ".openclaw.md",
     "2026-04-21.md",
@@ -167,6 +167,7 @@
     "ORCHESTRATOR-FIXES-EXECUTION.md",
     "ORCHESTRATOR.md",
     "PARALLEL-AGENTS-ORCHESTRATION.md",
+    "PARALLEL-EXECUTION-2026-04-29.md",
     "PERFORMANCE_BASELINE.md",
     "PLAN-NOTEBOOKLM-KNOWLEDGE-2026-04-14.md",
     "PLAN-OLLAMA-WORKER-2026-04-14.md",
