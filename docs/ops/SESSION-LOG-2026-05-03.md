@@ -12,11 +12,12 @@
 
 - **Merge del PR** de `fix/ci-actionlint-sprint` → `main` y confirmar job **Workflow Lint** verde en GitHub.
 - **Branch protection** en `main` según `docs/ops/branch-protection-setup.md`.
-- **Validaciones locales** (no todas ejecutadas en esta sesión por tiempo/entorno):
-  - `npm run type-check`
-  - `npm run lint`
-  - `./scripts/validate-config.sh` (puede requerir SSH/Doppler según máquina)
+- **Validaciones locales**
+  - `npm run type-check` — OK (turbo).
+  - `npm run lint` — falló (exit 1): muchos avisos en apps (orchestrator, etc.); no atribuible solo a esta rama.
+  - `./scripts/validate-config.sh` — no ejecutado (SSH/Doppler según entorno).
 
 ## Bloqueantes conocidos
 
 - Ninguno en actionlint tras los cambios; el CI remoto es la fuente de verdad final.
+- **PR #194:** revisar checks en GitHub tras el push (`gh pr status` mostró fallos parciales en cadena CI hasta que actionlint pase en remoto).
