@@ -60,8 +60,21 @@ echo -e "${GREEN}✅ Watcher PID: $WATCHER_PID${NC}"
 sleep 2
 echo ""
 
+# Start CursorAgent Service (if not already running)
+echo -e "${YELLOW}6️⃣  Starting CursorAgent Service (port 5001)...${NC}"
+if ! curl -s http://localhost:5001/health > /dev/null 2>&1; then
+  npx tsx scripts/cursor-agent-service.ts --port 5001 > /tmp/cursor-agent-service.log 2>&1 &
+  CURSOR_AGENT_PID=$!
+  echo -e "${GREEN}✅ CursorAgent Service PID: $CURSOR_AGENT_PID${NC}"
+  sleep 2
+else
+  echo -e "${YELLOW}⚠️  CursorAgent Service already running on port 5001${NC}"
+  CURSOR_AGENT_PID="existing"
+fi
+echo ""
+
 # Start LocalGitAutoCommit
-echo -e "${YELLOW}6️⃣  Starting LocalGitAutoCommit daemon...${NC}"
+echo -e "${YELLOW}7️⃣  Starting LocalGitAutoCommit daemon...${NC}"
 npx tsx scripts/local-git-auto-commit.ts --watch-dir .cursor/responses --working-dir /home/user/opsly > /tmp/autocommit.log 2>&1 &
 COMMIT_PID=$!
 echo -e "${GREEN}✅ AutoCommit PID: $COMMIT_PID${NC}"
@@ -75,16 +88,19 @@ echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━�
 echo ""
 echo "Service Status:"
 echo -e "  ${GREEN}✓${NC} Orchestrator (PID: $ORCH_PID) → http://localhost:3011/health"
+echo -e "  ${GREEN}✓${NC} CursorAgent Service (PID: $CURSOR_AGENT_PID) → http://localhost:5001/health"
 echo -e "  ${GREEN}✓${NC} LocalWatcher (PID: $WATCHER_PID) → Watching .cursor/prompts/"
 echo -e "  ${GREEN}✓${NC} AutoCommit (PID: $COMMIT_PID) → Watching .cursor/responses/"
 echo ""
 echo "Logs:"
-echo "  Orchestrator: tail -f /tmp/orchestrator-run.log"
-echo "  Watcher:      tail -f /tmp/watcher.log"
-echo "  AutoCommit:   tail -f /tmp/autocommit.log"
+echo "  Orchestrator:      tail -f /tmp/orchestrator-run.log"
+echo "  CursorAgent:       tail -f /tmp/cursor-agent-service.log"
+echo "  Watcher:           tail -f /tmp/watcher.log"
+echo "  AutoCommit:        tail -f /tmp/autocommit.log"
 echo ""
 echo "Test Prompt:"
-echo -e "  ${YELLOW}Created:${NC} .cursor/prompts/test-cursor-execution.md"
+echo -e "  ${YELLOW}Available:${NC} .cursor/prompts/test-local-cursor-phase1.md"
+echo -e "  ${YELLOW}Legacy:${NC} .cursor/prompts/test-cursor-execution.md"
 echo ""
 echo "Monitor Execution:"
 echo -e "  ${YELLOW}Metadata:${NC} tail -f .cursor/prompts/.metadata.json"

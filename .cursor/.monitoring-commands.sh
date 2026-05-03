@@ -1,0 +1,32 @@
+#!/bin/bash
+
+# Monitoring Commands for Phase 1 Test
+# Run these in separate terminals while the system is executing
+
+echo "=== MONITORING COMMANDS ==="
+echo ""
+echo "Terminal A - Health Status:"
+echo "  while true; do curl -s http://localhost:3011/health | jq . 2>/dev/null && echo OK || echo WAITING...; sleep 2; done"
+echo ""
+echo "Terminal B - Metadata Updates:"
+echo "  cd /home/user/opsly && watch -n 1 'cat .cursor/prompts/.metadata.json 2>/dev/null | jq . || echo \"Waiting for metadata...\"'"
+echo ""
+echo "Terminal C - Watcher Logs:"
+echo "  tail -f /tmp/watcher.log"
+echo ""
+echo "Terminal D - Orchestrator Logs:"
+echo "  tail -f /tmp/orchestrator-run.log"
+echo ""
+echo "Terminal E - CursorAgent Service Logs:"
+echo "  tail -f /tmp/cursor-agent-service.log"
+echo ""
+echo "Terminal F - AutoCommit Logs:"
+echo "  tail -f /tmp/autocommit.log"
+echo ""
+echo "=== WHEN CURSOR EXECUTES ==="
+echo "  The file src/test-local-greeting.ts should be created"
+echo "  ls -la src/test-local-greeting.ts"
+echo ""
+echo "=== GIT HISTORY ==="
+echo "  git log --oneline | head -5"
+echo ""
