@@ -9,6 +9,7 @@ const ROLE_ALLOWED_INTENTS: Record<AgentRole, readonly Intent[]> = {
   skeptic: ['notify', 'remote_plan', 'oar_react', 'execute_code', 'full_pipeline'],
   validator: ['notify', 'remote_plan', 'sprint_plan', 'full_pipeline'],
   researcher: ['notify', 'remote_plan', 'sync_drive', 'full_pipeline'],
+  architect: ['remote_plan', 'oar_react', 'execute_code', 'full_pipeline'],
 };
 
 export function getAllowedIntentsForRole(role: AgentRole): readonly Intent[] {

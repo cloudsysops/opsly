@@ -10,6 +10,7 @@ export type OpenClawTenantPermission = 'self' | 'cross-tenant-read' | 'cross-ten
 export type OpenClawSkillBinding =
   | 'opsly-orchestrator'
   | 'opsly-architect'
+  | 'opsly-architect-senior'
   | 'opsly-qa'
   | 'opsly-api'
   | 'opsly-llm'
@@ -139,6 +140,20 @@ const AGENT_REGISTRY = new Map<string, OpenClawAgentDescriptor>([
       capabilities: ['collect-context', 'gather-evidence', 'summarize-findings'],
       skillBinding: 'opsly-architect',
       targets: ['queue', 'skill'],
+      modelTier: 'premium',
+      tenantPermissions: ['self', 'cross-tenant-read'],
+      defaultController: 'default',
+      enabled: true,
+    },
+  ],
+  [
+    'codex-engineering',
+    {
+      id: 'codex-engineering',
+      role: 'architect',
+      capabilities: ['code-review', 'architecture-design', 'engineering-decisions', 'system-design'],
+      skillBinding: 'opsly-architect-senior',
+      targets: ['queue', 'skill', 'mcp'],
       modelTier: 'premium',
       tenantPermissions: ['self', 'cross-tenant-read'],
       defaultController: 'default',
