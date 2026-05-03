@@ -1,3 +1,4 @@
+# Opsly — workflow catalog: docs/ops/workflows-index.md
 # Valida acceso a Doppler y presencia de variables listadas en config/doppler-ci-required*.txt
 # Requiere en GitHub → Settings → Secrets → Actions:
 #   DOPPLER_TOKEN_PRD — token con acceso de lectura al proyecto ops-intcloudsysops (config prd)

@@ -1,3 +1,4 @@
+# Opsly — workflow catalog: docs/ops/workflows-index.md
 # Obsoleto como pipeline principal: el deploy staging automático vive en `deploy.yml`
 # (push a la rama `staging` → job `deploy-staging`).
 #

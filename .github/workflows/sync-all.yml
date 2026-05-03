@@ -1,3 +1,4 @@
+# Opsly — workflow catalog: docs/ops/workflows-index.md
 # Orquestación suave: docs + validación Notion opcional + burndown. Sin push automático (evita bucles).
 # Secrets opcionales: NOTION_TOKEN, NOTION_DATABASE_TASKS, DISCORD_WEBHOOK_URL
 
