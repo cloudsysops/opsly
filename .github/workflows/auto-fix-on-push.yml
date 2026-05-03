@@ -52,6 +52,7 @@ jobs:
       - name: Open PR if changes (never commit directly to main)
         env:
           GH_TOKEN: ${{ github.token }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
           set -euo pipefail
 
@@ -82,7 +83,7 @@ jobs:
             PR_BODY="$(printf '%s\n\n%s\n\n%s' \
               "Automated ESLint/Prettier fixes triggered by push to main." \
               "Triggered by commit \`${SHA_SHORT}\`. Review before merging." \
-              "Workflow: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}")"
+              "Workflow: ${RUN_URL}")"
             gh pr create \
               --repo "${{ github.repository }}" \
               --base main \
