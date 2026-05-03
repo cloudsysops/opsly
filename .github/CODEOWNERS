@@ -7,26 +7,30 @@
 #   La última regla que coincide con una ruta gana si hay solapamiento (orden importa).
 # Reutilizar en otro proyecto: sustituye @cloudsysops/* por tus equipos de GitHub
 #   (deben existir en la org o ser usuarios con acceso al repo) y ajusta rutas.
+#
+# Equipos @cloudsysops/backend|frontend|infra: si existen en la org, sustituir
+#   las líneas @cboteros de abajo por el team correspondiente (GitHub marca error
+#   si el handle no existe).
 # =============================================================================
 
 # Propietario por defecto (todo lo que no cae en reglas más específicas más abajo).
 # Esta línea debe ir PRIMERO; las rutas concretas van después para sobrescribirla.
 * @cboteros
 
-# API de control plane y automatización operativa → backend.
-apps/api/ @cloudsysops/backend
-scripts/ @cloudsysops/backend
+# API de control plane y automatización operativa → backend (owner hasta teams en org).
+apps/api/ @cboteros
+scripts/ @cboteros
 
 # Interfaces Next.js (dashboard admin y workspace web) → frontend.
-apps/admin/ @cloudsysops/frontend
-apps/web/ @cloudsysops/frontend
+apps/admin/ @cboteros
+apps/web/ @cboteros
 
 # Compose, Traefik, plantillas de tenant; Terraform cuando exista bajo infra/ → infra.
-infra/ @cloudsysops/infra
-infra/terraform/ @cloudsysops/infra
+infra/ @cboteros
+infra/terraform/ @cboteros
 
 # Esquema Postgres, RLS, migraciones → backend (misma línea de producto que API).
-supabase/ @cloudsysops/backend
+supabase/ @cboteros
 
 # Workflows y gobernanza GitHub → propietario del proyecto (cambios de seguridad/CI).
 # Esto evita que un bot o fork modifique workflows sin revisión humana.

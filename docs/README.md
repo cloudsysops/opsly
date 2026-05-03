@@ -213,7 +213,8 @@ docs/generated/sprint-status.auto.md ← burndown generado (status.yaml; no edit
 | Doc                                                | Cuándo usarlo                        |
 | -------------------------------------------------- | ------------------------------------ |
 | [`TEST_PLAN.md`](TEST_PLAN.md)                     | Plan de pruebas por componente       |
-| [`QA-REVIEW-COMPLETE.md`](QA-REVIEW-COMPLETE.md)   | QA review completa del sistema       |
+| [`qa/README.md`](qa/README.md)                     | **QA UI multi-ambiente:** checklist tester, prompt IA → Cursor, script copia |
+| [`QA-REVIEW-COMPLETE.md`](01-development/QA-REVIEW-COMPLETE.md) | QA review completa del sistema       |
 | [`LIBRARIES-INSTALLED.md`](LIBRARIES-INSTALLED.md) | Librerías instaladas y justificación |
 
 ### 12. Skills y agentes Claude

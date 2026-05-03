@@ -1,0 +1,48 @@
+name: "QA — Hallazgo UI"
+description: "Registro estructurado de prueba manual (portal / admin / web) para priorizar fixes."
+title: "[qa-ui] "
+labels:
+  - bug
+  - qa-ui
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Usa el **formato de tabla** de `docs/qa/TESTER-CHECKLIST.md` (un hallazgo = una tabla).
+        Luego procesa con `docs/qa/BACKLOG-IA-PROMPT.md`. **No pegues secretos.**
+  - type: textarea
+    id: hallazgos
+    attributes:
+      label: Hallazgos (tablas)
+      description: Pega una o más tablas (Ambiente, App, Ruta, Pasos, Esperado, Actual, Severidad, Tipo, Evidencia).
+    validations:
+      required: true
+  - type: dropdown
+    id: ambiente
+    attributes:
+      label: Ambiente principal
+      options:
+        - local
+        - staging
+        - prod
+        - otro
+    validations:
+      required: true
+  - type: dropdown
+    id: severidad_max
+    attributes:
+      label: Severidad máxima en este issue
+      options:
+        - S1
+        - S2
+        - S3
+        - S4
+    validations:
+      required: true
+  - type: textarea
+    id: notas
+    attributes:
+      label: Notas / enlaces
+      description: Issue relacionado, PR, capturas en Drive, etc.
+    validations:
+      required: false
