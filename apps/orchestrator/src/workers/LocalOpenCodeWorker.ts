@@ -1,6 +1,7 @@
 import type { Worker } from 'bullmq';
-import { startLocalAgentHttpWorker } from './local-agent-http-worker.js';
+import { startLocalAgentsUnifiedWorker } from './local-agent-http-worker.js';
 
+/** @deprecated Prefer importing `startLocalAgentsUnifiedWorker` from `./local-agent-http-worker.js`. */
 export function startLocalOpenCodeWorker(connection: object): Worker {
-  return startLocalAgentHttpWorker('opencode', connection);
+  return startLocalAgentsUnifiedWorker(connection);
 }

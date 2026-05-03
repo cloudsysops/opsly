@@ -1,5 +1,5 @@
 import { readFile } from 'node:fs/promises';
-import { Job, Worker } from 'bullmq';
+import { Job, UnrecoverableError, Worker } from 'bullmq';
 import { resolveAgentService } from '../lib/agent-service-registry.js';
 import {
   formatLocalWorkerResponse,
@@ -16,6 +16,13 @@ import { getWorkerConcurrency } from '../worker-concurrency.js';
 
 type LocalAgentJobType = 'local_cursor' | 'local_claude' | 'local_copilot' | 'local_opencode';
 
+const LOCAL_AGENT_JOB_TYPES: LocalAgentJobType[] = [
+  'local_cursor',
+  'local_claude',
+  'local_copilot',
+  'local_opencode',
+];
+
 function jobTypeForAgent(agent: LocalAgentKind): LocalAgentJobType {
   switch (agent) {
     case 'claude':
@@ -27,6 +34,10 @@ function jobTypeForAgent(agent: LocalAgentKind): LocalAgentJobType {
     case 'cursor':
       return 'local_cursor';
   }
+}
+
+function totalLocalAgentsConcurrency(): number {
+  return LOCAL_AGENT_JOB_TYPES.reduce((sum, key) => sum + getWorkerConcurrency(key), 0);
 }
 
 function responseIsObject(value: unknown): value is LocalAgentExecuteResponse {
@@ -78,23 +89,39 @@ async function resolveResponseBody(response: LocalAgentExecuteResponse): Promise
   return 'Agent completed without response content.';
 }
 
-export function startLocalAgentHttpWorker(agent: LocalAgentKind, connection: object): Worker {
-  const jobType = jobTypeForAgent(agent);
-  const concurrency = getWorkerConcurrency(jobType);
-  return new Worker(
+let unifiedLocalAgentsWorker: Worker | null = null;
+
+/**
+ * Single BullMQ Worker for queue `local-agents`.
+ * Multiple Workers on the same queue steal jobs round-robin; a worker that filters
+ * by `job.name` and returns early leaves jobs "completed" without work — use this unified worker only.
+ *
+ * Idempotent: repeated calls (e.g. legacy `startLocalCursorWorker` + `startLocalClaudeWorker`) return the same instance until it is closed.
+ */
+export function startLocalAgentsUnifiedWorker(connection: object): Worker {
+  if (unifiedLocalAgentsWorker !== null) {
+    return unifiedLocalAgentsWorker;
+  }
+
+  const concurrency = totalLocalAgentsConcurrency();
+  const worker = new Worker(
     'local-agents',
     async (job: Job) => {
-      if (job.name !== jobType) {
-        return;
+      const agent = localAgentForJobType(job.name);
+      if (agent === null) {
+        throw new UnrecoverableError(`local-agents: unsupported job name "${job.name}"`);
       }
+      const jobType = jobTypeForAgent(agent);
 
       const t0 = Date.now();
       logWorkerLifecycle('start', jobType, job);
       try {
         const data = job.data as OrchestratorJob;
-        const actualAgent = localAgentForJobType(data.type);
-        if (actualAgent !== agent) {
-          return;
+        const payloadAgent = localAgentForJobType(data.type);
+        if (payloadAgent !== agent) {
+          throw new UnrecoverableError(
+            `local-agents: job.name "${job.name}" does not match data.type "${String(data.type)}"`
+          );
         }
 
         const payload = data.payload;
@@ -169,4 +196,21 @@ export function startLocalAgentHttpWorker(agent: LocalAgentKind, connection: obj
     },
     { connection, concurrency }
   );
+
+  worker.on('ready', () => {
+    console.log(
+      JSON.stringify({
+        event: 'local_agents_worker_ready',
+        queue: 'local-agents',
+        concurrency,
+      })
+    );
+  });
+
+  worker.once('closed', () => {
+    unifiedLocalAgentsWorker = null;
+  });
+
+  unifiedLocalAgentsWorker = worker;
+  return worker;
 }
