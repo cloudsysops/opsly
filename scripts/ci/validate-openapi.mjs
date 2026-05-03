@@ -42,6 +42,7 @@ const REQUIRED_PORTAL_PATHS = [
   '/api/portal/tenant/{slug}/mode',
   '/api/portal/tenant/{slug}/usage',
   '/api/portal/tenant/{slug}/health',
+  '/api/portal/tenant/{slug}/n8n-marketplace/installs',
   '/api/portal/tenant/{slug}/budget',
   '/api/portal/tenant/{slug}/subscription/upgrade',
   '/api/portal/tenant/{slug}/insights',

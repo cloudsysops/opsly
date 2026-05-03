@@ -5,6 +5,7 @@ import {
   portalTenantInsightsUrl,
   portalTenantMeUrl,
   portalTenantModeUrl,
+  portalTenantN8nMarketplaceInstallsUrl,
   portalTenantShieldScoreUrl,
   portalTenantShieldSecretsUrl,
   portalTenantUsageUrl,
@@ -62,6 +63,17 @@ describe('portalTenantInsightsUrl', () => {
     expect(portalTenantInsightsUrl(BASE, 'acme')).toBe(`${BASE}/api/portal/tenant/acme/insights`);
     expect(portalTenantInsightsUrl(BASE, 'a/b')).toBe(
       `${BASE}/api/portal/tenant/${encodeURIComponent('a/b')}/insights`
+    );
+  });
+});
+
+describe('portalTenantN8nMarketplaceInstallsUrl', () => {
+  it('codifica slug en /tenant/…/n8n-marketplace/installs', () => {
+    expect(portalTenantN8nMarketplaceInstallsUrl(BASE, 'acme')).toBe(
+      `${BASE}/api/portal/tenant/acme/n8n-marketplace/installs`
+    );
+    expect(portalTenantN8nMarketplaceInstallsUrl(BASE, 'a/b')).toBe(
+      `${BASE}/api/portal/tenant/${encodeURIComponent('a/b')}/n8n-marketplace/installs`
     );
   });
 });
