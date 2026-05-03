@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-05-03T13:21:22Z",
-  "totalFiles": 299,
+  "lastIndexed": "2026-05-03T16:33:34Z",
+  "totalFiles": 302,
   "files": [
     ".openclaw.md",
     "2026-04-21.md",
@@ -55,6 +55,7 @@
     "AGENT-BRAIN-CONTRACT.md",
     "AGENT-GUARDRAILS.md",
     "AGENT-HOOKS-OBSIDIAN-NOTEBOOKLM-N8N.md",
+    "AGENT-ORCHESTRATION-INDEX.md",
     "AGENT-PROMPT-QUEUE.md",
     "AGENTS-ASSIGNMENTS.md",
     "AGENTS-ASSIGNMENTS.md",
@@ -88,6 +89,7 @@
     "CLIENT-TESTING-CHECKLIST.md",
     "CLIENTS-TO-INVITE.md",
     "CLOUDFLARE-PROXY-ACTIVATION.md",
+    "CLOUDSYSOPS-TECHNICIAN-N8N.md",
     "CODE-REVIEW-ORCHESTRATOR-2026-04-09.md",
     "CODE-SNAPSHOTS.md",
     "CONTEXT-BUILDER.md",
@@ -203,6 +205,7 @@
     "README.md",
     "REDIS_NAMESPACE_ISOLATION.md",
     "REFACTOR-CHECKLIST.md",
+    "REPAIR-QUEUE.md",
     "REPO-MAP.md",
     "RETENTION-POLICY.md",
     "REVENUE-EXECUTION-30D.md",
