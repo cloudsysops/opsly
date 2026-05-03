@@ -127,12 +127,20 @@ export function startLocalCursorWorker(connection: object) {
   const concurrency = getWorkerConcurrency('local-cursor') || 2;
   const registry = getAgentServiceRegistry();
 
+  console.log(`[LocalCursorWorker] Initialized with concurrency=${concurrency}`);
+
   return new Worker(
     'openclaw',
     async (job: Job) => {
+      // Debug: log ALL jobs to see what we're receiving
+      console.log(`[LocalCursorWorker] Received job: name='${job.name}', id='${job.id}', data.type='${(job.data as any)?.type}'`);
+
       if (job.name !== 'local-cursor') {
+        console.log(`[LocalCursorWorker] Skipping: expected 'local-cursor' but got '${job.name}'`);
         return;
       }
+
+      console.log(`[LocalCursorWorker] ✅ Processing local-cursor job ${job.id}`);
 
       const t0 = Date.now();
       logWorkerLifecycle('start', 'local-cursor', job);

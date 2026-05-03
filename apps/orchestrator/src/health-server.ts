@@ -913,16 +913,20 @@ async function handleLocalPromptSubmit(req: IncomingMessage, res: ServerResponse
     return;
   }
 
-  // Create intent_dispatch job for local execution
+  // Route to appropriate local worker based on agent_role
+  // Supported agents: 'cursor', 'claude', 'copilot', 'opencode'
+  const jobType = agentRole === 'claude' ? 'local-claude' : 'local-cursor';
+
+  // Create job for direct local worker execution (no intent routing)
   const job: OrchestratorJob = {
-    type: 'intent_dispatch',
+    type: jobType as any, // Will be 'local-cursor' or 'local-claude'
     payload: {
-      intent: 'execute_local_prompt',
+      prompt_content: promptBody,
       agent_role: agentRole,
-      prompt: promptBody,
-      goal,
       max_steps: maxSteps,
+      goal,
       context,
+      job_id: requestId,
     },
     tenant_slug: 'opsly',
     initiated_by: 'system',
@@ -936,9 +940,10 @@ async function handleLocalPromptSubmit(req: IncomingMessage, res: ServerResponse
 
   try {
     const bull = await enqueueJob(job);
+    console.log(`[LocalPromptSubmit] Enqueued ${jobType} job ${bull.id} (${agentRole})`);
     recordOpenClawIntentQueued({
       requestId,
-      intent: 'execute_local_prompt',
+      intent: `execute_${jobType}`,
       tenantSlug: 'opsly',
       jobId: bull.id ? String(bull.id) : null,
     });
