@@ -2,7 +2,7 @@ import { randomUUID } from 'node:crypto';
 import { createServer, type IncomingMessage, type Server, type ServerResponse } from 'node:http';
 import { resolveAutonomyPolicy } from './autonomy/policy.js';
 import { orchestratorModeLabel, parseOrchestratorRole } from './orchestrator-role.js';
-import { enqueueJob, orchestratorQueue } from './queue.js';
+import { enqueueJob, enqueueLocalAgentJob, orchestratorQueue } from './queue.js';
 import type { OrchestratorJob } from './types.js';
 import { enqueueWebhookJob } from './workers/WebhookWorker.js';
 import type { WebhookJobData } from './workers/WebhookWorker.js';
@@ -915,35 +915,24 @@ async function handleLocalPromptSubmit(req: IncomingMessage, res: ServerResponse
 
   // Route to appropriate local worker based on agent_role
   // Supported agents: 'cursor', 'claude', 'copilot', 'opencode'
-  const jobType = agentRole === 'claude' ? 'local-claude' : 'local-cursor';
+  const jobName = agentRole === 'claude' ? 'local_claude' : 'local_cursor';
 
-  // Create job for direct local worker execution (no intent routing)
-  const job: OrchestratorJob = {
-    type: jobType as any, // Will be 'local-cursor' or 'local-claude'
-    payload: {
-      prompt_content: promptBody,
-      agent_role: agentRole,
-      max_steps: maxSteps,
-      goal,
-      context,
-      job_id: requestId,
-    },
-    tenant_slug: 'opsly',
-    initiated_by: 'system',
-    request_id: requestId,
-    agent_role: agentRole as any,
-    metadata: {
-      local_execution: true,
-      source: 'local-agent-watcher',
-    },
+  // Payload for local agent execution
+  const payload = {
+    prompt_content: promptBody,
+    agent_role: agentRole,
+    max_steps: maxSteps,
+    goal,
+    context,
+    job_id: requestId,
   };
 
   try {
-    const bull = await enqueueJob(job);
-    console.log(`[LocalPromptSubmit] Enqueued ${jobType} job ${bull.id} (${agentRole})`);
+    const bull = await enqueueLocalAgentJob(jobName, payload, requestId);
+    console.log(`[LocalPromptSubmit] Enqueued ${jobName} job ${bull.id} (${agentRole}) to local-agents queue`);
     recordOpenClawIntentQueued({
       requestId,
-      intent: `execute_${jobType}`,
+      intent: `execute_${jobName}`,
       tenantSlug: 'opsly',
       jobId: bull.id ? String(bull.id) : null,
     });

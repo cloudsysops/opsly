@@ -122,9 +122,9 @@ export function startLocalClaudeWorker(connection: object) {
   const registry = getAgentServiceRegistry();
 
   return new Worker(
-    'openclaw',
+    'local-agents',
     async (job: Job) => {
-      if (job.name !== 'local-claude') {
+      if (job.name !== 'local_claude') {
         return;
       }
 

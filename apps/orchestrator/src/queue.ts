@@ -16,6 +16,15 @@ export const connection = {
 
 export const orchestratorQueue = new Queue('openclaw', { connection });
 
+/** Local Agent Queue: Cursor, Claude, Copilot execution on local machines */
+export const localAgentQueue = new Queue('local-agents', {
+  connection,
+  defaultJobOptions: {
+    attempts: 2,
+    backoff: { type: 'exponential', delay: 2000 },
+  },
+});
+
 /** Cola sandbox clasificador de tareas (worker opcional: `OPSLY_AGENT_CLASSIFIER_WORKER_ENABLED`). */
 export const agentClassifierQueue = new Queue('agent-classifier', { connection });
 
@@ -58,6 +67,30 @@ export async function enqueueJob(job: OrchestratorJob) {
     queue_priority: opts.priority,
     metadata: job.metadata,
   });
+
+  return bull;
+}
+
+/** Enqueue job to local-agents queue for execution on local machines (Cursor, Claude, etc) */
+export async function enqueueLocalAgentJob(jobName: string, payload: Record<string, unknown>, requestId: string) {
+  const bull = await localAgentQueue.add(
+    jobName, // 'local_cursor', 'local_claude', 'local_copilot', etc
+    { payload },
+    {
+      jobId: requestId,
+      priority: 40000,
+      attempts: 2,
+      backoff: { type: 'exponential', delay: 2000 },
+    }
+  );
+
+  logJobEnqueue({
+    event: 'job_enqueue',
+    job_type: jobName,
+    request_id: requestId,
+    queue: 'local-agents',
+    initiated_by: 'system',
+  } as any);
 
   return bull;
 }
