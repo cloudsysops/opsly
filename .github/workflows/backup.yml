@@ -1,3 +1,4 @@
+# Opsly — workflow catalog: docs/ops/workflows-index.md
 # Backup diario en el VPS (tenants). Requiere SSH al staging/prod según secrets.
 #
 # Secrets: VPS_HOST, VPS_USER, VPS_SSH_KEY, DISCORD_WEBHOOK_URL (opcional)

@@ -1,3 +1,4 @@
+# Opsly — workflow catalog: docs/ops/workflows-index.md
 # Secrets requeridos (repository o environment "production"):
 #   VPS_HOST, VPS_USER, VPS_SSH_KEY, PLATFORM_DOMAIN
 #   TAILSCALE_AUTHKEY (opcional pero recomendado si SSH del VPS es solo tailnet / UFW bloquea 22 público):

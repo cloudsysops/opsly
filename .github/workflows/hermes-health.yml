@@ -1,3 +1,4 @@
+# Opsly — workflow catalog: docs/ops/workflows-index.md
 # Smoke CI para módulo Hermes (type-check + tests acotados).
 name: Hermes health
 
