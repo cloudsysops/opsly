@@ -15,9 +15,11 @@ alwaysApply: true
 
 ## Al cerrar una tarea (agente)
 
-1. Si el cambio toca **zona roja/ámbar** en `docs/03-agents/AGENT-GUARDRAILS.md`: **PR**, no push directo a `main`.
-2. Si es **solo** actualización de `AGENTS.md` / espejos según cierre de sesión en `AGENTS.md`: puede ser commit en `main` según política del repo.
-3. Tras merge: recordar borrar rama remota si GitHub no lo hace automático.
+1. Orden: **commit** (conventional, type-check) → **push** de la rama → **PR** a `main` → **merge** → borrar rama (GitHub auto o `git push origin --delete <rama>`).
+2. Si el cambio toca **zona roja/ámbar** en `docs/03-agents/AGENT-GUARDRAILS.md`: **PR**, no push directo a `main`.
+3. Si es **solo** actualización de `AGENTS.md` / espejos según cierre de sesión en `AGENTS.md`: puede ser commit en `main` según política del repo.
+4. Ramas `cursor/*` / `claude/*`: una por tema; integrar o archivar (cerrar PR + borrar rama), no acumular sin merge.
+5. Tras merge: borrar rama remota si GitHub no lo hace automático; `git fetch --prune` y `git branch -d` local si aplica.
 
 ## Contradicciones
 
