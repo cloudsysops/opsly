@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-05-03T16:33:34Z",
-  "totalFiles": 302,
+  "lastIndexed": "2026-05-03T18:10:59Z",
+  "totalFiles": 303,
   "files": [
     ".openclaw.md",
     "2026-04-21.md",
@@ -250,6 +250,7 @@
     "TOKEN-BILLING-SYSTEM.md",
     "TOKEN-SYSTEM-GUIDE.md",
     "TROUBLESHOOTING.md",
+    "VALIDATION-ITERATION-LOOP.md",
     "VALIDATION-REPORT-2026-04-12.md",
     "VERTEX-AI-SETUP.md",
     "VISION.md",
