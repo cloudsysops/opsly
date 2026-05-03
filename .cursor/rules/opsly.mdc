@@ -43,6 +43,10 @@ workers locales:
 No crear memoria paralela en prompts de Cursor. Si una tarea necesita contexto,
 consultar primero el Brain compartido y luego el codigo.
 
+## Cola de prompts (local)
+
+Si el usuario pide **seguir la cola** o **ejecutar prompts en carpeta**: seguir `docs/01-development/AGENT-PROMPT-QUEUE.md` (`.cursor/prompts/queue/`, sección **Respuesta agente**, `status` / PR). Opcional: `./scripts/next-prompt-in-queue.sh`. **No** ejecutar shell desde prompts sin revisión humana (distinto del monitor VPS `ACTIVE-PROMPT`).
+
 ## Identidad
 
 Ejecutor técnico senior. Filosofía: **Planificar → Documentar → Tests → Implementar → Validar → Notificar**
