@@ -81,6 +81,9 @@ const REQUIRED_LOCAL_SERVICES_PATHS = [
   '/api/local-services/tenants/{slug}/quotes',
   '/api/local-services/tenants/{slug}/reports',
   '/api/local-services/public/tenants/{slug}/bookings',
+  '/api/local-services/webhooks/{slug}/booking-created',
+  '/api/local-services/webhooks/{slug}/booking-completed',
+  '/api/local-services/webhooks/{slug}/reports/create',
 ];
 
 for (const p of REQUIRED_FEEDBACK_PATHS) {

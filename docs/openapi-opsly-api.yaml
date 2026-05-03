@@ -1080,6 +1080,122 @@ paths:
         '500':
           $ref: '#/components/responses/InternalError'
 
+  /api/local-services/webhooks/{slug}/booking-created:
+    post:
+      summary: Local Services — webhook booking creado (HMAC, n8n)
+      description: >
+        Cabecera `X-Opsly-Signature: sha256=<hex>` = HMAC-SHA256 del cuerpo raw con
+        `LOCAL_SERVICES_WEBHOOK_SECRET` o `LOCAL_SERVICES_WEBHOOK_SECRET_<SLUG>`.
+        El tenant del path debe existir y estar activo. Cuerpo JSON con `booking_id` (UUID).
+      operationId: postLocalServicesWebhookBookingCreated
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [booking_id]
+              properties:
+                booking_id:
+                  type: string
+                  format: uuid
+                event:
+                  type: string
+      responses:
+        '200':
+          description: Webhook aceptado
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /api/local-services/webhooks/{slug}/booking-completed:
+    post:
+      summary: Local Services — webhook booking completado (HMAC)
+      description: Igual autenticación que booking-created; marca la reserva como `completed`.
+      operationId: postLocalServicesWebhookBookingCompleted
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [booking_id]
+              properties:
+                booking_id:
+                  type: string
+                  format: uuid
+                status:
+                  type: string
+                  enum: [completed]
+      responses:
+        '200':
+          description: Estado actualizado
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /api/local-services/webhooks/{slug}/reports/create:
+    post:
+      summary: Local Services — webhook crear reporte (HMAC)
+      description: Inserta fila en `ls_reports` para el slug del path.
+      operationId: postLocalServicesWebhookReportCreate
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title]
+              properties:
+                title:
+                  type: string
+                body:
+                  type: object
+                  additionalProperties: true
+      responses:
+        '200':
+          description: Reporte creado
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
   /api/shield/alerts/config:
     post:
       summary: Opsly Shield — configurar alerta defensiva por tenant (Discord)
