@@ -421,30 +421,30 @@ export type Database = {
           payload: Json;
         }>;
       };
-      n8n_marketplace_installs: {
-        Row: {
-          id: string;
-          tenant_id: string;
-          catalog_item_id: string;
-          catalog_version: string;
-          status: string;
-          created_at: string;
-          updated_at: string;
-        };
-        Insert: {
-          id?: string;
-          tenant_id: string;
-          catalog_item_id: string;
-          catalog_version?: string;
-          status?: string;
-          created_at?: string;
-          updated_at?: string;
-        };
-        Update: Partial<{
-          catalog_version: string;
-          status: string;
-          updated_at: string;
-        }>;
+      ls_services: {
+        Row: Record<string, unknown>;
+        Insert: Record<string, unknown>;
+        Update: Record<string, unknown>;
+      };
+      ls_customers: {
+        Row: Record<string, unknown>;
+        Insert: Record<string, unknown>;
+        Update: Record<string, unknown>;
+      };
+      ls_bookings: {
+        Row: Record<string, unknown>;
+        Insert: Record<string, unknown>;
+        Update: Record<string, unknown>;
+      };
+      ls_quotes: {
+        Row: Record<string, unknown>;
+        Insert: Record<string, unknown>;
+        Update: Record<string, unknown>;
+      };
+      ls_reports: {
+        Row: Record<string, unknown>;
+        Insert: Record<string, unknown>;
+        Update: Record<string, unknown>;
       };
     };
     Views: Record<string, never>;
