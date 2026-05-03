@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-05-03T18:10:59Z",
-  "totalFiles": 303,
+  "lastIndexed": "2026-05-03T21:31:47Z",
+  "totalFiles": 309,
   "files": [
     ".openclaw.md",
     "2026-04-21.md",
@@ -277,6 +277,7 @@
     "ecatma-OA_Hockey_vs_Bridgewater_Raynham_12_26_25.md",
     "ecatma-Planning_and_Zoning_Board_Meeting_9_16_24.md",
     "embeddedsoftware0000mass.md",
+    "epics-breakdown.md",
     "fourthgeneration02mart.md",
     "franchisingconte0000unse.md",
     "frombitstoifsint00daws.md",
@@ -289,10 +290,13 @@
     "index.md",
     "india.highcourt.judgement.hbhc010399162001.md",
     "indian-man-using-laptop-while-drinking-cup-coffee-outdoor-street-cafe.md",
+    "issue-bankruptcy-2026-05-03.md",
+    "issues-triage.md",
     "jdo6safjptanvblfo772ajzohhy1vzo7f8u2svvc.md",
     "jhyx0v1z9vu6lvvqnqog10m8tv1eewytitmmsofa.md",
     "lrhenfvaovhaled7lamamtt7zpt70uxo5ysjftoj.md",
     "managed.md",
+    "quick-wins.md",
     "research-1f448cd4-324e-44b8-994a-4e3e25dbcb64.md",
     "research-2fccc968-1f7e-4fd0-ba07-e3357de8f2cf.md",
     "research-778df65a-fe43-4962-9645-fc08dfa83ec4.md",
@@ -304,6 +308,8 @@
     "runbook-redis.md",
     "sprint-status.auto.md",
     "tenant-welcome-email.md",
-    "vics-basement-26.md"
+    "vics-basement-26.md",
+    "workflows-audit.md",
+    "workflows-index.md"
   ]
 }
