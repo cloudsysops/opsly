@@ -44,3 +44,16 @@ git branch -r --no-merged "$BASE" | sed 's/^[* ]*//' | grep -v HEAD || true
 echo ""
 echo "=== Locales con upstream [gone] (se pueden borrar con git branch -d/-D tras confirmar) ==="
 git branch -vv | grep ': gone]' || echo "(ninguna)"
+echo ""
+echo "=== Worktrees ==="
+git worktree list || true
+echo ""
+if command -v gh >/dev/null 2>&1; then
+  echo "=== PRs abiertos en GitHub (recuento) ==="
+  gh pr list --state open --json number --jq 'length' 2>/dev/null || echo "(gh: sin resultado)"
+else
+  echo "=== PRs abiertos (omitido: gh no está en PATH) ==="
+fi
+echo ""
+echo "=== Stash local (recuento; el script no borra entradas) ==="
+git stash list | wc -l | tr -d ' '
