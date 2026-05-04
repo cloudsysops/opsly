@@ -49,7 +49,8 @@
     ".env.local-workers.example",
     ".openclaw.md",
     ".opencode.json",
-    ".opsly-drive-config.json"
+    ".opsly-drive-config.json",
+    ".npmrc"
   ],
   "allowed_folders": [
     "apps",
