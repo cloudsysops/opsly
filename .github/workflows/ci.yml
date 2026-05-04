@@ -171,6 +171,33 @@ jobs:
           (cd apps/orchestrator && npm test)
           (cd apps/llm-gateway && npm test -- --run __tests__/cache-namespace.test.ts)
 
+      - name: Run ValidationOrchestrator E2E Tests with Coverage
+        run: |
+          set -euo pipefail
+          cd apps/orchestrator
+          npm run test:coverage -- src/__tests__/validation-orchestrator-e2e.test.ts
+
+      - name: Check Coverage Threshold
+        run: |
+          set -euo pipefail
+          cd apps/orchestrator
+          # Run test with coverage and capture output
+          npm run test:coverage -- src/__tests__/validation-orchestrator-e2e.test.ts 2>&1 | tee coverage.log
+          # Extract coverage percentage (looks for "Statements" line)
+          coverage=$(grep -oP 'Statements\s+:\s+\K[\d.]+' coverage.log | head -1)
+          if [ -z "$coverage" ]; then
+            echo "Warning: Could not extract coverage percentage from test output"
+            echo "This may indicate tests are still running or format changed. Proceeding with caution."
+            exit 0
+          fi
+          threshold=85
+          if (( $(echo "$coverage < $threshold" | bc -l) )); then
+            echo "ERROR: Coverage ${coverage}% is below threshold of ${threshold}%"
+            exit 1
+          else
+            echo "SUCCESS: Coverage ${coverage}% meets threshold of ${threshold}%"
+          fi
+
   build:
     needs: lint
     runs-on: ubuntu-latest

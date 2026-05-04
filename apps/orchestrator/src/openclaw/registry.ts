@@ -160,6 +160,62 @@ const AGENT_REGISTRY = new Map<string, OpenClawAgentDescriptor>([
       enabled: true,
     },
   ],
+  [
+    'local-cursor-agent',
+    {
+      id: 'local-cursor-agent',
+      role: 'executor',
+      capabilities: ['execute_code', 'write_code', 'fix_bug'],
+      skillBinding: 'opsly-api',
+      targets: ['queue'],
+      modelTier: 'balanced',
+      tenantPermissions: ['self'],
+      defaultController: 'default',
+      enabled: true,
+    },
+  ],
+  [
+    'local-claude-agent',
+    {
+      id: 'local-claude-agent',
+      role: 'architect',
+      capabilities: ['analyze_code', 'review_code', 'explain', 'architecture-design'],
+      skillBinding: 'opsly-architect-senior',
+      targets: ['queue'],
+      modelTier: 'balanced',
+      tenantPermissions: ['self'],
+      defaultController: 'default',
+      enabled: true,
+    },
+  ],
+  [
+    'local-copilot-agent',
+    {
+      id: 'local-copilot-agent',
+      role: 'validator',
+      capabilities: ['validate_code', 'suggest_improvement'],
+      skillBinding: 'opsly-qa',
+      targets: ['queue'],
+      modelTier: 'balanced',
+      tenantPermissions: ['self'],
+      defaultController: 'default',
+      enabled: true,
+    },
+  ],
+  [
+    'local-opencode-agent',
+    {
+      id: 'local-opencode-agent',
+      role: 'builder',
+      capabilities: ['generate_ui', 'refine_code', 'compose-work-plan'],
+      skillBinding: 'opsly-api',
+      targets: ['queue'],
+      modelTier: 'balanced',
+      tenantPermissions: ['self'],
+      defaultController: 'default',
+      enabled: true,
+    },
+  ],
 ]);
 
 export function getOpenClawController(name = 'default'): OpenClawControllerContract {
@@ -197,4 +253,58 @@ export function resolveOpenClawControllerForRole(role: OpenClawAgentRole): OpenC
   const firstEnabledForRole = listOpenClawAgentsByRole(role)[0];
   const controllerName = firstEnabledForRole?.defaultController ?? 'default';
   return getOpenClawController(controllerName);
+}
+
+/**
+ * Map local agent service names to registry agent IDs
+ */
+const LOCAL_AGENT_SERVICE_TO_REGISTRY = new Map<string, string>([
+  ['cursor', 'local-cursor-agent'],
+  ['claude', 'local-claude-agent'],
+  ['copilot', 'local-copilot-agent'],
+  ['opencode', 'local-opencode-agent'],
+]);
+
+/**
+ * Resolve local agent from service name (e.g., 'cursor' -> 'local-cursor-agent')
+ */
+export function resolveLocalAgentService(serviceName: string): OpenClawAgentDescriptor | null {
+  const agentId = LOCAL_AGENT_SERVICE_TO_REGISTRY.get(serviceName);
+  if (!agentId) return null;
+  const agent = getOpenClawAgent(agentId);
+  return agent ?? null;
+}
+
+/**
+ * Select appropriate local agent based on intent complexity and type
+ */
+export function selectLocalAgentForIntent(
+  intent: string,
+  complexity: 'simple' | 'medium' | 'complex'
+): OpenClawAgentDescriptor | null {
+  let agentId: string | null = null;
+
+  switch (true) {
+    case complexity === 'simple' && intent.includes('code'):
+      agentId = 'local-cursor-agent';
+      break;
+    case complexity === 'medium' && intent.includes('analyze'):
+      agentId = 'local-claude-agent';
+      break;
+    case intent.includes('validate'):
+      agentId = 'local-copilot-agent';
+      break;
+    case intent.includes('refine') || intent.includes('generate'):
+      agentId = 'local-opencode-agent';
+      break;
+    case intent.includes('architect') || intent.includes('review'):
+      agentId = 'local-claude-agent';
+      break;
+    default:
+      agentId = 'local-claude-agent';
+  }
+
+  if (!agentId) return null;
+  const agent = getOpenClawAgent(agentId);
+  return agent ?? null;
 }

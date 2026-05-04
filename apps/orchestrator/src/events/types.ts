@@ -13,4 +13,6 @@ export type OpslyEvent =
   | 'agent.task.started'
   | 'agent.task.completed'
   | 'agent.task.failed'
-  | 'policy.violation';
+  | 'policy.violation'
+  | 'validation.feedback.applied'
+  | 'openclaw_router_decision';

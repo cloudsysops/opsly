@@ -1,186 +1,357 @@
-import { mkdir, readFile, stat, writeFile } from 'node:fs/promises';
-import { basename, dirname, join, resolve } from 'node:path';
+/**
+ * Local Worker Utilities
+ *
+ * Helper functions for local agent workers:
+ * - File waiting (poll with timeout)
+ * - Response file reading
+ * - Job ID extraction
+ */
 
-export type LocalAgentKind = 'cursor' | 'claude' | 'copilot' | 'opencode';
+import { promises as fsp, watch as fsWatch } from 'fs';
+import * as path from 'path';
 
-export interface ParsedPromptFile {
+/**
+ * Wait for file with event-driven monitoring (replaces polling)
+ * Uses fs.watch for efficient file system monitoring
+ *
+ * Returns: file content if found, null on timeout
+ */
+export async function waitForFile(filePath: string, timeoutMs: number = 60000): Promise<string | null> {
+  const startTime = Date.now();
+  const dir = path.dirname(filePath);
+  const filename = path.basename(filePath);
+
+  return new Promise((resolve) => {
+    let timeout: NodeJS.Timeout | null = null;
+    let watcher: ReturnType<typeof fsWatch> | null = null;
+
+    const cleanup = () => {
+      if (timeout) clearTimeout(timeout);
+      if (watcher) watcher.close();
+    };
+
+    const checkFile = async () => {
+      try {
+        const content = await fsp.readFile(filePath, 'utf-8');
+        const elapsedMs = Date.now() - startTime;
+        console.log(`[LocalWorkerUtils] File found after ${elapsedMs}ms: ${filePath}`);
+        cleanup();
+        resolve(content);
+      } catch (err) {
+        // File still doesn't exist, continue watching
+      }
+    };
+
+    timeout = setTimeout(() => {
+      cleanup();
+      const elapsedMs = Date.now() - startTime;
+      console.error(`[LocalWorkerUtils] Timeout waiting for file (${elapsedMs}ms): ${filePath}`);
+      resolve(null);
+    }, timeoutMs);
+
+    try {
+      watcher = fsWatch(dir, { persistent: false }, (eventType, changedFile) => {
+        if (changedFile === filename) {
+          checkFile();
+        }
+      });
+
+      checkFile();
+    } catch (err) {
+      cleanup();
+      const elapsedMs = Date.now() - startTime;
+      console.error(`[LocalWorkerUtils] Error watching file (${elapsedMs}ms): ${err instanceof Error ? err.message : String(err)}`);
+      resolve(null);
+    }
+  });
+}
+
+/**
+ * Read response file from .cursor/responses/
+ *
+ * Returns: file content and metadata
+ */
+export async function readResponseFile(jobId: string, responsesDir: string): Promise<{
   content: string;
-  metadata: Record<string, string>;
-}
-
-export interface LocalAgentExecuteRequest {
-  job_id: string;
-  request_id?: string;
-  tenant_slug: string;
-  prompt_path?: string;
-  prompt_content: string;
-  agent: LocalAgentKind;
-  agent_role: string;
-  max_steps: number;
+  filePath: string;
   metadata: Record<string, unknown>;
+}> {
+  const filePath = path.join(responsesDir, `response-${jobId}.md`);
+
+  try {
+    const content = await fsp.readFile(filePath, 'utf-8');
+
+    // Extract metadata from YAML frontmatter if present
+    const metadata = parseYamlFrontmatter(content);
+
+    return {
+      content,
+      filePath,
+      metadata,
+    };
+  } catch (err) {
+    throw new Error(`Cannot read response file ${filePath}: ${String(err)}`);
+  }
 }
 
-export interface LocalAgentExecuteResponse {
-  success?: boolean;
-  response_content?: string;
-  response_path?: string;
-  error?: string;
-  metadata?: Record<string, unknown>;
+/**
+ * Parse YAML frontmatter from file content
+ *
+ * Returns: key-value map of frontmatter fields
+ */
+function parseYamlFrontmatter(content: string): Record<string, unknown> {
+  const match = content.match(/^---\n([\s\S]*?)\n---/);
+
+  if (!match) {
+    return {};
+  }
+
+  const yaml = match[1];
+  const metadata: Record<string, unknown> = {};
+
+  // Simple YAML parser (handles basic key: value pairs)
+  for (const line of yaml.split('\n')) {
+    if (!line.trim()) continue;
+
+    const colonIndex = line.indexOf(':');
+    if (colonIndex === -1) continue;
+
+    const key = line.substring(0, colonIndex).trim();
+    let value: unknown = line.substring(colonIndex + 1).trim();
+
+    // Remove quotes if present
+    value = (value as string).replace(/^['"]|['"]$/g, '');
+
+    // Try to parse as number
+    if (!isNaN(Number(value)) && value !== '') {
+      value = Number(value);
+    }
+
+    // Try to parse as boolean
+    if (value === 'true') value = true;
+    if (value === 'false') value = false;
+
+    metadata[key] = value;
+  }
+
+  return metadata;
 }
 
-export function parsePromptFrontmatter(content: string): ParsedPromptFile {
-  if (!content.startsWith('---\n')) {
-    return { content, metadata: {} };
-  }
+/**
+ * Extract job ID from response file path
+ *
+ * Examples:
+ * - response-job-123.md → job-123
+ * - response-abc-xyz-123.md → abc-xyz-123
+ */
+export function extractJobIdFromPath(filePath: string): string {
+  const filename = path.basename(filePath);
 
-  const end = content.indexOf('\n---', 4);
-  if (end < 0) {
-    return { content, metadata: {} };
-  }
+  // response-{job_id}.md → {job_id}
+  const match = filename.match(/^response-(.+)\.md$/);
+  return match ? match[1] : filename;
+}
 
-  const raw = content.slice(4, end).trim();
-  const metadata: Record<string, string> = {};
-  for (const line of raw.split('\n')) {
-    const idx = line.indexOf(':');
-    if (idx <= 0) {
-      continue;
+/**
+ * Check if validation guard exists for job
+ *
+ * Returns: true if guard file exists
+ */
+export async function hasValidationGuard(jobId: string, validationDir: string): Promise<boolean> {
+  try {
+    const guardPath = path.join(validationDir, `${jobId}.guard`);
+    await fsp.access(guardPath);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Wait for validation guard to be written
+ *
+ * Returns: guard content if written within timeout, null on timeout
+ */
+export async function waitForValidationGuard(
+  jobId: string,
+  validationDir: string,
+  timeoutMs: number = 30000
+): Promise<Record<string, unknown> | null> {
+  const startTime = Date.now();
+  const guardPath = path.join(validationDir, `${jobId}.guard`);
+  const guardFilename = path.basename(guardPath);
+
+  return new Promise((resolve) => {
+    let timeout: NodeJS.Timeout | null = null;
+    let watcher: ReturnType<typeof fsWatch> | null = null;
+
+    const cleanup = () => {
+      if (timeout) clearTimeout(timeout);
+      if (watcher) watcher.close();
+    };
+
+    const checkGuard = async () => {
+      try {
+        const content = await fsp.readFile(guardPath, 'utf-8');
+        cleanup();
+        resolve(JSON.parse(content) as Record<string, unknown>);
+      } catch (err) {
+        // Guard not written yet
+      }
+    };
+
+    timeout = setTimeout(() => {
+      cleanup();
+      const elapsedMs = Date.now() - startTime;
+      console.error(`[LocalWorkerUtils] Timeout waiting for validation guard (${elapsedMs}ms): ${jobId}`);
+      resolve(null);
+    }, timeoutMs);
+
+    try {
+      watcher = fsWatch(validationDir, { persistent: false }, (eventType, changedFile) => {
+        if (changedFile === guardFilename) {
+          checkGuard();
+        }
+      });
+
+      checkGuard();
+    } catch (err) {
+      cleanup();
+      const elapsedMs = Date.now() - startTime;
+      console.error(`[LocalWorkerUtils] Error watching validation guard (${elapsedMs}ms): ${err instanceof Error ? err.message : String(err)}`);
+      resolve(null);
     }
-    const key = line.slice(0, idx).trim();
-    const value = line.slice(idx + 1).trim().replace(/^['"]|['"]$/g, '');
-    if (key.length > 0) {
-      metadata[key] = value;
+  });
+}
+
+/**
+ * Format file size for display
+ *
+ * Examples: 1.2KB, 45.3MB
+ */
+export function formatFileSize(bytes: number): string {
+  if (bytes < 1024) return `${bytes}B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)}KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)}MB`;
+}
+
+/**
+ * Get file modification time
+ *
+ * Returns: ISO timestamp string
+ */
+export async function getFileModTime(filePath: string): Promise<string> {
+  try {
+    const stats = await fsp.stat(filePath);
+    return stats.mtime.toISOString();
+  } catch (err) {
+    throw new Error(`Cannot get modification time for ${filePath}: ${String(err)}`);
+  }
+}
+
+/**
+ * Cleanup old response files
+ *
+ * Deletes files older than specified days in responsesDir
+ */
+export async function cleanupOldResponses(responsesDir: string, daysOld: number = 7): Promise<void> {
+  try {
+    const files = await fsp.readdir(responsesDir);
+    const now = Date.now();
+    const maxAge = daysOld * 24 * 60 * 60 * 1000;
+
+    for (const file of files) {
+      const filePath = path.join(responsesDir, file);
+      const stats = await fsp.stat(filePath);
+
+      if (now - stats.mtime.getTime() > maxAge) {
+        await fsp.unlink(filePath);
+        console.log(`[LocalWorkerUtils] Cleaned up old response: ${file}`);
+      }
     }
+  } catch (err) {
+    console.error('[LocalWorkerUtils] Error during cleanup:', err);
+  }
+}
+
+/**
+ * Parse prompt file with YAML frontmatter and content
+ *
+ * Returns: { metadata, content }
+ */
+export function parsePromptFrontmatter(
+  content: string
+): {
+  metadata: Record<string, unknown>;
+  content: string;
+} {
+  const match = content.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
+
+  if (!match) {
+    return {
+      metadata: {},
+      content: content,
+    };
   }
 
-  const bodyStart = content.indexOf('\n', end + 4);
+  const yaml = match[1];
+  const body = match[2];
+  const metadata: Record<string, unknown> = {};
+
+  // Simple YAML parser (handles basic key: value pairs)
+  for (const line of yaml.split('\n')) {
+    if (!line.trim()) continue;
+
+    const colonIndex = line.indexOf(':');
+    if (colonIndex === -1) continue;
+
+    const key = line.substring(0, colonIndex).trim();
+    let value: unknown = line.substring(colonIndex + 1).trim();
+
+    // Remove quotes if present
+    value = (value as string).replace(/^['"]|['"]$/g, '');
+
+    metadata[key] = value;
+  }
+
   return {
-    content: bodyStart >= 0 ? content.slice(bodyStart + 1).trimStart() : '',
     metadata,
+    content: body,
   };
 }
 
-export async function readPromptInput(input: {
-  promptPath?: string;
-  promptContent?: string;
-}): Promise<ParsedPromptFile & { promptPath?: string }> {
-  if (typeof input.promptContent === 'string' && input.promptContent.trim().length > 0) {
-    return parsePromptFrontmatter(input.promptContent);
-  }
+/**
+ * Map local agent names to job types
+ *
+ * Examples:
+ * - cursor → local_cursor
+ * - claude → local_claude
+ * - copilot → local_copilot
+ * - opencode → local_opencode
+ */
+export function jobTypeForLocalAgent(agent: string): string {
+  const mapping: Record<string, string> = {
+    cursor: 'local_cursor',
+    claude: 'local_claude',
+    copilot: 'local_copilot',
+    opencode: 'local_opencode',
+  };
 
-  if (typeof input.promptPath !== 'string' || input.promptPath.trim().length === 0) {
-    throw new Error('local worker requires prompt_path or prompt_content');
-  }
-
-  const promptPath = resolve(input.promptPath);
-  const content = await readFile(promptPath, 'utf-8');
-  return { ...parsePromptFrontmatter(content), promptPath };
+  return mapping[agent] || `local_${agent}`;
 }
 
-export function normalizeLocalAgentKind(value: unknown): LocalAgentKind {
-  if (value === 'claude' || value === 'copilot' || value === 'opencode' || value === 'cursor') {
-    return value;
+/**
+ * Normalize local agent kind, defaulting unknown values to cursor
+ *
+ * Known agents: cursor, claude, copilot, opencode
+ * Unknown agents default to: cursor
+ */
+export function normalizeLocalAgentKind(kind: string): string {
+  const known = ['cursor', 'claude', 'copilot', 'opencode'];
+
+  if (known.includes(kind)) {
+    return kind;
   }
+
   return 'cursor';
-}
-
-export function jobTypeForLocalAgent(agent: LocalAgentKind):
-  | 'local_cursor'
-  | 'local_claude'
-  | 'local_copilot'
-  | 'local_opencode' {
-  switch (agent) {
-    case 'claude':
-      return 'local_claude';
-    case 'copilot':
-      return 'local_copilot';
-    case 'opencode':
-      return 'local_opencode';
-    case 'cursor':
-      return 'local_cursor';
-  }
-}
-
-export function localAgentForJobType(jobType: string): LocalAgentKind | null {
-  switch (jobType) {
-    case 'local_cursor':
-      return 'cursor';
-    case 'local_claude':
-      return 'claude';
-    case 'local_copilot':
-      return 'copilot';
-    case 'local_opencode':
-      return 'opencode';
-    default:
-      return null;
-  }
-}
-
-export function resolveLocalResponsesDir(): string {
-  return resolve(process.env.OPSLY_LOCAL_RESPONSES_DIR || '.cursor/responses');
-}
-
-export async function writeLocalWorkerResponse(input: {
-  jobId: string;
-  agent: LocalAgentKind;
-  content: string;
-  responsesDir?: string;
-}): Promise<string> {
-  const responsesDir = resolve(input.responsesDir || resolveLocalResponsesDir());
-  await mkdir(responsesDir, { recursive: true });
-  const responsePath = join(responsesDir, `response-${input.jobId}-${input.agent}.md`);
-  await writeFile(responsePath, input.content, 'utf-8');
-  return responsePath;
-}
-
-export async function waitForFile(filePath: string, timeoutMs: number): Promise<string> {
-  const startedAt = Date.now();
-  const resolved = resolve(filePath);
-  while (Date.now() - startedAt < timeoutMs) {
-    try {
-      const s = await stat(resolved);
-      if (s.isFile() && s.size > 0) {
-        return await readFile(resolved, 'utf-8');
-      }
-    } catch {
-      // Keep polling until timeout.
-    }
-    await new Promise((resolvePoll) => setTimeout(resolvePoll, 500));
-  }
-  throw new Error(`Timed out waiting for ${resolved}`);
-}
-
-export function formatLocalWorkerResponse(input: {
-  agent: LocalAgentKind;
-  jobId: string;
-  requestId?: string;
-  sourcePath?: string;
-  body: string;
-}): string {
-  const lines = [
-    '---',
-    `agent: ${input.agent}`,
-    `job_id: ${input.jobId}`,
-    input.requestId ? `request_id: ${input.requestId}` : '',
-    input.sourcePath ? `source_path: ${input.sourcePath}` : '',
-    `created_at: ${new Date().toISOString()}`,
-    '---',
-    '',
-    input.body.trim(),
-    '',
-  ];
-  return lines.filter((line) => line.length > 0).join('\n');
-}
-
-export function safeResponseTitle(responsePath: string): string {
-  return basename(responsePath).replace(/[^a-zA-Z0-9._-]/g, '-');
-}
-
-export function resolveCursorIpcDir(): string {
-  return resolve(process.env.OPSLY_CURSOR_IPC_DIR || '.cursor/.ipc');
-}
-
-export async function ensureLocalAgentDirs(): Promise<void> {
-  await mkdir(resolveLocalResponsesDir(), { recursive: true });
-  await mkdir(resolveCursorIpcDir(), { recursive: true });
-  await mkdir(dirname(resolve('.cursor/prompts/.metadata.json')), { recursive: true });
 }

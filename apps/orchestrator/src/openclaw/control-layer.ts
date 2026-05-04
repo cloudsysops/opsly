@@ -6,8 +6,10 @@ import {
   type OpenClawAgentTarget,
   type OpenClawAgentRole,
   resolveOpenClawAgentForRole,
+  selectLocalAgentForIntent,
 } from './registry.js';
 import { OPENCLAW_EXECUTION_QUEUE } from './queue-contract.js';
+import { ValidationFeedbackLayer } from '../lib/validation-feedback.js';
 
 const DEFAULT_MCP_SERVER = 'project-0-intcloudsysops-opsly-openclaw';
 
@@ -68,13 +70,41 @@ function modelTierToRoutingBias(
 }
 
 /**
+ * Infer intent complexity for local agent selection
+ */
+function inferIntentComplexity(intent: Intent): 'simple' | 'medium' | 'complex' {
+  const simpleIntents = ['execute_code', 'write_code', 'fix_bug', 'format_code'];
+  const mediumIntents = ['analyze_code', 'review_code', 'refactor', 'validate_code'];
+
+  if (simpleIntents.includes(intent)) {
+    return 'simple';
+  }
+  if (mediumIntents.includes(intent)) {
+    return 'medium';
+  }
+  return 'complex';
+}
+
+/**
  * OpenClaw logical control layer applied before orchestration execution.
  * It enforces tenant-aware permissions and routes intents deterministically.
+ * Also applies validation feedback to adapt routing based on historical metrics.
+ *
+ * Prioritizes local agents when appropriate, falling back to default agents.
  */
-export function applyOpenClawControlLayer(req: IntentRequest): OpenClawControlDecisionContract {
+export async function applyOpenClawControlLayer(req: IntentRequest): Promise<OpenClawControlDecisionContract> {
   const routing = routeOpenClawIntent(req);
   const role = (req.agent_role as OpenClawAgentRole | undefined) ?? inferRoleForIntent(routing.intent);
-  const agent = resolveOpenClawAgentForRole(role);
+
+  // Try to route to appropriate local agent first
+  const complexity = inferIntentComplexity(routing.intent);
+  let agent = selectLocalAgentForIntent(routing.intent, complexity);
+
+  // Fall back to default role-based agent if no local agent matched
+  if (!agent) {
+    agent = resolveOpenClawAgentForRole(role);
+  }
+
   applyOpenClawPolicies(req, routing.intent, agent?.tenantPermissions ?? ['self']);
   const preferredTarget = resolvePreferredTarget(req, agent?.targets ?? []);
   const execution =
@@ -111,9 +141,10 @@ export function applyOpenClawControlLayer(req: IntentRequest): OpenClawControlDe
               },
             }
           : { target: null, transport: null, queue: null, skill: null, mcp: null };
-  const routingBias = modelTierToRoutingBias(agent?.modelTier ?? null);
+  let routingBias = modelTierToRoutingBias(agent?.modelTier ?? null);
   const providerHint = agent?.role === 'skeptic' ? ('deepseek' as const) : null;
-  return {
+
+  let decision: OpenClawControlDecisionContract = {
     intent: routing.intent,
     reason: routing.reason,
     execution,
@@ -130,4 +161,19 @@ export function applyOpenClawControlLayer(req: IntentRequest): OpenClawControlDe
       tenant_permissions: agent?.tenantPermissions ?? [],
     },
   };
+
+  try {
+    const feedbackLayer = new ValidationFeedbackLayer();
+    const feedbackResult = await feedbackLayer.applyValidationFeedback(routing.intent, decision);
+
+    if (feedbackResult.adaptations.length > 0) {
+      console.log(`[OpenClawControlLayer] Applied ${feedbackResult.adaptations.length} feedback adaptation(s)`);
+      feedbackResult.adaptations.forEach((a) => console.log(`  - ${a}`));
+      decision = feedbackResult.adapted;
+    }
+  } catch (err) {
+    console.warn('[OpenClawControlLayer] Validation feedback error (using original decision):', err);
+  }
+
+  return decision;
 }

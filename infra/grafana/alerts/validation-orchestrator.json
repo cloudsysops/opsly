@@ -1,0 +1,101 @@
+{
+  "annotations": {
+    "description": "Alert rules for ValidationOrchestrator health monitoring"
+  },
+  "groups": [
+    {
+      "name": "ValidationOrchestrator",
+      "interval": "5m",
+      "rules": [
+        {
+          "alert": "ValidationOrchestratorEscalationRateWarning",
+          "expr": "escalation_rate_pct > 10",
+          "for": "5m",
+          "labels": {
+            "severity": "warning",
+            "service": "validation-orchestrator"
+          },
+          "annotations": {
+            "summary": "ValidationOrchestrator escalation rate is high",
+            "description": "Escalation rate: {{ $value }}% (warning threshold: 10%)",
+            "runbook_url": "https://github.com/cloudsysops/opsly/blob/main/docs/04-operations/VALIDATION-ORCHESTRATOR-OPERATIONAL-GUIDE.md"
+          }
+        },
+        {
+          "alert": "ValidationOrchestratorEscalationRateCritical",
+          "expr": "escalation_rate_pct > 20",
+          "for": "2m",
+          "labels": {
+            "severity": "critical",
+            "service": "validation-orchestrator"
+          },
+          "annotations": {
+            "summary": "ValidationOrchestrator escalation rate is critical",
+            "description": "Escalation rate: {{ $value }}% (critical threshold: 20%)",
+            "runbook_url": "https://github.com/cloudsysops/opsly/blob/main/docs/04-operations/VALIDATION-ORCHESTRATOR-OPERATIONAL-GUIDE.md"
+          }
+        },
+        {
+          "alert": "ValidationOrchestratorValidationTimeWarning",
+          "expr": "avg_validation_time_ms > 500",
+          "for": "5m",
+          "labels": {
+            "severity": "warning",
+            "service": "validation-orchestrator"
+          },
+          "annotations": {
+            "summary": "ValidationOrchestrator validation time is elevated",
+            "description": "Average validation time: {{ $value }}ms (warning threshold: 500ms)",
+            "runbook_url": "https://github.com/cloudsysops/opsly/blob/main/docs/04-operations/VALIDATION-ORCHESTRATOR-OPERATIONAL-GUIDE.md"
+          }
+        },
+        {
+          "alert": "ValidationOrchestratorValidationTimeCritical",
+          "expr": "avg_validation_time_ms > 1000",
+          "for": "2m",
+          "labels": {
+            "severity": "critical",
+            "service": "validation-orchestrator"
+          },
+          "annotations": {
+            "summary": "ValidationOrchestrator validation time is critical",
+            "description": "Average validation time: {{ $value }}ms (critical threshold: 1000ms)",
+            "runbook_url": "https://github.com/cloudsysops/opsly/blob/main/docs/04-operations/VALIDATION-ORCHESTRATOR-OPERATIONAL-GUIDE.md"
+          }
+        },
+        {
+          "alert": "ValidationOrchestratorAgentPoolUnhealthy",
+          "expr": "agent_pool_healthy == 0",
+          "for": "2m",
+          "labels": {
+            "severity": "critical",
+            "service": "validation-orchestrator"
+          },
+          "annotations": {
+            "summary": "ValidationOrchestrator agent pool is unhealthy",
+            "description": "One or more agents in the pool are unreachable (ports 5001-5004)",
+            "runbook_url": "https://github.com/cloudsysops/opsly/blob/main/docs/04-operations/VALIDATION-ORCHESTRATOR-OPERATIONAL-GUIDE.md"
+          }
+        }
+      ]
+    }
+  ],
+  "notification_channels": [
+    {
+      "name": "#ops-alerts",
+      "type": "slack",
+      "channel": "#ops-alerts",
+      "icon_url": "https://github.com/cloudsysops.png",
+      "settings": {
+        "mention_users": false,
+        "mention_channel": "@channel"
+      }
+    },
+    {
+      "name": "Discord Ops",
+      "type": "discord",
+      "url": "${DISCORD_WEBHOOK_HEALTH}",
+      "message_template": "**{{ .GroupLabels.severity | upper }}**: {{ .CommonAnnotations.summary }}\n{{ .CommonAnnotations.description }}"
+    }
+  ]
+}

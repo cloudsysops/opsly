@@ -59,7 +59,11 @@ export const hermesOrchestrationQueue = new Queue('hermes-orchestration', {
 
 export async function enqueueJob(job: OrchestratorJob) {
   const opts = buildQueueAddOptions(job);
-  const bull = await orchestratorQueue.add(job.type, job, opts);
+
+  // Route local agent jobs to local-agents queue
+  const isLocalAgentJob = job.type?.startsWith('local_');
+  const targetQueue = isLocalAgentJob ? localAgentQueue : orchestratorQueue;
+  const bull = await targetQueue.add(job.type, job, opts);
 
   logJobEnqueue({
     event: 'job_enqueue',

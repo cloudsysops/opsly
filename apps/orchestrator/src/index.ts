@@ -36,6 +36,10 @@ import { startTerminalWorker } from './workers/TerminalWorker.js';
 import { closeWebhookQueue, createWebhookWorker } from './workers/WebhookWorker.js';
 import { startWebhooksProcessingWorker } from './workers/WebhooksProcessingWorker.js';
 import { startLocalAgentsUnifiedWorker } from './workers/local-agent-http-worker.js';
+import { startLocalClaudeWorker } from './workers/LocalClaudeWorker.js';
+import { startLocalCopilotWorker } from './workers/LocalCopilotWorker.js';
+import { startLocalOpenCodeWorker } from './workers/LocalOpenCodeWorker.js';
+import { startLocalCursorWorker } from './workers/LocalCursorWorker.js';
 
 type AsyncCleanup = () => Promise<void>;
 
@@ -81,6 +85,10 @@ function startAllWorkers(): AsyncCleanup[] {
   const intentDispatchWorker = startIntentDispatchWorker(connection);
   const terminalWorker = startTerminalWorker(connection);
   const localAgentsWorker = startLocalAgentsUnifiedWorker(connection);
+  const localClaudeWorker = startLocalClaudeWorker(connection);
+  const localCopilotWorker = startLocalCopilotWorker(connection);
+  const localOpenCodeWorker = startLocalOpenCodeWorker(connection);
+  const localCursorWorker = startLocalCursorWorker(connection);
 
   let agentClassifierCleanup: AsyncCleanup[] = [];
   if (process.env.OPSLY_AGENT_CLASSIFIER_WORKER_ENABLED === 'true') {
@@ -103,11 +111,15 @@ function startAllWorkers(): AsyncCleanup[] {
     async () => intentDispatchWorker.close(),
     async () => terminalWorker.close(),
     async () => localAgentsWorker.close(),
+    async () => localClaudeWorker.close(),
+    async () => localCopilotWorker.close(),
+    async () => localOpenCodeWorker.close(),
+    async () => localCursorWorker.close(),
     ...agentClassifierCleanup
   );
 
   console.log(
-    '[orchestrator] Workers: cursor, n8n, notify, drive, backup, health, budget, opsly-webhooks, webhooks-processing, general-events, ollama, intent_dispatch, terminal_task, local-agents (cursor/claude/copilot/opencode)' +
+    '[orchestrator] Workers: cursor, n8n, notify, drive, backup, health, budget, opsly-webhooks, webhooks-processing, general-events, ollama, intent_dispatch, terminal_task, local-agents (cursor/claude/copilot/opencode), local-claude, local-copilot, local-opencode, local-cursor' +
       (process.env.OPSLY_AGENT_CLASSIFIER_WORKER_ENABLED === 'true' ? ', agent-classifier' : '') +
       '; Hermes tick → servicio opsly-hermes (no este proceso).'
   );
