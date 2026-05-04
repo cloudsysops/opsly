@@ -273,6 +273,54 @@ ${promptContent}`;
     return validation.attempt >= 3 && validation.overall_status === 'failed';
   }
 
+  /**
+   * Programmatic method for ValidationOrchestrator to analyze results and suggest next action
+   * Used by validation orchestrator for programmatic integration
+   */
+  async analyzeAndSuggest(
+    validationReport: ValidationReport,
+    responseContent: string,
+    originalPrompt: string,
+    maxAttempts: number = 3,
+  ): Promise<{
+    action: 'commit' | 'iterate' | 'escalate';
+    nextPrompt?: string;
+    reason: string;
+    confidence: number;
+  }> {
+    // All passed
+    if (validationReport.overall_status === 'passed') {
+      return {
+        action: 'commit',
+        reason: `All validations passed on attempt ${validationReport.attempt}`,
+        confidence: 1.0,
+      };
+    }
+
+    // Check if we should escalate
+    if (validationReport.attempt >= maxAttempts && validationReport.overall_status === 'failed') {
+      return {
+        action: 'escalate',
+        reason: `Max attempts (${maxAttempts}) exceeded. Final errors: ${validationReport.errors.map((e) => `${e.type}: ${e.message}`).join('; ')}`,
+        confidence: 0.95,
+      };
+    }
+
+    // Generate next iteration prompt
+    const nextPrompt = await this.generateRetryPrompt(
+      validationReport.job_id,
+      validationReport,
+      originalPrompt,
+    );
+
+    return {
+      action: 'iterate',
+      nextPrompt,
+      reason: `Validation failed on attempt ${validationReport.attempt}. Errors: ${validationReport.errors.map((e) => e.type).join(', ')}`,
+      confidence: 0.85,
+    };
+  }
+
   async processValidationResult(
     responsePath: string,
     originalPrompt: string,
