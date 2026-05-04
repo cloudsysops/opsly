@@ -71,7 +71,8 @@ export type AgentRole =
   | 'builder'
   | 'skeptic'
   | 'validator'
-  | 'researcher';
+  | 'researcher'
+  | 'architect';
 export type AutonomyRiskLevel = 'low' | 'medium' | 'high';
 
 export interface OrchestratorJob {

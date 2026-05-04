@@ -1,104 +1,191 @@
-import { watch } from 'node:fs';
-import { access, mkdir } from 'node:fs/promises';
-import { basename, resolve } from 'node:path';
-import { spawn } from 'node:child_process';
+#!/usr/bin/env node
+import { execSync, spawn } from 'child_process';
+import { promises as fsp } from 'fs';
+import * as path from 'path';
+import { watch } from 'chokidar';
 
-interface Options {
+interface GitAutoCommitOptions {
   watchDir: string;
-  autoPush: boolean;
-  remote: string;
+  workingDir: string;
+  autoPush?: boolean;
 }
 
-function argValue(name: string): string | undefined {
-  const idx = process.argv.indexOf(name);
-  return idx >= 0 ? process.argv[idx + 1] : undefined;
-}
+class LocalGitAutoCommit {
+  private watchDir: string;
+  private workingDir: string;
+  private autoPush: boolean;
+  private committedFiles = new Set<string>();
 
-function parseOptions(): Options {
-  return {
-    watchDir: resolve(argValue('--watch-dir') || '.cursor/responses'),
-    autoPush: process.argv.includes('--auto-push'),
-    remote: argValue('--remote') || 'origin',
-  };
-}
+  constructor(options: GitAutoCommitOptions) {
+    this.watchDir = options.watchDir;
+    this.workingDir = options.workingDir;
+    this.autoPush = options.autoPush ?? true;
+  }
 
-async function runGit(args: string[]): Promise<string> {
-  return new Promise((resolveRun, reject) => {
-    const child = spawn('git', args, { stdio: ['ignore', 'pipe', 'pipe'] });
-    let out = '';
-    let err = '';
-    child.stdout.on('data', (chunk: Buffer) => {
-      out += chunk.toString();
+  private extractJobId(filename: string): string {
+    // response-{job_id}.md format
+    const match = filename.match(/response-(.+)\.md$/);
+    return match ? match[1] : filename;
+  }
+
+  private async parseResponse(filePath: string): Promise<{
+    jobId: string;
+    agentRole?: string;
+    summary?: string;
+  }> {
+    try {
+      const content = await fsp.readFile(filePath, 'utf-8');
+      const lines = content.split('\n');
+
+      let jobId = '';
+      let agentRole = '';
+      let summary = '';
+
+      // Parse header or metadata in response file
+      for (const line of lines) {
+        if (line.includes('job_id:') || line.includes('Job ID:')) {
+          jobId = line.split(':')[1]?.trim() || '';
+        }
+        if (line.includes('agent_role:') || line.includes('Agent Role:')) {
+          agentRole = line.split(':')[1]?.trim() || '';
+        }
+        if (line.includes('Summary:')) {
+          summary = lines[lines.indexOf(line) + 1]?.trim() || '';
+          break;
+        }
+      }
+
+      // Fallback: extract from filename
+      if (!jobId) {
+        jobId = this.extractJobId(path.basename(filePath));
+      }
+
+      return { jobId, agentRole, summary };
+    } catch (err) {
+      console.error(`Error parsing response file ${filePath}:`, err);
+      return { jobId: this.extractJobId(path.basename(filePath)) };
+    }
+  }
+
+  private async getCurrentBranch(): Promise<string> {
+    try {
+      const branch = execSync('git branch --show-current', {
+        cwd: this.workingDir,
+        encoding: 'utf-8',
+      }).trim();
+      return branch;
+    } catch (err) {
+      console.error('Error getting current branch:', err);
+      return 'unknown';
+    }
+  }
+
+  private async commitAndPush(filePath: string, jobId: string, agentRole?: string) {
+    try {
+      const fileName = path.basename(filePath);
+
+      // Add file to git
+      execSync(`git add "${fileName}"`, {
+        cwd: path.dirname(filePath),
+        stdio: 'pipe',
+      });
+
+      // Create meaningful commit message
+      const agentLabel = agentRole ? `[${agentRole}]` : '';
+      const commitMessage = `feat(job-${jobId}): ${agentLabel} agent response completed`;
+
+      // Commit
+      execSync(`git commit -m "${commitMessage}"`, {
+        cwd: this.workingDir,
+        stdio: 'pipe',
+      });
+
+      console.log(`[AutoCommit] ✅ Committed: ${fileName}`);
+
+      // Push if enabled
+      if (this.autoPush) {
+        const branch = await this.getCurrentBranch();
+        if (branch !== 'unknown') {
+          execSync(`git push origin ${branch}`, {
+            cwd: this.workingDir,
+            stdio: 'pipe',
+          });
+          console.log(`[AutoCommit] ✅ Pushed to origin/${branch}`);
+        }
+      }
+
+      this.committedFiles.add(fileName);
+    } catch (err) {
+      console.error(`[AutoCommit] Error committing ${filePath}:`, err);
+    }
+  }
+
+  async startWatching() {
+    const watcher = watch(this.watchDir, {
+      ignored: [
+        (path: string) => {
+          const basename = path.split('/').pop() || '';
+          return basename.startsWith('.') || !basename.endsWith('.md');
+        },
+      ],
+      awaitWriteFinish: {
+        stabilityThreshold: 1000,
+        pollInterval: 100,
+      },
     });
-    child.stderr.on('data', (chunk: Buffer) => {
-      err += chunk.toString();
-    });
-    child.on('error', reject);
-    child.on('close', (code) => {
-      if (code === 0) {
-        resolveRun(out.trim());
-      } else {
-        reject(new Error(err.trim() || `git ${args.join(' ')} exited with ${code ?? 'unknown'}`));
+
+    watcher.on('add', async (filePath: string) => {
+      const filename = path.basename(filePath);
+
+      if (this.committedFiles.has(filename)) {
+        return;
+      }
+
+      console.log(`[AutoCommit] Detected response: ${filename}`);
+
+      try {
+        // Wait a bit for file to be fully written
+        await new Promise((resolve) => setTimeout(resolve, 500));
+
+        const { jobId, agentRole } = await this.parseResponse(filePath);
+        await this.commitAndPush(filePath, jobId, agentRole);
+      } catch (err) {
+        console.error(`[AutoCommit] Error processing ${filename}:`, err);
       }
     });
-  });
-}
 
-async function branchName(): Promise<string> {
-  return runGit(['branch', '--show-current']);
-}
-
-async function changedPaths(): Promise<string[]> {
-  const raw = await runGit(['status', '--porcelain']);
-  if (raw.length === 0) {
-    return [];
-  }
-  return raw
-    .split('\n')
-    .map((line) => line.slice(3).trim())
-    .filter((line) => line.length > 0)
-    .map((line) => {
-      const renamed = line.split(' -> ');
-      return renamed[renamed.length - 1] ?? line;
+    watcher.on('error', (err) => {
+      console.error('[AutoCommit] Watcher error:', err);
     });
+
+    console.log(`[AutoCommit] Watching ${this.watchDir} for responses...`);
+  }
 }
 
-async function commitResponse(filePath: string, options: Options, baseline: Set<string>): Promise<void> {
-  await access(filePath);
-  const title = basename(filePath).replace(/[^a-zA-Z0-9._-]/g, '-');
-  const jobMatch = title.match(/response-([^-]+)-/);
-  const jobId = jobMatch?.[1] || 'local';
-  const currentChanges = await changedPaths();
-  const newChanges = currentChanges.filter((path) => !baseline.has(path));
-  await runGit(['add', filePath, ...newChanges]);
-  const diff = await runGit(['diff', '--cached', '--name-only']);
-  if (diff.length === 0) {
-    return;
-  }
-  await runGit(['commit', '-m', `feat(job-${jobId}): local agent response ${title}`]);
-  if (options.autoPush) {
-    const branch = await branchName();
-    if (branch.length > 0) {
-      await runGit(['push', options.remote, branch]);
-    }
-  }
-  process.stdout.write(`[local-git-auto-commit] committed ${filePath}\n`);
-}
+// Main
+const watchDir =
+  process.argv.find((arg) => arg.startsWith('--watch-dir='))?.split('=')[1] ||
+  path.join(process.cwd(), '.cursor', 'responses');
 
-void (async () => {
-  const options = parseOptions();
-  await mkdir(options.watchDir, { recursive: true });
-  const baseline = new Set(await changedPaths());
-  process.stdout.write(`[local-git-auto-commit] watching ${options.watchDir}\n`);
-  watch(options.watchDir, (event, filename) => {
-    if (event !== 'rename' || !filename || !filename.endsWith('.md')) {
-      return;
-    }
-    void commitResponse(resolve(options.watchDir, filename), options, baseline).catch((err) => {
-      process.stderr.write(`[local-git-auto-commit] ${err instanceof Error ? err.message : String(err)}\n`);
-    });
-  });
-})().catch((err) => {
-  process.stderr.write(`[local-git-auto-commit] ${err instanceof Error ? err.message : String(err)}\n`);
+const workingDir =
+  process.argv.find((arg) => arg.startsWith('--working-dir='))?.split('=')[1] || process.cwd();
+
+const autoPush =
+  !process.argv.includes('--no-push');
+
+const commit = new LocalGitAutoCommit({
+  watchDir,
+  workingDir,
+  autoPush,
+});
+
+commit.startWatching().catch((err) => {
+  console.error('Fatal error:', err);
   process.exit(1);
+});
+
+// Graceful shutdown
+process.on('SIGINT', () => {
+  console.log('\n[AutoCommit] Shutting down...');
+  process.exit(0);
 });

@@ -1,0 +1,43 @@
+name: Agent Dispatch - Route Tasks via OpenClaw
+
+on:
+  issues:
+    types: [labeled]
+  pull_request:
+    types: [labeled]
+
+jobs:
+  agent-dispatch:
+    runs-on: ubuntu-latest
+    if: |
+      contains(github.event.issue.labels.*.name, 'agent:cursor') ||
+      contains(github.event.issue.labels.*.name, 'agent:opencode') ||
+      contains(github.event.pull_request.labels.*.name, 'agent:cursor') ||
+      contains(github.event.pull_request.labels.*.name, 'agent:opencode')
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Detect agent and route task
+        id: route
+        env:
+          ORCHESTRATOR_BASE_URL: http://orchestrator:3011
+          ORCHESTRATOR_TOKEN: ${{ secrets.ORCHESTRATOR_TOKEN }}
+        run: |
+          # Determine which agent to invoke based on labels
+          AGENT=""
+          if echo "${{ join(github.event.issue.labels.*.name, ' ') }}${{ join(github.event.pull_request.labels.*.name, ' ') }}" | grep -q "agent:cursor"; then
+            AGENT="cursor"
+          elif echo "${{ join(github.event.issue.labels.*.name, ' ') }}${{ join(github.event.pull_request.labels.*.name, ' ') }}" | grep -q "agent:opencode"; then
+            AGENT="opencode"
+          fi
+
+          if [ -z "$AGENT" ]; then
+            echo "No agent label detected"
+            exit 0
+          fi
+
+          echo "Agent: $AGENT"
+          echo "This workflow is configured for future agent dispatch via OpenClaw"
+          echo "Current support: Label-based routing infrastructure is ready"

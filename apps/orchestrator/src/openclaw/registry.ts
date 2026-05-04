@@ -10,6 +10,7 @@ export type OpenClawTenantPermission = 'self' | 'cross-tenant-read' | 'cross-ten
 export type OpenClawSkillBinding =
   | 'opsly-orchestrator'
   | 'opsly-architect'
+  | 'opsly-architect-senior'
   | 'opsly-qa'
   | 'opsly-api'
   | 'opsly-llm'
@@ -146,57 +147,15 @@ const AGENT_REGISTRY = new Map<string, OpenClawAgentDescriptor>([
     },
   ],
   [
-    'local-cursor',
+    'codex-engineering',
     {
-      id: 'local-cursor',
-      role: 'executor',
-      capabilities: ['execute-local-prompt', 'open-cursor-ide', 'write-local-response'],
-      skillBinding: 'opsly-orchestrator',
-      targets: ['queue'],
-      modelTier: 'balanced',
-      tenantPermissions: ['self'],
-      defaultController: 'default',
-      enabled: true,
-    },
-  ],
-  [
-    'local-claude',
-    {
-      id: 'local-claude',
-      role: 'executor',
-      capabilities: ['execute-local-prompt', 'call-claude-agent-service', 'write-local-response'],
-      skillBinding: 'opsly-orchestrator',
-      targets: ['queue'],
+      id: 'codex-engineering',
+      role: 'architect',
+      capabilities: ['code-review', 'architecture-design', 'engineering-decisions', 'system-design'],
+      skillBinding: 'opsly-architect-senior',
+      targets: ['queue', 'skill', 'mcp'],
       modelTier: 'premium',
-      tenantPermissions: ['self'],
-      defaultController: 'default',
-      enabled: true,
-    },
-  ],
-  [
-    'local-copilot',
-    {
-      id: 'local-copilot',
-      role: 'executor',
-      capabilities: ['execute-local-prompt', 'call-copilot-agent-service', 'write-local-response'],
-      skillBinding: 'opsly-orchestrator',
-      targets: ['queue'],
-      modelTier: 'balanced',
-      tenantPermissions: ['self'],
-      defaultController: 'default',
-      enabled: true,
-    },
-  ],
-  [
-    'local-opencode',
-    {
-      id: 'local-opencode',
-      role: 'executor',
-      capabilities: ['execute-local-prompt', 'call-opencode-agent-service', 'write-local-response'],
-      skillBinding: 'opsly-orchestrator',
-      targets: ['queue'],
-      modelTier: 'balanced',
-      tenantPermissions: ['self'],
+      tenantPermissions: ['self', 'cross-tenant-read'],
       defaultController: 'default',
       enabled: true,
     },

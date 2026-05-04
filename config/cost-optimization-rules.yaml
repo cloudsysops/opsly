@@ -1,0 +1,203 @@
+# Cost Optimization Rules for LLM Provider Routing
+# These rules automatically select the most cost-effective provider for a given task
+
+version: 1.0
+description: Smart provider selection based on task characteristics and budget constraints
+
+rules:
+  # Ultra-cheap tier for small token counts
+  - id: rule_small_tokens_ultra_cheap
+    condition:
+      input_tokens_lt: 100
+      output_tokens_lt: 100
+    action:
+      prefer_provider: mistralai/mistral-7b-instruct  # $0.00002/$0.00006 per 1k
+      tier: ultra_cheap
+
+  # Cheap tier for code generation
+  - id: rule_code_generation
+    condition:
+      task_type: code_generation
+      complexity_level_le: 2
+    action:
+      prefer_provider: codellama_local  # Free, local
+      fallback: deepseek_chat           # $0.14/M fallback
+      tier: cheap
+
+  # Cheap tier for simple tasks
+  - id: rule_simple_inference
+    condition:
+      complexity_level_eq: 1
+      task_type_in:
+        - summarization
+        - simple_qa
+        - text_classification
+    action:
+      prefer_provider: codellama_local  # Free for code-adjacent
+      alternate: deepseek_chat          # DeepSeek flash
+      tertiary: ollama_local            # Ollama local
+      tier: cheap
+
+  # Balanced tier for medium tasks with longer output
+  - id: rule_medium_output
+    condition:
+      output_tokens_gte: 1000
+      output_tokens_lt: 4000
+      complexity_level_eq: 2
+    action:
+      prefer_provider: deepseek_v4      # $0.4/M for good value
+      fallback: claude_sonnet           # $3/M fallback
+      tier: balanced
+
+  # Value optimization: choose DeepSeek v4 over Sonnet for balanced tasks
+  - id: rule_deepseek_value
+    condition:
+      complexity_level_eq: 2
+      cost_budget_optimization: true
+    action:
+      prefer_provider: deepseek_v4      # $0.4/M vs Sonnet $3/M (7.5x cheaper)
+      tier: balanced
+
+  # Premium tier for complex tasks requiring best quality
+  - id: rule_complex_premium
+    condition:
+      complexity_level_eq: 3
+      task_type_in:
+        - architecture_review
+        - system_design
+        - security_analysis
+        - complex_reasoning
+    action:
+      prefer_provider: gpt4o            # Best quality
+      fallback: claude_sonnet           # Good alternative
+      tier: premium
+
+  # Architecture/engineering decisions always go premium
+  - id: rule_engineering_decision
+    condition:
+      task_type: engineering_decision
+      agent_role: architect
+    action:
+      prefer_provider: gpt4o            # Complex analysis
+      fallback: claude_sonnet
+      tier: premium
+      min_quality_threshold: 0.95
+
+  # Budget enforcement: when daily budget remaining is low, force cheap tier
+  - id: rule_budget_exhaustion
+    condition:
+      daily_budget_remaining_percent_lt: 20
+    action:
+      force_tier: cheap                 # Only cheap models
+      deny_tiers: [balanced, premium]
+      force_provider: ollama_local      # Absolute cheapest first
+      skip_fallbacks_to_paid: true
+
+  # Cost target enforcement: if target cost/day exceeded, downgrade
+  - id: rule_cost_target_overage
+    condition:
+      actual_cost_vs_target_percent_gt: 110
+      monthly_cumulative_trend: true
+    action:
+      suggest_tier_downgrade: true      # Suggest, don't force
+      alert_channel: cost_monitoring
+      can_escalate_to_skeptic: true
+
+  # Tenant-specific overrides
+  - id: rule_tenant_premium_override
+    condition:
+      tenant_tier_eq: enterprise
+      explicit_model_request: gpt4o
+    action:
+      prefer_provider: gpt4o
+      skip_cost_optimization: true
+      log_override: true
+
+
+# Fallback chain when primary provider is down
+fallback_chain:
+  deepseek_v4:
+    - deepseek_chat
+    - claude_sonnet
+    - gpt4o_mini
+
+  codellama_local:
+    - llama_local
+    - deepseek_chat
+    - gpt4o_mini
+
+  deepseek_chat:
+    - gpt4o_mini
+    - claude_haiku
+    - ollama_local
+
+  gpt4o:
+    - claude_sonnet
+    - deepseek_v4
+    - gpt4o_mini
+
+# Model tier definitions
+model_tiers:
+  cheap:
+    max_cost_per_1k: 0.00015
+    providers:
+      - ollama_local
+      - codellama_local
+      - deepseek_chat
+      - mistralai/mistral-7b-instruct
+      - claude_haiku
+      - gpt4o_mini
+
+  balanced:
+    max_cost_per_1k: 0.001
+    providers:
+      - deepseek_v4
+      - claude_sonnet
+      - gpt4o_mini
+
+  premium:
+    max_cost_per_1k: 999999  # Unlimited for best quality
+    providers:
+      - gpt4o
+      - claude_sonnet
+      - deepseek_v4
+
+# Special routing for agent roles
+agent_role_routing:
+  executor:
+    default_tier: cheap
+    can_escalate_to: balanced
+    escalation_conditions:
+      - task_complexity_high
+      - token_budget_exceeded
+
+  planner:
+    default_tier: balanced
+    can_escalate_to: premium
+    escalation_conditions:
+      - multi_agent_coordination
+      - strategic_planning
+
+  architect:
+    default_tier: premium
+    requires_approval_for_downgrade: true
+
+  validator:
+    default_tier: cheap
+    specialization: code_quality_checks
+
+  researcher:
+    default_tier: balanced
+    prefers_consistent_model: true
+
+# Cost tracking configuration
+cost_tracking:
+  enabled: true
+  log_all_requests: true
+  alert_threshold_daily_usd: 50
+  alert_threshold_monthly_usd: 1000
+  cost_attribution:
+    by_tenant: true
+    by_agent: true
+    by_task_type: true
+    by_workspace: true

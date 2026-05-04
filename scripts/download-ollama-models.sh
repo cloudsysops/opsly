@@ -11,6 +11,7 @@ MODELS=(
   "nemotron-3-nano:4b"
   "phi3:mini"
   "llama3.2:3b"
+  "codellama:34b"
 )
 
 pull_one() {

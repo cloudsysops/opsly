@@ -35,6 +35,7 @@
     "HANDOFF.md",
     "SPRINT-TRACKER.md",
     "VALIDATION-REPORT-2026-04-12.md",
+    "PARALLEL-EXECUTION-STATUS.md",
     "commitlint.config.js",
     "Dockerfile.hermes",
     "Dockerfile.local-worker",

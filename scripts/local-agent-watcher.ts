@@ -1,161 +1,304 @@
-import { randomUUID } from 'node:crypto';
-import { watch } from 'node:fs';
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
-import { basename, join, resolve } from 'node:path';
+#!/usr/bin/env node
+import * as fs from 'fs';
+import * as path from 'path';
+import { promises as fsp } from 'fs';
+import fetch from 'node-fetch';
+import * as yaml from 'yaml';
+import { watch } from 'chokidar';
 
-interface WatcherOptions {
-  cursorDir: string;
-  orchestratorUrl: string;
-  token: string;
-  tenantSlug: string;
-}
-
-interface PromptMetadataEntry {
-  prompt_path: string;
+interface PromptMetadata {
+  path: string;
+  filename: string;
   job_id?: string;
-  request_id: string;
-  status: 'submitted' | 'failed';
-  submitted_at: string;
+  status?: 'pending' | 'processing' | 'completed' | 'failed';
+  submitted_at?: string;
+  completed_at?: string;
   error?: string;
 }
 
-interface MetadataStore {
-  prompts: Record<string, PromptMetadataEntry>;
+interface PromptFrontmatter {
+  agent_role?: string;
+  max_steps?: number;
+  max_iterations?: number;
+  context?: Record<string, unknown>;
+  goal?: string;
+  priority?: number;
 }
 
-function argValue(name: string): string | undefined {
-  const idx = process.argv.indexOf(name);
-  return idx >= 0 ? process.argv[idx + 1] : undefined;
+interface LocalWatcherOptions {
+  cursorDir: string;
+  orchestratorUrl: string;
+  orchestratorToken?: string;
 }
 
-function parseOptions(): WatcherOptions {
-  const cursorDir = resolve(argValue('--cursor-dir') || '.cursor');
-  return {
-    cursorDir,
-    orchestratorUrl: (argValue('--orchestrator-url') || 'http://localhost:3011').replace(/\/+$/, ''),
-    token: argValue('--token') || process.env.PLATFORM_ADMIN_TOKEN || 'local-dev',
-    tenantSlug: argValue('--tenant-slug') || process.env.OPSLY_LOCAL_TENANT_SLUG || 'opsly',
-  };
-}
+class LocalPromptWatcher {
+  private cursorDir: string;
+  private promptsDir: string;
+  private responsesDir: string;
+  private metadataPath: string;
+  private metadata: Map<string, PromptMetadata> = new Map();
+  private orchestratorUrl: string;
+  private orchestratorToken: string;
+  private isProcessing = new Set<string>();
 
-async function readMetadata(path: string): Promise<MetadataStore> {
-  try {
-    const raw = await readFile(path, 'utf-8');
-    const parsed: unknown = JSON.parse(raw);
-    if (typeof parsed === 'object' && parsed !== null && !Array.isArray(parsed)) {
-      const p = parsed as Partial<MetadataStore>;
-      if (typeof p.prompts === 'object' && p.prompts !== null) {
-        return { prompts: p.prompts };
+  constructor(options: LocalWatcherOptions) {
+    this.cursorDir = options.cursorDir;
+    this.promptsDir = path.join(this.cursorDir, 'prompts');
+    this.responsesDir = path.join(this.promptsDir, 'responses');
+    this.metadataPath = path.join(this.promptsDir, '.metadata.json');
+    this.orchestratorUrl = options.orchestratorUrl;
+    this.orchestratorToken = options.orchestratorToken || process.env.PLATFORM_ADMIN_TOKEN || 'local-dev';
+  }
+
+  async initialize() {
+    // Create directories if they don't exist
+    await fsp.mkdir(this.promptsDir, { recursive: true });
+    await fsp.mkdir(this.responsesDir, { recursive: true });
+
+    // Load existing metadata
+    await this.loadMetadata();
+
+    console.log(`[LocalWatcher] Initialized at ${this.promptsDir}`);
+  }
+
+  private async loadMetadata() {
+    try {
+      const content = await fsp.readFile(this.metadataPath, 'utf-8');
+      const data = JSON.parse(content);
+      for (const [key, value] of Object.entries(data)) {
+        this.metadata.set(key, value as PromptMetadata);
+      }
+    } catch (err) {
+      // Metadata file doesn't exist yet, that's fine
+      this.metadata.clear();
+    }
+  }
+
+  private async saveMetadata() {
+    const data = Object.fromEntries(this.metadata);
+    await fsp.writeFile(this.metadataPath, JSON.stringify(data, null, 2));
+  }
+
+  private parsePromptFile(content: string): {
+    frontmatter: PromptFrontmatter;
+    body: string;
+  } {
+    const lines = content.split('\n');
+    let inFrontmatter = false;
+    const frontmatterLines: string[] = [];
+    let bodyStart = 0;
+
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+
+      if (i === 0 && line.trim() === '---') {
+        inFrontmatter = true;
+        continue;
+      }
+
+      if (inFrontmatter && line.trim() === '---') {
+        inFrontmatter = false;
+        bodyStart = i + 1;
+        break;
+      }
+
+      if (inFrontmatter) {
+        frontmatterLines.push(line);
       }
     }
-  } catch {
-    // First run.
-  }
-  return { prompts: {} };
-}
 
-async function writeMetadata(path: string, store: MetadataStore): Promise<void> {
-  await mkdir(resolve(path, '..'), { recursive: true });
-  await writeFile(path, `${JSON.stringify(store, null, 2)}\n`, 'utf-8');
-}
+    const frontmatterText = frontmatterLines.join('\n');
+    const body = lines.slice(bodyStart).join('\n').trim();
 
-function parseFrontmatterValue(content: string, key: string): string | undefined {
-  if (!content.startsWith('---\n')) {
-    return undefined;
-  }
-  const end = content.indexOf('\n---', 4);
-  if (end < 0) {
-    return undefined;
-  }
-  const raw = content.slice(4, end).split('\n');
-  for (const line of raw) {
-    const idx = line.indexOf(':');
-    if (idx <= 0) {
-      continue;
+    let frontmatter: PromptFrontmatter = {};
+    try {
+      frontmatter = yaml.parse(frontmatterText) || {};
+    } catch (err) {
+      console.warn(`[LocalWatcher] Failed to parse frontmatter: ${err}`);
     }
-    if (line.slice(0, idx).trim() === key) {
-      return line.slice(idx + 1).trim().replace(/^['"]|['"]$/g, '');
-    }
-  }
-  return undefined;
-}
 
-async function submitPrompt(promptPath: string, options: WatcherOptions): Promise<PromptMetadataEntry> {
-  const content = await readFile(promptPath, 'utf-8');
-  const requestId = randomUUID();
-  const agent = parseFrontmatterValue(content, 'agent') || parseFrontmatterValue(content, 'local_agent') || 'cursor';
-  const agentRole = parseFrontmatterValue(content, 'agent_role') || 'executor';
-  const maxStepsRaw = parseFrontmatterValue(content, 'max_steps');
-  const maxSteps = maxStepsRaw ? Number.parseInt(maxStepsRaw, 10) : 5;
-  const res = await fetch(`${options.orchestratorUrl}/api/local/prompt-submit`, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${options.token}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      tenant_slug: options.tenantSlug,
-      request_id: requestId,
-      prompt_path: promptPath,
-      local_agent: agent,
-      agent_role: agentRole,
-      max_steps: Number.isFinite(maxSteps) ? maxSteps : 5,
-    }),
-  });
-  const parsed: unknown = await res.json().catch(() => ({}));
-  const response = typeof parsed === 'object' && parsed !== null ? (parsed as Record<string, unknown>) : {};
-  if (!res.ok) {
-    throw new Error(typeof response.error === 'string' ? response.error : `submit failed: ${res.status}`);
+    return { frontmatter, body };
   }
-  return {
-    prompt_path: promptPath,
-    request_id: typeof response.request_id === 'string' ? response.request_id : requestId,
-    job_id: typeof response.job_id === 'string' ? response.job_id : undefined,
-    status: 'submitted',
-    submitted_at: new Date().toISOString(),
-  };
-}
 
-async function handlePrompt(promptPath: string, options: WatcherOptions): Promise<void> {
-  const metadataPath = join(options.cursorDir, 'prompts', '.metadata.json');
-  const store = await readMetadata(metadataPath);
-  if (store.prompts[promptPath]) {
-    return;
-  }
-  try {
-    store.prompts[promptPath] = await submitPrompt(promptPath, options);
-    await writeMetadata(metadataPath, store);
-    process.stdout.write(`[local-agent-watcher] submitted ${promptPath}\n`);
-  } catch (err) {
-    store.prompts[promptPath] = {
-      prompt_path: promptPath,
-      request_id: randomUUID(),
-      status: 'failed',
-      submitted_at: new Date().toISOString(),
-      error: err instanceof Error ? err.message : String(err),
-    };
-    await writeMetadata(metadataPath, store);
-    process.stderr.write(`[local-agent-watcher] failed ${promptPath}: ${store.prompts[promptPath].error}\n`);
-  }
-}
-
-void (async () => {
-  const options = parseOptions();
-  const promptsDir = join(options.cursorDir, 'prompts');
-  await mkdir(promptsDir, { recursive: true });
-  process.stdout.write(`[local-agent-watcher] watching ${promptsDir}\n`);
-
-  watch(promptsDir, (event, filename) => {
-    if (event !== 'rename' || !filename || !filename.endsWith('.md')) {
+  private async submitPrompt(
+    promptPath: string,
+    filename: string,
+    frontmatter: PromptFrontmatter,
+    body: string,
+  ) {
+    if (this.isProcessing.has(filename)) {
+      console.log(`[LocalWatcher] Already processing ${filename}, skipping`);
       return;
     }
-    const name = basename(filename);
-    if (name === 'README.md' || name.startsWith('response-')) {
+
+    this.isProcessing.add(filename);
+
+    try {
+      const payload = {
+        prompt_path: promptPath,
+        agent_role: frontmatter.agent_role || 'executor',
+        context: frontmatter.context || {},
+        goal: frontmatter.goal,
+        prompt_body: body,
+        max_steps: frontmatter.max_steps || 10,
+        max_iterations: frontmatter.max_iterations,
+        priority: frontmatter.priority || 50000,
+      };
+
+      console.log(`[LocalWatcher] Submitting ${filename}...`);
+
+      const response = await fetch(`${this.orchestratorUrl}/api/local/prompt-submit`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this.orchestratorToken}`,
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const error = await response.text();
+        throw new Error(`HTTP ${response.status}: ${error}`);
+      }
+
+      const result = (await response.json()) as { job_id: string };
+      const jobId = result.job_id;
+
+      // Update metadata
+      this.metadata.set(filename, {
+        path: promptPath,
+        filename,
+        job_id: jobId,
+        status: 'processing',
+        submitted_at: new Date().toISOString(),
+      });
+
+      await this.saveMetadata();
+      console.log(`[LocalWatcher] ✅ ${filename} → Job ${jobId}`);
+
+      // Start polling for completion
+      this.pollJobCompletion(filename, jobId);
+    } catch (err) {
+      console.error(`[LocalWatcher] ❌ Failed to submit ${filename}:`, err);
+      this.metadata.set(filename, {
+        path: promptPath,
+        filename,
+        status: 'failed',
+        error: String(err),
+        submitted_at: new Date().toISOString(),
+      });
+      await this.saveMetadata();
+    } finally {
+      this.isProcessing.delete(filename);
+    }
+  }
+
+  private async pollJobCompletion(filename: string, jobId: string, attempts = 0) {
+    const maxAttempts = 300; // 5 minutes with 1-second intervals
+    const pollInterval = 1000;
+
+    if (attempts >= maxAttempts) {
+      console.warn(`[LocalWatcher] Job ${jobId} timed out after ${attempts} attempts`);
       return;
     }
-    void handlePrompt(join(promptsDir, filename), options);
+
+    try {
+      const response = await fetch(
+        `${this.orchestratorUrl}/api/job-status/${jobId}`,
+        {
+          headers: {
+            'Authorization': `Bearer ${this.orchestratorToken}`,
+          },
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+
+      const status = (await response.json()) as { status: string };
+
+      if (status.status === 'completed' || status.status === 'failed') {
+        const meta = this.metadata.get(filename);
+        if (meta) {
+          meta.status = status.status as 'completed' | 'failed';
+          meta.completed_at = new Date().toISOString();
+          this.metadata.set(filename, meta);
+          await this.saveMetadata();
+          console.log(`[LocalWatcher] Job ${jobId} ${status.status}`);
+        }
+      } else {
+        // Still processing, poll again
+        setTimeout(() => this.pollJobCompletion(filename, jobId, attempts + 1), pollInterval);
+      }
+    } catch (err) {
+      console.error(`[LocalWatcher] Poll error for ${jobId}:`, err);
+      // Continue polling despite error
+      setTimeout(() => this.pollJobCompletion(filename, jobId, attempts + 1), pollInterval);
+    }
+  }
+
+  async startWatching() {
+    const watcher = watch(this.promptsDir, {
+      ignored: [
+        (path: string) => {
+          const basename = path.split('/').pop() || '';
+          return (
+            basename.startsWith('.') ||
+            basename === 'responses' ||
+            basename === '.metadata.json' ||
+            !basename.endsWith('.md')
+          );
+        },
+      ],
+      awaitWriteFinish: {
+        stabilityThreshold: 500,
+        pollInterval: 100,
+      },
+    });
+
+    watcher.on('add', async (filePath: string) => {
+      const filename = path.basename(filePath);
+      console.log(`[LocalWatcher] Detected new prompt: ${filename}`);
+
+      try {
+        const content = await fsp.readFile(filePath, 'utf-8');
+        const { frontmatter, body } = this.parsePromptFile(content);
+        await this.submitPrompt(filePath, filename, frontmatter, body);
+      } catch (err) {
+        console.error(`[LocalWatcher] Error processing ${filename}:`, err);
+      }
+    });
+
+    watcher.on('error', (err) => {
+      console.error('[LocalWatcher] Watcher error:', err);
+    });
+
+    console.log(`[LocalWatcher] Watching ${this.promptsDir} for changes...`);
+  }
+}
+
+// Main
+const cursorDir = process.argv.find((arg) => arg.startsWith('--cursor-dir='))?.split('=')[1] || '.cursor';
+const orchestratorUrl =
+  process.argv.find((arg) => arg.startsWith('--orchestrator-url='))?.split('=')[1] ||
+  'http://localhost:3011';
+
+const watcher = new LocalPromptWatcher({
+  cursorDir,
+  orchestratorUrl,
+});
+
+watcher
+  .initialize()
+  .then(() => watcher.startWatching())
+  .catch((err) => {
+    console.error('Fatal error:', err);
+    process.exit(1);
   });
-})().catch((err) => {
-  process.stderr.write(`[local-agent-watcher] ${err instanceof Error ? err.message : String(err)}\n`);
-  process.exit(1);
+
+// Graceful shutdown
+process.on('SIGINT', () => {
+  console.log('\n[LocalWatcher] Shutting down...');
+  process.exit(0);
 });

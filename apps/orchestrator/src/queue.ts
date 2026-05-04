@@ -4,6 +4,16 @@ import { buildQueueAddOptions } from './queue-opts.js';
 import { getJobTenantSlug } from './lib/tenant-context.js';
 import type { OrchestratorJob } from './types.js';
 
+export interface OpenClawQueueTask {
+  objective: string;
+  tenant_slug: string;
+  tenant_id?: string;
+  initiated_by: 'claude' | 'discord' | 'cron' | 'system';
+  plan?: 'startup' | 'business' | 'enterprise';
+  request_id?: string;
+  metadata?: Record<string, unknown>;
+}
+
 const REDIS_URL = process.env.REDIS_URL || 'redis://localhost:6379';
 const redisUrl = new URL(REDIS_URL);
 const passwordFromUrl = redisUrl.password ? decodeURIComponent(redisUrl.password) : '';
@@ -15,9 +25,15 @@ export const connection = {
 };
 
 export const orchestratorQueue = new Queue('openclaw', { connection });
-export const localAgentQueue = new Queue('local-agents', { connection });
-export const plannerQueue = new Queue('queue-planner', { connection });
-export const skepticQueue = new Queue('queue-skeptic', { connection });
+
+/** Local Agent Queue: Cursor, Claude, Copilot execution on local machines */
+export const localAgentQueue = new Queue('local-agents', {
+  connection,
+  defaultJobOptions: {
+    attempts: 2,
+    backoff: { type: 'exponential', delay: 2000 },
+  },
+});
 
 /** Cola sandbox clasificador de tareas (worker opcional: `OPSLY_AGENT_CLASSIFIER_WORKER_ENABLED`). */
 export const agentClassifierQueue = new Queue('agent-classifier', { connection });
@@ -39,9 +55,6 @@ export const hermesOrchestrationQueue = new Queue('hermes-orchestration', {
     backoff: { type: 'fixed', delay: 5000 },
   },
 });
-
-/** CloudSysOps Sales + Ops agents (worker opcional `OPSLY_CLOUDSYSOPS_AGENTS_WORKER_ENABLED`). */
-export const cloudsysopsAgentsQueue = new Queue('cloudsysops-agents', { connection });
 
 export async function enqueueJob(job: OrchestratorJob) {
   const opts = buildQueueAddOptions(job);
@@ -68,79 +81,26 @@ export async function enqueueJob(job: OrchestratorJob) {
   return bull;
 }
 
-export async function enqueueCloudSysOpsAgentJob(job: OrchestratorJob) {
-  if (job.type !== 'cloudsysops_sales_message' && job.type !== 'cloudsysops_ops_complete') {
-    throw new Error(`enqueueCloudSysOpsAgentJob: unsupported type ${job.type}`);
-  }
-  const opts = buildQueueAddOptions(job);
-  const bull = await cloudsysopsAgentsQueue.add(job.type, job, opts);
+/** Enqueue job to local-agents queue for execution on local machines (Cursor, Claude, etc) */
+export async function enqueueLocalAgentJob(jobName: string, payload: Record<string, unknown>, requestId: string) {
+  const bull = await localAgentQueue.add(
+    jobName, // 'local_cursor', 'local_claude', 'local_copilot', etc
+    { payload },
+    {
+      jobId: requestId,
+      priority: 40000,
+      attempts: 2,
+      backoff: { type: 'exponential', delay: 2000 },
+    }
+  );
 
   logJobEnqueue({
     event: 'job_enqueue',
-    job_type: job.type,
-    task_id: job.taskId,
-    tenant_slug: getJobTenantSlug(job),
-    tenant_id: job.tenant_id,
-    plan: job.plan,
-    request_id: job.request_id,
-    idempotency_key: job.idempotency_key,
-    bullmq_job_id_custom: Boolean(opts.jobId),
-    initiated_by: job.initiated_by,
-    agent_role: job.agent_role,
-    cost_budget_usd: job.cost_budget_usd,
-    autonomy_risk: job.autonomy_risk,
-    queue_priority: opts.priority,
-    metadata: { ...(job.metadata ?? {}), queue: 'cloudsysops-agents' },
-  });
+    job_type: jobName,
+    request_id: requestId,
+    queue: 'local-agents',
+    initiated_by: 'system',
+  } as any);
 
   return bull;
-}
-
-export async function enqueueLocalAgentJob(job: OrchestratorJob) {
-  const opts = buildQueueAddOptions(job);
-  const bull = await localAgentQueue.add(job.type, job, opts);
-
-  logJobEnqueue({
-    event: 'job_enqueue',
-    job_type: job.type,
-    task_id: job.taskId,
-    tenant_slug: getJobTenantSlug(job),
-    tenant_id: job.tenant_id,
-    plan: job.plan,
-    request_id: job.request_id,
-    idempotency_key: job.idempotency_key,
-    bullmq_job_id_custom: Boolean(opts.jobId),
-    initiated_by: job.initiated_by,
-    agent_role: job.agent_role,
-    cost_budget_usd: job.cost_budget_usd,
-    autonomy_risk: job.autonomy_risk,
-    queue_priority: opts.priority,
-    metadata: { ...(job.metadata ?? {}), queue: 'local-agents' },
-  });
-
-  return bull;
-}
-
-export interface OpenClawQueueTask {
-  request_id: string;
-  tenant_id: string;
-  tenant_slug: string;
-  objective: string;
-  initiated_by: OrchestratorJob['initiated_by'];
-  plan?: OrchestratorJob['plan'];
-  metadata?: Record<string, unknown>;
-}
-
-export async function enqueuePlannerTask(task: OpenClawQueueTask) {
-  return plannerQueue.add('planner_task', task, {
-    removeOnComplete: true,
-    removeOnFail: false,
-  });
-}
-
-export async function enqueueSkepticTask(task: OpenClawQueueTask) {
-  return skepticQueue.add('skeptic_task', task, {
-    removeOnComplete: true,
-    removeOnFail: false,
-  });
 }

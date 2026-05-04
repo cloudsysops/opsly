@@ -17,13 +17,14 @@ export type WorkerConcurrencyKey =
   | 'agent-classifier'
   | 'evolution'
   | 'terminal'
-  | 'local_cursor'
-  | 'local_claude'
-  | 'local_copilot'
-  | 'local_opencode'
-  | 'defense_audit'
+  | 'local-cursor'
+  | 'local-claude'
+  | 'local-copilot'
+  | 'local-opencode'
   | 'cloudsysops_agents'
-  | 'test_validation';
+  | 'defense_audit'
+  | 'openclaw-planner'
+  | 'openclaw-skeptic';
 
 const FULL_STACK_DEFAULTS: Record<WorkerConcurrencyKey, number> = {
   cursor: 3,
@@ -42,13 +43,14 @@ const FULL_STACK_DEFAULTS: Record<WorkerConcurrencyKey, number> = {
   'agent-classifier': 2,
   evolution: 1,
   terminal: 2,
-  local_cursor: 1,
-  local_claude: 1,
-  local_copilot: 1,
-  local_opencode: 1,
-  defense_audit: 1,
-  cloudsysops_agents: 2,
-  test_validation: 1,
+  'local-cursor': 2,
+  'local-claude': 2,
+  'local-copilot': 1,
+  'local-opencode': 1,
+  'cloudsysops_agents': 2,
+  'defense_audit': 2,
+  'openclaw-planner': 2,
+  'openclaw-skeptic': 1,
 };
 
 const DISTRIBUTED_WORKER_DEFAULTS: Record<WorkerConcurrencyKey, number> = {
@@ -68,13 +70,14 @@ const DISTRIBUTED_WORKER_DEFAULTS: Record<WorkerConcurrencyKey, number> = {
   'agent-classifier': 1,
   evolution: 1,
   terminal: 1,
-  local_cursor: 1,
-  local_claude: 1,
-  local_copilot: 1,
-  local_opencode: 1,
-  defense_audit: 1,
-  cloudsysops_agents: 1,
-  test_validation: 1,
+  'local-cursor': 1,
+  'local-claude': 1,
+  'local-copilot': 1,
+  'local-opencode': 1,
+  'cloudsysops_agents': 1,
+  'defense_audit': 1,
+  'openclaw-planner': 1,
+  'openclaw-skeptic': 1,
 };
 
 const ENV_NAMES: Record<WorkerConcurrencyKey, string> = {
@@ -94,13 +97,14 @@ const ENV_NAMES: Record<WorkerConcurrencyKey, string> = {
   'agent-classifier': 'ORCHESTRATOR_AGENT_CLASSIFIER_CONCURRENCY',
   evolution: 'ORCHESTRATOR_EVOLUTION_CONCURRENCY',
   terminal: 'ORCHESTRATOR_TERMINAL_CONCURRENCY',
-  local_cursor: 'ORCHESTRATOR_LOCAL_CURSOR_CONCURRENCY',
-  local_claude: 'ORCHESTRATOR_LOCAL_CLAUDE_CONCURRENCY',
-  local_copilot: 'ORCHESTRATOR_LOCAL_COPILOT_CONCURRENCY',
-  local_opencode: 'ORCHESTRATOR_LOCAL_OPENCODE_CONCURRENCY',
-  defense_audit: 'ORCHESTRATOR_DEFENSE_AUDIT_CONCURRENCY',
-  cloudsysops_agents: 'ORCHESTRATOR_CLOUDSYSOPS_AGENTS_CONCURRENCY',
-  test_validation: 'ORCHESTRATOR_TEST_VALIDATION_CONCURRENCY',
+  'local-cursor': 'ORCHESTRATOR_LOCAL_CURSOR_CONCURRENCY',
+  'local-claude': 'ORCHESTRATOR_LOCAL_CLAUDE_CONCURRENCY',
+  'local-copilot': 'ORCHESTRATOR_LOCAL_COPILOT_CONCURRENCY',
+  'local-opencode': 'ORCHESTRATOR_LOCAL_OPENCODE_CONCURRENCY',
+  'cloudsysops_agents': 'ORCHESTRATOR_CLOUDSYSOPS_AGENTS_CONCURRENCY',
+  'defense_audit': 'ORCHESTRATOR_DEFENSE_AUDIT_CONCURRENCY',
+  'openclaw-planner': 'ORCHESTRATOR_OPENCLAW_PLANNER_CONCURRENCY',
+  'openclaw-skeptic': 'ORCHESTRATOR_OPENCLAW_SKEPTIC_CONCURRENCY',
 };
 
 function parsePositiveInt(raw: string | undefined): number | null {
