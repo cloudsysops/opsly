@@ -56,16 +56,13 @@ async function ensureSchema(client: pg.PoolClient): Promise<void> {
 }
 
 async function embedText(text: string): Promise<number[]> {
-  const key = process.env.OPENAI_API_KEY?.trim();
-  if (!key) {
-    throw new Error('OPENAI_API_KEY requerido para embeddings de knowledge-base');
-  }
-  const res = await fetch('https://api.openai.com/v1/embeddings', {
+  const gatewayUrl =
+    process.env.LLM_GATEWAY_URL ??
+    process.env.ORCHESTRATOR_LLM_GATEWAY_URL ??
+    'http://127.0.0.1:3010';
+  const res = await fetch(`${gatewayUrl}/v1/embeddings`, {
     method: 'POST',
-    headers: {
-      Authorization: `Bearer ${key}`,
-      'Content-Type': 'application/json',
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       model: EMBED_MODEL,
       input: text.slice(0, 8000),
@@ -73,14 +70,14 @@ async function embedText(text: string): Promise<number[]> {
   });
   if (!res.ok) {
     const t = await res.text();
-    throw new Error(`embeddings HTTP ${res.status}: ${t.slice(0, 200)}`);
+    throw new Error(`llm-gateway embeddings HTTP ${res.status}: ${t.slice(0, 200)}`);
   }
   const body = (await res.json()) as {
     data?: { embedding?: number[] }[];
   };
   const emb = body.data?.[0]?.embedding;
   if (!emb || emb.length !== EMBED_DIM) {
-    throw new Error('embedding inválido');
+    throw new Error('embedding inválido desde llm-gateway');
   }
   return emb;
 }

@@ -4,8 +4,6 @@
  * @see apps/orchestrator/src/runtime/interfaces/memory.interface.ts
  */
 
-import { createOpenAI } from '@ai-sdk/openai';
-import { embed } from 'ai';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import type { Redis } from 'ioredis';
 
@@ -19,8 +17,6 @@ export interface SupabaseMemoryAdapterOptions {
   matchThreshold?: number;
   /** Límite por defecto de fragmentos en `querySemantic`. */
   defaultSemanticLimit?: number;
-  /** API key OpenAI; por defecto `process.env.OPENAI_API_KEY`. */
-  openaiApiKey?: string;
 }
 
 type MatchTenantEmbeddingRow = {
@@ -32,12 +28,11 @@ type MatchTenantEmbeddingRow = {
 /**
  * - `getWorkingContext`: Hash Redis `opsly:oar:working:{tenantSlug}:{sessionId}` (campos string; valores JSON cuando aplica).
  * - `appendObservation`: inserta en `platform.agent_episode_logs`.
- * - `querySemantic`: embeddings con AI SDK + RPC `match_tenant_embeddings` sobre `platform.tenant_embeddings`.
+ * - `querySemantic`: embeddings vía LLM Gateway `POST /v1/embeddings` + RPC `match_tenant_embeddings`.
  */
 export class SupabaseMemoryAdapter implements MemoryInterface {
   private readonly matchThreshold: number;
   private readonly defaultSemanticLimit: number;
-  private readonly openaiApiKey: string | undefined;
 
   constructor(
     private readonly redis: Redis,
@@ -46,7 +41,6 @@ export class SupabaseMemoryAdapter implements MemoryInterface {
   ) {
     this.matchThreshold = options.matchThreshold ?? 0.72;
     this.defaultSemanticLimit = options.defaultSemanticLimit ?? 5;
-    this.openaiApiKey = options.openaiApiKey?.trim() ?? process.env.OPENAI_API_KEY?.trim();
   }
 
   private static workingContextKey(tenantSlug: string, sessionId: string): string {
@@ -94,19 +88,34 @@ export class SupabaseMemoryAdapter implements MemoryInterface {
     query: string,
     limit?: number
   ): Promise<MemoryFragment[]> {
-    const apiKey = this.openaiApiKey;
-    if (!apiKey || query.trim().length === 0) {
+    if (query.trim().length === 0) {
       return [];
     }
 
-    const openai = createOpenAI({ apiKey });
+    const gatewayUrl =
+      process.env.LLM_GATEWAY_URL ??
+      process.env.ORCHESTRATOR_LLM_GATEWAY_URL ??
+      'http://127.0.0.1:3010';
     const text = query.length > 8000 ? query.slice(0, 8000) : query;
-    const { embedding } = await embed({
-      model: openai.embedding(EMBED_MODEL),
-      value: text,
-    });
 
-    if (!Array.isArray(embedding) || embedding.length !== EMBED_DIM) {
+    let embedding: number[];
+    try {
+      const res = await fetch(`${gatewayUrl}/v1/embeddings`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ model: EMBED_MODEL, input: text }),
+      });
+      if (!res.ok) {
+        throw new Error(`llm-gateway embeddings HTTP ${res.status}`);
+      }
+      const body = (await res.json()) as { data?: { embedding?: number[] }[] };
+      const emb = body.data?.[0]?.embedding;
+      if (!emb || emb.length !== EMBED_DIM) {
+        throw new Error('embedding inválido desde llm-gateway');
+      }
+      embedding = emb;
+    } catch (e) {
+      process.stderr.write(`[SupabaseMemoryAdapter] embeddings: ${e instanceof Error ? e.message : String(e)}\n`);
       return [];
     }
 

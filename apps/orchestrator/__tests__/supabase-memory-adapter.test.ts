@@ -1,22 +1,25 @@
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type Redis from 'ioredis';
 
 import { SupabaseMemoryAdapter } from '../src/runtime/adapters/supabase-memory-adapter.js';
 
-vi.mock('ai', () => ({
-  embed: vi.fn(async () => ({
-    embedding: Array.from({ length: 1536 }, (_, i) => (i === 0 ? 1 : 0)),
-  })),
-}));
-
 function redisStub(hgetall: ReturnType<typeof vi.fn>): Redis {
   return { hgetall } as unknown as Redis;
 }
 
+const embedding1536 = (): number[] =>
+  Array.from({ length: 1536 }, (_, i) => (i === 0 ? 1 : 0));
+
 describe('SupabaseMemoryAdapter', () => {
+  beforeEach(() => {
+    vi.stubEnv('LLM_GATEWAY_URL', 'http://gateway.test');
+  });
+
   afterEach(() => {
     vi.clearAllMocks();
+    vi.unstubAllEnvs();
+    vi.unstubAllGlobals();
   });
 
   it('getWorkingContext devuelve objeto vacío si Redis no tiene hash', async () => {
@@ -54,15 +57,22 @@ describe('SupabaseMemoryAdapter', () => {
     });
   });
 
-  it('querySemantic usa RPC match_tenant_embeddings y mapea MemoryFragment', async () => {
+  it('querySemantic usa gateway /v1/embeddings y RPC match_tenant_embeddings', async () => {
+    const emb = embedding1536();
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => ({
+        ok: true,
+        json: async () => ({ data: [{ embedding: emb }] }),
+      })) as unknown as typeof fetch
+    );
+
     const rpc = vi.fn().mockResolvedValue({
       data: [{ id: 'doc-1', content: 'hello', similarity: 0.91 }],
       error: null,
     });
     const sb = { rpc } as unknown as SupabaseClient;
-    const adapter = new SupabaseMemoryAdapter(redisStub(vi.fn()), sb, {
-      openaiApiKey: 'sk-test',
-    });
+    const adapter = new SupabaseMemoryAdapter(redisStub(vi.fn()), sb);
     const out = await adapter.querySemantic('acme', 'buscar algo', 3);
     expect(out).toHaveLength(1);
     expect(out[0]).toEqual({
@@ -70,6 +80,12 @@ describe('SupabaseMemoryAdapter', () => {
       content: 'hello',
       relevanceScore: 0.91,
     });
+    expect(vi.mocked(fetch)).toHaveBeenCalledWith(
+      'http://gateway.test/v1/embeddings',
+      expect.objectContaining({
+        method: 'POST',
+      })
+    );
     expect(rpc).toHaveBeenCalledWith(
       'match_tenant_embeddings',
       expect.objectContaining({
@@ -80,14 +96,19 @@ describe('SupabaseMemoryAdapter', () => {
     );
     const call = rpc.mock.calls[0];
     const arg = call?.[1] as { query_embedding?: number[] };
-    expect(Array.isArray(arg?.query_embedding)).toBe(true);
-    expect(arg?.query_embedding?.length).toBe(1536);
+    expect(arg?.query_embedding).toEqual(emb);
   });
 
-  it('querySemantic devuelve [] sin OPENAI_API_KEY', async () => {
-    const adapter = new SupabaseMemoryAdapter(redisStub(vi.fn()), {} as SupabaseClient, {
-      openaiApiKey: '',
-    });
+  it('querySemantic devuelve [] si el gateway responde error HTTP', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => ({
+        ok: false,
+        status: 503,
+        text: async () => 'unavailable',
+      })) as unknown as typeof fetch
+    );
+    const adapter = new SupabaseMemoryAdapter(redisStub(vi.fn()), {} as SupabaseClient);
     await expect(adapter.querySemantic('acme', 'x')).resolves.toEqual([]);
   });
 });
