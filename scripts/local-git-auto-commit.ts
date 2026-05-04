@@ -120,6 +120,16 @@ class LocalGitAutoCommit {
     }
   }
 
+  private async hasValidationGuard(jobId: string): Promise<boolean> {
+    try {
+      const guardPath = path.join(this.workingDir, '.cursor', '.validation', `${jobId}.guard`);
+      await fsp.access(guardPath);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
   async startWatching() {
     const watcher = watch(this.watchDir, {
       ignored: [
@@ -148,6 +158,17 @@ class LocalGitAutoCommit {
         await new Promise((resolve) => setTimeout(resolve, 500));
 
         const { jobId, agentRole } = await this.parseResponse(filePath);
+
+        // Check if validation orchestrator already handled this
+        const hasGuard = await this.hasValidationGuard(jobId);
+        if (hasGuard) {
+          console.log(
+            `[AutoCommit] ⏭️  Skipping ${filename} - validation orchestrator already handled this (guard found)`,
+          );
+          this.committedFiles.add(filename);
+          return;
+        }
+
         await this.commitAndPush(filePath, jobId, agentRole);
       } catch (err) {
         console.error(`[AutoCommit] Error processing ${filename}:`, err);

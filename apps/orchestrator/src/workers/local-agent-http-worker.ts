@@ -8,6 +8,7 @@
  * - local_opencode
  *
  * Routes to appropriate HTTP endpoint based on job.name
+ * Integrates with ValidationOrchestrator for validation → decision → commit flow
  */
 
 import { Job, Worker, UnrecoverableError } from 'bullmq';
@@ -16,6 +17,8 @@ import * as path from 'path';
 import { getAgentServiceRegistry } from '../lib/agent-service-registry.js';
 import { logWorkerLifecycle } from '../observability/worker-log.js';
 import { getWorkerConcurrency } from '../worker-concurrency.js';
+import { createValidationOrchestrator } from '../lib/validation-orchestrator.js';
+import { writeValidationGuard, extractJobIdFromPath } from '../lib/validation-utils.js';
 
 interface LocalAgentPayload {
   prompt_content?: string;
@@ -32,6 +35,10 @@ interface LocalAgentResponse {
   response_path?: string;
   error?: string;
   execution_time_ms?: number;
+  validation_decision?: {
+    action: 'commit' | 'iterate' | 'escalate';
+    reason: string;
+  };
 }
 
 let unifiedWorkerInstance: Worker | null = null;
@@ -45,6 +52,8 @@ async function processLocalAgentJob(
   registry: ReturnType<typeof getAgentServiceRegistry>
 ): Promise<LocalAgentResponse> {
   const startTime = Date.now();
+  const cursorDir = path.join(process.cwd(), '.cursor');
+  const validationOrchestrator = createValidationOrchestrator(cursorDir);
 
   try {
     await registry.loadConfig();
@@ -52,6 +61,7 @@ async function processLocalAgentJob(
     // Route to appropriate service based on job type
     let serviceUrl: string | null = null;
     let llmGatewayUrl = process.env.LLM_GATEWAY_URL || 'http://localhost:3010';
+    let responsePath: string | null = null;
 
     if (jobType === 'local_cursor') {
       const service = await registry.getService('cursor');
@@ -78,11 +88,7 @@ async function processLocalAgentJob(
       }
 
       const result = await response.json() as any;
-      return {
-        success: true,
-        response_path: result.response_path,
-        execution_time_ms: Date.now() - startTime,
-      };
+      responsePath = result.response_path;
     } else if (jobType === 'local_claude') {
       console.log(`[LocalAgentWorker] Claude: calling LLM Gateway at ${llmGatewayUrl}`);
       const response = await fetch(`${llmGatewayUrl}/chat`, {
@@ -104,10 +110,10 @@ async function processLocalAgentJob(
       const responseText = result.content || result.message || '';
 
       // Write response to file
-      const responsesDir = path.join(process.cwd(), '.cursor', 'responses');
+      const responsesDir = path.join(cursorDir, 'responses');
       await fsp.mkdir(responsesDir, { recursive: true });
 
-      const responsePath = path.join(responsesDir, `response-${job_id}.md`);
+      responsePath = path.join(responsesDir, `response-${job_id}.md`);
       const responseContent = `---
 job_id: ${job_id}
 agent_role: ${agent_role}
@@ -121,15 +127,42 @@ ${responseText}
 `;
 
       await fsp.writeFile(responsePath, responseContent, 'utf-8');
+    } else {
+      throw new UnrecoverableError(`Unknown job type: ${jobType}`);
+    }
+
+    // Validate response and decide next action (validation orchestration)
+    if (responsePath) {
+      console.log(`[LocalAgentWorker] Starting validation orchestration for ${responsePath}`);
+      const decision = await validationOrchestrator.validateAndDecide(
+        job_id,
+        agent_role,
+        responsePath,
+        1, // iteration count
+        3, // max iterations
+      );
+
+      console.log(`[LocalAgentWorker] Validation decision: ${decision.action} - ${decision.reason}`);
+
+      // Write validation guard to prevent double-commits
+      await writeValidationGuard(job_id, decision.action, path.join(cursorDir, '.validation'));
 
       return {
         success: true,
         response_path: responsePath,
         execution_time_ms: Date.now() - startTime,
+        validation_decision: {
+          action: decision.action,
+          reason: decision.reason,
+        },
       };
-    } else {
-      throw new UnrecoverableError(`Unknown job type: ${jobType}`);
     }
+
+    return {
+      success: true,
+      response_path: responsePath || undefined,
+      execution_time_ms: Date.now() - startTime,
+    };
   } catch (err) {
     const errorMsg = err instanceof Error ? err.message : String(err);
     console.error(`[LocalAgentWorker] Job ${job_id} error:`, errorMsg);
