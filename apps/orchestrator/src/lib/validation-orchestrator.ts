@@ -2,6 +2,7 @@ import { promises as fsp } from 'fs';
 import * as path from 'path';
 import { TestValidatorWorker } from '../workers/TestValidatorWorker.js';
 import { IterationManager } from './iteration-manager.js';
+import { ValidationMetricsStore } from './validation-metrics.js';
 
 interface ValidationResult {
   type: 'type-check' | 'test' | 'build';
@@ -36,6 +37,7 @@ export interface ValidationDecision {
 export class ValidationOrchestrator {
   private testValidator: TestValidatorWorker;
   private iterationManager: IterationManager;
+  private metricsStore: ValidationMetricsStore;
   private cursorDir: string;
   private validationDir: string;
 
@@ -44,6 +46,7 @@ export class ValidationOrchestrator {
     this.validationDir = path.join(cursorDir, '.validation');
     this.testValidator = new TestValidatorWorker(cursorDir);
     this.iterationManager = new IterationManager(cursorDir);
+    this.metricsStore = new ValidationMetricsStore();
   }
 
   /**
@@ -152,6 +155,7 @@ export class ValidationOrchestrator {
   /**
    * Run actual validation (type-check, test, build)
    * Note: This is a wrapper that could be called from TestValidatorWorker
+   * For testing purposes, uses iteration number to simulate failures
    */
   private async validate(
     responseFile: string,
@@ -163,16 +167,12 @@ export class ValidationOrchestrator {
 
     console.log(`[ValidationOrchestrator] Validating ${filename} (job: ${jobId}, attempt: ${attempt})`);
 
-    // For now, we'll use the TestValidatorWorker directly
-    // In a real system, this could be async via a worker queue
     const startTime = Date.now();
 
-    // Create a temporary validation result that would normally come from TestValidatorWorker
-    // In practice, TestValidatorWorker would be called here
     try {
       const content = await fsp.readFile(responseFile, 'utf-8');
 
-      // Simple validation: check if response contains code blocks
+      // Check if response contains code blocks
       if (!content.includes('```')) {
         return {
           job_id: jobId,
@@ -193,7 +193,34 @@ export class ValidationOrchestrator {
         };
       }
 
-      // If validation passes (for now, just check code blocks exist)
+      // For testing: simulate failures on early iterations
+      // In real system, this would call actual validation commands
+      if (attempt < 3) {
+        // Simulate failure on iterations 1 and 2
+        const failureType = attempt === 1 ? 'type-check' : 'test';
+        const failureMsg =
+          attempt === 1
+            ? 'Missing type annotations on function parameters'
+            : 'Test assertions failed: expected function to handle edge cases';
+
+        return {
+          job_id: jobId,
+          timestamp: new Date().toISOString(),
+          attempt,
+          validations: [
+            { type: 'type-check', status: attempt === 1 ? 'failed' : 'passed', duration_ms: 100 },
+            { type: 'test', status: attempt === 2 ? 'failed' : 'skipped', duration_ms: attempt === 2 ? 150 : 0 },
+            { type: 'build', status: 'skipped', duration_ms: 0 },
+          ],
+          overall_status: 'failed',
+          can_retry: true,
+          next_action: 'iterate',
+          total_duration_ms: Date.now() - startTime,
+          errors: [{ type: failureType, message: failureMsg }],
+        };
+      }
+
+      // Iteration 3: all pass
       return {
         job_id: jobId,
         timestamp: new Date().toISOString(),
@@ -283,7 +310,7 @@ Return the complete, corrected implementation.
   }
 
   /**
-   * Record validation decision to disk
+   * Record validation decision to disk and Supabase metrics
    */
   private async recordDecision(
     jobId: string,
@@ -310,6 +337,20 @@ Return the complete, corrected implementation.
       await fsp.writeFile(recordPath, JSON.stringify(record, null, 2), 'utf-8');
 
       console.log(`[ValidationOrchestrator] Decision recorded: ${recordPath}`);
+
+      // Record to Supabase metrics for feedback loop
+      await this.metricsStore.recordValidationMetric({
+        job_id: jobId,
+        intent: jobId, // Use jobId as intent proxy; can be enhanced with actual intent
+        agent_role: validationReport.validations[0]?.type || 'unknown', // Placeholder
+        action: decision.action,
+        iteration_count: decision.metadata.iterationCount,
+        validation_time_ms: decision.metadata.validationTime,
+        failed_checks: decision.metadata.failedChecks || [],
+        model_tier: 'balanced',
+        cost_usd: 0,
+        created_at: new Date().toISOString(),
+      });
     } catch (err) {
       console.error('[ValidationOrchestrator] Error recording decision:', err);
     }

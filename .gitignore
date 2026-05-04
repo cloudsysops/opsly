@@ -26,6 +26,11 @@ tools/agents/prompts/secrets-*.md
 
 # Cursor / entorno local
 .cursor/mcp.json
+.cursor/responses/
+.cursor/.validation/
+.cursor/.ipc/
+.cursor/.metadata.json
+.cursor/prompts/.metadata.json
 .env.local
 .env*.local
 .env.worker

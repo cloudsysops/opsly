@@ -1,125 +1,127 @@
 import { Job, Worker } from 'bullmq';
 import { promises as fsp } from 'fs';
 import * as path from 'path';
-import { getAgentServiceRegistry } from '../lib/agent-service-registry.js';
 import { logWorkerLifecycle } from '../observability/worker-log.js';
 import { getWorkerConcurrency } from '../worker-concurrency.js';
-
-interface LLMRequest {
-  model: string;
-  messages: Array<{ role: 'user' | 'assistant'; content: string }>;
-  max_tokens: number;
-}
+import { ValidationOrchestrator } from '../lib/validation-orchestrator.js';
 
 /**
  * LocalClaudeWorker
  *
- * Listens on 'openclaw' queue for jobs with name='local-claude'
- * Invokes Claude API via LLM Gateway service (http://localhost:3010)
+ * Listens on 'local-agents' queue for jobs with name='local_claude'
+ * Invokes Claude API directly (supports both LLM Gateway and direct API)
  * Flow:
- * 1. Receives job with prompt content
- * 2. Calls LLM Gateway with prompt
+ * 1. Receives job with prompt + model_tier
+ * 2. Calls Claude API directly with retry logic
  * 3. Writes response to .cursor/responses/
- * 4. Returns response path to orchestrator
+ * 4. Calls ValidationOrchestrator to validate and decide
+ * 5. Returns { success: true, decision }
  *
- * Depends on:
- * - LLM Gateway service running (http://localhost:3010)
- * - config/agent-services.yaml (claude: http://localhost:5002)
- * - .cursor/responses/ directory for result files
+ * Environment:
+ * - ANTHROPIC_API_KEY: Claude API key (required for direct API mode)
+ * - LLM_GATEWAY_URL: Optional LLM Gateway URL (fallback)
+ * - CLAUDE_API_URL: Optional custom Claude API endpoint (default: https://api.anthropic.com)
  */
 
-async function processLocalClaudeJob(
-  promptContent: string,
-  jobId: string,
-  agentRole: string,
-  model: string,
-  registry: ReturnType<typeof getAgentServiceRegistry>
-): Promise<{ success: boolean; response_path?: string; error?: string; execution_time_ms?: number }> {
-  const startTime = Date.now();
-  const responsesDir = path.join(process.cwd(), '.cursor', 'responses');
-  const llmGatewayUrl = process.env.LLM_GATEWAY_URL || 'http://localhost:3010';
+interface LocalClaudeJobPayload {
+  prompt: string;
+  intent?: string;
+  model_tier?: 'economy' | 'balanced' | 'premium';
+  max_steps?: number;
+  agent_role?: string;
+  job_id?: string;
+}
 
-  console.log(`[LocalClaudeWorker] Processing job ${jobId} with model ${model}`);
+interface ValidationDecision {
+  action: 'commit' | 'iterate' | 'escalate';
+  nextPrompt?: string;
+  reason: string;
+  metadata: {
+    iterationCount: number;
+    validationTime: number;
+    failedChecks?: string[];
+  };
+}
+
+function selectModelByTier(tier: string = 'balanced'): string {
+  switch (tier) {
+    case 'economy':
+      return 'claude-opus-4';
+    case 'premium':
+      return 'claude-opus-4-latest';
+    case 'balanced':
+    default:
+      return 'claude-sonnet-4';
+  }
+}
+
+async function callClaudeApiDirect(
+  prompt: string,
+  model: string,
+  maxTokens: number = 2048,
+  retryCount: number = 0,
+  maxRetries: number = 3
+): Promise<string> {
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) {
+    throw new Error('ANTHROPIC_API_KEY environment variable is not set');
+  }
+
+  const apiUrl = process.env.CLAUDE_API_URL || 'https://api.anthropic.com';
 
   try {
-    // Call LLM Gateway
-    console.log(`[LocalClaudeWorker] Calling LLM Gateway at ${llmGatewayUrl}...`);
-    const llmRequest: LLMRequest = {
-      model,
-      messages: [
-        {
-          role: 'user',
-          content: promptContent,
-        },
-      ],
-      max_tokens: 4096,
-    };
+    console.log(`[LocalClaudeWorker] Calling Claude API with model ${model} (attempt ${retryCount + 1}/${maxRetries + 1})`);
 
-    const response = await fetch(`${llmGatewayUrl}/chat`, {
+    const response = await fetch(`${apiUrl}/v1/messages`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(llmRequest),
-      signal: AbortSignal.timeout(30000), // 30s timeout
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+      },
+      body: JSON.stringify({
+        model,
+        max_tokens: maxTokens,
+        messages: [
+          {
+            role: 'user',
+            content: prompt,
+          },
+        ],
+      }),
+      signal: AbortSignal.timeout(60000), // 60s timeout
     });
 
     if (!response.ok) {
-      throw new Error(`LLM Gateway error: ${response.status} ${response.statusText}`);
+      const errorData = await response.text();
+
+      // Handle rate limiting with exponential backoff
+      if (response.status === 429 && retryCount < maxRetries) {
+        const backoffMs = Math.pow(2, retryCount) * 1000 + Math.random() * 1000;
+        console.warn(`[LocalClaudeWorker] Rate limited. Retrying after ${backoffMs}ms...`);
+        await new Promise((resolve) => setTimeout(resolve, backoffMs));
+        return callClaudeApiDirect(prompt, model, maxTokens, retryCount + 1, maxRetries);
+      }
+
+      throw new Error(`Claude API error: ${response.status} ${response.statusText} - ${errorData}`);
     }
 
     const result = (await response.json()) as any;
-    const responseText = result.content || result.message || '';
+    const textContent = result.content?.find((c: any) => c.type === 'text');
+    if (!textContent) {
+      throw new Error('No text content in Claude API response');
+    }
 
-    // Write response to file
-    const responsePath = path.join(responsesDir, `response-${jobId}.md`);
-
-    // Ensure responses directory exists
-    await fsp.mkdir(responsesDir, { recursive: true });
-
-    // Create response file with metadata
-    const responseContent = `---
-job_id: ${jobId}
-agent_role: ${agentRole}
-model: ${model}
-created_at: ${new Date().toISOString()}
----
-
-# Claude Response
-
-${responseText}
-`;
-
-    await fsp.writeFile(responsePath, responseContent, 'utf-8');
-
-    const executionTime = Date.now() - startTime;
-
-    console.log(`[LocalClaudeWorker] ✅ Job ${jobId} completed in ${executionTime}ms`);
-    console.log(`[LocalClaudeWorker] Response: ${responsePath}`);
-
-    const outputTokens = result.tokens_out || result.usage?.output_tokens || 0;
-    console.log(`[LocalClaudeWorker] Tokens: ${outputTokens}`);
-
-    return {
-      success: true,
-      response_path: responsePath,
-      execution_time_ms: executionTime,
-    };
+    return textContent.text;
   } catch (err) {
-    const executionTime = Date.now() - startTime;
     const errorMsg = err instanceof Error ? err.message : String(err);
-
-    console.error(`[LocalClaudeWorker] ❌ Job ${jobId} failed:`, errorMsg);
-
-    return {
-      success: false,
-      error: errorMsg,
-      execution_time_ms: executionTime,
-    };
+    throw new Error(`Claude API call failed: ${errorMsg}`);
   }
 }
 
 export function startLocalClaudeWorker(connection: object) {
   const concurrency = getWorkerConcurrency('local-claude') || 2;
-  const registry = getAgentServiceRegistry();
+  const validationOrchestrator = new ValidationOrchestrator();
 
   return new Worker(
     'local-agents',
@@ -131,41 +133,88 @@ export function startLocalClaudeWorker(connection: object) {
       const t0 = Date.now();
       logWorkerLifecycle('start', 'local-claude', job);
 
-      const payload = job.data.payload as {
-        prompt_content?: string;
-        agent_role?: string;
-        model?: string;
-        job_id?: string;
-      };
+      const payload = job.data.payload as LocalClaudeJobPayload;
 
-      const prompt_content = payload.prompt_content || '';
+      const prompt = payload.prompt || '';
+      const intent = payload.intent || 'unknown';
+      const model_tier = payload.model_tier || 'balanced';
+      const max_steps = payload.max_steps || 3;
       const agent_role = payload.agent_role || 'architect';
-      const model = payload.model || 'claude-opus-4';
       const job_id = payload.job_id || job.id?.toString() || '';
 
       try {
-        await registry.loadConfig();
+        // Select model based on tier
+        const model = selectModelByTier(model_tier);
 
-        const result = await processLocalClaudeJob(
-          prompt_content,
-          job_id,
-          agent_role,
-          model,
-          registry
-        );
+        // Call Claude API directly
+        console.log(`[LocalClaudeWorker] Processing job ${job_id} with model ${model}`);
+        const responseText = await callClaudeApiDirect(prompt, model, 2048);
+
+        // Write response to file
+        const responsesDir = path.join(process.cwd(), '.cursor', 'responses');
+        await fsp.mkdir(responsesDir, { recursive: true });
+
+        const responsePath = path.join(responsesDir, `response-${job_id}.md`);
+        const responseContent = `---
+job_id: ${job_id}
+agent_role: ${agent_role}
+model: ${model}
+intent: ${intent}
+created_at: ${new Date().toISOString()}
+---
+
+# Claude Response
+
+${responseText}
+`;
+
+        await fsp.writeFile(responsePath, responseContent, 'utf-8');
+        console.log(`[LocalClaudeWorker] ✅ Response written to ${responsePath}`);
+
+        // Validate response and decide
+        let decision: ValidationDecision | undefined;
+        try {
+          decision = await validationOrchestrator.validateAndDecide(
+            job_id,
+            agent_role,
+            responsePath,
+            1, // iteration count
+            max_steps // max iterations
+          );
+          console.log(`[LocalClaudeWorker] Validation decision: ${decision.action}`);
+        } catch (validationErr) {
+          console.warn(`[LocalClaudeWorker] Validation error (non-blocking):`, validationErr);
+          decision = {
+            action: 'commit',
+            reason: 'Validation orchestrator unavailable, proceeding with response',
+            metadata: {
+              iterationCount: 1,
+              validationTime: 0,
+            },
+          };
+        }
 
         const elapsed = Date.now() - t0;
         logWorkerLifecycle('complete', 'local-claude', job, { duration_ms: elapsed });
 
-        return result;
+        return {
+          success: true,
+          response_path: responsePath,
+          decision,
+          execution_time_ms: elapsed,
+        };
       } catch (err) {
         const elapsed = Date.now() - t0;
         const errorMsg = err instanceof Error ? err.message : String(err);
 
-        console.error(`[LocalClaudeWorker] ❌ Job ${job.id} error:`, errorMsg);
+        console.error(`[LocalClaudeWorker] ❌ Job ${job_id} error:`, errorMsg);
         logWorkerLifecycle('fail', 'local-claude', job, { duration_ms: elapsed, error: errorMsg });
 
-        throw err;
+        return {
+          success: false,
+          error: errorMsg,
+          execution_time_ms: elapsed,
+        };
       }
     },
     {

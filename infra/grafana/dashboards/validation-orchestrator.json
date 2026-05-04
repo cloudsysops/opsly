@@ -1,0 +1,175 @@
+{
+  "dashboard": {
+    "title": "ValidationOrchestrator Metrics",
+    "description": "Real-time observability for ValidationOrchestrator performance and system health",
+    "tags": ["validation", "orchestrator", "observability"],
+    "timezone": "browser",
+    "schemaVersion": 38,
+    "version": 1,
+    "refresh": "30s",
+    "time": {
+      "from": "now-24h",
+      "to": "now"
+    },
+    "panels": [
+      {
+        "id": 1,
+        "title": "Success Rate Trend (24h)",
+        "type": "timeseries",
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 0
+        },
+        "targets": [
+          {
+            "datasourceUid": "supabase-validation-metrics",
+            "queryType": "sql",
+            "sql": "SELECT\n  time_bucket('1h', created_at) as time,\n  agent_role,\n  AVG(success_rate) as avg_success_rate\nFROM validation_metrics\nWHERE created_at > now() - interval '24 hours'\nGROUP BY time_bucket('1h', created_at), agent_role\nORDER BY time DESC",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "hideFrom": {
+                "tooltip": false,
+                "viz": false,
+                "legend": false
+              }
+            },
+            "unit": "percentunit"
+          },
+          "overrides": []
+        },
+        "options": {
+          "legend": {
+            "calcs": ["mean", "max", "min"],
+            "displayMode": "table",
+            "placement": "right"
+          }
+        }
+      },
+      {
+        "id": 2,
+        "title": "Escalation Rate by Intent",
+        "type": "barchart",
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 0
+        },
+        "targets": [
+          {
+            "datasourceUid": "supabase-validation-metrics",
+            "queryType": "sql",
+            "sql": "SELECT\n  intent,\n  AVG(escalation_rate) as escalation_rate\nFROM validation_metrics\nWHERE created_at > now() - interval '24 hours'\nGROUP BY intent\nORDER BY escalation_rate DESC\nLIMIT 10",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percentunit",
+            "color": {
+              "mode": "palette-classic"
+            }
+          },
+          "overrides": []
+        },
+        "options": {
+          "orientation": "auto",
+          "text": {},
+          "tooltip": {
+            "mode": "single"
+          }
+        }
+      },
+      {
+        "id": 3,
+        "title": "Model Tier Effectiveness (Cost vs Quality)",
+        "type": "scatter",
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 8
+        },
+        "targets": [
+          {
+            "datasourceUid": "supabase-validation-metrics",
+            "queryType": "sql",
+            "sql": "SELECT\n  recommended_model_tier,\n  COUNT(*) as validation_count,\n  AVG(success_rate) as avg_success,\n  AVG(cost_estimate) as avg_cost\nFROM validation_metrics\nWHERE created_at > now() - interval '24 hours'\nGROUP BY recommended_model_tier",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            }
+          },
+          "overrides": []
+        },
+        "options": {
+          "legend": {
+            "calcs": [],
+            "displayMode": "list",
+            "placement": "bottom"
+          }
+        }
+      },
+      {
+        "id": 4,
+        "title": "Agent Iteration Counts",
+        "type": "histogram",
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 8
+        },
+        "targets": [
+          {
+            "datasourceUid": "supabase-validation-metrics",
+            "queryType": "sql",
+            "sql": "SELECT\n  agent_role,\n  iteration_count,\n  COUNT(*) as frequency\nFROM validation_metrics\nWHERE created_at > now() - interval '24 hours'\nGROUP BY agent_role, iteration_count\nORDER BY agent_role, iteration_count",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            }
+          },
+          "overrides": []
+        },
+        "options": {
+          "legend": {
+            "calcs": [],
+            "displayMode": "list",
+            "placement": "bottom"
+          }
+        }
+      }
+    ],
+    "alerts": [
+      {
+        "id": "alert-escalation-high",
+        "title": "High Escalation Rate",
+        "condition": "escalation_rate > 10",
+        "message": "Escalation rate exceeds 10%",
+        "frequency": "5m"
+      },
+      {
+        "id": "alert-validation-slow",
+        "title": "Slow Validation Time",
+        "condition": "avg_validation_time_ms > 500",
+        "message": "Average validation time exceeds 500ms",
+        "frequency": "5m"
+      }
+    ]
+  }
+}

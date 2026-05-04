@@ -24,6 +24,8 @@ export type WorkerName =
   | 'terminal'
   | 'local-cursor'
   | 'local-claude'
+  | 'local-copilot'
+  | 'local-opencode'
   | 'local-agents'
   | 'cloudsysops_agents'
   | 'defense_audit'

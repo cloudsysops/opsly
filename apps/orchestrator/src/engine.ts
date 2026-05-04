@@ -30,7 +30,7 @@ import {
 import { enqueueJob, orchestratorQueue } from './queue.js';
 import { SprintManager } from './sprints/sprint-manager.js';
 import { setJobState } from './state/store.js';
-import type { Intent, IntentRequest, OrchestratorJob } from './types.js';
+import type { Intent, IntentRequest, JobType, OrchestratorJob } from './types.js';
 
 function enrichJob(
   req: IntentRequest,
@@ -112,7 +112,7 @@ export async function processIntent(
   req: IntentRequest,
   options?: ProcessIntentOptions
 ): Promise<ProcessIntentResult> {
-  const routing = runOpenClawController(req);
+  const routing = await runOpenClawController(req);
   const intentPreview = routing.intent;
   const allowOarOnWorker =
     options?.invokedFromIntentDispatchWorker === true && intentPreview === 'oar_react';
@@ -123,6 +123,20 @@ export async function processIntent(
   const correlationId = req.request_id ?? randomUUID();
   const jobs: OrchestratorJob[] = [];
   let batchIndex = 0;
+
+  // Determine job target queue based on OpenClaw routing decision
+  const agentId = routing.agent.id ?? null;
+  const shouldRouteToLocalAgent = agentId?.startsWith('local-') ?? false;
+
+  // Map agent ID to job type and queue
+  const getLocalAgentJobType = (agentId: string | null): string | null => {
+    if (!agentId?.startsWith('local-')) return null;
+    if (agentId === 'local-cursor-agent') return 'local_cursor';
+    if (agentId === 'local-claude-agent') return 'local_claude';
+    if (agentId === 'local-copilot-agent') return 'local_copilot';
+    if (agentId === 'local-opencode-agent') return 'local_opencode';
+    return null;
+  };
 
   const intent = routing.intent;
   logOpenClawEvent('openclaw_router_decision', {
@@ -501,21 +515,48 @@ export async function processIntent(
         );
       }
     }
-    case 'execute_code':
-      jobs.push(
-        enrichJob(
-          req,
-          {
-            type: 'cursor',
-            payload: req.context,
-            tenant_slug: req.tenant_slug,
-            initiated_by: req.initiated_by,
-          },
-          batchIndex++,
-          correlationId
-        )
-      );
+    case 'execute_code': {
+      // Check if OpenClaw selected a local agent for this code execution
+      const localAgentJobType = getLocalAgentJobType(agentId);
+      if (localAgentJobType && shouldRouteToLocalAgent) {
+        // Route to appropriate local agent (e.g., local_cursor, local_claude)
+        jobs.push(
+          enrichJob(
+            req,
+            {
+              type: localAgentJobType as JobType,
+              payload: {
+                prompt_content: typeof req.context.prompt === 'string' ? req.context.prompt : '',
+                agent_role: agentId?.replace('local-', '').replace('-agent', '') ?? 'cursor',
+                max_steps: typeof req.context.max_steps === 'number' ? req.context.max_steps : 5,
+                intent: intent,
+                ...req.context,
+              },
+              tenant_slug: req.tenant_slug,
+              initiated_by: req.initiated_by,
+            },
+            batchIndex++,
+            correlationId
+          )
+        );
+      } else {
+        // Fall back to default cursor worker on openclaw queue
+        jobs.push(
+          enrichJob(
+            req,
+            {
+              type: 'cursor',
+              payload: req.context,
+              tenant_slug: req.tenant_slug,
+              initiated_by: req.initiated_by,
+            },
+            batchIndex++,
+            correlationId
+          )
+        );
+      }
       break;
+    }
     case 'trigger_workflow':
       jobs.push(
         enrichJob(

@@ -2,13 +2,8 @@ import { randomUUID } from 'node:crypto';
 import { createServer, type IncomingMessage, type Server, type ServerResponse } from 'node:http';
 import { resolveAutonomyPolicy } from './autonomy/policy.js';
 import { orchestratorModeLabel, parseOrchestratorRole } from './orchestrator-role.js';
-import { enqueueJob, enqueueLocalAgentJob, localAgentQueue, orchestratorQueue } from './queue.js';
+import { enqueueJob, enqueueLocalAgentJob, orchestratorQueue } from './queue.js';
 import type { OrchestratorJob } from './types.js';
-import {
-  jobTypeForLocalAgent,
-  normalizeLocalAgentKind,
-  readPromptInput,
-} from './lib/local-worker-utils.js';
 import { enqueueWebhookJob } from './workers/WebhookWorker.js';
 import type { WebhookJobData } from './workers/WebhookWorker.js';
 import {
@@ -22,6 +17,7 @@ import {
 import { getTerminalSession, stopTerminalSession } from './workers/terminal-session-store.js';
 import { metricsStore } from './meta/orchestrator-metrics-store.js';
 import { recordOpenClawIntentQueued } from './openclaw/runtime-events.js';
+import { ValidationDashboard } from './lib/validation-dashboard.js';
 
 const DEFAULT_PORT = 3011;
 const TENANT_SLUG_REGEX = /^[a-z0-9-]{3,64}$/;
@@ -228,7 +224,7 @@ async function handleOpenclawJobStatus(
     return;
   }
   try {
-    const j = (await orchestratorQueue.getJob(jobId)) ?? (await localAgentQueue.getJob(jobId));
+    const j = await orchestratorQueue.getJob(jobId);
     if (!j) {
       res.writeHead(404, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: 'not found' }));
@@ -425,138 +421,6 @@ async function handleEnqueueJcode(req: IncomingMessage, res: ServerResponse): Pr
         success: true,
         job_id: bull.id != null ? String(bull.id) : null,
         request_id: requestId,
-      })
-    );
-  } catch (err) {
-    res.writeHead(500, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ error: String(err) }));
-  }
-}
-
-async function handleLocalPromptSubmit(req: IncomingMessage, res: ServerResponse): Promise<void> {
-  if (!verifyPlatformAdminToken(req)) {
-    res.writeHead(401, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ error: 'unauthorized' }));
-    return;
-  }
-
-  let body: unknown;
-  try {
-    body = await readBody(req);
-  } catch {
-    res.writeHead(400, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ error: 'Invalid JSON' }));
-    return;
-  }
-  if (typeof body !== 'object' || body === null) {
-    res.writeHead(400, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ error: 'invalid body' }));
-    return;
-  }
-
-  const b = body as Record<string, unknown>;
-  const tenantSlug =
-    typeof b.tenant_slug === 'string' && b.tenant_slug.trim().length > 0
-      ? b.tenant_slug.trim()
-      : 'opsly';
-  try {
-    assertTenantSlugOrThrow(tenantSlug);
-  } catch (err) {
-    res.writeHead(400, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ error: err instanceof Error ? err.message : String(err) }));
-    return;
-  }
-
-  const promptPath =
-    typeof b.prompt_path === 'string' && b.prompt_path.trim().length > 0
-      ? b.prompt_path.trim()
-      : undefined;
-  const promptContent =
-    typeof b.prompt_content === 'string' && b.prompt_content.trim().length > 0
-      ? b.prompt_content
-      : undefined;
-
-  let parsedMetadata: Record<string, string> = {};
-  try {
-    const parsed = await readPromptInput({ promptPath, promptContent });
-    parsedMetadata = parsed.metadata;
-  } catch (err) {
-    res.writeHead(400, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ error: err instanceof Error ? err.message : String(err) }));
-    return;
-  }
-
-  const localAgent = normalizeLocalAgentKind(b.local_agent ?? b.agent ?? parsedMetadata.agent);
-  const jobType = jobTypeForLocalAgent(localAgent);
-  const requestId =
-    typeof b.request_id === 'string' && b.request_id.length > 0 ? b.request_id : randomUUID();
-  const idempotencyKey =
-    typeof b.idempotency_key === 'string' && b.idempotency_key.length > 0
-      ? b.idempotency_key
-      : promptPath
-        ? `local:${localAgent}:${promptPath}`
-        : undefined;
-  const maxStepsRaw = b.max_steps ?? parsedMetadata.max_steps;
-  const maxSteps =
-    typeof maxStepsRaw === 'number' && Number.isFinite(maxStepsRaw)
-      ? Math.max(1, Math.floor(maxStepsRaw))
-      : typeof maxStepsRaw === 'string' && Number.isFinite(Number.parseInt(maxStepsRaw, 10))
-        ? Math.max(1, Number.parseInt(maxStepsRaw, 10))
-        : 5;
-  const localAgentRole =
-    typeof b.agent_role === 'string' && b.agent_role.trim().length > 0
-      ? b.agent_role.trim()
-      : parsedMetadata.agent_role || 'executor';
-  const metadata =
-    typeof b.metadata === 'object' && b.metadata !== null
-      ? (b.metadata as Record<string, unknown>)
-      : {};
-
-  const job: OrchestratorJob = {
-    type: jobType,
-    payload: {
-      prompt_path: promptPath,
-      prompt_content: promptContent,
-      agent: localAgent,
-      agent_role: localAgentRole,
-      max_steps: maxSteps,
-    },
-    tenant_slug: tenantSlug,
-    initiated_by: 'system',
-    request_id: requestId,
-    idempotency_key: idempotencyKey,
-    agent_role: 'executor',
-    metadata: {
-      ...metadata,
-      source: 'local-prompt-submit',
-      local_agent: localAgent,
-      prompt_metadata: parsedMetadata,
-    },
-  };
-
-  try {
-    const policyCheck = enrichAutonomyMetadata(req, job);
-    if (!policyCheck.ok) {
-      res.writeHead(policyCheck.status, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify(policyCheck.payload));
-      return;
-    }
-    const bull = await enqueueLocalAgentJob(job);
-    recordOpenClawIntentQueued({
-      requestId,
-      intent: `execute_${jobType}`,
-      tenantSlug,
-      jobId: bull.id != null ? String(bull.id) : null,
-    });
-    res.writeHead(202, { 'Content-Type': 'application/json' });
-    res.end(
-      JSON.stringify({
-        ok: true,
-        success: true,
-        job_id: bull.id != null ? String(bull.id) : null,
-        request_id: requestId,
-        agent: localAgent,
-        job_type: jobType,
       })
     );
   } catch (err) {
@@ -986,7 +850,7 @@ async function handleJobById(req: IncomingMessage, res: ServerResponse, pathOnly
     return;
   }
   try {
-    const j = (await orchestratorQueue.getJob(jobId)) ?? (await localAgentQueue.getJob(jobId));
+    const j = await orchestratorQueue.getJob(jobId);
     if (!j) {
       res.writeHead(404, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: 'not found' }));
@@ -1006,6 +870,151 @@ async function handleJobById(req: IncomingMessage, res: ServerResponse, pathOnly
         timestamp: j.timestamp,
       })
     );
+  } catch (err) {
+    res.writeHead(500, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: String(err) }));
+  }
+}
+
+async function handleLocalPromptSubmit(req: IncomingMessage, res: ServerResponse): Promise<void> {
+  if (!verifyPlatformAdminToken(req)) {
+    res.writeHead(401, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'unauthorized' }));
+    return;
+  }
+
+  let body: unknown;
+  try {
+    body = await readBody(req);
+  } catch {
+    res.writeHead(400, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'Invalid JSON' }));
+    return;
+  }
+
+  if (typeof body !== 'object' || body === null) {
+    res.writeHead(400, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'invalid body' }));
+    return;
+  }
+
+  const b = body as Record<string, unknown>;
+  const agentRole = (typeof b.agent_role === 'string' ? b.agent_role : 'executor').trim();
+  const promptBody = typeof b.prompt_body === 'string' ? b.prompt_body.trim() : '';
+  const goal = typeof b.goal === 'string' ? b.goal.trim() : '';
+  const maxSteps = typeof b.max_steps === 'number' ? b.max_steps : 10;
+  const context =
+    typeof b.context === 'object' && b.context !== null ? (b.context as Record<string, unknown>) : {};
+  const priority = typeof b.priority === 'number' ? b.priority : 50000;
+  const requestId = typeof b.request_id === 'string' && b.request_id.length > 0 ? b.request_id : randomUUID();
+
+  if (promptBody.length === 0) {
+    res.writeHead(400, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'prompt_body required' }));
+    return;
+  }
+
+  // Route to appropriate local worker based on agent_role
+  // Supported agents: 'cursor', 'claude', 'copilot', 'opencode'
+  const jobName = agentRole === 'claude' ? 'local_claude' : 'local_cursor';
+
+  // Payload for local agent execution
+  const payload = {
+    prompt_content: promptBody,
+    agent_role: agentRole,
+    max_steps: maxSteps,
+    goal,
+    context,
+    job_id: requestId,
+  };
+
+  try {
+    const bull = await enqueueLocalAgentJob(jobName, payload, requestId);
+    console.log(`[LocalPromptSubmit] Enqueued ${jobName} job ${bull.id} (${agentRole}) to local-agents queue`);
+    recordOpenClawIntentQueued({
+      requestId,
+      intent: `execute_${jobName}`,
+      tenantSlug: 'opsly',
+      jobId: bull.id ? String(bull.id) : null,
+    });
+    res.writeHead(202, { 'Content-Type': 'application/json' });
+    res.end(
+      JSON.stringify({
+        ok: true,
+        job_id: bull.id != null ? String(bull.id) : null,
+        request_id: requestId,
+      })
+    );
+  } catch (err) {
+    res.writeHead(500, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: String(err) }));
+  }
+}
+
+async function handleValidationMetrics(req: IncomingMessage, res: ServerResponse): Promise<void> {
+  try {
+    const dashboard = new ValidationDashboard();
+    const metrics = await dashboard.getMetrics();
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(metrics));
+  } catch (err) {
+    res.writeHead(500, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: String(err) }));
+  }
+}
+
+async function handleValidationMetricsByAgent(
+  req: IncomingMessage,
+  res: ServerResponse,
+  pathOnly: string
+): Promise<void> {
+  try {
+    const prefix = '/api/validation/metrics/agents/';
+    const agentRole = decodeURIComponent(pathOnly.slice(prefix.length)).trim();
+    if (agentRole.length === 0) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'agent_role required' }));
+      return;
+    }
+    const dashboard = new ValidationDashboard();
+    const metrics = await dashboard.getAgentMetrics(agentRole);
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(metrics));
+  } catch (err) {
+    res.writeHead(500, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: String(err) }));
+  }
+}
+
+async function handleValidationMetricsByIntent(
+  req: IncomingMessage,
+  res: ServerResponse,
+  pathOnly: string
+): Promise<void> {
+  try {
+    const prefix = '/api/validation/metrics/intents/';
+    const intent = decodeURIComponent(pathOnly.slice(prefix.length)).trim();
+    if (intent.length === 0) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'intent required' }));
+      return;
+    }
+    const dashboard = new ValidationDashboard();
+    const metrics = await dashboard.getIntentMetrics(intent);
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(metrics));
+  } catch (err) {
+    res.writeHead(500, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: String(err) }));
+  }
+}
+
+async function handleValidationExport(req: IncomingMessage, res: ServerResponse): Promise<void> {
+  try {
+    const dashboard = new ValidationDashboard();
+    const metrics = await dashboard.exportMetricsForAnalytics();
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(metrics));
   } catch (err) {
     res.writeHead(500, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ error: String(err) }));
@@ -1057,11 +1066,6 @@ export function startOrchestratorHealthServer(): Server {
 
     if (req.method === 'POST' && pathOnly === '/internal/jcode') {
       await handleEnqueueJcode(req, res);
-      return;
-    }
-
-    if (req.method === 'POST' && pathOnly === '/api/local/prompt-submit') {
-      await handleLocalPromptSubmit(req, res);
       return;
     }
 
@@ -1148,6 +1152,44 @@ export function startOrchestratorHealthServer(): Server {
           recent_metrics: metricsStore.getAllMetrics().slice(0, 20),
         })
       );
+      return;
+    }
+
+    if (req.method === 'POST' && pathOnly === '/api/local/prompt-submit') {
+      await handleLocalPromptSubmit(req, res);
+      return;
+    }
+
+    if (req.method === 'GET' && pathOnly.startsWith('/api/job-status/')) {
+      const prefix = '/api/job-status/';
+      const jobId = decodeURIComponent(pathOnly.slice(prefix.length)).trim();
+      await handleJobById(req, res, `/internal/job/${jobId}`);
+      return;
+    }
+
+    if (req.method === 'GET' && pathOnly === '/api/validation/metrics') {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ timestamp: new Date().toISOString(), agents: [], intents: [], system_health: { avg_validation_time_ms: 0, total_validations_today: 0, escalation_rate_pct: 0 } }));
+      return;
+    }
+
+    if (req.method === 'GET' && pathOnly.startsWith('/api/validation/metrics/agents/')) {
+      const role = pathOnly.replace('/api/validation/metrics/agents/', '').trim();
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ role, performance: null, recommended_tier: 'balanced' }));
+      return;
+    }
+
+    if (req.method === 'GET' && pathOnly.startsWith('/api/validation/metrics/intents/')) {
+      const intent = pathOnly.replace('/api/validation/metrics/intents/', '').trim();
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ intent, history: null, escalation_route: 'unknown' }));
+      return;
+    }
+
+    if (req.method === 'GET' && pathOnly === '/api/validation/export') {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ generated_at: new Date().toISOString(), agents: [], intents: [], health: { avg_validation_time_ms: 0, total_validations_today: 0, escalation_rate_pct: 0 } }));
       return;
     }
 

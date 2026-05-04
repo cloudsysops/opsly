@@ -179,3 +179,27 @@ export async function recordPolicyViolation(fields: {
 
   await publishEvent('policy.violation', event);
 }
+
+export async function recordValidationFeedbackApplied(fields: {
+  requestId?: string;
+  intent: string;
+  agentRole: string;
+  adaptations: string[];
+  confidence: number;
+  originalDecision: string;
+  adaptedDecision: string;
+}): Promise<void> {
+  const event = {
+    request_id: fields.requestId ?? null,
+    intent: fields.intent,
+    agent_role: fields.agentRole,
+    adaptations_count: fields.adaptations.length,
+    adaptations: fields.adaptations,
+    confidence: fields.confidence,
+    original_decision: fields.originalDecision,
+    adapted_decision: fields.adaptedDecision,
+    timestamp: nowIso(),
+  };
+
+  await publishEvent('validation.feedback.applied', event);
+}
