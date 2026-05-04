@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-05-04T05:34:31Z",
-  "totalFiles": 322,
+  "lastIndexed": "2026-05-04T18:31:41Z",
+  "totalFiles": 323,
   "files": [
     ".openclaw.md",
     "2026-04-21.md",
@@ -179,6 +179,7 @@
     "PARALLEL-EXECUTION-2026-04-29.md",
     "PARALLEL-EXECUTION-ARCHITECTURE.md",
     "PERFORMANCE_BASELINE.md",
+    "PHASE-2-DEPLOYMENT.md",
     "PHASE1-QUICK-START.md",
     "PHASE1-TEST-PLAN.md",
     "PHASE2-ROADMAP.md",
