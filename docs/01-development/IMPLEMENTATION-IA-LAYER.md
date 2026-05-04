@@ -20,6 +20,7 @@
 | Planner remoto (orchestrator → gateway)              | `apps/orchestrator/src/planner-client.ts`                                |
 | Respuesta planner JSON                               | `apps/llm-gateway/src/planner-route.ts`                                  |
 | Cola BullMQ, jobs, workers                           | `apps/orchestrator/src/engine.ts`, `workers/`                            |
+| Prompts locales → cola `local-agents`                | [`docs/LOCAL-AGENT-EXECUTION.md`](../LOCAL-AGENT-EXECUTION.md) (`POST /api/local/prompt-submit`, `apps/orchestrator/src/workers/local-agent-http-worker.ts`); convención cola git: [`AGENT-PROMPT-QUEUE.md`](AGENT-PROMPT-QUEUE.md) |
 | MCP, tools                                           | `apps/mcp/`                                                              |
 | Contexto / continuidad                               | `apps/context-builder/`                                                  |
 | Feedback portal                                      | `apps/api` (`/api/feedback`), Zero-Trust                                 |

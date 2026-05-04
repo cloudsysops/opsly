@@ -1,4 +1,7 @@
 #!/usr/bin/env node
+/**
+ * @deprecated Use `scripts/local-prompt-watcher.ts` (same flow, maintained). This duplicate may be removed after callers migrate.
+ */
 import * as fs from 'fs';
 import * as path from 'path';
 import { promises as fsp } from 'fs';

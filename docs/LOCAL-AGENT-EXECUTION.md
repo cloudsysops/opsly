@@ -12,6 +12,28 @@ Opsly's **Local Agent Execution System** enables autonomous execution of tasks o
 
 **Architecture:** Distributed HTTP-based worker pattern with configurable service endpoints.
 
+## Runbook E2E (dejar el flujo corriendo)
+
+**Criterio de hecho:** un `POST /api/local/prompt-submit` devuelve **202** con `job_id`, el worker `local-agents` procesa el job y aparece respuesta bajo `.cursor/responses/` (o logs del servicio HTTP sin error).
+
+1. **Redis** — `redis-cli ping` → `PONG`; `REDIS_URL` coherente en el proceso orchestrator.
+2. **Build** — `npm run build --workspace=@intcloudsysops/orchestrator`.
+3. **Orchestrator** — `PLATFORM_ADMIN_TOKEN`, `REDIS_URL`, modo que **consuma** la cola `local-agents` (misma máquina o worker remoto con el mismo Redis). Arranque típico: `cd apps/orchestrator && node dist/index.js` (tras build).
+4. **Servicio del agente** — URLs por defecto en [`config/agent-services.json`](../config/agent-services.json):
+
+| Agente   | Puerto default | Comando npm (raíz repo)              |
+| -------- | ---------------- | ------------------------------------- |
+| cursor   | 5001             | `npm run opsly:local-cursor-service`  |
+| claude   | 5002             | `npx tsx scripts/mock-claude-agent.ts` o servicio real en ese puerto |
+| copilot  | 5003             | mock/servicio según entorno          |
+| opencode | 5004             | mock/servicio según entorno          |
+
+5. **Watcher (opcional)** — `npm run opsly:local-prompt-watcher` con `ORCHESTRATOR_URL` y `PLATFORM_ADMIN_TOKEN` alineados al orchestrator. Frontmatter puede incluir `agent: cursor|claude|copilot|opencode` (el script envía `agent` en el JSON).
+6. **Smoke `curl`** — ver sección *Submit a Prompt* más abajo; cabecera `Authorization: Bearer …` obligatoria. Para jobs con riesgo autonomía puede hacer falta `x-autonomy-approved: true`.
+7. **Pre-push / Rollup (Mac)** — si husky falla por `@rollup/rollup-darwin-x64`, reinstalar dependencias (`rm -rf node_modules && npm ci`) o usar `git push --no-verify` solo cuando proceda; CI sigue siendo la verdad.
+
+**Nota VPS:** en `queue-only` el control plane **encola** pero no ejecuta jobs locales; hace falta un **nodo worker** (p. ej. Mac + Tailscale) con el mismo `REDIS_URL`.
+
 ```
 .cursor/prompts/task.md
     ↓ (LocalPromptWatcher detects)
@@ -31,7 +53,7 @@ git commit + push
 ### 1. Orchestrator Endpoint
 
 **Endpoint:** `POST /api/local/prompt-submit`  
-**Location:** `apps/orchestrator/src/health-server.ts:878`
+**Location:** `apps/orchestrator/src/health-server.ts` (`handleLocalPromptSubmit`)
 
 ```bash
 curl -X POST http://localhost:3011/api/local/prompt-submit \

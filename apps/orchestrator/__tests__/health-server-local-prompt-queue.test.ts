@@ -105,8 +105,29 @@ describe('health-server queue routing (local prompt vs sandbox)', () => {
 
     expect(enqueueLocalAgentJob).toHaveBeenCalledTimes(1);
     expect(enqueueJob).not.toHaveBeenCalled();
-    const jobArg = enqueueLocalAgentJob.mock.calls[0][0];
+    const jobArg = enqueueLocalAgentJob.mock.calls[0][0] as { type: string };
     expect(jobArg.type).toBe('local_cursor');
+  });
+
+  it('POST /api/local/prompt-submit maps frontmatter agent claude to local_claude', async () => {
+    const { status, raw } = await postJson(
+      port,
+      '/api/local/prompt-submit',
+      {
+        tenant_slug: 'acme',
+        prompt_content: '---\nagent: claude\n---\nRun checks',
+      },
+      {
+        Authorization: 'Bearer test-platform-admin',
+        'x-autonomy-approved': 'true',
+      }
+    );
+
+    expect(status).toBe(202);
+    const parsed = JSON.parse(raw) as { job_type?: string };
+    expect(parsed.job_type).toBe('local_claude');
+    const jobArg = enqueueLocalAgentJob.mock.calls[0][0] as { type: string };
+    expect(jobArg.type).toBe('local_claude');
   });
 
   it('POST /internal/enqueue-sandbox enqueues on openclaw via enqueueJob', async () => {

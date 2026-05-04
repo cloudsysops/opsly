@@ -33,6 +33,7 @@ interface WatcherState {
 }
 
 interface FrontmatterData {
+  agent?: string;
   agent_role?: string;
   max_steps?: number;
   goal?: string;
@@ -122,6 +123,10 @@ class LocalPromptWatcher {
       const { frontmatter, body } = this.parseFrontmatter(content);
 
       const agentRole = (frontmatter.agent_role || 'executor').toString();
+      const agentKind =
+        typeof frontmatter.agent === 'string' && frontmatter.agent.trim().length > 0
+          ? frontmatter.agent.trim()
+          : 'cursor';
       const maxSteps = frontmatter.max_steps || 10;
       const goal = (frontmatter.goal || '').toString();
       const context = frontmatter.context || {};
@@ -142,6 +147,7 @@ class LocalPromptWatcher {
         },
         body: JSON.stringify({
           prompt_body: body,
+          agent: agentKind,
           agent_role: agentRole,
           max_steps: maxSteps,
           goal,

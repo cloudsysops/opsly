@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto';
 import { Queue } from 'bullmq';
 import { logJobEnqueue } from './observability/job-log.js';
 import { buildQueueAddOptions } from './queue-opts.js';
@@ -82,12 +83,57 @@ export async function enqueueJob(job: OrchestratorJob) {
 }
 
 /** Enqueue job to local-agents queue for execution on local machines (Cursor, Claude, etc) */
-export async function enqueueLocalAgentJob(jobName: string, payload: Record<string, unknown>, requestId: string) {
+export async function enqueueLocalAgentJob(
+  jobOrName: OrchestratorJob | string,
+  payload?: Record<string, unknown>,
+  requestId?: string
+) {
+  if (typeof jobOrName === 'object' && jobOrName !== null && 'type' in jobOrName) {
+    const job = jobOrName as OrchestratorJob;
+    const jobId =
+      typeof job.idempotency_key === 'string' && job.idempotency_key.trim().length > 0
+        ? job.idempotency_key.trim()
+        : job.request_id;
+    const bull = await localAgentQueue.add(job.type, job, {
+      jobId,
+      priority: 40000,
+      attempts: 2,
+      backoff: { type: 'exponential', delay: 2000 },
+    });
+
+    logJobEnqueue({
+      event: 'job_enqueue',
+      job_type: job.type,
+      task_id: job.taskId,
+      tenant_slug: getJobTenantSlug(job),
+      tenant_id: job.tenant_id,
+      plan: job.plan,
+      request_id: job.request_id,
+      idempotency_key: job.idempotency_key,
+      bullmq_job_id_custom: Boolean(jobId),
+      initiated_by: job.initiated_by,
+      agent_role: job.agent_role,
+      cost_budget_usd: job.cost_budget_usd,
+      autonomy_risk: job.autonomy_risk,
+      queue_priority: 40000,
+      metadata: { ...job.metadata, bullmq_queue: 'local-agents' },
+    });
+
+    return bull;
+  }
+
+  const jobName = jobOrName as string;
+  const rid = typeof requestId === 'string' && requestId.length > 0 ? requestId : randomUUID();
+  const legacyPayload = payload ?? {};
+  const legacyTenant =
+    typeof legacyPayload.tenant_slug === 'string' && legacyPayload.tenant_slug.trim().length > 0
+      ? legacyPayload.tenant_slug.trim()
+      : 'local';
   const bull = await localAgentQueue.add(
-    jobName, // 'local_cursor', 'local_claude', 'local_copilot', etc
-    { payload },
+    jobName,
+    { payload: legacyPayload },
     {
-      jobId: requestId,
+      jobId: rid,
       priority: 40000,
       attempts: 2,
       backoff: { type: 'exponential', delay: 2000 },
@@ -96,11 +142,14 @@ export async function enqueueLocalAgentJob(jobName: string, payload: Record<stri
 
   logJobEnqueue({
     event: 'job_enqueue',
-    job_type: jobName,
-    request_id: requestId,
-    queue: 'local-agents',
+    job_type: jobName as OrchestratorJob['type'],
+    tenant_slug: legacyTenant,
+    request_id: rid,
+    bullmq_job_id_custom: true,
     initiated_by: 'system',
-  } as any);
+    queue_priority: 40000,
+    metadata: { bullmq_queue: 'local-agents', legacy_local_enqueue: true },
+  });
 
   return bull;
 }

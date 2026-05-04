@@ -49,6 +49,8 @@
     "dev:notion-mcp": "doppler run --project ops-intcloudsysops --config prd -- npm run dev --workspace=@intcloudsysops/notion-mcp",
     "start:notion-mcp": "doppler run --project ops-intcloudsysops --config prd -- npm run start --workspace=@intcloudsysops/notion-mcp",
     "enqueue-test-job": "tsx --tsconfig scripts/tsconfig.enqueue.json scripts/enqueue-test-job.ts",
+    "opsly:local-prompt-watcher": "tsx scripts/local-prompt-watcher.ts",
+    "opsly:local-cursor-service": "tsx scripts/cursor-agent-service.ts --port 5001",
     "docs:sync": "node scripts/sync-docs.js && node scripts/generate-sprint-tracking.js && node scripts/generate-agents-assignments.js",
     "docs:watch": "nodemon --watch docs/implementation/status.yaml --exec \"npm run docs:sync\"",
     "test:docs": "bash scripts/test-sync-docs.sh",
