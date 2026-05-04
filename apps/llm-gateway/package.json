@@ -7,7 +7,7 @@
     "dev": "tsx watch src/server.ts",
     "build": "tsc",
     "start": "node dist/src/server.js",
-    "test": "LLM_BATCH_WINDOW_SCALE=0 vitest run || true",
+    "test": "LLM_BATCH_WINDOW_SCALE=0 vitest run",
     "type-check": "tsc --noEmit"
   },
   "exports": {

@@ -6,7 +6,7 @@
     "dev": "tsx watch src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
-    "test": "vitest run || true",
+    "test": "vitest run",
     "test:tools": "vitest run --passWithNoTests src/agents/tools",
     "type-check": "tsc --noEmit",
     "hive-run": "tsx src/hive/hive-run.ts",

@@ -542,18 +542,19 @@ async function handleLocalPromptSubmit(req: IncomingMessage, res: ServerResponse
       return;
     }
     const bull = await enqueueLocalAgentJob(job);
-    recordOpenClawIntentQueued({
+    const jobIdStr = bull.id != null ? String(bull.id) : null;
+    await recordOpenClawIntentQueued({
       requestId,
-      intent: `execute_${jobType}`,
       tenantSlug,
-      jobId: bull.id != null ? String(bull.id) : null,
+      intent: `execute_${jobType}`,
+      jobId: jobIdStr,
     });
     res.writeHead(202, { 'Content-Type': 'application/json' });
     res.end(
       JSON.stringify({
         ok: true,
         success: true,
-        job_id: bull.id != null ? String(bull.id) : null,
+        job_id: jobIdStr,
         request_id: requestId,
         agent: localAgent,
         job_type: jobType,

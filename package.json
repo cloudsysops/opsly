@@ -89,7 +89,6 @@
     "commit": "git-cz"
   },
   "devDependencies": {
-    "@esbuild/linux-x64": "0.21.5",
     "@commitlint/cli": "^19.8.1",
     "@commitlint/config-conventional": "^19.8.1",
     "@eslint/eslintrc": "^3.3.1",
@@ -135,6 +134,12 @@
   "engines": {
     "node": ">=20.0.0",
     "npm": ">=10.0.0"
+  },
+  "optionalDependencies": {
+    "@esbuild/darwin-arm64": "0.27.7",
+    "@esbuild/darwin-x64": "0.27.7",
+    "@rollup/rollup-darwin-arm64": "4.60.2",
+    "@rollup/rollup-darwin-x64": "4.60.2"
   },
   "overrides": {
     "postcss": "8.5.13",
