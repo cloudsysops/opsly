@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-05-04T01:55:29Z",
-  "totalFiles": 321,
+  "lastIndexed": "2026-05-04T01:57:57Z",
+  "totalFiles": 322,
   "files": [
     ".openclaw.md",
     "2026-04-21.md",
@@ -79,6 +79,7 @@
     "AUTOMATION-PLAN.md",
     "AUTONOMOUS-EXECUTION-GUIDE.md",
     "AUTONOMOUS-EXECUTION-PLAN-2026-04-27.md",
+    "AUTONOMOUS-ITERATION.md",
     "AUTONOMOUS-PROD-60D.md",
     "AUTONOMY-COMPLETION-PLAN-2026-04-27.md",
     "AUTONOMY-EXECUTION-2026-04-29.md",
