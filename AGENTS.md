@@ -1032,7 +1032,9 @@ _Auditoría TypeScript y correcciones de código (2026-04-05, sesión agente Cla
 
 <!-- Una sola tarea concreta. Actualizar al final de cada sesión -->
 
-**Inmediato (2026-05-03):** smoke end-to-end local workers: arrancar orchestrator, `scripts/cursor-agent-service.ts`, `scripts/local-agent-watcher.ts` y `scripts/local-git-auto-commit.ts`; crear prompt pequeño en `.cursor/prompts/`; verificar job en **cola BullMQ `local-agents`** con **`job.name`** `local_cursor` \| `local_claude` \| `local_copilot` \| `local_opencode` (no en `openclaw`); `POST /internal/enqueue-sandbox` sigue en **`openclaw`**. Contrato en Vitest: `npm run test --workspace=@intcloudsysops/orchestrator -- --run health-server-local-prompt-queue`. Luego reparar `node_modules` si Vitest global sigue bloqueado por Rollup opcional (`@rollup/rollup-darwin-x64`).
+**Inmediato (2026-05-06):** **Semana 6** — [`docs/01-development/SEMANA-6-PLAN.md`](docs/01-development/SEMANA-6-PLAN.md): validar segundo tenant + `./scripts/test-e2e-invite-flow.sh` contra API staging; checklist pre-launch (Doppler, Resend dominio, DNS). Smoke local workers en `main` (PR **#199**, [`docs/LOCAL-AGENT-EXECUTION.md`](docs/LOCAL-AGENT-EXECUTION.md)); arranque orchestrator con `OPSLY_ROOT=<raíz repo>` si el cwd es `apps/orchestrator`.
+
+**Rama opcional `feat/local-prompt-flow-runbook`:** experimentos gateway (qwen/minimax) y dedupe de ruta `balanced`; integrar vía PR si se adoptan — `main` ya tiene una sola rama `balanced` en `getProvidersByPreference`.
 
 **Siguiente producto (pendiente):** convertir marketplace n8n v1 en autoservicio completo: API portal `install/activate`, persistencia de installs por tenant, enforcement de `plan_min`, y smoke real DeepSeek con `DEEPSEEK_API_KEY` via `/v1/text`/`/v1/chat/completions`.
 
