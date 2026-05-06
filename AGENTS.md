@@ -203,6 +203,7 @@ node scripts/load-skills.js show opsly-api
 | Skills operativos                            | `skills/user/*`, `skills/README.md`; metadata opcional `skills/manifest` (`@intcloudsysops/skills-manifest`)                                     |
 | Diseño OpenClaw / costos                     | `docs/OPENCLAW-ARCHITECTURE.md`                                                                                                                  |
 | Docker tenant aislado                        | `scripts/lib/docker-helpers.sh` — `--project-name tenant_<slug>`                                                                                 |
+| Agency Division (nuevo 2026-05-06)            | `docs/01-development/OPSLY-AGENCY-DIVISION.md` — API Factory, Agent Management, Security API, Autonomous Revenue                                 |
 
 ### Incrementos adoptados (acordados, orden recomendado)
 
@@ -329,7 +330,14 @@ node scripts/load-skills.js show opsly-api
 
 <!-- Actualizar al final de cada sesión -->
 
-**Fecha última actualización:** 2026-05-03 — **Local Agent Execution System / Workers MVP:** agregado submit local `POST /api/local/prompt-submit`, cola dedicada `local-agents` para evitar que workers genéricos consuman jobs por `job.name`, workers HTTP `local_cursor`, `local_claude`, `local_copilot`, `local_opencode`, registry configurable `config/agent-services.json`, servicio `scripts/cursor-agent-service.ts`, watcher `scripts/local-agent-watcher.ts` y auto-commit daemon `scripts/local-git-auto-commit.ts`. Validación: `tsc --noEmit -p apps/orchestrator/tsconfig.json` OK; scripts TS standalone OK. Vitest local bloqueado por binario opcional Rollup (`@rollup/rollup-darwin-x64`) con firma inválida en `node_modules`.
+**Fecha última actualización:** 2026-05-06 — **Agency Division + API Factory + Autonomous Revenue:**
+- ✅ Documento `docs/01-development/OPSLY-AGENCY-DIVISION.md` con 4 líneas de servicio
+- ✅ MCP tools: api_factory_create, api_factory_monitor, agent_management_stats, security_api_scan, security_api_audit (6 nuevas → 31 total)
+- ✅ Workers: `APIFactoryWorker` + `AutonomousRevenueWorker` en BullMQ
+- ✅ Integración con Python scripts autonomous_revenue_v2.py
+- ✅ Tipos worker: api_factory, autonomous_revenue en worker-concurrency.ts
+
+**Fecha referencia anterior:** 2026-05-03 — **Local Agent Execution System / Workers MVP:** agregado submit local `POST /api/local/prompt-submit`, cola dedicada `local-agents` para evitar que workers genéricos consuman jobs por `job.name`, workers HTTP `local_cursor`, `local_claude`, `local_copilot`, `local_opencode`, registry configurable `config/agent-services.json`, servicio `scripts/cursor-agent-service.ts`, watcher `scripts/local-agent-watcher.ts` y auto-commit daemon `scripts/local-git-auto-commit.ts`. Validación: `tsc --noEmit -p apps/orchestrator/tsconfig.json` OK; scripts TS standalone OK. Vitest local bloqueado por binario opcional Rollup (`@rollup/rollup-darwin-x64`) con firma inválida en `node_modules`.
 
 **Fecha referencia anterior:** 2026-05-03 — **Higiene Git/GitHub + flujo para agentes:** en `origin` quedó solo `main`; PRs **#174**, **#180**, **#184** cerrados con comentario de archivo; ramas remotas de integración/archivo eliminadas; **PR #185** mergeado (squash): [`docs/01-development/GIT-WORKFLOW.md`](docs/01-development/GIT-WORKFLOW.md) con orden **commit → push → PR → merge → borrar rama**, checklist para ramas pendientes, [`scripts/git-branch-hygiene.sh`](scripts/git-branch-hygiene.sh) operativo, [`.cursor/rules/git-workflow.mdc`](.cursor/rules/git-workflow.mdc) alineado. Pendiente local opcional: worktrees `claude/mystifying-curie-74e91d` y `autonomy/phase2-activation` (quitar con `git worktree remove` cuando no se usen).
 
