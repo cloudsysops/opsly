@@ -43,6 +43,13 @@ interface ValidationDecision {
   };
 }
 
+interface ClaudeAPIResponse {
+  content: Array<{
+    type: string;
+    text?: string;
+  }>;
+}
+
 function selectModelByTier(tier: string = 'balanced'): string {
   switch (tier) {
     case 'economy':
@@ -106,9 +113,9 @@ async function callClaudeApiDirect(
       throw new Error(`Claude API error: ${response.status} ${response.statusText} - ${errorData}`);
     }
 
-    const result = (await response.json()) as any;
-    const textContent = result.content?.find((c: any) => c.type === 'text');
-    if (!textContent) {
+    const result = (await response.json()) as ClaudeAPIResponse;
+    const textContent = result.content?.find((c) => c.type === 'text');
+    if (!textContent || !textContent.text) {
       throw new Error('No text content in Claude API response');
     }
 
@@ -183,15 +190,33 @@ ${responseText}
           );
           console.log(`[LocalClaudeWorker] Validation decision: ${decision.action}`);
         } catch (validationErr) {
-          console.warn(`[LocalClaudeWorker] Validation error (non-blocking):`, validationErr);
-          decision = {
-            action: 'commit',
-            reason: 'Validation orchestrator unavailable, proceeding with response',
-            metadata: {
-              iterationCount: 1,
-              validationTime: 0,
-            },
-          };
+          const errorMsg = validationErr instanceof Error ? validationErr.message : String(validationErr);
+          console.error(`[LocalClaudeWorker] Validation error:`, errorMsg);
+
+          // Distinguish error type: timeout/connection → mark for escalation
+          const isRetriable = errorMsg.includes('timeout') || errorMsg.includes('ECONNREFUSED');
+          if (isRetriable) {
+            console.error('[LocalClaudeWorker] Validation service unavailable (retriable), escalating');
+            decision = {
+              action: 'escalate',
+              reason: `Validation orchestrator unavailable: ${errorMsg}`,
+              metadata: {
+                iterationCount: 1,
+                validationTime: 0,
+                failedChecks: ['validation-service-unavailable'],
+              },
+            };
+          } else {
+            console.error('[LocalClaudeWorker] Permanent validation error, proceeding with response');
+            decision = {
+              action: 'commit',
+              reason: `Validation failed (permanent): ${errorMsg}`,
+              metadata: {
+                iterationCount: 1,
+                validationTime: 0,
+              },
+            };
+          }
         }
 
         const elapsed = Date.now() - t0;

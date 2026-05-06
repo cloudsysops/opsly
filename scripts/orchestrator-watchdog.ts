@@ -56,11 +56,11 @@ interface BackoffState {
 
 class OrchestratorWatchdog {
   private port = 3011;
-  private healthEndpoint = 'http://localhost:3011/health';
-  private queuesEndpoint = 'http://localhost:3013/queues';
-  private workersEndpoint = 'http://localhost:3013/workers';
-  private checkInterval = 30000; // 30 seconds
-  private maxRetries = 4;
+  private healthEndpoint = process.env.ORCHESTRATOR_HEALTH_ENDPOINT || 'http://localhost:3011/health';
+  private queuesEndpoint = process.env.HEALTH_SERVER_QUEUES_ENDPOINT || 'http://localhost:3013/queues';
+  private workersEndpoint = process.env.HEALTH_SERVER_WORKERS_ENDPOINT || 'http://localhost:3013/workers';
+  private checkInterval = parseInt(process.env.WATCHDOG_CHECK_INTERVAL_MS || '30000', 10); // 30 seconds
+  private maxRetries = parseInt(process.env.WATCHDOG_MAX_RETRIES || '4', 10);
   private backoffMs = [1000, 2000, 4000, 8000]; // exponential backoff base
 
   private getBackoffWithJitter(baseMs: number): number {

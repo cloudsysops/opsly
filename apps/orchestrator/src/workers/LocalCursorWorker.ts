@@ -20,6 +20,12 @@ export interface CursorExecutionResponse {
   };
 }
 
+interface CursorServiceResponse {
+  success: boolean;
+  response_path?: string;
+  error?: string;
+}
+
 /**
  * LocalCursorWorker
  *
@@ -105,10 +111,10 @@ async function processLocalCursorJob(
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
 
-    const result = (await response.json()) as any;
+    const result = (await response.json()) as CursorServiceResponse;
 
     if (!result.success) {
-      throw new Error(`Cursor service error: ${result.error}`);
+      throw new Error(`Cursor service error: ${result.error || 'Unknown error'}`);
     }
 
     console.log(`[LocalCursorWorker] Cursor service responded successfully`);

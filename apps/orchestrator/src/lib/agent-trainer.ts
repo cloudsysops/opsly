@@ -1,6 +1,9 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import crypto from 'crypto';
 
+const DEFAULT_VALIDATION_CHECKS = ['type-check', 'test', 'build'];
+const DEFAULT_PATTERN_LIMIT = 100;
+
 export interface ExecutionRecord {
   jobId: string;
   agentRole: string;
@@ -377,7 +380,7 @@ Ensure your implementation will pass all these checks in order.
       const successfulRuns = executions.filter((e) => e.action === 'commit');
       const typicalSequence = successfulRuns.length > 0
         ? this.inferSequence(successfulRuns)
-        : ['type-check', 'test', 'build'];
+        : DEFAULT_VALIDATION_CHECKS;
 
       // Upsert pattern record
       const pattern: ExecutionPattern = {
