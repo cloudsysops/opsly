@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-05-06T22:41:29Z",
-  "totalFiles": 330,
+  "lastIndexed": "2026-05-06T23:12:41Z",
+  "totalFiles": 331,
   "files": [
     ".openclaw.md",
     "2026-04-21.md",
@@ -171,6 +171,7 @@
     "OPENCLAW-STAGING-ACTIVATION.md",
     "OPENCLAW-TEAM-PLAN.md",
     "OPS-CLEANUP-PROCEDURES.md",
+    "OPSLY-AGENCY-DIVISION.md",
     "OPSLY-KNOWLEDGE-BASE.md",
     "OPSLY-OPENCLAW-STARTUP.md",
     "OPSLYQUANTUM-SKILL-DESIGN.md",
