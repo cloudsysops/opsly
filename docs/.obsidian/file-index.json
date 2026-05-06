@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-05-06T05:29:01Z",
-  "totalFiles": 329,
+  "lastIndexed": "2026-05-06T22:41:29Z",
+  "totalFiles": 330,
   "files": [
     ".openclaw.md",
     "2026-04-21.md",
@@ -257,6 +257,7 @@
     "SSH-COMMANDS-LOCALRANK.md",
     "SSH-USERS-FOR-AGENTS.md",
     "SUPER-AGENT-SHADOW-DEPLOY.md",
+    "SUPER-ORCHESTRATOR.md",
     "SUPERAGENTS-BOOTSTRAP.md",
     "TAILSCALE-NOMENCLATURA.md",
     "TENANT-ONBOARDING-TEMPLATE.md",
