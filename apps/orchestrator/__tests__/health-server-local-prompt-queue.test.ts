@@ -7,14 +7,24 @@ const { enqueueJob, enqueueLocalAgentJob } = vi.hoisted(() => ({
   enqueueLocalAgentJob: vi.fn(async () => ({ id: 'local-agents-job' })),
 }));
 
-vi.mock('../src/queue.js', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('../src/queue.js')>();
+vi.mock('@intcloudsysops/llm-gateway', () => ({
+  logUsage: vi.fn(),
+}));
+
+vi.mock('../src/queue.js', () => {
+  const queue = { getJob: vi.fn(async () => null) };
   return {
-    ...actual,
+    connection: {},
     enqueueJob,
     enqueueLocalAgentJob,
+    localAgentQueue: queue,
+    orchestratorQueue: queue,
   };
 });
+
+vi.mock('../src/workers/WebhookWorker.js', () => ({
+  enqueueWebhookJob: vi.fn(async () => ({ id: 'webhook-job' })),
+}));
 
 import { startOrchestratorHealthServer } from '../src/health-server.js';
 
