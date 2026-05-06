@@ -126,4 +126,6 @@ curl -sS -X POST http://127.0.0.1:3011/internal/enqueue-validation \
 
 ## Siguiente paso
 
-Ejecutar el smoke runtime en host local con Redis + Cursor IDE instalado. Hasta que el host IDE demuestre ejecucion real de cambios y commit controlado post-validacion, evitar declarar "Architecture Now Complete" para este sistema.
+Ejecutar el smoke runtime en host local con Redis + Cursor IDE instalado. La decision post-validacion ya existe en codigo (`commit` / `retry` / `escalate`), pero el commit automatico debe permanecer controlado hasta que el host IDE demuestre ejecucion real de cambios.
+
+Nota operativa: BullMQ no acepta `:` en custom `jobId`; `sanitizeQueueJobId` reemplaza esos separadores para que `/internal/enqueue-validation` pueda encolar jobs idempotentes.

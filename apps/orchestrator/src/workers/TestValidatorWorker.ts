@@ -86,7 +86,7 @@ function tail(text: string, max = 48_000): string {
 export function startTestValidatorWorker(connection: object): Worker {
   const concurrency = getWorkerConcurrency('test_validation');
   return new Worker(
-    'openclaw',
+    'validation',
     async (job: Job) => {
       if (job.name !== 'test_validation') {
         return;

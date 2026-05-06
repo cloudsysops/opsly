@@ -20,8 +20,8 @@ function baseJob(overrides: Partial<OrchestratorJob>): OrchestratorJob {
 }
 
 describe('sanitizeQueueJobId', () => {
-  it('permite alfanuméricos y : _ -', () => {
-    expect(sanitizeQueueJobId('idem:notify:abc-123')).toBe('idem:notify:abc-123');
+  it('permite alfanuméricos, _ y -; reemplaza : porque BullMQ lo reserva', () => {
+    expect(sanitizeQueueJobId('idem:notify:abc-123')).toBe('idem_notify_abc-123');
   });
 
   it('reemplaza caracteres no seguros', () => {
@@ -72,7 +72,7 @@ describe('buildQueueAddOptions', () => {
     const opts = buildQueueAddOptions(
       baseJob({ type: 'cursor', idempotency_key: 'run-1::cursor::0' })
     );
-    expect(opts.jobId).toBe('idem:cursor:run-1::cursor::0');
+    expect(opts.jobId).toBe('idem_cursor_run-1__cursor__0');
   });
 
   it('sube prioridad (menor número) para jobs derivados del Remote Planner', () => {

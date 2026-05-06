@@ -2,9 +2,10 @@ import http from 'node:http';
 import { once } from 'node:events';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { enqueueJob, enqueueLocalAgentJob } = vi.hoisted(() => ({
+const { enqueueJob, enqueueLocalAgentJob, enqueueValidationJob } = vi.hoisted(() => ({
   enqueueJob: vi.fn(async () => ({ id: 'openclaw-job' })),
   enqueueLocalAgentJob: vi.fn(async () => ({ id: 'local-agents-job' })),
+  enqueueValidationJob: vi.fn(async () => ({ id: 'validation-job' })),
 }));
 
 vi.mock('@intcloudsysops/llm-gateway', () => ({
@@ -17,8 +18,10 @@ vi.mock('../src/queue.js', () => {
     connection: {},
     enqueueJob,
     enqueueLocalAgentJob,
+    enqueueValidationJob,
     localAgentQueue: queue,
     orchestratorQueue: queue,
+    validationQueue: queue,
   };
 });
 
@@ -115,6 +118,7 @@ describe('health-server queue routing (local prompt vs sandbox)', () => {
 
     expect(enqueueLocalAgentJob).toHaveBeenCalledTimes(1);
     expect(enqueueJob).not.toHaveBeenCalled();
+    expect(enqueueValidationJob).not.toHaveBeenCalled();
     const jobArg = enqueueLocalAgentJob.mock.calls[0][0];
     expect(jobArg.type).toBe('local_cursor');
   });
@@ -137,6 +141,32 @@ describe('health-server queue routing (local prompt vs sandbox)', () => {
     expect(status).toBe(202);
     expect(enqueueJob).toHaveBeenCalledTimes(1);
     expect(enqueueLocalAgentJob).not.toHaveBeenCalled();
+    expect(enqueueValidationJob).not.toHaveBeenCalled();
     expect(enqueueJob.mock.calls[0][0].type).toBe('sandbox_execution');
+  });
+
+  it('POST /internal/enqueue-validation enqueues on validation via enqueueValidationJob', async () => {
+    const { status, raw } = await postJson(
+      port,
+      '/internal/enqueue-validation',
+      {
+        tenant_slug: 'acme',
+        repo_root: '/workspace',
+        correlation_id: 'validation-route-1',
+      },
+      {
+        Authorization: 'Bearer test-platform-admin',
+        'x-autonomy-approved': 'true',
+      }
+    );
+
+    expect(status).toBe(202);
+    const parsed = JSON.parse(raw) as { success?: boolean; job_id?: string };
+    expect(parsed.success).toBe(true);
+    expect(parsed.job_id).toBe('validation-job');
+    expect(enqueueValidationJob).toHaveBeenCalledTimes(1);
+    expect(enqueueJob).not.toHaveBeenCalled();
+    expect(enqueueLocalAgentJob).not.toHaveBeenCalled();
+    expect(enqueueValidationJob.mock.calls[0][0].type).toBe('test_validation');
   });
 });

@@ -3,7 +3,14 @@ import { createServer, type IncomingMessage, type Server, type ServerResponse } 
 import { resolve as resolvePath } from 'node:path';
 import { resolveAutonomyPolicy } from './autonomy/policy.js';
 import { orchestratorModeLabel, parseOrchestratorRole } from './orchestrator-role.js';
-import { enqueueJob, enqueueLocalAgentJob, localAgentQueue, orchestratorQueue } from './queue.js';
+import {
+  enqueueJob,
+  enqueueLocalAgentJob,
+  enqueueValidationJob,
+  localAgentQueue,
+  orchestratorQueue,
+  validationQueue,
+} from './queue.js';
 import type { OrchestratorJob } from './types.js';
 import {
   jobTypeForLocalAgent,
@@ -229,7 +236,10 @@ async function handleOpenclawJobStatus(
     return;
   }
   try {
-    const j = (await orchestratorQueue.getJob(jobId)) ?? (await localAgentQueue.getJob(jobId));
+    const j =
+      (await orchestratorQueue.getJob(jobId)) ??
+      (await localAgentQueue.getJob(jobId)) ??
+      (await validationQueue.getJob(jobId));
     if (!j) {
       res.writeHead(404, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: 'not found' }));
@@ -427,7 +437,7 @@ async function handleEnqueueValidation(req: IncomingMessage, res: ServerResponse
       res.end(JSON.stringify(policyCheck.payload));
       return;
     }
-    const bull = await enqueueJob(job);
+    const bull = await enqueueValidationJob(job);
     res.writeHead(202, { 'Content-Type': 'application/json' });
     res.end(
       JSON.stringify({
@@ -1076,7 +1086,10 @@ async function handleJobById(req: IncomingMessage, res: ServerResponse, pathOnly
     return;
   }
   try {
-    const j = (await orchestratorQueue.getJob(jobId)) ?? (await localAgentQueue.getJob(jobId));
+    const j =
+      (await orchestratorQueue.getJob(jobId)) ??
+      (await localAgentQueue.getJob(jobId)) ??
+      (await validationQueue.getJob(jobId));
     if (!j) {
       res.writeHead(404, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: 'not found' }));

@@ -16,6 +16,7 @@ import {
   hermesOrchestrationQueue,
   localAgentQueue,
   orchestratorQueue,
+  validationQueue,
 } from './queue.js';
 import { closeCircuitBreakerRedis } from './resilience/circuit-breaker.js';
 import { closeJobStateStore } from './state/store.js';
@@ -170,6 +171,7 @@ async function main(): Promise<void> {
   cleanupTasks.push(async () => drainMeteringOperations());
   cleanupTasks.push(async () => orchestratorQueue.close());
   cleanupTasks.push(async () => localAgentQueue.close());
+  cleanupTasks.push(async () => validationQueue.close());
   cleanupTasks.push(async () => agentClassifierQueue.close());
   cleanupTasks.push(async () => hermesOrchestrationQueue.close());
   cleanupTasks.push(async () => closeWebhookQueue());

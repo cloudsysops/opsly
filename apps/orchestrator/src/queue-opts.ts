@@ -49,10 +49,10 @@ export function planToQueuePriority(plan?: OrchestratorJob['plan']): number {
 }
 
 /**
- * BullMQ `jobId` solo acepta caracteres seguros; evita colisiones entre tipos.
+ * BullMQ `jobId` no puede contener `:` porque lo usa internamente como separador de claves Redis.
  */
 export function sanitizeQueueJobId(raw: string): string {
-  const cleaned = raw.replace(/[^a-zA-Z0-9:_-]/g, '_');
+  const cleaned = raw.replace(/[^a-zA-Z0-9_-]/g, '_');
   return cleaned.length <= MAX_JOB_ID_LEN ? cleaned : cleaned.slice(0, MAX_JOB_ID_LEN);
 }
 
