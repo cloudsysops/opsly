@@ -6,7 +6,7 @@ Validar el estado real del flujo local-agent descrito en `AGENTS.md`: prompt loc
 
 ## Resultado
 
-Estado actual: **MVP avanzado, no arquitectura autonoma completa end-to-end**.
+Estado actual: **MVP avanzado, con decision post-validacion explicita; no arquitectura autonoma completa end-to-end**.
 
 ### Verificado en codigo
 
@@ -15,13 +15,14 @@ Estado actual: **MVP avanzado, no arquitectura autonoma completa end-to-end**.
 - `local_cursor`, `local_claude`, `local_copilot` y `local_opencode` se atienden desde un worker BullMQ unificado.
 - `TestValidatorWorker` ejecuta validaciones `type-check`, `test` y `build`, y escribe reportes `validation-*.json`.
 - `iteration-watch-responses.ts` puede generar prompts de reintento desde validaciones fallidas.
+- `iteration-watch-responses.ts` escribe `decision-*.json` para decisiones `commit`, `retry` y `escalate`.
 - `local-git-auto-commit.ts` puede commitear respuestas locales y hacer push si se ejecuta con `--auto-push`.
 
 ### Gaps confirmados
 
 - No existe un componente llamado `ValidationOrchestrator`; el sistema real se compone de `TestValidatorWorker`, `iteration-manager` y watchers opcionales.
 - `cursor-agent-service.ts` abre Cursor con `open -a Cursor`; eso requiere host macOS con Cursor instalado y no prueba por si solo que el IDE aplique cambios sin intervencion.
-- La decision `commit / iterate / escalate` no esta integrada en un unico orquestador central; hoy depende de scripts separados y flags (`OPSLY_ITERATION_AUTO_SUBMIT`, `--auto-push`).
+- La decision `commit / retry / escalate` ya existe como decision explicita, pero el commit real sigue separado y protegido por script/flag (`local-git-auto-commit.ts`, `--auto-push`).
 - No hay evidencia de un push hardcodeado a `claude/opsly-defense-platform-sC0qH`; el auto-push usa la rama actual.
 
 ## Validacion ejecutada
@@ -40,13 +41,15 @@ npm install
 npm run build --workspace=@intcloudsysops/llm-gateway
 npm run test --workspace=@intcloudsysops/orchestrator -- --run health-server-local-prompt-queue iteration-manager
 npm run type-check --workspace=@intcloudsysops/orchestrator
+npm run validate-context
+npm ci --dry-run
 ```
 
 Resultado:
 
 ```text
 Test Files  2 passed (2)
-Tests       7 passed (7)
+Tests       10 passed (10)
 orchestrator type-check: PASS
 ```
 
@@ -59,6 +62,14 @@ orchestrator type-check: PASS
 - `@intcloudsysops/llm-gateway`, para aislar el test del build `dist` del gateway.
 
 Tambien se sincronizo `package-lock.json` con `package.json` porque `npm ci` fallaba por lockfile desactualizado (`@types/cors`, `uuid`).
+
+`apps/orchestrator/src/lib/iteration-manager.ts` ahora expone `decideValidationAction()`:
+
+1. `ok: true` -> `commit`.
+2. `ok: false` y `attempt < MAX_AUTO_ITERATIONS` -> `retry`.
+3. `ok: false` y `attempt >= MAX_AUTO_ITERATIONS` -> `escalate`.
+
+`apps/orchestrator/scripts/iteration-watch-responses.ts` consume esa decision y escribe `decision-<correlation>.json` en `.cursor/responses/` para los casos `commit` y `escalate`.
 
 ## Smoke runtime recomendado en host local
 
@@ -115,10 +126,4 @@ curl -sS -X POST http://127.0.0.1:3011/internal/enqueue-validation \
 
 ## Siguiente paso
 
-Integrar una decision explicita post-validacion:
-
-1. `ok: true` -> permitir commit controlado.
-2. `ok: false` y `attempt < 3` -> generar reintento y reencolar.
-3. `ok: false` y `attempt >= 3` -> escalar con reporte.
-
-Hasta que eso exista como flujo unico, evitar declarar "Architecture Now Complete" para este sistema.
+Ejecutar el smoke runtime en host local con Redis + Cursor IDE instalado. Hasta que el host IDE demuestre ejecucion real de cambios y commit controlado post-validacion, evitar declarar "Architecture Now Complete" para este sistema.

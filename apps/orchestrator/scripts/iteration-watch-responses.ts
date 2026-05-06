@@ -14,6 +14,9 @@ import { basename, join, resolve } from 'node:path';
 import {
   MAX_AUTO_ITERATIONS,
   buildRetryPromptMarkdown,
+  decideValidationAction,
+  safeCorrelationFileId,
+  type ValidationActionDecision,
   type ValidationReportSummary,
 } from '../src/lib/iteration-manager.js';
 
@@ -105,6 +108,33 @@ async function writeState(path: string, state: IterationStateFile): Promise<void
   await writeFile(path, `${JSON.stringify(state, null, 2)}\n`, 'utf-8');
 }
 
+async function writeDecisionReport(
+  options: Options,
+  summary: ValidationReportSummary,
+  decision: ValidationActionDecision
+): Promise<string> {
+  const responsesDir = join(options.repoRoot, '.cursor', 'responses');
+  await mkdir(responsesDir, { recursive: true });
+  const outPath = join(responsesDir, `decision-${safeCorrelationFileId(summary.correlation_id)}.json`);
+  await writeFile(
+    outPath,
+    `${JSON.stringify(
+      {
+        correlation_id: summary.correlation_id,
+        source_prompt_path: summary.source_prompt_path,
+        attempt: summary.attempt,
+        validation_ok: summary.ok,
+        decision,
+        decided_at: new Date().toISOString(),
+      },
+      null,
+      2
+    )}\n`,
+    'utf-8'
+  );
+  return outPath;
+}
+
 async function submitPromptPath(promptPath: string, options: Options): Promise<void> {
   const requestId = randomUUID();
   const res = await fetch(`${options.orchestratorUrl}/api/local/prompt-submit`, {
@@ -135,7 +165,20 @@ async function handleValidationJson(absPath: string, options: Options): Promise<
   const rawText = await readFile(absPath, 'utf-8');
   const parsed: unknown = JSON.parse(rawText);
   const summary = parseValidationReport(parsed);
-  if (!summary || summary.ok) {
+  if (!summary) {
+    return;
+  }
+
+  const decision = decideValidationAction(summary);
+  if (decision.action === 'commit') {
+    const decisionPath = await writeDecisionReport(options, summary, decision);
+    process.stdout.write(`[iteration-watch] validation ok; wrote ${decisionPath}\n`);
+    return;
+  }
+
+  if (decision.action === 'escalate') {
+    const decisionPath = await writeDecisionReport(options, summary, decision);
+    process.stderr.write(`[iteration-watch] escalation required; wrote ${decisionPath}\n`);
     return;
   }
 
@@ -150,7 +193,7 @@ async function handleValidationJson(absPath: string, options: Options): Promise<
     return;
   }
 
-  const nextIdx = emitted + 1;
+  const nextIdx = decision.nextAttempt;
   const md = buildRetryPromptMarkdown({
     summary,
     nextAttempt: nextIdx,

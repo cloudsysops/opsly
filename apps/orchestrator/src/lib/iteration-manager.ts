@@ -12,6 +12,24 @@ export interface ValidationReportSummary {
   source_prompt_path?: string;
 }
 
+export type ValidationActionDecision =
+  | { action: 'commit' }
+  | { action: 'retry'; nextAttempt: number }
+  | { action: 'escalate'; reason: 'max_iterations_reached' };
+
+export function decideValidationAction(
+  summary: ValidationReportSummary,
+  maxAttempts = MAX_AUTO_ITERATIONS
+): ValidationActionDecision {
+  if (summary.ok) {
+    return { action: 'commit' };
+  }
+  if (summary.attempt >= maxAttempts) {
+    return { action: 'escalate', reason: 'max_iterations_reached' };
+  }
+  return { action: 'retry', nextAttempt: summary.attempt + 1 };
+}
+
 export function extractTypeScriptErrorLines(log: string, maxLines = 24): string[] {
   const lines = log.split('\n');
   const hits: string[] = [];

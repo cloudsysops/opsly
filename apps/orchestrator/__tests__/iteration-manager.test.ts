@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   MAX_AUTO_ITERATIONS,
   buildRetryPromptMarkdown,
+  decideValidationAction,
   extractTypeScriptErrorLines,
   safeCorrelationFileId,
   suggestFixHints,
@@ -51,5 +52,42 @@ describe('iteration-manager', () => {
     expect(md).toContain('iteration_attempt: 2');
     expect(md).toContain('max_iterations: 3');
     expect(md).toContain('corr-1');
+  });
+
+  it('decideValidationAction commits when validation passed', () => {
+    expect(
+      decideValidationAction({
+        ok: true,
+        correlation_id: 'corr-commit',
+        attempt: 0,
+        log_tail: '',
+      })
+    ).toEqual({ action: 'commit' });
+  });
+
+  it('decideValidationAction retries failed validation before max iterations', () => {
+    expect(
+      decideValidationAction({
+        ok: false,
+        correlation_id: 'corr-retry',
+        attempt: 0,
+        failed_step: 'type-check',
+        exit_code: 2,
+        log_tail: 'error TS2322',
+      })
+    ).toEqual({ action: 'retry', nextAttempt: 1 });
+  });
+
+  it('decideValidationAction escalates failed validation at max iterations', () => {
+    expect(
+      decideValidationAction({
+        ok: false,
+        correlation_id: 'corr-escalate',
+        attempt: MAX_AUTO_ITERATIONS,
+        failed_step: 'test',
+        exit_code: 1,
+        log_tail: 'expected true to be false',
+      })
+    ).toEqual({ action: 'escalate', reason: 'max_iterations_reached' });
   });
 });
