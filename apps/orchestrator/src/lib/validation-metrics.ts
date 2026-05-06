@@ -90,6 +90,12 @@ export class ValidationMetricsStore {
    * Called after each ValidationOrchestrator.validateAndDecide()
    */
   async recordValidationMetric(metric: ValidationMetric): Promise<boolean> {
+    // Invalidate relevant caches first (before Supabase operation)
+    // This ensures cache consistency even if Supabase is not available
+    this.cache.delete(this.getCacheKey('agent-perf', metric.agent_role));
+    this.cache.delete(this.getCacheKey('intent-history', metric.intent));
+    this.cache.delete(this.getCacheKey('model-tier', `${metric.agent_role}:${metric.intent}`));
+
     if (!this.supabase) {
       console.warn('[ValidationMetricsStore] Cannot record metric: Supabase not configured');
       return false;
@@ -115,11 +121,6 @@ export class ValidationMetricsStore {
         console.error('[ValidationMetricsStore] Error recording metric:', error);
         return false;
       }
-
-      // Invalidate relevant caches
-      this.cache.delete(this.getCacheKey('agent-perf', metric.agent_role));
-      this.cache.delete(this.getCacheKey('intent-history', metric.intent));
-      this.cache.delete(this.getCacheKey('model-tier', `${metric.agent_role}:${metric.intent}`));
 
       return true;
     } catch (err) {

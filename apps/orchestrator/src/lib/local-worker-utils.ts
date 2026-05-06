@@ -58,10 +58,9 @@ export async function waitForFile(filePath: string, timeoutMs: number = 60000): 
 
       checkFile();
     } catch (err) {
-      cleanup();
-      const elapsedMs = Date.now() - startTime;
-      console.error(`[LocalWorkerUtils] Error watching file (${elapsedMs}ms): ${err instanceof Error ? err.message : String(err)}`);
-      resolve(null);
+      // Error watching file - still respect timeout instead of failing immediately
+      console.error(`[LocalWorkerUtils] Error watching file: ${err instanceof Error ? err.message : String(err)}`);
+      // Let timeout handle the resolution
     }
   });
 }
@@ -216,10 +215,9 @@ export async function waitForValidationGuard(
 
       checkGuard();
     } catch (err) {
-      cleanup();
-      const elapsedMs = Date.now() - startTime;
-      console.error(`[LocalWorkerUtils] Error watching validation guard (${elapsedMs}ms): ${err instanceof Error ? err.message : String(err)}`);
-      resolve(null);
+      // Error watching validation dir - still respect timeout instead of failing immediately
+      console.error(`[LocalWorkerUtils] Error watching validation guard: ${err instanceof Error ? err.message : String(err)}`);
+      // Let timeout handle the resolution
     }
   });
 }
@@ -316,7 +314,7 @@ export function parsePromptFrontmatter(
 
   return {
     metadata,
-    content: body,
+    content: body.trim(),
   };
 }
 
