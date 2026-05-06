@@ -27,7 +27,9 @@ export type JobType =
   /** CloudSysOps OpenClaw: cierre de servicio → informe vía LLM Gateway (cola `cloudsysops-agents`). */
   | 'cloudsysops_ops_complete'
   /** Validación npm (type-check / test / build) en `repo_root`; escribe `.cursor/responses/validation-*.json`. */
-  | 'test_validation';
+  | 'test_validation'
+  /** Super Orchestrator v2 - inteligente multi-agente */
+  | 'super_orchestrator';
 
 export interface TestValidationPayload {
   type: 'test_validation';

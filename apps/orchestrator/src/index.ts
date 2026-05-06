@@ -40,6 +40,8 @@ import { startLocalClaudeWorker } from './workers/LocalClaudeWorker.js';
 import { startLocalCopilotWorker } from './workers/LocalCopilotWorker.js';
 import { startLocalOpenCodeWorker } from './workers/LocalOpenCodeWorker.js';
 import { startLocalCursorWorker } from './workers/LocalCursorWorker.js';
+import { startSuperOrchestratorWorker } from './workers/SuperOrchestratorWorker.js';
+import { superOrchestratorIntegration } from './super-orchestrator-integration.js';
 
 type AsyncCleanup = () => Promise<void>;
 
@@ -89,6 +91,7 @@ function startAllWorkers(): AsyncCleanup[] {
   const localCopilotWorker = startLocalCopilotWorker(connection);
   const localOpenCodeWorker = startLocalOpenCodeWorker(connection);
   const localCursorWorker = startLocalCursorWorker(connection);
+  const superOrchestratorWorker = startSuperOrchestratorWorker();
 
   let agentClassifierCleanup: AsyncCleanup[] = [];
   if (process.env.OPSLY_AGENT_CLASSIFIER_WORKER_ENABLED === 'true') {
@@ -115,11 +118,12 @@ function startAllWorkers(): AsyncCleanup[] {
     async () => localCopilotWorker.close(),
     async () => localOpenCodeWorker.close(),
     async () => localCursorWorker.close(),
+    async () => superOrchestratorWorker.close(),
     ...agentClassifierCleanup
   );
 
   console.log(
-    '[orchestrator] Workers: cursor, n8n, notify, drive, backup, health, budget, opsly-webhooks, webhooks-processing, general-events, ollama, intent_dispatch, terminal_task, local-agents (cursor/claude/copilot/opencode), local-claude, local-copilot, local-opencode, local-cursor' +
+    '[orchestrator] Workers: cursor, n8n, notify, drive, backup, health, budget, opsly-webhooks, webhooks-processing, general-events, ollama, intent_dispatch, terminal_task, local-agents (cursor/claude/copilot/opencode), local-claude, local-copilot, local-opencode, local-cursor, super-orchestrator' +
       (process.env.OPSLY_AGENT_CLASSIFIER_WORKER_ENABLED === 'true' ? ', agent-classifier' : '') +
       '; Hermes tick → servicio opsly-hermes (no este proceso).'
   );
@@ -189,6 +193,16 @@ async function main(): Promise<void> {
 
   if (shouldRunWorkers(role)) {
     cleanupTasks.push(...startAllWorkers());
+  }
+
+  // Initialize Super Orchestrator integration
+  if (shouldRunControlPlane(role)) {
+    try {
+      await superOrchestratorIntegration.initialize();
+      console.log('[orchestrator] Super Orchestrator v2 initialized');
+    } catch (err) {
+      console.error('[orchestrator] Super Orchestrator init failed:', err);
+    }
   }
 
   let shutdownStarted = false;
