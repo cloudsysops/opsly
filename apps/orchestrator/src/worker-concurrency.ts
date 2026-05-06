@@ -24,7 +24,9 @@ export type WorkerConcurrencyKey =
   | 'cloudsysops_agents'
   | 'defense_audit'
   | 'openclaw-planner'
-  | 'openclaw-skeptic';
+  | 'openclaw-skeptic'
+  | 'api_factory'
+  | 'autonomous_revenue';
 
 const FULL_STACK_DEFAULTS: Record<WorkerConcurrencyKey, number> = {
   cursor: 3,
@@ -51,6 +53,8 @@ const FULL_STACK_DEFAULTS: Record<WorkerConcurrencyKey, number> = {
   'defense_audit': 2,
   'openclaw-planner': 2,
   'openclaw-skeptic': 1,
+  api_factory: 3,
+  autonomous_revenue: 2,
 };
 
 const DISTRIBUTED_WORKER_DEFAULTS: Record<WorkerConcurrencyKey, number> = {
@@ -78,6 +82,8 @@ const DISTRIBUTED_WORKER_DEFAULTS: Record<WorkerConcurrencyKey, number> = {
   'defense_audit': 1,
   'openclaw-planner': 1,
   'openclaw-skeptic': 1,
+  api_factory: 1,
+  autonomous_revenue: 1,
 };
 
 const ENV_NAMES: Record<WorkerConcurrencyKey, string> = {
@@ -105,6 +111,8 @@ const ENV_NAMES: Record<WorkerConcurrencyKey, string> = {
   'defense_audit': 'ORCHESTRATOR_DEFENSE_AUDIT_CONCURRENCY',
   'openclaw-planner': 'ORCHESTRATOR_OPENCLAW_PLANNER_CONCURRENCY',
   'openclaw-skeptic': 'ORCHESTRATOR_OPENCLAW_SKEPTIC_CONCURRENCY',
+  api_factory: 'ORCHESTRATOR_API_FACTORY_CONCURRENCY',
+  autonomous_revenue: 'ORCHESTRATOR_AUTONOMOUS_REVENUE_CONCURRENCY',
 };
 
 function parsePositiveInt(raw: string | undefined): number | null {

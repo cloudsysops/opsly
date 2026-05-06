@@ -30,7 +30,9 @@ export type WorkerName =
   | 'cloudsysops_agents'
   | 'defense_audit'
   | 'openclaw-planner'
-  | 'openclaw-skeptic';
+  | 'openclaw-skeptic'
+  | 'api_factory'
+  | 'autonomous_revenue';
 
 export function extractJobContext(job: Job): {
   task_id?: string;

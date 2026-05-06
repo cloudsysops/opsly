@@ -13,7 +13,8 @@ last_review: 2026-05-02
 **Guía técnica capa IA (monorepo):** [`IMPLEMENTATION-IA-LAYER.md`](IMPLEMENTATION-IA-LAYER.md).  
 **Runtime agéntico (borrador):** [`../design/OAR.md`](../design/OAR.md) — Opsly Agentic Runtime (OAR).  
 **Infra híbrida futura (opcional):** [`../adr/ADR-027-hybrid-compute-plane-k8s.md`](../adr/ADR-027-hybrid-compute-plane-k8s.md).  
-**Shadow deploy Super Agent:** [`../runbooks/SUPER-AGENT-SHADOW-DEPLOY.md`](../runbooks/SUPER-AGENT-SHADOW-DEPLOY.md).
+**Shadow deploy Super Agent:** [`../runbooks/SUPER-AGENT-SHADOW-DEPLOY.md`](../runbooks/SUPER-AGENT-SHADOW-DEPLOY.md).  
+**Agency Division:** [`OPSLY-AGENCY-DIVISION.md`](OPSLY-AGENCY-DIVISION.md) — Servicios comercializables: Marketing, Agentes, API Factory, Security.
 
 ## Índice de planificación (canon vs temático)
 
