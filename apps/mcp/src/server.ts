@@ -20,6 +20,7 @@ import {
   enqueueCloudSysOpsOpsCompleteTool,
   enqueueCloudSysOpsSalesMessageTool,
 } from './tools/cloudsysops-agents.tool.js';
+import { superOrchestratorTools } from './tools/super-orchestrator.js';
 import type { ToolContext, ToolDefinition } from './types/index.js';
 
 interface RegisteredTool {
@@ -175,6 +176,7 @@ export function getAllToolDefinitions(): ToolDefinition<unknown, unknown>[] {
     StartAgentFarmTool,
     enqueueCloudSysOpsSalesMessageTool,
     enqueueCloudSysOpsOpsCompleteTool,
+    ...superOrchestratorTools,
   ] as ToolDefinition<unknown, unknown>[];
 }
 
