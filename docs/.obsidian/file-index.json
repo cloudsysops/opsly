@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-05-08T11:57:11Z",
-  "totalFiles": 341,
+  "lastIndexed": "2026-05-08T12:48:21Z",
+  "totalFiles": 342,
   "files": [
     ".openclaw.md",
     "2026-04-21.md",
@@ -129,6 +129,7 @@
     "GOOGLE-DRIVE-SYNC.md",
     "HANDOFF.md",
     "HEAVY-SERVICES-DECISION.md",
+    "HERMES-AUTONOMOUS-WORK-PLAN.md",
     "HERMES-INTEGRATION.md",
     "HERMES-LOCAL-AGENTS-STACK.md",
     "HERMES-SPRINT-PLAN.md",
