@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-05-08T15:33:40Z",
-  "totalFiles": 359,
+  "lastIndexed": "2026-05-08T16:36:52Z",
+  "totalFiles": 360,
   "files": [
     ".openclaw.md",
     "2026-04-21.md",
@@ -241,6 +241,7 @@
     "REDIS-QUEUE-GUIDE.md",
     "REDIS_NAMESPACE_ISOLATION.md",
     "REFACTOR-CHECKLIST.md",
+    "RENDERING-ENGINE.md",
     "REPAIR-QUEUE.md",
     "REPO-MAP.md",
     "RETENTION-POLICY.md",
