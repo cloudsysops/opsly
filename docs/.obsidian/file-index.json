@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-05-08T19:06:28Z",
-  "totalFiles": 372,
+  "lastIndexed": "2026-05-08T19:08:23Z",
+  "totalFiles": 373,
   "files": [
     ".openclaw.md",
     "2026-04-21.md",
@@ -211,6 +211,7 @@
     "PHASE-2-DEPLOYMENT.md",
     "PHASE-2-TESTING.md",
     "PHASE-4-OBSERVABILITY-BILLING.md",
+    "PHASE-5-2-3-4-COMPLETE-SPECS.md",
     "PHASE-5-ADVANCED-FEATURES.md",
     "PHASE-5-IMPLEMENTATION-BLUEPRINT.md",
     "PHASE1-QUICK-START.md",
