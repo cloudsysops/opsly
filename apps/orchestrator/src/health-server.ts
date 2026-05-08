@@ -1025,7 +1025,7 @@ async function handleValidationExport(req: IncomingMessage, res: ServerResponse)
 export function startOrchestratorHealthServer(): Server {
   const port = parsePort();
   const server = createServer(async (req, res) => {
-    const url = req.url ?? '/';
+const url = req.url ?? '/';
     const pathOnly = url.split('?')[0] ?? '/';
     const query = url.includes('?') ? url.slice(url.indexOf('?')) : '';
 
