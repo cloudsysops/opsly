@@ -178,6 +178,7 @@
   },
   "active": "b49d7cadc22b48ed",
   "lastOpenFiles": [
+    "docs/PHASE-4-OBSERVABILITY-BILLING.md",
     "infra/docker-compose.phase4.yml",
     "apps/slack-bot/Dockerfile",
     "apps/billing-dashboard/src/BillingDashboard.css",
@@ -188,7 +189,6 @@
     "apps/billing-service/src",
     "apps/billing-service",
     "apps/slack-bot/src/index.ts",
-    "apps/slack-bot/src",
     "docs/HERMES-DEPLOYMENT-RUNBOOK.md",
     "docs/QUICK-REFERENCE-HERMES-OPSLY.md",
     "docs/SESSION-SUMMARY-COMPLETE.md",
