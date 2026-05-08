@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-05-08T21:27:36Z",
-  "totalFiles": 378,
+  "lastIndexed": "2026-05-08T21:33:34Z",
+  "totalFiles": 379,
   "files": [
     ".openclaw.md",
     "2026-04-21.md",
@@ -186,6 +186,7 @@
     "NOTION-MCP-SERVER.md",
     "OAR.md",
     "OBSERVABILITY.md",
+    "OBSIDIAN-KNOWLEDGE-SYSTEM-STATUS.md",
     "OBSIDIAN-NOTEBOOKLM-N8N-INTEGRATION.md",
     "OBSIDIAN-README.md",
     "OLLAMA-DEPLOYMENT.md",
