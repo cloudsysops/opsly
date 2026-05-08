@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-05-08T10:54:07Z",
-  "totalFiles": 339,
+  "lastIndexed": "2026-05-08T10:55:36Z",
+  "totalFiles": 340,
   "files": [
     ".openclaw.md",
     "2026-04-21.md",
@@ -99,6 +99,7 @@
     "CODE-SNAPSHOTS.md",
     "CONTEXT-BUILDER.md",
     "COST-DASHBOARD.md",
+    "COST-MONITORING-GUIDE.md",
     "CURSOR-DAILY-CHECKLIST.md",
     "DATABASE-OPERATIONS.md",
     "DECEPTICON-WORKER.md",
