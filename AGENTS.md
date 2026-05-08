@@ -1,7 +1,8 @@
 ---
 status: canon
 owner: operations
-last_review: 2026-05-03
+last_review: 2026-05-08
+last_session: SESSION 2 COMPLETE (Phase 5 Architecture Design)
 ---
 
 # Opsly — Contexto del Agente
@@ -1808,10 +1809,74 @@ View online: https://github.com/cloudsysops/opsly/tree/main/docs/audits
 
 ---
 
-**Servicios VPS (actualizados 2026-05-08 12:40 UTC):**
-- opsly_orchestrator, opsly_llm_gateway, opsly_context_builder
-- infra-redis-1, infra-app-1, infra-app-2, traefik
-- opsly_portal, opsly_mcp (12 tools)
-- All healthy ✅
+### 🎯 SESSION 2 COMPLETE: PHASE 5 ARCHITECTURE DESIGN ✅ (May 8, 2026)
+
+**Duration:** 1.5+ hours (continuation from "continuemos")  
+**Deliverable:** Complete Phase 5 architectural blueprint + next-steps guide  
+**Status:** 🟡 PHASE 5 ARCHITECTURE READY (code implementation pending)
+
+**What Was Delivered:**
+
+1. **`docs/PHASE-5-IMPLEMENTATION-BLUEPRINT.md`** (15.2 KB)
+   - Complete specs for 5.1 (Multi-Model LLM), 5.2 (Rendering), 5.3 (E2E Testing), 5.4 (Marketplace)
+   - 5+ endpoints per component
+   - Database schemas + implementation steps
+   - Success criteria + constraints
+   - Post-Phase-5 roadmap (Phases 6-9)
+
+2. **`docs/NEXT-STEPS.md`** (10.4 KB)
+   - How to continue from here
+   - Step-by-step coding guides
+   - Configuration checklists
+   - Testing procedures
+   - Deployment sequence
+
+3. **Git Commits:**
+   - `0d1f75c`: docs(phase5): comprehensive implementation blueprint
+   - `11e1056`: docs: add next-steps guide for phase 5 continuation
+
+**Phase 5 Components (Architecture Complete):**
+
+- **5.1: Multi-Model LLM Router** (8h to implement)
+  - 4 providers: Claude, GPT-4, Llama 2, Mixtral
+  - 4 routing strategies: cost, speed, quality, balanced
+  - Fallback chain: primary → secondary → backup
+  - 5 API endpoints (completions, stream, models, health, compare)
+
+- **5.2: Advanced Rendering** (7h to implement)
+  - Stable Diffusion (text→image, img2img, upscale)
+  - Elevenlabs TTS (text→voice, 32+ voices)
+  - Batch processor (Bull + Redis, exponential backoff)
+  - 4 API endpoints (render, status, batch, stats)
+
+- **5.3: E2E Testing** (6h to implement)
+  - 9 Playwright tests (8 workflows + 1 load test)
+  - GitHub Actions CI/CD pipeline
+  - Coverage >80% target
+
+- **5.4: Agent Marketplace** (6h to implement)
+  - React 4-step wizard UI
+  - 6 pre-built templates
+  - One-click deployment
+  - Execution tracking + cost per agent
+
+**Effort Breakdown:**
+- 5.1: 8 hours
+- 5.2: 7 hours
+- 5.3: 6 hours
+- 5.4: 6 hours
+- Integration & Polish: 8 hours
+- **TOTAL: 35 hours** (2-3 weeks distributed)
+
+**Next Session Instructions:**
+
+1. Read: `docs/PHASE-5-IMPLEMENTATION-BLUEPRINT.md`
+2. Follow: `docs/NEXT-STEPS.md`
+3. Pick first component (5.1 or 5.2)
+4. Code following the blueprint exactly
+5. Test locally → commit → push
+6. Repeat for remaining components
+
+**Status:** ✅ Architecture complete | 🟡 Ready for implementation phase
 
 ---
