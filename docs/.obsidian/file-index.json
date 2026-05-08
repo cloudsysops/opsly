@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-05-08T20:31:44Z",
-  "totalFiles": 377,
+  "lastIndexed": "2026-05-08T21:27:36Z",
+  "totalFiles": 378,
   "files": [
     ".openclaw.md",
     "2026-04-21.md",
@@ -301,6 +301,7 @@
     "SUPER-ORCHESTRATOR.md",
     "SUPERAGENTS-BOOTSTRAP.md",
     "SYRA-IMPLEMENTATION-GUIDE.md",
+    "SYRA-OPENCLAW-INTEGRATION.md",
     "TAILSCALE-NOMENCLATURA.md",
     "TECHNICAL-DEBT.md",
     "TENANT-INVITATIONS-SYSTEM.md",
