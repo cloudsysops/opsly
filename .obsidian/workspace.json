@@ -178,6 +178,7 @@
   },
   "active": "b49d7cadc22b48ed",
   "lastOpenFiles": [
+    "docs/SOCIAL-MEDIA-AGENT-SYRA.md",
     "docs/ELEVENLABS-ADVANCED-INTEGRATION.md",
     "docs/AGENT-TEAM-OVERVIEW.md",
     "docs/PHASE-5-2-3-4-COMPLETE-SPECS.md",
@@ -213,7 +214,6 @@
     "docs/adr/ADR-029-mcp-orchestration.md",
     "docs/COST-DASHBOARD-WIREFRAMES.md",
     "docs/E2E-TEST-SCENARIOS.md",
-    "docs/TROUBLESHOOTING-GUIDE.md",
     "node_modules/layout-base/layout-schema.png",
     "node_modules/non-layered-tidy-tree-layout/screenshots/1.png",
     "runtime/logs/tenant-qa/08-security.png",

@@ -15,6 +15,19 @@ last_session: SESSION 2 COMPLETE (Phase 5 Architecture Design)
 **⚡ Cheatsheet:** [`docs/QUICK-REFERENCE.md`](docs/QUICK-REFERENCE.md) — SSH, comandos, vars, sprint actual  
 **🧠 Sistema de conocimiento:** [`docs/KNOWLEDGE-SYSTEM.md`](docs/KNOWLEDGE-SYSTEM.md) — NotebookLM + Obsidian, flujo para agentes
 
+**Opsly 2.0 Agent Team (9 agents):**
+  - [`docs/OPSLY-2-0-MULTI-AGENT-BLUEPRINT.md`](docs/OPSLY-2-0-MULTI-AGENT-BLUEPRINT.md) — Complete agent architecture
+  - [`docs/AGENT-TEAM-OVERVIEW.md`](docs/AGENT-TEAM-OVERVIEW.md) — Agent roles + workflows
+  - [`docs/SOCIAL-MEDIA-AGENT-SYRA.md`](docs/SOCIAL-MEDIA-AGENT-SYRA.md) — NEW: Syra (autonomous content generation)
+
+**📱 Syra (NEW):** Social media agent for autonomous content generation
+  - Monitors Opsly events → generates Twitter, LinkedIn, Discord, Slack posts
+  - Creates visual assets (charts, badges, progress bars)
+  - Schedules content, tracks engagement, responds to comments (with Lousa approval)
+  - Cost: ~$3-5/month (LLM + image generation)
+  - Timeline: Week 3 (May 27-31), 17 hours dev
+  - ROI: 5-10x (24/7 autonomous brand presence)
+
 **Mapa de documentación (evitar duplicar con `docs/AGENTS-GUIDE.md`):** `VISION.md` = norte de producto; **`AGENTS.md` (este archivo)** = estado operativo, próximo paso, bloqueantes e incrementos **por sesión**; **`docs/AGENTS-GUIDE.md`** = convenciones **solo** para varios asistentes/automatismos en paralelo (no sustituye AGENTS). `docs/adr/` = decisiones de arquitectura. No copiar tablas de límites por plan aquí: enlazar `AGENTS-GUIDE` + `VISION.md`.
 
 **Planificación por sprint (IA + producto):** [`ROADMAP.md`](ROADMAP.md) (timeline semanal, milestones). **Guía técnica capa IA:** [`docs/IMPLEMENTATION-IA-LAYER.md`](docs/IMPLEMENTATION-IA-LAYER.md) (TypeScript, rutas reales en `apps/*`).
