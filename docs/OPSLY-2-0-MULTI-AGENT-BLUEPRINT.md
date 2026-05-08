@@ -8,13 +8,13 @@ date: 2026-05-08
 
 ## Vision
 
-**Opsly 2.0** is an **autonomous multi-agent development platform** where specialized AI agents (Hashi, Brissa, Lili, Kairo, Aria, Nyx) coordinate to build, test, and deploy software at scale, with Lousa ensuring quality standards and Michelle driving maximum performance capacity.
+**Opsly 2.0** is an **autonomous multi-agent development platform** where specialized AI agents (Hashi, Brissa, Lili, Kairo, Aria, Nyx, Lousa, Michelle, Syra) coordinate to build, test, deploy, and market software at scale, with Lousa ensuring quality standards, Michelle driving maximum performance capacity, and Syra building community presence.
 
-**Core Principle:** Human approves milestones. Agents execute everything else. Lousa ensures quality. Michelle ensures speed.
+**Core Principle:** Human approves milestones. Agents execute everything else. Lousa ensures quality. Michelle ensures speed. Syra ensures brand + community.
 
 ---
 
-## Agent Team Structure
+## Agent Team Structure (9 Agents Total)
 
 ### 🧠 Hashi (Architect Agent)
 **Role:** Strategic planning, task decomposition, context building
@@ -314,6 +314,11 @@ date: 2026-05-08
       LOUSA      MICHELLE     (Control Layer)
   (Quality/    (Performance/
    Standards)  Optimization)
+         │            │
+         └────┬───────┘
+              │
+           SYRA       (Brand + Community)
+      (Social Media)
 ```
 
 **Data Flow:**
