@@ -1,0 +1,73 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    monitor: hermes-monitor
+    environment: production
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+            - alertmanager:9093
+
+rule_files:
+  - "rules/*.yml"
+
+scrape_configs:
+  # MCP Gateway
+  - job_name: "mcp-gateway"
+    static_configs:
+      - targets: ["localhost:3001"]
+    metrics_path: "/metrics"
+    scrape_interval: 10s
+
+  # Agent Manager
+  - job_name: "agent-manager"
+    static_configs:
+      - targets: ["localhost:3002"]
+    metrics_path: "/metrics"
+
+  # Tenant Invitations
+  - job_name: "tenant-invitations"
+    static_configs:
+      - targets: ["localhost:3003"]
+    metrics_path: "/metrics"
+
+  # Onboarding Agent
+  - job_name: "onboarding-agent"
+    static_configs:
+      - targets: ["localhost:3004"]
+    metrics_path: "/metrics"
+
+  # Rendering Engine
+  - job_name: "rendering-engine"
+    static_configs:
+      - targets: ["localhost:3005"]
+    metrics_path: "/metrics"
+
+  # MCP Rendering Server
+  - job_name: "mcp-rendering-server"
+    static_configs:
+      - targets: ["localhost:3006"]
+    metrics_path: "/metrics"
+
+  # PostgreSQL (via postgres_exporter)
+  - job_name: "postgresql"
+    static_configs:
+      - targets: ["postgres-exporter:9187"]
+
+  # Redis (via redis_exporter)
+  - job_name: "redis"
+    static_configs:
+      - targets: ["redis-exporter:9121"]
+
+  # Docker stats (via cadvisor)
+  - job_name: "cadvisor"
+    static_configs:
+      - targets: ["cadvisor:8080"]
+
+  # Node exporter (VPS host metrics)
+  - job_name: "node"
+    static_configs:
+      - targets: ["node-exporter:9100"]

@@ -1,8 +1,8 @@
-#!/bin/bash
-set -e
+#!/usr/bin/env bash
+set -euo pipefail
 
-# Deploy Hermes to Production on VPS
-# Run this: ssh user@157.245.223.7 'bash -s' < scripts/deploy-hermes-production.sh
+# Deploy Hermes to production candidate on VPS
+# Run this: ssh vps-dragon@100.120.151.91 'bash -s' < scripts/deploy-hermes-production.sh
 
 echo "════════════════════════════════════════════════════════════════════════════════"
 echo "                    🚀 HERMES PRODUCTION DEPLOYMENT"
@@ -14,6 +14,43 @@ GREEN='\033[0;32m'
 BLUE='\033[0;34m'
 RED='\033[0;31m'
 NC='\033[0m' # No Color
+DRY_RUN=0
+COMPOSE_FILE="${COMPOSE_FILE:-infra/docker-compose.mcp.yml}"
+
+run() {
+    if [ "$DRY_RUN" -eq 1 ]; then
+        echo "[dry-run] $*"
+    else
+        "$@"
+    fi
+}
+
+usage() {
+    cat <<'EOF'
+Usage: deploy-hermes-production.sh [--dry-run]
+
+Options:
+  --dry-run   Print commands without executing them
+EOF
+}
+
+while [ "$#" -gt 0 ]; do
+    case "$1" in
+        --dry-run)
+            DRY_RUN=1
+            shift
+            ;;
+        -h|--help)
+            usage
+            exit 0
+            ;;
+        *)
+            echo "Unknown option: $1" >&2
+            usage
+            exit 1
+            ;;
+    esac
+done
 
 # Step 1: Navigate to repo
 echo -e "${BLUE}[STEP 1/6]${NC} Navigating to /opt/opsly..."
@@ -23,7 +60,7 @@ echo ""
 
 # Step 2: Git pull
 echo -e "${BLUE}[STEP 2/6]${NC} Pulling latest code from main..."
-git pull origin main --ff-only || {
+run git pull origin main --ff-only || {
     echo -e "${RED}❌ Git pull failed${NC}"
     exit 1
 }
@@ -32,64 +69,18 @@ echo ""
 
 # Step 3: Check Docker Compose
 echo -e "${BLUE}[STEP 3/6]${NC} Checking Docker Compose..."
-if ! command -v docker-compose &> /dev/null; then
+if ! command -v docker compose >/dev/null 2>&1; then
     echo -e "${RED}❌ Docker Compose not found${NC}"
     exit 1
 fi
 echo -e "${GREEN}✅ Docker Compose ready${NC}"
 echo ""
 
-# Step 4: Create .env.mcp if needed
+# Step 4: Validate .env.mcp
 echo -e "${BLUE}[STEP 4/6]${NC} Checking .env.mcp configuration..."
 if [ ! -f .env.mcp ]; then
-    echo -e "${RED}⚠️  .env.mcp not found. Creating template...${NC}"
-    cat > .env.mcp << 'ENVEOF'
-# Hermes MCP Configuration
-NODE_ENV=production
-LOG_LEVEL=info
-
-# Email Configuration (required for invitations)
-EMAIL_HOST=smtp.gmail.com
-EMAIL_PORT=587
-EMAIL_USER=your-email@gmail.com
-EMAIL_PASS=your-app-password
-EMAIL_SECURE=true
-EMAIL_FROM=Hermes <hermes@opsly.com>
-
-# Discord Webhook (required for approvals)
-DISCORD_WEBHOOK_URL=https://discord.com/api/webhooks/YOUR_WEBHOOK_ID/YOUR_WEBHOOK_TOKEN
-
-# Database
-DATABASE_URL=postgresql://postgres:postgres@infra-postgres:5432/hermes_db
-
-# Redis
-REDIS_URL=redis://infra-redis-1:6379/0
-
-# Services
-OPSLY_API_URL=http://infra-app-1:3000
-OPSLY_ORCHESTRATOR_URL=http://opsly_orchestrator:3002
-
-# Rendering
-RENDER_TIMEOUT=300
-RENDER_MAX_SIZE_MB=500
-RENDER_CACHE_DIR=/tmp/hermes-renders
-
-# Agent Configuration
-AGENT_ARCHITECT_ENABLED=true
-AGENT_DEVELOPER_ENABLED=true
-AGENT_QA_ENABLED=true
-AGENT_SECURITY_ENABLED=true
-AGENT_DOCS_ENABLED=true
-AGENT_ONBOARDING_ENABLED=true
-
-# Onboarding Agent Cron
-ONBOARDING_CRON_SCHEDULE=*/5 * * * *
-
-ENVEOF
-    echo -e "${BLUE}⚠️  Please update .env.mcp with your email and Discord webhook:${NC}"
-    echo "    nano .env.mcp"
-    echo ""
-    echo -e "${BLUE}Then re-run this script.${NC}"
+    echo -e "${RED}❌ .env.mcp not found${NC}"
+    echo "Bootstrap env with Doppler/secrets process before deploy."
     exit 1
 fi
 echo -e "${GREEN}✅ .env.mcp configured${NC}"
@@ -101,9 +92,9 @@ echo "  Services: MCP Gateway, Agent Manager, Tenant Invitations, Onboarding Age
 echo "            Rendering Engine, Rendering Server, PostgreSQL, Redis, Prometheus"
 echo ""
 
-docker-compose -f infra/docker-compose.mcp.yml up -d || {
+run docker compose -f "$COMPOSE_FILE" up -d || {
     echo -e "${RED}❌ Docker Compose failed${NC}"
-    docker-compose -f infra/docker-compose.mcp.yml logs --tail=50
+    docker compose -f "$COMPOSE_FILE" logs --tail=50
     exit 1
 }
 
@@ -117,6 +108,10 @@ sleep 5
 
 HEALTHY=0
 for i in {1..10}; do
+    if [ "$DRY_RUN" -eq 1 ]; then
+        HEALTHY=1
+        break
+    fi
     if curl -s http://localhost:3001/health | grep -q '"status":"ok"'; then
         HEALTHY=1
         break
@@ -139,10 +134,10 @@ echo "════════════════════════�
 echo ""
 echo "Next steps:"
 echo "  1. Verify all services are running:"
-echo "     docker-compose -f infra/docker-compose.mcp.yml ps"
+echo "     docker compose -f $COMPOSE_FILE ps"
 echo ""
 echo "  2. Check service logs:"
-echo "     docker-compose -f infra/docker-compose.mcp.yml logs -f"
+echo "     docker compose -f $COMPOSE_FILE logs -f"
 echo ""
 echo "  3. Invite intcloudsysops tenant:"
 echo "     ./scripts/invite-intcloudsysops.sh"

@@ -6,13 +6,13 @@ status: runbook
 
 # Hermes Production Deployment — Step by Step
 
-Este runbook te guía paso a paso para deployar Hermes a VPS (157.245.223.7) e invitar a intcloudsysops.
+Este runbook te guia paso a paso para deployar Hermes en VPS usando SSH por Tailscale e invitar a un tenant piloto.
 
 ---
 
 ## Prerequisites
 
-- SSH access to VPS (157.245.223.7)
+- SSH access to VPS via Tailscale (`vps-dragon@100.120.151.91`)
 - Git repo cloned locally: `/Users/dragon/cboteros/proyectos/intcloudsysops`
 - Docker Compose installed on VPS
 - Email configured (.env.mcp)
@@ -24,7 +24,7 @@ Este runbook te guía paso a paso para deployar Hermes a VPS (157.245.223.7) e i
 
 ```bash
 # From your local machine
-ssh root@157.245.223.7
+ssh vps-dragon@100.120.151.91
 
 # Once on VPS, execute deployment script
 bash -s < /dev/stdin << 'DEPLOY_SCRIPT'
@@ -45,7 +45,7 @@ if [ ! -f .env.mcp ]; then
 fi
 
 echo "Starting Hermes services (9 containers)..."
-docker-compose -f infra/docker-compose.mcp.yml up -d
+docker compose -f infra/docker-compose.mcp.yml up -d
 
 echo "Waiting for services..."
 sleep 5
@@ -54,7 +54,7 @@ echo "Checking health..."
 curl -s http://localhost:3001/health || echo "Services starting..."
 
 echo "✅ Deployment complete"
-docker-compose -f infra/docker-compose.mcp.yml ps
+docker compose -f infra/docker-compose.mcp.yml ps
 
 DEPLOY_SCRIPT
 ```
@@ -76,7 +76,7 @@ prometheus                up              (healthy)           9090/tcp
 
 If any service is not "healthy", check logs:
 ```bash
-docker-compose -f infra/docker-compose.mcp.yml logs <service-name>
+docker compose -f infra/docker-compose.mcp.yml logs <service-name>
 ```
 
 ---
@@ -99,7 +99,7 @@ cat /opt/opsly/.env.mcp
 If missing, edit and restart:
 ```bash
 nano /opt/opsly/.env.mcp
-docker-compose -f infra/docker-compose.mcp.yml restart
+docker compose -f infra/docker-compose.mcp.yml restart
 ```
 
 ---
@@ -125,8 +125,8 @@ chmod +x scripts/invite-hermes-vps.sh
 Configuration:
   Tenant:      intcloudsysops
   Email:       contact@intcloudsysops.com
-  VPS:         157.245.223.7
-  Domain:      opsly.com
+  VPS:         100.120.151.91
+  Domain:      ${PLATFORM_DOMAIN}
 
 [STEP 1/3] Verifying VPS connectivity...
 ✅ VPS is reachable and services are running
@@ -146,7 +146,7 @@ Invitation Details:
   Tenant:         intcloudsysops
   Email:          contact@intcloudsysops.com
   Token:          3f2b1a4c5d6e7f8g...
-  Acceptance URL: https://opsly.com/accept?token=3f2b1a4c5d6e7f8g...
+  Acceptance URL: https://portal.${PLATFORM_DOMAIN}/invite/<token>?email=<email>
   Expires:        7 days
 
 Next Steps:
@@ -167,7 +167,7 @@ Next Steps:
     • Docs Agent → Generate guides
 
 5️⃣  When done, tenant can logea at:
-    https://portal.intcloudsysops.opsly.com
+    https://portal.${PLATFORM_DOMAIN}
 ```
 
 ---
@@ -225,7 +225,7 @@ Once dashboard shows all 4 agents completed:
 
 ```bash
 # Check PostgreSQL for tenant workspace
-ssh root@157.245.223.7
+ssh vps-dragon@100.120.151.91
 
 docker exec infra-postgres psql -U postgres -d hermes_db -c "
   SELECT tenant_name, status, created_at, completed_at 
@@ -250,7 +250,7 @@ Subject: "Your Hermes Workspace is Ready!"
 Body:
   Congratulations! Your Hermes workspace is now live.
   
-  Portal: https://portal.intcloudsysops.opsly.com
+  Portal: https://portal.${PLATFORM_DOMAIN}
   Username: admin@intcloudsysops.com
   Temporary Password: [generated]
   
@@ -268,9 +268,9 @@ Body:
 ### Services not starting
 
 ```bash
-ssh root@157.245.223.7
+ssh vps-dragon@100.120.151.91
 cd /opt/opsly
-docker-compose -f infra/docker-compose.mcp.yml logs -f --tail=50
+docker compose -f infra/docker-compose.mcp.yml logs -f --tail=50
 ```
 
 ### Email not sending
@@ -282,14 +282,14 @@ grep EMAIL /opt/opsly/.env.mcp
 
 Test SMTP:
 ```bash
-docker-compose -f infra/docker-compose.mcp.yml exec tenant-invitations \
+docker compose -f infra/docker-compose.mcp.yml exec tenant-invitations \
   node -e "require('./src/email-service').testSMTP()"
 ```
 
 ### Onboarding agent not running
 
 ```bash
-docker-compose -f infra/docker-compose.mcp.yml logs opsly_onboarding_agent
+docker compose -f infra/docker-compose.mcp.yml logs opsly_onboarding_agent
 ```
 
 Check cron is enabled:
@@ -305,7 +305,7 @@ curl -v http://localhost:3001/health
 
 Check logs:
 ```bash
-docker-compose -f infra/docker-compose.mcp.yml logs opsly_mcp_gateway
+docker compose -f infra/docker-compose.mcp.yml logs opsly_mcp_gateway
 ```
 
 ---
@@ -315,20 +315,17 @@ docker-compose -f infra/docker-compose.mcp.yml logs opsly_mcp_gateway
 If something goes wrong:
 
 ```bash
-ssh root@157.245.223.7
+ssh vps-dragon@100.120.151.91
 cd /opt/opsly
 
 # Stop services
-docker-compose -f infra/docker-compose.mcp.yml down
+docker compose -f infra/docker-compose.mcp.yml down
 
-# Go back to previous commit
-git checkout HEAD~1
-
-# Restart
-docker-compose -f infra/docker-compose.mcp.yml up -d
+# Restart current pinned stack
+docker compose -f infra/docker-compose.mcp.yml up -d
 
 # Check status
-docker-compose -f infra/docker-compose.mcp.yml ps
+docker compose -f infra/docker-compose.mcp.yml ps
 ```
 
 ---
@@ -339,7 +336,7 @@ Once intcloudsysops is onboarded:
 
 1. **Test rendering**: Ask agent to generate a video
    ```bash
-   curl -X POST http://157.245.223.7:3005/render/video \
+   curl -X POST http://localhost:3005/render/video \
      -H "Content-Type: application/json" \
      -d '{"prompt": "test video", "duration": 10}'
    ```
@@ -352,7 +349,7 @@ Once intcloudsysops is onboarded:
 
 3. **Add more tenants**: Repeat invitation process
 
-4. **Setup observability**: Monitor Prometheus (http://157.245.223.7:9090)
+4. **Setup observability**: Monitor Prometheus (http://localhost:9090 via SSH tunnel)
 
 ---
 

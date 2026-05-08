@@ -5,8 +5,23 @@
 
 set -euo pipefail
 
-INVITATIONS_API="${INVITATIONS_SERVICE_URL:-http://localhost:3003}"
-ONBOARDING_API="${ONBOARDING_SERVICE_URL:-http://localhost:3004}"
+INVITATIONS_API="${INVITATIONS_SERVICE_URL:-${OPSLY_INVITATIONS_SERVICE_URL:-}}"
+ONBOARDING_API="${ONBOARDING_SERVICE_URL:-${OPSLY_ONBOARDING_SERVICE_URL:-}}"
+MCP_GATEWAY_API="${MCP_GATEWAY_URL:-${OPSLY_MCP_GATEWAY_URL:-}}"
+AGENT_MANAGER_API="${AGENT_MANAGER_URL:-${OPSLY_AGENT_MANAGER_URL:-}}"
+
+require_runtime_config() {
+  if [ -z "${INVITATIONS_API}" ] || [ -z "${ONBOARDING_API}" ] || [ -z "${MCP_GATEWAY_API}" ] || [ -z "${AGENT_MANAGER_API}" ]; then
+    echo "Missing required env vars:"
+    echo "  - INVITATIONS_SERVICE_URL or OPSLY_INVITATIONS_SERVICE_URL"
+    echo "  - ONBOARDING_SERVICE_URL or OPSLY_ONBOARDING_SERVICE_URL"
+    echo "  - MCP_GATEWAY_URL or OPSLY_MCP_GATEWAY_URL"
+    echo "  - AGENT_MANAGER_URL or OPSLY_AGENT_MANAGER_URL"
+    exit 1
+  fi
+}
+
+require_runtime_config
 
 clear
 
@@ -64,10 +79,10 @@ while true; do
   echo "🤖 AGENT STATUS"
   echo "───────────────────────────────────────────────────────────────────────────────"
   
-  gateway=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3001/health 2>/dev/null || echo "000")
-  manager=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3002/health 2>/dev/null || echo "000")
-  invitations=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3003/health 2>/dev/null || echo "000")
-  onboarding=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3004/health 2>/dev/null || echo "000")
+  gateway=$(curl -s -o /dev/null -w "%{http_code}" "$MCP_GATEWAY_API/health" 2>/dev/null || echo "000")
+  manager=$(curl -s -o /dev/null -w "%{http_code}" "$AGENT_MANAGER_API/health" 2>/dev/null || echo "000")
+  invitations=$(curl -s -o /dev/null -w "%{http_code}" "$INVITATIONS_API/health" 2>/dev/null || echo "000")
+  onboarding=$(curl -s -o /dev/null -w "%{http_code}" "$ONBOARDING_API/health" 2>/dev/null || echo "000")
   
   [ "$gateway" = "200" ] && gateway_status="✅" || gateway_status="❌"
   [ "$manager" = "200" ] && manager_status="✅" || manager_status="❌"

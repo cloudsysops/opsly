@@ -1,0 +1,240 @@
+.billing-dashboard {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu,
+    Cantarell, sans-serif;
+  background: linear-gradient(135deg, #1e1e2e 0%, #2a2a3e 100%);
+  min-height: 100vh;
+  color: #e0e0e0;
+  padding: 20px;
+}
+
+.billing-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+  border-bottom: 2px solid #404060;
+  padding-bottom: 20px;
+}
+
+.billing-header h1 {
+  font-size: 32px;
+  margin: 0;
+  background: linear-gradient(45deg, #00d4ff, #0099ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.period-selector {
+  display: flex;
+  gap: 10px;
+}
+
+.period-selector button {
+  padding: 8px 16px;
+  border: 2px solid #404060;
+  background: transparent;
+  color: #e0e0e0;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.period-selector button.active {
+  border-color: #00d4ff;
+  color: #00d4ff;
+  background: rgba(0, 212, 255, 0.1);
+}
+
+/* Metrics */
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin-bottom: 40px;
+}
+
+.metric-card {
+  background: linear-gradient(135deg, #2a2a3e 0%, #1f1f2e 100%);
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid #404060;
+  transition: all 0.3s ease;
+}
+
+.metric-card:hover {
+  border-color: #00d4ff;
+  box-shadow: 0 0 20px rgba(0, 212, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+.metric-card.highlight {
+  border-color: #00d4ff;
+  background: linear-gradient(135deg, rgba(0, 212, 255, 0.1) 0%, #2a2a3e 100%);
+}
+
+.metric-label {
+  font-size: 12px;
+  color: #a0a0b0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+
+.metric-value {
+  font-size: 28px;
+  font-weight: bold;
+  color: #00d4ff;
+  margin-bottom: 4px;
+}
+
+.metric-subtitle {
+  font-size: 12px;
+  color: #707080;
+}
+
+/* Charts */
+.charts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+  gap: 20px;
+  margin-bottom: 40px;
+}
+
+.chart-container {
+  background: linear-gradient(135deg, #2a2a3e 0%, #1f1f2e 100%);
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid #404060;
+}
+
+.chart-container h2 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-size: 18px;
+  color: #e0e0e0;
+}
+
+/* Optimization Suggestions */
+.optimization {
+  margin-bottom: 40px;
+}
+
+.optimization h2 {
+  font-size: 22px;
+  margin-bottom: 20px;
+  color: #e0e0e0;
+}
+
+.suggestions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.suggestion-card {
+  background: linear-gradient(135deg, #2a4a3e 0%, #1f3a2e 100%);
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid #404060;
+  border-left: 4px solid #00d4ff;
+}
+
+.suggestion-icon {
+  font-size: 24px;
+  margin-bottom: 12px;
+}
+
+.suggestion-card h3 {
+  margin: 0 0 10px 0;
+  font-size: 16px;
+  color: #00d4ff;
+}
+
+.suggestion-card p {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  color: #a0a0b0;
+  line-height: 1.5;
+}
+
+.potential-savings {
+  font-size: 12px;
+  color: #707080;
+  background: rgba(0, 212, 255, 0.05);
+  padding: 8px;
+  border-radius: 4px;
+}
+
+.potential-savings strong {
+  color: #00d4ff;
+}
+
+/* Invoices */
+.invoices {
+  margin-bottom: 40px;
+}
+
+.invoices h2 {
+  font-size: 22px;
+  margin-bottom: 20px;
+  color: #e0e0e0;
+}
+
+.btn-generate-invoice {
+  padding: 12px 24px;
+  background: linear-gradient(45deg, #00d4ff, #0099ff);
+  color: #1e1e2e;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-generate-invoice:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 212, 255, 0.3);
+}
+
+/* Loading & Error */
+.billing-loading,
+.billing-error {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  font-size: 18px;
+  color: #a0a0b0;
+}
+
+.billing-error {
+  color: #ff6b6b;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+  .charts {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .billing-header {
+    flex-direction: column;
+    gap: 20px;
+    align-items: flex-start;
+  }
+
+  .metrics {
+    grid-template-columns: 1fr;
+  }
+
+  .period-selector {
+    width: 100%;
+  }
+
+  .period-selector button {
+    flex: 1;
+  }
+}

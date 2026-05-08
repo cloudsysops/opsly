@@ -6,7 +6,7 @@ status: reference
 
 # Quick Reference: Hermes + Opsly
 
-**TL;DR:** Hermes es un orquestador de agentes que mejora Opsly. Sin Hermes tenías plataforma descoordinada. Con Hermes tienes sistema automático.
+**TL;DR:** Hermes es un orquestador de agentes que mejora Opsly. Integra aprobaciones, trazabilidad y flujos asistidos sobre la plataforma existente.
 
 ---
 
@@ -164,12 +164,12 @@ infra/docker-compose.mcp.yml   ← 9 servicios (Hermes)
 ```bash
 cd /opt/opsly
 git pull origin main
-docker-compose -f infra/docker-compose.mcp.yml up -d
+docker compose -f infra/docker-compose.mcp.yml up -d
 ```
 
 ### Option B: Local Testing
 ```bash
-docker-compose -f infra/docker-compose.mcp.yml up -d
+docker compose -f infra/docker-compose.mcp.yml up -d
 ./scripts/hermes-render.sh music "test" 10
 ```
 
@@ -204,7 +204,7 @@ T+16m:  Email: "¡Tu Hermes está listo!"
 ## After Onboarding: What Tenant Can Do
 
 ```
-Tenant logueado en portal.intcloudsysops.opsly.com
+Tenant logueado en portal.<PLATFORM_DOMAIN>
 
 Tenant: "Necesito un video demo"
   ↓
@@ -257,8 +257,8 @@ A: Everything is logged. Error → PostgreSQL → Discord notification.
 **Q: Can I invite multiple tenants?**
 A: Yes. Use batch CSV or single script. Unlimited scalable.
 
-**Q: When is this production ready?**
-A: Now. All code on main branch. Just deploy.
+**Q: What is needed before production use?**
+A: Validate env/secrets via Doppler, run health checks, and execute controlled deploy with human approval.
 
 ---
 
@@ -267,14 +267,14 @@ A: Now. All code on main branch. Just deploy.
 **A) Deploy + Invite**
 ```bash
 cd /opt/opsly && git pull
-docker-compose -f infra/docker-compose.mcp.yml up -d
+docker compose -f infra/docker-compose.mcp.yml up -d
 ./scripts/invite-intcloudsysops.sh
 ./scripts/hermes-tenant-dashboard.sh
 ```
 
 **B) Test Locally First**
 ```bash
-docker-compose -f infra/docker-compose.mcp.yml up -d
+docker compose -f infra/docker-compose.mcp.yml up -d
 ./scripts/hermes-render.sh music "test beat" 10
 curl http://localhost:3001/health
 ```
@@ -317,10 +317,10 @@ Opsly = SaaS platform base
 
 Workflow = Invite → Email → Click → Auto-setup → Done
 
-Without Hermes: Manual, slow, uncoordinated
-With Hermes: Automatic, fast, coordinated, auditable
+Without Hermes: More manual coordination overhead
+With Hermes: Better coordination and auditable workflows under supervision
 
-Status: Ready to deploy. Ready to scale. Ready for production.
+Status: Candidate for controlled deployment after env validation and smoke checks.
 ```
 
 ---

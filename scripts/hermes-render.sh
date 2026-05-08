@@ -5,8 +5,9 @@
 
 set -euo pipefail
 
-RENDERING_API="${RENDERING_ENGINE_URL:-http://localhost:3005}"
-MCP_SERVER_URL="${MCP_RENDERING_SERVER_URL:-http://localhost:3006}"
+RENDERING_API="${RENDERING_ENGINE_URL:-${OPSLY_RENDERING_ENGINE_URL:-}}"
+MCP_SERVER_URL="${MCP_RENDERING_SERVER_URL:-${OPSLY_MCP_RENDERING_SERVER_URL:-}}"
+DRY_RUN=0
 
 # Colors
 GREEN='\033[0;32m'
@@ -27,6 +28,13 @@ log_error() {
   echo -e "${RED}❌ $1${NC}"
 }
 
+require_runtime_config() {
+  if [ -z "${RENDERING_API}" ]; then
+    log_error "Missing RENDERING_ENGINE_URL (or OPSLY_RENDERING_ENGINE_URL)"
+    exit 1
+  fi
+}
+
 # Generate music
 render_music() {
   local prompt="$1"
@@ -40,16 +48,29 @@ render_music() {
   log_info "🎵 Rendering music: \"$prompt\""
   log_info "  Duration: ${duration}s, Style: $style, BPM: $bpm"
 
-  local response=$(curl -s -X POST "$RENDERING_API/render/music" \
+  local payload
+  payload="$(cat <<EOF
+{
+  "task_id": "$task_id",
+  "prompt": "$prompt",
+  "duration": $duration,
+  "style": "$style",
+  "bpm": $bpm,
+  "format": "$format"
+}
+EOF
+)"
+
+  if [ "$DRY_RUN" -eq 1 ]; then
+    log_info "[dry-run] POST $RENDERING_API/render/music"
+    echo "$payload" | jq '.'
+    return 0
+  fi
+
+  local response
+  response=$(curl -s -X POST "$RENDERING_API/render/music" \
     -H "Content-Type: application/json" \
-    -d "{
-      \"task_id\": \"$task_id\",
-      \"prompt\": \"$prompt\",
-      \"duration\": $duration,
-      \"style\": \"$style\",
-      \"bpm\": $bpm,
-      \"format\": \"$format\"
-    }")
+    -d "$payload")
 
   if echo "$response" | jq -e '.status == "success"' > /dev/null 2>&1; then
     log_success "Music rendered successfully"
@@ -75,15 +96,28 @@ render_image() {
   log_info "🖼️  Rendering image: \"$prompt\""
   log_info "  Style: $style, Resolution: $resolution"
 
-  local response=$(curl -s -X POST "$RENDERING_API/render/image" \
+  local payload
+  payload="$(cat <<EOF
+{
+  "task_id": "$task_id",
+  "prompt": "$prompt",
+  "style": "$style",
+  "resolution": "$resolution",
+  "format": "$format"
+}
+EOF
+)"
+
+  if [ "$DRY_RUN" -eq 1 ]; then
+    log_info "[dry-run] POST $RENDERING_API/render/image"
+    echo "$payload" | jq '.'
+    return 0
+  fi
+
+  local response
+  response=$(curl -s -X POST "$RENDERING_API/render/image" \
     -H "Content-Type: application/json" \
-    -d "{
-      \"task_id\": \"$task_id\",
-      \"prompt\": \"$prompt\",
-      \"style\": \"$style\",
-      \"resolution\": \"$resolution\",
-      \"format\": \"$format\"
-    }")
+    -d "$payload")
 
   if echo "$response" | jq -e '.status == "success"' > /dev/null 2>&1; then
     log_success "Image rendered successfully"
@@ -109,15 +143,28 @@ render_video() {
   log_info "🎬 Rendering video: \"$prompt\""
   log_info "  Duration: ${duration}s, Style: $style"
 
-  local response=$(curl -s -X POST "$RENDERING_API/render/video" \
+  local payload
+  payload="$(cat <<EOF
+{
+  "task_id": "$task_id",
+  "prompt": "$prompt",
+  "duration": $duration,
+  "style": "$style",
+  "format": "$format"
+}
+EOF
+)"
+
+  if [ "$DRY_RUN" -eq 1 ]; then
+    log_info "[dry-run] POST $RENDERING_API/render/video"
+    echo "$payload" | jq '.'
+    return 0
+  fi
+
+  local response
+  response=$(curl -s -X POST "$RENDERING_API/render/video" \
     -H "Content-Type: application/json" \
-    -d "{
-      \"task_id\": \"$task_id\",
-      \"prompt\": \"$prompt\",
-      \"duration\": $duration,
-      \"style\": \"$style\",
-      \"format\": \"$format\"
-    }")
+    -d "$payload")
 
   if echo "$response" | jq -e '.status == "success"' > /dev/null 2>&1; then
     log_success "Video rendered successfully"
@@ -156,6 +203,7 @@ usage() {
 ╚═════════════════════════════════════════════════════════════════╝
 
 Usage: hermes-render [command] [options]
+       hermes-render --dry-run <command> [options]
 
 Commands:
 
@@ -186,8 +234,10 @@ Commands:
 
 Environment Variables:
 
-  RENDERING_ENGINE_URL      URL of rendering engine (default: http://localhost:3005)
-  MCP_RENDERING_SERVER_URL  URL of MCP server (default: http://localhost:3006)
+  RENDERING_ENGINE_URL           URL of rendering engine
+  OPSLY_RENDERING_ENGINE_URL     Fallback URL for rendering engine
+  MCP_RENDERING_SERVER_URL       URL of MCP server (optional)
+  OPSLY_MCP_RENDERING_SERVER_URL Fallback URL for MCP server (optional)
 
 Examples:
 
@@ -211,6 +261,25 @@ EOF
 
 # Main
 main() {
+  local args=()
+  while [ "$#" -gt 0 ]; do
+    case "$1" in
+      --dry-run)
+        DRY_RUN=1
+        shift
+        ;;
+      *)
+        args+=("$1")
+        shift
+        ;;
+    esac
+  done
+  if [ "${#args[@]}" -gt 0 ]; then
+    set -- "${args[@]}"
+  else
+    set --
+  fi
+
   if [ $# -eq 0 ]; then
     usage
     exit 0
@@ -218,6 +287,10 @@ main() {
   
   local command=$1
   shift
+
+  if [ "$command" != "help" ]; then
+    require_runtime_config
+  fi
   
   case "$command" in
     music)

@@ -6,8 +6,9 @@
 set -euo pipefail
 
 # Configuration
-INVITATIONS_SERVICE_URL="${INVITATIONS_SERVICE_URL:-http://localhost:3003}"
-PORTAL_URL="${PORTAL_URL:-https://portal.hermes.intcloudsysops.com}"
+INVITATIONS_SERVICE_URL="${INVITATIONS_SERVICE_URL:-${OPSLY_INVITATIONS_SERVICE_URL:-}}"
+PORTAL_URL="${PORTAL_URL:-${OPSLY_PORTAL_URL:-}}"
+DRY_RUN=0
 
 # Colors
 GREEN='\033[0;32m'
@@ -28,6 +29,13 @@ log_error() {
   echo -e "${RED}❌ $1${NC}"
 }
 
+require_runtime_config() {
+  if [ -z "${INVITATIONS_SERVICE_URL}" ]; then
+    log_error "Missing INVITATIONS_SERVICE_URL (or OPSLY_INVITATIONS_SERVICE_URL)"
+    exit 1
+  fi
+}
+
 # Function to invite a single tenant
 invite_tenant() {
   local tenant_slug=$1
@@ -39,17 +47,30 @@ invite_tenant() {
 
   log_info "Inviting tenant: $tenant_name ($tenant_slug)"
 
-  local response=$(curl -s -X POST "$INVITATIONS_SERVICE_URL/tenants/invite" \
+  local payload
+  payload="$(cat <<EOF
+{
+  "tenant_slug": "$tenant_slug",
+  "tenant_name": "$tenant_name",
+  "contact_email": "$contact_email",
+  "contact_name": "$contact_name",
+  "plan": "$plan",
+  "features": ["agents", "music", "images", "videos"],
+  "billing_contact_email": "$billing_email"
+}
+EOF
+)"
+
+  if [ "$DRY_RUN" -eq 1 ]; then
+    log_info "[dry-run] POST $INVITATIONS_SERVICE_URL/tenants/invite"
+    echo "$payload" | jq '.'
+    return 0
+  fi
+
+  local response
+  response=$(curl -s -X POST "$INVITATIONS_SERVICE_URL/tenants/invite" \
     -H "Content-Type: application/json" \
-    -d "{
-      \"tenant_slug\": \"$tenant_slug\",
-      \"tenant_name\": \"$tenant_name\",
-      \"contact_email\": \"$contact_email\",
-      \"contact_name\": \"$contact_name\",
-      \"plan\": \"$plan\",
-      \"features\": [\"agents\", \"music\", \"images\", \"videos\"],
-      \"billing_contact_email\": \"$billing_email\"
-    }")
+    -d "$payload")
 
   if echo "$response" | jq -e '.status == "INVITED"' > /dev/null 2>&1; then
     log_success "Invited $tenant_name — email sent to $contact_email"
@@ -66,7 +87,7 @@ invite_tenant() {
 # Function to show pending invitations
 show_pending() {
   log_info "Fetching pending invitations..."
-  
+  require_runtime_config
   local response=$(curl -s "$INVITATIONS_SERVICE_URL/invitations/pending")
   
   echo "$response" | jq '.'
@@ -75,7 +96,7 @@ show_pending() {
 # Function to check invitation status
 check_status() {
   local token=$1
-  
+  require_runtime_config
   log_info "Checking invitation status..."
   
   local response=$(curl -s "$INVITATIONS_SERVICE_URL/invitations/status/$token")
@@ -83,9 +104,30 @@ check_status() {
   echo "$response" | jq '.'
 }
 
+# Parse optional flags first
+ARGS=()
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --dry-run)
+      DRY_RUN=1
+      shift
+      ;;
+    *)
+      ARGS+=("$1")
+      shift
+      ;;
+  esac
+done
+if [ "${#ARGS[@]}" -gt 0 ]; then
+  set -- "${ARGS[@]}"
+else
+  set --
+fi
+
 # Main execution
 case "${1:-}" in
   invite)
+    require_runtime_config
     # Invite single tenant
     if [ $# -lt 5 ]; then
       echo "Usage: $0 invite <slug> <name> <email> <contact_name> [plan] [billing_email]"
@@ -95,15 +137,16 @@ case "${1:-}" in
     ;;
   
   batch)
+    require_runtime_config
     # Batch invite from file
-    local file="${2:-tenants-to-invite.csv}"
+    file="${2:-config/tenants-to-invite.csv}"
     if [ ! -f "$file" ]; then
       log_error "File not found: $file"
       exit 1
     fi
 
     log_info "Batch inviting tenants from $file"
-    local count=0
+    count=0
     while IFS=',' read -r slug name email contact plan billing; do
       # Skip header line
       if [ "$slug" = "slug" ]; then
@@ -164,7 +207,11 @@ CSV Format (tenants-to-invite.csv):
 Environment Variables:
 
   INVITATIONS_SERVICE_URL    URL of invitations service (default: http://localhost:3003)
-  PORTAL_URL                 URL of Hermes portal (default: https://portal.hermes.intcloudsysops.com)
+  INVITATIONS_SERVICE_URL        URL of invitations service
+  OPSLY_INVITATIONS_SERVICE_URL  Fallback URL for invitations service
+  PORTAL_URL                     URL del portal (opcional)
+  OPSLY_PORTAL_URL               Fallback URL for portal (opcional)
+  --dry-run                      Print requests without mutating state
 
 USAGE
     exit 0

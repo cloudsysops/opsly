@@ -1,0 +1,172 @@
+# Extension to infra/docker-compose.mcp.yml with Phase 4 services
+# Run with: docker-compose -f infra/docker-compose.mcp.yml -f infra/docker-compose.phase4.yml up -d
+
+version: "3.9"
+
+services:
+  # ════════════════════════════════════════════════════════════════════
+  # PHASE 4: MONITORING & OBSERVABILITY
+  # ════════════════════════════════════════════════════════════════════
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: opsly_grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-hermes2026}
+      - GF_INSTALL_PLUGINS=grafana-piechart-panel
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana_storage:/var/lib/grafana
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning
+      - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - opsly-mcp
+    restart: unless-stopped
+    depends_on:
+      - prometheus
+
+  alertmanager:
+    image: prom/alertmanager:latest
+    container_name: opsly_alertmanager
+    ports:
+      - "9093:9093"
+    environment:
+      - DISCORD_WEBHOOK_URL=${DISCORD_WEBHOOK_URL}
+    volumes:
+      - ./monitoring/alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml
+      - alertmanager_storage:/alertmanager
+    command:
+      - "--config.file=/etc/alertmanager/alertmanager.yml"
+      - "--storage.path=/alertmanager"
+    networks:
+      - opsly-mcp
+    restart: unless-stopped
+
+  loki:
+    image: grafana/loki:latest
+    container_name: opsly_loki
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./monitoring/loki/loki-config.yml:/etc/loki/local-config.yml
+      - loki_storage:/loki
+    command: -config.file=/etc/loki/local-config.yml
+    networks:
+      - opsly-mcp
+    restart: unless-stopped
+
+  promtail:
+    image: grafana/promtail:latest
+    container_name: opsly_promtail
+    volumes:
+      - ./monitoring/promtail/promtail-config.yml:/etc/promtail/config.yml
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: -config.file=/etc/promtail/config.yml
+    networks:
+      - opsly-mcp
+    restart: unless-stopped
+    depends_on:
+      - loki
+
+  postgres-exporter:
+    image: prometheuscommunity/postgres-exporter
+    container_name: opsly_postgres_exporter
+    environment:
+      DATA_SOURCE_NAME: "postgresql://postgres:${DB_PASSWORD}@infra-postgres:5432/hermes_db?sslmode=disable"
+    ports:
+      - "9187:9187"
+    networks:
+      - opsly-mcp
+    restart: unless-stopped
+    depends_on:
+      - infra-postgres
+
+  redis-exporter:
+    image: oliver006/redis_exporter
+    container_name: opsly_redis_exporter
+    command: -redis-addr=infra-redis-1:6379
+    ports:
+      - "9121:9121"
+    networks:
+      - opsly-mcp
+    restart: unless-stopped
+    depends_on:
+      - infra-redis-1
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    container_name: opsly_cadvisor
+    ports:
+      - "8080:8080"
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    networks:
+      - opsly-mcp
+    restart: unless-stopped
+    privileged: true
+
+  # ════════════════════════════════════════════════════════════════════
+  # PHASE 4: SLACK BOT
+  # ════════════════════════════════════════════════════════════════════
+
+  slack-bot:
+    build:
+      context: .
+      dockerfile: apps/slack-bot/Dockerfile
+    container_name: opsly_slack_bot
+    ports:
+      - "3010:3010"
+    environment:
+      - SLACK_BOT_TOKEN=${SLACK_BOT_TOKEN}
+      - SLACK_SIGNING_SECRET=${SLACK_SIGNING_SECRET}
+      - SLACK_APP_TOKEN=${SLACK_APP_TOKEN}
+      - HERMES_API_URL=http://opsly_mcp_gateway:3001
+      - HERMES_INVITATIONS_URL=http://opsly_tenant_invitations:3003
+    networks:
+      - opsly-mcp
+    restart: unless-stopped
+    depends_on:
+      - opsly_mcp_gateway
+      - opsly_tenant_invitations
+
+  # ════════════════════════════════════════════════════════════════════
+  # PHASE 4: BILLING SERVICE
+  # ════════════════════════════════════════════════════════════════════
+
+  billing-service:
+    build:
+      context: .
+      dockerfile: apps/billing-service/Dockerfile
+    container_name: opsly_billing_service
+    ports:
+      - "3007:3007"
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - NODE_ENV=production
+    networks:
+      - opsly-mcp
+    restart: unless-stopped
+    depends_on:
+      - infra-postgres
+
+volumes:
+  grafana_storage:
+  alertmanager_storage:
+  loki_storage:
+
+networks:
+  opsly-mcp:
+    external: true
