@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-05-08T10:55:36Z",
-  "totalFiles": 340,
+  "lastIndexed": "2026-05-08T11:57:11Z",
+  "totalFiles": 341,
   "files": [
     ".openclaw.md",
     "2026-04-21.md",
@@ -287,6 +287,7 @@
     "VISION.md",
     "VISION.md",
     "VPS-ARCHITECTURE.md",
+    "VPS-DEPLOYMENT-2026-05-08.md",
     "VPS-DISK-SECURITY-SCAN.md",
     "VPS-SSH-WORKER-NODES.md",
     "WALLET-PREPAID-ROADMAP.md",
