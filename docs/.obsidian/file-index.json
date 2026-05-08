@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-05-08T13:04:36Z",
-  "totalFiles": 350,
+  "lastIndexed": "2026-05-08T14:05:58Z",
+  "totalFiles": 353,
   "files": [
     ".openclaw.md",
     "2026-04-21.md",
@@ -99,6 +99,7 @@
     "CODE-REVIEW-ORCHESTRATOR-2026-04-09.md",
     "CODE-SNAPSHOTS.md",
     "CONTEXT-BUILDER.md",
+    "COST-DASHBOARD-WIREFRAMES.md",
     "COST-DASHBOARD.md",
     "COST-DEEP-DIVE.md",
     "COST-MONITORING-GUIDE.md",
@@ -117,6 +118,7 @@
     "DOMAIN-CUTOVER-OP-SLY.md",
     "DOPPLER-CI-RUNBOOK.md",
     "DOPPLER-VARS.md",
+    "E2E-TEST-SCENARIOS.md",
     "EXECUTION-PLAN-LOCALRANK-NOTEBOOKLM.md",
     "FAILOVER-GCP-ARCHITECTURE.md",
     "FAILOVER-RUNBOOK.md",
@@ -286,6 +288,7 @@
     "TEST_PLAN.md",
     "TOKEN-BILLING-SYSTEM.md",
     "TOKEN-SYSTEM-GUIDE.md",
+    "TROUBLESHOOTING-GUIDE.md",
     "TROUBLESHOOTING.md",
     "VALIDATION-AND-ITERATION-SYSTEM.md",
     "VALIDATION-ITERATION-LOOP.md",
