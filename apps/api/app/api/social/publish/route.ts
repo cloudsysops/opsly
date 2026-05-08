@@ -2,6 +2,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { multiPlatformPublisher } from '@/lib/social/adapters/publisher';
+import { capturePublishEvent, capturePublishError } from '@/lib/knowledge/syra-capture';
 import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl = process.env.SUPABASE_URL || 'http://localhost:54321';
@@ -51,14 +52,36 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       }
     }
 
+    // Capture publishing event to knowledge vault
+    const successCount = results.filter((r) => r.success).length;
+    const failureCount = results.filter((r) => !r.success).length;
+
+    // Fire and forget: don't block on knowledge capture
+    if (successCount > 0) {
+      capturePublishEvent('social_media_published', platforms, {
+        platforms_published: results.filter((r) => r.success).map((r) => r.platform),
+        total_posts: results.length,
+        success_rate: successCount / results.length,
+      }).catch((err) => console.warn('Knowledge capture warning:', err));
+    }
+
+    // Capture any failures
+    for (const result of results) {
+      if (!result.success && result.error) {
+        capturePublishError(result.platform, result.error, `Content ID: ${content_id}`).catch(
+          (err) => console.warn('Knowledge capture warning:', err)
+        );
+      }
+    }
+
     return NextResponse.json({
       status: 'published',
       content_id,
       results,
       summary: {
         total: results.length,
-        successful: results.filter((r) => r.success).length,
-        failed: results.filter((r) => !r.success).length,
+        successful: successCount,
+        failed: failureCount,
       },
     });
   } catch (error) {

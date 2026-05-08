@@ -1,0 +1,17 @@
+[Unit]
+Description=Opsly Knowledge Base Nightly Sync Timer
+Requires=opsly-knowledge-sync.service
+
+[Timer]
+# Run every night at 2 AM
+OnCalendar=daily
+OnCalendar=*-*-* 02:00:00
+
+# If system is asleep, run when waking up
+Persistent=true
+
+# Randomize by 5 minutes to avoid thundering herd
+RandomizedDelaySec=5min
+
+[Install]
+WantedBy=timers.target
