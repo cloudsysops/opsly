@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-05-08T18:56:52Z",
-  "totalFiles": 371,
+  "lastIndexed": "2026-05-08T19:06:28Z",
+  "totalFiles": 372,
   "files": [
     ".openclaw.md",
     "2026-04-21.md",
@@ -194,6 +194,7 @@
     "OPENCLAW-TEAM-PLAN.md",
     "OPERATIONS-HANDBOOK.md",
     "OPS-CLEANUP-PROCEDURES.md",
+    "OPSLY-2-0-MULTI-AGENT-BLUEPRINT.md",
     "OPSLY-AGENCY-DIVISION.md",
     "OPSLY-KNOWLEDGE-BASE.md",
     "OPSLY-OPENCLAW-STARTUP.md",
