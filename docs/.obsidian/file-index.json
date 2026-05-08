@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-05-08T19:08:23Z",
-  "totalFiles": 373,
+  "lastIndexed": "2026-05-08T19:28:43Z",
+  "totalFiles": 374,
   "files": [
     ".openclaw.md",
     "2026-04-21.md",
@@ -66,6 +66,7 @@
     "AGENT-PROMPT-QUEUE.md",
     "AGENT-PROMPTS-REFERENCE.md",
     "AGENT-SERVICES-DEPLOYMENT.md",
+    "AGENT-TEAM-OVERVIEW.md",
     "AGENTS-ASSIGNMENTS.md",
     "AGENTS-ASSIGNMENTS.md",
     "AGENTS-AUTONOMOUS-RUNBOOK.md",
