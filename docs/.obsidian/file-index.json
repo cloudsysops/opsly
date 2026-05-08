@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-05-08T14:51:18Z",
-  "totalFiles": 358,
+  "lastIndexed": "2026-05-08T15:33:40Z",
+  "totalFiles": 359,
   "files": [
     ".openclaw.md",
     "2026-04-21.md",
@@ -285,6 +285,7 @@
     "SUPERAGENTS-BOOTSTRAP.md",
     "TAILSCALE-NOMENCLATURA.md",
     "TECHNICAL-DEBT.md",
+    "TENANT-INVITATIONS-SYSTEM.md",
     "TENANT-ONBOARDING-TEMPLATE.md",
     "TENANT-ONBOARDING-TRIAGE.md",
     "TENANT-TESTING-GUIDE.md",
