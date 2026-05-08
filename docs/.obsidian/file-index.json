@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-05-08T16:36:52Z",
-  "totalFiles": 360,
+  "lastIndexed": "2026-05-08T17:25:49Z",
+  "totalFiles": 362,
   "files": [
     ".openclaw.md",
     "2026-04-21.md",
@@ -138,6 +138,7 @@
     "HANDOFF.md",
     "HEAVY-SERVICES-DECISION.md",
     "HERMES-AUTONOMOUS-WORK-PLAN.md",
+    "HERMES-DEPLOYMENT-RUNBOOK.md",
     "HERMES-INTEGRATION.md",
     "HERMES-LOCAL-AGENTS-STACK.md",
     "HERMES-SPRINT-PLAN.md",
@@ -223,6 +224,7 @@
     "QA-REVIEW-COMPLETE.md",
     "QA-TESTING-BRIEF.md",
     "QUALITY-GATES.md",
+    "QUICK-REFERENCE-HERMES-OPSLY.md",
     "QUICK-REFERENCE.md",
     "QUICKSTART-AGENTS.md",
     "README.md",
