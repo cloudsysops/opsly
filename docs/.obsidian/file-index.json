@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-05-08T18:35:56Z",
-  "totalFiles": 368,
+  "lastIndexed": "2026-05-08T18:38:00Z",
+  "totalFiles": 369,
   "files": [
     ".openclaw.md",
     "2026-04-21.md",
@@ -288,6 +288,7 @@
     "SPRINTS_13_14.md",
     "SSH-COMMANDS-LOCALRANK.md",
     "SSH-USERS-FOR-AGENTS.md",
+    "STATE-OF-PLATFORM.md",
     "SUPABASE-MIGRATION-AUDIT.md",
     "SUPER-AGENT-SHADOW-DEPLOY.md",
     "SUPER-ORCHESTRATOR.md",
