@@ -8,15 +8,15 @@ date: 2026-05-08
 
 ## Vision
 
-**Opsly 2.0** is an **autonomous multi-agent development platform** where specialized AI agents (Arena, Billy, Lili) coordinate to build, test, and deploy software at scale without human intervention in the loop.
+**Opsly 2.0** is an **autonomous multi-agent development platform** where specialized AI agents (Hashi, Brissa, Lili, Kairo, Aria, Nyx) coordinate to build, test, and deploy software at scale, with Lousa ensuring quality standards and Michelle driving maximum performance capacity.
 
-**Core Principle:** Human approves milestones. Agents execute everything else.
+**Core Principle:** Human approves milestones. Agents execute everything else. Lousa ensures quality. Michelle ensures speed.
 
 ---
 
 ## Agent Team Structure
 
-### 🧠 Arena (Architect Agent)
+### 🧠 Hashi (Architect Agent)
 **Role:** Strategic planning, task decomposition, context building
 
 **Responsibilities:**
@@ -31,15 +31,15 @@ date: 2026-05-08
 - Docs MCP (search codebase + documentation)
 - Linear/Jira MCP (task queue)
 
-**Output:** `ACTIVE_TASK.json` + subtask list → broadcast to Billy, Lili
+**Output:** `ACTIVE_TASK.json` + subtask list → broadcast to Brissa, Lili
 
 ---
 
-### 💻 Billy (Developer Agent)
+### 💻 Brissa (Developer Agent)
 **Role:** Implementation, code generation, branch management
 
 **Responsibilities:**
-- Receives subtask from Arena
+- Receives subtask from Hashi
 - Creates feature branch (`feat/task-{id}`)
 - Implements code following specs
 - Runs type-check + linting
@@ -60,12 +60,12 @@ date: 2026-05-08
 **Role:** Testing, validation, error resolution, blocker mitigation
 
 **Responsibilities:**
-- Waits for Billy's PR
+- Waits for Brissa's PR
 - Runs E2E tests (Playwright)
 - Runs unit tests (Jest/Vitest)
 - Validates database migrations
 - Checks performance (latency, memory)
-- **If tests fail:** Analyzes error, suggests fix to Billy, retries
+- **If tests fail:** Analyzes error, suggests fix to Brissa, retries
 - **If tests pass:** Approves + merges to staging
 - Monitors deployment health
 
@@ -79,11 +79,11 @@ date: 2026-05-08
 
 ---
 
-### 🔒 Security Agent (Role-based sub-agent under Arena)
+### 🔒 Kairo (Security Agent)
 **Role:** Risk assessment, dependency audit, code review for vulnerabilities
 
 **Responsibilities:**
-- Scans Billy's PR for:
+- Scans Brissa's PR for:
   - Hardcoded secrets (fail if found)
   - SQL injection risks (flag dynamic queries)
   - Authentication bypass vectors
@@ -100,7 +100,7 @@ date: 2026-05-08
 
 ---
 
-### 📚 Docs Agent (Role-based sub-agent under Arena)
+### 📚 Aria (Docs Agent)
 **Role:** Documentation, runbooks, knowledge base
 
 **Responsibilities:**
@@ -120,7 +120,7 @@ date: 2026-05-08
 
 ---
 
-### 🔍 Researcher Agent (Role-based sub-agent under Arena)
+### 🔍 Nyx (Researcher Agent)
 **Role:** Investigation, documentation search, proof-of-concept
 
 **Responsibilities:**
@@ -130,7 +130,7 @@ date: 2026-05-08
   - "Does lib Z work with our stack?"
 - Searches docs, GitHub issues, Stack Overflow
 - Creates spike PRs with findings
-- Proposes solutions to Arena
+- Proposes solutions to Hashi
 
 **Tools:**
 - Browser MCP (web search)
@@ -141,44 +141,142 @@ date: 2026-05-08
 
 ---
 
+### 👩‍⚖️ Lousa (Interventora/Rectora)
+**Role:** Oversight, quality control, enforcement of standards
+
+**Responsibilities:**
+- **Monitors all agent performance:**
+  - Hashi: Task decomposition time <30 min?
+  - Brissa: Code quality + test coverage >80%?
+  - Lili: Test pass rate >95%?
+  - Kairo: Security scan completion <2 min?
+  - Aria: Docs updated after deploy?
+  - Nyx: Investigation within SLA?
+
+- **Enforces standards:**
+  - Code style violations → BLOCK until fixed
+  - Missing tests → REJECT PR
+  - Security findings not resolved → ESCALATE
+  - Performance degradation >10% → ALERT
+
+- **Quality gates:**
+  - All agents must meet SLAs before merge
+  - Zero tolerance for hardcoded secrets
+  - Coverage thresholds enforced
+  - Documentation completeness validated
+
+- **Escalation authority:**
+  - Can pause workflow if quality degrades
+  - Can request manual code review
+  - Can force agent retry with different strategy
+  - Can escalate to human if blockers persist
+
+**Tools:**
+- Prometheus MCP (metrics + SLA tracking)
+- GitHub MCP (PR quality checks)
+- Dashboard (real-time agent health)
+- Notification MCP (alerts + escalations)
+
+**Output:** Daily reports + enforcement actions + escalations
+
+---
+
+### ⚡ Michelle (Pressure/Performance Optimizer)
+**Role:** Drive agents to maximum capacity, optimize performance
+
+**Responsibilities:**
+- **Monitors agent throughput:**
+  - Hashi: How many tasks/hour? Push for more.
+  - Brissa: LOC per hour? Reduce bloat, increase velocity.
+  - Lili: Tests per hour? Parallelize, optimize.
+  - Kairo: Scans per hour? Reduce false positives.
+  - Aria: Docs commits per hour? Automate templates.
+  - Nyx: Research cycles per hour? Faster iteration.
+
+- **Pushes performance boundaries:**
+  - "Hashi, decompose this in 15 min instead of 30"
+  - "Brissa, ship this feature 2 hours faster"
+  - "Lili, run tests in parallel, hit 5-min target"
+  - "Kairo, reduce scan time by 50%, use caching"
+  - "Aria, auto-generate docs from code comments"
+  - "Nyx, search 3x faster using indexed knowledge"
+
+- **Implements capacity optimization:**
+  - Load balancing (distribute tasks among agents)
+  - Caching (avoid redundant work)
+  - Parallelization (concurrent agent runs)
+  - Resource allocation (CPU, memory, API quotas)
+  - Batch processing (group similar tasks)
+
+- **Tracks and reports:**
+  - Agent velocity (tasks/hour, LOC/hour, etc.)
+  - Throughput improvements (% faster week-over-week)
+  - Cost per task (optimize expensive operations)
+  - Bottlenecks (where is time being spent?)
+  - Recommendations (how to scale further)
+
+**Tools:**
+- Prometheus MCP (performance metrics)
+- GitHub MCP (workflow analysis)
+- ResourceManager MCP (allocation + scaling)
+- Dashboard (real-time capacity graphs)
+- Analytics MCP (trend analysis)
+
+**Output:** Optimization recommendations + performance reports + scaling strategies
+
+---
+
 ## Architecture Diagram
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                    Human (You)                              │
-│          Create task in Opsly 2.0 dashboard                 │
-│     (or: "Build payment integration with Stripe")           │
-└────────────────────┬────────────────────────────────────────┘
-                     │
-                     ▼
-         ┌───────────────────────┐
-         │   ARENA (Architect)   │
-         │  • Analyze task       │
-         │  • Break into subtasks│
-         │  • Create Context Pack│
-         │  • Assign to agents   │
-         └───────────────────────┘
-                     │
-        ┌────────────┼────────────┐
-        │            │            │
-        ▼            ▼            ▼
-    ┌────────┐  ┌────────┐  ┌──────────┐
-    │ BILLY  │  │ LILI   │  │RESEARCHER│
-    │ (Dev)  │  │ (QA)   │  │ (Spike)  │
-    │ Code   │  │ Test   │  │ Research │
-    └────────┘  └────────┘  └──────────┘
-        │            │            │
-        └────────────┼────────────┘
+┌──────────────────────────────────────────────────────────────────┐
+│                    Human (You)                                   │
+│        Create task: "Build Stripe payment integration"           │
+└────────────────────────┬─────────────────────────────────────────┘
+                         │
+                         ▼
+         ┌───────────────────────────┐
+         │   HASHI (Architect)       │
+         │  • Analyze task           │
+         │  • Break into subtasks    │
+         │  • Create Context Pack    │
+         │  • Assign to agents       │
+         └───────────────────────────┘
+                         │
+        ┌────────────────┼────────────────┐
+        │                │                │
+        ▼                ▼                ▼
+    ┌────────┐  ┌────────────┐  ┌──────────┐
+    │BRISSA  │  │   LILI     │  │   NYX    │
+    │(Dev)   │  │  (QA)      │  │(Researcher)
+    │ Code   │  │  Test      │  │ Research │
+    └────────┘  └────────────┘  └──────────┘
+        │            │               │
+        └────────────┼───────────────┘
                      │
         ┌────────────┴────────────┐
         │                         │
         ▼                         ▼
   ┌──────────────┐      ┌─────────────────┐
-  │ SECURITY     │      │ DOCS            │
-  │ (Audit PR)   │      │ (Update runbook)│
+  │   KAIRO      │      │     ARIA        │
+  │  (Security)  │      │  (Docs)         │
+  │ Audit PR     │      │ Update runbook  │
   └──────────────┘      └─────────────────┘
         │                         │
         └────────────┬────────────┘
+                     │
+        ┌────────────┴──────────────────────────┐
+        │                                       │
+        ▼                                       ▼
+   ┌──────────────┐                 ┌────────────────────┐
+   │   LOUSA      │                 │    MICHELLE        │
+   │(Interventora)│                 │  (Performance)     │
+   │ • Enforce SLAs                 │ • Optimize speed   │
+   │ • Quality gates                │ • Push capacity    │
+   │ • Escalate                     │ • Load balance     │
+   └──────────────┘                 └────────────────────┘
+        │                                       │
+        └────────────┬──────────────────────────┘
                      │
                      ▼
          ┌───────────────────────┐
@@ -192,6 +290,53 @@ date: 2026-05-08
         │ You approve milestone  │
         │ & next task            │
         └────────────────────────┘
+```
+
+**Agent Team Hierarchy:**
+```
+┌─────────────────────────────────────────┐
+│         HASHI (Architect)               │  ← Orchestration
+│         Strategic Direction             │
+└─────────────────────────────────────────┘
+         │          │        │
+    ┌────┴───┬──────┴──┬─────┴────┐
+    │        │        │           │
+  BRISSA   LILI     NYX    (Execution Layer)
+  (Code)  (Test) (Research)
+    │        │        │
+    └────┬───┴────┬───┘
+         │        │
+      KAIRO     ARIA    (Validation Layer)
+   (Security) (Docs)
+    │        │
+    └────┬───┴────────┐
+         │            │
+      LOUSA      MICHELLE     (Control Layer)
+  (Quality/    (Performance/
+   Standards)  Optimization)
+```
+
+**Data Flow:**
+```
+Task Input
+    ↓
+Hashi decomposes → Context Pack
+    ↓
+Brissa codes → PR
+    ↓
+Lili tests → Results
+    ↓
+Nyx researches → Recommendations
+    ↓
+Kairo audits → Approval
+    ↓
+Aria documents → Updates
+    ↓
+Lousa validates SLA & gates
+    ↓
+Michelle optimizes & scales
+    ↓
+Merge to main → Deploy
 ```
 
 ---
