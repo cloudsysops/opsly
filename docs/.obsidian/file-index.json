@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-05-08T14:14:30Z",
-  "totalFiles": 356,
+  "lastIndexed": "2026-05-08T14:49:56Z",
+  "totalFiles": 357,
   "files": [
     ".openclaw.md",
     "2026-04-21.md",
@@ -165,6 +165,7 @@
     "LOCALRANK-TESTER-GUIDE.md",
     "MASTER-PLAN-STATUS.md",
     "MASTER-PLAN.md",
+    "MCP-ORCHESTRATOR-DEPLOYMENT.md",
     "MCP-SERVERS.md",
     "MCP-STATUS-ANALYSIS.md",
     "MONITORING.md",
