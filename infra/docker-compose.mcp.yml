@@ -146,6 +146,73 @@ services:
         max-size: "10m"
         max-file: "3"
 
+  # Tenant Invitations Service - Onboarding + signup management
+  tenant-invitations:
+    build:
+      context: .
+      dockerfile: apps/tenant-invitations/Dockerfile
+    container_name: opsly_tenant_invitations
+    environment:
+      NODE_ENV: production
+      PORT: 3003
+      DATABASE_URL: postgresql://${DB_USER}:${DB_PASSWORD}@postgres:5432/opsly_mcp
+      AGENT_MANAGER_URL: http://agent-manager:3002
+      PORTAL_URL: ${PORTAL_URL:-https://portal.hermes.intcloudsysops.com}
+      EMAIL_HOST: ${EMAIL_HOST:-smtp.gmail.com}
+      EMAIL_PORT: ${EMAIL_PORT:-587}
+      EMAIL_USER: ${EMAIL_USER}
+      EMAIL_PASS: ${EMAIL_PASS}
+      EMAIL_FROM: ${EMAIL_FROM:-noreply@hermes.intcloudsysops.com}
+    ports:
+      - "3003:3003"
+    depends_on:
+      - postgres
+      - agent-manager
+    networks:
+      - opsly-mcp
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3003/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # Tenant Onboarding Agent - Autonomous tenant setup
+  tenant-onboarding-agent:
+    build:
+      context: .
+      dockerfile: apps/tenant-onboarding-agent/src/Dockerfile
+    container_name: opsly_tenant_onboarding_agent
+    environment:
+      NODE_ENV: production
+      PORT: 3004
+      DATABASE_URL: postgresql://${DB_USER}:${DB_PASSWORD}@postgres:5432/opsly_mcp
+      AGENT_MANAGER_URL: http://agent-manager:3002
+      LOG_LEVEL: info
+    ports:
+      - "3004:3004"
+    depends_on:
+      - postgres
+      - agent-manager
+    networks:
+      - opsly-mcp
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3004/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
   # Prometheus for metrics (optional)
   prometheus:
     image: prom/prometheus:latest
