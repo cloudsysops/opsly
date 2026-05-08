@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-05-08T18:54:30Z",
-  "totalFiles": 370,
+  "lastIndexed": "2026-05-08T18:56:52Z",
+  "totalFiles": 371,
   "files": [
     ".openclaw.md",
     "2026-04-21.md",
@@ -178,6 +178,7 @@
     "N8N-IMPORT-GUIDE.md",
     "N8N-MCP-INTEGRATION.md",
     "N8N-SETUP.md",
+    "NEXT-STEPS.md",
     "NOTEBOOKLM-INTEGRATION.md",
     "NOTEBOOKLM-SETUP.md",
     "NOTION-MCP-SERVER.md",
