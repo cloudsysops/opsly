@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-05-07T05:31:26Z",
-  "totalFiles": 331,
+  "lastIndexed": "2026-05-08T04:53:09Z",
+  "totalFiles": 334,
   "files": [
     ".openclaw.md",
     "2026-04-21.md",
@@ -35,6 +35,7 @@
     "ADR-025-notebooklm-knowledge-layer.md",
     "ADR-026-tenant-context-postgres-first.md",
     "ADR-027-hybrid-compute-plane-k8s.md",
+    "ADR-028-agent-api-routing.md",
     "ADR-028-tenant-onboarding-pattern.md",
     "ADR-029-infrastructure-layers-shared-vs-tenant.md",
     "ADR-030-prepaid-token-wallet-roadmap.md",
@@ -115,6 +116,7 @@
     "FAILOVER-RUNBOOK.md",
     "FAQ.md",
     "FIRST-OPENCLAW-AGENTS-MAC2011.md",
+    "FIX-TYPECHECK-BLOCKER.md",
     "GCP-ACTIVATION-CHECKLIST.md",
     "GCP-STANDBY-CONFIG.md",
     "GIT-WORKFLOW.md",
@@ -261,6 +263,7 @@
     "SUPER-ORCHESTRATOR.md",
     "SUPERAGENTS-BOOTSTRAP.md",
     "TAILSCALE-NOMENCLATURA.md",
+    "TECHNICAL-DEBT.md",
     "TENANT-ONBOARDING-TEMPLATE.md",
     "TENANT-ONBOARDING-TRIAGE.md",
     "TENANT-TESTING-GUIDE.md",
