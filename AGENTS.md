@@ -35,6 +35,8 @@ last_review: 2026-05-03
 
 **Git antes de editar:** en **opsly-admin** (Mac), **opsly-worker** (`~/opsly`) y **VPS** (`/opt/opsly` o staging), ejecutar `./scripts/git-sync-repo.sh` o `git pull --ff-only` en la rama de trabajo. Detalle: `docs/SESSION-GIT-SYNC.md`.
 
+**Ramas fijas (2026-05-08):** ambientes `main` (prod) y `staging` (pre-prod); integración por módulo en `module/api`, `module/admin`, `module/portal`, `module/orchestrator`, `module/llm`, `module/mcp`, `module/infra`, `module/billing`, `module/tenant`, `module/docs`, `module/skills`. Los agentes trabajan en ramas temporales `<tipo>/<modulo>/<YYYYMMDD>-<tema>` y promueven `temporal → module/<modulo> → staging → main`. Guía canónica: `docs/01-development/GIT-WORKFLOW.md`; bootstrap opcional: `./scripts/create-fixed-branches.sh --push`.
+
 **Índice de conocimiento (Repo-First RAG):** tras `git pull` en el VPS (o al añadir muchos `.md`), ejecuta `./scripts/index-knowledge.sh` desde la raíz del repo (`OPSLY_ROOT=/opt/opsly` si aplica) para regenerar `config/knowledge-index.json`. Sin ese paso, el Context Builder y el planner siguen “ciegos” respecto a títulos/keywords de la documentación nueva.
 
 **Al abrir una sesión nueva conmigo (otro agente / otro dispositivo):**
@@ -327,13 +329,20 @@ node scripts/load-skills.js show opsly-api
 
 <!-- Actualizar al final de cada sesión -->
 
-**Fecha última actualización:** 2026-05-03 — **Merge `autonomy/phase2-activation` → `main`:** `217afbd` — search-cache (context-builder), embeddings por lotes (llm-gateway), `phase_3_economics` en `runtime/context/system_state.json`, [`docs/reports/PARALLEL-EXECUTION-2026-04-29.md`](docs/reports/PARALLEL-EXECUTION-2026-04-29.md). BullMQ v5: `getPollingProfile()` / `OrchestratorDrainProfile` en `apps/orchestrator/src/queue-opts.ts`. Worktrees locales retirados; ramas `autonomy/phase2-activation` y `claude/mystifying-curie-74e91d` borradas (`git branch -d`). **Misma fecha (referencia):** higiene Git — solo `main`, PRs #174/#180/#184 archivados, **#185** `GIT-WORKFLOW.md` + `git-branch-hygiene.sh` + `git-workflow.mdc`.
+**Fecha última actualización:** 2026-05-08 — **Branch governance para agentes:** convención de ramas fijas por ambiente (`main`, `staging`) y por módulo (`module/*`), ramas temporales `<tipo>/<modulo>/<YYYYMMDD>-<tema>`, promoción `temporal → module/<modulo> → staging → main`, documentación en [`docs/01-development/GIT-WORKFLOW.md`](docs/01-development/GIT-WORKFLOW.md), aclaración CI/CD en [`docs/04-infrastructure/CICD-VPS.md`](docs/04-infrastructure/CICD-VPS.md) y script seguro `scripts/create-fixed-branches.sh` (dry-run por defecto; `--push` para materializar en GitHub).
+
+**Fecha referencia anterior:** 2026-05-03 — **Merge `autonomy/phase2-activation` → `main`:** `217afbd` — search-cache (context-builder), embeddings por lotes (llm-gateway), `phase_3_economics` en `runtime/context/system_state.json`, [`docs/reports/PARALLEL-EXECUTION-2026-04-29.md`](docs/reports/PARALLEL-EXECUTION-2026-04-29.md). BullMQ v5: `getPollingProfile()` / `OrchestratorDrainProfile` en `apps/orchestrator/src/queue-opts.ts`. Worktrees locales retirados; ramas `autonomy/phase2-activation` y `claude/mystifying-curie-74e91d` borradas (`git branch -d`). **Misma fecha (referencia):** higiene Git — solo `main`, PRs #174/#180/#184 archivados, **#185** `GIT-WORKFLOW.md` + `git-branch-hygiene.sh` + `git-workflow.mdc`.
 
 **Fecha referencia anterior:** 2026-05-02 — **Opsly Shield / Guardian Grid Phase 2 (MVP código):** migraciones `shield_alert_config`, `shield_score_history`, `shield_secret_findings`; API `POST /api/shield/alerts/config`, rutas portal Zero-Trust bajo `/api/portal/tenant/[slug]/shield/*`, cron `/api/cron/shield-secret-scan`, worker opcional `OPSLY_SHIELD_SCAN_WORKER_ENABLED`, portal `/shield/dashboard`; metering vía `logUsage` (`shield_api_observability`). Aplicar migraciones en Supabase y Doppler: `DISCORD_WEBHOOK_SHIELD` / `CRON_SECRET`; simulación escaneo `SHIELD_SECRET_SCAN_SIMULATE=true` hasta scanner real.
 
 **Fecha referencia (CRM / marketplace):** 2026-04-30 — **CRM Starter Pack aplicado en n8n tenants + marketplace v1 + DeepSeek V4/OpenClaw reforzado:** 6 contenedores n8n del VPS tienen los 4 workflows CRM importados; portal incluye `/dashboard/[tenant]/workflows`; LLM Gateway default DeepSeek V4 y trazabilidad `request_id` reforzada.
 
 **Siguiente fase:** Semana 6 (Segundo Cliente + E2E), ventana **2026-04-29 → 2026-05-03** ⏳ **EN PROGRESO**. Plan: [`docs/SEMANA-6-PLAN.md`](docs/SEMANA-6-PLAN.md).
+
+**Sesión 2026-05-08 — Branch governance por ambiente y módulo ✅**
+- ✅ Definidas ramas persistentes: `main`, `staging` y `module/*` para api/admin/portal/orchestrator/llm/mcp/infra/billing/tenant/docs/skills.
+- ✅ Definido formato temporal para agentes: `<tipo>/<modulo>/<YYYYMMDD>-<tema>` con promoción por PR hasta `main`.
+- ✅ Agregado script `scripts/create-fixed-branches.sh` para bootstrap controlado (dry-run por defecto; `--push` crea/pushea).
 
 **Sesión 2026-05-03 — Git/GitHub limpio + flujo agentes ✅**
 - ✅ `main` como única rama remota; PRs archivados (#174, #180, #184); integración docs/vision en `main` previa a esta sesión.
@@ -1027,7 +1036,7 @@ _Auditoría TypeScript y correcciones de código (2026-04-05, sesión agente Cla
 
 **Inmediato (2026-04-30):** convertir marketplace n8n v1 en autoservicio completo: API portal `install/activate`, persistencia de installs por tenant, enforcement de `plan_min`, y smoke real DeepSeek con `DEEPSEEK_API_KEY` via `/v1/text`/`/v1/chat/completions`.
 
-**Operación repo (2026-05-03):** flujo canónico en [`docs/01-development/GIT-WORKFLOW.md`](docs/01-development/GIT-WORKFLOW.md); auditoría `./scripts/git-branch-hygiene.sh`. Rama `autonomy/phase2-activation` integrada en `main`; sin worktrees huérfanos en este clon.
+**Operación repo (2026-05-08):** flujo canónico en [`docs/01-development/GIT-WORKFLOW.md`](docs/01-development/GIT-WORKFLOW.md); ramas fijas esperadas `main`, `staging`, `module/*`; ramas temporales de agentes `<tipo>/<modulo>/<YYYYMMDD>-<tema>`; auditoría `./scripts/git-branch-hygiene.sh`; bootstrap controlado `./scripts/create-fixed-branches.sh --push` cuando el owner quiera materializar ramas en GitHub.
 
 **Histórico Semana 2 (2026-04-21 → 2026-04-27):** Infraestructura IA (Ollama + NotebookLM Knowledge Layer)
 
