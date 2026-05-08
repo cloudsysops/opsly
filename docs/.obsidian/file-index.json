@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-05-08T17:25:49Z",
-  "totalFiles": 362,
+  "lastIndexed": "2026-05-08T17:36:22Z",
+  "totalFiles": 367,
   "files": [
     ".openclaw.md",
     "2026-04-21.md",
@@ -54,6 +54,10 @@
     "ADR-040-technician-scaling-solo-to-assistant.md",
     "ADR-041-local-services-phase-1-tenant-api.md",
     "ADR-042-local-services-phase-2-webhooks.md",
+    "AGENCY-DEVOPS-OS-DEMO.md",
+    "AGENCY-DEVOPS-OS-OFFER.md",
+    "AGENCY-MANAGED-DELIVERY-RUNBOOK.md",
+    "AGENCY-PILOT-OUTREACH.md",
     "AGENT-ANALYSIS-REAL-PROMPT.md",
     "AGENT-BRAIN-CONTRACT.md",
     "AGENT-GUARDRAILS.md",
@@ -204,6 +208,7 @@
     "PERFORMANCE_BASELINE.md",
     "PHASE-2-DEPLOYMENT.md",
     "PHASE-2-TESTING.md",
+    "PHASE-4-OBSERVABILITY-BILLING.md",
     "PHASE1-QUICK-START.md",
     "PHASE1-TEST-PLAN.md",
     "PHASE2-ROADMAP.md",
