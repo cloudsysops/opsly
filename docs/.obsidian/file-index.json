@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-05-08T19:35:46Z",
-  "totalFiles": 375,
+  "lastIndexed": "2026-05-08T19:56:39Z",
+  "totalFiles": 376,
   "files": [
     ".openclaw.md",
     "2026-04-21.md",
@@ -286,6 +286,7 @@
     "SETUP-NOTION-MCP.md",
     "SETUP-SUDOERS-CLOUDSYSOPS.md",
     "SFGTV_20181210_150000_Government_Access_Programming.md",
+    "SOCIAL-MEDIA-AGENT-SYRA.md",
     "SPRINT-CURSOR-PROMPTS.md",
     "SPRINT-PLANNING-SETUP.md",
     "SPRINT-ROADMAP.md",
