@@ -1,9 +1,36 @@
 import { randomUUID } from 'node:crypto';
 import { PheromoneChannel } from './pheromone-channel.js';
 import { HiveStateStore } from './hive-state.js';
-import type { BotRole, HiveTask, PheromoneMessage, Subtask } from './types.js';
+import type { BotRole, HiveTask, HiveState, PheromoneMessage, Subtask } from './types.js';
 
-const MAX_SUBTASK_RETRIES = 2;
+export const MAX_SUBTASK_RETRIES = 2;
+
+export interface QueenStateStore {
+  getState(): Promise<HiveState>;
+  getTask(taskId: string): Promise<HiveTask | null>;
+  addTask(task: HiveTask): Promise<void>;
+  updateTask(taskId: string, update: Partial<HiveTask>): Promise<void>;
+  close(): Promise<void>;
+}
+
+export interface QueenPheromoneBus {
+  publish(message: PheromoneMessage): Promise<void>;
+  subscribe(
+    botId: string,
+    messageTypes: PheromoneMessage['type'][],
+    callback: (message: PheromoneMessage) => void
+  ): Promise<void>;
+  close(): Promise<void>;
+}
+
+function resultRecord(result: unknown): Record<string, unknown> {
+  return typeof result === 'object' && result !== null ? { ...(result as Record<string, unknown>) } : {};
+}
+
+function numericResultField(result: unknown, field: string): number {
+  const value = resultRecord(result)[field];
+  return typeof value === 'number' && Number.isFinite(value) ? value : 0;
+}
 
 export function inferBotRole(description: string): BotRole {
   const d = description.toLowerCase();
@@ -34,9 +61,14 @@ export function decomposeObjective(objective: string, hiveTaskId: string): Subta
 }
 
 export class QueenBee {
-  private readonly hiveState = new HiveStateStore();
-  private readonly pheromones = new PheromoneChannel();
+  private readonly hiveState: QueenStateStore;
+  private readonly pheromones: QueenPheromoneBus;
   private subscribed = false;
+
+  constructor(deps: { hiveState?: QueenStateStore; pheromones?: QueenPheromoneBus } = {}) {
+    this.hiveState = deps.hiveState ?? new HiveStateStore();
+    this.pheromones = deps.pheromones ?? new PheromoneChannel();
+  }
 
   async start(): Promise<void> {
     if (this.subscribed) return;
@@ -127,10 +159,7 @@ export class QueenBee {
     if (message.type === 'error') {
       const target = hiveTask.subtasks.find((s) => s.id === subtaskId);
       if (!target) return;
-      const retries =
-        typeof target.result === 'object' && target.result !== null
-          ? Number((target.result as Record<string, unknown>).retryCount ?? 0)
-          : 0;
+      const retries = numericResultField(target.result, 'retryCount');
       const nextRetry = retries + 1;
       if (nextRetry <= MAX_SUBTASK_RETRIES) {
         await this.hiveState.updateTask(taskId, {
@@ -140,7 +169,7 @@ export class QueenBee {
                   ...s,
                   status: 'pending' as const,
                   assignedBotId: undefined,
-                  result: { retryCount: nextRetry, lastError: payload.error ?? 'unknown' },
+                  result: { ...resultRecord(s.result), retryCount: nextRetry, lastError: payload.error ?? 'unknown' },
                 }
               : s
           ),
@@ -153,7 +182,9 @@ export class QueenBee {
       }
       await this.hiveState.updateTask(taskId, {
         subtasks: hiveTask.subtasks.map((s) =>
-          s.id === subtaskId ? { ...s, status: 'failed' as const, result: { retryCount: nextRetry } } : s
+          s.id === subtaskId
+            ? { ...s, status: 'failed' as const, result: { ...resultRecord(s.result), retryCount: nextRetry } }
+            : s
         ),
         status: 'failed',
       });
@@ -165,11 +196,17 @@ export class QueenBee {
     if (!hiveTask) return false;
     const target = hiveTask.subtasks.find((s) => s.id === subtaskId);
     if (!target) return false;
+    const manualRetryCount = numericResultField(target.result, 'manualRetryCount') + 1;
     const pending: Subtask = {
       ...target,
       status: 'pending',
       assignedBotId: undefined,
       completedAt: undefined,
+      result: {
+        ...resultRecord(target.result),
+        manualRetryCount,
+        lastManualRetryAt: new Date().toISOString(),
+      },
     };
     await this.hiveState.updateTask(taskId, {
       subtasks: hiveTask.subtasks.map((s) => (s.id === subtaskId ? pending : s)),

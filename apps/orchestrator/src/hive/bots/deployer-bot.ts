@@ -54,19 +54,6 @@ export class DeployerBot implements Bot {
       await this.stateStore.updateBotStatus(this.id, 'working');
       const result = await this.executeDeploy(subtask);
 
-      if (subtask.taskId) {
-        await this.stateStore.updateTask(subtask.taskId, {
-          subtasks: [
-            {
-              ...subtask,
-              status: 'completed',
-              result,
-              completedAt: new Date(),
-            },
-          ],
-        });
-      }
-
       await this.pheromoneChannel.publish({
         senderId: this.id,
         type: 'task_complete',

@@ -64,19 +64,6 @@ export class CoderBot implements Bot {
 
       const result = await this.executeCode(subtask);
 
-      if (subtask.taskId) {
-        await this.stateStore.updateTask(subtask.taskId, {
-          subtasks: [
-            {
-              ...subtask,
-              status: 'completed',
-              result,
-              completedAt: new Date(),
-            },
-          ],
-        });
-      }
-
       await this.pheromoneChannel.publish({
         senderId: this.id,
         type: 'task_complete',

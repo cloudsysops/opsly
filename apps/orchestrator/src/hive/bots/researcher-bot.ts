@@ -56,19 +56,6 @@ export class ResearcherBot implements Bot {
 
       const result = await this.executeResearch(subtask);
 
-      if (subtask.taskId) {
-        await this.stateStore.updateTask(subtask.taskId, {
-          subtasks: [
-            {
-              ...subtask,
-              status: 'completed',
-              result,
-              completedAt: new Date(),
-            },
-          ],
-        });
-      }
-
       await this.pheromoneChannel.publish({
         senderId: this.id,
         type: 'task_complete',

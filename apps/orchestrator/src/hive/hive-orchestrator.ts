@@ -1,7 +1,8 @@
-import { QueenBee } from './queen-bee.js';
+import { QueenBee, type QueenStateStore } from './queen-bee.js';
 import { BotFactory, type BotRole } from './bots/bot-factory.js';
 import { HiveStateStore } from './hive-state.js';
 import type { Bot, HiveTask } from './types.js';
+import { computeHiveStats, type HiveStats } from './hive-stats.js';
 
 export interface ObjectiveRequest {
   objective: string;
@@ -23,14 +24,14 @@ export interface ObjectiveResult {
 
 export class HiveOrchestrator {
   private queensBee: QueenBee;
-  private stateStore: HiveStateStore;
+  private stateStore: QueenStateStore;
   private botFactory: typeof BotFactory;
   private activeObjectives: Map<string, ObjectiveRequest> = new Map();
 
-  constructor() {
-    this.queensBee = new QueenBee();
-    this.stateStore = new HiveStateStore();
-    this.botFactory = BotFactory;
+  constructor(deps: { queenBee?: QueenBee; stateStore?: QueenStateStore; botFactory?: typeof BotFactory } = {}) {
+    this.queensBee = deps.queenBee ?? new QueenBee();
+    this.stateStore = deps.stateStore ?? new HiveStateStore();
+    this.botFactory = deps.botFactory ?? BotFactory;
   }
 
   async initialize(): Promise<void> {
@@ -133,33 +134,9 @@ export class HiveOrchestrator {
     }));
   }
 
-  async getHiveStats(): Promise<{
-    activeBots: number;
-    pendingTasks: number;
-    completedTasks: number;
-    totalSubtasks: number;
-    completedSubtasks: number;
-    failedSubtasks: number;
-  }> {
+  async getHiveStats(): Promise<HiveStats> {
     const state = await this.stateStore.getState();
-
-    const completedSubtasks = state.tasks.flatMap((t) =>
-      t.subtasks.filter((s) => s.status === 'completed')
-    ).length;
-
-    const totalSubtasks = state.tasks.flatMap((t) => t.subtasks).length;
-    const failedSubtasks = state.tasks.flatMap((t) =>
-      t.subtasks.filter((s) => s.status === 'failed')
-    ).length;
-
-    return {
-      activeBots: Object.values(state.bots).filter((b: Bot) => b.status === 'working').length,
-      pendingTasks: state.tasks.filter((t) => t.status === 'planned').length,
-      completedTasks: state.tasks.filter((t) => t.status === 'completed').length,
-      totalSubtasks,
-      completedSubtasks,
-      failedSubtasks,
-    };
+    return computeHiveStats(state);
   }
 
   async retrySubtask(taskId: string, subtaskId: string): Promise<boolean> {

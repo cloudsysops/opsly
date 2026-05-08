@@ -317,7 +317,8 @@ node scripts/load-skills.js show opsly-api
 26. ~~**Siguiente capacidad Fase 4** — Seguir [`ROADMAP.md`](ROADMAP.md) Semana 1+; E2E invite con credenciales en CI; más handlers bajo `/api/portal/tenant/[slug]/`; redeploy admin/API si aplica; o VPS según `VISION.md`.~~ ✅ (2026-04-28)
 27. **✅ SwarmOps base (Hive of Bots) en orchestrator** — _Hecho (2026-04-28)._ Se consolidó la base en `apps/orchestrator/src/hive` con `QueenBee`, `HiveOrchestrator`, canal de feromonas (`PheromoneChannel`), estado compartido Redis (`HiveStateStore`) y endpoint interno `POST /internal/hive/objective` con status por `taskId` (`GET /internal/hive/objective/:taskId` y alias `GET /internal/hive/task/:taskId`).
 28. **✅ Hardening Hive retry/reasignación** — _Hecho (2026-04-28)._ La Queen reintenta subtareas fallidas con límite (`MAX_SUBTASK_RETRIES`) y reasigna cuando hay capacidad; endpoint de control manual `POST /internal/hive/task/:taskId/retry/:subtaskId` para recuperación operativa.
-29. **Siguiente capacidad Fase 4** — tests integrados de ciclo completo (submit objective → asignación → task_complete/error → retry automático/manual) y métricas de retry en `hive/stats`.
+29. **✅ Hive/OAR — ciclo integrado + métricas de retry** — _Hecho (2026-05-06)._ Test `hive-cycle.test.ts`: submit objective → asignación → `task_complete` → `error` con retry automático → retry manual → finalización; `hive/stats` expone `retryingSubtasks`, `retryAttempts`, `manualRetryAttempts` vía `computeHiveStats`.
+30. **Siguiente capacidad Fase 4** — aplicar el mismo smoke integrado contra `/internal/hive/*` en staging/VPS con Redis real y token interno, y documentar evidencia en `docs/SEMANA-6-PLAN.md` o runbook Hive.
 
 **Relación con `VISION.md`:** las fases 1–3 del producto siguen siendo el norte comercial; esta **Fase 4** documenta la **plataforma multi-agente incremental** y la **documentación operativa** que las alimentan. El detalle económico y de roadmap largo plazo sigue en `VISION.md` → _Evolución arquitectónica — AI Platform_.
 
@@ -327,13 +328,24 @@ node scripts/load-skills.js show opsly-api
 
 <!-- Actualizar al final de cada sesión -->
 
-**Fecha última actualización:** 2026-05-03 — **Merge `autonomy/phase2-activation` → `main`:** `217afbd` — search-cache (context-builder), embeddings por lotes (llm-gateway), `phase_3_economics` en `runtime/context/system_state.json`, [`docs/reports/PARALLEL-EXECUTION-2026-04-29.md`](docs/reports/PARALLEL-EXECUTION-2026-04-29.md). BullMQ v5: `getPollingProfile()` / `OrchestratorDrainProfile` en `apps/orchestrator/src/queue-opts.ts`. Worktrees locales retirados; ramas `autonomy/phase2-activation` y `claude/mystifying-curie-74e91d` borradas (`git branch -d`). **Misma fecha (referencia):** higiene Git — solo `main`, PRs #174/#180/#184 archivados, **#185** `GIT-WORKFLOW.md` + `git-branch-hygiene.sh` + `git-workflow.mdc`.
+**Fecha última actualización:** 2026-05-06 — **Hive/OAR retry metrics + test integrado:** `hive-cycle.test.ts`, `computeHiveStats`, inyección de dependencias en `QueenBee`/`HiveOrchestrator`. Validación focal: `validate-openapi`, `validate-skills`, tests Hive; `type-check` orchestrator bloqueado por dependencias/tipos preexistentes no relacionados (`@tavily/core`, `google-auth-library`, `litellm`, `pg`, `axios`, etc.).
+
+**Fecha referencia anterior:** 2026-05-03 — **Merge `autonomy/phase2-activation` → `main`:** `217afbd` — search-cache (context-builder), embeddings por lotes (llm-gateway), `phase_3_economics` en `runtime/context/system_state.json`, [`docs/reports/PARALLEL-EXECUTION-2026-04-29.md`](docs/reports/PARALLEL-EXECUTION-2026-04-29.md). BullMQ v5: `getPollingProfile()` / `OrchestratorDrainProfile` en `apps/orchestrator/src/queue-opts.ts`. Worktrees locales retirados; ramas `autonomy/phase2-activation` y `claude/mystifying-curie-74e91d` borradas (`git branch -d`). **Misma fecha (referencia):** higiene Git — solo `main`, PRs #174/#180/#184 archivados, **#185** `GIT-WORKFLOW.md` + `git-branch-hygiene.sh` + `git-workflow.mdc`.
 
 **Fecha referencia anterior:** 2026-05-02 — **Opsly Shield / Guardian Grid Phase 2 (MVP código):** migraciones `shield_alert_config`, `shield_score_history`, `shield_secret_findings`; API `POST /api/shield/alerts/config`, rutas portal Zero-Trust bajo `/api/portal/tenant/[slug]/shield/*`, cron `/api/cron/shield-secret-scan`, worker opcional `OPSLY_SHIELD_SCAN_WORKER_ENABLED`, portal `/shield/dashboard`; metering vía `logUsage` (`shield_api_observability`). Aplicar migraciones en Supabase y Doppler: `DISCORD_WEBHOOK_SHIELD` / `CRON_SECRET`; simulación escaneo `SHIELD_SECRET_SCAN_SIMULATE=true` hasta scanner real.
 
 **Fecha referencia (CRM / marketplace):** 2026-04-30 — **CRM Starter Pack aplicado en n8n tenants + marketplace v1 + DeepSeek V4/OpenClaw reforzado:** 6 contenedores n8n del VPS tienen los 4 workflows CRM importados; portal incluye `/dashboard/[tenant]/workflows`; LLM Gateway default DeepSeek V4 y trazabilidad `request_id` reforzada.
 
 **Siguiente fase:** Semana 6 (Segundo Cliente + E2E), ventana **2026-04-29 → 2026-05-03** ⏳ **EN PROGRESO**. Plan: [`docs/SEMANA-6-PLAN.md`](docs/SEMANA-6-PLAN.md).
+
+
+**Sesión 2026-05-06 — Hive/OAR ciclo integrado + retry stats ✅**
+- ✅ `QueenBee` acepta dependencias inyectables (`QueenStateStore`, `QueenPheromoneBus`) para validar flujo sin Redis real en unit/integration tests.
+- ✅ Retry automático preserva metadata previa y retry manual registra `manualRetryCount` / `lastManualRetryAt`.
+- ✅ Bots Hive dejan a la Queen como autoridad de estado de subtareas: publican `task_complete` sin sobrescribir el arreglo completo de `subtasks`.
+- ✅ `computeHiveStats` centraliza métricas de `hive/stats`: `retryingSubtasks`, `retryAttempts`, `manualRetryAttempts` además de totales existentes.
+- ✅ Test integrado `hive-cycle.test.ts`: objective → asignación coder/tester → complete/error → retry automático x2 → fallo → retry manual → complete.
+- ⚠️ `npm run type-check --workspace=@intcloudsysops/orchestrator` sigue bloqueado por dependencias/tipos preexistentes fuera del cambio (`@tavily/core`, `google-auth-library`, `litellm`, `pg`, `axios`, etc.); validación focal de archivos Hive con `tsc` directo OK.
 
 **Sesión 2026-05-03 — Git/GitHub limpio + flujo agentes ✅**
 - ✅ `main` como única rama remota; PRs archivados (#174, #180, #184); integración docs/vision en `main` previa a esta sesión.
