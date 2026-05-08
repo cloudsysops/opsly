@@ -1,8 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Create Opsly fixed environment/module branches.
-# Default is dry-run; pass --apply to create locally, and --push to push upstream.
+# Create Opsly fixed environment branches.
+# Module branch names are prefixes for temporary work branches, not persistent refs:
+#   module/<module>/<type>/<YYYYMMDD>-<topic>
+# This avoids Git ref conflicts such as a persistent branch `module/api`
+# blocking `module/api/feat/...`.
 
 MODULES=(api admin portal orchestrator llm mcp infra billing tenant docs skills)
 REMOTE="origin"
@@ -15,9 +18,14 @@ usage() {
   cat <<USAGE
 Usage: $0 [--apply] [--push] [--remote origin] [--base main]
 
-Creates fixed branches:
+Creates fixed environment branches:
   - staging
-  - module/{api,admin,portal,orchestrator,llm,mcp,infra,billing,tenant,docs,skills}
+
+Does NOT create module parent branches. Agents create temporary branches as:
+  module/<module>/<type>/<YYYYMMDD>-<topic>
+
+Valid modules:
+  ${MODULES[*]}
 
 Default mode prints commands only. Use --apply for local branches and --push to publish.
 USAGE
@@ -85,19 +93,7 @@ if [[ "$PUSH" -eq 1 ]]; then
   run git push -u "$REMOTE" "$STAGING_BRANCH"
 fi
 
-MODULE_BASE_REF="${REMOTE}/${STAGING_BRANCH}"
-if ! git rev-parse --verify --quiet "$MODULE_BASE_REF" >/dev/null; then
-  MODULE_BASE_REF="$STAGING_BRANCH"
-fi
-
-for module in "${MODULES[@]}"; do
-  branch="module/${module}"
-  run git checkout -B "$branch" "$MODULE_BASE_REF"
-  if [[ "$PUSH" -eq 1 ]]; then
-    run git push -u "$REMOTE" "$branch"
-  fi
-done
-
 run git checkout "$STAGING_BRANCH"
 
-echo "Done. Next: protect main, staging and module/* in GitHub branch rules."
+echo "Done. Next: protect main and staging in GitHub branch rules."
+echo "Agents should use temporary branches like: module/portal/feat/$(date -u +%Y%m%d)-short-topic"

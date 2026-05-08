@@ -8,7 +8,7 @@
 | **`main`**    | Sí                        | Tags **`:latest`** y `:sha`  | `/opt/opsly` — `git` en `main`, compose producción                      |
 
 - **Staging primero:** integrá cambios en la rama `staging` y hacé **push**; si el workflow pasa, el VPS staging recibe el compose sin tocar producción.
-- **Módulos primero:** las ramas `module/*` son buffers de integración para agentes y **no despliegan**. Promocioná `module/<modulo>` → `staging` para activar deploy staging.
+- **Módulos primero:** las ramas temporales `module/<modulo>/<tipo>/<fecha>-<tema>` ordenan el trabajo por módulo y **no despliegan**. Abrí PR hacia `staging` para activar deploy staging.
 - **Producción:** merge (o push) a **`main`** cuando el código esté validado; el mismo workflow construye y despliega **prod** solo para `main`.
 
 El job **Deploy Node/PM2** (`deploy-pm2-vps`) está **desactivado** (`if: false`) para no duplicar despliegues con `npm`/`pm2` en el VPS. El camino oficial es **Docker + compose**.
