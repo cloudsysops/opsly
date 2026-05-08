@@ -213,6 +213,61 @@ services:
         max-size: "10m"
         max-file: "3"
 
+  # Rendering Engine - Music, Image, Video generation
+  rendering-engine:
+    build:
+      context: .
+      dockerfile: apps/rendering-engine/Dockerfile
+    container_name: opsly_rendering_engine
+    environment:
+      NODE_ENV: production
+      PORT: 3005
+    ports:
+      - "3005:3005"
+    volumes:
+      - /tmp/hermes-renders:/tmp/hermes-renders
+    networks:
+      - opsly-mcp
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3005/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # MCP Rendering Server - Exposes rendering as agent tools
+  mcp-rendering-server:
+    build:
+      context: .
+      dockerfile: apps/mcp-rendering-server/Dockerfile
+    container_name: opsly_mcp_rendering_server
+    environment:
+      NODE_ENV: production
+      PORT: 3006
+      RENDERING_ENGINE_URL: http://rendering-engine:3005
+    ports:
+      - "3006:3006"
+    depends_on:
+      - rendering-engine
+    networks:
+      - opsly-mcp
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3006/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
   # Prometheus for metrics (optional)
   prometheus:
     image: prom/prometheus:latest
