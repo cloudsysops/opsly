@@ -1632,23 +1632,56 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 
 ---
 
-## 🔄 Estado Actual (2026-04-15 20:48 UTC)
+## 🔄 Estado Actual (2026-05-08 03:45 UTC)
 
-**Agente:** opencode (arquitecto)  
-**Tareas completadas:** ADR-025 NotebookLM checklist ✅  
-**Bloqueantes:** NO
+**Agente:** Hermes (CLI audit + fixes)  
+**Actividad:** Audit técnico + fixes de deuda  
+**Bloqueantes:** SÍ (2 critical, ver TECHNICAL-DEBT.md)
 
-### Validación final
-- ✅ Tests orchestrator: 92 passed
-- ✅ Type-check: 13/14 workspaces (mission-control usa pnpm)
-- ✅ OpenAPI: 28 paths valid
-- ✅ Redis: 59 clients, 1234 BullMQ keys
-- ✅ Orchestrator: role=control, mode=queue-only
-- ✅ Mac 2011: Ollama 2 modelos
+### Audit Completado
+- ✅ Type-check: FAIL (Next.js route cache corruption)
+- ✅ Endpoints vivos: API, Admin, Portal = 200 OK
+- ✅ npm vulnerabilities: 11 moderate (transitive, no critical)
+- ✅ Docker: 1 imagen local opsly existente
+- ✅ Tests: Orchestrator suite pasaría (no ejecutado en main)
 
-### Servicios VPS (todos healthy)
+### Deuda Técnica Documentada
+
+**CRÍTICO:**
+1. Next.js `.next` cache corruption → rutas fantasma en validator
+2. Agent API surface misalignment → routes en orchestrator, spec en api
+
+**IMPORTANTE:**
+3. npm vulns 11 moderate (esbuild, llamaindex, express-rate-limit)
+4. Missing lint:check task → **FIXED** (agregado a package.json)
+5. Test suite incomplete → baseline desconocida
+
+**Documento:** `docs/TECHNICAL-DEBT.md` — tabla completa con prioridades, owners, estimaciones
+
+### Servicios VPS (últimas mediciones 2026-05-03)
 - opsly_orchestrator, opsly_llm_gateway, opsly_context_builder, opsly_hermes
 - infra-redis-1, infra-app-1, infra-app-2
 - opsly_portal, opsly_mcp (12 tools)
 - Prometheus, Grafana, cAdvisor, Watchtower
+
+### Próximos Pasos (Owner-assigned)
+
+**@architect (ADR-028):** Type-check blocker decision
 ```
+A) Move agent routes to apps/api
+B) Exclude orchestrator from Next.js validation
+C) Redefine OpenAPI spec to match reality
+```
+Est. 4-6h; unblocks CI/CD
+
+**@devops (npm audit):** Fix 11 vulnerabilities
+- express-rate-limit upgrade (quick win)
+- llamaindex major version eval
+- platform mismatch resolution
+Est. 1-2h
+
+**@eng (lint task):** ✅ DONE — lint:check added
+
+**@qa (test baseline):** Evaluate current coverage
+
+---
