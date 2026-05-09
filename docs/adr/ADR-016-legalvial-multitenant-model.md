@@ -29,3 +29,9 @@ Notas operativas:
 Opcional: tras correr el import, puedes versionar `docs/adr/ADR-016-legalvial-multitenant-model.drive.txt` como “snapshot” del documento.
 
 Si ese archivo queda vacío (solo BOM), el Google Doc en Drive **no tiene cuerpo exportable** todavía (revisa sugerencias sin aceptar, o contenido fuera del cuerpo).
+
+## Resumen operativo en repo (sin sustituir el ADR en Drive)
+
+- Modelo subcliente / matriz compartido–dedicado: [`docs/runbooks/LEGALVIAL-LOCALRANK-MODEL.md`](../runbooks/LEGALVIAL-LOCALRANK-MODEL.md)
+- Config, secretos y zero-trust: [`docs/runbooks/LEGALVIAL-CONFIG-ZERO-TRUST.md`](../runbooks/LEGALVIAL-CONFIG-ZERO-TRUST.md)
+- Registro: [`config/tenants/legalvial.json`](../../config/tenants/legalvial.json)

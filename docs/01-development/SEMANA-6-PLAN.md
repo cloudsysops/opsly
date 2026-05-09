@@ -6,6 +6,20 @@
 
 ---
 
+## LegalVial como subcliente de LocalRank
+
+Documentación operativa (modelo, secretos, checklist, E2E/rollback, plantilla reutilizable):
+
+- [`docs/runbooks/LEGALVIAL-LOCALRANK-MODEL.md`](../runbooks/LEGALVIAL-LOCALRANK-MODEL.md)
+- [`docs/runbooks/LEGALVIAL-CONFIG-ZERO-TRUST.md`](../runbooks/LEGALVIAL-CONFIG-ZERO-TRUST.md)
+- [`docs/runbooks/LEGALVIAL-GOLIVE-CHECKLIST.md`](../runbooks/LEGALVIAL-GOLIVE-CHECKLIST.md)
+- [`docs/runbooks/LEGALVIAL-E2E-SOFTLAUNCH.md`](../runbooks/LEGALVIAL-E2E-SOFTLAUNCH.md)
+- [`docs/runbooks/SUBCLIENT-ONBOARDING-TEMPLATE.md`](../runbooks/SUBCLIENT-ONBOARDING-TEMPLATE.md)
+
+Registro en repo: [`config/tenants/legalvial.json`](../../config/tenants/legalvial.json). Validación: `./scripts/validate-subclient-config.sh`.
+
+---
+
 ## 🎯 Criterio de Éxito
 
 - ✅ Segundo tenant creado y funcionando (`POST /api/tenants`, schema estándar)

@@ -21,7 +21,7 @@ last_review: 2026-04-24
 ## Estado respecto a VISION.md
 
 - **Fase 1 (Validación):** completada según `VISION.md` (health, tenant real, stack base).
-- **Fase 2 (Producto):** en progreso; **segundo cliente real** (LegalVial via LocalRank) y endurecimiento staging/prod.
+- **Fase 2 (Producto):** en progreso; **segundo cliente real** (LegalVial via LocalRank) y endurecimiento staging/prod. Runbooks: [`docs/runbooks/LEGALVIAL-LOCALRANK-MODEL.md`](../runbooks/LEGALVIAL-LOCALRANK-MODEL.md), [`SUBCLIENT-ONBOARDING-TEMPLATE.md`](../runbooks/SUBCLIENT-ONBOARDING-TEMPLATE.md).
 - **Fase 4 (OpenClaw / IA):** incrementos completados (MCP, orchestrator, LLM Gateway, planner remoto, feedback loop).
 - **Consolidación arquitectónica:** context-builder-v2 archivado en `.archived/`.
 - **Multi-región / multi-cloud como producto:** solo en horizonte **Fase 6+**; no es sprint inmediato salvo ADR.

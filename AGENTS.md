@@ -425,6 +425,8 @@ node scripts/load-skills.js show opsly-api
 
 <!-- Actualizar al final de cada sesión -->
 
+**LegalVial (subcliente LocalRank) — producción:** runbooks [`docs/runbooks/LEGALVIAL-LOCALRANK-MODEL.md`](docs/runbooks/LEGALVIAL-LOCALRANK-MODEL.md) (matriz compartido/dedicado), [`LEGALVIAL-CONFIG-ZERO-TRUST.md`](docs/runbooks/LEGALVIAL-CONFIG-ZERO-TRUST.md), [`LEGALVIAL-GOLIVE-CHECKLIST.md`](docs/runbooks/LEGALVIAL-GOLIVE-CHECKLIST.md), [`LEGALVIAL-E2E-SOFTLAUNCH.md`](docs/runbooks/LEGALVIAL-E2E-SOFTLAUNCH.md); plantilla reutilizable [`SUBCLIENT-ONBOARDING-TEMPLATE.md`](docs/runbooks/SUBCLIENT-ONBOARDING-TEMPLATE.md); validación `config/tenants/*.json`: `./scripts/validate-subclient-config.sh`.
+
 **Fecha última actualización:** 2026-05-06 — **Agency Division + API Factory + Autonomous Revenue:**
 - ✅ Documento `docs/01-development/OPSLY-AGENCY-DIVISION.md` con 4 líneas de servicio
 - ✅ MCP tools: api_factory_create, api_factory_monitor, agent_management_stats, security_api_scan, security_api_audit (6 nuevas → 31 total)
@@ -1136,7 +1138,9 @@ _Auditoría TypeScript y correcciones de código (2026-04-05, sesión agente Cla
 
 <!-- Una sola tarea concreta. Actualizar al final de cada sesión -->
 
-**Inmediato (2026-05-06):** **Semana 6** — [`docs/01-development/SEMANA-6-PLAN.md`](docs/01-development/SEMANA-6-PLAN.md): validar segundo tenant + `./scripts/test-e2e-invite-flow.sh` contra API staging; checklist pre-launch (Doppler, Resend dominio, DNS). Smoke local workers en `main` (PR **#199**, [`docs/LOCAL-AGENT-EXECUTION.md`](docs/LOCAL-AGENT-EXECUTION.md)); arranque orchestrator con `OPSLY_ROOT=<raíz repo>` si el cwd es `apps/orchestrator`.
+**Inmediato:** cerrar go-live **LegalVial** con [`docs/runbooks/LEGALVIAL-GOLIVE-CHECKLIST.md`](docs/runbooks/LEGALVIAL-GOLIVE-CHECKLIST.md) y smoke [`LEGALVIAL-E2E-SOFTLAUNCH.md`](docs/runbooks/LEGALVIAL-E2E-SOFTLAUNCH.md).
+
+**Semana 6** — [`docs/01-development/SEMANA-6-PLAN.md`](docs/01-development/SEMANA-6-PLAN.md): validar segundo tenant + `./scripts/test-e2e-invite-flow.sh` contra API staging; checklist pre-launch (Doppler, Resend dominio, DNS). Smoke local workers en `main` (PR **#199**, [`docs/LOCAL-AGENT-EXECUTION.md`](docs/LOCAL-AGENT-EXECUTION.md)); arranque orchestrator con `OPSLY_ROOT=<raíz repo>` si el cwd es `apps/orchestrator`.
 
 **Rama opcional `feat/local-prompt-flow-runbook`:** experimentos gateway (qwen/minimax) y dedupe de ruta `balanced`; integrar vía PR si se adoptan — `main` ya tiene una sola rama `balanced` en `getProvidersByPreference`.
 

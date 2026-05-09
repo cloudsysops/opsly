@@ -4,6 +4,8 @@
 **Frecuencia:** por cada nuevo tenant que se provisioning.  
 **Tiempo estimado:** 15-30 minutos.
 
+**Subcliente / tenant hijo (p. ej. LegalVial bajo LocalRank):** usar además la plantilla [`SUBCLIENT-ONBOARDING-TEMPLATE.md`](./SUBCLIENT-ONBOARDING-TEMPLATE.md) y `./scripts/validate-subclient-config.sh`.
+
 ---
 
 ## 1. Pre-requisitos
