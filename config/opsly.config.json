@@ -13,12 +13,12 @@
     "traefik_network": "traefik-public"
   },
   "domains": {
-    "base": "ops.smiletripcare.com",
-    "api": "api.ops.smiletripcare.com",
-    "admin": "admin.ops.smiletripcare.com",
-    "portal": "portal.ops.smiletripcare.com",
-    "traefik": "traefik.ops.smiletripcare.com",
-    "wildcard": "*.ops.smiletripcare.com"
+    "base": "op-sly.com",
+    "api": "api.op-sly.com",
+    "admin": "admin.op-sly.com",
+    "portal": "portal.op-sly.com",
+    "traefik": "traefik.op-sly.com",
+    "wildcard": "*.op-sly.com"
   },
   "ports": {
     "traefik_http": 80,

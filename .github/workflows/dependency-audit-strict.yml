@@ -95,22 +95,23 @@ jobs:
           npm install -g npm@latest
           npm audit --json > audit-report.json || true
 
-          echo "## Dependency Audit Report" > audit-summary.md
-          echo "" >> audit-summary.md
-          echo "**Timestamp:** $(date -u)" >> audit-summary.md
-          echo "" >> audit-summary.md
-
-          if grep -q '"severity":"critical"' audit-report.json; then
-            echo "❌ **Status: FAILED** - Critical vulnerabilities detected" >> audit-summary.md
-          elif grep -q '"severity":"high"' audit-report.json; then
-            echo "⚠️  **Status: WARNING** - High severity vulnerabilities detected" >> audit-summary.md
-          else
-            echo "✅ **Status: PASSED** - No critical or high vulnerabilities" >> audit-summary.md
-          fi
+          {
+            echo "## Dependency Audit Report"
+            echo ""
+            echo "**Timestamp:** $(date -u)"
+            echo ""
+            if grep -q '"severity":"critical"' audit-report.json; then
+              echo "❌ **Status: FAILED** - Critical vulnerabilities detected"
+            elif grep -q '"severity":"high"' audit-report.json; then
+              echo "⚠️  **Status: WARNING** - High severity vulnerabilities detected"
+            else
+              echo "✅ **Status: PASSED** - No critical or high vulnerabilities"
+            fi
+          } > audit-summary.md
 
           cat audit-summary.md
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: audit-report
           path: audit-report.json

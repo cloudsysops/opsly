@@ -24,8 +24,9 @@ Lista operativa para releases y revisiones periódicas. Marca ítems según tu p
 
 ## Dependencias
 
-- [ ] `npm audit` en CI sin vulnerabilidades **high/critical** sin justificación documentada.
-- [ ] Lockfile actualizado de forma controlada.
+- [ ] `npm audit` en CI sin vulnerabilidades **high/critical** sin justificación documentada (local: `npm audit --audit-level=high`; workflow: [`.github/workflows/security.yml`](../../.github/workflows/security.yml)).
+- [ ] Lockfile actualizado de forma controlada; pins/overrides en `package.json` raíz revisados cuando el audit marque transitivos (ver [TECHNICAL-DEBT.md](../TECHNICAL-DEBT.md) § dependencias).
+- [ ] Workflows: **actionlint** en verde antes de merge (guía: [`docs/ops/workflows-index.md`](../ops/workflows-index.md) § Workflow lint).
 
 ## Aplicación
 

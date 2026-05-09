@@ -75,7 +75,7 @@ jobs:
 
     steps:
       - name: Archive health check results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: health-check-results-${{ github.run_id }}
           path: health-check-*.json

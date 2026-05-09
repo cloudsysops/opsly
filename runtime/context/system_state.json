@@ -20,7 +20,7 @@
     }
   },
   "deploy_staging": {
-    "api_health_url": "https://api.ops.smiletripcare.com/api/health",
+    "api_health_url": "https://api.op-sly.com/api/health",
     "status": "operational",
     "all_services_healthy": true
   },
@@ -35,7 +35,7 @@
     ]
   },
   "dns": {
-    "base": "ops.smiletripcare.com",
+    "base": "op-sly.com",
     "ip": "157.245.223.7",
     "status": "ok"
   },

@@ -123,7 +123,7 @@ Key decisions:
 ### Debugging
 
 - **[TROUBLESHOOTING-GUIDE.md](TROUBLESHOOTING-GUIDE.md)** — Symptom → solution tree
-- **[TECHNICAL-DEBT.md](TECHNICAL-DEBT.md)** — Known issues + workarounds
+- **[TECHNICAL-DEBT.md](TECHNICAL-DEBT.md)** — Known issues + workarounds (incl. audit npm / deuda moderate)
 - **[SYSTEMATIC-DEBUGGING.md]** — Coming soon (skill available)
 
 ---
@@ -145,6 +145,7 @@ Key decisions:
 2. Infra: [REDIS-QUEUE-GUIDE.md](infrastructure/REDIS-QUEUE-GUIDE.md), [DATABASE-OPERATIONS.md](database/DATABASE-OPERATIONS.md)
 3. Costs: [COST-MONITORING-GUIDE.md](operations/COST-MONITORING-GUIDE.md) + [COST-DEEP-DIVE.md](audits/COST-DEEP-DIVE.md)
 4. Deploy: [VPS-DEPLOYMENT-2026-05-08.md](runbooks/VPS-DEPLOYMENT-2026-05-08.md)
+5. CI: catálogo workflows + **actionlint** — [ops/workflows-index.md](ops/workflows-index.md) (§ Workflow lint)
 
 ### For Product/Leadership
 1. Vision: [VISION.md](../VISION.md)

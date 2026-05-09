@@ -91,7 +91,9 @@
     "commit": "git-cz"
   },
   "devDependencies": {
-    "@esbuild/linux-x64": "0.21.5",
+    "fast-xml-builder": "1.2.0",
+    "hono": "4.12.18",
+    "ip-address": "10.2.0",
     "@commitlint/cli": "^19.8.1",
     "@commitlint/config-conventional": "^19.8.1",
     "@eslint/eslintrc": "^3.3.1",
@@ -143,7 +145,17 @@
     "lodash": "^4.18.1",
     "minimist": "^1.2.8",
     "tmp": "^0.2.4",
-    "uuid": "^14.0.0"
+    "uuid": "^14.0.0",
+    "fast-uri": "3.1.2",
+    "fast-xml-builder": "1.2.0",
+    "fast-xml-parser": {
+      "fast-xml-builder": "1.2.0"
+    },
+    "hono": "4.12.18",
+    "ip-address": "10.2.0",
+    "express-rate-limit": {
+      "ip-address": "10.2.0"
+    }
   },
   "dependencies": {
     "@redis/client": "^1.6.1",

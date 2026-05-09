@@ -511,10 +511,10 @@ jobs:
               '{embeds:[{title:"❌ Staging deploy fallido",color:15158332,fields:[{name:"Run",value:$url}]}]}')"
 
   # Git + npm + Supabase + PM2 en el VPS (legacy). Desactivado: el despliegue oficial es Docker (jobs deploy / deploy-staging).
+  # Para reactivar: sustituir la condición por una rama/entorno real y enlazar `needs` con el job previo.
   deploy-pm2-vps:
     name: Deploy Node/PM2 on VPS (SSH) [legacy desactivado]
-    # Evita npm/supabase/pm2 en VPS en paralelo a Docker (deploy / deploy-staging). Reactivar: quitar `if: false` y restaurar `needs` + condición.
-    if: false
+    if: github.ref == 'refs/heads/legacy-pm2-vps-disabled'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

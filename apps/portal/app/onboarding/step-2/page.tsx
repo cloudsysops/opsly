@@ -55,8 +55,11 @@ function Step2Content() {
   const org = params.get('org') ?? 'Tu Organizaci\u00f3n';
   const plan = params.get('plan') ?? 'startup';
 
-  const n8nUrl = `n8n-${slug}.ops.smiletripcare.com`;
-  const uptimeUrl = `uptime-${slug}.ops.smiletripcare.com`;
+  const platformDomain =
+    process.env.NEXT_PUBLIC_PLATFORM_DOMAIN?.replace(/^https?:\/\//u, '').replace(/\/$/u, '') ||
+    'op-sly.com';
+  const n8nUrl = `n8n-${slug}.${platformDomain}`;
+  const uptimeUrl = `uptime-${slug}.${platformDomain}`;
 
   return (
     <div className="relative min-h-screen bg-slate-950 text-slate-100 overflow-hidden">

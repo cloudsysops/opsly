@@ -1,7 +1,7 @@
 ---
 status: living-document
 owner: operations
-last_update: 2026-05-08T03:40:00Z
+last_update: 2026-05-09T12:50:00Z
 priority: reference
 ---
 
@@ -77,81 +77,33 @@ npm run build  # Interrupted (timeout en Mac)
 
 ## 🟡 IMPORTANT (Deployment warning, not blocking)
 
-### 3. NPM Vulnerability: 11 Moderate
+### 3. NPM vulnerabilities (post-2026-05-09)
 
-**Status:** Unfixed  
-**Severity:** Moderate (no critical/high)  
-**Count:** 11 transitive vulns
+**Status:** HIGH/CRITICAL remediados en raíz; moderates pendientes  
+**Severity:** `npm audit --audit-level=high` → **exit 0** (gate alineado con `.github/workflows/security.yml`)
 
-Notable packages:
-- **llamaindex** (2 vulns via @llamaindex/workflow)
-  - Severity: moderate  
-  - Fix available: v0.11.9 (SemVer major)
-  - Impact: RAG pipeline optional, not user-facing
+**Qué se hizo (2026-05-09):**
+- Eliminado `@esbuild/linux-x64` de `devDependencies` raíz (provocaba `EBADPLATFORM` en macOS al instalar / auditar).
+- Pins en raíz + `overrides`: `fast-xml-builder@1.2.0`, `hono@4.12.18`, `ip-address@10.2.0`, `fast-uri@3.1.2`, y override anidado `fast-xml-parser` → `fast-xml-builder` acorde.
+- Corregidos workflows para **actionlint** (YAML real multilínea en `run: |`, `upload-artifact@v4`, `github.head_ref` vía `env`, etc.); validación local: `docker run --rm -v "$(pwd)":/repo -w /repo rhysd/actionlint:latest -color`.
 
-- **esbuild** (1 vuln in task-orchestrator)
-  - Advisory GHSA-67mh-4wv8-2f99: enables cross-origin requests to dev server
-  - CVSS: 5.3 (medium)
-  - Range: <=0.24.2
-  - Fix: upgrade vitest 4.1.5 (major)
-  - Impact: only in local dev (task-orchestrator experimental)
+**Pendiente (moderate, no bloquea el gate high):**
+- Cadena **esbuild / vite / vitest** en `apps/task-orchestrator` (GHSA-67mh-4wv8-2f99, entorno dev/test).
+- Arreglo probable: subir Vitest/Vite (cambio mayor) u override acotado de `esbuild` + pruebas.
 
-- **express-rate-limit** (1 vuln via ip-address)
-  - Range: 8.0.1 - 8.5.0
-  - Fix available: true
-  - Impact: API rate limiting bypass possible
-  - **Action:** upgrade express-rate-limit in package.json
-
-**Why not auto-fixed:**
-```
-npm audit fix --legacy-peer-deps
-→ Error: Unsupported platform @esbuild/linux-x64 on darwin
-```
-
-Platform mismatch: `package-lock.json` has linux bins, running on Mac.
-
-**Fix strategy:**
-1. `npm ci --force` on clean VPS (Linux) to resolve binaries
-2. Or: manually patch lockfile to remove platform-specific bins
-3. Or: accept moderate vulns until major version upgrade (LLamaIndex 0.12)
-
-**Risk:** LOW (no critical vulns, experimental code)  
+**Riesgo:** Bajo en runtime de plataforma para el advisory de esbuild (servidor de desarrollo); seguir el tema en backlog.  
 **Owner:** @devops  
-**Est. time:** 1 hour (VPS rebuild) or 2-3 hours (lockfile surgery)
+**Est. time:** 1–2 h (bump Vitest en task-orchestrator + regresión)
 
 ---
 
-### 4. Missing Lint Task
+### 4. Lint unificado en raíz
 
-**Status:** Soft fail  
-**Impact:** CI would not run lint in current setup  
-**Root Cause:** `npm run lint:check` doesn't exist
+**Status:** Resuelto (2026-05, verificar en tu clon)  
+**Root:** `package.json` raíz expone `lint:check` → `turbo lint --continue` junto con `lint` / `lint:fix`.
 
-```bash
-$ npm run lint:check
-npm error Missing script: "lint:check"
-```
-
-**Current scripts exist:**
-- `npm run lint` (might exist)
-- `npm run lint:fix` (in api + admin workspaces)
-
-**Real issue:** No unified lint validation in root `package.json`
-
-**Fix:**
-```json
-{
-  "scripts": {
-    "lint": "turbo run lint",
-    "lint:fix": "turbo run lint:fix",
-    "lint:check": "turbo run lint --continue"
-  }
-}
-```
-
-**Est. time:** 15 minutes  
-**Owner:** @eng  
-**Priority:** LOW (can run `npm run lint` instead)
+**Comando:** `npm run lint:check`  
+**Owner:** @eng
 
 ---
 
@@ -236,8 +188,8 @@ docker images --format "{{.Repository}}:{{.Tag}}\t{{.Size}}" | grep opsly
 |------|----------|---------|----------|-------|--------|
 | Route cache corruption | 🔴 Critical | YES | 2-3h | @arch | Exploring |
 | Agent API alignment | 🔴 Critical | YES | 4-6h | @arch | Design |
-| npm vulns (11 moderate) | 🟡 Important | NO | 1-2h | @devops | Unfixed |
-| Missing lint:check | 🟡 Important | NO | 15m | @eng | TODO |
+| npm vulns (4 moderate, esbuild/vitest) | 🟡 Important | NO | 1-2h | @devops | HIGH clear |
+| Lint `lint:check` en raíz | 🟢 Improvement | NO | — | @eng | OK |
 | Test suite incomplete | 🟢 Improvement | NO | 2h | @qa | TODO |
 | Build optimization | 🟢 Improvement | NO | 1h | @devops | TODO |
 | Docker image size | 🟢 Improvement | NO | 2h | @devops | TODO |
@@ -247,7 +199,7 @@ docker images --format "{{.Repository}}:{{.Tag}}\t{{.Size}}" | grep opsly
 ## Next Steps
 
 1. **Immediate (today):** ADR-028 decision on agent routes → unlocks type-check
-2. **Short-term (this week):** npm audit fix on VPS + lint task
+2. **Short-term (this week):** cerrar moderate esbuild/vitest en `apps/task-orchestrator` + lint task unificado si aplica
 3. **Medium-term (sprint):** Test framework + build optimization
 4. **Long-term:** Docker image size audit
 
