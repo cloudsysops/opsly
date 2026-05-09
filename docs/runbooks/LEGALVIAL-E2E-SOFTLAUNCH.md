@@ -28,12 +28,13 @@ Referencias: [`ONBOARDING-NEW-CLIENT.md`](./ONBOARDING-NEW-CLIENT.md), [`TENANT-
 ## Rollback (orden sugerido)
 
 1. **Degradar tráfico:** quitar DNS o pausar routers Traefik hacia servicios LegalVial si hace falta aislar.
-2. **Stack tenant:** desde VPS, bajar solo el proyecto Compose del slug (no la plataforma completa):
+2. **Stack tenant:** desde VPS, bajar solo el Compose del slug (no `docker-compose.platform.yml`):
    ```bash
-   # Ejemplo: ajustar -f y nombre de proyecto al estándar del repo
-   docker compose --project-name tenant_legalvial -f tenants/legalvial/docker-compose.yml down
+   # TENANTS_PATH suele ser <repo>/tenants o /opt/opsly/runtime/tenants según despliegue
+   export TENANTS_PATH="${TENANTS_PATH:-/opt/opsly/tenants}"
+   docker compose -f "${TENANTS_PATH}/docker-compose.legalvial.yml" down
    ```
-   Confirmar ruta real con `scripts/onboard-tenant.sh` / documentación de stacks.
+   Confirmar ruta del `-f` con `TENANTS_PATH` y el patrón `docker-compose.<slug>.yml` (ver `scripts/opsly.sh` / `scripts/deploy/rollout-tenant.sh`).
 3. **Datos:** no borrar schema Supabase sin decisión explícita; preferir marcar tenant `suspended` vía API/procedimiento estándar.
 4. **Secretos:** si hubo fuga, seguir [SECRET-ROTATION-AFTER-EXPOSURE.md](./SECRET-ROTATION-AFTER-EXPOSURE.md).
 5. **Post-mortem:** actualizar AGENTS / runbook con lecciones.

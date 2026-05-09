@@ -33,6 +33,11 @@ Operar **LegalVial** en producción como **subcliente lógico** de **LocalRank**
 - **Redis:** claves y namespaces según política actual del orquestador; no reutilizar prefijos entre tenants.
 - **Errores humanos:** un operador con acceso SSH puede afectar a todos los stacks; mitigar con runbooks, checklist y mínimo privilegio.
 
+## Plataforma vs stack del tenant
+
+- **`infra/docker-compose.platform.yml`:** control plane (API, admin, portal, Traefik, Redis, etc.). No incluye contenedores n8n/Uptime de un slug concreto.
+- **Stack LegalVial:** proyecto Compose aparte (convención `docker-compose.<slug>.yml` bajo `TENANTS_PATH`, ver `scripts/opsly.sh` / `scripts/deploy/rollout-tenant.sh`).
+
 ## Archivos de referencia en repo
 
 - `config/tenants/legalvial.json` — `parent_tenant_slug`, `client_slug`, notas de modelo híbrido.

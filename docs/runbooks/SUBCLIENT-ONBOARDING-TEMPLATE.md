@@ -22,7 +22,7 @@ Reutilizable para LegalVial y futuros subclientes. Ajustar nombres y dominios.
 ## Pasos operativos
 
 1. Verificar pre-requisitos: [ONBOARDING-NEW-CLIENT.md](./ONBOARDING-NEW-CLIENT.md).
-2. Onboarding técnico: `./scripts/onboard-tenant.sh --slug <slug> --email … --plan … --name "…"`.
+2. Onboarding técnico: `./scripts/opsly.sh create-tenant <slug> --email … --plan …` (implementación: `scripts/tenant/onboard.sh`; nombre comercial vía API/admin si aplica).
 3. Secretos en Doppler por tenant; cero hardcode en código.
 4. Completar [LEGALVIAL-GOLIVE-CHECKLIST.md](./LEGALVIAL-GOLIVE-CHECKLIST.md) (o copia renombrada para otro subcliente).
 5. Smoke E2E y soft-launch según [LEGALVIAL-E2E-SOFTLAUNCH.md](./LEGALVIAL-E2E-SOFTLAUNCH.md) (adaptar slug).

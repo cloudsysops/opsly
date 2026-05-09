@@ -25,7 +25,8 @@
 
 ## Compose y stacks
 
-- Stack del tenant: `docker compose --project-name tenant_legalvial` (o convención documentada en `scripts/onboard-tenant.sh`).
+- Stack del tenant: fichero bajo `TENANTS_PATH` (default `<repo>/tenants`) con patrón `docker-compose.<slug>.yml`; arranque idempotente vía `./scripts/opsly.sh start-tenant <slug>` → `scripts/deploy/rollout-tenant.sh`.
+- Alta vía API/DB: `./scripts/opsly.sh create-tenant <slug> --email … --plan …` (implementado en `scripts/tenant/onboard.sh`).
 - Variables inyectadas vía `.env` del VPS desde Doppler; revisar `TENANT_BASE_DOMAIN` vs `PLATFORM_DOMAIN` para URLs públicas de n8n/Uptime.
 
 ## Validación local del registro subcliente
