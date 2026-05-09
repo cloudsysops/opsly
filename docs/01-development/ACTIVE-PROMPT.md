@@ -296,7 +296,7 @@
 
 # ```bash
 
-# ssh vps-dragon@100.120.151.91 "cd /opt/opsly && git pull --ff-only && doppler run -c prd -- docker compose -f infra/docker-compose.platform.yml pull app && docker compose -f infra/docker-compose.platform.yml up -d --no-deps --force-recreate app"
+# ssh vps-dragon@100.120.151.91 "cd /opt/opsly && git pull --ff-only && doppler run -c prd -- docker compose --env-file /opt/opsly/.env -f infra/docker-compose.platform.yml pull app && docker compose --env-file /opt/opsly/.env -f infra/docker-compose.platform.yml up -d --no-deps --force-recreate app"
 
 # ```
 

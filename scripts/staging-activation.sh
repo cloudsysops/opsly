@@ -89,8 +89,12 @@ echo "FASE 3: Deploying Docker Compose Stack"
 echo "=========================================="
 
 log_info "Preparando environment desde Doppler..."
+COMPOSE_ENV_ARGS=()
+if [[ -f "$STAGING_DIR/.env" ]]; then
+  COMPOSE_ENV_ARGS=(--env-file "$STAGING_DIR/.env")
+fi
 doppler run --project ops-intcloudsysops --config prd -- \
-  docker compose -f "$STAGING_DIR/infra/docker-compose.platform.yml" up -d
+  docker compose "${COMPOSE_ENV_ARGS[@]}" -f "$STAGING_DIR/infra/docker-compose.platform.yml" up -d
 
 sleep 5
 
