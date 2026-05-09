@@ -76,12 +76,13 @@ jobs:
           fetch-depth: 0
 
       - name: Verify branch naming convention
+        env:
+          BRANCH_NAME: ${{ github.head_ref }}
         run: |
-          BRANCH="${{ github.head_ref }}"
-          if [[ $BRANCH =~ ^(claude|cursor|automation)/ ]]; then
-            echo "✓ Autonomous branch pattern: $BRANCH"
+          if [[ "${BRANCH_NAME}" =~ ^(claude|cursor|automation)/ ]]; then
+            echo "✓ Autonomous branch pattern: ${BRANCH_NAME}"
           else
-            echo "⚠ Non-standard autonomous branch: $BRANCH"
+            echo "⚠ Non-standard autonomous branch: ${BRANCH_NAME}"
           fi
 
       - name: Check for destructive commits

@@ -511,8 +511,9 @@ jobs:
   # Git + npm + Supabase + PM2 en el VPS (legacy). Desactivado: el despliegue oficial es Docker (jobs deploy / deploy-staging).
   deploy-pm2-vps:
     name: Deploy Node/PM2 on VPS (SSH) [legacy desactivado]
-    # Evita npm/supabase/pm2 en VPS en paralelo a Docker (deploy / deploy-staging). Reactivar: quitar `if: false` y restaurar `needs` + condición.
-    if: false
+    # DEPRECATED: This job is disabled to avoid npm/supabase/pm2 in VPS running parallel to Docker (deploy/deploy-staging).
+    # To reactivate: remove this condition, restore needs, and add back conditional logic.
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/never-deploy-pm2'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
