@@ -1,0 +1,78 @@
+{
+  "version": "1.0.0",
+  "description": "Opsly Library Modules Registry",
+  "lastUpdated": "2026-05-09T03:30:00Z",
+  "modules": {
+    "prompts": {
+      "name": "@intcloudsysops/prompts",
+      "version": "1.0.0",
+      "path": "lib/prompts",
+      "owner": "claude",
+      "description": "Versioned prompt registry for all agents",
+      "status": "stable",
+      "dependencies": [],
+      "governance": "lib/prompts/GOVERNANCE.md",
+      "mainFile": "lib/prompts/index.ts",
+      "exports": ["registry", "loader", "schemas"]
+    },
+    "observability": {
+      "name": "@intcloudsysops/observability",
+      "version": "1.0.0",
+      "path": "lib/observability",
+      "owner": "claude",
+      "description": "Unified logging, metrics, and tracing layer",
+      "status": "stable",
+      "dependencies": [],
+      "governance": "lib/observability/GOVERNANCE.md",
+      "mainFile": "lib/observability/index.ts",
+      "exports": ["logger", "metrics", "tracing"]
+    },
+    "components": {
+      "name": "@intcloudsysops/components",
+      "version": "1.0.0",
+      "path": "lib/components",
+      "owner": "claude",
+      "description": "Shared React components and design system",
+      "status": "stable",
+      "dependencies": [],
+      "governance": "lib/components/GOVERNANCE.md",
+      "mainFile": "lib/components/index.ts",
+      "exports": ["ui", "hooks", "styles"]
+    },
+    "evaluation": {
+      "name": "@intcloudsysops/evaluation",
+      "version": "1.0.0",
+      "path": "lib/evaluation",
+      "owner": "claude",
+      "description": "Testing, validation, and quality metrics framework",
+      "status": "stable",
+      "dependencies": ["prompts"],
+      "governance": "lib/evaluation/GOVERNANCE.md",
+      "mainFile": "lib/evaluation/index.ts",
+      "exports": ["validators", "metrics", "test-runners"]
+    }
+  },
+  "consumers": {
+    "apps/orchestrator": {
+      "depends": ["prompts", "observability", "evaluation"]
+    },
+    "apps/api": {
+      "depends": ["prompts", "observability", "evaluation"]
+    },
+    "apps/portal": {
+      "depends": ["components", "observability"]
+    },
+    "apps/admin": {
+      "depends": ["components", "observability"]
+    },
+    "apps/local-services": {
+      "depends": ["components", "observability", "prompts"]
+    }
+  },
+  "policies": {
+    "versioning": "semantic",
+    "breakingChanges": "require-adr",
+    "testCoverage": 80,
+    "circularDependencies": "forbidden"
+  }
+}

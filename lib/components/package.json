@@ -1,0 +1,42 @@
+{
+  "name": "@intcloudsysops/components",
+  "version": "1.0.0",
+  "description": "Shared React components and design system",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./ui": {
+      "import": "./dist/ui/index.js",
+      "types": "./dist/ui/index.d.ts"
+    },
+    "./hooks": {
+      "import": "./dist/hooks/index.js",
+      "types": "./dist/hooks/index.d.ts"
+    },
+    "./styles": {
+      "import": "./dist/styles/index.css"
+    }
+  },
+  "scripts": {
+    "build": "tsc && tailwindcss -i ./styles/globals.css -o ./dist/styles/index.css",
+    "test": "vitest",
+    "storybook": "storybook dev",
+    "storybook:build": "storybook build",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
+  },
+  "devDependencies": {
+    "@storybook/react": "^7.0.0",
+    "@types/react": "^18.0.0",
+    "tailwindcss": "^3.0.0",
+    "typescript": "^5.0.0",
+    "vitest": "^1.0.0"
+  }
+}

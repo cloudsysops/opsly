@@ -5,6 +5,7 @@
   "workspaces": [
     "apps/*",
     "apps/notebooklm-agent",
+    "lib/*",
     "packages/skills/manifest",
     "packages/*"
   ],

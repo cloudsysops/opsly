@@ -127,6 +127,60 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 
 ---
 
+## 📦 Modules & Registries (Enterprise-Scale Library)
+
+**Registry:** `config/modules.json` — Single source of truth para todos los módulos, versiones, owners.
+
+### Core Modules
+
+| Module | Version | Owner | Status | Purpose |
+|--------|---------|-------|--------|---------|
+| `@intcloudsysops/prompts` | 1.0.0 | claude | Stable | Versioned prompt registry (unified from `.cursor/`, `docs/`, `tools/agents/`) |
+| `@intcloudsysops/observability` | 1.0.0 | claude | Stable | Unified logging, metrics, tracing (all services) |
+| `@intcloudsysops/components` | 1.0.0 | claude | Stable | Shared React components, design system (portal, admin, local-services) |
+| `@intcloudsysops/evaluation` | 1.0.0 | claude | Stable | Testing, validators, quality metrics (QA gates, safety checks) |
+
+**Key Constraint:** Zero duplication. If code appears in 2+ places, consolidate to lib/.
+
+### Using Modules
+
+```typescript
+// Prompts
+import { loadPrompt } from '@intcloudsysops/prompts';
+const prompt = await loadPrompt('local-services-automation');
+
+// Observability
+import { createLogger, recordMetric } from '@intcloudsysops/observability';
+const logger = createLogger('my-service');
+logger.info('Event', { context });
+
+// Components (React)
+import { Button, useAuth } from '@intcloudsysops/components';
+
+// Evaluation
+import { validateInput, checkForPII } from '@intcloudsysops/evaluation';
+```
+
+### Adding/Modifying Modules
+
+1. **Check registry:** `config/modules.json` — what exists, who owns it
+2. **Read governance:** `lib/{module}/GOVERNANCE.md` — versioning, review, deprecation
+3. **Update carefully:** breaking changes require MAJOR version + migration guide
+4. **Run pre-commit hook:** `.githooks/pre-commit` validates all modules before commit
+
+**Per-module governance:**
+- `lib/prompts/GOVERNANCE.md` — Semantic versioning, rollback capability
+- `lib/observability/GOVERNANCE.md` — Required metrics per service, alerting policy
+- `lib/components/GOVERNANCE.md` — Reusability check (2+ apps), accessibility, type-safe
+- `lib/evaluation/GOVERNANCE.md` — Quality baselines, test coverage (80%+), SLOs
+
+### Documentation
+
+- `lib/{module}/README.md` — API docs, usage examples
+- `docs/01-development/LIBRARY-MODULES.md` — Integration guide for all apps
+
+---
+
 ## Skills disponibles para Claude modo supremo
 
 Procedimientos vivos en el repo: **`skills/user/<skill>/SKILL.md`**. En runtimes que montan `/mnt/skills/user`, enlazar o copiar desde el clon (ver `skills/README.md`).

@@ -1,0 +1,40 @@
+{
+  "name": "@intcloudsysops/evaluation",
+  "version": "1.0.0",
+  "description": "Testing, validation, and quality metrics framework",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./validators": {
+      "import": "./dist/validators/index.js",
+      "types": "./dist/validators/index.d.ts"
+    },
+    "./metrics": {
+      "import": "./dist/metrics/index.js",
+      "types": "./dist/metrics/index.d.ts"
+    },
+    "./test-runners": {
+      "import": "./dist/test-runners/index.js",
+      "types": "./dist/test-runners/index.d.ts"
+    }
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest",
+    "test:coverage": "vitest --coverage",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@intcloudsysops/prompts": "workspace:^"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0",
+    "vitest": "^1.0.0"
+  }
+}
