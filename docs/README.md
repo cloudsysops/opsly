@@ -52,6 +52,7 @@ docs/generated/sprint-status.auto.md ← burndown generado (status.yaml; no edit
 | Doc                                                                                    | Cuándo usarlo                                                              |
 | -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
 | [`ARCHITECTURE.md`](ARCHITECTURE.md)                                                   | Control plane vs data plane, Traefik, redes                                |
+| [`STRUCTURE-GUARDRAILS.md`](STRUCTURE-GUARDRAILS.md)                                   | Convenciones repo: API canónica, proxies `web`, checklists tenant          |
 | [`ARCHITECTURE-DISTRIBUTED.md`](ARCHITECTURE-DISTRIBUTED.md)                           | VPS control + workers remotos (Mac 2011), Redis Tailscale                  |
 | [`HYBRID-OPSLY-ADMIN.md`](HYBRID-OPSLY-ADMIN.md)                                       | **Centro de mando** (Mac `opsly-admin`): Cursor, MCP, Git, DragonB, SSH    |
 | [`runbooks/e2e-hybrid-write.md`](runbooks/e2e-hybrid-write.md)                         | E2E escritura API `/api/tools/execute`, deploy `app`, Trivy                |
@@ -68,6 +69,11 @@ docs/generated/sprint-status.auto.md ← burndown generado (status.yaml; no edit
 | [`VPS-SSH-WORKER-NODES.md`](VPS-SSH-WORKER-NODES.md)                                   | Clave SSH VPS → workers (`authorized_keys`), solo Tailscale                |
 | [`SSH-USERS-FOR-AGENTS.md`](SSH-USERS-FOR-AGENTS.md)                                   | **Qué usuario SSH usar** (VPS, worker, Mac) — agentes y humanos            |
 | [`AGENTS-AUTONOMOUS-RUNBOOK.md`](AGENTS-AUTONOMOUS-RUNBOOK.md)                         | Workers autónomos: systemd, Ollama, cola `openclaw`, verificación          |
+| [`runbooks/AUTONOMOUS-PRODUCTION-GO-LIVE-CHECKLIST.md`](runbooks/AUTONOMOUS-PRODUCTION-GO-LIVE-CHECKLIST.md) | **Go-live único** staging→prod (gates, tenant, canary) |
+| [`runbooks/AUTONOMOUS-PROD-60D.md`](runbooks/AUTONOMOUS-PROD-60D.md)                   | Resumen operativo plan 60 días + comandos/scripts                          |
+| [`runbooks/AUTONOMY-JOB-POLICY-MAP.md`](runbooks/AUTONOMY-JOB-POLICY-MAP.md)         | Mapa riesgo autonomía por `JobType`                                        |
+| [`runbooks/AUTONOMOUS-OPERATIONS-DASHBOARD.md`](runbooks/AUTONOMOUS-OPERATIONS-DASHBOARD.md) | 4 KPIs (SLO, costo, éxito jobs, MTTR) + dónde mirarlos              |
+| [`runbooks/INCIDENT-AUTONOMOUS-AGENT.md`](runbooks/INCIDENT-AUTONOMOUS-AGENT.md)       | Incidente: fallo agente autónomo (contención, diagnóstico, rollback)       |
 | [`FIRST-OPENCLAW-AGENTS-MAC2011.md`](FIRST-OPENCLAW-AGENTS-MAC2011.md)                 | Primer arranque workers OpenClaw en Mac 2011 (SSH, Redis, E2E)             |
 | [`DECEPTICON-WORKER.md`](DECEPTICON-WORKER.md)                                         | Decepticon en worker Ubuntu (instalación, seguridad, vs LLM Gateway Opsly) |
 | [`RTK.md`](RTK.md)                                                                     | RTK: reducción de tokens en contexto de agente (Cursor/VPS/worker)         |

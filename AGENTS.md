@@ -427,6 +427,8 @@ node scripts/load-skills.js show opsly-api
 
 **LegalVial (subcliente LocalRank) — producción:** runbooks [`docs/runbooks/LEGALVIAL-LOCALRANK-MODEL.md`](docs/runbooks/LEGALVIAL-LOCALRANK-MODEL.md) (matriz compartido/dedicado), [`LEGALVIAL-CONFIG-ZERO-TRUST.md`](docs/runbooks/LEGALVIAL-CONFIG-ZERO-TRUST.md), [`LEGALVIAL-GOLIVE-CHECKLIST.md`](docs/runbooks/LEGALVIAL-GOLIVE-CHECKLIST.md), [`LEGALVIAL-E2E-SOFTLAUNCH.md`](docs/runbooks/LEGALVIAL-E2E-SOFTLAUNCH.md); plantilla reutilizable [`SUBCLIENT-ONBOARDING-TEMPLATE.md`](docs/runbooks/SUBCLIENT-ONBOARDING-TEMPLATE.md); validación `config/tenants/*.json`: `./scripts/validate-subclient-config.sh`.
 
+**Escala orchestrator (2026-05-09):** foco inmediato = **más workers BullMQ `worker-enabled`** contra el mismo `REDIS_URL` del control plane; **Super Agent v2** queda como shadow deploy/ensayo de stack (no como solución principal de CPU) y **Hive** como coordinación multi-agente interna. Antes de sumar nodos, auditar desde cada worker `REDIS_URL` + `LLM_GATEWAY_URL`/`ORCHESTRATOR_LLM_GATEWAY_URL` con `./scripts/mac-admin-orchestrator-worker.sh check` o equivalente. DeepSeek V4 se usa vía LLM Gateway (`deepseek_chat`, `DEEPSEEK_*`) y no como tag Ollama salvo elección explícita de un modelo local real.
+
 **Fecha última actualización:** 2026-05-06 — **Agency Division + API Factory + Autonomous Revenue:**
 - ✅ Documento `docs/01-development/OPSLY-AGENCY-DIVISION.md` con 4 líneas de servicio
 - ✅ MCP tools: api_factory_create, api_factory_monitor, agent_management_stats, security_api_scan, security_api_audit (6 nuevas → 31 total)
@@ -1138,7 +1140,7 @@ _Auditoría TypeScript y correcciones de código (2026-04-05, sesión agente Cla
 
 <!-- Una sola tarea concreta. Actualizar al final de cada sesión -->
 
-**Inmediato:** cerrar go-live **LegalVial** con [`docs/runbooks/LEGALVIAL-GOLIVE-CHECKLIST.md`](docs/runbooks/LEGALVIAL-GOLIVE-CHECKLIST.md) y smoke [`LEGALVIAL-E2E-SOFTLAUNCH.md`](docs/runbooks/LEGALVIAL-E2E-SOFTLAUNCH.md).
+**Inmediato:** cerrar go-live **LegalVial** con [`docs/runbooks/LEGALVIAL-GOLIVE-CHECKLIST.md`](docs/runbooks/LEGALVIAL-GOLIVE-CHECKLIST.md) y smoke [`LEGALVIAL-E2E-SOFTLAUNCH.md`](docs/runbooks/LEGALVIAL-E2E-SOFTLAUNCH.md). **Autonomía:** si Cortex ya está en `OPSLY_CORTEX_ENABLED=true`, completar checklist operativo en [`docs/runbooks/CORTEX-OBSERVATION-WINDOW.md`](docs/runbooks/CORTEX-OBSERVATION-WINDOW.md) y registrar fecha en `runtime/context/system_state.json`.
 
 **Semana 6** — [`docs/01-development/SEMANA-6-PLAN.md`](docs/01-development/SEMANA-6-PLAN.md): validar segundo tenant + `./scripts/test-e2e-invite-flow.sh` contra API staging; checklist pre-launch (Doppler, Resend dominio, DNS). Smoke local workers en `main` (PR **#199**, [`docs/LOCAL-AGENT-EXECUTION.md`](docs/LOCAL-AGENT-EXECUTION.md)); arranque orchestrator con `OPSLY_ROOT=<raíz repo>` si el cwd es `apps/orchestrator`.
 

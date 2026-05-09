@@ -13,12 +13,12 @@
     "traefik_network": "traefik-public"
   },
   "domains": {
-    "base": "ops.smiletripcare.com",
-    "api": "api.ops.smiletripcare.com",
-    "admin": "admin.ops.smiletripcare.com",
-    "portal": "portal.ops.smiletripcare.com",
-    "traefik": "traefik.ops.smiletripcare.com",
-    "wildcard": "*.ops.smiletripcare.com"
+    "base": "op-sly.com",
+    "api": "api.op-sly.com",
+    "admin": "admin.op-sly.com",
+    "portal": "portal.op-sly.com",
+    "traefik": "traefik.op-sly.com",
+    "wildcard": "*.op-sly.com"
   },
   "ports": {
     "traefik_http": 80,
@@ -76,6 +76,27 @@
       "ownerEmail": "sierrasantiago90@gmail.com",
       "status": "active",
       "createdAt": "2026-04-07"
+    },
+    {
+      "slug": "localrank",
+      "plan": "startup",
+      "ownerEmail": "jkbotero78@gmail.com",
+      "status": "active",
+      "createdAt": "2026-04-11"
+    },
+    {
+      "slug": "jkboterolabs",
+      "plan": "startup",
+      "ownerEmail": "jkbotero78@gmail.com",
+      "status": "active",
+      "createdAt": "2026-04-08"
+    },
+    {
+      "slug": "intcloudsysops",
+      "plan": "enterprise",
+      "ownerEmail": "cboteros1@gmail.com",
+      "status": "active",
+      "createdAt": "2026-04-15"
     }
   ]
 }

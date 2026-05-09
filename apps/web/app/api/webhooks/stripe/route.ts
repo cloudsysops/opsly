@@ -1,5 +1,5 @@
-import { handleStripeWebhook } from '../../../../lib/stripe/webhook-handler';
+import { proxyToPlatformApi } from '../../../../lib/proxy-platform-api';
 
-export async function POST(request: Request): Promise<Response> {
-  return handleStripeWebhook(request);
+export function POST(request: Request): Promise<Response> {
+  return proxyToPlatformApi({ request, apiPath: '/api/webhooks/stripe' });
 }
