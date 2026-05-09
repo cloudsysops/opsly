@@ -39,7 +39,7 @@
 | Colas BullMQ, workers, health HTTP interno | [`apps/orchestrator`](../../apps/orchestrator) — [`docs/00-architecture/ORCHESTRATOR.md`](../00-architecture/ORCHESTRATOR.md) |
 | OpenClaw (políticas, contratos, eventos) | [`apps/orchestrator/src/openclaw/`](../../apps/orchestrator/src/openclaw/) |
 | MCP (tools) | [`apps/mcp`](../../apps/mcp) |
-| LLM (routing, costes) | [`apps/llm-gateway`](../../apps/llm-gateway) — [`docs/00-architecture/LLM-GATEWAY.md`](../00-architecture/LLM-GATEWAY.md) |
+| LLM (routing, costes) | [`apps/llm-gateway`](../../apps/llm-gateway) — [`docs/LLM-GATEWAY.md`](../LLM-GATEWAY.md) |
 | Autómatas n8n (por tenant) | [`infra/templates/`](../../infra/templates/), [`.n8n/`](../../.n8n/) — guías [`N8N-SETUP`](../01-development/N8N-SETUP.md), [`N8N-IMPORT-GUIDE`](../01-development/N8N-IMPORT-GUIDE.md). |
 | Fallover / cola de reparación (diseño) | [`docs/orchestrator/REPAIR-QUEUE.md`](../orchestrator/REPAIR-QUEUE.md) |
 | Seguridad operativa | [`docs/04-infrastructure/SECURITY_CHECKLIST.md`](../04-infrastructure/SECURITY_CHECKLIST.md) |
