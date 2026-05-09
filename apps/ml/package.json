@@ -27,7 +27,7 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@intcloudsysops/llm-gateway-client": "workspace:^",
+    "@intcloudsysops/llm-gateway-client": "*",
     "@supabase/supabase-js": "^2.56.1",
     "zod": "^3.24.1"
   },

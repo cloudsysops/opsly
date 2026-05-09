@@ -17,7 +17,7 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@intcloudsysops/errors": "workspace:^"
+    "@intcloudsysops/errors": "*"
   },
   "devDependencies": {
     "@types/node": "^20.19.12",

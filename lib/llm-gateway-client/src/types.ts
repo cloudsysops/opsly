@@ -14,13 +14,19 @@ export interface LLMRequest {
 }
 
 export interface LLMResponse {
-  id: string;
   content: string;
-  model: string;
-  usage: {
+  id?: string;
+  model?: string;
+  model_used?: string;
+  usage?: {
     prompt_tokens: number;
     completion_tokens: number;
     total_tokens: number;
   };
+  tokens_input?: number;
+  tokens_output?: number;
+  cost_usd?: number;
+  cache_hit?: boolean;
+  latency_ms?: number;
   [key: string]: unknown;
 }
