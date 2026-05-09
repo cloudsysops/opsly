@@ -4,6 +4,12 @@ import {
   portalBillingSummaryUrl,
   portalHealthUrl,
   portalOnboardingUrl,
+  portalTenantAgentMcpExecuteUrl,
+  portalTenantAgentMcpToolsUrl,
+  portalTenantAgentTerminalOutputUrl,
+  portalTenantAgentTerminalSessionsUrl,
+  portalTenantAgentTerminalStartUrl,
+  portalTenantAgentTerminalStopUrl,
   portalTenantInsightsUrl,
   portalTenantMeUrl,
   portalTenantModeUrl,
@@ -13,6 +19,9 @@ import {
   portalTenantUsageUrl,
 } from './portal-api-paths';
 import type {
+  AgentIdeMcpCatalogPayload,
+  AgentIdeOutputPayload,
+  AgentIdeSessionsPayload,
   OnboardingRequest,
   OnboardingResponse,
   PortalBillingSummaryPayload,
@@ -269,6 +278,119 @@ export async function fetchShieldScore(
       'Content-Type': 'application/json',
     },
     cache: 'no-store',
+  });
+}
+
+export type PortalAgentIdeStartBody = {
+  agent_id: string;
+  process_label?: string;
+  objective?: string;
+  commands: string[];
+  timeout_seconds?: number;
+  cwd?: string;
+};
+
+export async function startPortalAgentTerminal(
+  accessToken: string,
+  tenantSlug: string,
+  body: PortalAgentIdeStartBody
+): Promise<{ success: boolean; job_id: string | null; request_id: string; agent_id: string; session_id: string }> {
+  return requestPortalApi(portalTenantAgentTerminalStartUrl(getApiBaseUrl(), tenantSlug), {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(body),
+  });
+}
+
+export async function fetchPortalAgentSessions(
+  accessToken: string,
+  tenantSlug: string,
+  agentId: string
+): Promise<AgentIdeSessionsPayload> {
+  return requestPortalApi<AgentIdeSessionsPayload>(
+    portalTenantAgentTerminalSessionsUrl(getApiBaseUrl(), tenantSlug, agentId),
+    {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+      },
+      cache: 'no-store',
+    }
+  );
+}
+
+export async function fetchPortalAgentOutput(
+  accessToken: string,
+  tenantSlug: string,
+  agentId: string,
+  sessionId: string,
+  offset: number
+): Promise<AgentIdeOutputPayload> {
+  return requestPortalApi<AgentIdeOutputPayload>(
+    portalTenantAgentTerminalOutputUrl(getApiBaseUrl(), tenantSlug, agentId, sessionId, offset),
+    {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+      },
+      cache: 'no-store',
+    }
+  );
+}
+
+export async function stopPortalAgentTerminal(
+  accessToken: string,
+  tenantSlug: string,
+  agentId: string,
+  sessionId: string
+): Promise<{ success: boolean; status: string }> {
+  return requestPortalApi(
+    portalTenantAgentTerminalStopUrl(getApiBaseUrl(), tenantSlug, agentId, sessionId),
+    {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+      },
+    }
+  );
+}
+
+export async function fetchPortalAgentMcpTools(
+  accessToken: string,
+  tenantSlug: string
+): Promise<AgentIdeMcpCatalogPayload> {
+  return requestPortalApi<AgentIdeMcpCatalogPayload>(
+    portalTenantAgentMcpToolsUrl(getApiBaseUrl(), tenantSlug),
+    {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+      },
+      cache: 'no-store',
+    }
+  );
+}
+
+export async function executePortalAgentMcpTool(
+  accessToken: string,
+  tenantSlug: string,
+  toolId: string,
+  input: Record<string, unknown> = {}
+): Promise<{ ok: boolean; tool_id: string; result: unknown }> {
+  return requestPortalApi(portalTenantAgentMcpExecuteUrl(getApiBaseUrl(), tenantSlug), {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ tool_id: toolId, input }),
   });
 }
 

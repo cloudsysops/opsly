@@ -33,6 +33,28 @@ Registro en repo: [`config/tenants/legalvial.json`](../../config/tenants/legalvi
 
 ## 📋 Tareas Principales
 
+### Tarea 0: Smoke local-agents interno
+
+**Responsable:** Orchestrator local + `opsly-agent-cli`  
+**Duración:** ~5 min
+
+**Objetivo:** validar que el flujo interno de prompts sigue operativo antes de usarlo como apoyo de Semana 6.
+
+```bash
+npm run build --workspace=@intcloudsysops/orchestrator
+./scripts/test-local-agent-e2e.sh
+```
+
+**Checklist:**
+
+- [ ] Redis responde `PING` con el mismo `REDIS_URL` del orchestrator.
+- [ ] Orchestrator responde health HTTP y consume `local-agents`.
+- [ ] Servicio agente local configurado en `config/agent-services.json` responde `/execute`.
+- [ ] `POST /api/local/prompt-submit` devuelve `202` + `job_id`.
+- [ ] La ejecución deja respuesta en `.cursor/responses/`.
+
+Referencia: [`docs/LOCAL-AGENT-EXECUTION.md`](../LOCAL-AGENT-EXECUTION.md) y [`docs/01-development/AGENT-PROMPT-QUEUE.md`](AGENT-PROMPT-QUEUE.md).
+
 ### Tarea 1: Preparación de Segundo Cliente
 
 **Responsable:** CLI `onboard-tenant.sh`  

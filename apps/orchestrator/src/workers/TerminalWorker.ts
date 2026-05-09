@@ -9,6 +9,7 @@ import {
   appendSessionOutput,
   completeTerminalSession,
   failTerminalSession,
+  incrementSessionCommandCount,
   setSessionChild,
   setSessionCommand,
   startTerminalSession,
@@ -18,6 +19,9 @@ interface TerminalTaskPayload {
   agent_id?: string;
   commands?: unknown;
   tenant_slug?: string;
+  session_id?: string;
+  process_label?: string;
+  objective?: string;
   timeout_seconds?: number;
   cwd?: string;
 }
@@ -40,6 +44,7 @@ function isStringArray(value: unknown): value is string[] {
 
 function runCommand(
   agentId: string,
+  sessionId: string,
   command: string,
   cwd: string,
   timeoutSeconds: number
@@ -52,9 +57,13 @@ function runCommand(
       stdio: ['ignore', 'pipe', 'pipe'],
     });
 
-    setSessionChild(agentId, child);
-    child.stdout.on('data', (chunk: Buffer) => appendSessionOutput(agentId, chunk.toString()));
-    child.stderr.on('data', (chunk: Buffer) => appendSessionOutput(agentId, chunk.toString()));
+    setSessionChild(agentId, child, sessionId);
+    child.stdout.on('data', (chunk: Buffer) =>
+      appendSessionOutput(agentId, chunk.toString(), sessionId)
+    );
+    child.stderr.on('data', (chunk: Buffer) =>
+      appendSessionOutput(agentId, chunk.toString(), sessionId)
+    );
 
     const timeout = setTimeout(() => {
       child.kill('SIGTERM');
@@ -93,6 +102,10 @@ export function startTerminalWorker(connection: object): Worker {
 
         const rawAgentId = typeof payload.agent_id === 'string' ? payload.agent_id.trim() : '';
         const agentId = rawAgentId.length > 0 ? rawAgentId : `agent-${randomUUID()}`;
+        const sessionId =
+          typeof payload.session_id === 'string' && payload.session_id.trim().length > 0
+            ? payload.session_id.trim()
+            : randomUUID();
         const tenantSlug =
           typeof payload.tenant_slug === 'string' && payload.tenant_slug.trim().length > 0
             ? payload.tenant_slug.trim()
@@ -114,24 +127,35 @@ export function startTerminalWorker(connection: object): Worker {
         );
         const agentDir = resolve(baseDir, sanitizeAgentId(agentId));
         const cwd = typeof payload.cwd === 'string' && payload.cwd.trim().length > 0 ? payload.cwd : agentDir;
+        const processLabel =
+          typeof payload.process_label === 'string' && payload.process_label.trim().length > 0
+            ? payload.process_label.trim()
+            : undefined;
+        const objective =
+          typeof payload.objective === 'string' && payload.objective.trim().length > 0
+            ? payload.objective.trim()
+            : undefined;
 
         await mkdir(agentDir, { recursive: true });
-        startTerminalSession(agentId, tenantSlug, randomUUID(), cwd);
+        startTerminalSession(agentId, tenantSlug, sessionId, cwd, processLabel, objective);
 
         for (const command of commands) {
-          setSessionCommand(agentId, command);
-          await runCommand(agentId, command, cwd, timeoutSeconds);
-          setSessionChild(agentId, undefined);
+          setSessionCommand(agentId, command, sessionId);
+          await runCommand(agentId, sessionId, command, cwd, timeoutSeconds);
+          incrementSessionCommandCount(agentId, sessionId);
+          setSessionChild(agentId, undefined, sessionId);
         }
 
-        completeTerminalSession(agentId, 0);
+        completeTerminalSession(agentId, 0, sessionId);
         logWorkerLifecycle('complete', 'terminal', job, {
           duration_ms: Date.now() - t0,
+          session_id: sessionId,
         });
 
         return {
           success: true,
           agent_id: agentId,
+          session_id: sessionId,
           tenant_slug: tenantSlug,
           cwd,
           commands_executed: commands.length,
@@ -142,7 +166,11 @@ export function startTerminalWorker(connection: object): Worker {
         const payload = data.payload ?? {};
         const rawAgentId = typeof payload.agent_id === 'string' ? payload.agent_id.trim() : '';
         if (rawAgentId.length > 0) {
-          failTerminalSession(rawAgentId, message);
+          const sessionId =
+            typeof payload.session_id === 'string' && payload.session_id.trim().length > 0
+              ? payload.session_id.trim()
+              : undefined;
+          failTerminalSession(rawAgentId, message, sessionId);
         }
         logWorkerLifecycle('fail', 'terminal', job, {
           duration_ms: Date.now() - t0,

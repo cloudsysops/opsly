@@ -195,6 +195,8 @@ doppler secrets set DEEPSEEK_BASE_URL "https://api.deepseek.com/v1" --project op
 doppler secrets set DEEPSEEK_MODEL "deepseek-v4-flash" --project ops-intcloudsysops --config prd
 ```
 
+DeepSeek V4 no cambia el modelo local de Ollama. Para ejecución local, elegir un tag real de Ollama, ejecutar `ollama pull <tag>` en el worker y entonces configurar `OLLAMA_MODEL=<tag>`; si no hay tag elegido, mantener `llama_local` con el modelo actual y usar DeepSeek solo vía LLM Gateway.
+
 ## OpenClaw / Orchestrator
 
 Health:

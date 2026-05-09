@@ -52,7 +52,6 @@ docs/generated/sprint-status.auto.md ← burndown generado (status.yaml; no edit
 | Doc                                                                                    | Cuándo usarlo                                                              |
 | -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
 | [`ARCHITECTURE.md`](ARCHITECTURE.md)                                                   | Control plane vs data plane, Traefik, redes                                |
-| [`STRUCTURE-GUARDRAILS.md`](STRUCTURE-GUARDRAILS.md)                                   | Convenciones repo: API canónica, proxies `web`, checklists tenant          |
 | [`ARCHITECTURE-DISTRIBUTED.md`](ARCHITECTURE-DISTRIBUTED.md)                           | VPS control + workers remotos (Mac 2011), Redis Tailscale                  |
 | [`HYBRID-OPSLY-ADMIN.md`](HYBRID-OPSLY-ADMIN.md)                                       | **Centro de mando** (Mac `opsly-admin`): Cursor, MCP, Git, DragonB, SSH    |
 | [`runbooks/e2e-hybrid-write.md`](runbooks/e2e-hybrid-write.md)                         | E2E escritura API `/api/tools/execute`, deploy `app`, Trivy                |
@@ -190,6 +189,9 @@ docs/generated/sprint-status.auto.md ← burndown generado (status.yaml; no edit
 | Doc                                                                  | Cuándo usarlo                                                                     |
 | -------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
 | [`AUTOMATION-PLAN.md`](AUTOMATION-PLAN.md)                           | Loop Discord → GitHub → Cursor                                                    |
+| [`01-development/AGENT-PROMPT-QUEUE.md`](01-development/AGENT-PROMPT-QUEUE.md) | Cola git de prompts internos para agentes humanos/supervisados                    |
+| [`LOCAL-AGENT-EXECUTION.md`](LOCAL-AGENT-EXECUTION.md)               | `POST /api/local/prompt-submit`, cola `local-agents`, CLI y smoke local           |
+| [`runbooks/IDE-OCTOPUS-AGENTS.md`](runbooks/IDE-OCTOPUS-AGENTS.md)   | Consola web de agentes: terminal multi-sesión, MCP policy y rollout               |
 | [`N8N-SETUP.md`](N8N-SETUP.md)                                       | n8n Discord→GitHub; Doppler `N8N_WEBHOOK_SECRET_GH` (legado `N8N_WEBHOOK_SECRET`) |
 | [`N8N-IMPORT-GUIDE.md`](N8N-IMPORT-GUIDE.md)                         | Importar workflows n8n                                                            |
 | [`02-tools/N8N-MCP-INTEGRATION.md`](02-tools/N8N-MCP-INTEGRATION.md) | MCP **n8n-mcp** (Cursor + Docker opcional) junto a OpenClaw                       |

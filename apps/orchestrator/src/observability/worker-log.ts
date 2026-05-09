@@ -66,7 +66,7 @@ export function logWorkerLifecycle(
   phase: 'start' | 'complete' | 'fail',
   worker: WorkerName,
   job: Job,
-  extra?: { duration_ms?: number; error?: string }
+  extra?: { duration_ms?: number; error?: string } & Record<string, unknown>
 ): void {
   const ctx = extractJobContext(job);
   const status = phase === 'start' ? 'started' : phase === 'complete' ? 'completed' : 'failed';

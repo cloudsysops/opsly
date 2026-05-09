@@ -693,6 +693,235 @@ paths:
         '500':
           $ref: '#/components/responses/InternalError'
 
+  /api/admin/agents/terminal/start:
+    post:
+      summary: Inicia una sesión terminal IDE Octopus (Admin)
+      operationId: postAdminAgentTerminalStart
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AgentTerminalStartRequest'
+      responses:
+        '202':
+          description: Job terminal encolado
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /api/admin/agents/terminal/{agentId}/sessions:
+    get:
+      summary: Lista sesiones terminal por agente (Admin)
+      operationId: getAdminAgentTerminalSessions
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/AgentId'
+      responses:
+        '200':
+          description: Sesiones terminal del agente
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /api/admin/agents/terminal/{agentId}/sessions/{sessionId}/output:
+    get:
+      summary: Lee output incremental de una sesión terminal (Admin)
+      operationId: getAdminAgentTerminalOutput
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/AgentId'
+        - $ref: '#/components/parameters/SessionId'
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            minimum: 0
+      responses:
+        '200':
+          description: Chunk de output y próximo offset
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/admin/agents/terminal/{agentId}/sessions/{sessionId}/stop:
+    post:
+      summary: Detiene una sesión terminal (Admin)
+      operationId: postAdminAgentTerminalStop
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/AgentId'
+        - $ref: '#/components/parameters/SessionId'
+      responses:
+        '200':
+          description: Sesión detenida
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/admin/agents/mcp/tools:
+    get:
+      summary: Catálogo MCP permitido para IDE Octopus Admin
+      operationId: getAdminAgentMcpTools
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Tools MCP y política activa
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /api/admin/agents/mcp/execute:
+    post:
+      summary: Ejecuta tool MCP policy-gated desde Admin
+      operationId: postAdminAgentMcpExecute
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Resultado policy-gated de la tool
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /api/portal/tenant/{slug}/agents/terminal/start:
+    post:
+      summary: Inicia sesión terminal IDE Octopus para tenant (Zero-Trust)
+      operationId: postPortalTenantAgentTerminalStart
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AgentTerminalStartRequest'
+      responses:
+        '202':
+          description: Job terminal encolado para el tenant validado
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /api/portal/tenant/{slug}/agents/terminal/{agentId}/sessions:
+    get:
+      summary: Lista sesiones terminal tenant-aware
+      operationId: getPortalTenantAgentTerminalSessions
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+        - $ref: '#/components/parameters/AgentId'
+      responses:
+        '200':
+          description: Sesiones visibles del agente
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /api/portal/tenant/{slug}/agents/terminal/{agentId}/sessions/{sessionId}/output:
+    get:
+      summary: Lee output incremental tenant-aware
+      operationId: getPortalTenantAgentTerminalOutput
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+        - $ref: '#/components/parameters/AgentId'
+        - $ref: '#/components/parameters/SessionId'
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            minimum: 0
+      responses:
+        '200':
+          description: Chunk incremental y metadata de sesión
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/portal/tenant/{slug}/agents/terminal/{agentId}/sessions/{sessionId}/stop:
+    post:
+      summary: Detiene sesión terminal tenant-aware
+      operationId: postPortalTenantAgentTerminalStop
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+        - $ref: '#/components/parameters/AgentId'
+        - $ref: '#/components/parameters/SessionId'
+      responses:
+        '200':
+          description: Sesión detenida
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/portal/tenant/{slug}/agents/mcp/tools:
+    get:
+      summary: Catálogo MCP permitido para Portal tenant
+      operationId: getPortalTenantAgentMcpTools
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Tools MCP permitidas para portal
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /api/portal/tenant/{slug}/agents/mcp/execute:
+    post:
+      summary: Ejecuta tool MCP permitida por política del Portal
+      operationId: postPortalTenantAgentMcpExecute
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Resultado MCP policy-gated
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
   /api/portal/tenant/{slug}/n8n-marketplace/installs:
     get:
       summary: Lista activaciones marketplace n8n del tenant (Zero-Trust)
@@ -1771,6 +2000,20 @@ components:
       schema:
         type: string
       description: UUID o slug del tenant
+    AgentId:
+      name: agentId
+      in: path
+      required: true
+      schema:
+        type: string
+      description: Identificador lógico del agente
+    SessionId:
+      name: sessionId
+      in: path
+      required: true
+      schema:
+        type: string
+      description: Identificador de sesión terminal
 
   schemas:
     ErrorBody:
@@ -1833,6 +2076,31 @@ components:
               - backup.failed
               - usage.threshold_reached
           minItems: 1
+
+    AgentTerminalStartRequest:
+      type: object
+      required: [agent_id, commands]
+      properties:
+        agent_id:
+          type: string
+        tenant_slug:
+          type: string
+        session_id:
+          type: string
+        process_label:
+          type: string
+        objective:
+          type: string
+        commands:
+          type: array
+          items:
+            type: string
+          minItems: 1
+        timeout_seconds:
+          type: integer
+          minimum: 1
+        cwd:
+          type: string
 
   responses:
     BadRequest:

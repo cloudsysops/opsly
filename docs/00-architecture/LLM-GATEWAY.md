@@ -63,6 +63,7 @@ Salud en Redis se agrupa por **API**: `anthropic`, `llama_local`, `openrouter`, 
   - `quality` → Haiku, mini, OpenRouter, DeepSeek al final.
 - **HTTP:** `POST /v1/chat/completions` y `POST /v1/text` aceptan `routing_bias` y `provider_hint: "deepseek"` en el JSON.
 - **OpenClaw:** el rol **`skeptic`** fija `provider_hint=deepseek` en la decisión de control (`control-layer.ts`) para priorizar DeepSeek en planner y OAR vía gateway, sin hardcodear secretos.
+- **No confundir con Ollama:** DeepSeek V4 oficial entra por la API `deepseek_chat` y `DEEPSEEK_MODEL`; el proveedor local `llama_local` usa `OLLAMA_URL` + `OLLAMA_MODEL`. Solo cambiar `OLLAMA_MODEL` si existe un tag concreto en la library de Ollama que se haya elegido y descargado (`ollama pull <tag>`).
 
 ## Flujo
 

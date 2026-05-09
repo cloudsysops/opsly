@@ -1,12 +1,12 @@
 ---
 status: canon
 owner: product
-last_review: 2026-05-02
+last_review: 2026-05-09
 ---
 
 # Opsly — Visión y Objetivos
 
-> Última revisión: 2026-05-02  
+> Última revisión: 2026-05-09  
 > **Pivote estratégico (2026-04-28+):** Opsly Guardian Grid — Autonomous Defense Operating System
 
 **Planificación ejecutable por sprint:** [`ROADMAP.md`](ROADMAP.md) (semanas, milestones).  
@@ -211,7 +211,7 @@ Opsly es defensa ética:
 - La **inteligencia de routing** (qué modelo/proveedor intentar) se implementa en **LLM Gateway y orchestrator (TypeScript)**; no confundir Hermes con librerías externas de terceros ni con un runtime Python paralelo al monorepo.
 - **Comportamiento agéntico (roadmap):** el **Opsly Agentic Runtime (OAR)** — [`docs/design/OAR.md`](docs/design/OAR.md) — define loops explícitos (ReAct, Plan & Execute, Reflection) e interfaces `MemoryInterface` / `AgentActionPort` entre orchestrator y gateway; implementación por fases, no sustituye Hermes/BullMQ de un día para otro.
 - **Gobierno interno de agentes:** `opsly_billy` (orquesta/ejecuta) + `opsly_lili` (supervisa/políticas). Los agentes externos se integran por adapters, nunca como control plane paralelo.
-- **Desarrollo interno — cola de prompts y agentes locales:** tareas en `.cursor/prompts/` pueden enviarse al orchestrator (`POST /api/local/prompt-submit`) y ejecutarse vía cola BullMQ **`local-agents`** y servicios HTTP locales (Cursor, Claude, Copilot, OpenCode), mismo Redis que el control plane. Es **operación de plataforma/equipo**, no sustituye el portal tenant hasta Zero-Trust, `tenant_slug` obligatorio y billing por uso en ese canal. Ver [`docs/LOCAL-AGENT-EXECUTION.md`](../LOCAL-AGENT-EXECUTION.md) y [`AGENT-PROMPT-QUEUE.md`](AGENT-PROMPT-QUEUE.md).
+- **Desarrollo interno — cola de prompts y agentes locales:** tareas en `.cursor/prompts/` pueden enviarse al orchestrator (`POST /api/local/prompt-submit`) y ejecutarse vía cola BullMQ **`local-agents`** y servicios HTTP locales (Cursor, Claude, Copilot, OpenCode, Codex/OpenAI, Hermes, Decepticon), mismo Redis que el control plane. Es **operación de plataforma/equipo** y precursor de gobernanza de prompts; por ahora no es una superficie de portal tenant. Antes de exponerlo a clientes requiere Zero-Trust por `tenant_slug`, billing por uso y política de permisos. El switch manual `opsly_control` / `ide_fallback` permite que Opsly prepare/encole o que el operador ejecute en su IDE local. Ver [`docs/LOCAL-AGENT-EXECUTION.md`](../LOCAL-AGENT-EXECUTION.md) y [`AGENT-PROMPT-QUEUE.md`](AGENT-PROMPT-QUEUE.md).
 
 ## Lo que un agente NUNCA debe hacer
 

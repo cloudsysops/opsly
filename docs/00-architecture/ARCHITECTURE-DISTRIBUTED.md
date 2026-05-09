@@ -32,9 +32,14 @@ flowchart TB
 
 Misma base de código e imagen Docker; solo cambia el rol.
 
+## Decisión de escala
+
+Para aumentar throughput de jobs, el camino inmediato es **añadir workers BullMQ** (`worker-enabled`) contra el mismo Redis del control plane. El stack **Super Agent v2** sirve para shadow deploy y comparación de servicios v2, pero no sustituye por sí solo la capacidad de CPU/ejecución. **Hive** coordina subtareas dentro de orchestrator; no reemplaza el patrón de consumidores BullMQ.
+
 ## Requisitos de red
 
 - `REDIS_URL` en el worker remoto debe apuntar al Redis del VPS con **autenticación** (mismo `REDIS_PASSWORD` que en Doppler). Ejemplo orientativo: `redis://:PASSWORD@100.x.x.x:6379/0` (IP Tailscale del VPS, no la IP pública).
+- `LLM_GATEWAY_URL` u `ORCHESTRATOR_LLM_GATEWAY_URL` debe apuntar a una URL de LLM Gateway **alcanzable desde el worker**. `http://llm-gateway:3010` solo funciona dentro de la red Docker del VPS; un worker remoto normalmente necesita una URL Tailscale, túnel o endpoint interno publicado.
 - **No** exponer Redis a Internet abierto. Ver sección Redis en este doc y `docs/SECURITY_CHECKLIST.md`.
 
 ## Redis: opciones (orden de preferencia)
@@ -46,16 +51,20 @@ Comandos de comprobación (desde el Mac, con `redis-cli`):
 
 ```bash
 redis-cli -u "$REDIS_URL" ping
+curl -fsS "${LLM_GATEWAY_URL:-${ORCHESTRATOR_LLM_GATEWAY_URL:-}}/health"
+DRY_RUN=true ./scripts/run-orchestrator-worker.sh
 ```
+
+**Auditoría 2026-05-09 desde Mac admin:** `REDIS_URL` de Doppler `prd` está definido, pero resuelve a host Docker interno (`redis:6379`) y no sirve para workers fuera de esa red; configurar override de worker con Redis por Tailscale antes de activar nodos nuevos. `http://100.120.151.91:3010/health` responde desde la Mac, por lo que `LLM_GATEWAY_URL=http://100.120.151.91:3010` es candidato para `.env.worker`/Doppler worker si se publica esa ruta solo por Tailscale.
 
 ## Arranque rápido
 
 | Ubicación            | Variable                                                   | Comando                                                                       |
 | -------------------- | ---------------------------------------------------------- | ----------------------------------------------------------------------------- |
 | VPS `.env` / Doppler | `OPSLY_ORCHESTRATOR_MODE=queue-only`                       | `docker compose ... up -d orchestrator`                                       |
-| Mac `.env.local`     | `REDIS_URL=...` y `OPSLY_ORCHESTRATOR_MODE=worker-enabled` | `./scripts/run-orchestrator-worker.sh` o `./scripts/start-workers-mac2011.sh` |
+| Mac `.env.local`     | `REDIS_URL=...`, `LLM_GATEWAY_URL=...` y `OPSLY_ORCHESTRATOR_MODE=worker-enabled` | `./scripts/run-orchestrator-worker.sh` o `./scripts/start-worker.sh` |
 
-Scripts de ayuda: `scripts/setup-vps-control-plane.sh`, `scripts/start-workers-mac2011.sh`.
+Scripts de ayuda: `scripts/setup-vps-control-plane.sh`, `scripts/run-orchestrator-worker.sh`, `scripts/start-worker.sh`, `infra/docker-compose.workers.yml`.
 
 ## Defaults recomendados para el nodo worker
 

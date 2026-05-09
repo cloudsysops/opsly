@@ -328,28 +328,64 @@ export function parsePromptFrontmatter(
  * - opencode → local_opencode
  */
 export function jobTypeForLocalAgent(agent: string): string {
-  const mapping: Record<string, string> = {
+  const normalized = normalizeLocalAgentKind(agent);
+  const mapping: Record<LocalAgentKind, string> = {
     cursor: 'local_cursor',
     claude: 'local_claude',
     copilot: 'local_copilot',
     opencode: 'local_opencode',
+    codex: 'local_codex',
+    openai: 'local_openai',
+    hermes: 'local_hermes',
+    decepticon: 'local_decepticon',
   };
 
-  return mapping[agent] || `local_${agent}`;
+  return mapping[normalized];
 }
 
 /**
  * Normalize local agent kind, defaulting unknown values to cursor
  *
- * Known agents: cursor, claude, copilot, opencode
+ * Known agents: cursor, claude, copilot, opencode, codex, openai, hermes, decepticon
  * Unknown agents default to: cursor
  */
-export function normalizeLocalAgentKind(kind: string): string {
-  const known = ['cursor', 'claude', 'copilot', 'opencode'];
+export type LocalAgentKind =
+  | 'cursor'
+  | 'claude'
+  | 'copilot'
+  | 'opencode'
+  | 'codex'
+  | 'openai'
+  | 'hermes'
+  | 'decepticon';
 
-  if (known.includes(kind)) {
-    return kind;
-  }
+export const LOCAL_AGENT_KINDS: readonly LocalAgentKind[] = [
+  'cursor',
+  'claude',
+  'copilot',
+  'opencode',
+  'codex',
+  'openai',
+  'hermes',
+  'decepticon',
+];
+
+export function isLocalAgentKind(kind: string): kind is LocalAgentKind {
+  return (LOCAL_AGENT_KINDS as readonly string[]).includes(kind);
+}
+
+export function normalizeLocalAgentKind(kind: string): LocalAgentKind {
+  const normalized = kind
+    .trim()
+    .toLowerCase()
+    .replace(/^local[_-]/, '')
+    .replace(/[_-]agent$/, '');
+
+  if (isLocalAgentKind(normalized)) return normalized;
 
   return 'cursor';
+}
+
+export function agentForLocalJobType(jobType: string): LocalAgentKind {
+  return normalizeLocalAgentKind(jobType);
 }

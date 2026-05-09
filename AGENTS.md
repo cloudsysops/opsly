@@ -427,9 +427,13 @@ node scripts/load-skills.js show opsly-api
 
 **LegalVial (subcliente LocalRank) — producción:** runbooks [`docs/runbooks/LEGALVIAL-LOCALRANK-MODEL.md`](docs/runbooks/LEGALVIAL-LOCALRANK-MODEL.md) (matriz compartido/dedicado), [`LEGALVIAL-CONFIG-ZERO-TRUST.md`](docs/runbooks/LEGALVIAL-CONFIG-ZERO-TRUST.md), [`LEGALVIAL-GOLIVE-CHECKLIST.md`](docs/runbooks/LEGALVIAL-GOLIVE-CHECKLIST.md), [`LEGALVIAL-E2E-SOFTLAUNCH.md`](docs/runbooks/LEGALVIAL-E2E-SOFTLAUNCH.md); plantilla reutilizable [`SUBCLIENT-ONBOARDING-TEMPLATE.md`](docs/runbooks/SUBCLIENT-ONBOARDING-TEMPLATE.md); validación `config/tenants/*.json`: `./scripts/validate-subclient-config.sh`.
 
-**Escala orchestrator (2026-05-09):** foco inmediato = **más workers BullMQ `worker-enabled`** contra el mismo `REDIS_URL` del control plane; **Super Agent v2** queda como shadow deploy/ensayo de stack (no como solución principal de CPU) y **Hive** como coordinación multi-agente interna. Antes de sumar nodos, auditar desde cada worker `REDIS_URL` + `LLM_GATEWAY_URL`/`ORCHESTRATOR_LLM_GATEWAY_URL` con `./scripts/mac-admin-orchestrator-worker.sh check` o equivalente. DeepSeek V4 se usa vía LLM Gateway (`deepseek_chat`, `DEEPSEEK_*`) y no como tag Ollama salvo elección explícita de un modelo local real.
+**Fecha última actualización:** 2026-05-09 — **IDE Octopus para Agentes + build desbloqueado:**
+- ✅ Orchestrator: terminal multi-sesión por agente (`session_id`, `process_label`, `objective`, output incremental por `offset`).
+- ✅ API BFF Admin/Portal: `/api/admin/agents/*` y `/api/portal/tenant/[slug]/agents/*` con Zero-Trust en Portal y policy MCP.
+- ✅ UI Admin `/openclaw/ide` y Portal `/dashboard/[tenant]/agents/ide` con tabs de sesiones, output incremental, MCP panel y objective loop básico.
+- ✅ OpenAPI + runbook `docs/runbooks/IDE-OCTOPUS-AGENTS.md`; builds focales `orchestrator`, `api`, `admin`, `portal` en verde. API `next build` separa lint global vía `eslint.ignoreDuringBuilds` porque el lint completo incluye deuda preexistente no relacionada; `tsc --noEmit` sigue siendo gate.
 
-**Fecha última actualización:** 2026-05-06 — **Agency Division + API Factory + Autonomous Revenue:**
+**Fecha referencia anterior:** 2026-05-06 — **Agency Division + API Factory + Autonomous Revenue:**
 - ✅ Documento `docs/01-development/OPSLY-AGENCY-DIVISION.md` con 4 líneas de servicio
 - ✅ MCP tools: api_factory_create, api_factory_monitor, agent_management_stats, security_api_scan, security_api_audit (6 nuevas → 31 total)
 - ✅ Workers: `APIFactoryWorker` + `AutonomousRevenueWorker` en BullMQ

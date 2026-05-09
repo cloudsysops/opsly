@@ -574,4 +574,129 @@ export async function createDefenseAudit(
   });
 }
 
+export type AgentIdeTerminalSession = {
+  agent_id: string;
+  tenant_slug: string;
+  session_id: string;
+  process_label?: string;
+  objective?: string;
+  status: 'queued' | 'running' | 'completed' | 'failed' | 'stopped';
+  cwd: string;
+  current_command?: string;
+  started_at: string;
+  ended_at?: string;
+  exit_code?: number | null;
+  error?: string;
+  output: string;
+  pid?: number;
+  commands_executed: number;
+  retries: number;
+};
+
+export type AgentIdeStartTerminalBody = {
+  agent_id: string;
+  tenant_slug: string;
+  session_id?: string;
+  process_label?: string;
+  objective?: string;
+  commands: string[];
+  timeout_seconds?: number;
+  cwd?: string;
+};
+
+export type AgentIdeStartTerminalResponse = {
+  success: boolean;
+  job_id: string | null;
+  request_id: string;
+  agent_id: string;
+  session_id: string;
+};
+
+export type AgentIdeSessionsResponse = {
+  success: boolean;
+  agent_id: string;
+  sessions: AgentIdeTerminalSession[];
+};
+
+export type AgentIdeOutputResponse = {
+  success: boolean;
+  agent_id: string;
+  session_id: string;
+  session: AgentIdeTerminalSession | null;
+  output: string;
+  next_offset: number;
+  total_length: number;
+};
+
+export type AgentIdeMcpTool = {
+  id: string;
+  label: string;
+  mode: 'read-only' | 'action';
+  roles: ('admin' | 'portal')[];
+  description: string;
+};
+
+export type AgentIdeMcpCatalogResponse = {
+  tools: AgentIdeMcpTool[];
+  policy: {
+    surface: 'admin' | 'portal';
+    allowed_tool_ids: string[];
+    ssh_requires_allowlist: boolean;
+  };
+};
+
+export async function startAgentIdeTerminal(
+  body: AgentIdeStartTerminalBody
+): Promise<AgentIdeStartTerminalResponse> {
+  return request<AgentIdeStartTerminalResponse>('/api/admin/agents/terminal/start', {
+    method: 'POST',
+    body: JSON.stringify(body),
+  });
+}
+
+export async function listAgentIdeTerminalSessions(
+  agentId: string
+): Promise<AgentIdeSessionsResponse> {
+  return request<AgentIdeSessionsResponse>(
+    `/api/admin/agents/terminal/${encodeURIComponent(agentId)}/sessions`
+  );
+}
+
+export async function readAgentIdeTerminalOutput(
+  agentId: string,
+  sessionId: string,
+  offset: number
+): Promise<AgentIdeOutputResponse> {
+  return request<AgentIdeOutputResponse>(
+    `/api/admin/agents/terminal/${encodeURIComponent(agentId)}/sessions/${encodeURIComponent(
+      sessionId
+    )}/output?offset=${encodeURIComponent(String(offset))}`
+  );
+}
+
+export async function stopAgentIdeTerminalSession(
+  agentId: string,
+  sessionId: string
+): Promise<{ success: boolean; status: string }> {
+  return request(`/api/admin/agents/terminal/${encodeURIComponent(agentId)}/sessions/${encodeURIComponent(
+    sessionId
+  )}/stop`, {
+    method: 'POST',
+  });
+}
+
+export async function getAgentIdeMcpTools(): Promise<AgentIdeMcpCatalogResponse> {
+  return request<AgentIdeMcpCatalogResponse>('/api/admin/agents/mcp/tools');
+}
+
+export async function executeAgentIdeMcpTool(
+  toolId: string,
+  input: Record<string, unknown> = {}
+): Promise<{ ok: boolean; tool_id: string; result: unknown }> {
+  return request('/api/admin/agents/mcp/execute', {
+    method: 'POST',
+    body: JSON.stringify({ tool_id: toolId, input }),
+  });
+}
+
 export type { OllamaDemoJobStatus } from './types';

@@ -11,7 +11,7 @@ import {
   notifyProviderRateLimit,
 } from './providers/discord.js';
 import { buildLlmDirectCloudChain } from './cloud-chain.js';
-import { PROVIDERS, type ProviderChainEntry, type ProviderDefinition } from './providers.js';
+import { PROVIDERS, type ProviderChainEntry, type ProviderDefinition, type ProviderId } from './providers.js';
 import { estimateCost } from './router.js';
 import type { LLMMessage, LLMRequest, LLMResponse } from './types.js';
 
@@ -237,6 +237,33 @@ async function finalizeSuccess(
     cache_hit: false,
     latency_ms: Date.now() - start,
   };
+}
+
+/** Ejecuta un proveedor concreto, usado por rutas de ensemble/evaluación que no quieren fallback. */
+export async function completeWithProviderId(
+  providerId: ProviderId,
+  req: LLMRequest
+): Promise<LLMResponse> {
+  const start = Date.now();
+  const def = PROVIDERS[providerId];
+  const out = await runProvider(
+    {
+      id: providerId,
+      healthKey: def.healthKey,
+      def,
+    },
+    req
+  );
+  return finalizeSuccess(
+    req,
+    req.cache !== false && (req.temperature ?? 0) === 0,
+    start,
+    out.content,
+    out.tokens_in,
+    out.tokens_out,
+    out.model_used,
+    out.billing
+  );
 }
 
 /** Llamada directa al proveedor — sin batch ni descomposición (uso interno). */

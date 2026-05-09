@@ -14,6 +14,10 @@ export type JobType =
   | 'local_claude'
   | 'local_copilot'
   | 'local_opencode'
+  | 'local_codex'
+  | 'local_openai'
+  | 'local_hermes'
+  | 'local_decepticon'
   | 'defense_audit'
   | 'hive_objective'
   /** Payload: `{ intent_request: IntentRequest }` — ejecuta `processIntent` (p. ej. `oar_react`) en worker. */
