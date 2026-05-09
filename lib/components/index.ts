@@ -1,14 +1,11 @@
-// UI Components
-export * from './ui/Button';
-export * from './ui/Form';
-export * from './ui/Card';
-export * from './ui/Modal';
+// UI Components - Consolidated from portal, admin, and local-services
+export { Button, type ButtonProps } from './ui/button';
+export { Card, CardHeader, CardContent, CardFooter, CardTitle, CardDescription, type CardProps } from './ui/card';
+export { Input, type InputProps } from './ui/input';
+export { Skeleton, type SkeletonProps } from './ui/skeleton';
 
-// Hooks
-export * from './hooks/useAuth';
-export * from './hooks/useTheme';
-export * from './hooks/useAPI';
+// Hooks (stubs for future implementation)
+export type { AuthContextType, ThemeContextType, APIContextType } from './hooks/types';
 
 // Styles & Tokens
-export * from './styles/tokens';
-export * from './styles/theme';
+export { colorTokens, spacingTokens, typographyTokens } from './styles/tokens';

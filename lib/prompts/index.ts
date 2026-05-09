@@ -1,4 +1,10 @@
-export { loadPrompt, loadPromptByVersion, listPrompts } from './loader';
-export { PromptRegistry, initRegistry } from './registry';
-export { validatePromptSchema, validatePromptTemplate } from './schemas';
-export type { Prompt, PromptVersion, PromptMetadata } from './registry';
+export { loadPrompt, loadPromptByVersion, listPrompts } from './loader.js';
+export { PromptRegistry, initRegistry } from './registry.js';
+export { validatePromptSchema, validatePromptTemplate } from './schemas/index.js';
+export type { Prompt, PromptVersion, PromptMetadata } from './registry.js';
+
+// Direct prompt exports for convenience
+export {
+  CLOUDSYSOPS_SALES_AGENT_SYSTEM,
+  CLOUDSYSOPS_OPS_AGENT_SYSTEM,
+} from './agents.js';
