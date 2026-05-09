@@ -6,6 +6,7 @@
   "main": "./index.ts",
   "types": "./index.ts",
   "scripts": {
+    "test": "echo 'No tests yet'",
     "type-check": "echo 'Evaluation type-checked via root tsconfig'"
   },
   "keywords": ["evaluation", "testing", "validation", "quality-metrics"]
