@@ -1,0 +1,106 @@
+{
+  "name": "opsly-distributed-tracing",
+  "version": "1.0.0",
+  "description": "Implement OpenTelemetry distributed tracing across 18+ microservices. Enables request correlation, latency debugging, service dependency visualization, and cost attribution.",
+  "priority": "CRITICAL",
+  "category": "infrastructure/observability",
+  "triggers": [
+    "enable tracing",
+    "distributed tracing",
+    "opentelemetry",
+    "observability setup",
+    "trace requests",
+    "correlation ids"
+  ],
+  "author": "claude",
+  "maintainer": "infrastructure",
+  "license": "MIT",
+  "keywords": [
+    "observability",
+    "tracing",
+    "opentelemetry",
+    "performance",
+    "debugging",
+    "cost-attribution",
+    "request-correlation"
+  ],
+  "skills_related": [
+    "opsly-observability",
+    "opsly-telemetry",
+    "opsly-architect-senior"
+  ],
+  "entry_point": "scripts/setup-otel.ts",
+  "exports": {
+    "setupOtel": "scripts/setup-otel.ts",
+    "instrumentService": "scripts/instrument-service.ts",
+    "traceExporter": "scripts/trace-exporter.ts",
+    "validateTraces": "scripts/validate-traces.ts"
+  },
+  "dependencies": {
+    "@opentelemetry/api": "^1.7.0",
+    "@opentelemetry/sdk-node": "^0.45.0",
+    "@opentelemetry/auto-instrumentations-node": "^0.39.0",
+    "@opentelemetry/sdk-trace-node": "^0.45.0",
+    "@opentelemetry/exporter-trace-otlp-http": "^0.45.0",
+    "@opentelemetry/resources": "^0.45.0",
+    "@opentelemetry/semantic-conventions": "^0.45.0",
+    "@opentelemetry/instrumentation-http": "^0.45.0",
+    "@opentelemetry/instrumentation-pg": "^0.35.0",
+    "axios": "^1.6.0"
+  },
+  "env_required": [
+    "OTEL_EXPORTER_OTLP_ENDPOINT",
+    "OTEL_SERVICE_NAME"
+  ],
+  "env_optional": [
+    "JAEGER_ENDPOINT",
+    "DD_TRACE_ENABLED",
+    "NEWRELIC_ENABLED"
+  ],
+  "config_schema": {
+    "trace_sample_rate": 1.0,
+    "span_limit": 2048,
+    "trace_backend": "jaeger",
+    "batch_size": 512
+  },
+  "services_instrumented": [
+    "orchestrator",
+    "api",
+    "llm-gateway",
+    "local-services",
+    "context-builder",
+    "admin",
+    "portal",
+    "mcp"
+  ],
+  "capabilities": {
+    "request_correlation": true,
+    "latency_debugging": true,
+    "service_dependency_graph": true,
+    "cost_attribution": true,
+    "compliance_tracing": true,
+    "multi_tenant_isolation": true
+  },
+  "integrations": {
+    "trace_backends": [
+      "jaeger",
+      "grafana-tempo",
+      "datadog",
+      "newrelic"
+    ],
+    "observability_module": true,
+    "telemetry_module": true,
+    "evaluation_framework": true,
+    "admin_dashboard": "/traces"
+  },
+  "success_metrics": {
+    "trace_coverage": "95%+",
+    "trace_latency_p50_ms": "<500",
+    "tenant_isolation": "100% (0 leaks)",
+    "debugging_speed_reduction": "5min (from 30min)",
+    "cost_accuracy": "±2%"
+  },
+  "status": "stable",
+  "created_at": "2026-05-09",
+  "updated_at": "2026-05-09"
+}
