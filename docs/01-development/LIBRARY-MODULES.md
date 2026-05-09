@@ -1,3 +1,7 @@
+---
+title: "Library Modules Integration Guide"
+description: "Integration guide for all Opsly reusable library modules"
+---
 # Library Modules Integration Guide
 
 Enterprise-scale reusable library modules for Opsly. All 18+ apps use these modules to avoid duplication and maintain consistency.

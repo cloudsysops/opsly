@@ -1,3 +1,7 @@
+---
+title: "@intcloudsysops/evaluation"
+description: "Testing, validation, and quality metrics framework"
+---
 # @intcloudsysops/evaluation
 
 Testing, validation, and quality metrics framework for agent outputs. Provides automated QA gates, safety checks, and regression detection.

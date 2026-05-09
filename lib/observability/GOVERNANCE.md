@@ -1,3 +1,7 @@
+---
+title: "lib/observability Governance"
+description: "Module governance for observability layer"
+---
 # lib/observability Governance
 
 ## Ownership

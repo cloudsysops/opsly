@@ -1,3 +1,8 @@
+---
+title: "@intcloudsysops/prompts"
+description: "Versioned prompt registry for all agents"
+---
+
 # @intcloudsysops/prompts
 
 Versioned prompt registry for all agents. Centralized management of agent prompts with semantic versioning, validation, and audit trails.

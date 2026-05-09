@@ -1,3 +1,7 @@
+---
+title: "@intcloudsysops/components"
+description: "Shared React components and design system"
+---
 # @intcloudsysops/components
 
 Shared React components and design system for all Opsly UI applications (portal, admin, local-services).

@@ -1,3 +1,8 @@
+---
+title: "lib/prompts Governance"
+description: "Module governance for versioned prompt registry"
+---
+
 # lib/prompts Governance
 
 ## Ownership

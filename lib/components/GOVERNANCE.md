@@ -1,3 +1,7 @@
+---
+title: "lib/components Governance"
+description: "Module governance for shared components"
+---
 # lib/components Governance
 
 ## Ownership

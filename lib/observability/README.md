@@ -1,3 +1,7 @@
+---
+title: "@intcloudsysops/observability"
+description: "Unified logging, metrics, and tracing layer"
+---
 # @intcloudsysops/observability
 
 Unified logging, metrics, and tracing layer for all Opsly services. Provides consistent observability across orchestrator, API, gateway, and agents.
