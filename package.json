@@ -74,6 +74,7 @@
     "sync:all": "npm run docs:sync && node scripts/sync-all-orchestrator.js",
     "hermes:tick": "npm run hermes --workspace=@intcloudsysops/orchestrator -- tick",
     "hermes:status": "npm run hermes --workspace=@intcloudsysops/orchestrator -- status",
+    "hermes:test": "npm run test:hermes --workspace=@intcloudsysops/orchestrator",
     "docs:code-snapshots": "node scripts/generate-code-snapshots.mjs",
     "docs:to-notebooklm": "node scripts/docs-to-notebooklm.mjs",
     "notebooklm:sync": "npm run docs:code-snapshots && npm run docs:to-notebooklm",

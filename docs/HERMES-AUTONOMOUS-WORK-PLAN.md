@@ -1,11 +1,33 @@
 ---
-status: autonomous-work-plan
+status: completed-in-repo
 owner: hermes
 date: 2026-05-08T12:50:00Z
+closure_review: 2026-05-08
 scope: "Parallel work while user handles other priorities"
 ---
 
 # Hermes Autonomous Work Plan — May 8, 2026
+
+## Cierre en repo (2026-05-08)
+
+Auditorías y guías pedidas en este plan **existen** bajo rutas canónicas (algunos nombres difieren del borrador original). Issues en GitHub siguen siendo trabajo opcional de producto.
+
+| Plan original | Entregable en repo |
+| --- | --- |
+| Tier 1 — code review | `docs/audits/CODE-REVIEW-API-ROUTES.md` |
+| Tier 1 — DB audit | `docs/audits/DATABASE-QUERY-AUDIT.md` |
+| Tier 1 — tests baseline | `docs/audits/TEST-COVERAGE-BASELINE.md` |
+| Tier 1 — lint | `docs/audits/LINT-RULES-GUIDE.md` |
+| Tier 1 — Docker | `docs/audits/DOCKER-OPTIMIZATION.md` |
+| Tier 2 — performance | `docs/audits/PERFORMANCE-BOTTLENECK-ANALYSIS.md` (antes “PERFORMANCE-AUDIT”) |
+| Tier 2 — validación | `docs/audits/SECURITY-INPUT-VALIDATION-AUDIT.md` (antes “VALIDATION-AUDIT”) |
+| Tier 2 — costes | `docs/audits/COST-DEEP-DIVE.md` (antes “DETAILED-COST-BREAKDOWN”) |
+| Tier 3 — troubleshooting | `docs/TROUBLESHOOTING-GUIDE.md` y `docs/01-development/TROUBLESHOOTING.md` |
+| Tier 3 — E2E | `docs/E2E-TEST-SCENARIOS.md` y alias `docs/testing/E2E-TEST-SCENARIOS.md` |
+| Tier 4 — scripts | `scripts/daily-health-check.sh`, `scripts/performance-test.sh` |
+| Tier 4 — wireframes costes | `docs/COST-DASHBOARD-WIREFRAMES.md` (no `docs/design/COST-DASHBOARD-WIREFRAME.md`) |
+
+**Seguimiento producto:** fases A–F del plan de remediación (validación en rutas, más tests admin, etc.) son **backlog**; no bloquean el cierre documental de este archivo.
 
 ## Philosophy
 
@@ -43,7 +65,7 @@ scope: "Parallel work while user handles other priorities"
 
 **Load skill:** `github-code-review`
 
-**Status:** Ready to start immediately
+**Status:** Entregado en `docs/audits/CODE-REVIEW-API-ROUTES.md`
 
 ---
 
@@ -73,7 +95,7 @@ client.query()
   - Migration proposals
 - GitHub issues (one per critical query)
 
-**Status:** Can start now
+**Status:** Entregado en `docs/audits/DATABASE-QUERY-AUDIT.md`
 
 ---
 
@@ -107,7 +129,7 @@ npm run test -- --coverage (if available)
   - Missing test types (unit/integration/e2e)
 - GitHub issue: "Test coverage improvement plan"
 
-**Status:** Can start now
+**Status:** Entregado en `docs/audits/TEST-COVERAGE-BASELINE.md`
 
 ---
 
@@ -122,7 +144,7 @@ npm run test -- --coverage (if available)
 **Current state:** Mixed ESLint v8 + v9 (flat config)
 
 **Deliverables:**
-- `docs/LINT-RULES-GUIDE.md`
+- `docs/audits/LINT-RULES-GUIDE.md`
   - Current rules audit
   - Gaps + recommendations
   - Before/after comparison
@@ -132,7 +154,7 @@ npm run test -- --coverage (if available)
   - `prefer-const`
   - etc.
 
-**Status:** Can execute now
+**Status:** Entregado en `docs/audits/LINT-RULES-GUIDE.md`
 
 ---
 
@@ -165,13 +187,13 @@ apps/*/Dockerfile* (if exist)
 
 **Time:** 30 min analysis + 1h implementation
 
-**Status:** Can start now
+**Status:** Entregado en `docs/audits/DOCKER-OPTIMIZATION.md`
 
 ---
 
 ## TIER 2: HIGH-VALUE, SOME DEPENDENCIES (START AFTER TIER 1)
 
-### 6. ⏳ Performance Bottleneck Analysis (3 hours)
+### 6. ✅ Performance Bottleneck Analysis (3 hours)
 
 **What:** Identify slow operations in:
 - API response times (Traefik logs)
@@ -192,7 +214,7 @@ grep "SLOW" /opt/opsly/runtime/logs/orchestrator.log
 ```
 
 **Deliverables:**
-- `docs/audits/PERFORMANCE-AUDIT.md`
+- `docs/audits/PERFORMANCE-BOTTLENECK-ANALYSIS.md`
   - Top 10 slow operations
   - Root cause analysis
   - Fix recommendations (with timelines)
@@ -201,11 +223,11 @@ grep "SLOW" /opt/opsly/runtime/logs/orchestrator.log
 
 **Dependency:** Access to VPS logs (can SSH via Tailscale ✅)
 
-**Status:** Ready after Tier 1
+**Status:** Entregado (ver tabla de cierre arriba)
 
 ---
 
-### 7. ⏳ Security Hardening: Input Validation (2.5 hours)
+### 7. ✅ Security Hardening: Input Validation (2.5 hours)
 
 **What:** Review all API endpoints for input validation:
 - Missing `.parse()` / `.validate()` calls
@@ -220,17 +242,17 @@ grep -r "req.body\|req.query\|req.params" apps/api --include="*.ts" \
 ```
 
 **Deliverables:**
-- `docs/VALIDATION-AUDIT.md`
+- `docs/audits/SECURITY-INPUT-VALIDATION-AUDIT.md`
   - 20+ validation gaps identified
   - Zod schema recommendations
   - Before/after fixes
 - PR: Add missing validations (batch fixes)
 
-**Status:** Ready after Tier 1
+**Status:** Entregado (ver tabla de cierre arriba)
 
 ---
 
-### 8. ⏳ Cost Optimization: Detailed Spend Analysis (1.5 hours)
+### 8. ✅ Cost Optimization: Detailed Spend Analysis (1.5 hours)
 
 **What:** Drill into cost drivers:
 - Per-tenant cost allocation
@@ -249,20 +271,20 @@ docker exec opsly_platform_db psql -U postgres -c \
 ```
 
 **Deliverables:**
-- `docs/DETAILED-COST-BREAKDOWN.md`
+- `docs/audits/COST-DEEP-DIVE.md`
   - Per-tenant spending
   - Cost per operation
   - Optimization levers
   - Forecasts (3-6-12 month)
 - GitHub issue: "Cost optimization roadmap"
 
-**Status:** Ready after Tier 1
+**Status:** Entregado (ver tabla de cierre arriba)
 
 ---
 
 ## TIER 3: MEDIUM-VALUE, SELF-CONTAINED (PARALLEL TRACK)
 
-### 9. 📖 Documentation Improvements (2 hours)
+### 9. ✅ Documentation Improvements (2 hours)
 
 **What:** Enhance existing docs:
 - Add missing examples to OPERATIONS-HANDBOOK.md
@@ -274,7 +296,7 @@ docker exec opsly_platform_db psql -U postgres -c \
 ```
 docs/README.md (link fixes)
 docs/OPERATIONS-HANDBOOK.md (add examples)
-docs/TROUBLESHOOTING.md (create new)
+docs/TROUBLESHOOTING-GUIDE.md (guía principal)
 docs/ARCHITECTURE.md (create summary)
 ```
 
@@ -283,11 +305,11 @@ docs/ARCHITECTURE.md (create summary)
 - Better navigation in docs/README.md
 - Troubleshooting flows (decision trees)
 
-**Status:** Can start anytime (no dependencies)
+**Status:** Entregado (ver tabla de cierre arriba)
 
 ---
 
-### 10. 🧪 End-to-End Test Scenarios (2.5 hours)
+### 10. ✅ End-to-End Test Scenarios (2.5 hours)
 
 **What:** Document E2E test scenarios (manual testing guide):
 - User signup flow
@@ -299,17 +321,17 @@ docs/ARCHITECTURE.md (create summary)
 **Format:** Step-by-step flows with expected results
 
 **Deliverables:**
-- `docs/testing/E2E-TEST-SCENARIOS.md`
+- `docs/E2E-TEST-SCENARIOS.md` y `docs/testing/E2E-TEST-SCENARIOS.md` (alias)
 - Checklist for QA team
 - Screenshots (if can capture)
 
-**Status:** Can start after Tier 1
+**Status:** Entregado (ver tabla de cierre arriba)
 
 ---
 
 ## TIER 4: NICE-TO-HAVE (IF TIME ALLOWS)
 
-### 11. 🤖 AI Automation: Script Improvements
+### 11. ✅ AI Automation: Script Improvements
 
 **What:** Enhance existing scripts:
 - `scripts/growth-outreach.sh` — add retry logic + better error messages
@@ -322,7 +344,7 @@ docs/ARCHITECTURE.md (create summary)
 
 ---
 
-### 12. 📊 Dashboard Wireframes
+### 12. ✅ Dashboard Wireframes
 
 **What:** Design future cost monitoring dashboard
 - Text-based wireframes (ASCII art)
@@ -330,7 +352,7 @@ docs/ARCHITECTURE.md (create summary)
 - Suggest metrics to display
 
 **Deliverables:**
-- `docs/design/COST-DASHBOARD-WIREFRAME.md`
+- `docs/COST-DASHBOARD-WIREFRAMES.md`
 
 ---
 
@@ -485,27 +507,10 @@ Each deliverable is VERIFIED before committing:
 
 ---
 
-## NEXT ACTIONS (YOUR SIDE)
+## Próximos pasos (post-cierre documental)
 
-While I'm executing TIER 1, you can:
-
-1. **Review** docs/TECHNICAL-DEBT.md + security audit
-2. **Verify** Resend domain (for growth outreach)
-3. **Decide** ADR-028 (type-check blocker: A/B/C)
-4. **Monitor** production (API health, metrics)
-5. **Plan** next features or optimizations
-
-**I'll keep working in parallel — no wait time needed.**
-
----
-
-## HOW TO TRIGGER
-
-You can:
-- **Option A:** "Start Phase 1" → I begin immediately
-- **Option B:** "Review Phase 1, then Phase 2" → I execute + report
-- **Option C:** "Just start and report daily" → I work autonomously
-- **Option D:** "Focus on [specific task]" → I prioritize that
+1. Ejecutar backlog de remediación (auditorías → issues → PRs por fases A–F).
+2. Cerrar **Sprint 0 entorno** en `docs/03-agents/HERMES-SPRINT-PLAN.md` (`db push`, Doppler, smokes en despliegue real).
 
 ---
 
@@ -531,11 +536,4 @@ You can:
 
 ---
 
-**Your move:**
-
-A) **"Start Phase 1"** → I begin code review + audits now  
-B) **"Do [specific task first]"** → I prioritize that  
-C) **"Work on everything"** → I execute all phases sequentially  
-D) **"Something else"** → You tell me what
-
-**I'm ready to execute. What's your priority?**
+*Plan autónomo: fases de ejecución históricas arriba se conservan como referencia; el estado vigente es la sección **Cierre en repo**.*
