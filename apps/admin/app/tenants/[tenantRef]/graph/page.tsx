@@ -65,7 +65,7 @@ interface MetricsData {
 export default function GraphPage() {
   const params = useParams();
   const searchParams = useSearchParams();
-  const slug = params.slug as string;
+  const slug = (params.tenantRef ?? params.slug) as string;
 
   const [graph, setGraph] = useState<GraphData | null>(null);
   const [metrics, setMetrics] = useState<MetricsData | null>(null);

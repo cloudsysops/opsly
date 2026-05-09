@@ -2044,3 +2044,25 @@ Secrets:       🔒 Never exposed to agents (injected at runtime)
 
 ---
 
+## Cursor Cloud specific instructions
+
+### Services overview
+
+| Service | Workspace | Port | Dev command |
+|---------|-----------|------|-------------|
+| API | `@intcloudsysops/api` | 3000 | `npm run dev --workspace=@intcloudsysops/api` |
+| Admin | `@intcloudsysops/admin` | 3001 | `npm run dev --workspace=@intcloudsysops/admin -- -p 3001` |
+| Portal | `@intcloudsysops/portal` | 3002 | `npm run dev --workspace=@intcloudsysops/portal -- -p 3002` |
+
+### Key commands
+
+See `package.json` scripts. Key ones: `npm run type-check`, `npm run test`, `npm run validate-openapi`, `npm run validate-structure`.
+
+### Non-obvious caveats
+
+- **Redis required**: The API needs Redis at `redis://127.0.0.1:6379`. Install with `sudo apt-get install -y redis-server` and start with `redis-server --port 6379 --daemonize yes`. Pass `REDIS_URL=redis://127.0.0.1:6379` when starting the API.
+- **Build before test**: `@intcloudsysops/llm-gateway` and `@intcloudsysops/ml` must be built (`npm run build --workspace=...`) before running API tests, because their `package.json` exports point to `dist/` outputs.
+- **Supabase is cloud-hosted**: The API health endpoint will show `"supabase": "error"` without Supabase credentials — this is expected in Cloud Agent environments. Core functionality (health, Redis, type-check, tests) works without it.
+- **Dynamic route conflicts**: `apps/api/app/api/tenants/` and `apps/admin/app/tenants/` had conflicting dynamic segment names (`[slug]` vs `[ref]`/`[tenantRef]`). These were consolidated to use the existing `[ref]`/`[tenantRef]` convention.
+- **Admin/Portal redirect**: Both return HTTP 307 on `/` (redirect to `/login`) which is healthy behavior when Supabase Auth is not configured.
+
