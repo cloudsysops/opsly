@@ -152,8 +152,8 @@ function demoTenant(slug: string, plan: Tenant['plan'], status: Tenant['status']
     stripe_subscription_id: null,
     doppler_project: null,
     services: {
-      n8n_url: `https://n8n-${slug}.ops.smiletripcare.com`,
-      uptime_url: `https://uptime-${slug}.ops.smiletripcare.com`,
+      n8n_url: `https://n8n-${slug}.op-sly.com`,
+      uptime_url: `https://uptime-${slug}.op-sly.com`,
     },
     is_demo: true,
     demo_expires_at: null,

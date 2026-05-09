@@ -431,6 +431,12 @@ export type Database = {
           timestamp: string;
         }>;
       };
+      /** Syra scheduled posts — alinear filas con migración SQL cuando exista en remoto */
+      scheduled_posts: {
+        Row: Record<string, unknown>;
+        Insert: Record<string, unknown>;
+        Update: Record<string, unknown>;
+      };
       tenant_insights: {
         Row: {
           id: string;

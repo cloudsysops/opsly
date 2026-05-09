@@ -8,13 +8,13 @@ LAYER="${1:-qa}"
 
 case "$LAYER" in
   sandbox)
-    echo "https://api-sandbox.ops.smiletripcare.com"
+    echo "https://api-sandbox.op-sly.com"
     ;;
   qa)
-    echo "https://api-qa.ops.smiletripcare.com"
+    echo "https://api-qa.op-sly.com"
     ;;
   prod|production)
-    echo "https://api.ops.smiletripcare.com"
+    echo "https://api.op-sly.com"
     ;;
   local|development)
     echo "http://localhost:3000"

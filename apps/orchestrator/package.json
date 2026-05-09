@@ -7,6 +7,7 @@
     "build": "tsc",
     "start": "node dist/index.js",
     "test": "vitest run",
+    "test:hermes": "vitest run __tests__/hermes.test.ts src/hermes/__tests__/context-enricher.test.ts",
     "test:watch": "vitest watch",
     "test:coverage": "vitest run --coverage",
     "test:tools": "vitest run --passWithNoTests src/agents/tools",

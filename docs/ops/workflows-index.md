@@ -41,6 +41,22 @@ Cada workflow bajo `.github/workflows/*.yml` incluye una línea de referencia al
 
 `# Opsly — workflow catalog: docs/ops/workflows-index.md`
 
+## Workflow lint (actionlint)
+
+El job **Workflow Lint** en [`.github/workflows/ci.yml`](../../.github/workflows/ci.yml) usa `raven-actions/actionlint@v2` (mismo motor que [`rhysd/actionlint`](https://github.com/rhysd/actionlint)). **YAML válido ≠ actionlint verde:** el linter revisa expresiones, acciones obsoletas, rutas de inyección en scripts, etc.
+
+**Comprobar en local** (sin instalar binario):
+
+```bash
+docker run --rm -v "$(pwd)":/repo -w /repo rhysd/actionlint:latest -color
+```
+
+**Errores frecuentes corregidos en el repo (referencia 2026-05-09):**
+- Bloques `run: |` con strings multilínea (p. ej. `--body` de `gh pr create`) o heredocs: **toda línea** debe mantener la indentación del escalar YAML; si una línea queda al margen, el parser interpreta texto suelto y falla.
+- `github.head_ref` / entradas no confiables: pasar por `env:` y expandir solo el nombre de variable en el script ([buenas prácticas GitHub](https://docs.github.com/en/actions/reference/security/secure-use)).
+- `actions/upload-artifact@v3`: sustituir por **`@v4`** (v3 considerada demasiado antigua en runners actuales).
+- `if: false` literal: actionlint marca condición constante; para jobs legacy desactivados usar condición que no sea literalmente `false` (p. ej. comparar `github.ref` con una rama que no exista) o mover el fragmento a documentación.
+
 ## Relación con otros maestros
 
 - **Maestro #1** — actionlint + fixes en ramas dedicadas.

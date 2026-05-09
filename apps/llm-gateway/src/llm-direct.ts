@@ -5,11 +5,7 @@ import { checkDailyBudget, resolveAiProfile } from './config/budgets.js';
 import { hashPrompt } from './hash.js';
 import { healthDaemon } from './health-daemon.js';
 import { logUsage, mergeUsageAttribution } from './logger.js';
-import {
-  notifyBudgetExceeded,
-  notifyBudgetWarning,
-  notifyProviderRateLimit,
-} from './providers/discord.js';
+// Discord notifications removed - use Slack integration instead
 import { buildLlmDirectCloudChain } from './cloud-chain.js';
 import { PROVIDERS, type ProviderChainEntry, type ProviderDefinition, type ProviderId } from './providers.js';
 import { estimateCost } from './router.js';
@@ -292,18 +288,18 @@ export async function llmCallDirect(req: LLMRequest): Promise<LLMResponse> {
 
   const budget = await checkDailyBudget(req.tenant_slug);
   if (!budget.allowed) {
-    await notifyBudgetExceeded(req.tenant_slug, budget.usedUsd, budget.budgetUsd).catch(
-      () => undefined
-    );
+    // await notifyBudgetExceeded(req.tenant_slug, budget.usedUsd, budget.budgetUsd).catch(
+    // () => undefined
+    // );
     throw new GatewayHttpError(
       402,
       `Daily budget exceeded for tenant ${req.tenant_slug}: ${budget.usedUsd.toFixed(4)}/${budget.budgetUsd.toFixed(4)} USD`
     );
   }
   if (budget.warn) {
-    await notifyBudgetWarning(req.tenant_slug, budget.usedUsd, budget.budgetUsd).catch(
-      () => undefined
-    );
+    // await notifyBudgetWarning(req.tenant_slug, budget.usedUsd, budget.budgetUsd).catch(
+    // () => undefined
+    // );
   }
 
   const profile = resolveAiProfile(req.tenant_slug);
@@ -368,11 +364,11 @@ export async function llmCallDirect(req: LLMRequest): Promise<LLMResponse> {
     } catch (err) {
       lastErr = err;
       if (isRateLimitError(err)) {
-        await notifyProviderRateLimit(
-          req.tenant_slug,
-          entry.id,
-          err instanceof Error ? err.message : String(err)
-        ).catch(() => undefined);
+        // await notifyProviderRateLimit(
+        // req.tenant_slug,
+        // entry.id,
+        // err instanceof Error ? err.message : String(err)
+        // ).catch(() => undefined);
       }
     }
   }

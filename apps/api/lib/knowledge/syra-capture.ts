@@ -1,49 +1,108 @@
 /**
- * Optional knowledge capture for Syra / social flows.
- * No-op unless `SYRA_KNOWLEDGE_CAPTURE_URL` is configured (POST JSON).
+ * Syra Knowledge Auto-Capture Hook
+ *
+ * Automatically captures Syra's publishing results to Obsidian vault
+ * after each successful post.
  */
 
-type CapturePayload = Record<string, unknown>;
+import { knowledgeService } from './capture-service';
 
-async function postCapture(body: CapturePayload): Promise<void> {
-  const url = process.env.SYRA_KNOWLEDGE_CAPTURE_URL?.trim();
-  if (!url) {
-    return;
-  }
-
-  const res = await fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body),
-  });
-
-  if (!res.ok) {
-    throw new Error(`knowledge capture HTTP ${res.status}`);
-  }
+export interface PublishMetrics extends Record<string, unknown> {
+  platforms_published: string[];
+  total_posts: number;
+  success_rate: number;
+  estimated_reach?: number;
+  cost_usd?: number;
 }
 
+/**
+ * Called after Syra publishes to platforms.
+ * Captures the publishing event + metrics to knowledge vault.
+ */
 export async function capturePublishEvent(
-  eventType: string,
+  event_type: string,
   platforms: string[],
-  payload: CapturePayload
+  metrics: PublishMetrics
 ): Promise<void> {
-  await postCapture({
-    kind: 'event',
-    event_type: eventType,
-    platforms,
-    payload,
-  });
+  try {
+    const insight = `
+Published to: ${platforms.join(', ')}
+
+**Metrics:**
+- Posts published: ${metrics.total_posts}
+- Success rate: ${(metrics.success_rate * 100).toFixed(1)}%
+${metrics.estimated_reach ? `- Estimated reach: ${metrics.estimated_reach.toLocaleString()}` : ''}
+${metrics.cost_usd ? `- Cost: $${metrics.cost_usd.toFixed(4)}` : ''}
+
+**Event:** \`${event_type}\`
+**Platforms:** ${platforms.join(', ')}
+`;
+
+    await knowledgeService.captureCompletion(
+      'syra',
+      `Published to ${platforms.join(', ')}`,
+      insight,
+      metrics
+    );
+
+    console.log('✅ Publishing event captured to knowledge vault');
+  } catch (error) {
+    // Graceful fallback: don't block on knowledge capture
+    console.warn('Knowledge capture warning (non-critical):', error);
+  }
 }
 
+/**
+ * Called when Syra encounters an issue during publishing.
+ */
 export async function capturePublishError(
   platform: string,
-  error: string,
-  context: string
+  error_message: string,
+  details: string
 ): Promise<void> {
-  await postCapture({
-    kind: 'error',
-    platform,
-    error,
-    context,
-  });
+  try {
+    const fullDetails = `
+**Platform:** ${platform}
+**Error:** ${error_message}
+
+${details}
+`;
+
+    await knowledgeService.captureIssue('syra', `Publishing failed on ${platform}`, fullDetails);
+
+    console.log('⚠️ Publishing error captured for investigation');
+  } catch (error) {
+    console.warn('Knowledge capture warning (non-critical):', error);
+  }
+}
+
+/**
+ * Capture Syra's engagement metrics periodically.
+ */
+export async function captureEngagementMetrics(metrics: Record<string, unknown>): Promise<void> {
+  try {
+    await knowledgeService.captureMetrics('syra', 'Engagement metrics collected', metrics);
+
+    console.log('📊 Engagement metrics captured');
+  } catch (error) {
+    console.warn('Knowledge capture warning (non-critical):', error);
+  }
+}
+
+/**
+ * Capture when Syra reaches a milestone.
+ */
+export async function captureMilestone(milestone: string, details: string): Promise<void> {
+  try {
+    await knowledgeService.capture({
+      agent: 'syra',
+      context: `Milestone: ${milestone}`,
+      insight: details,
+      tags: ['syra', 'milestone'],
+    });
+
+    console.log('🎉 Milestone captured');
+  } catch (error) {
+    console.warn('Knowledge capture warning (non-critical):', error);
+  }
 }

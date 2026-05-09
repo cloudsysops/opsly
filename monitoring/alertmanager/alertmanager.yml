@@ -1,0 +1,52 @@
+global:
+  resolve_timeout: 5m
+  discord_api_url: "{{ env 'DISCORD_WEBHOOK_URL' }}"
+
+route:
+  receiver: discord-critical
+  group_by: ["alertname", "job"]
+  group_wait: 10s
+  group_interval: 10s
+  repeat_interval: 4h
+
+  routes:
+    # Critical alerts
+    - match:
+        severity: critical
+      receiver: discord-critical
+      continue: true
+
+    # Warning alerts
+    - match:
+        severity: warning
+      receiver: discord-warning
+      continue: true
+
+receivers:
+  - name: discord-critical
+    discord_configs:
+      - webhook_url: "{{ env 'DISCORD_WEBHOOK_URL' }}"
+        title: "🚨 CRITICAL ALERT"
+        color: 15158332  # Red
+        message: |
+          **{{ .GroupLabels.alertname }}**
+          {{ range .Alerts }}
+            Severity: {{ .Labels.severity }}
+            Service: {{ .Labels.job }}
+            Description: {{ .Annotations.description }}
+          {{ end }}
+
+  - name: discord-warning
+    discord_configs:
+      - webhook_url: "{{ env 'DISCORD_WEBHOOK_URL' }}"
+        title: "⚠️ WARNING"
+        color: 16776960  # Yellow
+        message: |
+          **{{ .GroupLabels.alertname }}**
+          {{ range .Alerts }}
+            Service: {{ .Labels.job }}
+            Description: {{ .Annotations.description }}
+          {{ end }}
+
+  - name: "null"
+    webhook_configs: []

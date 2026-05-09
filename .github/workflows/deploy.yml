@@ -511,11 +511,10 @@ jobs:
               '{embeds:[{title:"❌ Staging deploy fallido",color:15158332,fields:[{name:"Run",value:$url}]}]}')"
 
   # Git + npm + Supabase + PM2 en el VPS (legacy). Desactivado: el despliegue oficial es Docker (jobs deploy / deploy-staging).
+  # Para reactivar: sustituir la condición por una rama/entorno real y enlazar `needs` con el job previo.
   deploy-pm2-vps:
     name: Deploy Node/PM2 on VPS (SSH) [legacy desactivado]
-    # DEPRECATED: This job is disabled to avoid npm/supabase/pm2 in VPS running parallel to Docker (deploy/deploy-staging).
-    # To reactivate: remove this condition, restore needs, and add back conditional logic.
-    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/never-deploy-pm2'
+    if: github.ref == 'refs/heads/legacy-pm2-vps-disabled'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

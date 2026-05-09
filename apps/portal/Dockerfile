@@ -11,6 +11,7 @@ FROM node:20-alpine AS builder
 WORKDIR /repo
 COPY --from=deps /repo/node_modules ./node_modules
 COPY apps/portal ./apps/portal
+COPY config/n8n-workflows/catalog.json ./config/n8n-workflows/catalog.json
 WORKDIR /repo/apps/portal
 ENV NEXT_TELEMETRY_DISABLED=1
 ARG NEXT_PUBLIC_SUPABASE_URL

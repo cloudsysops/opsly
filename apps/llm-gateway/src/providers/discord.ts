@@ -1,15 +1,15 @@
-import { notifyDiscord } from '../discord-notify.js';
+/**
+ * Discord notifications - deprecated
+ * Use Slack integration instead
+ */
 
 export async function notifyBudgetExceeded(
   tenantSlug: string,
   usedUsd: number,
   budgetUsd: number
 ): Promise<void> {
-  await notifyDiscord(
-    'LLM budget agotado (402)',
-    `Tenant \`${tenantSlug}\` superó budget diario: usd_used=${usedUsd.toFixed(4)} usd_budget=${budgetUsd.toFixed(4)}.`,
-    'error'
-  );
+  // Slack integration handles this now
+  console.log(`Budget exceeded: ${tenantSlug} ($${usedUsd} / $${budgetUsd})`);
 }
 
 export async function notifyBudgetWarning(
@@ -17,21 +17,14 @@ export async function notifyBudgetWarning(
   usedUsd: number,
   budgetUsd: number
 ): Promise<void> {
-  await notifyDiscord(
-    'LLM budget warning (80%)',
-    `Tenant \`${tenantSlug}\` está cerca del tope diario: usd_used=${usedUsd.toFixed(4)} usd_budget=${budgetUsd.toFixed(4)}.`,
-    'warning'
-  );
+  // Slack integration handles this now
+  console.log(`Budget warning: ${tenantSlug} ($${usedUsd} / $${budgetUsd})`);
 }
 
 export async function notifyProviderRateLimit(
-  tenantSlug: string,
   provider: string,
-  detail: string
+  retryAfterSeconds: number
 ): Promise<void> {
-  await notifyDiscord(
-    'LLM provider rate limit (429)',
-    `Tenant \`${tenantSlug}\` recibió 429 en provider \`${provider}\`: ${detail.slice(0, 400)}.`,
-    'warning'
-  );
+  // Slack integration handles this now
+  console.log(`Rate limit: ${provider} (retry in ${retryAfterSeconds}s)`);
 }

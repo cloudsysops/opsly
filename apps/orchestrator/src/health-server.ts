@@ -1157,7 +1157,7 @@ export function startOrchestratorHealthServer(): Server {
   setLocalControlMode(parseControlMode(process.env.OPSLY_LOCAL_CONTROL_MODE));
   const port = parsePort();
   const server = createServer(async (req, res) => {
-    const url = req.url ?? '/';
+const url = req.url ?? '/';
     const pathOnly = url.split('?')[0] ?? '/';
     const query = url.includes('?') ? url.slice(url.indexOf('?')) : '';
 

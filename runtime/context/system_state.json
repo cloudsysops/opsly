@@ -36,12 +36,8 @@
   },
   "dns": {
     "base": "op-sly.com",
-    "api_subdomain": "api.op-sly.com",
-    "portal": "op-sly.com (Vercel)",
-    "admin": "admin.op-sly.com (Vercel)",
     "ip": "157.245.223.7",
-    "status": "ok",
-    "architecture": "hybrid-vercel-vps"
+    "status": "ok"
   },
   "tenants": [
     {

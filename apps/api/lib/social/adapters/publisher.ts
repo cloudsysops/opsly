@@ -1,80 +1,135 @@
-/**
- * Multi-platform social publish adapter.
- * When `SYRA_SOCIAL_PUBLISH_WEBHOOK_URL` is set, POSTs JSON to that webhook per platform.
- * Otherwise returns a stub success (no outbound call) so local/CI type-check and dry runs stay safe.
- */
+// Multi-platform publisher orchestrator
 
-export type ContentPayload = Record<string, unknown>;
+import { TwitterAdapter } from './twitter-adapter';
+import { LinkedInAdapter } from './linkedin-adapter';
+import { DiscordAdapter } from './discord-adapter';
+import { SlackAdapter } from './slack-adapter';
+
+export interface ContentPayload {
+  twitter?: {
+    threads: string[];
+    hashtags: string[];
+  };
+  linkedin?: {
+    title: string;
+    body: string;
+    tags: string[];
+  };
+  discord?: {
+    content: string;
+    embeds: Array<{
+      title: string;
+      description: string;
+      color: number;
+    }>;
+  };
+  slack?: {
+    text: string;
+    blocks: Array<{
+      type: string;
+      text?: {
+        type: string;
+        text: string;
+      };
+    }>;
+  };
+}
 
 export interface PublishResult {
   platform: string;
   success: boolean;
+  post_id?: string;
   url?: string;
   error?: string;
 }
 
-function previewForPlatform(content: ContentPayload, platform: string): string {
-  const slice = content[platform];
-  if (slice && typeof slice === 'object' && slice !== null) {
-    const o = slice as Record<string, unknown>;
-    if (typeof o.body === 'string') {
-      return o.body.slice(0, 280);
-    }
-    if (Array.isArray(o.threads)) {
-      const first = o.threads[0];
-      return typeof first === 'string' ? first.slice(0, 280) : '';
-    }
-    if (typeof o.text === 'string') {
-      return o.text.slice(0, 280);
-    }
-    if (typeof o.content === 'string') {
-      return o.content.slice(0, 280);
-    }
+export class MultiPlatformPublisher {
+  private twitter: TwitterAdapter;
+  private linkedin: LinkedInAdapter;
+  private discord: DiscordAdapter;
+  private slack: SlackAdapter;
+
+  constructor() {
+    this.twitter = new TwitterAdapter();
+    this.linkedin = new LinkedInAdapter();
+    this.discord = new DiscordAdapter();
+    this.slack = new SlackAdapter();
   }
-  return '';
-}
 
-async function publishToPlatform(platform: string, content: ContentPayload): Promise<PublishResult> {
-  const webhook = process.env.SYRA_SOCIAL_PUBLISH_WEBHOOK_URL?.trim();
+  async publishToAll(content: ContentPayload, platforms: string[]): Promise<PublishResult[]> {
+    const results: PublishResult[] = [];
 
-  if (webhook) {
+    for (const platform of platforms) {
+      const result = await this.publishToPlatform(platform, content);
+      results.push(result);
+    }
+
+    return results;
+  }
+
+  private async publishToPlatform(
+    platform: string,
+    content: ContentPayload
+  ): Promise<PublishResult> {
     try {
-      const res = await fetch(webhook, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          platform,
-          fragment: content[platform] ?? null,
-          preview: previewForPlatform(content, platform),
-        }),
-      });
+      switch (platform) {
+        case 'twitter':
+          if (content.twitter) {
+            const posts = await this.twitter.publishThreads(content.twitter);
+            return {
+              platform: 'twitter',
+              success: posts.length > 0,
+              post_id: posts[0]?.id,
+              url: `https://twitter.com/opsly/status/${posts[0]?.id}`,
+            };
+          }
+          return { platform: 'twitter', success: false, error: 'No Twitter content' };
 
-      if (!res.ok) {
-        return { platform, success: false, error: `publish webhook HTTP ${res.status}` };
+        case 'linkedin':
+          if (content.linkedin) {
+            const post = await this.linkedin.publishPost(content.linkedin);
+            return {
+              platform: 'linkedin',
+              success: post !== null,
+              post_id: post?.id,
+              url: post?.url,
+            };
+          }
+          return { platform: 'linkedin', success: false, error: 'No LinkedIn content' };
+
+        case 'discord':
+          if (content.discord) {
+            const message = await this.discord.publishMessage(content.discord);
+            return {
+              platform: 'discord',
+              success: message !== null,
+              post_id: message?.id,
+            };
+          }
+          return { platform: 'discord', success: false, error: 'No Discord content' };
+
+        case 'slack':
+          if (content.slack) {
+            const message = await this.slack.publishMessage(content.slack);
+            return {
+              platform: 'slack',
+              success: message !== null,
+              post_id: message?.ts,
+            };
+          }
+          return { platform: 'slack', success: false, error: 'No Slack content' };
+
+        default:
+          return { platform, success: false, error: 'Unknown platform' };
       }
-
-      const data = (await res.json()) as { url?: string };
+    } catch (error) {
       return {
         platform,
-        success: true,
-        url: typeof data.url === 'string' ? data.url : undefined,
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error',
       };
-    } catch (err) {
-      const message = err instanceof Error ? err.message : String(err);
-      return { platform, success: false, error: message };
     }
   }
-
-  const base = process.env.SYRA_STUB_PUBLISH_BASE_URL?.replace(/\/$/, '');
-  return {
-    platform,
-    success: true,
-    ...(base ? { url: `${base}/${encodeURIComponent(platform)}` } : {}),
-  };
 }
 
-export const multiPlatformPublisher = {
-  async publishToAll(content: ContentPayload, platforms: string[]): Promise<PublishResult[]> {
-    return Promise.all(platforms.map((p) => publishToPlatform(p, content)));
-  },
-};
+export const multiPlatformPublisher = new MultiPlatformPublisher();

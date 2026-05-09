@@ -28,10 +28,8 @@ jobs:
       - name: Check for hardcoded credentials in prompts
         run: |
           echo "Scanning for hardcoded secrets in autonomous prompts..."
-          # Look for actual hardcoded values, not just mentions of tokens/secrets
-          ! grep -rE "(password|secret|token|key|api_key)=[\'\"]?[a-zA-Z0-9]+" .cursor/prompts/ 2>/dev/null || exit 1
-          ! grep -r "BEGIN RSA PRIVATE KEY\|BEGIN OPENSSH PRIVATE KEY" .cursor/prompts/ 2>/dev/null || exit 1
-          echo "✓ No hardcoded credentials detected"
+          ! grep -r -i "password\|secret\|token\|key=" .cursor/prompts/ || exit 1
+          ! grep -r "BEGIN RSA PRIVATE KEY\|BEGIN OPENSSH PRIVATE KEY" .cursor/prompts/ || exit 1
 
       - name: Validate autonomy manifest files
         run: |
@@ -44,10 +42,8 @@ jobs:
 
       - name: Check for dangerous git operations in prompts
         run: |
-          echo "Checking for unsafe git operations in active prompts..."
-          # Only fail if there's actual code/commands, not mentions in documentation
-          ! grep -r "^\s*git reset --hard\|^\s*git push --force\|^\s*git clean -fd" .cursor/prompts/*.md 2>/dev/null || exit 1
-          echo "✓ No dangerous git operations detected"
+          echo "Checking for unsafe git operations..."
+          ! grep -r "git reset --hard\|git push --force\|git clean -fd" .cursor/prompts/ || exit 1
 
       - name: Verify Task Orchestrator config
         run: |
@@ -81,12 +77,13 @@ jobs:
 
       - name: Verify branch naming convention
         env:
-          BRANCH_NAME: ${{ github.head_ref }}
+          HEAD_REF: ${{ github.head_ref }}
         run: |
-          if [[ "${BRANCH_NAME}" =~ ^(claude|cursor|automation)/ ]]; then
-            echo "✓ Autonomous branch pattern: ${BRANCH_NAME}"
+          BRANCH="${HEAD_REF}"
+          if [[ $BRANCH =~ ^(claude|cursor|automation)/ ]]; then
+            echo "✓ Autonomous branch pattern: $BRANCH"
           else
-            echo "⚠ Non-standard autonomous branch: ${BRANCH_NAME}"
+            echo "⚠ Non-standard autonomous branch: $BRANCH"
           fi
 
       - name: Check for destructive commits

@@ -1,0 +1,90 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ma/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Audit logs for all MCP operations
+model AuditLog {
+  id              String    @id @default(cuid())
+  timestamp       DateTime  @default(now())
+  agent_id        String
+  tool_name       String
+  tool_tier       String    // READ, WRITE, SHELL
+  operation_type  String    // READ, WRITE, SHELL_BLOCKED, ERROR, UNAUTHORIZED_TOOL
+  status          String    // SUCCESS, DENIED, ERROR, PENDING
+  params          Json?
+  result          Json?
+  error_message   String?
+  approver        String?   // User who approved (if WRITE)
+  reason          String?   // Reason for denial (if DENIED)
+  context         String?   // Additional context
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  @@index([agent_id])
+  @@index([timestamp])
+  @@index([status])
+  @@index([operation_type])
+  
+  @@map("audit_logs")
+}
+
+// Agent configurations
+model Agent {
+  id              String    @id @default(cuid())
+  agent_id        String    @unique
+  name            String
+  role            String    // architect, developer, qa, security, docs
+  model           String    // claude-3-5-sonnet, etc
+  prompt_file     String    // Path to prompt in GitHub
+  allowed_tools   String[]  // Comma-separated tool names
+  blocked_tools   String[]  // Explicitly blocked tools
+  auto_approve    String[]  // Tools that auto-approve
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  @@map("agents")
+}
+
+// Approval records
+model Approval {
+  id              String    @id @default(cuid())
+  approval_id     String    @unique
+  agent_id        String
+  tool_name       String
+  params          Json
+  context         String?
+  status          String    // PENDING, APPROVED, DENIED
+  approver        String?
+  created_at      DateTime  @default(now())
+  expires_at      DateTime
+  
+  @@index([status])
+  @@index([expires_at])
+  
+  @@map("approvals")
+}
+
+// MCP tool definitions
+model MCPTool {
+  id              String    @id @default(cuid())
+  tool_name       String    @unique
+  server          String    // github, filesystem, postgres, linear, shell
+  tier            String    // READ, WRITE, SHELL
+  description     String
+  parameters      Json      // Schema of expected parameters
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  @@map("mcp_tools")
+}
