@@ -131,7 +131,9 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 
 **Registry:** `config/modules.json` — Single source of truth para todos los módulos, versiones, owners.
 
-### Core Modules
+### All Modules (13 total)
+
+#### Core Infrastructure (4 modules)
 
 | Module | Version | Owner | Status | Purpose |
 |--------|---------|-------|--------|---------|
@@ -140,9 +142,23 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 | `@intcloudsysops/components` | 1.0.0 | claude | Stable | Shared React components, design system (portal, admin, local-services) |
 | `@intcloudsysops/evaluation` | 1.0.0 | claude | Stable | Testing, validators, quality metrics (QA gates, safety checks) |
 
+#### Enterprise Utilities (9 modules)
+
+| Module | Version | Owner | Status | Purpose |
+|--------|---------|-------|--------|---------|
+| `@intcloudsysops/errors` | 1.0.0 | claude | Stable | Unified error handling with context tracking |
+| `@intcloudsysops/services` | 1.0.0 | claude | Stable | Repository pattern with multi-tenant isolation |
+| `@intcloudsysops/config` | 1.0.0 | claude | Stable | Environment configuration and feature flags |
+| `@intcloudsysops/security` | 1.0.0 | claude | Stable | Authentication, encryption, PII redaction |
+| `@intcloudsysops/api` | 1.0.0 | claude | Stable | Unified API response format and versioning |
+| `@intcloudsysops/workflow` | 1.0.0 | claude | Stable | Safe agent execution with timeouts and costs |
+| `@intcloudsysops/telemetry` | 1.0.0 | claude | Stable | Cost and performance tracking per agent |
+| `@intcloudsysops/testing` | 1.0.0 | claude | Stable | Unified test framework for agents/services |
+| `@intcloudsysops/migrations` | 1.0.0 | claude | Stable | Database migration versioning and rollback |
+
 **Key Constraint:** Zero duplication. If code appears in 2+ places, consolidate to lib/.
 
-### Using Modules
+### Quick Usage Examples
 
 ```typescript
 // Prompts
@@ -159,6 +175,33 @@ import { Button, useAuth } from '@intcloudsysops/components';
 
 // Evaluation
 import { validateInput, checkForPII } from '@intcloudsysops/evaluation';
+
+// Errors
+import { ValidationError, handleError } from '@intcloudsysops/errors';
+
+// Services (Data Access)
+import { BaseRepository } from '@intcloudsysops/services';
+
+// Config & Feature Flags
+import { getConfig, getFeatureFlags } from '@intcloudsysops/config';
+
+// Security
+import { generateToken, redactPII } from '@intcloudsysops/security';
+
+// API Responses
+import { createResponse } from '@intcloudsysops/api';
+
+// Workflow Execution
+import { executeWithTimeout } from '@intcloudsysops/workflow';
+
+// Telemetry
+import { Telemetry } from '@intcloudsysops/telemetry';
+
+// Testing
+import { runTest } from '@intcloudsysops/testing';
+
+// Migrations
+import { MigrationRunner } from '@intcloudsysops/migrations';
 ```
 
 ### Adding/Modifying Modules
@@ -168,16 +211,14 @@ import { validateInput, checkForPII } from '@intcloudsysops/evaluation';
 3. **Update carefully:** breaking changes require MAJOR version + migration guide
 4. **Run pre-commit hook:** `.githooks/pre-commit` validates all modules before commit
 
-**Per-module governance:**
-- `lib/prompts/GOVERNANCE.md` — Semantic versioning, rollback capability
-- `lib/observability/GOVERNANCE.md` — Required metrics per service, alerting policy
-- `lib/components/GOVERNANCE.md` — Reusability check (2+ apps), accessibility, type-safe
-- `lib/evaluation/GOVERNANCE.md` — Quality baselines, test coverage (80%+), SLOs
+**All module governance:**
+- `lib/{module}/GOVERNANCE.md` — Ownership, standards, review process, versioning
+- `lib/{module}/README.md` — API docs, usage examples
 
 ### Documentation
 
-- `lib/{module}/README.md` — API docs, usage examples
-- `docs/01-development/LIBRARY-MODULES.md` — Integration guide for all apps
+- `docs/01-development/LIBRARY-MODULES.md` — Complete integration guide for all 13 modules
+- `config/modules.json` — Module registry with versions, owners, dependencies
 
 ---
 

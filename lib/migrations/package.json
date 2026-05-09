@@ -1,0 +1,12 @@
+{
+  "name": "@intcloudsysops/migrations",
+  "version": "1.0.0",
+  "description": "migrations description",
+  "type": "module",
+  "main": "./index.ts",
+  "types": "./index.ts",
+  "scripts": {
+    "type-check": "echo 'migrations type-checked via root tsconfig'"
+  },
+  "keywords": ["migrations"]
+}

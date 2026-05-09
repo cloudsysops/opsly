@@ -1,0 +1,12 @@
+{
+  "name": "@intcloudsysops/errors",
+  "version": "1.0.0",
+  "description": "errors description",
+  "type": "module",
+  "main": "./index.ts",
+  "types": "./index.ts",
+  "scripts": {
+    "type-check": "echo 'errors type-checked via root tsconfig'"
+  },
+  "keywords": ["errors"]
+}

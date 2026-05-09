@@ -1,0 +1,12 @@
+{
+  "name": "@intcloudsysops/services",
+  "version": "1.0.0",
+  "description": "services description",
+  "type": "module",
+  "main": "./index.ts",
+  "types": "./index.ts",
+  "scripts": {
+    "type-check": "echo 'services type-checked via root tsconfig'"
+  },
+  "keywords": ["services"]
+}

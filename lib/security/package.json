@@ -1,0 +1,12 @@
+{
+  "name": "@intcloudsysops/security",
+  "version": "1.0.0",
+  "description": "security description",
+  "type": "module",
+  "main": "./index.ts",
+  "types": "./index.ts",
+  "scripts": {
+    "type-check": "echo 'security type-checked via root tsconfig'"
+  },
+  "keywords": ["security"]
+}
