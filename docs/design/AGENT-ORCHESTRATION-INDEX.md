@@ -1,8 +1,9 @@
 # Agent orchestration — índice maestro (Opsly)
 
 **Estado:** documentación canónica de **rutas de implementación** (qué construir primero y dónde vive en el monorepo).  
-**Última actualización:** 2026-04-30  
-**Relación:** complementa [`AGENTS.md`](../../AGENTS.md) y [`VISION.md`](../../VISION.md); no sustituye ADRs ni el checklist de seguridad.
+**Última actualización:** 2026-05-07  
+**Relación:** complementa [`AGENTS.md`](../../AGENTS.md) y [`VISION.md`](../../VISION.md); no sustituye ADRs ni el checklist de seguridad.  
+**Nota de rutas:** los documentos `docs/ORCHESTRATOR.md` / `docs/OPENCLAW-ARCHITECTURE.md` del plan histórico viven hoy en [`docs/00-architecture/ORCHESTRATOR.md`](../00-architecture/ORCHESTRATOR.md) y [`docs/00-architecture/OPENCLAW-ARCHITECTURE.md`](../00-architecture/OPENCLAW-ARCHITECTURE.md).
 
 ---
 

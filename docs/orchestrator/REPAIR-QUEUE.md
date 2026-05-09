@@ -1,7 +1,7 @@
 # Repair queue y fallover (diseño — Opsly)
 
 **Estado:** diseño / contrato; la implementación será incremental en [`apps/orchestrator`](../../apps/orchestrator).  
-**Última actualización:** 2026-04-30
+**Última actualización:** 2026-05-07
 
 ---
 

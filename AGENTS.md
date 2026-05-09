@@ -1,7 +1,7 @@
 ---
 status: canon
 owner: operations
-last_review: 2026-05-03
+last_review: 2026-05-07
 ---
 
 # Opsly — Contexto del Agente
@@ -451,7 +451,7 @@ node scripts/load-skills.js show opsly-api
 
 **Sesión 2026-05-03 — Local Workers MVP ✅**
 - ✅ `apps/orchestrator`: nuevos job types `local_cursor`, `local_claude`, `local_copilot`, `local_opencode`; cola dedicada `local-agents`; workers HTTP registrados en `index.ts`; `worker-log`/concurrencia ampliados.
-- ✅ `POST /api/local/prompt-submit`: acepta `prompt_path` o `prompt_content`, frontmatter simple (`agent`, `agent_role`, `max_steps`), `tenant_slug`, y encola al agente local correcto.
+- ✅ `POST /api/local/prompt-submit`: acepta `prompt_body` o `prompt_content`, frontmatter simple (`agent`, …), `tenant_slug`, y encola con **`enqueueLocalAgentJob(OrchestratorJob)`** en la cola BullMQ **`local-agents`** (nombre de job `local_*`, p. ej. `local_cursor`). Smoke: orchestrator `worker-enabled`, Redis compartido, comprobar en Redis/UI que el job no va a `openclaw`.
 - ✅ `config/agent-services.json`: endpoints localhost `5001..5004`, sobreescribibles por env (`OPSLY_CURSOR_AGENT_URL`, etc.).
 - ✅ Scripts locales: `cursor-agent-service.ts` abre Cursor con `open -a Cursor`; `local-agent-watcher.ts` vigila `.cursor/prompts`; `local-git-auto-commit.ts` commitea respuestas en `.cursor/responses`.
 - ✅ Validación: TypeScript orchestrator + scripts standalone OK. Pendiente: Vitest tras reparar `node_modules`/Rollup opcional en Mac.
