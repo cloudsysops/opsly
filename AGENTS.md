@@ -657,6 +657,7 @@ OpenClaw opera como **control plane IA** de Opsly: estandariza entrada (MCP/API)
 | ----------------- | ------------------------------ | ---------------------------------------------------------------------- |
 | OpenClaw MCP      | `apps/mcp`                     | Punto único de herramientas/acciones para agentes externos e internos  |
 | Orchestrator      | `apps/orchestrator`            | Cola BullMQ, prioridad por plan, coordinación de workers por job       |
+| Task Orchestrator | `apps/task-orchestrator`       | Ejecución autónoma de tareas, gestión de workers, tracking distribuido |
 | LLM Gateway       | `apps/llm-gateway`             | Routing, cache, costos por tenant, observabilidad de llamadas LLM      |
 | Context Builder   | `apps/context-builder`         | Construcción de contexto y continuidad entre interacciones             |
 | ML Services       | `apps/ml`                      | Clasificación, embeddings, soporte a decisiones IA                     |
