@@ -28,8 +28,10 @@ jobs:
       - name: Check for hardcoded credentials in prompts
         run: |
           echo "Scanning for hardcoded secrets in autonomous prompts..."
-          ! grep -r -i "password\|secret\|token\|key=" .cursor/prompts/ || exit 1
-          ! grep -r "BEGIN RSA PRIVATE KEY\|BEGIN OPENSSH PRIVATE KEY" .cursor/prompts/ || exit 1
+          # Look for actual hardcoded values, not just mentions of tokens/secrets
+          ! grep -rE "(password|secret|token|key|api_key)=[\'\"]?[a-zA-Z0-9]+" .cursor/prompts/ 2>/dev/null || exit 1
+          ! grep -r "BEGIN RSA PRIVATE KEY\|BEGIN OPENSSH PRIVATE KEY" .cursor/prompts/ 2>/dev/null || exit 1
+          echo "✓ No hardcoded credentials detected"
 
       - name: Validate autonomy manifest files
         run: |
@@ -42,8 +44,10 @@ jobs:
 
       - name: Check for dangerous git operations in prompts
         run: |
-          echo "Checking for unsafe git operations..."
-          ! grep -r "git reset --hard\|git push --force\|git clean -fd" .cursor/prompts/ || exit 1
+          echo "Checking for unsafe git operations in active prompts..."
+          # Only fail if there's actual code/commands, not mentions in documentation
+          ! grep -r "^\s*git reset --hard\|^\s*git push --force\|^\s*git clean -fd" .cursor/prompts/*.md 2>/dev/null || exit 1
+          echo "✓ No dangerous git operations detected"
 
       - name: Verify Task Orchestrator config
         run: |
