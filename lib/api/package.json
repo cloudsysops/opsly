@@ -1,5 +1,5 @@
 {
-  "name": "@intcloudsysops/api",
+  "name": "@intcloudsysops/api-utils",
   "version": "1.0.0",
   "description": "api description",
   "type": "module",

@@ -150,7 +150,7 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 | `@intcloudsysops/services` | 1.0.0 | claude | Stable | Repository pattern with multi-tenant isolation |
 | `@intcloudsysops/config` | 1.0.0 | claude | Stable | Environment configuration and feature flags |
 | `@intcloudsysops/security` | 1.0.0 | claude | Stable | Authentication, encryption, PII redaction |
-| `@intcloudsysops/api` | 1.0.0 | claude | Stable | Unified API response format and versioning |
+| `@intcloudsysops/api-utils` | 1.0.0 | claude | Stable | Unified API response format and versioning |
 | `@intcloudsysops/workflow` | 1.0.0 | claude | Stable | Safe agent execution with timeouts and costs |
 | `@intcloudsysops/telemetry` | 1.0.0 | claude | Stable | Cost and performance tracking per agent |
 | `@intcloudsysops/testing` | 1.0.0 | claude | Stable | Unified test framework for agents/services |
@@ -189,7 +189,7 @@ import { getConfig, getFeatureFlags } from '@intcloudsysops/config';
 import { generateToken, redactPII } from '@intcloudsysops/security';
 
 // API Responses
-import { createResponse } from '@intcloudsysops/api';
+import { createResponse } from '@intcloudsysops/api-utils';
 
 // Workflow Execution
 import { executeWithTimeout } from '@intcloudsysops/workflow';

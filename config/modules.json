@@ -100,7 +100,7 @@
       "exports": ["generateToken", "verifyToken", "encryptSecret", "decryptSecret", "redactPII"]
     },
     "api": {
-      "name": "@intcloudsysops/api",
+      "name": "@intcloudsysops/api-utils",
       "version": "1.0.0",
       "path": "lib/api",
       "owner": "claude",

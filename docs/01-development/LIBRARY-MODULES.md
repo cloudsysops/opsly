@@ -295,7 +295,7 @@ const encrypted = encryptSecret(apiKey);
 
 ---
 
-#### 9. @intcloudsysops/api
+#### 9. @intcloudsysops/api-utils
 
 Unified API response format, pagination, and versioning.
 
