@@ -1,6 +1,6 @@
-export { loadPrompt, loadPromptByVersion, listPrompts } from './loader.js';
-export { PromptRegistry, initRegistry } from './registry.js';
-export { validatePromptSchema, validatePromptTemplate } from './schemas/index.js';
+export { loadPrompt, loadPromptByVersion, listPrompts, listPromptIds } from './loader.js';
+export { getPromptRegistry, initRegistry } from './registry.js';
+export { validatePromptSchema, validatePromptTemplate, validatePrompt } from './schemas/index.js';
 export type { Prompt, PromptVersion, PromptMetadata } from './registry.js';
 
 // Direct prompt exports for convenience

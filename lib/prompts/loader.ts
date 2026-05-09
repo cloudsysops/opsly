@@ -1,5 +1,5 @@
-import { PromptRegistry } from './registry';
-import type { Prompt, PromptVersion } from './registry';
+import { getPromptRegistry } from './registry.js';
+import type { Prompt, PromptVersion } from './registry.js';
 
 export interface LoadOptions {
   version?: string;
@@ -8,7 +8,7 @@ export interface LoadOptions {
 }
 
 export async function loadPrompt(id: string, options: LoadOptions = {}): Promise<string> {
-  const registry = PromptRegistry();
+  const registry = getPromptRegistry();
   const prompt = registry.getPrompt(id);
 
   if (!prompt) {
@@ -35,21 +35,21 @@ export async function loadPromptByVersion(
   id: string,
   version: string
 ): Promise<PromptVersion | null> {
-  const registry = PromptRegistry();
+  const registry = getPromptRegistry();
   return registry.getPromptVersion(id, version) || null;
 }
 
 export function listPrompts(): Prompt[] {
-  const registry = PromptRegistry();
+  const registry = getPromptRegistry();
   return registry.listPrompts();
 }
 
 export function listPromptIds(tag?: string): string[] {
-  const registry = PromptRegistry();
+  const registry = getPromptRegistry();
   let ids = registry.listPromptIds();
 
   if (tag) {
-    ids = ids.filter(id => {
+    ids = ids.filter((id: string) => {
       const prompt = registry.getPrompt(id);
       return prompt?.metadata.tags.includes(tag);
     });

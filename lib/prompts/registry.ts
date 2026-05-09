@@ -135,9 +135,10 @@ export function initRegistry(basePaths: string[]): PromptRegistry {
   return globalRegistry;
 }
 
-export function PromptRegistry(): PromptRegistry {
+export function getPromptRegistry(): PromptRegistry {
   if (!globalRegistry) {
-    throw new Error('Prompt registry not initialized. Call initRegistry() first.');
+    globalRegistry = new PromptRegistry();
+    globalRegistry.initialize();
   }
   return globalRegistry;
 }

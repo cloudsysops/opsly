@@ -1,4 +1,4 @@
-import type { PromptMetadata } from '../registry';
+import type { PromptMetadata } from '../registry.js';
 
 export interface ValidationResult {
   valid: boolean;
