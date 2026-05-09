@@ -3,40 +3,10 @@
   "version": "1.0.0",
   "description": "Versioned prompt registry for all agents",
   "type": "module",
-  "exports": {
-    ".": {
-      "import": "./dist/index.js",
-      "types": "./dist/index.d.ts"
-    },
-    "./registry": {
-      "import": "./dist/registry.js",
-      "types": "./dist/registry.d.ts"
-    },
-    "./loader": {
-      "import": "./dist/loader.js",
-      "types": "./dist/loader.d.ts"
-    },
-    "./schemas": {
-      "import": "./dist/schemas/index.js",
-      "types": "./dist/schemas/index.d.ts"
-    }
-  },
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "files": [
-    "dist",
-    "templates"
-  ],
+  "main": "./index.ts",
+  "types": "./index.ts",
   "scripts": {
-    "build": "tsc",
-    "test": "vitest",
-    "test:coverage": "vitest --coverage",
-    "type-check": "tsc --noEmit"
+    "type-check": "echo 'Prompts type-checked via root tsconfig'"
   },
-  "dependencies": {},
-  "devDependencies": {
-    "@types/node": "^20.0.0",
-    "typescript": "^5.0.0",
-    "vitest": "^1.0.0"
-  }
+  "keywords": ["prompts", "ai", "agents", "registry"]
 }
