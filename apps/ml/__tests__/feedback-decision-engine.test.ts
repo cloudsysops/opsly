@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { analyzeFeedback } from '../src/feedback-decision-engine.js';
-import * as llmGateway from '@intcloudsysops/llm-gateway';
+import * as llmGateway from '@intcloudsysops/llm-gateway-client';
 
-vi.mock('@intcloudsysops/llm-gateway', () => ({
+vi.mock('@intcloudsysops/llm-gateway-client', () => ({
   llmCall: vi.fn(),
 }));
 

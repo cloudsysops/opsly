@@ -1,0 +1,26 @@
+{
+  "name": "@intcloudsysops/llm-gateway-client",
+  "version": "1.0.0",
+  "description": "HTTP client library for LLM Gateway service",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@intcloudsysops/errors": "workspace:^"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.12",
+    "typescript": "^5.9.2"
+  }
+}

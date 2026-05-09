@@ -2,7 +2,7 @@
  * ML Decision Engine — clasifica feedback y persiste decisión en Supabase.
  */
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
-import { llmCall } from '@intcloudsysops/llm-gateway';
+import { llmCall } from '@intcloudsysops/llm-gateway-client';
 import { writeActivePrompt } from './write-active-prompt.js';
 
 function requireEnv(name: string): string {

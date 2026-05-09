@@ -158,6 +158,18 @@
       "governance": "lib/migrations/GOVERNANCE.md",
       "mainFile": "lib/migrations/index.ts",
       "exports": ["MigrationRunner", "Migration"]
+    },
+    "llm-gateway-client": {
+      "name": "@intcloudsysops/llm-gateway-client",
+      "version": "1.0.0",
+      "path": "lib/llm-gateway-client",
+      "owner": "claude",
+      "description": "HTTP client library for LLM Gateway service",
+      "status": "stable",
+      "dependencies": ["errors"],
+      "governance": "lib/llm-gateway-client/GOVERNANCE.md",
+      "mainFile": "lib/llm-gateway-client/index.ts",
+      "exports": ["llmCall", "llmCallDirect", "LLMRequest", "LLMResponse"]
     }
   },
   "consumers": {
@@ -181,6 +193,9 @@
     },
     "tools/agents": {
       "depends": ["prompts", "observability", "security", "config", "telemetry"]
+    },
+    "apps/ml": {
+      "depends": ["llm-gateway-client", "errors", "services", "config"]
     }
   },
   "policies": {
