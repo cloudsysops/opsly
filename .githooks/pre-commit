@@ -56,5 +56,28 @@ bash scripts/check-duplicates.sh lib/components lib/services 2>/dev/null || true
 echo "🎯 Linting..."
 npm run lint -- --fix 2>/dev/null || true
 
+# 8. Protect canonical documentation
+echo "🔒 Validating canonical documentation integrity..."
+CANONICAL_FILES="VISION.md ROADMAP.md AGENTS.md SPRINT-TRACKER.md docs/README.md config/modules.json"
+MODIFIED_CANONICAL=""
+
+for file in $CANONICAL_FILES; do
+  if git diff --cached --name-only | grep -q "^$file$"; then
+    MODIFIED_CANONICAL="$MODIFIED_CANONICAL $file"
+  fi
+done
+
+if [ -n "$MODIFIED_CANONICAL" ]; then
+  echo "⚠️  Canonical files detected in commit:$MODIFIED_CANONICAL"
+
+  # Check if commit message indicates intentional update
+  COMMIT_MSG=$(cat /dev/stdin 2>/dev/null || echo "")
+  if ! echo "$COMMIT_MSG" | grep -qE "(docs|chore|feat)(\(.*\))?: |UPDATE_CANONICAL=true"; then
+    # During pre-commit, we don't have the commit message yet
+    # Just warn the user; the actual validation happens in commit-msg hook
+    echo "ℹ️  Canonical file changes require commit message like: docs(agents): update session state"
+  fi
+fi
+
 echo "✨ Pre-commit validation passed!"
 exit 0

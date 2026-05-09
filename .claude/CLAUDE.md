@@ -232,6 +232,67 @@ REDIS_URL=redis://100.120.151.91:6379
 4. Crear recurso → Factory pattern en `lib/factories/`
 5. Números mágicos → `lib/constants.ts`
 
+---
+
+## 📦 Enterprise-Scale Library Modules (v1.0)
+
+**All code is consolidated into 13 reusable, versioned library modules.** See `config/modules.json` for the complete registry.
+
+### Core Infrastructure Modules
+
+| Module | Purpose | Owner |
+|--------|---------|-------|
+| `@intcloudsysops/prompts` | Versioned prompt registry (all agents) | claude |
+| `@intcloudsysops/observability` | Unified logging, metrics, tracing | claude |
+| `@intcloudsysops/components` | Shared React components & design system | claude |
+| `@intcloudsysops/evaluation` | Testing, validators, safety checks | claude |
+
+### Enterprise Utilities (9 additional modules)
+
+- `@intcloudsysops/errors` — Unified error handling
+- `@intcloudsysops/services` — Repository pattern + multi-tenant isolation
+- `@intcloudsysops/config` — Environment configuration & feature flags
+- `@intcloudsysops/security` — Auth, encryption, PII redaction
+- `@intcloudsysops/api-utils` — Unified API response format
+- `@intcloudsysops/workflow` — Safe execution with timeouts
+- `@intcloudsysops/telemetry` — Cost & performance tracking
+- `@intcloudsysops/testing` — Unified test framework
+- `@intcloudsysops/migrations` — Database migration versioning
+
+**Key Rule:** Never duplicate code. If logic exists in 2+ places → consolidate to lib/.
+
+### Finding & Using Modules
+
+1. Check `config/modules.json` — what exists, owner, dependencies
+2. Read `lib/{module}/GOVERNANCE.md` — versioning rules, review process
+3. Import from `@intcloudsysops/{module}`
+4. For full docs: `docs/01-development/LIBRARY-MODULES.md`
+
+### When to Create New Module
+
+Only if ALL conditions are true:
+- Reusable by 2+ apps
+- Non-trivial (>100 lines of logic)
+- Stable API (won't change monthly)
+- Otherwise: keep in app-specific code
+
+---
+
+## 🔒 Canonical Documentation (Protected)
+
+**These files are canonical sources of truth and MUST NOT be modified except via explicit governance:**
+
+- `VISION.md` — Product north star (only updates: product changes)
+- `ROADMAP.md` — Timeline & milestones (only updates: sprint planning)
+- `AGENTS.md` — Operational status & next steps (update at session end, commit/push immediately)
+- `SPRINT-TRACKER.md` — Current sprint progress (update per team consensus)
+- `docs/README.md` — Documentation index
+- `config/modules.json` — Module registry (update only when adding/retiring modules)
+
+**Protection:** Branch protection rules on `main`, pre-commit hooks validate structure.
+
+---
+
 ## Git Operations — Protocolo Obligatorio para TODOS los agentes
 
 **⚠️ CRÍTICO:** Después de CADA tarea completada, SIEMPRE:

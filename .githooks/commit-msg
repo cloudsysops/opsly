@@ -11,6 +11,35 @@ fi
 
 cd "$ROOT"
 
+# Read commit message
+COMMIT_MSG=$(cat "$MSG_FILE")
+
+# Check if canonical files are being modified
+CANONICAL_FILES="VISION.md ROADMAP.md AGENTS.md SPRINT-TRACKER.md docs/README.md config/modules.json"
+MODIFIED_CANONICAL=""
+
+for file in $CANONICAL_FILES; do
+  if git diff --cached --name-only 2>/dev/null | grep -q "^$file$"; then
+    MODIFIED_CANONICAL="$MODIFIED_CANONICAL $file"
+  fi
+done
+
+# If canonical files modified, ensure commit message indicates intentional update
+if [ -n "$MODIFIED_CANONICAL" ]; then
+  if ! echo "$COMMIT_MSG" | grep -qE "^(docs|chore|feat)(\(.+\))?: |^\[CANONICAL\]|^UPDATE_DOCS"; then
+    echo ""
+    echo "❌ Canonical files detected:$MODIFIED_CANONICAL"
+    echo ""
+    echo "Canonical files require explicit documentation of why they changed."
+    echo "Use commit messages like:"
+    echo "  - docs(agents): update session state and progress"
+    echo "  - docs(roadmap): Q2 2026 milestone updates"
+    echo "  - chore(modules): register new lib module"
+    echo ""
+    exit 1
+  fi
+fi
+
 if ! command -v npx >/dev/null 2>&1; then
   echo "commit-msg: npx no disponible, omitiendo commitlint"
   exit 0
