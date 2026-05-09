@@ -126,7 +126,7 @@ check_docker_services() {
 check_api_health() {
   log_section "API Health"
   
-  local api_url="${API_BASE_URL:-https://api.ops.smiletripcare.com}"
+  local api_url="${API_BASE_URL:-https://api.op-sly.com}"
   local response_time
   local http_code
   

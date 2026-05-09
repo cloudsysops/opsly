@@ -14,7 +14,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck disable=SC1091
 source "${SCRIPT_DIR}/lib/common.sh"
 
-API_URL="${API_URL:-https://api.ops.smiletripcare.com}"
+API_URL="${API_URL:-https://api.op-sly.com}"
 # Backward compatible: prefer TENANT_REF, fallback to legacy TENANT_SLUG.
 TENANT_REF="${TENANT_REF:-${TENANT_SLUG:-smiletripcare}}"
 DRY_RUN="false"

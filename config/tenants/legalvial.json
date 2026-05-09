@@ -2,7 +2,7 @@
   "tenant_name": "LegalVial",
   "tenant_slug": "legalvial",
   "schema_name": "legalvial",
-  "platform_domain": "ops.smiletripcare.com",
+  "platform_domain": "op-sly.com",
   "parent_tenant_slug": "localrank",
   "client_slug": "legalvial",
   "workflows_count": 6,

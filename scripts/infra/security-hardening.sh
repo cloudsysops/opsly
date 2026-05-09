@@ -39,7 +39,7 @@ Acciones:
   - `--reset-ufw` aplica reset completo (opcional).
 
 Nota:
-  Para DNS público en Cloudflare, mantener Proxy ON en *.ops.smiletripcare.com.
+  Para DNS público en Cloudflare, mantener Proxy ON en *.op-sly.com.
 EOF
       exit 0
       ;;

@@ -2,7 +2,7 @@
   "tenant_name": "Equipa",
   "tenant_slug": "local-services",
   "schema_name": "local_services",
-  "platform_domain": "ops.smiletripcare.com",
+  "platform_domain": "op-sly.com",
   "workflows_count": 0,
   "pricing_per_unit": 0,
   "currency": "USD",

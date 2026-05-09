@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-STAGING_API_URL="${STAGING_API_URL:-https://api.ops.smiletripcare.com}"
-PROD_API_URL="${PROD_API_URL:-https://api.ops.smiletripcare.com}"
+STAGING_API_URL="${STAGING_API_URL:-https://api-qa.op-sly.com}"
+PROD_API_URL="${PROD_API_URL:-https://api.op-sly.com}"
 CANARY_MIN_SUCCESS="${CANARY_MIN_SUCCESS:-3}"
 CANARY_INTERVAL_SECONDS="${CANARY_INTERVAL_SECONDS:-10}"
 ROLLBACK_ON_FAIL="${ROLLBACK_ON_FAIL:-false}"
