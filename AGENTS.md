@@ -344,6 +344,8 @@ node scripts/load-skills.js show opsly-api
 
 <!-- Actualizar al final de cada sesión -->
 
+**Producción multi-tenant (pack):** [`docs/TENANT-PRODUCTION-BASELINE.md`](docs/TENANT-PRODUCTION-BASELINE.md), [`docs/TENANT-PRODUCTION-CHECKLIST.md`](docs/TENANT-PRODUCTION-CHECKLIST.md), [`docs/TENANT-PRODUCTION-HARDENING.md`](docs/TENANT-PRODUCTION-HARDENING.md), [`docs/TENANT-PRODUCTION-ROLLOUT.md`](docs/TENANT-PRODUCTION-ROLLOUT.md); plano API vs `apps/web`: [`docs/API-CORE-PORTFOLIO.md`](docs/API-CORE-PORTFOLIO.md) · copia en árbol dev: [`docs/01-development/API-CORE-PORTFOLIO.md`](docs/01-development/API-CORE-PORTFOLIO.md); proxy: `INTERNAL_API_URL` / `NEXT_PUBLIC_API_URL`.
+
 **Fecha última actualización:** 2026-05-06 — **Agency Division + API Factory + Autonomous Revenue:**
 - ✅ Documento `docs/01-development/OPSLY-AGENCY-DIVISION.md` con 4 líneas de servicio
 - ✅ MCP tools: api_factory_create, api_factory_monitor, agent_management_stats, security_api_scan, security_api_audit (6 nuevas → 31 total)

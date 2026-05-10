@@ -19,12 +19,15 @@
 
 ## 2. Inventario declarativo (`config/opsly.config.json`)
 
-| slug          | plan    | ownerEmail (config)        |
-| ------------- | ------- | -------------------------- |
-| smiletripcare | startup | smiletripcare@gmail.com    |
-| peskids       | startup | sierrasantiago90@gmail.com |
+| slug           | plan       | ownerEmail (config)         |
+| -------------- | ---------- | --------------------------- |
+| smiletripcare  | startup    | smiletripcare@gmail.com     |
+| peskids        | startup    | sierrasantiago90@gmail.com  |
+| localrank      | startup    | jkbotero78@gmail.com        |
+| jkboterolabs   | startup    | jkbotero78@gmail.com        |
+| intcloudsysops | enterprise | cboteros1@gmail.com         |
 
-**Gap conocido:** el JSON de config lista menos tenants que `system_state`. Mantener el config alineado en cada onboard o tratarlo solo como plantilla de ejemplo.
+**Nota:** los `slug` coinciden con `context/system_state.json`. Antes de go-live, validar `owner_email` y `plan` frente a **Supabase** (`platform.tenants`); el JSON de config es convención de producto — **la DB manda**.
 
 ## 3. Superficie API legacy (`apps/web`) vs canónica (`apps/api`)
 
