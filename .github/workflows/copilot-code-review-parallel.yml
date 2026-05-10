@@ -1,0 +1,32 @@
+name: 🤖 Copilot Code Review - 24/7 Parallel
+
+on:
+  pull_request:
+      types: [opened, synchronize, reopened]
+        schedule:
+            - cron: '0 */6 * * *'  # Every 6 hours
+              workflow_dispatch:
+
+              jobs:
+                copilot-review:
+                    name: AI Code Review Agent
+                        runs-on: ubuntu-latest
+                            permissions:
+                                  pull-requests: write
+                                        contents: read
+                                            steps:
+                                                  - name: Checkout
+                                                          uses: actions/checkout@v4
+                                                                  with:
+                                                                            fetch-depth: 0
+
+                                                                                        - name: Request Copilot Code Review
+                                                                                                uses: github-copilot-reviewer@v1
+                                                                                                        with:
+                                                                                                                  check_for:
+                                                                                                                              - security
+                                                                                                                                          - performance
+                                                                                                                                                      - code_quality
+                                                                                                                                                                  - mcp_compliance
+                                                                                                                                                                            report_format: pr_comment
+                                                                                                                                                                                      auto_approve_minor: false
