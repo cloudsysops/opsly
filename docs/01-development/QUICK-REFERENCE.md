@@ -56,7 +56,7 @@ npm run dev                          # Turbo: todos los servicios
 npm run type-check                   # TypeScript 11 workspaces
 npm run test --workspace=@intcloudsysops/api  # Tests API (241+)
 npm run lint                         # ESLint (max-warnings 0 en API)
-npm run validate-openapi             # Valida openapi-opsly-api.yaml
+npm run validate-openapi             # Valida docs/00-architecture/openapi-opsly-api.yaml
 npm run validate-skills              # Valida skills manifests
 ```
 

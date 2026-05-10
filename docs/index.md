@@ -1,26 +1,91 @@
 ---
 status: canon
 owner: architecture
-last_review: 2026-05-09
+last_review: 2026-05-10
 ---
 
-# Documentation Index
+# Opsly Brain — índice Obsidian (MOC)
 
-This is the compact Obsidian entrypoint. For the full policy and map, see
-[`README.md`](README.md) and [`STRUCTURE-GUARDRAILS.md`](STRUCTURE-GUARDRAILS.md).
+Punto de entrada compacto del vault. Política de carpetas:
+[`STRUCTURE-GUARDRAILS.md`](STRUCTURE-GUARDRAILS.md). Índice narrativo del repo:
+[`README.md`](README.md).
 
-## Maps of Content
+## Hubs y contratos (raíz del vault)
 
-- [`00-architecture/README.md`](00-architecture/README.md)
-- [`01-development/README.md`](01-development/README.md)
-- [`02-tools/README.md`](02-tools/README.md)
-- [`03-agents/README.md`](03-agents/README.md)
-- [`04-infrastructure/README.md`](04-infrastructure/README.md)
-- [`04-operations/README.md`](04-operations/README.md)
-- [`06-multi-agent/README.md`](06-multi-agent/README.md)
-- [`runbooks/README.md`](runbooks/README.md)
-- [`reports/README.md`](reports/README.md)
-- [`audits/README.md`](audits/README.md)
-- [`testing/README.md`](testing/README.md)
-- [`history/README.md`](history/README.md)
-- [`generated/README.md`](generated/README.md)
+- [`README.md`](README.md) — mapa del vault
+- [`STRUCTURE-GUARDRAILS.md`](STRUCTURE-GUARDRAILS.md) — reglas de ubicación
+- [`openapi-opsly-api.yaml`](00-architecture/openapi-opsly-api.yaml) — contrato API (subset)
+- Stubs de compatibilidad: [`stubs/README.md`](stubs/README.md)
+- Repo (fuera del vault): [`AGENTS.md`](../AGENTS.md), [`VISION.md`](../VISION.md), [`ROADMAP.md`](../ROADMAP.md)
+
+## Pilares numerados (gobierno docs)
+
+| Carpeta | Hub |
+| --- | --- |
+| [`00-architecture/`](00-architecture/README.md) | Arquitectura estable, diagramas |
+| [`01-development/`](01-development/README.md) | Roadmap, sprints, handoffs |
+| [`02-tools/`](02-tools/README.md) | MCP, NotebookLM, Drive, **Obsidian** |
+| [`03-agents/`](03-agents/README.md) | Agentes, guardrails, OpenClaw |
+| [`04-infrastructure/`](04-infrastructure/README.md) | VPS, Traefik, Tailscale, Doppler |
+| [`04-operations/`](04-operations/README.md) | Visión operativa |
+| [`05-deployment-status/`](05-deployment-status/) | Estado despliegue (sin README — usar explorador) |
+| [`06-multi-agent/`](06-multi-agent/README.md) | Multi-agente y paralelismo |
+| [`tenants/`](tenants/README.md) | Multi-tenant: prod, runbooks, testing, onboarding |
+
+## Decisiones, procedimientos, calidad
+
+| Carpeta | Hub |
+| --- | --- |
+| [`adr/`](adr/README.md) | ADRs numerados |
+| [`runbooks/`](runbooks/README.md) | Runbooks e incident response |
+| [`testing/`](testing/README.md) | E2E, QA |
+| [`audits/`](audits/README.md) | Auditorías |
+| [`reports/`](reports/README.md) | Informes y evidencias |
+| [`history/`](history/README.md) | Material histórico |
+| [`generated/`](generated/README.md) | Generado (no editar a mano) |
+| [`plans/`](plans/README.md) | Planes puntuales |
+
+## Cerebro enlazado y dominios extra
+
+| Carpeta | Uso |
+| --- | --- |
+| [`brain/`](brain/README.md) | Vault semántico (módulos, tenants, workflows) |
+| [`design/`](design/) | Diseño de orquestación y producto |
+| [`implementation/`](implementation/) | Notas de implementación |
+| [`orchestrator/`](orchestrator/) | Docs del orchestrator |
+| [`obsidian/`](obsidian/) | Notas específicas Obsidian |
+| [`ops/`](ops/) | Ops interno |
+| [`security/`](security/) | Seguridad |
+| [`database/`](database/) | Esquema / datos |
+| [`emails/`](emails/) | Plantillas email |
+| [`growth/`](growth/) | Growth |
+| [`research/`](research/) | Investigación |
+| [`prompts/`](prompts/README.md) | Prompts (hub); onboarding → [`tenants/onboarding-prompts/`](tenants/onboarding-prompts/) |
+| [`postman/`](postman/README.md) | Postman |
+| [`n8n-workflows/`](n8n-workflows/) | Workflows n8n |
+| [`tenants/legalvial/`](tenants/legalvial/) | Subcliente LegalVial |
+| [`infrastructure/`](infrastructure/README.md) | Stubs de compatibilidad → [`04-infrastructure/`](04-infrastructure/README.md) |
+| [`operations/`](operations/README.md) | Stubs de compatibilidad → [`04-operations/`](04-operations/README.md) |
+
+## Herramientas Obsidian
+
+- Guía: [`02-tools/OBSIDIAN-README.md`](02-tools/OBSIDIAN-README.md)
+- Sistema conocimiento (NotebookLM + Obsidian): [`02-tools/KNOWLEDGE-SYSTEM.md`](02-tools/KNOWLEDGE-SYSTEM.md)
+- Regenerar listado de `.md` del vault: `npm run obsidian:file-index` → `.obsidian/file-index.json`
+
+## Wiki: Obsidian + NotebookLM + Graphyfi
+
+| Capa | Documento / artefacto |
+| --- | --- |
+| MOC (mapa) | Esta página [`index.md`](index.md) + [`README.md`](README.md) |
+| Ciclo plan → pruebas → docs → cierre | [`01-development/DOCUMENTATION-LIFECYCLE.md`](01-development/DOCUMENTATION-LIFECYCLE.md) |
+| Contrato agentes | [`03-agents/AGENT-BRAIN-CONTRACT.md`](03-agents/AGENT-BRAIN-CONTRACT.md) |
+| Índice buscable | `config/knowledge-index.json` (`npm run index-knowledge`) |
+| Grafo MCP | `apps/mcp/src/tools/graphyfi.ts`, taxonomía `doc:<slug>` en el contrato |
+
+**Brechas típicas:** grafo GitHub (`config/github-module-graph.json`), notas `docs/brain/modules/`, regen de índice tras muchos commits de docs.
+
+## Grafo y enlaces
+
+- Usa wikilinks `[[nota]]` entre notas del mismo vault.
+- Para notas fuera de `docs/`, enlaces Markdown estándar a rutas del repo (`../AGENTS.md`).

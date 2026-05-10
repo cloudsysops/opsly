@@ -627,7 +627,7 @@ Con 12 meses de datos + Vertex AI + Llama base:
 
 ### Vista operativa — capa agentic (consolidada 2026-04)
 
-Texto que antes vivía solo en `docs/VISION.md`; la visión larga sigue siendo este archivo; los stubs en raíz y `.github/` solo enlazan aquí.
+Texto que antes vivía solo en `docs/stubs/VISION.md`; la visión larga sigue siendo este archivo; los stubs en raíz y `.github/` solo enlazan aquí.
 
 1. **Control plane estable** en `apps/*` (API, Orchestrator, MCP, LLM Gateway).
 2. **Shell de aceleración operativa** en `tools/cli` para validar patrones de autonomía: modos dinámicos, selección de skills, pipeline seguro sandbox/qa/prod, coordinación de workers, orquestación multi-agente.

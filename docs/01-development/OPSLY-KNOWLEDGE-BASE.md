@@ -146,7 +146,7 @@ docs/
 
 ## 📚 Docs Clave
 
-- [`AGENTS.md`](AGENTS.md) — Estado operativo
+- [`AGENTS.md`](../03-agents/AGENTS.md) — Estado operativo
 - [`VISION.md`](VISION.md) — Norte del producto
 - [`ROADMAP.md`](ROADMAP.md) — Plan semanal
 - [`docs/KNOWLEDGE-SYSTEM.md`](docs/KNOWLEDGE-SYSTEM.md) — Sistema de conocimiento
@@ -343,7 +343,7 @@ No listar secretos ni tokens en el análisis; usar `scripts/check-tokens.sh` y D
 ## Checklist por sprint (arquitectura)
 
 - [ ] `AGENTS.md` 🔄 actualizado al cierre de sesión.
-- [ ] Cambios de contrato HTTP/OpenAPI reflejados en `docs/openapi-opsly-api.yaml` y CI `validate-openapi`.
+- [ ] Cambios de contrato HTTP/OpenAPI reflejados en `docs/00-architecture/openapi-opsly-api.yaml` y CI `validate-openapi`.
 - [ ] Rutas nuevas con patrón Zero-Trust (`tenantSlugMatchesSession` donde toque `[slug]`).
 - [ ] Sin secretos en código ni en prompts pegados en issues.
 - [ ] `npm run type-check` y tests del workspace tocado en verde.
@@ -616,7 +616,7 @@ const result = await llmCall({
 | Arquitectura / código complejo | `sonnet`                | Coste mayor                       |
 | Feedback en tiempo real        | `haiku`, `cache: false` | Respuestas frescas                |
 
-Detalle de proveedores, health daemon y batching: `docs/LLM-GATEWAY.md`.
+Detalle de proveedores, health daemon y batching: `docs/00-architecture/LLM-GATEWAY.md`.
 
 ## Caché
 

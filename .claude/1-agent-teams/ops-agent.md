@@ -47,4 +47,4 @@ ssh vps-dragon@100.120.151.91 "cd /opt/opsly && git pull && \
 - `scripts/onboard-tenant.sh` — onboarding
 - `scripts/suspend-tenant.sh` / `resume-tenant.sh`
 - `docs/runbooks/DEPLOY-GITHUB-ACTIONS.md`
-- `docs/runbooks/TENANT-ONBOARDING-TRIAGE.md`
+- `docs/tenants/runbooks/TENANT-ONBOARDING-TRIAGE.md`

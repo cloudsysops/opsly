@@ -4,6 +4,8 @@ owner: devops
 date: 2026-05-08
 ---
 
+> **Canónico:** `docs/04-operations/`. Rutas históricas: stub [`docs/operations/COST-MONITORING-GUIDE.md`](../operations/COST-MONITORING-GUIDE.md).
+
 # Cost Monitoring & Optimization Guide
 
 ## Cost Model

@@ -17,3 +17,7 @@ Validación operativa, estado de operación y guías no procedimentales.
 
 - Procedimientos accionables; usar `../runbooks/`.
 - Reportes de una sesión puntual; usar `../reports/`.
+
+## Documentos clave
+
+- [`COST-MONITORING-GUIDE.md`](COST-MONITORING-GUIDE.md) — modelo de costes y optimización (stub histórico: [`../operations/COST-MONITORING-GUIDE.md`](../operations/COST-MONITORING-GUIDE.md))

@@ -11,7 +11,7 @@ Las rutas bajo `apps/web/app/api/**` son **proxies** hacia `apps/api` cuando exi
 - `INTERNAL_API_URL` (preferido en Docker) o `NEXT_PUBLIC_API_URL`
 - Cabecera de depuración en respuesta: `x-opsly-web-proxy: 1`
 
-Detalle de mapeo y riesgos: [TENANT-PRODUCTION-BASELINE.md](../04-infrastructure/TENANT-PRODUCTION-BASELINE.md).
+Detalle de mapeo y riesgos: [TENANT-PRODUCTION-BASELINE.md](../tenants/production/TENANT-PRODUCTION-BASELINE.md).
 
 ## Rutas añadidas en consolidación
 

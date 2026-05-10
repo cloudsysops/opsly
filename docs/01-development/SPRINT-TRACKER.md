@@ -7,7 +7,7 @@ last_review: 2026-04-24
 # Opsly — Sprint tracker (operativo)
 
 > **Sincronización:** este archivo es la **vista semanal editable** en git.  
-> **Fuente de verdad de fases:** [`ROADMAP.md`](ROADMAP.md), [`VISION.md`](VISION.md), [`AGENTS.md`](AGENTS.md).  
+> **Fuente de verdad de fases:** [`ROADMAP.md`](ROADMAP.md), [`VISION.md`](VISION.md), [`AGENTS.md`](../03-agents/AGENTS.md).  
 > **Actualizar:** al cerrar cada día/semana (métricas y checkboxes).
 
 ---

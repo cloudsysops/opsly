@@ -31,7 +31,7 @@ Si en el futuro se introduce **prepago**, los “tokens” del cliente pueden se
 
 ## Jerarquía de modelos (orientativa)
 
-Los nombres comerciales del prompt (GPT-4o, Gemini, etc.) son **ejemplos**. En el repo los hints son **`cheap`**, **`haiku`**, **`sonnet`**, más Ollama local — ver tabla en `docs/LLM-GATEWAY.md`.
+Los nombres comerciales del prompt (GPT-4o, Gemini, etc.) son **ejemplos**. En el repo los hints son **`cheap`**, **`haiku`**, **`sonnet`**, más Ollama local — ver tabla en `docs/00-architecture/LLM-GATEWAY.md`.
 
 | Tier conceptual | Rol                              | Equivalente Opsly             |
 | --------------- | -------------------------------- | ----------------------------- |
@@ -68,7 +68,7 @@ Si se implementara wallet prepago, una tabla **orientativa** podría mapear **ta
 
 ## Referencias
 
-- `docs/LLM-GATEWAY.md`
+- `docs/00-architecture/LLM-GATEWAY.md`
 - `docs/TOKEN-SYSTEM-GUIDE.md` (guía corta)
 - `docs/WORKER-TEAM-BILLING.md`
 - `docs/adr/ADR-017-worker-teams-billing-roadmap.md`

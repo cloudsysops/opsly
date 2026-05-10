@@ -12,7 +12,7 @@
 
 - **Qué:** USD agregado por tenant y modelo; presupuestos y alertas.
 - **Dónde hoy:** Admin **`/costs`** — `GET/POST /api/admin/costs`; uso por tenant **`/api/metrics/tenant/:slug`** (y portal **`/api/portal/usage`**).
-- **Logs:** `usage_events` / gateway (`docs/LLM-GATEWAY.md`).
+- **Logs:** `usage_events` / gateway (`docs/00-architecture/LLM-GATEWAY.md`).
 
 ## 3. Tasa de éxito de jobs autónomos
 

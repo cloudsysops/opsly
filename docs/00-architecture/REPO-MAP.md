@@ -8,8 +8,8 @@
 |-----------|------------------|--------|
 | Estado de sesión, bloqueantes, próximo paso | [`AGENTS.md`](../AGENTS.md) (raíz) | Tras cambios relevantes: espejo en `.github/AGENTS.md` vía hook o `npm run sync-agents`. |
 | Visión de producto (texto completo) | [`docs/01-development/VISION.md`](01-development/VISION.md) | |
-| Visión corta / enlaces | `VISION.md` (raíz), [`.github/VISION.md`](../.github/VISION.md), [`docs/VISION.md`](VISION.md) | Mismo **stub**; no escribir aquí el roadmap largo. |
-| Detalle de agentes (rol técnico) | [`docs/03-agents/AGENTS.md`](03-agents/AGENTS.md) | [`docs/AGENTS.md`](AGENTS.md) solo redirige. |
+| Visión corta / enlaces | `VISION.md` (raíz repo), [`.github/VISION.md`](../.github/VISION.md), [`docs/stubs/VISION.md`](../stubs/VISION.md) | **Stub** hacia `01-development/VISION.md`. |
+| Detalle de agentes (rol técnico) | [`docs/03-agents/AGENTS.md`](03-agents/AGENTS.md) | [`docs/stubs/AGENTS.md`](../stubs/AGENTS.md) solo redirige. |
 | **Políticas para IA (no tocar prod/secretos)** | [`docs/03-agents/AGENT-GUARDRAILS.md`](03-agents/AGENT-GUARDRAILS.md) | Zona roja / ámbar, Doppler, workflows, migraciones. |
 | Índice de toda la wiki | [`docs/README.md`](README.md) | |
 

@@ -22,6 +22,7 @@ Roadmap vivo, planificación, sprints, estado de producto y handoffs de desarrol
 
 ## Documentos clave
 
+- [`DOCUMENTATION-LIFECYCLE.md`](DOCUMENTATION-LIFECYCLE.md) — wiki: plan, pruebas, docs, NotebookLM/Obsidian/Graphyfi
 - `ROADMAP.md`
 - `VISION.md`
 - `IMPLEMENTATION-IA-LAYER.md`

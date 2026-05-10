@@ -21,7 +21,8 @@ Cerebro operativo de agentes: contexto, prompts, roles, guardrails, Hive, OpenCl
 
 ## Documentos clave
 
-- `AGENT-BRAIN-CONTRACT.md`
+- `AGENT-BRAIN-CONTRACT.md` (incluye cierre documental)
+- [`../01-development/DOCUMENTATION-LIFECYCLE.md`](../01-development/DOCUMENTATION-LIFECYCLE.md) — plan → código → pruebas → docs → índices
 - `AGENT-GUARDRAILS.md`
 - `AGENTS.md`
 - `LOCAL-AGENT-EXECUTION.md`

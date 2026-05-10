@@ -4,7 +4,7 @@
 
 Este archivo es **la instancia LegalVial** del patrón genérico (Opción B):
 
-- Plantilla reusable: `docs/prompts/tenant-onboarding/TENANT-ONBOARDING-TEMPLATE.md`
+- Plantilla reusable: `docs/tenants/onboarding-prompts/TENANT-ONBOARDING-TEMPLATE.md`
 - Config del tenant: `config/tenants/legalvial.json` (+ schema `config/tenants/schema.tenant-config.json`)
 - Automatización Drive (layout + upload prompts/config): `npm run opsly:drive:ensure-layout` / `npm run opsly:drive:upload-tenant-onboarding`
 

@@ -14,11 +14,11 @@ export GOOGLE_AUTH_STRATEGY="service_account_first"
 ./scripts/import-google-doc.sh \
   --strategy service_account_first \
   --file-id "1fg461BWfmpC6VH3CmV5B_eTddofm9T6grwZihT1W0SI" \
-  --out "docs/legalvial/LEGALVIAL-ARCHITECTURE-DECISION.drive.txt"
+  --out "docs/tenants/legalvial/LEGALVIAL-ARCHITECTURE-DECISION.drive.txt"
 ```
 
 ## Snapshot importado (texto plano)
 
-Opcional: tras correr el import, puedes versionar `docs/legalvial/LEGALVIAL-ARCHITECTURE-DECISION.drive.txt` como snapshot.
+Opcional: tras correr el import, puedes versionar `docs/tenants/legalvial/LEGALVIAL-ARCHITECTURE-DECISION.drive.txt` como snapshot.
 
 Si queda vacío, revisa el Google Doc en Drive (contenido aceptado/publicado en el cuerpo).

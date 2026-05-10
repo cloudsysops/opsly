@@ -6,7 +6,7 @@ last_review: 2026-04-24
 
 # Opsly — Roadmap de implementación (semanal)
 
-> **Fuente de verdad de fases y principios:** [`VISION.md`](VISION.md) y [`AGENTS.md`](AGENTS.md).  
+> **Fuente de verdad de fases y principios:** [`VISION.md`](VISION.md) y [`AGENTS.md`](../03-agents/AGENTS.md).  
 > **Última actualización:** 2026-04-24  
 > Este archivo es el **desglose ejecutable por sprint**; no sustituye decisiones fijas (Compose, Traefik, Supabase, sin K8s).
 

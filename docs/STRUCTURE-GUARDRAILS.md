@@ -32,14 +32,13 @@ No permitido en la raíz:
 
 ## Brain Obsidian (`docs/`)
 
-Solo deben vivir directamente en `docs/`:
+Solo deben vivir directamente en `docs/` (solo **hubs**, sin otros `.md`):
 
-- Hubs: `README.md`, `index.md`, `STRUCTURE-GUARDRAILS.md`.
-- Contratos públicos: `openapi-opsly-api.yaml`.
-- Stubs de compatibilidad: `AGENTS.md`, `ROADMAP.md`, `VISION.md`,
-  `LLM-GATEWAY.md`, `E2E-TEST-SCENARIOS.md`, `API-CORE-PORTFOLIO.md`,
-  `TENANT-PRODUCTION-BASELINE.md`, `TENANT-PRODUCTION-CHECKLIST.md`,
-  `TENANT-PRODUCTION-HARDENING.md`, `TENANT-PRODUCTION-ROLLOUT.md`.
+- `README.md`, `index.md`, `STRUCTURE-GUARDRAILS.md`.
+- Contrato OpenAPI (subset CI): `00-architecture/openapi-opsly-api.yaml` (no duplicar en la raíz de `docs/`).
+
+**Stubs de compatibilidad** (redirecciones cortas, no contenido real): carpeta
+[`stubs/`](./stubs/README.md) — p. ej. `stubs/AGENTS.md` → `03-agents/AGENTS.md`.
 
 Todo lo demás debe ir en una carpeta dueña:
 
@@ -52,13 +51,16 @@ Todo lo demás debe ir en una carpeta dueña:
 | `04-infrastructure/` | VPS, Docker, Traefik, Cloudflare, Tailscale, Redis, Doppler. |
 | `04-operations/` | Validaciones y visión operativa no procedimental. |
 | `06-multi-agent/` | Coordinación multi-agente y ejecución paralela. |
-| `adr/` | ADRs numerados. Suplementos en subcarpetas, sin duplicar IDs. |
+| `tenants/` | Multi-tenant: baseline prod, runbooks de tenant, testing, onboarding, subclientes. Hub: `tenants/README.md`. |
+| `adr/` | ADRs numerados. Hub: `adr/README.md`. Suplementos en subcarpetas, sin duplicar IDs. |
 | `runbooks/` | Procedimientos accionables e incident response. |
 | `reports/` | Snapshots, informes de sesión, evidencias, resultados puntuales. |
 | `audits/` | Auditorías técnicas, seguridad, performance y calidad. |
 | `testing/` | Escenarios E2E, QA y planes de prueba. |
 | `history/` | Material obsoleto o histórico que ya no es fuente de verdad. |
 | `generated/` | Archivos generados automáticamente; no editar a mano. |
+| `infrastructure/`, `operations/` | **Solo stubs y README** de compatibilidad; contenido nuevo en `04-infrastructure/`, `04-operations/`. |
+| `prompts/` | Hub [`prompts/README.md`](./prompts/README.md); onboarding canónico en [`tenants/onboarding-prompts/`](./tenants/onboarding-prompts/). |
 
 ## Frontmatter Recomendado
 
@@ -73,20 +75,22 @@ last_review: YYYY-MM-DD
 ## Reglas para Agentes
 
 - Antes de crear documentación, elegir una carpeta dueña.
-- Si se mueve un documento consumido por agentes/scripts, dejar stub temporal bajo `docs/`, no en la raíz.
-- No crear documentos nuevos directamente bajo `docs/` salvo hubs/stubs.
+- Si se mueve un documento consumido por agentes/scripts, dejar stub en `docs/stubs/`, no en la raíz de `docs/`.
+- No crear documentos nuevos directamente bajo `docs/` salvo los tres hubs; los stubs van en `docs/stubs/`.
 - No duplicar ADR IDs; usar subcarpetas de suplemento cuando haga falta.
 - No editar archivos bajo `docs/generated/` a mano.
+- Tras cambios de documentación: ver [`01-development/DOCUMENTATION-LIFECYCLE.md`](./01-development/DOCUMENTATION-LIFECYCLE.md) (pruebas → docs → índices → cierre).
 
 ## Multi-tenant y API
 
 - **Plano HTTP canónico:** `apps/api/app/api/**`.
-- **`apps/web/app/api/**`:** mantener como proxies hacia el API salvo excepción documentada; ver [`01-development/API-CORE-PORTFOLIO.md`](./01-development/API-CORE-PORTFOLIO.md) y [`04-infrastructure/TENANT-PRODUCTION-BASELINE.md`](./04-infrastructure/TENANT-PRODUCTION-BASELINE.md).
+- **`apps/web/app/api/**`:** mantener como proxies hacia el API salvo excepción documentada; ver [`01-development/API-CORE-PORTFOLIO.md`](./01-development/API-CORE-PORTFOLIO.md) y [`tenants/production/TENANT-PRODUCTION-BASELINE.md`](./tenants/production/TENANT-PRODUCTION-BASELINE.md) (stub: [`04-infrastructure/TENANT-PRODUCTION-BASELINE.md`](./04-infrastructure/TENANT-PRODUCTION-BASELINE.md)).
 
 ## Producción por tenant
 
-- Checklist única: [`runbooks/TENANT-PRODUCTION-CHECKLIST.md`](./runbooks/TENANT-PRODUCTION-CHECKLIST.md).
-- Rollout por cohortes: [`runbooks/TENANT-PRODUCTION-ROLLOUT.md`](./runbooks/TENANT-PRODUCTION-ROLLOUT.md).
+- Hub: [`tenants/README.md`](./tenants/README.md).
+- Checklist única: [`tenants/runbooks/TENANT-PRODUCTION-CHECKLIST.md`](./tenants/runbooks/TENANT-PRODUCTION-CHECKLIST.md) (stub en `runbooks/`).
+- Rollout por cohortes: [`tenants/runbooks/TENANT-PRODUCTION-ROLLOUT.md`](./tenants/runbooks/TENANT-PRODUCTION-ROLLOUT.md) (stub en `runbooks/`).
 
 ## Validación
 

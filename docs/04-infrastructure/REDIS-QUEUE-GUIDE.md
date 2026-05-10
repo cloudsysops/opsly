@@ -4,6 +4,8 @@ owner: devops
 date: 2026-05-08
 ---
 
+> **Canónico:** `docs/04-infrastructure/`. Rutas históricas: stub [`docs/infrastructure/REDIS-QUEUE-GUIDE.md`](../infrastructure/REDIS-QUEUE-GUIDE.md).
+
 # Redis Queue & Orchestrator Guide
 
 ## Quick Overview

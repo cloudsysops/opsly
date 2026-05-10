@@ -12,10 +12,10 @@ Opsly opera multi-tenant con stacks repetibles (Compose por tenant) y documentac
 
 Adoptar un patrón **genérico reusable (Opción B)**:
 
-- **Plantilla**: `docs/prompts/tenant-onboarding/TENANT-ONBOARDING-TEMPLATE.md` (variables explícitas).
+- **Plantilla**: `docs/tenants/onboarding-prompts/TENANT-ONBOARDING-TEMPLATE.md` (variables explícitas; stub en `docs/prompts/tenant-onboarding/`).
 - **Config por tenant**: `config/tenants/<slug>.json` validado por `config/tenants/schema.tenant-config.json`.
-- **Validación compartida**: `docs/prompts/tenant-onboarding/DEPLOYMENT-VALIDATION.md`.
-- **Infra compartida documentada**: `docs/prompts/tenant-onboarding/INFRASTRUCTURE-SETUP.md`.
+- **Validación compartida**: `docs/tenants/onboarding-prompts/DEPLOYMENT-VALIDATION.md`.
+- **Infra compartida documentada**: `docs/tenants/onboarding-prompts/INFRASTRUCTURE-SETUP.md`.
 
 LegalVial (y cualquier subcliente/híbrido) se modela como **instancia** del patrón (p.ej. `parent_tenant_slug` + `client_slug`), no como un prompt monolítico irreutilizable.
 

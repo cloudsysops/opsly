@@ -22,7 +22,7 @@
 
 | Área | Condición |
 |------|-----------|
-| Nuevas rutas bajo `apps/api/app/api/portal/**` | Zero-Trust: `resolveTrustedPortalSession` / `tenantSlugMatchesSession`; tests; actualizar `docs/openapi-opsly-api.yaml` si aplica subset CI. |
+| Nuevas rutas bajo `apps/api/app/api/portal/**` | Zero-Trust: `resolveTrustedPortalSession` / `tenantSlugMatchesSession`; tests; actualizar `docs/00-architecture/openapi-opsly-api.yaml` si aplica subset CI. |
 | `apps/mcp` tools que llaman API o ejecutan efectos | No nuevos vectores de exfiltración; autenticación alineada a ADR-009. |
 | `apps/orchestrator` colas, prioridades, workers | Sin breaking de payloads; `JOB_VALIDATION` / idempotencia; Vitest. |
 | Scripts bajo `scripts/` que hacen `ssh`, `docker`, `curl` a prod | `set -euo pipefail`, `--dry-run` por defecto donde tenga sentido; no imprimir secretos. |

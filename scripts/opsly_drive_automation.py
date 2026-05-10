@@ -514,7 +514,7 @@ def cmd_upload_tenant_pack(_: argparse.Namespace) -> int:
     prompts_parent = ensure_child_folder(client, root_id, str(folder_names.get("prompts", "PROMPTS")))
     config_parent = ensure_child_folder(client, root_id, str(folder_names.get("config", "CONFIG")))
 
-    prompt_dir = _repo_root() / "docs" / "prompts" / "tenant-onboarding"
+    prompt_dir = _repo_root() / "docs" / "tenants" / "onboarding-prompts"
     for p in sorted(prompt_dir.glob("*.md")):
         fid = upload_or_update_file(client, prompts_parent, p, mime="text/markdown")
         print(f"[drive] uploaded prompt {p.name} -> {fid}")

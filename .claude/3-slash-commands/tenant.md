@@ -1,6 +1,6 @@
 # /tenant — Crear/Depurar Tenant
 
-Gestiona tenants de prueba. Ver `AGENTS.md` (sección "Primer tenant en staging — smiletripcare") y `docs/runbooks/TENANT-ONBOARDING-TRIAGE.md`.
+Gestiona tenants de prueba. Ver `AGENTS.md` (sección "Primer tenant en staging — smiletripcare") y `docs/tenants/runbooks/TENANT-ONBOARDING-TRIAGE.md`.
 
 ## Crear Tenant
 ```bash
@@ -47,5 +47,5 @@ curl -X POST "https://api.op-sly.com/api/invitations" \
 ## Referencias
 - `AGENTS.md` → "Primer tenant en staging", "LocalRank por Tailscale"
 - `scripts/onboard-tenant.sh` — script principal
-- `docs/runbooks/TENANT-ONBOARDING-TRIAGE.md` — troubleshooting
+- `docs/tenants/runbooks/TENANT-ONBOARDING-TRIAGE.md` — troubleshooting
 - `infra/templates/` — plantilla Docker Compose

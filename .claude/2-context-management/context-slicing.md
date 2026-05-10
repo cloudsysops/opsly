@@ -34,7 +34,7 @@ const summary = { total_jobs: 1234, failed: 5, avg_duration_ms: 340 };
 ## 5. Lazy Loading Docs
 | Tarea | Doc a leer |
 |------|-------------|
-| Onboarding | `docs/runbooks/TENANT-ONBOARDING-TRIAGE.md` |
+| Onboarding | `docs/tenants/runbooks/TENANT-ONBOARDING-TRIAGE.md` |
 | Deploy | `docs/runbooks/DEPLOY-GITHUB-ACTIONS.md` |
 | Seguridad | `docs/SECURITY_CHECKLIST.md` |
 | Costos | `docs/COST-DASHBOARD.md` |

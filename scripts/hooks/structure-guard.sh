@@ -21,7 +21,8 @@ is_rule_definition_file() {
     [[ "$file" == "scripts/tests/structure-integrity.test.js" ]] || \
     [[ "$file" == "scripts/tests/whitelist.test.js" ]] || \
     [[ "$file" == "scripts/sync-references.sh" ]] || \
-    [[ "$file" == "docs/00-architecture/hooks-system.md" ]]
+    [[ "$file" == "docs/00-architecture/hooks-system.md" ]] || \
+    [[ "$file" == "docs/STRUCTURE-GUARDRAILS.md" ]]
 }
 
 check_forbidden_path() {
@@ -88,7 +89,7 @@ check_docs_root_staged() {
     echo "🚫 Archivo(s) no permitidos en la raíz de docs/:"
     echo "$violations"
     echo ""
-    echo "💡 config/docs-root-allowlist.json solo para hubs/stubs acordados"
+    echo "💡 config/docs-root-allowlist.json solo para hubs en raíz de docs/; stubs en docs/stubs/"
     return 1
   fi
   return 0

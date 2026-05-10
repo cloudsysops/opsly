@@ -565,7 +565,7 @@ curl http://localhost:3011/health
 - **LOCAL-AGENT-EXECUTION.md** — Basic setup & architecture
 - **VALIDATION-AND-ITERATION-SYSTEM.md** — Detailed validation flow
 - **docs/01-development/GIT-WORKFLOW.md** — Git standards
-- **docs/AGENTS.md** — Session state & agent roles
+- **docs/stubs/AGENTS.md** — Session state & agent roles
 
 ---
 

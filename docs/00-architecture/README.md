@@ -22,6 +22,7 @@ Arquitectura estable de Opsly: control plane, data plane, OpenClaw, LLM Gateway,
 
 ## Documentos clave
 
+- `openapi-opsly-api.yaml` — contrato HTTP subset (portal, health, feedback); CI `npm run validate-openapi`.
 - `ARCHITECTURE.md`
 - `ARCHITECTURE-DISTRIBUTED.md`
 - `OPENCLAW-ARCHITECTURE.md`

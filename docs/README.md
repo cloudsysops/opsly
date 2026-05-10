@@ -11,23 +11,25 @@ carpeta correcta antes de crear o editar documentación.
 
 ## Lectura Rápida
 
-- Estado operativo de sesión: [`../AGENTS.md`](../AGENTS.md).
-- Norte de producto: [`../VISION.md`](../VISION.md) y [`01-development/VISION.md`](01-development/VISION.md).
-- Roadmap activo: [`../ROADMAP.md`](../ROADMAP.md) y [`01-development/ROADMAP.md`](01-development/ROADMAP.md).
+- Estado operativo de sesión: [`03-agents/AGENTS.md`](03-agents/AGENTS.md) (stub: [`stubs/AGENTS.md`](stubs/AGENTS.md)); repo raíz: [`../AGENTS.md`](../AGENTS.md).
+- Norte de producto: [`01-development/VISION.md`](01-development/VISION.md) (stub: [`stubs/VISION.md`](stubs/VISION.md)); repo raíz: [`../VISION.md`](../VISION.md).
+- Roadmap activo: [`01-development/ROADMAP.md`](01-development/ROADMAP.md) (stub: [`stubs/ROADMAP.md`](stubs/ROADMAP.md)); repo raíz: [`../ROADMAP.md`](../ROADMAP.md).
 - Reglas de estructura: [`STRUCTURE-GUARDRAILS.md`](STRUCTURE-GUARDRAILS.md).
-- Índice compacto Obsidian: [`index.md`](index.md).
+- Índice compacto Obsidian (MOC de todo el vault): [`index.md`](index.md).
+- Ciclo documental (plan, pruebas, docs, índices, sin tareas a medias): [`01-development/DOCUMENTATION-LIFECYCLE.md`](01-development/DOCUMENTATION-LIFECYCLE.md).
 
 ## Brain Map
 
 | Área | Uso principal |
 | --- | --- |
 | [`00-architecture/`](00-architecture/README.md) | Arquitectura estable, diagramas, contratos técnicos. |
-| [`01-development/`](01-development/README.md) | Roadmap activo, sprints, planning vivo y handoffs. |
+| [`01-development/`](01-development/README.md) | Roadmap activo, sprints, planning vivo, handoffs y **ciclo de vida documental**. |
 | [`02-tools/`](02-tools/README.md) | MCPs, NotebookLM, Drive, Obsidian, n8n y herramientas internas. |
 | [`03-agents/`](03-agents/README.md) | Agentes, prompts, skills, guardrails y OpenClaw operativo. |
 | [`04-infrastructure/`](04-infrastructure/README.md) | VPS, Traefik, Docker, Cloudflare, Tailscale, Redis y Doppler. |
 | [`04-operations/`](04-operations/README.md) | Validaciones y visión operativa no procedimental. |
 | [`06-multi-agent/`](06-multi-agent/README.md) | Coordinación multi-agente y ejecución paralela. |
+| [`tenants/`](tenants/README.md) | Multi-tenant: prod, runbooks, testing, onboarding. |
 | [`adr/`](adr/) | ADRs numerados y suplementos. |
 | [`runbooks/`](runbooks/README.md) | Procedimientos accionables e incident response. |
 | [`reports/`](reports/README.md) | Snapshots, evidencias y reportes puntuales. |
@@ -36,26 +38,15 @@ carpeta correcta antes de crear o editar documentación.
 | [`history/`](history/README.md) | Material histórico u obsoleto. |
 | [`generated/`](generated/README.md) | Archivos generados; no editar a mano. |
 
-## Stubs en `docs/`
+## Stubs (`docs/stubs/`)
 
-Estos archivos existen solo por compatibilidad y apuntan a rutas canónicas:
-
-- [`AGENTS.md`](AGENTS.md) -> [`03-agents/AGENTS.md`](03-agents/AGENTS.md)
-- [`ROADMAP.md`](ROADMAP.md) -> [`01-development/ROADMAP.md`](01-development/ROADMAP.md)
-- [`VISION.md`](VISION.md) -> [`01-development/VISION.md`](01-development/VISION.md)
-- [`LLM-GATEWAY.md`](LLM-GATEWAY.md) -> [`00-architecture/LLM-GATEWAY.md`](00-architecture/LLM-GATEWAY.md)
-- [`E2E-TEST-SCENARIOS.md`](E2E-TEST-SCENARIOS.md) -> [`testing/E2E-TEST-SCENARIOS.md`](testing/E2E-TEST-SCENARIOS.md)
-- [`API-CORE-PORTFOLIO.md`](API-CORE-PORTFOLIO.md) -> [`01-development/API-CORE-PORTFOLIO.md`](01-development/API-CORE-PORTFOLIO.md)
-- [`TENANT-PRODUCTION-BASELINE.md`](TENANT-PRODUCTION-BASELINE.md) -> [`04-infrastructure/TENANT-PRODUCTION-BASELINE.md`](04-infrastructure/TENANT-PRODUCTION-BASELINE.md)
-- [`TENANT-PRODUCTION-CHECKLIST.md`](TENANT-PRODUCTION-CHECKLIST.md) -> [`runbooks/TENANT-PRODUCTION-CHECKLIST.md`](runbooks/TENANT-PRODUCTION-CHECKLIST.md)
-- [`TENANT-PRODUCTION-HARDENING.md`](TENANT-PRODUCTION-HARDENING.md) -> [`04-infrastructure/TENANT-PRODUCTION-HARDENING.md`](04-infrastructure/TENANT-PRODUCTION-HARDENING.md)
-- [`TENANT-PRODUCTION-ROLLOUT.md`](TENANT-PRODUCTION-ROLLOUT.md) -> [`runbooks/TENANT-PRODUCTION-ROLLOUT.md`](runbooks/TENANT-PRODUCTION-ROLLOUT.md)
+Redirecciones cortas; el índice está en [`stubs/README.md`](stubs/README.md).
 
 ## Reglas para Nuevos Docs
 
 - No crear Markdown nuevo en la raíz del repo salvo `AGENTS.md`, `README.md`, `ROADMAP.md` o `VISION.md`.
-- No crear documentos completos directamente bajo `docs/`; usa una carpeta dueña.
+- No crear documentos completos directamente bajo `docs/` (salvo los tres hubs); usa una carpeta dueña.
 - Reportes y evidencias van a `docs/reports/`; planes históricos a `docs/history/`.
 - Runbooks accionables van a `docs/runbooks/`; arquitectura estable a `docs/00-architecture/`.
-- Si una ruta vieja es consumida por agentes o scripts, deja stub temporal bajo `docs/`.
+- Si una ruta vieja es consumida por agentes o scripts, deja stub en `docs/stubs/`.
 - Valida con `npm run validate-structure` antes de cerrar cambios de documentación.
