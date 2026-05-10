@@ -54,6 +54,10 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON platform.mi_tabla TO service_role;
 
 Si anon/authenticated acceden por PostgREST, añadir políticas explícitas; si solo `service_role` vía backend, documentar en el ADR o en el comentario de la migración.
 
+## Skill marketplace (seguridad / CLI Supabase)
+
+Checklist extendido (JWT, `user_metadata`, vistas RLS, Storage, MCP): **`opsly-supabase-marketplace`**.
+
 ## Errores comunes
 
 | Error                 | Causa                      | Solución                             |

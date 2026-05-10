@@ -55,3 +55,7 @@ export async function POST(request: Request): Promise<Response> {
 | Doble cobro                     | Falta idempotencia                 | Usar `idempotency_key` + upsert defensivo               |
 | Plan no refleja en portal       | Sync incompleto API→DB             | Asegurar update en `subscription-service` y re-fetch UI |
 | 500 en invoice creation         | Tenant sin customer Stripe         | Crear/validar `stripe_customer_id` antes de facturar    |
+
+## Skill marketplace (oficial Stripe)
+
+Para criterios de producto Stripe (Checkout vs Charges, Billing, Connect) alineados a la documentación actual, cargar también **`opsly-stripe-marketplace`** (`skills/user/opsly-stripe-marketplace/SKILL.md`).

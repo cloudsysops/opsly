@@ -1,7 +1,7 @@
 {
-  "version": "3.0.0",
-  "generated": "2026-05-14T17:55:00Z",
-  "description": "Índice de todos los skills disponibles en Opsly para agentes IA autónomos",
+  "version": "3.1.0",
+  "generated": "2026-05-10T00:00:00Z",
+  "description": "Índice de todos los skills disponibles en Opsly para agentes IA autónomos (incl. adaptaciones marketplace Cursor)",
   "skills": [
     {
       "name": "opsly-skill-creator",
@@ -157,6 +157,42 @@
       "path": "skills/user/opsly-billing/"
     },
     {
+      "name": "opsly-stripe-marketplace",
+      "version": "1.0.0",
+      "description": "Criterios Stripe oficiales (skill marketplace) mapeados a Opsly: Checkout, Billing, sin Charges legacy; usar con opsly-billing.",
+      "category": "billing",
+      "priority": "high",
+      "usage": "Diseño o auditoría Stripe alineada a documentación oficial + rutas Doppler Opsly",
+      "path": "skills/user/opsly-stripe-marketplace/"
+    },
+    {
+      "name": "opsly-supabase-marketplace",
+      "version": "1.0.0",
+      "description": "Seguridad Supabase y CLI (skill marketplace): RLS, JWT/metadata, vistas, Storage; complementa opsly-supabase.",
+      "category": "database",
+      "priority": "high",
+      "usage": "Auditoría RLS/Auth/MCP Supabase antes de migrar o exponer datos",
+      "path": "skills/user/opsly-supabase-marketplace/"
+    },
+    {
+      "name": "opsly-ai-sdk-vercel",
+      "version": "1.0.0",
+      "description": "Vercel AI SDK en portal/admin/web con regla OpenClaw: UI y streaming sin fugas de claves ni bypass del LLM Gateway para costos.",
+      "category": "ai",
+      "priority": "medium",
+      "usage": "Chat/streaming en Next.js con paquete ai; combinar con opsly-llm para backend",
+      "path": "skills/user/opsly-ai-sdk-vercel/"
+    },
+    {
+      "name": "opsly-agent-verification",
+      "version": "1.0.0",
+      "description": "Evidencia antes de merge: type-check, tests workspace, validate-openapi/skills, sin secretos (disciplina agentes).",
+      "category": "qa",
+      "priority": "high",
+      "usage": "Cierre de tarea o PR; antes de afirmar completado",
+      "path": "skills/user/opsly-agent-verification/"
+    },
+    {
       "name": "opsly-orchestrator",
       "version": "1.0.0",
       "description": "OAR, workflows, n8n, super-agent, BullMQ. Orquestación de agentes y workflows automizados.",
@@ -307,19 +343,25 @@
     "bootstrap": ["opsly-context", "opsly-bootstrap"],
     "master": ["opsly-quantum"],
     "autonomy": ["opsly-autonomous"],
-    "architecture": ["opsly-architect-senior", "opsly-architect", "hermes-skeptic"],
-    "development": ["opsly-api", "opsly-bash", "opsly-frontend", "context-builder"],
-    "ai": ["opsly-llm", "opsly-notebooklm", "opsly-feedback-ml"],
+    "architecture": ["opsly-architect-senior", "opsly-architect"],
+    "development": ["opsly-api", "opsly-bash", "opsly-frontend"],
+    "ai": ["opsly-llm", "opsly-notebooklm", "opsly-feedback-ml", "opsly-ai-sdk-vercel"],
     "integration": ["opsly-mcp", "opsly-google-cloud"],
-    "database": ["opsly-supabase"],
+    "database": ["opsly-supabase", "opsly-supabase-marketplace"],
     "operations": ["opsly-tenant"],
-    "infrastructure": ["opsly-infra", "opsly-self-healing"],
-    "orchestration": ["opsly-orchestrator", "opsly-agent-teams", "opsly-jcode", "opsly-n8n-automation"],
-    "billing": ["opsly-billing", "opsly-cost-forecaster"],
-    "qa": ["opsly-qa"],
+    "infrastructure": ["opsly-infra"],
+    "orchestration": ["opsly-orchestrator", "opsly-agent-teams", "opsly-jcode"],
+    "billing": ["opsly-billing", "opsly-stripe-marketplace"],
+    "qa": ["opsly-qa", "opsly-agent-verification"],
     "notifications": ["opsly-discord"],
     "optimization": ["opsly-simplify"],
-    "research": ["opsly-researcher", "opsly-brain-researcher"]
+    "research": ["opsly-researcher"],
+    "marketplace": [
+      "opsly-stripe-marketplace",
+      "opsly-supabase-marketplace",
+      "opsly-ai-sdk-vercel",
+      "opsly-agent-verification"
+    ]
   },
   "quick_reference": {
     "nueva_sesion": ["opsly-context"],
@@ -331,9 +373,10 @@
     "self_healing": ["opsly-self-healing", "opsly-infra", "opsly-discord"],
     "revision_arquitectura": ["opsly-architect-senior"],
     "investigacion_externa": ["opsly-researcher"],
-    "tracing": ["opsly-distributed-tracing", "opsly-infra"],
-    "costos": ["opsly-cost-forecaster", "opsly-billing"],
-    "n8n": ["opsly-n8n-automation", "opsly-orchestrator"]
+    "stripe_oficial": ["opsly-billing", "opsly-stripe-marketplace"],
+    "supabase_oficial": ["opsly-supabase", "opsly-supabase-marketplace"],
+    "frontend_ai_chat": ["opsly-frontend", "opsly-ai-sdk-vercel"],
+    "cierre_tarea_agente": ["opsly-agent-verification", "opsly-qa"]
   },
   "deprecated": {
     "opsly-bootstrap": "Usar opsly-context",
