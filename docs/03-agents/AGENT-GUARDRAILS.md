@@ -10,7 +10,8 @@
 | `supabase/migrations/*.sql` en **prod** (o push sin `--dry-run` revisado) | Datos y RLS de todos los tenants; errores son irreversibles sin restore. |
 | `.github/workflows/*` que despliegan o mutan secretos | Un cambio malicioso o erróneo despliega a VPS o expone tokens. |
 | `infra/docker-compose.platform.yml`, `infra/traefik/*`, reglas TLS/ACME | Un error deja la plataforma o tenants fuera de servicio. |
-| `config/root-whitelist.json` (ampliar sin consenso) | Debilita el gate de CI que evita basura en raíz. |
+| `config/root-whitelist.json` (ampliar sin consenso) | Debilita el gate de CI que evita basura en raíz del **repo**. |
+| `config/docs-root-allowlist.json` (ampliar sin consenso) | La raíz de `docs/` debe quedarse en **tres** hubs; ampliar sin revisión rompe Obsidian/validación. |
 | `doppler secrets set`, rotación de tokens, subida de `.env` a Doppler | Riesgo de fuga, sobrescritura de `prd`, o valores truncados en la nube. |
 | `docs/ACTIVE-PROMPT.md` en VPS si **no** confías en quien puede editarlo | `cursor-prompt-monitor` ejecuta líneas no comentadas = **RCE** (ver `AGENTS.md`). |
 | Billing real: Stripe **live**, precios, webhooks de cobro | Impacto legal y financiero directo. |
@@ -63,4 +64,4 @@ En CI: `validate-structure-strict` con `CI=true` valida raíz contra whitelist.
 
 ---
 
-**Última revisión:** 2026-04-30 — añadir filas a zonas roja/ámbar cuando aparezca un incidente o nueva superficie (billing, nuevo proveedor, etc.).
+**Última revisión:** 2026-05-10 — política raíz `docs/` + `config/docs-root-allowlist.json`; spec OpenAPI bajo `docs/00-architecture/`.

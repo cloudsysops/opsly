@@ -26,6 +26,7 @@
     "validate:strict": "npm run validate-structure",
     "validate:strict:ci": "npm run validate-structure",
     "index-knowledge": "bash scripts/index-knowledge.sh",
+    "obsidian:file-index": "node scripts/update-obsidian-file-index.mjs",
     "validate-skills": "npm run validate-skills --prefix packages/skills/manifest",
     "test-skills-manifest": "npm test --prefix packages/skills/manifest",
     "skills:list": "node scripts/load-skills.js list",

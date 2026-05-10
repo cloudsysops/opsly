@@ -31,7 +31,7 @@ Mantener un cerebro compartido entre humanos y agentes:
 Antes de modificar codigo, infra, tests, workflows o docs operativas:
 
 1. Leer `AGENTS.md`.
-2. Leer `VISION.md` o el stub que apunte a `docs/01-development/VISION.md`.
+2. Leer `VISION.md` (raíz repo) o `docs/stubs/VISION.md` / `docs/01-development/VISION.md`.
 3. Leer este contrato: `docs/03-agents/AGENT-BRAIN-CONTRACT.md`.
 4. Consultar `config/knowledge-index.json` si existe.
 5. Consultar `config/github-module-graph.json` si existe.
@@ -73,7 +73,7 @@ un enlace explicito a este contrato.
 | Capa | Ruta |
 | --- | --- |
 | Estado operativo | `AGENTS.md` |
-| Vision de producto | `VISION.md`, `docs/01-development/VISION.md` |
+| Vision de producto | `VISION.md` (repo), `docs/stubs/VISION.md`, `docs/01-development/VISION.md` |
 | Memoria Obsidian | `docs/brain/` |
 | Indice documental | `config/knowledge-index.json` |
 | Grafo de modulos GitHub | `config/github-module-graph.json` |

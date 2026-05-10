@@ -22,7 +22,8 @@ is_rule_definition_file() {
     [[ "$file" == "scripts/tests/whitelist.test.js" ]] || \
     [[ "$file" == "scripts/sync-references.sh" ]] || \
     [[ "$file" == "docs/00-architecture/hooks-system.md" ]] || \
-    [[ "$file" == "docs/STRUCTURE-GUARDRAILS.md" ]]
+    [[ "$file" == "docs/STRUCTURE-GUARDRAILS.md" ]] || \
+    [[ "$file" == "config/docs-root-allowlist.json" ]]
 }
 
 check_forbidden_path() {

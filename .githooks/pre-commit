@@ -72,7 +72,7 @@ npm run lint -- --fix 2>/dev/null || true
 
 # 9. Protect canonical documentation
 echo "🔒 Validating canonical documentation integrity..."
-CANONICAL_FILES="VISION.md ROADMAP.md AGENTS.md README.md docs/README.md docs/STRUCTURE-GUARDRAILS.md config/modules.json"
+CANONICAL_FILES="VISION.md ROADMAP.md AGENTS.md README.md docs/README.md docs/index.md docs/STRUCTURE-GUARDRAILS.md config/docs-root-allowlist.json config/modules.json"
 MODIFIED_CANONICAL=""
 
 for file in $CANONICAL_FILES; do

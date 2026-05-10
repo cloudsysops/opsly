@@ -37,7 +37,7 @@ workers locales:
 1. `docs/03-agents/AGENT-BRAIN-CONTRACT.md`
 2. `config/knowledge-index.json`
 3. `config/github-module-graph.json` cuando exista
-4. `docs/brain/` como vault Obsidian canonico
+4. `docs/brain/` como vault Obsidian canonico; mapa de todo `docs/`: `docs/index.md`; inventario `.md`: `npm run obsidian:file-index`
 5. `apps/mcp/src/tools/graphyfi.ts` como entrada Graphyfi/MCP
 
 No crear memoria paralela en prompts de Cursor. Si una tarea necesita contexto,
@@ -45,11 +45,13 @@ consultar primero el Brain compartido y luego el codigo.
 
 ## Docs / Obsidian Brain — obligatorio
 
-- La raiz del repo solo permite Markdown canonico: `AGENTS.md`, `README.md`, `ROADMAP.md`, `VISION.md`.
-- No crear stubs ni docs largos en raiz (`ARCHITECTURE.md`, `HANDOFF.md`, `SPRINT-TRACKER.md`, `.openclaw.md`, reportes, planes, auditorias).
-- **Raíz de `docs/`:** no añadir archivos sueltos (`.md`, `.yaml`, etc.). Solo hubs/stubs listados en `docs/STRUCTURE-GUARDRAILS.md` y en `config/docs-root-allowlist.json`. Documentación nueva va en la carpeta dueña (`docs/01-development/`, `docs/runbooks/`, `docs/adr/`, …). El pre-commit y `npm run validate-structure` fallan si se viola.
-- Si mueves una ruta consumida por agentes/scripts, deja stub temporal bajo `docs/` (y solo si el stub está en la allowlist), nunca en la raíz del repo.
-- Antes de terminar cambios de documentacion: ejecutar `npm run validate-structure` y, si tocaste contexto JSON, `npm run validate-context`.
+- **Raíz del repo:** solo Markdown canónico: `AGENTS.md`, `README.md`, `ROADMAP.md`, `VISION.md`. No añadir otros `.md` en raíz (`ARCHITECTURE.md`, `HANDOFF.md`, etc.).
+- **Raíz de `docs/`:** exactamente **tres** hubs: `docs/README.md`, `docs/index.md`, `docs/STRUCTURE-GUARDRAILS.md`. Nada más en ese nivel (ni `.md` ni `.yaml`). Lista cerrada en `config/docs-root-allowlist.json`.
+- **Stubs de compatibilidad** (redirecciones cortas): `docs/stubs/` — ver `docs/stubs/README.md`. OpenAPI subset CI: `docs/00-architecture/openapi-opsly-api.yaml`.
+- Documentación nueva en la **carpeta dueña** (`docs/01-development/`, `docs/runbooks/`, `docs/adr/`, `docs/tenants/`, …). `npm run validate-structure`, pre-commit y `scripts/hooks/structure-guard.sh` fallan si se coloca un archivo no allowlisted en `docs/`.
+- Si mueves una ruta consumida por enlaces viejos, añade o actualiza un stub en `docs/stubs/`, no en la raíz de `docs/` ni del repo.
+- Antes de cerrar cambios de documentación: `npm run validate-structure` y, si tocaste contexto JSON del brain, `npm run validate-context`.
+- Tras cambios en el vault: `docs/01-development/DOCUMENTATION-LIFECYCLE.md`; si aplica, `npm run index-knowledge` y `npm run obsidian:file-index`.
 
 ## Cola de prompts (local)
 
@@ -65,7 +67,7 @@ Ejecutor técnico senior. Filosofía: **Planificar → Documentar → Tests → 
 
 1. **`AGENTS.md`** — sección **🔄 Próximo paso inmediato** y, si aplica, **🔄 Estado actual** / bloqueantes.
 2. **`ROADMAP.md`** (y el detalle en **`docs/01-development/ROADMAP.md`** si existe en el clon) — sprint/semana activa.
-3. **Doc de sprint referenciado en AGENTS** (p. ej. Semana 6: plan en `docs/01-development/SEMANA-6-PLAN.md`; la ruta en AGENTS puede ser un stub — resolver al archivo real bajo `docs/`).
+3. **Doc de sprint referenciado en AGENTS** (p. ej. Semana 6: plan en `docs/01-development/SEMANA-6-PLAN.md`; si AGENTS enlaza un nombre corto, resolver al archivo real bajo `docs/` o vía `docs/stubs/`).
 
 Citar explícitamente qué fuente alimenta cada bloque del plan. **Excepción:** crear **ADR**, runbook o doc **nuevo** solo si el usuario lo pide de forma explícita (no por el mero hecho de pedir «un plan»).
 

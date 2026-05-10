@@ -15,7 +15,7 @@ cd "$ROOT"
 COMMIT_MSG=$(cat "$MSG_FILE")
 
 # Check if canonical files are being modified
-CANONICAL_FILES="VISION.md ROADMAP.md AGENTS.md README.md docs/README.md docs/STRUCTURE-GUARDRAILS.md config/modules.json"
+CANONICAL_FILES="VISION.md ROADMAP.md AGENTS.md README.md docs/README.md docs/index.md docs/STRUCTURE-GUARDRAILS.md config/docs-root-allowlist.json config/modules.json"
 MODIFIED_CANONICAL=""
 
 for file in $CANONICAL_FILES; do

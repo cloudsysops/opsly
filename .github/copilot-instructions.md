@@ -22,7 +22,7 @@ Hermes y workers locales:
 
 No crear instrucciones paralelas que contradigan el Brain compartido.
 
-**Layout de documentación:** no crear archivos nuevos en la raíz de `docs/` salvo los hubs/stubs listados en `docs/STRUCTURE-GUARDRAILS.md` y `config/docs-root-allowlist.json`. El resto va en la carpeta dueña (`docs/01-development/`, `docs/runbooks/`, etc.). `npm run validate-structure` y el pre-commit lo comprueban.
+**Layout de documentación:** la raíz de `docs/` solo tiene **tres** hubs (`README.md`, `index.md`, `STRUCTURE-GUARDRAILS.md`); lista cerrada en `config/docs-root-allowlist.json`. Redirecciones cortas en `docs/stubs/`. OpenAPI subset: `docs/00-architecture/openapi-opsly-api.yaml`. Norma completa: `docs/STRUCTURE-GUARDRAILS.md`. `npm run validate-structure` y el pre-commit lo comprueban.
 
 ## FILOSOFIA DE TRABAJO
 

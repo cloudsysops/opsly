@@ -286,10 +286,14 @@ Only if ALL conditions are true:
 - `ROADMAP.md` — Timeline & milestones (only updates: sprint planning)
 - `AGENTS.md` — Operational status & next steps (update at session end, commit/push immediately)
 - `SPRINT-TRACKER.md` — Current sprint progress (update per team consensus)
-- `docs/README.md` — Documentation index
+- `docs/README.md` — Documentation brain map
+- `docs/index.md` — Obsidian MOC (compact index)
+- `docs/STRUCTURE-GUARDRAILS.md` — Where docs may live; root of `docs/` is **three hubs only**
+- `config/docs-root-allowlist.json` — Closed list for files at `docs/` root (do not expand without architecture review)
+- `docs/stubs/*` — Short redirects to canonical paths under `docs/` (see `docs/stubs/README.md`)
 - `config/modules.json` — Module registry (update only when adding/retiring modules)
 
-**Protection:** Branch protection rules on `main`, pre-commit hooks validate structure.
+**Protection:** Branch protection rules on `main`, pre-commit hooks validate structure (`validate-structure`, `structure-guard.sh`).
 
 ---
 
