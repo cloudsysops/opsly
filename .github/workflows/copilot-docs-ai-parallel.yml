@@ -1,0 +1,27 @@
+name: 📚 Copilot Docs AI - 24/7 Parallel
+on:
+  push:
+      paths: ['src/**', 'apps/**']
+        schedule:
+            - cron: '0 */12 * * *'
+              workflow_dispatch:
+              jobs:
+                docs-ai:
+                    runs-on: ubuntu-latest
+                        permissions:
+                              contents: write
+                                    pull-requests: write
+                                        steps:
+                                              - uses: actions/checkout@v4
+                                                    - uses: actions/setup-node@v4
+                                                            with:
+                                                                      node-version: '18'
+                                                                            - name: Generate Docs
+                                                                                    run: |
+                                                                                              npm run docs:generate 2>&1 || true
+                                                                                                        npm run docs:update-api 2>&1 || true
+                                                                                                              - name: Auto-Commit Docs
+                                                                                                                      uses: stefanzweifel/git-auto-commit-action@v4
+                                                                                                                              with:
+                                                                                                                                        commit_message: 'chore(docs): auto-generated documentation updates'
+                                                                                                                                                  file_pattern: 'docs/**' 
