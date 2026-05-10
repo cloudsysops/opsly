@@ -22,9 +22,10 @@ export async function notifyBudgetWarning(
 }
 
 export async function notifyProviderRateLimit(
-  provider: string,
-  retryAfterSeconds: number
+  tenantSlug: string,
+  providerId: string,
+  detail: string
 ): Promise<void> {
-  // Slack integration handles this now
-  console.log(`Rate limit: ${provider} (retry in ${retryAfterSeconds}s)`);
+  // Slack integration handles this now; keep signature for observability hooks / tests
+  console.log(`Rate limit: tenant=${tenantSlug} provider=${providerId} ${detail}`);
 }

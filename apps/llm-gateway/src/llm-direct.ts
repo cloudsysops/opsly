@@ -5,7 +5,7 @@ import { checkDailyBudget, resolveAiProfile } from './config/budgets.js';
 import { hashPrompt } from './hash.js';
 import { healthDaemon } from './health-daemon.js';
 import { logUsage, mergeUsageAttribution } from './logger.js';
-// Discord notifications removed - use Slack integration instead
+import { notifyProviderRateLimit } from './providers/discord.js';
 import { buildLlmDirectCloudChain } from './cloud-chain.js';
 import { PROVIDERS, type ProviderChainEntry, type ProviderDefinition, type ProviderId } from './providers.js';
 import { estimateCost } from './router.js';
@@ -364,11 +364,11 @@ export async function llmCallDirect(req: LLMRequest): Promise<LLMResponse> {
     } catch (err) {
       lastErr = err;
       if (isRateLimitError(err)) {
-        // await notifyProviderRateLimit(
-        // req.tenant_slug,
-        // entry.id,
-        // err instanceof Error ? err.message : String(err)
-        // ).catch(() => undefined);
+        await notifyProviderRateLimit(
+          req.tenant_slug,
+          entry.id,
+          err instanceof Error ? err.message : String(err)
+        ).catch(() => undefined);
       }
     }
   }
