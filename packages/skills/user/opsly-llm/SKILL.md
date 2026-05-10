@@ -31,7 +31,7 @@ const result = await llmCall({
 | Arquitectura / código complejo | `sonnet`                | Coste mayor                       |
 | Feedback en tiempo real        | `haiku`, `cache: false` | Respuestas frescas                |
 
-Detalle de proveedores, health daemon y batching: `docs/LLM-GATEWAY.md`.
+Detalle de proveedores, health daemon y batching: `docs/00-architecture/LLM-GATEWAY.md`.
 
 ## Caché
 

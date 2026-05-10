@@ -32,7 +32,7 @@ Plataforma multi-tenant **enterprise SaaS**: plano de control (API, billing, orq
 | ---------------------------------------------------------------- | --------------------------------------------------------- |
 | [`docs/ARCHITECTURE.md`](docs/00-architecture/ARCHITECTURE.md)                   | Control plane vs data plane, flujos, aislamiento          |
 | [`docs/OPENCLAW-ARCHITECTURE.md`](docs/00-architecture/OPENCLAW-ARCHITECTURE.md) | OpenClaw: MCP, Orchestrator, LLM Gateway, Context Builder |
-| [`docs/LLM-GATEWAY.md`](docs/00-architecture/LLM-GATEWAY.md)                     | Cache, routing, modelos, env vars                         |
+| [`docs/00-architecture/LLM-GATEWAY.md`](docs/00-architecture/LLM-GATEWAY.md)                     | Cache, routing, modelos, env vars                         |
 | [`docs/ORCHESTRATOR.md`](docs/00-architecture/ORCHESTRATOR.md)                   | BullMQ jobs, workers, circuit breaker (Sprint 4)          |
 | [`docs/CONTEXT-BUILDER.md`](docs/00-architecture/CONTEXT-BUILDER.md)             | Sesión, TTL, resúmenes, persistencia (Sprint 4)           |
 | [`docs/AGENTS-GUIDE.md`](docs/03-agents/AGENTS-GUIDE.md)                   | Agentes paralelos y límites por plan                      |
@@ -136,7 +136,7 @@ Capa opcional de **orquestación multi-agente**, LLM unificado y contexto de ses
 
 | Doc                                                | Contenido                            |
 | -------------------------------------------------- | ------------------------------------ |
-| [docs/LLM-GATEWAY.md](docs/00-architecture/LLM-GATEWAY.md)         | Cache, modelos, env vars             |
+| [docs/00-architecture/LLM-GATEWAY.md](docs/00-architecture/LLM-GATEWAY.md)         | Cache, modelos, env vars             |
 | [docs/ORCHESTRATOR.md](docs/00-architecture/ORCHESTRATOR.md)       | Jobs, workers, estados               |
 | [docs/CONTEXT-BUILDER.md](docs/00-architecture/CONTEXT-BUILDER.md) | Sesión, TTL, resúmenes               |
 | [docs/AGENTS-GUIDE.md](docs/03-agents/AGENTS-GUIDE.md)       | Agentes paralelos y límites por plan |

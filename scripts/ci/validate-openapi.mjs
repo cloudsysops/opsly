@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Valida que docs/openapi-opsly-api.yaml sea YAML parseable y tenga estructura OpenAPI mínima.
+ * Valida que docs/00-architecture/openapi-opsly-api.yaml sea YAML parseable y tenga estructura OpenAPI mínima.
  * Uso: node scripts/ci/validate-openapi.mjs
  * (Wrapper en scripts/validate-openapi-yaml.mjs reenvía aquí.)
  */
@@ -11,7 +11,7 @@ import { parse } from 'yaml';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.join(__dirname, '..', '..');
-const specPath = path.join(root, 'docs', 'openapi-opsly-api.yaml');
+const specPath = path.join(root, 'docs', '00-architecture', 'openapi-opsly-api.yaml');
 
 const raw = fs.readFileSync(specPath, 'utf8');
 const doc = parse(raw);

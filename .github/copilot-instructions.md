@@ -316,7 +316,7 @@ Patrón clave: **vi.mock antes de imports del handler**, mocks restablecidos con
 ./scripts/validate-config.sh     # Verifica JSON, DNS, SSH VPS, Doppler vars críticas
 npm run validate-context          # Valida system_state.json
 npm run validate-skills           # Verifica metadatos en skills/user/*/
-npm run validate-openapi          # Valida openapi-opsly-api.yaml: paths, estructura, rutas obligatorias
+npm run validate-openapi          # Valida docs/00-architecture/openapi-opsly-api.yaml: paths, estructura, rutas obligatorias
 ```
 
 ---
@@ -415,7 +415,7 @@ Capa 3: LLM Gateway + Context    → apps/llm-gateway + apps/context-builder
 API + ML: Métricas, embeddings   → apps/api + apps/ml
 ```
 
-Documentación: `docs/OPENCLAW-ARCHITECTURE.md`, `docs/ORCHESTRATOR.md`, `docs/LLM-GATEWAY.md`.
+Documentación: `docs/OPENCLAW-ARCHITECTURE.md`, `docs/ORCHESTRATOR.md`, `docs/00-architecture/LLM-GATEWAY.md`.
 
 ---
 

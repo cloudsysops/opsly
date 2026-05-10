@@ -74,7 +74,7 @@ try {
 }
 
 if (docsViolations.length > 0) {
-  console.error('Files at docs/ root must be hubs, stubs, or openapi only (see docs/STRUCTURE-GUARDRAILS.md):');
+  console.error('Files at docs/ root must be hubs only (README, index, STRUCTURE-GUARDRAILS); stubs live in docs/stubs/. See docs/STRUCTURE-GUARDRAILS.md:');
   for (const item of docsViolations) {
     console.error(`- docs/${item}`);
   }

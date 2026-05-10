@@ -32,6 +32,6 @@ echo "[import-legalvial] Exportando Google Docs → repo (mime=text/plain)…"
 "$SCRIPT_DIR/import-google-doc.sh" \
   --strategy service_account_first \
   --file-id "$EXEC_SUMMARY_ID" \
-  --out "$REPO_ROOT/docs/legalvial/LEGALVIAL-ARCHITECTURE-DECISION.drive.txt"
+  --out "$REPO_ROOT/docs/tenants/legalvial/LEGALVIAL-ARCHITECTURE-DECISION.drive.txt"
 
 echo "[import-legalvial] OK. Siguiente paso: si los .drive.txt salen vacíos, el Google Doc no tiene cuerpo publicado (revisar contenido en Drive)."
