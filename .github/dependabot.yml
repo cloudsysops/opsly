@@ -1,0 +1,55 @@
+version: 2
+updates:
+  # NPM dependencies
+    - package-ecosystem: "npm"
+        directory: "/"
+            schedule:
+                  interval: "daily"
+                        time: "03:00"
+                            open-pull-requests-limit: 10
+                                pull-request-branch-name:
+                                      separator: "/"
+                                          reviewers:
+                                                - "code-owners"
+                                                    assignees:
+                                                          - "cboteros"
+                                                              labels:
+                                                                    - "dependencies"
+                                                                          - "auto-update"
+                                                                              allow:
+                                                                                    - dependency-type: "direct"
+                                                                                          - dependency-type: "indirect"
+                                                                                              ignore: []
+
+                                                                                                      # Auto-merge patch and minor for dev dependencies
+                                                                                                          rebase-strategy: "auto"
+                                                                                                              commit-message:
+                                                                                                                    prefix: "chore(deps)"
+                                                                                                                          prefix-development: "chore(dev-deps)"
+                                                                                                                                include: "scope"
+                                                                                                                                
+                                                                                                                                  # Docker images (if applicable)
+                                                                                                                                    - package-ecosystem: "docker"
+                                                                                                                                        directory: "/"
+                                                                                                                                            schedule:
+                                                                                                                                                  interval: "weekly"
+                                                                                                                                                        day: "monday"
+                                                                                                                                                            open-pull-requests-limit: 5
+                                                                                                                                                                reviewers:
+                                                                                                                                                                      - "infrastructure-team"
+                                                                                                                                                                          labels:
+                                                                                                                                                                                - "docker"
+                                                                                                                                                                                      - "infrastructure"
+                                                                                                                                                                                      
+                                                                                                                                                                                        # GitHub Actions
+                                                                                                                                                                                          - package-ecosystem: "github-actions"
+                                                                                                                                                                                              directory: "/"
+                                                                                                                                                                                                  schedule:
+                                                                                                                                                                                                        interval: "weekly"
+                                                                                                                                                                                                              day: "monday"
+                                                                                                                                                                                                                  reviewers:
+                                                                                                                                                                                                                        - "devops-team"
+                                                                                                                                                                                                                            labels:
+                                                                                                                                                                                                                                  - "github-actions"
+                                                                                                                                                                                                                                        - "ci-cd"
+                                                                                                                                                                                                                                        
