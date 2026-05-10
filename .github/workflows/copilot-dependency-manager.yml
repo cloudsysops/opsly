@@ -1,0 +1,135 @@
+name: Copilot Dependency Manager
+
+on:
+  push:
+    paths:
+      - 'package.json'
+      - 'package-lock.json'
+      - '**/package.json'
+  pull_request:
+    types: [opened, synchronize, reopened]
+  schedule:
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
+
+jobs:
+  dependency-analysis:
+    name: Dependency Security & Update Analysis
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+      security-events: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: npm audit (security)
+        id: audit
+        run: |
+          npm audit --json > audit-results.json 2>/dev/null || true
+          CRITICAL=$(node -e "try { const r = require('./audit-results.json'); const v = r.metadata?.vulnerabilities; console.log((v?.critical || 0) + (v?.high || 0)); } catch { console.log(0); }" 2>/dev/null || echo "0")
+          MODERATE=$(node -e "try { const r = require('./audit-results.json'); console.log(r.metadata?.vulnerabilities?.moderate || 0); } catch { console.log(0); }" 2>/dev/null || echo "0")
+          LOW=$(node -e "try { const r = require('./audit-results.json'); console.log(r.metadata?.vulnerabilities?.low || 0); } catch { console.log(0); }" 2>/dev/null || echo "0")
+          echo "critical-high=${CRITICAL}" >> $GITHUB_OUTPUT
+          echo "moderate=${MODERATE}" >> $GITHUB_OUTPUT
+          echo "low=${LOW}" >> $GITHUB_OUTPUT
+
+      - name: Check for outdated packages
+        id: outdated
+        run: |
+          npm outdated --json > outdated.json 2>/dev/null || true
+          COUNT=$(node -e "try { const r = require('./outdated.json'); console.log(Object.keys(r).length); } catch { console.log(0); }" 2>/dev/null || echo "0")
+          echo "outdated-count=${COUNT}" >> $GITHUB_OUTPUT
+
+      - name: Check for duplicate packages
+        id: duplicates
+        run: |
+          npm dedupe --dry-run 2>&1 | tee dedupe.log || true
+          if grep -q "would remove\|would change" dedupe.log 2>/dev/null; then
+            echo "has-duplicates=true" >> $GITHUB_OUTPUT
+          else
+            echo "has-duplicates=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Validate workspace packages
+        id: workspaces
+        run: |
+          ISSUES=0
+          # Check each workspace package.json is valid
+          for pkg in apps/*/package.json packages/*/package.json; do
+            if [ -f "$pkg" ]; then
+              if ! node -e "require('./${pkg}')" 2>/dev/null; then
+                echo "❌ Invalid package.json: ${pkg}"
+                ISSUES=$((ISSUES + 1))
+              fi
+            fi
+          done
+          echo "workspace-issues=${ISSUES}" >> $GITHUB_OUTPUT
+
+      - name: Update governance dashboard
+        if: always()
+        run: |
+          TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          mkdir -p config/governance-reports
+          cat > "config/governance-reports/dependency-manager-${TIMESTAMP}.json" << EOF
+          {
+            "agent": "copilot-dependency-manager",
+            "timestamp": "${TIMESTAMP}",
+            "run_id": "${{ github.run_id }}",
+            "ref": "${{ github.ref }}",
+            "results": {
+              "critical_high_vulns": "${{ steps.audit.outputs.critical-high }}",
+              "moderate_vulns": "${{ steps.audit.outputs.moderate }}",
+              "low_vulns": "${{ steps.audit.outputs.low }}",
+              "outdated_packages": "${{ steps.outdated.outputs.outdated-count }}",
+              "has_duplicates": "${{ steps.duplicates.outputs.has-duplicates }}",
+              "workspace_issues": "${{ steps.workspaces.outputs.workspace-issues }}"
+            }
+          }
+          EOF
+
+      - name: Comment on PR
+        if: github.event_name == 'pull_request' && always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const criticalHigh = parseInt('${{ steps.audit.outputs.critical-high }}' || '0');
+            const moderate = parseInt('${{ steps.audit.outputs.moderate }}' || '0');
+            const low = parseInt('${{ steps.audit.outputs.low }}' || '0');
+            const outdated = parseInt('${{ steps.outdated.outputs.outdated-count }}' || '0');
+            const hasDuplicates = '${{ steps.duplicates.outputs.has-duplicates }}' === 'true';
+            const workspaceIssues = parseInt('${{ steps.workspaces.outputs.workspace-issues }}' || '0');
+
+            const status = criticalHigh > 0 || workspaceIssues > 0 ? '❌' : (moderate > 0 || outdated > 0 ? '⚠️' : '✅');
+
+            const body = `## 📦 Copilot Dependency Manager — ${status}
+
+            | Check | Result |
+            |-------|--------|
+            | Critical/High Vulnerabilities | ${criticalHigh > 0 ? '🚨 ' + criticalHigh + ' — run `npm audit fix`' : '✅ None'} |
+            | Moderate Vulnerabilities | ${moderate > 0 ? '⚠️ ' + moderate : '✅ None'} |
+            | Low Vulnerabilities | ${low > 0 ? 'ℹ️ ' + low : '✅ None'} |
+            | Outdated Packages | ${outdated > 0 ? '⚠️ ' + outdated + ' package(s) behind' : '✅ Up to date'} |
+            | Duplicate Packages | ${hasDuplicates ? '⚠️ Run `npm dedupe`' : '✅ None'} |
+            | Workspace Validity | ${workspaceIssues > 0 ? '❌ ' + workspaceIssues + ' invalid package.json(s)' : '✅ All valid'} |
+
+            > Powered by Copilot Dependency Manager Agent | [Governance Rules](../config/governance-rules.json)`;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body
+            });

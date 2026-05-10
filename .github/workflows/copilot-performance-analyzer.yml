@@ -1,0 +1,180 @@
+name: Copilot Performance Analyzer
+
+on:
+  push:
+    branches: ['**']
+    paths:
+      - 'apps/api/**/*.ts'
+      - 'apps/llm-gateway/**/*.ts'
+      - 'apps/orchestrator/**/*.ts'
+  pull_request:
+    types: [opened, synchronize, reopened]
+  schedule:
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
+
+jobs:
+  performance-analysis:
+    name: Performance Bottleneck Detection
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: TypeScript build time analysis
+        id: build-time
+        run: |
+          START=$(date +%s%3N)
+          npm run type-check 2>&1 | tail -5
+          END=$(date +%s%3N)
+          DURATION=$((END - START))
+          echo "type-check-ms=${DURATION}" >> $GITHUB_OUTPUT
+          echo "Type-check duration: ${DURATION}ms"
+
+      - name: Detect N+1 query patterns in API routes
+        id: n-plus-one
+        run: |
+          ISSUES=0
+          # Detect loops with Supabase calls inside
+          while IFS= read -r -d '' file; do
+            if grep -l "supabase\." "$file" > /dev/null 2>&1; then
+              if grep -qP "(for|while|forEach|map)\s*[\(\{].*\n.*supabase\." "$file" 2>/dev/null || \
+                 awk '/for\s*\(|\.forEach|\.map\(/{found=1} found && /supabase\./{print FILENAME": potential N+1"; found=0}' "$file" | grep -q .; then
+                echo "⚠️ Potential N+1 in: $file"
+                ISSUES=$((ISSUES + 1))
+              fi
+            fi
+          done < <(find apps/api/app/api -name "route.ts" -print0 2>/dev/null)
+          echo "n-plus-one-count=${ISSUES}" >> $GITHUB_OUTPUT
+
+      - name: Detect missing Redis cache patterns
+        id: cache-check
+        run: |
+          UNCACHED=0
+          # Find expensive Supabase calls without Redis caching nearby
+          for file in $(find apps/api/lib -name "*.ts" 2>/dev/null); do
+            HAS_SUPABASE=$(grep -c "supabase\.\(from\|rpc\)" "$file" 2>/dev/null || echo "0")
+            HAS_CACHE=$(grep -c "redis\|CACHE_TTL\|redisClient" "$file" 2>/dev/null || echo "0")
+            if [ "$HAS_SUPABASE" -gt 2 ] && [ "$HAS_CACHE" -eq 0 ]; then
+              echo "⚠️ No caching in high-DB file: $file (${HAS_SUPABASE} queries)"
+              UNCACHED=$((UNCACHED + 1))
+            fi
+          done
+          echo "uncached-files=${UNCACHED}" >> $GITHUB_OUTPUT
+
+      - name: Detect high-complexity functions
+        id: complexity
+        run: |
+          HIGH_COMPLEXITY=0
+          # Count functions over 50 lines (approximation for high complexity)
+          for file in $(find apps/api/lib apps/orchestrator/src -name "*.ts" 2>/dev/null); do
+            LONG_FUNCS=$(awk 'BEGIN{in_func=0;start=0} /^[[:space:]]*(async\s+)?function|=>\s*\{/{in_func=1;start=NR} in_func && /^\}$/{if(NR-start>50){count++};in_func=0} END{print count+0}' "$file" 2>/dev/null || echo "0")
+            if [ "$LONG_FUNCS" -gt 0 ]; then
+              HIGH_COMPLEXITY=$((HIGH_COMPLEXITY + LONG_FUNCS))
+            fi
+          done
+          echo "high-complexity=${HIGH_COMPLEXITY}" >> $GITHUB_OUTPUT
+
+      - name: Bundle size estimation
+        id: bundle-size
+        run: |
+          LARGE_FILES=0
+          # Flag TypeScript source files over 300 lines
+          for file in $(find apps/api/lib apps/api/app -name "*.ts" 2>/dev/null); do
+            LINES=$(wc -l < "$file" 2>/dev/null || echo "0")
+            if [ "$LINES" -gt 300 ]; then
+              echo "⚠️ Large file (${LINES} lines): $file"
+              LARGE_FILES=$((LARGE_FILES + 1))
+            fi
+          done
+          echo "large-files=${LARGE_FILES}" >> $GITHUB_OUTPUT
+
+      - name: Check BullMQ queue configuration
+        id: bullmq
+        run: |
+          ISSUES=0
+          # Check for setTimeout-based retry instead of BullMQ
+          if grep -r "setTimeout.*retry\|setInterval.*retry" apps/ --include="*.ts" \
+               --exclude-dir="node_modules" 2>/dev/null | grep -v "//"; then
+            echo "⚠️ Manual retry loops found — use BullMQ attempts + backoff"
+            ISSUES=$((ISSUES + 1))
+          fi
+          # Check for missing backoff config in BullMQ jobs
+          if grep -r "addJob\|queue\.add" apps/orchestrator/src --include="*.ts" 2>/dev/null | \
+               grep -v "backoff\|attempts"; then
+            echo "⚠️ BullMQ jobs without backoff/retry config found"
+            ISSUES=$((ISSUES + 1))
+          fi
+          echo "bullmq-issues=${ISSUES}" >> $GITHUB_OUTPUT
+
+      - name: Update governance dashboard
+        if: always()
+        run: |
+          TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          mkdir -p config/governance-reports
+          cat > "config/governance-reports/performance-analyzer-${TIMESTAMP}.json" << EOF
+          {
+            "agent": "copilot-performance-analyzer",
+            "timestamp": "${TIMESTAMP}",
+            "run_id": "${{ github.run_id }}",
+            "ref": "${{ github.ref }}",
+            "results": {
+              "type_check_ms": "${{ steps.build-time.outputs.type-check-ms }}",
+              "n_plus_one_patterns": "${{ steps.n-plus-one.outputs.n-plus-one-count }}",
+              "uncached_heavy_files": "${{ steps.cache-check.outputs.uncached-files }}",
+              "high_complexity_functions": "${{ steps.complexity.outputs.high-complexity }}",
+              "large_files": "${{ steps.bundle-size.outputs.large-files }}",
+              "bullmq_issues": "${{ steps.bullmq.outputs.bullmq-issues }}"
+            }
+          }
+          EOF
+
+      - name: Comment on PR
+        if: github.event_name == 'pull_request' && always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const typeCheckMs = parseInt('${{ steps.build-time.outputs.type-check-ms }}' || '0');
+            const nPlusOne = parseInt('${{ steps.n-plus-one.outputs.n-plus-one-count }}' || '0');
+            const uncached = parseInt('${{ steps.cache-check.outputs.uncached-files }}' || '0');
+            const highComplexity = parseInt('${{ steps.complexity.outputs.high-complexity }}' || '0');
+            const largeFiles = parseInt('${{ steps.bundle-size.outputs.large-files }}' || '0');
+            const bullmqIssues = parseInt('${{ steps.bullmq.outputs.bullmq-issues }}' || '0');
+
+            const criticalIssues = nPlusOne + bullmqIssues;
+            const warnIssues = uncached + highComplexity + largeFiles;
+            const status = criticalIssues > 0 ? '❌' : warnIssues > 0 ? '⚠️' : '✅';
+
+            const body = `## ⚡ Copilot Performance Analyzer — ${status}
+
+            | Check | Result |
+            |-------|--------|
+            | Type-check Duration | ${typeCheckMs < 30000 ? '✅' : '⚠️'} ${typeCheckMs}ms ${typeCheckMs > 60000 ? '(slow — check circular deps)' : ''} |
+            | N+1 Query Patterns | ${nPlusOne > 0 ? '🚨 ' + nPlusOne + ' potential N+1(s) found' : '✅ None detected'} |
+            | Missing Redis Cache | ${uncached > 0 ? '⚠️ ' + uncached + ' high-query file(s) without caching' : '✅ Cache patterns OK'} |
+            | High-Complexity Functions | ${highComplexity > 0 ? '⚠️ ' + highComplexity + ' function(s) >50 lines' : '✅ None'} |
+            | Large Files (>300 lines) | ${largeFiles > 0 ? '⚠️ ' + largeFiles + ' file(s) — consider splitting' : '✅ None'} |
+            | BullMQ Config | ${bullmqIssues > 0 ? '❌ ' + bullmqIssues + ' job(s) missing retry/backoff' : '✅ Properly configured'} |
+
+            > Powered by Copilot Performance Analyzer Agent | [Governance Rules](../config/governance-rules.json)`;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body
+            });

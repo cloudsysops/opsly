@@ -1,0 +1,135 @@
+name: Copilot Code Review
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+    types: [opened, synchronize, reopened]
+  schedule:
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
+
+jobs:
+  code-review:
+    name: AI Code Quality Review
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: TypeScript type-check
+        id: type-check
+        run: |
+          npm run type-check 2>&1 | tee type-check.log || true
+          ERRORS=$(grep -c "error TS" type-check.log || echo "0")
+          echo "ts-errors=${ERRORS}" >> $GITHUB_OUTPUT
+
+      - name: ESLint analysis
+        id: lint
+        run: |
+          npx eslint "apps/api/**/*.ts" --format json --output-file lint-results.json 2>/dev/null || true
+          ERRORS=$(node -e "try { const r = require('./lint-results.json'); console.log(r.reduce((a,f) => a + f.errorCount, 0)); } catch { console.log(0); }" 2>/dev/null || echo "0")
+          WARNINGS=$(node -e "try { const r = require('./lint-results.json'); console.log(r.reduce((a,f) => a + f.warningCount, 0)); } catch { console.log(0); }" 2>/dev/null || echo "0")
+          echo "lint-errors=${ERRORS}" >> $GITHUB_OUTPUT
+          echo "lint-warnings=${WARNINGS}" >> $GITHUB_OUTPUT
+
+      - name: MCP compliance check
+        id: mcp-check
+        run: |
+          ISSUES=0
+          # Check for direct LLM calls outside LLM Gateway
+          if grep -r "openai\.\|anthropic\.\|@anthropic" apps/ --include="*.ts" \
+               --exclude-dir="node_modules" --exclude-dir="llm-gateway" 2>/dev/null | \
+               grep -v "//.*openai\|//.*anthropic" | grep -v "apps/llm-gateway" | grep -v "apps/mcp"; then
+            echo "⚠️ Direct LLM calls found outside LLM Gateway"
+            ISSUES=$((ISSUES + 1))
+          fi
+          # Check for missing tenant_slug in orchestrator jobs
+          if grep -r "processIntent\|addJob" apps/orchestrator/src --include="*.ts" 2>/dev/null | \
+               grep -v "tenant_slug\|tenantSlug"; then
+            echo "⚠️ Orchestrator jobs may be missing tenant_slug"
+            ISSUES=$((ISSUES + 1))
+          fi
+          echo "mcp-issues=${ISSUES}" >> $GITHUB_OUTPUT
+
+      - name: Security scan (secrets detection)
+        id: security
+        run: |
+          SECRETS_FOUND=0
+          # Detect hardcoded secrets patterns
+          if grep -rE "(password|secret|api_key|token)\s*=\s*['\"][^'\"]{8,}['\"]" \
+               apps/ --include="*.ts" --include="*.js" --include="*.env" \
+               --exclude-dir="node_modules" 2>/dev/null | \
+               grep -v "process\.env\|REPLACE_ME\|example\|placeholder\|test\|mock"; then
+            SECRETS_FOUND=1
+          fi
+          echo "secrets-found=${SECRETS_FOUND}" >> $GITHUB_OUTPUT
+
+      - name: Update governance dashboard
+        if: always()
+        run: |
+          TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          REPORT_FILE="config/governance-reports/code-review-${TIMESTAMP}.json"
+          mkdir -p config/governance-reports
+          cat > "${REPORT_FILE}" << EOF
+          {
+            "agent": "copilot-code-review",
+            "timestamp": "${TIMESTAMP}",
+            "run_id": "${{ github.run_id }}",
+            "ref": "${{ github.ref }}",
+            "results": {
+              "ts_errors": "${{ steps.type-check.outputs.ts-errors }}",
+              "lint_errors": "${{ steps.lint.outputs.lint-errors }}",
+              "lint_warnings": "${{ steps.lint.outputs.lint-warnings }}",
+              "mcp_issues": "${{ steps.mcp-check.outputs.mcp-issues }}",
+              "secrets_found": "${{ steps.security.outputs.secrets-found }}"
+            }
+          }
+          EOF
+          echo "Report written to ${REPORT_FILE}"
+
+      - name: Comment on PR
+        if: github.event_name == 'pull_request' && always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const tsErrors = parseInt('${{ steps.type-check.outputs.ts-errors }}' || '0');
+            const lintErrors = parseInt('${{ steps.lint.outputs.lint-errors }}' || '0');
+            const lintWarnings = parseInt('${{ steps.lint.outputs.lint-warnings }}' || '0');
+            const mcpIssues = parseInt('${{ steps.mcp-check.outputs.mcp-issues }}' || '0');
+            const secretsFound = '${{ steps.security.outputs.secrets-found }}' === '1';
+
+            const status = (tsErrors + lintErrors + mcpIssues > 0 || secretsFound) ? '❌' : '✅';
+
+            const body = `## 🤖 Copilot Code Review — ${status}
+
+            | Check | Result |
+            |-------|--------|
+            | TypeScript Errors | ${tsErrors > 0 ? '❌ ' + tsErrors + ' error(s)' : '✅ None'} |
+            | ESLint Errors | ${lintErrors > 0 ? '❌ ' + lintErrors + ' error(s)' : '✅ None'} |
+            | ESLint Warnings | ${lintWarnings > 0 ? '⚠️ ' + lintWarnings + ' warning(s)' : '✅ None'} |
+            | MCP Compliance | ${mcpIssues > 0 ? '⚠️ ' + mcpIssues + ' issue(s)' : '✅ Compliant'} |
+            | Secrets Detected | ${secretsFound ? '🚨 **Possible secrets found — review immediately**' : '✅ None found'} |
+
+            > Powered by Copilot Code Review Agent | [Governance Rules](../config/governance-rules.json)`;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body
+            });

@@ -1,104 +1,150 @@
 {
-    "version": "1.0.0",
-    "metadata": {
-          "description": "Governance rules for OPSLY autonomous code validation and merge",
-          "lastUpdated": "2026-05-10",
-          "maintainer": "opsly-governance-team"
-    },
-    "autoValidation": {
-          "enabled": true,
-          "checkAllStatusRequired": true,
-          "requiredChecks": [
-                  "structure-integrity",
-                  "workflow-lint",
-                  "lint",
-                  "test-unit",
-                  "test-integration",
-                  "build",
-                  "scripts-check",
-                  "secret-scan"
-          ]
-    },
-    "autoFix": {
-          "enabled": true,
-          "rules": [
-                  {
-                            "id": "missing-dependencies",
-                            "trigger": "MODULE_NOT_FOUND",
-                            "action": "npm-install",
-                            "autoCommit": true,
-                            "requiresValidation": true
-                  },
-                  {
-                            "id": "lint-errors",
-                            "trigger": "ESLINT_ERROR",
-                            "action": "eslint-fix",
-                            "autoCommit": true,
-                            "requiresValidation": true
-                  },
-                  {
-                            "id": "type-errors",
-                            "trigger": "TYPESCRIPT_ERROR",
-                            "action": "tsc-check",
-                            "autoCommit": false,
-                            "requiresValidation": true
-                  }
-          ]
-    },
-    "autoApprove": {
-          "enabled": true,
-          "rules": [
-                  {
-                            "type": "documentation",
-                            "patterns": ["docs/**", "README.md", "*.md"],
-                            "requiresReview": false,
-                            "requiresApproval": false,
-                            "autoMerge": true
-                  },
-                  {
-                            "type": "configuration",
-                            "patterns": ["config/**", ".github/**", "*.json", "*.yml"],
-                            "requiresReview": true,
-                            "requiresApproval": 1,
-                            "autoMerge": false
-                  },
-                  {
-                            "type": "code",
-                            "patterns": ["apps/**", "src/**", "packages/**"],
-                            "requiresReview": true,
-                            "requiresApproval": 2,
-                            "autoMerge": false
-                  }
-          ]
-    },
-    "branchProtection": {
-          "main": {
-                  "requiresPullRequest": true,
-                  "requiredApprovals": 1,
-                  "dismissStaleReviews": true,
-                  "requireCodeOwnerReviews": true,
-                  "restrictWhoCanDismissReviews": false,
-                  "requireStatusChecks": true,
-                  "requireUpToDate": true
-          }
-    },
-    "dependencyManagement": {
-          "dependabotEnabled": true,
-          "autoMergePatch": true,
-          "autoMergeMinor": false,
-          "autoMergeMajor": false,
-          "securityUpdatesAlwaysMerge": true
-    },
-    "escalation": {
-          "failedAutoFix": {
-                  "action": "notify-maintainers",
-                  "label": "needs-manual-review",
-                  "comment": "Automatic fix failed, requires manual intervention"
-          },
-          "multipleChecks Failed": {
-                  "action": "request-review",
-                  "label": "blocked",
-                  "assignTo": "code-owners"
-          }
+  "version": "1.1.0",
+  "metadata": {
+    "description": "Governance rules for OPSLY autonomous validation, auto-fix, and Copilot agent orchestration",
+    "lastUpdated": "2026-05-10",
+    "maintainer": "opsly-governance-team"
+  },
+  "agents": {
+    "dashboard": "config/governance-reports/",
+    "reportRetentionDays": 30,
+    "registry": [
+      {
+        "id": "copilot-code-review",
+        "workflow": ".github/workflows/copilot-code-review.yml",
+        "description": "Reviews PRs for code quality, security, and MCP compliance",
+        "triggers": ["push", "pull_request", "schedule", "workflow_dispatch"],
+        "scheduleInterval": "every 6 hours",
+        "reportsTo": "config/governance-reports/code-review-*.json"
+      },
+      {
+        "id": "copilot-docs-ai",
+        "workflow": ".github/workflows/copilot-docs-ai.yml",
+        "description": "Auto-validates and checks documentation consistency from code changes",
+        "triggers": ["push", "pull_request", "schedule", "workflow_dispatch"],
+        "scheduleInterval": "every 6 hours",
+        "reportsTo": "config/governance-reports/docs-ai-*.json"
+      },
+      {
+        "id": "copilot-dependency-manager",
+        "workflow": ".github/workflows/copilot-dependency-manager.yml",
+        "description": "Analyzes and reports dependency security vulnerabilities and updates",
+        "triggers": ["push", "pull_request", "schedule", "workflow_dispatch"],
+        "scheduleInterval": "every 6 hours",
+        "reportsTo": "config/governance-reports/dependency-manager-*.json"
+      },
+      {
+        "id": "copilot-test-generator",
+        "workflow": ".github/workflows/copilot-test-generator.yml",
+        "description": "Runs tests across all workspaces and detects coverage gaps",
+        "triggers": ["push", "pull_request", "schedule", "workflow_dispatch"],
+        "scheduleInterval": "every 6 hours",
+        "reportsTo": "config/governance-reports/test-generator-*.json"
+      },
+      {
+        "id": "copilot-performance-analyzer",
+        "workflow": ".github/workflows/copilot-performance-analyzer.yml",
+        "description": "Profiles performance bottlenecks: N+1 queries, missing cache, BullMQ config",
+        "triggers": ["push", "pull_request", "schedule", "workflow_dispatch"],
+        "scheduleInterval": "every 6 hours",
+        "reportsTo": "config/governance-reports/performance-analyzer-*.json"
+      }
+    ]
+  },
+  "autoValidation": {
+    "enabled": true,
+    "checkAllStatusRequired": true,
+    "requiredChecks": [
+      "structure-integrity",
+      "workflow-lint",
+      "lint",
+      "test-unit",
+      "test-integration",
+      "build",
+      "scripts-check",
+      "secret-scan"
+    ]
+  },
+  "autoFix": {
+    "enabled": true,
+    "rules": [
+      {
+        "id": "missing-dependencies",
+        "trigger": "MODULE_NOT_FOUND",
+        "action": "npm-install",
+        "autoCommit": true,
+        "requiresValidation": true
+      },
+      {
+        "id": "lint-errors",
+        "trigger": "ESLINT_ERROR",
+        "action": "eslint-fix",
+        "autoCommit": true,
+        "requiresValidation": true
+      },
+      {
+        "id": "type-errors",
+        "trigger": "TYPESCRIPT_ERROR",
+        "action": "tsc-check",
+        "autoCommit": false,
+        "requiresValidation": true
+      }
+    ]
+  },
+  "autoApprove": {
+    "enabled": true,
+    "rules": [
+      {
+        "type": "documentation",
+        "patterns": ["docs/**", "README.md", "*.md"],
+        "requiresReview": false,
+        "requiresApproval": false,
+        "autoMerge": true
+      },
+      {
+        "type": "configuration",
+        "patterns": ["config/**", ".github/**", "*.json", "*.yml"],
+        "requiresReview": true,
+        "requiresApproval": 1,
+        "autoMerge": false
+      },
+      {
+        "type": "code",
+        "patterns": ["apps/**", "src/**", "packages/**"],
+        "requiresReview": true,
+        "requiresApproval": 2,
+        "autoMerge": false
+      }
+    ]
+  },
+  "branchProtection": {
+    "main": {
+      "requiresPullRequest": true,
+      "requiredApprovals": 1,
+      "dismissStaleReviews": true,
+      "requireCodeOwnerReviews": true,
+      "restrictWhoCanDismissReviews": false,
+      "requireStatusChecks": true,
+      "requireUpToDate": true
     }
+  },
+  "dependencyManagement": {
+    "dependabotEnabled": true,
+    "autoMergePatch": true,
+    "autoMergeMinor": false,
+    "autoMergeMajor": false,
+    "securityUpdatesAlwaysMerge": true
+  },
+  "escalation": {
+    "failedAutoFix": {
+      "action": "notify-maintainers",
+      "label": "needs-manual-review",
+      "comment": "Automatic fix failed, requires manual intervention"
+    },
+    "multipleChecksFailed": {
+      "action": "request-review",
+      "label": "blocked",
+      "assignTo": "code-owners"
+    }
+  }
 }

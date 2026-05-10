@@ -1,0 +1,138 @@
+name: Copilot Docs AI
+
+on:
+  push:
+    branches: ['**']
+    paths:
+      - 'apps/**/*.ts'
+      - 'apps/**/*.tsx'
+      - 'packages/**/*.ts'
+      - 'docs/openapi-opsly-api.yaml'
+  pull_request:
+    types: [opened, synchronize, reopened]
+  schedule:
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
+
+jobs:
+  docs-check:
+    name: Documentation Consistency Check
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate OpenAPI spec
+        id: openapi
+        run: |
+          npm run validate-openapi 2>&1 | tee openapi.log
+          STATUS=$?
+          echo "openapi-valid=$([ $STATUS -eq 0 ] && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
+
+      - name: Validate skills manifest
+        id: skills
+        run: |
+          npm run validate-skills 2>&1 | tee skills.log
+          STATUS=$?
+          echo "skills-valid=$([ $STATUS -eq 0 ] && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
+
+      - name: Check AGENTS.md mirrors
+        id: agents-md
+        run: |
+          DIVERGED=false
+          if [ -L .github/AGENTS.md ] && [ "$(readlink .github/AGENTS.md)" = "../AGENTS.md" ]; then
+            echo "AGENTS.md mirror is canonical symlink"
+          elif ! diff -q AGENTS.md .github/AGENTS.md > /dev/null 2>&1; then
+            echo "⚠️ AGENTS.md and .github/AGENTS.md have diverged"
+            DIVERGED=true
+          fi
+          echo "agents-diverged=${DIVERGED}" >> $GITHUB_OUTPUT
+
+      - name: Check apps documented in AGENTS.md
+        id: apps-docs
+        run: |
+          UNDOCUMENTED=()
+          for app in apps/*/; do
+            name=$(basename "$app")
+            if ! grep -q "$name" AGENTS.md; then
+              UNDOCUMENTED+=("$name")
+            fi
+          done
+          COUNT=${#UNDOCUMENTED[@]}
+          echo "undocumented-count=${COUNT}" >> $GITHUB_OUTPUT
+          if [ $COUNT -gt 0 ]; then
+            echo "undocumented-apps=${UNDOCUMENTED[*]}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Check system_state.json validity
+        id: state-json
+        run: |
+          python3 -m json.tool context/system_state.json > /dev/null 2>&1
+          echo "state-valid=$([ $? -eq 0 ] && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
+
+      - name: Update governance dashboard
+        if: always()
+        run: |
+          TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          mkdir -p config/governance-reports
+          cat > "config/governance-reports/docs-ai-${TIMESTAMP}.json" << EOF
+          {
+            "agent": "copilot-docs-ai",
+            "timestamp": "${TIMESTAMP}",
+            "run_id": "${{ github.run_id }}",
+            "ref": "${{ github.ref }}",
+            "results": {
+              "openapi_valid": "${{ steps.openapi.outputs.openapi-valid }}",
+              "skills_valid": "${{ steps.skills.outputs.skills-valid }}",
+              "agents_diverged": "${{ steps.agents-md.outputs.agents-diverged }}",
+              "undocumented_apps": "${{ steps.apps-docs.outputs.undocumented-count }}",
+              "state_json_valid": "${{ steps.state-json.outputs.state-valid }}"
+            }
+          }
+          EOF
+
+      - name: Comment on PR
+        if: github.event_name == 'pull_request' && always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const openApiValid = '${{ steps.openapi.outputs.openapi-valid }}' === 'true';
+            const skillsValid = '${{ steps.skills.outputs.skills-valid }}' === 'true';
+            const agentsDiverged = '${{ steps.agents-md.outputs.agents-diverged }}' === 'true';
+            const undocumentedCount = parseInt('${{ steps.apps-docs.outputs.undocumented-count }}' || '0');
+            const stateValid = '${{ steps.state-json.outputs.state-valid }}' === 'true';
+
+            const allGood = openApiValid && skillsValid && !agentsDiverged && undocumentedCount === 0 && stateValid;
+
+            const body = `## 📚 Copilot Docs AI — ${allGood ? '✅' : '⚠️'}
+
+            | Check | Result |
+            |-------|--------|
+            | OpenAPI Spec | ${openApiValid ? '✅ Valid' : '❌ Invalid'} |
+            | Skills Manifest | ${skillsValid ? '✅ Valid' : '❌ Invalid'} |
+            | AGENTS.md Mirror | ${agentsDiverged ? '⚠️ Diverged — run `./scripts/update-agents.sh`' : '✅ In sync'} |
+            | Apps Documented | ${undocumentedCount > 0 ? '⚠️ ' + undocumentedCount + ' app(s) not in AGENTS.md' : '✅ All documented'} |
+            | system_state.json | ${stateValid ? '✅ Valid JSON' : '❌ Invalid JSON'} |
+
+            > Powered by Copilot Docs AI Agent | [Governance Rules](../config/governance-rules.json)`;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body
+            });

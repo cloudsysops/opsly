@@ -1,0 +1,162 @@
+name: Copilot Test Generator
+
+on:
+  push:
+    branches: ['**']
+    paths:
+      - 'apps/**/*.ts'
+      - 'apps/**/*.tsx'
+      - 'packages/**/*.ts'
+  pull_request:
+    types: [opened, synchronize, reopened]
+  schedule:
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
+
+jobs:
+  test-coverage-analysis:
+    name: Test Coverage Analysis & Gap Detection
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run API tests
+        id: api-tests
+        run: |
+          npm run test --workspace=@intcloudsysops/api 2>&1 | tee api-tests.log || true
+          PASSED=$(grep -oP '\d+(?= passed)' api-tests.log | tail -1 || echo "0")
+          FAILED=$(grep -oP '\d+(?= failed)' api-tests.log | tail -1 || echo "0")
+          echo "api-passed=${PASSED}" >> $GITHUB_OUTPUT
+          echo "api-failed=${FAILED}" >> $GITHUB_OUTPUT
+
+      - name: Run orchestrator tests
+        id: orchestrator-tests
+        run: |
+          npm run test --workspace=@intcloudsysops/orchestrator 2>&1 | tee orchestrator-tests.log || true
+          PASSED=$(grep -oP '\d+(?= passed)' orchestrator-tests.log | tail -1 || echo "0")
+          FAILED=$(grep -oP '\d+(?= failed)' orchestrator-tests.log | tail -1 || echo "0")
+          echo "orchestrator-passed=${PASSED}" >> $GITHUB_OUTPUT
+          echo "orchestrator-failed=${FAILED}" >> $GITHUB_OUTPUT
+
+      - name: Run llm-gateway tests
+        id: gateway-tests
+        run: |
+          LLM_BATCH_WINDOW_SCALE=0 npm run test --workspace=@intcloudsysops/llm-gateway 2>&1 | tee gateway-tests.log || true
+          PASSED=$(grep -oP '\d+(?= passed)' gateway-tests.log | tail -1 || echo "0")
+          FAILED=$(grep -oP '\d+(?= failed)' gateway-tests.log | tail -1 || echo "0")
+          echo "gateway-passed=${PASSED}" >> $GITHUB_OUTPUT
+          echo "gateway-failed=${FAILED}" >> $GITHUB_OUTPUT
+
+      - name: Run portal tests
+        id: portal-tests
+        run: |
+          npm run test --workspace=@intcloudsysops/portal 2>&1 | tee portal-tests.log || true
+          PASSED=$(grep -oP '\d+(?= passed)' portal-tests.log | tail -1 || echo "0")
+          FAILED=$(grep -oP '\d+(?= failed)' portal-tests.log | tail -1 || echo "0")
+          echo "portal-passed=${PASSED}" >> $GITHUB_OUTPUT
+          echo "portal-failed=${FAILED}" >> $GITHUB_OUTPUT
+
+      - name: Run MCP tests
+        id: mcp-tests
+        run: |
+          npm run test --workspace=@intcloudsysops/mcp 2>&1 | tee mcp-tests.log || true
+          PASSED=$(grep -oP '\d+(?= passed)' mcp-tests.log | tail -1 || echo "0")
+          FAILED=$(grep -oP '\d+(?= failed)' mcp-tests.log | tail -1 || echo "0")
+          echo "mcp-passed=${PASSED}" >> $GITHUB_OUTPUT
+          echo "mcp-failed=${FAILED}" >> $GITHUB_OUTPUT
+
+      - name: Detect untested route handlers
+        id: coverage-gaps
+        run: |
+          TOTAL_ROUTES=$(find apps/api/app/api -name "route.ts" 2>/dev/null | wc -l | tr -d ' ')
+          TESTED_ROUTES=$(grep -rl "GET\|POST\|PUT\|DELETE\|PATCH" apps/api/__tests__ 2>/dev/null | wc -l | tr -d ' ')
+          UNTESTED=$((TOTAL_ROUTES - TESTED_ROUTES))
+          echo "total-routes=${TOTAL_ROUTES}" >> $GITHUB_OUTPUT
+          echo "tested-routes=${TESTED_ROUTES}" >> $GITHUB_OUTPUT
+          echo "untested-routes=$((UNTESTED < 0 ? 0 : UNTESTED))" >> $GITHUB_OUTPUT
+
+      - name: Update governance dashboard
+        if: always()
+        run: |
+          TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          mkdir -p config/governance-reports
+          cat > "config/governance-reports/test-generator-${TIMESTAMP}.json" << EOF
+          {
+            "agent": "copilot-test-generator",
+            "timestamp": "${TIMESTAMP}",
+            "run_id": "${{ github.run_id }}",
+            "ref": "${{ github.ref }}",
+            "results": {
+              "api_tests": { "passed": "${{ steps.api-tests.outputs.api-passed }}", "failed": "${{ steps.api-tests.outputs.api-failed }}" },
+              "orchestrator_tests": { "passed": "${{ steps.orchestrator-tests.outputs.orchestrator-passed }}", "failed": "${{ steps.orchestrator-tests.outputs.orchestrator-failed }}" },
+              "gateway_tests": { "passed": "${{ steps.gateway-tests.outputs.gateway-passed }}", "failed": "${{ steps.gateway-tests.outputs.gateway-failed }}" },
+              "portal_tests": { "passed": "${{ steps.portal-tests.outputs.portal-passed }}", "failed": "${{ steps.portal-tests.outputs.portal-failed }}" },
+              "mcp_tests": { "passed": "${{ steps.mcp-tests.outputs.mcp-passed }}", "failed": "${{ steps.mcp-tests.outputs.mcp-failed }}" },
+              "total_routes": "${{ steps.coverage-gaps.outputs.total-routes }}",
+              "tested_routes": "${{ steps.coverage-gaps.outputs.tested-routes }}",
+              "untested_routes": "${{ steps.coverage-gaps.outputs.untested-routes }}"
+            }
+          }
+          EOF
+
+      - name: Comment on PR
+        if: github.event_name == 'pull_request' && always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const apiFailed = parseInt('${{ steps.api-tests.outputs.api-failed }}' || '0');
+            const orchFailed = parseInt('${{ steps.orchestrator-tests.outputs.orchestrator-failed }}' || '0');
+            const gwFailed = parseInt('${{ steps.gateway-tests.outputs.gateway-failed }}' || '0');
+            const portalFailed = parseInt('${{ steps.portal-tests.outputs.portal-failed }}' || '0');
+            const mcpFailed = parseInt('${{ steps.mcp-tests.outputs.mcp-failed }}' || '0');
+            const untestedRoutes = parseInt('${{ steps.coverage-gaps.outputs.untested-routes }}' || '0');
+            const totalRoutes = parseInt('${{ steps.coverage-gaps.outputs.total-routes }}' || '0');
+            const testedRoutes = parseInt('${{ steps.coverage-gaps.outputs.tested-routes }}' || '0');
+
+            const totalFailed = apiFailed + orchFailed + gwFailed + portalFailed + mcpFailed;
+            const status = totalFailed > 0 ? '❌' : untestedRoutes > 5 ? '⚠️' : '✅';
+
+            const coveragePct = totalRoutes > 0 ? Math.round((testedRoutes / totalRoutes) * 100) : 100;
+
+            const body = `## 🧪 Copilot Test Generator — ${status}
+
+            ### Test Results by Workspace
+            | Workspace | Passed | Failed |
+            |-----------|--------|--------|
+            | API | ✅ ${{ steps.api-tests.outputs.api-passed }} | ${apiFailed > 0 ? '❌ ' + apiFailed : '✅ 0'} |
+            | Orchestrator | ✅ ${{ steps.orchestrator-tests.outputs.orchestrator-passed }} | ${orchFailed > 0 ? '❌ ' + orchFailed : '✅ 0'} |
+            | LLM Gateway | ✅ ${{ steps.gateway-tests.outputs.gateway-passed }} | ${gwFailed > 0 ? '❌ ' + gwFailed : '✅ 0'} |
+            | Portal | ✅ ${{ steps.portal-tests.outputs.portal-passed }} | ${portalFailed > 0 ? '❌ ' + portalFailed : '✅ 0'} |
+            | MCP | ✅ ${{ steps.mcp-tests.outputs.mcp-passed }} | ${mcpFailed > 0 ? '❌ ' + mcpFailed : '✅ 0'} |
+
+            ### Coverage Analysis
+            | Metric | Value |
+            |--------|-------|
+            | Total Route Handlers | ${totalRoutes} |
+            | Tested Routes | ${testedRoutes} |
+            | Untested Routes | ${untestedRoutes > 0 ? '⚠️ ' + untestedRoutes : '✅ 0'} |
+            | Estimated Coverage | ${coveragePct >= 80 ? '✅' : '⚠️'} ~${coveragePct}% |
+
+            > Powered by Copilot Test Generator Agent | [Governance Rules](../config/governance-rules.json)`;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body
+            });
