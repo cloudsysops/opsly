@@ -200,7 +200,9 @@ export function createSdkBridgeServer(
             type: 'text',
             text:
               'Lee los resources `opsly://context/agents`, `opsly://context/vision`, ' +
-              '`opsly://context/system-state` y los ADR relevantes. Resume en 5 bullets: ' +
+              '`opsly://context/system-state`, `opsly://context/brain-dashboard`, ' +
+              '`opsly://context/brain-modules`, `opsly://context/knowledge-index` y los ADR relevantes. ' +
+              'Resume en 5 bullets: ' +
               'decisiones recientes, bloqueantes, prioridades, optimizaciones y qué no hacer.',
           },
         },

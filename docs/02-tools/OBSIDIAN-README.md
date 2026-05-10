@@ -60,6 +60,10 @@ de primer nivel bajo `docs/`. Para regenerar el inventario de notas:
 
 ---
 
+## Cerebro con fuentes (investigación + grafo)
+
+- **[OBSIDIAN-RESEARCH-BRAIN.md](OBSIDIAN-RESEARCH-BRAIN.md)** — flujo Obsidian + **Web search** y **Browser** en Cursor, plantillas anti-notas huérfanas, prompt copiable.
+
 ## Key Documents
 
 - [[index|Documentation Index (MOC)]] — mapa completo del vault

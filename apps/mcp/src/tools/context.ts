@@ -24,7 +24,7 @@ export const contextTools: [
   {
     name: 'list_context_resources',
     description:
-      'Lista resources de contexto estático de Opsly (AGENTS, VISION, system_state, etc.)',
+      'Lista resources de contexto estático de Opsly (AGENTS, VISION, system_state, brain Obsidian, etc.)',
     inputSchema: z.object({}),
     handler: async () => {
       const resources = getAvailableStaticContextResources().map((entry) => ({

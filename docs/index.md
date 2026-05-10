@@ -70,6 +70,7 @@ Punto de entrada compacto del vault. Política de carpetas:
 ## Herramientas Obsidian
 
 - Guía: [`02-tools/OBSIDIAN-README.md`](02-tools/OBSIDIAN-README.md)
+- **Investigación + grafo (web, navegador, fuentes):** [`02-tools/OBSIDIAN-RESEARCH-BRAIN.md`](02-tools/OBSIDIAN-RESEARCH-BRAIN.md)
 - Sistema conocimiento (NotebookLM + Obsidian): [`02-tools/KNOWLEDGE-SYSTEM.md`](02-tools/KNOWLEDGE-SYSTEM.md)
 - Regenerar listado de `.md` del vault: `npm run obsidian:file-index` → `.obsidian/file-index.json`
 

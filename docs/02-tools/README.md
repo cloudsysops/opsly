@@ -21,6 +21,7 @@ Herramientas e integraciones que alimentan el Brain y la operación de agentes.
 ## Documentos clave
 
 - `OBSIDIAN-README.md`
+- `OBSIDIAN-RESEARCH-BRAIN.md` — vault trazable con fuentes; Cursor (web + browser)
 - `OBSIDIAN-NOTEBOOKLM-N8N-INTEGRATION.md`
 - `NOTEBOOKLM-SETUP.md`
 - `N8N-MCP-INTEGRATION.md`
