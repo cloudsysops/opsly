@@ -48,6 +48,52 @@ check_forbidden_path() {
   return 0
 }
 
+check_docs_root_staged() {
+  echo ""
+  echo "📄 Verificando archivos en raíz de docs/ (staged)..."
+
+  local allowlist_file="$ROOT_DIR/config/docs-root-allowlist.json"
+  if [[ ! -f "$allowlist_file" ]]; then
+    echo "⚠️ Falta $allowlist_file"
+    return 0
+  fi
+
+  local staged_docs
+  staged_docs="$(git diff --cached --name-only --diff-filter=ACM 2>/dev/null | rg '^docs/[^/]+$' || true)"
+  if [[ -z "$staged_docs" ]]; then
+    echo "  ✅ Sin cambios en archivos sueltos bajo docs/"
+    return 0
+  fi
+
+  local violations=""
+  while IFS= read -r rel; do
+    [[ -z "$rel" ]] && continue
+    local base
+    base="$(basename "$rel")"
+    if node -e "
+      const fs = require('fs');
+      const base = process.argv[1];
+      const d = JSON.parse(fs.readFileSync(process.argv[2], 'utf8'));
+      const ok = (d.allowed_files || []).includes(base);
+      process.exit(ok ? 0 : 1);
+    " "$base" "$allowlist_file" 2>/dev/null; then
+      echo "  ✅ $rel (allowlist)"
+    else
+      violations+=$'\n'"  ❌ $rel — usar subcarpeta dueña (docs/STRUCTURE-GUARDRAILS.md) o revisar allowlist"
+    fi
+  done <<< "$staged_docs"
+
+  if [[ -n "$violations" ]]; then
+    echo ""
+    echo "🚫 Archivo(s) no permitidos en la raíz de docs/:"
+    echo "$violations"
+    echo ""
+    echo "💡 config/docs-root-allowlist.json solo para hubs/stubs acordados"
+    return 1
+  fi
+  return 0
+}
+
 check_root_whitelist() {
   echo ""
   echo "📋 Verificando whitelist de archivos en raíz..."
@@ -245,6 +291,7 @@ for forbidden in logs tenants letsencrypt agents workspaces cli; do
 done
 
 check_root_whitelist || ((errors++))
+check_docs_root_staged || ((errors++))
 check_root_folders_whitelist || ((errors++))
 check_hidden_folders_whitelist || ((errors++))
 

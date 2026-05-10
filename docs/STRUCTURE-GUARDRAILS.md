@@ -90,6 +90,6 @@ last_review: YYYY-MM-DD
 
 ## Validación
 
-- Validación de estructura del repo: `npm run validate-structure`.
-- Guard de staged files: `bash scripts/hooks/structure-guard.sh`.
+- Validación de estructura del repo (incluye raíz de `docs/` frente a `config/docs-root-allowlist.json`): `npm run validate-structure`.
+- Guard de staged files (raíz repo + raíz `docs/`): `bash scripts/hooks/structure-guard.sh`.
 - Validación de contexto JSON: `npm run validate-context`.

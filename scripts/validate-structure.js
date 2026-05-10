@@ -64,4 +64,24 @@ if (rootMarkdownFiles.length > 0) {
   process.exit(1);
 }
 
+const { findDocsRootViolations, CONFIG_REL } = require('./lib/docs-root-layout');
+let docsViolations = [];
+try {
+  docsViolations = findDocsRootViolations(root);
+} catch (error) {
+  console.error(`Docs root layout check failed: ${error.message}`);
+  process.exit(1);
+}
+
+if (docsViolations.length > 0) {
+  console.error('Files at docs/ root must be hubs, stubs, or openapi only (see docs/STRUCTURE-GUARDRAILS.md):');
+  for (const item of docsViolations) {
+    console.error(`- docs/${item}`);
+  }
+  console.error(
+    `Hint: move new docs into a owning folder (e.g. docs/01-development/). To extend the exception list, update ${CONFIG_REL} with explicit review.`,
+  );
+  process.exit(1);
+}
+
 console.log('Structure validation passed.');

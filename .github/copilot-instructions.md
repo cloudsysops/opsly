@@ -22,6 +22,8 @@ Hermes y workers locales:
 
 No crear instrucciones paralelas que contradigan el Brain compartido.
 
+**Layout de documentación:** no crear archivos nuevos en la raíz de `docs/` salvo los hubs/stubs listados en `docs/STRUCTURE-GUARDRAILS.md` y `config/docs-root-allowlist.json`. El resto va en la carpeta dueña (`docs/01-development/`, `docs/runbooks/`, etc.). `npm run validate-structure` y el pre-commit lo comprueban.
+
 ## FILOSOFIA DE TRABAJO
 
 Planificar -> Documentar -> Tests -> Implementar -> Validar -> Notificar

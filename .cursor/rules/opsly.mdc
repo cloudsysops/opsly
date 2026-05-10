@@ -47,8 +47,8 @@ consultar primero el Brain compartido y luego el codigo.
 
 - La raiz del repo solo permite Markdown canonico: `AGENTS.md`, `README.md`, `ROADMAP.md`, `VISION.md`.
 - No crear stubs ni docs largos en raiz (`ARCHITECTURE.md`, `HANDOFF.md`, `SPRINT-TRACKER.md`, `.openclaw.md`, reportes, planes, auditorias).
-- Todo documento nuevo debe ir bajo `docs/` segun `docs/STRUCTURE-GUARDRAILS.md`.
-- Si mueves una ruta consumida por agentes/scripts, deja stub temporal bajo `docs/`, no en la raiz.
+- **Raíz de `docs/`:** no añadir archivos sueltos (`.md`, `.yaml`, etc.). Solo hubs/stubs listados en `docs/STRUCTURE-GUARDRAILS.md` y en `config/docs-root-allowlist.json`. Documentación nueva va en la carpeta dueña (`docs/01-development/`, `docs/runbooks/`, `docs/adr/`, …). El pre-commit y `npm run validate-structure` fallan si se viola.
+- Si mueves una ruta consumida por agentes/scripts, deja stub temporal bajo `docs/` (y solo si el stub está en la allowlist), nunca en la raíz del repo.
 - Antes de terminar cambios de documentacion: ejecutar `npm run validate-structure` y, si tocaste contexto JSON, `npm run validate-context`.
 
 ## Cola de prompts (local)

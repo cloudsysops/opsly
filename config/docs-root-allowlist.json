@@ -1,0 +1,19 @@
+{
+  "description": "Únicos archivos permitidos en la raíz de docs/. Fuente normativa: docs/STRUCTURE-GUARDRAILS.md. No añadir entradas sin revisión de arquitectura.",
+  "allowed_files": [
+    "README.md",
+    "index.md",
+    "STRUCTURE-GUARDRAILS.md",
+    "openapi-opsly-api.yaml",
+    "AGENTS.md",
+    "ROADMAP.md",
+    "VISION.md",
+    "LLM-GATEWAY.md",
+    "E2E-TEST-SCENARIOS.md",
+    "API-CORE-PORTFOLIO.md",
+    "TENANT-PRODUCTION-BASELINE.md",
+    "TENANT-PRODUCTION-CHECKLIST.md",
+    "TENANT-PRODUCTION-HARDENING.md",
+    "TENANT-PRODUCTION-ROLLOUT.md"
+  ]
+}
