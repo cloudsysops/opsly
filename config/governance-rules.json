@@ -1,0 +1,104 @@
+{
+    "version": "1.0.0",
+    "metadata": {
+          "description": "Governance rules for OPSLY autonomous code validation and merge",
+          "lastUpdated": "2026-05-10",
+          "maintainer": "opsly-governance-team"
+    },
+    "autoValidation": {
+          "enabled": true,
+          "checkAllStatusRequired": true,
+          "requiredChecks": [
+                  "structure-integrity",
+                  "workflow-lint",
+                  "lint",
+                  "test-unit",
+                  "test-integration",
+                  "build",
+                  "scripts-check",
+                  "secret-scan"
+          ]
+    },
+    "autoFix": {
+          "enabled": true,
+          "rules": [
+                  {
+                            "id": "missing-dependencies",
+                            "trigger": "MODULE_NOT_FOUND",
+                            "action": "npm-install",
+                            "autoCommit": true,
+                            "requiresValidation": true
+                  },
+                  {
+                            "id": "lint-errors",
+                            "trigger": "ESLINT_ERROR",
+                            "action": "eslint-fix",
+                            "autoCommit": true,
+                            "requiresValidation": true
+                  },
+                  {
+                            "id": "type-errors",
+                            "trigger": "TYPESCRIPT_ERROR",
+                            "action": "tsc-check",
+                            "autoCommit": false,
+                            "requiresValidation": true
+                  }
+          ]
+    },
+    "autoApprove": {
+          "enabled": true,
+          "rules": [
+                  {
+                            "type": "documentation",
+                            "patterns": ["docs/**", "README.md", "*.md"],
+                            "requiresReview": false,
+                            "requiresApproval": false,
+                            "autoMerge": true
+                  },
+                  {
+                            "type": "configuration",
+                            "patterns": ["config/**", ".github/**", "*.json", "*.yml"],
+                            "requiresReview": true,
+                            "requiresApproval": 1,
+                            "autoMerge": false
+                  },
+                  {
+                            "type": "code",
+                            "patterns": ["apps/**", "src/**", "packages/**"],
+                            "requiresReview": true,
+                            "requiresApproval": 2,
+                            "autoMerge": false
+                  }
+          ]
+    },
+    "branchProtection": {
+          "main": {
+                  "requiresPullRequest": true,
+                  "requiredApprovals": 1,
+                  "dismissStaleReviews": true,
+                  "requireCodeOwnerReviews": true,
+                  "restrictWhoCanDismissReviews": false,
+                  "requireStatusChecks": true,
+                  "requireUpToDate": true
+          }
+    },
+    "dependencyManagement": {
+          "dependabotEnabled": true,
+          "autoMergePatch": true,
+          "autoMergeMinor": false,
+          "autoMergeMajor": false,
+          "securityUpdatesAlwaysMerge": true
+    },
+    "escalation": {
+          "failedAutoFix": {
+                  "action": "notify-maintainers",
+                  "label": "needs-manual-review",
+                  "comment": "Automatic fix failed, requires manual intervention"
+          },
+          "multipleChecks Failed": {
+                  "action": "request-review",
+                  "label": "blocked",
+                  "assignTo": "code-owners"
+          }
+    }
+}
