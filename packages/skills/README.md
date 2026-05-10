@@ -2,6 +2,10 @@
 
 > Skills procedurales para agentes IA autónomos en **Opsly** — sin improvisar, sin preguntar.
 
+## Skills derivadas del marketplace (Cursor)
+
+Adaptaciones en `skills/user/` que enlazan guías oficiales (Stripe, Supabase, Vercel AI SDK) y disciplina de verificación con rutas reales del monorepo. Índice en `skills/index.json` categoría **`marketplace`** y entradas `opsly-stripe-marketplace`, `opsly-supabase-marketplace`, `opsly-ai-sdk-vercel`, `opsly-agent-verification`.
+
 ## Quick Start
 
 ```bash
