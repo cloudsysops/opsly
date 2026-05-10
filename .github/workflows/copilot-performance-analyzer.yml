@@ -49,11 +49,10 @@ jobs:
         id: n-plus-one
         run: |
           ISSUES=0
-          # Detect loops with Supabase calls inside
+          # Detect loops with Supabase calls inside using awk (multiline-aware)
           while IFS= read -r -d '' file; do
             if grep -l "supabase\." "$file" > /dev/null 2>&1; then
-              if grep -qP "(for|while|forEach|map)\s*[\(\{].*\n.*supabase\." "$file" 2>/dev/null || \
-                 awk '/for\s*\(|\.forEach|\.map\(/{found=1} found && /supabase\./{print FILENAME": potential N+1"; found=0}' "$file" | grep -q .; then
+              if awk '/for\s*\(|\.forEach\b|\.map\b/{found=1} found && /supabase\./{print FILENAME": potential N+1"; found=0}' "$file" | grep -q .; then
                 echo "⚠️ Potential N+1 in: $file"
                 ISSUES=$((ISSUES + 1))
               fi
@@ -113,12 +112,15 @@ jobs:
             echo "⚠️ Manual retry loops found — use BullMQ attempts + backoff"
             ISSUES=$((ISSUES + 1))
           fi
-          # Check for missing backoff config in BullMQ jobs
-          if grep -r "addJob\|queue\.add" apps/orchestrator/src --include="*.ts" 2>/dev/null | \
-               grep -v "backoff\|attempts"; then
-            echo "⚠️ BullMQ jobs without backoff/retry config found"
-            ISSUES=$((ISSUES + 1))
-          fi
+          # Check for missing backoff config — inspect each file for addJob/queue.add
+          # without any accompanying backoff/attempts configuration in the same file
+          while IFS= read -r file; do
+            if grep -qE "addJob|queue\.add" "$file" 2>/dev/null && \
+               ! grep -qE "backoff|attempts" "$file" 2>/dev/null; then
+              echo "⚠️ BullMQ call without backoff/retry config: $file"
+              ISSUES=$((ISSUES + 1))
+            fi
+          done < <(find apps/orchestrator/src -name "*.ts" 2>/dev/null)
           echo "bullmq-issues=${ISSUES}" >> $GITHUB_OUTPUT
 
       - name: Update governance dashboard

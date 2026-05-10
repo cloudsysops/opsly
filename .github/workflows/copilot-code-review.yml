@@ -51,19 +51,22 @@ jobs:
         id: mcp-check
         run: |
           ISSUES=0
-          # Check for direct LLM calls outside LLM Gateway
+          # Check for direct LLM calls outside LLM Gateway (exclude known allowed dirs)
           if grep -r "openai\.\|anthropic\.\|@anthropic" apps/ --include="*.ts" \
-               --exclude-dir="node_modules" --exclude-dir="llm-gateway" 2>/dev/null | \
-               grep -v "//.*openai\|//.*anthropic" | grep -v "apps/llm-gateway" | grep -v "apps/mcp"; then
+               --exclude-dir="node_modules" --exclude-dir="llm-gateway" --exclude-dir="mcp" 2>/dev/null | \
+               grep -v "//.*openai\|//.*anthropic"; then
             echo "⚠️ Direct LLM calls found outside LLM Gateway"
             ISSUES=$((ISSUES + 1))
           fi
-          # Check for missing tenant_slug in orchestrator jobs
-          if grep -r "processIntent\|addJob" apps/orchestrator/src --include="*.ts" 2>/dev/null | \
-               grep -v "tenant_slug\|tenantSlug"; then
-            echo "⚠️ Orchestrator jobs may be missing tenant_slug"
-            ISSUES=$((ISSUES + 1))
-          fi
+          # Check for orchestrator call-sites that lack tenant_slug in the same file
+          # (file-level check avoids multiline false positives)
+          while IFS= read -r file; do
+            if grep -qE "processIntent|addJob" "$file" 2>/dev/null && \
+               ! grep -qE "tenant_slug|tenantSlug" "$file" 2>/dev/null; then
+              echo "⚠️ Orchestrator call without tenant_slug context: $file"
+              ISSUES=$((ISSUES + 1))
+            fi
+          done < <(find apps/orchestrator/src -name "*.ts" 2>/dev/null)
           echo "mcp-issues=${ISSUES}" >> $GITHUB_OUTPUT
 
       - name: Security scan (secrets detection)

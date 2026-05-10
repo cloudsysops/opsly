@@ -68,7 +68,8 @@ jobs:
           UNDOCUMENTED=()
           for app in apps/*/; do
             name=$(basename "$app")
-            if ! grep -q "$name" AGENTS.md; then
+            # Use -F for literal matching and -w for word boundary to avoid false negatives
+            if ! grep -Fqw "$name" AGENTS.md 2>/dev/null; then
               UNDOCUMENTED+=("$name")
             fi
           done
