@@ -8,6 +8,7 @@ COPY package.json package-lock.json ./
 COPY apps/orchestrator/package.json ./apps/orchestrator/
 COPY apps/notebooklm-agent/package.json ./apps/notebooklm-agent/
 COPY packages/types/package.json ./packages/types/
+COPY apps/llm-gateway/package.json ./apps/llm-gateway/
 RUN npm ci
 
 COPY . .
@@ -44,6 +45,7 @@ RUN npm ci --ignore-scripts --omit=dev
 COPY --from=builder /app/apps/orchestrator/dist ./apps/orchestrator/dist
 COPY --from=builder /app/apps/notebooklm-agent/dist ./apps/notebooklm-agent/dist
 COPY --from=builder /app/packages/types/dist ./packages/types/dist
+COPY --from=builder /app/apps/llm-gateway/node_modules/@intcloudsysops ./apps/llm-gateway/node_modules/@intcloudsysops
 COPY --from=builder /app/scripts ./scripts
 COPY infra/hermes ./infra/hermes
 
