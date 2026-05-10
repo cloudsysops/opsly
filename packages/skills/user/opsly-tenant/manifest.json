@@ -51,9 +51,9 @@
         "tenantCreated": true,
         "stackRunning": true,
         "urls": {
-          "n8n": "https://n8n-miempresa.ops.smiletripcare.com",
-          "uptime": "https://uptime-miempresa.ops.smiletripcare.com",
-          "portal": "https://portal.ops.smiletripcare.com"
+          "n8n": "https://n8n-miempresa.op-sly.com",
+          "uptime": "https://uptime-miempresa.op-sly.com",
+          "portal": "https://portal.op-sly.com"
         },
         "invitationSent": true
       }

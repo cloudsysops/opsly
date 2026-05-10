@@ -139,7 +139,7 @@ watch 'redis-cli -u "$REDIS_URL" KEYS "*bullmq:queue:*" | wc -l'
 
 ```bash
 # Notify job
-curl -X POST https://api.ops.smiletripcare.com/api/jobs/notify \
+curl -X POST https://api.op-sly.com/api/jobs/notify \
   -H "Authorization: Bearer $ADMIN_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{

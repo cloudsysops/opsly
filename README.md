@@ -352,11 +352,11 @@ Provision (cola → Docker Compose tenant)
 
 | Entorno           | URL                                     |
 | ----------------- | --------------------------------------- |
-| Dominio base      | `https://ops.smiletripcare.com`         |
-| API               | `https://api.ops.smiletripcare.com`     |
-| Admin             | `https://admin.ops.smiletripcare.com`   |
-| Traefik dashboard | `https://traefik.ops.smiletripcare.com` |
-| Wildcard tenants  | `*.ops.smiletripcare.com`               |
+| Dominio base      | `https://op-sly.com`         |
+| API               | `https://api.op-sly.com`     |
+| Admin             | `https://admin.op-sly.com`   |
+| Traefik dashboard | `https://traefik.op-sly.com` |
+| Wildcard tenants  | `*.op-sly.com`               |
 
 <!-- URLS_END -->
 

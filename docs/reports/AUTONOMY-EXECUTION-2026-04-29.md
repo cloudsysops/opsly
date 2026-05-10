@@ -59,7 +59,7 @@ Date: 2026-04-29 | Owner: Opsly Autonomous Runtime | Mode: AGGRESSIVE (Cortex sa
 ## INFRASTRUCTURE STATUS
 - VPS: 157.245.223.7 (operational, all services healthy)
 - Services: traefik, api, admin, portal, mcp, llm-gateway, orchestrator, context-builder, redis
-- Deploy staging: ops.smiletripcare.com (operational)
+- Deploy staging: op-sly.com (operational)
 - Doppler: ops-intcloudsysops/prd (complete, 3 vars pending for ML)
 
 ## COMMITS THIS SESSION

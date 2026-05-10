@@ -8,7 +8,7 @@ Sistema unificado: **Notion** como colaboración en tiempo real, **YAML + docs g
 | ---------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
 | **Notion** (bases Tasks / Sprints)                                                                                                 | Donde el equipo edita día a día                                                                    |
 | **`docs/implementation/status.yaml`**                                                                                              | Vista consolidada para docs, hooks y PRs (puede poblar desde Notion con `npm run notion:fetch`)    |
-| **`docs/generated/implementation-progress.auto.md`**, **`docs/generated/sprint-status.auto.md`**, **`docs/AGENTS-ASSIGNMENTS.md`** | **Generados** — no editar a mano; vista humana del sprint: **`SPRINT-TRACKER.md`** (raíz del repo) |
+| **`docs/generated/implementation-progress.auto.md`**, **`docs/generated/sprint-status.auto.md`**, **`docs/AGENTS-ASSIGNMENTS.md`** | **Generados** — no editar a mano; vista humana del sprint: **`SPRINT-TRACKER.md`** (`docs/01-development/`)  |
 | **GitHub Issues**                                                                                                                  | Tracking técnico y enlaces desde Notion (opcional)                                                 |
 
 Variables: ver [`docs/DOPPLER-VARS.md`](DOPPLER-VARS.md) (`NOTION_TOKEN`, `NOTION_DATABASE_TASKS`, …). No hardcodear IDs de base en código: usar env.

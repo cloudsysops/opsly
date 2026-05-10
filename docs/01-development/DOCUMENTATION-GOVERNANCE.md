@@ -175,7 +175,7 @@ All GitHub admins can approve emergency overrides.
 git diff main docs/README.md VISION.md ROADMAP.md AGENTS.md
 
 # Verify all canonical docs have frontmatter
-grep -l "status: canon" VISION.md ROADMAP.md AGENTS.md SPRINT-TRACKER.md docs/README.md
+grep -l "status: canon" VISION.md ROADMAP.md AGENTS.md README.md docs/README.md docs/01-development/SPRINT-TRACKER.md
 ```
 
 ## Q&A

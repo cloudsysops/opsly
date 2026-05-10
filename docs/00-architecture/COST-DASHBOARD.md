@@ -4,7 +4,7 @@
 
 Ruta en la app admin: `/costs`.
 
-En staging, la URL base suele ser `https://admin.<PLATFORM_DOMAIN>/costs` (por ejemplo `https://admin.ops.smiletripcare.com/costs`).
+En staging, la URL base suele ser `https://admin.<PLATFORM_DOMAIN>/costs` (por ejemplo `https://admin.op-sly.com/costs`).
 
 ## Funcionalidad
 

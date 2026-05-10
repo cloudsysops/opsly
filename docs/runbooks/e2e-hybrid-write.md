@@ -18,13 +18,13 @@ Sustituir `API_BASE`, `TOKEN` y `TENANT` (slug real):
 curl -sS -X POST "https://api.${PLATFORM_DOMAIN}/api/tools/execute" \
   -H "Authorization: Bearer ${PLATFORM_ADMIN_TOKEN}" \
   -H "Content-Type: application/json" \
-  -d '{"tenant_slug":"smiletripcare","action":"fs_write","args":{"path":"e2e-proof.txt","content":"opsly e2e write"}}'
+  -d '{"tenant_slug":"smiletripcare","action":"fs_write","args":{"path":"docs/reports/e2e-proof.txt","content":"opsly e2e write"}}'
 ```
 
 Luego en el VPS:
 
 ```bash
-ssh vps-dragon "test -f /opt/opsly/e2e-proof.txt && head -1 /opt/opsly/e2e-proof.txt"
+ssh vps-dragon "test -f /opt/opsly/docs/reports/e2e-proof.txt && head -1 /opt/opsly/docs/reports/e2e-proof.txt"
 ```
 
 ## 3. Escaneo post-cambio

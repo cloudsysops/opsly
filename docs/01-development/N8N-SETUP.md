@@ -11,7 +11,7 @@ y notificar confirmacion de recepcion.
 
 ## Prerrequisitos
 
-- n8n operativo en `https://n8n-intcloudsysops.ops.smiletripcare.com`
+- n8n operativo en `https://n8n-intcloudsysops.op-sly.com`
 - Secretos en Doppler `prd`:
   - `GITHUB_TOKEN` o `GITHUB_TOKEN_N8N` (scope `repo` o Contents en el repo)
   - `DISCORD_WEBHOOK_URL`

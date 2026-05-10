@@ -23,7 +23,7 @@ docker compose -f infra/docker-compose.platform.yml --env-file /opt/opsly/.env u
 ```bash
 # Health check (hasta 5 intentos)
 for i in {1..5}; do
-  curl -sfk "https://api.ops.smiletripcare.com/api/health" && break
+  curl -sfk "https://api.op-sly.com/api/health" && break
   sleep 15
 done
 

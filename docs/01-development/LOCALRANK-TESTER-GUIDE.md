@@ -8,14 +8,14 @@ Eres uno de nuestros primeros testers externos: tu feedback ayuda a definir el p
 
 | Servicio    | URL                                            |
 | ----------- | ---------------------------------------------- |
-| Portal      | https://portal.ops.smiletripcare.com           |
-| n8n         | https://n8n-localrank.ops.smiletripcare.com    |
-| Uptime Kuma | https://uptime-localrank.ops.smiletripcare.com |
+| Portal      | https://portal.op-sly.com           |
+| n8n         | https://n8n-localrank.op-sly.com    |
+| Uptime Kuma | https://uptime-localrank.op-sly.com |
 
 _(Las URLs asumen el tenant `localrank` desplegado en el VPS de staging.)_
 
 **Nota de seguridad:** acceso SSH de administración solo por Tailscale (`100.120.151.91`).
-Las webs públicas están detrás de Cloudflare (Proxy ON recomendado para `*.ops.smiletripcare.com`).
+Las webs públicas están detrás de Cloudflare (Proxy ON recomendado para `*.op-sly.com`).
 
 ## Qué probar esta semana
 
@@ -40,9 +40,9 @@ Las webs públicas están detrás de Cloudflare (Proxy ON recomendado para `*.op
 
 ## Checklist rápido (smoke test)
 
-- [ ] `https://portal.ops.smiletripcare.com` carga login
-- [ ] `https://n8n-localrank.ops.smiletripcare.com` responde
-- [ ] `https://uptime-localrank.ops.smiletripcare.com` responde
+- [ ] `https://portal.op-sly.com` carga login
+- [ ] `https://n8n-localrank.op-sly.com` responde
+- [ ] `https://uptime-localrank.op-sly.com` responde
 - [ ] Invitación del tenant recibida y activada
 - [ ] Si NotebookLM está habilitado: artifacts generados correctamente
 

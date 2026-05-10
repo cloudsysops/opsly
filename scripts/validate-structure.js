@@ -4,6 +4,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 
 const root = process.cwd();
+const allowedRootMarkdown = new Set(['AGENTS.md', 'README.md', 'ROADMAP.md', 'VISION.md']);
 const requiredPaths = [
   'apps/mcp',
   'apps/orchestrator',
@@ -41,7 +42,24 @@ if (forbiddenPresent.length > 0) {
     console.error(`- ${item}`);
   }
   console.error(
-    'Hint: move contents under runtime/ or tools/ (e.g. logs → runtime/logs/). See docs/REPO-MAP.md § validate-structure.',
+    'Hint: move contents under runtime/ or tools/ (e.g. logs → runtime/logs/). See docs/00-architecture/REPO-MAP.md § validate-structure.',
+  );
+  process.exit(1);
+}
+
+const rootMarkdownFiles = fs
+  .readdirSync(root, { withFileTypes: true })
+  .filter((entry) => entry.isFile() && entry.name.endsWith('.md'))
+  .map((entry) => entry.name)
+  .filter((fileName) => !allowedRootMarkdown.has(fileName));
+
+if (rootMarkdownFiles.length > 0) {
+  console.error('Forbidden Markdown files found in repository root:');
+  for (const item of rootMarkdownFiles) {
+    console.error(`- ${item}`);
+  }
+  console.error(
+    'Hint: keep root Markdown limited to AGENTS.md, README.md, ROADMAP.md and VISION.md. Move all other docs under docs/.',
   );
   process.exit(1);
 }

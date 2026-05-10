@@ -10,7 +10,7 @@
 
 **Opsly** es una plataforma multi-tenant SaaS que despliega y gestiona stacks de agentes autónomos (n8n, Uptime Kuma) por cliente, con facturación Stripe, backups automáticos y dashboard de administración.
 
-- **Dominio:** ops.smiletripcare.com
+- **Dominio:** op-sly.com
 - **IP VPS:** 157.245.223.7
 - **Tailscale:** 100.120.151.91
 
@@ -21,10 +21,10 @@
 | Servicio     | Puerto | Status        | URL                          |
 | ------------ | ------ | ------------- | ---------------------------- |
 | Traefik      | 80/443 | ✅ Running    | —                            |
-| API (app)    | 3000   | ⚠️ Error      | api.ops.smiletripcare.com    |
-| Admin        | 3001   | ✅ Running    | admin.ops.smiletripcare.com  |
-| Portal       | 3002   | ✅ Running    | portal.ops.smiletripcare.com |
-| MCP          | 3003   | ✅ Running    | mcp.ops.smiletripcare.com    |
+| API (app)    | 3000   | ⚠️ Error      | api.op-sly.com    |
+| Admin        | 3001   | ✅ Running    | admin.op-sly.com  |
+| Portal       | 3002   | ✅ Running    | portal.op-sly.com |
+| MCP          | 3003   | ✅ Running    | mcp.op-sly.com    |
 | Orchestrator | 3011   | ⏳ Restarting | —                            |
 | Redis        | 6379   | ✅ Running    | —                            |
 
@@ -1142,4 +1142,4 @@ Usar `--dry-run` primero si el entorno no está validado. Variables Supabase/pat
 - Uptime: `https://uptime-{slug}.{PLATFORM_DOMAIN}`
 - Portal: `https://portal.{PLATFORM_DOMAIN}`
 
-Sustituir `PLATFORM_DOMAIN` por el dominio base del entorno (ej. `ops.smiletripcare.com`).
+Sustituir `PLATFORM_DOMAIN` por el dominio base del entorno (ej. `op-sly.com`).

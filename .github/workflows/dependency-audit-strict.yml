@@ -43,7 +43,7 @@ jobs:
           # Check for CRITICAL vulnerabilities
           if grep -q '"severity":"critical"' audit-report.json; then
             echo "❌ CRITICAL vulnerabilities detected"
-            jq '.vulnerabilities | select(.[] | .severity == "critical")' audit-report.json
+            cat audit-report.json | jq '.vulnerabilities | select(.[] | .severity == "critical")'
             exit 1
           fi
 
@@ -51,7 +51,7 @@ jobs:
           HIGH_COUNT=$(grep -c '"severity":"high"' audit-report.json || true)
           if [ "$HIGH_COUNT" -gt 0 ]; then
             echo "⚠️  HIGH severity vulnerabilities found: $HIGH_COUNT"
-            jq '.vulnerabilities | select(.[] | .severity == "high")' audit-report.json
+            cat audit-report.json | jq '.vulnerabilities | select(.[] | .severity == "high")'
           fi
 
       - name: Check deprecated packages
@@ -74,11 +74,9 @@ jobs:
         run: |
           echo "Checking license compliance..."
           # Check for GPL, AGPL licenses which may be incompatible
-          if npm ls --json 2>/dev/null | grep -qi "gpl\|agpl"; then
+          ! npm ls --json 2>/dev/null | grep -i "gpl\|agpl" || {
             echo "⚠️  GPL/AGPL licensed packages detected - review required"
-          else
-            echo "✓ No GPL/AGPL licensed packages found"
-          fi
+          }
 
   audit-report:
     runs-on: ubuntu-latest

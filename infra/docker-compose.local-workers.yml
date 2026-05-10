@@ -1,7 +1,7 @@
 # Compose para workers locales ( failover )
 # Uso:
 #   # Con Redis del VPS (failover real - misma cola)
-#   REDIS_URL='redis://redis.ops.smiletripcare.com:6379' docker compose -f infra/docker-compose.local-workers.yml up -d
+#   REDIS_URL='redis://redis.op-sly.com:6379' docker compose -f infra/docker-compose.local-workers.yml up -d
 #
 #   # Con Redis local (testing)
 #   docker compose -f infra/docker-compose.local-workers.yml --env-file .env.local-workers up -d

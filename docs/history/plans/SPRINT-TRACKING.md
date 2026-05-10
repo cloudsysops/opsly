@@ -6,7 +6,7 @@ last_review: 2026-04-30
 note: Copia archivada (ADR-033). Vista actual en docs/generated/*.auto.md.
 ---
 
-> **Deprecated — snapshot archivado.** La vista generada actual está en [`docs/generated/sprint-status.auto.md`](../../generated/sprint-status.auto.md). Canon humano: [`SPRINT-TRACKER.md`](../../../SPRINT-TRACKER.md).
+> **Deprecated — snapshot archivado.** La vista generada actual está en [`docs/generated/sprint-status.auto.md`](../../generated/sprint-status.auto.md). Canon humano: [`SPRINT-TRACKER.md`](../../01-development/SPRINT-TRACKER.md).
 
 # Opsly — Sprint tracking
 

@@ -2,18 +2,18 @@
 
 **Checklist corto:** [`TENANT-TESTING-PLAN.md`](TENANT-TESTING-PLAN.md).
 
-Dominio base de ejemplo en staging: `ops.smiletripcare.com`. Sustituye `<slug>` por el slug de tu tenant (p. ej. `localrank`, `jkboterolabs`).
+Dominio base de ejemplo en staging: `op-sly.com`. Sustituye `<slug>` por el slug de tu tenant (p. ej. `localrank`, `jkboterolabs`).
 
 ## 1. Verificar que el stack está activo
 
-- **n8n:** `https://n8n-<slug>.ops.smiletripcare.com` — esperado: **HTTP 200** en la raíz (tras TLS).
-- **Uptime Kuma:** `https://uptime-<slug>.ops.smiletripcare.com` — suele responder **302** a la página de login (normal).
+- **n8n:** `https://n8n-<slug>.op-sly.com` — esperado: **HTTP 200** en la raíz (tras TLS).
+- **Uptime Kuma:** `https://uptime-<slug>.op-sly.com` — suele responder **302** a la página de login (normal).
 
 Comprobar desde tu máquina:
 
 ```bash
-curl -sI --max-time 10 "https://n8n-<slug>.ops.smiletripcare.com" | head -3
-curl -sI --max-time 10 "https://uptime-<slug>.ops.smiletripcare.com" | head -3
+curl -sI --max-time 10 "https://n8n-<slug>.op-sly.com" | head -3
+curl -sI --max-time 10 "https://uptime-<slug>.op-sly.com" | head -3
 ```
 
 En el servidor (compose por tenant), los compose viven bajo `/opt/opsly/runtime/tenants//` como `docker-compose.<slug>.yml`.

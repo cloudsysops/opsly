@@ -1,23 +1,11 @@
-# Portafolio API — plano canónico vs `apps/web`
+---
+status: moved
+owner: product
+last_review: 2026-05-10
+---
 
-## Plano canónico
+# API Core Portfolio Moved
 
-- **`apps/api`** — única fuente de verdad HTTP para la plataforma (tenants, webhooks, métricas, claves, público acotado).
+The canonical document lives in [`01-development/API-CORE-PORTFOLIO.md`](01-development/API-CORE-PORTFOLIO.md).
 
-## `apps/web` (legacy / transición)
-
-Las rutas bajo `apps/web/app/api/**` son **proxies** hacia `apps/api` cuando existe paridad. Configuración:
-
-- `INTERNAL_API_URL` (preferido en Docker) o `NEXT_PUBLIC_API_URL`
-- Cabecera de depuración en respuesta: `x-opsly-web-proxy: 1`
-
-Detalle de mapeo y riesgos: [TENANT-PRODUCTION-BASELINE.md](./TENANT-PRODUCTION-BASELINE.md).
-
-## Rutas añadidas en consolidación
-
-| Método | Ruta API | Uso |
-| ------ | -------- | --- |
-| GET | `/api/metrics/web-dashboard` | Métricas anidadas (ex-`apps/web` `/api/metrics`). |
-| GET | `/api/public/tenants/status` | Estado onboarding por `?email=` + rate limit Redis. |
-| GET, POST | `/api/v1/keys` | API keys por cabecera `x-tenant-id` (deuda de hardening documentada). |
-| DELETE | `/api/v1/keys/{id}` | Revocar clave. |
+Do not edit this stub.

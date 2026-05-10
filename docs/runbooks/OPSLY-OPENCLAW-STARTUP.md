@@ -146,7 +146,7 @@ ssh vps-dragon@100.120.151.91 "cd /opt/opsly && docker compose -f infra/docker-c
 Verificaciones:
 
 ```bash
-curl -sf https://api.ops.smiletripcare.com/api/health
+curl -sf https://api.op-sly.com/api/health
 ssh vps-dragon@100.120.151.91 \
   "docker inspect --format '{{.Name}} {{.State.Status}} {{if .State.Health}}{{.State.Health.Status}}{{else}}no-health{{end}}' opsly_orchestrator opsly_llm_gateway opsly_mcp infra-redis-1 traefik"
 ```

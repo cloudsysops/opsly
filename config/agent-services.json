@@ -1,25 +1,65 @@
 {
   "services": {
     "cursor": {
+      "enabled": true,
       "url": "http://localhost:5001",
+      "envUrl": "OPSLY_CURSOR_AGENT_URL",
       "type": "http",
       "timeoutMs": 60000,
       "retries": 1
     },
     "claude": {
+      "enabled": true,
       "url": "http://localhost:5002",
+      "envUrl": "OPSLY_CLAUDE_AGENT_URL",
       "type": "http",
       "timeoutMs": 120000,
       "retries": 1
     },
     "copilot": {
+      "enabled": false,
       "url": "http://localhost:5003",
+      "envUrl": "OPSLY_COPILOT_AGENT_URL",
       "type": "http",
       "timeoutMs": 120000,
       "retries": 1
     },
     "opencode": {
+      "enabled": false,
       "url": "http://localhost:5004",
+      "envUrl": "OPSLY_OPENCODE_AGENT_URL",
+      "type": "http",
+      "timeoutMs": 120000,
+      "retries": 1
+    },
+    "codex": {
+      "enabled": false,
+      "url": "http://localhost:5005",
+      "envUrl": "OPSLY_CODEX_AGENT_URL",
+      "type": "http",
+      "timeoutMs": 120000,
+      "retries": 1
+    },
+    "openai": {
+      "enabled": false,
+      "url": "http://localhost:5006",
+      "envUrl": "OPSLY_OPENAI_AGENT_URL",
+      "type": "http",
+      "timeoutMs": 120000,
+      "retries": 1
+    },
+    "hermes": {
+      "enabled": false,
+      "url": "http://localhost:5007",
+      "envUrl": "OPSLY_HERMES_AGENT_URL",
+      "type": "http",
+      "timeoutMs": 120000,
+      "retries": 1
+    },
+    "decepticon": {
+      "enabled": false,
+      "url": "http://localhost:5008",
+      "envUrl": "OPSLY_DECEPTICON_AGENT_URL",
       "type": "http",
       "timeoutMs": 120000,
       "retries": 1

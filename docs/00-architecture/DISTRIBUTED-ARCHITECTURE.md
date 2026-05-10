@@ -24,7 +24,7 @@ Mac 2011 Worker (Tailscale)
 
 ### Públicas (vía Traefik)
 
-Sustituye `BASE` por tu `domains.base` (ej. `ops.smiletripcare.com`):
+Sustituye `BASE` por tu `domains.base` (ej. `op-sly.com`):
 
 | Uso                  | URL                   |
 | -------------------- | --------------------- |

@@ -1,6 +1,6 @@
 # Plan de pruebas para tenants (staging)
 
-**Dominio base:** `ops.smiletripcare.com` (sustituir si tu entorno usa otro `PLATFORM_DOMAIN`).  
+**Dominio base:** `op-sly.com` (sustituir si tu entorno usa otro `PLATFORM_DOMAIN`).  
 **Detalle técnico ampliado:** [`TENANT-TESTING-GUIDE.md`](TENANT-TESTING-GUIDE.md).
 
 ## Estado del sistema (verificación operativa)
@@ -9,8 +9,8 @@ Checklist rápido antes de invitar a tenants:
 
 | Componente         | Verificación                                                                                          |
 | ------------------ | ----------------------------------------------------------------------------------------------------- |
-| API                | `GET https://api.ops.smiletripcare.com/api/health` → `status: ok`, `checks.supabase` / `checks.redis` |
-| Costes (admin)     | `https://admin.ops.smiletripcare.com/costs` (requiere sesión admin / token según despliegue)          |
+| API                | `GET https://api.op-sly.com/api/health` → `status: ok`, `checks.supabase` / `checks.redis` |
+| Costes (admin)     | `https://admin.op-sly.com/costs` (requiere sesión admin / token según despliegue)          |
 | Redis (plataforma) | En VPS: contenedor `infra-redis-1` healthy                                                            |
 | Worker remoto      | Opcional: nodo Mac 2011 u otro worker con cola BullMQ (ver `docs/WORKER-SETUP-MAC2011.md`)            |
 
@@ -18,17 +18,17 @@ Checklist rápido antes de invitar a tenants:
 
 | Recurso          | URL                                                                            |
 | ---------------- | ------------------------------------------------------------------------------ |
-| Health API       | `https://api.ops.smiletripcare.com/api/health`                                 |
-| Admin            | `https://admin.ops.smiletripcare.com`                                          |
-| Portal           | `https://portal.ops.smiletripcare.com` (si el servicio portal está desplegado) |
-| Dashboard costos | `https://admin.ops.smiletripcare.com/costs`                                    |
+| Health API       | `https://api.op-sly.com/api/health`                                 |
+| Admin            | `https://admin.op-sly.com`                                          |
+| Portal           | `https://portal.op-sly.com` (si el servicio portal está desplegado) |
+| Dashboard costos | `https://admin.op-sly.com/costs`                                    |
 
 ## Tenants de referencia (ejemplos)
 
 | Tenant       | n8n                                              | Uptime Kuma                                         |
 | ------------ | ------------------------------------------------ | --------------------------------------------------- |
-| localrank    | `https://n8n-localrank.ops.smiletripcare.com`    | `https://uptime-localrank.ops.smiletripcare.com`    |
-| jkboterolabs | `https://n8n-jkboterolabs.ops.smiletripcare.com` | `https://uptime-jkboterolabs.ops.smiletripcare.com` |
+| localrank    | `https://n8n-localrank.op-sly.com`    | `https://uptime-localrank.op-sly.com`    |
+| jkboterolabs | `https://n8n-jkboterolabs.op-sly.com` | `https://uptime-jkboterolabs.op-sly.com` |
 
 _Esperado típico:_ n8n **200** en raíz; Uptime **302** hacia login.
 
@@ -37,8 +37,8 @@ _Esperado típico:_ n8n **200** en raíz; Uptime **302** hacia login.
 ### 1. Verificar stack activo
 
 ```bash
-curl -sI --max-time 15 "https://n8n-TU-SLUG.ops.smiletripcare.com" | head -3
-curl -sI --max-time 15 "https://uptime-TU-SLUG.ops.smiletripcare.com" | head -3
+curl -sI --max-time 15 "https://n8n-TU-SLUG.op-sly.com" | head -3
+curl -sI --max-time 15 "https://uptime-TU-SLUG.op-sly.com" | head -3
 ```
 
 ### 2. n8n
@@ -47,7 +47,7 @@ Abrir URL → registro admin solo la primera vez → importar o crear workflows 
 
 ### 3. Uptime Kuma
 
-Abrir URL → crear admin → añadir monitor HTTP (p. ej. `https://api.ops.smiletripcare.com/api/health`).
+Abrir URL → crear admin → añadir monitor HTTP (p. ej. `https://api.op-sly.com/api/health`).
 
 ### 4. Feedback (portal)
 

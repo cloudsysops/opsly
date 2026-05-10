@@ -11,7 +11,7 @@
 #   --email EMAIL     Debe coincidir con owner_email del tenant en platform.tenants
 #   --name NAME       Opcional; nombre mostrado en el email
 #   --mode MODE       developer | managed (default: developer)
-#   --api-url URL     Default: https://api.ops.smiletripcare.com
+#   --api-url URL     Default: https://api.op-sly.com
 #   --dry-run         Solo muestra el cuerpo del template manual (no llama a la API)
 #   -h, --help
 
@@ -28,7 +28,7 @@ TENANT_REF=""
 EMAIL=""
 NAME=""
 MODE="developer"
-API_URL="${API_URL:-https://api.ops.smiletripcare.com}"
+API_URL="${API_URL:-https://api.op-sly.com}"
 DRY_RUN="false"
 
 while [[ $# -gt 0 ]]; do

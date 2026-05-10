@@ -10,6 +10,7 @@ services:
   cursor:
     enabled: true
     url: "http://localhost:5001"
+    env_var: "OPSLY_CURSOR_AGENT_URL"
     type: "http"
     agent_role: "executor"
     capabilities:
@@ -29,6 +30,7 @@ services:
   claude:
     enabled: true
     url: "http://localhost:5002"
+    env_var: "OPSLY_CLAUDE_AGENT_URL"
     type: "http_api"
     agent_role: "architect"
     model: "claude-opus-4"
@@ -47,6 +49,7 @@ services:
   copilot:
     enabled: false
     url: "http://localhost:5003"
+    env_var: "OPSLY_COPILOT_AGENT_URL"
     type: "http"
     agent_role: "executor"
     capabilities:
@@ -63,6 +66,7 @@ services:
   opencode:
     enabled: false
     url: "http://localhost:5004"
+    env_var: "OPSLY_OPENCODE_AGENT_URL"
     type: "http"
     agent_role: "executor"
     capabilities:
@@ -73,6 +77,74 @@ services:
     retry_backoff_ms: 3000
     health_check_interval_ms: 60000
     description: "Vercel OpenCode service"
+
+  # Codex/OpenAI-compatible local service
+  # Disabled until a concrete local bridge is running.
+  codex:
+    enabled: false
+    url: "http://localhost:5005"
+    env_var: "OPSLY_CODEX_AGENT_URL"
+    type: "http"
+    agent_role: "executor"
+    capabilities:
+      - code-generation
+      - repository-editing
+      - terminal-assisted-development
+    timeout_ms: 120000
+    retry_attempts: 1
+    retry_backoff_ms: 3000
+    health_check_interval_ms: 60000
+    description: "Codex-compatible local execution service"
+
+  # OpenAI IDE fallback bridge (alias kept separate for operator routing)
+  openai:
+    enabled: false
+    url: "http://localhost:5006"
+    env_var: "OPSLY_OPENAI_AGENT_URL"
+    type: "http"
+    agent_role: "executor"
+    capabilities:
+      - code-generation
+      - reasoning
+    timeout_ms: 120000
+    retry_attempts: 1
+    retry_backoff_ms: 3000
+    health_check_interval_ms: 60000
+    description: "OpenAI local agent bridge"
+
+  # Hermes routing bridge for Opsly LLM control-plane tasks
+  hermes:
+    enabled: false
+    url: "http://localhost:5007"
+    env_var: "OPSLY_HERMES_AGENT_URL"
+    type: "http"
+    agent_role: "planner"
+    capabilities:
+      - routing
+      - planning
+      - cost-aware-llm
+    timeout_ms: 120000
+    retry_attempts: 1
+    retry_backoff_ms: 3000
+    health_check_interval_ms: 60000
+    description: "Hermes local routing service"
+
+  # Decepticon red-team/validation bridge
+  decepticon:
+    enabled: false
+    url: "http://localhost:5008"
+    env_var: "OPSLY_DECEPTICON_AGENT_URL"
+    type: "http"
+    agent_role: "validator"
+    capabilities:
+      - adversarial-review
+      - validation
+      - security-audit
+    timeout_ms: 120000
+    retry_attempts: 1
+    retry_backoff_ms: 3000
+    health_check_interval_ms: 60000
+    description: "Decepticon validation service"
 
 # Default service selection rules
 defaults:
@@ -85,6 +157,10 @@ defaults:
     - "claude"
     - "copilot"
     - "opencode"
+    - "codex"
+    - "openai"
+    - "hermes"
+    - "decepticon"
 
 # Scaling configuration (for future remote/Docker deployments)
 # Example: Move Cursor to different machine by changing URL
@@ -95,21 +171,37 @@ environments:
     claude: "http://localhost:5002"
     copilot: "http://localhost:5003"
     opencode: "http://localhost:5004"
+    codex: "http://localhost:5005"
+    openai: "http://localhost:5006"
+    hermes: "http://localhost:5007"
+    decepticon: "http://localhost:5008"
 
   local:
     cursor: "http://localhost:5001"
     claude: "http://localhost:5002"
+    copilot: "http://localhost:5003"
+    opencode: "http://localhost:5004"
+    codex: "http://localhost:5005"
+    openai: "http://localhost:5006"
+    hermes: "http://localhost:5007"
+    decepticon: "http://localhost:5008"
 
   tailscale:
     cursor: "http://opsly-mac2011:5001"     # MacBook via Tailscale
     cursor_backup: "http://opsly-admin:5001"  # Admin machine backup
     claude: "http://opsly-admin:5002"       # Claude on admin machine
+    codex: "http://opsly-admin:5005"
+    hermes: "http://opsly-admin:5007"
     # Orchestrator stays on VPS via normal config
 
   remote:
     cursor: "http://192.168.1.100:5001"  # Different machine
     claude: "http://192.168.1.100:5002"
+    codex: "http://192.168.1.100:5005"
+    hermes: "http://192.168.1.100:5007"
 
   docker:
     cursor: "http://cursor-container:5001"
     claude: "http://claude-container:5002"
+    codex: "http://codex-container:5005"
+    hermes: "http://hermes-container:5007"

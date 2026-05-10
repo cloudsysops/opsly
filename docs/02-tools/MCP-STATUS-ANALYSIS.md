@@ -176,7 +176,7 @@ Debería:
 1. Ve a https://claude.ai/settings/mcp
 2. Agrega:
    - Name: Opsly OpenClaw
-   - URL: https://mcp.ops.smiletripcare.com
+   - URL: https://mcp.op-sly.com
    - Client ID: claude-ai
    - Redirect: https://claude.ai/oauth/callback
 3. Aprueba los scopes solicitados

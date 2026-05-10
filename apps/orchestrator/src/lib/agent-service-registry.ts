@@ -5,6 +5,7 @@ import * as yaml from 'js-yaml';
 export interface AgentService {
   enabled: boolean;
   url: string;
+  env_var?: string;
   type: 'http' | 'http_api';
   agent_role: string;
   capabilities: string[];
@@ -59,18 +60,65 @@ export class AgentServiceRegistry {
     return this.config!;
   }
 
+  private lookupRawService(serviceName: string): Record<string, unknown> | null {
+    if (!this.config) {
+      return null;
+    }
+    const services = this.config.services as unknown as Record<string, Record<string, unknown>>;
+    return services[serviceName] ?? services[`local_${serviceName}`] ?? null;
+  }
+
+  private normalizeService(serviceName: string, raw: Record<string, unknown>): AgentService {
+    const url = typeof raw.url === 'string' ? raw.url : typeof raw.endpoint === 'string' ? raw.endpoint : '';
+    const envVar =
+      typeof raw.env_var === 'string'
+        ? raw.env_var
+        : typeof raw.envUrl === 'string'
+          ? raw.envUrl
+          : undefined;
+    const timeoutMs =
+      typeof raw.timeout_ms === 'number'
+        ? raw.timeout_ms
+        : typeof raw.timeout === 'number'
+          ? raw.timeout
+          : 60000;
+    const retryAttempts =
+      typeof raw.retry_attempts === 'number'
+        ? raw.retry_attempts
+        : typeof raw.retries === 'number'
+          ? raw.retries
+          : 1;
+    return {
+      enabled: raw.enabled === true,
+      url,
+      env_var: envVar,
+      type: raw.type === 'http_api' ? 'http_api' : 'http',
+      agent_role: typeof raw.agent_role === 'string' ? raw.agent_role : 'executor',
+      capabilities: Array.isArray(raw.capabilities)
+        ? raw.capabilities.filter((item): item is string => typeof item === 'string')
+        : [],
+      timeout_ms: timeoutMs,
+      retry_attempts: retryAttempts,
+      retry_backoff_ms: typeof raw.retry_backoff_ms === 'number' ? raw.retry_backoff_ms : 1000,
+      health_check_interval_ms:
+        typeof raw.health_check_interval_ms === 'number' ? raw.health_check_interval_ms : 30000,
+      description: typeof raw.description === 'string' ? raw.description : `${serviceName} local agent service`,
+    };
+  }
+
   /**
    * Get a specific service by name
    * Returns: { url, timeout_ms, retry_attempts, description }
    */
   async getService(serviceName: string): Promise<AgentService | null> {
-    const config = await this.getConfig();
-    const service = config.services[serviceName];
+    await this.getConfig();
+    const rawService = this.lookupRawService(serviceName);
 
-    if (!service) {
+    if (!rawService) {
       console.warn(`[AgentServiceRegistry] Service not found: ${serviceName}`);
       return null;
     }
+    const service = this.normalizeService(serviceName, rawService);
 
     if (!service.enabled) {
       console.warn(`[AgentServiceRegistry] Service disabled: ${serviceName}`);
@@ -90,6 +138,16 @@ export class AgentServiceRegistry {
 
   async getServiceUrl(serviceName: string, environment?: string): Promise<string | null> {
     const config = await this.getConfig();
+    const rawService = this.lookupRawService(serviceName);
+    const service = rawService ? this.normalizeService(serviceName, rawService) : null;
+    const envOverrideName = service?.env_var;
+    const envOverride =
+      typeof envOverrideName === 'string' && envOverrideName.length > 0
+        ? process.env[envOverrideName]?.trim()
+        : undefined;
+    if (envOverride) {
+      return envOverride;
+    }
 
     // Use provided environment, or fall back to AGENT_ENVIRONMENT
     const env = environment || this.getEnvironment();
@@ -100,7 +158,6 @@ export class AgentServiceRegistry {
     }
 
     // Fall back to service config
-    const service = config.services[serviceName];
     if (service?.enabled) {
       return service.url;
     }
@@ -114,8 +171,8 @@ export class AgentServiceRegistry {
   async getAvailableServices(): Promise<string[]> {
     const config = await this.getConfig();
     return Object.entries(config.services)
-      .filter(([_, service]) => service.enabled)
-      .map(([name, _]) => name);
+      .filter(([name, service]) => this.normalizeService(name, service as unknown as Record<string, unknown>).enabled)
+      .map(([name, _]) => name.replace(/^local_/, ''));
   }
 
   /**
@@ -185,7 +242,8 @@ export class AgentServiceRegistry {
     for (const serviceName of chain) {
       const isHealthy = await this.isServiceHealthy(serviceName);
       if (isHealthy) {
-        const service = config.services[serviceName];
+        const rawService = this.lookupRawService(serviceName);
+        const service = rawService ? this.normalizeService(serviceName, rawService) : null;
         if (service?.enabled) {
           console.log(`[AgentServiceRegistry] 🎯 Using service: ${serviceName}`);
           return { name: serviceName, service };
@@ -213,12 +271,14 @@ export class AgentServiceRegistry {
     const services = [];
 
     for (const [name, service] of Object.entries(config.services)) {
-      const healthy = await this.isServiceHealthy(name);
+      const normalizedName = name.replace(/^local_/, '');
+      const normalized = this.normalizeService(normalizedName, service as unknown as Record<string, unknown>);
+      const healthy = await this.isServiceHealthy(normalizedName);
       services.push({
-        name,
-        enabled: service.enabled,
-        url: service.url,
-        capabilities: service.capabilities,
+        name: normalizedName,
+        enabled: normalized.enabled,
+        url: normalized.url,
+        capabilities: normalized.capabilities,
         healthy,
       });
     }

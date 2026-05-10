@@ -20,12 +20,7 @@ import {
   handleGetHiveStats,
   handleShutdownHive,
 } from './hive/http-handler.js';
-import {
-  getTerminalSession,
-  listTerminalSessions,
-  readTerminalSessionOutput,
-  stopTerminalSession,
-} from './workers/terminal-session-store.js';
+import { getTerminalSession, stopTerminalSession } from './workers/terminal-session-store.js';
 import { metricsStore } from './meta/orchestrator-metrics-store.js';
 import { recordOpenClawIntentQueued } from './openclaw/runtime-events.js';
 import { getAgentServiceRegistry, type AgentService } from './lib/agent-service-registry.js';
@@ -39,10 +34,38 @@ import { ValidationDashboard } from './lib/validation-dashboard.js';
 
 const DEFAULT_PORT = 3011;
 const TENANT_SLUG_REGEX = /^[a-z0-9-]{3,64}$/;
+const MAX_RECENT_LOCAL_JOBS = 25;
+
+interface LocalRecentJob {
+  request_id: string;
+  job_id: string | null;
+  agent: string;
+  job_type: string;
+  tenant_slug: string;
+  control_mode: string;
+  status: 'queued' | 'prepared';
+  submitted_at: string;
+}
+
+const recentLocalJobs: LocalRecentJob[] = [];
+
+function recordRecentLocalJob(job: LocalRecentJob): void {
+  recentLocalJobs.unshift(job);
+  if (recentLocalJobs.length > MAX_RECENT_LOCAL_JOBS) {
+    recentLocalJobs.splice(MAX_RECENT_LOCAL_JOBS);
+  }
+}
 
 function parsePort(): number {
-  const raw = process.env.ORCHESTRATOR_HEALTH_PORT || String(DEFAULT_PORT);
-  const n = Number.parseInt(raw, 10);
+  const raw = process.env.ORCHESTRATOR_HEALTH_PORT;
+  if (raw === undefined || raw === '') {
+    return DEFAULT_PORT;
+  }
+  const trimmed = raw.trim();
+  if (trimmed === '0') {
+    return 0;
+  }
+  const n = Number.parseInt(trimmed, 10);
   return Number.isFinite(n) && n > 0 ? n : DEFAULT_PORT;
 }
 
@@ -951,13 +974,15 @@ async function handleLocalState(req: IncomingMessage, res: ServerResponse): Prom
     const config = await registry.getConfig();
     const agents = Object.entries(config.services).map(([name, service]) => {
       const s = service as AgentService;
+      const legacy = service as unknown as { endpoint?: string };
+      const agentName = normalizeLocalAgentKind(name);
       return {
-        name,
+        name: agentName,
         enabled: s.enabled,
-        url: s.url,
+        url: s.url ?? legacy.endpoint,
         type: s.type,
-        job_type: jobTypeForLocalAgent(name),
-        capabilities: s.capabilities,
+        job_type: jobTypeForLocalAgent(agentName),
+        capabilities: s.capabilities ?? [],
       };
     });
 
@@ -968,7 +993,7 @@ async function handleLocalState(req: IncomingMessage, res: ServerResponse): Prom
         control_mode: getLocalControlMode(),
         allowed_modes: listLocalControlModes(),
         agents,
-        jobs_recent: [],
+        jobs_recent: recentLocalJobs,
         updated_at: new Date().toISOString(),
       })
     );
@@ -1047,6 +1072,7 @@ async function handleLocalPromptSubmit(req: IncomingMessage, res: ServerResponse
     request_id: requestId,
     metadata: { labels: ['local_prompt'] },
   };
+  const controlMode = getLocalControlMode();
 
   try {
     const policyCheck = enrichAutonomyMetadata(req, job);
@@ -1056,15 +1082,55 @@ async function handleLocalPromptSubmit(req: IncomingMessage, res: ServerResponse
       return;
     }
 
+    if (controlMode === 'ide_fallback') {
+      console.log(
+        `[LocalPromptSubmit] Prepared ${job.type} job ${requestId} (${agentKind}) for manual IDE fallback`
+      );
+      recordRecentLocalJob({
+        request_id: requestId,
+        job_id: null,
+        agent: agentKind,
+        job_type: job.type,
+        tenant_slug: tenantSlug,
+        control_mode: controlMode,
+        status: 'prepared',
+        submitted_at: new Date().toISOString(),
+      });
+      res.writeHead(202, { 'Content-Type': 'application/json' });
+      res.end(
+        JSON.stringify({
+          success: true,
+          ok: true,
+          job_type: job.type,
+          job_id: null,
+          request_id: requestId,
+          control_mode: controlMode,
+          prepared_only: true,
+        })
+      );
+      return;
+    }
+
     const bull = await enqueueLocalAgentJob(job);
+    const bullJobId = bull.id != null ? String(bull.id) : null;
     console.log(
       `[LocalPromptSubmit] Enqueued ${job.type} job ${bull.id} (${agentKind}) to local-agents queue`
     );
+    recordRecentLocalJob({
+      request_id: requestId,
+      job_id: bullJobId,
+      agent: agentKind,
+      job_type: job.type,
+      tenant_slug: tenantSlug,
+      control_mode: controlMode,
+      status: 'queued',
+      submitted_at: new Date().toISOString(),
+    });
     recordOpenClawIntentQueued({
       requestId,
       intent: `execute_${job.type}`,
       tenantSlug,
-      jobId: bull.id ? String(bull.id) : null,
+      jobId: bullJobId,
     });
     res.writeHead(202, { 'Content-Type': 'application/json' });
     res.end(
@@ -1072,8 +1138,9 @@ async function handleLocalPromptSubmit(req: IncomingMessage, res: ServerResponse
         success: true,
         ok: true,
         job_type: job.type,
-        job_id: bull.id != null ? String(bull.id) : null,
+        job_id: bullJobId,
         request_id: requestId,
+        control_mode: controlMode,
       })
     );
   } catch (err) {
@@ -1157,7 +1224,7 @@ export function startOrchestratorHealthServer(): Server {
   setLocalControlMode(parseControlMode(process.env.OPSLY_LOCAL_CONTROL_MODE));
   const port = parsePort();
   const server = createServer(async (req, res) => {
-const url = req.url ?? '/';
+    const url = req.url ?? '/';
     const pathOnly = url.split('?')[0] ?? '/';
     const query = url.includes('?') ? url.slice(url.indexOf('?')) : '';
 

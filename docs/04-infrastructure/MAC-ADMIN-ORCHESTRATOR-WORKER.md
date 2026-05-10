@@ -7,7 +7,7 @@ Objetivo: que el **control plane** siga en el **VPS** y tu **Mac** consuma colas
 ## Principios de seguridad
 
 1. **Redis (BullMQ):** misma `REDIS_URL` que en Doppler `prd` / la que use el VPS. Tráfico solo por **Tailscale** o red privada; nunca exponer Redis a Internet público.
-2. **Secretos:** `doppler run` (ver `docs/LOCAL-MAC-IMPROVEMENT-PLAN.md` y alias `claude-dop` / `opsly-doppler-run`).
+2. **Secretos:** `doppler run` (ver `docs/01-development/LOCAL-MAC-IMPROVEMENT-PLAN.md` y alias `claude-dop` / `opsly-doppler-run`).
 3. **Cursor Agent HTTP:** escucha en **`127.0.0.1`** por defecto (`CURSOR_AGENT_BIND_HOST` para anular solo si entiendes el riesgo).
 4. **LLM Gateway:** desde la Mac, apunta `LLM_GATEWAY_URL` al gateway alcanzable (p. ej. IP Tailscale del VPS y puerto `3010`), no hardcodear en el repo.
 

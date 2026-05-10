@@ -5,14 +5,28 @@ set -e
 
 echo "🔍 Running pre-commit validation..."
 
-# 1. Type check
+# 1. Repository structure
+echo "🧭 Validating repository structure..."
+npm run validate-structure --silent || {
+  echo "❌ Structure validation failed"
+  exit 1
+}
+
+if [ -x scripts/hooks/structure-guard.sh ]; then
+  bash scripts/hooks/structure-guard.sh || {
+    echo "❌ Structure guard failed"
+    exit 1
+  }
+fi
+
+# 2. Type check
 echo "📋 Type checking..."
 npm run type-check 2>/dev/null || {
   echo "❌ Type check failed"
   exit 1
 }
 
-# 2. Validate lib/prompts
+# 3. Validate lib/prompts
 if git diff --cached --name-only | grep -q "lib/prompts/"; then
   echo "🔐 Validating prompts..."
   npm run test --workspace=@intcloudsysops/prompts 2>/dev/null || {
@@ -21,7 +35,7 @@ if git diff --cached --name-only | grep -q "lib/prompts/"; then
   }
 fi
 
-# 3. Validate lib/observability
+# 4. Validate lib/observability
 if git diff --cached --name-only | grep -q "lib/observability/"; then
   echo "📊 Validating observability..."
   npm run test --workspace=@intcloudsysops/observability 2>/dev/null || {
@@ -30,7 +44,7 @@ if git diff --cached --name-only | grep -q "lib/observability/"; then
   }
 fi
 
-# 4. Validate lib/components
+# 5. Validate lib/components
 if git diff --cached --name-only | grep -q "lib/components/"; then
   echo "🎨 Validating components..."
   npm run test --workspace=@intcloudsysops/components 2>/dev/null || {
@@ -39,7 +53,7 @@ if git diff --cached --name-only | grep -q "lib/components/"; then
   }
 fi
 
-# 5. Validate lib/evaluation
+# 6. Validate lib/evaluation
 if git diff --cached --name-only | grep -q "lib/evaluation/"; then
   echo "✅ Validating evaluation..."
   npm run test --workspace=@intcloudsysops/evaluation 2>/dev/null || {
@@ -48,17 +62,17 @@ if git diff --cached --name-only | grep -q "lib/evaluation/"; then
   }
 fi
 
-# 6. Check for duplicates
+# 7. Check for duplicates
 echo "🔎 Checking for code duplication..."
 bash scripts/check-duplicates.sh lib/components lib/services 2>/dev/null || true
 
-# 7. Lint
+# 8. Lint
 echo "🎯 Linting..."
 npm run lint -- --fix 2>/dev/null || true
 
-# 8. Protect canonical documentation
+# 9. Protect canonical documentation
 echo "🔒 Validating canonical documentation integrity..."
-CANONICAL_FILES="VISION.md ROADMAP.md AGENTS.md SPRINT-TRACKER.md docs/README.md config/modules.json"
+CANONICAL_FILES="VISION.md ROADMAP.md AGENTS.md README.md docs/README.md docs/STRUCTURE-GUARDRAILS.md config/modules.json"
 MODIFIED_CANONICAL=""
 
 for file in $CANONICAL_FILES; do

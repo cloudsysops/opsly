@@ -8,7 +8,7 @@
 
 ## 🔴 CRÍTICAS (Esta Noche)
 
-### 1. Cloudflare Proxy para \*.ops.smiletripcare.com
+### 1. Cloudflare Proxy para \*.op-sly.com
 
 **Objetivo:** Ocultar IP pública del VPS (157.245.223.7) y habilitar WAF.
 
@@ -17,19 +17,19 @@
 ```
 1. Ve a Cloudflare → DNS Records
 2. Para cada subdominio A record actual:
-   - api.ops.smiletripcare.com (157.245.223.7)
-   - admin.ops.smiletripcare.com (157.245.223.7)
-   - portal.ops.smiletripcare.com (157.245.223.7)
-   - n8n-smiletripcare.ops.smiletripcare.com (157.245.223.7)
-   - uptime-smiletripcare.ops.smiletripcare.com (157.245.223.7)
-   - n8n-localrank.ops.smiletripcare.com (157.245.223.7)
-   - uptime-localrank.ops.smiletripcare.com (157.245.223.7)
+   - api.op-sly.com (157.245.223.7)
+   - admin.op-sly.com (157.245.223.7)
+   - portal.op-sly.com (157.245.223.7)
+   - n8n-smiletripcare.op-sly.com (157.245.223.7)
+   - uptime-smiletripcare.op-sly.com (157.245.223.7)
+   - n8n-localrank.op-sly.com (157.245.223.7)
+   - uptime-localrank.op-sly.com (157.245.223.7)
 
    Haz clic en el ícono nube:
    - Naranja (Proxied): ACTIVA Cloudflare
    - Gris (DNS only): Actual
 
-3. Cambia a Naranja para TODOS los *.ops.smiletripcare.com
+3. Cambia a Naranja para TODOS los *.op-sly.com
 
 4. Ve a Security → WAF Rules y habilita:
    - Managed Rulesets: Cloudflare Managed Challenge
@@ -44,15 +44,15 @@
 
 ```bash
 # Antes (IP pública visible):
-dig api.ops.smiletripcare.com +short
+dig api.op-sly.com +short
 # Output: 157.245.223.7
 
 # Después (IP Cloudflare):
-dig api.ops.smiletripcare.com +short
+dig api.op-sly.com +short
 # Output: 104.16.x.x (Cloudflare IP)
 
 # HTTPS debería funcionar igual:
-curl -sfk https://api.ops.smiletripcare.com/api/health
+curl -sfk https://api.op-sly.com/api/health
 # Output: {"status":"ok"}
 ```
 
@@ -329,7 +329,7 @@ jobs:
     steps:
       - uses: zaproxy/action-baseline@v0.7.0
         with:
-          target: 'https://api-staging.ops.smiletripcare.com/api/health'
+          target: 'https://api-staging.op-sly.com/api/health'
           rules_file_name: '.zap/rules.tsv'
 ```
 
@@ -373,14 +373,14 @@ CMD
 
 # 5. CLOUDFLARE: Cambiar DNS a Proxy
 # (Manual en dashboard: https://dash.cloudflare.com/)
-# Cambiar icono nube a naranja para todos *.ops.smiletripcare.com
+# Cambiar icono nube a naranja para todos *.op-sly.com
 
 # 6. VERIFICAR: IP pública SSH está bloqueada
 ssh -o ConnectTimeout=3 vps-dragon@157.245.223.7
 # Expected: timeout (port closed) ✓
 
 # 7. VERIFICAR: HTTPS aún funciona
-curl -sfk https://api.ops.smiletripcare.com/api/health
+curl -sfk https://api.op-sly.com/api/health
 # Expected: {"status":"ok"} ✓
 
 # 8. VERIFICAR: LocalRank onboarding vía Tailscale

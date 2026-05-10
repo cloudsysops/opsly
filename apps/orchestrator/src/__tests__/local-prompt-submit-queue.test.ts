@@ -40,7 +40,6 @@ vi.mock('../openclaw/runtime-events.js', () => ({
 
 const { enqueueJob, enqueueLocalAgentJob } = queueMocks;
 
-import { setLocalControlMode } from '../control-mode.js';
 import { startOrchestratorHealthServer } from '../health-server.js';
 
 function postJson(
@@ -86,7 +85,7 @@ describe('local prompt-submit → local-agents queue', () => {
   beforeEach(async () => {
     vi.clearAllMocks();
     process.env.PLATFORM_ADMIN_TOKEN = 'test-platform-admin';
-    process.env.ORCHESTRATOR_HEALTH_PORT = String(38000 + Math.floor(Math.random() * 2000));
+    process.env.ORCHESTRATOR_HEALTH_PORT = '0';
     server = startOrchestratorHealthServer();
     await once(server, 'listening');
     const addr = server.address();

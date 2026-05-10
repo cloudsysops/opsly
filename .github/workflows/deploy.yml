@@ -12,7 +12,7 @@
 #     Los paquetes intcloudsysops-* están ligados a este repo → el token del Actions puede hacer pull.
 #   GHCR_PAT / GHCR_USER (opcional): solo para login manual en el VPS fuera de Actions; ver doppler / docs.
 #   DISCORD_WEBHOOK_URL (opcional; si falta, los steps de Discord hacen no-op)
-#   PLATFORM_DOMAIN: dominio base sin subdominio (ej. ops.smiletripcare.com). Debe coincidir con
+#   PLATFORM_DOMAIN: dominio base sin subdominio (ej. op-sly.com). Debe coincidir con
 #   .env del VPS para compose; el health check usa https://api.${PLATFORM_DOMAIN}/api/health
 #
 # Staging (rama `staging` → VPS /opt/opsly-staging):

@@ -4,7 +4,7 @@
 # Interpolación ${VAR} en este archivo: el deploy usa `docker compose --env-file /opt/opsly/.env`
 # (Compose por defecto solo lee .env junto al YAML en infra/, no la raíz del repo).
 #
-# Required en /opt/opsly/.env (non-exhaustive): PLATFORM_DOMAIN (base host, e.g. ops.smiletripcare.com),
+# Required en /opt/opsly/.env (non-exhaustive): PLATFORM_DOMAIN (base host, e.g. op-sly.com),
 # REDIS_PASSWORD, REDIS_EXPORT_BIND (opcional; ver servicio redis), LLM_GATEWAY_EXPORT_BIND (opcional; ver servicio llm-gateway),
 # ACME_EMAIL, TRAEFIK_DASHBOARD_BASIC_AUTH_USERS (htpasswd; escapar $ en Compose),
 # DOCKER_GID (GID del grupo del socket: stat -c %g /var/run/docker.sock; vps-bootstrap.sh lo añade),

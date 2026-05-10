@@ -204,7 +204,7 @@ This gives us a clean architecture + time to validate.
 ## References
 
 - Type-check blocker: `docs/runbooks/FIX-TYPECHECK-BLOCKER.md`
-- Technical debt register: `docs/TECHNICAL-DEBT.md` (item #2)
+- Technical debt register: `docs/01-development/TECHNICAL-DEBT.md` (item #2)
 - Orchestrator source: `apps/orchestrator/src/health-server.ts`
 - Agent workers: `apps/orchestrator/src/workers/local-agent-http-worker.ts`
 - Current routes: `scripts/hive-run.ts` (examples)

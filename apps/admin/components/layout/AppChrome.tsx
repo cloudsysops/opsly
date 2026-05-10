@@ -23,7 +23,7 @@ export function AppChrome({ children }: { children: React.ReactNode }) {
         <footer className="holo-border mx-6 mb-4 rounded-xl px-6 py-3 font-mono text-[11px] text-ops-gray">
           Opsly Platform v{process.env.NEXT_PUBLIC_APP_VERSION ?? '1.0'} &middot;{' '}
           {process.env.NEXT_PUBLIC_ENV ?? 'staging'} &middot;{' '}
-          {process.env.NEXT_PUBLIC_PLATFORM_DOMAIN ?? 'ops.smiletripcare.com'}
+          {process.env.NEXT_PUBLIC_PLATFORM_DOMAIN ?? 'op-sly.com'}
         </footer>
       </div>
     </div>

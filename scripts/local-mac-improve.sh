@@ -145,7 +145,7 @@ main() {
   fi
 
   echo ""
-  log_info "Siguiente paso: lee docs/LOCAL-MAC-IMPROVEMENT-PLAN.md"
+  log_info "Siguiente paso: lee docs/01-development/LOCAL-MAC-IMPROVEMENT-PLAN.md"
 }
 
 main "$@"

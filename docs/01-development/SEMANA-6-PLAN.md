@@ -33,28 +33,6 @@ Registro en repo: [`config/tenants/legalvial.json`](../../config/tenants/legalvi
 
 ## 📋 Tareas Principales
 
-### Tarea 0: Smoke local-agents interno
-
-**Responsable:** Orchestrator local + `opsly-agent-cli`  
-**Duración:** ~5 min
-
-**Objetivo:** validar que el flujo interno de prompts sigue operativo antes de usarlo como apoyo de Semana 6.
-
-```bash
-npm run build --workspace=@intcloudsysops/orchestrator
-./scripts/test-local-agent-e2e.sh
-```
-
-**Checklist:**
-
-- [ ] Redis responde `PING` con el mismo `REDIS_URL` del orchestrator.
-- [ ] Orchestrator responde health HTTP y consume `local-agents`.
-- [ ] Servicio agente local configurado en `config/agent-services.json` responde `/execute`.
-- [ ] `POST /api/local/prompt-submit` devuelve `202` + `job_id`.
-- [ ] La ejecución deja respuesta en `.cursor/responses/`.
-
-Referencia: [`docs/LOCAL-AGENT-EXECUTION.md`](../LOCAL-AGENT-EXECUTION.md) y [`docs/01-development/AGENT-PROMPT-QUEUE.md`](AGENT-PROMPT-QUEUE.md).
-
 ### Tarea 1: Preparación de Segundo Cliente
 
 **Responsable:** CLI `onboard-tenant.sh`  
@@ -70,7 +48,7 @@ Referencia: [`docs/LOCAL-AGENT-EXECUTION.md`](../LOCAL-AGENT-EXECUTION.md) y [`d
 
 ```bash
 export PLATFORM_ADMIN_TOKEN="$(doppler run --config prd -- echo $PLATFORM_ADMIN_TOKEN)"
-export NEXT_PUBLIC_APP_URL="https://api.ops.smiletripcare.com"  # O staging según env
+export NEXT_PUBLIC_APP_URL="https://api.op-sly.com"  # O staging según env
 
 ./scripts/onboard-tenant.sh \
   --slug test-client-b \
@@ -107,7 +85,7 @@ export ADMIN_TOKEN="$(doppler run --config prd -- echo $PLATFORM_ADMIN_TOKEN)"
 export OWNER_EMAIL="owner-b@example.com"  # Email owner del tenant #2
 
 ./scripts/test-e2e-invite-flow.sh \
-  --api-url https://api.ops.smiletripcare.com
+  --api-url https://api.op-sly.com
   # --dry-run si es primer intento
 ```
 
@@ -146,9 +124,9 @@ export OWNER_EMAIL="owner-b@example.com"  # Email owner del tenant #2
 #### 3.2 DNS + Dominio
 
 - [ ] CNAME / A records configurados para:
-  - `api.ops.smiletripcare.com` → VPS IP (157.245.223.7)
-  - `admin.ops.smiletripcare.com` → VPS IP
-  - `portal.ops.smiletripcare.com` → VPS IP
+  - `api.op-sly.com` → VPS IP (157.245.223.7)
+  - `admin.op-sly.com` → VPS IP
+  - `portal.op-sly.com` → VPS IP
   - Subdominio tenant #2 (si aplica)
 - [ ] DNS propagado (verificar con `dig`)
 - [ ] Cloudflare Proxy ON si activado en producción
@@ -157,7 +135,7 @@ export OWNER_EMAIL="owner-b@example.com"  # Email owner del tenant #2
 
 **Variables críticas presentes:**
 
-- [ ] `PLATFORM_DOMAIN` = `ops.smiletripcare.com`
+- [ ] `PLATFORM_DOMAIN` = `op-sly.com`
 - [ ] `PLATFORM_ADMIN_TOKEN` (SECRETO, >32 chars)
 - [ ] `SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY`
 - [ ] `REDIS_URL` (VPS o external)
@@ -175,7 +153,7 @@ doppler run --config prd -- ./scripts/check-tokens.sh
 
 #### 3.4 Admin Access
 
-- [ ] Admin portal operativo: `https://admin.ops.smiletripcare.com`
+- [ ] Admin portal operativo: `https://admin.op-sly.com`
 - [ ] `/admin/tenants` lista ambos clientes (smiletripcare + test-client-b)
 - [ ] `/admin/costs` muestra presupuestos por tenant
 - [ ] `/admin/metrics/llm` muestra usage por tenant

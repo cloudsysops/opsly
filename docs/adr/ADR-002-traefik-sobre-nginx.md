@@ -11,7 +11,7 @@ Traefik v3 como único reverse proxy y gestor de SSL.
 
 - SSL automático via Let's Encrypt sin configuración manual
 - Autodescubrimiento de contenedores Docker
-- Dashboard en traefik.ops.smiletripcare.com
+- Dashboard en traefik.op-sly.com
 - Labels en docker-compose = configuración como código
 
 ## Alternativas rechazadas

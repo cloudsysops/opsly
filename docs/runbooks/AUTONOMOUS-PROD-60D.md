@@ -75,8 +75,8 @@ Canary gate command:
 
 ```bash
 bash scripts/deploy/promote-canary.sh \
-  --staging-api-url "https://api.ops.smiletripcare.com" \
-  --prod-api-url "https://api.ops.smiletripcare.com" \
+  --staging-api-url "https://api.op-sly.com" \
+  --prod-api-url "https://api.op-sly.com" \
   --rollback-on-fail
 ```
 

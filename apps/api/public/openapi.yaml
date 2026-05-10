@@ -11,7 +11,7 @@ info:
 servers:
   - url: https://api.example.com
     description: Producción (sustituir por dominio real)
-  - url: https://api.ops.smiletripcare.com
+  - url: https://api.op-sly.com
     description: Staging
 
 paths:
@@ -108,6 +108,57 @@ paths:
                     type: boolean
         '401':
           $ref: '#/components/responses/Unauthorized'
+
+  /api/metrics/web-dashboard:
+    get:
+      summary: Métricas anidadas para dashboard web (proxy desde apps/web)
+      operationId: getWebDashboardMetrics
+      description: >
+        Contrato canónico consumido vía `GET /api/metrics` en `apps/web` → este endpoint en `apps/api`.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Payload agregado para UI workspace/web
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /api/public/tenants/status:
+    get:
+      summary: Estado público de tenant por email (rate limited)
+      operationId: getPublicTenantStatus
+      description: >
+        Requiere `email` query válido. Rate limit por IP vía Redis (429 si se excede).
+      parameters:
+        - name: email
+          in: query
+          required: true
+          schema:
+            type: string
+            format: email
+      responses:
+        '200':
+          description: Estado/progreso no sensible del tenant asociado al email
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          description: Too many requests
+        '503':
+          description: Rate limiting unavailable (sin Redis)
 
   /api/tenants:
     get:

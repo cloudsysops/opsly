@@ -101,7 +101,7 @@
 
 ✓ **Doppler:** ops-intcloudsysops/prd (complete, 3 vars pending for ML)
 
-✓ **DNS:** ops.smiletripcare.com → 157.245.223.7 (OK)
+✓ **DNS:** op-sly.com → 157.245.223.7 (OK)
 
 ---
 

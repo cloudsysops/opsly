@@ -19,7 +19,7 @@ doppler secrets set GITHUB_TOKEN --project ops-intcloudsysops --config prd
 ## 1) Pre-checks obligatorios
 
 1. Verifica acceso a n8n:
-   - URL: `https://n8n-intcloudsysops.ops.smiletripcare.com`
+   - URL: `https://n8n-intcloudsysops.op-sly.com`
 2. Verifica secreto en Doppler (comando operativo):
 
 ```bash

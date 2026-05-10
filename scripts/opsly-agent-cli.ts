@@ -131,11 +131,18 @@ function startCommandFor(agent: string): string | null {
     return fromEnv;
   }
 
-  if (agent === 'cursor') {
-    return 'npm run opsly:local-cursor-service';
-  }
+  const defaults: Record<string, string> = {
+    cursor: 'npm run opsly:local-cursor-service',
+    claude: 'PORT=5002 npx tsx scripts/mock-claude-agent.ts',
+    copilot: 'PORT=5003 npx tsx scripts/mock-cursor-agent.ts',
+    opencode: 'PORT=5004 npx tsx scripts/mock-cursor-agent.ts',
+    codex: 'PORT=5005 npx tsx scripts/mock-cursor-agent.ts',
+    openai: 'PORT=5006 npx tsx scripts/mock-claude-agent.ts',
+    hermes: 'PORT=5007 npx tsx scripts/mock-claude-agent.ts',
+    decepticon: 'PORT=5008 npx tsx scripts/mock-cursor-agent.ts',
+  };
 
-  return null;
+  return defaults[agent] ?? null;
 }
 
 async function startAgent(agent: string): Promise<void> {
@@ -209,7 +216,10 @@ async function showStatus(json: boolean): Promise<void> {
       agent,
       configured: true,
       enabled: registry.services?.[agent]?.enabled ?? false,
-      url: registry.services?.[agent]?.url ?? null,
+      url:
+        (registry.services?.[agent]?.envUrl ? process.env[registry.services[agent].envUrl] : undefined) ??
+        registry.services?.[agent]?.url ??
+        null,
       pid: state?.pid ?? null,
       running: state ? isPidRunning(state.pid) : false,
     };

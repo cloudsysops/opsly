@@ -7,7 +7,7 @@ do_not_edit: true
 
 <!-- This file is auto-generated. Do not edit manually. -->
 <!-- See docs/generated/README.md for details. -->
-<!-- For human-authored sprint execution, see ../../SPRINT-TRACKER.md -->
+<!-- For human-authored sprint execution, see ../01-development/SPRINT-TRACKER.md -->
 
 # Opsly — Sprint Status (Auto-Generated)
 

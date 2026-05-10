@@ -7,7 +7,7 @@
 const https = require('https');
 
 async function automateN8n({ tenant, mode, strategies }) {
-  const webhook = `https://n8n-${tenant}.ops.smiletripcare.com/webhook/n8n-expert`;
+  const webhook = `https://n8n-${tenant}.op-sly.com/webhook/n8n-expert`;
   
   const payload = {
     prompt: `Act as expert n8n autonomous agent for Opsly.

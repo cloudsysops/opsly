@@ -48,7 +48,7 @@ Al tocar el flujo de feedback de usuarios, decisiones ML o tablas `feedback_*` /
 node -e "const {analyzeFeedback} = require('./apps/ml/src/feedback-decision-engine'); analyzeFeedback({criticality:'low'}).then(console.log)"
 
 # Test approval endpoint
-curl -sf -X POST https://api.ops.smiletripcare.com/api/feedback/approve \
+curl -sf -X POST https://api.op-sly.com/api/feedback/approve \
   -H "Authorization: Bearer $TOKEN" \
   -d '{"conversation_id":"conv_xxx"}'
 ```

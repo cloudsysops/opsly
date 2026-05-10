@@ -4,23 +4,23 @@ Muestra costos LLM. Ver `AGENTS.md` (sección "Ecosistema IA") y `docs/COST-DASH
 
 ## Portal (sesión tenant)
 ```bash
-JWT_TOKEN=$(curl -s -X POST "https://api.ops.smiletripcare.com/api/portal/login" \
+JWT_TOKEN=$(curl -s -X POST "https://api.op-sly.com/api/portal/login" \
   -H "Content-Type: application/json" \
   -d '{"email": "<email>", "password": "<password>"}' | jq -r '.session.access_token')
 
 # Hoy
 curl -H "Authorization: Bearer $JWT_TOKEN" \
-  "https://api.ops.smiletripcare.com/api/portal/usage?period=today"
+  "https://api.op-sly.com/api/portal/usage?period=today"
 
 # Mes actual
 curl -H "Authorization: Bearer $JWT_TOKEN" \
-  "https://api.ops.smiletripcare.com/api/portal/tenant/<slug>/usage?period=month"
+  "https://api.op-sly.com/api/portal/tenant/<slug>/usage?period=month"
 ```
 
 ## Admin (todos los tenants)
 ```bash
 curl -H "Authorization: Bearer $PLATFORM_ADMIN_TOKEN" \
-  "https://admin.ops.smiletripcare.com/api/admin/costs"
+  "https://admin.op-sly.com/api/admin/costs"
 ```
 
 ## LLM Gateway (directo)

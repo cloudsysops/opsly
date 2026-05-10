@@ -17,7 +17,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck disable=SC1091
 source "${SCRIPT_DIR}/lib/common.sh"
 
-API_URL="${API_URL:-https://api.ops.smiletripcare.com}"
+API_URL="${API_URL:-https://api.op-sly.com}"
 DRY_RUN="false"
 CLEANUP="false"
 while [[ $# -gt 0 ]]; do

@@ -45,4 +45,4 @@ Evitar workflows que filtren por rutas **inexistentes** (`apps/orchestrator/src/
 ## Referencias
 
 - [`docs/CURSOR-DAILY-CHECKLIST.md`](CURSOR-DAILY-CHECKLIST.md)
-- [`SPRINT-TRACKER.md`](../SPRINT-TRACKER.md)
+- [`SPRINT-TRACKER.md`](SPRINT-TRACKER.md)

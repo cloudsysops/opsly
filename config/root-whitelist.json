@@ -2,10 +2,6 @@
   "allowed_files": [
     "README.md",
     "LICENSE",
-    "CHANGELOG.md",
-    "CONTRIBUTING.md",
-    "SECURITY.md",
-    "CODEOWNERS",
     "package.json",
     "package-lock.json",
     "tsconfig.json",
@@ -31,23 +27,12 @@
     "AGENTS.md",
     "ROADMAP.md",
     "VISION.md",
-    "ARCHITECTURE.md",
-    "HANDOFF.md",
-    "SPRINT-TRACKER.md",
-    "VALIDATION-REPORT-2026-04-12.md",
-    "PARALLEL-EXECUTION-STATUS.md",
     "commitlint.config.js",
     "Dockerfile.hermes",
     "Dockerfile.local-worker",
     "doppler.json",
     "vercel.json",
-    ".env",
-    ".env.local",
-    ".env.prod",
-    ".env.qa",
-    ".env.sandbox",
     ".env.local-workers.example",
-    ".openclaw.md",
     ".opencode.json",
     ".opsly-drive-config.json",
     ".npmrc"
@@ -81,7 +66,8 @@
     ".archived",
     "node_modules",
     ".mypy_cache",
-    ".ruff_cache"
+    ".ruff_cache",
+    ".n8n"
   ],
   "allowed_hidden_folders": [
     ".git",
@@ -98,7 +84,8 @@
     ".archived",
     ".turbo",
     ".mypy_cache",
-    ".ruff_cache"
+    ".ruff_cache",
+    ".n8n"
   ],
   "allowed_extensions_in_root": [],
   "blocked_patterns": [

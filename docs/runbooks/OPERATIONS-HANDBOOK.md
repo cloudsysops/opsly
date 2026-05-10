@@ -34,7 +34,7 @@ ssh -i ~/.ssh/opsly-vps vps-dragon@157.245.223.7 'docker ps'
 # If failing: Check Tailscale (100.120.151.91)
 
 # 2. API health
-curl -s https://api.ops.smiletripcare.com/api/health | jq .
+curl -s https://api.op-sly.com/api/health | jq .
 
 # Expected: { "status": "ok", "timestamp": "2026-05-08T..." }
 # If 503: Check VPS docker logs
@@ -64,7 +64,7 @@ tail -100 /opt/opsly/runtime/logs/llm-gateway.log | grep ERROR
 
 ```bash
 # Cost metrics
-curl -s https://admin.ops.smiletripcare.com/api/metrics/system | \
+curl -s https://admin.op-sly.com/api/metrics/system | \
   jq '.services[] | {name, cost_usd_month}'
 
 # Go/no-go check
@@ -73,7 +73,7 @@ jq .autonomy_kpis context/system_state.json
 
 # Check tenant health
 curl -s -H "Authorization: Bearer $ADMIN_TOKEN" \
-  https://api.ops.smiletripcare.com/api/admin/tenants | jq '.[] | {slug, status, last_activity}'
+  https://api.op-sly.com/api/admin/tenants | jq '.[] | {slug, status, last_activity}'
 
 # Review security alerts
 grep -i "warn\|error" /opt/opsly/runtime/logs/*.log | tail -50
@@ -108,7 +108,7 @@ npm run type-check
 
 **Symptoms:**
 ```bash
-curl https://api.ops.smiletripcare.com/api/health
+curl https://api.op-sly.com/api/health
 # Returns 503
 ```
 
@@ -153,7 +153,7 @@ You can only send testing emails to your own email address...
 
 **Fix:** (Manual — requires your action)
 1. Go to https://resend.com/domains
-2. Add `growth@ops.smiletripcare.com`
+2. Add `growth@op-sly.com`
 3. Verify DNS records
 4. Retry: `npm run scripts/growth-outreach.sh`
 
@@ -366,7 +366,7 @@ docker exec opsly_platform_db psql -U postgres -c "SELECT 1"
 docker restart opsly_api opsly_portal opsly_admin
 
 # 6. Verify
-curl https://api.ops.smiletripcare.com/api/health
+curl https://api.op-sly.com/api/health
 ```
 
 ---
@@ -468,7 +468,7 @@ redis-cli -u "$REDIS_URL" FLUSHDB  # DANGEROUS! Use with caution
 - **Deployments:** docs/runbooks/
 - **Database:** docs/database/SUPABASE-MIGRATION-AUDIT.md
 - **Security:** docs/security/SECURITY-POSTURE-AUDIT.md
-- **Technical Debt:** docs/TECHNICAL-DEBT.md
+- **Technical Debt:** docs/01-development/TECHNICAL-DEBT.md
 - **State:** context/system_state.json
 
 ---

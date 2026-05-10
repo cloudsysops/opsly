@@ -172,7 +172,7 @@ redis-cli -u "$REDIS_URL" \
   --eval scripts/usage-stats.lua
 
 # 3. LLM API spend (if Phase 3 enabled)
-curl https://api.ops.smiletripcare.com/api/metrics/costs
+curl https://api.op-sly.com/api/metrics/costs
 
 # 4. Calculate total
 # Total = DigitalOcean + Stripe + Supabase + APIs

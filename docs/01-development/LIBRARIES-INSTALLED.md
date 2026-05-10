@@ -395,6 +395,6 @@ Status: READY FOR PRODUCTION 🚀
 ## 🤝 REFERENCIAS
 
 - [Opsly README](../README.md)
-- [Stack Technical Doc](./ARCHITECTURE.md)
+- [Stack Technical Doc](../00-architecture/ARCHITECTURE.md)
 - [ADRs](./adr/)
 - [Setup Guide](../scripts/local-setup.sh)
