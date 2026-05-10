@@ -84,8 +84,8 @@ for route in $(find apps/api/app/api -name 'route.ts'); do
 done
 
 # 3. Test publicly
-curl https://api.ops.smiletripcare.com/api/health  # should work
-curl https://api.ops.smiletripcare.com/api/admin/... # should 401 w/o token
+curl https://api.op-sly.com/api/health  # should work
+curl https://api.op-sly.com/api/admin/... # should 401 w/o token
 ```
 
 **If unprotected routes found:**

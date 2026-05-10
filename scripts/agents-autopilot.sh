@@ -16,6 +16,7 @@ INTERVAL_SECONDS="${INTERVAL_SECONDS:-300}"
 ITERATIONS="${ITERATIONS:-0}" # 0 = infinito
 RUN_ID_PREFIX="${RUN_ID_PREFIX:-autopilot}"
 ENABLE_WORKER_SMOKE="${ENABLE_WORKER_SMOKE:-true}"
+ENABLE_REDIS_SMOKE="${ENABLE_REDIS_SMOKE:-true}"
 ENABLE_HERMES_TICK="${ENABLE_HERMES_TICK:-true}"
 USE_DOPPLER="${USE_DOPPLER:-true}"
 AUTO_LOCAL_REDIS_FIX="${AUTO_LOCAL_REDIS_FIX:-true}"
@@ -69,6 +70,7 @@ if [[ "${DRY_RUN:-false}" == "true" ]]; then
   echo "[dry-run] TENANT_SLUG=$TENANT_SLUG PLAN=$PLAN PROFILE=$PROFILE"
   echo "[dry-run] GOAL=$GOAL"
   echo "[dry-run] INTERVAL_SECONDS=$INTERVAL_SECONDS ITERATIONS=$ITERATIONS"
+  echo "[dry-run] ENABLE_REDIS_SMOKE=$ENABLE_REDIS_SMOKE ENABLE_WORKER_SMOKE=$ENABLE_WORKER_SMOKE"
 fi
 
 run_in_env() {
@@ -117,7 +119,14 @@ run_cycle() {
     if [[ "$ENABLE_WORKER_SMOKE" == "true" ]]; then
       echo "[dry-run] ./scripts/test-worker-e2e.sh ${TENANT_SLUG} --notify"
     fi
+    if [[ "$ENABLE_REDIS_SMOKE" == "true" ]]; then
+      echo "[dry-run] ./scripts/autonomy-redis-smoke.sh"
+    fi
     return 0
+  fi
+
+  if [[ "$ENABLE_REDIS_SMOKE" == "true" ]]; then
+    run_in_env ./scripts/autonomy-redis-smoke.sh
   fi
 
   if [[ "$ENABLE_HERMES_TICK" == "true" ]]; then

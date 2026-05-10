@@ -189,7 +189,7 @@ npm run test --workspace=@intcloudsysops/orchestrator
 ### 4.5 Demo ollama job
 
 ```bash
-API_URL=https://api.ops.smiletripcare.com \
+API_URL=https://api.op-sly.com \
 ADMIN_TOKEN=$(doppler secrets get PLATFORM_ADMIN_TOKEN --project ops-intcloudsysops --config prd --plain) \
 TENANT=localrank \
 ./scripts/demo-ollama-workers.sh

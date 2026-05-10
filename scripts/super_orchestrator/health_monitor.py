@@ -96,7 +96,7 @@ class HealthMonitor:
         try:
             async with aiohttp.ClientSession() as session:
                 async with session.get(
-                    "https://api.ops.smiletripcare.com/api/health",
+                    "https://api.op-sly.com/api/health",
                     timeout=aiohttp.ClientTimeout(total=5)
                 ) as resp:
                     if resp.status == 200:

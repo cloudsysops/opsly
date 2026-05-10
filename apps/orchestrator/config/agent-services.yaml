@@ -4,6 +4,7 @@ services:
   local_opencode:
     enabled: true
     endpoint: http://127.0.0.1:5004
+    env_var: OPSLY_OPENCODE_AGENT_URL
     timeout: 60000
     retry_attempts: 2
     fallback_provider: claude
@@ -11,17 +12,48 @@ services:
   local_claude:
     enabled: true
     endpoint: http://127.0.0.1:5002
+    env_var: OPSLY_CLAUDE_AGENT_URL
     timeout: 60000
     retry_attempts: 2
 
   local_copilot:
     enabled: true
     endpoint: http://127.0.0.1:5003
+    env_var: OPSLY_COPILOT_AGENT_URL
     timeout: 60000
     retry_attempts: 2
 
   local_cursor:
     enabled: true
     endpoint: http://127.0.0.1:5001
+    env_var: OPSLY_CURSOR_AGENT_URL
     timeout: 60000
     retry_attempts: 2
+
+  local_codex:
+    enabled: false
+    endpoint: http://127.0.0.1:5005
+    env_var: OPSLY_CODEX_AGENT_URL
+    timeout: 120000
+    retry_attempts: 1
+
+  local_openai:
+    enabled: false
+    endpoint: http://127.0.0.1:5006
+    env_var: OPSLY_OPENAI_AGENT_URL
+    timeout: 120000
+    retry_attempts: 1
+
+  local_hermes:
+    enabled: false
+    endpoint: http://127.0.0.1:5007
+    env_var: OPSLY_HERMES_AGENT_URL
+    timeout: 120000
+    retry_attempts: 1
+
+  local_decepticon:
+    enabled: false
+    endpoint: http://127.0.0.1:5008
+    env_var: OPSLY_DECEPTICON_AGENT_URL
+    timeout: 120000
+    retry_attempts: 1

@@ -1,5 +1,21 @@
-# Historical documentation
+---
+status: canon
+owner: documentation
+last_review: 2026-05-09
+---
 
-Superseded Markdown snapshots live under [`plans/`](plans/).
+# History MOC
 
-**Current machine-generated views** (from `docs/implementation/status.yaml`): see [`docs/generated/README.md`](../generated/README.md).
+Documentos preservados por contexto histórico, pero que ya no son fuente de verdad.
+
+## Qué va aquí
+
+- Planes obsoletos.
+- Consolidaciones cerradas.
+- Archivos legacy o snapshots que no deben editarse como canon.
+
+## Subcarpetas
+
+- `plans/`: planes históricos.
+- `consolidation/`: esfuerzos de consolidación cerrados.
+- `governance/`: archivos de gobernanza preservados por historial.

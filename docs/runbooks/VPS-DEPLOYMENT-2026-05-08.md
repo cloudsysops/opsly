@@ -28,7 +28,7 @@ git pull origin main
 
 # Traefik reloads dynamic config automatically
 # Verify:
-curl -sI https://api.ops.smiletripcare.com/api/health | grep -i "strict-transport\|content-security"
+curl -sI https://api.op-sly.com/api/health | grep -i "strict-transport\|content-security"
 ```
 
 **No restart needed** — Traefik hot-reloads
@@ -137,7 +137,7 @@ npm install --legacy-peer-deps
 - [ ] Apply migrations: `npx supabase migration up`
 - [ ] Verify: `docker exec opsly_platform_db psql -U postgres -c "SELECT count(*) FROM schema_migrations;"`
 - [ ] Restart Traefik (optional — dynamic reload): `docker-compose -f infra/docker-compose.platform.yml restart traefik`
-- [ ] Test API: `curl -sI https://api.ops.smiletripcare.com/api/health`
+- [ ] Test API: `curl -sI https://api.op-sly.com/api/health`
 - [ ] Check headers: Verify Strict-Transport-Security is present
 
 ### Post-deployment (Verify)
@@ -180,7 +180,7 @@ docker exec opsly_platform_db pg_dump -U postgres | gzip > /tmp/backup-$(date +%
 
 ✅ **Security headers:**
 ```bash
-curl -sI https://api.ops.smiletripcare.com/api/health
+curl -sI https://api.op-sly.com/api/health
 
 # Should see:
 # x-frame-options: DENY
@@ -198,13 +198,13 @@ SELECT count(*) FROM schema_migrations;
 
 ✅ **Services healthy:**
 ```bash
-curl https://api.ops.smiletripcare.com/api/health
+curl https://api.op-sly.com/api/health
 # { "status": "ok", "timestamp": "..." }
 
-curl https://admin.ops.smiletripcare.com/health
+curl https://admin.op-sly.com/health
 # 200 OK
 
-curl https://portal.ops.smiletripcare.com/health
+curl https://portal.op-sly.com/health
 # 200 OK
 ```
 

@@ -9,7 +9,7 @@ Variables mínimas:
 - `{tenant_name}`: nombre comercial
 - `{tenant_slug}`: slug (3–30, regex del producto)
 - `{schema_name}`: schema Postgres dedicado (normalmente igual a `{tenant_slug}`)
-- `{platform_domain}`: dominio base Opsly (p.ej. `ops.smiletripcare.com`)
+- `{platform_domain}`: dominio base Opsly (p.ej. `op-sly.com`)
 - `{portal_domain}`: (opcional) host público específico; muchos despliegues usan portal compartido + aislamiento por sesión/tenant_slug
 - `{workflows_count}`: número de workflows n8n a provisionar/validar
 - `{pricing_per_unit}`: precio unitario (si aplica)

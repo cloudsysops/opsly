@@ -30,7 +30,7 @@ fi
 
 # 4. Verificar webhook URL
 echo "🔗 Verificando webhook..."
-N8N_URL="https://n8n-smiletripcare.ops.smiletripcare.com"
+N8N_URL="https://n8n-smiletripcare.op-sly.com"
 HTTP=$(curl -sk -o /dev/null -w "%{http_code}" "$N8N_URL/healthz" 2>/dev/null || echo "000")
 if [[ "$HTTP" == "200" ]]; then
   echo "   ✅ n8n responde: $N8N_URL"
@@ -65,7 +65,7 @@ echo "✅ Configuración n8n completada."
 echo ""
 echo "📚 Próximos pasos:"
 echo "   1. Importar workflow: ./.n8n/n8n-import.sh"
-echo "   2. Ver workflows: https://n8n-smiletripcare.ops.smiletripcare.com"
+echo "   2. Ver workflows: https://n8n-smiletripcare.op-sly.com"
 echo "   3. Probar webhook: curl -X POST \$N8N_WEBHOOK_URL -d '{\"content\":\"# test\"}'"
 echo ""
 echo "🔗 Referencias:"

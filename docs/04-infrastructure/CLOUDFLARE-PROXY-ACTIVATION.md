@@ -1,6 +1,6 @@
 # Cloudflare Proxy — Runbook de activación
 
-> Cubre: activar Proxy (nube naranja) para `*.ops.smiletripcare.com`,
+> Cubre: activar Proxy (nube naranja) para `*.op-sly.com`,
 > verificar que Traefik obtiene TLS por `dnsChallenge` y que la IP origen queda oculta.
 
 ## Por qué es necesario
@@ -22,7 +22,7 @@ Con Proxy ON:
 | `CF_DNS_API_TOKEN` en Doppler `prd`                                          | `doppler secrets get CF_DNS_API_TOKEN --plain` |
 | Traefik config usa `dnsChallenge.provider: cloudflare`                       | `infra/traefik/traefik.yml`                    |
 | `CF_DNS_API_TOKEN` en entorno del contenedor Traefik                         | `infra/docker-compose.platform.yml`            |
-| Token CF tiene permisos **Zone:DNS:Edit** en la zona `ops.smiletripcare.com` | Dashboard CF → Profile → API Tokens            |
+| Token CF tiene permisos **Zone:DNS:Edit** en la zona `op-sly.com` | Dashboard CF → Profile → API Tokens            |
 
 ---
 
@@ -30,7 +30,7 @@ Con Proxy ON:
 
 Traefik usa **`dnsChallenge` con provider Cloudflare**: Let's Encrypt pide un registro TXT y Traefik lo crea vía **API de Cloudflare** en la zona gestionada ahí.
 
-Si **`dig NS ops.smiletripcare.com`** (o el dominio base que uses) **no** devuelve nameservers de Cloudflare (p. ej. solo `ns1.vercel-dns.com`), la zona pública **no** está en Cloudflare: el token `CF_DNS_API_TOKEN` **no puede** crear los TXT necesarios y verás errores ACME del tipo *Unable to obtain certificate* aunque el token sea válido.
+Si **`dig NS op-sly.com`** (o el dominio base que uses) **no** devuelve nameservers de Cloudflare (p. ej. solo `ns1.vercel-dns.com`), la zona pública **no** está en Cloudflare: el token `CF_DNS_API_TOKEN` **no puede** crear los TXT necesarios y verás errores ACME del tipo *Unable to obtain certificate* aunque el token sea válido.
 
 **Opciones:**
 
@@ -74,10 +74,10 @@ doppler secrets set CF_DNS_API_TOKEN --project ops-intcloudsysops --config prd
 
 ```bash
 # Debe aparecer IPs de Cloudflare (103.x.x.x / 104.x.x.x), NO 157.245.223.7
-dig +short api.ops.smiletripcare.com
+dig +short api.op-sly.com
 
 # Debe incluir el header CF-RAY en la respuesta
-curl -sI https://api.ops.smiletripcare.com/api/health | grep -i cf-ray
+curl -sI https://api.op-sly.com/api/health | grep -i cf-ray
 ```
 
 Respuesta esperada:
@@ -139,7 +139,7 @@ https://www.cloudflare.com/ips/
 
 Tras completar esta guía, marcar en `docs/SECURITY_CHECKLIST.md`:
 
-- `[x]` Cloudflare Proxy ON para `*.ops.smiletripcare.com`
+- `[x]` Cloudflare Proxy ON para `*.op-sly.com`
 - `[x]` `CF_DNS_API_TOKEN` en Doppler `prd`
 - `[x]` Traefik `api.insecure: false` (sin dashboard expuesto)
 - `[x]` UFW: SSH solo Tailscale, 80/443 públicos

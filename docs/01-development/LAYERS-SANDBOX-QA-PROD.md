@@ -34,9 +34,9 @@ Sistema de capas para implementar cambios de forma segura: **Sandbox** → **QA*
 | Capa        | Entorno        | URL Base                        | Propósito              | Auto-deploy       |
 | ----------- | -------------- | ------------------------------- | ---------------------- | ----------------- |
 | **local**   | Mac desarrollo | `localhost:3000`                | Desarrollo rápido      | ❌                |
-| **sandbox** | VPS sandbox    | `sandbox.ops.smiletripcare.com` | Pruebas de integración | ✅                |
-| **qa**      | VPS staging    | `qa.ops.smiletripcare.com`      | QA testing             | ✅                |
-| **prod**    | VPS production | `ops.smiletripcare.com`         | Producción             | ✅ (con approval) |
+| **sandbox** | VPS sandbox    | `sandbox.op-sly.com` | Pruebas de integración | ✅                |
+| **qa**      | VPS staging    | `qa.op-sly.com`      | QA testing             | ✅                |
+| **prod**    | VPS production | `op-sly.com`         | Producción             | ✅ (con approval) |
 
 ---
 
@@ -54,9 +54,9 @@ OPSLY_ENVIRONMENT=development
 DOPPLER_CONFIG=sandbox
 DATABASE_URL=postgresql://user:pass@sandbox-db
 REDIS_URL=redis://sandbox-cache
-API_URL=https://api-sandbox.ops.smiletripcare.com
-ADMIN_URL=https://admin-sandbox.ops.smiletripcare.com
-PORTAL_URL=https://portal-sandbox.ops.smiletripcare.com
+API_URL=https://api-sandbox.op-sly.com
+ADMIN_URL=https://admin-sandbox.op-sly.com
+PORTAL_URL=https://portal-sandbox.op-sly.com
 
 # ──────────────────────────────────────────────────────────────
 
@@ -69,9 +69,9 @@ OPSLY_ENVIRONMENT=staging
 DOPPLER_CONFIG=qa
 DATABASE_URL=postgresql://user:pass@qa-db
 REDIS_URL=redis://qa-cache
-API_URL=https://api-qa.ops.smiletripcare.com
-ADMIN_URL=https://admin-qa.ops.smiletripcare.com
-PORTAL_URL=https://portal-qa.ops.smiletripcare.com
+API_URL=https://api-qa.op-sly.com
+ADMIN_URL=https://admin-qa.op-sly.com
+PORTAL_URL=https://portal-qa.op-sly.com
 
 # ──────────────────────────────────────────────────────────────
 
@@ -84,9 +84,9 @@ OPSLY_ENVIRONMENT=production
 DOPPLER_CONFIG=prd
 DATABASE_URL=postgresql://user:pass@prod-db
 REDIS_URL=redis://prod-cache
-API_URL=https://api.ops.smiletripcare.com
-ADMIN_URL=https://admin.ops.smiletripcare.com
-PORTAL_URL=https://portal.ops.smiletripcare.com
+API_URL=https://api.op-sly.com
+ADMIN_URL=https://admin.op-sly.com
+PORTAL_URL=https://portal.op-sly.com
 ```
 
 ---
@@ -255,13 +255,13 @@ LAYER="${1:-qa}"
 
 case $LAYER in
   sandbox)
-    echo "https://api-sandbox.ops.smiletripcare.com"
+    echo "https://api-sandbox.op-sly.com"
     ;;
   qa)
-    echo "https://api-qa.ops.smiletripcare.com"
+    echo "https://api-qa.op-sly.com"
     ;;
   prod|production)
-    echo "https://api.ops.smiletripcare.com"
+    echo "https://api.op-sly.com"
     ;;
   *)
     echo "Unknown layer: $LAYER" >&2
@@ -388,7 +388,7 @@ git pull origin main
 2. **Agregar DNS:**
 
    ```
-   api-$NEW_LAYER.ops.smiletripcare.com → VPS
+   api-$NEW_LAYER.op-sly.com → VPS
    ```
 
 3. **Crear .env file:**

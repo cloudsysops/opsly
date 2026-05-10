@@ -24,7 +24,7 @@ doppler secrets set GITHUB_TOKEN_N8N --project ops-intcloudsysops --config prd
 
 ```bash
 # n8n debe exponer un endpoint para GitHub
-GITHUB_WEBHOOK_URL="https://n8n-smiletripcare.ops.smiletripcare.com/webhook/github-event"
+GITHUB_WEBHOOK_URL="https://n8n-smiletripcare.op-sly.com/webhook/github-event"
 
 # Configurar en GitHub repo settings → Webhooks
 # Content type: application/json

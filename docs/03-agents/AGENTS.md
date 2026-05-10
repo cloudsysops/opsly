@@ -322,7 +322,7 @@ node scripts/load-skills.js show opsly-api
 
 <!-- Actualizar al final de cada sesión -->
 
-**Fecha última actualización:** 2026-04-26 — **Estabilización prod:** health `https://api.ops.smiletripcare.com/api/health` OK (supabase+redis); E2E invite ejecutado en `prd` con `scripts/test-e2e-invite-flow.sh --tenant-ref intcloudsysops` (resultado idempotente: usuario ya registrado, smoke aceptado); workflow deploy activo en GitHub Actions (`deploy.yml`) tras fix de sintaxis Tailscale y timeout SSH 2m. **Sprint histórico Semana 5:** [`docs/SEMANA-5-INFORME.md`](docs/SEMANA-5-INFORME.md), [`ROADMAP.md`](ROADMAP.md).
+**Fecha última actualización:** 2026-04-26 — **Estabilización prod:** health `https://api.op-sly.com/api/health` OK (supabase+redis); E2E invite ejecutado en `prd` con `scripts/test-e2e-invite-flow.sh --tenant-ref intcloudsysops` (resultado idempotente: usuario ya registrado, smoke aceptado); workflow deploy activo en GitHub Actions (`deploy.yml`) tras fix de sintaxis Tailscale y timeout SSH 2m. **Sprint histórico Semana 5:** [`docs/SEMANA-5-INFORME.md`](docs/SEMANA-5-INFORME.md), [`ROADMAP.md`](ROADMAP.md).
 
 **Siguiente fase:** Semana 6 (Segundo Cliente + E2E), ventana **2026-04-29 → 2026-05-03** ⏳ **EN PROGRESO**. Plan: [`docs/SEMANA-6-PLAN.md`](docs/SEMANA-6-PLAN.md).
 
@@ -349,8 +349,8 @@ node scripts/load-skills.js show opsly-api
 | ------------- | ---------- | ------ | ----------------------------------------------- |
 | Traefik       | ✅ Running | 80/443 | Router principal                                |
 | API (app)     | ⚠️ Error   | 3000   | `[id] !== [ref]` conflict en imagen GHCR        |
-| Admin         | ✅ Running | 3001   | `admin.ops.smiletripcare.com`                   |
-| Portal        | ✅ Running | 3002   | `portal.ops.smiletripcare.com`                  |
+| Admin         | ✅ Running | 3001   | `admin.op-sly.com`                   |
+| Portal        | ✅ Running | 3002   | `portal.op-sly.com`                  |
 | MCP           | ✅ Running | 3003   | Herramientas disponibles                        |
 | Orchestrator  | ✅ Running | 3011   | OAR + Mode System COMPLETO (Semana 1)           |
 | Redis         | ✅ Running | 6379   | Sin password (bug compose)                      |
@@ -699,20 +699,20 @@ _CORS + `NEXT*PUBLIC*_`en build admin +`deploy.yml`(2026-04-06, commit`8f12487` 
 - **`apps/admin/Dockerfile` (builder):** `ARG`/`ENV` `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `NEXT_PUBLIC_API_URL` antes del build (Next hornea `NEXT_PUBLIC_*`).
 - **`.github/workflows/deploy.yml`:** en _Build and push API image_, `build-args: PLATFORM_DOMAIN=${{ secrets.PLATFORM_DOMAIN }}`. En _Admin_, `build-args` con `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` y `NEXT_PUBLIC_API_URL=https://api.${{ secrets.PLATFORM_DOMAIN }}`. Comentario en cabecera del YAML con comandos `gh secret set` para el repo.
 - **Secretos GitHub requeridos en el job build** (valores desde Doppler `prd`): `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `PLATFORM_DOMAIN`. Sin ellos el build de admin o el origen CORS en API pueden fallar o quedar vacíos.
-- **Verificación local:** `npm run type-check` en verde antes del commit; post-deploy humano: `https://admin.ops.smiletripcare.com/dashboard` sin errores de CORS/Supabase en consola (tras definir secrets y un run verde de **Deploy**).
+- **Verificación local:** `npm run type-check` en verde antes del commit; post-deploy humano: `https://admin.op-sly.com/dashboard` sin errores de CORS/Supabase en consola (tras definir secrets y un run verde de **Deploy**).
 
 _Admin dashboard + API métricas — sesión Cursor 2026-04-04 (stakeholders / familia):_
 
 **Objetivo:** Admin en `apps/admin` operativo y legible, con datos reales del VPS y del tenant `smiletripcare` (Supabase `platform.tenants`), sin autenticación Supabase en modo demo.
 
-**URL pública:** https://admin.ops.smiletripcare.com — Traefik router `opsly-admin`, `Host(admin.${PLATFORM_DOMAIN})`, `entrypoints=websecure`, `tls=true`, `tls.certresolver=letsencrypt`, servicio puerto **3001** (`infra/docker-compose.platform.yml`).
+**URL pública:** https://admin.op-sly.com — Traefik router `opsly-admin`, `Host(admin.${PLATFORM_DOMAIN})`, `entrypoints=websecure`, `tls=true`, `tls.certresolver=letsencrypt`, servicio puerto **3001** (`infra/docker-compose.platform.yml`).
 
 **Admin — pantallas y UX**
 
 - **`/dashboard`:** Gauge circular CPU (verde si el uso es menor que 60%, amarillo si es menor que 85%, rojo en caso contrario; hex `#22c55e` / `#eab308` / `#ef4444`), RAM y disco en GB con `Progress` (shadcn/Radix), uptime legible, conteo tenants activos y contenedores Docker en ejecución; **SWR cada 30 s** contra la API. Tema dark, fondo `#0a0a0a`, valores en `font-mono`. Aviso en UI si la API devuelve **`mock: true`** (Prometheus no alcanzable).
 - **`/tenants`:** Tabla: slug, plan, status (badges: active verde, provisioning amarillo, failed rojo, etc.), `created_at`. Clic en fila expande: URLs n8n y Uptime con botones «Abrir», email owner, fechas; enlace a detalle.
 - **`/tenants/[tenantRef]`:** Detalle por **slug o UUID** (carpeta dinámica `[tenantRef]`). Header con nombre y status; cards plan / email / creado; botones n8n y Uptime; **iframe** a `{uptime_base}/status/{slug}` (Uptime Kuma) con texto de ayuda si bloquea por `X-Frame-Options`; sección containers y URLs técnicas.
-- **Chrome:** Marca **Opsly**, sidebar solo **Dashboard | Tenants**, footer: `Opsly Platform v1.0 · staging · ops.smiletripcare.com`.
+- **Chrome:** Marca **Opsly**, sidebar solo **Dashboard | Tenants**, footer: `Opsly Platform v1.0 · staging · op-sly.com`.
 - **Dependencias admin:** `@radix-ui/react-progress`, componente `components/ui/progress.tsx`, `CpuGauge`, hook `useSystemMetrics`.
 
 **API (`apps/api`)**
@@ -734,13 +734,13 @@ _Admin dashboard + API métricas — sesión Cursor 2026-04-04 (stakeholders / f
 
 - `npm run type-check` (Turbo) en verde antes de commit; pre-commit ESLint en rutas API tocadas.
 - Tras push a `main`, CI despliega imágenes GHCR. **Hasta `pull` + `up` de `app` y `admin` en el VPS**, una imagen admin antigua puede seguir redirigiendo a `/login` (307): hace falta imagen nueva con el ARG de demo y, en `.env`, **`ADMIN_PUBLIC_DEMO_READ=true`** para el servicio **`app`**.
-- Comprobación sugerida post-deploy: `curl -sfk https://admin.ops.smiletripcare.com` (esperar HTML del dashboard, no solo redirect a login).
+- Comprobación sugerida post-deploy: `curl -sfk https://admin.op-sly.com` (esperar HTML del dashboard, no solo redirect a login).
 
 _Primer tenant en staging — smiletripcare (2026-04-06, verificado ✅):_
 
 - **Slug:** `smiletripcare` — fila en `platform.tenants` + stack compose en VPS (`scripts/onboard-tenant.sh`).
-- **n8n:** https://n8n-smiletripcare.ops.smiletripcare.com ✅
-- **Uptime Kuma:** https://uptime-smiletripcare.ops.smiletripcare.com ✅
+- **n8n:** https://n8n-smiletripcare.op-sly.com ✅
+- **Uptime Kuma:** https://uptime-smiletripcare.op-sly.com ✅
 - **Credenciales n8n:** guardadas en Doppler proyecto `ops-intcloudsysops` / config **`prd`** (no repetir en repo ni en chat).
 
 _Sesión agente Cursor — Supabase producción + onboarding (2026-04-07):_
@@ -751,7 +751,7 @@ _Sesión agente Cursor — Supabase producción + onboarding (2026-04-07):_
 - **Corrección en repo:** renombrar RLS a **`0007_rls_policies.sql`** (orden aplicado: `0001` … `0006`, luego `0007`). Segundo **`db push`:** OK (`0004`–`0007` según estado previo del remoto).
 - **Verificación tablas:** `npx supabase db query --linked` → existen **`platform.tenants`** y **`platform.subscriptions`** en Postgres.
 - **REST / PostgREST (histórico previo al onboard 2026-04-06):** faltaba exponer `platform` y/o `GRANT` — resuelto antes del primer tenant; la API debe usar `Accept-Profile: platform` contra `platform.tenants` según config actual del proyecto.
-- **Onboarding smiletripcare (planificación, sin ejecutar):** no existe `scripts/onboard.sh`; el script es **`scripts/onboard-tenant.sh`** con `--slug`, `--email`, `--plan` (`startup` \| `business` \| `enterprise`). URLs del template: `https://n8n-{slug}.{PLATFORM_DOMAIN}/` y `https://uptime-{slug}.{PLATFORM_DOMAIN}/` (p. ej. `ops.smiletripcare.com`). El bloque _Próximo paso_ histórico mencionaba `plan: pro` y hosts distintos — **desalineado** con el CHECK SQL y la plantilla; usar el script real antes de ejecutar.
+- **Onboarding smiletripcare (planificación, sin ejecutar):** no existe `scripts/onboard.sh`; el script es **`scripts/onboard-tenant.sh`** con `--slug`, `--email`, `--plan` (`startup` \| `business` \| `enterprise`). URLs del template: `https://n8n-{slug}.{PLATFORM_DOMAIN}/` y `https://uptime-{slug}.{PLATFORM_DOMAIN}/` (p. ej. `op-sly.com`). El bloque _Próximo paso_ histórico mencionaba `plan: pro` y hosts distintos — **desalineado** con el CHECK SQL y la plantilla; usar el script real antes de ejecutar.
 
 _Capas de calidad de código — monorepo Opsly (2026-04-05, commit `d4acfcb` `feat(quality): add code patterns, SOLID rules and automated review layers`, pusheado a `main`):_
 
@@ -807,7 +807,7 @@ _CI/deploy — GHCR desde Actions, health, Traefik, `.env` compose, Discord, VPS
 
 - **`deploy.yml` — login GHCR en el VPS sin Doppler:** el script SSH ya no usa `doppler secrets get GHCR_TOKEN/GHCR_USER`. En el step _Deploy via SSH_: `env` con `GHCR_USER: ${{ github.actor }}`, `GHCR_PAT: ${{ secrets.GITHUB_TOKEN }}`; `envs: PLATFORM_DOMAIN,GHCR_USER,GHCR_PAT` para `appleboy/ssh-action`; en remoto: `echo "$GHCR_PAT" | docker login ghcr.io -u "$GHCR_USER" --password-stdin`. Job **`deploy`** con **`permissions: contents: read, packages: read`** para que `GITHUB_TOKEN` pueda autenticar lectura en GHCR al reutilizarse como PAT en el VPS.
 - **`apps/api/package.json` y `apps/admin/package.json`:** añadido script **`start`** (`next start -p 3000` / `3001`). Sin él, los contenedores entraban en bucle con _Missing script: "start"_ pese a imagen correcta.
-- **Health check post-deploy (SSH):** **`curl -sfk "https://api.${PLATFORM_DOMAIN}/api/health"`**; mensaje _Esperando que Traefik registre routers…_, luego **`sleep 60`**, hasta **5 intentos** con **`sleep 15`** entre fallos; en el intento 5 fallido: logs **`docker logs infra-app-1`** y **`exit 1`**. Secret **`PLATFORM_DOMAIN`** = dominio **base** (ej. **`ops.smiletripcare.com`**).
+- **Health check post-deploy (SSH):** **`curl -sfk "https://api.${PLATFORM_DOMAIN}/api/health"`**; mensaje _Esperando que Traefik registre routers…_, luego **`sleep 60`**, hasta **5 intentos** con **`sleep 15`** entre fallos; en el intento 5 fallido: logs **`docker logs infra-app-1`** y **`exit 1`**. Secret **`PLATFORM_DOMAIN`** = dominio **base** (ej. **`op-sly.com`**).
 - **`infra/docker-compose.platform.yml` — router Traefik para la API:** labels del servicio **`app`** con `traefik.http.routers.app.rule=Host(\`api.${PLATFORM_DOMAIN}\`)`, **`entrypoints=websecure`**, **`tls=true`**, **`tls.certresolver=letsencrypt`**, **`service=app`**, **`traefik.http.services.app.loadbalancer.server.port=3000`**, `traefik.enable=true`, **`traefik.docker.network=traefik-public`**. Redes: **`traefik`** y **`app`** en **`traefik-public`** (externa); `app`también en`internal`(Redis). Middlewares de archivo se mantienen en el router`app`.
 - **Interpolación de variables en Compose:** por defecto Compose busca `.env` en el directorio del proyecto (junto a `infra/docker-compose.platform.yml`), **no** en `/opt/opsly/.env`. En **`deploy.yml`**, **`docker compose --env-file /opt/opsly/.env -f docker-compose.platform.yml pull`** y el mismo **`--env-file`** en **`up`**, para que `${PLATFORM_DOMAIN}`, `${ACME_EMAIL}`, `${REDIS_PASSWORD}`, etc. se resuelvan en labels y `environment`. Comentario en el YAML del compose documenta esto.
 - **Discord en GitHub Actions:** **no** usar **`secrets.…` dentro de expresiones `if:`** en steps (p. ej. `if: failure() && secrets.DISCORD_WEBHOOK_URL != ''`) — el workflow queda **inválido** (_workflow file issue_, run ~0s sin logs). Solución: `if: success()` / `if: failure()` y en el script: si `DISCORD_WEBHOOK_URL` vacío → mensaje y **`exit 0`** (no-op); evita `curl: (3) URL rejected` con webhook vacío.
@@ -826,7 +826,7 @@ _Traefik — socket Docker, API y grupo `docker` (2026-04-05, seguimiento Cursor
 - **Raíz del compose:** sin clave **`version:`** (obsoleta en Compose moderno, eliminaba warning).
 - **Commits de referencia:** `ed38256` (`fix(traefik): set DOCKER_API_VERSION and fix socket mount…`), `57f0440` (`fix(traefik): fix docker provider config and socket access…` — insecure, health 5×15s, `docker info` en first-run), `0df201c` (`fix(traefik): add docker group and API version to fix socket discovery` — `group_add`, bootstrap/validate `DOCKER_GID`). Histórico previo del mismo hilo: `393bc3c` … `03068a0` (`--env-file`). Runs ejemplo: `24008556692`, `24008712390`, `24009183221`.
 
-_Intento deploy staging → `https://api.ops.smiletripcare.com/api/health` (2026-04-05):_
+_Intento deploy staging → `https://api.op-sly.com/api/health` (2026-04-05):_
 
 - **Paso 1 — Auditoría:** revisados `config/opsly.config.json` (sin secretos), `.env.example` (placeholders unificados), `infra/docker-compose.platform.yml` (solo nombres de vars), y por SSH el árbol `.env*` bajo `/opt/opsly` (`.env`, `.env.example`, `.env.swp`).
 - **Hallazgo:** en VPS y en Doppler `prd` hay claves **truncadas o placeholder** (p. ej. JWT tipo `eyJ...`, Stripe demasiado corto, `change-me` en `PLATFORM_ADMIN_TOKEN` / `REDIS_PASSWORD`). **No** se ejecutó `doppler secrets upload` desde el `.env` del VPS para no contaminar Doppler.
@@ -966,14 +966,14 @@ _Auditoría TypeScript y correcciones de código (2026-04-05, sesión agente Cla
 
 **En progreso 🔄**
 
-- **Deploy portal:** run **Deploy** en GitHub tras push (imagen `intcloudsysops-portal`); en VPS `docker compose … pull` + `up -d` incluyendo servicio **`portal`**; validar `https://portal.ops.smiletripcare.com/login` y flujo invite.
+- **Deploy portal:** run **Deploy** en GitHub tras push (imagen `intcloudsysops-portal`); en VPS `docker compose … pull` + `up -d` incluyendo servicio **`portal`**; validar `https://portal.op-sly.com/login` y flujo invite.
 - **Secretos GitHub** `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `PLATFORM_DOMAIN` definidos en `cloudsysops/opsly` y **Deploy** verde para que la imagen admin incluya Supabase/API URL y la API CORS el origen admin correcto.
 - **Despliegue Admin + API lectura demo en VPS:** variables `ADMIN_PUBLIC_DEMO_READ=true` y nuevas imágenes GHCR; validar dashboard, `/api/metrics/system` y consola del navegador (CORS + `NEXT_PUBLIC_*`).
 - **CI “Nightly code quality” (`nightly-fix.yml`):** probar con _Actions → Run workflow_; el cron solo corre con el workflow en la rama por defecto (`main`).
 - **CI `Deploy` en GitHub Actions:** tras push a `main`, **`build-and-push`** publica imágenes en GHCR; **`deploy`** hace SSH, **`docker compose --env-file /opt/opsly/.env … pull` + `up`**, health con reintentos y **`curl -sfk`**. Revisar _Actions → Deploy_ si falla SSH, disco VPS, Traefik, **`PLATFORM_DOMAIN`** o falta **`DOCKER_GID`** en el `.env` del VPS (sin él, `group_add` usa `999` y el socket puede seguir inaccesible).
 - Deploy staging — imágenes **`ghcr.io/cloudsysops/intcloudsysops-{api,admin}:latest`**; en VPS **`/opt/opsly/.env`** con **`DOCKER_GID`** (vuelve a ejecutar **`vps-bootstrap.sh`** tras cambios de compose si hace falta); login GHCR en el job con **`GITHUB_TOKEN`**. Tras cambios en Traefik: recrear contenedor **`traefik`** en el VPS para cargar env y `group_add`.
 - Con Doppler CLI + token con scope `/opt/opsly`: **`./scripts/vps-bootstrap.sh`** regenera `.env`; ejecutar tras cambiar imágenes o secretos en `prd`.
-- DNS: ops.smiletripcare.com → 157.245.223.7 ✅
+- DNS: op-sly.com → 157.245.223.7 ✅
 
 **Pendiente ⏳**
 
@@ -1045,9 +1045,9 @@ ssh -o BatchMode=yes -o ConnectTimeout=15 vps-dragon@100.120.151.91 "echo ok && 
 ./scripts/opsly.sh start-tenant localrank --wait --wait-seconds 180
 
 # 4) Verificar URLs públicas
-curl -I "https://portal.ops.smiletripcare.com"
-curl -I "https://n8n-localrank.ops.smiletripcare.com"
-curl -I "https://uptime-localrank.ops.smiletripcare.com"
+curl -I "https://portal.op-sly.com"
+curl -I "https://n8n-localrank.op-sly.com"
+curl -I "https://uptime-localrank.op-sly.com"
 
 # 5) NotebookLM EXPERIMENTAL (solo business+)
 doppler secrets set NOTEBOOKLM_ENABLED true --project ops-intcloudsysops --config prd
@@ -1139,7 +1139,7 @@ ssh vps-dragon@100.120.151.91 "docker system df && sudo du -xh /var --max-depth=
 - [x] **`.env` VPS** alineado con Doppler vía **`vps-bootstrap.sh`** + Doppler en VPS (sesión 2026-04-05); repetir bootstrap tras cambios en `prd`
 - [x] **Doppler CLI + token con scope `/opt/opsly`** en VPS (sesión 2026-04-05) — alternativa a solo `scp`
 - [x] **Traefik v3 + Docker 29.3.1 API negotiation bug** — fix: `daemon.json` `min-api-version: 1.24` + vps-bootstrap.sh paso [j] idempotente (2026-04-06)
-- [x] **Health check staging** — `curl -sfk https://api.ops.smiletripcare.com/api/health` → `{"status":"ok"}` (2026-04-06 23:58 UTC)
+- [x] **Health check staging** — `curl -sfk https://api.op-sly.com/api/health` → `{"status":"ok"}` (2026-04-06 23:58 UTC)
 - [x] **Migraciones SQL en Supabase opsly-prod** — `db push` vía CLI enlazada; tablas `platform.tenants` / `platform.subscriptions` verificadas en Postgres (2026-04-07)
 - [x] **PostgREST / API sobre schema `platform`** — `GRANT` USAGE (y permisos necesarios) + schema expuesto en API; onboarding y API contra `platform.tenants` operativos (2026-04-06)
 - [x] **Resend remitente en Doppler/VPS** — `RESEND_FROM_EMAIL` en `prd` + bootstrap + `app` recreado (2026-04-07).
@@ -1319,7 +1319,7 @@ flowchart TB
 
 ### Mitigaciones Inmediatas (esta noche)
 
-1. **Cloudflare Proxy (5 min):** Cambiar `*.ops.smiletripcare.com` a naranja (Proxy ON) — oculta IP VPS
+1. **Cloudflare Proxy (5 min):** Cambiar `*.op-sly.com` a naranja (Proxy ON) — oculta IP VPS
 2. **ufw Firewall (5 min):** Default DROP; whitelist SSH desde Tailscale (100.64.0.0/10), HTTP/HTTPS público (`./scripts/vps-secure.sh --ssh-host 100.120.151.91`)
 3. **Tailscale SSH (5 min):** VPS vía `100.120.151.91` (IP Tailscale) — scripts ya usan por defecto (`SSH_HOST=${SSH_HOST:-100.120.151.91}`)
 
@@ -1338,8 +1338,8 @@ flowchart TB
 | Usuario SSH     | vps-dragon                               |
 | Repo en VPS     | /opt/opsly                               |
 | Repo GitHub     | github.com/cloudsysops/opsly             |
-| Dominio staging | ops.smiletripcare.com                    |
-| DNS wildcard    | \*.ops.smiletripcare.com → 157.245.223.7 |
+| Dominio staging | op-sly.com                    |
+| DNS wildcard    | \*.op-sly.com → 157.245.223.7 |
 
 ### Infraestructura VPS-dragon – Tailscale
 
@@ -1350,7 +1350,7 @@ flowchart TB
   - `allow 80/tcp`
   - `allow 443/tcp`
   - `default deny incoming`
-- Cloudflare recomendado: Proxy ON en todos los registros `*.ops.smiletripcare.com`.
+- Cloudflare recomendado: Proxy ON en todos los registros `*.op-sly.com`.
 
 ### Topología de red activa (Management vs Edge)
 

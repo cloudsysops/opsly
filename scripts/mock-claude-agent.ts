@@ -66,6 +66,34 @@ app.post('/chat', async (req, res) => {
   }
 });
 
+// Generic local-agent contract used by LocalAgentHTTPWorker.
+app.post('/execute', async (req, res) => {
+  const { job_id, prompt_content, agent_role, model } = req.body as ChatRequest;
+
+  console.log(`[MockClaude] Received execute job ${job_id}`);
+  console.log(`[MockClaude] Role: ${agent_role}, Model: ${model || 'mock-claude'}`);
+
+  try {
+    await new Promise(resolve => setTimeout(resolve, MOCK_DELAY));
+    const response = generateMockResponse(agent_role, prompt_content, job_id);
+
+    res.status(200).json({
+      success: true,
+      job_id,
+      response_content: response,
+      model: model || 'mock-claude',
+      created_at: new Date().toISOString(),
+    });
+  } catch (error) {
+    console.error(`[MockClaude] ❌ Execute job ${job_id} failed:`, error);
+    res.status(500).json({
+      success: false,
+      job_id,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+});
+
 /**
  * Generate mock response based on agent role
  */

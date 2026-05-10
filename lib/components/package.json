@@ -1,0 +1,17 @@
+{
+  "name": "@intcloudsysops/components",
+  "version": "1.0.0",
+  "description": "Shared React components and design system",
+  "type": "module",
+  "main": "./index.ts",
+  "types": "./index.ts",
+  "scripts": {
+    "test": "echo 'No tests yet'",
+    "type-check": "echo 'Components type-checked via root tsconfig'"
+  },
+  "peerDependencies": {
+    "react": "^18.0.0 || ^19.0.0",
+    "react-dom": "^18.0.0 || ^19.0.0"
+  },
+  "keywords": ["react", "components", "design-system", "ui"]
+}

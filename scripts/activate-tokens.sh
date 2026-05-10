@@ -80,7 +80,7 @@ export TENANT_SLUG="intcloudsysops"
 ok "E2E invite flow OK"
 
 log "Probando feedback API…"
-API="${API_BASE_URL:-https://api.ops.smiletripcare.com}"
+API="${API_BASE_URL:-https://api.op-sly.com}"
 HTTP_CODE=""
 HTTP_CODE="$(curl -sS -o /tmp/activate-feedback-body.json -w "%{http_code}" \
   -X POST "$API/api/feedback" \

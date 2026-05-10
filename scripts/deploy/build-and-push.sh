@@ -51,7 +51,7 @@ remote_script() {
     log_info "  - git clone o git pull ${OPSLY_GIT_URL} (${OPSLY_GIT_BRANCH})"
     log_info "  - cp .env.example .env si no hay .env"
     log_info "  - docker network create traefik-public"
-    log_info "  - docker compose -f ${OPS_DEPLOY_ROOT}/infra/docker-compose.platform.yml up -d"
+    log_info "  - cd ${OPS_DEPLOY_ROOT}/infra && docker compose --env-file ${OPS_DEPLOY_ROOT}/.env -f docker-compose.platform.yml up -d"
     log_info "  - health vía docker exec al contenedor app"
     return 0
   fi

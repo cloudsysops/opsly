@@ -23,7 +23,7 @@
 - Opcion C (DevTools -> Console) para endpoints autenticados:
 
 ```js
-await fetch('https://api.ops.smiletripcare.com/api/n8n/decide', {
+await fetch('https://api.op-sly.com/api/n8n/decide', {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',

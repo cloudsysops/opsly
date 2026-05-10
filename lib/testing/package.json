@@ -1,0 +1,13 @@
+{
+  "name": "@intcloudsysops/testing",
+  "version": "1.0.0",
+  "description": "testing description",
+  "type": "module",
+  "main": "./index.ts",
+  "types": "./index.ts",
+  "scripts": {
+    "test": "echo 'No tests yet'",
+    "type-check": "echo 'testing type-checked via root tsconfig'"
+  },
+  "keywords": ["testing"]
+}

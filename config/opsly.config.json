@@ -76,6 +76,27 @@
       "ownerEmail": "sierrasantiago90@gmail.com",
       "status": "active",
       "createdAt": "2026-04-07"
+    },
+    {
+      "slug": "localrank",
+      "plan": "startup",
+      "ownerEmail": "jkbotero78@gmail.com",
+      "status": "active",
+      "createdAt": "2026-04-11"
+    },
+    {
+      "slug": "jkboterolabs",
+      "plan": "startup",
+      "ownerEmail": "jkbotero78@gmail.com",
+      "status": "active",
+      "createdAt": "2026-04-08"
+    },
+    {
+      "slug": "intcloudsysops",
+      "plan": "enterprise",
+      "ownerEmail": "cboteros1@gmail.com",
+      "status": "active",
+      "createdAt": "2026-04-15"
     }
   ]
 }

@@ -36,7 +36,7 @@ Usar `--dry-run` primero si el entorno no está validado. Variables Supabase/pat
 - Uptime: `https://uptime-{slug}.{PLATFORM_DOMAIN}`
 - Portal: `https://portal.{PLATFORM_DOMAIN}`
 
-Sustituir `PLATFORM_DOMAIN` por el dominio base del entorno (ej. `ops.smiletripcare.com`).
+Sustituir `PLATFORM_DOMAIN` por el dominio base del entorno (ej. `op-sly.com`).
 
 ## Errores comunes
 
@@ -53,7 +53,7 @@ Sustituir `PLATFORM_DOMAIN` por el dominio base del entorno (ej. `ops.smiletripc
 docker ps | grep tenant_micliente
 
 # Health check tenant
-curl -sf https://n8n-micliente.ops.smiletripcare.com/healthz
+curl -sf https://n8n-micliente.op-sly.com/healthz
 
 # Ver logs
 docker logs n8n_micliente_1 --tail 50

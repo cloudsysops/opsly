@@ -39,7 +39,7 @@ Sustituye el token sin pegarlo en tickets públicos.
 ```bash
 ADMIN_TOKEN="…"  # doppler secrets get PLATFORM_ADMIN_TOKEN --plain --project ops-intcloudsysops --config prd
 
-curl -X POST "https://api.ops.smiletripcare.com/api/invitations" \
+curl -X POST "https://api.op-sly.com/api/invitations" \
   -H "Content-Type: application/json" \
   -H "x-admin-token: ${ADMIN_TOKEN}" \
   -d '{

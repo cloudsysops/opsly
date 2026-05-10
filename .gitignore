@@ -33,6 +33,7 @@ tools/agents/prompts/secrets-*.md
 .cursor/prompts/.metadata.json
 .env.local
 .env*.local
+!.env.local-workers.example
 .env.worker
 
 node_modules
@@ -63,6 +64,8 @@ infra/terraform/tfplan
 runtime/logs/*
 runtime/letsencrypt/*
 runtime/tenants/*
+runtime/pids/*
+!runtime/pids/.gitkeep
 !runtime/logs/.gitkeep
 !runtime/letsencrypt/.gitkeep
 !runtime/tenants/.gitkeep

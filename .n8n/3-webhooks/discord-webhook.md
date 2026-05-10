@@ -6,7 +6,7 @@ Configuración del webhook Discord para recibir tareas y enviar respuestas.
 
 ```bash
 # Producción (smiletripcare)
-N8N_URL="https://n8n-smiletripcare.ops.smiletripcare.com/webhook/opsly-discord-task"
+N8N_URL="https://n8n-smiletripcare.op-sly.com/webhook/opsly-discord-task"
 
 # Verificar desde Doppler
 N8N_WEBHOOK_URL=$(doppler secrets get N8N_WEBHOOK_URL --plain --project ops-intcloudsysops --config prd)

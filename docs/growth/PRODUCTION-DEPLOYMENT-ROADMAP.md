@@ -31,7 +31,7 @@ Here's what we've seen:
 
 Would you be open to a 15-min demo? I'd love to show you how Opsly could fit into your workflow.
 
-Demo link: https://ops.smiletripcare.com/demo
+Demo link: https://op-sly.com/demo
 (Or reply to this email—happy to work around your schedule)
 
 Best,
@@ -48,15 +48,15 @@ Opsly Growth Team
 
 #### Option 1: Verify Sending Domain (Recommended)
 1. Login to Resend Dashboard → https://resend.com/domains
-2. Add domain: `ops.smiletripcare.com`
+2. Add domain: `op-sly.com`
 3. Configure DNS records (provided by Resend)
 4. Verify domain status (typically 5-10 minutes)
-5. Update script: `FROM_EMAIL=growth@ops.smiletripcare.com`
+5. Update script: `FROM_EMAIL=growth@op-sly.com`
 6. Execute: `./scripts/growth-outreach.sh` (without TEST_MODE)
 
 #### Option 2: Use Custom Domain with SPF/DKIM
-- If `ops.smiletripcare.com` can't be verified quickly
-- Create subdomain: `mail.ops.smiletripcare.com`
+- If `op-sly.com` can't be verified quickly
+- Create subdomain: `mail.op-sly.com`
 - Configure SPF/DKIM at DNS provider
 - Register with Resend
 - Estimated time: 24-48 hours
@@ -70,12 +70,12 @@ Opsly Growth Team
 
 - [ ] **Domain Verification**
   - [ ] Login to Resend dashboard
-  - [ ] Add `ops.smiletripcare.com` domain
+  - [ ] Add `op-sly.com` domain
   - [ ] Configure DNS records
   - [ ] Confirm verification (wait for green checkmark)
 
 - [ ] **Script Validation**
-  - [ ] Update `RESEND_FROM_EMAIL` to `growth@ops.smiletripcare.com`
+  - [ ] Update `RESEND_FROM_EMAIL` to `growth@op-sly.com`
   - [ ] Disable `TEST_MODE` in script (or set to `false`)
   - [ ] Verify contact list: `data/growth/tier1-targets.json` (15 contacts)
   - [ ] Check email templates in script (no changes needed)

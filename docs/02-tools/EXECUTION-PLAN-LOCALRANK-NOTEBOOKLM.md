@@ -22,7 +22,7 @@ git status --short  # Should be clean
 ```bash
 export SUPABASE_URL="$(doppler secrets get SUPABASE_URL --project ops-intcloudsysops --config prd --plain)"
 export SUPABASE_SERVICE_ROLE_KEY="$(doppler secrets get SUPABASE_SERVICE_ROLE_KEY --project ops-intcloudsysops --config prd --plain)"
-export PLATFORM_DOMAIN="ops.smiletripcare.com"
+export PLATFORM_DOMAIN="op-sly.com"
 export TENANTS_PATH="/opt/opsly/runtime/tenants/"
 export TEMPLATE_PATH="/opt/opsly/infra/templates/docker-compose.tenant.yml"
 
@@ -62,8 +62,8 @@ ssh vps-dragon@100.120.151.91
   cd /opt/opsly
   doppler run -- npx supabase query "SELECT slug, plan, status FROM platform.tenants WHERE slug = 'localrank'"
   docker compose --project-name tenant_localrank ps
-  curl -sfk https://n8n-localrank.ops.smiletripcare.com/healthz
-  curl -sfk https://uptime-localrank.ops.smiletripcare.com/api/ping
+  curl -sfk https://n8n-localrank.op-sly.com/healthz
+  curl -sfk https://uptime-localrank.op-sly.com/api/ping
 ```
 
 ---
@@ -79,7 +79,7 @@ ADMIN_TOKEN=$(doppler secrets get PLATFORM_ADMIN_TOKEN --project ops-intcloudsys
 ### 3.2 Send Invitation
 
 ```bash
-curl -X POST https://api.ops.smiletripcare.com/api/invitations \
+curl -X POST https://api.op-sly.com/api/invitations \
   -H "Authorization: Bearer $ADMIN_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"email": "jkbotero78@gmail.com", "slug": "localrank", "name": "JK Botero Labs", "mode": "developer"}'
@@ -90,7 +90,7 @@ curl -X POST https://api.ops.smiletripcare.com/api/invitations \
 ```bash
 ./scripts/notify-discord.sh \
   "🚀 LocalRank Tenant Ready" \
-  "✅ Onboard complete!\n📍 n8n: https://n8n-localrank.ops.smiletripcare.com\n🎉 Invite sent" \
+  "✅ Onboard complete!\n📍 n8n: https://n8n-localrank.op-sly.com\n🎉 Invite sent" \
   "success"
 ```
 

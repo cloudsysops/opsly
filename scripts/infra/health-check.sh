@@ -30,7 +30,7 @@ if [[ -f "${REPO_ROOT}/config/worker-tailscale.env" ]]; then
   set +a
 fi
 
-API_URL="${API_URL:-https://api.ops.smiletripcare.com}"
+API_URL="${API_URL:-https://api.op-sly.com}"
 VPS_SSH="${VPS_SSH:-vps-dragon@100.120.151.91}"
 
 WORKER_USER="${WORKER_USER:-opslyquantum}"
@@ -151,8 +151,8 @@ fi
 
 echo ""
 echo "👥 Tenants (primeras líneas HTTP):"
-curl -sI --max-time 15 "https://n8n-localrank.ops.smiletripcare.com" | head -1 || true
-curl -sI --max-time 15 "https://n8n-jkboterolabs.ops.smiletripcare.com" | head -1 || true
+curl -sI --max-time 15 "https://n8n-localrank.op-sly.com" | head -1 || true
+curl -sI --max-time 15 "https://n8n-jkboterolabs.op-sly.com" | head -1 || true
 
 echo ""
 echo "✅ Smoke completado (revisa avisos arriba)."

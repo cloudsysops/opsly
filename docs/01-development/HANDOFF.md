@@ -18,7 +18,7 @@
 
 ```bash
 # Salud API pública
-curl -sS --max-time 10 "https://api.ops.smiletripcare.com/api/health" | jq .
+curl -sS --max-time 10 "https://api.op-sly.com/api/health" | jq .
 
 # Tenants en VPS
 ssh -o BatchMode=yes vps-dragon@100.120.151.91 "ls -la /opt/opsly/runtime/tenants//"
@@ -26,10 +26,10 @@ ssh -o BatchMode=yes vps-dragon@100.120.151.91 "ls -la /opt/opsly/runtime/tenant
 
 ## URLs de testing (staging)
 
-- LocalRank n8n: https://n8n-localrank.ops.smiletripcare.com
-- LocalRank uptime: https://uptime-localrank.ops.smiletripcare.com
-- jkboterolabs n8n: https://n8n-jkboterolabs.ops.smiletripcare.com
-- jkboterolabs uptime: https://uptime-jkboterolabs.ops.smiletripcare.com
+- LocalRank n8n: https://n8n-localrank.op-sly.com
+- LocalRank uptime: https://uptime-localrank.op-sly.com
+- jkboterolabs n8n: https://n8n-jkboterolabs.op-sly.com
+- jkboterolabs uptime: https://uptime-jkboterolabs.op-sly.com
 
 ## Referencias de código
 

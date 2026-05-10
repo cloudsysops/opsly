@@ -23,7 +23,7 @@
 | **1. Contenedores**   | Docker Compose `--project-name tenant_<slug>`                                         | Alto       | ✅ 3 tenants en mismo VPS         |
 | **2. BD Schemas**     | `platform` (global) + `tenant_<slug>` (aislado) + RLS                                 | Medio-Alto | ✅ RLS policies en migración 0007 |
 | **3. API Validation** | `tenantSlugMatchesSession()` en todas rutas `[slug]` → 403                            | Alto       | ✅ 4 rutas implementadas          |
-| **4. Red DNS**        | Traefik Host() rules: `n8n-<slug>.ops.smiletripcare.com`                              | Medio      | ✅ TLS obligatorio                |
+| **4. Red DNS**        | Traefik Host() rules: `n8n-<slug>.op-sly.com`                              | Medio      | ✅ TLS obligatorio                |
 | **5. SSH Admin**      | Tailscale VPN únicamente (`vps-dragon@100.120.151.91`) — IP pública bloqueada por ufw | Alto       | ✅ Implementado                   |
 
 ---
@@ -73,7 +73,7 @@
 
 ```
 Dashboard: https://dash.cloudflare.com → DNS
-Para: *.ops.smiletripcare.com
+Para: *.op-sly.com
 Cambio: Cloud icon Gris → Naranja (Proxied)
 Resultado: IP 157.245.223.7 OCULTA + WAF ACTIVADO ✅
 ```
@@ -111,19 +111,19 @@ ssh vps-dragon@100.120.151.91  # Tailscale IP (única vía válida)
 
 ### Portales Públicos
 
-- **Portal:** https://portal.ops.smiletripcare.com (login + invite)
-- **Admin:** https://admin.ops.smiletripcare.com (internal dashboard)
-- **API Health:** https://api.ops.smiletripcare.com/api/health
+- **Portal:** https://portal.op-sly.com (login + invite)
+- **Admin:** https://admin.op-sly.com (internal dashboard)
+- **API Health:** https://api.op-sly.com/api/health
 
 ### LocalRank Tenant (Post-Onboard)
 
-- **n8n Workflows:** https://n8n-localrank.ops.smiletripcare.com
-- **Uptime Monitor:** https://uptime-localrank.ops.smiletripcare.com
-- **Tenant Usage:** https://api.ops.smiletripcare.com/api/portal/tenant/localrank/usage
+- **n8n Workflows:** https://n8n-localrank.op-sly.com
+- **Uptime Monitor:** https://uptime-localrank.op-sly.com
+- **Tenant Usage:** https://api.op-sly.com/api/portal/tenant/localrank/usage
 
 ### Protección
 
-- Todos los \*.ops.smiletripcare.com detrás de **Cloudflare Proxy** (naranja ON)
+- Todos los \*.op-sly.com detrás de **Cloudflare Proxy** (naranja ON)
 - SSL/TLS obligatorio (Let's Encrypt via Traefik)
 - SSH solo desde **Tailscale VPN** (100.120.151.91)
 - API validatetes tenant ownership vía **JWT + RLS**
@@ -168,11 +168,11 @@ ssh vps-dragon@100.120.151.91  # Tailscale IP (única vía válida)
 - [ ] Tailscale Mac: `curl ... | sh && tailscale up`
 - [ ] Tailscale VPS: `curl ... | sh && tailscale up --advertise-exit-node`
 - [ ] ufw Firewall: `sudo ufw default deny ... && sudo ufw enable`
-- [ ] Cloudflare: DNS → change to Proxy (naranja) para \*.ops.smiletripcare.com
+- [ ] Cloudflare: DNS → change to Proxy (naranja) para \*.op-sly.com
 - [ ] Test SSH: `ssh vps-dragon@100.120.151.91` ✅ (should work)
 - [ ] Test SSH blocked: `ssh vps-dragon@157.245.223.7` ⏱️ (should timeout)
 - [ ] LocalRank onboard: `./scripts/onboard-tenant.sh --slug localrank ...`
-- [ ] Verify health: `curl https://api.ops.smiletripcare.com/api/health` ✅
+- [ ] Verify health: `curl https://api.op-sly.com/api/health` ✅
 
 ---
 

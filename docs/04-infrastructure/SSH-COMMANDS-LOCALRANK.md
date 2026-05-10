@@ -3,7 +3,7 @@
 ## BLOQUE A: ONBOARDING VERIFICATION (SSH to VPS)
 
 ```bash
-ssh vps-dragon@100.120.151.91 'cd /opt/opsly && echo "=== Checking Supabase ===" && doppler run -- npx supabase query "SELECT slug, plan, status FROM platform.tenants WHERE slug = 10localrank10" && echo "" && echo "=== Checking Docker ===" && docker compose --project-name tenant_localrank ps && echo "" && echo "=== Testing n8n ===" && curl -sfk https://n8n-localrank.ops.smiletripcare.com/healthz && echo "✅ n8n OK" || echo "❌ n8n FAILED" && echo "" && echo "=== Testing Uptime ===" && curl -sfk https://uptime-localrank.ops.smiletripcare.com/api/ping && echo "✅ Uptime OK" || echo "❌ Uptime FAILED"'
+ssh vps-dragon@100.120.151.91 'cd /opt/opsly && echo "=== Checking Supabase ===" && doppler run -- npx supabase query "SELECT slug, plan, status FROM platform.tenants WHERE slug = 10localrank10" && echo "" && echo "=== Checking Docker ===" && docker compose --project-name tenant_localrank ps && echo "" && echo "=== Testing n8n ===" && curl -sfk https://n8n-localrank.op-sly.com/healthz && echo "✅ n8n OK" || echo "❌ n8n FAILED" && echo "" && echo "=== Testing Uptime ===" && curl -sfk https://uptime-localrank.op-sly.com/api/ping && echo "✅ Uptime OK" || echo "❌ Uptime FAILED"'
 ```
 
 ## BLOQUE B: NOTEBOOKLM SETUP (SSH to VPS)

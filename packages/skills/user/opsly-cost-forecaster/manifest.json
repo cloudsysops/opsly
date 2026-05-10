@@ -1,0 +1,86 @@
+{
+  "name": "opsly-cost-forecaster",
+  "version": "1.0.0",
+  "description": "Predict infrastructure and AI costs with 30-90 day advance notice. Enables budget planning, cost optimization recommendations, and capacity planning.",
+  "priority": "CRITICAL",
+  "category": "ai/billing",
+  "triggers": [
+    "predict cost",
+    "forecast billing",
+    "token burn",
+    "llm spending",
+    "cost analysis",
+    "presupuesto",
+    "proyectar gasto"
+  ],
+  "author": "claude",
+  "maintainer": "operations",
+  "license": "MIT",
+  "keywords": [
+    "forecasting",
+    "cost-prediction",
+    "budget-planning",
+    "llm-tokens",
+    "infrastructure-costs",
+    "stripe",
+    "prometheus",
+    "multi-tenant"
+  ],
+  "skills_related": [
+    "opsly-billing",
+    "opsly-llm",
+    "opsly-telemetry",
+    "opsly-economist"
+  ],
+  "entry_point": "scripts/forecast.ts",
+  "exports": {
+    "forecast": "scripts/forecast.ts",
+    "tokenCounter": "scripts/token-counter.ts",
+    "recommendations": "scripts/recommendations.ts"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.0.0",
+    "axios": "^1.6.0",
+    "anthropic": "^0.13.0",
+    "js-tiktoken": "^1.0.0",
+    "pino": "^8.0.0"
+  },
+  "env_required": [
+    "PROMETHEUS_URL",
+    "DOPPLER_TOKEN",
+    "STRIPE_API_KEY",
+    "SUPABASE_URL",
+    "SUPABASE_KEY"
+  ],
+  "config_schema": {
+    "growth_rate_default": 0.075,
+    "forecast_periods": [30, 60, 90],
+    "confidence_threshold": 0.65,
+    "recommendation_thresholds": {
+      "high_spend": 5000,
+      "cost_overrun": 1.1
+    }
+  },
+  "capabilities": {
+    "historical_data_collection": true,
+    "per_model_pricing": true,
+    "multi_period_forecasting": true,
+    "recommendation_generation": true,
+    "alert_integration": true
+  },
+  "integrations": {
+    "admin_dashboard": "/costs",
+    "discord_webhook": "DISCORD_WEBHOOK_COST_ALERTS",
+    "stripe_triggers": true,
+    "scheduler": "weekly-sunday-00:00-utc"
+  },
+  "success_metrics": {
+    "forecast_accuracy_mape": ">85%",
+    "surprise_invoice_prevention": "100%",
+    "annual_savings_per_tenant": "$2000+",
+    "adoption_rate": "80%+"
+  },
+  "status": "stable",
+  "created_at": "2026-05-09",
+  "updated_at": "2026-05-09"
+}

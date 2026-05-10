@@ -52,6 +52,7 @@ export function resolveAutonomyPolicy(
 
   if (
     jobType === 'cursor' ||
+    (typeof jobType === 'string' && jobType.startsWith('local_')) ||
     jobType === 'n8n' ||
     jobType === 'research' ||
     jobType === 'ollama' ||

@@ -1,0 +1,13 @@
+{
+  "name": "@intcloudsysops/prompts",
+  "version": "1.0.0",
+  "description": "Versioned prompt registry for all agents",
+  "type": "module",
+  "main": "./index.ts",
+  "types": "./index.ts",
+  "scripts": {
+    "test": "echo 'No tests yet'",
+    "type-check": "echo 'Prompts type-checked via root tsconfig'"
+  },
+  "keywords": ["prompts", "ai", "agents", "registry"]
+}

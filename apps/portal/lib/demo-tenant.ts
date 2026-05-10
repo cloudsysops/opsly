@@ -47,8 +47,8 @@ export function demoPortalTenantPayload(mode: PortalMode = 'managed'): PortalTen
     tenant_id: 'tenant_demo_localrank',
     created_at: '2026-05-02T00:00:00.000Z',
     services: {
-      n8n_url: `https://n8n-${slug}.ops.smiletripcare.com`,
-      uptime_url: `https://uptime-${slug}.ops.smiletripcare.com`,
+      n8n_url: `https://n8n-${slug}.op-sly.com`,
+      uptime_url: `https://uptime-${slug}.op-sly.com`,
       n8n_user: 'admin',
       n8n_password: 'demo-n8n-password',
     },

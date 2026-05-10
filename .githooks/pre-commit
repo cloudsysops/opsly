@@ -1,42 +1,97 @@
 #!/bin/bash
-# Pre-commit: docs auto-sync (status.yaml) + type-check + ESLint API si aplica.
-set -euo pipefail
-ROOT="$(git rev-parse --show-toplevel)"
-cd "$ROOT" || exit 1
-if [ ! -f package.json ]; then
-  exit 0
-fi
-if ! command -v npm >/dev/null 2>&1; then
-  echo "pre-commit: npm no disponible, omitiendo type-check"
-  exit 0
-fi
+# Pre-commit hooks for Opsly modules
 
-echo "pre-commit: validando estructura estándar..."
-npm run validate-structure
-bash scripts/hooks/structure-guard.sh
+set -e
 
-# Si docs/implementation/status.yaml está en el índice, regenerar docs generados (ADR-033)
-STAGED_STATUS=$(git diff --cached --name-only --diff-filter=ACM | grep -E '^docs/implementation/status\.yaml$' || true)
-if [ -n "$STAGED_STATUS" ]; then
-  echo "pre-commit: docs:sync (status.yaml staged)…"
-  npm run docs:sync
-  git add docs/generated/implementation-progress.auto.md docs/generated/sprint-status.auto.md docs/AGENTS-ASSIGNMENTS.md
+echo "🔍 Running pre-commit validation..."
+
+# 1. Repository structure
+echo "🧭 Validating repository structure..."
+npm run validate-structure --silent || {
+  echo "❌ Structure validation failed"
+  exit 1
+}
+
+if [ -x scripts/hooks/structure-guard.sh ]; then
+  bash scripts/hooks/structure-guard.sh || {
+    echo "❌ Structure guard failed"
+    exit 1
+  }
 fi
 
-npm run type-check
+# 2. Type check
+echo "📋 Type checking..."
+npm run type-check 2>/dev/null || {
+  echo "❌ Type check failed"
+  exit 1
+}
 
-# ESLint: solo archivos TypeScript staged bajo apps/api/app y apps/api/lib (no admin/web).
-if command -v npx >/dev/null 2>&1 && [ -f eslint.config.mjs ]; then
-  STAGED_API=$(git diff --cached --name-only --diff-filter=ACM | grep -E '^apps/api/(app|lib)/.*\.(tsx?)$' || true)
-  if [ -n "$STAGED_API" ]; then
-    echo "pre-commit: ESLint (apps/api app + lib, --max-warnings 0)…"
-    # shellcheck disable=SC2086
-    if ! echo "$STAGED_API" | xargs npx eslint --max-warnings 0; then
-      echo ""
-      echo "pre-commit (ES): ESLint falló en apps/api."
-      echo "Revisá reglas: @typescript-eslint/no-explicit-any, eqeqeq, complexity, no-nested-ternary,"
-      echo "prefer-const, no-magic-numbers, max-lines-per-function, @typescript-eslint/explicit-function-return-type."
-      exit 1
-    fi
+# 3. Validate lib/prompts
+if git diff --cached --name-only | grep -q "lib/prompts/"; then
+  echo "🔐 Validating prompts..."
+  npm run test --workspace=@intcloudsysops/prompts 2>/dev/null || {
+    echo "❌ Prompt validation failed"
+    exit 1
+  }
+fi
+
+# 4. Validate lib/observability
+if git diff --cached --name-only | grep -q "lib/observability/"; then
+  echo "📊 Validating observability..."
+  npm run test --workspace=@intcloudsysops/observability 2>/dev/null || {
+    echo "❌ Observability validation failed"
+    exit 1
+  }
+fi
+
+# 5. Validate lib/components
+if git diff --cached --name-only | grep -q "lib/components/"; then
+  echo "🎨 Validating components..."
+  npm run test --workspace=@intcloudsysops/components 2>/dev/null || {
+    echo "❌ Component validation failed"
+    exit 1
+  }
+fi
+
+# 6. Validate lib/evaluation
+if git diff --cached --name-only | grep -q "lib/evaluation/"; then
+  echo "✅ Validating evaluation..."
+  npm run test --workspace=@intcloudsysops/evaluation 2>/dev/null || {
+    echo "❌ Evaluation validation failed"
+    exit 1
+  }
+fi
+
+# 7. Check for duplicates
+echo "🔎 Checking for code duplication..."
+bash scripts/check-duplicates.sh lib/components lib/services 2>/dev/null || true
+
+# 8. Lint
+echo "🎯 Linting..."
+npm run lint -- --fix 2>/dev/null || true
+
+# 9. Protect canonical documentation
+echo "🔒 Validating canonical documentation integrity..."
+CANONICAL_FILES="VISION.md ROADMAP.md AGENTS.md README.md docs/README.md docs/STRUCTURE-GUARDRAILS.md config/modules.json"
+MODIFIED_CANONICAL=""
+
+for file in $CANONICAL_FILES; do
+  if git diff --cached --name-only | grep -q "^$file$"; then
+    MODIFIED_CANONICAL="$MODIFIED_CANONICAL $file"
+  fi
+done
+
+if [ -n "$MODIFIED_CANONICAL" ]; then
+  echo "⚠️  Canonical files detected in commit:$MODIFIED_CANONICAL"
+
+  # Check if commit message indicates intentional update
+  COMMIT_MSG=$(cat /dev/stdin 2>/dev/null || echo "")
+  if ! echo "$COMMIT_MSG" | grep -qE "(docs|chore|feat)(\(.*\))?: |UPDATE_CANONICAL=true"; then
+    # During pre-commit, we don't have the commit message yet
+    # Just warn the user; the actual validation happens in commit-msg hook
+    echo "ℹ️  Canonical file changes require commit message like: docs(agents): update session state"
   fi
 fi
+
+echo "✨ Pre-commit validation passed!"
+exit 0

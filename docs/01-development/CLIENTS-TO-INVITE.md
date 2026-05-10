@@ -51,11 +51,11 @@ Ver ejemplo en `docs/INVITATIONS_RUNBOOK.md` (`tenantRef` + `email` + `mode`).
 
 ### LocalRank
 
-- Portal: https://portal.ops.smiletripcare.com
-- n8n: https://n8n-localrank.ops.smiletripcare.com
-- Uptime: https://uptime-localrank.ops.smiletripcare.com
+- Portal: https://portal.op-sly.com
+- n8n: https://n8n-localrank.op-sly.com
+- Uptime: https://uptime-localrank.op-sly.com
 
 ### jkboterolabs
 
-- n8n: https://n8n-jkboterolabs.ops.smiletripcare.com
-- Uptime: https://uptime-jkboterolabs.ops.smiletripcare.com
+- n8n: https://n8n-jkboterolabs.op-sly.com
+- Uptime: https://uptime-jkboterolabs.op-sly.com

@@ -1,14 +1,11 @@
 ---
-status: canon
+status: moved
 owner: product
-last_review: 2026-05-02
+last_review: 2026-05-09
 ---
 
-# VISION
+# Vision Moved
 
-Documento canónico: [`docs/01-development/VISION.md`](01-development/VISION.md).
+The canonical vision lives in [`01-development/VISION.md`](01-development/VISION.md).
 
-Actualización operativa relacionada (2026-04-28):
-
-- La base **SwarmOps / Hive of Bots** quedó integrada en orchestrator.
-- El detalle técnico y de contrato runtime vive en [`docs/design/OAR.md`](design/OAR.md) y estado de sesión en [`AGENTS.md`](../AGENTS.md).
+Do not edit this stub.

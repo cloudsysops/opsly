@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-05-03",
+  "last_updated": "2026-05-10",
   "phase": "fase-2-producto-ia-autonomy-phase3",
   "vps": {
     "ip": "157.245.223.7",
@@ -36,8 +36,12 @@
   },
   "dns": {
     "base": "op-sly.com",
+    "api_subdomain": "api.op-sly.com",
+    "portal": "op-sly.com (Vercel)",
+    "admin": "admin.op-sly.com (Vercel)",
     "ip": "157.245.223.7",
-    "status": "ok"
+    "status": "ok",
+    "architecture": "hybrid-vercel-vps"
   },
   "tenants": [
     {
@@ -70,8 +74,10 @@
     "search_mode": "degraded",
     "cortex_mode": "safe_active",
     "goal_backlog_sync": "enabled_daily",
-    "go_no_go_weekly": "checked_2026-04-28",
-    "closure_status": "all_todos_checked"
+    "go_no_go_weekly": "checked_2026-05-10",
+    "closure_status": "siguiente_fase_plan_repo_complete",
+    "phase1_e2e": "orchestrator_tests_green_sandbox_worker_gated_2026-05-10",
+    "sandbox_worker": "optional_OPSLY_SANDBOX_WORKER_ENABLED"
   },
   "growth_loop": {
     "enabled": true,

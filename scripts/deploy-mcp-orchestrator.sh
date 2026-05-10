@@ -257,7 +257,7 @@ Logs:
 Stop services:
   docker-compose -f infra/docker-compose.mcp.yml down
 
-For documentation, see: docs/IMPLEMENTATION-MCP-AGENTS.md
+For documentation, see: docs/03-agents/IMPLEMENTATION-MCP-AGENTS.md
 
 EOF
 }

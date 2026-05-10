@@ -239,7 +239,7 @@ def build_parser() -> argparse.ArgumentParser:
     sub = parser.add_subparsers(dest="command", required=True)
 
     p_health = sub.add_parser("health", help="Check API health endpoint.")
-    p_health.add_argument("--api-url", default="https://api.ops.smiletripcare.com")
+    p_health.add_argument("--api-url", default="https://api.op-sly.com")
     p_health.add_argument("--json", action="store_true", help="Print raw JSON response.")
     p_health.set_defaults(func=cmd_health)
 

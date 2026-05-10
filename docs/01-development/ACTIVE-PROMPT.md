@@ -20,7 +20,7 @@
 
 # ## CONTEXTO
 
-# - Síntoma: `curl -X POST https://api.ops.smiletripcare.com/api/tenants` → HTTP 202 con UUID pero el tenant no aparece en GET /api/tenants ni en platform.tenants
+# - Síntoma: `curl -X POST https://api.op-sly.com/api/tenants` → HTTP 202 con UUID pero el tenant no aparece en GET /api/tenants ni en platform.tenants
 
 # - Archivo sospechoso: `apps/api/lib/orchestrator.ts` → función `createTenantRecord()`
 
@@ -184,7 +184,7 @@
 
 # ```bash
 
-# curl -s https://api.ops.smiletripcare.com/api/tenants | jq '.[] | {slug, status, plan}'
+# curl -s https://api.op-sly.com/api/tenants | jq '.[] | {slug, status, plan}'
 
 # ```
 
@@ -208,13 +208,13 @@
 
 # ```bash
 
-# curl -sk https://n8n-smiletripcare.ops.smiletripcare.com/healthz | head -c 100
+# curl -sk https://n8n-smiletripcare.op-sly.com/healthz | head -c 100
 
-# curl -sk https://uptime-smiletripcare.ops.smiletripcare.com/ | head -c 100
+# curl -sk https://uptime-smiletripcare.op-sly.com/ | head -c 100
 
-# curl -sk https://n8n-peskids.ops.smiletripcare.com/healthz | head -c 100
+# curl -sk https://n8n-peskids.op-sly.com/healthz | head -c 100
 
-# curl -sk https://uptime-peskids.ops.smiletripcare.com/ | head -c 100
+# curl -sk https://uptime-peskids.op-sly.com/ | head -c 100
 
 # ```
 
@@ -296,7 +296,7 @@
 
 # ```bash
 
-# ssh vps-dragon@100.120.151.91 "cd /opt/opsly && git pull --ff-only && doppler run -c prd -- docker compose -f infra/docker-compose.platform.yml pull app && docker compose -f infra/docker-compose.platform.yml up -d --no-deps --force-recreate app"
+# ssh vps-dragon@100.120.151.91 "cd /opt/opsly && git pull --ff-only && doppler run -c prd -- docker compose --env-file /opt/opsly/.env -f infra/docker-compose.platform.yml pull app && docker compose --env-file /opt/opsly/.env -f infra/docker-compose.platform.yml up -d --no-deps --force-recreate app"
 
 # ```
 
@@ -310,7 +310,7 @@
 
 # ```bash
 
-# curl -s -X POST https://api.ops.smiletripcare.com/api/tenants \
+# curl -s -X POST https://api.op-sly.com/api/tenants \
 
 # -H "Content-Type: application/json" \
 
@@ -326,7 +326,7 @@
 
 # ```bash
 
-# curl -s https://api.ops.smiletripcare.com/api/tenants | jq '.[] | select(.slug == "test-verify-fix")'
+# curl -s https://api.op-sly.com/api/tenants | jq '.[] | select(.slug == "test-verify-fix")'
 
 # ```
 

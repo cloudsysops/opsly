@@ -42,7 +42,7 @@ run chmod 600 "${OPS_ROOT}/runtime/letsencrypt/acme.json"
 
 log_info "[c] Levantar stack completo (traefik, redis, app, admin)"
 run cd "${OPS_ROOT}"
-run docker compose -f "${COMPOSE_FILE}" up -d
+run docker compose --env-file "${ENV_FILE}" -f "${COMPOSE_FILE}" up -d
 
 log_info "[d] Esperando 30s (certificados / arranque)"
 if [[ "${DRY_RUN}" != "true" ]]; then
@@ -64,7 +64,7 @@ fi
 
 if [[ "${health_ok}" -ne 1 ]]; then
   log_error "Health check falló"
-  run docker compose -f "${COMPOSE_FILE}" logs --tail=120 traefik app || true
+  run docker compose --env-file "${ENV_FILE}" -f "${COMPOSE_FILE}" logs --tail=120 traefik app || true
   die "first-run abortado" 1
 fi
 

@@ -1,6 +1,12 @@
 import { randomUUID } from 'node:crypto';
 import { createServer, type IncomingMessage, type Server, type ServerResponse } from 'node:http';
 import { resolveAutonomyPolicy } from './autonomy/policy.js';
+import {
+  getLocalControlMode,
+  listLocalControlModes,
+  parseControlMode,
+  setLocalControlMode,
+} from './control-mode.js';
 import { orchestratorModeLabel, parseOrchestratorRole } from './orchestrator-role.js';
 import { enqueueJob, enqueueLocalAgentJob, orchestratorQueue } from './queue.js';
 import type { OrchestratorJob } from './types.js';
@@ -17,14 +23,49 @@ import {
 import { getTerminalSession, stopTerminalSession } from './workers/terminal-session-store.js';
 import { metricsStore } from './meta/orchestrator-metrics-store.js';
 import { recordOpenClawIntentQueued } from './openclaw/runtime-events.js';
+import { getAgentServiceRegistry, type AgentService } from './lib/agent-service-registry.js';
+import {
+  isLocalAgentKind,
+  jobTypeForLocalAgent,
+  normalizeLocalAgentKind,
+  parsePromptFrontmatter,
+} from './lib/local-worker-utils.js';
 import { ValidationDashboard } from './lib/validation-dashboard.js';
 
 const DEFAULT_PORT = 3011;
 const TENANT_SLUG_REGEX = /^[a-z0-9-]{3,64}$/;
+const MAX_RECENT_LOCAL_JOBS = 25;
+
+interface LocalRecentJob {
+  request_id: string;
+  job_id: string | null;
+  agent: string;
+  job_type: string;
+  tenant_slug: string;
+  control_mode: string;
+  status: 'queued' | 'prepared';
+  submitted_at: string;
+}
+
+const recentLocalJobs: LocalRecentJob[] = [];
+
+function recordRecentLocalJob(job: LocalRecentJob): void {
+  recentLocalJobs.unshift(job);
+  if (recentLocalJobs.length > MAX_RECENT_LOCAL_JOBS) {
+    recentLocalJobs.splice(MAX_RECENT_LOCAL_JOBS);
+  }
+}
 
 function parsePort(): number {
-  const raw = process.env.ORCHESTRATOR_HEALTH_PORT || String(DEFAULT_PORT);
-  const n = Number.parseInt(raw, 10);
+  const raw = process.env.ORCHESTRATOR_HEALTH_PORT;
+  if (raw === undefined || raw === '') {
+    return DEFAULT_PORT;
+  }
+  const trimmed = raw.trim();
+  if (trimmed === '0') {
+    return 0;
+  }
+  const n = Number.parseInt(trimmed, 10);
   return Number.isFinite(n) && n > 0 ? n : DEFAULT_PORT;
 }
 
@@ -876,6 +917,92 @@ async function handleJobById(req: IncomingMessage, res: ServerResponse, pathOnly
   }
 }
 
+function resolveLocalPromptAgentKind(b: Record<string, unknown>, promptForFrontmatter: string): string {
+  const explicit = typeof b.agent === 'string' ? b.agent.trim() : '';
+  if (explicit.length > 0) {
+    return normalizeLocalAgentKind(explicit);
+  }
+  if (promptForFrontmatter.length > 0) {
+    const { metadata } = parsePromptFrontmatter(promptForFrontmatter);
+    const fromFm = metadata.agent;
+    if (typeof fromFm === 'string' && fromFm.trim().length > 0) {
+      return normalizeLocalAgentKind(fromFm);
+    }
+  }
+  const role = typeof b.agent_role === 'string' ? b.agent_role.trim().toLowerCase() : '';
+  if (isLocalAgentKind(role)) {
+    return normalizeLocalAgentKind(role);
+  }
+  return 'cursor';
+}
+
+async function handleLocalControlMode(req: IncomingMessage, res: ServerResponse): Promise<void> {
+  if (!verifyPlatformAdminToken(req)) {
+    res.writeHead(401, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'unauthorized' }));
+    return;
+  }
+
+  let body: unknown;
+  try {
+    body = await readBody(req);
+  } catch {
+    res.writeHead(400, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'Invalid JSON' }));
+    return;
+  }
+
+  const mode =
+    typeof body === 'object' && body !== null
+      ? parseControlMode((body as Record<string, unknown>).mode)
+      : 'opsly_control';
+  setLocalControlMode(mode);
+
+  res.writeHead(200, { 'Content-Type': 'application/json' });
+  res.end(JSON.stringify({ success: true, mode, allowed_modes: listLocalControlModes() }));
+}
+
+async function handleLocalState(req: IncomingMessage, res: ServerResponse): Promise<void> {
+  if (!verifyPlatformAdminToken(req)) {
+    res.writeHead(401, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'unauthorized' }));
+    return;
+  }
+
+  try {
+    const registry = getAgentServiceRegistry();
+    const config = await registry.getConfig();
+    const agents = Object.entries(config.services).map(([name, service]) => {
+      const s = service as AgentService;
+      const legacy = service as unknown as { endpoint?: string };
+      const agentName = normalizeLocalAgentKind(name);
+      return {
+        name: agentName,
+        enabled: s.enabled,
+        url: s.url ?? legacy.endpoint,
+        type: s.type,
+        job_type: jobTypeForLocalAgent(agentName),
+        capabilities: s.capabilities ?? [],
+      };
+    });
+
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(
+      JSON.stringify({
+        success: true,
+        control_mode: getLocalControlMode(),
+        allowed_modes: listLocalControlModes(),
+        agents,
+        jobs_recent: recentLocalJobs,
+        updated_at: new Date().toISOString(),
+      })
+    );
+  } catch (err) {
+    res.writeHead(500, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: String(err) }));
+  }
+}
+
 async function handleLocalPromptSubmit(req: IncomingMessage, res: ServerResponse): Promise<void> {
   if (!verifyPlatformAdminToken(req)) {
     res.writeHead(401, { 'Content-Type': 'application/json' });
@@ -899,50 +1026,121 @@ async function handleLocalPromptSubmit(req: IncomingMessage, res: ServerResponse
   }
 
   const b = body as Record<string, unknown>;
-  const agentRole = (typeof b.agent_role === 'string' ? b.agent_role : 'executor').trim();
+  const promptContentRaw = typeof b.prompt_content === 'string' ? b.prompt_content.trim() : '';
   const promptBody = typeof b.prompt_body === 'string' ? b.prompt_body.trim() : '';
-  const goal = typeof b.goal === 'string' ? b.goal.trim() : '';
-  const maxSteps = typeof b.max_steps === 'number' ? b.max_steps : 10;
-  const context =
-    typeof b.context === 'object' && b.context !== null ? (b.context as Record<string, unknown>) : {};
-  const priority = typeof b.priority === 'number' ? b.priority : 50000;
-  const requestId = typeof b.request_id === 'string' && b.request_id.length > 0 ? b.request_id : randomUUID();
+  const promptForWorker = promptContentRaw.length > 0 ? promptContentRaw : promptBody;
+  const promptForAgentResolve = promptContentRaw.length > 0 ? promptContentRaw : '';
 
-  if (promptBody.length === 0) {
+  if (promptForWorker.length === 0) {
     res.writeHead(400, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ error: 'prompt_body required' }));
+    res.end(JSON.stringify({ error: 'prompt_body or prompt_content required' }));
     return;
   }
 
-  // Route to appropriate local worker based on agent_role
-  // Supported agents: 'cursor', 'claude', 'copilot', 'opencode'
-  const jobName = agentRole === 'claude' ? 'local_claude' : 'local_cursor';
+  const tenantSlugRaw = typeof b.tenant_slug === 'string' ? b.tenant_slug.trim() : '';
+  const tenantSlug = tenantSlugRaw.length > 0 ? tenantSlugRaw : 'local';
+  try {
+    assertTenantSlugOrThrow(tenantSlug);
+  } catch (err) {
+    res.writeHead(400, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: err instanceof Error ? err.message : String(err) }));
+    return;
+  }
 
-  // Payload for local agent execution
-  const payload = {
-    prompt_content: promptBody,
-    agent_role: agentRole,
-    max_steps: maxSteps,
-    goal,
-    context,
-    job_id: requestId,
+  const agentRole = (typeof b.agent_role === 'string' ? b.agent_role : 'executor').trim();
+  const goal = typeof b.goal === 'string' ? b.goal.trim() : '';
+  const maxSteps = typeof b.max_steps === 'number' && Number.isFinite(b.max_steps) ? Math.floor(b.max_steps) : 10;
+  const context =
+    typeof b.context === 'object' && b.context !== null ? (b.context as Record<string, unknown>) : {};
+  const requestId = typeof b.request_id === 'string' && b.request_id.length > 0 ? b.request_id : randomUUID();
+
+  const agentKind = resolveLocalPromptAgentKind(b, promptForAgentResolve);
+  const jobType = jobTypeForLocalAgent(agentKind);
+
+  const job: OrchestratorJob = {
+    type: jobType as OrchestratorJob['type'],
+    payload: {
+      prompt_content: promptForWorker,
+      agent_role: agentRole,
+      max_steps: maxSteps,
+      goal,
+      context,
+      job_id: requestId,
+    },
+    tenant_slug: tenantSlug,
+    initiated_by: 'system',
+    request_id: requestId,
+    metadata: { labels: ['local_prompt'] },
   };
+  const controlMode = getLocalControlMode();
 
   try {
-    const bull = await enqueueLocalAgentJob(jobName, payload, requestId);
-    console.log(`[LocalPromptSubmit] Enqueued ${jobName} job ${bull.id} (${agentRole}) to local-agents queue`);
+    const policyCheck = enrichAutonomyMetadata(req, job);
+    if (!policyCheck.ok) {
+      res.writeHead(policyCheck.status, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(policyCheck.payload));
+      return;
+    }
+
+    if (controlMode === 'ide_fallback') {
+      console.log(
+        `[LocalPromptSubmit] Prepared ${job.type} job ${requestId} (${agentKind}) for manual IDE fallback`
+      );
+      recordRecentLocalJob({
+        request_id: requestId,
+        job_id: null,
+        agent: agentKind,
+        job_type: job.type,
+        tenant_slug: tenantSlug,
+        control_mode: controlMode,
+        status: 'prepared',
+        submitted_at: new Date().toISOString(),
+      });
+      res.writeHead(202, { 'Content-Type': 'application/json' });
+      res.end(
+        JSON.stringify({
+          success: true,
+          ok: true,
+          job_type: job.type,
+          job_id: null,
+          request_id: requestId,
+          control_mode: controlMode,
+          prepared_only: true,
+        })
+      );
+      return;
+    }
+
+    const bull = await enqueueLocalAgentJob(job);
+    const bullJobId = bull.id != null ? String(bull.id) : null;
+    console.log(
+      `[LocalPromptSubmit] Enqueued ${job.type} job ${bull.id} (${agentKind}) to local-agents queue`
+    );
+    recordRecentLocalJob({
+      request_id: requestId,
+      job_id: bullJobId,
+      agent: agentKind,
+      job_type: job.type,
+      tenant_slug: tenantSlug,
+      control_mode: controlMode,
+      status: 'queued',
+      submitted_at: new Date().toISOString(),
+    });
     recordOpenClawIntentQueued({
       requestId,
-      intent: `execute_${jobName}`,
-      tenantSlug: 'opsly',
-      jobId: bull.id ? String(bull.id) : null,
+      intent: `execute_${job.type}`,
+      tenantSlug,
+      jobId: bullJobId,
     });
     res.writeHead(202, { 'Content-Type': 'application/json' });
     res.end(
       JSON.stringify({
+        success: true,
         ok: true,
-        job_id: bull.id != null ? String(bull.id) : null,
+        job_type: job.type,
+        job_id: bullJobId,
         request_id: requestId,
+        control_mode: controlMode,
       })
     );
   } catch (err) {
@@ -1023,9 +1221,10 @@ async function handleValidationExport(req: IncomingMessage, res: ServerResponse)
 
 /** HTTP liveness + internal webhook enqueue endpoint. */
 export function startOrchestratorHealthServer(): Server {
+  setLocalControlMode(parseControlMode(process.env.OPSLY_LOCAL_CONTROL_MODE));
   const port = parsePort();
   const server = createServer(async (req, res) => {
-const url = req.url ?? '/';
+    const url = req.url ?? '/';
     const pathOnly = url.split('?')[0] ?? '/';
     const query = url.includes('?') ? url.slice(url.indexOf('?')) : '';
 
@@ -1157,6 +1356,16 @@ const url = req.url ?? '/';
 
     if (req.method === 'POST' && pathOnly === '/api/local/prompt-submit') {
       await handleLocalPromptSubmit(req, res);
+      return;
+    }
+
+    if (req.method === 'POST' && pathOnly === '/api/local/control-mode') {
+      await handleLocalControlMode(req, res);
+      return;
+    }
+
+    if (req.method === 'GET' && pathOnly === '/api/local/state') {
+      await handleLocalState(req, res);
       return;
     }
 

@@ -60,8 +60,8 @@ Enlaces: `docs/OPENCLAW-ARCHITECTURE.md`, `docs/ORCHESTRATOR.md`, `apps/mcp/READ
 | Servicio     | Status | URL/Notas                                  |
 | ------------ | ------ | ------------------------------------------ |
 | Traefik      | ✅     | Puertos 80/443                             |
-| Admin        | ✅     | admin.ops.smiletripcare.com                |
-| Portal       | ✅     | portal.ops.smiletripcare.com               |
+| Admin        | ✅     | admin.op-sly.com                |
+| Portal       | ✅     | portal.op-sly.com               |
 | MCP          | ✅     | Puerto 3003                                |
 | API          | ⚠️     | Error `[id] !== [ref]` — carpeta duplicada |
 | Orchestrator | ⏳     | Esperando rebuild CI                       |

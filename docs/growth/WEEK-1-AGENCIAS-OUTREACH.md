@@ -86,7 +86,7 @@ doppler run --project ops-intcloudsysops --config prd -- ./scripts/growth-outrea
 
 ```bash
 RESEND_API_KEY=re_xxxxxxxx          # From Doppler prd
-RESEND_FROM_EMAIL=growth@ops.smiletripcare.com  # Sender
+RESEND_FROM_EMAIL=growth@op-sly.com  # Sender
 ```
 
 ## Email Template

@@ -43,4 +43,4 @@ if (!strategy) {
 
 console.log(JSON.stringify(strategy, null, 2));
 console.log(`\n✅ Strategy "${strategyArg}" ready to import to n8n`);
-console.log(`Next: curl -X POST https://n8n-smiletripcare.ops.smiletripcare.com/webhook/import-workflow -d @workflow.json`);
+console.log(`Next: curl -X POST https://n8n-smiletripcare.op-sly.com/webhook/import-workflow -d @workflow.json`);

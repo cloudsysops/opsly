@@ -53,7 +53,7 @@ n8n import:workflow --input=.n8n/1-workflows/discord-to-github.json
 
 Los webhooks n8n se configuran automáticamente en los tenants vía `scripts/onboard-tenant.sh`.
 
-**URL base:** `https://n8n-<slug>.ops.smiletripcare.com`
+**URL base:** `https://n8n-<slug>.op-sly.com`
 
 ### 4. Workflows Disponibles
 
@@ -105,10 +105,10 @@ Actualización automática vía `.githooks/post-commit` + `scripts/sync-n8n-cont
 
 ```bash
 # Ver workflows en n8n
-curl -s https://n8n-smiletripcare.ops.smiletripcare.com/api/v1/workflows
+curl -s https://n8n-smiletripcare.op-sly.com/api/v1/workflows
 
 # Ejecutar workflow manualmente
-curl -X POST https://n8n-smiletripcare.ops.smiletripcare.com/webhook/opsly-discord-task \
+curl -X POST https://n8n-smiletripcare.op-sly.com/webhook/opsly-discord-task \
   -H "Content-Type: application/json" \
   -d '{"content": "# Test desde Claude", "author": {"username": "Claude"}}'
 
@@ -142,10 +142,10 @@ docker restart tenant_<slug>_n8n_1
 ### Webhook devuelve 404
 ```bash
 # Verificar que el workflow está activo en n8n
-curl -s https://n8n-<slug>.ops.smiletripcare.com/api/v1/workflows | jq '.data[] | select(.name=="...") | .active'
+curl -s https://n8n-<slug>.op-sly.com/api/v1/workflows | jq '.data[] | select(.name=="...") | .active'
 
 # Activar si está inactivo
-curl -X POST https://n8n-<slug>.ops.smiletripcare.com/api/v1/workflows/<id>/activate
+curl -X POST https://n8n-<slug>.op-sly.com/api/v1/workflows/<id>/activate
 ```
 
 ### n8n CLI no encontrado

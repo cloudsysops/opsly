@@ -21,7 +21,7 @@ last_review: 2026-04-24
 ## Estado respecto a VISION.md
 
 - **Fase 1 (Validación):** completada según `VISION.md` (health, tenant real, stack base).
-- **Fase 2 (Producto):** en progreso; **segundo cliente real** (LegalVial via LocalRank) y endurecimiento staging/prod.
+- **Fase 2 (Producto):** en progreso; **segundo cliente real** (LegalVial via LocalRank) y endurecimiento staging/prod. Runbooks: [`docs/runbooks/LEGALVIAL-LOCALRANK-MODEL.md`](../runbooks/LEGALVIAL-LOCALRANK-MODEL.md), [`SUBCLIENT-ONBOARDING-TEMPLATE.md`](../runbooks/SUBCLIENT-ONBOARDING-TEMPLATE.md).
 - **Fase 4 (OpenClaw / IA):** incrementos completados (MCP, orchestrator, LLM Gateway, planner remoto, feedback loop).
 - **Consolidación arquitectónica:** context-builder-v2 archivado en `.archived/`.
 - **Multi-región / multi-cloud como producto:** solo en horizonte **Fase 6+**; no es sprint inmediato salvo ADR.
@@ -64,9 +64,9 @@ Ventana sugerida: **2026-04-14 → 2026-05-25** (ajustar según capacidad).
 | ------------------------------------ | ----------------------------------------------------------- |
 | Cliente orchestrator/context-builder | `docs/ORCHESTRATOR.md`, `apps/context-builder`              |
 | Índice conocimiento repo             | `scripts/index-knowledge.sh`, `config/knowledge-index.json` |
-| Smoke prompt local → cola `local-agents` | Runbook en [`docs/LOCAL-AGENT-EXECUTION.md`](../LOCAL-AGENT-EXECUTION.md) (E2E), `npm run opsly:local-prompt-watcher`, tests `health-server-local-prompt-queue.test.ts` |
+| Smoke prompt local → orchestrator → worker local | Runbook en [`docs/03-agents/LOCAL-AGENT-EXECUTION.md`](../LOCAL-AGENT-EXECUTION.md); CLI `npm run opsly:agent-cli`; E2E `./scripts/test-local-agent-e2e.sh`; tests `local-worker-utils.test.ts`, `local-prompt-submit-queue.test.ts`, `health-server-local-control.test.ts` |
 
-**Checkpoint:** una prueba E2E documentada (script o test) que no requiera inventar API inexistente.
+**Checkpoint:** una prueba E2E documentada (script o test) que no requiera inventar API inexistente. Estado 2026-05-09: smoke local verificado con Redis + orchestrator compilado + mock Cursor (`./scripts/test-local-agent-e2e.sh`), respuesta en `.cursor/responses/`.
 
 ### Semana 4 — Cost transparency (admin)
 

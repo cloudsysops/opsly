@@ -46,7 +46,7 @@ jobs:
             if [ -f "1-agent-teams/security/$bot/manifest.json" ]; then
               echo "✓ Validating $bot..."
               # Basic JSON validation
-              cat "1-agent-teams/security/$bot/manifest.json" | jq . > /dev/null || {
+              jq . "1-agent-teams/security/$bot/manifest.json" > /dev/null || {
                 echo "❌ Invalid JSON in $bot manifest"
                 exit 1
               }

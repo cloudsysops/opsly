@@ -114,7 +114,7 @@ ssh vps-dragon@100.120.151.91 "df -h / && docker system df"
    ```bash
    ssh vps-dragon@100.120.151.91 "cd /opt/opsly && git pull && docker compose -f infra/docker-compose.platform.yml up -d --pull always"
    ```
-4. Verificar health: `curl -sf https://api.ops.smiletripcare.com/api/health`
+4. Verificar health: `curl -sf https://api.op-sly.com/api/health`
 5. Notificar Discord: `./scripts/notify-discord.sh "Deploy" "Servicio X actualizado" "success"`
 
 ## Reglas

@@ -1,8 +1,9 @@
 # Agent orchestration — índice maestro (Opsly)
 
 **Estado:** documentación canónica de **rutas de implementación** (qué construir primero y dónde vive en el monorepo).  
-**Última actualización:** 2026-04-30  
-**Relación:** complementa [`AGENTS.md`](../../AGENTS.md) y [`VISION.md`](../../VISION.md); no sustituye ADRs ni el checklist de seguridad.
+**Última actualización:** 2026-05-06  
+**Relación:** complementa [`AGENTS.md`](../../AGENTS.md) y [`VISION.md`](../../VISION.md); no sustituye ADRs ni el checklist de seguridad.  
+**Nota de rutas:** los documentos `docs/ORCHESTRATOR.md` / `docs/OPENCLAW-ARCHITECTURE.md` del plan histórico viven hoy en [`docs/00-architecture/ORCHESTRATOR.md`](../00-architecture/ORCHESTRATOR.md) y [`docs/00-architecture/OPENCLAW-ARCHITECTURE.md`](../00-architecture/OPENCLAW-ARCHITECTURE.md).
 
 ---
 
@@ -39,8 +40,18 @@
 | OpenClaw (políticas, contratos, eventos) | [`apps/orchestrator/src/openclaw/`](../../apps/orchestrator/src/openclaw/) |
 | MCP (tools) | [`apps/mcp`](../../apps/mcp) |
 | LLM (routing, costes) | [`apps/llm-gateway`](../../apps/llm-gateway) — [`docs/LLM-GATEWAY.md`](../LLM-GATEWAY.md) |
+| Autómatas n8n (por tenant) | [`infra/templates/`](../../infra/templates/), [`.n8n/`](../../.n8n/) — guías [`N8N-SETUP`](../01-development/N8N-SETUP.md), [`N8N-IMPORT-GUIDE`](../01-development/N8N-IMPORT-GUIDE.md). |
 | Fallover / cola de reparación (diseño) | [`docs/orchestrator/REPAIR-QUEUE.md`](../orchestrator/REPAIR-QUEUE.md) |
 | Seguridad operativa | [`docs/04-infrastructure/SECURITY_CHECKLIST.md`](../04-infrastructure/SECURITY_CHECKLIST.md) |
+
+## Referencias canónicas (lectura cruzada)
+
+- [`docs/00-architecture/OPENCLAW-ARCHITECTURE.md`](../00-architecture/OPENCLAW-ARCHITECTURE.md) — diagrama y flujo OpenClaw (histórico: enlaces `docs/OPENCLAW-ARCHITECTURE.md` redirigen aquí).
+- [`docs/00-architecture/ORCHESTRATOR.md`](../00-architecture/ORCHESTRATOR.md) — colas, workers, observabilidad (histórico: `docs/ORCHESTRATOR.md`).
+- [`AGENTS.md`](../../AGENTS.md) — estado operativo y próximo paso por sesión (**elegir ruta A, B o C** como foco).
+- [`VISION.md`](../../VISION.md) — norte de producto y fases.
+- [`docs/04-infrastructure/SECURITY_CHECKLIST.md`](../04-infrastructure/SECURITY_CHECKLIST.md) — checklist de seguridad (incl. abuso / rate limit).
+- [`docs/orchestrator/REPAIR-QUEUE.md`](../orchestrator/REPAIR-QUEUE.md) — diseño de cola de reparación / fallover.
 
 **No crear** un segundo plano tipo `apps/agent-server` (Express paralelo): extender orchestrator + API según [`AGENTS.md`](../../AGENTS.md) (Fase 4).
 

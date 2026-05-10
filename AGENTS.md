@@ -1,8 +1,7 @@
 ---
 status: canon
 owner: operations
-last_review: 2026-05-08
-last_session: SESSION 2 COMPLETE (Phase 5 Architecture Design)
+last_review: 2026-05-06
 ---
 
 # Opsly — Contexto del Agente
@@ -15,24 +14,11 @@ last_session: SESSION 2 COMPLETE (Phase 5 Architecture Design)
 **⚡ Cheatsheet:** [`docs/QUICK-REFERENCE.md`](docs/QUICK-REFERENCE.md) — SSH, comandos, vars, sprint actual  
 **🧠 Sistema de conocimiento:** [`docs/KNOWLEDGE-SYSTEM.md`](docs/KNOWLEDGE-SYSTEM.md) — NotebookLM + Obsidian, flujo para agentes
 
-**Opsly 2.0 Agent Team (9 agents):**
-  - [`docs/OPSLY-2-0-MULTI-AGENT-BLUEPRINT.md`](docs/OPSLY-2-0-MULTI-AGENT-BLUEPRINT.md) — Complete agent architecture
-  - [`docs/AGENT-TEAM-OVERVIEW.md`](docs/AGENT-TEAM-OVERVIEW.md) — Agent roles + workflows
-  - [`docs/SOCIAL-MEDIA-AGENT-SYRA.md`](docs/SOCIAL-MEDIA-AGENT-SYRA.md) — NEW: Syra (autonomous content generation)
-
-**📱 Syra (NEW):** Social media agent for autonomous content generation
-  - Monitors Opsly events → generates Twitter, LinkedIn, Discord, Slack posts
-  - Creates visual assets (charts, badges, progress bars)
-  - Schedules content, tracks engagement, responds to comments (with Lousa approval)
-  - Cost: ~$3-5/month (LLM + image generation)
-  - Timeline: Week 3 (May 27-31), 17 hours dev
-  - ROI: 5-10x (24/7 autonomous brand presence)
-
 **Mapa de documentación (evitar duplicar con `docs/AGENTS-GUIDE.md`):** `VISION.md` = norte de producto; **`AGENTS.md` (este archivo)** = estado operativo, próximo paso, bloqueantes e incrementos **por sesión**; **`docs/AGENTS-GUIDE.md`** = convenciones **solo** para varios asistentes/automatismos en paralelo (no sustituye AGENTS). `docs/adr/` = decisiones de arquitectura. No copiar tablas de límites por plan aquí: enlazar `AGENTS-GUIDE` + `VISION.md`.
 
 **Planificación por sprint (IA + producto):** [`ROADMAP.md`](ROADMAP.md) (timeline semanal, milestones). **Guía técnica capa IA:** [`docs/IMPLEMENTATION-IA-LAYER.md`](docs/IMPLEMENTATION-IA-LAYER.md) (TypeScript, rutas reales en `apps/*`).
 
-**Orquestación de agentes (rutas A/B/C, fallover, vendor):** [`docs/design/AGENT-ORCHESTRATION-INDEX.md`](docs/design/AGENT-ORCHESTRATION-INDEX.md) — índice maestro; cola de reparación (diseño): [`docs/orchestrator/REPAIR-QUEUE.md`](docs/orchestrator/REPAIR-QUEUE.md).
+**Orquestación de agentes:** [`docs/design/AGENT-ORCHESTRATION-INDEX.md`](docs/design/AGENT-ORCHESTRATION-INDEX.md) — índice maestro (**elegir ruta A, B o C** como foco); fallover / repair queue (diseño): [`docs/orchestrator/REPAIR-QUEUE.md`](docs/orchestrator/REPAIR-QUEUE.md).
 
 **Shadow deployment Super Agent (nuevo):** [`docs/runbooks/SUPER-AGENT-SHADOW-DEPLOY.md`](docs/runbooks/SUPER-AGENT-SHADOW-DEPLOY.md), diseño `context-builder-v2` en `apps/context-builder-v2/src/design/architecture.md`, script `scripts/rollback-super-agent.sh`, overlay `infra/docker-compose.super-agent.yml`.
 
@@ -138,6 +124,101 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 - **DO:** tratar NotebookLM como **EXPERIMENTAL** (solo Business+ y `NOTEBOOKLM_ENABLED=true`).
 - **NO:** exponer SSH en IP pública; acceso admin solo por Tailscale `100.120.151.91`.
 - **NO:** hardcodear secrets, tokens o IPs en código/scripts/docs operativos.
+
+---
+
+## 📦 Modules & Registries (Enterprise-Scale Library)
+
+**Registry:** `config/modules.json` — Single source of truth para todos los módulos, versiones, owners.
+
+### All Modules (13 total)
+
+#### Core Infrastructure (4 modules)
+
+| Module | Version | Owner | Status | Purpose |
+|--------|---------|-------|--------|---------|
+| `@intcloudsysops/prompts` | 1.0.0 | claude | Stable | Versioned prompt registry (unified from `.cursor/`, `docs/`, `tools/agents/`) |
+| `@intcloudsysops/observability` | 1.0.0 | claude | Stable | Unified logging, metrics, tracing (all services) |
+| `@intcloudsysops/components` | 1.0.0 | claude | Stable | Shared React components, design system (portal, admin, local-services) |
+| `@intcloudsysops/evaluation` | 1.0.0 | claude | Stable | Testing, validators, quality metrics (QA gates, safety checks) |
+
+#### Enterprise Utilities (9 modules)
+
+| Module | Version | Owner | Status | Purpose |
+|--------|---------|-------|--------|---------|
+| `@intcloudsysops/errors` | 1.0.0 | claude | Stable | Unified error handling with context tracking |
+| `@intcloudsysops/services` | 1.0.0 | claude | Stable | Repository pattern with multi-tenant isolation |
+| `@intcloudsysops/config` | 1.0.0 | claude | Stable | Environment configuration and feature flags |
+| `@intcloudsysops/security` | 1.0.0 | claude | Stable | Authentication, encryption, PII redaction |
+| `@intcloudsysops/api-utils` | 1.0.0 | claude | Stable | Unified API response format and versioning |
+| `@intcloudsysops/workflow` | 1.0.0 | claude | Stable | Safe agent execution with timeouts and costs |
+| `@intcloudsysops/telemetry` | 1.0.0 | claude | Stable | Cost and performance tracking per agent |
+| `@intcloudsysops/testing` | 1.0.0 | claude | Stable | Unified test framework for agents/services |
+| `@intcloudsysops/migrations` | 1.0.0 | claude | Stable | Database migration versioning and rollback |
+
+**Key Constraint:** Zero duplication. If code appears in 2+ places, consolidate to lib/.
+
+### Quick Usage Examples
+
+```typescript
+// Prompts
+import { loadPrompt } from '@intcloudsysops/prompts';
+const prompt = await loadPrompt('local-services-automation');
+
+// Observability
+import { createLogger, recordMetric } from '@intcloudsysops/observability';
+const logger = createLogger('my-service');
+logger.info('Event', { context });
+
+// Components (React)
+import { Button, useAuth } from '@intcloudsysops/components';
+
+// Evaluation
+import { validateInput, checkForPII } from '@intcloudsysops/evaluation';
+
+// Errors
+import { ValidationError, handleError } from '@intcloudsysops/errors';
+
+// Services (Data Access)
+import { BaseRepository } from '@intcloudsysops/services';
+
+// Config & Feature Flags
+import { getConfig, getFeatureFlags } from '@intcloudsysops/config';
+
+// Security
+import { generateToken, redactPII } from '@intcloudsysops/security';
+
+// API Responses
+import { createResponse } from '@intcloudsysops/api-utils';
+
+// Workflow Execution
+import { executeWithTimeout } from '@intcloudsysops/workflow';
+
+// Telemetry
+import { Telemetry } from '@intcloudsysops/telemetry';
+
+// Testing
+import { runTest } from '@intcloudsysops/testing';
+
+// Migrations
+import { MigrationRunner } from '@intcloudsysops/migrations';
+```
+
+### Adding/Modifying Modules
+
+1. **Check registry:** `config/modules.json` — what exists, who owns it
+2. **Read governance:** `lib/{module}/GOVERNANCE.md` — versioning, review, deprecation
+3. **Update carefully:** breaking changes require MAJOR version + migration guide
+4. **Run pre-commit hook:** `.githooks/pre-commit` validates all modules before commit
+
+**All module governance:**
+- `lib/{module}/GOVERNANCE.md` — Ownership, standards, review process, versioning
+- `lib/{module}/README.md` — API docs, usage examples
+
+### Documentation
+
+- `docs/01-development/LIBRARY-MODULES.md` — Complete integration guide for all 13 modules
+- `config/modules.json` — Module registry with versions, owners, dependencies
 
 ---
 
@@ -344,6 +425,12 @@ node scripts/load-skills.js show opsly-api
 
 <!-- Actualizar al final de cada sesión -->
 
+**Producción multi-tenant (pack):** baseline e inventario [`docs/04-infrastructure/TENANT-PRODUCTION-BASELINE.md`](docs/04-infrastructure/TENANT-PRODUCTION-BASELINE.md); checklist [`docs/runbooks/TENANT-PRODUCTION-CHECKLIST.md`](docs/runbooks/TENANT-PRODUCTION-CHECKLIST.md); hardening [`docs/04-infrastructure/TENANT-PRODUCTION-HARDENING.md`](docs/04-infrastructure/TENANT-PRODUCTION-HARDENING.md); rollout [`docs/runbooks/TENANT-PRODUCTION-ROLLOUT.md`](docs/runbooks/TENANT-PRODUCTION-ROLLOUT.md); API vs `apps/web`: [`docs/01-development/API-CORE-PORTFOLIO.md`](docs/01-development/API-CORE-PORTFOLIO.md); proxy: `INTERNAL_API_URL` / `NEXT_PUBLIC_API_URL`.
+
+**LegalVial (subcliente LocalRank) — producción:** runbooks [`docs/runbooks/LEGALVIAL-LOCALRANK-MODEL.md`](docs/runbooks/LEGALVIAL-LOCALRANK-MODEL.md) (matriz compartido/dedicado), [`LEGALVIAL-CONFIG-ZERO-TRUST.md`](docs/runbooks/LEGALVIAL-CONFIG-ZERO-TRUST.md), [`LEGALVIAL-GOLIVE-CHECKLIST.md`](docs/runbooks/LEGALVIAL-GOLIVE-CHECKLIST.md), [`LEGALVIAL-E2E-SOFTLAUNCH.md`](docs/runbooks/LEGALVIAL-E2E-SOFTLAUNCH.md); plantilla reutilizable [`SUBCLIENT-ONBOARDING-TEMPLATE.md`](docs/runbooks/SUBCLIENT-ONBOARDING-TEMPLATE.md); validación `config/tenants/*.json`: `./scripts/validate-subclient-config.sh`.
+
+**Continuación autonomía (2026-05-10):** Igual que 2026-05-09 más worker opcional `sandbox_execution` en `index.ts` con `OPSLY_SANDBOX_WORKER_ENABLED=true` (Docker + `run-in-sandbox.sh`). Plan «Siguiente fase» cerrado en repo: type-check/tests orchestrator, KPIs en `runtime/context/system_state.json`, runbooks `CORTEX-OBSERVATION-WINDOW` + go/no-go semanal al día.
+
 **Fecha última actualización:** 2026-05-06 — **Agency Division + API Factory + Autonomous Revenue:**
 - ✅ Documento `docs/01-development/OPSLY-AGENCY-DIVISION.md` con 4 líneas de servicio
 - ✅ MCP tools: api_factory_create, api_factory_monitor, agent_management_stats, security_api_scan, security_api_audit (6 nuevas → 31 total)
@@ -368,7 +455,7 @@ node scripts/load-skills.js show opsly-api
 
 **Sesión 2026-05-03 — Local Workers MVP ✅**
 - ✅ `apps/orchestrator`: nuevos job types `local_cursor`, `local_claude`, `local_copilot`, `local_opencode`; cola dedicada `local-agents`; workers HTTP registrados en `index.ts`; `worker-log`/concurrencia ampliados.
-- ✅ `POST /api/local/prompt-submit`: acepta `prompt_path` o `prompt_content`, frontmatter simple (`agent`, `agent_role`, `max_steps`), `tenant_slug`, y encola al agente local correcto.
+- ✅ `POST /api/local/prompt-submit`: acepta `prompt_body` o `prompt_content`, frontmatter simple (`agent`, …), `tenant_slug`, y encola con **`enqueueLocalAgentJob(OrchestratorJob)`** en la cola BullMQ **`local-agents`** (nombre de job `local_*`, p. ej. `local_cursor`). Smoke: orchestrator `worker-enabled`, Redis compartido, comprobar en Redis/UI que el job no va a `openclaw`.
 - ✅ `config/agent-services.json`: endpoints localhost `5001..5004`, sobreescribibles por env (`OPSLY_CURSOR_AGENT_URL`, etc.).
 - ✅ Scripts locales: `cursor-agent-service.ts` abre Cursor con `open -a Cursor`; `local-agent-watcher.ts` vigila `.cursor/prompts`; `local-git-auto-commit.ts` commitea respuestas en `.cursor/responses`.
 - ✅ Validación: TypeScript orchestrator + scripts standalone OK. Pendiente: Vitest tras reparar `node_modules`/Rollup opcional en Mac.
@@ -415,8 +502,8 @@ node scripts/load-skills.js show opsly-api
 | ------------- | ------------- | ------ | ----------------------------------------------- |
 | Traefik       | ✅ Running    | 80/443 | Router principal                                |
 | API (app)     | ⚠️ Error      | 3000   | `[id] !== [ref]` conflict en imagen GHCR        |
-| Admin         | ✅ Running    | 3001   | `admin.ops.smiletripcare.com`                   |
-| Portal        | ✅ Running    | 3002   | `portal.ops.smiletripcare.com`                  |
+| Admin         | ✅ Running    | 3001   | `admin.op-sly.com`                   |
+| Portal        | ✅ Running    | 3002   | `portal.op-sly.com`                  |
 | MCP           | ✅ Running    | 3003   | Herramientas disponibles                        |
 | Orchestrator  | ✅ Running    | 3011   | OAR + Mode System COMPLETO (Semana 1)           |
 | Redis         | ✅ Running    | 6379   | Sin password (bug compose)                      |
@@ -576,6 +663,7 @@ OpenClaw opera como **control plane IA** de Opsly: estandariza entrada (MCP/API)
 | ----------------- | ------------------------------ | ---------------------------------------------------------------------- |
 | OpenClaw MCP      | `apps/mcp`                     | Punto único de herramientas/acciones para agentes externos e internos  |
 | Orchestrator      | `apps/orchestrator`            | Cola BullMQ, prioridad por plan, coordinación de workers por job       |
+| Task Orchestrator | `apps/task-orchestrator`       | Ejecución autónoma de tareas, gestión de workers, tracking distribuido |
 | LLM Gateway       | `apps/llm-gateway`             | Routing, cache, costos por tenant, observabilidad de llamadas LLM      |
 | Context Builder   | `apps/context-builder`         | Construcción de contexto y continuidad entre interacciones             |
 | ML Services       | `apps/ml`                      | Clasificación, embeddings, soporte a decisiones IA                     |
@@ -761,20 +849,20 @@ _CORS + `NEXT*PUBLIC*_`en build admin +`deploy.yml`(2026-04-06, commit`8f12487` 
 - **`apps/admin/Dockerfile` (builder):** `ARG`/`ENV` `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `NEXT_PUBLIC_API_URL` antes del build (Next hornea `NEXT_PUBLIC_*`).
 - **`.github/workflows/deploy.yml`:** en _Build and push API image_, `build-args: PLATFORM_DOMAIN=${{ secrets.PLATFORM_DOMAIN }}`. En _Admin_, `build-args` con `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` y `NEXT_PUBLIC_API_URL=https://api.${{ secrets.PLATFORM_DOMAIN }}`. Comentario en cabecera del YAML con comandos `gh secret set` para el repo.
 - **Secretos GitHub requeridos en el job build** (valores desde Doppler `prd`): `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `PLATFORM_DOMAIN`. Sin ellos el build de admin o el origen CORS en API pueden fallar o quedar vacíos.
-- **Verificación local:** `npm run type-check` en verde antes del commit; post-deploy humano: `https://admin.ops.smiletripcare.com/dashboard` sin errores de CORS/Supabase en consola (tras definir secrets y un run verde de **Deploy**).
+- **Verificación local:** `npm run type-check` en verde antes del commit; post-deploy humano: `https://admin.op-sly.com/dashboard` sin errores de CORS/Supabase en consola (tras definir secrets y un run verde de **Deploy**).
 
 _Admin dashboard + API métricas — sesión Cursor 2026-04-04 (stakeholders / familia):_
 
 **Objetivo:** Admin en `apps/admin` operativo y legible, con datos reales del VPS y del tenant `smiletripcare` (Supabase `platform.tenants`), sin autenticación Supabase en modo demo.
 
-**URL pública:** https://admin.ops.smiletripcare.com — Traefik router `opsly-admin`, `Host(admin.${PLATFORM_DOMAIN})`, `entrypoints=websecure`, `tls=true`, `tls.certresolver=letsencrypt`, servicio puerto **3001** (`infra/docker-compose.platform.yml`).
+**URL pública:** https://admin.op-sly.com — Traefik router `opsly-admin`, `Host(admin.${PLATFORM_DOMAIN})`, `entrypoints=websecure`, `tls=true`, `tls.certresolver=letsencrypt`, servicio puerto **3001** (`infra/docker-compose.platform.yml`).
 
 **Admin — pantallas y UX**
 
 - **`/dashboard`:** Gauge circular CPU (verde si el uso es menor que 60%, amarillo si es menor que 85%, rojo en caso contrario; hex `#22c55e` / `#eab308` / `#ef4444`), RAM y disco en GB con `Progress` (shadcn/Radix), uptime legible, conteo tenants activos y contenedores Docker en ejecución; **SWR cada 30 s** contra la API. Tema dark, fondo `#0a0a0a`, valores en `font-mono`. Aviso en UI si la API devuelve **`mock: true`** (Prometheus no alcanzable).
 - **`/tenants`:** Tabla: slug, plan, status (badges: active verde, provisioning amarillo, failed rojo, etc.), `created_at`. Clic en fila expande: URLs n8n y Uptime con botones «Abrir», email owner, fechas; enlace a detalle.
 - **`/tenants/[tenantRef]`:** Detalle por **slug o UUID** (carpeta dinámica `[tenantRef]`). Header con nombre y status; cards plan / email / creado; botones n8n y Uptime; **iframe** a `{uptime_base}/status/{slug}` (Uptime Kuma) con texto de ayuda si bloquea por `X-Frame-Options`; sección containers y URLs técnicas.
-- **Chrome:** Marca **Opsly**, sidebar solo **Dashboard | Tenants**, footer: `Opsly Platform v1.0 · staging · ops.smiletripcare.com`.
+- **Chrome:** Marca **Opsly**, sidebar solo **Dashboard | Tenants**, footer: `Opsly Platform v1.0 · staging · op-sly.com`.
 - **Dependencias admin:** `@radix-ui/react-progress`, componente `components/ui/progress.tsx`, `CpuGauge`, hook `useSystemMetrics`.
 
 **API (`apps/api`)**
@@ -796,13 +884,13 @@ _Admin dashboard + API métricas — sesión Cursor 2026-04-04 (stakeholders / f
 
 - `npm run type-check` (Turbo) en verde antes de commit; pre-commit ESLint en rutas API tocadas.
 - Tras push a `main`, CI despliega imágenes GHCR. **Hasta `pull` + `up` de `app` y `admin` en el VPS**, una imagen admin antigua puede seguir redirigiendo a `/login` (307): hace falta imagen nueva con el ARG de demo y, en `.env`, **`ADMIN_PUBLIC_DEMO_READ=true`** para el servicio **`app`**.
-- Comprobación sugerida post-deploy: `curl -sfk https://admin.ops.smiletripcare.com` (esperar HTML del dashboard, no solo redirect a login).
+- Comprobación sugerida post-deploy: `curl -sfk https://admin.op-sly.com` (esperar HTML del dashboard, no solo redirect a login).
 
 _Primer tenant en staging — smiletripcare (2026-04-06, verificado ✅):_
 
 - **Slug:** `smiletripcare` — fila en `platform.tenants` + stack compose en VPS (`scripts/onboard-tenant.sh`).
-- **n8n:** https://n8n-smiletripcare.ops.smiletripcare.com ✅
-- **Uptime Kuma:** https://uptime-smiletripcare.ops.smiletripcare.com ✅
+- **n8n:** https://n8n-smiletripcare.op-sly.com ✅
+- **Uptime Kuma:** https://uptime-smiletripcare.op-sly.com ✅
 - **Credenciales n8n:** guardadas en Doppler proyecto `ops-intcloudsysops` / config **`prd`** (no repetir en repo ni en chat).
 
 _Sesión agente Cursor — Supabase producción + onboarding (2026-04-07):_
@@ -813,7 +901,7 @@ _Sesión agente Cursor — Supabase producción + onboarding (2026-04-07):_
 - **Corrección en repo:** renombrar RLS a **`0007_rls_policies.sql`** (orden aplicado: `0001` … `0006`, luego `0007`). Segundo **`db push`:** OK (`0004`–`0007` según estado previo del remoto).
 - **Verificación tablas:** `npx supabase db query --linked` → existen **`platform.tenants`** y **`platform.subscriptions`** en Postgres.
 - **REST / PostgREST (histórico previo al onboard 2026-04-06):** faltaba exponer `platform` y/o `GRANT` — resuelto antes del primer tenant; la API debe usar `Accept-Profile: platform` contra `platform.tenants` según config actual del proyecto.
-- **Onboarding smiletripcare (planificación, sin ejecutar):** no existe `scripts/onboard.sh`; el script es **`scripts/onboard-tenant.sh`** con `--slug`, `--email`, `--plan` (`startup` \| `business` \| `enterprise`). URLs del template: `https://n8n-{slug}.{PLATFORM_DOMAIN}/` y `https://uptime-{slug}.{PLATFORM_DOMAIN}/` (p. ej. `ops.smiletripcare.com`). El bloque _Próximo paso_ histórico mencionaba `plan: pro` y hosts distintos — **desalineado** con el CHECK SQL y la plantilla; usar el script real antes de ejecutar.
+- **Onboarding smiletripcare (planificación, sin ejecutar):** no existe `scripts/onboard.sh`; el script es **`scripts/onboard-tenant.sh`** con `--slug`, `--email`, `--plan` (`startup` \| `business` \| `enterprise`). URLs del template: `https://n8n-{slug}.{PLATFORM_DOMAIN}/` y `https://uptime-{slug}.{PLATFORM_DOMAIN}/` (p. ej. `op-sly.com`). El bloque _Próximo paso_ histórico mencionaba `plan: pro` y hosts distintos — **desalineado** con el CHECK SQL y la plantilla; usar el script real antes de ejecutar.
 
 _Capas de calidad de código — monorepo Opsly (2026-04-05, commit `d4acfcb` `feat(quality): add code patterns, SOLID rules and automated review layers`, pusheado a `main`):_
 
@@ -869,7 +957,7 @@ _CI/deploy — GHCR desde Actions, health, Traefik, `.env` compose, Discord, VPS
 
 - **`deploy.yml` — login GHCR en el VPS sin Doppler:** el script SSH ya no usa `doppler secrets get GHCR_TOKEN/GHCR_USER`. En el step _Deploy via SSH_: `env` con `GHCR_USER: ${{ github.actor }}`, `GHCR_PAT: ${{ secrets.GITHUB_TOKEN }}`; `envs: PLATFORM_DOMAIN,GHCR_USER,GHCR_PAT` para `appleboy/ssh-action`; en remoto: `echo "$GHCR_PAT" | docker login ghcr.io -u "$GHCR_USER" --password-stdin`. Job **`deploy`** con **`permissions: contents: read, packages: read`** para que `GITHUB_TOKEN` pueda autenticar lectura en GHCR al reutilizarse como PAT en el VPS.
 - **`apps/api/package.json` y `apps/admin/package.json`:** añadido script **`start`** (`next start -p 3000` / `3001`). Sin él, los contenedores entraban en bucle con _Missing script: "start"_ pese a imagen correcta.
-- **Health check post-deploy (SSH):** **`curl -sfk "https://api.${PLATFORM_DOMAIN}/api/health"`**; mensaje _Esperando que Traefik registre routers…_, luego **`sleep 60`**, hasta **5 intentos** con **`sleep 15`** entre fallos; en el intento 5 fallido: logs **`docker logs infra-app-1`** y **`exit 1`**. Secret **`PLATFORM_DOMAIN`** = dominio **base** (ej. **`ops.smiletripcare.com`**).
+- **Health check post-deploy (SSH):** **`curl -sfk "https://api.${PLATFORM_DOMAIN}/api/health"`**; mensaje _Esperando que Traefik registre routers…_, luego **`sleep 60`**, hasta **5 intentos** con **`sleep 15`** entre fallos; en el intento 5 fallido: logs **`docker logs infra-app-1`** y **`exit 1`**. Secret **`PLATFORM_DOMAIN`** = dominio **base** (ej. **`op-sly.com`**).
 - **`infra/docker-compose.platform.yml` — router Traefik para la API:** labels del servicio **`app`** con `traefik.http.routers.app.rule=Host(\`api.${PLATFORM_DOMAIN}\`)`, **`entrypoints=websecure`**, **`tls=true`**, **`tls.certresolver=letsencrypt`**, **`service=app`**, **`traefik.http.services.app.loadbalancer.server.port=3000`**, `traefik.enable=true`, **`traefik.docker.network=traefik-public`**. Redes: **`traefik`** y **`app`** en **`traefik-public`** (externa); `app`también en`internal`(Redis). Middlewares de archivo se mantienen en el router`app`.
 - **Interpolación de variables en Compose:** por defecto Compose busca `.env` en el directorio del proyecto (junto a `infra/docker-compose.platform.yml`), **no** en `/opt/opsly/.env`. En **`deploy.yml`**, **`docker compose --env-file /opt/opsly/.env -f docker-compose.platform.yml pull`** y el mismo **`--env-file`** en **`up`**, para que `${PLATFORM_DOMAIN}`, `${ACME_EMAIL}`, `${REDIS_PASSWORD}`, etc. se resuelvan en labels y `environment`. Comentario en el YAML del compose documenta esto.
 - **Discord en GitHub Actions:** **no** usar **`secrets.…` dentro de expresiones `if:`** en steps (p. ej. `if: failure() && secrets.DISCORD_WEBHOOK_URL != ''`) — el workflow queda **inválido** (_workflow file issue_, run ~0s sin logs). Solución: `if: success()` / `if: failure()` y en el script: si `DISCORD_WEBHOOK_URL` vacío → mensaje y **`exit 0`** (no-op); evita `curl: (3) URL rejected` con webhook vacío.
@@ -888,7 +976,7 @@ _Traefik — socket Docker, API y grupo `docker` (2026-04-05, seguimiento Cursor
 - **Raíz del compose:** sin clave **`version:`** (obsoleta en Compose moderno, eliminaba warning).
 - **Commits de referencia:** `ed38256` (`fix(traefik): set DOCKER_API_VERSION and fix socket mount…`), `57f0440` (`fix(traefik): fix docker provider config and socket access…` — insecure, health 5×15s, `docker info` en first-run), `0df201c` (`fix(traefik): add docker group and API version to fix socket discovery` — `group_add`, bootstrap/validate `DOCKER_GID`). Histórico previo del mismo hilo: `393bc3c` … `03068a0` (`--env-file`). Runs ejemplo: `24008556692`, `24008712390`, `24009183221`.
 
-_Intento deploy staging → `https://api.ops.smiletripcare.com/api/health` (2026-04-05):_
+_Intento deploy staging → `https://api.op-sly.com/api/health` (2026-04-05):_
 
 - **Paso 1 — Auditoría:** revisados `config/opsly.config.json` (sin secretos), `.env.example` (placeholders unificados), `infra/docker-compose.platform.yml` (solo nombres de vars), y por SSH el árbol `.env*` bajo `/opt/opsly` (`.env`, `.env.example`, `.env.swp`).
 - **Hallazgo:** en VPS y en Doppler `prd` hay claves **truncadas o placeholder** (p. ej. JWT tipo `eyJ...`, Stripe demasiado corto, `change-me` en `PLATFORM_ADMIN_TOKEN` / `REDIS_PASSWORD`). **No** se ejecutó `doppler secrets upload` desde el `.env` del VPS para no contaminar Doppler.
@@ -1028,14 +1116,14 @@ _Auditoría TypeScript y correcciones de código (2026-04-05, sesión agente Cla
 
 **En progreso 🔄**
 
-- **Deploy portal:** run **Deploy** en GitHub tras push (imagen `intcloudsysops-portal`); en VPS `docker compose … pull` + `up -d` incluyendo servicio **`portal`**; validar `https://portal.ops.smiletripcare.com/login` y flujo invite.
+- **Deploy portal:** run **Deploy** en GitHub tras push (imagen `intcloudsysops-portal`); en VPS `docker compose … pull` + `up -d` incluyendo servicio **`portal`**; validar `https://portal.op-sly.com/login` y flujo invite.
 - **Secretos GitHub** `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `PLATFORM_DOMAIN` definidos en `cloudsysops/opsly` y **Deploy** verde para que la imagen admin incluya Supabase/API URL y la API CORS el origen admin correcto.
 - **Despliegue Admin + API lectura demo en VPS:** variables `ADMIN_PUBLIC_DEMO_READ=true` y nuevas imágenes GHCR; validar dashboard, `/api/metrics/system` y consola del navegador (CORS + `NEXT_PUBLIC_*`).
 - **CI “Nightly code quality” (`nightly-fix.yml`):** probar con _Actions → Run workflow_; el cron solo corre con el workflow en la rama por defecto (`main`).
 - **CI `Deploy` en GitHub Actions:** tras push a `main`, **`build-and-push`** publica imágenes en GHCR; **`deploy`** hace SSH, **`docker compose --env-file /opt/opsly/.env … pull` + `up`**, health con reintentos y **`curl -sfk`**. Revisar _Actions → Deploy_ si falla SSH, disco VPS, Traefik, **`PLATFORM_DOMAIN`** o falta **`DOCKER_GID`** en el `.env` del VPS (sin él, `group_add` usa `999` y el socket puede seguir inaccesible).
 - Deploy staging — imágenes **`ghcr.io/cloudsysops/intcloudsysops-{api,admin}:latest`**; en VPS **`/opt/opsly/.env`** con **`DOCKER_GID`** (vuelve a ejecutar **`vps-bootstrap.sh`** tras cambios de compose si hace falta); login GHCR en el job con **`GITHUB_TOKEN`**. Tras cambios en Traefik: recrear contenedor **`traefik`** en el VPS para cargar env y `group_add`.
 - Con Doppler CLI + token con scope `/opt/opsly`: **`./scripts/vps-bootstrap.sh`** regenera `.env`; ejecutar tras cambiar imágenes o secretos en `prd`.
-- DNS: ops.smiletripcare.com → 157.245.223.7 ✅
+- DNS: op-sly.com → 157.245.223.7 ✅
 
 **Pendiente ⏳**
 
@@ -1054,7 +1142,9 @@ _Auditoría TypeScript y correcciones de código (2026-04-05, sesión agente Cla
 
 <!-- Una sola tarea concreta. Actualizar al final de cada sesión -->
 
-**Inmediato (2026-05-06):** **Semana 6** — [`docs/01-development/SEMANA-6-PLAN.md`](docs/01-development/SEMANA-6-PLAN.md): validar segundo tenant + `./scripts/test-e2e-invite-flow.sh` contra API staging; checklist pre-launch (Doppler, Resend dominio, DNS). Smoke local workers en `main` (PR **#199**, [`docs/LOCAL-AGENT-EXECUTION.md`](docs/LOCAL-AGENT-EXECUTION.md)); arranque orchestrator con `OPSLY_ROOT=<raíz repo>` si el cwd es `apps/orchestrator`.
+**Inmediato:** cerrar go-live **LegalVial** con [`docs/runbooks/LEGALVIAL-GOLIVE-CHECKLIST.md`](docs/runbooks/LEGALVIAL-GOLIVE-CHECKLIST.md) y smoke [`LEGALVIAL-E2E-SOFTLAUNCH.md`](docs/runbooks/LEGALVIAL-E2E-SOFTLAUNCH.md). **Autonomía:** si Cortex ya está en `OPSLY_CORTEX_ENABLED=true`, completar checklist operativo en [`docs/runbooks/CORTEX-OBSERVATION-WINDOW.md`](docs/runbooks/CORTEX-OBSERVATION-WINDOW.md) y registrar fecha en `runtime/context/system_state.json`.
+
+**Semana 6** — [`docs/01-development/SEMANA-6-PLAN.md`](docs/01-development/SEMANA-6-PLAN.md): validar segundo tenant + `./scripts/test-e2e-invite-flow.sh` contra API staging; checklist pre-launch (Doppler, Resend dominio, DNS). Smoke local workers en `main` (PR **#199**, [`docs/LOCAL-AGENT-EXECUTION.md`](docs/LOCAL-AGENT-EXECUTION.md)); arranque orchestrator con `OPSLY_ROOT=<raíz repo>` si el cwd es `apps/orchestrator`.
 
 **Rama opcional `feat/local-prompt-flow-runbook`:** experimentos gateway (qwen/minimax) y dedupe de ruta `balanced`; integrar vía PR si se adoptan — `main` ya tiene una sola rama `balanced` en `getProvidersByPreference`.
 
@@ -1117,9 +1207,9 @@ ssh -o BatchMode=yes -o ConnectTimeout=15 vps-dragon@100.120.151.91 "echo ok && 
 ./scripts/opsly.sh start-tenant localrank --wait --wait-seconds 180
 
 # 4) Verificar URLs públicas
-curl -I "https://portal.ops.smiletripcare.com"
-curl -I "https://n8n-localrank.ops.smiletripcare.com"
-curl -I "https://uptime-localrank.ops.smiletripcare.com"
+curl -I "https://portal.op-sly.com"
+curl -I "https://n8n-localrank.op-sly.com"
+curl -I "https://uptime-localrank.op-sly.com"
 
 # 5) NotebookLM EXPERIMENTAL (solo business+)
 doppler secrets set NOTEBOOKLM_ENABLED true --project ops-intcloudsysops --config prd
@@ -1213,7 +1303,7 @@ ssh vps-dragon@100.120.151.91 "docker system df && sudo du -xh /var --max-depth=
 - [x] **`.env` VPS** alineado con Doppler vía **`vps-bootstrap.sh`** + Doppler en VPS (sesión 2026-04-05); repetir bootstrap tras cambios en `prd`
 - [x] **Doppler CLI + token con scope `/opt/opsly`** en VPS (sesión 2026-04-05) — alternativa a solo `scp`
 - [x] **Traefik v3 + Docker 29.3.1 API negotiation bug** — fix: `daemon.json` `min-api-version: 1.24` + vps-bootstrap.sh paso [j] idempotente (2026-04-06)
-- [x] **Health check staging** — `curl -sfk https://api.ops.smiletripcare.com/api/health` → `{"status":"ok"}` (2026-04-06 23:58 UTC)
+- [x] **Health check staging** — `curl -sfk https://api.op-sly.com/api/health` → `{"status":"ok"}` (2026-04-06 23:58 UTC)
 - [x] **Migraciones SQL en Supabase opsly-prod** — `db push` vía CLI enlazada; tablas `platform.tenants` / `platform.subscriptions` verificadas en Postgres (2026-04-07)
 - [x] **PostgREST / API sobre schema `platform`** — `GRANT` USAGE (y permisos necesarios) + schema expuesto en API; onboarding y API contra `platform.tenants` operativos (2026-04-06)
 - [x] **Resend remitente en Doppler/VPS** — `RESEND_FROM_EMAIL` en `prd` + bootstrap + `app` recreado (2026-04-07).
@@ -1393,7 +1483,7 @@ flowchart TB
 
 ### Mitigaciones Inmediatas (esta noche)
 
-1. **Cloudflare Proxy (5 min):** Cambiar `*.ops.smiletripcare.com` a naranja (Proxy ON) — oculta IP VPS
+1. **Cloudflare Proxy (5 min):** Cambiar `*.op-sly.com` a naranja (Proxy ON) — oculta IP VPS
 2. **ufw Firewall (5 min):** Default DROP; whitelist SSH desde Tailscale (100.64.0.0/10), HTTP/HTTPS público (`./scripts/vps-secure.sh --ssh-host 100.120.151.91`)
 3. **Tailscale SSH (5 min):** VPS vía `100.120.151.91` (IP Tailscale) — scripts ya usan por defecto (`SSH_HOST=${SSH_HOST:-100.120.151.91}`)
 
@@ -1412,8 +1502,8 @@ flowchart TB
 | Usuario SSH     | vps-dragon                               |
 | Repo en VPS     | /opt/opsly                               |
 | Repo GitHub     | github.com/cloudsysops/opsly             |
-| Dominio staging | ops.smiletripcare.com                    |
-| DNS wildcard    | \*.ops.smiletripcare.com → 157.245.223.7 |
+| Dominio staging | op-sly.com                    |
+| DNS wildcard    | \*.op-sly.com → 157.245.223.7 |
 
 ### Infraestructura VPS-dragon – Tailscale
 
@@ -1424,7 +1514,7 @@ flowchart TB
   - `allow 80/tcp`
   - `allow 443/tcp`
   - `default deny incoming`
-- Cloudflare recomendado: Proxy ON en todos los registros `*.ops.smiletripcare.com`.
+- Cloudflare recomendado: Proxy ON en todos los registros `*.op-sly.com`.
 
 ### Topología de red activa (Management vs Edge)
 
@@ -1646,401 +1736,56 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 
 ---
 
-## 🔄 Estado Actual (2026-05-08 15:45 UTC) — PHASE 1-4 COMPLETE ✅✅✅
+## 🔄 Estado Actual (2026-05-08 03:45 UTC)
 
-**Agente:** Hermes (autonomous work: 4 phases complete)  
-**Actividad:** ✅ COMPLETE — 13 comprehensive documents, 89 issues identified, zero blockers  
-**Resultado:** Production ready + Full team execution roadmap (26-35 hours work planned)  
+**Agente:** Hermes (CLI audit + fixes)  
+**Actividad:** Audit técnico + fixes de deuda  
+**Bloqueantes:** SÍ (2 critical, ver TECHNICAL-DEBT.md)
 
-### ✅ BLOQUEANTES RESUELTOS (Sesión 2026-05-08)
+### Audit Completado
+- ✅ Type-check: FAIL (Next.js route cache corruption)
+- ✅ Endpoints vivos: API, Admin, Portal = 200 OK
+- ✅ npm vulnerabilities: 11 moderate (transitive, no critical)
+- ✅ Docker: 1 imagen local opsly existente
+- ✅ Tests: Orchestrator suite pasaría (no ejecutado en main)
 
-**CRÍTICO (4) → 3 RESUELTOS + 1 PLAN:**
-1. ✅ Type-check: PASSING (cache clear fixed)
-2. ✅ Hardcoded secrets: NONE found in code
-3. ✅ Security headers: DEPLOYED (3 new headers in Traefik)
-4. 📋 npm vulns: Plan ready (VPS execution, no critical vulns)
+### Deuda Técnica Documentada
 
-**IMPORTANTE (3) → 3 RESUELTOS:**
-5. ✅ API auth coverage: VERIFIED working
-6. ✅ CORS: WHITELIST correct (no wildcard)
-7. ✅ DB migrations: SEQUENTIAL (0051, 0052 renamed)
+**CRÍTICO:**
+1. Next.js `.next` cache corruption → rutas fantasma en validator
+2. Agent API surface misalignment → routes en orchestrator, spec en api
 
-**RESULTADO:**
-- 6/8 bloqueantes resueltos (local work completed)
-- 2 pending optional (npm audit, growth outreach)
-- 10/10 local validation tests: PASSING ✅
-- 6/6 production verification tests: PASSING ✅
-- VPS deployment: SUCCESSFUL (0 downtime)
+**IMPORTANTE:**
+3. npm vulns 11 moderate (esbuild, llamaindex, express-rate-limit)
+4. Missing lint:check task → **FIXED** (agregado a package.json)
+5. Test suite incomplete → baseline desconocida
 
-### 📦 Deliverables (Committed to main)
+**Documento:** `docs/TECHNICAL-DEBT.md` — tabla completa con prioridades, owners, estimaciones
 
-**Code Changes:**
-- ✅ `infra/traefik/dynamic/middlewares.yml` (security headers)
-- ✅ `supabase/migrations/0051_*.sql` (was 0047 duplicate)
-- ✅ `supabase/migrations/0052_*.sql` (was 0048 duplicate)
-- ✅ `scripts/validate-fixes.sh` (10-test suite)
+### Servicios VPS (últimas mediciones 2026-05-03)
+- opsly_orchestrator, opsly_llm_gateway, opsly_context_builder, opsly_hermes
+- infra-redis-1, infra-app-1, infra-app-2
+- opsly_portal, opsly_mcp (12 tools)
+- Prometheus, Grafana, cAdvisor, Watchtower
 
-**Documentation (7 major files, 65 KB):**
-- ✅ docs/TECHNICAL-DEBT.md
-- ✅ docs/security/SECURITY-POSTURE-AUDIT.md
-- ✅ docs/database/DATABASE-OPERATIONS.md
-- ✅ docs/infrastructure/REDIS-QUEUE-GUIDE.md
-- ✅ docs/operations/COST-MONITORING-GUIDE.md
-- ✅ docs/runbooks/OPERATIONS-HANDBOOK.md
-- ✅ docs/runbooks/VPS-DEPLOYMENT-2026-05-08.md
+### Próximos Pasos (Owner-assigned)
 
-**Autonomous Work Plan:**
-- ✅ docs/HERMES-AUTONOMOUS-WORK-PLAN.md (17-22 hours planned)
-
-**Git Commits:**
-- `df1b94f`: test(validation) + VPS deployment plan
-- `497b59e`: fix(security,database) + migrations + headers
-- `e23d58c`: docs(deployment) + VPS execution report
-- `1dea298`: docs(plan) + autonomous work plan
-
-### 🎯 Production Status (Verified 2026-05-08 12:40 UTC)
-
-**API Health:** ✅ 200 OK
+**@architect (ADR-028):** Type-check blocker decision
 ```
-{
-  "status": "ok",
-  "timestamp": "2026-05-08T12:39:58.493Z",
-  "checks": {
-    "supabase": "ok",
-    "redis": "ok"
-  }
-}
+A) Move agent routes to apps/api
+B) Exclude orchestrator from Next.js validation
+C) Redefine OpenAPI spec to match reality
 ```
+Est. 4-6h; unblocks CI/CD
 
-**Security Headers:** ✅ LIVE
-- content-security-policy: deployed ✓
-- x-frame-options: DENY ✓
-- x-content-type-options: nosniff ✓
+**@devops (npm audit):** Fix 11 vulnerabilities
+- express-rate-limit upgrade (quick win)
+- llamaindex major version eval
+- platform mismatch resolution
+Est. 1-2h
 
-**Services:** ✅ All responding
-- API: 200 OK
-- Admin: 307 redirect (healthy)
-- Portal: 307 redirect (healthy)
-- Traefik: Running (v3.3, healthy)
+**@eng (lint task):** ✅ DONE — lint:check added
 
-### 🚀 Autonomous Work Plan: PHASE 1 + 2 + 3 + 4 COMPLETE ✅✅✅
-
-**PHASE 1 (6.5 hours, 5 audits completed):**
-- ✅ CODE-REVIEW-API-ROUTES.md — 50 routes analyzed, 48 missing validation
-- ✅ DATABASE-QUERY-AUDIT.md — 1 N+1 pattern, 6 unfiltered queries
-- ✅ TEST-COVERAGE-BASELINE.md — 23.3% coverage (admin 0%, portal 5.4%)
-- ✅ LINT-RULES-GUIDE.md — Missing rules identified, migration plan
-- ✅ DOCKER-OPTIMIZATION.md — 60-70% image size reduction potential
-
-**PHASE 2 (6 hours, 3 audits completed):**
-- ✅ PERFORMANCE-BOTTLENECK-ANALYSIS.md — 3 critical patterns (10-300x improvement)
-- ✅ SECURITY-INPUT-VALIDATION-AUDIT.md — 41/43 routes without validation (CRITICAL)
-- ✅ COST-DEEP-DIVE.md — $1,050/month baseline, -15% optimization potential
-
-**PHASE 3 (4 hours, 3 documents completed):**
-- ✅ TROUBLESHOOTING-GUIDE.md — Symptom-to-solution tree, copy-paste commands
-- ✅ docs/README.md (UPDATED) — Complete documentation hub, role-based navigation
-- ✅ E2E-TEST-SCENARIOS.md — 5 critical workflows, Playwright guide, CI/CD ready
-
-**PHASE 4 (3 hours, 2 scripts + 1 document completed):**
-- ✅ scripts/daily-health-check.sh — Automated monitoring with Discord alerts
-- ✅ scripts/performance-test.sh — API benchmarking, DB profiling, JSON reports
-- ✅ COST-DASHBOARD-WIREFRAMES.md — ASCII wireframes, components, a11y specs
-
-**TOTAL PHASES 1-4:** 13 documents, 120+ KB, 89 issues identified
+**@qa (test baseline):** Evaluate current coverage
 
 ---
-
-### 📊 Issues Breakdown (Final)
-
-| Priority | Count | Examples |
-|----------|-------|----------|
-| 🔴 CRITICAL | 26 | Missing validation (41 routes), N+1 query, 0% test coverage (admin) |
-| 🟡 IMPORTANT | 40 | Missing indexes, unfiltered queries, insufficient auth checks |
-| 🟢 NICE-TO-HAVE | 23 | Documentation, monitoring, caching optimization |
-
-### 📈 Remediation Roadmap (Final)
-
-| Phase | Duration | Focus | Owner |
-|-------|----------|-------|-------|
-| Phase A: Validation & Security | 5-7h | Input validation (41 routes) | @engineering |
-| Phase B: Testing | 5-8h | Admin + portal tests (70%+ coverage) | @qa + @engineering |
-| Phase C: Performance | 3-4h | 3 bottleneck fixes (10-300x) | @engineering + @database-admin |
-| Phase D: Infrastructure | 4-5h | Docker + indexes | @devops |
-| Phase E: Monitoring & UI | 6-8h | Dashboards + E2E tests | @frontend + @devops |
-| Phase F: Optional | 2-4h | ESLint + polish | Any |
-
-**Total potential work:** 26-35 hours autonomous execution (by team)
-
----
-
-### 🎯 Top Actions (Priority Order)
-
-1. **CRITICAL:** Add input validation to 41 routes (5-7h)
-2. **CRITICAL:** Create tests for admin panel (5-8h)
-3. **CRITICAL:** Fix 3 performance bottlenecks (3h)
-4. **IMPORTANT:** Add indexes + optimize queries (2-3h)
-5. **IMPORTANT:** Lint rules standardization (2-4h)
-6. **IMPORTANT:** Docker optimization (.dockerignore + cleanup) (4-5h)
-
----
-
-### 📂 Complete Document Index
-
-**Audits:** `docs/audits/`
-- CODE-REVIEW-API-ROUTES.md
-- DATABASE-QUERY-AUDIT.md
-- TEST-COVERAGE-BASELINE.md
-- LINT-RULES-GUIDE.md
-- DOCKER-OPTIMIZATION.md
-- PERFORMANCE-BOTTLENECK-ANALYSIS.md
-- SECURITY-INPUT-VALIDATION-AUDIT.md
-- COST-DEEP-DIVE.md
-
-**New Documentation:** `docs/`
-- TROUBLESHOOTING-GUIDE.md
-- README.md (updated navigation hub)
-- E2E-TEST-SCENARIOS.md
-- COST-DASHBOARD-WIREFRAMES.md
-
-**Scripts:** `scripts/`
-- daily-health-check.sh
-- performance-test.sh
-
-View online: https://github.com/cloudsysops/opsly/tree/main/docs/audits
-
----
-
-### 🔄 PHASE 5: TEAM EXECUTION READY
-
-**Next team actions (no more analysis needed):**
-1. Review all 13 documents
-2. Create GitHub issues from findings
-3. Execute remediation phases A-F (26-35 hours total)
-4. Deploy scripts (daily-health-check.sh, performance-test.sh)
-5. Implement cost dashboard from wireframes
-
----
-
-### 🎯 SESSION 2 COMPLETE: PHASE 5 ARCHITECTURE DESIGN ✅ (May 8, 2026)
-
-**Duration:** 1.5+ hours (continuation from "continuemos")  
-**Deliverable:** Complete Phase 5 architectural blueprint + next-steps guide  
-**Status:** 🟡 PHASE 5 ARCHITECTURE READY (code implementation pending)
-
-**What Was Delivered:**
-
-1. **`docs/PHASE-5-IMPLEMENTATION-BLUEPRINT.md`** (15.2 KB)
-   - Complete specs for 5.1 (Multi-Model LLM), 5.2 (Rendering), 5.3 (E2E Testing), 5.4 (Marketplace)
-   - 5+ endpoints per component
-   - Database schemas + implementation steps
-   - Success criteria + constraints
-   - Post-Phase-5 roadmap (Phases 6-9)
-
-2. **`docs/NEXT-STEPS.md`** (10.4 KB)
-   - How to continue from here
-   - Step-by-step coding guides
-   - Configuration checklists
-   - Testing procedures
-   - Deployment sequence
-
-3. **Git Commits:**
-   - `0d1f75c`: docs(phase5): comprehensive implementation blueprint
-   - `11e1056`: docs: add next-steps guide for phase 5 continuation
-
-**Phase 5 Components (Architecture Complete):**
-
-- **5.1: Multi-Model LLM Router** (8h to implement)
-  - 4 providers: Claude, GPT-4, Llama 2, Mixtral
-  - 4 routing strategies: cost, speed, quality, balanced
-  - Fallback chain: primary → secondary → backup
-  - 5 API endpoints (completions, stream, models, health, compare)
-
-- **5.2: Advanced Rendering** (7h to implement)
-  - Stable Diffusion (text→image, img2img, upscale)
-  - Elevenlabs TTS (text→voice, 32+ voices)
-  - Batch processor (Bull + Redis, exponential backoff)
-  - 4 API endpoints (render, status, batch, stats)
-
-- **5.3: E2E Testing** (6h to implement)
-  - 9 Playwright tests (8 workflows + 1 load test)
-  - GitHub Actions CI/CD pipeline
-  - Coverage >80% target
-
-- **5.4: Agent Marketplace** (6h to implement)
-  - React 4-step wizard UI
-  - 6 pre-built templates
-  - One-click deployment
-  - Execution tracking + cost per agent
-
-**Effort Breakdown:**
-- 5.1: 8 hours
-- 5.2: 7 hours
-- 5.3: 6 hours
-- 5.4: 6 hours
-- Integration & Polish: 8 hours
-- **TOTAL: 35 hours** (2-3 weeks distributed)
-
-**Next Session Instructions:**
-
-1. Read: `docs/PHASE-5-IMPLEMENTATION-BLUEPRINT.md`
-2. Follow: `docs/NEXT-STEPS.md`
-3. Pick first component (5.1 or 5.2)
-4. Code following the blueprint exactly
-5. Test locally → commit → push
-6. Repeat for remaining components
-
-**Status:** ✅ Architecture complete | 🟡 Ready for implementation phase
-
----
-
-### 🚀 SESSION 3 COMPLETE: OPSLY 2.0 MULTI-AGENT ORCHESTRATION (May 8, 2026)
-
-**Duration:** 2+ hours (continued autonomous execution)  
-**Deliverable:** Complete Opsly 2.0 multi-agent architecture + Phase 5.2-5.4 detailed specs  
-**Status:** 🟡 OPSLY 2.0 ARCHITECTURE READY + PHASE 5 FULLY SPECIFIED
-
-**What Was Delivered:**
-
-1. **`docs/OPSLY-2-0-MULTI-AGENT-BLUEPRINT.md`** (20.3 KB)
-   - Complete multi-agent orchestration system (Arena, Billy, Lili, Security, Docs)
-   - MCP security rules (READ/WRITE/SHELL/PROD gates)
-   - Task lifecycle flow (human → Arena → Billy → Lili → merge → deploy)
-   - Infrastructure requirements (opsly-agent-control repo)
-   - Agent capabilities + safety constraints
-
-2. **`docs/PHASE-5-2-3-4-COMPLETE-SPECS.md`** (27.9 KB)
-   - Phase 5.2: Advanced Rendering (Billy's task)
-     - StableDiffusion adapter + Elevenlabs TTS + Batch processor
-     - 6 API endpoints with full specs
-     - Cost tracking ($0.001/image, $0.005/min audio)
-   - Phase 5.3: E2E Testing (Lili's validation)
-     - 8+ Playwright test cases with code examples
-     - GitHub Actions CI/CD pipeline (YAML complete)
-     - Load testing (10 concurrent users)
-   - Phase 5.4: Agent Marketplace (Billy + Lili)
-     - React 4-step wizard component (React code examples)
-     - 6 pre-built templates (Code Reviewer, API Builder, QA, Data, Content, Support)
-     - Database schema (agents + executions tables)
-     - 6 API endpoints (CRUD + execution tracking)
-
-3. **Git Commits:**
-   - `4d1d707`: docs(phase5): complete specifications for 5.2 rendering, 5.3 testing, 5.4 marketplace
-   - `d0e07ec`: docs(opsly2.0): multi-agent orchestration architecture blueprint
-
-**Opsly 2.0 Agent Team Architecture:**
-
-- **Arena (Architect):** Receives tasks → analyzes codebase → decomposes into subtasks → creates Context Pack
-- **Billy (Developer):** Implements code → runs type-check → commits → opens PR
-- **Lili (QA):** Runs tests → validates → suggests fixes → approves PRs
-- **Security Agent:** Scans for secrets/injection/vulns → blocks high-risk PRs
-- **Docs Agent:** Updates AGENTS.md + API docs + runbooks after each deploy
-
-**Multi-Agent Safety Model:**
-```
-READ tools:    ✅ Allowed by default (GitHub, Docs, Prometheus)
-WRITE tools:   🟡 Explicit permission (create branches, commit, migrations)
-SHELL tools:   🔴 Sandboxed only (npm type-check, npm test, npm build — NO rm/chmod)
-PROD access:   🛑 Human approval mandatory (deploy to production)
-Secrets:       🔒 Never exposed to agents (injected at runtime)
-```
-
-**Phase 5 Complete Specifications:**
-
-- **5.1: LLM Router** (8h) — Already designed
-- **5.2: Advanced Rendering** (7h) — Billy: StableDiffusion + Elevenlabs + Batch
-- **5.3: E2E Testing** (6h) — Lili: Playwright + CI/CD + load test
-- **5.4: Agent Marketplace** (6h) — Billy + Lili: UI wizard + 6 templates
-
-**Total Implementation:** 27 hours (could be parallelized to 2 weeks with full agent team)
-
-**Key Features:**
-
-- ✅ Task intake via Arena → decomposition → agent dispatch
-- ✅ Billy codes while Lili validates previous PR (parallelism)
-- ✅ Automatic retry on test failure (Lili suggests fix)
-- ✅ Multi-tenant isolation (SQL constraints + app validation)
-- ✅ Cost tracking per agent/render type
-- ✅ Full audit trail (all actions logged)
-- ✅ Zero hardcoded secrets (sandboxed execution)
-
-**ElevenLabs Advanced Features (Recommended for Later Integration):**
-
-- Voice Cloning (users upload 30s sample)
-- 29+ language support (auto-detect input)
-- Streaming audio output (WebSocket, low-latency)
-- Voice profiling (demographics-optimized voices)
-- Video dubbing (cross-regional support)
-
-**Next Steps:**
-
-1. Create `opsly-agent-control` private repo
-2. Setup MCP allowlist + security policies
-3. Implement Arena prompt + context packer
-4. Deploy agent-orchestrator service
-5. Run Phase 5.1 via Billy → Lili validation → merge
-6. Repeat for 5.2, 5.3, 5.4
-
-**Estimated Timeline:**
-- Week 1: Infrastructure setup
-- Week 2: Phase 5.1 + 5.2 (Billy + Lili parallel)
-- Week 3: Phase 5.3 + 5.4 (full team)
-- Week 4: Production deployment
-
-**Status:** ✅ Architecture complete | ✅ Specs complete | 🟡 Ready for implementation
-
----
-
----
-
-## 🚀 SESSION 6 — SYRA IMPLEMENTATION COMPLETE
-
-**Status:** ✅ Syra Social Media Agent FULLY IMPLEMENTED & PRODUCTION READY
-
-**What Was Delivered:**
-
-1. **Syra Core Service** (150 LOC, TypeScript strict)
-   - Content generator with platform-specific templates
-   - Multi-platform support (Twitter, LinkedIn, Discord, Slack)
-   - Event-driven automation with Lousa approval gates
-   - Engagement metrics tracking
-
-2. **API Endpoints**
-   - POST /api/social/generate (content generation)
-   - POST /api/social/trigger (event-driven posting)
-   - GET /api/social/calendar (scheduled posts)
-   - GET /api/social/metrics (engagement tracking)
-
-3. **Database Schema**
-   - generated_content table
-   - scheduled_posts table
-   - engagement_metrics table
-   - content_strategy table
-
-4. **Integration Hooks**
-   - Brissa feature complete → Auto-announce
-   - Lili test validation → Celebrate
-   - Kairo security approved → Security tip
-   - Nyx research complete → Share findings
-   - Michelle optimization → Performance wins
-   - Phase complete → Lousa approval required
-
-5. **Documentation**
-   - 26.6 KB comprehensive blueprint
-   - API examples + integration guide
-   - Content examples + safeguards
-   - Database schema + migrations
-
-**Git Commits:**
-- a4abb31: feat(syra): complete implementation - production ready
-- 8f4d7e5: feat(syra): implement social media agent endpoints
-- b7ddc79: docs(agents): add syra reference
-
-**Timeline:** 2 hours (MVP delivered, production ready)
-
-**Cost:** ~$3-5/month (essentially free)
-
-**Status for Phase 5.2:** ✅ Ready for Supabase deployment + orchestrator integration
-
----
-

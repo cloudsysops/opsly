@@ -87,6 +87,55 @@ export function portalTenantN8nMarketplaceInstallsUrl(apiBaseUrl: string, tenant
   return `${base}/api/portal/tenant/${encodeURIComponent(tenantSlug)}/n8n-marketplace/installs`;
 }
 
+export function portalTenantAgentTerminalStartUrl(apiBaseUrl: string, tenantSlug: string): string {
+  const base = normalizeApiBase(apiBaseUrl);
+  return `${base}/api/portal/tenant/${encodeURIComponent(tenantSlug)}/agents/terminal/start`;
+}
+
+export function portalTenantAgentTerminalSessionsUrl(
+  apiBaseUrl: string,
+  tenantSlug: string,
+  agentId: string
+): string {
+  const base = normalizeApiBase(apiBaseUrl);
+  return `${base}/api/portal/tenant/${encodeURIComponent(tenantSlug)}/agents/terminal/${encodeURIComponent(
+    agentId
+  )}/sessions`;
+}
+
+export function portalTenantAgentTerminalOutputUrl(
+  apiBaseUrl: string,
+  tenantSlug: string,
+  agentId: string,
+  sessionId: string,
+  offset: number
+): string {
+  const sessionsUrl = portalTenantAgentTerminalSessionsUrl(apiBaseUrl, tenantSlug, agentId);
+  return `${sessionsUrl}/${encodeURIComponent(sessionId)}/output?offset=${encodeURIComponent(
+    String(offset)
+  )}`;
+}
+
+export function portalTenantAgentTerminalStopUrl(
+  apiBaseUrl: string,
+  tenantSlug: string,
+  agentId: string,
+  sessionId: string
+): string {
+  const sessionsUrl = portalTenantAgentTerminalSessionsUrl(apiBaseUrl, tenantSlug, agentId);
+  return `${sessionsUrl}/${encodeURIComponent(sessionId)}/stop`;
+}
+
+export function portalTenantAgentMcpToolsUrl(apiBaseUrl: string, tenantSlug: string): string {
+  const base = normalizeApiBase(apiBaseUrl);
+  return `${base}/api/portal/tenant/${encodeURIComponent(tenantSlug)}/agents/mcp/tools`;
+}
+
+export function portalTenantAgentMcpExecuteUrl(apiBaseUrl: string, tenantSlug: string): string {
+  const base = normalizeApiBase(apiBaseUrl);
+  return `${base}/api/portal/tenant/${encodeURIComponent(tenantSlug)}/agents/mcp/execute`;
+}
+
 /** URL absoluta `GET /api/portal/billing/summary` (sesión → tenant actual). */
 export function portalBillingSummaryUrl(apiBaseUrl: string): string {
   return `${normalizeApiBase(apiBaseUrl)}/api/portal/billing/summary`;

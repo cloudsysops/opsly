@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  agentForLocalJobType,
   jobTypeForLocalAgent,
   normalizeLocalAgentKind,
   parsePromptFrontmatter,
@@ -32,6 +33,16 @@ describe('local-worker-utils', () => {
     expect(jobTypeForLocalAgent('claude')).toBe('local_claude');
     expect(jobTypeForLocalAgent('copilot')).toBe('local_copilot');
     expect(jobTypeForLocalAgent('opencode')).toBe('local_opencode');
+    expect(jobTypeForLocalAgent('codex')).toBe('local_codex');
+    expect(jobTypeForLocalAgent('openai')).toBe('local_openai');
+    expect(jobTypeForLocalAgent('hermes')).toBe('local_hermes');
+    expect(jobTypeForLocalAgent('decepticon')).toBe('local_decepticon');
+  });
+
+  it('maps local job types back to agent kinds', () => {
+    expect(agentForLocalJobType('local_cursor')).toBe('cursor');
+    expect(agentForLocalJobType('local_codex')).toBe('codex');
+    expect(agentForLocalJobType('local_hermes')).toBe('hermes');
   });
 
   it('defaults unknown agent values to cursor', () => {

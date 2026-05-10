@@ -21,6 +21,9 @@ import {
   enqueueCloudSysOpsSalesMessageTool,
 } from './tools/cloudsysops-agents.tool.js';
 import { superOrchestratorTools } from './tools/super-orchestrator.js';
+import { executeQuantumTool } from './tools/execute-quantum.tool.js';
+import { getModeTool } from './tools/get-mode.tool.js';
+import { setModeTool } from './tools/set-mode.tool.js';
 import type { ToolContext, ToolDefinition } from './types/index.js';
 
 interface RegisteredTool {
@@ -67,6 +70,9 @@ export const TOOL_REQUIRED_SCOPES: Record<string, string> = {
   start_agent_farm: 'agents:write',
   enqueue_cloudsysops_sales_message: 'agents:write',
   enqueue_cloudsysops_ops_complete: 'agents:write',
+  get_mode: 'agents:write',
+  set_mode: 'agents:write',
+  execute_quantum: 'agents:write',
 };
 
 export type CallToolOptions = {
@@ -176,8 +182,15 @@ export function getAllToolDefinitions(): ToolDefinition<unknown, unknown>[] {
     StartAgentFarmTool,
     enqueueCloudSysOpsSalesMessageTool,
     enqueueCloudSysOpsOpsCompleteTool,
+    getModeTool,
+    setModeTool,
+    executeQuantumTool,
     ...superOrchestratorTools,
   ] as ToolDefinition<unknown, unknown>[];
+}
+
+export function collectRegisteredToolNames(): string[] {
+  return getAllToolDefinitions().map((definition) => definition.name);
 }
 
 export function createServer(): OpenClawMcpServer {

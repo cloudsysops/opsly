@@ -29,7 +29,6 @@ VPS_HOST="${VPS_HOST:-100.120.151.91}"
 VPS_USER="${VPS_USER:-vps-dragon}"
 VPS_PATH="${VPS_PATH:-/opt/opsly}"
 DOCKER_COMPOSE_FILE="${DOCKER_COMPOSE_FILE:-docker-compose.platform.yml}"
-DOCKER_COMPOSE_PATH="${VPS_PATH}/infra/${DOCKER_COMPOSE_FILE}"
 
 # Logging
 LOG_DIR="/tmp/opsly-deploy-$(date +%s)"
@@ -204,7 +203,7 @@ deploy_docker() {
 
   # Graceful shutdown
   log "INFO" "Stopping running containers (graceful)"
-  vps_run "cd ${VPS_PATH} && docker compose -f ${DOCKER_COMPOSE_PATH} down --remove-orphans --timeout 30" "Gracefully stop containers"
+  vps_run "cd ${VPS_PATH} && docker compose --env-file ${VPS_PATH}/.env -f infra/${DOCKER_COMPOSE_FILE} down --remove-orphans --timeout 30" "Gracefully stop containers"
 
   # Wait for services to fully stop
   log "INFO" "Waiting for services to fully shut down"
@@ -212,7 +211,7 @@ deploy_docker() {
 
   # Start services
   log "INFO" "Starting Docker services"
-  vps_run "cd ${VPS_PATH} && docker compose -f ${DOCKER_COMPOSE_PATH} up -d" "Start containers"
+  vps_run "cd ${VPS_PATH} && docker compose --env-file ${VPS_PATH}/.env -f infra/${DOCKER_COMPOSE_FILE} up -d" "Start containers"
 
   # Show running containers
   vps_run "docker ps --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'" "Show running containers"

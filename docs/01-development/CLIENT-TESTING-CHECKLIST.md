@@ -18,14 +18,14 @@
 
 ### n8n
 
-- [ ] Abre la URL `https://n8n-{slug}.ops.smiletripcare.com`.
+- [ ] Abre la URL `https://n8n-{slug}.op-sly.com`.
 - [ ] Creó cuenta admin (primera visita).
 - [ ] Importó o creó un workflow.
 - [ ] Ejecutó un workflow de prueba.
 
 ### Uptime Kuma
 
-- [ ] Abre `https://uptime-{slug}.ops.smiletripcare.com`.
+- [ ] Abre `https://uptime-{slug}.op-sly.com`.
 - [ ] Creó cuenta admin.
 - [ ] Añadió un monitor.
 - [ ] Configuró al menos un canal de notificación.

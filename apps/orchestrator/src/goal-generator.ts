@@ -12,7 +12,7 @@ interface StrategicGoal {
   riskLevel: 'low' | 'medium' | 'high';
 }
 
-interface GoalGeneratorContext {
+export interface GoalGeneratorContext {
   activeUsers: number;
   mrrUsd: number;
   techHealth: string;

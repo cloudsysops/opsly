@@ -15,7 +15,7 @@ Imports workflows from .n8n/1-workflows/ to n8n instance.
 
 Requirements:
   - n8n CLI available in PATH
-  - n8n instance running (e.g., https://n8n-smiletripcare.ops.smiletripcare.com)
+  - n8n instance running (e.g., https://n8n-smiletripcare.op-sly.com)
 EOF
 }
 
