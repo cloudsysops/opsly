@@ -29,7 +29,9 @@ export type JobType =
   /** Validación npm (type-check / test / build) en `repo_root`; escribe `.cursor/responses/validation-*.json`. */
   | 'test_validation'
   /** Super Orchestrator v2 - inteligente multi-agente */
-  | 'super_orchestrator';
+  | 'super_orchestrator'
+  /** Batch processing: fan-out/fan-in job execution */
+  | 'batch_process';
 
 export interface TestValidationPayload {
   type: 'test_validation';
@@ -41,6 +43,15 @@ export interface TestValidationPayload {
   steps?: Array<'type-check' | 'test' | 'build'>;
   npm_workspace?: string;
   source_prompt_path?: string;
+}
+
+export interface BatchProcessPayload {
+  type: 'batch_process';
+  batch_id: string;
+  tenant_slug: string;
+  request_id: string;
+  jobs: OrchestratorJob[];
+  chunk_size?: number;
 }
 
 export interface SandboxExecutionPayload {

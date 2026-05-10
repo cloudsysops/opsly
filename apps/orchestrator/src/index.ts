@@ -41,6 +41,7 @@ import { startLocalCopilotWorker } from './workers/LocalCopilotWorker.js';
 import { startLocalOpenCodeWorker } from './workers/LocalOpenCodeWorker.js';
 import { startLocalCursorWorker } from './workers/LocalCursorWorker.js';
 import { startSuperOrchestratorWorker } from './workers/SuperOrchestratorWorker.js';
+import { startBatchWorker } from './workers/BatchWorker.js';
 import { superOrchestratorIntegration } from './super-orchestrator-integration.js';
 
 type AsyncCleanup = () => Promise<void>;
@@ -92,6 +93,7 @@ function startAllWorkers(): AsyncCleanup[] {
   const localOpenCodeWorker = startLocalOpenCodeWorker(connection);
   const localCursorWorker = startLocalCursorWorker(connection);
   const superOrchestratorWorker = startSuperOrchestratorWorker();
+  const batchWorker = startBatchWorker();
 
   let agentClassifierCleanup: AsyncCleanup[] = [];
   if (process.env.OPSLY_AGENT_CLASSIFIER_WORKER_ENABLED === 'true') {
@@ -119,11 +121,12 @@ function startAllWorkers(): AsyncCleanup[] {
     async () => localOpenCodeWorker.close(),
     async () => localCursorWorker.close(),
     async () => superOrchestratorWorker.close(),
+    async () => batchWorker.close(),
     ...agentClassifierCleanup
   );
 
   console.log(
-    '[orchestrator] Workers: cursor, n8n, notify, drive, backup, health, budget, opsly-webhooks, webhooks-processing, general-events, ollama, intent_dispatch, terminal_task, local-agents (cursor/claude/copilot/opencode), local-claude, local-copilot, local-opencode, local-cursor, super-orchestrator' +
+    '[orchestrator] Workers: cursor, n8n, notify, drive, backup, health, budget, opsly-webhooks, webhooks-processing, general-events, ollama, intent_dispatch, terminal_task, local-agents (cursor/claude/copilot/opencode), local-claude, local-copilot, local-opencode, local-cursor, super-orchestrator, batch_process' +
       (process.env.OPSLY_AGENT_CLASSIFIER_WORKER_ENABLED === 'true' ? ', agent-classifier' : '') +
       '; Hermes tick → servicio opsly-hermes (no este proceso).'
   );

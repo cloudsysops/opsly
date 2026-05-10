@@ -86,6 +86,47 @@ export async function enqueueJob(job: OrchestratorJob) {
   return bull;
 }
 
+export async function enqueueJobBulk(jobs: OrchestratorJob[]) {
+  const results: { job: OrchestratorJob; bullJobId: string }[] = [];
+
+  const isLocalAgentJob = (type: string) => type?.startsWith('local_');
+  const localAgentJobs = jobs.filter((j) => isLocalAgentJob(j.type));
+  const bullmqJobs = jobs.filter((j) => !isLocalAgentJob(j.type));
+
+  if (bullmqJobs.length > 0) {
+    const bullJobs = await orchestratorQueue.addBulk(
+      bullmqJobs.map((job) => ({
+        name: job.type,
+        data: job,
+        opts: buildQueueAddOptions(job),
+      }))
+    );
+    for (const bull of bullJobs) {
+      results.push({ job: bull.data as unknown as OrchestratorJob, bullJobId: bull.id ?? '' });
+    }
+  }
+
+  if (localAgentJobs.length > 0) {
+    const localBullJobs = await localAgentQueue.addBulk(
+      localAgentJobs.map((job) => ({
+        name: job.type,
+        data: job,
+        opts: {
+          jobId: job.idempotency_key || job.request_id,
+          priority: 40000,
+          attempts: 2,
+          backoff: { type: 'exponential', delay: 2000 },
+        },
+      }))
+    );
+    for (const bull of localBullJobs) {
+      results.push({ job: bull.data as unknown as OrchestratorJob, bullJobId: bull.id ?? '' });
+    }
+  }
+
+  return results;
+}
+
 /** Enqueue job to local-agents queue for execution on local machines (Cursor, Claude, etc) */
 export async function enqueueLocalAgentJob(
   jobOrName: OrchestratorJob | string,
