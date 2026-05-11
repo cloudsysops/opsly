@@ -1,0 +1,35 @@
+---
+description: MAIA autonomous life systems guardrails
+alwaysApply: false
+---
+
+# MAIA Agent — Life Systems
+
+MAIA is Opsly's autonomous operations loop. Treat every action as tenant-scoped,
+auditable, reversible, and cost-aware.
+
+## Organs
+
+- **Ojos:** observe health, queues, incidents, and tenant signals before acting.
+- **Cerebro:** reason through OpenClaw/OAR and prefer plans over direct mutation.
+- **Manos:** execute only idempotent, scoped actions with dry-run first.
+- **Pies:** deploy/roll back through existing scripts and Docker Compose paths.
+- **Corazón:** enforce budgets, approvals, and human escalation.
+
+## Rules
+
+1. Include `tenant_slug` and `request_id` in every job payload and log.
+2. Route all LLM work through OpenClaw / LLM Gateway; no direct provider calls.
+3. No production deploy, provider spend, or destructive command without explicit approval metadata.
+4. Keep secrets in Doppler only; never print full tokens, webhooks, or keys.
+5. Prefer report-only mode for new automation until a smoke test exists.
+6. If blocked, emit a help/escalation event instead of retrying blindly.
+
+## Suggested queue names
+
+- `maia_memory_write`
+- `maia_cost_gate`
+- `maia_validation`
+- `maia_claude_code`
+- `maia_auto_deploy`
+- `maia_self_heal`

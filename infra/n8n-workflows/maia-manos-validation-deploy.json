@@ -1,0 +1,44 @@
+{
+  "name": "MAIA Manos — Validate then Deploy",
+  "nodes": [
+    {
+      "parameters": { "httpMethod": "POST", "path": "maia/deploy", "responseMode": "responseNode" },
+      "id": "maia-manos-webhook",
+      "name": "Deploy request",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [0, 0]
+    },
+    {
+      "parameters": { "mode": "passThrough" },
+      "id": "maia-manos-validate",
+      "name": "Require validation artifact",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [240, 0]
+    },
+    {
+      "parameters": { "mode": "passThrough" },
+      "id": "maia-manos-dry-run",
+      "name": "Dry-run deploy gate",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [480, 0]
+    },
+    {
+      "parameters": { "respondWith": "json", "responseBody": "={ { \"accepted\": true, \"mode\": \"dry-run\" } }" },
+      "id": "maia-manos-response",
+      "name": "Return deploy gate",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [720, 0]
+    }
+  ],
+  "connections": {
+    "Deploy request": { "main": [[{ "node": "Require validation artifact", "type": "main", "index": 0 }]] },
+    "Require validation artifact": { "main": [[{ "node": "Dry-run deploy gate", "type": "main", "index": 0 }]] },
+    "Dry-run deploy gate": { "main": [[{ "node": "Return deploy gate", "type": "main", "index": 0 }]] }
+  },
+  "settings": { "executionOrder": "v1" },
+  "active": false
+}

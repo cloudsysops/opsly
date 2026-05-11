@@ -1,0 +1,39 @@
+{
+  "name": "MAIA Corazón — Cost + Self-Heal Escalation",
+  "nodes": [
+    {
+      "parameters": { "rule": { "interval": [{ "field": "hours", "hoursInterval": 6 }] } },
+      "id": "maia-corazon-cron",
+      "name": "Every 6 hours",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [0, 0]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{$env.OPSLY_API_URL || 'http://app:3000'}}/api/admin/costs",
+        "responseFormat": "json"
+      },
+      "id": "maia-corazon-costs",
+      "name": "Read cost posture",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [260, 0]
+    },
+    {
+      "parameters": { "mode": "passThrough" },
+      "id": "maia-corazon-escalate",
+      "name": "Escalate if over threshold",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [520, 0]
+    }
+  ],
+  "connections": {
+    "Every 6 hours": { "main": [[{ "node": "Read cost posture", "type": "main", "index": 0 }]] },
+    "Read cost posture": { "main": [[{ "node": "Escalate if over threshold", "type": "main", "index": 0 }]] }
+  },
+  "settings": { "executionOrder": "v1" },
+  "active": false
+}

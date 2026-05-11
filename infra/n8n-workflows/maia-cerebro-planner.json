@@ -1,0 +1,41 @@
+{
+  "name": "MAIA Cerebro — Plan Router",
+  "nodes": [
+    {
+      "parameters": { "httpMethod": "POST", "path": "maia/plan", "responseMode": "responseNode" },
+      "id": "maia-cerebro-webhook",
+      "name": "Receive objective",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [0, 0]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$env.OPSLY_ORCHESTRATOR_URL || 'http://orchestrator:3011'}}/internal/hive/objective",
+        "sendBody": true,
+        "bodyParameters": { "parameters": [{ "name": "objective", "value": "={{$json.body.objective}}" }] },
+        "responseFormat": "json"
+      },
+      "id": "maia-cerebro-hive",
+      "name": "Submit Hive objective",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [260, 0]
+    },
+    {
+      "parameters": { "respondWith": "json", "responseBody": "={{$json}}" },
+      "id": "maia-cerebro-response",
+      "name": "Return task",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [520, 0]
+    }
+  ],
+  "connections": {
+    "Receive objective": { "main": [[{ "node": "Submit Hive objective", "type": "main", "index": 0 }]] },
+    "Submit Hive objective": { "main": [[{ "node": "Return task", "type": "main", "index": 0 }]] }
+  },
+  "settings": { "executionOrder": "v1" },
+  "active": false
+}
