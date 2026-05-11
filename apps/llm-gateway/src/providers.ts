@@ -87,7 +87,7 @@ export const PROVIDERS = {
     healthKey: 'codellama_local',
   },
   openrouter_cheap: {
-    model: 'mistralai/mistral-7b-instruct',
+    model: 'mistralai/mistral-7b-instruct-v0.1',
     kind: 'openrouter',
     cost_per_1k_input: 0.00002,
     cost_per_1k_output: 0.00006,
