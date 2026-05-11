@@ -29,7 +29,7 @@ export interface ChatCompletionsPlannerBody {
   request_id?: string;
   tenant_plan?: 'startup' | 'business' | 'enterprise';
   routing_bias?: RoutingBias;
-  provider_hint?: 'deepseek';
+  provider_hint?: 'deepseek' | 'nvidia';
   messages: Array<{ role: string; content: string }>;
   user_id?: string;
   feature?: string;
@@ -119,7 +119,10 @@ function chatBodyToLlmRequest(body: ChatCompletionsPlannerBody, requestId: strin
     body.routing_bias === 'balanced' || body.routing_bias === 'quality' || body.routing_bias === 'cost'
       ? body.routing_bias
       : 'cost';
-  const providerHint = body.provider_hint === 'deepseek' ? 'deepseek' : undefined;
+  const providerHint =
+    body.provider_hint === 'deepseek' || body.provider_hint === 'nvidia'
+      ? body.provider_hint
+      : undefined;
 
   return {
     tenant_slug: body.tenant_slug,

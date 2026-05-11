@@ -45,7 +45,7 @@ export interface LLMRequest {
    * Prioriza un proveedor cloud en `llmCallDirect` (p. ej. OpenClaw rol `skeptic` → DeepSeek).
    * Requiere `DEEPSEEK_API_KEY` para efecto en la cadena.
    */
-  provider_hint?: 'deepseek';
+  provider_hint?: 'deepseek' | 'nvidia';
   max_tokens?: number;
   temperature?: number;
   cache?: boolean;

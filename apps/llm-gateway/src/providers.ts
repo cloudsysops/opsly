@@ -1,4 +1,4 @@
-export type ProviderKind = 'anthropic' | 'ollama' | 'openrouter' | 'openai' | 'deepseek';
+export type ProviderKind = 'anthropic' | 'ollama' | 'openrouter' | 'openai' | 'deepseek' | 'nvidia';
 
 export interface ProviderDefinition {
   /** Model id for the upstream API */
@@ -19,6 +19,20 @@ const deepseekModel =
   process.env.DEEPSEEK_MODEL?.trim() && process.env.DEEPSEEK_MODEL.trim().length > 0
     ? process.env.DEEPSEEK_MODEL.trim()
     : 'deepseek-v4-flash';
+const nvidiaBase = (process.env.NVIDIA_BASE_URL ?? 'https://integrate.api.nvidia.com/v1').replace(/\/$/, '');
+const nvidiaModel =
+  process.env.NVIDIA_MODEL?.trim() && process.env.NVIDIA_MODEL.trim().length > 0
+    ? process.env.NVIDIA_MODEL.trim()
+    : 'nvidia/llama-3.3-nemotron-super-49b-v1.5';
+
+function parseCostEnv(name: string, fallback: number): number {
+  const raw = process.env[name]?.trim();
+  if (!raw) {
+    return fallback;
+  }
+  const parsed = Number.parseFloat(raw);
+  return Number.isFinite(parsed) && parsed >= 0 ? parsed : fallback;
+}
 
 export const PROVIDERS = {
   claude_haiku: {
@@ -54,6 +68,19 @@ export const PROVIDERS = {
     cost_per_1k_output: 0.00028,
     baseUrl: deepseekBase,
     healthKey: 'deepseek',
+  },
+  /**
+   * NVIDIA NIM / build.nvidia.com (OpenAI-compatible).
+   * Useful as cloud fallback when local Ollama worker (Opsly-mac2012/mac2011) is down.
+   * Variables: `NVIDIA_API_KEY`, optional `NVIDIA_BASE_URL`, `NVIDIA_MODEL`.
+   */
+  nvidia_nim: {
+    model: nvidiaModel,
+    kind: 'nvidia',
+    cost_per_1k_input: parseCostEnv('NVIDIA_COST_PER_1K_INPUT', 0),
+    cost_per_1k_output: parseCostEnv('NVIDIA_COST_PER_1K_OUTPUT', 0),
+    baseUrl: nvidiaBase,
+    healthKey: 'nvidia',
   },
   openrouter_cheap: {
     model: 'mistralai/mistral-7b-instruct',
@@ -100,6 +127,17 @@ function deepseekChainEntry(): ProviderChainEntry | null {
   };
 }
 
+function nvidiaChainEntry(): ProviderChainEntry | null {
+  if (!process.env.NVIDIA_API_KEY?.trim()) {
+    return null;
+  }
+  return {
+    id: 'nvidia_nim',
+    healthKey: PROVIDERS.nvidia_nim.healthKey,
+    def: PROVIDERS.nvidia_nim,
+  };
+}
+
 export function getProvidersByPreference(preference: RoutingPreference): ProviderChainEntry[] {
   const e = (id: ProviderId): ProviderChainEntry => ({
     id,
@@ -107,13 +145,22 @@ export function getProvidersByPreference(preference: RoutingPreference): Provide
     def: PROVIDERS[id],
   });
   const ds = deepseekChainEntry();
+  const nv = nvidiaChainEntry();
 
   if (preference === 'sonnet') {
-    return [e('claude_sonnet'), e('gpt4o'), e('claude_haiku')];
+    return nv ? [e('claude_sonnet'), e('gpt4o'), nv, e('claude_haiku')] : [e('claude_sonnet'), e('gpt4o'), e('claude_haiku')];
   }
   if (preference === 'haiku') {
     const tail = [e('llama_local'), e('openrouter_cheap'), e('gpt4o_mini')];
+    if (nv && ds) return [e('claude_haiku'), nv, ds, ...tail];
+    if (nv) return [e('claude_haiku'), nv, ...tail];
     return ds ? [e('claude_haiku'), ds, ...tail] : [e('claude_haiku'), ...tail];
+  }
+  if (nv && ds) {
+    return [e('llama_local'), nv, ds, e('claude_haiku'), e('openrouter_cheap')];
+  }
+  if (nv) {
+    return [e('llama_local'), nv, e('claude_haiku'), e('openrouter_cheap')];
   }
   if (ds) {
     return [e('llama_local'), ds, e('claude_haiku'), e('openrouter_cheap')];

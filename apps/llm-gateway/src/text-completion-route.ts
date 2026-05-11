@@ -13,7 +13,7 @@ export interface TextCompletionBody {
   task_type?: OllamaTaskType;
   prompt: string;
   routing_bias?: RoutingBias;
-  provider_hint?: 'deepseek';
+  provider_hint?: 'deepseek' | 'nvidia';
   user_id?: string;
   feature?: string;
   usage_metadata?: Record<string, unknown>;
@@ -140,7 +140,10 @@ export async function handleTextCompletionHttp(
     routingRaw === 'cost' || routingRaw === 'balanced' || routingRaw === 'quality'
       ? routingRaw
       : undefined;
-  const providerHint = body.provider_hint === 'deepseek' ? 'deepseek' : undefined;
+  const providerHint =
+    body.provider_hint === 'deepseek' || body.provider_hint === 'nvidia'
+      ? body.provider_hint
+      : undefined;
 
   const userContent = `${prefixForTask(taskType)}${prompt.trim()}`;
   const llmReq: LLMRequest = {

@@ -329,7 +329,9 @@ node scripts/load-skills.js show opsly-api
 
 <!-- Actualizar al final de cada sesión -->
 
-**Fecha última actualización:** 2026-05-08 — **Branch governance para agentes:** ramas fijas reales solo por ambiente (`main`, `staging`) y prefijos fijos por módulo (`module/<modulo>/...`) para que cada agente cree una rama por cambio sin conflicto de refs; formato `module/<modulo>/<tipo>/<YYYYMMDD>-<tema>`, promoción `temporal → staging → main`, documentación en [`docs/01-development/GIT-WORKFLOW.md`](docs/01-development/GIT-WORKFLOW.md), aclaración CI/CD en [`docs/04-infrastructure/CICD-VPS.md`](docs/04-infrastructure/CICD-VPS.md) y script seguro `scripts/create-fixed-branches.sh` (dry-run por defecto; `--push` materializa `staging`, no ramas padre de módulo).
+**Fecha última actualización:** 2026-05-11 — **LLM Gateway NVIDIA NIM fallback:** `nvidia_nim` integrado como proveedor OpenAI-compatible de build.nvidia.com para cubrir caídas de Ollama local (`Opsly-mac2012` / `Opsly-mac2011`); `provider_hint="nvidia"` y `routing_bias=cost` lo priorizan en cloud fallback; variables `NVIDIA_API_KEY`, `NVIDIA_BASE_URL`, `NVIDIA_MODEL`, `NVIDIA_COST_PER_1K_INPUT`, `NVIDIA_COST_PER_1K_OUTPUT` documentadas.
+
+**Fecha referencia anterior:** 2026-05-08 — **Branch governance para agentes:** ramas fijas reales solo por ambiente (`main`, `staging`) y prefijos fijos por módulo (`module/<modulo>/...`) para que cada agente cree una rama por cambio sin conflicto de refs; formato `module/<modulo>/<tipo>/<YYYYMMDD>-<tema>`, promoción `temporal → staging → main`, documentación en [`docs/01-development/GIT-WORKFLOW.md`](docs/01-development/GIT-WORKFLOW.md), aclaración CI/CD en [`docs/04-infrastructure/CICD-VPS.md`](docs/04-infrastructure/CICD-VPS.md) y script seguro `scripts/create-fixed-branches.sh` (dry-run por defecto; `--push` materializa `staging`, no ramas padre de módulo).
 
 **Fecha referencia anterior:** 2026-05-03 — **Merge `autonomy/phase2-activation` → `main`:** `217afbd` — search-cache (context-builder), embeddings por lotes (llm-gateway), `phase_3_economics` en `runtime/context/system_state.json`, [`docs/reports/PARALLEL-EXECUTION-2026-04-29.md`](docs/reports/PARALLEL-EXECUTION-2026-04-29.md). BullMQ v5: `getPollingProfile()` / `OrchestratorDrainProfile` en `apps/orchestrator/src/queue-opts.ts`. Worktrees locales retirados; ramas `autonomy/phase2-activation` y `claude/mystifying-curie-74e91d` borradas (`git branch -d`). **Misma fecha (referencia):** higiene Git — solo `main`, PRs #174/#180/#184 archivados, **#185** `GIT-WORKFLOW.md` + `git-branch-hygiene.sh` + `git-workflow.mdc`.
 
@@ -338,6 +340,11 @@ node scripts/load-skills.js show opsly-api
 **Fecha referencia (CRM / marketplace):** 2026-04-30 — **CRM Starter Pack aplicado en n8n tenants + marketplace v1 + DeepSeek V4/OpenClaw reforzado:** 6 contenedores n8n del VPS tienen los 4 workflows CRM importados; portal incluye `/dashboard/[tenant]/workflows`; LLM Gateway default DeepSeek V4 y trazabilidad `request_id` reforzada.
 
 **Siguiente fase:** Semana 6 (Segundo Cliente + E2E), ventana **2026-04-29 → 2026-05-03** ⏳ **EN PROGRESO**. Plan: [`docs/SEMANA-6-PLAN.md`](docs/SEMANA-6-PLAN.md).
+
+**Sesión 2026-05-11 — NVIDIA NIM fallback LLM Gateway ✅**
+- ✅ Proveedor `nvidia_nim` en `apps/llm-gateway`: base default `https://integrate.api.nvidia.com/v1`, health `GET /models`, chat `POST /chat/completions` vía capa OpenAI-compatible.
+- ✅ Routing: `provider_hint="nvidia"` prioriza NVIDIA; `routing_bias=cost` usa NVIDIA antes de DeepSeek/Haiku cuando Ollama local está caído o no disponible.
+- ✅ Docs actualizadas (`docs/00-architecture/LLM-GATEWAY.md`, `docs/04-infrastructure/DOPPLER-VARS.md`) para operar con `Opsly-mac2012` caído sin saltarse OpenClaw → LLM Gateway.
 
 **Sesión 2026-05-08 — Branch governance por ambiente y módulo ✅**
 - ✅ Definidas ramas persistentes: `main` y `staging`; los módulos quedan como prefijos `module/<modulo>/...`, no como ramas padre.

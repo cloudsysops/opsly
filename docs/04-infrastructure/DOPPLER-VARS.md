@@ -125,6 +125,11 @@ Esperado: `status: ok` y títulos de las cinco bases (mismas variables `NOTION_D
 | `LLM_CACHE_TTL_SECONDS`                      | TTL del cache Redis de prompts (default `7200`).                                                 |
 | `OLLAMA_URL`                                 | Base URL de Ollama (default `http://localhost:11434`).                                           |
 | `OLLAMA_MODEL`                               | Modelo Ollama por defecto (default `nemotron-3-nano:4b`; override p. ej. `nemotron-3-nano:30b`). |
+| `NVIDIA_API_KEY`                            | NVIDIA NIM / build.nvidia.com (fallback cloud OpenAI-compatible si Ollama local cae).             |
+| `NVIDIA_BASE_URL`                           | Opcional; default `https://integrate.api.nvidia.com/v1`.                                          |
+| `NVIDIA_MODEL`                              | Opcional; default `nvidia/llama-3.3-nemotron-super-49b-v1.5`.                                     |
+| `NVIDIA_COST_PER_1K_INPUT`                  | Opcional; coste orientativo input para metering (default `0` hasta fijar pricing real).           |
+| `NVIDIA_COST_PER_1K_OUTPUT`                 | Opcional; coste orientativo output para metering (default `0` hasta fijar pricing real).          |
 | `OPENROUTER_API_KEY`                         | OpenRouter (fallback económico).                                                                 |
 | `OPENAI_API_KEY`                             | OpenAI (`gpt-4o`, `gpt-4o-mini`) como fallback.                                                  |
 | `OPENROUTER_HTTP_REFERER`                    | Opcional: cabecera HTTP-Referer para OpenRouter.                                                 |

@@ -5,6 +5,10 @@ function hasDeepseekCredentials(): boolean {
   return Boolean(process.env.DEEPSEEK_API_KEY?.trim());
 }
 
+function hasNvidiaCredentials(): boolean {
+  return Boolean(process.env.NVIDIA_API_KEY?.trim());
+}
+
 function entry(id: ProviderId): ProviderChainEntry {
   return {
     id,
@@ -20,33 +24,43 @@ function deepseekEntry(): ProviderChainEntry | null {
   return entry('deepseek_chat');
 }
 
+function nvidiaEntry(): ProviderChainEntry | null {
+  if (!hasNvidiaCredentials()) {
+    return null;
+  }
+  return entry('nvidia_nim');
+}
+
+function compact(entries: Array<ProviderChainEntry | null>): ProviderChainEntry[] {
+  return entries.filter((item): item is ProviderChainEntry => item !== null);
+}
+
 /**
  * Orden de proveedores cloud en `llmCallDirect` (después de Ollama local si aplica).
- * - `routing_bias=cost` o `provider_hint=deepseek`: DeepSeek primero cuando hay API key.
- * - `balanced` / sin sesgo explícito: Haiku, luego DeepSeek, luego OpenAI mini, OpenRouter.
- * - `quality`: Haiku → OpenAI → OpenRouter → DeepSeek (último recurso barato).
+ * - `provider_hint=nvidia`: NVIDIA NIM primero cuando hay API key.
+ * - `provider_hint=deepseek`: DeepSeek primero cuando hay API key.
+ * - `routing_bias=cost`: NVIDIA NIM → DeepSeek → Haiku → OpenAI mini → OpenRouter.
+ * - `balanced` / sin sesgo explícito: Haiku, NVIDIA NIM, DeepSeek, OpenAI mini, OpenRouter.
+ * - `quality`: Haiku → OpenAI mini → NVIDIA NIM → OpenRouter → DeepSeek.
  */
 export function buildLlmDirectCloudChain(req: LLMRequest): ProviderChainEntry[] {
   const ds = deepseekEntry();
+  const nv = nvidiaEntry();
   const haiku = entry('claude_haiku');
   const mini = entry('gpt4o_mini');
   const orCheap = entry('openrouter_cheap');
 
-  const hintDeepseek = req.provider_hint === 'deepseek';
-  const bias = req.routing_bias;
-
-  if (hintDeepseek && ds) {
-    return [ds, haiku, mini, orCheap];
+  if (req.provider_hint === 'nvidia' && nv) {
+    return compact([nv, ds, haiku, mini, orCheap]);
   }
-  if (bias === 'cost' && ds) {
-    return [ds, haiku, mini, orCheap];
+  if (req.provider_hint === 'deepseek' && ds) {
+    return compact([ds, nv, haiku, mini, orCheap]);
   }
-  if (bias === 'quality') {
-    const base = [haiku, mini, orCheap];
-    return ds ? [...base, ds] : base;
+  if (req.routing_bias === 'cost') {
+    return compact([nv, ds, haiku, mini, orCheap]);
   }
-  if (ds) {
-    return [haiku, ds, mini, orCheap];
+  if (req.routing_bias === 'quality') {
+    return compact([haiku, mini, nv, orCheap, ds]);
   }
-  return [haiku, mini, orCheap];
+  return compact([haiku, nv, ds, mini, orCheap]);
 }
