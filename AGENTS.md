@@ -328,7 +328,9 @@ node scripts/load-skills.js show opsly-api
 
 <!-- Actualizar al final de cada sesión -->
 
-**Fecha última actualización:** 2026-05-06 — **Hive/OAR retry metrics + test integrado:** `hive-cycle.test.ts`, `computeHiveStats`, inyección de dependencias en `QueenBee`/`HiveOrchestrator`. Validación focal: `validate-openapi`, `validate-skills`, tests Hive; `type-check` orchestrator bloqueado por dependencias/tipos preexistentes no relacionados (`@tavily/core`, `google-auth-library`, `litellm`, `pg`, `axios`, etc.).
+**Fecha última actualización:** 2026-05-11 — **Opsly AI Gateway MVP en admin:** `/api/ai/chat` server-side con provider NVIDIA Build/NIM, UI `/ai-gateway`, script `scripts/test-ai-gateway.js`, docs `docs/AI-GATEWAY.md`, envs `AI_GATEWAY_*`/`NVIDIA_*`. Validación: admin lint/type-check OK; build bloqueado por fetch de Google Fonts/lockfile SWC en entorno.
+
+**Fecha referencia anterior:** 2026-05-06 — **Hive/OAR retry metrics + test integrado:** `hive-cycle.test.ts`, `computeHiveStats`, inyección de dependencias en `QueenBee`/`HiveOrchestrator`. Validación focal: `validate-openapi`, `validate-skills`, tests Hive; `type-check` orchestrator bloqueado por dependencias/tipos preexistentes no relacionados (`@tavily/core`, `google-auth-library`, `litellm`, `pg`, `axios`, etc.).
 
 **Fecha referencia anterior:** 2026-05-03 — **Merge `autonomy/phase2-activation` → `main`:** `217afbd` — search-cache (context-builder), embeddings por lotes (llm-gateway), `phase_3_economics` en `runtime/context/system_state.json`, [`docs/reports/PARALLEL-EXECUTION-2026-04-29.md`](docs/reports/PARALLEL-EXECUTION-2026-04-29.md). BullMQ v5: `getPollingProfile()` / `OrchestratorDrainProfile` en `apps/orchestrator/src/queue-opts.ts`. Worktrees locales retirados; ramas `autonomy/phase2-activation` y `claude/mystifying-curie-74e91d` borradas (`git branch -d`). **Misma fecha (referencia):** higiene Git — solo `main`, PRs #174/#180/#184 archivados, **#185** `GIT-WORKFLOW.md` + `git-branch-hygiene.sh` + `git-workflow.mdc`.
 
@@ -338,6 +340,15 @@ node scripts/load-skills.js show opsly-api
 
 **Siguiente fase:** Semana 6 (Segundo Cliente + E2E), ventana **2026-04-29 → 2026-05-03** ⏳ **EN PROGRESO**. Plan: [`docs/SEMANA-6-PLAN.md`](docs/SEMANA-6-PLAN.md).
 
+
+
+**Sesión 2026-05-11 — Opsly AI Gateway MVP (NVIDIA Build/NIM) ✅**
+- ✅ Admin API interna `POST /api/ai/chat` con auth de sesión existente (o demo público), validación de mensajes, límites de longitud/tokens, timeout y errores sanitizados.
+- ✅ Abstracción `apps/admin/lib/ai-gateway`: tipos, provider NVIDIA compatible OpenAI `/chat/completions`, selector de provider y gateway.
+- ✅ UI admin `/ai-gateway` para prompt/model override y respuesta provider/model/content; Sidebar incluye acceso **AI Gateway**.
+- ✅ `.env.example` documenta `AI_GATEWAY_PROVIDER`, `AI_GATEWAY_TIMEOUT_MS`, `NVIDIA_API_KEY`, `NVIDIA_BASE_URL`, `NVIDIA_DEFAULT_MODEL` sin secretos.
+- ✅ `docs/AI-GATEWAY.md` + `scripts/test-ai-gateway.js` para prueba local/VPS.
+- ⚠️ `npm run build --workspace=@intcloudsysops/admin` falla en este entorno por `next/font` descargando Google Fonts y patch SWC lockfile; `npm run lint` y `npm run type-check` admin pasan.
 
 **Sesión 2026-05-06 — Hive/OAR ciclo integrado + retry stats ✅**
 - ✅ `QueenBee` acepta dependencias inyectables (`QueenStateStore`, `QueenPheromoneBus`) para validar flujo sin Redis real en unit/integration tests.

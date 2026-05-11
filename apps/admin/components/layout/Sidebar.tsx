@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import {
   Activity,
   BarChart3,
+  Bot,
   BookOpen,
   Boxes,
   CircleDollarSign,
@@ -26,6 +27,7 @@ const nav = [
   { href: '/tenants', label: 'Tenants', icon: Server },
   { href: '/invitations', label: 'Invitations', icon: Mail },
   { href: '/metrics/llm', label: 'LLM Metrics', icon: BarChart3 },
+  { href: '/ai-gateway', label: 'AI Gateway', icon: Bot },
   { href: '/api-surface', label: 'API Surface', icon: Network },
   { href: '/agents', label: 'Agent Teams', icon: Activity },
   { href: '/agents-team', label: 'Agents Config', icon: Activity },
