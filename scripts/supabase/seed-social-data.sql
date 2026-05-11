@@ -1,29 +1,20 @@
--- Seed data for social media automation tables.
--- Run after migration 0053: psql $SUPABASE_DATABASE_URL < scripts/supabase/seed-social-data.sql
-
-INSERT INTO featured_streamers (name, platform, description) VALUES
-  ('Ibai Llanos', 'Twitch', 'Esports & Gaming'),
-  ('Auronplay', 'Twitch', 'Gaming & Variety'),
-  ('Pokimane', 'Twitch', 'Gaming & Community'),
-  ('Valkyrae', 'Twitch', 'Gaming & Entertainment'),
-  ('TheGrefG', 'Twitch', 'Fortnite & Gaming'),
-  ('Spreen', 'Twitch', 'Gaming & Content')
+-- Seed featured streamers
+INSERT INTO featured_streamers (name, platform, description, active) VALUES
+  ('Ibai Llanos', 'Twitch', 'Esports & Gaming commentator', true),
+  ('Auronplay', 'Twitch', 'Gaming & variety content', true),
+  ('Pokimane', 'Twitch', 'Gaming & community builder', true),
+  ('Valkyrae', 'Twitch', 'Gaming & entertainment', true),
+  ('TheGrefG', 'Twitch', 'Fortnite & competitive gaming', true),
+  ('Spreen', 'Twitch', 'Gaming & content creator', true)
 ON CONFLICT DO NOTHING;
 
-INSERT INTO content_templates (category, template_name, prompt_text, language, tags) VALUES
-  ('viral', 'streamer_reaction',
-   'Genera un caption VIRAL de 30-50 palabras para un Reel sobre "{streamer}" reaccionando a "{opsly_theme}". Lenguaje: {language}. Incluir emoji al inicio, terminar con CTA.',
-   'es', ARRAY['viral', 'streamer', 'reaction']),
-  ('viral', 'streamer_reaction',
-   'Generate a VIRAL 30-50 word caption for a Reel about "{streamer}" reacting to "{opsly_theme}". Include emoji at start, end with CTA.',
-   'en', ARRAY['viral', 'streamer', 'reaction']),
-  ('viral', 'streamer_clip_mashup',
-   'Create a 25-40 word caption mashup: clips de {streamer} + visualizacion tecnica de {opsly_theme}. Idioma: {language}. Hashtags: #Opsly #DevOps #{streamer_name}.',
-   'es', ARRAY['mashup', 'clip', 'technical']),
-  ('educational', 'education_entertaining',
-   'Caption educativo estilo Twitch sobre "{opsly_theme}". 35-50 palabras. Gancho intrigante. Hashtags: #Opsly #Tech #{tema_simplificado}.',
-   'es', ARRAY['educational', 'tutorial', 'twitch']),
-  ('educational', 'education_entertaining',
-   'Educational Twitch-style caption about "{opsly_theme}". 35-50 words. Intriguing hook. Hashtags: #Opsly #Tech #{tema_simplificado}.',
-   'en', ARRAY['educational', 'tutorial', 'twitch'])
+-- Seed content templates
+INSERT INTO content_templates (category, template_name, prompt_text, language) VALUES
+  ('viral', 'streamer_reaction', 'Create viral caption for {streamer} reacting to {opsly_theme}. {language}. Add emoji, #OpslyLife', 'es'),
+  ('viral', 'streamer_reaction', 'Create viral TikTok caption: {streamer} + {opsly_theme}. {language}. 30-50 words.', 'en'),
+  ('educational', 'education_entertaining', 'Explain {opsly_theme} Twitch-style. {language}. 35-50 words. Hook: intriguing. End: #Opsly', 'es')
 ON CONFLICT DO NOTHING;
+
+-- Verify
+SELECT COUNT(*) AS streamers_count FROM featured_streamers;
+SELECT COUNT(*) AS templates_count FROM content_templates;
