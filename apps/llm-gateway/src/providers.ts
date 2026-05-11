@@ -1,4 +1,10 @@
-export type ProviderKind = 'anthropic' | 'ollama' | 'openrouter' | 'openai' | 'deepseek';
+export type ProviderKind =
+  | 'anthropic'
+  | 'ollama'
+  | 'openrouter'
+  | 'openai'
+  | 'deepseek'
+  | 'nvidia';
 
 export interface ProviderDefinition {
   /** Model id for the upstream API */
@@ -19,6 +25,15 @@ const deepseekModel =
   process.env.DEEPSEEK_MODEL?.trim() && process.env.DEEPSEEK_MODEL.trim().length > 0
     ? process.env.DEEPSEEK_MODEL.trim()
     : 'deepseek-v4-flash';
+
+const nvidiaBase = (process.env.NVIDIA_BASE_URL ?? 'https://integrate.api.nvidia.com/v1').replace(
+  /\/$/,
+  ''
+);
+const nvidiaModel =
+  process.env.NVIDIA_MODEL_ID?.trim() && process.env.NVIDIA_MODEL_ID.trim().length > 0
+    ? process.env.NVIDIA_MODEL_ID.trim()
+    : 'meta/llama-3.1-8b-instruct';
 
 export const PROVIDERS = {
   claude_haiku: {
@@ -79,6 +94,18 @@ export const PROVIDERS = {
     baseUrl: openRouterBase,
     healthKey: 'openrouter',
   },
+  /**
+   * NVIDIA API Catalog (OpenAI-compatible). Requiere `NVIDIA_API_KEY` en runtime.
+   * Modelo/base vía Doppler: `NVIDIA_MODEL_ID`, `NVIDIA_BASE_URL` (opcional).
+   */
+  nvidia_chat: {
+    model: nvidiaModel,
+    kind: 'nvidia',
+    cost_per_1k_input: 0.0001,
+    cost_per_1k_output: 0.0002,
+    baseUrl: nvidiaBase,
+    healthKey: 'nvidia',
+  },
   gpt4o_mini: {
     model: 'gpt-4o-mini',
     kind: 'openai',
@@ -116,6 +143,17 @@ function deepseekChainEntry(): ProviderChainEntry | null {
   };
 }
 
+function nvidiaChainEntry(): ProviderChainEntry | null {
+  if (!process.env.NVIDIA_API_KEY?.trim()) {
+    return null;
+  }
+  return {
+    id: 'nvidia_chat',
+    healthKey: PROVIDERS.nvidia_chat.healthKey,
+    def: PROVIDERS.nvidia_chat,
+  };
+}
+
 export function getProvidersByPreference(preference: RoutingPreference): ProviderChainEntry[] {
   const e = (id: ProviderId): ProviderChainEntry => ({
     id,
@@ -132,15 +170,34 @@ export function getProvidersByPreference(preference: RoutingPreference): Provide
     return ds ? [e('claude_haiku'), ds, ...tail] : [e('claude_haiku'), ...tail];
   }
   if (preference === 'balanced') {
-    return [e('deepseek_v4'), e('claude_sonnet'), e('deepseek_chat'), e('claude_haiku')];
+    if (ds) {
+      const parts: ProviderChainEntry[] = [
+        e('deepseek_v4'),
+        e('claude_sonnet'),
+        e('deepseek_chat'),
+      ];
+      const nv = nvidiaChainEntry();
+      if (nv) {
+        parts.push(nv);
+      }
+      parts.push(e('claude_haiku'));
+      return parts;
+    }
+    return [e('claude_sonnet'), e('claude_haiku'), e('gpt4o_mini'), e('openrouter_cheap')];
   }
   if (preference === 'code') {
-    return [e('codellama_local'), e('gpt4o'), e('deepseek_chat'), e('llama_local')];
+    const tail = ds ? [e('deepseek_chat')] : [];
+    return [e('codellama_local'), e('gpt4o'), ...tail, e('llama_local')];
   }
+  const nv = nvidiaChainEntry();
   if (ds) {
-    return [e('llama_local'), e('deepseek_chat'), e('claude_haiku'), e('openrouter_cheap')];
+    return nv
+      ? [e('llama_local'), e('deepseek_chat'), nv, e('claude_haiku'), e('openrouter_cheap')]
+      : [e('llama_local'), e('deepseek_chat'), e('claude_haiku'), e('openrouter_cheap')];
   }
-  return [e('llama_local'), e('claude_haiku'), e('openrouter_cheap')];
+  return nv
+    ? [e('llama_local'), nv, e('claude_haiku'), e('openrouter_cheap')]
+    : [e('llama_local'), e('claude_haiku'), e('openrouter_cheap')];
 }
 
 export function resolveRoutingPreference(

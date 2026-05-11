@@ -137,6 +137,9 @@ describe('local-first policy', () => {
   });
 
   it('429 en Claude hace retry/fallback cloud secundario', async () => {
+    vi.stubEnv('OPENROUTER_API_KEY', '');
+    vi.stubEnv('DEEPSEEK_API_KEY', '');
+    vi.stubEnv('NVIDIA_API_KEY', '');
     vi.stubGlobal(
       'fetch',
       vi
@@ -159,7 +162,7 @@ describe('local-first policy', () => {
 
     expect(out.content).toBe('fallback openai');
     expect(out.model_used).toBe('gpt-4o-mini');
-    expect(notifyProviderRateLimitMock).toHaveBeenCalled();
+    // notifyProviderRateLimit desactivado en llm-direct (Discord retirado); el mock queda por compatibilidad.
   });
 
   it('Loguea provider, latencia y costo', async () => {

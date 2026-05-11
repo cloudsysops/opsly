@@ -5,6 +5,14 @@ function hasDeepseekCredentials(): boolean {
   return Boolean(process.env.DEEPSEEK_API_KEY?.trim());
 }
 
+function hasOpenRouterCredentials(): boolean {
+  return Boolean(process.env.OPENROUTER_API_KEY?.trim());
+}
+
+function hasNvidiaCredentials(): boolean {
+  return Boolean(process.env.NVIDIA_API_KEY?.trim());
+}
+
 function entry(id: ProviderId): ProviderChainEntry {
   return {
     id,
@@ -20,33 +28,85 @@ function deepseekEntry(): ProviderChainEntry | null {
   return entry('deepseek_chat');
 }
 
+function openRouterCheapEntry(): ProviderChainEntry | null {
+  if (!hasOpenRouterCredentials()) {
+    return null;
+  }
+  return entry('openrouter_cheap');
+}
+
+function nvidiaEntry(): ProviderChainEntry | null {
+  if (!hasNvidiaCredentials()) {
+    return null;
+  }
+  return entry('nvidia_chat');
+}
+
+/**
+ * Orden económico en cloud (tras Ollama local en `llmCallDirect` si aplica):
+ * OpenRouter barato → DeepSeek → NVIDIA (si claves) → Haiku → GPT-4o mini.
+ */
+function costOrderedCloud(): ProviderChainEntry[] {
+  const haiku = entry('claude_haiku');
+  const mini = entry('gpt4o_mini');
+  const out: ProviderChainEntry[] = [];
+  const or = openRouterCheapEntry();
+  const ds = deepseekEntry();
+  const nv = nvidiaEntry();
+  if (or) {
+    out.push(or);
+  }
+  if (ds) {
+    out.push(ds);
+  }
+  if (nv) {
+    out.push(nv);
+  }
+  out.push(haiku, mini);
+  return out;
+}
+
 /**
  * Orden de proveedores cloud en `llmCallDirect` (después de Ollama local si aplica).
- * - `routing_bias=cost` o `provider_hint=deepseek`: DeepSeek primero cuando hay API key.
- * - `balanced` / sin sesgo explícito: Haiku, luego DeepSeek, luego OpenAI mini, OpenRouter.
- * - `quality`: Haiku → OpenAI → OpenRouter → DeepSeek (último recurso barato).
+ * Prioriza coste bajo / capa gratuita en worker: OpenRouter → DeepSeek → NVIDIA → Haiku → mini.
+ * `routing_bias=cost` o `provider_hint=deepseek`: DeepSeek primero cuando hay API key.
+ * `balanced` / sin sesgo explícito: Haiku primero, luego cola económica (sin duplicar Haiku).
+ * `quality`: Haiku → mini → OpenRouter → NVIDIA → DeepSeek al final.
  */
 export function buildLlmDirectCloudChain(req: LLMRequest): ProviderChainEntry[] {
   const ds = deepseekEntry();
   const haiku = entry('claude_haiku');
   const mini = entry('gpt4o_mini');
   const orCheap = entry('openrouter_cheap');
+  const nv = nvidiaEntry();
 
   const hintDeepseek = req.provider_hint === 'deepseek';
   const bias = req.routing_bias;
 
   if (hintDeepseek && ds) {
-    return [ds, haiku, mini, orCheap];
+    const tail = costOrderedCloud().filter((e) => e.id !== 'deepseek_chat');
+    return [ds, ...tail];
   }
-  if (bias === 'cost' && ds) {
-    return [ds, haiku, mini, orCheap];
+  if (bias === 'cost') {
+    return costOrderedCloud();
   }
   if (bias === 'quality') {
-    const base = [haiku, mini, orCheap];
-    return ds ? [...base, ds] : base;
+    const base = [haiku, mini];
+    const tail: ProviderChainEntry[] = [];
+    if (hasOpenRouterCredentials()) {
+      tail.push(orCheap);
+    }
+    if (nv) {
+      tail.push(nv);
+    }
+    if (ds) {
+      tail.push(ds);
+    }
+    return [...base, ...tail];
   }
+  const cheap = costOrderedCloud();
   if (ds) {
-    return [haiku, ds, mini, orCheap];
+    return [haiku, ...cheap.filter((e) => e.id !== 'claude_haiku')];
   }
-  return [haiku, mini, orCheap];
+  return [haiku, ...cheap.filter((e) => e.id !== 'claude_haiku')];
 }

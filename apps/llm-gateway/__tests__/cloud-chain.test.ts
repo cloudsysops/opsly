@@ -13,9 +13,13 @@ function minimalReq(overrides: Partial<LLMRequest> = {}): LLMRequest {
 
 describe('buildLlmDirectCloudChain', () => {
   const savedKey = process.env.DEEPSEEK_API_KEY;
+  const savedOr = process.env.OPENROUTER_API_KEY;
+  const savedNv = process.env.NVIDIA_API_KEY;
 
   beforeEach(() => {
     process.env.DEEPSEEK_API_KEY = 'test-key';
+    delete process.env.OPENROUTER_API_KEY;
+    delete process.env.NVIDIA_API_KEY;
   });
 
   afterEach(() => {
@@ -23,6 +27,16 @@ describe('buildLlmDirectCloudChain', () => {
       delete process.env.DEEPSEEK_API_KEY;
     } else {
       process.env.DEEPSEEK_API_KEY = savedKey;
+    }
+    if (savedOr === undefined) {
+      delete process.env.OPENROUTER_API_KEY;
+    } else {
+      process.env.OPENROUTER_API_KEY = savedOr;
+    }
+    if (savedNv === undefined) {
+      delete process.env.NVIDIA_API_KEY;
+    } else {
+      process.env.NVIDIA_API_KEY = savedNv;
     }
   });
 
@@ -33,7 +47,30 @@ describe('buildLlmDirectCloudChain', () => {
       'deepseek_chat',
       'claude_haiku',
       'gpt4o_mini',
+    ]);
+  });
+
+  it('puts OpenRouter before DeepSeek when routing_bias is cost and OpenRouter key exists', () => {
+    process.env.OPENROUTER_API_KEY = 'or-test';
+    const chain = buildLlmDirectCloudChain(minimalReq({ routing_bias: 'cost' }));
+    expect(chain.map((e: ProviderChainEntry) => e.id)).toEqual([
       'openrouter_cheap',
+      'deepseek_chat',
+      'claude_haiku',
+      'gpt4o_mini',
+    ]);
+  });
+
+  it('inserts NVIDIA after DeepSeek in cost chain when both keys exist', () => {
+    process.env.OPENROUTER_API_KEY = 'or-test';
+    process.env.NVIDIA_API_KEY = 'nv-test';
+    const chain = buildLlmDirectCloudChain(minimalReq({ routing_bias: 'cost' }));
+    expect(chain.map((e: ProviderChainEntry) => e.id)).toEqual([
+      'openrouter_cheap',
+      'deepseek_chat',
+      'nvidia_chat',
+      'claude_haiku',
+      'gpt4o_mini',
     ]);
   });
 

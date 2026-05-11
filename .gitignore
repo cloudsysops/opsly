@@ -44,6 +44,7 @@ tools/agents/prompts/secrets-*.md
 .env*.local
 !.env.local-workers.example
 .env.worker
+**/.write_test
 
 # package.json / package-lock.json: del monorepo; no ignorar. Cambios de deps menores → stash,
 # commit aparte, o rama; no añadir aquí.

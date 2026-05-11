@@ -178,6 +178,14 @@ async function runProvider(
     }
     throw lastErr instanceof Error ? lastErr : new Error(String(lastErr));
   }
+  if (def.kind === 'nvidia') {
+    const key = process.env.NVIDIA_API_KEY?.trim() ?? '';
+    if (!key) throw new Error('NVIDIA_API_KEY no configurada');
+    const base = (def.baseUrl ?? 'https://integrate.api.nvidia.com/v1').replace(/\/$/, '');
+    const endpoint = `${base}/chat/completions`;
+    const out = await invokeOpenAiCompatible(endpoint, key, def.model, req, undefined, 90_000);
+    return { ...out, model_used: def.model, billing: def };
+  }
   const key = process.env.OPENAI_API_KEY ?? '';
   if (!key) throw new Error('OPENAI_API_KEY no configurada');
   const out = await invokeOpenAiCompatible(
