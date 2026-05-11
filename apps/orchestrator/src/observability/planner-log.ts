@@ -11,7 +11,7 @@ export interface PlannerActionEnqueuedFields {
 }
 
 /**
- * Log JSON para Hermes / agregadores — una línea por acción del planner encolada.
+ * Log JSON para Billy (planner) / agregadores — una línea por acción del planner encolada.
  */
 export function logPlannerActionEnqueued(fields: PlannerActionEnqueuedFields): void {
   const line = JSON.stringify({

@@ -111,7 +111,7 @@ export type Intent =
   | 'notify'
   | 'sync_drive'
   | 'full_pipeline'
-  /** Delegación al LLM Gateway (Remote Planner / Chat.z); requiere tenant_slug y plan Hermes. */
+  /** Delegación al LLM Gateway (Billy / Remote Planner / Chat.z); requiere tenant_slug y plan de tenant (prioridad cola). */
   | 'remote_plan'
   /** Plan + sprint persistido en `platform.sprints`; ejecución en background. */
   | 'sprint_plan'

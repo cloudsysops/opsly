@@ -69,7 +69,9 @@ function costOrderedCloud(): ProviderChainEntry[] {
 /**
  * Orden de proveedores cloud en `llmCallDirect` (después de Ollama local si aplica).
  * Prioriza coste bajo / capa gratuita en worker: OpenRouter → DeepSeek → NVIDIA → Haiku → mini.
- * `routing_bias=cost` o `provider_hint=deepseek`: DeepSeek primero cuando hay API key.
+ * `provider_hint=deepseek`: DeepSeek primero cuando hay API key.
+ * `provider_hint=nvidia`: NVIDIA primero cuando hay API key (p. ej. catálogo gratuito).
+ * `routing_bias=cost`: cadena económica completa (sin hint explícito).
  * `balanced` / sin sesgo explícito: Haiku primero, luego cola económica (sin duplicar Haiku).
  * `quality`: Haiku → mini → OpenRouter → NVIDIA → DeepSeek al final.
  */
@@ -81,11 +83,16 @@ export function buildLlmDirectCloudChain(req: LLMRequest): ProviderChainEntry[] 
   const nv = nvidiaEntry();
 
   const hintDeepseek = req.provider_hint === 'deepseek';
+  const hintNvidia = req.provider_hint === 'nvidia';
   const bias = req.routing_bias;
 
   if (hintDeepseek && ds) {
     const tail = costOrderedCloud().filter((e) => e.id !== 'deepseek_chat');
     return [ds, ...tail];
+  }
+  if (hintNvidia && nv) {
+    const tail = costOrderedCloud().filter((e) => e.id !== 'nvidia_chat');
+    return [nv, ...tail];
   }
   if (bias === 'cost') {
     return costOrderedCloud();

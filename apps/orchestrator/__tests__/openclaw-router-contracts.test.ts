@@ -34,8 +34,8 @@ describe('openclaw router + contracts', () => {
     expect(result.agent.skill_binding).toBe('opsly-orchestrator');
     expect(result.execution.skill).toBeNull();
     expect(result.execution.mcp).toBeNull();
-    expect(result.llm.routing_bias).toBe('balanced');
-    expect(result.llm.provider_hint).toBeNull();
+    expect(result.llm.routing_bias).toBe('cost');
+    expect(result.llm.provider_hint).toBe('deepseek');
   });
 
   it('sets DeepSeek provider hint for skeptic role', () => {

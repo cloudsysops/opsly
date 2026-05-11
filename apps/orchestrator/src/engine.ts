@@ -340,7 +340,7 @@ export async function processIntent(
     case 'remote_plan': {
       const tenantSlug = req.tenant_slug;
       if (!tenantSlug || tenantSlug.length === 0) {
-        throw new Error('remote_plan requires tenant_slug (Hermes / tenant isolation)');
+        throw new Error('remote_plan requires tenant_slug (Billy planner / tenant isolation)');
       }
       const snapshot = buildPlannerContextSnapshot({ ...req, intent });
       const toolRegistry = createDefaultToolRegistry();
@@ -376,6 +376,7 @@ export async function processIntent(
       }
       const remotePlanStartedAt = Date.now();
       try {
+        // Billy: planner remoto → LLM Gateway (executeRemotePlanner)
         const gw = await executeRemotePlanner(contextStr, plannerTools, {
           tenantSlug,
           requestId: correlationId,

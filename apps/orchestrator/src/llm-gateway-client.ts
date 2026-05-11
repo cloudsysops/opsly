@@ -1,6 +1,6 @@
 /**
  * Cliente HTTP al servicio llm-gateway (sin llamadas directas a Anthropic/OpenAI).
- * POST /v1/planner — Hermes vía gateway (usage_events en el proceso gateway).
+ * POST /v1/planner — Billy / planner vía gateway (`usage_events` en el proceso gateway; metering Hermes).
  */
 
 import { z } from 'zod';

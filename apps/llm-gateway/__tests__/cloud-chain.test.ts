@@ -40,6 +40,18 @@ describe('buildLlmDirectCloudChain', () => {
     }
   });
 
+  it('puts NVIDIA first when provider_hint is nvidia', () => {
+    process.env.NVIDIA_API_KEY = 'nv-test';
+    const chain = buildLlmDirectCloudChain(minimalReq({ provider_hint: 'nvidia' }));
+    expect(chain[0]?.id).toBe('nvidia_chat');
+    expect(chain.map((e: ProviderChainEntry) => e.id)).toEqual([
+      'nvidia_chat',
+      'deepseek_chat',
+      'claude_haiku',
+      'gpt4o_mini',
+    ]);
+  });
+
   it('puts DeepSeek first when provider_hint is deepseek', () => {
     const chain = buildLlmDirectCloudChain(minimalReq({ provider_hint: 'deepseek' }));
     expect(chain[0]?.id).toBe('deepseek_chat');

@@ -6,7 +6,8 @@
       "envUrl": "OPSLY_CURSOR_AGENT_URL",
       "type": "http",
       "timeoutMs": 60000,
-      "retries": 1
+      "retries": 1,
+      "llmFallback": "deepseek_v4"
     },
     "claude": {
       "enabled": true,
@@ -14,7 +15,17 @@
       "envUrl": "OPSLY_CLAUDE_AGENT_URL",
       "type": "http",
       "timeoutMs": 120000,
-      "retries": 1
+      "retries": 1,
+      "llmFallback": "claude_haiku"
+    },
+    "llm_gateway": {
+      "enabled": true,
+      "url": "http://localhost:3010",
+      "envUrl": "LLM_GATEWAY_URL",
+      "type": "http",
+      "timeoutMs": 120000,
+      "retries": 2,
+      "description": "LLM Gateway con proveedores gratuitos: Ollama, DeepSeek, NVIDIA, OpenRouter"
     },
     "copilot": {
       "enabled": false,
