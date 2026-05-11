@@ -92,6 +92,7 @@
     "social:list": "node scripts/social/commands.mjs list",
     "social:test": "vitest run scripts/social/__tests__/",
     "social:secrets": "node scripts/setup/configure-secrets.mjs",
+    "social:validate": "node scripts/setup/validate-connections.mjs",
     "prepare": "husky",
     "commit": "git-cz"
   },
