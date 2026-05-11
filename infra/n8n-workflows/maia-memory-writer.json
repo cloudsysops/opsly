@@ -1,0 +1,39 @@
+{
+  "name": "Maia Life Systems - Memory Writer",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "maia/memory-write",
+        "httpMethod": "POST",
+        "responseMode": "lastNode"
+      },
+      "id": "maia-memory-webhook",
+      "name": "Memory Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [0, 0]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$env.OPSLY_ORCHESTRATOR_URL || 'http://orchestrator:3011'}}/queue/openclaw",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ name: 'maia.memory_write', payload: $json, tenant_slug: $json.tenant_slug, request_id: $json.request_id }) }}"
+      },
+      "id": "maia-memory-dispatch",
+      "name": "Dispatch Memory Write",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [240, 0]
+    }
+  ],
+  "connections": {
+    "Memory Webhook": {
+      "main": [[{ "node": "Dispatch Memory Write", "type": "main", "index": 0 }]]
+    }
+  },
+  "active": false,
+  "settings": { "executionOrder": "v1" },
+  "tags": ["maia", "life-systems", "memory"]
+}

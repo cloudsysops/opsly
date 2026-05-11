@@ -1,0 +1,40 @@
+---
+description: Maia life-systems agent rules for autonomous operational work
+globs:
+  - "apps/orchestrator/src/workers/**"
+  - "infra/n8n-workflows/**"
+  - "scripts/**"
+alwaysApply: false
+---
+
+# Maia Agent — Life Systems
+
+Maia life-systems changes must be incremental, auditable, and safe-by-default.
+
+## Required context
+
+- Include `tenant_slug` and `request_id` in every queued job payload when available.
+- Prefer dry-run behavior unless an explicit `MAIA_*_ENABLED=true` or `*_EXECUTE=true` flag is present.
+- Send all LLM-facing work through OpenClaw / LLM Gateway; do not add direct provider calls.
+- Keep worker effects idempotent: repeated jobs should not duplicate deploys, memory entries, or recovery actions without an idempotency key.
+
+## Branching
+
+Use a temporary module branch from `staging`:
+
+```bash
+git checkout staging
+git pull --ff-only origin staging
+git checkout -b module/orchestrator/feat/YYYYMMDD-short-topic
+```
+
+Do not create persistent parent branches like `module/orchestrator`.
+
+## Validation
+
+Before pushing life-systems work, run at least:
+
+```bash
+npm run type-check --workspace=@intcloudsysops/orchestrator
+bash -n scripts/install-cursor-monitor.sh
+```
