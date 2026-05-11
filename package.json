@@ -87,6 +87,11 @@
     "superagents:install": "bash scripts/install-superagents-stack.sh",
     "superagents:up": "bash scripts/superagents-up.sh",
     "superagents:doctor": "bash scripts/superagents-doctor.sh",
+    "social:generate": "node scripts/social/commands.mjs generate",
+    "social:publish": "node scripts/social/commands.mjs publish",
+    "social:list": "node scripts/social/commands.mjs list",
+    "social:test": "vitest run scripts/social/__tests__/",
+    "social:secrets": "node scripts/setup/configure-secrets.mjs",
     "prepare": "husky",
     "commit": "git-cz"
   },

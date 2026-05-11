@@ -5,10 +5,6 @@
 
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-const supabaseKey = process.env.SUPABASE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY || '';
-const supabase = createClient(supabaseUrl, supabaseKey);
-
 async function publishToInstagram(post) {
   const response = await fetch('https://graph.instagram.com/v18.0/me/media', {
     method: 'POST',
@@ -79,7 +75,13 @@ const PLATFORM_PUBLISHERS = {
   youtube: publishToYouTube,
 };
 
-async function updatePostStatus(postId, status, errorMsg) {
+function getSupabase() {
+  const url = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+  const key = process.env.SUPABASE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+  return createClient(url, key);
+}
+
+async function updatePostStatus(supabase, postId, status, errorMsg) {
   const updateData = {
     status,
     updated_at: new Date().toISOString(),
@@ -92,7 +94,9 @@ async function updatePostStatus(postId, status, errorMsg) {
   if (error) console.error(`Failed to update post ${postId}:`, error.message);
 }
 
-async function publishScheduledReels() {
+export async function publishScheduledReels(options = {}) {
+  const supabase = getSupabase();
+
   const { data: posts, error } = await supabase
     .from('social_posts')
     .select('*')
@@ -101,33 +105,76 @@ async function publishScheduledReels() {
     .limit(5);
 
   if (error) {
-    console.error('Error fetching scheduled posts:', error.message);
-    process.exit(1);
+    throw new Error(`Error fetching scheduled posts: ${error.message}`);
   }
 
   console.log(`Publicando ${posts.length} Reels...`);
+  const results = [];
 
   for (const post of posts) {
     let allOk = true;
+    const postResults = { id: post.id, platforms: {} };
+
     for (const platform of post.platforms) {
       const publisher = PLATFORM_PUBLISHERS[platform];
       if (!publisher) {
         console.log(`Skipping unknown platform: ${platform}`);
         continue;
       }
+
+      if (options.dryRun) {
+        console.log(`[DRY RUN] Would publish to ${platform}: ${post.id}`);
+        postResults.platforms[platform] = 'dry-run';
+        continue;
+      }
+
       try {
         await publisher(post);
         console.log(`Publicado en ${platform}: ${post.id}`);
+        postResults.platforms[platform] = 'ok';
       } catch (err) {
         console.error(`Error en ${platform}: ${err.message}`);
+        postResults.platforms[platform] = err.message;
         allOk = false;
       }
     }
-    await updatePostStatus(post.id, allOk ? 'published' : 'failed', allOk ? null : 'partial failure');
+
+    if (!options.dryRun) {
+      await updatePostStatus(
+        supabase,
+        post.id,
+        allOk ? 'published' : 'failed',
+        allOk ? null : 'partial failure',
+      );
+    }
+    results.push(postResults);
   }
+
+  return results;
 }
 
-publishScheduledReels().catch((err) => {
-  console.error('Error en publicación:', err.message);
-  process.exit(1);
-});
+export async function listPosts(options = {}) {
+  const supabase = getSupabase();
+  let query = supabase
+    .from('social_posts')
+    .select('id, title, caption, status, language, streamer_featured, scheduled_at, created_at')
+    .order('created_at', { ascending: false })
+    .limit(20);
+
+  if (options.status) {
+    query = query.eq('status', options.status);
+  }
+
+  const { data, error } = await query;
+  if (error) throw new Error(`Error listing posts: ${error.message}`);
+  return data;
+}
+
+const isMain = process.argv[1] && import.meta.url.endsWith(process.argv[1].replace(/.*\//, ''));
+if (isMain) {
+  const dryRun = process.argv.includes('--dry-run');
+  publishScheduledReels({ dryRun }).catch((err) => {
+    console.error('Error en publicacion:', err.message);
+    process.exit(1);
+  });
+}
