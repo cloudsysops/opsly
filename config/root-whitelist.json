@@ -35,6 +35,7 @@
     "HANDOFF.md",
     "SPRINT-TRACKER.md",
     "VALIDATION-REPORT-2026-04-12.md",
+    "PARALLEL-EXECUTION-STATUS.md",
     "commitlint.config.js",
     "Dockerfile.hermes",
     "Dockerfile.local-worker",
@@ -48,7 +49,8 @@
     ".env.local-workers.example",
     ".openclaw.md",
     ".opencode.json",
-    ".opsly-drive-config.json"
+    ".opsly-drive-config.json",
+    ".npmrc"
   ],
   "allowed_folders": [
     "apps",
@@ -63,6 +65,7 @@
     "skills",
     "supabase",
     "context",
+    "monitoring",
     ".github",
     ".agents",
     ".codex",

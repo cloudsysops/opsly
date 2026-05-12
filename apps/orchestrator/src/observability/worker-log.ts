@@ -18,19 +18,21 @@ export type WorkerName =
   | 'approval-gate'
   | 'hermes-orchestration'
   | 'intent_dispatch'
-  | 'openclaw-planner'
-  | 'openclaw-skeptic'
   | 'evolution'
   | 'hive'
   | 'jcode'
   | 'terminal'
-  | 'local_cursor'
-  | 'local_claude'
-  | 'local_copilot'
-  | 'local_opencode'
+  | 'local-cursor'
+  | 'local-claude'
+  | 'local-copilot'
+  | 'local-opencode'
+  | 'local-agents'
   | 'cloudsysops_agents'
   | 'defense_audit'
-  | 'test_validation';
+  | 'openclaw-planner'
+  | 'openclaw-skeptic'
+  | 'api_factory'
+  | 'autonomous_revenue';
 
 export function extractJobContext(job: Job): {
   task_id?: string;

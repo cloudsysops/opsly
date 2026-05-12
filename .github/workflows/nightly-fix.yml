@@ -1,3 +1,4 @@
+# Opsly — workflow catalog: docs/ops/workflows-index.md
 name: Nightly code quality
 
 on:
@@ -145,11 +146,11 @@ jobs:
           FILE="apps/api/app/api/health/route.ts"
           if [ ! -f "$FILE" ]; then
             mkdir -p "$(dirname "$FILE")"
-            cat > "$FILE" << 'EOF'
-export async function GET() {
-  return Response.json({ status: "ok", timestamp: new Date().toISOString() })
-}
-EOF
+            {
+              printf '%s\n' 'export async function GET() {'
+              printf '%s\n' '  return Response.json({ status: "ok", timestamp: new Date().toISOString() })'
+              printf '%s\n' '}'
+            } > "$FILE"
             echo "created=true" >> "$GITHUB_OUTPUT"
           else
             echo "created=false" >> "$GITHUB_OUTPUT"

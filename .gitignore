@@ -26,6 +26,11 @@ tools/agents/prompts/secrets-*.md
 
 # Cursor / entorno local
 .cursor/mcp.json
+.cursor/responses/
+.cursor/.validation/
+.cursor/.ipc/
+.cursor/.metadata.json
+.cursor/prompts/.metadata.json
 .env.local
 .env*.local
 .env.worker
@@ -88,5 +93,9 @@ docs/.obsidian/plugins/recent-files-obsidian/data.json
 
 # Claude local config (ignored)
 .claude/2-context-management/CLAUDE.local.md
+
 # Claude Code worktrees (local clones; never commit)
 .claude/worktrees/
+
+# Redis dump file
+dump.rdb

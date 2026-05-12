@@ -71,3 +71,4 @@ El check `docs-governance` (ADR-033) **NUNCA** puede saltarse.
 - Agregar secrets a GitHub Actions para que `validate-doppler`, `test`, `e2e` puedan correr en PRs de feature
 - Batch de shellcheck warnings → subir severidad a `-S warning` después del cleanup
 - Revisar `npm audit` findings caso por caso
+- Mantener **actionlint** (job Workflow Lint en `ci.yml`) sin falsos positivos “transientes”: los fallos repetidos suelen ser YAML/scripts deterministas; ver `docs/ops/workflows-index.md` § Workflow lint

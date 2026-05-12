@@ -185,7 +185,8 @@ function generateOutreachEmail(request: OutreachRequest): OutreachEmailResponse 
   const template_version = request.template_version || '1.0';
 
   const subject = `Hey ${name}, Opsly automates your ${specialization} workflows`;
-  const demoLink = 'https://ops.smiletripcare.com/demo';
+  const platformDomain = process.env.PLATFORM_DOMAIN?.trim() || 'op-sly.com';
+  const demoLink = `https://${platformDomain}/demo`;
   const body = buildPlainTextBody(name, company, specialization, demoLink);
   const html = buildHtmlBody(name, company, specialization, demoLink);
 

@@ -1,0 +1,72 @@
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+
+positions:
+  filename: /tmp/positions.yaml
+
+clients:
+  - url: http://loki:3100/loki/api/v1/push
+
+scrape_configs:
+  # Docker containers
+  - job_name: docker
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: dockerlogs
+          __path__: /var/lib/docker/containers/*/*-json.log
+    pipeline_stages:
+      - json:
+          expressions:
+            output: log
+            stream: stream
+      - output:
+          source: output
+
+  # MCP Gateway logs
+  - job_name: mcp-gateway
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: mcp-gateway
+    relabel_configs:
+      - source_labels: [__address__]
+        replacement: "opsly_mcp_gateway"
+        target_label: container
+
+  # Agent Manager logs
+  - job_name: agent-manager
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: agent-manager
+    relabel_configs:
+      - source_labels: [__address__]
+        replacement: "opsly_agent_manager"
+        target_label: container
+
+  # Rendering Engine logs
+  - job_name: rendering-engine
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: rendering-engine
+    relabel_configs:
+      - source_labels: [__address__]
+        replacement: "opsly_rendering_engine"
+        target_label: container
+
+  # Syslog (optional)
+  - job_name: syslog
+    syslog:
+      protocol_config:
+        protocol: rfc5424
+        address: 0.0.0.0:514
+    relabel_configs:
+      - source_labels: [__syslog_message_hostname]
+        target_label: hostname

@@ -20,5 +20,5 @@ export function getApiBaseUrl(): string {
     }
   }
   // Fallback for build or missing env - use default staging
-  return 'https://api.ops.smiletripcare.com';
+  return 'https://api.op-sly.com';
 }

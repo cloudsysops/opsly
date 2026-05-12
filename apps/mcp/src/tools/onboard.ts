@@ -51,12 +51,13 @@ export const onboardTool: ToolDefinition<OnboardInput, Record<string, unknown>> 
       invitation_sent: input.send_invitation,
     });
 
+    const platformDomain = process.env.PLATFORM_DOMAIN?.trim() || 'op-sly.com';
     return {
       success: true,
       tenant_id: tenant.id || null,
       slug: input.slug,
-      n8n_url: `https://n8n-${input.slug}.ops.smiletripcare.com`,
-      uptime_url: `https://uptime-${input.slug}.ops.smiletripcare.com`,
+      n8n_url: `https://n8n-${input.slug}.${platformDomain}`,
+      uptime_url: `https://uptime-${input.slug}.${platformDomain}`,
       invitation_sent: input.send_invitation,
     };
   },

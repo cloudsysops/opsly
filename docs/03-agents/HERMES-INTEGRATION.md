@@ -48,8 +48,10 @@ Aplicar `supabase/migrations/0028_hermes_tables.sql` (`npx supabase db push` en 
 ## Pruebas
 
 ```bash
-npm run test --workspace=@intcloudsysops/orchestrator -- hermes
+npm run test:hermes --workspace=@intcloudsysops/orchestrator
 ```
+
+Incluye `__tests__/hermes.test.ts` y `src/hermes/__tests__/context-enricher.test.ts` (sin depender de Redis).
 
 ## Troubleshooting
 

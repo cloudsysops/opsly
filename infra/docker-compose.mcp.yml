@@ -1,0 +1,302 @@
+version: '3.8'
+
+services:
+  # MCP Gateway - Central orchestration point
+  mcp-gateway:
+    build:
+      context: .
+      dockerfile: apps/mcp-gateway/Dockerfile
+    container_name: opsly_mcp_gateway
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+      DATABASE_URL: postgresql://${DB_USER}:${DB_PASSWORD}@postgres:5432/opsly_mcp
+      DISCORD_WEBHOOK_URL: ${DISCORD_WEBHOOK_URL}
+      LOG_LEVEL: info
+    ports:
+      - "3001:3001"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - opsly-mcp
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    volumes:
+      - ./apps/mcp-gateway/src:/app/src:ro
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # PostgreSQL for audit logs + MCP state
+  postgres:
+    image: postgres:16-alpine
+    container_name: opsly_mcp_postgres
+    environment:
+      POSTGRES_USER: ${DB_USER:-opsly_mcp}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-changeme}
+      POSTGRES_DB: opsly_mcp
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=en_US.UTF-8"
+    ports:
+      - "5433:5432"
+    networks:
+      - opsly-mcp
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./apps/mcp-gateway/prisma:/docker-entrypoint-initdb.d:ro
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-opsly_mcp}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # Redis for caching + agent coordination
+  redis:
+    image: redis:7-alpine
+    container_name: opsly_mcp_redis
+    ports:
+      - "6380:6379"
+    networks:
+      - opsly-mcp
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    command: redis-server --appendonly yes
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # Agent Manager - Coordinate agent tasks
+  agent-manager:
+    build:
+      context: .
+      dockerfile: apps/agent-manager/Dockerfile
+    container_name: opsly_agent_manager
+    environment:
+      NODE_ENV: production
+      MCP_GATEWAY_URL: http://mcp-gateway:3001
+      REDIS_URL: redis://redis:6379/0
+      DATABASE_URL: postgresql://${DB_USER}:${DB_PASSWORD}@postgres:5432/opsly_mcp
+    depends_on:
+      - mcp-gateway
+      - redis
+      - postgres
+    networks:
+      - opsly-mcp
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3002/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # Orchestrator Worker - Execute agent tasks
+  orchestrator-worker:
+    build:
+      context: .
+      dockerfile: apps/orchestrator/Dockerfile
+    container_name: opsly_orchestrator_worker
+    environment:
+      NODE_ENV: production
+      MCP_GATEWAY_URL: http://mcp-gateway:3001
+      REDIS_URL: redis://redis:6379/1
+      DATABASE_URL: postgresql://${DB_USER}:${DB_PASSWORD}@postgres:5432/opsly_mcp
+      GITHUB_TOKEN: ${GITHUB_TOKEN}
+      GITHUB_REPO: ${GITHUB_REPO:-cloudsysops/opsly}
+    depends_on:
+      - mcp-gateway
+      - redis
+      - postgres
+    networks:
+      - opsly-mcp
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "-n", "1", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # Tenant Invitations Service - Onboarding + signup management
+  tenant-invitations:
+    build:
+      context: .
+      dockerfile: apps/tenant-invitations/Dockerfile
+    container_name: opsly_tenant_invitations
+    environment:
+      NODE_ENV: production
+      PORT: 3003
+      DATABASE_URL: postgresql://${DB_USER}:${DB_PASSWORD}@postgres:5432/opsly_mcp
+      AGENT_MANAGER_URL: http://agent-manager:3002
+      PORTAL_URL: ${PORTAL_URL:-https://portal.hermes.intcloudsysops.com}
+      EMAIL_HOST: ${EMAIL_HOST:-smtp.gmail.com}
+      EMAIL_PORT: ${EMAIL_PORT:-587}
+      EMAIL_USER: ${EMAIL_USER}
+      EMAIL_PASS: ${EMAIL_PASS}
+      EMAIL_FROM: ${EMAIL_FROM:-noreply@hermes.intcloudsysops.com}
+    ports:
+      - "3003:3003"
+    depends_on:
+      - postgres
+      - agent-manager
+    networks:
+      - opsly-mcp
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3003/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # Tenant Onboarding Agent - Autonomous tenant setup
+  tenant-onboarding-agent:
+    build:
+      context: .
+      dockerfile: apps/tenant-onboarding-agent/src/Dockerfile
+    container_name: opsly_tenant_onboarding_agent
+    environment:
+      NODE_ENV: production
+      PORT: 3004
+      DATABASE_URL: postgresql://${DB_USER}:${DB_PASSWORD}@postgres:5432/opsly_mcp
+      AGENT_MANAGER_URL: http://agent-manager:3002
+      LOG_LEVEL: info
+    ports:
+      - "3004:3004"
+    depends_on:
+      - postgres
+      - agent-manager
+    networks:
+      - opsly-mcp
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3004/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # Rendering Engine - Music, Image, Video generation
+  rendering-engine:
+    build:
+      context: .
+      dockerfile: apps/rendering-engine/Dockerfile
+    container_name: opsly_rendering_engine
+    environment:
+      NODE_ENV: production
+      PORT: 3005
+    ports:
+      - "3005:3005"
+    volumes:
+      - /tmp/hermes-renders:/tmp/hermes-renders
+    networks:
+      - opsly-mcp
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3005/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # MCP Rendering Server - Exposes rendering as agent tools
+  mcp-rendering-server:
+    build:
+      context: .
+      dockerfile: apps/mcp-rendering-server/Dockerfile
+    container_name: opsly_mcp_rendering_server
+    environment:
+      NODE_ENV: production
+      PORT: 3006
+      RENDERING_ENGINE_URL: http://rendering-engine:3005
+    ports:
+      - "3006:3006"
+    depends_on:
+      - rendering-engine
+    networks:
+      - opsly-mcp
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3006/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # Prometheus for metrics (optional)
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: opsly_prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    networks:
+      - opsly-mcp
+    restart: unless-stopped
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  prometheus_data:
+    driver: local
+
+networks:
+  opsly-mcp:
+    driver: bridge

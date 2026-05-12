@@ -43,6 +43,6 @@ export interface OpenClawControlDecisionContract {
   };
 }
 
-export interface OpenClawControllerContract {
-  (req: IntentRequest): OpenClawControlDecisionContract;
-}
+export type OpenClawControllerContract = (
+  req: IntentRequest
+) => OpenClawControlDecisionContract | Promise<OpenClawControlDecisionContract>;

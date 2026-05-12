@@ -55,6 +55,22 @@ export const PROVIDERS = {
     baseUrl: deepseekBase,
     healthKey: 'deepseek',
   },
+  deepseek_v4: {
+    model: 'deepseek-v4',
+    kind: 'deepseek',
+    cost_per_1k_input: 0.0004,
+    cost_per_1k_output: 0.0016,
+    baseUrl: deepseekBase,
+    healthKey: 'deepseek',
+  },
+  codellama_local: {
+    model: 'codellama:34b',
+    kind: 'ollama',
+    cost_per_1k_input: 0,
+    cost_per_1k_output: 0,
+    baseUrl: ollamaBase.replace(/\/$/, ''),
+    healthKey: 'codellama_local',
+  },
   openrouter_cheap: {
     model: 'mistralai/mistral-7b-instruct',
     kind: 'openrouter',
@@ -87,7 +103,7 @@ export interface ProviderChainEntry {
   def: ProviderDefinition;
 }
 
-export type RoutingPreference = 'sonnet' | 'haiku' | 'cheap';
+export type RoutingPreference = 'sonnet' | 'haiku' | 'cheap' | 'balanced' | 'code';
 
 function deepseekChainEntry(): ProviderChainEntry | null {
   if (!process.env.DEEPSEEK_API_KEY?.trim()) {
@@ -115,8 +131,14 @@ export function getProvidersByPreference(preference: RoutingPreference): Provide
     const tail = [e('llama_local'), e('openrouter_cheap'), e('gpt4o_mini')];
     return ds ? [e('claude_haiku'), ds, ...tail] : [e('claude_haiku'), ...tail];
   }
+  if (preference === 'balanced') {
+    return [e('deepseek_v4'), e('claude_sonnet'), e('deepseek_chat'), e('claude_haiku')];
+  }
+  if (preference === 'code') {
+    return [e('codellama_local'), e('gpt4o'), e('deepseek_chat'), e('llama_local')];
+  }
   if (ds) {
-    return [e('llama_local'), ds, e('claude_haiku'), e('openrouter_cheap')];
+    return [e('llama_local'), e('deepseek_chat'), e('claude_haiku'), e('openrouter_cheap')];
   }
   return [e('llama_local'), e('claude_haiku'), e('openrouter_cheap')];
 }
@@ -128,7 +150,10 @@ export function resolveRoutingPreference(
   if (explicitModel === 'sonnet') return 'sonnet';
   if (explicitModel === 'haiku') return 'haiku';
   if (explicitModel === 'cheap' || explicitModel === 'llama') return 'cheap';
+  if (explicitModel === 'balanced') return 'balanced';
+  if (explicitModel === 'code') return 'code';
   if (complexityLevel === 3) return 'sonnet';
+  if (complexityLevel === 2) return 'balanced';
   if (complexityLevel === 1) return 'cheap';
   return 'haiku';
 }

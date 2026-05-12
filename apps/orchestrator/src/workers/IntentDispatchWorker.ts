@@ -40,24 +40,26 @@ export function startIntentDispatchWorker(connection: object): Worker {
             detail: 'intent accepted by intent_dispatch worker',
           });
         }
-        const control = runOpenClawController(req);
+        const control = await runOpenClawController(req);
         if (control.intent !== 'oar_react') {
           throw new Error('intent_dispatch: only intent oar_react is supported');
         }
+
         if (typeof requestId === 'string' && requestId.length > 0) {
           await recordOpenClawStage({
             requestId,
             stage: 'planner',
             status: 'completed',
-            detail: `routing intent=${control.intent}`,
+            detail: `routing intent=${control.intent} (agent=${control.agent.role} tier=${control.agent.model_tier})`,
           });
           await recordOpenClawStage({
             requestId,
             stage: 'skeptic',
             status: 'running',
-            detail: 'executing oar_react pipeline',
+            detail: `executing oar_react pipeline with agent=${control.agent.role} tier=${control.agent.model_tier}`,
           });
         }
+
         const result = await processIntent(req, { invokedFromIntentDispatchWorker: true });
         if (typeof requestId === 'string' && requestId.length > 0) {
           await recordOpenClawStage({

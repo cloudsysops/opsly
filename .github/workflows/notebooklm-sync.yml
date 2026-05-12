@@ -1,3 +1,4 @@
+# Opsly — workflow catalog: docs/ops/workflows-index.md
 # Sincronización documentación → NotebookLM (text sources). Requiere secretos NOTEBOOKLM_* y Python + notebooklm-py en el runner (o self-hosted).
 name: NotebookLM docs sync
 

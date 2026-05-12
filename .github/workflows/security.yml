@@ -1,3 +1,4 @@
+# Opsly — workflow catalog: docs/ops/workflows-index.md
 # CVE & secret scanning — runs on every PR and weekly cron.
 # High/critical npm vulnerabilities block the PR (audit-level=high).
 # Docker Scout CVE scan runs on images already pushed to GHCR (post-deploy).

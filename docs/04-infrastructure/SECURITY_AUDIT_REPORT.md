@@ -3,9 +3,11 @@
 **Fecha:** 2026-04-06  
 **Alcance:** monorepo Opsly — sin acceso a Doppler/VPS ni a secretos reales.
 
+**Nota 2026-05-09:** el snapshot de vulnerabilidades **cambia** con el lockfile. La política vigente es **`npm audit --audit-level=high`** sin fallos en CI ([`.github/workflows/security.yml`](../../.github/workflows/security.yml)). Estado y moderates pendientes: [`docs/TECHNICAL-DEBT.md`](../TECHNICAL-DEBT.md) § 3.
+
 ## npm audit
 
-- **Raíz del monorepo:** `npm audit` → **0** vulnerabilidades (reporte JSON, todas las severidades en 0 al momento de la corrida).
+- **Raíz del monorepo (2026-04-06):** `npm audit` → **0** vulnerabilidades (reporte JSON, todas las severidades en 0 al momento de la corrida).
 - **Workspace `apps/api`:** mismo resultado (dependencias resueltas vía lockfile raíz).
 
 Recomendación: ejecutar `npm audit` en CI en cada PR y ante cambios de `package-lock.json`.

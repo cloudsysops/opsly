@@ -1,3 +1,4 @@
+# Opsly — workflow catalog: docs/ops/workflows-index.md
 name: Autonomy Safety Check
 
 on:
@@ -75,8 +76,10 @@ jobs:
           fetch-depth: 0
 
       - name: Verify branch naming convention
+        env:
+          HEAD_REF: ${{ github.head_ref }}
         run: |
-          BRANCH="${{ github.head_ref }}"
+          BRANCH="${HEAD_REF}"
           if [[ $BRANCH =~ ^(claude|cursor|automation)/ ]]; then
             echo "✓ Autonomous branch pattern: $BRANCH"
           else

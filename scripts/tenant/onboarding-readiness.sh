@@ -6,10 +6,10 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "${SCRIPT_DIR}/../lib/common.sh"
 
 TENANT_SLUG=""
-API_URL="${API_URL:-https://api.ops.smiletripcare.com}"
-PORTAL_DOMAIN="${PORTAL_DOMAIN:-portal.ops.smiletripcare.com}"
-N8N_DOMAIN_BASE="${N8N_DOMAIN_BASE:-ops.smiletripcare.com}"
-UPTIME_DOMAIN_BASE="${UPTIME_DOMAIN_BASE:-ops.smiletripcare.com}"
+API_URL="${API_URL:-https://api.op-sly.com}"
+PORTAL_DOMAIN="${PORTAL_DOMAIN:-portal.op-sly.com}"
+N8N_DOMAIN_BASE="${N8N_DOMAIN_BASE:-op-sly.com}"
+UPTIME_DOMAIN_BASE="${UPTIME_DOMAIN_BASE:-op-sly.com}"
 
 while [[ $# -gt 0 ]]; do
   case "$1" in

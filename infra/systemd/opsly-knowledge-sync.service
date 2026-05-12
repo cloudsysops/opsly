@@ -1,0 +1,21 @@
+[Unit]
+Description=Opsly Knowledge Base Nightly Sync
+After=network.target
+
+[Service]
+Type=oneshot
+User=dragon
+WorkingDirectory=/Users/dragon/cboteros/proyectos/intcloudsysops
+Environment="REPO_ROOT=/Users/dragon/cboteros/proyectos/intcloudsysops"
+ExecStart=/bin/bash /Users/dragon/cboteros/proyectos/intcloudsysops/scripts/knowledge-nightly-sync.sh
+
+# Restart on failure
+OnFailure=notify-send-failure@%n.service
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=opsly-knowledge-sync
+
+[Install]
+WantedBy=multi-user.target

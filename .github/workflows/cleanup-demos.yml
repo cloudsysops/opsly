@@ -1,3 +1,4 @@
+# Opsly — workflow catalog: docs/ops/workflows-index.md
 name: Cleanup Expired Demos
 on:
   schedule: [{ cron: '0 * * * *' }]

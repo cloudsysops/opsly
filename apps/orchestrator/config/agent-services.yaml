@@ -1,0 +1,27 @@
+# Agent Services Configuration
+# Used by LocalOpenCodeWorker and other local agent workers
+services:
+  local_opencode:
+    enabled: true
+    endpoint: http://127.0.0.1:5004
+    timeout: 60000
+    retry_attempts: 2
+    fallback_provider: claude
+
+  local_claude:
+    enabled: true
+    endpoint: http://127.0.0.1:5002
+    timeout: 60000
+    retry_attempts: 2
+
+  local_copilot:
+    enabled: true
+    endpoint: http://127.0.0.1:5003
+    timeout: 60000
+    retry_attempts: 2
+
+  local_cursor:
+    enabled: true
+    endpoint: http://127.0.0.1:5001
+    timeout: 60000
+    retry_attempts: 2

@@ -1,165 +1,314 @@
-import { mkdir, writeFile } from 'node:fs/promises';
-import { join, resolve } from 'node:path';
-import { Job, Worker } from 'bullmq';
-import { execa } from 'execa';
-import { logWorkerLifecycle } from '../observability/worker-log.js';
-import { getWorkerConcurrency } from '../worker-concurrency.js';
-import { safeCorrelationFileId } from '../lib/iteration-manager.js';
-import type { OrchestratorJob } from '../types.js';
+import { execSync, spawn } from 'child_process';
+import { promises as fsp } from 'fs';
+import * as path from 'path';
 
-export type ValidationStepName = 'type-check' | 'test' | 'build';
-
-export interface TestValidationPayload {
-  type: 'test_validation';
-  repo_root: string;
-  tenant_slug: string;
-  request_id: string;
-  correlation_id: string;
-  attempt: number;
-  steps?: ValidationStepName[];
-  /** When set, `test` / `build` run scoped: `npm run … -w <value>`. */
-  npm_workspace?: string;
-  source_prompt_path?: string;
+interface ValidationResult {
+  type: 'type-check' | 'test' | 'build';
+  status: 'passed' | 'failed' | 'skipped';
+  duration_ms?: number;
+  error?: string;
+  stdout?: string;
+  stderr?: string;
 }
 
-const DEFAULT_STEPS: ValidationStepName[] = ['type-check'];
+interface ValidationReport {
+  job_id: string;
+  timestamp: string;
+  attempt: number;
+  validations: ValidationResult[];
+  overall_status: 'passed' | 'failed' | 'partial';
+  can_retry: boolean;
+  next_action: 'commit' | 'iterate' | 'escalate';
+  total_duration_ms: number;
+  errors: Array<{ type: string; message: string }>;
+}
 
-function parseSteps(raw: unknown): ValidationStepName[] {
-  if (!Array.isArray(raw)) {
-    return DEFAULT_STEPS;
+/**
+ * TestValidatorWorker
+ *
+ * Monitors .cursor/responses/ for new response files
+ * Runs validation suite on generated code:
+ *   1. npm run type-check (TypeScript)
+ *   2. npm run test (Unit tests)
+ *   3. npm run build (Build validation)
+ *
+ * Writes results to response-{id}.validation.json
+ * Enables IterationManager to decide: commit vs iterate vs escalate
+ */
+export class TestValidatorWorker {
+  private responsesDir: string;
+  private processedFiles = new Set<string>();
+  private cursorDir: string;
+
+  constructor(cursorDir: string = '.cursor') {
+    this.cursorDir = cursorDir;
+    this.responsesDir = path.join(cursorDir, 'responses');
   }
-  const allowed: ValidationStepName[] = [];
-  for (const item of raw) {
-    if (item === 'type-check' || item === 'test' || item === 'build') {
-      allowed.push(item);
+
+  private extractJobId(filename: string): string {
+    // response-{job_id}.md → {job_id}
+    const match = filename.match(/^response-(.+)\.md$/);
+    return match ? match[1] : filename;
+  }
+
+  private extractWorkspaces(responseContent: string): string[] {
+    // Simple heuristic: look for common workspace names in the response
+    const workspaces = new Set<string>();
+    const workspaceNames = [
+      'orchestrator',
+      'api',
+      'frontend',
+      'admin',
+      'portal',
+      'llm-gateway',
+      'context-builder',
+      'mcp',
+      'supabase',
+    ];
+
+    for (const wsName of workspaceNames) {
+      if (responseContent.toLowerCase().includes(`@intcloudsysops/${wsName}`)) {
+        workspaces.add(wsName);
+      }
+    }
+
+    return Array.from(workspaces);
+  }
+
+  private runValidation(type: 'type-check' | 'test' | 'build', workspaces?: string[]): ValidationResult {
+    const startTime = Date.now();
+
+    try {
+      let command = '';
+      let args: string[] = [];
+
+      switch (type) {
+        case 'type-check':
+          command = 'npm run type-check';
+          if (workspaces && workspaces.length > 0) {
+            command += ` -- --workspace=${workspaces[0]}`;
+          }
+          break;
+        case 'test':
+          command = 'npm run test';
+          if (workspaces && workspaces.length > 0) {
+            command += ` --workspace=@intcloudsysops/${workspaces[0]}`;
+          }
+          break;
+        case 'build':
+          command = 'npm run build';
+          if (workspaces && workspaces.length > 0) {
+            command += ` --workspace=@intcloudsysops/${workspaces[0]}`;
+          }
+          break;
+      }
+
+      console.log(`[TestValidator] Running: ${command}`);
+
+      const result = execSync(command, {
+        encoding: 'utf-8',
+        stdio: ['pipe', 'pipe', 'pipe'],
+        cwd: process.cwd(),
+      });
+
+      const duration = Date.now() - startTime;
+
+      return {
+        type,
+        status: 'passed',
+        duration_ms: duration,
+        stdout: result.substring(0, 1000), // First 1000 chars
+      };
+    } catch (err) {
+      const duration = Date.now() - startTime;
+      const errorMsg = err instanceof Error ? err.message : String(err);
+
+      // Try to extract useful error info
+      let stdout = '';
+      let stderr = '';
+
+      if (err instanceof Error && 'stdout' in err) {
+        stdout = String((err as any).stdout || '').substring(0, 500);
+      }
+      if (err instanceof Error && 'stderr' in err) {
+        stderr = String((err as any).stderr || '').substring(0, 500);
+      }
+
+      return {
+        type,
+        status: 'failed',
+        duration_ms: duration,
+        error: errorMsg.substring(0, 500),
+        stdout,
+        stderr,
+      };
     }
   }
-  return allowed.length > 0 ? allowed : DEFAULT_STEPS;
-}
 
-async function runStep(
-  cwd: string,
-  step: ValidationStepName,
-  npmWorkspace: string | undefined
-): Promise<{ exitCode: number; stdout: string; stderr: string }> {
-  const wsArgs = npmWorkspace && npmWorkspace.length > 0 ? ['-w', npmWorkspace] : [];
-  if (step === 'type-check') {
-    const r = await execa('npm', ['run', 'type-check', ...wsArgs], {
-      cwd,
-      reject: false,
-      all: true,
-      timeout: 900_000,
-      env: { ...process.env, FORCE_COLOR: '0' },
-    });
-    const combined = typeof r.all === 'string' ? r.all : `${r.stdout}\n${r.stderr}`;
-    return { exitCode: r.exitCode ?? 1, stdout: combined, stderr: '' };
-  }
-  if (step === 'test') {
-    const r = await execa('npm', ['run', 'test', ...wsArgs], {
-      cwd,
-      reject: false,
-      all: true,
-      timeout: 900_000,
-      env: { ...process.env, FORCE_COLOR: '0' },
-    });
-    const combined = typeof r.all === 'string' ? r.all : `${r.stdout}\n${r.stderr}`;
-    return { exitCode: r.exitCode ?? 1, stdout: combined, stderr: '' };
-  }
-  const r = await execa('npm', ['run', 'build', ...wsArgs], {
-    cwd,
-    reject: false,
-    all: true,
-    timeout: 900_000,
-    env: { ...process.env, FORCE_COLOR: '0' },
-  });
-  const combined = typeof r.all === 'string' ? r.all : `${r.stdout}\n${r.stderr}`;
-  return { exitCode: r.exitCode ?? 1, stdout: combined, stderr: '' };
-}
+  async validateResponse(filePath: string): Promise<void> {
+    try {
+      const filename = path.basename(filePath);
+      const jobId = this.extractJobId(filename);
 
-function tail(text: string, max = 48_000): string {
-  if (text.length <= max) {
-    return text;
-  }
-  return text.slice(-max);
-}
-
-export function startTestValidatorWorker(connection: object): Worker {
-  const concurrency = getWorkerConcurrency('test_validation');
-  return new Worker(
-    'openclaw',
-    async (job: Job) => {
-      if (job.name !== 'test_validation') {
+      // Skip if already processed
+      if (this.processedFiles.has(filename)) {
         return;
       }
+      this.processedFiles.add(filename);
 
-      const t0 = Date.now();
-      logWorkerLifecycle('start', 'test_validation', job);
+      console.log(`[TestValidator] Validating ${filename} (job: ${jobId})`);
 
-      const data = job.data as OrchestratorJob;
-      const payload = data.payload as Partial<TestValidationPayload>;
-      const repoRoot = typeof payload.repo_root === 'string' ? resolve(payload.repo_root) : '';
-      const correlationId =
-        typeof payload.correlation_id === 'string' && payload.correlation_id.length > 0
-          ? payload.correlation_id
-          : typeof data.request_id === 'string'
-            ? data.request_id
-            : job.id != null
-              ? String(job.id)
-              : 'unknown';
-      const attempt = typeof payload.attempt === 'number' && Number.isFinite(payload.attempt) ? payload.attempt : 0;
-      const steps = parseSteps(payload.steps);
-      const npmWorkspace = typeof payload.npm_workspace === 'string' ? payload.npm_workspace.trim() : undefined;
+      // Read response content
+      const content = await fsp.readFile(filePath, 'utf-8');
 
-      if (repoRoot.length === 0) {
-        throw new Error('test_validation: repo_root required');
-      }
-
-      let failedStep: ValidationStepName | undefined;
-      let exitCode = 0;
-      const logs: string[] = [];
-
-      for (const step of steps) {
-        const r = await runStep(repoRoot, step, npmWorkspace);
-        logs.push(`=== ${step} (exit ${String(r.exitCode)}) ===\n${r.stdout}`);
-        if (r.exitCode !== 0) {
-          failedStep = step;
-          exitCode = r.exitCode;
-          break;
+      // Extract attempt number from metadata or filename
+      let attempt = 1;
+      if (filename.includes('-attempt-')) {
+        const match = filename.match(/-attempt-(\d+)/);
+        if (match) {
+          attempt = Number.parseInt(match[1], 10);
         }
       }
 
-      const logTail = tail(logs.join('\n\n'));
-      const ok = failedStep === undefined;
-      const outDir = join(repoRoot, '.cursor', 'responses');
-      await mkdir(outDir, { recursive: true });
-      const safeId = safeCorrelationFileId(correlationId);
-      const reportPath = join(outDir, `validation-${safeId}.json`);
-      const report = {
-        ok,
-        correlation_id: correlationId,
-        attempt,
-        failed_step: failedStep,
-        exit_code: exitCode,
-        log_tail: logTail,
-        source_prompt_path: payload.source_prompt_path,
-        completed_at: new Date().toISOString(),
-        steps_run: steps,
-      };
-      await writeFile(reportPath, `${JSON.stringify(report, null, 2)}\n`, 'utf-8');
+      // Detect affected workspaces
+      const workspaces = this.extractWorkspaces(content);
+      console.log(`[TestValidator] Detected workspaces: ${workspaces.join(', ') || 'none'}`);
 
-      if (!ok) {
-        logWorkerLifecycle('fail', 'test_validation', job, {
-          duration_ms: Date.now() - t0,
-          error: `step ${failedStep ?? '?'} exit ${String(exitCode)}`,
-        });
-        throw new Error(`validation failed at ${failedStep ?? 'unknown'} (exit ${String(exitCode)})`);
+      // Run validation suite
+      console.log(`[TestValidator] Starting validation suite (attempt ${attempt})...`);
+      const startTime = Date.now();
+
+      const validations: ValidationResult[] = [];
+
+      // 1. Type-check
+      console.log('[TestValidator] 1/3 Running type-check...');
+      validations.push(this.runValidation('type-check', workspaces));
+
+      // 2. Tests (if type-check passed)
+      if (validations[0]?.status === 'passed') {
+        console.log('[TestValidator] 2/3 Running tests...');
+        validations.push(this.runValidation('test', workspaces));
+      } else {
+        validations.push({ type: 'test', status: 'skipped' });
       }
 
-      logWorkerLifecycle('complete', 'test_validation', job, { duration_ms: Date.now() - t0 });
-    },
-    {
-      connection,
-      concurrency,
+      // 3. Build (if type-check and tests passed)
+      if (validations[0]?.status === 'passed' && validations[1]?.status !== 'failed') {
+        console.log('[TestValidator] 3/3 Running build...');
+        validations.push(this.runValidation('build', workspaces));
+      } else {
+        validations.push({ type: 'build', status: 'skipped' });
+      }
+
+      const totalDuration = Date.now() - startTime;
+
+      // Determine overall status
+      const allPassed = validations.every((v) => v.status === 'passed' || v.status === 'skipped');
+      const overallStatus = allPassed ? 'passed' : 'failed';
+
+      // Collect errors
+      const errors = validations
+        .filter((v) => v.status === 'failed')
+        .map((v) => ({
+          type: v.type,
+          message: v.error || 'Unknown error',
+        }));
+
+      // Determine next action
+      let nextAction: 'commit' | 'iterate' | 'escalate' = 'commit';
+      if (overallStatus === 'failed') {
+        nextAction = attempt < 3 ? 'iterate' : 'escalate';
+      }
+
+      const report: ValidationReport = {
+        job_id: jobId,
+        timestamp: new Date().toISOString(),
+        attempt,
+        validations,
+        overall_status: overallStatus,
+        can_retry: attempt < 3,
+        next_action: nextAction,
+        total_duration_ms: totalDuration,
+        errors,
+      };
+
+      // Write validation report
+      const reportPath = filePath.replace(/\.md$/, '.validation.json');
+      await fsp.writeFile(reportPath, JSON.stringify(report, null, 2), 'utf-8');
+
+      // Log summary
+      const statusEmoji = overallStatus === 'passed' ? '✅' : '❌';
+      console.log(
+        `[TestValidator] ${statusEmoji} Validation complete (${totalDuration}ms, attempt ${attempt})`,
+      );
+      console.log(`[TestValidator] Result: ${overallStatus} | Next action: ${nextAction}`);
+
+      if (errors.length > 0) {
+        console.log('[TestValidator] Errors:');
+        errors.forEach((e) => {
+          console.log(`  - [${e.type}] ${e.message}`);
+        });
+      }
+    } catch (err) {
+      console.error('[TestValidator] Fatal error:', err);
     }
-  );
+  }
+
+  /**
+   * Start monitoring .cursor/responses/ for changes
+   * Automatically validates new response files
+   */
+  async start(): Promise<void> {
+    console.log(`[TestValidator] Starting, watching ${this.responsesDir}`);
+
+    // Ensure directory exists
+    try {
+      await fsp.mkdir(this.responsesDir, { recursive: true });
+    } catch (err) {
+      console.error('[TestValidator] Failed to create responses dir:', err);
+    }
+
+    // Import chokidar for file watching
+    try {
+      const { watch } = await import('chokidar');
+
+      const watcher = watch(`${this.responsesDir}/*.md`, {
+        persistent: true,
+        ignored: [
+          '**/.validation.json',
+          '**/.*',
+          '**/*.validation.json',
+        ],
+      });
+
+      watcher.on('add', (filePath: string) => {
+        const filename = path.basename(filePath);
+        if (!filename.endsWith('.validation.json')) {
+          console.log(`[TestValidator] Detected new response: ${filename}`);
+          void this.validateResponse(filePath);
+        }
+      });
+
+      watcher.on('error', (err: unknown) => {
+        console.error('[TestValidator] Watcher error:', err);
+      });
+
+      console.log('[TestValidator] Ready. Watching for response files...');
+    } catch (err) {
+      console.error('[TestValidator] Failed to start watcher:', err);
+    }
+  }
+}
+
+// Export singleton
+let instance: TestValidatorWorker | null = null;
+
+export function startTestValidatorWorker(cursorDir?: string): TestValidatorWorker {
+  if (instance) {
+    return instance;
+  }
+
+  instance = new TestValidatorWorker(cursorDir);
+  void instance.start();
+  return instance;
 }

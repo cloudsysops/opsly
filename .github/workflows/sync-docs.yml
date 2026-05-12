@@ -1,3 +1,4 @@
+# Opsly — workflow catalog: docs/ops/workflows-index.md
 # Regenera reportes auto-generados en docs/generated/
 # y metadatos en status.yaml tras cambios relevantes.
 # Evita bucles: no corre si el último commit contiene [docs-sync].

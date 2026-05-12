@@ -75,6 +75,22 @@
       },
       "allowed_tools": ["bash", "docker_ps", "health_check", "logs_tail"],
       "allowed_paths": ["infra/", "scripts/", "docs/"]
+    },
+    {
+      "id": "codex-engineering",
+      "name": "Codex Engineering Agent",
+      "role": "architect",
+      "model": "gpt-4o",
+      "fallback_model": "anthropic/claude-3-5-sonnet",
+      "daily_budget_usd": 2.5,
+      "local_only": false,
+      "rate_limit": {
+        "requests_per_minute": 4,
+        "tokens_per_minute": 15000
+      },
+      "allowed_tools": ["read_file", "analyze_codebase", "code_review", "architecture_analysis", "mcp_tool"],
+      "allowed_paths": ["apps/", "config/", "docs/", "supabase/", "infra/"],
+      "specialization": ["code-review", "architecture-design", "engineering-decisions", "system-design"]
     }
   ]
 }
