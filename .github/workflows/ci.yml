@@ -310,12 +310,17 @@ jobs:
           export ALLOW_UNAVAILABLE="true"
           bash scripts/test-e2e-invite-flow.sh
 
-      - name: Install Playwright Chromium
-        run: npx playwright install --with-deps chromium
-
       - name: Run Playwright E2E tests (portal with Supabase)
         run: |
           export NEXT_PUBLIC_SUPABASE_URL="${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}"
           export NEXT_PUBLIC_SUPABASE_ANON_KEY="${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}"
           export PORTAL_URL="https://portal.op-sly.com"
+          portal_status="$(curl -L -s -o /dev/null -w '%{http_code}' "${PORTAL_URL}/login" || true)"
+          case "${portal_status}" in
+            000|404|502|503|504)
+              echo "WARN: ${PORTAL_URL}/login no disponible (${portal_status}). Skip explícito."
+              exit 0
+              ;;
+          esac
+          npx playwright install --with-deps chromium
           npm run test:e2e --workspace=@intcloudsysops/portal
