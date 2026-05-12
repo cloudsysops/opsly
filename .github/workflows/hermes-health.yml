@@ -18,4 +18,4 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run type-check --workspace=@intcloudsysops/orchestrator
-      - run: npm run test --workspace=@intcloudsysops/orchestrator -- hermes
+      - run: npm run test:hermes --workspace=@intcloudsysops/orchestrator

@@ -7,18 +7,31 @@
 
 ## Sprint Mapping vs estado del repo
 
-### Sprint 0: Validación y credenciales (~3 días, no 1 semana completa)
+### Sprint 0: Validación — repo vs entorno
 
-**Estado:** ~70% del código ya en `main` (migración 0028, orchestrator, cliente NotebookLM, workflows, API métricas).
+**Repo (cerrado en `main`, 2026-05-08):** código, migración SQL, API métricas, CI Hermes y pruebas Vitest acotadas sin Redis.
 
-**Acciones reales Sprint 0:**
+| Entrega repo | Estado |
+| ------------ | ------ |
+| Migración `supabase/migrations/0028_hermes_tables.sql` | Listo en git |
+| `apps/orchestrator/src/hermes/*` + worker BullMQ | Listo |
+| `GET /api/hermes/metrics` (`apps/api/app/api/hermes/metrics/route.ts`) | Listo |
+| Script `npm run test:hermes` en orchestrator + workflow `.github/workflows/hermes-health.yml` | Listo |
+| Docs `HERMES-INTEGRATION.md`, runbooks, scripts | Listo |
+
+**Checklist repo:**
 
 - [x] Commits atómicos Hermes + NotebookLM en el repo
-- [ ] `npx supabase db push` (aplicar `0028_hermes_tables.sql` al proyecto Supabase objetivo)
+- [x] Pruebas Hermes: `npm run hermes:test` (raíz) o `npm run test:hermes --workspace=@intcloudsysops/orchestrator`
+- [x] Contrato API métricas implementado (`requireAdminAccess` + agregados Supabase)
+
+**Entorno (owner — Supabase / Doppler / runtime):** no automatizable desde el agente sin credenciales y sin `db push` en prod sin revisión humana.
+
+- [ ] `npx supabase db push` (aplicar `0028_hermes_tables.sql` al proyecto Supabase objetivo; preferir `db push --dry-run` antes)
 - [ ] Doppler: `NOTEBOOKLM_ENABLED`, `NOTEBOOKLM_NOTEBOOK_ID`, `NOTEBOOKLM_DEFAULT_TENANT_SLUG`
 - [ ] Smoke: `npm run notebooklm:sync` en entorno con Python + `notebooklm-py` + sesión Google
 - [ ] Smoke: `HERMES_ENABLED=true` + orchestrator con Redis/Supabase; `npm run hermes:tick` o worker BullMQ
-- [ ] `GET /api/hermes/metrics` con sesión admin → JSON coherente
+- [ ] `GET /api/hermes/metrics` con sesión admin en API desplegada → JSON coherente
 - [ ] Gate: lo anterior OK → arranque Sprint 1
 
 **No es obligatorio en Sprint 0:**
@@ -46,5 +59,5 @@
 
 ## Referencias ADR
 
-- [ADR-014: NotebookLM agent](./adr/ADR-014-notebooklm-agent.md) — experimental, browser automation
+- [ADR-014: NotebookLM agent](../adr/ADR-014-notebooklm-agent.md) — experimental, browser automation
 - ADR futuro (TBD): límites de recursos Hermes en Compose, si se escala fuera del orchestrator monolítico

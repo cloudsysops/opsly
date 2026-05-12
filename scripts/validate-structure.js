@@ -40,6 +40,9 @@ if (forbiddenPresent.length > 0) {
   for (const item of forbiddenPresent) {
     console.error(`- ${item}`);
   }
+  console.error(
+    'Hint: move contents under runtime/ or tools/ (e.g. logs → runtime/logs/). See docs/REPO-MAP.md § validate-structure.',
+  );
   process.exit(1);
 }
 

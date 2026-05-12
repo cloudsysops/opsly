@@ -7,7 +7,7 @@
 
 set -e
 
-API_URL="${API_URL:-https://api.ops.smiletripcare.com}"
+API_URL="${API_URL:-https://api.op-sly.com}"
 ADMIN_TOKEN="${ADMIN_TOKEN:-}"
 PORTAL_HEALTH_SLUG="${PORTAL_HEALTH_SLUG:-smiletripcare}"
 

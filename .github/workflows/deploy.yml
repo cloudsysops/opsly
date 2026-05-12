@@ -383,6 +383,8 @@ jobs:
     permissions:
       contents: read
       packages: read
+    env:
+      TAILSCALE_AUTHKEY: ${{ secrets.TAILSCALE_AUTHKEY }}
     steps:
       - uses: actions/checkout@v4
 
@@ -432,7 +434,7 @@ jobs:
         if: steps.tailscale_staging.outputs.enabled == 'true'
         uses: tailscale/github-action@v2
         with:
-          authkey: ${{ secrets.TAILSCALE_AUTHKEY }}
+          authkey: ${{ env.TAILSCALE_AUTHKEY }}
           version: 1.94.2
 
       - name: Deploy staging via SSH (compose)
@@ -520,10 +522,10 @@ jobs:
               '{embeds:[{title:"❌ Staging deploy fallido",color:15158332,fields:[{name:"Run",value:$url}]}]}')"
 
   # Git + npm + Supabase + PM2 en el VPS (legacy). Desactivado: el despliegue oficial es Docker (jobs deploy / deploy-staging).
+  # Para reactivar: sustituir la condición por una rama/entorno real y enlazar `needs` con el job previo.
   deploy-pm2-vps:
     name: Deploy Node/PM2 on VPS (SSH) [legacy desactivado]
-    # Evita npm/supabase/pm2 en VPS en paralelo a Docker (deploy / deploy-staging). Reactivar: quitar `if: false` y restaurar `needs` + condición.
-    if: false
+    if: github.ref == 'refs/heads/legacy-pm2-vps-disabled'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -582,6 +584,8 @@ jobs:
     permissions:
       contents: read
       packages: read
+    env:
+      TAILSCALE_AUTHKEY: ${{ secrets.TAILSCALE_AUTHKEY }}
     steps:
       - uses: actions/checkout@v4
 
@@ -630,7 +634,7 @@ jobs:
         if: steps.tailscale_production.outputs.enabled == 'true'
         uses: tailscale/github-action@v2
         with:
-          authkey: ${{ secrets.TAILSCALE_AUTHKEY }}
+          authkey: ${{ env.TAILSCALE_AUTHKEY }}
           version: 1.94.2
 
       - name: Deploy via SSH

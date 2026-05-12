@@ -48,10 +48,10 @@ wait $pid_api $pid_orch $pid_portal
 
 echo "==> Smoke E2E invite gate (dry-run)"
 if [[ "${STAGE}" == "staging" ]]; then
-  API_URL="${API_URL:-https://api.ops.smiletripcare.com}" \
+  API_URL="${API_URL:-https://api.op-sly.com}" \
     bash scripts/test-e2e-invite-flow.sh --dry-run --tenant-ref "${TENANT_REF:-localrank}"
 else
-  API_URL="${API_URL:-https://api.ops.smiletripcare.com}" \
+  API_URL="${API_URL:-https://api.op-sly.com}" \
     bash scripts/test-e2e-invite-flow.sh --dry-run --tenant-ref "${TENANT_REF:-smiletripcare}"
 fi
 

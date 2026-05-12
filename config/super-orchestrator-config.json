@@ -1,0 +1,112 @@
+{
+  "version": "2.0.0",
+  "name": "Super Orchestrator v2",
+  "description": "Sistema de orquestación multi-agente auto-evolutivo",
+  "enabled": true,
+  "mode": "production",
+  "components": {
+    "prompt_controller": {
+      "enabled": true,
+      "max_concurrent_tasks": 10,
+      "timeout_seconds": 300,
+      "retry_attempts": 3
+    },
+    "provider_selector": {
+      "enabled": true,
+      "selection_strategy": "cost_quality_latency",
+      "fallback_enabled": true,
+      "cache_ttl_seconds": 3600
+    },
+    "performance_tracker": {
+      "enabled": true,
+      "metrics_retention_days": 30,
+      "report_interval_hours": 24,
+      "alert_threshold_error_rate": 0.1
+    },
+    "idea_generator": {
+      "enabled": true,
+      "generation_interval_hours": 24,
+      "max_ideas_per_cycle": 10,
+      "min_impact_score": 0.5
+    },
+    "cost_optimizer": {
+      "enabled": true,
+      "budget_limit_usd_per_day": 100,
+      "auto_optimize": true,
+      "report_interval_hours": 168
+    },
+    "auto_evolution": {
+      "enabled": true,
+      "cycle_interval_hours": 24,
+      "auto_apply_ideas": false,
+      "max_auto_applies_per_cycle": 2
+    },
+    "health_monitor": {
+      "enabled": true,
+      "check_interval_seconds": 300,
+      "alert_on_failure": true,
+      "discord_webhook": "${DISCORD_WEBHOOK_URL}"
+    }
+  },
+  "providers": {
+    "preferred_order": [
+      "ollama-qwen",
+      "ollama-codellama",
+      "anthropic-sonnet",
+      "deepseek-v4"
+    ],
+    "fallback_chain": {
+      "ollama-qwen": ["ollama-codellama", "anthropic-sonnet"],
+      "ollama-codellama": ["ollama-qwen", "anthropic-sonnet"],
+      "anthropic-sonnet": ["deepseek-v4", "ollama-qwen"],
+      "deepseek-v4": ["ollama-qwen", "anthropic-sonnet"]
+    }
+  },
+  "routing_rules": {
+    "code_generation": {
+      "primary": "codellama",
+      "fallback": "ollama-qwen",
+      "max_latency_ms": 3000
+    },
+    "code_review": {
+      "primary": "codellama",
+      "fallback": "anthropic-sonnet",
+      "max_latency_ms": 5000
+    },
+    "reasoning": {
+      "primary": "ollama-qwen",
+      "fallback": "anthropic-sonnet",
+      "max_latency_ms": 5000
+    },
+    "fast_task": {
+      "primary": "nemotron",
+      "fallback": "ollama-qwen",
+      "max_latency_ms": 1000
+    },
+    "general": {
+      "primary": "ollama-qwen",
+      "fallback": "llama3.2",
+      "max_latency_ms": 3000
+    }
+  },
+  "limits": {
+    "max_concurrent_per_provider": {
+      "ollama": 4,
+      "anthropic": 2,
+      "deepseek": 2,
+      "openai": 2
+    },
+    "max_cost_per_day_usd": 100,
+    "max_tasks_per_hour": 100
+  },
+  "redis": {
+    "host": "100.120.151.91",
+    "port": 6379,
+    "password": "${REDIS_PASSWORD}",
+    "db": 0
+  },
+  "supabase": {
+    "url": "${SUPABASE_URL}",
+    "key": "${SUPABASE_SERVICE_ROLE_KEY}"
+  }
+}

@@ -1,0 +1,115 @@
+# Agent Services Configuration
+# Defines endpoints and capabilities for local agent services (Cursor, Claude, Copilot, etc)
+# Workers use this config to locate and call agent services via HTTP
+
+services:
+  # Cursor IDE Agent Service
+  # Runs on MacBook, listens on port 5001
+  # Receives: prompt file path + content
+  # Returns: execution result from Cursor IDE
+  cursor:
+    enabled: true
+    url: "http://localhost:5001"
+    type: "http"
+    agent_role: "executor"
+    capabilities:
+      - code-generation
+      - typescript-execution
+      - file-creation
+    timeout_ms: 60000
+    retry_attempts: 3
+    retry_backoff_ms: 1000
+    health_check_interval_ms: 30000
+    description: "Cursor IDE local execution service"
+
+  # Claude API Agent Service
+  # Direct calls to Claude API via HTTP
+  # Receives: prompt content
+  # Returns: Claude completion
+  claude:
+    enabled: true
+    url: "http://localhost:5002"
+    type: "http_api"
+    agent_role: "architect"
+    model: "claude-opus-4"
+    capabilities:
+      - architecture-design
+      - code-review
+      - planning
+    timeout_ms: 30000
+    retry_attempts: 2
+    retry_backoff_ms: 2000
+    health_check_interval_ms: 60000
+    description: "Claude API bridge service"
+
+  # GitHub Copilot Chat Service
+  # Optional: Copilot Chat API if available locally
+  copilot:
+    enabled: false
+    url: "http://localhost:5003"
+    type: "http"
+    agent_role: "executor"
+    capabilities:
+      - code-generation
+      - code-completion
+    timeout_ms: 45000
+    retry_attempts: 2
+    retry_backoff_ms: 1500
+    health_check_interval_ms: 45000
+    description: "GitHub Copilot Chat service"
+
+  # Vercel OpenCode API Service
+  # Optional: OpenCode endpoint for advanced code generation
+  opencode:
+    enabled: false
+    url: "http://localhost:5004"
+    type: "http"
+    agent_role: "executor"
+    capabilities:
+      - advanced-code-generation
+      - multi-file-generation
+    timeout_ms: 120000
+    retry_attempts: 1
+    retry_backoff_ms: 3000
+    health_check_interval_ms: 60000
+    description: "Vercel OpenCode service"
+
+# Default service selection rules
+defaults:
+  # If no agent_role specified in prompt, use default
+  default_agent: "cursor"
+
+  # Fallback chain: if cursor unavailable, try claude
+  fallback_chain:
+    - "cursor"
+    - "claude"
+    - "copilot"
+    - "opencode"
+
+# Scaling configuration (for future remote/Docker deployments)
+# Example: Move Cursor to different machine by changing URL
+environments:
+  # Mock services for local testing (no real agents needed)
+  mock:
+    cursor: "http://localhost:5001"
+    claude: "http://localhost:5002"
+    copilot: "http://localhost:5003"
+    opencode: "http://localhost:5004"
+
+  local:
+    cursor: "http://localhost:5001"
+    claude: "http://localhost:5002"
+
+  tailscale:
+    cursor: "http://opsly-mac2011:5001"     # MacBook via Tailscale
+    cursor_backup: "http://opsly-admin:5001"  # Admin machine backup
+    claude: "http://opsly-admin:5002"       # Claude on admin machine
+    # Orchestrator stays on VPS via normal config
+
+  remote:
+    cursor: "http://192.168.1.100:5001"  # Different machine
+    claude: "http://192.168.1.100:5002"
+
+  docker:
+    cursor: "http://cursor-container:5001"
+    claude: "http://claude-container:5002"

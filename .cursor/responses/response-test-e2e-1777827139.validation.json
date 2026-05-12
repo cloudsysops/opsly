@@ -1,0 +1,27 @@
+{
+  "job_id": "test-e2e",
+  "timestamp": "2026-05-03T16:00:05Z",
+  "attempt": 1,
+  "validations": [
+    {
+      "type": "type-check",
+      "status": "passed",
+      "duration_ms": 800
+    },
+    {
+      "type": "test",
+      "status": "passed",
+      "duration_ms": 1200
+    },
+    {
+      "type": "build",
+      "status": "passed",
+      "duration_ms": 500
+    }
+  ],
+  "overall_status": "passed",
+  "can_retry": true,
+  "next_action": "commit",
+  "total_duration_ms": 2500,
+  "errors": []
+}

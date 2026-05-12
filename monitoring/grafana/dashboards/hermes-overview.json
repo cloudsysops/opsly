@@ -1,0 +1,163 @@
+{
+  "dashboard": {
+    "title": "Hermes — System Overview",
+    "tags": ["hermes", "production"],
+    "timezone": "browser",
+    "panels": [
+      {
+        "title": "Service Status",
+        "type": "stat",
+        "gridPos": {"h": 4, "w": 4, "x": 0, "y": 0},
+        "targets": [
+          {
+            "expr": "count(up{job=~\"mcp-gateway|agent-manager|tenant-invitations|onboarding-agent|rendering-engine|mcp-rendering-server\"} == 1)",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "colorMode": "background",
+          "graphMode": "none",
+          "justifyMode": "center",
+          "textMode": "auto"
+        }
+      },
+      {
+        "title": "Error Rate",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 6, "x": 4, "y": 0},
+        "targets": [
+          {
+            "expr": "sum(rate(http_requests_total{status=~\"5..\"}[5m])) by (job)",
+            "legendFormat": "{{ job }}"
+          }
+        ]
+      },
+      {
+        "title": "Request Latency (p95)",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 6, "x": 10, "y": 0},
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) * 1000",
+            "legendFormat": "{{ job }}"
+          }
+        ],
+        "yaxes": [
+          {"label": "ms"}
+        ]
+      },
+      {
+        "title": "Agent Task Success Rate",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 6, "x": 0, "y": 8},
+        "targets": [
+          {
+            "expr": "sum(rate(hermes_agent_tasks_completed_total[5m])) by (agent) / sum(rate(hermes_agent_tasks_total[5m])) by (agent)",
+            "legendFormat": "{{ agent }}"
+          }
+        ],
+        "yaxes": [
+          {"min": 0, "max": 1, "format": "percentunit"}
+        ]
+      },
+      {
+        "title": "Rendering Jobs (Last 24h)",
+        "type": "stat",
+        "gridPos": {"h": 4, "w": 3, "x": 6, "y": 8},
+        "targets": [
+          {
+            "expr": "increase(hermes_rendering_jobs_total[24h])",
+            "refId": "A"
+          }
+        ]
+      },
+      {
+        "title": "Monthly Cost",
+        "type": "stat",
+        "gridPos": {"h": 4, "w": 3, "x": 9, "y": 8},
+        "targets": [
+          {
+            "expr": "hermes_monthly_cost_usd",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "custom": {},
+            "unit": "currencyUSD"
+          }
+        }
+      },
+      {
+        "title": "Queue Depth",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 6, "x": 12, "y": 8},
+        "targets": [
+          {
+            "expr": "hermes_queue_length",
+            "legendFormat": "{{ agent }}"
+          }
+        ]
+      },
+      {
+        "title": "Database Connections",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 6, "x": 0, "y": 16},
+        "targets": [
+          {
+            "expr": "pg_stat_activity_count",
+            "legendFormat": "Active connections"
+          }
+        ]
+      },
+      {
+        "title": "Redis Memory",
+        "type": "gauge",
+        "gridPos": {"h": 8, "w": 6, "x": 6, "y": 16},
+        "targets": [
+          {
+            "expr": "redis_memory_used_bytes / redis_memory_max_bytes",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percentunit",
+            "min": 0,
+            "max": 1
+          }
+        }
+      },
+      {
+        "title": "Disk Usage",
+        "type": "gauge",
+        "gridPos": {"h": 8, "w": 6, "x": 12, "y": 16},
+        "targets": [
+          {
+            "expr": "1 - (node_filesystem_avail_bytes / node_filesystem_size_bytes)",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percentunit",
+            "min": 0,
+            "max": 1
+          }
+        }
+      }
+    ],
+    "refresh": "10s",
+    "schemaVersion": 30,
+    "style": "dark",
+    "templating": {
+      "list": []
+    },
+    "time": {
+      "from": "now-6h",
+      "to": "now"
+    },
+    "timepicker": {},
+    "uid": "hermes-overview"
+  }
+}

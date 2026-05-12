@@ -1,0 +1,37 @@
+{
+  "jobId": "job-123",
+  "decision": {
+    "action": "escalate",
+    "reason": "Max iterations (3) reached. Final errors: type-check: ENOENT: no such file or directory, open '/tmp/response.md'",
+    "metadata": {
+      "iterationCount": 5,
+      "validationTime": 1,
+      "failedChecks": [
+        "type-check"
+      ]
+    }
+  },
+  "validationReport": {
+    "job_id": "job-123",
+    "timestamp": "2026-05-06T10:28:52.524Z",
+    "attempt": 5,
+    "validations": [
+      {
+        "type": "type-check",
+        "status": "failed",
+        "error": "ENOENT: no such file or directory, open '/tmp/response.md'"
+      }
+    ],
+    "overall_status": "failed",
+    "can_retry": false,
+    "next_action": "escalate",
+    "total_duration_ms": 0,
+    "errors": [
+      {
+        "type": "type-check",
+        "message": "ENOENT: no such file or directory, open '/tmp/response.md'"
+      }
+    ]
+  },
+  "timestamp": "2026-05-06T10:28:52.524Z"
+}

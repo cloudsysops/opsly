@@ -1,0 +1,105 @@
+{
+  "dashboard": {
+    "title": "Hermes — Tenant Metrics",
+    "tags": ["hermes", "tenants"],
+    "timezone": "browser",
+    "panels": [
+      {
+        "title": "Active Tenants",
+        "type": "stat",
+        "gridPos": {"h": 4, "w": 3, "x": 0, "y": 0},
+        "targets": [
+          {
+            "expr": "count(distinct(hermes_tenant_api_calls_total))",
+            "refId": "A"
+          }
+        ]
+      },
+      {
+        "title": "Onboarding Progress",
+        "type": "stat",
+        "gridPos": {"h": 4, "w": 3, "x": 3, "y": 0},
+        "targets": [
+          {
+            "expr": "count(hermes_tenant_onboarding_started_timestamp{status=\"completed\"})",
+            "refId": "A"
+          }
+        ]
+      },
+      {
+        "title": "Total API Calls",
+        "type": "stat",
+        "gridPos": {"h": 4, "w": 3, "x": 6, "y": 0},
+        "targets": [
+          {
+            "expr": "sum(increase(hermes_tenant_api_calls_total[24h]))",
+            "refId": "A"
+          }
+        ]
+      },
+      {
+        "title": "Total Rendering Jobs",
+        "type": "stat",
+        "gridPos": {"h": 4, "w": 3, "x": 9, "y": 0},
+        "targets": [
+          {
+            "expr": "sum(increase(hermes_rendering_jobs_total[24h]))",
+            "refId": "A"
+          }
+        ]
+      },
+      {
+        "title": "API Calls by Tenant (Last 24h)",
+        "type": "bargauge",
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 4},
+        "targets": [
+          {
+            "expr": "topk(10, sum(increase(hermes_tenant_api_calls_total[24h])) by (tenant))",
+            "legendFormat": "{{ tenant }}"
+          }
+        ]
+      },
+      {
+        "title": "Rendering Cost by Tenant (Last 30d)",
+        "type": "piechart",
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 4},
+        "targets": [
+          {
+            "expr": "sum(hermes_tenant_rendering_cost_usd) by (tenant)",
+            "legendFormat": "{{ tenant }}"
+          }
+        ]
+      },
+      {
+        "title": "Agent Usage by Tenant",
+        "type": "table",
+        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 12},
+        "targets": [
+          {
+            "expr": "sum by (tenant, agent) (rate(hermes_agent_tasks_total[24h]))",
+            "format": "table"
+          }
+        ]
+      },
+      {
+        "title": "Tenant Onboarding Timeline",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 20},
+        "targets": [
+          {
+            "expr": "count(hermes_tenant_onboarding_started_timestamp) by (status)",
+            "legendFormat": "{{ status }}"
+          }
+        ]
+      }
+    ],
+    "refresh": "30s",
+    "schemaVersion": 30,
+    "style": "dark",
+    "time": {
+      "from": "now-30d",
+      "to": "now"
+    },
+    "uid": "hermes-tenants"
+  }
+}

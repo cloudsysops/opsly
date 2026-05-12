@@ -12,6 +12,7 @@
     "dev": "turbo dev",
     "build": "turbo build",
     "lint": "turbo lint",
+    "lint:check": "turbo lint --continue",
     "lint:fix": "turbo lint:fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
@@ -49,6 +50,8 @@
     "dev:notion-mcp": "doppler run --project ops-intcloudsysops --config prd -- npm run dev --workspace=@intcloudsysops/notion-mcp",
     "start:notion-mcp": "doppler run --project ops-intcloudsysops --config prd -- npm run start --workspace=@intcloudsysops/notion-mcp",
     "enqueue-test-job": "tsx --tsconfig scripts/tsconfig.enqueue.json scripts/enqueue-test-job.ts",
+    "opsly:local-prompt-watcher": "tsx scripts/local-prompt-watcher.ts",
+    "opsly:local-cursor-service": "tsx scripts/cursor-agent-service.ts --port 5001",
     "docs:sync": "node scripts/sync-docs.js && node scripts/generate-sprint-tracking.js && node scripts/generate-agents-assignments.js",
     "docs:watch": "nodemon --watch docs/implementation/status.yaml --exec \"npm run docs:sync\"",
     "test:docs": "bash scripts/test-sync-docs.sh",
@@ -71,6 +74,7 @@
     "sync:all": "npm run docs:sync && node scripts/sync-all-orchestrator.js",
     "hermes:tick": "npm run hermes --workspace=@intcloudsysops/orchestrator -- tick",
     "hermes:status": "npm run hermes --workspace=@intcloudsysops/orchestrator -- status",
+    "hermes:test": "npm run test:hermes --workspace=@intcloudsysops/orchestrator",
     "docs:code-snapshots": "node scripts/generate-code-snapshots.mjs",
     "docs:to-notebooklm": "node scripts/docs-to-notebooklm.mjs",
     "notebooklm:sync": "npm run docs:code-snapshots && npm run docs:to-notebooklm",
@@ -87,7 +91,9 @@
     "commit": "git-cz"
   },
   "devDependencies": {
-    "@esbuild/linux-x64": "0.21.5",
+    "fast-xml-builder": "1.2.0",
+    "hono": "4.12.18",
+    "ip-address": "10.2.0",
     "@commitlint/cli": "^19.8.1",
     "@commitlint/config-conventional": "^19.8.1",
     "@eslint/eslintrc": "^3.3.1",
@@ -134,12 +140,28 @@
     "node": ">=20.0.0",
     "npm": ">=10.0.0"
   },
+  "optionalDependencies": {
+    "@rollup/rollup-linux-x64-gnu": "4.60.2",
+    "@rollup/rollup-darwin-arm64": "4.60.2",
+    "@rollup/rollup-darwin-x64": "4.60.2"
+  },
   "overrides": {
+    "rollup": "4.60.2",
     "postcss": "8.5.13",
     "lodash": "^4.18.1",
     "minimist": "^1.2.8",
     "tmp": "^0.2.4",
-    "uuid": "^14.0.0"
+    "uuid": "^14.0.0",
+    "fast-uri": "3.1.2",
+    "fast-xml-builder": "1.2.0",
+    "fast-xml-parser": {
+      "fast-xml-builder": "1.2.0"
+    },
+    "hono": "4.12.18",
+    "ip-address": "10.2.0",
+    "express-rate-limit": {
+      "ip-address": "10.2.0"
+    }
   },
   "dependencies": {
     "@redis/client": "^1.6.1",

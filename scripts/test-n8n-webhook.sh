@@ -4,7 +4,7 @@ set -euo pipefail
 
 PASS=0
 FAIL=0
-N8N_URL="https://n8n-intcloudsysops.ops.smiletripcare.com"
+N8N_URL="https://n8n-intcloudsysops.op-sly.com"
 
 assert() {
   local desc="$1"
