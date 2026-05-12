@@ -117,11 +117,12 @@ jobs:
         run: |
           set -euo pipefail
           npm ci
-          # Build internal packages first (required for tests that import them)
-          (cd apps/ml && npm run build)
-          (cd apps/llm-gateway && npm run build)
-          (cd apps/mcp && npm run build)
-          (cd apps/context-builder && npm run build)
+        # Build internal packages first (required for tests that import them)
+        (cd apps/notebooklm-agent && npm run build)
+        (cd apps/ml && npm run build)
+        (cd apps/llm-gateway && npm run build)
+        (cd apps/mcp && npm run build)
+        (cd apps/context-builder && npm run build)
           # Unit-oriented suites (without Redis service dependency)
           (cd apps/api && npm test) & pid_api=$!
           (cd apps/portal && npm test) & pid0=$!
@@ -171,32 +172,29 @@ jobs:
           (cd apps/orchestrator && npm test)
           (cd apps/llm-gateway && npm test -- --run __tests__/cache-namespace.test.ts)
 
-      - name: Run ValidationOrchestrator E2E Tests with Coverage
-        run: |
-          set -euo pipefail
-          cd apps/orchestrator
-          npm run test:coverage -- src/__tests__/validation-orchestrator-e2e.test.ts
+  - name: Run ValidationOrchestrator E2E Tests with Coverage
+    run: |
+      set -euo pipefail
+      cd apps/orchestrator
+      npm run test:coverage -- src/__tests__/validation-orchestrator-e2e.test.ts 2>&1 | tee coverage.log
 
-      - name: Check Coverage Threshold
-        run: |
-          set -euo pipefail
-          cd apps/orchestrator
-          # Run test with coverage and capture output
-          npm run test:coverage -- src/__tests__/validation-orchestrator-e2e.test.ts 2>&1 | tee coverage.log
-          # Extract coverage percentage (looks for "Statements" line)
-          coverage=$(grep -oP 'Statements\s+:\s+\K[\d.]+' coverage.log | head -1)
-          if [ -z "$coverage" ]; then
-            echo "Warning: Could not extract coverage percentage from test output"
-            echo "This may indicate tests are still running or format changed. Proceeding with caution."
-            exit 0
-          fi
-          threshold=85
-          if (( $(echo "$coverage < $threshold" | bc -l) )); then
-            echo "ERROR: Coverage ${coverage}% is below threshold of ${threshold}%"
-            exit 1
-          else
-            echo "SUCCESS: Coverage ${coverage}% meets threshold of ${threshold}%"
-          fi
+  - name: Check Coverage Threshold
+    run: |
+      cd apps/orchestrator
+      # Vitest v8 coverage table uses pipe-delimited columns, e.g. "All files | 42.36 | ..."
+      coverage=$(grep -oP 'All files\s*\|\s*\K[\d.]+' coverage.log | head -1)
+      if [ -z "$coverage" ]; then
+        echo "Warning: Could not extract coverage percentage from test output"
+        echo "Proceeding without enforcement (coverage format may have changed)"
+        exit 0
+      fi
+      threshold=85
+      if (( $(echo "$coverage < $threshold" | bc -l) )); then
+        echo "ERROR: Coverage ${coverage}% is below threshold of ${threshold}%"
+        exit 1
+      else
+        echo "SUCCESS: Coverage ${coverage}% meets threshold of ${threshold}%"
+      fi
 
   build:
     needs: lint
