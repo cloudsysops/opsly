@@ -4,7 +4,8 @@ export interface RouteContext {
   req: IncomingMessage;
   res: ServerResponse;
   path: string;
-  query: string;
+  query: Record<string, string>;
+  params: Record<string, string>;
 }
 
 export type RouteHandler = (ctx: RouteContext) => Promise<void> | void;
@@ -38,11 +39,7 @@ export class Router {
     this.register('DELETE', path, handler);
   }
 
-  match(method: string, path: string): Route | undefined {
-    return this.routes.find((r) => r.method === method && r.path === path);
-  }
-
-  findMatch(method: string, pathOnly: string): Route | undefined {
+  findMatch(method: string, pathOnly: string): { route: Route; params: Record<string, string> } | undefined {
     for (const route of this.routes) {
       if (route.method !== method) continue;
 
@@ -56,16 +53,58 @@ export class Router {
 
       for (let i = 0; i < routeParts.length; i++) {
         if (routeParts[i].startsWith(':')) {
-          params[routeParts[i].slice(1)] = pathParts[i];
+          params[routeParts[i].slice(1)] = decodeURIComponent(pathParts[i]);
         } else if (routeParts[i] !== pathParts[i]) {
           match = false;
           break;
         }
       }
 
-      if (match) return route;
+      if (match) return { route, params };
     }
     return undefined;
+  }
+
+  dispatch(req: IncomingMessage, res: ServerResponse): boolean {
+    const url = req.url ?? '/';
+    const questionMark = url.indexOf('?');
+    const pathOnly = questionMark === -1 ? url : url.slice(0, questionMark);
+    const queryString = questionMark === -1 ? '' : url.slice(questionMark + 1);
+
+    const method = req.method ?? 'GET';
+    const result = this.findMatch(method, pathOnly);
+    if (!result) return false;
+
+    const query: Record<string, string> = {};
+    if (queryString.length > 0) {
+      for (const pair of queryString.split('&')) {
+        const eq = pair.indexOf('=');
+        if (eq === -1) {
+          query[decodeURIComponent(pair)] = '';
+        } else {
+          query[decodeURIComponent(pair.slice(0, eq))] = decodeURIComponent(pair.slice(eq + 1));
+        }
+      }
+    }
+
+    const ctx: RouteContext = {
+      req,
+      res,
+      path: pathOnly,
+      query,
+      params: result.params,
+    };
+
+    const result_ = result.route.handler(ctx);
+    if (result_ instanceof Promise) {
+      result_.catch((err: unknown) => {
+        try {
+          jsonResponse(res, { error: String(err) }, 500);
+        } catch { /* response already sent */ }
+      });
+    }
+
+    return true;
   }
 
   getRoutes(): Route[] {
