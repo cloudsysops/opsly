@@ -15,6 +15,9 @@ vi.mock('../queue.js', () => {
     orchestratorQueue: {
       getJob: vi.fn(),
     },
+    localAgentQueue: {
+      getJob: vi.fn(),
+    },
   };
 });
 

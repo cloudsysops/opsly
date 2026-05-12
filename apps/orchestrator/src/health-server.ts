@@ -8,7 +8,7 @@ import {
   setLocalControlMode,
 } from './control-mode.js';
 import { orchestratorModeLabel, parseOrchestratorRole } from './orchestrator-role.js';
-import { enqueueJob, enqueueLocalAgentJob, orchestratorQueue } from './queue.js';
+import { enqueueJob, enqueueLocalAgentJob, orchestratorQueue, localAgentQueue } from './queue.js';
 import type { OrchestratorJob } from './types.js';
 import { enqueueWebhookJob } from './workers/WebhookWorker.js';
 import type { WebhookJobData } from './workers/WebhookWorker.js';
@@ -20,7 +20,7 @@ import {
   handleGetHiveStats,
   handleShutdownHive,
 } from './hive/http-handler.js';
-import { getTerminalSession, stopTerminalSession } from './workers/terminal-session-store.js';
+import { getTerminalSession, stopTerminalSession, listTerminalSessions, readTerminalSessionOutput } from './workers/terminal-session-store.js';
 import { metricsStore } from './meta/orchestrator-metrics-store.js';
 import { recordOpenClawIntentQueued } from './openclaw/runtime-events.js';
 import { getAgentServiceRegistry, type AgentService } from './lib/agent-service-registry.js';
@@ -265,7 +265,12 @@ async function handleOpenclawJobStatus(
     return;
   }
   try {
-    const j = await orchestratorQueue.getJob(jobId);
+    let j = await orchestratorQueue.getJob(jobId);
+    let queueName = 'openclaw';
+    if (!j) {
+      j = await localAgentQueue.getJob(jobId);
+      queueName = 'local-agents';
+    }
     if (!j) {
       res.writeHead(404, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: 'not found' }));
@@ -277,6 +282,7 @@ async function handleOpenclawJobStatus(
       JSON.stringify({
         job_id: j.id != null ? String(j.id) : null,
         name: j.name,
+        queue: queueName,
         state,
         returnvalue: j.returnvalue,
         failedReason: j.failedReason,
@@ -788,35 +794,45 @@ async function handleStartTerminalTask(req: IncomingMessage, res: ServerResponse
       ? Math.floor(b.timeout_seconds)
       : undefined;
   const cwd = typeof b.cwd === 'string' && b.cwd.length > 0 ? b.cwd : undefined;
-  const requestId =
-    typeof b.request_id === 'string' && b.request_id.length > 0 ? b.request_id : randomUUID();
+const requestId =
+  typeof b.request_id === 'string' && b.request_id.length > 0 ? b.request_id : randomUUID();
+const sessionId =
+  typeof b.session_id === 'string' && b.session_id.length > 0 ? b.session_id : randomUUID();
+const processLabel =
+  typeof b.process_label === 'string' && b.process_label.length > 0 ? b.process_label : undefined;
+const objective =
+  typeof b.objective === 'string' && b.objective.length > 0 ? b.objective : undefined;
 
   const job: OrchestratorJob = {
-    type: 'terminal_task',
-    payload: {
-      agent_id: agentId,
-      tenant_slug: tenantSlug,
-      commands,
-      timeout_seconds: timeoutSeconds,
-      cwd,
-    },
+  type: 'terminal_task',
+  payload: {
+    agent_id: agentId,
     tenant_slug: tenantSlug,
-    initiated_by: 'system',
-    request_id: requestId,
-    metadata: { labels: ['terminal', 'autonomous-agent'] },
-  };
+    session_id: sessionId,
+    process_label: processLabel,
+    objective,
+    commands,
+    timeout_seconds: timeoutSeconds,
+    cwd,
+  },
+  tenant_slug: tenantSlug,
+  initiated_by: 'system',
+  request_id: requestId,
+  metadata: { labels: ['terminal', 'autonomous-agent'] },
+};
 
-  try {
-    const bull = await enqueueJob(job);
-    res.writeHead(202, { 'Content-Type': 'application/json' });
-    res.end(
-      JSON.stringify({
-        success: true,
-        job_id: bull.id != null ? String(bull.id) : null,
-        request_id: requestId,
-        agent_id: agentId,
-      })
-    );
+try {
+  const bull = await enqueueJob(job);
+  res.writeHead(202, { 'Content-Type': 'application/json' });
+  res.end(
+    JSON.stringify({
+      success: true,
+      job_id: bull.id != null ? String(bull.id) : null,
+      request_id: requestId,
+      session_id: sessionId,
+      agent_id: agentId,
+    })
+  );
   } catch (err) {
     res.writeHead(500, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ error: String(err) }));
@@ -877,6 +893,120 @@ async function handleTerminalStop(
   res.end(JSON.stringify({ success: true, agent_id: agentId, status: 'stopped' }));
 }
 
+async function handleTerminalListSessions(
+  req: IncomingMessage,
+  res: ServerResponse,
+  pathOnly: string
+): Promise<void> {
+  if (!verifyPlatformAdminToken(req)) {
+    res.writeHead(401, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'unauthorized' }));
+    return;
+  }
+  const prefix = '/internal/terminal/';
+  const suffix = '/sessions';
+  const rest = pathOnly.slice(prefix.length);
+  if (!rest.endsWith(suffix)) {
+    res.writeHead(400, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'invalid sessions path' }));
+    return;
+  }
+  const agentId = decodeURIComponent(rest.slice(0, rest.length - suffix.length)).trim();
+  if (agentId.length === 0) {
+    res.writeHead(400, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'agent_id required' }));
+    return;
+  }
+  const sessions = listTerminalSessions(agentId);
+  res.writeHead(200, { 'Content-Type': 'application/json' });
+  res.end(JSON.stringify({ success: true, agent_id: agentId, sessions }));
+}
+
+async function handleTerminalSessionOutput(
+  req: IncomingMessage,
+  res: ServerResponse,
+  pathOnly: string
+): Promise<void> {
+  if (!verifyPlatformAdminToken(req)) {
+    res.writeHead(401, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'unauthorized' }));
+    return;
+  }
+  const prefix = '/internal/terminal/';
+  const suffix = '/output';
+  const rest = pathOnly.slice(prefix.length);
+  if (!rest.endsWith(suffix)) {
+    res.writeHead(400, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'invalid output path' }));
+    return;
+  }
+  const parts = rest.slice(0, rest.length - suffix.length).split('/sessions/');
+  if (parts.length !== 2) {
+    res.writeHead(400, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'expected /{agentId}/sessions/{sessionId}/output' }));
+    return;
+  }
+  const agentId = decodeURIComponent(parts[0]).trim();
+  const sessionId = decodeURIComponent(parts[1]).trim();
+  if (agentId.length === 0 || sessionId.length === 0) {
+    res.writeHead(400, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'agent_id and session_id required' }));
+    return;
+  }
+  const url = new URL(pathOnly, 'http://localhost');
+  const offsetStr = url.searchParams.get('offset');
+  const offset = offsetStr !== null ? Number.parseInt(offsetStr, 10) : 0;
+  const result = readTerminalSessionOutput(agentId, sessionId, offset);
+  if (!result) {
+    res.writeHead(404, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'session_not_found' }));
+    return;
+  }
+  res.writeHead(200, { 'Content-Type': 'application/json' });
+  res.end(JSON.stringify({ success: true, agent_id: agentId, session_id: sessionId, ...result }));
+}
+
+async function handleTerminalSessionStop(
+  req: IncomingMessage,
+  res: ServerResponse,
+  pathOnly: string
+): Promise<void> {
+  if (!verifyPlatformAdminToken(req)) {
+    res.writeHead(401, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'unauthorized' }));
+    return;
+  }
+  const prefix = '/internal/terminal/';
+  const suffix = '/stop';
+  const rest = pathOnly.slice(prefix.length);
+  if (!rest.endsWith(suffix)) {
+    res.writeHead(400, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'invalid stop path' }));
+    return;
+  }
+  const parts = rest.slice(0, rest.length - suffix.length).split('/sessions/');
+  if (parts.length !== 2) {
+    res.writeHead(400, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'expected /{agentId}/sessions/{sessionId}/stop' }));
+    return;
+  }
+  const agentId = decodeURIComponent(parts[0]).trim();
+  const sessionId = decodeURIComponent(parts[1]).trim();
+  if (agentId.length === 0 || sessionId.length === 0) {
+    res.writeHead(400, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'agent_id and session_id required' }));
+    return;
+  }
+  const result = stopTerminalSession(agentId, sessionId);
+  if (!result.success) {
+    res.writeHead(404, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: result.reason ?? 'session_not_found' }));
+    return;
+  }
+  res.writeHead(200, { 'Content-Type': 'application/json' });
+  res.end(JSON.stringify({ success: true, agent_id: agentId, session_id: sessionId, status: 'stopped' }));
+}
+
 async function handleJobById(req: IncomingMessage, res: ServerResponse, pathOnly: string): Promise<void> {
   if (!verifyPlatformAdminToken(req)) {
     res.writeHead(401, { 'Content-Type': 'application/json' });
@@ -891,7 +1021,12 @@ async function handleJobById(req: IncomingMessage, res: ServerResponse, pathOnly
     return;
   }
   try {
-    const j = await orchestratorQueue.getJob(jobId);
+    let j = await orchestratorQueue.getJob(jobId);
+    let queueName = 'openclaw';
+    if (!j) {
+      j = await localAgentQueue.getJob(jobId);
+      queueName = 'local-agents';
+    }
     if (!j) {
       res.writeHead(404, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: 'not found' }));
@@ -904,6 +1039,7 @@ async function handleJobById(req: IncomingMessage, res: ServerResponse, pathOnly
         success: true,
         job_id: j.id != null ? String(j.id) : null,
         name: j.name,
+        queue: queueName,
         state,
         progress: j.progress,
         returnvalue: j.returnvalue,
@@ -1293,12 +1429,27 @@ export function startOrchestratorHealthServer(): Server {
       return;
     }
 
-    if (req.method === 'POST' && pathOnly.startsWith('/internal/terminal/stop/')) {
-      await handleTerminalStop(req, res, pathOnly);
-      return;
-    }
+  if (req.method === 'POST' && pathOnly.startsWith('/internal/terminal/stop/')) {
+    await handleTerminalStop(req, res, pathOnly);
+    return;
+  }
 
-    if (req.method === 'GET' && pathOnly.startsWith('/internal/job/')) {
+  if (req.method === 'GET' && pathOnly.match(/^\/internal\/terminal\/[^/]+\/sessions$/) && !pathOnly.includes('/sessions/')) {
+    await handleTerminalListSessions(req, res, pathOnly);
+    return;
+  }
+
+  if (req.method === 'GET' && pathOnly.includes('/sessions/') && pathOnly.endsWith('/output')) {
+    await handleTerminalSessionOutput(req, res, pathOnly);
+    return;
+  }
+
+  if (req.method === 'POST' && pathOnly.includes('/sessions/') && pathOnly.endsWith('/stop')) {
+    await handleTerminalSessionStop(req, res, pathOnly);
+    return;
+  }
+
+  if (req.method === 'GET' && pathOnly.startsWith('/internal/job/')) {
       await handleJobById(req, res, pathOnly);
       return;
     }

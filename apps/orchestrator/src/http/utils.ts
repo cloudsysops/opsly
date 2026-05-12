@@ -1,5 +1,7 @@
 import type { IncomingMessage } from 'node:http';
 import { randomUUID } from 'node:crypto';
+import { resolveAutonomyPolicy } from '../autonomy/policy.js';
+import type { OrchestratorJob } from '../types.js';
 
 export { randomUUID };
 
@@ -30,6 +32,36 @@ export function hasExplicitAutonomyApproval(req: IncomingMessage): boolean {
     return raw.includes('true');
   }
   return raw === 'true';
+}
+
+export function enrichAutonomyMetadata(
+  req: IncomingMessage,
+  job: OrchestratorJob
+):
+  | { ok: true }
+  | { ok: false; status: number; payload: Record<string, unknown> } {
+  const policy = resolveAutonomyPolicy(job.type, job.autonomy_risk);
+  const metadata = {
+    ...(job.metadata ?? {}),
+    autonomy_risk: policy.riskLevel,
+    autonomy_requires_approval: policy.requiresApproval,
+    autonomy_auto_rollback: policy.allowAutoRollback,
+  };
+
+  if (policy.requiresApproval && !hasExplicitAutonomyApproval(req)) {
+    return {
+      ok: false,
+      status: 403,
+      payload: {
+        error: 'autonomy_approval_required',
+        autonomy_risk: policy.riskLevel,
+      },
+    };
+  }
+
+  job.autonomy_risk = policy.riskLevel;
+  job.metadata = metadata;
+  return { ok: true };
 }
 
 export async function parseBody(req: IncomingMessage): Promise<unknown> {
