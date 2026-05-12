@@ -1,24 +1,8 @@
 import type { IncomingMessage, ServerResponse } from 'node:http';
 import { HiveOrchestrator, type ObjectiveRequest } from './hive-orchestrator.js';
+import { parseBody } from '../http/utils.js';
 
 let orchestrator: HiveOrchestrator | null = null;
-
-async function readBody(req: IncomingMessage): Promise<unknown> {
-  return new Promise((resolve, reject) => {
-    let data = '';
-    req.on('data', (chunk: Buffer) => {
-      data += chunk.toString();
-    });
-    req.on('end', () => {
-      try {
-        resolve(JSON.parse(data));
-      } catch {
-        reject(new Error('Invalid JSON'));
-      }
-    });
-    req.on('error', reject);
-  });
-}
 
 export async function initializeHiveHandler(): Promise<HiveOrchestrator> {
   if (!orchestrator) {
@@ -36,7 +20,7 @@ export async function handleSubmitObjective(req: IncomingMessage, res: ServerRes
   }
 
   try {
-    const body = await readBody(req);
+    const body = await parseBody(req);
 
     if (typeof body !== 'object' || body === null) {
       res.writeHead(400, { 'Content-Type': 'application/json' });

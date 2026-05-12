@@ -17,7 +17,7 @@
 import { promises as fsp } from 'fs';
 import * as path from 'path';
 import { watch } from 'chokidar';
-import { IterationManager } from '../apps/orchestrator/src/lib/iteration-manager';
+import { IterationManager } from '../apps/orchestrator/src/lib/iteration/iteration-manager';
 
 interface ProcessedValidation {
   jobId: string;

@@ -15,7 +15,7 @@ import {
   MAX_AUTO_ITERATIONS,
   buildRetryPromptMarkdown,
   type ValidationReportSummary,
-} from '../src/lib/iteration-manager.js';
+} from '../src/lib/iteration/iteration-manager.js';
 
 interface Options {
   repoRoot: string;
