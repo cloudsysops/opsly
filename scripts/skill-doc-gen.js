@@ -128,7 +128,7 @@ function generateCompleteDoc() {
   const index = loadIndex();
   const skills = index.skills.map((s) => loadSkill(s.name));
 
-  const readme = `# Skills Opsly
+  let readme = `# Skills Opsly
 
 > Sistema de skills para agentes IA autónomos en Opsly
 > Versión: ${index.version} | Generado: ${new Date().toISOString()}

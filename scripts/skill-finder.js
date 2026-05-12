@@ -1,73 +1,83 @@
 #!/usr/bin/env node
 /**
- * skill-finder.js — Buscador inteligente de skills con fuzzy matching
+ * skill-finder.js v4 — búsqueda optimizada con caché + prioridad + auto-triggers
  * Uso: node scripts/skill-finder.js "mi query" [--autonomous]
  */
 
-import { readFileSync, existsSync } from 'fs';
+import { readFileSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const SKILLS_INDEX = join(__dirname, '../skills/index.json');
 const ADEQUATE_SCORE_THRESHOLD = 20;
+const CACHE = new Map(); // caché en memoria
 
-// Fuzzy matching simple
-function fuzzyMatch(str, pattern) {
-  const s = str.toLowerCase();
-  const p = pattern.toLowerCase();
+// Fuzzy matching inline
+const fuzzyMatch = (s, p) => {
   let pi = 0;
   for (let i = 0; i < s.length && pi < p.length; i++) {
-    if (s[i] === p[pi]) pi++;
+    if (s[i].toLowerCase() === p[pi].toLowerCase()) pi++;
   }
   return pi === p.length;
+};
+
+// Auto-generar triggers desde descripción (ahorra triggers manuales)
+function autoTriggers(skill) {
+  if (skill.triggers?.length) return skill.triggers;
+  const desc = skill.description?.toLowerCase() || '';
+  const matches = desc.match(/\b\w{4,}\b/g) || [];
+  return [...new Set(matches.slice(0, 5))];
 }
 
-// TF-IDF simple scoring
+// Scoring prioridad-first (crítico 50% weight)
 function scoreSkill(skill, query) {
   const q = query.toLowerCase();
   const words = q.split(/\s+/);
-  let score = 0;
+  const priorityBoost = { critical: 50, high: 20, medium: 10, low: 5 };
+  let score = priorityBoost[skill.priority] || 0;
 
-  for (const trigger of skill.triggers || []) {
-    const t = trigger.toLowerCase();
-    if (t === q) score += 50;
-    else if (t.includes(q)) score += 25;
-    else if (q.includes(t)) score += 15;
-    else if (fuzzyMatch(t, q)) score += 10;
-    for (const w of words) {
-      if (t.includes(w)) score += 5;
-    }
+  const triggers = autoTriggers(skill);
+  for (const t of triggers) {
+    const tl = t.toLowerCase();
+    if (tl === q) score += 100;
+    else if (tl.includes(q)) score += 40;
+    else if (q.includes(tl)) score += 20;
+    else if (fuzzyMatch(tl, q)) score += 10;
+    for (const w of words) if (tl.includes(w)) score += 5;
   }
 
-  if (skill.name?.toLowerCase().includes(q)) score += 10;
+  if (skill.name?.toLowerCase().includes(q)) score += 15;
   if (skill.description?.toLowerCase().includes(q)) score += 8;
-  if (skill.category?.toLowerCase().includes(q)) score += 5;
-
-  const priority = { critical: 20, high: 10, medium: 5, low: 2 };
-  score += priority[skill.priority] || 0;
+  if (skill.category?.toLowerCase().includes(q)) score += 3;
 
   return score;
 }
 
 export function findSkills(query) {
+  // Caché (reutiliza si existe)
+  if (CACHE.has(query)) return CACHE.get(query);
+
   const data = JSON.parse(readFileSync(SKILLS_INDEX, 'utf-8'));
   const matches = [];
 
   for (const skill of data.skills) {
+    // Filtrar deprecated
+    if (skill.priority === 'deprecated') continue;
+
     const score = scoreSkill(skill, query);
     if (score > 0) {
-      const matchedTriggers = (skill.triggers || []).filter(
-        (t) =>
-          t.toLowerCase().includes(query.toLowerCase()) ||
-          query.toLowerCase().includes(t.toLowerCase()) ||
-          fuzzyMatch(t, query)
+      const triggers = autoTriggers(skill);
+      const matchedTriggers = triggers.filter((t) =>
+        fuzzyMatch(t.toLowerCase(), query.toLowerCase())
       );
       matches.push({ ...skill, score, matchedTriggers });
     }
   }
 
-  return matches.sort((a, b) => b.score - a.score);
+  const sorted = matches.sort((a, b) => b.score - a.score);
+  CACHE.set(query, sorted);
+  return sorted;
 }
 
 function inferModule(query) {
@@ -127,21 +137,21 @@ function evaluateAdequacy(matches, query) {
 export function suggestChain(query) {
   const matches = findSkills(query);
   const adequacy = evaluateAdequacy(matches, query);
-  if (!adequacy.hasAdequateMatch) return ['opsly-bootstrap', 'opsly-skill-creator'];
+  if (!adequacy.hasAdequateMatch) return ['opsly-context', 'opsly-skill-creator'];
 
-  const chain = matches.map((s) => s.name);
+  const chain = matches.slice(0, 5).map((s) => s.name); // Top 5 solo
 
-  // Bootstrap is always first for Opsly sessions.
-  if (!chain.includes('opsly-bootstrap')) {
-    chain.unshift('opsly-bootstrap');
+  // Context (reemplaza bootstrap deprecated) siempre primero
+  if (!chain.includes('opsly-context')) {
+    chain.unshift('opsly-context');
   }
 
-  // Skill creator stays available by default so agents can capture new workflows.
+  // Creator disponible para capturar workflows nuevos
   if (!chain.includes('opsly-skill-creator')) {
     chain.push('opsly-skill-creator');
   }
 
-  return chain;
+  return chain.slice(0, 7); // Máx 7 skills en cadena
 }
 
 export function getSkillPath(name) {
