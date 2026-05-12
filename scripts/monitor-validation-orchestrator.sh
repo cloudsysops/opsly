@@ -185,21 +185,26 @@ check_escalation_rate() {
 generate_metrics_report() {
     local timestamp=$(date -u +%Y-%m-%dT%H:%M:%SZ)
     local commits=$(get_git_commit_rate)
+    local orchestrator_status
+    local containers_running
+
+    orchestrator_status=$(ssh "$VPS_USER@$VPS_HOST" "curl -s http://localhost:3011/health | jq -r '.status // \"down\"'" 2>/dev/null || echo "down")
+    containers_running=$(ssh "$VPS_USER@$VPS_HOST" "docker ps | grep -c opsly || echo 0")
 
     cat > "$METRICS_FILE" << EOFM
 {
   "timestamp": "$timestamp",
   "health": {
-    "orchestrator": "$(ssh "$VPS_USER@$VPS_HOST" "curl -s http://localhost:3011/health | jq -r '.status // \"down\"')"
+    "orchestrator": "$orchestrator_status"
   },
   "metrics": {
     "commits_30min": $commits,
-    "containers_running": $(ssh "$VPS_USER@$VPS_HOST" "docker ps | grep -c opsly || echo 0")
+    "containers_running": $containers_running
   }
 }
 EOFM
 
-    if [ "$1" == "--json" ]; then
+    if [ "${1:-}" == "--json" ]; then
         cat "$METRICS_FILE"
     fi
 }
