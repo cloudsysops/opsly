@@ -1,6 +1,7 @@
-import { Worker, Job } from 'bullmq';
+import { Job } from 'bullmq';
 import { createClient } from '@supabase/supabase-js';
 import { v4 as randomUUID } from 'uuid';
+import { createWorker, type WorkerName } from './create-worker.js';
 
 export interface ResearchExecutionPayload {
   query: string;
@@ -175,18 +176,13 @@ Formato: texto plano, sin markdown.
   }
 }
 
-export function createResearchWorker(connection: any): Worker {
-  return new Worker(
-    'openclaw',
-    async (job: Job) => {
-      if (job.name !== 'research') {
-        return;
-      }
-      return processResearchJob(job as Job<ResearchExecutionPayload>);
-    },
-    {
-      connection,
-      concurrency: 2,
-    }
-  );
+export function createResearchWorker(connection: object) {
+  return createWorker({
+    queueName: 'openclaw',
+    jobName: 'research',
+    workerName: 'research',
+    concurrencyKey: 'research',
+    connection,
+    processFn: (job: Job) => processResearchJob(job as Job<ResearchExecutionPayload>),
+  });
 }

@@ -44,6 +44,14 @@ import { startLocalOpenCodeWorker } from './workers/LocalOpenCodeWorker.js';
 import { startLocalCursorWorker } from './workers/LocalCursorWorker.js';
 import { startSandboxWorker } from './workers/SandboxWorker.js';
 import { startSuperOrchestratorWorker } from './workers/SuperOrchestratorWorker.js';
+import { startJcodeWorker } from './workers/JcodeWorker.js';
+import { startHiveWorker } from './workers/HiveWorker.js';
+import { startDefenseAuditWorker } from './workers/DefenseAuditWorker.js';
+import { createResearchWorker } from './workers/ResearchWorker.js';
+import { startApprovalGateWorker } from './workers/ApprovalGateWorker.js';
+import { startOpenClawPlannerWorker } from './workers/OpenClawPlannerWorker.js';
+import { startOpenClawSkepticWorker } from './workers/OpenClawSkepticWorker.js';
+import { startAgentFarmWorker } from './workers/AgentFarmWorker.js';
 import { superOrchestratorIntegration } from './super-orchestrator-integration.js';
 
 type AsyncCleanup = () => Promise<void>;
@@ -99,8 +107,8 @@ function startAllWorkers(): AsyncCleanup[] {
   const localOpenCodeWorker = localAgentUnifiedOnly ? undefined : startLocalOpenCodeWorker(connection);
   const localCursorWorker = localAgentUnifiedOnly ? undefined : startLocalCursorWorker(connection);
   const superOrchestratorWorker = superOrchestratorWorkerEnabled
-    ? startSuperOrchestratorWorker()
-    : undefined;
+  ? startSuperOrchestratorWorker(connection)
+  : undefined;
 
   let agentClassifierCleanup: AsyncCleanup[] = [];
   if (process.env.OPSLY_AGENT_CLASSIFIER_WORKER_ENABLED === 'true') {
@@ -109,7 +117,17 @@ function startAllWorkers(): AsyncCleanup[] {
   }
 
   const sandboxWorker =
-    process.env.OPSLY_SANDBOX_WORKER_ENABLED === 'true' ? startSandboxWorker(connection) : undefined;
+  process.env.OPSLY_SANDBOX_WORKER_ENABLED === 'true' ? startSandboxWorker(connection) : undefined;
+  const jcodeWorker = startJcodeWorker(connection);
+  const hiveWorker = startHiveWorker(connection);
+  const defenseAuditWorker = startDefenseAuditWorker(connection);
+  const researchWorker = createResearchWorker(connection);
+  const plannerWorker = startOpenClawPlannerWorker(connection);
+  const skepticWorker = startOpenClawSkepticWorker(connection);
+  const agentFarmWorkerEnabled = process.env.OPSLY_AGENT_FARM_WORKER_ENABLED === 'true';
+  const agentFarmWorker = agentFarmWorkerEnabled ? startAgentFarmWorker(connection) : undefined;
+  const approvalGateWorkerEnabled = process.env.OPSLY_APPROVAL_GATE_WORKER_ENABLED === 'true';
+  const approvalGateResult = approvalGateWorkerEnabled ? startApprovalGateWorker(connection) : undefined;
 
   cleanup.push(
     async () => cursorWorker.close(),
@@ -132,19 +150,29 @@ function startAllWorkers(): AsyncCleanup[] {
     ...(localOpenCodeWorker ? [async () => localOpenCodeWorker.close()] : []),
     ...(localCursorWorker ? [async () => localCursorWorker.close()] : []),
     ...(superOrchestratorWorker ? [async () => superOrchestratorWorker.close()] : []),
-    ...(sandboxWorker ? [async () => sandboxWorker.close()] : []),
-    ...agentClassifierCleanup
+  ...(sandboxWorker ? [async () => sandboxWorker.close()] : []),
+  async () => jcodeWorker.close(),
+  async () => hiveWorker.close(),
+  async () => defenseAuditWorker.close(),
+  async () => researchWorker.close(),
+  async () => plannerWorker.close(),
+  async () => skepticWorker.close(),
+  ...(agentFarmWorker ? [async () => agentFarmWorker.close()] : []),
+  ...(approvalGateResult ? [async () => approvalGateResult.worker.close()] : []),
+  ...agentClassifierCleanup
   );
 
   const localWorkersLabel = localAgentUnifiedOnly
     ? 'local-agents unified-only'
     : 'local-agents (cursor/claude/copilot/opencode), local-claude, local-copilot, local-opencode, local-cursor';
   const superWorkerLabel = superOrchestratorWorkerEnabled ? ', super-orchestrator' : '';
+  const agentFarmLabel = agentFarmWorkerEnabled ? ', agent-farm' : '';
+  const approvalGateLabel = approvalGateWorkerEnabled ? ', approval-gate' : '';
   console.log(
-    `[orchestrator] Workers: cursor, n8n, notify, drive, backup, health, budget, opsly-webhooks, webhooks-processing, general-events, ollama, evolution, intent_dispatch, terminal_task, ${localWorkersLabel}${superWorkerLabel}` +
-      (process.env.OPSLY_AGENT_CLASSIFIER_WORKER_ENABLED === 'true' ? ', agent-classifier' : '') +
-      (process.env.OPSLY_SANDBOX_WORKER_ENABLED === 'true' ? ', sandbox' : '') +
-      '; Hermes tick → servicio opsly-hermes (no este proceso).'
+    `[orchestrator] Workers: cursor, n8n, notify, drive, backup, health, budget, opsly-webhooks, webhooks-processing, general-events, ollama, evolution, intent_dispatch, terminal_task, jcode, hive, defense-audit, research, planner, skeptic${localWorkersLabel}${superWorkerLabel}${agentFarmLabel}${approvalGateLabel}` +
+    (process.env.OPSLY_AGENT_CLASSIFIER_WORKER_ENABLED === 'true' ? ', agent-classifier' : '') +
+    (process.env.OPSLY_SANDBOX_WORKER_ENABLED === 'true' ? ', sandbox' : '') +
+    '; Hermes tick → servicio opsly-hermes (no este proceso).'
   );
   return cleanup;
 }

@@ -35,11 +35,11 @@ export type WorkerName =
   | 'autonomous_revenue'
   | 'research'
   | 'agent_farm'
-  | 'super_orchestrator'
-  | 'shield-scan'
-  | 'insight-generator'
-  | 'webhook'
-  | 'test-validator';
+	| 'super_orchestrator'
+	| 'shield-scan'
+	| 'insight-generator'
+	| 'webhook'
+	| 'test-validator';
 
 export function extractJobContext(job: Job): {
   task_id?: string;

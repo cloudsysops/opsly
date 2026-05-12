@@ -12,7 +12,7 @@ import {
   VertexAIClient,
   VERTEX_TEXT_EMBEDDING_004_DIM,
 } from '../lib/vertex-ai-client.js';
-import { logWorkerLifecycle } from '../observability/worker-log.js';
+import { createWorker } from './create-worker.js';
 
 const DEFAULT_GATES = {
   min_success_rate: 95,
@@ -171,35 +171,19 @@ export function startApprovalGateWorker(connection: object): {
   }
   const gate = new ApprovalGateWorker(supabase, client, vertex);
 
-  const worker = new Worker<ApprovalGateJobData>(
-    'approval-gate',
-    async (job: Job<ApprovalGateJobData>) => {
-      const t0 = Date.now();
-      logWorkerLifecycle('start', 'approval-gate', job);
-      try {
-        const out = await gate.execute(job.data);
-        logWorkerLifecycle('complete', 'approval-gate', job, { duration_ms: Date.now() - t0 });
-        return out;
-      } catch (err) {
-        const msg = err instanceof Error ? err.message : String(err);
-        logWorkerLifecycle('fail', 'approval-gate', job, {
-          duration_ms: Date.now() - t0,
-          error: msg,
-        });
-        throw err;
-      }
+  const worker = createWorker({
+    queueName: 'approval-gate',
+    workerName: 'approval-gate',
+    concurrencyKey: 'approval-gate',
+    connection,
+    processFn: async (job: Job) => {
+      return gate.execute(job.data as ApprovalGateJobData);
     },
-    { connection, concurrency: 2 }
-  );
-
-  worker.on('failed', (job, err) => {
-    console.error(`[ApprovalGate] Job failed: ${job?.id ?? '?'}`, err);
   });
 
   return {
     worker,
     closeSupabase: async () => {
-      // Supabase JS client has no explicit close in v2
       await Promise.resolve();
     },
   };
