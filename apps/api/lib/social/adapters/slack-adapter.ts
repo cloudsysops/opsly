@@ -71,7 +71,7 @@ export class SlackAdapter {
     }
   }
 
-  private simulateMessage(content: SlackContent): SlackMessage {
+  private simulateMessage(_content: SlackContent): SlackMessage {
     console.warn('📝 Simulating Slack message (no webhook configured)');
     return {
       ts: `${Date.now()}`,

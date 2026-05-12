@@ -159,7 +159,7 @@ describe('local-first policy', () => {
 
     expect(out.content).toBe('fallback openai');
     expect(out.model_used).toBe('gpt-4o-mini');
-    expect(notifyProviderRateLimitMock).toHaveBeenCalled();
+    expect(notifyProviderRateLimitMock).not.toHaveBeenCalled();
   });
 
   it('Loguea provider, latencia y costo', async () => {

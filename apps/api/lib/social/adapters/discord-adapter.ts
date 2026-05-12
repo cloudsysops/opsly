@@ -79,7 +79,7 @@ export class DiscordAdapter {
     }
   }
 
-  private simulateMessage(content: DiscordContent): DiscordMessage {
+  private simulateMessage(_content: DiscordContent): DiscordMessage {
     console.warn('📝 Simulating Discord message (no webhook configured)');
     return {
       id: `sim-discord-${Date.now()}`,

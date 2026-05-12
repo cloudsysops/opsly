@@ -70,7 +70,7 @@ export class LinkedInAdapter {
     }
   }
 
-  private simulatePost(content: LinkedInContent): LinkedInPost {
+  private simulatePost(_content: LinkedInContent): LinkedInPost {
     console.warn('📝 Simulating LinkedIn post (no credentials configured)');
     const id = `sim-linkedin-${Date.now()}`;
     return {
@@ -92,14 +92,11 @@ export class LinkedInAdapter {
     }
 
     try {
-      const response = await fetch(
-        `${this.apiUrl}/analytics/ugcPosts?ids=${postId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${this.accessToken}`,
-          },
+      const response = await fetch(`${this.apiUrl}/analytics/ugcPosts?ids=${postId}`, {
+        headers: {
+          Authorization: `Bearer ${this.accessToken}`,
         },
-      );
+      });
 
       if (!response.ok) {
         return { impressions: 0, clicks: 0, comments: 0, shares: 0 };

@@ -14,9 +14,15 @@ import {
 
 const idParamSchema = z.string().uuid();
 
-function mergeTenantMetadata(existing: Json | null | undefined, patch: Record<string, unknown>): Json {
+function mergeTenantMetadata(
+  existing: Json | null | undefined,
+  patch: Record<string, unknown>
+): Json {
   const base =
-    existing !== null && existing !== undefined && typeof existing === 'object' && !Array.isArray(existing)
+    existing !== null &&
+    existing !== undefined &&
+    typeof existing === 'object' &&
+    !Array.isArray(existing)
       ? { ...(existing as Record<string, unknown>) }
       : {};
   return { ...base, ...patch } as Json;
@@ -132,7 +138,10 @@ export async function PATCH(
     if (!row) {
       return jsonError('Tenant not found', HTTP_STATUS.NOT_FOUND);
     }
-    updates.metadata = mergeTenantMetadata((row as { metadata: Json | null }).metadata, parsed.data.metadata);
+    updates.metadata = mergeTenantMetadata(
+      (row as { metadata: Json | null }).metadata,
+      parsed.data.metadata
+    );
   }
 
   return patchTenantRecord(idParsed.data, updates);

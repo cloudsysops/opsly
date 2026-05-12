@@ -72,56 +72,17 @@ export class MultiPlatformPublisher {
     content: ContentPayload
   ): Promise<PublishResult> {
     try {
-      switch (platform) {
-        case 'twitter':
-          if (content.twitter) {
-            const posts = await this.twitter.publishThreads(content.twitter);
-            return {
-              platform: 'twitter',
-              success: posts.length > 0,
-              post_id: posts[0]?.id,
-              url: `https://twitter.com/opsly/status/${posts[0]?.id}`,
-            };
-          }
-          return { platform: 'twitter', success: false, error: 'No Twitter content' };
-
-        case 'linkedin':
-          if (content.linkedin) {
-            const post = await this.linkedin.publishPost(content.linkedin);
-            return {
-              platform: 'linkedin',
-              success: post !== null,
-              post_id: post?.id,
-              url: post?.url,
-            };
-          }
-          return { platform: 'linkedin', success: false, error: 'No LinkedIn content' };
-
-        case 'discord':
-          if (content.discord) {
-            const message = await this.discord.publishMessage(content.discord);
-            return {
-              platform: 'discord',
-              success: message !== null,
-              post_id: message?.id,
-            };
-          }
-          return { platform: 'discord', success: false, error: 'No Discord content' };
-
-        case 'slack':
-          if (content.slack) {
-            const message = await this.slack.publishMessage(content.slack);
-            return {
-              platform: 'slack',
-              success: message !== null,
-              post_id: message?.ts,
-            };
-          }
-          return { platform: 'slack', success: false, error: 'No Slack content' };
-
-        default:
-          return { platform, success: false, error: 'Unknown platform' };
+      const handlers: Record<string, () => Promise<PublishResult>> = {
+        twitter: () => this.publishToTwitter(content),
+        linkedin: () => this.publishToLinkedIn(content),
+        discord: () => this.publishToDiscord(content),
+        slack: () => this.publishToSlack(content),
+      };
+      const handler = handlers[platform];
+      if (!handler) {
+        return { platform, success: false, error: 'Unknown platform' };
       }
+      return await handler();
     } catch (error) {
       return {
         platform,
@@ -129,6 +90,56 @@ export class MultiPlatformPublisher {
         error: error instanceof Error ? error.message : 'Unknown error',
       };
     }
+  }
+
+  private async publishToTwitter(content: ContentPayload): Promise<PublishResult> {
+    if (!content.twitter) {
+      return { platform: 'twitter', success: false, error: 'No Twitter content' };
+    }
+    const posts = await this.twitter.publishThreads(content.twitter);
+    return {
+      platform: 'twitter',
+      success: posts.length > 0,
+      post_id: posts[0]?.id,
+      url: `https://twitter.com/opsly/status/${posts[0]?.id}`,
+    };
+  }
+
+  private async publishToLinkedIn(content: ContentPayload): Promise<PublishResult> {
+    if (!content.linkedin) {
+      return { platform: 'linkedin', success: false, error: 'No LinkedIn content' };
+    }
+    const post = await this.linkedin.publishPost(content.linkedin);
+    return {
+      platform: 'linkedin',
+      success: post !== null,
+      post_id: post?.id,
+      url: post?.url,
+    };
+  }
+
+  private async publishToDiscord(content: ContentPayload): Promise<PublishResult> {
+    if (!content.discord) {
+      return { platform: 'discord', success: false, error: 'No Discord content' };
+    }
+    const message = await this.discord.publishMessage(content.discord);
+    return {
+      platform: 'discord',
+      success: message !== null,
+      post_id: message?.id,
+    };
+  }
+
+  private async publishToSlack(content: ContentPayload): Promise<PublishResult> {
+    if (!content.slack) {
+      return { platform: 'slack', success: false, error: 'No Slack content' };
+    }
+    const message = await this.slack.publishMessage(content.slack);
+    return {
+      platform: 'slack',
+      success: message !== null,
+      post_id: message?.ts,
+    };
   }
 }
 
