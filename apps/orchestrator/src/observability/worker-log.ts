@@ -32,7 +32,14 @@ export type WorkerName =
   | 'openclaw-planner'
   | 'openclaw-skeptic'
   | 'api_factory'
-  | 'autonomous_revenue';
+  | 'autonomous_revenue'
+  | 'research'
+  | 'agent_farm'
+  | 'super_orchestrator'
+  | 'shield-scan'
+  | 'insight-generator'
+  | 'webhook'
+  | 'test-validator';
 
 export function extractJobContext(job: Job): {
   task_id?: string;
@@ -60,6 +67,42 @@ export function extractJobContext(job: Job): {
     metadata: d.metadata,
     autonomy_risk: autonomyRisk,
   };
+}
+
+export type WorkerLogLevel = 'info' | 'warn' | 'error';
+
+function writeWorkerLog(
+  level: WorkerLogLevel,
+  worker: WorkerName,
+  message: string,
+  extra?: Record<string, unknown>
+): void {
+  const line = JSON.stringify({
+    ts: new Date().toISOString(),
+    service: 'orchestrator',
+    event: 'worker_log',
+    worker,
+    level,
+    message,
+    ...extra,
+  });
+  if (level === 'error') {
+    process.stderr.write(`${line}\n`);
+  } else {
+    process.stdout.write(`${line}\n`);
+  }
+}
+
+export function logWorkerInfo(worker: WorkerName, message: string, extra?: Record<string, unknown>): void {
+  writeWorkerLog('info', worker, message, extra);
+}
+
+export function logWorkerWarn(worker: WorkerName, message: string, extra?: Record<string, unknown>): void {
+  writeWorkerLog('warn', worker, message, extra);
+}
+
+export function logWorkerError(worker: WorkerName, message: string, extra?: Record<string, unknown>): void {
+  writeWorkerLog('error', worker, message, extra);
 }
 
 export function logWorkerLifecycle(

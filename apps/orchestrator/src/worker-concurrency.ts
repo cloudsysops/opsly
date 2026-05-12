@@ -30,7 +30,11 @@ export type WorkerConcurrencyKey =
   | 'openclaw-planner'
   | 'openclaw-skeptic'
   | 'api_factory'
-  | 'autonomous_revenue';
+  | 'autonomous_revenue'
+  | 'research'
+  | 'agent_farm'
+  | 'super_orchestrator'
+  | 'approval-gate';
 
 const FULL_STACK_DEFAULTS: Record<WorkerConcurrencyKey, number> = {
   cursor: 3,
@@ -63,6 +67,10 @@ const FULL_STACK_DEFAULTS: Record<WorkerConcurrencyKey, number> = {
   'openclaw-skeptic': 1,
   api_factory: 3,
   autonomous_revenue: 2,
+  research: 2,
+  agent_farm: 2,
+  super_orchestrator: 3,
+  'approval-gate': 2,
 };
 
 const DISTRIBUTED_WORKER_DEFAULTS: Record<WorkerConcurrencyKey, number> = {
@@ -96,6 +104,10 @@ const DISTRIBUTED_WORKER_DEFAULTS: Record<WorkerConcurrencyKey, number> = {
   'openclaw-skeptic': 1,
   api_factory: 1,
   autonomous_revenue: 1,
+  research: 1,
+  agent_farm: 1,
+  super_orchestrator: 1,
+  'approval-gate': 1,
 };
 
 const ENV_NAMES: Record<WorkerConcurrencyKey, string> = {
@@ -129,6 +141,10 @@ const ENV_NAMES: Record<WorkerConcurrencyKey, string> = {
   'openclaw-skeptic': 'ORCHESTRATOR_OPENCLAW_SKEPTIC_CONCURRENCY',
   api_factory: 'ORCHESTRATOR_API_FACTORY_CONCURRENCY',
   autonomous_revenue: 'ORCHESTRATOR_AUTONOMOUS_REVENUE_CONCURRENCY',
+  research: 'ORCHESTRATOR_RESEARCH_CONCURRENCY',
+  agent_farm: 'ORCHESTRATOR_AGENT_FARM_CONCURRENCY',
+  super_orchestrator: 'ORCHESTRATOR_SUPER_ORCHESTRATOR_CONCURRENCY',
+  'approval-gate': 'ORCHESTRATOR_APPROVAL_GATE_CONCURRENCY',
 };
 
 function parsePositiveInt(raw: string | undefined): number | null {
