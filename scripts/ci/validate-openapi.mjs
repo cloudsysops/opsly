@@ -101,6 +101,13 @@ const REQUIRED_LOCAL_SERVICES_PATHS = [
   '/api/local-services/webhooks/{slug}/reports/create',
 ];
 
+/** Opsly AI Gateway — OpenAI-compatible + JSON Opsly */
+const REQUIRED_AI_GATEWAY_PATHS = [
+  '/api/ai/chat',
+  '/api/ai/v1/chat/completions',
+  '/api/ai/models',
+];
+
 for (const p of REQUIRED_FEEDBACK_PATHS) {
   if (!Object.prototype.hasOwnProperty.call(doc.paths, p)) {
     console.error(`validate-openapi-yaml: falta path obligatorio en spec: ${p}`);
@@ -136,7 +143,14 @@ for (const p of REQUIRED_LOCAL_SERVICES_PATHS) {
   }
 }
 
+for (const p of REQUIRED_AI_GATEWAY_PATHS) {
+  if (!Object.prototype.hasOwnProperty.call(doc.paths, p)) {
+    console.error(`validate-openapi-yaml: falta path ai-gateway en spec: ${p}`);
+    process.exit(1);
+  }
+}
+
 const n = Object.keys(doc.paths).length;
 console.log(
-  `validate-openapi-yaml: OK (OpenAPI ${doc.openapi}, ${n} paths, portal ${REQUIRED_PORTAL_PATHS.length} + feedback ${REQUIRED_FEEDBACK_PATHS.length} + admin ${REQUIRED_ADMIN_PATHS.length} + sprint5 ${REQUIRED_SPRINT5_PATHS.length} + shield ${REQUIRED_SHIELD_PATHS.length} + local-services ${REQUIRED_LOCAL_SERVICES_PATHS.length} requeridos)`
+  `validate-openapi-yaml: OK (OpenAPI ${doc.openapi}, ${n} paths, portal ${REQUIRED_PORTAL_PATHS.length} + feedback ${REQUIRED_FEEDBACK_PATHS.length} + admin ${REQUIRED_ADMIN_PATHS.length} + sprint5 ${REQUIRED_SPRINT5_PATHS.length} + shield ${REQUIRED_SHIELD_PATHS.length} + local-services ${REQUIRED_LOCAL_SERVICES_PATHS.length} + ai-gateway ${REQUIRED_AI_GATEWAY_PATHS.length} requeridos)`
 );

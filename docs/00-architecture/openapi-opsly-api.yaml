@@ -2034,6 +2034,80 @@ paths:
                     type: boolean
                     example: true
 
+  /api/ai/chat:
+    post:
+      summary: Opsly AI Gateway JSON chat
+      operationId: postAiChat
+      description: >
+        Ejecuta una conversación vía el AI Gateway interno. Acepta alias `opsly:*`,
+        resuelve `AI_ROUTE_*`, reintenta una vez en 429 y aplica fallback por
+        `AI_GATEWAY_PROVIDER_CHAIN`.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AiChatRequest'
+      responses:
+        '200':
+          description: Respuesta JSON Opsly
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /api/ai/v1/chat/completions:
+    post:
+      summary: OpenAI-compatible chat completions
+      operationId: postAiV1ChatCompletions
+      description: >
+        Endpoint compatible con clientes OpenAI SDK/OpenCode. No soporta
+        `stream: true`; usar respuestas no-streaming.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AiChatRequest'
+      responses:
+        '200':
+          description: Chat completion compatible OpenAI
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OpenAiChatCompletion'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /api/ai/models:
+    get:
+      summary: AI Gateway public model configuration
+      operationId: getAiModels
+      description: Devuelve rutas/model ids configurados y flags booleanos de proveedores, sin secretos.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Configuración pública segura del AI Gateway
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
 components:
   securitySchemes:
     bearerAuth:
@@ -2152,6 +2226,67 @@ components:
           minimum: 1
         cwd:
           type: string
+
+    AiChatMessage:
+      type: object
+      required: [role, content]
+      properties:
+        role:
+          type: string
+          enum: [system, user, assistant]
+        content:
+          type: string
+
+    AiChatRequest:
+      type: object
+      required: [messages]
+      properties:
+        model:
+          type: string
+          example: opsly:coding
+        messages:
+          type: array
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/AiChatMessage'
+        temperature:
+          type: number
+        max_tokens:
+          type: integer
+          minimum: 1
+        stream:
+          type: boolean
+          description: No soportado; `true` devuelve 400.
+        metadata:
+          type: object
+          additionalProperties: true
+
+    OpenAiChatCompletion:
+      type: object
+      properties:
+        id:
+          type: string
+        object:
+          type: string
+          example: chat.completion
+        created:
+          type: integer
+        model:
+          type: string
+        choices:
+          type: array
+          items:
+            type: object
+            properties:
+              index:
+                type: integer
+              message:
+                $ref: '#/components/schemas/AiChatMessage'
+              finish_reason:
+                type: string
+        usage:
+          type: object
+          additionalProperties: true
 
   responses:
     BadRequest:

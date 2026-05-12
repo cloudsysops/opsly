@@ -54,6 +54,8 @@
     "dev:notion-mcp": "doppler run --project ops-intcloudsysops --config prd -- npm run dev --workspace=@intcloudsysops/notion-mcp",
     "start:notion-mcp": "doppler run --project ops-intcloudsysops --config prd -- npm run start --workspace=@intcloudsysops/notion-mcp",
     "enqueue-test-job": "tsx --tsconfig scripts/tsconfig.enqueue.json scripts/enqueue-test-job.ts",
+    "test:hermes-nvidia": "tsx scripts/test-hermes-nvidia.ts",
+    "test:ai-gateway-routing": "tsx scripts/test-ai-gateway-routing.ts",
     "opsly:local-prompt-watcher": "tsx scripts/local-prompt-watcher.ts",
     "opsly:local-prompt-watcher:once": "tsx scripts/local-prompt-watcher.ts --once",
     "opsly:agent-cli": "tsx scripts/opsly-agent-cli.ts",

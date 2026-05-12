@@ -1,3 +1,4 @@
+import crypto from 'node:crypto';
 import { jsonError } from './api-response';
 import { HTTP_STATUS } from './constants';
 import { resolveSuperAdminSession } from './super-admin-auth';
@@ -26,6 +27,40 @@ export function requireAdminTokenUnlessDemoRead(request: Request): Response | nu
     return null;
   }
   return requireAdminToken(request);
+}
+
+/** Lee solo `Authorization: Bearer` (sin `x-admin-token`) para `AI_GATEWAY_API_KEY`. */
+function readBearerOnly(request: Request): string {
+  const auth = request.headers.get('authorization');
+  return auth?.startsWith('Bearer ') === true ? auth.slice('Bearer '.length).trim() : '';
+}
+
+function timingSafeEqualString(a: string, b: string): boolean {
+  try {
+    const ba = Buffer.from(a, 'utf8');
+    const bb = Buffer.from(b, 'utf8');
+    if (ba.length !== bb.length) {
+      return false;
+    }
+    return crypto.timingSafeEqual(ba, bb);
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Rutas `/api/ai/*` para clientes OpenAI-compat: acepta `AI_GATEWAY_API_KEY` en Bearer
+ * (Doppler) o la misma autenticación que el panel admin.
+ */
+export async function requireAiGatewayOrAdminAccess(request: Request): Promise<Response | null> {
+  const gatewayExpected = process.env.AI_GATEWAY_API_KEY?.trim() ?? '';
+  if (gatewayExpected.length > 0) {
+    const bearer = readBearerOnly(request);
+    if (bearer.length > 0 && timingSafeEqualString(bearer, gatewayExpected)) {
+      return null;
+    }
+  }
+  return requireAdminAccess(request);
 }
 
 /**

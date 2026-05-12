@@ -4,9 +4,9 @@
 
 1. **Admin UI** (opcional) o **script** → `POST /api/agents/hermes/run` (API Next.js, **solo servidor**).
 2. **Ruta Hermes** construye mensajes y llama **`runAiGatewayChat`** en `apps/api/lib/ai-gateway/gateway.ts` (mismo proceso Node; **no** llama a NVIDIA desde el navegador).
-3. **Gateway** según `AI_GATEWAY_PROVIDER` (por defecto `nvidia`) → `apps/api/lib/ai-gateway/providers/nvidia.ts` → `POST ${NVIDIA_BASE_URL}/chat/completions` con `Authorization: Bearer ${NVIDIA_API_KEY}`.
+3. **Gateway** según `AI_GATEWAY_PROVIDER_CHAIN` (por defecto `nvidia,openrouter,ollama,openai`) → `apps/api/lib/ai-gateway/providers/*` → endpoint OpenAI-compatible del proveedor, con secretos solo en servidor.
 
-Hermes **no** importa ni conoce la URL de NVIDIA; solo el gateway. Para cambiar a OpenAI, Claude, OpenRouter u Ollama: añadir proveedor en `lib/ai-gateway/providers/` y ramificar en `gateway.ts` (o enrutar al `apps/llm-gateway` existente si se unifica).
+Hermes **no** importa ni conoce URLs ni claves de proveedores; solo el gateway. NVIDIA es el camino primario documentado, pero OpenRouter, Ollama y OpenAI ya pueden operar como fallback OpenAI-compatible.
 
 ## Variables de entorno
 
@@ -18,7 +18,7 @@ Definidas en `.env.example` (valores en **Doppler** `ops-intcloudsysops` / `prd`
 | `NVIDIA_BASE_URL` | Por defecto `https://integrate.api.nvidia.com/v1`. |
 | `NVIDIA_MODEL_ID` | Modelo en cadena LLM Gateway legacy. |
 | `NVIDIA_DEFAULT_MODEL` | Modelo por defecto del AI Gateway Hermes; si vacío se usa `NVIDIA_MODEL_ID`. |
-| `AI_GATEWAY_PROVIDER` | `nvidia` (extensible). |
+| `AI_GATEWAY_PROVIDER_CHAIN` | Cadena de proveedores (`nvidia,openrouter,ollama,openai`). |
 | `AI_GATEWAY_TIMEOUT_MS` | Timeout fetch al proveedor. |
 | `AI_GATEWAY_MAX_PROMPT_CHARS` | Límite total de caracteres en `messages`. |
 | `AI_GATEWAY_DEFAULT_MAX_TOKENS` | `max_tokens` por defecto si no viene en el body. |
@@ -63,7 +63,7 @@ Comprobar el **model id** exacto en el catálogo antes de producción (`NVIDIA_D
 
 ## Próximos proveedores
 
-Implementar en `lib/ai-gateway/providers/` (p. ej. `openai.ts`, `openrouter.ts`) y extender `runAiGatewayChat` + `AI_GATEWAY_PROVIDER`. Opcional: delegar en `apps/llm-gateway` para una sola implementación HTTP.
+Mantener proveedores en `lib/ai-gateway/providers/` y ajustar `AI_GATEWAY_PROVIDER_CHAIN` / `AI_GATEWAY_PROVIDER_CHAIN_<BUCKET>` para enrutar por caso de uso. Opcional futuro: delegar en `apps/llm-gateway` para una sola implementación HTTP.
 
 ## Verificación (repo)
 

@@ -1,4 +1,4 @@
-import { llmCall } from '@intcloudsysops/llm-gateway';
+import { runAiGatewayChat, safeGatewayErrorMessage } from '../../ai-gateway/gateway';
 
 const HERMES_SYSTEM =
   "You are Hermes, Opsly's skeptical senior AI agent. Your job is to analyze tasks, challenge assumptions, identify risks, and produce actionable execution steps. Be concise, technical, and security-aware.";
@@ -24,13 +24,6 @@ export type RunHermesTaskResult =
       ok: false;
       error: string;
     };
-
-function safeGatewayErrorMessage(err: unknown): string {
-  if (err instanceof Error) {
-    return err.message;
-  }
-  return String(err);
-}
 
 function defaultHermesModel(mode: HermesMode): string {
   if (mode === 'security') {
@@ -61,22 +54,20 @@ export async function runHermesTask(input: RunHermesTaskInput): Promise<RunHerme
   }
 
   try {
-    const out = await llmCall({
-      tenant_slug: HERMES_TENANT_SLUG,
-      system: HERMES_SYSTEM,
-      messages: [{ role: 'user', content: buildUserPayload(input) }],
+    const out = await runAiGatewayChat({
+      messages: [
+        { role: 'system', content: HERMES_SYSTEM },
+        { role: 'user', content: buildUserPayload(input) },
+      ],
       model: input.model?.trim() || defaultHermesModel(input.mode),
       temperature: 0.2,
       max_tokens: 1200,
-      cache: false,
-      request_id: `hermes:${input.mode}:${Date.now()}`,
-      skip_repo_context: true,
-      usage_metadata: { agent: 'hermes', mode: input.mode },
+      metadata: { agent: 'hermes', mode: input.mode, tenant_slug: HERMES_TENANT_SLUG },
     });
     return {
       ok: true,
-      provider: 'llm-gateway',
-      model: out.model_used,
+      provider: out.provider,
+      model: out.client_model ?? out.model,
       result: out.content,
     };
   } catch (err) {
