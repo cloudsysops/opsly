@@ -5,7 +5,9 @@ import { LinkedInAdapter } from './linkedin-adapter';
 import { DiscordAdapter } from './discord-adapter';
 import { SlackAdapter } from './slack-adapter';
 
-export interface ContentPayload {
+type SupportedPlatform = 'twitter' | 'linkedin' | 'discord' | 'slack';
+
+
   twitter?: {
     threads: string[];
     hashtags: string[];
@@ -72,13 +74,13 @@ export class MultiPlatformPublisher {
     content: ContentPayload
   ): Promise<PublishResult> {
     try {
-      const handlers: Record<string, () => Promise<PublishResult>> = {
+      const handlers: Record<SupportedPlatform, () => Promise<PublishResult>> = {
         twitter: () => this.publishToTwitter(content),
         linkedin: () => this.publishToLinkedIn(content),
         discord: () => this.publishToDiscord(content),
         slack: () => this.publishToSlack(content),
       };
-      const handler = handlers[platform];
+      const handler = handlers[platform as SupportedPlatform];
       if (!handler) {
         return { platform, success: false, error: 'Unknown platform' };
       }
