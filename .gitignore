@@ -117,3 +117,4 @@ docs/.obsidian/plugins/recent-files-obsidian/data.json
 
 # Redis dump file
 dump.rdb
+logs/
