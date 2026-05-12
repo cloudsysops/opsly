@@ -1706,7 +1706,16 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 │   ├── ingestion-service/    # Webhooks → Redis queue (bunker)
 │   ├── mission-control/      # Control plane para workers remotos
 │   ├── notebooklm-agent/    # Workflows NotebookLM legacy (python + TS wrapper)
-│   └── notion-mcp/          # HTTP hacia Notion (tareas, standup, quality; Doppler)
+│ ├── notion-mcp/ # HTTP hacia Notion (tareas, standup, quality; Doppler)
+│ ├── agent-manager/ # Gestión del ciclo de vida de agentes autónomos
+│ ├── billing-dashboard/ # UI de facturación y uso por tenant
+│ ├── billing-service/ # Lógica de facturación, Stripe metering
+│ ├── mcp-gateway/ # Gateway MCP con routing y auth
+│ ├── mcp-rendering-server/ # Servidor de renderizado MCP
+│ ├── rendering-engine/ # Motor de renderizado de artefactos
+│ ├── slack-bot/ # Bot Slack para notificaciones e interacción
+│ ├── tenant-invitations/ # Servicio de invitaciones por email
+│ └── tenant-onboarding-agent/ # Agente de onboarding automático por tenant
 ├── config/
 │   └── opsly.config.json    # Infra/dominios/planes (sin secretos)
 ├── agents/prompts/          # Plantillas Claude / Cursor

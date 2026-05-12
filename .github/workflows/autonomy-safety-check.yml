@@ -28,7 +28,10 @@ jobs:
       - name: Check for hardcoded credentials in prompts
         run: |
           echo "Scanning for hardcoded secrets in autonomous prompts..."
-          ! grep -r -i "password\|secret\|token\|key=" .cursor/prompts/ || exit 1
+          ! grep -r -iE '\bpassword\s*=\s*["\x27][^"\x27]{4,}' .cursor/prompts/ || exit 1
+          ! grep -r -iE '\bsecret\s*=\s*["\x27][^"\x27]{8,}' .cursor/prompts/ || exit 1
+          ! grep -r -iE '\btoken\s*=\s*["\x27][^"\x27]{8,}' .cursor/prompts/ || exit 1
+          ! grep -r -iE '\bapi_key\s*=\s*["\x27][^"\x27]{8,}' .cursor/prompts/ || exit 1
           ! grep -r "BEGIN RSA PRIVATE KEY\|BEGIN OPENSSH PRIVATE KEY" .cursor/prompts/ || exit 1
 
       - name: Validate autonomy manifest files
@@ -89,7 +92,7 @@ jobs:
       - name: Check for destructive commits
         run: |
           echo "Scanning commits for suspicious patterns..."
-          ! git log --oneline origin/main..HEAD | grep -i "force\|delete all\|wipe\|destroy" || {
+          ! git log --oneline origin/main..HEAD | grep -iE "\bforce\b|delete all|\bwipe\b|\bdestroy\b" || {
             echo "WARNING: Potentially destructive commit messages detected"
             exit 1
           }

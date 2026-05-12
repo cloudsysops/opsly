@@ -40,4 +40,4 @@ jobs:
           bash scripts/deploy/promote-canary.sh \
             --staging-api-url "${STAGING_API_URL}" \
             --prod-api-url "${PROD_API_URL}" \
-            $( [ "${ROLLBACK_ON_FAIL}" = "true" ] && echo "--rollback-on-fail" )
+            "$( [ "${ROLLBACK_ON_FAIL}" = "true" ] && echo "--rollback-on-fail" )"
