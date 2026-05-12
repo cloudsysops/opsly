@@ -49,6 +49,7 @@
   - [ ] No flaky tests
 
 - [ ] **Dependency Security Audit**
+
   ```bash
   npm audit
   ```
@@ -80,6 +81,7 @@
   - [ ] Commit history is clean (no fixup commits)
 
 - [ ] **Tag Creation (Optional but Recommended)**
+
   ```bash
   git tag -a v8.0.0-phases-5-7 -m "Phase 8 deployment: Orchestrator, Agent Teams, Validation"
   git push origin v8.0.0-phases-5-7
@@ -118,6 +120,7 @@
   - [ ] No inode exhaustion warnings
 
 - [ ] **Environment Variables Set in Doppler**
+
   ```bash
   doppler run --project ops-intcloudsysops --config prd -- env | grep -E "ORCHESTRATOR|AGENT|VALIDATION"
   ```
@@ -144,6 +147,7 @@
   - [ ] All volume mounts accessible
 
 - [ ] **Environment file integrity**
+
   ```bash
   test -f .env && wc -l .env
   ```
@@ -206,6 +210,7 @@ Script runs health checks every 10s for up to 2 minutes:
   - [ ] Queue connection established
 
 - [ ] **Admin Dashboard (port 3001)**
+
   ```bash
   curl -sf http://localhost:3001/health
   ```
@@ -227,6 +232,7 @@ Script runs health checks every 10s for up to 2 minutes:
   - [ ] No startup errors
 
 - [ ] **Agent Trainer Service Started**
+
   ```bash
   ssh vps-dragon@100.120.151.91 "ps aux | grep trainer"
   ```
@@ -321,6 +327,7 @@ ssh vps-dragon@100.120.151.91 "docker ps --format 'table {{.Names}}\t{{.Status}}
   - [ ] No stuck jobs (in active state > 5 minutes)
 
 - [ ] **Dead Letter Queue (DLQ) empty**
+
   ```bash
   ssh vps-dragon@100.120.151.91 "redis-cli --raw LRANGE bull:orchestrator:failed:* 0 -1"
   ```
@@ -363,6 +370,7 @@ ssh vps-dragon@100.120.151.91 "docker ps --format 'table {{.Names}}\t{{.Status}}
   - [ ] No trainer crashes
 
 - [ ] **Orchestrator performance**
+
   ```bash
   ssh vps-dragon@100.120.151.91 "curl -sf http://localhost:3011/health | jq '.metrics'"
   ```
@@ -374,6 +382,7 @@ ssh vps-dragon@100.120.151.91 "docker ps --format 'table {{.Names}}\t{{.Status}}
 ### Test Results Artifact
 
 - [ ] **test-results.json generated**
+
   ```bash
   jq . test-results.json
   ```
