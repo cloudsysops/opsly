@@ -114,7 +114,7 @@
       "cost_per_1k_output": 0,
       "latency_ms_avg": 1000,
       "latency_ms_p95": 2000,
-      "success_rate": 0.90,
+      "success_rate": 0.9,
       "capabilities": ["code_generation", "code_review", "refactoring", "debugging"],
       "max_concurrent": 2,
       "status": "active",

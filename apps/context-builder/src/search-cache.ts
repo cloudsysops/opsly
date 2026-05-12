@@ -40,9 +40,7 @@ function hashQuery(query: string, options?: Record<string, unknown>): string {
  * Static queries (no special parameters): 24h
  * Dynamic queries (with filters/params): 1h
  */
-function determineTtl(
-  isDynamic: boolean = false
-): number {
+function determineTtl(isDynamic: boolean = false): number {
   return isDynamic ? 3600 : 86400; // 1h vs 24h
 }
 

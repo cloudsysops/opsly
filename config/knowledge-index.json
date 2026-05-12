@@ -11591,7 +11591,10 @@
       "skills/user/opsly-architect/SKILL.md",
       "skills/user/opsly-architect-senior/SKILL.md"
     ],
-    "arquitecto": ["tools/tools/tools/tools/tools/agents/prompts/claude-architect.md", "docs/ARCHITECT-SECURITY-REVIEW.md"],
+    "arquitecto": [
+      "tools/tools/tools/tools/tools/agents/prompts/claude-architect.md",
+      "docs/ARCHITECT-SECURITY-REVIEW.md"
+    ],
     "cursor": [
       "tools/tools/tools/tools/tools/agents/prompts/cursor-executor.md",
       "docs/SSH-USERS-FOR-AGENTS.md",

@@ -3,6 +3,7 @@
 ## Introducción
 
 La observabilidad de OpenClaw está construida sobre tres pilares:
+
 1. **Prometheus** — Métricas en tiempo real (counters, gauges, histogramas)
 2. **Jaeger** — Distributed tracing (flujos per-tenant)
 3. **ELK Stack** — Logging estructurado y búsqueda
@@ -42,13 +43,14 @@ Todos los datos están separados **por tenant** para análisis aislado y trouble
 ### Core Metrics
 
 #### 1. openclaw_tenant_job_count
+
 **Type:** Counter
 **Labels:** `tenant_slug`, `status` (success/failure/timeout), `job_type`
 **Description:** Número total de jobs ejecutados
 
 ```promql
 # Ejemplo: Success rate por tenant
-rate(openclaw_tenant_job_count{status="success"}[5m]) / 
+rate(openclaw_tenant_job_count{status="success"}[5m]) /
   rate(openclaw_tenant_job_count[5m])
 
 # Jobs fallidos en última hora
@@ -56,6 +58,7 @@ increase(openclaw_tenant_job_count{status="failure"}[1h])
 ```
 
 #### 2. openclaw_tenant_job_duration_ms
+
 **Type:** Histogram
 **Labels:** `tenant_slug`, `job_type`
 **Buckets:** [100, 500, 1000, 2000, 5000, 10000, 30000]ms
@@ -70,6 +73,7 @@ rate(openclaw_tenant_job_duration_ms_bucket{le="5000"}[5m])
 ```
 
 #### 3. openclaw_tenant_cost_usd
+
 **Type:** Gauge
 **Labels:** `tenant_slug`
 **Description:** Costo acumulado del día actual
@@ -83,6 +87,7 @@ avg(openclaw_tenant_cost_usd)
 ```
 
 #### 4. openclaw_tenant_concurrent_jobs
+
 **Type:** Gauge
 **Labels:** `tenant_slug`, `plan`
 **Description:** Número de jobs concurrentes activos
@@ -96,6 +101,7 @@ openclaw_tenant_concurrent_jobs > 10
 ```
 
 #### 5. openclaw_ml_feedback_score
+
 **Type:** Histogram
 **Labels:** `tenant_slug`
 **Buckets:** [0.1, 0.3, 0.5, 0.7, 0.9, 1.0]
@@ -110,6 +116,7 @@ histogram_quantile(0.5, openclaw_ml_feedback_score_bucket) < 0.7
 ```
 
 #### 6. openclaw_skill_invocations
+
 **Type:** Counter
 **Labels:** `tenant_slug`, `skill_name`, `status`
 **Description:** Invocaciones de skills por tenant
@@ -124,6 +131,7 @@ rate(openclaw_skill_invocations{status="failure"}[5m]) /
 ```
 
 #### 7. openclaw_skill_invocation_duration_ms
+
 **Type:** Histogram
 **Labels:** `tenant_slug`, `skill_name`
 **Buckets:** [10, 50, 100, 500, 1000, 2000, 5000]ms
@@ -131,11 +139,12 @@ rate(openclaw_skill_invocations{status="failure"}[5m]) /
 
 ```promql
 # Skill más lento (p99)
-topk(1, histogram_quantile(0.99, 
+topk(1, histogram_quantile(0.99,
   rate(openclaw_skill_invocation_duration_ms_bucket[5m])))
 ```
 
 #### 8. openclaw_notebooklm_latency_ms
+
 **Type:** Histogram
 **Labels:** `tenant_slug`, `operation` (index, query, sync)
 **Buckets:** [100, 500, 1000, 2000, 5000]ms
@@ -148,6 +157,7 @@ histogram_quantile(0.95, rate(
 ```
 
 #### 9. openclaw_tenant_job_errors
+
 **Type:** Counter
 **Labels:** `tenant_slug`, `error_type`
 **Description:** Conteo de errores por tipo
@@ -161,6 +171,7 @@ topk(5, rate(openclaw_tenant_job_errors[1h]))
 ```
 
 #### 10. openclaw_provisioning_duration_ms
+
 **Type:** Histogram
 **Buckets:** [1000, 5000, 10000, 20000, 30000]ms
 **Description:** Tiempo de provisioning
@@ -190,6 +201,7 @@ span.setAttributes({
 ### Trace Flows
 
 #### 1. Job Execution Flow
+
 ```
 job.execute
 ├─ job.id = "job-123"
@@ -203,6 +215,7 @@ job.execute
 ```
 
 #### 2. Skill Invocation Flow
+
 ```
 skill.invoke
 ├─ skill.name = "opsly-api"
@@ -214,6 +227,7 @@ skill.invoke
 ```
 
 #### 3. Provisioning Flow
+
 ```
 tenant.provisioning
 ├─ tenant.slug = "new-tenant"
@@ -241,7 +255,7 @@ tags: job.status=failure
 tags: job.duration_ms>5000
 
 # NotebookLM queries lentas
-serviceName=openclaw & operationName=knowledge_pipeline.notebooklm & 
+serviceName=openclaw & operationName=knowledge_pipeline.notebooklm &
   tags: knowledge_pipeline.stage=notebooklm
 ```
 
@@ -258,6 +272,7 @@ curl "http://localhost:16686/api/traces?service=openclaw&tags=%7B%22tenant.slug%
 ### Log Structure
 
 Todos los logs incluyen:
+
 ```json
 {
   "timestamp": "2026-05-01T12:34:56Z",
@@ -425,29 +440,29 @@ groups:
            rate(openclaw_tenant_job_count[5m])) > 0.05
         for: 5m
         annotations:
-          summary: "Tenant {{ $labels.tenant_slug }} has > 5% job failure rate"
-          dashboard: "http://grafana:3000/d/openclaw-per-tenant"
+          summary: 'Tenant {{ $labels.tenant_slug }} has > 5% job failure rate'
+          dashboard: 'http://grafana:3000/d/openclaw-per-tenant'
 
       # Slow jobs
       - alert: SlowJobLatency
         expr: histogram_quantile(0.99, openclaw_tenant_job_duration_ms_bucket) > 10000
         for: 10m
         annotations:
-          summary: "Tenant {{ $labels.tenant_slug }} jobs taking >10s"
+          summary: 'Tenant {{ $labels.tenant_slug }} jobs taking >10s'
 
       # High cost
       - alert: HighTenantCost
         expr: increase(openclaw_tenant_cost_usd[1h]) > 100
         for: 15m
         annotations:
-          summary: "Tenant {{ $labels.tenant_slug }} cost > $100/hour"
+          summary: 'Tenant {{ $labels.tenant_slug }} cost > $100/hour'
 
       # Provisioning timeout
       - alert: ProvisioningTimeout
         expr: increase(openclaw_provisioning_duration_ms[5m]) > 30000
         for: 5m
         annotations:
-          summary: "Tenant provisioning took >30s"
+          summary: 'Tenant provisioning took >30s'
 
       # Skill failures
       - alert: HighSkillFailureRate
@@ -456,7 +471,7 @@ groups:
            rate(openclaw_skill_invocations[5m])) > 0.1
         for: 10m
         annotations:
-          summary: "Skill {{ $labels.skill_name }} has > 10% failure rate"
+          summary: 'Skill {{ $labels.skill_name }} has > 10% failure rate'
 ```
 
 ### Slack/PagerDuty Integration
@@ -464,34 +479,34 @@ groups:
 ```yaml
 global:
   resolve_timeout: 5m
-  slack_api_url: "${SLACK_WEBHOOK_URL}"
+  slack_api_url: '${SLACK_WEBHOOK_URL}'
 
 route:
-  receiver: "default"
-  group_by: ["tenant_slug", "severity"]
+  receiver: 'default'
+  group_by: ['tenant_slug', 'severity']
   group_wait: 10s
   group_interval: 10s
   repeat_interval: 4h
 
 receivers:
-  - name: "default"
+  - name: 'default'
     slack_configs:
-      - channel: "#openclaw-alerts"
-        title: "[{{ .GroupLabels.severity }}] {{ .Alerts.Firing | len }} alerts"
-        text: "Tenant: {{ .GroupLabels.tenant_slug }}"
+      - channel: '#openclaw-alerts'
+        title: '[{{ .GroupLabels.severity }}] {{ .Alerts.Firing | len }} alerts'
+        text: 'Tenant: {{ .GroupLabels.tenant_slug }}'
         send_resolved: true
 ```
 
 ## Performance Benchmarks
 
-| Component | Target | Alert Threshold |
-|-----------|--------|-----------------|
-| Provisioning | <30s | >45s |
-| Job baseline | <5s | >10s |
-| NotebookLM query | <2s | >3s |
-| Obsidian graph | <1s | >2s |
-| Skill discovery | <100ms | >200ms |
-| Cost tracking latency | <100ms | >500ms |
+| Component             | Target | Alert Threshold |
+| --------------------- | ------ | --------------- |
+| Provisioning          | <30s   | >45s            |
+| Job baseline          | <5s    | >10s            |
+| NotebookLM query      | <2s    | >3s             |
+| Obsidian graph        | <1s    | >2s             |
+| Skill discovery       | <100ms | >200ms          |
+| Cost tracking latency | <100ms | >500ms          |
 
 ## Debugging Guide
 
@@ -573,14 +588,14 @@ curl "http://api:3000/api/tenants/acme-corp/skills/opsly-notebooklm/history?limi
 
 ## URLs y Acceso
 
-| Servicio | URL | Puerto | Auth |
-|----------|-----|--------|------|
-| Prometheus | http://prometheus:9090 | 9090 | none |
-| Grafana | http://grafana:3000 | 3000 | admin/admin |
-| Jaeger UI | http://localhost:16686 | 16686 | none |
-| Elasticsearch | http://elasticsearch:9200 | 9200 | none |
-| Kibana | http://kibana:5601 | 5601 | none |
-| OpenClaw Metrics | http://api:3000/metrics | 3000 | Bearer token |
+| Servicio         | URL                       | Puerto | Auth         |
+| ---------------- | ------------------------- | ------ | ------------ |
+| Prometheus       | http://prometheus:9090    | 9090   | none         |
+| Grafana          | http://grafana:3000       | 3000   | admin/admin  |
+| Jaeger UI        | http://localhost:16686    | 16686  | none         |
+| Elasticsearch    | http://elasticsearch:9200 | 9200   | none         |
+| Kibana           | http://kibana:5601        | 5601   | none         |
+| OpenClaw Metrics | http://api:3000/metrics   | 3000   | Bearer token |
 
 ## Next Steps
 

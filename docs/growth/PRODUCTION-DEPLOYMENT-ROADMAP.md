@@ -15,6 +15,7 @@
 - **Logs:** `runtime/logs/growth/week-1-outreach.log`
 
 ### Sample Email (Generated via Template)
+
 ```
 Subject: Hey María García, Opsly automates your ecommerce workflows
 
@@ -47,6 +48,7 @@ Opsly Growth Team
 **Resolution Path:**
 
 #### Option 1: Verify Sending Domain (Recommended)
+
 1. Login to Resend Dashboard → https://resend.com/domains
 2. Add domain: `ops.smiletripcare.com`
 3. Configure DNS records (provided by Resend)
@@ -55,6 +57,7 @@ Opsly Growth Team
 6. Execute: `./scripts/growth-outreach.sh` (without TEST_MODE)
 
 #### Option 2: Use Custom Domain with SPF/DKIM
+
 - If `ops.smiletripcare.com` can't be verified quickly
 - Create subdomain: `mail.ops.smiletripcare.com`
 - Configure SPF/DKIM at DNS provider
@@ -62,6 +65,7 @@ Opsly Growth Team
 - Estimated time: 24-48 hours
 
 #### Option 3: Upgrade Resend Account
+
 - Contact Resend support to move account to production tier
 - Allows unrestricted sending with verified domain
 - Recommended if scaling beyond pilot phase

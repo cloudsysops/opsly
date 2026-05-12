@@ -1,7 +1,8 @@
 ---
-title: "lib/services Governance"
-description: "Module governance for data access layer"
+title: 'lib/services Governance'
+description: 'Module governance for data access layer'
 ---
+
 # lib/services Governance
 
 ## Ownership
@@ -45,8 +46,8 @@ Repositories support optional caching:
 
 ```typescript
 interface CacheOptions {
-  ttl: number;      // Cache duration (seconds)
-  key: string;      // Cache key pattern
+  ttl: number; // Cache duration (seconds)
+  key: string; // Cache key pattern
   invalidateOn?: string[]; // Events that clear cache
 }
 

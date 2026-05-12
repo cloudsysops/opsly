@@ -1,7 +1,8 @@
 ---
-title: "lib/migrations Governance"
-description: "Module governance for database migrations"
+title: 'lib/migrations Governance'
+description: 'Module governance for database migrations'
 ---
+
 # lib/migrations Governance
 
 ## Ownership
@@ -103,15 +104,16 @@ Never mix tenant data in migrations.
 
 ## Performance Considerations
 
-| Operation | Time | Strategy |
-|-----------|------|----------|
-| Add column (nullable) | < 1s | Online (no lock) |
-| Add index | 1-10min | Background |
-| Remove column | < 1s | Online |
-| Backfill 1M rows | 5-10min | Batched |
-| Rename table | < 1s | Online |
+| Operation             | Time    | Strategy         |
+| --------------------- | ------- | ---------------- |
+| Add column (nullable) | < 1s    | Online (no lock) |
+| Add index             | 1-10min | Background       |
+| Remove column         | < 1s    | Online           |
+| Backfill 1M rows      | 5-10min | Batched          |
+| Rename table          | < 1s    | Online           |
 
 Avoid:
+
 - ❌ ALTER TABLE ... MODIFY (full rewrite)
 - ❌ Backfill in single transaction
 - ❌ Foreign key constraints on large tables

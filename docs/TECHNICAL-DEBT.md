@@ -9,7 +9,7 @@ priority: reference
 
 Audit ejecutado: 2026-05-08 03:30 UTC  
 Branch: main  
-Agente: Hermes (CLI) 
+Agente: Hermes (CLI)
 
 ---
 
@@ -22,24 +22,28 @@ Agente: Hermes (CLI)
 **Root Cause:** `.next/types/validator.ts` referencia rutas que no existen en código
 
 Rutas fantasma referenciadas:
+
 - `apps/api/app/api/admin/agents/hive/objective/[taskId]/route.js`
 - `apps/api/app/api/admin/agents/mcp/catalog/route.js`
 - `apps/api/app/api/admin/agents/terminal/[agentId]/sessions/ts`
 - `apps/api/app/api/portal/tenant/[slug]/agents/hive/objective/[taskId]/route.js`
 - (+ ~18 más)
 
-**Why it happened:**  
+**Why it happened:**
+
 - Routes definidas en `apps/orchestrator` (health-server.ts)
 - Not en `apps/api` como espera Next.js validator
 - Build cache caché acumula referencias deletreadas
 
 **Fix attempted:**
+
 ```bash
 rm -rf apps/admin/.next apps/api/.next
 npm run build  # Interrupted (timeout en Mac)
 ```
 
 **Real fix:**
+
 1. Clean `.next` en todos workspaces Next.js
 2. Rebuild single workspace a la vez (orchestrator, api, admin)
 3. OR: deregister rutas agentes de `apps/api` spec si viven en orchestrator
@@ -56,15 +60,18 @@ npm run build  # Interrupted (timeout en Mac)
 **Root Cause:** Agents routes (hive, mcp, terminal) en orchestrator pero validator expects api
 
 **Current state:**
+
 - `apps/orchestrator/src/health-server.ts`: inline routes for `/internal/hive`, `/internal/mcp`, `/internal/terminal`
 - `apps/orchestrator/src/workers/LocalClaudeWorker.ts`: HTTP worker expects routes
 - Tests in `scripts/hive-run.ts` call `/internal/hive/objective`
 
 **Expected state:**
+
 - Routes should be in `apps/api/app/api/` if validator checks them
 - OR orchestrator should be excluded from Next.js route discovery
 
 **Decision needed:**
+
 - A) Move agent routes to `apps/api` + gateway from orchestrator
 - B) Exclude orchestrator from Next.js type checking
 - C) Redefine OpenAPI spec to only include real routes
@@ -84,8 +91,9 @@ npm run build  # Interrupted (timeout en Mac)
 **Count:** 11 transitive vulns
 
 Notable packages:
+
 - **llamaindex** (2 vulns via @llamaindex/workflow)
-  - Severity: moderate  
+  - Severity: moderate
   - Fix available: v0.11.9 (SemVer major)
   - Impact: RAG pipeline optional, not user-facing
 
@@ -103,6 +111,7 @@ Notable packages:
   - **Action:** upgrade express-rate-limit in package.json
 
 **Why not auto-fixed:**
+
 ```
 npm audit fix --legacy-peer-deps
 → Error: Unsupported platform @esbuild/linux-x64 on darwin
@@ -111,6 +120,7 @@ npm audit fix --legacy-peer-deps
 Platform mismatch: `package-lock.json` has linux bins, running on Mac.
 
 **Fix strategy:**
+
 1. `npm ci --force` on clean VPS (Linux) to resolve binaries
 2. Or: manually patch lockfile to remove platform-specific bins
 3. Or: accept moderate vulns until major version upgrade (LLamaIndex 0.12)
@@ -133,12 +143,14 @@ npm error Missing script: "lint:check"
 ```
 
 **Current scripts exist:**
+
 - `npm run lint` (might exist)
 - `npm run lint:fix` (in api + admin workspaces)
 
 **Real issue:** No unified lint validation in root `package.json`
 
 **Fix:**
+
 ```json
 {
   "scripts": {
@@ -162,15 +174,18 @@ npm error Missing script: "lint:check"
 **Status:** Partial  
 **Impact:** No clear test coverage metrics  
 **Current state:**
+
 - Orchestrator: 92 tests (documented in AGENTS.md)
 - Others: unknown (0 reported in audit)
 
 **Missing:**
+
 - Test script definitions in workspaces
 - CI test job
 - Coverage reporting
 
 **Fix:** Add to each workspace that needs tests
+
 ```json
 {
   "scripts": {
@@ -194,6 +209,7 @@ npm error Missing script: "lint:check"
 **Current:** Full rebuild every PR
 
 **Opportunity:**
+
 - Incremental builds via Turbo cache
 - SWC minifier config in `next.config.js`
 - Disable Source maps in prod build
@@ -212,6 +228,7 @@ npm error Missing script: "lint:check"
 **Current:** 1 image in local Docker (intcloudsysops-context-builder:test)
 
 **To measure:**
+
 ```bash
 docker images --format "{{.Repository}}:{{.Tag}}\t{{.Size}}" | grep opsly
 ```
@@ -219,6 +236,7 @@ docker images --format "{{.Repository}}:{{.Tag}}\t{{.Size}}" | grep opsly
 **Typical Next.js images:** 500MB-1GB (full nodejs + deps)
 
 **Opportunity:**
+
 - Distroless base images
 - Multi-stage builds
 - Remove dev deps in runtime
@@ -232,15 +250,15 @@ docker images --format "{{.Repository}}:{{.Tag}}\t{{.Size}}" | grep opsly
 
 ## 📋 Summary Table
 
-| Item | Severity | Blocker | Est. Fix | Owner | Status |
-|------|----------|---------|----------|-------|--------|
-| Route cache corruption | 🔴 Critical | YES | 2-3h | @arch | Exploring |
-| Agent API alignment | 🔴 Critical | YES | 4-6h | @arch | Design |
-| npm vulns (11 moderate) | 🟡 Important | NO | 1-2h | @devops | Unfixed |
-| Missing lint:check | 🟡 Important | NO | 15m | @eng | TODO |
-| Test suite incomplete | 🟢 Improvement | NO | 2h | @qa | TODO |
-| Build optimization | 🟢 Improvement | NO | 1h | @devops | TODO |
-| Docker image size | 🟢 Improvement | NO | 2h | @devops | TODO |
+| Item                    | Severity       | Blocker | Est. Fix | Owner   | Status    |
+| ----------------------- | -------------- | ------- | -------- | ------- | --------- |
+| Route cache corruption  | 🔴 Critical    | YES     | 2-3h     | @arch   | Exploring |
+| Agent API alignment     | 🔴 Critical    | YES     | 4-6h     | @arch   | Design    |
+| npm vulns (11 moderate) | 🟡 Important   | NO      | 1-2h     | @devops | Unfixed   |
+| Missing lint:check      | 🟡 Important   | NO      | 15m      | @eng    | TODO      |
+| Test suite incomplete   | 🟢 Improvement | NO      | 2h       | @qa     | TODO      |
+| Build optimization      | 🟢 Improvement | NO      | 1h       | @devops | TODO      |
+| Docker image size       | 🟢 Improvement | NO      | 2h       | @devops | TODO      |
 
 ---
 
@@ -256,6 +274,7 @@ docker images --format "{{.Repository}}:{{.Tag}}\t{{.Size}}" | grep opsly
 ## How to Update This Document
 
 Add entries under appropriate severity:
+
 ```markdown
 ### N. [Issue Title]
 

@@ -1,4 +1,5 @@
 # Production Readiness & Testing Plan
+
 **Status:** Sprints 6-16 Complete | Ready for Staging → Production  
 **Date:** 2026-05-01  
 **Owner:** QA Team + DevOps
@@ -19,12 +20,14 @@ OpenClaw per-tenant architecture (Sprints 6-16) is **code-complete** and ready f
 ## Phase 1: Pre-Production Verification ✅
 
 ### Code Quality (Already Passing)
+
 - ✅ Type-check: 13/13 packages passing
 - ✅ ESLint: 100% compliant (apps/web intentionally excluded)
 - ✅ Structure validation: All conventions met
 - ✅ Skills manifest: 31 skills indexed and validated
 
 ### Architecture Validation (Already Complete)
+
 - ✅ ADR-035: OpenClaw per-tenant architecture documented
 - ✅ Redis namespace isolation: `tenant:{slug}:*` implemented
 - ✅ Supabase multi-schema: `tenant_{slug}_*` ready
@@ -34,6 +37,7 @@ OpenClaw per-tenant architecture (Sprints 6-16) is **code-complete** and ready f
 - ✅ Observability: Jaeger tracing, Prometheus metrics, Grafana dashboards
 
 ### Documentation (Complete)
+
 - ✅ `docs/OPENCLAW-STAGING-ACTIVATION.md` — 850+ lines operational guide
 - ✅ `docs/IMPLEMENTATION-STATUS.md` — Sprint tracking + architecture
 - ✅ `docs/adr/ADR-035-openclaw-per-tenant.md` — Decision record
@@ -44,7 +48,9 @@ OpenClaw per-tenant architecture (Sprints 6-16) is **code-complete** and ready f
 ## Phase 2: Staging Validation (Gated by Doppler Admin)
 
 ### Pre-Requisite: Admin Configuration
+
 **Task:** Add 15 Doppler variables to `ops-intcloudsysops/prd`:
+
 ```bash
 OPENCLAW_ENABLED=true
 OPENCLAW_MODE=hybrid
@@ -64,6 +70,7 @@ NOTEBOOKLM_ENABLED=true
 ```
 
 ### Execution: Run Staging Activation Script
+
 ```bash
 # On VPS staging environment
 cd /opt/opsly-staging
@@ -72,6 +79,7 @@ chmod +x scripts/staging-activation.sh
 ```
 
 **Automated 6 Phases:**
+
 1. Doppler variable validation
 2. Code pull + type-check + lint
 3. Docker Compose deployment (9 services)
@@ -84,6 +92,7 @@ chmod +x scripts/staging-activation.sh
 ### QA Validation Checklist (Staging)
 
 #### Health & Connectivity
+
 - [ ] Orchestrator responding: `curl http://localhost:3011/health`
 - [ ] LLM Gateway responding: `curl http://localhost:3010/health`
 - [ ] Context Builder responding: `curl http://localhost:3012/health`
@@ -92,6 +101,7 @@ chmod +x scripts/staging-activation.sh
 - [ ] Supabase schemas created: psql query `information_schema.schemata`
 
 #### Per-Tenant Isolation (Critical)
+
 - [ ] Create test-tenant-a: `POST /api/tenants` with slug "test-tenant-a"
 - [ ] Create test-tenant-b: `POST /api/tenants` with slug "test-tenant-b"
 - [ ] Verify Redis isolation: test-tenant-a keys don't appear in test-tenant-b query
@@ -99,12 +109,14 @@ chmod +x scripts/staging-activation.sh
 - [ ] Test MCP context: Each tenant's MCP only sees its own resources
 
 #### Feature Validation
+
 - [ ] NotebookLM endpoint responds: `GET /api/tenants/test-tenant-a/notebooklm/sources`
 - [ ] Graphyfi visualization: `GET /api/tenants/test-tenant-a/graph/workflows`
 - [ ] Orchestrator decision engine: `POST /api/orchestrator/jobs` respects plan limits
 - [ ] LLM Gateway caching: Verify `tenant:test-tenant-a:llm:*` keys in Redis
 
 #### Monitoring & Observability
+
 - [ ] Grafana dashboard imports successfully
 - [ ] Prometheus metrics collected: `curl http://localhost:9090/api/v1/targets`
 - [ ] Jaeger traces appear: access `http://localhost:16686` and search
@@ -115,6 +127,7 @@ chmod +x scripts/staging-activation.sh
 ## Phase 3: Backend Testing (For QA Team)
 
 ### Run All Tests Locally
+
 ```bash
 # Type-check (all 13 packages)
 npm run type-check
@@ -135,7 +148,9 @@ npm run test
 ### Backend Test Categories
 
 #### API Routes
+
 **File:** `apps/api/__tests__/`
+
 - [ ] Tenant CRUD (`POST /api/tenants`, `GET /api/tenants/:slug`)
 - [ ] NotebookLM endpoints (`GET /api/tenants/:slug/notebooklm/sources`)
 - [ ] Orchestrator endpoints (`POST /api/orchestrator/jobs`)
@@ -145,7 +160,9 @@ npm run test
 **Run:** `npm run test --workspace=@intcloudsysops/api`
 
 #### Orchestrator
+
 **File:** `apps/orchestrator/__tests__/`
+
 - [ ] Decision engine (tenant plan limits)
 - [ ] Job routing (per-tenant isolation)
 - [ ] Context propagation (AsyncLocalStorage)
@@ -155,7 +172,9 @@ npm run test
 **Run:** `npm run test --workspace=@intcloudsysops/orchestrator`
 
 #### LLM Gateway
+
 **File:** `apps/llm-gateway/__tests__/`
+
 - [ ] Tenant context extraction
 - [ ] Per-tenant caching
 - [ ] Cost tracking per tenant
@@ -165,7 +184,9 @@ npm run test
 **Run:** `npm run test --workspace=@intcloudsysops/llm-gateway`
 
 #### Context Builder
+
 **File:** `apps/context-builder/__tests__/`
+
 - [ ] RAG per-tenant
 - [ ] Redis namespace isolation
 - [ ] Session management
@@ -174,7 +195,9 @@ npm run test
 **Run:** `npm run test --workspace=@intcloudsysops/context-builder`
 
 #### ML Module
+
 **File:** `apps/ml/__tests__/`
+
 - [ ] Feedback decision engine
 - [ ] Insight generation
 - [ ] Task classification
@@ -183,7 +206,9 @@ npm run test
 **Run:** `npm run test --workspace=@intcloudsysops/ml`
 
 #### Portal
+
 **File:** `apps/portal/__tests__/`
+
 - [ ] Tenant-aware filtering
 - [ ] RLS queries
 - [ ] Dashboard rendering
@@ -191,7 +216,9 @@ npm run test
 **Run:** `npm run test --workspace=@intcloudsysops/portal`
 
 #### MCP
+
 **File:** `apps/mcp/__tests__/`
+
 - [ ] Tool invocation with tenant context
 - [ ] Credential isolation
 - [ ] Error handling
@@ -203,6 +230,7 @@ npm run test
 ## Phase 4: Frontend Testing (For QA Team)
 
 ### Setup Frontend Development
+
 ```bash
 # Install dependencies
 npm install
@@ -223,6 +251,7 @@ cd apps/portal && npm run dev
 ### Frontend Test Scenarios
 
 #### Web App (apps/web)
+
 - [ ] Authentication flow
 - [ ] Landing page rendering
 - [ ] Navigation between pages
@@ -230,6 +259,7 @@ cd apps/portal && npm run dev
 - [ ] Performance (Lighthouse score >90)
 
 #### Admin Dashboard (apps/admin)
+
 - [ ] Tenant management (`/admin/tenants`)
 - [ ] Per-tenant graph visualization (`/admin/tenants/[slug]/graph`)
 - [ ] Skills management (`/admin/tenants/[slug]/skills`)
@@ -237,6 +267,7 @@ cd apps/portal && npm run dev
 - [ ] User access control
 
 #### Portal (apps/portal)
+
 - [ ] Tenant dashboard (`/portal/tenants/[slug]`)
 - [ ] Agent status display
 - [ ] Cost tracking visualization
@@ -244,6 +275,7 @@ cd apps/portal && npm run dev
 - [ ] Real-time WebSocket updates
 
 #### Cross-Tenant Verification
+
 - [ ] Login as tenant-a, verify can only see tenant-a data
 - [ ] Login as tenant-b, verify can only see tenant-b data
 - [ ] Admin can see all tenants
@@ -254,6 +286,7 @@ cd apps/portal && npm run dev
 ## Phase 5: Integration Testing (For QA Team)
 
 ### End-to-End Workflow
+
 ```bash
 # 1. Provision new tenant
 curl -X POST http://localhost:3000/api/tenants \
@@ -286,6 +319,7 @@ curl -X POST http://localhost:3000/api/tenants/e2e-test/cleanup \
 ## Phase 6: Production Deployment
 
 ### Pre-Production Checklist
+
 - [ ] All staging tests passed
 - [ ] QA team signed off
 - [ ] Rollback plan tested
@@ -294,6 +328,7 @@ curl -X POST http://localhost:3000/api/tenants/e2e-test/cleanup \
 - [ ] Feature flags configured
 
 ### Canary Deployment (Recommended)
+
 ```bash
 # Enable OPENCLAW_ENABLED=true for 10% of traffic initially
 # Monitor metrics for 24 hours
@@ -301,6 +336,7 @@ curl -X POST http://localhost:3000/api/tenants/e2e-test/cleanup \
 ```
 
 ### Full Deployment
+
 ```bash
 # Deploy to production with all feature flags enabled
 doppler run --project ops-intcloudsysops --config prd -- \
@@ -308,6 +344,7 @@ doppler run --project ops-intcloudsysops --config prd -- \
 ```
 
 ### Post-Deployment Verification
+
 - [ ] All services healthy
 - [ ] No error spikes in logs
 - [ ] Metrics baseline met
@@ -319,6 +356,7 @@ doppler run --project ops-intcloudsysops --config prd -- \
 ## Phase 7: Rollback Procedures
 
 ### Quick Disable (30 seconds)
+
 ```bash
 # Set in Doppler
 OPENCLAW_ENABLED=false
@@ -328,6 +366,7 @@ docker compose -f infra/docker-compose.platform.yml restart api orchestrator llm
 ```
 
 ### Full Rollback (to previous commit)
+
 ```bash
 git reset --hard HEAD~1
 git push -f origin production
@@ -337,21 +376,22 @@ git push -f origin production
 
 ## Testing Responsibilidades
 
-| Role | Task | Timeline |
-|------|------|----------|
-| **QA Team** | Run all backend + frontend tests | Week 1 |
-| **QA Team** | Execute E2E integration scenarios | Week 1 |
-| **DevOps** | Deploy to staging with Doppler vars | Day 1 |
-| **DevOps** | Verify staging health checks | Day 1 |
-| **DevOps** | Setup monitoring + alerting | Week 1 |
-| **Product** | Approve feature flags for production | Week 1 |
-| **Engineering** | Be on-call during production rollout | Week 2 |
+| Role            | Task                                 | Timeline |
+| --------------- | ------------------------------------ | -------- |
+| **QA Team**     | Run all backend + frontend tests     | Week 1   |
+| **QA Team**     | Execute E2E integration scenarios    | Week 1   |
+| **DevOps**      | Deploy to staging with Doppler vars  | Day 1    |
+| **DevOps**      | Verify staging health checks         | Day 1    |
+| **DevOps**      | Setup monitoring + alerting          | Week 1   |
+| **Product**     | Approve feature flags for production | Week 1   |
+| **Engineering** | Be on-call during production rollout | Week 2   |
 
 ---
 
 ## Success Criteria
 
 ### For Staging
+
 - ✅ All 6 phases of staging-activation.sh complete
 - ✅ Per-tenant isolation verified
 - ✅ Health checks all passing
@@ -359,6 +399,7 @@ git push -f origin production
 - ✅ Monitoring dashboards functional
 
 ### For Production
+
 - ✅ All QA tests passing
 - ✅ E2E workflows successful
 - ✅ Zero customer impact

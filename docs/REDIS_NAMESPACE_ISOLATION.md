@@ -11,6 +11,7 @@ tenant:{slug}:{service}:{data_type}:{identifier}
 ```
 
 Donde:
+
 - `tenant:` - prefijo literal
 - `{slug}` - identificador único del tenant (ej: `acme`, `beta-corp`)
 - `{service}` - componente de Opsly (`ctx`, `jobs`, `llm`)
@@ -30,11 +31,13 @@ tenant:{slug}:ctx:rag:{ragId}              # Knowledge base indexada
 ```
 
 **Configuración**:
+
 ```env
 CONTEXT_BUILDER_REDIS_NAMESPACE=ctx        # Namespace suffix (default: "ctx")
 ```
 
 **API**:
+
 - `getSessionContext(tenantSlug, sessionId)` - Obtener sesión
 - `saveSessionContext(context)` - Guardar sesión (con TTL de 1 hora)
 - `saveRAG(tenantSlug, ragId, ragData)` - Guardar RAG (TTL: 30 días)
@@ -43,6 +46,7 @@ CONTEXT_BUILDER_REDIS_NAMESPACE=ctx        # Namespace suffix (default: "ctx")
 - `deleteRAG(tenantSlug, ragId)` - Eliminar RAG
 
 **Implementación**:
+
 ```typescript
 // Internamente usa NamespacedRedis
 async function getNamespacedRedis(tenantSlug: string): Promise<NamespacedRedis> {
@@ -67,17 +71,20 @@ tenant:{slug}:llm:cache:{promptHash}       # Respuestas cacheadas
 ```
 
 **Configuración**:
+
 ```env
 LLM_GATEWAY_TENANT_AWARE=true              # Enable tenant-aware (default: false)
 LLM_GATEWAY_REDIS_NAMESPACE=llm            # Namespace suffix (default: "llm")
 ```
 
 **API**:
+
 - `cacheGet(tenantSlug, promptHash)` - Obtener del cache
 - `cacheSet(tenantSlug, promptHash, response)` - Guardar en cache (TTL: 2 horas)
 - `getCacheStats(tenantSlug)` - Estadísticas del cache
 
 **Características**:
+
 - Backward compatible: legacy mode cuando `LLM_GATEWAY_TENANT_AWARE=false`
 - En modo tenant-aware usa `NamespacedRedis`
 - TTL configurable via `LLM_CACHE_TTL_SECONDS`
@@ -93,7 +100,7 @@ tenant:{slug}:jobs:job:{jobId}             # Datos del job
 **Validación**: Cada job requiere `tenant_slug` como campo obligatorio.
 
 ```typescript
-validateJobTenantIsolation(job, context);  // Lanza error si tenant_slug vacío
+validateJobTenantIsolation(job, context); // Lanza error si tenant_slug vacío
 ```
 
 ## Clase NamespacedRedis
@@ -106,18 +113,19 @@ Helper type-safe para Redis operations con namespace automático.
 export class NamespacedRedis {
   constructor(redis: RedisClientType, tenantSlug: string, service: string);
 
-  async get(key: string): Promise<string | null>
-  async set(key: string, value: string): Promise<void>
-  async setEx(key: string, ttlSeconds: number, value: string): Promise<void>
-  async del(key: string | string[]): Promise<number>
-  async exists(key: string): Promise<boolean>
-  async keys(pattern: string): Promise<string[]>
-  async ttl(key: string): Promise<number>
-  async expire(key: string, ttlSeconds: number): Promise<boolean>
+  async get(key: string): Promise<string | null>;
+  async set(key: string, value: string): Promise<void>;
+  async setEx(key: string, ttlSeconds: number, value: string): Promise<void>;
+  async del(key: string | string[]): Promise<number>;
+  async exists(key: string): Promise<boolean>;
+  async keys(pattern: string): Promise<string[]>;
+  async ttl(key: string): Promise<number>;
+  async expire(key: string, ttlSeconds: number): Promise<boolean>;
 }
 ```
 
 **Comportamiento**:
+
 - Input: `"session:123"`
 - Namespace: `"acme"`, Service: `"ctx"`
 - Output Redis: `"tenant:acme:ctx:session:123"`
@@ -127,6 +135,7 @@ Retorna siempre claves relativas (sin el namespace).
 ## Tests
 
 ### Context Builder
+
 - **Archivo**: `apps/context-builder/__tests__/redis-namespace.test.ts`
 - **Verifica**:
   - Aislamiento entre tenants
@@ -134,6 +143,7 @@ Retorna siempre claves relativas (sin el namespace).
   - KEYS pattern matching
 
 ### LLM Gateway
+
 - **Archivo**: `apps/llm-gateway/__tests__/cache-namespace.test.ts`
 - **Verifica**:
   - Cache per-tenant
@@ -151,6 +161,7 @@ Retorna siempre claves relativas (sin el namespace).
 ```
 
 **Funcionalidades**:
+
 1. Verificación de conexión a Redis
 2. Descubrimiento de tenants
 3. Estadísticas por servicio
@@ -158,6 +169,7 @@ Retorna siempre claves relativas (sin el namespace).
 5. Reporte global
 
 **Salida esperada**:
+
 ```
 ✓ Validación EXITOSA: Namespace correctamente aislado
 
@@ -172,6 +184,7 @@ Patrones esperados:
 ### Para Desarrolladores
 
 1. **Siempre usar NamespacedRedis**:
+
 ```typescript
 // ✓ Correcto
 const ns = await getNamespacedRedis(tenantSlug);
@@ -183,11 +196,13 @@ await redis.set(`tenant:${tenantSlug}:...`, value); // Bypassa namespace
 ```
 
 2. **Validar tenant_slug en Jobs**:
+
 ```typescript
 validateJobTenantIsolation(job, 'function_name');
 ```
 
 3. **No hardcodear namespaces**:
+
 ```typescript
 // ✓ Correcto
 return new NamespacedRedis(redis, tenantSlug, SERVICE);
@@ -199,11 +214,13 @@ return new NamespacedRedis(redis, 'acme', SERVICE);
 ### Para Operaciones
 
 1. **Monitorear regularmente**:
+
 ```bash
 ./scripts/validate-redis-namespace.sh
 ```
 
 2. **Configurar env vars**:
+
 ```env
 LLM_GATEWAY_TENANT_AWARE=true
 CONTEXT_BUILDER_REDIS_NAMESPACE=ctx
@@ -212,14 +229,17 @@ CONTEXT_BUILDER_REDIS_NAMESPACE=ctx
 ## Migración desde Código Antiguo
 
 ### Contexto Builder
+
 - ✅ Completamente migrado a NamespacedRedis
 - ✅ Todas las funciones actualizadas
 
 ### LLM Gateway
+
 - ✅ Soporte dual (legacy + tenant-aware)
 - ✅ Activar con `LLM_GATEWAY_TENANT_AWARE=true`
 
 ### Orchestrator
+
 - En desarrollo
 - Validación automática de tenant_slug
 

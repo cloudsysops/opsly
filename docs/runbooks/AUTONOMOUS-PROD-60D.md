@@ -14,41 +14,49 @@ bash scripts/ci/release-gate.sh production
 ```
 
 Gate coverage:
+
 - OpenAPI contract validation.
 - TypeScript validation across core workspaces.
 - Tests for `api`, `orchestrator`, and `portal`.
 - E2E invite smoke in dry-run mode.
 
 CI integration:
+
 - `Deploy` workflow uses `release-gate` as prerequisite for image build and deploy jobs.
 
 ## 2) Autonomous Risk Policies
 
 Policy source:
+
 - `apps/orchestrator/src/autonomy/policy.ts`
 
 Risk model:
+
 - `low`: no approval required, retries enabled.
 - `medium`: no approval required, tighter retries and slower backoff.
 - `high`: explicit approval required via `x-autonomy-approved: true`, single attempt.
 
 Enforcement points:
+
 - Queue options (`attempts`, `backoff`) in `apps/orchestrator/src/queue-opts.ts`.
 - Internal enqueue endpoints in `apps/orchestrator/src/health-server.ts`.
 
 ## 3) KPI and Observability
 
 Structured logs now include autonomy dimensions:
+
 - `tenant_slug`
 - `request_id`
 - `autonomy_risk`
 - lifecycle outcome (`success` for completion phase)
 
 Files:
+
 - `apps/orchestrator/src/observability/worker-log.ts`
 - `apps/orchestrator/src/queue.ts`
 
 Minimum KPI targets:
+
 - autonomous job success >= 95% (low/medium risk).
 - MTTR < 30 minutes for priority incidents.
 
@@ -61,12 +69,14 @@ bash scripts/tenant/onboarding-readiness.sh --tenant-slug <slug>
 ```
 
 Checks:
+
 - API health.
 - Portal health endpoint (`/api/portal/health?slug=`).
 - Invite E2E dry-run.
 - Public URLs for portal, n8n, and uptime.
 
 GitHub workflow:
+
 - `.github/workflows/tenant-onboarding-readiness.yml` (manual trigger).
 
 ## 5) Production Promotion with Canary + Rollback
@@ -81,8 +91,10 @@ bash scripts/deploy/promote-canary.sh \
 ```
 
 GitHub workflow:
+
 - `.github/workflows/promote-production-canary.yml` (manual trigger).
 
 Rollback strategy:
+
 - If canary fails, stop rollout and run rollback procedure for core services.
 - Keep deployment SHA references to enable deterministic rollback from GHCR image tags.

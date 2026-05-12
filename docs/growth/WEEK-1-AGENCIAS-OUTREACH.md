@@ -22,36 +22,36 @@ runtime/context/system_state.json (metrics)
 
 ## Files
 
-| Path | Purpose |
-|------|---------|
-| `data/growth/tier1-targets.json` | 15 contact entries (name, email, company, specialization, etc.) |
-| `scripts/growth-outreach.sh` | Main orchestration script (Resend integration, logging, idempotent) |
-| `scripts/test-growth-outreach.mjs` | Test/preview script (dry-run simulation) |
-| `apps/api/app/api/growth/outreach-template/route.ts` | Email template generation (GET/POST endpoints) |
-| `runtime/logs/growth/week-1-outreach.log` | Campaign log (timestamps, recipients, status) |
-| `runtime/context/system_state.json` | Metrics tracking (outreach_count, status, ARPU) |
+| Path                                                 | Purpose                                                             |
+| ---------------------------------------------------- | ------------------------------------------------------------------- |
+| `data/growth/tier1-targets.json`                     | 15 contact entries (name, email, company, specialization, etc.)     |
+| `scripts/growth-outreach.sh`                         | Main orchestration script (Resend integration, logging, idempotent) |
+| `scripts/test-growth-outreach.mjs`                   | Test/preview script (dry-run simulation)                            |
+| `apps/api/app/api/growth/outreach-template/route.ts` | Email template generation (GET/POST endpoints)                      |
+| `runtime/logs/growth/week-1-outreach.log`            | Campaign log (timestamps, recipients, status)                       |
+| `runtime/context/system_state.json`                  | Metrics tracking (outreach_count, status, ARPU)                     |
 
 ## Tier-1 Targets (15 Agencias)
 
 All LATAM-based digital agencies with revenue ranges $300k–$5M and 8–70 employees.
 
-| # | Name | Email | Company | Specialization | Revenue |
-|---|------|-------|---------|-----------------|---------|
-| 1 | María García | maria@agenciax.com | Agencia X | ecommerce | $500k–$1M |
-| 2 | Carlos López | carlos@digitalpro.com | Digital Pro | marketing-automation | $1M–$2M |
-| 3 | Ana Martínez | ana@creativestudio.com | Creative Studio | web-design | $400k–$900k |
-| 4 | Roberto Silva | roberto@datadriven.com | DataDriven Solutions | data-analytics | $1.5M–$3M |
-| 5 | Sofía Rodríguez | sofia@cloudnative.com | CloudNative Experts | cloud-infrastructure | $600k–$1.5M |
-| 6 | Diego Fernández | diego@automationhub.com | Automation Hub | workflow-automation | $300k–$700k |
-| 7 | Marcela Gómez | marcela@agenciatecnology.com | Agencia Technology | custom-development | $2M–$4M |
-| 8 | Pablo Ramírez | pablo@integrationpros.com | Integration Pros | api-integration | $800k–$1.8M |
-| 9 | Alejandra Moreno | alejandra@mobilefirst.com | Mobile First Agency | mobile-development | $500k–$1.2M |
-| 10 | Fernando Juárez | fernando@seoexperts.com | SEO Experts | digital-marketing | $700k–$1.6M |
-| 11 | Gabriela Sánchez | gabriela@contentmasters.com | Content Masters | content-management | $400k–$850k |
-| 12 | Javier Castillo | javier@designinnovation.com | Design Innovation Lab | ui-ux-design | $600k–$1.4M |
-| 13 | Valentina Torres | valentina@businessprocess.com | Business Process Solutions | process-automation | $1M–$2.5M |
-| 14 | Manuel Herradura | manuel@securityfirst.com | Security First Consulting | cybersecurity | $900k–$2M |
-| 15 | Catalina Flores | catalina@enterprisesolutions.com | Enterprise Solutions Inc | enterprise-consulting | $2.5M–$5M |
+| #   | Name             | Email                            | Company                    | Specialization        | Revenue     |
+| --- | ---------------- | -------------------------------- | -------------------------- | --------------------- | ----------- |
+| 1   | María García     | maria@agenciax.com               | Agencia X                  | ecommerce             | $500k–$1M   |
+| 2   | Carlos López     | carlos@digitalpro.com            | Digital Pro                | marketing-automation  | $1M–$2M     |
+| 3   | Ana Martínez     | ana@creativestudio.com           | Creative Studio            | web-design            | $400k–$900k |
+| 4   | Roberto Silva    | roberto@datadriven.com           | DataDriven Solutions       | data-analytics        | $1.5M–$3M   |
+| 5   | Sofía Rodríguez  | sofia@cloudnative.com            | CloudNative Experts        | cloud-infrastructure  | $600k–$1.5M |
+| 6   | Diego Fernández  | diego@automationhub.com          | Automation Hub             | workflow-automation   | $300k–$700k |
+| 7   | Marcela Gómez    | marcela@agenciatecnology.com     | Agencia Technology         | custom-development    | $2M–$4M     |
+| 8   | Pablo Ramírez    | pablo@integrationpros.com        | Integration Pros           | api-integration       | $800k–$1.8M |
+| 9   | Alejandra Moreno | alejandra@mobilefirst.com        | Mobile First Agency        | mobile-development    | $500k–$1.2M |
+| 10  | Fernando Juárez  | fernando@seoexperts.com          | SEO Experts                | digital-marketing     | $700k–$1.6M |
+| 11  | Gabriela Sánchez | gabriela@contentmasters.com      | Content Masters            | content-management    | $400k–$850k |
+| 12  | Javier Castillo  | javier@designinnovation.com      | Design Innovation Lab      | ui-ux-design          | $600k–$1.4M |
+| 13  | Valentina Torres | valentina@businessprocess.com    | Business Process Solutions | process-automation    | $1M–$2.5M   |
+| 14  | Manuel Herradura | manuel@securityfirst.com         | Security First Consulting  | cybersecurity         | $900k–$2M   |
+| 15  | Catalina Flores  | catalina@enterprisesolutions.com | Enterprise Solutions Inc   | enterprise-consulting | $2.5M–$5M   |
 
 ## Execution
 
@@ -94,6 +94,7 @@ RESEND_FROM_EMAIL=growth@ops.smiletripcare.com  # Sender
 ### Personalization
 
 Each email is customized with:
+
 - Contact's first name
 - Company name
 - Specialization (ecommerce, marketing-automation, etc.)
@@ -117,6 +118,7 @@ Example: `Hey María García, Opsly automates your ecommerce workflows`
 ### HTML Format
 
 Marketing-ready HTML with:
+
 - Gradient header
 - Benefit bullets
 - CTA button
@@ -126,13 +128,13 @@ Marketing-ready HTML with:
 
 ### Expected Outcomes
 
-| Metric | Value |
-|--------|-------|
-| Total Contacts | 15 |
-| Expected Conversion | 20% (3 new tenants) |
-| Projected ARPU | $299/tenant |
-| Expected Weekly Revenue | $897 (3 × $299) |
-| Expected Monthly Revenue (4 weeks) | $3,588 |
+| Metric                             | Value               |
+| ---------------------------------- | ------------------- |
+| Total Contacts                     | 15                  |
+| Expected Conversion                | 20% (3 new tenants) |
+| Projected ARPU                     | $299/tenant         |
+| Expected Weekly Revenue            | $897 (3 × $299)     |
+| Expected Monthly Revenue (4 weeks) | $3,588              |
 
 ### Tracking
 
@@ -158,6 +160,7 @@ Results logged in `runtime/context/system_state.json`:
 ### Log Format
 
 Each sent email is logged with:
+
 - Timestamp (ISO 8601)
 - Recipient name + email
 - Company + specialization
@@ -167,6 +170,7 @@ Each sent email is logged with:
 - Resend email ID (for tracking opens/clicks)
 
 Example:
+
 ```
 [2026-04-29T12:05:00Z] TARGET_0
   Name: María García
@@ -182,11 +186,13 @@ Example:
 ## Idempotency
 
 The script is **idempotent**:
+
 - Safe to re-run without duplicate sends (if Resend deduplicates)
 - Logs track all attempts
 - No state mutations except log files
 
 To prevent accidental re-sends:
+
 1. Always use `--dry-run` first
 2. Review `logs/growth/week-1-outreach.log` before re-running
 3. Check `system_state.json` for `last_run` timestamp

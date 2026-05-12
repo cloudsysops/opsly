@@ -1,7 +1,8 @@
 ---
-title: "@intcloudsysops/workflow"
-description: "Safe agent execution with timeouts and cost tracking"
+title: '@intcloudsysops/workflow'
+description: 'Safe agent execution with timeouts and cost tracking'
 ---
+
 # @intcloudsysops/workflow
 
 Safe agent execution framework with timeout enforcement, cost tracking, and execution metrics.
@@ -27,7 +28,7 @@ const context = {
   userId: 'user-123',
   input: { query: 'create invoice' },
   startTime: Date.now(),
-  timeoutMs: 5000 // 5 second timeout
+  timeoutMs: 5000, // 5 second timeout
 };
 
 const result = await executeWithTimeout(
@@ -38,24 +39,24 @@ const result = await executeWithTimeout(
   context.agentId
 );
 
-console.log(result.success);      // true/false
-console.log(result.output);       // Agent output
-console.log(result.durationMs);   // Execution time
-console.log(result.cost);         // Cost in USD
+console.log(result.success); // true/false
+console.log(result.output); // Agent output
+console.log(result.durationMs); // Execution time
+console.log(result.cost); // Cost in USD
 ```
 
 ### Execution Context
 
 ```typescript
 interface ExecutionContext {
-  agentId: string;           // Which agent is running
-  tenantId: string;          // Tenant context
-  userId: string;            // Who triggered execution
-  input: unknown;            // Agent input
-  startTime: number;         // Timestamp (Date.now())
-  timeoutMs: number;         // Max execution duration
-  maxTokens?: number;        // Token limit
-  maxCost?: number;          // Cost limit (USD)
+  agentId: string; // Which agent is running
+  tenantId: string; // Tenant context
+  userId: string; // Who triggered execution
+  input: unknown; // Agent input
+  startTime: number; // Timestamp (Date.now())
+  timeoutMs: number; // Max execution duration
+  maxTokens?: number; // Token limit
+  maxCost?: number; // Cost limit (USD)
 }
 ```
 
@@ -63,11 +64,11 @@ interface ExecutionContext {
 
 ```typescript
 interface ExecutionResult {
-  success: boolean;          // Execution completed
-  output?: unknown;          // Agent output (if success)
-  cost: number;              // Cost in USD
-  tokensUsed: number;        // Tokens consumed
-  durationMs: number;        // Execution time
+  success: boolean; // Execution completed
+  output?: unknown; // Agent output (if success)
+  cost: number; // Cost in USD
+  tokensUsed: number; // Tokens consumed
+  durationMs: number; // Execution time
   error?: {
     code: string;
     message: string;
@@ -89,14 +90,10 @@ async function runAgent(agentId, input, tenantId) {
     userId: 'system',
     input,
     startTime: Date.now(),
-    timeoutMs: 30000  // 30 second timeout
+    timeoutMs: 30000, // 30 second timeout
   };
 
-  const result = await executeWithTimeout(
-    () => agent.execute(input),
-    context.timeoutMs,
-    agentId
-  );
+  const result = await executeWithTimeout(() => agent.execute(input), context.timeoutMs, agentId);
 
   // Log metrics
   await recordMetric('agent_execution_time', result.durationMs, { agentId });
@@ -118,7 +115,7 @@ app.post('/api/agents/:id/execute', async (req, res) => {
   try {
     const result = await executeWithTimeout(
       () => agent.execute(input),
-      10000,  // 10 second timeout for API
+      10000, // 10 second timeout for API
       req.params.id
     );
 
@@ -126,10 +123,10 @@ app.post('/api/agents/:id/execute', async (req, res) => {
       return res.status(400).json({ error: result.error });
     }
 
-    res.json({ 
-      output: result.output, 
-      cost: result.cost, 
-      tokensUsed: result.tokensUsed 
+    res.json({
+      output: result.output,
+      cost: result.cost,
+      tokensUsed: result.tokensUsed,
     });
   } catch (error) {
     res.status(500).json({ error: 'Execution failed' });

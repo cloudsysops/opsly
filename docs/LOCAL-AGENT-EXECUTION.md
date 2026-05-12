@@ -21,15 +21,15 @@ Opsly's **Local Agent Execution System** enables autonomous execution of tasks o
 3. **Orchestrator** — `PLATFORM_ADMIN_TOKEN`, `REDIS_URL`, modo que **consuma** la cola `local-agents` (misma máquina o worker remoto con el mismo Redis). Arranque típico: `cd apps/orchestrator && node dist/index.js` (tras build).
 4. **Servicio del agente** — URLs por defecto en [`config/agent-services.json`](../config/agent-services.json):
 
-| Agente   | Puerto default | Comando npm (raíz repo)              |
-| -------- | ---------------- | ------------------------------------- |
-| cursor   | 5001             | `npm run opsly:local-cursor-service`  |
-| claude   | 5002             | `npx tsx scripts/mock-claude-agent.ts` o servicio real en ese puerto |
-| copilot  | 5003             | mock/servicio según entorno          |
-| opencode | 5004             | mock/servicio según entorno          |
+| Agente   | Puerto default | Comando npm (raíz repo)                                              |
+| -------- | -------------- | -------------------------------------------------------------------- |
+| cursor   | 5001           | `npm run opsly:local-cursor-service`                                 |
+| claude   | 5002           | `npx tsx scripts/mock-claude-agent.ts` o servicio real en ese puerto |
+| copilot  | 5003           | mock/servicio según entorno                                          |
+| opencode | 5004           | mock/servicio según entorno                                          |
 
 5. **Watcher (opcional)** — `npm run opsly:local-prompt-watcher` con `ORCHESTRATOR_URL` y `PLATFORM_ADMIN_TOKEN` alineados al orchestrator. Frontmatter puede incluir `agent: cursor|claude|copilot|opencode` (el script envía `agent` en el JSON).
-6. **Smoke `curl`** — ver sección *Submit a Prompt* más abajo; cabecera `Authorization: Bearer …` obligatoria. Para jobs con riesgo autonomía puede hacer falta `x-autonomy-approved: true`.
+6. **Smoke `curl`** — ver sección _Submit a Prompt_ más abajo; cabecera `Authorization: Bearer …` obligatoria. Para jobs con riesgo autonomía puede hacer falta `x-autonomy-approved: true`.
 7. **Pre-push / Rollup (Mac)** — si husky falla por `@rollup/rollup-darwin-x64`, reinstalar dependencias (`rm -rf node_modules && npm ci`) o usar `git push --no-verify` solo cuando proceda; CI sigue siendo la verdad.
 
 **Nota VPS:** en `queue-only` el control plane **encola** pero no ejecuta jobs locales; hace falta un **nodo worker** (p. ej. Mac + Tailscale) con el mismo `REDIS_URL`.
@@ -70,6 +70,7 @@ curl -X POST http://localhost:3011/api/local/prompt-submit \
 ```
 
 **Response:**
+
 ```json
 {
   "ok": true,
@@ -84,6 +85,7 @@ curl -X POST http://localhost:3011/api/local/prompt-submit \
 **Worker:** `apps/orchestrator/src/workers/local-agent-http-worker.ts`
 
 Unified worker handles all job types:
+
 - `local_cursor` → POST to Cursor service (port 5001)
 - `local_claude` → POST to LLM Gateway (port 3010)
 - `local_copilot` → POST to Copilot service (port 5003)
@@ -99,6 +101,7 @@ npx tsx scripts/cursor-agent-service.ts --port 5001
 ```
 
 **Responsibilities:**
+
 - Listens for HTTP POST on `/execute`
 - Writes prompt to `.cursor/prompts/pending/`
 - Opens Cursor IDE with prompt
@@ -106,6 +109,7 @@ npx tsx scripts/cursor-agent-service.ts --port 5001
 - Returns response path via HTTP
 
 **API:**
+
 ```bash
 POST http://localhost:5001/execute
 Content-Type: application/json
@@ -133,6 +137,7 @@ npx tsx scripts/local-prompt-watcher.ts
 ```
 
 **Features:**
+
 - Watches `.cursor/prompts/*.md` for changes
 - Parses YAML frontmatter
 - Auto-submits to orchestrator
@@ -232,12 +237,12 @@ git log --oneline | head -3
 
 ### Environment Variables
 
-| Variable | Default | Purpose |
-|----------|---------|---------|
-| `PLATFORM_ADMIN_TOKEN` | (none) | **Required** for API authentication |
-| `ORCHESTRATOR_URL` | http://localhost:3011 | Orchestrator health server |
-| `CURSOR_DIR` | .cursor | Working directory for prompts/responses |
-| `LLM_GATEWAY_URL` | http://localhost:3010 | LLM Gateway for Claude execution |
+| Variable               | Default               | Purpose                                 |
+| ---------------------- | --------------------- | --------------------------------------- |
+| `PLATFORM_ADMIN_TOKEN` | (none)                | **Required** for API authentication     |
+| `ORCHESTRATOR_URL`     | http://localhost:3011 | Orchestrator health server              |
+| `CURSOR_DIR`           | .cursor               | Working directory for prompts/responses |
+| `LLM_GATEWAY_URL`      | http://localhost:3010 | LLM Gateway for Claude execution        |
 
 ### Service Registry Configuration
 
@@ -246,22 +251,23 @@ git log --oneline | head -3
 ```yaml
 services:
   cursor:
-    url: "http://localhost:5001"
-    type: "http"
+    url: 'http://localhost:5001'
+    type: 'http'
     timeout_ms: 120000
-    
+
   claude:
-    url: "http://localhost:3010"
-    type: "http"
+    url: 'http://localhost:3010'
+    type: 'http'
     timeout_ms: 30000
-    
+
   copilot:
-    url: "http://localhost:5003"
-    type: "http"
+    url: 'http://localhost:5003'
+    type: 'http'
     timeout_ms: 60000
 ```
 
 Override via environment:
+
 ```bash
 export CURSOR_SERVICE_URL="http://192.168.1.100:5001"
 export CLAUDE_SERVICE_URL="http://localhost:3010"
@@ -273,13 +279,13 @@ export CLAUDE_SERVICE_URL="http://localhost:3010"
 
 ```md
 ---
-agent_role: executor        # 'executor', 'architect', 'reviewer'
-max_steps: 5               # Max iterations before completion
-goal: "What are you trying to achieve?"
-priority: 50000            # Job priority (0-100000)
-context:                   # Additional context
-  project: "opsly"
-  domain: "orchestration"
+agent_role: executor # 'executor', 'architect', 'reviewer'
+max_steps: 5 # Max iterations before completion
+goal: 'What are you trying to achieve?'
+priority: 50000 # Job priority (0-100000)
+context: # Additional context
+  project: 'opsly'
+  domain: 'orchestration'
 ---
 
 # Prompt Body
@@ -289,6 +295,7 @@ Can span multiple paragraphs.
 ```
 
 ### Valid agent_role values:
+
 - `executor` → Cursor IDE (local_cursor)
 - `architect` → Claude via LLM Gateway (local_claude)
 - `reviewer` → (future) Code review agent

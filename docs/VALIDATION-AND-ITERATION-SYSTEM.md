@@ -41,9 +41,11 @@ Loop until:
 ## Components to Build
 
 ### 1. TestValidator Worker
+
 **Location:** `apps/orchestrator/src/workers/TestValidatorWorker.ts`
 
 **Responsibilities:**
+
 - Triggered when response file appears in `.cursor/responses/`
 - Extracts code from response
 - Runs validation commands in order:
@@ -56,6 +58,7 @@ Loop until:
 **Queue:** `validation-jobs` (separate from local-agents)
 
 **Payload:**
+
 ```typescript
 interface ValidationJob {
   response_file: string;
@@ -68,6 +71,7 @@ interface ValidationJob {
 ```
 
 **Output:** Writes to `.cursor/responses/response-{id}.validation.json`
+
 ```json
 {
   "job_id": "test-1",
@@ -94,9 +98,11 @@ interface ValidationJob {
 ```
 
 ### 2. IterationManager Service
+
 **Location:** `apps/orchestrator/src/lib/iteration-manager.ts`
 
 **Responsibilities:**
+
 - Read validation results
 - Analyze error messages
 - Generate next prompt for Cursor (with refactoring suggestions)
@@ -121,22 +127,22 @@ class IterationManager {
     if (attempt >= 3) {
       return {
         shouldRetry: false,
-        escalationReason: `Max retries (3) exceeded. Last error: ${errors[0]?.message}`
+        escalationReason: `Max retries (3) exceeded. Last error: ${errors[0]?.message}`,
       };
     }
 
     // Analyze error types
-    const errorPatterns = errors.map(e => ({
+    const errorPatterns = errors.map((e) => ({
       type: e.type, // 'type-check', 'test', 'build'
       message: e.message,
-      suggestion: this.suggestFix(e)
+      suggestion: this.suggestFix(e),
     }));
 
     // Generate refactoring prompt
     const nextPrompt = `
 The previous code had validation errors. Please fix:
 
-${errorPatterns.map(p => `- [${p.type}] ${p.message}\n  Suggestion: ${p.suggestion}`).join('\n')}
+${errorPatterns.map((p) => `- [${p.type}] ${p.message}\n  Suggestion: ${p.suggestion}`).join('\n')}
 
 Original request: ${originalPrompt}
 
@@ -150,7 +156,7 @@ Please provide corrected code that passes all validations.
 
     return {
       shouldRetry: true,
-      nextPrompt
+      nextPrompt,
     };
   }
 
@@ -180,10 +186,10 @@ Please provide corrected code that passes all validations.
 // Before auto-committing, check if validation passed
 async function commitWithValidation(filePath: string): Promise<void> {
   const validationFile = filePath.replace('.md', '.validation.json');
-  
+
   // Wait for validation to complete (with timeout)
   const validation = await waitForValidation(validationFile, 60000);
-  
+
   if (validation.overall_status === 'failed') {
     // Check if retry was requested
     if (validation.next_action === 'iterate') {
@@ -197,7 +203,7 @@ async function commitWithValidation(filePath: string): Promise<void> {
       return;
     }
   }
-  
+
   // All validations passed, safe to commit
   await commitFile(filePath, 'All validations passed');
 }
@@ -212,27 +218,27 @@ async function commitWithValidation(filePath: string): Promise<void> {
 ```typescript
 async function onResponseDetected(responsePath: string): Promise<void> {
   const jobId = extractJobId(responsePath);
-  
+
   // 1. Read validation result
   const validation = await readValidation(responsePath);
-  
+
   if (validation.overall_status === 'passed') {
     console.log(`✅ Job ${jobId} validation passed`);
     // Git will commit automatically
     return;
   }
-  
+
   if (validation.overall_status === 'failed') {
     const attempt = validation.attempt || 1;
-    
+
     if (attempt >= 3) {
       console.log(`⚠️ Job ${jobId} failed after 3 attempts, escalating...`);
       await createHelpRequest(jobId, validation);
       return;
     }
-    
+
     console.log(`🔄 Job ${jobId} validation failed (attempt ${attempt}/3), iterating...`);
-    
+
     // Use IterationManager to generate refactoring prompt
     const iteration = await iterationManager.analyzeAndRefactor(
       jobId,
@@ -241,12 +247,12 @@ async function onResponseDetected(responsePath: string): Promise<void> {
       getOriginalPrompt(jobId),
       readResponseContent(responsePath)
     );
-    
+
     if (iteration.shouldRetry && iteration.nextPrompt) {
       // Create new prompt for retry
-      const retryPromptPath = `.cursor/prompts/retry-${jobId}-attempt-${attempt+1}.md`;
+      const retryPromptPath = `.cursor/prompts/retry-${jobId}-attempt-${attempt + 1}.md`;
       await writeFile(retryPromptPath, iteration.nextPrompt);
-      
+
       // This triggers LocalPromptWatcher again → submit → execute → validate
       // (Loop continues until pass or max attempts)
     }
@@ -368,12 +374,14 @@ async function onResponseDetected(responsePath: string): Promise<void> {
 ## Implementation Priority
 
 ### Phase 1 (This session) - TestValidator
+
 - [ ] Create TestValidatorWorker
 - [ ] Register in orchestrator
 - [ ] Write validation.json on completion
 - [ ] Handle workspace detection
 
 ### Phase 2 - IterationManager
+
 - [x] Implement error analysis
 - [x] Generate refactoring prompts
 - [x] Track attempt count
@@ -381,12 +389,14 @@ async function onResponseDetected(responsePath: string): Promise<void> {
 - [x] Response watcher integration
 
 ### Phase 3 - Integration
+
 - [ ] Modify local-git-auto-commit for validation checks
 - [ ] Modify local-prompt-watcher for retry logic
 - [ ] Create help request system
 - [ ] Add metrics/tracking
 
 ### Phase 4 - UX & Dashboarding
+
 - [ ] Execution history visualization
 - [ ] Retry attempt logs
 - [ ] Success rate metrics
@@ -395,12 +405,14 @@ async function onResponseDetected(responsePath: string): Promise<void> {
 ## Success Criteria
 
 ✅ **Phase 1 Complete When:**
+
 - Type-check, test, build commands execute in TestValidator
 - Validation results written to JSON
 - Worker handles multiple attempts
 - Integration test passes
 
 ✅ **Full System Complete When:**
+
 - Prompt → Execute → Validate → Pass → Commit (happy path)
 - Prompt → Execute → Validate → Fail → Iterate → Pass → Commit (retry path)
 - Prompt → Execute → Validate → Fail 3x → Help Request (escalation)

@@ -30,7 +30,7 @@ Con Proxy ON:
 
 Traefik usa **`dnsChallenge` con provider Cloudflare**: Let's Encrypt pide un registro TXT y Traefik lo crea vía **API de Cloudflare** en la zona gestionada ahí.
 
-Si **`dig NS ops.smiletripcare.com`** (o el dominio base que uses) **no** devuelve nameservers de Cloudflare (p. ej. solo `ns1.vercel-dns.com`), la zona pública **no** está en Cloudflare: el token `CF_DNS_API_TOKEN` **no puede** crear los TXT necesarios y verás errores ACME del tipo *Unable to obtain certificate* aunque el token sea válido.
+Si **`dig NS ops.smiletripcare.com`** (o el dominio base que uses) **no** devuelve nameservers de Cloudflare (p. ej. solo `ns1.vercel-dns.com`), la zona pública **no** está en Cloudflare: el token `CF_DNS_API_TOKEN` **no puede** crear los TXT necesarios y verás errores ACME del tipo _Unable to obtain certificate_ aunque el token sea válido.
 
 **Opciones:**
 
@@ -102,7 +102,7 @@ Traefik hace la validación ACME vía DNS en lugar de HTTP, por lo que Cloudflar
 
 Si el token se añadió **después** del último `compose up`:
 
-Desde el directorio del repo en el VPS, Compose debe leer **`/opt/opsly/.env`** (las variables `${CF_DNS_API_TOKEN}` se interpolan al crear el contenedor; sin `--env-file` suele aparecer el warning *Defaulting to a blank string*):
+Desde el directorio del repo en el VPS, Compose debe leer **`/opt/opsly/.env`** (las variables `${CF_DNS_API_TOKEN}` se interpolan al crear el contenedor; sin `--env-file` suele aparecer el warning _Defaulting to a blank string_):
 
 ```bash
 ssh vps-dragon@100.120.151.91 "cd /opt/opsly && docker compose --env-file /opt/opsly/.env -f infra/docker-compose.platform.yml up -d --force-recreate traefik"

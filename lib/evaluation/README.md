@@ -1,7 +1,8 @@
 ---
-title: "@intcloudsysops/evaluation"
-description: "Testing, validation, and quality metrics framework"
+title: '@intcloudsysops/evaluation'
+description: 'Testing, validation, and quality metrics framework'
 ---
+
 # @intcloudsysops/evaluation
 
 Testing, validation, and quality metrics framework for agent outputs. Provides automated QA gates, safety checks, and regression detection.
@@ -54,12 +55,10 @@ console.log(`BLEU: ${metrics.bleu}, ROUGE: ${metrics.rouge}`);
 ```typescript
 import { runSmokeTests, runRegressionTests } from '@intcloudsysops/evaluation';
 
-const tests = [
-  { name: 'test-1', input: { query: 'hello' }, expectedOutput: 'greeting' },
-];
+const tests = [{ name: 'test-1', input: { query: 'hello' }, expectedOutput: 'greeting' }];
 
 const results = await runSmokeTests(tests);
-const passed = results.filter(r => r.passed).length;
+const passed = results.filter((r) => r.passed).length;
 console.log(`Passed ${passed}/${results.length} tests`);
 ```
 
@@ -101,9 +100,9 @@ Set per-agent baselines to catch regressions:
 
 ```typescript
 const baseline = {
-  bleu: 0.45,     // Minimum BLEU score
-  rouge: 0.50,    // Minimum ROUGE score
-  latency: 500,   // Maximum latency (ms)
+  bleu: 0.45, // Minimum BLEU score
+  rouge: 0.5, // Minimum ROUGE score
+  latency: 500, // Maximum latency (ms)
   tokensUsed: 500, // Maximum tokens
 };
 

@@ -40,7 +40,7 @@ export class IterationManager {
     attempt: number,
     errors: ValidationError[],
     originalPrompt: string,
-    responseContent: string,
+    responseContent: string
   ): Promise<IterationResult> {
     // Max attempts reached
     if (attempt >= 3) {
@@ -67,7 +67,7 @@ export class IterationManager {
       originalPrompt,
       responseContent,
       errorPatterns,
-      attempt,
+      attempt
     );
 
     const suggestions = errorPatterns.map((p) => `[${p.type}] ${p.suggestion}`);
@@ -122,7 +122,7 @@ export class IterationManager {
     originalPrompt: string,
     responseContent: string,
     errorPatterns: Array<{ type: string; message: string; suggestion: string }>,
-    attempt: number,
+    attempt: number
   ): string {
     return `
 # Refactoring Request (Attempt ${attempt + 1}/3)
@@ -163,14 +163,12 @@ Please provide the fixed implementation that will pass all validations.
   async generateRetryPrompt(
     jobId: string,
     validationReport: ValidationReport,
-    originalPrompt: string,
+    originalPrompt: string
   ): Promise<string> {
     const attempt = validationReport.attempt;
 
     // Collect all error messages
-    const errorMessages = validationReport.errors
-      .map((e) => `[${e.type}] ${e.message}`)
-      .join('\n');
+    const errorMessages = validationReport.errors.map((e) => `[${e.type}] ${e.message}`).join('\n');
 
     // Generate refactoring suggestions
     const suggestions = validationReport.errors
@@ -212,26 +210,16 @@ Provide the corrected implementation.
 `;
   }
 
-  async writeRetryPrompt(
-    jobId: string,
-    attempt: number,
-    promptContent: string,
-  ): Promise<string> {
+  async writeRetryPrompt(jobId: string, attempt: number, promptContent: string): Promise<string> {
     const promptsDir = path.join(this.cursorDir, 'prompts');
     const retryFilename = `retry-${jobId}-attempt-${attempt + 1}.md`;
     const retryPath = path.join(promptsDir, retryFilename);
 
     try {
       await fsp.mkdir(promptsDir, { recursive: true });
-      await fsp.writeFile(
-        retryPath,
-        this.formatRetryPrompt(promptContent),
-        'utf-8',
-      );
+      await fsp.writeFile(retryPath, this.formatRetryPrompt(promptContent), 'utf-8');
 
-      console.log(
-        `[IterationManager] ✅ Created retry prompt: ${retryFilename}`,
-      );
+      console.log(`[IterationManager] ✅ Created retry prompt: ${retryFilename}`);
       return retryPath;
     } catch (err) {
       console.error('[IterationManager] ❌ Failed to write retry prompt:', err);
@@ -253,18 +241,14 @@ ${promptContent}`;
     return promptContent;
   }
 
-  async readValidationReport(
-    responsePath: string,
-  ): Promise<ValidationReport | null> {
+  async readValidationReport(responsePath: string): Promise<ValidationReport | null> {
     const validationPath = responsePath.replace(/\.md$/, '.validation.json');
 
     try {
       const content = await fsp.readFile(validationPath, 'utf-8');
       return JSON.parse(content) as ValidationReport;
     } catch (err) {
-      console.log(
-        `[IterationManager] No validation report found: ${validationPath}`,
-      );
+      console.log(`[IterationManager] No validation report found: ${validationPath}`);
       return null;
     }
   }
@@ -281,7 +265,7 @@ ${promptContent}`;
     validationReport: ValidationReport,
     responseContent: string,
     originalPrompt: string,
-    maxAttempts: number = 3,
+    maxAttempts: number = 3
   ): Promise<{
     action: 'commit' | 'iterate' | 'escalate';
     nextPrompt?: string;
@@ -310,7 +294,7 @@ ${promptContent}`;
     const nextPrompt = await this.generateRetryPrompt(
       validationReport.job_id,
       validationReport,
-      originalPrompt,
+      originalPrompt
     );
 
     return {
@@ -323,7 +307,7 @@ ${promptContent}`;
 
   async processValidationResult(
     responsePath: string,
-    originalPrompt: string,
+    originalPrompt: string
   ): Promise<{
     action: 'commit' | 'iterate' | 'escalate';
     nextPromptPath?: string;
@@ -358,13 +342,13 @@ ${promptContent}`;
     const nextPrompt = await this.generateRetryPrompt(
       validation.job_id,
       validation,
-      originalPrompt,
+      originalPrompt
     );
 
     const nextPromptPath = await this.writeRetryPrompt(
       validation.job_id,
       validation.attempt,
-      nextPrompt,
+      nextPrompt
     );
 
     return {
@@ -377,9 +361,7 @@ ${promptContent}`;
 
 let instance: IterationManager | null = null;
 
-export function getIterationManager(
-  cursorDir?: string,
-): IterationManager {
+export function getIterationManager(cursorDir?: string): IterationManager {
   if (!instance) {
     instance = new IterationManager(cursorDir);
   }

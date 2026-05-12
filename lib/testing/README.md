@@ -1,7 +1,8 @@
 ---
-title: "@intcloudsysops/testing"
-description: "Unified test framework for agents and services"
+title: '@intcloudsysops/testing'
+description: 'Unified test framework for agents and services'
 ---
+
 # @intcloudsysops/testing
 
 Unified test framework for running and reporting test results consistently across all services and agents.
@@ -26,14 +27,14 @@ const tests: TestCase[] = [
     name: 'greet-user',
     input: { name: 'Alice' },
     expectedOutput: 'Hello, Alice!',
-    metadata: { category: 'happy-path', priority: 'high' }
+    metadata: { category: 'happy-path', priority: 'high' },
   },
   {
     name: 'greet-empty-name',
     input: { name: '' },
     expectedOutput: 'Hello, Guest!',
-    metadata: { category: 'edge-case' }
-  }
+    metadata: { category: 'edge-case' },
+  },
 ];
 ```
 
@@ -46,10 +47,7 @@ async function testAgent(agent) {
   const results = [];
 
   for (const testCase of tests) {
-    const result = await runTest(
-      testCase,
-      (input) => agent.execute(input)
-    );
+    const result = await runTest(testCase, (input) => agent.execute(input));
 
     results.push(result);
     console.log(`${result.testName}: ${result.passed ? '✓' : '✗'}`);
@@ -63,11 +61,11 @@ async function testAgent(agent) {
 
 ```typescript
 interface TestResult {
-  testName: string;          // Test case name
-  passed: boolean;           // true if output matches expected
-  actual: unknown;           // Actual output
-  expected: unknown;         // Expected output
-  duration: number;          // Execution time (ms)
+  testName: string; // Test case name
+  passed: boolean; // true if output matches expected
+  actual: unknown; // Actual output
+  expected: unknown; // Expected output
+  duration: number; // Execution time (ms)
   error?: {
     message: string;
     stack: string;
@@ -92,7 +90,7 @@ async function validateAgent(agentId) {
   for (const testCase of testCases) {
     const result = await runTest(testCase, (input) => agent.execute(input));
     results.push(result);
-    
+
     if (result.passed) passed++;
   }
 
@@ -118,13 +116,10 @@ async function ciTestStep() {
   }
 
   // Write JSON report
-  fs.writeFileSync(
-    'test-results.json',
-    JSON.stringify(results, null, 2)
-  );
+  fs.writeFileSync('test-results.json', JSON.stringify(results, null, 2));
 
   // Exit with error if any test failed
-  const failed = results.filter(r => !r.passed).length;
+  const failed = results.filter((r) => !r.passed).length;
   if (failed > 0) {
     console.error(`${failed} test(s) failed`);
     process.exit(1);
@@ -139,21 +134,20 @@ import { runTest } from '@intcloudsysops/testing';
 
 async function reportTestMetrics(agentId) {
   const results = await runTests(agentId);
-  
+
   const metrics = {
     totalTests: results.length,
-    passed: results.filter(r => r.passed).length,
-    failed: results.filter(r => !r.passed).length,
-    avgDurationMs: average(results.map(r => r.duration)),
-    passRate: (passed / results.length) * 100
+    passed: results.filter((r) => r.passed).length,
+    failed: results.filter((r) => !r.passed).length,
+    avgDurationMs: average(results.map((r) => r.duration)),
+    passRate: (passed / results.length) * 100,
   };
 
-  await db.from('test_metrics')
-    .insert({
-      agent_id: agentId,
-      ...metrics,
-      timestamp: Date.now()
-    });
+  await db.from('test_metrics').insert({
+    agent_id: agentId,
+    ...metrics,
+    timestamp: Date.now(),
+  });
 
   return metrics;
 }

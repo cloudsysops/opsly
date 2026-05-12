@@ -11,7 +11,7 @@ export interface ValidateResult {
 
 export function validateInput(input: unknown, schema: Record<string, any>): ValidateResult {
   const errors: ValidationError[] = [];
-  
+
   if (typeof input !== 'object' || input === null) {
     errors.push({ field: 'root', message: 'Input must be an object', severity: 'error' });
     return { valid: false, errors };
@@ -54,7 +54,7 @@ export function checkForPII(text: string): ValidationError[] {
 export function checkForHallucinations(generated: string, context: string): ValidationError[] {
   // Simple heuristic: check if generated contains facts not in context
   const errors: ValidationError[] = [];
-  
+
   // In production, use more sophisticated detection
   if (generated.length > context.length * 2) {
     errors.push({

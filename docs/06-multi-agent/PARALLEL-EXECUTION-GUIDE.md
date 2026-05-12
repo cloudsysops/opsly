@@ -5,6 +5,7 @@
 The ValidationOrchestrator system now supports **parallel execution across multiple agents** with intelligent feedback-based routing.
 
 **Architecture:**
+
 ```
 Single Prompt
     ↓
@@ -22,6 +23,7 @@ Auto-commit to git
 ```
 
 **Key Benefits:**
+
 - ✅ Parallel execution reduces total time (4 agents: ~30s vs serial: ~2min)
 - ✅ Multiple perspectives on same problem (executor + validator + analyzer)
 - ✅ Automatic feedback loop improves agent selection over time
@@ -34,11 +36,13 @@ Auto-commit to git
 ### 1. Start Agent Services
 
 **Terminal 1: Start Orchestrator**
+
 ```bash
 npm run dev --workspace=@intcloudsysops/orchestrator
 ```
 
 **Terminal 2: Start Cursor Agent Service**
+
 ```bash
 # Service listens on localhost:5001
 # Executes prompts via local Cursor IDE
@@ -46,6 +50,7 @@ npx tsx scripts/cursor-agent-service.ts
 ```
 
 **Terminal 3: Start Claude Agent Service**
+
 ```bash
 # Service listens on localhost:5002
 # Calls Claude API or local Ollama
@@ -53,6 +58,7 @@ npx tsx scripts/claude-agent-service.ts
 ```
 
 **Terminal 4: Start Copilot Agent Service** (optional)
+
 ```bash
 # Service listens on localhost:5003
 # Calls GitHub Copilot Chat API
@@ -60,6 +66,7 @@ npx tsx scripts/copilot-agent-service.ts
 ```
 
 **Terminal 5: Start OpenCode Agent Service** (optional)
+
 ```bash
 # Service listens on localhost:5004
 # Calls Vercel OpenCode API
@@ -134,7 +141,7 @@ cat .cursor/responses/parallel-*/execution-log.txt
 ```
 .cursor/responses/parallel-1715000000-abc123def/
 ├── cursor-result.json          # Cursor's response
-├── claude-result.json          # Claude's response  
+├── claude-result.json          # Claude's response
 ├── copilot-result.json         # Copilot's response
 ├── opencode-result.json        # OpenCode's response
 └── execution-log.txt           # Execution summary
@@ -151,6 +158,7 @@ cat .cursor/responses/parallel-*/execution-log.txt
 ### How Feedback Works
 
 **Scenario 1: High Escalation Rate**
+
 ```
 Past 10 attempts: 7 commits, 2 iterations, 1 escalation (10% escalation rate)
 → ValidationFeedbackLayer detects this is slightly problematic
@@ -159,6 +167,7 @@ Past 10 attempts: 7 commits, 2 iterations, 1 escalation (10% escalation rate)
 ```
 
 **Scenario 2: High Iteration Rate**
+
 ```
 Past 20 attempts: 15 commits (after 2 iterations each), 5 immediate commits
 → Agent needs refinement
@@ -167,6 +176,7 @@ Past 20 attempts: 15 commits (after 2 iterations each), 5 immediate commits
 ```
 
 **Scenario 3: Consistent Success**
+
 ```
 Past 50 attempts: 48 commits on first try, 2 on retry
 → Agent is very reliable
@@ -179,7 +189,7 @@ Past 50 attempts: 48 commits on first try, 2 on retry
 ```bash
 # Query validation metrics from Supabase
 psql -h <supabase-host> -U postgres -d postgres << 'SQL'
-SELECT 
+SELECT
   agent_role,
   COUNT(*) as total_attempts,
   ROUND(100.0 * COUNT(*) FILTER (WHERE action = 'commit') / COUNT(*), 1) as commit_rate,
@@ -191,6 +201,7 @@ SQL
 ```
 
 Expected output:
+
 ```
  agent_role │ total_attempts │ commit_rate │ avg_iterations
 ────────────┼────────────────┼─────────────┼────────────────
@@ -213,12 +224,12 @@ npm run test -- validation-feedback-parallel.test.ts -t "Integration"
 
 ### Default Configuration
 
-| Agent | Port | Role | Endpoint | Type |
-|-------|------|------|----------|------|
-| Cursor | 5001 | executor | localhost:5001 | HTTP |
-| Claude | 5002 | analyzer | localhost:5002 | HTTP |
-| Copilot | 5003 | validator | localhost:5003 | HTTP |
-| OpenCode | 5004 | refiner | localhost:5004 | HTTP |
+| Agent    | Port | Role      | Endpoint       | Type |
+| -------- | ---- | --------- | -------------- | ---- |
+| Cursor   | 5001 | executor  | localhost:5001 | HTTP |
+| Claude   | 5002 | analyzer  | localhost:5002 | HTTP |
+| Copilot  | 5003 | validator | localhost:5003 | HTTP |
+| OpenCode | 5004 | refiner   | localhost:5004 | HTTP |
 
 ### Custom Configuration
 
@@ -276,8 +287,8 @@ ssh vps-dragon@100.120.151.91 "tail -f /opt/opsly/.cursor/responses/parallel-*/e
 
 # Check validation metrics on VPS
 ssh vps-dragon@100.120.151.91 "psql -h localhost postgres << 'SQL'
-SELECT agent_role, action, COUNT(*) 
-FROM validation_metrics 
+SELECT agent_role, action, COUNT(*)
+FROM validation_metrics
 GROUP BY agent_role, action;
 SQL"
 ```
@@ -288,19 +299,19 @@ SQL"
 
 ### Execution Time (4 agents in parallel)
 
-| Task Type | Serial | Parallel | Speedup |
-|-----------|--------|----------|---------|
-| Simple function | 120s | 35s | 3.4x |
-| API endpoint | 240s | 65s | 3.7x |
-| Complex feature | 360s | 95s | 3.8x |
+| Task Type       | Serial | Parallel | Speedup |
+| --------------- | ------ | -------- | ------- |
+| Simple function | 120s   | 35s      | 3.4x    |
+| API endpoint    | 240s   | 65s      | 3.7x    |
+| Complex feature | 360s   | 95s      | 3.8x    |
 
 ### Success Rates (with feedback)
 
-| Metric | Before Feedback | After Feedback (100+ attempts) |
-|--------|-----------------|-------------------------------|
-| First-try commit rate | 72% | 84% (+12%) |
-| Average iterations | 1.4 | 1.2 (-14%) |
-| Escalation rate | 8% | 3% (-62%) |
+| Metric                | Before Feedback | After Feedback (100+ attempts) |
+| --------------------- | --------------- | ------------------------------ |
+| First-try commit rate | 72%             | 84% (+12%)                     |
+| Average iterations    | 1.4             | 1.2 (-14%)                     |
+| Escalation rate       | 8%              | 3% (-62%)                      |
 
 ---
 
@@ -374,7 +385,7 @@ app.use(express.json());
 
 app.post('/execute', async (req, res) => {
   const { prompt_content, job_id } = req.body;
-  
+
   try {
     // Call local Ollama instance
     const response = await fetch('http://localhost:11434/api/generate', {
@@ -385,7 +396,7 @@ app.post('/execute', async (req, res) => {
         stream: false,
       }),
     });
-    
+
     const data = await response.json();
     res.json({ response: data.response });
   } catch (err) {

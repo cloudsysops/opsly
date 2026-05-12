@@ -22,13 +22,11 @@ export class Telemetry {
   }
 
   getCostByAgent(agentId: string): number {
-    return this.costs
-      .filter(c => c.provider === agentId)
-      .reduce((sum, c) => sum + c.costUSD, 0);
+    return this.costs.filter((c) => c.provider === agentId).reduce((sum, c) => sum + c.costUSD, 0);
   }
 
   getMetrics(agentId: string): PerformanceMetrics | undefined {
-    return this.metrics.find(m => m.avgLatencyMs > 0); // Placeholder
+    return this.metrics.find((m) => m.avgLatencyMs > 0); // Placeholder
   }
 
   recordMetric(metric: PerformanceMetrics) {

@@ -4,10 +4,7 @@
 import { Job, Worker } from 'bullmq';
 import { processIntent } from '../engine.js';
 import { runOpenClawController } from '../openclaw/controller.js';
-import {
-  recordOpenClawCompletion,
-  recordOpenClawStage,
-} from '../openclaw/runtime-events.js';
+import { recordOpenClawCompletion, recordOpenClawStage } from '../openclaw/runtime-events.js';
 import { logWorkerLifecycle } from '../observability/worker-log.js';
 import type { IntentRequest, OrchestratorJob } from '../types.js';
 
@@ -103,7 +100,9 @@ export function startIntentDispatchWorker(connection: object): Worker {
             return null;
           }
           const req = raw as IntentRequest;
-          return typeof req.request_id === 'string' && req.request_id.length > 0 ? req.request_id : null;
+          return typeof req.request_id === 'string' && req.request_id.length > 0
+            ? req.request_id
+            : null;
         })();
         if (requestId !== null) {
           await recordOpenClawStage({

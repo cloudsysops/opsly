@@ -333,7 +333,9 @@ async function main(): Promise<void> {
         await sendDiscordAlert(discordWebhook, health, health.agent_pool_health);
         log('Discord alert sent successfully');
       } catch (err) {
-        log(`WARNING: Failed to send Discord alert: ${err instanceof Error ? err.message : String(err)}`);
+        log(
+          `WARNING: Failed to send Discord alert: ${err instanceof Error ? err.message : String(err)}`
+        );
       }
     }
 

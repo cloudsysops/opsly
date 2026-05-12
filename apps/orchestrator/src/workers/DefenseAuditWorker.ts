@@ -14,11 +14,7 @@ function gatewayBaseUrl(): string {
 }
 
 function resolveSupabaseUrl(): string {
-  return (
-    process.env.NEXT_PUBLIC_SUPABASE_URL?.trim() ||
-    process.env.SUPABASE_URL?.trim() ||
-    ''
-  );
+  return process.env.NEXT_PUBLIC_SUPABASE_URL?.trim() || process.env.SUPABASE_URL?.trim() || '';
 }
 
 function resolveSupabaseKey(): string {
@@ -117,7 +113,12 @@ async function callDefenseLlm(params: {
       },
     }),
   });
-  const data = (await res.json()) as { content?: string; text?: string; error?: string; message?: string };
+  const data = (await res.json()) as {
+    content?: string;
+    text?: string;
+    error?: string;
+    message?: string;
+  };
   if (!res.ok || data.error) {
     throw new Error(data.message ?? data.error ?? `gateway status ${String(res.status)}`);
   }
@@ -160,8 +161,9 @@ export async function processDefenseAuditJob(job: Job<OrchestratorJob>): Promise
 
   const auditType = typeof payload.audit_type === 'string' ? payload.audit_type : 'security';
   const framework = typeof payload.framework === 'string' ? payload.framework : '';
-  const scopeText =
-    Array.isArray(payload.scope) ? payload.scope.join(', ') : JSON.stringify(payload.scope ?? []);
+  const scopeText = Array.isArray(payload.scope)
+    ? payload.scope.join(', ')
+    : JSON.stringify(payload.scope ?? []);
 
   const userPrompt = [
     `Audit ID: ${auditId}`,
@@ -174,7 +176,10 @@ export async function processDefenseAuditJob(job: Job<OrchestratorJob>): Promise
     .filter(Boolean)
     .join('\n');
 
-  const requestId = typeof data.request_id === 'string' && data.request_id.length > 0 ? data.request_id : randomUUID();
+  const requestId =
+    typeof data.request_id === 'string' && data.request_id.length > 0
+      ? data.request_id
+      : randomUUID();
 
   try {
     const rawText = await callDefenseLlm({
@@ -187,7 +192,8 @@ export async function processDefenseAuditJob(job: Job<OrchestratorJob>): Promise
     const summary = parsed.summary ?? {};
 
     const rows = vulns.map((v) => {
-      const title = typeof v.title === 'string' && v.title.length > 0 ? v.title : 'Untitled finding';
+      const title =
+        typeof v.title === 'string' && v.title.length > 0 ? v.title : 'Untitled finding';
       const sev = normalizeSeverity(v.severity);
       const cvss =
         typeof v.cvss_score === 'number' && Number.isFinite(v.cvss_score)
@@ -208,7 +214,10 @@ export async function processDefenseAuditJob(job: Job<OrchestratorJob>): Promise
     });
 
     if (rows.length > 0) {
-      const { error: insErr } = await supabase.schema('defense').from('vulnerabilities').insert(rows);
+      const { error: insErr } = await supabase
+        .schema('defense')
+        .from('vulnerabilities')
+        .insert(rows);
       if (insErr) {
         throw new Error(insErr.message);
       }

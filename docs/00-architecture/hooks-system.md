@@ -38,16 +38,16 @@ npm run sync-references
 
 ## Rutas Protegidas
 
-| Ruta Antigua         | Ruta Nueva                     | Estado    |
-| -------------------- | ------------------------------ | --------- |
-| `./runtime/logs/`            | `./runtime/logs/`              | Bloqueado |
-| `./runtime/tenants/`         | `./runtime/tenants/`           | Bloqueado |
-| `./runtime/letsencrypt/`     | `./runtime/letsencrypt/`       | Bloqueado |
-| `tools/agents/prompts`     | `tools/tools/agents/prompts`         | Bloqueado |
-| `workspaces/` (raíz) | `tools/workspaces/`            | Bloqueado |
-| `cli/` (raíz)        | `tools/cli/`                   | Bloqueado |
-| `/opt/opsly/runtime/logs`    | `/opt/opsly/runtime/logs`      | Bloqueado |
-| `/opt/opsly/runtime/tenants` | `/opt/opsly/runtime/tenants`   | Bloqueado |
+| Ruta Antigua                 | Ruta Nueva                   | Estado    |
+| ---------------------------- | ---------------------------- | --------- |
+| `./runtime/logs/`            | `./runtime/logs/`            | Bloqueado |
+| `./runtime/tenants/`         | `./runtime/tenants/`         | Bloqueado |
+| `./runtime/letsencrypt/`     | `./runtime/letsencrypt/`     | Bloqueado |
+| `tools/agents/prompts`       | `tools/tools/agents/prompts` | Bloqueado |
+| `workspaces/` (raíz)         | `tools/workspaces/`          | Bloqueado |
+| `cli/` (raíz)                | `tools/cli/`                 | Bloqueado |
+| `/opt/opsly/runtime/logs`    | `/opt/opsly/runtime/logs`    | Bloqueado |
+| `/opt/opsly/runtime/tenants` | `/opt/opsly/runtime/tenants` | Bloqueado |
 
 ## Flujo de Trabajo
 

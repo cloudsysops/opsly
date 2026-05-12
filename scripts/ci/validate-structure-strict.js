@@ -123,7 +123,7 @@ function validateHiddenFolders() {
   for (const folder of hiddenFolders) {
     const allowed = (whitelist.allowed_hidden_folders ?? []).includes(folder);
     const blocked = (whitelist.blocked_hidden_patterns ?? []).some((p) =>
-      wildcardToRegex(p).test(folder),
+      wildcardToRegex(p).test(folder)
     );
     if (allowed) log(`  OK ${folder}/`, 'green');
     else {
@@ -178,7 +178,10 @@ function validateSymlinks() {
     }
     if (fs.lstatSync(full).isSymbolicLink()) {
       const target = fs.readlinkSync(full);
-      log(`  WARN ${link.path} -> ${target} (${link.temporary ? 'temporary' : 'permanent'})`, 'yellow');
+      log(
+        `  WARN ${link.path} -> ${target} (${link.temporary ? 'temporary' : 'permanent'})`,
+        'yellow'
+      );
     } else log(`  INFO ${link.path} is a real directory`, 'green');
   }
   return true;
@@ -204,7 +207,8 @@ function main() {
   const total = Object.keys(results).length;
 
   log('\nValidation summary:', 'blue');
-  for (const [name, ok] of Object.entries(results)) log(`  ${ok ? 'OK' : 'FAIL'} ${name}`, ok ? 'green' : 'red');
+  for (const [name, ok] of Object.entries(results))
+    log(`  ${ok ? 'OK' : 'FAIL'} ${name}`, ok ? 'green' : 'red');
   log(`\nResult: ${passed}/${total} checks passed`, passed === total ? 'green' : 'red');
 
   if (IS_CI && passed < total) process.exit(1);

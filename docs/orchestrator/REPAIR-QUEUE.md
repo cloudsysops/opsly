@@ -22,10 +22,10 @@ Cuando un job falle por causas **recuperables con intervención** (p. ej. crédi
 
 ## Flujo (contrato)
 
-1. **Clasificar** el fallo del worker (categoría + recuperable o no).  
-2. **`shouldRepair`:** solo si la política lo permite y no se superó la profundidad máxima de repair.  
-3. **Encolar** job en la cola de repair (payload: job original + error + `repairHistory` acotado).  
-4. **Handler repair:** acción humana o automatizada que corrige la causa cuando sea posible.  
+1. **Clasificar** el fallo del worker (categoría + recuperable o no).
+2. **`shouldRepair`:** solo si la política lo permite y no se superó la profundidad máxima de repair.
+3. **Encolar** job en la cola de repair (payload: job original + error + `repairHistory` acotado).
+4. **Handler repair:** acción humana o automatizada que corrige la causa cuando sea posible.
 5. **Re-encolar** el trabajo en la cola primaria con la misma trazabilidad (`tenant_slug`, `request_id`; respetar `idempotency_key` / `jobId` BullMQ como hoy).
 
 ---

@@ -3,7 +3,7 @@ description: Documentación técnica y runbooks.
 skills:
   - opsly-bootstrap
 environment_vars:
-  DOC_MODE: "true"
+  DOC_MODE: 'true'
 permissions:
   - docs:write
 tools:

@@ -17,7 +17,10 @@
     "properties": {
       "mode": { "type": "string", "enum": ["expert", "income", "optimization"] },
       "tenant_slug": { "type": "string" },
-      "strategy": { "type": "string", "enum": ["bitcoin-production", "cost-optimization", "auto-deploy"] },
+      "strategy": {
+        "type": "string",
+        "enum": ["bitcoin-production", "cost-optimization", "auto-deploy"]
+      },
       "budget_usd": { "type": "number", "minimum": 0 }
     },
     "required": ["mode", "tenant_slug"]

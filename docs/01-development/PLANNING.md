@@ -6,13 +6,13 @@
 
 ## Fases (resumen)
 
-| Fase                      | Documento                                   | Contenido                        |
-| ------------------------- | ------------------------------------------- | -------------------------------- |
-| Producto / comercial      | [`VISION.md`](VISION.md)                    | ICP, fases, límites, “Nunca”; **índice de planes** |
-| Operación sesión a sesión | [`../../AGENTS.md`](../../AGENTS.md)        | Bloqueantes, decisiones, URL raw |
-| Semanas 1–6 + milestones  | [`ROADMAP.md`](ROADMAP.md)                  | Tareas por semana                |
-| Esta semana (checkboxes)  | [`SPRINT-TRACKER.md`](SPRINT-TRACKER.md)    | Progreso y métricas              |
-| Planes temáticos          | [`../plans/README.md`](../plans/README.md)  | Autonomía, CLI, go/no-go         |
+| Fase                      | Documento                                  | Contenido                                          |
+| ------------------------- | ------------------------------------------ | -------------------------------------------------- |
+| Producto / comercial      | [`VISION.md`](VISION.md)                   | ICP, fases, límites, “Nunca”; **índice de planes** |
+| Operación sesión a sesión | [`../../AGENTS.md`](../../AGENTS.md)       | Bloqueantes, decisiones, URL raw                   |
+| Semanas 1–6 + milestones  | [`ROADMAP.md`](ROADMAP.md)                 | Tareas por semana                                  |
+| Esta semana (checkboxes)  | [`SPRINT-TRACKER.md`](SPRINT-TRACKER.md)   | Progreso y métricas                                |
+| Planes temáticos          | [`../plans/README.md`](../plans/README.md) | Autonomía, CLI, go/no-go                           |
 
 ## Herramientas recomendadas
 

@@ -7,9 +7,15 @@ export function useAPI<T>(url: string) {
 
   useEffect(() => {
     fetch(url)
-      .then(r => r.json())
-      .then(d => { setData(d); setLoading(false); })
-      .catch(e => { setError(e); setLoading(false); });
+      .then((r) => r.json())
+      .then((d) => {
+        setData(d);
+        setLoading(false);
+      })
+      .catch((e) => {
+        setError(e);
+        setLoading(false);
+      });
   }, [url]);
 
   return { data, loading, error };

@@ -49,12 +49,7 @@
     }
   },
   "providers": {
-    "preferred_order": [
-      "ollama-qwen",
-      "ollama-codellama",
-      "anthropic-sonnet",
-      "deepseek-v4"
-    ],
+    "preferred_order": ["ollama-qwen", "ollama-codellama", "anthropic-sonnet", "deepseek-v4"],
     "fallback_chain": {
       "ollama-qwen": ["ollama-codellama", "anthropic-sonnet"],
       "ollama-codellama": ["ollama-qwen", "anthropic-sonnet"],

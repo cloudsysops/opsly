@@ -16,7 +16,7 @@ last_review: 2026-04-24
 | ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Hermes**              | Sistema de **metering/billing IA** (ledger `usage_events`, costos por tenant). Ver `VISION.md` — _no_ es un paquete Python externo obligatorio. |
 | **Capa de decisión IA** | Lógica en **TypeScript** (`apps/llm-gateway`, `apps/orchestrator`): routing, fallback, presupuesto — extender lo existente.                     |
-| **NotebookLM**          | **EXPERIMENTAL**, planes superiores + flag; ver `apps/notebooklm-agent`, MCP.                                                                  |
+| **NotebookLM**          | **EXPERIMENTAL**, planes superiores + flag; ver `apps/notebooklm-agent`, MCP.                                                                   |
 
 ## Estado respecto a VISION.md
 
@@ -60,10 +60,10 @@ Ventana sugerida: **2026-04-14 → 2026-05-25** (ajustar según capacidad).
 
 **Objetivo:** Sesiones/contexto alineados al servicio existente (`apps/context-builder`), sin segundo motor paralelo sin ADR.
 
-| Tarea                                | Referencia                                                  |
-| ------------------------------------ | ----------------------------------------------------------- |
-| Cliente orchestrator/context-builder | `docs/ORCHESTRATOR.md`, `apps/context-builder`              |
-| Índice conocimiento repo             | `scripts/index-knowledge.sh`, `config/knowledge-index.json` |
+| Tarea                                    | Referencia                                                                                                                                                              |
+| ---------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Cliente orchestrator/context-builder     | `docs/ORCHESTRATOR.md`, `apps/context-builder`                                                                                                                          |
+| Índice conocimiento repo                 | `scripts/index-knowledge.sh`, `config/knowledge-index.json`                                                                                                             |
 | Smoke prompt local → cola `local-agents` | Runbook en [`docs/LOCAL-AGENT-EXECUTION.md`](../LOCAL-AGENT-EXECUTION.md) (E2E), `npm run opsly:local-prompt-watcher`, tests `health-server-local-prompt-queue.test.ts` |
 
 **Checkpoint:** una prueba E2E documentada (script o test) que no requiera inventar API inexistente.

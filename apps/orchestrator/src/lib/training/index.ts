@@ -1,1 +1,6 @@
-export { AgentTrainer, type ExecutionRecord, type AgentPattern, type TrainerReport } from './agent-trainer.js';
+export {
+  AgentTrainer,
+  type ExecutionRecord,
+  type AgentPattern,
+  type TrainerReport,
+} from './agent-trainer.js';

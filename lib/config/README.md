@@ -1,7 +1,8 @@
 ---
-title: "@intcloudsysops/config"
-description: "Environment and feature flag management"
+title: '@intcloudsysops/config'
+description: 'Environment and feature flag management'
 ---
+
 # @intcloudsysops/config
 
 Centralized configuration and feature flags for safe, environment-aware deployments.
@@ -22,8 +23,8 @@ Centralized configuration and feature flags for safe, environment-aware deployme
 import { getConfig } from '@intcloudsysops/config';
 
 const config = getConfig();
-console.log(config.NODE_ENV);        // 'development' | 'staging' | 'production'
-console.log(config.LOG_LEVEL);       // 'debug' | 'info' | 'warn' | 'error'
+console.log(config.NODE_ENV); // 'development' | 'staging' | 'production'
+console.log(config.LOG_LEVEL); // 'debug' | 'info' | 'warn' | 'error'
 console.log(config.AGENT_MAX_CONCURRENT); // 10
 ```
 
@@ -81,12 +82,12 @@ interface Config {
 
 ```typescript
 interface FeatureFlags {
-  agentsV2Enabled: boolean;         // New agent orchestration
-  evaluationStrictMode: boolean;    // Enforce quality gates
-  cacheEnabled: boolean;             // Use Redis caching
-  profilerEnabled: boolean;          // Performance profiling
-  debugLogsEnabled: boolean;         // Verbose logging
-  a2bTestingEnabled: boolean;        // A/B testing framework
+  agentsV2Enabled: boolean; // New agent orchestration
+  evaluationStrictMode: boolean; // Enforce quality gates
+  cacheEnabled: boolean; // Use Redis caching
+  profilerEnabled: boolean; // Performance profiling
+  debugLogsEnabled: boolean; // Verbose logging
+  a2bTestingEnabled: boolean; // A/B testing framework
 }
 ```
 

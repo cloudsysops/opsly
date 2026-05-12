@@ -116,7 +116,10 @@ describe('ValidationFeedbackLayer + LocalWorkerPool - Parallel Execution', () =>
       const feedbackLayer = new ValidationFeedbackLayer();
 
       // Should return a confidence between 0 and 1
-      const confidence = await feedbackLayer.calculateAdaptationConfidence('executor', 'test-intent');
+      const confidence = await feedbackLayer.calculateAdaptationConfidence(
+        'executor',
+        'test-intent'
+      );
 
       expect(confidence).toBeGreaterThanOrEqual(0);
       expect(confidence).toBeLessThanOrEqual(1);

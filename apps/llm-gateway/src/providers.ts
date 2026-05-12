@@ -14,7 +14,10 @@ export interface ProviderDefinition {
 
 const ollamaBase = process.env.OLLAMA_URL ?? 'http://localhost:11434';
 const openRouterBase = 'https://openrouter.ai/api/v1';
-const deepseekBase = (process.env.DEEPSEEK_BASE_URL ?? 'https://api.deepseek.com/v1').replace(/\/$/, '');
+const deepseekBase = (process.env.DEEPSEEK_BASE_URL ?? 'https://api.deepseek.com/v1').replace(
+  /\/$/,
+  ''
+);
 const deepseekModel =
   process.env.DEEPSEEK_MODEL?.trim() && process.env.DEEPSEEK_MODEL.trim().length > 0
     ? process.env.DEEPSEEK_MODEL.trim()

@@ -1,5 +1,11 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
-import { cacheGet, cacheSet, getCacheStats, getRedisClient, closeRedisClient } from '../src/cache.js';
+import {
+  cacheGet,
+  cacheSet,
+  getCacheStats,
+  getRedisClient,
+  closeRedisClient,
+} from '../src/cache.js';
 
 describe('LLM Gateway - Cache with Namespace', () => {
   const TENANT_1 = 'tenant-alpha';

@@ -43,10 +43,14 @@ export class CoderBot implements Bot {
   }
 
   private setupListeners(): void {
-    void this.pheromoneChannel.subscribe(this.id, ['subtask_assignment'], async (message: PheromoneMessage) => {
-      const subtask = message.payload as Subtask;
-      await this.handleTask(subtask);
-    });
+    void this.pheromoneChannel.subscribe(
+      this.id,
+      ['subtask_assignment'],
+      async (message: PheromoneMessage) => {
+        const subtask = message.payload as Subtask;
+        await this.handleTask(subtask);
+      }
+    );
   }
 
   async handleTask(subtask: Subtask): Promise<void> {

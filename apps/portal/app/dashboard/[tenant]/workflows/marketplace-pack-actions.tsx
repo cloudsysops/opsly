@@ -35,13 +35,11 @@ export function MarketplacePackActions({
     setMessage(null);
     setPending(true);
     try {
-      const res = await postPortalN8nMarketplaceInstall(
-        accessToken,
-        tenantSlug,
-        catalogItemId
-      );
+      const res = await postPortalN8nMarketplaceInstall(accessToken, tenantSlug, catalogItemId);
       setActivated(true);
-      setMessage(res.already ? 'Ya estaba activado en tu cuenta.' : 'Activado. Facturación registrada.');
+      setMessage(
+        res.already ? 'Ya estaba activado en tu cuenta.' : 'Activado. Facturación registrada.'
+      );
     } catch (e) {
       setMessage(e instanceof Error ? e.message : 'No se pudo activar');
     } finally {

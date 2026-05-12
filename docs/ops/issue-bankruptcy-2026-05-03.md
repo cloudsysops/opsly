@@ -12,11 +12,11 @@
 
 ## Projections
 
-| Scenario | Outcome |
-|----------|---------|
-| Status quo (daily automation updates) | `updated:<date>` stale filters stay **empty**; backlog stays high **unless** dedupe policy changes. |
-| Dedupe + one epic + close duplicates with comments | Open count could drop **~150+** in a controlled human review window. |
-| GitHub Actions `stale` workflow (conservative) | Surfaces true rot after automation stops touching old issues; pair with `keep-backlog` for exceptions. |
+| Scenario                                           | Outcome                                                                                                |
+| -------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| Status quo (daily automation updates)              | `updated:<date>` stale filters stay **empty**; backlog stays high **unless** dedupe policy changes.    |
+| Dedupe + one epic + close duplicates with comments | Open count could drop **~150+** in a controlled human review window.                                   |
+| GitHub Actions `stale` workflow (conservative)     | Surfaces true rot after automation stops touching old issues; pair with `keep-backlog` for exceptions. |
 
 ## Actions completed (this pass)
 

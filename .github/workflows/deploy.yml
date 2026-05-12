@@ -48,7 +48,7 @@ on:
   workflow_dispatch:
     inputs:
       skip_tests:
-        description: "Omitir lint, typecheck y eslint"
+        description: 'Omitir lint, typecheck y eslint'
         type: boolean
         required: false
         default: false
@@ -62,7 +62,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: '20'
           cache: npm
           cache-dependency-path: package-lock.json
 

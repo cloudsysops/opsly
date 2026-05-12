@@ -24,6 +24,7 @@ This plan consolidates fragmented code across `apps/orchestrator`, `apps/api`, `
 ## 1. PROMPTS CONSOLIDATION
 
 ### Current State
+
 - **Cursor Prompts**: 21 files in `.cursor/prompts/` (24 KB)
 - **Doc Prompts**: 3 files in `docs/prompts/tenant-onboarding/` (8 KB)
 - **Agent Prompts**: 1 file in `apps/orchestrator/src/agents/cloudsysops/prompts.ts` (88 lines)
@@ -32,6 +33,7 @@ This plan consolidates fragmented code across `apps/orchestrator`, `apps/api`, `
 ### Files to Consolidate
 
 #### 1.1 Cursor Prompts (21 files)
+
 ```
 .cursor/prompts/
 ├── README.md
@@ -58,6 +60,7 @@ This plan consolidates fragmented code across `apps/orchestrator`, `apps/api`, `
 ```
 
 **Metadata Extraction**:
+
 - Name (from filename)
 - Category (executor, architect, reviewer, observability, local-services, e2e-test, etc.)
 - Purpose/Tags (extracted from content)
@@ -65,6 +68,7 @@ This plan consolidates fragmented code across `apps/orchestrator`, `apps/api`, `
 - Updated date (git log)
 
 #### 1.2 Doc Prompts (3 files)
+
 ```
 docs/prompts/
 ├── tenant-onboarding/TENANT-ONBOARDING-TEMPLATE.md
@@ -75,6 +79,7 @@ docs/prompts/
 **Category**: `tenant-onboarding`
 
 #### 1.3 Agent Prompts (1 file)
+
 - `/home/user/opsly/apps/orchestrator/src/agents/cloudsysops/prompts.ts` (88 lines)
 - **Type**: TypeScript module with exported prompt strings
 - **Category**: `agent/cloudsysops`
@@ -82,6 +87,7 @@ docs/prompts/
 ### Consolidation Target
 
 **Destination**: `lib/prompts/registry.ts` + new directories:
+
 ```
 lib/prompts/
 ├── registry.ts (existing - enhance)
@@ -109,27 +115,32 @@ lib/prompts/
 ### Implementation Steps
 
 **Phase 1: Metadata & Structure**
+
 1. Create `lib/prompts/schemas/prompt-metadata.ts` with interfaces
 2. Update `lib/prompts/registry.ts` to support structured metadata
 3. Create indexing for prompts by category, tags, status
 
 **Phase 2: Cursor Prompts Migration**
+
 1. Copy all `.cursor/prompts/*.md` to `lib/prompts/cursors/`
 2. Extract metadata from content (frontmatter or comments)
 3. Update `lib/prompts/registry.ts` to load from new location
 4. Keep `.cursor/prompts/` as symlinks or references for 1 version
 
 **Phase 3: Doc Prompts Migration**
+
 1. Move `docs/prompts/tenant-onboarding/*` to `lib/prompts/tenant-onboarding/`
 2. Register in `lib/prompts/registry.ts`
 3. Update documentation links
 
 **Phase 4: Agent Prompts**
+
 1. Extract string exports from `cloudsysops/prompts.ts`
 2. Create `lib/prompts/agents/cloudsysops/system-prompts.ts`
 3. Re-export from `apps/orchestrator/src/agents/cloudsysops/prompts.ts`
 
 ### Metadata Schema
+
 ```typescript
 export interface PromptMetadata {
   id: string;
@@ -150,22 +161,24 @@ export interface PromptMetadata {
 
 ### File Counts & Effort
 
-| Task | Files | LOC | Effort |
-|------|-------|-----|--------|
-| Cursor prompts | 21 | ~800 | 4h |
-| Doc prompts | 3 | ~200 | 1h |
-| Agent prompts | 1 | 88 | 1h |
-| Registry/loader update | 2 | ~100 | 2h |
-| Tests | 1 | ~150 | 2h |
-| **TOTAL** | **28** | **~1,338** | **10h** |
+| Task                   | Files  | LOC        | Effort  |
+| ---------------------- | ------ | ---------- | ------- |
+| Cursor prompts         | 21     | ~800       | 4h      |
+| Doc prompts            | 3      | ~200       | 1h      |
+| Agent prompts          | 1      | 88         | 1h      |
+| Registry/loader update | 2      | ~100       | 2h      |
+| Tests                  | 1      | ~150       | 2h      |
+| **TOTAL**              | **28** | **~1,338** | **10h** |
 
 ### Risk Factors
+
 - **Import path changes**: Apps using `lib/prompts` must update imports
 - **File encoding**: Ensure UTF-8 for all markdown files
 - **Git history loss**: Prompts will lose git blame; mitigate with comments
 - **CI/CD changes**: Update workflows if `.cursor/prompts` is referenced
 
 ### Dependencies
+
 - None (independent)
 - Safe to start immediately
 
@@ -176,6 +189,7 @@ export interface PromptMetadata {
 ### Current State
 
 **Distributed code** (481 lines across 5 locations):
+
 ```
 apps/orchestrator/src/observability/
 ├── job-log.ts (34 lines) - Job enqueue logging
@@ -190,6 +204,7 @@ apps/orchestrator/src/openclaw/
 ```
 
 **Existing lib/observability** (204 lines):
+
 ```
 lib/observability/
 ├── logger.ts (48 lines) - Generic logger
@@ -201,11 +216,13 @@ lib/observability/
 ### Files to Consolidate
 
 #### 2.1 Job/Planner/Worker Logs
+
 - `job-log.ts`: Interfaces & log functions for job enqueue events
 - `planner-log.ts`: Interfaces & log functions for planner steps
 - `worker-log.ts`: Interfaces & log functions for worker execution
 
 **Example**: Job log interface
+
 ```typescript
 export interface JobEnqueueLogFields {
   event: 'job_enqueue';
@@ -222,17 +239,20 @@ export function logJobEnqueue(fields: JobEnqueueLogFields): void { ... }
 **Purpose**: Structured logging for BullMQ job lifecycle
 
 #### 2.2 Tracer
+
 - `tracer.ts`: Distributed tracing (OpenTelemetry integration)
 - 317 lines, complex correlation ID management
 - Integrates with `@opentelemetry/api`
 
 #### 2.3 OpenClaw Observability
+
 - `observability.ts`: OpenClaw-specific context propagation
 - 19 lines, lightweight
 
 ### Consolidation Target
 
 **Destination**: Enhance `lib/observability/`
+
 ```
 lib/observability/
 ├── index.ts (update exports)
@@ -249,6 +269,7 @@ lib/observability/
 ### Implementation Steps
 
 **Phase 1: Type Unification**
+
 1. Create `lib/observability/types.ts` with shared types:
    - `LogField`, `LogContext`, `LogLevel`
    - `JobLogFields`, `PlannerLogFields`, `WorkerLogFields`
@@ -257,27 +278,32 @@ lib/observability/
 2. Update `lib/observability/logger.ts` to use unified types
 
 **Phase 2: Job/Planner/Worker Logs Migration**
+
 1. Copy `job-log.ts`, `planner-log.ts`, `worker-log.ts` to `lib/observability/`
 2. Update imports (e.g., `OrchestratorJob` type must come from `apps/orchestrator/src/types`)
 3. Create orchestrator-specific log function exports in `lib/observability/index.ts`
 4. Keep `apps/orchestrator/src/observability/*.ts` as thin re-export wrappers
 
 **Phase 3: Tracer Enhancement**
+
 1. Move `tracer.ts` logic into `lib/observability/tracing.ts`
 2. Merge with existing tracing code
 3. Ensure OpenTelemetry integration is at lib level
 
 **Phase 4: OpenClaw Integration**
+
 1. Enhance `lib/observability/tracing.ts` with OpenClaw context propagation
 2. Remove separate `openclaw-observability.ts` file
 
 **Phase 5: Testing**
+
 1. Update tests to import from `lib/observability`
 2. Add integration tests for job/planner/worker logging
 
 ### Compatibility Concerns
 
 **Import Path Changes**:
+
 ```typescript
 // BEFORE
 import { logJobEnqueue } from '@/observability/job-log';
@@ -287,31 +313,35 @@ import { logJobEnqueue } from '@intcloudsysops/lib-observability';
 ```
 
 **Type Dependencies**:
+
 - `OrchestratorJob` type: Must remain in `apps/orchestrator/src/types`
 - Create wrapper types in `lib/observability/types.ts` if needed
 
 **Logger Integration**:
+
 - Ensure job/planner/worker logs integrate with existing `createLogger()`
 - May need to enhance logger with structured field support
 
 ### File Counts & Effort
 
-| Task | Files | LOC | Effort |
-|------|-------|-----|--------|
-| Type unification | 1 | ~100 | 2h |
-| Job/planner/worker migration | 3 | 164 | 3h |
-| Tracer enhancement | 1 | 317 | 4h |
-| OpenClaw integration | 1 | 19 | 1h |
-| Tests | 5 | ~200 | 3h |
-| **TOTAL** | **11** | **~800** | **13h** |
+| Task                         | Files  | LOC      | Effort  |
+| ---------------------------- | ------ | -------- | ------- |
+| Type unification             | 1      | ~100     | 2h      |
+| Job/planner/worker migration | 3      | 164      | 3h      |
+| Tracer enhancement           | 1      | 317      | 4h      |
+| OpenClaw integration         | 1      | 19       | 1h      |
+| Tests                        | 5      | ~200     | 3h      |
+| **TOTAL**                    | **11** | **~800** | **13h** |
 
 ### Risk Factors
+
 - **Type circular dependencies**: `OrchestratorJob` is app-specific; may need type boundaries
 - **Tracer complexity**: OpenTelemetry integration is intricate; requires thorough testing
 - **Breaking changes**: Apps using `apps/orchestrator/src/observability` must update imports
 - **Runtime behavior**: Changes to logger output format could break log aggregation
 
 ### Dependencies
+
 - Depends on: `apps/orchestrator/src/types` (OrchestratorJob)
 - Blocks: Nothing immediate
 - Recommended order: Phase 1 (Prompts) → Phase 2 (Observability) for better parallel work
@@ -323,6 +353,7 @@ import { logJobEnqueue } from '@intcloudsysops/lib-observability';
 ### Current State
 
 **Distributed components** (30 files):
+
 ```
 apps/portal/components/ui/ (6 files)
 ├── button.tsx
@@ -364,6 +395,7 @@ apps/admin/components/ (1 file)
 ```
 
 **Existing lib/components** (4 files):
+
 ```
 lib/components/
 ├── ui/Button.tsx
@@ -384,18 +416,22 @@ lib/components/
 | Skeleton | ✓ | ✓ | ✗ | Duplicate |
 
 **UI Components Unique to Admin**:
+
 - Badge, Dialog, Progress, Select, Separator, Table, Tooltip (7 files)
 
 **UI Components Unique to Portal**:
+
 - Empty-state, Accessibility (2 files)
 
 **High-value Shared Components** (13 files):
+
 - Domain-specific: LLMUsageCard, CredentialReveal, StatusBadge, etc.
 - Candidates for consolidation if used across apps
 
 ### Consolidation Strategy
 
 #### 3.1 Tier 1: Core UI Components (Deduplication)
+
 **Action**: Consolidate identical or near-identical components
 
 ```
@@ -420,12 +456,15 @@ lib/components/ui/
 **Effort per component**: 30-60 min (merge variants, test)
 
 #### 3.2 Tier 2: Domain Components (Selective)
+
 **Candidates** (if reusable across portal/admin):
+
 - `status-badge.tsx`: Generic status visualization
 - `mode-selector.tsx`: UI mode toggle
 - `service-card.tsx`: Generic card wrapper
 
 **Non-candidates** (app-specific):
+
 - `FeedbackChat.tsx`: Portal-specific feature
 - `super-admin-dashboard.tsx`: Admin-specific layout
 - `llm-usage-card.tsx`: Portal business logic
@@ -434,6 +473,7 @@ lib/components/ui/
 - `CredentialReveal.tsx`: Admin-specific security feature
 
 **Consolidation target** (Tier 2):
+
 ```
 lib/components/
 ├── ui/ (Tier 1 consolidated)
@@ -447,6 +487,7 @@ lib/components/
 ### Implementation Steps
 
 **Phase 1: Audit & Merge Strategy**
+
 1. For each duplicate (Button, Card, Input, Skeleton):
    - Extract common styles/behavior
    - Define variant props (portal vs admin specific)
@@ -458,6 +499,7 @@ lib/components/
    - Ensure no app-specific imports (no portal/admin deps)
 
 **Phase 2: Consolidate Tier 1**
+
 1. Create `lib/components/ui/` directory structure
 2. Merge and test each component
 3. Update `lib/components/index.ts` exports
@@ -466,16 +508,19 @@ lib/components/
 6. Run tests: Portal + Admin should pass with lib imports
 
 **Phase 3: Consolidate Tier 2 (Generic High-Value)**
+
 1. Move `StatusBadge.tsx`, `ModeSelector.tsx`, `ServiceCard.tsx`
 2. Remove app-specific styling if possible
 3. Create in `lib/components/common/`
 4. Update imports in portal/admin
 
 **Phase 4: Keep App-Specific**
+
 1. Leave orchestrator, feedback, domain-specific components in apps
 2. Document in `lib/components/README.md` what should/shouldn't be consolidated
 
 **Phase 5: Testing & Migration**
+
 1. Audit all imports in portal/admin
 2. Update import statements
 3. Run visual regression tests
@@ -483,24 +528,26 @@ lib/components/
 
 ### File Counts & Effort
 
-| Task | Files | Effort |
-|------|-------|--------|
-| Audit & strategy | — | 2h |
-| Merge Button, Card, Input, Skeleton | 4 | 3h |
-| Move unique Tier 1 components | 11 | 4h |
-| Consolidate Tier 2 | 3 | 2h |
-| Update imports in portal | 12 | 2h |
-| Update imports in admin | 13 | 2h |
-| Tests & integration | — | 4h |
-| **TOTAL** | **30** | **19h** |
+| Task                                | Files  | Effort  |
+| ----------------------------------- | ------ | ------- |
+| Audit & strategy                    | —      | 2h      |
+| Merge Button, Card, Input, Skeleton | 4      | 3h      |
+| Move unique Tier 1 components       | 11     | 4h      |
+| Consolidate Tier 2                  | 3      | 2h      |
+| Update imports in portal            | 12     | 2h      |
+| Update imports in admin             | 13     | 2h      |
+| Tests & integration                 | —      | 4h      |
+| **TOTAL**                           | **30** | **19h** |
 
 ### Risk Factors
+
 - **Styling divergence**: Portal and Admin may have different design tokens; must test visually
 - **Dependency chains**: Components may import app-specific hooks (useAuth, etc.); extract to lib
 - **Breaking changes**: Apps updating imports will need version bump
 - **Storybook/Chromatic**: Visual regression detection needed for variants
 
 ### Dependencies
+
 - Depends on: None
 - Blocks: Nothing immediate
 - Can run in parallel with Prompts/Observability phases
@@ -512,6 +559,7 @@ lib/components/
 ### Current State
 
 **Distributed validation/evaluation code** (1,401 lines):
+
 ```
 apps/orchestrator/src/lib/
 ├── validation-orchestrator.ts (415 lines) - Job validation, feedback aggregation
@@ -525,6 +573,7 @@ apps/api/lib/
 ```
 
 **Existing lib/evaluation** (minimal):
+
 ```
 lib/evaluation/
 ├── validators/index.ts
@@ -536,33 +585,31 @@ lib/evaluation/
 ### Files to Consolidate
 
 #### 4.1 Orchestrator Validation
+
 - **validation-orchestrator.ts**: Core orchestrator job validation logic
   - Job type validation
   - Tenant isolation checks
   - Feedback aggregation from multiple sources
-  
 - **validation-metrics.ts**: Quality metrics collection & scoring
   - Success rate calculation
   - Cost tracking
   - Performance metrics
   - SLA compliance
-  
 - **validation-feedback.ts**: Feedback pipeline
   - Collect feedback from agents
   - Store in Supabase
   - Aggregate by job/tenant
-  
 - **validation-dashboard.ts**: Dashboard data preparation
   - Metrics aggregation
   - Time series data
   - Trend analysis
-  
 - **validation-utils.ts**: Shared utilities
   - Scoring helpers
   - Calculation functions
   - Data transformations
 
 #### 4.2 API Validation
+
 - **validation.ts**: Generic data validation
   - Input validation helpers
   - Type guards
@@ -570,6 +617,7 @@ lib/evaluation/
 ### Consolidation Target
 
 **Destination**: Enhance `lib/evaluation/`
+
 ```
 lib/evaluation/
 ├── index.ts (update exports)
@@ -601,36 +649,42 @@ lib/evaluation/
 ### Implementation Steps
 
 **Phase 1: Type Extraction & Unification**
+
 1. Extract all interfaces/types from 5 validation files
 2. Create `lib/evaluation/types.ts` with unified schema:
    - `ValidationResult`, `FeedbackItem`, `MetricValue`, `DashboardData`
 3. Update existing `lib/evaluation/validators/index.ts` to export types
 
 **Phase 2: Validator Migration**
+
 1. Extract job validation logic → `validators/job-validator.ts`
 2. Extract feedback validation → `validators/feedback-validator.ts`
 3. Extract API validation → `validators/schema-validators.ts`
 4. Ensure no cross-app dependencies
 
 **Phase 3: Metrics Migration**
+
 1. Extract quality metrics → `metrics/quality-metrics.ts`
 2. Extract cost metrics → `metrics/cost-metrics.ts`
 3. Extract SLA metrics → `metrics/sla-metrics.ts`
 4. Merge with existing `lib/evaluation/metrics/index.ts`
 
 **Phase 4: Dashboard Data Preparation**
+
 1. Create `lib/evaluation/dashboard/metrics-aggregator.ts`
 2. Create `lib/evaluation/dashboard/trend-analyzer.ts`
 3. Migrate dashboard-specific logic from `validation-dashboard.ts`
 4. Ensure separation from UI (return data, not components)
 
 **Phase 5: Feedback Pipeline**
+
 1. Create `lib/evaluation/feedback/collector.ts`
 2. Create `lib/evaluation/feedback/aggregator.ts`
 3. Migrate feedback collection logic
 4. Integrate with Supabase repository pattern
 
 **Phase 6: Update Imports & Testing**
+
 1. Update `apps/orchestrator/src/lib/validation*.ts` to re-export from lib
 2. Run all orchestrator validation tests
 3. Update API tests
@@ -639,43 +693,50 @@ lib/evaluation/
 ### Dependency Analysis
 
 **What validation-orchestrator.ts depends on**:
+
 - `@supabase/supabase-js` (database)
 - `OrchestratorJob` type (app-specific)
 - BullMQ types
 
 **What validation-metrics.ts depends on**:
+
 - `OrchestratorJob`, `OrchestratorJobStatus` types
 - Date calculations (no external deps)
 
 **What validation-feedback.ts depends on**:
+
 - Supabase client
 - Feedback schema types
 
 **What validation-dashboard.ts depends on**:
+
 - Supabase
 - Metrics calculations
 
 **What validation-utils.ts depends on**:
+
 - No external dependencies (pure functions)
 
 **Circular dependency risks**:
+
 - `validation-orchestrator` → `validation-metrics` → `validation-orchestrator`?
 - Check and break if found
 
 ### File Counts & Effort
 
-| Task | Files | LOC | Effort |
-|------|-------|-----|--------|
-| Type extraction | 1 | ~150 | 2h |
-| Validator migration | 3 | ~300 | 4h |
-| Metrics migration | 3 | ~400 | 5h |
-| Dashboard migration | 2 | ~300 | 4h |
-| Feedback migration | 2 | ~200 | 3h |
-| Utils migration | 1 | ~225 | 2h |
-| Testing | — | ~200 | 4h |
-| **TOTAL** | **15** | **~1,775** | **24h** |
+| Task                | Files  | LOC        | Effort  |
+| ------------------- | ------ | ---------- | ------- |
+| Type extraction     | 1      | ~150       | 2h      |
+| Validator migration | 3      | ~300       | 4h      |
+| Metrics migration   | 3      | ~400       | 5h      |
+| Dashboard migration | 2      | ~300       | 4h      |
+| Feedback migration  | 2      | ~200       | 3h      |
+| Utils migration     | 1      | ~225       | 2h      |
+| Testing             | —      | ~200       | 4h      |
+| **TOTAL**           | **15** | **~1,775** | **24h** |
 
 ### Risk Factors
+
 - **Circular imports**: Break with careful type/interface separation
 - **Supabase dependency**: Ensure lib doesn't force Supabase client; use dependency injection
 - **App-specific types**: `OrchestratorJob` can't move to lib; pass as generic or typed args
@@ -683,6 +744,7 @@ lib/evaluation/
 - **Test coverage**: Validation is critical; needs 100% test pass
 
 ### Dependencies
+
 - Depends on: `apps/orchestrator/src/types` (OrchestratorJob)
 - Blocks: Nothing immediate
 - Recommended order: After Prompts (Phase 1), in parallel with Observability (Phase 2)
@@ -694,6 +756,7 @@ lib/evaluation/
 ### Current State
 
 **Distributed services** (79 files in `apps/api/lib/`):
+
 ```
 apps/api/lib/
 ├── base-repository.ts (98 lines) - Generic data access pattern
@@ -713,6 +776,7 @@ apps/api/lib/
 ```
 
 **Existing lib/services** (minimal):
+
 ```
 lib/services/
 ├── index.ts
@@ -724,6 +788,7 @@ lib/services/
 ### Analysis: Consolidation Candidates
 
 #### 5.1 HIGH PRIORITY: Base Repository Pattern
+
 - **File**: `apps/api/lib/base-repository.ts` (98 lines)
 - **Purpose**: Generic repository class for data access
 - **Usage**: Used throughout API for database operations
@@ -743,6 +808,7 @@ export class BaseRepository<T> {
 **Migration target**: `lib/services/base-repository.ts`
 
 #### 5.2 HIGH PRIORITY: Validation Service
+
 - **File**: `apps/api/lib/validation.ts` (56 lines)
 - **Purpose**: Input validation helpers
 - **Reusability**: Can be shared across API, orchestrator, portal
@@ -750,7 +816,9 @@ export class BaseRepository<T> {
 **Migration target**: Merge into `lib/evaluation/validators/` OR `lib/services/validation.ts`
 
 #### 5.3 MEDIUM PRIORITY: Domain Services
+
 **Local Services** (12 files):
+
 - `local-services.ts`: Core local services logic
 - `local-services-dal.ts`: Data access layer
 - `local-services-booking-schema.ts`: Booking schema
@@ -758,31 +826,32 @@ export class BaseRepository<T> {
 - etc.
 
 **Status**: Highly specific to local-services domain; candidates for consolidation only if:
+
 - Used by multiple apps (currently only apps/api)
 - Represent generic patterns applicable to other domains
 
 **Recommendation**: Keep in `apps/api/lib/` unless local-services becomes a standalone domain service
 
 #### 5.4 MEDIUM PRIORITY: Integration Services
+
 - `ai/`: LLM integrations (OpenAI, Anthropic, etc.)
   - `apps/api/lib/ai/*.ts` - API-specific AI logic
-  
 - `cloud-providers/`: Cloud provider abstractions (AWS, GCP, Azure)
-  
 - `doppler/`: Secrets management
-  
 - `email/`: Email service
 
 **Reusability**: Low (mostly API-specific)
 **Keep in**: `apps/api/lib/` for now; extract only if used by multiple apps
 
 #### 5.5 LOW PRIORITY: Utilities
+
 - `docker-*.ts`, `bullmq-*.ts`, `metrics-*.ts`: Infrastructure utilities
 - **Recommendation**: Keep in apps/api/lib or move to lib/infra if used elsewhere
 
 ### Consolidation Target
 
 **Phase 1 (Immediate)**:
+
 ```
 lib/services/
 ├── index.ts (update exports)
@@ -793,6 +862,7 @@ lib/services/
 ```
 
 **Phase 2 (If needed)**:
+
 ```
 lib/services/
 ├── integrations/ (NEW)
@@ -807,6 +877,7 @@ lib/services/
 ### Implementation Steps
 
 **Phase 1: Base Repository Migration (Immediate)**
+
 1. Copy `apps/api/lib/base-repository.ts` to `lib/services/base-repository.ts`
 2. Update Supabase client injection (no hardcoded paths)
 3. Create `lib/services/types.ts` with repository interfaces
@@ -814,6 +885,7 @@ lib/services/
 5. Run API tests to ensure no breaking changes
 
 **Phase 2: Validation Service (Depends on Evaluation Phase)**
+
 1. Coordinate with Evaluation consolidation
 2. Either:
    a. Move `apps/api/lib/validation.ts` to `lib/evaluation/validators/api-validation.ts`
@@ -821,6 +893,7 @@ lib/services/
 3. Update imports
 
 **Phase 3: Repository Factory (Optional)**
+
 1. Create factory pattern for repository instantiation
 2. Simplify repository creation in API routes
 3. Example:
@@ -833,28 +906,31 @@ lib/services/
    ```
 
 **Phase 4: Integration Services (Later)**
+
 1. Evaluate if AI/Cloud/Doppler/Email services are used by multiple apps
 2. If yes: Extract to `lib/services/integrations/`
 3. If no: Leave in `apps/api/lib/`
 
 ### File Counts & Effort
 
-| Task | Files | LOC | Effort |
-|------|-------|-----|--------|
-| Base repository migration | 1 | 98 | 2h |
-| Validation service merge | 1 | 56 | 1h |
-| Factory pattern (optional) | 1 | ~100 | 2h |
-| Testing | — | ~100 | 2h |
-| **TOTAL (Phase 1)** | **3** | **~254** | **7h** |
-| **Phase 2+ (Optional)** | **20+** | **~1000+** | **15-20h** |
+| Task                       | Files   | LOC        | Effort     |
+| -------------------------- | ------- | ---------- | ---------- |
+| Base repository migration  | 1       | 98         | 2h         |
+| Validation service merge   | 1       | 56         | 1h         |
+| Factory pattern (optional) | 1       | ~100       | 2h         |
+| Testing                    | —       | ~100       | 2h         |
+| **TOTAL (Phase 1)**        | **3**   | **~254**   | **7h**     |
+| **Phase 2+ (Optional)**    | **20+** | **~1000+** | **15-20h** |
 
 ### Risk Factors
+
 - **Dependency injection**: Base repository must accept Supabase client as param, not import it
 - **Type safety**: Repository generics must be strict to avoid `any`
 - **Breaking changes**: Changes to repository pattern require coordinated update across API
 - **Testing**: Data access layer is critical; needs comprehensive test coverage
 
 ### Dependencies
+
 - Depends on: `lib/services/` structure already exists
 - Blocks: App-specific services (local-services, AI, etc.)
 - Recommended order: Phase 1 (Base Repository) early; Phase 2+ later
@@ -864,15 +940,17 @@ lib/services/
 ## PHASE SUMMARY: Prioritized Execution Plan
 
 ### Phase 1: Foundation (Week 1)
+
 **Goal**: Set up lib module consolidation infrastructure
 
-| Module | Task | Effort | Files |
-|--------|------|--------|-------|
-| Prompts | Consolidate cursor/doc prompts | 10h | 28 |
-| Services | Migrate base-repository.ts | 2h | 1 |
-| **Phase 1 Total** | — | **12h** | **29** |
+| Module            | Task                           | Effort  | Files  |
+| ----------------- | ------------------------------ | ------- | ------ |
+| Prompts           | Consolidate cursor/doc prompts | 10h     | 28     |
+| Services          | Migrate base-repository.ts     | 2h      | 1      |
+| **Phase 1 Total** | —                              | **12h** | **29** |
 
-**Deliverable**: 
+**Deliverable**:
+
 - Centralized prompt registry with metadata
 - Base repository pattern in lib/services
 
@@ -881,17 +959,19 @@ lib/services/
 ---
 
 ### Phase 2: Core Consolidation (Weeks 2-3)
+
 **Goal**: Move critical shared code to lib
 
-| Module | Task | Effort | Files |
-|--------|------|--------|-------|
-| Observability | Job/planner/worker logs + tracer | 13h | 5 |
-| Evaluation | Validation & metrics consolidation | 24h | 15 |
-| Components | Tier 1 UI components (deduplication) | 10h | 15 |
-| Services | Validation service + factory pattern | 3h | 2 |
-| **Phase 2 Total** | — | **50h** | **37** |
+| Module            | Task                                 | Effort  | Files  |
+| ----------------- | ------------------------------------ | ------- | ------ |
+| Observability     | Job/planner/worker logs + tracer     | 13h     | 5      |
+| Evaluation        | Validation & metrics consolidation   | 24h     | 15     |
+| Components        | Tier 1 UI components (deduplication) | 10h     | 15     |
+| Services          | Validation service + factory pattern | 3h      | 2      |
+| **Phase 2 Total** | —                                    | **50h** | **37** |
 
 **Deliverable**:
+
 - Centralized observability stack
 - Unified evaluation/validation framework
 - Deduplicated UI components (Button, Card, Input, etc.)
@@ -901,17 +981,19 @@ lib/services/
 ---
 
 ### Phase 3: Extended Consolidation (Weeks 4-5)
+
 **Goal**: Migrate remaining high-value code; optional but recommended
 
-| Module | Task | Effort | Files |
-|--------|------|--------|-------|
-| Components | Tier 2 domain components | 5h | 3 |
-| Services | Integration services (AI, Cloud, Email) | 20h | 15 |
-| Testing | Cross-module integration tests | 10h | — |
-| Documentation | Update all module READMEs | 4h | — |
-| **Phase 3 Total** | — | **39h** | **18** |
+| Module            | Task                                    | Effort  | Files  |
+| ----------------- | --------------------------------------- | ------- | ------ |
+| Components        | Tier 2 domain components                | 5h      | 3      |
+| Services          | Integration services (AI, Cloud, Email) | 20h     | 15     |
+| Testing           | Cross-module integration tests          | 10h     | —      |
+| Documentation     | Update all module READMEs               | 4h      | —      |
+| **Phase 3 Total** | —                                       | **39h** | **18** |
 
 **Deliverable**:
+
 - All high-value shared code consolidated
 - Comprehensive test coverage
 - Clear documentation of consolidation patterns
@@ -922,14 +1004,15 @@ lib/services/
 
 ## GRAND TOTAL
 
-| Phase | Effort | Files | LOC |
-|-------|--------|-------|-----|
-| Phase 1 | 12h | 29 | 350 |
-| Phase 2 | 50h | 37 | 2,175 |
-| Phase 3 | 39h | 18 | 1,500 |
+| Phase     | Effort   | Files  | LOC       |
+| --------- | -------- | ------ | --------- |
+| Phase 1   | 12h      | 29     | 350       |
+| Phase 2   | 50h      | 37     | 2,175     |
+| Phase 3   | 39h      | 18     | 1,500     |
 | **TOTAL** | **101h** | **84** | **4,025** |
 
-**Timeline**: 
+**Timeline**:
+
 - **Minimum** (Phases 1-2 only): 3 weeks with 2 developers
 - **Recommended** (All phases): 5 weeks with 2 developers or 3 weeks with 3 developers
 
@@ -969,15 +1052,18 @@ lib/services/
 ### Recommended Execution Sequence
 
 **Week 1 (Parallel Work)**:
+
 - **Dev A**: Prompts consolidation (10h)
 - **Dev B**: Services base-repository + Observability setup (2h + 3h)
 
 **Weeks 2-3 (Parallel Work)**:
+
 - **Dev A**: Observability migration (10h) + Components Tier 1 (10h)
 - **Dev B**: Evaluation migration (24h) + Services validation (3h)
 - **Dev A & B**: Testing & integration (8h total)
 
 **Weeks 4-5 (Optional)**:
+
 - **Dev A**: Components Tier 2 (5h) + Services integrations phase 1 (10h)
 - **Dev B**: Services integrations phase 2 (10h) + Integration testing (6h)
 - **Both**: Documentation & final QA (4h)
@@ -989,6 +1075,7 @@ lib/services/
 ### For Each Consolidation, Apps Must Update Imports
 
 #### Prompts
+
 ```typescript
 // BEFORE (if using from individual locations)
 import { local_services_mvp } from './.cursor/prompts/local-services-mvp.md';
@@ -999,6 +1086,7 @@ const prompt = await getPrompt('local-services-mvp');
 ```
 
 #### Observability
+
 ```typescript
 // BEFORE
 import { logJobEnqueue } from '@/observability/job-log';
@@ -1009,6 +1097,7 @@ import { logJobEnqueue, createTracer } from '@intcloudsysops/lib-observability';
 ```
 
 #### Components
+
 ```typescript
 // BEFORE
 import Button from '@/components/ui/button';
@@ -1019,6 +1108,7 @@ import { Button, useAuth } from '@intcloudsysops/lib-components';
 ```
 
 #### Evaluation
+
 ```typescript
 // BEFORE
 import { validateJob } from '@/lib/validation-orchestrator';
@@ -1030,6 +1120,7 @@ import { calculateMetrics } from '@intcloudsysops/lib-evaluation/metrics';
 ```
 
 #### Services
+
 ```typescript
 // BEFORE
 import { BaseRepository } from '@/lib/base-repository';
@@ -1061,13 +1152,13 @@ import { BaseRepository } from '@intcloudsysops/lib-services';
 
 ### Critical Risks
 
-| Risk | Probability | Impact | Mitigation |
-|------|-------------|--------|-----------|
-| Circular dependencies | Medium | High | Use interface extraction; test early |
-| Breaking changes miss | High | High | Comprehensive testing; gradual migration |
-| Type safety loss | Medium | High | Strict TS config; no `any` allowed |
-| Performance regression | Low | Medium | Bundle analysis before/after |
-| Test coverage gaps | Medium | High | Require 90%+ coverage for lib code |
+| Risk                   | Probability | Impact | Mitigation                               |
+| ---------------------- | ----------- | ------ | ---------------------------------------- |
+| Circular dependencies  | Medium      | High   | Use interface extraction; test early     |
+| Breaking changes miss  | High        | High   | Comprehensive testing; gradual migration |
+| Type safety loss       | Medium      | High   | Strict TS config; no `any` allowed       |
+| Performance regression | Low         | Medium | Bundle analysis before/after             |
+| Test coverage gaps     | Medium      | High   | Require 90%+ coverage for lib code       |
 
 ### Testing Strategy
 
@@ -1089,22 +1180,26 @@ import { BaseRepository } from '@intcloudsysops/lib-services';
 ## SUCCESS METRICS
 
 ### Code Quality
+
 - **Duplication removed**: 0 duplicated components, utilities
 - **Test coverage**: 90%+ for lib modules (up from current ~60%)
 - **Type safety**: 0 `any` types in consolidated code
 - **Lint score**: 100% compliance with ESLint rules
 
 ### Performance
+
 - **Bundle size**: No increase in app bundle size
 - **Import performance**: <5ms for all lib imports
 - **Runtime overhead**: <1ms for observability logging
 
 ### Developer Experience
+
 - **Import clarity**: Clear, single path to shared code
 - **Documentation**: Every lib module has comprehensive README
 - **Examples**: At least one example usage per API
 
 ### Adoption
+
 - **Migration completion**: 100% of apps using consolidated code by Phase 3 end
 - **Developer satisfaction**: >4/5 rating on consolidation effort
 
@@ -1115,6 +1210,7 @@ import { BaseRepository } from '@intcloudsysops/lib-services';
 ### A.1 Prompts (28 files)
 
 **Cursor Prompts (21):**
+
 - `.cursor/prompts/README.md`
 - `.cursor/prompts/e2e-test-1777846828.md`
 - `.cursor/prompts/e2e-test.md`
@@ -1138,11 +1234,13 @@ import { BaseRepository } from '@intcloudsysops/lib-services';
 - `.cursor/prompts/tenants/local-services/piloto-automatizaciones.md`
 
 **Doc Prompts (3):**
+
 - `docs/prompts/tenant-onboarding/TENANT-ONBOARDING-TEMPLATE.md`
 - `docs/prompts/tenant-onboarding/INFRASTRUCTURE-SETUP.md`
 - `docs/prompts/tenant-onboarding/DEPLOYMENT-VALIDATION.md`
 
 **Agent Prompts (1):**
+
 - `apps/orchestrator/src/agents/cloudsysops/prompts.ts`
 
 ### A.2 Observability (5 files, 481 lines)
@@ -1156,6 +1254,7 @@ import { BaseRepository } from '@intcloudsysops/lib-services';
 ### A.3 Components (30 files, ~1500 lines)
 
 **Portal UI (6):**
+
 - `apps/portal/components/ui/button.tsx`
 - `apps/portal/components/ui/card.tsx`
 - `apps/portal/components/ui/input.tsx`
@@ -1164,6 +1263,7 @@ import { BaseRepository } from '@intcloudsysops/lib-services';
 - `apps/portal/components/ui/accessibility.tsx`
 
 **Portal High-value (12):**
+
 - `apps/portal/components/llm-usage-card.tsx`
 - `apps/portal/components/credential-reveal.tsx`
 - `apps/portal/components/FeedbackChat.tsx`
@@ -1178,6 +1278,7 @@ import { BaseRepository } from '@intcloudsysops/lib-services';
 - `apps/portal/components/service-card.tsx`
 
 **Admin UI (11):**
+
 - `apps/admin/components/ui/badge.tsx`
 - `apps/admin/components/ui/button.tsx`
 - `apps/admin/components/ui/dialog.tsx`
@@ -1191,11 +1292,13 @@ import { BaseRepository } from '@intcloudsysops/lib-services';
 - `apps/admin/components/ui/card.tsx`
 
 **Admin High-value (1):**
+
 - `apps/admin/components/providers.tsx`
 
 ### A.4 Evaluation (6 files, 1,401 lines)
 
 **Orchestrator validation (5):**
+
 - `apps/orchestrator/src/lib/validation-orchestrator.ts` (415 lines)
 - `apps/orchestrator/src/lib/validation-metrics.ts` (335 lines)
 - `apps/orchestrator/src/lib/validation-feedback.ts` (147 lines)
@@ -1203,15 +1306,18 @@ import { BaseRepository } from '@intcloudsysops/lib-services';
 - `apps/orchestrator/src/lib/validation-utils.ts` (225 lines)
 
 **API validation (1):**
+
 - `apps/api/lib/validation.ts` (56 lines)
 
 ### A.5 Services (1 file initial, 79 files optional)
 
 **Phase 1:**
+
 - `apps/api/lib/base-repository.ts` (98 lines)
 - `apps/api/lib/validation.ts` (56 lines)
 
 **Phase 3 (Optional):**
+
 - 79 additional files in `apps/api/lib/` (various domains)
 
 ---
@@ -1219,6 +1325,7 @@ import { BaseRepository } from '@intcloudsysops/lib-services';
 ## Appendix B: Repository Checkpoints
 
 ### Post-Phase-1 Checkpoint
+
 ```bash
 # Verify consolidation
 ls -la lib/prompts/cursors/ | wc -l # Should be 21
@@ -1234,6 +1341,7 @@ npm run build && du -sh dist/
 ```
 
 ### Post-Phase-2 Checkpoint
+
 ```bash
 # Verify all consolidations
 ls lib/observability/ | wc -l # Should be 10+
@@ -1251,6 +1359,7 @@ npm run test -- lib/
 ```
 
 ### Post-Phase-3 Checkpoint
+
 ```bash
 # Final verification
 ls lib/services/integrations/ # Should exist
@@ -1268,6 +1377,7 @@ npm run build && node -e "const lib = require('./dist/lib'); console.log(Object.
 ## Appendix C: Example Import Migration
 
 ### Before (Fragmented)
+
 ```typescript
 // In apps/orchestrator/src/routes/validation.ts
 import { validateJob } from '../lib/validation-orchestrator';
@@ -1284,6 +1394,7 @@ import { useAuth } from '../../hooks/useAuth';
 ```
 
 ### After (Consolidated)
+
 ```typescript
 // In apps/orchestrator/src/routes/validation.ts
 import {
@@ -1303,18 +1414,21 @@ import { Button, Card, Input, useAuth } from '@intcloudsysops/lib-components';
 ## Appendix D: Estimated Timeline & Resource Allocation
 
 ### Scenario 1: Single Developer (Full-time)
+
 - Week 1: Phase 1 (Prompts + Services base) → 12h
 - Weeks 2-3: Phase 2 (partial) → 35h of 50h
 - Weeks 4-6: Phase 2 (continued) + Phase 3 (started) → 50h
 - **Timeline**: 6 weeks
 
 ### Scenario 2: Two Developers (Full-time)
+
 - Week 1: Phase 1 (Prompts + Services) → 12h (1 dev at 50%)
 - Weeks 2-3: Phase 2 (both devs parallel) → 50h total
 - Weeks 4-5: Phase 3 (both devs parallel) → 39h total
 - **Timeline**: 5 weeks
 
 ### Scenario 3: Three Developers (Part-time)
+
 - Week 1: Phase 1 (all three at 30%) → 12h distributed
 - Weeks 2-3: Phase 2 (all three at 50%) → 50h distributed
 - Weeks 4-5: Phase 3 (all three at 50%) → 39h distributed
@@ -1331,4 +1445,3 @@ import { Button, Card, Input, useAuth } from '@intcloudsysops/lib-components';
 **Review Status**: Pending technical review
 
 ---
-

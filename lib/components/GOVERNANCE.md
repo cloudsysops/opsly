@@ -1,7 +1,8 @@
 ---
-title: "lib/components Governance"
-description: "Module governance for shared components"
+title: 'lib/components Governance'
+description: 'Module governance for shared components'
 ---
+
 # lib/components Governance
 
 ## Ownership
@@ -52,7 +53,7 @@ All components in `lib/components/` must:
 
 - React, React-DOM
 - Tailwind CSS (utilities only)
-- @types/* packages
+- @types/\* packages
 
 ### Forbidden
 

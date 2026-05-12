@@ -48,8 +48,7 @@ export function extractJobContext(job: Job): {
     payload?: { tenant_id?: string; tenant_slug?: string };
   };
   const autonomyRisk =
-    parseAutonomyRiskLevel(d.autonomy_risk) ??
-    parseAutonomyRiskLevel(d.metadata?.autonomy_risk);
+    parseAutonomyRiskLevel(d.autonomy_risk) ?? parseAutonomyRiskLevel(d.metadata?.autonomy_risk);
   return {
     task_id: d.taskId,
     tenant_slug: d.tenant_slug ?? d.payload?.tenant_slug,

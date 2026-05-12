@@ -40,18 +40,18 @@ El Super Orchestrator v2 es un sistema de orquestación avanzado que:
 
 ### 1. Python Scripts (`scripts/super_orchestrator/`)
 
-| Módulo | Descripción |
-|--------|-------------|
-| `provider_selector.py` | Auto-selecciona mejor proveedor por costo/calidad/latencia |
-| `prompt_controller.py` | Parsea prompts, extrae intención, ejecuta acciones |
-| `performance_tracker.py` | Rastrea métricas por proveedor y tarea |
-| `auto_evolution.py` | Analiza métricas y genera ideas de mejora |
-| `agent_pool_manager.py` | Administra pool de agentes disponibles |
-| `health_monitor.py` | Health checks para Ollama, Redis, API, etc. |
-| `cost_optimizer.py` | Control de presupuesto y sugerencias de ahorro |
-| `idea_generator.py` | Genera ideas de mejora basadas en contexto |
-| `git_automation.py` | Auto-commit, push, branch operations |
-| `n8n_trigger.py` | Dispara workflows de n8n |
+| Módulo                   | Descripción                                                |
+| ------------------------ | ---------------------------------------------------------- |
+| `provider_selector.py`   | Auto-selecciona mejor proveedor por costo/calidad/latencia |
+| `prompt_controller.py`   | Parsea prompts, extrae intención, ejecuta acciones         |
+| `performance_tracker.py` | Rastrea métricas por proveedor y tarea                     |
+| `auto_evolution.py`      | Analiza métricas y genera ideas de mejora                  |
+| `agent_pool_manager.py`  | Administra pool de agentes disponibles                     |
+| `health_monitor.py`      | Health checks para Ollama, Redis, API, etc.                |
+| `cost_optimizer.py`      | Control de presupuesto y sugerencias de ahorro             |
+| `idea_generator.py`      | Genera ideas de mejora basadas en contexto                 |
+| `git_automation.py`      | Auto-commit, push, branch operations                       |
+| `n8n_trigger.py`         | Dispara workflows de n8n                                   |
 
 ### 2. Configuración (`config/`)
 
@@ -64,10 +64,10 @@ El Super Orchestrator v2 es un sistema de orquestación avanzado que:
 
 ## Modelos Recomendados
 
-| Modelo | Uso | Latencia |
-|--------|-----|----------|
-| `qwen2.5:7b` | Reasoning, planning, analysis | ~2000ms |
-| `codellama:7b` | Code generation, review | ~1800ms |
+| Modelo         | Uso                           | Latencia |
+| -------------- | ----------------------------- | -------- |
+| `qwen2.5:7b`   | Reasoning, planning, analysis | ~2000ms  |
+| `codellama:7b` | Code generation, review       | ~1800ms  |
 
 ## Uso
 
@@ -94,16 +94,10 @@ python scripts/super_orchestrator/auto_evolution.py --report
 import { superOrchestrator } from './super-orchestrator-bridge.js';
 
 // Seleccionar provider
-const { provider, reasoning } = await superOrchestrator.selectProvider("revisar código");
+const { provider, reasoning } = await superOrchestrator.selectProvider('revisar código');
 
 // Registrar performance
-await superOrchestrator.recordPerformance(
-  "ollama-qwen", 
-  "code_review", 
-  1500, 
-  true, 
-  0.0
-);
+await superOrchestrator.recordPerformance('ollama-qwen', 'code_review', 1500, true, 0.0);
 
 // Dashboard unificado
 console.log(await superOrchestrator.getUnifiedDashboard());
@@ -182,21 +176,21 @@ El bridge conecta los scripts Python con el orchestrator BullMQ existente:
 
 ## Estado del Proyecto
 
-| Componente | Estado |
-|------------|--------|
-| Configuración | ✅ Completado |
-| Provider Selector | ✅ Completado |
-| Prompt Controller | ✅ Completado |
+| Componente          | Estado        |
+| ------------------- | ------------- |
+| Configuración       | ✅ Completado |
+| Provider Selector   | ✅ Completado |
+| Prompt Controller   | ✅ Completado |
 | Performance Tracker | ✅ Completado |
-| Health Monitor | ✅ Completado |
-| Cost Optimizer | ✅ Completado |
-| Idea Generator | ✅ Completado |
-| Git Automation | ✅ Completado |
-| N8n Trigger | ✅ Completado |
-| Auto Evolution | ✅ Completado |
-| Agent Pool Manager | ✅ Completado |
-| TypeScript Bridge | ✅ Completado |
-| Documentación | ✅ Completado |
+| Health Monitor      | ✅ Completado |
+| Cost Optimizer      | ✅ Completado |
+| Idea Generator      | ✅ Completado |
+| Git Automation      | ✅ Completado |
+| N8n Trigger         | ✅ Completado |
+| Auto Evolution      | ✅ Completado |
+| Agent Pool Manager  | ✅ Completado |
+| TypeScript Bridge   | ✅ Completado |
+| Documentación       | ✅ Completado |
 
 ## Próximos Pasos
 
@@ -208,5 +202,5 @@ El bridge conecta los scripts Python con el orchestrator BullMQ existente:
 
 ---
 
-*Documento generado: 2026-05-06*
-*Repo: github.com/cloudsysops/opsly*
+_Documento generado: 2026-05-06_
+_Repo: github.com/cloudsysops/opsly_

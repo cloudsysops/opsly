@@ -1,7 +1,8 @@
 ---
-title: "@intcloudsysops/migrations"
-description: "Database migration versioning and rollback"
+title: '@intcloudsysops/migrations'
+description: 'Database migration versioning and rollback'
 ---
+
 # @intcloudsysops/migrations
 
 Safe database schema versioning with rollback capability and audit trails.
@@ -24,7 +25,7 @@ import { Migration } from '@intcloudsysops/migrations';
 const migration: Migration = {
   version: '001',
   name: 'create-agents-table',
-  
+
   async up(db) {
     await db.schema.createTable('agents', (table) => {
       table.uuid('id').primary();
@@ -37,7 +38,7 @@ const migration: Migration = {
 
   async down(db) {
     await db.schema.dropTableIfExists('agents');
-  }
+  },
 };
 ```
 
@@ -74,9 +75,9 @@ await runner.rollback('latest');
 
 ```typescript
 interface Migration {
-  version: string;           // e.g., '001', '002', '2024-05-09'
-  name: string;              // Descriptive name
-  up(db: Database): Promise<void>;   // Forward migration
+  version: string; // e.g., '001', '002', '2024-05-09'
+  name: string; // Descriptive name
+  up(db: Database): Promise<void>; // Forward migration
   down(db: Database): Promise<void>; // Rollback
 }
 ```
@@ -94,7 +95,7 @@ async function startApp() {
   const runner = new MigrationRunner(db);
 
   // Register all migrations
-  Object.values(migrations).forEach(m => runner.register(m));
+  Object.values(migrations).forEach((m) => runner.register(m));
 
   // Run pending migrations
   const results = await runner.runAll();
@@ -117,8 +118,8 @@ async function runTenantMigrations(tenantId, db) {
 
   // Run migrations for specific tenant
   const results = await runner.runAll({
-    tenantId,  // Tenant context
-    dryRun: false
+    tenantId, // Tenant context
+    dryRun: false,
   });
 
   return results;
@@ -128,6 +129,7 @@ async function runTenantMigrations(tenantId, db) {
 ## Migration Best Practices
 
 ✅ **Do:**
+
 - Write both `up()` and `down()` methods
 - Keep migrations small and focused
 - Test migrations in staging first
@@ -135,6 +137,7 @@ async function runTenantMigrations(tenantId, db) {
 - Add indexes for new foreign keys
 
 ❌ **Don't:**
+
 - Assume column order
 - Use raw SQL without escaping
 - Create migrations without rollback plan
@@ -158,7 +161,7 @@ const migration: Migration = {
     await db.schema.alterTable('agents', (table) => {
       table.dropColumn('description');
     });
-  }
+  },
 };
 ```
 
@@ -176,7 +179,8 @@ const migration: Migration = {
     });
 
     // Then backfill existing records
-    await db.from('agents')
+    await db
+      .from('agents')
       .where('created_at', '<', db.raw("now() - interval '30 days'"))
       .update({ status: 'disabled' });
   },
@@ -185,7 +189,7 @@ const migration: Migration = {
     await db.schema.alterTable('agents', (table) => {
       table.dropColumn('status');
     });
-  }
+  },
 };
 ```
 

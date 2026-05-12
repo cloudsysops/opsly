@@ -16,15 +16,46 @@ const REQUIRED_DIRS = [
 
 const FORBIDDEN_ROOT_DIRS = ['logs', 'tenants', 'letsencrypt', 'agents', 'workspaces', 'cli'];
 
-const SCAN_EXTENSIONS = new Set(['.ts', '.tsx', '.js', '.mjs', '.cjs', '.sh', '.yml', '.yaml', '.md', '.json']);
-const IGNORE_DIRS = new Set(['.git', 'node_modules', 'dist', '.next', '.turbo', '.cursor', '.archived']);
+const SCAN_EXTENSIONS = new Set([
+  '.ts',
+  '.tsx',
+  '.js',
+  '.mjs',
+  '.cjs',
+  '.sh',
+  '.yml',
+  '.yaml',
+  '.md',
+  '.json',
+]);
+const IGNORE_DIRS = new Set([
+  '.git',
+  'node_modules',
+  'dist',
+  '.next',
+  '.turbo',
+  '.cursor',
+  '.archived',
+]);
 
 const FORBIDDEN_PATTERNS = [
-  { pattern: /(?:^|[^A-Za-z0-9_./-])\.\/logs(?:\/|$)/, message: 'Referencia ./runtime/logs/ obsoleta' },
-  { pattern: /(?:^|[^A-Za-z0-9_./-])\.\/tenants(?:\/|$)/, message: 'Referencia ./runtime/tenants/ obsoleta' },
-  { pattern: /(?:^|[^A-Za-z0-9_./-])\.\/letsencrypt(?:\/|$)/, message: 'Referencia ./runtime/letsencrypt/ obsoleta' },
+  {
+    pattern: /(?:^|[^A-Za-z0-9_./-])\.\/logs(?:\/|$)/,
+    message: 'Referencia ./runtime/logs/ obsoleta',
+  },
+  {
+    pattern: /(?:^|[^A-Za-z0-9_./-])\.\/tenants(?:\/|$)/,
+    message: 'Referencia ./runtime/tenants/ obsoleta',
+  },
+  {
+    pattern: /(?:^|[^A-Za-z0-9_./-])\.\/letsencrypt(?:\/|$)/,
+    message: 'Referencia ./runtime/letsencrypt/ obsoleta',
+  },
   { pattern: /\/opt\/opsly\/logs\b/, message: 'Ruta /opt/opsly/runtime/logs/ obsoleta' },
-  { pattern: /(?:^|[^A-Za-z0-9_./-])agents\/prompts\b/, message: 'Referencia tools/agents/prompts obsoleta' },
+  {
+    pattern: /(?:^|[^A-Za-z0-9_./-])agents\/prompts\b/,
+    message: 'Referencia tools/agents/prompts obsoleta',
+  },
 ];
 
 function walk(dir, files = []) {
@@ -115,7 +146,11 @@ function testForbiddenPatterns() {
 
 function testGitkeepFiles() {
   console.log('\n📌 Verificando .gitkeep de runtime...');
-  const required = ['runtime/logs/.gitkeep', 'runtime/tenants/.gitkeep', 'runtime/letsencrypt/.gitkeep'];
+  const required = [
+    'runtime/logs/.gitkeep',
+    'runtime/tenants/.gitkeep',
+    'runtime/letsencrypt/.gitkeep',
+  ];
   let ok = true;
   for (const file of required) {
     if (fs.existsSync(path.join(ROOT, file))) {

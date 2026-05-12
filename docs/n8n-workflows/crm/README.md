@@ -4,21 +4,21 @@ Workflows n8n plug-and-run para instalar en cualquier tenant Opsly.
 
 ## Workflows incluidos
 
-| Archivo | Trigger | Proposito |
-| --- | --- | --- |
-| `crm-lead-capture.json` | `POST /webhook/opsly-crm-lead` | Captura y normaliza leads desde formularios, landing pages o integraciones |
-| `crm-hot-lead-alert.json` | `POST /webhook/opsly-crm-hot-lead` | Calcula score y alerta si el lead es caliente |
-| `crm-follow-up-reminder.json` | Cron 09:00 L-V | Recordatorio diario de seguimiento comercial |
-| `crm-daily-pipeline-digest.json` | Cron 17:30 L-V | Digest de cierre del pipeline |
+| Archivo                          | Trigger                            | Proposito                                                                  |
+| -------------------------------- | ---------------------------------- | -------------------------------------------------------------------------- |
+| `crm-lead-capture.json`          | `POST /webhook/opsly-crm-lead`     | Captura y normaliza leads desde formularios, landing pages o integraciones |
+| `crm-hot-lead-alert.json`        | `POST /webhook/opsly-crm-hot-lead` | Calcula score y alerta si el lead es caliente                              |
+| `crm-follow-up-reminder.json`    | Cron 09:00 L-V                     | Recordatorio diario de seguimiento comercial                               |
+| `crm-daily-pipeline-digest.json` | Cron 17:30 L-V                     | Digest de cierre del pipeline                                              |
 
 ## Variables por tenant
 
 Configurar en el contenedor n8n del tenant o en su entorno:
 
-| Variable | Requerida | Uso |
-| --- | --- | --- |
-| `TENANT_SLUG` | Recomendada | Identifica el tenant en mensajes y payloads. Los nuevos stacks ya la reciben desde el template compose. |
-| `OPSLY_CRM_NOTIFY_WEBHOOK_URL` | Recomendada | Webhook Slack/Discord/Teams para avisos CRM |
+| Variable                       | Requerida   | Uso                                                                                                     |
+| ------------------------------ | ----------- | ------------------------------------------------------------------------------------------------------- |
+| `TENANT_SLUG`                  | Recomendada | Identifica el tenant en mensajes y payloads. Los nuevos stacks ya la reciben desde el template compose. |
+| `OPSLY_CRM_NOTIFY_WEBHOOK_URL` | Recomendada | Webhook Slack/Discord/Teams para avisos CRM                                                             |
 
 Los workflows no incluyen secretos ni credenciales. Si `OPSLY_CRM_NOTIFY_WEBHOOK_URL` no existe, el nodo de notificacion falla en modo tolerante (`continueOnFail`) y el workflow sigue siendo importable/testeable.
 

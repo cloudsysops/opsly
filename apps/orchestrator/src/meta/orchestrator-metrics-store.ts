@@ -25,7 +25,10 @@ class MetricsStore {
 
     // Track rollbacks for circuit breaker pattern
     if (metric.rollback_triggered) {
-      const existing = this.lastRollbackByPrompt.get(metric.prompt_name) ?? { count: 0, timestamp: '' };
+      const existing = this.lastRollbackByPrompt.get(metric.prompt_name) ?? {
+        count: 0,
+        timestamp: '',
+      };
       this.lastRollbackByPrompt.set(metric.prompt_name, {
         count: existing.count + 1,
         timestamp: metric.timestamp,

@@ -215,6 +215,7 @@ Configuración de equipos de agentes (reemplaza `enable-flag.json`):
   - Ver: `1-agent-teams/security-agent.md`
 
 **Configuración en VPS:**
+
 ```bash
 # Control plane (VPS)
 OPSLY_ORCHESTRATOR_MODE=queue-only
@@ -240,12 +241,12 @@ REDIS_URL=redis://100.120.151.91:6379
 
 ### Core Infrastructure Modules
 
-| Module | Purpose | Owner |
-|--------|---------|-------|
-| `@intcloudsysops/prompts` | Versioned prompt registry (all agents) | claude |
-| `@intcloudsysops/observability` | Unified logging, metrics, tracing | claude |
-| `@intcloudsysops/components` | Shared React components & design system | claude |
-| `@intcloudsysops/evaluation` | Testing, validators, safety checks | claude |
+| Module                          | Purpose                                 | Owner  |
+| ------------------------------- | --------------------------------------- | ------ |
+| `@intcloudsysops/prompts`       | Versioned prompt registry (all agents)  | claude |
+| `@intcloudsysops/observability` | Unified logging, metrics, tracing       | claude |
+| `@intcloudsysops/components`    | Shared React components & design system | claude |
+| `@intcloudsysops/evaluation`    | Testing, validators, safety checks      | claude |
 
 ### Enterprise Utilities (9 additional modules)
 
@@ -271,6 +272,7 @@ REDIS_URL=redis://100.120.151.91:6379
 ### When to Create New Module
 
 Only if ALL conditions are true:
+
 - Reusable by 2+ apps
 - Non-trivial (>100 lines of logic)
 - Stable API (won't change monthly)
@@ -315,13 +317,15 @@ git commit -m "feat(scope): descripción clara"
 git push origin <branch-name>
 ```
 
-**Por qué:** 
+**Por qué:**
+
 - ✅ GitHub refleja siempre estado actual del código
 - ✅ Fácil trackear progreso por commits
 - ✅ Evita "cambios perdidos" cuando agentes rotan
 - ✅ CI corre automáticamente en cada push
 
 **APLICA A (sin excepciones):**
+
 - ✅ Claude (AI en Claude Code)
 - ✅ Cursor (AI en Cursor IDE)
 - ✅ Codex (AI en Copilot)
@@ -340,16 +344,19 @@ git push origin <branch-name>
 **Where:** `scripts/phase-detector.sh` (runs via `.githooks/post-commit`)
 
 **Triggered by:**
+
 - Phase 0 Complete: ADRs + prompts created
 - Phase 1 Complete: API infrastructure + migrations deployed
 - Phase 2 Complete: n8n workflows + webhooks + Stripe integration deployed
 
 **Notifies:**
+
 - Internal team: Discord / Slack channels
 - Developer: Branch, commit hash, author
 - Next phase: What comes after current phase
 
 **Example notifications:**
+
 ```
 ✅ Phase 1 Complete: API Infrastructure
 Database migrations, tenant isolation, booking endpoints, and Next.js UI deployed.
@@ -360,6 +367,7 @@ Branch: main | Commit: 274dbde | Author: Cursor
 ```
 
 **Setup required (one time):**
+
 ```bash
 # Ensure webhooks are in Doppler
 doppler secrets get DISCORD_WEBHOOK_URL
@@ -370,6 +378,7 @@ doppler secrets get SLACK_WEBHOOK_URL
 ```
 
 **How to test:**
+
 ```bash
 # Manually trigger phase detection
 bash scripts/phase-detector.sh

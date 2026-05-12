@@ -71,6 +71,7 @@ doppler run --project ops-intcloudsysops --config prd -- ./scripts/validate-open
 ```
 
 Expected output:
+
 ```
 === OpenClaw Variables Validation ===
 ✓ PASS: OPENCLAW_ENABLED=true
@@ -102,10 +103,12 @@ npm run lint           # Should pass: 100% ESLint
 ### 3. Build Docker Images (CI/CD or Manual)
 
 If using GitHub Actions CI (recommended):
+
 - Push to `staging` branch → GHA builds `:staging` images
 - Images: `ghcr.io/cloudsysops/intcloudsysops-*:staging`
 
 If manual build:
+
 ```bash
 docker build -t ghcr.io/cloudsysops/intcloudsysops-api:staging ./apps/api
 docker build -t ghcr.io/cloudsysops/intcloudsysops-orchestrator:staging ./apps/orchestrator
@@ -126,6 +129,7 @@ docker ps --filter "label=app=opsly" --format "table {{.Names}}\t{{.Status}}"
 ```
 
 Expected services:
+
 ```
 NAME                 STATUS
 redis                Up 2 seconds

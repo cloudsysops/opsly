@@ -1,7 +1,8 @@
 ---
-title: "lib/config Governance"
-description: "Module governance for configuration management"
+title: 'lib/config Governance'
+description: 'Module governance for configuration management'
 ---
+
 # lib/config Governance
 
 ## Ownership

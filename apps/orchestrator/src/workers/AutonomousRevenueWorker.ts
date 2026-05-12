@@ -1,10 +1,10 @@
 /**
  * Autonomous Revenue Worker
- * 
+ *
  * Worker BullMQ para ejecutar el ciclo 8-fases de autonomous_revenue
  * Jobs: 'revenue_research', 'revenue_idea', 'revenue_project', 'revenue_brand',
  *       'revenue_landing', 'revenue_social', 'revenue_marketing', 'revenue_monetize'
- * 
+ *
  * Ref: scripts/super_orchestrator/autonomous_revenue_v2.py
  */
 
@@ -14,7 +14,7 @@ import { setJobState } from '../state/store.js';
 import { logWorkerLifecycle } from '../observability/worker-log.js';
 import { getWorkerConcurrency } from '../worker-concurrency.js';
 
-export type RevenuePhase = 
+export type RevenuePhase =
   | 'research'
   | 'idea'
   | 'project'
@@ -59,7 +59,10 @@ export function startAutonomousRevenueWorker(): Worker {
         throw new Error(`Unknown job type: ${job.name}`);
       } catch (err) {
         const msg = err instanceof Error ? err.message : String(err);
-        logWorkerLifecycle('fail', 'autonomous_revenue', job, { duration_ms: Date.now() - t0, error: msg });
+        logWorkerLifecycle('fail', 'autonomous_revenue', job, {
+          duration_ms: Date.now() - t0,
+          error: msg,
+        });
         throw err;
       } finally {
         logWorkerLifecycle('complete', 'autonomous_revenue', job, { duration_ms: Date.now() - t0 });
@@ -89,7 +92,7 @@ async function handleRevenueCycle(job: Job<RevenueCycleJobData>): Promise<any> {
     type: `revenue_${phase}`,
     tenant_slug,
     request_id: job.id!,
-    started_at: new Date().toISOString()
+    started_at: new Date().toISOString(),
   });
 
   let result: Record<string, unknown>;
@@ -99,25 +102,37 @@ async function handleRevenueCycle(job: Job<RevenueCycleJobData>): Promise<any> {
       result = await executeResearch(niche || '', tenant_slug);
       break;
     case 'idea':
-      result = await executeIdeaGeneration(previous_results as Record<string, unknown> || {});
+      result = await executeIdeaGeneration((previous_results as Record<string, unknown>) || {});
       break;
     case 'project':
       result = await executeProjectCreation(project_name || '', options || {});
       break;
     case 'brand':
-      result = await executeBranding(project_name || '', options?.style as string || 'modern');
+      result = await executeBranding(project_name || '', (options?.style as string) || 'modern');
       break;
     case 'landing':
-      result = await executeLandingPage(project_name || '', options?.template as string || 'saas');
+      result = await executeLandingPage(
+        project_name || '',
+        (options?.template as string) || 'saas'
+      );
       break;
     case 'social':
-      result = await executeSocialMedia(project_name || '', options?.platforms as string[] || ['twitter', 'linkedin']);
+      result = await executeSocialMedia(
+        project_name || '',
+        (options?.platforms as string[]) || ['twitter', 'linkedin']
+      );
       break;
     case 'marketing':
-      result = await executeMarketing(project_name || '', options?.channel as string || 'organic');
+      result = await executeMarketing(
+        project_name || '',
+        (options?.channel as string) || 'organic'
+      );
       break;
     case 'monetize':
-      result = await executeMonetization(project_name || '', options?.model as string || 'subscription');
+      result = await executeMonetization(
+        project_name || '',
+        (options?.model as string) || 'subscription'
+      );
       break;
     default:
       throw new Error(`Unknown phase: ${phase}`);
@@ -126,7 +141,7 @@ async function handleRevenueCycle(job: Job<RevenueCycleJobData>): Promise<any> {
   await setJobState(job.id!, {
     status: 'completed',
     completed_at: new Date().toISOString(),
-    result
+    result,
   });
 
   return result;
@@ -140,7 +155,7 @@ async function handleFullCycle(job: Job<FullCycleJobData>): Promise<any> {
     type: 'revenue_full_cycle',
     tenant_slug,
     request_id: job.id!,
-    started_at: new Date().toISOString()
+    started_at: new Date().toISOString(),
   });
 
   const results: Record<string, unknown>[] = [];
@@ -148,7 +163,7 @@ async function handleFullCycle(job: Job<FullCycleJobData>): Promise<any> {
 
   for (let i = 0; i < project_count; i++) {
     const projectName = `project_${Date.now()}_${i}`;
-    
+
     // Execute each phase in sequence
     const phaseResults = await executeFullCycle(target_niche, projectName, tenant_slug);
     results.push(phaseResults);
@@ -159,13 +174,13 @@ async function handleFullCycle(job: Job<FullCycleJobData>): Promise<any> {
     projects_created: project_count,
     projects: results,
     total_estimated_monthly_revenue: totalRevenue,
-    cycle_completed_at: new Date().toISOString()
+    cycle_completed_at: new Date().toISOString(),
   };
 
   await setJobState(job.id!, {
     status: 'completed',
     completed_at: new Date().toISOString(),
-    result: fullResult
+    result: fullResult,
   });
 
   return fullResult;
@@ -173,7 +188,10 @@ async function handleFullCycle(job: Job<FullCycleJobData>): Promise<any> {
 
 // Phase execution functions (simulated - in production would call Python scripts)
 
-async function executeResearch(niche: string, tenant_slug: string): Promise<Record<string, unknown>> {
+async function executeResearch(
+  niche: string,
+  tenant_slug: string
+): Promise<Record<string, unknown>> {
   return {
     phase: 'research',
     niche,
@@ -182,25 +200,30 @@ async function executeResearch(niche: string, tenant_slug: string): Promise<Reco
     trends: ['AI automation', 'No-code tools', 'Remote work'],
     opportunity_score: 78,
     sources_analyzed: 12,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   };
 }
 
-async function executeIdeaGeneration(researchResults: Record<string, unknown>): Promise<Record<string, unknown>> {
+async function executeIdeaGeneration(
+  researchResults: Record<string, unknown>
+): Promise<Record<string, unknown>> {
   return {
     phase: 'idea',
     generated_ideas: [
       { name: 'AI Content Scheduler', revenue_potential: 299, effort: 'medium' },
       { name: 'No-Code API Builder', revenue_potential: 499, effort: 'high' },
-      { name: 'Remote Team Dashboard', revenue_potential: 199, effort: 'low' }
+      { name: 'Remote Team Dashboard', revenue_potential: 199, effort: 'low' },
     ],
     selected_idea: 'AI Content Scheduler',
     justification: 'High demand, medium competition, proven market',
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   };
 }
 
-async function executeProjectCreation(projectName: string, options: Record<string, unknown>): Promise<Record<string, unknown>> {
+async function executeProjectCreation(
+  projectName: string,
+  options: Record<string, unknown>
+): Promise<Record<string, unknown>> {
   return {
     phase: 'project',
     project_name: projectName,
@@ -208,31 +231,37 @@ async function executeProjectCreation(projectName: string, options: Record<strin
       frontend: 'Next.js 15',
       backend: 'Node.js + Prisma',
       database: 'PostgreSQL',
-      deployment: 'Vercel + Railway'
+      deployment: 'Vercel + Railway',
     },
     features: ['User auth', 'Dashboard', 'API integrations', 'Analytics'],
     estimated_build_time: '2 weeks',
     files_created: ['package.json', 'tsconfig.json', 'src/**/*'],
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   };
 }
 
-async function executeBranding(projectName: string, style: string): Promise<Record<string, unknown>> {
+async function executeBranding(
+  projectName: string,
+  style: string
+): Promise<Record<string, unknown>> {
   return {
     phase: 'brand',
     project_name: projectName,
     brand: {
-      name: projectName.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+      name: projectName.replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase()),
       tagline: 'Automate Your Success',
       color_palette: ['#6366F1', '#8B5CF6', '#EC4899'],
-      style: style || 'modern'
+      style: style || 'modern',
     },
     deliverables: ['Logo SVG', 'Brand guidelines', 'Social templates'],
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   };
 }
 
-async function executeLandingPage(projectName: string, template: string): Promise<Record<string, unknown>> {
+async function executeLandingPage(
+  projectName: string,
+  template: string
+): Promise<Record<string, unknown>> {
   return {
     phase: 'landing',
     project_name: projectName,
@@ -241,11 +270,14 @@ async function executeLandingPage(projectName: string, template: string): Promis
     cta_conversion_target: '5%',
     seo_optimized: true,
     pages_generated: 5,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   };
 }
 
-async function executeSocialMedia(projectName: string, platforms: string[]): Promise<Record<string, unknown>> {
+async function executeSocialMedia(
+  projectName: string,
+  platforms: string[]
+): Promise<Record<string, unknown>> {
   return {
     phase: 'social',
     project_name: projectName,
@@ -253,15 +285,18 @@ async function executeSocialMedia(projectName: string, platforms: string[]): Pro
     content_created: {
       linkedin: { posts: 10, strategy: 'thought_leadership' },
       twitter: { posts: 20, strategy: 'engagement' },
-      youtube: { videos: 2, strategy: 'tutorials' }
+      youtube: { videos: 2, strategy: 'tutorials' },
     },
     posting_schedule: 'daily',
     estimated_reach: 5000,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   };
 }
 
-async function executeMarketing(projectName: string, channel: string): Promise<Record<string, unknown>> {
+async function executeMarketing(
+  projectName: string,
+  channel: string
+): Promise<Record<string, unknown>> {
   return {
     phase: 'marketing',
     project_name: projectName,
@@ -269,15 +304,18 @@ async function executeMarketing(projectName: string, channel: string): Promise<R
     campaigns: [
       { name: 'Launch Email', status: 'ready', estimated_conversion: '3%' },
       { name: 'SEO Push', status: 'active', estimated_traffic: '500/month' },
-      { name: 'Partner Outreach', status: 'planned', estimated_partners: 10 }
+      { name: 'Partner Outreach', status: 'planned', estimated_partners: 10 },
     ],
     budget: 500,
     estimated_roi: '3.5x',
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   };
 }
 
-async function executeMonetization(projectName: string, model: string): Promise<Record<string, unknown>> {
+async function executeMonetization(
+  projectName: string,
+  model: string
+): Promise<Record<string, unknown>> {
   return {
     phase: 'monetize',
     project_name: projectName,
@@ -285,16 +323,20 @@ async function executeMonetization(projectName: string, model: string): Promise<
     pricing: {
       starter: 29,
       pro: 79,
-      enterprise: 199
+      enterprise: 199,
     },
     revenue_streams: ['subscriptions', 'one_time', 'enterprise'],
     estimated_monthly_revenue: Math.floor(Math.random() * 500) + 100,
     launch_date: new Date(Date.now() + 14 * 86400000).toISOString(),
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   };
 }
 
-async function executeFullCycle(niche: string, projectName: string, tenant_slug: string): Promise<Record<string, unknown>> {
+async function executeFullCycle(
+  niche: string,
+  projectName: string,
+  tenant_slug: string
+): Promise<Record<string, unknown>> {
   // Execute each phase sequentially
   const research = await executeResearch(niche, tenant_slug);
   const idea = await executeIdeaGeneration(research);
@@ -310,6 +352,6 @@ async function executeFullCycle(niche: string, projectName: string, tenant_slug:
     niche,
     phases: { research, idea, project, brand, landing, social, marketing, monetize },
     estimated_monthly_revenue: monetize.estimated_monthly_revenue,
-    completed_at: new Date().toISOString()
+    completed_at: new Date().toISOString(),
   };
 }

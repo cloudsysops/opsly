@@ -185,9 +185,7 @@ export async function postPortalN8nMarketplaceInstall(
     });
   } catch (err) {
     if (err instanceof Error && err.name === 'AbortError') {
-      throw new Error(
-        `Portal API timeout after ${N8N_MARKETPLACE_POST_TIMEOUT_MS / 1000}s`
-      );
+      throw new Error(`Portal API timeout after ${N8N_MARKETPLACE_POST_TIMEOUT_MS / 1000}s`);
     }
     throw err;
   } finally {

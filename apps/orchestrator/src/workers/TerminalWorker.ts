@@ -113,7 +113,8 @@ export function startTerminalWorker(connection: object): Worker {
           process.env.OPSLY_TERMINAL_BASE_DIR ?? join(process.cwd(), 'runtime', 'agents')
         );
         const agentDir = resolve(baseDir, sanitizeAgentId(agentId));
-        const cwd = typeof payload.cwd === 'string' && payload.cwd.trim().length > 0 ? payload.cwd : agentDir;
+        const cwd =
+          typeof payload.cwd === 'string' && payload.cwd.trim().length > 0 ? payload.cwd : agentDir;
 
         await mkdir(agentDir, { recursive: true });
         startTerminalSession(agentId, tenantSlug, randomUUID(), cwd);

@@ -72,13 +72,18 @@ function hasExplicitAutonomyApproval(req: IncomingMessage): boolean {
   return raw === 'true';
 }
 
-function enrichAutonomyMetadata(req: IncomingMessage, job: OrchestratorJob): {
-  ok: true;
-} | {
-  ok: false;
-  status: number;
-  payload: Record<string, unknown>;
-} {
+function enrichAutonomyMetadata(
+  req: IncomingMessage,
+  job: OrchestratorJob
+):
+  | {
+      ok: true;
+    }
+  | {
+      ok: false;
+      status: number;
+      payload: Record<string, unknown>;
+    } {
   const policy = resolveAutonomyPolicy(job.type, job.autonomy_risk);
   const metadata = {
     ...(job.metadata ?? {}),
@@ -836,7 +841,11 @@ async function handleTerminalStop(
   res.end(JSON.stringify({ success: true, agent_id: agentId, status: 'stopped' }));
 }
 
-async function handleJobById(req: IncomingMessage, res: ServerResponse, pathOnly: string): Promise<void> {
+async function handleJobById(
+  req: IncomingMessage,
+  res: ServerResponse,
+  pathOnly: string
+): Promise<void> {
   if (!verifyPlatformAdminToken(req)) {
     res.writeHead(401, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ error: 'unauthorized' }));
@@ -904,9 +913,12 @@ async function handleLocalPromptSubmit(req: IncomingMessage, res: ServerResponse
   const goal = typeof b.goal === 'string' ? b.goal.trim() : '';
   const maxSteps = typeof b.max_steps === 'number' ? b.max_steps : 10;
   const context =
-    typeof b.context === 'object' && b.context !== null ? (b.context as Record<string, unknown>) : {};
+    typeof b.context === 'object' && b.context !== null
+      ? (b.context as Record<string, unknown>)
+      : {};
   const priority = typeof b.priority === 'number' ? b.priority : 50000;
-  const requestId = typeof b.request_id === 'string' && b.request_id.length > 0 ? b.request_id : randomUUID();
+  const requestId =
+    typeof b.request_id === 'string' && b.request_id.length > 0 ? b.request_id : randomUUID();
 
   if (promptBody.length === 0) {
     res.writeHead(400, { 'Content-Type': 'application/json' });
@@ -930,7 +942,9 @@ async function handleLocalPromptSubmit(req: IncomingMessage, res: ServerResponse
 
   try {
     const bull = await enqueueLocalAgentJob(jobName, payload, requestId);
-    console.log(`[LocalPromptSubmit] Enqueued ${jobName} job ${bull.id} (${agentRole}) to local-agents queue`);
+    console.log(
+      `[LocalPromptSubmit] Enqueued ${jobName} job ${bull.id} (${agentRole}) to local-agents queue`
+    );
     recordOpenClawIntentQueued({
       requestId,
       intent: `execute_${jobName}`,
@@ -1169,7 +1183,18 @@ export function startOrchestratorHealthServer(): Server {
 
     if (req.method === 'GET' && pathOnly === '/api/validation/metrics') {
       res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ timestamp: new Date().toISOString(), agents: [], intents: [], system_health: { avg_validation_time_ms: 0, total_validations_today: 0, escalation_rate_pct: 0 } }));
+      res.end(
+        JSON.stringify({
+          timestamp: new Date().toISOString(),
+          agents: [],
+          intents: [],
+          system_health: {
+            avg_validation_time_ms: 0,
+            total_validations_today: 0,
+            escalation_rate_pct: 0,
+          },
+        })
+      );
       return;
     }
 
@@ -1189,7 +1214,14 @@ export function startOrchestratorHealthServer(): Server {
 
     if (req.method === 'GET' && pathOnly === '/api/validation/export') {
       res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ generated_at: new Date().toISOString(), agents: [], intents: [], health: { avg_validation_time_ms: 0, total_validations_today: 0, escalation_rate_pct: 0 } }));
+      res.end(
+        JSON.stringify({
+          generated_at: new Date().toISOString(),
+          agents: [],
+          intents: [],
+          health: { avg_validation_time_ms: 0, total_validations_today: 0, escalation_rate_pct: 0 },
+        })
+      );
       return;
     }
 

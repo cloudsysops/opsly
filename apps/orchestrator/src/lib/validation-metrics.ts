@@ -55,7 +55,9 @@ export class ValidationMetricsStore {
     this.cacheTtlMs = cacheTtlMs;
 
     if (!url || !key) {
-      console.warn('[ValidationMetricsStore] Supabase credentials not configured, metrics disabled');
+      console.warn(
+        '[ValidationMetricsStore] Supabase credentials not configured, metrics disabled'
+      );
       this.supabase = null;
     } else {
       this.supabase = createClient(url, key, {
@@ -102,9 +104,8 @@ export class ValidationMetricsStore {
     }
 
     try {
-      const { error } = await this.supabase
-        .from('validation_metrics')
-        .insert([{
+      const { error } = await this.supabase.from('validation_metrics').insert([
+        {
           job_id: metric.job_id,
           intent: metric.intent,
           agent_role: metric.agent_role,
@@ -115,7 +116,8 @@ export class ValidationMetricsStore {
           model_tier: metric.model_tier || 'balanced',
           cost_usd: metric.cost_usd || 0,
           created_at: metric.created_at || new Date().toISOString(),
-        }]);
+        },
+      ]);
 
       if (error) {
         console.error('[ValidationMetricsStore] Error recording metric:', error);
@@ -133,7 +135,10 @@ export class ValidationMetricsStore {
    * Get validation history for a specific intent
    * Used by ValidationFeedbackLayer to adapt routing
    */
-  async getValidationHistoryForIntent(intent: string, limit: number = 50): Promise<ValidationMetric[]> {
+  async getValidationHistoryForIntent(
+    intent: string,
+    limit: number = 50
+  ): Promise<ValidationMetric[]> {
     if (!this.supabase) {
       return [];
     }
@@ -186,12 +191,13 @@ export class ValidationMetricsStore {
       }
 
       const total = data.length;
-      const commits = data.filter(m => m.action === 'commit').length;
-      const iterates = data.filter(m => m.action === 'iterate').length;
-      const escalates = data.filter(m => m.action === 'escalate').length;
+      const commits = data.filter((m) => m.action === 'commit').length;
+      const iterates = data.filter((m) => m.action === 'iterate').length;
+      const escalates = data.filter((m) => m.action === 'escalate').length;
 
       const avgIterations = data.reduce((sum, m) => sum + (m.iteration_count || 1), 0) / total;
-      const avgValidationTime = data.reduce((sum, m) => sum + (m.validation_time_ms || 0), 0) / total;
+      const avgValidationTime =
+        data.reduce((sum, m) => sum + (m.validation_time_ms || 0), 0) / total;
 
       const result: AgentPerformanceStats = {
         agent_role: agentRole,
@@ -261,14 +267,14 @@ export class ValidationMetricsStore {
         return null;
       }
 
-      const commits = data.filter(m => m.action === 'commit').length;
-      const iterates = data.filter(m => m.action === 'iterate').length;
-      const escalates = data.filter(m => m.action === 'escalate').length;
+      const commits = data.filter((m) => m.action === 'commit').length;
+      const iterates = data.filter((m) => m.action === 'iterate').length;
+      const escalates = data.filter((m) => m.action === 'escalate').length;
       const total = data.length;
 
       // Extract common error patterns from failed_checks
       const errorMap = new Map<string, number>();
-      data.forEach(m => {
+      data.forEach((m) => {
         if (m.failed_checks && Array.isArray(m.failed_checks)) {
           m.failed_checks.forEach((err: string) => {
             errorMap.set(err, (errorMap.get(err) || 0) + 1);
@@ -301,13 +307,15 @@ export class ValidationMetricsStore {
    * Get agent escalation recommendations
    * Routes escalations to validator/skeptic agents
    */
-  async getEscalationRoute(intent: string, lastFailure: string): Promise<{ agent_role: string; confidence: number }> {
+  async getEscalationRoute(
+    intent: string,
+    lastFailure: string
+  ): Promise<{ agent_role: string; confidence: number }> {
     // High escalation rate for this intent → route to validator
     const history = await this.getIntentValidationHistory(intent);
     if (history) {
-      const escalationRate = history.total_validations > 0
-        ? history.escalate_count / history.total_validations
-        : 0;
+      const escalationRate =
+        history.total_validations > 0 ? history.escalate_count / history.total_validations : 0;
 
       if (escalationRate > 0.1) {
         return {

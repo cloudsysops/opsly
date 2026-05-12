@@ -74,6 +74,7 @@ npx tsx scripts/local-prompt-watcher.ts
 ```
 
 **What it does:**
+
 - Monitors `.cursor/prompts/*.md` with chokidar
 - Parses YAML frontmatter (agent_role, max_steps, goal, context)
 - POST to `/api/local/prompt-submit` with PLATFORM_ADMIN_TOKEN
@@ -96,6 +97,7 @@ npm run dev --workspace=@intcloudsysops/orchestrator
 ```
 
 **What it does:**
+
 - Listens on `POST /api/local/prompt-submit`
 - Creates job in `local-agents` BullMQ queue
 - Routes by agent_role:
@@ -115,6 +117,7 @@ npm run dev --workspace=@intcloudsysops/orchestrator
 Runs automatically when orchestrator starts.
 
 **What it does:**
+
 - Listens to BullMQ `local-agents` queue
 - Routes by job.name:
   - `local_cursor` → HTTP POST to http://localhost:5001/execute
@@ -124,6 +127,7 @@ Runs automatically when orchestrator starts.
 - Validates response received
 
 **Distributed design:** Can point to remote machines:
+
 ```bash
 # Local MacBook: start Cursor Service
 npx tsx scripts/cursor-agent-service.ts --port 5001
@@ -143,6 +147,7 @@ export CURSOR_SERVICE_URL="http://192.168.1.100:5001"
 Starts automatically when orchestrator starts.
 
 **What it does:**
+
 1. Monitors `.cursor/responses/*.md` for new response files
 2. Runs validation in sequence:
    ```
@@ -160,6 +165,7 @@ Starts automatically when orchestrator starts.
    - `attempt`: which attempt number this was (1, 2, or 3)
 
 **Key files:**
+
 - Response: `.cursor/responses/response-{id}.md`
 - Validation report: `.cursor/responses/response-{id}.validation.json`
 
@@ -176,6 +182,7 @@ npx tsx scripts/iteration-watch-responses.ts
 ```
 
 **What it does:**
+
 1. Monitors `.cursor/responses/*.validation.json` for results
 2. Reads validation report
 3. If `overall_status === 'failed'`:
@@ -302,24 +309,31 @@ Result: Code written, validated, iterated, committed autonomously in ~108 second
 ## 💡 Key Design Principles
 
 ### 1. **Asynchronous & Decoupled**
+
 Each daemon runs independently, monitoring file system or queue. No tight coupling.
 
 ### 2. **Auto-Loop via File System**
+
 Retry prompts are just `.md` files → LocalPromptWatcher sees them → Resubmits. No extra coordination needed.
 
 ### 3. **Attempt Tracking**
+
 Validation report includes `attempt: N`. IterationManager checks if `N >= 3` to escalate.
 
 ### 4. **Sequential Validation**
+
 Type-check → Test → Build (only if earlier passed). Saves time and provides better error context.
 
 ### 5. **Error Analysis**
+
 IterationManager analyzes error messages:
+
 - Missing types → Suggest "Add TypeScript annotations"
 - Missing imports → Suggest "Import all dependencies"
 - Test failures → Suggest "Review assertions"
 
 ### 6. **Human Escalation**
+
 After 3 failed attempts, IterationWatcher logs escalation (ready for HelpRequestSystem integration to create help request).
 
 ---
@@ -327,6 +341,7 @@ After 3 failed attempts, IterationWatcher logs escalation (ready for HelpRequest
 ## ✅ Setup Checklist
 
 ### Prerequisites
+
 ```bash
 # 1. Redis running
 redis-server --daemonize yes --port 6379
@@ -344,18 +359,21 @@ npm run build --workspace=@intcloudsysops/orchestrator
 ### Terminal Setup (5 tabs)
 
 **Terminal 1: Orchestrator**
+
 ```bash
 npm run dev --workspace=@intcloudsysops/orchestrator
 # Starts health server on 3011 + all workers
 ```
 
 **Terminal 2: Cursor Agent Service** (requires Cursor IDE)
+
 ```bash
 npx tsx scripts/cursor-agent-service.ts --port 5001
 # Listens for prompts from orchestrator
 ```
 
 **Terminal 3: LocalPromptWatcher**
+
 ```bash
 PLATFORM_ADMIN_TOKEN="local-dev" \
 ORCHESTRATOR_URL="http://localhost:3011" \
@@ -364,6 +382,7 @@ npx tsx scripts/local-prompt-watcher.ts
 ```
 
 **Terminal 4: IterationResponseWatcher**
+
 ```bash
 CURSOR_DIR=".cursor" \
 npx tsx scripts/iteration-watch-responses.ts
@@ -371,6 +390,7 @@ npx tsx scripts/iteration-watch-responses.ts
 ```
 
 **Terminal 5: Git Auto-Commit**
+
 ```bash
 npx tsx scripts/local-git-auto-commit.ts --auto-push
 # Monitors .cursor/responses/ and commits when validation passes
@@ -381,12 +401,14 @@ npx tsx scripts/local-git-auto-commit.ts --auto-push
 ## 🧪 Testing
 
 ### Automatic E2E Test
+
 ```bash
 ./scripts/test-local-agent-e2e.sh
 # Creates test prompt → Submits → Monitors response → Verifies flow
 ```
 
 ### Iteration Loop Simulation
+
 ```bash
 ./scripts/test-iteration-loop.sh
 # Simulates: validation fail → retry → success → commit
@@ -394,6 +416,7 @@ npx tsx scripts/local-git-auto-commit.ts --auto-push
 ```
 
 ### Manual Test
+
 ```bash
 # 1. Create prompt
 cat > .cursor/prompts/test.md << 'EOF'
@@ -421,7 +444,9 @@ git log --oneline | head -5
 ## 📊 Data Files
 
 ### Prompt Metadata
+
 **File:** `.cursor/prompts/.metadata.json`
+
 ```json
 {
   "test.md": {
@@ -435,7 +460,9 @@ git log --oneline | head -5
 ```
 
 ### Validation Report
+
 **File:** `.cursor/responses/response-{id}.validation.json`
+
 ```json
 {
   "job_id": "abc123",
@@ -465,18 +492,21 @@ git log --oneline | head -5
 ## 🔧 Configuration
 
 ### Agent Services Registry
+
 **File:** `apps/orchestrator/src/lib/agent-service-registry.ts`
 
 Services are configurable:
+
 ```typescript
 const services = {
   cursor: { url: 'http://localhost:5001', type: 'http' },
   claude: { url: 'http://localhost:3010', type: 'http' },
-  copilot: { url: 'http://localhost:5003', type: 'http' }
+  copilot: { url: 'http://localhost:5003', type: 'http' },
 };
 ```
 
 Override via environment:
+
 ```bash
 export CURSOR_SERVICE_URL="http://192.168.1.100:5001"
 ```
@@ -486,9 +516,11 @@ export CURSOR_SERVICE_URL="http://192.168.1.100:5001"
 ## 🚀 Scaling
 
 ### Single Machine (Development)
+
 All 5 daemons on localhost, all services on same machine.
 
 ### Multiple Machines
+
 ```bash
 # MacBook with Cursor IDE
 npx tsx scripts/cursor-agent-service.ts --port 5001
@@ -503,7 +535,9 @@ export CLAUDE_SERVICE_URL="http://localhost:3010"
 ```
 
 ### Docker
+
 Each service can be containerized independently:
+
 ```dockerfile
 FROM node:20-alpine
 WORKDIR /app
@@ -517,12 +551,14 @@ CMD ["npx", "tsx", "scripts/cursor-agent-service.ts", "--port", "5001"]
 ## 🎯 Next Steps
 
 ### Phase 2 (Intelligence)
+
 - [ ] Agent Trainer: Record patterns, improve suggestions
 - [ ] Cost tracking: Log validation time + resource usage
 - [ ] Performance metrics: Success rate by agent, by task type
 - [ ] Dashboard: Real-time job status visualization
 
 ### Phase 3 (Advanced)
+
 - [ ] Parallel execution: Multiple agents on same task
 - [ ] Consolidation: Merge best of multiple responses
 - [ ] Selective validation: Skip tests for docs-only changes
@@ -533,27 +569,32 @@ CMD ["npx", "tsx", "scripts/cursor-agent-service.ts", "--port", "5001"]
 ## 🆘 Troubleshooting
 
 ### Issue: "Orchestrator not responding"
+
 ```bash
 curl http://localhost:3011/health
 # Should see: {"ok": true}
 ```
 
 ### Issue: "Response not received"
+
 - Check Cursor Agent Service is running: `curl http://localhost:5001/health`
 - Check `.cursor/responses/` directory exists
 - Check LocalPromptWatcher logs for submission errors
 
 ### Issue: "Validation never completes"
+
 - Check affected workspaces are detected correctly
 - Run `npm run type-check` manually to see actual error
 - Check TestValidatorWorker is running (should be auto-started)
 
 ### Issue: "Retry prompt not detected"
+
 - Check IterationResponseWatcher is running
 - Check `.cursor/prompts/` directory permissions
 - Verify retry prompt file created: `ls -la .cursor/prompts/retry-*`
 
 ### Issue: "Git commit fails"
+
 - Check git status: `git status`
 - Verify branch is set: `git branch -a`
 - Check permissions on `.cursor/responses/`
@@ -572,6 +613,7 @@ curl http://localhost:3011/health
 ## 📝 Summary
 
 This is a **complete autonomous system** for:
+
 1. **Writing** code (Cursor IDE or Claude)
 2. **Validating** code (TypeScript, tests, build)
 3. **Iterating** automatically (up to 3 attempts)

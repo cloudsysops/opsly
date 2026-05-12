@@ -268,8 +268,12 @@ export async function llmCall(req: LLMRequest): Promise<LLMResponse> {
       cache_hit: res.cache_hit,
       latency_ms: Date.now() - start,
       legacy_pipeline,
-      ...(requestWithId.routing_bias !== undefined ? { routing_bias: requestWithId.routing_bias } : {}),
-      ...(requestWithId.provider_hint !== undefined ? { provider_hint: requestWithId.provider_hint } : {}),
+      ...(requestWithId.routing_bias !== undefined
+        ? { routing_bias: requestWithId.routing_bias }
+        : {}),
+      ...(requestWithId.provider_hint !== undefined
+        ? { provider_hint: requestWithId.provider_hint }
+        : {}),
     });
     return res;
   } catch (err) {
@@ -280,8 +284,12 @@ export async function llmCall(req: LLMRequest): Promise<LLMResponse> {
       request_id,
       latency_ms: Date.now() - start,
       legacy_pipeline,
-      ...(requestWithId.routing_bias !== undefined ? { routing_bias: requestWithId.routing_bias } : {}),
-      ...(requestWithId.provider_hint !== undefined ? { provider_hint: requestWithId.provider_hint } : {}),
+      ...(requestWithId.routing_bias !== undefined
+        ? { routing_bias: requestWithId.routing_bias }
+        : {}),
+      ...(requestWithId.provider_hint !== undefined
+        ? { provider_hint: requestWithId.provider_hint }
+        : {}),
       error: msg,
     });
     throw err;

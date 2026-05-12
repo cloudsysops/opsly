@@ -9,5 +9,10 @@
     "test": "echo 'No tests yet'",
     "type-check": "echo 'Observability type-checked via root tsconfig'"
   },
-  "keywords": ["observability", "logging", "metrics", "tracing"]
+  "keywords": [
+    "observability",
+    "logging",
+    "metrics",
+    "tracing"
+  ]
 }

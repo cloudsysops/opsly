@@ -24,7 +24,11 @@ export function createResponse<T>(data: T, requestId: string): APIResponse<T> {
   };
 }
 
-export function createErrorResponse(code: string, message: string, requestId: string): APIResponse<null> {
+export function createErrorResponse(
+  code: string,
+  message: string,
+  requestId: string
+): APIResponse<null> {
   return {
     success: false,
     error: { code, message },

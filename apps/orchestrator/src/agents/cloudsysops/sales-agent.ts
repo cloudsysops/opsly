@@ -43,7 +43,11 @@ function parseBookingData(raw: unknown): SalesBookingData | undefined {
     return undefined;
   }
   const o = raw as Record<string, unknown>;
-  if (!isServiceType(o.serviceType) || !isSuggestedPrice(o.suggestedPrice) || !isUrgency(o.urgency)) {
+  if (
+    !isServiceType(o.serviceType) ||
+    !isSuggestedPrice(o.suggestedPrice) ||
+    !isUrgency(o.urgency)
+  ) {
     return undefined;
   }
   return {
@@ -57,7 +61,9 @@ export interface InvokeSalesAgentOptions extends CloudSysOpsLlmContext {
   input: SalesAgentInput;
 }
 
-export async function invokeSalesAgent(options: InvokeSalesAgentOptions): Promise<SalesAgentOutput> {
+export async function invokeSalesAgent(
+  options: InvokeSalesAgentOptions
+): Promise<SalesAgentOutput> {
   const { input, ...llmCtx } = options;
   const historyJson = JSON.stringify(input.conversationHistory);
   const contextPart =

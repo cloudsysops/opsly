@@ -21,6 +21,7 @@
 ### 1️⃣ Preparación (2 min)
 
 **Terminal Principal:**
+
 ```bash
 cd ~/opsly
 git status  # Verificar branch correcta
@@ -28,6 +29,7 @@ npm ci      # Asegurar deps
 ```
 
 **Verificar Redis:**
+
 ```bash
 redis-cli ping
 # Output esperado: PONG
@@ -36,11 +38,13 @@ redis-cli ping
 ### 2️⃣ Iniciar Sistema (3 min)
 
 **Terminal Principal:**
+
 ```bash
 bash scripts/run-local-agent-system.sh
 ```
 
 **Output esperado:**
+
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Local Agent Execution System - Phase 1
@@ -63,11 +67,13 @@ Local Agent Execution System - Phase 1
 ### 3️⃣ Verificar Orchestrator Ready (2 min)
 
 **New Terminal - Health Check:**
+
 ```bash
 curl -s http://localhost:3011/health | jq .
 ```
 
 **Output esperado:**
+
 ```json
 {
   "status": "ok",
@@ -82,9 +88,10 @@ curl -s http://localhost:3011/health | jq .
 ### 4️⃣ Monitor Prompts (5 min)
 
 **New Terminal - Watch Metadata:**
+
 ```bash
 cd ~/opsly
-while true; do 
+while true; do
   clear
   echo "=== Prompt Metadata ==="
   cat .cursor/prompts/.metadata.json 2>/dev/null | jq . || echo "Waiting for metadata..."
@@ -99,11 +106,12 @@ done
 ```
 
 **New Terminal - Watch Logs:**
+
 ```bash
 # Terminal A: Watcher logs
 tail -f /tmp/watcher.log
 
-# Terminal B: AutoCommit logs  
+# Terminal B: AutoCommit logs
 tail -f /tmp/autocommit.log
 
 # Terminal C: Orchestrator logs
@@ -115,6 +123,7 @@ tail -f /tmp/orchestrator-run.log
 ### 5️⃣ Test Prompt Already Exists (3 min)
 
 **Check test prompt:**
+
 ```bash
 cat .cursor/prompts/test-cursor-execution.md
 ```
@@ -124,6 +133,7 @@ cat .cursor/prompts/test-cursor-execution.md
 **Expected Flow:**
 
 1. **Watcher detecta (~5 seg):**
+
    ```
    [LocalWatcher] Detected new prompt: test-cursor-execution.md
    [LocalWatcher] Submitting test-cursor-execution.md...
@@ -131,6 +141,7 @@ cat .cursor/prompts/test-cursor-execution.md
    ```
 
 2. **Orchestrator enruta (~2 seg):**
+
    ```json
    {
      "event": "job_enqueue",
@@ -146,6 +157,7 @@ cat .cursor/prompts/test-cursor-execution.md
    - Escribe respuesta a `.cursor/responses/response-XXXX.md`
 
 4. **AutoCommit detecta (~2 seg):**
+
    ```
    [AutoCommit] Detected response: response-XXXX.md
    [AutoCommit] ✅ Committed: response-XXXX.md
@@ -165,24 +177,28 @@ cat .cursor/prompts/test-cursor-execution.md
 ### 6️⃣ Verificar Resultados (5 min)
 
 **Check if file was created:**
+
 ```bash
 ls -la src/greeting.ts  # Should exist if Cursor executed
 cat src/greeting.ts     # Should have the generated function
 ```
 
 **Check git log:**
+
 ```bash
 git log --oneline | head -3
 # Should show: feat(job-XXXX): [executor] agent response completed
 ```
 
 **Check response file:**
+
 ```bash
 ls -la .cursor/prompts/responses/
 cat .cursor/prompts/responses/response-*.md
 ```
 
 **Check metadata final:**
+
 ```bash
 cat .cursor/prompts/.metadata.json | jq .
 ```
@@ -208,6 +224,7 @@ For test to **PASS**, all must be true:
 ## ❌ Troubleshooting
 
 ### Orchestrator won't start
+
 ```bash
 # Check port 3011 in use
 lsof -i :3011
@@ -219,6 +236,7 @@ redis-cli ping  # Must return PONG
 ```
 
 ### Watcher not detecting prompt
+
 ```bash
 # Check file exists
 ls -la .cursor/prompts/test-cursor-execution.md
@@ -231,6 +249,7 @@ grep "Watching" /tmp/watcher.log
 ```
 
 ### Cursor not executing
+
 ```bash
 # Check Cursor is installed
 which cursor
@@ -243,6 +262,7 @@ open -a "Cursor" .cursor/prompts/test-cursor-execution.md
 ```
 
 ### AutoCommit not committing
+
 ```bash
 # Check responses directory exists
 ls -la .cursor/prompts/responses/
@@ -260,6 +280,7 @@ git commit -m "manual test"
 ```
 
 ### Git push fails
+
 ```bash
 # Check branch tracking
 git branch -vv
@@ -275,15 +296,15 @@ git push origin claude/opsly-defense-platform-sC0qH
 
 ## 📊 Expected Timeline
 
-| Step | Component | Expected Time |
-|------|-----------|----------------|
-| Prompt creation | Manual | 0 sec (pre-created) |
-| Watcher detection | LocalWatcher | 1-5 sec |
-| Job enqueue | Orchestrator | 1-2 sec |
-| Cursor execution | Cursor IDE | 10-30 sec |
-| Response detection | AutoCommit | 1-2 sec |
-| Git commit+push | Git | 2-5 sec |
-| **Total** | - | **~20-45 sec** |
+| Step               | Component    | Expected Time       |
+| ------------------ | ------------ | ------------------- |
+| Prompt creation    | Manual       | 0 sec (pre-created) |
+| Watcher detection  | LocalWatcher | 1-5 sec             |
+| Job enqueue        | Orchestrator | 1-2 sec             |
+| Cursor execution   | Cursor IDE   | 10-30 sec           |
+| Response detection | AutoCommit   | 1-2 sec             |
+| Git commit+push    | Git          | 2-5 sec             |
+| **Total**          | -            | **~20-45 sec**      |
 
 ---
 

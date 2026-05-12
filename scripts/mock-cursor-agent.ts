@@ -38,7 +38,7 @@ app.post('/execute', async (req, res) => {
 
   try {
     // Simulate processing delay
-    await new Promise(resolve => setTimeout(resolve, MOCK_DELAY));
+    await new Promise((resolve) => setTimeout(resolve, MOCK_DELAY));
 
     // Generate mock response based on agent role
     const response = generateMockResponse(agent_role, prompt_content, job_id);

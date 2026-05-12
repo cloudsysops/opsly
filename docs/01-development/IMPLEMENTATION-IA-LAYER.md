@@ -13,18 +13,18 @@
 
 ## 2. Dónde tocar código (mapa)
 
-| Capacidad                                            | Ubicación                                                                |
-| ---------------------------------------------------- | ------------------------------------------------------------------------ |
-| Routing multi-proveedor, fallback, costes declarados | `apps/llm-gateway/src/providers.ts`, `llm-direct.ts`, `routing-hints.ts` |
-| Llamada HTTP unificada                               | `apps/llm-gateway/src/gateway.ts`                                        |
-| Planner remoto (orchestrator → gateway)              | `apps/orchestrator/src/planner-client.ts`                                |
-| Respuesta planner JSON                               | `apps/llm-gateway/src/planner-route.ts`                                  |
-| Cola BullMQ, jobs, workers                           | `apps/orchestrator/src/engine.ts`, `workers/`                            |
+| Capacidad                                            | Ubicación                                                                                                                                                                                                                           |
+| ---------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Routing multi-proveedor, fallback, costes declarados | `apps/llm-gateway/src/providers.ts`, `llm-direct.ts`, `routing-hints.ts`                                                                                                                                                            |
+| Llamada HTTP unificada                               | `apps/llm-gateway/src/gateway.ts`                                                                                                                                                                                                   |
+| Planner remoto (orchestrator → gateway)              | `apps/orchestrator/src/planner-client.ts`                                                                                                                                                                                           |
+| Respuesta planner JSON                               | `apps/llm-gateway/src/planner-route.ts`                                                                                                                                                                                             |
+| Cola BullMQ, jobs, workers                           | `apps/orchestrator/src/engine.ts`, `workers/`                                                                                                                                                                                       |
 | Prompts locales → cola `local-agents`                | [`docs/LOCAL-AGENT-EXECUTION.md`](../LOCAL-AGENT-EXECUTION.md) (`POST /api/local/prompt-submit`, `apps/orchestrator/src/workers/local-agent-http-worker.ts`); convención cola git: [`AGENT-PROMPT-QUEUE.md`](AGENT-PROMPT-QUEUE.md) |
-| MCP, tools                                           | `apps/mcp/`                                                              |
-| Contexto / continuidad                               | `apps/context-builder/`                                                  |
-| Feedback portal                                      | `apps/api` (`/api/feedback`), Zero-Trust                                 |
-| NotebookLM                                           | `apps/notebooklm-agent/`, MCP                                           |
+| MCP, tools                                           | `apps/mcp/`                                                                                                                                                                                                                         |
+| Contexto / continuidad                               | `apps/context-builder/`                                                                                                                                                                                                             |
+| Feedback portal                                      | `apps/api` (`/api/feedback`), Zero-Trust                                                                                                                                                                                            |
+| NotebookLM                                           | `apps/notebooklm-agent/`, MCP                                                                                                                                                                                                       |
 
 ## 3. Semana 1 — Checklist técnico (sin nuevos repos)
 

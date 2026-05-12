@@ -42,7 +42,7 @@ class PromptRegistry {
 
   private loadFromDirectory(dirPath: string): void {
     try {
-      const files = readdirSync(dirPath).filter(f => f.endsWith('.md'));
+      const files = readdirSync(dirPath).filter((f) => f.endsWith('.md'));
 
       for (const file of files) {
         const filePath = join(dirPath, file);
@@ -115,7 +115,7 @@ class PromptRegistry {
 
   getPromptVersion(id: string, version: string): PromptVersion | undefined {
     const prompt = this.prompts.get(id);
-    return prompt?.versions.find(v => v.version === version);
+    return prompt?.versions.find((v) => v.version === version);
   }
 
   listPrompts(): Prompt[] {

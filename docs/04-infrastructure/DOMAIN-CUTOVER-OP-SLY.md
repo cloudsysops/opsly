@@ -16,7 +16,7 @@ Objetivo: activar `op-sly.com` con Cloudflare DNS autoritativo y Traefik ACME DN
 - DNS publico debe apuntar a la IP publica del VPS (actual: `157.245.223.7`), no a Tailscale `100.x`.
 - Si Cloudflare esta en modo proxied (nube naranja), `dig` no devolvera la IP del VPS sino IPs anycast de Cloudflare.
 - `app.op-sly.com` no existe en Traefik hoy; el frontend cliente actual es `portal.op-sly.com`.
-- **ACME DNS-01 + Cloudflare:** el `CF_DNS_API_TOKEN` solo sirve si los **nameservers autoritativos** del dominio (o subzona) apuntan a Cloudflare. Si el DNS público sigue en otro proveedor (p. ej. solo Vercel DNS), Traefik no podrá completar el challenge con el provider Cloudflare; ver [CLOUDFLARE-PROXY-ACTIVATION.md](CLOUDFLARE-PROXY-ACTIVATION.md) sección *DNS autoritativo y ACME*.
+- **ACME DNS-01 + Cloudflare:** el `CF_DNS_API_TOKEN` solo sirve si los **nameservers autoritativos** del dominio (o subzona) apuntan a Cloudflare. Si el DNS público sigue en otro proveedor (p. ej. solo Vercel DNS), Traefik no podrá completar el challenge con el provider Cloudflare; ver [CLOUDFLARE-PROXY-ACTIVATION.md](CLOUDFLARE-PROXY-ACTIVATION.md) sección _DNS autoritativo y ACME_.
 
 ## 1) Vercel + Cloudflare (pasos manuales dashboard)
 
@@ -94,4 +94,3 @@ Buscar eventos ACME/certificados emitidos para `*.op-sly.com` y hosts usados.
 - `admin.op-sly.com/*`: bypass cache
 - `portal.op-sly.com/_next/static/*`: cache allowed
 - Evitar `Cache Everything` global sobre API.
-

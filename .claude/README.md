@@ -73,12 +73,12 @@ En Claude Code, usa los comandos personalizados:
 
 Los agentes se definen en `1-agent-teams/` y se integran via `CLAUDE.md`:
 
-| Agente | Rol | Triggers |
-|--------|-----|----------|
-| OrchestratorAgent | Coordina tareas entre agentes | `processIntent()`, cola BullMQ |
-| ops-agent | Onboarding, health checks, deployments | `tenant_slug`, alertas Discord |
-| billing-agent | Stripe, metering, cost alerts | `GET /api/admin/costs`, LLM Gateway usage |
-| security-agent | Zero-Trust, access review | `tenantSlugMatchesSession`, firewall rules |
+| Agente            | Rol                                    | Triggers                                   |
+| ----------------- | -------------------------------------- | ------------------------------------------ |
+| OrchestratorAgent | Coordina tareas entre agentes          | `processIntent()`, cola BullMQ             |
+| ops-agent         | Onboarding, health checks, deployments | `tenant_slug`, alertas Discord             |
+| billing-agent     | Stripe, metering, cost alerts          | `GET /api/admin/costs`, LLM Gateway usage  |
+| security-agent    | Zero-Trust, access review              | `tenantSlugMatchesSession`, firewall rules |
 
 ## Convenciones de Commits
 
@@ -93,6 +93,7 @@ docs(claude): update agent teams documentation
 ## Configuración Personal (CLAUDE.local.md)
 
 El archivo `2-context-management/CLAUDE.local.md` está ignorado por git y es ideal para:
+
 - Tokens de prueba
 - Configuraciones de desarrollo local
 - Overrides de puertos o URLs
@@ -102,6 +103,7 @@ El archivo `2-context-management/CLAUDE.local.md` está ignorado por git y es id
 ## Multi-Tenancy
 
 Opsly es una plataforma multi-tenant. Las reglas críticas (ver `CLAUDE.md` y `2-context-management/CLAUDE.md`):
+
 - Nunca mezclar datos de tenants
 - Siempre incluir `tenant_slug` y `request_id` en jobs/orquestación
 - Usar `tenantSlugMatchesSession` en rutas con `[slug]`
@@ -122,6 +124,7 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 ## Troubleshooting
 
 ### Hooks no se ejecutan
+
 ```bash
 # Verificar configuración
 git config core.hooksPath
@@ -132,12 +135,14 @@ git config core.hooksPath .claude/4-hooks
 ```
 
 ### Permisos de ejecución
+
 ```bash
 chmod +x .claude/4-hooks/*.sh
 ls -la .claude/4-hooks/*.sh  # Verificar xr-xr-x
 ```
 
 ### package-lock.json cambió pero no se reinstaló
+
 ```bash
 # Ejecutar manualmente:
 npm ci

@@ -65,13 +65,13 @@ const BASE_HEALTH_CHECKS: Record<string, HealthCheckFn> = {
   },
 };
 
-const DEEPSEEK_HEALTH_CHECK: Record<
-  'deepseek',
-  HealthCheckFn
-> = {
+const DEEPSEEK_HEALTH_CHECK: Record<'deepseek', HealthCheckFn> = {
   deepseek: async () => {
     const start = Date.now();
-    const base = (process.env.DEEPSEEK_BASE_URL ?? 'https://api.deepseek.com/v1').replace(/\/$/, '');
+    const base = (process.env.DEEPSEEK_BASE_URL ?? 'https://api.deepseek.com/v1').replace(
+      /\/$/,
+      ''
+    );
     const res = await fetch(`${base}/models`, {
       headers: {
         Authorization: `Bearer ${process.env.DEEPSEEK_API_KEY ?? ''}`,

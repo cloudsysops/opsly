@@ -4,7 +4,4 @@ export { validatePromptSchema, validatePromptTemplate, validatePrompt } from './
 export type { Prompt, PromptVersion, PromptMetadata } from './registry.js';
 
 // Direct prompt exports for convenience
-export {
-  CLOUDSYSOPS_SALES_AGENT_SYSTEM,
-  CLOUDSYSOPS_OPS_AGENT_SYSTEM,
-} from './agents.js';
+export { CLOUDSYSOPS_SALES_AGENT_SYSTEM, CLOUDSYSOPS_OPS_AGENT_SYSTEM } from './agents.js';

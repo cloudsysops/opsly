@@ -71,7 +71,7 @@ class AgentTrainerService {
 
     const startTime = Date.now();
     console.log(
-      `[AgentTrainerService] 📊 Starting pattern aggregation at ${new Date().toISOString()}`,
+      `[AgentTrainerService] 📊 Starting pattern aggregation at ${new Date().toISOString()}`
     );
 
     try {
@@ -85,7 +85,7 @@ class AgentTrainerService {
       }
 
       console.log(
-        `[AgentTrainerService] 🔍 Aggregating patterns for ${pairs.length} agent/intent pairs`,
+        `[AgentTrainerService] 🔍 Aggregating patterns for ${pairs.length} agent/intent pairs`
       );
 
       const results: Record<string, any> = {
@@ -99,7 +99,7 @@ class AgentTrainerService {
         const pattern = await this.trainer.aggregatePatterns(
           pair.agentRole,
           pair.intent,
-          this.minExecutionsForPattern,
+          this.minExecutionsForPattern
         );
 
         if (pattern) {
@@ -120,7 +120,7 @@ class AgentTrainerService {
 
       const duration = Date.now() - startTime;
       console.log(
-        `[AgentTrainerService] ✅ Pattern aggregation completed (${duration}ms, ${results.patterns.length} patterns)`,
+        `[AgentTrainerService] ✅ Pattern aggregation completed (${duration}ms, ${results.patterns.length} patterns)`
       );
 
       this.lastRun = new Date();

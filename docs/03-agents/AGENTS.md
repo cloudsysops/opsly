@@ -510,14 +510,14 @@ Validación: npm run type-check; tests del workspace tocado
 
 OpenClaw opera como **control plane IA** de Opsly: estandariza entrada (MCP/API), orquesta ejecución event-driven (BullMQ), aplica políticas de costo/routing (LLM Gateway), y mantiene contexto operativo para sesiones de agentes (Context Builder).
 
-| Componente        | Ubicación                      | Responsabilidad principal                                              |
-| ----------------- | ------------------------------ | ---------------------------------------------------------------------- |
-| OpenClaw MCP      | `apps/mcp`                     | Punto único de herramientas/acciones para agentes externos e internos  |
-| Orchestrator      | `apps/orchestrator`            | Cola BullMQ, prioridad por plan, coordinación de workers por job       |
-| LLM Gateway       | `apps/llm-gateway`             | Routing, cache, costos por tenant, observabilidad de llamadas LLM      |
-| Context Builder   | `apps/context-builder`         | Construcción de contexto y continuidad entre interacciones             |
-| ML Services       | `apps/ml`                      | Clasificación, embeddings, soporte a decisiones IA                     |
-| API Control Plane | `apps/api`                     | Identidad Zero-Trust, validación tenant/session, contratos HTTP        |
+| Componente        | Ubicación                     | Responsabilidad principal                                              |
+| ----------------- | ----------------------------- | ---------------------------------------------------------------------- |
+| OpenClaw MCP      | `apps/mcp`                    | Punto único de herramientas/acciones para agentes externos e internos  |
+| Orchestrator      | `apps/orchestrator`           | Cola BullMQ, prioridad por plan, coordinación de workers por job       |
+| LLM Gateway       | `apps/llm-gateway`            | Routing, cache, costos por tenant, observabilidad de llamadas LLM      |
+| Context Builder   | `apps/context-builder`        | Construcción de contexto y continuidad entre interacciones             |
+| ML Services       | `apps/ml`                     | Clasificación, embeddings, soporte a decisiones IA                     |
+| API Control Plane | `apps/api`                    | Identidad Zero-Trust, validación tenant/session, contratos HTTP        |
 | NotebookLM Tool   | `apps/notebooklm-agent` + MCP | Generación de artefactos (podcast/slides/infografía), **EXPERIMENTAL** |
 
 ```mermaid
@@ -1572,8 +1572,8 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 
 ## 🔄 Estado Actual (2026-04-27 00:14 UTC)
 
-**Agente:** opencode (arquitecto)  
-**Tareas completadas:** Pre-check Pre-Launch ✅  
+**Agente:** opencode (arquitecto)
+**Tareas completadas:** Pre-check Pre-Launch ✅
 **Bloqueantes:** MCP + context-builder images necesitan rebuild GHCR
 
 ### Validación Pre-Launch (2026-04-27)

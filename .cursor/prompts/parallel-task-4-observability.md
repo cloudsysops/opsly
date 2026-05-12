@@ -21,7 +21,7 @@ Add comprehensive observability to the autonomous execution system.
 
 2. **Metrics tracked:**
    - Total jobs executed
-   - Success rate (%) 
+   - Success rate (%)
    - Avg validation time
    - Avg iterations to success
    - Files changed per job
@@ -37,7 +37,8 @@ Add comprehensive observability to the autonomous execution system.
    - Hook into IterationManager
    - Hook into LocalGitAutoCommit
 
-**Success:** 
+**Success:**
+
 - All metrics properly recorded
 - No performance regression
 - Types are strict (no `any`)

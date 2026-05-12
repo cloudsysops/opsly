@@ -218,13 +218,13 @@ La infraestructura OpenClaw (Context Builder + MCP) puede desplegarse **per-tena
 
 ### Aislamiento
 
-| Nivel          | Mecanismo                              | Ejemplo                          |
-| -------------- | -------------------------------------- | -------------------------------- |
-| **Redis**      | Namespace prefix per-tenant            | `tenant_alice:openclaw:*`        |
-| **Supabase**   | Schema aislado per tenant + RLS        | Schema `tenant_alice` con RLS    |
-| **Networking** | Docker network aislado per tenant      | Compose network `tenant_alice`   |
-| **Secretos**   | Inyectados en Compose via `env_file`   | `secrets/tenant_{slug}.env`      |
-| **Logs**       | Etiquetados con `TENANT_SLUG`          | CloudWatch `tenant_slug=alice`   |
+| Nivel          | Mecanismo                            | Ejemplo                        |
+| -------------- | ------------------------------------ | ------------------------------ |
+| **Redis**      | Namespace prefix per-tenant          | `tenant_alice:openclaw:*`      |
+| **Supabase**   | Schema aislado per tenant + RLS      | Schema `tenant_alice` con RLS  |
+| **Networking** | Docker network aislado per tenant    | Compose network `tenant_alice` |
+| **Secretos**   | Inyectados en Compose via `env_file` | `secrets/tenant_{slug}.env`    |
+| **Logs**       | Etiquetados con `TENANT_SLUG`        | CloudWatch `tenant_slug=alice` |
 
 ### Variables Doppler
 

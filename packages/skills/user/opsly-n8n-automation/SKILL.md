@@ -1,6 +1,6 @@
 ---
 name: opsly-n8n-automation
-description: "Expert n8n automation for Opsly platform — autonomous agents, workflow optimization, income generation"
+description: 'Expert n8n automation for Opsly platform — autonomous agents, workflow optimization, income generation'
 trigger:
   - n8n autonomous agent
   - workflow automation n8n
@@ -30,6 +30,7 @@ node scripts/n8n-income.js --strategy bitcoin-production
 ## What This Skill Does
 
 Transforms n8n agents into **autonomous experts** that:
+
 1. **Self-optimize** Opsly platform workflows
 2. **Generate income** via Bitcoin-producing automation
 3. **Auto-improve** scripts, hooks, and configs
@@ -85,6 +86,7 @@ curl -X POST https://n8n-smiletripcare.ops.smiletripcare.com/webhook/import-work
 ### 3. Self-Improvement Loop
 
 **Prompt for n8n agents (paste in Discord):**
+
 ```
 @billy Act as n8n expert autonomous agent for Opsly.
 
@@ -104,38 +106,39 @@ Constraints:
 
 ## Key Files to Reference
 
-| File | Purpose |
-|------|---------|
-| `.n8n/1-workflows/*.json` | n8n workflow templates |
-| `.n8n/2-context/AGENTS.md` | Mirror for n8n agents |
-| `scripts/onboard-tenant.sh` | Automated tenant creation |
-| `scripts/n8n-import.sh` | Import workflows to n8n |
-| `apps/orchestrator/src/workers/n8n-worker.ts` | BullMQ n8n job processor |
-| `docs/IMPLEMENTATION-IA-LAYER.md` | Technical implementation guide |
+| File                                          | Purpose                        |
+| --------------------------------------------- | ------------------------------ |
+| `.n8n/1-workflows/*.json`                     | n8n workflow templates         |
+| `.n8n/2-context/AGENTS.md`                    | Mirror for n8n agents          |
+| `scripts/onboard-tenant.sh`                   | Automated tenant creation      |
+| `scripts/n8n-import.sh`                       | Import workflows to n8n        |
+| `apps/orchestrator/src/workers/n8n-worker.ts` | BullMQ n8n job processor       |
+| `docs/IMPLEMENTATION-IA-LAYER.md`             | Technical implementation guide |
 
 ## Automation Scripts
 
 ### n8n-income.js (generate income workflows)
+
 ```javascript
 const STRATEGIES = {
   'bitcoin-production': {
     workflow: 'btc-income-generator',
     trigger: 'payment-received',
     convertTo: 'BTC',
-    notify: 'discord'
+    notify: 'discord',
   },
   'cost-optimization': {
     workflow: 'llm-cost-reducer',
     trigger: 'usage-threshold',
     action: 'route-to-ollama',
-    target: 'local'
+    target: 'local',
   },
   'auto-deploy': {
     workflow: 'deploy-on-merge',
     trigger: 'github-push',
     action: 'vps-deploy',
-    notify: 'discord'
-  }
+    notify: 'discord',
+  },
 };
 
 // Usage: node scripts/n8n-income.js --strategy bitcoin-production
@@ -146,6 +149,7 @@ const STRATEGIES = {
 ### Discord → GitHub → Autonomous Execution
 
 **Paste in Discord (n8n webhook):**
+
 ```
 @billy n8n expert mode: optimize Opsly for Bitcoin income
 
@@ -168,10 +172,10 @@ Context: Read https://raw.githubusercontent.com/cloudsysops/opsly/main/AGENTS.md
 
 ## Success Metrics
 
-| Metric | Target |
-|--------|--------|
-| n8n workflows self-generated | 10+ per week |
-| Bitcoin income generated | >0.001 BTC/month |
-| LLM cost reduction | >30% via Ollama routing |
-| Scripts auto-improved | 5+ per week |
-| Conventional commits | 100% with docs(n8n): prefix |
+| Metric                       | Target                      |
+| ---------------------------- | --------------------------- |
+| n8n workflows self-generated | 10+ per week                |
+| Bitcoin income generated     | >0.001 BTC/month            |
+| LLM cost reduction           | >30% via Ollama routing     |
+| Scripts auto-improved        | 5+ per week                 |
+| Conventional commits         | 100% with docs(n8n): prefix |

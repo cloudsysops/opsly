@@ -1,7 +1,8 @@
 ---
-title: "lib/security Governance"
-description: "Module governance for authentication and encryption"
+title: 'lib/security Governance'
+description: 'Module governance for authentication and encryption'
 ---
+
 # lib/security Governance
 
 ## Ownership

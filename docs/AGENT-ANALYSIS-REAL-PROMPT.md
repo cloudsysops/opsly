@@ -11,8 +11,8 @@
 ## 📋 PROMPT RECEIVED
 
 ```
-Design and implement a REST API endpoint that allows external systems 
-(Cursor, GitHub Actions, n8n) to submit arbitrary prompts to Opsly 
+Design and implement a REST API endpoint that allows external systems
+(Cursor, GitHub Actions, n8n) to submit arbitrary prompts to Opsly
 agents and receive execution results.
 
 REQUIREMENTS:
@@ -31,7 +31,7 @@ REQUIREMENTS:
 ```
 External System (Cursor/GitHub Actions/n8n)
         ↓
-[API Gateway] 
+[API Gateway]
         ↓
 POST /api/tenants/{slug}/agent-prompts
         ↓
@@ -126,7 +126,7 @@ paths:
           description: Unauthorized (invalid API key)
         '429':
           description: Rate limit exceeded (5 concurrent prompts)
-        
+
   /api/tenants/{slug}/agent-prompts/{request_id}:
     get:
       summary: Poll execution status
@@ -175,7 +175,7 @@ components:
         metadata:
           type: object
           additionalProperties: true
-        
+
     PromptResponse:
       type: object
       properties:
@@ -183,7 +183,7 @@ components:
         status: { enum: [pending, processing, completed, failed] }
         created_at: { type: string, format: date-time }
         estimated_completion: { type: string, format: date-time }
-        
+
     StatusResponse:
       type: object
       properties:
@@ -202,12 +202,7 @@ components:
 ```typescript
 import { z } from 'zod';
 
-export const AgentRoleSchema = z.enum([
-  'executor',
-  'architect',
-  'researcher',
-  'builder',
-]);
+export const AgentRoleSchema = z.enum(['executor', 'architect', 'researcher', 'builder']);
 
 export const PromptRequestSchema = z.object({
   prompt: z.string().min(1).max(10000),
@@ -248,17 +243,18 @@ export type ExecutionResult = z.infer<typeof ExecutionResultSchema>;
 
 ### Threat Model
 
-| Threat | Likelihood | Impact | Mitigation |
-|--------|------------|--------|-----------|
-| API key compromise | Medium | High | Key rotation, scoped permissions |
-| Multi-tenant data leak | Low | Critical | RLS + row-level encryption |
-| Prompt injection | Medium | High | Schema validation + sandboxing |
-| Cost abuse | High | Medium | Rate limiting (5 concurrent) |
-| Timeout DoS | Medium | High | 30-min hard timeout |
+| Threat                 | Likelihood | Impact   | Mitigation                       |
+| ---------------------- | ---------- | -------- | -------------------------------- |
+| API key compromise     | Medium     | High     | Key rotation, scoped permissions |
+| Multi-tenant data leak | Low        | Critical | RLS + row-level encryption       |
+| Prompt injection       | Medium     | High     | Schema validation + sandboxing   |
+| Cost abuse             | High       | Medium   | Rate limiting (5 concurrent)     |
+| Timeout DoS            | Medium     | High     | 30-min hard timeout              |
 
 ### Implementation Details
 
 **1. API Key Validation**
+
 ```typescript
 // Middleware: validate X-API-Key header
 const apiKey = req.headers['x-api-key'];
@@ -274,6 +270,7 @@ if (!tenantKey || !hasScope(tenantKey.scopes, 'prompts:write')) {
 ```
 
 **2. RLS Enforcement**
+
 ```sql
 -- All queries automatically filtered by tenant_id
 ALTER TABLE agent_prompts ENABLE ROW LEVEL SECURITY;
@@ -285,6 +282,7 @@ CREATE POLICY "Tenant isolation"
 ```
 
 **3. Webhook Security (HMAC Signature)**
+
 ```typescript
 // Sign callback payload
 const signature = crypto
@@ -302,30 +300,35 @@ const signature = crypto
 ## 📋 IMPLEMENTATION ROADMAP
 
 ### Phase 1: Foundation (Week 1)
+
 - [ ] Create Supabase tables: `agent_prompts`, `execution_results`, `api_keys`
 - [ ] Implement RLS policies
 - [ ] Create TypeScript types (Zod schemas)
 - [ ] Add unit tests for schema validation
 
 ### Phase 2: API Endpoint (Week 2)
+
 - [ ] `POST /api/tenants/{slug}/agent-prompts` - submit prompt
 - [ ] `GET /api/tenants/{slug}/agent-prompts/{id}` - check status
 - [ ] API key middleware + validation
 - [ ] Rate limiting (5 concurrent/tenant)
 
 ### Phase 3: Orchestrator Integration (Week 3)
+
 - [ ] Queue job to orchestrator
 - [ ] Pass agent_role → provider tier selection
 - [ ] Track cost per execution
 - [ ] Audit logging
 
 ### Phase 4: Webhook Callbacks (Week 4)
+
 - [ ] Implement HMAC-signed callbacks
 - [ ] Retry logic (3x exponential backoff)
 - [ ] Webhook delivery status tracking
 - [ ] Dead letter queue for failed callbacks
 
 ### Phase 5: Monitoring + Production (Week 5)
+
 - [ ] Prometheus metrics (execution time, cost, errors)
 - [ ] Dashboard for admin view
 - [ ] Load testing (concurrent limits)
@@ -340,6 +343,7 @@ const signature = crypto
 **Answer**: **ASYNC QUEUE (Recommended)**
 
 **Trade-offs**:
+
 ```
 ASYNC (BullMQ Queue):
 ✅ Handles concurrency limits (5/tenant)
@@ -357,6 +361,7 @@ SYNC (Immediate):
 ```
 
 **Recommendation**: Use **ASYNC with optional polling**.
+
 - Default: submit → callback via webhook
 - Alternative: POST returns request_id → client polls `GET /agent-prompts/{id}`
 
@@ -381,6 +386,7 @@ retry_policy:
 ```
 
 **Implementation**:
+
 ```typescript
 const job = await orchestratorQueue.add('execute-prompt', payload, {
   attempts: 3,
@@ -463,6 +469,7 @@ POST /api/tenants/{slug}/agent-prompts/batch
 ```
 
 **Later callbacks**:
+
 ```
 X-Opsly-Batch-ID: batch_xxx
 [Individual result callbacks for each prompt]
@@ -477,7 +484,6 @@ X-Opsly-Batch-ID: batch_xxx
   - [ ] HMAC webhook signature validation
   - [ ] RLS policies tested
   - [ ] Prompt input sanitization
-  
 - [ ] **Reliability**
   - [ ] 99.9% uptime SLA target
   - [ ] Auto-retry on transient failures
@@ -512,7 +518,7 @@ This design provides:
 ✅ **Scalable** async queue with 5 concurrent limit/tenant  
 ✅ **Reliable** 3-tier retry strategy + webhook callbacks  
 ✅ **Observable** full cost tracking + audit logs  
-✅ **Extensible** batch support + agent role selection  
+✅ **Extensible** batch support + agent role selection
 
 **Estimated Implementation**: 5 weeks (1 phase/week)  
 **Team Size**: 1 senior engineer + 1 junior  
@@ -527,4 +533,3 @@ This design provides:
 3. **Security**: Any additional threat model items?
 4. **Scope**: Should batch prompts be in MVP or Phase 2?
 5. **Timeline**: Is 5-week estimate realistic?
-

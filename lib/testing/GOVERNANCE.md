@@ -1,7 +1,8 @@
 ---
-title: "lib/testing Governance"
-description: "Module governance for unified testing framework"
+title: 'lib/testing Governance'
+description: 'Module governance for unified testing framework'
 ---
+
 # lib/testing Governance
 
 ## Ownership
@@ -40,6 +41,7 @@ Every test case must have:
 ## Test Execution Rules
 
 Tests run:
+
 1. **Pre-deployment** — All tests must pass
 2. **Per-agent** — Isolated test suite per agent
 3. **Per-module** — Unit tests for each lib module
@@ -47,6 +49,7 @@ Tests run:
 5. **Nightly** — Full regression suite
 
 Pass Criteria:
+
 - ✅ > 95% of tests pass
 - ✅ < 5 second timeout per test
 - ✅ No memory leaks
@@ -84,16 +87,17 @@ lib/testing/
 
 ## SLOs for Testing
 
-| Metric | Target | Alert |
-|--------|--------|-------|
-| Test Pass Rate | > 95% | < 90% |
-| Test Execution Time | < 5s | > 10s |
-| Coverage | > 80% | < 70% |
-| Determinism | 100% | < 99.9% |
+| Metric              | Target | Alert   |
+| ------------------- | ------ | ------- |
+| Test Pass Rate      | > 95%  | < 90%   |
+| Test Execution Time | < 5s   | > 10s   |
+| Coverage            | > 80%  | < 70%   |
+| Determinism         | 100%   | < 99.9% |
 
 ## Test Environments
 
 Tests run in:
+
 - **Local** — Developer machine
 - **CI** — GitHub Actions on every commit
 - **Staging** — Full integration tests

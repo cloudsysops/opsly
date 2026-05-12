@@ -146,11 +146,11 @@ export function ValidationMetricsDashboard() {
           </div>
           <div className="bg-white rounded-lg shadow p-6">
             <h3 className="text-sm font-medium text-gray-600 mb-2">Escalation Rate</h3>
-            <p className={`text-2xl font-bold ${
-              metrics.system_health.escalation_rate_pct > 10
-                ? 'text-red-600'
-                : 'text-green-600'
-            }`}>
+            <p
+              className={`text-2xl font-bold ${
+                metrics.system_health.escalation_rate_pct > 10 ? 'text-red-600' : 'text-green-600'
+              }`}
+            >
               {metrics.system_health.escalation_rate_pct.toFixed(2)}%
             </p>
           </div>
@@ -166,7 +166,9 @@ export function ValidationMetricsDashboard() {
                   <h3 className="text-lg font-semibold text-gray-900">
                     {agent.agent_role.charAt(0).toUpperCase() + agent.agent_role.slice(1)}
                   </h3>
-                  <span className={`text-sm font-medium px-3 py-1 rounded-full ${trendingColor(agent.trending)}`}>
+                  <span
+                    className={`text-sm font-medium px-3 py-1 rounded-full ${trendingColor(agent.trending)}`}
+                  >
                     {agent.trending}
                   </span>
                 </div>
@@ -226,20 +228,20 @@ export function ValidationMetricsDashboard() {
               <tbody className="divide-y divide-gray-200">
                 {metrics.intents.map((intent) => (
                   <tr key={intent.intent} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 text-sm font-medium text-gray-900">
-                      {intent.intent}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-600">
-                      {intent.total_validations}
-                    </td>
+                    <td className="px-6 py-4 text-sm font-medium text-gray-900">{intent.intent}</td>
+                    <td className="px-6 py-4 text-sm text-gray-600">{intent.total_validations}</td>
                     <td className="px-6 py-4 text-sm">
-                      <span className={intent.success_rate > 0.8 ? 'text-green-600 font-semibold' : 'text-gray-600'}>
+                      <span
+                        className={
+                          intent.success_rate > 0.8
+                            ? 'text-green-600 font-semibold'
+                            : 'text-gray-600'
+                        }
+                      >
                         {(intent.success_rate * 100).toFixed(1)}%
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-600">
-                      {intent.escalation_count}
-                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-600">{intent.escalation_count}</td>
                     <td className="px-6 py-4 text-sm">
                       <span className="px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-xs font-medium">
                         {intent.recommended_model_tier}

@@ -4,7 +4,7 @@ Epics are **logical** groupings for humans to create manually when ready.
 
 ## Epic 1 — Tenant health & automated alerts
 
-**Theme:** 🔴 [Auto] Tenant *&lt;slug&gt;* unreachable after restart (and variants).
+**Theme:** 🔴 [Auto] Tenant _&lt;slug&gt;_ unreachable after restart (and variants).
 
 **Suggested sub-issues (titles only):**
 

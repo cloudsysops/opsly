@@ -9,5 +9,10 @@
     "test": "echo 'No tests yet'",
     "type-check": "echo 'Evaluation type-checked via root tsconfig'"
   },
-  "keywords": ["evaluation", "testing", "validation", "quality-metrics"]
+  "keywords": [
+    "evaluation",
+    "testing",
+    "validation",
+    "quality-metrics"
+  ]
 }

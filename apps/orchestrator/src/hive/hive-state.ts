@@ -37,7 +37,7 @@ export class HiveStateStore {
     const current = await this.getState();
     const merged: HiveState = {
       tasks: update.tasks ?? current.tasks,
-      bots: { ...current.bots, ...( update.bots ?? {}) },
+      bots: { ...current.bots, ...(update.bots ?? {}) },
       lastUpdated: Date.now(),
       pheromoneLog: update.pheromoneLog ?? current.pheromoneLog,
     };

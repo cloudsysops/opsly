@@ -13,6 +13,7 @@ Aceptado (2026-05-02)
 Opsly Local Services necesita adquirir clientes sin contact center / sales team. Sales Agent (Claude IA) debe responder leads vía múltiples canales.
 
 **Canales disponibles:**
+
 - **Email** — asíncrono, profesional, escalable, requiere Setup: SendGrid
 - **WhatsApp** — síncrono, personal, RI market uses, requiere Setup: Twilio
 - **SMS** — synchronous, no context, expensive
@@ -25,16 +26,19 @@ Opsly Local Services necesita adquirir clientes sin contact center / sales team.
 ## Alternativas Consideradas
 
 ### Opción A: Email solo (semanas 1-4)
+
 - Week 1-2: Web form → email to customer + to Sales Agent digest
 - Sales Agent responds via email (1h SLA)
 - Customers reply, booking confirmed
 
 **Ventajas:**
+
 - Simplest to implement
 - Professional tone
 - Async (Sales Agent no must online 24/7)
 
 **Limitaciones:**
+
 - Slower customer response cycle (email = delayed gratification)
 - Lower conversion (customer forgets lead, moves to competitor)
 - Local market (RI tech services) prefers WhatsApp over email
@@ -42,17 +46,20 @@ Opsly Local Services necesita adquirir clientes sin contact center / sales team.
 **Seleccionada para Week 1-2 (foundation)**
 
 ### Opción B: WhatsApp solo (Week 1+)
+
 - Week 1: Setup Twilio WhatsApp webhooks
 - Customers text: "Gaming PC overheating help"
 - Sales Agent responds live (requires availability signal)
 
 **Ventajas:**
+
 - Faster response → higher conversion
 - Matches local market behavior (RI customers text first)
 - Rich media (photos of issue)
 - Warm leads feel personal
 
 **Limitaciones:**
+
 - Requires Sales Agent "online" availability or smart routing
 - Overkill if customer inquiry is async question ("prices?")
 - Risk: Sales Agent overwhelmed by multiple WhatsApp threads
@@ -60,11 +67,13 @@ Opsly Local Services necesita adquirir clientes sin contact center / sales team.
 **Rechazo temporal:** Week 1 too early (focus on email foundation). Agrega Week 1+ after email setup works.
 
 ### Opción C: Hybrid (Email + WhatsApp from Day 1) ✅ **SELECCIONADA CON PHASING**
+
 - **Week 1-2 (MVP):** Email primary (web form → SendGrid → Sales Agent)
 - **Week 1+ (enhancement):** WhatsApp added (form option: "prefer WhatsApp response?" → Twilio webhook)
 - **Week 3+:** Auto-triage (form priority + lead warmth signals routing to best channel)
 
 **Seleccionada porque:**
+
 - Email = foundation (reliable, async, no surprise load)
 - WhatsApp = enhancement (after email pattern proven)
 - Flexibility: customer chooses channel preference
@@ -75,6 +84,7 @@ Opsly Local Services necesita adquirir clientes sin contact center / sales team.
 **Phased multi-channel approach:**
 
 ### Phase 1: Email Foundation (Week 1-2)
+
 - **Entry point:** Web form (public booking page)
 - **Fields:**
   ```
@@ -101,6 +111,7 @@ Opsly Local Services necesita adquirir clientes sin contact center / sales team.
   ```
 
 ### Phase 1.5: WhatsApp Add-On (Week 1+, optional launch timing)
+
 - **Conditional field:** "Prefer WhatsApp response?"
 - **Setup:** Twilio WhatsApp Business API
 - **Flow (if customer selects WhatsApp):**
@@ -134,13 +145,13 @@ async function routeLeadToSalesAgent(lead: LeadChannel) {
     // Send via Twilio WhatsApp
     await twilioWhatsApp.send({
       to: lead.phone,
-      template: 'lead_inquiry_acknowledgment'
+      template: 'lead_inquiry_acknowledgment',
     });
   } else {
     // Send via SendGrid email (default)
     await sendgrid.send({
       to: lead.email,
-      template: 'lead_inquiry_acknowledgment'
+      template: 'lead_inquiry_acknowledgment',
     });
   }
 }
@@ -149,24 +160,28 @@ async function routeLeadToSalesAgent(lead: LeadChannel) {
 ## Consecuencias
 
 ### Positivas
+
 - **Week 1-2:** Email alone = simple, reliable, zero interruptions
 - **Week 1+:** WhatsApp option = faster conversion for warm leads
 - **Psychological:** Customer chooses channel = perceived respect for preference
 - **Scalability:** Both route through same Sales Agent (no duplication)
 
 ### Negativas (mitigadas)
-- **WhatsApp always-on pressure:** Sales Agent must be responsive. *Mitigación:* Set availability hours in Twilio (auto-respond after-hours: "Will get back to you 9am tomorrow")
-- **Conversation fragmentation:** Same lead across email + WhatsApp creates duplicate work. *Mitigación:* Use lead_id to dedup, track channel in CRM
-- **Twilio cost:** WhatsApp messages cost $0.01-0.05 each. *Mitigación:* Budget ~$50/mo for 1000-5000 messages at MVP scale
+
+- **WhatsApp always-on pressure:** Sales Agent must be responsive. _Mitigación:_ Set availability hours in Twilio (auto-respond after-hours: "Will get back to you 9am tomorrow")
+- **Conversation fragmentation:** Same lead across email + WhatsApp creates duplicate work. _Mitigación:_ Use lead_id to dedup, track channel in CRM
+- **Twilio cost:** WhatsApp messages cost $0.01-0.05 each. _Mitigación:_ Budget ~$50/mo for 1000-5000 messages at MVP scale
 
 ## Notas Operacionales
 
 ### SendGrid Setup (Week 1)
+
 - Template: `lead_inquiry_acknowledgment_email.html`
 - Sender: `noreply@opsly-local-services.com` or `sales@yourdomain.com`
 - Reply-To: Sales Agent email (or bounce to orchestrator job)
 
 ### Twilio Setup (Week 1+)
+
 ```bash
 # npm install twilio
 # Doppler secret: TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_WHATSAPP_NUMBER

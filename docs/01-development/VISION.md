@@ -18,16 +18,16 @@ last_review: 2026-05-02
 
 ## Índice de planificación (canon vs temático)
 
-| Rol | Documento | Notas |
-| --- | --- | --- |
-| **Norte y fases** | Este archivo (`VISION.md`) | ICP, límites, checklist Fase 1–6, reglas para agentes |
-| **Sprint semanal** | [`ROADMAP.md`](ROADMAP.md) | Tareas por semana; alineado a las fases de arriba |
-| **Checkboxes de la semana** | [`SPRINT-TRACKER.md`](SPRINT-TRACKER.md) | Progreso operativo editable |
-| **Sesión y bloqueantes** | [`../../AGENTS.md`](../../AGENTS.md) (raíz del repo) | Estado vivo; no duplicar tablas de límites aquí |
-| **Macro + herramientas** | [`PLANNING.md`](PLANNING.md) | Cómo planificar (GitHub Projects, CI, calidad) |
-| **Planes temáticos** | [`../plans/README.md`](../plans/README.md) | Autonomía, CLI, go/no-go; no sustituyen ROADMAP |
-| **Semana 6 (detalle)** | [`SEMANA-6-PLAN.md`](SEMANA-6-PLAN.md) | Playbook segundo cliente + E2E; informe: [`../SEMANA-6-INFORME.md`](../SEMANA-6-INFORME.md) |
-| **Histórico** | [`../history/plans/`](../history/plans/) | `MASTER-PLAN*.md` y similares — **deprecated** (ADR-033); solo contexto |
+| Rol                         | Documento                                            | Notas                                                                                       |
+| --------------------------- | ---------------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| **Norte y fases**           | Este archivo (`VISION.md`)                           | ICP, límites, checklist Fase 1–6, reglas para agentes                                       |
+| **Sprint semanal**          | [`ROADMAP.md`](ROADMAP.md)                           | Tareas por semana; alineado a las fases de arriba                                           |
+| **Checkboxes de la semana** | [`SPRINT-TRACKER.md`](SPRINT-TRACKER.md)             | Progreso operativo editable                                                                 |
+| **Sesión y bloqueantes**    | [`../../AGENTS.md`](../../AGENTS.md) (raíz del repo) | Estado vivo; no duplicar tablas de límites aquí                                             |
+| **Macro + herramientas**    | [`PLANNING.md`](PLANNING.md)                         | Cómo planificar (GitHub Projects, CI, calidad)                                              |
+| **Planes temáticos**        | [`../plans/README.md`](../plans/README.md)           | Autonomía, CLI, go/no-go; no sustituyen ROADMAP                                             |
+| **Semana 6 (detalle)**      | [`SEMANA-6-PLAN.md`](SEMANA-6-PLAN.md)               | Playbook segundo cliente + E2E; informe: [`../SEMANA-6-INFORME.md`](../SEMANA-6-INFORME.md) |
+| **Histórico**               | [`../history/plans/`](../history/plans/)             | `MASTER-PLAN*.md` y similares — **deprecated** (ADR-033); solo contexto                     |
 
 La **raíz del repo** expone stubs que apuntan aquí: [`../../VISION.md`](../../VISION.md), [`../../ROADMAP.md`](../../ROADMAP.md).
 
@@ -59,11 +59,13 @@ Ambos con facturación Stripe, backups automáticos, dashboard global y orquesta
 ## Para quién
 
 ### Opsly Automation
+
 - Agencias digitales y equipos de operaciones que necesitan automatización sin gestionar infra
 - Monitoreo de uptime para sus clientes
 - Facturación recurrente con planes diferenciados
 
 ### Opsly Shield (NUEVO — norte estratégico)
+
 - **SMBs que no pueden pagar SOC enterprise** (~$1k-5k/mes típico)
 - Pequeños negocios que necesitan defensa digital 24/7
 - Familias y startups en modalidad personal
@@ -81,22 +83,24 @@ Ambos con facturación Stripe, backups automáticos, dashboard global y orquesta
 
 ### Opsly Shield (NUEVO — línea defensiva)
 
-| Plan       | Precio   | Incluye                                      | Público                    |
-| ---------- | -------- | -------------------------------------------- | -------------------------- |
-| Starter    | $49/mes  | Monitoreo web, alertas phishing, backups     | Pequeños negocios          |
-| Business   | $199/mes | Starter + SIEM lite, bots defensivos, uptime | SMBs con datos sensibles   |
+| Plan       | Precio   | Incluye                                      | Público                     |
+| ---------- | -------- | -------------------------------------------- | --------------------------- |
+| Starter    | $49/mes  | Monitoreo web, alertas phishing, backups     | Pequeños negocios           |
+| Business   | $199/mes | Starter + SIEM lite, bots defensivos, uptime | SMBs con datos sensibles    |
 | Enterprise | $999/mes | Business + agentes SOC completos, compliance | Empresas con requisitos SLA |
-| Personal   | $19/mes  | Protección identidad, breaches, fraude       | Familias, freelancers      |
+| Personal   | $19/mes  | Protección identidad, breaches, fraude       | Familias, freelancers       |
 
 ## Clientes Reales y Validación
 
 ### Opsly Automation
+
 - **Tenant:** smiletripcare
 - **Plan:** Startup ($49/mes)
 - **Dominio:** ops.smiletripcare.com
 - **Propósito:** validar stack completo en producción
 
 ### Opsly Shield (PRÓXIMO)
+
 - **Target:** Primera SMB + una startup personalmente
 - **Plan aspiracional:** Business ($199/mes) + Personal ($19/mes)
 - **Métrica de éxito:** detección de breach/anomalía real en primer mes
@@ -110,6 +114,7 @@ Ambos con facturación Stripe, backups automáticos, dashboard global y orquesta
 3. **Diferenciador:** "Protege negocios que no pueden pagar un SOC real"
 
 ### Go-to-Market Fase 1 (30 días)
+
 - [ ] Uptime Kuma + security alerts (MVP)
 - [ ] Secrets scanner automático
 - [ ] Dashboard Security Score (0-100)
@@ -117,6 +122,7 @@ Ambos con facturación Stripe, backups automáticos, dashboard global y orquesta
 - [ ] Blog post: "Why SMBs Get Breached and How Opsly Shield Stops It"
 
 ### Go-to-Market Fase 2 (90 días)
+
 - [ ] Guardian Bots (5/8 implementados)
 - [ ] Auto-Response Engine (feature flag)
 - [ ] Compliance checklists
@@ -124,6 +130,7 @@ Ambos con facturación Stripe, backups automáticos, dashboard global y orquesta
 - [ ] 5-10 clientes en MRR
 
 ### Revenue Projection (anual)
+
 ```
 Mes 1-3:  MVP validation    →  $500 MRR (1-2 clientes)
 Mes 4-6:  Guardian full     →  $3k MRR (8-12 clientes)
@@ -239,6 +246,7 @@ Objetivo: un tenant real corriendo en producción.
 Objetivo: onboarding sin intervención manual + Guardian Grid MVP.
 
 **Opsly Automation (existente):**
+
 - [x] Stripe → webhook → tenant desplegado automáticamente
 - [x] Dashboard admin operativo
 - [x] Redis memory layer para contexto de agentes
@@ -246,6 +254,7 @@ Objetivo: onboarding sin intervención manual + Guardian Grid MVP.
 - [ ] Segundo cliente real
 
 **Opsly Shield (nuevo):**
+
 - [ ] Uptime Kuma + alertas defensivas en portal
 - [ ] Secrets scanner básico (repos públicos, hardcoded env vars)
 - [ ] Security Score dashboard (MVP)
@@ -257,6 +266,7 @@ Objetivo: onboarding sin intervención manual + Guardian Grid MVP.
 Objetivo: plataforma defensiva + automatización que vende sola, PMF claro en Shield.
 
 **Opsly Shield (prioridad defensiva):**
+
 - [ ] Guardian Bots completamente funcionales (DNS, Email, Logs, Cloud, Billing, Secrets, API)
 - [ ] Auto-Response Engine con toggles por plan y confidence threshold
 - [ ] Breach intelligence + threat feeds integradas
@@ -264,11 +274,13 @@ Objetivo: plataforma defensiva + automatización que vende sola, PMF claro en Sh
 - [ ] 3+ clientes pagando Shield en plan Business/Enterprise
 
 **Opsly Automation (complementario):**
+
 - [ ] Self-service completo para workflow tenants
 - [ ] Marketplace de templates n8n
 - [ ] Multi-VPS si el primero no alcanza
 
 **Ambas líneas:**
+
 - [ ] Observabilidad: métricas por tenant
 - [ ] Vector DB para memoria semántica de agentes
 - [ ] API docs públicas
@@ -278,6 +290,7 @@ Objetivo: plataforma defensiva + automatización que vende sola, PMF claro en Sh
 Objetivo: unificar herramientas, orquestación, defensa y capa de costos IA bajo un control plane único.
 
 **OpenClaw Core (multi-agente):**
+
 - [ ] MCP como entrypoint estándar de herramientas para agentes.
 - [ ] Orchestrator BullMQ con prioridad por plan (`startup|business|enterprise`).
 - [ ] LLM Gateway como punto único de routing, cache y métricas de costo.
@@ -288,6 +301,7 @@ Objetivo: unificar herramientas, orquestación, defensa y capa de costos IA bajo
 - [ ] Endurecer SwarmOps: retries/reasignación explícita por subtarea y pruebas integradas.
 
 **Guardian Grid (NUEVO — defensa 24/7):**
+
 - [ ] Guardian Bots base: Bot DNS, Bot Email, Bot Logs, Bot Cloud, Bot Billing, Bot Secrets, Bot API, Bot Compliance.
 - [ ] Security Swarm coordinado: microbots en cooperación via Opsly Core.
 - [ ] Auto-Response Engine: bloqueo IP, rotación credenciales, aislamiento automático de tenant.
@@ -312,6 +326,7 @@ Objetivo: unificar herramientas, orquestación, defensa y capa de costos IA bajo
 ### Componentes Guardian Grid
 
 #### 1. Guardian Bots (especialización)
+
 Cada bot monitorea un dominio de seguridad 24/7:
 
 ```
@@ -326,20 +341,26 @@ BotCompliance  → Checklists GDPR/SOC2/ISO27001, requisitos regulatorios
 ```
 
 #### 2. Security Swarm
+
 Microbots coordinados por `QueenBee` (orquestador), comunicación via `PheromoneChannel`:
+
 - Cooperación paralela: múltiples bots investigan el mismo incidente
 - Priorización inteligente: severidad + tenant + plan
 - State sharing: contexto compartido para reasignación automática
 
 #### 3. Auto-Response Engine
+
 Remediaciónauto cuando confidence > threshold:
+
 - **Red:** bloquear IP / dominio
 - **Orange:** rotación de credenciales, reset 2FA
 - **Yellow:** apagar servicio comprometido temporalmente, crear backup inmediato
 - **Green:** alert-only (información, sin acción)
 
 #### 4. Security Score Live
+
 Dashboard por tenant actualizado en tiempo real:
+
 - Postura actual (0-100)
 - Riesgos identificados (severidad)
 - Uptime última 7 días
@@ -348,7 +369,9 @@ Dashboard por tenant actualizado en tiempo real:
 - Costos infraestructura
 
 #### 5. Intelligence Feed
+
 Conectores a:
+
 - Breach databases (HaveIBeenPwned, etc.)
 - Threat intel feeds (públicos + privados según plan)
 - CVE tracking (vulnerabilidades de 3rd party)
@@ -447,7 +470,7 @@ flowchart TB
   MCP --> NB[NotebookLM EXPERIMENTAL]
   API --> SUP[(Supabase platform + tenant schemas)]
   LLMG --> MODELS[LLM Providers]
-  
+
   UK -.->|security alerts| BOTS
   BOTS -.->|incident events| API
 ```

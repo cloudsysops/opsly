@@ -4,7 +4,7 @@ skills:
   - opsly-architect
   - opsly-infra
 environment_vars:
-  ARCH_MODE: "true"
+  ARCH_MODE: 'true'
 permissions:
   - design:write
 tools:

@@ -55,15 +55,16 @@ Extensión de Opsly que transforma los agentes SwarmOps en **productos y servici
 
 **Objetivo:** Agentes de marketing automatizado para clientes externos.
 
-| Servicio | Descripción | pricing |
-|----------|-------------|---------|
-| **Social Media Automation** | Posts, scheduling, analytics por plataforma | $99/mes |
-| **Content Generation** | Blog posts, emails, ads copy con AI | $149/mes |
-| **SEO Agent** | Keyword research, on-page optimization, reporting | $199/mes |
-| **Email Marketing** | Campaigns, sequences, A/B testing automation | $129/mes |
-| **Analytics Dashboard** | Multi-channel analytics con insights AI | $79/mes |
+| Servicio                    | Descripción                                       | pricing  |
+| --------------------------- | ------------------------------------------------- | -------- |
+| **Social Media Automation** | Posts, scheduling, analytics por plataforma       | $99/mes  |
+| **Content Generation**      | Blog posts, emails, ads copy con AI               | $149/mes |
+| **SEO Agent**               | Keyword research, on-page optimization, reporting | $199/mes |
+| **Email Marketing**         | Campaigns, sequences, A/B testing automation      | $129/mes |
+| **Analytics Dashboard**     | Multi-channel analytics con insights AI           | $79/mes  |
 
 **Agentes relacionados:**
+
 - `agent_social_media` ✅ existente
 - `agent_marketing` ✅ existente
 - `agent_creative` ✅ existente
@@ -74,14 +75,15 @@ Extensión de Opsly que transforma los agentes SwarmOps en **productos y servici
 
 **Objetivo:** Vender enjambres de agentes como subscription.
 
-| Producto | Descripción | pricing |
-|----------|-------------|---------|
-| **Pentester Swarm** | Security scans recurrentes, vulnerability assessment | $299/mes |
-| **Revenue Swarm** | Trading automation + lead generation + sales | $499/mes |
-| **Enterprise Swarm** | Operations + HR + Finance automation | $399/mes |
-| **Custom Agent** | Agente especializado según necesidad | $199+/mes |
+| Producto             | Descripción                                          | pricing   |
+| -------------------- | ---------------------------------------------------- | --------- |
+| **Pentester Swarm**  | Security scans recurrentes, vulnerability assessment | $299/mes  |
+| **Revenue Swarm**    | Trading automation + lead generation + sales         | $499/mes  |
+| **Enterprise Swarm** | Operations + HR + Finance automation                 | $399/mes  |
+| **Custom Agent**     | Agente especializado según necesidad                 | $199+/mes |
 
 **Agentes relacionados:**
+
 - `pentester_execute` ✅ existente
 - `revenue_execute` ✅ existente
 - `enterprise_execute` ✅ existente
@@ -92,13 +94,13 @@ Extensión de Opsly que transforma los agentes SwarmOps en **productos y servici
 
 **Objetivo:** Desarrollo autónomo de APIs seguras y monitoreadas.
 
-| Servicio | Descripción | pricing |
-|----------|-------------|---------|
-| **API Generator** | Genera API completa desde spec OpenAPI | $149/mes |
-| **API Security** | Rate limiting, auth, penetration testing | $199/mes |
-| **API Monitoring** | 24/7 health, latency, error tracking | $99/mes |
-| **API Documentation** | Auto-generates docs, postman collections | $79/mes |
-| **API Compliance** | GDPR, SOC2, ISO27001 audit trails | $249/mes |
+| Servicio              | Descripción                              | pricing  |
+| --------------------- | ---------------------------------------- | -------- |
+| **API Generator**     | Genera API completa desde spec OpenAPI   | $149/mes |
+| **API Security**      | Rate limiting, auth, penetration testing | $199/mes |
+| **API Monitoring**    | 24/7 health, latency, error tracking     | $99/mes  |
+| **API Documentation** | Auto-generates docs, postman collections | $79/mes  |
+| **API Compliance**    | GDPR, SOC2, ISO27001 audit trails        | $249/mes |
 
 **Arquitectura:**
 
@@ -131,14 +133,14 @@ Extensión de Opsly que transforma los agentes SwarmOps en **productos y servici
 
 **Objetivo:** Dashboard centralizado para gestionar todos los agentes.
 
-| Feature | Descripción |
-|---------|-------------|
-| **Agent Registry** | Lista todos los agentes por tenant |
-| **Usage Metrics** | Executions, tokens, costo por agente |
-| **Health Status** | Uptime, errores, último heartbeat |
-| **Cost Allocation** | Costo por agente, tendencias, forecasting |
-| **Alerting** | Thresholds configurables por cliente |
-| **Billing Integration** | Calcula billing por uso real |
+| Feature                 | Descripción                               |
+| ----------------------- | ----------------------------------------- |
+| **Agent Registry**      | Lista todos los agentes por tenant        |
+| **Usage Metrics**       | Executions, tokens, costo por agente      |
+| **Health Status**       | Uptime, errores, último heartbeat         |
+| **Cost Allocation**     | Costo por agente, tendencias, forecasting |
+| **Alerting**            | Thresholds configurables por cliente      |
+| **Billing Integration** | Calcula billing por uso real              |
 
 ---
 
@@ -180,23 +182,23 @@ Extensión de Opsly que transforma los agentes SwarmOps en **productos y servici
 // Nueva estructura de colas para Agency Division
 const AGENCY_QUEUES = {
   // Marketing
-  'marketing_campaign': { priority: 10, concurrency: 5 },
-  'social_media_post': { priority: 8, concurrency: 10 },
-  'content_generation': { priority: 5, concurrency: 3 },
-  
+  marketing_campaign: { priority: 10, concurrency: 5 },
+  social_media_post: { priority: 8, concurrency: 10 },
+  content_generation: { priority: 5, concurrency: 3 },
+
   // Agents (Pentester, Revenue, Enterprise)
-  'pentester_scan': { priority: 9, concurrency: 2 },
-  'revenue_task': { priority: 7, concurrency: 5 },
-  'enterprise_task': { priority: 6, concurrency: 3 },
-  
+  pentester_scan: { priority: 9, concurrency: 2 },
+  revenue_task: { priority: 7, concurrency: 5 },
+  enterprise_task: { priority: 6, concurrency: 3 },
+
   // API Factory
-  'api_generate': { priority: 8, concurrency: 3 },
-  'api_security_scan': { priority: 9, concurrency: 2 },
-  'api_monitor': { priority: 5, concurrency: 10 },
-  
+  api_generate: { priority: 8, concurrency: 3 },
+  api_security_scan: { priority: 9, concurrency: 2 },
+  api_monitor: { priority: 5, concurrency: 10 },
+
   // Agent Management
-  'agent_health_check': { priority: 3, concurrency: 20 },
-  'usage_aggregation': { priority: 2, concurrency: 1 }
+  agent_health_check: { priority: 3, concurrency: 20 },
+  usage_aggregation: { priority: 2, concurrency: 1 },
 };
 ```
 
@@ -207,13 +209,13 @@ const AGENCY_QUEUES = {
 const AGENCY_REDIS_KEYS = {
   // Agentes por tenant
   'agency:{tenant}:agents' → Hash of agent_id → metadata
-  
+
   // Métricas por agente
   'agency:{tenant}:metrics:{agent_id}:daily' → Sorted set by timestamp
-  
+
   // Costos acumulados
   'agency:{tenant}:costs:{month}' → Hash of agent_id → total_cost
-  
+
   // API Factory
   'api:{tenant}:apis' → Hash of api_id → spec + status
   'api:{tenant}:health:{api_id}' → Latest health snapshot
@@ -228,12 +230,12 @@ const AGENCY_REDIS_KEYS = {
 
 **Objetivo:** Validar con 3-5 clientes piloto.
 
-| Step | Acción | Timeline |
-|------|--------|----------|
-| 1 | Dashboard Agent Management básico | Semana 1-2 |
-| 2 | Integrar agentes existentes (Marketing, Pentester) | Semana 3-4 |
-| 3 | API Factory básico (generate + monitor) | Semana 5-6 |
-| 4 | Onboard 3 clientes piloto | Semana 7-8 |
+| Step | Acción                                             | Timeline   |
+| ---- | -------------------------------------------------- | ---------- |
+| 1    | Dashboard Agent Management básico                  | Semana 1-2 |
+| 2    | Integrar agentes existentes (Marketing, Pentester) | Semana 3-4 |
+| 3    | API Factory básico (generate + monitor)            | Semana 5-6 |
+| 4    | Onboard 3 clientes piloto                          | Semana 7-8 |
 
 ### Fase 2: Producto (Mes 3-6)
 
@@ -284,12 +286,12 @@ const AGENCY_REDIS_KEYS = {
 
 ### Revenue Breakdown Proyectado
 
-| Mes | Clientes | MRR | Líneas activas |
-|-----|----------|-----|----------------|
-| 1-2 | 3 | $297 | Pilot |
-| 3-4 | 10 | $2,990 | Marketing + Agents |
-| 5-6 | 25 | $14,950 | Full suite |
-| 7-12 | 50+ | $35,000+ | Scale |
+| Mes  | Clientes | MRR      | Líneas activas     |
+| ---- | -------- | -------- | ------------------ |
+| 1-2  | 3        | $297     | Pilot              |
+| 3-4  | 10       | $2,990   | Marketing + Agents |
+| 5-6  | 25       | $14,950  | Full suite         |
+| 7-12 | 50+      | $35,000+ | Scale              |
 
 ---
 
@@ -321,24 +323,24 @@ const AGENCY_REDIS_KEYS = {
 
 ## Métricas de Éxito
 
-| Métrica | Target Q2 | Target Q4 |
-|---------|-----------|-----------|
-| Clientes activos | 3 | 50 |
-| MRR | $300 | $35,000 |
-| Agents deployed | 50 | 500 |
-| API uptime | 99.5% | 99.9% |
-| Customer NPS | 40+ | 60+ |
+| Métrica          | Target Q2 | Target Q4 |
+| ---------------- | --------- | --------- |
+| Clientes activos | 3         | 50        |
+| MRR              | $300      | $35,000   |
+| Agents deployed  | 50        | 500       |
+| API uptime       | 99.5%     | 99.9%     |
+| Customer NPS     | 40+       | 60+       |
 
 ---
 
 ## Risks y Mitigaciones
 
-| Risk | Impacto | Mitigación |
-|------|---------|------------|
-| Dependencia de agentes Python | Alto | Migrar a TypeScript gradualmente |
-| Costos LLM se disparan | Medio | Budget caps por tenant, cache obligatorio |
-| Clientes no adoptan | Alto | Onboarding asistido, templates pre-configurados |
-| Security liability | Alto | Insurance, Terms of Service claros, opt-in para pentesting |
+| Risk                          | Impacto | Mitigación                                                 |
+| ----------------------------- | ------- | ---------------------------------------------------------- |
+| Dependencia de agentes Python | Alto    | Migrar a TypeScript gradualmente                           |
+| Costos LLM se disparan        | Medio   | Budget caps por tenant, cache obligatorio                  |
+| Clientes no adoptan           | Alto    | Onboarding asistido, templates pre-configurados            |
+| Security liability            | Alto    | Insurance, Terms of Service claros, opt-in para pentesting |
 
 ---
 

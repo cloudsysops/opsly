@@ -1,6 +1,6 @@
 /**
  * API Factory Worker
- * 
+ *
  * Worker BullMQ para generar APIs seguras y monitoreadas
  * Jobs: 'api_factory_generate', 'api_factory_security', 'api_factory_monitor'
  */
@@ -64,7 +64,10 @@ export function startAPIFactoryWorker(): Worker {
         throw new Error(`Unknown job type: ${job.name}`);
       } catch (err) {
         const msg = err instanceof Error ? err.message : String(err);
-        logWorkerLifecycle('fail', 'api_factory', job, { duration_ms: Date.now() - t0, error: msg });
+        logWorkerLifecycle('fail', 'api_factory', job, {
+          duration_ms: Date.now() - t0,
+          error: msg,
+        });
         throw err;
       } finally {
         logWorkerLifecycle('complete', 'api_factory', job, { duration_ms: Date.now() - t0 });
@@ -94,7 +97,7 @@ async function handleApiGenerate(job: Job<ApiGenerateJobData>): Promise<any> {
     type: 'api_generate',
     tenant_slug,
     request_id: job.id!,
-    started_at: new Date().toISOString()
+    started_at: new Date().toISOString(),
   });
 
   // Simulate code generation
@@ -108,11 +111,11 @@ async function handleApiGenerate(job: Job<ApiGenerateJobData>): Promise<any> {
     'docker-compose.yml',
     'Dockerfile',
     'package.json',
-    '.env.example'
+    '.env.example',
   ];
 
   // Simulate processing time
-  await new Promise(resolve => setTimeout(resolve, 2000));
+  await new Promise((resolve) => setTimeout(resolve, 2000));
 
   const result = {
     api_id: `api_${Date.now()}`,
@@ -125,19 +128,19 @@ async function handleApiGenerate(job: Job<ApiGenerateJobData>): Promise<any> {
       rate_limiting: true,
       cors: true,
       helmet: true,
-      auth: endpoints.some(e => e.auth !== 'none') ? 'configured' : 'none'
+      auth: endpoints.some((e) => e.auth !== 'none') ? 'configured' : 'none',
     },
     monitoring: {
       health_endpoint: '/health',
       metrics_endpoint: '/metrics',
-      logging: 'enabled'
-    }
+      logging: 'enabled',
+    },
   };
 
   await setJobState(job.id!, {
     status: 'completed',
     completed_at: new Date().toISOString(),
-    result
+    result,
   });
 
   return result;
@@ -151,17 +154,17 @@ async function handleApiSecurity(job: Job<ApiSecurityJobData>): Promise<any> {
     type: 'api_security',
     tenant_slug,
     request_id: job.id!,
-    started_at: new Date().toISOString()
+    started_at: new Date().toISOString(),
   });
 
   // Simulate security scan
   const vulnerabilities = [
     { severity: 'critical', type: 'SQL Injection', endpoint: '/api/users', cve: 'CVE-2024-001' },
     { severity: 'high', type: 'Broken Auth', endpoint: '/api/auth', cve: 'CVE-2024-002' },
-    { severity: 'medium', type: 'Info Disclosure', endpoint: '/api/debug', cve: 'CVE-2024-003' }
+    { severity: 'medium', type: 'Info Disclosure', endpoint: '/api/debug', cve: 'CVE-2024-003' },
   ];
 
-  await new Promise(resolve => setTimeout(resolve, 3000));
+  await new Promise((resolve) => setTimeout(resolve, 3000));
 
   const result = {
     scan_id: `scan_${Date.now()}`,
@@ -172,29 +175,29 @@ async function handleApiSecurity(job: Job<ApiSecurityJobData>): Promise<any> {
     duration_seconds: 145,
     vulnerabilities,
     vulnerability_count: {
-      critical: vulnerabilities.filter(v => v.severity === 'critical').length,
-      high: vulnerabilities.filter(v => v.severity === 'high').length,
-      medium: vulnerabilities.filter(v => v.severity === 'medium').length,
-      low: 0
+      critical: vulnerabilities.filter((v) => v.severity === 'critical').length,
+      high: vulnerabilities.filter((v) => v.severity === 'high').length,
+      medium: vulnerabilities.filter((v) => v.severity === 'medium').length,
+      low: 0,
     },
     recommendations: [
       'Implement parameterized queries',
       'Add MFA for auth endpoints',
       'Remove debug endpoints from production',
-      'Enable WAF rules'
+      'Enable WAF rules',
     ],
     security_score: 65,
     compliance_status: {
       OWASP: 'fail',
       SOC2: 'pass',
-      GDPR: 'partial'
-    }
+      GDPR: 'partial',
+    },
   };
 
   await setJobState(job.id!, {
     status: 'completed',
     completed_at: new Date().toISOString(),
-    result
+    result,
   });
 
   return result;
@@ -208,7 +211,7 @@ async function handleApiMonitor(job: Job<ApiMonitorJobData>): Promise<any> {
     type: 'api_monitor',
     tenant_slug,
     request_id: job.id!,
-    started_at: new Date().toISOString()
+    started_at: new Date().toISOString(),
   });
 
   // Return monitoring data
@@ -220,7 +223,7 @@ async function handleApiMonitor(job: Job<ApiMonitorJobData>): Promise<any> {
     health: {
       status: 'healthy',
       uptime: '99.8%',
-      last_check: new Date().toISOString()
+      last_check: new Date().toISOString(),
     },
     metrics: {
       requests_total: 45230,
@@ -228,21 +231,25 @@ async function handleApiMonitor(job: Job<ApiMonitorJobData>): Promise<any> {
       error_rate: '0.24%',
       latency_p50: 28,
       latency_p95: 85,
-      latency_p99: 210
+      latency_p99: 210,
     },
     alerts: [
-      { severity: 'warning', message: 'High latency on /api/users', timestamp: new Date().toISOString() }
+      {
+        severity: 'warning',
+        message: 'High latency on /api/users',
+        timestamp: new Date().toISOString(),
+      },
     ],
     rate_limits: {
       remaining: 9500,
-      reset_at: new Date(Date.now() + 3600000).toISOString()
-    }
+      reset_at: new Date(Date.now() + 3600000).toISOString(),
+    },
   };
 
   await setJobState(job.id!, {
     status: 'completed',
     completed_at: new Date().toISOString(),
-    result
+    result,
   });
 
   return result;

@@ -10,7 +10,7 @@
 
 ## Executive Summary
 
-Opsly ha pivotado a Guardian Grid (Autonomous Defense Operating System). Para ejecutar tareas autonomamente, necesitamos un **Task Orchestrator** que ya tiene estructura base (Redis queue, Express API). 
+Opsly ha pivotado a Guardian Grid (Autonomous Defense Operating System). Para ejecutar tareas autonomamente, necesitamos un **Task Orchestrator** que ya tiene estructura base (Redis queue, Express API).
 
 Tu tarea: **Completar la implementación + crear worker client para MacBook que ejecute prompts automáticamente.**
 
@@ -41,12 +41,14 @@ Resultado final: Claude pushea prompts → Cursor en MacBook los ejecuta automá
 ### Phase 1: Infrastructure (Day 1)
 
 **1.1 Apply Supabase Migration**
+
 - [ ] Read: `apps/task-orchestrator/src/db/schema.sql`
 - [ ] Apply to jkwykpldnitavhmtuzmo (Supabase project)
 - [ ] Verify tables exist: `opsly_tasks`, `opsly_task_logs`, `opsly_workers`
 - [ ] Set RLS policies to allow all (for now)
 
 **1.2 Complete Queue Service**
+
 - [ ] File: `apps/task-orchestrator/src/services/queue.ts`
 - [ ] Implement missing methods:
   - [ ] `connect()` → Connect to Redis + initialize BullMQ queue
@@ -54,19 +56,20 @@ Resultado final: Claude pushea prompts → Cursor en MacBook los ejecuta automá
   - [ ] `getTask()` → Fetch from Redis (not just BullMQ)
   - [ ] `updateTaskStatus()` → Also sync to Supabase
   - [ ] Add: `syncToSupabase()` → Persist logs to DB every 30s
-  
 - [ ] Handle edge cases:
   - Reconnection logic if Redis fails
   - Fallback to Supabase if Redis unavailable
   - Transaction safety for status updates
 
 **1.3 Complete Server Endpoints**
+
 - [ ] All POST endpoints should validate input with Zod
 - [ ] All responses should include request_id (trace)
 - [ ] Error handling: proper HTTP status codes + Sentry
 - [ ] Logging: use OpenClaw LLM Gateway for metering
 
 Example for POST /api/tasks:
+
 ```typescript
 // Every endpoint should:
 POST /api/tasks
@@ -82,6 +85,7 @@ POST /api/tasks
 ### Phase 2: Dashboard UI (Day 2)
 
 **2.1 Portal Component**
+
 - [ ] Create: `apps/portal/app/orchestrator/page.tsx`
 - [ ] Features:
   - [ ] Task list table (pending, executing, completed, failed)
@@ -92,6 +96,7 @@ POST /api/tasks
   - [ ] Buttons: cancel, retry, view-result
 
 **2.2 Task Detail View**
+
 - [ ] Modal or sidebar when clicking task
 - [ ] Show:
   - [ ] Full prompt
@@ -102,6 +107,7 @@ POST /api/tasks
 - [ ] Actions: cancel, retry with params, download logs
 
 **2.3 Worker Status**
+
 - [ ] Show connected workers (polling /api/workers)
 - [ ] Status: idle, working, offline
 - [ ] Last heartbeat
@@ -114,6 +120,7 @@ POST /api/tasks
 This is the **most important part**. This enables full autonomy.
 
 **3.1 Create Worker Client Library**
+
 - [ ] Path: `apps/task-orchestrator/src/client/worker.ts`
 - [ ] Class: `OpslyWorker`
 
@@ -150,6 +157,7 @@ class OpslyWorker {
 ```
 
 **3.2 Cursor Integration (For MacBook)**
+
 - [ ] Create executable: `scripts/worker-start-cursor.sh`
 - [ ] Usage: `npm run worker:start -- --worker-id=cursor-macbook-cboteros`
 - [ ] What it does:
@@ -162,7 +170,9 @@ class OpslyWorker {
   7. Fetches next task
 
 **3.3 Cursor Execution**
+
 - [ ] When worker gets task, execute:
+
 ```bash
 cursor --execute "$(task.prompt)" \
   --output-dir=/tmp/cursor-execution-$RANDOM \
@@ -174,8 +184,8 @@ cursor --execute "$(task.prompt)" \
   - [ ] Exit code
   - [ ] Files created/modified
   - [ ] Git commits made
-  
 - [ ] Send logs every 30s:
+
 ```
 POST /api/tasks/:id/log
 {
@@ -186,6 +196,7 @@ POST /api/tasks/:id/log
 ```
 
 **3.4 Cursor Package.json Script**
+
 ```json
 {
   "scripts": {
@@ -210,26 +221,33 @@ POST /api/tasks/:id/log
 ## Key Technical Decisions
 
 ### A. Redis vs Supabase Sync
+
 **Design:** Redis is primary (low latency), Supabase is persistent backup.
+
 - Task starts → Redis queue immediately
 - Every 30s → sync logs to Supabase (batch)
 - Worker offline → tasks still in Redis queue
 - Server restart → recover tasks from Supabase
 
 ### B. Worker Heartbeat
+
 **Design:** Every 30 seconds
+
 - If no heartbeat for 2 min → worker marked offline
 - Tasks reassigned to other workers (future)
 - Prevent zombie workers
 
 ### C. Cursor Execution Isolation
+
 **Design:** Each execution in temporary directory
+
 - `/tmp/cursor-execution-$RANDOM/`
 - Logs streamed back to orchestrator
 - On completion: git operations (add, commit, push)
 - Prevent state pollution between tasks
 
 ### D. Error Handling
+
 - Task fails → worker sends error + stacktrace to /api/tasks/:id/log
 - If task fails > 3 times → mark as failed_perm (requires manual retry)
 - All errors logged to Sentry
@@ -271,23 +289,27 @@ apps/task-orchestrator/
 ## Acceptance Criteria
 
 ✅ **Functionality:**
+
 - [ ] Queue service: CRUD tasks, sync to Supabase
 - [ ] API: all endpoints working, validated input
 - [ ] Dashboard: real-time task monitoring
 - [ ] Worker client: executes prompts via Cursor, streams logs
 
 ✅ **Quality:**
+
 - [ ] TypeScript strict mode (no `any`)
 - [ ] Tests: >70% coverage
 - [ ] Error handling: no silent failures
 - [ ] Logging: full traceability (request_id)
 
 ✅ **Integration:**
+
 - [ ] Works with existing Opsly stack (OpenClaw, Supabase, Redis)
 - [ ] Follows project conventions (CLAUDE.md, patterns)
 - [ ] Can be deployed to VPS + MacBook simultaneously
 
 ✅ **Documentation:**
+
 - [ ] README updated with setup instructions
 - [ ] API documented (request/response examples)
 - [ ] Worker setup guide for MacBook

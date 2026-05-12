@@ -9,7 +9,7 @@ Objetivo: **una línea base (`main`) estable**, cambios integrados por **PR**, y
    - `git fetch origin && git checkout main && git pull --ff-only origin main`
    - `git checkout -b feat/<tema-corto>` o `fix/<ticket>`.
 3. **Integración:** **Pull Request** hacia `main`, CI verde, revisión cuando toque código de producto/infra.
-4. **Tras merge:** borrar la rama en GitHub (recomendado: *Automatically delete head branches* en **Settings → General → Pull Requests**).
+4. **Tras merge:** borrar la rama en GitHub (recomendado: _Automatically delete head branches_ en **Settings → General → Pull Requests**).
 5. **No** hacer `git push --force` a `main`. **No** acumular semanas de trabajo en ramas `cursor/*` o `claude/*` sin integrar o archivar.
 6. **Ramas de agente** (`cursor/…`, `claude/…`): **temporales**. Una rama = un tema; al terminar: PR o cierre explícito + borrado de rama (ver abajo).
 
@@ -26,13 +26,13 @@ Si varios agentes tocan el mismo tema, **una rama coordinada** o PRs encadenados
 
 ## Cómo terminar ramas pendientes (checklist)
 
-| Situación | Acción |
-|-----------|--------|
-| El trabajo **debe** entrar en producto | Rebase o merge de `main` en la rama, `push`, PR, merge, borrar rama remota. |
-| El trabajo **ya está** en `main` (duplicado) | Cerrar PR con comentario *superseded by main* / archivo; `git push origin --delete <rama>`. |
-| El trabajo **se abandona** | Cerrar PR con comentario breve; borrar rama remota; local `git branch -D <rama>` si upstream `gone`. |
-| **Sin PR** pero rama remota vieja | Revisar con `git log origin/main..origin/<rama>`; luego borrar remota o abrir PR único desde `main` actualizado. |
-| **Git worktree** (rama enlazada a otra carpeta) | No borrar la rama hasta `git worktree remove <path>`; luego `git branch -d <rama>`. |
+| Situación                                       | Acción                                                                                                           |
+| ----------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| El trabajo **debe** entrar en producto          | Rebase o merge de `main` en la rama, `push`, PR, merge, borrar rama remota.                                      |
+| El trabajo **ya está** en `main` (duplicado)    | Cerrar PR con comentario _superseded by main_ / archivo; `git push origin --delete <rama>`.                      |
+| El trabajo **se abandona**                      | Cerrar PR con comentario breve; borrar rama remota; local `git branch -D <rama>` si upstream `gone`.             |
+| **Sin PR** pero rama remota vieja               | Revisar con `git log origin/main..origin/<rama>`; luego borrar remota o abrir PR único desde `main` actualizado. |
+| **Git worktree** (rama enlazada a otra carpeta) | No borrar la rama hasta `git worktree remove <path>`; luego `git branch -d <rama>`.                              |
 
 Comandos útiles:
 
@@ -52,13 +52,13 @@ git branch -r --no-merged origin/main
 
 Objetivo: en **una pasada corta** (varios terminales o agentes en paralelo) comprobar que **GitHub** no tenga PRs ni ramas colgantes y que el **clon** quede alineado a `main`.
 
-| Canal | Comando | Listo cuando… |
-|-------|---------|----------------|
-| **PRs** | `gh pr list --state open` | No quedan PRs abiertos que deban mergearse o cerrarse con comentario. |
-| **Ramas remotas** | `git fetch origin --prune` y `git branch -r` | Solo `origin/main` (salvo ramas de release acordadas explícitamente). |
-| **Ramas locales** | `./scripts/git-branch-hygiene.sh` | Sin remotas mergeadas basura; sin locales `[gone]` sin resolver. |
-| **Worktrees** | `git worktree list` y en cada ruta `git status -sb` | Árbol limpio; si el contexto ya no aplica: `git worktree remove <path>` antes de borrar la rama. |
-| **Stash** | `git stash list` | Revisión humana; **no** purgar en automático (`drop`/`clear` solo tras confirmar). |
+| Canal             | Comando                                             | Listo cuando…                                                                                    |
+| ----------------- | --------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| **PRs**           | `gh pr list --state open`                           | No quedan PRs abiertos que deban mergearse o cerrarse con comentario.                            |
+| **Ramas remotas** | `git fetch origin --prune` y `git branch -r`        | Solo `origin/main` (salvo ramas de release acordadas explícitamente).                            |
+| **Ramas locales** | `./scripts/git-branch-hygiene.sh`                   | Sin remotas mergeadas basura; sin locales `[gone]` sin resolver.                                 |
+| **Worktrees**     | `git worktree list` y en cada ruta `git status -sb` | Árbol limpio; si el contexto ya no aplica: `git worktree remove <path>` antes de borrar la rama. |
+| **Stash**         | `git stash list`                                    | Revisión humana; **no** purgar en automático (`drop`/`clear` solo tras confirmar).               |
 
 Si corrés todo en paralelo, sincronizá resultados en un solo lugar (p. ej. comentario en issue interno o línea en `AGENTS.md` al cierre de sesión).
 

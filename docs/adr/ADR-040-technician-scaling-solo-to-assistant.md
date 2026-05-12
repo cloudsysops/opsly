@@ -20,31 +20,37 @@ Opsly Local Services inicia con single technician (você) generando $5k/mo. A me
 ## Alternativas Consideradas
 
 ### Opción A: Solo forever (no hiring)
+
 - Only you do all jobs
 - Max capacity: 15 appointments/week @ $150 avg = $2,250/week = $9k/mo
 - Limited by your time, energy, skill (some jobs out of scope)
 
 **Rechazada porque:**
+
 - Burnout risk (solo no scales beyond ~$10k)
 - Can't take vacation or sick day
 - Some jobs (enterprise office setups) need 2 people
 
 ### Opción B: Hire 2+ people (team model)
+
 - Hire full-time technician + manager
 - Build formal tech support org
 
 **Rechazada porque:**
+
 - Out of scope MVP (overhead kills profitability)
 - Opsly Local Services proof-of-concept, not mega business
 - Fixed headcount = fixed costs (risky)
 
 ### Opción C: Micro-hire 1 assistant technician (flexible, part-time) ✅ **SELECCIONADA**
+
 - You: high-value complex jobs ($300+)
 - Assistant: standard jobs ($100-200)
 - Revenue split: 70/30 or commission-based
 - Part-time (10-15 hrs/week) scales to full-time if hits $50k/mo later
 
 **Seleccionada porque:**
+
 - Simple: 2-person team < 10-person org
 - Flexible: assistant paid per job (no fixed salary risk)
 - Scalable: can hire 2nd, 3rd assistant as needed
@@ -55,6 +61,7 @@ Opsly Local Services inicia con single technician (você) generando $5k/mo. A me
 **Two-tier technician model with automatic assignment logic:**
 
 ### Phase 1: Solo (Week 1-4)
+
 - **You:** all jobs (gamer, laptop, office, simple & complex)
 - **Capacity:** 10-15 jobs/week × $150-300 avg = **$5k/mo**
 - **CRM:** All bookings in `local_services.bookings` with `assigned_to = NULL` (no assignment yet)
@@ -62,6 +69,7 @@ Opsly Local Services inicia con single technician (você) generando $5k/mo. A me
 ### Phase 2: +Assistant (Week 5+)
 
 **Revenue projection:**
+
 - **You:** high-value jobs ($300+, complex, office, recurring)
   - ~10 jobs/week = $3.5k/week = **$14k/mo (you only)**
 - **Assistant:** standard jobs ($100-200, simple, gamer, laptop)
@@ -83,16 +91,16 @@ interface AssignmentRule {
 function assignTechnician(booking: AssignmentRule): 'you' | 'assistant' {
   // Rule 1: High-value jobs → You
   if (booking.job_price >= 300) return 'you';
-  
+
   // Rule 2: Complex office jobs → You
   if (booking.service_type === 'office' && booking.complexity === 'complex') return 'you';
-  
+
   // Rule 3: Recurring → You (relationship management)
   if (booking.recurring) return 'you';
-  
+
   // Rule 4: Standard jobs → Assistant (if available)
   if (booking.job_price < 200 && booking.complexity !== 'complex') return 'assistant';
-  
+
   // Rule 5: Fallback → You (default if assistant busy or doesn't match)
   return 'you';
 }
@@ -118,6 +126,7 @@ interface TechnicianDashboard {
 ```
 
 **Features:**
+
 - View today's appointments
 - Mark as "en_route" / "completed"
 - Upload service photos
@@ -128,15 +137,17 @@ interface TechnicianDashboard {
 ### Compensation Model (Week 5)
 
 **Option A: Flat commission**
+
 ```
 Assistant: 30% of booking revenue
 Example: $150 job → assistant gets $45
 ```
 
 **Option B: Tiered commission (performance-based)**
+
 ```
 1-10 jobs/week:   25% commission
-11-20 jobs/week:  28% commission  
+11-20 jobs/week:  28% commission
 20+ jobs/week:    30% commission (high performer bonus)
 ```
 
@@ -147,6 +158,7 @@ Example: $150 job → assistant gets $45
 ## Consecuencias
 
 ### Positivas
+
 - **Capacity growth:** 10-15 → 20-25 jobs/week without burnout
 - **Revenue expansion:** $5k → $10k/mo
 - **Flexibility:** Assistant paid per job (no fixed salary overhead)
@@ -154,14 +166,16 @@ Example: $150 job → assistant gets $45
 - **Scaling:** Model replicates (hire 3rd assistant if needed)
 
 ### Negativas (mitigadas)
-- **Training overhead:** Assistant needs onboarding (2-3 jobs shadowing). *Mitigación:* Schedule Week 4 for training
-- **Quality variance:** Assistant may deliver differently than you. *Mitigación:* Standard process docs + customer feedback loop
-- **Communication tax:** Assigning jobs adds complexity. *Mitigación:* Automatic assignment rules (code does it)
-- **Customer preference:** Some customers want YOU specifically. *Mitigación:* Flag "author_preference = true" in booking, always assign to you
+
+- **Training overhead:** Assistant needs onboarding (2-3 jobs shadowing). _Mitigación:_ Schedule Week 4 for training
+- **Quality variance:** Assistant may deliver differently than you. _Mitigación:_ Standard process docs + customer feedback loop
+- **Communication tax:** Assigning jobs adds complexity. _Mitigación:_ Automatic assignment rules (code does it)
+- **Customer preference:** Some customers want YOU specifically. _Mitigación:_ Flag "author_preference = true" in booking, always assign to you
 
 ## Notas Operacionales
 
 ### Week 4-5: Assistant Onboarding
+
 - Interview 3-5 local tech candidates
 - Hire by end of Week 4
 - Week 5: Shadowing (you + assistant on 3-5 jobs together)
@@ -191,6 +205,7 @@ If declined → reassign or offer to other technician
 ### CRM Tracking (Week 5)
 
 Add to `local_services.bookings` table:
+
 ```sql
 ALTER TABLE local_services.bookings ADD COLUMN assigned_to UUID REFERENCES auth.users;
 ALTER TABLE local_services.bookings ADD COLUMN assignment_rule TEXT; -- "high_value", "assistant", "customer_preference"
@@ -200,15 +215,17 @@ ALTER TABLE local_services.bookings ADD COLUMN assignment_timestamp TIMESTAMPTZ;
 ### Revenue Tracking (Dashboard)
 
 Admin dashboard shows:
+
 - **Total platform revenue:** $X/mo
 - **Your jobs:** $Y/mo (commission-free)
 - **Assistant jobs:** $Z/mo (you collect revenue, pay assistant commission)
-- **Assistant earnings:** $Z * 0.30 (what they earned)
-- **Your margin:** $Y + ($Z * 0.70)
+- **Assistant earnings:** $Z \* 0.30 (what they earned)
+- **Your margin:** $Y + ($Z \* 0.70)
 
 ### Expansion (Week 8+)
 
 Once $10k/mo sustained:
+
 - **Option 1:** Hire 2nd assistant (scale to $15k/mo)
 - **Option 2:** Hire assistant manager (manage scheduling, training)
 - **Option 3:** Build service product: $99/mo maintenance plan → passive recurring

@@ -20,17 +20,17 @@ Runbook para poner en marcha Opsly/OpenClaw sin introducir infraestructura paral
 
 La guia generica de repositorios/workflows contiene ideas reutilizables, pero estos puntos no deben ejecutarse literalmente en Opsly:
 
-| Propuesta generica | Decision Opsly |
-| --- | --- |
-| Copiar `actions/starter-workflows` encima de `.github/workflows/ci.yml` | No sobrescribir workflows existentes. Extender `.github/workflows/ci.yml`, `deploy.yml` y `validate-context.yml` con cambios acotados. |
-| Integrar `github/super-linter` como lint universal | No requerido ahora. El repo ya usa Turbo, ESLint 9, Vitest, Playwright y validaciones especificas (`validate-openapi`, `validate-skills`, `validate-structure`). |
-| Clonar workflows externos de n8n en masa | Usar `docs/n8n-workflows/` como catalogo local curado. Importar uno por uno si hay caso de uso. |
-| Agregar Airflow DAGs | Fuera de arquitectura actual. BullMQ + orchestrator es el motor de jobs. Airflow requeriria ADR. |
-| Crear `config/vertex-ai-config.json` con credenciales locales | Usar Doppler y `docs/04-infrastructure/VERTEX-AI-SETUP.md`; no guardar credenciales en repo. |
-| Instalar `@deepseek/sdk` en consumidores | Si DeepSeek se usa, hacerlo via LLM Gateway y variables Doppler (`DEEPSEEK_API_KEY`, `DEEPSEEK_BASE_URL`, `DEEPSEEK_MODEL`). |
-| Ejecutar `apps/orchestrator/dist/hive/queen-bee.js` y bots como procesos sueltos | Hive vive integrado en orchestrator. Usar endpoints internos o `npm run hive-run --workspace=@intcloudsysops/orchestrator` para pruebas locales. |
-| Llamar `/openclaw/intent` o dashboard `/openclaw-governance` | No son contratos actuales. Usar endpoints internos existentes en `apps/orchestrator/src/health-server.ts`. |
-| Usar `docker-compose` | Preferir `docker compose`. |
+| Propuesta generica                                                               | Decision Opsly                                                                                                                                                   |
+| -------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Copiar `actions/starter-workflows` encima de `.github/workflows/ci.yml`          | No sobrescribir workflows existentes. Extender `.github/workflows/ci.yml`, `deploy.yml` y `validate-context.yml` con cambios acotados.                           |
+| Integrar `github/super-linter` como lint universal                               | No requerido ahora. El repo ya usa Turbo, ESLint 9, Vitest, Playwright y validaciones especificas (`validate-openapi`, `validate-skills`, `validate-structure`). |
+| Clonar workflows externos de n8n en masa                                         | Usar `docs/n8n-workflows/` como catalogo local curado. Importar uno por uno si hay caso de uso.                                                                  |
+| Agregar Airflow DAGs                                                             | Fuera de arquitectura actual. BullMQ + orchestrator es el motor de jobs. Airflow requeriria ADR.                                                                 |
+| Crear `config/vertex-ai-config.json` con credenciales locales                    | Usar Doppler y `docs/04-infrastructure/VERTEX-AI-SETUP.md`; no guardar credenciales en repo.                                                                     |
+| Instalar `@deepseek/sdk` en consumidores                                         | Si DeepSeek se usa, hacerlo via LLM Gateway y variables Doppler (`DEEPSEEK_API_KEY`, `DEEPSEEK_BASE_URL`, `DEEPSEEK_MODEL`).                                     |
+| Ejecutar `apps/orchestrator/dist/hive/queen-bee.js` y bots como procesos sueltos | Hive vive integrado en orchestrator. Usar endpoints internos o `npm run hive-run --workspace=@intcloudsysops/orchestrator` para pruebas locales.                 |
+| Llamar `/openclaw/intent` o dashboard `/openclaw-governance`                     | No son contratos actuales. Usar endpoints internos existentes en `apps/orchestrator/src/health-server.ts`.                                                       |
+| Usar `docker-compose`                                                            | Preferir `docker compose`.                                                                                                                                       |
 
 ## Preparacion local
 

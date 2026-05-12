@@ -27,7 +27,9 @@ describe('openclaw router + contracts', () => {
   });
 
   it('reuses bullmq transport when queue target exists', () => {
-    const result = applyOpenClawControlLayer(baseRequest({ intent: 'notify', agent_role: 'planner' }));
+    const result = applyOpenClawControlLayer(
+      baseRequest({ intent: 'notify', agent_role: 'planner' })
+    );
     expect(result.execution.target).toBe('queue');
     expect(result.execution.transport).toBe('bullmq');
     expect(result.execution.queue).toBe('openclaw');
@@ -39,7 +41,9 @@ describe('openclaw router + contracts', () => {
   });
 
   it('sets DeepSeek provider hint for skeptic role', () => {
-    const result = applyOpenClawControlLayer(baseRequest({ intent: 'notify', agent_role: 'skeptic' }));
+    const result = applyOpenClawControlLayer(
+      baseRequest({ intent: 'notify', agent_role: 'skeptic' })
+    );
     expect(result.agent.role).toBe('skeptic');
     expect(result.llm.provider_hint).toBe('deepseek');
     expect(result.llm.routing_bias).toBe('quality');

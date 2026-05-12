@@ -53,17 +53,20 @@ npm run type-check
 ## Understanding the Bug
 
 **What's happening:**
+
 - Next.js has a built-in route validator in `.next/types/validator.ts`
 - It expects all `app/api/*/route.ts` files to be importable
 - But we have routes in `apps/orchestrator` (not `apps/api`)
 - Validator cached those routes and now expects them
 
 **Why it persists:**
+
 - Build cache persists `.next/` directory
 - Cache references deleted/moved files
 - Rebuild from cache doesn't fix stale references
 
 **Root cause (for architecture):**
+
 - Agent routes should live in **one place** (see ADR-028)
 - Currently split between orchestrator + api spec
 - Creates phantom routes in validator
@@ -75,16 +78,19 @@ npm run type-check
 See `docs/adr/ADR-028-agent-api-routing.md` (TODO: create):
 
 **Option A: Move agent routes to API**
+
 - Pros: Type validator happy, single source of truth
 - Cons: Orchestrator loses direct HTTP serving
 - Time: 4-6 hours
 
 **Option B: Exclude orchestrator from validator**
+
 - Pros: Quick, no refactoring
 - Cons: Validator loses coverage
 - Time: 1 hour
 
 **Option C: Remove phantom routes from spec**
+
 - Pros: Minimal change
 - Cons: Orchestrator routes won't be validated
 - Time: 2 hours

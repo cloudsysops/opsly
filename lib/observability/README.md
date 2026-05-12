@@ -1,7 +1,8 @@
 ---
-title: "@intcloudsysops/observability"
-description: "Unified logging, metrics, and tracing layer"
+title: '@intcloudsysops/observability'
+description: 'Unified logging, metrics, and tracing layer'
 ---
+
 # @intcloudsysops/observability
 
 Unified logging, metrics, and tracing layer for all Opsly services. Provides consistent observability across orchestrator, API, gateway, and agents.
@@ -81,15 +82,15 @@ logger.info('Agent queue processing', { queueSize: 100 });
 app.use((req, res, next) => {
   const tracer = createTracer();
   const span = tracer.startSpan('http-request');
-  
+
   span.setAttribute('method', req.method);
   span.setAttribute('path', req.path);
-  
+
   res.on('finish', () => {
     span.setAttribute('status', res.statusCode);
     span.end();
   });
-  
+
   next();
 });
 ```

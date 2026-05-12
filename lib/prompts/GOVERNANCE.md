@@ -1,6 +1,6 @@
 ---
-title: "lib/prompts Governance"
-description: "Module governance for versioned prompt registry"
+title: 'lib/prompts Governance'
+description: 'Module governance for versioned prompt registry'
 ---
 
 # lib/prompts Governance
@@ -74,6 +74,7 @@ This module follows **semantic versioning** (MAJOR.MINOR.PATCH):
 4. Update documentation
 
 Example:
+
 ```yaml
 ---
 name: old-agent-prompt
@@ -151,7 +152,7 @@ If you must introduce a breaking change:
 
 Example Breaking Change Note:
 
-```markdown
+````markdown
 ## Breaking Change: v2.0.0
 
 **What changed:** `{{context}}` renamed to `{{enhanced_context}}`
@@ -159,6 +160,7 @@ Example Breaking Change Note:
 **Why:** Better semantic naming, supports richer context injection
 
 **Migration:**
+
 ```typescript
 // Before
 const prompt = await loadPrompt('agent', { version: '1.0.0' });
@@ -167,8 +169,10 @@ const prompt = await loadPrompt('agent', { version: '1.0.0' });
 const prompt = await loadPrompt('agent', { version: '2.0.0' });
 // Update templates to use {{enhanced_context}}
 ```
+````
 
 **Timeline:**
+
 - v1.5.0 (current): Both `{{context}}` and `{{enhanced_context}}` work
 - v2.0.0 (next): Only `{{enhanced_context}}` works
 - v2.1.0: v1 compatibility removed

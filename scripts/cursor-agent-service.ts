@@ -45,10 +45,7 @@ class CursorAgentService {
   private pendingResponses: Map<string, Promise<string>> = new Map();
   private responseResolvers: Map<string, (value: string) => void> = new Map();
 
-  constructor(
-    port: number = 5001,
-    cursorDir: string = path.join(process.cwd(), '.cursor'),
-  ) {
+  constructor(port: number = 5001, cursorDir: string = path.join(process.cwd(), '.cursor')) {
     this.port = port;
     this.cursorDir = cursorDir;
     this.app = express();
@@ -89,7 +86,12 @@ class CursorAgentService {
         await fsp.mkdir(pendingDir, { recursive: true });
 
         const promptFile = path.join(pendingDir, `prompt-${job_id}.md`);
-        const promptWithMetadata = this.addPromptMetadata(prompt_content, job_id, agent_role, max_steps);
+        const promptWithMetadata = this.addPromptMetadata(
+          prompt_content,
+          job_id,
+          agent_role,
+          max_steps
+        );
         await fsp.writeFile(promptFile, promptWithMetadata, 'utf-8');
 
         console.log(`[CursorAgent] Prompt written to ${promptFile}`);
@@ -157,7 +159,7 @@ class CursorAgentService {
     content: string,
     jobId: string,
     agentRole?: string,
-    maxSteps?: number,
+    maxSteps?: number
   ): string {
     let header = `---\njob_id: ${jobId}\n`;
     if (agentRole) header += `agent_role: ${agentRole}\n`;
@@ -199,7 +201,8 @@ class CursorAgentService {
       const startTime = Date.now();
 
       // Check if response already exists
-      fsp.access(responsePath)
+      fsp
+        .access(responsePath)
         .then(() => {
           console.log(`[CursorAgent] Response found immediately: ${responsePath}`);
           resolve(responsePath);
@@ -216,7 +219,9 @@ class CursorAgentService {
 
           const timeoutHandle = setTimeout(() => {
             watcher.close();
-            reject(new Error(`Response timeout: job ${jobId} did not respond within ${timeoutMs}ms`));
+            reject(
+              new Error(`Response timeout: job ${jobId} did not respond within ${timeoutMs}ms`)
+            );
           }, timeoutMs);
 
           watcher.on('add', (filePath: string) => {
@@ -243,7 +248,9 @@ class CursorAgentService {
   public start(): void {
     this.app.listen(this.port, () => {
       console.log(`[CursorAgent] Service running on port ${this.port}`);
-      console.log(`[CursorAgent] Ready to receive prompts at http://localhost:${this.port}/execute`);
+      console.log(
+        `[CursorAgent] Ready to receive prompts at http://localhost:${this.port}/execute`
+      );
     });
 
     // Graceful shutdown

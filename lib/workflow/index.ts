@@ -22,15 +22,15 @@ export async function executeWithTimeout(
   agentId: string
 ): Promise<ExecutionResult> {
   const startTime = Date.now();
-  
+
   try {
     const result = await Promise.race([
       fn(),
-      new Promise((_, reject) => 
+      new Promise((_, reject) =>
         setTimeout(() => reject(new Error('Execution timeout')), timeoutMs)
       ),
     ]);
-    
+
     return {
       success: true,
       output: result,

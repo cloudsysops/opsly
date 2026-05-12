@@ -11,6 +11,7 @@ This document outlines the implementation of Sprints 13-14, which introduce an M
 #### 1. ML Scoring Module (`apps/orchestrator/src/lib/ml-scoring.ts`)
 
 Calculates feedback scores for job completions with:
+
 - **Status-based scoring** (success=85, partial=50, failed=0)
 - **Performance adjustments**:
   - Fast execution (< 1s): +5 bonus
@@ -24,6 +25,7 @@ Calculates feedback scores for job completions with:
 - **Per-tenant isolation** via Redis keys: `tenant:{slug}:ml:feedback:{job_id}`
 
 **Key Functions:**
+
 - `scoreFeedback(event)` - Calculate score for a job completion
 - `getRecentScores(tenantSlug, limit)` - Retrieve historical scores
 - `getMetricsSummary(tenantSlug)` - Get aggregated metrics
@@ -31,6 +33,7 @@ Calculates feedback scores for job completions with:
 #### 2. Enhanced Feedback Decision Engine (`apps/ml/src/feedback-decision-engine.ts`)
 
 Updated with:
+
 - Tenant-aware scoring storage
 - Redis integration for fast access
 - Supabase long-term storage in tenant-specific schemas
@@ -40,6 +43,7 @@ Updated with:
 #### 3. Insights Engine (`apps/ml/src/insight-engine.ts`)
 
 Already implemented, generates:
+
 - Churn risk predictions
 - Revenue forecasts
 - Anomaly detection
@@ -48,6 +52,7 @@ Already implemented, generates:
 #### 4. Task Classification (`apps/ml/src/task-category-classifier.ts`)
 
 Already implemented, classifies tasks with:
+
 - Category detection (bug, feature, improvement, security, billing)
 - Confidence scoring
 - Per-tenant routing validation
@@ -57,12 +62,14 @@ Already implemented, classifies tasks with:
 #### Migration 0042: ML Feedback Scores (`supabase/migrations/0042_ml_feedback_scores.sql`)
 
 Creates:
+
 1. **feedback_scores** - Per-job feedback with category and confidence
 2. **feedback_embeddings** - Vector embeddings for semantic search (1536-dim)
 3. **tenant_ml_metrics** - Hourly aggregated metrics per tenant
 4. **tenant_api_keys** - API keys for portal access with scopes
 
 All tables have:
+
 - Tenant ID foreign keys with CASCADE delete
 - Proper indexing on (tenant_id, time) pairs
 - RLS enabled (service_role only)
@@ -73,12 +80,14 @@ All tables have:
 #### `/api/tenants/:slug/insights` (GET/POST)
 
 **GET** - Retrieve insights for a tenant
+
 ```
 Query params: period=daily|weekly|monthly, limit=10
 Response: { insights: [], metrics: { avg_feedback_score, ... }, generated_at }
 ```
 
 **POST** - Create new insight
+
 ```
 Body: { insight_type, title, description, payload, confidence, impact_score }
 Response: { id }
@@ -87,6 +96,7 @@ Response: { id }
 #### `/api/tenants/:slug/portal/metrics` (GET)
 
 Real-time dashboard metrics:
+
 ```json
 {
   "slug": "tenant-slug",
@@ -112,6 +122,7 @@ Real-time dashboard metrics:
 ### Tests
 
 Comprehensive test suite in `apps/ml/__tests__/ml-scoring.test.ts`:
+
 - Score calculation for various scenarios
 - Tenant isolation verification
 - Metrics aggregation per tenant
@@ -125,6 +136,7 @@ Comprehensive test suite in `apps/ml/__tests__/ml-scoring.test.ts`:
 #### 1. Tenant Portal Library (`apps/portal/lib/tenant-portal.ts`)
 
 Self-service portal with:
+
 - **Metrics retrieval**: Agent status, costs, recent jobs, logs, insights
 - **API key management**: Create, list, revoke keys with scopes
 - **Real-time cost tracking** from billing_usage table
@@ -133,6 +145,7 @@ Self-service portal with:
 - **Insights display** (active insights only)
 
 **Key Classes:**
+
 - `TenantPortal` - Main class managing all portal operations
 - Methods: `getMetrics()`, `createAPIKey()`, `listAPIKeys()`, `revokeAPIKey()`
 
@@ -141,6 +154,7 @@ Self-service portal with:
 ##### `/api/tenants/:slug/api-keys` (GET/POST)
 
 **GET** - List all active API keys
+
 ```json
 {
   "keys": [
@@ -156,6 +170,7 @@ Self-service portal with:
 ```
 
 **POST** - Create new API key
+
 ```json
 Request:
 {
@@ -182,6 +197,7 @@ Revoke an API key (marks with revoked_at timestamp)
 ##### Dashboard (`apps/portal/app/tenants/[slug]/page.tsx`)
 
 Self-service tenant dashboard with:
+
 - **Status cards**: Agent health, monthly costs, API status
 - **Success rate visualization** with progress bar
 - **Cost tracking** with plan limit indicator
@@ -205,6 +221,7 @@ Self-service tenant dashboard with:
 **POST /api/webhooks/notion**
 
 Handles Notion events:
+
 - Page created/updated
 - Database created
 - HMAC-SHA256 signature validation
@@ -215,6 +232,7 @@ Handles Notion events:
 #### 2. Notion Sync Service (`apps/notion-mcp/src/tenant-sync.ts`)
 
 Bidirectional synchronization:
+
 - **Notion → Obsidian**: Convert Notion pages to Markdown
 - **Obsidian → Notion**: Convert Markdown to Notion blocks
 - **Conflict resolution**: Latest timestamp wins
@@ -222,6 +240,7 @@ Bidirectional synchronization:
 - **Per-tenant isolation**: Separate sync records per tenant
 
 **Key Methods:**
+
 - `syncNotion2Obsidian()` - Pull from Notion
 - `syncObsidian2Notion()` - Push to Obsidian
 - `bidirectionalSync()` - Full sync cycle
@@ -232,12 +251,14 @@ Bidirectional synchronization:
 #### Migration 0043: Notion Sync Tables (`supabase/migrations/0043_notion_sync_tables.sql`)
 
 Creates:
+
 1. **notion_sync_history** - Per-sync event logs with status tracking
 2. **notion_sync_metadata** - Relationship mapping between Notion and Obsidian
 3. **portal_metrics_snapshots** - Time-series dashboard metrics
 4. **agent_logs** - Tenant-scoped application logs
 
 All with:
+
 - Tenant isolation via tenant_id
 - Proper indexes on (tenant_id, created_at)
 - RLS enabled
@@ -266,6 +287,7 @@ All with:
 ### Feedback Score Calculation
 
 Factors considered:
+
 - **Status**: Most important (0-85 base points)
 - **Performance**: Execution time (±5-10)
 - **Cost**: Resource usage (±5-10)
@@ -286,6 +308,7 @@ Final score: Clamped to 0-100 range with confidence 0.5-0.95
 ### With Orchestrator
 
 Post-job completion:
+
 1. Emit `JobCompletionEvent` with metrics
 2. Score via `scoreFeedback()`
 3. Store in Redis + Supabase
@@ -308,27 +331,27 @@ Post-job completion:
 
 ### Redis vs Supabase
 
-| Data | Storage | Reason |
-|------|---------|--------|
-| Hot feedback scores (7 days) | Redis | Fast reads for portal |
-| Historical scores (30+ days) | Supabase | Long-term analytics |
-| Embeddings cache | Redis | Semantic search speed |
-| API keys | Supabase | Persistent, revocable |
-| Logs | Supabase | Audit trail |
+| Data                         | Storage  | Reason                |
+| ---------------------------- | -------- | --------------------- |
+| Hot feedback scores (7 days) | Redis    | Fast reads for portal |
+| Historical scores (30+ days) | Supabase | Long-term analytics   |
+| Embeddings cache             | Redis    | Semantic search speed |
+| API keys                     | Supabase | Persistent, revocable |
+| Logs                         | Supabase | Audit trail           |
 
 ### Index Strategy
 
 ```sql
 -- Fast tenant-scoped queries
-CREATE INDEX idx_feedback_scores_tenant_created 
+CREATE INDEX idx_feedback_scores_tenant_created
   ON platform.feedback_scores (tenant_id, created_at DESC);
 
 -- Category aggregation
-CREATE INDEX idx_feedback_scores_category 
+CREATE INDEX idx_feedback_scores_category
   ON platform.feedback_scores (tenant_id, category, score DESC);
 
 -- Hash lookups for embeddings
-CREATE INDEX idx_feedback_embeddings_hash 
+CREATE INDEX idx_feedback_embeddings_hash
   ON platform.feedback_embeddings (tenant_id, query_hash);
 ```
 
@@ -345,11 +368,13 @@ CREATE INDEX idx_feedback_embeddings_hash
 ## Testing
 
 Run test suite:
+
 ```bash
 npm run test apps/ml/__tests__/ml-scoring.test.ts
 ```
 
 Test coverage:
+
 - Score calculation for 5 job scenarios
 - Tenant isolation (keys don't cross tenants)
 - Metrics aggregation (avg, sum, counts)
@@ -370,6 +395,7 @@ Test coverage:
 ## Files Modified/Created
 
 ### New Files
+
 - `apps/orchestrator/src/lib/ml-scoring.ts`
 - `apps/api/app/api/tenants/[slug]/insights/route.ts`
 - `apps/api/app/api/tenants/[slug]/api-keys/route.ts`
@@ -385,6 +411,7 @@ Test coverage:
 - `supabase/migrations/0043_notion_sync_tables.sql`
 
 ### Modified Files
+
 - `apps/ml/src/feedback-decision-engine.ts` (added tenant_id, job_id, storeFeedbackScore)
 
 ## Deployment Checklist

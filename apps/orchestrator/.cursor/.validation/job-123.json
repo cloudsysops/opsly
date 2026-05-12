@@ -6,9 +6,7 @@
     "metadata": {
       "iterationCount": 5,
       "validationTime": 1,
-      "failedChecks": [
-        "type-check"
-      ]
+      "failedChecks": ["type-check"]
     }
   },
   "validationReport": {

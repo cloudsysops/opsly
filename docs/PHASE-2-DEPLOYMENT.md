@@ -99,6 +99,7 @@ npx tsx scripts/mock-claude-agent.ts
 **Config agent services in orchestrator:**
 
 Create `config/agent-services.json`:
+
 ```json
 {
   "cursor": {
@@ -131,6 +132,7 @@ Create `config/agent-services.json`:
 **Load agent services in orchestrator:**
 
 In `apps/orchestrator/src/index.ts`:
+
 ```typescript
 import agentServices from '../../config/agent-services.json' assert { type: 'json' };
 
@@ -182,6 +184,7 @@ npx tsx scripts/autonomous-iteration-cli.ts status
 ```
 
 **Expected output:**
+
 ```
 ✅ test-autonomous-1.md detected
 ✅ Job enqueued to local-agents queue
@@ -242,7 +245,7 @@ npx tsx scripts/autonomous-iteration-cli.ts report
 # Generated: 2026-05-04T...
 # Total Executions: 42
 # Patterns Found: 8
-# 
+#
 # Agent Improvements:
 #   cursor
 #     Success Rate: +15%
@@ -450,6 +453,7 @@ Once Phase 2 is stable:
 ---
 
 **Related Documentation:**
+
 - `docs/AUTONOMOUS-ITERATION.md` — System design
 - `docs/LOCAL-AGENT-EXECUTION.md` — Phase 1 (execution)
 - `AGENTS.md` — Session state

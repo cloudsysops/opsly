@@ -18,7 +18,8 @@ const packages = [
     name: 'Autonomous Ops',
     price: '$699/mes',
     setup: '$1,500 setup',
-    description: 'Para equipos que quieren que Opsly revise fallos, costos y workflows cada semana.',
+    description:
+      'Para equipos que quieren que Opsly revise fallos, costos y workflows cada semana.',
     features: ['Todo Managed', 'Agentes read-only', 'Mission Control', 'Recomendaciones semanales'],
   },
   {
@@ -26,7 +27,12 @@ const packages = [
     price: 'desde $1,500/mes',
     setup: '$3,000+ setup',
     description: 'Para agencias que quieren que disenen, operemos y mejoremos los workflows.',
-    features: ['Implementacion guiada', 'Workflows por cliente', 'Soporte prioritario', 'Roadmap mensual'],
+    features: [
+      'Implementacion guiada',
+      'Workflows por cliente',
+      'Soporte prioritario',
+      'Roadmap mensual',
+    ],
   },
 ];
 
@@ -140,7 +146,9 @@ export default function ParaAgenciasPage() {
           <p className="text-sm font-semibold uppercase tracking-[0.18em] text-cyan-300">
             Paquetes listos para vender
           </p>
-          <h2 className="mt-3 text-3xl font-semibold">Empieza con piloto pagado, no con demo eterna</h2>
+          <h2 className="mt-3 text-3xl font-semibold">
+            Empieza con piloto pagado, no con demo eterna
+          </h2>
           <p className="mt-4 text-zinc-400">
             El precio incluye operacion gestionada. Implementaciones complejas se cotizan como setup
             para proteger margen desde el primer cliente.

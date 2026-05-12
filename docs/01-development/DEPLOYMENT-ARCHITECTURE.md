@@ -43,6 +43,7 @@ last_review: 2026-05-09
 ### Vercel for Portal + Admin
 
 **✅ Advantages:**
+
 - Automatic CDN distribution globally
 - Git-based deployments (push to deploy)
 - Built-in SSL/TLS with auto-renewal
@@ -53,6 +54,7 @@ last_review: 2026-05-09
 - Serverless = automatic scaling (ISR, Edge Functions)
 
 **⚠️ Trade-offs:**
+
 - 15-minute function timeout (fine for HTTP requests)
 - Ephemeral filesystem (no local file persistence needed)
 - Request body size limit (100MB, sufficient for Next.js)
@@ -61,6 +63,7 @@ last_review: 2026-05-09
 ### VPS (DigitalOcean) for API + Orchestrator
 
 **✅ Advantages:**
+
 - Redis persistence (mandatory for BullMQ queues)
 - Long-running processes (orchestrator workers, webhooks)
 - Cron jobs without serverless limitations
@@ -70,6 +73,7 @@ last_review: 2026-05-09
 - Already operational, proven, costs sunk (~$40/mo)
 
 **⚠️ Trade-offs:**
+
 - Manual deployment via Docker Compose + scripts
 - Admin responsible for SSL/TLS (Traefik + Let's Encrypt handles it)
 - Scaling = horizontal (more VPS or K8s, outside scope for now)
@@ -77,15 +81,16 @@ last_review: 2026-05-09
 
 ## Domains & DNS
 
-| Service | Domain | Where | DNS Points To |
-|---------|--------|-------|----------------|
-| Portal | `op-sly.com` | Vercel | Vercel nameservers |
-| Admin | `admin.op-sly.com` | Vercel | Vercel nameservers |
-| API | `api.op-sly.com` | VPS Traefik | `157.245.223.7` (VPS IP) |
-| n8n (per tenant) | `n8n-<slug>.op-sly.com` | VPS Docker | Same VPS IP via Traefik |
-| Orchestrator | Internal (no public DNS) | VPS | Redis on `localhost:6379` |
+| Service          | Domain                   | Where       | DNS Points To             |
+| ---------------- | ------------------------ | ----------- | ------------------------- |
+| Portal           | `op-sly.com`             | Vercel      | Vercel nameservers        |
+| Admin            | `admin.op-sly.com`       | Vercel      | Vercel nameservers        |
+| API              | `api.op-sly.com`         | VPS Traefik | `157.245.223.7` (VPS IP)  |
+| n8n (per tenant) | `n8n-<slug>.op-sly.com`  | VPS Docker  | Same VPS IP via Traefik   |
+| Orchestrator     | Internal (no public DNS) | VPS         | Redis on `localhost:6379` |
 
 **Setup:**
+
 1. Register `op-sly.com` at registrar (e.g., Namecheap)
 2. Point nameservers to Vercel for `op-sly.com` (portal + admin auto-configured)
 3. Add CNAME record for `api.op-sly.com` → VPS IP (or use @ if VPS = root)
@@ -137,6 +142,7 @@ Use `doppler run` in Docker Compose to inject at runtime.
 ### Portal & Admin → Vercel
 
 1. **Manual trigger or Git event:**
+
    ```bash
    git push origin feat/portal-update
    # GitHub creates PR → Vercel creates preview deployment
@@ -158,6 +164,7 @@ Use `doppler run` in Docker Compose to inject at runtime.
 ### API + Orchestrator → VPS
 
 1. **Manual or CI trigger:**
+
    ```bash
    # Option A: Direct SSH
    ssh vps-dragon@100.120.151.91
@@ -190,16 +197,18 @@ Both Vercel apps are at `op-sly.com` and `admin.op-sly.com`, making requests to 
 
 ```typescript
 // apps/api/src/middleware/cors.ts
-app.use(cors({
-  origin: [
-    'https://op-sly.com',
-    'https://admin.op-sly.com',
-    'http://localhost:3000', // local dev
-    'http://localhost:3001'  // local dev
-  ],
-  credentials: true, // allow JWT in cookies
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH']
-}));
+app.use(
+  cors({
+    origin: [
+      'https://op-sly.com',
+      'https://admin.op-sly.com',
+      'http://localhost:3000', // local dev
+      'http://localhost:3001', // local dev
+    ],
+    credentials: true, // allow JWT in cookies
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+  })
+);
 ```
 
 **Vercel security headers (in `vercel.json`):**
@@ -225,6 +234,7 @@ app.use(cors({
 ### Portal/Admin Health
 
 Vercel dashboard → Production → Deployments:
+
 - Green checkmark = app is live
 - Logs visible in Vercel console (stderr/stdout)
 - Rollback to previous deployment in one click
@@ -251,13 +261,13 @@ See `.github/workflows/health-check-*.yml` for scheduled checks.
 
 ## Cost Estimate (Monthly)
 
-| Component | Cost | Note |
-|-----------|------|------|
-| VPS (DigitalOcean $40/mo) | $40 | API, Orchestrator, Redis |
-| Vercel (Portal + Admin) | $20-50 | Pay-as-you-go after free tier |
-| Supabase (managed) | $0-100+ | Per usage (auth, DB rows, realtime) |
-| Stripe (per transaction) | 2.9% + $0.30 | No monthly fee |
-| **Total** | **~$100-200/mo** | Scales with tenant usage |
+| Component                 | Cost             | Note                                |
+| ------------------------- | ---------------- | ----------------------------------- |
+| VPS (DigitalOcean $40/mo) | $40              | API, Orchestrator, Redis            |
+| Vercel (Portal + Admin)   | $20-50           | Pay-as-you-go after free tier       |
+| Supabase (managed)        | $0-100+          | Per usage (auth, DB rows, realtime) |
+| Stripe (per transaction)  | 2.9% + $0.30     | No monthly fee                      |
+| **Total**                 | **~$100-200/mo** | Scales with tenant usage            |
 
 ## Rollback Strategy
 
@@ -286,6 +296,7 @@ docker-compose up -d --build
 ### Phase 2: Vercel Functions for API (Optional)
 
 If Portal/Admin logic grows complex (real-time sync, heavy compute):
+
 - Move Portal backend logic to Vercel Edge Functions
 - Keep orchestration, webhooks on VPS
 - Reduces VPS load, increases fault isolation
@@ -293,6 +304,7 @@ If Portal/Admin logic grows complex (real-time sync, heavy compute):
 ### Phase 3: Multi-Region VPS (Optional)
 
 If latency becomes issue:
+
 - Deploy secondary VPS (EU, Asia)
 - API calls → nearest region (Cloudflare Workers + Geo routing)
 - Replicate Redis (Dragonfly, Valkey cluster)
@@ -300,6 +312,7 @@ If latency becomes issue:
 ### Phase 4: Kubernetes (If Needed)
 
 Only if:
+
 - 10,000+ RPS (Vercel handles auto-scaling)
 - <100ms p99 latency requirement (VPS already meets this)
 - Multi-region mandatory for compliance

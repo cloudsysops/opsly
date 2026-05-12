@@ -3,6 +3,7 @@
 Gestiona ciclo de vida de tenants, health checks y deployments. Ver `AGENTS.md` para estado actual.
 
 ## Triggers
+
 - `POST /api/tenants` → onboarding
 - `tenant_slug` + health check → verificar servicios
 - Alerta Discord → investigar issue
@@ -11,6 +12,7 @@ Gestiona ciclo de vida de tenants, health checks y deployments. Ver `AGENTS.md` 
 ## Acciones
 
 ### Onboarding
+
 ```bash
 ./scripts/onboard-tenant.sh --slug <slug> --email <owner> --plan <plan> --name "Name" --yes
 # Verificar:
@@ -18,6 +20,7 @@ curl "https://n8n-<slug>.ops.smiletripcare.com"
 ```
 
 ### Health Checks
+
 ```bash
 # API público (sin auth)
 curl "https://api.ops.smiletripcare.com/api/portal/health?slug=smiletripcare"
@@ -28,6 +31,7 @@ curl -H "Authorization: Bearer $PLATFORM_ADMIN_TOKEN" \
 ```
 
 ### Deploy
+
 ```bash
 # GitHub Actions (recomendado)
 gh workflow run deploy.yml --ref main
@@ -39,11 +43,13 @@ ssh vps-dragon@100.120.151.91 "cd /opt/opsly && git pull && \
 ```
 
 ## Reglas
+
 - **SIEMPRE** `tenant_slug` + `request_id` en logs/orquestación
 - **NUNCA** mezclar datos de tenants
 - Docker Compose: `--project-name tenant_<slug>`
 
 ## Referencias
+
 - `scripts/onboard-tenant.sh` — onboarding
 - `scripts/suspend-tenant.sh` / `resume-tenant.sh`
 - `docs/runbooks/DEPLOY-GITHUB-ACTIONS.md`

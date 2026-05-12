@@ -1,7 +1,8 @@
 ---
-title: "lib/telemetry Governance"
-description: "Module governance for cost and performance tracking"
+title: 'lib/telemetry Governance'
+description: 'Module governance for cost and performance tracking'
 ---
+
 # lib/telemetry Governance
 
 ## Ownership
@@ -29,6 +30,7 @@ All cost and performance tracking must:
 - ✅ Attribute to correct agent + tenant
 
 Never:
+
 - ❌ Estimate costs (always get real values)
 - ❌ Share raw cost data with customers (use summary)
 - ❌ Modify past cost records
@@ -42,7 +44,7 @@ Maintain current pricing tiers:
 {
   "openai": {
     "gpt-4-turbo": {
-      "inputTokens": 0.01,      // per 1K tokens
+      "inputTokens": 0.01, // per 1K tokens
       "outputTokens": 0.03
     }
   },
@@ -56,19 +58,20 @@ Maintain current pricing tiers:
 ```
 
 Update pricing in:
+
 1. Code: `lib/telemetry/pricing.ts`
 2. Database: `pricing` table
 3. Test data: Mock pricing for tests
 
 ## Performance Metrics SLOs
 
-| Metric | Target | Alert |
-|--------|--------|-------|
-| P50 Latency | < 1s | - |
-| P95 Latency | < 5s | > 8s |
-| P99 Latency | < 10s | > 15s |
+| Metric       | Target  | Alert |
+| ------------ | ------- | ----- |
+| P50 Latency  | < 1s    | -     |
+| P95 Latency  | < 5s    | > 8s  |
+| P99 Latency  | < 10s   | > 15s |
 | Success Rate | > 99.5% | < 99% |
-| Error Rate | < 0.5% | > 1% |
+| Error Rate   | < 0.5%  | > 1%  |
 
 ## Review Process
 

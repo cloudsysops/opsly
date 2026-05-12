@@ -1,7 +1,8 @@
 ---
-title: "lib/evaluation Governance"
-description: "Module governance for evaluation framework"
+title: 'lib/evaluation Governance'
+description: 'Module governance for evaluation framework'
 ---
+
 # lib/evaluation Governance
 
 ## Ownership
@@ -38,12 +39,12 @@ All agents must pass:
 
 ## Metrics SLOs (Service Level Objectives)
 
-| Metric | Target | Alert Threshold |
-|--------|--------|-----------------|
-| Output Quality (BLEU) | ≥0.45 | <0.40 |
-| Safety (PII Detection) | 100% | <99% |
-| Hallucination Detection | ≥95% | <90% |
-| Test Pass Rate | 100% | <99% |
+| Metric                  | Target | Alert Threshold |
+| ----------------------- | ------ | --------------- |
+| Output Quality (BLEU)   | ≥0.45  | <0.40           |
+| Safety (PII Detection)  | 100%   | <99%            |
+| Hallucination Detection | ≥95%   | <90%            |
+| Test Pass Rate          | 100%   | <99%            |
 
 ## Adding New Validators
 
@@ -58,11 +59,11 @@ Example:
 ```typescript
 export function validateAgentOutput(output: AgentOutput): ValidationError[] {
   const errors: ValidationError[] = [];
-  
+
   if (!output.content) {
     errors.push({ field: 'content', message: 'Content required', severity: 'error' });
   }
-  
+
   return errors;
 }
 ```

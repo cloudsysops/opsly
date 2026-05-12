@@ -58,13 +58,13 @@ export class ValidationOrchestrator {
     agentRole: string,
     responseFile: string,
     iterationCount: number = 1,
-    maxIterations: number = 3,
+    maxIterations: number = 3
   ): Promise<ValidationDecision> {
     const startTime = Date.now();
 
     try {
       console.log(
-        `[ValidationOrchestrator] Starting validation for job ${jobId} (iteration ${iterationCount}/${maxIterations})`,
+        `[ValidationOrchestrator] Starting validation for job ${jobId} (iteration ${iterationCount}/${maxIterations})`
       );
 
       // Ensure validation directory exists
@@ -92,7 +92,9 @@ export class ValidationOrchestrator {
 
         return decision;
       } else if (iterationCount < maxIterations) {
-        console.log(`[ValidationOrchestrator] ⚠️ Validation FAILED for job ${jobId}, suggesting iteration`);
+        console.log(
+          `[ValidationOrchestrator] ⚠️ Validation FAILED for job ${jobId}, suggesting iteration`
+        );
 
         // Generate next prompt
         const responseContent = await fsp.readFile(responseFile, 'utf-8');
@@ -101,7 +103,7 @@ export class ValidationOrchestrator {
           agentRole,
           validationReport,
           responseContent,
-          iterationCount,
+          iterationCount
         );
 
         const decision: ValidationDecision = {
@@ -120,7 +122,9 @@ export class ValidationOrchestrator {
 
         return decision;
       } else {
-        console.log(`[ValidationOrchestrator] ❌ Max iterations (${maxIterations}) reached, escalating`);
+        console.log(
+          `[ValidationOrchestrator] ❌ Max iterations (${maxIterations}) reached, escalating`
+        );
 
         const decision: ValidationDecision = {
           action: 'escalate',
@@ -161,11 +165,13 @@ export class ValidationOrchestrator {
     responseFile: string,
     jobId: string,
     agentRole: string,
-    attempt: number,
+    attempt: number
   ): Promise<ValidationReport> {
     const filename = path.basename(responseFile);
 
-    console.log(`[ValidationOrchestrator] Validating ${filename} (job: ${jobId}, attempt: ${attempt})`);
+    console.log(
+      `[ValidationOrchestrator] Validating ${filename} (job: ${jobId}, attempt: ${attempt})`
+    );
 
     const startTime = Date.now();
 
@@ -209,7 +215,11 @@ export class ValidationOrchestrator {
           attempt,
           validations: [
             { type: 'type-check', status: attempt === 1 ? 'failed' : 'passed', duration_ms: 100 },
-            { type: 'test', status: attempt === 2 ? 'failed' : 'skipped', duration_ms: attempt === 2 ? 150 : 0 },
+            {
+              type: 'test',
+              status: attempt === 2 ? 'failed' : 'skipped',
+              duration_ms: attempt === 2 ? 150 : 0,
+            },
             { type: 'build', status: 'skipped', duration_ms: 0 },
           ],
           overall_status: 'failed',
@@ -266,7 +276,7 @@ export class ValidationOrchestrator {
     agentRole: string,
     validationReport: ValidationReport,
     responseContent: string,
-    attempt: number,
+    attempt: number
   ): Promise<string> {
     // Analyze errors and suggest fixes
     const failedChecks = validationReport.errors.map((e) => e.type).join(', ');
@@ -316,7 +326,7 @@ Return the complete, corrected implementation.
     jobId: string,
     decision: ValidationDecision,
     validationReport: ValidationReport,
-    attemptNumber?: number,
+    attemptNumber?: number
   ): Promise<void> {
     try {
       // Determine filename: final or intermediate
@@ -410,6 +420,8 @@ Return the complete, corrected implementation.
 }
 
 // Export factory function for easy instantiation
-export function createValidationOrchestrator(cursorDir: string = '.cursor'): ValidationOrchestrator {
+export function createValidationOrchestrator(
+  cursorDir: string = '.cursor'
+): ValidationOrchestrator {
   return new ValidationOrchestrator(cursorDir);
 }

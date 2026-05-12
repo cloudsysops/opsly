@@ -45,16 +45,13 @@ export function calculateTokenCost(
   model: string,
   inputTokens: number,
   outputTokens: number,
-  pricingData?: PricingData,
+  pricingData?: PricingData
 ): number {
-  const pricing =
-    pricingData?.[model] || DEFAULT_PRICING[model] || estimateTokenCost(model);
+  const pricing = pricingData?.[model] || DEFAULT_PRICING[model] || estimateTokenCost(model);
 
   if (!pricing) {
     console.warn(`Unknown model ${model}, using default estimation`);
-    return estimateTokenCost(model)
-      ? (inputTokens + outputTokens) * 0.0000015
-      : 0;
+    return estimateTokenCost(model) ? (inputTokens + outputTokens) * 0.0000015 : 0;
   }
 
   return inputTokens * pricing.input + outputTokens * pricing.output;
@@ -91,7 +88,7 @@ export function aggregateTokensByModel(
     outputTokens: number;
     timestamp: Date;
   }>,
-  pricingData?: PricingData,
+  pricingData?: PricingData
 ): TokenBreakdown {
   const breakdown: TokenBreakdown = {
     totalInputTokens: 0,
@@ -104,12 +101,7 @@ export function aggregateTokensByModel(
     breakdown.totalInputTokens += inputTokens;
     breakdown.totalOutputTokens += outputTokens;
 
-    const cost = calculateTokenCost(
-      model,
-      inputTokens,
-      outputTokens,
-      pricingData,
-    );
+    const cost = calculateTokenCost(model, inputTokens, outputTokens, pricingData);
     breakdown.totalCost += cost;
 
     if (!breakdown.costByModel[model]) {
@@ -134,7 +126,7 @@ export function aggregateTokensByModel(
 export function projectTokenCost(
   currentDailyCost: number,
   days: number,
-  growthRatePerMonth: number = 0.075,
+  growthRatePerMonth: number = 0.075
 ): number {
   // Convert monthly growth rate to daily
   const dailyGrowthRate = Math.pow(1 + growthRatePerMonth, 1 / 30) - 1;
@@ -146,7 +138,7 @@ export function projectTokenCost(
  */
 export function benchmarkTokensPerTenant(
   tenantCount: number,
-  agentFrequency: 'low' | 'medium' | 'high' = 'medium',
+  agentFrequency: 'low' | 'medium' | 'high' = 'medium'
 ): number {
   const baseTokensPerTenant = 5_000;
   const frequencyMultiplier = {
@@ -166,7 +158,7 @@ export function compareCost(
   model2: string,
   inputTokens: number,
   outputTokens: number,
-  pricingData?: PricingData,
+  pricingData?: PricingData
 ): {
   model1Cost: number;
   model2Cost: number;

@@ -80,11 +80,10 @@ function testHiddenFoldersCompliance() {
       continue;
     }
 
-    const isBlocked =
-      (whitelist.blocked_hidden_patterns ?? []).some((pattern) => {
-        const regex = new RegExp(`^${pattern.replace(/\*/g, '.*')}$`);
-        return regex.test(folder);
-      });
+    const isBlocked = (whitelist.blocked_hidden_patterns ?? []).some((pattern) => {
+      const regex = new RegExp(`^${pattern.replace(/\*/g, '.*')}$`);
+      return regex.test(folder);
+    });
 
     if (isBlocked) {
       console.log(`  ❌ ${folder}/ (patrón bloqueado)`);

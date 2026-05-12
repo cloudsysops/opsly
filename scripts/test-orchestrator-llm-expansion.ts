@@ -266,9 +266,7 @@ async function main() {
     console.log('═══════════════════════════════════════════════════════════\n');
 
     if (failed > 0) {
-      console.log(
-        '⚠️  Some tests failed. Check the orchestrator logs for details.'
-      );
+      console.log('⚠️  Some tests failed. Check the orchestrator logs for details.');
       process.exit(1);
     } else {
       console.log('✅ All tests passed! PR #187 is working correctly.');

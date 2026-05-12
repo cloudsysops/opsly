@@ -56,9 +56,12 @@ interface BackoffState {
 
 class OrchestratorWatchdog {
   private port = 3011;
-  private healthEndpoint = process.env.ORCHESTRATOR_HEALTH_ENDPOINT || 'http://localhost:3011/health';
-  private queuesEndpoint = process.env.HEALTH_SERVER_QUEUES_ENDPOINT || 'http://localhost:3013/queues';
-  private workersEndpoint = process.env.HEALTH_SERVER_WORKERS_ENDPOINT || 'http://localhost:3013/workers';
+  private healthEndpoint =
+    process.env.ORCHESTRATOR_HEALTH_ENDPOINT || 'http://localhost:3011/health';
+  private queuesEndpoint =
+    process.env.HEALTH_SERVER_QUEUES_ENDPOINT || 'http://localhost:3013/queues';
+  private workersEndpoint =
+    process.env.HEALTH_SERVER_WORKERS_ENDPOINT || 'http://localhost:3013/workers';
   private checkInterval = parseInt(process.env.WATCHDOG_CHECK_INTERVAL_MS || '30000', 10); // 30 seconds
   private maxRetries = parseInt(process.env.WATCHDOG_MAX_RETRIES || '4', 10);
   private backoffMs = [1000, 2000, 4000, 8000]; // exponential backoff base
@@ -91,7 +94,9 @@ class OrchestratorWatchdog {
     try {
       fs.appendFileSync(this.logFile, logMessage + '\n', { encoding: 'utf-8' });
     } catch (err) {
-      console.error(`Failed to write to log file: ${err instanceof Error ? err.message : String(err)}`);
+      console.error(
+        `Failed to write to log file: ${err instanceof Error ? err.message : String(err)}`
+      );
     }
   }
 
@@ -99,7 +104,10 @@ class OrchestratorWatchdog {
     try {
       fs.writeFileSync(this.metricsFile, JSON.stringify(result, null, 2), { encoding: 'utf-8' });
     } catch (err) {
-      this.log(`Failed to save metrics: ${err instanceof Error ? err.message : String(err)}`, 'warn');
+      this.log(
+        `Failed to save metrics: ${err instanceof Error ? err.message : String(err)}`,
+        'warn'
+      );
     }
   }
 
@@ -141,7 +149,8 @@ class OrchestratorWatchdog {
 
     // Check orchestrator health endpoint
     const orchestratorCheck = await this.makeHttpRequest(this.healthEndpoint);
-    const orchestratorHealthy = orchestratorCheck.statusCode === 200 || orchestratorCheck.statusCode === 201;
+    const orchestratorHealthy =
+      orchestratorCheck.statusCode === 200 || orchestratorCheck.statusCode === 201;
 
     // Check queue sizes (via health server)
     let queues = { cursor: 0, claude: 0, copilot: 0, opencode: 0, total: 0 };
@@ -223,7 +232,9 @@ class OrchestratorWatchdog {
     const baseMs = this.backoffMs[backoffIndex];
     const waitMs = this.getBackoffWithJitter(baseMs);
 
-    this.log(`Waiting ${Math.round(waitMs)}ms before restart attempt ${this.state.restartCount + 1}/${this.maxRetries}...`);
+    this.log(
+      `Waiting ${Math.round(waitMs)}ms before restart attempt ${this.state.restartCount + 1}/${this.maxRetries}...`
+    );
     await new Promise((resolve) => setTimeout(resolve, waitMs));
 
     try {
@@ -231,9 +242,10 @@ class OrchestratorWatchdog {
       const cwd = process.env.OPSLY_ROOT || '/home/user/opsly';
       const args = [
         'compose',
-        '-f', 'infra/docker-compose.openclaw-orchestrator.yml',
+        '-f',
+        'infra/docker-compose.openclaw-orchestrator.yml',
         'restart',
-        'orchestrator'
+        'orchestrator',
       ];
       execSync('docker ' + args.join(' '), { stdio: 'inherit', cwd, shell: '/bin/sh' });
 
@@ -345,12 +357,16 @@ class OrchestratorWatchdog {
   private notifyEscalation(result: HealthCheckResult): void {
     // Trigger Discord notification via shared notifier
     try {
-      const notifierPath = process.env.NOTIFIER_SCRIPT || '/home/user/opsly/scripts/notify-discord-orchestrator.js';
+      const notifierPath =
+        process.env.NOTIFIER_SCRIPT || '/home/user/opsly/scripts/notify-discord-orchestrator.js';
       const dataJson = JSON.stringify(result);
       const cmd = `node ${notifierPath} escalation ${JSON.stringify(dataJson)}`;
       execSync(cmd, { stdio: 'inherit', shell: '/bin/sh' });
     } catch (err) {
-      this.log(`Failed to send escalation notification: ${err instanceof Error ? err.message : String(err)}`, 'warn');
+      this.log(
+        `Failed to send escalation notification: ${err instanceof Error ? err.message : String(err)}`,
+        'warn'
+      );
     }
   }
 }

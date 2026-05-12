@@ -8,7 +8,9 @@ import type { OrchestratorJob } from '../types.js';
 
 function requestIdFromJob(job: Job<OrchestratorJob>): string {
   const d = job.data;
-  return typeof d.request_id === 'string' && d.request_id.length > 0 ? d.request_id : String(job.id ?? 'cloudsysops');
+  return typeof d.request_id === 'string' && d.request_id.length > 0
+    ? d.request_id
+    : String(job.id ?? 'cloudsysops');
 }
 
 export function startCloudSysOpsAgentsWorker(connection: object) {

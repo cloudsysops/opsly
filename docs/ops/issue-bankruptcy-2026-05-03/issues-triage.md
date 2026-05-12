@@ -5,52 +5,52 @@
 
 ## Totals
 
-| Metric | Count |
-|--------|------:|
-| Open issues | **164** |
-| Unassigned (`assignees` empty) | **164** |
-| No milestone | **164** |
-| No `updatedAt` older than 60 days (cutoff `2026-03-04`) | **0** (all touched Apr 14–May 3, 2026) |
-| Titles matching security/CVE/data-leak (regex, case-insensitive) | **0** |
+| Metric                                                           |                                  Count |
+| ---------------------------------------------------------------- | -------------------------------------: |
+| Open issues                                                      |                                **164** |
+| Unassigned (`assignees` empty)                                   |                                **164** |
+| No milestone                                                     |                                **164** |
+| No `updatedAt` older than 60 days (cutoff `2026-03-04`)          | **0** (all touched Apr 14–May 3, 2026) |
+| Titles matching security/CVE/data-leak (regex, case-insensitive) |                                  **0** |
 
 ## Age buckets (`updatedAt`)
 
 All 164 issues have `updatedAt` between **2026-04-14** and **2026-05-03** (automation churn). Buckets vs 2026-05-03:
 
-| Bucket | Count |
-|--------|------:|
-| &lt; 30 days | 164 |
-| 30–90 days | 0 |
-| &gt; 90 days | 0 |
+| Bucket       | Count |
+| ------------ | ----: |
+| &lt; 30 days |   164 |
+| 30–90 days   |     0 |
+| &gt; 90 days |     0 |
 
 ## Age buckets (`createdAt`)
 
-| Bucket | Count |
-|--------|------:|
-| &lt; 30 days (created after 2026-04-03) | 164 |
-| 30–90 days | 0 |
-| &gt; 90 days | 0 |
+| Bucket                                  | Count |
+| --------------------------------------- | ----: |
+| &lt; 30 days (created after 2026-04-03) |   164 |
+| 30–90 days                              |     0 |
+| &gt; 90 days                            |     0 |
 
 ## Top labels (open issues)
 
-| Label | Count |
-|-------|------:|
-| `automated` | 160 |
-| `bug` | 160 |
-| `tenant-health` | 160 |
+| Label           | Count |
+| --------------- | ----: |
+| `automated`     |   160 |
+| `bug`           |   160 |
+| `tenant-health` |   160 |
 
 (Counts overlap: same issues carry all three labels.)
 
 ## Top 20 oldest by `createdAt` (all same day batch; representative)
 
-| # | Created (UTC) | Title (trimmed) |
-|---|---------------|-----------------|
-| 7 | 2026-04-14 | 🔴 [Auto] Tenant localrank unreachable after restart |
-| 6 | 2026-04-14 | 🔴 [Auto] Tenant jkboterolabs unreachable after restart |
-| 5 | 2026-04-14 | 🔴 [Auto] Tenant intcloudsysops unreachable after restart |
-| 4 | 2026-04-14 | 🔴 [Auto] Tenant smiletripcare unreachable after restart |
-| 3 | 2026-04-14 | 🔴 [Auto] Tenant peskids unreachable after restart |
-| … | 2026-04-14 | (same pattern; duplicates across tenants / runs) |
+| #   | Created (UTC) | Title (trimmed)                                           |
+| --- | ------------- | --------------------------------------------------------- |
+| 7   | 2026-04-14    | 🔴 [Auto] Tenant localrank unreachable after restart      |
+| 6   | 2026-04-14    | 🔴 [Auto] Tenant jkboterolabs unreachable after restart   |
+| 5   | 2026-04-14    | 🔴 [Auto] Tenant intcloudsysops unreachable after restart |
+| 4   | 2026-04-14    | 🔴 [Auto] Tenant smiletripcare unreachable after restart  |
+| 3   | 2026-04-14    | 🔴 [Auto] Tenant peskids unreachable after restart        |
+| …   | 2026-04-14    | (same pattern; duplicates across tenants / runs)          |
 
 Links (same order as export):
 

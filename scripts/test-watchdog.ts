@@ -109,9 +109,8 @@ async function runTests(): Promise<boolean> {
       for (const [, metric] of Object.entries(parsed.summary)) {
         if (metric && typeof metric === 'object') {
           const m = metric as Record<string, unknown>;
-          const successRate = typeof m.validation_success_rate === 'number'
-            ? m.validation_success_rate
-            : 100;
+          const successRate =
+            typeof m.validation_success_rate === 'number' ? m.validation_success_rate : 100;
           totalEscalationRate += 100 - successRate;
           if (typeof m.last_metric_timestamp === 'string') {
             intentCount++;
@@ -132,13 +131,11 @@ async function runTests(): Promise<boolean> {
       const passed = expectedStatus === testCase.expectedStatus;
 
       if (passed) {
-        console.log(
-          `✓ PASS: Escalation rate ${escalationRate.toFixed(2)}% → ${expectedStatus}`
-        );
+        console.log(`✓ PASS: Escalation rate ${escalationRate.toFixed(2)}% → ${expectedStatus}`);
       } else {
         console.log(
           `✗ FAIL: Expected ${testCase.expectedStatus}, got ${expectedStatus}` +
-          ` (escalation rate: ${escalationRate.toFixed(2)}%)`
+            ` (escalation rate: ${escalationRate.toFixed(2)}%)`
         );
         allPassed = false;
       }

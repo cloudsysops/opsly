@@ -8,11 +8,13 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 ## Reglas de Código
 
 ### TypeScript
+
 - **NUNCA** `any` — tipos explícitos
 - Funciones >50 líneas → dividir
 - Usar `lib/constants.ts` para números mágicos
 
 ### Patrones
+
 - **Repository**: queries Supabase → `lib/repositories/`
 - **Factory**: crear recursos → `lib/factories/`
 - **Strategy**: routing LLM → `apps/llm-gateway/src/providers/`
@@ -42,11 +44,13 @@ Ejemplos: `feat(api): add GET /api/portal/usage`, `fix(hooks): prevent main comm
 ## Variables (Placeholders)
 
 **NUNCA** commitear secretos. Usar Doppler:
+
 ```bash
 doppler run --project ops-intcloudsysops --config prd -- <command>
 ```
 
 ## Referencias Cruzadas
+
 - **Estado**: `AGENTS.md` (raíz) — fuente de verdad
 - **Visión**: `VISION.md`
 - **Roadmap**: `ROADMAP.md`

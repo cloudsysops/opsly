@@ -5,6 +5,7 @@
 Este archivo es leído por el servicio `billy-prompt-monitor` cada 30s en el VPS para ejecutar tareas autónomas.
 
 ## Última actualización
+
 ```bash
 # Ver fecha de modificación
 stat -c %y /opt/opsly/docs/ACTIVE-PROMPT.md

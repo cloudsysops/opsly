@@ -5,12 +5,14 @@ Ejecuta el deploy de Opsly. Ver detalles completos en `AGENTS.md` (sección "Inf
 ## Comandos Rápidos
 
 ### Opción 1: GitHub Actions (Recomendado)
+
 ```bash
 gh workflow run deploy.yml --ref main
 gh run list --workflow=deploy.yml --limit 3
 ```
 
 ### Opción 2: Manual VPS (Staging)
+
 ```bash
 ssh vps-dragon@100.120.151.91
 cd /opt/opsly && git pull
@@ -20,6 +22,7 @@ docker compose -f infra/docker-compose.platform.yml --env-file /opt/opsly/.env u
 ```
 
 ### Verificación
+
 ```bash
 # Health check (hasta 5 intentos)
 for i in {1..5}; do
@@ -32,12 +35,14 @@ ssh vps-dragon@100.120.151.91 "docker ps --format '{{.Names}}\t{{.Status}}'"
 ```
 
 ## Pre-requisitos
+
 - [ ] `./scripts/validate-config.sh` → LISTO PARA DEPLOY
 - [ ] `npm run type-check` → 0 errores
 - [ ] Cloudflare Proxy ON
 - [ ] SSH vía Tailscale (`100.120.151.91`)
 
 ## Referencias
+
 - `AGENTS.md` → "Infraestructura VPS-dragon", "Deploy staging"
 - `.github/workflows/deploy.yml` — pipeline GitHub Actions
 - `docs/runbooks/DEPLOY-GITHUB-ACTIONS.md` — runbook completo

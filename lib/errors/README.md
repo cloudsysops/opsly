@@ -1,7 +1,8 @@
 ---
-title: "@intcloudsysops/errors"
-description: "Unified error handling and context tracking"
+title: '@intcloudsysops/errors'
+description: 'Unified error handling and context tracking'
 ---
+
 # @intcloudsysops/errors
 
 Centralized error handling with consistent response format, context tracking, and HTTP status codes.
@@ -58,13 +59,13 @@ class CustomError extends AppError {
 
 ## Error Types
 
-| Error | Status | When to Use |
-|-------|--------|------------|
-| ValidationError | 400 | Invalid input, schema mismatch |
-| AuthError | 401 | Missing or invalid credentials |
-| NotFoundError | 404 | Resource not found |
-| RateLimitError | 429 | Too many requests |
-| AppError | 500 | Generic server error |
+| Error           | Status | When to Use                    |
+| --------------- | ------ | ------------------------------ |
+| ValidationError | 400    | Invalid input, schema mismatch |
+| AuthError       | 401    | Missing or invalid credentials |
+| NotFoundError   | 404    | Resource not found             |
+| RateLimitError  | 429    | Too many requests              |
+| AppError        | 500    | Generic server error           |
 
 ## Integration by Service
 

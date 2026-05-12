@@ -12,14 +12,14 @@ This document defines how canonical documentation is protected and maintained in
 
 The following files are **sources of truth** and are protected from unauthorized modification:
 
-| File | Purpose | Update Frequency | Owner |
-|------|---------|------------------|-------|
-| `VISION.md` | Product north star, strategic direction | Quarterly or on major pivot | Operations |
-| `ROADMAP.md` | Timeline, milestones, quarterly goals | Weekly/Sprint planning | Operations |
-| `AGENTS.md` | Operational status, session state, next steps | Per session end | All Agents |
-| `SPRINT-TRACKER.md` | Current sprint progress, blockers, velocity | Daily during sprint | Operations |
-| `docs/README.md` | Documentation index and architecture guide | As docs are added | Operations |
-| `config/modules.json` | Library module registry, versions, owners | When modules added/retired | Architecture |
+| File                  | Purpose                                       | Update Frequency            | Owner        |
+| --------------------- | --------------------------------------------- | --------------------------- | ------------ |
+| `VISION.md`           | Product north star, strategic direction       | Quarterly or on major pivot | Operations   |
+| `ROADMAP.md`          | Timeline, milestones, quarterly goals         | Weekly/Sprint planning      | Operations   |
+| `AGENTS.md`           | Operational status, session state, next steps | Per session end             | All Agents   |
+| `SPRINT-TRACKER.md`   | Current sprint progress, blockers, velocity   | Daily during sprint         | Operations   |
+| `docs/README.md`      | Documentation index and architecture guide    | As docs are added           | Operations   |
+| `config/modules.json` | Library module registry, versions, owners     | When modules added/retired  | Architecture |
 
 ## Protection Mechanisms
 
@@ -68,6 +68,7 @@ gh api repos/cloudsysops/opsly/branches/main/protection \
 File: `.githooks/pre-commit` — validates canonical files are not modified carelessly.
 
 **Behavior:**
+
 - Detects if canonical files are staged for commit
 - Warns developer about the modification
 - Requires explicit commit message indicating intentional change
@@ -77,6 +78,7 @@ File: `.githooks/pre-commit` — validates canonical files are not modified care
 File: `.githooks/commit-msg` — enforces semantic commit messages for canonical docs.
 
 **Required patterns for canonical file changes:**
+
 ```
 docs(agents): update session state
 docs(roadmap): Q2 2026 milestones
@@ -85,6 +87,7 @@ feat(vision): update product direction
 ```
 
 **Validation logic:**
+
 ```bash
 if canonical_files_modified && ! (commit_message matches docs|chore|feat pattern)
   then exit 1 with error message
@@ -100,6 +103,7 @@ fi
 **Who:** The agent (Claude, Cursor, etc.) or developer working on that session
 
 **How:**
+
 1. Update relevant sections (🔄 markers indicate update points)
 2. Commit with message: `docs(agents): update session state and progress`
 3. Push to `main`
@@ -112,6 +116,7 @@ fi
 **Who:** Operations team + product lead
 
 **How:**
+
 1. Create a PR against `main` with the changes
 2. Include rationale in PR description
 3. Require 1 approval before merge
@@ -125,6 +130,7 @@ fi
 **Who:** Architecture team (claude)
 
 **How:**
+
 1. Update `config/modules.json` with new module metadata
 2. Update `docs/01-development/LIBRARY-MODULES.md` with usage examples
 3. Commit with message: `chore(modules): register {module-name} v{version}`
@@ -137,7 +143,7 @@ All canonical docs MUST include:
 ```yaml
 ---
 status: canon
-owner: {operations|architecture|team-name}
+owner: { operations|architecture|team-name }
 last_review: YYYY-MM-DD
 ---
 ```
@@ -165,11 +171,13 @@ All GitHub admins can approve emergency overrides.
 ## Monitoring
 
 **Automatic checks:**
+
 - CI workflow `validate-context.yml` verifies all canonical docs exist with proper frontmatter
 - Pre-commit hooks prevent accidental modifications
 - Post-commit hooks keep `.github/` mirror in sync
 
 **Manual review (recommended quarterly):**
+
 ```bash
 # Check if any canonical docs are out of sync
 git diff main docs/README.md VISION.md ROADMAP.md AGENTS.md

@@ -107,7 +107,9 @@ export default async function WorkflowsMarketplacePage({
                       </p>
                     )}
                     <Button asChild variant="default" className="mt-2 w-full sm:w-auto">
-                      <Link href={`/dashboard/${tenant}/subscriptions`}>Suscripciones y planes</Link>
+                      <Link href={`/dashboard/${tenant}/subscriptions`}>
+                        Suscripciones y planes
+                      </Link>
                     </Button>
                   </CardContent>
                 </Card>
@@ -208,9 +210,7 @@ export default async function WorkflowsMarketplacePage({
                     tenantPlan={payload.plan}
                     installedByDefault={item.installed_by_default}
                     accessToken={accessToken}
-                    initiallyActivated={
-                      item.installed_by_default || activatedIds.has(item.id)
-                    }
+                    initiallyActivated={item.installed_by_default || activatedIds.has(item.id)}
                   />
                   <div className="flex flex-wrap gap-3">
                     {n8nUrl ? (

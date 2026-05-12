@@ -116,7 +116,13 @@
       "purpose": "Predictive cost modeling for multi-tenant scenarios with LLM spend, infra scaling, and Stripe billing integration. Forecast 30/90-day budgets, detect anomalies, recommend plan downgrades/upgrades.",
       "difficulty": "high",
       "depends_on": ["opsly-economist", "@intcloudsysops/telemetry", "@intcloudsysops/config"],
-      "triggers": ["cost forecast", "budget prediction", "burn rate", "cost anomaly", "plan recommendation"],
+      "triggers": [
+        "cost forecast",
+        "budget prediction",
+        "burn rate",
+        "cost anomaly",
+        "plan recommendation"
+      ],
       "estimated_effort_hours": 40,
       "priority": "critical",
       "impact_area": "cost-governance, revenue-operations"
@@ -127,7 +133,13 @@
       "purpose": "PII/data compliance risk scanner and audit generator. Scan logs, backups, tenant schemas for unredacted PII, validate GDPR/CCPA adherence, generate compliance reports.",
       "difficulty": "high",
       "depends_on": ["@intcloudsysops/security", "opsly-supabase", "@intcloudsysops/observability"],
-      "triggers": ["compliance audit", "pii scan", "gdpr check", "data lineage", "compliance report"],
+      "triggers": [
+        "compliance audit",
+        "pii scan",
+        "gdpr check",
+        "data lineage",
+        "compliance report"
+      ],
       "estimated_effort_hours": 50,
       "priority": "critical",
       "impact_area": "security, legal-compliance, enterprise-sales"
@@ -138,7 +150,13 @@
       "purpose": "OpenTelemetry instrumentation and distributed tracing dashboard. Enable end-to-end request tracing across 18+ microservices, cost attribution per trace, latency SLO enforcement.",
       "difficulty": "high",
       "depends_on": ["@intcloudsysops/observability", "opsly-infra", "opsly-llm"],
-      "triggers": ["distributed trace", "request tracing", "latency profiling", "cost per trace", "slo monitoring"],
+      "triggers": [
+        "distributed trace",
+        "request tracing",
+        "latency profiling",
+        "cost per trace",
+        "slo monitoring"
+      ],
       "estimated_effort_hours": 60,
       "priority": "critical",
       "impact_area": "observability, performance, sre"
@@ -148,8 +166,19 @@
       "name": "opsly-tenant-autoscaler",
       "purpose": "Intelligent tenant resource allocation and multi-VPS orchestration. Predict scaling needs, auto-provision new VPS, rebalance tenants, cold-deprovision unused stacks.",
       "difficulty": "very-high",
-      "depends_on": ["opsly-infra", "opsly-orchestrator", "@intcloudsysops/workflow", "@intcloudsysops/telemetry"],
-      "triggers": ["tenant scaling", "capacity planning", "vps provisioning", "tenant rebalance", "cost optimization"],
+      "depends_on": [
+        "opsly-infra",
+        "opsly-orchestrator",
+        "@intcloudsysops/workflow",
+        "@intcloudsysops/telemetry"
+      ],
+      "triggers": [
+        "tenant scaling",
+        "capacity planning",
+        "vps provisioning",
+        "tenant rebalance",
+        "cost optimization"
+      ],
       "estimated_effort_hours": 80,
       "priority": "high",
       "impact_area": "scalability, devops, cost-governance"
@@ -160,7 +189,13 @@
       "purpose": "Automated incident response and self-healing orchestration. Detect and remediate common failures: health checks, resource exhaustion, TLS rotation, orphaned containers.",
       "difficulty": "high",
       "depends_on": ["opsly-orchestrator", "opsly-infra", "@intcloudsysops/observability"],
-      "triggers": ["incident response", "auto-remediation", "circuit breaker", "health recovery", "self-healing"],
+      "triggers": [
+        "incident response",
+        "auto-remediation",
+        "circuit breaker",
+        "health recovery",
+        "self-healing"
+      ],
       "estimated_effort_hours": 55,
       "priority": "high",
       "impact_area": "reliability, sre, autonomy"
@@ -171,7 +206,13 @@
       "purpose": "ML model quality monitoring and drift detection. Track LLM output quality, token efficiency, provider fallback decisions, prompt A/B testing with analytics.",
       "difficulty": "high",
       "depends_on": ["opsly-llm", "opsly-feedback-ml", "@intcloudsysops/observability"],
-      "triggers": ["model drift", "token efficiency", "llm quality", "provider fallback", "prompt ab test"],
+      "triggers": [
+        "model drift",
+        "token efficiency",
+        "llm quality",
+        "provider fallback",
+        "prompt ab test"
+      ],
       "estimated_effort_hours": 45,
       "priority": "high",
       "impact_area": "ai-cost-governance, product"
@@ -182,7 +223,13 @@
       "purpose": "Backup/disaster recovery orchestration with SLA monitoring. Automated cross-region replication, integrity validation, restore testing, point-in-time recovery.",
       "difficulty": "high",
       "depends_on": ["opsly-supabase", "opsly-infra", "@intcloudsysops/observability"],
-      "triggers": ["backup orchestration", "disaster recovery", "backup restore", "rto-rpo monitoring", "cross-region replication"],
+      "triggers": [
+        "backup orchestration",
+        "disaster recovery",
+        "backup restore",
+        "rto-rpo monitoring",
+        "cross-region replication"
+      ],
       "estimated_effort_hours": 50,
       "priority": "high",
       "impact_area": "data-protection, enterprise-sla"
@@ -193,7 +240,13 @@
       "purpose": "Multi-tenant secret vault and rotation orchestrator. Tenant-level secret rotation, key versioning, encryption key escrow, audit trail.",
       "difficulty": "high",
       "depends_on": ["@intcloudsysops/security", "opsly-tenant", "opsly-supabase"],
-      "triggers": ["secret rotation", "key management", "encryption escrow", "secret audit", "tenant vault"],
+      "triggers": [
+        "secret rotation",
+        "key management",
+        "encryption escrow",
+        "secret audit",
+        "tenant vault"
+      ],
       "estimated_effort_hours": 45,
       "priority": "high",
       "impact_area": "security, compliance"
@@ -215,7 +268,13 @@
       "purpose": "Multi-step tenant onboarding orchestration. Template n8n workflows, send tutorials, setup integrations, first-use success tracking, churn prediction.",
       "difficulty": "medium",
       "depends_on": ["opsly-tenant", "opsly-orchestrator", "opsly-discord"],
-      "triggers": ["onboarding automation", "welcome experience", "tutorial delivery", "churn prediction", "activation tracking"],
+      "triggers": [
+        "onboarding automation",
+        "welcome experience",
+        "tutorial delivery",
+        "churn prediction",
+        "activation tracking"
+      ],
       "estimated_effort_hours": 30,
       "priority": "medium",
       "impact_area": "customer-success, plg"
@@ -226,7 +285,13 @@
       "purpose": "Real-time per-tenant quota enforcement and usage metering. Dynamic rate limiting, overage notifications, quota upgrade suggestions.",
       "difficulty": "medium",
       "depends_on": ["@intcloudsysops/telemetry", "@intcloudsysops/config", "opsly-billing"],
-      "triggers": ["quota enforcement", "usage metering", "rate limiting", "overage alert", "quota suggestion"],
+      "triggers": [
+        "quota enforcement",
+        "usage metering",
+        "rate limiting",
+        "overage alert",
+        "quota suggestion"
+      ],
       "estimated_effort_hours": 30,
       "priority": "medium",
       "impact_area": "billing, revenue-operations"
@@ -237,7 +302,13 @@
       "purpose": "Cross-tenant anonymized benchmarking and feature suggestions. Cohort analysis, upgrade recommendations, best-practice templates.",
       "difficulty": "medium",
       "depends_on": ["opsly-economist", "@intcloudsysops/observability"],
-      "triggers": ["benchmarking", "cohort analysis", "upgrade suggest", "best practice", "usage analytics"],
+      "triggers": [
+        "benchmarking",
+        "cohort analysis",
+        "upgrade suggest",
+        "best practice",
+        "usage analytics"
+      ],
       "estimated_effort_hours": 35,
       "priority": "medium",
       "impact_area": "product-led-growth, sales"
@@ -248,7 +319,13 @@
       "purpose": "Monorepo-wide dependency scanning, CVE detection, and automated patch orchestration. License compliance, supply chain security.",
       "difficulty": "medium",
       "depends_on": ["opsly-bash", "@intcloudsysops/security"],
-      "triggers": ["dependency scan", "cve detection", "license compliance", "patch automation", "supply chain"],
+      "triggers": [
+        "dependency scan",
+        "cve detection",
+        "license compliance",
+        "patch automation",
+        "supply chain"
+      ],
       "estimated_effort_hours": 40,
       "priority": "medium",
       "impact_area": "security, devops"
@@ -349,17 +426,39 @@
   "priority_matrix": {
     "critical": {
       "count": 4,
-      "items": ["skill-01 (cost-forecaster)", "skill-02 (compliance-auditor)", "skill-03 (distributed-tracing)", "ext-04 (otel-instrumentation)"],
+      "items": [
+        "skill-01 (cost-forecaster)",
+        "skill-02 (compliance-auditor)",
+        "skill-03 (distributed-tracing)",
+        "ext-04 (otel-instrumentation)"
+      ],
       "rationale": "Enable enterprise sales, security compliance, and operational visibility. Blocking factors for 50-100 tenant scale."
     },
     "high": {
       "count": 6,
-      "items": ["skill-04 (tenant-autoscaler)", "skill-05 (self-healing)", "skill-06 (ml-observability)", "skill-07 (backup-recovery)", "skill-08 (secret-manager)", "ext-02 (stripe-tools)"],
+      "items": [
+        "skill-04 (tenant-autoscaler)",
+        "skill-05 (self-healing)",
+        "skill-06 (ml-observability)",
+        "skill-07 (backup-recovery)",
+        "skill-08 (secret-manager)",
+        "ext-02 (stripe-tools)"
+      ],
       "rationale": "Required for 99.5% SLA, enterprise contracts, and scalability. Reduce on-call burden and churn."
     },
     "medium": {
       "count": 9,
-      "items": ["skill-09 to skill-13", "ext-01", "ext-03", "ext-05", "ext-06", "ext-07", "ext-08", "ext-09", "ext-10"],
+      "items": [
+        "skill-09 to skill-13",
+        "ext-01",
+        "ext-03",
+        "ext-05",
+        "ext-06",
+        "ext-07",
+        "ext-08",
+        "ext-09",
+        "ext-10"
+      ],
       "rationale": "Improve DX, PLG efficiency, and security posture. Medium ROI but high user satisfaction."
     }
   },

@@ -18,26 +18,32 @@
   - [ ] No `any` types in TypeScript (type-check passing)
 
 - [ ] **Type Safety Verification**
+
   ```bash
   npm run type-check
   ```
+
   - [ ] No TypeScript errors
   - [ ] All interfaces properly typed
   - [ ] No implicit `any` values
 
 - [ ] **Linting & Formatting**
+
   ```bash
   npm run lint
   npm run format:check
   ```
+
   - [ ] No linting errors
   - [ ] Code properly formatted
   - [ ] ESLint rules satisfied
 
 - [ ] **Unit & Integration Tests Pass**
+
   ```bash
   npm run test -- --run
   ```
+
   - [ ] Test suite completes with 0 failures
   - [ ] Coverage metrics acceptable (>70% for critical paths)
   - [ ] No flaky tests
@@ -46,6 +52,7 @@
   ```bash
   npm audit
   ```
+
   - [ ] No high/critical vulnerabilities
   - [ ] All transitive dependencies resolved
   - [ ] Dependency tree clean
@@ -53,17 +60,21 @@
 ### Git Preparation
 
 - [ ] **Current Branch Clean**
+
   ```bash
   git status
   ```
+
   - [ ] No uncommitted changes
   - [ ] All work committed with descriptive messages
 
 - [ ] **Branch Up-to-Date**
+
   ```bash
   git fetch origin main
   git log --oneline -10
   ```
+
   - [ ] Branch contains all necessary commits
   - [ ] No merge conflicts with main
   - [ ] Commit history is clean (no fixup commits)
@@ -73,29 +84,36 @@
   git tag -a v8.0.0-phases-5-7 -m "Phase 8 deployment: Orchestrator, Agent Teams, Validation"
   git push origin v8.0.0-phases-5-7
   ```
+
   - [ ] Version tag created and pushed
   - [ ] Release notes in GitHub
 
 ### Infrastructure Readiness
 
 - [ ] **VPS SSH Access Verified**
+
   ```bash
   npm run opsly:vps-ssh:verify
   ```
+
   - [ ] Can SSH to VPS without password (Tailscale key-based auth)
   - [ ] SSH agent forwarding working if needed
 
 - [ ] **VPS Docker Runtime Healthy**
+
   ```bash
   ssh vps-dragon@100.120.151.91 "docker ps --format 'table {{.Names}}\t{{.Status}}'"
   ```
+
   - [ ] Docker daemon responsive
   - [ ] Previous containers healthy or acceptable to restart
 
 - [ ] **Disk Space Available on VPS**
+
   ```bash
   ssh vps-dragon@100.120.151.91 "df -h /"
   ```
+
   - [ ] At least 10GB free space
   - [ ] No inode exhaustion warnings
 
@@ -103,6 +121,7 @@
   ```bash
   doppler run --project ops-intcloudsysops --config prd -- env | grep -E "ORCHESTRATOR|AGENT|VALIDATION"
   ```
+
   - [ ] `ORCHESTRATOR_MODE` set correctly
   - [ ] `AGENT_TEAM_SIZE` configured
   - [ ] `VALIDATION_ESCALATION_THRESHOLD` set
@@ -115,9 +134,11 @@
 ### Step 1: Pre-Deployment Health Check (5 min)
 
 - [ ] **Local docker-compose validation**
+
   ```bash
   docker-compose -f infra/docker-compose.local.yml config > /dev/null
   ```
+
   - [ ] YAML syntax valid
   - [ ] All services defined
   - [ ] All volume mounts accessible
@@ -126,6 +147,7 @@
   ```bash
   test -f .env && wc -l .env
   ```
+
   - [ ] `.env` file exists (if using local env)
   - [ ] All required variables populated
 
@@ -164,17 +186,21 @@ The script performs:
 Script runs health checks every 10s for up to 2 minutes:
 
 - [ ] **Orchestrator (port 3011)**
+
   ```bash
   curl -sf http://localhost:3011/health
   ```
+
   - [ ] Returns 200 OK
   - [ ] JSON response includes `"status":"healthy"`
   - [ ] No 5xx errors
 
 - [ ] **API Service (port 3000)**
+
   ```bash
   curl -sf http://localhost:3000/api/health
   ```
+
   - [ ] Returns 200 OK
   - [ ] Includes database connectivity status
   - [ ] Queue connection established
@@ -183,6 +209,7 @@ Script runs health checks every 10s for up to 2 minutes:
   ```bash
   curl -sf http://localhost:3001/health
   ```
+
   - [ ] Returns 200 OK
   - [ ] React app loads successfully
   - [ ] Static assets served
@@ -190,9 +217,11 @@ Script runs health checks every 10s for up to 2 minutes:
 ### Step 4: Background Service Startup (1 min)
 
 - [ ] **Orchestrator Watchdog Started**
+
   ```bash
   ssh vps-dragon@100.120.151.91 "ps aux | grep watchdog"
   ```
+
   - [ ] Process running as expected
   - [ ] Logs writing to `/var/log/opsly-watchdog.log`
   - [ ] No startup errors
@@ -201,6 +230,7 @@ Script runs health checks every 10s for up to 2 minutes:
   ```bash
   ssh vps-dragon@100.120.151.91 "ps aux | grep trainer"
   ```
+
   - [ ] Process running
   - [ ] Logs writing to `/var/log/opsly-trainer.log`
   - [ ] Connecting to orchestrator successfully
@@ -231,9 +261,11 @@ ssh vps-dragon@100.120.151.91 "docker ps --format 'table {{.Names}}\t{{.Status}}
 ### Service Connectivity
 
 - [ ] **Queue connections healthy**
+
   ```bash
   ssh vps-dragon@100.120.151.91 "redis-cli ping"
   ```
+
   - [ ] Returns `PONG`
   - [ ] Redis accepting connections
 
@@ -278,10 +310,12 @@ ssh vps-dragon@100.120.151.91 "docker ps --format 'table {{.Names}}\t{{.Status}}
 ### Queue Processing Verification
 
 - [ ] **BullMQ jobs processing**
+
   ```bash
   ssh vps-dragon@100.120.151.91 \
     "redis-cli --raw LRANGE bull:orchestrator:jobs:* 0 -1 | head -10"
   ```
+
   - [ ] Job queue has items
   - [ ] Jobs transitioning from pending → active → completed
   - [ ] No stuck jobs (in active state > 5 minutes)
@@ -290,6 +324,7 @@ ssh vps-dragon@100.120.151.91 "docker ps --format 'table {{.Names}}\t{{.Status}}
   ```bash
   ssh vps-dragon@100.120.151.91 "redis-cli --raw LRANGE bull:orchestrator:failed:* 0 -1"
   ```
+
   - [ ] DLQ should be empty or minimal
   - [ ] If failures exist, they're expected/handled
 
@@ -309,16 +344,20 @@ ssh vps-dragon@100.120.151.91 "docker ps --format 'table {{.Names}}\t{{.Status}}
 ### Log Analysis
 
 - [ ] **No critical errors in logs**
+
   ```bash
   ssh vps-dragon@100.120.151.91 "tail -100 /var/log/opsly-watchdog.log | grep -i error"
   ```
+
   - [ ] Should return minimal errors (<2% of log lines)
   - [ ] Warnings are acceptable; errors should be addressed
 
 - [ ] **Agent trainer learning**
+
   ```bash
   ssh vps-dragon@100.120.151.91 "tail -100 /var/log/opsly-trainer.log"
   ```
+
   - [ ] Trainer is processing feedback
   - [ ] Improvement metrics logged
   - [ ] No trainer crashes
@@ -327,6 +366,7 @@ ssh vps-dragon@100.120.151.91 "docker ps --format 'table {{.Names}}\t{{.Status}}
   ```bash
   ssh vps-dragon@100.120.151.91 "curl -sf http://localhost:3011/health | jq '.metrics'"
   ```
+
   - [ ] Avg validation time reasonable
   - [ ] Throughput stable
   - [ ] No memory leaks (process doesn't grow)
@@ -337,6 +377,7 @@ ssh vps-dragon@100.120.151.91 "docker ps --format 'table {{.Names}}\t{{.Status}}
   ```bash
   jq . test-results.json
   ```
+
   - [ ] All test prompts have pass/fail status
   - [ ] Success criteria met
   - [ ] Timestamps recorded for audit trail
@@ -432,10 +473,10 @@ tail -f /var/log/opsly-trainer.log
 
 ### Known Issues & Workarounds
 
-| Issue | Symptom | Workaround | Status |
-|-------|---------|-----------|--------|
+| Issue     | Symptom               | Workaround                | Status                      |
+| --------- | --------------------- | ------------------------- | --------------------------- |
 | (Example) | Trainer slow to start | Wait 30s, then check logs | Document actual issues here |
-| | | | |
+|           |                       |                           |                             |
 
 ---
 

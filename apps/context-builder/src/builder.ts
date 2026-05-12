@@ -63,7 +63,11 @@ function generateQueryHash(query: string): string {
 async function queryNotebookLMContext(
   tenantSlug: string,
   query: string
-): Promise<{ context: string; sources: Array<{ title: string; url?: string }>; confidence: number } | null> {
+): Promise<{
+  context: string;
+  sources: Array<{ title: string; url?: string }>;
+  confidence: number;
+} | null> {
   try {
     // Crear cliente Supabase con service role
     const supabase = createSupabaseClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
@@ -116,8 +120,11 @@ export async function buildContextForLLM(
     if (knowledgeContext) {
       system += `\n\nContexto de Knowledge Base (NotebookLM):\n${knowledgeContext.context}`;
       if (knowledgeContext.sources.length > 0) {
-        system += '\n\nFuentes:\n' +
-          knowledgeContext.sources.map((s: any) => `- ${s.title}${s.url ? ` (${s.url})` : ''}`).join('\n');
+        system +=
+          '\n\nFuentes:\n' +
+          knowledgeContext.sources
+            .map((s: any) => `- ${s.title}${s.url ? ` (${s.url})` : ''}`)
+            .join('\n');
       }
     }
   } catch (err) {

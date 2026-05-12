@@ -1,6 +1,6 @@
 ---
-title: "@intcloudsysops/prompts"
-description: "Versioned prompt registry for all agents"
+title: '@intcloudsysops/prompts'
+description: 'Versioned prompt registry for all agents'
 ---
 
 # @intcloudsysops/prompts
@@ -23,11 +23,7 @@ Versioned prompt registry for all agents. Centralized management of agent prompt
 ```typescript
 import { initRegistry } from '@intcloudsysops/prompts';
 
-initRegistry([
-  '.cursor/prompts',
-  'tools/agents/prompts',
-  'docs/prompts'
-]);
+initRegistry(['.cursor/prompts', 'tools/agents/prompts', 'docs/prompts']);
 ```
 
 ### Load Prompt

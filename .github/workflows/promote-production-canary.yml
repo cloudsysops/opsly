@@ -5,15 +5,15 @@ on:
   workflow_dispatch:
     inputs:
       staging_api_url:
-        description: "Staging API URL"
+        description: 'Staging API URL'
         required: false
         type: string
       production_api_url:
-        description: "Production API URL"
+        description: 'Production API URL'
         required: false
         type: string
       rollback_on_fail:
-        description: "Activar rollback si falla canary"
+        description: 'Activar rollback si falla canary'
         required: false
         type: boolean
         default: true

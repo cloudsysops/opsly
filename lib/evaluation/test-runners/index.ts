@@ -26,7 +26,7 @@ export async function runSmokeTests(testCases: TestCase[]): Promise<TestResult[]
     // Validate input
     const inputValidation = validateInput(test.input, {});
     if (!inputValidation.valid) {
-      errors.push(...inputValidation.errors.map(e => e.message));
+      errors.push(...inputValidation.errors.map((e) => e.message));
     }
 
     results.push({
@@ -40,15 +40,13 @@ export async function runSmokeTests(testCases: TestCase[]): Promise<TestResult[]
   return results;
 }
 
-export async function runRegressionTests(
-  testCases: TestCase[]
-): Promise<TestResult[]> {
+export async function runRegressionTests(testCases: TestCase[]): Promise<TestResult[]> {
   const results = await runSmokeTests(testCases);
 
   for (const result of results) {
     // Check for PII in inputs
     const piiErrors = checkForPII(JSON.stringify(result));
-    result.errors.push(...piiErrors.map(e => e.message));
+    result.errors.push(...piiErrors.map((e) => e.message));
     result.passed = result.errors.length === 0;
   }
 

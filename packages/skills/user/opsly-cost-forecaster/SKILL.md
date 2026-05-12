@@ -8,6 +8,7 @@
 ## Propósito
 
 Predecir costos de infraestructura e IA (tokens LLM, compute, storage) con 30-90 días de anticipación. Permite a operaciones:
+
 - Alertar antes de sorpresas de factura
 - Recomendaciones de ahorro (proveedor, modelo, batching)
 - Capacity planning (¿cuándo upgraar infraestructura?)
@@ -26,12 +27,14 @@ Predecir costos de infraestructura e IA (tokens LLM, compute, storage) con 30-90
 ### 1. Recolectar datos históricos
 
 Fuentes:
+
 - `openclaw_llm_tokens_consumed` (Prometheus) — tokens por proveedor/modelo
 - Doppler `ops-intcloudsysops/prd` — active LLM providers + models + pricing
 - Stripe API — recent invoices (last 90 days)
 - Database — tenant count, agent frequency
 
 Métricas críticas:
+
 ```
 llm_tokens_per_day = sum(tokens) / days_in_period
 compute_monthly = VPS_monthly_cost (DigitalOcean)
@@ -56,11 +59,13 @@ const tokenCost = (model: string, tokens: number) => {
 ### 3. Proyectar 30/60/90 días
 
 Asumir:
+
 - Token usage crece 5-10% MoM (start conservador, ajustar con datos)
 - New tenants = +2-3 token/day por tenant (benchmark)
 - Modelo switching = recalcular (si cambias Claude → GPT-4, +50% token cost)
 
 Fórmula simple:
+
 ```
 forecast_day_N = avg_daily_spend * (1 + growth_rate) ^ (N/30)
 forecast_month = sum(forecast_day_1...forecast_day_30)
@@ -69,12 +74,14 @@ forecast_month = sum(forecast_day_1...forecast_day_30)
 ### 4. Generar recomendaciones
 
 **Si forecast > budget:**
+
 1. "Switch 30% of queries to Claude Haiku (50% token cost, 85% quality)" → Est. savings: $150/mo
 2. "Batch small queries (10x throughput, same cost)" → Est. savings: $200/mo
 3. "Cache repeated queries (LLM Gateway cache hit rate)" → Est. savings: $300/mo
 4. "Recommend Claude Sonnet for lower-priority agents" → Est. savings: $400/mo
 
 **Si forecast < budget:**
+
 1. "Headroom $X — can safely add Y new agents"
 2. "Consider premium model (Claude Opus for higher accuracy on critical tasks)"
 
@@ -93,9 +100,7 @@ forecast_month = sum(forecast_day_1...forecast_day_30)
     "compute": 400,
     "storage": 200
   },
-  "alerts": [
-    "⚠️ Token spend +12% MoM — if trend continues, will exceed annual budget by Q4"
-  ],
+  "alerts": ["⚠️ Token spend +12% MoM — if trend continues, will exceed annual budget by Q4"],
   "recommendations": [
     {
       "action": "Switch 30% queries to Haiku",
@@ -117,17 +122,20 @@ forecast_month = sum(forecast_day_1...forecast_day_30)
 ## Implementación
 
 ### Requisitos
+
 - Prometheus access (`openclaw_llm_tokens_consumed` metric)
 - Doppler read (pricing data)
 - Stripe API token (recent invoices)
 - Supabase query (tenant telemetry)
 
 ### Scripts
+
 - `forecast.ts` — Main forecast engine
 - `token-counter.ts` — Per-model token cost calculation
 - `recommendations.ts` — Savings suggestions algorithm
 
 ### Test cases
+
 1. Historical accuracy: Compare past forecast vs. actual spend (should be ±15%)
 2. Edge cases: New tenant onboarded mid-month, model price changed
 3. Budget scenarios: Low spend ($500/mo), high spend ($10k+/mo)

@@ -21,7 +21,10 @@ function statusByCpu(cpuPercent: number): 'NEURAL SYNC' | 'PATTERN DETECTED' | '
 
 export function AIInsightsPanel({ cpuPercent, activeTenants, containers }: AIInsightsPanelProps) {
   const status = statusByCpu(cpuPercent);
-  const aiLoad = Math.min(100, Math.round((cpuPercent * 0.52 + containers * 0.7 + activeTenants * 1.5) % 100));
+  const aiLoad = Math.min(
+    100,
+    Math.round((cpuPercent * 0.52 + containers * 0.7 + activeTenants * 1.5) % 100)
+  );
 
   return (
     <Card className="stagger-fade [animation-delay:90ms]">
@@ -54,7 +57,9 @@ export function AIInsightsPanel({ cpuPercent, activeTenants, containers }: AIIns
               <Zap className="h-3.5 w-3.5 animate-pulse-dot" />
               Sync confidence
             </div>
-            <p className="digital-readout text-sm">{Math.max(72, 100 - Math.round(cpuPercent / 2))}%</p>
+            <p className="digital-readout text-sm">
+              {Math.max(72, 100 - Math.round(cpuPercent / 2))}%
+            </p>
           </div>
         </div>
 
@@ -70,7 +75,8 @@ export function AIInsightsPanel({ cpuPercent, activeTenants, containers }: AIIns
             />
           </div>
           <p className="text-xs text-neutral-300">
-            Sugerencia IA: prioriza workers de inferencia y activa cooldown de pipelines no críticos.
+            Sugerencia IA: prioriza workers de inferencia y activa cooldown de pipelines no
+            críticos.
           </p>
         </div>
       </CardContent>

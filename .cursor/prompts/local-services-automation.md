@@ -1,6 +1,7 @@
 # CURSOR PROMPT: Local Services Automation Engineer
 
 ## Context
+
 Build n8n workflows that auto-trigger on booking events. Handle booking confirmations, post-service reports, reminder sequences, and upsell emails. You are orchestration, not code.
 
 **Assigned to:** Codex (workflow automation), triggered by booking lifecycle
@@ -8,6 +9,7 @@ Build n8n workflows that auto-trigger on booking events. Handle booking confirma
 ## Scope
 
 **YOU build (in n8n):**
+
 1. Booking confirmation (email to customer + technician)
 2. 24-hour reminder SMS + email
 3. Post-service report email (Claude generates description)
@@ -17,6 +19,7 @@ Build n8n workflows that auto-trigger on booking events. Handle booking confirma
 7. Review request (Google/Yelp links)
 
 **NOT code.** Pure workflow automation with:
+
 - Webhook triggers (booking status changes)
 - Data fetching (Supabase reads)
 - Email sending (SendGrid)
@@ -27,6 +30,7 @@ Build n8n workflows that auto-trigger on booking events. Handle booking confirma
 **Trigger:** Booking created (status = 'pending')
 
 **Flow:**
+
 ```
 1. Webhook fires: POST /n8n/webhooks/local-services/booking-created
    Body: { booking_id, customer_id, scheduled_at, service_ids }
@@ -53,6 +57,7 @@ Build n8n workflows that auto-trigger on booking events. Handle booking confirma
 **Trigger:** Time-based (scheduled 24h before scheduled_at)
 
 **Flow:**
+
 ```
 1. Query: all bookings with scheduled_at = tomorrow at this time
 
@@ -60,7 +65,7 @@ Build n8n workflows that auto-trigger on booking events. Handle booking confirma
    a. Send SMS (Twilio):
       "Hi [Name], reminder: we're coming tomorrow at [time].
        Text back to confirm or reschedule 📅"
-   
+
    b. Send email (SendGrid):
       "See you tomorrow!"
 
@@ -72,6 +77,7 @@ Build n8n workflows that auto-trigger on booking events. Handle booking confirma
 **Trigger:** Booking status = 'completed'
 
 **Flow:**
+
 ```
 1. Webhook: POST /n8n/webhooks/local-services/booking-completed
    Body: { booking_id, technician_notes, duration_minutes }
@@ -99,6 +105,7 @@ Build n8n workflows that auto-trigger on booking events. Handle booking confirma
 **Triggers:** Scheduled 7, 30, 60 days after booking completion
 
 **Workflow 4a (Day 7): How's it working?**
+
 ```
 Email subject: "How's your [service] working?"
 Body: "Hi [Name], it's been a week. How's everything running? Any issues?
@@ -108,6 +115,7 @@ Purpose: Catch problems early, increase satisfaction
 ```
 
 **Workflow 4b (Day 30): Upsell maintenance**
+
 ```
 Email subject: "[Name], quick question about your WiFi..."
 Body: "We noticed you haven't had a single dropout! 🎉
@@ -122,6 +130,7 @@ Purpose: Convert one-time customers to recurring revenue
 ```
 
 **Workflow 4c (Day 60): Other services?**
+
 ```
 Email subject: "Before you forget: we also do..."
 Body: "[Name], since we fixed your [current service],
@@ -129,7 +138,7 @@ Body: "[Name], since we fixed your [current service],
       - Laptop speed-up ($150-200)
       - Office backup setup ($300)
       - Security audit ($200)
-      
+
       Interested? [Book another service]"
 
 Purpose: Expand LTV per customer
@@ -140,6 +149,7 @@ Purpose: Expand LTV per customer
 **Trigger:** Booking status = 'completed' + 48 hours
 
 **Flow:**
+
 ```
 1. Send email to customer
 
@@ -161,6 +171,7 @@ Purpose: Build social proof, increase organic leads
 **Trigger:** Booking status changes
 
 **Flow:**
+
 ```
 IF booking.status = 'confirmed':
   → Create Google Calendar event (technician's calendar)
@@ -179,6 +190,7 @@ IF booking.status = 'completed':
 ## n8n Configuration
 
 **Webhooks to create:**
+
 ```
 /n8n/webhooks/local-services/booking-created
 /n8n/webhooks/local-services/booking-completed
@@ -186,6 +198,7 @@ IF booking.status = 'completed':
 ```
 
 **External integrations:**
+
 - SendGrid API (email sending)
 - Twilio API (SMS reminders)
 - Supabase API (data fetch)
@@ -193,6 +206,7 @@ IF booking.status = 'completed':
 - LLM Gateway (Claude for report generation)
 
 **n8n node types:**
+
 - Webhook (trigger)
 - Supabase (fetch/insert data)
 - SendGrid (send email)
@@ -227,7 +241,7 @@ Each JSON file is exported from n8n UI.
 ✅ Twilio SMS arrives (if configured)  
 ✅ Conditional branching works (customer_type check)  
 ✅ Scheduled workflows trigger at correct time  
-✅ Claude report generation succeeds + email sends  
+✅ Claude report generation succeeds + email sends
 
 ## Constraints
 
@@ -235,7 +249,7 @@ Each JSON file is exported from n8n UI.
 ✅ Email templates render correctly (test in SendGrid)  
 ✅ Timing: workflows execute within expected window  
 ✅ Error handling: failed email logs alert (Slack/Discord)  
-✅ Idempotency: no duplicate emails if webhook retries  
+✅ Idempotency: no duplicate emails if webhook retries
 
 ## Success Criteria
 

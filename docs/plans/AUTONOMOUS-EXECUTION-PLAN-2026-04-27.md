@@ -41,6 +41,7 @@ Scope: Incremental activation of integral autonomy with safety-first controls.
 - **Task A3:** Trigger one `sandbox_execution` job from CLI bridge and confirm status retrieval.
 
 Success criteria:
+
 - Search responds `200` and returns structured results.
 - At least one sandbox job completes with deterministic log output.
 
@@ -51,6 +52,7 @@ Success criteria:
 - **Task B3:** Add or verify daily scheduler install path (`cron` or `systemd timer` runbook-backed).
 
 Success criteria:
+
 - Help request is created in `context/help-requests/` and resolved successfully.
 - Daily report can be generated without manual edits.
 
@@ -63,6 +65,7 @@ Success criteria:
 - **Task C2:** Link evidence artifacts from `docs/research/`.
 
 Success criteria:
+
 - PR is reviewable, no runtime changes, passes checks.
 
 ## Block D — Learning and KPI update (T+20h to T+24h)
@@ -72,6 +75,7 @@ Success criteria:
 - **Task D3:** Publish daily summary to Discord.
 
 Success criteria:
+
 - KPI snapshot updated with today run metadata.
 - Report published with blockers + next actions.
 

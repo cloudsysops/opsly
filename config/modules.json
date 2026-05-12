@@ -61,7 +61,14 @@
       "dependencies": [],
       "governance": "lib/errors/GOVERNANCE.md",
       "mainFile": "lib/errors/index.ts",
-      "exports": ["AppError", "ValidationError", "AuthError", "NotFoundError", "RateLimitError", "handleError"]
+      "exports": [
+        "AppError",
+        "ValidationError",
+        "AuthError",
+        "NotFoundError",
+        "RateLimitError",
+        "handleError"
+      ]
     },
     "services": {
       "name": "@intcloudsysops/services",
@@ -109,7 +116,13 @@
       "dependencies": ["errors"],
       "governance": "lib/api/GOVERNANCE.md",
       "mainFile": "lib/api/index.ts",
-      "exports": ["createResponse", "createErrorResponse", "APIResponse", "PaginationParams", "API_VERSIONS"]
+      "exports": [
+        "createResponse",
+        "createErrorResponse",
+        "APIResponse",
+        "PaginationParams",
+        "API_VERSIONS"
+      ]
     },
     "workflow": {
       "name": "@intcloudsysops/workflow",
@@ -174,10 +187,28 @@
   },
   "consumers": {
     "apps/orchestrator": {
-      "depends": ["prompts", "observability", "evaluation", "errors", "workflow", "config", "security"]
+      "depends": [
+        "prompts",
+        "observability",
+        "evaluation",
+        "errors",
+        "workflow",
+        "config",
+        "security"
+      ]
     },
     "apps/api": {
-      "depends": ["prompts", "observability", "evaluation", "errors", "api", "security", "config", "services", "telemetry"]
+      "depends": [
+        "prompts",
+        "observability",
+        "evaluation",
+        "errors",
+        "api",
+        "security",
+        "config",
+        "services",
+        "telemetry"
+      ]
     },
     "apps/gateway": {
       "depends": ["observability", "errors", "security", "config", "telemetry", "workflow"]

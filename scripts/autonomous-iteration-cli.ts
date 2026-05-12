@@ -118,7 +118,9 @@ async function showStatus(jobId?: string) {
 }
 
 async function showPatterns(keyword?: string) {
-  const patterns = keyword ? await trainer.getPatternsFor(keyword) : (await trainer.generatePatterns()).patterns;
+  const patterns = keyword
+    ? await trainer.getPatternsFor(keyword)
+    : (await trainer.generatePatterns()).patterns;
 
   console.log(`📈 Agent Patterns${keyword ? ` (${keyword})` : ''}\n`);
 
@@ -211,7 +213,9 @@ async function showTrainerReport() {
     console.log('Top Patterns:\n');
     report.patterns.slice(0, 5).forEach((p) => {
       console.log(`  ${p.agent_role} / ${p.task_pattern}`);
-      console.log(`    Success: ${(p.success_rate * 100).toFixed(1)}% | Speed: ${(p.avg_duration_ms / 1000).toFixed(1)}s`);
+      console.log(
+        `    Success: ${(p.success_rate * 100).toFixed(1)}% | Speed: ${(p.avg_duration_ms / 1000).toFixed(1)}s`
+      );
     });
   }
 

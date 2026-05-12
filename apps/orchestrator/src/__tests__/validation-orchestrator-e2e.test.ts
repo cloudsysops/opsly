@@ -146,7 +146,10 @@ describe('ValidationOrchestrator E2E - Feedback Loop Integration', () => {
         },
       };
 
-      const result = await feedbackLayer.applyValidationFeedback('execute_code', mockDecision as any);
+      const result = await feedbackLayer.applyValidationFeedback(
+        'execute_code',
+        mockDecision as any
+      );
       expect(result).toBeDefined();
       expect(result.adapted).toBeDefined();
       expect(result.confidence).toBeGreaterThanOrEqual(0);
@@ -179,7 +182,10 @@ describe('ValidationOrchestrator E2E - Feedback Loop Integration', () => {
         },
       };
 
-      const result = await feedbackLayer.applyValidationFeedback('unknown_intent', mockDecision as any);
+      const result = await feedbackLayer.applyValidationFeedback(
+        'unknown_intent',
+        mockDecision as any
+      );
       expect(result.adapted).toBeDefined();
     });
   });

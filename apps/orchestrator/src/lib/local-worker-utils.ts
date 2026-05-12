@@ -16,7 +16,10 @@ import * as path from 'path';
  *
  * Returns: file content if found, null on timeout
  */
-export async function waitForFile(filePath: string, timeoutMs: number = 60000): Promise<string | null> {
+export async function waitForFile(
+  filePath: string,
+  timeoutMs: number = 60000
+): Promise<string | null> {
   const startTime = Date.now();
   const dir = path.dirname(filePath);
   const filename = path.basename(filePath);
@@ -59,7 +62,9 @@ export async function waitForFile(filePath: string, timeoutMs: number = 60000): 
       checkFile();
     } catch (err) {
       // Error watching file - still respect timeout instead of failing immediately
-      console.error(`[LocalWorkerUtils] Error watching file: ${err instanceof Error ? err.message : String(err)}`);
+      console.error(
+        `[LocalWorkerUtils] Error watching file: ${err instanceof Error ? err.message : String(err)}`
+      );
       // Let timeout handle the resolution
     }
   });
@@ -70,7 +75,10 @@ export async function waitForFile(filePath: string, timeoutMs: number = 60000): 
  *
  * Returns: file content and metadata
  */
-export async function readResponseFile(jobId: string, responsesDir: string): Promise<{
+export async function readResponseFile(
+  jobId: string,
+  responsesDir: string
+): Promise<{
   content: string;
   filePath: string;
   metadata: Record<string, unknown>;
@@ -202,7 +210,9 @@ export async function waitForValidationGuard(
     timeout = setTimeout(() => {
       cleanup();
       const elapsedMs = Date.now() - startTime;
-      console.error(`[LocalWorkerUtils] Timeout waiting for validation guard (${elapsedMs}ms): ${jobId}`);
+      console.error(
+        `[LocalWorkerUtils] Timeout waiting for validation guard (${elapsedMs}ms): ${jobId}`
+      );
       resolve(null);
     }, timeoutMs);
 
@@ -216,7 +226,9 @@ export async function waitForValidationGuard(
       checkGuard();
     } catch (err) {
       // Error watching validation dir - still respect timeout instead of failing immediately
-      console.error(`[LocalWorkerUtils] Error watching validation guard: ${err instanceof Error ? err.message : String(err)}`);
+      console.error(
+        `[LocalWorkerUtils] Error watching validation guard: ${err instanceof Error ? err.message : String(err)}`
+      );
       // Let timeout handle the resolution
     }
   });
@@ -252,7 +264,10 @@ export async function getFileModTime(filePath: string): Promise<string> {
  *
  * Deletes files older than specified days in responsesDir
  */
-export async function cleanupOldResponses(responsesDir: string, daysOld: number = 7): Promise<void> {
+export async function cleanupOldResponses(
+  responsesDir: string,
+  daysOld: number = 7
+): Promise<void> {
   try {
     const files = await fsp.readdir(responsesDir);
     const now = Date.now();
@@ -277,9 +292,7 @@ export async function cleanupOldResponses(responsesDir: string, daysOld: number 
  *
  * Returns: { metadata, content }
  */
-export function parsePromptFrontmatter(
-  content: string
-): {
+export function parsePromptFrontmatter(content: string): {
   metadata: Record<string, unknown>;
   content: string;
 } {

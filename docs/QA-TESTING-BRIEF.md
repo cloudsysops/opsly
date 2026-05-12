@@ -1,4 +1,5 @@
 # QA Testing Brief — OpenClaw Production Readiness
+
 **Date:** 2026-05-01  
 **Status:** Code Complete → Ready for QA Execution  
 **Duration:** 5 days to Production Go/No-Go Decision
@@ -14,6 +15,7 @@ OpenClaw per-tenant architecture (Sprints 6-16) is **code-complete** and ready f
 ## Your Responsibilities
 
 ### 1️⃣ Backend Testing (Days 1-3)
+
 **Run automated test suites to verify core functionality:**
 
 ```bash
@@ -29,6 +31,7 @@ npm run test
 ```
 
 **What to test:**
+
 - ✅ API route handlers (tenant CRUD, orchestrator jobs, health checks)
 - ✅ Orchestrator decision engine (plan limits, job routing)
 - ✅ LLM Gateway (tenant caching, cost tracking)
@@ -40,6 +43,7 @@ npm run test
 ---
 
 ### 2️⃣ Staging Validation (Days 2-3)
+
 **Once admin deploys to staging with Doppler variables, execute:**
 
 ```bash
@@ -67,6 +71,7 @@ redis-cli KEYS "tenant:qa-test-b:*"
 ```
 
 **Verification points:**
+
 - ✅ All 4 services respond to health checks
 - ✅ Per-tenant Redis keys don't overlap
 - ✅ No cross-tenant data visible
@@ -74,6 +79,7 @@ redis-cli KEYS "tenant:qa-test-b:*"
 ---
 
 ### 3️⃣ Frontend Testing (Days 3-4)
+
 **Start dev servers and test user flows:**
 
 ```bash
@@ -91,6 +97,7 @@ cd apps/portal && npm run dev
 ```
 
 **Test scenarios:**
+
 - User can log in and see only their tenant data
 - Admin can see all tenants
 - Dashboard displays correctly on mobile/tablet/desktop
@@ -99,6 +106,7 @@ cd apps/portal && npm run dev
 ---
 
 ### 4️⃣ E2E Integration (Day 4)
+
 **Execute complete workflow from tenant creation to job execution:**
 
 ```bash
@@ -125,6 +133,7 @@ curl -X DELETE http://localhost:3000/api/tenants/e2e-workflow \
 ```
 
 **Success criteria:**
+
 - ✅ Tenant created successfully
 - ✅ Job enqueued and processed
 - ✅ No cross-tenant data leaks
@@ -133,13 +142,14 @@ curl -X DELETE http://localhost:3000/api/tenants/e2e-workflow \
 ---
 
 ### 5️⃣ Deliverables (Day 5)
+
 **Compile test report with:**
 
 1. **Test Execution Summary**
-   - Total tests run: ___
-   - Passed: ___
-   - Failed: ___
-   - Blocked: ___
+   - Total tests run: \_\_\_
+   - Passed: \_\_\_
+   - Failed: \_\_\_
+   - Blocked: \_\_\_
 
 2. **Backend Test Results**
    - API routes: ✅/❌
@@ -181,18 +191,19 @@ curl -X DELETE http://localhost:3000/api/tenants/e2e-workflow \
 
 ## Key Documents
 
-| Document | Purpose |
-|----------|---------|
-| `docs/PRODUCTION-READINESS.md` | Complete production guide (382 lines) |
-| `docs/OPENCLAW-STAGING-ACTIVATION.md` | Staging deployment guide (850+ lines) |
-| `docs/IMPLEMENTATION-STATUS.md` | Sprint tracking and architecture (500+ lines) |
-| `scripts/staging-activation.sh` | Automated 6-phase deployment script |
+| Document                              | Purpose                                       |
+| ------------------------------------- | --------------------------------------------- |
+| `docs/PRODUCTION-READINESS.md`        | Complete production guide (382 lines)         |
+| `docs/OPENCLAW-STAGING-ACTIVATION.md` | Staging deployment guide (850+ lines)         |
+| `docs/IMPLEMENTATION-STATUS.md`       | Sprint tracking and architecture (500+ lines) |
+| `scripts/staging-activation.sh`       | Automated 6-phase deployment script           |
 
 ---
 
 ## Success Criteria for Go to Production
 
 ✅ **MUST HAVE:**
+
 - All backend tests passing
 - Per-tenant isolation verified (no cross-tenant data leaks)
 - All frontend components functional
@@ -200,6 +211,7 @@ curl -X DELETE http://localhost:3000/api/tenants/e2e-workflow \
 - No critical or high-priority bugs
 
 ✅ **NICE TO HAVE:**
+
 - Performance benchmarks met (<5s job completion)
 - Monitoring dashboards functional
 - Logs properly structured
@@ -209,14 +221,14 @@ curl -X DELETE http://localhost:3000/api/tenants/e2e-workflow \
 
 ## Timeline
 
-| Day | Phase | Owner |
-|-----|-------|-------|
-| **1** | Doppler setup + staging deploy | DevOps |
-| **1-2** | Backend test execution | QA |
-| **2-3** | Staging validation | QA |
-| **3-4** | Frontend testing | QA |
-| **4** | E2E integration testing | QA |
-| **5** | Report compilation + go/no-go | QA |
+| Day     | Phase                          | Owner  |
+| ------- | ------------------------------ | ------ |
+| **1**   | Doppler setup + staging deploy | DevOps |
+| **1-2** | Backend test execution         | QA     |
+| **2-3** | Staging validation             | QA     |
+| **3-4** | Frontend testing               | QA     |
+| **4**   | E2E integration testing        | QA     |
+| **5**   | Report compilation + go/no-go  | QA     |
 
 ---
 

@@ -62,10 +62,7 @@ export function validatePromptTemplate(content: string): ValidationResult {
   };
 }
 
-export function validatePrompt(
-  content: string,
-  metadata: PromptMetadata
-): ValidationResult {
+export function validatePrompt(content: string, metadata: PromptMetadata): ValidationResult {
   const schemaResult = validatePromptSchema(metadata);
   const templateResult = validatePromptTemplate(content);
 

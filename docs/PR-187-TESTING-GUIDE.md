@@ -3,6 +3,7 @@
 ## Overview
 
 PR #187 implements:
+
 1. **LLM Provider Expansion** (9 providers with cost optimization)
 2. **Codex Agent** (Architect role with premium tier)
 3. **Cost Optimization Rules** (Dynamic provider selection)
@@ -11,6 +12,7 @@ PR #187 implements:
 ## Setup
 
 ### Prerequisites
+
 ```bash
 # Ensure you have the latest code
 git checkout claude/opsly-defense-platform-sC0qH
@@ -20,6 +22,7 @@ npm install
 ### Start Services
 
 **Terminal 1: Orchestrator**
+
 ```bash
 cd /home/user/opsly
 npm run dev --workspace=@intcloudsysops/orchestrator
@@ -27,6 +30,7 @@ npm run dev --workspace=@intcloudsysops/orchestrator
 ```
 
 **Terminal 2: LLM Gateway** (for provider routing)
+
 ```bash
 cd /home/user/opsly
 npm run dev --workspace=@intcloudsysops/llm-gateway
@@ -34,6 +38,7 @@ npm run dev --workspace=@intcloudsysops/llm-gateway
 ```
 
 **Terminal 3: Redis** (if not already running)
+
 ```bash
 redis-server --port 6379
 ```
@@ -49,12 +54,14 @@ redis-server --port 6379
 ```
 
 **Expected behavior**:
+
 - ✅ Request routed to `cheap` tier
 - ✅ Provider selected: `deepseek_v4_flash` or fallback to `ollama_local`
 - ✅ Response time: <3 seconds
 - ✅ Cost tracking logged
 
 **Check logs**:
+
 ```bash
 # In orchestrator logs, look for:
 # {routed_model_tier: "cheap", routed_provider_hint: "deepseek_v4_flash"}
@@ -71,12 +78,14 @@ redis-server --port 6379
 ```
 
 **Expected behavior**:
+
 - ✅ Request detected as code-generation task
 - ✅ Provider selected: `codellama:34b` (free local Ollama)
 - ✅ Savings: $0.00 (completely free)
 - ✅ Response includes TypeScript function code
 
 **Check logs**:
+
 ```bash
 # In orchestrator logs, look for:
 # {execution_skill: "code_generation", routed_provider: "codellama"}
@@ -94,12 +103,14 @@ redis-server --port 6379
 ```
 
 **Expected behavior**:
+
 - ✅ Agent role: `architect` maps to `codex-engineering` agent
 - ✅ Model tier: `premium` (uses GPT-4o or Claude Sonnet)
 - ✅ Skill binding: `opsly-architect-senior`
 - ✅ Response includes architecture review + risks
 
 **Check logs**:
+
 ```bash
 # In orchestrator logs, look for:
 # {routed_agent_id: "codex-engineering", routed_agent_role: "architect", routed_model_tier: "premium"}
@@ -107,6 +118,7 @@ redis-server --port 6379
 ```
 
 **Verify Codex Registration**:
+
 ```bash
 # Check if Codex is registered in OpenClaw
 grep -A 5 "codex-engineering" apps/orchestrator/src/openclaw/registry.ts
@@ -124,12 +136,14 @@ grep -A 5 "codex-engineering" apps/orchestrator/src/openclaw/registry.ts
 ```
 
 **Expected behavior**:
+
 - ✅ Request routed to `balanced` tier
 - ✅ Provider selected: `deepseek_v4`
 - ✅ Cost tracking logged (~0.001 USD per request)
 - ✅ Quality better than cheap tier
 
 **Check logs**:
+
 ```bash
 # In orchestrator logs, look for:
 # {routed_model_tier: "balanced", routed_provider: "deepseek_v4"}
@@ -148,12 +162,14 @@ TENANT_SLUG=startup-xyz ./scripts/send-prompt-to-orchestrator.sh cheap
 ```
 
 **Expected behavior**:
+
 - ✅ Each tenant's job routed to separate queue
 - ✅ No data leakage between tenants
 - ✅ Each tenant sees only their own results
 - ✅ Billing tracked per tenant
 
 **Verify RLS**:
+
 ```sql
 -- Check that jobs are filtered by tenant
 SELECT COUNT(*) FROM orchestrator.jobs WHERE tenant_slug = 'acme-corp';
@@ -218,6 +234,7 @@ curl -X POST http://localhost:3011/api/intent \
 ```
 
 **Expected behavior**:
+
 - ✅ Initial routing to `cheap` tier
 - ✅ Agent detects high complexity
 - ✅ Agent issues `AgentRegistryChangeRequest`
@@ -289,9 +306,9 @@ curl http://localhost:3010/api/health/providers
 
 ```bash
 # Query Supabase
-SELECT 
-  tenant_slug, 
-  model, 
+SELECT
+  tenant_slug,
+  model,
   SUM(tokens_input + tokens_output) as total_tokens,
   SUM(cost_usd) as total_cost
 FROM metering.usage_events
@@ -306,6 +323,7 @@ GROUP BY tenant_slug, model;
 ### Provider Not Resolving
 
 Check LLM Gateway logs:
+
 ```bash
 # Look for provider health errors
 grep "provider.*error\|health.*failed" /tmp/llm-gateway.log
@@ -314,6 +332,7 @@ grep "provider.*error\|health.*failed" /tmp/llm-gateway.log
 ### Agent Not Routing
 
 Check OpenClaw controller:
+
 ```bash
 # Verify agent is registered
 curl http://localhost:3011/api/openclaw/registry | jq '.agents[] | select(.id=="codex-engineering")'
@@ -322,6 +341,7 @@ curl http://localhost:3011/api/openclaw/registry | jq '.agents[] | select(.id=="
 ### Cost Calculation Wrong
 
 Verify provider pricing:
+
 ```bash
 grep -A 2 "cost_per_1k" apps/llm-gateway/src/providers.ts
 # Compare with actual tokens used

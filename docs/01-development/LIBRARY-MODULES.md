@@ -1,7 +1,8 @@
 ---
-title: "Library Modules Integration Guide"
-description: "Integration guide for all Opsly reusable library modules"
+title: 'Library Modules Integration Guide'
+description: 'Integration guide for all Opsly reusable library modules'
 ---
+
 # Library Modules Integration Guide
 
 Enterprise-scale reusable library modules for Opsly. All 18+ apps use these modules to avoid duplication and maintain consistency.
@@ -42,6 +43,7 @@ const all = listPrompts();
 ```
 
 **Integration:**
+
 - **Orchestrator** (`apps/orchestrator/`) — Load agent prompts before execution
 - **API** (`apps/api/`) — Serve prompts to frontend
 - **Agents** (`tools/agents/`) — Load prompts for inference
@@ -79,12 +81,14 @@ span.end('success');
 ```
 
 **Integration:**
+
 - **All services** must instrument with `createLogger()` and `recordMetric()`
 - **API routes** use observability middleware for HTTP tracing
 - **Orchestrator** tracks agent execution metrics
 - **Gateway** records LLM provider costs and latency
 
 **Required Metrics Per Service:**
+
 - `{service}_requests_total` (counter)
 - `{service}_request_duration_ms` (histogram)
 - `{service}_errors_total` (counter)
@@ -119,11 +123,13 @@ function MyPage() {
 ```
 
 **Available Components:**
+
 - **UI:** Button, Form, FormField, Card, Modal
 - **Hooks:** useAuth, useTheme, useAPI
 - **Styles:** Design tokens (colors, spacing, typography)
 
 **Integration:**
+
 - **Portal** (`apps/portal/`) — Dashboard UI
 - **Admin** (`apps/admin/`) — Administration interface
 - **Local Services** (`apps/local-services/`) — Local UI
@@ -131,6 +137,7 @@ function MyPage() {
 **Accessibility:** All components WCAG 2.1 AA compliant.
 
 **Storybook:** View components isolated:
+
 ```bash
 npm run storybook --workspace=@intcloudsysops/components
 ```
@@ -148,13 +155,13 @@ Testing, validation, and quality metrics framework. Automated QA gates.
 **Use Case:** Validate agent outputs before returning to users.
 
 ```typescript
-import { 
-  validateInput, 
-  checkForPII, 
+import {
+  validateInput,
+  checkForPII,
   checkForHallucinations,
   scoreQuality,
   runSmokeTests,
-  runRegressionTests
+  runRegressionTests,
 } from '@intcloudsysops/evaluation';
 
 // Validate input schema
@@ -176,16 +183,19 @@ const results = await runRegressionTests([
 ```
 
 **Quality Baselines** (per-agent):
+
 - BLEU ≥ 0.45
 - ROUGE ≥ 0.50
 - Latency ≤ 500ms
 - Error rate ≤ 5%
 
 **Test Datasets:**
+
 - **Golden:** `lib/evaluation/datasets/golden/` — Reference outputs for regression
 - **Adversarial:** `lib/evaluation/datasets/adversarial/` — Edge cases, jailbreaks
 
 **Integration:**
+
 - **Orchestrator** (`apps/orchestrator/`) — Run smoke tests before agent execution
 - **API** (`apps/api/`) — Validate outputs, check for PII
 - **CI/CD** — Run regression tests before deploy
@@ -332,7 +342,7 @@ import { executeWithTimeout } from '@intcloudsysops/workflow';
 
 const result = await executeWithTimeout(
   () => agent.execute(input),
-  30000,  // 30 second timeout
+  30000, // 30 second timeout
   agentId
 );
 ```
@@ -410,21 +420,21 @@ await runner.rollback('001');
 
 ## Module Governance Summary
 
-| Module | Versioning | Review | Deprecation | Breaking Changes |
-|--------|------------|--------|-------------|------------------|
-| prompts | Semantic (1.0.0) | 1 approval | 2 releases | MAJOR bump + migration guide |
-| observability | Semantic | 1 approval | 2 releases | MAJOR bump + migration guide |
-| components | Semantic | 1 approval | 2 releases | MAJOR bump + migration guide |
-| evaluation | Semantic | 1 approval | 2 releases | MAJOR bump + migration guide |
-| errors | Semantic | 1 approval | 2 releases | MAJOR bump + migration guide |
-| services | Semantic | 1 approval | 2 releases | MAJOR bump + migration guide |
-| config | Semantic | 1 approval | 2 releases | MAJOR bump + migration guide |
-| security | Semantic | 1 approval | 2 releases | MAJOR bump + migration guide |
-| api | Semantic | 1 approval | 2 releases | MAJOR bump + migration guide |
-| workflow | Semantic | 1 approval | 2 releases | MAJOR bump + migration guide |
-| telemetry | Semantic | 1 approval | 2 releases | MAJOR bump + migration guide |
-| testing | Semantic | 1 approval | 2 releases | MAJOR bump + migration guide |
-| migrations | Semantic | 1 approval | 2 releases | MAJOR bump + migration guide |
+| Module        | Versioning       | Review     | Deprecation | Breaking Changes             |
+| ------------- | ---------------- | ---------- | ----------- | ---------------------------- |
+| prompts       | Semantic (1.0.0) | 1 approval | 2 releases  | MAJOR bump + migration guide |
+| observability | Semantic         | 1 approval | 2 releases  | MAJOR bump + migration guide |
+| components    | Semantic         | 1 approval | 2 releases  | MAJOR bump + migration guide |
+| evaluation    | Semantic         | 1 approval | 2 releases  | MAJOR bump + migration guide |
+| errors        | Semantic         | 1 approval | 2 releases  | MAJOR bump + migration guide |
+| services      | Semantic         | 1 approval | 2 releases  | MAJOR bump + migration guide |
+| config        | Semantic         | 1 approval | 2 releases  | MAJOR bump + migration guide |
+| security      | Semantic         | 1 approval | 2 releases  | MAJOR bump + migration guide |
+| api           | Semantic         | 1 approval | 2 releases  | MAJOR bump + migration guide |
+| workflow      | Semantic         | 1 approval | 2 releases  | MAJOR bump + migration guide |
+| telemetry     | Semantic         | 1 approval | 2 releases  | MAJOR bump + migration guide |
+| testing       | Semantic         | 1 approval | 2 releases  | MAJOR bump + migration guide |
+| migrations    | Semantic         | 1 approval | 2 releases  | MAJOR bump + migration guide |
 
 ## Adding New Libraries
 
@@ -445,6 +455,7 @@ bash scripts/check-duplicates.sh lib/components lib/services
 ```
 
 If you see duplicated code:
+
 1. Extract to lib/ module
 2. Update imports in all apps
 3. Run tests to ensure everything works
@@ -477,6 +488,7 @@ npm run type-check
 ### Breaking changes not documented
 
 Before deploying breaking change:
+
 1. Update `lib/{module}/GOVERNANCE.md`
 2. Create migration guide in `README.md`
 3. Add ADR explaining the change

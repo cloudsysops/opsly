@@ -57,7 +57,10 @@ function allowDegradedSearch(): boolean {
  * Minimal HTTP search tool for Opsly research workflows.
  * Uses Tavily API if enabled; otherwise returns 503.
  */
-export async function handleSearchHttp(req: IncomingMessage, res: ServerResponse): Promise<boolean> {
+export async function handleSearchHttp(
+  req: IncomingMessage,
+  res: ServerResponse
+): Promise<boolean> {
   const pathOnly = req.url?.split('?')[0] ?? '/';
   if (req.method !== 'POST' || pathOnly !== '/v1/search') {
     return false;
@@ -65,7 +68,12 @@ export async function handleSearchHttp(req: IncomingMessage, res: ServerResponse
 
   if (!isSearchEnabled()) {
     res.writeHead(503, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ error: 'search_disabled', message: 'Enable LLM_GATEWAY_SEARCH_ENABLED=true' }));
+    res.end(
+      JSON.stringify({
+        error: 'search_disabled',
+        message: 'Enable LLM_GATEWAY_SEARCH_ENABLED=true',
+      })
+    );
     return true;
   }
 
@@ -156,7 +164,9 @@ export async function handleSearchHttp(req: IncomingMessage, res: ServerResponse
   if (!upstream.ok) {
     const text = await upstream.text();
     res.writeHead(502, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ error: 'search_upstream_error', status: upstream.status, body: text }));
+    res.end(
+      JSON.stringify({ error: 'search_upstream_error', status: upstream.status, body: text })
+    );
     return true;
   }
 

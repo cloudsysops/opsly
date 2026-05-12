@@ -2,24 +2,24 @@
 
 **Objetivo:** una sola tabla maestra + TSV machine-readable + plan de revisión sin tocar la rama `main` sin PR.
 
-| Artefacto | Ruta |
-|-----------|------|
-| Catálogo TSV (regenerable) | [`workflows-catalog.tsv`](./workflows-catalog.tsv) |
-| Auditoría narrativa (histórica) | [`workflows-audit.md`](./workflows-audit.md) |
-| Plan archivo (dry-run) | [`../../scripts/archive-plan.sh`](../../scripts/archive-plan.sh) |
-| Regenerar TSV | `bash scripts/generate-workflows-catalog.sh` |
+| Artefacto                       | Ruta                                                             |
+| ------------------------------- | ---------------------------------------------------------------- |
+| Catálogo TSV (regenerable)      | [`workflows-catalog.tsv`](./workflows-catalog.tsv)               |
+| Auditoría narrativa (histórica) | [`workflows-audit.md`](./workflows-audit.md)                     |
+| Plan archivo (dry-run)          | [`../../scripts/archive-plan.sh`](../../scripts/archive-plan.sh) |
+| Regenerar TSV                   | `bash scripts/generate-workflows-catalog.sh`                     |
 
 ## Categorías
 
-| Categoría | Qué agrupa |
-|-----------|------------|
-| `ci-quality` | CI, validación estructura/contexto/Doppler, security scan, autofix, nightly |
-| `deploy-release` | Deploy prod/staging, canary, bots de deploy, Guardian |
-| `sync-docs` | Sync documentación, Obsidian, NotebookLM, gobernanza docs |
-| `tenant-ops` | Limpieza demos, readiness onboarding, project sync, task-orchestrator CI |
-| `backup` | Backup programado tenants |
-| `health-autonomy` | Hermes health, autonomy safety |
-| `experimental` | Pipelines poco frecuentes / evolución |
+| Categoría         | Qué agrupa                                                                  |
+| ----------------- | --------------------------------------------------------------------------- |
+| `ci-quality`      | CI, validación estructura/contexto/Doppler, security scan, autofix, nightly |
+| `deploy-release`  | Deploy prod/staging, canary, bots de deploy, Guardian                       |
+| `sync-docs`       | Sync documentación, Obsidian, NotebookLM, gobernanza docs                   |
+| `tenant-ops`      | Limpieza demos, readiness onboarding, project sync, task-orchestrator CI    |
+| `backup`          | Backup programado tenants                                                   |
+| `health-autonomy` | Hermes health, autonomy safety                                              |
+| `experimental`    | Pipelines poco frecuentes / evolución                                       |
 
 ## Datos tabulados
 

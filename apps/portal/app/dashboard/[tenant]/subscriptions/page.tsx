@@ -6,11 +6,7 @@ import { DashboardShell } from '@/components/dashboard/premium-dashboard';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { SubscriptionCard } from './subscription-card';
 import { PlanSelector } from './plan-selector';
-import {
-  demoBillingPlans,
-  demoSubscription,
-  PORTAL_DEMO_TENANT_SLUG,
-} from '@/lib/demo-tenant';
+import { demoBillingPlans, demoSubscription, PORTAL_DEMO_TENANT_SLUG } from '@/lib/demo-tenant';
 import { isPortalDemoSession } from '@/lib/demo-session';
 
 interface BillingPlan {

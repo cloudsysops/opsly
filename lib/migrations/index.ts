@@ -13,9 +13,7 @@ export class MigrationRunner {
   }
 
   async runAll() {
-    for (const migration of this.migrations.sort((a, b) => 
-      a.version.localeCompare(b.version)
-    )) {
+    for (const migration of this.migrations.sort((a, b) => a.version.localeCompare(b.version))) {
       try {
         await migration.up();
         console.log(`✅ Migration ${migration.version}: ${migration.name}`);
@@ -27,9 +25,9 @@ export class MigrationRunner {
   }
 
   async rollback(version: string) {
-    const migration = this.migrations.find(m => m.version === version);
+    const migration = this.migrations.find((m) => m.version === version);
     if (!migration) throw new Error(`Migration ${version} not found`);
-    
+
     await migration.down();
     console.log(`⬅️ Rolled back ${version}`);
   }

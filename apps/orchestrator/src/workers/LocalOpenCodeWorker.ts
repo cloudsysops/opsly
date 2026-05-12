@@ -67,9 +67,7 @@ async function processLocalOpenCodeJob(
     // Check for Vercel token
     const vercelToken = process.env.VERCEL_TOKEN?.trim();
     if (!vercelToken) {
-      console.warn(
-        '[LocalOpenCodeWorker] VERCEL_TOKEN not configured, falling back to Claude'
-      );
+      console.warn('[LocalOpenCodeWorker] VERCEL_TOKEN not configured, falling back to Claude');
       return await fallbackToClaudeViaGateway(
         promptContent,
         jobId,
@@ -102,7 +100,7 @@ async function processLocalOpenCodeJob(
         response = await fetch('https://api.v0.dev/generate', {
           method: 'POST',
           headers: {
-            'Authorization': `Bearer ${vercelToken}`,
+            Authorization: `Bearer ${vercelToken}`,
             'Content-Type': 'application/json',
             'User-Agent': 'Opsly-OpenCode-Worker/1.0',
           },
@@ -154,20 +152,14 @@ async function processLocalOpenCodeJob(
 
     // Handle other HTTP errors
     if (!response!.ok) {
-      throw new Error(
-        `Vercel v0 API error: ${response!.status} ${response!.statusText}`
-      );
+      throw new Error(`Vercel v0 API error: ${response!.status} ${response!.statusText}`);
     }
 
     const result = (await response!.json()) as any;
 
     // Extract code from response (v0 API returns different formats)
     let generatedCode =
-      result.code ||
-      result.component ||
-      result.content ||
-      result.generated_code ||
-      '';
+      result.code || result.component || result.content || result.generated_code || '';
 
     if (!generatedCode) {
       throw new Error('Empty response from Vercel v0 API');
@@ -243,15 +235,10 @@ ${codeBlock}
     const executionTime = Date.now() - startTime;
     const errorMsg = err instanceof Error ? err.message : String(err);
 
-    console.error(
-      `[LocalOpenCodeWorker] ❌ Job ${jobId} failed:`,
-      errorMsg
-    );
+    console.error(`[LocalOpenCodeWorker] ❌ Job ${jobId} failed:`, errorMsg);
 
     // Fallback to Claude if OpenCode fails
-    console.warn(
-      `[LocalOpenCodeWorker] OpenCode failed, attempting Claude fallback`
-    );
+    console.warn(`[LocalOpenCodeWorker] OpenCode failed, attempting Claude fallback`);
     try {
       return await fallbackToClaudeViaGateway(
         promptContent,
@@ -261,12 +248,8 @@ ${codeBlock}
         validationOrchestrator
       );
     } catch (fallbackErr) {
-      const fallbackMsg =
-        fallbackErr instanceof Error ? fallbackErr.message : String(fallbackErr);
-      console.error(
-        `[LocalOpenCodeWorker] Claude fallback also failed:`,
-        fallbackMsg
-      );
+      const fallbackMsg = fallbackErr instanceof Error ? fallbackErr.message : String(fallbackErr);
+      console.error(`[LocalOpenCodeWorker] Claude fallback also failed:`, fallbackMsg);
 
       return {
         success: false,
@@ -290,9 +273,7 @@ async function fallbackToClaudeViaGateway(
   const llmGatewayUrl = process.env.LLM_GATEWAY_URL || 'http://localhost:3010';
   const responsesDir = path.join(cursorDir, 'responses');
 
-  console.log(
-    `[LocalOpenCodeWorker] Falling back to Claude via LLM Gateway at ${llmGatewayUrl}`
-  );
+  console.log(`[LocalOpenCodeWorker] Falling back to Claude via LLM Gateway at ${llmGatewayUrl}`);
 
   const response = await fetch(`${llmGatewayUrl}/chat`, {
     method: 'POST',
@@ -306,9 +287,7 @@ async function fallbackToClaudeViaGateway(
   });
 
   if (!response.ok) {
-    throw new Error(
-      `Claude fallback error: ${response.status} ${response.statusText}`
-    );
+    throw new Error(`Claude fallback error: ${response.status} ${response.statusText}`);
   }
 
   const result = (await response.json()) as any;
@@ -341,11 +320,7 @@ ${responseText}
     3
   );
 
-  await writeValidationGuard(
-    jobId,
-    decision.action,
-    path.join(cursorDir, '.validation')
-  );
+  await writeValidationGuard(jobId, decision.action, path.join(cursorDir, '.validation'));
 
   return {
     success: true,
@@ -362,9 +337,7 @@ export function startLocalOpenCodeWorker(connection: object) {
   const concurrency = getWorkerConcurrency('local-opencode') || 1;
   const registry = getAgentServiceRegistry();
 
-  console.log(
-    `[LocalOpenCodeWorker] Initialized with concurrency=${concurrency}`
-  );
+  console.log(`[LocalOpenCodeWorker] Initialized with concurrency=${concurrency}`);
 
   return new Worker(
     'local-agents',
@@ -412,10 +385,7 @@ export function startLocalOpenCodeWorker(connection: object) {
         const elapsed = Date.now() - t0;
         const errorMsg = err instanceof Error ? err.message : String(err);
 
-        console.error(
-          `[LocalOpenCodeWorker] ❌ Job ${job.id} error:`,
-          errorMsg
-        );
+        console.error(`[LocalOpenCodeWorker] ❌ Job ${job.id} error:`, errorMsg);
         logWorkerLifecycle('fail', 'local-opencode', job, {
           duration_ms: elapsed,
           error: errorMsg,

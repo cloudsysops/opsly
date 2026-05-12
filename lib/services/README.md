@@ -1,7 +1,8 @@
 ---
-title: "@intcloudsysops/services"
-description: "Data access layer with multi-tenant isolation"
+title: '@intcloudsysops/services'
+description: 'Data access layer with multi-tenant isolation'
 ---
+
 # @intcloudsysops/services
 
 Repository pattern and base service layer for consistent data access across all services with built-in multi-tenant isolation.
@@ -34,11 +35,7 @@ class AgentRepository extends BaseRepository<Agent> {
   }
 
   async findActive(tenantId: string): Promise<Agent[]> {
-    return this.db
-      .from('agents')
-      .select('*')
-      .eq('tenant_id', tenantId)
-      .eq('status', 'active');
+    return this.db.from('agents').select('*').eq('tenant_id', tenantId).eq('status', 'active');
   }
 }
 ```
@@ -69,7 +66,7 @@ import { AgentRepository } from '@lib/services';
 app.post('/api/agents', async (req, res) => {
   const { tenantId } = req.user;
   const agentRepo = new AgentRepository(db);
-  
+
   const agent = await agentRepo.create(req.body, tenantId);
   res.json({ success: true, agent });
 });
@@ -104,9 +101,7 @@ import { MockRepository } from '@intcloudsysops/services';
 
 class MockAgentRepository extends MockRepository<Agent> {}
 
-const mockRepo = new MockAgentRepository([
-  { id: 'a1', tenantId: 'tenant-abc', name: 'Agent 1' },
-]);
+const mockRepo = new MockAgentRepository([{ id: 'a1', tenantId: 'tenant-abc', name: 'Agent 1' }]);
 
 const service = new AgentService(mockRepo);
 const agent = await service.getAgent('a1', 'tenant-abc');

@@ -4,10 +4,10 @@ Repositorio upstream: [czlonkowski/n8n-mcp](https://github.com/czlonkowski/n8n-m
 
 ## Relación con OpenClaw
 
-| Componente | Rol |
-| ------------ | --- |
+| Componente                | Rol                                                                                                                                 |
+| ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
 | **`apps/mcp`** (OpenClaw) | MCP **oficial Opsly**: tenants, health, invitaciones, GitHub prompt, etc. ([ADR-009](../adr/ADR-009-openclaw-mcp-architecture.md)). |
-| **n8n-mcp** | MCP **adicional** solo para **diseño y validación de workflows n8n**. No sustituye al MCP de plataforma. |
+| **n8n-mcp**               | MCP **adicional** solo para **diseño y validación de workflows n8n**. No sustituye al MCP de plataforma.                            |
 
 ## Fase 1 — Cursor local (recomendado)
 
@@ -44,10 +44,10 @@ docker compose --env-file ../.env -f docker-compose.n8n-mcp.yml --profile n8n-mc
 
 Variables (Doppler / `.env`):
 
-| Variable | Uso |
-| -------- | --- |
-| `N8N_API_URL` | Base URL de la instancia n8n (p. ej. tenant staging). |
-| `N8N_API_KEY` | API key n8n (herramientas `n8n_*` del MCP). |
+| Variable             | Uso                                                                                    |
+| -------------------- | -------------------------------------------------------------------------------------- |
+| `N8N_API_URL`        | Base URL de la instancia n8n (p. ej. tenant staging).                                  |
+| `N8N_API_KEY`        | API key n8n (herramientas `n8n_*` del MCP).                                            |
 | `N8N_MCP_AUTH_TOKEN` | Token HTTP para proteger el endpoint del MCP (`AUTH_TOKEN` en el contenedor upstream). |
 
 Imagen publicada: `ghcr.io/czlonkowski/n8n-mcp` (etiquetas por versión; en el compose se fija una tag acotada). Puerto interno del contenedor upstream: **3000**; en el overlay se publica **127.0.0.1:3020** para Traefik o túnel manual.

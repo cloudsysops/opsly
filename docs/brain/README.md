@@ -11,15 +11,15 @@ workflows y decisiones.
 
 ## Mapa
 
-| Area | Uso |
-| --- | --- |
-| `modules/` | Una nota por app/package/modulo GitHub |
-| `agents/` | Roles, limites y handoffs de agentes |
-| `tenants/` | Contexto operativo por tenant cuando aplique |
-| `workflows/` | n8n, Hermes, OpenClaw y automatizaciones |
+| Area            | Uso                                               |
+| --------------- | ------------------------------------------------- |
+| `modules/`      | Una nota por app/package/modulo GitHub            |
+| `agents/`       | Roles, limites y handoffs de agentes              |
+| `tenants/`      | Contexto operativo por tenant cuando aplique      |
+| `workflows/`    | n8n, Hermes, OpenClaw y automatizaciones          |
 | `architecture/` | Mapas visuales derivados de ADRs y docs canonicas |
-| `runbooks/` | Procedimientos operativos enlazados |
-| `generated/` | Salidas regenerables, no editar a mano |
+| `runbooks/`     | Procedimientos operativos enlazados               |
+| `generated/`    | Salidas regenerables, no editar a mano            |
 
 ## Reglas
 

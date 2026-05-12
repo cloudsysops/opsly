@@ -56,10 +56,12 @@ function clamp01(value: number): number {
 
 export class OpslyCortex {
   private readonly statePath = resolve(process.cwd(), 'runtime/context/system_state.json');
-  private readonly intervalMs = parsePositiveIntEnv('OPSLY_CORTEX_INTERVAL_MINUTES', 15) * 60 * 1000;
+  private readonly intervalMs =
+    parsePositiveIntEnv('OPSLY_CORTEX_INTERVAL_MINUTES', 15) * 60 * 1000;
   private readonly strategicHourUtc = parsePositiveIntEnv('OPSLY_CORTEX_STRATEGIC_HOUR_UTC', 5);
   private readonly reflectionHourUtc = parsePositiveIntEnv('OPSLY_CORTEX_REFLECTION_HOUR_UTC', 20);
-  private readonly gatewayUrl = process.env.ORCHESTRATOR_LLM_GATEWAY_URL ?? 'http://llm-gateway:3010';
+  private readonly gatewayUrl =
+    process.env.ORCHESTRATOR_LLM_GATEWAY_URL ?? 'http://llm-gateway:3010';
   private timer: NodeJS.Timeout | null = null;
   private running = false;
   private runtimeState: CortexRuntimeState = {};
@@ -117,7 +119,10 @@ export class OpslyCortex {
   }
 
   private async oodaCycle(): Promise<void> {
-    const [metrics, signals] = await Promise.all([this.gatherSystemMetrics(), this.getExternalSignals()]);
+    const [metrics, signals] = await Promise.all([
+      this.gatherSystemMetrics(),
+      this.getExternalSignals(),
+    ]);
     const analysis = await this.analyzeSituation({ metrics, signals, state: this.cognitiveState });
     if (analysis.emotionalAdjustment) {
       this.cognitiveState.emotionalState = analysis.emotionalAdjustment;
@@ -247,7 +252,9 @@ export class OpslyCortex {
       const systemHealth = parsed.systemHealth;
       const urgency = parsed.urgency;
       if (
-        (systemHealth !== 'optimal' && systemHealth !== 'degraded' && systemHealth !== 'critical') ||
+        (systemHealth !== 'optimal' &&
+          systemHealth !== 'degraded' &&
+          systemHealth !== 'critical') ||
         (urgency !== 'low' && urgency !== 'medium' && urgency !== 'high')
       ) {
         return null;
@@ -328,7 +335,10 @@ export class OpslyCortex {
   private async runDailyStrategicSessionIfDue(): Promise<void> {
     const now = new Date();
     const today = now.toISOString().slice(0, 10);
-    if (now.getUTCHours() !== this.strategicHourUtc || this.runtimeState.lastStrategicDate === today) {
+    if (
+      now.getUTCHours() !== this.strategicHourUtc ||
+      this.runtimeState.lastStrategicDate === today
+    ) {
       return;
     }
     this.runtimeState.lastStrategicDate = today;
@@ -348,7 +358,10 @@ export class OpslyCortex {
     }
     this.runtimeState.lastReflectionWeek = weekToken;
     const note = `weekly_reflection:${weekToken}:${this.cognitiveState.currentStrategy ?? 'n/a'}`;
-    this.cognitiveState.recentExperiences = [...this.cognitiveState.recentExperiences.slice(-9), { note }];
+    this.cognitiveState.recentExperiences = [
+      ...this.cognitiveState.recentExperiences.slice(-9),
+      { note },
+    ];
     await this.persistCognitiveSnapshot();
   }
 

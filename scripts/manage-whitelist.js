@@ -228,6 +228,8 @@ switch (command) {
     break;
   default:
     console.error(`Comando desconocido: ${command}`);
-    console.log('Comandos disponibles: list, add, remove, check, add-folder, remove-folder, add-hidden, remove-hidden');
+    console.log(
+      'Comandos disponibles: list, add, remove, check, add-folder, remove-folder, add-hidden, remove-hidden'
+    );
     process.exit(1);
 }

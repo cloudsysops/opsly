@@ -30,13 +30,21 @@ export class NotFoundError extends AppError {
 
 export class RateLimitError extends AppError {
   constructor(retryAfter: number, context?: Record<string, any>) {
-    super('RATE_LIMIT', 429, `Rate limited. Retry after ${retryAfter}s`, { retryAfter, ...context });
+    super('RATE_LIMIT', 429, `Rate limited. Retry after ${retryAfter}s`, {
+      retryAfter,
+      ...context,
+    });
   }
 }
 
 export function handleError(error: unknown) {
   if (error instanceof AppError) {
-    return { code: error.code, statusCode: error.statusCode, message: error.message, context: error.context };
+    return {
+      code: error.code,
+      statusCode: error.statusCode,
+      message: error.message,
+      context: error.context,
+    };
   }
   return { code: 'INTERNAL_ERROR', statusCode: 500, message: 'Internal server error' };
 }

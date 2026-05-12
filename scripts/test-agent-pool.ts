@@ -97,7 +97,9 @@ async function runHealthCheck(): Promise<void> {
     const responseInfo = result.responseTime ? ` (${result.responseTime}ms)` : '';
     const errorMsg = result.error ? ` - ${result.error}` : '';
 
-    console.log(`${statusEmoji} ${result.agent.padEnd(10)} [${result.port}]: ${result.status}${responseInfo}${errorMsg}`);
+    console.log(
+      `${statusEmoji} ${result.agent.padEnd(10)} [${result.port}]: ${result.status}${responseInfo}${errorMsg}`
+    );
 
     if (result.status === 'connected') {
       connectedCount++;

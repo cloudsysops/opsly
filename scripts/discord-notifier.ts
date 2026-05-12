@@ -259,9 +259,18 @@ class DiscordNotifier {
   /**
    * Notify service is down
    */
-  public notifyServiceDown(serviceName: string, reason: string, details?: Record<string, string | number>): void {
+  public notifyServiceDown(
+    serviceName: string,
+    reason: string,
+    details?: Record<string, string | number>
+  ): void {
     const description = `**Service:** ${serviceName}\n**Reason:** ${reason}${
-      details ? '\n**Details:**\n' + Object.entries(details).map(([k, v]) => `• ${k}: ${v}`).join('\n') : ''
+      details
+        ? '\n**Details:**\n' +
+          Object.entries(details)
+            .map(([k, v]) => `• ${k}: ${v}`)
+            .join('\n')
+        : ''
     }`;
 
     this.queueAlert({
@@ -279,7 +288,12 @@ class DiscordNotifier {
    */
   public notifyServiceUp(serviceName: string, details?: Record<string, string | number>): void {
     const description = `**Service:** ${serviceName}\n**Status:** Online and responsive${
-      details ? '\n**Details:**\n' + Object.entries(details).map(([k, v]) => `• ${k}: ${v}`).join('\n') : ''
+      details
+        ? '\n**Details:**\n' +
+          Object.entries(details)
+            .map(([k, v]) => `• ${k}: ${v}`)
+            .join('\n')
+        : ''
     }`;
 
     this.queueAlert({
@@ -295,9 +309,18 @@ class DiscordNotifier {
   /**
    * Notify degraded status
    */
-  public notifyDegraded(serviceName: string, reason: string, details?: Record<string, string | number>): void {
+  public notifyDegraded(
+    serviceName: string,
+    reason: string,
+    details?: Record<string, string | number>
+  ): void {
     const description = `**Service:** ${serviceName}\n**Status:** Degraded\n**Reason:** ${reason}${
-      details ? '\n**Details:**\n' + Object.entries(details).map(([k, v]) => `• ${k}: ${v}`).join('\n') : ''
+      details
+        ? '\n**Details:**\n' +
+          Object.entries(details)
+            .map(([k, v]) => `• ${k}: ${v}`)
+            .join('\n')
+        : ''
     }`;
 
     this.queueAlert({
@@ -339,7 +362,12 @@ class DiscordNotifier {
   ): void {
     const description =
       `**Incident:** ${title}\n**Reason:** ${reason}\n**Recommended Action:** ${recommendedAction}` +
-      (details ? '\n**Details:**\n' + Object.entries(details).map(([k, v]) => `• ${k}: ${v}`).join('\n') : '');
+      (details
+        ? '\n**Details:**\n' +
+          Object.entries(details)
+            .map(([k, v]) => `• ${k}: ${v}`)
+            .join('\n')
+        : '');
 
     this.queueAlert({
       type: 'escalation',
@@ -401,7 +429,11 @@ async function main(): Promise<void> {
       break;
 
     case 'escalation':
-      n.notifyEscalation(args[0] || 'Escalation', args[1] || 'Unknown', args[2] || 'Manual intervention required');
+      n.notifyEscalation(
+        args[0] || 'Escalation',
+        args[1] || 'Unknown',
+        args[2] || 'Manual intervention required'
+      );
       break;
 
     default:

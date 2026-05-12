@@ -567,7 +567,11 @@ export type CreateDefenseAuditPayload = {
 
 export async function createDefenseAudit(
   body: CreateDefenseAuditPayload
-): Promise<{ success: boolean; audit: DefenseAuditRow; orchestrator?: { queued: boolean; detail?: string } }> {
+): Promise<{
+  success: boolean;
+  audit: DefenseAuditRow;
+  orchestrator?: { queued: boolean; detail?: string };
+}> {
   return request(`/api/defense/audits`, {
     method: 'POST',
     body: JSON.stringify(body),

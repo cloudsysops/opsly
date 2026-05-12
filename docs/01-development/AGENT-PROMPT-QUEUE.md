@@ -10,11 +10,11 @@ Objetivo: que **desde el móvil o el equipo** se dejen instrucciones en git y el
 
 ## Rutas recomendadas
 
-| Rol | Ruta | Notas |
-|-----|------|--------|
-| Prompts **pendientes** | `.cursor/prompts/queue/*.md` | Un archivo = una tarea; nombre `NNN-breve-titulo.md` (NNN = 001, 002…). |
-| Prompts **hechos** (archivo) | `.cursor/prompts/done/` | Tras completar: **mover** el `.md` de `queue/` → `done/` (o renombrar con prefijo `done-`). |
-| **Respuesta del agente** | Mismo archivo, sección final *o* par `queue/001-x.md` + `queue/001-x.response.md` | Elige **una** convención por repo y cúmplela siempre. |
+| Rol                          | Ruta                                                                              | Notas                                                                                       |
+| ---------------------------- | --------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| Prompts **pendientes**       | `.cursor/prompts/queue/*.md`                                                      | Un archivo = una tarea; nombre `NNN-breve-titulo.md` (NNN = 001, 002…).                     |
+| Prompts **hechos** (archivo) | `.cursor/prompts/done/`                                                           | Tras completar: **mover** el `.md` de `queue/` → `done/` (o renombrar con prefijo `done-`). |
+| **Respuesta del agente**     | Mismo archivo, sección final _o_ par `queue/001-x.md` + `queue/001-x.response.md` | Elige **una** convención por repo y cúmplela siempre.                                       |
 
 Convención **recomendada en este repo**: respuesta **al final del mismo archivo** en una sección fija (menos archivos sueltos).
 

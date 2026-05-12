@@ -1,7 +1,8 @@
 ---
-title: "@intcloudsysops/api"
-description: "Unified API response format and versioning"
+title: '@intcloudsysops/api'
+description: 'Unified API response format and versioning'
 ---
+
 # @intcloudsysops/api
 
 Centralized API response formatting, pagination, and versioning for consistent client experiences.
@@ -60,9 +61,9 @@ const response = createErrorResponse('AGENT_NOT_FOUND', 'Agent not found', reque
 import { createResponse, PaginationParams } from '@intcloudsysops/api';
 
 const params: PaginationParams = {
-  page: 1,      // 1-indexed
+  page: 1, // 1-indexed
   limit: 20,
-  offset: 0     // (page - 1) * limit
+  offset: 0, // (page - 1) * limit
 };
 
 const agents = await agentRepo.findAll(tenantId, params);
@@ -72,7 +73,7 @@ const response = createResponse(
     total: 150,
     page: 1,
     limit: 20,
-    totalPages: 8
+    totalPages: 8,
   },
   requestId
 );
@@ -99,16 +100,16 @@ if (version === API_VERSIONS.V1) {
 
 ```typescript
 interface APIResponse<T> {
-  success: boolean;           // true if successful, false otherwise
-  data: T | null;             // Response data (null if error)
-  error: ErrorDetail | null;  // Error details (null if success)
-  requestId: string;          // Unique request identifier
-  timestamp: string;          // ISO 8601 timestamp
+  success: boolean; // true if successful, false otherwise
+  data: T | null; // Response data (null if error)
+  error: ErrorDetail | null; // Error details (null if success)
+  requestId: string; // Unique request identifier
+  timestamp: string; // ISO 8601 timestamp
 }
 
 interface ErrorDetail {
-  code: string;       // Machine-readable error code
-  message: string;    // Human-readable message
+  code: string; // Machine-readable error code
+  message: string; // Human-readable message
   details?: Record<string, any>; // Additional error context
 }
 ```
@@ -128,11 +129,7 @@ app.post('/api/agents', async (req, res) => {
     const response = createResponse(agent, requestId);
     res.json(response);
   } catch (error) {
-    const response = createErrorResponse(
-      error.code || 'INTERNAL_ERROR',
-      error.message,
-      requestId
-    );
+    const response = createErrorResponse(error.code || 'INTERNAL_ERROR', error.message, requestId);
     res.status(error.statusCode || 500).json(response);
   }
 });

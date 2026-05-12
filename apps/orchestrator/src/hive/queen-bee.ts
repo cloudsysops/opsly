@@ -88,7 +88,9 @@ export class QueenBee {
   }
 
   private async assignReadySubtasks(hiveTask: HiveTask): Promise<void> {
-    const completed = new Set(hiveTask.subtasks.filter((s) => s.status === 'completed').map((s) => s.id));
+    const completed = new Set(
+      hiveTask.subtasks.filter((s) => s.status === 'completed').map((s) => s.id)
+    );
     for (const subtask of hiveTask.subtasks) {
       if (subtask.status !== 'pending') continue;
       const canStart =
@@ -153,7 +155,9 @@ export class QueenBee {
       }
       await this.hiveState.updateTask(taskId, {
         subtasks: hiveTask.subtasks.map((s) =>
-          s.id === subtaskId ? { ...s, status: 'failed' as const, result: { retryCount: nextRetry } } : s
+          s.id === subtaskId
+            ? { ...s, status: 'failed' as const, result: { retryCount: nextRetry } }
+            : s
         ),
         status: 'failed',
       });

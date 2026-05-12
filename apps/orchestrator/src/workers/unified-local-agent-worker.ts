@@ -15,7 +15,8 @@ interface LocalAgentJob extends OrchestratorJob {
 // Simple logger replacement
 const logger = {
   info: (msg: string, ctx?: any) => console.log(`[INFO] ${msg}`, ctx ? JSON.stringify(ctx) : ''),
-  error: (msg: string, ctx?: any) => console.error(`[ERROR] ${msg}`, ctx ? JSON.stringify(ctx) : ''),
+  error: (msg: string, ctx?: any) =>
+    console.error(`[ERROR] ${msg}`, ctx ? JSON.stringify(ctx) : ''),
 };
 
 interface AgentResponse {
@@ -47,9 +48,12 @@ export class UnifiedLocalAgentWorker {
       claude: 'http://localhost:5002',
       copilot: 'http://localhost:5003',
       opencode: 'http://localhost:5004',
-    },
+    }
   ) {
-    this.orchestrator = new IterationOrchestrator(`${cursorDir}/iteration-state`, `${cursorDir}/training`);
+    this.orchestrator = new IterationOrchestrator(
+      `${cursorDir}/iteration-state`,
+      `${cursorDir}/training`
+    );
     this.trainer = new AgentTrainer(`${cursorDir}/training`);
 
     this.worker = new Worker('local-agents', this.processJob.bind(this), {
@@ -88,8 +92,14 @@ export class UnifiedLocalAgentWorker {
   private async processJob(job: any): Promise<any> {
     const localJob = job.data as LocalAgentJob;
     const promptBody = (localJob as any).prompt_body || localJob.metadata?.prompt_body || '';
-    const agentRole = ((localJob as any).agent_role || 'cursor') as 'cursor' | 'claude' | 'copilot' | 'opencode';
-    const goal = ((localJob as any).goal || localJob.metadata?.goal || 'Unspecified goal') as string;
+    const agentRole = ((localJob as any).agent_role || 'cursor') as
+      | 'cursor'
+      | 'claude'
+      | 'copilot'
+      | 'opencode';
+    const goal = ((localJob as any).goal ||
+      localJob.metadata?.goal ||
+      'Unspecified goal') as string;
 
     logger.info(`🚀 Processing local agent job`, {
       job_id: job.id,
@@ -105,10 +115,13 @@ export class UnifiedLocalAgentWorker {
         goal,
         promptBody,
         agentRole,
-        localJob.max_iterations,
+        localJob.max_iterations
       );
       sessionId = session.job_id;
-      logger.info(`📝 Iteration session initialized`, { session_id: sessionId, max_iterations: localJob.max_iterations });
+      logger.info(`📝 Iteration session initialized`, {
+        session_id: sessionId,
+        max_iterations: localJob.max_iterations,
+      });
     }
 
     // Step 2: Execute prompt via HTTP agent service
@@ -211,7 +224,7 @@ export class UnifiedLocalAgentWorker {
   private async executeViaAgentService(
     job: LocalAgentJob,
     promptBody: string,
-    agentRole: 'cursor' | 'claude' | 'copilot' | 'opencode',
+    agentRole: 'cursor' | 'claude' | 'copilot' | 'opencode'
   ): Promise<AgentResponse> {
     const serviceUrl = this.agentServices[agentRole];
     if (!serviceUrl) {

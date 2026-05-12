@@ -1,7 +1,8 @@
 ---
-title: "lib/api Governance"
-description: "Module governance for API response formatting"
+title: 'lib/api Governance'
+description: 'Module governance for API response formatting'
 ---
+
 # lib/api Governance
 
 ## Ownership
@@ -29,6 +30,7 @@ All API responses must:
 - ✅ `timestamp` in ISO 8601
 
 Never:
+
 - ❌ Return raw error messages
 - ❌ Include stack traces in responses
 - ❌ Leak internal implementation details
@@ -41,6 +43,7 @@ Never:
 - **V3** — Future (experimental)
 
 Versions run in parallel:
+
 ```
 GET /api/v1/agents     → Legacy response
 GET /api/v2/agents     → Modern response
@@ -86,14 +89,14 @@ Response:
 
 ## Error Code Standardization
 
-| Code | Status | Meaning |
-|------|--------|---------|
-| VALIDATION_ERROR | 400 | Input validation failed |
-| AUTH_ERROR | 401 | Authentication required |
-| NOT_FOUND | 404 | Resource not found |
-| CONFLICT | 409 | Resource already exists |
-| RATE_LIMIT | 429 | Too many requests |
-| INTERNAL_ERROR | 500 | Server error |
+| Code             | Status | Meaning                 |
+| ---------------- | ------ | ----------------------- |
+| VALIDATION_ERROR | 400    | Input validation failed |
+| AUTH_ERROR       | 401    | Authentication required |
+| NOT_FOUND        | 404    | Resource not found      |
+| CONFLICT         | 409    | Resource already exists |
+| RATE_LIMIT       | 429    | Too many requests       |
+| INTERNAL_ERROR   | 500    | Server error            |
 
 ## Dependencies
 

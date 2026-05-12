@@ -29,9 +29,7 @@ export async function llmCall(request: LLMRequest): Promise<LLMResponse> {
   });
 
   if (!response.ok) {
-    throw new Error(
-      `LLM Gateway request failed: ${response.status} ${response.statusText}`
-    );
+    throw new Error(`LLM Gateway request failed: ${response.status} ${response.statusText}`);
   }
 
   return response.json() as Promise<LLMResponse>;
@@ -63,9 +61,7 @@ export async function llmCallDirect(
   });
 
   if (!response.ok) {
-    throw new Error(
-      `LLM Gateway request failed: ${response.status} ${response.statusText}`
-    );
+    throw new Error(`LLM Gateway request failed: ${response.status} ${response.statusText}`);
   }
 
   return response.json() as Promise<LLMResponse>;

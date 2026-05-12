@@ -3,14 +3,7 @@
 import type { ReactElement } from 'react';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import {
-  Line,
-  LineChart,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from 'recharts';
+import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { Button } from '@/components/ui/button';
 import { createClient } from '@/lib/supabase';
 import { fetchShieldSecrets } from '@/lib/tenant';
@@ -127,7 +120,10 @@ export function ShieldDashboardClient(props: {
 
   return (
     <div className="space-y-10">
-      <section id="score" className="scroll-mt-24 rounded-xl border border-ops-border/80 bg-ops-panel/30 p-6">
+      <section
+        id="score"
+        className="scroll-mt-24 rounded-xl border border-ops-border/80 bg-ops-panel/30 p-6"
+      >
         <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-col items-center sm:items-start">
             <ScoreGauge score={currentScore} />
@@ -151,8 +147,8 @@ export function ShieldDashboardClient(props: {
             </div>
             {scorePayload === null ? (
               <p className="text-sm text-amber-400/90">
-                No se pudo cargar el score. Comprueba que la migración Shield esté aplicada y vuelve a
-                intentar.
+                No se pudo cargar el score. Comprueba que la migración Shield esté aplicada y vuelve
+                a intentar.
               </p>
             ) : null}
           </div>
@@ -168,10 +164,7 @@ export function ShieldDashboardClient(props: {
             </div>
           ) : (
             Object.entries(bySeverity).map(([sev, count]) => (
-              <div
-                key={sev}
-                className="rounded-lg border border-ops-border/60 bg-ops-bg/50 p-4"
-              >
+              <div key={sev} className="rounded-lg border border-ops-border/60 bg-ops-bg/50 p-4">
                 <p className="text-xs uppercase tracking-wide text-neutral-500">{sev}</p>
                 <p className="mt-1 font-mono text-2xl text-white">{count}</p>
                 <p className="text-xs text-neutral-500">hallazgos abiertos</p>
@@ -200,7 +193,13 @@ export function ShieldDashboardClient(props: {
                     borderRadius: 8,
                   }}
                 />
-                <Line type="monotone" dataKey="score" stroke="#22c55e" strokeWidth={2} dot={false} />
+                <Line
+                  type="monotone"
+                  dataKey="score"
+                  stroke="#22c55e"
+                  strokeWidth={2}
+                  dot={false}
+                />
               </LineChart>
             </ResponsiveContainer>
           )}

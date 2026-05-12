@@ -21,7 +21,7 @@ export function calculateBleu(reference: string, generated: string): number {
   // Simplified BLEU score (0-1)
   const refWords = reference.split(' ');
   const genWords = generated.split(' ');
-  const matches = genWords.filter(w => refWords.includes(w)).length;
+  const matches = genWords.filter((w) => refWords.includes(w)).length;
   return Math.min(1, matches / Math.max(1, genWords.length));
 }
 
@@ -29,7 +29,7 @@ export function calculateRouge(reference: string, generated: string): number {
   // Simplified ROUGE score
   const refWords = new Set(reference.split(' '));
   const genWords = generated.split(' ');
-  const matches = genWords.filter(w => refWords.has(w)).length;
+  const matches = genWords.filter((w) => refWords.has(w)).length;
   return Math.min(1, matches / Math.max(1, genWords.length));
 }
 

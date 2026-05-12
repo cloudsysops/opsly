@@ -116,7 +116,9 @@ function chatBodyToLlmRequest(body: ChatCompletionsPlannerBody, requestId: strin
       ? conv
       : [{ role: 'user', content: '(planner: no user/assistant messages in request)' }];
   const routingBias: RoutingBias =
-    body.routing_bias === 'balanced' || body.routing_bias === 'quality' || body.routing_bias === 'cost'
+    body.routing_bias === 'balanced' ||
+    body.routing_bias === 'quality' ||
+    body.routing_bias === 'cost'
       ? body.routing_bias
       : 'cost';
   const providerHint = body.provider_hint === 'deepseek' ? 'deepseek' : undefined;

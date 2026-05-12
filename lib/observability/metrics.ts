@@ -25,11 +25,7 @@ export function initMetrics(options: MetricOptions[]): void {
   }
 }
 
-export function recordMetric(
-  name: string,
-  value: number,
-  labels?: Record<string, string>
-): void {
+export function recordMetric(name: string, value: number, labels?: Record<string, string>): void {
   const metricsList = metrics.get(name) || [];
 
   metricsList.push({

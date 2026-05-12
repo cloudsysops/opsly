@@ -22,4 +22,3 @@ export interface N8nWorkflowCatalog {
 export function getN8nWorkflowCatalog(): N8nWorkflowCatalog {
   return catalog as N8nWorkflowCatalog;
 }
-

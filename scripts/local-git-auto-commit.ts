@@ -163,7 +163,7 @@ class LocalGitAutoCommit {
         const hasGuard = await this.hasValidationGuard(jobId);
         if (hasGuard) {
           console.log(
-            `[AutoCommit] ⏭️  Skipping ${filename} - validation orchestrator already handled this (guard found)`,
+            `[AutoCommit] ⏭️  Skipping ${filename} - validation orchestrator already handled this (guard found)`
           );
           this.committedFiles.add(filename);
           return;
@@ -191,8 +191,7 @@ const watchDir =
 const workingDir =
   process.argv.find((arg) => arg.startsWith('--working-dir='))?.split('=')[1] || process.cwd();
 
-const autoPush =
-  !process.argv.includes('--no-push');
+const autoPush = !process.argv.includes('--no-push');
 
 const commit = new LocalGitAutoCommit({
   watchDir,

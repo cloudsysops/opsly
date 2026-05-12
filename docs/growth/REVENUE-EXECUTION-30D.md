@@ -6,11 +6,11 @@ Conseguir 3 pilotos pagados en 30 dias para validar Opsly como operacion gestion
 
 ## Oferta
 
-| Paquete | Precio | Setup | Promesa |
-| --- | ---: | ---: | --- |
-| Managed Automation | $299/mes | $750 | Stack n8n + monitoreo + backups operado por Opsly |
-| Autonomous Ops | $699/mes | $1,500 | Agentes read-only revisan fallos, costos y mejoras |
-| Done-For-You | desde $1,500/mes | $3,000+ | Opsly disena, implementa y mejora workflows |
+| Paquete            |           Precio |   Setup | Promesa                                            |
+| ------------------ | ---------------: | ------: | -------------------------------------------------- |
+| Managed Automation |         $299/mes |    $750 | Stack n8n + monitoreo + backups operado por Opsly  |
+| Autonomous Ops     |         $699/mes |  $1,500 | Agentes read-only revisan fallos, costos y mejoras |
+| Done-For-You       | desde $1,500/mes | $3,000+ | Opsly disena, implementa y mejora workflows        |
 
 ## Activos listos
 

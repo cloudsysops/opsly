@@ -176,7 +176,9 @@ export class AgentServiceRegistry {
    * Get a working service from fallback chain
    * Tries primary, then falls back through chain until one is healthy
    */
-  async getWorkingService(preferredService?: string): Promise<{ name: string; service: AgentService } | null> {
+  async getWorkingService(
+    preferredService?: string
+  ): Promise<{ name: string; service: AgentService } | null> {
     const config = await this.getConfig();
     const chain = preferredService
       ? [preferredService, ...config.defaults.fallback_chain.filter((s) => s !== preferredService)]
@@ -246,7 +248,9 @@ export class AgentServiceRegistry {
     const config = await this.getConfig();
     if (config.services[serviceName]) {
       config.services[serviceName].enabled = enabled;
-      console.log(`[AgentServiceRegistry] Service ${serviceName} ${enabled ? 'enabled' : 'disabled'}`);
+      console.log(
+        `[AgentServiceRegistry] Service ${serviceName} ${enabled ? 'enabled' : 'disabled'}`
+      );
     } else {
       throw new Error(`Service ${serviceName} not found in config`);
     }

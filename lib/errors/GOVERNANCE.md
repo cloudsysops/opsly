@@ -1,7 +1,8 @@
 ---
-title: "lib/errors Governance"
-description: "Module governance for error handling"
+title: 'lib/errors Governance'
+description: 'Module governance for error handling'
 ---
+
 # lib/errors Governance
 
 ## Ownership

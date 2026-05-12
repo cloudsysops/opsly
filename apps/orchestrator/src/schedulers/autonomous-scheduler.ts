@@ -54,10 +54,8 @@ export class AutonomousScheduler {
   private readonly agentsPath = resolve(process.cwd(), 'AGENTS.md');
   private readonly visionPath = resolve(process.cwd(), 'VISION.md');
   private readonly planningHourUtc = parseNumberEnv('OPSLY_AUTONOMOUS_PLANNING_HOUR_UTC', 6);
-  private readonly executionIntervalMs = parseNumberEnv(
-    'OPSLY_AUTONOMOUS_EXECUTION_INTERVAL_HOURS',
-    4
-  ) * 60 * 60 * 1000;
+  private readonly executionIntervalMs =
+    parseNumberEnv('OPSLY_AUTONOMOUS_EXECUTION_INTERVAL_HOURS', 4) * 60 * 60 * 1000;
   private readonly growthEnabled = process.env.OPSLY_AUTONOMOUS_GROWTH_ENABLED === 'true';
   private readonly tickEveryMs = parseNumberEnv('OPSLY_AUTONOMOUS_TICK_MINUTES', 5) * 60 * 1000;
   private lastPlanningDate = '';
@@ -243,14 +241,16 @@ export class AutonomousScheduler {
       {
         id: `daily-${Date.now()}-health`,
         goal: 'Verificar salud de servicios core',
-        instruction: 'Ejecuta chequeos de salud para api, orchestrator y llm-gateway y resume hallazgos.',
+        instruction:
+          'Ejecuta chequeos de salud para api, orchestrator y llm-gateway y resume hallazgos.',
         priority: 50,
         labels: ['ops'],
       },
       {
         id: `daily-${Date.now()}-security`,
         goal: 'Revisar postura de seguridad operativa',
-        instruction: 'Revisa bloqueantes de seguridad activos y propone accion concreta sin tocar secretos.',
+        instruction:
+          'Revisa bloqueantes de seguridad activos y propone accion concreta sin tocar secretos.',
         priority: 60,
         labels: ['security'],
       },
@@ -284,8 +284,7 @@ export class AutonomousScheduler {
       return parsed.tasks
         .map((task, index) => {
           const goal = typeof task.goal === 'string' ? task.goal.trim() : '';
-          const instruction =
-            typeof task.instruction === 'string' ? task.instruction.trim() : goal;
+          const instruction = typeof task.instruction === 'string' ? task.instruction.trim() : goal;
           const idSource = typeof task.id === 'string' ? task.id.trim() : `task-${index + 1}`;
           const id = idSource.length > 0 ? idSource : `task-${index + 1}`;
           const priority =

@@ -40,8 +40,8 @@ OPSLY_ROOT=/opt/opsly ./scripts/index-knowledge.sh
 
 ## Errores comunes
 
-| Error | Causa | Solucion |
-| ----- | ----- | -------- |
-| Planner sin docs nuevas | No se regenero `config/knowledge-index.json` | Ejecutar `npm run index-knowledge` |
-| Contexto con secretos | Se copio `.env` o salida Doppler completa | Registrar solo nombres/longitudes |
-| Segundo builder | Implementacion paralela en orchestrator | Integrar como cliente del servicio existente |
+| Error                   | Causa                                        | Solucion                                     |
+| ----------------------- | -------------------------------------------- | -------------------------------------------- |
+| Planner sin docs nuevas | No se regenero `config/knowledge-index.json` | Ejecutar `npm run index-knowledge`           |
+| Contexto con secretos   | Se copio `.env` o salida Doppler completa    | Registrar solo nombres/longitudes            |
+| Segundo builder         | Implementacion paralela en orchestrator      | Integrar como cliente del servicio existente |

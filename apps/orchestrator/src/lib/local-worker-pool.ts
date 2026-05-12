@@ -96,7 +96,7 @@ export class LocalWorkerPool {
     });
 
     console.log(
-      `[LocalWorkerPool] Initialized with ${Array.from(this.agents.values()).filter((a) => a.enabled).length} agents`,
+      `[LocalWorkerPool] Initialized with ${Array.from(this.agents.values()).filter((a) => a.enabled).length} agents`
     );
   }
 
@@ -130,25 +130,21 @@ export class LocalWorkerPool {
     // Determine which agents to execute
     let agentsToUse = this.getEnabledAgents();
     if (request.agent_roles && request.agent_roles.length > 0) {
-      agentsToUse = agentsToUse.filter((a) =>
-        request.agent_roles!.includes(a.role),
-      );
+      agentsToUse = agentsToUse.filter((a) => request.agent_roles!.includes(a.role));
     }
 
     const maxConcurrent = request.max_concurrent || this.defaultMaxConcurrent;
     const timeout = request.timeout || 60000;
 
     console.log(
-      `[LocalWorkerPool] Executing ${request.job_id} on ${agentsToUse.length} agents (max concurrent: ${maxConcurrent})`,
+      `[LocalWorkerPool] Executing ${request.job_id} on ${agentsToUse.length} agents (max concurrent: ${maxConcurrent})`
     );
 
     // Execute in batches to respect concurrency limit
     const results: AgentExecutionResult[] = [];
     for (let i = 0; i < agentsToUse.length; i += maxConcurrent) {
       const batch = agentsToUse.slice(i, i + maxConcurrent);
-      const batchPromises = batch.map((agent) =>
-        this.executeOnAgent(agent, request, timeout),
-      );
+      const batchPromises = batch.map((agent) => this.executeOnAgent(agent, request, timeout));
 
       const batchResults = await Promise.all(batchPromises);
       results.push(...batchResults);
@@ -158,7 +154,7 @@ export class LocalWorkerPool {
     const failed = results.filter((r) => r.status === 'failed').length;
 
     console.log(
-      `[LocalWorkerPool] Completed ${request.job_id}: ${successful} succeeded, ${failed} failed (${Date.now() - startTime}ms)`,
+      `[LocalWorkerPool] Completed ${request.job_id}: ${successful} succeeded, ${failed} failed (${Date.now() - startTime}ms)`
     );
 
     return {
@@ -177,7 +173,7 @@ export class LocalWorkerPool {
   private async executeOnAgent(
     agent: AgentServiceConfig,
     request: ParallelExecutionRequest,
-    timeout: number,
+    timeout: number
   ): Promise<AgentExecutionResult> {
     const startTime = Date.now();
 

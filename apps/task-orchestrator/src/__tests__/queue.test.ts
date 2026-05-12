@@ -61,7 +61,7 @@ describe('TaskQueue Service', () => {
     const pending = await taskQueue.getPendingTasks();
 
     expect(pending.length).toBeGreaterThan(0);
-    expect(pending.some(t => t.id === task.id)).toBe(true);
+    expect(pending.some((t) => t.id === task.id)).toBe(true);
   });
 
   it('should update task status', async () => {
@@ -80,7 +80,9 @@ describe('TaskQueue Service', () => {
     };
 
     await taskQueue.addTask(task);
-    await taskQueue.updateTaskStatus(task.id, 'executing', { started_at: new Date().toISOString() });
+    await taskQueue.updateTaskStatus(task.id, 'executing', {
+      started_at: new Date().toISOString(),
+    });
 
     const updated = await taskQueue.getTask(task.id);
     expect(updated?.status).toBe('executing');

@@ -53,7 +53,7 @@ class LocalPromptWatcher {
   constructor(
     cursorDir: string = '.cursor',
     orchestratorUrl: string = 'http://localhost:3011',
-    adminToken: string = '',
+    adminToken: string = ''
   ) {
     this.cursorDir = cursorDir;
     this.orchestratorUrl = orchestratorUrl;
@@ -96,7 +96,9 @@ class LocalPromptWatcher {
     try {
       const data = await fsp.readFile(this.metadataFile, 'utf-8');
       this.state = JSON.parse(data) as WatcherState;
-      console.log(`[LocalPromptWatcher] Loaded metadata: ${Object.keys(this.state).length} entries`);
+      console.log(
+        `[LocalPromptWatcher] Loaded metadata: ${Object.keys(this.state).length} entries`
+      );
     } catch {
       this.state = {};
     }
@@ -135,7 +137,7 @@ class LocalPromptWatcher {
       const requestId = filename.replace(/\.md$/, '').replace(/[^a-z0-9-]/gi, '');
 
       console.log(
-        `[LocalPromptWatcher] Submitting ${filename} (agent: ${agentRole}, steps: ${maxSteps})`,
+        `[LocalPromptWatcher] Submitting ${filename} (agent: ${agentRole}, steps: ${maxSteps})`
       );
 
       // Submit to orchestrator
@@ -158,9 +160,7 @@ class LocalPromptWatcher {
 
       if (!response.ok) {
         const errorText = await response.text();
-        throw new Error(
-          `HTTP ${response.status}: ${errorText || response.statusText}`,
-        );
+        throw new Error(`HTTP ${response.status}: ${errorText || response.statusText}`);
       }
 
       const result = (await response.json()) as { job_id?: string; request_id?: string };
@@ -175,9 +175,7 @@ class LocalPromptWatcher {
         agentRole,
       };
 
-      console.log(
-        `[LocalPromptWatcher] ✅ Submitted ${filename} as job ${jobId}`,
-      );
+      console.log(`[LocalPromptWatcher] ✅ Submitted ${filename} as job ${jobId}`);
       await this.saveState();
     } catch (err) {
       const errorMsg = err instanceof Error ? err.message : String(err);
@@ -213,12 +211,7 @@ class LocalPromptWatcher {
 
     const watcher = watch(`${this.promptsDir}/*.md`, {
       persistent: true,
-      ignored: [
-        '**/.*',
-        '**/responses/**',
-        '**/pending/**',
-        '**/.gitignore',
-      ],
+      ignored: ['**/.*', '**/responses/**', '**/pending/**', '**/.gitignore'],
     });
 
     watcher.on('add', (filePath: string) => {
@@ -241,9 +234,7 @@ async function main(): Promise<void> {
   const adminToken = process.env.PLATFORM_ADMIN_TOKEN || '';
 
   if (!adminToken) {
-    console.error(
-      '[LocalPromptWatcher] ERROR: PLATFORM_ADMIN_TOKEN not set in environment',
-    );
+    console.error('[LocalPromptWatcher] ERROR: PLATFORM_ADMIN_TOKEN not set in environment');
     process.exit(1);
   }
 

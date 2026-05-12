@@ -3,6 +3,7 @@
 Muestra costos LLM. Ver `AGENTS.md` (sección "Ecosistema IA") y `docs/COST-DASHBOARD.md`.
 
 ## Portal (sesión tenant)
+
 ```bash
 JWT_TOKEN=$(curl -s -X POST "https://api.ops.smiletripcare.com/api/portal/login" \
   -H "Content-Type: application/json" \
@@ -18,12 +19,14 @@ curl -H "Authorization: Bearer $JWT_TOKEN" \
 ```
 
 ## Admin (todos los tenants)
+
 ```bash
 curl -H "Authorization: Bearer $PLATFORM_ADMIN_TOKEN" \
   "https://admin.ops.smiletripcare.com/api/admin/costs"
 ```
 
 ## LLM Gateway (directo)
+
 ```bash
 # Logs estructurados
 ssh vps-dragon@100.120.151.91 "docker logs infra-llm-gateway-1 --tail 50 | grep 'llm_call'"
@@ -34,6 +37,7 @@ doppler run --project ops-intcloudsysops --config prd -- \
 ```
 
 ## Referencias
+
 - `AGENTS.md` → "Ecosistema IA — OpenClaw", "Dashboard de costos"
 - `apps/api/lib/admin-costs.ts` — lógica admin
 - `apps/llm-gateway/src/logger.ts` — `logUsage()`

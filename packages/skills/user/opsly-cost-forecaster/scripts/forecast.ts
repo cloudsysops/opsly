@@ -35,7 +35,7 @@ interface PrometheusResponse {
  */
 async function fetchPrometheusMetrics(
   prometheusUrl: string,
-  days: number = 90,
+  days: number = 90
 ): Promise<HistoricalData> {
   logger.info(`Fetching Prometheus metrics for last ${days} days`);
 
@@ -44,17 +44,14 @@ async function fetchPrometheusMetrics(
     const startTime = endTime - days * 24 * 60 * 60;
     const query = `sum(rate(openclaw_llm_tokens_consumed_total[1d])) by (model)`;
 
-    const response = await axios.get<PrometheusResponse>(
-      `${prometheusUrl}/api/v1/query_range`,
-      {
-        params: {
-          query,
-          start: startTime,
-          end: endTime,
-          step: '1d',
-        },
+    const response = await axios.get<PrometheusResponse>(`${prometheusUrl}/api/v1/query_range`, {
+      params: {
+        query,
+        start: startTime,
+        end: endTime,
+        step: '1d',
       },
-    );
+    });
 
     const tokenStream = response.data.data.result.flatMap((series) => {
       const model = series.metric.model || 'unknown';
@@ -103,9 +100,7 @@ async function fetchPricingData(dopplerToken: string): Promise<PricingData> {
     // Fallback to hardcoded defaults in token-counter.ts
     if (response.data.secrets.LLM_PRICING_JSON) {
       try {
-        const pricing = JSON.parse(
-          response.data.secrets.LLM_PRICING_JSON.computed_value,
-        );
+        const pricing = JSON.parse(response.data.secrets.LLM_PRICING_JSON.computed_value);
         Object.assign(pricingData, pricing);
       } catch {
         logger.warn('Failed to parse LLM_PRICING_JSON from Doppler');
@@ -197,8 +192,7 @@ async function fetchTenantData(supabaseUrl: string, supabaseKey: string) {
       agentCount: agents?.length || 0,
       avgTokensPerAgent:
         agents && agents.length > 0
-          ? agents.reduce((sum, a) => sum + (a.usage_tokens_30d || 0), 0) /
-            agents.length
+          ? agents.reduce((sum, a) => sum + (a.usage_tokens_30d || 0), 0) / agents.length
           : 0,
     };
   } catch (error) {
@@ -224,38 +218,29 @@ export async function runForecast(
     supabaseKey?: string;
     growthRate?: number;
     confidenceThreshold?: number;
-  },
+  }
 ): Promise<ForecastResult> {
   const prometheusUrl =
     options?.prometheusUrl || process.env.PROMETHEUS_URL || 'http://localhost:9090';
-  const dopplerToken =
-    options?.dopplerToken || process.env.DOPPLER_TOKEN || '';
-  const stripeApiKey =
-    options?.stripeApiKey || process.env.STRIPE_API_KEY || '';
-  const supabaseUrl =
-    options?.supabaseUrl || process.env.SUPABASE_URL || '';
-  const supabaseKey =
-    options?.supabaseKey || process.env.SUPABASE_KEY || '';
+  const dopplerToken = options?.dopplerToken || process.env.DOPPLER_TOKEN || '';
+  const stripeApiKey = options?.stripeApiKey || process.env.STRIPE_API_KEY || '';
+  const supabaseUrl = options?.supabaseUrl || process.env.SUPABASE_URL || '';
+  const supabaseKey = options?.supabaseKey || process.env.SUPABASE_KEY || '';
   const growthRate = options?.growthRate ?? 0.075;
   const confidenceThreshold = options?.confidenceThreshold ?? 0.65;
 
   logger.info('Starting cost forecast');
 
   // Step 1: Collect historical data
-  const [historicalData, pricingData, stripeData, tenantData] = await Promise.all(
-    [
-      fetchPrometheusMetrics(prometheusUrl),
-      fetchPricingData(dopplerToken),
-      fetchStripeInvoices(stripeApiKey),
-      fetchTenantData(supabaseUrl, supabaseKey),
-    ],
-  );
+  const [historicalData, pricingData, stripeData, tenantData] = await Promise.all([
+    fetchPrometheusMetrics(prometheusUrl),
+    fetchPricingData(dopplerToken),
+    fetchStripeInvoices(stripeApiKey),
+    fetchTenantData(supabaseUrl, supabaseKey),
+  ]);
 
   // Step 2: Calculate current monthly spend
-  const tokenBreakdown = aggregateTokensByModel(
-    historicalData.tokenStream,
-    pricingData,
-  );
+  const tokenBreakdown = aggregateTokensByModel(historicalData.tokenStream, pricingData);
   const currentMonthlySpend = tokenBreakdown.totalCost;
 
   logger.info(
@@ -263,26 +248,19 @@ export async function runForecast(
       currentMonthlySpend,
       totalTokens: historicalData.dailyAverageTokens * 30,
     },
-    'Current spend calculated',
+    'Current spend calculated'
   );
 
   // Step 3: Project 30/60/90 days
   const dailySpend = currentMonthlySpend / 30;
   const forecast_30d = dailySpend * 30 * Math.pow(1 + growthRate, 1 / 12);
-  const forecast_60d =
-    dailySpend * 30 * Math.pow(1 + growthRate, 2 / 12);
-  const forecast_90d =
-    dailySpend * 30 * Math.pow(1 + growthRate, 3 / 12);
+  const forecast_60d = dailySpend * 30 * Math.pow(1 + growthRate, 2 / 12);
+  const forecast_90d = dailySpend * 30 * Math.pow(1 + growthRate, 3 / 12);
 
   // Confidence based on data quality and forecast accuracy vs. actual
   const actualSpend30d = stripeData.totalSpent30d || 0;
-  const mape = actualSpend30d
-    ? Math.abs(forecast_30d - actualSpend30d) / actualSpend30d
-    : 0;
-  const confidence = Math.max(
-    confidenceThreshold,
-    Math.min(1, 1 - mape),
-  );
+  const mape = actualSpend30d ? Math.abs(forecast_30d - actualSpend30d) / actualSpend30d : 0;
+  const confidence = Math.max(confidenceThreshold, Math.min(1, 1 - mape));
 
   // Step 4: Generate alerts
   const alerts: string[] = [];
@@ -290,13 +268,13 @@ export async function runForecast(
 
   if (monthlyGrowth > 15) {
     alerts.push(
-      `⚠️ Token spend +${monthlyGrowth.toFixed(0)}% MoM — if trend continues, will exceed annual budget by Q4`,
+      `⚠️ Token spend +${monthlyGrowth.toFixed(0)}% MoM — if trend continues, will exceed annual budget by Q4`
     );
   }
 
   if (forecast_30d > budget * 0.8) {
     alerts.push(
-      `⚠️ Forecast ($${forecast_30d.toFixed(0)}) exceeds 80% of budget ($${budget}) — cost optimization required`,
+      `⚠️ Forecast ($${forecast_30d.toFixed(0)}) exceeds 80% of budget ($${budget}) — cost optimization required`
     );
   }
 
@@ -325,14 +303,10 @@ export async function runForecast(
       },
       alerts,
       recommendations: [],
-      next_review: new Date(
-        Date.now() + 14 * 24 * 60 * 60 * 1000,
-      )
-        .toISOString()
-        .split('T')[0],
+      next_review: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
     },
     budget,
-    recommendationContext,
+    recommendationContext
   );
 
   const prioritizedRecommendations = prioritizeRecommendations(recommendations);
@@ -351,11 +325,7 @@ export async function runForecast(
     },
     alerts,
     recommendations: prioritizedRecommendations,
-    next_review: new Date(
-      Date.now() + 14 * 24 * 60 * 60 * 1000,
-    )
-      .toISOString()
-      .split('T')[0],
+    next_review: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
   };
 
   logger.info(result, 'Forecast complete');

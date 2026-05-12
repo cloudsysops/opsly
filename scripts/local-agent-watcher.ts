@@ -50,7 +50,8 @@ class LocalPromptWatcher {
     this.responsesDir = path.join(this.promptsDir, 'responses');
     this.metadataPath = path.join(this.promptsDir, '.metadata.json');
     this.orchestratorUrl = options.orchestratorUrl;
-    this.orchestratorToken = options.orchestratorToken || process.env.PLATFORM_ADMIN_TOKEN || 'local-dev';
+    this.orchestratorToken =
+      options.orchestratorToken || process.env.PLATFORM_ADMIN_TOKEN || 'local-dev';
   }
 
   async initialize() {
@@ -127,7 +128,7 @@ class LocalPromptWatcher {
     promptPath: string,
     filename: string,
     frontmatter: PromptFrontmatter,
-    body: string,
+    body: string
   ) {
     if (this.isProcessing.has(filename)) {
       console.log(`[LocalWatcher] Already processing ${filename}, skipping`);
@@ -154,7 +155,7 @@ class LocalPromptWatcher {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${this.orchestratorToken}`,
+          Authorization: `Bearer ${this.orchestratorToken}`,
         },
         body: JSON.stringify(payload),
       });
@@ -206,14 +207,11 @@ class LocalPromptWatcher {
     }
 
     try {
-      const response = await fetch(
-        `${this.orchestratorUrl}/api/job-status/${jobId}`,
-        {
-          headers: {
-            'Authorization': `Bearer ${this.orchestratorToken}`,
-          },
+      const response = await fetch(`${this.orchestratorUrl}/api/job-status/${jobId}`, {
+        headers: {
+          Authorization: `Bearer ${this.orchestratorToken}`,
         },
-      );
+      });
 
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}`);
@@ -282,7 +280,8 @@ class LocalPromptWatcher {
 }
 
 // Main
-const cursorDir = process.argv.find((arg) => arg.startsWith('--cursor-dir='))?.split('=')[1] || '.cursor';
+const cursorDir =
+  process.argv.find((arg) => arg.startsWith('--cursor-dir='))?.split('=')[1] || '.cursor';
 const orchestratorUrl =
   process.argv.find((arg) => arg.startsWith('--orchestrator-url='))?.split('=')[1] ||
   'http://localhost:3011';

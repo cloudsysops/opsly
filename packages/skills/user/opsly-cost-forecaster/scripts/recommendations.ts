@@ -1,8 +1,4 @@
-import type {
-  ForecastResult,
-  CostRecommendation,
-  RecommendationContext,
-} from '../types.js';
+import type { ForecastResult, CostRecommendation, RecommendationContext } from '../types.js';
 import { compareCost } from './token-counter.js';
 
 /**
@@ -12,7 +8,7 @@ import { compareCost } from './token-counter.js';
 export function generateRecommendations(
   forecast: ForecastResult,
   budget: number,
-  context: RecommendationContext,
+  context: RecommendationContext
 ): CostRecommendation[] {
   const recommendations: CostRecommendation[] = [];
 
@@ -22,16 +18,12 @@ export function generateRecommendations(
 
   // Case 1: Over budget or approaching threshold
   if (percentageOfBudget >= 80) {
-    recommendations.push(
-      ...generateOverBudgetRecommendations(forecast, budget, context),
-    );
+    recommendations.push(...generateOverBudgetRecommendations(forecast, budget, context));
   }
 
   // Case 2: Under budget
   if (percentageOfBudget < 80) {
-    recommendations.push(
-      ...generateUnderBudgetRecommendations(budgetHeadroom, context),
-    );
+    recommendations.push(...generateUnderBudgetRecommendations(budgetHeadroom, context));
   }
 
   // Always include operational optimization suggestions
@@ -46,7 +38,7 @@ export function generateRecommendations(
 function generateOverBudgetRecommendations(
   forecast: ForecastResult,
   budget: number,
-  context: RecommendationContext,
+  context: RecommendationContext
 ): CostRecommendation[] {
   const recommendations: CostRecommendation[] = [];
   const overageAmount = forecast.forecast_30d - budget;
@@ -54,14 +46,13 @@ function generateOverBudgetRecommendations(
   // 1. Model downgrade recommendation
   if (context.currentModelMix?.['claude-opus-4']) {
     const opusTokens =
-      (context.currentModelMix['claude-opus-4'] / 100) *
-      forecast.breakdown.llm_tokens;
+      (context.currentModelMix['claude-opus-4'] / 100) * forecast.breakdown.llm_tokens;
     const savings = compareCost(
       'claude-opus-4',
       'claude-sonnet-4',
       opusTokens * 0.8,
       opusTokens * 0.2,
-      context.pricingData,
+      context.pricingData
     );
 
     if (savings.savingsPct > 20) {
@@ -71,8 +62,7 @@ function generateOverBudgetRecommendations(
         effort: 'low',
         confidence: 'high',
         timeframe_days: 3,
-        implementation:
-          'Update LLM router rules, A/B test quality impact on subset of queries',
+        implementation: 'Update LLM router rules, A/B test quality impact on subset of queries',
       });
     }
   }
@@ -86,8 +76,7 @@ function generateOverBudgetRecommendations(
       effort: 'medium',
       confidence: 'high',
       timeframe_days: 5,
-      implementation:
-        'Enable Cache-Control headers in LLM Gateway, configure TTL per model',
+      implementation: 'Enable Cache-Control headers in LLM Gateway, configure TTL per model',
     });
   }
 
@@ -100,8 +89,7 @@ function generateOverBudgetRecommendations(
       effort: 'medium',
       confidence: 'medium',
       timeframe_days: 7,
-      implementation:
-        'Queue small requests, batch 5-10 per inference, apply token discount',
+      implementation: 'Queue small requests, batch 5-10 per inference, apply token discount',
     });
   }
 
@@ -113,8 +101,7 @@ function generateOverBudgetRecommendations(
       effort: 'high',
       confidence: 'medium',
       timeframe_days: 14,
-      implementation:
-        'Identify tenants with <10% feature usage, offer tiered plan downgrade',
+      implementation: 'Identify tenants with <10% feature usage, offer tiered plan downgrade',
     });
   }
 
@@ -126,7 +113,7 @@ function generateOverBudgetRecommendations(
  */
 function generateUnderBudgetRecommendations(
   budgetHeadroom: number,
-  context: RecommendationContext,
+  context: RecommendationContext
 ): CostRecommendation[] {
   const recommendations: CostRecommendation[] = [];
 
@@ -162,7 +149,7 @@ function generateUnderBudgetRecommendations(
  */
 function generateOperationalRecommendations(
   forecast: ForecastResult,
-  context: RecommendationContext,
+  context: RecommendationContext
 ): CostRecommendation[] {
   const recommendations: CostRecommendation[] = [];
 
@@ -221,7 +208,7 @@ function generateOperationalRecommendations(
  * Prioritize recommendations by ROI per effort ratio
  */
 export function prioritizeRecommendations(
-  recommendations: CostRecommendation[],
+  recommendations: CostRecommendation[]
 ): CostRecommendation[] {
   const effortScore = { low: 1, medium: 5, high: 10 };
 
@@ -237,9 +224,7 @@ export function prioritizeRecommendations(
 /**
  * Calculate total potential savings from all recommendations
  */
-export function calculateTotalSavingsPotential(
-  recommendations: CostRecommendation[],
-): number {
+export function calculateTotalSavingsPotential(recommendations: CostRecommendation[]): number {
   return recommendations.reduce((sum, r) => sum + (r.estimated_savings || 0), 0);
 }
 
@@ -248,7 +233,7 @@ export function calculateTotalSavingsPotential(
  */
 export function generateExecutiveSummary(
   recommendations: CostRecommendation[],
-  topN: number = 3,
+  topN: number = 3
 ): string {
   const prioritized = prioritizeRecommendations(recommendations);
   const top = prioritized.slice(0, topN);

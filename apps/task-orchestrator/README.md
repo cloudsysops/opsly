@@ -43,6 +43,7 @@ cp .env.example .env
 ```
 
 Configure:
+
 - `REDIS_HOST` — Redis connection host (default: localhost)
 - `REDIS_PORT` — Redis connection port (default: 6379)
 - `SUPABASE_URL` — Supabase project URL
@@ -63,6 +64,7 @@ npm run test         # Run tests
 ### Task Management
 
 #### Create Task
+
 ```http
 POST /api/tasks
 Content-Type: application/json
@@ -83,16 +85,19 @@ Content-Type: application/json
 Response: `201 Created` with task object
 
 #### Get Tasks
+
 ```http
 GET /api/tasks?status=pending
 ```
 
 Query Parameters:
+
 - `status` — Filter by status (pending, assigned, executing, completed, failed, cancelled)
 
 Returns: `200 OK` with array of tasks
 
 #### Get Task Details
+
 ```http
 GET /api/tasks/:id
 ```
@@ -100,6 +105,7 @@ GET /api/tasks/:id
 Returns: `200 OK` with full task including execution logs
 
 #### Update Task
+
 ```http
 PATCH /api/tasks/:id
 Content-Type: application/json
@@ -119,6 +125,7 @@ Content-Type: application/json
 ```
 
 #### Cancel Task
+
 ```http
 DELETE /api/tasks/:id
 ```
@@ -126,6 +133,7 @@ DELETE /api/tasks/:id
 ### Worker Management
 
 #### Register Worker
+
 ```http
 POST /api/workers/register
 Content-Type: application/json
@@ -145,6 +153,7 @@ Content-Type: application/json
 Supported worker types: `cursor`, `ci-runner`, `claude-research`
 
 #### Get Next Task (Worker Polling)
+
 ```http
 GET /api/workers/:id/next-task
 ```
@@ -154,6 +163,7 @@ Returns: `200 OK` with next task object or `null` if no tasks available.
 **Worker should poll this endpoint every 5-30 seconds.**
 
 #### Worker Heartbeat
+
 ```http
 POST /api/workers/:id/heartbeat
 Content-Type: application/json
@@ -167,11 +177,13 @@ Content-Type: application/json
 Status values: `idle`, `working`, `offline`
 
 #### Get Worker Status
+
 ```http
 GET /api/workers
 ```
 
 Returns: `200 OK`
+
 ```json
 {
   "workers": [
@@ -196,6 +208,7 @@ Returns: `200 OK`
 ### Task Logging
 
 #### Add Log Entry
+
 ```http
 POST /api/tasks/:id/log
 Content-Type: application/json
@@ -222,7 +235,7 @@ assigned (worker picked up)
 executing (worker working)
    ├→ completed (success)
    └→ failed (error)
-   
+
 Any → cancelled (manual cancel)
 ```
 
@@ -251,42 +264,36 @@ async function pollTasks() {
     console.log(`Executing: ${task.title}`);
 
     // Send heartbeat
-    await axios.post(
-      `${ORCHESTRATOR_URL}/api/workers/${WORKER_ID}/heartbeat`,
-      { status: 'working', current_task_id: task.id }
-    );
+    await axios.post(`${ORCHESTRATOR_URL}/api/workers/${WORKER_ID}/heartbeat`, {
+      status: 'working',
+      current_task_id: task.id,
+    });
 
     try {
       // Execute task (your implementation)
       const result = await executeTask(task);
 
       // Report success
-      await axios.patch(
-        `${ORCHESTRATOR_URL}/api/tasks/${task.id}`,
-        {
-          status: 'completed',
-          worker_id: WORKER_ID,
-          result: {
-            success: true,
-            output: result.output,
-            commits: result.commits,
-            duration_ms: Date.now() - task.created_at
-          }
-        }
-      );
+      await axios.patch(`${ORCHESTRATOR_URL}/api/tasks/${task.id}`, {
+        status: 'completed',
+        worker_id: WORKER_ID,
+        result: {
+          success: true,
+          output: result.output,
+          commits: result.commits,
+          duration_ms: Date.now() - task.created_at,
+        },
+      });
     } catch (error) {
       // Report failure
-      await axios.patch(
-        `${ORCHESTRATOR_URL}/api/tasks/${task.id}`,
-        {
-          status: 'failed',
-          worker_id: WORKER_ID,
-          result: {
-            success: false,
-            error: error.message
-          }
-        }
-      );
+      await axios.patch(`${ORCHESTRATOR_URL}/api/tasks/${task.id}`, {
+        status: 'failed',
+        worker_id: WORKER_ID,
+        result: {
+          success: false,
+          error: error.message,
+        },
+      });
     }
   } catch (error) {
     console.error('Poll error:', error.message);
@@ -299,14 +306,11 @@ async function pollTasks() {
 // Register worker and start polling
 async function start() {
   try {
-    await axios.post(
-      `${ORCHESTRATOR_URL}/api/workers/register`,
-      {
-        id: WORKER_ID,
-        type: 'cursor',
-        capacity: 1
-      }
-    );
+    await axios.post(`${ORCHESTRATOR_URL}/api/workers/register`, {
+      id: WORKER_ID,
+      type: 'cursor',
+      capacity: 1,
+    });
     console.log('Worker registered');
     pollTasks();
   } catch (error) {
@@ -326,6 +330,7 @@ npm run test -- --coverage # With coverage
 ```
 
 Tests cover:
+
 - Input validation (Zod schemas)
 - Task queue operations
 - Worker management
@@ -368,11 +373,13 @@ app.post('/api/my-route', async (req: Request, res: Response) => {
 ## Monitoring
 
 ### Health Check
+
 ```bash
 curl http://localhost:3015/api/health
 ```
 
 ### Task Queue Status
+
 ```bash
 redis-cli LLEN opsly-tasks:wait
 redis-cli LLEN opsly-tasks:active
@@ -380,6 +387,7 @@ redis-cli LLEN opsly-tasks:completed
 ```
 
 ### Worker Status
+
 ```bash
 curl http://localhost:3015/api/workers
 ```
@@ -428,16 +436,19 @@ save 900 1 300 10 60 10000
 ## Troubleshooting
 
 ### Redis Connection Failed
+
 - Verify Redis is running: `redis-cli ping`
 - Check `REDIS_HOST` and `REDIS_PORT` in `.env`
 - Fallback to in-memory mode if Supabase configured
 
 ### Supabase Connection Failed
+
 - Verify `SUPABASE_URL` and `SUPABASE_SERVICE_KEY`
 - Task Orchestrator works in Redis-only mode without Supabase
 - Check network connectivity to Supabase
 
 ### Worker Not Getting Tasks
+
 - Verify worker is registered: `GET /api/workers`
 - Check tasks exist: `GET /api/tasks?status=pending`
 - Verify worker heartbeat responds

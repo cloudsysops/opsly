@@ -7,15 +7,20 @@
 - Duracion: 24 ms
 
 ## Consulta
+
 ```
 que capacidades faltan en Opsly para ser completamente autonomo
 ```
 
 ## Resultados
+
 - Sin resultados
+
 ## Sandbox
+
 - No ejecutado
 
 ## Metadatos
+
 - total_results: 0
 - generated_by: tools/cli research-run

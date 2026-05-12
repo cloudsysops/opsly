@@ -12,8 +12,9 @@ Design the optimal validation pipeline for the autonomous execution system.
 **Deliverable:** Create `docs/VALIDATION-PIPELINE-DESIGN.md`
 
 **Include:**
+
 1. **Current Flow:** Diagram of type-check → test → build (sequential)
-2. **Optimizations:** 
+2. **Optimizations:**
    - Which validations can run in parallel?
    - Which must be sequential?
    - Estimated time savings?

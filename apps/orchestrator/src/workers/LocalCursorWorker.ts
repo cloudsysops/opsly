@@ -2,7 +2,10 @@ import { Job, Worker, UnrecoverableError } from 'bullmq';
 import { promises as fsp } from 'fs';
 import * as path from 'path';
 import { getAgentServiceRegistry } from '../lib/agent-service-registry.js';
-import { createValidationOrchestrator, ValidationDecision } from '../lib/validation-orchestrator.js';
+import {
+  createValidationOrchestrator,
+  ValidationDecision,
+} from '../lib/validation-orchestrator.js';
 import { logWorkerLifecycle } from '../observability/worker-log.js';
 import { getWorkerConcurrency } from '../worker-concurrency.js';
 import { waitForFile } from '../lib/local-worker-utils.js';
@@ -91,10 +94,7 @@ async function processLocalCursorJob(
 
     // Call Cursor Agent Service via HTTP
     const controller = new AbortController();
-    const timeout = setTimeout(
-      () => controller.abort(),
-      cursorService.timeout_ms
-    );
+    const timeout = setTimeout(() => controller.abort(), cursorService.timeout_ms);
 
     const response = await fetch(`${cursorUrl}/execute`, {
       method: 'POST',
@@ -143,12 +143,10 @@ async function processLocalCursorJob(
       agentRole,
       expectedResponsePath,
       1, // initial iteration
-      3, // max iterations
+      3 // max iterations
     );
 
-    console.log(
-      `[LocalCursorWorker] Validation decision: ${decision.action} - ${decision.reason}`
-    );
+    console.log(`[LocalCursorWorker] Validation decision: ${decision.action} - ${decision.reason}`);
 
     // Write validation guard to prevent double-commits
     const validationDir = path.join(cursorDir, '.validation');
@@ -266,7 +264,10 @@ export function startLocalCursorWorker(connection: object): Worker {
           });
         } else {
           console.error(`[LocalCursorWorker] ❌ Job ${job.id} error:`, errorMsg);
-          logWorkerLifecycle('fail', 'local-cursor', job, { duration_ms: elapsed, error: errorMsg });
+          logWorkerLifecycle('fail', 'local-cursor', job, {
+            duration_ms: elapsed,
+            error: errorMsg,
+          });
         }
 
         throw err;

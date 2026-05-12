@@ -3,6 +3,7 @@
 Estructura escalable de documentacion tecnica para Opsly.
 
 ## 00-architecture
+
 Architecture and system design decisions.
 
 - Guia de seccion: [`docs/00-architecture/README.md`](00-architecture/README.md)
@@ -21,6 +22,7 @@ Architecture and system design decisions.
 - ... y 4 archivos mas
 
 ## 01-development
+
 Development guides, plans, onboarding and QA.
 
 - Guia de seccion: [`docs/01-development/README.md`](01-development/README.md)
@@ -39,6 +41,7 @@ Development guides, plans, onboarding and QA.
 - ... y 47 archivos mas
 
 ## 02-tools
+
 Tooling docs (MCP, NotebookLM, Notion, integrations).
 
 - Guia de seccion: [`docs/02-tools/README.md`](02-tools/README.md)
@@ -57,6 +60,7 @@ Tooling docs (MCP, NotebookLM, Notion, integrations).
 - ... y 2 archivos mas
 
 ## 03-agents
+
 Agent operation, prompts, behaviors and governance.
 
 - Guia de seccion: [`docs/03-agents/README.md`](03-agents/README.md)
@@ -75,6 +79,7 @@ Agent operation, prompts, behaviors and governance.
 - ... y 9 archivos mas
 
 ## 04-infrastructure
+
 Infra, deploy, network, security, runbooks and ops.
 
 - Guia de seccion: [`docs/04-infrastructure/README.md`](04-infrastructure/README.md)
@@ -91,4 +96,3 @@ Infra, deploy, network, security, runbooks and ops.
 - [`docs/04-infrastructure/GCP-ACTIVATION-CHECKLIST.md`](04-infrastructure/GCP-ACTIVATION-CHECKLIST.md)
 - [`docs/04-infrastructure/GCP-STANDBY-CONFIG.md`](04-infrastructure/GCP-STANDBY-CONFIG.md)
 - ... y 24 archivos mas
-

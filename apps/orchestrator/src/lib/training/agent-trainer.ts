@@ -180,7 +180,7 @@ export class AgentTrainer {
     return report.patterns.filter(
       (p) =>
         p.task_pattern.includes(taskKeyword.toLowerCase()) ||
-        p.task_pattern.split(/\W+/).some((word) => taskKeyword.toLowerCase().includes(word)),
+        p.task_pattern.split(/\W+/).some((word) => taskKeyword.toLowerCase().includes(word))
     );
   }
 

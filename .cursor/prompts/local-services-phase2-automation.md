@@ -6,11 +6,11 @@ Referencia para Cursor: `@` este archivo al trabajar **Phase 2** (webhooks, n8n,
 
 Implementado en la API:
 
-| Método | Ruta | Cuerpo (JSON) | Efecto |
-|--------|------|----------------|--------|
-| POST | `/api/local-services/webhooks/{slug}/booking-created` | `{ "booking_id": "<uuid>" }` | Valida firma + tenant; comprueba que la reserva pertenece al `slug` |
-| POST | `/api/local-services/webhooks/{slug}/booking-completed` | `{ "booking_id": "<uuid>" }` | Marca `ls_bookings.status = completed` |
-| POST | `/api/local-services/webhooks/{slug}/reports/create` | `{ "title": "...", "body": {} }` | Inserta `ls_reports` |
+| Método | Ruta                                                    | Cuerpo (JSON)                    | Efecto                                                              |
+| ------ | ------------------------------------------------------- | -------------------------------- | ------------------------------------------------------------------- |
+| POST   | `/api/local-services/webhooks/{slug}/booking-created`   | `{ "booking_id": "<uuid>" }`     | Valida firma + tenant; comprueba que la reserva pertenece al `slug` |
+| POST   | `/api/local-services/webhooks/{slug}/booking-completed` | `{ "booking_id": "<uuid>" }`     | Marca `ls_bookings.status = completed`                              |
+| POST   | `/api/local-services/webhooks/{slug}/reports/create`    | `{ "title": "...", "body": {} }` | Inserta `ls_reports`                                                |
 
 **Firma:** `X-Opsly-Signature: sha256=<hex>` donde `<hex>` = HMAC-SHA256 del **raw body** (mismo string que envía n8n). Secretos: `LOCAL_SERVICES_WEBHOOK_SECRET` o `LOCAL_SERVICES_WEBHOOK_SECRET_<SLUG>` (ver `local-services-webhook-signature.ts`).
 

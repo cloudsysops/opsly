@@ -98,9 +98,7 @@ class IterationResponseWatcher {
     this.processedValidations.add(filename);
 
     try {
-      console.log(
-        `[IterationWatcher] Processing validation: ${filename}`,
-      );
+      console.log(`[IterationWatcher] Processing validation: ${filename}`);
 
       // Read validation report
       const content = await fsp.readFile(filePath, 'utf-8');
@@ -115,7 +113,7 @@ class IterationResponseWatcher {
       // Process validation result
       const result = await this.iterationManager.processValidationResult(
         filePath.replace('.validation.json', '.md'),
-        originalPrompt,
+        originalPrompt
       );
 
       console.log(`[IterationWatcher] Job ${jobId} (attempt ${attempt}): ${result.action}`);
@@ -124,23 +122,14 @@ class IterationResponseWatcher {
       if (result.action === 'commit') {
         console.log(`[IterationWatcher] ✅ Ready for commit`);
       } else if (result.action === 'iterate') {
-        console.log(
-          `[IterationWatcher] 🔄 Generated retry prompt: ${result.nextPromptPath}`,
-        );
-        console.log(
-          `[IterationWatcher] LocalPromptWatcher will detect and resubmit automatically`,
-        );
+        console.log(`[IterationWatcher] 🔄 Generated retry prompt: ${result.nextPromptPath}`);
+        console.log(`[IterationWatcher] LocalPromptWatcher will detect and resubmit automatically`);
       } else if (result.action === 'escalate') {
-        console.log(
-          `[IterationWatcher] ⚠️ Escalating to help request: ${result.reason}`,
-        );
+        console.log(`[IterationWatcher] ⚠️ Escalating to help request: ${result.reason}`);
         // TODO: Create help request when HelpRequestSystem integrated
       }
     } catch (err) {
-      console.error(
-        `[IterationWatcher] Error processing ${filename}:`,
-        err,
-      );
+      console.error(`[IterationWatcher] Error processing ${filename}:`, err);
     }
   }
 
@@ -153,9 +142,7 @@ class IterationResponseWatcher {
       console.error('[IterationWatcher] Failed to create directories:', err);
     }
 
-    console.log(
-      `[IterationWatcher] Starting, watching ${this.responsesDir}`,
-    );
+    console.log(`[IterationWatcher] Starting, watching ${this.responsesDir}`);
 
     const watcher = watch(`${this.responsesDir}/*.validation.json`, {
       persistent: true,
@@ -170,9 +157,7 @@ class IterationResponseWatcher {
       console.error('[IterationWatcher] Watcher error:', err);
     });
 
-    console.log(
-      '[IterationWatcher] Ready. Monitoring validation results...',
-    );
+    console.log('[IterationWatcher] Ready. Monitoring validation results...');
   }
 }
 

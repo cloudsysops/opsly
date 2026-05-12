@@ -26,7 +26,10 @@ function readCrossTenantMode(req: IntentRequest): 'read' | 'write' {
 }
 
 function hasTenantGovernanceApproval(req: IntentRequest): boolean {
-  return req.context.tenant_governance_approved === true || req.metadata?.tenant_governance_approved === true;
+  return (
+    req.context.tenant_governance_approved === true ||
+    req.metadata?.tenant_governance_approved === true
+  );
 }
 
 function readRequestedTargetTenant(req: IntentRequest): string | null {

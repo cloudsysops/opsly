@@ -5,6 +5,7 @@
 The Opsly autonomous execution system uses distributed agent services via HTTP. Each agent (Cursor, Claude, Copilot, OpenCode) runs as a service on configurable endpoints.
 
 **Current Configuration:** Tailscale-based distributed deployment
+
 - Orchestrator: `opsly-worker` (VPS)
 - Cursor Agent Service: `opsly-mac2011:5001` and `opsly-admin:5001` (via Tailscale)
 - Claude Agent Service: `opsly-admin:5002` (via Tailscale)
@@ -14,6 +15,7 @@ The Opsly autonomous execution system uses distributed agent services via HTTP. 
 ## Queue Status
 
 **Pending Jobs (awaiting agent services):**
+
 - `fa3df11b-44e7-449d-85bb-34ac24803be0` - Reviewer (Security Audit)
 - `8d3dea86-7f54-481d-8215-b9c3400c4ded` - Executor (Test Utilities)
 - `0979fd70-875f-4a8f-a3b9-28fa650eebba` - Architect (Validation Pipeline)
@@ -26,12 +28,14 @@ All jobs are queued but failing with "fetch failed" - they'll automatically retr
 ### On opsly-mac2011
 
 1. **Install Node.js dependencies:**
+
    ```bash
    cd /path/to/opsly
    npm install
    ```
 
 2. **Start Cursor Agent Service:**
+
    ```bash
    # Monitor .cursor/prompts/ and communicate via Cursor IDE
    npx tsx scripts/cursor-agent-service.ts --port 5001 --machine "opsly-mac2011"
@@ -46,16 +50,19 @@ All jobs are queued but failing with "fetch failed" - they'll automatically retr
 ### On opsly-admin
 
 1. **Start Cursor Backup Service:**
+
    ```bash
    npx tsx scripts/cursor-agent-service.ts --port 5001 --machine "opsly-admin"
    ```
 
 2. **Start Claude Agent Service:**
+
    ```bash
    ANTHROPIC_API_KEY="your-key" npx tsx scripts/claude-agent-service.ts --port 5002
    ```
 
 3. **Optional - Start Copilot Service:**
+
    ```bash
    npx tsx scripts/copilot-agent-service.ts --port 5003
    ```
@@ -82,6 +89,7 @@ npm run dev --workspace=@intcloudsysops/orchestrator
 ```
 
 The mock services will:
+
 - Accept HTTP requests from the orchestrator
 - Return simulated agent responses
 - Validate the execution pipeline
@@ -143,12 +151,14 @@ If any fail: escalate to HelpRequestSystem
 ## Environment Configuration
 
 ### Local Testing
+
 ```bash
 export AGENT_ENVIRONMENT=local
 # Services: localhost:5001, localhost:5002, etc.
 ```
 
 ### Tailscale (Current)
+
 ```bash
 export AGENT_ENVIRONMENT=tailscale
 # Services: opsly-mac2011:5001, opsly-admin:5002, etc.
@@ -156,6 +166,7 @@ export AGENT_ENVIRONMENT=tailscale
 ```
 
 ### Remote Machines
+
 ```bash
 export AGENT_ENVIRONMENT=remote
 # Services: 192.168.1.100:5001, 192.168.1.100:5002, etc.
@@ -166,17 +177,17 @@ Edit `config/agent-services.yaml` to add/modify environments:
 ```yaml
 environments:
   local:
-    cursor: "http://localhost:5001"
-    claude: "http://localhost:5002"
-  
+    cursor: 'http://localhost:5001'
+    claude: 'http://localhost:5002'
+
   tailscale:
-    cursor: "http://opsly-mac2011:5001"
-    cursor_backup: "http://opsly-admin:5001"
-    claude: "http://opsly-admin:5002"
-  
+    cursor: 'http://opsly-mac2011:5001'
+    cursor_backup: 'http://opsly-admin:5001'
+    claude: 'http://opsly-admin:5002'
+
   remote:
-    cursor: "http://192.168.1.100:5001"
-    claude: "http://192.168.1.100:5002"
+    cursor: 'http://192.168.1.100:5001'
+    claude: 'http://192.168.1.100:5002'
 ```
 
 ## Monitoring & Debugging
@@ -219,6 +230,7 @@ curl http://localhost:3011/api/agents/health
 ## Automatic Job Retry
 
 Failed jobs automatically retry with exponential backoff:
+
 - 1st attempt: immediate
 - 2nd attempt: 5 seconds later
 - 3rd attempt: 10 seconds later
@@ -228,16 +240,17 @@ Once agent services come online, the next retry cycle will pick them up and proc
 
 ## Current Task Status
 
-| Job ID | Task | Status | Assigned To |
-|--------|------|--------|-------------|
-| `fa3df11b-44e7...` | Security Audit | Queued | Reviewer (Copilot) |
-| `8d3dea86-7f54...` | Test Utilities | Queued | Executor (Cursor) |
-| `0979fd70-875f...` | Validation Design | Queued | Architect (Claude) |
-| `da41a241-ba99...` | Observability Metrics | Queued | Executor (Cursor) |
+| Job ID             | Task                  | Status | Assigned To        |
+| ------------------ | --------------------- | ------ | ------------------ |
+| `fa3df11b-44e7...` | Security Audit        | Queued | Reviewer (Copilot) |
+| `8d3dea86-7f54...` | Test Utilities        | Queued | Executor (Cursor)  |
+| `0979fd70-875f...` | Validation Design     | Queued | Architect (Claude) |
+| `da41a241-ba99...` | Observability Metrics | Queued | Executor (Cursor)  |
 
 ## Next Steps
 
 1. **Immediate (Option 2 - Testing):**
+
    ```bash
    npm run agent-services:mock
    # Jobs will auto-retry and execute with mock responses
@@ -256,6 +269,7 @@ Once agent services come online, the next retry cycle will pick them up and proc
 ## Troubleshooting
 
 **Jobs still failing after service deployment:**
+
 ```bash
 # Check if service is accessible
 nc -zv opsly-mac2011 5001
@@ -268,6 +282,7 @@ getent hosts opsly-mac2011
 ```
 
 **Service responding but jobs still failing:**
+
 ```bash
 # Check service logs
 tail -f /var/log/cursor-agent-service.log
@@ -279,6 +294,7 @@ curl -X POST http://opsly-mac2011:5001/execute \
 ```
 
 **Environment variable not being respected:**
+
 ```bash
 # Verify environment is set
 echo $AGENT_ENVIRONMENT

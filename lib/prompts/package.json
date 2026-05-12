@@ -9,5 +9,10 @@
     "test": "echo 'No tests yet'",
     "type-check": "echo 'Prompts type-checked via root tsconfig'"
   },
-  "keywords": ["prompts", "ai", "agents", "registry"]
+  "keywords": [
+    "prompts",
+    "ai",
+    "agents",
+    "registry"
+  ]
 }

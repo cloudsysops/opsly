@@ -81,17 +81,17 @@ export class TaskQueue {
 
   async getPendingTasks(): Promise<Task[]> {
     const jobs = await this.queue.getJobs(['waiting', 'prioritized', 'delayed']);
-    return jobs.map(job => job.data);
+    return jobs.map((job) => job.data);
   }
 
   async getExecutingTasks(): Promise<Task[]> {
     const jobs = await this.queue.getJobs(['active']);
-    return jobs.map(job => job.data);
+    return jobs.map((job) => job.data);
   }
 
   async getCompletedTasks(): Promise<Task[]> {
     const jobs = await this.queue.getJobs(['completed']);
-    return jobs.map(job => job.data);
+    return jobs.map((job) => job.data);
   }
 
   async updateTaskStatus(

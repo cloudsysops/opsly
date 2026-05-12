@@ -57,4 +57,4 @@ Ver responsabilidades y flujos en [`docs/AGENTS-ORCHESTRATION.md`](AGENTS-ORCHES
 
 ---
 
-*No editar a mano — regenerar con `npm run docs:sync`.*
+_No editar a mano — regenerar con `npm run docs:sync`._

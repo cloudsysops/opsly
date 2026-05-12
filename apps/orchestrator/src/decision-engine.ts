@@ -79,8 +79,7 @@ export async function evaluateTenantJobAllowed(
 
   // Determine priority based on remaining capacity
   const concurrencyRatio = (state.current_concurrent_jobs + 1) / limits.maxConcurrentJobs;
-  const priority =
-    concurrencyRatio > 0.8 ? 'low' : concurrencyRatio > 0.5 ? 'normal' : 'high';
+  const priority = concurrencyRatio > 0.8 ? 'low' : concurrencyRatio > 0.5 ? 'normal' : 'high';
 
   return {
     allowed: true,

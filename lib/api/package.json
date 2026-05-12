@@ -9,5 +9,7 @@
     "test": "echo 'No tests yet'",
     "type-check": "echo 'api type-checked via root tsconfig'"
   },
-  "keywords": ["api"]
+  "keywords": [
+    "api"
+  ]
 }

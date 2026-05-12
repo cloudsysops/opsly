@@ -14,9 +14,9 @@ const targetsFile = path.join(__dirname, '../data/growth/tier1-targets.json');
 // Read targets
 const targets = JSON.parse(fs.readFileSync(targetsFile, 'utf-8'));
 
-console.log('=' .repeat(80));
+console.log('='.repeat(80));
 console.log('Growth Week 1 Agencias Outreach — DRY-RUN EMAIL PREVIEW');
-console.log('=' .repeat(80));
+console.log('='.repeat(80));
 console.log(`\nLoaded ${targets.length} target contacts\n`);
 
 targets.forEach((target, idx) => {
@@ -55,13 +55,17 @@ targets.forEach((target, idx) => {
   console.log('\n');
 });
 
-console.log('=' .repeat(80));
+console.log('='.repeat(80));
 console.log('SUMMARY');
-console.log('=' .repeat(80));
+console.log('='.repeat(80));
 console.log(`✓ Total emails ready to send: ${targets.length}`);
 console.log(`✓ Template version: 1.0`);
 console.log(`✓ Expected conversion rate: 20%`);
 console.log(`✓ Projected ARPU per tenant: $299`);
-console.log(`✓ Expected weekly revenue if all convert: $${(targets.length * 0.2 * 299).toFixed(2)}`);
+console.log(
+  `✓ Expected weekly revenue if all convert: $${(targets.length * 0.2 * 299).toFixed(2)}`
+);
 console.log('\nTo send for real, run:');
-console.log('  doppler run --project ops-intcloudsysops --config prd -- ./scripts/growth-outreach.sh\n');
+console.log(
+  '  doppler run --project ops-intcloudsysops --config prd -- ./scripts/growth-outreach.sh\n'
+);

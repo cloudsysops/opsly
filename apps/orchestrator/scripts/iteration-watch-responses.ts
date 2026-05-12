@@ -39,7 +39,10 @@ function parseOptions(): Options {
   const repoRoot = resolve(argValue('--repo-root') || process.env.OPSLY_REPO_ROOT || process.cwd());
   return {
     repoRoot,
-    orchestratorUrl: (argValue('--orchestrator-url') || 'http://localhost:3011').replace(/\/+$/, ''),
+    orchestratorUrl: (argValue('--orchestrator-url') || 'http://localhost:3011').replace(
+      /\/+$/,
+      ''
+    ),
     token: argValue('--token') || process.env.PLATFORM_ADMIN_TOKEN || '',
     tenantSlug: argValue('--tenant-slug') || process.env.OPSLY_LOCAL_TENANT_SLUG || 'opsly',
     autoSubmit: process.env.OPSLY_ITERATION_AUTO_SUBMIT === 'true',
@@ -62,8 +65,11 @@ function parseValidationReport(raw: unknown): ValidationReportSummary | null {
   const attempt = typeof raw.attempt === 'number' && Number.isFinite(raw.attempt) ? raw.attempt : 0;
   const failedStep = raw.failed_step;
   const step =
-    failedStep === 'type-check' || failedStep === 'test' || failedStep === 'build' ? failedStep : undefined;
-  const exitCode = typeof raw.exit_code === 'number' && Number.isFinite(raw.exit_code) ? raw.exit_code : undefined;
+    failedStep === 'type-check' || failedStep === 'test' || failedStep === 'build'
+      ? failedStep
+      : undefined;
+  const exitCode =
+    typeof raw.exit_code === 'number' && Number.isFinite(raw.exit_code) ? raw.exit_code : undefined;
   const logTail = typeof raw.log_tail === 'string' ? raw.log_tail : '';
   const sourcePromptPath =
     typeof raw.source_prompt_path === 'string' ? raw.source_prompt_path : undefined;

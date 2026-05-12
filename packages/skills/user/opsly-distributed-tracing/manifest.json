@@ -24,11 +24,7 @@
     "cost-attribution",
     "request-correlation"
   ],
-  "skills_related": [
-    "opsly-observability",
-    "opsly-telemetry",
-    "opsly-architect-senior"
-  ],
+  "skills_related": ["opsly-observability", "opsly-telemetry", "opsly-architect-senior"],
   "entry_point": "scripts/setup-otel.ts",
   "exports": {
     "setupOtel": "scripts/setup-otel.ts",
@@ -48,15 +44,8 @@
     "@opentelemetry/instrumentation-pg": "^0.35.0",
     "axios": "^1.6.0"
   },
-  "env_required": [
-    "OTEL_EXPORTER_OTLP_ENDPOINT",
-    "OTEL_SERVICE_NAME"
-  ],
-  "env_optional": [
-    "JAEGER_ENDPOINT",
-    "DD_TRACE_ENABLED",
-    "NEWRELIC_ENABLED"
-  ],
+  "env_required": ["OTEL_EXPORTER_OTLP_ENDPOINT", "OTEL_SERVICE_NAME"],
+  "env_optional": ["JAEGER_ENDPOINT", "DD_TRACE_ENABLED", "NEWRELIC_ENABLED"],
   "config_schema": {
     "trace_sample_rate": 1.0,
     "span_limit": 2048,
@@ -82,12 +71,7 @@
     "multi_tenant_isolation": true
   },
   "integrations": {
-    "trace_backends": [
-      "jaeger",
-      "grafana-tempo",
-      "datadog",
-      "newrelic"
-    ],
+    "trace_backends": ["jaeger", "grafana-tempo", "datadog", "newrelic"],
     "observability_module": true,
     "telemetry_module": true,
     "evaluation_framework": true,

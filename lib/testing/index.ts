@@ -14,13 +14,16 @@ export interface TestResult {
   error?: string;
 }
 
-export async function runTest(testCase: TestCase, fn: (input: unknown) => Promise<unknown>): Promise<TestResult> {
+export async function runTest(
+  testCase: TestCase,
+  fn: (input: unknown) => Promise<unknown>
+): Promise<TestResult> {
   const startTime = Date.now();
-  
+
   try {
     const actual = await fn(testCase.input);
     const passed = JSON.stringify(actual) === JSON.stringify(testCase.expectedOutput);
-    
+
     return {
       testName: testCase.name,
       passed,

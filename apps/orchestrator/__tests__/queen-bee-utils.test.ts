@@ -11,7 +11,10 @@ describe('queen-bee utils', () => {
   });
 
   it('decomposes objective preserving dependency chain', () => {
-    const subtasks = decomposeObjective('Investigar arquitectura. Implementar endpoint. Escribir tests', 'task-1');
+    const subtasks = decomposeObjective(
+      'Investigar arquitectura. Implementar endpoint. Escribir tests',
+      'task-1'
+    );
     expect(subtasks.length).toBe(3);
     expect(subtasks[0]?.dependencies).toEqual([]);
     expect(subtasks[1]?.dependencies).toEqual(['task-1-subtask-1']);

@@ -32,15 +32,19 @@ export class KafkaBullMQBridge {
         attempts: 2,
         backoff: { type: 'fixed', delay: 1500 },
       };
-      await this.bullQueue.add(jobName, {
-        ...parsed,
-        metadata: {
-          source: 'kafka-bridge',
-          kafka_topic: topic,
-          kafka_partition: message.partition,
-          kafka_offset: message.offset,
+      await this.bullQueue.add(
+        jobName,
+        {
+          ...parsed,
+          metadata: {
+            source: 'kafka-bridge',
+            kafka_topic: topic,
+            kafka_partition: message.partition,
+            kafka_offset: message.offset,
+          },
         },
-      }, opts);
+        opts
+      );
     });
   }
 

@@ -26,7 +26,8 @@ function clampScore(value: number): number {
 }
 
 export class PromptOptimizer {
-  private readonly gatewayUrl = process.env.ORCHESTRATOR_LLM_GATEWAY_URL ?? 'http://llm-gateway:3010';
+  private readonly gatewayUrl =
+    process.env.ORCHESTRATOR_LLM_GATEWAY_URL ?? 'http://llm-gateway:3010';
   private readonly enabled = process.env.OPSLY_META_OPTIMIZER_ENABLED === 'true';
 
   async optimizePrompt(

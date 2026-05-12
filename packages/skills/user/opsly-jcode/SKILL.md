@@ -3,10 +3,10 @@ name: opsly-jcode
 description: Invoca jcode en sandbox para generar o refactorizar código de forma autónoma y segura.
 priority: high
 triggers:
-  - "genera código para"
-  - "implementa la función"
-  - "crea un componente"
-  - "jcode"
+  - 'genera código para'
+  - 'implementa la función'
+  - 'crea un componente'
+  - 'jcode'
 ---
 
 # Opsly Jcode Skill

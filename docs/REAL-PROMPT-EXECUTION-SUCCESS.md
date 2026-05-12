@@ -12,7 +12,7 @@ Orquestador ejecutó correctamente un PROMPT REAL sobre la arquitectura de "Agen
 **Job ID:** 3  
 **Job Type:** ollama  
 **Agent Role:** executor  
-**Task Type:** analyze  
+**Task Type:** analyze
 
 ### Respuesta del Orquestador
 
@@ -73,17 +73,17 @@ Orquestador ejecutó correctamente un PROMPT REAL sobre la arquitectura de "Agen
 ## Prompt Enviado
 
 ```
-You are architecting a new feature for Opsly: 'Agent Prompt Execution API'. 
-Design and implement a REST API endpoint that allows external systems to submit 
-arbitrary prompts to Opsly agents and receive execution results. 
+You are architecting a new feature for Opsly: 'Agent Prompt Execution API'.
+Design and implement a REST API endpoint that allows external systems to submit
+arbitrary prompts to Opsly agents and receive execution results.
 
-Key Requirements: 
+Key Requirements:
 1) Multi-tenant isolation with API key auth.
 2) Request/response models with Zod validation.
 3) POST endpoint with async queue execution and webhook callbacks.
 4) Max 5 concurrent per tenant, 30-min timeout, audit logging, cost tracking per execution.
 
-Deliverables: 
+Deliverables:
 (1) System architecture diagram
 (2) OpenAPI 3.0 specification
 (3) TypeScript Zod types
@@ -99,3 +99,4 @@ Please provide a production-ready design.
 # 1. Fix unicorn-magic (if needed)
 cat > /home/user/opsly/apps/orchestrator/node_modules/unicorn-magic/package.json << 'EOF'
 {...}
+```

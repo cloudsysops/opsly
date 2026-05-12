@@ -69,17 +69,17 @@ un enlace explicito a este contrato.
 
 ## Rutas canonicas
 
-| Capa | Ruta |
-| --- | --- |
-| Estado operativo | `AGENTS.md` |
-| Vision de producto | `VISION.md`, `docs/01-development/VISION.md` |
-| Memoria Obsidian | `docs/brain/` |
-| Indice documental | `config/knowledge-index.json` |
-| Grafo de modulos GitHub | `config/github-module-graph.json` |
-| Grafo renderizado | `docs/generated/github-module-graph.md` |
-| Tool Graphyfi MCP | `apps/mcp/src/tools/graphyfi.ts` |
-| Guardrails | `docs/03-agents/AGENT-GUARDRAILS.md` |
-| Workflow Git | `docs/01-development/GIT-WORKFLOW.md` |
+| Capa                    | Ruta                                         |
+| ----------------------- | -------------------------------------------- |
+| Estado operativo        | `AGENTS.md`                                  |
+| Vision de producto      | `VISION.md`, `docs/01-development/VISION.md` |
+| Memoria Obsidian        | `docs/brain/`                                |
+| Indice documental       | `config/knowledge-index.json`                |
+| Grafo de modulos GitHub | `config/github-module-graph.json`            |
+| Grafo renderizado       | `docs/generated/github-module-graph.md`      |
+| Tool Graphyfi MCP       | `apps/mcp/src/tools/graphyfi.ts`             |
+| Guardrails              | `docs/03-agents/AGENT-GUARDRAILS.md`         |
+| Workflow Git            | `docs/01-development/GIT-WORKFLOW.md`        |
 
 ## Taxonomia de nodos Graphyfi
 

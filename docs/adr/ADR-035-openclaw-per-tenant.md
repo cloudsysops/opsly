@@ -47,6 +47,7 @@ Con la emergencia de **agentes IA dedicados por tenant** (p. ej. opsAgent, billi
    - Se agrega tabla `openclaw_context_snapshots` y `openclaw_tool_logs` en cada schema.
 
 3. **Docker Compose**: extensión `docker-compose.tenant.yml`
+
    ```yaml
    services:
      context-builder:
@@ -86,10 +87,12 @@ Con la emergencia de **agentes IA dedicados por tenant** (p. ej. opsAgent, billi
 ### Alternativa B: Todos los componentes centralizados (status quo)
 
 **Pros:**
+
 - Simplicidad actual.
 - Operación única.
 
 **Contras:**
+
 - Privacidad débil (contexto compartido).
 - Escalamiento = más recursos en VPS monolítico.
 - Riesgo de data leakage entre tenants en Context Builder.
@@ -97,10 +100,12 @@ Con la emergencia de **agentes IA dedicados por tenant** (p. ej. opsAgent, billi
 ### Alternativa C: Kubernetes con namespaces
 
 **Pros:**
+
 - Aislamiento máximo.
 - Escalabilidad teórica infinita.
 
 **Contras:**
+
 - Complejidad operativa (viola decisión ADR-001).
 - No justificado en fase actual (max ~50 tenants en 2026).
 - Overhead de aprendizaje y mantenimiento.

@@ -25,12 +25,15 @@ Actuar como revisor critico: identificar riesgos, supuestos no probados, impacto
 
 ```markdown
 Riesgos:
+
 - ...
 
 Supuestos:
+
 - ...
 
 Validacion minima:
+
 - ...
 
 Recomendacion:
@@ -47,8 +50,8 @@ Proceed | Proceed with guardrails | Block
 
 ## Errores comunes
 
-| Error | Causa | Solucion |
-| ----- | ----- | -------- |
-| Revision vaga | Riesgos sin impacto concreto | Asociar cada riesgo a tenant, costo, seguridad o operacion |
-| Olvidar costos | Nuevo proveedor sin aprobacion | Revisar `AGENTS.md` Control de costos |
-| Saltar metering | LLM directo desde feature | Enrutar por LLM Gateway y registrar Hermes |
+| Error           | Causa                          | Solucion                                                   |
+| --------------- | ------------------------------ | ---------------------------------------------------------- |
+| Revision vaga   | Riesgos sin impacto concreto   | Asociar cada riesgo a tenant, costo, seguridad o operacion |
+| Olvidar costos  | Nuevo proveedor sin aprobacion | Revisar `AGENTS.md` Control de costos                      |
+| Saltar metering | LLM directo desde feature      | Enrutar por LLM Gateway y registrar Hermes                 |

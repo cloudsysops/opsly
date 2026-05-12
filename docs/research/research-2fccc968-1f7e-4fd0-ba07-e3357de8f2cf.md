@@ -7,15 +7,20 @@
 - Duracion: 29 ms
 
 ## Consulta
+
 ```
 Opsly autonomy phase1 evidence run 2
 ```
 
 ## Resultados
+
 - Sin resultados
+
 ## Sandbox
+
 - No ejecutado
 
 ## Metadatos
+
 - total_results: 0
 - generated_by: tools/cli research-run

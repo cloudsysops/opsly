@@ -55,7 +55,10 @@ export default function DashboardPage() {
 
       <div className="stagger-fade flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 data-text="CYBERPUNK CONTROL DECK" className="glitch-text font-display text-2xl text-ops-cyan">
+          <h1
+            data-text="CYBERPUNK CONTROL DECK"
+            className="glitch-text font-display text-2xl text-ops-cyan"
+          >
             CYBERPUNK CONTROL DECK
           </h1>
           <p className="mt-1 text-xs uppercase tracking-[0.2em] text-ops-magenta">
@@ -90,9 +93,7 @@ export default function DashboardPage() {
       <div className="grid gap-4 lg:grid-cols-3">
         <Card className="stagger-fade lg:col-span-1 [animation-delay:60ms]">
           <CardHeader className="pb-2">
-            <CardTitle className="text-xs font-normal tracking-wide text-ops-gray">
-              CPU
-            </CardTitle>
+            <CardTitle className="text-xs font-normal tracking-wide text-ops-gray">CPU</CardTitle>
           </CardHeader>
           <CardContent>
             {isLoading || !data ? (

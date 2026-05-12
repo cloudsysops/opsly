@@ -2,12 +2,12 @@
 
 ## Componentes
 
-| Pieza | Ubicación | Rol |
-|--------|-----------|-----|
-| **TestValidatorWorker** | `apps/orchestrator/src/workers/TestValidatorWorker.ts` | Cola BullMQ `openclaw`, job name `test_validation`. Ejecuta `npm run type-check` / `test` / `build` en `repo_root` (opcional `-w` workspace). Escribe `.cursor/responses/validation-<correlation>.json`. |
-| **Iteration manager** | `apps/orchestrator/src/lib/iteration-manager.ts` | Genera markdown de reintento a partir del JSON de validación (máx. `MAX_AUTO_ITERATIONS` = 3). |
-| **HTTP enqueue** | `POST /internal/enqueue-validation` en el health del orchestrator (mismo puerto que `/health`, p. ej. 3011) | Encola el job (Bearer `PLATFORM_ADMIN_TOKEN`). |
-| **Watcher opcional** | `apps/orchestrator/scripts/iteration-watch-responses.ts` | Observa `validation-*.json`; si `ok: false`, escribe `.cursor/prompts/auto-retry-*.md` y opcionalmente re-envía a `/api/local/prompt-submit`. |
+| Pieza                   | Ubicación                                                                                                   | Rol                                                                                                                                                                                                      |
+| ----------------------- | ----------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **TestValidatorWorker** | `apps/orchestrator/src/workers/TestValidatorWorker.ts`                                                      | Cola BullMQ `openclaw`, job name `test_validation`. Ejecuta `npm run type-check` / `test` / `build` en `repo_root` (opcional `-w` workspace). Escribe `.cursor/responses/validation-<correlation>.json`. |
+| **Iteration manager**   | `apps/orchestrator/src/lib/iteration-manager.ts`                                                            | Genera markdown de reintento a partir del JSON de validación (máx. `MAX_AUTO_ITERATIONS` = 3).                                                                                                           |
+| **HTTP enqueue**        | `POST /internal/enqueue-validation` en el health del orchestrator (mismo puerto que `/health`, p. ej. 3011) | Encola el job (Bearer `PLATFORM_ADMIN_TOKEN`).                                                                                                                                                           |
+| **Watcher opcional**    | `apps/orchestrator/scripts/iteration-watch-responses.ts`                                                    | Observa `validation-*.json`; si `ok: false`, escribe `.cursor/prompts/auto-retry-*.md` y opcionalmente re-envía a `/api/local/prompt-submit`.                                                            |
 
 ## Activación del worker
 

@@ -20,11 +20,11 @@ Opsly tiene una UVP clara: despliegue y operacion de automatizaciones multi-tena
 
 ## Oferta comercial v1
 
-| Paquete | Precio | Setup | Cliente ideal |
-| --- | ---: | ---: | --- |
-| Managed Automation | $299/mes | $750 | Agencia que necesita n8n + monitoreo estable para 1-3 cuentas |
-| Autonomous Ops | $699/mes | $1,500 | Agencia con varias cuentas y soporte operativo recurrente |
-| Done-For-You | desde $1,500/mes | $3,000+ | Agencia que quiere delegar implementacion y mejora continua |
+| Paquete            |           Precio |   Setup | Cliente ideal                                                 |
+| ------------------ | ---------------: | ------: | ------------------------------------------------------------- |
+| Managed Automation |         $299/mes |    $750 | Agencia que necesita n8n + monitoreo estable para 1-3 cuentas |
+| Autonomous Ops     |         $699/mes |  $1,500 | Agencia con varias cuentas y soporte operativo recurrente     |
+| Done-For-You       | desde $1,500/mes | $3,000+ | Agencia que quiere delegar implementacion y mejora continua   |
 
 **Regla de margen:** no vender pilotos gratis. El piloto puede tener descuento fundador, pero debe incluir setup para pagar implementacion.
 

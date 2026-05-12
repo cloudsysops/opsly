@@ -21,10 +21,7 @@ export class PromptSuggester {
   /**
    * Generate next prompt based on result analysis
    */
-  static suggest(
-    context: SuggestionContext,
-    patterns?: AgentPattern[],
-  ): PromptSuggestion {
+  static suggest(context: SuggestionContext, patterns?: AgentPattern[]): PromptSuggestion {
     // Check if task is complete
     if (context.iteration >= 5) {
       return {
@@ -173,10 +170,7 @@ Please provide corrected version without TODOs or placeholders.
 `;
   }
 
-  private static suggestNextStep(
-    context: SuggestionContext,
-    patterns?: AgentPattern[],
-  ): string {
+  private static suggestNextStep(context: SuggestionContext, patterns?: AgentPattern[]): string {
     // Use patterns if available
     if (patterns && patterns.length > 0) {
       const pattern = patterns[0];

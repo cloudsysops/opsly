@@ -75,7 +75,10 @@ function printUsage(): void {
 
 async function main(): Promise<void> {
   const args = parseArgs(process.argv.slice(2));
-  if (args.action === 'objective' && (args.objective.length === 0 || args.tenantSlug.length === 0)) {
+  if (
+    args.action === 'objective' &&
+    (args.objective.length === 0 || args.tenantSlug.length === 0)
+  ) {
     printUsage();
     process.exitCode = 1;
     return;
@@ -95,12 +98,15 @@ async function main(): Promise<void> {
   }
 
   if (args.action === 'status') {
-    const response = await fetch(`${args.endpoint}/internal/hive/task/${encodeURIComponent(args.taskId)}`, {
-      method: 'GET',
-      headers: {
-        authorization: `Bearer ${args.adminToken}`,
-      },
-    });
+    const response = await fetch(
+      `${args.endpoint}/internal/hive/task/${encodeURIComponent(args.taskId)}`,
+      {
+        method: 'GET',
+        headers: {
+          authorization: `Bearer ${args.adminToken}`,
+        },
+      }
+    );
     if (!response.ok) {
       throw new Error(`hive status failed: ${response.status} ${await response.text()}`);
     }

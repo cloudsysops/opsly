@@ -30,17 +30,17 @@
 
 ## Dónde va cada cosa (mapa del monorepo)
 
-| Capacidad | Ubicación real en Opsly |
-|-----------|-------------------------|
-| API HTTP (Next Route Handlers) | [`apps/api/app/api/`](../../apps/api/app/api/) |
-| Admin UI | [`apps/admin`](../../apps/admin) |
-| Portal / web producto | [`apps/portal`](../../apps/portal), [`apps/web`](../../apps/web) |
+| Capacidad                                  | Ubicación real en Opsly                                                                                                       |
+| ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------- |
+| API HTTP (Next Route Handlers)             | [`apps/api/app/api/`](../../apps/api/app/api/)                                                                                |
+| Admin UI                                   | [`apps/admin`](../../apps/admin)                                                                                              |
+| Portal / web producto                      | [`apps/portal`](../../apps/portal), [`apps/web`](../../apps/web)                                                              |
 | Colas BullMQ, workers, health HTTP interno | [`apps/orchestrator`](../../apps/orchestrator) — [`docs/00-architecture/ORCHESTRATOR.md`](../00-architecture/ORCHESTRATOR.md) |
-| OpenClaw (políticas, contratos, eventos) | [`apps/orchestrator/src/openclaw/`](../../apps/orchestrator/src/openclaw/) |
-| MCP (tools) | [`apps/mcp`](../../apps/mcp) |
-| LLM (routing, costes) | [`apps/llm-gateway`](../../apps/llm-gateway) — [`docs/LLM-GATEWAY.md`](../LLM-GATEWAY.md) |
-| Fallover / cola de reparación (diseño) | [`docs/orchestrator/REPAIR-QUEUE.md`](../orchestrator/REPAIR-QUEUE.md) |
-| Seguridad operativa | [`docs/04-infrastructure/SECURITY_CHECKLIST.md`](../04-infrastructure/SECURITY_CHECKLIST.md) |
+| OpenClaw (políticas, contratos, eventos)   | [`apps/orchestrator/src/openclaw/`](../../apps/orchestrator/src/openclaw/)                                                    |
+| MCP (tools)                                | [`apps/mcp`](../../apps/mcp)                                                                                                  |
+| LLM (routing, costes)                      | [`apps/llm-gateway`](../../apps/llm-gateway) — [`docs/LLM-GATEWAY.md`](../LLM-GATEWAY.md)                                     |
+| Fallover / cola de reparación (diseño)     | [`docs/orchestrator/REPAIR-QUEUE.md`](../orchestrator/REPAIR-QUEUE.md)                                                        |
+| Seguridad operativa                        | [`docs/04-infrastructure/SECURITY_CHECKLIST.md`](../04-infrastructure/SECURITY_CHECKLIST.md)                                  |
 
 **No crear** un segundo plano tipo `apps/agent-server` (Express paralelo): extender orchestrator + API según [`AGENTS.md`](../../AGENTS.md) (Fase 4).
 
@@ -63,6 +63,6 @@ Checklist y mitigaciones: [`docs/04-infrastructure/SECURITY_CHECKLIST.md`](../04
 
 ## Próximo paso operativo
 
-1. Elegir **ruta A, B o C** y reflejar el foco en `AGENTS.md` (sección 🔄 / próximo paso).  
-2. Abrir PRs pequeños (schema → API → UI → n8n / jobs) con `npm run type-check` y tests del workspace tocado.  
+1. Elegir **ruta A, B o C** y reflejar el foco en `AGENTS.md` (sección 🔄 / próximo paso).
+2. Abrir PRs pequeños (schema → API → UI → n8n / jobs) con `npm run type-check` y tests del workspace tocado.
 3. Para fallover automático a “repair”, seguir el diseño en [`docs/orchestrator/REPAIR-QUEUE.md`](../orchestrator/REPAIR-QUEUE.md) antes de escribir colas nuevas.

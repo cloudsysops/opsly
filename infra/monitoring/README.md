@@ -5,58 +5,71 @@
 ## Components
 
 ### Watchdog Script
+
 **File**: `scripts/watchdog-validation-orchestrator.ts`
 
 Monitors ValidationOrchestrator health every 5 minutes by:
+
 - Fetching metrics from `/internal/meta-optimizer/metrics`
 - Checking escalation rate, validation time, agent pool status
 - Sending Discord alerts on threshold breaches
 - Logging results to stdout
 
 Exit codes:
+
 - `0` = healthy
 - `1` = warning
 - `2` = critical
 
 ### GitHub Actions Workflow
+
 **File**: `.github/workflows/health-check-validation-orchestrator.yml`
 
 Automated workflow that:
+
 - Runs every 5 minutes (configurable)
 - Executes watchdog script
 - Creates issues on critical failures
 - Archives metrics for dashboard integration
 
 Secrets required:
+
 - `DISCORD_WEBHOOK_HEALTH`: Discord webhook URL for alerts
 - `ORCHESTRATOR_ENDPOINT`: Optional, defaults to `http://localhost:3011`
 
 ### Test Suite
+
 **File**: `scripts/test-watchdog.ts`
 
 Validates watchdog logic with mock metrics:
+
 - Healthy state (escalation <5%)
 - Warning state (escalation 10-20%)
 - Critical state (escalation >20%)
 
 Run locally:
+
 ```bash
 npx tsx scripts/test-watchdog.ts
 ```
 
 ### Grafana Alerts
+
 **File**: `infra/grafana/alerts/validation-orchestrator.json`
 
 Prometheus-style alert rules for integration with Grafana:
+
 - Escalation rate warnings/critical
 - Validation time warnings/critical
 - Agent pool health checks
 - Notification routing to #ops-alerts
 
 ### Operational Guide
+
 **File**: `docs/04-operations/VALIDATION-ORCHESTRATOR-OPERATIONAL-GUIDE.md`
 
 Complete operational procedures:
+
 - Health threshold definitions
 - Incident response playbooks
 - Troubleshooting guides
@@ -65,11 +78,11 @@ Complete operational procedures:
 
 ## Alert Thresholds
 
-| Condition | Warning | Critical |
-|-----------|---------|----------|
-| Escalation Rate | >10% | >20% |
-| Avg Validation Time | >500ms | >1000ms |
-| Agent Pool | Configured monitoring | 1+ agent unreachable |
+| Condition           | Warning               | Critical             |
+| ------------------- | --------------------- | -------------------- |
+| Escalation Rate     | >10%                  | >20%                 |
+| Avg Validation Time | >500ms                | >1000ms              |
+| Agent Pool          | Configured monitoring | 1+ agent unreachable |
 
 ## Quick Start
 
@@ -83,6 +96,7 @@ Complete operational procedures:
 ### Enable GitHub Actions Workflow
 
 Workflow is automatically enabled. To manually trigger:
+
 ```bash
 gh workflow run health-check-validation-orchestrator.yml \
   --repo cloudsysops/opsly \
@@ -119,6 +133,7 @@ From `/internal/meta-optimizer/metrics`:
 ```
 
 Watchdog computes:
+
 - **escalation_rate_pct**: (100 - validation_success_rate) / # intents
 - **avg_validation_time_ms**: Placeholder (placeholder in v1)
 - **agent_pool_status**: Health of ports 5001-5004
@@ -140,6 +155,7 @@ watchdog-validation-orchestrator.ts
 ## Integration Points
 
 ### With Supabase
+
 Health checks can be stored in `health_checks` table for historical tracking:
 
 ```sql
@@ -155,9 +171,11 @@ CREATE TABLE health_checks (
 ```
 
 ### With Grafana
+
 Import alert rules from `infra/grafana/alerts/validation-orchestrator.json` using Grafana API or UI.
 
 ### With Dashboard
+
 Archive metrics artifacts for integration into monitoring dashboard via Actions artifacts API.
 
 ## Troubleshooting
@@ -165,6 +183,7 @@ Archive metrics artifacts for integration into monitoring dashboard via Actions 
 ### Workflow Not Triggering
 
 Check Actions settings:
+
 ```bash
 gh workflow view health-check-validation-orchestrator.yml \
   --repo cloudsysops/opsly
@@ -173,6 +192,7 @@ gh workflow view health-check-validation-orchestrator.yml \
 ### Metrics Unavailable
 
 Verify orchestrator health:
+
 ```bash
 curl http://localhost:3011/health
 ```
@@ -180,6 +200,7 @@ curl http://localhost:3011/health
 ### Discord Alerts Not Received
 
 Test webhook:
+
 ```bash
 curl -X POST "${DISCORD_WEBHOOK_HEALTH}" \
   -H 'Content-Type: application/json' \

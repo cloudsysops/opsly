@@ -14,11 +14,11 @@ doppler secrets set GITHUB_TOKEN_N8N --project ops-intcloudsysops --config prd
 
 ## Eventos a Recibir
 
-| Evento | Propósito |
-|--------|-----------|
-| `push` | Detectar cambios en main |
-| `pull_request` | Validar PRs |
-| `issues` | Responder issues automáticamente |
+| Evento         | Propósito                        |
+| -------------- | -------------------------------- |
+| `push`         | Detectar cambios en main         |
+| `pull_request` | Validar PRs                      |
+| `issues`       | Responder issues automáticamente |
 
 ## URL del Webhook GitHub
 

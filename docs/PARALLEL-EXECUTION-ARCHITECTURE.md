@@ -83,24 +83,25 @@ Jobs are distributed across agents based on `agent_role` in prompt frontmatter:
 
 ```yaml
 ---
-agent_role: executor    # or: architect, reviewer, observer
+agent_role: executor # or: architect, reviewer, observer
 max_steps: 6
 priority: 47000
 ---
 ```
 
-| agent_role | Service | Timeout | Capability |
-|------------|---------|---------|-----------|
-| executor | Cursor | 60s | Code generation, file creation |
-| architect | Claude | 30s | Design, planning, analysis |
-| reviewer | Copilot | 45s | Security audit, code review |
-| observer | OpenCode | 120s | Advanced code generation |
+| agent_role | Service  | Timeout | Capability                     |
+| ---------- | -------- | ------- | ------------------------------ |
+| executor   | Cursor   | 60s     | Code generation, file creation |
+| architect  | Claude   | 30s     | Design, planning, analysis     |
+| reviewer   | Copilot  | 45s     | Security audit, code review    |
+| observer   | OpenCode | 120s    | Advanced code generation       |
 
 ## Current Implementation
 
 ### Phase 1: Complete ✅
 
 **Completed:**
+
 - ✅ Agent Service Registry with environment support
 - ✅ LocalAgentHTTPWorker for job routing
 - ✅ BullMQ queue integration
@@ -109,6 +110,7 @@ priority: 47000
 - ✅ Parallel task submission (4 tasks queued)
 
 **Status:** 4 parallel tasks enqueued and ready to execute
+
 - `fa3df11b-44e7...` - Reviewer: Security Audit
 - `8d3dea86-7f54...` - Executor: Test Utilities
 - `0979fd70-875f...` - Architect: Validation Pipeline
@@ -117,6 +119,7 @@ priority: 47000
 ### Phase 2: In Progress 🚀
 
 **Next Steps:**
+
 1. Deploy agent services to remote machines (opsly-mac2011, opsly-admin)
 2. Test with AGENT_ENVIRONMENT=tailscale
 3. Monitor job execution and response generation
@@ -126,6 +129,7 @@ priority: 47000
 ### Phase 3: Coming Soon 📋
 
 **Components to build:**
+
 - IterationManager: Suggest next prompts based on results
 - AgentTrainer: Learn patterns from executions
 - RefinementPipeline: Consolidate multiple agent responses
@@ -135,6 +139,7 @@ priority: 47000
 ### Phase 4: 24/7 Autonomy 🤖
 
 **End State:**
+
 - User creates one prompt
 - System iterates 3-5 times automatically
 - Results committed to git
@@ -170,28 +175,28 @@ Edit `config/agent-services.yaml`:
 services:
   cursor:
     enabled: true
-    url: "http://localhost:5001"    # Default fallback
+    url: 'http://localhost:5001' # Default fallback
     timeout_ms: 60000
     retry_attempts: 3
-    
+
   claude:
     enabled: true
-    url: "http://localhost:5002"
+    url: 'http://localhost:5002'
     timeout_ms: 30000
-    model: "claude-opus-4"
+    model: 'claude-opus-4'
 
 environments:
   mock:
-    cursor: "http://localhost:5001"
-    claude: "http://localhost:5002"
-  
+    cursor: 'http://localhost:5001'
+    claude: 'http://localhost:5002'
+
   tailscale:
-    cursor: "http://opsly-mac2011:5001"
-    claude: "http://opsly-admin:5002"
-  
+    cursor: 'http://opsly-mac2011:5001'
+    claude: 'http://opsly-admin:5002'
+
   docker:
-    cursor: "http://cursor-container:5001"
-    claude: "http://claude-container:5002"
+    cursor: 'http://cursor-container:5001'
+    claude: 'http://claude-container:5002'
 ```
 
 ## Testing
@@ -289,11 +294,13 @@ git show {commitHash}
 ### Current Performance
 
 With mock services (2-3s delay):
+
 - **4 parallel tasks:** ~5 seconds total (mock execution)
 - **4 × validation pipeline:** ~60 seconds (type-check + test + build)
 - **Total time to response + commit:** ~65 seconds
 
 With real services:
+
 - **4 parallel tasks:** ~10-30 seconds (depends on agent)
 - **Validation pipeline:** ~45 seconds
 - **Total time:** ~75 seconds
@@ -301,6 +308,7 @@ With real services:
 ### Scalability Projections
 
 **100 parallel jobs:**
+
 - Sequential execution: 100 × 75s = 125 minutes
 - With job queue batching (5 concurrent): 100 × 15s = 25 minutes
 - With validation caching: ~15 minutes average
@@ -310,18 +318,21 @@ With real services:
 ### Jobs Still Failing
 
 1. **Check service connectivity:**
+
    ```bash
    curl -I http://opsly-mac2011:5001/health
    curl -I http://opsly-admin:5002/health
    ```
 
 2. **Verify environment is set:**
+
    ```bash
    echo $AGENT_ENVIRONMENT
    curl http://localhost:3011/api/agents/service-urls
    ```
 
 3. **Check orchestrator logs:**
+
    ```bash
    tail -f /tmp/orchestrator.log | grep "LocalAgentWorker"
    grep "fetch failed" /tmp/orchestrator.log
@@ -342,12 +353,14 @@ With real services:
 ### Validation Pipeline Failing
 
 1. **Check if response was generated:**
+
    ```bash
    ls -la .cursor/prompts/responses/
    cat .cursor/prompts/responses/response-{jobId}.md
    ```
 
 2. **Run validation manually:**
+
    ```bash
    npm run type-check
    npm run test --workspace=@intcloudsysops/orchestrator
@@ -438,6 +451,7 @@ With real services:
 **Chosen:** HTTP with environment-based endpoints
 
 **Rationale:**
+
 - ✅ Scalable to remote machines
 - ✅ Works across networks
 - ✅ No filesystem coupling
@@ -445,6 +459,7 @@ With real services:
 - ✅ Docker-ready
 
 **Alternative considered:** File-based IPC
+
 - ✅ Zero network overhead
 - ❌ Requires shared filesystem
 - ❌ Doesn't scale to remote
@@ -455,6 +470,7 @@ With real services:
 **Chosen:** Tailscale VPN
 
 **Rationale:**
+
 - ✅ Encrypted end-to-end
 - ✅ Works across networks
 - ✅ Zero firewall complexity
@@ -462,6 +478,7 @@ With real services:
 - ✅ Secure by default
 
 **Alternative considered:** Static IP + firewall
+
 - ✅ Standard networking
 - ❌ Requires firewall rules
 - ❌ Public IP exposure
@@ -472,6 +489,7 @@ With real services:
 **Chosen:** BullMQ (Redis-backed queue)
 
 **Rationale:**
+
 - ✅ Distributed job processing
 - ✅ Automatic retries
 - ✅ Persistent jobs
@@ -479,6 +497,7 @@ With real services:
 - ✅ Built-in monitoring
 
 **Alternative considered:** In-memory queue
+
 - ✅ Simpler setup
 - ❌ Jobs lost on restart
 - ❌ No distributed processing
@@ -489,6 +508,7 @@ With real services:
 The Opsly autonomous execution system is architected for **distributed, parallel agent execution** with a clear path to 24/7 autonomous operation. Phase 1 (infrastructure) is complete. Phase 2 (validation & testing) is in progress. Phases 3-4 will add intelligence and full autonomy.
 
 **Key Achievements:**
+
 - ✅ 4 agents executing in parallel
 - ✅ Environment-based configuration
 - ✅ Mock services for testing

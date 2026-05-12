@@ -88,7 +88,7 @@ async function processLocalAgentJob(
         throw new Error(`Cursor service error: ${response.status}`);
       }
 
-      const result = await response.json() as any;
+      const result = (await response.json()) as any;
       responsePath = result.response_path;
     } else if (jobType === 'local_claude') {
       console.log(`[LocalAgentWorker] Claude: calling LLM Gateway at ${llmGatewayUrl}`);
@@ -107,7 +107,7 @@ async function processLocalAgentJob(
         throw new Error(`LLM Gateway error: ${response.status}`);
       }
 
-      const result = await response.json() as any;
+      const result = (await response.json()) as any;
       const responseText = result.content || result.message || '';
 
       // Write response to file
@@ -137,7 +137,7 @@ ${responseText}
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${process.env.GITHUB_COPILOT_TOKEN || ''}`,
+          Authorization: `Bearer ${process.env.GITHUB_COPILOT_TOKEN || ''}`,
         },
         body: JSON.stringify({
           code: prompt_content,
@@ -151,7 +151,7 @@ ${responseText}
         throw new Error(`Copilot service error: ${response.status}`);
       }
 
-      const result = await response.json() as any;
+      const result = (await response.json()) as any;
       const validationText = result.suggestions || result.feedback || '';
 
       // Write response to file
@@ -193,7 +193,7 @@ ${validationText}
         throw new Error(`OpenCode service error: ${response.status}`);
       }
 
-      const result = await response.json() as any;
+      const result = (await response.json()) as any;
       const generatedCode = result.code || result.output || '';
 
       // Write response to file
@@ -224,10 +224,12 @@ ${generatedCode}
         agent_role,
         responsePath,
         1, // iteration count
-        3, // max iterations
+        3 // max iterations
       );
 
-      console.log(`[LocalAgentWorker] Validation decision: ${decision.action} - ${decision.reason}`);
+      console.log(
+        `[LocalAgentWorker] Validation decision: ${decision.action} - ${decision.reason}`
+      );
 
       // Write validation guard to prevent double-commits
       await writeValidationGuard(job_id, decision.action, path.join(cursorDir, '.validation'));
@@ -271,7 +273,8 @@ export function startLocalAgentsUnifiedWorker(connection: object): Worker {
   const claudeConcurrency = getWorkerConcurrency('local-claude') || 2;
   const copilotConcurrency = getWorkerConcurrency('local-copilot') || 1;
   const opencodeConcurrency = getWorkerConcurrency('local-opencode') || 1;
-  const totalConcurrency = cursorConcurrency + claudeConcurrency + copilotConcurrency + opencodeConcurrency;
+  const totalConcurrency =
+    cursorConcurrency + claudeConcurrency + copilotConcurrency + opencodeConcurrency;
 
   console.log(
     `[LocalAgentWorker] Unified worker: cursor=${cursorConcurrency} + claude=${claudeConcurrency} + copilot=${copilotConcurrency} + opencode=${opencodeConcurrency} = ${totalConcurrency}`
@@ -311,7 +314,13 @@ export function startLocalAgentsUnifiedWorker(connection: object): Worker {
       logWorkerLifecycle('start', 'local-agents', job);
 
       try {
-        const result = await processLocalAgentJob(jobType, prompt_content, job_id, agent_role, registry);
+        const result = await processLocalAgentJob(
+          jobType,
+          prompt_content,
+          job_id,
+          agent_role,
+          registry
+        );
 
         const elapsed = Date.now() - t0;
         logWorkerLifecycle('complete', 'local-agents', job, { duration_ms: elapsed });
@@ -328,11 +337,19 @@ export function startLocalAgentsUnifiedWorker(connection: object): Worker {
         const errorMsg = err instanceof Error ? err.message : String(err);
 
         if (err instanceof UnrecoverableError) {
-          console.error(`[LocalAgentWorker] ⚠️ Unrecoverable error in ${jobType} job ${job.id}: ${errorMsg}`);
-          logWorkerLifecycle('fail', 'local-agents', job, { duration_ms: elapsed, error: errorMsg });
+          console.error(
+            `[LocalAgentWorker] ⚠️ Unrecoverable error in ${jobType} job ${job.id}: ${errorMsg}`
+          );
+          logWorkerLifecycle('fail', 'local-agents', job, {
+            duration_ms: elapsed,
+            error: errorMsg,
+          });
         } else {
           console.error(`[LocalAgentWorker] ❌ ${jobType} job ${job.id} error: ${errorMsg}`);
-          logWorkerLifecycle('fail', 'local-agents', job, { duration_ms: elapsed, error: errorMsg });
+          logWorkerLifecycle('fail', 'local-agents', job, {
+            duration_ms: elapsed,
+            error: errorMsg,
+          });
         }
 
         throw err;

@@ -73,7 +73,9 @@ async function enqueuePendingTasks(): Promise<void> {
 
       try {
         const enqueued = await enqueueJob(job);
-        console.log(`[Supervisor] ✓ Enqueued task: ${task.title.slice(0, 50)}... (job ${enqueued.id})`);
+        console.log(
+          `[Supervisor] ✓ Enqueued task: ${task.title.slice(0, 50)}... (job ${enqueued.id})`
+        );
       } catch (err) {
         console.error(`[Supervisor] Failed to enqueue task: ${task.title}`, err);
       }

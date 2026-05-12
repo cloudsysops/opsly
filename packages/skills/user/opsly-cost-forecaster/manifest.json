@@ -26,12 +26,7 @@
     "prometheus",
     "multi-tenant"
   ],
-  "skills_related": [
-    "opsly-billing",
-    "opsly-llm",
-    "opsly-telemetry",
-    "opsly-economist"
-  ],
+  "skills_related": ["opsly-billing", "opsly-llm", "opsly-telemetry", "opsly-economist"],
   "entry_point": "scripts/forecast.ts",
   "exports": {
     "forecast": "scripts/forecast.ts",

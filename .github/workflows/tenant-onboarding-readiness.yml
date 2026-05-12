@@ -5,11 +5,11 @@ on:
   workflow_dispatch:
     inputs:
       tenant_slug:
-        description: "Tenant slug a validar"
+        description: 'Tenant slug a validar'
         required: true
         type: string
       api_url:
-        description: "API base URL (opcional)"
+        description: 'API base URL (opcional)'
         required: false
         type: string
 
@@ -21,7 +21,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: '20'
           cache: npm
           cache-dependency-path: package-lock.json
 

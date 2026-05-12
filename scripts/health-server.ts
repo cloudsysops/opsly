@@ -262,29 +262,35 @@ function createHealthServer(): http.Server {
         // Quick health check - only orchestrator status
         const orchestrator = await checkOrchestratorHealth();
         res.writeHead(orchestrator.reachable ? 200 : 503);
-        res.end(JSON.stringify({
-          status: orchestrator.reachable ? 'healthy' : 'down',
-          orchestrator,
-          timestamp: new Date().toISOString(),
-        }));
+        res.end(
+          JSON.stringify({
+            status: orchestrator.reachable ? 'healthy' : 'down',
+            orchestrator,
+            timestamp: new Date().toISOString(),
+          })
+        );
       } else if (req.url === '/queues') {
         // Queue depth report
         const queues = await getQueueStats();
         res.writeHead(200);
-        res.end(JSON.stringify({
-          status: 'ok',
-          queues,
-          timestamp: new Date().toISOString(),
-        }));
+        res.end(
+          JSON.stringify({
+            status: 'ok',
+            queues,
+            timestamp: new Date().toISOString(),
+          })
+        );
       } else if (req.url === '/workers') {
         // Worker pool status
         const workers = await getWorkerStatus();
         res.writeHead(200);
-        res.end(JSON.stringify({
-          status: 'ok',
-          workers,
-          timestamp: new Date().toISOString(),
-        }));
+        res.end(
+          JSON.stringify({
+            status: 'ok',
+            workers,
+            timestamp: new Date().toISOString(),
+          })
+        );
       } else if (req.url === '/metrics') {
         // Aggregated metrics
         const metrics = await getSystemMetrics();
@@ -294,24 +300,30 @@ function createHealthServer(): http.Server {
         // Readiness probe (same as health for now)
         const orchestrator = await checkOrchestratorHealth();
         res.writeHead(orchestrator.reachable ? 200 : 503);
-        res.end(JSON.stringify({
-          ready: orchestrator.reachable,
-          timestamp: new Date().toISOString(),
-        }));
+        res.end(
+          JSON.stringify({
+            ready: orchestrator.reachable,
+            timestamp: new Date().toISOString(),
+          })
+        );
       } else {
         res.writeHead(404);
-        res.end(JSON.stringify({
-          error: 'Not found',
-          available: ['/health', '/queues', '/workers', '/metrics', '/ready'],
-        }));
+        res.end(
+          JSON.stringify({
+            error: 'Not found',
+            available: ['/health', '/queues', '/workers', '/metrics', '/ready'],
+          })
+        );
       }
     } catch (err) {
       log(`Request handler error: ${err instanceof Error ? err.message : String(err)}`, 'error');
       res.writeHead(500);
-      res.end(JSON.stringify({
-        error: 'Internal server error',
-        message: err instanceof Error ? err.message : String(err),
-      }));
+      res.end(
+        JSON.stringify({
+          error: 'Internal server error',
+          message: err instanceof Error ? err.message : String(err),
+        })
+      );
     }
   });
 

@@ -20,7 +20,9 @@ type FsReadFileInput = z.infer<typeof fsReadFileInputSchema>;
 type FsWriteFileInput = z.infer<typeof fsWriteFileInputSchema>;
 
 function getTenantWorkspaceRoot(context?: ToolContext): string {
-  const workspaceRoot = path.resolve(context?.workspaceRoot ?? process.env.WORKSPACE_ROOT ?? './tools/workspaces');
+  const workspaceRoot = path.resolve(
+    context?.workspaceRoot ?? process.env.WORKSPACE_ROOT ?? './tools/workspaces'
+  );
   const tenantId = context?.tenantId ?? 'tenant_001';
   return path.resolve(workspaceRoot, tenantId);
 }

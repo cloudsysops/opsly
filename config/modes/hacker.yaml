@@ -4,7 +4,7 @@ skills:
   - opsly-mcp
   - opsly-qa
 environment_vars:
-  HACKER_MODE: "true"
+  HACKER_MODE: 'true'
 permissions:
   - analysis:advanced
 tools:

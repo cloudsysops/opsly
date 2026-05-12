@@ -9,11 +9,11 @@
 
 ## 1. Nombre y presencia
 
-| Campo | Valor |
-| ----- | ----- |
-| Nombre en plataforma / invitaciones | `Equipa` (o `Equipa — Limpieza y upgrade` si preferís más largo en `platform.tenants.name`) |
-| Slug (no cambiar tras onboard) | `local-services` |
-| URLs públicas (staging típico) | `https://n8n-local-services.<PLATFORM_DOMAIN>` · `https://uptime-local-services.<PLATFORM_DOMAIN>` |
+| Campo                               | Valor                                                                                              |
+| ----------------------------------- | -------------------------------------------------------------------------------------------------- |
+| Nombre en plataforma / invitaciones | `Equipa` (o `Equipa — Limpieza y upgrade` si preferís más largo en `platform.tenants.name`)        |
+| Slug (no cambiar tras onboard)      | `local-services`                                                                                   |
+| URLs públicas (staging típico)      | `https://n8n-local-services.<PLATFORM_DOMAIN>` · `https://uptime-local-services.<PLATFORM_DOMAIN>` |
 
 ---
 
@@ -41,7 +41,7 @@
 
 ## 3. Oferta comercial (referencia)
 
-Mensaje mínimo para clientes: *“Equipa — servicio de limpieza de equipos e instalación/upgrade en tu ubicación. Reserva y seguimiento vía Opsly.”* (Ajustar copy con marketing.)
+Mensaje mínimo para clientes: _“Equipa — servicio de limpieza de equipos e instalación/upgrade en tu ubicación. Reserva y seguimiento vía Opsly.”_ (Ajustar copy con marketing.)
 
 ---
 

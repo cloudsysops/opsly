@@ -7,6 +7,7 @@ last_update: 2026-05-04
 # Autonomous Iteration System — Phase 2
 
 Opsly's autonomous iteration enables agents to:
+
 1. **Execute** a task (Phase 1: LocalPromptWatcher)
 2. **Analyze** the result (Phase 2: IterationManager)
 3. **Learn** from patterns (Phase 2: AgentTrainer)
@@ -45,6 +46,7 @@ Auto-commit when complete
 **Responsibility:** Manages the full iteration lifecycle
 
 **Key Methods:**
+
 ```typescript
 // Initialize a new session
 async initializeSession(
@@ -69,6 +71,7 @@ async getSummary(jobId): Promise<SessionSummary>
 ```
 
 **Example Usage:**
+
 ```typescript
 const orchestrator = new IterationOrchestrator();
 
@@ -93,7 +96,7 @@ if (next.should_iterate) {
   await enqueueLocalAgentJob({
     type: 'local_cursor',
     prompt_body: next.next_prompt,
-    request_id: `job-123-iter-${state.current_iteration}`
+    request_id: `job-123-iter-${state.current_iteration}`,
   });
 }
 ```
@@ -105,6 +108,7 @@ if (next.should_iterate) {
 **Responsibility:** Records and analyzes execution patterns
 
 **Key Methods:**
+
 ```typescript
 // Record execution for training
 async recordExecution(record: ExecutionRecord): Promise<void>
@@ -120,10 +124,12 @@ async getRecords(limit?: number): Promise<ExecutionRecord[]>
 ```
 
 **Output Files:**
+
 - `.cursor/training/execution-records.json` — Raw execution history
 - `.cursor/training/trainer-report.json` — Pattern analysis and trends
 
 **Example Report:**
+
 ```json
 {
   "generated_at": "2026-05-04T...",
@@ -156,6 +162,7 @@ async getRecords(limit?: number): Promise<ExecutionRecord[]>
 **Responsibility:** Generates next prompts based on analysis
 
 **Decision Logic:**
+
 ```
 IF max_iterations reached
   → Request task summary
@@ -169,6 +176,7 @@ ELSE
 ```
 
 **Example Output:**
+
 ```markdown
 ---
 agent_role: cursor
@@ -190,6 +198,7 @@ Add proper TypeScript interfaces and type annotations.
 ## Autonomous Iteration Loop (Detailed)
 
 ### Round 1: Initial Execution
+
 1. Developer writes: `.cursor/prompts/build-api.md`
 2. LocalPromptWatcher detects → enqueues
 3. Agent service executes → response to `.cursor/responses/`
@@ -197,6 +206,7 @@ Add proper TypeScript interfaces and type annotations.
 5. AgentTrainer saves execution record
 
 ### Round 2+: Automatic Iteration
+
 1. PromptSuggester analyzes result
 2. Decides: error fix? incomplete? complete?
 3. Generates next prompt if needed
@@ -205,7 +215,9 @@ Add proper TypeScript interfaces and type annotations.
 6. Loop continues (max 5 iterations by default)
 
 ### Final: Auto-Commit
+
 After task completion or max iterations:
+
 1. IterationOrchestrator marks complete
 2. Git auto-commit with summary
 3. AgentTrainer generates final patterns
@@ -221,7 +233,7 @@ import { IterationOrchestrator } from '../apps/orchestrator/src/lib/iteration/in
 async function handlePromptSubmit(promptPath: string) {
   // Parse frontmatter
   const { frontmatter, body } = parseFrontmatter(content);
-  
+
   // Initialize iteration session if max_iterations specified
   if (frontmatter.max_iterations) {
     const orchestrator = new IterationOrchestrator();
@@ -235,7 +247,7 @@ async function handlePromptSubmit(promptPath: string) {
     // Store session ID in metadata for later tracking
     metadata[jobId].iteration_session = state.job_id;
   }
-  
+
   // Submit to orchestrator
   await submitToOrchestrator(jobId, body, frontmatter);
 }
@@ -243,12 +255,12 @@ async function handlePromptSubmit(promptPath: string) {
 async function handleResponse(jobId: string, result: string, durationMs: number) {
   const metadata = await loadMetadata();
   const sessionId = metadata[jobId]?.iteration_session;
-  
+
   if (sessionId) {
     // Record result and get next action
     const orchestrator = new IterationOrchestrator();
     const next = await orchestrator.recordResult(sessionId, result, durationMs);
-    
+
     if (next.should_iterate) {
       // Auto-submit next prompt
       logger.info(`Auto-iterating: ${next.reasoning}`);
@@ -276,12 +288,11 @@ async function handleResponse(jobId: string, result: string, durationMs: number)
 agent: cursor
 max_steps: 10
 ---
-
 # Autonomous iteration (Phase 2)
 ---
 agent: cursor
 max_steps: 10
-max_iterations: 5    # Enable auto-iteration (up to 5 attempts)
+max_iterations: 5 # Enable auto-iteration (up to 5 attempts)
 goal: Build a user registration API
 ---
 ```
@@ -289,16 +300,19 @@ goal: Build a user registration API
 ## Monitoring & Observability
 
 ### Execution Records (`training/execution-records.json`)
+
 - Raw data for all executions
 - Indexed by: job_id, agent_role, timestamp
 - Used by trainer to generate patterns
 
 ### Trainer Report (`training/trainer-report.json`)
+
 - Pattern analysis (success rates, typical sequences)
 - Improvement trends (speed, quality)
 - Agent-specific metrics
 
 ### Iteration State (`iteration-state/`)
+
 - Per-job state files: `{job_id}.json`
 - Tracks: current iteration, history, status
 - Used to resume interrupted sessions
@@ -322,6 +336,7 @@ rm .cursor/iteration-state/job-123.json
 ## Success Metrics
 
 **Phase 2 Goals:**
+
 - ✅ AgentTrainer records 20+ executions
 - ✅ Patterns extracted (success rates, error types, sequences)
 - ✅ Auto-iteration loop stable (3+ turns without human intervention)
@@ -329,6 +344,7 @@ rm .cursor/iteration-state/job-123.json
 - ✅ Speed improvement visible (speed_improvement > 1.5x)
 
 **Example success trajectory:**
+
 ```
 Execution 1:   70% success, 5 min
 Execution 2:   75% success, 4.5 min
@@ -340,15 +356,18 @@ Execution 5:   95% success, 1.5 min (learned best approach)
 ## Troubleshooting
 
 ### Session not found
+
 - Verify `.cursor/iteration-state/{job_id}.json` exists
 - Check `ITERATION_STATE_DIR` environment variable
 
 ### No patterns generated
+
 - Need at least 2-5 executions for each pattern
 - Check `.cursor/training/execution-records.json` for data
 - Verify AgentTrainer is recording results correctly
 
 ### Auto-iteration not triggering
+
 - Verify `max_iterations > 0` in frontmatter
 - Check that LocalPromptWatcher is monitoring properly
 - Verify IterationOrchestrator.recordResult() called after execution
@@ -364,6 +383,7 @@ Execution 5:   95% success, 1.5 min (learned best approach)
 ---
 
 **Related:**
+
 - `docs/LOCAL-AGENT-EXECUTION.md` — Phase 1 (execution)
 - `docs/01-development/AGENT-PROMPT-QUEUE.md` — Queue structure
 - `AGENTS.md` — Session state tracking

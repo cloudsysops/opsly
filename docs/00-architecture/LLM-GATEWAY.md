@@ -41,15 +41,15 @@ Si falta configuración, responde `503 search_disabled` o `500 search_misconfigu
 
 Definidos en `apps/llm-gateway/src/providers.ts` y costes en `router.ts` / `estimateCost`.
 
-| Proveedor               | Nivel típico | Coste orientativo / 1k tokens | Uso                                                                          |
-| ----------------------- | ------------ | ----------------------------- | ---------------------------------------------------------------------------- |
-| Llama local             | 1            | $0                            | Clasificación, extracción, tareas baratas (`model: "cheap"` o complejidad 1) |
-| Claude Haiku            | 2            | ~$0.00025 in / $0.00125 out   | Moderado, RAG simple                                                         |
-| OpenRouter (Mistral 7B) | 2            | ~$0.00002 in / $0.00006 out   | Fallback económico                                                           |
-| GPT-4o mini             | 2            | ~$0.00015 in / $0.0006 out    | Fallback OpenAI                                                              |
-| Claude Sonnet           | 3            | ~$0.003 in / $0.015 out       | Arquitectura, código complejo                                                |
-| GPT-4o                  | 3            | ~$0.005 in / $0.015 out       | Fallback si Sonnet no disponible                                             |
-| **DeepSeek** (`deepseek_chat`) | 2       | Bajo (API compatible OpenAI) | Cadena cloud vía `llmCallDirect`: primero con `routing_bias=cost` o `provider_hint=deepseek` si hay `DEEPSEEK_API_KEY` |
+| Proveedor                      | Nivel típico | Coste orientativo / 1k tokens | Uso                                                                                                                    |
+| ------------------------------ | ------------ | ----------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| Llama local                    | 1            | $0                            | Clasificación, extracción, tareas baratas (`model: "cheap"` o complejidad 1)                                           |
+| Claude Haiku                   | 2            | ~$0.00025 in / $0.00125 out   | Moderado, RAG simple                                                                                                   |
+| OpenRouter (Mistral 7B)        | 2            | ~$0.00002 in / $0.00006 out   | Fallback económico                                                                                                     |
+| GPT-4o mini                    | 2            | ~$0.00015 in / $0.0006 out    | Fallback OpenAI                                                                                                        |
+| Claude Sonnet                  | 3            | ~$0.003 in / $0.015 out       | Arquitectura, código complejo                                                                                          |
+| GPT-4o                         | 3            | ~$0.005 in / $0.015 out       | Fallback si Sonnet no disponible                                                                                       |
+| **DeepSeek** (`deepseek_chat`) | 2            | Bajo (API compatible OpenAI)  | Cadena cloud vía `llmCallDirect`: primero con `routing_bias=cost` o `provider_hint=deepseek` si hay `DEEPSEEK_API_KEY` |
 
 Salud en Redis se agrupa por **API**: `anthropic`, `llama_local`, `openrouter`, `openai`, y **`deepseek`** si la clave está configurada.
 

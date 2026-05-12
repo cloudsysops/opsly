@@ -5,6 +5,7 @@
 The Meta-Optimizer is a Phase 4a (Safe Mode) implementation of autonomous prompt improvement for the Opsly orchestrator. It uses semantic similarity scoring and sandbox validation to evaluate and safely test prompt improvements without persisting changes.
 
 **Key Characteristics:**
+
 - In-memory + Redis metrics only (no persistent prompt changes)
 - Embedding-based semantic similarity validation
 - Automatic rollback on validation failure or low improvement score
@@ -51,6 +52,7 @@ In-memory metrics store with:
   - Triggers cooldown if >= 3 rollbacks in 5 minutes
 
 **Memory Management:**
+
 - Keeps last 100 metrics per prompt
 - Automatically compresses old records when limit reached
 - Survives orchestrator restart (in-memory only)
@@ -96,6 +98,7 @@ Located in `__tests__/fixtures/meta-optimizer-test-prompts.ts`:
    - Validates working state enrichment
 
 Each test case includes:
+
 - Original prompt
 - Expected keywords for validation
 - Test inputs to verify improved prompt handles them
@@ -105,6 +108,7 @@ Each test case includes:
 Endpoint: `GET /internal/meta-optimizer/metrics`
 
 Returns:
+
 ```json
 {
   "success": true,
@@ -163,12 +167,14 @@ if (!result.rollback_triggered) {
 ## Phase 4a Scope (Conservative Mode)
 
 **What's Included:**
+
 - Orchestrator dispatch prompts (`src/workers/**/prompt*.ts`)
 - Intent validation prompts
 - Context enrichment prompts
 - Routing decision prompts
 
 **What's Excluded:**
+
 - System prompts (kernel level)
 - User-facing templates (customer-visible content)
 - Sensitive instruction sets
@@ -176,6 +182,7 @@ if (!result.rollback_triggered) {
 
 **Expansion Path:**
 Once Phase 4a validates stability, Phase 4b can expand to:
+
 - LLM Gateway system prompts
 - Planning engine prompts
 - Reflection/critique prompts

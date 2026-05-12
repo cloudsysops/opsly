@@ -32,7 +32,7 @@ if (missing.length > 0) {
 
 const forbiddenRootDirs = ['logs', 'tenants', 'letsencrypt', 'agents', 'workspaces', 'cli'];
 const forbiddenPresent = forbiddenRootDirs.filter((relativePath) =>
-  fs.existsSync(path.join(root, relativePath)),
+  fs.existsSync(path.join(root, relativePath))
 );
 
 if (forbiddenPresent.length > 0) {
@@ -41,7 +41,7 @@ if (forbiddenPresent.length > 0) {
     console.error(`- ${item}`);
   }
   console.error(
-    'Hint: move contents under runtime/ or tools/ (e.g. logs → runtime/logs/). See docs/REPO-MAP.md § validate-structure.',
+    'Hint: move contents under runtime/ or tools/ (e.g. logs → runtime/logs/). See docs/REPO-MAP.md § validate-structure.'
   );
   process.exit(1);
 }

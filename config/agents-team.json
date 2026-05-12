@@ -88,9 +88,20 @@
         "requests_per_minute": 4,
         "tokens_per_minute": 15000
       },
-      "allowed_tools": ["read_file", "analyze_codebase", "code_review", "architecture_analysis", "mcp_tool"],
+      "allowed_tools": [
+        "read_file",
+        "analyze_codebase",
+        "code_review",
+        "architecture_analysis",
+        "mcp_tool"
+      ],
       "allowed_paths": ["apps/", "config/", "docs/", "supabase/", "infra/"],
-      "specialization": ["code-review", "architecture-design", "engineering-decisions", "system-design"]
+      "specialization": [
+        "code-review",
+        "architecture-design",
+        "engineering-decisions",
+        "system-design"
+      ]
     }
   ]
 }

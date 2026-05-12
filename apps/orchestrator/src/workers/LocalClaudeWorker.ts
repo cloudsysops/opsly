@@ -77,7 +77,9 @@ async function callClaudeApiDirect(
   const apiUrl = process.env.CLAUDE_API_URL || 'https://api.anthropic.com';
 
   try {
-    console.log(`[LocalClaudeWorker] Calling Claude API with model ${model} (attempt ${retryCount + 1}/${maxRetries + 1})`);
+    console.log(
+      `[LocalClaudeWorker] Calling Claude API with model ${model} (attempt ${retryCount + 1}/${maxRetries + 1})`
+    );
 
     const response = await fetch(`${apiUrl}/v1/messages`, {
       method: 'POST',
@@ -190,13 +192,16 @@ ${responseText}
           );
           console.log(`[LocalClaudeWorker] Validation decision: ${decision.action}`);
         } catch (validationErr) {
-          const errorMsg = validationErr instanceof Error ? validationErr.message : String(validationErr);
+          const errorMsg =
+            validationErr instanceof Error ? validationErr.message : String(validationErr);
           console.error(`[LocalClaudeWorker] Validation error:`, errorMsg);
 
           // Distinguish error type: timeout/connection → mark for escalation
           const isRetriable = errorMsg.includes('timeout') || errorMsg.includes('ECONNREFUSED');
           if (isRetriable) {
-            console.error('[LocalClaudeWorker] Validation service unavailable (retriable), escalating');
+            console.error(
+              '[LocalClaudeWorker] Validation service unavailable (retriable), escalating'
+            );
             decision = {
               action: 'escalate',
               reason: `Validation orchestrator unavailable: ${errorMsg}`,
@@ -207,7 +212,9 @@ ${responseText}
               },
             };
           } else {
-            console.error('[LocalClaudeWorker] Permanent validation error, proceeding with response');
+            console.error(
+              '[LocalClaudeWorker] Permanent validation error, proceeding with response'
+            );
             decision = {
               action: 'commit',
               reason: `Validation failed (permanent): ${errorMsg}`,

@@ -3,10 +3,7 @@ export type OpenClawEventName =
   | 'openclaw_intent_result'
   | 'openclaw_intent_error';
 
-export function logOpenClawEvent(
-  event: OpenClawEventName,
-  fields: Record<string, unknown>
-): void {
+export function logOpenClawEvent(event: OpenClawEventName, fields: Record<string, unknown>): void {
   process.stdout.write(
     `${JSON.stringify({
       event,

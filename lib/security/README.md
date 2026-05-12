@@ -1,7 +1,8 @@
 ---
-title: "@intcloudsysops/security"
-description: "Authentication, encryption, and PII handling"
+title: '@intcloudsysops/security'
+description: 'Authentication, encryption, and PII handling'
 ---
+
 # @intcloudsysops/security
 
 Authentication, encryption, and PII redaction utilities for security and compliance.
@@ -25,7 +26,7 @@ const user = {
   id: 'u123',
   tenantId: 'tenant-abc',
   email: 'user@example.com',
-  role: 'admin'
+  role: 'admin',
 };
 
 const token = generateToken(user, '7d'); // 7 days
@@ -38,8 +39,8 @@ const token = generateToken(user, '7d'); // 7 days
 import { verifyToken } from '@intcloudsysops/security';
 
 const payload = verifyToken(token);
-console.log(payload.userId);    // 'u123'
-console.log(payload.tenantId);  // 'tenant-abc'
+console.log(payload.userId); // 'u123'
+console.log(payload.tenantId); // 'tenant-abc'
 ```
 
 ### Encrypt Secret
@@ -72,8 +73,8 @@ interface JWTPayload {
   userId: string;
   tenantId: string;
   role: 'user' | 'admin' | 'superadmin';
-  iat: number;        // Issued at (Unix timestamp)
-  exp: number;        // Expires at (Unix timestamp)
+  iat: number; // Issued at (Unix timestamp)
+  exp: number; // Expires at (Unix timestamp)
 }
 ```
 
@@ -86,7 +87,7 @@ import { verifyToken } from '@intcloudsysops/security';
 
 app.use((req, res, next) => {
   const token = req.headers.authorization?.split(' ')[1];
-  
+
   if (!token) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
@@ -111,7 +112,7 @@ const logger = createLogger('my-service');
 logger.info('User created', {
   email: redactPII('user@example.com'),
   phone: redactPII('555-1234'),
-  ssn: redactPII('123-45-6789')
+  ssn: redactPII('123-45-6789'),
 });
 ```
 
@@ -124,7 +125,7 @@ import { encryptSecret } from '@intcloudsysops/security';
 const encrypted = encryptSecret(apiKey);
 await db.from('api_keys').insert({
   user_id: userId,
-  value: encrypted
+  value: encrypted,
 });
 
 // Retrieve and use

@@ -42,48 +42,48 @@ docs/generated/sprint-status.auto.md ← burndown generado (status.yaml; no edit
 
 > **Note:** Legacy planning (`MASTER-PLAN*.md`, `SPRINT-ROADMAP.md`) is in [`history/plans/`](history/plans/) — **deprecated snapshots** (ADR-033). Canon: [`../ROADMAP.md`](../ROADMAP.md), [`../SPRINT-TRACKER.md`](../SPRINT-TRACKER.md), [`../AGENTS.md`](../AGENTS.md); machine view: [`generated/sprint-status.auto.md`](generated/sprint-status.auto.md), [`generated/implementation-progress.auto.md`](generated/implementation-progress.auto.md).
 
-| Doc                                                        | Cuándo usarlo                                            |
-| ---------------------------------------------------------- | -------------------------------------------------------- |
-| [`01-development/VISION.md`](01-development/VISION.md)     | Norte producto, fases, límites; **índice canon vs planes temáticos** |
-| [`../ROADMAP.md`](../ROADMAP.md)                           | Stub raíz → `docs/01-development/ROADMAP.md` (plan semanal) |
-| [`../SPRINT-TRACKER.md`](../SPRINT-TRACKER.md)             | Stub raíz → `docs/01-development/SPRINT-TRACKER.md` (checkboxes) |
-| [`plans/README.md`](plans/README.md)                       | Índice de planes temáticos (autonomía, CLI, go/no-go)    |
-| [`01-development/IMPLEMENTATION-IA-LAYER.md`](01-development/IMPLEMENTATION-IA-LAYER.md) | Implementar capa IA en el monorepo (sin Python paralelo) |
-| [`ACTIVE-PROMPT.md`](ACTIVE-PROMPT.md)                     | Prompt activo ejecutado por cursor-prompt-monitor        |
+| Doc                                                                                      | Cuándo usarlo                                                        |
+| ---------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| [`01-development/VISION.md`](01-development/VISION.md)                                   | Norte producto, fases, límites; **índice canon vs planes temáticos** |
+| [`../ROADMAP.md`](../ROADMAP.md)                                                         | Stub raíz → `docs/01-development/ROADMAP.md` (plan semanal)          |
+| [`../SPRINT-TRACKER.md`](../SPRINT-TRACKER.md)                                           | Stub raíz → `docs/01-development/SPRINT-TRACKER.md` (checkboxes)     |
+| [`plans/README.md`](plans/README.md)                                                     | Índice de planes temáticos (autonomía, CLI, go/no-go)                |
+| [`01-development/IMPLEMENTATION-IA-LAYER.md`](01-development/IMPLEMENTATION-IA-LAYER.md) | Implementar capa IA en el monorepo (sin Python paralelo)             |
+| [`ACTIVE-PROMPT.md`](ACTIVE-PROMPT.md)                                                   | Prompt activo ejecutado por cursor-prompt-monitor                    |
 
 ### 2. Arquitectura
 
-| Doc                                                                                    | Cuándo usarlo                                                              |
-| -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| Doc                                                                                    | Cuándo usarlo                                                                    |
+| -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
 | [`REPO-MAP.md`](REPO-MAP.md)                                                           | **Estructura del monorepo:** qué editar (VISION/AGENTS), whitelist raíz, scripts |
-| [`ARCHITECTURE.md`](ARCHITECTURE.md)                                                   | Control plane vs data plane, Traefik, redes                                |
-| [`ARCHITECTURE-DISTRIBUTED.md`](ARCHITECTURE-DISTRIBUTED.md)                           | VPS control + workers remotos (Mac 2011), Redis Tailscale                  |
-| [`HYBRID-OPSLY-ADMIN.md`](HYBRID-OPSLY-ADMIN.md)                                       | **Centro de mando** (Mac `opsly-admin`): Cursor, MCP, Git, DragonB, SSH    |
-| [`runbooks/e2e-hybrid-write.md`](runbooks/e2e-hybrid-write.md)                         | E2E escritura API `/api/tools/execute`, deploy `app`, Trivy                |
-| [`runbooks/VPS-DISK-SECURITY-SCAN.md`](runbooks/VPS-DISK-SECURITY-SCAN.md)             | Disco VPS, Trivy, `cleanup-vps.sh`                                         |
-| [`runbooks/DEPLOY-GITHUB-ACTIONS.md`](runbooks/DEPLOY-GITHUB-ACTIONS.md)               | Deploy CI → VPS (Tailscale, `VPS_HOST`, rollback imagen)                   |
-| [`runbooks/TENANT-ONBOARDING-TRIAGE.md`](runbooks/TENANT-ONBOARDING-TRIAGE.md)         | Triage onboarding tenants (logs, DB, cola, Docker)                         |
-| [`runbooks/LOCAL-SERVICES-GO-LIVE.md`](runbooks/LOCAL-SERVICES-GO-LIVE.md)             | Go-live tenant **Equipa** (`local-services`) — oferta limpieza + upgrade   |
-| [`runbooks/PRODUCTION-SECURITY-BASELINE.md`](runbooks/PRODUCTION-SECURITY-BASELINE.md) | Checklist mínimo red/secretos/apps en `prd`                                |
-| [`VPS-SSH-WORKER-NODES.md`](VPS-SSH-WORKER-NODES.md)                                   | Clave SSH VPS → workers (`authorized_keys`), solo Tailscale                |
-| [`SSH-USERS-FOR-AGENTS.md`](SSH-USERS-FOR-AGENTS.md)                                   | **Qué usuario SSH usar** (VPS, worker, Mac) — agentes y humanos            |
-| [`AGENTS-AUTONOMOUS-RUNBOOK.md`](AGENTS-AUTONOMOUS-RUNBOOK.md)                         | Workers autónomos: systemd, Ollama, cola `openclaw`, verificación          |
-| [`FIRST-OPENCLAW-AGENTS-MAC2011.md`](FIRST-OPENCLAW-AGENTS-MAC2011.md)                 | Primer arranque workers OpenClaw en Mac 2011 (SSH, Redis, E2E)             |
-| [`DECEPTICON-WORKER.md`](DECEPTICON-WORKER.md)                                         | Decepticon en worker Ubuntu (instalación, seguridad, vs LLM Gateway Opsly) |
-| [`RTK.md`](RTK.md)                                                                     | RTK: reducción de tokens en contexto de agente (Cursor/VPS/worker)         |
-| [`WORKER-FLOWS.md`](WORKER-FLOWS.md)                                                   | Quién corre TeamManager vs workers BullMQ                                  |
-| [`OPENCLAW-ARCHITECTURE.md`](OPENCLAW-ARCHITECTURE.md)                                 | MCP + Orchestrator + LLM Gateway + Context Builder                         |
-| [`design/OAR.md`](design/OAR.md)                                                       | Opsly Agentic Runtime (OAR): loops, MemoryInterface, AgentActionPort       |
-| [`adr/ADR-027-hybrid-compute-plane-k8s.md`](adr/ADR-027-hybrid-compute-plane-k8s.md)   | Control plane Compose vs compute plane K8s (futuro, criterios)             |
-| [`QUICKSTART-AGENTS.md`](QUICKSTART-AGENTS.md)                                         | Añadir tools MCP OpenClaw, tests, qué no duplicar                          |
-| [`ORCHESTRATOR.md`](ORCHESTRATOR.md)                                                   | BullMQ jobs, workers, circuit breaker, prioridades                         |
-| [`LLM-GATEWAY.md`](LLM-GATEWAY.md)                                                     | Cache Redis, routing bias, cost tracking                                   |
-| [`TOKEN-BILLING-SYSTEM.md`](TOKEN-BILLING-SYSTEM.md)                                   | Tokens/créditos vs USD; qué existe hoy vs wallet prepago (roadmap)         |
-| [`TOKEN-SYSTEM-GUIDE.md`](TOKEN-SYSTEM-GUIDE.md)                                       | Guía corta: ahorro, routing, presupuestos                                  |
-| [`CONTEXT-BUILDER.md`](CONTEXT-BUILDER.md)                                             | Sesiones de agentes, TTL por plan, persistencia                            |
-| [`AGENTS-GUIDE.md`](AGENTS-GUIDE.md)                                                   | Agentes paralelos, roles, límites por plan                                 |
-| [`WORKER-TEAM-ARCHITECTURE.md`](WORKER-TEAM-ARCHITECTURE.md)                           | Equipos OpenClaw / roles vs `TeamManager` (roadmap)                        |
-| [`WORKER-TEAM-BILLING.md`](WORKER-TEAM-BILLING.md)                                     | Billing workers: uso LLM, budgets, qué falta (CPU/mem)                     |
+| [`ARCHITECTURE.md`](ARCHITECTURE.md)                                                   | Control plane vs data plane, Traefik, redes                                      |
+| [`ARCHITECTURE-DISTRIBUTED.md`](ARCHITECTURE-DISTRIBUTED.md)                           | VPS control + workers remotos (Mac 2011), Redis Tailscale                        |
+| [`HYBRID-OPSLY-ADMIN.md`](HYBRID-OPSLY-ADMIN.md)                                       | **Centro de mando** (Mac `opsly-admin`): Cursor, MCP, Git, DragonB, SSH          |
+| [`runbooks/e2e-hybrid-write.md`](runbooks/e2e-hybrid-write.md)                         | E2E escritura API `/api/tools/execute`, deploy `app`, Trivy                      |
+| [`runbooks/VPS-DISK-SECURITY-SCAN.md`](runbooks/VPS-DISK-SECURITY-SCAN.md)             | Disco VPS, Trivy, `cleanup-vps.sh`                                               |
+| [`runbooks/DEPLOY-GITHUB-ACTIONS.md`](runbooks/DEPLOY-GITHUB-ACTIONS.md)               | Deploy CI → VPS (Tailscale, `VPS_HOST`, rollback imagen)                         |
+| [`runbooks/TENANT-ONBOARDING-TRIAGE.md`](runbooks/TENANT-ONBOARDING-TRIAGE.md)         | Triage onboarding tenants (logs, DB, cola, Docker)                               |
+| [`runbooks/LOCAL-SERVICES-GO-LIVE.md`](runbooks/LOCAL-SERVICES-GO-LIVE.md)             | Go-live tenant **Equipa** (`local-services`) — oferta limpieza + upgrade         |
+| [`runbooks/PRODUCTION-SECURITY-BASELINE.md`](runbooks/PRODUCTION-SECURITY-BASELINE.md) | Checklist mínimo red/secretos/apps en `prd`                                      |
+| [`VPS-SSH-WORKER-NODES.md`](VPS-SSH-WORKER-NODES.md)                                   | Clave SSH VPS → workers (`authorized_keys`), solo Tailscale                      |
+| [`SSH-USERS-FOR-AGENTS.md`](SSH-USERS-FOR-AGENTS.md)                                   | **Qué usuario SSH usar** (VPS, worker, Mac) — agentes y humanos                  |
+| [`AGENTS-AUTONOMOUS-RUNBOOK.md`](AGENTS-AUTONOMOUS-RUNBOOK.md)                         | Workers autónomos: systemd, Ollama, cola `openclaw`, verificación                |
+| [`FIRST-OPENCLAW-AGENTS-MAC2011.md`](FIRST-OPENCLAW-AGENTS-MAC2011.md)                 | Primer arranque workers OpenClaw en Mac 2011 (SSH, Redis, E2E)                   |
+| [`DECEPTICON-WORKER.md`](DECEPTICON-WORKER.md)                                         | Decepticon en worker Ubuntu (instalación, seguridad, vs LLM Gateway Opsly)       |
+| [`RTK.md`](RTK.md)                                                                     | RTK: reducción de tokens en contexto de agente (Cursor/VPS/worker)               |
+| [`WORKER-FLOWS.md`](WORKER-FLOWS.md)                                                   | Quién corre TeamManager vs workers BullMQ                                        |
+| [`OPENCLAW-ARCHITECTURE.md`](OPENCLAW-ARCHITECTURE.md)                                 | MCP + Orchestrator + LLM Gateway + Context Builder                               |
+| [`design/OAR.md`](design/OAR.md)                                                       | Opsly Agentic Runtime (OAR): loops, MemoryInterface, AgentActionPort             |
+| [`adr/ADR-027-hybrid-compute-plane-k8s.md`](adr/ADR-027-hybrid-compute-plane-k8s.md)   | Control plane Compose vs compute plane K8s (futuro, criterios)                   |
+| [`QUICKSTART-AGENTS.md`](QUICKSTART-AGENTS.md)                                         | Añadir tools MCP OpenClaw, tests, qué no duplicar                                |
+| [`ORCHESTRATOR.md`](ORCHESTRATOR.md)                                                   | BullMQ jobs, workers, circuit breaker, prioridades                               |
+| [`LLM-GATEWAY.md`](LLM-GATEWAY.md)                                                     | Cache Redis, routing bias, cost tracking                                         |
+| [`TOKEN-BILLING-SYSTEM.md`](TOKEN-BILLING-SYSTEM.md)                                   | Tokens/créditos vs USD; qué existe hoy vs wallet prepago (roadmap)               |
+| [`TOKEN-SYSTEM-GUIDE.md`](TOKEN-SYSTEM-GUIDE.md)                                       | Guía corta: ahorro, routing, presupuestos                                        |
+| [`CONTEXT-BUILDER.md`](CONTEXT-BUILDER.md)                                             | Sesiones de agentes, TTL por plan, persistencia                                  |
+| [`AGENTS-GUIDE.md`](AGENTS-GUIDE.md)                                                   | Agentes paralelos, roles, límites por plan                                       |
+| [`WORKER-TEAM-ARCHITECTURE.md`](WORKER-TEAM-ARCHITECTURE.md)                           | Equipos OpenClaw / roles vs `TeamManager` (roadmap)                              |
+| [`WORKER-TEAM-BILLING.md`](WORKER-TEAM-BILLING.md)                                     | Billing workers: uso LLM, budgets, qué falta (CPU/mem)                           |
 
 ### 3. Decisiones de arquitectura (ADRs)
 
@@ -124,7 +124,7 @@ docs/generated/sprint-status.auto.md ← burndown generado (status.yaml; no edit
 | [ADR-031](adr/ADR-031-token-optimization-ollama-primary.md)      | Optimización de tokens + Ollama primary (doc paralela; ver ADR-024)     |
 | [ADR-032](adr/ADR-032-scripts-organization.md)                   | Scripts por categoría + wrappers compatibilidad                         |
 | [ADR-033](adr/ADR-033-docs-canonicalization.md)                  | Canon docs + `docs/generated/*.auto.md` + historial en `history/plans/` |
-| [ADR-034](adr/ADR-034-ci-hygiene.md)                             | Higiene CI y docs-governance (relacionado con ADR-033)                   |
+| [ADR-034](adr/ADR-034-ci-hygiene.md)                             | Higiene CI y docs-governance (relacionado con ADR-033)                  |
 | [ADR-035](adr/ADR-035-openclaw-per-tenant.md)                    | OpenClaw Context Builder + MCP per-tenant (PROPOSED)                    |
 | [ADR-036](adr/ADR-036-cli-consolidation-tools-cli-first.md)      | Consolidación CLI `tools/cli` → `apps/cli` (propuesto)                  |
 

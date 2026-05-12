@@ -1,7 +1,8 @@
 ---
-title: "lib/workflow Governance"
-description: "Module governance for agent execution"
+title: 'lib/workflow Governance'
+description: 'Module governance for agent execution'
 ---
+
 # lib/workflow Governance
 
 ## Ownership
@@ -51,6 +52,7 @@ Fail after 4 attempts
 ```
 
 Never retry on:
+
 - Validation errors (400)
 - Authentication errors (401)
 - Rate limit (429) — Use circuit breaker instead
@@ -84,6 +86,7 @@ Never retry on:
 ```
 
 When limit exceeded:
+
 - Alert user via email
 - Mark agent as rate-limited
 - Queue further executions
@@ -91,13 +94,13 @@ When limit exceeded:
 
 ## Performance SLOs
 
-| Metric | Target | Alert |
-|--------|--------|-------|
-| P50 Latency | < 1s | - |
-| P95 Latency | < 5s | > 10s |
-| P99 Latency | < 10s | > 20s |
-| Success Rate | > 99% | < 99% |
-| Timeout Rate | < 1% | > 2% |
+| Metric       | Target | Alert |
+| ------------ | ------ | ----- |
+| P50 Latency  | < 1s   | -     |
+| P95 Latency  | < 5s   | > 10s |
+| P99 Latency  | < 10s  | > 20s |
+| Success Rate | > 99%  | < 99% |
+| Timeout Rate | < 1%   | > 2%  |
 
 ## Dependencies
 

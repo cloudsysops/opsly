@@ -149,7 +149,10 @@ export default function LandingPage() {
       <section className="border-y border-ops-border bg-ops-surface/35">
         <div className="mx-auto grid max-w-7xl gap-4 px-4 py-12 sm:px-6 md:grid-cols-4 lg:px-8">
           {workflow.map((item) => (
-            <article key={item.title} className="rounded-sm border border-ops-border bg-ops-bg/60 p-5">
+            <article
+              key={item.title}
+              className="rounded-sm border border-ops-border bg-ops-bg/60 p-5"
+            >
               <item.icon className="h-5 w-5 text-ops-green" aria-hidden />
               <h3 className="mt-4 font-semibold text-neutral-50">{item.title}</h3>
               <p className="mt-2 text-sm leading-6 text-neutral-500">{item.body}</p>
@@ -173,7 +176,10 @@ export default function LandingPage() {
         </div>
         <div className="mt-10 grid gap-5 lg:grid-cols-3">
           {packages.map((pkg) => (
-            <article key={pkg.name} className="flex flex-col rounded-lg border border-ops-border bg-ops-surface p-6">
+            <article
+              key={pkg.name}
+              className="flex flex-col rounded-lg border border-ops-border bg-ops-surface p-6"
+            >
               <h3 className="text-xl font-semibold text-neutral-50">{pkg.name}</h3>
               <p className="mt-3 min-h-16 text-sm leading-6 text-neutral-500">{pkg.description}</p>
               <div className="mt-6">

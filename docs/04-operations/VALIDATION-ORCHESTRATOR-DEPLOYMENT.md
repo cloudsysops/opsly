@@ -5,12 +5,14 @@
 The ValidationOrchestrator system provides automated validation → decision → commit coordination for agent-generated code. This guide covers deploying to VPS and monitoring 24/7 operation.
 
 **Key Components:**
+
 - **ValidationOrchestrator**: Lightweight coordinator for validation → decision → commit flow
 - **TestValidatorWorker**: Executes npm run type-check, test, build pipeline
 - **IterationManager**: Analyzes validation failures and suggests next prompts
 - **LocalGitAutoCommit**: Auto-commits validated responses with metadata
 
 **Architecture:**
+
 ```
 UnifiedLocalAgentWorker
     ├─ Cursor service (localhost:5001)
@@ -32,12 +34,14 @@ if escalate → marks in Supabase + HelpRequestSystem
 ## Prerequisites
 
 ### Local Development
+
 - Node 20+
 - Docker & Docker Compose
 - Git
 - SSH access to VPS (via Tailscale)
 
 ### VPS Requirements
+
 - Ubuntu 22.04 LTS
 - Docker & Docker Compose
 - Redis
@@ -45,6 +49,7 @@ if escalate → marks in Supabase + HelpRequestSystem
 - 4GB+ RAM, 20GB disk
 
 ### SSH Access
+
 ```bash
 # Verify Tailscale connection
 tailscale status
@@ -71,6 +76,7 @@ npm run test -- validation-orchestrator-e2e.test.ts --watch
 ```
 
 **Expected Output:**
+
 ```
 ValidationOrchestrator E2E - 3-Iteration Flow
   ✓ should handle 3-iteration flow: fail → iterate → fail → iterate → pass → commit (XXXms)
@@ -85,16 +91,19 @@ ValidationOrchestrator E2E - 3-Iteration Flow
 ### 2. Manual E2E Test with Real Services
 
 **Terminal 1: Start Orchestrator**
+
 ```bash
 npm run dev --workspace=@intcloudsysops/orchestrator
 ```
 
 **Terminal 2: Start Cursor Agent Service** (simulated)
+
 ```bash
 npx tsx scripts/mock-cursor-agent.ts
 ```
 
 **Terminal 3: Create Test Prompt**
+
 ```bash
 cat > .cursor/prompts/validation-test.md << 'EOF'
 ---
@@ -113,16 +122,19 @@ EOF
 ```
 
 **Terminal 4: Monitor Responses**
+
 ```bash
 watch -n 0.5 'ls -la .cursor/responses/ .cursor/.validation/ | tail -10'
 ```
 
 **Terminal 5: Monitor Git Commits**
+
 ```bash
 watch -n 1 'git log --oneline | head -10'
 ```
 
 **Verify:**
+
 - ✅ `src/handlers/greeting.ts` created with proper code
 - ✅ 3 iteration attempts (responses created)
 - ✅ Final git commit with "iteration 3/3 complete" message
@@ -170,6 +182,7 @@ bash scripts/deploy-validation-orchestrator.sh --rollback
 8. **Tagging**: Tags release with timestamp
 
 **Sample Output:**
+
 ```
 ValidationOrchestrator Deployment Script
 Branch: claude/opsly-defense-platform-sC0qH
@@ -233,14 +246,14 @@ The script automatically checks every 30 seconds:
 
 ### Alert Conditions
 
-| Condition | Threshold | Action |
-|-----------|-----------|--------|
-| Orchestrator Down | N/A | Critical alert |
-| Container Not Running | N/A | Critical alert |
-| Error Rate | >5 errors/hour | Warning alert |
-| Escalation Rate | >10% | Warning alert |
-| No Commits | >30 min | Warning |
-| High Queue Depth | >1000 jobs | Info |
+| Condition             | Threshold      | Action         |
+| --------------------- | -------------- | -------------- |
+| Orchestrator Down     | N/A            | Critical alert |
+| Container Not Running | N/A            | Critical alert |
+| Error Rate            | >5 errors/hour | Warning alert  |
+| Escalation Rate       | >10%           | Warning alert  |
+| No Commits            | >30 min        | Warning        |
+| High Queue Depth      | >1000 jobs     | Info           |
 
 ### Sample Output
 
@@ -281,15 +294,15 @@ grep "severity" /tmp/validation-orchestrator-alerts.log | sort | uniq -c
 ssh vps-dragon@100.120.151.91 << 'EOF'
     echo "1. Docker containers:"
     docker ps --format "table {{.Names}}\t{{.Status}}"
-    
+
     echo ""
     echo "2. Orchestrator health:"
     curl -s http://localhost:3011/health | jq .
-    
+
     echo ""
     echo "3. Recent errors:"
     docker logs orchestrator --since=1h | grep -i error | tail -5
-    
+
     echo ""
     echo "4. Recent commits:"
     cd /opt/opsly && git log --oneline -5
@@ -410,14 +423,14 @@ EOF
 
 ### Key Metrics
 
-| Metric | Target | Warning | Critical |
-|--------|--------|---------|----------|
-| Uptime | 99.9% | <99.5% | <95% |
-| Health Check Response | <100ms | >500ms | >2s |
-| Commit Rate | 3+ per 30 min | <1 per 30 min | 0 per 30 min |
-| Error Rate | <1 per hour | >5 per hour | >10 per hour |
-| Escalation Rate | <5% | >10% | >20% |
-| Queue Depth | <100 | >500 | >1000 |
+| Metric                | Target        | Warning       | Critical     |
+| --------------------- | ------------- | ------------- | ------------ |
+| Uptime                | 99.9%         | <99.5%        | <95%         |
+| Health Check Response | <100ms        | >500ms        | >2s          |
+| Commit Rate           | 3+ per 30 min | <1 per 30 min | 0 per 30 min |
+| Error Rate            | <1 per hour   | >5 per hour   | >10 per hour |
+| Escalation Rate       | <5%           | >10%          | >20%         |
+| Queue Depth           | <100          | >500          | >1000        |
 
 ### Monthly Report Template
 
@@ -425,27 +438,32 @@ EOF
 # ValidationOrchestrator - Monthly Report [Month]
 
 ## Uptime
+
 - Total uptime: XX.X%
 - Incidents: X
 - MTTR: XXX minutes
 
 ## Activity
+
 - Total jobs processed: XXX
 - Successful commits: XXX (XX%)
 - Iterations: XXX (XX%)
 - Escalations: XXX (XX%)
 
 ## Errors
+
 - Total errors: XX
 - Most common: [error type]
 - Resolution time: XX minutes average
 
 ## Performance
+
 - Average validation time: XX ms
 - P95 validation time: XX ms
 - Commit frequency: XX per hour
 
 ## Recommendations
+
 - [List any needed improvements]
 ```
 
@@ -549,17 +567,17 @@ git log -1 --format=%H  # Should show previous commit
 ```bash
 ssh vps-dragon@100.120.151.91 << 'EOF'
     cd /opt/opsly
-    
+
     # Stop current
     docker-compose down
-    
+
     # Get previous commit
     git log --oneline -2
     git reset --hard HEAD~1
-    
+
     # Rebuild and start
     docker-compose up -d orchestrator
-    
+
     # Verify
     curl http://localhost:3011/health
 EOF
@@ -581,6 +599,7 @@ EOF
 ## Support
 
 For issues or questions:
+
 1. Check monitoring output: `bash scripts/monitor-validation-orchestrator.sh --once`
 2. Review logs: `ssh vps-dragon@100.120.151.91 'docker logs orchestrator | tail -50'`
 3. Check validation records: `.cursor/.validation/` directory

@@ -28,11 +28,13 @@ Client library for the LLM Gateway service. Provides a unified, typed interface 
 ## API Stability
 
 ### Stable Exports (no changes without MAJOR bump)
+
 - `llmCall(request)` - main entry point
 - `llmCallDirect(request, options)` - provider-specific calls
 - `LLMRequest`, `LLMResponse` types
 
 ### Experimental (may change)
+
 - Environment variable configuration pattern
 
 ## Dependencies

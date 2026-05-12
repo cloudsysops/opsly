@@ -10,6 +10,7 @@ bash scripts/run-local-agent-system.sh
 ```
 
 That's it. System will:
+
 - ✅ Start Orchestrator on port 3011
 - ✅ Start LocalPromptWatcher watching `.cursor/prompts/`
 - ✅ Start LocalGitAutoCommit watching `.cursor/responses/`
@@ -22,21 +23,25 @@ That's it. System will:
 ## 📍 Watch 4 Things In Real-Time
 
 **Terminal 1 - Orchestrator Health:**
+
 ```bash
 while true; do curl -s http://localhost:3011/health | jq .status; sleep 5; done
 ```
 
 **Terminal 2 - Metadata Updates:**
+
 ```bash
 cd ~/opsly && watch -n 1 'cat .cursor/prompts/.metadata.json 2>/dev/null | jq .'
 ```
 
 **Terminal 3 - Watcher Logs:**
+
 ```bash
 tail -f /tmp/watcher.log
 ```
 
 **Terminal 4 - Git Commits:**
+
 ```bash
 cd ~/opsly && watch -n 2 'git log --oneline | head -5'
 ```
@@ -78,6 +83,7 @@ feat(job-12345): [executor] agent response completed
 ```
 
 And:
+
 ```bash
 # File created by Cursor
 ls -la src/greeting.ts
@@ -89,12 +95,14 @@ cat src/greeting.ts
 ## ⚠️ If It Stalls
 
 **Watcher not detecting?**
+
 ```bash
 # Manual trigger
 touch .cursor/prompts/test-cursor-execution.md
 ```
 
 **Cursor not executing?**
+
 ```bash
 # Check if Cursor is available
 which cursor
@@ -103,6 +111,7 @@ open -a "Cursor" .cursor/prompts/test-cursor-execution.md
 ```
 
 **Logs are your friend:**
+
 ```bash
 cat /tmp/orchestrator-run.log | tail -20
 cat /tmp/watcher.log | tail -20
@@ -149,6 +158,7 @@ Same flow happens automatically. Just watch the logs.
 ## 📞 Questions?
 
 Check logs first:
+
 ```bash
 grep -i error /tmp/*.log
 grep "failed\|Error" /tmp/watcher.log

@@ -88,7 +88,7 @@ export function extractCodeBlocks(content: string): CodeBlock[] {
 export async function writeValidationGuard(
   jobId: string,
   decision: string,
-  validationDir: string,
+  validationDir: string
 ): Promise<void> {
   try {
     const guardPath = path.join(validationDir, `${jobId}.guard`);
@@ -122,7 +122,11 @@ export async function hasValidationGuard(jobId: string, validationDir: string): 
 /**
  * Generate commit message with iteration metadata
  */
-export function generateCommitMessage(jobId: string, agentRole: string, iterations: number): string {
+export function generateCommitMessage(
+  jobId: string,
+  agentRole: string,
+  iterations: number
+): string {
   return `feat(job-${jobId}): iteration ${iterations} complete - ${agentRole}`;
 }
 
@@ -149,7 +153,7 @@ export function extractJobIdFromPath(filePath: string): string {
 export function formatErrorMessage(
   type: string,
   message: string,
-  context?: Record<string, unknown>,
+  context?: Record<string, unknown>
 ): string {
   let formatted = `[${type.toUpperCase()}] ${message}`;
 

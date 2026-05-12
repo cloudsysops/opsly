@@ -75,7 +75,10 @@ export class TestValidatorWorker {
     return Array.from(workspaces);
   }
 
-  private runValidation(type: 'type-check' | 'test' | 'build', workspaces?: string[]): ValidationResult {
+  private runValidation(
+    type: 'type-check' | 'test' | 'build',
+    workspaces?: string[]
+  ): ValidationResult {
     const startTime = Date.now();
 
     try {
@@ -239,7 +242,7 @@ export class TestValidatorWorker {
       // Log summary
       const statusEmoji = overallStatus === 'passed' ? '✅' : '❌';
       console.log(
-        `[TestValidator] ${statusEmoji} Validation complete (${totalDuration}ms, attempt ${attempt})`,
+        `[TestValidator] ${statusEmoji} Validation complete (${totalDuration}ms, attempt ${attempt})`
       );
       console.log(`[TestValidator] Result: ${overallStatus} | Next action: ${nextAction}`);
 
@@ -274,11 +277,7 @@ export class TestValidatorWorker {
 
       const watcher = watch(`${this.responsesDir}/*.md`, {
         persistent: true,
-        ignored: [
-          '**/.validation.json',
-          '**/.*',
-          '**/*.validation.json',
-        ],
+        ignored: ['**/.validation.json', '**/.*', '**/*.validation.json'],
       });
 
       watcher.on('add', (filePath: string) => {

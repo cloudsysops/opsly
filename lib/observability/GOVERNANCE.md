@@ -1,7 +1,8 @@
 ---
-title: "lib/observability Governance"
-description: "Module governance for observability layer"
+title: 'lib/observability Governance'
+description: 'Module governance for observability layer'
 ---
+
 # lib/observability Governance
 
 ## Ownership
@@ -20,12 +21,12 @@ All Opsly services MUST use `@intcloudsysops/observability` for:
 
 ### Required Metrics Per Service
 
-| Metric | Type | Description |
-|--------|------|-------------|
-| `{service}_requests_total` | counter | Total requests |
+| Metric                          | Type      | Description     |
+| ------------------------------- | --------- | --------------- |
+| `{service}_requests_total`      | counter   | Total requests  |
 | `{service}_request_duration_ms` | histogram | Request latency |
-| `{service}_errors_total` | counter | Total errors |
-| `{service}_queue_depth` | gauge | Pending work |
+| `{service}_errors_total`        | counter   | Total errors    |
+| `{service}_queue_depth`         | gauge     | Pending work    |
 
 ### Logging Levels
 

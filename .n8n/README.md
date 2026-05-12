@@ -57,15 +57,15 @@ Los webhooks n8n se configuran automáticamente en los tenants vía `scripts/onb
 
 ### 4. Workflows Disponibles
 
-| Workflow | Propósito | Trigger |
-|----------|-----------|---------|
-| discord-to-github | Discord → GitHub ACTIVE-PROMPT | `POST /webhook/opsly-discord-task` |
-| crm-lead-capture | Captura y normaliza leads CRM | `POST /webhook/opsly-crm-lead` |
-| crm-hot-lead-alert | Alerta leads calientes | `POST /webhook/opsly-crm-hot-lead` |
-| crm-follow-up-reminder | Recordatorio diario de ventas | Cron L-V 09:00 |
-| crm-daily-pipeline-digest | Digest diario de pipeline | Cron L-V 17:30 |
-| backup-workflow | Backup automático diario | Cron: `0 2 * * *` |
-| tenant-onboard | Onboarding automático | API call / evento |
+| Workflow                  | Propósito                      | Trigger                            |
+| ------------------------- | ------------------------------ | ---------------------------------- |
+| discord-to-github         | Discord → GitHub ACTIVE-PROMPT | `POST /webhook/opsly-discord-task` |
+| crm-lead-capture          | Captura y normaliza leads CRM  | `POST /webhook/opsly-crm-lead`     |
+| crm-hot-lead-alert        | Alerta leads calientes         | `POST /webhook/opsly-crm-hot-lead` |
+| crm-follow-up-reminder    | Recordatorio diario de ventas  | Cron L-V 09:00                     |
+| crm-daily-pipeline-digest | Digest diario de pipeline      | Cron L-V 17:30                     |
+| backup-workflow           | Backup automático diario       | Cron: `0 2 * * *`                  |
+| tenant-onboard            | Onboarding automático          | API call / evento                  |
 
 ### CRM Starter Pack
 
@@ -85,6 +85,7 @@ Detalle: `docs/n8n-workflows/crm/README.md`.
 ## Integración con Claude Code
 
 Los workflows n8n comparten contexto con Claude vía:
+
 - **`2-context/AGENTS.md`** — espejo de `/opt/opsly/AGENTS.md`
 - **`2-context/system_state.json`** — espejo de `/opt/opsly/context/system_state.json`
 
@@ -128,6 +129,7 @@ docker logs tenant_smiletripcare_n8n_1 --tail 100
 ## Troubleshooting
 
 ### n8n no responde
+
 ```bash
 # Verificar contenedor
 docker ps | grep n8n
@@ -140,6 +142,7 @@ docker restart tenant_<slug>_n8n_1
 ```
 
 ### Webhook devuelve 404
+
 ```bash
 # Verificar que el workflow está activo en n8n
 curl -s https://n8n-<slug>.ops.smiletripcare.com/api/v1/workflows | jq '.data[] | select(.name=="...") | .active'
@@ -149,6 +152,7 @@ curl -X POST https://n8n-<slug>.ops.smiletripcare.com/api/v1/workflows/<id>/acti
 ```
 
 ### n8n CLI no encontrado
+
 ```bash
 # Instalar n8n CLI globalmente
 npm install -g n8n

@@ -49,7 +49,10 @@ export function BookingForm(): ReactElement {
   }
 
   return (
-    <form onSubmit={(ev) => void onSubmit(ev)} className="mx-auto max-w-md space-y-4 rounded-lg border border-ops-border bg-neutral-950/80 p-6">
+    <form
+      onSubmit={(ev) => void onSubmit(ev)}
+      className="mx-auto max-w-md space-y-4 rounded-lg border border-ops-border bg-neutral-950/80 p-6"
+    >
       <div>
         <label htmlFor="name" className="mb-1 block text-sm text-neutral-400">
           Nombre
@@ -110,7 +113,9 @@ export function BookingForm(): ReactElement {
         {status === 'loading' ? 'Enviando…' : 'Solicitar reserva'}
       </button>
       {message.length > 0 ? (
-        <p className={status === 'ok' ? 'text-sm text-ops-green' : 'text-sm text-red-400'}>{message}</p>
+        <p className={status === 'ok' ? 'text-sm text-ops-green' : 'text-sm text-red-400'}>
+          {message}
+        </p>
       ) : null}
     </form>
   );
