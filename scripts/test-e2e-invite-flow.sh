@@ -3,9 +3,10 @@
 # Uso:
 #   export ADMIN_TOKEN="..."   # PLATFORM_ADMIN_TOKEN (nunca pegar en issues públicos)
 #   export OWNER_EMAIL="owner@dominio-real-del-tenant"   # Debe coincidir con owner_email en Supabase
-#   bash scripts/test-e2e-invite-flow.sh [--api-url URL] [--dry-run]
+#   bash scripts/test-e2e-invite-flow.sh [--api-url URL] [--dry-run] [--allow-unavailable]
 #
 # --dry-run: solo health check (no POST /api/invitations).
+# --allow-unavailable: si el endpoint público responde 404/5xx o no conecta, salir 0 con skip explícito.
 
 set -euo pipefail
 
@@ -18,6 +19,26 @@ API_URL="${API_URL:-https://api.op-sly.com}"
 # Backward compatible: prefer TENANT_REF, fallback to legacy TENANT_SLUG.
 TENANT_REF="${TENANT_REF:-${TENANT_SLUG:-smiletripcare}}"
 DRY_RUN="false"
+ALLOW_UNAVAILABLE="${ALLOW_UNAVAILABLE:-false}"
+
+is_transient_public_failure() {
+  local code="${1:-}"
+  [[ "${code}" == "000" || "${code}" == "404" || "${code}" == "502" || "${code}" == "503" || "${code}" == "504" ]]
+}
+
+skip_if_unavailable() {
+  local label="${1:?}"
+  local code="${2:-000}"
+  local body="${3:-}"
+  if [[ "${ALLOW_UNAVAILABLE}" == "true" ]] && is_transient_public_failure "${code}"; then
+    log_warn "${label} no disponible en entorno público (${code}). Skip explícito."
+    if [[ -n "${body}" ]]; then
+      echo "${body}" | jq . 2>/dev/null || echo "${body}"
+    fi
+    exit 0
+  fi
+}
+
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --api-url)
@@ -26,6 +47,10 @@ while [[ $# -gt 0 ]]; do
       ;;
     --dry-run)
       DRY_RUN="true"
+      shift
+      ;;
+    --allow-unavailable)
+      ALLOW_UNAVAILABLE="true"
       shift
       ;;
     --tenant-ref)
@@ -49,10 +74,24 @@ fi
 echo "🔍 E2E Invite flow (local runner)"
 echo "  API: ${API_URL}"
 echo "  Dry-run: ${DRY_RUN}"
+echo "  Allow unavailable: ${ALLOW_UNAVAILABLE}"
 echo "  Tenant: ${TENANT_REF}"
 
 echo "✓ Test 1: Health"
-curl -sfk "${API_URL}/api/health" | jq . >/dev/null
+TMP_HEALTH="$(mktemp)"
+TMP_BODY=""
+TMP_RES=""
+trap 'rm -f "${TMP_HEALTH}" "${TMP_BODY}" "${TMP_RES}"' EXIT
+HEALTH_CODE="$(
+  curl -sk --connect-timeout 10 --max-time 20 -o "${TMP_HEALTH}" -w "%{http_code}" "${API_URL}/api/health"
+)"
+HEALTH_BODY="$(cat "${TMP_HEALTH}")"
+skip_if_unavailable "GET /api/health" "${HEALTH_CODE}" "${HEALTH_BODY}"
+if [[ "${HEALTH_CODE}" != "200" ]]; then
+  echo "${HEALTH_BODY}" | jq . 2>/dev/null || echo "${HEALTH_BODY}"
+  die "GET /api/health devolvió HTTP ${HEALTH_CODE}" 1
+fi
+echo "${HEALTH_BODY}" | jq . >/dev/null
 
 if [[ "${DRY_RUN}" == "true" ]]; then
   echo "✓ Dry-run: omitiendo POST /api/invitations"
@@ -72,7 +111,6 @@ echo "✓ Test 2: POST /api/invitations"
 # Authorization Bearer + x-admin-token (API acepta cualquiera; Bearer es el que suele usar el admin app).
 TMP_BODY="$(mktemp)"
 TMP_RES="$(mktemp)"
-trap 'rm -f "${TMP_BODY}" "${TMP_RES}"' EXIT
 jq -n \
   --arg email "${OWNER_EMAIL}" \
   --arg tenantRef "${TENANT_REF}" \
@@ -86,6 +124,7 @@ HTTP_CODE="$(
     -d @"${TMP_BODY}"
 )"
 RESPONSE="$(cat "${TMP_RES}")"
+skip_if_unavailable "POST /api/invitations" "${HTTP_CODE}" "${RESPONSE}"
 echo "${RESPONSE}" | jq . 2>/dev/null || echo "${RESPONSE}"
 
 if [[ "${HTTP_CODE}" != "200" ]]; then

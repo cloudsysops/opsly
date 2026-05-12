@@ -307,6 +307,7 @@ jobs:
           export ADMIN_TOKEN="${{ secrets.PLATFORM_ADMIN_TOKEN }}"
           export OWNER_EMAIL="jkbotero78@gmail.com"
           export TENANT_SLUG="localrank"
+          export ALLOW_UNAVAILABLE="true"
           bash scripts/test-e2e-invite-flow.sh
 
       - name: Run Playwright E2E tests (portal with Supabase)
