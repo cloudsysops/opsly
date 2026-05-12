@@ -1,7 +1,7 @@
 ---
 status: canon
 owner: operations
-last_review: 2026-05-06
+last_review: 2026-05-12
 ---
 
 # Opsly — Contexto del Agente
@@ -248,9 +248,11 @@ node scripts/load-skills.js show opsly-api
 
 ### Por prioridad
 
-**CRITICAL** (siempre al inicio): `opsly-bootstrap` + `opsly-skill-creator`  
-**HIGH** (recomendados): `opsly-api`, `opsly-frontend`, `opsly-supabase`, `opsly-infra`, `opsly-mcp`, `opsly-llm`, `opsly-tenant`, `opsly-orchestrator`, `opsly-billing`  
-**MEDIUM**: `opsly-qa`, `opsly-discord`, `opsly-architect`
+**CRITICAL** (siempre al inicio): `opsly-bootstrap`, `opsly-skill-creator`, `opsly-context`, `opsly-quantum`, `opsly-autonomous`, `opsly-cost-forecaster`, `opsly-distributed-tracing`
+**HIGH** (recomendados): `opsly-api`, `opsly-frontend`, `opsly-supabase`, `opsly-infra`, `opsly-mcp`, `opsly-llm`, `opsly-tenant`, `opsly-orchestrator`, `opsly-billing`, `opsly-architect`, `opsly-bash`, `opsly-jcode`, `opsly-agent-manager`, `opsly-slack`, `opsly-invitations`, `opsly-economist`, `opsly-n8n-automation`, `opsly-niche-solution`
+**MEDIUM**: `opsly-qa`, `opsly-discord`, `opsly-feedback-ml`, `opsly-google-cloud`, `opsly-notebooklm`, `opsly-agent-teams`, `opsly-billing-dashboard`, `opsly-rendering`, `opsly-mcp-rendering`, `opsly-notion`, `opsly-airflow`, `opsly-ml`, `opsly-local-services`, `hermes-skeptic`, `context-builder`
+**LOW**: `opsly-simplify`, `opsly-researcher`
+**DEPRECATED**: `opsly-architect-senior` (merged into `opsly-architect`)
 
 **Regla operativa obligatoria:** primero buscar y reutilizar skill existente; si no hay match adecuado, crear o extender una skill por módulo con `opsly-skill-creator`.
 
@@ -258,18 +260,46 @@ node scripts/load-skills.js show opsly-api
 | --- | --- | --- |
 | opsly-bootstrap | `skills/user/opsly-bootstrap/` | **SIEMPRE** al inicio de sesión |
 | opsly-skill-creator | `skills/user/opsly-skill-creator/` | Crear/mejorar skills cuando falte proceso estándar |
+| opsly-context | `skills/user/opsly-context/` | Context Builder, sesión y resumen de agente |
+| opsly-quantum | `skills/user/opsly-quantum/` | Orquestación maestra, composición de skills |
+| opsly-autonomous | `skills/user/opsly-autonomous/` | Ejecución autónoma, chaining de skills |
+| opsly-cost-forecaster | `skills/user/opsly-cost-forecaster/` | Predicción de costos infra + IA (tokens, compute) |
+| opsly-distributed-tracing | `skills/user/opsly-distributed-tracing/` | Trazabilidad distribuida, OpenTelemetry |
 | opsly-api | `skills/user/opsly-api/` | Rutas `apps/api/` |
 | opsly-frontend | `skills/user/opsly-frontend/` | UI en `apps/portal`, `apps/admin`, `apps/web` |
 | opsly-supabase | `skills/user/opsly-supabase/` | Migraciones / SQL `platform` |
 | opsly-infra | `skills/user/opsly-infra/` | Docker, VPS, deploy, scripts de infra |
-| opsly-mcp | `skills/user/opsly-mcp/` | Tools MCP OpenClaw |
+| opsly-mcp | `skills/user/opsly-mcp/` | Tools MCP OpenClaw + MCP Gateway |
 | opsly-llm | `skills/user/opsly-llm/` | Llamadas vía LLM Gateway |
-| opsly-tenant | `skills/user/opsly-tenant/` | Onboarding / lifecycle tenant |
+| opsly-tenant | `skills/user/opsly-tenant/` | Onboarding / lifecycle / onboarding-agent |
 | opsly-orchestrator | `skills/user/opsly-orchestrator/` | OAR + workflows n8n/super-agent |
-| opsly-billing | `skills/user/opsly-billing/` | Stripe subscriptions/invoices/metering |
+| opsly-billing | `skills/user/opsly-billing/` | Stripe + billing-service, invoices, costos |
+| opsly-architect | `skills/user/opsly-architect/` | Decisiones de arquitectura / ADRs (incluye nivel senior) |
+| opsly-bash | `skills/user/opsly-bash/` | Scripts bash, convenciones, templates |
+| opsly-jcode | `skills/user/opsly-jcode/` | Generación de código en Opsly |
+| opsly-agent-manager | `skills/user/opsly-agent-manager/` | Queue de agentes, lifecycle, stats |
+| opsly-slack | `skills/user/opsly-slack/` | Comandos `/hermes-*`, Bolt, App Home |
+| opsly-invitations | `skills/user/opsly-invitations/` | Invitaciones tenant, email, audit |
+| opsly-economist | `skills/user/opsly-economist/` | Análisis económico, ROI, pricing |
+| opsly-n8n-automation | `skills/user/opsly-n8n-automation/` | Workflows n8n, automatización tenant |
+| opsly-niche-solution | `skills/user/opsly-niche-solution/` | Identificación de soluciones de nicho |
 | opsly-qa | `skills/user/opsly-qa/` | Validación release, smoke, auditoría |
 | opsly-discord | `skills/user/opsly-discord/` | `notify-discord.sh` y alertas |
-| opsly-architect | `skills/user/opsly-architect/` | Decisiones de arquitectura / ADRs |
+| opsly-feedback-ml | `skills/user/opsly-feedback-ml/` | Feedback loop, clasificación ML |
+| opsly-google-cloud | `skills/user/opsly-google-cloud/` | GCP, Drive, BigQuery, Vertex AI |
+| opsly-notebooklm | `skills/user/opsly-notebooklm/` | NotebookLM knowledge layer (EXPERIMENTAL) |
+| opsly-agent-teams | `skills/user/opsly-agent-teams/` | TeamManager BullMQ, colas paralelas |
+| opsly-billing-dashboard | `skills/user/opsly-billing-dashboard/` | UI billing/costos, Recharts, períodos |
+| opsly-rendering | `skills/user/opsly-rendering/` | Render música/imagen/vídeo (sox/SD/FFmpeg) |
+| opsly-mcp-rendering | `skills/user/opsly-mcp-rendering/` | Tools MCP render → rendering-engine |
+| opsly-notion | `skills/user/opsly-notion/` | Notion tasks, standup, quality |
+| opsly-airflow | `skills/user/opsly-airflow/` | DAGs Airflow, orquestación programada |
+| opsly-ml | `skills/user/opsly-ml/` | RAG, embeddings, insight engine, pgvector |
+| opsly-local-services | `skills/user/opsly-local-services/` | UI automatización local por tenant |
+| hermes-skeptic | `skills/user/hermes-skeptic/` | Revisión de riesgo en decisiones Hermes |
+| context-builder | `skills/user/context-builder/` | Context Builder service (sesión + summary) |
+| opsly-simplify | `skills/user/opsly-simplify/` | Optimización Docker/Compose |
+| opsly-researcher | `skills/user/opsly-researcher/` | Investigación web vía llm-gateway |
 
 ---
 
