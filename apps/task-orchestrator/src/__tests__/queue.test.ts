@@ -6,7 +6,7 @@ describe('TaskQueue Service', () => {
   beforeAll(async () => {
     try {
       await taskQueue.connect();
-    } catch (error) {
+    } catch {
       // Skip tests if Redis is not available
       console.warn('⚠️ Redis not available, skipping queue tests');
     }
@@ -15,7 +15,7 @@ describe('TaskQueue Service', () => {
   afterAll(async () => {
     try {
       await taskQueue.disconnect();
-    } catch (error) {
+    } catch {
       // Ignore disconnect errors
     }
   });

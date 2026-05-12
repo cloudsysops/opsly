@@ -98,6 +98,12 @@
       "rules": {
         "no-unused-vars": "off"
       }
+    },
+    {
+      "files": ["apps/task-orchestrator/**/*.ts"],
+      "rules": {
+        "@typescript-eslint/no-unused-expressions": "off"
+      }
     }
   ]
 }

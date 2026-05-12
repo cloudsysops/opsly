@@ -18,7 +18,7 @@ function getGatewayUrl(): string {
  * Used by most packages for general LLM requests.
  */
 export async function llmCall(request: LLMRequest): Promise<LLMResponse> {
-  const url = `${getGatewayUrl()}/chat/completions`;
+  const url = `${getGatewayUrl()}/v1/chat/completions`;
 
   const response = await fetch(url, {
     method: 'POST',
@@ -43,7 +43,7 @@ export async function llmCallDirect(
   request: LLMRequest,
   options?: { provider?: string; model?: string }
 ): Promise<LLMResponse> {
-  const url = new URL(`${getGatewayUrl()}/chat/completions`);
+  const url = new URL(`${getGatewayUrl()}/v1/chat/completions`);
 
   if (options?.provider) {
     url.searchParams.set('provider', options.provider);

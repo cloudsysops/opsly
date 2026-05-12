@@ -144,6 +144,7 @@ export const DEMO_SYSTEM_METRICS_MOCK = {
 export const COMPOSE_CRYPTO = {
   N8N_PASSWORD_RANDOM_BYTES: 24,
   N8N_ENCRYPTION_KEY_RANDOM_BYTES: 32,
+  MCP_JWT_SECRET_RANDOM_BYTES: 32,
 } as const;
 
 /** Webhooks outbound. */

@@ -1,4 +1,4 @@
-import express, { Express, Request, Response, NextFunction } from 'express';
+import express, { Express, Request, Response } from 'express';
 import cors from 'cors';
 import { ZodError } from 'zod';
 import { taskQueue } from './services/queue';
@@ -23,10 +23,11 @@ app.use(cors());
 app.use(express.json());
 
 // Error handling middleware
-app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
+app.use((err: unknown, _req: Request, res: Response): void => {
   console.error('Error:', err);
   if (err instanceof ZodError) {
-    return res.status(400).json({ error: 'Validation failed', details: err.issues });
+    res.status(400).json({ error: 'Validation failed', details: err.issues });
+    return;
   }
   res.status(500).json({ error: errorMessage(err) });
 });

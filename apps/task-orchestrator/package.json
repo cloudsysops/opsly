@@ -29,7 +29,9 @@
     "@types/node": "^20.8.0",
     "@types/cors": "^2.8.13",
     "@types/uuid": "^9.0.2",
-    "eslint": "^8.51.0",
+    "eslint": "^9.21.0",
+    "@typescript-eslint/eslint-plugin": "^8.58.0",
+    "@typescript-eslint/parser": "^8.58.0",
     "@humanwhocodes/config-array": "^0.11.14"
   }
 }

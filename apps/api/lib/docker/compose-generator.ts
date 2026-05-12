@@ -60,7 +60,7 @@ export async function renderTenantComposeFromTemplate(
   const n8nEncryptionKey = randomBytes(COMPOSE_CRYPTO.N8N_ENCRYPTION_KEY_RANDOM_BYTES).toString(
     'hex'
   );
-  const mcpJwtSecret = randomBytes(32).toString('hex');
+  const mcpJwtSecret = randomBytes(COMPOSE_CRYPTO.MCP_JWT_SECRET_RANDOM_BYTES).toString('hex');
 
   let yaml = await readFile(templatePath, 'utf8');
   yaml = yaml.replaceAll('{{SLUG}}', slug);

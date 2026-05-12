@@ -1,3 +1,5 @@
+const MIN_ADDRESS_LENGTH = 3;
+
 /**
  * MVP area check without Google Maps: address must mention an allowed state (USPS-style).
  */
@@ -6,7 +8,7 @@ export function addressMentionsAllowedState(
   allowedStatesUppercase: readonly string[]
 ): boolean {
   const trimmed = address.trim();
-  if (trimmed.length < 3) {
+  if (trimmed.length < MIN_ADDRESS_LENGTH) {
     return false;
   }
   const upper = trimmed.toUpperCase();

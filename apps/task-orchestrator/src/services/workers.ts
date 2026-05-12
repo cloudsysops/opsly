@@ -125,7 +125,7 @@ export class WorkerManager {
     status: 'idle' | 'working' | 'offline',
     currentTaskId?: string
   ): Promise<Worker> {
-    let worker = await this.getWorker(workerId);
+    const worker = await this.getWorker(workerId);
     if (!worker) {
       throw new Error(`Worker ${workerId} not found`);
     }
