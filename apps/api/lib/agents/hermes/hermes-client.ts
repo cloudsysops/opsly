@@ -1,8 +1,8 @@
-import { runAiGatewayChat, safeGatewayErrorMessage } from '../../ai-gateway/gateway';
-import type { ChatMessage } from '../../ai-gateway/types';
+import { llmCall } from '@intcloudsysops/llm-gateway';
 
 const HERMES_SYSTEM =
   "You are Hermes, Opsly's skeptical senior AI agent. Your job is to analyze tasks, challenge assumptions, identify risks, and produce actionable execution steps. Be concise, technical, and security-aware.";
+const HERMES_TENANT_SLUG = 'opsly';
 
 export type HermesMode = 'review' | 'plan' | 'debug' | 'security' | 'research';
 
@@ -25,30 +25,21 @@ export type RunHermesTaskResult =
       error: string;
     };
 
-function readOptionalEnv(key: string): string | undefined {
-  const value = process.env[key]?.trim();
-  return value !== undefined && value.length > 0 ? value : undefined;
+function safeGatewayErrorMessage(err: unknown): string {
+  if (err instanceof Error) {
+    return err.message;
+  }
+  return String(err);
 }
 
-function defaultHermesModel(mode: HermesMode): string | undefined {
-  switch (mode) {
-    case 'review':
-      return readOptionalEnv('AI_ROUTE_FAST') ?? readOptionalEnv('HERMES_MODEL');
-    case 'plan':
-      return readOptionalEnv('AI_ROUTE_ARCHITECT') ?? readOptionalEnv('HERMES_MODEL');
-    case 'debug':
-      return readOptionalEnv('AI_ROUTE_CODING') ?? readOptionalEnv('HERMES_MODEL');
-    case 'security':
-      return (
-        readOptionalEnv('AI_ROUTE_SECURITY') ??
-        readOptionalEnv('SECURITY_MODEL') ??
-        readOptionalEnv('HERMES_MODEL')
-      );
-    case 'research':
-      return readOptionalEnv('AI_ROUTE_REASONING') ?? readOptionalEnv('HERMES_MODEL');
-    default:
-      return readOptionalEnv('HERMES_MODEL');
+function defaultHermesModel(mode: HermesMode): string {
+  if (mode === 'security') {
+    return 'opsly:security';
   }
+  if (mode === 'plan') {
+    return 'opsly:coding';
+  }
+  return 'opsly:fast';
 }
 
 function buildUserPayload(input: RunHermesTaskInput): string {
@@ -61,8 +52,7 @@ function buildUserPayload(input: RunHermesTaskInput): string {
 }
 
 /**
- * Ejecuta Hermes en servidor vía {@link runAiGatewayChat} (NVIDIA u otro proveedor según env),
- * sin llamadas directas del cliente a NVIDIA.
+ * Ejecuta Hermes vía {@link runAiGatewayChat} con alias `opsly:*` (mapeo a AI_ROUTE_* en el gateway).
  */
 export async function runHermesTask(input: RunHermesTaskInput): Promise<RunHermesTaskResult> {
   const task = input.task?.trim() ?? '';
@@ -70,22 +60,23 @@ export async function runHermesTask(input: RunHermesTaskInput): Promise<RunHerme
     return { ok: false, error: 'task is required' };
   }
 
-  const messages: ChatMessage[] = [
-    { role: 'system', content: HERMES_SYSTEM },
-    { role: 'user', content: buildUserPayload(input) },
-  ];
-
   try {
-    const out = await runAiGatewayChat({
-      messages,
+    const out = await llmCall({
+      tenant_slug: HERMES_TENANT_SLUG,
+      system: HERMES_SYSTEM,
+      messages: [{ role: 'user', content: buildUserPayload(input) }],
       model: input.model?.trim() || defaultHermesModel(input.mode),
       temperature: 0.2,
-      metadata: { agent: 'hermes', mode: input.mode },
+      max_tokens: 1200,
+      cache: false,
+      request_id: `hermes:${input.mode}:${Date.now()}`,
+      skip_repo_context: true,
+      usage_metadata: { agent: 'hermes', mode: input.mode },
     });
     return {
       ok: true,
-      provider: out.provider,
-      model: out.model,
+      provider: 'llm-gateway',
+      model: out.model_used,
       result: out.content,
     };
   } catch (err) {
