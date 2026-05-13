@@ -2,6 +2,7 @@ import { createHmac } from 'node:crypto';
 import { Job, Queue, Worker } from 'bullmq';
 import { connection } from '../queue.js';
 import { getWorkerConcurrency } from '../worker-concurrency.js';
+import { logWorkerInfo, logWorkerError } from '../observability/worker-log.js';
 import type { WebhookPayload } from './webhook-types.js';
 
 export const WEBHOOK_QUEUE = 'opsly-webhooks';
@@ -49,39 +50,27 @@ export function createWebhookWorker(): Worker<WebhookJobData> {
   });
 
   worker.on('active', (job) => {
-    console.log(
-      JSON.stringify({
-        event: 'worker_start',
-        worker: 'WebhookWorker',
-        jobId: job.id,
-        webhookId: job.data.webhookId,
-        webhookEvent: job.data.payload.event,
-      })
-    );
+    logWorkerInfo('webhook', 'Job active', {
+      jobId: job.id,
+      webhookId: job.data.webhookId,
+      webhookEvent: job.data.payload.event
+    });
   });
 
   worker.on('completed', (job) => {
-    console.log(
-      JSON.stringify({
-        event: 'worker_complete',
-        worker: 'WebhookWorker',
-        jobId: job.id,
-        webhookId: job.data.webhookId,
-      })
-    );
+    logWorkerInfo('webhook', 'Job completed', {
+      jobId: job.id,
+      webhookId: job.data.webhookId
+    });
   });
 
   worker.on('failed', (job, err) => {
-    console.error(
-      JSON.stringify({
-        event: 'worker_fail',
-        worker: 'WebhookWorker',
-        jobId: job?.id,
-        webhookId: job?.data.webhookId,
-        error: err.message,
-        attemptsMade: job?.attemptsMade,
-      })
-    );
+    logWorkerError('webhook', 'Job failed', {
+      jobId: job?.id,
+      webhookId: job?.data.webhookId,
+      error: err.message,
+      attemptsMade: job?.attemptsMade
+    });
   });
 
   return worker;

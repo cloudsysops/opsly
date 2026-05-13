@@ -1,7 +1,7 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import { basename, join, resolve } from 'node:path';
 import { watch } from 'node:fs';
-import { HelpRequestSystem, ensureHelpRequestDirectories } from './help-request-system.js';
+import { HelpRequestSystem, ensureHelpRequestDirectories } from '../help-request-system.js';
 
 export class CursorCopilotBridge {
   private readonly promptsDir = resolve(process.cwd(), '.cursor/prompts');

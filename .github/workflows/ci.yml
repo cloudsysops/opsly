@@ -45,27 +45,28 @@ jobs:
           # Build ml first (required by api)
           cd apps/ml && npm run build
 
-      - name: TypeScript (api + admin + portal + mcp + orchestrator + ml + llm-gateway + context-builder)
-        run: |
-          set -euo pipefail
-          (cd apps/api && npx tsc --noEmit) & pid1=$!
-          (cd apps/admin && npx tsc --noEmit) & pid2=$!
-          (cd apps/portal && npx tsc --noEmit) & pid3=$!
-          (cd apps/mcp && npx tsc --noEmit) & pid4=$!
-          (cd apps/orchestrator && npx tsc --noEmit) & pid5=$!
-          (cd apps/ml && npx tsc --noEmit) & pid6=$!
-          (cd apps/llm-gateway && npx tsc --noEmit) & pid7=$!
-          (cd apps/context-builder && npx tsc --noEmit) & pid8=$!
-          status=0
-          wait $pid1 || status=1
-          wait $pid2 || status=1
-          wait $pid3 || status=1
-          wait $pid4 || status=1
-          wait $pid5 || status=1
-          wait $pid6 || status=1
-          wait $pid7 || status=1
-          wait $pid8 || status=1
-          exit $status
+  - name: TypeScript (api + admin + portal + mcp + orchestrator + ml + llm-gateway + context-builder)
+    run: |
+      set -euo pipefail
+      run_tsc() { cd "$GITHUB_WORKSPACE/$1" && npx tsc --noEmit; }
+      run_tsc apps/api & pid1=$!
+      run_tsc apps/admin & pid2=$!
+      run_tsc apps/portal & pid3=$!
+      run_tsc apps/mcp & pid4=$!
+      run_tsc apps/orchestrator & pid5=$!
+      run_tsc apps/ml & pid6=$!
+      run_tsc apps/llm-gateway & pid7=$!
+      run_tsc apps/context-builder & pid8=$!
+      status=0
+      wait $pid1 || status=1
+      wait $pid2 || status=1
+      wait $pid3 || status=1
+      wait $pid4 || status=1
+      wait $pid5 || status=1
+      wait $pid6 || status=1
+      wait $pid7 || status=1
+      wait $pid8 || status=1
+      exit $status
 
       - name: OpenAPI subset (CI gate; duplica validate-context para fallo temprano en PR)
         run: npm run validate-openapi
@@ -79,7 +80,7 @@ jobs:
               || [ -f "${dir}/.eslintrc.json" ] \
               || [ -f "${dir}/.eslintrc.cjs" ] \
               || [ -f "${dir}/.eslintrc.js" ]; then
-              (cd "$dir" && npx eslint .)
+              cd "$GITHUB_WORKSPACE/$dir" && npx eslint .
             else
               echo "No ESLint config in ${dir}, skipping"
             fi

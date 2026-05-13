@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
-import { ValidationFeedbackLayer } from '../lib/validation-feedback.js';
+import { ValidationFeedbackLayer } from '../lib/validation/validation-feedback.js';
 import { LocalWorkerPool } from '../lib/local-worker-pool.js';
-import { ValidationMetricsStore } from '../lib/validation-metrics.js';
+import { ValidationMetricsStore } from '../lib/validation/validation-metrics.js';
 
 describe('ValidationFeedbackLayer + LocalWorkerPool - Parallel Execution', () => {
   describe('ValidationFeedbackLayer: Initialization', () => {

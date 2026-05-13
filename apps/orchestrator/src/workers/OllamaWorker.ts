@@ -2,6 +2,7 @@ import { Job } from 'bullmq';
 import { meterPlannerLlmFireAndForget } from '../metering/usage-events-meter.js';
 import { createWorker } from './create-worker.js';
 import type { OrchestratorJob } from '../types.js';
+import { logWorkerInfo, logWorkerWarn, logWorkerError, type WorkerName } from '../observability/worker-log.js';
 
 const DEFAULT_GATEWAY = 'http://127.0.0.1:3010';
 
@@ -31,7 +32,7 @@ async function handleAutoCommit(ctx: {
 }): Promise<void> {
 	const { persona, runId, tenantSlug, result, success, durationMs } = ctx;
 
-	console.log(`[auto-commit] ${persona} completed in ${durationMs}ms, success=${success}`);
+  logWorkerInfo('ollama', `auto-commit ${persona} completed`, { duration_ms: durationMs, success });
 
 	const { createClient } = await import('@supabase/supabase-js');
 
@@ -39,7 +40,7 @@ async function handleAutoCommit(ctx: {
 	const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY ?? process.env.SUPABASE_ANON_KEY ?? '';
 
 	if (!supabaseKey) {
-		console.log('[auto-commit] SUPABASE_URL/KEY not configured, skipping');
+  logWorkerInfo('ollama', 'SUPABASE_URL/KEY not configured, skipping auto-commit');
 		return;
 	}
 
@@ -59,11 +60,11 @@ async function handleAutoCommit(ctx: {
 		});
 
 	if (error) {
-		console.log(`[auto-commit] DB insert failed: ${error.message}`);
+    logWorkerError('ollama', `DB insert failed: ${error.message}`, { persona, run_id: runId });
 		return;
 	}
 
-	console.log(`[auto-commit] Task result stored for ${persona} (${runId}) in sandbox`);
+  logWorkerInfo('ollama', `Task result stored for ${persona}`, { run_id: runId, schema: 'sandbox' });
 
 	if (persona === 'evolution-agent') {
 		await runEvolutionLoop(ctx);
@@ -82,7 +83,7 @@ async function runEvolutionLoop(ctx: {
 	success: boolean;
 	durationMs: number;
 }): Promise<void> {
-	console.log('[evolution] Analyzing team performance...');
+  logWorkerInfo('ollama', 'Analyzing team performance...');
 
 	const { createClient } = await import('@supabase/supabase-js');
 	const supabaseUrl = process.env.SUPABASE_URL ?? 'https://jkwykpldnitavhmtuzmo.supabase.co';
@@ -100,7 +101,7 @@ async function runEvolutionLoop(ctx: {
 		.limit(20);
 
 	if (!results || results.length === 0) {
-		console.log('[evolution] No historical data to analyze');
+    logWorkerInfo('ollama', 'No historical data to analyze');
 		return;
 	}
 
@@ -108,15 +109,13 @@ async function runEvolutionLoop(ctx: {
 	const failCount = results.length - successCount;
 	const avgDuration = results.reduce((acc, r) => acc + (r.duration_ms || 0), 0) / results.length;
 
-	console.log(
-		`[evolution] Stats: ${successCount} success, ${failCount} failed, avg ${Math.round(avgDuration)}ms`
-	);
+  logWorkerInfo('ollama', 'Evolution stats', { success_count: successCount, fail_count: failCount, avg_duration_ms: Math.round(avgDuration) });
 
 	if (failCount > successCount * 0.5) {
-		console.log('[evolution] ⚠️ High failure rate detected - triggering correction');
+    logWorkerWarn('ollama', 'High failure rate detected - triggering correction', { success_count: successCount, fail_count: failCount });
 	}
 
-	console.log('[evolution] Evolution analysis complete');
+  logWorkerInfo('ollama', 'Evolution analysis complete');
 }
 
 async function runAutoSync(ctx: {
@@ -124,7 +123,7 @@ async function runAutoSync(ctx: {
 	runId: string;
 	tenantSlug: string;
 }): Promise<void> {
-	console.log('[auto-sync] Checking for repo updates...');
+  logWorkerInfo('ollama', 'Checking for repo updates...');
 
 	const gitDir = process.env.OPSLY_GIT_DIR || '/opt/opsly';
 
@@ -138,15 +137,15 @@ async function runAutoSync(ctx: {
 		const remote = execSync('git rev-parse origin/main').toString().trim();
 
 		if (local !== remote) {
-			console.log(`[auto-sync] New commits: ${local.slice(0, 7)} -> ${remote.slice(0, 7)}`);
+      logWorkerInfo('ollama', 'New commits detected, syncing', { local: local.slice(0, 7), remote: remote.slice(0, 7) });
 			execSync('git stash', { stdio: 'ignore' });
 			execSync('git pull --rebase origin main', { stdio: 'inherit' });
-			console.log('[auto-sync] Repo synced');
+      logWorkerInfo('ollama', 'Repo synced');
 		} else {
-			console.log('[auto-sync] Up to date');
+      logWorkerInfo('ollama', 'Repo up to date');
 		}
 	} catch (err) {
-		console.log(`[auto-sync] Sync failed: ${err instanceof Error ? err.message : 'unknown'}`);
+    logWorkerError('ollama', `Sync failed: ${err instanceof Error ? err.message : 'unknown'}`);
 	}
 }
 
@@ -155,7 +154,7 @@ async function runWatcherHealth(ctx: {
 	runId: string;
 	tenantSlug: string;
 }): Promise<void> {
-	console.log('[watcher] Running health checks...');
+  logWorkerInfo('ollama', 'Running health checks...');
 
 	try {
 		const { createClient } = await import('@supabase/supabase-js');
@@ -191,14 +190,14 @@ async function runWatcherHealth(ctx: {
 			},
 		};
 
-		console.log(`[watcher] Health: queue=${waiting} waiting, ${failed} failed`);
+  logWorkerInfo('ollama', 'Health check result', { queue_waiting: waiting, queue_failed: failed });
 
 		if (failed > active && active > 0) {
-			console.log('[watcher] ⚠️ High failure rate - auto-scaling triggered');
+    logWorkerWarn('ollama', 'High failure rate - auto-scaling triggered', { queue_active: active, queue_failed: failed });
 		}
 
 		if (waiting > 50) {
-			console.log('[watcher] ⚠️ Queue backup detected - consider scaling workers');
+    logWorkerWarn('ollama', 'Queue backup detected - consider scaling workers', { queue_waiting: waiting });
 		}
 
 		try {
@@ -212,13 +211,13 @@ async function runWatcherHealth(ctx: {
 					created_at: new Date().toISOString(),
 				});
 			if (insertError) {
-				console.log(`[watcher] DB insert failed: ${insertError.message}`);
+      logWorkerError('ollama', `DB insert failed: ${insertError.message}`, { run_id: ctx.runId });
 			}
 		} catch (dbErr) {
-			console.log(`[watcher] DB error: ${dbErr instanceof Error ? dbErr.message : 'unknown'}`);
+      logWorkerError('ollama', `DB error: ${dbErr instanceof Error ? dbErr.message : 'unknown'}`);
 		}
 	} catch (err) {
-		console.log(`[watcher] Health check failed: ${err instanceof Error ? err.message : 'unknown'}`);
+    logWorkerError('ollama', `Health check failed: ${err instanceof Error ? err.message : 'unknown'}`);
 	}
 }
 

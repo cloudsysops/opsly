@@ -9,7 +9,7 @@ import {
   selectLocalAgentForIntent,
 } from './registry.js';
 import { OPENCLAW_EXECUTION_QUEUE } from './queue-contract.js';
-import { ValidationFeedbackLayer } from '../lib/validation-feedback.js';
+import { ValidationFeedbackLayer } from '../lib/validation/validation-feedback.js';
 import { parseMetadataLlmOverrides, resolveLlmPolicyFromIntent } from './llm-intent-policy.js';
 
 const DEFAULT_MCP_SERVER = 'project-0-intcloudsysops-opsly-openclaw';

@@ -21,7 +21,7 @@ import { closeJobStateStore } from './state/store.js';
 import { OpslyCortex } from './cortex.js';
 import { TeamManager } from './teams/TeamManager.js';
 import { AutonomousScheduler } from './schedulers/autonomous-scheduler.js';
-import { CursorCopilotBridge } from './lib/cursor-copilot-bridge.js';
+import { CursorCopilotBridge } from './lib/agent/cursor-copilot-bridge.js';
 import { startBackupWorker } from './workers/BackupWorker.js';
 import { startCursorWorker } from './workers/CursorWorker.js';
 import { startDriveWorker } from './workers/DriveWorker.js';

@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { ValidationMetricsStore } from '../lib/validation-metrics.js';
+import { ValidationMetricsStore } from '../lib/validation/validation-metrics.js';
 
 describe('Error Path Handling Tests', () => {
   describe('ValidationMetricsStore graceful degradation', () => {

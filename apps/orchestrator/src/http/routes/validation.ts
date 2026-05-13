@@ -1,5 +1,5 @@
 import type { RouteContext } from '../router.js';
-import { ValidationDashboard } from '../../lib/validation-dashboard.js';
+import { ValidationDashboard } from '../../lib/validation/validation-dashboard.js';
 import { jsonResponse, errorResponse } from '../router.js';
 
 export async function handleValidationMetrics(ctx: RouteContext): Promise<void> {

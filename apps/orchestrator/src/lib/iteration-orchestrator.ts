@@ -1,7 +1,7 @@
 import { promises as fsp } from 'fs';
 import * as path from 'path';
 import { IterationManager } from './iteration/iteration-manager.js';
-import { AgentTrainer, type PatternSuggestion, type ExecutionPattern } from './agent-trainer.js';
+import { AgentTrainer, type PatternSuggestion, type ExecutionPattern } from './agent/agent-trainer.js';
 
 export interface IterationSession {
   jobId: string;

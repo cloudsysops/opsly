@@ -1,5 +1,6 @@
 import { createClient } from 'redis';
 import { notifyDiscord } from './NotifyWorker.js';
+import { logWorkerInfo, logWorkerWarn, logWorkerError } from '../observability/worker-log.js';
 
 const HEALTH_INTERVAL_MS = 5 * 60 * 1000; // 5 minutos
 const MAX_CONSECUTIVE_FAILURES = 3;
@@ -141,7 +142,7 @@ async function checkTenant(redis: ReturnType<typeof createClient>, slug: string)
     }
 
     const failures = await incrementFailures(redis, fKey);
-    console.warn(`[health] ${slug}/${svc} failure #${failures} — ${url}`);
+    logWorkerWarn('health', 'Service failure', { slug, svc, failures, url });
 
     if (failures >= MAX_CONSECUTIVE_FAILURES) {
       // 1ª alerta: intento de restart
@@ -198,11 +199,11 @@ export function startHealthWorker(connection: {
   });
 
   redis.on('error', (err) => {
-    console.error('[health] Redis error:', err);
+    logWorkerError('health', 'Redis error', { message: err instanceof Error ? err.message : String(err) });
   });
 
   const connectPromise = redis.connect().catch((err) => {
-    console.error('[health] Redis connect failed:', err);
+    logWorkerError('health', 'Redis connect failed', { message: err instanceof Error ? err.message : String(err) });
     return null;
   });
 
@@ -213,12 +214,12 @@ export function startHealthWorker(connection: {
 
   // Primera ejecución inmediata
   void tick().catch((err) => {
-    console.error('[health] initial tick error:', err);
+    logWorkerError('health', 'Initial tick error', { message: err instanceof Error ? err.message : String(err) });
   });
 
   const timer = setInterval(() => {
     void tick().catch((err) => {
-      console.error('[health] tick error:', err);
+      logWorkerError('health', 'Tick error', { message: err instanceof Error ? err.message : String(err) });
     });
   }, HEALTH_INTERVAL_MS);
 

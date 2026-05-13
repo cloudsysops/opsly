@@ -1,7 +1,7 @@
 import { promises as fsp } from 'fs';
 import * as path from 'path';
-import { TestValidatorWorker } from '../workers/TestValidatorWorker.js';
-import { IterationManager } from './iteration/iteration-manager.js';
+import { TestValidatorWorker } from '../../workers/TestValidatorWorker.js';
+import { IterationManager } from '../iteration/iteration-manager.js';
 import { ValidationMetricsStore } from './validation-metrics.js';
 
 interface ValidationResult {

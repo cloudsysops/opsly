@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { promises as fsp } from 'fs';
 import * as path from 'path';
 import { IterationOrchestrator } from '../lib/iteration-orchestrator.js';
-import { AgentTrainer } from '../lib/agent-trainer.js';
+import { AgentTrainer } from '../lib/agent/agent-trainer.js';
 
 /**
  * End-to-End Test: Phase 7 - Autonomous Iteration + Pattern Learning

@@ -8,7 +8,7 @@ import {
   parseControlMode,
   setLocalControlMode,
 } from '../../control-mode.js';
-import { getAgentServiceRegistry, type AgentService } from '../../lib/agent-service-registry.js';
+import { getAgentServiceRegistry, type AgentService } from '../../lib/agent/agent-service-registry.js';
 import {
   isLocalAgentKind,
   jobTypeForLocalAgent,

@@ -57,6 +57,7 @@
     "opsly:local-prompt-watcher": "tsx scripts/local-prompt-watcher.ts",
     "opsly:local-prompt-watcher:once": "tsx scripts/local-prompt-watcher.ts --once",
     "opsly:agent-cli": "tsx scripts/opsly-agent-cli.ts",
+    "opsly:cursor-session-brief": "tsx --tsconfig scripts/tsconfig.cursor-sdk.json scripts/cursor-sdk-session-brief.ts",
     "opsly:local-cursor-service": "tsx scripts/cursor-agent-service.ts --port 5001",
     "docs:sync": "node scripts/sync-docs.js && node scripts/generate-sprint-tracking.js && node scripts/generate-agents-assignments.js",
     "docs:watch": "nodemon --watch docs/implementation/status.yaml --exec \"npm run docs:sync\"",
@@ -97,11 +98,9 @@
     "commit": "git-cz"
   },
   "devDependencies": {
-    "fast-xml-builder": "1.2.0",
-    "hono": "4.12.18",
-    "ip-address": "10.2.0",
     "@commitlint/cli": "^19.8.1",
     "@commitlint/config-conventional": "^19.8.1",
+    "@cursor/sdk": "^1.0.13",
     "@eslint/eslintrc": "^3.3.1",
     "@eslint/js": "^9.21.0",
     "@playwright/test": "^1.59.1",
@@ -115,7 +114,10 @@
     "eslint": "^9.21.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.5",
+    "fast-xml-builder": "1.2.0",
+    "hono": "4.12.18",
     "husky": "^9.1.7",
+    "ip-address": "10.2.0",
     "js-yaml": "^4.1.0",
     "lint-staged": "^15.5.1",
     "nodemon": "^3.1.9",
@@ -147,9 +149,9 @@
     "npm": ">=10.0.0"
   },
   "optionalDependencies": {
-    "@rollup/rollup-linux-x64-gnu": "4.60.2",
     "@rollup/rollup-darwin-arm64": "4.60.2",
-    "@rollup/rollup-darwin-x64": "4.60.2"
+    "@rollup/rollup-darwin-x64": "4.60.2",
+    "@rollup/rollup-linux-x64-gnu": "4.60.2"
   },
   "overrides": {
     "rollup": "4.60.2",

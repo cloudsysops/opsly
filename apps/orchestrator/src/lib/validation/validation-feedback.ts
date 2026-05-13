@@ -1,4 +1,4 @@
-import type { OpenClawControlDecisionContract } from '../openclaw/contracts.js';
+import type { OpenClawControlDecisionContract } from '../../openclaw/contracts.js';
 import { ValidationMetricsStore } from './validation-metrics.js';
 
 export interface AdaptedDecision {

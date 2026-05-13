@@ -4,7 +4,7 @@
  */
 import { Job, Worker } from 'bullmq';
 import Stripe from 'stripe';
-import { logWorkerLifecycle } from '../observability/worker-log.js';
+import { logWorkerLifecycle, logWorkerError } from '../observability/worker-log.js';
 import { connection } from '../queue.js';
 import { getWorkerConcurrency } from '../worker-concurrency.js';
 
@@ -116,14 +116,7 @@ export function startWebhooksProcessingWorker(): Worker<StripeIngestJobData> {
   );
 
   worker.on('failed', (job, err) => {
-    console.error(
-      JSON.stringify({
-        event: 'worker_fail',
-        worker: 'WebhooksProcessingWorker',
-        jobId: job?.id,
-        error: err instanceof Error ? err.message : String(err),
-      })
-    );
+    logWorkerError('webhooks-processing', 'Job failed', { jobId: job?.id, error: err instanceof Error ? err.message : String(err) });
   });
 
   return worker;

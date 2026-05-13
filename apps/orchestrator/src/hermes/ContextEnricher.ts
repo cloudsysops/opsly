@@ -10,7 +10,7 @@ import type {
 } from '@intcloudsysops/types';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
-import { NotebookLMClient } from '../lib/notebooklm-client.js';
+import { NotebookLMClient } from '../lib/notebooklm/notebooklm-client.js';
 
 const LOCAL_DOC_PATHS = ['ARCHITECTURE.md', 'AGENTS.md', 'docs/HERMES-INTEGRATION.md'] as const;
 

@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { AgentTrainer } from '../lib/agent-trainer.js';
-import { ValidationOrchestrator } from '../lib/validation-orchestrator.js';
+import { AgentTrainer } from '../lib/agent/agent-trainer.js';
+import { ValidationOrchestrator } from '../lib/validation/validation-orchestrator.js';
 import { IterationOrchestrator } from '../lib/iteration-orchestrator.js';
 
 describe('Input Validation Tests', () => {

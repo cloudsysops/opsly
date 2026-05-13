@@ -12,17 +12,17 @@
 import { Job, Worker, UnrecoverableError } from 'bullmq';
 import { promises as fsp } from 'node:fs';
 import * as path from 'node:path';
-import { getAgentServiceRegistry } from '../lib/agent-service-registry.js';
+import { getAgentServiceRegistry } from '../lib/agent/agent-service-registry.js';
 import {
   agentForLocalJobType,
   jobTypeForLocalAgent,
   LOCAL_AGENT_KINDS,
   type LocalAgentKind,
 } from '../lib/local-worker-utils.js';
-import { logWorkerLifecycle } from '../observability/worker-log.js';
+import { logWorkerInfo, logWorkerWarn, logWorkerError, logWorkerLifecycle } from '../observability/worker-log.js';
 import { getWorkerConcurrency, type WorkerConcurrencyKey } from '../worker-concurrency.js';
-import { createValidationOrchestrator } from '../lib/validation-orchestrator.js';
-import { writeValidationGuard } from '../lib/validation-utils.js';
+import { createValidationOrchestrator } from '../lib/validation/validation-orchestrator.js';
+import { writeValidationGuard } from '../lib/validation/validation-utils.js';
 
 interface LocalAgentPayload {
   prompt_content?: string;
@@ -131,7 +131,7 @@ async function processLocalAgentJob(
       throw new Error(`Service not configured or disabled for ${agent}`);
     }
 
-    console.log(`[LocalAgentWorker] ${agent}: invoking ${serviceUrl}/execute`);
+		logWorkerInfo('local-agents', `${agent}: invoking ${serviceUrl}/execute`);
     const response = await fetch(`${serviceUrl.replace(/\/+$/, '')}/execute`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -168,7 +168,7 @@ async function processLocalAgentJob(
 
     // Validate response and decide next action (validation orchestration)
     if (responsePath) {
-      console.log(`[LocalAgentWorker] Starting validation orchestration for ${responsePath}`);
+		logWorkerInfo('local-agents', `Starting validation orchestration for ${responsePath}`);
       const decision = await validationOrchestrator.validateAndDecide(
         job_id,
         agent_role,
@@ -177,7 +177,7 @@ async function processLocalAgentJob(
         3, // max iterations
       );
 
-      console.log(`[LocalAgentWorker] Validation decision: ${decision.action} - ${decision.reason}`);
+		logWorkerInfo('local-agents', `Validation decision: ${decision.action} - ${decision.reason}`);
 
       // Write validation guard to prevent double-commits
       await writeValidationGuard(job_id, decision.action, path.join(cursorDir, '.validation'));
@@ -200,7 +200,7 @@ async function processLocalAgentJob(
     };
   } catch (err) {
     const errorMsg = err instanceof Error ? err.message : String(err);
-    console.error(`[LocalAgentWorker] Job ${job_id} error:`, errorMsg);
+		logWorkerError('local-agents', `Job ${job_id} error: ${errorMsg}`);
 
     return {
       success: false,
@@ -222,11 +222,10 @@ export function startLocalAgentsUnifiedWorker(connection: object): Worker {
   }));
   const totalConcurrency = localConcurrency.reduce((sum, item) => sum + item.concurrency, 0);
 
-  console.log(
-    `[LocalAgentWorker] Unified worker: ${localConcurrency
-      .map((item) => `${item.agent}=${item.concurrency}`)
-      .join(' + ')} = ${totalConcurrency}`
-  );
+	logWorkerInfo(
+		'local-agents',
+		`Unified worker: ${localConcurrency.map((item) => `${item.agent}=${item.concurrency}`).join(' + ')} = ${totalConcurrency}`
+	);
   const validJobTypes = new Set(LOCAL_AGENT_KINDS.map((agent) => jobTypeForLocalAgent(agent)));
 
   const worker = new Worker(
@@ -257,7 +256,7 @@ export function startLocalAgentsUnifiedWorker(connection: object): Worker {
       const registry = getAgentServiceRegistry();
       const t0 = Date.now();
 
-      console.log(`[LocalAgentWorker] Processing ${jobType} job ${job.id}`);
+		logWorkerInfo('local-agents', `Processing ${jobType} job ${job.id}`);
       logWorkerLifecycle('start', 'local-agents', job);
 
       try {
@@ -267,9 +266,9 @@ export function startLocalAgentsUnifiedWorker(connection: object): Worker {
         logWorkerLifecycle('complete', 'local-agents', job, { duration_ms: elapsed });
 
         if (result.success) {
-          console.log(`[LocalAgentWorker] ✅ ${jobType} job ${job.id} completed in ${elapsed}ms`);
-        } else {
-          console.error(`[LocalAgentWorker] ❌ ${jobType} job ${job.id} failed: ${result.error}`);
+			logWorkerInfo('local-agents', `${jobType} job ${job.id} completed in ${elapsed}ms`, { success: true });
+			} else {
+			logWorkerError('local-agents', `${jobType} job ${job.id} failed: ${result.error}`);
         }
 
         return result;
@@ -278,10 +277,10 @@ export function startLocalAgentsUnifiedWorker(connection: object): Worker {
         const errorMsg = err instanceof Error ? err.message : String(err);
 
         if (err instanceof UnrecoverableError) {
-          console.error(`[LocalAgentWorker] ⚠️ Unrecoverable error in ${jobType} job ${job.id}: ${errorMsg}`);
-          logWorkerLifecycle('fail', 'local-agents', job, { duration_ms: elapsed, error: errorMsg });
-        } else {
-          console.error(`[LocalAgentWorker] ❌ ${jobType} job ${job.id} error: ${errorMsg}`);
+			logWorkerError('local-agents', `Unrecoverable error in ${jobType} job ${job.id}: ${errorMsg}`);
+			logWorkerLifecycle('fail', 'local-agents', job, { duration_ms: elapsed, error: errorMsg });
+			} else {
+			logWorkerError('local-agents', `${jobType} job ${job.id} error: ${errorMsg}`);
           logWorkerLifecycle('fail', 'local-agents', job, { duration_ms: elapsed, error: errorMsg });
         }
 
@@ -295,16 +294,16 @@ export function startLocalAgentsUnifiedWorker(connection: object): Worker {
   );
 
   worker.on('closed', () => {
-    console.log('[LocalAgentWorker] Unified worker closed');
+		logWorkerInfo('local-agents', 'Unified worker closed');
     unifiedWorkerClosed = true;
     unifiedWorkerInstance = null;
   });
 
   worker.on('error', (err) => {
-    console.error('[LocalAgentWorker] Worker error:', err);
+		logWorkerError('local-agents', 'Worker error', { error: String(err) });
   });
 
-  console.log('[LocalAgentWorker] Unified worker ready on local-agents queue');
+	logWorkerInfo('local-agents', 'Unified worker ready on local-agents queue');
   unifiedWorkerInstance = worker;
   unifiedWorkerClosed = false;
 

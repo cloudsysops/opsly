@@ -4,6 +4,7 @@ import { IterationOrchestrator } from '../lib/iteration/iteration-orchestrator.j
 import { AgentTrainer } from '../lib/training/agent-trainer.js';
 import { enqueueLocalAgentJob } from '../queue.js';
 import type { OrchestratorJob } from '../types.js';
+import { logWorkerInfo, logWorkerError } from '../observability/worker-log.js';
 
 interface LocalAgentJob extends OrchestratorJob {
   prompt_body?: string;
@@ -12,11 +13,6 @@ interface LocalAgentJob extends OrchestratorJob {
   max_steps?: number;
 }
 
-// Simple logger replacement
-const logger = {
-  info: (msg: string, ctx?: any) => console.log(`[INFO] ${msg}`, ctx ? JSON.stringify(ctx) : ''),
-  error: (msg: string, ctx?: any) => console.error(`[ERROR] ${msg}`, ctx ? JSON.stringify(ctx) : ''),
-};
 
 interface AgentResponse {
   success: boolean;
@@ -63,15 +59,15 @@ export class UnifiedLocalAgentWorker {
 
     // Event handlers
     this.worker.on('completed', (job) => {
-      logger.info(`✅ Job ${job.id} completed`, { job_type: job.name });
+      logWorkerInfo('local-agents', 'Job completed', { jobId: job.id, job_type: job.name });
     });
 
     this.worker.on('failed', (job, err) => {
-      logger.error(`❌ Job ${job?.id} failed`, { error: err.message, job_type: job?.name });
+      logWorkerError('local-agents', 'Job failed', { jobId: job?.id, error: err.message, job_type: job?.name });
     });
 
     this.worker.on('error', (err) => {
-      logger.error('Worker error', { error: err.message });
+      logWorkerError('local-agents', 'Worker error', { error: err.message });
     });
 
     // Store services for use in processJob
@@ -91,11 +87,11 @@ export class UnifiedLocalAgentWorker {
     const agentRole = ((localJob as any).agent_role || 'cursor') as 'cursor' | 'claude' | 'copilot' | 'opencode';
     const goal = ((localJob as any).goal || localJob.metadata?.goal || 'Unspecified goal') as string;
 
-    logger.info(`🚀 Processing local agent job`, {
-      job_id: job.id,
-      agent_role: agentRole,
-      has_iterations: Boolean(localJob.max_iterations),
-    });
+logWorkerInfo('local-agents', 'Processing local agent job', {
+    jobId: job.id,
+    agent_role: agentRole,
+    has_iterations: Boolean(localJob.max_iterations),
+  });
 
     // Step 1: Initialize iteration session if needed
     let sessionId = localJob.request_id || job.id;
@@ -108,7 +104,7 @@ export class UnifiedLocalAgentWorker {
         localJob.max_iterations,
       );
       sessionId = session.job_id;
-      logger.info(`📝 Iteration session initialized`, { session_id: sessionId, max_iterations: localJob.max_iterations });
+      logWorkerInfo('local-agents', 'Iteration session initialized', { session_id: sessionId, max_iterations: localJob.max_iterations });
     }
 
     // Step 2: Execute prompt via HTTP agent service
@@ -117,15 +113,15 @@ export class UnifiedLocalAgentWorker {
     const duration = Date.now() - startTime;
 
     if (!response.success) {
-      logger.error(`❌ Agent service failed`, {
-        agent_role: agentRole,
-        error: response.error,
-      });
+logWorkerError('local-agents', 'Agent service failed', {
+      agent_role: agentRole,
+      error: response.error,
+    });
       throw new Error(`Agent service failed: ${response.error}`);
     }
 
     const result = response.result || '';
-    logger.info(`✅ Agent execution complete`, { duration, result_length: result.length });
+    logWorkerInfo('local-agents', 'Agent execution complete', { duration, result_length: result.length });
 
     // Step 3: Record result and determine if we should iterate
     let shouldIterate = false;
@@ -136,10 +132,10 @@ export class UnifiedLocalAgentWorker {
       shouldIterate = iteration.should_iterate;
       nextPrompt = iteration.next_prompt;
 
-      logger.info(`📊 Iteration analysis complete`, {
-        should_iterate: shouldIterate,
-        reasoning: iteration.reasoning,
-      });
+logWorkerInfo('local-agents', 'Iteration analysis complete', {
+      should_iterate: shouldIterate,
+      reasoning: iteration.reasoning,
+    });
     }
 
     // Step 4: Write result to responses folder
@@ -160,7 +156,7 @@ export class UnifiedLocalAgentWorker {
 
     // Step 6: Auto-iterate if needed
     if (shouldIterate && nextPrompt) {
-      logger.info(`🔄 Auto-iterating...`, { session_id: sessionId });
+      logWorkerInfo('local-agents', 'Auto-iterating', { session_id: sessionId });
 
       const nextJob: LocalAgentJob = {
         type: localJob.type || 'local_cursor',
@@ -181,19 +177,19 @@ export class UnifiedLocalAgentWorker {
       };
 
       await enqueueLocalAgentJob(nextJob);
-      logger.info(`📤 Next iteration enqueued`, { parent_job: job.id });
+      logWorkerInfo('local-agents', 'Next iteration enqueued', { parent_job: job.id });
     } else if (!shouldIterate && localJob.max_iterations && localJob.max_iterations > 0) {
       // Session is complete
       await this.orchestrator.completeSession(sessionId);
       const summary = await this.orchestrator.getSummary(sessionId);
-      logger.info(`🎉 Iteration session complete`, { summary });
+      logWorkerInfo('local-agents', 'Iteration session complete', { summary });
 
       // Generate patterns report
       const report = await this.trainer.generatePatterns();
-      logger.info(`📈 Trainer report generated`, {
-        total_executions: report.total_executions,
-        patterns_found: report.patterns.length,
-      });
+logWorkerInfo('local-agents', 'Trainer report generated', {
+      total_executions: report.total_executions,
+      patterns_found: report.patterns.length,
+    });
     }
 
     return {
@@ -274,7 +270,7 @@ export class UnifiedLocalAgentWorker {
     const filepath = path.join(responsesDir, filename);
 
     await fsp.writeFile(filepath, result);
-    logger.info(`📝 Response written`, { filepath });
+    logWorkerInfo('local-agents', 'Response written', { filepath });
   }
 
   /**
@@ -294,17 +290,17 @@ export class UnifiedLocalAgentWorker {
    * Start worker
    */
   async start(): Promise<void> {
-    logger.info('🚀 UnifiedLocalAgentWorker starting...');
+    logWorkerInfo('local-agents', 'UnifiedLocalAgentWorker starting');
     await this.worker.waitUntilReady();
-    logger.info('✅ UnifiedLocalAgentWorker ready');
+    logWorkerInfo('local-agents', 'UnifiedLocalAgentWorker ready');
   }
 
   /**
    * Stop worker
    */
   async stop(): Promise<void> {
-    logger.info('🛑 Stopping UnifiedLocalAgentWorker...');
+    logWorkerInfo('local-agents', 'Stopping UnifiedLocalAgentWorker');
     await this.worker.close();
-    logger.info('✅ UnifiedLocalAgentWorker stopped');
+    logWorkerInfo('local-agents', 'UnifiedLocalAgentWorker stopped');
   }
 }

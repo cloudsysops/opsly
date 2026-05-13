@@ -13,6 +13,7 @@ import {
   VERTEX_TEXT_EMBEDDING_004_DIM,
 } from '../lib/vertex-ai-client.js';
 import { createWorker } from './create-worker.js';
+import { logWorkerInfo, logWorkerWarn, logWorkerError } from '../observability/worker-log.js';
 
 const DEFAULT_GATES = {
   min_success_rate: 95,
@@ -63,7 +64,7 @@ async function notifyDiscordApproval(
     body: JSON.stringify({ embeds: [embed] }),
   });
   if (!res.ok) {
-    console.warn('[ApprovalGate] Discord notify failed', res.status);
+    logWorkerWarn('approval-gate', 'Discord notify failed', { status: res.status });
   }
 }
 
@@ -90,7 +91,7 @@ export class ApprovalGateWorker {
       throw new Error(`ApprovalGateWorker: invalid job payload: ${parsed.error.message}`);
     }
     const job = parsed.data;
-    console.log(`[ApprovalGate] Starting analysis: ${job.sandbox_run_id}`);
+    logWorkerInfo('approval-gate', 'Starting analysis', { sandbox_run_id: job.sandbox_run_id });
 
     const response = await this.approvalClient.analyze({
       sandbox_run_id: job.sandbox_run_id,
@@ -114,7 +115,7 @@ export class ApprovalGateWorker {
       });
 
     if (error) {
-      console.error('[ApprovalGate] Supabase insert failed', error);
+      logWorkerError('approval-gate', 'Supabase insert failed', { message: error.message });
       throw new Error(error.message);
     }
 
@@ -133,19 +134,17 @@ export class ApprovalGateWorker {
             model_used: modelUsed,
           });
         if (embErr) {
-          console.warn('[ApprovalGate] embedding insert failed', embErr.message);
+          logWorkerWarn('approval-gate', 'Embedding insert failed', { message: embErr.message });
         } else {
           const dim = emb.dimension;
-          console.log(`[ApprovalGate] Embedding stored: ${String(dim)} dims`);
+          logWorkerInfo('approval-gate', 'Embedding stored', { dims: dim });
           if (dim !== VERTEX_TEXT_EMBEDDING_004_DIM) {
-            console.warn(
-              `[ApprovalGate] expected ${String(VERTEX_TEXT_EMBEDDING_004_DIM)} dims, got ${String(dim)}`
-            );
+logWorkerWarn('approval-gate', 'Embedding dimension mismatch', { expected: VERTEX_TEXT_EMBEDDING_004_DIM, got: dim });
           }
         }
       } catch (e) {
         const msg = e instanceof Error ? e.message : String(e);
-        console.warn('[ApprovalGate] Vertex embedding skipped:', msg);
+        logWorkerWarn('approval-gate', 'Vertex embedding skipped', { message: msg });
       }
     }
 
@@ -166,7 +165,7 @@ export function startApprovalGateWorker(connection: object): {
       vertex = new VertexAIClient();
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
-      console.warn('[ApprovalGate] VERTEX_AI_EMBED_ENABLED but client init failed:', msg);
+      logWorkerWarn('approval-gate', 'VERTEX_AI_EMBED_ENABLED but client init failed', { message: msg });
     }
   }
   const gate = new ApprovalGateWorker(supabase, client, vertex);
