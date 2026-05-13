@@ -35,8 +35,6 @@ Estructura para gestionar agentes, comandos y hooks en Claude Code dentro del pr
 └── .DS_Store                  # (ignorado por git)
 ```
 
-En la **raíz del monorepo** (no dentro de `.claude/`): **`.mcp.json`** — registro MCP estándar de Claude Code para OpenClaw (`opsly-openclaw` → `npm run opsly:mcp:stdio`).
-
 ## Claude Code: SSH al VPS (sandbox macOS)
 
 En `.claude/settings.json` hay reglas oficiales `permissions.allow` (`Bash(ssh *)`, script `setup-vps-ssh-to-opsly-admin`, `npm run opsly:vps-ssh:to-admin`) y `sandbox.excludedCommands` (`ssh`, el script) para evitar `Operation not permitted` con Seatbelt. Plantilla opcional: `settings.local.json.example` → copiar a `.claude/settings.local.json` (gitignored). Tras actualizar, reinicia sesión o usa `/permissions` en Claude Code.
@@ -127,6 +125,10 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 - **skills/user/**: Procedimientos vivos (opsly-bootstrap, opsly-skill-creator, etc.)
 
 ## Troubleshooting
+
+### `/doctor` — Invalid settings (hooks ignorados)
+
+Si aparece *Unknown hook event "pre-commit"* (u otros de Git), es porque `hooks` en la raíz del JSON es reservado por Claude Code. Usa **`opslyGitHookCatalog`** para el catálogo Opsly y deja `hooks` solo si defines eventos válidos de la documentación enlazada arriba.
 
 ### Hooks no se ejecutan
 ```bash

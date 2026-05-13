@@ -44,7 +44,8 @@
     }
   },
 
-  "hooks": {
+  "opslyGitHookCatalog": {
+    "description": "Metadatos Opsly para git (core.hooksPath → .claude/4-hooks). No usar la clave top-level \"hooks\": Claude Code la reserva para SessionStart, PreToolUse, etc.",
     "pre-commit": {
       "enabled": true,
       "command": "bash .claude/4-hooks/lint-on-save.sh"
@@ -123,16 +124,14 @@
   "permissions": {
     "enabled": true,
     "strategy": "whitelist",
-    "description": "Sandbox enabled for Opsly. See settings.local.json for machine-specific overrides",
+    "description": "See settings.local.json for machine-specific permissions",
     "allow": [
       "Bash(ssh *)",
       "Bash(ssh vps-dragon *)",
       "Bash(./scripts/setup-vps-ssh-to-opsly-admin.sh *)",
       "Bash(bash ./scripts/setup-vps-ssh-to-opsly-admin.sh *)",
       "Bash(npm run opsly:vps-ssh:to-admin *)",
-      "Bash(npm run opsly:vps-ssh:to-admin)",
-      "Bash(npm run opsly:mcp:stdio)",
-      "Bash(npm run opsly:*)"
+      "Bash(npm run opsly:vps-ssh:to-admin)"
     ],
     "global": [
       "Read(//Users/dragon/**)",
