@@ -118,3 +118,6 @@ docs/.obsidian/plugins/recent-files-obsidian/data.json
 # Redis dump file
 dump.rdb
 logs/
+
+# Agent bootstrap state (generated per-agent, local to session)
+.agent-bootstrap-state/
