@@ -12,6 +12,9 @@
 ├── 3-slash-commands/
 ├── 4-hooks/
 └── SYNC-GUIDE.md                    # Este archivo
+
+# Raíz del repo (también versionado):
+/.mcp.json                           # Claude Code — servidor MCP OpenClaw (stdio)
 ```
 
 **Commit:**
@@ -112,6 +115,16 @@ cat > .claude/settings.local.json << 'EOF'
 }
 EOF
 ```
+
+### VPS → máquina local (¿hace falta en `.claude`?)
+
+**No es simétrico por defecto.** Lo que ves en `CLAUDE.md` / `settings.json` (`ssh vps-dragon@100.120.151.91`) es el flujo **más habitual**: Claude Code (o tú) en el **Mac con el repo** ejecuta SSH **hacia el VPS** para `docker ps`, deploy, etc.
+
+El camino **VPS → tu Mac** es otro patrón: sirve para **scripts / workers / orquestador** que salen del VPS hacia nodos (Mac 2011, laptops), con clave en el VPS y `authorized_keys` en el destino. Eso **no** lo define `.claude` como “obligatorio”; está descrito en infra:
+
+- [`docs/04-infrastructure/VPS-SSH-WORKER-NODES.md`](../docs/04-infrastructure/VPS-SSH-WORKER-NODES.md)
+
+Si en algún día corres **Claude Code dentro del VPS** y quisieras que pudiera `ssh` a tu Mac, tendrías que: **Remote Login** en el Mac, IP Tailscale del Mac (`tailscale ip -4` en el Mac), clave **del VPS** autorizada en `~/.ssh/authorized_keys` del usuario Mac, y en el VPS un `settings.local.json` con permisos `Bash(ssh …)` hacia ese host (igual que en local hacia el VPS). Es opcional y más riesgo de superficie; el sync canónico del repo sigue siendo **git**, no SSH inverso.
 
 ## 4. Post-Setup: Activar Agentes en Ambas Máquinas
 

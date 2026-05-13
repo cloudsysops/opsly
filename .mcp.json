@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "opsly-openclaw": {
+      "command": "npm",
+      "args": ["run", "opsly:mcp:stdio"],
+      "cwd": "${CLAUDE_PROJECT_DIR}"
+    }
+  }
+}

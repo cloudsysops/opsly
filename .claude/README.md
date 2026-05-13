@@ -8,7 +8,8 @@ Estructura para gestionar agentes, comandos y hooks en Claude Code dentro del pr
 .claude/
 ├── README.md                    # Este archivo
 ├── CLAUDE.md                   # Contexto global para Claude (protocolo, skills, reglas)
-├── settings.local.json          # Configuración local de permisos
+├── settings.local.json.example  # Plantilla permisos + sandbox (copiar a settings.local.json)
+├── settings.local.json          # Permisos / overrides (gitignored); plantilla: settings.local.json.example
 ├── setup.sh                    # Script de instalación automática
 ├── 1-agent-teams/             # Definición de agentes y orchestrator
 │   ├── orchestrator.md         # OrchestratorAgent: tipos, patrones, BullMQ/Temporal
@@ -33,6 +34,12 @@ Estructura para gestionar agentes, comandos y hooks en Claude Code dentro del pr
 │   └── register.json         # Registro de hooks para git
 └── .DS_Store                  # (ignorado por git)
 ```
+
+En la **raíz del monorepo** (no dentro de `.claude/`): **`.mcp.json`** — registro MCP estándar de Claude Code para OpenClaw (`opsly-openclaw` → `npm run opsly:mcp:stdio`).
+
+## Claude Code: SSH al VPS (sandbox macOS)
+
+En `.claude/settings.json` hay reglas oficiales `permissions.allow` (`Bash(ssh *)`, script `setup-vps-ssh-to-opsly-admin`, `npm run opsly:vps-ssh:to-admin`) y `sandbox.excludedCommands` (`ssh`, el script) para evitar `Operation not permitted` con Seatbelt. Plantilla opcional: `settings.local.json.example` → copiar a `.claude/settings.local.json` (gitignored). Tras actualizar, reinicia sesión o usa `/permissions` en Claude Code.
 
 ## Uso Rápido
 

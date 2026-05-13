@@ -110,6 +110,7 @@ docs/.obsidian/plugins/recent-files-obsidian/data.json
 !docs/.obsidian/plugins/obsidian-git/data.json
 
 # Claude local config (ignored)
+.claude/settings.local.json
 .claude/2-context-management/CLAUDE.local.md
 
 # Claude Code worktrees (local clones; never commit)

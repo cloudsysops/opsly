@@ -4,7 +4,8 @@ export type ProviderKind =
   | 'openrouter'
   | 'openai'
   | 'deepseek'
-  | 'nvidia';
+  | 'nvidia'
+  | 'groq';
 
 export interface ProviderDefinition {
   /** Model id for the upstream API */
@@ -34,6 +35,12 @@ const nvidiaModel =
   process.env.NVIDIA_MODEL_ID?.trim() && process.env.NVIDIA_MODEL_ID.trim().length > 0
     ? process.env.NVIDIA_MODEL_ID.trim()
     : 'meta/llama-3.1-8b-instruct';
+
+const groqBase = (process.env.GROQ_BASE_URL ?? 'https://api.groq.com/openai/v1').replace(/\/$/, '');
+const groqModel =
+  process.env.GROQ_MODEL_ID?.trim() && process.env.GROQ_MODEL_ID.trim().length > 0
+    ? process.env.GROQ_MODEL_ID.trim()
+    : 'llama-3.3-70b-versatile';
 
 export const PROVIDERS = {
   claude_haiku: {
@@ -120,6 +127,14 @@ export const PROVIDERS = {
     cost_per_1k_output: 0.015,
     healthKey: 'openai',
   },
+  groq_chat: {
+    model: groqModel,
+    kind: 'groq',
+    cost_per_1k_input: 0,
+    cost_per_1k_output: 0,
+    baseUrl: groqBase,
+    healthKey: 'groq',
+  },
 } as const satisfies Record<string, ProviderDefinition>;
 
 export type ProviderId = keyof typeof PROVIDERS;
@@ -154,6 +169,17 @@ function nvidiaChainEntry(): ProviderChainEntry | null {
   };
 }
 
+function groqChainEntry(): ProviderChainEntry | null {
+  if (!process.env.GROQ_API_KEY?.trim()) {
+    return null;
+  }
+  return {
+    id: 'groq_chat',
+    healthKey: PROVIDERS.groq_chat.healthKey,
+    def: PROVIDERS.groq_chat,
+  };
+}
+
 export function getProvidersByPreference(preference: RoutingPreference): ProviderChainEntry[] {
   const e = (id: ProviderId): ProviderChainEntry => ({
     id,
@@ -161,13 +187,17 @@ export function getProvidersByPreference(preference: RoutingPreference): Provide
     def: PROVIDERS[id],
   });
   const ds = deepseekChainEntry();
+  const gq = groqChainEntry();
 
   if (preference === 'sonnet') {
     return [e('claude_sonnet'), e('gpt4o'), e('claude_haiku')];
   }
   if (preference === 'haiku') {
+    const mid: ProviderChainEntry[] = [];
+    if (gq) mid.push(gq);
+    if (ds) mid.push(ds);
     const tail = [e('llama_local'), e('openrouter_cheap'), e('gpt4o_mini')];
-    return ds ? [e('claude_haiku'), ds, ...tail] : [e('claude_haiku'), ...tail];
+    return [e('claude_haiku'), ...mid, ...tail];
   }
   if (preference === 'balanced') {
     if (ds) {
@@ -177,13 +207,15 @@ export function getProvidersByPreference(preference: RoutingPreference): Provide
         e('deepseek_chat'),
       ];
       const nv = nvidiaChainEntry();
-      if (nv) {
-        parts.push(nv);
-      }
+      if (nv) parts.push(nv);
+      if (gq) parts.push(gq);
       parts.push(e('claude_haiku'));
       return parts;
     }
-    return [e('claude_sonnet'), e('claude_haiku'), e('gpt4o_mini'), e('openrouter_cheap')];
+    const parts: ProviderChainEntry[] = [e('claude_sonnet'), e('claude_haiku'), e('gpt4o_mini')];
+    if (gq) parts.push(gq);
+    parts.push(e('openrouter_cheap'));
+    return parts;
   }
   if (preference === 'code') {
     const tail = ds ? [e('deepseek_chat')] : [];
@@ -191,13 +223,17 @@ export function getProvidersByPreference(preference: RoutingPreference): Provide
   }
   const nv = nvidiaChainEntry();
   if (ds) {
-    return nv
-      ? [e('llama_local'), e('deepseek_chat'), nv, e('claude_haiku'), e('openrouter_cheap')]
-      : [e('llama_local'), e('deepseek_chat'), e('claude_haiku'), e('openrouter_cheap')];
+    const mid: ProviderChainEntry[] = [e('llama_local'), e('deepseek_chat')];
+    if (gq) mid.push(gq);
+    if (nv) mid.push(nv);
+    mid.push(e('claude_haiku'), e('openrouter_cheap'));
+    return mid;
   }
-  return nv
-    ? [e('llama_local'), nv, e('claude_haiku'), e('openrouter_cheap')]
-    : [e('llama_local'), e('claude_haiku'), e('openrouter_cheap')];
+  const mid: ProviderChainEntry[] = [e('llama_local')];
+  if (gq) mid.push(gq);
+  if (nv) mid.push(nv);
+  mid.push(e('claude_haiku'), e('openrouter_cheap'));
+  return mid;
 }
 
 export function resolveRoutingPreference(

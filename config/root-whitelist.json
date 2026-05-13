@@ -34,6 +34,7 @@
     "vercel.json",
     ".env.local-workers.example",
     ".opencode.json",
+    ".mcp.json",
     ".opsly-drive-config.json",
     ".npmrc"
   ],

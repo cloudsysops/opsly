@@ -1,0 +1,24 @@
+{
+  "machine": {
+    "name": "opsly-admin-mac",
+    "environment": "local",
+    "os": "darwin",
+    "vpsAccess": true
+  },
+  "permissions": {
+    "allow": [
+      "Bash(ssh *)",
+      "Bash(ssh vps-dragon *)",
+      "Bash(./scripts/setup-vps-ssh-to-opsly-admin.sh *)",
+      "Bash(bash ./scripts/setup-vps-ssh-to-opsly-admin.sh *)",
+      "Bash(npm run opsly:vps-ssh:to-admin *)"
+    ]
+  },
+  "sandbox": {
+    "excludedCommands": [
+      "./scripts/setup-vps-ssh-to-opsly-admin.sh",
+      "bash ./scripts/setup-vps-ssh-to-opsly-admin.sh",
+      "ssh"
+    ]
+  }
+}

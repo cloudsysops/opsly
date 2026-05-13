@@ -186,6 +186,14 @@ async function runProvider(
     const out = await invokeOpenAiCompatible(endpoint, key, def.model, req, undefined, 90_000);
     return { ...out, model_used: def.model, billing: def };
   }
+  if (def.kind === 'groq') {
+    const key = process.env.GROQ_API_KEY?.trim() ?? '';
+    if (!key) throw new Error('GROQ_API_KEY no configurada');
+    const base = (def.baseUrl ?? 'https://api.groq.com/openai/v1').replace(/\/$/, '');
+    const endpoint = `${base}/chat/completions`;
+    const out = await invokeOpenAiCompatible(endpoint, key, def.model, req, undefined, 60_000);
+    return { ...out, model_used: def.model, billing: def };
+  }
   const key = process.env.OPENAI_API_KEY ?? '';
   if (!key) throw new Error('OPENAI_API_KEY no configurada');
   const out = await invokeOpenAiCompatible(

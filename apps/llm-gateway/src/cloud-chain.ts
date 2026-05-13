@@ -13,6 +13,10 @@ function hasNvidiaCredentials(): boolean {
   return Boolean(process.env.NVIDIA_API_KEY?.trim());
 }
 
+function hasGroqCredentials(): boolean {
+  return Boolean(process.env.GROQ_API_KEY?.trim());
+}
+
 function entry(id: ProviderId): ProviderChainEntry {
   return {
     id,
@@ -42,9 +46,16 @@ function nvidiaEntry(): ProviderChainEntry | null {
   return entry('nvidia_chat');
 }
 
+function groqEntry(): ProviderChainEntry | null {
+  if (!hasGroqCredentials()) {
+    return null;
+  }
+  return entry('groq_chat');
+}
+
 /**
  * Orden económico en cloud (tras Ollama local en `llmCallDirect` si aplica):
- * OpenRouter barato → DeepSeek → NVIDIA (si claves) → Haiku → GPT-4o mini.
+ * OpenRouter barato → DeepSeek → Groq → NVIDIA (si claves) → Haiku → GPT-4o mini.
  */
 function costOrderedCloud(): ProviderChainEntry[] {
   const haiku = entry('claude_haiku');
@@ -52,12 +63,16 @@ function costOrderedCloud(): ProviderChainEntry[] {
   const out: ProviderChainEntry[] = [];
   const or = openRouterCheapEntry();
   const ds = deepseekEntry();
+  const gq = groqEntry();
   const nv = nvidiaEntry();
   if (or) {
     out.push(or);
   }
   if (ds) {
     out.push(ds);
+  }
+  if (gq) {
+    out.push(gq);
   }
   if (nv) {
     out.push(nv);
@@ -68,15 +83,17 @@ function costOrderedCloud(): ProviderChainEntry[] {
 
 /**
  * Orden de proveedores cloud en `llmCallDirect` (después de Ollama local si aplica).
- * Prioriza coste bajo / capa gratuita en worker: OpenRouter → DeepSeek → NVIDIA → Haiku → mini.
+ * Prioriza coste bajo / capa gratuita en worker: OpenRouter → DeepSeek → Groq → NVIDIA → Haiku → mini.
  * `provider_hint=deepseek`: DeepSeek primero cuando hay API key.
- * `provider_hint=nvidia`: NVIDIA primero cuando hay API key (p. ej. catálogo gratuito).
+ * `provider_hint=nvidia`: NVIDIA primero cuando hay API key.
+ * `provider_hint=groq`: Groq primero cuando hay API key.
  * `routing_bias=cost`: cadena económica completa (sin hint explícito).
  * `balanced` / sin sesgo explícito: Haiku primero, luego cola económica (sin duplicar Haiku).
- * `quality`: Haiku → mini → OpenRouter → NVIDIA → DeepSeek al final.
+ * `quality`: Haiku → mini → OpenRouter → Groq → NVIDIA → DeepSeek al final.
  */
 export function buildLlmDirectCloudChain(req: LLMRequest): ProviderChainEntry[] {
   const ds = deepseekEntry();
+  const gq = groqEntry();
   const haiku = entry('claude_haiku');
   const mini = entry('gpt4o_mini');
   const orCheap = entry('openrouter_cheap');
@@ -84,6 +101,7 @@ export function buildLlmDirectCloudChain(req: LLMRequest): ProviderChainEntry[] 
 
   const hintDeepseek = req.provider_hint === 'deepseek';
   const hintNvidia = req.provider_hint === 'nvidia';
+  const hintGroq = req.provider_hint === 'groq';
   const bias = req.routing_bias;
 
   if (hintDeepseek && ds) {
@@ -94,6 +112,10 @@ export function buildLlmDirectCloudChain(req: LLMRequest): ProviderChainEntry[] 
     const tail = costOrderedCloud().filter((e) => e.id !== 'nvidia_chat');
     return [nv, ...tail];
   }
+  if (hintGroq && gq) {
+    const tail = costOrderedCloud().filter((e) => e.id !== 'groq_chat');
+    return [gq, ...tail];
+  }
   if (bias === 'cost') {
     return costOrderedCloud();
   }
@@ -102,6 +124,9 @@ export function buildLlmDirectCloudChain(req: LLMRequest): ProviderChainEntry[] 
     const tail: ProviderChainEntry[] = [];
     if (hasOpenRouterCredentials()) {
       tail.push(orCheap);
+    }
+    if (gq) {
+      tail.push(gq);
     }
     if (nv) {
       tail.push(nv);
