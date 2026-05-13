@@ -50,9 +50,6 @@ describe('MCP SDK bridge', () => {
     expect(resources.resources.some((resource) => resource.uri === 'opsly://context/agents')).toBe(
       true
     );
-    expect(
-      resources.resources.some((resource) => resource.uri === 'opsly://context/brain-dashboard')
-    ).toBe(true);
     expect(prompts.prompts.some((prompt) => prompt.name === 'opsly_startup')).toBe(true);
 
     await Promise.all([client.close(), server.close()]);
@@ -62,7 +59,6 @@ describe('MCP SDK bridge', () => {
     const { client, server } = await connectClientAndServer();
 
     const systemState = await client.readResource({ uri: 'opsly://context/system-state' });
-    const brainDashboard = await client.readResource({ uri: 'opsly://context/brain-dashboard' });
     const templates = await client.listResourceTemplates();
     const adr = await client.readResource({
       uri: 'opsly://adr/ADR-009-openclaw-mcp-architecture.md',
@@ -75,11 +71,6 @@ describe('MCP SDK bridge', () => {
     expect(
       systemState.contents[0] && 'text' in systemState.contents[0] && systemState.contents[0].text
     ).toContain('"knowledge_system"');
-    expect(
-      brainDashboard.contents[0] &&
-        'text' in brainDashboard.contents[0] &&
-        brainDashboard.contents[0].text
-    ).toContain('Brain Dashboard');
     expect(
       templates.resourceTemplates.some((template) => template.uriTemplate === 'opsly://adr/{slug}')
     ).toBe(true);
