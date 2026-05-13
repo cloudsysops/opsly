@@ -1,4 +1,20 @@
 {
+  "global_context_strategy": {
+    "name": "brain-driven-optimization",
+    "enabled": true,
+    "description": "All agents use brain:research for 60-70% token savings",
+    "mcp_tools_required": ["brain:research"],
+    "rule_hierarchy": [
+      "1. Query exists in docs/brain/ → use brain:research",
+      "2. Search code locally → grep/find",
+      "3. Need architecture → AGENTS.md + VISION.md",
+      "4. Last resort → ask user"
+    ],
+    "triggers_for_brain_research": [
+      "investigar", "research", "explain", "explica", "¿cómo funciona", "how does", "funcionamiento"
+    ],
+    "onboarding_skills": ["opsly-context", "opsly-brain-researcher"]
+  },
   "services": {
     "cursor": {
       "enabled": true,
