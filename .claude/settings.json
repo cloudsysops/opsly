@@ -1,0 +1,186 @@
+{
+  "version": "1.0",
+  "description": "Canonical Claude Code config for Opsly. Environment-specific overrides in settings.local.json",
+
+  "global": {
+    "model": "claude-opus-4-7",
+    "fastMode": false,
+    "contextWindow": "200000",
+    "enableThinking": true
+  },
+
+  "agents": {
+    "enabled": true,
+    "discoveryMode": "auto",
+    "registry": {
+      "opsly-context": { "priority": "CRITICAL", "category": "bootstrap", "autoload": true },
+      "opsly-quantum": { "priority": "CRITICAL", "category": "master", "autoload": true },
+      "opsly-autonomous": { "priority": "CRITICAL", "category": "autonomy", "autoload": false },
+      "opsly-skill-creator": { "priority": "CRITICAL", "category": "tooling", "autoload": true },
+      "opsly-api": { "priority": "HIGH", "category": "development", "autoload": true },
+      "opsly-bash": { "priority": "HIGH", "category": "development", "autoload": true },
+      "opsly-frontend": { "priority": "HIGH", "category": "development", "autoload": true },
+      "opsly-supabase": { "priority": "HIGH", "category": "database", "autoload": true },
+      "opsly-infra": { "priority": "HIGH", "category": "infrastructure", "autoload": true },
+      "opsly-llm": { "priority": "HIGH", "category": "ai", "autoload": true },
+      "opsly-mcp": { "priority": "HIGH", "category": "integration", "autoload": true },
+      "opsly-orchestrator": { "priority": "HIGH", "category": "orchestration", "autoload": true },
+      "opsly-architect-senior": { "priority": "HIGH", "category": "architecture", "autoload": false }
+    }
+  },
+
+  "mcpServers": {
+    "enabled": true,
+    "servers": {
+      "claude-ai-figma": { "enabled": true },
+      "claude-ai-supabase": { "enabled": true },
+      "claude-ai-vercel": { "enabled": true },
+      "claude-ai-github": { "enabled": true },
+      "claude-ai-google-drive": { "enabled": true },
+      "claude-ai-resend": { "enabled": true },
+      "computer-use": { "enabled": true, "env": "DISPLAY required on Linux" },
+      "context7": { "enabled": true, "description": "Library documentation" },
+      "memory": { "enabled": true, "path": ".claude/projects/*/memory/" }
+    }
+  },
+
+  "hooks": {
+    "pre-commit": {
+      "enabled": true,
+      "command": "bash .claude/4-hooks/lint-on-save.sh"
+    },
+    "post-commit": {
+      "enabled": true,
+      "command": "bash scripts/update-agents.sh"
+    },
+    "post-merge": {
+      "enabled": true,
+      "command": "bash .claude/4-hooks/post-merge.sh"
+    },
+    "session-start": {
+      "enabled": true,
+      "command": "node scripts/skill-finder.js --autonomous"
+    }
+  },
+
+  "tokenOptimization": {
+    "rtk": {
+      "enabled": true,
+      "description": "Rust Token Killer CLI proxy (60-90% savings)"
+    },
+    "brainResearch": {
+      "enabled": true,
+      "description": "Use docs/brain/ for context (300 tokens vs 5000)"
+    },
+    "contextSlicing": {
+      "enabled": true,
+      "strategy": "multi-tenant isolation",
+      "maxContextPerTenant": "50000 tokens"
+    }
+  },
+
+  "environment": {
+    "vps": {
+      "enabled": false,
+      "description": "Set to true on VPS machine",
+      "config": {
+        "host": "vps-dragon@100.120.151.91",
+        "services": ["mcp:3003", "orchestrator:3011", "llm-gateway:3010", "api:3000"],
+        "model": "claude-opus-4-7",
+        "contextWindow": "200000"
+      }
+    },
+    "local": {
+      "enabled": true,
+      "description": "Local development machine",
+      "config": {
+        "model": "claude-opus-4-7",
+        "fastMode": false,
+        "syncInterval": "30s"
+      }
+    },
+    "ci": {
+      "enabled": false,
+      "description": "CI/CD pipeline environment",
+      "config": {
+        "model": "claude-haiku-4-5",
+        "fastMode": false,
+        "permissions": "restricted"
+      }
+    }
+  },
+
+  "slashCommands": {
+    "enabled": true,
+    "registry": {
+      "deploy": { "path": ".claude/3-slash-commands/deploy.md" },
+      "tenant": { "path": ".claude/3-slash-commands/tenant.md" },
+      "ai-cost": { "path": ".claude/3-slash-commands/ai-cost.md" },
+      "ship": { "path": ".claude/3-slash-commands/ship.md" }
+    }
+  },
+
+  "permissions": {
+    "enabled": true,
+    "strategy": "whitelist",
+    "description": "See settings.local.json for machine-specific permissions",
+    "global": [
+      "Read(//Users/dragon/**)",
+      "Read(//root/**)",
+      "Bash(git:*)",
+      "Bash(npm:*)",
+      "Bash(pnpm:*)",
+      "Bash(rtk:*)",
+      "Bash(node:*)",
+      "Bash(doppler:*)",
+      "Bash(supabase:*)",
+      "Bash(gh:*)",
+      "Bash(curl:*)",
+      "Skill(brainstorming)",
+      "Skill(systematic-debugging)",
+      "Skill(test-driven-development)",
+      "Skill(verification-before-completion)",
+      "mcp__memory__read_graph",
+      "mcp__memory__search_nodes",
+      "WebFetch(domain:raw.githubusercontent.com)"
+    ]
+  },
+
+  "skills": {
+    "autoload": true,
+    "searchPaths": [
+      "skills/user/",
+      ".claude/skills/",
+      "/mnt/skills/user/",
+      "~/.claude/skills/"
+    ]
+  },
+
+  "brain": {
+    "enabled": true,
+    "paths": [
+      "docs/brain/",
+      "docs/03-agents/",
+      "docs/01-development/"
+    ],
+    "canonicalDocs": [
+      "VISION.md",
+      "AGENTS.md",
+      "ROADMAP.md",
+      "docs/README.md"
+    ]
+  },
+
+  "sync": {
+    "enabled": true,
+    "strategy": "git + settings.local.json overrides",
+    "description": "Sync .claude/ across machines via git; machine-specific config in settings.local.json",
+    "files": [
+      ".claude/",
+      "docs/brain/",
+      "scripts/skill-finder.js",
+      "scripts/skill-loader.js",
+      ".claude/4-hooks/register.json"
+    ]
+  }
+}

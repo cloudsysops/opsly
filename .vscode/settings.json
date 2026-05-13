@@ -30,5 +30,13 @@
 
   // --- ESLint: validar TS/TSX (apps Next.js) ---
   "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact"],
-  "eslint.workingDirectories": [{ "mode": "auto" }]
+  "eslint.workingDirectories": [{ "mode": "auto" }],
+
+  "// --- VS Code / Copilot Agent Configuration ---": "Mirrors .agents/config.json + Copilot guardrails",
+  "copilotAgent": {
+    "role": "Code suggestions, completions, chat",
+    "model": "gpt-4-turbo (GitHub Copilot)",
+    "canonicalConfig": ".agents/config.json",
+    "guardrailsFile": ".github/copilot-instructions.md"
+  }
 }

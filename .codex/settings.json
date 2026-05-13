@@ -1,0 +1,88 @@
+{
+  "version": "2.0",
+  "description": "Codex agent config (mirrors .agents/config.json)",
+  "agent": "codex",
+  "canonical": ".agents/config.json",
+
+  "role": "Code generation, refactoring, batch operations",
+
+  "model": {
+    "default": "claude-sonnet-4-6",
+    "capabilities": [
+      "code-generation",
+      "refactoring",
+      "migration",
+      "batch-processing"
+    ]
+  },
+
+  "capabilities": {
+    "codeGeneration": {
+      "enabled": true,
+      "languages": [
+        "typescript",
+        "javascript",
+        "python",
+        "sql"
+      ],
+      "patterns": [
+        "api-routes",
+        "migrations",
+        "components",
+        "utilities"
+      ]
+    },
+    "refactoring": {
+      "enabled": true,
+      "strategies": [
+        "extract-function",
+        "consolidate-duplicates",
+        "library-modules",
+        "error-handling"
+      ]
+    },
+    "batchOperations": {
+      "enabled": true,
+      "maxConcurrency": 2,
+      "queueBackend": "BullMQ",
+      "timeout": 60000
+    }
+  },
+
+  "templates": {
+    "apiRoute": "scripts/templates/template-api-route.ts",
+    "migration": "scripts/templates/template-migration.sql",
+    "component": "scripts/templates/template-component.tsx",
+    "test": "scripts/templates/template-test.ts"
+  },
+
+  "validation": {
+    "enabled": true,
+    "checks": [
+      "typescript-compile",
+      "eslint",
+      "tests-pass",
+      "type-safe"
+    ],
+    "onError": "report-and-stop"
+  },
+
+  "permissions": {
+    "allow": [
+      "Bash(npm:*)",
+      "Bash(pnpm:*)",
+      "Bash(node:*)",
+      "Bash(tsc:*)",
+      "Bash(git:*)",
+      "Read(lib/**)",
+      "Read(docs/brain/**)"
+    ]
+  },
+
+  "guards": [
+    "❌ NUNCA modify VISION.md o AGENTS.md",
+    "❌ NUNCA use TypeScript any",
+    "✅ SIEMPRE validate code antes de commit",
+    "✅ SIEMPRE use library modules if >100 LOC"
+  ]
+}

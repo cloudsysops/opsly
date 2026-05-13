@@ -1,0 +1,373 @@
+{
+  "version": "2.0",
+  "description": "Master unified config for all AI agents (Claude, Cursor, Copilot, Codex, Hermes, OpenCode)",
+  "canonical": true,
+  "lastUpdated": "2026-05-12",
+
+  "agents": [
+    {
+      "id": "claude",
+      "name": "Claude Code (AI)",
+      "role": "Architecture, decisions, debugging, autonomy",
+      "configPath": ".claude/",
+      "enabled": true,
+      "model": "claude-opus-4-7",
+      "priority": "PRIMARY",
+      "capabilities": [
+        "code-review",
+        "architecture",
+        "debugging",
+        "multi-file edits",
+        "skill orchestration"
+      ]
+    },
+    {
+      "id": "cursor",
+      "name": "Cursor IDE",
+      "role": "Execution, coding, commits",
+      "configPath": ".cursor/",
+      "enabled": true,
+      "model": "claude-opus-4-7",
+      "priority": "HIGH",
+      "capabilities": [
+        "real-time coding",
+        "multi-cursor edits",
+        "terminal integration",
+        "git operations"
+      ]
+    },
+    {
+      "id": "copilot",
+      "name": "GitHub Copilot",
+      "role": "Code suggestions, completions, chat",
+      "configPath": ".vscode/settings.json + .github/copilot-instructions.md",
+      "enabled": true,
+      "model": "gpt-4-turbo (Microsoft/OpenAI)",
+      "priority": "HIGH",
+      "capabilities": [
+        "inline suggestions",
+        "chat completions",
+        "symbol navigation",
+        "test generation"
+      ],
+      "settings": {
+        "language": "es",
+        "timeout": 5000,
+        "maxSuggestions": 5
+      }
+    },
+    {
+      "id": "codex",
+      "name": "Codex Agent",
+      "role": "Code generation, refactoring",
+      "configPath": ".codex/",
+      "enabled": true,
+      "model": "claude-sonnet-4-6",
+      "priority": "MEDIUM",
+      "capabilities": [
+        "code-generation",
+        "refactoring",
+        "migration",
+        "batch operations"
+      ]
+    },
+    {
+      "id": "hermes",
+      "name": "Hermes",
+      "role": "Metering, billing, routing, decision-making",
+      "configPath": ".hermes/",
+      "enabled": true,
+      "model": "ollama-local (fallback: claude-opus-4-7)",
+      "priority": "CRITICAL",
+      "capabilities": [
+        "metering",
+        "billing",
+        "routing-decisions",
+        "local-inference"
+      ],
+      "settings": {
+        "localLLMFirst": true,
+        "ollama_models": ["llama2:7b", "codellama:7b", "qwen2.5:7b"],
+        "fallback": "claude-opus-4-7"
+      }
+    },
+    {
+      "id": "opencode",
+      "name": "OpenCode IDE",
+      "role": "Browser-based code editor + AI",
+      "configPath": ".opencode/",
+      "enabled": false,
+      "note": "Optional, for remote development",
+      "model": "claude-opus-4-7",
+      "priority": "LOW",
+      "capabilities": [
+        "browser-editing",
+        "remote-development",
+        "collaboration",
+        "lightweight-ci"
+      ]
+    }
+  ],
+
+  "sharedBehaviors": {
+    "gitWorkflow": {
+      "enabled": true,
+      "strategy": "feat/fix per agent",
+      "rules": [
+        "✅ All agents use SAME branch",
+        "✅ Conventional commits (feat/fix/docs/chore)",
+        "✅ git add → git commit → git push",
+        "✅ No force push unless pre-authorized"
+      ]
+    },
+    "contextSync": {
+      "enabled": true,
+      "sources": [
+        "AGENTS.md",
+        "VISION.md",
+        "docs/brain/",
+        "docs/03-agents/",
+        "config/modules.json"
+      ],
+      "priority": "AGENTS.md first, never override"
+    },
+    "tokenOptimization": {
+      "enabled": true,
+      "rtk": "Claude only (Cursor/Copilot use native RTK)",
+      "brainResearch": "Use docs/brain/ first (saves 60-70% tokens)",
+      "contextSlicing": "Per-tenant isolation"
+    },
+    "permissions": {
+      "strategy": "whitelist",
+      "sharedAllow": [
+        "Bash(git:*)",
+        "Bash(npm:*)",
+        "Bash(pnpm:*)",
+        "Bash(node:*)",
+        "Bash(doppler:*)",
+        "Read(docs/brain/**)",
+        "Read(AGENTS.md)",
+        "Read(VISION.md)"
+      ],
+      "agentSpecific": {
+        "claude": [
+          "Bash(rtk:*)",
+          "Skill(*)",
+          "mcp__memory__read_graph"
+        ],
+        "cursor": [
+          "Terminal operations",
+          "File watchers"
+        ],
+        "copilot": [
+          "Symbol indexing",
+          "AST analysis"
+        ],
+        "hermes": [
+          "Bash(docker:*)",
+          "Bash(ollama:*)",
+          "Redis access"
+        ]
+      }
+    },
+    "models": {
+      "routing": {
+        "complexity-high": "claude-opus-4-7",
+        "complexity-medium": "claude-sonnet-4-6",
+        "complexity-low": "claude-haiku-4-5",
+        "local-inference": "ollama (Hermes)",
+        "realtime-suggestion": "copilot (gpt-4-turbo)"
+      },
+      "fallback": {
+        "primary": "claude-opus-4-7",
+        "secondary": "claude-sonnet-4-6",
+        "tertiary": "claude-haiku-4-5"
+      }
+    }
+  },
+
+  "synchronization": {
+    "enabled": true,
+    "strategy": "master-config + git + machine-overrides",
+    "files": {
+      "canonical": [
+        ".agents/config.json",
+        ".claude/settings.json",
+        ".claude/CLAUDE.md",
+        ".hermes/HERMES.md",
+        ".codex/CODEX.md",
+        ".github/copilot-instructions.md",
+        ".vscode/extensions.json"
+      ],
+      "machineSpecific": [
+        ".claude/settings.local.json",
+        ".hermes/settings.local.json",
+        ".cursor/settings.json",
+        ".vscode/settings.json (local overrides only)"
+      ]
+    },
+    "gitHooks": {
+      "pre-commit": "Validate agent configs don't conflict",
+      "post-commit": "Sync .agents/config.json to mirrors",
+      "post-merge": "Merge agent configs, alert on conflicts"
+    }
+  },
+
+  "capabilities": {
+    "parallelization": {
+      "enabled": true,
+      "strategy": "BullMQ queue per agent",
+      "maxConcurrent": {
+        "claude": 1,
+        "cursor": 1,
+        "copilot": 3,
+        "codex": 2,
+        "hermes": 1
+      }
+    },
+    "stateSharing": {
+      "enabled": true,
+      "backend": "redis://100.120.151.91:6379/0",
+      "keyPrefix": "opsly:agent:",
+      "ttl": 3600
+    },
+    "monitoring": {
+      "enabled": true,
+      "metrics": [
+        "tokens_used",
+        "cost_usd",
+        "duration_ms",
+        "agent_name",
+        "machine_name",
+        "task_id"
+      ],
+      "backend": "supabase",
+      "table": "agent_metrics"
+    }
+  },
+
+  "guardrails": {
+    "all": [
+      "❌ NUNCA K8s/Swarm/nginx (ADR required)",
+      "❌ NUNCA secretos en código",
+      "❌ NUNCA TypeScript any",
+      "❌ NUNCA saltarse validate-config.sh antes de deploy",
+      "✅ SIEMPRE leer AGENTS.md al iniciar",
+      "✅ SIEMPRE usar OpenClaw framework",
+      "✅ SIEMPRE seguir GIT-WORKFLOW.md"
+    ],
+    "byAgent": {
+      "claude": [
+        "Read AGENTS.md + VISION.md first",
+        "Use brain:research MCP for context (saves tokens)",
+        "Mark tokens_used in metrics"
+      ],
+      "cursor": [
+        "Commits are ATOMIC (one feature = one commit)",
+        "Run npm run validate-config before pushing",
+        "Do NOT push directly to main"
+      ],
+      "copilot": [
+        "Suggestions in Spanish (github.copilot.chat.localeOverride: es)",
+        "Respect @cursor focus if active",
+        "Log high-uncertainty suggestions"
+      ],
+      "hermes": [
+        "Route decisions via LLM Gateway",
+        "Track metering in usage_events table",
+        "Fallback to claude-opus if ollama down"
+      ]
+    }
+  },
+
+  "environments": {
+    "local": {
+      "agents": [
+        "claude",
+        "cursor",
+        "copilot"
+      ],
+      "config": {
+        "model": "claude-opus-4-7",
+        "contextWindow": 200000,
+        "brainsearch": true,
+        "rtk": true
+      }
+    },
+    "vps": {
+      "agents": [
+        "hermes",
+        "codex"
+      ],
+      "config": {
+        "model": "ollama-local (fallback: claude-sonnet-4-6)",
+        "contextWindow": 100000,
+        "brainsearch": false,
+        "rtk": false
+      }
+    },
+    "ci": {
+      "agents": [
+        "copilot",
+        "hermes"
+      ],
+      "config": {
+        "model": "claude-haiku-4-5",
+        "contextWindow": 50000,
+        "parallelization": true,
+        "maxConcurrent": 10
+      }
+    }
+  },
+
+  "integrations": {
+    "mcp": {
+      "enabled": true,
+      "servers": [
+        "claude-ai-figma",
+        "claude-ai-supabase",
+        "claude-ai-github",
+        "claude-ai-vercel",
+        "context7",
+        "memory"
+      ]
+    },
+    "llmGateway": {
+      "enabled": true,
+      "url": "https://llm-gateway.op-sly.com",
+      "metering": true,
+      "providers": [
+        "anthropic",
+        "openrouter",
+        "ollama-local"
+      ]
+    },
+    "orchestrator": {
+      "enabled": true,
+      "url": "http://localhost:3011",
+      "queue": "BullMQ/Redis",
+      "routing": "via intent + effort"
+    },
+    "n8n": {
+      "enabled": true,
+      "url": "http://localhost:5678",
+      "exposedWorkflows": [
+        "billing-sync",
+        "tenant-onboarding",
+        "health-monitor"
+      ]
+    }
+  },
+
+  "nextSteps": [
+    "✅ Create .agents/config.json (DONE)",
+    "⏳ Update .claude/settings.json to reference this",
+    "⏳ Create .hermes/settings.json (mirrored config)",
+    "⏳ Create .codex/settings.json (mirrored config)",
+    "⏳ Update .vscode/settings.json (mirrored config)",
+    "⏳ Update .github/copilot-instructions.md to link this",
+    "⏳ Add post-merge hook to sync .agents/config.json",
+    "⏳ Document in AGENTS.md: 'All agents sync via .agents/config.json'",
+    "⏳ Create dashboard: agent metrics visualization"
+  ]
+}

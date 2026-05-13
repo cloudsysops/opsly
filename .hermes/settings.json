@@ -1,0 +1,181 @@
+{
+  "version": "2.0",
+  "description": "Hermes agent config (mirrors .agents/config.json)",
+  "agent": "hermes",
+  "canonical": ".agents/config.json",
+
+  "role": "Metering, billing, routing, decision-making for LLM operations",
+
+  "model": {
+    "primary": "ollama-local",
+    "localModels": [
+      "llama2:7b",
+      "codellama:7b",
+      "qwen2.5:7b"
+    ],
+    "fallback": "claude-opus-4-7",
+    "settings": {
+      "localLLMFirst": true,
+      "contextWindow": 8000,
+      "temperature": 0.7,
+      "timeout": 30000
+    }
+  },
+
+  "metering": {
+    "enabled": true,
+    "backend": "supabase",
+    "table": "usage_events",
+    "track": [
+      "agent_name",
+      "model_name",
+      "tokens_input",
+      "tokens_output",
+      "cost_usd",
+      "duration_ms",
+      "tenant_slug",
+      "request_id",
+      "timestamp"
+    ],
+    "batchSize": 100,
+    "flushInterval": "60s"
+  },
+
+  "routing": {
+    "enabled": true,
+    "strategy": "decision-matrix",
+    "decisions": [
+      {
+        "input": "task_complexity + effort",
+        "routes": {
+          "low-effort": "ollama (local)",
+          "medium-effort": "claude-sonnet-4-6",
+          "high-effort": "claude-opus-4-7"
+        }
+      },
+      {
+        "input": "cost_target",
+        "routes": {
+          "cost-first": "claude-haiku-4-5",
+          "balanced": "claude-sonnet-4-6",
+          "quality-first": "claude-opus-4-7"
+        }
+      }
+    ]
+  },
+
+  "ollama": {
+    "enabled": true,
+    "url": "http://localhost:11434",
+    "healthcheck": {
+      "interval": "30s",
+      "timeout": 5000,
+      "endpoint": "http://localhost:11434/api/health"
+    },
+    "models": {
+      "llama2:7b": {
+        "purpose": "general-purpose",
+        "contextLength": 4096,
+        "speedRating": "fast"
+      },
+      "codellama:7b": {
+        "purpose": "code-generation",
+        "contextLength": 4096,
+        "speedRating": "medium"
+      },
+      "qwen2.5:7b": {
+        "purpose": "multilingual",
+        "contextLength": 8000,
+        "speedRating": "slow"
+      }
+    }
+  },
+
+  "fallback": {
+    "enabled": true,
+    "policy": "automatic",
+    "triggers": [
+      "ollama_unavailable",
+      "ollama_timeout > 5000",
+      "model_not_found",
+      "oom_error"
+    ],
+    "action": "route to claude-opus-4-7",
+    "notify": true,
+    "notificationChannels": [
+      "discord",
+      "logs"
+    ]
+  },
+
+  "redis": {
+    "enabled": true,
+    "url": "redis://:PASSWORD@100.120.151.91:6379/1",
+    "cache": {
+      "ttl": 3600,
+      "keyPrefix": "hermes:",
+      "strategy": "lru"
+    },
+    "queue": {
+      "name": "hermes-tasks",
+      "concurrency": 1,
+      "retryPolicy": {
+        "maxRetries": 3,
+        "backoff": "exponential"
+      }
+    }
+  },
+
+  "integrations": {
+    "llmGateway": {
+      "enabled": true,
+      "url": "https://llm-gateway.op-sly.com",
+      "endpoints": {
+        "completions": "/v1/chat/completions",
+        "embeddings": "/v1/embeddings",
+        "metrics": "/v1/metrics"
+      },
+      "auth": {
+        "type": "bearer",
+        "tokenEnv": "HERMES_API_KEY"
+      }
+    },
+    "orchestrator": {
+      "enabled": true,
+      "url": "http://localhost:3011",
+      "webhooks": [
+        "job.created",
+        "job.completed",
+        "job.failed"
+      ]
+    },
+    "supabase": {
+      "enabled": true,
+      "project": "jkwykpldnitavhmtuzmo",
+      "tables": [
+        "usage_events",
+        "agent_metrics",
+        "cost_alerts"
+      ]
+    }
+  },
+
+  "permissions": {
+    "allow": [
+      "Bash(docker:*)",
+      "Bash(ollama:*)",
+      "Bash(redis-cli:*)",
+      "Bash(curl:*)",
+      "Read(docs/brain/**)",
+      "Read(AGENTS.md)",
+      "Redis access"
+    ]
+  },
+
+  "guards": [
+    "❌ NUNCA cache datos sin tenant_slug",
+    "❌ NUNCA rutear a modelo sin fallback",
+    "✅ SIEMPRE track usage_events",
+    "✅ SIEMPRE usa request_id en logs"
+  ]
+}
