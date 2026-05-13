@@ -1,0 +1,20 @@
+[Unit]
+Description=Opsly GitHub Webhook Handler (Auto-Sync)
+After=network.target
+
+[Service]
+Type=simple
+User=ops
+WorkingDirectory=/opt/opsly
+Environment="NODE_ENV=production"
+Environment="WEBHOOK_PORT=9000"
+Environment="REPO_PATH=/opt/opsly"
+Environment="GITHUB_WEBHOOK_SECRET=%i"
+ExecStart=/usr/bin/node .agents/github-webhook-handler.ts
+Restart=always
+RestartSec=10
+StandardOutput=append:/var/log/opsly-webhook.log
+StandardError=append:/var/log/opsly-webhook.log
+
+[Install]
+WantedBy=multi-user.target

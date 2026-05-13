@@ -123,14 +123,16 @@
   "permissions": {
     "enabled": true,
     "strategy": "whitelist",
-    "description": "See settings.local.json for machine-specific permissions",
+    "description": "Sandbox enabled for Opsly. See settings.local.json for machine-specific overrides",
     "allow": [
       "Bash(ssh *)",
       "Bash(ssh vps-dragon *)",
       "Bash(./scripts/setup-vps-ssh-to-opsly-admin.sh *)",
       "Bash(bash ./scripts/setup-vps-ssh-to-opsly-admin.sh *)",
       "Bash(npm run opsly:vps-ssh:to-admin *)",
-      "Bash(npm run opsly:vps-ssh:to-admin)"
+      "Bash(npm run opsly:vps-ssh:to-admin)",
+      "Bash(npm run opsly:mcp:stdio)",
+      "Bash(npm run opsly:*)"
     ],
     "global": [
       "Read(//Users/dragon/**)",
