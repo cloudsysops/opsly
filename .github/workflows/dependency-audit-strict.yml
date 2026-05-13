@@ -29,7 +29,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'
           cache: 'npm'
 
       - name: Install dependencies
@@ -43,7 +43,7 @@ jobs:
           # Check for CRITICAL vulnerabilities
           if grep -q '"severity":"critical"' audit-report.json; then
             echo "❌ CRITICAL vulnerabilities detected"
-            cat audit-report.json | jq '.vulnerabilities | select(.[] | .severity == "critical")'
+            jq '.vulnerabilities | select(.[] | .severity == "critical")' audit-report.json
             exit 1
           fi
 
@@ -51,7 +51,7 @@ jobs:
           HIGH_COUNT=$(grep -c '"severity":"high"' audit-report.json || true)
           if [ "$HIGH_COUNT" -gt 0 ]; then
             echo "⚠️  HIGH severity vulnerabilities found: $HIGH_COUNT"
-            cat audit-report.json | jq '.vulnerabilities | select(.[] | .severity == "high")'
+            jq '.vulnerabilities | select(.[] | .severity == "high")' audit-report.json
           fi
 
       - name: Check deprecated packages
@@ -87,7 +87,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'
           cache: 'npm'
 
       - name: Generate audit report

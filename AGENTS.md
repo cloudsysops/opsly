@@ -1605,18 +1605,29 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 │   │   └── notebooklm/      # Agente NotebookLM (notebooklm-py + wrapper TS + MCP)
 │   ├── api/                 # Next.js API (control plane)
 │   ├── admin/               # Next.js dashboard admin
+│   ├── agent-manager/       # Gestión operativa de agentes y sesiones
+│   ├── billing-dashboard/   # Dashboard de facturación y métricas comerciales
+│   ├── billing-service/     # Servicios de billing y automatización de cobros
+│   ├── local-services/      # Servicios locales/autohospedados por tenant
 │   ├── portal/              # Next.js portal cliente (login, invitación, modos)
 │   ├── web/                 # App web (workspace)
 │   ├── mcp/                 # OpenClaw MCP server (tools → API / GitHub)
+│   ├── mcp-gateway/         # Gateway MCP para integración externa
+│   ├── mcp-rendering-server/ # Rendering MCP para artefactos visuales
 │   ├── orchestrator/        # OpenClaw BullMQ + processIntent
 │   ├── ml/                  # OpenClaw ML (RAG, clasificación, embeddings)
 │   ├── llm-gateway/         # OpenClaw LLM Gateway (cache/routing/cost)
 │   ├── context-builder/     # OpenClaw Context Builder (session+summary)
+│   ├── rendering-engine/    # Motor de render para assets y salidas visuales
+│   ├── slack-bot/           # Integración Slack para alertas y operación
 │   ├── airflow/             # DAGs de automatización (validación estructura docs/ops)
-│   ├── ingestion-service/    # Webhooks → Redis queue (bunker)
-│   ├── mission-control/      # Control plane para workers remotos
+│   ├── ingestion-service/   # Webhooks → Redis queue (bunker)
+│   ├── mission-control/     # Control plane para workers remotos
 │   ├── notebooklm-agent/    # Workflows NotebookLM legacy (python + TS wrapper)
-│   └── notion-mcp/          # HTTP hacia Notion (tareas, standup, quality; Doppler)
+│   ├── notion-mcp/          # HTTP hacia Notion (tareas, standup, quality; Doppler)
+│   ├── task-orchestrator/   # Coordinación de tareas autónomas y workers
+│   ├── tenant-invitations/  # Invitaciones y activación de tenants
+│   └── tenant-onboarding-agent/ # Onboarding automatizado por tenant
 ├── config/
 │   └── opsly.config.json    # Infra/dominios/planes (sin secretos)
 ├── agents/prompts/          # Plantillas Claude / Cursor
@@ -2043,4 +2054,3 @@ Secrets:       🔒 Never exposed to agents (injected at runtime)
 **Status for Phase 5.2:** ✅ Ready for Supabase deployment + orchestrator integration
 
 ---
-
