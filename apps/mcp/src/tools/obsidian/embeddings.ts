@@ -77,12 +77,12 @@ async function embedNote(
   extractor: any
 ): Promise<EmbeddedNote> {
   const chunks = chunkText(content);
-  const embeddedChunks = [];
+  const embeddedChunks: { text: string; embedding: number[]; position: number }[] = [];
 
   for (let i = 0; i < chunks.length; i++) {
     const text = chunks[i];
     const result = await extractor(text, { pooling: 'mean', normalize: true });
-    const embedding = Array.from(result.data);
+    const embedding = Array.from(result.data) as number[];
     embeddedChunks.push({ text, embedding, position: i });
   }
 

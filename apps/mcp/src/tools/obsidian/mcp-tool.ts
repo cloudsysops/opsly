@@ -1,10 +1,11 @@
 /**
- * MCP Tool: Obsidian Brain Search + Semantic
- * Fulltext + semantic similarity search of vault
+ * MCP Tool: Obsidian Brain Search + Semantic + Research Agent
+ * Fulltext + semantic similarity search + autonomous investigation
  */
 
 import { searchNotes, getNote } from './search.js';
 import { semanticSearch, loadEmbeddingsIndex } from './embeddings.js';
+import Anthropic from '@anthropic-ai/sdk';
 
 export const ObsidianTools = {
   'brain:search': {
@@ -196,6 +197,147 @@ export const ObsidianTools = {
           matches: r.matches,
           preview: r.note.chunks[0]?.text.substring(0, 150) + '...',
         })),
+      };
+    },
+  },
+
+  'brain:research': {
+    description:
+      'Autonomous research agent. Iteratively investigates the brain by searching, synthesizing facts, and deepening investigation until confident enough to answer.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        question: {
+          type: 'string',
+          description: 'Research question (e.g., "How is tenant isolation designed?")',
+        },
+        maxIterations: {
+          type: 'number',
+          description: 'Max investigation cycles (default 5, min 1, max 10)',
+        },
+        confidenceThreshold: {
+          type: 'number',
+          description: 'Confidence level to stop investigation (0-1, default 0.8)',
+        },
+      },
+      required: ['question'],
+    },
+    handler: async (input: {
+      question: string;
+      maxIterations?: number;
+      confidenceThreshold?: number;
+    }) => {
+      const client = new Anthropic({
+        apiKey: process.env.ANTHROPIC_API_KEY,
+      });
+
+      const maxIterations = Math.min(input.maxIterations || 5, 10);
+      const confidenceThreshold = input.confidenceThreshold || 0.8;
+      const sources = new Set<string>();
+      let currentQuestion = input.question;
+      let iterations = 0;
+      let confidence = 0;
+      let answer = '';
+
+      while (iterations < maxIterations) {
+        iterations++;
+
+        // Search using both methods
+        const fulltext = searchNotes(currentQuestion);
+        const index = loadEmbeddingsIndex();
+        let semantic: Array<{ note: any; score: number; matches: string[] }> = [];
+        if (index) {
+          semantic = await semanticSearch(currentQuestion, 5);
+        }
+
+        if (fulltext.length === 0 && semantic.length === 0) break;
+
+        // Combine and rank results
+        const combined = [
+          ...fulltext.slice(0, 3).map((r) => ({ ...r, method: 'fulltext' })),
+          ...semantic.slice(0, 3).map((r) => ({
+            score: r.score,
+            note: r.note,
+            matches: r.matches,
+            method: 'semantic',
+          })),
+        ];
+
+        const unique = Array.from(
+          new Map(combined.map((r) => [r.note.path, r])).values()
+        ).slice(0, 5);
+
+        // Extract facts
+        const facts = unique
+          .map((r) => `[${r.note.path}] ${r.note.title}: ${r.matches?.[0] || r.note.content.substring(0, 100)}`)
+          .join('\n');
+
+        unique.forEach((r) => sources.add(r.note.path));
+
+        // Synthesize
+        const prompt = `
+Question: ${currentQuestion}
+
+Available Facts:
+${facts}
+
+Provide a concise answer based on these facts. Estimate your confidence (0-1) in this answer.
+
+Format:
+ANSWER: [your answer]
+CONFIDENCE: [0.0-1.0]
+`;
+
+        const response = await client.messages.create({
+          model: 'claude-haiku-4-5-20251001',
+          max_tokens: 300,
+          messages: [{ role: 'user', content: prompt }],
+        });
+
+        const text =
+          response.content[0].type === 'text' ? response.content[0].text : '';
+
+        const answerMatch = text.match(/ANSWER:\s*(.+?)(?=CONFIDENCE:|$)/s);
+        const confidenceMatch = text.match(/CONFIDENCE:\s*([0-9.]+)/);
+
+        answer = answerMatch ? answerMatch[1].trim() : text;
+        confidence = confidenceMatch ? parseFloat(confidenceMatch[1]) : 0.5;
+
+        if (confidence >= confidenceThreshold) break;
+
+        // Generate follow-up
+        const followUpPrompt = `
+Original question: ${input.question}
+Current facts: ${facts}
+
+Generate a follow-up search query to deepen investigation.
+Be specific and search for related concepts not yet covered.
+`;
+
+        const followUpResponse = await client.messages.create({
+          model: 'claude-haiku-4-5-20251001',
+          max_tokens: 50,
+          messages: [{ role: 'user', content: followUpPrompt }],
+        });
+
+        currentQuestion =
+          followUpResponse.content[0].type === 'text'
+            ? followUpResponse.content[0].text
+            : input.question;
+      }
+
+      const relatedTopics = Array.from(sources)
+        .map((s) => s.split('/').pop()?.replace('.md', '') || '')
+        .filter(Boolean)
+        .slice(0, 5);
+
+      return {
+        question: input.question,
+        answer,
+        sources: Array.from(sources).slice(0, 5),
+        confidence: Math.min(confidence, 1.0),
+        iterations,
+        relatedTopics,
       };
     },
   },
