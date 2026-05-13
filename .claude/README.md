@@ -128,7 +128,7 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 
 ### `/doctor` — Invalid settings (hooks ignorados)
 
-Si aparece *Unknown hook event "pre-commit"* (u otros de Git), es porque `hooks` en la raíz del JSON es reservado por Claude Code. Usa **`opslyGitHookCatalog`** para el catálogo Opsly y deja `hooks` solo si defines eventos válidos de la documentación enlazada arriba.
+Si ves *Unknown hook event "pre-commit"*, la clave raíz **`hooks`** es de Claude Code, no de Git. Usa **`opslyGitHookCatalog`** en `.claude/settings.json` para el catálogo Opsly.
 
 ### Hooks no se ejecutan
 ```bash
