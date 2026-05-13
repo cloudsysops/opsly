@@ -1,5 +1,5 @@
 ---
-status: reference
+status: canon
 owner: operations
 updated: 2026-05-08T14:45:00Z
 ---
