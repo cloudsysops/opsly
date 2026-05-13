@@ -60,6 +60,9 @@ echo "[setup] Ensuring hook scripts are executable..."
 run_cmd chmod +x .claude/4-hooks/pre-commit
 run_cmd chmod +x .claude/4-hooks/commit-msg
 run_cmd chmod +x .claude/4-hooks/pre-push
+if compgen -G ".claude/hooks/*.sh" >/dev/null 2>&1; then
+  run_cmd chmod +x .claude/hooks/*.sh
+fi
 
 echo "[setup] Validating environment..."
 run_cmd git config --get core.hooksPath

@@ -44,8 +44,7 @@
     }
   },
 
-  "opslyGitHookCatalog": {
-    "description": "Metadatos Opsly para Git (core.hooksPath → .claude/4-hooks). No usar la clave top-level \"hooks\": Claude Code la reserva para SessionStart, PreToolUse, etc.",
+  "hooks": {
     "pre-commit": {
       "enabled": true,
       "command": "bash .claude/4-hooks/lint-on-save.sh"
@@ -197,6 +196,7 @@
       "docs/brain/",
       "scripts/skill-finder.js",
       "scripts/skill-loader.js",
+      ".claude/hooks/opsly-session-start-skills.sh",
       ".claude/4-hooks/register.json"
     ]
   }
