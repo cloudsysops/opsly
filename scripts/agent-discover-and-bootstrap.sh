@@ -37,8 +37,8 @@ echo "🔍 Agent Discovery"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
 
-# Get all agents from config
-agents=$(jq -r '.agents[].name' "$AGENTS_TEAM" 2>/dev/null || echo "")
+# Get all agents from config (use id, not name which may have spaces)
+agents=$(jq -r '.agents[].id' "$AGENTS_TEAM" 2>/dev/null || echo "")
 
 if [ -z "$agents" ]; then
   echo "❌ No agents found in agents-team.json"
