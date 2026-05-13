@@ -185,12 +185,15 @@ check_escalation_rate() {
 generate_metrics_report() {
     local timestamp=$(date -u +%Y-%m-%dT%H:%M:%SZ)
     local commits=$(get_git_commit_rate)
+    local orchestrator_health
+    orchestrator_health=$(ssh "$VPS_USER@$VPS_HOST" \
+        "curl -s http://localhost:3011/health | jq -r '.status // \"down\"'")
 
     cat > "$METRICS_FILE" << EOFM
 {
   "timestamp": "$timestamp",
   "health": {
-    "orchestrator": "$(ssh "$VPS_USER@$VPS_HOST" "curl -s http://localhost:3011/health | jq -r '.status // \"down\"')"
+    "orchestrator": "$orchestrator_health"
   },
   "metrics": {
     "commits_30min": $commits,
