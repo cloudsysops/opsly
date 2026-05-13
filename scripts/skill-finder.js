@@ -23,7 +23,7 @@ function fuzzyMatch(str, pattern) {
   return pi === p.length;
 }
 
-// TF-IDF simple scoring
+// TF-IDF simple scoring + brain-researcher boost
 function scoreSkill(skill, query) {
   const q = query.toLowerCase();
   const words = q.split(/\s+/);
@@ -46,6 +46,14 @@ function scoreSkill(skill, query) {
 
   const priority = { critical: 20, high: 10, medium: 5, low: 2 };
   score += priority[skill.priority] || 0;
+
+  // Brain-researcher auto-boost for research queries
+  if (skill.name === 'opsly-brain-researcher') {
+    const investigationKeywords = ['investigar', 'research', 'explain', 'explica', '¿cómo', 'how', 'funcionamiento', 'entender'];
+    if (investigationKeywords.some(kw => q.includes(kw))) {
+      score += 30; // Strong boost for research queries
+    }
+  }
 
   return score;
 }
@@ -127,13 +135,22 @@ function evaluateAdequacy(matches, query) {
 export function suggestChain(query) {
   const matches = findSkills(query);
   const adequacy = evaluateAdequacy(matches, query);
-  if (!adequacy.hasAdequateMatch) return ['opsly-bootstrap', 'opsly-skill-creator'];
+  if (!adequacy.hasAdequateMatch) return ['opsly-context', 'opsly-skill-creator'];
 
   const chain = matches.map((s) => s.name);
 
-  // Bootstrap is always first for Opsly sessions.
-  if (!chain.includes('opsly-bootstrap')) {
-    chain.unshift('opsly-bootstrap');
+  // Context is always first for Opsly sessions.
+  if (!chain.includes('opsly-context')) {
+    chain.unshift('opsly-context');
+  }
+
+  // Auto-inject brain-researcher if query looks like research
+  const q = query.toLowerCase();
+  const investigationKeywords = ['investigar', 'research', 'explain', 'explica', '¿cómo', 'how', 'funcionamiento'];
+  const isResearchQuery = investigationKeywords.some(kw => q.includes(kw));
+  if (isResearchQuery && !chain.includes('opsly-brain-researcher')) {
+    // Insert after context, before other skills
+    chain.splice(1, 0, 'opsly-brain-researcher');
   }
 
   // Skill creator stays available by default so agents can capture new workflows.

@@ -130,6 +130,23 @@ intent = "deploy" →  Confirmar antes de ejecutar
 domain = "unknown" → Solicitar contexto adicional
 ```
 
+### Token Optimization (CRÍTICO)
+
+**SIEMPRE que necesites contexto/información del proyecto:**
+
+```
+1. ¿Existe en docs/brain/?              → brain:research (60-70% tokens saved)
+2. ¿Es búsqueda en código?              → grep/find localmente
+3. ¿Necesitas arquitectura?             → AGENTS.md + VISION.md
+4. ¿Última opción?                      → Pedir al usuario
+```
+
+**brain:research MCP tool:**
+- Triggers: "investigar X", "research X", "explain X", "¿cómo funciona X?"
+- Retorna: {question, answer, sources[], confidence, iterations}
+- Costo: ~300 tokens vs. 5000 tokens full context
+- Skill: `opsly-brain-researcher` (HIGH priority)
+
 ## URLs raw
 
 - AGENTS.md: https://raw.githubusercontent.com/cloudsysops/opsly/main/AGENTS.md

@@ -98,6 +98,65 @@ npm run opsly:ensure-ollama -- --ensure
 
 ---
 
+## 🧠 Brain-Driven Context (Token Optimization)
+
+**CRÍTICO:** Todos los agentes DEBEN usar `brain:research` para contexto profundo. **Ahorra 60-70% de tokens.**
+
+### Cuándo Usar `brain:research`
+
+```
+Usuario pregunta: "¿Cómo está diseñado el tenant isolation?"
+❌ MAL:  ctx.loadFullChatHistory() + claude.ask() → 5000 tokens
+✅ BIEN: mcpTools.brain:research({question}) → 300 tokens respuesta + sources
+```
+
+### MCP Tools Disponibles
+
+| Tool | Uso | Costo |
+|------|-----|-------|
+| `brain:search` | Fulltext + tags | Bajo |
+| `brain:semantic-search` | Similitud embeddings | Muy bajo |
+| `brain:research` | **Investigación iterativa** | **Muy bajo** |
+| `brain:graph` | Knowledge graph | Bajo |
+| `brain:get` | Nota completa | Bajo |
+
+### Cómo Invocar
+
+**Opción A — MCP Tool (recomendado):**
+```typescript
+// En cualquier agente con acceso a MCP
+const result = await tools.call("brain:research", {
+  question: "¿cómo funciona el orchestrator?",
+  maxIterations: 5,
+  confidenceThreshold: 0.8
+});
+// Returns: { question, answer, sources[], confidence, iterations, relatedTopics[] }
+```
+
+**Opción B — Skill directo:**
+```typescript
+import { research } from "@opsly/brain-researcher";
+const result = await research("investigar arquitectura multi-tenant");
+```
+
+### Triggers Automáticos (skill-finder)
+
+Agentes que usen `node scripts/skill-finder.js <query> --autonomous` recibirán `opsly-brain-researcher` sugerido en cadena si detectan:
+- "investigar X"
+- "research X"  
+- "¿cómo funciona X?"
+- "explica X"
+
+### Regla de Oro
+
+**ANTES de hacer cualquier búsqueda o RAG:**
+1. ¿Existe documentación en `docs/brain/`?
+2. SÍ → Usa `brain:research`
+3. NO → Busca en código localmente
+4. Último recurso → Pide contexto al usuario
+
+---
+
 ### Flujo con Claude (multi-agente)
 
 1. **Contexto:** misma **URL raw** de `AGENTS.md` (arriba) y, si aplica, `VISION.md` — referencias en `.claude/CLAUDE.md`.
