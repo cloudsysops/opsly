@@ -259,6 +259,10 @@ export function resolveOpenClawControllerForRole(role: OpenClawAgentRole): OpenC
  * Map local agent service names to registry agent IDs
  */
 const LOCAL_AGENT_SERVICE_TO_REGISTRY = new Map<string, string>([
+  ['local_cursor', 'local-cursor-agent'],
+  ['local_claude', 'local-claude-agent'],
+  ['local_copilot', 'local-copilot-agent'],
+  ['local_opencode', 'local-opencode-agent'],
   ['cursor', 'local-cursor-agent'],
   ['claude', 'local-claude-agent'],
   ['copilot', 'local-copilot-agent'],

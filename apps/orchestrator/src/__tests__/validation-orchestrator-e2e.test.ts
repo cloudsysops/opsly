@@ -75,9 +75,9 @@ describe('ValidationOrchestrator E2E - Feedback Loop Integration', () => {
     });
 
     it('should get agent by name', () => {
-      const cursor = workerPool.getAgent('cursor');
+      const cursor = workerPool.getAgent('local_cursor');
       if (cursor) {
-        expect(cursor.name).toBe('cursor');
+        expect(cursor.name).toBe('local_cursor');
         expect(cursor.port).toBeGreaterThan(0);
       }
     });

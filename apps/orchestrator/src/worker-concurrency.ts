@@ -25,6 +25,9 @@ export type WorkerConcurrencyKey =
   | 'local-openai'
   | 'local-hermes'
   | 'local-decepticon'
+  | 'local-aider'
+  | 'local-goose'
+  | 'local-playwright'
   | 'cloudsysops_agents'
   | 'defense_audit'
   | 'openclaw-planner'
@@ -61,6 +64,9 @@ const FULL_STACK_DEFAULTS: Record<WorkerConcurrencyKey, number> = {
   'local-openai': 1,
   'local-hermes': 1,
   'local-decepticon': 1,
+  'local-aider': 1,
+  'local-goose': 1,
+  'local-playwright': 1,
   'cloudsysops_agents': 2,
   'defense_audit': 2,
   'openclaw-planner': 2,
@@ -98,6 +104,9 @@ const DISTRIBUTED_WORKER_DEFAULTS: Record<WorkerConcurrencyKey, number> = {
   'local-openai': 1,
   'local-hermes': 1,
   'local-decepticon': 1,
+  'local-aider': 1,
+  'local-goose': 1,
+  'local-playwright': 1,
   'cloudsysops_agents': 1,
   'defense_audit': 1,
   'openclaw-planner': 1,
@@ -135,6 +144,9 @@ const ENV_NAMES: Record<WorkerConcurrencyKey, string> = {
   'local-openai': 'ORCHESTRATOR_LOCAL_OPENAI_CONCURRENCY',
   'local-hermes': 'ORCHESTRATOR_LOCAL_HERMES_CONCURRENCY',
   'local-decepticon': 'ORCHESTRATOR_LOCAL_DECEPTICON_CONCURRENCY',
+  'local-aider': 'ORCHESTRATOR_LOCAL_AIDER_CONCURRENCY',
+  'local-goose': 'ORCHESTRATOR_LOCAL_GOOSE_CONCURRENCY',
+  'local-playwright': 'ORCHESTRATOR_LOCAL_PLAYWRIGHT_CONCURRENCY',
   'cloudsysops_agents': 'ORCHESTRATOR_CLOUDSYSOPS_AGENTS_CONCURRENCY',
   'defense_audit': 'ORCHESTRATOR_DEFENSE_AUDIT_CONCURRENCY',
   'openclaw-planner': 'ORCHESTRATOR_OPENCLAW_PLANNER_CONCURRENCY',

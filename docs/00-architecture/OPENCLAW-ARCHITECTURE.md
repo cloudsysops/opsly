@@ -1,5 +1,7 @@
 # OpenClaw — Arquitectura de orquestación (Opsly)
 
+> **Terminología:** «OpenClaw» en este documento es la **arquitectura de colas y decisión** en Opsly. El **CLI** `openclaw` (npm) se llama **OpenClaw CLI**; el servicio Docker de colas es el **Orquestador Opsly** (`apps/orchestrator`). Ver **`docs/01-development/OPENCLAW-TERMINOLOGY.md`**.
+
 Documento de **diseño orientativo** para una capa de orquestación de agentes y tareas de larga duración **alineada con el stack Opsly** (Redis, colas, API Next). No sustituye ADR existentes hasta que se apruebe implementación concreta.
 
 ## Actualización 2026-04-21 (Super Agente + Shadow Deploy)

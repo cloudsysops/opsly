@@ -3,9 +3,8 @@
     "name": "brain-driven-optimization",
     "enabled": true,
     "description": "All agents use brain:research for 60-70% token savings",
-    "mcp_tools_required": [
-      "brain:research"
-    ],
+    "token_savings_target": "60-70%",
+    "mcp_tools_required": ["brain:research"],
     "rule_hierarchy": [
       "1. Query exists in docs/brain/ → use brain:research",
       "2. Search code locally → grep/find",
@@ -21,14 +20,12 @@
       "how does",
       "funcionamiento"
     ],
-    "onboarding_skills": [
-      "opsly-context",
-      "opsly-brain-researcher"
-    ]
+    "onboarding_skills": ["opsly-context", "opsly-brain-researcher"]
   },
   "services": {
-    "cursor": {
+    "local_cursor": {
       "enabled": true,
+      "external_cli": "cursor",
       "url": "http://localhost:5001",
       "envUrl": "OPSLY_CURSOR_AGENT_URL",
       "type": "http",
@@ -36,8 +33,9 @@
       "retries": 1,
       "llmFallback": "deepseek_v4"
     },
-    "claude": {
+    "local_claude": {
       "enabled": true,
+      "external_cli": "claude",
       "url": "http://localhost:5002",
       "envUrl": "OPSLY_CLAUDE_AGENT_URL",
       "type": "http",
@@ -54,8 +52,9 @@
       "retries": 2,
       "description": "LLM Gateway con proveedores gratuitos: Ollama, DeepSeek, NVIDIA, OpenRouter"
     },
-    "copilot": {
+    "local_copilot": {
       "enabled": true,
+      "external_cli": "copilot",
       "url": "http://localhost:5003",
       "envUrl": "OPSLY_COPILOT_AGENT_URL",
       "type": "http",
@@ -63,8 +62,9 @@
       "retries": 1,
       "description": "copilot real local CLI bridge service"
     },
-    "opencode": {
+    "local_opencode": {
       "enabled": true,
+      "external_cli": "opencode",
       "url": "http://localhost:5004",
       "envUrl": "OPSLY_OPENCODE_AGENT_URL",
       "type": "http",
@@ -72,8 +72,9 @@
       "retries": 1,
       "description": "opencode real local CLI bridge service"
     },
-    "codex": {
+    "local_codex": {
       "enabled": true,
+      "external_cli": "codex",
       "url": "http://localhost:5005",
       "envUrl": "OPSLY_CODEX_AGENT_URL",
       "type": "http",
@@ -81,8 +82,9 @@
       "retries": 1,
       "description": "codex real local CLI bridge service"
     },
-    "openai": {
+    "local_openai": {
       "enabled": true,
+      "external_cli": "openai",
       "url": "http://localhost:5006",
       "envUrl": "OPSLY_OPENAI_AGENT_URL",
       "type": "http",
@@ -90,8 +92,9 @@
       "retries": 1,
       "description": "openai real local CLI bridge service"
     },
-    "hermes": {
+    "local_hermes": {
       "enabled": true,
+      "external_cli": "hermes",
       "url": "http://localhost:5007",
       "envUrl": "OPSLY_HERMES_AGENT_URL",
       "type": "http",
@@ -99,8 +102,9 @@
       "retries": 1,
       "description": "hermes real local CLI bridge service"
     },
-    "decepticon": {
+    "local_decepticon": {
       "enabled": true,
+      "external_cli": "decepticon",
       "url": "http://localhost:5008",
       "envUrl": "OPSLY_DECEPTICON_AGENT_URL",
       "type": "http",
@@ -108,8 +112,9 @@
       "retries": 1,
       "description": "decepticon real local CLI bridge service"
     },
-    "aider": {
+    "local_aider": {
       "enabled": true,
+      "external_cli": "aider",
       "url": "http://localhost:5009",
       "envUrl": "OPSLY_AIDER_AGENT_URL",
       "type": "http",
@@ -117,8 +122,9 @@
       "retries": 1,
       "description": "aider git-aware local coding CLI bridge service"
     },
-    "goose": {
+    "local_goose": {
       "enabled": true,
+      "external_cli": "goose",
       "url": "http://localhost:5010",
       "envUrl": "OPSLY_GOOSE_AGENT_URL",
       "type": "http",
@@ -126,8 +132,9 @@
       "retries": 1,
       "description": "goose general-purpose local agent CLI bridge service"
     },
-    "playwright": {
+    "local_playwright": {
       "enabled": true,
+      "external_cli": "playwright",
       "url": "http://localhost:5011",
       "envUrl": "OPSLY_PLAYWRIGHT_AGENT_URL",
       "type": "http",

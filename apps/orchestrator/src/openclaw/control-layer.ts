@@ -1,3 +1,4 @@
+/** Capa OpenClaw (TS) en Opsly: routing de intents — no confundir con el CLI npm `openclaw`. Ver `docs/01-development/OPENCLAW-TERMINOLOGY.md`. */
 import type { Intent, IntentRequest } from '../types.js';
 import { routeOpenClawIntent } from './router.js';
 import { applyOpenClawPolicies } from './policies.js';

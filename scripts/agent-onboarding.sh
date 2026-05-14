@@ -1,7 +1,7 @@
 #!/bin/bash
 ##
 # agent-onboarding.sh — Auto-configure new agents with brain:research
-# Usage: ./scripts/agent-onboarding.sh <agent_name> [--enable]
+# Usage: ./scripts/agent-onboarding.sh <opsly_service_key> [--enable]
 ##
 
 set -e
@@ -10,10 +10,10 @@ AGENT_NAME="${1:-}"
 ENABLE_FLAG="${2:-}"
 
 if [ -z "$AGENT_NAME" ]; then
-  echo "Usage: agent-onboarding.sh <agent_name> [--enable]"
+  echo "Usage: agent-onboarding.sh <opsly_service_key> [--enable]"
   echo "Examples:"
-  echo "  ./scripts/agent-onboarding.sh hermes"
-  echo "  ./scripts/agent-onboarding.sh copilot --enable"
+  echo "  ./scripts/agent-onboarding.sh local_hermes --enable"
+  echo "  (service key must exist under services in config/agent-services.json)"
   exit 1
 fi
 
