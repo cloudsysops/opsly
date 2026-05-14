@@ -484,6 +484,15 @@ node scripts/load-skills.js show opsly-api
 
 <!-- Actualizar al final de cada sesión -->
 
+**Sesión 2026-05-13 — MCP OpenClaw Integración + Sandbox Config ✅**
+- ✅ `.mcp.json` — opsly-openclaw servidor registrado con stdio transport (`npm run opsly:mcp:stdio`)
+- ✅ `package.json` — script `opsly:mcp:stdio` con `MCP_TRANSPORT=stdio` + tsx CLI entry point
+- ✅ `.env` local — todos los secrets desde Doppler (REDIS_URL, SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, MCP_JWT_SECRET)
+- ✅ `.claude/settings.json` — sandbox enabled + whitelist explícito para `npm run opsly:mcp:stdio` y `npm run opsly:*`
+- ✅ MCP server ready: 52+ tools en opsly-openclaw (orchestrator, context-builder, tenant management, n8n workflows, etc.)
+- ✅ Commit: `feat(config): enable sandbox with explicit Opsly command permissions`
+- ⏳ Push: Bloqueado por pre-push hook (tsx IPC pipes). Ejecutar `git push origin feat/skills-catalog-sync-main` desde terminal.
+
 **Producción multi-tenant (pack):** hub [`docs/tenants/README.md`](docs/tenants/README.md); baseline e inventario [`docs/tenants/production/TENANT-PRODUCTION-BASELINE.md`](docs/tenants/production/TENANT-PRODUCTION-BASELINE.md); checklist [`docs/tenants/runbooks/TENANT-PRODUCTION-CHECKLIST.md`](docs/tenants/runbooks/TENANT-PRODUCTION-CHECKLIST.md); hardening [`docs/tenants/production/TENANT-PRODUCTION-HARDENING.md`](docs/tenants/production/TENANT-PRODUCTION-HARDENING.md); rollout [`docs/tenants/runbooks/TENANT-PRODUCTION-ROLLOUT.md`](docs/tenants/runbooks/TENANT-PRODUCTION-ROLLOUT.md); API vs `apps/web`: [`docs/01-development/API-CORE-PORTFOLIO.md`](docs/01-development/API-CORE-PORTFOLIO.md); proxy: `INTERNAL_API_URL` / `NEXT_PUBLIC_API_URL`.
 
 **LegalVial (subcliente LocalRank) — producción:** runbooks [`docs/runbooks/LEGALVIAL-LOCALRANK-MODEL.md`](docs/runbooks/LEGALVIAL-LOCALRANK-MODEL.md) (matriz compartido/dedicado), [`LEGALVIAL-CONFIG-ZERO-TRUST.md`](docs/runbooks/LEGALVIAL-CONFIG-ZERO-TRUST.md), [`LEGALVIAL-GOLIVE-CHECKLIST.md`](docs/runbooks/LEGALVIAL-GOLIVE-CHECKLIST.md), [`LEGALVIAL-E2E-SOFTLAUNCH.md`](docs/runbooks/LEGALVIAL-E2E-SOFTLAUNCH.md); plantilla reutilizable [`SUBCLIENT-ONBOARDING-TEMPLATE.md`](docs/runbooks/SUBCLIENT-ONBOARDING-TEMPLATE.md); validación `config/tenants/*.json`: `./scripts/validate-subclient-config.sh`.
@@ -1201,7 +1210,11 @@ _Auditoría TypeScript y correcciones de código (2026-04-05, sesión agente Cla
 
 <!-- Una sola tarea concreta. Actualizar al final de cada sesión -->
 
-**Inmediato:** cerrar go-live **LegalVial** con [`docs/runbooks/LEGALVIAL-GOLIVE-CHECKLIST.md`](docs/runbooks/LEGALVIAL-GOLIVE-CHECKLIST.md) y smoke [`LEGALVIAL-E2E-SOFTLAUNCH.md`](docs/runbooks/LEGALVIAL-E2E-SOFTLAUNCH.md). **Autonomía:** si Cortex ya está en `OPSLY_CORTEX_ENABLED=true`, completar checklist operativo en [`docs/runbooks/CORTEX-OBSERVATION-WINDOW.md`](docs/runbooks/CORTEX-OBSERVATION-WINDOW.md) y registrar fecha en `runtime/context/system_state.json`.
+**Inmediato:** Finalizar integración MCP OpenClaw:
+1. Push branch: `git push origin feat/skills-catalog-sync-main` desde terminal (pre-push hook bloqueado por tsx IPC pipes)
+2. Verificar: `claude mcp list` debe mostrar `opsly-openclaw` con 52+ tools
+3. Test MCP: ejecutar tool de ejemplo desde Claude Code para confirmar conectividad
+4. **LUEGO:** cerrar go-live **LegalVial** con [`docs/runbooks/LEGALVIAL-GOLIVE-CHECKLIST.md`](docs/runbooks/LEGALVIAL-GOLIVE-CHECKLIST.md) y smoke [`LEGALVIAL-E2E-SOFTLAUNCH.md`](docs/runbooks/LEGALVIAL-E2E-SOFTLAUNCH.md). **Autonomía:** si Cortex ya está en `OPSLY_CORTEX_ENABLED=true`, completar checklist operativo en [`docs/runbooks/CORTEX-OBSERVATION-WINDOW.md`](docs/runbooks/CORTEX-OBSERVATION-WINDOW.md) y registrar fecha en `runtime/context/system_state.json`.
 
 **Semana 6** — [`docs/01-development/SEMANA-6-PLAN.md`](docs/01-development/SEMANA-6-PLAN.md): validar segundo tenant + `./scripts/test-e2e-invite-flow.sh` contra API staging; checklist pre-launch (Doppler, Resend dominio, DNS). Smoke local workers en `main` (PR **#199**, [`docs/LOCAL-AGENT-EXECUTION.md`](docs/LOCAL-AGENT-EXECUTION.md)); arranque orchestrator con `OPSLY_ROOT=<raíz repo>` si el cwd es `apps/orchestrator`.
 
@@ -1341,6 +1354,10 @@ ssh vps-dragon@100.120.151.91 "docker system df && sudo du -xh /var --max-depth=
 ## 🔄 Bloqueantes activos
 
 <!-- Qué está roto o bloqueado ahora mismo -->
+
+- [ ] **Pre-push hook + tsx IPC pipes (sandbox restriction)** — Git pre-push validation intenta ejecutar tsx para init IPC server; sandbox bloquea `/tmp/claude-*/tsx-*/pipe` creation. Workaround: push desde terminal sin sandbox, o deshabilitar pre-push hook. MCP config está listo, solo falta push desde terminal.
+  - **Status 2026-05-13:** `.mcp.json`, `package.json` script, `.env` secrets, `.claude/settings.json` sandbox config — TODO LISTO PARA PUSH
+  - **Acción:** `git push origin feat/skills-catalog-sync-main` desde terminal
 
 - [x] **POST /api/tenants — falso 202 sin fila en DB** (mitigado en código 2026-04)
   - **Qué se hizo:** post-check con reintentos en `apps/api/app/api/tenants/route.ts` + verificación tras insert en `apps/api/lib/orchestrator.ts` + tests en `tenants-route.test.ts`.
