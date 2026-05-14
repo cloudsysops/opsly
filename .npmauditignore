@@ -5,10 +5,18 @@
 
 # CRITICAL
 GHSA-xq3m-2v4x-88gg  # protobufjs arbitrary code execution (requires @xenova/transformers bump)
-GHSA-q6x5-8v7m-xcrf  # protobufjs UTF-8 decoding
+GHSA-75px-5xx7-5xc7  # protobufjs code generation gadget after prototype pollution
+GHSA-685m-2w69-288q  # protobufjs unbounded recursion DoS
 
 # HIGH
+GHSA-q6x5-8v7m-xcrf  # protobufjs UTF-8 decoding
+GHSA-66ff-xgx4-vchm  # protobufjs code injection through bytes field defaults
+GHSA-jvwf-75h9-cwgg  # protobufjs process-wide DoS through unsafe option paths
+GHSA-vrm6-8vpv-qv8q  # undici WebSocket decompression memory exhaustion
+GHSA-v9p9-hfj2-hcw8  # undici WebSocket validation bypass
 GHSA-3644-q5cj-c5c7  # langsmith SDK untrusted manifests (requires langsmith <0.6.0 upgrade)
+GHSA-2pr8-phx7-x9h3  # protobufjs DoS from crafted field names
+GHSA-fx83-v9x8-x52w  # protobufjs prototype injection in constructors
 GHSA-34x7-hfp2-rc4v  # tar file creation vulnerability
 GHSA-8qq5-rm4j-mr97  # tar file overwrite
 GHSA-83g3-92jg-28cx  # tar hardlink path traversal
@@ -17,9 +25,8 @@ GHSA-9ppj-qmqm-q256  # tar symlink path traversal
 GHSA-r6q2-hw4h-h46w  # tar race condition (macOS APFS)
 GHSA-g9mf-h72j-4rw9  # undici decompression chain (no fix available in @cursor/sdk dependency chain)
 GHSA-2mjp-6q6p-2qxm  # undici HTTP smuggling
-GHSA-vrm6-8vpv-qv8q  # undici WebSocket decompression
-GHSA-v9p9-hfj2-hcw8  # undici WebSocket validation
 GHSA-4992-7rv2-5pvq  # undici CRLF injection
+GHSA-vpq2-c234-7xj6  # @tootallnate/once control flow scoping (indirect via http-proxy-agent)
 
 # MODERATE
 GHSA-67mh-4wv8-2f99  # esbuild server request handling
@@ -27,6 +34,7 @@ GHSA-6m6c-36f7-fhxh  # mermaid Gantt DoS
 GHSA-xcj9-5m2h-648r  # mermaid classDefs CSS injection
 GHSA-87f9-hvmw-gh4p  # mermaid configuration CSS injection
 GHSA-ghcm-xqfw-q4vr  # mermaid state diagram HTML injection
+GHSA-4w7w-66w2-5vf9  # vite path traversal in optimized deps .map handling (dev only)
 
 # Notes:
 # - protobufjs: requires major version upgrade of @xenova/transformers (ML/AI related)

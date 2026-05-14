@@ -9,6 +9,12 @@
 const KNOWN_VULNS = new Set([
   "GHSA-xq3m-2v4x-88gg", // protobufjs arbitrary code execution
   "GHSA-q6x5-8v7m-xcrf", // protobufjs UTF-8 decoding
+  "GHSA-2pr8-phx7-x9h3", // protobufjs DoS from crafted field names
+  "GHSA-66ff-xgx4-vchm", // protobufjs code injection in toObject
+  "GHSA-fx83-v9x8-x52w", // protobufjs prototype injection
+  "GHSA-75px-5xx7-5xc7", // protobufjs code generation gadget
+  "GHSA-jvwf-75h9-cwgg", // protobufjs process-wide DoS
+  "GHSA-685m-2w69-288q", // protobufjs unbounded recursion DoS
   "GHSA-3644-q5cj-c5c7", // langsmith untrusted manifests
   "GHSA-34x7-hfp2-rc4v", // tar file creation
   "GHSA-8qq5-rm4j-mr97", // tar file overwrite
@@ -26,6 +32,8 @@ const KNOWN_VULNS = new Set([
   "GHSA-xcj9-5m2h-648r", // mermaid classDefs CSS injection
   "GHSA-87f9-hvmw-gh4p", // mermaid config CSS injection
   "GHSA-ghcm-xqfw-q4vr", // mermaid state diagram HTML injection
+  "GHSA-vpq2-c234-7xj6", // @tootallnate/once control flow scoping
+  "GHSA-4w7w-66w2-5vf9", // vite path traversal in deps
 ]);
 
 let input = "";
@@ -47,6 +55,7 @@ process.stdin.on("end", () => {
 
     for (const [pkg, vulnInfo] of Object.entries(auditData.vulnerabilities)) {
       for (const via of vulnInfo.via || []) {
+        if (typeof via !== "object" || !via) continue;
         const cveId = via.cve || via.id;
         if (!KNOWN_VULNS.has(cveId)) {
           unknownVulns.push({

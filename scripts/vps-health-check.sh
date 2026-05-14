@@ -64,7 +64,7 @@ echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "🏥 API HEALTH"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-ssh -o BatchMode=yes -o ConnectTimeout=20 "$VPS_HOST" "curl -s http://localhost:3000/api/health | jq . 2>/dev/null || echo '❌ API no responde en :3000'"
+ssh -o BatchMode=yes -o ConnectTimeout=20 "$VPS_SSH" "curl -s http://localhost:3000/api/health | jq . 2>/dev/null || echo '❌ API no responde en :3000'"
 
 # 5. LOGS RECIENTES
 echo ""

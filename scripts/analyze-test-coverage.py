@@ -97,7 +97,10 @@ class CoverageAnalyzer:
                 # Exclude test files
                 if not any(
                     part in f.parts
-                    for part in ["__tests__", ".test", ".spec", "node_modules", "dist"]
+                    for part in ["__tests__", "node_modules", "dist"]
+                ) and not any(
+                    f.name.endswith(suffix)
+                    for suffix in [".test.ts", ".test.tsx", ".spec.ts", ".spec.tsx"]
                 ):
                     source_files.append(f)
 
