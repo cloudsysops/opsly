@@ -31,7 +31,7 @@ npm run validate-skills
 - [ ] Tests del workspace tocado verdes (p. ej. `npm run test --workspace=@intcloudsysops/llm-gateway`).
 - [ ] Sin secretos en diff; sin `console.log` de depuración en código de producción.
 - [ ] Funciones nuevas en API: preferir &lt; ~50 líneas o extraer helpers (convención Opsly).
-- [ ] Si cambia contrato HTTP u OpenAPI: actualizar `docs/openapi-opsly-api.yaml` y `npm run validate-openapi`.
+- [ ] Si cambia contrato HTTP u OpenAPI: actualizar `docs/00-architecture/openapi-opsly-api.yaml` y `npm run validate-openapi`.
 - [ ] Decisiones de arquitectura: mencionar en `AGENTS.md` si aplica.
 
 ## Cobertura
@@ -45,4 +45,4 @@ Evitar workflows que filtren por rutas **inexistentes** (`apps/orchestrator/src/
 ## Referencias
 
 - [`docs/CURSOR-DAILY-CHECKLIST.md`](CURSOR-DAILY-CHECKLIST.md)
-- [`SPRINT-TRACKER.md`](../SPRINT-TRACKER.md)
+- [`SPRINT-TRACKER.md`](SPRINT-TRACKER.md)

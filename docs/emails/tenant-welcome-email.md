@@ -16,17 +16,17 @@ Hola **{NOMBRE_CLIENTE}**,
 
 ## 🔑 Tu acceso
 
-**Portal (login y dashboard):** https://portal.ops.smiletripcare.com
+**Portal (login y dashboard):** https://portal.op-sly.com
 
 > Si recibiste un **enlace de invitación** por email, ábrelo primero para activar tu cuenta; luego podrás entrar al portal con tu usuario y contraseña.
 
-**Panel administrativo de la plataforma** (solo equipo Opsly / demos internas): https://admin.ops.smiletripcare.com
+**Panel administrativo de la plataforma** (solo equipo Opsly / demos internas): https://admin.op-sly.com
 
 ## 🛠️ Tus herramientas
 
 ### n8n (Automatización)
 
-**URL:** https://n8n-{TU_SLUG}.ops.smiletripcare.com
+**URL:** https://n8n-{TU_SLUG}.op-sly.com
 
 Pasos:
 
@@ -37,7 +37,7 @@ Pasos:
 
 ### Uptime Kuma (Monitoreo)
 
-**URL:** https://uptime-{TU_SLUG}.ops.smiletripcare.com
+**URL:** https://uptime-{TU_SLUG}.op-sly.com
 
 Pasos:
 

@@ -1,6 +1,6 @@
 # Sistema de Conocimiento Opsly — NotebookLM + Obsidian
 
-> **Última actualización:** 2026-04-14
+> **Última actualización:** 2026-05-10
 > **Para agentes:** leer este doc primero para entender cómo Opsly gestiona conocimiento.
 
 ---
@@ -60,15 +60,9 @@ node scripts/query-notebooklm.mjs "¿Cuál es el estado actual de Opsly?"
 
 ### Estructura del vault
 
-```
-docs/
-├── README.md                 ← Índice principal
-├── adr/                      ← Decisiones de arquitectura (ADR-001...)
-├── runbooks/                  ← Runbooks operativos
-├── howto/                    ← Guías paso a paso
-├── cheatsheets/              ← Referencias rápidas
-└── templates/                ← Plantillas para nuevos docs
-```
+Mapa completo (todas las carpetas y hubs): [`index.md`](../index.md).
+Política de ubicación: [`STRUCTURE-GUARDRAILS.md`](../STRUCTURE-GUARDRAILS.md).
+Inventario regenerable de todos los `.md`: `npm run obsidian:file-index`.
 
 ### Graph view (obsidian://graph)
 
@@ -141,6 +135,24 @@ docs/QUICK-REFERENCE.md  ← comandos rápidos
 
 ---
 
+## Triada wiki (Obsidian + índice + Graphyfi)
+
+| Pieza | Función |
+| --- | --- |
+| **Obsidian** | Wiki local: MOC [`index.md`](../index.md), wikilinks, graph view. |
+| **`config/knowledge-index.json`** | Inventario para agentes / Context Builder / NotebookLM (fuentes repo-first). |
+| **Graphyfi** | Nodos `doc:<slug>` y relación `documents` hacia módulos; tool MCP `graphyfi`. |
+
+Orden tras entregar código **y** pruebas: documentar → `npm run index-knowledge` → `npm run obsidian:file-index`. Detalle y Definition of Done: [`docs/01-development/DOCUMENTATION-LIFECYCLE.md`](../01-development/DOCUMENTATION-LIFECYCLE.md).
+
+### Qué suele faltar (revisar periódicamente)
+
+- Grafo de módulos (`config/github-module-graph.json`) alineado al monorepo.
+- Notas en `docs/brain/modules/` para apps con mucho tráfico de cambios.
+- Sync de índice tras oleadas de commits solo de código sin regen de `knowledge-index.json`.
+
+---
+
 ## 🔗 Enlaces relacionados
 
 - [`AGENTS.md`](../AGENTS.md) — estado operativo
@@ -148,3 +160,4 @@ docs/QUICK-REFERENCE.md  ← comandos rápidos
 - [`ROADMAP.md`](../ROADMAP.md) — plan semanal
 - [`docs/adr/ADR-025-notebooklm-knowledge-layer.md`](adr/ADR-025-notebooklm-knowledge-layer.md)
 - [`skills/user/opsly-notebooklm/SKILL.md`](../skills/user/opsly-notebooklm/SKILL.md)
+- [`docs/01-development/DOCUMENTATION-LIFECYCLE.md`](../01-development/DOCUMENTATION-LIFECYCLE.md)

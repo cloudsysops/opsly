@@ -25,10 +25,10 @@ ssh opslyquantum@100.80.41.29          # worker Ubuntu (opsly-mac2011)
 
 | Servicio          | URL                                            |
 | ----------------- | ---------------------------------------------- |
-| API               | `https://api.ops.smiletripcare.com`            |
-| Admin             | `https://admin.ops.smiletripcare.com`          |
-| Portal            | `https://portal.ops.smiletripcare.com`         |
-| Health check      | `https://api.ops.smiletripcare.com/api/health` |
+| API               | `https://api.op-sly.com`            |
+| Admin             | `https://admin.op-sly.com`          |
+| Portal            | `https://portal.op-sly.com`         |
+| Health check      | `https://api.op-sly.com/api/health` |
 | Traefik dashboard | `http://100.120.151.91:8080` (solo Tailscale)  |
 
 ---
@@ -56,7 +56,7 @@ npm run dev                          # Turbo: todos los servicios
 npm run type-check                   # TypeScript 11 workspaces
 npm run test --workspace=@intcloudsysops/api  # Tests API (241+)
 npm run lint                         # ESLint (max-warnings 0 en API)
-npm run validate-openapi             # Valida openapi-opsly-api.yaml
+npm run validate-openapi             # Valida docs/00-architecture/openapi-opsly-api.yaml
 npm run validate-skills              # Valida skills manifests
 ```
 
@@ -75,7 +75,7 @@ docker compose --env-file /opt/opsly/.env -f docker-compose.platform.yml up -d -
 ./scripts/onboard-tenant.sh --slug <slug> --email <email> --plan startup --name "<Nombre>" --ssh-host 100.120.151.91 --yes
 
 # Health check rápido
-curl -sfk https://api.ops.smiletripcare.com/api/health
+curl -sfk https://api.op-sly.com/api/health
 ```
 
 ### Doppler
@@ -160,7 +160,7 @@ apps/
 | `REDIS_URL`                   | Cola + cache                                                                          |
 | `CRON_SECRET`                 | Cron endpoints protegidos                                                             |
 | `DOCKER_GID`                  | GID grupo docker en VPS                                                               |
-| `PLATFORM_DOMAIN`             | Dominio base (ops.smiletripcare.com)                                                  |
+| `PLATFORM_DOMAIN`             | Dominio base (op-sly.com)                                                  |
 
 ---
 
@@ -202,5 +202,5 @@ supabase/migrations/0019_agent_sessions.sql
 
 → `docs/README.md` — índice completo categorizado  
 → `AGENTS.md` — estado de sesión y decisiones  
-→ `SPRINT-TRACKER.md` — semana operativa; `ROADMAP.md` — plan; `docs/history/plans/SPRINT-ROADMAP.md` — snapshot archivado  
+→ `docs/01-development/SPRINT-TRACKER.md` — semana operativa; `ROADMAP.md` — plan; `docs/history/plans/SPRINT-ROADMAP.md` — snapshot archivado  
 → `docs/adr/` — 15 decisiones de arquitectura

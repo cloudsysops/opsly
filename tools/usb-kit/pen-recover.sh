@@ -74,7 +74,7 @@ Comandos:
   cd /opt/opsly && ./scripts/vps-bootstrap.sh
   ./scripts/vps-first-run.sh
 
-  curl -sf https://api.ops.smiletripcare.com/api/health | jq .
+  curl -sf https://api.op-sly.com/api/health | jq .
 
 Validar antes de dar por cerrado:
   • docker ps (traefik, app, admin según compose)

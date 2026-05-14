@@ -5,7 +5,7 @@
 - Diagnóstico **SSH** por Tailscale (`100.120.151.91`): servicios de plataforma y stacks **localrank** / **jkboterolabs** visibles; `curl` a n8n **200**, uptime **302** (esperado).
 - Directorio de compose en VPS: `/opt/opsly/runtime/tenants//` con `docker-compose.localrank.yml`, `docker-compose.jkboterolabs.yml`, etc.
 - **Causa de `checks.supabase: degraded` en `/api/health`:** el probe llama a `.../auth/v1/health`; en proyecto Supabase hosted la respuesta puede ser **401** sin credenciales, y el handler anterior marcaba `degraded`. **Corregido** en `apps/api/app/api/health/route.ts`: **401/403** se consideran alcanzabilidad OK.
-- Documentación **`docs/TENANT-TESTING-GUIDE.md`** (URLs, comandos, feedback existente, sin duplicar `/api/tenant-feedback`).
+- Documentación **`docs/tenants/testing/TENANT-TESTING-GUIDE.md`** (URLs, comandos, feedback existente, sin duplicar `/api/tenant-feedback`).
 - **No** se creó tabla nueva ni ruta `tenant-feedback`: se mantiene **`POST/GET /api/feedback`**.
 
 ## Pendiente / atención humana
@@ -18,7 +18,7 @@
 
 ```bash
 # Salud API pública
-curl -sS --max-time 10 "https://api.ops.smiletripcare.com/api/health" | jq .
+curl -sS --max-time 10 "https://api.op-sly.com/api/health" | jq .
 
 # Tenants en VPS
 ssh -o BatchMode=yes vps-dragon@100.120.151.91 "ls -la /opt/opsly/runtime/tenants//"
@@ -26,10 +26,10 @@ ssh -o BatchMode=yes vps-dragon@100.120.151.91 "ls -la /opt/opsly/runtime/tenant
 
 ## URLs de testing (staging)
 
-- LocalRank n8n: https://n8n-localrank.ops.smiletripcare.com
-- LocalRank uptime: https://uptime-localrank.ops.smiletripcare.com
-- jkboterolabs n8n: https://n8n-jkboterolabs.ops.smiletripcare.com
-- jkboterolabs uptime: https://uptime-jkboterolabs.ops.smiletripcare.com
+- LocalRank n8n: https://n8n-localrank.op-sly.com
+- LocalRank uptime: https://uptime-localrank.op-sly.com
+- jkboterolabs n8n: https://n8n-jkboterolabs.op-sly.com
+- jkboterolabs uptime: https://uptime-jkboterolabs.op-sly.com
 
 ## Referencias de código
 

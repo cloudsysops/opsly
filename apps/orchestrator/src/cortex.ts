@@ -2,6 +2,8 @@ import { randomUUID } from 'node:crypto';
 import { readFile, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { enqueueJob } from './queue.js';
+import { GoalGenerator } from './goal-generator.js';
+import type { GoalGeneratorContext } from './goal-generator.js';
 import type { OrchestratorJob } from './types.js';
 
 type CortexUrgency = 'low' | 'medium' | 'high';
@@ -30,6 +32,7 @@ interface CortexRuntimeState {
   lastStrategicDate?: string;
   lastReflectionWeek?: string;
   lastEvolutionGapHour?: string;
+  lastGoalSyncDate?: string;
 }
 
 function parsePositiveIntEnv(name: string, fallback: number): number {
@@ -55,11 +58,19 @@ function clamp01(value: number): number {
 }
 
 export class OpslyCortex {
-  private readonly statePath = resolve(process.cwd(), 'runtime/context/system_state.json');
-  private readonly intervalMs = parsePositiveIntEnv('OPSLY_CORTEX_INTERVAL_MINUTES', 15) * 60 * 1000;
+  private readonly repoRoot = process.env.OPSLY_ROOT ?? process.cwd();
+  private readonly statePath = resolve(this.repoRoot, 'runtime/context/system_state.json');
+  private readonly intervalMinutes = Math.max(
+    parsePositiveIntEnv('OPSLY_CORTEX_INTERVAL_MINUTES', 15),
+    parsePositiveIntEnv('OPSLY_CORTEX_MIN_INTERVAL_MINUTES', 15)
+  );
+  private readonly intervalMs = this.intervalMinutes * 60 * 1000;
   private readonly strategicHourUtc = parsePositiveIntEnv('OPSLY_CORTEX_STRATEGIC_HOUR_UTC', 5);
   private readonly reflectionHourUtc = parsePositiveIntEnv('OPSLY_CORTEX_REFLECTION_HOUR_UTC', 20);
   private readonly gatewayUrl = process.env.ORCHESTRATOR_LLM_GATEWAY_URL ?? 'http://llm-gateway:3010';
+  private readonly maxEnqueuesPerHour = parsePositiveIntEnv('OPSLY_CORTEX_MAX_ENQUEUES_PER_HOUR', 8);
+  private enqueueHourToken = '';
+  private enqueueCountThisHour = 0;
   private timer: NodeJS.Timeout | null = null;
   private running = false;
   private runtimeState: CortexRuntimeState = {};
@@ -89,7 +100,133 @@ export class OpslyCortex {
     }, this.intervalMs);
     this.timer.unref();
     void this.tick();
-    console.log('[orchestrator] OpslyCortex enabled');
+    const dry = this.isDryRun() ? 'dry_run=true' : 'dry_run=false';
+    console.log(
+      `[orchestrator] OpslyCortex enabled interval_min=${this.intervalMinutes} max_enqueue/h=${this.maxEnqueuesPerHour} gateway=${this.gatewayUrl} ${dry}`
+    );
+  }
+
+  private isDryRun(): boolean {
+    return process.env.OPSLY_CORTEX_DRY_RUN === 'true';
+  }
+
+  private async safeEnqueueJob(job: OrchestratorJob, rateLimitExempt: boolean): Promise<void> {
+    if (this.isDryRun()) {
+      console.log('[orchestrator] OpslyCortex dry-run skip enqueue', job.type, job.idempotency_key ?? '');
+      return;
+    }
+    if (!rateLimitExempt) {
+      const hourKey = new Date().toISOString().slice(0, 13);
+      if (hourKey !== this.enqueueHourToken) {
+        this.enqueueHourToken = hourKey;
+        this.enqueueCountThisHour = 0;
+      }
+      if (this.enqueueCountThisHour >= this.maxEnqueuesPerHour) {
+        console.warn(
+          `[orchestrator] OpslyCortex hourly enqueue cap (${this.maxEnqueuesPerHour}) — skip ${job.type}`
+        );
+        return;
+      }
+      this.enqueueCountThisHour += 1;
+    }
+    await enqueueJob(job);
+  }
+
+  private async mergeAutonomyKpis(patch: Record<string, unknown>): Promise<void> {
+    const state = (await this.safeReadJson(this.statePath)) ?? {};
+    const prev =
+      typeof state.autonomy_kpis === 'object' && state.autonomy_kpis !== null
+        ? (state.autonomy_kpis as Record<string, unknown>)
+        : {};
+    const nextState = {
+      ...state,
+      autonomy_kpis: { ...prev, ...patch },
+      last_updated: new Date().toISOString(),
+    };
+    await writeFile(this.statePath, `${JSON.stringify(nextState, null, 2)}\n`, 'utf-8');
+  }
+
+  private slugifyGoalName(name: string): string {
+    const s = name
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '')
+      .slice(0, 48);
+    return s.length > 0 ? s : 'goal';
+  }
+
+  private buildGoalContextFromState(state: Record<string, unknown> | null): GoalGeneratorContext {
+    const tenants = state?.tenants;
+    const tenantCount = Array.isArray(tenants) ? tenants.length : 0;
+    const econ = state?.economics;
+    const mrr =
+      econ && typeof econ === 'object' && econ !== null && 'projected_monthly_with_optimizations' in econ
+        ? Number((econ as Record<string, unknown>).projected_monthly_with_optimizations ?? 0)
+        : 0;
+    const techHealth =
+      typeof state?.next_action === 'string' && state.next_action.length > 0 ? 'documented' : 'unknown';
+    const signals: string[] = [];
+    if (typeof state?.phase === 'string') {
+      signals.push(`phase:${state.phase}`);
+    }
+    return {
+      activeUsers: tenantCount,
+      mrrUsd: Number.isFinite(mrr) ? mrr : 0,
+      techHealth,
+      marketSignals: signals,
+    };
+  }
+
+  private async syncGoalsToBacklogIfDue(dateIso: string, strategyTheme: string): Promise<void> {
+    if (this.runtimeState.lastGoalSyncDate === dateIso) {
+      return;
+    }
+    const state = await this.safeReadJson(this.statePath);
+    const context = this.buildGoalContextFromState(state);
+    const generator = new GoalGenerator();
+    const goals = await generator.generateQuarterlyGoals(context);
+    let enqueued = 0;
+    for (const goal of goals) {
+      const slug = this.slugifyGoalName(goal.name);
+      const requestId = `cortex-goal-${randomUUID()}`;
+      const job: OrchestratorJob = {
+        type: 'intent_dispatch',
+        initiated_by: 'system',
+        plan: 'startup',
+        tenant_slug: 'platform',
+        taskId: `cortex-goal-${Date.now()}-${slug}`,
+        idempotency_key: `cortex:goal:${dateIso}:${slug}`,
+        request_id: requestId,
+        agent_role: 'planner',
+        payload: {
+          intent_request: {
+            intent: 'oar_react',
+            initiated_by: 'system',
+            tenant_slug: 'platform',
+            plan: 'startup',
+            context: {
+              prompt: `${strategyTheme}\n\nObjetivo: ${goal.name}\n${goal.description}`,
+              source: 'cortex_goal_backlog',
+              goal_rationale: goal.rationale,
+              key_results: goal.keyResults,
+              risk_level: goal.riskLevel,
+            },
+          },
+        },
+        metadata: {
+          cognitive_source: 'cortex_goal_sync',
+          cognitive_priority: goal.riskLevel === 'high' ? 'high' : 'medium',
+        },
+      };
+      await this.safeEnqueueJob(job, false);
+      enqueued += 1;
+    }
+    this.runtimeState.lastGoalSyncDate = dateIso;
+    await this.mergeAutonomyKpis({
+      goal_backlog_sync_last_at: new Date().toISOString(),
+      goal_backlog_sync_jobs_enqueued: enqueued,
+      goal_backlog_sync_strategy_date: dateIso,
+    });
   }
 
   stop(): void {
@@ -153,16 +290,14 @@ export class OpslyCortex {
       request_id: requestId,
       agent_role: 'planner',
       payload: {
-        payload: {
-          type: 'detect-gaps',
-          tenant_slug: 'platform',
-          request_id: requestId,
-          objective,
-          metadata: {
-            system_health: analysis.systemHealth,
-            urgency: analysis.urgency,
-            threats: analysis.threats,
-          },
+        type: 'detect-gaps',
+        tenant_slug: 'platform',
+        request_id: requestId,
+        objective,
+        metadata: {
+          system_health: analysis.systemHealth,
+          urgency: analysis.urgency,
+          threats: analysis.threats,
         },
       },
       metadata: {
@@ -170,7 +305,7 @@ export class OpslyCortex {
         cognitive_urgency: analysis.urgency,
       },
     };
-    await enqueueJob(job);
+    await this.safeEnqueueJob(job, false);
   }
 
   private async gatherSystemMetrics(): Promise<Record<string, unknown>> {
@@ -322,7 +457,7 @@ export class OpslyCortex {
         cognitive_urgency: analysis.urgency,
       },
     };
-    await enqueueJob(job);
+    await this.safeEnqueueJob(job, priority === 'critical');
   }
 
   private async runDailyStrategicSessionIfDue(): Promise<void> {
@@ -335,6 +470,7 @@ export class OpslyCortex {
     const strategy = await this.generateStrategicTheme();
     this.cognitiveState.currentStrategy = strategy;
     console.log(`[orchestrator] cortex strategic theme: ${strategy}`);
+    await this.syncGoalsToBacklogIfDue(today, strategy);
   }
 
   private async runWeeklyReflectionIfDue(): Promise<void> {

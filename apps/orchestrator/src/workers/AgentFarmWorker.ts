@@ -1,5 +1,5 @@
-import { Worker, type Job } from 'bullmq';
-import { connection } from '../queue.js';
+import { type Job } from 'bullmq';
+import { createWorker } from './create-worker.js';
 import { processIntent } from '../engine.js';
 import type { IntentRequest, OrchestratorJob } from '../types.js';
 
@@ -10,27 +10,15 @@ export interface AgentFarmPayload {
   tenant_slug: string;
 }
 
-/**
- * AgentFarmWorker: procesa jobs de tipo `agent_farm`.
- * Lanza instancias OAR ReAct con herramientas de desarrollo.
- * Gestiona concurrencia para no saturar el LLM Gateway.
- */
-export function startAgentFarmWorker() {
-  const worker = new Worker('openclaw', handleAgentFarmJob, {
+export function startAgentFarmWorker(connection: object) {
+  return createWorker({
+    queueName: 'openclaw',
+    jobName: 'agent_farm',
+    workerName: 'agent_farm',
+    concurrencyKey: 'agent_farm',
     connection,
-    concurrency: 2,
+    processFn: handleAgentFarmJob,
   });
-
-  worker.on('completed', (job: Job) => {
-    console.log(`✅ Agent farm job completed: ${job.id}`);
-  });
-
-  worker.on('failed', (job: Job | undefined, err: Error) => {
-    if (!job) return;
-    console.error(`❌ Agent farm job failed: ${job.id}`, err.message);
-  });
-
-  return worker;
 }
 
 async function handleAgentFarmJob(job: Job<OrchestratorJob>): Promise<{
@@ -55,11 +43,6 @@ async function handleAgentFarmJob(job: Job<OrchestratorJob>): Promise<{
   const actualTenant = tenant_slug || farm_tenant || 'opsly-internal';
 
   try {
-    console.log(
-      `[AgentFarm] Starting ${role} agent for: ${task.slice(0, 60)}... (max_steps: ${max_steps})`
-    );
-
-    // Construir el prompt para el agente ReAct
     const systemPrompt = `
 You are a specialized developer agent working on the Opsly platform.
 Your role: ${getRoleDescription(role)}
@@ -104,8 +87,6 @@ Max steps: ${max_steps}. Be efficient and avoid loops.
     };
   } catch (e) {
     const error = e instanceof Error ? e.message : String(e);
-    console.error(`[AgentFarm] Error in ${role} agent:`, error);
-
     return {
       ok: false,
       error,

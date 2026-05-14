@@ -3,7 +3,7 @@
 # Test script for Local Agent Execution System end-to-end flow
 # Usage: ./scripts/test-local-agent-e2e.sh
 
-set -e
+set -euo pipefail
 
 echo "🚀 Testing Local Agent Execution System E2E"
 echo ""
@@ -95,6 +95,7 @@ RESPONSE=$(curl -s -X POST \
   "${ORCHESTRATOR_URL}/api/local/prompt-submit" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer ${PLATFORM_ADMIN_TOKEN}" \
+  -H "x-autonomy-approved: true" \
   -d @- << EOF
 {
   "prompt_body": "Create a simple test file to verify the system is working.\n\nPlease create a file named test-result.txt with the content 'Local agent test successful!'",

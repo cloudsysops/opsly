@@ -1,0 +1,129 @@
+{
+  "name": "opsly-distributed-tracing",
+  "version": "1.0.0",
+  "description": "OpenTelemetry tracing for Opsly services: request correlation, latency debugging, per-service spans, and LLM cost attribution.",
+  "priority": "CRITICAL",
+  "category": "infrastructure/observability",
+  "triggers": [
+    "distributed tracing",
+    "tracing",
+    "opentelemetry",
+    "otel",
+    "traceparent",
+    "span",
+    "jaeger",
+    "tempo",
+    "request correlation",
+    "latency",
+    "p99",
+    "baggage",
+    "tenant_slug",
+    "request_id"
+  ],
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "action": {
+        "type": "string",
+        "description": "Qué tipo de trabajo de tracing se necesita.",
+        "enum": [
+          "bootstrap",
+          "instrument",
+          "propagate",
+          "debug",
+          "validate",
+          "attribute-cost"
+        ]
+      },
+      "service": {
+        "type": "string",
+        "description": "Servicio o proceso a instrumentar."
+      },
+      "backend": {
+        "type": "string",
+        "description": "Backend de trazas objetivo.",
+        "enum": ["otlp", "jaeger", "tempo", "datadog", "newrelic"]
+      },
+      "tenant_slug": {
+        "type": "string",
+        "description": "Tenant a correlacionar cuando aplique."
+      },
+      "request_id": {
+        "type": "string",
+        "description": "Identificador de correlación de la request o job."
+      }
+    },
+    "required": ["action"],
+    "additionalProperties": true
+  },
+  "outputSchema": {
+    "type": "object",
+    "properties": {
+      "implemented": {
+        "type": "boolean",
+        "description": "Si la instrumentación o ajuste quedó aplicado."
+      },
+      "services": {
+        "type": "array",
+        "items": { "type": "string" },
+        "description": "Servicios tocados o verificados."
+      },
+      "backend": {
+        "type": "string",
+        "description": "Backend de trazas usado o validado."
+      },
+      "correlationKeys": {
+        "type": "array",
+        "items": { "type": "string" },
+        "description": "Claves propagadas en la traza."
+      },
+      "validation": {
+        "type": "array",
+        "items": { "type": "string" },
+        "description": "Comprobaciones realizadas."
+      }
+    }
+  },
+  "examples": [
+    {
+      "input": {
+        "action": "instrument",
+        "service": "api",
+        "backend": "otlp",
+        "tenant_slug": "acme",
+        "request_id": "req_123"
+      },
+      "output": {
+        "implemented": true,
+        "services": ["api"],
+        "backend": "otlp",
+        "correlationKeys": ["tenant_slug", "request_id", "traceparent"],
+        "validation": ["trace propagated", "span emitted"]
+      }
+    },
+    {
+      "input": {
+        "action": "attribute-cost",
+        "service": "llm-gateway",
+        "backend": "tempo"
+      },
+      "output": {
+        "implemented": true,
+        "services": ["llm-gateway"],
+        "backend": "tempo",
+        "correlationKeys": ["llm.model", "llm.tokens_in", "llm.tokens_out", "cost.usd"],
+        "validation": ["cost attached to span", "no secret leakage"]
+      }
+    }
+  ],
+  "crossReferences": [
+    "opsly-observability",
+    "opsly-telemetry",
+    "opsly-llm",
+    "opsly-api",
+    "opsly-orchestrator",
+    "opsly-architect"
+  ],
+  "status": "stable",
+  "updated_at": "2026-05-13"
+}

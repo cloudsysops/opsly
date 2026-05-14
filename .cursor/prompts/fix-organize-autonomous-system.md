@@ -58,8 +58,8 @@ priority: 50000
 - [ ] `scripts/iteration-watch-responses.ts` - 200 lines ✅
 - [ ] `scripts/local-prompt-watcher.ts` - exists ✅
 - [ ] `scripts/local-git-auto-commit.ts` - exists ✅
-- [ ] `docs/AUTONOMOUS-EXECUTION-GUIDE.md` - 582 lines ✅
-- [ ] `docs/VALIDATION-AND-ITERATION-SYSTEM.md` - exists ✅
+- [ ] `docs/03-agents/AUTONOMOUS-EXECUTION-GUIDE.md` - 582 lines ✅
+- [ ] `docs/03-agents/VALIDATION-AND-ITERATION-SYSTEM.md` - exists ✅
 - [ ] `scripts/test-iteration-loop.sh` - executable ✅
 
 ### 4. Final Validation

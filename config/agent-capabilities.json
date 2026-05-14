@@ -1,0 +1,128 @@
+{
+  "version": 1,
+  "updated_at": "2026-05-13",
+  "routing_policy": {
+    "default_agent": "codex",
+    "prefer_localhost": true,
+    "remote_requires_tailscale": true,
+    "remote_requires_execute_token": true,
+    "notes": "Use this registry to route orchestration jobs by role, risk, write permissions, and runtime cost."
+  },
+  "agents": {
+    "cursor": {
+      "role": "executor",
+      "service": "cursor",
+      "endpoint_env": "OPSLY_CURSOR_AGENT_URL",
+      "endpoint_default": "http://127.0.0.1:5001",
+      "write_access": true,
+      "risk_ceiling": "medium",
+      "best_for": ["IDE-assisted edits", "small frontend fixes", "prompt queue execution"],
+      "avoid_for": ["unattended production changes", "long-running test suites"]
+    },
+    "claude": {
+      "role": "architect",
+      "service": "claude",
+      "endpoint_env": "OPSLY_CLAUDE_AGENT_URL",
+      "endpoint_default": "http://127.0.0.1:5002",
+      "write_access": false,
+      "risk_ceiling": "medium",
+      "best_for": ["architecture review", "large-codebase analysis", "documentation planning"],
+      "avoid_for": ["blind code execution", "deployment"]
+    },
+    "copilot": {
+      "role": "assistant",
+      "service": "copilot",
+      "endpoint_env": "OPSLY_COPILOT_AGENT_URL",
+      "endpoint_default": "http://127.0.0.1:5003",
+      "write_access": false,
+      "risk_ceiling": "low",
+      "best_for": ["command suggestions", "quick explanations", "small code suggestions"],
+      "avoid_for": ["autonomous multi-step implementation"]
+    },
+    "opencode": {
+      "role": "executor",
+      "service": "opencode",
+      "endpoint_env": "OPSLY_OPENCODE_AGENT_URL",
+      "endpoint_default": "http://127.0.0.1:5004",
+      "write_access": true,
+      "risk_ceiling": "medium",
+      "best_for": ["focused edits", "multi-file implementation", "prototype fixes"],
+      "avoid_for": ["security signoff"]
+    },
+    "codex": {
+      "role": "executor",
+      "service": "codex",
+      "endpoint_env": "OPSLY_CODEX_AGENT_URL",
+      "endpoint_default": "http://127.0.0.1:5005",
+      "write_access": true,
+      "risk_ceiling": "high",
+      "best_for": ["repo-aware implementation", "tests", "refactors", "integration work"],
+      "avoid_for": ["unapproved provider-cost changes"]
+    },
+    "openai": {
+      "role": "executor",
+      "service": "openai",
+      "endpoint_env": "OPSLY_OPENAI_AGENT_URL",
+      "endpoint_default": "http://127.0.0.1:5006",
+      "write_access": true,
+      "risk_ceiling": "medium",
+      "best_for": ["OpenAI-compatible coding fallback", "analysis", "small implementation tasks"],
+      "avoid_for": ["security approval"]
+    },
+    "hermes": {
+      "role": "planner",
+      "service": "hermes",
+      "endpoint_env": "OPSLY_HERMES_AGENT_URL",
+      "endpoint_default": "http://127.0.0.1:5007",
+      "write_access": false,
+      "risk_ceiling": "medium",
+      "best_for": ["routing", "planning", "cost-aware model selection", "task decomposition"],
+      "avoid_for": ["direct repository mutation"]
+    },
+    "decepticon": {
+      "role": "security_reviewer",
+      "service": "decepticon",
+      "endpoint_env": "OPSLY_DECEPTICON_AGENT_URL",
+      "endpoint_default": "http://127.0.0.1:5008",
+      "write_access": false,
+      "risk_ceiling": "high",
+      "best_for": ["adversarial review", "security audit", "failure-mode analysis"],
+      "avoid_for": ["code generation", "deployment"]
+    },
+    "aider": {
+      "role": "executor",
+      "service": "aider",
+      "endpoint_env": "OPSLY_AIDER_AGENT_URL",
+      "endpoint_default": "http://127.0.0.1:5009",
+      "write_access": true,
+      "risk_ceiling": "medium",
+      "best_for": ["git-aware code editing", "targeted refactors", "small feature patches"],
+      "avoid_for": ["large autonomous changes without reviewer"]
+    },
+    "goose": {
+      "role": "tool_operator",
+      "service": "goose",
+      "endpoint_env": "OPSLY_GOOSE_AGENT_URL",
+      "endpoint_default": "http://127.0.0.1:5010",
+      "write_access": true,
+      "risk_ceiling": "medium",
+      "best_for": ["multi-step local automation", "tool-use workflows", "research-to-action tasks"],
+      "avoid_for": ["tenant production changes without guardrails"]
+    },
+    "playwright": {
+      "role": "frontend_qa",
+      "service": "playwright",
+      "endpoint_env": "OPSLY_PLAYWRIGHT_AGENT_URL",
+      "endpoint_default": "http://127.0.0.1:5011",
+      "write_access": false,
+      "risk_ceiling": "low",
+      "best_for": ["browser smoke tests", "portal E2E", "UI regression checks"],
+      "avoid_for": ["code edits"]
+    }
+  },
+  "recommended_distribution": {
+    "vps-dragon": ["orchestrator", "api", "llm_gateway", "mcp", "tenant_stacks", "deployer_guarded"],
+    "opsly-admin": ["cursor", "claude", "codex", "opencode", "copilot", "hermes", "aider", "goose", "playwright"],
+    "opsly-worker": ["decepticon", "playwright", "aider", "test_runner", "ollama", "build_runner"]
+  }
+}

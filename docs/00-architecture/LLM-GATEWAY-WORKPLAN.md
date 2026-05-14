@@ -129,7 +129,7 @@ npm run test:coverage --workspace=@intcloudsysops/llm-gateway
 ## Archivo de referencia
 
 - `docs/IMPLEMENTATION-IA-LAYER.md` — arquitectura LLM Gateway
-- `docs/LLM-GATEWAY.md` — documentación detallada
+- `docs/00-architecture/LLM-GATEWAY.md` — documentación detallada
 - `ROADMAP.md` —timeline semanal
 
 ---

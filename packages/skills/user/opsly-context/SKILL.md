@@ -100,7 +100,7 @@ Next.js 15 · TypeScript · Tailwind · Supabase · Stripe · Docker Compose · 
 
 ```bash
 # Verificar contexto cargado
-curl -sf https://api.ops.smiletripcare.com/api/health
+curl -sf https://api.op-sly.com/api/health
 
 # Verificar sync git
 cd /opt/opsly && git status

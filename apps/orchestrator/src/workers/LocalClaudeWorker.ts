@@ -1,9 +1,9 @@
 import { Job, Worker } from 'bullmq';
 import { promises as fsp } from 'fs';
 import * as path from 'path';
-import { logWorkerLifecycle } from '../observability/worker-log.js';
+import { logWorkerLifecycle, logWorkerInfo, logWorkerWarn, logWorkerError } from '../observability/worker-log.js';
 import { getWorkerConcurrency } from '../worker-concurrency.js';
-import { ValidationOrchestrator } from '../lib/validation-orchestrator.js';
+import { ValidationOrchestrator } from '../lib/validation/validation-orchestrator.js';
 
 /**
  * LocalClaudeWorker
@@ -77,7 +77,7 @@ async function callClaudeApiDirect(
   const apiUrl = process.env.CLAUDE_API_URL || 'https://api.anthropic.com';
 
   try {
-    console.log(`[LocalClaudeWorker] Calling Claude API with model ${model} (attempt ${retryCount + 1}/${maxRetries + 1})`);
+    logWorkerInfo('local-claude', 'Calling Claude API', { model, attempt: retryCount + 1, maxAttempts: maxRetries + 1 });
 
     const response = await fetch(`${apiUrl}/v1/messages`, {
       method: 'POST',
@@ -105,7 +105,7 @@ async function callClaudeApiDirect(
       // Handle rate limiting with exponential backoff
       if (response.status === 429 && retryCount < maxRetries) {
         const backoffMs = Math.pow(2, retryCount) * 1000 + Math.random() * 1000;
-        console.warn(`[LocalClaudeWorker] Rate limited. Retrying after ${backoffMs}ms...`);
+        logWorkerWarn('local-claude', 'Rate limited, retrying', { backoffMs });
         await new Promise((resolve) => setTimeout(resolve, backoffMs));
         return callClaudeApiDirect(prompt, model, maxTokens, retryCount + 1, maxRetries);
       }
@@ -154,7 +154,7 @@ export function startLocalClaudeWorker(connection: object) {
         const model = selectModelByTier(model_tier);
 
         // Call Claude API directly
-        console.log(`[LocalClaudeWorker] Processing job ${job_id} with model ${model}`);
+        logWorkerInfo('local-claude', 'Processing job', { jobId: job_id, model });
         const responseText = await callClaudeApiDirect(prompt, model, 2048);
 
         // Write response to file
@@ -176,7 +176,7 @@ ${responseText}
 `;
 
         await fsp.writeFile(responsePath, responseContent, 'utf-8');
-        console.log(`[LocalClaudeWorker] ✅ Response written to ${responsePath}`);
+        logWorkerInfo('local-claude', 'Response written', { path: responsePath });
 
         // Validate response and decide
         let decision: ValidationDecision | undefined;
@@ -188,15 +188,15 @@ ${responseText}
             1, // iteration count
             max_steps // max iterations
           );
-          console.log(`[LocalClaudeWorker] Validation decision: ${decision.action}`);
+          logWorkerInfo('local-claude', 'Validation decision', { action: decision.action });
         } catch (validationErr) {
           const errorMsg = validationErr instanceof Error ? validationErr.message : String(validationErr);
-          console.error(`[LocalClaudeWorker] Validation error:`, errorMsg);
+          logWorkerError('local-claude', 'Validation error', { error: errorMsg });
 
           // Distinguish error type: timeout/connection → mark for escalation
           const isRetriable = errorMsg.includes('timeout') || errorMsg.includes('ECONNREFUSED');
           if (isRetriable) {
-            console.error('[LocalClaudeWorker] Validation service unavailable (retriable), escalating');
+            logWorkerError('local-claude', 'Validation service unavailable (retriable), escalating');
             decision = {
               action: 'escalate',
               reason: `Validation orchestrator unavailable: ${errorMsg}`,
@@ -207,7 +207,7 @@ ${responseText}
               },
             };
           } else {
-            console.error('[LocalClaudeWorker] Permanent validation error, proceeding with response');
+            logWorkerError('local-claude', 'Permanent validation error, proceeding with response');
             decision = {
               action: 'commit',
               reason: `Validation failed (permanent): ${errorMsg}`,
@@ -232,7 +232,7 @@ ${responseText}
         const elapsed = Date.now() - t0;
         const errorMsg = err instanceof Error ? err.message : String(err);
 
-        console.error(`[LocalClaudeWorker] ❌ Job ${job_id} error:`, errorMsg);
+        logWorkerError('local-claude', 'Job error', { jobId: job_id, error: errorMsg });
         logWorkerLifecycle('fail', 'local-claude', job, { duration_ms: elapsed, error: errorMsg });
 
         return {

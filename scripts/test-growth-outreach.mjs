@@ -46,7 +46,7 @@ targets.forEach((target, idx) => {
 
   Would you be open to a 15-min demo?
 
-  Demo link: https://ops.smiletripcare.com/demo
+  Demo link: https://op-sly.com/demo
 
   Best,
   Opsly Growth Team`;

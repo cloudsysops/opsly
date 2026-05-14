@@ -25,6 +25,9 @@ export interface DetectedIntent {
   suggested_team: string;
 }
 
+/** Hint explícito para ordenar la cadena cloud en `llmCallDirect` (`cloud-chain.ts`). */
+export type LlmProviderHint = 'deepseek' | 'nvidia' | 'groq';
+
 export interface LLMMessage {
   role: 'user' | 'assistant';
   content: string;
@@ -42,10 +45,11 @@ export interface LLMRequest {
    */
   routing_bias?: RoutingBias;
   /**
-   * Prioriza un proveedor cloud en `llmCallDirect` (p. ej. OpenClaw rol `skeptic` → DeepSeek).
-   * Requiere `DEEPSEEK_API_KEY` para efecto en la cadena.
+   * Prioriza un proveedor al frente de la cadena cloud en `llmCallDirect`.
+   * `deepseek` requiere `DEEPSEEK_API_KEY`; `nvidia` requiere `NVIDIA_API_KEY`;
+   * `groq` requiere `GROQ_API_KEY`.
    */
-  provider_hint?: 'deepseek';
+  provider_hint?: LlmProviderHint;
   max_tokens?: number;
   temperature?: number;
   cache?: boolean;

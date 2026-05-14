@@ -50,19 +50,23 @@ Definidos en `apps/llm-gateway/src/providers.ts` y costes en `router.ts` / `esti
 | Claude Sonnet           | 3            | ~$0.003 in / $0.015 out       | Arquitectura, código complejo                                                |
 | GPT-4o                  | 3            | ~$0.005 in / $0.015 out       | Fallback si Sonnet no disponible                                             |
 | **DeepSeek** (`deepseek_chat`) | 2       | Bajo (API compatible OpenAI) | Cadena cloud vía `llmCallDirect`: primero con `routing_bias=cost` o `provider_hint=deepseek` si hay `DEEPSEEK_API_KEY` |
+| **NVIDIA** (`nvidia_chat`) | 2 | Orientativo (catálogo) | Tras OpenRouter/DeepSeek en `routing_bias=cost` si hay `NVIDIA_API_KEY` (sin valor en docs; solo Doppler). |
 
-Salud en Redis se agrupa por **API**: `anthropic`, `llama_local`, `openrouter`, `openai`, y **`deepseek`** si la clave está configurada.
+Salud en Redis se agrupa por **API**: `anthropic`, `llama_local`, `openrouter`, `openai`, **`deepseek`** si la clave está configurada, y **`nvidia`** si hay `NVIDIA_API_KEY`.
 
 ### DeepSeek (OpenAI-compatible)
 
 - **Variables:** `DEEPSEEK_API_KEY` (obligatoria para activar el proveedor), `DEEPSEEK_BASE_URL` (default `https://api.deepseek.com/v1`), `DEEPSEEK_MODEL` (default `deepseek-v4-flash`; usar `deepseek-v4-pro` para mayor calidad). DeepSeek V4 mantiene el base URL y cambia solo el `model`.
 - **Id de proveedor interno:** `deepseek_chat` (definido en `apps/llm-gateway/src/providers.ts`).
 - **Orden en cadena cloud** (`apps/llm-gateway/src/cloud-chain.ts`):
-  - `routing_bias=cost` **o** `provider_hint=deepseek` → DeepSeek primero (si hay clave).
-  - `balanced` → Haiku, DeepSeek, GPT-4o mini, OpenRouter cheap.
-  - `quality` → Haiku, mini, OpenRouter, DeepSeek al final.
-- **HTTP:** `POST /v1/chat/completions` y `POST /v1/text` aceptan `routing_bias` y `provider_hint: "deepseek"` en el JSON.
-- **OpenClaw:** el rol **`skeptic`** fija `provider_hint=deepseek` en la decisión de control (`control-layer.ts`) para priorizar DeepSeek en planner y OAR vía gateway, sin hardcodear secretos.
+  - **Local primero** (`llmCallDirect`): Ollama si el perfil lo permite y el health está OK.
+  - `routing_bias=cost` → OpenRouter cheap (si clave) → DeepSeek → NVIDIA → Haiku → GPT-4o mini.
+  - `provider_hint=deepseek` → DeepSeek primero, luego el resto de la cola económica sin duplicar DeepSeek.
+  - **Default / balanceado** → Haiku primero, luego la misma cola económica (sin duplicar Haiku).
+  - `quality` → Haiku → GPT-4o mini → OpenRouter → NVIDIA → DeepSeek al final.
+- **HTTP:** `POST /v1/chat/completions` y `POST /v1/text` aceptan `routing_bias` y `provider_hint: "deepseek" | "nvidia"` en el JSON.
+- **Orquestador:** política por intent en `apps/orchestrator/src/openclaw/llm-intent-policy.ts` (planner/sprint/OAR y ejecución → `cost` + `deepseek`; planner **enterprise** → `balanced` + `deepseek`; `notify` / `sync_drive` → `cost` sin hint). Overrides en `metadata`: `llm_routing_bias`, `llm_provider_hint` (`none` quita hint).
+- **OpenClaw:** el rol **`skeptic`** mantiene `provider_hint=deepseek` y sesgo de calidad vía `modelTier` premium en `control-layer.ts`.
 
 ## Flujo
 
@@ -106,7 +110,7 @@ await llmCall({
 
 ## Variables de entorno
 
-Ver **`docs/DOPPLER-VARS.md`** (sección LLM Gateway). Mínimo habitual: `ANTHROPIC_API_KEY`, `REDIS_URL`, opcionales `OPENROUTER_API_KEY`, `OPENAI_API_KEY`, `OLLAMA_URL`, `DISCORD_WEBHOOK_URL`, `SUPABASE_*`, `LLM_GATEWAY_PORT`, `LLM_CACHE_TTL_SECONDS`.
+Variables: ver `.env.example` y Doppler. Mínimo habitual: `ANTHROPIC_API_KEY`, `REDIS_URL`, opcionales `OPENROUTER_API_KEY`, `OPENAI_API_KEY`, `DEEPSEEK_*`, `NVIDIA_API_KEY` + `NVIDIA_MODEL_ID` / `NVIDIA_BASE_URL`, `OLLAMA_URL`, `DISCORD_WEBHOOK_URL`, `SUPABASE_*`, `LLM_GATEWAY_PORT`, `LLM_CACHE_TTL_SECONDS`.
 
 ## Tests
 

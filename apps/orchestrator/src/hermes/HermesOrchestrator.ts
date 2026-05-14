@@ -1,5 +1,5 @@
 import type { HermesTask } from '@intcloudsysops/types';
-import { NotebookLMClient } from '../lib/notebooklm-client.js';
+import { NotebookLMClient } from '../lib/notebooklm/notebooklm-client.js';
 import { enqueueJob } from '../queue.js';
 import { getOrchestratorRedis } from '../metering/redis-client.js';
 import { ContextEnricher, createContextEnricher, enrichTaskLocalOnly } from './ContextEnricher.js';

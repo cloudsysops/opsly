@@ -1,13 +1,25 @@
 ---
 status: canon
 owner: operations
-last_review: 2026-05-03
+last_review: 2026-05-10
+tags:
+  - opsly/brain
+  - moc
 ---
 
 # Opsly Brain
 
 Vault Obsidian canonico para conectar codigo, arquitectura, agentes, tenants,
 workflows y decisiones.
+
+## Entrada rapida
+
+- [[brain/dashboard|Brain Dashboard]] — tablero ejecutivo del cerebro.
+- [[brain/modules/README|Modules MOC]] — apps, paquetes y servicios del monorepo.
+- [[brain/agents/README|Agents MOC]] — Codex, Claude, Cursor, OpenCode, Hermes y workers.
+- [[brain/tenants/README|Tenants MOC]] — tenants y contexto comercial/operativo.
+- [[brain/workflows/README|Workflows MOC]] — n8n, OpenClaw, Shield, billing y CRM.
+- [[brain/architecture/README|Architecture MOC]] — decisiones y mapas tecnicos.
 
 ## Mapa
 
@@ -27,6 +39,10 @@ workflows y decisiones.
 - Las notas de `modules/` deben enlazar al repo path real y a docs relacionadas.
 - Los grafos generados deben derivar de `config/github-module-graph.json`.
 - No guardar secretos ni dumps de variables de entorno.
+- Cada nota de modulo debe tener frontmatter con `type`, `layer`, `owner`,
+  `status`, `repo_path` y `related_docs`.
+- Si un modulo no tiene nota, crear primero una nota minima antes de pedirle a
+  un agente que trabaje de forma autonoma sobre ese modulo.
 
 ## Primer grafo objetivo
 

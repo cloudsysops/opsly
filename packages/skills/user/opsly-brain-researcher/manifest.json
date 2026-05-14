@@ -1,0 +1,60 @@
+{
+  "name": "opsly-brain-researcher",
+  "version": "1.0.0",
+  "type": "agent",
+  "category": "research",
+  "priority": "HIGH",
+  "description": "Autonomous research agent that investigates the Obsidian brain, synthesizes knowledge, and iteratively deepens investigation until confident enough to answer.",
+  "author": "claude",
+  "triggers": [
+    "investigar",
+    "investigate",
+    "research",
+    "explica",
+    "explain",
+    "¿cómo funciona",
+    "how does",
+    "busca en el brain"
+  ],
+  "capabilities": [
+    "multi-search (fulltext + semantic)",
+    "auto-read notes",
+    "knowledge graph traversal",
+    "iterative investigation",
+    "confidence-based synthesis",
+    "follow-up question generation"
+  ],
+  "dependencies": [
+    "@intcloudsysops/prompts",
+    "@anthropic-ai/sdk"
+  ],
+  "config": {
+    "maxIterations": 5,
+    "confidenceThreshold": 0.8,
+    "timeout": 30000,
+    "llmModel": "claude-haiku-4-5-20251001",
+    "searchDepth": 2
+  },
+  "examples": [
+    {
+      "query": "investigar cómo está diseñado el tenant isolation",
+      "expectedAnswer": "Respuesta sintetizada de notas sobre arquitectura multi-tenant"
+    },
+    {
+      "query": "research LLM gateway caching strategy",
+      "expectedAnswer": "Respuesta sobre caching, con fuentes de las notas del gateway"
+    },
+    {
+      "query": "¿cómo funciona el orchestrator de agentes?",
+      "expectedAnswer": "Explicación iterativa que profundiza hasta alcanzar confianza >0.8"
+    }
+  ],
+  "outputSchema": {
+    "question": "string",
+    "answer": "string",
+    "sources": ["path/to/note.md"],
+    "confidence": "0.0-1.0",
+    "iterations": "number",
+    "relatedTopics": ["topic1", "topic2"]
+  }
+}

@@ -1,6 +1,6 @@
 # /tenant — Crear/Depurar Tenant
 
-Gestiona tenants de prueba. Ver `AGENTS.md` (sección "Primer tenant en staging — smiletripcare") y `docs/runbooks/TENANT-ONBOARDING-TRIAGE.md`.
+Gestiona tenants de prueba. Ver `AGENTS.md` (sección "Primer tenant en staging — smiletripcare") y `docs/tenants/runbooks/TENANT-ONBOARDING-TRIAGE.md`.
 
 ## Crear Tenant
 ```bash
@@ -17,11 +17,11 @@ doppler run --project ops-intcloudsysops --config prd -- \
 docker ps --format '{{.Names}}' | grep "tenant_testtenant"
 
 # URLs
-echo "n8n: https://n8n-testtenant.ops.smiletripcare.com"
-echo "uptime: https://uptime-testtenant.ops.smiletripcare.com"
+echo "n8n: https://n8n-testtenant.op-sly.com"
+echo "uptime: https://uptime-testtenant.op-sly.com"
 
 # Health
-curl -sf "https://api.ops.smiletripcare.com/api/portal/health?slug=testtenant"
+curl -sf "https://api.op-sly.com/api/portal/health?slug=testtenant"
 ```
 
 ## Debug
@@ -38,7 +38,7 @@ docker network inspect tenant_testtenant_default
 
 ## Invitar Usuario
 ```bash
-curl -X POST "https://api.ops.smiletripcare.com/api/invitations" \
+curl -X POST "https://api.op-sly.com/api/invitations" \
   -H "Authorization: Bearer $PLATFORM_ADMIN_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"email": "test@example.com", "slug": "testtenant", "name": "Test", "mode": "developer"}'
@@ -47,5 +47,5 @@ curl -X POST "https://api.ops.smiletripcare.com/api/invitations" \
 ## Referencias
 - `AGENTS.md` → "Primer tenant en staging", "LocalRank por Tailscale"
 - `scripts/onboard-tenant.sh` — script principal
-- `docs/runbooks/TENANT-ONBOARDING-TRIAGE.md` — troubleshooting
+- `docs/tenants/runbooks/TENANT-ONBOARDING-TRIAGE.md` — troubleshooting
 - `infra/templates/` — plantilla Docker Compose

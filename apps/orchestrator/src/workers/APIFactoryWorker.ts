@@ -9,6 +9,7 @@ import { Worker, Job } from 'bullmq';
 import { connection } from '../queue.js';
 import { setJobState } from '../state/store.js';
 import { logWorkerLifecycle } from '../observability/worker-log.js';
+import { logWorkerInfo, logWorkerError } from '../observability/worker-log.js';
 import { getWorkerConcurrency } from '../worker-concurrency.js';
 
 interface ApiGenerateJobData {
@@ -74,14 +75,14 @@ export function startAPIFactoryWorker(): Worker {
   );
 
   worker.on('completed', (job) => {
-    console.log(`[api-factory-worker] Job ${job.id} completed`);
+    logWorkerInfo('api_factory', 'Job completed', { jobId: job.id });
   });
 
   worker.on('failed', (job, error) => {
-    console.error(`[api-factory-worker] Job ${job?.id} failed:`, error.message);
+    logWorkerError('api_factory', 'Job failed', { jobId: job?.id, error: error.message });
   });
 
-  console.log(`[api-factory-worker] Started with concurrency ${concurrency}`);
+  logWorkerInfo('api_factory', 'Started', { concurrency });
 
   return worker;
 }

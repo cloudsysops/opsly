@@ -5,7 +5,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/lib/common.sh"
 
-DOMAIN="ops.smiletripcare.com"
+DOMAIN="op-sly.com"
 ACTION=""
 
 usage() {
@@ -15,14 +15,14 @@ Usage: $(basename "$0") [OPTIONS]
 Options:
   --enable            Enable proxy (orange cloud) for matching records
   --disable           Disable proxy (gray cloud) for matching records
-  --domain DOMAIN     Domain to manage (default: ops.smiletripcare.com)
+  --domain DOMAIN     Domain to manage (default: op-sly.com)
   --list              List current DNS records and proxy status
   --dry-run           Show what would be done without changing records
   -h, --help          Show this help
 
 Examples:
   $(basename "$0") --enable
-  $(basename "$0") --disable --domain ops.smiletripcare.com
+  $(basename "$0") --disable --domain op-sly.com
   $(basename "$0") --list
   $(basename "$0") --dry-run --enable
 EOF

@@ -102,6 +102,23 @@ Entonces:
 ssh opsly-worker "uptime"
 ```
 
+## 4b. VPS → Mac principal (opsly-admin, Tailscale)
+
+Para que **desde el VPS** puedas hacer `ssh` al Mac de desarrollo (p. ej. `git pull` en un repo en la Mac o automatismos) **sin contraseña**, ejecuta **en la Mac** (donde ya funciona `ssh vps-dragon`):
+
+```bash
+./scripts/setup-vps-ssh-to-opsly-admin.sh --dry-run   # ver pasos
+./scripts/setup-vps-ssh-to-opsly-admin.sh
+```
+
+O vía npm: `npm run opsly:vps-ssh:to-admin -- --dry-run`
+
+Variables opcionales: `SSH_VPS` (default `vps-dragon`), `OPSLY_ADMIN_USER` (default `dragon`), `OPSLY_ADMIN_HOST` (IP Tailscale del Mac, default `100.89.38.3`). En el VPS queda un bloque `Host opsly-admin-from-vps` en `~/.ssh/config` y una clave dedicada `~/.ssh/vps_to_opsly_admin`.
+
+Prueba en el VPS: `ssh opsly-admin-from-vps hostname`
+
+Requisitos en la Mac: **Inicio de sesión remoto** (SSH) activo y usuario alineado con `docs/03-agents/SSH-USERS-FOR-AGENTS.md`. Contexto Claude Code / permisos: `.claude/SYNC-GUIDE.md` (sección VPS → máquina local).
+
 ## 5. Primera vez: si el worker aún no tiene la clave del VPS
 
 No puedes usar `ssh-copy-id` desde el VPS si aún no hay trust. Orden habitual:
@@ -119,6 +136,7 @@ No puedes usar `ssh-copy-id` desde el VPS si aún no hay trust. Orden habitual:
 
 ## Referencias
 
+- `scripts/setup-vps-ssh-to-opsly-admin.sh` — automatizar VPS → Mac principal (`npm run opsly:vps-ssh:to-admin`)
 - `docs/TAILSCALE-NOMENCLATURA.md` — nombres `vps-dragon`, `opsly-worker`, IPs `100.x`
 - `docs/WORKER-SETUP-MAC2011.md` — prerrequisitos en el worker Ubuntu
 - `docs/ARCHITECTURE-DISTRIBUTED.md` — Redis y roles `queue-only` / `worker-enabled`

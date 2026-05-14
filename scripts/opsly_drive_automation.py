@@ -140,7 +140,9 @@ def _load_service_account_json() -> dict[str, Any]:
     if not isinstance(obj, dict):
         raise RuntimeError("GOOGLE_SERVICE_ACCOUNT_JSON must decode to a JSON object.")
     if obj.get("type") != "service_account":
-        raise RuntimeError("GOOGLE_SERVICE_ACCOUNT_JSON must be a service_account JSON.")
+        raise RuntimeError(
+            "GOOGLE_SERVICE_ACCOUNT_JSON must be a service_account JSON."
+        )
     return obj
 
 
@@ -175,7 +177,9 @@ def _jwt_for_sa(sa: dict[str, Any], scope: str) -> str:
         key_path = kf.name
 
     try:
-        sig = subprocess.check_output(["openssl", "dgst", "-sha256", "-sign", key_path], input=signing_input)
+        sig = subprocess.check_output(
+            ["openssl", "dgst", "-sha256", "-sign", key_path], input=signing_input
+        )
     finally:
         try:
             os.remove(key_path)
@@ -222,7 +226,9 @@ def _oauth_token_from_jwt(jwt: str) -> str:
         }
     ).encode("utf-8")
     oauth_timeout = int(os.environ.get("OPSLY_DRIVE_OAUTH_TIMEOUT", "120"))
-    use_curl = os.environ.get("OPSLY_DRIVE_OAUTH_PREFER_CURL", "1").strip().lower() not in (
+    use_curl = os.environ.get(
+        "OPSLY_DRIVE_OAUTH_PREFER_CURL", "1"
+    ).strip().lower() not in (
         "0",
         "false",
         "no",
@@ -258,7 +264,6 @@ def _oauth_token_from_jwt(jwt: str) -> str:
     if not token:
         raise RuntimeError(f"Failed to obtain access_token: {payload}")
     return str(token)
-
 
 
 def _google_https_request_curl(
@@ -298,7 +303,9 @@ def _google_https_request_curl(
         )
         if r.returncode != 0 or not os.path.isfile(bpath) or not os.path.isfile(hpath):
             err = (r.stderr or b"").decode("utf-8", errors="replace")
-            raise RuntimeError(f"curl {method} failed (exit {r.returncode}): {err[:2000]}")
+            raise RuntimeError(
+                f"curl {method} failed (exit {r.returncode}): {err[:2000]}"
+            )
         h1 = open(hpath, encoding="utf-8", errors="replace").readline()
         parts = h1.split()
         status = int(parts[1]) if len(parts) > 1 else 0
@@ -314,7 +321,9 @@ def _google_https_request(
     timeout: int,
 ) -> tuple[int, bytes]:
     """Google APIs: prefer curl, else http.client."""
-    prefer = os.environ.get("OPSLY_GOOGLE_HTTPS_PREFER_CURL", "1").strip().lower() not in (
+    prefer = os.environ.get(
+        "OPSLY_GOOGLE_HTTPS_PREFER_CURL", "1"
+    ).strip().lower() not in (
         "0",
         "false",
         "no",
@@ -340,6 +349,7 @@ def _google_https_request(
     finally:
         conn.close()
 
+
 @dataclass(frozen=True)
 class DriveClient:
     access_token: str
@@ -356,7 +366,9 @@ class DriveClient:
             raise RuntimeError(f"HTTP {status} GET {url}: {text[:2000]}")
         return json.loads(text)
 
-    def post_json(self, url: str, body: bytes, content_type: str, method: str = "POST") -> Any:
+    def post_json(
+        self, url: str, body: bytes, content_type: str, method: str = "POST"
+    ) -> Any:
         headers = {**self._headers(), "Content-Type": content_type}
         status, raw = _google_https_request(method, url, headers, body, 300)
         text = raw.decode("utf-8", errors="replace")
@@ -405,10 +417,16 @@ def find_child_folder_id(client: DriveClient, parent_id: str, name: str) -> str 
 
 
 def create_folder(client: DriveClient, parent_id: str, name: str) -> str:
-    meta = {"name": name, "mimeType": "application/vnd.google-apps.folder", "parents": [parent_id]}
+    meta = {
+        "name": name,
+        "mimeType": "application/vnd.google-apps.folder",
+        "parents": [parent_id],
+    }
     qs = urllib.parse.urlencode({"supportsAllDrives": "true"})
     url = f"https://www.googleapis.com/drive/v3/files?{qs}"
-    created = client.post_json(url, json.dumps(meta).encode("utf-8"), "application/json; charset=UTF-8")
+    created = client.post_json(
+        url, json.dumps(meta).encode("utf-8"), "application/json; charset=UTF-8"
+    )
     return str(created["id"])
 
 
@@ -419,7 +437,9 @@ def ensure_child_folder(client: DriveClient, parent_id: str, name: str) -> str:
     return create_folder(client, parent_id, name)
 
 
-def find_file_in_folder_by_name(client: DriveClient, parent_id: str, filename: str) -> str | None:
+def find_file_in_folder_by_name(
+    client: DriveClient, parent_id: str, filename: str
+) -> str | None:
     safe = filename.replace("'", "\\'")
     q = f"name='{safe}' and '{parent_id}' in parents and trashed=false"
     files = drive_query_files(client, q, "files(id,name,mimeType)")
@@ -449,10 +469,14 @@ def upload_or_update_file(
     create_qs = urllib.parse.urlencode({"supportsAllDrives": "true"})
     create_url = f"https://www.googleapis.com/drive/v3/files?{create_qs}"
     meta = {"name": filename, "parents": [parent_id]}
-    created = client.post_json(create_url, json.dumps(meta).encode("utf-8"), "application/json; charset=UTF-8")
+    created = client.post_json(
+        create_url, json.dumps(meta).encode("utf-8"), "application/json; charset=UTF-8"
+    )
     new_id = str(created["id"])
 
-    upload_qs = urllib.parse.urlencode({"uploadType": "media", "supportsAllDrives": "true"})
+    upload_qs = urllib.parse.urlencode(
+        {"uploadType": "media", "supportsAllDrives": "true"}
+    )
     upload_url = f"https://www.googleapis.com/upload/drive/v3/files/{urllib.parse.quote(new_id)}?{upload_qs}"
     client.patch_bytes(upload_url, data, mime)
     return new_id
@@ -511,10 +535,14 @@ def cmd_upload_tenant_pack(_: argparse.Namespace) -> int:
     token = _oauth_token_from_jwt(signed_jwt)
     client = DriveClient(token)
 
-    prompts_parent = ensure_child_folder(client, root_id, str(folder_names.get("prompts", "PROMPTS")))
-    config_parent = ensure_child_folder(client, root_id, str(folder_names.get("config", "CONFIG")))
+    prompts_parent = ensure_child_folder(
+        client, root_id, str(folder_names.get("prompts", "PROMPTS"))
+    )
+    config_parent = ensure_child_folder(
+        client, root_id, str(folder_names.get("config", "CONFIG"))
+    )
 
-    prompt_dir = _repo_root() / "docs" / "prompts" / "tenant-onboarding"
+    prompt_dir = _repo_root() / "docs" / "tenants" / "onboarding-prompts"
     for p in sorted(prompt_dir.glob("*.md")):
         fid = upload_or_update_file(client, prompts_parent, p, mime="text/markdown")
         print(f"[drive] uploaded prompt {p.name} -> {fid}")
@@ -531,7 +559,9 @@ def cmd_upload_tenant_pack(_: argparse.Namespace) -> int:
 
 def cmd_export_doc(ns: argparse.Namespace) -> int:
     sa = _load_service_account_json()
-    scope = os.environ.get("OPSLY_DRIVE_IMPORT_SCOPE", "https://www.googleapis.com/auth/drive.readonly")
+    scope = os.environ.get(
+        "OPSLY_DRIVE_IMPORT_SCOPE", "https://www.googleapis.com/auth/drive.readonly"
+    )
     print("[drive] Firmando JWT (service account)…", flush=True)
     signed_jwt = _jwt_for_sa(sa, scope)
     print("[drive] Solicitando access_token a Google OAuth…", flush=True)
@@ -539,7 +569,9 @@ def cmd_export_doc(ns: argparse.Namespace) -> int:
     client = DriveClient(token)
 
     out = Path(ns.out)
-    size = export_google_doc(client, file_id=str(ns.file_id), out_path=out, mime=str(ns.mime))
+    size = export_google_doc(
+        client, file_id=str(ns.file_id), out_path=out, mime=str(ns.mime)
+    )
     print(f"[drive] exported doc {ns.file_id} -> {out} ({size} bytes)")
     return 0
 
@@ -548,13 +580,21 @@ def main() -> int:
     parser = argparse.ArgumentParser(prog="opsly_drive_automation")
     sub = parser.add_subparsers(dest="cmd", required=True)
 
-    p_layout = sub.add_parser("ensure-layout", help="Create PROMPTS/CONFIG/EXECUTIONS/ARCHITECTURE under the Opsly root folder")
+    p_layout = sub.add_parser(
+        "ensure-layout",
+        help="Create PROMPTS/CONFIG/EXECUTIONS/ARCHITECTURE under the Opsly root folder",
+    )
     p_layout.set_defaults(func=cmd_ensure_layout)
 
-    p_pack = sub.add_parser("upload-tenant-pack", help="Upload generic onboarding prompts + tenant JSON configs")
+    p_pack = sub.add_parser(
+        "upload-tenant-pack",
+        help="Upload generic onboarding prompts + tenant JSON configs",
+    )
     p_pack.set_defaults(func=cmd_upload_tenant_pack)
 
-    p_export = sub.add_parser("export-doc", help="Export a Google Doc to a local file (binary/text)")
+    p_export = sub.add_parser(
+        "export-doc", help="Export a Google Doc to a local file (binary/text)"
+    )
     p_export.add_argument("--file-id", required=True)
     p_export.add_argument("--out", required=True)
     p_export.add_argument(

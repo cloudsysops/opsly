@@ -22,6 +22,8 @@ Hermes y workers locales:
 
 No crear instrucciones paralelas que contradigan el Brain compartido.
 
+**Layout de documentación:** la raíz de `docs/` solo tiene **tres** hubs (`README.md`, `index.md`, `STRUCTURE-GUARDRAILS.md`); lista cerrada en `config/docs-root-allowlist.json`. Redirecciones cortas en `docs/stubs/`. OpenAPI subset: `docs/00-architecture/openapi-opsly-api.yaml`. Norma completa: `docs/STRUCTURE-GUARDRAILS.md`. `npm run validate-structure` y el pre-commit lo comprueban.
+
 ## FILOSOFIA DE TRABAJO
 
 Planificar -> Documentar -> Tests -> Implementar -> Validar -> Notificar
@@ -314,7 +316,7 @@ Patrón clave: **vi.mock antes de imports del handler**, mocks restablecidos con
 ./scripts/validate-config.sh     # Verifica JSON, DNS, SSH VPS, Doppler vars críticas
 npm run validate-context          # Valida system_state.json
 npm run validate-skills           # Verifica metadatos en skills/user/*/
-npm run validate-openapi          # Valida openapi-opsly-api.yaml: paths, estructura, rutas obligatorias
+npm run validate-openapi          # Valida docs/00-architecture/openapi-opsly-api.yaml: paths, estructura, rutas obligatorias
 ```
 
 ---
@@ -413,7 +415,7 @@ Capa 3: LLM Gateway + Context    → apps/llm-gateway + apps/context-builder
 API + ML: Métricas, embeddings   → apps/api + apps/ml
 ```
 
-Documentación: `docs/OPENCLAW-ARCHITECTURE.md`, `docs/ORCHESTRATOR.md`, `docs/LLM-GATEWAY.md`.
+Documentación: `docs/OPENCLAW-ARCHITECTURE.md`, `docs/ORCHESTRATOR.md`, `docs/00-architecture/LLM-GATEWAY.md`.
 
 ---
 

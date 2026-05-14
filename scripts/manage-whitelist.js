@@ -45,6 +45,9 @@ function listFiles() {
   for (const pattern of whitelist.blocked_patterns) {
     console.log(`  ✗ ${pattern}`);
   }
+
+  console.log('\nℹ️  Raíz del repo ≠ raíz de docs/: para archivos permitidos solo en `docs/` ver');
+  console.log('   config/docs-root-allowlist.json y docs/STRUCTURE-GUARDRAILS.md (npm run validate-structure).');
 }
 
 function addFile(filename) {

@@ -4,6 +4,8 @@
 **Frecuencia:** por cada nuevo tenant que se provisioning.  
 **Tiempo estimado:** 15-30 minutos.
 
+**Subcliente / tenant hijo (p. ej. LegalVial bajo LocalRank):** usar además la plantilla [`SUBCLIENT-ONBOARDING-TEMPLATE.md`](./SUBCLIENT-ONBOARDING-TEMPLATE.md) y `./scripts/validate-subclient-config.sh`.
+
 ---
 
 ## 1. Pre-requisitos
@@ -12,7 +14,7 @@ Antes de iniciar el onboarding, verificar:
 
 | Requisito                | Cómo verificar                                                           | Contacto/Referencia            |
 | ------------------------ | ------------------------------------------------------------------------ | ------------------------------ |
-| Dominio configurado      | `dig +short n8n-test.ops.smiletripcare.com` → IP VPS                     | DNS en Cloudflare              |
+| Dominio configurado      | `dig +short n8n-test.op-sly.com` → IP VPS                     | DNS en Cloudflare              |
 | Doppler secrets cargados | `doppler secrets --only-names --project ops-intcloudsysops --config prd` | 50+ secrets должны быть        |
 | Acceso SSH Tailscale     | `ssh -o BatchMode=yes vps-dragon@100.120.151.91 "hostname"`              | IP: 100.120.151.91             |
 | Credenciales Supabase    | `doppler secrets get SUPABASE_SERVICE_ROLE_KEY --plain`                  | Proyecto: jkwykpldnitavhmtuzmo |
@@ -34,8 +36,8 @@ Antes de iniciar el onboarding, verificar:
 # [ ] 3. Verificar plan disponible (startup/business/enterprise)
 # [ ] 4. Ejecutar onboard-tenant.sh
 # [ ] 5. Verificar Docker stacks levantados
-# [ ] 6. Verificar n8n accesible (https://n8n-{slug}.ops.smiletripcare.com)
-# [ ] 7. Verificar Uptime Kuma accesible (https://uptime-{slug}.ops.smiletripcare.com)
+# [ ] 6. Verificar n8n accesible (https://n8n-{slug}.op-sly.com)
+# [ ] 7. Verificar Uptime Kuma accesible (https://uptime-{slug}.op-sly.com)
 # [ ] 8. Enviar invitación al portal
 # [ ] 9. Documentar credenciales en Doppler (si aplica)
 # [ ] 10. Notificar en Discord canal #ops-notifications
@@ -80,21 +82,21 @@ docker ps --filter "name=tenant_nuevo-cliente" --filter "name=n8n-nuevo-cliente"
 ./scripts/opsly.sh status --slug nuevo-cliente
 
 # Verificar salud de n8n
-curl -sf --max-time 15 https://n8n-nuevo-cliente.ops.smiletripcare.com/health
+curl -sf --max-time 15 https://n8n-nuevo-cliente.op-sly.com/health
 
 # Verificar Uptime Kuma (página principal)
-curl -sf --max-time 15 https://uptime-nuevo-cliente.ops.smiletripcare.com/ | head -20
+curl -sf --max-time 15 https://uptime-nuevo-cliente.op-sly.com/ | head -20
 
 # Verificar respuesta HTTP
-curl -sI --max-time 15 https://n8n-nuevo-cliente.ops.smiletripcare.com | head -1
-curl -sI --max-time 15 https://uptime-nuevo-cliente.ops.smiletripcare.com | head -1
+curl -sI --max-time 15 https://n8n-nuevo-cliente.op-sly.com | head -1
+curl -sI --max-time 15 https://uptime-nuevo-cliente.op-sly.com | head -1
 ```
 
 ### 3.3 Invitación al Portal
 
 ```bash
 # Enviar invitación al portal (desde VPS o local con credenciales)
-curl -X POST https://api.ops.smiletripcare.com/api/invitations \
+curl -X POST https://api.op-sly.com/api/invitations \
   -H "Authorization: Bearer $ADMIN_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
@@ -129,13 +131,13 @@ docker compose -f tenants/nuevo-cliente/docker-compose.yml restart n8n
 
 | Servicio    | URL                                           | Puerto interno |
 | ----------- | --------------------------------------------- | -------------- |
-| n8n         | `https://n8n-{slug}.ops.smiletripcare.com`    | 5678           |
-| Uptime Kuma | `https://uptime-{slug}.ops.smiletripcare.com` | 3001           |
+| n8n         | `https://n8n-{slug}.op-sly.com`    | 5678           |
+| Uptime Kuma | `https://uptime-{slug}.op-sly.com` | 3001           |
 
 **Ejemplo para cliente "acme-corp":**
 
-- n8n: https://n8n-acme-corp.ops.smiletripcare.com
-- Uptime: https://uptime-acme-corp.ops.smiletripcare.com
+- n8n: https://n8n-acme-corp.op-sly.com
+- Uptime: https://uptime-acme-corp.op-sly.com
 
 ---
 
@@ -176,7 +178,7 @@ docker ps --format "table {{.Names}}\t{{.Ports}}"
 
 ```bash
 # Verificar dominio verificado en Resend
-# Ir a https://resend.com/domains y verificar ops.smiletripcare.com
+# Ir a https://resend.com/domains y verificar op-sly.com
 
 # Verificar logs de la API
 docker logs opsly_app_1 2>&1 | grep -i invitation
@@ -199,7 +201,7 @@ docker logs opsly_app_1 2>&1 | grep -i invitation
 
 ```bash
 # Estado vía API
-curl -sf https://api.ops.smiletripcare.com/api/tenants/{slug}
+curl -sf https://api.op-sly.com/api/tenants/{slug}
 
 # Estado en Supabase
 # SELECT slug, status, plan, created_at FROM platform.tenants WHERE slug = '{slug}'
@@ -232,7 +234,7 @@ ssh vps-dragon@100.120.151.91 "docker ps --format 'table {{.Names}}\t{{.Status}}
 ```bash
 # Notificar al canal #ops-notifications
 ./scripts/notify-discord.sh "✅ Nuevo cliente onboarding completado" \
-  "Slug: nuevo-cliente\nEmail: owner@dominio.com\nPlan: startup\nn8n: https://n8n-nuevo-cliente.ops.smiletripcare.com" \
+  "Slug: nuevo-cliente\nEmail: owner@dominio.com\nPlan: startup\nn8n: https://n8n-nuevo-cliente.op-sly.com" \
   "success"
 
 # O manualmente via Webhook (si el script no está disponible)
@@ -245,7 +247,7 @@ curl -X POST "$DISCORD_WEBHOOK_URL" \
       "fields": [
         {"name": "Email", "value": "owner@dominio.com"},
         {"name": "Plan", "value": "startup"},
-        {"name": "n8n", "value": "https://n8n-nuevo-cliente.ops.smiletripcare.com"}
+        {"name": "n8n", "value": "https://n8n-nuevo-cliente.op-sly.com"}
       ],
       "color": 65280
     }]
@@ -273,7 +275,7 @@ doppler secrets set N8N_WEBHOOK_URL_nuevo-cliente="https://..." \
 
 | Variable          | Default                 | Descripción                           |
 | ----------------- | ----------------------- | ------------------------------------- |
-| `PLATFORM_DOMAIN` | `ops.smiletripcare.com` | Dominio base de la plataforma         |
+| `PLATFORM_DOMAIN` | `op-sly.com` | Dominio base de la plataforma         |
 | `SSH_HOST`        | `100.120.151.91`        | IP Tailscale del VPS                  |
 | `TENANTS_PATH`    | `./runtime/tenants/`             | Directorio donde se crean los compose |
 | `ADMIN_TOKEN`     | -                       | Token de admin (obtener de Doppler)   |

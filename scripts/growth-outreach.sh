@@ -30,7 +30,7 @@ API_BASE_URL="${NEXT_PUBLIC_API_URL:-http://localhost:3000}"
 
 # Resend configuration
 RESEND_API_KEY="${RESEND_API_KEY:-}"
-RESEND_FROM_EMAIL="${RESEND_FROM_EMAIL:-growth@ops.smiletripcare.com}"
+RESEND_FROM_EMAIL="${RESEND_FROM_EMAIL:-growth@op-sly.com}"
 TEST_MODE="${TEST_MODE:-false}"
 TEST_EMAIL="cboteros1@gmail.com"
 
@@ -38,7 +38,7 @@ TEST_EMAIL="cboteros1@gmail.com"
 DRY_RUN="${1:-}"
 BATCH_SIZE=5
 TEMPLATE_VERSION="1.0"
-DEMO_LINK="https://ops.smiletripcare.com/demo"
+DEMO_LINK="https://op-sly.com/demo"
 
 # --- Validations ---
 

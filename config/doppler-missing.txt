@@ -3,7 +3,7 @@
 
 # --- No aplican al repo actual ---
 NEXTAUTH_SECRET=          # Opsly no usa NextAuth en apps/api ni apps/admin (grep sin matches). Si añades Auth.js: openssl rand -base64 32
-NEXTAUTH_URL=             # URL pública de la app auth, ej. https://admin.ops.smiletripcare.com — solo si adoptas NextAuth
+NEXTAUTH_URL=             # URL pública de la app auth, ej. https://admin.op-sly.com — solo si adoptas NextAuth
 
 # --- No debe vivir en Doppler (token de máquina) ---
 DOPPLER_TOKEN=            # Service token para el VPS: scripts/setup-doppler.sh (PROVISION_VPS=1) o Doppler Dashboard → Service Tokens → guardar en /etc/doppler.env en el servidor

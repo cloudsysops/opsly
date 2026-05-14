@@ -1,0 +1,13 @@
+{
+  "name": "@intcloudsysops/api-utils",
+  "version": "1.0.0",
+  "description": "api description",
+  "type": "module",
+  "main": "./index.ts",
+  "types": "./index.ts",
+  "scripts": {
+    "test": "echo 'No tests yet'",
+    "type-check": "echo 'api type-checked via root tsconfig'"
+  },
+  "keywords": ["api"]
+}

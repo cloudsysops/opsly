@@ -6,7 +6,7 @@
 
 ## Health (API plataforma)
 
-Sustituye `BASE` por `domains.base` en `config/opsly.config.json` (ej. `ops.smiletripcare.com`):
+Sustituye `BASE` por `domains.base` en `config/opsly.config.json` (ej. `op-sly.com`):
 
 ```bash
 curl -sf "https://api.BASE/api/health"

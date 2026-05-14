@@ -22,7 +22,7 @@ case "$MODE" in
   --start|--vps)
     echo "==> Arrancando worker con Redis del VPS (failover real)..."
     # Fallback: si no hay REDIS_URL en entorno, usa la del VPS
-    : "${REDIS_URL:=redis://redis.ops.smiletripcare.com:6379}"
+    : "${REDIS_URL:=redis://redis.op-sly.com:6379}"
     export REDIS_URL
     echo "    REDIS_URL: $REDIS_URL"
     $COMPOSE up -d worker-local

@@ -31,9 +31,23 @@ tools/agents/prompts/secrets-*.md
 .cursor/.ipc/
 .cursor/.metadata.json
 .cursor/prompts/.metadata.json
+# Overrides personales de reglas Cursor (el canónico del repo sigue siendo opsly.mdc, etc.)
+.cursor/rules/*.local.mdc
+
+# OpenCode — ajustes por máquina (modelo, preferencias). El repo puede llevar .opencode.json base;
+# si lo editas solo para ti, renombra/copia a este nombre o usa skip-worktree en .opencode.json.
+.opencode.local.json
+
+# Obsidian — estado de UI en la raíz del repo (no es el vault docs/); no commitear
+.obsidian/
 .env.local
 .env*.local
+!.env.local-workers.example
 .env.worker
+**/.write_test
+
+# package.json / package-lock.json: del monorepo; no ignorar. Cambios de deps menores → stash,
+# commit aparte, o rama; no añadir aquí.
 
 node_modules
 apps/api/coverage/
@@ -63,6 +77,8 @@ infra/terraform/tfplan
 runtime/logs/*
 runtime/letsencrypt/*
 runtime/tenants/*
+runtime/pids/*
+!runtime/pids/.gitkeep
 !runtime/logs/.gitkeep
 !runtime/letsencrypt/.gitkeep
 !runtime/tenants/.gitkeep
@@ -75,10 +91,12 @@ supabase/migrations/supabase/.temp/
 apps/portal/test-results/
 apps/portal/playwright-report/
 
-# Obsidian — ignore runtime/personal state
+# Obsidian — ignore runtime/personal state (vault en docs/)
 docs/.obsidian/cache
 docs/.obsidian/workspace
 docs/.obsidian/workspace.json
+docs/.obsidian/workspace-mobile.json
+docs/.obsidian/graph.json
 docs/.obsidian/plugins/recent-files-obsidian/data.json
 
 # Keep config + plugin settings tracked
@@ -92,6 +110,7 @@ docs/.obsidian/plugins/recent-files-obsidian/data.json
 !docs/.obsidian/plugins/obsidian-git/data.json
 
 # Claude local config (ignored)
+.claude/settings.local.json
 .claude/2-context-management/CLAUDE.local.md
 
 # Claude Code worktrees (local clones; never commit)
@@ -99,3 +118,7 @@ docs/.obsidian/plugins/recent-files-obsidian/data.json
 
 # Redis dump file
 dump.rdb
+logs/
+
+# Agent bootstrap state (generated per-agent, local to session)
+.agent-bootstrap-state/

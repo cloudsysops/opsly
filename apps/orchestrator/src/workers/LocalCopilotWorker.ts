@@ -1,11 +1,11 @@
 import { Job, Worker } from 'bullmq';
 import { promises as fsp } from 'fs';
 import * as path from 'path';
-import { getAgentServiceRegistry } from '../lib/agent-service-registry.js';
-import { logWorkerLifecycle } from '../observability/worker-log.js';
+import { getAgentServiceRegistry } from '../lib/agent/agent-service-registry.js';
+import { logWorkerLifecycle, logWorkerInfo, logWorkerWarn, logWorkerError } from '../observability/worker-log.js';
 import { getWorkerConcurrency } from '../worker-concurrency.js';
-import { createValidationOrchestrator } from '../lib/validation-orchestrator.js';
-import { writeValidationGuard } from '../lib/validation-utils.js';
+import { createValidationOrchestrator } from '../lib/validation/validation-orchestrator.js';
+import { writeValidationGuard } from '../lib/validation/validation-utils.js';
 
 interface CopilotExecutionResponse {
   success: boolean;
@@ -31,8 +31,8 @@ interface CopilotExecutionResponse {
  * Flow:
  * 1. Receives job with prompt content
  * 2. Calls GitHub Copilot Chat API
- *    - Endpoint: https://copilot-chat.github.com/api/chat or via authenticated GitHub Copilot
- *    - Auth: GitHub token from env (GITHUB_TOKEN)
+ * - Endpoint: https://copilot-chat.github.com/api/chat or via authenticated GitHub Copilot
+ * - Auth: GitHub token from env (GITHUB_TOKEN)
  * 3. Formats response to markdown
  * 4. Writes to .cursor/responses/response-{job_id}.md
  * 5. Calls ValidationOrchestrator.validateAndDecide()
@@ -59,13 +59,13 @@ async function processLocalCopilotJob(
   const responsesDir = path.join(cursorDir, 'responses');
   const validationOrchestrator = createValidationOrchestrator(cursorDir);
 
-  console.log(`[LocalCopilotWorker] Processing job ${jobId}: ${agentRole}`);
+  logWorkerInfo('local-copilot', 'Processing job', { jobId, agentRole });
 
   try {
     // Check for GitHub token
     const githubToken = process.env.GITHUB_TOKEN?.trim() || process.env.GITHUB_TOKEN_N8N?.trim();
     if (!githubToken) {
-      console.warn('[LocalCopilotWorker] GITHUB_TOKEN not configured, falling back to Claude');
+      logWorkerWarn('local-copilot', 'GITHUB_TOKEN not configured, falling back to Claude');
       return await fallbackToClaudeViaGateway(promptContent, jobId, agentRole, cursorDir, validationOrchestrator);
     }
 
@@ -80,7 +80,7 @@ async function processLocalCopilotJob(
       model: 'gpt-4',
     };
 
-    console.log(`[LocalCopilotWorker] Calling GitHub Copilot Chat API`);
+    logWorkerInfo('local-copilot', 'Calling GitHub Copilot Chat API');
 
     // Attempt to call Copilot API with timeout and retry logic
     const controller = new AbortController();
@@ -115,9 +115,7 @@ async function processLocalCopilotJob(
         }
 
         const backoffMs = Math.pow(2, retryCount) * 1000; // exponential backoff: 2s, 4s
-        console.warn(
-          `[LocalCopilotWorker] Retry ${retryCount}/${maxRetries} after ${backoffMs}ms`
-        );
+        logWorkerWarn('local-copilot', 'Retrying after backoff', { retry: retryCount, maxRetries, backoffMs });
         await new Promise((resolve) => setTimeout(resolve, backoffMs));
       }
     }
@@ -127,15 +125,13 @@ async function processLocalCopilotJob(
     // Handle rate limiting (429)
     if (response!.status === 429) {
       const retryAfter = response!.headers.get('Retry-After');
-      console.warn(`[LocalCopilotWorker] Rate limited (429), retry after ${retryAfter}s`);
+      logWorkerWarn('local-copilot', 'Rate limited (429)', { retryAfter });
       throw new Error(`GitHub Copilot API rate limited. Retry after ${retryAfter}s`);
     }
 
     // Handle authentication errors
     if (response!.status === 401 || response!.status === 403) {
-      console.warn(
-        `[LocalCopilotWorker] Authentication failed (${response!.status}), falling back to Claude`
-      );
+      logWorkerWarn('local-copilot', 'Authentication failed, falling back to Claude', { status: response!.status });
       return await fallbackToClaudeViaGateway(promptContent, jobId, agentRole, cursorDir, validationOrchestrator);
     }
 
@@ -178,14 +174,12 @@ ${responseText}
 
     await fsp.writeFile(responsePath, responseContent, 'utf-8');
 
-    console.log(`[LocalCopilotWorker] ✅ Response written to ${responsePath}`);
+    logWorkerInfo('local-copilot', 'Response written', { path: responsePath });
 
     // Validate response and get decision
     const decision = await validationOrchestrator.validateAndDecide(jobId, agentRole, responsePath, 1, 3);
 
-    console.log(
-      `[LocalCopilotWorker] Validation decision: ${decision.action} - ${decision.reason}`
-    );
+    logWorkerInfo('local-copilot', 'Validation decision', { action: decision.action, reason: decision.reason });
 
     // Write validation guard to prevent double-commits
     await writeValidationGuard(jobId, decision.action, path.join(cursorDir, '.validation'));
@@ -205,15 +199,10 @@ ${responseText}
     const executionTime = Date.now() - startTime;
     const errorMsg = err instanceof Error ? err.message : String(err);
 
-    console.error(
-      `[LocalCopilotWorker] ❌ Job ${jobId} failed:`,
-      errorMsg
-    );
+    logWorkerError('local-copilot', 'Job failed', { jobId, error: errorMsg });
 
     // Final fallback to Claude if Copilot fails
-    console.warn(
-      `[LocalCopilotWorker] Copilot failed, attempting Claude fallback`
-    );
+    logWorkerWarn('local-copilot', 'Copilot failed, attempting Claude fallback');
     try {
       return await fallbackToClaudeViaGateway(
         promptContent,
@@ -225,7 +214,7 @@ ${responseText}
     } catch (fallbackErr) {
       const fallbackMsg =
         fallbackErr instanceof Error ? fallbackErr.message : String(fallbackErr);
-      console.error(`[LocalCopilotWorker] Claude fallback also failed:`, fallbackMsg);
+      logWorkerError('local-copilot', 'Claude fallback also failed', { error: fallbackMsg });
 
       return {
         success: false,
@@ -249,9 +238,7 @@ async function fallbackToClaudeViaGateway(
   const llmGatewayUrl = process.env.LLM_GATEWAY_URL || 'http://localhost:3010';
   const responsesDir = path.join(cursorDir, 'responses');
 
-  console.log(
-    `[LocalCopilotWorker] Falling back to Claude via LLM Gateway at ${llmGatewayUrl}`
-  );
+  logWorkerInfo('local-copilot', 'Falling back to Claude via LLM Gateway', { url: llmGatewayUrl });
 
   const response = await fetch(`${llmGatewayUrl}/chat`, {
     method: 'POST',
@@ -309,9 +296,7 @@ export function startLocalCopilotWorker(connection: object) {
   const concurrency = getWorkerConcurrency('local-copilot') || 1;
   const registry = getAgentServiceRegistry();
 
-  console.log(
-    `[LocalCopilotWorker] Initialized with concurrency=${concurrency}`
-  );
+  logWorkerInfo('local-copilot', 'Initialized', { concurrency });
 
   return new Worker(
     'local-agents',
@@ -321,7 +306,7 @@ export function startLocalCopilotWorker(connection: object) {
         return;
       }
 
-      console.log(`[LocalCopilotWorker] ✅ Processing job ${job.id}`);
+      logWorkerInfo('local-copilot', 'Processing job', { jobId: job.id });
 
       const t0 = Date.now();
       logWorkerLifecycle('start', 'local-copilot', job);
@@ -359,10 +344,7 @@ export function startLocalCopilotWorker(connection: object) {
         const elapsed = Date.now() - t0;
         const errorMsg = err instanceof Error ? err.message : String(err);
 
-        console.error(
-          `[LocalCopilotWorker] ❌ Job ${job.id} error:`,
-          errorMsg
-        );
+        logWorkerError('local-copilot', 'Job error', { jobId: job.id, error: errorMsg });
         logWorkerLifecycle('fail', 'local-copilot', job, {
           duration_ms: elapsed,
           error: errorMsg,

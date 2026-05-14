@@ -1,0 +1,159 @@
+{
+  "version": "1.0.0",
+  "generated": "2026-05-13T01:05:42.016Z",
+  "stats": {
+    "totalNotes": 28,
+    "totalTags": 0,
+    "byCategory": {
+      "": 2,
+      "agents": 1,
+      "architecture": 3,
+      "modules": 11,
+      "tenants": 5,
+      "workflows": 6
+    }
+  },
+  "notes": [
+    {
+      "path": "/README.md",
+      "title": "Opsly Brain",
+      "tags": []
+    },
+    {
+      "path": "agents/README.md",
+      "title": "Agents MOC",
+      "tags": []
+    },
+    {
+      "path": "architecture/README.md",
+      "title": "Architecture MOC",
+      "tags": []
+    },
+    {
+      "path": "architecture/knowledge-graph.md",
+      "title": "Knowledge Graph",
+      "tags": []
+    },
+    {
+      "path": "architecture/system-map.md",
+      "title": "System Map",
+      "tags": []
+    },
+    {
+      "path": "/dashboard.md",
+      "title": "Brain Dashboard",
+      "tags": []
+    },
+    {
+      "path": "modules/README.md",
+      "title": "Modules MOC",
+      "tags": []
+    },
+    {
+      "path": "modules/admin.md",
+      "title": "Admin Console",
+      "tags": []
+    },
+    {
+      "path": "modules/api.md",
+      "title": "API Control Plane",
+      "tags": []
+    },
+    {
+      "path": "modules/context-builder.md",
+      "title": "Context Builder",
+      "tags": []
+    },
+    {
+      "path": "modules/llm-gateway.md",
+      "title": "LLM Gateway",
+      "tags": []
+    },
+    {
+      "path": "modules/local-services.md",
+      "title": "Local Services",
+      "tags": []
+    },
+    {
+      "path": "modules/mcp.md",
+      "title": "MCP Server",
+      "tags": []
+    },
+    {
+      "path": "modules/notebooklm-agent.md",
+      "title": "NotebookLM Agent",
+      "tags": []
+    },
+    {
+      "path": "modules/orchestrator.md",
+      "title": "Orchestrator",
+      "tags": []
+    },
+    {
+      "path": "modules/portal.md",
+      "title": "Tenant Portal",
+      "tags": []
+    },
+    {
+      "path": "modules/web.md",
+      "title": "Public Web",
+      "tags": []
+    },
+    {
+      "path": "tenants/README.md",
+      "title": "Tenants MOC",
+      "tags": []
+    },
+    {
+      "path": "tenants/legalvial.md",
+      "title": "Tenant: legalvial",
+      "tags": []
+    },
+    {
+      "path": "tenants/local-services.md",
+      "title": "Tenant: local-services",
+      "tags": []
+    },
+    {
+      "path": "tenants/peskids.md",
+      "title": "Tenant: peskids",
+      "tags": []
+    },
+    {
+      "path": "tenants/smiletripcare.md",
+      "title": "Tenant: smiletripcare",
+      "tags": []
+    },
+    {
+      "path": "workflows/README.md",
+      "title": "Workflows MOC",
+      "tags": []
+    },
+    {
+      "path": "workflows/billing.md",
+      "title": "Billing Workflow",
+      "tags": []
+    },
+    {
+      "path": "workflows/local-agents.md",
+      "title": "Local Agents Workflow",
+      "tags": []
+    },
+    {
+      "path": "workflows/marketplace-crm.md",
+      "title": "Marketplace CRM",
+      "tags": []
+    },
+    {
+      "path": "workflows/openclaw.md",
+      "title": "OpenClaw Workflow",
+      "tags": []
+    },
+    {
+      "path": "workflows/shield.md",
+      "title": "Shield Workflow",
+      "tags": []
+    }
+  ],
+  "tags": []
+}

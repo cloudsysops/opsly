@@ -5,6 +5,7 @@ Objetivo: asumir que cualquier secreto mostrado en una sesión compartida (Curso
 ## Principios
 
 - Rotar en **Doppler** primario (`ops-intcloudsysops` / config `prd`); el VPS debe volver a obtener `.env` con `./scripts/vps-bootstrap.sh` (o flujo documentado del equipo), **nunca** pegar claves en issues ni commits.
+- No usar `grep` / `tail` / volcados de `.env` en sesiones compartidas (Cursor, grabaciones) sin redacción; validar secretos con `doppler secrets get … >/dev/null` o chequeos en el VPS sin imprimir valores.
 - Tras rotar **Redis**, actualizar `REDIS_PASSWORD` y `REDIS_URL` si incluye password; recrear servicios que usen Redis para que lean el nuevo valor.
 - Tras rotar **Cloudflare API token**, revocar el token antiguo en Cloudflare Dashboard y actualizar `CF_DNS_API_TOKEN` en Doppler; recrear Traefik con `docker compose --env-file /opt/opsly/.env -f infra/docker-compose.platform.yml up -d --force-recreate traefik`.
 

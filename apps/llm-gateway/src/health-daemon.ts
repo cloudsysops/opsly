@@ -83,9 +83,44 @@ const DEEPSEEK_HEALTH_CHECK: Record<
   },
 };
 
+const NVIDIA_HEALTH_CHECK: Record<'nvidia', HealthCheckFn> = {
+  nvidia: async () => {
+    const start = Date.now();
+    const base = (process.env.NVIDIA_BASE_URL ?? 'https://integrate.api.nvidia.com/v1').replace(
+      /\/$/,
+      ''
+    );
+    const res = await fetch(`${base}/models`, {
+      headers: {
+        Authorization: `Bearer ${process.env.NVIDIA_API_KEY ?? ''}`,
+      },
+      signal: AbortSignal.timeout(5000),
+    });
+    if (!res.ok) throw new Error(`NVIDIA HTTP ${res.status}`);
+    return Date.now() - start;
+  },
+};
+
+const GROQ_HEALTH_CHECK: Record<'groq', HealthCheckFn> = {
+  groq: async () => {
+    const start = Date.now();
+    const base = (process.env.GROQ_BASE_URL ?? 'https://api.groq.com/openai/v1').replace(/\/$/, '');
+    const res = await fetch(`${base}/models`, {
+      headers: {
+        Authorization: `Bearer ${process.env.GROQ_API_KEY ?? ''}`,
+      },
+      signal: AbortSignal.timeout(5000),
+    });
+    if (!res.ok) throw new Error(`Groq HTTP ${res.status}`);
+    return Date.now() - start;
+  },
+};
+
 const HEALTH_CHECKS: Record<string, HealthCheckFn> = {
   ...BASE_HEALTH_CHECKS,
   ...(process.env.DEEPSEEK_API_KEY?.trim() ? DEEPSEEK_HEALTH_CHECK : {}),
+  ...(process.env.NVIDIA_API_KEY?.trim() ? NVIDIA_HEALTH_CHECK : {}),
+  ...(process.env.GROQ_API_KEY?.trim() ? GROQ_HEALTH_CHECK : {}),
 };
 
 export class HealthDaemon {

@@ -27,7 +27,7 @@ This checklist decides whether Opsly can increase autonomous execution scope for
 2. Run `npm run test --workspace=@intcloudsysops/orchestrator`.
 3. Run `npm run type-check`.
 4. Run a bounded smoke:
-   - `ITERATIONS=1 ENABLE_HERMES_TICK=true ENABLE_WORKER_SMOKE=true ./scripts/agents-autopilot.sh`
+   - `ITERATIONS=1 ENABLE_HERMES_TICK=true ENABLE_WORKER_SMOKE=true ENABLE_REDIS_SMOKE=true ./scripts/agents-autopilot.sh`
 5. Record decision:
    - `GO` if all criteria pass and no no-go trigger appears.
    - `NO-GO` otherwise, with remediation tasks for the next cycle.
@@ -40,11 +40,14 @@ This checklist decides whether Opsly can increase autonomous execution scope for
 
 ## Latest Weekly Check
 
-- Date: `2026-04-28`
+- Date: `2026-04-27`
 - Result: `GO (controlled scope)`
 - Evidence:
   - `npm run type-check` passed.
-  - `npm run test --workspace=@intcloudsysops/orchestrator` passed (137 tests).
+  - `npm run test --workspace=@intcloudsysops/orchestrator` passed.
+  - `evolution` worker registrado en `apps/orchestrator/src/index.ts` (jobs `evolution` de Cortex ya no quedan sin consumidor en `openclaw`).
+  - `sandbox_execution`: worker opcional vía `OPSLY_SANDBOX_WORKER_ENABLED=true` en el mismo archivo (activar en VPS cuando haya Docker para el flujo E2E sandbox).
+  - `ENABLE_REDIS_SMOKE=true` (default) en `./scripts/agents-autopilot.sh` + `autonomy-redis-smoke.sh` por ciclo.
   - `DRY_RUN=true ITERATIONS=1 ENABLE_HERMES_TICK=true ENABLE_WORKER_SMOKE=true ./scripts/agents-autopilot.sh` passed.
 - Constraints kept:
   - `search_mode` remains `degraded` until `TAVILY_API_KEY` is available.

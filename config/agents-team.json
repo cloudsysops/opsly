@@ -3,17 +3,43 @@
     "name": "Opsly Agent Team",
     "description": "Arquitecto supervisor con workers especializados sobre OpenClaw"
   },
+  "shared_context": {
+    "strategy": "brain-driven-optimization",
+    "enabled": true,
+    "mcp_tools": [
+      "brain:search",
+      "brain:semantic-search",
+      "brain:research",
+      "brain:graph",
+      "brain:get"
+    ],
+    "token_savings_target": "60-70%",
+    "onboarding_required": true,
+    "auto_config_new_agents": true,
+    "skills_to_inject": [
+      "opsly-context",
+      "opsly-brain-researcher"
+    ],
+    "documentation": "https://raw.githubusercontent.com/cloudsysops/opsly/main/AGENTS.md#brain-driven-context-token-optimization"
+  },
   "routing": {
     "policy": "local-first",
     "providers": {
       "primary": "ollama",
-      "fallback": ["openrouter", "anthropic"]
+      "fallback": [
+        "openrouter",
+        "anthropic"
+      ]
     }
   },
   "constraints": {
     "max_total_daily_budget_usd": 5,
     "max_concurrent_agents": 3,
-    "require_approval_for": ["delete_file", "git_push_main", "infra_change"]
+    "require_approval_for": [
+      "delete_file",
+      "git_push_main",
+      "infra_change"
+    ]
   },
   "agents": [
     {
@@ -28,8 +54,18 @@
         "requests_per_minute": 6,
         "tokens_per_minute": 12000
       },
-      "allowed_tools": ["plan", "delegate", "summarize", "route_task"],
-      "allowed_paths": ["apps/", "config/", "docs/", "scripts/"]
+      "allowed_tools": [
+        "plan",
+        "delegate",
+        "summarize",
+        "route_task"
+      ],
+      "allowed_paths": [
+        "apps/",
+        "config/",
+        "docs/",
+        "scripts/"
+      ]
     },
     {
       "id": "backend-worker",
@@ -43,8 +79,17 @@
         "requests_per_minute": 5,
         "tokens_per_minute": 10000
       },
-      "allowed_tools": ["read_file", "write_file", "run_tests", "enqueue_job"],
-      "allowed_paths": ["apps/api/", "apps/orchestrator/", "apps/llm-gateway/"]
+      "allowed_tools": [
+        "read_file",
+        "write_file",
+        "run_tests",
+        "enqueue_job"
+      ],
+      "allowed_paths": [
+        "apps/api/",
+        "apps/orchestrator/",
+        "apps/llm-gateway/"
+      ]
     },
     {
       "id": "frontend-worker",
@@ -58,8 +103,15 @@
         "requests_per_minute": 5,
         "tokens_per_minute": 8000
       },
-      "allowed_tools": ["read_file", "write_file", "run_tests"],
-      "allowed_paths": ["apps/admin/", "apps/portal/"]
+      "allowed_tools": [
+        "read_file",
+        "write_file",
+        "run_tests"
+      ],
+      "allowed_paths": [
+        "apps/admin/",
+        "apps/portal/"
+      ]
     },
     {
       "id": "infra-worker",
@@ -73,8 +125,17 @@
         "requests_per_minute": 3,
         "tokens_per_minute": 6000
       },
-      "allowed_tools": ["bash", "docker_ps", "health_check", "logs_tail"],
-      "allowed_paths": ["infra/", "scripts/", "docs/"]
+      "allowed_tools": [
+        "bash",
+        "docker_ps",
+        "health_check",
+        "logs_tail"
+      ],
+      "allowed_paths": [
+        "infra/",
+        "scripts/",
+        "docs/"
+      ]
     },
     {
       "id": "codex-engineering",
@@ -88,9 +149,58 @@
         "requests_per_minute": 4,
         "tokens_per_minute": 15000
       },
-      "allowed_tools": ["read_file", "analyze_codebase", "code_review", "architecture_analysis", "mcp_tool"],
-      "allowed_paths": ["apps/", "config/", "docs/", "supabase/", "infra/"],
-      "specialization": ["code-review", "architecture-design", "engineering-decisions", "system-design"]
+      "allowed_tools": [
+        "read_file",
+        "analyze_codebase",
+        "code_review",
+        "architecture_analysis",
+        "mcp_tool"
+      ],
+      "allowed_paths": [
+        "apps/",
+        "config/",
+        "docs/",
+        "supabase/",
+        "infra/"
+      ],
+      "specialization": [
+        "code-review",
+        "architecture-design",
+        "engineering-decisions",
+        "system-design"
+      ]
+    },
+    {
+      "id": "hermes",
+      "name": "hermes",
+      "role": "tool",
+      "model": "llama3.2:latest",
+      "fallback_model": "openrouter/claude-3.5-haiku",
+      "daily_budget_usd": 0.5,
+      "local_only": false,
+      "rate_limit": {
+        "requests_per_minute": 3,
+        "tokens_per_minute": 6000
+      },
+      "allowed_tools": [
+        "bash",
+        "docker_ps",
+        "health_check",
+        "logs_tail",
+        "mcp_tool"
+      ],
+      "allowed_paths": [
+        "infra/",
+        "scripts/",
+        "docs/"
+      ],
+      "specialization": [
+        "infrastructure",
+        "devops",
+        "deployment"
+      ],
+      "_registered_at": "2026-05-13T01:48:28.357Z",
+      "_detected_type": "tool"
     }
   ]
 }

@@ -1,12 +1,12 @@
 ---
 status: deprecated
 superseded_by: ../../../ROADMAP.md
-related_canon: ../../../SPRINT-TRACKER.md, ../MASTER-PLAN-STATUS.md
+related_canon: ../../01-development/SPRINT-TRACKER.md, MASTER-PLAN-STATUS.md
 last_review: 2026-04-30
 note: Snapshot enterprise archivado (ADR-033).
 ---
 
-> **Deprecated — histórico.** Progreso vivo: [`ROADMAP.md`](../../../ROADMAP.md), [`SPRINT-TRACKER.md`](../../../SPRINT-TRACKER.md), [`docs/generated/sprint-status.auto.md`](../../generated/sprint-status.auto.md). Snapshot relacionado (histórico): [`MASTER-PLAN-STATUS.md`](MASTER-PLAN-STATUS.md).
+> **Deprecated — histórico.** Progreso vivo: [`ROADMAP.md`](../../../ROADMAP.md), [`SPRINT-TRACKER.md`](../../01-development/SPRINT-TRACKER.md), [`docs/generated/sprint-status.auto.md`](../../generated/sprint-status.auto.md). Snapshot relacionado (histórico): [`MASTER-PLAN-STATUS.md`](MASTER-PLAN-STATUS.md).
 
 # Opsly Enterprise — Sprint Roadmap
 

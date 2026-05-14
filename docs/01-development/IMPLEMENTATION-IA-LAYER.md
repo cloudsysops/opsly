@@ -7,7 +7,8 @@
 
 | Nombre                              | Qué es en Opsly                                                                                                                                                        |
 | ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Hermes**                          | **Metering y billing IA** unificado (`usage_events`, costos por `tenant_slug` / `request_id`). Ver [`VISION.md`](../VISION.md) (_Sistema de Metering — Hermes_).       |
+| **Hermes**                          | **Metering y billing IA** unificado (`usage_events`, costos por `tenant_slug` / `request_id`). Ver [`VISION.md`](../VISION.md) (_Sistema de Metering — Hermes_). No confundir con el planner remoto (**Billy**). |
+| **Billy**                           | **Planner remoto** orchestrator → LLM Gateway: `executeRemotePlanner` en `apps/orchestrator/src/planner-client.ts`, intent `remote_plan`. Nombre alineado a Opsly 2.0 (rol Billy). |
 | **“Agente Hermes” tipo Nous / pip** | **No** está adoptado: el monorepo no añade `hermes-agent` en Python al orchestrator. La “inteligencia” de routing vive en **LLM Gateway + orchestrator** (TypeScript). |
 | **NotebookLM**                      | Agente/herramienta **experimental**; planes Business+ y flags.                                                                                                         |
 
@@ -17,10 +18,10 @@
 | ---------------------------------------------------- | ------------------------------------------------------------------------ |
 | Routing multi-proveedor, fallback, costes declarados | `apps/llm-gateway/src/providers.ts`, `llm-direct.ts`, `routing-hints.ts` |
 | Llamada HTTP unificada                               | `apps/llm-gateway/src/gateway.ts`                                        |
-| Planner remoto (orchestrator → gateway)              | `apps/orchestrator/src/planner-client.ts`                                |
+| Planner remoto Billy (orchestrator → gateway)        | `apps/orchestrator/src/planner-client.ts`                                |
 | Respuesta planner JSON                               | `apps/llm-gateway/src/planner-route.ts`                                  |
 | Cola BullMQ, jobs, workers                           | `apps/orchestrator/src/engine.ts`, `workers/`                            |
-| Prompts locales → cola `local-agents`                | [`docs/LOCAL-AGENT-EXECUTION.md`](../LOCAL-AGENT-EXECUTION.md) (`POST /api/local/prompt-submit`, `apps/orchestrator/src/workers/local-agent-http-worker.ts`); convención cola git: [`AGENT-PROMPT-QUEUE.md`](AGENT-PROMPT-QUEUE.md) |
+| Prompts locales → cola `local-agents`                | [`../LOCAL-AGENT-EXECUTION.md`](../LOCAL-AGENT-EXECUTION.md) (`POST /api/local/prompt-submit`, `apps/orchestrator/src/workers/local-agent-http-worker.ts`, switch `opsly_control` / `ide_fallback`); convención cola git: [`AGENT-PROMPT-QUEUE.md`](AGENT-PROMPT-QUEUE.md) |
 | MCP, tools                                           | `apps/mcp/`                                                              |
 | Contexto / continuidad                               | `apps/context-builder/`                                                  |
 | Feedback portal                                      | `apps/api` (`/api/feedback`), Zero-Trust                                 |

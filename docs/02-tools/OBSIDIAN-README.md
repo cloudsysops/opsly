@@ -33,7 +33,14 @@ Configure:
   ✅ Auto push after every file save
 ```
 
-### 3. Start Navigating
+### 3. Mapa completo del vault
+
+Abre [`index.md`](../index.md) (MOC): ahí están enlazadas **todas** las carpetas
+de primer nivel bajo `docs/`. Para regenerar el inventario de notas:
+
+`npm run obsidian:file-index` (escribe `.obsidian/file-index.json`).
+
+### 4. Start Navigating
 
 - **Graph View** (icon top-left): see doc relationships
 - **Search** (Cmd+Shift+F): find anything
@@ -53,12 +60,18 @@ Configure:
 
 ---
 
+## Cerebro con fuentes (investigación + grafo)
+
+- **[OBSIDIAN-RESEARCH-BRAIN.md](OBSIDIAN-RESEARCH-BRAIN.md)** — flujo Obsidian + **Web search** y **Browser** en Cursor, plantillas anti-notas huérfanas, prompt copiable.
+
 ## Key Documents
 
-- [[MASTER-PLAN]] — roadmap and objectives
-- [[ARCHITECTURE]] — tech design
-- [[HERMES-SPRINT-PLAN]] — current sprint
-- [[NOTEBOOKLM-INTEGRATION]] — context pipeline
+- [[index|Documentation Index (MOC)]] — mapa completo del vault
+- [[README|Docs README]] — índice y stubs
+- [[STRUCTURE-GUARDRAILS]] — dónde crear cada tipo de doc
+- [`01-development/ROADMAP.md`](01-development/ROADMAP.md) — roadmap vivo
+- [`00-architecture/OPENCLAW-ARCHITECTURE.md`](../00-architecture/OPENCLAW-ARCHITECTURE.md) — OpenClaw
+- [`02-tools/KNOWLEDGE-SYSTEM.md`](KNOWLEDGE-SYSTEM.md) — NotebookLM + índice repo
 
 ---
 
@@ -81,12 +94,12 @@ Agents (Claude, Cursor) read latest docs
 ## Wikilink Syntax
 
 ```markdown
-[[MASTER-PLAN]] # Link to doc
-[[MASTER-PLAN|click here]] # Custom link text
-[[HERMES-SPRINT-PLAN#Sprint 0]] # Link to section
+[[index]] # Link to index.md
+[[STRUCTURE-GUARDRAILS|guardrails]] # Custom link text
+[[README#Brain Map]] # Link to section (if heading exists)
 ```
 
-File naming: `[[My Doc]]` → looks for `docs/My-Doc.md` (spaces → hyphens)
+File naming: `[[My Doc]]` → busca `My Doc.md` en el vault (espacios permitidos)
 
 ---
 

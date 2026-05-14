@@ -25,6 +25,7 @@ These plugins enhance Obsidian sync + productivity. Install via Obsidian UI.
 ### Templater
 
 - Advanced template variables with date/time formatting
+- Útil con plantillas en `.obsidian/templates/` (`source-note`, `evergreen-claim`, `moc-research`); ver [`OBSIDIAN-RESEARCH-BRAIN.md`](../02-tools/OBSIDIAN-RESEARCH-BRAIN.md)
 
 ### Excalidraw
 

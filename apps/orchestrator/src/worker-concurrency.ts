@@ -21,12 +21,20 @@ export type WorkerConcurrencyKey =
   | 'local-claude'
   | 'local-copilot'
   | 'local-opencode'
+  | 'local-codex'
+  | 'local-openai'
+  | 'local-hermes'
+  | 'local-decepticon'
   | 'cloudsysops_agents'
   | 'defense_audit'
   | 'openclaw-planner'
   | 'openclaw-skeptic'
   | 'api_factory'
-  | 'autonomous_revenue';
+  | 'autonomous_revenue'
+  | 'research'
+  | 'agent_farm'
+  | 'super_orchestrator'
+  | 'approval-gate';
 
 const FULL_STACK_DEFAULTS: Record<WorkerConcurrencyKey, number> = {
   cursor: 3,
@@ -49,12 +57,20 @@ const FULL_STACK_DEFAULTS: Record<WorkerConcurrencyKey, number> = {
   'local-claude': 2,
   'local-copilot': 1,
   'local-opencode': 1,
+  'local-codex': 1,
+  'local-openai': 1,
+  'local-hermes': 1,
+  'local-decepticon': 1,
   'cloudsysops_agents': 2,
   'defense_audit': 2,
   'openclaw-planner': 2,
   'openclaw-skeptic': 1,
   api_factory: 3,
   autonomous_revenue: 2,
+  research: 2,
+  agent_farm: 2,
+  super_orchestrator: 3,
+  'approval-gate': 2,
 };
 
 const DISTRIBUTED_WORKER_DEFAULTS: Record<WorkerConcurrencyKey, number> = {
@@ -78,12 +94,20 @@ const DISTRIBUTED_WORKER_DEFAULTS: Record<WorkerConcurrencyKey, number> = {
   'local-claude': 1,
   'local-copilot': 1,
   'local-opencode': 1,
+  'local-codex': 1,
+  'local-openai': 1,
+  'local-hermes': 1,
+  'local-decepticon': 1,
   'cloudsysops_agents': 1,
   'defense_audit': 1,
   'openclaw-planner': 1,
   'openclaw-skeptic': 1,
   api_factory: 1,
   autonomous_revenue: 1,
+  research: 1,
+  agent_farm: 1,
+  super_orchestrator: 1,
+  'approval-gate': 1,
 };
 
 const ENV_NAMES: Record<WorkerConcurrencyKey, string> = {
@@ -107,12 +131,20 @@ const ENV_NAMES: Record<WorkerConcurrencyKey, string> = {
   'local-claude': 'ORCHESTRATOR_LOCAL_CLAUDE_CONCURRENCY',
   'local-copilot': 'ORCHESTRATOR_LOCAL_COPILOT_CONCURRENCY',
   'local-opencode': 'ORCHESTRATOR_LOCAL_OPENCODE_CONCURRENCY',
+  'local-codex': 'ORCHESTRATOR_LOCAL_CODEX_CONCURRENCY',
+  'local-openai': 'ORCHESTRATOR_LOCAL_OPENAI_CONCURRENCY',
+  'local-hermes': 'ORCHESTRATOR_LOCAL_HERMES_CONCURRENCY',
+  'local-decepticon': 'ORCHESTRATOR_LOCAL_DECEPTICON_CONCURRENCY',
   'cloudsysops_agents': 'ORCHESTRATOR_CLOUDSYSOPS_AGENTS_CONCURRENCY',
   'defense_audit': 'ORCHESTRATOR_DEFENSE_AUDIT_CONCURRENCY',
   'openclaw-planner': 'ORCHESTRATOR_OPENCLAW_PLANNER_CONCURRENCY',
   'openclaw-skeptic': 'ORCHESTRATOR_OPENCLAW_SKEPTIC_CONCURRENCY',
   api_factory: 'ORCHESTRATOR_API_FACTORY_CONCURRENCY',
   autonomous_revenue: 'ORCHESTRATOR_AUTONOMOUS_REVENUE_CONCURRENCY',
+  research: 'ORCHESTRATOR_RESEARCH_CONCURRENCY',
+  agent_farm: 'ORCHESTRATOR_AGENT_FARM_CONCURRENCY',
+  super_orchestrator: 'ORCHESTRATOR_SUPER_ORCHESTRATOR_CONCURRENCY',
+  'approval-gate': 'ORCHESTRATOR_APPROVAL_GATE_CONCURRENCY',
 };
 
 function parsePositiveInt(raw: string | undefined): number | null {

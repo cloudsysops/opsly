@@ -1,7 +1,7 @@
 ---
 status: canon
 owner: operations
-last_review: 2026-05-03
+last_review: 2026-05-10
 ---
 
 # Agent Brain Contract
@@ -20,6 +20,7 @@ Mantener un cerebro compartido entre humanos y agentes:
 
 - **GitHub/repo**: fuente de verdad del codigo, workflows, docs y ADRs.
 - **Obsidian**: memoria navegable para humanos y agentes, con notas por modulo.
+  Mapa de todo el vault: `docs/index.md`. Inventario de `.md`: `npm run obsidian:file-index`.
 - **Graphyfi**: grafo visual/semantico de modulos, dependencias, endpoints,
   tenants, agentes y workflows.
 - **Context Builder/OpenClaw/MCP**: capa de acceso para que los agentes consulten
@@ -30,7 +31,7 @@ Mantener un cerebro compartido entre humanos y agentes:
 Antes de modificar codigo, infra, tests, workflows o docs operativas:
 
 1. Leer `AGENTS.md`.
-2. Leer `VISION.md` o el stub que apunte a `docs/01-development/VISION.md`.
+2. Leer `VISION.md` (raíz repo) o `docs/stubs/VISION.md` / `docs/01-development/VISION.md`.
 3. Leer este contrato: `docs/03-agents/AGENT-BRAIN-CONTRACT.md`.
 4. Consultar `config/knowledge-index.json` si existe.
 5. Consultar `config/github-module-graph.json` si existe.
@@ -72,7 +73,7 @@ un enlace explicito a este contrato.
 | Capa | Ruta |
 | --- | --- |
 | Estado operativo | `AGENTS.md` |
-| Vision de producto | `VISION.md`, `docs/01-development/VISION.md` |
+| Vision de producto | `VISION.md` (repo), `docs/stubs/VISION.md`, `docs/01-development/VISION.md` |
 | Memoria Obsidian | `docs/brain/` |
 | Indice documental | `config/knowledge-index.json` |
 | Grafo de modulos GitHub | `config/github-module-graph.json` |
@@ -119,6 +120,15 @@ El grafo debe usar IDs estables y legibles:
 - Si un agente detecta deriva entre `.claude`, `.cursor`, `.codex`, `.opencode`
   o Copilot, debe corregir apuntando a este contrato en vez de copiar reglas
   completas en cada archivo.
+
+## Cierre documental (sin trabajo a medias)
+
+Después de **implementar** y **ejecutar pruebas** relevantes (`type-check`, tests del workspace, smoke acordado):
+
+1. Actualizar documentación en la **carpeta dueña** del cambio (runbook, ADR, arquitectura, `tenants/`, etc.), según [`docs/01-development/DOCUMENTATION-LIFECYCLE.md`](../01-development/DOCUMENTATION-LIFECYCLE.md).
+2. Regenerar índices: `npm run index-knowledge` y, si tocó el vault, `npm run obsidian:file-index`.
+3. Si el cambio es operativo para la plataforma, alinear [`AGENTS.md`](../../AGENTS.md) (secciones 🔄) según política del repo.
+4. No cerrar PR con “falta documentar” sin al menos un issue enlazado, una nota en `docs/plans/` o un párrafo en `docs/reports/` con propietario y fecha.
 
 ## Estado actual
 

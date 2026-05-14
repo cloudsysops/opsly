@@ -9,7 +9,7 @@ Cliente MCP / orquestador
     → apps/mcp (tools en TypeScript, OpenClawMcpServer)
     → apps/api (control plane HTTP: tenants, health, invitaciones, …)
     → apps/orchestrator (BullMQ + workers) — ver docs/ORCHESTRATOR.md
-    → apps/llm-gateway (routing, cache, costos) — ver docs/LLM-GATEWAY.md
+    → apps/llm-gateway (routing, cache, costos) — ver docs/00-architecture/LLM-GATEWAY.md
     → apps/context-builder (sesiones / contexto) — ver docs/CONTEXT-BUILDER.md
 ```
 

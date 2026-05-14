@@ -1,37 +1,35 @@
 /**
  * Procesa jobs `intent_dispatch` en la cola `openclaw` (p. ej. OAR `oar_react` encolados desde MCP).
  */
-import { Job, Worker } from 'bullmq';
+import { Job } from 'bullmq';
 import { processIntent } from '../engine.js';
 import { runOpenClawController } from '../openclaw/controller.js';
 import {
   recordOpenClawCompletion,
   recordOpenClawStage,
 } from '../openclaw/runtime-events.js';
-import { logWorkerLifecycle } from '../observability/worker-log.js';
+import { createWorker } from './create-worker.js';
 import type { IntentRequest, OrchestratorJob } from '../types.js';
 
-export function startIntentDispatchWorker(connection: object): Worker {
-  return new Worker(
-    'openclaw',
-    async (job: Job) => {
-      if (job.name !== 'intent_dispatch') {
+export function startIntentDispatchWorker(connection: object) {
+  return createWorker({
+    queueName: 'openclaw',
+    jobName: 'intent_dispatch',
+    workerName: 'intent_dispatch',
+    connection,
+    processFn: async (job: Job) => {
+      const data = job.data as OrchestratorJob;
+      if (data.type !== 'intent_dispatch') {
         return;
       }
-      const t0 = Date.now();
-      logWorkerLifecycle('start', 'intent_dispatch', job);
+      const raw = data.payload.intent_request;
+      if (raw === null || typeof raw !== 'object' || Array.isArray(raw)) {
+        throw new TypeError('intent_dispatch: payload.intent_request must be an object');
+      }
+      const req = raw as IntentRequest;
+      const requestId = req.request_id;
+      const startedAt = Date.now();
       try {
-        const data = job.data as OrchestratorJob;
-        if (data.type !== 'intent_dispatch') {
-          return;
-        }
-        const raw = data.payload.intent_request;
-        if (raw === null || typeof raw !== 'object' || Array.isArray(raw)) {
-          throw new TypeError('intent_dispatch: payload.intent_request must be an object');
-        }
-        const req = raw as IntentRequest;
-        const requestId = req.request_id;
-        const startedAt = Date.now();
         if (typeof requestId === 'string' && requestId.length > 0) {
           await recordOpenClawStage({
             requestId,
@@ -90,22 +88,10 @@ export function startIntentDispatchWorker(connection: object): Worker {
             costUsd: 0,
           });
         }
-        logWorkerLifecycle('complete', 'intent_dispatch', job, {
-          duration_ms: Date.now() - t0,
-        });
         return result;
       } catch (err) {
         const msg = err instanceof Error ? err.message : String(err);
-        const requestId = (() => {
-          const data = job.data as OrchestratorJob;
-          const raw = data.payload.intent_request;
-          if (raw === null || typeof raw !== 'object' || Array.isArray(raw)) {
-            return null;
-          }
-          const req = raw as IntentRequest;
-          return typeof req.request_id === 'string' && req.request_id.length > 0 ? req.request_id : null;
-        })();
-        if (requestId !== null) {
+        if (typeof requestId === 'string' && requestId.length > 0) {
           await recordOpenClawStage({
             requestId,
             stage: 'validator',
@@ -115,18 +101,13 @@ export function startIntentDispatchWorker(connection: object): Worker {
           await recordOpenClawCompletion({
             requestId,
             status: 'failed',
-            latencyMs: Date.now() - t0,
+            latencyMs: Date.now() - startedAt,
             costUsd: 0,
             error: msg,
           });
         }
-        logWorkerLifecycle('fail', 'intent_dispatch', job, {
-          duration_ms: Date.now() - t0,
-          error: msg,
-        });
         throw err;
       }
     },
-    { connection, concurrency: 1 }
-  );
+  });
 }

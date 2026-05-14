@@ -1,12 +1,12 @@
 import { Job, Worker, UnrecoverableError } from 'bullmq';
 import { promises as fsp } from 'fs';
 import * as path from 'path';
-import { getAgentServiceRegistry } from '../lib/agent-service-registry.js';
-import { createValidationOrchestrator, ValidationDecision } from '../lib/validation-orchestrator.js';
-import { logWorkerLifecycle } from '../observability/worker-log.js';
+import { getAgentServiceRegistry } from '../lib/agent/agent-service-registry.js';
+import { createValidationOrchestrator, ValidationDecision } from '../lib/validation/validation-orchestrator.js';
+import { logWorkerLifecycle, logWorkerInfo, logWorkerWarn, logWorkerError } from '../observability/worker-log.js';
 import { getWorkerConcurrency } from '../worker-concurrency.js';
 import { waitForFile } from '../lib/local-worker-utils.js';
-import { writeValidationGuard } from '../lib/validation-utils.js';
+import { writeValidationGuard } from '../lib/validation/validation-utils.js';
 
 export interface CursorExecutionResponse {
   success: boolean;
@@ -57,7 +57,7 @@ async function processLocalCursorJob(
   const cursorDir = path.join(process.cwd(), '.cursor');
   const validationOrchestrator = createValidationOrchestrator(cursorDir);
 
-  console.log(`[LocalCursorWorker] Processing job ${jobId}: ${agentRole}, intent: ${intent}`);
+  logWorkerInfo('local-cursor', 'Processing job', { jobId, agentRole, intent });
 
   try {
     // Get Cursor service endpoint from registry
@@ -87,7 +87,7 @@ async function processLocalCursorJob(
       model_tier: 'balanced',
     };
 
-    console.log(`[LocalCursorWorker] Invoking Cursor at ${cursorUrl}/execute`);
+    logWorkerInfo('local-cursor', 'Invoking Cursor', { url: `${cursorUrl}/execute` });
 
     // Call Cursor Agent Service via HTTP
     const controller = new AbortController();
@@ -117,7 +117,7 @@ async function processLocalCursorJob(
       throw new Error(`Cursor service error: ${result.error || 'Unknown error'}`);
     }
 
-    console.log(`[LocalCursorWorker] Cursor service responded successfully`);
+    logWorkerInfo('local-cursor', 'Cursor service responded successfully');
 
     // Wait for response file from Cursor Service
     const responsesDir = path.join(cursorDir, 'responses');
@@ -125,7 +125,7 @@ async function processLocalCursorJob(
 
     const expectedResponsePath = path.join(responsesDir, `response-${jobId}.md`);
 
-    console.log(`[LocalCursorWorker] Waiting for response at: ${expectedResponsePath}`);
+    logWorkerInfo('local-cursor', 'Waiting for response file', { path: expectedResponsePath });
 
     const responseContent = await waitForFile(expectedResponsePath, cursorService.timeout_ms);
 
@@ -133,10 +133,10 @@ async function processLocalCursorJob(
       throw new Error(`Response file not found after timeout: ${expectedResponsePath}`);
     }
 
-    console.log(`[LocalCursorWorker] Response file received (${responseContent.length} bytes)`);
+    logWorkerInfo('local-cursor', 'Response file received', { bytes: responseContent.length });
 
     // Validate response and decide next action
-    console.log(`[LocalCursorWorker] Starting validation for job ${jobId}`);
+    logWorkerInfo('local-cursor', 'Starting validation', { jobId });
 
     const decision = await validationOrchestrator.validateAndDecide(
       jobId,
@@ -146,9 +146,7 @@ async function processLocalCursorJob(
       3, // max iterations
     );
 
-    console.log(
-      `[LocalCursorWorker] Validation decision: ${decision.action} - ${decision.reason}`
-    );
+    logWorkerInfo('local-cursor', 'Validation decision', { action: decision.action, reason: decision.reason });
 
     // Write validation guard to prevent double-commits
     const validationDir = path.join(cursorDir, '.validation');
@@ -171,7 +169,7 @@ async function processLocalCursorJob(
     const executionTime = Date.now() - startTime;
     const errorMsg = err instanceof Error ? err.message : String(err);
 
-    console.error(`[LocalCursorWorker] ❌ Job ${jobId} failed:`, errorMsg);
+    logWorkerError('local-cursor', 'Job failed', { jobId, error: errorMsg });
 
     return {
       success: false,
@@ -193,7 +191,7 @@ export function startLocalCursorWorker(connection: object): Worker {
   const concurrency = getWorkerConcurrency('local-cursor') || 2;
   const registry = getAgentServiceRegistry();
 
-  console.log(`[LocalCursorWorker] Initialized with concurrency=${concurrency}`);
+  logWorkerInfo('local-cursor', 'Initialized', { concurrency });
 
   const worker = new Worker(
     'local-cursor',
@@ -228,7 +226,7 @@ export function startLocalCursorWorker(connection: object): Worker {
         throw new UnrecoverableError('Missing prompt_content');
       }
 
-      console.log(`[LocalCursorWorker] Processing job ${job.id} (intent: ${intent})`);
+      logWorkerInfo('local-cursor', 'Processing job', { jobId: job.id, intent });
 
       try {
         await registry.loadConfig();
@@ -246,11 +244,9 @@ export function startLocalCursorWorker(connection: object): Worker {
         logWorkerLifecycle('complete', 'local-cursor', job, { duration_ms: elapsed });
 
         if (result.success) {
-          console.log(
-            `[LocalCursorWorker] ✅ Job ${job.id} completed in ${elapsed}ms - decision: ${result.validation_decision?.action}`
-          );
+          logWorkerInfo('local-cursor', 'Job completed', { jobId: job.id, duration_ms: elapsed, decision: result.validation_decision?.action });
         } else {
-          console.error(`[LocalCursorWorker] ❌ Job ${job.id} failed: ${result.error}`);
+          logWorkerError('local-cursor', 'Job failed', { jobId: job.id, error: result.error });
         }
 
         return result;
@@ -259,13 +255,13 @@ export function startLocalCursorWorker(connection: object): Worker {
         const errorMsg = err instanceof Error ? err.message : String(err);
 
         if (err instanceof UnrecoverableError) {
-          console.error(`[LocalCursorWorker] ⚠️ Unrecoverable error in job ${job.id}: ${errorMsg}`);
+          logWorkerError('local-cursor', 'Unrecoverable error in job', { jobId: job.id, error: errorMsg });
           logWorkerLifecycle('fail', 'local-cursor', job, {
             duration_ms: elapsed,
             error: errorMsg,
           });
         } else {
-          console.error(`[LocalCursorWorker] ❌ Job ${job.id} error:`, errorMsg);
+          logWorkerError('local-cursor', 'Job error', { jobId: job.id, error: errorMsg });
           logWorkerLifecycle('fail', 'local-cursor', job, { duration_ms: elapsed, error: errorMsg });
         }
 
@@ -279,11 +275,11 @@ export function startLocalCursorWorker(connection: object): Worker {
   );
 
   worker.on('completed', (job) => {
-    console.log(`[LocalCursorWorker] Job ${job.id} completed`);
+    logWorkerInfo('local-cursor', 'Job completed', { jobId: job.id });
   });
 
   worker.on('failed', (job, err) => {
-    console.error(`[LocalCursorWorker] Job ${job?.id} failed:`, err);
+    logWorkerError('local-cursor', 'Job failed', { jobId: job?.id, error: err.message });
   });
 
   workerInstance = worker;

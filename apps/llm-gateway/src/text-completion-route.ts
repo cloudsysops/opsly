@@ -2,7 +2,8 @@ import { randomUUID } from 'node:crypto';
 import type { IncomingMessage, ServerResponse } from 'node:http';
 import { GatewayHttpError, llmCallDirect } from './llm-direct.js';
 import type { RoutingBias } from './routing-hints.js';
-import type { LLMRequest, TenantPlan } from './types.js';
+import type { LLMRequest, LlmProviderHint, TenantPlan } from './types.js';
+import { parseProviderHintBody } from './parse-provider-hint.js';
 
 export type OllamaTaskType = 'analyze' | 'generate' | 'review' | 'summarize';
 
@@ -13,7 +14,7 @@ export interface TextCompletionBody {
   task_type?: OllamaTaskType;
   prompt: string;
   routing_bias?: RoutingBias;
-  provider_hint?: 'deepseek';
+  provider_hint?: LlmProviderHint;
   user_id?: string;
   feature?: string;
   usage_metadata?: Record<string, unknown>;
@@ -140,7 +141,7 @@ export async function handleTextCompletionHttp(
     routingRaw === 'cost' || routingRaw === 'balanced' || routingRaw === 'quality'
       ? routingRaw
       : undefined;
-  const providerHint = body.provider_hint === 'deepseek' ? 'deepseek' : undefined;
+  const providerHint = parseProviderHintBody(body.provider_hint);
 
   const userContent = `${prefixForTask(taskType)}${prompt.trim()}`;
   const llmReq: LLMRequest = {

@@ -1,0 +1,74 @@
+{
+  "name": "opsly-cost-forecaster",
+  "version": "1.0.0",
+  "description": "Forecast Opsly multi-tenant spend across LLM tokens, infra, storage, and Stripe billing.",
+  "triggers": [
+    "forecast cost",
+    "cost forecast",
+    "burn rate",
+    "run rate",
+    "budget",
+    "spend",
+    "overrun",
+    "unit economics",
+    "tenant cost",
+    "llm spend",
+    "token burn",
+    "stripe invoice",
+    "presupuesto",
+    "proyeccion",
+    "factura",
+    "gasto"
+  ],
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "scope": {
+        "type": "string",
+        "enum": ["tenant", "plan", "service", "fleet"]
+      },
+      "horizonDays": {
+        "type": "integer",
+        "enum": [30, 60, 90]
+      },
+      "tenantSlug": {
+        "type": "string"
+      },
+      "budgetUsd": {
+        "type": "number"
+      },
+      "includeScenarios": {
+        "type": "boolean",
+        "default": true
+      }
+    },
+    "additionalProperties": true
+  },
+  "outputSchema": {
+    "type": "object",
+    "properties": {
+      "currentMonthlyRunRate": {
+        "type": "number"
+      },
+      "forecast30d": {
+        "type": "number"
+      },
+      "forecast60d": {
+        "type": "number"
+      },
+      "forecast90d": {
+        "type": "number"
+      },
+      "confidence": {
+        "type": "number"
+      }
+    }
+  },
+  "crossReferences": [
+    "opsly-billing",
+    "opsly-llm",
+    "opsly-telemetry",
+    "opsly-economist",
+    "opsly-infra"
+  ]
+}

@@ -70,7 +70,32 @@ O abrir un prompt concreto:
 @.cursor/prompts/queue/001-mi-tarea.md Ejecuta y deja respuesta según AGENT-PROMPT-QUEUE.md
 ```
 
-## Detección “automática” sin peligro
+## Daemon local seguro
+
+El repo incluye un watcher mantenido:
+
+```bash
+PLATFORM_ADMIN_TOKEN="<token>" \
+ORCHESTRATOR_URL="http://localhost:3011" \
+npm run opsly:local-prompt-watcher
+```
+
+Comportamiento:
+
+- Escucha `.cursor/prompts/queue/*.md`.
+- Procesa todos los prompts con `status: pending` al arrancar y luego los nuevos cambios.
+- Lee `docs/01-development/ACTIVE-PROMPT.md` como contexto operativo para cada job.
+- Envía el contenido a `POST /api/local/prompt-submit`; **no ejecuta bloques shell del Markdown**.
+- Hace polling de `/api/job-status/{job_id}`.
+- Añade la sección `## Respuesta agente (...)` en el mismo archivo y cambia `status` a `done` o `failed`.
+
+Para procesar una sola pasada y salir:
+
+```bash
+PLATFORM_ADMIN_TOKEN="<token>" npm run opsly:local-prompt-watcher:once
+```
+
+## Detección manual sin peligro
 
 - **Opcional:** script solo lectura que lista el siguiente pendiente (para humano o para pegar salida en el chat):
 

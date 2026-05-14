@@ -9,7 +9,8 @@ import {
   selectLocalAgentForIntent,
 } from './registry.js';
 import { OPENCLAW_EXECUTION_QUEUE } from './queue-contract.js';
-import { ValidationFeedbackLayer } from '../lib/validation-feedback.js';
+import { ValidationFeedbackLayer } from '../lib/validation/validation-feedback.js';
+import { parseMetadataLlmOverrides, resolveLlmPolicyFromIntent } from './llm-intent-policy.js';
 
 const DEFAULT_MCP_SERVER = 'project-0-intcloudsysops-opsly-openclaw';
 
@@ -142,7 +143,26 @@ export async function applyOpenClawControlLayer(req: IntentRequest): Promise<Ope
             }
           : { target: null, transport: null, queue: null, skill: null, mcp: null };
   let routingBias = modelTierToRoutingBias(agent?.modelTier ?? null);
-  const providerHint = agent?.role === 'skeptic' ? ('deepseek' as const) : null;
+  let providerHint: 'deepseek' | 'nvidia' | null =
+    agent?.role === 'skeptic' ? ('deepseek' as const) : null;
+
+  if (agent?.role !== 'skeptic') {
+    const intentPolicy = resolveLlmPolicyFromIntent(routing.intent, req.plan);
+    if (intentPolicy.routing_bias !== undefined) {
+      routingBias = intentPolicy.routing_bias;
+    }
+    if (intentPolicy.provider_hint !== undefined) {
+      providerHint = intentPolicy.provider_hint;
+    }
+  }
+
+  const metaLlm = parseMetadataLlmOverrides(req);
+  if (metaLlm.routing_bias !== undefined) {
+    routingBias = metaLlm.routing_bias;
+  }
+  if (metaLlm.provider_hint !== undefined) {
+    providerHint = metaLlm.provider_hint;
+  }
 
   let decision: OpenClawControlDecisionContract = {
     intent: routing.intent,

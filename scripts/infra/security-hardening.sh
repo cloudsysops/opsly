@@ -44,14 +44,14 @@ EOF
       exit 0
       ;;
     *)
-      echo "[vps-secure] argumento desconocido: $1" >&2
+      echo "[security-hardening] argumento desconocido: $1 (ver ./scripts/vps-secure.sh --help)" >&2
       exit 1
       ;;
   esac
 done
 
 if [[ -z "${SSH_HOST}" || -z "${SSH_USER}" ]]; then
-  echo "[vps-secure] SSH_HOST/SSH_USER inválidos" >&2
+  echo "[security-hardening] SSH_HOST/SSH_USER inválidos" >&2
   exit 1
 fi
 
@@ -87,4 +87,4 @@ echo "[vps-secure] Aplicando reglas UFW en ${SSH_USER}@${SSH_HOST} (dry-run=${DR
 ssh -o BatchMode=yes -o ConnectTimeout=15 "${SSH_USER}@${SSH_HOST}" \
   "bash -s -- '${TS_NET_CIDR}' '${DRY_RUN}' '${RESET_UFW}'" <<<"${REMOTE_SCRIPT}"
 
-echo "[vps-secure] OK. Recomendación Cloudflare: activar Proxy ON en *.ops.smiletripcare.com"
+echo "[vps-secure] OK. Recomendación Cloudflare: activar Proxy ON en *.op-sly.com"

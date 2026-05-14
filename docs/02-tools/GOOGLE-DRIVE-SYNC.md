@@ -53,7 +53,7 @@ Sincronización **manual** salvo que añadas un script propio (no incluido en es
 Opsly incluye un CLI en Python para mantener una estructura consistente en el folder raíz de Drive y subir prompts/configs reutilizables (Opción B: onboarding por tenant):
 
 - Layout: `npm run opsly:drive:ensure-layout`
-- Upload prompts (`docs/prompts/tenant-onboarding/*.md`) + configs (`config/tenants/*.json`): `npm run opsly:drive:upload-tenant-onboarding`
+- Upload prompts (`docs/tenants/onboarding-prompts/*.md`; stubs en `docs/prompts/tenant-onboarding/`) + configs (`config/tenants/*.json`): `npm run opsly:drive:upload-tenant-onboarding`
 
 Config (sin secretos): `config/opsly-drive-automation.json` (`root_folder_id` + nombres de subcarpetas).
 

@@ -4,13 +4,15 @@
 # Interpolación ${VAR} en este archivo: el deploy usa `docker compose --env-file /opt/opsly/.env`
 # (Compose por defecto solo lee .env junto al YAML en infra/, no la raíz del repo).
 #
-# Required en /opt/opsly/.env (non-exhaustive): PLATFORM_DOMAIN (base host, e.g. ops.smiletripcare.com),
+# Required en /opt/opsly/.env (non-exhaustive): PLATFORM_DOMAIN (base host, e.g. op-sly.com),
 # REDIS_PASSWORD, REDIS_EXPORT_BIND (opcional; ver servicio redis), LLM_GATEWAY_EXPORT_BIND (opcional; ver servicio llm-gateway),
 # ACME_EMAIL, TRAEFIK_DASHBOARD_BASIC_AUTH_USERS (htpasswd; escapar $ en Compose),
 # DOCKER_GID (GID del grupo del socket: stat -c %g /var/run/docker.sock; vps-bootstrap.sh lo añade),
 # APP_IMAGE (optional). Los servicios también cargan env_file ../.env (= /opt/opsly/.env desde infra/).
 # Nuevos servicios opcionales: GRAFANA_ADMIN_PASSWORD, GF_SECURITY_SECRET_KEY,
 # WATCHTOWER_REGISTRY_USER, WATCHTOWER_REGISTRY_PASSWORD (token GHCR read:packages).
+# Tenant stacks (n8n/Uptime por slug, p. ej. legalvial) no viven en este compose: proyecto
+# Docker separado; ver scripts/opsly.sh, TENANTS_PATH y runbooks LegalVial / onboarding tenant.
 
 # ── Logging estándar: rotación automática en todos los servicios ──────────────
 x-logging: &default-logging
@@ -363,6 +365,17 @@ services:
     environment:
       LLM_GATEWAY_PORT: '3010'
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY}
+      DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY}
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+      XAI_API_KEY: ${XAI_API_KEY}
+      GROQ_API_KEY: ${GROQ_API_KEY}
+      GEMINI_MODEL: ${GEMINI_MODEL:-}
+      XAI_MODEL: ${XAI_MODEL:-}
+      XAI_BASE_URL: ${XAI_BASE_URL:-}
+      GROQ_MODEL: ${GROQ_MODEL:-}
+      DEEPSEEK_R2_MODEL: ${DEEPSEEK_R2_MODEL:-}
       REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379/0
       REDIS_PASSWORD: ${REDIS_PASSWORD}
       SUPABASE_URL: ${SUPABASE_URL}

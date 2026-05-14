@@ -3,7 +3,7 @@
 **Fecha:** 2026-04-06  
 **Alcance:** monorepo Opsly — sin acceso a Doppler/VPS ni a secretos reales.
 
-**Nota 2026-05-09:** el snapshot de vulnerabilidades **cambia** con el lockfile. La política vigente es **`npm audit --audit-level=high`** sin fallos en CI ([`.github/workflows/security.yml`](../../.github/workflows/security.yml)). Estado y moderates pendientes: [`docs/TECHNICAL-DEBT.md`](../TECHNICAL-DEBT.md) § 3.
+**Nota 2026-05-09:** el snapshot de vulnerabilidades **cambia** con el lockfile. La política vigente es **`npm audit --audit-level=high`** sin fallos en CI ([`.github/workflows/security.yml`](../../.github/workflows/security.yml)). Estado y moderates pendientes: [`docs/01-development/TECHNICAL-DEBT.md`](../TECHNICAL-DEBT.md) § 3.
 
 ## npm audit
 

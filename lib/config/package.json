@@ -1,0 +1,13 @@
+{
+  "name": "@intcloudsysops/config",
+  "version": "1.0.0",
+  "description": "config description",
+  "type": "module",
+  "main": "./index.ts",
+  "types": "./index.ts",
+  "scripts": {
+    "test": "echo 'No tests yet'",
+    "type-check": "echo 'config type-checked via root tsconfig'"
+  },
+  "keywords": ["config"]
+}

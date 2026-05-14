@@ -134,6 +134,32 @@ Esperado: `status: ok` y títulos de las cinco bases (mismas variables `NOTION_D
 | `JCODE_MODEL`                                | Modelo por defecto para `jcode` (`jcode_execution`).                                             |
 | `JCODE_PROVIDER`                             | Proveedor por defecto para `jcode` (`claude`, `openai`, `openrouter`, etc.).                    |
 
+## OpenAI API y Codex CLI (local)
+
+| Variable           | Uso                                                                                         |
+| ------------------ | ------------------------------------------------------------------------------------------- |
+| `OPENAI_API_KEY`   | API de OpenAI (LLM Gateway, scripts Python `openai`, Codex en modo que lea esta env).       |
+
+**Cargar en Doppler sin exponer la clave en argv:**
+
+```bash
+pbpaste | ./scripts/doppler-import-openai-api-key.sh
+# o: ./scripts/doppler-import-openai-api-key.sh < ruta/al/archivo.txt
+./scripts/doppler-import-openai-api-key.sh --dry-run   # solo valida longitud
+```
+
+**Ejecutar Codex con env del proyecto** (requiere `npm i -g @openai/codex` o `brew install --cask codex`):
+
+```bash
+npm run opsly:codex
+# o, tras ./scripts/local-mac-improve.sh --apply-zsh:
+codex-dop
+```
+
+Cualquier otro comando con las mismas variables: `opsly-doppler-run -- <cmd>` (ver `docs/01-development/LOCAL-MAC-IMPROVEMENT-PLAN.md`).
+
+**VPS (usuario `vps-dragon`, Tailscale):** instalar Codex en el servidor y añadir `~/.npm-global/bin` al PATH: `./scripts/vps-install-codex-cli.sh --dry-run` / `--apply`. Tras login shell, `codex --version`. Opcional: `doppler run … -- codex` desde `/opt/opsly` si quieres `OPENAI_API_KEY` del proyecto.
+
 ## Notion MCP (`apps/notion-mcp`)
 
 | Variable                  | Uso                                                                                                        |

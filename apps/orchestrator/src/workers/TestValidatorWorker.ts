@@ -1,6 +1,7 @@
 import { execSync, spawn } from 'child_process';
 import { promises as fsp } from 'fs';
 import * as path from 'path';
+import { logWorkerInfo, logWorkerWarn, logWorkerError } from '../observability/worker-log.js';
 
 interface ValidationResult {
   type: 'type-check' | 'test' | 'build';
@@ -103,7 +104,7 @@ export class TestValidatorWorker {
           break;
       }
 
-      console.log(`[TestValidator] Running: ${command}`);
+      logWorkerInfo('test-validator', 'Running validation command', { command });
 
       const result = execSync(command, {
         encoding: 'utf-8',
@@ -156,7 +157,7 @@ export class TestValidatorWorker {
       }
       this.processedFiles.add(filename);
 
-      console.log(`[TestValidator] Validating ${filename} (job: ${jobId})`);
+      logWorkerInfo('test-validator', 'Validating response file', { filename, jobId });
 
       // Read response content
       const content = await fsp.readFile(filePath, 'utf-8');
@@ -172,21 +173,21 @@ export class TestValidatorWorker {
 
       // Detect affected workspaces
       const workspaces = this.extractWorkspaces(content);
-      console.log(`[TestValidator] Detected workspaces: ${workspaces.join(', ') || 'none'}`);
+      logWorkerInfo('test-validator', 'Detected workspaces', { workspaces: workspaces.join(', ') || 'none' });
 
       // Run validation suite
-      console.log(`[TestValidator] Starting validation suite (attempt ${attempt})...`);
+      logWorkerInfo('test-validator', 'Starting validation suite', { attempt });
       const startTime = Date.now();
 
       const validations: ValidationResult[] = [];
 
       // 1. Type-check
-      console.log('[TestValidator] 1/3 Running type-check...');
+      logWorkerInfo('test-validator', '1/3 Running type-check');
       validations.push(this.runValidation('type-check', workspaces));
 
       // 2. Tests (if type-check passed)
       if (validations[0]?.status === 'passed') {
-        console.log('[TestValidator] 2/3 Running tests...');
+        logWorkerInfo('test-validator', '2/3 Running tests');
         validations.push(this.runValidation('test', workspaces));
       } else {
         validations.push({ type: 'test', status: 'skipped' });
@@ -194,7 +195,7 @@ export class TestValidatorWorker {
 
       // 3. Build (if type-check and tests passed)
       if (validations[0]?.status === 'passed' && validations[1]?.status !== 'failed') {
-        console.log('[TestValidator] 3/3 Running build...');
+        logWorkerInfo('test-validator', '3/3 Running build');
         validations.push(this.runValidation('build', workspaces));
       } else {
         validations.push({ type: 'build', status: 'skipped' });
@@ -236,21 +237,14 @@ export class TestValidatorWorker {
       const reportPath = filePath.replace(/\.md$/, '.validation.json');
       await fsp.writeFile(reportPath, JSON.stringify(report, null, 2), 'utf-8');
 
-      // Log summary
-      const statusEmoji = overallStatus === 'passed' ? '✅' : '❌';
-      console.log(
-        `[TestValidator] ${statusEmoji} Validation complete (${totalDuration}ms, attempt ${attempt})`,
-      );
-      console.log(`[TestValidator] Result: ${overallStatus} | Next action: ${nextAction}`);
+      logWorkerInfo('test-validator', 'Validation complete', { overallStatus, totalDuration_ms: totalDuration, attempt });
+      logWorkerInfo('test-validator', 'Validation result', { overallStatus, nextAction });
 
       if (errors.length > 0) {
-        console.log('[TestValidator] Errors:');
-        errors.forEach((e) => {
-          console.log(`  - [${e.type}] ${e.message}`);
-        });
+        logWorkerWarn('test-validator', 'Validation errors found', { errors: errors.map((e) => `[${e.type}] ${e.message}`) });
       }
     } catch (err) {
-      console.error('[TestValidator] Fatal error:', err);
+      logWorkerError('test-validator', 'Fatal error during validation', { error: err instanceof Error ? err.message : String(err) });
     }
   }
 
@@ -259,13 +253,13 @@ export class TestValidatorWorker {
    * Automatically validates new response files
    */
   async start(): Promise<void> {
-    console.log(`[TestValidator] Starting, watching ${this.responsesDir}`);
+    logWorkerInfo('test-validator', 'Starting file watcher', { responsesDir: this.responsesDir });
 
     // Ensure directory exists
     try {
       await fsp.mkdir(this.responsesDir, { recursive: true });
     } catch (err) {
-      console.error('[TestValidator] Failed to create responses dir:', err);
+      logWorkerError('test-validator', 'Failed to create responses directory', { error: err instanceof Error ? err.message : String(err) });
     }
 
     // Import chokidar for file watching
@@ -284,18 +278,18 @@ export class TestValidatorWorker {
       watcher.on('add', (filePath: string) => {
         const filename = path.basename(filePath);
         if (!filename.endsWith('.validation.json')) {
-          console.log(`[TestValidator] Detected new response: ${filename}`);
+          logWorkerInfo('test-validator', 'Detected new response file', { filename });
           void this.validateResponse(filePath);
         }
       });
 
       watcher.on('error', (err: unknown) => {
-        console.error('[TestValidator] Watcher error:', err);
+        logWorkerError('test-validator', 'Watcher error', { error: err instanceof Error ? err.message : String(err) });
       });
 
-      console.log('[TestValidator] Ready. Watching for response files...');
+      logWorkerInfo('test-validator', 'Ready. Watching for response files');
     } catch (err) {
-      console.error('[TestValidator] Failed to start watcher:', err);
+      logWorkerError('test-validator', 'Failed to start watcher', { error: err instanceof Error ? err.message : String(err) });
     }
   }
 }

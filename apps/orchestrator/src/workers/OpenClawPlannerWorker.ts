@@ -1,6 +1,6 @@
-import { Job, Worker } from 'bullmq';
+import { Job } from 'bullmq';
 import { processIntent } from '../engine.js';
-import { logWorkerLifecycle } from '../observability/worker-log.js';
+import { createWorker } from './create-worker.js';
 import type { OpenClawQueueTask } from '../queue.js';
 
 function buildPlannerIntentRequest(task: OpenClawQueueTask) {
@@ -21,26 +21,15 @@ function buildPlannerIntentRequest(task: OpenClawQueueTask) {
   };
 }
 
-export function startOpenClawPlannerWorker(connection: object): Worker<OpenClawQueueTask> {
-  return new Worker<OpenClawQueueTask>(
-    'queue-planner',
-    async (job: Job<OpenClawQueueTask>) => {
-      const t0 = Date.now();
-      logWorkerLifecycle('start', 'openclaw-planner', job);
-      try {
-        const req = buildPlannerIntentRequest(job.data);
-        const result = await processIntent(req);
-        logWorkerLifecycle('complete', 'openclaw-planner', job, { duration_ms: Date.now() - t0 });
-        return result;
-      } catch (error) {
-        const message = error instanceof Error ? error.message : String(error);
-        logWorkerLifecycle('fail', 'openclaw-planner', job, {
-          duration_ms: Date.now() - t0,
-          error: message,
-        });
-        throw error;
-      }
+export function startOpenClawPlannerWorker(connection: object) {
+  return createWorker({
+    queueName: 'queue-planner',
+    workerName: 'openclaw-planner',
+    concurrencyKey: 'openclaw-planner',
+    connection,
+    processFn: async (job: Job) => {
+      const req = buildPlannerIntentRequest(job.data as OpenClawQueueTask);
+      return processIntent(req);
     },
-    { connection, concurrency: 2 }
-  );
+  });
 }

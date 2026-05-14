@@ -81,7 +81,7 @@ No listar secretos ni tokens en el análisis; usar `scripts/check-tokens.sh` y D
 ## Checklist por sprint (arquitectura)
 
 - [ ] `AGENTS.md` 🔄 actualizado al cierre de sesión.
-- [ ] Cambios de contrato HTTP/OpenAPI reflejados en `docs/openapi-opsly-api.yaml` y CI `validate-openapi`.
+- [ ] Cambios de contrato HTTP/OpenAPI reflejados en `docs/00-architecture/openapi-opsly-api.yaml` y CI `validate-openapi`.
 - [ ] Rutas nuevas con patrón Zero-Trust (`tenantSlugMatchesSession` donde toque `[slug]`).
 - [ ] Sin secretos en código ni en prompts pegados en issues.
 - [ ] `npm run type-check` y tests del workspace tocado en verde.

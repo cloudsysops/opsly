@@ -12,6 +12,7 @@ import { Worker, Job } from 'bullmq';
 import { connection } from '../queue.js';
 import { setJobState } from '../state/store.js';
 import { logWorkerLifecycle } from '../observability/worker-log.js';
+import { logWorkerInfo, logWorkerError } from '../observability/worker-log.js';
 import { getWorkerConcurrency } from '../worker-concurrency.js';
 
 export type RevenuePhase = 
@@ -69,14 +70,14 @@ export function startAutonomousRevenueWorker(): Worker {
   );
 
   worker.on('completed', (job) => {
-    console.log(`[autonomous-revenue-worker] Job ${job.id} completed`);
+    logWorkerInfo('autonomous_revenue', 'Job completed', { jobId: job.id });
   });
 
   worker.on('failed', (job, error) => {
-    console.error(`[autonomous-revenue-worker] Job ${job?.id} failed:`, error.message);
+    logWorkerError('autonomous_revenue', 'Job failed', { jobId: job?.id, error: error.message });
   });
 
-  console.log(`[autonomous-revenue-worker] Started with concurrency ${concurrency}`);
+  logWorkerInfo('autonomous_revenue', 'Started', { concurrency });
 
   return worker;
 }

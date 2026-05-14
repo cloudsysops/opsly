@@ -155,7 +155,7 @@ Variables típicas (ver `apps/orchestrator` y tu `.env`):
 Comprueba API pública (sin secretos):
 
 ```bash
-ssh opsly-worker "curl -sf --max-time 10 https://api.ops.smiletripcare.com/api/health"
+ssh opsly-worker "curl -sf --max-time 10 https://api.op-sly.com/api/health"
 ```
 
 **Redis desde el worker:** debe ser alcanzable por red (Tailscale al VPS, túnel, o Redis dedicado). Un `redis-cli ping` solo funciona si el puerto Redis está expuesto a esa ruta y con credenciales correctas; en producción suele ser **solo red interna/VPN**.

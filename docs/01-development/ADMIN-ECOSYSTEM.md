@@ -2,7 +2,7 @@
 
 **Audiencia:** operadores con acceso al VPS, Doppler `ops-intcloudsysops` / `prd`, GitHub `cloudsysops/opsly`, y (cuando aplique) token admin de la API.
 
-**Fuente de datos no secreta:** `config/opsly.config.json` (dominios de ejemplo, usuario VPS, rutas). Sustituye `<PLATFORM_DOMAIN>` por tu dominio base real (p. ej. `ops.smiletripcare.com`).
+**Fuente de datos no secreta:** `config/opsly.config.json` (dominios de ejemplo, usuario VPS, rutas). Sustituye `<PLATFORM_DOMAIN>` por tu dominio base real (p. ej. `op-sly.com`).
 
 ---
 
@@ -74,7 +74,7 @@ Ajusta `orchestrator` por `app`, `llm-gateway`, `context-builder`, etc.
 
 ## 4. Health checks públicos (HTTPS)
 
-Sustituye `<PLATFORM_DOMAIN>` por tu base (ej. `ops.smiletripcare.com`):
+Sustituye `<PLATFORM_DOMAIN>` por tu base (ej. `op-sly.com`):
 
 ```bash
 curl -sf "https://api.<PLATFORM_DOMAIN>/api/health"

@@ -1,0 +1,13 @@
+{
+  "name": "@intcloudsysops/observability",
+  "version": "1.0.0",
+  "description": "Unified logging, metrics, and tracing layer",
+  "type": "module",
+  "main": "./index.ts",
+  "types": "./index.ts",
+  "scripts": {
+    "test": "echo 'No tests yet'",
+    "type-check": "echo 'Observability type-checked via root tsconfig'"
+  },
+  "keywords": ["observability", "logging", "metrics", "tracing"]
+}

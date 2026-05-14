@@ -56,6 +56,7 @@ Cada ítem ayuda a mantener calidad y seguridad del monorepo.
 -->
 
 - [ ] `npm run type-check` (o el type-check del monorepo) pasó localmente
+- [ ] `npm run validate-structure` pasó (raíz del repo y raíz de `docs/`; docs nuevos en subcarpeta dueña, no sueltos en `docs/`)
 - [ ] No hay secretos en el código; los valores van en Doppler (u otro gestor acordado)
 - [ ] `./scripts/validate-config.sh` pasó cuando aplica (deploy / DNS / Doppler configurados en la máquina)
 - [ ] `AGENTS.md` actualizado si cambió arquitectura, flujos o decisiones de sesión

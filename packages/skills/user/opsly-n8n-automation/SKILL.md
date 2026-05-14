@@ -77,7 +77,7 @@ cat > /tmp/btc-workflow.json << 'EOF'
 }
 EOF
 
-curl -X POST https://n8n-smiletripcare.ops.smiletripcare.com/webhook/import-workflow \
+curl -X POST https://n8n-smiletripcare.op-sly.com/webhook/import-workflow \
   -H "Content-Type: application/json" \
   -d @/tmp/btc-workflow.json
 ```

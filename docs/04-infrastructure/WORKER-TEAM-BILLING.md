@@ -59,6 +59,6 @@ npm run type-check
 ## Referencias
 
 - `docs/WORKER-TEAM-ARCHITECTURE.md`
-- `docs/LLM-GATEWAY.md`
+- `docs/00-architecture/LLM-GATEWAY.md`
 - `docs/ORCHESTRATOR.md`
 - `docs/SECURITY_CHECKLIST.md`

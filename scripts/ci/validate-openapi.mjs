@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Valida que docs/openapi-opsly-api.yaml sea YAML parseable y tenga estructura OpenAPI mínima.
+ * Valida que docs/00-architecture/openapi-opsly-api.yaml sea YAML parseable y tenga estructura OpenAPI mínima.
  * Uso: node scripts/ci/validate-openapi.mjs
  * (Wrapper en scripts/validate-openapi-yaml.mjs reenvía aquí.)
  */
@@ -11,7 +11,7 @@ import { parse } from 'yaml';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.join(__dirname, '..', '..');
-const specPath = path.join(root, 'docs', 'openapi-opsly-api.yaml');
+const specPath = path.join(root, 'docs', '00-architecture', 'openapi-opsly-api.yaml');
 
 const raw = fs.readFileSync(specPath, 'utf8');
 const doc = parse(raw);
@@ -49,6 +49,12 @@ const REQUIRED_PORTAL_PATHS = [
   '/api/portal/tenant/{slug}/shield/secrets',
   '/api/portal/tenant/{slug}/shield/secrets/{findingId}',
   '/api/portal/tenant/{slug}/shield/score',
+  '/api/portal/tenant/{slug}/agents/terminal/start',
+  '/api/portal/tenant/{slug}/agents/terminal/{agentId}/sessions',
+  '/api/portal/tenant/{slug}/agents/terminal/{agentId}/sessions/{sessionId}/output',
+  '/api/portal/tenant/{slug}/agents/terminal/{agentId}/sessions/{sessionId}/stop',
+  '/api/portal/tenant/{slug}/agents/mcp/tools',
+  '/api/portal/tenant/{slug}/agents/mcp/execute',
 ];
 
 for (const p of REQUIRED_PORTAL_PATHS) {
@@ -61,7 +67,15 @@ for (const p of REQUIRED_PORTAL_PATHS) {
 /** Subset feedback (portal POST + admin GET) — Fase 4 incr. 24. */
 const REQUIRED_FEEDBACK_PATHS = ['/api/feedback'];
 
-const REQUIRED_ADMIN_PATHS = ['/api/admin/audit'];
+const REQUIRED_ADMIN_PATHS = [
+  '/api/admin/audit',
+  '/api/admin/agents/terminal/start',
+  '/api/admin/agents/terminal/{agentId}/sessions',
+  '/api/admin/agents/terminal/{agentId}/sessions/{sessionId}/output',
+  '/api/admin/agents/terminal/{agentId}/sessions/{sessionId}/stop',
+  '/api/admin/agents/mcp/tools',
+  '/api/admin/agents/mcp/execute',
+];
 
 /** Sprint 5: Swagger UI, versioning, webhooks */
 const REQUIRED_SPRINT5_PATHS = [

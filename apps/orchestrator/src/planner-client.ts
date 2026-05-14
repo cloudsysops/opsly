@@ -1,6 +1,6 @@
 /**
- * Cliente HTTP al LLM Gateway para el Planner externo (Chat.z).
- * POST /v1/chat/completions — Hermes / metering en el proceso gateway (sin LLM directo aquí).
+ * Cliente HTTP al LLM Gateway para el planner remoto **Billy** (Chat.z / OpenClaw).
+ * POST /v1/chat/completions — sin LLM directo en el orchestrator; el gateway aplica routing y metering (capa Hermes del producto).
  */
 
 import { setupLangSmithTracing } from './agents/langsmith.js';
@@ -10,7 +10,7 @@ const DEFAULT_BASE = 'http://127.0.0.1:3010';
 
 /** System prompt inyectado en el cuerpo tipo chat/completions (español, JSON estricto). */
 export const REMOTE_PLANNER_SYSTEM_PROMPT =
-  'Eres un orquestador experto. Devuelve SOLO JSON válido con el formato { "reasoning": string, "actions": [] } ' +
+  'Eres Billy, el agente planner remoto de Opsly. Devuelve SOLO JSON válido con el formato { "reasoning": string, "actions": [] } ' +
   'donde cada elemento de actions es { "tool": string, "params": object }. Sin markdown ni texto fuera del JSON.';
 
 function gatewayBaseUrl(): string {
@@ -39,7 +39,7 @@ export interface ExecuteRemotePlannerOptions {
   requestId: string;
   tenantPlan?: 'startup' | 'business' | 'enterprise';
   routingBias?: 'cost' | 'balanced' | 'quality';
-  providerHint?: 'deepseek';
+  providerHint?: 'deepseek' | 'nvidia' | null;
 }
 
 function normalizeActions(raw: unknown): PlannerResponse['actions'] {
@@ -68,7 +68,7 @@ function normalizeActions(raw: unknown): PlannerResponse['actions'] {
 }
 
 /**
- * Delega el plan al gateway vía POST /v1/chat/completions (mensajes system + user con contexto y herramientas).
+ * Billy: delega el plan al LLM Gateway vía POST /v1/chat/completions (mensajes system + user con contexto y herramientas).
  */
 export async function executeRemotePlanner(
   context: string,
@@ -85,7 +85,9 @@ export async function executeRemotePlanner(
     request_id: options.requestId,
     tenant_plan: options.tenantPlan,
     routing_bias: options.routingBias,
-    ...(options.providerHint === 'deepseek' ? { provider_hint: 'deepseek' as const } : {}),
+    ...(options.providerHint === 'deepseek' || options.providerHint === 'nvidia'
+      ? { provider_hint: options.providerHint }
+      : {}),
     messages: [
       { role: 'system', content: REMOTE_PLANNER_SYSTEM_PROMPT },
       { role: 'user', content: userContent },

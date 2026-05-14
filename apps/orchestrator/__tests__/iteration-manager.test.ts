@@ -6,7 +6,7 @@ import {
   safeCorrelationFileId,
   suggestFixHints,
   truncateTail,
-} from '../src/lib/iteration-manager.js';
+} from '../src/lib/iteration/iteration-manager.js';
 
 describe('iteration-manager', () => {
   it('extractTypeScriptErrorLines picks TS diagnostics', () => {

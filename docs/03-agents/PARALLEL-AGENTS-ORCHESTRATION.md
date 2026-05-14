@@ -214,7 +214,7 @@ curl -sf http://100.80.41.29:11434/api/tags | jq .
 | `scripts/verify-token-tracking.sh`                      | Hermes validation helper            |
 | `scripts/test-fallback-claude.sh`                       | Fallback scenario test              |
 | `docs/PLAN-OLLAMA-WORKER-2026-04-14.md`                 | Detailed ADR-024 phases             |
-| `docs/AGENTS.md`                                        | Session state + decisions log       |
+| `docs/stubs/AGENTS.md`                                        | Session state + decisions log       |
 
 ---
 

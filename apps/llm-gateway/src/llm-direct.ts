@@ -5,9 +5,9 @@ import { checkDailyBudget, resolveAiProfile } from './config/budgets.js';
 import { hashPrompt } from './hash.js';
 import { healthDaemon } from './health-daemon.js';
 import { logUsage, mergeUsageAttribution } from './logger.js';
-// Discord notifications removed - use Slack integration instead
+import { notifyProviderRateLimit } from './providers/discord.js';
 import { buildLlmDirectCloudChain } from './cloud-chain.js';
-import { PROVIDERS, type ProviderChainEntry, type ProviderDefinition } from './providers.js';
+import { PROVIDERS, type ProviderChainEntry, type ProviderDefinition, type ProviderId } from './providers.js';
 import { estimateCost } from './router.js';
 import type { LLMMessage, LLMRequest, LLMResponse } from './types.js';
 
@@ -178,6 +178,22 @@ async function runProvider(
     }
     throw lastErr instanceof Error ? lastErr : new Error(String(lastErr));
   }
+  if (def.kind === 'nvidia') {
+    const key = process.env.NVIDIA_API_KEY?.trim() ?? '';
+    if (!key) throw new Error('NVIDIA_API_KEY no configurada');
+    const base = (def.baseUrl ?? 'https://integrate.api.nvidia.com/v1').replace(/\/$/, '');
+    const endpoint = `${base}/chat/completions`;
+    const out = await invokeOpenAiCompatible(endpoint, key, def.model, req, undefined, 90_000);
+    return { ...out, model_used: def.model, billing: def };
+  }
+  if (def.kind === 'groq') {
+    const key = process.env.GROQ_API_KEY?.trim() ?? '';
+    if (!key) throw new Error('GROQ_API_KEY no configurada');
+    const base = (def.baseUrl ?? 'https://api.groq.com/openai/v1').replace(/\/$/, '');
+    const endpoint = `${base}/chat/completions`;
+    const out = await invokeOpenAiCompatible(endpoint, key, def.model, req, undefined, 60_000);
+    return { ...out, model_used: def.model, billing: def };
+  }
   const key = process.env.OPENAI_API_KEY ?? '';
   if (!key) throw new Error('OPENAI_API_KEY no configurada');
   const out = await invokeOpenAiCompatible(
@@ -233,6 +249,33 @@ async function finalizeSuccess(
     cache_hit: false,
     latency_ms: Date.now() - start,
   };
+}
+
+/** Ejecuta un proveedor concreto, usado por rutas de ensemble/evaluación que no quieren fallback. */
+export async function completeWithProviderId(
+  providerId: ProviderId,
+  req: LLMRequest
+): Promise<LLMResponse> {
+  const start = Date.now();
+  const def = PROVIDERS[providerId];
+  const out = await runProvider(
+    {
+      id: providerId,
+      healthKey: def.healthKey,
+      def,
+    },
+    req
+  );
+  return finalizeSuccess(
+    req,
+    req.cache !== false && (req.temperature ?? 0) === 0,
+    start,
+    out.content,
+    out.tokens_in,
+    out.tokens_out,
+    out.model_used,
+    out.billing
+  );
 }
 
 /** Llamada directa al proveedor — sin batch ni descomposición (uso interno). */
@@ -337,11 +380,11 @@ export async function llmCallDirect(req: LLMRequest): Promise<LLMResponse> {
     } catch (err) {
       lastErr = err;
       if (isRateLimitError(err)) {
-        // await notifyProviderRateLimit(
-        // req.tenant_slug,
-        // entry.id,
-        // err instanceof Error ? err.message : String(err)
-        // ).catch(() => undefined);
+        await notifyProviderRateLimit(
+          req.tenant_slug,
+          entry.id,
+          err instanceof Error ? err.message : String(err)
+        ).catch(() => undefined);
       }
     }
   }

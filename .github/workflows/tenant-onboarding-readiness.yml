@@ -31,6 +31,6 @@ jobs:
         run: |
           set -euo pipefail
           if [ -z "${API_URL:-}" ]; then
-            API_URL="https://api.ops.smiletripcare.com"
+            API_URL="https://api.op-sly.com"
           fi
           bash scripts/tenant/onboarding-readiness.sh --tenant-slug "${{ inputs.tenant_slug }}" --api-url "${API_URL}"

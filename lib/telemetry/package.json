@@ -1,0 +1,13 @@
+{
+  "name": "@intcloudsysops/telemetry",
+  "version": "1.0.0",
+  "description": "telemetry description",
+  "type": "module",
+  "main": "./index.ts",
+  "types": "./index.ts",
+  "scripts": {
+    "test": "echo 'No tests yet'",
+    "type-check": "echo 'telemetry type-checked via root tsconfig'"
+  },
+  "keywords": ["telemetry"]
+}

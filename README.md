@@ -32,7 +32,7 @@ Plataforma multi-tenant **enterprise SaaS**: plano de control (API, billing, orq
 | ---------------------------------------------------------------- | --------------------------------------------------------- |
 | [`docs/ARCHITECTURE.md`](docs/00-architecture/ARCHITECTURE.md)                   | Control plane vs data plane, flujos, aislamiento          |
 | [`docs/OPENCLAW-ARCHITECTURE.md`](docs/00-architecture/OPENCLAW-ARCHITECTURE.md) | OpenClaw: MCP, Orchestrator, LLM Gateway, Context Builder |
-| [`docs/LLM-GATEWAY.md`](docs/00-architecture/LLM-GATEWAY.md)                     | Cache, routing, modelos, env vars                         |
+| [`docs/00-architecture/LLM-GATEWAY.md`](docs/00-architecture/LLM-GATEWAY.md)                     | Cache, routing, modelos, env vars                         |
 | [`docs/ORCHESTRATOR.md`](docs/00-architecture/ORCHESTRATOR.md)                   | BullMQ jobs, workers, circuit breaker (Sprint 4)          |
 | [`docs/CONTEXT-BUILDER.md`](docs/00-architecture/CONTEXT-BUILDER.md)             | Sesión, TTL, resúmenes, persistencia (Sprint 4)           |
 | [`docs/AGENTS-GUIDE.md`](docs/03-agents/AGENTS-GUIDE.md)                   | Agentes paralelos y límites por plan                      |
@@ -136,7 +136,7 @@ Capa opcional de **orquestación multi-agente**, LLM unificado y contexto de ses
 
 | Doc                                                | Contenido                            |
 | -------------------------------------------------- | ------------------------------------ |
-| [docs/LLM-GATEWAY.md](docs/00-architecture/LLM-GATEWAY.md)         | Cache, modelos, env vars             |
+| [docs/00-architecture/LLM-GATEWAY.md](docs/00-architecture/LLM-GATEWAY.md)         | Cache, modelos, env vars             |
 | [docs/ORCHESTRATOR.md](docs/00-architecture/ORCHESTRATOR.md)       | Jobs, workers, estados               |
 | [docs/CONTEXT-BUILDER.md](docs/00-architecture/CONTEXT-BUILDER.md) | Sesión, TTL, resúmenes               |
 | [docs/AGENTS-GUIDE.md](docs/03-agents/AGENTS-GUIDE.md)       | Agentes paralelos y límites por plan |
@@ -320,6 +320,8 @@ Provision (cola → Docker Compose tenant)
 | `scripts/test-e2e-invite-flow.sh`          | Smoke contra API pública (health + POST invitaciones)                        | `--dry-run`, `--api-url`, requiere `ADMIN_TOKEN` / `OWNER_EMAIL`                      |
 | `scripts/sync-and-test-invite-flow.sh`     | Tras Doppler OK: `vps-refresh-api-env` + `test-e2e-invite-flow`              | `--dry-run`, `--skip-vps`; requiere `ADMIN_TOKEN` (+ `OWNER_EMAIL` salvo `--dry-run`) |
 | `scripts/doppler-import-resend-api-key.sh` | Escribe `RESEND_API_KEY` en Doppler prd desde stdin                          | Ver cabecera del script (pbpaste, archivo); `--dry-run`                               |
+| `scripts/doppler-import-openai-api-key.sh` | Escribe `OPENAI_API_KEY` en Doppler prd desde stdin                           | Igual patrón que Resend; luego `npm run opsly:codex`                                   |
+| `scripts/vps-install-codex-cli.sh`         | Instala `@openai/codex` en el VPS (Tailscale) y PATH en `~/.bashrc`           | `--dry-run` / `--apply`; ver `docs/04-infrastructure/DOPPLER-VARS.md`                 |
 
 ## Environment Variables Reference
 
@@ -352,11 +354,11 @@ Provision (cola → Docker Compose tenant)
 
 | Entorno           | URL                                     |
 | ----------------- | --------------------------------------- |
-| Dominio base      | `https://ops.smiletripcare.com`         |
-| API               | `https://api.ops.smiletripcare.com`     |
-| Admin             | `https://admin.ops.smiletripcare.com`   |
-| Traefik dashboard | `https://traefik.ops.smiletripcare.com` |
-| Wildcard tenants  | `*.ops.smiletripcare.com`               |
+| Dominio base      | `https://op-sly.com`         |
+| API               | `https://api.op-sly.com`     |
+| Admin             | `https://admin.op-sly.com`   |
+| Traefik dashboard | `https://traefik.op-sly.com` |
+| Wildcard tenants  | `*.op-sly.com`               |
 
 <!-- URLS_END -->
 

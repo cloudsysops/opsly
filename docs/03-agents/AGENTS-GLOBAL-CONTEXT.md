@@ -148,7 +148,7 @@ VPS (control plane)                    Worker Mac 2011
 | Repo GitHub   | https://github.com/cloudsysops/opsly                               |
 | AGENTS.md raw | https://raw.githubusercontent.com/cloudsysops/opsly/main/AGENTS.md |
 | VISION.md raw | https://raw.githubusercontent.com/cloudsysops/opsly/main/VISION.md |
-| Admin         | https://admin.ops.smiletripcare.com                                |
-| Portal        | https://portal.ops.smiletripcare.com                               |
-| API           | https://api.ops.smiletripcare.com                                  |
+| Admin         | https://admin.op-sly.com                                |
+| Portal        | https://portal.op-sly.com                               |
+| API           | https://api.op-sly.com                                  |
 | VPS SSH       | `ssh vps-dragon@100.120.151.91`                                    |

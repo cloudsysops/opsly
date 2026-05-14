@@ -146,7 +146,7 @@ ssh vps-dragon@100.120.151.91 "cd /opt/opsly && docker compose -f infra/docker-c
 Verificaciones:
 
 ```bash
-curl -sf https://api.ops.smiletripcare.com/api/health
+curl -sf https://api.op-sly.com/api/health
 ssh vps-dragon@100.120.151.91 \
   "docker inspect --format '{{.Name}} {{.State.Status}} {{if .State.Health}}{{.State.Health.Status}}{{else}}no-health{{end}}' opsly_orchestrator opsly_llm_gateway opsly_mcp infra-redis-1 traefik"
 ```
@@ -194,6 +194,8 @@ doppler secrets set DEEPSEEK_API_KEY --project ops-intcloudsysops --config prd
 doppler secrets set DEEPSEEK_BASE_URL "https://api.deepseek.com/v1" --project ops-intcloudsysops --config prd
 doppler secrets set DEEPSEEK_MODEL "deepseek-v4-flash" --project ops-intcloudsysops --config prd
 ```
+
+DeepSeek V4 no cambia el modelo local de Ollama. Para ejecución local, elegir un tag real de Ollama, ejecutar `ollama pull <tag>` en el worker y entonces configurar `OLLAMA_MODEL=<tag>`; si no hay tag elegido, mantener `llama_local` con el modelo actual y usar DeepSeek solo vía LLM Gateway.
 
 ## OpenClaw / Orchestrator
 

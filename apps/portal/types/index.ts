@@ -137,6 +137,58 @@ export type PortalHealthPayload = {
   };
 };
 
+export type AgentIdeTerminalSession = {
+  agent_id: string;
+  tenant_slug: string;
+  session_id: string;
+  process_label?: string;
+  objective?: string;
+  status: 'queued' | 'running' | 'completed' | 'failed' | 'stopped';
+  cwd: string;
+  current_command?: string;
+  started_at: string;
+  ended_at?: string;
+  exit_code?: number | null;
+  error?: string;
+  output: string;
+  pid?: number;
+  commands_executed: number;
+  retries: number;
+};
+
+export type AgentIdeSessionsPayload = {
+  success: boolean;
+  agent_id: string;
+  sessions: AgentIdeTerminalSession[];
+};
+
+export type AgentIdeOutputPayload = {
+  success: boolean;
+  agent_id: string;
+  session_id: string;
+  session: AgentIdeTerminalSession | null;
+  output: string;
+  next_offset: number;
+  total_length: number;
+};
+
+export type AgentIdeMcpTool = {
+  id: string;
+  label: string;
+  mode: 'read-only' | 'action';
+  roles: ('admin' | 'portal')[];
+  description: string;
+};
+
+export type AgentIdeMcpCatalogPayload = {
+  tools: AgentIdeMcpTool[];
+  policy: {
+    surface: 'admin' | 'portal';
+    allowed_tool_ids: string[];
+    ssh_requires_allowlist: boolean;
+  };
+};
+
 /** Respuesta documentada de POST /api/invitations (consumo futuro en UI). */
 export type AdminInvitationResponse = {
   ok: true;

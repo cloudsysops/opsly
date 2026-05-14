@@ -1,12 +1,12 @@
 ---
 status: deprecated
 superseded_by: ../../../ROADMAP.md
-related_canon: ../../../VISION.md, ../../../SPRINT-TRACKER.md, ../../../AGENTS.md
+related_canon: ../../../VISION.md, ../../01-development/SPRINT-TRACKER.md, ../../../AGENTS.md
 last_review: 2026-04-30
 note: Inventario largoplazo archivado (ADR-033). Roadmap vivo en raíz del repo.
 ---
 
-> **Deprecated — histórico.** No usar como fuente de verdad del roadmap. Canon: [`ROADMAP.md`](../../../ROADMAP.md), [`VISION.md`](../../../VISION.md), [`SPRINT-TRACKER.md`](../../../SPRINT-TRACKER.md), [`AGENTS.md`](../../../AGENTS.md). Índice planes: [`docs/plans/README.md`](../../plans/README.md).
+> **Deprecated — histórico.** No usar como fuente de verdad del roadmap. Canon: [`ROADMAP.md`](../../../ROADMAP.md), [`VISION.md`](../../../VISION.md), [`SPRINT-TRACKER.md`](../../01-development/SPRINT-TRACKER.md), [`AGENTS.md`](../../../AGENTS.md). Índice planes: [`docs/plans/README.md`](../../plans/README.md).
 
 # OPSLY MASTER PLAN — Plan de trabajo completo
 
@@ -203,12 +203,12 @@ PASO 9.1: Activar todos los tokens
 ./scripts/activate-tokens.sh
 
 Verificar cada servicio:
-curl -sf https://api.ops.smiletripcare.com/api/health
-curl -sf https://admin.ops.smiletripcare.com
-curl -sf https://portal.ops.smiletripcare.com/login
+curl -sf https://api.op-sly.com/api/health
+curl -sf https://admin.op-sly.com
+curl -sf https://portal.op-sly.com/login
 
 PASO 9.2: Importar workflow n8n
-URL: https://n8n-intcloudsysops.ops.smiletripcare.com
+URL: https://n8n-intcloudsysops.op-sly.com
 → Credentials → New → Crear estas credenciales:
 
 - GitHub API: `GITHUB_TOKEN` (legado en docs viejos: `GITHUB_TOKEN_N8N`)
@@ -235,7 +235,7 @@ export TENANT_SLUG="intcloudsysops"
 
 PASO 9.5: Test feedback chat
 curl -sf -X POST \
- https://api.ops.smiletripcare.com/api/feedback \
+ https://api.op-sly.com/api/feedback \
  -H "Content-Type: application/json" \
  -d '{
 "tenant_slug": "intcloudsysops",
@@ -252,7 +252,7 @@ PASO 9.6: Test drive sync
 
 PASO 9.7: Verificar MCP server
 curl -sf \
- https://mcp.ops.smiletripcare.com/.well-known/oauth-authorization-server
+ https://mcp.op-sly.com/.well-known/oauth-authorization-server
 → Debe retornar JSON con endpoints OAuth
 
 PASO 9.8: Deploy CI verde

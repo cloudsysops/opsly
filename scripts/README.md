@@ -56,7 +56,7 @@ This directory contains operational and deployment scripts organized by category
 ### Python CLI automations
 
 ```bash
-python3 scripts/opsly_cli.py health --api-url https://api.ops.smiletripcare.com
+python3 scripts/opsly_cli.py health --api-url https://api.op-sly.com
 python3 scripts/opsly_cli.py deploy-last
 python3 scripts/opsly_cli.py deploy-status 24970035820
 python3 scripts/opsly_cli.py deploy-watch 24970035820

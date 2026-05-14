@@ -37,4 +37,4 @@ npm run type-check
 ## Más detalle
 
 - `docs/TOKEN-BILLING-SYSTEM.md` — diseño completo y estado.
-- `docs/LLM-GATEWAY.md` — proveedores, caché, `routing_bias`.
+- `docs/00-architecture/LLM-GATEWAY.md` — proveedores, caché, `routing_bias`.

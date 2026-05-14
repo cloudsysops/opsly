@@ -1,0 +1,192 @@
+{
+  "version": "1.0.0",
+  "description": "Opsly Library Modules Registry",
+  "lastUpdated": "2026-05-09T03:30:00Z",
+  "modules": {
+    "prompts": {
+      "name": "@intcloudsysops/prompts",
+      "version": "1.0.0",
+      "path": "lib/prompts",
+      "owner": "claude",
+      "description": "Versioned prompt registry for all agents",
+      "status": "stable",
+      "dependencies": [],
+      "governance": "lib/prompts/GOVERNANCE.md",
+      "mainFile": "lib/prompts/index.ts",
+      "exports": ["registry", "loader", "schemas"]
+    },
+    "observability": {
+      "name": "@intcloudsysops/observability",
+      "version": "1.0.0",
+      "path": "lib/observability",
+      "owner": "claude",
+      "description": "Unified logging, metrics, and tracing layer",
+      "status": "stable",
+      "dependencies": [],
+      "governance": "lib/observability/GOVERNANCE.md",
+      "mainFile": "lib/observability/index.ts",
+      "exports": ["logger", "metrics", "tracing"]
+    },
+    "components": {
+      "name": "@intcloudsysops/components",
+      "version": "1.0.0",
+      "path": "lib/components",
+      "owner": "claude",
+      "description": "Shared React components and design system",
+      "status": "stable",
+      "dependencies": [],
+      "governance": "lib/components/GOVERNANCE.md",
+      "mainFile": "lib/components/index.ts",
+      "exports": ["ui", "hooks", "styles"]
+    },
+    "evaluation": {
+      "name": "@intcloudsysops/evaluation",
+      "version": "1.0.0",
+      "path": "lib/evaluation",
+      "owner": "claude",
+      "description": "Testing, validation, and quality metrics framework",
+      "status": "stable",
+      "dependencies": ["prompts"],
+      "governance": "lib/evaluation/GOVERNANCE.md",
+      "mainFile": "lib/evaluation/index.ts",
+      "exports": ["validators", "metrics", "test-runners"]
+    },
+    "errors": {
+      "name": "@intcloudsysops/errors",
+      "version": "1.0.0",
+      "path": "lib/errors",
+      "owner": "claude",
+      "description": "Unified error handling with context tracking",
+      "status": "stable",
+      "dependencies": [],
+      "governance": "lib/errors/GOVERNANCE.md",
+      "mainFile": "lib/errors/index.ts",
+      "exports": ["AppError", "ValidationError", "AuthError", "NotFoundError", "RateLimitError", "handleError"]
+    },
+    "services": {
+      "name": "@intcloudsysops/services",
+      "version": "1.0.0",
+      "path": "lib/services",
+      "owner": "claude",
+      "description": "Repository pattern with multi-tenant isolation",
+      "status": "stable",
+      "dependencies": ["errors"],
+      "governance": "lib/services/GOVERNANCE.md",
+      "mainFile": "lib/services/index.ts",
+      "exports": ["Repository", "BaseRepository", "MockRepository"]
+    },
+    "config": {
+      "name": "@intcloudsysops/config",
+      "version": "1.0.0",
+      "path": "lib/config",
+      "owner": "claude",
+      "description": "Environment configuration and feature flags",
+      "status": "stable",
+      "dependencies": [],
+      "governance": "lib/config/GOVERNANCE.md",
+      "mainFile": "lib/config/index.ts",
+      "exports": ["getConfig", "getFeatureFlags", "Config", "FeatureFlags"]
+    },
+    "security": {
+      "name": "@intcloudsysops/security",
+      "version": "1.0.0",
+      "path": "lib/security",
+      "owner": "claude",
+      "description": "Authentication, encryption, and PII redaction",
+      "status": "stable",
+      "dependencies": [],
+      "governance": "lib/security/GOVERNANCE.md",
+      "mainFile": "lib/security/index.ts",
+      "exports": ["generateToken", "verifyToken", "encryptSecret", "decryptSecret", "redactPII"]
+    },
+    "api": {
+      "name": "@intcloudsysops/api-utils",
+      "version": "1.0.0",
+      "path": "lib/api",
+      "owner": "claude",
+      "description": "Unified API response format and versioning",
+      "status": "stable",
+      "dependencies": ["errors"],
+      "governance": "lib/api/GOVERNANCE.md",
+      "mainFile": "lib/api/index.ts",
+      "exports": ["createResponse", "createErrorResponse", "APIResponse", "PaginationParams", "API_VERSIONS"]
+    },
+    "workflow": {
+      "name": "@intcloudsysops/workflow",
+      "version": "1.0.0",
+      "path": "lib/workflow",
+      "owner": "claude",
+      "description": "Safe agent execution with timeouts and cost tracking",
+      "status": "stable",
+      "dependencies": ["config", "observability", "telemetry"],
+      "governance": "lib/workflow/GOVERNANCE.md",
+      "mainFile": "lib/workflow/index.ts",
+      "exports": ["executeWithTimeout", "ExecutionContext", "ExecutionResult"]
+    },
+    "telemetry": {
+      "name": "@intcloudsysops/telemetry",
+      "version": "1.0.0",
+      "path": "lib/telemetry",
+      "owner": "claude",
+      "description": "Cost and performance tracking per agent",
+      "status": "stable",
+      "dependencies": ["config"],
+      "governance": "lib/telemetry/GOVERNANCE.md",
+      "mainFile": "lib/telemetry/index.ts",
+      "exports": ["Telemetry", "CostBreakdown", "PerformanceMetrics"]
+    },
+    "testing": {
+      "name": "@intcloudsysops/testing",
+      "version": "1.0.0",
+      "path": "lib/testing",
+      "owner": "claude",
+      "description": "Unified test framework for agents and services",
+      "status": "stable",
+      "dependencies": [],
+      "governance": "lib/testing/GOVERNANCE.md",
+      "mainFile": "lib/testing/index.ts",
+      "exports": ["runTest", "TestCase", "TestResult"]
+    },
+    "migrations": {
+      "name": "@intcloudsysops/migrations",
+      "version": "1.0.0",
+      "path": "lib/migrations",
+      "owner": "claude",
+      "description": "Database migration versioning with rollback",
+      "status": "stable",
+      "dependencies": [],
+      "governance": "lib/migrations/GOVERNANCE.md",
+      "mainFile": "lib/migrations/index.ts",
+      "exports": ["MigrationRunner", "Migration"]
+    }
+  },
+  "consumers": {
+    "apps/orchestrator": {
+      "depends": ["prompts", "observability", "evaluation", "errors", "workflow", "config", "security"]
+    },
+    "apps/api": {
+      "depends": ["prompts", "observability", "evaluation", "errors", "api", "security", "config", "services", "telemetry"]
+    },
+    "apps/gateway": {
+      "depends": ["observability", "errors", "security", "config", "telemetry", "workflow"]
+    },
+    "apps/portal": {
+      "depends": ["components", "observability", "security", "api", "telemetry"]
+    },
+    "apps/admin": {
+      "depends": ["components", "observability", "security", "api", "services"]
+    },
+    "apps/local-services": {
+      "depends": ["components", "observability", "prompts", "security", "api", "config"]
+    },
+    "tools/agents": {
+      "depends": ["prompts", "observability", "security", "config", "telemetry"]
+    }
+  },
+  "policies": {
+    "versioning": "semantic",
+    "breakingChanges": "require-adr",
+    "testCoverage": 80,
+    "circularDependencies": "forbidden"
+  }
+}

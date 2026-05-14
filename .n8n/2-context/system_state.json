@@ -21,7 +21,7 @@
   },
   "webhooks": {
     "discord": {
-      "url": "https://n8n-smiletripcare.ops.smiletripcare.com/webhook/opsly-discord-task",
+      "url": "https://n8n-smiletripcare.op-sly.com/webhook/opsly-discord-task",
       "secret_env": "N8N_WEBHOOK_SECRET_GH",
       "methods": ["POST"]
     }
@@ -29,7 +29,7 @@
   "n8n_instances": [
     {
       "tenant_slug": "smiletripcare",
-      "url": "https://n8n-smiletripcare.ops.smiletripcare.com",
+      "url": "https://n8n-smiletripcare.op-sly.com",
       "status": "running",
       "containers": ["tenant_smiletripcare_n8n_1"]
     }

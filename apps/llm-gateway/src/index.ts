@@ -25,6 +25,6 @@ export {
   parseLlmGatewayRoutingParams,
   type RoutingBias,
 } from './routing-hints.js';
-export type { LLMRequest, LLMResponse, UsageEvent } from './types.js';
+export type { LLMRequest, LLMResponse, LlmProviderHint, UsageEvent } from './types.js';
 export { llmCallWithFallback } from './fallback-chain.js';
 export { handleSearchHttp, type SearchHttpBody } from './search-route.js';

@@ -1,0 +1,8 @@
+{
+  "description": "Únicos archivos .md permitidos en la raíz de docs/. Fuente normativa: docs/STRUCTURE-GUARDRAILS.md. Stubs viven en docs/stubs/. No añadir entradas sin revisión de arquitectura.",
+  "allowed_files": [
+    "README.md",
+    "index.md",
+    "STRUCTURE-GUARDRAILS.md"
+  ]
+}

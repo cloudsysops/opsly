@@ -206,7 +206,7 @@ node scripts/load-skills.js show opsly-api
 2. **Roles de agente como tipos y convenciones** — `planner` \| `executor` \| `tool` \| `notifier` ya en tipo `AgentRole`; uso progresivo en callers, no un framework nuevo.
 3. **✅ Logs estructurados** — _Hecho (2026-04-05; verificado 2026-04-04)._ Workers: `observability/worker-log.ts` (`worker_start` \| `worker_complete` \| `worker_fail`) en `CursorWorker`, `DriveWorker`, `N8nWorker`, `NotifyWorker`. LLM Gateway: `structured-log.ts`; `llmCall` registra `llm_call_complete` / `llm_call_error` (opcional `request_id` en `LLMRequest`, UUID por defecto). Pruebas: `worker-log.test.ts`, `structured-log.test.ts`; `gateway.test.ts` mockea `logGatewayEvent`. Doc: `docs/ORCHESTRATOR.md`.
 4. **✅ Skills (manifest opcional)** — _Hecho (2026-04-08; canonical `skills/manifest` 2026-04-04)._ Paquete `skills/manifest` (`@intcloudsysops/skills-manifest`): `loadSkillMetadata`, `parseSimpleFrontmatter` (YAML mínimo entre `---`), `parseManifestJsonObject`, `validateAllUserSkills`, CLI vía `npm run validate-skills`. `manifest.json` opcional con `name`, `version`, `description`, `inputSchema` / `outputSchema`. Pilotos: `skills/user/opsly-api/manifest.json`, `skills/user/opsly-context/manifest.json`. Tests: `skills/manifest/__tests__/*.ts`; doc: `skills/README.md`; CI: `.github/workflows/validate-context.yml` (`validate-skills` + `test-skills-manifest`). El antiguo `apps/skill-manifest` se eliminó para evitar duplicar nombre y lockfile.
-5. **✅ LLM Gateway (routing opcional)** — _Hecho (2026-04-08)._ `routing_bias` (`cost` \| `balanced` \| `quality`) en `LLMRequest` si no hay `model` explícito; `applyRoutingBias` + cadena existente en `llmCallDirect` → `buildChain`. Helpers `parseLlmGatewayRoutingParams` / `parseLlmGatewayRoutingHeaders` para query (`llm_model`, `llm_routing`) y cabeceras (`x-llm-model`, `x-llm-routing`). Export en `apps/llm-gateway/src/index.ts`; logs estructurados con `routing_bias` si aplica. Doc: `docs/LLM-GATEWAY.md`. Pruebas: `__tests__/routing-hints.test.ts`.
+5. **✅ LLM Gateway (routing opcional)** — _Hecho (2026-04-08)._ `routing_bias` (`cost` \| `balanced` \| `quality`) en `LLMRequest` si no hay `model` explícito; `applyRoutingBias` + cadena existente en `llmCallDirect` → `buildChain`. Helpers `parseLlmGatewayRoutingParams` / `parseLlmGatewayRoutingHeaders` para query (`llm_model`, `llm_routing`) y cabeceras (`x-llm-model`, `x-llm-routing`). Export en `apps/llm-gateway/src/index.ts`; logs estructurados con `routing_bias` si aplica. Doc: `docs/00-architecture/LLM-GATEWAY.md`. Pruebas: `__tests__/routing-hints.test.ts`.
 6. **✅ Orchestrator — prioridad por plan (cola BullMQ)** — _Hecho (2026-04-08)._ `planToQueuePriority` + `PLAN_QUEUE_PRIORITY` en `apps/orchestrator/src/queue-opts.ts`: BullMQ usa **0 = máxima** prioridad → enterprise `0`, business `10_000`, startup o sin plan `50_000`. `buildQueueAddOptions` incluye `priority`; log `job_enqueue` añade `queue_priority`. Pruebas: `__tests__/queue-opts.test.ts`. Doc: `docs/ORCHESTRATOR.md`. Descomposición ligera de tareas / routing en `engine.ts` sin DAG global.
 7. **✅ Refuerzo Zero-Trust incremental (feedback)** — _Hecho (2026-04-08)._ `POST /api/feedback`: identidad vía `Authorization: Bearer` + `resolveTrustedFeedbackIdentity` (`apps/api/lib/portal-feedback-auth.ts` → `resolveTrustedPortalSession` en `portal-trusted-identity.ts`); cuerpo no sustituye tenant/email (`parseFeedbackPostFields`); `verifyConversationBelongsToUser` valida `conversation_id`. Portal: `FeedbackChat` con Bearer. Tests: `__tests__/feedback.test.ts`, `lib/__tests__/portal-feedback-auth.test.ts`; checklist en `docs/SECURITY_CHECKLIST.md`.
 8. **✅ Zero-Trust — `GET /api/portal/me` + `POST /api/portal/mode`** — _Hecho (2026-04-08)._ Ambas rutas usan `resolveTrustedPortalSession` (`portal-trusted-identity.ts`); `/me` deja de duplicar la lógica manualmente; `/mode` exige tenant+owner antes de mutar `user_metadata.mode`. Tests: `portal-routes.test.ts` (incl. 403 sin `tenant_slug`), `lib/__tests__/portal-trusted-identity.test.ts` (sesión + `tenantSlugMatchesSession`).
@@ -221,13 +221,13 @@ node scripts/load-skills.js show opsly-api
 17. **✅ Portal — `fetchPortalTenant` vía `[slug]` cuando hay `tenant_slug` en JWT** — _Hecho (2026-04-05)._ `tenantSlugFromUserMetadata(user)` + `fetchPortalTenant(token, tenantSlug?)` en `apps/portal/lib/tenant.ts` (sin slug → **`GET /api/portal/me`**); con slug → **`GET /api/portal/tenant/{slug}/me`**. `requirePortalPayload` / `requirePortalPayloadWithUsage` (`portal-server.ts`, `getUser` + metadata), **`ModeSelector`**, **`usePortalTenant`**. Validación: `npm run type-check --workspace=@intcloudsysops/portal`, `npm run lint --workspace=@intcloudsysops/portal`; API **155** tests sin cambios.
 18. **✅ Portal — tests Vitest para `tenantSlugFromUserMetadata`** — _Hecho (2026-04-08)._ `apps/portal`: `vitest.config.ts`, script **`npm run test --workspace=@intcloudsysops/portal`**, `lib/__tests__/tenant-metadata.test.ts` (5 casos: null/undefined, metadata inválida, trim, vacío, tipo). `docs/SECURITY_CHECKLIST.md` (cliente portal + JWT). **`.github/workflows/ci.yml`** job **`test`** ejecuta `apps/portal` en paralelo con mcp/orchestrator/ml/llm-gateway. Validación: `npm run test` + `type-check` + `lint` portal; API **155** tests sin regresión.
 19. **✅ Portal — URLs API puras (`portal-api-paths`) + tests** — _Hecho (2026-04-08)._ `lib/portal-api-paths.ts`: `portalTenantMeUrl`, `portalTenantModeUrl`, `portalTenantUsageUrl` (base normalizada, `encodeURIComponent` en segmento `[slug]`); `lib/tenant.ts` delega en ellas. `lib/__tests__/portal-api-paths.test.ts` (8 casos). Portal **13** tests Vitest en total. API **155** tests sin regresión.
-20. **✅ OpenAPI — rutas portal `/usage` y `/tenant/{slug}/*`** — _Hecho (2026-04-08)._ `docs/openapi-opsly-api.yaml`: `GET /api/portal/usage`; `GET /api/portal/tenant/{slug}/me`; `POST /api/portal/tenant/{slug}/mode`; `GET /api/portal/tenant/{slug}/usage` (query `period`); alineado a implementación y a `portal-api-paths`. `docs/SECURITY_CHECKLIST.md` (referencia contrato en portal cliente). Sin cambio de runtime.
+20. **✅ OpenAPI — rutas portal `/usage` y `/tenant/{slug}/*`** — _Hecho (2026-04-08)._ `docs/00-architecture/openapi-opsly-api.yaml`: `GET /api/portal/usage`; `GET /api/portal/tenant/{slug}/me`; `POST /api/portal/tenant/{slug}/mode`; `GET /api/portal/tenant/{slug}/usage` (query `period`); alineado a implementación y a `portal-api-paths`. `docs/SECURITY_CHECKLIST.md` (referencia contrato en portal cliente). Sin cambio de runtime.
 21. **✅ CI — validación OpenAPI YAML** — _Hecho (2026-04-05)._ `scripts/ci/validate-openapi.mjs`: parse con paquete `yaml` (devDependency raíz), comprobación de `openapi` y `paths`. `npm run validate-openapi`. `.github/workflows/validate-context.yml`: paso tras `npm ci`. Sin cambio de runtime.
 22. **✅ Portal — Vitest validación formulario invite (`/invite/[token]`)** — _Hecho (2026-04-04)._ `lib/invite-activation-validation.ts` (`validateInviteActivationForm`, `inviteActivationErrorMessage`); `lib/__tests__/invite-activation-validation.test.ts` (6 casos); `app/invite/[token]/invite-activate.tsx` delega en el módulo (mismos mensajes ES). Sin Supabase en tests. Suite portal Vitest actual: **21** tests (incr. 25 suma `portal-api-paths` health); API **162** en fecha incr. 25.
 23. **✅ CI — OpenAPI paths portal obligatorios** — _Hecho (2026-04-08)._ `scripts/ci/validate-openapi.mjs` (`REQUIRED_PORTAL_PATHS`): exige en `paths` las rutas portal del subset (ampliadas a **8** con health en incr. 25). `docs/SECURITY_CHECKLIST.md` referencia la validación. Sin cambio de runtime.
-24. **✅ OpenAPI — `/api/feedback` (POST portal JWT + GET admin)** — _Hecho (2026-04-08)._ `docs/openapi-opsly-api.yaml`: `POST /api/feedback` (cuerpo `message` + opcionales alineados a `parseFeedbackPostFields`); `GET /api/feedback` (`status`, `limit`; admin `Bearer` / `x-admin-token`). `scripts/ci/validate-openapi.mjs` (`REQUIRED_FEEDBACK_PATHS`) exige `/api/feedback`. Sin cambio de runtime. Suite API actual en incr. 25: **162** tests.
+24. **✅ OpenAPI — `/api/feedback` (POST portal JWT + GET admin)** — _Hecho (2026-04-08)._ `docs/00-architecture/openapi-opsly-api.yaml`: `POST /api/feedback` (cuerpo `message` + opcionales alineados a `parseFeedbackPostFields`); `GET /api/feedback` (`status`, `limit`; admin `Bearer` / `x-admin-token`). `scripts/ci/validate-openapi.mjs` (`REQUIRED_FEEDBACK_PATHS`) exige `/api/feedback`. Sin cambio de runtime. Suite API actual en incr. 25: **162** tests.
 25. **✅ Portal — health API + `portal-api-paths` + Playwright E2E smoke** — _Hecho (2026-04-08)._ API: `GET /api/portal/health?slug=` (público, monitoring); `GET /api/portal/tenant/{slug}/health` (JWT + `tenantSlugMatchesSession`); `lib/portal-health-json.ts` (`respondPortalTenantHealth`). Cliente: `portalHealthUrl(slug)`, `portalPublicHealthUrl(slug)`, `fetchPortalHealth` (`lib/tenant.ts`). **`@playwright/test`**, `playwright.config.ts`, `e2e/portal.spec.ts` (login + invite + smoke; dashboard redirect tests con `test.skip` si faltan vars Supabase públicas). OpenAPI + `REQUIRED_PORTAL_PATHS` (**8** rutas portal, incl. health). Tests API **162**; portal Vitest **21**; `npm run test:e2e --workspace=@intcloudsysops/portal`.
-26. **✅ Remote Planner (Chat.z) integrado en Orchestrator** — _Hecho (2026-04-10)._ Cliente `executeRemotePlanner` (`apps/orchestrator/src/planner-client.ts`) → `POST /v1/chat/completions` en llm-gateway; compat `POST /v1/planner`. Intent `remote_plan`: sin encolar jobs efectivos (solo logs JSON + simulación `console.log` por acción) hasta validación Go-Live; Hermes vía `llmCall` en gateway. Healthchecks en `infra/docker-compose.platform.yml` (app `/api/health`, portal `/login`, llm-gateway y orchestrator `/health`) con `interval` 30s. Doc: `docs/ORCHESTRATOR.md`.
+26. **✅ Remote Planner — Billy (Chat.z) en Orchestrator** — _Hecho (2026-04-10)._ **Billy:** cliente `executeRemotePlanner` (`apps/orchestrator/src/planner-client.ts`) → `POST /v1/chat/completions` en llm-gateway; compat `POST /v1/planner`. Intent `remote_plan`: plan JSON → jobs BullMQ. El gateway usa `llmCall` con `tenant_slug` / `request_id` (metering Hermes unificado). Healthchecks en `infra/docker-compose.platform.yml` (app `/api/health`, portal `/login`, llm-gateway y orchestrator `/health`) con `interval` 30s. Doc: `docs/00-architecture/ORCHESTRATOR.md`.
 27. **✅ Admin — dashboard de costos + API `/api/admin/costs` + worker Mac 2011** — _Hecho (2026-04-11)._ `apps/api/lib/admin-costs.ts` + `app/api/admin/costs/route.ts` (`GET`/`POST`, aprobaciones en memoria de proceso, Discord opcional, `lastUpdated`, `specs`, alertas info/warning incl. GCP **opslyquantum**). Admin: `apps/admin/app/costs/page.tsx`, `components/costs/CostCard.tsx`, Sidebar **Costos**, `lib/api-client.ts` (`getAdminCosts`, `postCostDecision`; modo demo + `NEXT_PUBLIC_PLATFORM_ADMIN_TOKEN` para mutaciones). Sección **Control de costos** en este AGENTS. Scripts `scripts/start-workers-mac2011.sh` (`--dry-run`), `infra/docker-compose.workers.yml`. Docs: `docs/COST-DASHBOARD.md`, ampliación `docs/WORKER-SETUP-MAC2011.md`. Commits de referencia: `4de0201` (base), `8654a43` + `d2db1a0` (extensión + espejo AGENTS).
 
 - **2026-04-11 — Fase 1 Seguridad Crítica:**
@@ -280,7 +280,7 @@ node scripts/load-skills.js show opsly-api
 | Eficiencia de sesiones         | `docs/CLAUDE-WORKFLOW-OPTIMIZATION.md` — 10 técnicas de flujo                                                                                         |
 | Contexto siempre publicado     | URL raw de `AGENTS.md` + hooks; opcional `scripts/auto-push-watcher.sh` y/o `docs/ACTIVE-PROMPT.md` + `cursor-prompt-monitor` en VPS                  |
 | Criterios de salida (borrador) | ADR si hay cola/orquestador nuevo; métricas de jobs; runbook de incidentes multi-agente                                                               |
-| OpenAPI (subset)               | `docs/openapi-opsly-api.yaml` — portal + health + **`/api/feedback`** (incr. 20–25); CI `validate-openapi`: **8** portal + feedback (incr. 21, 23–25) |
+| OpenAPI (subset)               | `docs/00-architecture/openapi-opsly-api.yaml` — portal + health + **`/api/feedback`** (incr. 20–25); CI `validate-openapi`: **8** portal + feedback (incr. 21, 23–25) |
 | Portal invite (cliente)        | `apps/portal` — validación previa a Supabase en `lib/invite-activation-validation.ts` + Vitest (incr. 22, 2026-04-04)                                 |
 
 **Automatización opcional (VPS):** unidad `infra/systemd/opsly-watcher.service` y guía `docs/AUTO-PUSH-WATCHER.md`. No sustituye revisión humana ni política de secretos.
@@ -305,7 +305,7 @@ node scripts/load-skills.js show opsly-api
 16. ~~**Portal — `fetchPortalTenant` con `tenant_slug` del JWT → `GET …/tenant/[slug]/me`** (`tenantSlugFromUserMetadata`, `portal-server`, `ModeSelector`, `usePortalTenant`).~~ ✅
 17. ~~**Portal — Vitest `tenantSlugFromUserMetadata`** (`lib/__tests__/tenant-metadata.test.ts`, `vitest.config.ts`).~~ ✅
 18. ~~**Portal — `portal-api-paths` + tests** (`portalTenantMeUrl` / `Mode` / `Usage`, refactor `tenant.ts`).~~ ✅
-19. ~~**OpenAPI — portal `/usage` + `/tenant/{slug}/*`** (`docs/openapi-opsly-api.yaml`).~~ ✅
+19. ~~**OpenAPI — portal `/usage` + `/tenant/{slug}/*`** (`docs/00-architecture/openapi-opsly-api.yaml`).~~ ✅
 20. ~~**CI — `validate-openapi`** (`scripts/ci/validate-openapi.mjs`, `validate-context.yml`).~~ ✅
 21. ~~**Portal — Vitest validación invite** (`invite-activation-validation.ts`, `invite-activate.tsx`).~~ ✅
 22. ~~**CI — paths portal obligatorios en OpenAPI** (`scripts/ci/validate-openapi.mjs`).~~ ✅
@@ -322,7 +322,7 @@ node scripts/load-skills.js show opsly-api
 
 <!-- Actualizar al final de cada sesión -->
 
-**Fecha última actualización:** 2026-04-26 — **Estabilización prod:** health `https://api.ops.smiletripcare.com/api/health` OK (supabase+redis); E2E invite ejecutado en `prd` con `scripts/test-e2e-invite-flow.sh --tenant-ref intcloudsysops` (resultado idempotente: usuario ya registrado, smoke aceptado); workflow deploy activo en GitHub Actions (`deploy.yml`) tras fix de sintaxis Tailscale y timeout SSH 2m. **Sprint histórico Semana 5:** [`docs/SEMANA-5-INFORME.md`](docs/SEMANA-5-INFORME.md), [`ROADMAP.md`](ROADMAP.md).
+**Fecha última actualización:** 2026-04-26 — **Estabilización prod:** health `https://api.op-sly.com/api/health` OK (supabase+redis); E2E invite ejecutado en `prd` con `scripts/test-e2e-invite-flow.sh --tenant-ref intcloudsysops` (resultado idempotente: usuario ya registrado, smoke aceptado); workflow deploy activo en GitHub Actions (`deploy.yml`) tras fix de sintaxis Tailscale y timeout SSH 2m. **Sprint histórico Semana 5:** [`docs/SEMANA-5-INFORME.md`](docs/SEMANA-5-INFORME.md), [`ROADMAP.md`](ROADMAP.md).
 
 **Siguiente fase:** Semana 6 (Segundo Cliente + E2E), ventana **2026-04-29 → 2026-05-03** ⏳ **EN PROGRESO**. Plan: [`docs/SEMANA-6-PLAN.md`](docs/SEMANA-6-PLAN.md).
 
@@ -349,8 +349,8 @@ node scripts/load-skills.js show opsly-api
 | ------------- | ---------- | ------ | ----------------------------------------------- |
 | Traefik       | ✅ Running | 80/443 | Router principal                                |
 | API (app)     | ⚠️ Error   | 3000   | `[id] !== [ref]` conflict en imagen GHCR        |
-| Admin         | ✅ Running | 3001   | `admin.ops.smiletripcare.com`                   |
-| Portal        | ✅ Running | 3002   | `portal.ops.smiletripcare.com`                  |
+| Admin         | ✅ Running | 3001   | `admin.op-sly.com`                   |
+| Portal        | ✅ Running | 3002   | `portal.op-sly.com`                  |
 | MCP           | ✅ Running | 3003   | Herramientas disponibles                        |
 | Orchestrator  | ✅ Running | 3011   | OAR + Mode System COMPLETO (Semana 1)           |
 | Redis         | ✅ Running | 6379   | Sin password (bug compose)                      |
@@ -533,7 +533,7 @@ flowchart LR
 ```
 
 **Estado NotebookLM:** integrado vía MCP tool `notebooklm`; habilitación solo Business+ con `NOTEBOOKLM_ENABLED=true`.  
-**Estado LocalRank / jkboterolabs:** SSH Tailscale OK para diagnóstico; stacks con n8n **200** y uptime **302** en staging (ver `docs/TENANT-TESTING-PLAN.md`, `docs/TENANT-TESTING-GUIDE.md`).  
+**Estado LocalRank / jkboterolabs:** SSH Tailscale OK para diagnóstico; stacks con n8n **200** y uptime **302** en staging (ver `docs/tenants/testing/TENANT-TESTING-PLAN.md`, `docs/tenants/testing/TENANT-TESTING-GUIDE.md`).  
 **Mitigaciones requeridas:** Cloudflare Proxy ON + UFW/Tailscale-only SSH.
 
 **Resumen 2026-04-08 (Cursor / Opsly — sesión tester + Drive)**
@@ -582,7 +582,7 @@ flowchart LR
 - Portal: `types/index.ts` → `PortalHealthPayload`; `lib/portal-api-paths.ts` → `portalHealthUrl(base, tenantSlug?)` (slug vacío → `/api/portal/health`, slug → `/api/portal/tenant/{slug}/health`); `lib/tenant.ts` → `fetchPortalHealth(accessToken, tenantSlug?)`.
 - Playwright E2E: `playwright.config.ts` (Chromium, 1 worker, `PORTAL_URL` env var), `e2e/portal.spec.ts` (4 tests públicos: `/login`, `/invite/TOKEN` sin email param, `/invite/TOKEN?email=test@test.com`, `/dashboard` → redirect a `/login`; 3 tests auth: skip sin Supabase env vars).
 - Vitest: 4 tests nuevos `portalHealthUrl` en `lib/__tests__/portal-api-paths.test.ts`.
-- OpenAPI: `/api/portal/health` + `/api/portal/tenant/{slug}/health` en `docs/openapi-opsly-api.yaml`; `REQUIRED_PORTAL_PATHS` ampliado; `scripts/ci/validate-openapi.mjs` OK (**16 paths**).
+- OpenAPI: `/api/portal/health` + `/api/portal/tenant/{slug}/health` en `docs/00-architecture/openapi-opsly-api.yaml`; `REQUIRED_PORTAL_PATHS` ampliado; `scripts/ci/validate-openapi.mjs` OK (**16 paths**).
 - Validación: `npm run type-check` (11 workspaces ✅), `npm run test --workspace=@intcloudsysops/api` (**155 tests**), `npm run test --workspace=@intcloudsysops/portal` (**23 tests**), `npm run build --workspace=@intcloudsysops/portal`, Playwright E2E 4/4 pass / 3 skip, `npm run validate-openapi` OK, lint portal 0 errors. Middleware portal sin `NEXT_PUBLIC_SUPABASE_URL` → pasa sin redirigir (comportamiento conocido, no bloqueante).
 
 **Histórico 2026-04-09 (misma fecha):** Confirmado OAuth codes en Redis (TTL 600s) en `apps/mcp/src/auth/oauth-server.ts`; `drive-sync` migrado a `GOOGLE_SERVICE_ACCOUNT_JSON` + helper `scripts/lib/google-auth.sh`; Admin páginas métricas y agents; docs Google Cloud; Supabase migraciones 0010–0013 aplicadas; health daemon LLM Gateway; `doppler run` + `notify-discord.sh` OK; `.claude/CLAUDE.md` actualizado con skill `opsly-google-cloud`. **Drive usuario + onboard tester localrank:** SSH timeout / docker ps colgado; reintentar `./scripts/onboard-tenant.sh` y `POST /api/invitations` desde red estable.
@@ -595,7 +595,7 @@ flowchart LR
 * Portal: `types/index.ts` → `PortalHealthPayload`; `lib/portal-api-paths.ts` → `portalHealthUrl(base, tenantSlug?)` (slug vacío → `/api/portal/health`, slug → `/api/portal/tenant/{slug}/health`); `lib/tenant.ts` → `fetchPortalHealth(accessToken, tenantSlug?)`.
 * Playwright E2E: `playwright.config.ts` (Chromium, 1 worker, `PORTAL_URL` env var), `e2e/portal.spec.ts` (4 tests públicos: `/login`, `/invite/TOKEN` sin email param, `/invite/TOKEN?email=test@test.com`, `/dashboard` → redirect a `/login`; 3 tests auth: skip sin Supabase env vars).
 * Vitest: 4 tests nuevos `portalHealthUrl` en `lib/__tests__/portal-api-paths.test.ts`.
-* OpenAPI: `/api/portal/health` + `/api/portal/tenant/{slug}/health` en `docs/openapi-opsly-api.yaml`; `REQUIRED_PORTAL_PATHS` ampliado; `scripts/ci/validate-openapi.mjs` OK (**16 paths**).
+* OpenAPI: `/api/portal/health` + `/api/portal/tenant/{slug}/health` en `docs/00-architecture/openapi-opsly-api.yaml`; `REQUIRED_PORTAL_PATHS` ampliado; `scripts/ci/validate-openapi.mjs` OK (**16 paths**).
 * Validación: `npm run type-check` (11 workspaces ✅), `npm run test --workspace=@intcloudsysops/api` (**155 tests**), `npm run test --workspace=@intcloudsysops/portal` (**23 tests**), `npm run build --workspace=@intcloudsysops/portal`, Playwright E2E 4/4 pass / 3 skip, `npm run validate-openapi` OK, lint portal 0 errors. Middleware portal sin `NEXT_PUBLIC_SUPABASE_URL` → pasa sin redirigir (comportamiento conocido, no bloqueante).
 
 - **2026-04-11 — Fase 1 Seguridad Crítica:**
@@ -634,7 +634,7 @@ flowchart LR
 
 * **2026-04-06 — Bloques A/B/C (plan 3 vías):** Vitest en `apps/api`: tests nuevos para `validation`, `portal-me`, `pollPortsUntilHealthy`, rutas `tenants` y `tenants/[id]` (`npm run test` 67 tests, `npm run type-check` verde). Documentación: `docs/runbooks/{admin,dev,managed,incident}.md`, ADR-006–008, `docs/FAQ.md`. Terraform: `infra/terraform/terraform.tfvars.example` (placeholders), `terraform plan -input=false` con `TF_VAR_*` de ejemplo y nota en `infra/terraform/README.md`.
 * **2026-04-06 — CURSOR-EXECUTE-NOW (archivo `/home/claude/CURSOR-EXECUTE-NOW.md` no presente en workspace):** +36 casos en 4 archivos `*.test.ts` (health, metrics, portal, suspend/resume) + `invitations-stripe-routes.test.ts` para cobertura de `route.ts`; `npm run test:coverage` ~89% líneas en `app/api/**/route.ts`; `health/route.ts` recorta slashes finales en URL Supabase; `docs/FAQ.md` enlaces Markdown validados; `infra/terraform/tfplan.txt` + `.gitignore` `infra/terraform/tfplan`.
-* **2026-04-06 — cursor-autonomous-plan (archivo `/home/claude/cursor-autonomous-plan.md` no presente):** SUB-A `lib/api-response.ts` + refactor `auth`, `tenants`, `metrics`, `tenants/[id]`; SUB-C `docs/SECURITY_AUDIT_REPORT.md`; SUB-B `TROUBLESHOOTING.md`, `SECURITY_CHECKLIST.md`, `PERFORMANCE_BASELINE.md`; SUB-D `OBSERVABILITY.md`; SUB-E `docs/openapi-opsly-api.yaml`.
+* **2026-04-06 — cursor-autonomous-plan (archivo `/home/claude/cursor-autonomous-plan.md` no presente):** SUB-A `lib/api-response.ts` + refactor `auth`, `tenants`, `metrics`, `tenants/[id]`; SUB-C `docs/SECURITY_AUDIT_REPORT.md`; SUB-B `TROUBLESHOOTING.md`, `SECURITY_CHECKLIST.md`, `PERFORMANCE_BASELINE.md`; SUB-D `OBSERVABILITY.md`; SUB-E `docs/00-architecture/openapi-opsly-api.yaml`.
 
 _Sesión Cursor — qué se hizo (orden aproximado):_
 
@@ -646,7 +646,7 @@ _Sesión Cursor — qué se hizo (orden aproximado):_
 
 0. **GHCR deploy 2026-04-06 (tarde)** — Auditoría: paquetes `intcloudsysops-{api,admin,portal}` existen y son privados; 403 no era “solo portal” sino PAT sin acceso efectivo a manifiestos. **`deploy.yml`**: login en VPS con token del workflow; pulls alineados al compose.
 1. **Scaffold portal** — `apps/portal` (Next 15, Tailwind, login, `/invite/[token]`, dashboards developer/managed, `middleware`, libs Supabase, `output: standalone`, sin `any`).
-2. **API** — `GET /api/portal/me`, `GET /api/portal/tenant/[slug]/me`, `POST /api/portal/mode`, `POST /api/portal/tenant/[slug]/mode`, `GET /api/portal/usage`, `GET /api/portal/tenant/[slug]/usage`, invitaciones `POST /api/invitations` + Resend; **`lib/portal-me.ts`**, **`portal-auth.ts`**, **`portal-me-json.ts`**, **`portal-mode-update.ts`**, **`portal-usage-json.ts`**, **`cors-origins.ts`**, **`apps/api/middleware.ts`**. Portal: **`fetchPortalTenant(token, tenantSlug?)`** — con `tenant_slug` en JWT → **`GET /api/portal/tenant/{slug}/me`**, si no → **`GET /api/portal/me`** (`tenantSlugFromUserMetadata` + `getUser` en server); **`postPortalMode`** con slug del tenant → **`POST /api/portal/tenant/{slug}/mode`** (sin slug tercero → **`POST /api/portal/mode`**); dashboards llaman **`GET /api/portal/tenant/{slug}/usage`** con el slug del payload (`fetchPortalUsage` en `lib/tenant.ts`); opcional sin slug sigue **`GET /api/portal/usage`**. Rutas HTTP absolutas en cliente: **`lib/portal-api-paths.ts`**. Referencia OpenAPI (subset): **`docs/openapi-opsly-api.yaml`** (`/usage`, `/tenant/{slug}/*`).
+2. **API** — `GET /api/portal/me`, `GET /api/portal/tenant/[slug]/me`, `POST /api/portal/mode`, `POST /api/portal/tenant/[slug]/mode`, `GET /api/portal/usage`, `GET /api/portal/tenant/[slug]/usage`, invitaciones `POST /api/invitations` + Resend; **`lib/portal-me.ts`**, **`portal-auth.ts`**, **`portal-me-json.ts`**, **`portal-mode-update.ts`**, **`portal-usage-json.ts`**, **`cors-origins.ts`**, **`apps/api/middleware.ts`**. Portal: **`fetchPortalTenant(token, tenantSlug?)`** — con `tenant_slug` en JWT → **`GET /api/portal/tenant/{slug}/me`**, si no → **`GET /api/portal/me`** (`tenantSlugFromUserMetadata` + `getUser` en server); **`postPortalMode`** con slug del tenant → **`POST /api/portal/tenant/{slug}/mode`** (sin slug tercero → **`POST /api/portal/mode`**); dashboards llaman **`GET /api/portal/tenant/{slug}/usage`** con el slug del payload (`fetchPortalUsage` en `lib/tenant.ts`); opcional sin slug sigue **`GET /api/portal/usage`**. Rutas HTTP absolutas en cliente: **`lib/portal-api-paths.ts`**. Referencia OpenAPI (subset): **`docs/00-architecture/openapi-opsly-api.yaml`** (`/usage`, `/tenant/{slug}/*`).
 3. **Corrección crítica** — El cliente ya llamaba **`/api/portal/me`** pero la API exponía solo **`/tenant`** → handler movido a **`app/api/portal/me/route.ts`**, eliminado **`tenant`**, imports relativos corregidos (`../../../../lib/...`); **`npm run type-check`** en verde.
 4. **Hook** — **`apps/portal/hooks/usePortalTenant.ts`** (opcional) para fetch con sesión.
 5. **Managed** — Sin email fijo; solo **`NEXT_PUBLIC_SUPPORT_EMAIL`** o mensaje de configuración en UI.
@@ -699,20 +699,20 @@ _CORS + `NEXT*PUBLIC*_`en build admin +`deploy.yml`(2026-04-06, commit`8f12487` 
 - **`apps/admin/Dockerfile` (builder):** `ARG`/`ENV` `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `NEXT_PUBLIC_API_URL` antes del build (Next hornea `NEXT_PUBLIC_*`).
 - **`.github/workflows/deploy.yml`:** en _Build and push API image_, `build-args: PLATFORM_DOMAIN=${{ secrets.PLATFORM_DOMAIN }}`. En _Admin_, `build-args` con `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` y `NEXT_PUBLIC_API_URL=https://api.${{ secrets.PLATFORM_DOMAIN }}`. Comentario en cabecera del YAML con comandos `gh secret set` para el repo.
 - **Secretos GitHub requeridos en el job build** (valores desde Doppler `prd`): `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `PLATFORM_DOMAIN`. Sin ellos el build de admin o el origen CORS en API pueden fallar o quedar vacíos.
-- **Verificación local:** `npm run type-check` en verde antes del commit; post-deploy humano: `https://admin.ops.smiletripcare.com/dashboard` sin errores de CORS/Supabase en consola (tras definir secrets y un run verde de **Deploy**).
+- **Verificación local:** `npm run type-check` en verde antes del commit; post-deploy humano: `https://admin.op-sly.com/dashboard` sin errores de CORS/Supabase en consola (tras definir secrets y un run verde de **Deploy**).
 
 _Admin dashboard + API métricas — sesión Cursor 2026-04-04 (stakeholders / familia):_
 
 **Objetivo:** Admin en `apps/admin` operativo y legible, con datos reales del VPS y del tenant `smiletripcare` (Supabase `platform.tenants`), sin autenticación Supabase en modo demo.
 
-**URL pública:** https://admin.ops.smiletripcare.com — Traefik router `opsly-admin`, `Host(admin.${PLATFORM_DOMAIN})`, `entrypoints=websecure`, `tls=true`, `tls.certresolver=letsencrypt`, servicio puerto **3001** (`infra/docker-compose.platform.yml`).
+**URL pública:** https://admin.op-sly.com — Traefik router `opsly-admin`, `Host(admin.${PLATFORM_DOMAIN})`, `entrypoints=websecure`, `tls=true`, `tls.certresolver=letsencrypt`, servicio puerto **3001** (`infra/docker-compose.platform.yml`).
 
 **Admin — pantallas y UX**
 
 - **`/dashboard`:** Gauge circular CPU (verde si el uso es menor que 60%, amarillo si es menor que 85%, rojo en caso contrario; hex `#22c55e` / `#eab308` / `#ef4444`), RAM y disco en GB con `Progress` (shadcn/Radix), uptime legible, conteo tenants activos y contenedores Docker en ejecución; **SWR cada 30 s** contra la API. Tema dark, fondo `#0a0a0a`, valores en `font-mono`. Aviso en UI si la API devuelve **`mock: true`** (Prometheus no alcanzable).
 - **`/tenants`:** Tabla: slug, plan, status (badges: active verde, provisioning amarillo, failed rojo, etc.), `created_at`. Clic en fila expande: URLs n8n y Uptime con botones «Abrir», email owner, fechas; enlace a detalle.
 - **`/tenants/[tenantRef]`:** Detalle por **slug o UUID** (carpeta dinámica `[tenantRef]`). Header con nombre y status; cards plan / email / creado; botones n8n y Uptime; **iframe** a `{uptime_base}/status/{slug}` (Uptime Kuma) con texto de ayuda si bloquea por `X-Frame-Options`; sección containers y URLs técnicas.
-- **Chrome:** Marca **Opsly**, sidebar solo **Dashboard | Tenants**, footer: `Opsly Platform v1.0 · staging · ops.smiletripcare.com`.
+- **Chrome:** Marca **Opsly**, sidebar solo **Dashboard | Tenants**, footer: `Opsly Platform v1.0 · staging · op-sly.com`.
 - **Dependencias admin:** `@radix-ui/react-progress`, componente `components/ui/progress.tsx`, `CpuGauge`, hook `useSystemMetrics`.
 
 **API (`apps/api`)**
@@ -734,13 +734,13 @@ _Admin dashboard + API métricas — sesión Cursor 2026-04-04 (stakeholders / f
 
 - `npm run type-check` (Turbo) en verde antes de commit; pre-commit ESLint en rutas API tocadas.
 - Tras push a `main`, CI despliega imágenes GHCR. **Hasta `pull` + `up` de `app` y `admin` en el VPS**, una imagen admin antigua puede seguir redirigiendo a `/login` (307): hace falta imagen nueva con el ARG de demo y, en `.env`, **`ADMIN_PUBLIC_DEMO_READ=true`** para el servicio **`app`**.
-- Comprobación sugerida post-deploy: `curl -sfk https://admin.ops.smiletripcare.com` (esperar HTML del dashboard, no solo redirect a login).
+- Comprobación sugerida post-deploy: `curl -sfk https://admin.op-sly.com` (esperar HTML del dashboard, no solo redirect a login).
 
 _Primer tenant en staging — smiletripcare (2026-04-06, verificado ✅):_
 
 - **Slug:** `smiletripcare` — fila en `platform.tenants` + stack compose en VPS (`scripts/onboard-tenant.sh`).
-- **n8n:** https://n8n-smiletripcare.ops.smiletripcare.com ✅
-- **Uptime Kuma:** https://uptime-smiletripcare.ops.smiletripcare.com ✅
+- **n8n:** https://n8n-smiletripcare.op-sly.com ✅
+- **Uptime Kuma:** https://uptime-smiletripcare.op-sly.com ✅
 - **Credenciales n8n:** guardadas en Doppler proyecto `ops-intcloudsysops` / config **`prd`** (no repetir en repo ni en chat).
 
 _Sesión agente Cursor — Supabase producción + onboarding (2026-04-07):_
@@ -751,7 +751,7 @@ _Sesión agente Cursor — Supabase producción + onboarding (2026-04-07):_
 - **Corrección en repo:** renombrar RLS a **`0007_rls_policies.sql`** (orden aplicado: `0001` … `0006`, luego `0007`). Segundo **`db push`:** OK (`0004`–`0007` según estado previo del remoto).
 - **Verificación tablas:** `npx supabase db query --linked` → existen **`platform.tenants`** y **`platform.subscriptions`** en Postgres.
 - **REST / PostgREST (histórico previo al onboard 2026-04-06):** faltaba exponer `platform` y/o `GRANT` — resuelto antes del primer tenant; la API debe usar `Accept-Profile: platform` contra `platform.tenants` según config actual del proyecto.
-- **Onboarding smiletripcare (planificación, sin ejecutar):** no existe `scripts/onboard.sh`; el script es **`scripts/onboard-tenant.sh`** con `--slug`, `--email`, `--plan` (`startup` \| `business` \| `enterprise`). URLs del template: `https://n8n-{slug}.{PLATFORM_DOMAIN}/` y `https://uptime-{slug}.{PLATFORM_DOMAIN}/` (p. ej. `ops.smiletripcare.com`). El bloque _Próximo paso_ histórico mencionaba `plan: pro` y hosts distintos — **desalineado** con el CHECK SQL y la plantilla; usar el script real antes de ejecutar.
+- **Onboarding smiletripcare (planificación, sin ejecutar):** no existe `scripts/onboard.sh`; el script es **`scripts/onboard-tenant.sh`** con `--slug`, `--email`, `--plan` (`startup` \| `business` \| `enterprise`). URLs del template: `https://n8n-{slug}.{PLATFORM_DOMAIN}/` y `https://uptime-{slug}.{PLATFORM_DOMAIN}/` (p. ej. `op-sly.com`). El bloque _Próximo paso_ histórico mencionaba `plan: pro` y hosts distintos — **desalineado** con el CHECK SQL y la plantilla; usar el script real antes de ejecutar.
 
 _Capas de calidad de código — monorepo Opsly (2026-04-05, commit `d4acfcb` `feat(quality): add code patterns, SOLID rules and automated review layers`, pusheado a `main`):_
 
@@ -807,7 +807,7 @@ _CI/deploy — GHCR desde Actions, health, Traefik, `.env` compose, Discord, VPS
 
 - **`deploy.yml` — login GHCR en el VPS sin Doppler:** el script SSH ya no usa `doppler secrets get GHCR_TOKEN/GHCR_USER`. En el step _Deploy via SSH_: `env` con `GHCR_USER: ${{ github.actor }}`, `GHCR_PAT: ${{ secrets.GITHUB_TOKEN }}`; `envs: PLATFORM_DOMAIN,GHCR_USER,GHCR_PAT` para `appleboy/ssh-action`; en remoto: `echo "$GHCR_PAT" | docker login ghcr.io -u "$GHCR_USER" --password-stdin`. Job **`deploy`** con **`permissions: contents: read, packages: read`** para que `GITHUB_TOKEN` pueda autenticar lectura en GHCR al reutilizarse como PAT en el VPS.
 - **`apps/api/package.json` y `apps/admin/package.json`:** añadido script **`start`** (`next start -p 3000` / `3001`). Sin él, los contenedores entraban en bucle con _Missing script: "start"_ pese a imagen correcta.
-- **Health check post-deploy (SSH):** **`curl -sfk "https://api.${PLATFORM_DOMAIN}/api/health"`**; mensaje _Esperando que Traefik registre routers…_, luego **`sleep 60`**, hasta **5 intentos** con **`sleep 15`** entre fallos; en el intento 5 fallido: logs **`docker logs infra-app-1`** y **`exit 1`**. Secret **`PLATFORM_DOMAIN`** = dominio **base** (ej. **`ops.smiletripcare.com`**).
+- **Health check post-deploy (SSH):** **`curl -sfk "https://api.${PLATFORM_DOMAIN}/api/health"`**; mensaje _Esperando que Traefik registre routers…_, luego **`sleep 60`**, hasta **5 intentos** con **`sleep 15`** entre fallos; en el intento 5 fallido: logs **`docker logs infra-app-1`** y **`exit 1`**. Secret **`PLATFORM_DOMAIN`** = dominio **base** (ej. **`op-sly.com`**).
 - **`infra/docker-compose.platform.yml` — router Traefik para la API:** labels del servicio **`app`** con `traefik.http.routers.app.rule=Host(\`api.${PLATFORM_DOMAIN}\`)`, **`entrypoints=websecure`**, **`tls=true`**, **`tls.certresolver=letsencrypt`**, **`service=app`**, **`traefik.http.services.app.loadbalancer.server.port=3000`**, `traefik.enable=true`, **`traefik.docker.network=traefik-public`**. Redes: **`traefik`** y **`app`** en **`traefik-public`** (externa); `app`también en`internal`(Redis). Middlewares de archivo se mantienen en el router`app`.
 - **Interpolación de variables en Compose:** por defecto Compose busca `.env` en el directorio del proyecto (junto a `infra/docker-compose.platform.yml`), **no** en `/opt/opsly/.env`. En **`deploy.yml`**, **`docker compose --env-file /opt/opsly/.env -f docker-compose.platform.yml pull`** y el mismo **`--env-file`** en **`up`**, para que `${PLATFORM_DOMAIN}`, `${ACME_EMAIL}`, `${REDIS_PASSWORD}`, etc. se resuelvan en labels y `environment`. Comentario en el YAML del compose documenta esto.
 - **Discord en GitHub Actions:** **no** usar **`secrets.…` dentro de expresiones `if:`** en steps (p. ej. `if: failure() && secrets.DISCORD_WEBHOOK_URL != ''`) — el workflow queda **inválido** (_workflow file issue_, run ~0s sin logs). Solución: `if: success()` / `if: failure()` y en el script: si `DISCORD_WEBHOOK_URL` vacío → mensaje y **`exit 0`** (no-op); evita `curl: (3) URL rejected` con webhook vacío.
@@ -826,7 +826,7 @@ _Traefik — socket Docker, API y grupo `docker` (2026-04-05, seguimiento Cursor
 - **Raíz del compose:** sin clave **`version:`** (obsoleta en Compose moderno, eliminaba warning).
 - **Commits de referencia:** `ed38256` (`fix(traefik): set DOCKER_API_VERSION and fix socket mount…`), `57f0440` (`fix(traefik): fix docker provider config and socket access…` — insecure, health 5×15s, `docker info` en first-run), `0df201c` (`fix(traefik): add docker group and API version to fix socket discovery` — `group_add`, bootstrap/validate `DOCKER_GID`). Histórico previo del mismo hilo: `393bc3c` … `03068a0` (`--env-file`). Runs ejemplo: `24008556692`, `24008712390`, `24009183221`.
 
-_Intento deploy staging → `https://api.ops.smiletripcare.com/api/health` (2026-04-05):_
+_Intento deploy staging → `https://api.op-sly.com/api/health` (2026-04-05):_
 
 - **Paso 1 — Auditoría:** revisados `config/opsly.config.json` (sin secretos), `.env.example` (placeholders unificados), `infra/docker-compose.platform.yml` (solo nombres de vars), y por SSH el árbol `.env*` bajo `/opt/opsly` (`.env`, `.env.example`, `.env.swp`).
 - **Hallazgo:** en VPS y en Doppler `prd` hay claves **truncadas o placeholder** (p. ej. JWT tipo `eyJ...`, Stripe demasiado corto, `change-me` en `PLATFORM_ADMIN_TOKEN` / `REDIS_PASSWORD`). **No** se ejecutó `doppler secrets upload` desde el `.env` del VPS para no contaminar Doppler.
@@ -966,14 +966,14 @@ _Auditoría TypeScript y correcciones de código (2026-04-05, sesión agente Cla
 
 **En progreso 🔄**
 
-- **Deploy portal:** run **Deploy** en GitHub tras push (imagen `intcloudsysops-portal`); en VPS `docker compose … pull` + `up -d` incluyendo servicio **`portal`**; validar `https://portal.ops.smiletripcare.com/login` y flujo invite.
+- **Deploy portal:** run **Deploy** en GitHub tras push (imagen `intcloudsysops-portal`); en VPS `docker compose … pull` + `up -d` incluyendo servicio **`portal`**; validar `https://portal.op-sly.com/login` y flujo invite.
 - **Secretos GitHub** `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `PLATFORM_DOMAIN` definidos en `cloudsysops/opsly` y **Deploy** verde para que la imagen admin incluya Supabase/API URL y la API CORS el origen admin correcto.
 - **Despliegue Admin + API lectura demo en VPS:** variables `ADMIN_PUBLIC_DEMO_READ=true` y nuevas imágenes GHCR; validar dashboard, `/api/metrics/system` y consola del navegador (CORS + `NEXT_PUBLIC_*`).
 - **CI “Nightly code quality” (`nightly-fix.yml`):** probar con _Actions → Run workflow_; el cron solo corre con el workflow en la rama por defecto (`main`).
 - **CI `Deploy` en GitHub Actions:** tras push a `main`, **`build-and-push`** publica imágenes en GHCR; **`deploy`** hace SSH, **`docker compose --env-file /opt/opsly/.env … pull` + `up`**, health con reintentos y **`curl -sfk`**. Revisar _Actions → Deploy_ si falla SSH, disco VPS, Traefik, **`PLATFORM_DOMAIN`** o falta **`DOCKER_GID`** en el `.env` del VPS (sin él, `group_add` usa `999` y el socket puede seguir inaccesible).
 - Deploy staging — imágenes **`ghcr.io/cloudsysops/intcloudsysops-{api,admin}:latest`**; en VPS **`/opt/opsly/.env`** con **`DOCKER_GID`** (vuelve a ejecutar **`vps-bootstrap.sh`** tras cambios de compose si hace falta); login GHCR en el job con **`GITHUB_TOKEN`**. Tras cambios en Traefik: recrear contenedor **`traefik`** en el VPS para cargar env y `group_add`.
 - Con Doppler CLI + token con scope `/opt/opsly`: **`./scripts/vps-bootstrap.sh`** regenera `.env`; ejecutar tras cambiar imágenes o secretos en `prd`.
-- DNS: ops.smiletripcare.com → 157.245.223.7 ✅
+- DNS: op-sly.com → 157.245.223.7 ✅
 
 **Pendiente ⏳**
 
@@ -1045,9 +1045,9 @@ ssh -o BatchMode=yes -o ConnectTimeout=15 vps-dragon@100.120.151.91 "echo ok && 
 ./scripts/opsly.sh start-tenant localrank --wait --wait-seconds 180
 
 # 4) Verificar URLs públicas
-curl -I "https://portal.ops.smiletripcare.com"
-curl -I "https://n8n-localrank.ops.smiletripcare.com"
-curl -I "https://uptime-localrank.ops.smiletripcare.com"
+curl -I "https://portal.op-sly.com"
+curl -I "https://n8n-localrank.op-sly.com"
+curl -I "https://uptime-localrank.op-sly.com"
 
 # 5) NotebookLM EXPERIMENTAL (solo business+)
 doppler secrets set NOTEBOOKLM_ENABLED true --project ops-intcloudsysops --config prd
@@ -1123,7 +1123,7 @@ ssh vps-dragon@100.120.151.91 "docker system df && sudo du -xh /var --max-depth=
 
 - [x] **POST /api/tenants — falso 202 sin fila en DB** (mitigado en código 2026-04)
   - **Qué se hizo:** post-check con reintentos en `apps/api/app/api/tenants/route.ts` + verificación tras insert en `apps/api/lib/orchestrator.ts` + tests en `tenants-route.test.ts`.
-  - **Pendiente operativo:** run Deploy en verde tras fix de sintaxis workflow y ejecutar smoke real (`POST` + `GET /api/tenants`) con `scripts/smoke-tenant-provision-api.sh`. Runbook: [`docs/runbooks/TENANT-ONBOARDING-TRIAGE.md`](docs/runbooks/TENANT-ONBOARDING-TRIAGE.md).
+  - **Pendiente operativo:** run Deploy en verde tras fix de sintaxis workflow y ejecutar smoke real (`POST` + `GET /api/tenants`) con `scripts/smoke-tenant-provision-api.sh`. Runbook: [`docs/tenants/runbooks/TENANT-ONBOARDING-TRIAGE.md`](docs/tenants/runbooks/TENANT-ONBOARDING-TRIAGE.md).
 - [ ] **Deploy GitHub Actions → VPS (SSH timeout)** — si el job **Deploy** falla: (1) `TAILSCALE_AUTHKEY` + `VPS_HOST` / `VPS_SSH_HOST` = IP tailnet del VPS; (2) el workflow **no** impone un tag fijo de Tailscale (evita fallos de ACL); (3) `timeout: 2m` en el paso SSH. Ver [`docs/runbooks/DEPLOY-GITHUB-ACTIONS.md`](docs/runbooks/DEPLOY-GITHUB-ACTIONS.md).
 
 - [x] 🟠 **CONSOLIDACIÓN ARQUITECTURA (2026-04-24)**
@@ -1139,7 +1139,7 @@ ssh vps-dragon@100.120.151.91 "docker system df && sudo du -xh /var --max-depth=
 - [x] **`.env` VPS** alineado con Doppler vía **`vps-bootstrap.sh`** + Doppler en VPS (sesión 2026-04-05); repetir bootstrap tras cambios en `prd`
 - [x] **Doppler CLI + token con scope `/opt/opsly`** en VPS (sesión 2026-04-05) — alternativa a solo `scp`
 - [x] **Traefik v3 + Docker 29.3.1 API negotiation bug** — fix: `daemon.json` `min-api-version: 1.24` + vps-bootstrap.sh paso [j] idempotente (2026-04-06)
-- [x] **Health check staging** — `curl -sfk https://api.ops.smiletripcare.com/api/health` → `{"status":"ok"}` (2026-04-06 23:58 UTC)
+- [x] **Health check staging** — `curl -sfk https://api.op-sly.com/api/health` → `{"status":"ok"}` (2026-04-06 23:58 UTC)
 - [x] **Migraciones SQL en Supabase opsly-prod** — `db push` vía CLI enlazada; tablas `platform.tenants` / `platform.subscriptions` verificadas en Postgres (2026-04-07)
 - [x] **PostgREST / API sobre schema `platform`** — `GRANT` USAGE (y permisos necesarios) + schema expuesto en API; onboarding y API contra `platform.tenants` operativos (2026-04-06)
 - [x] **Resend remitente en Doppler/VPS** — `RESEND_FROM_EMAIL` en `prd` + bootstrap + `app` recreado (2026-04-07).
@@ -1319,7 +1319,7 @@ flowchart TB
 
 ### Mitigaciones Inmediatas (esta noche)
 
-1. **Cloudflare Proxy (5 min):** Cambiar `*.ops.smiletripcare.com` a naranja (Proxy ON) — oculta IP VPS
+1. **Cloudflare Proxy (5 min):** Cambiar `*.op-sly.com` a naranja (Proxy ON) — oculta IP VPS
 2. **ufw Firewall (5 min):** Default DROP; whitelist SSH desde Tailscale (100.64.0.0/10), HTTP/HTTPS público (`./scripts/vps-secure.sh --ssh-host 100.120.151.91`)
 3. **Tailscale SSH (5 min):** VPS vía `100.120.151.91` (IP Tailscale) — scripts ya usan por defecto (`SSH_HOST=${SSH_HOST:-100.120.151.91}`)
 
@@ -1338,8 +1338,8 @@ flowchart TB
 | Usuario SSH     | vps-dragon                               |
 | Repo en VPS     | /opt/opsly                               |
 | Repo GitHub     | github.com/cloudsysops/opsly             |
-| Dominio staging | ops.smiletripcare.com                    |
-| DNS wildcard    | \*.ops.smiletripcare.com → 157.245.223.7 |
+| Dominio staging | op-sly.com                    |
+| DNS wildcard    | \*.op-sly.com → 157.245.223.7 |
 
 ### Infraestructura VPS-dragon – Tailscale
 
@@ -1350,7 +1350,7 @@ flowchart TB
   - `allow 80/tcp`
   - `allow 443/tcp`
   - `default deny incoming`
-- Cloudflare recomendado: Proxy ON en todos los registros `*.ops.smiletripcare.com`.
+- Cloudflare recomendado: Proxy ON en todos los registros `*.op-sly.com`.
 
 ### Topología de red activa (Management vs Edge)
 
@@ -1419,7 +1419,7 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 | 2026-04-04 | Portal `fetchPortalTenant`: si `user_metadata.tenant_slug` existe → `GET /api/portal/tenant/{slug}/me`; si no → `GET /api/portal/me` (`tenantSlugFromUserMetadata`, `portal-server`, hooks)                                                                                                                                                                                                                                                             | Fase 4 incremento 17; alinea cliente con rutas Zero-Trust `[slug]` como `fetchPortalUsage`                                                                                                                    |
 | 2026-04-08 | Portal Vitest: `lib/__tests__/tenant-metadata.test.ts` cubre `tenantSlugFromUserMetadata`; `ci.yml` job `test` ejecuta `apps/portal` en paralelo                                                                                                                                                                                                                                                                                                        | Fase 4 incremento 18; regresiones de metadata JWT antes de llegar a la API                                                                                                                                    |
 | 2026-04-08 | Portal `portal-api-paths.ts`: URLs absolutas para `/me`, `/mode`, `/usage` y rutas con `[slug]`; `tenant.ts` delega; tests `portal-api-paths.test.ts`                                                                                                                                                                                                                                                                                                   | Fase 4 incremento 19; un solo lugar para `encodeURIComponent` y `?period=`                                                                                                                                    |
-| 2026-04-08 | OpenAPI `docs/openapi-opsly-api.yaml`: documentados `GET /api/portal/usage` y rutas `/api/portal/tenant/{slug}/me                                                                                                                                                                                                                                                                                                                                       | mode                                                                                                                                                                                                          | usage`junto a`/me`y`/mode` | Fase 4 incremento 20; contrato visible para integradores sin tocar runtime |
+| 2026-04-08 | OpenAPI `docs/00-architecture/openapi-opsly-api.yaml`: documentados `GET /api/portal/usage` y rutas `/api/portal/tenant/{slug}/me                                                                                                                                                                                                                                                                                                                                       | mode                                                                                                                                                                                                          | usage`junto a`/me`y`/mode` | Fase 4 incremento 20; contrato visible para integradores sin tocar runtime |
 | 2026-04-05 | CI `npm run validate-openapi`: `scripts/ci/validate-openapi.mjs` parsea el YAML y exige `openapi` + `paths`; paso en `validate-context.yml` tras `npm ci`                                                                                                                                                                                                                                                                                               | Fase 4 incremento 21; evita merges con spec YAML inválida o sin estructura mínima                                                                                                                             |
 | 2026-04-08 | OpenAPI: lista fija de 6 paths portal en `scripts/ci/validate-openapi.mjs` (`REQUIRED_PORTAL_PATHS`); falla si se borra una ruta del subset                                                                                                                                                                                                                                                                                                             | Fase 4 incremento 23; contrato portal no se “silencia” al editar el YAML                                                                                                                                      |
 | 2026-04-04 | Portal `/invite/[token]`: validación pura `validateInviteActivationForm` + mensajes ES centralizados; Vitest sin mocks de Supabase                                                                                                                                                                                                                                                                                                                      | Fase 4 incremento 22; mismo UX; base para E2E invite                                                                                                                                                          |

@@ -1,0 +1,13 @@
+{
+  "name": "@intcloudsysops/evaluation",
+  "version": "1.0.0",
+  "description": "Testing, validation, and quality metrics framework",
+  "type": "module",
+  "main": "./index.ts",
+  "types": "./index.ts",
+  "scripts": {
+    "test": "echo 'No tests yet'",
+    "type-check": "echo 'Evaluation type-checked via root tsconfig'"
+  },
+  "keywords": ["evaluation", "testing", "validation", "quality-metrics"]
+}

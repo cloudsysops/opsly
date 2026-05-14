@@ -104,17 +104,18 @@ En `full-stack` se mantienen los defaults históricos. Todos los workers aceptan
 
 Cada job lleva `priority` en las opciones de `Queue.add` (BullMQ: **0 = máxima prioridad**, valores mayores se procesan después). `planToQueuePriority` asigna: **enterprise → 0**, **business → 10_000**, **startup** o sin plan → **50_000**. El log JSON `job_enqueue` incluye `queue_priority` para correlación.
 
-## Remote Planner (Chat.z / Fase 4)
+## Remote Planner — Billy (Chat.z / Fase 4)
 
 - **Intención:** `remote_plan` (o cualquier intent con `agent_role: "planner"`, que se normaliza a `remote_plan`).
-- **Flujo principal:** el orchestrator usa `executeRemotePlanner` en `apps/orchestrator/src/planner-client.ts` → **`POST /v1/chat/completions`** en **llm-gateway** (mensajes `system` + `user` con contexto y lista de herramientas). Compatibilidad: `callRemotePlanner` en `llm-gateway-client.ts` delega en el mismo cliente. **`POST /v1/planner`** sigue disponible (mismo `llmCall` + JSON planner). No hay llamadas directas a Anthropic/OpenAI desde el orchestrator.
-- **Hermes:** el gateway ejecuta `llmCall()` y registra uso (tokens/costo) con `request_id` y `tenant_slug` en el flujo estándar del gateway.
+- **Flujo principal (Billy):** el orchestrator usa `executeRemotePlanner` en `apps/orchestrator/src/planner-client.ts` → **`POST /v1/chat/completions`** en **llm-gateway** (mensajes `system` + `user` con contexto y lista de herramientas). Compatibilidad: `callRemotePlanner` en `llm-gateway-client.ts` delega en el mismo cliente. **`POST /v1/planner`** sigue disponible (mismo `llmCall` + JSON planner). No hay llamadas directas a Anthropic/OpenAI desde el orchestrator.
+- **Metering (Hermes, producto):** el gateway ejecuta `llmCall()` y registra uso (tokens/costo) con `request_id` y `tenant_slug` en el flujo estándar del gateway.
+- **Política LLM por intent:** `resolveLlmPolicyFromIntent` (`apps/orchestrator/src/openclaw/llm-intent-policy.ts`) + overrides en `metadata` alimentan `routing_bias` / `provider_hint` antes de `executeRemotePlanner` (ver `docs/00-architecture/LLM-GATEWAY.md`).
 - **Respuesta:** JSON `{ reasoning, actions: [{ tool, params }] }`.
 
 **Estado del Planner (2026-04-10):** el flujo `remote_plan` está en **modo producción**.
 
-1. El orchestrator recibe un `IntentRequest` (exige `tenant_slug` para aislamiento Hermes).
-2. Llama a `executeRemotePlanner` → **LLM Gateway** (`POST /v1/chat/completions` o equivalente interno).
+1. El orchestrator recibe un `IntentRequest` (exige `tenant_slug` para aislamiento multi-tenant del planner Billy).
+2. Llama a `executeRemotePlanner` (Billy) → **LLM Gateway** (`POST /v1/chat/completions` o equivalente interno).
 3. El JSON devuelto se valida; cada acción se mapea con `planner-map.ts` a un `OrchestratorJob` y se encola en BullMQ vía `enqueueJob` (cola `openclaw`, tipos `cursor` \| `n8n` \| `notify` \| `drive` según herramienta). Los `params` del planner pasan por `sanitizePlannerParams` (no pueden sobrescribir `tenant_slug`, `request_id` ni `tenant_id`).
 4. **Límites de seguridad:** máximo **5** acciones por plan (`MAX_PLANNER_ACTIONS`); si se supera → error _Plan demasiado complejo_. Herramientas desconocidas → log `planner_unknown_tool` y se omiten (fail-safe).
 5. **Observabilidad:** línea JSON `planner_response` en stdout; por cada job encolado, `planner_action_enqueued` (`observability/planner-log.ts`); estado inicial en Redis con `setJobState`.

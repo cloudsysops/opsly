@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { ValidationMetricsStore } from '../lib/validation-metrics.js';
-import { ValidationFeedbackLayer } from '../lib/validation-feedback.js';
-import { ValidationDashboard } from '../lib/validation-dashboard.js';
+import { ValidationMetricsStore } from '../lib/validation/validation-metrics.js';
+import { ValidationFeedbackLayer } from '../lib/validation/validation-feedback.js';
+import { ValidationDashboard } from '../lib/validation/validation-dashboard.js';
 import { LocalWorkerPool } from '../lib/local-worker-pool.js';
 
 /**

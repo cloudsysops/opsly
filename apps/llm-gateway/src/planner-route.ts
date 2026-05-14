@@ -3,7 +3,8 @@ import type { IncomingMessage, ServerResponse } from 'node:http';
 import { llmCall } from './gateway.js';
 import { GatewayHttpError } from './llm-direct.js';
 import type { RoutingBias } from './routing-hints.js';
-import type { LLMMessage, LLMRequest } from './types.js';
+import type { LLMMessage, LLMRequest, LlmProviderHint } from './types.js';
+import { parseProviderHintBody } from './parse-provider-hint.js';
 
 /** Contrato alineado con apps/orchestrator (Remote Planner / Chat.z). */
 export interface PlannerResponseShape {
@@ -29,7 +30,7 @@ export interface ChatCompletionsPlannerBody {
   request_id?: string;
   tenant_plan?: 'startup' | 'business' | 'enterprise';
   routing_bias?: RoutingBias;
-  provider_hint?: 'deepseek';
+  provider_hint?: LlmProviderHint;
   messages: Array<{ role: string; content: string }>;
   user_id?: string;
   feature?: string;
@@ -119,7 +120,7 @@ function chatBodyToLlmRequest(body: ChatCompletionsPlannerBody, requestId: strin
     body.routing_bias === 'balanced' || body.routing_bias === 'quality' || body.routing_bias === 'cost'
       ? body.routing_bias
       : 'cost';
-  const providerHint = body.provider_hint === 'deepseek' ? 'deepseek' : undefined;
+  const providerHint = parseProviderHintBody(body.provider_hint);
 
   return {
     tenant_slug: body.tenant_slug,

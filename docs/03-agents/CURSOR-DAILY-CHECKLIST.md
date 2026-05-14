@@ -1,6 +1,6 @@
 # Checklist diario — sesiones Cursor / agentes
 
-Copiar el bloque **“Hoy”** al iniciar la sesión. Contexto: [`AGENTS.md`](../AGENTS.md), [`ROADMAP.md`](../ROADMAP.md), [`SPRINT-TRACKER.md`](../SPRINT-TRACKER.md).
+Copiar el bloque **“Hoy”** al iniciar la sesión. Contexto: [`AGENTS.md`](../AGENTS.md), [`ROADMAP.md`](../ROADMAP.md), [`SPRINT-TRACKER.md`](../01-development/SPRINT-TRACKER.md).
 
 ## Antes de empezar
 
