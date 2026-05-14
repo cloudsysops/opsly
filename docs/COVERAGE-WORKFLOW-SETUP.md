@@ -209,6 +209,6 @@ permissions:
 
 ## Related Documents
 
-- [Test Coverage Analysis Guide](../pr/234) - Detailed findings
-- [Scripts Documentation](scripts/analyze-test-coverage.py) - Python script details
-- [CI/CD Workflow Index](docs/ops/workflows-index.md) - All workflows
+- [Test Coverage Analysis](https://github.com/cloudsysops/opsly/pull/234) - Detailed findings and recommendations (PR #234)
+- [Test Coverage Script](scripts/analyze-test-coverage.py) - Python implementation
+- [CI/CD Workflow Index](../ops/workflows-index.md) - All available workflows
