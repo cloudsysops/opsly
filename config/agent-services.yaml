@@ -47,7 +47,7 @@ services:
   # GitHub Copilot Chat Service
   # Optional: Copilot Chat API if available locally
   copilot:
-    enabled: false
+    enabled: true
     url: "http://localhost:5003"
     env_var: "OPSLY_COPILOT_AGENT_URL"
     type: "http"
@@ -59,12 +59,12 @@ services:
     retry_attempts: 2
     retry_backoff_ms: 1500
     health_check_interval_ms: 45000
-    description: "GitHub Copilot Chat service"
+    description: "GitHub Copilot local CLI bridge service"
 
   # Vercel OpenCode API Service
   # Optional: OpenCode endpoint for advanced code generation
   opencode:
-    enabled: false
+    enabled: true
     url: "http://localhost:5004"
     env_var: "OPSLY_OPENCODE_AGENT_URL"
     type: "http"
@@ -76,12 +76,12 @@ services:
     retry_attempts: 1
     retry_backoff_ms: 3000
     health_check_interval_ms: 60000
-    description: "Vercel OpenCode service"
+    description: "OpenCode local CLI bridge service"
 
   # Codex/OpenAI-compatible local service
   # Disabled until a concrete local bridge is running.
   codex:
-    enabled: false
+    enabled: true
     url: "http://localhost:5005"
     env_var: "OPSLY_CODEX_AGENT_URL"
     type: "http"
@@ -94,11 +94,11 @@ services:
     retry_attempts: 1
     retry_backoff_ms: 3000
     health_check_interval_ms: 60000
-    description: "Codex-compatible local execution service"
+    description: "Codex local CLI bridge service"
 
   # OpenAI IDE fallback bridge (alias kept separate for operator routing)
   openai:
-    enabled: false
+    enabled: true
     url: "http://localhost:5006"
     env_var: "OPSLY_OPENAI_AGENT_URL"
     type: "http"
@@ -110,11 +110,11 @@ services:
     retry_attempts: 1
     retry_backoff_ms: 3000
     health_check_interval_ms: 60000
-    description: "OpenAI local agent bridge"
+    description: "OpenAI/Codex local CLI bridge service"
 
   # Hermes routing bridge for Opsly LLM control-plane tasks
   hermes:
-    enabled: false
+    enabled: true
     url: "http://localhost:5007"
     env_var: "OPSLY_HERMES_AGENT_URL"
     type: "http"
@@ -127,11 +127,11 @@ services:
     retry_attempts: 1
     retry_backoff_ms: 3000
     health_check_interval_ms: 60000
-    description: "Hermes local routing service"
+    description: "Hermes local CLI bridge service"
 
   # Decepticon red-team/validation bridge
   decepticon:
-    enabled: false
+    enabled: true
     url: "http://localhost:5008"
     env_var: "OPSLY_DECEPTICON_AGENT_URL"
     type: "http"
@@ -144,7 +144,58 @@ services:
     retry_attempts: 1
     retry_backoff_ms: 3000
     health_check_interval_ms: 60000
-    description: "Decepticon validation service"
+    description: "Decepticon local CLI review bridge service"
+
+  # Aider git-aware coding bridge
+  aider:
+    enabled: true
+    url: "http://localhost:5009"
+    env_var: "OPSLY_AIDER_AGENT_URL"
+    type: "http"
+    agent_role: "executor"
+    capabilities:
+      - git-aware-editing
+      - code-generation
+      - refactoring
+    timeout_ms: 300000
+    retry_attempts: 1
+    retry_backoff_ms: 3000
+    health_check_interval_ms: 60000
+    description: "Aider local CLI bridge service"
+
+  # Goose general-purpose automation bridge
+  goose:
+    enabled: true
+    url: "http://localhost:5010"
+    env_var: "OPSLY_GOOSE_AGENT_URL"
+    type: "http"
+    agent_role: "tool"
+    capabilities:
+      - multi-step-automation
+      - repository-inspection
+      - tool-use
+    timeout_ms: 300000
+    retry_attempts: 1
+    retry_backoff_ms: 3000
+    health_check_interval_ms: 60000
+    description: "Goose local CLI bridge service"
+
+  # Playwright frontend QA bridge
+  playwright:
+    enabled: true
+    url: "http://localhost:5011"
+    env_var: "OPSLY_PLAYWRIGHT_AGENT_URL"
+    type: "http"
+    agent_role: "validator"
+    capabilities:
+      - browser-e2e
+      - frontend-regression
+      - screenshot-validation
+    timeout_ms: 300000
+    retry_attempts: 1
+    retry_backoff_ms: 3000
+    health_check_interval_ms: 60000
+    description: "Playwright local E2E and browser QA runner"
 
 # Default service selection rules
 defaults:
@@ -161,6 +212,9 @@ defaults:
     - "openai"
     - "hermes"
     - "decepticon"
+    - "aider"
+    - "goose"
+    - "playwright"
 
 # Scaling configuration (for future remote/Docker deployments)
 # Example: Move Cursor to different machine by changing URL
@@ -175,6 +229,9 @@ environments:
     openai: "http://localhost:5006"
     hermes: "http://localhost:5007"
     decepticon: "http://localhost:5008"
+    aider: "http://localhost:5009"
+    goose: "http://localhost:5010"
+    playwright: "http://localhost:5011"
 
   local:
     cursor: "http://localhost:5001"
@@ -185,6 +242,9 @@ environments:
     openai: "http://localhost:5006"
     hermes: "http://localhost:5007"
     decepticon: "http://localhost:5008"
+    aider: "http://localhost:5009"
+    goose: "http://localhost:5010"
+    playwright: "http://localhost:5011"
 
   tailscale:
     cursor: "http://opsly-mac2011:5001"     # MacBook via Tailscale
@@ -192,6 +252,10 @@ environments:
     claude: "http://opsly-admin:5002"       # Claude on admin machine
     codex: "http://opsly-admin:5005"
     hermes: "http://opsly-admin:5007"
+    decepticon: "http://opsly-admin:5008"
+    aider: "http://opsly-admin:5009"
+    goose: "http://opsly-admin:5010"
+    playwright: "http://opsly-admin:5011"
     # Orchestrator stays on VPS via normal config
 
   remote:
@@ -199,9 +263,17 @@ environments:
     claude: "http://192.168.1.100:5002"
     codex: "http://192.168.1.100:5005"
     hermes: "http://192.168.1.100:5007"
+    decepticon: "http://192.168.1.100:5008"
+    aider: "http://192.168.1.100:5009"
+    goose: "http://192.168.1.100:5010"
+    playwright: "http://192.168.1.100:5011"
 
   docker:
     cursor: "http://cursor-container:5001"
     claude: "http://claude-container:5002"
     codex: "http://codex-container:5005"
     hermes: "http://hermes-container:5007"
+    decepticon: "http://decepticon-container:5008"
+    aider: "http://aider-container:5009"
+    goose: "http://goose-container:5010"
+    playwright: "http://playwright-container:5011"

@@ -3,7 +3,9 @@
     "name": "brain-driven-optimization",
     "enabled": true,
     "description": "All agents use brain:research for 60-70% token savings",
-    "mcp_tools_required": ["brain:research"],
+    "mcp_tools_required": [
+      "brain:research"
+    ],
     "rule_hierarchy": [
       "1. Query exists in docs/brain/ → use brain:research",
       "2. Search code locally → grep/find",
@@ -11,9 +13,18 @@
       "4. Last resort → ask user"
     ],
     "triggers_for_brain_research": [
-      "investigar", "research", "explain", "explica", "¿cómo funciona", "how does", "funcionamiento"
+      "investigar",
+      "research",
+      "explain",
+      "explica",
+      "¿cómo funciona",
+      "how does",
+      "funcionamiento"
     ],
-    "onboarding_skills": ["opsly-context", "opsly-brain-researcher"]
+    "onboarding_skills": [
+      "opsly-context",
+      "opsly-brain-researcher"
+    ]
   },
   "services": {
     "cursor": {
@@ -44,52 +55,85 @@
       "description": "LLM Gateway con proveedores gratuitos: Ollama, DeepSeek, NVIDIA, OpenRouter"
     },
     "copilot": {
-      "enabled": false,
+      "enabled": true,
       "url": "http://localhost:5003",
       "envUrl": "OPSLY_COPILOT_AGENT_URL",
       "type": "http",
       "timeoutMs": 120000,
-      "retries": 1
+      "retries": 1,
+      "description": "copilot real local CLI bridge service"
     },
     "opencode": {
-      "enabled": false,
+      "enabled": true,
       "url": "http://localhost:5004",
       "envUrl": "OPSLY_OPENCODE_AGENT_URL",
       "type": "http",
       "timeoutMs": 120000,
-      "retries": 1
+      "retries": 1,
+      "description": "opencode real local CLI bridge service"
     },
     "codex": {
-      "enabled": false,
+      "enabled": true,
       "url": "http://localhost:5005",
       "envUrl": "OPSLY_CODEX_AGENT_URL",
       "type": "http",
       "timeoutMs": 120000,
-      "retries": 1
+      "retries": 1,
+      "description": "codex real local CLI bridge service"
     },
     "openai": {
-      "enabled": false,
+      "enabled": true,
       "url": "http://localhost:5006",
       "envUrl": "OPSLY_OPENAI_AGENT_URL",
       "type": "http",
       "timeoutMs": 120000,
-      "retries": 1
+      "retries": 1,
+      "description": "openai real local CLI bridge service"
     },
     "hermes": {
-      "enabled": false,
+      "enabled": true,
       "url": "http://localhost:5007",
       "envUrl": "OPSLY_HERMES_AGENT_URL",
       "type": "http",
       "timeoutMs": 120000,
-      "retries": 1
+      "retries": 1,
+      "description": "hermes real local CLI bridge service"
     },
     "decepticon": {
-      "enabled": false,
+      "enabled": true,
       "url": "http://localhost:5008",
       "envUrl": "OPSLY_DECEPTICON_AGENT_URL",
       "type": "http",
       "timeoutMs": 120000,
-      "retries": 1
+      "retries": 1,
+      "description": "decepticon real local CLI bridge service"
+    },
+    "aider": {
+      "enabled": true,
+      "url": "http://localhost:5009",
+      "envUrl": "OPSLY_AIDER_AGENT_URL",
+      "type": "http",
+      "timeoutMs": 300000,
+      "retries": 1,
+      "description": "aider git-aware local coding CLI bridge service"
+    },
+    "goose": {
+      "enabled": true,
+      "url": "http://localhost:5010",
+      "envUrl": "OPSLY_GOOSE_AGENT_URL",
+      "type": "http",
+      "timeoutMs": 300000,
+      "retries": 1,
+      "description": "goose general-purpose local agent CLI bridge service"
+    },
+    "playwright": {
+      "enabled": true,
+      "url": "http://localhost:5011",
+      "envUrl": "OPSLY_PLAYWRIGHT_AGENT_URL",
+      "type": "http",
+      "timeoutMs": 300000,
+      "retries": 1,
+      "description": "playwright portal E2E and browser QA local runner"
     }
   }
 }

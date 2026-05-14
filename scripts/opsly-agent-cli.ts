@@ -133,13 +133,16 @@ function startCommandFor(agent: string): string | null {
 
   const defaults: Record<string, string> = {
     cursor: 'npm run opsly:local-cursor-service',
-    claude: 'PORT=5002 npx tsx scripts/mock-claude-agent.ts',
-    copilot: 'PORT=5003 npx tsx scripts/mock-cursor-agent.ts',
-    opencode: 'PORT=5004 npx tsx scripts/mock-cursor-agent.ts',
-    codex: 'PORT=5005 npx tsx scripts/mock-cursor-agent.ts',
-    openai: 'PORT=5006 npx tsx scripts/mock-claude-agent.ts',
-    hermes: 'PORT=5007 npx tsx scripts/mock-claude-agent.ts',
-    decepticon: 'PORT=5008 npx tsx scripts/mock-cursor-agent.ts',
+    claude: 'npm run opsly:local-claude-service',
+    copilot: 'npm run opsly:local-copilot-service',
+    opencode: 'npm run opsly:local-opencode-service',
+    codex: 'npm run opsly:local-codex-service',
+    openai: 'npm run opsly:local-openai-service',
+    hermes: 'npm run opsly:local-hermes-service',
+    decepticon: 'npm run opsly:local-decepticon-service',
+    aider: 'npm run opsly:local-aider-service',
+    goose: 'npm run opsly:local-goose-service',
+    playwright: 'npm run opsly:local-playwright-service',
   };
 
   return defaults[agent] ?? null;

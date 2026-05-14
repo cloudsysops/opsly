@@ -1,106 +1,129 @@
 {
   "name": "opsly-distributed-tracing",
   "version": "1.0.0",
-  "description": "Implement OpenTelemetry distributed tracing across 18+ microservices. Enables request correlation, latency debugging, service dependency visualization, and cost attribution.",
+  "description": "OpenTelemetry tracing for Opsly services: request correlation, latency debugging, per-service spans, and LLM cost attribution.",
   "priority": "CRITICAL",
   "category": "infrastructure/observability",
   "triggers": [
-    "enable tracing",
     "distributed tracing",
-    "opentelemetry",
-    "observability setup",
-    "trace requests",
-    "correlation ids"
-  ],
-  "author": "claude",
-  "maintainer": "infrastructure",
-  "license": "MIT",
-  "keywords": [
-    "observability",
     "tracing",
     "opentelemetry",
-    "performance",
-    "debugging",
-    "cost-attribution",
-    "request-correlation"
+    "otel",
+    "traceparent",
+    "span",
+    "jaeger",
+    "tempo",
+    "request correlation",
+    "latency",
+    "p99",
+    "baggage",
+    "tenant_slug",
+    "request_id"
   ],
-  "skills_related": [
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "action": {
+        "type": "string",
+        "description": "Qué tipo de trabajo de tracing se necesita.",
+        "enum": [
+          "bootstrap",
+          "instrument",
+          "propagate",
+          "debug",
+          "validate",
+          "attribute-cost"
+        ]
+      },
+      "service": {
+        "type": "string",
+        "description": "Servicio o proceso a instrumentar."
+      },
+      "backend": {
+        "type": "string",
+        "description": "Backend de trazas objetivo.",
+        "enum": ["otlp", "jaeger", "tempo", "datadog", "newrelic"]
+      },
+      "tenant_slug": {
+        "type": "string",
+        "description": "Tenant a correlacionar cuando aplique."
+      },
+      "request_id": {
+        "type": "string",
+        "description": "Identificador de correlación de la request o job."
+      }
+    },
+    "required": ["action"],
+    "additionalProperties": true
+  },
+  "outputSchema": {
+    "type": "object",
+    "properties": {
+      "implemented": {
+        "type": "boolean",
+        "description": "Si la instrumentación o ajuste quedó aplicado."
+      },
+      "services": {
+        "type": "array",
+        "items": { "type": "string" },
+        "description": "Servicios tocados o verificados."
+      },
+      "backend": {
+        "type": "string",
+        "description": "Backend de trazas usado o validado."
+      },
+      "correlationKeys": {
+        "type": "array",
+        "items": { "type": "string" },
+        "description": "Claves propagadas en la traza."
+      },
+      "validation": {
+        "type": "array",
+        "items": { "type": "string" },
+        "description": "Comprobaciones realizadas."
+      }
+    }
+  },
+  "examples": [
+    {
+      "input": {
+        "action": "instrument",
+        "service": "api",
+        "backend": "otlp",
+        "tenant_slug": "acme",
+        "request_id": "req_123"
+      },
+      "output": {
+        "implemented": true,
+        "services": ["api"],
+        "backend": "otlp",
+        "correlationKeys": ["tenant_slug", "request_id", "traceparent"],
+        "validation": ["trace propagated", "span emitted"]
+      }
+    },
+    {
+      "input": {
+        "action": "attribute-cost",
+        "service": "llm-gateway",
+        "backend": "tempo"
+      },
+      "output": {
+        "implemented": true,
+        "services": ["llm-gateway"],
+        "backend": "tempo",
+        "correlationKeys": ["llm.model", "llm.tokens_in", "llm.tokens_out", "cost.usd"],
+        "validation": ["cost attached to span", "no secret leakage"]
+      }
+    }
+  ],
+  "crossReferences": [
     "opsly-observability",
     "opsly-telemetry",
-    "opsly-architect-senior"
+    "opsly-llm",
+    "opsly-api",
+    "opsly-orchestrator",
+    "opsly-architect"
   ],
-  "entry_point": "scripts/setup-otel.ts",
-  "exports": {
-    "setupOtel": "scripts/setup-otel.ts",
-    "instrumentService": "scripts/instrument-service.ts",
-    "traceExporter": "scripts/trace-exporter.ts",
-    "validateTraces": "scripts/validate-traces.ts"
-  },
-  "dependencies": {
-    "@opentelemetry/api": "^1.7.0",
-    "@opentelemetry/sdk-node": "^0.45.0",
-    "@opentelemetry/auto-instrumentations-node": "^0.39.0",
-    "@opentelemetry/sdk-trace-node": "^0.45.0",
-    "@opentelemetry/exporter-trace-otlp-http": "^0.45.0",
-    "@opentelemetry/resources": "^0.45.0",
-    "@opentelemetry/semantic-conventions": "^0.45.0",
-    "@opentelemetry/instrumentation-http": "^0.45.0",
-    "@opentelemetry/instrumentation-pg": "^0.35.0",
-    "axios": "^1.6.0"
-  },
-  "env_required": [
-    "OTEL_EXPORTER_OTLP_ENDPOINT",
-    "OTEL_SERVICE_NAME"
-  ],
-  "env_optional": [
-    "JAEGER_ENDPOINT",
-    "DD_TRACE_ENABLED",
-    "NEWRELIC_ENABLED"
-  ],
-  "config_schema": {
-    "trace_sample_rate": 1.0,
-    "span_limit": 2048,
-    "trace_backend": "jaeger",
-    "batch_size": 512
-  },
-  "services_instrumented": [
-    "orchestrator",
-    "api",
-    "llm-gateway",
-    "local-services",
-    "context-builder",
-    "admin",
-    "portal",
-    "mcp"
-  ],
-  "capabilities": {
-    "request_correlation": true,
-    "latency_debugging": true,
-    "service_dependency_graph": true,
-    "cost_attribution": true,
-    "compliance_tracing": true,
-    "multi_tenant_isolation": true
-  },
-  "integrations": {
-    "trace_backends": [
-      "jaeger",
-      "grafana-tempo",
-      "datadog",
-      "newrelic"
-    ],
-    "observability_module": true,
-    "telemetry_module": true,
-    "evaluation_framework": true,
-    "admin_dashboard": "/traces"
-  },
-  "success_metrics": {
-    "trace_coverage": "95%+",
-    "trace_latency_p50_ms": "<500",
-    "tenant_isolation": "100% (0 leaks)",
-    "debugging_speed_reduction": "5min (from 30min)",
-    "cost_accuracy": "±2%"
-  },
   "status": "stable",
-  "created_at": "2026-05-09",
-  "updated_at": "2026-05-09"
+  "updated_at": "2026-05-13"
 }

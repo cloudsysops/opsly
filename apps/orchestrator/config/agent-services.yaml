@@ -31,29 +31,50 @@ services:
     retry_attempts: 2
 
   local_codex:
-    enabled: false
+    enabled: true
     endpoint: http://127.0.0.1:5005
     env_var: OPSLY_CODEX_AGENT_URL
     timeout: 120000
     retry_attempts: 1
 
   local_openai:
-    enabled: false
+    enabled: true
     endpoint: http://127.0.0.1:5006
     env_var: OPSLY_OPENAI_AGENT_URL
     timeout: 120000
     retry_attempts: 1
 
   local_hermes:
-    enabled: false
+    enabled: true
     endpoint: http://127.0.0.1:5007
     env_var: OPSLY_HERMES_AGENT_URL
     timeout: 120000
     retry_attempts: 1
 
   local_decepticon:
-    enabled: false
+    enabled: true
     endpoint: http://127.0.0.1:5008
     env_var: OPSLY_DECEPTICON_AGENT_URL
     timeout: 120000
+    retry_attempts: 1
+
+  local_aider:
+    enabled: true
+    endpoint: http://127.0.0.1:5009
+    env_var: OPSLY_AIDER_AGENT_URL
+    timeout: 300000
+    retry_attempts: 1
+
+  local_goose:
+    enabled: true
+    endpoint: http://127.0.0.1:5010
+    env_var: OPSLY_GOOSE_AGENT_URL
+    timeout: 300000
+    retry_attempts: 1
+
+  local_playwright:
+    enabled: true
+    endpoint: http://127.0.0.1:5011
+    env_var: OPSLY_PLAYWRIGHT_AGENT_URL
+    timeout: 300000
     retry_attempts: 1

@@ -1,5 +1,5 @@
 /**
- * /admin/tenants/[slug]/graph
+ * /admin/tenants/[tenantRef]/graph
  * Graphyfi DAG Visualization Dashboard
  *
  * Features:
@@ -65,7 +65,7 @@ interface MetricsData {
 export default function GraphPage() {
   const params = useParams();
   const searchParams = useSearchParams();
-  const slug = params.slug as string;
+  const tenantRef = params.tenantRef as string;
 
   const [graph, setGraph] = useState<GraphData | null>(null);
   const [metrics, setMetrics] = useState<MetricsData | null>(null);
@@ -83,8 +83,8 @@ export default function GraphPage() {
 
         // Fetch graph and metrics in parallel
         const [graphRes, metricsRes] = await Promise.all([
-          fetch(`/api/tenants/${slug}/graph/workflows?format=${format}`),
-          fetch(`/api/tenants/${slug}/graph/metrics?timeRange=${timeRange}`),
+          fetch(`/api/tenants/${tenantRef}/graph/workflows?format=${format}`),
+          fetch(`/api/tenants/${tenantRef}/graph/metrics?timeRange=${timeRange}`),
         ]);
 
         if (!graphRes.ok) throw new Error('Failed to load graph');
@@ -103,7 +103,7 @@ export default function GraphPage() {
     };
 
     loadGraphData();
-  }, [slug, timeRange, format]);
+  }, [tenantRef, timeRange, format]);
 
   // Initialize mermaid diagram
   useEffect(() => {
@@ -136,7 +136,7 @@ export default function GraphPage() {
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold text-gray-900">Workflow Visualization</h1>
-        <p className="text-gray-600">Tenant: {slug}</p>
+        <p className="text-gray-600">Tenant: {tenantRef}</p>
       </div>
 
       {/* Controls */}
