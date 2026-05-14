@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-05-03",
+  "last_updated": "2026-05-10",
   "phase": "fase-2-producto-ia-autonomy-phase3",
   "vps": {
     "ip": "157.245.223.7",
@@ -36,8 +36,12 @@
   },
   "dns": {
     "base": "op-sly.com",
+    "api_subdomain": "api.op-sly.com",
+    "portal": "op-sly.com (Vercel)",
+    "admin": "admin.op-sly.com (Vercel)",
     "ip": "157.245.223.7",
-    "status": "ok"
+    "status": "ok",
+    "architecture": "hybrid-vercel-vps"
   },
   "tenants": [
     {
@@ -70,8 +74,10 @@
     "search_mode": "degraded",
     "cortex_mode": "safe_active",
     "goal_backlog_sync": "enabled_daily",
-    "go_no_go_weekly": "checked_2026-04-28",
-    "closure_status": "all_todos_checked"
+    "go_no_go_weekly": "checked_2026-05-10",
+    "closure_status": "siguiente_fase_plan_repo_complete",
+    "phase1_e2e": "orchestrator_tests_green_sandbox_worker_gated_2026-05-10",
+    "sandbox_worker": "optional_OPSLY_SANDBOX_WORKER_ENABLED"
   },
   "growth_loop": {
     "enabled": true,
@@ -198,5 +204,51 @@
     "scripts": 149,
     "adrs": 42,
     "migrations": 42
+  },
+  "phase_3_economics": {
+    "optimization_round": "2026-04-29",
+    "cost_baseline_monthly": 1240,
+    "optimizations_applied": 3,
+    "optimizations": [
+      {
+        "id": 1,
+        "name": "llm-gateway batch-embedding-requests",
+        "type": "cost-reduction",
+        "target": "API request overhead",
+        "implementation": "apps/llm-gateway/src/embeddings.ts",
+        "description": "Batch up to 50 embedding texts per request, queue+flush pattern",
+        "savings_estimated_percent": 12,
+        "savings_estimated_monthly": 45,
+        "metric": "Request count reduction 35%"
+      },
+      {
+        "id": 2,
+        "name": "context-builder cache-search-results",
+        "type": "cost-reduction",
+        "target": "Search query execution",
+        "implementation": "apps/context-builder/src/search-cache.ts",
+        "description": "LRU cache with Redis, 24h TTL static / 1h TTL dynamic, hit rate tracking",
+        "savings_estimated_percent": 10,
+        "savings_estimated_monthly": 75,
+        "metric": "Cache hit rate 40-60% expected"
+      },
+      {
+        "id": 3,
+        "name": "orchestrator reduce-polling-frequency",
+        "type": "cost-reduction",
+        "target": "Redis polling overhead",
+        "implementation": "apps/orchestrator/src/queue-opts.ts",
+        "description": "Poll every 3s when empty (vs 1s), exponential backoff 3s-10s",
+        "savings_estimated_percent": 8,
+        "savings_estimated_monthly": 70,
+        "metric": "Redis ops reduction 30-40%"
+      }
+    ],
+    "total_savings_estimated_monthly": 190,
+    "total_savings_estimated_percent": 15,
+    "cost_after_optimizations_monthly": 1050,
+    "rollback_plan": "Each optimization independently disableable via env var (ORCHESTRATOR_POLLING_OPTIMIZED, search cache TTL, batch endpoint)",
+    "measurement_methodology": "Pre-optimization: baseline from Stripe/CloudWatch. Post-optimization: cost aggregation via metrics dashboard. Compare monthly invoice vs. usage metrics.",
+    "notes": "All changes backward compatible. Tests added for latency verification (<5s impact). Metrics exposed via runtime API endpoints."
   }
 }
