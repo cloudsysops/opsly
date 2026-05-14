@@ -20,20 +20,25 @@ The workflow automatically:
 bash scripts/install-coverage-workflow.sh
 ```
 
-### Option 2: Manual Setup
+### Option 2: Use Automated Installer
 
-1. Create the workflow file:
-   ```bash
-   mkdir -p .github/workflows
-   cp docs/workflows/test-coverage.yml .github/workflows/test-coverage.yml
-   ```
+The installer script handles all setup automatically. Run once and it will:
+- Create `.github/workflows/` directory if needed
+- Generate `test-coverage.yml` with complete workflow configuration
+- Validate file structure before committing
 
-2. Commit and push:
-   ```bash
-   git add .github/workflows/test-coverage.yml
-   git commit -m "ci: add test coverage analysis workflow"
-   git push origin main
-   ```
+```bash
+bash scripts/install-coverage-workflow.sh
+```
+
+After successful setup, verify:
+```bash
+ls -la .github/workflows/test-coverage.yml
+git status  # review changes
+git add .github/workflows/test-coverage.yml
+git commit -m "ci: add test coverage analysis workflow"
+git push origin main
+```
 
 ## Workflow Configuration
 
