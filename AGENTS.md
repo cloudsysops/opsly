@@ -499,7 +499,9 @@ node scripts/load-skills.js show opsly-api
 
 **Continuación autonomía (2026-05-10):** Igual que 2026-05-09 más worker opcional `sandbox_execution` en `index.ts` con `OPSLY_SANDBOX_WORKER_ENABLED=true` (Docker + `run-in-sandbox.sh`). Plan «Siguiente fase» cerrado en repo: type-check/tests orchestrator, KPIs en `runtime/context/system_state.json`, runbooks `CORTEX-OBSERVATION-WINDOW` + go/no-go semanal al día.
 
-**Fecha última actualización:** 2026-05-06 — **Agency Division + API Factory + Autonomous Revenue:**
+**Fecha última actualización:** 2026-05-14 — **Local agent pool + HEAVY-SERVICES-DECISION:** documentados puertos `5001–5011`, `config/agent-capabilities.json`, hardening pendiente de `POST /execute`, distribución VPS vs Mac vs worker en `docs/01-development/HEAVY-SERVICES-DECISION.md`, heurística `recommend_provision_host` en `tools/cli/docker_provisioner.py`.
+
+**Fecha referencia anterior:** 2026-05-06 — **Agency Division + API Factory + Autonomous Revenue:**
 - ✅ Documento `docs/01-development/OPSLY-AGENCY-DIVISION.md` con 4 líneas de servicio
 - ✅ MCP tools: api_factory_create, api_factory_monitor, agent_management_stats, security_api_scan, security_api_audit (6 nuevas → 31 total)
 - ✅ Workers: `APIFactoryWorker` + `AutonomousRevenueWorker` en BullMQ
@@ -507,6 +509,8 @@ node scripts/load-skills.js show opsly-api
 - ✅ Tipos worker: api_factory, autonomous_revenue en worker-concurrency.ts
 
 **Fecha referencia anterior:** 2026-05-03 — **Local Agent Execution System / Workers MVP:** agregado submit local `POST /api/local/prompt-submit`, cola dedicada `local-agents` para evitar que workers genéricos consuman jobs por `job.name`, workers HTTP `local_cursor`, `local_claude`, `local_copilot`, `local_opencode`, registry configurable `config/agent-services.json`, servicio `scripts/cursor-agent-service.ts`, watcher `scripts/local-agent-watcher.ts` y auto-commit daemon `scripts/local-git-auto-commit.ts`. Validación: `tsc --noEmit -p apps/orchestrator/tsconfig.json` OK; scripts TS standalone OK. Vitest local bloqueado por binario opcional Rollup (`@rollup/rollup-darwin-x64`) con firma inválida en `node_modules`.
+
+**Sesión 2026-05-14 — Pool local de agentes HTTP (5001–5011) + capacidades:** Puertos por defecto: **5001** cursor (servicio repo), **5002** claude, **5003** copilot, **5004** opencode, **5005** codex, **5006** openai-bridge, **5007** hermes, **5008** decepticon, **5009** aider, **5010** goose, **5011** playwright (QA portal). Contrato común: `GET /health`, `POST /execute`. Bridge CLI: `scripts/cli-agent-service.ts` + arranque vía `scripts/opsly-agent-cli.ts`; overrides por env `OPSLY_*_AGENT_URL` en `config/agent-services.json` / `apps/orchestrator/config/agent-services.yaml`. Routing por rol/riesgo: **`config/agent-capabilities.json`**. **No** exponer `/execute` al público ni al VPS sin token, bind acotado y hardening (ver `docs/01-development/HEAVY-SERVICES-DECISION.md`). **tmux:** sesión `opsly-agents` (ventanas por agente) o `tmux attach -t cursor|claude|…` para consolas persistentes. **Distribución:** control plane en VPS; pool de agentes en Mac operador + Colima; cargas pesadas (Decepticon, E2E pesados, Ollama grande) preferir **worker** Tailscale cuando esté online.
 
 **Fecha referencia anterior:** 2026-05-03 — **Higiene Git/GitHub + flujo para agentes:** en `origin` quedó solo `main`; PRs **#174**, **#180**, **#184** cerrados con comentario de archivo; ramas remotas de integración/archivo eliminadas; **PR #185** mergeado (squash): [`docs/01-development/GIT-WORKFLOW.md`](docs/01-development/GIT-WORKFLOW.md) con orden **commit → push → PR → merge → borrar rama**, checklist para ramas pendientes, [`scripts/git-branch-hygiene.sh`](scripts/git-branch-hygiene.sh) operativo, [`.cursor/rules/git-workflow.mdc`](.cursor/rules/git-workflow.mdc) alineado. Pendiente local opcional: worktrees `claude/mystifying-curie-74e91d` y `autonomy/phase2-activation` (quitar con `git worktree remove` cuando no se usen).
 
@@ -524,7 +528,7 @@ node scripts/load-skills.js show opsly-api
 **Sesión 2026-05-03 — Local Workers MVP ✅**
 - ✅ `apps/orchestrator`: nuevos job types `local_cursor`, `local_claude`, `local_copilot`, `local_opencode`; cola dedicada `local-agents`; workers HTTP registrados en `index.ts`; `worker-log`/concurrencia ampliados.
 - ✅ `POST /api/local/prompt-submit`: acepta `prompt_body` o `prompt_content`, frontmatter simple (`agent`, …), `tenant_slug`, y encola con **`enqueueLocalAgentJob(OrchestratorJob)`** en la cola BullMQ **`local-agents`** (nombre de job `local_*`, p. ej. `local_cursor`). Smoke: orchestrator `worker-enabled`, Redis compartido, comprobar en Redis/UI que el job no va a `openclaw`.
-- ✅ `config/agent-services.json`: endpoints localhost `5001..5004`, sobreescribibles por env (`OPSLY_CURSOR_AGENT_URL`, etc.).
+- ✅ `config/agent-services.json`: endpoints localhost `5001..5004` (ampliado **2026-05-14** a `5001..5011` con aider/goose/playwright; ver sesión 2026-05-14), sobreescribibles por env (`OPSLY_CURSOR_AGENT_URL`, etc.).
 - ✅ Scripts locales: `cursor-agent-service.ts` abre Cursor con `open -a Cursor`; `local-agent-watcher.ts` vigila `.cursor/prompts`; `local-git-auto-commit.ts` commitea respuestas en `.cursor/responses`.
 - ✅ Validación: TypeScript orchestrator + scripts standalone OK. Pendiente: Vitest tras reparar `node_modules`/Rollup opcional en Mac.
 

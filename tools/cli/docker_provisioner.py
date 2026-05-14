@@ -1,3 +1,11 @@
+"""Docker-backed tool provisioning for orchestrator experiments.
+
+Heavy vs light placement is aligned with ``docs/01-development/HEAVY-SERVICES-DECISION.md``:
+VPS keeps control plane and tenant stacks; local CLI agent pools, Decepticon, full Playwright
+E2E, and large Ollama workloads should run on operator Mac or a dedicated worker—not as
+extra images on the small production VPS disk unless explicitly approved.
+"""
+
 from __future__ import annotations
 
 import json
@@ -5,6 +13,34 @@ import shutil
 import subprocess
 from dataclasses import dataclass
 from pathlib import Path
+
+# Tool names that should not be provisioned as extra containers on the production VPS by default.
+_HEAVY_OR_SENSITIVE_TOOLS: frozenset[str] = frozenset(
+    {
+        "ollama",
+        "decepticon",
+        "playwright",
+        "openclaw",
+        "aider",
+        "goose",
+    }
+)
+
+
+def recommend_provision_host(tool_name: str) -> str:
+    """Return a short placement hint: ``vps_ok`` | ``operator_mac`` | ``worker``.
+
+    Used by callers to skip ``provision_tool`` on the VPS for heavy or sensitive agents.
+    """
+    key = tool_name.strip().lower()
+    if key in _HEAVY_OR_SENSITIVE_TOOLS:
+        return "worker" if key in {"decepticon", "playwright", "ollama"} else "operator_mac"
+    return "vps_ok"
+
+
+def is_default_vps_provision_blocked(tool_name: str) -> bool:
+    """True if ``tool_name`` should not get an ad-hoc Docker image on the small VPS without review."""
+    return tool_name.strip().lower() in _HEAVY_OR_SENSITIVE_TOOLS
 
 
 @dataclass(frozen=True)
