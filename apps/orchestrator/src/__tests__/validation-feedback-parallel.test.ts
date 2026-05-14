@@ -46,10 +46,10 @@ describe('ValidationFeedbackLayer + LocalWorkerPool - Parallel Execution', () =>
 
     it('should get agent by name', () => {
       const workerPool = new LocalWorkerPool();
-      const cursor = workerPool.getAgent('cursor');
+      const cursor = workerPool.getAgent('local_cursor');
 
       if (cursor) {
-        expect(cursor.name).toBe('cursor');
+        expect(cursor.name).toBe('local_cursor');
         expect(cursor.port).toBe(5001);
       }
     });

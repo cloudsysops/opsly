@@ -17,7 +17,9 @@ import {
   agentForLocalJobType,
   jobTypeForLocalAgent,
   LOCAL_AGENT_KINDS,
+  localAgentKindToWorkerConcurrencyKey,
   type LocalAgentKind,
+  externalCliLabelForOpslyLocalAgent,
 } from '../lib/local-worker-utils.js';
 import { logWorkerInfo, logWorkerWarn, logWorkerError, logWorkerLifecycle } from '../observability/worker-log.js';
 import { getWorkerConcurrency, type WorkerConcurrencyKey } from '../worker-concurrency.js';
@@ -91,21 +93,23 @@ function buildResponseFileContent(
   agentRole: string,
   responseText: string
 ): string {
+  const external = externalCliLabelForOpslyLocalAgent(agent);
   return `---
 job_id: ${jobId}
 agent_role: ${agentRole}
-agent: ${agent}
+opsly_agent_id: ${agent}
+external_cli: ${external}
 created_at: ${new Date().toISOString()}
 ---
 
-# ${agent} Response
+# ${agent} (${external}) Response
 
 ${responseText}
 `;
 }
 
 function concurrencyKeyForLocalAgent(agent: LocalAgentKind): WorkerConcurrencyKey {
-  return `local-${agent}` as WorkerConcurrencyKey;
+  return localAgentKindToWorkerConcurrencyKey(agent);
 }
 
 async function processLocalAgentJob(

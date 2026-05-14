@@ -2,6 +2,7 @@
   "name": "@intcloudsysops/orchestrator",
   "version": "1.0.0",
   "private": true,
+  "description": "Opsly BullMQ orchestrator (queues, workers, OpenClaw routing in TS). Not the OpenClaw CLI (npm openclaw).",
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "build": "tsc",

@@ -347,7 +347,7 @@ node scripts/load-skills.js show opsly-api
 
 | Capacidad                                    | Ubicación en repo                                                                                                                                |
 | -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Orchestrator + cola BullMQ + workers         | `apps/orchestrator` — ver `docs/ORCHESTRATOR.md`, ADR-011                                                                                        |
+| Orquestador Opsly (BullMQ + workers)         | `apps/orchestrator` — ver `docs/ORCHESTRATOR.md`, ADR-011; **no** es el CLI npm `openclaw` → `docs/01-development/OPENCLAW-TERMINOLOGY.md`        |
 | MCP / herramientas                           | `apps/mcp` — ADR-009                                                                                                                             |
 | LLM Gateway (cache, routing opcional Fase 4) | `apps/llm-gateway`                                                                                                                               |
 | Context pipeline (servicio)                  | `apps/context-builder` — integrar como **cliente** al servicio existente; no crear un segundo “context builder” embebido en orchestrator sin ADR |
@@ -356,6 +356,7 @@ node scripts/load-skills.js show opsly-api
 | Airflow orchestration (experimental)         | `apps/airflow` — alternativa a BullMQ para orquestación de workflows complejos                                                                    |
 | Skills operativos                            | `skills/user/*`, `skills/README.md`; metadata opcional `skills/manifest` (`@intcloudsysops/skills-manifest`)                                     |
 | Diseño OpenClaw / costos                     | `docs/OPENCLAW-ARCHITECTURE.md`                                                                                                                  |
+| Nomenclatura CLI `openclaw` vs orquestador   | `docs/01-development/OPENCLAW-TERMINOLOGY.md`                                                                                                  |
 | Docker tenant aislado                        | `scripts/lib/docker-helpers.sh` — `--project-name tenant_<slug>`                                                                                 |
 | Agency Division (nuevo 2026-05-06)            | `docs/01-development/OPSLY-AGENCY-DIVISION.md` — API Factory, Agent Management, Security API, Autonomous Revenue                                 |
 

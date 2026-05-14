@@ -61,12 +61,12 @@ async function processLocalCursorJob(
 
   try {
     // Get Cursor service endpoint from registry
-    const cursorService = await registry.getService('cursor');
+    const cursorService = await registry.getService('local_cursor');
     if (!cursorService) {
       throw new Error('Cursor service not configured or disabled');
     }
 
-    const cursorUrl = await registry.getServiceUrl('cursor');
+    const cursorUrl = await registry.getServiceUrl('local_cursor');
     if (!cursorUrl) {
       throw new Error('Cursor service URL not found');
     }

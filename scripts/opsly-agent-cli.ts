@@ -4,6 +4,12 @@ import { existsSync, readFileSync, unlinkSync, writeFileSync } from 'node:fs';
 import { mkdir } from 'node:fs/promises';
 import { basename, join, resolve } from 'node:path';
 
+import {
+  resolveToOpslyLocalAgentKind,
+  externalCliLabelForOpslyLocalAgent,
+  isConfigurableLocalBridgeKey,
+} from '../apps/orchestrator/src/lib/local-worker-utils.js';
+
 type Command = 'start' | 'stop' | 'status' | 'submit';
 
 interface CliOptions {
@@ -59,7 +65,7 @@ function printUsage(): void {
 Environment:
   OPSLY_ORCHESTRATOR_URL              Default: http://127.0.0.1:3011
   PLATFORM_ADMIN_TOKEN                Required for submit/status API calls
-  OPSLY_AGENT_<AGENT>_START_CMD       Optional start command override
+  OPSLY_AGENT_<EXTERNAL_CLI_UPPER>_START_CMD   Optional override (e.g. CURSOR for local_cursor)
 `);
 }
 
@@ -91,7 +97,8 @@ function isCommand(value: string | undefined): value is Command {
 }
 
 function normalizeAgent(agent: string | undefined): string {
-  return (agent || 'cursor').trim().toLowerCase();
+  const raw = (agent ?? 'cursor').trim();
+  return resolveToOpslyLocalAgentKind(raw);
 }
 
 function pidFile(agent: string): string {
@@ -124,28 +131,30 @@ function isPidRunning(pid: number): boolean {
   }
 }
 
-function startCommandFor(agent: string): string | null {
-  const envName = `OPSLY_AGENT_${agent.toUpperCase().replace(/[^A-Z0-9]/g, '_')}_START_CMD`;
+function startCommandFor(agentOpslyId: string): string | null {
+  const resolved = resolveToOpslyLocalAgentKind(agentOpslyId);
+  const envSegment = externalCliLabelForOpslyLocalAgent(resolved).toUpperCase().replace(/[^A-Z0-9]/g, '_');
+  const envName = `OPSLY_AGENT_${envSegment}_START_CMD`;
   const fromEnv = process.env[envName]?.trim();
   if (fromEnv) {
     return fromEnv;
   }
 
   const defaults: Record<string, string> = {
-    cursor: 'npm run opsly:local-cursor-service',
-    claude: 'npm run opsly:local-claude-service',
-    copilot: 'npm run opsly:local-copilot-service',
-    opencode: 'npm run opsly:local-opencode-service',
-    codex: 'npm run opsly:local-codex-service',
-    openai: 'npm run opsly:local-openai-service',
-    hermes: 'npm run opsly:local-hermes-service',
-    decepticon: 'npm run opsly:local-decepticon-service',
-    aider: 'npm run opsly:local-aider-service',
-    goose: 'npm run opsly:local-goose-service',
-    playwright: 'npm run opsly:local-playwright-service',
+    local_cursor: 'npm run opsly:local-cursor-service',
+    local_claude: 'npm run opsly:local-claude-service',
+    local_copilot: 'npm run opsly:local-copilot-service',
+    local_opencode: 'npm run opsly:local-opencode-service',
+    local_codex: 'npm run opsly:local-codex-service',
+    local_openai: 'npm run opsly:local-openai-service',
+    local_hermes: 'npm run opsly:local-hermes-service',
+    local_decepticon: 'npm run opsly:local-decepticon-service',
+    local_aider: 'npm run opsly:local-aider-service',
+    local_goose: 'npm run opsly:local-goose-service',
+    local_playwright: 'npm run opsly:local-playwright-service',
   };
 
-  return defaults[agent] ?? null;
+  return defaults[resolved] ?? null;
 }
 
 async function startAgent(agent: string): Promise<void> {
@@ -158,7 +167,8 @@ async function startAgent(agent: string): Promise<void> {
 
   const command = startCommandFor(agent);
   if (!command) {
-    throw new Error(`No safe start command for ${agent}. Set OPSLY_AGENT_${agent.toUpperCase()}_START_CMD.`);
+    const seg = externalCliLabelForOpslyLocalAgent(resolveToOpslyLocalAgentKind(agent)).toUpperCase();
+    throw new Error(`No safe start command for ${agent}. Set OPSLY_AGENT_${seg}_START_CMD.`);
   }
 
   const child = spawn(command, {
@@ -212,7 +222,7 @@ async function getLocalState(): Promise<Record<string, unknown> | null> {
 
 async function showStatus(json: boolean): Promise<void> {
   const registry = readRegistry();
-  const services = Object.keys(registry.services ?? {});
+  const services = Object.keys(registry.services ?? {}).filter((name) => isConfigurableLocalBridgeKey(name));
   const local = services.map((agent) => {
     const state = readAgentState(agent);
     return {

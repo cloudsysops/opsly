@@ -28,7 +28,7 @@ describe('local-worker-utils', () => {
     expect(parsed.content).toBe('Build the thing.');
   });
 
-  it('maps local agents to job types', () => {
+  it('maps external CLI aliases to canonical Opsly job types', () => {
     expect(jobTypeForLocalAgent('cursor')).toBe('local_cursor');
     expect(jobTypeForLocalAgent('claude')).toBe('local_claude');
     expect(jobTypeForLocalAgent('copilot')).toBe('local_copilot');
@@ -39,14 +39,19 @@ describe('local-worker-utils', () => {
     expect(jobTypeForLocalAgent('decepticon')).toBe('local_decepticon');
   });
 
-  it('maps local job types back to agent kinds', () => {
-    expect(agentForLocalJobType('local_cursor')).toBe('cursor');
-    expect(agentForLocalJobType('local_codex')).toBe('codex');
-    expect(agentForLocalJobType('local_hermes')).toBe('hermes');
+  it('job type is idempotent for Opsly ids', () => {
+    expect(jobTypeForLocalAgent('local_cursor')).toBe('local_cursor');
+    expect(jobTypeForLocalAgent('local_claude')).toBe('local_claude');
   });
 
-  it('defaults unknown agent values to cursor', () => {
-    expect(normalizeLocalAgentKind('bogus')).toBe('cursor');
-    expect(normalizeLocalAgentKind('opencode')).toBe('opencode');
+  it('maps BullMQ job names back to canonical Opsly agent ids', () => {
+    expect(agentForLocalJobType('local_cursor')).toBe('local_cursor');
+    expect(agentForLocalJobType('local_codex')).toBe('local_codex');
+    expect(agentForLocalJobType('local_hermes')).toBe('local_hermes');
+  });
+
+  it('defaults unknown agent values to local_cursor', () => {
+    expect(normalizeLocalAgentKind('bogus')).toBe('local_cursor');
+    expect(normalizeLocalAgentKind('opencode')).toBe('local_opencode');
   });
 });

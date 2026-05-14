@@ -194,8 +194,18 @@ describe('health-server local hybrid control plane', () => {
     expect(parsed.control_mode).toBe('opsly_control');
     expect(parsed.agents).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ name: 'cursor', job_type: 'local_cursor' }),
-        expect.objectContaining({ name: 'codex', job_type: 'local_codex' }),
+        expect.objectContaining({
+          id: 'local_cursor',
+          name: 'local_cursor',
+          external_cli: 'cursor',
+          job_type: 'local_cursor',
+        }),
+        expect.objectContaining({
+          id: 'local_codex',
+          name: 'local_codex',
+          external_cli: 'codex',
+          job_type: 'local_codex',
+        }),
       ])
     );
   });
