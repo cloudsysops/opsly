@@ -38,8 +38,17 @@
     "auto_evolution": {
       "enabled": true,
       "cycle_interval_hours": 24,
-      "auto_apply_ideas": false,
+      "auto_apply_ideas": true,
       "max_auto_applies_per_cycle": 2
+    },
+    "self_healing": {
+      "enabled": true,
+      "check_interval_minutes": 15,
+      "auto_repair": true,
+      "expected_domain": "op-sly.com",
+      "tenants_path": "/opt/opsly/tenants",
+      "max_repairs_per_cycle": 3,
+      "repair_cooldown_minutes": 60
     },
     "health_monitor": {
       "enabled": true,

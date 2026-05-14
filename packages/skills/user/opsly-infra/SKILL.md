@@ -127,6 +127,119 @@ ssh vps-dragon@100.120.151.91 "df -h / && docker system df"
 - No crear YAML anchors para configuración que aparece una sola vez.
 - SSH solo por Tailscale — nunca IP pública directa.
 
+## Traefik v3 — Middlewares
+
+### ⚠️ stsForceHTTPS NO existe en Traefik v3
+
+**Campo correcto:** `forceSTSHeader` (reemplaza `stsForceHTTPS` de Traefik v2).
+
+**Síntoma de error:** Si `middlewares.yml` usa `stsForceHTTPS`, Traefik v3 rechaza **todo** el archivo de file provider. Los logs muestran:
+```
+Error while building configuration: "/etc/traefik/dynamic/middlewares.yml: field not found, node: stsForceHTTPS"
+```
+Y luego:
+```
+middleware "rate-limit@file" does not exist
+middleware "secure-headers@file" does not exist
+```
+
+**Resultado:** Todos los endpoints devuelven 404 porque Traefik no puede cargar los middlewares → las rutas que los referencian quedan inválidas.
+
+**Fix:**
+```bash
+sed -i 's/stsForceHTTPS/forceSTSHeader/' /opt/opsly/infra/traefik/dynamic/middlewares.yml
+docker restart traefik
+```
+
+### Middlewares file provider
+
+Archivo: `/opt/opsly/infra/traefik/dynamic/middlewares.yml`
+
+```yaml
+http:
+  middlewares:
+    secure-headers:
+      headers:
+        frameDeny: true
+        contentTypeNosniff: true
+        browserXssFilter: true
+        stsSeconds: 31536000
+        stsIncludeSubdomains: true
+        stsPreload: true
+        forceSTSHeader: true          # ← Traefik v3, NO stsForceHTTPS
+        referrerPolicy: strict-origin-when-cross-origin
+        customResponseHeaders:
+          X-Content-Security-Policy: "default-src 'self'; ..."
+          X-Permitted-Cross-Domain-Policies: "none"
+
+    rate-limit:
+      rateLimit:
+        average: 100
+        burst: 50
+
+    compress:
+      compress: {}
+
+    redirect-to-https:
+      redirectScheme:
+        scheme: https
+        permanent: true
+```
+
+### Certificados ACME con DNS Challenge
+
+Traefik usa `dnsChallenge` con Cloudflare para certificados wildcard. Config en `traefik.yml`:
+
+```yaml
+certificatesResolvers:
+  letsencrypt:
+    acme:
+      storage: /letsencrypt/acme.json
+      dnsChallenge:
+        provider: cloudflare
+        delayBeforeCheck: '20'
+```
+
+Requiere `CF_DNS_API_TOKEN` (desde Doppler) disponible en el entorno del contenedor Traefik.
+
+## Cloudflare DNS
+
+### Wildcard record
+
+Para que `n8n-{slug}.{domain}` y `uptime-{slug}.{domain}` resuelvan, es necesario un registro A wildcard:
+
+| Tipo | Nombre | Contenido | Proxy |
+|------|--------|-----------|-------|
+| A    | `*.op-sly.com` | `157.245.223.7` | DNS-only (gris) |
+
+**⚠️ Proxied=true (nube naranja) con VPS que no tiene IPv6:** Cloudflare devuelve registros AAAA (IPv6) y el VPS no puede conectarse → conexiones fallan intermitentemente (cURL devuelve 000). **Solución:** DNS-only (proxied=false).
+
+### Registros actuales de op-sly.com
+
+```
+A     admin.op-sly.com          → 157.245.223.7  proxied=true
+A     api.op-sly.com            → 157.245.223.7  proxied=true
+A     op-sly.com                → 157.245.223.7  proxied=true
+A     portal.op-sly.com         → 157.245.223.7  proxied=true
+A     *.op-sly.com              → 157.245.223.7  proxied=false
+```
+
+### SSL/TLS
+
+Cloudflare SSL modo **Full** (no Full Strict) — suficiente para Traefik con certificados Let's Encrypt.
+
+## Self-Healing
+
+El agente de auto-reparación integra estos patrones. Ver skill `opsly-self-healing`.
+
+```bash
+# Ejecutar chequeo completo
+python3 /opt/opsly/scripts/super_orchestrator/self_healing.py check
+
+# Chequeo + reparación automática
+python3 /opt/opsly/scripts/super_orchestrator/self_healing.py repair
+```
+
 ## Errores comunes
 
 | Error            | Causa                          | Solución                                     |
@@ -137,3 +250,7 @@ ssh vps-dragon@100.120.151.91 "df -h / && docker system df"
 | pipefail exit    | Comando falla sin set -e       | `set -euo pipefail` siempre                  |
 | secrets leaked   | echo de variable sensible      | Usar `log` sin valores, Doppler para secrets |
 | Multi-stage roto | Runner sin artifacts           | Copiar `node_modules` desde builder          |
+| 404 en todos los tenants | Traefik middleware roto (stsForceHTTPS) | `sed -i 's/stsForceHTTPS/forceSTSHeader/' middlewares.yml && docker restart traefik` |
+| URL fail to redirect | Wildcard DNS no existe | Crear `*.{domain}` A → `157.245.223.7` en Cloudflare |
+| curl 000 intermitente | IPv6 desde Cloudflare proxy | Cambiar wildcard a DNS-only (proxied=false) |
+| ACME certificate timeout | DNS propagation lento | Verificar `delayBeforeCheck: '20'` en traefik.yml y `CF_DNS_API_TOKEN` |
