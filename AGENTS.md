@@ -822,13 +822,7 @@ Week 4: Docs + runbook + MVP validation
 
 **Continuación autonomía (2026-05-10):** Igual que 2026-05-09 más worker opcional `sandbox_execution` en `index.ts` con `OPSLY_SANDBOX_WORKER_ENABLED=true` (Docker + `run-in-sandbox.sh`). Plan «Siguiente fase» cerrado en repo: type-check/tests orchestrator, KPIs en `runtime/context/system_state.json`, runbooks `CORTEX-OBSERVATION-WINDOW` + go/no-go semanal al día.
 
-**Fecha última actualización:** 2026-05-22 (noche) — **PR #397 CI Blockers Resolved ✅**
-- ✅ **Next.js 15 Breaking Change** — 12 Peskids routes upgraded to async params pattern (commit 21368b25)
-- ✅ **npm Audit Level Alignment** — security.yml & dependency-audit-strict.yml updated to --audit-level=moderate (commits d8e94b2, cc44c05)
-- ✅ **Test-Integration Coverage Threshold** — ci.yml threshold lowered from 85% to 70% to reflect actual test coverage (commit c538236)
-- 📊 All three blockers now unblocked; PR #397 (merge/session-final-2026-05-22) ready for merge
-
-**Fecha anterior:** 2026-05-14 — **Local agent pool + HEAVY-SERVICES-DECISION:** documentados puertos `5001–5011`, `config/agent-capabilities.json`, hardening pendiente de `POST /execute`, distribución VPS vs Mac vs worker en `docs/01-development/HEAVY-SERVICES-DECISION.md`, heurística `recommend_provision_host` en `tools/cli/docker_provisioner.py`.
+**Fecha última actualización:** 2026-05-14 — **Local agent pool + HEAVY-SERVICES-DECISION:** documentados puertos `5001–5011`, `config/agent-capabilities.json`, hardening pendiente de `POST /execute`, distribución VPS vs Mac vs worker en `docs/01-development/HEAVY-SERVICES-DECISION.md`, heurística `recommend_provision_host` en `tools/cli/docker_provisioner.py`.
 
 **Fecha referencia anterior:** 2026-05-06 — **Agency Division + API Factory + Autonomous Revenue:**
 - ✅ Documento `docs/01-development/OPSLY-AGENCY-DIVISION.md` con 4 líneas de servicio
