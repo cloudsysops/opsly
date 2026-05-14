@@ -92,7 +92,7 @@ jobs:
 
       - name: Generate audit report
         run: |
-          npm install -g npm@latest
+          npm --version
           npm audit --json > audit-report.json || true
 
           {
