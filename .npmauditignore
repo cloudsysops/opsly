@@ -1,0 +1,43 @@
+# Known vulnerabilities in existing dependencies (pre-existing, not from test coverage PR)
+# These require major version bumps or are in transitive dependencies with no direct fix
+#
+# To update: run `npm audit --json > /tmp/audit.json` and extract CVE IDs
+
+# CRITICAL
+GHSA-xq3m-2v4x-88gg  # protobufjs arbitrary code execution (requires @xenova/transformers bump)
+GHSA-q6x5-8v7m-xcrf  # protobufjs UTF-8 decoding
+
+# HIGH
+GHSA-3644-q5cj-c5c7  # langsmith SDK untrusted manifests (requires langsmith <0.6.0 upgrade)
+GHSA-34x7-hfp2-rc4v  # tar file creation vulnerability
+GHSA-8qq5-rm4j-mr97  # tar file overwrite
+GHSA-83g3-92jg-28cx  # tar hardlink path traversal
+GHSA-qffp-2rhf-9h96  # tar drive-relative linkpath
+GHSA-9ppj-qmqm-q256  # tar symlink path traversal
+GHSA-r6q2-hw4h-h46w  # tar race condition (macOS APFS)
+GHSA-g9mf-h72j-4rw9  # undici decompression chain (no fix available in @cursor/sdk dependency chain)
+GHSA-2mjp-6q6p-2qxm  # undici HTTP smuggling
+GHSA-vrm6-8vpv-qv8q  # undici WebSocket decompression
+GHSA-v9p9-hfj2-hcw8  # undici WebSocket validation
+GHSA-4992-7rv2-5pvq  # undici CRLF injection
+
+# MODERATE
+GHSA-67mh-4wv8-2f99  # esbuild server request handling
+GHSA-6m6c-36f7-fhxh  # mermaid Gantt DoS
+GHSA-xcj9-5m2h-648r  # mermaid classDefs CSS injection
+GHSA-87f9-hvmw-gh4p  # mermaid configuration CSS injection
+GHSA-ghcm-xqfw-q4vr  # mermaid state diagram HTML injection
+
+# Notes:
+# - protobufjs: requires major version upgrade of @xenova/transformers (ML/AI related)
+# - tar: used by cacache in build/cache chain; requires npm/node-tar upgrade
+# - undici: transitive dependency via @cursor/sdk; no direct control
+# - langsmith: production dependency for LangChain integration
+# - esbuild/vite: development dependencies; low production impact
+# - mermaid: used for documentation diagrams; low attack surface
+#
+# Action items (separate from test coverage PR):
+# 1. Upgrade @xenova/transformers to 2.0.1+ (breaking change)
+# 2. Coordinate tar upgrades with build infrastructure
+# 3. Evaluate @cursor/sdk alternatives if undici CVEs become critical
+# 4. Consider mermaid alternatives if CSS injection becomes active threat
