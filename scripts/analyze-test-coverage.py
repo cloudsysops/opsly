@@ -10,12 +10,10 @@ Usage:
 """
 
 import json
-import os
-import subprocess
 import sys
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Dict
 
 @dataclass
 class CoverageStats:

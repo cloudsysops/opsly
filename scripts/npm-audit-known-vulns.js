@@ -5,8 +5,6 @@
  * Exit 0 if only known vulns, Exit 1 if new/unknown vulns found
  */
 
-const fs = require("fs");
-
 // Known vulnerabilities that are pre-existing (not caused by this PR)
 const KNOWN_VULNS = new Set([
   "GHSA-xq3m-2v4x-88gg", // protobufjs arbitrary code execution
