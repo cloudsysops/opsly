@@ -53,6 +53,7 @@
     "supabase",
     "context",
     "monitoring",
+    ".coverage-reports",
     ".github",
     ".agents",
     ".codex",

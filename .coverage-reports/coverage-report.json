@@ -1,0 +1,304 @@
+{
+  "timestamp": "2026-05-14T10:08:32.519617",
+  "summary": {
+    "total_modules": 40,
+    "total_test_files": 157,
+    "total_source_files": 944,
+    "by_status": {
+      "critical": [],
+      "high": [],
+      "low": [
+        "apps/orchestrator",
+        "apps/llm-gateway",
+        "apps/api",
+        "apps/ml",
+        "apps/mcp",
+        "apps/context-builder",
+        "apps/task-orchestrator",
+        "apps/portal",
+        "packages/skills/manifest"
+      ],
+      "none": [
+        "apps/notion-mcp",
+        "apps/local-services",
+        "apps/tenant-onboarding-agent",
+        "apps/mcp-gateway",
+        "apps/admin",
+        "apps/billing-dashboard",
+        "apps/agents",
+        "apps/web",
+        "apps/airflow",
+        "apps/tenant-invitations",
+        "apps/experimental",
+        "apps/rendering-engine",
+        "apps/notebooklm-agent",
+        "apps/agent-manager",
+        "apps/mcp-rendering-server",
+        "apps/slack-bot",
+        "apps/billing-service",
+        "lib/components",
+        "lib/evaluation",
+        "lib/telemetry",
+        "lib/config",
+        "lib/services",
+        "lib/observability",
+        "lib/api",
+        "lib/migrations",
+        "lib/errors",
+        "lib/prompts",
+        "lib/workflow",
+        "lib/testing",
+        "lib/security",
+        "packages/types"
+      ]
+    },
+    "coverage_distribution": {
+      "critical": 0,
+      "high": 0,
+      "low": 9,
+      "none": 31
+    }
+  },
+  "modules": {
+    "apps/notion-mcp": {
+      "test_files": 0,
+      "source_files": 9,
+      "coverage_pct": 0.0,
+      "status": "none"
+    },
+    "apps/local-services": {
+      "test_files": 0,
+      "source_files": 9,
+      "coverage_pct": 0.0,
+      "status": "none"
+    },
+    "apps/tenant-onboarding-agent": {
+      "test_files": 0,
+      "source_files": 1,
+      "coverage_pct": 0.0,
+      "status": "none"
+    },
+    "apps/mcp-gateway": {
+      "test_files": 0,
+      "source_files": 1,
+      "coverage_pct": 0.0,
+      "status": "none"
+    },
+    "apps/admin": {
+      "test_files": 0,
+      "source_files": 98,
+      "coverage_pct": 0.0,
+      "status": "none"
+    },
+    "apps/orchestrator": {
+      "test_files": 50,
+      "source_files": 216,
+      "coverage_pct": 23.14814814814815,
+      "status": "low"
+    },
+    "apps/billing-dashboard": {
+      "test_files": 0,
+      "source_files": 1,
+      "coverage_pct": 0.0,
+      "status": "none"
+    },
+    "apps/agents": {
+      "test_files": 0,
+      "source_files": 1,
+      "coverage_pct": 0.0,
+      "status": "none"
+    },
+    "apps/llm-gateway": {
+      "test_files": 17,
+      "source_files": 47,
+      "coverage_pct": 36.17021276595745,
+      "status": "low"
+    },
+    "apps/web": {
+      "test_files": 0,
+      "source_files": 33,
+      "coverage_pct": 0.0,
+      "status": "none"
+    },
+    "apps/airflow": {
+      "test_files": 0,
+      "source_files": 0,
+      "coverage_pct": 0.0,
+      "status": "none"
+    },
+    "apps/api": {
+      "test_files": 61,
+      "source_files": 280,
+      "coverage_pct": 21.785714285714285,
+      "status": "low"
+    },
+    "apps/tenant-invitations": {
+      "test_files": 0,
+      "source_files": 2,
+      "coverage_pct": 0.0,
+      "status": "none"
+    },
+    "apps/experimental": {
+      "test_files": 0,
+      "source_files": 3,
+      "coverage_pct": 0.0,
+      "status": "none"
+    },
+    "apps/rendering-engine": {
+      "test_files": 0,
+      "source_files": 4,
+      "coverage_pct": 0.0,
+      "status": "none"
+    },
+    "apps/notebooklm-agent": {
+      "test_files": 0,
+      "source_files": 1,
+      "coverage_pct": 0.0,
+      "status": "none"
+    },
+    "apps/agent-manager": {
+      "test_files": 0,
+      "source_files": 1,
+      "coverage_pct": 0.0,
+      "status": "none"
+    },
+    "apps/mcp-rendering-server": {
+      "test_files": 0,
+      "source_files": 1,
+      "coverage_pct": 0.0,
+      "status": "none"
+    },
+    "apps/ml": {
+      "test_files": 3,
+      "source_files": 9,
+      "coverage_pct": 33.33333333333333,
+      "status": "low"
+    },
+    "apps/slack-bot": {
+      "test_files": 0,
+      "source_files": 1,
+      "coverage_pct": 0.0,
+      "status": "none"
+    },
+    "apps/mcp": {
+      "test_files": 11,
+      "source_files": 51,
+      "coverage_pct": 21.568627450980394,
+      "status": "low"
+    },
+    "apps/context-builder": {
+      "test_files": 5,
+      "source_files": 15,
+      "coverage_pct": 33.33333333333333,
+      "status": "low"
+    },
+    "apps/billing-service": {
+      "test_files": 0,
+      "source_files": 1,
+      "coverage_pct": 0.0,
+      "status": "none"
+    },
+    "apps/task-orchestrator": {
+      "test_files": 2,
+      "source_files": 10,
+      "coverage_pct": 20.0,
+      "status": "low"
+    },
+    "apps/portal": {
+      "test_files": 5,
+      "source_files": 97,
+      "coverage_pct": 5.154639175257731,
+      "status": "low"
+    },
+    "lib/components": {
+      "test_files": 0,
+      "source_files": 15,
+      "coverage_pct": 0.0,
+      "status": "none"
+    },
+    "lib/evaluation": {
+      "test_files": 0,
+      "source_files": 4,
+      "coverage_pct": 0.0,
+      "status": "none"
+    },
+    "lib/telemetry": {
+      "test_files": 0,
+      "source_files": 1,
+      "coverage_pct": 0.0,
+      "status": "none"
+    },
+    "lib/config": {
+      "test_files": 0,
+      "source_files": 1,
+      "coverage_pct": 0.0,
+      "status": "none"
+    },
+    "lib/services": {
+      "test_files": 0,
+      "source_files": 1,
+      "coverage_pct": 0.0,
+      "status": "none"
+    },
+    "lib/observability": {
+      "test_files": 0,
+      "source_files": 4,
+      "coverage_pct": 0.0,
+      "status": "none"
+    },
+    "lib/api": {
+      "test_files": 0,
+      "source_files": 1,
+      "coverage_pct": 0.0,
+      "status": "none"
+    },
+    "lib/migrations": {
+      "test_files": 0,
+      "source_files": 1,
+      "coverage_pct": 0.0,
+      "status": "none"
+    },
+    "lib/errors": {
+      "test_files": 0,
+      "source_files": 1,
+      "coverage_pct": 0.0,
+      "status": "none"
+    },
+    "lib/prompts": {
+      "test_files": 0,
+      "source_files": 5,
+      "coverage_pct": 0.0,
+      "status": "none"
+    },
+    "lib/workflow": {
+      "test_files": 0,
+      "source_files": 1,
+      "coverage_pct": 0.0,
+      "status": "none"
+    },
+    "lib/testing": {
+      "test_files": 0,
+      "source_files": 1,
+      "coverage_pct": 0.0,
+      "status": "none"
+    },
+    "lib/security": {
+      "test_files": 0,
+      "source_files": 1,
+      "coverage_pct": 0.0,
+      "status": "none"
+    },
+    "packages/types": {
+      "test_files": 0,
+      "source_files": 6,
+      "coverage_pct": 0.0,
+      "status": "none"
+    },
+    "packages/skills/manifest": {
+      "test_files": 3,
+      "source_files": 9,
+      "coverage_pct": 33.33333333333333,
+      "status": "low"
+    }
+  }
+}
