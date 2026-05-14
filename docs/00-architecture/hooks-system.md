@@ -60,19 +60,18 @@ npm run sync-references
 
 Every PR is automatically validated against structure rules.
 
-### Local validation
+### Structure Validation
 
 ```bash
-npm run validate:strict
+npm run validate-structure
 ```
 
-### CI validation (strict mode)
-
-In CI mode, warnings become errors. Any file/folder not in whitelist fails the build.
-
-```bash
-npm run validate:strict:ci
-```
+This validates:
+- Required directories exist
+- No forbidden directories in root
+- All files/folders in root are whitelisted
+- All hidden folders are authorized
+- No legacy path references
 
 ### What CI validates
 
