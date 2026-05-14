@@ -18,13 +18,16 @@ Desde la raíz del repo:
 
 El bloque define `claude-dop` y `opsly-doppler-run` usando `ops-intcloudsysops` y config `prd` por defecto (sobrescribible con `OPSLY_DOPPLER_PROJECT` / `OPSLY_DOPPLER_CONFIG`).
 
-Tras `--apply-zsh`: `source ~/.zshrc` o abrir terminal nueva. Usar **`claude-dop`** en lugar de `claude` para que `ANTHROPIC_API_KEY` venga de Doppler.
+Tras `--apply-zsh`: `source ~/.zshrc` o abrir terminal nueva. Usar **`claude-dop`** en lugar de `claude` para que `ANTHROPIC_API_KEY` venga de Doppler. Usar **`codex-dop`** o **`npm run opsly:codex`** para Codex con `OPENAI_API_KEY` desde Doppler.
+
+Si **ya tenías** el bloque `opsly-mac-integration` en `~/.zshrc` sin `codex-dop`, borra las líneas entre los marcadores `# >>> opsly-mac-integration` y `# <<< opsly-mac-integration <<<` y vuelve a ejecutar `./scripts/local-mac-improve.sh --apply-zsh`.
 
 ## Fase 2 — Flujo diario
 
 | Acción | Comando |
 |--------|---------|
 | Claude Code con Doppler | `claude-dop` |
+| Codex CLI con Doppler | `codex-dop` o `npm run opsly:codex` |
 | Cualquier comando con env prd | `opsly-doppler-run -- <cmd>` |
 | Sync repo (ver `docs/SESSION-GIT-SYNC.md`) | `./scripts/utils/git-sync.sh` o `git pull --ff-only` |
 

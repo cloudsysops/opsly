@@ -4,7 +4,7 @@
 # Uso:
 #   ./scripts/local-mac-improve.sh [--dry-run] [--apply-zsh]
 #
-# --apply-zsh  Añade un bloque idempotente a ~/.zshrc con alias claude-dop / opsly-doppler-run.
+# --apply-zsh  Añade un bloque idempotente a ~/.zshrc con alias claude-dop / codex-dop / opsly-doppler-run.
 # --dry-run    No escribe ~/.zshrc; solo muestra acciones.
 #
 # Variables opcionales:
@@ -53,6 +53,7 @@ ${MARKER_BEGIN}
 export OPSLY_DOPPLER_PROJECT="\${OPSLY_DOPPLER_PROJECT:-${OPSLY_DOPPLER_PROJECT}}"
 export OPSLY_DOPPLER_CONFIG="\${OPSLY_DOPPLER_CONFIG:-${OPSLY_DOPPLER_CONFIG}}"
 alias claude-dop='doppler run --project "\$OPSLY_DOPPLER_PROJECT" --config "\$OPSLY_DOPPLER_CONFIG" -- claude'
+alias codex-dop='doppler run --project "\$OPSLY_DOPPLER_PROJECT" --config "\$OPSLY_DOPPLER_CONFIG" -- codex'
 alias opsly-doppler-run='doppler run --project "\$OPSLY_DOPPLER_PROJECT" --config "\$OPSLY_DOPPLER_CONFIG" --'
 ${MARKER_END}
 EOF
@@ -102,6 +103,19 @@ check_doppler_secret() {
   fi
 }
 
+check_openai_optional() {
+  local n
+  if ! command -v doppler >/dev/null 2>&1; then
+    return 0
+  fi
+  n="$(doppler secrets get OPENAI_API_KEY --project "${OPSLY_DOPPLER_PROJECT}" --config "${OPSLY_DOPPLER_CONFIG}" --plain 2>/dev/null | wc -c | tr -d ' ')"
+  if [[ "${n}" -gt 20 ]]; then
+    log_ok "Doppler OPENAI_API_KEY presente (${n} bytes) — npm run opsly:codex / codex-dop"
+  else
+    log_warn "OPENAI_API_KEY ausente o corta — Codex/API OpenAI: pbpaste | ./scripts/doppler-import-openai-api-key.sh"
+  fi
+}
+
 check_shell_env() {
   if [[ -n "${ANTHROPIC_API_KEY:-}" ]]; then
     log_ok "Shell actual: ANTHROPIC_API_KEY definida (${#ANTHROPIC_API_KEY} chars)"
@@ -135,6 +149,7 @@ main() {
 
   check_doppler_cli || true
   check_doppler_secret || true
+  check_openai_optional || true
   check_shell_env
   check_claude_settings || true
 
