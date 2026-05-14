@@ -158,6 +158,8 @@ codex-dop
 
 Cualquier otro comando con las mismas variables: `opsly-doppler-run -- <cmd>` (ver `docs/01-development/LOCAL-MAC-IMPROVEMENT-PLAN.md`).
 
+**VPS (usuario `vps-dragon`, Tailscale):** instalar Codex en el servidor y añadir `~/.npm-global/bin` al PATH: `./scripts/vps-install-codex-cli.sh --dry-run` / `--apply`. Tras login shell, `codex --version`. Opcional: `doppler run … -- codex` desde `/opt/opsly` si quieres `OPENAI_API_KEY` del proyecto.
+
 ## Notion MCP (`apps/notion-mcp`)
 
 | Variable                  | Uso                                                                                                        |

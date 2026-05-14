@@ -321,6 +321,7 @@ Provision (cola → Docker Compose tenant)
 | `scripts/sync-and-test-invite-flow.sh`     | Tras Doppler OK: `vps-refresh-api-env` + `test-e2e-invite-flow`              | `--dry-run`, `--skip-vps`; requiere `ADMIN_TOKEN` (+ `OWNER_EMAIL` salvo `--dry-run`) |
 | `scripts/doppler-import-resend-api-key.sh` | Escribe `RESEND_API_KEY` en Doppler prd desde stdin                          | Ver cabecera del script (pbpaste, archivo); `--dry-run`                               |
 | `scripts/doppler-import-openai-api-key.sh` | Escribe `OPENAI_API_KEY` en Doppler prd desde stdin                           | Igual patrón que Resend; luego `npm run opsly:codex`                                   |
+| `scripts/vps-install-codex-cli.sh`         | Instala `@openai/codex` en el VPS (Tailscale) y PATH en `~/.bashrc`           | `--dry-run` / `--apply`; ver `docs/04-infrastructure/DOPPLER-VARS.md`                 |
 
 ## Environment Variables Reference
 
