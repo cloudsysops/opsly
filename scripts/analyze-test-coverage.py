@@ -62,10 +62,18 @@ class CoverageAnalyzer:
                 if lib.is_dir() and not lib.name.startswith("_"):
                     self._analyze_module(lib, "lib")
 
-        # Analyze packages/skills
-        skills_dir = self.repo_root / "packages" / "skills" / "manifest"
-        if skills_dir.exists():
-            self._analyze_module(skills_dir, "packages/skills/manifest")
+        # Analyze packages
+        packages_dir = self.repo_root / "packages"
+        if packages_dir.exists():
+            for package in packages_dir.iterdir():
+                if package.is_dir() and not package.name.startswith("_"):
+                    # For skills, go deeper to manifest directory
+                    if package.name == "skills":
+                        manifest_dir = package / "manifest"
+                        if manifest_dir.is_dir():
+                            self._analyze_module(manifest_dir, "packages/skills")
+                    else:
+                        self._analyze_module(package, "packages")
 
         return self.results
 

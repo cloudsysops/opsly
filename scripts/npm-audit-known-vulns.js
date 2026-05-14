@@ -46,6 +46,16 @@ process.stdin.on("end", () => {
   try {
     const auditData = JSON.parse(input);
 
+    if (auditData.error) {
+      console.error("❌ npm audit error:", auditData.error.summary);
+      process.exit(1);
+    }
+
+    if (!auditData.metadata) {
+      console.error("❌ npm audit failed: missing metadata (audit may have encountered an error)");
+      process.exit(1);
+    }
+
     if (!auditData.vulnerabilities) {
       console.log("No vulnerabilities found");
       process.exit(0);
