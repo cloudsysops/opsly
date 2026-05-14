@@ -45,19 +45,7 @@
   },
 
   "hooks": {
-    "pre-commit": {
-      "enabled": true,
-      "command": "bash .claude/4-hooks/lint-on-save.sh"
-    },
-    "post-commit": {
-      "enabled": true,
-      "command": "bash scripts/update-agents.sh"
-    },
-    "post-merge": {
-      "enabled": true,
-      "command": "bash .claude/4-hooks/post-merge.sh"
-    },
-    "session-start": {
+    "SessionStart": {
       "enabled": true,
       "command": "node scripts/skill-finder.js --autonomous"
     }
