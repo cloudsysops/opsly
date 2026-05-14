@@ -56,8 +56,12 @@ process.stdin.on("end", () => {
     for (const [pkg, vulnInfo] of Object.entries(auditData.vulnerabilities)) {
       for (const via of vulnInfo.via || []) {
         if (typeof via !== "object" || !via) continue;
-        const cveId = via.cve || via.id;
-        if (!KNOWN_VULNS.has(cveId)) {
+        let cveId = via.cve || via.id;
+        if (!cveId && via.url) {
+          const match = via.url.match(/GHSA-[\w-]+|CVE-\d+-\d+/);
+          cveId = match ? match[0] : null;
+        }
+        if (cveId && !KNOWN_VULNS.has(cveId)) {
           unknownVulns.push({
             package: pkg,
             vulnerability: cveId,
