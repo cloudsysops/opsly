@@ -1,3 +1,7 @@
+---
+title: Sistema de Hooks de Integridad
+---
+
 # Sistema de Hooks de Integridad
 
 ## Propósito
