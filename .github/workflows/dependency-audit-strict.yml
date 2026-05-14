@@ -29,7 +29,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: '20'
           cache: 'npm'
 
       - name: Install dependencies
@@ -87,13 +87,13 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: '20'
           cache: 'npm'
 
       - name: Generate audit report
         run: |
           npm --version
-          npm audit --audit-level=moderate --json > audit-report.json || true
+          npm audit --json > audit-report.json || true
 
           {
             echo "## Dependency Audit Report"
