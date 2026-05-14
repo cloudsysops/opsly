@@ -74,7 +74,7 @@ class CoverageAnalyzer:
         module_name = module_path.name
         full_name = f"{prefix}/{module_name}"
 
-        # Count test files
+        # Count test files (use set to avoid duplicates)
         test_patterns = [
             "**/*.test.ts",
             "**/*.test.tsx",
@@ -82,9 +82,11 @@ class CoverageAnalyzer:
             "**/*.spec.tsx",
             "**/__tests__/**/*.ts",
         ]
-        test_files = []
+        test_files_set = set()
         for pattern in test_patterns:
-            test_files.extend(module_path.glob(pattern))
+            for f in module_path.glob(pattern):
+                test_files_set.add(f)
+        test_files = list(test_files_set)
 
         # Count source files
         source_patterns = [

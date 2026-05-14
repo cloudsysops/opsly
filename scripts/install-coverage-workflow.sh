@@ -90,18 +90,26 @@ jobs:
         run: |
           python3 << 'PYTHON_EOF'
           import json
+          import os
+          import sys
+
           with open('${{ env.REPORT_DIR }}/coverage-report.json') as f:
             data = json.load(f)
           summary = data['summary']
           untested = summary['coverage_distribution']['none']
 
-          echo "UNTESTED_MODULES=$untested" >> $GITHUB_OUTPUT
+          github_output = os.getenv('GITHUB_OUTPUT')
+          with open(github_output, 'a') as f:
+            f.write(f"UNTESTED_MODULES={untested}\n")
 
-          if [ "${{ github.event.inputs.fail_on_gap }}" = "true" ] && [ $untested -gt 15 ]; then
-            echo "VALIDATION_FAILED=true" >> $GITHUB_OUTPUT
-            exit 1
-          fi
-          echo "VALIDATION_FAILED=false" >> $GITHUB_OUTPUT
+          fail_on_gap = "${{ github.event.inputs.fail_on_gap }}" == "true"
+          if fail_on_gap and untested > 15:
+            with open(github_output, 'a') as f:
+              f.write("VALIDATION_FAILED=true\n")
+            sys.exit(1)
+
+          with open(github_output, 'a') as f:
+            f.write("VALIDATION_FAILED=false\n")
           PYTHON_EOF
 
       - name: Comment PR with coverage summary
@@ -144,7 +152,7 @@ jobs:
 
       - name: Upload coverage reports
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: coverage-reports
           path: ${{ env.REPORT_DIR }}/
