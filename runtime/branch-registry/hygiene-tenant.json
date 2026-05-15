@@ -1,6 +1,6 @@
 {
   "tenant_slug": "hygiene-tenant",
-  "next_job_sequence": 102,
+  "next_job_sequence": 103,
   "entries": [
     {
       "id": "50075576-b22b-48c5-8e85-46b6fd64db7c",
@@ -41,6 +41,26 @@
       "files_touched": [],
       "created_at": "2026-05-15T18:36:45.352Z",
       "updated_at": "2026-05-15T18:36:45.352Z"
+    },
+    {
+      "id": "96b7f272-0529-4a58-8819-3960d6a148c4",
+      "tenant_slug": "hygiene-tenant",
+      "branch_name": "agent/copilot/job-102/hygiene-check",
+      "job_id": "job-102",
+      "worker_id": "copilot-cli",
+      "worker_branch_slug": "copilot",
+      "task_slug": "hygiene-check",
+      "task_type": "tests",
+      "parent_branch": "main",
+      "target_branch": "integration/chatops-mvp",
+      "integration_branch": "integration/chatops-mvp",
+      "initiative": "chatops-mvp",
+      "status": "planned",
+      "risk_level": "low",
+      "test_status": "unknown",
+      "files_touched": [],
+      "created_at": "2026-05-15T18:49:09.246Z",
+      "updated_at": "2026-05-15T18:49:09.246Z"
     }
   ]
 }
