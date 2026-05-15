@@ -24,6 +24,9 @@ import { superOrchestratorTools } from './tools/super-orchestrator.js';
 import { executeQuantumTool } from './tools/execute-quantum.tool.js';
 import { getModeTool } from './tools/get-mode.tool.js';
 import { setModeTool } from './tools/set-mode.tool.js';
+import { visualizeWorkflowTool } from './tools/graphyfi.js';
+import { agentAppsTools } from './tools/agent-apps-bridge.js';
+import { contentCreationTools } from './tools/content-creation.js';
 import type { ToolContext, ToolDefinition } from './types/index.js';
 
 interface RegisteredTool {
@@ -73,6 +76,25 @@ export const TOOL_REQUIRED_SCOPES: Record<string, string> = {
   get_mode: 'agents:write',
   set_mode: 'agents:write',
   execute_quantum: 'agents:write',
+  visualize_tenant_workflow: 'metrics:read',
+  agent_apps_list: 'metrics:read',
+  agent_apps_open: 'agents:write',
+  agent_system_status: 'metrics:read',
+  agent_git: 'metrics:read',
+  agent_manage_app: 'agents:write',
+  web_navigate: 'agents:write',
+  web_search: 'agents:write',
+  doc_create_notion: 'agents:write',
+  doc_create_obsidian: 'agents:write',
+  doc_export_pdf: 'agents:write',
+  capture_screenshot: 'agents:write',
+  capture_screen_record: 'agents:write',
+  image_generate: 'agents:write',
+  image_generate_local: 'agents:write',
+  video_edit_capcut: 'agents:write',
+  audio_edit_ableton: 'agents:write',
+  content_blog_post: 'agents:write',
+  content_presentation: 'agents:write',
 };
 
 export type CallToolOptions = {
@@ -185,7 +207,10 @@ export function getAllToolDefinitions(): ToolDefinition<unknown, unknown>[] {
     getModeTool,
     setModeTool,
     executeQuantumTool,
+    visualizeWorkflowTool,
     ...superOrchestratorTools,
+    ...agentAppsTools,
+    ...contentCreationTools,
   ] as ToolDefinition<unknown, unknown>[];
 }
 

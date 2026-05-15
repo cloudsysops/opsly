@@ -4,12 +4,18 @@
     "enabled": true,
     "description": "All agents use brain:research for 60-70% token savings",
     "token_savings_target": "60-70%",
-    "mcp_tools_required": ["brain:research"],
+    "mcp_tools_required": [
+      "brain:research",
+      "visualize_tenant_workflow",
+      "check_service_health",
+      "get_docker_containers"
+    ],
     "rule_hierarchy": [
       "1. Query exists in docs/brain/ → use brain:research",
       "2. Search code locally → grep/find",
       "3. Need architecture → AGENTS.md + VISION.md",
-      "4. Last resort → ask user"
+      "4. Use MCP read tools for live state when available",
+      "5. Last resort → ask user"
     ],
     "triggers_for_brain_research": [
       "investigar",
@@ -20,9 +26,24 @@
       "how does",
       "funcionamiento"
     ],
-    "onboarding_skills": ["opsly-context", "opsly-brain-researcher"]
+    "onboarding_skills": [
+      "opsly-context",
+      "opsly-brain-researcher",
+      "opsly-mcp",
+      "opsly-orchestrator",
+      "opsly-infra"
+    ]
   },
   "services": {
+    "mcp": {
+      "enabled": true,
+      "url": "http://localhost:3003",
+      "envUrl": "OPSLY_MCP_URL",
+      "type": "http",
+      "timeoutMs": 30000,
+      "retries": 2,
+      "description": "OpenClaw MCP server for audited Opsly tools; do not use as an unrestricted shell bridge"
+    },
     "local_cursor": {
       "enabled": true,
       "external_cli": "cursor",
