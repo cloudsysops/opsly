@@ -3,9 +3,8 @@ import path from 'node:path';
 import { randomUUID } from 'node:crypto';
 
 import type { AutomationAuditEvent } from './types';
-import { resolveOpslyRepoRoot } from '../tools-execute';
 
-const auditPath = path.join(resolveOpslyRepoRoot(), 'runtime', 'logs', 'local-automation.jsonl');
+const auditPath = path.join(process.cwd(), 'runtime', 'logs', 'local-automation.jsonl');
 
 export async function appendAutomationAuditEvent(
   event: Omit<AutomationAuditEvent, 'id' | 'ts'>

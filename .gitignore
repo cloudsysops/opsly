@@ -43,7 +43,7 @@ tools/agents/prompts/secrets-*.md
 .codex/config.toml
 
 # Obsidian — estado de UI en la raíz del repo (no es el vault docs/); no commitear
-/.obsidian/
+.obsidian/
 .env.local
 .env*.local
 !.env.local-workers.example

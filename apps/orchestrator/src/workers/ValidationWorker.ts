@@ -1,4 +1,4 @@
-import { Job, Worker } from "bullmq";
+import { Job, Queue, Worker } from "bullmq";
 import { resolveGithubPat } from "../lib/github-pat.js";
 import { logWorkerLifecycle } from "../observability/worker-log.js";
 import { notifyDiscord } from "./NotifyWorker.js";
@@ -20,45 +20,21 @@ const MAX_RETRIES = 3;
 const POLL_INTERVAL_MS = 30_000;
 const POLL_TIMEOUT_MS = 5 * 60_000;
 
-export async function fetchCIConclusion(sha: string, token: string): Promise<CIConclusion> {
+async function fetchCIConclusion(sha: string, token: string): Promise<CIConclusion> {
   const url = `https://api.github.com/repos/${REPO}/actions/runs?head_sha=${sha}&per_page=5`;
+  const res = await fetch(url, {
+    headers: { Authorization: `Bearer ${token}`, Accept: "application/vnd.github+json" },
+  });
+  if (!res.ok) return "failure";
 
-  try {
-    const res = await fetch(url, {
-      headers: { Authorization: `Bearer ${token}`, Accept: "application/vnd.github+json" },
-    });
-    if (!res.ok) {
-      if (res.status === 401 || res.status === 403 || res.status === 404) {
-        return "failure";
-      }
-      return "pending";
-    }
+  const data = (await res.json()) as { workflow_runs?: { status: string; conclusion: string | null }[] };
+  const runs = data.workflow_runs ?? [];
+  if (runs.length === 0) return "pending";
 
-    const data = (await res.json()) as { workflow_runs?: { status: string; conclusion: string | null }[] };
-    const runs = data.workflow_runs ?? [];
-    if (runs.length === 0) return "pending";
-
-    const latest = runs[0];
-    if (latest.status === "queued" || latest.status === "in_progress") return "pending";
-
-    switch (latest.conclusion) {
-      case "success":
-        return "success";
-      case "cancelled":
-        return "cancelled";
-      case "timed_out":
-        return "timed_out";
-      case "failure":
-      case "startup_failure":
-      case "action_required":
-      case "stale":
-        return "failure";
-      default:
-        return "pending";
-    }
-  } catch {
-    return "pending";
-  }
+  const latest = runs[0];
+  if (latest.status === "queued" || latest.status === "in_progress") return "pending";
+  if (latest.conclusion === "success") return "success";
+  return "failure";
 }
 
 async function pollCI(sha: string, token: string): Promise<CIConclusion> {

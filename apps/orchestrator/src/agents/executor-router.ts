@@ -83,7 +83,7 @@ export class ExecutorRouter {
     const executor = resolveExecutor(task);
     const jobName = executor === "cursor" ? "cursor"
       : executor === "claude-code" ? "claude-code"
-      : "terminal_task";
+      : "shell";
 
     const payload = buildPayload(task, executor);
     const job = await orchestratorQueue.add(jobName, payload, {

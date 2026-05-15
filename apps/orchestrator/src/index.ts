@@ -136,14 +136,13 @@ function startAllWorkers(): AsyncCleanup[] {
   const agentFarmWorker = agentFarmWorkerEnabled ? startAgentFarmWorker(connection) : undefined;
   const approvalGateWorkerEnabled = process.env.OPSLY_APPROVAL_GATE_WORKER_ENABLED === 'true';
   const approvalGateResult = approvalGateWorkerEnabled ? startApprovalGateWorker(connection) : undefined;
-  const maiaWorkersEnabled = process.env.OPSLY_MAIA_WORKERS_ENABLED === 'true';
   // Maia Life Systems
-  const selfHealWorker = maiaWorkersEnabled ? startSelfHealWorker(connection) : undefined;
-  const autoDeployWorker = maiaWorkersEnabled ? startAutoDeployWorker(connection) : undefined;
-  const costGateWorker = maiaWorkersEnabled ? startCostGateWorker(connection) : undefined;
-  const claudeCodeWorker = maiaWorkersEnabled ? startClaudeCodeWorker(connection) : undefined;
-  const validationWorker = maiaWorkersEnabled ? startValidationWorker(connection) : undefined;
-  const memoryWriterWorker = maiaWorkersEnabled ? startMemoryWriterWorker(connection) : undefined;
+  const selfHealWorker = startSelfHealWorker(connection);
+  const autoDeployWorker = startAutoDeployWorker(connection);
+  const costGateWorker = startCostGateWorker(connection);
+  const claudeCodeWorker = startClaudeCodeWorker(connection);
+  const validationWorker = startValidationWorker(connection);
+  const memoryWriterWorker = startMemoryWriterWorker(connection);
 
   cleanup.push(
     async () => cursorWorker.close(),
@@ -176,12 +175,13 @@ function startAllWorkers(): AsyncCleanup[] {
   ...(agentFarmWorker ? [async () => agentFarmWorker.close()] : []),
   ...(approvalGateResult ? [async () => approvalGateResult.worker.close()] : []),
   ...agentClassifierCleanup,
-    ...(selfHealWorker ? [async () => selfHealWorker.close()] : []),
-    ...(autoDeployWorker ? [async () => autoDeployWorker.close()] : []),
-    ...(costGateWorker ? [async () => costGateWorker.close()] : []),
-    ...(claudeCodeWorker ? [async () => claudeCodeWorker.close()] : []),
-    ...(validationWorker ? [async () => validationWorker.close()] : []),
-    ...(memoryWriterWorker ? [async () => memoryWriterWorker.close()] : []),
+    // Maia Life Systems
+    async () => selfHealWorker.close(),
+    async () => autoDeployWorker.close(),
+    async () => costGateWorker.close(),
+    async () => claudeCodeWorker.close(),
+    async () => validationWorker.close(),
+    async () => memoryWriterWorker.close(),
   );
 
   const localWorkersLabel = localAgentUnifiedOnly
