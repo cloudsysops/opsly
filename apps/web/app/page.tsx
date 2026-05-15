@@ -377,6 +377,9 @@ export default function LandingPage() {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="/automation-crm" className="ops-btn-primary text-center">
+              Automation CRM →
+            </a>
             <a href="#pricing" className="ops-btn-primary text-center">
               Ver planes y precios →
             </a>
