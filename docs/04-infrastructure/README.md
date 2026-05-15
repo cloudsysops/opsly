@@ -22,6 +22,7 @@ Infraestructura de plataforma: VPS, Docker, Traefik, Cloudflare, Tailscale, Redi
 ## Documentos clave
 
 - `VPS-ARCHITECTURE.md`
+- `PRODUCTION-STATUS-2026-05-15.md`
 - `DOMAIN-CUTOVER-OP-SLY.md`
 - `MCP-ORCHESTRATOR-DEPLOYMENT.md`
 - `PRODUCTION-READINESS.md`
