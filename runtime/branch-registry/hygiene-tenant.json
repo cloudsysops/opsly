@@ -1,0 +1,46 @@
+{
+  "tenant_slug": "hygiene-tenant",
+  "next_job_sequence": 102,
+  "entries": [
+    {
+      "id": "50075576-b22b-48c5-8e85-46b6fd64db7c",
+      "tenant_slug": "hygiene-tenant",
+      "branch_name": "agent/copilot/job-100/hygiene-check",
+      "job_id": "job-100",
+      "worker_id": "copilot-cli",
+      "worker_branch_slug": "copilot",
+      "task_slug": "hygiene-check",
+      "task_type": "tests",
+      "parent_branch": "main",
+      "target_branch": "integration/chatops-mvp",
+      "integration_branch": "integration/chatops-mvp",
+      "initiative": "chatops-mvp",
+      "status": "planned",
+      "risk_level": "low",
+      "test_status": "unknown",
+      "files_touched": [],
+      "created_at": "2026-05-15T17:46:54.872Z",
+      "updated_at": "2026-05-15T17:46:54.872Z"
+    },
+    {
+      "id": "8c88eece-318b-4769-b84d-b123dd8c058b",
+      "tenant_slug": "hygiene-tenant",
+      "branch_name": "agent/copilot/job-101/hygiene-check",
+      "job_id": "job-101",
+      "worker_id": "copilot-cli",
+      "worker_branch_slug": "copilot",
+      "task_slug": "hygiene-check",
+      "task_type": "tests",
+      "parent_branch": "main",
+      "target_branch": "integration/chatops-mvp",
+      "integration_branch": "integration/chatops-mvp",
+      "initiative": "chatops-mvp",
+      "status": "planned",
+      "risk_level": "low",
+      "test_status": "unknown",
+      "files_touched": [],
+      "created_at": "2026-05-15T18:36:45.352Z",
+      "updated_at": "2026-05-15T18:36:45.352Z"
+    }
+  ]
+}

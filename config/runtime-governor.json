@@ -1,0 +1,58 @@
+{
+  "version": 1,
+  "principle": "Prevent AI agent chaos — sequential by default, human approval for extra capacity.",
+  "max_active_implementation_workers": 1,
+  "max_active_planning_workers": 1,
+  "max_parallel_jobs": 1,
+  "max_background_tmux_sessions": 2,
+  "max_docker_sandboxes": 2,
+  "agent_idle_timeout_minutes": 20,
+  "require_approval_for_extra_agents": true,
+  "prefer_sequential_execution": true,
+  "cheap_model_aliases": ["opsly:fast", "opsly:local", "opsly:balanced"],
+  "premium_model_aliases": ["opsly:architect", "opsly:quality"],
+  "implementation_roles": ["executor", "implementation", "debugging", "tool"],
+  "planning_roles": ["planner", "architecture", "planning", "architect"],
+  "review_roles": ["review", "auditor", "security_review"],
+  "resource_thresholds": {
+    "memory_percent": 85,
+    "load_per_cpu": 1.5
+  },
+  "tier_limits": {
+    "free": {
+      "max_active_implementation_workers": 1,
+      "max_active_planning_workers": 1,
+      "max_parallel_jobs": 1,
+      "max_background_tmux_sessions": 2,
+      "max_docker_sandboxes": 2
+    },
+    "startup": {
+      "max_active_implementation_workers": 1,
+      "max_active_planning_workers": 1,
+      "max_parallel_jobs": 1,
+      "max_background_tmux_sessions": 2,
+      "max_docker_sandboxes": 2
+    },
+    "pro": {
+      "max_active_implementation_workers": 2,
+      "max_active_planning_workers": 1,
+      "max_parallel_jobs": 2,
+      "max_background_tmux_sessions": 4,
+      "max_docker_sandboxes": 3
+    },
+    "business": {
+      "max_active_implementation_workers": 2,
+      "max_active_planning_workers": 2,
+      "max_parallel_jobs": 3,
+      "max_background_tmux_sessions": 6,
+      "max_docker_sandboxes": 4
+    },
+    "enterprise": {
+      "max_active_implementation_workers": 4,
+      "max_active_planning_workers": 2,
+      "max_parallel_jobs": 5,
+      "max_background_tmux_sessions": 10,
+      "max_docker_sandboxes": 8
+    }
+  }
+}

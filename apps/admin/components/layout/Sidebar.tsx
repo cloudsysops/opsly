@@ -19,6 +19,7 @@ import {
   Settings,
   ShieldAlert,
   ShieldCheck,
+  Terminal,
   Wrench,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -34,6 +35,7 @@ const nav = [
   { href: '/agents-team', label: 'Agents Config', icon: Activity },
   { href: '/mission-control/office', label: 'Mission Control', icon: LayoutGrid },
   { href: '/mission-control/local-runtime', label: 'Local Runtime', icon: Wrench },
+  { href: '/mission-control/runtime', label: 'Agent Runtime', icon: Terminal },
   { href: '/openclaw/ide', label: 'IDE Octopus', icon: Code2 },
   { href: '/openclaw-governance', label: 'OpenClaw Governance', icon: Gavel },
   { href: '/costs', label: 'Costos', icon: CircleDollarSign },

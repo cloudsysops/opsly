@@ -1,6 +1,7 @@
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { Job } from 'bullmq';
+import { releaseSandboxJob } from '../lib/runtime-governor.js';
 import { createWorker } from './create-worker.js';
 import type { OrchestratorJob } from '../types.js';
 
@@ -81,12 +82,20 @@ async function processJcodeJob(job: Job) {
 	};
 }
 
+async function processJcodeJobWithGovernor(job: Job): Promise<unknown> {
+	try {
+		return await processJcodeJob(job);
+	} finally {
+		releaseSandboxJob();
+	}
+}
+
 export function startJcodeWorker(connection: object) {
 	return createWorker({
 		jobName: 'jcode_execution',
 		workerName: 'jcode',
 		concurrencyKey: 'jcode',
 		connection,
-		processFn: processJcodeJob,
+		processFn: processJcodeJobWithGovernor,
 	});
 }

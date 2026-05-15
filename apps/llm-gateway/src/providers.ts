@@ -240,6 +240,10 @@ export function resolveRoutingPreference(
   explicitModel: string | undefined,
   complexityLevel: 1 | 2 | 3
 ): RoutingPreference {
+  if (explicitModel === 'opsly:fast' || explicitModel === 'opsly:local') return 'cheap';
+  if (explicitModel === 'opsly:coding') return 'code';
+  if (explicitModel === 'opsly:balanced') return 'balanced';
+  if (explicitModel === 'opsly:quality' || explicitModel === 'opsly:architect') return 'sonnet';
   if (explicitModel === 'sonnet') return 'sonnet';
   if (explicitModel === 'haiku') return 'haiku';
   if (explicitModel === 'cheap' || explicitModel === 'llama') return 'cheap';

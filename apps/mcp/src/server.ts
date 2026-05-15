@@ -27,6 +27,8 @@ import { setModeTool } from './tools/set-mode.tool.js';
 import { visualizeWorkflowTool } from './tools/graphyfi.js';
 import { agentAppsTools } from './tools/agent-apps-bridge.js';
 import { contentCreationTools } from './tools/content-creation.js';
+import { runtimeSessionsTools } from './tools/runtime-sessions.tool.js';
+import { gitBranchOrchestratorTools } from './tools/git-branch-orchestrator.tool.js';
 import type { ToolContext, ToolDefinition } from './types/index.js';
 
 interface RegisteredTool {
@@ -95,6 +97,9 @@ export const TOOL_REQUIRED_SCOPES: Record<string, string> = {
   audio_edit_ableton: 'agents:write',
   content_blog_post: 'agents:write',
   content_presentation: 'agents:write',
+  runtime_list_sessions: 'metrics:read',
+  runtime_session_logs: 'metrics:read',
+  runtime_create_session: 'agents:write',
 };
 
 export type CallToolOptions = {
@@ -211,6 +216,8 @@ export function getAllToolDefinitions(): ToolDefinition<unknown, unknown>[] {
     ...superOrchestratorTools,
     ...agentAppsTools,
     ...contentCreationTools,
+    ...runtimeSessionsTools,
+    ...gitBranchOrchestratorTools,
   ] as ToolDefinition<unknown, unknown>[];
 }
 

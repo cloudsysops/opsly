@@ -3,7 +3,22 @@ import { Queue } from 'bullmq';
 import { logJobEnqueue } from './observability/job-log.js';
 import { buildQueueAddOptions } from './queue-opts.js';
 import { getJobTenantSlug } from './lib/tenant-context.js';
+import {
+  evaluateEnqueue,
+  registerActiveLocalJob,
+  registerSandboxJob,
+} from './lib/runtime-governor.js';
 import type { OrchestratorJob } from './types.js';
+
+export class RuntimeGovernorRejectedError extends Error {
+  constructor(
+    message: string,
+    readonly decision: Awaited<ReturnType<typeof evaluateEnqueue>>,
+  ) {
+    super(message);
+    this.name = 'RuntimeGovernorRejectedError';
+  }
+}
 
 export interface OpenClawQueueTask {
   objective: string;
@@ -58,6 +73,21 @@ export const hermesOrchestrationQueue = new Queue('hermes-orchestration', {
 });
 
 export async function enqueueJob(job: OrchestratorJob) {
+  const isSandbox =
+    job.type === 'sandbox_execution' || job.type === 'jcode_execution';
+  if (isSandbox) {
+    const governor = await evaluateEnqueue({
+      job_type: job.type,
+      agent_role: job.agent_role,
+      tenant_plan: job.plan,
+      autonomy_approved: job.metadata?.autonomy_approved === true,
+    });
+    if (!governor.allowed) {
+      throw new RuntimeGovernorRejectedError(governor.reason, governor);
+    }
+    registerSandboxJob();
+  }
+
   const opts = buildQueueAddOptions(job);
 
   // Route local agent jobs to local-agents queue
@@ -97,7 +127,21 @@ export async function enqueueLocalAgentJob(
     const jobId =
       typeof job.idempotency_key === 'string' && job.idempotency_key.trim().length > 0
         ? job.idempotency_key.trim()
-        : job.request_id;
+        : job.request_id ?? randomUUID();
+
+    const governor = await evaluateEnqueue({
+      job_type: job.type,
+      agent_role: job.agent_role,
+      tenant_plan: job.plan,
+      autonomy_approved: job.metadata?.autonomy_approved === true,
+      metadata: job.metadata,
+    });
+    if (!governor.allowed) {
+      throw new RuntimeGovernorRejectedError(governor.reason, governor);
+    }
+
+    registerActiveLocalJob(String(jobId), job.agent_role ?? 'executor', job.tenant_slug);
+
     const bull = await localAgentQueue.add(job.type, job, {
       jobId,
       priority: 40000,

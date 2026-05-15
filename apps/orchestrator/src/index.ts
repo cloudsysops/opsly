@@ -2,6 +2,10 @@ import { setupLangSmithTracing } from './agents/langsmith.js';
 import { processIntent } from './engine.js';
 import { subscribeEvents } from './events/bus.js';
 import { startOrchestratorHealthServer } from './health-server.js';
+import {
+  startRuntimeGovernorSweeper,
+  stopRuntimeGovernorSweeper,
+} from './lib/runtime-governor-sweeper.js';
 import { drainMeteringOperations } from './metering/usage-events-meter.js';
 import { closeOrchestratorRedis } from './metering/redis-client.js';
 import {
@@ -35,6 +39,7 @@ import { startSuspensionWorker } from './workers/SuspensionWorker.js';
 import { startGeneralEventsWorker } from './workers/GeneralEventsWorker.js';
 import { startIntentDispatchWorker } from './workers/IntentDispatchWorker.js';
 import { startTerminalWorker } from './workers/TerminalWorker.js';
+import { startRuntimeSessionWorker } from './workers/RuntimeSessionWorker.js';
 import { closeWebhookQueue, createWebhookWorker } from './workers/WebhookWorker.js';
 import { startWebhooksProcessingWorker } from './workers/WebhooksProcessingWorker.js';
 import { startLocalAgentsUnifiedWorker } from './workers/local-agent-http-worker.js';
@@ -108,6 +113,7 @@ function startAllWorkers(): AsyncCleanup[] {
   const evolutionWorker = startEvolutionWorker(connection);
   const intentDispatchWorker = startIntentDispatchWorker(connection);
   const terminalWorker = startTerminalWorker(connection);
+  const runtimeSessionWorker = startRuntimeSessionWorker(connection);
   const localAgentsWorker = startLocalAgentsUnifiedWorker(connection);
   const localClaudeWorker = localAgentUnifiedOnly ? undefined : startLocalClaudeWorker(connection);
   const localCopilotWorker = localAgentUnifiedOnly ? undefined : startLocalCopilotWorker(connection);
@@ -190,7 +196,7 @@ function startAllWorkers(): AsyncCleanup[] {
   const agentFarmLabel = agentFarmWorkerEnabled ? ', agent-farm' : '';
   const approvalGateLabel = approvalGateWorkerEnabled ? ', approval-gate' : '';
   console.log(
-    `[orchestrator] Workers: cursor, n8n, notify, drive, backup, health, budget, opsly-webhooks, webhooks-processing, general-events, ollama, evolution, intent_dispatch, terminal_task, jcode, hive, defense-audit, research, planner, skeptic${localWorkersLabel}${superWorkerLabel}${agentFarmLabel}${approvalGateLabel}` +
+    `[orchestrator] Workers: cursor, n8n, notify, drive, backup, health, budget, opsly-webhooks, webhooks-processing, general-events, ollama, evolution, intent_dispatch, terminal_task, runtime_session, jcode, hive, defense-audit, research, planner, skeptic${localWorkersLabel}${superWorkerLabel}${agentFarmLabel}${approvalGateLabel}` +
     (process.env.OPSLY_AGENT_CLASSIFIER_WORKER_ENABLED === 'true' ? ', agent-classifier' : '') +
     (process.env.OPSLY_SANDBOX_WORKER_ENABLED === 'true' ? ', sandbox' : '') +
     '; Hermes tick → servicio opsly-hermes (no este proceso).'
@@ -230,6 +236,10 @@ async function main(): Promise<void> {
   }
 
   const healthServer = startOrchestratorHealthServer();
+  if (process.env.OPSLY_RUNTIME_GOVERNOR_SWEEPER !== '0') {
+    startRuntimeGovernorSweeper(5);
+    cleanupTasks.push(async () => stopRuntimeGovernorSweeper());
+  }
   cleanupTasks.push(async () => closeHttpServer(healthServer));
   cleanupTasks.push(async () => drainMeteringOperations());
   cleanupTasks.push(async () => orchestratorQueue.close());

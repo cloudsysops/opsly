@@ -44,6 +44,16 @@
 | Fallover / cola de reparación (diseño) | [`docs/orchestrator/REPAIR-QUEUE.md`](../orchestrator/REPAIR-QUEUE.md) |
 | Seguridad operativa | [`docs/04-infrastructure/SECURITY_CHECKLIST.md`](../04-infrastructure/SECURITY_CHECKLIST.md) |
 
+## Runtime worker contract (VPS / tmux / MCP / sandbox)
+
+Controlled workers (not unrestricted agents) must follow:
+
+- [`docs/03-agents/OPSLY-RUNTIME-WORKER-CONTRACT.md`](../03-agents/OPSLY-RUNTIME-WORKER-CONTRACT.md)
+
+Cursor rule (globs orchestrator/MCP/runtime): `.cursor/rules/opsly-runtime-worker.mdc`
+
+---
+
 ## Referencias canónicas (lectura cruzada)
 
 - [`docs/00-architecture/OPENCLAW-ARCHITECTURE.md`](../00-architecture/OPENCLAW-ARCHITECTURE.md) — diagrama y flujo OpenClaw (histórico: enlaces `docs/OPENCLAW-ARCHITECTURE.md` redirigen aquí).

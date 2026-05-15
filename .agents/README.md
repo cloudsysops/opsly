@@ -25,16 +25,17 @@ Any new agent family must start with the same bootstrap packet:
 1. `AGENTS.md`
 2. `VISION.md`
 3. `docs/03-agents/AGENT-BRAIN-CONTRACT.md`
-4. `docs/03-agents/AGENT-GUARDRAILS.md`
-5. `docs/01-development/GIT-WORKFLOW.md`
-6. `config/knowledge-index.json`
-7. `config/github-module-graph.json` when present
+4. `docs/03-agents/OPSLY-RUNTIME-WORKER-CONTRACT.md` (VPS / tmux / MCP / sandbox workers)
+5. `docs/03-agents/AGENT-GUARDRAILS.md`
+6. `docs/01-development/GIT-WORKFLOW.md`
+7. `config/knowledge-index.json`
+8. `config/github-module-graph.json` when present
 
 Minimum prompt:
 
 ```text
-Read AGENTS.md, VISION.md and docs/03-agents/AGENT-BRAIN-CONTRACT.md.
-Operate as an Opsly agent using OpenClaw, Obsidian Brain and Graphyfi.
+Read AGENTS.md, VISION.md, docs/03-agents/AGENT-BRAIN-CONTRACT.md and docs/03-agents/OPSLY-RUNTIME-WORKER-CONTRACT.md.
+Operate as a controlled Opsly runtime worker (OpenClaw, MCP, orchestrator, LLM Gateway).
 Do not create a parallel memory. Respect guardrails and Git workflow.
 ```
 

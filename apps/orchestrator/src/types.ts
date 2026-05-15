@@ -29,6 +29,8 @@ export type JobType =
   | 'agent_farm'
   /** Payload: `{ agent_id, commands[], tenant_slug, timeout_seconds? }` */
   | 'terminal_task'
+  /** Opsly Agent Runtime — tmux session create/send/stop via session-manager. */
+  | 'runtime_session'
   /** CloudSysOps OpenClaw: mensaje canal ventas → LLM Gateway (cola `cloudsysops-agents`). */
   | 'cloudsysops_sales_message'
   /** CloudSysOps OpenClaw: cierre de servicio → informe vía LLM Gateway (cola `cloudsysops-agents`). */

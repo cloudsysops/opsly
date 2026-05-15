@@ -1,0 +1,30 @@
+{
+  "name": "@intcloudsysops/session-manager",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Opsly tmux session manager for persistent agent runtime",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "type-check": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "execa": "^9.6.0",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.12",
+    "typescript": "^5.9.2",
+    "vitest": "^3.2.4"
+  }
+}

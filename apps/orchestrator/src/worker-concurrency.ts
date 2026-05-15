@@ -17,6 +17,7 @@ export type WorkerConcurrencyKey =
   | 'agent-classifier'
   | 'evolution'
   | 'terminal'
+  | 'runtime_session'
   | 'local-cursor'
   | 'local-claude'
   | 'local-copilot'
@@ -56,6 +57,7 @@ const FULL_STACK_DEFAULTS: Record<WorkerConcurrencyKey, number> = {
   'agent-classifier': 2,
   evolution: 1,
   terminal: 2,
+  runtime_session: 1,
   'local-cursor': 2,
   'local-claude': 2,
   'local-copilot': 1,
@@ -96,6 +98,7 @@ const DISTRIBUTED_WORKER_DEFAULTS: Record<WorkerConcurrencyKey, number> = {
   'agent-classifier': 1,
   evolution: 1,
   terminal: 1,
+  runtime_session: 1,
   'local-cursor': 1,
   'local-claude': 1,
   'local-copilot': 1,
@@ -136,6 +139,7 @@ const ENV_NAMES: Record<WorkerConcurrencyKey, string> = {
   'agent-classifier': 'ORCHESTRATOR_AGENT_CLASSIFIER_CONCURRENCY',
   evolution: 'ORCHESTRATOR_EVOLUTION_CONCURRENCY',
   terminal: 'ORCHESTRATOR_TERMINAL_CONCURRENCY',
+  runtime_session: 'ORCHESTRATOR_RUNTIME_SESSION_CONCURRENCY',
   'local-cursor': 'ORCHESTRATOR_LOCAL_CURSOR_CONCURRENCY',
   'local-claude': 'ORCHESTRATOR_LOCAL_CLAUDE_CONCURRENCY',
   'local-copilot': 'ORCHESTRATOR_LOCAL_COPILOT_CONCURRENCY',

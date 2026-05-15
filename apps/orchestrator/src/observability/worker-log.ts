@@ -22,6 +22,7 @@ export type WorkerName =
   | 'hive'
   | 'jcode'
   | 'terminal'
+  | 'runtime_session'
   | 'local-cursor'
   | 'local-claude'
   | 'local-copilot'

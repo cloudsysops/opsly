@@ -1,6 +1,6 @@
 import type { RouteContext } from '../router.js';
 import { verifyPlatformAdminToken, parseBody, assertTenantSlugOrThrow, enrichAutonomyMetadata, randomUUID } from '../utils.js';
-import { enqueueJob, enqueueLocalAgentJob } from '../../queue.js';
+import { enqueueJob, enqueueLocalAgentJob, RuntimeGovernorRejectedError } from '../../queue.js';
 import type { OrchestratorJob } from '../../types.js';
 import {
   getLocalControlMode,
@@ -18,6 +18,7 @@ import {
   isConfigurableLocalBridgeKey,
 } from '../../lib/local-worker-utils.js';
 import { recordOpenClawIntentQueued } from '../../openclaw/runtime-events.js';
+import { resolveOpslyJobTypeForPrompt } from '../../lib/external-agent-coordinator.js';
 import { jsonResponse, errorResponse } from '../router.js';
 
 const MAX_RECENT_LOCAL_JOBS = 25;
@@ -42,23 +43,26 @@ function recordRecentLocalJob(job: LocalRecentJob): void {
   }
 }
 
-function resolveLocalPromptAgentKind(b: Record<string, unknown>, promptForFrontmatter: string): string {
+function explicitAgentFromBody(
+  b: Record<string, unknown>,
+  promptForFrontmatter: string,
+): string | undefined {
   const explicit = typeof b.agent === 'string' ? b.agent.trim() : '';
   if (explicit.length > 0) {
-    return normalizeLocalAgentKind(explicit);
+    return explicit;
   }
   if (promptForFrontmatter.length > 0) {
     const { metadata } = parsePromptFrontmatter(promptForFrontmatter);
     const fromFm = metadata.agent;
     if (typeof fromFm === 'string' && fromFm.trim().length > 0) {
-      return normalizeLocalAgentKind(fromFm);
+      return fromFm.trim();
     }
   }
   const role = typeof b.agent_role === 'string' ? b.agent_role.trim().toLowerCase() : '';
   if (isLocalAgentKind(role)) {
-    return normalizeLocalAgentKind(role);
+    return role;
   }
-  return 'local_cursor';
+  return undefined;
 }
 
 export async function handleLocalControlMode(ctx: RouteContext): Promise<void> {
@@ -166,7 +170,14 @@ export async function handleLocalPromptSubmit(ctx: RouteContext): Promise<void> 
     typeof b.context === 'object' && b.context !== null ? (b.context as Record<string, unknown>) : {};
   const requestId = typeof b.request_id === 'string' && b.request_id.length > 0 ? b.request_id : randomUUID();
 
-  const agentKind = resolveLocalPromptAgentKind(b, promptForAgentResolve);
+  const explicitAgent = explicitAgentFromBody(b, promptForAgentResolve);
+  const routed = await resolveOpslyJobTypeForPrompt({
+    explicitAgent,
+    agentRole,
+    goal,
+    intent: typeof b.intent === 'string' ? b.intent : undefined,
+  });
+  const agentKind = routed.opslyJobType;
   const jobType = jobTypeForLocalAgent(agentKind);
 
   const job: OrchestratorJob = {
@@ -178,11 +189,18 @@ export async function handleLocalPromptSubmit(ctx: RouteContext): Promise<void> 
       goal,
       context,
       job_id: requestId,
+      model: routed.worker.defaultModel,
+      external_worker_id: routed.worker.workerId,
+      external_command: routed.worker.command,
     },
     tenant_slug: tenantSlug,
     initiated_by: 'system',
     request_id: requestId,
-    metadata: { labels: ['local_prompt'] },
+    metadata: {
+      labels: ['local_prompt', 'external_binary'],
+      external_worker_id: routed.worker.workerId,
+      default_model: routed.worker.defaultModel,
+    },
   };
   const controlMode = getLocalControlMode();
 
@@ -213,6 +231,8 @@ export async function handleLocalPromptSubmit(ctx: RouteContext): Promise<void> 
         request_id: requestId,
         control_mode: controlMode,
         prepared_only: true,
+        external_worker_id: routed.worker.workerId,
+        opsly_job_type: agentKind,
       });
       return;
     }
@@ -238,6 +258,9 @@ export async function handleLocalPromptSubmit(ctx: RouteContext): Promise<void> 
       job_id: bullJobId,
       request_id: requestId,
       control_mode: controlMode,
+      external_worker_id: routed.worker.workerId,
+      opsly_job_type: agentKind,
+      default_model: routed.worker.defaultModel,
     });
   } catch (err) {
     errorResponse(ctx.res, 500, String(err));

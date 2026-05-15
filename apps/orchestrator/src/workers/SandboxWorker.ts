@@ -1,6 +1,7 @@
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { Job } from 'bullmq';
+import { releaseSandboxJob } from '../lib/runtime-governor.js';
 import { createWorker } from './create-worker.js';
 
 const execFileAsync = promisify(execFile);
@@ -57,12 +58,20 @@ async function processSandboxJob(job: Job) {
 	};
 }
 
+async function processSandboxJobWithGovernor(job: Job): Promise<unknown> {
+	try {
+		return await processSandboxJob(job);
+	} finally {
+		releaseSandboxJob();
+	}
+}
+
 export function startSandboxWorker(connection: object) {
 	return createWorker({
 		jobName: 'sandbox_execution',
 		workerName: 'sandbox',
 		concurrencyKey: 'sandbox',
 		connection,
-		processFn: processSandboxJob,
+		processFn: processSandboxJobWithGovernor,
 	});
 }

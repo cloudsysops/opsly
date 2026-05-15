@@ -29,12 +29,29 @@ import {
   handleLocalControlMode,
   handleLocalState,
   handleLocalPromptSubmit,
+  handleExternalAgentsRegistry,
   handleValidationMetrics,
   handleValidationMetricsByAgent,
   handleValidationMetricsByIntent,
   handleValidationExport,
   handleMaiaCallback,
   handleMaiaSelfHeal,
+  handleRuntimeHealth,
+  handleRuntimeListSessions,
+  handleRuntimeCreateSession,
+  handleRuntimeSessionLogs,
+  handleRuntimeSessionSend,
+  handleRuntimeSessionStop,
+  handleRuntimeSessionCheckpoint,
+  handleGovernorStatus,
+  handleGovernorSweepIdle,
+  handleGitBranchPlan,
+  handleGitBranchAssign,
+  handleGitBranchRegistry,
+  handleGitChatOpsDispatch,
+  handleGitBranchHygiene,
+  handleGitIntegrationMergeAdvisor,
+  handleGitBranchMergeAdvisor,
 } from './http/routes/index.js';
 
 const DEFAULT_PORT = 3011;
@@ -82,6 +99,14 @@ function buildRouter(): Router {
   r.post('/internal/terminal/:agentId/session/:sessionId/stop', handleTerminalSessionStop);
   r.post('/internal/terminal/stop/:agentId', handleTerminalStop);
 
+  r.get('/internal/runtime/health', handleRuntimeHealth);
+  r.get('/internal/runtime/sessions', handleRuntimeListSessions);
+  r.post('/internal/runtime/sessions', handleRuntimeCreateSession);
+  r.get('/internal/runtime/sessions/:sessionId/logs', handleRuntimeSessionLogs);
+  r.post('/internal/runtime/sessions/:sessionId/send', handleRuntimeSessionSend);
+  r.post('/internal/runtime/sessions/:sessionId/stop', handleRuntimeSessionStop);
+  r.post('/internal/runtime/sessions/:sessionId/checkpoint', handleRuntimeSessionCheckpoint);
+
   r.get('/internal/job/:jobId', handleJobById);
 
   r.get('/internal/meta-optimizer/metrics', handleMetaOptimizerMetrics);
@@ -89,6 +114,8 @@ function buildRouter(): Router {
   r.post('/api/local/prompt-submit', handleLocalPromptSubmit);
   r.post('/api/local/control-mode', handleLocalControlMode);
   r.get('/api/local/state', handleLocalState);
+  r.get('/api/local/external-agents', handleExternalAgentsRegistry);
+  r.get('/internal/external-agents/registry', handleExternalAgentsRegistry);
 
   r.get('/api/job-status/:jobId', handleJobStatusAlias);
 

@@ -1,0 +1,49 @@
+{
+  "version": 1,
+  "principle": "Opsly turns AI branch chaos into governed software delivery.",
+  "branch_pattern": "agent/{worker}/{jobId}/{taskSlug}",
+  "integration_pattern": "integration/{initiative}",
+  "protected_targets": ["main", "master"],
+  "default_parent_branch": "main",
+  "require_pr_to_integration_first": true,
+  "auto_merge_to_main": false,
+  "task_type_workers": {
+    "architecture": "claude-code",
+    "planning": "claude-code",
+    "implementation": "opencode",
+    "debugging": "codex-cli",
+    "ui": "copilot-cli",
+    "docs": "copilot-cli",
+    "tests": "copilot-cli",
+    "small_patch": "copilot-cli",
+    "review": "hermes-cli",
+    "security_review": "decepticon-cli"
+  },
+  "worker_branch_slug": {
+    "claude-code": "claude",
+    "codex-cli": "codex",
+    "opencode": "opencode",
+    "copilot-cli": "copilot",
+    "hermes-cli": "hermes",
+    "cursor-ide": "cursor",
+    "decepticon-cli": "decepticon",
+    "aider-cli": "aider",
+    "goose-cli": "goose",
+    "playwright-runner": "playwright"
+  },
+  "high_risk_paths": [
+    "supabase/migrations/",
+    "apps/api/app/api/auth",
+    "apps/api/lib/stripe",
+    "infra/docker-compose.platform.yml",
+    "config/root-whitelist.json"
+  ],
+  "human_approval_required_for": [
+    "merge_to_main",
+    "production_deploy",
+    "schema_migration",
+    "auth_change",
+    "billing_change",
+    "force_push"
+  ]
+}

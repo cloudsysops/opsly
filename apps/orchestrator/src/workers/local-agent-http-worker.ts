@@ -25,6 +25,11 @@ import { logWorkerInfo, logWorkerWarn, logWorkerError, logWorkerLifecycle } from
 import { getWorkerConcurrency, type WorkerConcurrencyKey } from '../worker-concurrency.js';
 import { createValidationOrchestrator } from '../lib/validation/validation-orchestrator.js';
 import { writeValidationGuard } from '../lib/validation/validation-utils.js';
+import {
+  markJobRunning,
+  releaseActiveLocalJob,
+} from '../lib/runtime-governor.js';
+import type { AgentLifecycleState } from '../lib/runtime-governor-lifecycle.js';
 
 interface LocalAgentPayload {
   prompt_content?: string;
@@ -34,6 +39,8 @@ interface LocalAgentPayload {
   job_id?: string;
   goal?: string;
   context?: Record<string, unknown>;
+  external_worker_id?: string;
+  external_command?: string;
 }
 
 interface LocalAgentResponse {
@@ -118,7 +125,9 @@ async function processLocalAgentJob(
   job_id: string,
   agent_role: string,
   registry: ReturnType<typeof getAgentServiceRegistry>,
-  max_steps: number = 5
+  max_steps: number = 5,
+  model?: string,
+  external_worker_id?: string,
 ): Promise<LocalAgentResponse> {
   const startTime = Date.now();
   const cursorDir = path.join(process.cwd(), '.cursor');
@@ -135,7 +144,8 @@ async function processLocalAgentJob(
       throw new Error(`Service not configured or disabled for ${agent}`);
     }
 
-		logWorkerInfo('local-agents', `${agent}: invoking ${serviceUrl}/execute`);
+    const externalLabel = external_worker_id ?? externalCliLabelForOpslyLocalAgent(agent);
+		logWorkerInfo('local-agents', `${agent} (${externalLabel}): invoking ${serviceUrl}/execute`);
     const response = await fetch(`${serviceUrl.replace(/\/+$/, '')}/execute`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -144,6 +154,8 @@ async function processLocalAgentJob(
         agent_role,
         max_steps,
         job_id,
+        ...(model ? { model } : {}),
+        ...(external_worker_id ? { external_worker_id } : {}),
       }),
       signal: AbortSignal.timeout(service.timeout_ms),
     });
@@ -259,12 +271,23 @@ export function startLocalAgentsUnifiedWorker(connection: object): Worker {
 
       const registry = getAgentServiceRegistry();
       const t0 = Date.now();
+      markJobRunning(job_id);
+      let finalState: AgentLifecycleState = 'COMPLETED';
 
 		logWorkerInfo('local-agents', `Processing ${jobType} job ${job.id}`);
       logWorkerLifecycle('start', 'local-agents', job);
 
       try {
-        const result = await processLocalAgentJob(jobType, prompt_content, job_id, agent_role, registry, max_steps);
+        const result = await processLocalAgentJob(
+          jobType,
+          prompt_content,
+          job_id,
+          agent_role,
+          registry,
+          max_steps,
+          payload.model,
+          payload.external_worker_id,
+        );
 
         const elapsed = Date.now() - t0;
         logWorkerLifecycle('complete', 'local-agents', job, { duration_ms: elapsed });
@@ -273,10 +296,12 @@ export function startLocalAgentsUnifiedWorker(connection: object): Worker {
 			logWorkerInfo('local-agents', `${jobType} job ${job.id} completed in ${elapsed}ms`, { success: true });
 			} else {
 			logWorkerError('local-agents', `${jobType} job ${job.id} failed: ${result.error}`);
+          finalState = 'FAILED';
         }
 
         return result;
       } catch (err) {
+        finalState = 'FAILED';
         const elapsed = Date.now() - t0;
         const errorMsg = err instanceof Error ? err.message : String(err);
 
@@ -289,6 +314,8 @@ export function startLocalAgentsUnifiedWorker(connection: object): Worker {
         }
 
         throw err;
+      } finally {
+        releaseActiveLocalJob(job_id, finalState);
       }
     },
     {

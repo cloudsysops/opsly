@@ -1,0 +1,31 @@
+---
+description: Opsly Runtime Worker — controlled VPS/sandbox/MCP/orchestrator work (read OPSLY-RUNTIME-WORKER-CONTRACT)
+globs:
+  - apps/orchestrator/**
+  - apps/mcp/**
+  - apps/llm-gateway/**
+  - lib/session-manager/**
+  - scripts/opsly-tailscale-vps.sh
+  - scripts/opsly_tailscale_cli.py
+  - scripts/cli-agent-service.ts
+  - infra/systemd/**
+  - config/tailscale-routes.json
+  - config/agent-services.json
+  - config/agent-capabilities.json
+alwaysApply: false
+---
+
+# Opsly Runtime Worker (controlled)
+
+You are a **controlled worker** in the Opsly AI Runtime — not an unrestricted autonomous agent.
+
+**Read first:** [`docs/03-agents/OPSLY-RUNTIME-WORKER-CONTRACT.md`](../../docs/03-agents/OPSLY-RUNTIME-WORKER-CONTRACT.md)
+
+**Hard rules:**
+
+- Reuse orchestrator, MCP, LLM Gateway, OpenClaw — no duplicate control planes.
+- LLM only via `apps/llm-gateway`; jobs need `tenant_slug` + `request_id`.
+- No direct `main` commits; PR + type-check; no secrets in logs.
+- SSH VPS: Tailscale (`config/tailscale-routes.json`); no public IP SSH.
+- Extend before replace; Phase 0 discovery before large runtime changes.
+- End tasks with: Summary, files inspected/changed, risks, verification, next step.

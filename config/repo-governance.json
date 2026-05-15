@@ -1,0 +1,129 @@
+{
+  "version": 1,
+  "principle": "SAFE incremental evolution — extend existing Opsly systems; human is final approver.",
+  "canon_services": [
+    {
+      "id": "api",
+      "path": "apps/api",
+      "owner": "backend",
+      "purpose": "Control plane HTTP, auth, tenants, portal, billing webhooks"
+    },
+    {
+      "id": "orchestrator",
+      "path": "apps/orchestrator",
+      "owner": "platform",
+      "purpose": "BullMQ queues, workers, runtime governor, health internal API"
+    },
+    {
+      "id": "llm-gateway",
+      "path": "apps/llm-gateway",
+      "owner": "platform",
+      "purpose": "Single LLM routing, cache, metering — no direct provider calls elsewhere"
+    },
+    {
+      "id": "mcp",
+      "path": "apps/mcp",
+      "owner": "platform",
+      "purpose": "OpenClaw MCP tools; extend tools here only"
+    },
+    {
+      "id": "context-builder",
+      "path": "apps/context-builder",
+      "owner": "platform",
+      "purpose": "Session context pipeline for agents"
+    },
+    {
+      "id": "portal",
+      "path": "apps/portal",
+      "owner": "frontend",
+      "purpose": "Tenant-facing portal UI"
+    },
+    {
+      "id": "admin",
+      "path": "apps/admin",
+      "owner": "frontend",
+      "purpose": "Ops / Mission Control admin UI"
+    },
+    {
+      "id": "web",
+      "path": "apps/web",
+      "owner": "frontend",
+      "purpose": "Marketing / billing web surfaces"
+    }
+  ],
+  "architecture_docs": [
+    "AGENTS.md",
+    "VISION.md",
+    "docs/design/AGENT-ORCHESTRATION-INDEX.md",
+    "docs/design/OAR.md",
+    "docs/03-agents/AGENT-GUARDRAILS.md",
+    "docs/03-agents/OPSLY-RUNTIME-WORKER-CONTRACT.md",
+    "docs/00-architecture/OPENCLAW-ARCHITECTURE.md",
+    "docs/00-architecture/ORCHESTRATOR.md",
+    "docs/00-architecture/LLM-GATEWAY.md"
+  ],
+  "forbidden_new_top_level": [
+    "agents",
+    "orchestrator-v2",
+    "llm-gateway-v2",
+    "openclaw-v2",
+    "platform-v2"
+  ],
+  "forbidden_duplicate_service_patterns": [
+    { "pattern": "**/orchestrator-*/**", "reason": "Use apps/orchestrator only" },
+    { "pattern": "**/llm-gateway-*/**", "reason": "Use apps/llm-gateway only" },
+    { "pattern": "**/auth-service/**", "reason": "Auth lives in apps/api/lib" },
+    { "pattern": "**/billing-service/**", "reason": "Billing in apps/api + apps/web; do not fork" }
+  ],
+  "protected_paths": {
+    "red": [
+      { "glob": "supabase/migrations/**", "zone": "red", "reason": "Production schema; human + dry-run" },
+      { "glob": ".github/workflows/**", "zone": "red", "reason": "Deploy and secrets workflows" },
+      { "glob": "infra/docker-compose.platform.yml", "zone": "red", "reason": "Platform compose" },
+      { "glob": "infra/traefik/**", "zone": "red", "reason": "TLS and routing" },
+      { "glob": "config/root-whitelist.json", "zone": "red", "reason": "Root structure gate" },
+      { "glob": "config/docs-root-allowlist.json", "zone": "red", "reason": "Docs root allowlist" },
+      { "glob": "docs/ACTIVE-PROMPT.md", "zone": "red", "reason": "VPS RCE if monitor runs" }
+    ],
+    "amber": [
+      { "glob": "apps/api/app/api/portal/**", "zone": "amber", "reason": "Zero-Trust portal routes" },
+      { "glob": "apps/api/lib/stripe/**", "zone": "amber", "reason": "Billing / Stripe" },
+      { "glob": "apps/api/app/api/auth/**", "zone": "amber", "reason": "Auth surface" },
+      { "glob": "apps/mcp/**", "zone": "amber", "reason": "MCP tools and OAuth" },
+      { "glob": "apps/orchestrator/**", "zone": "amber", "reason": "Queues and workers" },
+      { "glob": "scripts/**", "zone": "amber", "reason": "Operational scripts" }
+    ]
+  },
+  "change_budget": {
+    "max_files_changed": 25,
+    "max_lines_changed": 800,
+    "max_new_files": 8,
+    "max_deleted_files": 3,
+    "max_apps_touched": 3
+  },
+  "human_approval_required_for": [
+    "merge_to_main",
+    "production_deploy",
+    "schema_migration",
+    "auth_change",
+    "billing_change",
+    "new_top_level_directory",
+    "duplicate_control_plane",
+    "force_push",
+    "exceed_change_budget"
+  ],
+  "allowed_root_markdown": ["AGENTS.md", "README.md", "ROADMAP.md", "VISION.md"],
+  "allowed_top_level_dirs": [
+    "apps",
+    "packages",
+    "lib",
+    "config",
+    "docs",
+    "infra",
+    "scripts",
+    "skills",
+    "supabase",
+    "runtime",
+    "tools"
+  ]
+}

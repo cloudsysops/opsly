@@ -19,7 +19,10 @@
   "dependencies": {
     "@ai-sdk/openai": "^3.0.53",
     "@anthropic-ai/sdk": "^0.57.0",
+    "@intcloudsysops/external-agent-registry": "*",
+    "@intcloudsysops/git-branch-orchestrator": "*",
     "@intcloudsysops/llm-gateway": "*",
+    "@intcloudsysops/session-manager": "*",
     "@intcloudsysops/ml": "^1.0.0",
     "@intcloudsysops/types": "*",
     "@llamaindex/postgres": "^0.0.65",

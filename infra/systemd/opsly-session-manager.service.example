@@ -1,0 +1,22 @@
+# Example unit — session state is managed by orchestrator + lib/session-manager.
+# Copy to /etc/systemd/system/ only after opsly orchestrator is deployed on VPS.
+#
+#   sudo cp infra/systemd/opsly-session-manager.service.example /etc/systemd/system/opsly-session-manager.service
+#   sudo systemctl daemon-reload
+#
+# Prefer running sessions via orchestrator health server (3011) /internal/runtime/*.
+
+[Unit]
+Description=Opsly Agent Runtime session metadata (optional helper)
+After=network.target opsly-orchestrator.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+WorkingDirectory=/opt/opsly
+Environment=OPSLY_ROOT=/opt/opsly
+Environment=OPSLY_RUNTIME_STATE_DIR=/opt/opsly/runtime/sessions
+ExecStart=/bin/true
+
+[Install]
+WantedBy=multi-user.target

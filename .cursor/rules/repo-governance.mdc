@@ -1,0 +1,47 @@
+---
+description: Repository governance — extend Opsly safely; no duplicate control planes
+globs:
+  - "**/*"
+alwaysApply: true
+---
+
+# Opsly Repository Governance (mandatory for AI workers)
+
+**Principle:** SAFE incremental evolution. Extend existing systems. Human is final approver.
+
+## Before ANY implementation
+
+1. Run `npm run repo:governance -- scan` (or read `config/repo-governance.json`).
+2. Read canon services — one orchestrator, one LLM gateway, one MCP, auth/billing in `apps/api`.
+3. Read architecture docs listed in `config/repo-governance.json` → `architecture_docs`.
+4. Generate context: `npm run repo:governance -- context-pack --task "<title>"`.
+5. Confirm task fits **change budget** (default: ≤25 files, ≤800 lines, ≤3 apps).
+
+## Workers MUST
+
+- Extend code under existing `apps/*` and `lib/*` paths.
+- Reuse `@intcloudsysops/*` modules and repository/factory patterns in `apps/api/lib`.
+- Patch incrementally; prefer small PRs.
+- Run `npm run repo:governance -- validate-diff` before opening PR.
+- Produce pre-merge report: `npm run repo:governance -- pre-merge-report`.
+
+## Workers MUST NOT
+
+- Create new repos or top-level dirs (`agents/`, `orchestrator-v2/`, etc.).
+- Add a second orchestrator, LLM gateway, MCP server, or parallel auth/billing stack.
+- Rewrite stable backend logic without explicit human request.
+- Apply `supabase/migrations/**`, change `.github/workflows/**`, or edit `infra/docker-compose.platform.yml` without human approval.
+- Exceed change budget without human approval.
+
+## Protected zones
+
+- **Red:** migrations, deploy workflows, platform compose, Traefik, root allowlists, `docs/ACTIVE-PROMPT.md`.
+- **Amber:** portal Zero-Trust routes, Stripe, auth, MCP, orchestrator, `scripts/**`.
+
+See `docs/03-agents/AGENT-GUARDRAILS.md` and `config/repo-governance.json`.
+
+## Before merge (human checklist)
+
+- Change summary, impact, touched services, risks, rollback path (from `pre-merge-report`).
+- Exit code `2` from `pre-merge-report` = human approval required.
+- Integrate via PR to `main`; never force-push `main`.
