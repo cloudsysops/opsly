@@ -107,6 +107,17 @@ function buildRouter(): Router {
   r.post('/internal/runtime/sessions/:sessionId/stop', handleRuntimeSessionStop);
   r.post('/internal/runtime/sessions/:sessionId/checkpoint', handleRuntimeSessionCheckpoint);
 
+  r.get('/internal/runtime/governor/status', handleGovernorStatus);
+  r.post('/internal/runtime/governor/sweep-idle', handleGovernorSweepIdle);
+
+  r.post('/api/git/branches/plan', handleGitBranchPlan);
+  r.post('/api/git/branches/assign', handleGitBranchAssign);
+  r.get('/api/git/branches/registry', handleGitBranchRegistry);
+  r.get('/api/git/branches/hygiene', handleGitBranchHygiene);
+  r.post('/api/git/chatops/dispatch', handleGitChatOpsDispatch);
+  r.get('/api/git/integration/:initiative/merge-advisor', handleGitIntegrationMergeAdvisor);
+  r.get('/api/git/branches/:id/merge-advisor', handleGitBranchMergeAdvisor);
+
   r.get('/internal/job/:jobId', handleJobById);
 
   r.get('/internal/meta-optimizer/metrics', handleMetaOptimizerMetrics);
