@@ -26,3 +26,4 @@ export {
   handleValidationMetricsByIntent,
   handleValidationExport,
 } from './validation.js';
+export { handleMaiaCallback, handleMaiaSelfHeal } from './maia.js';

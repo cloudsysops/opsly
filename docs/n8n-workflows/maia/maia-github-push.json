@@ -1,0 +1,53 @@
+{
+  "name": "Maia — GitHub Push → Orchestrator Callback",
+  "description": "Detecta push en ramas maia/* y dispara ValidationWorker via orchestrator",
+  "nodes": [
+    {
+      "name": "GitHub Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "parameters": {
+        "path": "maia-github-push",
+        "httpMethod": "POST",
+        "responseMode": "onReceived",
+        "responseData": "{ \"received\": true }"
+      }
+    },
+    {
+      "name": "Filter: rama maia/*",
+      "type": "n8n-nodes-base.if",
+      "parameters": {
+        "conditions": {
+          "string": [{ "value1": "={{ $json.body.ref }}", "operation": "contains", "value2": "maia/" }]
+        }
+      }
+    },
+    {
+      "name": "POST orchestrator: maia callback",
+      "type": "n8n-nodes-base.httpRequest",
+      "parameters": {
+        "url": "http://localhost:3000/api/maia/callback",
+        "method": "POST",
+        "jsonBody": true,
+        "body": {
+          "job_id": "={{ $json.body.ref.replace('refs/heads/maia/', '') }}",
+          "branch": "={{ $json.body.ref }}",
+          "commit_sha": "={{ $json.body.after }}",
+          "status": "push_received",
+          "pusher": "={{ $json.body.pusher.name }}"
+        }
+      }
+    },
+    {
+      "name": "Discord: Maia push recibido",
+      "type": "n8n-nodes-base.httpRequest",
+      "parameters": {
+        "url": "={{ $env.DISCORD_WEBHOOK_URL }}",
+        "method": "POST",
+        "jsonBody": true,
+        "body": {
+          "content": "=🔄 Maia push detectado: `{{ $json.body.ref }}` — validando CI..."
+        }
+      }
+    }
+  ]
+}

@@ -33,6 +33,8 @@ import {
   handleValidationMetricsByAgent,
   handleValidationMetricsByIntent,
   handleValidationExport,
+  handleMaiaCallback,
+  handleMaiaSelfHeal,
 } from './http/routes/index.js';
 
 const DEFAULT_PORT = 3011;
@@ -94,6 +96,10 @@ function buildRouter(): Router {
   r.get('/api/validation/metrics/agents/:agentRole', handleValidationMetricsByAgent);
   r.get('/api/validation/metrics/intents/:intent', handleValidationMetricsByIntent);
   r.get('/api/validation/export', handleValidationExport);
+
+  // Maia Life Systems loop endpoints
+  r.post('/api/maia/callback', handleMaiaCallback);
+  r.post('/api/maia/self-heal', handleMaiaSelfHeal);
 
   return r;
 }

@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "updated_at": "2026-05-14",
+  "workspace_root": "~/opsly-workspace/opsly",
+  "default_effect": "deny",
+  "approval_required": ["app.launch", "binary.install", "docker.run", "terminal.execute"],
+  "agents": {
+    "admin": {
+      "permissions": [
+        "app.discover",
+        "binary.inspect",
+        "docker.inspect",
+        "runtime.registry.read",
+        "runtime.history.read"
+      ]
+    },
+    "codex": {
+      "permissions": [
+        "app.discover",
+        "binary.inspect",
+        "docker.inspect",
+        "workspace.read",
+        "workspace.write"
+      ]
+    },
+    "openclaw": {
+      "permissions": [
+        "app.discover",
+        "binary.inspect",
+        "docker.inspect",
+        "runtime.registry.read"
+      ]
+    }
+  },
+  "install_allowlist": {
+    "brew_formula": ["ffmpeg", "gh", "git", "jq", "node@22", "nvm", "pnpm", "python", "tmux", "watchman"],
+    "brew_cask": ["cursor", "docker", "iterm2", "obs", "ollama", "visual-studio-code"],
+    "npm_global": ["@openai/codex"],
+    "pnpm_global": [],
+    "docker_images": ["node:22", "python:3.13", "mcr.microsoft.com/playwright:v1.59.1-jammy"]
+  },
+  "forbidden_paths": ["~/.ssh", "~/Library/Keychains", "~/Library/Mobile Documents", "~/Desktop", "~/Downloads"],
+  "forbidden_commands": ["sudo", "security", "find ~", "cat ~/.ssh", "curl | bash", "chmod -R 777"]
+}

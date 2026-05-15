@@ -53,6 +53,13 @@ import { startOpenClawPlannerWorker } from './workers/OpenClawPlannerWorker.js';
 import { startOpenClawSkepticWorker } from './workers/OpenClawSkepticWorker.js';
 import { startAgentFarmWorker } from './workers/AgentFarmWorker.js';
 import { superOrchestratorIntegration } from './super-orchestrator-integration.js';
+// Maia Life Systems — 6 workers autónomos
+import { startSelfHealWorker } from './workers/SelfHealWorker.js';
+import { startAutoDeployWorker } from './workers/AutoDeployWorker.js';
+import { startCostGateWorker } from './workers/CostGateWorker.js';
+import { startClaudeCodeWorker } from './workers/ClaudeCodeWorker.js';
+import { startValidationWorker } from './workers/ValidationWorker.js';
+import { startMemoryWriterWorker } from './workers/MemoryWriterWorker.js';
 
 type AsyncCleanup = () => Promise<void>;
 
@@ -128,6 +135,13 @@ function startAllWorkers(): AsyncCleanup[] {
   const agentFarmWorker = agentFarmWorkerEnabled ? startAgentFarmWorker(connection) : undefined;
   const approvalGateWorkerEnabled = process.env.OPSLY_APPROVAL_GATE_WORKER_ENABLED === 'true';
   const approvalGateResult = approvalGateWorkerEnabled ? startApprovalGateWorker(connection) : undefined;
+  // Maia Life Systems
+  const selfHealWorker = startSelfHealWorker(connection);
+  const autoDeployWorker = startAutoDeployWorker(connection);
+  const costGateWorker = startCostGateWorker(connection);
+  const claudeCodeWorker = startClaudeCodeWorker(connection);
+  const validationWorker = startValidationWorker(connection);
+  const memoryWriterWorker = startMemoryWriterWorker(connection);
 
   cleanup.push(
     async () => cursorWorker.close(),
@@ -159,7 +173,14 @@ function startAllWorkers(): AsyncCleanup[] {
   async () => skepticWorker.close(),
   ...(agentFarmWorker ? [async () => agentFarmWorker.close()] : []),
   ...(approvalGateResult ? [async () => approvalGateResult.worker.close()] : []),
-  ...agentClassifierCleanup
+  ...agentClassifierCleanup,
+    // Maia Life Systems
+    async () => selfHealWorker.close(),
+    async () => autoDeployWorker.close(),
+    async () => costGateWorker.close(),
+    async () => claudeCodeWorker.close(),
+    async () => validationWorker.close(),
+    async () => memoryWriterWorker.close(),
   );
 
   const localWorkersLabel = localAgentUnifiedOnly

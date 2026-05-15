@@ -39,7 +39,15 @@ export type WorkerName =
 	| 'shield-scan'
 	| 'insight-generator'
 	| 'webhook'
-	| 'test-validator';
+	| 'test-validator'
+  // Maia Life Systems
+  | 'self-heal'
+  | 'auto-deploy'
+  | 'cost-gate'
+  | 'cost-check'
+  | 'claude-code'
+  | 'validation'
+  | 'memory-writer';
 
 export function extractJobContext(job: Job): {
   task_id?: string;
