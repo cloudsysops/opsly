@@ -6,7 +6,10 @@ import { readFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 
-import { listSessions } from '@intcloudsysops/session-manager';
+import {
+  listSessions,
+  type RuntimeSessionMetadata,
+} from '@intcloudsysops/session-manager';
 
 import {
   countByState,
@@ -177,7 +180,9 @@ async function collectMetrics(cfg: RuntimeGovernorConfig): Promise<GovernorMetri
   let tmuxCount = 0;
   try {
     const sessions = await listSessions();
-    tmuxCount = sessions.filter((s) => s.status === 'running' || s.status === 'created').length;
+    tmuxCount = sessions.filter(
+      (s: RuntimeSessionMetadata) => s.status === 'running' || s.status === 'created',
+    ).length;
   } catch {
     /* ignore */
   }
