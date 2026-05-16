@@ -22,6 +22,29 @@ last_review: 2026-05-03
 
 **Shadow deployment Super Agent (nuevo):** [`docs/runbooks/SUPER-AGENT-SHADOW-DEPLOY.md`](docs/runbooks/SUPER-AGENT-SHADOW-DEPLOY.md), diseño `context-builder-v2` en `apps/context-builder-v2/src/design/architecture.md`, script `scripts/rollback-super-agent.sh`, overlay `infra/docker-compose.super-agent.yml`.
 
+## 🏗️ Pivote Arquitectónico: LOCAL-FIRST Runtime
+
+**Decisión (2026-05-16):** Opsly evoluciona de VPS-only → local-first, sin redesign core.
+
+**Fases:**
+1. **LOCAL-FIRST** (Q3-Q4): Tenant usa su Mac/Linux/Windows. BullMQ workers local. Control plane mínimo.
+2. **CLOUD-ASSISTED** (2027): GCP optional. Adaptive routing si local CPU < 20%.
+3. **MULTI-CLOUD** (2027+): AWS/Azure/Hetzner como opciones.
+
+**Por qué:** Reduce complejidad, costo, latencia. Tenant elige topología (local, híbrida, cloud).
+
+**Próximos pasos (semanas 1-4):**
+- [ ] Environment detector: `lib/runtime/environment-detector.ts`
+- [ ] Setup wizard: `scripts/runtime-setup-wizard.sh`
+- [ ] Docs: `LOCAL-RUNTIME-GUIDE.md`
+- [ ] Mission Control local nodes display
+
+**Detalles:** [`/plans/LOCAL-FIRST-ARCHITECTURE.md`](/plans/LOCAL-FIRST-ARCHITECTURE.md).
+
+**Status:** Architect ready. Waiting for dev implementation.
+
+---
+
 ## ⚠️ Control de costos
 
 **Regla:** cualquier servicio con costo mensual recurrente requiere **aprobación explícita** del responsable antes de activarse en proveedor (DO, GCP, Cloudflare de pago, etc.). El dashboard de admin es **registro orientativo**; la facturación real está en cada panel de proveedor.

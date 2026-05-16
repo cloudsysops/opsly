@@ -170,11 +170,17 @@ Next.js + Supabase Auth = @supabase/ssr + `NEXT_PUBLIC_SUPABASE_*` en `.env`
 El detalle vive en **Roadmap por fases** más abajo (y en [`ROADMAP.md`](ROADMAP.md) para el desglose semanal).  
 **Fase 1** está cerrada en producción según checklist de la sección _Fase 1 — Validación_; **Fase 2** sigue abierta (p. ej. segundo cliente).
 
-## Decisión de arquitectura central
+## Decisión de arquitectura central: LOCAL-FIRST → CLOUD-ASSISTED → MULTI-CLOUD
 
-Cada tenant es un docker-compose aislado. **Despliegue por defecto:** Docker Compose + Traefik en VPS — **sin Kubernetes ni Swarm** como stack principal del control plane. Simplicidad operativa sobre escala teórica; escalar = más VPS antes que más complejidad.
+**Fase 1 (LOCAL-FIRST):** Cada tenant elige su nodo de compute. Por defecto, máquina del usuario (Mac, Linux, Windows, VPS casero). BullMQ workers + tmux local. VPS control plane (API, portal, admin) como orquestrador mínimo, no ejecutor.
 
-**Excepción estratégica (futura, no por defecto):** una **fase opcional** de _compute plane_ (workers BullMQ, sandboxes de ejecución, ML/GPU) podrá usar **Kubernetes** solo cuando se cumplan criterios de negocio/seguridad documentados — ver [`docs/adr/ADR-027-hybrid-compute-plane-k8s.md`](docs/adr/ADR-027-hybrid-compute-plane-k8s.md). El **control plane** (API, portal, admin, MCP HTTP, web) permanece en Compose salvo nueva decisión explícita.
+**Fase 2 (CLOUD-ASSISTED):** GCP como opción (no obligatorio). Tenant decide: ¿necesito GPU cloud? Si local CPU no alcanza → delega a Cloud Run. Fallback automático, sin intervención manual.
+
+**Fase 3 (MULTI-CLOUD):** AWS, Azure, Hetzner, DO como opciones. Opsly elige mejor proveedor por costo/latencia/compliance.
+
+**Principio:** Tenant define topología basado en capacidades + presupuesto, no Opsly impone cloud.
+
+**Sin Kubernetes por defecto:** Docker Compose local + BullMQ. Kubernetes solo si demanda real lo justifica (Fase 3+, con ADR). Ver [`docs/LOCAL-RUNTIME-GUIDE.md`](LOCAL-RUNTIME-GUIDE.md) y [`docs/MULTI-CLOUD-ARCHITECTURE.md`](MULTI-CLOUD-ARCHITECTURE.md).
 
 ## Principios Morales y Operacionales
 
@@ -193,12 +199,16 @@ Opsly es defensa ética:
 
 ## Principios de Arquitectura
 
-- Aislamiento por tenant con Docker Compose + Traefik por subdominio.
-- Control plane único en `apps/api` y servicios OpenClaw.
-- Escalamiento incremental: vertical primero, horizontal con demanda real.
+- **Topología flexible por tenant:** Local (tmux + BullMQ local), Híbrida (local + GCP), Multi-cloud (AWS/Azure/Hetzner). No una sola arquitectura.
+- **Control plane único** en `apps/api` + OpenClaw (orquestración, no ejecución).
+- **Compute plane distribuido:** workers BullMQ en máquina tenant (Fase 1), extienden a GCP/AWS/etc (Fase 2+).
+- **Environment detector + setup wizard:** recomendaciones contextuales (Mac 16GB → Colima + local; startup sin GPU → local-only; SMB grande → híbrido).
+- **BullMQ + Redis como queue singular** en todas las topologías (local, cloud, multi-cloud).
+- Aislamiento por tenant con Docker Compose + Traefik (local o cloud).
+- Escalamiento incremental: vertical primero (Mac 16GB puede manejar 2 workers), horizontal con demanda (add GCP Cloud Run).
 - Seguridad Zero-Trust en rutas dinámicas y sesiones portal.
-- **Gobernanza de costos de infra:** activar proveedores con cargo recurrente (p. ej. upgrade VPS, GCP Compute de pago, Cloudflare Load Balancer) requiere **aprobación explícita** del responsable; el dashboard admin en `/costs` y la API `GET /api/admin/costs` son **catálogo y registro operativo** — la facturación real sigue en cada panel (DO, GCP proyecto de referencia **opslyquantum**, etc.). Ver `AGENTS.md` (_Control de costos_) y `docs/COST-DASHBOARD.md`.
-- **Workers remotos** (p. ej. Mac 2011 + Ubuntu): extienden el mismo orchestrator BullMQ contra Redis del control plane, sin segundo sistema de orquestación; guía `docs/WORKER-SETUP-MAC2011.md`, scripts `scripts/start-workers-mac2011.sh` / `start-worker.sh`.
+- **Gobernanza de costos de infra:** activar proveedores con cargo recurrente requiere **aprobación explícita**. Dashboard `/costs` es catálogo operativo; facturación real en cada panel (DO, GCP, AWS, etc.). Ver `AGENTS.md` (_Control de costos_) y `docs/COST-DASHBOARD.md`.
+- **Workers remotos** (p. ej. Mac 2011, Ubuntu server, VPS): extienden BullMQ sin segundo sistema de orquestación; guía `docs/WORKER-SETUP-MAC2011.md`, scripts `scripts/start-workers-mac2011.sh` / `start-worker.sh`.
 
 ## Principios del Ecosistema IA
 
@@ -296,6 +306,33 @@ Objetivo: unificar herramientas, orquestación, defensa y capa de costos IA bajo
 - [ ] Secrets scanner automático en repos y configuraciones.
 - [ ] Breach detection + breach intelligence para usuarios (Personal Shield).
 - [ ] Compliance tracker (GDPR, SOC2, ISO27001 checklists por tenant).
+
+---
+
+## Roadmap de Infraestructura: LOCAL-FIRST → CLOUD-ASSISTED → MULTI-CLOUD
+
+Pauta paralela a Fases 1-4 de producto (Shield + Automation). Evolución arquitectónica sin redesign.
+
+### LOCAL-FIRST (Fase 1-2 de producto, Q3-Q4 2026)
+Tenant usa su máquina como nodo de compute:
+- Environment detector + setup wizard automático
+- BullMQ workers + tmux local, Redis local (o cloud optional)
+- Control plane mínimo en VPS (orquestación, no ejecución)
+- **Meta:** setup < 10 min en Mac/Linux/Windows, cero costo cloud
+
+### CLOUD-ASSISTED (Fase 3 de producto, 2027)
+GCP como extensión opcional (no obligatorio):
+- Adaptive routing: si local CPU < 20% → Cloud Run
+- Cost analyzer: "Usa local, no cloud (ahorra $50/mes)"
+- Fallback automático sin intervención manual
+
+### MULTI-CLOUD (Fase 4 de producto, 2027+)
+AWS, Azure, Hetzner, DO como opciones:
+- Provider-agnostic adapter layer
+- Tenant elige best-fit por costo/latencia/compliance
+- Multi-cloud mesh (Tailscale/Wireguard)
+
+**Detalles:** ver [`/plans/LOCAL-FIRST-ARCHITECTURE.md`](/plans/LOCAL-FIRST-ARCHITECTURE.md).
 
 ---
 
