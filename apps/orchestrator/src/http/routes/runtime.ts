@@ -7,6 +7,7 @@ import {
   sendCommand,
   stopSession,
 } from '@intcloudsysops/session-manager';
+import { evaluateEnqueue } from '../../lib/runtime-governor.js';
 import type { RouteContext } from '../router.js';
 import { jsonResponse, errorResponse } from '../router.js';
 import { parseBody, verifyPlatformAdminToken } from '../utils.js';

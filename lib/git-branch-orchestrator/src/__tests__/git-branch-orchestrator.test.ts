@@ -1,6 +1,6 @@
 import { describe, expect, it, beforeEach, afterEach } from 'vitest';
 import { join } from 'node:path';
-import { mkdtemp, rm } from 'node:fs/promises';
+import { copyFile, mkdir, mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 
 import {
@@ -23,7 +23,12 @@ describe('git-branch-orchestrator', () => {
   beforeEach(async () => {
     clearGitBranchPolicyCache();
     tempRoot = await mkdtemp(join(tmpdir(), 'opsly-git-branch-'));
-    process.env.OPSLY_ROOT = REPO_ROOT;
+    await mkdir(join(tempRoot, 'config'), { recursive: true });
+    await copyFile(
+      join(REPO_ROOT, 'config', 'git-branch-policy.json'),
+      join(tempRoot, 'config', 'git-branch-policy.json'),
+    );
+    process.env.OPSLY_ROOT = tempRoot;
   });
 
   afterEach(async () => {

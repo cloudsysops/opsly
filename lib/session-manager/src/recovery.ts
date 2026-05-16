@@ -97,21 +97,34 @@ function recommendActions(
   return [...new Set(actions)];
 }
 
+function resolveTenantSlug(explicit?: string): string {
+  const fromArg = explicit?.trim();
+  if (fromArg && fromArg.length > 0) {
+    return fromArg;
+  }
+  const fromEnv = process.env.OPSLY_DEFAULT_TENANT_SLUG?.trim();
+  if (fromEnv && fromEnv.length > 0) {
+    return fromEnv;
+  }
+  return 'intcloudsysops';
+}
+
 export async function buildRecoverySnapshot(
   sessionId: string,
-  tenantSlug = 'intcloudsysops',
+  tenantSlug?: string,
 ): Promise<RecoverySnapshot> {
   const meta = await loadSession(sessionId);
   if (!meta) {
     throw new Error(`Session not found: ${sessionId}`);
   }
 
+  const resolvedTenant = resolveTenantSlug(tenantSlug);
   const tmuxAlive = await tmuxHasSession(meta.tmuxSessionName);
   const git = await gitSnapshot(meta.workspace);
   const logsTail = await readLogsTail(sessionId);
 
   const root = resolveRepoRoot();
-  const entries = await listBranchEntries(tenantSlug, root);
+  const entries = await listBranchEntries(resolvedTenant, root);
   const branchRegistryMatches = entries
     .filter(
       (e) =>

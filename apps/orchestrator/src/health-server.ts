@@ -90,6 +90,18 @@ function buildRouter(): Router {
   r.post('/internal/terminal/:agentId/session/:sessionId/stop', handleTerminalSessionStop);
   r.post('/internal/terminal/stop/:agentId', handleTerminalStop);
 
+  r.get('/internal/runtime/health', handleRuntimeHealth);
+  r.get('/internal/runtime/sessions', handleRuntimeListSessions);
+  r.post('/internal/runtime/sessions', handleRuntimeCreateSession);
+  r.get('/internal/runtime/sessions/:sessionId/logs', handleRuntimeSessionLogs);
+  r.post('/internal/runtime/sessions/:sessionId/send', handleRuntimeSessionSend);
+  r.post('/internal/runtime/sessions/:sessionId/stop', handleRuntimeSessionStop);
+  r.post('/internal/runtime/sessions/:sessionId/resume', handleRuntimeSessionResume);
+  r.post('/internal/runtime/sessions/:sessionId/checkpoint', handleRuntimeSessionCheckpoint);
+
+  r.get('/internal/runtime/governor/status', handleGovernorStatus);
+  r.post('/internal/runtime/governor/sweep-idle', handleGovernorSweepIdle);
+
   r.get('/internal/job/:jobId', handleJobById);
 
   r.get('/internal/meta-optimizer/metrics', handleMetaOptimizerMetrics);
@@ -104,19 +116,6 @@ function buildRouter(): Router {
   r.get('/api/validation/metrics/agents/:agentRole', handleValidationMetricsByAgent);
   r.get('/api/validation/metrics/intents/:intent', handleValidationMetricsByIntent);
   r.get('/api/validation/export', handleValidationExport);
-
-
-  r.get('/internal/runtime/health', handleRuntimeHealth);
-  r.get('/internal/runtime/sessions', handleRuntimeListSessions);
-  r.post('/internal/runtime/sessions', handleRuntimeCreateSession);
-  r.get('/internal/runtime/sessions/:sessionId/logs', handleRuntimeSessionLogs);
-  r.post('/internal/runtime/sessions/:sessionId/send', handleRuntimeSessionSend);
-  r.post('/internal/runtime/sessions/:sessionId/stop', handleRuntimeSessionStop);
-  r.post('/internal/runtime/sessions/:sessionId/resume', handleRuntimeSessionResume);
-  r.post('/internal/runtime/sessions/:sessionId/checkpoint', handleRuntimeSessionCheckpoint);
-
-  r.get('/internal/runtime/governor/status', handleGovernorStatus);
-  r.post('/internal/runtime/governor/sweep-idle', handleGovernorSweepIdle);
 
   return r;
 }

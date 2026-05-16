@@ -53,6 +53,8 @@ export async function buildMergeAdvisorReport(
     );
   }
 
+  const elevatedRisk = highRiskHits.length > 0 ? 'HIGH' : risk;
+
   return {
     branch_name: entry.branch_name,
     job_id: entry.job_id,
@@ -63,10 +65,10 @@ export async function buildMergeAdvisorReport(
       highRiskHits.length > 0
         ? 'May affect platform control plane, auth, billing, or schema.'
         : 'Localized change; review module boundaries in Mission Control.',
-    risk_level: highRiskHits.length > 0 ? 'HIGH' : risk,
+    risk_level: elevatedRisk,
     tests_status: entry.test_status ?? 'unknown',
     duplicate_logic_warnings: duplicateWarnings,
-    recommended_action: recommendedAction(entry, risk),
+    recommended_action: recommendedAction(entry, elevatedRisk),
     requires_human_approval: requiresHuman,
     pr_target: entry.target_branch,
     generated_at: new Date().toISOString(),

@@ -16,6 +16,31 @@ interface TenantRegistryFile {
 
 const memoryByTenant = new Map<string, BranchRegistryEntry[]>();
 
+/** Serializes allocateJobId per tenant within this process (avoids duplicate job-* ids). */
+const allocateChains = new Map<string, Promise<unknown>>();
+
+async function withTenantAllocateLock<T>(
+  tenantSlug: string,
+  fn: () => Promise<T>,
+): Promise<T> {
+  const previous = allocateChains.get(tenantSlug) ?? Promise.resolve();
+  let release!: () => void;
+  const gate = new Promise<void>((resolve) => {
+    release = resolve;
+  });
+  const chain = previous.then(() => gate);
+  allocateChains.set(tenantSlug, chain);
+  await previous;
+  try {
+    return await fn();
+  } finally {
+    release();
+    if (allocateChains.get(tenantSlug) === chain) {
+      allocateChains.delete(tenantSlug);
+    }
+  }
+}
+
 function registryDir(root: string): string {
   return join(root, 'runtime', 'branch-registry');
 }
@@ -101,12 +126,14 @@ export async function getBranchByName(
 }
 
 export async function allocateJobId(tenantSlug: string, root?: string): Promise<string> {
-  const repoRoot = root ?? resolveRepoRoot();
-  const file = await loadFile(repoRoot, tenantSlug);
-  const seq = file.next_job_sequence;
-  file.next_job_sequence = seq + 1;
-  await saveFile(repoRoot, file);
-  return `job-${seq}`;
+  return withTenantAllocateLock(tenantSlug, async () => {
+    const repoRoot = root ?? resolveRepoRoot();
+    const file = await loadFile(repoRoot, tenantSlug);
+    const seq = file.next_job_sequence;
+    file.next_job_sequence = seq + 1;
+    await saveFile(repoRoot, file);
+    return `job-${seq}`;
+  });
 }
 
 export async function upsertBranchEntry(
