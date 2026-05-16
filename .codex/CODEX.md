@@ -15,6 +15,13 @@ Codex works as an OpenClaw-aware orchestrator for Opsly.
 5. Apply `docs/03-agents/AGENT-GUARDRAILS.md`.
 6. Apply `docs/01-development/GIT-WORKFLOW.md`.
 
+## SysOps Rules
+
+- Use Doppler wrappers for commands that need secrets or production parity.
+- Prefer Tailscale SSH, existing runbooks, and repo scripts over ad hoc shell work.
+- Treat Codex as the worker/executor for Opsly, not the architect of record.
+- Keep this bootstrap scoped to Opsly work only.
+
 ## Brain Rule
 
 Do not create a separate memory system for Codex. Use the shared Opsly Brain:
