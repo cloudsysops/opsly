@@ -38,6 +38,12 @@
       "claude-ai-github": { "enabled": true },
       "claude-ai-google-drive": { "enabled": true },
       "claude-ai-resend": { "enabled": true },
+      "opsly-openclaw": {
+        "enabled": true,
+        "command": "npm",
+        "args": ["run", "opsly:mcp:stdio"],
+        "cwd": "${CLAUDE_PROJECT_DIR}"
+      },
       "computer-use": { "enabled": true, "env": "DISPLAY required on Linux" },
       "context7": { "enabled": true, "description": "Library documentation" },
       "memory": { "enabled": true, "path": ".claude/projects/*/memory/" }

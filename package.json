@@ -61,6 +61,7 @@
     "opsly:agent-cli": "tsx scripts/opsly-agent-cli.ts",
     "opsly:cursor-session-brief": "tsx --tsconfig scripts/tsconfig.cursor-sdk.json scripts/cursor-sdk-session-brief.ts",
     "opsly:local-cursor-service": "tsx scripts/cursor-agent-service.ts --port 5001",
+    "opsly:mcp:stdio": "MCP_TRANSPORT=stdio node apps/mcp/dist/src/index.js",
     "docs:sync": "node scripts/sync-docs.js && node scripts/generate-sprint-tracking.js && node scripts/generate-agents-assignments.js",
     "docs:watch": "nodemon --watch docs/implementation/status.yaml --exec \"npm run docs:sync\"",
     "test:docs": "bash scripts/test-sync-docs.sh",

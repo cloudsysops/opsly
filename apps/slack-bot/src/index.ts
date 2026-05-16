@@ -1,8 +1,23 @@
-import { App, BlockAction, ButtonAction, HomeTabOpenedEvent } from "@slack/bolt";
+import { createServer } from "node:http";
+import {
+  App,
+  type BlockAction,
+  type ButtonAction,
+  type SlackCommandMiddlewareArgs,
+} from "@slack/bolt";
 import axios from "axios";
 import * as dotenv from "dotenv";
 
 dotenv.config({ path: ".env.mcp" });
+
+const DEFAULT_SLACK_PORT = 3010;
+
+function parsePort(rawValue: string | undefined, fallback: number): number {
+  const parsed = Number.parseInt(rawValue ?? String(fallback), 10);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
+}
+
+const SLACK_PORT = parsePort(process.env.SLACK_PORT, DEFAULT_SLACK_PORT);
 
 const app = new App({
   token: process.env.SLACK_BOT_TOKEN,
@@ -19,7 +34,9 @@ const INVITATIONS_API =
 // EVENTS: App Home (Dashboard)
 // ════════════════════════════════════════════════════════════════════
 
-app.event("app_home_opened", async ({ event, say, client }) => {
+app.event(
+  "app_home_opened",
+  async ({ event, client }: { event: { user: string }; client: typeof app.client }) => {
   try {
     const homeView = buildHomeView();
     await client.views.publish({
@@ -29,13 +46,14 @@ app.event("app_home_opened", async ({ event, say, client }) => {
   } catch (error) {
     console.error("Error publishing home view:", error);
   }
-});
+  }
+);
 
 // ════════════════════════════════════════════════════════════════════
 // COMMANDS: /hermes-status
 // ════════════════════════════════════════════════════════════════════
 
-app.command("/hermes-status", async ({ command, ack, say }) => {
+app.command("/hermes-status", async ({ command, ack, say }: SlackCommandMiddlewareArgs) => {
   await ack();
 
   try {
@@ -84,7 +102,7 @@ app.command("/hermes-status", async ({ command, ack, say }) => {
 // COMMANDS: /hermes-invite <email> <tenant>
 // ════════════════════════════════════════════════════════════════════
 
-app.command("/hermes-invite", async ({ command, ack, say, body }) => {
+app.command("/hermes-invite", async ({ command, ack, say, body }: SlackCommandMiddlewareArgs) => {
   await ack();
 
   const [email, tenantName] = command.text.split(" ");
@@ -142,7 +160,7 @@ app.command("/hermes-invite", async ({ command, ack, say, body }) => {
 // COMMANDS: /hermes-task <agent> <description>
 // ════════════════════════════════════════════════════════════════════
 
-app.command("/hermes-task", async ({ command, ack, say, body }) => {
+app.command("/hermes-task", async ({ command, ack, say, body }: SlackCommandMiddlewareArgs) => {
   await ack();
 
   const parts = command.text.match(/"([^"]*)"|(\S+)/g) || [];
@@ -212,67 +230,89 @@ app.command("/hermes-task", async ({ command, ack, say, body }) => {
 // ACTIONS: Button clicks
 // ════════════════════════════════════════════════════════════════════
 
-app.action("btn_task_status", async ({ ack, action, say }) => {
-  await ack();
+app.action(
+  "btn_task_status",
+  async (args) => {
+    const {
+      ack,
+      action,
+      client,
+      body,
+    } = args as unknown as {
+      ack: () => Promise<void>;
+      action: ButtonAction;
+      client: typeof app.client;
+      body: { user: { id: string } };
+    };
 
-  const taskId = (action as ButtonAction).value;
+    await ack();
 
-  try {
-    const response = await axios.get(`${HERMES_API}/api/tasks/${taskId}`);
-    const { status, started_at, completed_at, result } = response.data;
+    const taskId = (action as ButtonAction).value;
 
-    const blocks = [
-      {
-        type: "section",
-        text: {
-          type: "mrkdwn",
-          text: `*Task Status: ${status.toUpperCase()}*\nID: \`${taskId}\``,
+    try {
+      const response = await axios.get(`${HERMES_API}/api/tasks/${taskId}`);
+      const { status, started_at, completed_at, result } = response.data;
+
+      const blocks = [
+        {
+          type: "section",
+          text: {
+            type: "mrkdwn",
+            text: `*Task Status: ${status.toUpperCase()}*\nID: \`${taskId}\``,
+          },
         },
-      },
-    ];
+      ];
 
-    if (started_at) {
-      blocks.push({
-        type: "section",
-        text: {
-          type: "mrkdwn",
-          text: `⏱️ Started: ${new Date(started_at).toLocaleString()}`,
-        },
+      if (started_at) {
+        blocks.push({
+          type: "section",
+          text: {
+            type: "mrkdwn",
+            text: `⏱️ Started: ${new Date(started_at).toLocaleString()}`,
+          },
+        });
+      }
+
+      if (completed_at) {
+        blocks.push({
+          type: "section",
+          text: {
+            type: "mrkdwn",
+            text: `✅ Completed: ${new Date(completed_at).toLocaleString()}`,
+          },
+        });
+      }
+
+      if (result) {
+        blocks.push({
+          type: "section",
+          text: {
+            type: "mrkdwn",
+            text: `📋 Result:\n\`\`\`\n${JSON.stringify(result, null, 2)}\n\`\`\``,
+          },
+        });
+      }
+
+      await client.chat.postMessage({
+        channel: body.user.id,
+        blocks,
+        text: `Task status: ${status.toUpperCase()} (${taskId})`,
+      });
+    } catch (error) {
+      await client.chat.postMessage({
+        channel: body.user.id,
+        text: `❌ Error fetching task status: ${error}`,
       });
     }
-
-    if (completed_at) {
-      blocks.push({
-        type: "section",
-        text: {
-          type: "mrkdwn",
-          text: `✅ Completed: ${new Date(completed_at).toLocaleString()}`,
-        },
-      });
-    }
-
-    if (result) {
-      blocks.push({
-        type: "section",
-        text: {
-          type: "mrkdwn",
-          text: `📋 Result:\n\`\`\`\n${JSON.stringify(result, null, 2)}\n\`\`\``,
-        },
-      });
-    }
-
-    await say({ blocks });
-  } catch (error) {
-    await say(`❌ Error fetching task status: ${error}`);
   }
-});
+);
 
 // ════════════════════════════════════════════════════════════════════
 // HOME VIEW: Build dashboard
 // ════════════════════════════════════════════════════════════════════
 
 function buildHomeView() {
-  return {
+  const homeView = {
     type: "home",
     blocks: [
       {
@@ -339,6 +379,35 @@ function buildHomeView() {
       },
     ],
   };
+
+  return homeView as Parameters<typeof app.client.views.publish>[0]["view"];
+}
+
+function startHealthServer(): void {
+  const server = createServer((req, res) => {
+    const host = req.headers.host ?? "127.0.0.1";
+    const url = new URL(req.url ?? "/", `http://${host}`);
+
+    if (req.method === "GET" && url.pathname === "/health") {
+      res.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
+      res.end(JSON.stringify({ status: "ok", service: "slack-bot" }));
+      return;
+    }
+
+    res.writeHead(404);
+    res.end();
+  });
+
+  server.listen(SLACK_PORT, "0.0.0.0", () => {
+    console.log(
+      JSON.stringify({
+        service: "slack-bot",
+        http: "listening",
+        port: SLACK_PORT,
+        path: "/health",
+      })
+    );
+  });
 }
 
 // ════════════════════════════════════════════════════════════════════
@@ -347,9 +416,10 @@ function buildHomeView() {
 
 (async () => {
   try {
+    startHealthServer();
     await app.start();
     console.log("✅ Hermes Slack Bot started successfully");
-    console.log(`   Listening on port ${process.env.SLACK_PORT || 3000}`);
+    console.log(`   Health: http://0.0.0.0:${SLACK_PORT}/health`);
     console.log(`   API: ${HERMES_API}`);
   } catch (error) {
     console.error("❌ Failed to start bot:", error);

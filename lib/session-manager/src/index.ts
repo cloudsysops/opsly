@@ -1,4 +1,5 @@
 import { randomUUID } from 'node:crypto';
+import { existsSync } from 'node:fs';
 
 import {
   appendSessionLog,
@@ -29,6 +30,18 @@ function nowIso(): string {
   return new Date().toISOString();
 }
 
+function resolveWorkspacePath(workspace: string): string {
+  const candidate = workspace.trim();
+  if (candidate.length > 0 && existsSync(candidate)) {
+    return candidate;
+  }
+  const root = process.env.OPSLY_ROOT?.trim() ?? '';
+  if (root.length > 0 && existsSync(root)) {
+    return root;
+  }
+  return candidate.length > 0 ? candidate : root || '.';
+}
+
 async function touch(meta: RuntimeSessionMetadata, patch: Partial<RuntimeSessionMetadata>): Promise<RuntimeSessionMetadata> {
   const next: RuntimeSessionMetadata = {
     ...meta,
@@ -56,20 +69,24 @@ export async function createSession(input: CreateSessionInput): Promise<RuntimeS
   const sessionId = randomUUID();
   const tmuxName = tmuxSessionName(sessionId);
   const ts = nowIso();
+  const workspace = resolveWorkspacePath(input.workspace);
   const meta: RuntimeSessionMetadata = {
     sessionId,
     name: input.name,
     agentId: input.agentId,
     jobId: input.jobId,
-    workspace: input.workspace,
+    workspace,
     branch: input.branch,
     status: 'created',
     createdAt: ts,
     lastSeenAt: ts,
     tmuxSessionName: tmuxName,
   };
-  await tmuxNewSession(tmuxName, input.workspace, input.initialCommand);
+  await tmuxNewSession(tmuxName, workspace);
   const running = await tmuxHasSession(tmuxName);
+  if (running && input.initialCommand && input.initialCommand.trim().length > 0) {
+    await tmuxSendKeys(tmuxName, input.initialCommand.trim());
+  }
   const updated = await touch(meta, {
     status: running ? 'running' : 'failed',
     lastCommand: input.initialCommand,

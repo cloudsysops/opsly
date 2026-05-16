@@ -72,12 +72,8 @@ Inventario regenerable de todos los `.md`: `npm run obsidian:file-index`.
 
 ### Plugins recomendados
 
-```json
-// .obsidian/workspace.json (ya en repo)
-{
-  "plugin": ["graph", "backlinks", "daily-notes", "templates"]
-}
-```
+Configuración compartida en `docs/.obsidian/` (p. ej. `core-plugins.json`, `community-plugins.json`).
+**No** versionar `docs/.obsidian/workspace.json` ni `.obsidian/` en la raíz del repo (estado de UI local).
 
 ### Reglas de documentación
 

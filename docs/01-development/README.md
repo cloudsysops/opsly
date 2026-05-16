@@ -22,6 +22,7 @@ Roadmap vivo, planificación, sprints, estado de producto y handoffs de desarrol
 
 ## Documentos clave
 
+- [`SETUP-QUICKSTART.md`](SETUP-QUICKSTART.md) — clone, hooks, MCP, Slack (manual), scripts reales (`npm run`)
 - [`DOCUMENTATION-LIFECYCLE.md`](DOCUMENTATION-LIFECYCLE.md) — wiki: plan, pruebas, docs, NotebookLM/Obsidian/Graphyfi
 - `ROADMAP.md`
 - `VISION.md`

@@ -23,4 +23,6 @@ EXPOSE 3010
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
   CMD node -e "require('http').get('http://localhost:3010/health', (r) => {if (r.statusCode !== 200) throw new Error(r.statusCode)})"
 
-CMD ["node", "dist/apps/slack-bot/src/index.js"]
+WORKDIR /app/apps/slack-bot
+
+CMD ["node", "dist/src/index.js"]

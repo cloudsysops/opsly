@@ -30,3 +30,13 @@ If the module graph is missing, inspect the repo directly and document the gap.
 
 Use PR-first workflow for code, infra, tests and API contracts. Direct `main`
 pushes are only for explicitly allowed documentation closures.
+
+## MCP Canonical
+
+Use the Opsly MCP server through the repo script:
+
+```bash
+npm run opsly:mcp:stdio
+```
+
+This is the same entrypoint referenced by `.mcp.json` and `.cursor/mcp.json`.

@@ -26,15 +26,37 @@ interface SuperOrchestratorConfig {
 
 const DEFAULT_CONFIG: SuperOrchestratorConfig = {
   pythonPath: 'python3',
-  scriptsDir: join(process.cwd(), 'scripts/super_orchestrator'),
-  configDir: join(process.cwd(), 'config')
+  scriptsDir: resolveSuperOrchestratorPath('scripts/super_orchestrator'),
+  configDir: resolveSuperOrchestratorPath('config')
 };
+
+function resolveSuperOrchestratorPath(relativePath: string): string {
+  const candidates = [
+    join(process.cwd(), relativePath),
+    join(process.cwd(), '..', relativePath),
+    join(process.cwd(), '..', '..', relativePath),
+    join(process.cwd(), '..', '..', '..', relativePath),
+  ];
+
+  for (const candidate of candidates) {
+    if (existsSync(candidate)) {
+      return candidate;
+    }
+  }
+
+  return candidates[0];
+}
 
 export class SuperOrchestratorBridge {
   private config: SuperOrchestratorConfig;
   
   constructor(config: Partial<SuperOrchestratorConfig> = {}) {
-    this.config = { ...DEFAULT_CONFIG, ...config };
+    this.config = {
+      ...DEFAULT_CONFIG,
+      ...config,
+      scriptsDir: config.scriptsDir ?? DEFAULT_CONFIG.scriptsDir,
+      configDir: config.configDir ?? DEFAULT_CONFIG.configDir,
+    };
     this.validatePaths();
   }
   

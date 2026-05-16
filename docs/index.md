@@ -80,6 +80,7 @@ Punto de entrada compacto del vault. Política de carpetas:
 | --- | --- |
 | MOC (mapa) | Esta página [`index.md`](index.md) + [`README.md`](README.md) |
 | Ciclo plan → pruebas → docs → cierre | [`01-development/DOCUMENTATION-LIFECYCLE.md`](01-development/DOCUMENTATION-LIFECYCLE.md) |
+| Setup dev (clone, hooks, MCP, Slack manual) | [`01-development/SETUP-QUICKSTART.md`](01-development/SETUP-QUICKSTART.md) |
 | Contrato agentes | [`03-agents/AGENT-BRAIN-CONTRACT.md`](03-agents/AGENT-BRAIN-CONTRACT.md) |
 | Índice buscable | `config/knowledge-index.json` (`npm run index-knowledge`) |
 | Grafo MCP | `apps/mcp/src/tools/graphyfi.ts`, taxonomía `doc:<slug>` en el contrato |

@@ -25,14 +25,17 @@ FROM node:20-alpine AS runner
 ENV NODE_ENV=production
 
 WORKDIR /app
+RUN apk add --no-cache tmux
 
 COPY --from=builder /app/package.json ./
 COPY --from=builder /app/package-lock.json ./
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/apps/orchestrator/dist ./apps/orchestrator/dist
 COPY --from=builder /app/apps/orchestrator/package.json ./apps/orchestrator/package.json
-COPY --from=builder /app/apps/ml ./apps/ml
-COPY --from=builder /app/apps/llm-gateway ./apps/llm-gateway
+COPY --from=builder /app/apps/ml/dist ./apps/ml/dist
+COPY --from=builder /app/apps/ml/package.json ./apps/ml/package.json
+COPY --from=builder /app/apps/llm-gateway/dist ./apps/llm-gateway/dist
+COPY --from=builder /app/apps/llm-gateway/package.json ./apps/llm-gateway/package.json
 COPY --from=builder /app/lib/session-manager ./lib/session-manager
 COPY --from=builder /app/lib/external-agent-registry ./lib/external-agent-registry
 COPY --from=builder /app/lib/git-branch-orchestrator ./lib/git-branch-orchestrator
