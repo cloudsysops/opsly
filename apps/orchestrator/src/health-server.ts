@@ -20,6 +20,7 @@ import {
   handleEnqueueAgentFarm,
   handleOpenClawImproveDocumentation,
   handleMetaOptimizerMetrics,
+  handleSessionRecovery,
   handleStartTerminalTask,
   handleTerminalStatus,
   handleTerminalStop,
@@ -121,6 +122,10 @@ function buildRouter(): Router {
   r.get('/internal/job/:jobId', handleJobById);
 
   r.get('/internal/meta-optimizer/metrics', handleMetaOptimizerMetrics);
+
+  // Session recovery endpoints
+  r.get('/internal/sessions/recover', handleSessionRecovery);
+  r.post('/internal/sessions/recover', handleSessionRecovery);
 
   r.post('/api/local/prompt-submit', handleLocalPromptSubmit);
   r.post('/api/local/control-mode', handleLocalControlMode);

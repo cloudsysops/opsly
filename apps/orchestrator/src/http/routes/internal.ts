@@ -1,6 +1,12 @@
 import type { RouteContext } from '../router.js';
-import { verifyPlatformAdminToken, parseBody, assertTenantSlugOrThrow, enrichAutonomyMetadata, randomUUID } from '../utils.js';
-import { enqueueJob } from '../../queue.js';
+import {
+  verifyPlatformAdminToken,
+  parseBody,
+  assertTenantSlugOrThrow,
+  enrichAutonomyMetadata,
+  randomUUID,
+} from '../utils.js';
+import { enqueueJob, orchestratorQueue, localAgentQueue } from '../../queue.js';
 import type { OrchestratorJob } from '../../types.js';
 import { recordOpenClawIntentQueued } from '../../openclaw/runtime-events.js';
 import { jsonResponse, errorResponse } from '../router.js';
@@ -58,7 +64,11 @@ export async function handleEnqueueAgentFarm(ctx: RouteContext): Promise<void> {
       return;
     }
     const bull = await enqueueJob(job);
-    jsonResponse(ctx.res, 202, { success: true, job_id: bull.id != null ? String(bull.id) : null, request_id: requestId });
+    jsonResponse(ctx.res, 202, {
+      success: true,
+      job_id: bull.id != null ? String(bull.id) : null,
+      request_id: requestId,
+    });
   } catch (err) {
     errorResponse(ctx.res, 500, String(err));
   }
@@ -176,4 +186,158 @@ export async function handleMetaOptimizerMetrics(ctx: RouteContext): Promise<voi
     summary: metricsStore.getSummary(),
     recent_metrics: metricsStore.getAllMetrics().slice(0, 20),
   });
+}
+
+export async function handleSessionRecovery(ctx: RouteContext): Promise<void> {
+  const method = ctx.req.method;
+
+  if (method === 'GET') {
+    try {
+      const [openclawJobs, localAgentJobs] = await Promise.all([
+        orchestratorQueue.getJobs(['failed', 'waiting']),
+        localAgentQueue.getJobs(['failed', 'waiting']),
+      ]);
+
+      const formatJob = (job: {
+        id?: string | number;
+        data?: unknown;
+        failedReason?: string;
+        attemptsMade?: number;
+        returned?: unknown;
+      }) => ({
+        job_id: job.id?.toString() ?? 'unknown',
+        queue: 'openclaw',
+        attempts: job.attemptsMade ?? 0,
+        failed_reason: job.failedReason ?? null,
+        payload_preview:
+          typeof job.data === 'object'
+            ? JSON.stringify(job.data).slice(0, 200)
+            : String(job.data ?? ''),
+      });
+
+      const formatLocalJob = (job: {
+        id?: string | number;
+        data?: unknown;
+        failedReason?: string;
+        attemptsMade?: number;
+      }) => ({
+        job_id: job.id?.toString() ?? 'unknown',
+        queue: 'local-agents',
+        attempts: job.attemptsMade ?? 0,
+        failed_reason: job.failedReason ?? null,
+        payload_preview:
+          typeof job.data === 'object'
+            ? JSON.stringify(job.data).slice(0, 200)
+            : String(job.data ?? ''),
+      });
+
+      jsonResponse(ctx.res, 200, {
+        success: true,
+        recovery_candidates: {
+          openclaw: openclawJobs.map(formatJob),
+          local_agents: localAgentJobs.map(formatLocalJob),
+        },
+        summary: {
+          total_candidates: openclawJobs.length + localAgentJobs.length,
+          openclaw_count: openclawJobs.length,
+          local_agents_count: localAgentJobs.length,
+        },
+        timestamp: new Date().toISOString(),
+      });
+    } catch (err) {
+      errorResponse(ctx.res, 500, String(err));
+    }
+    return;
+  }
+
+  if (method === 'POST') {
+    let body: unknown;
+    try {
+      body = await parseBody(ctx.req);
+    } catch {
+      errorResponse(ctx.res, 400, 'Invalid JSON');
+      return;
+    }
+
+    if (typeof body !== 'object' || body === null) {
+      errorResponse(ctx.res, 400, 'invalid body');
+      return;
+    }
+
+    const b = body as Record<string, unknown>;
+    const jobId = typeof b.job_id === 'string' ? b.job_id : '';
+    const queueName = typeof b.queue === 'string' ? b.queue : 'openclaw';
+    const autoRetryAll = b.auto_retry_all === true;
+
+    if (!['openclaw', 'local-agents'].includes(queueName)) {
+      errorResponse(ctx.res, 400, 'queue must be openclaw or local-agents');
+      return;
+    }
+
+    const targetQueue = queueName === 'local-agents' ? localAgentQueue : orchestratorQueue;
+
+    // Handle auto-retry all failed jobs
+    if (autoRetryAll) {
+      try {
+        const failedJobs = await targetQueue.getJobs(['failed']);
+        const retryResults: Array<{ job_id: string; success: boolean; error?: string }> = [];
+
+        for (const job of failedJobs) {
+          try {
+            const jobIdStr = job.id?.toString() ?? 'unknown';
+            await job.retry();
+            retryResults.push({ job_id: jobIdStr, success: true });
+          } catch (err) {
+            retryResults.push({
+              job_id: job.id?.toString() ?? 'unknown',
+              success: false,
+              error: String(err),
+            });
+          }
+        }
+
+        jsonResponse(ctx.res, 200, {
+          success: true,
+          action: 'auto_retry_all',
+          total_failed: failedJobs.length,
+          retry_results: retryResults,
+          message: `Retried ${retryResults.filter((r) => r.success).length} of ${failedJobs.length} jobs`,
+        });
+        return;
+      } catch (err) {
+        errorResponse(ctx.res, 500, String(err));
+        return;
+      }
+    }
+
+    // Single job retry (original behavior)
+    if (jobId.length === 0) {
+      errorResponse(ctx.res, 400, 'job_id required');
+      return;
+    }
+
+    try {
+      const job = await targetQueue.getJob(jobId);
+      if (!job) {
+        errorResponse(ctx.res, 404, 'job not found');
+        return;
+      }
+
+      const state = await job.getState();
+      const retryResult = await job.retry();
+
+      jsonResponse(ctx.res, 200, {
+        success: true,
+        job_id: jobId,
+        previous_state: state,
+        retry_initiated: retryResult,
+        message: `Job ${jobId} retry initiated from state ${state}`,
+      });
+    } catch (err) {
+      errorResponse(ctx.res, 500, String(err));
+    }
+    return;
+  }
+
+  errorResponse(ctx.res, 405, 'method not allowed');
 }
