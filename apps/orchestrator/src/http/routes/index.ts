@@ -26,3 +26,15 @@ export {
   handleValidationMetricsByIntent,
   handleValidationExport,
 } from './validation.js';
+export {
+  handleRuntimeHealth,
+  handleRuntimeListSessions,
+  handleRuntimeCreateSession,
+  handleRuntimeSessionLogs,
+  handleRuntimeSessionSend,
+  handleRuntimeSessionStop,
+  handleRuntimeSessionResume,
+  handleRuntimeSessionCheckpoint,
+} from './runtime.js';
+export { handleGovernorStatus, handleGovernorSweepIdle } from './governor.js';
+
