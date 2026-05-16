@@ -16,6 +16,7 @@ Redirecciones cortas a documentos canónicos. **No editar el contenido real aqu�
 | [`LLM-GATEWAY.md`](LLM-GATEWAY.md) | [`../00-architecture/LLM-GATEWAY.md`](../00-architecture/LLM-GATEWAY.md) |
 | [`E2E-TEST-SCENARIOS.md`](E2E-TEST-SCENARIOS.md) | [`../testing/E2E-TEST-SCENARIOS.md`](../testing/E2E-TEST-SCENARIOS.md) |
 | [`API-CORE-PORTFOLIO.md`](API-CORE-PORTFOLIO.md) | [`../01-development/API-CORE-PORTFOLIO.md`](../01-development/API-CORE-PORTFOLIO.md) |
+| [`DESIGN-REFERENCES.md`](DESIGN-REFERENCES.md) | [`../01-development/DESIGN-REFERENCES.md`](../01-development/DESIGN-REFERENCES.md) |
 | `TENANT-PRODUCTION-*.md` | [`../tenants/`](../tenants/README.md) |
 
 La raíz de `docs/` solo conserva hubs: [`../README.md`](../README.md), [`../index.md`](../index.md), [`../STRUCTURE-GUARDRAILS.md`](../STRUCTURE-GUARDRAILS.md).
