@@ -37,4 +37,4 @@ export {
   handleRuntimeSessionCheckpoint,
 } from './runtime.js';
 export { handleGovernorStatus, handleGovernorSweepIdle } from './governor.js';
-
+export { handleMissionControlChat } from './mission-control.js';
