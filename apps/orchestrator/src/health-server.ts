@@ -43,7 +43,6 @@ import {
   handleRuntimeSessionCheckpoint,
   handleGovernorStatus,
   handleGovernorSweepIdle,
-  handleMissionControlChat,
 } from './http/routes/index.js';
 
 const DEFAULT_PORT = 3011;
@@ -118,8 +117,6 @@ function buildRouter(): Router {
 
   r.get('/internal/runtime/governor/status', handleGovernorStatus);
   r.post('/internal/runtime/governor/sweep-idle', handleGovernorSweepIdle);
-
-  r.post('/internal/mission-control/chat', handleMissionControlChat);
 
   return r;
 }
