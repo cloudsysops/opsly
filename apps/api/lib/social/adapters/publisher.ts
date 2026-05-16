@@ -7,7 +7,7 @@ import { SlackAdapter } from './slack-adapter';
 
 type SupportedPlatform = 'twitter' | 'linkedin' | 'discord' | 'slack';
 
-
+export interface ContentPayload {
   twitter?: {
     threads: string[];
     hashtags: string[];

@@ -162,7 +162,7 @@ describe('local-first policy', () => {
 
     expect(out.content).toBe('fallback openai');
     expect(out.model_used).toBe('gpt-4o-mini');
-    // notifyProviderRateLimit desactivado en llm-direct (Discord retirado); el mock queda por compatibilidad.
+    expect(notifyProviderRateLimitMock).toHaveBeenCalled();
   });
 
   it('Loguea provider, latencia y costo', async () => {
