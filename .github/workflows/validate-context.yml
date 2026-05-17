@@ -53,13 +53,20 @@ jobs:
 
       - name: .github/AGENTS.md apunta a la fuente canónica
         run: |
+          set -euo pipefail
+          # Git index may store a symlink while checkout materializes a stale copy (ADR-034).
+          if git ls-tree HEAD .github/AGENTS.md 2>/dev/null | grep -q '^120000'; then
+            bash scripts/ci/ensure-github-agents-symlink.sh
+            exit 0
+          fi
           if [ -L .github/AGENTS.md ] && [ "$(readlink .github/AGENTS.md)" = "../AGENTS.md" ]; then
             echo "✅ .github/AGENTS.md → ../AGENTS.md (symlink, ADR-034)"
             exit 0
           fi
           if ! diff -q AGENTS.md .github/AGENTS.md > /dev/null 2>&1; then
             echo "❌ AGENTS.md y .github/AGENTS.md divergen (y no es symlink canónico)"
+            echo "Fix: bash scripts/ci/ensure-github-agents-symlink.sh && git add .github/AGENTS.md"
             echo "Ver docs/adr/ADR-034-ci-hygiene.md"
             exit 1
           fi
-          echo "✅ Mismo contenido (modo legado); preferir symlink → ../AGENTS.md"
+          echo "✅ Mismo contenido (modo legado); preferir: bash scripts/ci/ensure-github-agents-symlink.sh"
