@@ -20,12 +20,14 @@ export {
   handleTerminalSessionStop,
 } from './terminal.js';
 export { handleLocalControlMode, handleLocalState, handleLocalPromptSubmit } from './local.js';
+export { handleExternalAgentsRegistry } from './external-agents.js';
 export {
   handleValidationMetrics,
   handleValidationMetricsByAgent,
   handleValidationMetricsByIntent,
   handleValidationExport,
 } from './validation.js';
+export { handleMaiaCallback, handleMaiaSelfHeal } from './maia.js';
 export {
   handleRuntimeHealth,
   handleRuntimeListSessions,
@@ -36,4 +38,15 @@ export {
   handleRuntimeSessionResume,
   handleRuntimeSessionCheckpoint,
 } from './runtime.js';
+export { handleRuntimeNodesStatus, handleRuntimeStream } from './runtime-local-health.js';
+export { handleMissionControlChat } from './mission-control.js';
 export { handleGovernorStatus, handleGovernorSweepIdle } from './governor.js';
+export {
+  handleGitBranchPlan,
+  handleGitBranchAssign,
+  handleGitBranchRegistry,
+  handleGitChatOpsDispatch,
+  handleGitBranchHygiene,
+  handleGitIntegrationMergeAdvisor,
+  handleGitBranchMergeAdvisor,
+} from './git-branch.js';

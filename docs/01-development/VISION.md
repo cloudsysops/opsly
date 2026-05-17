@@ -601,6 +601,16 @@ Snapshot archivado (ADR-033, **no** fuente de verdad del roadmap): [`../history/
 4. **Datos primero**: recolectar datos HOY para ML de mañana
 5. **Un servicio a la vez**: no añadir dos tecnologías nuevas en el mismo sprint
 
+### Orden operativo
+
+La secuencia de ejecución para el trabajo de plataforma queda fijada así:
+
+1. **Opsly core estable**: runtime, sesiones, governance, deploy y recovery.
+2. **Adapters / skills**: LangGraph, n8n y OpenHands solo como integración fina, sin duplicar el control plane.
+3. **MCP seguro**: permisos mínimos, separación read/write/shell/secrets y zero-trust para acciones sensibles.
+4. **Mission Control**: jobs, workers, sessions, branches y health.
+5. **Fork solo si hace falta**: crear una integración nueva únicamente cuando el adapter no permita lo que necesitamos.
+
 ### El activo más valioso — datos
 
 Los datos que recolectamos hoy son el cimiento del LLM propio de mañana:

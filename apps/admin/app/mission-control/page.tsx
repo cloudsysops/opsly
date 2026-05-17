@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useCallback, useMemo, useState } from 'react';
 import useSWR from 'swr';
 
+import { LocalNodesPanel } from '../../components/LocalNodesPanel';
 import { getBaseUrl } from '../../lib/api-client';
 import type {
   AgentTeamsResponse,
@@ -110,6 +111,10 @@ export default function MissionControlPage() {
               Refresh
             </button>
           </div>
+        </div>
+
+        <div className="mb-8">
+          <LocalNodesPanel />
         </div>
 
         {/* Orchestrator Status */}

@@ -1,69 +1,65 @@
-#!/bin/bash
-#
-# Runtime Setup Wizard
-# Week 2: Setup automatizado para entorno local
-# Usage: ./scripts/runtime-setup-wizard.sh [--dry-run] [--os=macos|linux|windows]
-#
-
+#!/usr/bin/env bash
+# Interactive local-first runtime setup wizard (Phase 1 Week 2).
 set -euo pipefail
 
-# Colors
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$ROOT"
+
+DRY_RUN=false
+
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
-NC='\033[0m' # No Color
+NC='\033[0m'
 
-# Configuration
-DRY_RUN=false
-TARGET_OS=""
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
+log_info() { echo -e "${BLUE}[INFO]${NC} $*"; }
+log_ok() { echo -e "${GREEN}[OK]${NC} $*"; }
+log_warn() { echo -e "${YELLOW}[WARN]${NC} $*"; }
+log_err() { echo -e "${RED}[ERROR]${NC} $*" >&2; }
 
-# Logging functions
-log_info() { echo -e "${BLUE}[INFO]${NC} $1"; }
-log_success() { echo -e "${GREEN}[OK]${NC} $1"; }
-log_warn() { echo -e "${YELLOW}[WARN]${NC} $1"; }
-log_error() { echo -e "${RED}[ERROR]${NC} $1"; }
-
-# Usage
 usage() {
-  cat << EOF
-Usage: $0 [OPTIONS]
+  cat <<'EOF'
+Usage: ./scripts/runtime-setup-wizard.sh [--dry-run]
 
-Setup wizard for Local-First Runtime Environment
-
-OPTIONS:
-  --dry-run       Show what would be done without doing it
-  --os OS         Target OS: macos, linux, windows (auto-detected by default)
-  -h, --help      Show this help
-
-EXAMPLES:
-  $0                    # Auto-detect OS and setup
-  $0 --dry-run          # Preview changes
-  $0 --os=linux         # Force Linux setup
-
+Interactive setup for Opsly local-first runtime.
 EOF
   exit 0
 }
 
-# Parse arguments
 while [[ $# -gt 0 ]]; do
-  case $1 in
+  case "$1" in
     --dry-run) DRY_RUN=true; shift ;;
-    --os) TARGET_OS="$2"; shift 2 ;;
     -h|--help) usage ;;
-    *) log_error "Unknown option: $1"; exit 1 ;;
+    *) log_err "Unknown option: $1"; exit 1 ;;
   esac
 done
 
-# Detect OS
-detect_os() {
-  if [[ -n "$TARGET_OS" ]]; then
-    echo "$TARGET_OS"
-    return
-  fi
+command_exists() { command -v "$1" >/dev/null 2>&1; }
 
+read_yn() {
+  local prompt="$1"
+  local default="${2:-y}"
+  local answer=""
+  if [[ "$default" == "y" ]]; then
+    read -r -p "${prompt} [Y/n]: " answer || true
+    answer="${answer:-y}"
+  else
+    read -r -p "${prompt} [y/N]: " answer || true
+    answer="${answer:-n}"
+  fi
+  [[ "$answer" =~ ^[Yy] ]]
+}
+
+run_cmd() {
+  if [[ "$DRY_RUN" == "true" ]]; then
+    log_info "[DRY-RUN] $*"
+    return 0
+  fi
+  "$@"
+}
+
+detect_os() {
   case "$(uname -s)" in
     Darwin*) echo "macos" ;;
     Linux*) echo "linux" ;;
@@ -72,217 +68,168 @@ detect_os() {
   esac
 }
 
-# Check if command exists
-command_exists() {
-  command -v "$1" >/dev/null 2>&1
-}
-
-# Setup for macOS
-setup_macos() {
-  log_info "Setting up macOS environment..."
-
-  local packages=("node" "python3" "docker")
-
-  # Check Homebrew
-  if ! command_exists brew; then
-    log_warn "Homebrew not found. Install from: https://brew.sh"
-    return 1
-  fi
-
-  for pkg in "${packages[@]}"; do
-    if command_exists "$pkg"; then
-      log_success "$pkg already installed"
-    else
-      if [[ "$DRY_RUN" == "true" ]]; then
-        log_info "[DRY-RUN] Would install: $pkg"
-      else
-        log_info "Installing $pkg..."
-        # brew install "$pkg" || log_warn "Failed to install $pkg"
+install_container_engine() {
+  local os="$1"
+  local engine="$2"
+  case "$engine" in
+    colima)
+      if [[ "$os" != "macos" ]]; then
+        log_warn "Colima is macOS-only; skipping"
+        return 0
       fi
-    fi
-  done
-
-  # Check for Cursor
-  if [[ -d "/Applications/Cursor.app" ]]; then
-    log_success "Cursor found"
-  else
-    log_warn "Cursor not found. Install from: https://cursor.sh"
-  fi
-
-  # Setup Ollama
-  if command_exists ollama; then
-    log_success "Ollama installed"
-    if [[ "$DRY_RUN" != "true" ]]; then
-      # ollama serve &
-      log_info "Ollama is available"
-    fi
-  else
-    log_warn "Ollama not found. Install with: brew install ollama"
-  fi
-}
-
-# Setup for Linux
-setup_linux() {
-  log_info "Setting up Linux environment..."
-
-  # Check package manager
-  local pkg_manager=""
-  if command_exists apt-get; then
-    pkg_manager="apt"
-  elif command_exists yum; then
-    pkg_manager="yum"
-  elif command_exists dnf; then
-    pkg_manager="dnf"
-  fi
-
-  if [[ -z "$pkg_manager" ]]; then
-    log_error "No supported package manager found"
-    return 1
-  fi
-
-  local packages=("nodejs" "npm" "python3" "docker.io")
-
-  for pkg in "${packages[@]}"; do
-    if command_exists "$pkg"; then
-      log_success "$pkg already installed"
-    else
-      if [[ "$DRY_RUN" == "true" ]]; then
-        log_info "[DRY-RUN] Would install: $pkg"
+      if command_exists colima; then
+        log_ok "colima already installed"
       else
-        log_info "Installing $pkg..."
-        # sudo "$pkg_manager" install -y "$pkg" || log_warn "Failed to install $pkg"
+        log_info "Installing colima via Homebrew..."
+        run_cmd brew install colima docker
       fi
-    fi
-  done
-
-  # Setup Ollama
-  if command_exists ollama; then
-    log_success "Ollama installed"
-  else
-    log_warn "Ollama not found. Install with: curl -fsSL https://ollama.com/install.sh | sh"
-  fi
+      run_cmd colima start --cpu 2 --memory 4 || log_warn "colima start failed (may already run)"
+      ;;
+    docker-desktop|docker)
+      if [[ "$os" == "macos" ]] && command_exists brew; then
+        run_cmd brew install --cask docker || run_cmd brew install docker
+      elif [[ "$os" == "linux" ]] && command_exists apt-get; then
+        run_cmd sudo apt-get update
+        run_cmd sudo apt-get install -y docker.io docker-compose-plugin
+      else
+        log_warn "Install Docker Desktop manually for $os"
+      fi
+      ;;
+    podman)
+      if command_exists apt-get; then
+        run_cmd sudo apt-get install -y podman
+      elif command_exists brew; then
+        run_cmd brew install podman
+      fi
+      ;;
+  esac
 }
 
-# Setup for Windows (WSL)
-setup_windows() {
-  log_info "Setting up Windows (WSL) environment..."
-
-  # Check if running in WSL
-  if [[ -f /proc/version ]] && grep -qi microsoft /proc/version; then
-    log_info "Detected WSL"
-    setup_linux
-  else
-    log_warn "WSL not detected. This script should run inside WSL."
-    log_info "Run: wsl --install -d Ubuntu"
-  fi
-}
-
-# Create config file
-create_config() {
-  local config_file="$PROJECT_ROOT/.env.local"
-
-  if [[ -f "$config_file" ]]; then
-    log_warn "Config file already exists: $config_file"
+ensure_tmux_session() {
+  local name="$1"
+  local start_cmd="$2"
+  if ! command_exists tmux; then
+    log_warn "tmux not installed; skip session $name"
     return 0
   fi
-
+  if tmux has-session -t "$name" 2>/dev/null; then
+    log_ok "tmux session '$name' already exists"
+    return 0
+  fi
   if [[ "$DRY_RUN" == "true" ]]; then
-    log_info "[DRY-RUN] Would create: $config_file"
+    log_info "[DRY-RUN] tmux new-session -d -s $name -- $start_cmd"
     return 0
   fi
-
-  cat > "$config_file" << 'EOF'
-# Local-First Runtime Configuration
-# Generated by runtime-setup-wizard.sh
-
-# Enable local execution
-OPSLY_LOCAL_AGENTS_ENABLED=true
-
-# Ollama settings
-OPSLY_LOCAL_OLLAMA_URL=http://localhost:11434
-OPSLY_LOCAL_OLLAMA_MODEL=llama3.2
-
-# Preferred agent (auto-selected by default)
-# Options: cursor, claude, codex, opencode, ollama, remote
-OPSLY_LOCAL_PREFERRED_AGENT=auto
-
-# Timeouts (ms)
-OPSLY_LOCAL_TIMEOUT_MS=30000
-OPSLY_LOCAL_MAX_RETRIES=3
-EOF
-
-  log_success "Created config: $config_file"
+  tmux new-session -d -s "$name" -- bash -lc "$start_cmd"
+  log_ok "started tmux session: $name"
 }
 
-# Verify environment
-verify_environment() {
-  log_info "Verifying environment..."
-
-  # Check Node.js
-  if command_exists node; then
-    log_success "Node.js: $(node --version)"
-  else
-    log_warn "Node.js not found"
-  fi
-
-  # Check npm
-  if command_exists npm; then
-    log_success "npm: $(npm --version)"
-  else
-    log_warn "npm not found"
-  fi
-
-  # Check Docker
-  if command_exists docker; then
-    if docker info >/dev/null 2>&1; then
-      log_success "Docker: running"
-    else
-      log_warn "Docker installed but not running"
-    fi
-  else
-    log_warn "Docker not found"
-  fi
-
-  # Check Ollama
-  if command_exists ollama; then
-    log_success "Ollama: available"
-    if curl -s http://localhost:11434/api/tags >/dev/null 2>&1; then
-      log_success "Ollama: running"
-    else
-      log_warn "Ollama not running (run: ollama serve)"
-    fi
-  else
-    log_warn "Ollama not found"
-  fi
-}
-
-# Main
 main() {
-  log_info "=== Local-First Runtime Setup Wizard ==="
+  log_info "=== Opsly Local-First Runtime Setup ==="
 
-  local os=$(detect_os)
-  log_info "Detected OS: $os"
-
-  if [[ "$os" == "unknown" ]]; then
-    log_error "Could not detect OS. Use --os to specify."
+  if ! command_exists node || ! command_exists npm; then
+    log_err "Node.js and npm are required"
     exit 1
   fi
 
-  case "$os" in
-    macos) setup_macos ;;
-    linux) setup_linux ;;
-    windows) setup_windows ;;
-    *) log_error "Unsupported OS: $os"; exit 1 ;;
-  esac
+  log_info "Detecting environment..."
+  profile_json="$(npm run runtime:detect --silent)"
+  echo "$profile_json" | node -e "
+const p = JSON.parse(require('fs').readFileSync(0,'utf8'));
+const s = p.system;
+const r = p.recommendation;
+console.log('');
+console.log('System:', s.os, '|', s.cpuCores, 'cores |', s.ramGb, 'GB RAM |', s.diskFreeGb, 'GB free');
+console.log('Tools: docker='+s.dockerAvailable+' colima='+s.colimaAvailable+' ollama='+s.ollamaAvailable+' redis='+s.redisAvailable+' tmux='+s.tmuxAvailable);
+console.log('Recommendation:', r.topologyType, '| workers:', r.maxLocalWorkers, '|', r.estimatedSetupMinutes, 'min');
+if (r.warnings.length) console.log('Warnings:', r.warnings.join('; '));
+"
 
-  create_config
-  verify_environment
+  os="$(detect_os)"
+  max_workers="$(echo "$profile_json" | node -e "const p=JSON.parse(require('fs').readFileSync(0,'utf8'));console.log(p.recommendation.maxLocalWorkers)")"
+  docker_engine="$(echo "$profile_json" | node -e "const p=JSON.parse(require('fs').readFileSync(0,'utf8'));console.log(p.recommendation.dockerEngine)")"
 
-  log_success "=== Setup Complete ==="
-  log_info "Next steps:"
-  log_info "  1. Review .env.local configuration"
-  log_info "  2. Run: npm run type-check"
-  log_info "  3. Test: ./scripts/runtime-health-check.sh"
+  if [[ "$docker_engine" != "none" ]]; then
+    if read_yn "Install/start container engine ($docker_engine)?" "y"; then
+      install_container_engine "$os" "$docker_engine"
+    fi
+  else
+    log_warn "No container engine detected"
+  fi
+
+  worker_count="$max_workers"
+  read -r -p "How many BullMQ workers to configure? [1-${max_workers}] (default ${max_workers}): " worker_input || true
+  if [[ -n "${worker_input:-}" ]] && [[ "$worker_input" =~ ^[0-9]+$ ]]; then
+    worker_count="$worker_input"
+  fi
+
+  use_local_redis=true
+  if read_yn "Use local Redis (vs external REDIS_URL)?" "y"; then
+    use_local_redis=true
+  else
+    use_local_redis=false
+  fi
+
+  enable_ollama=false
+  if read_yn "Enable Ollama for local inference?" "n"; then
+    enable_ollama=true
+    if ! command_exists ollama; then
+      if [[ "$os" == "macos" ]] && command_exists brew; then
+        run_cmd brew install ollama
+      elif [[ "$os" == "linux" ]]; then
+        log_info "Install Ollama: curl -fsSL https://ollama.com/install.sh | sh"
+      fi
+    fi
+    run_cmd ollama serve >/dev/null 2>&1 &
+  fi
+
+  env_file="$ROOT/.env.local"
+  if [[ ! -f "$env_file" ]]; then
+    if [[ "$DRY_RUN" == "true" ]]; then
+      log_info "[DRY-RUN] Would create $env_file"
+    else
+      cat >"$env_file" <<EOF
+# Generated by runtime-setup-wizard.sh
+OPSLY_LOCAL_AGENTS_ENABLED=true
+OPSLY_ORCHESTRATOR_MODE=worker-enabled
+OPSLY_LOCAL_WORKER_COUNT=${worker_count}
+OPSLY_LOCAL_OLLAMA_URL=http://localhost:11434
+OPSLY_LOCAL_OLLAMA_MODEL=llama3.2
+EOF
+      if [[ "$use_local_redis" == "true" ]]; then
+        echo "REDIS_URL=redis://127.0.0.1:6379" >>"$env_file"
+      fi
+      if [[ "$enable_ollama" == "true" ]]; then
+        echo "OPSLY_LOCAL_OLLAMA_ENABLED=true" >>"$env_file"
+      fi
+      log_ok "Created $env_file"
+    fi
+  else
+    log_warn "$env_file already exists (not overwritten)"
+  fi
+
+  redis_cmd="redis-server --port 6379"
+  if [[ "$use_local_redis" == "true" ]]; then
+    ensure_tmux_session "opsly-redis" "$redis_cmd"
+  fi
+
+  worker_cmd="cd '$ROOT' && OPSLY_ROOT='$ROOT' npm run start --workspace=@intcloudsysops/orchestrator"
+  ensure_tmux_session "opsly-workers" "$worker_cmd"
+
+  dev_cmd="cd '$ROOT' && npm run dev"
+  ensure_tmux_session "opsly-dev" "$dev_cmd"
+
+  log_info "Validating local runtime (dry-run)..."
+  if [[ "$DRY_RUN" == "true" ]]; then
+    log_info "[DRY-RUN] npm run validate-local-runtime"
+  else
+    npm run validate-local-runtime || log_warn "validate-local-runtime reported issues (review above)"
+  fi
+
+  log_ok "=== Setup complete ==="
+  log_info "tmux attach -t opsly-workers | opsly-redis | opsly-dev"
+  log_info "Detect: npm run runtime:detect"
+  log_info "Mission Control: admin /mission-control (Local Nodes panel)"
 }
 
 main "$@"

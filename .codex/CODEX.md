@@ -21,6 +21,7 @@ Codex works as an OpenClaw-aware orchestrator for Opsly.
 - Prefer Tailscale SSH, existing runbooks, and repo scripts over ad hoc shell work.
 - Treat Codex as the worker/executor for Opsly, not the architect of record.
 - Keep this bootstrap scoped to Opsly work only.
+- For Browser + terminal sessions, follow `docs/runbooks/COMPUTER-CONTROL-OPERATOR-MODE.md`.
 
 ## Brain Rule
 

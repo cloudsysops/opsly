@@ -29,10 +29,13 @@ import {
   handleLocalControlMode,
   handleLocalState,
   handleLocalPromptSubmit,
+  handleExternalAgentsRegistry,
   handleValidationMetrics,
   handleValidationMetricsByAgent,
   handleValidationMetricsByIntent,
   handleValidationExport,
+  handleMaiaCallback,
+  handleMaiaSelfHeal,
   handleRuntimeHealth,
   handleRuntimeListSessions,
   handleRuntimeCreateSession,
@@ -41,8 +44,18 @@ import {
   handleRuntimeSessionStop,
   handleRuntimeSessionResume,
   handleRuntimeSessionCheckpoint,
+  handleRuntimeNodesStatus,
+  handleRuntimeStream,
+  handleMissionControlChat,
   handleGovernorStatus,
   handleGovernorSweepIdle,
+  handleGitBranchPlan,
+  handleGitBranchAssign,
+  handleGitBranchRegistry,
+  handleGitChatOpsDispatch,
+  handleGitBranchHygiene,
+  handleGitIntegrationMergeAdvisor,
+  handleGitBranchMergeAdvisor,
 } from './http/routes/index.js';
 
 const DEFAULT_PORT = 3011;
@@ -99,8 +112,18 @@ function buildRouter(): Router {
   r.post('/internal/runtime/sessions/:sessionId/resume', handleRuntimeSessionResume);
   r.post('/internal/runtime/sessions/:sessionId/checkpoint', handleRuntimeSessionCheckpoint);
 
+  r.post('/internal/mission-control/chat', handleMissionControlChat);
+
   r.get('/internal/runtime/governor/status', handleGovernorStatus);
   r.post('/internal/runtime/governor/sweep-idle', handleGovernorSweepIdle);
+
+  r.post('/api/git/branches/plan', handleGitBranchPlan);
+  r.post('/api/git/branches/assign', handleGitBranchAssign);
+  r.get('/api/git/branches/registry', handleGitBranchRegistry);
+  r.get('/api/git/branches/hygiene', handleGitBranchHygiene);
+  r.post('/api/git/chatops/dispatch', handleGitChatOpsDispatch);
+  r.get('/api/git/integration/:initiative/merge-advisor', handleGitIntegrationMergeAdvisor);
+  r.get('/api/git/branches/:id/merge-advisor', handleGitBranchMergeAdvisor);
 
   r.get('/internal/job/:jobId', handleJobById);
 
@@ -109,6 +132,8 @@ function buildRouter(): Router {
   r.post('/api/local/prompt-submit', handleLocalPromptSubmit);
   r.post('/api/local/control-mode', handleLocalControlMode);
   r.get('/api/local/state', handleLocalState);
+  r.get('/api/local/external-agents', handleExternalAgentsRegistry);
+  r.get('/internal/external-agents/registry', handleExternalAgentsRegistry);
 
   r.get('/api/job-status/:jobId', handleJobStatusAlias);
 
@@ -116,6 +141,10 @@ function buildRouter(): Router {
   r.get('/api/validation/metrics/agents/:agentRole', handleValidationMetricsByAgent);
   r.get('/api/validation/metrics/intents/:intent', handleValidationMetricsByIntent);
   r.get('/api/validation/export', handleValidationExport);
+
+  // Maia Life Systems loop endpoints
+  r.post('/api/maia/callback', handleMaiaCallback);
+  r.post('/api/maia/self-heal', handleMaiaSelfHeal);
 
   return r;
 }

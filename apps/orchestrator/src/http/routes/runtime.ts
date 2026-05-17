@@ -7,7 +7,6 @@ import {
   sendCommand,
   stopSession,
 } from '@intcloudsysops/session-manager';
-import { evaluateEnqueue } from '../../lib/runtime-governor.js';
 import type { RouteContext } from '../router.js';
 import { jsonResponse, errorResponse } from '../router.js';
 import { parseBody, verifyPlatformAdminToken } from '../utils.js';
@@ -21,12 +20,16 @@ function requireAdmin(ctx: RouteContext): boolean {
 }
 
 export async function handleRuntimeHealth(ctx: RouteContext): Promise<void> {
-  const sessions = await listSessions();
+  const { collectRuntimeHealthSnapshot } = await import('../../runtime/runtime-health.js');
+  const snapshot = await collectRuntimeHealthSnapshot();
   jsonResponse(ctx.res, 200, {
     ok: true,
     service: 'opsly-runtime',
-    session_count: sessions.length,
-    dry_run: process.env.OPSLY_RUNTIME_DRY_RUN === 'true',
+    session_count: snapshot.sessionCount,
+    dry_run: snapshot.dryRun,
+    nodes: snapshot.nodes,
+    queues: snapshot.queues,
+    timestamp: snapshot.timestamp,
   });
 }
 
