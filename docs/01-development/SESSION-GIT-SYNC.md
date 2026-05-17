@@ -12,6 +12,39 @@
 
 Los despliegues por **GitHub Actions** ya hacen `git reset --hard` en el VPS en el job de deploy; este documento cubre **trabajo manual** y **sesiones locales**.
 
+## Modelo recomendado (Mac ↔ GitHub ↔ VPS)
+
+| Dónde | Rama | Cuándo |
+| ----- | ---- | ------ |
+| **GitHub `main`** | Fuente de verdad tras merge de PR | Siempre |
+| **Mac (desarrollo)** | `feat/*` o `fix/*` desde `main` actualizado | Durante la feature; PR al terminar |
+| **VPS producción** | `main` | Operación estable; `git pull --ff-only` tras merge |
+| **VPS prueba puntual** | Misma `feat/*` que Mac | Solo smoke temporal; volver a `main` después |
+
+**Evitar:** dejar el VPS días en ramas `codex/*` o `cursor/*` sin PR. Si Mac y VPS divergen, no copies `.env` por `scp` para “igualar” — usa **Doppler** en cada host.
+
+### Ver estado y alinear
+
+```bash
+# Solo comparar local vs VPS vs origin/main (sin cambios)
+npm run opsly:repos:status
+# o: ./scripts/opsly-repo-align.sh --status
+
+# Mac → main (antes de abrir feat nueva)
+./scripts/git-sync-repo.sh . main
+
+# VPS → main (producción alineada; --vps-stash si hay cambios locales sin commit)
+./scripts/opsly-repo-align.sh --vps --branch main --vps-stash --vps-reset
+
+# Mac + VPS en la misma feature (prueba coordinada)
+./scripts/opsly-repo-align.sh --local --vps --branch feat/tu-rama
+
+# Producción estable en un comando (cuando toque)
+npm run opsly:repos:align
+```
+
+El script falla si el working tree está sucio (commit o `stash` antes).
+
 ## Comando único (repo)
 
 Desde la raíz del clon (o con ruta explícita):

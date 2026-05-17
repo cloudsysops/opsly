@@ -110,6 +110,9 @@
     "runtime:detect": "npm run detect --workspace=@intcloudsysops/runtime",
     "runtime:setup": "bash scripts/runtime-setup-wizard.sh",
     "validate-local-runtime": "bash scripts/validate-local-runtime.sh",
+    "opsly:git-sync": "bash scripts/git-sync-repo.sh",
+    "opsly:repos:status": "bash scripts/opsly-repo-align.sh --status",
+    "opsly:repos:align": "bash scripts/opsly-repo-align.sh --local --vps --branch main --vps-reset",
     "prepare": "husky",
     "commit": "git-cz"
   },
