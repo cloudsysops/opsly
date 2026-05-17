@@ -127,11 +127,12 @@ DO_STASH="$3"
 DO_RESET="$4"
 cd "$VPS_PATH"
 
-if [[ -n "$(git status --porcelain)" ]]; then
+DIRTY="$(git status --porcelain 2>/dev/null | grep -v '^?? tenants/' || true)"
+if [[ -n "$DIRTY" ]]; then
   if [[ "$DO_STASH" == "true" ]]; then
     STAMP="$(date -u +%Y%m%dT%H%M%SZ)"
-    git stash push -u -m "opsly-repo-align-${STAMP}"
-    echo "vps-git-align: cambios guardados en stash (opsly-repo-align-${STAMP})"
+    git stash push -m "opsly-repo-align-${STAMP}" || true
+    echo "vps-git-align: stash aplicado (sin -u; tenants/ puede ser root)"
   else
     echo "vps-git-align: working tree sucio — usa --vps-stash o commit en VPS:" >&2
     git status -sb >&2
@@ -143,10 +144,8 @@ CURRENT="$(git branch --show-current)"
 echo "vps-git-align: ${VPS_PATH} (actual: ${CURRENT} → objetivo: ${BRANCH})"
 
 git fetch origin "$BRANCH"
-if [[ "$CURRENT" != "$BRANCH" ]]; then
-  git checkout "$BRANCH"
-fi
-git pull --ff-only origin "$BRANCH" || true
+git checkout -B "$BRANCH" "origin/${BRANCH}" 2>/dev/null || git checkout "$BRANCH"
+git pull --ff-only origin "$BRANCH" 2>/dev/null || true
 if [[ "$DO_RESET" == "true" ]]; then
   git reset --hard "origin/${BRANCH}"
   echo "vps-git-align: reset --hard origin/${BRANCH}"
