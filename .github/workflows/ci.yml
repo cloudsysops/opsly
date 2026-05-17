@@ -42,9 +42,8 @@ jobs:
         run: |
           set -euo pipefail
           npm ci
-          # Build ml first (required by api)
-          cd apps/ml && npm run build
-          # Orchestrator mission-control / runtime routes depend on lib/* dist + .d.ts
+          # Build ml first (required by api); subshells keep cwd at repo root
+          (cd apps/ml && npm run build)
           (cd lib/git-branch-orchestrator && npm run build)
           (cd lib/session-manager && npm run build)
           (cd lib/runtime && npm run build)
