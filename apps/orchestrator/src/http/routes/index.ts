@@ -39,6 +39,8 @@ export {
   handleRuntimeSessionCheckpoint,
 } from './runtime.js';
 export { handleRuntimeNodesStatus, handleRuntimeStream } from './runtime-local-health.js';
+export { handleRuntimeCapabilities } from './runtime-capabilities.js';
+export { handleRuntimePoppingSubagents } from './popping-subagents.js';
 export { handleMissionControlChat } from './mission-control.js';
 export { handleGovernorStatus, handleGovernorSweepIdle } from './governor.js';
 export {

@@ -38,6 +38,9 @@ tools/agents/prompts/secrets-*.md
 # si lo editas solo para ti, renombra/copia a este nombre o usa skip-worktree en .opencode.json.
 .opencode.local.json
 
+# Codex — config local por máquina (el repo lleva CODEX.md / settings.json canónicos)
+.codex/config.toml
+
 # Obsidian — estado de UI en la raíz del repo (no es el vault docs/); no commitear
 .obsidian/
 .env.local

@@ -8,11 +8,15 @@ import os from 'node:os';
 import { Queue } from 'bullmq';
 import { execa } from 'execa';
 import {
+  createDefaultDeps,
   detectEnvironment,
+  detectCapabilityRegistry,
+  type CapabilityRegistry,
   type RuntimeProfile,
 } from '@intcloudsysops/runtime';
 import { connection } from '../queue.js';
 import { listSessions } from '@intcloudsysops/session-manager';
+import type { RuntimeSessionMetadata } from '@intcloudsysops/session-manager';
 
 const RUNTIME_QUEUE_NAMES = [
   'openclaw',
@@ -68,7 +72,61 @@ export interface RuntimeHealthSnapshot {
   nodes: RuntimeLocalNode[];
   queues: RuntimeQueueSnapshot[];
   sessionCount: number;
+  sessionSummary: RuntimeSessionSummary;
+  capabilities: CapabilityRegistry;
   dryRun: boolean;
+}
+
+export interface RuntimeSessionSummary {
+  total: number;
+  created: number;
+  running: number;
+  checkpointed: number;
+  waitingApproval: number;
+  stopped: number;
+  failed: number;
+  resumable: number;
+}
+
+function summarizeSessions(sessions: RuntimeSessionMetadata[]): RuntimeSessionSummary {
+  const summary: RuntimeSessionSummary = {
+    total: sessions.length,
+    created: 0,
+    running: 0,
+    checkpointed: 0,
+    waitingApproval: 0,
+    stopped: 0,
+    failed: 0,
+    resumable: 0,
+  };
+  for (const session of sessions) {
+    switch (session.status) {
+      case 'created':
+        summary.created += 1;
+        break;
+      case 'running':
+        summary.running += 1;
+        break;
+      case 'checkpointed':
+        summary.checkpointed += 1;
+        break;
+      case 'waiting_approval':
+        summary.waitingApproval += 1;
+        break;
+      case 'stopped':
+        summary.stopped += 1;
+        break;
+      case 'failed':
+        summary.failed += 1;
+        break;
+      case 'resumable':
+        summary.resumable += 1;
+        break;
+      default:
+        break;
+    }
+  }
+  return summary;
 }
 
 async function diskUsagePercent(): Promise<{ freeGb: number; percent: number }> {
@@ -142,9 +200,10 @@ async function queueSnapshot(name: string): Promise<RuntimeQueueSnapshot> {
 }
 
 export async function collectRuntimeHealthSnapshot(): Promise<RuntimeHealthSnapshot> {
+  const deps = createDefaultDeps();
   const [profile, disk, ram, tmuxSessions, redisConnected, sessions, queues] =
     await Promise.all([
-      detectEnvironment(),
+      detectEnvironment(deps),
       diskUsagePercent(),
       Promise.resolve(ramUsagePercent()),
       Promise.all(TMUX_SESSION_NAMES.map((n) => tmuxSessionStatus(n))),
@@ -152,6 +211,7 @@ export async function collectRuntimeHealthSnapshot(): Promise<RuntimeHealthSnaps
       listSessions().catch(() => []),
       Promise.all(RUNTIME_QUEUE_NAMES.map((n) => queueSnapshot(n))),
     ]);
+  const capabilities = await detectCapabilityRegistry(deps, profile);
 
   const mem = process.memoryUsage();
   const node: RuntimeLocalNode = {
@@ -184,6 +244,8 @@ export async function collectRuntimeHealthSnapshot(): Promise<RuntimeHealthSnaps
     nodes: [node],
     queues,
     sessionCount: sessions.length,
+    sessionSummary: summarizeSessions(sessions),
+    capabilities,
     dryRun: process.env.OPSLY_RUNTIME_DRY_RUN === 'true',
   };
 }

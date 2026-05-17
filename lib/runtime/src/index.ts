@@ -12,3 +12,11 @@ export {
   type RuntimeRecommendation,
   type SystemInfo,
 } from './environment-detector.js';
+
+export {
+  detectCapabilityRegistry,
+  type CapabilityCategory,
+  type CapabilityPresence,
+  type CapabilityRegistry,
+  type RuntimeCapability,
+} from './capability-registry.js';

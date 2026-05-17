@@ -46,6 +46,8 @@ import {
   handleRuntimeSessionCheckpoint,
   handleRuntimeNodesStatus,
   handleRuntimeStream,
+  handleRuntimeCapabilities,
+  handleRuntimePoppingSubagents,
   handleMissionControlChat,
   handleGovernorStatus,
   handleGovernorSweepIdle,
@@ -111,6 +113,12 @@ function buildRouter(): Router {
   r.post('/internal/runtime/sessions/:sessionId/stop', handleRuntimeSessionStop);
   r.post('/internal/runtime/sessions/:sessionId/resume', handleRuntimeSessionResume);
   r.post('/internal/runtime/sessions/:sessionId/checkpoint', handleRuntimeSessionCheckpoint);
+
+  r.get('/internal/runtime/nodes/status', handleRuntimeNodesStatus);
+  r.get('/internal/runtime/stream', handleRuntimeStream);
+  r.get('/internal/runtime/capabilities', handleRuntimeCapabilities);
+  r.get('/internal/runtime/popping-subagents', handleRuntimePoppingSubagents);
+  r.post('/internal/runtime/popping-subagents', handleRuntimePoppingSubagents);
 
   r.post('/internal/mission-control/chat', handleMissionControlChat);
 
