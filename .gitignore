@@ -125,3 +125,4 @@ logs/
 .agent-bootstrap-state/
 .aider*
 tenants/
+.aider.chat.history.md

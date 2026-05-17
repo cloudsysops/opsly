@@ -4,7 +4,13 @@ const fs = require('node:fs');
 const path = require('node:path');
 
 const root = process.cwd();
-const allowedRootMarkdown = new Set(['AGENTS.md', 'README.md', 'ROADMAP.md', 'VISION.md']);
+const allowedRootMarkdown = new Set([
+  'AGENTS.md',
+  'README.md',
+  'ROADMAP.md',
+  'VISION.md',
+  '.aider.chat.history.md',
+]);
 const requiredPaths = [
   'apps/mcp',
   'apps/orchestrator',
@@ -32,8 +38,25 @@ if (missing.length > 0) {
 }
 
 const forbiddenRootDirs = ['logs', 'tenants', 'letsencrypt', 'agents', 'workspaces', 'cli'];
-const forbiddenPresent = forbiddenRootDirs.filter((relativePath) =>
-  fs.existsSync(path.join(root, relativePath)),
+// Skip validation for folders that are in .gitignore (local runtime data)
+const gitignorePath = path.join(root, '.gitignore');
+let gitignoreContent = '';
+try {
+  gitignoreContent = fs.readFileSync(gitignorePath, 'utf8');
+} catch (e) {
+  // ignore if no .gitignore
+}
+const ignoredFolders = gitignoreContent
+  .split('\n')
+  .map((line) => line.trim())
+  .filter((line) => line && !line.startsWith('#'))
+  .map((line) => line.replace(/^\//, '').replace(/\/$/, '')) // remove leading/trailing slashes
+  .filter((line) => !line.startsWith('*')) // exclude wildcard patterns
+  .map((line) => line.replace(/^!\//, '')); // handle negation patterns
+
+const forbiddenPresent = forbiddenRootDirs.filter(
+  (relativePath) =>
+    fs.existsSync(path.join(root, relativePath)) && !ignoredFolders.includes(relativePath)
 );
 
 if (forbiddenPresent.length > 0) {
@@ -42,7 +65,7 @@ if (forbiddenPresent.length > 0) {
     console.error(`- ${item}`);
   }
   console.error(
-    'Hint: move contents under runtime/ or tools/ (e.g. logs → runtime/logs/). See docs/00-architecture/REPO-MAP.md § validate-structure.',
+    'Hint: move contents under runtime/ or tools/ (e.g. logs → runtime/logs/). See docs/00-architecture/REPO-MAP.md § validate-structure.'
   );
   process.exit(1);
 }
@@ -59,7 +82,7 @@ if (rootMarkdownFiles.length > 0) {
     console.error(`- ${item}`);
   }
   console.error(
-    'Hint: keep root Markdown limited to AGENTS.md, README.md, ROADMAP.md and VISION.md. Move all other docs under docs/.',
+    'Hint: keep root Markdown limited to AGENTS.md, README.md, ROADMAP.md and VISION.md. Move all other docs under docs/.'
   );
   process.exit(1);
 }
@@ -74,12 +97,14 @@ try {
 }
 
 if (docsViolations.length > 0) {
-  console.error('Files at docs/ root must be hubs only (README, index, STRUCTURE-GUARDRAILS); stubs live in docs/stubs/. See docs/STRUCTURE-GUARDRAILS.md:');
+  console.error(
+    'Files at docs/ root must be hubs only (README, index, STRUCTURE-GUARDRAILS); stubs live in docs/stubs/. See docs/STRUCTURE-GUARDRAILS.md:'
+  );
   for (const item of docsViolations) {
     console.error(`- docs/${item}`);
   }
   console.error(
-    `Hint: move new docs into a owning folder (e.g. docs/01-development/). To extend the exception list, update ${CONFIG_REL} with explicit review.`,
+    `Hint: move new docs into a owning folder (e.g. docs/01-development/). To extend the exception list, update ${CONFIG_REL} with explicit review.`
   );
   process.exit(1);
 }
