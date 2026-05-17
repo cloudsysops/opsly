@@ -107,6 +107,9 @@
     "superagents:install": "bash scripts/install-superagents-stack.sh",
     "superagents:up": "bash scripts/superagents-up.sh",
     "superagents:doctor": "bash scripts/superagents-doctor.sh",
+    "runtime:detect": "npm run detect --workspace=@intcloudsysops/runtime",
+    "runtime:setup": "bash scripts/runtime-setup-wizard.sh",
+    "validate-local-runtime": "bash scripts/validate-local-runtime.sh",
     "prepare": "husky",
     "commit": "git-cz"
   },

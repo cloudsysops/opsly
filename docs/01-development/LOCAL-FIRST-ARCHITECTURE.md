@@ -19,9 +19,9 @@
 ## 📊 Weeks Breakdown
 
 ### Week 1: Environment Detection (Core)
-- [ ] `lib/runtime/environment-detector.ts` — detecta capabilities locales
-- [ ] Sistema de detection por OS (macOS/Linux/Windows/WASM)
-- [ ] Health checks para recursos locales (CPU, RAM, Disk)
+- [x] `@intcloudsysops/runtime` — `detectEnvironment()` + `generateRecommendation()` (`lib/runtime/src/`)
+- [x] CLI: `npm run runtime:detect` · tests: `npm run test --workspace=@intcloudsysops/runtime`
+- [ ] Validación manual en Ubuntu 20.04+ y Windows WSL2 (Mac probado en dev)
 
 ### Week 2: Runtime Setup Wizard
 - [ ] `scripts/runtime-setup-wizard.sh` — setup automatizado
