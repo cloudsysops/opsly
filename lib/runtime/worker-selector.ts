@@ -32,7 +32,7 @@ export interface SelectionResult {
 /**
  * Configuración de workers disponibles
  */
-const getWorkerConfig = (env: EnvironmentCapabilities): WorkerConfig[] => {
+export const getWorkerConfig = (env: EnvironmentCapabilities): WorkerConfig[] => {
   const workers: WorkerConfig[] = [];
 
   // Local agents

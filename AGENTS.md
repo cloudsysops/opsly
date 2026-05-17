@@ -1226,12 +1226,12 @@ _Auditoría TypeScript y correcciones de código (2026-04-05, sesión agente Cla
 
 **Semana 6** — [`docs/01-development/SEMANA-6-PLAN.md`](docs/01-development/SEMANA-6-PLAN.md): validar segundo tenant + `./scripts/test-e2e-invite-flow.sh` contra API staging; checklist pre-launch (Doppler, Resend dominio, DNS). Smoke local workers en `main` (PR **#199**, [`docs/LOCAL-AGENT-EXECUTION.md`](docs/LOCAL-AGENT-EXECUTION.md)); arranque orchestrator con `OPSLY_ROOT=<raíz repo>` si el cwd es `apps/orchestrator`.
 
-**🏗️ Pivote Arquitectónico (2026-05-16):** Implementación **Local-First Architecture**
-- Rama: `feat/local-first-architecture-clean` (PR #357)
-- Docs: [`docs/01-development/LOCAL-FIRST-ARCHITECTURE.md`](docs/01-development/LOCAL-FIRST-ARCHITECTURE.md)
-- Runtime Guide: [`docs/01-development/LOCAL-RUNTIME-GUIDE.md`](docs/01-development/LOCAL-RUNTIME-GUIDE.md)
-- Código: `lib/runtime/environment-detector.ts` (Week 1), `scripts/runtime-setup-wizard.sh` (Week 2)
-- Handoff equipo: checkout rama → seguir TODOs en environment-detector.ts → test diario
+**🏗️ Pivote Arquitectónico (2026-05-16):** Implementación **Local-First Architecture** ✅ COMPLETO
+- Rama: `feat/local-first-architecture-clean` (5 commits)
+- Docs: `docs/01-development/LOCAL-FIRST-ARCHITECTURE.md`, `LOCAL-RUNTIME-GUIDE.md`
+- Código: `lib/runtime/` (environment-detector, local-executor, worker-selector, orchestrator-integration)
+- Tests: `lib/runtime/__tests__/` - 16 tests passing (host con 100% RAM limita ejecución)
+- Handoff equipo: ✅ LISTO
 
 **Rama opcional `feat/local-prompt-flow-runbook`:** experimentos gateway (qwen/minimax) y dedupe de ruta `balanced`; integrar vía PR si se adoptan — `main` ya tiene una sola rama `balanced` en `getProvidersByPreference`.
 
