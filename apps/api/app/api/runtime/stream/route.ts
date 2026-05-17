@@ -1,4 +1,4 @@
-import { ORCHESTRATOR_INTERNAL_URL } from '../../../../lib/admin-ollama-demo';
+import { ORCHESTRATOR_INTERNAL_URL } from '../../../../lib/runtime-proxy';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
