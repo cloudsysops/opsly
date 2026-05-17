@@ -188,7 +188,12 @@
     "ip-address": "10.2.0",
     "express-rate-limit": {
       "ip-address": "10.2.0"
-    }
+    },
+    "@tootallnate/once": "^3.0.1",
+    "langsmith": "0.7.1",
+    "tar": "^7.5.15",
+    "undici": "^6.24.0",
+    "mermaid": "^11.4.0"
   },
   "dependencies": {
     "@redis/client": "^1.6.1",
