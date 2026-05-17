@@ -1,9 +1,12 @@
 /**
- * Unified Memory: Redis (working context) + Supabase (episodic logs + pgvector RAG).
- *
- * @see apps/orchestrator/src/runtime/interfaces/memory.interface.ts
+ * Supabase-backed memory adapter using pgvector for semantic search.
+ * Tabla: `memory_embeddings` (tenant-scoped).
+ * 
+ * Embeddings: OpenAI text-embedding-3-small (1536 dims).
+ * 
+ * TODO(ADR-033): Migrar a LLM Gateway para métricas unificadas
+ * import { getEmbeddingsViaGateway } from '@intcloudsysops/runtime/llm-gateway-embeddings';
  */
-
 import { createOpenAI } from '@ai-sdk/openai';
 import { embed } from 'ai';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';

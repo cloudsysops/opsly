@@ -2,6 +2,9 @@
  * Memoria a largo plazo (Opsly Brain): pgvector + embeddings OpenAI.
  * Tabla `public.opsly_knowledge_store` (ver migración SQL). Compatible con sustituir el
  * almacenamiento interno por `PGVectorStore` de `@llamaindex/postgres` cuando se unifique el embed model.
+ * 
+ * TODO(ADR-033): Migrar a LLM Gateway para métricas unificadas
+ * import { getEmbeddingsViaGateway } from '@intcloudsysops/runtime/llm-gateway-embeddings';
  */
 import pg from 'pg';
 
