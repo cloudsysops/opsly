@@ -24,6 +24,8 @@ import { superOrchestratorTools } from './tools/super-orchestrator.js';
 import { executeQuantumTool } from './tools/execute-quantum.tool.js';
 import { getModeTool } from './tools/get-mode.tool.js';
 import { setModeTool } from './tools/set-mode.tool.js';
+import { runtimeSessionsTools } from './tools/runtime-sessions.tool.js';
+import { brainTools } from './tools/obsidian/brain-tools.js';
 import type { ToolContext, ToolDefinition } from './types/index.js';
 
 interface RegisteredTool {
@@ -73,6 +75,20 @@ export const TOOL_REQUIRED_SCOPES: Record<string, string> = {
   get_mode: 'agents:write',
   set_mode: 'agents:write',
   execute_quantum: 'agents:write',
+  runtime_list_sessions: 'metrics:read',
+  runtime_session_logs: 'metrics:read',
+  runtime_create_session: 'agents:write',
+  runtime_session_send: 'agents:write',
+  runtime_session_stop: 'agents:write',
+  runtime_resume_session: 'agents:write',
+  'brain:search': 'metrics:read',
+  'brain:get': 'metrics:read',
+  'brain:list-tags': 'metrics:read',
+  'brain:graph': 'metrics:read',
+  'brain:semantic-search': 'metrics:read',
+  'brain:research': 'agents:write',
+  'brain:recall': 'metrics:read',
+  'brain:architecture-context': 'metrics:read',
 };
 
 export type CallToolOptions = {
@@ -186,6 +202,8 @@ export function getAllToolDefinitions(): ToolDefinition<unknown, unknown>[] {
     setModeTool,
     executeQuantumTool,
     ...superOrchestratorTools,
+    ...runtimeSessionsTools,
+    ...brainTools,
   ] as ToolDefinition<unknown, unknown>[];
 }
 

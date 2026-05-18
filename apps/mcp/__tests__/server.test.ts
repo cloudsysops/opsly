@@ -33,6 +33,10 @@ describe('createServer', () => {
     expect(tools).toContain('list_ai_integrations');
     expect(tools).toContain('probe_platform_component');
     expect(tools).toContain('get_docker_containers');
+    expect(tools).toContain('brain:search');
+    expect(tools).toContain('brain:research');
+    expect(tools).toContain('brain:recall');
+    expect(tools).toContain('runtime_resume_session');
   });
 
   it('lanza error si la tool no existe', async () => {
