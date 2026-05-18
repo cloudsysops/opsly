@@ -217,7 +217,7 @@ describe('ContentApprovalQueue', () => {
     });
 
     it('should filter by tenant', async () => {
-      const task = await queue.enqueueForApproval(mockDraft);
+      await queue.enqueueForApproval(mockDraft);
       const pending1 = await queue.listPendingApprovals('test-tenant');
       const pending2 = await queue.listPendingApprovals('other-tenant');
 
@@ -228,7 +228,7 @@ describe('ContentApprovalQueue', () => {
 
   describe('listByState', () => {
     it('should list tasks by state', async () => {
-      const task1 = await queue.enqueueForApproval(mockDraft);
+      await queue.enqueueForApproval(mockDraft);
       const task2 = await queue.enqueueForApproval({
         ...mockDraft,
         id: 'draft-124',
@@ -249,8 +249,8 @@ describe('ContentApprovalQueue', () => {
 
   describe('listTenantTasks', () => {
     it('should list all tasks for tenant', async () => {
-      const task1 = await queue.enqueueForApproval(mockDraft);
-      const task2 = await queue.enqueueForApproval({
+      await queue.enqueueForApproval(mockDraft);
+      await queue.enqueueForApproval({
         ...mockDraft,
         id: 'draft-124',
       });
@@ -269,7 +269,7 @@ describe('ContentApprovalQueue', () => {
 
   describe('getStats', () => {
     it('should return queue statistics', async () => {
-      const task1 = await queue.enqueueForApproval(mockDraft);
+      await queue.enqueueForApproval(mockDraft);
       const task2 = await queue.enqueueForApproval({
         ...mockDraft,
         id: 'draft-124',
