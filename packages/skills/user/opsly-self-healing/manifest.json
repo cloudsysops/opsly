@@ -1,0 +1,31 @@
+{
+  "name": "opsly-self-healing",
+  "version": "1.0.0",
+  "description": "Self-healing agent — detección y reparación automática de infraestructura: dominio equivocado en tenants, DNS wildcard, middlewares Traefik, contenedores caídos",
+  "triggers": [
+    "self-healing", "auto-repair", "healing", "alerts", "discord alerts", "url failed",
+    "container down", "domain mismatch", "traefik 404", "middleware", "wildcard dns"
+  ],
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "command": {
+        "type": "string",
+        "enum": ["check", "repair", "report"],
+        "description": "check = solo detectar, repair = detectar + reparar, report = último reporte"
+      }
+    }
+  },
+  "outputSchema": {
+    "type": "object",
+    "properties": {
+      "issues": { "type": "integer", "description": "Número de problemas detectados" },
+      "repaired": { "type": "integer", "description": "Número de problemas reparados" }
+    }
+  },
+  "crossReferences": ["opsly-infra", "opsly-discord", "opsly-tenant"],
+  "errors": {
+    "E_CF_TOKEN_MISSING": "No se encontró CF_DNS_API_TOKEN en Doppler — el wildcard DNS no se puede reparar automáticamente",
+    "E_TRAEFIK_CONF": "middlewares.yml con campos de Traefik v2 (stsForceHTTPS) — reparar con replace + restart Traefik"
+  }
+}

@@ -8,12 +8,12 @@ services:
       N8N_BASIC_AUTH_USER: admin
       N8N_BASIC_AUTH_PASSWORD: {{N8N_AUTH_PASSWORD}}
       N8N_ENCRYPTION_KEY: {{N8N_ENCRYPTION_KEY}}
-      WEBHOOK_URL: https://n8n-{{SLUG}}.opsly.io
+      WEBHOOK_URL: https://n8n-{{SLUG}}.{{DOMAIN}}
     volumes:
       - n8n_data_{{SLUG}}:/home/node/.n8n
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.n8n-{{SLUG}}.rule=Host(`n8n-{{SLUG}}.opsly.io`)"
+      - "traefik.http.routers.n8n-{{SLUG}}.rule=Host(`n8n-{{SLUG}}.{{DOMAIN}}`)"
       - "traefik.http.routers.n8n-{{SLUG}}.tls=true"
       - "traefik.http.services.n8n-{{SLUG}}.loadbalancer.server.port=5678"
     healthcheck:
@@ -33,7 +33,7 @@ services:
       - uptime_data_{{SLUG}}:/app/data
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.uptime-{{SLUG}}.rule=Host(`uptime-{{SLUG}}.opsly.io`)"
+      - "traefik.http.routers.uptime-{{SLUG}}.rule=Host(`uptime-{{SLUG}}.{{DOMAIN}}`)"
       - "traefik.http.routers.uptime-{{SLUG}}.tls=true"
       - "traefik.http.services.uptime-{{SLUG}}.loadbalancer.server.port=3001"
     restart: unless-stopped

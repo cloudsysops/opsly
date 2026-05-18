@@ -28,6 +28,7 @@ export interface AgentServicesConfig {
 export class AgentServiceRegistry {
   private config: AgentServicesConfig | null = null;
   private configPath: string;
+  private loadedConfigPath: string | null = null;
   private serviceHealthStatus: Map<string, boolean> = new Map();
   private lastHealthCheck: Map<string, number> = new Map();
 
@@ -35,19 +36,45 @@ export class AgentServiceRegistry {
     this.configPath = configPath || path.join(process.cwd(), 'config', 'agent-services.yaml');
   }
 
+  private candidateConfigPaths(): string[] {
+    const explicitPath = process.env.OPSLY_AGENT_SERVICES_CONFIG?.trim();
+    const candidates = [
+      explicitPath,
+      this.configPath,
+      path.join(process.cwd(), '..', '..', 'config', 'agent-services.yaml'),
+      path.join(process.cwd(), '..', '..', '..', 'config', 'agent-services.yaml'),
+      path.join(process.cwd(), '..', 'config', 'agent-services.yaml'),
+      '/app/config/agent-services.yaml',
+    ].filter((value): value is string => typeof value === 'string' && value.length > 0);
+
+    return [...new Set(candidates.map((candidate) => path.resolve(candidate)))];
+  }
+
   /**
-   * Load agent services configuration from YAML file
+   * Load agent services configuration from YAML file.
+   *
+   * The orchestrator runs from different cwd values locally and in Docker
+   * (`/app` vs `/app/apps/orchestrator`). Try the canonical root config before
+   * failing so workers do not die when only the monorepo-level config is mounted.
    */
   async loadConfig(): Promise<AgentServicesConfig> {
-    try {
-      const fileContent = await fsp.readFile(this.configPath, 'utf-8');
-      this.config = yaml.load(fileContent) as AgentServicesConfig;
-      console.log('[AgentServiceRegistry] ✅ Config loaded:', this.configPath);
-      return this.config;
-    } catch (err) {
-      console.error('[AgentServiceRegistry] ❌ Error loading config:', err);
-      throw new Error(`Failed to load agent services config from ${this.configPath}`);
+    const errors: string[] = [];
+
+    for (const candidatePath of this.candidateConfigPaths()) {
+      try {
+        const fileContent = await fsp.readFile(candidatePath, 'utf-8');
+        this.config = yaml.load(fileContent) as AgentServicesConfig;
+        this.loadedConfigPath = candidatePath;
+        console.log('[AgentServiceRegistry] ✅ Config loaded:', candidatePath);
+        return this.config;
+      } catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
+        errors.push(`${candidatePath}: ${message}`);
+      }
     }
+
+    console.error('[AgentServiceRegistry] ❌ Error loading config:', errors.join(' | '));
+    throw new Error(`Failed to load agent services config. Tried: ${this.candidateConfigPaths().join(', ')}`);
   }
 
   /**

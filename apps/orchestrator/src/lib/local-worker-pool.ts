@@ -54,7 +54,7 @@ export class LocalWorkerPool {
   private initializeAgents(): void {
     const agentConfigs: AgentServiceConfig[] = [
       {
-        name: 'cursor',
+        name: 'local_cursor',
         role: 'executor',
         endpoint: process.env.CURSOR_AGENT_URL || 'http://localhost:5001',
         port: 5001,
@@ -63,7 +63,7 @@ export class LocalWorkerPool {
         enabled: true,
       },
       {
-        name: 'claude',
+        name: 'local_claude',
         role: 'analyzer',
         endpoint: process.env.CLAUDE_AGENT_URL || 'http://localhost:5002',
         port: 5002,
@@ -72,7 +72,7 @@ export class LocalWorkerPool {
         enabled: !!process.env.CLAUDE_AGENT_URL,
       },
       {
-        name: 'copilot',
+        name: 'local_copilot',
         role: 'validator',
         endpoint: process.env.COPILOT_AGENT_URL || 'http://localhost:5003',
         port: 5003,
@@ -81,7 +81,7 @@ export class LocalWorkerPool {
         enabled: !!process.env.COPILOT_AGENT_URL,
       },
       {
-        name: 'opencode',
+        name: 'local_opencode',
         role: 'refiner',
         endpoint: process.env.OPENCODE_AGENT_URL || 'http://localhost:5004',
         port: 5004,

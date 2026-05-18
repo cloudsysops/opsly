@@ -1,6 +1,6 @@
 {
   "version": "3.0.0",
-  "generated": "2026-04-21T09:51:00Z",
+  "generated": "2026-05-14T17:55:00Z",
   "description": "Índice de todos los skills disponibles en Opsly para agentes IA autónomos",
   "skills": [
     {
@@ -122,12 +122,21 @@
     },
     {
       "name": "opsly-infra",
-      "version": "1.0.0",
-      "description": "Docker, Compose, VPS, deploy, scripts de infraestructura. Operaciones de infraestructura y despliegue.",
+      "version": "1.1.0",
+      "description": "Docker, Compose, VPS, deploy, Traefik v3 (middlewares, ACME), Cloudflare DNS, scripts de infraestructura. Operaciones de infraestructura y despliegue.",
       "category": "infrastructure",
       "priority": "high",
-      "usage": "Docker, Compose, VPS, deploy, operaciones de infraestructura",
+      "usage": "Docker, Compose, VPS, deploy, Traefik, Cloudflare, DNS, operaciones de infraestructura",
       "path": "skills/user/opsly-infra/"
+    },
+    {
+      "name": "opsly-self-healing",
+      "version": "1.0.0",
+      "description": "Self-healing agent: detección y reparación automática de domain mismatch, DNS wildcard, middlewares Traefik, contenedores caídos. Alertas de Discord, URL failed to redirect, 404 en tenants.",
+      "category": "infrastructure",
+      "priority": "high",
+      "usage": "Auto-reparación de infraestructura, diagnosis de alerts Discord, fix de middlewares Traefik y DNS wildcard",
+      "path": "skills/user/opsly-self-healing/"
     },
     {
       "name": "opsly-frontend",
@@ -237,6 +246,60 @@
       "priority": "medium",
       "usage": "Análisis comparativo de herramientas y documentación externa",
       "path": "skills/user/opsly-researcher/"
+    },
+    {
+      "name": "context-builder",
+      "version": "1.0.0",
+      "description": "Construcción de contexto operativo y memoria de investigación por tenant para agentes OpenClaw.",
+      "category": "development",
+      "priority": "medium",
+      "usage": "Construcción de contexto operativo, memoria por tenant, índice de conocimiento del repo",
+      "path": "skills/user/context-builder/"
+    },
+    {
+      "name": "hermes-skeptic",
+      "version": "1.0.0",
+      "description": "Revisión crítica de planes y decisiones con foco en riesgos, supuestos y failure modes.",
+      "category": "architecture",
+      "priority": "medium",
+      "usage": "Revisión crítica de planes, decisiones de arquitectura, cambios de infraestructura",
+      "path": "skills/user/hermes-skeptic/"
+    },
+    {
+      "name": "opsly-brain-researcher",
+      "version": "1.0.0",
+      "description": "Agente de investigación autónomo que investiga el Obsidian Brain, sintetiza conocimiento y profundiza iterativamente.",
+      "category": "research",
+      "priority": "high",
+      "usage": "Investigación iterativa del Obsidian Brain, síntesis de conocimiento con confianza >0.8",
+      "path": "skills/user/opsly-brain-researcher/"
+    },
+    {
+      "name": "opsly-cost-forecaster",
+      "version": "1.0.0",
+      "description": "Forecast Opsly multi-tenant spend across LLM tokens, infra, storage, and Stripe billing.",
+      "category": "billing",
+      "priority": "high",
+      "usage": "Proyección de costos multi-tenant, análisis what-if, detección de anomalías en facturas",
+      "path": "skills/user/opsly-cost-forecaster/"
+    },
+    {
+      "name": "opsly-distributed-tracing",
+      "version": "1.0.0",
+      "description": "OpenTelemetry tracing for Opsly services: request correlation, latency debugging, per-service spans, and LLM cost attribution.",
+      "category": "infrastructure",
+      "priority": "high",
+      "usage": "Tracing distribuido, depuración de latencia, atribución de costos LLM por traza",
+      "path": "skills/user/opsly-distributed-tracing/"
+    },
+    {
+      "name": "opsly-n8n-automation",
+      "version": "1.0.0",
+      "description": "Expert n8n automation for Opsly platform — autonomous agents, workflow optimization, income generation.",
+      "category": "orchestration",
+      "priority": "medium",
+      "usage": "Automatización n8n, optimización de workflows, generación de ingresos autónoma",
+      "path": "skills/user/opsly-n8n-automation/"
     }
   ],
   "categories": {
@@ -244,19 +307,19 @@
     "bootstrap": ["opsly-context", "opsly-bootstrap"],
     "master": ["opsly-quantum"],
     "autonomy": ["opsly-autonomous"],
-    "architecture": ["opsly-architect-senior", "opsly-architect"],
-    "development": ["opsly-api", "opsly-bash", "opsly-frontend"],
+    "architecture": ["opsly-architect-senior", "opsly-architect", "hermes-skeptic"],
+    "development": ["opsly-api", "opsly-bash", "opsly-frontend", "context-builder"],
     "ai": ["opsly-llm", "opsly-notebooklm", "opsly-feedback-ml"],
     "integration": ["opsly-mcp", "opsly-google-cloud"],
     "database": ["opsly-supabase"],
     "operations": ["opsly-tenant"],
-    "infrastructure": ["opsly-infra"],
-    "orchestration": ["opsly-orchestrator", "opsly-agent-teams", "opsly-jcode"],
-    "billing": ["opsly-billing"],
+    "infrastructure": ["opsly-infra", "opsly-self-healing"],
+    "orchestration": ["opsly-orchestrator", "opsly-agent-teams", "opsly-jcode", "opsly-n8n-automation"],
+    "billing": ["opsly-billing", "opsly-cost-forecaster"],
     "qa": ["opsly-qa"],
     "notifications": ["opsly-discord"],
     "optimization": ["opsly-simplify"],
-    "research": ["opsly-researcher"]
+    "research": ["opsly-researcher", "opsly-brain-researcher"]
   },
   "quick_reference": {
     "nueva_sesion": ["opsly-context"],
@@ -264,9 +327,13 @@
     "autonomo": ["opsly-autonomous"],
     "desarrollo_api": ["opsly-api", "opsly-bash", "opsly-jcode"],
     "ia_ml": ["opsly-llm", "opsly-feedback-ml", "opsly-notebooklm"],
-    "infra": ["opsly-infra", "opsly-tenant", "opsly-discord"],
+    "infra": ["opsly-infra", "opsly-tenant", "opsly-discord", "opsly-self-healing"],
+    "self_healing": ["opsly-self-healing", "opsly-infra", "opsly-discord"],
     "revision_arquitectura": ["opsly-architect-senior"],
-    "investigacion_externa": ["opsly-researcher"]
+    "investigacion_externa": ["opsly-researcher"],
+    "tracing": ["opsly-distributed-tracing", "opsly-infra"],
+    "costos": ["opsly-cost-forecaster", "opsly-billing"],
+    "n8n": ["opsly-n8n-automation", "opsly-orchestrator"]
   },
   "deprecated": {
     "opsly-bootstrap": "Usar opsly-context",

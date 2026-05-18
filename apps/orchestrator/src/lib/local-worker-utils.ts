@@ -10,6 +10,8 @@
 import { promises as fsp, watch as fsWatch } from 'fs';
 import * as path from 'path';
 
+import type { WorkerConcurrencyKey } from '../worker-concurrency.js';
+
 /**
  * Wait for file with event-driven monitoring (replaces polling)
  * Uses fs.watch for efficient file system monitoring
@@ -319,73 +321,136 @@ export function parsePromptFrontmatter(
 }
 
 /**
- * Map local agent names to job types
- *
- * Examples:
- * - cursor → local_cursor
- * - claude → local_claude
- * - copilot → local_copilot
- * - opencode → local_opencode
+ * Vendor / binary label (external only). Canonical Opsly ids are `local_*`.
  */
-export function jobTypeForLocalAgent(agent: string): string {
-  const normalized = normalizeLocalAgentKind(agent);
-  const mapping: Record<LocalAgentKind, string> = {
-    cursor: 'local_cursor',
-    claude: 'local_claude',
-    copilot: 'local_copilot',
-    opencode: 'local_opencode',
-    codex: 'local_codex',
-    openai: 'local_openai',
-    hermes: 'local_hermes',
-    decepticon: 'local_decepticon',
-  };
+export const OPSLY_LOCAL_AGENT_EXTERNAL_CLI: Record<LocalAgentKind, string> = {
+  local_cursor: 'cursor',
+  local_claude: 'claude',
+  local_copilot: 'copilot',
+  local_opencode: 'opencode',
+  local_codex: 'codex',
+  local_openai: 'openai',
+  local_hermes: 'hermes',
+  local_decepticon: 'decepticon',
+  local_aider: 'aider',
+  local_goose: 'goose',
+  local_playwright: 'playwright',
+};
 
-  return mapping[normalized];
+/** Map CLI-style short names to canonical Opsly service ids (`local_*`). */
+export const EXTERNAL_CLI_TO_OPSLY_LOCAL_AGENT: Readonly<Record<string, LocalAgentKind>> = {
+  cursor: 'local_cursor',
+  claude: 'local_claude',
+  copilot: 'local_copilot',
+  opencode: 'local_opencode',
+  codex: 'local_codex',
+  openai: 'local_openai',
+  hermes: 'local_hermes',
+  decepticon: 'local_decepticon',
+  aider: 'local_aider',
+  goose: 'local_goose',
+  playwright: 'local_playwright',
+};
+
+/** Canonical Opsly id for a local HTTP bridge (BullMQ job name = this string). */
+export type LocalAgentKind =
+  | 'local_cursor'
+  | 'local_claude'
+  | 'local_copilot'
+  | 'local_opencode'
+  | 'local_codex'
+  | 'local_openai'
+  | 'local_hermes'
+  | 'local_decepticon'
+  | 'local_aider'
+  | 'local_goose'
+  | 'local_playwright';
+
+export const LOCAL_AGENT_KINDS: readonly LocalAgentKind[] = [
+  'local_cursor',
+  'local_claude',
+  'local_copilot',
+  'local_opencode',
+  'local_codex',
+  'local_openai',
+  'local_hermes',
+  'local_decepticon',
+  'local_aider',
+  'local_goose',
+  'local_playwright',
+];
+
+export function externalCliLabelForOpslyLocalAgent(kind: LocalAgentKind): string {
+  return OPSLY_LOCAL_AGENT_EXTERNAL_CLI[kind];
+}
+
+export function localAgentKindToWorkerConcurrencyKey(kind: LocalAgentKind): WorkerConcurrencyKey {
+  const map: Record<LocalAgentKind, WorkerConcurrencyKey> = {
+    local_cursor: 'local-cursor',
+    local_claude: 'local-claude',
+    local_copilot: 'local-copilot',
+    local_opencode: 'local-opencode',
+    local_codex: 'local-codex',
+    local_openai: 'local-openai',
+    local_hermes: 'local-hermes',
+    local_decepticon: 'local-decepticon',
+    local_aider: 'local-aider',
+    local_goose: 'local-goose',
+    local_playwright: 'local-playwright',
+  };
+  return map[kind];
 }
 
 /**
- * Normalize local agent kind, defaulting unknown values to cursor
- *
- * Known agents: cursor, claude, copilot, opencode, codex, openai, hermes, decepticon
- * Unknown agents default to: cursor
+ * Resolve user input / legacy keys to canonical Opsly local agent id (`local_*`).
  */
-export type LocalAgentKind =
-  | 'cursor'
-  | 'claude'
-  | 'copilot'
-  | 'opencode'
-  | 'codex'
-  | 'openai'
-  | 'hermes'
-  | 'decepticon';
+export function resolveToOpslyLocalAgentKind(input: string): LocalAgentKind {
+  const k = input.trim().toLowerCase().replace(/-/g, '_').replace(/_agent$/, '');
+  if ((LOCAL_AGENT_KINDS as readonly string[]).includes(k)) {
+    return k as LocalAgentKind;
+  }
+  const mapped = EXTERNAL_CLI_TO_OPSLY_LOCAL_AGENT[k];
+  if (mapped) {
+    return mapped;
+  }
+  const bare = k.startsWith('local_') ? k.slice('local_'.length) : k;
+  const fromBare = EXTERNAL_CLI_TO_OPSLY_LOCAL_AGENT[bare];
+  if (fromBare) {
+    return fromBare;
+  }
+  return 'local_cursor';
+}
 
-export const LOCAL_AGENT_KINDS: readonly LocalAgentKind[] = [
-  'cursor',
-  'claude',
-  'copilot',
-  'opencode',
-  'codex',
-  'openai',
-  'hermes',
-  'decepticon',
-];
-
-export function isLocalAgentKind(kind: string): kind is LocalAgentKind {
-  return (LOCAL_AGENT_KINDS as readonly string[]).includes(kind);
+export function isLocalAgentKind(kind: string): boolean {
+  const k = kind.trim().toLowerCase().replace(/-/g, '_').replace(/_agent$/, '');
+  if ((LOCAL_AGENT_KINDS as readonly string[]).includes(k)) {
+    return true;
+  }
+  if (EXTERNAL_CLI_TO_OPSLY_LOCAL_AGENT[k]) {
+    return true;
+  }
+  const bare = k.startsWith('local_') ? k.slice('local_'.length) : k;
+  return EXTERNAL_CLI_TO_OPSLY_LOCAL_AGENT[bare] !== undefined;
 }
 
 export function normalizeLocalAgentKind(kind: string): LocalAgentKind {
-  const normalized = kind
-    .trim()
-    .toLowerCase()
-    .replace(/^local[_-]/, '')
-    .replace(/[_-]agent$/, '');
+  return resolveToOpslyLocalAgentKind(kind);
+}
 
-  if (isLocalAgentKind(normalized)) return normalized;
-
-  return 'cursor';
+/** BullMQ job `name` / `OrchestratorJob.type` for local HTTP bridges. */
+export function jobTypeForLocalAgent(agent: string): string {
+  return resolveToOpslyLocalAgentKind(agent);
 }
 
 export function agentForLocalJobType(jobType: string): LocalAgentKind {
-  return normalizeLocalAgentKind(jobType);
+  return resolveToOpslyLocalAgentKind(jobType);
+}
+
+/** True for keys that map to local HTTP bridges (excludes e.g. `llm_gateway`). */
+export function isConfigurableLocalBridgeKey(name: string): boolean {
+  const k = name.trim().toLowerCase().replace(/-/g, '_');
+  if ((LOCAL_AGENT_KINDS as readonly string[]).includes(k)) {
+    return true;
+  }
+  return EXTERNAL_CLI_TO_OPSLY_LOCAL_AGENT[k] !== undefined;
 }

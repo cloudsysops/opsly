@@ -14,6 +14,8 @@ import {
   jobTypeForLocalAgent,
   normalizeLocalAgentKind,
   parsePromptFrontmatter,
+  externalCliLabelForOpslyLocalAgent,
+  isConfigurableLocalBridgeKey,
 } from '../../lib/local-worker-utils.js';
 import { recordOpenClawIntentQueued } from '../../openclaw/runtime-events.js';
 import { jsonResponse, errorResponse } from '../router.js';
@@ -56,7 +58,7 @@ function resolveLocalPromptAgentKind(b: Record<string, unknown>, promptForFrontm
   if (isLocalAgentKind(role)) {
     return normalizeLocalAgentKind(role);
   }
-  return 'cursor';
+  return 'local_cursor';
 }
 
 export async function handleLocalControlMode(ctx: RouteContext): Promise<void> {
@@ -87,16 +89,24 @@ export async function handleLocalState(ctx: RouteContext): Promise<void> {
   try {
     const registry = getAgentServiceRegistry();
     const config = await registry.getConfig();
-    const agents = Object.entries(config.services).map(([name, service]) => {
+    const agents = Object.entries(config.services)
+      .filter(([name]) => isConfigurableLocalBridgeKey(name))
+      .map(([name, service]) => {
       const s = service as AgentService;
       const legacy = service as unknown as { endpoint?: string };
-      const agentName = normalizeLocalAgentKind(name);
+      const raw = service as unknown as { external_cli?: string };
+      const agentKind = normalizeLocalAgentKind(name);
+      const externalFromConfig = typeof raw.external_cli === 'string' ? raw.external_cli.trim() : '';
+      const external_cli =
+        externalFromConfig.length > 0 ? externalFromConfig : externalCliLabelForOpslyLocalAgent(agentKind);
       return {
-        name: agentName,
+        id: agentKind,
+        name: agentKind,
+        external_cli,
         enabled: s.enabled,
         url: s.url ?? legacy.endpoint,
         type: s.type,
-        job_type: jobTypeForLocalAgent(agentName),
+        job_type: jobTypeForLocalAgent(agentKind),
         capabilities: s.capabilities ?? [],
       };
     });

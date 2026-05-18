@@ -1,11 +1,11 @@
 {
   "name": "opsly-infra",
-  "version": "1.0.0",
-  "description": "Docker, Docker Compose, VPS, deploy, Traefik, scripts bash, y operaciones de infraestructura. Fusión de bash+simplify. Usar cuando se mencione docker, compose, deploy, vps, ssh, script, bash, dockerfile, healthcheck, memory, infra.",
+  "version": "1.1.0",
+  "description": "Docker, Docker Compose, VPS, deploy, Traefik v3 (middlewares, ACME), Cloudflare DNS, scripts bash, y operaciones de infraestructura. Fusión de bash+simplify. Usar cuando se mencione docker, compose, deploy, vps, ssh, script, bash, dockerfile, healthcheck, memory, infra, traefik, cloudflare, dns, wildcard, middlewares, acme, letsencrypt.",
   "inputSchema": {
     "type": "object",
     "properties": {
-      "target": { "type": "string", "enum": ["script", "dockerfile", "compose", "vps", "deploy"] }
+      "target": { "type": "string", "enum": ["script", "dockerfile", "compose", "vps", "deploy", "traefik", "cloudflare"] }
     },
     "additionalProperties": true
   },
@@ -14,5 +14,6 @@
     "properties": {
       "validated": { "type": "boolean" }
     }
-  }
+  },
+  "crossReferences": ["opsly-self-healing", "opsly-discord", "opsly-tenant"]
 }

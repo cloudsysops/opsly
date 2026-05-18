@@ -292,7 +292,7 @@ app.post('/execute', async (req, res) => {
   }
 });
 
-app.listen(port, '127.0.0.1', () => {
+app.listen(port, '0.0.0.0', () => {
   console.log(`[${agent}] CLI agent service listening on http://127.0.0.1:${port}`);
   console.log(`[${agent}] cwd=${cwd}`);
   console.log(`[${agent}] dryRun=${dryRun}`);
