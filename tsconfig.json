@@ -46,5 +46,5 @@
     }
   },
   "include": ["**/*.ts", "**/*.tsx", "lib/**/*", "apps/**/*", "packages/**/*"],
-  "exclude": ["node_modules", "dist", "**/*.spec.ts", "**/*.test.ts"]
+  "exclude": ["node_modules", "dist", "apps/api/**", "**/*.spec.ts", "**/*.test.ts"]
 }
