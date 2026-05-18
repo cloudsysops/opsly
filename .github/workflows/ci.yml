@@ -38,12 +38,14 @@ jobs:
           cache: npm
           cache-dependency-path: package-lock.json
 
-      - name: npm ci + build ml package
+      - name: npm ci + build workspace deps for type-check
         run: |
           set -euo pipefail
           npm ci
-          # Build ml first (required by api)
-          cd apps/ml && npm run build
+          (cd apps/ml && npm run build)
+          (cd lib/git-branch-orchestrator && npm run build)
+          (cd lib/session-manager && npm run build)
+          (cd lib/runtime && npm run build)
 
       - name: TypeScript (api + admin + portal + mcp + orchestrator + ml + llm-gateway + context-builder)
         run: |
@@ -218,8 +220,11 @@ jobs:
         run: |
           set -euo pipefail
           npm ci
-          # Build internal packages first
+          # Build internal packages first (lib/* before orchestrator)
           (cd apps/ml && npm run build)
+          (cd lib/git-branch-orchestrator && npm run build)
+          (cd lib/session-manager && npm run build)
+          (cd lib/runtime && npm run build)
           (cd apps/llm-gateway && npm run build)
           (cd apps/orchestrator && npm run build)
           (cd apps/mcp && npm run build)
