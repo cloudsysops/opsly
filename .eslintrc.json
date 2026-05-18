@@ -3,7 +3,6 @@
   "ignorePatterns": [
     "apps/admin/**",
     "apps/web/**",
-    "apps/api/**",
     "node_modules/**",
     "**/.next/**",
     "**/dist/**",
