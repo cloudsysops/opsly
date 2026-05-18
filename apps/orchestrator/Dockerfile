@@ -7,6 +7,7 @@ COPY package.json package-lock.json ./
 COPY turbo.json ./
 COPY apps ./apps
 COPY packages ./packages
+COPY lib ./lib
 COPY scripts ./scripts
 RUN npm ci --ignore-scripts
 
@@ -40,6 +41,7 @@ COPY --from=builder /app/lib/git-branch-orchestrator/package.json ./lib/git-bran
 COPY --from=builder /app/lib/runtime/dist ./lib/runtime/dist
 COPY --from=builder /app/lib/runtime/package.json ./lib/runtime/package.json
 COPY --from=builder /app/scripts ./scripts
+COPY --from=builder /app/config/git-branch-policy.json ./config/git-branch-policy.json
 
 WORKDIR /app/apps/orchestrator
 EXPOSE 3011
