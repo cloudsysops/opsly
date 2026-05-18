@@ -9,6 +9,7 @@ COPY apps ./apps
 COPY packages ./packages
 COPY lib ./lib
 COPY scripts ./scripts
+COPY config ./config
 RUN npm ci --ignore-scripts
 
 RUN npm run build -w @intcloudsysops/types && \
