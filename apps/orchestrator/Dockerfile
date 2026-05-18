@@ -6,11 +6,15 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 COPY turbo.json ./
 COPY apps ./apps
+COPY lib ./lib
 COPY packages ./packages
 COPY scripts ./scripts
 RUN npm ci --ignore-scripts
 
 RUN npm run build -w @intcloudsysops/types && \
+    npm run build -w @intcloudsysops/runtime && \
+    npm run build -w @intcloudsysops/git-branch-orchestrator && \
+    npm run build -w @intcloudsysops/session-manager && \
     npm run build -w @intcloudsysops/llm-gateway && \
     npm run build -w @intcloudsysops/ml && \
     npm run build -w @intcloudsysops/orchestrator
@@ -27,6 +31,7 @@ COPY --from=builder /app/package-lock.json ./
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/apps/orchestrator/dist ./apps/orchestrator/dist
 COPY --from=builder /app/apps/orchestrator/package.json ./apps/orchestrator/package.json
+COPY --from=builder /app/lib ./lib
 COPY --from=builder /app/apps/ml ./apps/ml
 COPY --from=builder /app/apps/llm-gateway ./apps/llm-gateway
 COPY --from=builder /app/packages/types ./packages/types
