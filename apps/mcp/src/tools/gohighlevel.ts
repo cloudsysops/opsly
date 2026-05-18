@@ -3,7 +3,6 @@ import {
   getGoHighLevelService,
   type Contact,
   type Task,
-  type Appointment,
 } from '@intcloudsysops/services/gohighlevel/index.js';
 import type { ToolDefinition, ToolContext } from '../types/index.js';
 
