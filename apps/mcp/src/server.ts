@@ -26,6 +26,7 @@ import { getModeTool } from './tools/get-mode.tool.js';
 import { setModeTool } from './tools/set-mode.tool.js';
 import { runtimeSessionsTools } from './tools/runtime-sessions.tool.js';
 import { brainTools } from './tools/obsidian/brain-tools.js';
+import { goHighLevelTools } from './tools/gohighlevel.js';
 import type { ToolContext, ToolDefinition } from './types/index.js';
 
 interface RegisteredTool {
@@ -89,6 +90,13 @@ export const TOOL_REQUIRED_SCOPES: Record<string, string> = {
   'brain:research': 'agents:write',
   'brain:recall': 'metrics:read',
   'brain:architecture-context': 'metrics:read',
+  'gohighlevel:list_contacts': 'agents:write',
+  'gohighlevel:get_contact': 'agents:write',
+  'gohighlevel:create_contact': 'agents:write',
+  'gohighlevel:update_contact': 'agents:write',
+  'gohighlevel:create_task': 'agents:write',
+  'gohighlevel:update_task': 'agents:write',
+  'gohighlevel:send_message': 'agents:write',
 };
 
 export type CallToolOptions = {
@@ -204,6 +212,7 @@ export function getAllToolDefinitions(): ToolDefinition<unknown, unknown>[] {
     ...superOrchestratorTools,
     ...runtimeSessionsTools,
     ...brainTools,
+    ...goHighLevelTools,
   ] as ToolDefinition<unknown, unknown>[];
 }
 
