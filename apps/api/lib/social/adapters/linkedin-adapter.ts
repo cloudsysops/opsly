@@ -80,7 +80,7 @@ export class LinkedInAdapter {
     };
   }
 
-  async getMetrics(_postId: string): Promise<{
+  async getMetrics(postId: string): Promise<{
     impressions: number;
     clicks: number;
     comments: number;
@@ -91,7 +91,7 @@ export class LinkedInAdapter {
     }
 
     try {
-      const response = await fetch(`${this.apiUrl}/analytics/ugcPosts?ids=${_postId}`, {
+      const response = await fetch(`${this.apiUrl}/analytics/ugcPosts?ids=${postId}`, {
         headers: {
           Authorization: `Bearer ${this.accessToken}`,
         },
