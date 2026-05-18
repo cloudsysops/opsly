@@ -1,5 +1,6 @@
 export { GoHighLevelClient } from './client.js';
 export { GoHighLevelService, getGoHighLevelService } from './service.js';
+export { runAILeadFollowupWorkflow, triggerFollowupForContact } from './workflows/ai-lead-followup.js';
 export type {
   Contact,
   CreateContactRequest,
@@ -12,3 +13,4 @@ export type {
   GoHighLevelResponse,
   ListResponse,
 } from './types.js';
+export type { AIFollowupConfig, AIFollowupResult } from './workflows/ai-lead-followup.js';
