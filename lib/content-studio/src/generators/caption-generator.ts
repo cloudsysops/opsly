@@ -129,6 +129,7 @@ export function enrichContentDraftWithCaptions(
       platform: cap.platform,
       text: cap.text,
       hashtags: cap.hashtags,
+      characterCount: cap.characterCount,
     })),
     copy_paste_kit: {
       instagram_caption: captions.find((c) => c.platform === 'instagram')?.text || '',

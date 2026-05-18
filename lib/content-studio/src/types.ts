@@ -45,7 +45,12 @@ export interface ContentDraft {
   event_id: string;
   title: string;
   story_hook: string;
-  captions: Array<{ platform: string; text: string; hashtags: string[] }>;
+  captions: Array<{
+    platform: string;
+    text: string;
+    hashtags: string[];
+    characterCount: number;
+  }>;
   image_prompt: string;
   reel_script?: Array<{ scene: string; copy: string; duration_sec: number }>;
   call_to_action: string;
