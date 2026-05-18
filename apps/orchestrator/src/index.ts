@@ -2,6 +2,7 @@ import { setupLangSmithTracing } from './agents/langsmith.js';
 import { processIntent } from './engine.js';
 import { subscribeEvents } from './events/bus.js';
 import { startOrchestratorHealthServer } from './health-server.js';
+import { startRuntimeGovernorSweeper } from './lib/runtime-governor-sweeper.js';
 import { drainMeteringOperations } from './metering/usage-events-meter.js';
 import { closeOrchestratorRedis } from './metering/redis-client.js';
 import {
@@ -210,6 +211,10 @@ async function main(): Promise<void> {
 
   const healthServer = startOrchestratorHealthServer();
   cleanupTasks.push(async () => closeHttpServer(healthServer));
+
+  if (shouldRunControlPlane(role) && process.env.OPSLY_RUNTIME_GOVERNOR_SWEEPER_ENABLED !== 'false') {
+    startRuntimeGovernorSweeper(5);
+  }
   cleanupTasks.push(async () => drainMeteringOperations());
   cleanupTasks.push(async () => orchestratorQueue.close());
   cleanupTasks.push(async () => agentClassifierQueue.close());

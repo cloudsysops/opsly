@@ -11,16 +11,8 @@ if echo "$CHANGED" | grep -qE "^(infra|scripts|apps|supabase)/"; then
 fi
 
 # .github/AGENTS.md debe ser symlink a ../AGENTS.md (ADR-034); nunca copiar (rompería el symlink)
-if [ -f "$ROOT/AGENTS.md" ]; then
-  if [ -e "$ROOT/.github/AGENTS.md" ] && [ ! -L "$ROOT/.github/AGENTS.md" ]; then
-    rm -f "$ROOT/.github/AGENTS.md"
-  fi
-  if [ ! -e "$ROOT/.github/AGENTS.md" ]; then
-    (cd "$ROOT/.github" && ln -s ../AGENTS.md AGENTS.md)
-  elif [ -L "$ROOT/.github/AGENTS.md" ] && [ "$(readlink "$ROOT/.github/AGENTS.md")" != "../AGENTS.md" ]; then
-    rm -f "$ROOT/.github/AGENTS.md"
-    (cd "$ROOT/.github" && ln -s ../AGENTS.md AGENTS.md)
-  fi
+if [ -f "$ROOT/AGENTS.md" ] && [ -x "$ROOT/scripts/ci/ensure-github-agents-symlink.sh" ]; then
+  "$ROOT/scripts/ci/ensure-github-agents-symlink.sh" >/dev/null 2>&1 || true
 fi
 
 # Sincroniza context/ a .github/

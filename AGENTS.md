@@ -422,6 +422,14 @@ node scripts/load-skills.js show opsly-api
 - DAG engine complejo, LangGraph/CrewAI como dependencia runtime obligatoria, K8s.
 - Sustituir BullMQ o MCP por alternativas paralelas.
 
+### Orden de ejecución
+
+1. **Opsly core estable**: runtime, sesiones, governance, deploy y recovery.
+2. **Adapters / skills**: LangGraph, n8n y OpenHands solo como integración fina, sin duplicar el control plane.
+3. **MCP seguro**: permisos mínimos, separación read/write/shell/secrets y zero-trust para acciones sensibles.
+4. **Mission Control**: jobs, workers, sessions, branches y health.
+5. **Fork solo si hace falta**: crear una integración nueva únicamente cuando el adapter no permita lo que necesitamos.
+
 ### Errores que rompen la arquitectura (checklist de PR)
 
 - Carpeta raíz `agents/` fuera del patrón `apps/agents/*`.
@@ -1217,6 +1225,13 @@ _Auditoría TypeScript y correcciones de código (2026-04-05, sesión agente Cla
 4. **LUEGO:** cerrar go-live **LegalVial** con [`docs/runbooks/LEGALVIAL-GOLIVE-CHECKLIST.md`](docs/runbooks/LEGALVIAL-GOLIVE-CHECKLIST.md) y smoke [`LEGALVIAL-E2E-SOFTLAUNCH.md`](docs/runbooks/LEGALVIAL-E2E-SOFTLAUNCH.md). **Autonomía:** si Cortex ya está en `OPSLY_CORTEX_ENABLED=true`, completar checklist operativo en [`docs/runbooks/CORTEX-OBSERVATION-WINDOW.md`](docs/runbooks/CORTEX-OBSERVATION-WINDOW.md) y registrar fecha en `runtime/context/system_state.json`.
 
 **Semana 6** — [`docs/01-development/SEMANA-6-PLAN.md`](docs/01-development/SEMANA-6-PLAN.md): validar segundo tenant + `./scripts/test-e2e-invite-flow.sh` contra API staging; checklist pre-launch (Doppler, Resend dominio, DNS). Smoke local workers en `main` (PR **#199**, [`docs/LOCAL-AGENT-EXECUTION.md`](docs/LOCAL-AGENT-EXECUTION.md)); arranque orchestrator con `OPSLY_ROOT=<raíz repo>` si el cwd es `apps/orchestrator`.
+
+**🏗️ Pivote Arquitectónico (2026-05-16):** Implementación **Local-First Architecture** ✅ COMPLETO
+- Rama: `feat/local-first-architecture-clean` (5 commits)
+- Docs: `docs/01-development/LOCAL-FIRST-ARCHITECTURE.md`, `LOCAL-RUNTIME-GUIDE.md`
+- Código: `lib/runtime/` (environment-detector, local-executor, worker-selector, orchestrator-integration)
+- Tests: `lib/runtime/__tests__/` - 16 tests passing (host con 100% RAM limita ejecución)
+- Handoff equipo: ✅ LISTO
 
 **Rama opcional `feat/local-prompt-flow-runbook`:** experimentos gateway (qwen/minimax) y dedupe de ruta `balanced`; integrar vía PR si se adoptan — `main` ya tiene una sola rama `balanced` en `getProvidersByPreference`.
 

@@ -1,0 +1,39 @@
+{
+  "version": 1,
+  "principle": "One integration branch per initiative; agent branches merge to integration before main.",
+  "branch_pattern": "agent/{worker}/{jobId}/{taskSlug}",
+  "integration_pattern": "integration/{initiative}",
+  "protected_targets": ["main", "master"],
+  "default_parent_branch": "main",
+  "require_pr_to_integration_first": true,
+  "auto_merge_to_main": false,
+  "task_type_workers": {
+    "architecture": "claude-code",
+    "planning": "claude-code",
+    "implementation": "opencode",
+    "debugging": "codex",
+    "ui": "copilot-cli",
+    "docs": "copilot-cli",
+    "tests": "playwright",
+    "small_patch": "opencode",
+    "review": "hermes-cli",
+    "security_review": "hermes-cli"
+  },
+  "worker_branch_slug": {
+    "claude-code": "claude",
+    "opencode": "opencode",
+    "codex": "codex",
+    "copilot-cli": "copilot",
+    "hermes-cli": "hermes",
+    "cursor": "cursor",
+    "playwright": "playwright"
+  },
+  "high_risk_paths": [
+    "apps/api/lib/auth",
+    "apps/api/app/api/auth",
+    "supabase/migrations",
+    "infra/docker-compose.platform.yml",
+    "config/root-whitelist.json"
+  ],
+  "human_approval_required_for": ["merge_to_main", "delete_branch", "high_risk_paths"]
+}

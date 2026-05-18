@@ -107,6 +107,12 @@
     "superagents:install": "bash scripts/install-superagents-stack.sh",
     "superagents:up": "bash scripts/superagents-up.sh",
     "superagents:doctor": "bash scripts/superagents-doctor.sh",
+    "runtime:detect": "npm run detect --workspace=@intcloudsysops/runtime",
+    "runtime:setup": "bash scripts/runtime-setup-wizard.sh",
+    "validate-local-runtime": "bash scripts/validate-local-runtime.sh",
+    "opsly:git-sync": "bash scripts/git-sync-repo.sh",
+    "opsly:repos:status": "bash scripts/opsly-repo-align.sh --status",
+    "opsly:repos:align": "bash scripts/opsly-repo-align.sh --local --vps --branch main --vps-reset",
     "prepare": "husky",
     "commit": "git-cz"
   },
@@ -182,7 +188,12 @@
     "ip-address": "10.2.0",
     "express-rate-limit": {
       "ip-address": "10.2.0"
-    }
+    },
+    "@tootallnate/once": "^3.0.1",
+    "langsmith": "0.7.1",
+    "tar": "^7.5.15",
+    "undici": "^6.24.0",
+    "mermaid": "^11.4.0"
   },
   "dependencies": {
     "@redis/client": "^1.6.1",

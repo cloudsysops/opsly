@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useCallback, useMemo, useState } from 'react';
 import useSWR from 'swr';
 
+import { LocalNodesPanel } from '../../components/LocalNodesPanel';
 import { getBaseUrl } from '../../lib/api-client';
 import type {
   AgentTeamsResponse,
@@ -103,6 +104,12 @@ export default function MissionControlPage() {
             >
               Office (HQ map)
             </Link>
+            <Link
+              href="/mission-control/chat"
+              className="px-4 py-2 rounded-lg font-medium transition-colors bg-zinc-800 hover:bg-zinc-700 text-white border border-zinc-700"
+            >
+              Chat
+            </Link>
             <button
               onClick={handleRefresh}
               className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg font-medium transition-colors"
@@ -110,6 +117,10 @@ export default function MissionControlPage() {
               Refresh
             </button>
           </div>
+        </div>
+
+        <div className="mb-8">
+          <LocalNodesPanel />
         </div>
 
         {/* Orchestrator Status */}

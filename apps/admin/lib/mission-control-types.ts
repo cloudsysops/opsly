@@ -57,6 +57,64 @@ export type OpenClawSnapshot = {
   generated_at: string;
 };
 
+export type PoppingSubagentRiskLevel = 'low' | 'medium' | 'high';
+
+export type PoppingSubagentRole = {
+  id: string;
+  role: string;
+  skill: string;
+  skillChain: string[];
+  worker: string;
+  jobType: string;
+  maxDurationMinutes: number;
+  riskLevel: PoppingSubagentRiskLevel;
+  requiresApproval: boolean;
+  checkpointRequired: boolean;
+  enabledByDefault: boolean;
+  sequenceOrder: number;
+  rationale: string;
+};
+
+export type PoppingSubagentLimits = {
+  maxPoppingSubagents: number;
+  maxActivePoppingSubagents: number;
+  defaultTimeoutMinutes: number;
+};
+
+export type PoppingSubagentPlanStage = PoppingSubagentRole & {
+  prompt: string;
+  expectedOutput: string[];
+  order: number;
+  workerHealthy: boolean | null;
+  workerUrl: string | null;
+};
+
+export type PoppingSubagentAnalysis = {
+  summary: string;
+  risk: 'SAFE' | 'MODERATE' | 'HIGH';
+  filesTouched: string[];
+  recommendation: string;
+  humanApprovalRequired: boolean;
+};
+
+export type PoppingSubagentCatalog = {
+  limits: PoppingSubagentLimits;
+  roles: PoppingSubagentRole[];
+  activeDefaultRoles: PoppingSubagentRole[];
+  optionalRoles: PoppingSubagentRole[];
+};
+
+export type PoppingSubagentPlan = {
+  goal: string;
+  strategy: 'sequential';
+  createdAt: string;
+  limits: PoppingSubagentLimits;
+  activeRoles: PoppingSubagentPlanStage[];
+  optionalRoles: PoppingSubagentRole[];
+  analysis: PoppingSubagentAnalysis;
+  missionControlHint: string;
+};
+
 export type AgentLifecycleStatus =
   | 'idle'
   | 'thinking'
