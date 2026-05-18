@@ -40,7 +40,9 @@
       "@intcloudsysops/components": ["./lib/components"],
       "@intcloudsysops/components/*": ["./lib/components/*"],
       "@intcloudsysops/evaluation": ["./lib/evaluation"],
-      "@intcloudsysops/evaluation/*": ["./lib/evaluation/*"]
+      "@intcloudsysops/evaluation/*": ["./lib/evaluation/*"],
+      "@intcloudsysops/services": ["./lib/services"],
+      "@intcloudsysops/services/*": ["./lib/services/*"]
     }
   },
   "include": ["**/*.ts", "**/*.tsx", "lib/**/*", "apps/**/*", "packages/**/*"],
