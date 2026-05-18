@@ -22,6 +22,7 @@ Roadmap vivo, planificación, sprints, estado de producto y handoffs de desarrol
 
 ## Documentos clave
 
+- [`DESIGN-REFERENCES.md`](DESIGN-REFERENCES.md) — Claude Design (live) + handoff Figma/dev
 - [`DOCUMENTATION-LIFECYCLE.md`](DOCUMENTATION-LIFECYCLE.md) — wiki: plan, pruebas, docs, NotebookLM/Obsidian/Graphyfi
 - `ROADMAP.md`
 - `VISION.md`
