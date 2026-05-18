@@ -127,18 +127,18 @@ export async function buildRecoverySnapshot(
   const entries = await listBranchEntries(resolvedTenant, root);
   const branchRegistryMatches = entries
     .filter(
-      (e) =>
+      (e: Record<string, unknown>) =>
         e.session_id === sessionId ||
         (meta.branch && e.branch_name === meta.branch) ||
         (meta.jobId && e.job_id === meta.jobId),
     )
     .slice(0, 8)
-    .map((e) => ({
-      id: e.id,
-      branch_name: e.branch_name,
-      status: e.status,
-      risk_level: e.risk_level,
-      job_id: e.job_id,
+    .map((e: Record<string, unknown>) => ({
+      id: String(e.id),
+      branch_name: String(e.branch_name),
+      status: String(e.status),
+      risk_level: String(e.risk_level),
+      job_id: String(e.job_id),
     }));
 
   const recommendedActions = recommendActions(meta, tmuxAlive, git.changedFiles);

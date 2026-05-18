@@ -13,6 +13,9 @@ RUN npm ci --ignore-scripts
 RUN npm run build -w @intcloudsysops/types && \
     npm run build -w @intcloudsysops/llm-gateway && \
     npm run build -w @intcloudsysops/ml && \
+    npm run build -w @intcloudsysops/git-branch-orchestrator && \
+    npm run build -w @intcloudsysops/session-manager && \
+    npm run build -w @intcloudsysops/runtime && \
     npm run build -w @intcloudsysops/orchestrator
 # NO npm prune --omit=dev aquí, puede borrar dependencias transitivas compartilhadas
 
@@ -30,6 +33,12 @@ COPY --from=builder /app/apps/orchestrator/package.json ./apps/orchestrator/pack
 COPY --from=builder /app/apps/ml ./apps/ml
 COPY --from=builder /app/apps/llm-gateway ./apps/llm-gateway
 COPY --from=builder /app/packages/types ./packages/types
+COPY --from=builder /app/lib/session-manager/dist ./lib/session-manager/dist
+COPY --from=builder /app/lib/session-manager/package.json ./lib/session-manager/package.json
+COPY --from=builder /app/lib/git-branch-orchestrator/dist ./lib/git-branch-orchestrator/dist
+COPY --from=builder /app/lib/git-branch-orchestrator/package.json ./lib/git-branch-orchestrator/package.json
+COPY --from=builder /app/lib/runtime/dist ./lib/runtime/dist
+COPY --from=builder /app/lib/runtime/package.json ./lib/runtime/package.json
 COPY --from=builder /app/scripts ./scripts
 
 WORKDIR /app/apps/orchestrator
