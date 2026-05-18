@@ -4,7 +4,7 @@ import {
   type Contact,
   type Task,
   type Appointment,
-} from '../../../lib/services/gohighlevel/index.js';
+} from '@intcloudsysops/services/gohighlevel/index.js';
 import type { ToolDefinition, ToolContext } from '../types/index.js';
 
 // Input schemas
