@@ -133,8 +133,7 @@ describe('ComplianceChecker', () => {
     it('should detect database connection strings', () => {
       const draftWithDB: Partial<ContentDraft> = {
         ...safeDraft,
-        story_hook:
-          'mongodb+srv://user:password@cluster.mongodb.net/database',
+        story_hook: 'mongodb+srv://user:password@cluster.mongodb.net/database',
       };
 
       const result = checkDraftCompliance(draftWithDB);
@@ -180,9 +179,7 @@ describe('ComplianceChecker', () => {
     });
 
     it('should detect secrets in captions', () => {
-      const result = checkCaptionsCompliance([
-        'Check AKIAIOSFODNN7EXAMPLE in production',
-      ]);
+      const result = checkCaptionsCompliance(['Check AKIAIOSFODNN7EXAMPLE in production']);
 
       expect(result.isCompliant).toBe(false);
       expect(result.violations.some((v) => v.type === 'secret')).toBe(true);

@@ -179,10 +179,7 @@ export class CopyPasteKit {
     return Promise.reject(new Error('Clipboard API not available'));
   }
 
-  static async copyPlatformCaption(
-    draft: Partial<ContentDraft>,
-    platform: string,
-  ): Promise<void> {
+  static async copyPlatformCaption(draft: Partial<ContentDraft>, platform: string): Promise<void> {
     const kit = draft.copy_paste_kit;
     if (!kit) throw new Error('No copy_paste_kit in draft');
 

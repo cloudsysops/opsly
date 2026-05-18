@@ -1,9 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import {
-  createApprovalQueue,
-  type ApprovalQueueConfig,
-  type ApprovalTask,
-} from '../content-approval-queue.js';
+import { createApprovalQueue, type ApprovalQueueConfig } from '../content-approval-queue.js';
 import type { ContentDraft } from '../../types.js';
 
 describe('ContentApprovalQueue', () => {
@@ -48,7 +44,7 @@ describe('ContentApprovalQueue', () => {
       };
 
       await expect(queue.enqueueForApproval(invalidDraft)).rejects.toThrow(
-        'Draft must have id and tenant_slug',
+        'Draft must have id and tenant_slug'
       );
     });
 
@@ -59,7 +55,7 @@ describe('ContentApprovalQueue', () => {
       };
 
       await expect(queue.enqueueForApproval(invalidDraft)).rejects.toThrow(
-        'Draft must have id and tenant_slug',
+        'Draft must have id and tenant_slug'
       );
     });
   });
@@ -75,18 +71,18 @@ describe('ContentApprovalQueue', () => {
     });
 
     it('should throw error if task not found', async () => {
-      await expect(
-        queue.approveDraft('nonexistent-id', 'reviewer@example.com'),
-      ).rejects.toThrow('Task not found');
+      await expect(queue.approveDraft('nonexistent-id', 'reviewer@example.com')).rejects.toThrow(
+        'Task not found'
+      );
     });
 
     it('should throw error if task not in pending_approval state', async () => {
       const task = await queue.enqueueForApproval(mockDraft);
       await queue.approveDraft(task.id, 'reviewer@example.com');
 
-      await expect(
-        queue.approveDraft(task.id, 'reviewer@example.com'),
-      ).rejects.toThrow('Cannot approve task in approved state');
+      await expect(queue.approveDraft(task.id, 'reviewer@example.com')).rejects.toThrow(
+        'Cannot approve task in approved state'
+      );
     });
   });
 
@@ -96,7 +92,7 @@ describe('ContentApprovalQueue', () => {
       const rejected = await queue.rejectDraft(
         task.id,
         'reviewer@example.com',
-        'Contains sensitive information',
+        'Contains sensitive information'
       );
 
       expect(rejected.state).toBe('rejected');
@@ -110,7 +106,7 @@ describe('ContentApprovalQueue', () => {
       await queue.approveDraft(task.id, 'reviewer@example.com');
 
       await expect(
-        queue.rejectDraft(task.id, 'reviewer@example.com', 'Not approved'),
+        queue.rejectDraft(task.id, 'reviewer@example.com', 'Not approved')
       ).rejects.toThrow('Cannot reject task in approved state');
     });
   });
@@ -128,7 +124,7 @@ describe('ContentApprovalQueue', () => {
       const task = await queue.enqueueForApproval(mockDraft);
 
       await expect(queue.transitionToReady(task.id)).rejects.toThrow(
-        'Cannot transition to ready from pending_approval state',
+        'Cannot transition to ready from pending_approval state'
       );
     });
   });
@@ -137,10 +133,7 @@ describe('ContentApprovalQueue', () => {
     it('should schedule approved draft for publishing', async () => {
       const task = await queue.enqueueForApproval(mockDraft);
       await queue.approveDraft(task.id, 'reviewer@example.com');
-      const scheduled = await queue.schedulePublish(
-        task.id,
-        '2024-12-25T09:00:00Z',
-      );
+      const scheduled = await queue.schedulePublish(task.id, '2024-12-25T09:00:00Z');
 
       expect(scheduled.state).toBe('scheduled');
       expect(scheduled.scheduled_for).toBe('2024-12-25T09:00:00Z');
@@ -150,10 +143,7 @@ describe('ContentApprovalQueue', () => {
       const task = await queue.enqueueForApproval(mockDraft);
       await queue.approveDraft(task.id, 'reviewer@example.com');
       await queue.transitionToReady(task.id);
-      const scheduled = await queue.schedulePublish(
-        task.id,
-        '2024-12-25T09:00:00Z',
-      );
+      const scheduled = await queue.schedulePublish(task.id, '2024-12-25T09:00:00Z');
 
       expect(scheduled.state).toBe('scheduled');
     });
@@ -161,9 +151,9 @@ describe('ContentApprovalQueue', () => {
     it('should throw error if task not in approved or ready state', async () => {
       const task = await queue.enqueueForApproval(mockDraft);
 
-      await expect(
-        queue.schedulePublish(task.id, '2024-12-25T09:00:00Z'),
-      ).rejects.toThrow('Cannot schedule from pending_approval state');
+      await expect(queue.schedulePublish(task.id, '2024-12-25T09:00:00Z')).rejects.toThrow(
+        'Cannot schedule from pending_approval state'
+      );
     });
   });
 
@@ -236,10 +226,7 @@ describe('ContentApprovalQueue', () => {
 
       await queue.approveDraft(task2.id, 'reviewer@example.com');
 
-      const pending = await queue.listByState(
-        'test-tenant',
-        'pending_approval',
-      );
+      const pending = await queue.listByState('test-tenant', 'pending_approval');
       const approved = await queue.listByState('test-tenant', 'approved');
 
       expect(pending).toHaveLength(1);
@@ -308,19 +295,13 @@ describe('ContentApprovalQueue', () => {
       const draft = await queue.enqueueForApproval(mockDraft);
       expect(draft.state).toBe('pending_approval');
 
-      const approved = await queue.approveDraft(
-        draft.id,
-        'reviewer@example.com',
-      );
+      const approved = await queue.approveDraft(draft.id, 'reviewer@example.com');
       expect(approved.state).toBe('approved');
 
       const ready = await queue.transitionToReady(draft.id);
       expect(ready.state).toBe('ready_to_copy');
 
-      const scheduled = await queue.schedulePublish(
-        draft.id,
-        '2024-12-25T09:00:00Z',
-      );
+      const scheduled = await queue.schedulePublish(draft.id, '2024-12-25T09:00:00Z');
       expect(scheduled.state).toBe('scheduled');
 
       const published = await queue.markPublished(draft.id);
@@ -330,11 +311,7 @@ describe('ContentApprovalQueue', () => {
 
     it('should handle rejection workflow', async () => {
       const draft = await queue.enqueueForApproval(mockDraft);
-      const rejected = await queue.rejectDraft(
-        draft.id,
-        'reviewer@example.com',
-        'Contains PII',
-      );
+      const rejected = await queue.rejectDraft(draft.id, 'reviewer@example.com', 'Contains PII');
 
       expect(rejected.state).toBe('rejected');
       expect(rejected.rejection_reason).toBe('Contains PII');

@@ -1,4 +1,4 @@
-import type { ContentDraft, ContentEvent } from '../types.js';
+import type { ContentDraft } from '../types.js';
 
 export type Platform =
   | 'instagram'
@@ -59,7 +59,7 @@ function truncateToCharLimit(text: string, charLimit: number): string {
 export function generateCaption(
   platform: Platform,
   storyHook: string,
-  callToAction: string,
+  callToAction: string
 ): Caption {
   const limit = platformLimits[platform];
   const hashtags = platformHashtags[platform];
@@ -99,29 +99,22 @@ export function generateCaption(
 export function generateCaptions(
   storyHook: string,
   callToAction: string,
-  platforms?: Platform[],
+  platforms?: Platform[]
 ): Caption[] {
-  const targetPlatforms =
-    platforms || (Object.keys(platformLimits) as Platform[]);
+  const targetPlatforms = platforms || (Object.keys(platformLimits) as Platform[]);
 
-  return targetPlatforms.map((platform) =>
-    generateCaption(platform, storyHook, callToAction),
-  );
+  return targetPlatforms.map((platform) => generateCaption(platform, storyHook, callToAction));
 }
 
 export function enrichContentDraftWithCaptions(
   draft: Partial<ContentDraft>,
-  platforms?: Platform[],
+  platforms?: Platform[]
 ): Partial<ContentDraft> {
   if (!draft.story_hook || !draft.call_to_action) {
     return draft;
   }
 
-  const captions = generateCaptions(
-    draft.story_hook,
-    draft.call_to_action,
-    platforms,
-  );
+  const captions = generateCaptions(draft.story_hook, draft.call_to_action, platforms);
 
   return {
     ...draft,
@@ -137,8 +130,7 @@ export function enrichContentDraftWithCaptions(
       linkedin_caption: captions.find((c) => c.platform === 'linkedin')?.text || '',
       x_caption: captions.find((c) => c.platform === 'x')?.text || '',
       tiktok_script: captions.find((c) => c.platform === 'tiktok')?.text || '',
-      youtube_shorts_script:
-        captions.find((c) => c.platform === 'youtube')?.text || '',
+      youtube_shorts_script: captions.find((c) => c.platform === 'youtube')?.text || '',
     },
   };
 }

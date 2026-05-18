@@ -80,7 +80,10 @@ export interface CalendarDay {
   drafts: Partial<ContentDraft>[];
 }
 
-export function getCalendarData(month: Date, drafts: Partial<ContentDraft>[]): {
+export function getCalendarData(
+  month: Date,
+  drafts: Partial<ContentDraft>[]
+): {
   monthLabel: string;
   weekDays: string[];
   days: CalendarDay[];

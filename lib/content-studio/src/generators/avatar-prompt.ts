@@ -52,7 +52,7 @@ export function generateAvatarPrompt(profile: TenantContentProfile): AvatarPromp
 
 export function generateAvatarPrompts(
   profile: TenantContentProfile,
-  styles: TenantContentProfile['avatar_style'][] = ['minimal'],
+  styles: TenantContentProfile['avatar_style'][] = ['minimal']
 ): AvatarPrompt[] {
   return styles.map((style) => {
     const tempProfile = { ...profile, avatar_style: style };

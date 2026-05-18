@@ -36,9 +36,7 @@ export class ContentApprovalQueue {
     this.config = config;
   }
 
-  async enqueueForApproval(
-    draft: Partial<ContentDraft>,
-  ): Promise<ApprovalTask> {
+  async enqueueForApproval(draft: Partial<ContentDraft>): Promise<ApprovalTask> {
     if (!draft.id || !draft.tenant_slug) {
       throw new Error('Draft must have id and tenant_slug');
     }
@@ -56,19 +54,14 @@ export class ContentApprovalQueue {
     return task;
   }
 
-  async approveDraft(
-    taskId: string,
-    reviewedBy: string,
-  ): Promise<ApprovalTask> {
+  async approveDraft(taskId: string, reviewedBy: string): Promise<ApprovalTask> {
     const task = this.tasks.get(taskId);
     if (!task) {
       throw new Error(`Task not found: ${taskId}`);
     }
 
     if (task.state !== 'pending_approval') {
-      throw new Error(
-        `Cannot approve task in ${task.state} state. Must be pending_approval`,
-      );
+      throw new Error(`Cannot approve task in ${task.state} state. Must be pending_approval`);
     }
 
     task.state = 'approved';
@@ -80,20 +73,14 @@ export class ContentApprovalQueue {
     return task;
   }
 
-  async rejectDraft(
-    taskId: string,
-    reviewedBy: string,
-    reason: string,
-  ): Promise<ApprovalTask> {
+  async rejectDraft(taskId: string, reviewedBy: string, reason: string): Promise<ApprovalTask> {
     const task = this.tasks.get(taskId);
     if (!task) {
       throw new Error(`Task not found: ${taskId}`);
     }
 
     if (task.state !== 'pending_approval') {
-      throw new Error(
-        `Cannot reject task in ${task.state} state. Must be pending_approval`,
-      );
+      throw new Error(`Cannot reject task in ${task.state} state. Must be pending_approval`);
     }
 
     task.state = 'rejected';
@@ -113,9 +100,7 @@ export class ContentApprovalQueue {
     }
 
     if (task.state !== 'approved') {
-      throw new Error(
-        `Cannot transition to ready from ${task.state} state. Must be approved`,
-      );
+      throw new Error(`Cannot transition to ready from ${task.state} state. Must be approved`);
     }
 
     task.state = 'ready_to_copy';
@@ -125,10 +110,7 @@ export class ContentApprovalQueue {
     return task;
   }
 
-  async schedulePublish(
-    taskId: string,
-    scheduledFor: string,
-  ): Promise<ApprovalTask> {
+  async schedulePublish(taskId: string, scheduledFor: string): Promise<ApprovalTask> {
     const task = this.tasks.get(taskId);
     if (!task) {
       throw new Error(`Task not found: ${taskId}`);
@@ -136,7 +118,7 @@ export class ContentApprovalQueue {
 
     if (!['approved', 'ready_to_copy'].includes(task.state)) {
       throw new Error(
-        `Cannot schedule from ${task.state} state. Must be approved or ready_to_copy`,
+        `Cannot schedule from ${task.state} state. Must be approved or ready_to_copy`
       );
     }
 
@@ -166,29 +148,20 @@ export class ContentApprovalQueue {
     return this.tasks.get(taskId);
   }
 
-  async listPendingApprovals(
-    tenantSlug: string,
-  ): Promise<ApprovalTask[]> {
+  async listPendingApprovals(tenantSlug: string): Promise<ApprovalTask[]> {
     return Array.from(this.tasks.values()).filter(
-      (task) =>
-        task.tenant_slug === tenantSlug &&
-        task.state === 'pending_approval',
+      (task) => task.tenant_slug === tenantSlug && task.state === 'pending_approval'
     );
   }
 
-  async listByState(
-    tenantSlug: string,
-    state: ApprovalState,
-  ): Promise<ApprovalTask[]> {
+  async listByState(tenantSlug: string, state: ApprovalState): Promise<ApprovalTask[]> {
     return Array.from(this.tasks.values()).filter(
-      (task) => task.tenant_slug === tenantSlug && task.state === state,
+      (task) => task.tenant_slug === tenantSlug && task.state === state
     );
   }
 
   async listTenantTasks(tenantSlug: string): Promise<ApprovalTask[]> {
-    return Array.from(this.tasks.values()).filter(
-      (task) => task.tenant_slug === tenantSlug,
-    );
+    return Array.from(this.tasks.values()).filter((task) => task.tenant_slug === tenantSlug);
   }
 
   getStats() {
@@ -196,30 +169,19 @@ export class ContentApprovalQueue {
       totalTasks: this.tasks.size,
       byState: {
         pending_approval: Array.from(this.tasks.values()).filter(
-          (t) => t.state === 'pending_approval',
+          (t) => t.state === 'pending_approval'
         ).length,
-        approved: Array.from(this.tasks.values()).filter(
-          (t) => t.state === 'approved',
-        ).length,
-        rejected: Array.from(this.tasks.values()).filter(
-          (t) => t.state === 'rejected',
-        ).length,
-        ready_to_copy: Array.from(this.tasks.values()).filter(
-          (t) => t.state === 'ready_to_copy',
-        ).length,
-        scheduled: Array.from(this.tasks.values()).filter(
-          (t) => t.state === 'scheduled',
-        ).length,
-        published: Array.from(this.tasks.values()).filter(
-          (t) => t.state === 'published',
-        ).length,
+        approved: Array.from(this.tasks.values()).filter((t) => t.state === 'approved').length,
+        rejected: Array.from(this.tasks.values()).filter((t) => t.state === 'rejected').length,
+        ready_to_copy: Array.from(this.tasks.values()).filter((t) => t.state === 'ready_to_copy')
+          .length,
+        scheduled: Array.from(this.tasks.values()).filter((t) => t.state === 'scheduled').length,
+        published: Array.from(this.tasks.values()).filter((t) => t.state === 'published').length,
       },
     };
   }
 }
 
-export function createApprovalQueue(
-  config: ApprovalQueueConfig,
-): ContentApprovalQueue {
+export function createApprovalQueue(config: ApprovalQueueConfig): ContentApprovalQueue {
   return new ContentApprovalQueue(config);
 }

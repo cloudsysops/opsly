@@ -80,20 +80,15 @@ describe('AvatarPromptGenerator', () => {
   });
 
   it('should throw error for unknown avatar style', () => {
-    expect(() =>
-      generateAvatarPrompt({
-        ...mockProfile,
-        avatar_style: 'unknown' as any,
-      }),
-    ).toThrow('Unknown avatar style');
+    const invalidProfile: TenantContentProfile = {
+      ...mockProfile,
+      avatar_style: 'unknown' as 'minimal',
+    };
+    expect(() => generateAvatarPrompt(invalidProfile)).toThrow('Unknown avatar style');
   });
 
   it('should generate multiple avatar prompts for different styles', () => {
-    const prompts = generateAvatarPrompts(mockProfile, [
-      'minimal',
-      'geometric',
-      'illustrated',
-    ]);
+    const prompts = generateAvatarPrompts(mockProfile, ['minimal', 'geometric', 'illustrated']);
 
     expect(prompts).toHaveLength(3);
     expect(prompts[0].style).toBe('minimal');

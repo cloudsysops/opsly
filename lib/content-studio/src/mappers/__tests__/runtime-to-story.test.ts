@@ -90,7 +90,7 @@ describe('RuntimeToStoryMapper', () => {
   it('should throw error for unknown event type', () => {
     const invalidEvent: ContentEvent = {
       ...mockEvent,
-      event_type: 'unknown_event' as any,
+      event_type: 'unknown_event' as ContentEvent['event_type'],
     };
 
     expect(() => mapEventToStory(invalidEvent)).toThrow('Unknown event type');

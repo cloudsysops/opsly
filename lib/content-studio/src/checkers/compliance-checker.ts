@@ -1,14 +1,7 @@
 import type { ContentDraft } from '../types.js';
 
 export interface ComplianceViolation {
-  type:
-    | 'secret'
-    | 'ip_address'
-    | 'pii_email'
-    | 'pii_phone'
-    | 'pii_ssn'
-    | 'api_key'
-    | 'token';
+  type: 'secret' | 'ip_address' | 'pii_email' | 'pii_phone' | 'pii_ssn' | 'api_key' | 'token';
   severity: 'high' | 'medium' | 'low';
   message: string;
   location: string;
@@ -24,7 +17,7 @@ const patterns = {
   aws_secret: /aws_secret_access_key\s*=\s*[^\s]+/gi,
   github_token: /gh[pruoats]_[A-Za-z0-9_]{36,255}/g,
   api_key_generic: /api[_-]?key\s*[:=]\s*[^\s]+/gi,
-  bearer_token: /bearer\s+[a-zA-Z0-9\-._~+\/]+=*/gi,
+  bearer_token: /bearer\s+[a-zA-Z0-9\-._~+/]+=*/gi,
   ipv4: /\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b/g,
   email: /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g,
   phone_us: /\b(?:\+?1[-.\s]?)?\(?([0-9]{3})\)?[-.\s]?([0-9]{3})[-.\s]?([0-9]{4})\b/g,
@@ -150,9 +143,7 @@ function checkForPII(text: string): ComplianceViolation[] {
   return violations;
 }
 
-export function checkDraftCompliance(
-  draft: Partial<ContentDraft>,
-): ComplianceResult {
+export function checkDraftCompliance(draft: Partial<ContentDraft>): ComplianceResult {
   const textToCheck = [
     draft.title || '',
     draft.story_hook || '',
@@ -187,19 +178,13 @@ export function checkCaptionsCompliance(captions: string[]): ComplianceResult {
   };
 }
 
-export function performFullCompliance(
-  draft: Partial<ContentDraft>,
-): ComplianceResult {
+export function performFullCompliance(draft: Partial<ContentDraft>): ComplianceResult {
   const draftResult = checkDraftCompliance(draft);
 
-  const captionTexts =
-    draft.captions?.map((c) => c.text).filter(Boolean) || [];
+  const captionTexts = draft.captions?.map((c) => c.text).filter(Boolean) || [];
   const captionsResult = checkCaptionsCompliance(captionTexts);
 
-  const allViolations = [
-    ...draftResult.violations,
-    ...captionsResult.violations,
-  ];
+  const allViolations = [...draftResult.violations, ...captionsResult.violations];
 
   return {
     isCompliant: allViolations.length === 0,

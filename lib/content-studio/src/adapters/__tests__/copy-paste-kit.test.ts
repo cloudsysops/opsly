@@ -133,20 +133,14 @@ describe('CopyPasteKit', () => {
 
   describe('generatePermalink', () => {
     it('should generate URL-safe permalink', () => {
-      const permalink = CopyPasteKit.generatePermalink(
-        'draft-001',
-        'New Feature Launch',
-      );
+      const permalink = CopyPasteKit.generatePermalink('draft-001', 'New Feature Launch');
 
       expect(permalink).toContain('/mission-control/content/draft/draft-001/');
       expect(permalink).toContain('new-feature-launch');
     });
 
     it('should handle titles with special characters', () => {
-      const permalink = CopyPasteKit.generatePermalink(
-        'draft-001',
-        'Feature: Part 1 & Part 2!',
-      );
+      const permalink = CopyPasteKit.generatePermalink('draft-001', 'Feature: Part 1 & Part 2!');
 
       expect(permalink).toContain('feature-part-1-part-2');
       expect(permalink).not.toContain('&');
@@ -154,10 +148,7 @@ describe('CopyPasteKit', () => {
     });
 
     it('should collapse multiple hyphens', () => {
-      const permalink = CopyPasteKit.generatePermalink(
-        'draft-001',
-        'New   Feature   Launch',
-      );
+      const permalink = CopyPasteKit.generatePermalink('draft-001', 'New   Feature   Launch');
 
       expect(permalink).toContain('new-feature-launch');
       expect(permalink).not.toMatch(/--+/);
@@ -173,10 +164,7 @@ describe('CopyPasteKit', () => {
     });
 
     it('should respect custom base URL', () => {
-      const link = CopyPasteKit.generateShareableLink(
-        'draft-001',
-        'https://custom.com',
-      );
+      const link = CopyPasteKit.generateShareableLink('draft-001', 'https://custom.com');
 
       expect(link).toContain('https://custom.com/share/draft/');
     });
@@ -218,9 +206,9 @@ describe('CopyPasteKit', () => {
         configurable: true,
       });
 
-      await expect(
-        CopyPasteKit.copyToClipboard('test'),
-      ).rejects.toThrow('Clipboard API not available');
+      await expect(CopyPasteKit.copyToClipboard('test')).rejects.toThrow(
+        'Clipboard API not available'
+      );
     });
   });
 
@@ -239,7 +227,7 @@ describe('CopyPasteKit', () => {
       await CopyPasteKit.copyPlatformCaption(mockDraft, 'instagram');
 
       expect(mockClipboard.writeText).toHaveBeenCalledWith(
-        'Check out our new feature! #shipping #devops',
+        'Check out our new feature! #shipping #devops'
       );
     });
 
@@ -249,15 +237,15 @@ describe('CopyPasteKit', () => {
         state: 'draft',
       };
 
-      await expect(
-        CopyPasteKit.copyPlatformCaption(draftNoCopy, 'instagram'),
-      ).rejects.toThrow('No copy_paste_kit in draft');
+      await expect(CopyPasteKit.copyPlatformCaption(draftNoCopy, 'instagram')).rejects.toThrow(
+        'No copy_paste_kit in draft'
+      );
     });
 
     it('should throw error if platform not found', async () => {
-      await expect(
-        CopyPasteKit.copyPlatformCaption(mockDraft, 'unknown_platform'),
-      ).rejects.toThrow('No content for platform: unknown_platform');
+      await expect(CopyPasteKit.copyPlatformCaption(mockDraft, 'unknown_platform')).rejects.toThrow(
+        'No content for platform: unknown_platform'
+      );
     });
   });
 
@@ -288,10 +276,7 @@ describe('CopyPasteKit', () => {
     });
 
     it('should generate shareable and accessible links', () => {
-      const permalink = CopyPasteKit.generatePermalink(
-        mockDraft.id!,
-        mockDraft.title!,
-      );
+      const permalink = CopyPasteKit.generatePermalink(mockDraft.id!, mockDraft.title!);
       const shareable = CopyPasteKit.generateShareableLink(mockDraft.id!);
 
       expect(permalink).toContain('/mission-control/content/draft/');

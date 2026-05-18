@@ -4,7 +4,7 @@ import {
   generateCaptions,
   enrichContentDraftWithCaptions,
 } from '../caption-generator.js';
-import type { Platform, Caption } from '../caption-generator.js';
+import type { Platform } from '../caption-generator.js';
 import type { ContentDraft } from '../../types.js';
 
 describe('CaptionGenerator', () => {
@@ -23,12 +23,7 @@ describe('CaptionGenerator', () => {
 
       expect(caption.platform).toBe('instagram');
       expect(caption.text.length).toBeLessThanOrEqual(2200);
-      expect(caption.hashtags).toEqual([
-        '#shipping',
-        '#devops',
-        '#automation',
-        '#engineering',
-      ]);
+      expect(caption.hashtags).toEqual(['#shipping', '#devops', '#automation', '#engineering']);
       expect(caption.characterCount).toBe(caption.text.length);
     });
 
@@ -79,13 +74,7 @@ describe('CaptionGenerator', () => {
 
     it('should truncate to character limit with ellipsis', () => {
       const longHook =
-        'A'.repeat(300) +
-        ' ' +
-        'B'.repeat(300) +
-        ' ' +
-        'C'.repeat(300) +
-        ' ' +
-        'D'.repeat(300);
+        'A'.repeat(300) + ' ' + 'B'.repeat(300) + ' ' + 'C'.repeat(300) + ' ' + 'D'.repeat(300);
 
       const caption = generateCaption('x', longHook, callToAction);
 
@@ -101,12 +90,7 @@ describe('CaptionGenerator', () => {
     });
 
     it('should not include hashtags for reddit, discord, telegram', () => {
-      const noHashtagPlatforms: Platform[] = [
-        'reddit',
-        'discord',
-        'telegram',
-        'whatsapp',
-      ];
+      const noHashtagPlatforms: Platform[] = ['reddit', 'discord', 'telegram', 'whatsapp'];
 
       noHashtagPlatforms.forEach((platform) => {
         const caption = generateCaption(platform, storyHook, callToAction);
@@ -222,9 +206,7 @@ describe('CaptionGenerator', () => {
     it('should use hashtags from each caption in copy_paste_kit', () => {
       const enriched = enrichContentDraftWithCaptions(mockDraft);
 
-      const instagramCaption = enriched.captions?.find(
-        (c) => c.platform === 'instagram',
-      );
+      const instagramCaption = enriched.captions?.find((c) => c.platform === 'instagram');
       expect(instagramCaption?.hashtags.length).toBeGreaterThan(0);
       instagramCaption?.hashtags.forEach((tag) => {
         expect(enriched.copy_paste_kit?.instagram_caption).toContain(tag);
@@ -254,12 +236,7 @@ describe('CaptionGenerator', () => {
     });
 
     it('should handle reddit, discord, telegram, whatsapp without hashtags', () => {
-      const noHashtagPlatforms: Platform[] = [
-        'reddit',
-        'discord',
-        'telegram',
-        'whatsapp',
-      ];
+      const noHashtagPlatforms: Platform[] = ['reddit', 'discord', 'telegram', 'whatsapp'];
 
       noHashtagPlatforms.forEach((platform) => {
         const caption = generateCaption(platform, storyHook, callToAction);
