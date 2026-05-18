@@ -74,5 +74,5 @@
     }
   },
   "include": ["**/*.ts", "**/*.tsx", "lib/**/*", "apps/**/*", "packages/**/*"],
-  "exclude": ["node_modules", "dist", "apps/api/**", "**/*.spec.ts", "**/*.test.ts"]
+  "exclude": ["node_modules", "dist", "apps/api/**", "supabase/**", "**/*.spec.ts", "**/*.test.ts"]
 }
