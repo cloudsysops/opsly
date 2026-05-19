@@ -37,7 +37,7 @@ export const BUILT_IN_MODES: Record<OpslyModeId, BuiltInModeDefinition> = {
     id: 'security',
     displayName: 'Security',
     tools: { allowed: ['*'] },
-    blockedTools: ['fs_write_file', 'execute_terminal'],
+    blockedTools: ['fs_write_file'],
   },
   mentor: {
     id: 'mentor',
