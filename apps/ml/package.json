@@ -2,19 +2,22 @@
   "name": "@intcloudsysops/ml",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
+  "main": "./dist/src/index.js",
+  "types": "./dist/src/index.d.ts",
   "exports": {
     ".": {
-      "types": "./src/index.ts",
+      "types": "./dist/src/index.d.ts",
       "import": "./dist/src/index.js",
       "default": "./dist/src/index.js"
     },
     "./feedback-decision-engine": {
-      "types": "./src/feedback-decision-engine.ts",
+      "types": "./dist/src/feedback-decision-engine.d.ts",
       "import": "./dist/src/feedback-decision-engine.js",
       "default": "./dist/src/feedback-decision-engine.js"
     },
     "./feedback-decision-engine-runtime": {
-      "types": "./src/feedback-decision-engine.ts",
+      "types": "./dist/src/feedback-decision-engine.d.ts",
       "import": "./dist/src/feedback-decision-engine.js",
       "default": "./dist/src/feedback-decision-engine.js"
     }
