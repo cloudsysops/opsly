@@ -1,95 +1,325 @@
+# Opsly Operational Blueprint v0.1
+
+**Status:** Draft v0.1 (In Development)  
+**Purpose:** Define how multi-tenant services operate safely and at scale within Opsly  
+**Validation Pilot:** Peskids (after-school education tenant)  
+**Updated:** 2026-05-19
+
 ---
-status: draft
-owner: architecture
-last_review: 2026-05-19
+
+## What is the Operational Blueprint?
+
+The Operational Blueprint is a set of **non-negotiable principles** for how all Opsly tenants:
+
+1. **Isolate data** (multi-tenant security)
+2. **Communicate** (event-driven architecture)
+3. **Operate safely** (approval-first AI)
+4. **Scale reliably** (real-time observability)
+5. **Evolve independently** (extraction-ready design)
+
+It's not a technology choice. It's an **operational contract** every tenant must honor.
+
 ---
 
-# Opsly Operational Blueprint
+## Why Blueprint v0.1?
 
-Blueprint operativo reutilizable para **pequeños negocios**, **incubación de clientes** y **futuras plataformas independientes** en Opsly. No es un producto terminado ni un clon de blueprints enterprise de Google Cloud.
+1. **Learning mode** — Peskids is the first operational pilot. We'll learn from real usage.
+2. **Refinement path** — Feedback from Peskids will inform v0.2 (better, clearer).
+3. **Not final** — Expect breaking changes. v0.2 will refactor based on Peskids findings.
+4. **Principles not details** — Blueprint defines "what" (isolation, events, approval-first) not "how" (which database, which event bus).
 
-## Qué es
+---
 
-Un conjunto de **principios, capas, módulos y patrones** que el equipo Opsly usa para:
+## 5 Core Principles
 
-- Diseñar operaciones digitales **simples y modulares**
-- Incubar tenants (p. ej. Peskids) dentro de Opsly con trazabilidad
-- Extraer después un **producto independiente** sin rehacer todo desde cero
-- Elegir proveedores con **bajo lock-in** y costos acotados
-- Repetir el mismo modelo para más clientes sin reescribir la arquitectura
+### 1. Multi-Tenant Isolation
 
-Inspiración de buenas prácticas (seguridad, observabilidad, confiabilidad, modularidad, documentación) — **no** copiar arquitecturas enterprise ni landing zones multi-cuenta.
+**Principle:** Data in Tenant A is never visible to Tenant B, by architecture not convention.
 
-## Qué NO es
+**How it works:**
+- Every table has `tenant_id` column
+- RLS (Row-Level Security) at database layer enforces filtering
+- No query defaults to "show all tenants"
+- No exception for admins
+- Every API endpoint validates tenant context
 
-| No es | Por qué |
-|-------|---------|
-| Catálogo de servicios GCP/AWS | Opsly no vende infra hyperscaler |
-| SaaS multi-tenant cerrado | El cliente debe poder salir con sus datos |
-| Framework de código obligatorio | Evita acoplar runtime Opsly al negocio del cliente |
-| Pack de Terraform enterprise | Demasiado pesado para PyMEs |
-| Promesa de “IA autónoma” | Política **approval-first** |
-| Sustituto de contrato legal/comercial | Ver [COMMERCIAL-PACKAGES.md](./COMMERCIAL-PACKAGES.md) como orientación |
+**Validation method:**
+- Two test tenants in staging
+- Cross-tenant queries blocked (verified in CI)
+- Audit logs show who accessed what tenant data
 
-## Diferencia vs blueprints enterprise (Google y similares)
+**Peskids implementation:** ✅ RLS on leads, students, feedback, followups tables
 
-| Enterprise (inspiración) | Opsly Blueprint (adaptación) |
-|--------------------------|------------------------------|
-| Landing zones, org policies | Checklist de dueño de cuentas y permisos mínimos |
-| SLOs multi-región | Uptime Kuma + health URLs + reporte semanal |
-| Service mesh | Traefik + compose por tenant; sin mesh |
-| 50 microservicios | n8n + API + dashboard; pocos componentes |
-| Equipo platform 24/7 | Operación lean; humano en el loop |
-| Billing unificado cloud | Pass-through de herramientas + paquete Opsly claro |
+---
 
-## Cómo apoya incubación y extracción
+### 2. Event-Driven Communication
 
-```mermaid
-flowchart LR
-  A[Cliente PyME] --> B[Opsly incubator]
-  B --> C[MVP documentado]
-  C --> D[Piloto activo]
-  D --> E{¿Listo?}
-  E -->|Sí| F[Repo independiente]
-  E -->|No| B
-  F --> G[Conexión opcional webhooks]
+**Principle:** Services don't call each other directly. They emit events. Consumers subscribe.
+
+**Why:**
+- **Loose coupling** — Services don't need to know about each other
+- **Auditability** — All changes flow through event log
+- **Replayability** — Can rebuild data by replaying events
+- **Scalability** — Add new consumers without changing producer
+
+**How it works:**
+```
+User Action (form submit, button click)
+  ↓
+Service creates database record
+  ↓
+Service emits event to event bus
+  ↓
+Event bus logs event + routes to consumers
+  ↓
+Consumers (dashboard, alerts, metrics) process event
+  ↓
+(If consumer fails, retry with exponential backoff)
 ```
 
-1. **Incubar** — tenant con stack aislado, workflows y docs en `docs/tenants/<slug>/`
-2. **Validar** — MVP, checklist, smoke sin tocar core Opsly
-3. **Extraer** — copiar módulos/docs seguros; Supabase y dominio propios
-4. **Conectar** — eventos opcionales hacia Opsly (metering, soporte)
+**Event contract:**
+- Every event has: event_id, tenant_id, timestamp, payload
+- Events are immutable (no editing)
+- At-least-once delivery (consumer handles duplicates)
+- 90-day retention (then archive)
 
-Peskids es el **piloto de referencia** que valida este blueprint. Las futuras plataformas no deben inventar un modelo nuevo: deben partir de la [CLIENT-INCUBATION-TEMPLATE.md](./CLIENT-INCUBATION-TEMPLATE.md) y solo cambiar lo específico del cliente.
+**Peskids implementation:** ✅ 9 events defined: lead.created, feedback.created, followup.completed, etc.
 
-## Mapa del blueprint
+---
 
-| Documento | Contenido |
-|-----------|-----------|
-| [PRINCIPLES.md](./PRINCIPLES.md) | Reglas de diseño |
-| [REFERENCE-ARCHITECTURE.md](./REFERENCE-ARCHITECTURE.md) | Capas y diagramas |
-| [MODULES.md](./MODULES.md) | Módulos reutilizables |
-| [PROVIDER-MATRIX.md](./PROVIDER-MATRIX.md) | Elección de proveedores |
-| [TENANT-INCUBATION.md](./TENANT-INCUBATION.md) | Ciclo de vida del tenant |
-| [CLIENT-INCUBATION-TEMPLATE.md](./CLIENT-INCUBATION-TEMPLATE.md) | Plantilla reusable para nuevos clientes |
-| [EXTRACTION-PATTERN.md](./EXTRACTION-PATTERN.md) | Salida a plataforma propia |
-| [SECURITY-AND-TRUST.md](./SECURITY-AND-TRUST.md) | Confianza y datos |
-| [COMMERCIAL-PACKAGES.md](./COMMERCIAL-PACKAGES.md) | Paquetes comerciales |
-| [NICHE-PLAYBOOKS.md](./NICHE-PLAYBOOKS.md) | Aplicación por nicho |
-| [IMPLEMENTATION-CHECKLIST.md](./IMPLEMENTATION-CHECKLIST.md) | Checklist de implementación |
-| [CLIENT-FACING-EXPLANATION.md](./CLIENT-FACING-EXPLANATION.md) | Explicación al cliente (ES) |
-| [TEAM-FACING-EXPLANATION.md](./TEAM-FACING-EXPLANATION.md) | Explicación al equipo (ES) |
+### 3. Approval-First AI Operations
 
-## Advertencias
+**Principle:** AI suggests, humans approve. No auto-send, no silent automations.
 
-- **No sobre-ingenierizar:** si un Google Sheet resuelve el MVP, úsalo hasta que duela.
-- **No lock-in:** cada capa debe tener nota de migración en [PROVIDER-MATRIX.md](./PROVIDER-MATRIX.md).
-- **No tocar core Opsly** al aplicar el blueprint a un cliente — extender por docs, config tenant y stacks aislados.
+**Why:**
+- **Transparency** — Owner sees what we're about to do
+- **Trust** — No surprises. Owner controls their business.
+- **Safety** — If AI makes a mistake, owner catches it before send
+- **Regulation** — Audit trail: owner approved X on date Y
 
-## Piloto de referencia
+**How it works:**
+```
+AI generates suggestion: "Send follow-up email to Maria on Friday"
+  ↓
+Suggestion appears in dashboard: "Recommended: Email to Maria - [Approve] [Dismiss]"
+  ↓
+Owner reviews + clicks [Approve]
+  ↓
+Event emitted: "owner_approved_followup"
+  ↓
+Action executed (email sent, task created, etc.)
+  ↓
+Audit log shows: owner approved at time T, action executed
+```
 
-[Peskids](../../tenants/peskids/README.md) valida este blueprint en un tenant real (incubar → validar → extraer). La plantilla de cliente vive en [CLIENT-INCUBATION-TEMPLATE.md](./CLIENT-INCUBATION-TEMPLATE.md) y reutiliza la misma lógica para futuros tenants. El blueprint sigue en **draft v0.1**; las lecciones de Peskids alimentan `v0.2`, no convierten el borrador en canon.
+**Never auto-execute:**
+- ❌ Auto-send emails to parents
+- ❌ Auto-create follow-up tasks
+- ❌ Auto-enroll students
+- ❌ Auto-schedule messages
 
-## Estado
+**Peskids implementation:** ✅ All follow-ups require explicit owner click; dashboard shows what will happen before approval
 
-**v0.1 — borrador vivo.** Revisar con producto y operaciones antes de tratarlo como canon. Las lecciones de Peskids alimentan la siguiente revisión.
+---
+
+### 4. Real-Time Observability
+
+**Principle:** Operators see what's happening NOW, not yesterday.
+
+**Why:**
+- **Operational need** — Owner needs to know if a lead came in 2 minutes ago
+- **Quick response** — Alert on negative feedback within 1 second
+- **Trust** — Dashboard is source of truth, not batch report from email
+
+**How it works:**
+- New data appears in dashboard within 2–5 seconds
+- Alerts (e.g., "low satisfaction feedback") within 1 second
+- Trend charts update every 5 minutes
+- No overnight batch jobs hiding urgencies
+
+**Implementation choice:** WebSocket subscriptions (Supabase Realtime) + fallback to 5-second poll
+
+**Peskids implementation:** ✅ Supabase Realtime for lead/feedback; 5-second poll for follow-ups
+
+---
+
+### 5. Extraction-Ready Design
+
+**Principle:** Every tenant can eventually run independently, without Opsly.
+
+**Why:**
+- **Business flexibility** — If tenant grows, they can own infrastructure
+- **Risk mitigation** — Tenant is not locked into Opsly
+- **Quality assurance** — Forces us to avoid hardcoding tenant-specific assumptions
+
+**How it works:**
+- Tenant configuration is injectable (env vars, not code)
+- Event bus connection is swappable (Opsly → Kafka → Redis)
+- Database schema is portable (works with any PostgreSQL)
+- APIs are versioned (v1, v2, avoiding breaking changes)
+
+**Extraction checklist:**
+- [ ] No hardcoded Opsly URLs
+- [ ] No hardcoded tenant secrets
+- [ ] All external services are injected via config
+- [ ] Database migrations are documented + reversible
+- [ ] API version is explicit (v1, v2)
+
+**Peskids implementation:** ✅ Designed to extract; EXTRACTION-PLAN.md defines timeline
+
+---
+
+## Operational Guardrails
+
+### Security
+
+- **Minimum PII:** Collect only what's operationally necessary
+- **No plaintext secrets:** All secrets injected via Doppler or env
+- **Encrypted at rest:** Database encryption enabled
+- **Encrypted in transit:** HTTPS only
+- **RLS enforced:** Database layer blocks cross-tenant access
+- **Audit logs:** All data access logged + queryable
+
+### Performance
+
+- **Dashboard load:** <3 seconds (including real-time update)
+- **API response:** <200ms (p95)
+- **Event delivery:** <1 second (median)
+- **Database queries:** All indexed; <100ms (p99)
+
+### Reliability
+
+- **Uptime:** 99%+ (outside of planned maintenance)
+- **Data durability:** 99.99% (Supabase + backups)
+- **Event delivery:** At-least-once (no data loss)
+- **Graceful degradation:** Dashboard works even if real-time fails
+
+### Observability
+
+- **Error tracking:** All errors logged (Sentry or similar)
+- **Metrics:** Events/min, users/day, latency
+- **Alerts:** Ops alerted on anomalies (downtime, high error rate)
+- **Logging:** Structured JSON logs, PII-free
+
+---
+
+## Governance Model
+
+### Who Defines the Blueprint?
+
+- **Opsly Architecture Team** — Initial design + v1 refinement
+- **Tenant Pilots** — Feedback from real usage (Peskids, others)
+- **Opsly Ops Team** — Operational constraints + safety requirements
+
+### Who Must Follow It?
+
+**Mandatory for all tenants:**
+- Multi-tenant isolation (RLS)
+- Event emission (all user actions)
+- Approval-first (no silent automations)
+- Real-time observability (dashboard, not batch)
+
+**Recommended but flexible:**
+- Which event bus (Supabase, Kafka, Redis)
+- Which database (PostgreSQL preferred)
+- Which API framework (Next.js, FastAPI, Go)
+- Which monitoring (Sentry, Datadog, custom)
+
+### Change Process
+
+**To propose Blueprint change:**
+1. Document proposal in `docs/blueprints/proposals/`
+2. Get feedback from 2+ tenant pilots
+3. Get approval from Opsly Architecture Team
+4. Create PR → review → merge
+5. Announce in AGENTS.md + all-hands
+6. Existing tenants have 30 days to align
+
+---
+
+## Peskids as Validation Pilot
+
+**Why Peskids?**
+- Real user (after-school education nonprofit)
+- Clear operational workflows (leads → enrollment → feedback)
+- Low infrastructure risk (no new systems needed)
+- Realistic scope (5–7 user stories per sprint)
+
+**What we're learning:**
+1. ✅ Multi-tenant isolation is viable for real users
+2. ✅ Event contracts work for cross-service communication
+3. ❓ Approval-first creates friction or builds trust?
+4. ❓ Real-time dashboards matter operationally?
+5. ❓ Can we extract tenants without breaking Opsly?
+
+**Feedback loop:**
+- Phase 1 (Design): Owner validates workflows
+- Phase 2 (Build): Dev team learns from specs
+- Phase 3 (Operations): Ops sees operational realities
+- Phase 4 (Reflection): All teams refine blueprint
+
+---
+
+## Next Steps
+
+### Phase 1: Design & Validation (Now)
+- Owner reviews Peskids wireframes + demo script
+- Team refines blueprint based on design feedback
+- **Gate:** Owner says "yes, build this"
+
+### Phase 2: MVP Build
+- Dev team implements per blueprint
+- CI validates RLS, events, approval-first
+- **Gate:** 0 security issues, <2s dashboard load
+
+### Phase 3: Operations
+- First real owner uses system
+- Ops monitors for anomalies
+- Blueprint assumptions tested in production
+- **Gate:** Owner uses daily, zero breaches
+
+### Phase 4: Reflection & v0.2 Planning
+- All learnings documented
+- Blueprint v0.2 drafted
+- Next tenant (TBD) onboards with updated blueprint
+
+---
+
+## Roadmap (Blueprint Maturity)
+
+| Version | Timeline | Focus | Status |
+|---------|----------|-------|--------|
+| **v0.1** | Now | Core principles + Peskids pilot | Active |
+| **v0.2** | Post-Peskids | Refinements + 2nd tenant | Planned |
+| **v1.0** | Month 6+ | Stable, production-ready | TBD |
+| **v2.0** | Year 2+ | Advanced features (scaling, extraction automation) | Future |
+
+---
+
+## References
+
+- **Peskids Docs:** `docs/tenants/peskids/`
+  - README.md — Overview
+  - BLUEPRINT-MAPPING.md — How Peskids aligns
+  - EXTRACTION-PLAN.md — Future independence
+  - MVP-PLAN.md — MVP scope + architecture
+  - MVP-BACKLOG.md — 9 epics
+  - SPRINT-01.md — 7-day phase 1
+  - DEMO-SCRIPT.md — Owner presentation
+
+- **Opsly Docs:** `VISION.md`, `AGENTS.md`
+- **Architecture:** `docs/adr/` (Architecture Decision Records)
+
+---
+
+## Questions?
+
+- **What does Blueprint v0.1 guarantee?** Multi-tenant isolation + approval-first operations for all tenants
+- **Can we break it?** Only with approval from Opsly Architecture Team
+- **What if Peskids finds it unworkable?** We refine it. That's why it's a pilot.
+- **How long until v1.0?** 6+ months; depends on how much Peskids teaches us
+- **What about tenants that can't follow it?** They're either not ready for Opsly, or blueprint evolves to accommodate
+
+---
+
+**Blueprint v0.1 approved for Peskids pilot on 2026-05-19.**
