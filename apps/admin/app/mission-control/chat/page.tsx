@@ -57,20 +57,12 @@ export default function MissionControlChatPage() {
           Mission Control Chat
         </h1>
         <p className="text-sm text-zinc-400">
-<<<<<<< HEAD
           Runtime operator shell for session routing, checkpoints, and resume flows.
-=======
-          Runtime operator shell — routes sessions, branches, and worker recommendations. Humans approve merges and deploys.
->>>>>>> 8c27ce48 (feat(mission-control): operator chat with session routing (#353))
         </p>
       </header>
 
       <form
-<<<<<<< HEAD
         className="grid gap-2 md:grid-cols-[1fr_220px_auto]"
-=======
-        className="flex gap-2"
->>>>>>> 8c27ce48 (feat(mission-control): operator chat with session routing (#353))
         onSubmit={(e) => {
           e.preventDefault();
           void submit();
@@ -83,7 +75,6 @@ export default function MissionControlChatPage() {
           placeholder="e.g. continue runtime work"
           disabled={loading}
         />
-<<<<<<< HEAD
         <input
           className="rounded-md border border-zinc-700 bg-zinc-900 px-3 py-2 text-sm"
           value={sessionId}
