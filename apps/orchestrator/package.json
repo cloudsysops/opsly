@@ -42,7 +42,8 @@
     "zod": "^3.25.76",
     "@intcloudsysops/session-manager": "*",
     "@intcloudsysops/git-branch-orchestrator": "*",
-    "@intcloudsysops/runtime": "*"
+    "@intcloudsysops/runtime": "*",
+    "@intcloudsysops/external-agent-registry": "*"
   },
   "devDependencies": {
     "@types/js-yaml": "^4.0.9",

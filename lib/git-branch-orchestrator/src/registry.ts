@@ -40,7 +40,6 @@ async function withTenantAllocateLock<T>(
     }
   }
 }
-
 function registryDir(root: string): string {
   return join(root, 'runtime', 'branch-registry');
 }

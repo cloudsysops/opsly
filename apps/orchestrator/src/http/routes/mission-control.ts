@@ -193,7 +193,6 @@ function recommendationForSession(session: RuntimeSessionMetadata | null): Worke
 function summarizeStaleSessions(sessions: RuntimeSessionMetadata[]): RuntimeSessionMetadata[] {
   return sessions.filter((session) => session.status === 'resumable' || session.status === 'stopped');
 }
-
 export async function handleMissionControlChat(ctx: RouteContext): Promise<void> {
   if (!requireAdmin(ctx)) {
     return;

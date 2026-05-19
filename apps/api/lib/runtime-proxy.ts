@@ -2,7 +2,6 @@ import { HTTP_STATUS } from './constants';
 import { ORCHESTRATOR_INTERNAL_URL } from './admin-ollama-demo';
 
 export { ORCHESTRATOR_INTERNAL_URL } from './admin-ollama-demo';
-
 function adminToken(): string {
   return process.env.PLATFORM_ADMIN_TOKEN?.trim() ?? '';
 }

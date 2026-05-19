@@ -125,6 +125,7 @@ function buildRouter(): Router {
   r.get('/internal/runtime/governor/status', handleGovernorStatus);
   r.post('/internal/runtime/governor/sweep-idle', handleGovernorSweepIdle);
 
+<<<<<<< HEAD
   r.post('/api/git/branches/plan', handleGitBranchPlan);
   r.post('/api/git/branches/assign', handleGitBranchAssign);
   r.get('/api/git/branches/registry', handleGitBranchRegistry);
@@ -153,6 +154,9 @@ function buildRouter(): Router {
   // Maia Life Systems loop endpoints
   r.post('/api/maia/callback', handleMaiaCallback);
   r.post('/api/maia/self-heal', handleMaiaSelfHeal);
+=======
+  r.post('/internal/mission-control/chat', handleMissionControlChat);
+>>>>>>> 8c27ce48 (feat(mission-control): operator chat with session routing (#353))
 
   return r;
 }
