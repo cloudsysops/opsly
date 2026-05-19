@@ -228,3 +228,15 @@ Peskids uses only:
 - Peskids README: [README.md](./README.md)
 - Peskids Extraction Plan: [EXTRACTION-PLAN.md](./EXTRACTION-PLAN.md)
 - MVP Plan: [MVP-PLAN.md](./MVP-PLAN.md)
+
+## Mapa rápido de principios (ES)
+
+| Principio blueprint | Doc Peskids | Estado |
+| --- | --- | --- |
+| Workflow-first | [WORKFLOWS.md](./WORKFLOWS.md) | active |
+| Approval-first AI | [AI-APPROVAL-POLICY.md](./AI-APPROVAL-POLICY.md) | active |
+| Client owns data/accounts | [README.md](./README.md) | planned |
+| Incubate before extracting | [EXTRACTION-PLAN.md](./EXTRACTION-PLAN.md) | active |
+| Provider replaceable | [ARCHITECTURE.md](./ARCHITECTURE.md) | active |
+| Dashboards before autonomy | [DASHBOARD-SPEC.md](./DASHBOARD-SPEC.md) | planned |
+| Document before automating | [INCUBATION-CHECKLIST.md](./INCUBATION-CHECKLIST.md) | active |
