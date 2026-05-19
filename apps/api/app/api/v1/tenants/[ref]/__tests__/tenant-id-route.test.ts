@@ -1,18 +1,18 @@
 import { describe, it, expect, vi, beforeEach, beforeAll, afterAll } from 'vitest';
 import { GET, PATCH, DELETE } from '../route';
-import * as supabaseMod from '../../../../../lib/supabase';
-import * as orchestratorMod from '../../../../../lib/orchestrator';
-import * as dockerMod from '../../../../../lib/docker';
+import * as supabaseMod from '../../../../../../lib/supabase';
+import * as orchestratorMod from '../../../../../../lib/orchestrator';
+import * as dockerMod from '../../../../../../lib/docker';
 
-vi.mock('../../../../../lib/supabase', () => ({
+vi.mock('../../../../../../lib/supabase', () => ({
   getServiceClient: vi.fn(),
 }));
 
-vi.mock('../../../../../lib/orchestrator', () => ({
+vi.mock('../../../../../../lib/orchestrator', () => ({
   deleteTenant: vi.fn(),
 }));
 
-vi.mock('../../../../../lib/docker', () => ({
+vi.mock('../../../../../../lib/docker', () => ({
   getTenantStackStatus: vi.fn(),
 }));
 

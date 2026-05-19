@@ -9,14 +9,14 @@ const idParamSchema = z.string().uuid();
 
 export async function POST(
   request: Request,
-  context: { params: Promise<{ ref: string }> }
+  context: { params: Promise<{ slug: string }> }
 ): Promise<Response> {
   const authError = await requireAdminAccess(request);
   if (authError) {
     return authError;
   }
 
-  const { ref } = await context.params;
+  const { slug: ref } = await context.params;
   const idParsed = idParamSchema.safeParse(ref);
   if (!idParsed.success) {
     return Response.json({ error: formatZodError(idParsed.error) }, { status: 400 });

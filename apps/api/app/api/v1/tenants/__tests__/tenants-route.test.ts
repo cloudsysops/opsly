@@ -1,13 +1,13 @@
 import { describe, it, expect, vi, beforeEach, beforeAll, afterAll } from 'vitest';
 import { GET, POST } from '../route';
-import * as supabaseMod from '../../../../lib/supabase';
-import * as orchestratorMod from '../../../../lib/orchestrator';
+import * as supabaseMod from '../../../../../lib/supabase';
+import * as orchestratorMod from '../../../../../lib/orchestrator';
 
-vi.mock('../../../../lib/supabase', () => ({
+vi.mock('../../../../../lib/supabase', () => ({
   getServiceClient: vi.fn(),
 }));
 
-vi.mock('../../../../lib/orchestrator', () => ({
+vi.mock('../../../../../lib/orchestrator', () => ({
   provisionTenant: vi.fn(),
 }));
 

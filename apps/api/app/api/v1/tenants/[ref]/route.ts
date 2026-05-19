@@ -1,16 +1,16 @@
 import { z } from 'zod';
-import { jsonError, parseJsonBody, serverErrorLogged } from '../../../../lib/api-response';
-import { requireAdminAccess, requireAdminAccessUnlessDemoRead } from '../../../../lib/auth';
-import { HTTP_STATUS } from '../../../../lib/constants';
-import { getTenantStackStatus } from '../../../../lib/docker';
-import { deleteTenant } from '../../../../lib/orchestrator';
-import { getServiceClient } from '../../../../lib/supabase';
-import type { Json, Tenant } from '../../../../lib/supabase/types';
+import { jsonError, parseJsonBody, serverErrorLogged } from '../../../../../lib/api-response';
+import { requireAdminAccess, requireAdminAccessUnlessDemoRead } from '../../../../../lib/auth';
+import { HTTP_STATUS } from '../../../../../lib/constants';
+import { getTenantStackStatus } from '../../../../../lib/docker';
+import { deleteTenant } from '../../../../../lib/orchestrator';
+import { getServiceClient } from '../../../../../lib/supabase';
+import type { Json, Tenant } from '../../../../../lib/supabase/types';
 import {
   TenantRefParamSchema,
   UpdateTenantSchema,
   formatZodError,
-} from '../../../../lib/validation';
+} from '../../../../../lib/validation';
 
 const idParamSchema = z.string().uuid();
 

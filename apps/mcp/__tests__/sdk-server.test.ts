@@ -79,7 +79,7 @@ describe('MCP SDK bridge', () => {
       brainDashboard.contents[0] &&
         'text' in brainDashboard.contents[0] &&
         brainDashboard.contents[0].text
-    ).toContain('Opsly Brain');
+    ).toContain('Brain Dashboard');
     expect(
       templates.resourceTemplates.some((template) => template.uriTemplate === 'opsly://adr/{slug}')
     ).toBe(true);

@@ -20,8 +20,8 @@ function adminHeaders(): HeadersInit {
   return { authorization: `Bearer ${ADMIN}` };
 }
 
-function params(ref: string): { params: Promise<{ ref: string }> } {
-  return { params: Promise.resolve({ ref }) };
+function params(ref: string): { params: Promise<{ slug: string }> } {
+  return { params: Promise.resolve({ slug: ref }) };
 }
 
 function mockMaybeSingle(data: unknown, error: unknown) {

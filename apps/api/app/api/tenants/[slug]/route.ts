@@ -47,14 +47,14 @@ async function patchTenantRecord(
 
 export async function GET(
   request: Request,
-  context: { params: Promise<{ ref: string }> }
+  context: { params: Promise<{ slug: string }> }
 ): Promise<Response> {
   const authError = await requireAdminAccessUnlessDemoRead(request);
   if (authError) {
     return authError;
   }
 
-  const { ref } = await context.params;
+  const { slug: ref } = await context.params;
   const refParsed = TenantRefParamSchema.safeParse(ref);
   if (!refParsed.success) {
     return jsonError(formatZodError(refParsed.error), HTTP_STATUS.BAD_REQUEST);
@@ -88,14 +88,14 @@ export async function GET(
 
 export async function PATCH(
   request: Request,
-  context: { params: Promise<{ ref: string }> }
+  context: { params: Promise<{ slug: string }> }
 ): Promise<Response> {
   const authError = await requireAdminAccess(request);
   if (authError) {
     return authError;
   }
 
-  const { ref } = await context.params;
+  const { slug: ref } = await context.params;
   const idParsed = idParamSchema.safeParse(ref);
   if (!idParsed.success) {
     return jsonError(formatZodError(idParsed.error), HTTP_STATUS.BAD_REQUEST);
@@ -140,14 +140,14 @@ export async function PATCH(
 
 export async function DELETE(
   request: Request,
-  context: { params: Promise<{ ref: string }> }
+  context: { params: Promise<{ slug: string }> }
 ): Promise<Response> {
   const authError = await requireAdminAccess(request);
   if (authError) {
     return authError;
   }
 
-  const { ref } = await context.params;
+  const { slug: ref } = await context.params;
   const idParsed = idParamSchema.safeParse(ref);
   if (!idParsed.success) {
     return jsonError(formatZodError(idParsed.error), HTTP_STATUS.BAD_REQUEST);
