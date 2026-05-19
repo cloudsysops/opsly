@@ -133,3 +133,35 @@ CREATE POLICY "Authenticated users can read followups for their tenant"
 -- 2. Reads from dashboard: Bypassed using service role (server-side API route)
 -- 3. Future: When client-side auth is added, set app.settings.tenant_id before queries
 -- The SELECT policies above are ready for future authenticated access (they reference CURRENT_SETTING)
+
+-- Create webhook_logs table for tracking external integrations (Jelou, etc.)
+CREATE TABLE IF NOT EXISTS public.webhook_logs (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  tenant_id TEXT NOT NULL,
+  provider TEXT NOT NULL, -- 'jelou', 'zapier', etc.
+  event_type TEXT NOT NULL, -- 'lead.created', 'feedback.created', etc.
+  record_id UUID, -- Reference to the created record (lead_id, feedback_id, etc.)
+  payload JSONB NOT NULL, -- Full webhook payload for debugging
+  status TEXT NOT NULL DEFAULT 'received' CHECK (status IN ('received', 'processing', 'completed', 'failed')),
+  error_message TEXT, -- If processing failed
+  received_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  processed_at TIMESTAMPTZ
+);
+
+CREATE INDEX idx_webhook_logs_tenant ON public.webhook_logs(tenant_id);
+CREATE INDEX idx_webhook_logs_provider ON public.webhook_logs(provider);
+CREATE INDEX idx_webhook_logs_event_type ON public.webhook_logs(event_type);
+CREATE INDEX idx_webhook_logs_received_at ON public.webhook_logs(received_at DESC);
+
+-- RLS for webhook_logs: Only service role can write/read
+ALTER TABLE public.webhook_logs ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Service role can insert webhook logs"
+  ON public.webhook_logs
+  FOR INSERT
+  WITH CHECK (CURRENT_SETTING('app.settings.is_service_role', true) = 'true');
+
+CREATE POLICY "Service role can read webhook logs"
+  ON public.webhook_logs
+  FOR SELECT
+  USING (CURRENT_SETTING('app.settings.is_service_role', true) = 'true');
