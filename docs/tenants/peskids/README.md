@@ -19,7 +19,7 @@ Peskids es un **tenant activo** en la plataforma Opsly (plan **startup**) y el *
 | Config tenant | Plantilla | `config/tenants/peskids.json` — ver propuesta abajo |
 | VPS (documentado) | Stack esperado | `tenant_peskids`; `n8n_peskids` + Uptime Kuma |
 | CRM n8n | Documentado | 4 workflows `Opsly CRM` (AGENTS 2026-04-30) — verificar en VPS |
-| Producto / MVP | En diseño | Specs Sprint 01; sin Supabase producto aún |
+| Producto / MVP | Código en repo | API `POST /api/public/tenants/peskids/*`; migración `0053` (aplicar en Supabase) |
 | Blueprint | Alineado | [BLUEPRINT-MAPPING.md](./BLUEPRINT-MAPPING.md) |
 
 **Fuente de verdad operativa:** Supabase `platform.tenants` + VPS.
