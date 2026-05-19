@@ -41,10 +41,9 @@
           "warn",
           {
             "ignore": [0, 1, -1, 100, 1000],
-            "ignoreEnums": true,
-            "ignoreNumericLiteralTypes": true,
-            "ignoreReadonlyClassProperties": true,
-            "ignoreDefaultValues": true
+            "ignoreArrayIndexes": true,
+            "ignoreDefaultValues": true,
+            "enforceConst": false
           }
         ],
         "@typescript-eslint/no-explicit-any": "error",

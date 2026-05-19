@@ -15,12 +15,12 @@ export default function ThanksPage() {
         </h1>
 
         <p className="text-gray-600 mb-8">
-          Your information has been received. We'll review your request and get back to you soon.
+          Your information has been received. We&apos;ll review your request and get back to you soon.
         </p>
 
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-8">
           <p className="text-sm text-blue-700">
-            <strong>What's next?</strong> You'll receive a confirmation email shortly.
+            <strong>What&apos;s next?</strong> You&apos;ll receive a confirmation email shortly.
           </p>
         </div>
 

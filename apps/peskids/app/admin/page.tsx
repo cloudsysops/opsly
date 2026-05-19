@@ -128,7 +128,7 @@ export default function AdminDashboard() {
                       <span className="text-gray-400">{'★'.repeat(5 - fb.satisfaction)}</span>
                     </div>
                     {fb.suggestion && (
-                      <p className="text-xs text-gray-600 mt-1 italic">"{fb.suggestion}"</p>
+                      <p className="text-xs text-gray-600 mt-1 italic">&quot;{fb.suggestion}&quot;</p>
                     )}
                   </div>
                 ))
