@@ -13,6 +13,9 @@ RUN npm ci
 
 COPY . .
 RUN npm run build -w @intcloudsysops/types \
+  && npm run build -w @intcloudsysops/runtime \
+  && npm run build -w @intcloudsysops/git-branch-orchestrator \
+  && npm run build -w @intcloudsysops/session-manager \
   && npm run build -w @intcloudsysops/notebooklm-agent \
   && npm run build -w @intcloudsysops/orchestrator
 
@@ -44,6 +47,7 @@ RUN npm ci --ignore-scripts --omit=dev
 
 COPY --from=builder /app/apps/orchestrator/dist ./apps/orchestrator/dist
 COPY --from=builder /app/apps/notebooklm-agent/dist ./apps/notebooklm-agent/dist
+COPY --from=builder /app/lib ./lib
 COPY --from=builder /app/packages/types/dist ./packages/types/dist
 COPY --from=builder /app/apps/llm-gateway/node_modules/@intcloudsysops ./apps/llm-gateway/node_modules/@intcloudsysops
 COPY --from=builder /app/scripts ./scripts
