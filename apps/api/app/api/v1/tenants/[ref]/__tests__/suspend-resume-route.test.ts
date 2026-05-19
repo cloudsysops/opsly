@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach, beforeAll, afterAll } from 'vitest';
 import { POST as suspendPost } from '../suspend/route';
 import { POST as resumePost } from '../resume/route';
-import * as supabaseMod from '../../../../../lib/supabase';
-import * as orchestratorMod from '../../../../../lib/orchestrator';
+import * as supabaseMod from '../../../../../../lib/supabase';
+import * as orchestratorMod from '../../../../../../lib/orchestrator';
 
 vi.mock('../../../../../lib/supabase', () => ({
   getServiceClient: vi.fn(),

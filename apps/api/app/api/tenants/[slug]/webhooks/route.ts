@@ -21,14 +21,14 @@ const CreateWebhookSchema = z.object({
   events: z.array(z.enum(ALLOWED_EVENTS)).min(1),
 });
 
-type RouteParams = { params: Promise<{ ref: string }> };
+type RouteParams = { params: Promise<{ slug: string }> };
 
 export async function GET(_req: Request, { params }: RouteParams): Promise<Response> {
   return tryRoute('GET /api/tenants/[ref]/webhooks', async () => {
     const authErr = requireAdminToken(_req);
     if (authErr) return authErr;
 
-    const { ref: tenantSlug } = await params;
+    const { slug: tenantSlug } = await params;
     const webhooks = await listWebhooks(tenantSlug);
     const safe = webhooks.map((w) => {
       const { secret: _secret, ...rest } = w;
@@ -49,7 +49,7 @@ export async function POST(req: Request, { params }: RouteParams): Promise<Respo
       return jsonError(parsed.error.message, HTTP_STATUS.UNPROCESSABLE);
     }
 
-    const { ref: tenantSlug } = await params;
+    const { slug: tenantSlug } = await params;
     const secret = randomBytes(WEBHOOK_CRYPTO.SECRET_RANDOM_BYTES).toString('hex');
 
     const webhook = await createWebhook({
