@@ -62,16 +62,16 @@ referral_source: {
 1. Validate all fields client-side
 2. If validation fails: show error message above field
 3. If validation passes:
-   - POST to /api/leads with form data
-   - Show "Sending..." loading state
-   - On success:
-     - Store lead in `leads` table
-     - Emit event: lead.created
-     - Send confirmation email to user
-     - Redirect to /thanks (or show thank-you modal)
-   - On error:
-     - Show error message: "Something went wrong. Try again."
-     - Keep form filled in so user can re-submit
+  - POST to /api/leads with form data
+  - Show "Sending..." loading state
+  - On success:
+    - Store lead in `leads` table
+    - Emit event: lead.created
+    - Redirect to /thanks (or show thank-you modal)
+    - Show an on-screen confirmation only; any email follow-up is future/manual
+  - On error:
+    - Show error message: "Something went wrong. Try again."
+    - Keep form filled in so user can re-submit
 ```
 
 ### Data Destination
@@ -184,7 +184,8 @@ contact_me: {
    - Check: if satisfaction < 3, set flag for admin review
    - Store in `feedback` table
    - Emit event: feedback.created
-   - If satisfaction < 3: send alert email to admin
+   - If satisfaction < 3: flag for admin review in dashboard
+   - Optional alert email remains future/manual and is not part of Sprint 01
    - Show thank-you message
 3. If invalid: show field errors
 ```
