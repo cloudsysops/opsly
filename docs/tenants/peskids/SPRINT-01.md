@@ -57,8 +57,8 @@ source: optional, enum
 **On submit:**
 - Insert into `leads` table
 - Emit `lead.created` event
-- Send confirmation email to submitter
 - Show thank you page with dashboard link
+- Any email notification is future/manual and not part of Sprint 01
 
 **Acceptance:**
 - [ ] All fields documented

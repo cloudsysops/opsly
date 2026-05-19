@@ -61,7 +61,7 @@
 - Lead source attribution (which channel converts best?)
 - Duplicate detection (same email, different lead?)
 - Bulk import (load historical leads from CSV)
-- Webhook trigger (auto-respond with welcome email?)
+- Webhook trigger (future: generate welcome email draft for manual approval)
 
 ---
 
@@ -242,7 +242,7 @@
 }
 ```
 
-**Future:** Sync with payment system, auto-send welcome email
+**Future:** Sync with payment system, generate welcome email draft for manual approval
 
 ---
 
