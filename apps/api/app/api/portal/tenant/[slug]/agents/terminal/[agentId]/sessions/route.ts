@@ -6,7 +6,5 @@ export async function GET(
   context: { params: Promise<{ slug: string; agentId: string }> }
 ): Promise<Response> {
   const { slug, agentId } = await context.params;
-  return runTrustedPortalDalForPathSlug(request, slug, () =>
-    listAgentIdeTerminalSessions(agentId)
-  );
+  return runTrustedPortalDalForPathSlug(request, slug, () => listAgentIdeTerminalSessions(agentId));
 }

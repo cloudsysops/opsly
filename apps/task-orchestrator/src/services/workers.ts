@@ -41,7 +41,11 @@ export class WorkerManager {
     return worker;
   }
 
-  async updateWorkerStatus(workerId: string, status: 'idle' | 'working' | 'offline', currentTaskId?: string): Promise<Worker> {
+  async updateWorkerStatus(
+    workerId: string,
+    status: 'idle' | 'working' | 'offline',
+    currentTaskId?: string
+  ): Promise<Worker> {
     let worker: Worker | undefined = workers.get(workerId);
     if (!worker) {
       const fetched = await supabaseService.getWorker(workerId);
@@ -62,14 +66,15 @@ export class WorkerManager {
   }
 
   async getAvailableWorker(workerType?: string): Promise<Worker | null> {
-    const availableWorkers = Array.from(workers.values())
-      .filter(w => w.status === 'idle' && (!workerType || w.type === workerType));
+    const availableWorkers = Array.from(workers.values()).filter(
+      (w) => w.status === 'idle' && (!workerType || w.type === workerType)
+    );
 
     if (availableWorkers.length === 0) return null;
 
     // Return worker with lowest current load
     return availableWorkers.reduce((prev, current) =>
-      (current.capacity > prev.capacity) ? current : prev
+      current.capacity > prev.capacity ? current : prev
     );
   }
 
@@ -88,8 +93,7 @@ export class WorkerManager {
   }
 
   async completeTask(taskId: string, workerId: string, result: TaskResult): Promise<void> {
-    const taskBefore =
-      (await taskQueue.getTask(taskId)) ?? (await supabaseService.getTask(taskId));
+    const taskBefore = (await taskQueue.getTask(taskId)) ?? (await supabaseService.getTask(taskId));
     await taskQueue.completeTask(taskId, result);
     if (taskBefore) {
       await supabaseService.saveTask({
@@ -103,8 +107,7 @@ export class WorkerManager {
   }
 
   async failTask(taskId: string, workerId: string, error: string): Promise<void> {
-    const taskBefore =
-      (await taskQueue.getTask(taskId)) ?? (await supabaseService.getTask(taskId));
+    const taskBefore = (await taskQueue.getTask(taskId)) ?? (await supabaseService.getTask(taskId));
     await taskQueue.failTask(taskId, error);
     if (taskBefore) {
       await supabaseService.saveTask({
@@ -122,7 +125,7 @@ export class WorkerManager {
     status: 'idle' | 'working' | 'offline',
     currentTaskId?: string
   ): Promise<Worker> {
-    let worker = await this.getWorker(workerId);
+    const worker = await this.getWorker(workerId);
     if (!worker) {
       throw new Error(`Worker ${workerId} not found`);
     }
@@ -147,9 +150,9 @@ export class WorkerManager {
     const allWorkers = this.getAllWorkers();
     return {
       total: allWorkers.length,
-      idle: allWorkers.filter(w => w.status === 'idle').length,
-      working: allWorkers.filter(w => w.status === 'working').length,
-      offline: allWorkers.filter(w => w.status === 'offline').length,
+      idle: allWorkers.filter((w) => w.status === 'idle').length,
+      working: allWorkers.filter((w) => w.status === 'working').length,
+      offline: allWorkers.filter((w) => w.status === 'offline').length,
     };
   }
 }

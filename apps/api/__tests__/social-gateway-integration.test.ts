@@ -100,7 +100,7 @@ describe('Gateway Integration - Unit Tests (callGatewayForContent)', () => {
         prompt: 'Create a LinkedIn post',
       });
 
-      expect(result.request_id).toMatch(/^syra:beta-corp:[a-f0-9\-]{36}$/);
+      expect(result.request_id).toMatch(/^syra:beta-corp:[a-f0-9-]{36}$/);
       expect(vi.mocked(gateway.logUsage)).toHaveBeenCalledWith(
         expect.objectContaining({
           request_id: result.request_id,
@@ -394,9 +394,7 @@ describe('Gateway Integration - Integration Tests (POST /api/social/publish)', (
     });
 
     const { multiPlatformPublisher } = await import('../lib/social/adapters/publisher');
-    vi.mocked(multiPlatformPublisher.publishToAll).mockResolvedValue(
-      mockPublisherResponse
-    );
+    vi.mocked(multiPlatformPublisher.publishToAll).mockResolvedValue(mockPublisherResponse);
 
     const request = new NextRequest('http://localhost/api/social/publish', {
       method: 'POST',

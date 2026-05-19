@@ -12,7 +12,7 @@ export async function GET(): Promise<Response> {
   if (token.length === 0) {
     return Response.json(
       { error: 'Server misconfiguration: PLATFORM_ADMIN_TOKEN is not set' },
-      { status: 500 },
+      { status: 500 }
     );
   }
 

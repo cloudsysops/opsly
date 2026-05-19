@@ -134,9 +134,17 @@ app.patch('/api/tasks/:id', async (req: Request, res: Response) => {
     }
 
     if (validated.status === 'completed' && validated.result) {
-      await workerManager.completeTask(taskId, validated.worker_id || task.worker_id || 'unknown', validated.result);
+      await workerManager.completeTask(
+        taskId,
+        validated.worker_id || task.worker_id || 'unknown',
+        validated.result
+      );
     } else if (validated.status === 'failed' && validated.result?.error) {
-      await workerManager.failTask(taskId, validated.worker_id || task.worker_id || 'unknown', validated.result.error);
+      await workerManager.failTask(
+        taskId,
+        validated.worker_id || task.worker_id || 'unknown',
+        validated.result.error
+      );
     } else if (validated.status === 'assigned' && validated.worker_id) {
       task.status = 'assigned';
       task.worker_id = validated.worker_id;
