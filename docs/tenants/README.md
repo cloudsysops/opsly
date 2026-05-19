@@ -15,6 +15,7 @@ Hub para **multi-tenant**: producción, runbooks, pruebas, onboarding y subclien
 | [`testing/`](testing/TENANT-TESTING-PLAN.md) | Plan y guía de pruebas en staging. |
 | [`onboarding-prompts/`](onboarding-prompts/TENANT-ONBOARDING-TEMPLATE.md) | Plantillas y validación de onboarding (histórico `docs/prompts/tenant-onboarding/`). |
 | [`legalvial/`](legalvial/LEGALVIAL-ARCHITECTURE-DECISION.md) | Notas del subcliente LegalVial (LocalRank). |
+| [`peskids/`](peskids/README.md) | Tenant incubado Peskids (MVP, extracción a `peskids-platform`). |
 
 **Stubs de compatibilidad** (no editar): `docs/stubs/TENANT-PRODUCTION-*.md`, `docs/04-infrastructure/TENANT-PRODUCTION-*.md`, `docs/runbooks/TENANT-*.md` relevantes, `docs/01-development/TENANT-TESTING-*.md`, `docs/prompts/tenant-onboarding/*.md`.
 
