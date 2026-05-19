@@ -1,4 +1,10 @@
-export type TaskStatus = 'pending' | 'assigned' | 'executing' | 'completed' | 'failed' | 'cancelled';
+export type TaskStatus =
+  | 'pending'
+  | 'assigned'
+  | 'executing'
+  | 'completed'
+  | 'failed'
+  | 'cancelled';
 export type TaskType = 'implementation' | 'bugfix' | 'refactor' | 'research' | 'documentation';
 export type WorkerType = 'cursor' | 'ci-runner' | 'claude-research';
 
