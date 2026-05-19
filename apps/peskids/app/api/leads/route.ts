@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseServer } from '@/lib/supabase'
 import { emitLeadCreated } from '@/lib/events'
+import type { Database } from '@/lib/types'
 
 export async function POST(request: NextRequest) {
   try {
@@ -33,17 +34,18 @@ export async function POST(request: NextRequest) {
     const supabase = supabaseServer()
 
     // Insert into database
+    const leadPayload: any = {
+      tenant_id: tenantId,
+      name,
+      email,
+      phone: phone || null,
+      grade_interested,
+      referral_source: referral_source || null,
+      status: 'new',
+    }
     const { data, error } = await supabase
       .from('leads')
-      .insert({
-        tenant_id: tenantId,
-        name,
-        email,
-        phone: phone || null,
-        grade_interested,
-        referral_source: referral_source || null,
-        status: 'new',
-      })
+      .insert(leadPayload)
       .select()
       .single()
 
@@ -56,21 +58,22 @@ export async function POST(request: NextRequest) {
     }
 
     // Emit event
+    const lead = data as Database['public']['Tables']['leads']['Row']
     try {
       await emitLeadCreated(
-        data.id,
-        data.name,
-        data.email,
-        data.phone,
-        data.grade_interested,
-        data.referral_source
+        lead.id,
+        lead.name,
+        lead.email,
+        lead.phone,
+        lead.grade_interested,
+        lead.referral_source
       )
     } catch (eventError) {
       console.error('Event emission error:', eventError)
     }
 
     return NextResponse.json(
-      { id: data.id, message: 'Lead created successfully' },
+      { id: lead.id, message: 'Lead created successfully' },
       { status: 201 }
     )
   } catch (error) {

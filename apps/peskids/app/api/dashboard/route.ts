@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { supabaseServer } from '@/lib/supabase'
-import { DashboardData } from '@/lib/types'
+import type { Database, DashboardData } from '@/lib/types'
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const tenantId = process.env.NEXT_PUBLIC_TENANT_ID || 'peskids'
     const supabase = supabaseServer()
@@ -36,7 +36,8 @@ export async function GET(request: NextRequest) {
 
     // Count students by grade
     const studentsByGrade: Record<string, number> = {}
-    students?.forEach(student => {
+    const typedStudents = students as Array<Pick<Database['public']['Tables']['students']['Row'], 'grade'>>
+    typedStudents?.forEach(student => {
       studentsByGrade[student.grade] = (studentsByGrade[student.grade] || 0) + 1
     })
 
@@ -62,12 +63,12 @@ export async function GET(request: NextRequest) {
 
     const dashboardData: DashboardData = {
       new_leads_count: newLeads?.length || 0,
-      new_leads: newLeads || [],
+      new_leads: (newLeads as Array<Pick<Database['public']['Tables']['leads']['Row'], 'id' | 'name' | 'email' | 'phone' | 'grade_interested'>>) || [],
       active_students_count: students?.length || 0,
       students_by_grade: studentsByGrade,
-      recent_feedback: recentFeedback || [],
+      recent_feedback: (recentFeedback as Array<Pick<Database['public']['Tables']['feedback']['Row'], 'id' | 'child_name' | 'satisfaction' | 'suggestion'>>) || [],
       pending_followups_count: pendingFollowups?.length || 0,
-      pending_followups: pendingFollowups || [],
+      pending_followups: (pendingFollowups as Array<Pick<Database['public']['Tables']['followups']['Row'], 'id' | 'contact_id' | 'due_date' | 'type'>>) || [],
     }
 
     return NextResponse.json(dashboardData)

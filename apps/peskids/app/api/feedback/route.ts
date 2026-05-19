@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseServer } from '@/lib/supabase'
 import { emitFeedbackCreated } from '@/lib/events'
+import type { Database } from '@/lib/types'
 
 export async function POST(request: NextRequest) {
   try {
@@ -33,16 +34,17 @@ export async function POST(request: NextRequest) {
     const supabase = supabaseServer()
 
     // Insert into database
+    const feedbackPayload: any = {
+      tenant_id: tenantId,
+      child_name,
+      satisfaction,
+      suggestion: suggestion || null,
+      contact_wanted: contact_wanted || false,
+      parent_email: parent_email || '',
+    }
     const { data, error } = await supabase
       .from('feedback')
-      .insert({
-        tenant_id: tenantId,
-        child_name,
-        satisfaction,
-        suggestion: suggestion || null,
-        contact_wanted: contact_wanted || false,
-        parent_email: parent_email || '',
-      })
+      .insert(feedbackPayload)
       .select()
       .single()
 
@@ -55,20 +57,21 @@ export async function POST(request: NextRequest) {
     }
 
     // Emit event
+    const feedback = data as Database['public']['Tables']['feedback']['Row']
     try {
       await emitFeedbackCreated(
-        data.id,
-        data.child_name,
-        data.satisfaction,
-        data.suggestion,
-        data.parent_email
+        feedback.id,
+        feedback.child_name,
+        feedback.satisfaction,
+        feedback.suggestion,
+        feedback.parent_email
       )
     } catch (eventError) {
       console.error('Event emission error:', eventError)
     }
 
     return NextResponse.json(
-      { id: data.id, message: 'Feedback submitted successfully' },
+      { id: feedback.id, message: 'Feedback submitted successfully' },
       { status: 201 }
     )
   } catch (error) {

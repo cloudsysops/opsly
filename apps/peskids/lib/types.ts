@@ -14,7 +14,16 @@ export type Database = {
           status: 'new' | 'contacted' | 'enrolled' | 'archived'
           admin_notes: string | null
         }
-        Insert: Omit<Database['public']['Tables']['leads']['Row'], 'id' | 'created_at'>
+        Insert: {
+          tenant_id: string
+          name: string
+          email: string
+          phone?: string | null
+          grade_interested: string
+          referral_source?: string | null
+          status?: 'new' | 'contacted' | 'enrolled' | 'archived'
+          admin_notes?: string | null
+        }
         Update: Partial<Database['public']['Tables']['leads']['Insert']>
       }
       students: {
@@ -28,7 +37,14 @@ export type Database = {
           enrollment_date: string
           created_at: string
         }
-        Insert: Omit<Database['public']['Tables']['students']['Row'], 'id' | 'created_at'>
+        Insert: {
+          tenant_id: string
+          name: string
+          grade: string
+          status?: 'active' | 'inactive'
+          parent_email: string
+          enrollment_date?: string
+        }
         Update: Partial<Database['public']['Tables']['students']['Insert']>
       }
       feedback: {
@@ -42,7 +58,14 @@ export type Database = {
           parent_email: string
           created_at: string
         }
-        Insert: Omit<Database['public']['Tables']['feedback']['Row'], 'id' | 'created_at'>
+        Insert: {
+          tenant_id: string
+          child_name: string
+          satisfaction: number
+          suggestion?: string | null
+          contact_wanted?: boolean
+          parent_email?: string
+        }
         Update: Partial<Database['public']['Tables']['feedback']['Insert']>
       }
       followups: {
@@ -57,7 +80,15 @@ export type Database = {
           notes: string | null
           created_at: string
         }
-        Insert: Omit<Database['public']['Tables']['followups']['Row'], 'id' | 'created_at'>
+        Insert: {
+          tenant_id: string
+          contact_id: string
+          contact_type: 'lead' | 'student' | 'parent'
+          type: 'call' | 'email' | 'sms' | 'in-person'
+          due_date: string
+          status?: 'pending' | 'completed' | 'cancelled'
+          notes?: string | null
+        }
         Update: Partial<Database['public']['Tables']['followups']['Insert']>
       }
     }
