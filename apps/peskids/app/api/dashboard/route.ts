@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabaseServer } from '@/lib/supabase'
+import { supabaseServer, getRecentMessages } from '@/lib/supabase'
 import type { Database, DashboardData } from '@/lib/types'
 
 function validateAdminAuth(req: NextRequest): { valid: boolean; error?: string } {
@@ -86,6 +86,9 @@ export async function GET(req: NextRequest) {
 
     if (followupsError) throw followupsError
 
+    // Fetch recent inbound messages (WhatsApp, Instagram, etc.)
+    const recentMessages = await getRecentMessages(tenantId, 10)
+
     const dashboardData: DashboardData = {
       new_leads_count: newLeads?.length || 0,
       new_leads: (newLeads as Array<Pick<Database['public']['Tables']['leads']['Row'], 'id' | 'name' | 'email' | 'phone' | 'grade_interested'>>) || [],
@@ -94,6 +97,7 @@ export async function GET(req: NextRequest) {
       recent_feedback: (recentFeedback as Array<Pick<Database['public']['Tables']['feedback']['Row'], 'id' | 'child_name' | 'satisfaction' | 'suggestion'>>) || [],
       pending_followups_count: pendingFollowups?.length || 0,
       pending_followups: (pendingFollowups as Array<Pick<Database['public']['Tables']['followups']['Row'], 'id' | 'contact_id' | 'due_date' | 'type'>>) || [],
+      recent_messages: recentMessages || [],
     }
 
     return NextResponse.json(dashboardData)

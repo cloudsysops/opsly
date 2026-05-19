@@ -29,3 +29,20 @@ function createServerClient(token?: string) {
 export const supabaseServer = (token?: string) => {
   return createServerClient(token)
 }
+
+export async function getRecentMessages(tenantId: string, limit: number = 10) {
+  const client = supabaseServer()
+  const { data, error } = await client
+    .from('messages')
+    .select('*')
+    .eq('tenant_id', tenantId)
+    .order('created_at', { ascending: false })
+    .limit(limit)
+
+  if (error) {
+    console.error('Error fetching recent messages:', error)
+    return []
+  }
+
+  return data || []
+}

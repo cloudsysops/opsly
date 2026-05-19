@@ -95,6 +95,28 @@ export type Database = {
         }
         Update: Partial<Database['public']['Tables']['followups']['Insert']>
       }
+      messages: {
+        Row: {
+          id: string
+          tenant_id: string
+          source: 'whatsapp' | 'instagram' | 'web'
+          sender_name: string | null
+          sender_contact: string
+          message_text: string
+          external_id: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          tenant_id: string
+          source: 'whatsapp' | 'instagram' | 'web'
+          sender_name?: string | null
+          sender_contact: string
+          message_text: string
+          external_id?: string | null
+        }
+        Update: Partial<Database['public']['Tables']['messages']['Insert']>
+      }
     }
   }
 }
@@ -115,4 +137,5 @@ export interface DashboardData {
   recent_feedback: Pick<Database['public']['Tables']['feedback']['Row'], 'id' | 'child_name' | 'satisfaction' | 'suggestion'>[]
   pending_followups_count: number
   pending_followups: Pick<Database['public']['Tables']['followups']['Row'], 'id' | 'contact_id' | 'due_date' | 'type'>[]
+  recent_messages: Pick<Database['public']['Tables']['messages']['Row'], 'id' | 'source' | 'sender_name' | 'sender_contact' | 'message_text' | 'created_at'>[]
 }
