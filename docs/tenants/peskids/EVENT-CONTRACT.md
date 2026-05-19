@@ -444,6 +444,33 @@ const channel = supabase
 
 ---
 
+## Event: whatsapp.message.received (planificado — MVP+1)
+
+**Producer:** Webhook Jelou/Meta → n8n `peskids-whatsapp-inbound`  
+**Consumer:** Dashboard cola WhatsApp, posible vínculo a `lead_id`  
+**Timing:** Al recibir mensaje inbound  
+**Sprint 01:** No implementado — ver [WHATSAPP-CHANNEL.md](./WHATSAPP-CHANNEL.md)
+
+**Payload (borrador):**
+```json
+{
+  "event_type": "whatsapp.message.received",
+  "event_id": "uuid",
+  "tenant_id": "peskids",
+  "timestamp": "2026-05-20T16:00:00Z",
+  "message_id": "provider-message-id",
+  "from_phone": "+57...",
+  "body_preview": "first 200 chars",
+  "direction": "inbound"
+}
+```
+
+**Privacy:** No almacenar media binaria en evento; solo referencia.
+
+**Prohibido en Fase 1:** disparar envío outbound automático.
+
+---
+
 ## Event Versioning
 
 **Current version:** 1.0

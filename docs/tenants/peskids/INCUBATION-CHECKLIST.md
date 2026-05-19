@@ -30,7 +30,7 @@ Marcar con fecha y responsable. Evidencia en notas o enlace a ticket — no secr
 
 ## Canales (futuro — inventario ahora)
 
-- [ ] **WhatsApp / Jelou** — titular del número y proveedor; **no activar API en MVP**
+- [ ] **WhatsApp** — titular del número; proveedor (Jelou vs Meta) en [WHATSAPP-CHANNEL.md](./WHATSAPP-CHANNEL.md); **Fase 0 manual**; API después de Sprint 01
 - [ ] **Email transaccional** — Resend/dominio verificado para alertas
 - [ ] **Discord/webhook** — si se usa para alertas ops
 
