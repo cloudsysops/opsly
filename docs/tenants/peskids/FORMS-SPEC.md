@@ -109,10 +109,11 @@ CREATE TABLE leads (
 }
 ```
 
-### Admin Notification
+### Admin Notification (Sprint 01)
 
-- Email to owner: "New lead: Maria Rodriguez (K–5)"
-- Link to dashboard for follow-up
+- Dashboard: nueva tarjeta / fila en lista de leads (tiempo real si aplica)
+- **Sin** email automático al owner en Sprint 01
+- Owner abre dashboard o WhatsApp manual para contactar al padre
 
 ### Success Page
 
@@ -223,12 +224,13 @@ CREATE TABLE feedback (
 }
 ```
 
-### Admin Alert
+### Admin Alert (Sprint 01)
 
 **If satisfaction < 3:**
-- Email to owner: "Low feedback: Emma Martinez (2 stars)"
-- Link to feedback detail in dashboard
-- Message: "Parent would like to discuss" (if contact_wanted = true)
+- Flag en dashboard + destacar en lista de feedback
+- **Sin** email automático al owner en Sprint 01
+- Si `contact_wanted = true`: mostrar badge "Padre pide contacto" en detalle
+- Seguimiento por WhatsApp manual según [WHATSAPP-CHANNEL.md](./WHATSAPP-CHANNEL.md)
 
 ### Success Message
 

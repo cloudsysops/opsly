@@ -44,6 +44,7 @@ Peskids es un **tenant activo** en la plataforma Opsly (plan **startup**) y el *
 | [ARCHITECTURE.md](./ARCHITECTURE.md) | Vista Opsly ↔ Peskids |
 | [DATA-MODEL.md](./DATA-MODEL.md) | Entidades de producto |
 | [WORKFLOWS.md](./WORKFLOWS.md) | Flujos n8n |
+| [WHATSAPP-CHANNEL.md](./WHATSAPP-CHANNEL.md) | Plan WhatsApp (manual → API approval-first) |
 | [AI-APPROVAL-POLICY.md](./AI-APPROVAL-POLICY.md) | IA approval-first |
 | [OPS-RUNBOOK.md](./OPS-RUNBOOK.md) | Comandos lectura |
 | [BLUEPRINT-MAPPING.md](./BLUEPRINT-MAPPING.md) | Validación blueprint |
