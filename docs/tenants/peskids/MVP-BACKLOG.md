@@ -316,7 +316,7 @@
 | Epic | Priority | Status | LOE | Owner | Notes |
 |------|----------|--------|-----|-------|-------|
 | Landing | P0 | todo | 2d | Design + Cursor | Minimum viable landing page |
-| Lead Capture | P0 | todo | 2d | Codex | Form + dashboard (no email auto Sprint 01) |
+| Lead Capture | P0 | todo | 2d | Codex | Form + email notification |
 | Parent Feedback | P1 | todo | 1.5d | Codex | Weekly pulse check |
 | Dashboard | P0 | todo | 3d | Cursor | Core feature, 5-card minimum |
 | Follow-ups | P1 | planned | 2d | Codex | Manual workflow support |
@@ -324,8 +324,6 @@
 | Content | P2 | deferred | 1d | Codex | Stretch goal, Sprint 02 |
 | Events | P1 | planned | 1d | Codex | Opsly integration |
 | Extraction | P2 | planned | 2d | Arch | Post-MVP |
-| WhatsApp inbound | P1 | planned | 3d | Codex | MVP+1; [WHATSAPP-CHANNEL.md](./WHATSAPP-CHANNEL.md) Fase 1 |
-| WhatsApp outbound | P2 | deferred | 2d | Codex | Solo con cola `approved` |
 
 **Total MVP LOE:** ~13 days (1 developer, 2 weeks)
 
@@ -339,10 +337,9 @@
 3. Owner receives weekly summary email
 4. Parents can submit feedback via form
 5. All data integrates with Opsly event bus
-6. No WhatsApp API / auto-messaging needed to launch (WhatsApp manual OK)
+6. No WhatsApp/AI/automation needed to launch
 
 ❌ **What's NOT in MVP:**
-- WhatsApp API or automated outbound messaging
 - Automated messaging or scheduling
 - AI-generated suggestions
 - Multi-language support
