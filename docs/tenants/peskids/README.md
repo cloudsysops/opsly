@@ -1,98 +1,102 @@
+# Peskids — Opsly Operational Pilot
+
+**Status:** Incubation (Phase 1 — Design & Validation)  
+**Role:** Reference pilot for Opsly multi-tenant operations framework  
+**Owner:** CloudSysOps (incubated tenant)  
+**Blueprint:** Opsly Operational Blueprint v0.1
+
 ---
-status: draft
-owner: product
-last_review: 2026-05-19
-tenant_slug: peskids
+
+## What is Peskids?
+
+Peskids is an after-school education program management platform incubated within Opsly. It serves as the **first operational pilot** for the Opsly Operational Blueprint, proving how a real tenant:
+
+- Operates within the multi-tenant isolation model
+- Uses event-driven architecture for cross-service communication
+- Implements approval-first AI workflows
+- Follows incubation → extraction lifecycle
+- Maintains operational safety without sacrificing user experience
+
+## Why Peskids?
+
+Peskids was selected as the pilot because it:
+
+1. **Realistic operational scope** — 5-7 user stories per sprint, manageable
+2. **Clear approval-first requirement** — No auto-send, no automations without owner approval
+3. **Fits Opsly's multi-tenant model perfectly** — Isolated leads, students, feedback, follow-ups by tenant
+4. **Demonstrates extraction potential** — Clear future path to standalone platform
+5. **Low infrastructure risk** — Uses existing Supabase, no new systems needed
+
+## Key Phases
+
+| Phase | Timeline | Focus | Owner |
+|-------|----------|-------|-------|
+| **Phase 1: Design & Validation** | 7 days (Sprint 01) | Wireframes, specs, demo | CloudSysOps Product |
+| **Phase 2: MVP Build** | 7 days (Sprint 02) | Landing page, forms, dashboard | CloudSysOps Dev |
+| **Phase 3: Launch & Ops** | 7 days (Sprint 03) | Live, first real users, metrics | CloudSysOps Ops |
+| **Phase 4: Stabilization** | Ongoing | Monitoring, feedback loops, scaling | CloudSysOps + Opsly Ops Agent |
+
+## Documentation Structure
+
+- **[BLUEPRINT-MAPPING.md](./BLUEPRINT-MAPPING.md)** — How Peskids aligns with Opsly Operational Blueprint v0.1
+- **[EXTRACTION-PLAN.md](./EXTRACTION-PLAN.md)** — Incubation → extraction lifecycle and versioning strategy
+- **[MVP-PLAN.md](./MVP-PLAN.md)** — MVP architecture grounded in operational blueprint
+- **[MVP-BACKLOG.md](./MVP-BACKLOG.md)** — 9 prioritized epics with acceptance criteria
+- **[SPRINT-01.md](./SPRINT-01.md)** — 7-day sprint plan (design & validation)
+- **[DASHBOARD-SPEC.md](./DASHBOARD-SPEC.md)** — 5-card admin dashboard specification
+- **[FORMS-SPEC.md](./FORMS-SPEC.md)** — 4 forms with validation, API, events
+- **[EVENT-CONTRACT.md](./EVENT-CONTRACT.md)** — 9 events and Opsly integration contract
+- **[DEMO-SCRIPT.md](./DEMO-SCRIPT.md)** — Bilingual 10-minute demo for owner
+
+## Quick Start (for Ops)
+
+**For owner review:**
+1. Read BLUEPRINT-MAPPING.md (5 min) — understand Peskids role in Opsly
+2. Watch DEMO-SCRIPT.md (10 min, in person or video) — see landing page, dashboard, forms
+3. Review MVP-PLAN.md (10 min) — understand timeline and phases
+
+**For team execution:**
+1. Read MVP-BACKLOG.md — epics, priorities, dependencies
+2. Execute SPRINT-01.md — 7 days of design and validation
+3. Move to SPRINT-02.md upon owner approval
+
+## Opsly Integration Points
+
+**Event Bus:** Peskids emits 9 events to Opsly event bus for:
+- Lead capture attribution (which channel converts best?)
+- Analytics dashboards (cross-tenant benchmarking future)
+- Follow-up automation triggers (if owner opts in)
+- Weekly report generation (with owner approval)
+
+**Tenant Isolation:** 
+- Supabase RLS policies enforce tenant data separation
+- No lead from Tenant A visible to Tenant B
+- Events tagged with tenant_id for proper routing
+
+**Approval-First AI:**
+- No auto-messaging to parents (yet)
+- No auto-follow-up creation (yet)
+- No auto-enrollment (yet)
+- Owner approves every action that touches parents/students
+
+## Success Metrics (Phase 1–3)
+
+- **Phase 1:** Owner says "yes, build this" after demo ✅
+- **Phase 2:** Landing page live, first 5 real leads captured ✅
+- **Phase 3:** 20+ leads captured, 3+ students enrolled, owner uses dashboard daily ✅
+
+## Future (Post-MVP)
+
+- **Multi-language** (Spanish, Portuguese, English)
+- **WhatsApp integration** (approval-first messaging)
+- **AI suggestions** (smart follow-up ideas, parent sentiment)
+- **Webhook APIs** (3rd-party CRM sync)
+- **Standalone extraction** (Peskids as independent product)
+
 ---
 
-# Peskids — tenant incubado en Opsly
+## Related
 
-Peskids es un **tenant activo** en la plataforma Opsly (plan **startup**) y el **primer piloto** del [Opsly Operational Blueprint v0.1](../../blueprints/opsly-operational-blueprint/README.md). Opsly actúa como **incubadora**: stack n8n + monitoreo, CRM base y futura capa de producto. Objetivo: **extraer** `peskids-platform` sin depender del runtime de orquestación de Opsly.
-
-**Fase actual (ejecución):** Diseño y validación — ver [SPRINT-01.md](./SPRINT-01.md).
-
-## Estado actual (snapshot repo)
-
-| Área | Estado | Notas |
-|------|--------|--------|
-| Registro plataforma | Activo | `config/opsly.config.json`: slug `peskids`, owner `sierrasantiago90@gmail.com`, plan `startup` |
-| Config tenant | Plantilla | `config/tenants/peskids.json` — ver propuesta abajo |
-| VPS (documentado) | Stack esperado | `tenant_peskids`; `n8n_peskids` + Uptime Kuma |
-| CRM n8n | Documentado | 4 workflows `Opsly CRM` (AGENTS 2026-04-30) — verificar en VPS |
-| Producto / MVP | Código en repo | API `POST /api/public/tenants/peskids/*`; migración `0053` (aplicar en Supabase) |
-| Blueprint | Alineado | [BLUEPRINT-MAPPING.md](./BLUEPRINT-MAPPING.md) |
-
-**Fuente de verdad operativa:** Supabase `platform.tenants` + VPS.
-
-## Qué existe hoy
-
-- Inventario: [`../production/TENANT-PRODUCTION-BASELINE.md`](../production/TENANT-PRODUCTION-BASELINE.md)
-- URLs: `https://n8n-peskids.op-sly.com`, `https://uptime-peskids.op-sly.com`
-- CRM Starter Pack: [`config/n8n-workflows/catalog.json`](../../../config/n8n-workflows/catalog.json)
-
-## Primer MVP (resumen)
-
-**Visibilidad + leads + feedback + follow-up con aprobación humana + reporte semanal** — sin mensajería autónoma. Detalle: [MVP-PLAN.md](./MVP-PLAN.md).
-
-## Mapa de documentación
-
-### Incubación y operación (ES)
-
-| Documento | Propósito |
-|-----------|-----------|
-| [MVP-PLAN.md](./MVP-PLAN.md) | Alcance MVP y principios blueprint |
-| [ARCHITECTURE.md](./ARCHITECTURE.md) | Vista Opsly ↔ Peskids |
-| [DATA-MODEL.md](./DATA-MODEL.md) | Entidades de producto |
-| [WORKFLOWS.md](./WORKFLOWS.md) | Flujos n8n |
-| [WHATSAPP-CHANNEL.md](./WHATSAPP-CHANNEL.md) | Plan WhatsApp (manual → API approval-first) |
-| [AI-APPROVAL-POLICY.md](./AI-APPROVAL-POLICY.md) | IA approval-first |
-| [OPS-RUNBOOK.md](./OPS-RUNBOOK.md) | Comandos lectura |
-| [BLUEPRINT-MAPPING.md](./BLUEPRINT-MAPPING.md) | Validación blueprint |
-| [EXTRACTION-PLAN.md](./EXTRACTION-PLAN.md) | Extracción a repo propio |
-| [CLIENT-PITCH.md](./CLIENT-PITCH.md) | Explicación cliente |
-| [INCUBATION-CHECKLIST.md](./INCUBATION-CHECKLIST.md) | Checklist incubación |
-| [FUTURE-REPO-SEED.md](./FUTURE-REPO-SEED.md) | Semilla `peskids-platform` |
-
-### Sprint 01 — diseño y validación
-
-| Documento | Propósito |
-|-----------|-----------|
-| [MVP-BACKLOG.md](./MVP-BACKLOG.md) | Épicas y prioridades |
-| [SPRINT-01.md](./SPRINT-01.md) | Plan 7 días |
-| [DASHBOARD-SPEC.md](./DASHBOARD-SPEC.md) | 5 tarjetas admin |
-| [FORMS-SPEC.md](./FORMS-SPEC.md) | 4 formularios + eventos |
-| [EVENT-CONTRACT.md](./EVENT-CONTRACT.md) | 9 eventos Opsly |
-| [DEMO-SCRIPT.md](./DEMO-SCRIPT.md) | Demo 10 min owner |
-
-## Quick start
-
-**Owner:** BLUEPRINT-MAPPING → DEMO-SCRIPT → MVP-PLAN.
-
-**Equipo:** MVP-BACKLOG → SPRINT-01 → (tras OK owner) Sprint 02.
-
-## Blueprint alignment
-
-- Blueprint en **draft v0.1**; Peskids lo **valida**, no lo canoniza.
-- Ciclo: incubar → validar → extraer ([EXTRACTION-PLAN.md](./EXTRACTION-PLAN.md)).
-- Hub blueprint: [`../../blueprints/opsly-operational-blueprint/`](../../blueprints/opsly-operational-blueprint/)
-
-## Config review (propuesta, no aplicada)
-
-```json
-{
-  "tenant_name": "Peskids",
-  "tenant_slug": "peskids",
-  "workflows_count": 4,
-  "incubation_status": "active_pilot",
-  "product_repo_planned": "cloudsysops/peskids-platform",
-  "notes": "Incubado Opsly. CRM 4 workflows VPS 2026-04-30. Tenant directo."
-}
-```
-
-Aplicar solo tras validación owner + `./scripts/validate-subclient-config.sh`.
-
-## Enlaces Opsly
-
-- Hub tenants: [`../README.md`](../README.md)
-- Blueprint: [`../../blueprints/opsly-operational-blueprint/README.md`](../../blueprints/opsly-operational-blueprint/README.md)
-- Brain: [`../../brain/tenants/peskids.md`](../../brain/tenants/peskids.md)
+- Opsly Operational Blueprint: `docs/blueprints/opsly-operational-blueprint/`
+- AGENTS.md: Current operational status
+- VISION.md: Opsly product direction
