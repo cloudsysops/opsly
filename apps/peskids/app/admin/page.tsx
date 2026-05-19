@@ -163,6 +163,42 @@ export default function AdminDashboard() {
               )}
             </div>
           </div>
+
+          {/* New Inbound Messages Card */}
+          <div className="bg-white rounded-lg shadow-md p-6 border-l-4 border-purple-500">
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">New Inbound Messages</h2>
+            <div className="space-y-3 max-h-48 overflow-y-auto">
+              {data.recent_messages.length > 0 ? (
+                data.recent_messages.map(msg => {
+                  const sourceEmoji = msg.source === 'whatsapp' ? '💬' : msg.source === 'instagram' ? '📱' : '💻'
+                  const sourceColor = msg.source === 'whatsapp' ? 'bg-green-100 text-green-800' : msg.source === 'instagram' ? 'bg-pink-100 text-pink-800' : 'bg-blue-100 text-blue-800'
+                  const displayName = msg.sender_name || msg.sender_contact
+                  const messagePreview = msg.message_text.length > 40 ? msg.message_text.substring(0, 40) + '...' : msg.message_text
+                  const timestamp = new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+
+                  return (
+                    <div key={msg.id} className="border-t border-gray-200 pt-3 first:border-t-0 first:pt-0 cursor-pointer hover:bg-gray-50 p-2 -m-2 rounded">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="text-lg">{sourceEmoji}</span>
+                            <p className="font-medium text-gray-900 text-sm">{displayName}</p>
+                            <span className={`inline-block px-2 py-0.5 rounded text-xs font-medium ${sourceColor}`}>
+                              {msg.source}
+                            </span>
+                          </div>
+                          <p className="text-xs text-gray-600">{messagePreview}</p>
+                        </div>
+                        <p className="text-xs text-gray-400 ml-2">{timestamp}</p>
+                      </div>
+                    </div>
+                  )
+                })
+              ) : (
+                <p className="text-gray-500 text-sm">No inbound messages</p>
+              )}
+            </div>
+          </div>
         </div>
 
         {/* Info Card */}
