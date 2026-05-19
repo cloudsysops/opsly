@@ -1,97 +1,98 @@
 ---
 status: draft
 owner: product
-last_review: 2026-05-19
+last_review: 2026-05-18
 tenant_slug: peskids
 ---
 
 # Peskids — tenant incubado en Opsly
 
-Peskids es un **tenant activo** en la plataforma Opsly (plan **startup**) y el **primer piloto** del [Opsly Operational Blueprint v0.1](../../blueprints/opsly-operational-blueprint/README.md). Opsly actúa como **incubadora**: stack n8n + monitoreo, CRM base y futura capa de producto. Objetivo: **extraer** `peskids-platform` sin depender del runtime de orquestación de Opsly.
-
-**Fase actual (ejecución):** Diseño y validación — ver [SPRINT-01.md](./SPRINT-01.md).
+Peskids es un **tenant activo** en la plataforma Opsly (plan **startup**). Opsly actúa como **incubadora y plano de control**: stack n8n + monitoreo, CRM base y futura capa de datos/producto. El objetivo a medio plazo es **extraer** un producto independiente (`peskids-platform`) sin romper Opsly ni depender permanentemente del runtime de orquestación de Opsly.
 
 ## Estado actual (snapshot repo)
 
 | Área | Estado | Notas |
 |------|--------|--------|
-| Registro plataforma | Activo | `config/opsly.config.json`: slug `peskids`, owner `sierrasantiago90@gmail.com`, plan `startup` |
-| Config tenant | Plantilla | `config/tenants/peskids.json` — ver propuesta abajo |
-| VPS (documentado) | Stack esperado | `tenant_peskids`; `n8n_peskids` + Uptime Kuma |
-| CRM n8n | Documentado | 4 workflows `Opsly CRM` (AGENTS 2026-04-30) — verificar en VPS |
-| Producto / MVP | En diseño | Specs Sprint 01; sin Supabase producto aún |
-| Blueprint | Alineado | [BLUEPRINT-MAPPING.md](./BLUEPRINT-MAPPING.md) |
+| Registro plataforma | Activo | `config/opsly.config.json`: slug `peskids`, owner `sierrasantiago90@gmail.com`, plan `startup`, `createdAt` 2026-04-07 |
+| Config tenant | Plantilla | `config/tenants/peskids.json` — `workflows_count: 0`, sin dominio portal propio documentado |
+| Brain Obsidian | Candidato | `docs/brain/tenants/peskids.md` — incompleto; ver hub canónico **aquí** |
+| VPS (documentado) | Stack esperado | Proyecto Compose `tenant_peskids`; contenedores `n8n_peskids` + Uptime Kuma |
+| CRM n8n (documentado) | Probable en VPS | AGENTS (2026-04-30): 4 workflows `Opsly CRM` en `n8n_peskids` — **no verificado en esta sesión** |
+| Producto / MVP | No definido en repo | Sin Supabase de producto, sin dashboard Peskids, sin dominio cliente final |
+| Extracción | Planificado | Ver [EXTRACTION-PLAN.md](./EXTRACTION-PLAN.md) |
 
-**Fuente de verdad operativa:** Supabase `platform.tenants` + VPS.
+**Fuente de verdad operativa:** Supabase `platform.tenants` + estado en VPS. El JSON de config y `system_state.json` pueden ir por detrás de la DB.
 
 ## Qué existe hoy
 
-- Inventario: [`../production/TENANT-PRODUCTION-BASELINE.md`](../production/TENANT-PRODUCTION-BASELINE.md)
-- URLs: `https://n8n-peskids.op-sly.com`, `https://uptime-peskids.op-sly.com`
-- CRM Starter Pack: [`config/n8n-workflows/catalog.json`](../../../config/n8n-workflows/catalog.json)
+- Tenant slug **`peskids`** en inventario de producción ([`../production/TENANT-PRODUCTION-BASELINE.md`](../production/TENANT-PRODUCTION-BASELINE.md)).
+- URLs convención Opsly (staging `op-sly.com`):
+  - `https://n8n-peskids.op-sly.com`
+  - `https://uptime-peskids.op-sly.com`
+- Perfil LLM plataforma: **`hybrid`** (`apps/llm-gateway/src/config/budgets.ts`).
+- Catálogo marketplace n8n: **CRM Starter Pack** aplicable a tenants `startup` ([`config/n8n-workflows/catalog.json`](../../../config/n8n-workflows/catalog.json)).
+- Instalador referencia: `scripts/install-crm-workflows.sh` (no ejecutar desde doc sin aprobación).
+
+## Qué falta (incubación)
+
+- Contexto comercial y alcance MVP acordado con el owner.
+- `config/tenants/peskids.json` alineado a realidad (workflows, dominio, notas de producto).
+- Modelo de datos de producto (Supabase futuro) y dashboards padres/estudiantes/docentes.
+- Workflows Peskids **específicos** (más allá del CRM genérico Opsly).
+- Política AI y métricas del primer dashboard.
+- Decisión de dominio, WhatsApp (Jelou) y redes — **futuro**, no en MVP infra.
+- Eventos hacia/desde Opsly para extracción ([EXTRACTION-PLAN.md](./EXTRACTION-PLAN.md)).
 
 ## Primer MVP (resumen)
 
-**Visibilidad + leads + feedback + follow-up con aprobación humana + reporte semanal** — sin mensajería autónoma. Detalle: [MVP-PLAN.md](./MVP-PLAN.md).
+Ver detalle en [MVP-PLAN.md](./MVP-PLAN.md). En una línea: **visibilidad + captura de leads + feedback de padres + seguimiento con aprobación humana + reporte semanal**, sin mensajería autónoma.
 
 ## Mapa de documentación
 
-### Incubación y operación (ES)
-
 | Documento | Propósito |
 |-----------|-----------|
-| [MVP-PLAN.md](./MVP-PLAN.md) | Alcance MVP y principios blueprint |
-| [ARCHITECTURE.md](./ARCHITECTURE.md) | Vista Opsly ↔ Peskids |
-| [DATA-MODEL.md](./DATA-MODEL.md) | Entidades de producto |
-| [WORKFLOWS.md](./WORKFLOWS.md) | Flujos n8n |
-| [AI-APPROVAL-POLICY.md](./AI-APPROVAL-POLICY.md) | IA approval-first |
-| [OPS-RUNBOOK.md](./OPS-RUNBOOK.md) | Comandos lectura |
-| [BLUEPRINT-MAPPING.md](./BLUEPRINT-MAPPING.md) | Validación blueprint |
-| [EXTRACTION-PLAN.md](./EXTRACTION-PLAN.md) | Extracción a repo propio |
-| [CLIENT-PITCH.md](./CLIENT-PITCH.md) | Explicación cliente |
-| [INCUBATION-CHECKLIST.md](./INCUBATION-CHECKLIST.md) | Checklist incubación |
-| [FUTURE-REPO-SEED.md](./FUTURE-REPO-SEED.md) | Semilla `peskids-platform` |
+| [MVP-PLAN.md](./MVP-PLAN.md) | Alcance MVP y criterios de aceptación |
+| [ARCHITECTURE.md](./ARCHITECTURE.md) | Vista actual y futura (Opsly ↔ Peskids) |
+| [DATA-MODEL.md](./DATA-MODEL.md) | Entidades de producto (borrador) |
+| [WORKFLOWS.md](./WORKFLOWS.md) | Flujos n8n/operativos |
+| [AI-APPROVAL-POLICY.md](./AI-APPROVAL-POLICY.md) | Límites de IA (approval-first) |
+| [OPS-RUNBOOK.md](./OPS-RUNBOOK.md) | Comandos seguros de lectura |
+| [EXTRACTION-PLAN.md](./EXTRACTION-PLAN.md) | Salida a repo independiente |
+| [CLIENT-PITCH.md](./CLIENT-PITCH.md) | Explicación para cliente (español) |
+| [INCUBATION-CHECKLIST.md](./INCUBATION-CHECKLIST.md) | Checklist de incubación |
+| [FUTURE-REPO-SEED.md](./FUTURE-REPO-SEED.md) | Semilla `cloudsysops/peskids-platform` |
 
-### Sprint 01 — diseño y validación
+## Config review (Phase 2 — propuesta, no aplicada)
 
-| Documento | Propósito |
-|-----------|-----------|
-| [MVP-BACKLOG.md](./MVP-BACKLOG.md) | Épicas y prioridades |
-| [SPRINT-01.md](./SPRINT-01.md) | Plan 7 días |
-| [DASHBOARD-SPEC.md](./DASHBOARD-SPEC.md) | 5 tarjetas admin |
-| [FORMS-SPEC.md](./FORMS-SPEC.md) | 4 formularios + eventos |
-| [EVENT-CONTRACT.md](./EVENT-CONTRACT.md) | 9 eventos Opsly |
-| [DEMO-SCRIPT.md](./DEMO-SCRIPT.md) | Demo 10 min owner |
+`config/tenants/peskids.json` sigue siendo plantilla. **No se ha modificado** en esta incubación.
 
-## Quick start
-
-**Owner:** BLUEPRINT-MAPPING → DEMO-SCRIPT → MVP-PLAN.
-
-**Equipo:** MVP-BACKLOG → SPRINT-01 → (tras OK owner) Sprint 02.
-
-## Blueprint alignment
-
-- Blueprint en **draft v0.1**; Peskids lo **valida**, no lo canoniza.
-- Ciclo: incubar → validar → extraer ([EXTRACTION-PLAN.md](./EXTRACTION-PLAN.md)).
-- Hub blueprint: [`../../blueprints/opsly-operational-blueprint/`](../../blueprints/opsly-operational-blueprint/)
-
-## Config review (propuesta, no aplicada)
+Propuesta de patch (aplicar solo tras validación con owner y Supabase):
 
 ```json
 {
   "tenant_name": "Peskids",
   "tenant_slug": "peskids",
+  "schema_name": "peskids",
+  "platform_domain": "op-sly.com",
+  "portal_domain": null,
   "workflows_count": 4,
+  "pricing_per_unit": 0,
+  "currency": "USD",
   "incubation_status": "active_pilot",
   "product_repo_planned": "cloudsysops/peskids-platform",
-  "notes": "Incubado Opsly. CRM 4 workflows VPS 2026-04-30. Tenant directo."
+  "notes": "Incubado en Opsly. CRM Starter Pack (4 workflows) documentado en VPS 2026-04-30. MVP y extracción: docs/tenants/peskids/. Sin parent_tenant_slug (tenant directo, no subcliente)."
 }
 ```
 
-Aplicar solo tras validación owner + `./scripts/validate-subclient-config.sh`.
+Campos nuevos (`portal_domain`, `incubation_status`, `product_repo_planned`) requieren acuerdo de esquema JSON del tenant; si el validador no los admite, mantener solo `notes` ampliado y `workflows_count: 4`.
+
+## Relación con otros tenants
+
+- **No es subcliente** (contraste: LegalVial bajo LocalRank con `parent_tenant_slug`).
+- Mismo patrón técnico que smiletripcare/localrank: **1 slug = 1 stack Compose** en VPS.
 
 ## Enlaces Opsly
 
+- Inventario prod: [`../production/TENANT-PRODUCTION-BASELINE.md`](../production/TENANT-PRODUCTION-BASELINE.md)
 - Hub tenants: [`../README.md`](../README.md)
-- Blueprint: [`../../blueprints/opsly-operational-blueprint/README.md`](../../blueprints/opsly-operational-blueprint/README.md)
-- Brain: [`../../brain/tenants/peskids.md`](../../brain/tenants/peskids.md)
+- Brain (candidato): [`../../brain/tenants/peskids.md`](../../brain/tenants/peskids.md)

@@ -37,8 +37,7 @@ Toda salida IA debe llevar:
 | Enviar mensajes a padres/clientes sin aprobación humana explícita | Riesgo reputacional y legal |
 | Publicar en redes sociales automáticamente | Misma razón |
 | Crear/editar/borrar registros de estudiantes o padres sin ticket aprobado | Integridad de datos |
-| Enviar WhatsApp sin estado `approved` | Canal sensible; ver [WHATSAPP-CHANNEL.md](./WHATSAPP-CHANNEL.md) |
-| Auto-reply WhatsApp (texto generado por IA) | Solo borrador hasta aprobación |
+| Iniciar conversaciones WhatsApp (Jelou) | Fuera de alcance; canal sensible |
 | Ejecutar scripts shell / deploy desde sugerencia IA | Zona roja Opsly |
 | Auto-aprobar follow-ups o cerrar leads | Debe ser acción humana |
 
@@ -84,17 +83,6 @@ Cualquier excepción (p. ej. auto-ack “recibimos tu mensaje”) requiere:
 2. Texto fijo pre-aprobado (sin generación IA)
 3. Sin datos sensibles en el ack
 
-## WhatsApp (Peskids)
-
-| Fase | Permitido | Prohibido |
-|------|-----------|-----------|
-| 0 — Manual | Owner responde en app WhatsApp | Bot / IA enviando |
-| 1 — Inbound | Webhook → log → dashboard, o auto-reply si `PESKIDS_WHATSAPP_REPLY_MODE=auto` | Auto-reply IA sin bandera explícita |
-| 2 — Borrador | IA → `draft` en dashboard | Envío |
-| 3 — Envío | Tras `approved` + registro `approved_by` | Envío masivo sin revisión |
-
-Detalle: [WHATSAPP-CHANNEL.md](./WHATSAPP-CHANNEL.md).
-
 ## Revisión
 
-Revisar esta política al pasar de Fase 0 → 1 de WhatsApp o al extraer `peskids-platform`.
+Revisar esta política al activar WhatsApp o al extraer `peskids-platform`.
