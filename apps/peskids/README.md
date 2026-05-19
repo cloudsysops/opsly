@@ -29,13 +29,14 @@ npm run dev
 ## Key Features
 
 ✅ **Landing Page** — Hero + lead capture form  
-✅ **Admin Dashboard** — 5-card real-time dashboard  
-✅ **Lead Management** — Track all leads with status  
-✅ **Parent Feedback** — Satisfaction ratings + alerts  
-✅ **Follow-up Tracking** — Pending follow-ups with due dates  
+✅ **Admin Dashboard** — Real-time cards (leads, students, feedback, follow-ups)  
+✅ **Lead Capture** — Form submission + database persistence  
+✅ **Parent Feedback** — Satisfaction ratings (1-5) + alerts for low scores  
 ✅ **Multi-tenant Isolation** — RLS at database layer  
 ✅ **Event-Driven** — All actions emit to Opsly event bus  
 ✅ **Approval-First** — No auto-send, owner controls everything  
+✅ **Admin Auth** — Protected /admin route + API authentication  
+⚠️ **Follow-up Management** — Dashboard view only (no create/edit yet)  
 
 ## Project Structure
 

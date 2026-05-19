@@ -1,9 +1,6 @@
 -- Peskids MVP Schema
 -- Multi-tenant isolation with RLS policies
-
--- Enable RLS
-ALTER DATABASE "postgres" SET "app.settings.jwt_secret" TO 'your-jwt-secret';
-ALTER SCHEMA "public" OWNER TO postgres;
+-- Note: JWT configuration is handled by Supabase Auth configuration, not in migrations
 
 -- Create leads table
 CREATE TABLE IF NOT EXISTS public.leads (
@@ -82,17 +79,19 @@ ALTER TABLE public.feedback ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.followups ENABLE ROW LEVEL SECURITY;
 
 -- RLS Policies: Public inserts (for landing page form)
--- During MVP, we allow public inserts. In production, add authentication.
+-- During MVP, we allow public inserts from the web form.
+-- The web form always sets tenant_id to the configured Peskids tenant.
+-- Server-side validation in the API route ensures tenant_id cannot be spoofed.
 
 CREATE POLICY "Allow public inserts to leads"
   ON public.leads
   FOR INSERT
-  WITH CHECK (TRUE);
+  WITH CHECK (tenant_id = 'peskids');
 
 CREATE POLICY "Allow public inserts to feedback"
   ON public.feedback
   FOR INSERT
-  WITH CHECK (TRUE);
+  WITH CHECK (tenant_id = 'peskids');
 
 -- RLS Policies: Authenticated users can read only their tenant's data
 -- For admin access, use service role or authenticated users with tenant_id claim
@@ -129,5 +128,8 @@ CREATE POLICY "Authenticated users can read followups for their tenant"
     OR CURRENT_SETTING('app.settings.is_service_role', true) = 'true'
   );
 
--- Note: For MVP, disable RLS on reads and implement application-level tenant filtering
--- Uncomment above policies once authentication is in place
+-- RLS Implementation Notes for MVP:
+-- 1. Public inserts: Constrained by tenant_id in WITH CHECK clause (RLS active)
+-- 2. Reads from dashboard: Bypassed using service role (server-side API route)
+-- 3. Future: When client-side auth is added, set app.settings.tenant_id before queries
+-- The SELECT policies above are ready for future authenticated access (they reference CURRENT_SETTING)

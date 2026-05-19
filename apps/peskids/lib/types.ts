@@ -10,9 +10,10 @@ export type Database = {
           phone: string | null
           grade_interested: string
           referral_source: string | null
-          created_at: string
           status: 'new' | 'contacted' | 'enrolled' | 'archived'
           admin_notes: string | null
+          created_at: string
+          updated_at: string
         }
         Insert: {
           tenant_id: string
@@ -33,16 +34,17 @@ export type Database = {
           name: string
           grade: string
           status: 'active' | 'inactive'
-          parent_email: string
+          parent_email: string | null
           enrollment_date: string
           created_at: string
+          updated_at: string
         }
         Insert: {
           tenant_id: string
           name: string
           grade: string
           status?: 'active' | 'inactive'
-          parent_email: string
+          parent_email?: string | null
           enrollment_date?: string
         }
         Update: Partial<Database['public']['Tables']['students']['Insert']>
@@ -55,8 +57,9 @@ export type Database = {
           satisfaction: number
           suggestion: string | null
           contact_wanted: boolean
-          parent_email: string
+          parent_email: string | null
           created_at: string
+          updated_at: string
         }
         Insert: {
           tenant_id: string
@@ -64,7 +67,7 @@ export type Database = {
           satisfaction: number
           suggestion?: string | null
           contact_wanted?: boolean
-          parent_email?: string
+          parent_email?: string | null
         }
         Update: Partial<Database['public']['Tables']['feedback']['Insert']>
       }
@@ -79,6 +82,7 @@ export type Database = {
           status: 'pending' | 'completed' | 'cancelled'
           notes: string | null
           created_at: string
+          updated_at: string
         }
         Insert: {
           tenant_id: string

@@ -20,7 +20,7 @@ export default function ThanksPage() {
 
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-8">
           <p className="text-sm text-blue-700">
-            <strong>What&apos;s next?</strong> You&apos;ll receive a confirmation email shortly.
+            <strong>What&apos;s next?</strong> Our team will review your information and contact you at the email or phone number you provided.
           </p>
         </div>
 

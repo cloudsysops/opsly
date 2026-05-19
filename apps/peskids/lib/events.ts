@@ -1,6 +1,6 @@
 import { OpslyEvent } from './types'
 
-const OPSLY_EVENT_BUS_URL = process.env.NEXT_PUBLIC_OPSLY_EVENT_BUS_URL || 'http://localhost:3011/events'
+const OPSLY_EVENT_BUS_URL = process.env.OPSLY_EVENT_BUS_URL || process.env.NEXT_PUBLIC_OPSLY_EVENT_BUS_URL || 'http://localhost:3011/events'
 const TENANT_ID = process.env.NEXT_PUBLIC_TENANT_ID || 'peskids'
 
 export async function emitEvent(
