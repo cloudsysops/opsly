@@ -155,10 +155,10 @@ export default function Home() {
                   className="w-full"
                 >
                   <option value="">Select a grade</option>
-                  <option value="K-2">K-2</option>
-                  <option value="3-5">3-5</option>
+                  <option value="K-5">K-5</option>
                   <option value="6-8">6-8</option>
                   <option value="9-12">9-12</option>
+                  <option value="Other">Other</option>
                 </select>
               </div>
 

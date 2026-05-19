@@ -1,9 +1,34 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { supabaseServer } from '@/lib/supabase'
 import type { Database, DashboardData } from '@/lib/types'
 
-export async function GET() {
+function validateAdminAuth(req: NextRequest): { valid: boolean; error?: string } {
+  const authHeader = req.headers.get('authorization')
+  const adminSecret = process.env.DASHBOARD_ADMIN_SECRET
+
+  if (!adminSecret) {
+    return { valid: false, error: 'Admin authentication not configured' }
+  }
+
+  if (!authHeader) {
+    return { valid: false, error: 'Missing authorization header' }
+  }
+
+  const token = authHeader.replace('Bearer ', '')
+  if (token !== adminSecret) {
+    return { valid: false, error: 'Invalid admin token' }
+  }
+
+  return { valid: true }
+}
+
+export async function GET(req: NextRequest) {
   try {
+    const auth = validateAdminAuth(req)
+    if (!auth.valid) {
+      return NextResponse.json({ error: auth.error }, { status: 401 })
+    }
+
     const tenantId = process.env.NEXT_PUBLIC_TENANT_ID || 'peskids'
     const supabase = supabaseServer()
 
