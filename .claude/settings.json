@@ -47,8 +47,13 @@
   "hooks": {
     "SessionStart": [
       {
-        "matcher": "**",
-        "command": "node scripts/skill-finder.js --autonomous"
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node scripts/skill-finder.js --autonomous"
+          }
+        ]
       }
     ]
   },
