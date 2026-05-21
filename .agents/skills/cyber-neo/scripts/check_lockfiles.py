@@ -233,8 +233,28 @@ def check_npm_package_json(target_dir: Path) -> list:
                     "owasp": "A03:2025",
                 })
 
-    except (json.JSONDecodeError, OSError):
-        pass
+    except json.JSONDecodeError as exc:
+        findings.append({
+            "type": "Invalid package.json",
+            "severity": "info",
+            "file": str(pkg_path),
+            "line": 0,
+            "description": "Could not parse package.json; npm security checks were skipped.",
+            "evidence": str(exc),
+            "cwe": "CWE-829",
+            "owasp": "A03:2025",
+        })
+    except OSError as exc:
+        findings.append({
+            "type": "Unreadable package.json",
+            "severity": "info",
+            "file": str(pkg_path),
+            "line": 0,
+            "description": "Could not read package.json; npm security checks were skipped.",
+            "evidence": str(exc),
+            "cwe": "CWE-829",
+            "owasp": "A03:2025",
+        })
 
     return findings
 
