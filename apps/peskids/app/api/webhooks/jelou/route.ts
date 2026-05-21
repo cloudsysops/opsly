@@ -165,7 +165,7 @@ async function logWebhookReceipt(
       provider: 'jelou',
       event_type,
       record_id,
-      payload: webhook as unknown as Json,
+      payload: webhook as unknown as any,
       received_at: new Date().toISOString(),
     });
   } catch (error) {
