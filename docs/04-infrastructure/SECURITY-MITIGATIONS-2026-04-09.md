@@ -10,20 +10,20 @@
 
 ### 1. Cloudflare Proxy para \*.op-sly.com
 
-**Objetivo:** Ocultar IP pública del VPS (157.245.223.7) y habilitar WAF.
+**Objetivo:** Ocultar IP pública del VPS (origen VPS; valor en Doppler, no en git) y habilitar WAF.
 
 **Pasos (Cloudflare Dashboard):**
 
 ```
 1. Ve a Cloudflare → DNS Records
 2. Para cada subdominio A record actual:
-   - api.op-sly.com (157.245.223.7)
-   - admin.op-sly.com (157.245.223.7)
-   - portal.op-sly.com (157.245.223.7)
-   - n8n-smiletripcare.op-sly.com (157.245.223.7)
-   - uptime-smiletripcare.op-sly.com (157.245.223.7)
-   - n8n-localrank.op-sly.com (157.245.223.7)
-   - uptime-localrank.op-sly.com (157.245.223.7)
+   - api.op-sly.com (origen VPS; valor en Doppler, no en git)
+   - admin.op-sly.com (origen VPS; valor en Doppler, no en git)
+   - portal.op-sly.com (origen VPS; valor en Doppler, no en git)
+   - n8n-smiletripcare.op-sly.com (origen VPS; valor en Doppler, no en git)
+   - uptime-smiletripcare.op-sly.com (origen VPS; valor en Doppler, no en git)
+   - n8n-localrank.op-sly.com (origen VPS; valor en Doppler, no en git)
+   - uptime-localrank.op-sly.com (origen VPS; valor en Doppler, no en git)
 
    Haz clic en el ícono nube:
    - Naranja (Proxied): ACTIVA Cloudflare
@@ -45,7 +45,7 @@
 ```bash
 # Antes (IP pública visible):
 dig api.op-sly.com +short
-# Output: 157.245.223.7
+# Output: (IP en Doppler)
 
 # Después (IP Cloudflare):
 dig api.op-sly.com +short
@@ -58,7 +58,7 @@ curl -sfk https://api.op-sly.com/api/health
 
 **Impacto:**
 
-- ✅ IP VPS oculta (157.245.223.7 no visible públicamente)
+- ✅ IP VPS oculta (origen del VPS no visible en DNS públicamente)
 - ✅ WAF protege contra bot/SQL injection/XSS
 - ✅ DDoS mitigation automático
 - ⚠️ Pueden haber latencias de ~10-50ms extra (Cloudflare edge)
@@ -74,7 +74,7 @@ curl -sfk https://api.op-sly.com/api/health
 **Comandos SSH a VPS:**
 
 ```bash
-ssh vps-dragon@157.245.223.7 << 'EOF'
+ssh vps-dragon@100.120.151.91 << 'EOF'
 set -euo pipefail
 
 echo "=== Verificando ufw ==="
@@ -112,7 +112,7 @@ EOF
 ```bash
 # Desde Mac (IP pública): SSH debe fallar con timeout
 # (esto es correcto - queremos que falle)
-ssh -o ConnectTimeout=3 vps-dragon@157.245.223.7
+ssh -o ConnectTimeout=3 vps-dragon@100.120.151.91
 # Expected: timeout after 3 seconds (SSH port cerrado)
 
 # Desde Tailscale VPN: SSH debe funcionar
@@ -174,8 +174,8 @@ tailscale status
 # SSH directo a IP Tailscale
 ssh vps-dragon@100.120.151.91
 
-# Después de ufw enable, IP pública (157.245.223.7) no responde a SSH
-ssh -o ConnectTimeout=3 vps-dragon@157.245.223.7
+# Después de ufw enable, IP pública (origen VPS; valor en Doppler, no en git) no responde a SSH
+ssh -o ConnectTimeout=3 vps-dragon@100.120.151.91
 # Expected: connection timeout (SSL port bloqueado por ufw)
 ```
 
@@ -204,7 +204,7 @@ ssh -o ConnectTimeout=3 vps-dragon@157.245.223.7
 **Comandos SSH a VPS (antes de ufw):**
 
 ```bash
-ssh vps-dragon@157.245.223.7 << 'EOF'
+ssh vps-dragon@100.120.151.91 << 'EOF'
 set -euo pipefail
 
 echo "=== Instalando Tailscale en VPS ==="
@@ -349,7 +349,7 @@ tailscale ip -4  # Anota tu IP (ej. 100.120.123.456)
 
 # 2. VPS: Instalar Tailscale
 # (SSH aún funciona desde IP pública)
-ssh vps-dragon@157.245.223.7 << 'CMD'
+ssh vps-dragon@100.120.151.91 << 'CMD'
 curl -fsSL https://tailscale.com/install.sh | sh
 sudo tailscale up --advertise-exit-node
 # Autoriza en navegador (URL que imprime)
@@ -376,7 +376,7 @@ CMD
 # Cambiar icono nube a naranja para todos *.op-sly.com
 
 # 6. VERIFICAR: IP pública SSH está bloqueada
-ssh -o ConnectTimeout=3 vps-dragon@157.245.223.7
+ssh -o ConnectTimeout=3 vps-dragon@100.120.151.91
 # Expected: timeout (port closed) ✓
 
 # 7. VERIFICAR: HTTPS aún funciona
@@ -394,7 +394,7 @@ curl -sfk https://api.op-sly.com/api/health
 
 | Capa           | Antes                      | Después                                   | Estado       |
 | -------------- | -------------------------- | ----------------------------------------- | ------------ |
-| SSH            | IP pública (157.245.223.7) | Tailscale only (100.120.151.91)           | 🟢 Seguro    |
+| SSH            | IP pública (origen VPS; valor en Doppler, no en git) | Tailscale only (100.120.151.91)           | 🟢 Seguro    |
 | Firewall       | Abierto (nada)             | ufw drop incoming + whitelist             | 🟢 Seguro    |
 | IP VPS         | Expuesta                   | Cloudflare Proxy (naranja)                | 🟢 Oculta    |
 | WAF            | Nada                       | Cloudflare Managed Challenge + rate limit | 🟢 Protegido |

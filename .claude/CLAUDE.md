@@ -203,7 +203,7 @@ Regla Git clave: **código/infra/tests por PR** (`feat/*` o `fix/*`), no push di
 ## Infraestructura
 
 - VPS: `/opt/opsly` — SSH **solo Tailscale** `vps-dragon@100.120.151.91`
-- IP pública: `157.245.223.7` (solo HTTP/HTTPS)
+- IP pública: `PLATFORM_VPS_PUBLIC_IP` (Doppler, no commitear el valor) (solo HTTP/HTTPS)
 - Doppler: `ops-intcloudsysops` / `prd`
 - Supabase: `jkwykpldnitavhmtuzmo`
 - GitHub: `cloudsysops/opsly`

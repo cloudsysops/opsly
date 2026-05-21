@@ -415,7 +415,7 @@ node scripts/load-skills.js show opsly-api
 
 **Git status:** 26 archivos modificados + 2 nuevos (`auth-admin-access.test.ts`, `bullmq-redis.ts`).
 
-**Bloqueante activo:** Cloudflare Proxy ON requerido para ocultar IP VPS pública (157.245.223.7). 28. **Siguiente** — p. ej. **redeploy API + admin** en VPS para servir `/costs` y payload nuevo; E2E invite con Supabase en CI; más rutas bajo `/api/portal/tenant/[slug]/`; persistir aprobaciones de costos en DB si hace falta; operación VPS según `VISION.md`.
+**Bloqueante activo:** Cloudflare Proxy ON requerido para ocultar IP VPS pública (origen VPS; valor en Doppler, no en git). 28. **Siguiente** — p. ej. **redeploy API + admin** en VPS para servir `/costs` y payload nuevo; E2E invite con Supabase en CI; más rutas bajo `/api/portal/tenant/[slug]/`; persistir aprobaciones de costos en DB si hace falta; operación VPS según `VISION.md`.
 
 ### Qué evitamos por ahora
 
@@ -1204,7 +1204,7 @@ _Auditoría TypeScript y correcciones de código (2026-04-05, sesión agente Cla
 - **CI `Deploy` en GitHub Actions:** tras push a `main`, **`build-and-push`** publica imágenes en GHCR; **`deploy`** hace SSH, **`docker compose --env-file /opt/opsly/.env … pull` + `up`**, health con reintentos y **`curl -sfk`**. Revisar _Actions → Deploy_ si falla SSH, disco VPS, Traefik, **`PLATFORM_DOMAIN`** o falta **`DOCKER_GID`** en el `.env` del VPS (sin él, `group_add` usa `999` y el socket puede seguir inaccesible).
 - Deploy staging — imágenes **`ghcr.io/cloudsysops/intcloudsysops-{api,admin}:latest`**; en VPS **`/opt/opsly/.env`** con **`DOCKER_GID`** (vuelve a ejecutar **`vps-bootstrap.sh`** tras cambios de compose si hace falta); login GHCR en el job con **`GITHUB_TOKEN`**. Tras cambios en Traefik: recrear contenedor **`traefik`** en el VPS para cargar env y `group_add`.
 - Con Doppler CLI + token con scope `/opt/opsly`: **`./scripts/vps-bootstrap.sh`** regenera `.env`; ejecutar tras cambiar imágenes o secretos en `prd`.
-- DNS: op-sly.com → 157.245.223.7 ✅
+- DNS: op-sly.com → (registro A; IP en Doppler `PLATFORM_VPS_PUBLIC_IP`) ✅
 
 **Pendiente ⏳**
 
@@ -1223,7 +1223,30 @@ _Auditoría TypeScript y correcciones de código (2026-04-05, sesión agente Cla
 
 <!-- Una sola tarea concreta. Actualizar al final de cada sesión -->
 
-**Inmediato:** Finalizar integración MCP OpenClaw:
+**CRÍTICO - Peskids Production Deployment (2026-05-20):**
+- ✅ Code: built (exit 0) + committed + pushed to `feat/peskids-sprint-01`
+- ⏳ PR to main: exists but **NOT MERGED** — bloqueador: sandbox TLS cert + no browser access
+- ⏳ Vercel secrets: **NOT CONFIGURED** — awaiting manual GitHub API call or UI access
+- ⏳ Production deployment: **NOT EXECUTED** — requires Vercel deployment
+- 📋 Status: Script ready at `scripts/deploy-peskids-finish.sh` + `DEPLOY-NOW.md` — **requires execution on user's local machine with full network access**
+
+**Acción requerida (humano, fuera del sandbox):**
+```bash
+cd /Users/dragon/cboteros/proyectos/intcloudsysops && bash scripts/deploy-peskids-finish.sh
+```
+Script auto-detecta PR, mergea a main, configura secretos Vercel desde Doppler, deploya, verifica https://peskids.vercel.app live.
+
+**Post-deployment:**
+1. Verificar: `curl -I https://peskids.vercel.app` retorna 200/308
+2. Test lead capture → Supabase flow
+3. Validar admin dashboard login
+4. Confirmar Jelou webhooks funcionando
+5. Update AGENTS.md → commit → push
+
+---
+
+**Después (si peskids 🟢 en prod):**
+Finalizar integración MCP OpenClaw:
 1. Push branch: `git push origin feat/skills-catalog-sync-main` desde terminal (pre-push hook bloqueado por tsx IPC pipes)
 2. Verificar: `claude mcp list` debe mostrar `opsly-openclaw` con 52+ tools
 3. Test MCP: ejecutar tool de ejemplo desde Claude Code para confirmar conectividad
@@ -1575,7 +1598,7 @@ flowchart TB
 | Base de Datos    | Medio-Alto | RLS + schemas aislados (`platform` + `tenant_{slug}`)                              | Service role key global (mitigable: Doppler + auditoría)            |
 | API / Backend    | Alto       | `tenantSlugMatchesSession` en todas rutas `[slug]` + `resolveTrustedPortalSession` | Misconfiguración nueva ruta (mitigable: pre-commit check)           |
 | Red / Exposición | Medio      | Traefik v3 + TLS Let's Encrypt                                                     | IP pública visible (mitigable: Cloudflare Proxy naranja)            |
-| SSH / Admin      | **Bajo**   | IP pública 157.245.223.7 sin restricción                                           | **BLOQUEADOR:** SSH desde cualquier IP (mitigable: Tailscale + ufw) |
+| SSH / Admin      | **Bajo**   | IP pública del VPS (solo Doppler) sin restricción                                           | **BLOQUEADOR:** SSH desde cualquier IP (mitigable: Tailscale + ufw) |
 
 ### Mitigaciones Inmediatas (esta noche)
 
@@ -1593,13 +1616,13 @@ flowchart TB
 | Recurso         | Valor                                    |
 | --------------- | ---------------------------------------- |
 | VPS             | DigitalOcean Ubuntu 24                   |
-| IP pública      | 157.245.223.7                            |
-| Tailscale IP    | 100.120.151.91                           |
+| IP pública (edge DNS) | Solo Doppler / Cloudflare — **no** en git      |
+| Tailscale (SSH/admin) | `100.120.151.91`                               |
 | Usuario SSH     | vps-dragon                               |
 | Repo en VPS     | /opt/opsly                               |
 | Repo GitHub     | github.com/cloudsysops/opsly             |
 | Dominio staging | op-sly.com                    |
-| DNS wildcard    | \*.op-sly.com → 157.245.223.7 |
+| DNS wildcard    | `*.op-sly.com` → registro A al origen (valor solo en Doppler) |
 
 ### Infraestructura VPS-dragon – Tailscale
 
@@ -1615,7 +1638,7 @@ flowchart TB
 ### Topología de red activa (Management vs Edge)
 
 - **Management plane (privado):** administración y SSH solo por Tailscale `100.120.151.91`.
-- **Edge plane (público):** tráfico de usuarios por Cloudflare Proxy (nube naranja) a `157.245.223.7` solo en `80/443`.
+- **Edge plane (público):** tráfico de usuarios por Cloudflare Proxy (nube naranja) al origen del VPS solo en `80/443` (IP del origen solo en Doppler, no en git).
 - **TLS en Traefik:** resolver ACME por `dnsChallenge` con Cloudflare (`CF_DNS_API_TOKEN` desde Doppler).
 - **Tenant LocalRank:** onboarding listo con `--ssh-host 100.120.151.91`; NotebookLM solo en `business|enterprise` con `NOTEBOOKLM_ENABLED=true`.
 

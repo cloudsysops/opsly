@@ -124,7 +124,7 @@ export OWNER_EMAIL="owner-b@example.com"  # Email owner del tenant #2
 #### 3.2 DNS + Dominio
 
 - [ ] CNAME / A records configurados para:
-  - `api.op-sly.com` → VPS IP (157.245.223.7)
+  - `api.op-sly.com` → VPS IP (origen VPS; valor en Doppler, no en git)
   - `admin.op-sly.com` → VPS IP
   - `portal.op-sly.com` → VPS IP
   - Subdominio tenant #2 (si aplica)
@@ -242,7 +242,7 @@ EOF
 
 | Bloqueante                 | Estado                                    | Mitigación                              |
 | -------------------------- | ----------------------------------------- | --------------------------------------- |
-| Cloudflare Proxy OFF       | ⚠️ Si está OFF, IP 157.245.223.7 expuesta | Activar Proxy en dashboard CF           |
+| Cloudflare Proxy OFF       | ⚠️ Si está OFF, IP pública del VPS (solo Doppler) expuesta | Activar Proxy en dashboard CF           |
 | Doppler `prd` missing vars | ⚠️ Si variables incompletas, deploy falla | Completar según checklist 3.3           |
 | Supabase rate limits       | ⚠️ Si E2E muy agresivo                    | Usar `--dry-run` primero                |
 | RESEND quota               | ⚠️ Si se agotan invitaciones diarias      | Verificar con equipo Resend             |

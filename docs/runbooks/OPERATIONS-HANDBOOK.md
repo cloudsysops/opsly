@@ -28,7 +28,7 @@ Quick reference for common tasks, troubleshooting, and escalation paths.
 
 ```bash
 # 1. VPS connectivity
-ssh -i ~/.ssh/opsly-vps vps-dragon@157.245.223.7 'docker ps'
+ssh -i ~/.ssh/opsly-vps vps-dragon@100.120.151.91 'docker ps'
 
 # Expected: 10+ services running
 # If failing: Check Tailscale (100.120.151.91)
@@ -115,7 +115,7 @@ curl https://api.op-sly.com/api/health
 **Diagnosis:**
 ```bash
 # 1. Check if service is running
-ssh -i ~/.ssh/opsly-vps vps-dragon@157.245.223.7 'docker ps | grep app'
+ssh -i ~/.ssh/opsly-vps vps-dragon@100.120.151.91 'docker ps | grep app'
 
 # 2. Check logs
 docker logs opsly_app --tail=50
@@ -429,7 +429,7 @@ services:
 
 ```bash
 # VPS access
-ssh -i ~/.ssh/opsly-vps vps-dragon@157.245.223.7
+ssh -i ~/.ssh/opsly-vps vps-dragon@100.120.151.91
 
 # SSH via Tailscale (if DNS fails)
 ssh vps-dragon@100.120.151.91

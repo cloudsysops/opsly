@@ -24,6 +24,11 @@ from dataclasses import dataclass, asdict
 from typing import Optional
 
 
+def vps_public_ip() -> str:
+    """IP pública del VPS — solo desde entorno/Doppler; nunca en git."""
+    return os.environ.get("PLATFORM_VPS_PUBLIC_IP", "").strip()
+
+
 @dataclass
 class HealingIssue:
     issue_id: str
@@ -53,7 +58,7 @@ class SelfHealingAgent:
     def __init__(self, config: Optional[dict] = None):
         self.config = config or {}
         self.expected_domain = self.config.get("expected_domain", "op-sly.com")
-        self.tenants_path = self.config.get("tenants_path", "/opt/opsly/tenants")
+        self.tenants_path = self.config.get("tenants_path", "/opt/opsly/runtime/tenants/")
         self.issues = []
         self.actions = []
         self.max_repairs = self.config.get("max_repairs_per_cycle", 3)
@@ -380,7 +385,7 @@ class SelfHealingAgent:
             result={
                 "message": f"DNS no reparable automáticamente. "
                 f"Configurar wildcard *.{self.expected_domain} "
-                f"→ 157.245.223.7 en Cloudflare",
+                f"→ (registro A; IP en Doppler `PLATFORM_VPS_PUBLIC_IP`) en Cloudflare",
                 "hostname": hostname,
             },
         )
@@ -449,7 +454,7 @@ class SelfHealingAgent:
                     result={
                         "message": "No se encontró CF_DNS_API_TOKEN. "
                         "Configurar manualmente en Cloudflare: "
-                        f"A *.{self.expected_domain} → 157.245.223.7 (proxied=false)"
+                        f"A *.{self.expected_domain} → (registro A; IP en Doppler `PLATFORM_VPS_PUBLIC_IP`) (proxied=false)"
                     },
                 )
         zone_name = self.expected_domain
@@ -486,6 +491,17 @@ class SelfHealingAgent:
                 result={"error": f"Zone {zone_name} no encontrada en Cloudflare"},
             )
         zone_id = zones[0]["id"]
+        public_ip = vps_public_ip()
+        if not public_ip:
+            return HealingAction(
+                action_id=f"repair_{issue.issue_id}",
+                issue_id=issue.issue_id,
+                action="dns_wildcard_fix",
+                status="manual",
+                result={
+                    "message": "Falta PLATFORM_VPS_PUBLIC_IP en el entorno (Doppler prd)."
+                },
+            )
         code, out = self._exec(
             [
                 "curl",
@@ -502,7 +518,7 @@ class SelfHealingAgent:
                     {
                         "type": "A",
                         "name": f"*.{self.expected_domain}",
-                        "content": "157.245.223.7",
+                        "content": public_ip,
                         "ttl": 120,
                         "proxied": False,
                     }
@@ -518,7 +534,7 @@ class SelfHealingAgent:
             self._mark_repaired("dns_wildcard")
             self._notify_discord(
                 "🔧 Wildcard DNS reparado",
-                f"*.{self.expected_domain} → 157.245.223.7 (DNS-only)",
+                f"*.{self.expected_domain} → {public_ip} (DNS-only)",
                 "success",
             )
             return HealingAction(
@@ -638,7 +654,7 @@ def main():
     )
     parser.add_argument("--domain", default="op-sly.com", help="Expected domain")
     parser.add_argument(
-        "--tenants-path", default="/opt/opsly/tenants", help="Tenants compose directory"
+        "--tenants-path", default="/opt/opsly/runtime/tenants/", help="Tenants compose directory"
     )
     parser.add_argument(
         "--auto-repair", action="store_true", help="Auto-repair detected issues"

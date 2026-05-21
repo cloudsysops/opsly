@@ -84,7 +84,7 @@ Next.js 15 · React 19 · TypeScript 5.7 · Tailwind 3.4 · Supabase · Stripe �
 | GitHub     | `cloudsysops/opsly`                     |
 | VPS        | `/opt/opsly`                            |
 | SSH        | `vps-dragon@100.120.151.91` (Tailscale) |
-| IP pública | `157.245.223.7` (solo HTTP/HTTPS edge)  |
+| IP pública | `PLATFORM_VPS_PUBLIC_IP` (Doppler, no commitear el valor) (solo HTTP/HTTPS edge)  |
 | Doppler    | `ops-intcloudsysops` / `prd`            |
 | Supabase   | `jkwykpldnitavhmtuzmo`                  |
 

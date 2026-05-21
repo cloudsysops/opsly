@@ -109,7 +109,7 @@ npm run validate-structure
 ## On VPS (if CI fails)
 
 ```bash
-ssh -i ~/.ssh/opsly-vps vps-dragon@157.245.223.7
+ssh -i ~/.ssh/opsly-vps vps-dragon@100.120.151.91
 
 cd /opt/opsly
 git pull origin main

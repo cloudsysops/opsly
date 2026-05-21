@@ -81,7 +81,7 @@ last_review: 2026-05-09
 |---------|--------|-------|----------------|
 | Portal | `op-sly.com` | Vercel | Vercel nameservers |
 | Admin | `admin.op-sly.com` | Vercel | Vercel nameservers |
-| API | `api.op-sly.com` | VPS Traefik | `157.245.223.7` (VPS IP) |
+| API | `api.op-sly.com` | VPS Traefik | `PLATFORM_VPS_PUBLIC_IP` (Doppler, no commitear el valor) (VPS IP) |
 | n8n (per tenant) | `n8n-<slug>.op-sly.com` | VPS Docker | Same VPS IP via Traefik |
 | Orchestrator | Internal (no public DNS) | VPS | Redis on `localhost:6379` |
 

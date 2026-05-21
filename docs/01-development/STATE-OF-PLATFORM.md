@@ -15,7 +15,7 @@ status: active
 
 Hermes is a **production-grade autonomous agent orchestration platform** serving 5+ concurrent tenants with:
 
-- **18+ microservices** running on Docker Compose (VPS @ 157.245.223.7)
+- **18+ microservices** running on Docker Compose (VPS (producción))
 - **4 LLM providers** with intelligent routing (Claude, GPT-4, Llama, Mixtral)
 - **Advanced rendering** capabilities (images, audio, video)
 - **Complete observability** (Prometheus + Grafana + Loki)

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServiceClient } from '@/lib/supabase';
+import { supabaseServer } from '@/lib/supabase';
 import { emitEvent } from '@/lib/events';
 import {
   verifyJelouSignature,
@@ -43,7 +43,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 }
 
 async function handleLeadSubmission(webhook: any) {
-  const supabase = getServiceClient();
+  const supabase = supabaseServer();
   const lead = extractLeadFromJelou(webhook);
 
   try {
@@ -95,7 +95,7 @@ async function handleLeadSubmission(webhook: any) {
 }
 
 async function handleFeedbackSubmission(webhook: any) {
-  const supabase = getServiceClient();
+  const supabase = supabaseServer();
   const feedback = extractFeedbackFromJelou(webhook);
 
   try {
@@ -160,7 +160,7 @@ async function logWebhookReceipt(
   record_id: string
 ) {
   try {
-    const supabase = getServiceClient();
+    const supabase = supabaseServer();
     await supabase.schema('public').from('webhook_logs').insert({
       tenant_id: TENANT_ID,
       provider: 'jelou',

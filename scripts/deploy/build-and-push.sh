@@ -4,7 +4,7 @@
 #   ./scripts/deploy-staging.sh [--dry-run] [--stop-smiletrip-nginx]
 #
 # Variables opcionales:
-#   VPS_HOST   (default: 157.245.223.7)
+#   VPS_HOST   (default: Tailscale 100.120.151.91)
 #   VPS_USER   (default: vps-dragon)
 #   OPSLY_GIT_URL (default: git@github.com:cloudsysops/opsly.git)
 #   OPSLY_GIT_BRANCH (default: main)
@@ -17,7 +17,7 @@ REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 # shellcheck source=scripts/lib/common.sh
 source "${SCRIPT_DIR}/lib/common.sh"
 
-VPS_HOST="${VPS_HOST:-157.245.223.7}"
+VPS_HOST="${VPS_HOST:-100.120.151.91}"
 VPS_USER="${VPS_USER:-vps-dragon}"
 VPS="${VPS_USER}@${VPS_HOST}"
 OPSLY_GIT_URL="${OPSLY_GIT_URL:-git@github.com:cloudsysops/opsly.git}"

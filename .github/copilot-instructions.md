@@ -323,19 +323,19 @@ npm run validate-openapi          # Valida docs/00-architecture/openapi-opsly-ap
 
 ## Acceso al VPS — Tailscale obligatorio
 
-> **Regla de oro:** el SSH al VPS va **SIEMPRE** por Tailscale. Nunca usar la IP pública `157.245.223.7` para conectarse.
+> **Regla de oro:** el SSH al VPS va **SIEMPRE** por Tailscale. Nunca usar la IP pública `PLATFORM_VPS_PUBLIC_IP` (Doppler, no commitear el valor) para conectarse.
 
 | Propósito          | Dirección                              | Nota                             |
 | ------------------ | -------------------------------------- | -------------------------------- |
 | SSH / admin        | `vps-dragon@100.120.151.91`            | Tailscale VPN — única vía válida |
-| HTTP/HTTPS público | `157.245.223.7` (detrás de Cloudflare) | Solo tráfico de usuarios         |
+| HTTP/HTTPS público | `PLATFORM_VPS_PUBLIC_IP` (Doppler, no commitear el valor) (detrás de Cloudflare) | Solo tráfico de usuarios         |
 
 ```bash
 # ✅ CORRECTO — siempre así
 ssh vps-dragon@100.120.151.91
 
 # ❌ NUNCA — IP pública bloqueada por ufw para SSH
-ssh vps-dragon@157.245.223.7
+ssh vps-dragon@100.120.151.91
 ```
 
 Si Tailscale no responde (`Connection timed out`): verificar `tailscale status` localmente y en el VPS antes de escalar.

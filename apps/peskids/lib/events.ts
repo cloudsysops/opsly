@@ -57,7 +57,7 @@ export async function emitFeedbackCreated(
   childName: string,
   satisfaction: number,
   suggestion: string | null,
-  parentEmail: string
+  parentEmail: string | null
 ): Promise<void> {
   await emitEvent('feedback.created', {
     feedback_id: feedbackId,
