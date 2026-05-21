@@ -22,6 +22,7 @@ Procedimientos accionables para operar, desplegar, diagnosticar y recuperar Opsl
 ## Documentos clave
 
 - `DEPLOYMENT-CHECKLIST.md`
+- `MIGRATION-CHECKLIST.md`
 - `TROUBLESHOOTING-GUIDE.md`
 - `INCIDENT-AUTONOMOUS-AGENT.md`
 - `OPSLY-OPENCLAW-STARTUP.md`
