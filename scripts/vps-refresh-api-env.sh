@@ -45,7 +45,7 @@ done
 
 DOPPLER_PROJECT="$(jq -r '.project.doppler_project // empty' "${CONFIG}")"
 DOPPLER_CFG="$(jq -r '.project.doppler_config // empty' "${CONFIG}")"
-VPS_IP="$(jq -r '.infrastructure.vps_ip // empty' "${CONFIG}")"
+VPS_TAILSCALE_IP="$(jq -r '.infrastructure.vps_tailscale_ip // empty' "${CONFIG}")"
 VPS_USER="$(jq -r '.infrastructure.vps_user // empty' "${CONFIG}")"
 OPS_ROOT="$(jq -r '.infrastructure.vps_path // empty' "${CONFIG}")"
 
@@ -55,7 +55,7 @@ nonempty() {
 
 nonempty "${DOPPLER_PROJECT}" || die "config: falta project.doppler_project" 1
 nonempty "${DOPPLER_CFG}" || die "config: falta project.doppler_config" 1
-nonempty "${VPS_IP}" || die "config: falta infrastructure.vps_ip" 1
+nonempty "${VPS_TAILSCALE_IP}" || die "config: falta infrastructure.vps_tailscale_ip" 1
 nonempty "${VPS_USER}" || die "config: falta infrastructure.vps_user" 1
 nonempty "${OPS_ROOT}" || die "config: falta infrastructure.vps_path" 1
 
@@ -77,7 +77,7 @@ if [[ "${SKIP_RESEND_CHECK}" != "true" ]]; then
   fi
 fi
 
-SSH_TARGET="${VPS_USER}@${VPS_IP}"
+SSH_TARGET="${VPS_USER}@${VPS_TAILSCALE_IP}"
 
 run_remote() {
   ssh -o BatchMode=yes -o ConnectTimeout=15 "${SSH_TARGET}" bash -s <<EOF

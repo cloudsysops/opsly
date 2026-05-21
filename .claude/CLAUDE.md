@@ -1,26 +1,158 @@
-## PROTOCOLO — INICIO DE SESIÓN AUTÓNOMO
+# CLAUDE.md — Opsly Codebase Guide for AI Assistants
 
-1. **Cargar skills automáticamente:**
+**Last Updated:** 2026-05-21  
+**Status:** Canonical guide for all Claude sessions in Opsly  
+**Version:** 2.0 (Enhanced with full codebase structure)
 
+---
+
+## 🚀 SESSION STARTUP PROTOCOL
+
+### Immediate Actions (First 5 minutes)
+
+1. **Read canonical documents** (in order):
+   - 📖 [`AGENTS.md`](https://raw.githubusercontent.com/cloudsysops/opsly/main/AGENTS.md) — operational status + next steps
+   - 🎯 [`VISION.md`](https://raw.githubusercontent.com/cloudsysops/opsly/main/VISION.md) — product north star
+   - 📚 [`docs/README.md`](docs/README.md) — documentation index
+
+2. **Verify git state** (should execute instantly):
    ```bash
-   # Detectar skills para el contexto
-   node scripts/skill-finder.js "inicio sesión" --autonomous
+   git status
+   git log --oneline -3
+   git branch -v
    ```
 
-2. **Leer AGENTS.md** (URL raw abajo) — fuente de verdad operativa
+3. **Load skills for your context** (if needed):
+   ```bash
+   node scripts/skill-finder.js "your task here" --autonomous
+   ```
 
-3. **Leer VISION.md** — norte del producto
+4. **Check infrastructure** (critical for deployment tasks only):
+   ```bash
+   # VPS status
+   ssh vps-dragon@100.120.151.91 "docker ps --format '{{.Names}}\t{{.Status}}'"
+   
+   # Doppler secrets health
+   doppler run --project ops-intcloudsysops --config prd -- print-env | grep -E "DISCORD|RESEND|GITHUB|NOTEBOOKLM"
+   ```
 
-4. **Ejecutar checks en paralelo:**
-   - VPS: `ssh vps-dragon@100.120.151.91 "docker ps --format '{{.Names}}\t{{.Status}}'"`
-   - Doppler: `doppler run --project ops-intcloudsysops --config prd -- print-env | grep -E "DISCORD|RESEND|GITHUB|NOTEBOOKLM"`
-   - Git: `git status && git log --oneline -3`
+### Abort Conditions
 
-5. **Reporte de gaps** — si hay errores, parar y reportar
+Stop and report if:
+- Git status shows uncommitted critical changes (safety check)
+- Doppler secrets are missing (ask user before continuing)
+- AGENTS.md is older than 7 days (may be stale context)
+- Infrastructure health check fails (VPS/Redis unreachable)
 
 ---
 
 # Claude en Opsly — Sistema Autónomo
+
+---
+
+## 📁 Codebase Structure (Monorepo: Turbo + pnpm)
+
+### Quick Navigator
+
+```
+opsly/
+├── apps/                          # 27+ applications (see below)
+├── lib/                           # 13 enterprise-scale library modules
+├── packages/                      # Shared utilities & skills
+├── docs/                          # Documentation (Obsidian vault + markdown)
+├── config/                        # Configuration & metadata
+├── scripts/                       # Operational scripts & automation
+├── .claude/                       # Claude-specific configurations
+├── .cursor/                       # Cursor IDE configurations
+├── .codex/                        # GitHub Copilot configurations
+├── AGENTS.md                      # Operational status (READ THIS FIRST)
+├── VISION.md                      # Product north star
+├── ROADMAP.md                     # Sprint timeline & milestones
+└── CLAUDE.md                      # This file
+```
+
+### 📦 apps/ — Main Applications (27 deployable services)
+
+| App | Purpose | Type | Port | Status |
+|-----|---------|------|------|--------|
+| **api** | REST API server, tenant isolation, business logic | Node.js | 3000 | Production |
+| **admin** | Admin dashboard, metrics, cost tracking | Next.js | 3001 | Production |
+| **portal** | Customer-facing portal | Next.js | 3002 | Production |
+| **mcp** | Model Context Protocol server (Claude integration) | Node.js | 3003 | Production |
+| **orchestrator** | Job orchestration, BullMQ, Temporal | Node.js | 3011 | Production |
+| **llm-gateway** | Unified LLM provider gateway | Node.js | 3010 | Production |
+| **context-builder** | Context aggregation for agents | Node.js | 3012 | Production |
+| **agents** | Internal AI agent implementations | Node.js | — | Experimental |
+| **local-services** | Local dev services, booking, customers | Node.js | — | Active Development |
+| **billing-service** | Stripe integration, metering | Node.js | — | Production |
+| **billing-dashboard** | Billing analytics & invoicing | Next.js | — | Production |
+| **notebooklm-agent** | PDF→podcast generation | Node.js | — | Experimental |
+| **tenant-onboarding-agent** | Automated tenant setup | Node.js | — | Production |
+| **tenant-invitations** | Invitation system | Node.js | — | Production |
+| **slack-bot** | Slack integration & notifications | Node.js | — | Production |
+| **web** | Public website | Next.js | — | Production |
+| **peskids** | Multi-channel form platform | Next.js | — | Active Development |
+| **ml** | ML pipeline runner | Python | — | Experimental |
+| **airflow** | Airflow DAG definitions | Python | — | Experimental |
+| **mcp-gateway** | MCP routing layer | Node.js | — | Production |
+| **mcp-rendering-server** | MCP content rendering | Node.js | — | Experimental |
+| **notion-mcp** | Notion integration | Node.js | — | Production |
+| **task-orchestrator** | Task queue manager | Node.js | — | Production |
+| **agent-manager** | Agent lifecycle management | Node.js | — | Production |
+| **context-builder-v2** | Next-gen context builder (Shadow deploy) | Node.js | — | Staging |
+| **experimental** | Experimental features | Various | — | Not for Prod |
+| **__tests__** | End-to-end test suite | Vitest | — | CI/CD |
+
+### 📚 lib/ — Enterprise Library Modules (13 modules)
+
+**Location:** `lib/{module}` with `package.json` exported as `@intcloudsysops/{module}`
+
+| Module | Purpose | Owner | Status |
+|--------|---------|-------|--------|
+| **api** | HTTP utils, request handling, middleware | claude | Stable |
+| **components** | React component library + design system | claude | Stable |
+| **config** | Environment vars, feature flags, secrets | claude | Stable |
+| **errors** | Unified error handling + types | claude | Stable |
+| **evaluation** | Testing utils, validators, safety checks | claude | Stable |
+| **external-agent-registry** | External agent registry & discovery | claude | Active |
+| **git-branch-orchestrator** | Git workflow automation | claude | Active |
+| **migrations** | Database migration versioning | claude | Stable |
+| **observability** | Logging, metrics, distributed tracing | claude | Stable |
+| **prompts** | Versioned prompt registry for all agents | claude | Stable |
+| **runtime** | Agent runtime, execution engine | claude | Active |
+| **security** | Auth, encryption, PII redaction | claude | Stable |
+| **services** | Repository pattern + data layer | claude | Stable |
+| **telemetry** | Cost tracking, performance monitoring | claude | Stable |
+| **testing** | Unified test framework setup | claude | Stable |
+| **session-manager** | Session lifecycle, recovery | claude | Active |
+| **workflow** | Safe execution, timeouts, retries | claude | Stable |
+
+### 📄 docs/ — Documentation Structure
+
+**Single source of truth:** Obsidian vault + markdown (synced via `npm run docs:sync`)
+
+```
+docs/
+├── 01-development/           # Dev guides, workflows, conventions
+├── 02-architecture/          # ADRs, system design, patterns
+├── 03-agents/                # Agent-specific docs, orchestration
+├── 04-operations/            # Runbooks, deployment, monitoring
+├── adr/                       # Architecture Decision Records (ADR-001+)
+├── brain/                     # Knowledge vault for RAG
+├── database/                  # Schema, migrations, queries
+├── design/                    # Design patterns, UI/component docs
+├── infrastructure/            # VPS, Docker, networking
+├── ops/                       # Operational procedures, checklists
+├── orchestrator/              # Orchestration guides, repair queue
+├── plans/                     # Sprint plans, feature plans
+├── generated/                 # Auto-generated docs (DO NOT EDIT)
+├── stubs/                     # Redirect files (keep root clean)
+├── README.md                  # Documentation index
+├── STRUCTURE-GUARDRAILS.md    # Where docs may live (protected)
+└── index.md                   # Obsidian MOC (compact reference)
+```
+
+---
 
 ## Framework: OpenClaw
 
@@ -203,7 +335,7 @@ Regla Git clave: **código/infra/tests por PR** (`feat/*` o `fix/*`), no push di
 ## Infraestructura
 
 - VPS: `/opt/opsly` — SSH **solo Tailscale** `vps-dragon@100.120.151.91`
-- IP pública: `157.245.223.7` (solo HTTP/HTTPS)
+- IP pública: `PLATFORM_VPS_PUBLIC_IP` (Doppler, no commitear el valor) (solo HTTP/HTTPS)
 - Doppler: `ops-intcloudsysops` / `prd`
 - Supabase: `jkwykpldnitavhmtuzmo`
 - GitHub: `cloudsysops/opsly`
@@ -241,13 +373,106 @@ OPSLY_ORCHESTRATOR_MODE=worker-enabled
 REDIS_URL=redis://100.120.151.91:6379
 ```
 
-## Antes de Proponer Código
+## Before Proposing Code
 
-1. Verificar si existe en `lib/` → reutilizar
-2. Función >50 líneas → dividir
-3. Query Supabase → Repository pattern en `lib/repositories/`
-4. Crear recurso → Factory pattern en `lib/factories/`
-5. Números mágicos → `lib/constants.ts`
+1. **Reuse first:** Check if logic exists in `lib/` or another app → import instead of rewrite
+2. **Monorepo-aware imports:** Always use workspace paths `@intcloudsysops/{module}` not relative paths
+3. **Split large functions:** >50 lines → break into smaller, testable units
+4. **Data access:** Supabase queries → use Repository pattern in `lib/services/`
+5. **Resource creation:** Use Factory pattern in `lib/services/{entity}.factory.ts`
+6. **Magic numbers:** Store in `lib/config/constants.ts` or env vars
+7. **Type safety:** NO `any` in TypeScript — always use specific types
+8. **Error handling:** Use `@intcloudsysops/errors` for unified error classes
+9. **Validation:** Only at system boundaries (user input, external APIs) — trust internal code
+10. **Tests:** Write tests for logic in `lib/`, optional for app-specific UI code
+
+### API Development Checklist
+
+```bash
+# 1. Create route in apps/api/app/{feature}/route.ts
+# 2. Use Repository pattern for data access
+# 3. Add validation schema (Zod)
+# 4. Write middleware for auth/permissions
+# 5. Test with curl or Postman
+# 6. Document in OpenAPI spec (apps/api/openapi.json)
+# 7. Run: npm run type-check && npm run test --workspace=@intcloudsysops/api
+```
+
+### Database Changes Checklist
+
+```bash
+# 1. Create migration: npm run migrations:create --workspace=@intcloudsysops/migrations
+# 2. Define schema in migration file
+# 3. Apply locally: npm run db:migrate
+# 4. Update TypeScript types: npm run db:codegen
+# 5. Add RLS policies (security-first)
+# 6. Test with sample data
+# 7. Document schema in docs/database/SCHEMA.md
+```
+
+### Frontend (Next.js) Checklist
+
+```bash
+# 1. Create component in apps/{app-name}/src/components/
+# 2. Use @intcloudsysops/components for shared UI
+# 3. Handle loading/error/success states
+# 4. Add responsive design (mobile-first)
+# 5. Test manually in browser before commit
+# 6. Type all props (no `any`)
+# 7. Document with Storybook if component is reusable
+```
+
+---
+
+## 🔄 Common Tasks
+
+### Adding a New API Endpoint
+
+```bash
+# 1. Understand requirements from AGENTS.md or issue
+# 2. Create route: apps/api/app/features/[feature]/route.ts
+# 3. Import Repository from @intcloudsysops/services
+# 4. Add Zod validation schema
+# 5. Implement handler with proper error handling
+# 6. Update OpenAPI spec
+# 7. Test: npm run test --workspace=@intcloudsysops/api
+# 8. Commit: git commit -m "feat(api): add {endpoint} route"
+```
+
+### Creating a Database Migration
+
+```bash
+# 1. npm run migrations:create --workspace=@intcloudsysops/migrations
+# 2. Edit: lib/migrations/src/{timestamp}_description.sql
+# 3. Write SQL with proper RLS policies
+# 4. Test locally: npm run db:migrate
+# 5. Generate types: npm run db:codegen
+# 6. Commit: git commit -m "feat(db): migration for {table}"
+# 7. Verify in AGENTS.md that schema change is documented
+```
+
+### Debugging a Failing Test
+
+```bash
+# 1. Run test with verbose output: npm run test -- --reporter=verbose
+# 2. Check error message and stack trace
+# 3. Inspect test file: lib/{module}/__tests__/{file}.test.ts
+# 4. Look for mocks, stubs, or setup issues
+# 5. Add console.log or debugger statements (remove before commit)
+# 6. Re-run: npm run test -- --watch {pattern}
+```
+
+### Deploying to Production
+
+```bash
+# 1. Ensure all tests pass: npm run test
+# 2. Type-check: npm run type-check
+# 3. Create PR, get review
+# 4. Merge to main branch
+# 5. CI/CD automatically deploys to VPS
+# 6. Monitor: check Doppler logs, admin dashboard
+# 7. If issues: rollback immediately, investigate in staging first
+```
 
 ---
 
@@ -401,24 +626,238 @@ cat .github/phase-state.json
 
 ---
 
-## Workflow Autónomo Típico
+## Typical Autonomous Workflow
 
 ```bash
-# 1. Detectar skills necesarios
-node scripts/skill-finder.js "crear migration supabase" --autonomous
+# 1. Detect skills for your context
+node scripts/skill-finder.js "your task description" --autonomous
 
-# 2. Cargar skills
-node scripts/skill-loader.js --context "crear migration"
+# 2. Load skills (optional if found above)
+node scripts/skill-loader.js --context "your domain"
 
-# 3. Implementar usando templates
-# Copiar de skills/templates/template-migration.md
+# 3. Implement using templates from skills/templates/
+#    Examples: template-api-route.md, template-migration.md, template-test.md
 
-# 4. Validar
+# 4. Validate before commit
 npm run type-check
+npm run test --workspace=<affected-workspace>
+npm run lint:check
+
+# 5. COMMIT + PUSH (MANDATORY)
+git add -A
+git commit -m "feat(scope): clear description"
+git push origin <branch-name>
+
+# 6. After push: create PR if one doesn't exist
+gh pr create --draft --base main --head <branch-name>
+```
+
+---
+
+## 🤖 Claude's Role in This Codebase
+
+### What Claude Excels At
+
+✅ **Architecture & Design Decisions**
+- Proposing system design patterns
+- Architecture Decision Records (ADRs)
+- Technology choices with tradeoffs
+- Refactoring strategy
+- Risk analysis
+
+✅ **Code Review & Quality**
+- Analyzing code for issues
+- Suggesting improvements
+- Identifying security/performance problems
+- Type safety validation
+- Cross-cutting concerns
+
+✅ **Documentation & Clarity**
+- Writing clear guides and runbooks
+- Explaining complex systems
+- Updating AGENTS.md and system status
+- Generating docs from code
+- Creating decision records
+
+✅ **Problem-Solving & Debugging**
+- Root cause analysis
+- Debugging complex issues
+- Proposing fixes with explanation
+- Testing strategies
+- Monitoring and observability setup
+
+### What Claude Should Avoid
+
+❌ **Don't:**
+- Create code without user's explicit request for implementation
+- Modify `.env` or sensitive configs without user confirmation
+- Push directly to `main` (always use feature branch)
+- Guess infrastructure credentials or secrets
+- Make destructive changes (delete, reset --hard) without asking
+- Propose multiple unrelated changes in one PR
+- Commit personal workflow preferences (eslint config, IDE settings)
+
+### How Claude Works With Other Tools
+
+| Tool | When to Use | Communication |
+|------|-----------|-----------------|
+| **Cursor** | Code implementation, editing, fixing | Claude proposes → Cursor executes |
+| **GitHub Copilot** | Auto-completion, inline suggestions | Parallel tool, no conflicts |
+| **Hermes** | Background automation, scheduled tasks | Read status from `AGENTS.md` |
+| **n8n** | Workflow automation, webhooks | Query `.n8n/` configs, don't edit |
+| **Doppler** | Environment secrets | Use CLI for read-only, ask user for edits |
+
+---
+
+## 🔐 Security & Compliance
+
+### Secrets Management
+
+- **Never** commit `.env` files or secrets
+- **Never** log sensitive data (API keys, tokens, passwords)
+- **Use Doppler** for all secrets: `doppler run --project ops-intcloudsysops --config prd -- <command>`
+- **PII Redaction:** Use `@intcloudsysops/security` for redaction
+- **Audit:** Check commits with `git log --patch | grep -E "key|secret|password"`
+
+### Authentication & Authorization
+
+- **Multi-tenant isolation:** Enforced at database level (RLS policies)
+- **JWT validation:** On all API endpoints (middleware in `lib/api`)
+- **RBAC:** Role-based access via Supabase auth
+- **Never hardcode roles:** Store in database with proper RLS
+
+### Code Security
+
+- **Type safety first:** TypeScript `strict` mode, no `any`
+- **Input validation:** Zod schemas on all endpoints
+- **SQL injection:** Always use parameterized queries (Supabase does this)
+- **XSS prevention:** React auto-escapes, use DOMPurify for rich content
+- **CSRF protection:** Verify request origin on state-changing operations
+
+---
+
+## 📊 Monitoring & Observability
+
+### Key Dashboards
+
+- **Admin metrics:** `https://admin.<DOMAIN>/metrics`
+- **Cost tracking:** `https://admin.<DOMAIN>/costs`
+- **Logs:** Doppler integration with Datadog (if enabled)
+- **Alerts:** Discord webhook + Slack notifications
+
+### Common Monitoring Tasks
+
+```bash
+# View recent logs
+doppler run --project ops-intcloudsysops --config prd -- npm run logs:view
+
+# Check VPS status
+ssh vps-dragon@100.120.151.91 "systemctl status opsly"
+
+# Monitor Redis queue (BullMQ)
+npm run orchestrator:status --workspace=@intcloudsysops/orchestrator
+
+# Check database health
+npm run db:health --workspace=@intcloudsysops/migrations
+```
+
+### Alerting
+
+All critical issues should trigger:
+1. **Discord notification** → #ops-alerts channel
+2. **Slack notification** → #opsly-incidents thread
+3. **PagerDuty** → if critical service is down
+4. **Update AGENTS.md** → document incident and resolution
+
+---
+
+## 📖 Essential References
+
+**Always have these open when working:**
+
+1. **AGENTS.md** — Current session state + blockers → https://raw.githubusercontent.com/cloudsysops/opsly/main/AGENTS.md
+2. **VISION.md** — Product roadmap + north star → https://raw.githubusercontent.com/cloudsysops/opsly/main/VISION.md
+3. **docs/adr/** — Architecture decisions
+4. **docs/01-development/GIT-WORKFLOW.md** — Git protocol (branching, PRs)
+5. **docs/01-development/LIBRARY-MODULES.md** — How to use lib modules
+6. **docs/IMPLEMENTATION-IA-LAYER.md** — Real app paths for AI features
+7. **README.md** — Project overview + quick commands
+
+### Quick Command Reference
+
+```bash
+# Type-check all workspaces (before commit)
+npm run type-check
+
+# Test specific workspace
 npm run test --workspace=@intcloudsysops/api
 
-# 5. COMMIT + PUSH (obligatorio, no opcional)
+# Lint check (pre-commit)
+npm run lint:check
+
+# Format code
+npm run format
+
+# Build for production
+npm run build
+
+# Start dev server
+npm run dev
+
+# Git workflow (ALWAYS use these)
+git checkout -b feat/your-feature
 git add -A
-git commit -m "feat(supabase): nueva migration"
-git push origin <branch-name>
+git commit -m "feat(scope): description"
+git push origin feat/your-feature
+# Then create PR via GitHub or gh CLI
 ```
+
+---
+
+## 🎓 Learning Resources
+
+**New to this codebase?**
+
+1. Read [`docs/README.md`](docs/README.md) — documentation map
+2. Read [`VISION.md`](VISION.md) — understand product goals
+3. Read [`docs/adr/ADR-001.md`](docs/adr/ADR-001.md) through latest — understand decisions
+4. Look at a simple app first (e.g., `apps/web`) → understand patterns
+5. Try a small fix to `lib/` → understand module system
+6. Review a merged PR on GitHub → see what good looks like
+
+**Need help?**
+- Ask Claude: "How does [system/feature] work?"
+- Check `docs/brain/` for knowledge base
+- Search issue tracker for similar problems
+- Look at AGENTS.md for known blockers/workarounds
+
+---
+
+## 🔍 Session Closing Protocol
+
+**When finishing your session, ALWAYS:**
+
+```bash
+# 1. Verify changes are clean
+git status
+git diff --stat
+
+# 2. Update AGENTS.md with:
+#    - What you completed
+#    - Any blockers or TODOs
+#    - Next steps for next session
+# 3. Commit
+git add AGENTS.md
+git commit -m "docs(agents): session update YYYY-MM-DD"
+
+# 4. Push your branch
+git push origin <branch-name>
+
+# 5. Create PR if needed
+gh pr create --draft --base main --head <branch-name>
+
+# 6. Leave URL of updated AGENTS.md for next session
+# https://raw.githubusercontent.com/cloudsysops/opsly/main/AGENTS.md
+```
+
+This ensures continuity and helps the next agent (or session) start immediately with context.

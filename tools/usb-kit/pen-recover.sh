@@ -59,14 +59,14 @@ Escenario 2 — VPS caído o reseteado (misma IP / droplet existente)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Qué necesitás del USB:
-  • Acceso SSH (root o usuario con sudo) al 157.245.223.7
+  • Acceso SSH por Tailscale (vps-dragon@100.120.151.91)
   • Repo en GitHub alcanzable desde el servidor
 
 Tiempo estimado: 30–60 min.
 
 Comandos:
 
-  ssh root@157.245.223.7
+  ssh vps-dragon@100.120.151.91
 
   apt update && apt install -y git docker.io docker-compose-plugin
 
@@ -101,7 +101,7 @@ Comandos:
   cd /ruta/al/repo/opsly
   ./tools/usb-kit/pen-secrets.sh restore
 
-  scp /tmp/opsly-restore/emergency.env vps-dragon@157.245.223.7:/opt/opsly/.env
+  scp /tmp/opsly-restore/emergency.env vps-dragon@100.120.151.91:/opt/opsly/.env
 
 ADVERTENCIA:
   Rotá TODOS los secretos expuestos (.env en disco, PAT, claves) vía Doppler y

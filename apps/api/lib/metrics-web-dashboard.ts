@@ -14,36 +14,30 @@ function daysAgoIso(days: number): string {
   return d.toISOString();
 }
 
-export type WebDashboardMetricsJson = {
-  tenants: {
-    total: number;
-    active: number;
-    suspended: number;
-    demo: number;
-    failed: number;
-  };
-  plans: { startup: number; business: number; enterprise: number };
-  mrr: number;
-  conversion: { onboard_started: number; onboard_completed: number; rate: number };
-};
+function calculateMrr(activePaidRes: unknown): number {
+  let mrr = 0;
+  const data = (activePaidRes as { data: Array<{ plan: string; is_demo: boolean }> }).data ?? [];
+  for (const row of data) {
+    if (row.is_demo || row.plan === 'demo' || !(row.plan in PLAN_MRR_USD)) {
+      continue;
+    }
+    mrr += PLAN_MRR_USD[row.plan] ?? 0;
+  }
+  return mrr;
+}
 
-export async function getWebDashboardMetricsJson(): Promise<WebDashboardMetricsJson> {
-  const client = getServiceClient();
-  const since = daysAgoIso(30);
+function validateQueryResults(results: Array<{ error?: unknown }>): void {
+  const errors = results.map((r) => r.error).filter(Boolean);
+  if (errors.length > 0) {
+    throw new Error((errors[0] as { message?: string })?.message ?? 'Query failed');
+  }
+}
 
-  const [
-    totalRes,
-    activeRes,
-    suspendedRes,
-    demoRes,
-    failedRes,
-    startupRes,
-    businessRes,
-    enterpriseRes,
-    activePaidRes,
-    startedRes,
-    completedRes,
-  ] = await Promise.all([
+function buildMetricsQueries(
+  client: ReturnType<typeof getServiceClient>,
+  since: string
+): unknown[] {
+  return [
     client
       .schema('platform')
       .from('tenants')
@@ -109,63 +103,72 @@ export async function getWebDashboardMetricsJson(): Promise<WebDashboardMetricsJ
       .select('*', { count: 'exact', head: true })
       .eq('event', 'onboard_completed')
       .gte('created_at', since),
-  ]);
+  ];
+}
 
-  const errors = [
-    totalRes.error,
-    activeRes.error,
-    suspendedRes.error,
-    demoRes.error,
-    failedRes.error,
-    startupRes.error,
-    businessRes.error,
-    enterpriseRes.error,
-    activePaidRes.error,
-    startedRes.error,
-    completedRes.error,
-  ].filter(Boolean);
+async function fetchMetricsData(
+  client: ReturnType<typeof getServiceClient>,
+  since: string
+): Promise<unknown[]> {
+  return Promise.all(buildMetricsQueries(client, since));
+}
 
-  if (errors.length > 0) {
-    throw new Error(errors[0]?.message ?? 'Query failed');
-  }
-
-  let mrr = 0;
-  for (const row of activePaidRes.data ?? []) {
-    const plan = row.plan as string;
-    if (row.is_demo === true) {
-      continue;
-    }
-    if (plan === 'demo') {
-      continue;
-    }
-    if (plan in PLAN_MRR_USD) {
-      mrr += PLAN_MRR_USD[plan] ?? 0;
-    }
-  }
-
-  const onboardStarted = startedRes.count ?? 0;
-  const onboardCompleted = completedRes.count ?? 0;
-  const rate =
-    onboardStarted > 0 ? Math.round((onboardCompleted / onboardStarted) * 10000) / 100 : 0;
-
-  return {
-    tenants: {
-      total: totalRes.count ?? 0,
-      active: activeRes.count ?? 0,
-      suspended: suspendedRes.count ?? 0,
-      demo: demoRes.count ?? 0,
-      failed: failedRes.count ?? 0,
-    },
-    plans: {
-      startup: startupRes.count ?? 0,
-      business: businessRes.count ?? 0,
-      enterprise: enterpriseRes.count ?? 0,
-    },
-    mrr,
-    conversion: {
-      onboard_started: onboardStarted,
-      onboard_completed: onboardCompleted,
-      rate,
-    },
+export type WebDashboardMetricsJson = {
+  tenants: {
+    total: number;
+    active: number;
+    suspended: number;
+    demo: number;
+    failed: number;
   };
+  plans: { startup: number; business: number; enterprise: number };
+  mrr: number;
+  conversion: { onboard_started: number; onboard_completed: number; rate: number };
+};
+
+function extractTenantMetrics(
+  results: Array<{ count?: number }>
+): WebDashboardMetricsJson['tenants'] {
+  return {
+    total: results[0].count ?? 0,
+    active: results[1].count ?? 0,
+    suspended: results[2].count ?? 0,
+    demo: results[3].count ?? 0,
+    failed: results[4].count ?? 0,
+  };
+}
+
+function extractPlanMetrics(results: Array<{ count?: number }>): WebDashboardMetricsJson['plans'] {
+  return {
+    startup: results[5].count ?? 0,
+    business: results[6].count ?? 0,
+    enterprise: results[7].count ?? 0,
+  };
+}
+
+function calculateConversionMetrics(
+  startedRes: { count?: number },
+  completedRes: { count?: number }
+): WebDashboardMetricsJson['conversion'] {
+  const started = startedRes.count ?? 0;
+  const completed = completedRes.count ?? 0;
+  const rate = started > 0 ? Math.round((completed / started) * 10000) / 100 : 0;
+  return { onboard_started: started, onboard_completed: completed, rate };
+}
+
+function buildDashboardMetrics(results: unknown[]): WebDashboardMetricsJson {
+  const typedResults = results as Array<{ count?: number; data?: unknown[] }>;
+  const mrr = calculateMrr(typedResults[8]);
+  const tenants = extractTenantMetrics(typedResults);
+  const plans = extractPlanMetrics(typedResults);
+  const conversion = calculateConversionMetrics(typedResults[9], typedResults[10]);
+  return { tenants, plans, mrr, conversion };
+}
+
+export async function getWebDashboardMetricsJson(): Promise<WebDashboardMetricsJson> {
+  const client = getServiceClient();
+  const since = daysAgoIso(30);
+  const results = await fetchMetricsData(client, since);
+  validateQueryResults(results as Array<{ error?: unknown }>);
+  return buildDashboardMetrics(results);
 }

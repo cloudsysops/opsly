@@ -1,0 +1,5 @@
+version: 1
+agent:
+  name: code-reviewer
+  extend: default
+  system_prompt_path: ./system.md

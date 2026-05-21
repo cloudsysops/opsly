@@ -169,7 +169,7 @@ git commit -m "feat(sprintN): ..."
 ssh vps-dragon@100.120.151.91
 
 # ❌ Incorrecto — IP pública (bloqueada por UFW)
-ssh vps-dragon@157.245.223.7
+ssh vps-dragon@100.120.151.91
 ```
 
 Ver `docs/SSH-COMMANDS-LOCALRANK.md` para comandos de operación.

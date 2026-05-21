@@ -47,7 +47,7 @@
   - Alternativa: usar `onboarding@resend.dev` (limitado a emails propios)
 
 ### Pre-Launch Checklist (pendiente)
-- [ ] **DNS**: ✅ todos apuntan a `157.245.223.7` (verificado con `dig`)
+- [ ] **DNS**: ✅ todos apuntan a `PLATFORM_VPS_PUBLIC_IP` (Doppler, no commitear el valor) (verificado con `dig`)
 - [ ] **Backups**: configurar `scripts/backup-tenants.sh` en cron
 - [ ] **Doppler vars**: faltan `GOOGLE_CLOUD_PROJECT_ID`, `BIGQUERY_DATASET`, `VERTEX_AI_REGION` (Fase 10)
 - [ ] **Cloudflare Proxy**: cambiar a naranja (ocultar IP pública)
@@ -70,7 +70,7 @@
 
 1. **Verificar dominio Resend** → `op-sly.com` (permitir invitaciones reales)
 2. **E2E completo** → `test-e2e-invite-flow.sh` con email verificado
-3. **Cloudflare Proxy ON** → ocultar IP VPS `157.245.223.7`
+3. **Cloudflare Proxy ON** → ocultar IP VPS `PLATFORM_VPS_PUBLIC_IP` (Doppler, no commitear el valor)
 4. **UFW hardening** → SSH solo Tailscale `100.120.151.91`
 5. **Backups automáticos** → cron + `scripts/backup-tenants.sh`
 6. **Doppler vars Fase 10** → Google Cloud + BigQuery + Vertex AI

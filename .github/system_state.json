@@ -2,7 +2,6 @@
   "last_updated": "2026-05-03",
   "phase": "fase-2-producto-ia-autonomy-phase3",
   "vps": {
-    "ip": "157.245.223.7",
     "tailscale": "100.120.151.91",
     "user": "vps-dragon",
     "repo": "/opt/opsly",
@@ -36,7 +35,7 @@
   },
   "dns": {
     "base": "op-sly.com",
-    "ip": "157.245.223.7",
+    "public_ip": "doppler-only",
     "status": "ok"
   },
   "tenants": [

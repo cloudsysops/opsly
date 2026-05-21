@@ -130,7 +130,7 @@ npm install --legacy-peer-deps
 
 ### Deployment (On VPS)
 
-- [ ] SSH to VPS: `ssh vps-dragon@157.245.223.7`
+- [ ] SSH to VPS: `ssh vps-dragon@100.120.151.91`
 - [ ] Navigate: `cd /opt/opsly`
 - [ ] Pull: `git pull origin main`
 - [ ] Check migrations: `npx supabase migration list`

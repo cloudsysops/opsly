@@ -51,7 +51,7 @@ REQ=(
   .project.doppler_config
   .project.github_org
   .project.github_repo
-  .infrastructure.vps_ip
+  .infrastructure.vps_tailscale_ip
   .infrastructure.vps_user
   .infrastructure.vps_path
   .infrastructure.traefik_network
@@ -77,7 +77,8 @@ else
   echo "❌ Faltan o están vacíos: ${missing[*]}"
 fi
 
-VPS_IP="$(read_cfg '.infrastructure.vps_ip')"
+VPS_TAILSCALE_IP="$(read_cfg '.infrastructure.vps_tailscale_ip')"
+VPS_PUBLIC_IP="${PLATFORM_VPS_PUBLIC_IP:-}"
 API_DOM="$(read_cfg '.domains.api')"
 BASE_DOM="$(read_cfg '.domains.base')"
 ADMIN_DOM="$(read_cfg '.domains.admin')"
@@ -89,31 +90,38 @@ VPS_PATH="$(read_cfg '.infrastructure.vps_path')"
 dns_points_to_vps() {
   local host="$1"
   local out
+  if [[ -z "${VPS_PUBLIC_IP}" ]]; then
+    return 2
+  fi
   out="$(dig +short "${host}" 2>/dev/null || true)"
-  if echo "${out}" | grep -Fq "${VPS_IP}"; then
+  if echo "${out}" | grep -Fq "${VPS_PUBLIC_IP}"; then
     return 0
   fi
   return 1
 }
 
 if [[ "${PASS_JSON}" -eq 1 ]] && [[ "${PASS_FIELDS}" -eq 1 ]]; then
-  if dns_points_to_vps "${API_DOM}"; then
-    echo "✅ DNS ${API_DOM} → ${VPS_IP}"
-    PASS_DNS_API=1
+  if [[ -z "${VPS_PUBLIC_IP}" ]]; then
+    echo "⚠️  DNS omitido: export PLATFORM_VPS_PUBLIC_IP desde Doppler (no guardar IP pública en git)"
   else
-    echo "⚠️  DNS ${API_DOM} no resuelve claramente a ${VPS_IP} (revisa dig +short)"
-  fi
-  if dns_points_to_vps "${BASE_DOM}"; then
-    echo "✅ DNS ${BASE_DOM} → ${VPS_IP}"
-    PASS_DNS_BASE=1
-  else
-    echo "⚠️  DNS ${BASE_DOM} no resuelve claramente a ${VPS_IP}"
-  fi
-  if dns_points_to_vps "${ADMIN_DOM}"; then
-    echo "✅ DNS ${ADMIN_DOM} → ${VPS_IP}"
-    PASS_DNS_ADMIN=1
-  else
-    echo "⚠️  DNS ${ADMIN_DOM} no resuelve claramente a ${VPS_IP}"
+    if dns_points_to_vps "${API_DOM}"; then
+      echo "✅ DNS ${API_DOM} coincide con PLATFORM_VPS_PUBLIC_IP"
+      PASS_DNS_API=1
+    else
+      echo "⚠️  DNS ${API_DOM} no coincide con PLATFORM_VPS_PUBLIC_IP (dig +short)"
+    fi
+    if dns_points_to_vps "${BASE_DOM}"; then
+      echo "✅ DNS ${BASE_DOM} coincide con PLATFORM_VPS_PUBLIC_IP"
+      PASS_DNS_BASE=1
+    else
+      echo "⚠️  DNS ${BASE_DOM} no coincide con PLATFORM_VPS_PUBLIC_IP"
+    fi
+    if dns_points_to_vps "${ADMIN_DOM}"; then
+      echo "✅ DNS ${ADMIN_DOM} coincide con PLATFORM_VPS_PUBLIC_IP"
+      PASS_DNS_ADMIN=1
+    else
+      echo "⚠️  DNS ${ADMIN_DOM} no coincide con PLATFORM_VPS_PUBLIC_IP"
+    fi
   fi
 else
   echo "⚠️  Omitidas comprobaciones DNS (JSON inválido o incompleto)"
@@ -176,16 +184,16 @@ else
   echo "⚠️  Doppler CLI no autenticado — no se validaron secretos remotos"
 fi
 
-if ssh -o BatchMode=yes -o ConnectTimeout=5 "${VPS_USER}@${VPS_IP}" exit >/dev/null 2>&1; then
-  echo "✅ VPS accesible (ssh ${VPS_USER}@${VPS_IP})"
+if ssh -o BatchMode=yes -o ConnectTimeout=5 "${VPS_USER}@${VPS_TAILSCALE_IP}" exit >/dev/null 2>&1; then
+  echo "✅ VPS accesible por Tailscale (ssh ${VPS_USER}@${VPS_TAILSCALE_IP})"
   PASS_SSH=1
 else
-  echo "⚠️  SSH no disponible sin interacción (clave, known_hosts o timeout)"
+  echo "⚠️  SSH Tailscale no disponible sin interacción (clave, known_hosts o timeout)"
 fi
 
 # DOCKER_GID en .env del VPS — Traefik (compose) usa group_add con este valor para el socket Docker.
 if [[ "${PASS_SSH}" -eq 1 ]] && nonempty "${VPS_PATH}"; then
-  if ssh -o BatchMode=yes -o ConnectTimeout=8 "${VPS_USER}@${VPS_IP}" \
+  if ssh -o BatchMode=yes -o ConnectTimeout=8 "${VPS_USER}@${VPS_TAILSCALE_IP}" \
     "test -f '${VPS_PATH}/.env' && grep -q '^DOCKER_GID=' '${VPS_PATH}/.env'" >/dev/null 2>&1; then
     echo "✅ VPS ${VPS_PATH}/.env incluye DOCKER_GID (Traefik → docker.sock)"
   else

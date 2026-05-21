@@ -1,0 +1,5 @@
+version: 1
+agent:
+  name: sales-coach
+  extend: default
+  system_prompt_path: ./system.md

@@ -23,7 +23,7 @@ async function getRedis(): Promise<RedisClient> {
     throw new Error('Missing REDIS_URL');
   }
   if (!redisConnect) {
-    redisConnect = (async () => {
+    redisConnect = (async (): Promise<RedisClient> => {
       const c = createClient({ url });
       c.on('error', () => {});
       await c.connect();

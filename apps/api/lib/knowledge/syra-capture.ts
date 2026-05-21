@@ -45,7 +45,7 @@ ${metrics.cost_usd ? `- Cost: $${metrics.cost_usd.toFixed(4)}` : ''}
       metrics
     );
 
-    console.log('✅ Publishing event captured to knowledge vault');
+    console.warn('✅ Publishing event captured to knowledge vault');
   } catch (error) {
     // Graceful fallback: don't block on knowledge capture
     console.warn('Knowledge capture warning (non-critical):', error);
@@ -70,7 +70,7 @@ ${details}
 
     await knowledgeService.captureIssue('syra', `Publishing failed on ${platform}`, fullDetails);
 
-    console.log('⚠️ Publishing error captured for investigation');
+    console.warn('⚠️ Publishing error captured for investigation');
   } catch (error) {
     console.warn('Knowledge capture warning (non-critical):', error);
   }
@@ -83,7 +83,7 @@ export async function captureEngagementMetrics(metrics: Record<string, unknown>)
   try {
     await knowledgeService.captureMetrics('syra', 'Engagement metrics collected', metrics);
 
-    console.log('📊 Engagement metrics captured');
+    console.warn('📊 Engagement metrics captured');
   } catch (error) {
     console.warn('Knowledge capture warning (non-critical):', error);
   }
@@ -101,7 +101,7 @@ export async function captureMilestone(milestone: string, details: string): Prom
       tags: ['syra', 'milestone'],
     });
 
-    console.log('🎉 Milestone captured');
+    console.warn('🎉 Milestone captured');
   } catch (error) {
     console.warn('Knowledge capture warning (non-critical):', error);
   }

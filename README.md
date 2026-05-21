@@ -101,7 +101,7 @@ La lógica es la misma en código; **solo cambian las variables** según el ento
 ## Architecture
 
 > 🔒 **SSH al VPS siempre por Tailscale:** `ssh vps-dragon@100.120.151.91`  
-> ❌ Nunca usar IP pública `157.245.223.7` para SSH (bloqueada por UFW)
+> ❌ No uses la IP pública del VPS para SSH (UFW la bloquea). Esa IP no va en este repo ni en GitHub — solo en Doppler / panel DNS.
 
 Referencia conceptual **Opsly**: el **control plane** decide ciclo de vida, facturación y políticas; el **data plane** ejecuta cargas de trabajo por tenant (contenedores, redes, volúmenes y rutas TLS).
 
@@ -158,7 +158,7 @@ Imágenes GHCR: `intcloudsysops-{api,admin,portal,mcp,llm-gateway,orchestrator,c
 ## Prerequisites
 
 - VPS Ubuntu 24 con Docker (y Docker Compose plugin) instalado
-- Dominio con DNS wildcard al VPS (`*.yourdomain.com` → IP pública)
+- Dominio con DNS wildcard al origen del VPS (registros A en Cloudflare; valor de IP solo en Doppler, no en git)
 - Proyecto Supabase (Postgres + Auth según uso)
 - Cuenta Stripe con productos/precios y webhook configurado
 - Cuenta Doppler (recomendado para secretos en VPS y CI)

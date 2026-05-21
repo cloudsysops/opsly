@@ -1,0 +1,5 @@
+version: 1
+agent:
+  name: legal-billing-time-tracking
+  extend: default
+  system_prompt_path: ./system.md

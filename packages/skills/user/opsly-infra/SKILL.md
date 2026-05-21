@@ -210,18 +210,18 @@ Para que `n8n-{slug}.{domain}` y `uptime-{slug}.{domain}` resuelvan, es necesari
 
 | Tipo | Nombre | Contenido | Proxy |
 |------|--------|-----------|-------|
-| A    | `*.op-sly.com` | `157.245.223.7` | DNS-only (gris) |
+| A    | `*.op-sly.com` | `PLATFORM_VPS_PUBLIC_IP` (Doppler, no commitear el valor) | DNS-only (gris) |
 
 **⚠️ Proxied=true (nube naranja) con VPS que no tiene IPv6:** Cloudflare devuelve registros AAAA (IPv6) y el VPS no puede conectarse → conexiones fallan intermitentemente (cURL devuelve 000). **Solución:** DNS-only (proxied=false).
 
 ### Registros actuales de op-sly.com
 
 ```
-A     admin.op-sly.com          → 157.245.223.7  proxied=true
-A     api.op-sly.com            → 157.245.223.7  proxied=true
-A     op-sly.com                → 157.245.223.7  proxied=true
-A     portal.op-sly.com         → 157.245.223.7  proxied=true
-A     *.op-sly.com              → 157.245.223.7  proxied=false
+A     admin.op-sly.com          → (registro A; IP en Doppler `PLATFORM_VPS_PUBLIC_IP`)  proxied=true
+A     api.op-sly.com            → (registro A; IP en Doppler `PLATFORM_VPS_PUBLIC_IP`)  proxied=true
+A     op-sly.com                → (registro A; IP en Doppler `PLATFORM_VPS_PUBLIC_IP`)  proxied=true
+A     portal.op-sly.com         → (registro A; IP en Doppler `PLATFORM_VPS_PUBLIC_IP`)  proxied=true
+A     *.op-sly.com              → (registro A; IP en Doppler `PLATFORM_VPS_PUBLIC_IP`)  proxied=false
 ```
 
 ### SSL/TLS
@@ -251,6 +251,6 @@ python3 /opt/opsly/scripts/super_orchestrator/self_healing.py repair
 | secrets leaked   | echo de variable sensible      | Usar `log` sin valores, Doppler para secrets |
 | Multi-stage roto | Runner sin artifacts           | Copiar `node_modules` desde builder          |
 | 404 en todos los tenants | Traefik middleware roto (stsForceHTTPS) | `sed -i 's/stsForceHTTPS/forceSTSHeader/' middlewares.yml && docker restart traefik` |
-| URL fail to redirect | Wildcard DNS no existe | Crear `*.{domain}` A → `157.245.223.7` en Cloudflare |
+| URL fail to redirect | Wildcard DNS no existe | Crear `*.{domain}` A → `PLATFORM_VPS_PUBLIC_IP` (Doppler, no commitear el valor) en Cloudflare |
 | curl 000 intermitente | IPv6 desde Cloudflare proxy | Cambiar wildcard a DNS-only (proxied=false) |
 | ACME certificate timeout | DNS propagation lento | Verificar `delayBeforeCheck: '20'` en traefik.yml y `CF_DNS_API_TOKEN` |

@@ -13,7 +13,7 @@ Objetivo: activar `op-sly.com` con Cloudflare DNS autoritativo y Traefik ACME DN
 
 ## Importante (evita fallos comunes)
 
-- DNS publico debe apuntar a la IP publica del VPS (actual: `157.245.223.7`), no a Tailscale `100.x`.
+- DNS publico debe apuntar a la IP publica del VPS (actual: `PLATFORM_VPS_PUBLIC_IP` (Doppler, no commitear el valor)), no a Tailscale `100.x`.
 - Si Cloudflare esta en modo proxied (nube naranja), `dig` no devolvera la IP del VPS sino IPs anycast de Cloudflare.
 - `app.op-sly.com` no existe en Traefik hoy; el frontend cliente actual es `portal.op-sly.com`.
 - **ACME DNS-01 + Cloudflare:** el `CF_DNS_API_TOKEN` solo sirve si los **nameservers autoritativos** del dominio (o subzona) apuntan a Cloudflare. Si el DNS público sigue en otro proveedor (p. ej. solo Vercel DNS), Traefik no podrá completar el challenge con el provider Cloudflare; ver [CLOUDFLARE-PROXY-ACTIVATION.md](CLOUDFLARE-PROXY-ACTIVATION.md) sección *DNS autoritativo y ACME*.
@@ -24,13 +24,13 @@ Objetivo: activar `op-sly.com` con Cloudflare DNS autoritativo y Traefik ACME DN
 2. En Cloudflare, agrega zona `op-sly.com` (plan free) y activa setup.
 3. Cambia nameservers en el registrador a los que Cloudflare te entregue para esa zona.
 4. Crea registros DNS recomendados (todos proxied):
-   - `A @ -> 157.245.223.7`
-   - `A api -> 157.245.223.7`
-   - `A admin -> 157.245.223.7`
-   - `A portal -> 157.245.223.7`
-   - `A mcp -> 157.245.223.7`
-   - `A traefik -> 157.245.223.7` (solo si expones dashboard)
-   - `A * -> 157.245.223.7` (opcional; revisar impacto)
+   - `A @ → (registro A; IP en Doppler `PLATFORM_VPS_PUBLIC_IP`)`
+   - `A api → (registro A; IP en Doppler `PLATFORM_VPS_PUBLIC_IP`)`
+   - `A admin → (registro A; IP en Doppler `PLATFORM_VPS_PUBLIC_IP`)`
+   - `A portal → (registro A; IP en Doppler `PLATFORM_VPS_PUBLIC_IP`)`
+   - `A mcp → (registro A; IP en Doppler `PLATFORM_VPS_PUBLIC_IP`)`
+   - `A traefik → (registro A; IP en Doppler `PLATFORM_VPS_PUBLIC_IP`)` (solo si expones dashboard)
+   - `A * → (registro A; IP en Doppler `PLATFORM_VPS_PUBLIC_IP`)` (opcional; revisar impacto)
 
 ## 2) Doppler (config `prd`)
 

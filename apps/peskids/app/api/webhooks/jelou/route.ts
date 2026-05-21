@@ -18,7 +18,6 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     const signature = request.headers.get('x-jelou-signature') || '';
     const body = await request.text();
 
-    // Verify webhook signature
     if (!verifyJelouSignature(body, signature, JELOU_WEBHOOK_SECRET)) {
       console.warn('⚠️ Invalid Jelou webhook signature');
       return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
@@ -26,7 +25,6 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
     const webhook = parseJelouWebhook(JSON.parse(body));
 
-    // Route to appropriate handler
     if (webhook.event === 'form.lead_capture' || webhook.data.form_id === 'lead') {
       return await handleLeadSubmission(webhook);
     }
@@ -35,8 +33,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       return await handleFeedbackSubmission(webhook);
     }
 
-    // Unknown form type
-    console.log(`Unknown form type: ${webhook.data.form_id}`);
+    console.warn(`Unknown form type: ${webhook.data.form_id}`);
     return NextResponse.json({ status: 'ignored' });
   } catch (error) {
     console.error('Jelou webhook error:', error);
@@ -49,7 +46,6 @@ async function handleLeadSubmission(webhook: JelouWebhookPayload) {
   const lead = extractLeadFromJelou(webhook);
 
   try {
-    // Insert lead into database
     const { data, error } = await supabase
       .schema('public')
       .from('leads')
@@ -69,7 +65,6 @@ async function handleLeadSubmission(webhook: JelouWebhookPayload) {
       return NextResponse.json({ error: 'Failed to save lead' }, { status: 500 });
     }
 
-    // Emit event to Opsly bus
     await emitEvent('lead.created', {
       lead_id: data.id,
       name: lead.name,
@@ -81,7 +76,6 @@ async function handleLeadSubmission(webhook: JelouWebhookPayload) {
       contact_id: lead.contact_id,
     });
 
-    // Log webhook receipt
     await logWebhookReceipt('lead.created', webhook, data.id);
 
     return NextResponse.json({
@@ -100,7 +94,6 @@ async function handleFeedbackSubmission(webhook: JelouWebhookPayload) {
   const feedback = extractFeedbackFromJelou(webhook);
 
   try {
-    // Insert feedback into database
     const { data, error } = await supabase
       .schema('public')
       .from('feedback')
@@ -119,7 +112,6 @@ async function handleFeedbackSubmission(webhook: JelouWebhookPayload) {
       return NextResponse.json({ error: 'Failed to save feedback' }, { status: 500 });
     }
 
-    // Emit event to Opsly bus
     await emitEvent('feedback.created', {
       feedback_id: data.id,
       student_name: feedback.student_name,
@@ -130,7 +122,6 @@ async function handleFeedbackSubmission(webhook: JelouWebhookPayload) {
       contact_id: feedback.contact_id,
     });
 
-    // Alert admin if negative feedback
     if (feedback.satisfaction <= 2) {
       await emitEvent('feedback.alert', {
         feedback_id: data.id,
@@ -139,7 +130,6 @@ async function handleFeedbackSubmission(webhook: JelouWebhookPayload) {
       });
     }
 
-    // Log webhook receipt
     await logWebhookReceipt('feedback.created', webhook, data.id);
 
     return NextResponse.json({
@@ -170,6 +160,5 @@ async function logWebhookReceipt(
     });
   } catch (error) {
     console.warn('Failed to log webhook receipt:', error);
-    // Don't fail the request if logging fails
   }
 }

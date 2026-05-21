@@ -39,7 +39,7 @@ export class TwitterAdapter {
         if (reply) posts.push(reply);
       }
 
-      console.log(`✅ Posted ${posts.length} tweets to Twitter`);
+      console.warn(`✅ Posted ${posts.length} tweets to Twitter`);
       return posts;
     } catch (error) {
       console.error('Twitter posting failed:', error);
@@ -79,7 +79,7 @@ export class TwitterAdapter {
   }
 
   private simulatePost(content: TwitterContent): TwitterPost[] {
-    console.log('📝 Simulating Twitter post (no credentials configured)');
+    console.warn('📝 Simulating Twitter post (no credentials configured)');
     return content.threads.map((text, index) => ({
       text,
       created_at: new Date().toISOString(),
