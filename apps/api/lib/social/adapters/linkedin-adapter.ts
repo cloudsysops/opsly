@@ -91,7 +91,7 @@ export class LinkedInAdapter {
     }
 
     try {
-      const response = await fetch(`${this.apiUrl}/analytics/ugcPosts?ids=${postId}`, {
+      const response = await fetch(`${this.apiUrl}/analytics/ugcPosts?ids=${_postId}`, {
         headers: {
           Authorization: `Bearer ${this.accessToken}`,
         },
