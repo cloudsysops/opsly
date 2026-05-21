@@ -405,8 +405,15 @@ def check_gitignore(target_dir: Path) -> list:
                         "description": f".env files exist ({', '.join(f.name for f in env_files)}) but .env is not in .gitignore",
                         "evidence": "Missing .env in .gitignore",
                     })
-    except OSError:
-        pass
+    except OSError as exc:
+        findings.append({
+            "type": "Unreadable .gitignore",
+            "severity": "medium",
+            "file": str(gitignore_path),
+            "line": 0,
+            "description": "Could not read .gitignore to verify sensitive patterns",
+            "evidence": str(exc),
+        })
 
     return findings
 
