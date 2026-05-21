@@ -295,8 +295,20 @@ def check_pip_requirements(target_dir: Path) -> list:
                     "cwe": "CWE-829",
                     "owasp": "A03:2025",
                 })
-        except OSError:
-            pass
+        except OSError as e:
+            findings.append({
+                "type": "Requirements file read error",
+                "severity": "low",
+                "file": str(req_path),
+                "line": 0,
+                "description": (
+                    "Could not read requirements file; dependency pinning checks "
+                    "for this file were skipped."
+                ),
+                "evidence": str(e),
+                "cwe": "CWE-703",
+                "owasp": "A09:2025",
+            })
 
     return findings
 
