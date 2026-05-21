@@ -1918,12 +1918,32 @@ Est. 1-2h
 ✅ **RESOLVED (already fixed in latest commit):** `.github/workflows/dependency-audit-strict.yml` now has `--audit-level=moderate` flag (line 41)  
 ✅ **`.npmrc` configuration:** Documented HIGH vulnerabilities in transitive deps (Peskids Next.js 14 → upgrade Phase 2)
 
-### Cleanup Tasks
-- ⏳ **Eliminate obsolete branches:** codex/merge-vps-local-runtime-2026-05-15, feat/agent-apps-mcp-2026-05-15, backup/main-before-bypass-20260513-214923 (3 branches)
-- ⚠️ **BLOCKER:** `tenants.bak/` directory (untracked, Docker-owned files) blocks `npm run validate-structure` → requires root-level cleanup or VPS SSH session
-  - Added to `.gitignore` but validador checks physical existence, not gitignore
-  - Ownership issue: vps-dragon owns dir, root owns files inside
-  - Next: SSH to VPS or manual intervention required
+### Cleanup Tasks (READY FOR EXECUTION)
+
+**BLOCKER RESOLUTION SCRIPT READY:**
+```bash
+# Run on VPS with root/sudo access:
+cd /opt/opsly
+sudo bash scripts/cleanup-tenants-bak.sh
+```
+
+This script will:
+1. Remove `tenants.bak/` directory (Docker-owned files)
+2. Validate repository structure passes
+3. Print commands to delete 3 obsolete branches
+
+**Manual steps if script fails:**
+```bash
+sudo rm -rf /opt/opsly/tenants.bak/
+cd /opt/opsly
+npm run validate-structure  # Should pass
+git push origin --delete codex/merge-vps-local-runtime-2026-05-15 feat/agent-apps-mcp-2026-05-15 backup/main-before-bypass-20260513-214923
+```
+
+**Status:**
+- ✅ Script created: `scripts/cleanup-tenants-bak.sh`
+- ✅ Awaiting root execution (VPS terminal or `sudo` prompt)
+- ⏳ After cleanup: 3 obsolete branches will delete successfully
 
 ### Notes for Next Session
 - All canonical documentation updated (AGENTS.md, VISION.md)
