@@ -1,0 +1,158 @@
+{
+  "id": "opsly-crm-hot-lead-alert",
+  "name": "Opsly CRM - Hot Lead Alert",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "opsly-crm-hot-lead",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "hot-lead-webhook",
+      "name": "Hot Lead Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $json.body ?? $json;\nconst score = Number(body.score ?? 0) || 0;\nconst dealValue = Number(body.deal_value ?? body.budget ?? 0) || 0;\nconst isHot = score >= 70 || dealValue >= 1000 || body.priority === 'high';\nreturn [{\n  json: {\n    tenant_slug: body.tenant_slug || $env.TENANT_SLUG || 'unknown',\n    name: body.name || body.parent_name || body.contact_name || 'Unknown lead',\n    phone: body.phone || body.whatsapp || null,\n    email: body.email || null,\n    score,\n    deal_value: dealValue,\n    is_hot: isHot,\n    reason: isHot ? 'high-intent lead' : 'normal lead',\n    received_at: new Date().toISOString(),\n    raw: body\n  }\n}];"
+      },
+      "id": "score-lead",
+      "name": "Score Lead",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        260,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.is_hot }}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "id": "is-hot",
+      "name": "Is Hot Lead?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        520,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.OPSLY_CRM_NOTIFY_WEBHOOK_URL }}",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "text",
+              "value": "={{ 'Hot lead for ' + $json.tenant_slug + ': ' + $json.name + ' score=' + $json.score }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "notify-hot-lead",
+      "name": "Notify Hot Lead",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        780,
+        -120
+      ],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { ok: true, workflow: 'opsly-crm-hot-lead-alert', hot: $json.is_hot, lead: $json } }}",
+        "options": {
+          "responseCode": 202
+        }
+      },
+      "id": "hot-lead-response",
+      "name": "Accepted Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1040,
+        0
+      ]
+    }
+  ],
+  "connections": {
+    "Hot Lead Webhook": {
+      "main": [
+        [
+          {
+            "node": "Score Lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Score Lead": {
+      "main": [
+        [
+          {
+            "node": "Is Hot Lead?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Hot Lead?": {
+      "main": [
+        [
+          {
+            "node": "Notify Hot Lead",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Accepted Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notify Hot Lead": {
+      "main": [
+        [
+          {
+            "node": "Accepted Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": [
+    "opsly",
+    "crm",
+    "bonus"
+  ]
+}

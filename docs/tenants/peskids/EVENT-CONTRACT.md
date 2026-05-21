@@ -4,10 +4,12 @@
 
 **Principles:**
 - Every user action → event
-- No PII in event body (except tenant context)
+- Core contact fields allowed in payload (name, email, phone for leads/feedback)
+- No user-agent or IP in events (no tracking/fingerprinting)
 - Events are immutable (no editing history, only new events)
 - At-least-once delivery (may retransmit, consumer must handle idempotency)
 - Events logged for 90 days
+- All events scoped to tenant (`tenant_id` always included)
 
 ---
 

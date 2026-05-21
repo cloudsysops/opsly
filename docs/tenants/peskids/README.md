@@ -7,9 +7,9 @@ tenant_slug: peskids
 
 # Peskids — tenant incubado en Opsly
 
-Peskids es un **tenant activo** en la plataforma Opsly (plan **startup**) y el **primer piloto** del [Opsly Operational Blueprint v0.1](../../blueprints/opsly-operational-blueprint/README.md). Opsly actúa como **incubadora**: stack n8n + monitoreo, CRM base y futura capa de producto. Objetivo: **extraer** `peskids-platform` sin depender del runtime de orquestación de Opsly.
+Peskids es un **tenant activo** en Opsly (plan **startup**) y el **primer piloto** del [Opsly Operational Blueprint v0.1](../../blueprints/opsly-operational-blueprint/README.md). Opsly actúa como **incubadora**: stack n8n + monitoreo, CRM base y capa de producto. Objetivo: **extraer** `peskids-platform` sin depender del runtime de orquestación de Opsly.
 
-**Fase actual (ejecución):** Diseño y validación — ver [SPRINT-01.md](./SPRINT-01.md).
+**Fase actual:** MVP runtime en Opsly — [SPRINT-02-RUN.md](./SPRINT-02-RUN.md). Diseño: [SPRINT-01.md](./SPRINT-01.md).
 
 ## Estado actual (snapshot repo)
 
@@ -24,6 +24,23 @@ Peskids es un **tenant activo** en la plataforma Opsly (plan **startup**) y el *
 
 **Fuente de verdad operativa:** Supabase `platform.tenants` + VPS.
 
+## Por qué Peskids (piloto)
+
+1. **Alcance operativo realista** — historias acotables por sprint
+2. **Approval-first claro** — sin auto-envío ni automatismos sin owner
+3. **Encaja en multi-tenant Opsly** — leads, feedback, follow-ups aislados por tenant
+4. **Demuestra extracción** — camino a plataforma independiente
+5. **Riesgo infra bajo** — Supabase + stack existente
+
+## Fases
+
+| Fase | Enfoque | Doc |
+|------|---------|-----|
+| Sprint 01 | Diseño y validación owner | [SPRINT-01.md](./SPRINT-01.md) |
+| Sprint 02 | MVP que corre (API + forms) | [SPRINT-02-RUN.md](./SPRINT-02-RUN.md) |
+| Sprint 03+ | UI portal, follow-ups, reportes | [MVP-BACKLOG.md](./MVP-BACKLOG.md) |
+| Extracción | Repo `peskids-platform` | [FUTURE-REPO-SEED.md](./FUTURE-REPO-SEED.md) |
+
 ## Qué existe hoy
 
 - Inventario: [`../production/TENANT-PRODUCTION-BASELINE.md`](../production/TENANT-PRODUCTION-BASELINE.md)
@@ -32,7 +49,7 @@ Peskids es un **tenant activo** en la plataforma Opsly (plan **startup**) y el *
 
 ## Primer MVP (resumen)
 
-**Visibilidad + leads + feedback + follow-up con aprobación humana + reporte semanal** — sin mensajería autónoma. Detalle: [MVP-PLAN.md](./MVP-PLAN.md).
+**Visibilidad + leads + feedback + follow-up con aprobación humana** — sin mensajería autónoma. Detalle: [MVP-PLAN.md](./MVP-PLAN.md).
 
 ## Mapa de documentación
 
@@ -53,12 +70,13 @@ Peskids es un **tenant activo** en la plataforma Opsly (plan **startup**) y el *
 | [INCUBATION-CHECKLIST.md](./INCUBATION-CHECKLIST.md) | Checklist incubación |
 | [FUTURE-REPO-SEED.md](./FUTURE-REPO-SEED.md) | Semilla `peskids-platform` |
 
-### Sprint 01 — diseño y validación
+### Sprint 01–02
 
 | Documento | Propósito |
 |-----------|-----------|
 | [MVP-BACKLOG.md](./MVP-BACKLOG.md) | Épicas y prioridades |
-| [SPRINT-01.md](./SPRINT-01.md) | Plan 7 días |
+| [SPRINT-01.md](./SPRINT-01.md) | Plan 7 días diseño |
+| [SPRINT-02-RUN.md](./SPRINT-02-RUN.md) | Deploy y smoke MVP |
 | [DASHBOARD-SPEC.md](./DASHBOARD-SPEC.md) | 5 tarjetas admin |
 | [FORMS-SPEC.md](./FORMS-SPEC.md) | 4 formularios + eventos |
 | [EVENT-CONTRACT.md](./EVENT-CONTRACT.md) | 9 eventos Opsly |
@@ -68,7 +86,7 @@ Peskids es un **tenant activo** en la plataforma Opsly (plan **startup**) y el *
 
 **Owner:** BLUEPRINT-MAPPING → DEMO-SCRIPT → MVP-PLAN.
 
-**Equipo:** MVP-BACKLOG → SPRINT-01 → (tras OK owner) Sprint 02.
+**Equipo:** SPRINT-02-RUN (deploy) → MVP-BACKLOG (siguiente UI).
 
 ## Blueprint alignment
 
@@ -91,7 +109,13 @@ Peskids es un **tenant activo** en la plataforma Opsly (plan **startup**) y el *
 
 Aplicar solo tras validación owner + `./scripts/validate-subclient-config.sh`.
 
-## Enlaces Opsly
+## Métricas de éxito (orientativas)
+
+- **Sprint 01:** Owner dice «sí, construyan esto» tras demo
+- **Sprint 02:** POST lead → 201 en prod; owner ve summary en portal
+- **Post-MVP:** 20+ leads, uso diario del dashboard
+
+## Enlaces
 
 - Hub tenants: [`../README.md`](../README.md)
 - Blueprint: [`../../blueprints/opsly-operational-blueprint/README.md`](../../blueprints/opsly-operational-blueprint/README.md)

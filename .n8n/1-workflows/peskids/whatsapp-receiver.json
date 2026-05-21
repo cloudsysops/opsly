@@ -1,0 +1,181 @@
+{
+  "name": "Peskids WhatsApp Receiver (Baileys)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "peskids-whatsapp",
+        "responseMode": "responseNode",
+        "responseData": "first"
+      },
+      "id": "webhook-trigger",
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Parse Baileys webhook payload\n// Input: { from, name, text, timestamp }\n// Output: normalized message object\n\nconst payload = $input.first().body;\n\nreturn {\n  tenant_id: 'peskids',\n  source: 'whatsapp',\n  sender_contact: payload.from || '',\n  sender_name: payload.name || 'Unknown',\n  message_text: payload.text || '',\n  external_id: payload.messageId || payload.timestamp || '',\n  created_at: new Date().toISOString()\n};"
+      },
+      "id": "parse-message",
+      "name": "Parse Message",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.SUPABASE_URL }}/rest/v1/messages",
+        "authentication": "genericCredentialType",
+        "genericCredentialType": "=supabaseServiceRole",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "tenant_id",
+              "value": "=peskids"
+            },
+            {
+              "name": "source",
+              "value": "=whatsapp"
+            },
+            {
+              "name": "sender_contact",
+              "value": "={{ $node[\"Parse Message\"].json.sender_contact }}"
+            },
+            {
+              "name": "sender_name",
+              "value": "={{ $node[\"Parse Message\"].json.sender_name }}"
+            },
+            {
+              "name": "message_text",
+              "value": "={{ $node[\"Parse Message\"].json.message_text }}"
+            },
+            {
+              "name": "external_id",
+              "value": "={{ $node[\"Parse Message\"].json.external_id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "insert-message",
+      "name": "Insert into Supabase",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.OPSLY_EVENT_BUS_URL }}/events",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "event_type",
+              "value": "=message.received"
+            },
+            {
+              "name": "tenant_id",
+              "value": "=peskids"
+            },
+            {
+              "name": "source",
+              "value": "=whatsapp"
+            },
+            {
+              "name": "sender_contact",
+              "value": "={{ $node[\"Parse Message\"].json.sender_contact }}"
+            },
+            {
+              "name": "message_text",
+              "value": "={{ $node[\"Parse Message\"].json.message_text }}"
+            },
+            {
+              "name": "timestamp",
+              "value": "={{ new Date().toISOString() }}"
+            }
+          ]
+        }
+      },
+      "id": "emit-event",
+      "name": "Emit Event to Opsly",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [850, 300],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "responseCode": 200,
+        "responseData": {
+          "preset": "autoOutput"
+        }
+      },
+      "id": "response",
+      "name": "Return 200 OK",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1050, 300]
+    }
+  ],
+  "connections": {
+    "webhook-trigger": {
+      "main": [
+        [
+          {
+            "node": "parse-message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "parse-message": {
+      "main": [
+        [
+          {
+            "node": "insert-message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "insert-message": {
+      "main": [
+        [
+          {
+            "node": "emit-event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "emit-event": {
+      "main": [
+        [
+          {
+            "node": "response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "1",
+  "meta": {
+    "instanceId": "peskids",
+    "created": "2026-05-19T16:30:00Z",
+    "updated": "2026-05-19T16:30:00Z"
+  }
+}

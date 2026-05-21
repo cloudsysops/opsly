@@ -8,36 +8,32 @@ if (!supabaseUrl || !supabaseKey) {
   console.warn('⚠️ Supabase credentials not configured, using Redis-only mode');
 }
 
-const supabase = supabaseUrl && supabaseKey
-  ? createClient(supabaseUrl, supabaseKey)
-  : null;
+const supabase = supabaseUrl && supabaseKey ? createClient(supabaseUrl, supabaseKey) : null;
 
 export class SupabaseService {
   async saveTask(task: Task): Promise<void> {
     if (!supabase) return;
 
-    const { error } = await supabase
-      .from('opsly_tasks')
-      .upsert({
-        id: task.id,
-        task_type: task.type,
-        title: task.title,
-        description: task.description,
-        prompt: task.prompt,
-        priority: task.priority,
-        status: task.status,
-        assigned_worker: task.assigned_worker,
-        worker_id: task.worker_id,
-        created_by: task.created_by,
-        created_at: task.created_at,
-        started_at: task.started_at,
-        completed_at: task.completed_at,
-        estimated_days: task.estimated_days,
-        git_branch: task.branch,
-        dependencies: task.dependencies,
-        metadata: task.metadata,
-        result: task.result,
-      });
+    const { error } = await supabase.from('opsly_tasks').upsert({
+      id: task.id,
+      task_type: task.type,
+      title: task.title,
+      description: task.description,
+      prompt: task.prompt,
+      priority: task.priority,
+      status: task.status,
+      assigned_worker: task.assigned_worker,
+      worker_id: task.worker_id,
+      created_by: task.created_by,
+      created_at: task.created_at,
+      started_at: task.started_at,
+      completed_at: task.completed_at,
+      estimated_days: task.estimated_days,
+      git_branch: task.branch,
+      dependencies: task.dependencies,
+      metadata: task.metadata,
+      result: task.result,
+    });
 
     if (error) throw new Error(`Failed to save task: ${error.message}`);
   }
@@ -67,23 +63,21 @@ export class SupabaseService {
     const { data, error } = await query;
     if (error) throw new Error(`Failed to fetch tasks: ${error.message}`);
 
-    return (data || []).map(row => this.mapDbTaskToTask(row as Record<string, unknown>));
+    return (data || []).map((row) => this.mapDbTaskToTask(row as Record<string, unknown>));
   }
 
   async saveWorker(worker: Worker): Promise<void> {
     if (!supabase) return;
 
-    const { error } = await supabase
-      .from('opsly_workers')
-      .upsert({
-        id: worker.id,
-        worker_type: worker.type,
-        status: worker.status,
-        current_task_id: worker.current_task_id,
-        last_heartbeat: worker.last_heartbeat,
-        capacity: worker.capacity,
-        metadata: worker.metadata,
-      });
+    const { error } = await supabase.from('opsly_workers').upsert({
+      id: worker.id,
+      worker_type: worker.type,
+      status: worker.status,
+      current_task_id: worker.current_task_id,
+      last_heartbeat: worker.last_heartbeat,
+      capacity: worker.capacity,
+      metadata: worker.metadata,
+    });
 
     if (error) throw new Error(`Failed to save worker: ${error.message}`);
   }
@@ -107,14 +101,12 @@ export class SupabaseService {
   async addLog(taskId: string, log: TaskLog): Promise<void> {
     if (!supabase) return;
 
-    const { error } = await supabase
-      .from('opsly_task_logs')
-      .insert({
-        task_id: taskId,
-        level: log.level,
-        message: log.message,
-        context: log.context,
-      });
+    const { error } = await supabase.from('opsly_task_logs').insert({
+      task_id: taskId,
+      level: log.level,
+      message: log.message,
+      context: log.context,
+    });
 
     if (error) throw new Error(`Failed to save log: ${error.message}`);
   }
@@ -130,7 +122,7 @@ export class SupabaseService {
 
     if (error) throw new Error(`Failed to fetch logs: ${error.message}`);
 
-    return (data || []).map(row => ({
+    return (data || []).map((row) => ({
       timestamp: row.created_at,
       level: row.level,
       message: row.message,
@@ -149,18 +141,28 @@ export class SupabaseService {
       priority: dbTask.priority as Task['priority'],
       status: dbTask.status as Task['status'],
       assigned_worker: dbTask.assigned_worker as Task['assigned_worker'],
-      worker_id: dbTask.worker_id !== undefined && dbTask.worker_id !== null ? String(dbTask.worker_id) : undefined,
+      worker_id:
+        dbTask.worker_id !== undefined && dbTask.worker_id !== null
+          ? String(dbTask.worker_id)
+          : undefined,
       created_by: String(dbTask.created_by ?? ''),
       created_at: String(dbTask.created_at ?? ''),
-      started_at: dbTask.started_at !== undefined && dbTask.started_at !== null ? String(dbTask.started_at) : undefined,
+      started_at:
+        dbTask.started_at !== undefined && dbTask.started_at !== null
+          ? String(dbTask.started_at)
+          : undefined,
       completed_at:
-        dbTask.completed_at !== undefined && dbTask.completed_at !== null ? String(dbTask.completed_at) : undefined,
-      estimated_days:
-        typeof dbTask.estimated_days === 'number' ? dbTask.estimated_days : undefined,
+        dbTask.completed_at !== undefined && dbTask.completed_at !== null
+          ? String(dbTask.completed_at)
+          : undefined,
+      estimated_days: typeof dbTask.estimated_days === 'number' ? dbTask.estimated_days : undefined,
       dependencies: Array.isArray(deps) ? deps.map(String) : [],
       logs: [],
       result: dbTask.result as Task['result'],
-      branch: dbTask.git_branch !== undefined && dbTask.git_branch !== null ? String(dbTask.git_branch) : undefined,
+      branch:
+        dbTask.git_branch !== undefined && dbTask.git_branch !== null
+          ? String(dbTask.git_branch)
+          : undefined,
       metadata: dbTask.metadata as Task['metadata'],
     };
   }

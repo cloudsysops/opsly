@@ -1,7 +1,20 @@
 import { z } from 'zod';
 
-export const taskTypeSchema = z.enum(['implementation', 'bugfix', 'refactor', 'research', 'documentation']);
-export const taskStatusSchema = z.enum(['pending', 'assigned', 'executing', 'completed', 'failed', 'cancelled']);
+export const taskTypeSchema = z.enum([
+  'implementation',
+  'bugfix',
+  'refactor',
+  'research',
+  'documentation',
+]);
+export const taskStatusSchema = z.enum([
+  'pending',
+  'assigned',
+  'executing',
+  'completed',
+  'failed',
+  'cancelled',
+]);
 export const taskPrioritySchema = z.enum(['low', 'medium', 'high', 'critical']);
 export const workerTypeSchema = z.enum(['cursor', 'ci-runner', 'claude-research']);
 export const logLevelSchema = z.enum(['info', 'warn', 'error', 'debug']);
@@ -22,15 +35,17 @@ export const createTaskSchema = z.object({
 export const updateTaskSchema = z.object({
   status: taskStatusSchema.optional(),
   worker_id: z.string().optional(),
-  result: z.object({
-    success: z.boolean(),
-    output: z.string().optional(),
-    error: z.string().optional(),
-    files_changed: z.array(z.string()).optional(),
-    commits: z.array(z.string()).optional(),
-    pr_url: z.string().optional(),
-    duration_ms: z.number().optional(),
-  }).optional(),
+  result: z
+    .object({
+      success: z.boolean(),
+      output: z.string().optional(),
+      error: z.string().optional(),
+      files_changed: z.array(z.string()).optional(),
+      commits: z.array(z.string()).optional(),
+      pr_url: z.string().optional(),
+      duration_ms: z.number().optional(),
+    })
+    .optional(),
   metadata: z.record(z.unknown()).optional(),
 });
 

@@ -2,17 +2,18 @@
   "name": "@intcloudsysops/types",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "main": "./dist/index.js",
-  "types": "./src/index.ts",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "types": "./src/index.ts",
+      "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
       "require": "./dist/index.js",
       "default": "./dist/index.js"
     },
     "./approval": {
-      "types": "./src/approval.ts",
+      "types": "./dist/approval.d.ts",
       "import": "./dist/approval.js",
       "require": "./dist/approval.js",
       "default": "./dist/approval.js"
@@ -26,6 +27,6 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
-    "typescript": "^5.9.2"
+    "typescript": "^5.9.3"
   }
 }

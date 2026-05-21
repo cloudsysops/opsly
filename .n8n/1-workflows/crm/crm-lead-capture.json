@@ -1,0 +1,85 @@
+{
+  "id": "opsly-crm-lead-capture",
+  "name": "Opsly CRM - Lead Capture",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "opsly-crm-lead",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "lead-webhook",
+      "name": "Lead Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $json.body ?? $json;\nconst dealValue = Number(body.deal_value ?? body.budget ?? 0) || 0;\nconst hasContact = Boolean(body.email || body.phone || body.whatsapp);\nreturn [{\n  json: {\n    tenant_slug: body.tenant_slug || $env.TENANT_SLUG || 'unknown',\n    name: body.name || body.parent_name || body.contact_name || 'Unknown lead',\n    email: body.email || null,\n    phone: body.phone || body.whatsapp || null,\n    company: body.company || body.business_name || null,\n    source: body.source || 'webhook',\n    interest: body.interest || body.service || body.message || null,\n    deal_value: dealValue,\n    score: (dealValue >= 1000 ? 40 : 10) + (hasContact ? 30 : 0) + (body.message ? 20 : 0),\n    received_at: new Date().toISOString(),\n    raw: body\n  }\n}];"
+      },
+      "id": "normalize-lead",
+      "name": "Normalize Lead",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        260,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { ok: true, workflow: 'opsly-crm-lead-capture', lead: $json } }}",
+        "options": {
+          "responseCode": 202
+        }
+      },
+      "id": "lead-response",
+      "name": "Accepted Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        520,
+        0
+      ]
+    }
+  ],
+  "connections": {
+    "Lead Webhook": {
+      "main": [
+        [
+          {
+            "node": "Normalize Lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Lead": {
+      "main": [
+        [
+          {
+            "node": "Accepted Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": [
+    "opsly",
+    "crm",
+    "bonus"
+  ]
+}

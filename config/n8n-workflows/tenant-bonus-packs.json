@@ -1,0 +1,96 @@
+{
+  "version": "2026-05-20",
+  "default_pack_id": "crm-starter-pack",
+  "rollout_policy": {
+    "install_mode": "manual",
+    "activation_mode": "human_review_required",
+    "billing_positioning": "included_bonus_for_existing_clients",
+    "notes": "Do not activate workflows automatically. Import inactive, verify tenant URLs and credentials, then activate from the tenant n8n UI."
+  },
+  "tenants": [
+    {
+      "tenant_slug": "peskids",
+      "tenant_name": "Peskids",
+      "pack_ids": ["crm-starter-pack"],
+      "bonus_label": "Parent lead capture, feedback follow-up, and weekly owner report",
+      "primary_outcomes": [
+        "Capture parent inquiries",
+        "Flag high-intent prospects",
+        "Remind the owner about pending follow-ups",
+        "Send a daily or weekly pipeline digest"
+      ],
+      "demo_priority": 1,
+      "status": "ready_for_dry_run"
+    },
+    {
+      "tenant_slug": "smiletripcare",
+      "tenant_name": "SmileTripCare",
+      "pack_ids": ["crm-starter-pack"],
+      "bonus_label": "Patient/client intake, follow-up reminders, and daily pipeline digest",
+      "primary_outcomes": [
+        "Capture care inquiries",
+        "Alert high-value or urgent leads",
+        "Reduce missed follow-ups",
+        "Summarize new opportunities for the owner"
+      ],
+      "demo_priority": 2,
+      "status": "ready_for_dry_run"
+    },
+    {
+      "tenant_slug": "localrank",
+      "tenant_name": "LocalRank",
+      "pack_ids": ["crm-starter-pack"],
+      "bonus_label": "SEO audit leads, ranking report requests, and monthly follow-up",
+      "primary_outcomes": [
+        "Capture local SEO leads",
+        "Route audit requests",
+        "Track follow-up intent",
+        "Send owner pipeline digest"
+      ],
+      "demo_priority": 3,
+      "status": "ready_for_dry_run"
+    },
+    {
+      "tenant_slug": "legalvial",
+      "tenant_name": "LegalVial",
+      "pack_ids": ["crm-starter-pack"],
+      "bonus_label": "Legal intake, document request follow-up, and case pipeline digest",
+      "primary_outcomes": [
+        "Capture case inquiries",
+        "Identify urgent leads",
+        "Remind staff about document follow-up",
+        "Summarize active intake pipeline"
+      ],
+      "demo_priority": 4,
+      "status": "requires_parent_tenant_review"
+    },
+    {
+      "tenant_slug": "jkboterolabs",
+      "tenant_name": "JK Botero Labs",
+      "pack_ids": ["crm-starter-pack"],
+      "bonus_label": "Project inquiry intake, support triage, and owner digest",
+      "primary_outcomes": [
+        "Capture project inquiries",
+        "Route support requests",
+        "Track pending follow-ups",
+        "Summarize active opportunities"
+      ],
+      "demo_priority": 5,
+      "status": "ready_for_dry_run"
+    },
+    {
+      "tenant_slug": "intcloudsysops",
+      "tenant_name": "Intcloudsysops",
+      "pack_ids": ["crm-starter-pack"],
+      "bonus_label": "Internal ops intake, incident follow-up, and agent health digest",
+      "primary_outcomes": [
+        "Capture internal requests",
+        "Route urgent operational items",
+        "Track follow-ups",
+        "Summarize daily operations"
+      ],
+      "demo_priority": 6,
+      "status": "internal_only"
+    }
+  ]
+}

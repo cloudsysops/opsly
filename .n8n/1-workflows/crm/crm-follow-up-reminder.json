@@ -1,0 +1,96 @@
+{
+  "id": "opsly-crm-follow-up-reminder",
+  "name": "Opsly CRM - Follow Up Reminder",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 9 * * 1-5"
+            }
+          ]
+        }
+      },
+      "id": "weekday-schedule",
+      "name": "Weekday 9am",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{ json: {\n  tenant_slug: $env.TENANT_SLUG || 'unknown',\n  type: 'follow_up_reminder',\n  title: 'Review open leads and pending follow-ups',\n  generated_at: new Date().toISOString()\n} }];"
+      },
+      "id": "build-reminder",
+      "name": "Build Reminder",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        260,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.OPSLY_CRM_NOTIFY_WEBHOOK_URL }}",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "text",
+              "value": "={{ '[' + $json.tenant_slug + '] CRM follow-up reminder: ' + $json.title }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "notify-reminder",
+      "name": "Notify Reminder",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        520,
+        0
+      ],
+      "continueOnFail": true
+    }
+  ],
+  "connections": {
+    "Weekday 9am": {
+      "main": [
+        [
+          {
+            "node": "Build Reminder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Reminder": {
+      "main": [
+        [
+          {
+            "node": "Notify Reminder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": [
+    "opsly",
+    "crm",
+    "bonus"
+  ]
+}
