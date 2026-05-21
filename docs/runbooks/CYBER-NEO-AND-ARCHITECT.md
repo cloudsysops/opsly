@@ -4,8 +4,8 @@ Status: installed locally on 2026-05-21.
 
 Sources:
 
-- `vendor/cyber-neo` from https://github.com/Hainrixz/cyber-neo
-- `vendor/the-architect` from https://github.com/Hainrixz/the-architect
+- `tools/agent-packs/vendor/cyber-neo` from https://github.com/Hainrixz/cyber-neo
+- `tools/agent-packs/vendor/the-architect` from https://github.com/Hainrixz/the-architect
 
 Both projects are MIT licensed.
 
@@ -17,7 +17,7 @@ Both projects are MIT licensed.
 | Codex project skill | `.agents/skills/the-architect` | Blueprint generation workflow adapted for Opsly |
 | Claude Code skill | `~/.claude/skills/cyber-neo` | `/cyber-neo` style security analysis |
 | Claude Code agent | `~/.claude/agents/the-architect` | Blueprint/meta-architecture agent |
-| Vendor source | `vendor/cyber-neo`, `vendor/the-architect` | Pinned local source copy |
+| Vendor source | `tools/agent-packs/vendor/cyber-neo`, `tools/agent-packs/vendor/the-architect` | Pinned local source copy |
 
 ## Safe Usage
 
