@@ -9,7 +9,7 @@ tenant_slug: peskids
 
 Peskids es un **tenant activo** en Opsly (plan **startup**) y el **primer piloto** del [Opsly Operational Blueprint v0.1](../../blueprints/opsly-operational-blueprint/README.md). Opsly actúa como **incubadora**: stack n8n + monitoreo, CRM base y capa de producto. Objetivo: **extraer** `peskids-platform` sin depender del runtime de orquestación de Opsly.
 
-**Fase actual:** MVP runtime en Opsly — [SPRINT-02-RUN.md](./SPRINT-02-RUN.md). Diseño: [SPRINT-01.md](./SPRINT-01.md).
+**Fase actual:** MVP runtime en Opsly — [SPRINT-02-RUN.md](./SPRINT-02-RUN.md). **Deploy API prod:** [DEPLOYMENT-2026-05-21.md](./DEPLOYMENT-2026-05-21.md). Diseño: [SPRINT-01.md](./SPRINT-01.md).
 
 ## Estado actual (snapshot repo)
 
@@ -19,7 +19,7 @@ Peskids es un **tenant activo** en Opsly (plan **startup**) y el **primer piloto
 | Config tenant | Plantilla | `config/tenants/peskids.json` — ver propuesta abajo |
 | VPS (documentado) | Stack esperado | `tenant_peskids`; `n8n_peskids` + Uptime Kuma |
 | CRM n8n | Documentado | 4 workflows `Opsly CRM` (AGENTS 2026-04-30) — verificar en VPS |
-| Producto / MVP | Código en repo | API `POST /api/public/tenants/peskids/*`; migración `0053` (aplicar en Supabase) |
+| Producto / MVP | **En prod API** | Smoke PASS 2026-05-21; imagen VPS `intcloudsysops-api:peskids-latest` — ver [DEPLOYMENT-2026-05-21.md](./DEPLOYMENT-2026-05-21.md) |
 | Blueprint | Alineado | [BLUEPRINT-MAPPING.md](./BLUEPRINT-MAPPING.md) |
 
 **Fuente de verdad operativa:** Supabase `platform.tenants` + VPS.
@@ -77,6 +77,7 @@ Peskids es un **tenant activo** en Opsly (plan **startup**) y el **primer piloto
 | [MVP-BACKLOG.md](./MVP-BACKLOG.md) | Épicas y prioridades |
 | [SPRINT-01.md](./SPRINT-01.md) | Plan 7 días diseño |
 | [SPRINT-02-RUN.md](./SPRINT-02-RUN.md) | Deploy y smoke MVP |
+| [DEPLOYMENT-2026-05-21.md](./DEPLOYMENT-2026-05-21.md) | Registro deploy prod API (smoke PASS) |
 | [DASHBOARD-SPEC.md](./DASHBOARD-SPEC.md) | 5 tarjetas admin |
 | [FORMS-SPEC.md](./FORMS-SPEC.md) | 4 formularios + eventos |
 | [EVENT-CONTRACT.md](./EVENT-CONTRACT.md) | 9 eventos Opsly |
