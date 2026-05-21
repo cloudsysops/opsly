@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseServer } from '@/lib/supabase'
-
 function validateAdminAuth(req: NextRequest): { valid: boolean; error?: string } {
   const authHeader = req.headers.get('authorization')
   const adminSecret = process.env.DASHBOARD_ADMIN_SECRET

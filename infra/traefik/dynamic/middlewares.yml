@@ -11,7 +11,6 @@ http:
         stsSeconds: 31536000
         stsIncludeSubdomains: true
         stsPreload: true
-        stsForceHTTPS: true
         referrerPolicy: strict-origin-when-cross-origin
         customResponseHeaders:
           X-Content-Security-Policy: "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline';"

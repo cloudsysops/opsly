@@ -1,3 +1,11 @@
+export type Json =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: Json | undefined }
+  | Json[]
+
 export type Database = {
   public: {
     Tables: {
@@ -26,6 +34,7 @@ export type Database = {
           admin_notes?: string | null
         }
         Update: Partial<Database['public']['Tables']['leads']['Insert']>
+        Relationships: []
       }
       students: {
         Row: {
@@ -48,6 +57,7 @@ export type Database = {
           enrollment_date?: string
         }
         Update: Partial<Database['public']['Tables']['students']['Insert']>
+        Relationships: []
       }
       feedback: {
         Row: {
@@ -70,6 +80,7 @@ export type Database = {
           parent_email?: string | null
         }
         Update: Partial<Database['public']['Tables']['feedback']['Insert']>
+        Relationships: []
       }
       followups: {
         Row: {
@@ -94,6 +105,7 @@ export type Database = {
           notes?: string | null
         }
         Update: Partial<Database['public']['Tables']['followups']['Insert']>
+        Relationships: []
       }
       messages: {
         Row: {
@@ -116,8 +128,34 @@ export type Database = {
           external_id?: string | null
         }
         Update: Partial<Database['public']['Tables']['messages']['Insert']>
+        Relationships: []
+      }
+      webhook_logs: {
+        Row: {
+          id: string
+          tenant_id: string
+          provider: string
+          event_type: string
+          record_id: string
+          payload: Json
+          received_at: string
+        }
+        Insert: {
+          tenant_id: string
+          provider: string
+          event_type: string
+          record_id: string
+          payload: Json
+          received_at?: string
+        }
+        Update: Partial<Database['public']['Tables']['webhook_logs']['Insert']>
+        Relationships: []
       }
     }
+    Views: Record<string, never>
+    Functions: Record<string, never>
+    Enums: Record<string, never>
+    CompositeTypes: Record<string, never>
   }
 }
 
