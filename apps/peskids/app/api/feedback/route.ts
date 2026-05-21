@@ -73,7 +73,7 @@ export async function POST(request: NextRequest) {
         feedback.child_name,
         feedback.satisfaction,
         feedback.suggestion,
-        feedback.parent_email
+        feedback.parent_email || ''
       )
     } catch (eventError) {
       console.error('Event emission error:', eventError)
