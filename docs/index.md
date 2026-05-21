@@ -15,6 +15,7 @@ Punto de entrada compacto del vault. Política de carpetas:
 - [`README.md`](README.md) — mapa del vault
 - [`STRUCTURE-GUARDRAILS.md`](STRUCTURE-GUARDRAILS.md) — reglas de ubicación
 - [`openapi-opsly-api.yaml`](00-architecture/openapi-opsly-api.yaml) — contrato API (subset)
+- Ciclo de vida de tenants: [`00-architecture/TENANT-INCUBATION-LIFECYCLE.md`](00-architecture/TENANT-INCUBATION-LIFECYCLE.md), [`04-infrastructure/VPS-PROVISIONING-STANDARD.md`](04-infrastructure/VPS-PROVISIONING-STANDARD.md), [`runbooks/MIGRATION-CHECKLIST.md`](runbooks/MIGRATION-CHECKLIST.md)
 - Stubs de compatibilidad: [`stubs/README.md`](stubs/README.md)
 - Repo (fuera del vault): [`AGENTS.md`](../AGENTS.md), [`VISION.md`](../VISION.md), [`ROADMAP.md`](../ROADMAP.md)
 
