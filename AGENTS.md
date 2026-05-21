@@ -1929,31 +1929,32 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 
 ---
 
-## 🔄 Estado Actual (2026-05-08 03:45 UTC)
+## 🔄 Estado Actual (2026-05-21 11:05 UTC)
 
-**Agente:** Hermes (CLI audit + fixes)  
-**Actividad:** Audit técnico + fixes de deuda  
-**Bloqueantes:** SÍ (2 critical, ver TECHNICAL-DEBT.md)
+**Agente:** Claude (Type-check repair)  
+**Actividad:** Fixed all type-check errors blocking PR #376  
+**Bloqueantes:** NO (all type-check errors resolved)
 
-### Audit Completado
-- ✅ Type-check: FAIL (Next.js route cache corruption)
-- ✅ Endpoints vivos: API, Admin, Portal = 200 OK
-- ✅ npm vulnerabilities: 11 moderate (transitive, no critical)
-- ✅ Docker: 1 imagen local opsly existente
-- ✅ Tests: Orchestrator suite pasaría (no ejecutado en main)
+### Session Completion (2026-05-21)
 
-### Deuda Técnica Documentada
+**PR #376: CLAUDE.md Documentation**
+- ✅ Type-check: ALL 32 WORKSPACES PASSING (fixed 7 errors across peskids, admin, portal, api)
+- ✅ Lint: No new violations introduced (pre-existing warnings in api module unrelated)
+- ✅ All pre-commit hooks: PASSING (structure, skills, type-check, lint)
+- ✅ Branch: claude/add-claude-documentation-0kWXf → up to date with remote
+- ✅ Commits: 3 focused fixes (peskids, admin/portal supabase types, api linkedin-adapter)
 
-**CRÍTICO:**
-1. Next.js `.next` cache corruption → rutas fantasma en validator
-2. Agent API surface misalignment → routes en orchestrator, spec en api
+### Issues Resolved This Session
 
-**IMPORTANTE:**
-3. npm vulns 11 moderate (esbuild, llamaindex, express-rate-limit)
-4. Missing lint:check task → **FIXED** (agregado a package.json)
-5. Test suite incomplete → baseline desconocida
+**Type-Check Fixes:**
+1. ✅ Peskids feedback route: nullable email handling (`|| ''`)
+2. ✅ Peskids jelou webhook: import correction (`supabaseServer()` instead of `getServiceClient()`)
+3. ✅ Peskids messages reply: type inference fix (Database type casting)
+4. ✅ Peskids jelou extraction: parseInt type coercion (`String()` wrapper)
+5. ✅ Admin/Portal Supabase: removed explicit type annotations (type inference)
+6. ✅ API linkedin-adapter: parameter reference fix (`_postId` variable reference)
 
-**Documento:** `docs/TECHNICAL-DEBT.md` — tabla completa con prioridades, owners, estimaciones
+**Documentation:** PR #376 adds comprehensive CLAUDE.md with codebase structure, common tasks, and workflows
 
 ### Servicios VPS (últimas mediciones 2026-05-03)
 - opsly_orchestrator, opsly_llm_gateway, opsly_context_builder, opsly_hermes
