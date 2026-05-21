@@ -10,6 +10,52 @@ export interface KnowledgeCapture {
   tags?: string[];
 }
 
+async function writeKnowledgeToInbox(
+  agentName: string,
+  body: KnowledgeCapture,
+  today: string
+): Promise<string> {
+  const inboxDir = join(process.cwd(), 'docs', 'obsidian', 'inbox');
+  const inboxFile = join(inboxDir, `${today}.md`);
+
+  if (!existsSync(inboxDir)) {
+    await mkdir(inboxDir, { recursive: true });
+  }
+
+  const timestamp = new Date().toISOString();
+  const tags = body.tags ? body.tags : [agentName];
+  const tagsStr = tags
+    .map((tag) => `#${tag.toLowerCase().replace(/[^a-z0-9-]/g, '')}`)
+    .join(' ');
+
+  const mdContent = `## ${body.context}
+
+**Agent:** \`${agentName}\`
+**Time:** ${timestamp}
+**Tags:** ${tagsStr}
+
+${body.insight}
+
+---
+
+`;
+
+  const fs = await import('node:fs/promises');
+  try {
+    await fs.access(inboxFile);
+    await fs.appendFile(inboxFile, mdContent);
+  } catch {
+    const header = `# Knowledge Inbox — ${today}
+
+Captured insights from autonomous agents.
+
+`;
+    await fs.writeFile(inboxFile, header + mdContent);
+  }
+
+  return timestamp;
+}
+
 /**
  * POST /api/knowledge/capture
  *
@@ -23,11 +69,10 @@ export interface KnowledgeCapture {
  *   tags: ["syra", "publishing", "optimization"]
  * }
  */
-export async function POST(req: NextRequest) {
+export async function POST(req: NextRequest): Promise<NextResponse> {
   try {
     const body = (await req.json()) as KnowledgeCapture;
 
-    // Validate required fields
     if (!body.agent || !body.context || !body.insight) {
       return NextResponse.json(
         { error: 'Missing required fields: agent, context, insight' },
@@ -35,62 +80,14 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Sanitize agent name (only alphanumeric + dash)
     const agentName = body.agent.toLowerCase().replace(/[^a-z0-9-]/g, '');
     if (!agentName) {
       return NextResponse.json({ error: 'Invalid agent name' }, { status: 400 });
     }
 
-    // Get today's date for inbox filename
-    const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
-    const inboxDir = join(process.cwd(), 'docs', 'obsidian', 'inbox');
-    const inboxFile = join(inboxDir, `${today}.md`);
+    const today = new Date().toISOString().split('T')[0];
+    const timestamp = await writeKnowledgeToInbox(agentName, body, today);
 
-    // Ensure inbox directory exists
-    if (!existsSync(inboxDir)) {
-      await mkdir(inboxDir, { recursive: true });
-    }
-
-    // Build markdown content
-    const timestamp = new Date().toISOString();
-    const tags = body.tags ? body.tags : [agentName];
-    const tagsStr = tags.map((tag) => `#${tag.toLowerCase().replace(/[^a-z0-9-]/g, '')}`).join(' ');
-
-    const mdContent = `## ${body.context}
-
-**Agent:** \`${agentName}\`  
-**Time:** ${timestamp}  
-**Tags:** ${tagsStr}
-
-${body.insight}
-
----
-
-`;
-
-    // Append to inbox file
-    try {
-      // Try to read existing file, append to it
-      const fs = await import('node:fs/promises');
-      try {
-        await fs.access(inboxFile);
-        // File exists, append
-        await fs.appendFile(inboxFile, mdContent);
-      } catch {
-        // File doesn't exist, create it with header
-        const header = `# Knowledge Inbox — ${today}
-
-Captured insights from autonomous agents.
-
-`;
-        await fs.writeFile(inboxFile, header + mdContent);
-      }
-    } catch (writeError) {
-      console.error('Error writing to inbox:', writeError);
-      return NextResponse.json({ error: 'Failed to capture knowledge' }, { status: 500 });
-    }
-
-    // Return success
     return NextResponse.json(
       {
         success: true,
@@ -111,7 +108,7 @@ Captured insights from autonomous agents.
  *
  * Get today's captured insights.
  */
-export async function GET() {
+export async function GET(): Promise<NextResponse> {
   try {
     const today = new Date().toISOString().split('T')[0];
     const inboxFile = join(process.cwd(), 'docs', 'obsidian', 'inbox', `${today}.md`);
