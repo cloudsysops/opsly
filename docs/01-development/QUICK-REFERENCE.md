@@ -13,8 +13,7 @@
 ssh vps-dragon@100.120.151.91          # control plane
 ssh opslyquantum@100.80.41.29          # worker Ubuntu (opsly-mac2011)
 
-# IP pública (solo HTTP/HTTPS — bloqueada para SSH por UFW)
-# 157.245.223.7
+# IP pública del VPS: solo en Doppler / panel DNS (nunca en git). SSH bloqueado por UFW.
 ```
 
 **VPS → workers (otros nodos):** clave en el VPS (`vps_to_nodes` o `id_ed25519_opsly_nodes`) + `authorized_keys` en el worker; guía [`VPS-SSH-WORKER-NODES.md`](VPS-SSH-WORKER-NODES.md).

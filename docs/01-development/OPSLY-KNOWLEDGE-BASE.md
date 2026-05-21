@@ -11,7 +11,7 @@
 **Opsly** es una plataforma multi-tenant SaaS que despliega y gestiona stacks de agentes autónomos (n8n, Uptime Kuma) por cliente, con facturación Stripe, backups automáticos y dashboard de administración.
 
 - **Dominio:** op-sly.com
-- **IP VPS:** 157.245.223.7
+- **IP VPS:** solo en Doppler (no en git)
 - **Tailscale:** 100.120.151.91
 
 ---
@@ -422,7 +422,7 @@ cat AGENTS.md
 cat VISION.md
 cat docs/OPENCLAW-ARCHITECTURE.md
 
-# 2. Estado VPS — acceso SOLO por Tailscale (nunca IP pública 157.245.223.7)
+# 2. Estado VPS — acceso SOLO por Tailscale (nunca IP pública del VPS (solo Doppler))
 ssh vps-dragon@100.120.151.91 "
   systemctl is-active cursor-prompt-monitor opsly-watcher 2>/dev/null || true
   docker ps --format 'table {{.Names}}\t{{.Status}}' \
@@ -452,7 +452,7 @@ Next.js 15 · TypeScript · Tailwind · Supabase · Stripe · Docker Compose · 
 ## Repos y paths
 
 - GitHub: `cloudsysops/opsly`
-- VPS: `/opt/opsly` · SSH `vps-dragon@100.120.151.91` (Tailscale · IP pública `157.245.223.7` solo para tráfico HTTP/HTTPS)
+- VPS: `/opt/opsly` · SSH `vps-dragon@100.120.151.91` (Tailscale). IP pública del origen solo en Doppler (HTTP/HTTPS vía Cloudflare).
 - Doppler: `ops-intcloudsysops` / `prd`
 
 ### opsly-discord

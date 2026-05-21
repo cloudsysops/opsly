@@ -53,7 +53,7 @@ else
   usb_resolve_repo_root || die "Sin repo ni pen.local.json con ssh.target" 1
   require_cmd jq
   user="$(read_cfg '.infrastructure.vps_user')"
-  ip="$(read_cfg '.infrastructure.vps_ip')"
+  ip="$(read_cfg '.infrastructure.vps_tailscale_ip')"
   TARGET="${user}@${ip}"
   log_info "SSH target: ${TARGET} (desde opsly.config.json)"
 fi

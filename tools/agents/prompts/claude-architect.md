@@ -49,4 +49,4 @@ Bloqueantes: [lista o "ninguno"]
 - LLM Gateway: apps/llm-gateway (puerto 3010)
 - Context Builder: apps/context-builder (puerto 3012)
 
-**SSH:** solo Tailscale `vps-dragon@100.120.151.91` (nunca IP pública 157.245.223.7)
+**SSH:** solo Tailscale `vps-dragon@100.120.151.91` (nunca la IP pública del VPS)

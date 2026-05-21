@@ -24,7 +24,7 @@ locals {
   droplet_ssh_keys = compact([var.ssh_fingerprint])
 }
 
-# Droplet de PRODUCCIÓN — corresponde al VPS ya existente (157.245.223.7).
+# Droplet de PRODUCCIÓN — corresponde al VPS ya existente (origen VPS; valor en Doppler, no en git).
 # Flujo: definir este bloque, luego `terraform import digitalocean_droplet.production <ID>`.
 # No ejecutar apply que “reemplace” sin revisar el plan: el objetivo es gestionar DNS
 # y opcionalmente staging sin recrear producción.

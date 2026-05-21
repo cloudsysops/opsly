@@ -2,7 +2,6 @@
   "last_updated": "2026-05-10",
   "phase": "fase-2-producto-ia-autonomy-phase3",
   "vps": {
-    "ip": "157.245.223.7",
     "tailscale": "100.120.151.91",
     "user": "vps-dragon",
     "repo": "/opt/opsly",
@@ -39,7 +38,7 @@
     "api_subdomain": "api.op-sly.com",
     "portal": "op-sly.com (Vercel)",
     "admin": "admin.op-sly.com (Vercel)",
-    "ip": "157.245.223.7",
+    "public_ip": "doppler-only",
     "status": "ok",
     "architecture": "hybrid-vercel-vps"
   },

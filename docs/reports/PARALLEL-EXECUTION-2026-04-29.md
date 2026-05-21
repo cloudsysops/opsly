@@ -91,7 +91,7 @@
 
 ## INFRASTRUCTURE STATUS
 
-✓ **VPS (157.245.223.7):** All services operational
+✓ **VPS (origen VPS; valor en Doppler, no en git):** All services operational
 - traefik, api, admin, portal, mcp, llm-gateway, orchestrator, context-builder, redis
 
 ✓ **Tenants:** 5 active
@@ -101,7 +101,7 @@
 
 ✓ **Doppler:** ops-intcloudsysops/prd (complete, 3 vars pending for ML)
 
-✓ **DNS:** op-sly.com → 157.245.223.7 (OK)
+✓ **DNS:** op-sly.com → (registro A; IP en Doppler `PLATFORM_VPS_PUBLIC_IP`) (OK)
 
 ---
 

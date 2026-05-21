@@ -7,7 +7,7 @@
     "github_repo": "opsly"
   },
   "infrastructure": {
-    "vps_ip": "157.245.223.7",
+    "vps_tailscale_ip": "100.120.151.91",
     "vps_user": "vps-dragon",
     "vps_path": "/opt/opsly",
     "traefik_network": "traefik-public"

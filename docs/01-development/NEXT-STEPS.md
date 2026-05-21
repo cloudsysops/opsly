@@ -378,7 +378,7 @@ Then pick the next Phase 5 component and execute step-by-step.
 
 **GitHub Issues:** https://github.com/cloudsysops/opsly/issues  
 **Commits:** https://github.com/cloudsysops/opsly/commits/main  
-**VPS SSH:** `ssh -i ~/.ssh/opsly ubuntu@157.245.223.7` (via Tailscale)  
+**VPS SSH:** `ssh -i ~/.ssh/opsly vps-dragon@100.120.151.91` (via Tailscale)
 **Monitoring:** http://localhost:3000/grafana (Grafana dashboards)  
 
 ---

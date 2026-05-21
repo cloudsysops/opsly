@@ -57,7 +57,7 @@ Date: 2026-04-29 | Owner: Opsly Autonomous Runtime | Mode: AGGRESSIVE (Cortex sa
 4. Weekly autonomy cycle >= 80% task completion
 
 ## INFRASTRUCTURE STATUS
-- VPS: 157.245.223.7 (operational, all services healthy)
+- VPS: operativo (operational, all services healthy)
 - Services: traefik, api, admin, portal, mcp, llm-gateway, orchestrator, context-builder, redis
 - Deploy staging: op-sly.com (operational)
 - Doppler: ops-intcloudsysops/prd (complete, 3 vars pending for ML)

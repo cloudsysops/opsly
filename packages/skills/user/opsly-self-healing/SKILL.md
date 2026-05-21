@@ -41,7 +41,7 @@ El agente busca cualquier dominio diferente al esperado en URLs dentro de los co
 
 Verifica que `n8n-{slug}.{domain}` y `uptime-{slug}.{domain}` resuelvan a una IP mediante `dig @1.1.1.1`.
 
-**Causa común:** Falta el registro wildcard `*.{domain}` → `157.245.223.7` en Cloudflare (DNS-only, proxied=false para evitar issues IPv6).
+**Causa común:** Falta el registro wildcard `*.{domain}` → `PLATFORM_VPS_PUBLIC_IP` (Doppler, no commitear el valor) en Cloudflare (DNS-only, proxied=false para evitar issues IPv6).
 
 **Fix automático:** Usa `CF_DNS_API_TOKEN` de Doppler para crear el registro A wildcard vía API de Cloudflare.
 
@@ -63,7 +63,7 @@ Detecta `stsForceHTTPS` en `infra/traefik/dynamic/middlewares.yml` — campo obs
 
 Verifica que `*.{domain}` exista como registro A en Cloudflare.
 
-**Fix:** Crea registro A `*.{domain}` → `157.245.223.7` con `proxied=false` vía API de Cloudflare.
+**Fix:** Crea registro A `*.{domain}` → `PLATFORM_VPS_PUBLIC_IP` (Doppler, no commitear el valor) con `proxied=false` vía API de Cloudflare.
 
 ## Arquitectura
 
@@ -97,7 +97,7 @@ El agente tiene cooldown de 60 minutos por componente reparado (configurable via
 | Error | Causa | Solución |
 |-------|-------|----------|
 | `middleware "rate-limit@file" does not exist` | stsForceHTTPS rompe file provider | Ejecutar self-healing o fix manual: `s/stsForceHTTPS/forceSTSHeader/g` + restart Traefik |
-| URL failed to redirect | Wildcard DNS no existe | Crear `*.{domain}` A → `157.245.223.7` en Cloudflare |
+| URL failed to redirect | Wildcard DNS no existe | Crear `*.{domain}` A → `PLATFORM_VPS_PUBLIC_IP` (Doppler, no commitear el valor) en Cloudflare |
 | Contenedor en loop | Docker no pudo recrear | Verificar compose syntax, disk space, puertos |
 | 404 en todos los tenants | Traefik no puede rutear (middlewares rotos) | Revisar logs de Traefik: `docker logs traefik \| grep "middleware"` |
 | n8n-*.op-sly.com: 000 | DNS devuelve IPv6 pero VPS no tiene IPv6 global | Asegurar wildcard en DNS-only (proxied=false) o forzar IPv4 |

@@ -75,7 +75,7 @@
 Dashboard: https://dash.cloudflare.com → DNS
 Para: *.op-sly.com
 Cambio: Cloud icon Gris → Naranja (Proxied)
-Resultado: IP 157.245.223.7 OCULTA + WAF ACTIVADO ✅
+Resultado: IP pública del VPS (solo Doppler) OCULTA + WAF ACTIVADO ✅
 ```
 
 ### 2. ufw Firewall (5 min — SSH)
@@ -134,7 +134,7 @@ ssh vps-dragon@100.120.151.91  # Tailscale IP (única vía válida)
 
 | Aspecto              | Antes                 | Después                         | Mejora   |
 | -------------------- | --------------------- | ------------------------------- | -------- |
-| **SSH Público**      | 157.245.223.7 abierto | Solo Tailscale (100.120.151.91) | 🟢 +95%  |
+| **SSH Público**      | SSH público abierto | Solo Tailscale (100.120.151.91) | 🟢 +95%  |
 | **IP Expuesta**      | Visible en DNS        | Cloudflare Proxy oculta         | 🟢 +90%  |
 | **Firewall**         | Ninguno               | ufw drop + whitelist            | 🟢 +100% |
 | **WAF**              | Ninguno               | Cloudflare Managed Challenge    | 🟢 +100% |
@@ -170,7 +170,7 @@ ssh vps-dragon@100.120.151.91  # Tailscale IP (única vía válida)
 - [ ] ufw Firewall: `sudo ufw default deny ... && sudo ufw enable`
 - [ ] Cloudflare: DNS → change to Proxy (naranja) para \*.op-sly.com
 - [ ] Test SSH: `ssh vps-dragon@100.120.151.91` ✅ (should work)
-- [ ] Test SSH blocked: `ssh vps-dragon@157.245.223.7` ⏱️ (should timeout)
+- [ ] Test SSH blocked: `ssh vps-dragon@100.120.151.91` ⏱️ (should timeout)
 - [ ] LocalRank onboard: `./scripts/onboard-tenant.sh --slug localrank ...`
 - [ ] Verify health: `curl https://api.op-sly.com/api/health` ✅
 

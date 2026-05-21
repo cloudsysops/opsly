@@ -5,7 +5,7 @@
 
 ## Por qué es necesario
 
-Sin Cloudflare Proxy ON, la IP pública del VPS (`157.245.223.7`) queda expuesta en DNS.
+Sin Cloudflare Proxy ON, la IP pública del VPS (`PLATFORM_VPS_PUBLIC_IP` (Doppler, no commitear el valor)) queda expuesta en DNS.
 Con Proxy ON:
 
 - La IP origen queda **oculta** a atacantes.
@@ -61,7 +61,7 @@ doppler secrets set CF_DNS_API_TOKEN --project ops-intcloudsysops --config prd
 > Esto **no se puede automatizar** por código (requiere autenticación humana en CF dashboard).
 
 1. Ir a **Cloudflare Dashboard → smiletripcare.com → DNS → Records**.
-2. Por cada registro que apunte a `157.245.223.7`:
+2. Por cada registro que apunte a `PLATFORM_VPS_PUBLIC_IP` (Doppler, no commitear el valor):
    - `ops` (`A` → IP)
    - `*.ops` (`A` → IP)
    - `api.ops`, `admin.ops`, `portal.ops`, `web.ops` (si son registros explícitos)
@@ -73,7 +73,7 @@ doppler secrets set CF_DNS_API_TOKEN --project ops-intcloudsysops --config prd
 ## Verificar que Proxy está activo
 
 ```bash
-# Debe aparecer IPs de Cloudflare (103.x.x.x / 104.x.x.x), NO 157.245.223.7
+# Debe aparecer IPs de Cloudflare (103.x.x.x / 104.x.x.x), no la IP del VPS
 dig +short api.op-sly.com
 
 # Debe incluir el header CF-RAY en la respuesta
@@ -129,7 +129,7 @@ sudo ufw allow 443/tcp
 sudo ufw enable
 ```
 
-Con esto, cualquier acceso directo a `157.245.223.7:443` sin pasar por Cloudflare será rechazado.
+Con esto, cualquier acceso directo al origen del VPS por :443 sin pasar por Cloudflare será rechazado.
 Opcional (más restrictivo): limitar 80/443 solo a IPs de Cloudflare:
 https://www.cloudflare.com/ips/
 

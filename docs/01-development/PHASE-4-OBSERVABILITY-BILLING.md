@@ -396,7 +396,7 @@ docker-compose -f infra/docker-compose.mcp.yml \
 
 ```bash
 # SSH to VPS
-ssh root@157.245.223.7
+ssh vps-dragon@100.120.151.91
 
 # Go to repo
 cd /opt/opsly
@@ -516,7 +516,7 @@ grep SLACK_ .env.mcp
 
 ## NEXT STEPS
 
-1. **Deploy to VPS** — Run docker-compose on 157.245.223.7
+1. **Deploy to VPS** — Run docker-compose en el VPS
 2. **Invite intcloudsysops** — Test full workflow
 3. **Monitor dashboard** — Watch onboarding in real-time
 4. **Create Slack bot app** — Configure tokens

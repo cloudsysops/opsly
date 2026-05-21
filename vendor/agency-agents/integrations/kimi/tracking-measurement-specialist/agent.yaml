@@ -1,0 +1,5 @@
+version: 1
+agent:
+  name: tracking-measurement-specialist
+  extend: default
+  system_prompt_path: ./system.md
