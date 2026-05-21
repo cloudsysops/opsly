@@ -2,7 +2,7 @@
   "name": "peskids",
   "version": "0.1.0",
   "private": true,
-  "description": "After-school program management (MVP). Note: Uses Next.js 14 for stability during MVP phase; upgrade to 15+ in phase 2.",
+  "description": "After-school program management (MVP). Next.js aligned with monorepo (15.5.x) for security audit / CI.",
   "scripts": {
     "dev": "next dev -p 3004",
     "build": "next build",
@@ -13,7 +13,7 @@
   "dependencies": {
     "@supabase/auth-helpers-nextjs": "^0.8.7",
     "@supabase/supabase-js": "^2.106.0",
-    "next": "^14.1.0",
+    "next": "^15.5.18",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "typescript": "^5.9.3"
@@ -23,9 +23,9 @@
     "@types/react": "^18.3.0",
     "@types/react-dom": "^18.3.0",
     "autoprefixer": "^10.5.0",
-    "eslint": "^8.56.0",
-    "eslint-config-next": "^14.1.0",
-    "postcss": "^8.4.32",
+    "eslint": "^9.39.4",
+    "eslint-config-next": "^15.5.18",
+    "postcss": "^8.5.13",
     "tailwindcss": "^3.4.19"
   }
 }
