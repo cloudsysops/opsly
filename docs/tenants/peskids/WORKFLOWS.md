@@ -30,7 +30,7 @@ Instalación referencia: `scripts/install-crm-workflows.sh --tenant peskids` (**
 |-------|--------|
 | **Trigger** | Webhook formulario web / manual |
 | **Entrada** | nombre, contacto, fuente, mensaje |
-| **Pasos** | Validar → dedupe simple (email/tel) → crear lead → notificar owner |
+| **Pasos** | Validar → dedupe simple (email/tel) → crear lead → actualizar dashboard (sin email auto Sprint 01) |
 | **Salida** | Evento lógico `lead.created` (futuro webhook Opsly) |
 | **IA** | Opcional: etiquetar fuente/intención — **sugerencia** en notas, no auto-respuesta |
 
@@ -115,9 +115,23 @@ Sin valores en repo. Ejemplos de **nombres**:
 | followup-pending | 1 recordatorio con cierre manual |
 | weekly-report | 1 informe revisado antes de envío |
 
-## Qué no automatizar (MVP)
+### 5. `peskids-whatsapp-inbound` (MVP+1 — planificado)
 
-- Respuestas WhatsApp
+Ver [WHATSAPP-CHANNEL.md](./WHATSAPP-CHANNEL.md).
+
+| Campo | Valor |
+|-------|--------|
+| **Trigger** | Webhook Jelou o Meta |
+| **Pasos** | Validar firma → log mensaje → evento → cola dashboard |
+| **Prohibido** | Auto-reply IA; envío sin `approved` |
+
+### 6. `peskids-whatsapp-send-approved` (futuro)
+
+Solo tras aprobación humana en dashboard; plantillas Meta si aplica.
+
+## Qué no automatizar (MVP / Sprint 01)
+
+- Respuestas WhatsApp automáticas (manual en Fase 0; API en fases posteriores con aprobación)
 - Publicación en redes
 - Cambios en datos de alumnos/padres sin ticket de aprobación
 - Suspender/reanudar stacks Docker

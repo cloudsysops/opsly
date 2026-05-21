@@ -15,6 +15,7 @@ Punto de entrada compacto del vault. Política de carpetas:
 - [`README.md`](README.md) — mapa del vault
 - [`STRUCTURE-GUARDRAILS.md`](STRUCTURE-GUARDRAILS.md) — reglas de ubicación
 - [`openapi-opsly-api.yaml`](00-architecture/openapi-opsly-api.yaml) — contrato API (subset)
+- Ciclo de vida de tenants: [`00-architecture/TENANT-INCUBATION-LIFECYCLE.md`](00-architecture/TENANT-INCUBATION-LIFECYCLE.md), [`04-infrastructure/VPS-PROVISIONING-STANDARD.md`](04-infrastructure/VPS-PROVISIONING-STANDARD.md), [`runbooks/MIGRATION-CHECKLIST.md`](runbooks/MIGRATION-CHECKLIST.md)
 - Stubs de compatibilidad: [`stubs/README.md`](stubs/README.md)
 - Repo (fuera del vault): [`AGENTS.md`](../AGENTS.md), [`VISION.md`](../VISION.md), [`ROADMAP.md`](../ROADMAP.md)
 
@@ -25,7 +26,7 @@ Punto de entrada compacto del vault. Política de carpetas:
 | [`00-architecture/`](00-architecture/README.md) | Arquitectura estable, diagramas |
 | [`01-development/`](01-development/README.md) | Roadmap, sprints, handoffs |
 | [`02-tools/`](02-tools/README.md) | MCP, NotebookLM, Drive, **Obsidian** |
-| [`03-agents/`](03-agents/README.md) | Agentes, guardrails, OpenClaw |
+| [`03-agents/`](03-agents/README.md) | Agentes, guardrails, OpenClaw, packs locales |
 | [`04-infrastructure/`](04-infrastructure/README.md) | VPS, Traefik, Tailscale, Doppler |
 | [`04-operations/`](04-operations/README.md) | Visión operativa |
 | [`05-deployment-status/`](05-deployment-status/) | Estado despliegue (sin README — usar explorador) |
@@ -50,6 +51,7 @@ Punto de entrada compacto del vault. Política de carpetas:
 | Carpeta | Uso |
 | --- | --- |
 | [`brain/`](brain/README.md) | Vault semántico (módulos, tenants, workflows) |
+| [`../tools/agent-packs/README.md`](../tools/agent-packs/README.md) | Mirror local de packs externos y referencia operativa |
 | [`design/`](design/) | Diseño de orquestación y producto |
 | [`implementation/`](implementation/) | Notas de implementación |
 | [`orchestrator/`](orchestrator/) | Docs del orchestrator |

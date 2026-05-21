@@ -112,5 +112,5 @@ Sin hardcodear dominios en código; usar env (`PLATFORM_DOMAIN`, `TENANT_BASE_DO
 
 1. ¿Supabase dedicado Peskids vs schema `tenant_peskids` en proyecto compartido?
 2. ¿n8n permanece en Opsly VPS o se replica en deploy Vercel/serverless?
-3. ¿Jelou como canal primario post-MVP?
+3. **WhatsApp post-MVP:** Jelou vs Meta directo — ver [WHATSAPP-CHANNEL.md](./WHATSAPP-CHANNEL.md) (Fase 0 manual → Fase 1 inbound; sin GoHighLevel auto-send)
 4. Contrato de eventos con Opsly (auth, retry, idempotencia).

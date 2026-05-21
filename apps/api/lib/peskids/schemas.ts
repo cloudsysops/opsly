@@ -1,9 +1,5 @@
 import { z } from 'zod';
-import {
-  PESKIDS_GRADE_VALUES,
-  PESKIDS_REFERRAL_SOURCES,
-  PESKIDS_TENANT_SLUG,
-} from './constants';
+import { PESKIDS_GRADE_VALUES, PESKIDS_REFERRAL_SOURCES, PESKIDS_TENANT_SLUG } from './constants';
 
 const nameField = z
   .string()

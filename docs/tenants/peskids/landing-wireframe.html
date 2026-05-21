@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Peskids - Wireframe Landing Page</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      background: #f5f5f5;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+    }
+
+    /* Header */
+    header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header .logo {
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    header nav a {
+      color: white;
+      margin-left: 30px;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    /* Hero Section */
+    .hero {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 80px 40px;
+      text-align: center;
+    }
+
+    .hero h1 {
+      font-size: 48px;
+      margin-bottom: 20px;
+      line-height: 1.2;
+    }
+
+    .hero p {
+      font-size: 20px;
+      margin-bottom: 40px;
+      opacity: 0.95;
+    }
+
+    /* Lead Form Section (Hero) */
+    .form-container {
+      background: white;
+      border-radius: 8px;
+      padding: 40px;
+      margin: -60px 40px 0;
+      position: relative;
+      z-index: 10;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .form-container h2 {
+      color: #333;
+      margin-bottom: 20px;
+      font-size: 24px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+      text-align: left;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: #333;
+      font-size: 14px;
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+      font-family: inherit;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .required {
+      color: #e74c3c;
+    }
+
+    .form-button {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .form-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+    }
+
+    /* Benefits Section */
+    .benefits {
+      padding: 80px 40px;
+      background: #f9f9f9;
+    }
+
+    .benefits h2 {
+      text-align: center;
+      font-size: 32px;
+      margin-bottom: 60px;
+      color: #333;
+    }
+
+    .benefits-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 40px;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .benefit-card {
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      text-align: center;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .benefit-card .icon {
+      font-size: 40px;
+      margin-bottom: 15px;
+    }
+
+    .benefit-card h3 {
+      font-size: 20px;
+      margin-bottom: 10px;
+      color: #333;
+    }
+
+    .benefit-card p {
+      color: #666;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    /* CTA Section */
+    .cta {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 60px 40px;
+      text-align: center;
+    }
+
+    .cta h2 {
+      font-size: 32px;
+      margin-bottom: 20px;
+    }
+
+    .cta p {
+      font-size: 18px;
+      margin-bottom: 30px;
+    }
+
+    .cta-button {
+      display: inline-block;
+      padding: 14px 40px;
+      background: white;
+      color: #667eea;
+      text-decoration: none;
+      border-radius: 4px;
+      font-weight: 600;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .cta-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Footer */
+    footer {
+      background: #333;
+      color: white;
+      padding: 40px;
+      text-align: center;
+      font-size: 14px;
+    }
+
+    footer p {
+      margin-bottom: 10px;
+    }
+
+    footer a {
+      color: #667eea;
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      header {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      header nav a {
+        margin: 10px 15px;
+      }
+
+      .hero h1 {
+        font-size: 32px;
+      }
+
+      .hero p {
+        font-size: 16px;
+      }
+
+      .form-container {
+        margin: -40px 20px 0;
+      }
+
+      .benefits {
+        padding: 40px 20px;
+      }
+
+      .benefits h2 {
+        font-size: 24px;
+        margin-bottom: 30px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <header>
+      <div class="logo">🎓 Peskids</div>
+      <nav>
+        <a href="#features">Features</a>
+        <a href="#form">Solicitar</a>
+        <a href="#contact">Contacto</a>
+      </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+      <h1>Gestiona tu programa de afterschool sin perder ni un lead</h1>
+      <p>Todas tus inscripciones, feedback de padres y seguimiento en un solo lugar</p>
+    </section>
+
+    <!-- Lead Form (Above Fold) -->
+    <section class="form-container" id="form">
+      <h2>Solicita Información</h2>
+      <form>
+        <div class="form-group">
+          <label for="name">Nombre Completo <span class="required">*</span></label>
+          <input type="text" id="name" placeholder="Ej: María García" required>
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email <span class="required">*</span></label>
+          <input type="email" id="email" placeholder="tu@email.com" required>
+        </div>
+
+        <div class="form-group">
+          <label for="phone">Teléfono</label>
+          <input type="tel" id="phone" placeholder="(555) 123-4567">
+        </div>
+
+        <div class="form-group">
+          <label for="grade">Grado Interesado <span class="required">*</span></label>
+          <select id="grade" required>
+            <option value="">Selecciona un grado</option>
+            <option value="K-5">Primaria (K-5)</option>
+            <option value="6-8">Intermedia (6-8)</option>
+            <option value="9-12">Secundaria (9-12)</option>
+            <option value="other">Otro</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="source">¿Cómo nos encontraste?</label>
+          <select id="source">
+            <option value="">Selecciona una opción</option>
+            <option value="google">Google</option>
+            <option value="friend">Recomendación</option>
+            <option value="social">Redes Sociales</option>
+            <option value="other">Otro</option>
+          </select>
+        </div>
+
+        <button type="submit" class="form-button">Enviar Solicitud</button>
+      </form>
+    </section>
+
+    <!-- Benefits Section -->
+    <section class="benefits" id="features">
+      <h2>¿Por qué Peskids?</h2>
+      <div class="benefits-grid">
+        <div class="benefit-card">
+          <div class="icon">📊</div>
+          <h3>Un Dashboard Centralizado</h3>
+          <p>Todos tus leads, alumnos y feedback en un solo lugar. Sin emails perdidos, sin chats confusos.</p>
+        </div>
+
+        <div class="benefit-card">
+          <div class="icon">⏰</div>
+          <h3>Seguimiento Automático</h3>
+          <p>Recibe recordatorios de qué hacer después, qué padres necesitan seguimiento y cuándo.</p>
+        </div>
+
+        <div class="benefit-card">
+          <div class="icon">📈</div>
+          <h3>Crecimiento sin Pérdida</h3>
+          <p>Captura todos los leads que recibes. Convierte más padres. Crece tu programa.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta" id="contact">
+      <h2>¿Listo para transformar tu programa?</h2>
+      <p>Comienza tu demo gratuita hoy. Sin tarjeta de crédito requerida.</p>
+      <a href="#form" class="cta-button">Ver Dashboard Demo</a>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+      <p>&copy; 2026 Peskids. Todos los derechos reservados.</p>
+      <p><a href="mailto:support@peskids.com">support@peskids.com</a> | <a href="#">Privacy Policy</a></p>
+    </footer>
+  </div>
+</body>
+</html>

@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Smoke Peskids MVP API (read-only + optional POST).
+# Smoke Peskids MVP API.
 # Usage:
 #   API_BASE=https://api.op-sly.com ./scripts/peskids-mvp-smoke.sh --dry-run
-#   API_BASE=http://127.0.0.1:3000 ./scripts/peskids-mvp-smoke.sh
+#   API_BASE=https://api.op-sly.com ./scripts/peskids-mvp-smoke.sh
 
 API_BASE="${API_BASE:-https://api.op-sly.com}"
 DRY_RUN=false
@@ -34,6 +34,19 @@ run_curl() {
   "$@"
 }
 
+assert_status() {
+  local actual="$1"
+  local expected="$2"
+  local label="$3"
+  local body_file="$4"
+  if [[ "$actual" != "$expected" ]]; then
+    echo "ERROR: $label expected HTTP $expected, got HTTP $actual" >&2
+    head -c 500 "$body_file" 2>/dev/null >&2 || true
+    echo >&2
+    exit 1
+  fi
+}
+
 echo "== Peskids MVP smoke (API_BASE=$API_BASE) =="
 
 run_curl curl -sfk "${API_BASE}/api/health" | head -c 120
@@ -55,7 +68,7 @@ assert_status() {
   fi
 }
 
-echo "POST lead (test email .invalid)…"
+echo "POST lead (test email .invalid)..."
 if [[ "$DRY_RUN" == true ]]; then
   run_curl curl -sfk -X POST "${API_BASE}/api/public/tenants/peskids/leads" \
     -H 'Content-Type: application/json' \
@@ -71,7 +84,7 @@ else
   echo
 fi
 
-echo "POST feedback low rating (test child)…"
+echo "POST feedback low rating (test child)..."
 if [[ "$DRY_RUN" == true ]]; then
   run_curl curl -sfk -X POST "${API_BASE}/api/public/tenants/peskids/feedback" \
     -H 'Content-Type: application/json' \
@@ -93,7 +106,11 @@ else
   echo
 fi
 
+<<<<<<< HEAD
 echo "Forms (when API deployed):"
+=======
+echo "Forms:"
+>>>>>>> 51126414 (chore(peskids): update deployment and smoke test scripts)
 echo "  ${API_BASE}/peskids/lead-form.html"
 echo "  ${API_BASE}/peskids/feedback-form.html"
 echo "Done."
