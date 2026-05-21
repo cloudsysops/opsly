@@ -158,8 +158,20 @@ def check_gitignore_for_lockfiles(target_dir: Path, lockfile_names: list) -> lis
                         "cwe": "CWE-829",
                         "owasp": "A03:2025",
                     })
-    except OSError:
-        pass
+    except OSError as exc:
+        findings.append({
+            "type": "Lock file check skipped",
+            "severity": "info",
+            "file": str(gitignore),
+            "line": 0,
+            "description": (
+                "Unable to read .gitignore while checking lock file ignore rules; "
+                "lock file ignore validation was skipped"
+            ),
+            "evidence": str(exc),
+            "cwe": "CWE-703",
+            "owasp": "A09:2025",
+        })
 
     return findings
 
