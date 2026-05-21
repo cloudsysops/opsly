@@ -428,7 +428,8 @@ def get_staged_files() -> list:
         if result.returncode == 0:
             return [f for f in result.stdout.strip().split("\n") if f]
     except (subprocess.TimeoutExpired, FileNotFoundError):
-        pass
+        # Git may be unavailable or slow in some environments; fall back to no staged files.
+        return []
     return []
 
 
