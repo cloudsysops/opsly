@@ -79,7 +79,7 @@ export class DiscordAdapter {
     }
   }
 
-  private simulateMessage(content: DiscordContent): DiscordMessage {
+  private simulateMessage(_content: DiscordContent): DiscordMessage {
     console.warn('📝 Simulating Discord message (no webhook configured)');
     return {
       id: `sim-discord-${Date.now()}`,
@@ -88,7 +88,6 @@ export class DiscordAdapter {
     };
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async getMetrics(_messageId: string): Promise<{ reactions: number; replies: number }> {
     console.warn('Discord metrics: N/A (webhook limitation)');
     return { reactions: 0, replies: 0 };

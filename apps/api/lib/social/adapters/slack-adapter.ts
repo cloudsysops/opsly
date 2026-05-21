@@ -71,7 +71,7 @@ export class SlackAdapter {
     }
   }
 
-  private simulateMessage(content: SlackContent): SlackMessage {
+  private simulateMessage(_content: SlackContent): SlackMessage {
     console.warn('📝 Simulating Slack message (no webhook configured)');
     return {
       ts: `${Date.now()}`,
@@ -80,7 +80,6 @@ export class SlackAdapter {
     };
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async getMetrics(_messageTs: string): Promise<{ reactions: number; replies: number }> {
     console.warn('Slack metrics: N/A (webhook limitation)');
     return { reactions: 0, replies: 0 };

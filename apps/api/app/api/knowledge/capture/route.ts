@@ -24,9 +24,7 @@ async function writeKnowledgeToInbox(
 
   const timestamp = new Date().toISOString();
   const tags = body.tags ? body.tags : [agentName];
-  const tagsStr = tags
-    .map((tag) => `#${tag.toLowerCase().replace(/[^a-z0-9-]/g, '')}`)
-    .join(' ');
+  const tagsStr = tags.map((tag) => `#${tag.toLowerCase().replace(/[^a-z0-9-]/g, '')}`).join(' ');
 
   const mdContent = `## ${body.context}
 
