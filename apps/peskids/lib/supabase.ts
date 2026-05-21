@@ -30,6 +30,9 @@ export const supabaseServer = (token?: string) => {
   return createServerClient(token)
 }
 
+/** Alias for webhook routes (same service-role client). */
+export const getServiceClient = supabaseServer
+
 export async function getRecentMessages(tenantId: string, limit: number = 10) {
   const client = supabaseServer()
   const { data, error } = await client

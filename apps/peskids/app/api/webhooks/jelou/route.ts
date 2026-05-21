@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseServer } from '@/lib/supabase';
 import { emitEvent } from '@/lib/events';
+import type { Json } from '@/lib/types';
 import {
   verifyJelouSignature,
   parseJelouWebhook,
@@ -53,12 +54,11 @@ async function handleLeadSubmission(webhook: any) {
       .from('leads')
       .insert({
         tenant_id: TENANT_ID,
-        name: lead.name,
-        email: lead.email,
-        phone: lead.phone,
-        interested_grade: lead.interested_grade,
-        source: lead.source,
-        created_at: new Date().toISOString(),
+        name: String(lead.name),
+        email: String(lead.email),
+        phone: lead.phone != null ? String(lead.phone) : null,
+        grade_interested: String(lead.interested_grade),
+        referral_source: lead.source,
       })
       .select('id')
       .single();
@@ -105,12 +105,10 @@ async function handleFeedbackSubmission(webhook: any) {
       .from('feedback')
       .insert({
         tenant_id: TENANT_ID,
-        student_name: feedback.student_name,
+        child_name: String(feedback.student_name),
         satisfaction: feedback.satisfaction,
-        suggestion: feedback.suggestion,
-        follow_up_wanted: feedback.follow_up_wanted,
-        source: `jelou:${feedback.channel}`,
-        created_at: new Date().toISOString(),
+        suggestion: feedback.suggestion ? String(feedback.suggestion) : null,
+        contact_wanted: feedback.follow_up_wanted,
       })
       .select('id')
       .single();
@@ -166,7 +164,7 @@ async function logWebhookReceipt(
       provider: 'jelou',
       event_type,
       record_id,
-      payload: webhook,
+      payload: webhook as Json,
       received_at: new Date().toISOString(),
     });
   } catch (error) {

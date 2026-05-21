@@ -1,10 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseServer } from '@/lib/supabase'
-import type { Database } from '@/lib/types'
-
-type MessageRow = Database['public']['Tables']['messages']['Row']
-type MessageInsert = Database['public']['Tables']['messages']['Insert']
-
 function validateAdminAuth(req: NextRequest): { valid: boolean; error?: string } {
   const authHeader = req.headers.get('authorization')
   const adminSecret = process.env.DASHBOARD_ADMIN_SECRET
@@ -47,32 +42,27 @@ export async function POST(
 
     // Get original message to know source + contact
     const { data: originalMessage, error: fetchError } = await supabase
-      .schema('public')
       .from('messages')
       .select('*')
       .eq('id', messageId)
       .eq('tenant_id', tenantId)
       .single()
 
-    const original = originalMessage as MessageRow | null
-    if (fetchError || !original) {
+    if (fetchError || !originalMessage) {
       return NextResponse.json({ error: 'Message not found' }, { status: 404 })
-    }
-
-    const replyInsert: MessageInsert = {
-      tenant_id: tenantId,
-      source: original.source,
-      sender_name: 'Owner',
-      sender_contact: 'owner',
-      message_text: replyText,
-      external_id: `reply-${messageId}`,
     }
 
     // Log reply to messages table
     const { data: replyRecord, error: insertError } = await supabase
-      .schema('public')
       .from('messages')
-      .insert(replyInsert)
+      .insert({
+        tenant_id: tenantId,
+        source: originalMessage.source,
+        sender_name: 'Owner', // Mark as owner reply
+        sender_contact: 'owner',
+        message_text: replyText,
+        external_id: `reply-${messageId}`,
+      })
       .select()
       .single()
 
@@ -80,7 +70,7 @@ export async function POST(
 
     // TODO: In Phase 2, call n8n endpoint to actually send via Baileys/Instagram
     // For now, just log that reply was approved
-    // n8nEndpoint = await sendReply(original.source, original.sender_contact, replyText)
+    // n8nEndpoint = await sendReply(originalMessage.source, originalMessage.sender_contact, replyText)
 
     // Emit event to Opsly event bus
     try {
@@ -90,8 +80,8 @@ export async function POST(
         body: JSON.stringify({
           event_type: 'message.replied',
           tenant_id: tenantId,
-          source: original.source,
-          sender_contact: original.sender_contact,
+          source: originalMessage.source,
+          sender_contact: originalMessage.sender_contact,
           reply_text: replyText,
           timestamp: new Date().toISOString(),
         }),
