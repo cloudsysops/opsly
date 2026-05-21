@@ -7,9 +7,15 @@ describe('AvatarPromptGenerator', () => {
     tenant_slug: 'test-tenant',
     brand_name: 'TestBrand',
     brand_color: '#FF5733',
+    tone_of_voice: 'corporate',
+    language: 'en',
     avatar_style: 'minimal',
-    content_tone: 'professional',
-    primary_platform: 'linkedin',
+    content_privacy: {
+      hide_team_names: false,
+      hide_metrics: false,
+      hide_infrastructure: false,
+      show_only_wins: false,
+    },
   };
 
   it('should generate minimal avatar prompt', () => {
