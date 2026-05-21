@@ -45,7 +45,9 @@ export const AGENT_IDE_MCP_TOOLS: readonly AgentIdeMcpTool[] = [
   },
 ] as const;
 
-const ADMIN_ALLOWED_MCP_TOOLS: ReadonlySet<string> = new Set(AGENT_IDE_MCP_TOOLS.map((tool) => tool.id));
+const ADMIN_ALLOWED_MCP_TOOLS: ReadonlySet<string> = new Set(
+  AGENT_IDE_MCP_TOOLS.map((tool) => tool.id)
+);
 const PORTAL_ALLOWED_MCP_TOOLS: ReadonlySet<string> = new Set(
   AGENT_IDE_MCP_TOOLS.filter((tool) => tool.roles.includes('portal')).map((tool) => tool.id)
 );
@@ -144,16 +146,28 @@ export function agentIdeMcpCatalog(surface: 'admin' | 'portal'): Response {
   });
 }
 
-export async function executeAgentIdeMcpTool(
-  surface: 'admin' | 'portal',
-  body: unknown,
-  tenantSlug?: string
-): Promise<Response> {
+function validateMcpExecuteInput(
+  body: unknown
+): { input: Record<string, unknown>; toolId: string } | Response {
   if (typeof body !== 'object' || body === null) {
     return Response.json({ error: 'invalid body' }, { status: HTTP_STATUS.BAD_REQUEST });
   }
   const input = body as Record<string, unknown>;
   const toolId = typeof input.tool_id === 'string' ? input.tool_id.trim() : '';
+  return { input, toolId };
+}
+
+export async function executeAgentIdeMcpTool(
+  surface: 'admin' | 'portal',
+  body: unknown,
+  tenantSlug?: string
+): Promise<Response> {
+  const validation = validateMcpExecuteInput(body);
+  if (validation instanceof Response) {
+    return validation;
+  }
+
+  const { input, toolId } = validation;
   const allowed = surface === 'admin' ? ADMIN_ALLOWED_MCP_TOOLS : PORTAL_ALLOWED_MCP_TOOLS;
   if (!allowed.has(toolId)) {
     return Response.json({ error: 'mcp_tool_not_allowed' }, { status: HTTP_STATUS.FORBIDDEN });

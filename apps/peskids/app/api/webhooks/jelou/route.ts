@@ -34,7 +34,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     }
 
     // Unknown form type
-    console.log(`Unknown form type: ${webhook.data.form_id}`);
+    console.warn(`Unknown form type: ${webhook.data.form_id}`);
     return NextResponse.json({ status: 'ignored' });
   } catch (error) {
     console.error('Jelou webhook error:', error);

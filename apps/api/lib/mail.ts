@@ -14,7 +14,7 @@ export async function sendWelcomeEmail({
   tenant_slug: string;
   dashboard_url: string;
   request_id: string;
-}) {
+}): Promise<{ id?: string; error?: unknown }> {
   try {
     const result = await resend.emails.send({
       from: process.env.RESEND_FROM_EMAIL || 'hello@opsly.sh',
