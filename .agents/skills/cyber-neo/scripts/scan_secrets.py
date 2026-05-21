@@ -362,7 +362,8 @@ def scan_file(filepath: Path, compiled_patterns: list, target_root: str = "") ->
                         break  # One finding per line to avoid duplicates
 
     except (OSError, UnicodeDecodeError):
-        pass
+        # Intentionally skip unreadable/unopenable files so the scan can continue.
+        return findings
 
     return findings
 
