@@ -151,8 +151,7 @@ async function processContact(
     const sendResult = await ghlService.sendMessage(config.tenantId, {
       contactId: contact.id,
       channel,
-      subject: channel === 'email' ? 'Quick Update' : undefined,
-      body: message,
+      message,
     });
 
     // Create follow-up task (for manual review if needed)
