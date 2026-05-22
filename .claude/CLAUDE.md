@@ -1,8 +1,8 @@
 # CLAUDE.md — Opsly Codebase Guide for AI Assistants
 
-**Last Updated:** 2026-05-21  
+**Last Updated:** 2026-05-22  
 **Status:** Canonical guide for all Claude sessions in Opsly  
-**Version:** 2.0 (Enhanced with full codebase structure)
+**Version:** 2.1 (Updated with Guardian Grid pivot, rendering-engine, content-studio, peskids production live)
 
 ---
 
@@ -56,8 +56,8 @@ Stop and report if:
 
 ```
 opsly/
-├── apps/                          # 27+ applications (see below)
-├── lib/                           # 13 enterprise-scale library modules
+├── apps/                          # 27 applications (see below)
+├── lib/                           # 18 enterprise-scale library modules
 ├── packages/                      # Shared utilities & skills
 ├── docs/                          # Documentation (Obsidian vault + markdown)
 ├── config/                        # Configuration & metadata
@@ -91,7 +91,8 @@ opsly/
 | **tenant-invitations** | Invitation system | Node.js | — | Production |
 | **slack-bot** | Slack integration & notifications | Node.js | — | Production |
 | **web** | Public website | Next.js | — | Production |
-| **peskids** | Multi-channel form platform | Next.js | — | Active Development |
+| **peskids** | Multi-channel form platform | Next.js | — | Production |
+| **rendering-engine** | Content rendering pipeline | Node.js | — | Production |
 | **ml** | ML pipeline runner | TypeScript | — | Experimental |
 | **airflow** | Airflow DAG definitions | Python | — | Experimental |
 | **mcp-gateway** | MCP routing layer | Node.js | — | Production |
@@ -103,7 +104,7 @@ opsly/
 | **experimental** | Experimental features | Various | — | Not for Prod |
 | **__tests__** | End-to-end test suite | Vitest | — | CI/CD |
 
-### 📚 lib/ — Enterprise Library Modules (13 modules)
+### 📚 lib/ — Enterprise Library Modules (18 modules)
 
 **Location:** `lib/{module}` with `package.json` exported as `@intcloudsysops/{module}`
 
@@ -112,6 +113,7 @@ opsly/
 | **api** | HTTP utils, request handling, middleware | claude | Stable |
 | **components** | React component library + design system | claude | Stable |
 | **config** | Environment vars, feature flags, secrets | claude | Stable |
+| **content-studio** | Event-driven content generation pipeline | claude | Active |
 | **errors** | Unified error handling + types | claude | Stable |
 | **evaluation** | Testing utils, validators, safety checks | claude | Stable |
 | **external-agent-registry** | External agent registry & discovery | claude | Active |
@@ -119,7 +121,7 @@ opsly/
 | **migrations** | Database migration versioning | claude | Stable |
 | **observability** | Logging, metrics, distributed tracing | claude | Stable |
 | **prompts** | Versioned prompt registry for all agents | claude | Stable |
-| **runtime** | Agent runtime, execution engine | claude | Active |
+| **runtime** | Agent runtime, execution engine (OAR) | claude | Active |
 | **security** | Auth, encryption, PII redaction | claude | Stable |
 | **services** | Repository pattern + data layer | claude | Stable |
 | **telemetry** | Cost tracking, performance monitoring | claude | Stable |
@@ -151,6 +153,23 @@ docs/
 ├── STRUCTURE-GUARDRAILS.md    # Where docs may live (protected)
 └── index.md                   # Obsidian MOC (compact reference)
 ```
+
+---
+
+## 🛡️ Strategic Direction: Opsly Guardian Grid
+
+**Pivot (2026-04-28+):** Opsly is now **Autonomous Defense Operating System** with two product lines:
+
+1. **Opsly Automation** — Agent stacks (n8n, Uptime Kuma, orchestration via OpenClaw)
+2. **Opsly Shield / Guardian Grid** — 24/7 defensive bots (Blue Team AI) for SMBs without SOC
+
+**Key Recent Updates:**
+- ✅ Peskids form platform now **Production** (2026-05-22)
+- ✅ Content Studio Phase 2.1 MVP: Event-driven content generation
+- ✅ Rendering Engine: New production service for content pipelines
+- 🔄 Shield Phase 2 MVP: Secret scanning, Discord alerts, risk scoring dashboard
+
+See [`docs/01-development/VISION.md`](docs/01-development/VISION.md) for product details and [`docs/design/OAR.md`](docs/design/OAR.md) for Opsly Agentic Runtime (OAR) specifications.
 
 ---
 
@@ -209,12 +228,14 @@ skill_autoload "mi query"
 | HIGH       | `opsly-llm`              | ai             | LLM Gateway, providers, cache              |
 | HIGH       | `opsly-mcp`              | integration    | MCP OpenClaw tools                         |
 | HIGH       | `opsly-tenant`           | operations     | Onboarding, suspensión, stacks             |
-| HIGH       | `opsly-orchestrator`     | orchestration  | OAR, workflows, n8n                        |
+| HIGH       | `opsly-orchestrator`     | orchestration  | OAR, workflows, n8n, local_* agent IDs    |
 | HIGH       | `opsly-billing`          | billing        | Stripe subscriptions, invoices             |
 | HIGH       | `opsly-architect-senior` | architecture   | Diagnóstico, ADRs, riesgos                 |
+| HIGH       | `opsly-shield`           | security       | Guardian Grid, secret scanning, Shield API |
+| MEDIUM     | `opsly-content-studio`   | ai             | Content generation, rendering pipeline     |
 | MEDIUM     | `opsly-agent-teams`      | orchestration  | BullMQ, colas paralelas                    |
 | MEDIUM     | `opsly-qa`               | qa             | Testing, smoke, audit                      |
-| MEDIUM     | `opsly-discord`          | notifications  | Notificaciones Discord                     |
+| MEDIUM     | `opsly-discord`          | notifications  | Notificaciones Discord, Shield alerts      |
 | MEDIUM     | `opsly-feedback-ml`      | ai             | Feedback loop, decisiones ML               |
 | MEDIUM     | `opsly-google-cloud`     | integration    | Google Cloud services                      |
 | LOW        | `opsly-notebooklm`       | ai             | PDF→podcast (EXPERIMENTAL)                 |
@@ -348,7 +369,9 @@ Regla Git clave: **código/infra/tests por PR** (`feat/*` o `fix/*`), no push di
 | Cursor      | Ejecución, código, commits                       |
 | AGENTS.md   | Memoria compartida entre sesiones                |
 
-## agent_teams
+## agent_teams & OAR
+
+**Opsly Agentic Runtime (OAR):** Runtime specification for multi-agent orchestration with canonical local_* agent IDs and strategy patterns. See [`docs/design/OAR.md`](docs/design/OAR.md).
 
 Configuración de equipos de agentes (reemplaza `enable-flag.json`):
 
@@ -360,7 +383,7 @@ Configuración de equipos de agentes (reemplaza `enable-flag.json`):
   - Ver: `1-agent-teams/ops-agent.md`
 - **BillingAgent**: Stripe, metering, cost alerts
   - Ver: `1-agent-teams/billing-agent.md`
-- **SecurityAgent**: Zero-Trust, access review
+- **SecurityAgent**: Zero-Trust, access review (Guardian Grid integration)
   - Ver: `1-agent-teams/security-agent.md`
 
 **Configuración en VPS:**
@@ -420,6 +443,18 @@ REDIS_URL=redis://100.120.151.91:6379
 # 5. Test manually in browser before commit
 # 6. Type all props (no `any`)
 # 7. Document with Storybook if component is reusable
+```
+
+### Shield / Guardian Grid Features
+
+```bash
+# 1. Secret scanning endpoints: apps/api/app/shield/...
+# 2. Use RLS policies: service_role for API, authenticated for portal
+# 3. Shield tables: shield_alert_config, shield_score_history, shield_secret_findings
+# 4. Alerts: Discord webhook via DISCORD_WEBHOOK_SHIELD or SHIELD_ALERTS_DISCORD_WEBHOOK_URL
+# 5. Portal route: apps/portal/src/app/shield/dashboard
+# 6. Observability: Use @intcloudsysops/observability with shield:{slug}:... prefix
+# 7. Test: Run with SHIELD_SECRET_SCAN_SIMULATE=true (no real repo scanning)
 ```
 
 ---
@@ -488,6 +523,7 @@ REDIS_URL=redis://100.120.151.91:6379
 | `@intcloudsysops/observability` | Unified logging, metrics, tracing | claude |
 | `@intcloudsysops/components` | Shared React components & design system | claude |
 | `@intcloudsysops/evaluation` | Testing, validators, safety checks | claude |
+| `@intcloudsysops/content-studio` | Event-driven content generation | claude |
 
 ### Enterprise Utilities (9 additional modules)
 
