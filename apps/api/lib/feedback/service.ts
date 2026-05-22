@@ -1,6 +1,6 @@
 import type { NextRequest } from 'next/server';
 import { llmCall } from '@intcloudsysops/llm-gateway';
-import { analyzeFeedback, executeAutoImplement } from '@intcloudsysops/ml';
+import { analyzeFeedback } from '@intcloudsysops/ml';
 import { notifyDiscordFeedback } from '../feedback-notify';
 import {
   resolveTrustedFeedbackIdentity,
@@ -344,17 +344,9 @@ async function runAnalysisBranch(
     },
     supabase
   )) as { output: DecisionOutput; decision_id: string | null };
-  const { output, decision_id } = analyzed;
+  const { output } = analyzed;
 
   await notifyDecisionDiscord(output, ctx.tenant_slug, ctx.user_email);
-
-  if (output.decision_type === 'auto_implement' && output.implementation_prompt && decision_id) {
-    await executeAutoImplement(decision_id, output.implementation_prompt, ctx.tenant_slug).catch(
-      (e: unknown) => {
-        console.error('[feedback] executeAutoImplement:', e);
-      }
-    );
-  }
 
   return { assistantResponse: output.user_response, decision: output };
 }

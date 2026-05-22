@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
-# Cursor Automatic Prompt Monitor — vigila docs/ACTIVE-PROMPT.md y ejecuta su contenido como shell.
-# [SEGURIDAD] Cualquiera que pueda editar ese archivo puede ejecutar código como el usuario del servicio.
-# Mantén el repo y permisos de escritura acotados; no uses esto en hosts multi-tenant sin control de acceso.
+# Cursor Automatic Prompt Monitor — vigila docs/ACTIVE-PROMPT.md y registra cambios.
+# [SEGURIDAD] No ejecuta shell desde el archivo; solo notifica que el prompt cambió.
 set -euo pipefail
 
 REPO_PATH="${REPO_PATH:-/opt/opsly}"
@@ -13,11 +12,6 @@ LOG_FILE="${LOG_FILE:-$LOG_DIR/cursor-prompt-monitor.log}"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=lib/common.sh
 source "${SCRIPT_DIR}/lib/common.sh"
-
-extract_shell_payload() {
-  # Igual que el diseño original: excluye líneas que empiezan por # o por --- (frágil para markdown).
-  grep -v '^#' "$PROMPT_FILE" | grep -v '^---' || true
-}
 
 log_line() {
   local msg="$1"
@@ -63,35 +57,13 @@ while true; do
   log_line "NUEVO PROMPT DETECTADO (hash ${CURRENT_HASH:0:8})"
 
   cd "${REPO_PATH}"
+  PREVIEW="$(head -2 "$PROMPT_FILE" | rg -v '^#' | head -1)"
+  "${SCRIPT_DIR}/utils/notify-discord.sh" \
+    "Cursor detectó un prompt nuevo" \
+    "${PREVIEW:-Prompt actualizado en ACTIVE-PROMPT.md}" \
+    "info" 2>/dev/null || true
 
-  PAYLOAD="$(extract_shell_payload)"
-  if [[ -z "${PAYLOAD//[$' \t\n\r']/}" ]]; then
-    log_line "Payload vacío tras filtrar #/---; no se ejecuta shell"
-  else
-    PREVIEW="$(head -2 "$PROMPT_FILE" | rg -v '^#' | head -1)"
-    "${SCRIPT_DIR}/utils/notify-discord.sh" \
-      "Cursor ejecutando tarea" \
-      "${PREVIEW:-Prompt actualizado en ACTIVE-PROMPT.md}" \
-      "info" 2>/dev/null || true
-
-    log_line "Ejecutando payload..."
-    set +e
-    bash -c "${PAYLOAD}" 2>&1 | tee -a "${LOG_FILE}"
-    _rc="${PIPESTATUS[0]}"
-    set -e
-    if [[ "${_rc}" -ne 0 ]]; then
-      log_line "Payload terminó con código ${_rc}"
-      "${SCRIPT_DIR}/utils/notify-discord.sh" \
-        "Error en ejecucion Cursor" \
-        "Exit code: ${_rc} — revisar logs: /opt/opsly/runtime/logs//cursor-prompt-monitor.log" \
-        "error" 2>/dev/null || true
-    else
-      "${SCRIPT_DIR}/utils/notify-discord.sh" \
-        "Tarea completada por Cursor" \
-        "Ejecutado en $(date +'%H:%M:%S')" \
-        "success" 2>/dev/null || true
-    fi
-  fi
+  log_line "Prompt actualizado; no se ejecuta shell"
 
   log_line "Ciclo de prompt finalizado"
   LAST_HASH="${CURRENT_HASH}"
