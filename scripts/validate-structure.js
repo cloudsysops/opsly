@@ -4,7 +4,15 @@ const fs = require('node:fs');
 const path = require('node:path');
 
 const root = process.cwd();
-const allowedRootMarkdown = new Set(['AGENTS.md', 'README.md', 'ROADMAP.md', 'VISION.md']);
+const allowedRootMarkdown = new Set([
+  'AGENTS.md',
+  'README.md',
+  'ROADMAP.md',
+  'VISION.md',
+  'SECURITY.md',
+  'CONTRIBUTING.md',
+  'CODE_OF_CONDUCT.md',
+]);
 const requiredPaths = [
   'apps/mcp',
   'apps/orchestrator',
@@ -59,7 +67,7 @@ if (rootMarkdownFiles.length > 0) {
     console.error(`- ${item}`);
   }
   console.error(
-    'Hint: keep root Markdown limited to AGENTS.md, README.md, ROADMAP.md and VISION.md. Move all other docs under docs/.',
+    'Hint: keep root Markdown limited to AGENTS.md, README.md, ROADMAP.md, VISION.md, SECURITY.md (GitHub policy), CONTRIBUTING.md, CODE_OF_CONDUCT.md. Move all other docs under docs/.',
   );
   process.exit(1);
 }

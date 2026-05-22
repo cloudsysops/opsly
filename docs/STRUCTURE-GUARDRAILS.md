@@ -15,6 +15,8 @@ documento debe tener carpeta dueña, estado y propósito claros.
 Permitido en la raíz:
 
 - `AGENTS.md`, `README.md`, `ROADMAP.md`, `VISION.md`.
+- `SECURITY.md` (política de seguridad para GitHub; detalle en `docs/04-infrastructure/`).
+- `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md` (convenciones GitHub; contenido largo en `docs/01-development/`).
 - Manifests/configs de tooling (`package.json`, `turbo.json`, `tsconfig.json`,
   `vercel.json`, `doppler.json`, Dockerfiles y configs de lint/formato).
 - Carpetas de código/plataforma (`apps/`, `packages/`, `infra/`, `scripts/`,

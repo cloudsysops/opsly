@@ -44,7 +44,7 @@ Redirecciones cortas; el índice está en [`stubs/README.md`](stubs/README.md).
 
 ## Reglas para Nuevos Docs
 
-- No crear Markdown nuevo en la raíz del repo salvo `AGENTS.md`, `README.md`, `ROADMAP.md` o `VISION.md`.
+- No crear Markdown nuevo en la raíz del repo salvo `AGENTS.md`, `README.md`, `ROADMAP.md`, `VISION.md`, `SECURITY.md`, `CONTRIBUTING.md` o `CODE_OF_CONDUCT.md` (ver `docs/STRUCTURE-GUARDRAILS.md`).
 - No crear documentos completos directamente bajo `docs/` (salvo los tres hubs); usa una carpeta dueña.
 - Reportes y evidencias van a `docs/reports/`; planes históricos a `docs/history/`.
 - Runbooks accionables van a `docs/runbooks/`; arquitectura estable a `docs/00-architecture/`.
