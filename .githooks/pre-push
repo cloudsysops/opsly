@@ -1,6 +1,18 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+if ! command -v npm >/dev/null 2>&1; then
+  for candidate in \
+    /usr/local/opt/node@20/bin \
+    /opt/homebrew/opt/node@20/bin
+  do
+    if [ -d "$candidate" ]; then
+      export PATH="$candidate:$PATH"
+      break
+    fi
+  done
+fi
+
 echo "🚀 Validando antes de push..."
 npm run validate-structure --silent
 bash scripts/hooks/structure-guard.sh
