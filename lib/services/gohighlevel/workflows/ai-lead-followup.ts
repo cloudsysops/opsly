@@ -103,10 +103,15 @@ Return ONLY the message text, no quotes or formatting.`;
 
     return '';
   } catch (error) {
-    logger.error('Failed to generate followup message', {
+    const logMeta = {
       contactId: contact.id,
       error: error instanceof Error ? error.message : String(error),
-    });
+    };
+    if (logger?.error) {
+      logger.error('Failed to generate followup message', logMeta);
+    } else {
+      console.error('Failed to generate followup message', logMeta);
+    }
     throw error;
   }
 }
