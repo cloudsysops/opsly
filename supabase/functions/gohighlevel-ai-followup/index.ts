@@ -44,7 +44,14 @@ serve(async (req: Request) => {
 
     let result;
 
-    if (body.mode === 'single' && body.contactId) {
+    if (body.mode === 'single') {
+      if (!body.contactId) {
+        return new Response(JSON.stringify({ error: 'Missing required field: contactId' }), {
+          status: 400,
+          headers: { 'Content-Type': 'application/json' },
+        });
+      }
+
       // Single contact follow-up
       result = await triggerFollowupForContact(body.tenantId, body.contactId, body.messageContext);
     } else {
