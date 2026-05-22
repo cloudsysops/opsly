@@ -111,8 +111,8 @@ export function FormViewer({ formId }: FormViewerProps) {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-ops-dark p-6">
-        <div className="mx-auto max-w-2xl">
+      <div className="min-h-screen bg-ops-dark p-4 sm:p-6">
+        <div className="mx-auto w-full max-w-2xl">
           <Card>
             <CardContent className="py-8">
               <div className="space-y-4 animate-pulse">
@@ -132,8 +132,8 @@ export function FormViewer({ formId }: FormViewerProps) {
 
   if (!form) {
     return (
-      <div className="min-h-screen bg-ops-dark p-6">
-        <div className="mx-auto max-w-2xl">
+      <div className="min-h-screen bg-ops-dark p-4 sm:p-6">
+        <div className="mx-auto w-full max-w-2xl">
           <Card>
             <CardContent className="py-12 text-center">
               <p className="text-neutral-100">Form not found</p>
@@ -146,8 +146,8 @@ export function FormViewer({ formId }: FormViewerProps) {
 
   if (submitSuccess) {
     return (
-      <div className="min-h-screen bg-ops-dark p-6">
-        <div className="mx-auto max-w-2xl">
+      <div className="min-h-screen bg-ops-dark p-4 sm:p-6">
+        <div className="mx-auto w-full max-w-2xl">
           <Card>
             <CardContent className="py-12 text-center">
               <div className="mb-4 text-5xl">✅</div>
@@ -161,8 +161,8 @@ export function FormViewer({ formId }: FormViewerProps) {
   }
 
   return (
-    <div className="min-h-screen bg-ops-dark p-6">
-      <div className="mx-auto max-w-2xl">
+    <div className="min-h-screen bg-ops-dark p-4 sm:p-6">
+      <div className="mx-auto w-full max-w-2xl">
         <Card>
           <CardHeader>
             <CardTitle className="text-neutral-100">{form.title}</CardTitle>
@@ -171,7 +171,7 @@ export function FormViewer({ formId }: FormViewerProps) {
             )}
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
               {submitError && (
                 <div className="rounded-lg bg-red-500/20 p-4 text-red-400">
                   {submitError}
@@ -192,7 +192,7 @@ export function FormViewer({ formId }: FormViewerProps) {
                       value={formValues[field.id] || ''}
                       onChange={(e) => handleFieldChange(field.id, e.target.value)}
                       required={field.required}
-                      className="w-full rounded-lg border border-ops-border bg-ops-surface px-4 py-2 text-neutral-100 placeholder-ops-gray focus:border-ops-blue focus:outline-none"
+                      className="w-full rounded-lg border border-ops-border bg-ops-surface px-3 py-2 text-base sm:text-sm text-neutral-100 placeholder-ops-gray focus:border-ops-blue focus:outline-none"
                       rows={4}
                     />
                   ) : field.type === 'select' ? (
@@ -202,7 +202,7 @@ export function FormViewer({ formId }: FormViewerProps) {
                       value={formValues[field.id] || ''}
                       onChange={(e) => handleFieldChange(field.id, e.target.value)}
                       required={field.required}
-                      className="w-full rounded-lg border border-ops-border bg-ops-surface px-4 py-2 text-neutral-100 focus:border-ops-blue focus:outline-none"
+                      className="w-full rounded-lg border border-ops-border bg-ops-surface px-3 py-2 text-base sm:text-sm text-neutral-100 focus:border-ops-blue focus:outline-none"
                     >
                       <option value="">Select an option</option>
                       {field.options?.map((option) => (
@@ -246,17 +246,17 @@ export function FormViewer({ formId }: FormViewerProps) {
                       value={formValues[field.id] || ''}
                       onChange={(e) => handleFieldChange(field.id, e.target.value)}
                       required={field.required}
-                      className="w-full rounded-lg border border-ops-border bg-ops-surface px-4 py-2 text-neutral-100 placeholder-ops-gray focus:border-ops-blue focus:outline-none"
+                      className="w-full rounded-lg border border-ops-border bg-ops-surface px-3 py-2 text-base sm:text-sm text-neutral-100 placeholder-ops-gray focus:border-ops-blue focus:outline-none"
                     />
                   )}
                 </div>
               ))}
 
-              <div className="flex gap-3 pt-6">
+              <div className="flex flex-col gap-2 pt-4 sm:pt-6">
                 <Button
                   type="submit"
                   disabled={isSubmitting}
-                  className="flex-1 bg-ops-blue hover:bg-ops-blue/90 disabled:opacity-50"
+                  className="w-full bg-ops-blue hover:bg-ops-blue/90 disabled:opacity-50"
                 >
                   {isSubmitting ? 'Submitting...' : 'Submit'}
                 </Button>
