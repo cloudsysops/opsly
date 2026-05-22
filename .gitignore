@@ -76,6 +76,7 @@ infra/terraform/tfplan
 # Raíz: nunca `logs/` ni `tenants/` aquí (structure-guard + usar runtime/)
 /logs/
 /tenants/
+/tenants.bak/
 
 # Runtime directories (VPS/local runtime)
 runtime/logs/*

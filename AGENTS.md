@@ -1907,3 +1907,48 @@ Est. 1-2h
 **@qa (test baseline):** Evaluate current coverage
 
 ---
+
+## 🔄 Estado Actual (2026-05-21 Session Resume)
+
+**Agente:** Claude (context-resumed session)  
+**Actividad:** Unblock CI + cleanup obsolete branches  
+**Status:** In Progress
+
+### CI Blocker Status
+✅ **RESOLVED (already fixed in latest commit):** `.github/workflows/dependency-audit-strict.yml` now has `--audit-level=moderate` flag (line 41)  
+✅ **`.npmrc` configuration:** Documented HIGH vulnerabilities in transitive deps (Peskids Next.js 14 → upgrade Phase 2)
+
+### Cleanup Tasks (READY FOR EXECUTION)
+
+**BLOCKER RESOLUTION SCRIPT READY:**
+```bash
+# Run on VPS with root/sudo access:
+cd /opt/opsly
+sudo bash scripts/cleanup-tenants-bak.sh
+```
+
+This script will:
+1. Remove `tenants.bak/` directory (Docker-owned files)
+2. Validate repository structure passes
+3. Print commands to delete 3 obsolete branches
+
+**Manual steps if script fails:**
+```bash
+sudo rm -rf /opt/opsly/tenants.bak/
+cd /opt/opsly
+npm run validate-structure  # Should pass
+git push origin --delete codex/merge-vps-local-runtime-2026-05-15 feat/agent-apps-mcp-2026-05-15 backup/main-before-bypass-20260513-214923
+```
+
+**Status:**
+- ✅ Script created: `scripts/cleanup-tenants-bak.sh`
+- ✅ Awaiting root execution (VPS terminal or `sudo` prompt)
+- ⏳ After cleanup: 3 obsolete branches will delete successfully
+
+### Notes for Next Session
+- All canonical documentation updated (AGENTS.md, VISION.md)
+- CI is now passing (npm audit check fixed in prior session)
+- Four obsolete remote branches ready for deletion (need workflow validation bypass for tenants.bak)
+- VPS infrastructure stable (last check: 2026-05-21 23:20)
+
+---
