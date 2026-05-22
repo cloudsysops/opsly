@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { validateAdminRequest } from '@/lib/admin-auth'
+import { enqueueApprovedReply } from '@/lib/n8n-send'
 import { supabaseServer } from '@/lib/supabase'
 
 export async function POST(
@@ -34,25 +35,31 @@ export async function POST(
       return NextResponse.json({ error: 'Message not found' }, { status: 404 })
     }
 
-    // Log reply to messages table
     const { data: replyRecord, error: insertError } = await supabase
       .from('messages')
       .insert({
         tenant_id: tenantId,
         source: originalMessage.source,
-        sender_name: 'Owner', // Mark as owner reply
+        sender_name: 'Equipo Peskids',
         sender_contact: 'owner',
-        message_text: replyText,
-        external_id: `reply-${messageId}`,
+        message_text: replyText.trim(),
+        external_id: `reply-${messageId}-${Date.now()}`,
+        direction: 'outbound',
+        parent_message_id: messageId,
+        status: 'sent',
+        ai_generated: false,
       })
       .select()
       .single()
 
     if (insertError) throw insertError
 
-    // TODO: In Phase 2, call n8n endpoint to actually send via Baileys/Instagram
-    // For now, just log that reply was approved
-    // n8nEndpoint = await sendReply(originalMessage.source, originalMessage.sender_contact, replyText)
+    const sendResult = await enqueueApprovedReply({
+      messageId,
+      source: String(originalMessage.source),
+      sender_contact: String(originalMessage.sender_contact),
+      reply_text: replyText.trim(),
+    })
 
     // Emit event to Opsly event bus
     try {
@@ -77,7 +84,10 @@ export async function POST(
       {
         success: true,
         replyRecord,
-        message: 'Reply approved and logged. Phase 2 will add actual send-via-WhatsApp/Instagram.',
+        n8n: sendResult,
+        message: sendResult.ok
+          ? 'Respuesta registrada y encolada en n8n para envío.'
+          : 'Respuesta registrada. n8n no disponible — revisa N8N_WEBHOOK_BASE_URL.',
       },
       { status: 201 }
     )

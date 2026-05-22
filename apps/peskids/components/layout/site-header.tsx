@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { PeskidsLockup } from '@/components/brand/peskids-logo'
-import { Button } from '@/components/ui/button'
+import { WhatsAppLink } from '@/components/contact/whatsapp-link'
 
 interface SiteHeaderProps {
   variant?: 'marketing' | 'minimal'
@@ -14,28 +14,26 @@ export function SiteHeader({ variant = 'marketing' }: SiteHeaderProps): React.Re
           <PeskidsLockup height={40} />
         </Link>
         {variant === 'marketing' ? (
-          <nav className="hidden items-center gap-8 text-sm font-semibold text-pk-sub md:flex">
-            <a href="#metodo" className="hover:text-pk-primary">
-              Método
+          <div className="flex items-center gap-2 sm:gap-4">
+            <nav className="hidden items-center gap-6 text-sm font-semibold text-pk-sub md:flex">
+              <a href="#niveles" className="hover:text-pk-primary">
+                Niveles
+              </a>
+              <a href="#contacto" className="hover:text-pk-primary">
+                Reservar
+              </a>
+              <Link href="/familias" className="hover:text-pk-primary">
+                Familias
+              </Link>
+            </nav>
+            <WhatsAppLink variant="button" label="WhatsApp" className="shrink-0" />
+            <a
+              href="#contacto"
+              className="inline-flex h-10 items-center justify-center rounded-full bg-pk-primary px-4 text-xs font-bold text-white shadow-sm sm:hidden"
+            >
+              Reservar
             </a>
-            <a href="#niveles" className="hover:text-pk-primary">
-              Niveles
-            </a>
-            <a href="#redes" className="hover:text-pk-primary">
-              Redes
-            </a>
-            <Link href="/familias" className="hover:text-pk-primary">
-              Familias
-            </Link>
-            <a href="#contacto" className="hover:text-pk-primary">
-              Contacto
-            </a>
-            <Link href="/admin">
-              <Button variant="deep" size="sm">
-                Panel admin
-              </Button>
-            </Link>
-          </nav>
+          </div>
         ) : null}
       </div>
     </header>

@@ -20,12 +20,12 @@ export function CtaBand(): React.ReactElement {
             </p>
           </div>
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+            <WhatsAppLink variant="onDark" label="WhatsApp — respuesta rápida" className="min-w-[200px]" />
             <a href="#contacto">
-              <Button variant="accent" size="lg" className="whitespace-nowrap">
-                Reservar prueba gratis →
+              <Button variant="accent" size="lg" className="whitespace-nowrap border-2 border-white/30">
+                Formulario de reserva →
               </Button>
             </a>
-            <WhatsAppLink variant="onDark" label="Escribir por WhatsApp" />
           </div>
         </div>
       </div>

@@ -18,6 +18,8 @@ All forms are mobile-first, accessible (WCAG 2.1 AA), and validation-heavy (prev
 | name | text | ✅ yes | min:2, max:50, alpha+space | "Your full name" |
 | email | email | ✅ yes | valid-email | "your@example.com" |
 | phone | tel | ❌ optional | phone-format or empty | "(555) 123-4567" |
+| class_modality | select | ✅ yes | `llanogrande` (sede) / `domicilio` | "¿Dónde prefieres la clase?" |
+| neighborhood | text | ✅ yes | min:2, max:80 (barrio/zona) | "Ej. Llanogrande, Envigado…" |
 | grade_interested | select | ✅ yes | enum: K–5 / 6–8 / 9–12 / Other | "Select grade..." |
 | referral_source | select | ❌ optional | enum: Google / Friend / Facebook / Instagram / Other / Not sure | "How did you hear?" |
 

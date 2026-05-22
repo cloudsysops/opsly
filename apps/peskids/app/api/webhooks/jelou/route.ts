@@ -53,12 +53,13 @@ async function handleLeadSubmission(webhook: any) {
       .from('leads')
       .insert({
         tenant_id: TENANT_ID,
-        name: lead.name,
-        email: lead.email,
-        phone: lead.phone,
-        interested_grade: lead.interested_grade,
-        source: lead.source,
-        created_at: new Date().toISOString(),
+        name: String(lead.name),
+        email: String(lead.email),
+        phone: lead.phone != null ? String(lead.phone) : null,
+        class_modality: lead.class_modality,
+        neighborhood: lead.neighborhood || null,
+        grade_interested: String(lead.interested_grade),
+        referral_source: lead.source,
       })
       .select('id')
       .single();

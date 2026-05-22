@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { Caveat_Brush, JetBrains_Mono, Nunito } from 'next/font/google'
+import { PeskidsChatWidget } from '@/components/chat/peskids-chat-widget'
 import { WhatsAppFloatingButton } from '@/components/contact/whatsapp-floating-button'
 import './globals.css'
 
@@ -42,6 +43,7 @@ export default function RootLayout({
     >
       <body>
         {children}
+        <PeskidsChatWidget />
         <WhatsAppFloatingButton />
       </body>
     </html>

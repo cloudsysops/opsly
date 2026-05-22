@@ -10,7 +10,9 @@ import {
 } from 'lucide-react'
 import type { DashboardData } from '@/lib/types'
 import { AdminShell } from '@/components/admin/admin-shell'
+import { MessageInboxPanel } from '@/components/admin/message-inbox-panel'
 import { StatCard } from '@/components/admin/stat-card'
+import { classModalityLabel } from '@/lib/lead-modality'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
@@ -35,12 +37,6 @@ function StarRating({ value }: { value: number }): React.ReactElement {
   )
 }
 
-const sourceTone: Record<string, 'green' | 'coral' | 'teal'> = {
-  whatsapp: 'green',
-  instagram: 'coral',
-  web: 'teal',
-}
-
 export function DashboardView({
   data,
   lastUpdated,
@@ -56,7 +52,9 @@ export function DashboardView({
       (l) =>
         l.name.toLowerCase().includes(q) ||
         l.email.toLowerCase().includes(q) ||
-        (l.phone?.toLowerCase().includes(q) ?? false)
+        (l.phone?.toLowerCase().includes(q) ?? false) ||
+        (l.neighborhood?.toLowerCase().includes(q) ?? false) ||
+        classModalityLabel(l.class_modality).toLowerCase().includes(q)
     )
   }, [data.new_leads, search])
 
@@ -97,9 +95,13 @@ export function DashboardView({
                   <p className="font-medium text-sm text-pk-ink">{lead.name}</p>
                   <p className="text-xs text-pk-sub">{lead.email}</p>
                   {lead.phone ? <p className="text-xs text-pk-sub">{lead.phone}</p> : null}
-                  <Badge tone="teal" className="mt-2">
-                    {lead.grade_interested}
-                  </Badge>
+                  {lead.neighborhood ? (
+                    <p className="text-xs text-pk-sub">Barrio: {lead.neighborhood}</p>
+                  ) : null}
+                  <div className="mt-2 flex flex-wrap gap-1.5">
+                    <Badge tone="amber">{classModalityLabel(lead.class_modality)}</Badge>
+                    <Badge tone="teal">{lead.grade_interested}</Badge>
+                  </div>
                 </li>
               ))
             ) : (
@@ -194,43 +196,7 @@ export function DashboardView({
           icon={MessageSquare}
           accent="violet"
         >
-          <ul className="max-h-52 space-y-3 overflow-y-auto">
-            {data.recent_messages.length > 0 ? (
-              data.recent_messages.map((msg) => {
-                const tone = sourceTone[msg.source] ?? 'teal'
-                const preview =
-                  msg.message_text.length > 56
-                    ? `${msg.message_text.slice(0, 56)}…`
-                    : msg.message_text
-                return (
-                  <li
-                    key={msg.id}
-                    className="rounded-lg border border-pk-border/80 px-3 py-2 transition-colors hover:bg-pk-muted/40"
-                  >
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="min-w-0 flex-1">
-                        <div className="flex flex-wrap items-center gap-2">
-                          <p className="truncate text-sm font-medium text-pk-ink">
-                            {msg.sender_name || msg.sender_contact}
-                          </p>
-                          <Badge tone={tone}>{msg.source}</Badge>
-                        </div>
-                        <p className="mt-1 text-xs text-pk-sub">{preview}</p>
-                      </div>
-                      <time className="shrink-0 text-[10px] text-pk-sub/80">
-                        {new Date(msg.created_at).toLocaleTimeString('es-CO', {
-                          hour: '2-digit',
-                          minute: '2-digit',
-                        })}
-                      </time>
-                    </div>
-                  </li>
-                )
-              })
-            ) : (
-              <p className="text-sm text-pk-sub">Sin mensajes entrantes recientes.</p>
-            )}
-          </ul>
+          <MessageInboxPanel messages={data.recent_messages} />
         </StatCard>
 
         <Card accent="slate" className="md:col-span-2 xl:col-span-1">

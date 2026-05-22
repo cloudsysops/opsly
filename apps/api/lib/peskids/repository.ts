@@ -11,6 +11,8 @@ export type PeskidsLeadRow = {
   full_name: string;
   email: string;
   phone: string | null;
+  class_modality: string | null;
+  neighborhood: string | null;
   grade_interested: string;
   referral_source: string | null;
   status: string;
@@ -48,12 +50,14 @@ export async function peskidsInsertLead(
       full_name: body.name,
       email: body.email,
       phone: normalizePhone(body.phone),
+      class_modality: body.class_modality,
+      neighborhood: body.neighborhood,
       grade_interested: body.grade_interested,
       referral_source: body.referral_source ?? null,
       status: 'new',
     })
     .select(
-      'id, tenant_slug, full_name, email, phone, grade_interested, referral_source, status, admin_notes, created_at'
+      'id, tenant_slug, full_name, email, phone, class_modality, neighborhood, grade_interested, referral_source, status, admin_notes, created_at'
     )
     .single();
 
@@ -127,7 +131,7 @@ export async function peskidsFetchDashboardSummary(): Promise<
       .schema('platform')
       .from('peskids_leads')
       .select(
-        'id, tenant_slug, full_name, email, phone, grade_interested, referral_source, status, admin_notes, created_at'
+        'id, tenant_slug, full_name, email, phone, class_modality, neighborhood, grade_interested, referral_source, status, admin_notes, created_at'
       )
       .eq('tenant_slug', PESKIDS_TENANT_SLUG)
       .order('created_at', { ascending: false })

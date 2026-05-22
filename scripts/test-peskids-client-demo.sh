@@ -38,13 +38,17 @@ if ! command -v doppler >/dev/null 2>&1; then
   exit 1
 fi
 
-for name in JELOU_WEBHOOK_SECRET DASHBOARD_ADMIN_SECRET; do
-  if ! doppler secrets get "$name" --project "$PROJECT" --config "$CONFIG" --plain >/dev/null 2>&1; then
-    echo "Missing Doppler secret: $name (project=$PROJECT config=$CONFIG)" >&2
-    exit 1
+for name in JELOU_WEBHOOK_SECRET DASHBOARD_ADMIN_SECRET PESKIDS_INBOUND_WEBHOOK_SECRET; do
+  if doppler secrets get "$name" --project "$PROJECT" --config "$CONFIG" --plain >/dev/null 2>&1; then
+    echo "ok   Doppler has $name"
   fi
-  echo "ok   Doppler has $name"
 done
+
+if doppler secrets get NEXT_PUBLIC_PESKIDS_WHATSAPP_E164 --project "$PROJECT" --config "$CONFIG" --plain >/dev/null 2>&1; then
+  echo "ok   Doppler has NEXT_PUBLIC_PESKIDS_WHATSAPP_E164 (wa.me + simulación from=)"
+else
+  echo "warn Doppler sin NEXT_PUBLIC_PESKIDS_WHATSAPP_E164 — usa ./scripts/peskids-promote-whatsapp-doppler.sh"
+fi
 
 echo ""
 echo "== Public URLs =="
@@ -72,10 +76,11 @@ if [[ "$DRY_RUN" == true ]]; then
 else
   doppler run --project "$PROJECT" --config "$CONFIG" -- bash -c '
     set -euo pipefail
-    SECRET="${JELOU_WEBHOOK_SECRET:?}"
+    SECRET="${PESKIDS_INBOUND_WEBHOOK_SECRET:-${JELOU_WEBHOOK_SECRET:?}}"
     ADMIN="${DASHBOARD_ADMIN_SECRET:?}"
     BASE="'"$PESKIDS_BASE"'"
-    BODY="{\"source\":\"whatsapp\",\"from\":\"573001112233\",\"name\":\"Padre Demo Cliente\",\"text\":\"Hola, quiero clase de prueba para mi hijo\",\"messageId\":\"'"$DEMO_ID"'\"}"
+    WA_FROM="${NEXT_PUBLIC_PESKIDS_WHATSAPP_E164:-573001112233}"
+    BODY="{\"source\":\"whatsapp\",\"from\":\"${WA_FROM}\",\"name\":\"Prueba WhatsApp Doppler\",\"text\":\"Hola, quiero clase de prueba para mi hijo\",\"messageId\":\"'"$DEMO_ID"'\"}"
     code=$(curl -sk -o /tmp/pk-inbound.json -w "%{http_code}" -X POST "${BASE}/api/webhooks/inbound" \
       -H "Content-Type: application/json" \
       -H "x-webhook-secret: ${SECRET}" \

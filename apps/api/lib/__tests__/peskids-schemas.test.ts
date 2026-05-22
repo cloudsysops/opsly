@@ -7,6 +7,8 @@ describe('peskidsLeadBodySchema', () => {
       name: 'Maria Lopez',
       email: 'maria@example.com',
       phone: '555-1234',
+      class_modality: 'llanogrande',
+      neighborhood: 'Llanogrande',
       grade_interested: 'K-5',
       referral_source: 'Friend',
     });
@@ -17,6 +19,8 @@ describe('peskidsLeadBodySchema', () => {
     const parsed = peskidsLeadBodySchema.safeParse({
       name: 'Maria Lopez',
       email: 'maria@example.com',
+      class_modality: 'domicilio',
+      neighborhood: 'El Poblado',
       grade_interested: 'invalid',
     });
     expect(parsed.success).toBe(false);

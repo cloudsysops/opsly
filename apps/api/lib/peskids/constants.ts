@@ -12,6 +12,17 @@ export const PESKIDS_REFERRAL_SOURCES = [
   'Not sure',
 ] as const;
 
+/** Clase en sede Llanogrande o a domicilio del alumno. */
+export const PESKIDS_CLASS_MODALITY_VALUES = ['llanogrande', 'domicilio'] as const;
+
+export const PESKIDS_CLASS_MODALITY_LABELS: Record<
+  (typeof PESKIDS_CLASS_MODALITY_VALUES)[number],
+  string
+> = {
+  llanogrande: 'Sede Llanogrande',
+  domicilio: 'A domicilio',
+};
+
 export const PESKIDS_LEAD_STATUSES = [
   'new',
   'contacted',
