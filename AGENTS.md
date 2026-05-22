@@ -675,14 +675,25 @@ Week 4: Docs + runbook + MVP validation
   18. feat(peskids): add Phase 5 form viewer, responses, and complete flow
   19. (uncommitted) Form submission and audit integration ready for testing
 
-**Next Steps (Phase 6+ — Polish & Integration):**
-- [ ] Form field validation rules (custom expressions, regex patterns)
-- [ ] Bulk operations: Grade All, Export Submissions (CSV/PDF)
-- [ ] Mobile responsiveness testing and refinement
-- [ ] Assessment rubric interface for teacher grading workflow
+- ✅ Phase 6 Polish & Teacher Features (COMPLETE):
+  - Form field validation: Zod-based validators with custom rules (regex, minLength, maxLength, patterns)
+  - Validation patterns library: phone, zipcode, SSN, credit card, alphanumeric, slug, hex color, IPv4
+  - Bulk grading: POST /api/peskids/portal/{tenantSlug}/submissions/bulk-grade with score/feedback
+  - Form export: GET /api/peskids/portal/{tenantSlug}/forms/{formId}/export (CSV/JSON)
+  - Assessment rubric: Interactive component with criterion levels and score tracking
+  - Mobile responsiveness: Responsive padding, text sizing (text-base sm:text-sm), full-width buttons
+  - Submission operations library: grades, exports, bulk updates with audit logging
+  - Enhanced StudentSubmissionsPanel: checkbox selection, bulk grading UI, export button
+
+**Next Steps (Phase 7+ — Advanced Integration):**
 - [ ] n8n workflow integration: form submission → webhook → CRM notifications
-- [ ] Performance optimization: pagination, caching for large datasets
-- [ ] End-to-end test: Create → Submit → Webhook → Audit → Dashboard verification
+- [ ] Performance optimization: pagination for large submissions, caching, aggregations
+- [ ] Advanced analytics: completion funnels, field-level error rates, time-to-submit analysis
+- [ ] Template library: reusable form templates for common use cases
+- [ ] Webhook retry logic: BullMQ integration for failed webhook deliveries
+- [ ] End-to-end test suite: automated form creation, submission, and verification
+- [ ] API rate limiting and quota management per tenant
+- [ ] Form versioning: track changes, allow rollback to previous versions
 
 **Sesión 2026-05-22 — Peskids Production Live ✅**
 - ✅ Peskids production LIVE (2026-05-22 verified):
