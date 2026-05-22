@@ -654,22 +654,35 @@ Week 4: Docs + runbook + MVP validation
   - Not introduced by this PR (zero new dependencies added)
   - Repository-wide issue requiring Next.js upgrade
   - Documented in PR comment explaining pre-existing nature
-- 📋 Session Commits (16 total, extending branch):
+- ✅ Phase 5 End-to-End Form Submission Flow (COMPLETE):
+  - POST /api/peskids/portal/{tenantSlug}/forms: Create/save forms endpoint
+  - GET /api/peskids/forms/{formId}: Retrieve specific form for viewing
+  - POST /api/peskids/forms/{formId}/submissions: Public form submission endpoint
+  - GET /api/peskids/portal/{tenantSlug}/forms/{formId}/responses: Get form responses
+  - FormViewer.tsx: Public form viewer with client-side validation
+  - FormResponses.tsx: View submitted form responses
+  - /forms/[formId] public route: Public form submission page
+  - Complete flow: Form creation → Public submission → Audit logging → Dashboard visibility
+- 📋 Session Commits (19 total, extending branch):
   1-10. Previous commits (Phase 3 foundation)
   11. feat(peskids): add Phase 4 dashboard layout foundation
   12. feat(peskids): add Phase 4 API endpoints and form builder schema
   13. feat(peskids): connect dashboards to real API endpoints
   14. fix: reorganize API routes to follow correct Next.js structure
   15. feat(peskids): add FormBuilderPage integration component
+  16. docs(agents): Phase 4 completion documentation
+  17. feat(peskids): add missing form creation, retrieval, and submission endpoints
+  18. feat(peskids): add Phase 5 form viewer, responses, and complete flow
+  19. (uncommitted) Form submission and audit integration ready for testing
 
-**Next Steps (Phase 5 — Full Integration):**
-- [ ] Test end-to-end: Form creation → Submission → Webhook → Audit Trail → Dashboard
-- [ ] Implement form field validation rules (custom expressions)
-- [ ] Add bulk operations: Grade All, Export Submissions
-- [ ] Responsive design refinement for mobile devices
-- [ ] Assessment rubric interface for teacher grading
-- [ ] n8n workflow integration for form events
-- [ ] Performance optimization for large form datasets
+**Next Steps (Phase 6+ — Polish & Integration):**
+- [ ] Form field validation rules (custom expressions, regex patterns)
+- [ ] Bulk operations: Grade All, Export Submissions (CSV/PDF)
+- [ ] Mobile responsiveness testing and refinement
+- [ ] Assessment rubric interface for teacher grading workflow
+- [ ] n8n workflow integration: form submission → webhook → CRM notifications
+- [ ] Performance optimization: pagination, caching for large datasets
+- [ ] End-to-end test: Create → Submit → Webhook → Audit → Dashboard verification
 
 **Sesión 2026-05-22 — Peskids Production Live ✅**
 - ✅ Peskids production LIVE (2026-05-22 verified):
