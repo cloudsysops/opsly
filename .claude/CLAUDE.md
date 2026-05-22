@@ -50,7 +50,7 @@ Stop and report if:
 
 ---
 
-## 📁 Codebase Structure (Monorepo: Turbo + pnpm)
+## 📁 Codebase Structure (Monorepo: Turbo + npm)
 
 ### Quick Navigator
 
