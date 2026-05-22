@@ -417,6 +417,63 @@ node scripts/load-skills.js show opsly-api
 
 **Bloqueante activo:** Cloudflare Proxy ON requerido para ocultar IP VPS pública (157.245.223.7). 28. **Siguiente** — p. ej. **redeploy API + admin** en VPS para servir `/costs` y payload nuevo; E2E invite con Supabase en CI; más rutas bajo `/api/portal/tenant/[slug]/`; persistir aprobaciones de costos en DB si hace falta; operación VPS según `VISION.md`.
 
+---
+
+## 🔄 Phase 2 — Content Studio (2026-05-18)
+
+**Branch:** `feat/content-studio-phase2`  
+**Status:** Architecture scaffolded, MVP planning  
+**Deliverable:** Tenant + Opsly brand content generation from runtime events
+
+### Context
+
+PR #352 (session resume) rebased and merged; Phase 1 (LOCAL-FIRST) complete. Now designing Content Studio — safe multi-platform publishing without secrets exposure, without auto-publish by default.
+
+### Phase 2.1 MVP Scope
+
+**NOT included yet:**
+- Image generation
+- API publishing (Instagram, LinkedIn, X, TikTok, YouTube, etc.)
+- Auto-scheduling
+
+**Included:**
+- Event → Story mapping (6 event types)
+- Caption generation (per-platform)
+- Avatar + art direction prompts
+- Compliance checker (no secrets regex)
+- Approval queue (BullMQ)
+- Copy/paste kit (text export)
+- Mission Control UI (drafts + calendar)
+
+### Modules Being Built
+
+```
+lib/content-studio/
+├── src/types.ts (ContentEvent, TenantContentProfile, ContentDraft)
+├── src/mappers/
+├── src/generators/
+├── src/checkers/
+├── src/adapters/
+└── __tests__/
+```
+
+### Key Files
+
+- `docs/00-architecture/CONTENT-STUDIO-ARCHITECTURE.md` — Full spec
+- `lib/content-studio/` — Core library
+- `apps/orchestrator/` — Event ingestion (BullMQ)
+- `apps/admin/` — Approval queue UI (future)
+- `apps/mission-control/` — Content Studio tab (future)
+
+### Phase 2.1 Timeline
+
+Week 1: RuntimeToStoryMapper + CaptionGenerator  
+Week 2: ComplianceChecker + ContentApprovalQueue  
+Week 3: CopyPasteKit + Mission Control UI  
+Week 4: Docs + runbook + MVP validation
+
+---
+
 ### Qué evitamos por ahora
 
 - Segundo orchestrator, segundo motor de contexto, o reestructurar `infra/` sin necesidad.
