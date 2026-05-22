@@ -1,26 +1,14 @@
 import { createHmac } from 'crypto';
-
-interface WebhookTriggerPayload {
-  form_id: string;
-  submission_id: string;
-  tenant_slug: string;
-  form_data: Record<string, unknown>;
-  timestamp: number;
-  user_id?: string;
-}
-
-interface WebhookConfig {
-  id: string;
-  webhook_url: string;
-  secret: string;
-  is_active: boolean;
-  failure_count: number;
-}
+import type {
+  WebhookConfig,
+  WebhookTriggerPayload,
+  WebhookTriggerResult,
+} from './peskids-types';
 
 export async function triggerWebhooks(
   webhooks: WebhookConfig[],
   payload: WebhookTriggerPayload
-): Promise<{ success: number; failed: number; errors: string[] }> {
+): Promise<WebhookTriggerResult> {
   const results = {
     success: 0,
     failed: 0,

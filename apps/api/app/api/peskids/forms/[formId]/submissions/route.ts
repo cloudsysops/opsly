@@ -3,6 +3,7 @@ import { createClient } from '@supabase/supabase-js';
 import { jsonError, jsonOk } from '../../../../../../../lib/api-response';
 import { HTTP_STATUS } from '../../../../../../../lib/constants';
 import { triggerWebhooks } from '../../../../../../../lib/peskids-webhook-trigger';
+import type { WebhookConfig } from '../../../../../../../lib/peskids-types';
 
 function requireEnv(name: string): string {
   const value = process.env[name];
@@ -25,14 +26,6 @@ interface FormSubmissionPayload {
   submissionData: Record<string, string | number | boolean | null>;
   email?: string;
   userId?: string;
-}
-
-interface WebhookConfig {
-  id: string;
-  webhook_url: string;
-  secret: string;
-  is_active: boolean;
-  failure_count: number;
 }
 
 export async function POST(
