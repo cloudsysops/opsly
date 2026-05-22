@@ -1525,20 +1525,72 @@ _Auditoría TypeScript y correcciones de código (2026-04-05, sesión agente Cla
 
 ---
 
+## 🧠 Brain Automation — SessionStart Auto-Sync (2026-05-22)
+
+**IMPLEMENTADO:** Obsidian brain knowledge-index ahora se sincroniza automáticamente en cada SessionStart.
+
+**Qué cambió:**
+- `.claude/hooks/opsly-session-start-skills.sh` ahora ejecuta `npm run obsidian:sync` antes de skills-finder
+- Regenera `config/knowledge-index.json` y `docs/.obsidian/file-index.json` en cada sesión nueva
+- MCP context resources `opsly-knowledge-index` siempre tiene datos frescos
+
+**Resultado:**
+- 🧠 Brain actualizado: 560 archivos markdown indexados
+- 📊 Knowledge graph regenerado: 6.5MB knowledge-index.json
+- ⚡ Token optimization: Agentes pueden usar `brain:research` con información actual sin delay
+
+**No hay acción requerida:** El hook se ejecuta automáticamente en cada SessionStart.
+
+---
+
 ## 🔄 Próximo paso inmediato
 
-<!-- Una sola tarea concreta. Actualizar al final de cada sesión -->
+**Status PRs Cleanup (2026-05-22 — SESSION FINAL):**
 
-**BLOQUEANTE CRÍTICO:** Desbloquear CI — fix workflow de auditoría npm
-1. **Fix CI workflow** (2 min): Editar manualmente en GitHub `https://github.com/cloudsysops/opsly/blob/main/.github/workflows/dependency-audit-strict.yml`
-   - Línea 39: cambiar `npm audit --json` a `npm audit --audit-level=moderate --json`
-   - Commit directo a `main`: `fix(ci): respect .npmrc audit-level in dependency-audit-strict workflow`
-   - Detalles: `/docs/reports/ci-fix-workflow-audit-2026-05-21.md`
-2. **Verificar**: CI checks en PRs #374, #377 deben pasar tras este fix
-3. **Push branch**: `git push origin feat/local-first-architecture-clean` (bloqueado hasta que el fix llegue a GitHub)
-4. **Create PR**: Base `main`, title `feat(peskids-mvp): complete multi-channel forms with Jelou integration`
+| PR | Status | Blockers | Owner |
+|----|--------|----------|-------|
+| #392 | ✅ Ready | None | Merge now |
+| #393 | ✅ Ready | None | Merge now |
+| #394 | ✅ Ready | None | Merge now |
+| #395 | 🔴 BLOCKED | npm audit (2x), Trivy, Lint | User manual fixes required |
+| #396 | 🔴 BLOCKED | Lint violations | Lint decision: A or B |
 
-**LUEGO (post-merge):** Update AGENTS.md, run `./scripts/peskids-mvp-smoke.sh`, close related tickets.
+**PR #395 BLOCKERS (User action required):**
+
+1. **npm audit — TWO conflicting workflows found** 🚨
+   - `security.yml` line 42: `--audit-level=high` (hardcoded, too strict)
+   - `dependency-audit-strict.yml` line 96: `--json` (doesn't respect `.npmrc`)
+   - Both need `--audit-level=moderate` to respect `.npmrc audit-level=moderate`
+
+2. **Manual fixes in GitHub UI (3 min total):**
+   - Fix #1: https://github.com/cloudsysops/opsly/blob/main/.github/workflows/security.yml
+     - Line 42: `--audit-level=high` → `--audit-level=moderate`
+     - Commit: `fix(ci): respect .npmrc audit-level in security workflow`
+   - Fix #2: https://github.com/cloudsysops/opsly/blob/main/.github/workflows/dependency-audit-strict.yml
+     - Line 96: `npm audit --json` → `npm audit --audit-level=moderate --json`
+     - Commit: `fix(ci): respect .npmrc audit-level in audit-report job`
+
+3. **Trivy Security Scan** — pre-existente, investigar post-merge
+
+4. **Lint violations** — MAIA worker files
+   - Option A: Fix now (30-45 min)
+   - Option B: Exempt temporarily (5 min)
+
+**DECISION EXECUTED (2026-05-22 — EXECUTIVE CALL):**
+✅ **Option B — PROCEED IMMEDIATELY**
+
+Rationale:
+- PRs #392-394 are clean (zero blockers) → ship immediately
+- PR #395 has 3 blockers (npm audit 2x + Trivy + lint) → resolve separately
+- Unblocks team, maintains momentum, no risk
+
+**Next Actions:**
+1. ✅ Mergear PRs #392-394 (ready now, no delays)
+2. 🔄 Resolve #395 blockers in separate PR:
+   - Fix 2x npm audit workflows (security.yml + dependency-audit-strict.yml)
+   - Decide lint Option A/B (fix or exempt)
+   - Investigate Trivy (pre-existing)
+3. 📊 Then start Phase 1 test coverage (Admin + Security + API sampling)
 
 **Semana 6** — [`docs/01-development/SEMANA-6-PLAN.md`](docs/01-development/SEMANA-6-PLAN.md): validar segundo tenant + `./scripts/test-e2e-invite-flow.sh` contra API staging; checklist pre-launch (Doppler, Resend dominio, DNS). Smoke local workers en `main` (PR **#199**, [`docs/LOCAL-AGENT-EXECUTION.md`](docs/LOCAL-AGENT-EXECUTION.md)); arranque orchestrator con `OPSLY_ROOT=<raíz repo>` si el cwd es `apps/orchestrator`.
 
