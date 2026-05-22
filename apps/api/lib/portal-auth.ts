@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import type { User } from '@supabase/supabase-js';
+import { extractBearerToken } from './auth';
 
 function requireEnv(name: string): string {
   const value = process.env[name];
@@ -11,10 +12,7 @@ function requireEnv(name: string): string {
 
 export async function getUserFromAuthorizationHeader(request: Request): Promise<User | null> {
   const auth = request.headers.get('authorization');
-  if (!auth?.startsWith('Bearer ')) {
-    return null;
-  }
-  const jwt = auth.slice('Bearer '.length).trim();
+  const jwt = extractBearerToken(auth);
   if (jwt.length === 0) {
     return null;
   }

@@ -15,12 +15,14 @@ const TENANT_PATH_MARKER = 'tenant';
 const SECURITY_HEADERS: Record<string, string> = {
   'Content-Security-Policy':
     "default-src 'self'; " +
-    "script-src 'self' 'unsafe-inline' 'unsafe-eval'; " +
-    "style-src 'self' 'unsafe-inline'; " +
+    "script-src 'self'; " +
+    "style-src 'self'; " +
     "img-src 'self' data: https:; " +
     "connect-src 'self' https://*.supabase.co https://api.stripe.com; " +
     "font-src 'self' data:; " +
-    "frame-ancestors 'none';",
+    "frame-ancestors 'none'; " +
+    "base-uri 'self'; " +
+    "form-action 'self';",
 
   'X-Frame-Options': 'DENY',
 
@@ -29,6 +31,8 @@ const SECURITY_HEADERS: Record<string, string> = {
   'Referrer-Policy': 'strict-origin-when-cross-origin',
 
   'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
+
+  'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
 };
 
 function normalizedApiPath(pathname: string): string {
@@ -86,11 +90,16 @@ function readPayloadTenantSlug(
 
 function resolveTenantSlugFromAuth(request: NextRequest): string | null {
   const auth = request.headers.get('authorization');
-  if (!auth?.startsWith('Bearer ')) {
+  if (!auth) {
     return null;
   }
 
-  const jwt = auth.slice('Bearer '.length).trim();
+  const [scheme, token] = auth.split(' ');
+  if (scheme.toLowerCase() !== 'bearer' || !token) {
+    return null;
+  }
+
+  const jwt = token.trim();
   if (jwt.length === 0) {
     return null;
   }
