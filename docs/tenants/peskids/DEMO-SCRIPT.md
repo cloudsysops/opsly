@@ -76,7 +76,7 @@ Los padres lo llenan. Tú recibes sus datos aquí. No se pierde nada."
 — Un clic para hacer seguimiento
 
 **Card 2: Alumnos Activos**
-— Cuántos niños estáinscritos hoy
+— Cuántos niños están inscritos hoy
 — Dividido por grado
 — Tendencia semana a semana
 
