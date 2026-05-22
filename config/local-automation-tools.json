@@ -1,0 +1,98 @@
+{
+  "version": 1,
+  "updated_at": "2026-05-14",
+  "workspace_root": "~/opsly-workspace/opsly",
+  "approved_installers": ["brew", "npm", "pnpm", "docker"],
+  "tools": {
+    "iterm2": {
+      "type": "app",
+      "app_name": "iTerm.app",
+      "brew_cask": "iterm2",
+      "permissions": ["app.discover", "app.launch"]
+    },
+    "docker": {
+      "type": "app+binary",
+      "app_name": "Docker.app",
+      "brew_cask": "docker",
+      "binaries": ["docker"],
+      "permissions": ["app.discover", "binary.inspect", "docker.inspect", "docker.run"],
+      "required": true
+    },
+    "cursor": {
+      "type": "app",
+      "app_name": "Cursor.app",
+      "brew_cask": "cursor",
+      "permissions": ["app.discover", "app.launch", "workspace.write"]
+    },
+    "vscode": {
+      "type": "app+binary",
+      "app_name": "Visual Studio Code.app",
+      "brew_cask": "visual-studio-code",
+      "binaries": ["code"],
+      "permissions": ["app.discover", "app.launch", "binary.inspect", "workspace.write"]
+    },
+    "obs": {
+      "type": "app",
+      "app_name": "OBS.app",
+      "brew_cask": "obs",
+      "permissions": ["app.discover", "app.launch"]
+    },
+    "ableton": {
+      "type": "app",
+      "app_name": "Ableton Live.app",
+      "permissions": ["app.discover", "app.launch"]
+    },
+    "node": {
+      "type": "binary",
+      "binaries": ["node", "npm"],
+      "brew_formula": "node@22",
+      "permissions": ["binary.inspect", "binary.install"],
+      "required": true
+    },
+    "pnpm": {
+      "type": "binary",
+      "binaries": ["pnpm"],
+      "brew_formula": "pnpm",
+      "permissions": ["binary.inspect", "binary.install"],
+      "required": true
+    },
+    "git": {
+      "type": "binary",
+      "binaries": ["git"],
+      "brew_formula": "git",
+      "permissions": ["binary.inspect", "binary.install"],
+      "required": true
+    },
+    "gh": {
+      "type": "binary",
+      "binaries": ["gh"],
+      "brew_formula": "gh",
+      "permissions": ["binary.inspect", "binary.install"]
+    },
+    "python": {
+      "type": "binary",
+      "binaries": ["python3"],
+      "brew_formula": "python",
+      "permissions": ["binary.inspect", "binary.install"]
+    },
+    "ffmpeg": {
+      "type": "binary",
+      "binaries": ["ffmpeg"],
+      "brew_formula": "ffmpeg",
+      "permissions": ["binary.inspect", "binary.install"]
+    },
+    "ollama": {
+      "type": "app+binary",
+      "app_name": "Ollama.app",
+      "brew_cask": "ollama",
+      "binaries": ["ollama"],
+      "permissions": ["app.discover", "binary.inspect", "binary.install"]
+    },
+    "brew": {
+      "type": "binary",
+      "binaries": ["brew"],
+      "permissions": ["binary.inspect"],
+      "required": true
+    }
+  }
+}

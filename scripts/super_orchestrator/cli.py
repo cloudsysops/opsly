@@ -8,8 +8,18 @@ import json
 import sys
 import os
 
+_script_file = os.path.abspath(__file__)
+_scripts_dir = os.path.dirname(os.path.dirname(_script_file))
+
+# Tailscale: sin importar super_orchestrator (evita aiohttp y deps pesadas).
+if len(sys.argv) > 1 and sys.argv[1] == "tailscale":
+    sys.path.insert(0, _scripts_dir)
+    import opsly_tailscale_cli
+
+    raise SystemExit(opsly_tailscale_cli.main(sys.argv[2:]))
+
 # Add parent dir to path
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, _scripts_dir)
 
 from super_orchestrator.provider_selector import ProviderSelector
 from super_orchestrator.performance_tracker import PerformanceTracker

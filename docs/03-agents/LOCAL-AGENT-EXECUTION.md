@@ -21,18 +21,41 @@ Opsly's **Local Agent Execution System** enables autonomous execution of tasks o
 3. **Orchestrator** — `PLATFORM_ADMIN_TOKEN`, `REDIS_URL`, modo que **consuma** la cola `local-agents` (misma máquina o worker remoto con el mismo Redis). Arranque típico: `cd apps/orchestrator && node dist/index.js` (tras build).
 4. **Servicio del agente** — URLs por defecto en [`config/agent-services.json`](../config/agent-services.json):
 
-| Agente   | Puerto default | Comando npm (raíz repo)              |
-| -------- | ---------------- | ------------------------------------- |
-| cursor   | 5001             | `npm run opsly:local-cursor-service`  |
-| claude   | 5002             | `npx tsx scripts/mock-claude-agent.ts` o servicio real en ese puerto |
-| copilot  | 5003             | mock/servicio según entorno          |
-| opencode | 5004             | mock/servicio según entorno          |
+| Agente     | Puerto default | Comando npm (raíz repo)             |
+| ---------- | -------------- | ------------------------------------ |
+| cursor     | 5001           | `npm run opsly:local-cursor-service` |
+| claude     | 5002           | `npm run opsly:local-claude-service` |
+| copilot    | 5003           | `npm run opsly:local-copilot-service` |
+| opencode   | 5004           | `npm run opsly:local-opencode-service` |
+| codex      | 5005           | `npm run opsly:local-codex-service` |
+| openai     | 5006           | `npm run opsly:local-openai-service` |
+| hermes     | 5007           | `npm run opsly:local-hermes-service` |
+| decepticon | 5008           | `npm run opsly:local-decepticon-service` |
+| aider      | 5009           | `npm run opsly:local-aider-service` |
+| goose      | 5010           | `npm run opsly:local-goose-service` |
+| playwright | 5011           | `npm run opsly:local-playwright-service` |
 
 5. **Watcher (opcional)** — `npm run opsly:local-prompt-watcher` con `ORCHESTRATOR_URL` y `PLATFORM_ADMIN_TOKEN` alineados al orchestrator. Escucha `.cursor/prompts/queue/*.md`, lee `docs/01-development/ACTIVE-PROMPT.md` como contexto y deja `Respuesta agente` en el mismo archivo. Frontmatter puede incluir `agent: cursor|claude|copilot|opencode` (el script envía `agent` en el JSON).
 6. **Smoke `curl`** — ver sección *Submit a Prompt* más abajo; cabecera `Authorization: Bearer …` obligatoria. Para jobs con riesgo autonomía puede hacer falta `x-autonomy-approved: true`.
 7. **Pre-push / Rollup (Mac)** — si husky falla por `@rollup/rollup-darwin-x64`, reinstalar dependencias (`rm -rf node_modules && npm ci`) o usar `git push --no-verify` solo cuando proceda; CI sigue siendo la verdad.
 
 **Nota VPS:** en `queue-only` el control plane **encola** pero no ejecuta jobs locales; hace falta un **nodo worker** (p. ej. Mac + Tailscale) con el mismo `REDIS_URL`.
+
+### Seguridad del bridge CLI
+
+Los servicios `opsly:local-*-service` que usan `scripts/cli-agent-service.ts` escuchan solo en `127.0.0.1` y aplican estos límites:
+
+| Variable | Uso |
+| --- | --- |
+| `OPSLY_CLI_AGENT_TOKEN` | Si existe, `POST /execute` exige `Authorization: Bearer <token>`. |
+| `OPSLY_CLI_AGENT_ALLOWED_CWD_PREFIX` | Raíz permitida para `OPSLY_CLI_AGENT_CWD`; por defecto, la raíz del repo. |
+| `OPSLY_CLI_AGENT_CWD` | Directorio de trabajo del agente; debe estar dentro de la raíz permitida. |
+| `OPSLY_CLI_AGENT_TIMEOUT_MS` | Timeout por ejecución; default `300000`. |
+| `OPSLY_CLI_AGENT_OUTPUT_LIMIT_BYTES` | Límite de `stdout`/`stderr` devuelto; default `120000`. |
+| `OPSLY_CLI_AGENT_ENV_ALLOWLIST` | Lista extra de variables permitidas para el proceso hijo. |
+| `OPSLY_CLI_AGENT_ALLOW_COMMAND_OVERRIDE` | Debe ser `1` para habilitar `OPSLY_CLI_AGENT_COMMAND`; usar solo en laboratorio. |
+
+El bridge permite un job activo por proceso. Si un agente ya está ejecutando trabajo, responde `429` con `in_flight_job_id`. No pasa todo `process.env` al proceso hijo; solo una allowlist mínima y lo que se declare explícitamente.
 
 ```
 .cursor/prompts/queue/task.md

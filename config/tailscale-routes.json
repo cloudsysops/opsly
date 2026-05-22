@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "description": "Rutas Tailscale canónicas Opsly (sin secretos). Scripts y cli.py leen este archivo; override con OPSLY_TAILSCALE_ROUTES_JSON.",
+  "nodes": {
+    "vps": {
+      "name": "vps-dragon",
+      "tailscale_ipv4": "100.120.151.91",
+      "ssh_user": "vps-dragon",
+      "ssh_spec": "vps-dragon@100.120.151.91",
+      "repo_path": "/opt/opsly",
+      "compose_relative": "infra/docker-compose.platform.yml"
+    },
+    "worker": {
+      "name": "opsly-worker",
+      "tailscale_ipv4": "100.80.41.29",
+      "ssh_user": "opslyquantum",
+      "ssh_spec": "opslyquantum@100.80.41.29",
+      "notes": "Mac 2011 Ubuntu; MagicDNS: ver config/worker-tailscale.env.example"
+    }
+  }
+}
