@@ -1,8 +1,8 @@
 # CLAUDE.md — Opsly Codebase Guide for AI Assistants
 
-**Last Updated:** 2026-05-21  
+**Last Updated:** 2026-05-22  
 **Status:** Canonical guide for all Claude sessions in Opsly  
-**Version:** 2.0 (Enhanced with full codebase structure)
+**Version:** 2.1 (Updated with current lib modules and app inventory)
 
 ---
 
@@ -57,7 +57,7 @@ Stop and report if:
 ```
 opsly/
 ├── apps/                          # 27+ applications (see below)
-├── lib/                           # 13 enterprise-scale library modules
+├── lib/                           # 18 enterprise-scale library modules
 ├── packages/                      # Shared utilities & skills
 ├── docs/                          # Documentation (Obsidian vault + markdown)
 ├── config/                        # Configuration & metadata
@@ -97,13 +97,14 @@ opsly/
 | **mcp-gateway** | MCP routing layer | Node.js | — | Production |
 | **mcp-rendering-server** | MCP content rendering | Node.js | — | Experimental |
 | **notion-mcp** | Notion integration | Node.js | — | Production |
+| **rendering-engine** | Content rendering engine | Node.js | — | Active Development |
 | **task-orchestrator** | Task queue manager | Node.js | — | Production |
 | **agent-manager** | Agent lifecycle management | Node.js | — | Production |
 | **context-builder-v2** | Next-gen context builder (Shadow deploy) | Node.js | — | Staging |
 | **experimental** | Experimental features | Various | — | Not for Prod |
 | **__tests__** | End-to-end test suite | Vitest | — | CI/CD |
 
-### 📚 lib/ — Enterprise Library Modules (13 modules)
+### 📚 lib/ — Enterprise Library Modules (18 modules)
 
 **Location:** `lib/{module}` with `package.json` exported as `@intcloudsysops/{module}`
 
@@ -112,6 +113,7 @@ opsly/
 | **api** | HTTP utils, request handling, middleware | claude | Stable |
 | **components** | React component library + design system | claude | Stable |
 | **config** | Environment vars, feature flags, secrets | claude | Stable |
+| **content-studio** | Content creation and management tools | claude | Active |
 | **errors** | Unified error handling + types | claude | Stable |
 | **evaluation** | Testing utils, validators, safety checks | claude | Stable |
 | **external-agent-registry** | External agent registry & discovery | claude | Active |
@@ -122,9 +124,9 @@ opsly/
 | **runtime** | Agent runtime, execution engine | claude | Active |
 | **security** | Auth, encryption, PII redaction | claude | Stable |
 | **services** | Repository pattern + data layer | claude | Stable |
+| **session-manager** | Session lifecycle, recovery | claude | Active |
 | **telemetry** | Cost tracking, performance monitoring | claude | Stable |
 | **testing** | Unified test framework setup | claude | Stable |
-| **session-manager** | Session lifecycle, recovery | claude | Active |
 | **workflow** | Safe execution, timeouts, retries | claude | Stable |
 
 ### 📄 docs/ — Documentation Structure
@@ -478,7 +480,7 @@ REDIS_URL=redis://100.120.151.91:6379
 
 ## 📦 Enterprise-Scale Library Modules (v1.0)
 
-**All code is consolidated into 13 reusable, versioned library modules.** See `config/modules.json` for the complete registry.
+**All code is consolidated into 18 reusable, versioned library modules.** See `config/modules.json` for the complete registry.
 
 ### Core Infrastructure Modules
 
@@ -489,9 +491,12 @@ REDIS_URL=redis://100.120.151.91:6379
 | `@intcloudsysops/components` | Shared React components & design system | claude |
 | `@intcloudsysops/evaluation` | Testing, validators, safety checks | claude |
 
-### Enterprise Utilities (9 additional modules)
+### Enterprise Utilities (14 additional modules)
 
+- `@intcloudsysops/content-studio` — Content creation and management
 - `@intcloudsysops/errors` — Unified error handling
+- `@intcloudsysops/external-agent-registry` — Agent discovery & registry
+- `@intcloudsysops/git-branch-orchestrator` — Git workflow automation
 - `@intcloudsysops/services` — Repository pattern + multi-tenant isolation
 - `@intcloudsysops/config` — Environment configuration & feature flags
 - `@intcloudsysops/security` — Auth, encryption, PII redaction
@@ -500,6 +505,8 @@ REDIS_URL=redis://100.120.151.91:6379
 - `@intcloudsysops/telemetry` — Cost & performance tracking
 - `@intcloudsysops/testing` — Unified test framework
 - `@intcloudsysops/migrations` — Database migration versioning
+- `@intcloudsysops/runtime` — Agent runtime & execution engine
+- `@intcloudsysops/session-manager` — Session lifecycle & recovery
 
 **Key Rule:** Never duplicate code. If logic exists in 2+ places → consolidate to lib/.
 
