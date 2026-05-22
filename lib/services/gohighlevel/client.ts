@@ -24,52 +24,97 @@ export class GoHighLevelClient {
     this.requestTimeout = timeoutMs;
   }
 
+  private async sleep(ms: number): Promise<void> {
+    await new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
+  private parseRetryAfter(retryAfter: string | null): number | null {
+    if (!retryAfter) {
+      return null;
+    }
+
+    const seconds = Number(retryAfter);
+    if (Number.isFinite(seconds) && seconds >= 0) {
+      return seconds * 1000;
+    }
+
+    const retryAt = Date.parse(retryAfter);
+    if (Number.isNaN(retryAt)) {
+      return null;
+    }
+
+    return Math.max(0, retryAt - Date.now());
+  }
+
+  private getRateLimitBackoffDelay(attempt: number): number {
+    const baseDelayMs = 1000;
+    const maxDelayMs = 30000;
+    const exponentialDelay = Math.min(maxDelayMs, baseDelayMs * (2 ** attempt));
+    const jitter = Math.floor(Math.random() * 250);
+
+    return Math.min(maxDelayMs, exponentialDelay + jitter);
+  }
+
   private async request<T>(
     method: string,
     path: string,
     body?: unknown
   ): Promise<T> {
     const url = `${this.baseUrl}${path}`;
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), this.requestTimeout);
+    const maxRateLimitRetries = 3;
 
-    try {
-      const response = await fetch(url, {
-        method,
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${this.apiKey}`,
-          'Accept': 'application/json',
-        },
-        body: body ? JSON.stringify(body) : undefined,
-        signal: controller.signal,
-      });
+    for (let attempt = 0; attempt <= maxRateLimitRetries; attempt++) {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), this.requestTimeout);
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        let errorMessage = `GoHighLevel API error: ${response.status}`;
-        try {
-          const errorJson = JSON.parse(errorText) as Record<string, unknown>;
-          errorMessage = (errorJson.message as string) || errorMessage;
-        } catch {
-          errorMessage = errorText || errorMessage;
+      try {
+        const response = await fetch(url, {
+          method,
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${this.apiKey}`,
+            'Accept': 'application/json',
+          },
+          body: body ? JSON.stringify(body) : undefined,
+          signal: controller.signal,
+        });
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          let errorMessage = `GoHighLevel API error: ${response.status}`;
+          try {
+            const errorJson = JSON.parse(errorText) as Record<string, unknown>;
+            errorMessage = (errorJson.message as string) || errorMessage;
+          } catch {
+            errorMessage = errorText || errorMessage;
+          }
+
+          if (response.status === 429 && attempt < maxRateLimitRetries) {
+            const retryAfterMs = this.parseRetryAfter(response.headers.get('Retry-After'));
+            const delayMs = retryAfterMs ?? this.getRateLimitBackoffDelay(attempt);
+            await this.sleep(delayMs);
+            continue;
+          }
+
+          throw new Error(errorMessage);
         }
-        throw new Error(errorMessage);
-      }
 
-      const data = await response.json() as T;
-      return data;
-    } catch (err) {
-      if (err instanceof Error) {
-        if (err.name === 'AbortError') {
-          throw new Error(`GoHighLevel request timeout after ${this.requestTimeout}ms`);
+        const data = await response.json() as T;
+        return data;
+      } catch (err) {
+        if (err instanceof Error) {
+          if (err.name === 'AbortError') {
+            throw new Error(`GoHighLevel request timeout after ${this.requestTimeout}ms`);
+          }
+          throw err;
         }
-        throw err;
+        throw new Error(`GoHighLevel API request failed: ${String(err)}`);
+      } finally {
+        clearTimeout(timeoutId);
       }
-      throw new Error(`GoHighLevel API request failed: ${String(err)}`);
-    } finally {
-      clearTimeout(timeoutId);
     }
+
+    throw new Error('GoHighLevel API request failed after rate-limit retries');
   }
 
   async getContacts(filter?: ListContactsFilter): Promise<ListResponse<Contact>> {
