@@ -1,6 +1,6 @@
 import type { Config } from 'tailwindcss';
 import tailwindcssAnimate from 'tailwindcss-animate';
-import { colorTokens } from '@intcloudsysops/components/styles/tokens';
+import { colorTokens } from '@intcloudsysops/components';
 
 const config: Config = {
   darkMode: ['class'],
