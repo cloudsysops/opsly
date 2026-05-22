@@ -45,10 +45,17 @@
   },
 
   "hooks": {
-    "SessionStart": {
-      "enabled": true,
-      "command": "node scripts/skill-finder.js --autonomous"
-    }
+    "SessionStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node scripts/skill-finder.js --autonomous"
+          }
+        ]
+      }
+    ]
   },
 
   "tokenOptimization": {

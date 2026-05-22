@@ -22,9 +22,11 @@ Procedimientos accionables para operar, desplegar, diagnosticar y recuperar Opsl
 ## Documentos clave
 
 - `DEPLOYMENT-CHECKLIST.md`
+- `MIGRATION-CHECKLIST.md`
 - `TROUBLESHOOTING-GUIDE.md`
 - `INCIDENT-AUTONOMOUS-AGENT.md`
 - `OPSLY-OPENCLAW-STARTUP.md`
+- `TENANT-BONUS-WORKFLOWS.md` — bonus CRM workflows por tenant, dry-run e instalacion segura
 - [`../tenants/runbooks/TENANT-PRODUCTION-CHECKLIST.md`](../tenants/runbooks/TENANT-PRODUCTION-CHECKLIST.md) — criterios prod por tenant (stub `TENANT-PRODUCTION-CHECKLIST.md` aquí)
 - [`../tenants/runbooks/TENANT-PRODUCTION-ROLLOUT.md`](../tenants/runbooks/TENANT-PRODUCTION-ROLLOUT.md) — cohortes y rollback (stub aquí)
 - [`../tenants/runbooks/TENANT-ONBOARDING-TRIAGE.md`](../tenants/runbooks/TENANT-ONBOARDING-TRIAGE.md) — triage onboarding API

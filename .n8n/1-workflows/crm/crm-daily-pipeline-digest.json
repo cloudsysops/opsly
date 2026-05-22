@@ -1,0 +1,96 @@
+{
+  "id": "opsly-crm-daily-pipeline-digest",
+  "name": "Opsly CRM - Daily Pipeline Digest",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "30 17 * * 1-5"
+            }
+          ]
+        }
+      },
+      "id": "weekday-digest-schedule",
+      "name": "Weekday 5:30pm",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{ json: {\n  tenant_slug: $env.TENANT_SLUG || 'unknown',\n  type: 'daily_pipeline_digest',\n  summary: 'Daily CRM digest ready for owner review',\n  generated_at: new Date().toISOString()\n} }];"
+      },
+      "id": "build-digest",
+      "name": "Build Digest",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        260,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.OPSLY_CRM_NOTIFY_WEBHOOK_URL }}",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "text",
+              "value": "={{ '[' + $json.tenant_slug + '] ' + $json.summary }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "notify-digest",
+      "name": "Notify Digest",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        520,
+        0
+      ],
+      "continueOnFail": true
+    }
+  ],
+  "connections": {
+    "Weekday 5:30pm": {
+      "main": [
+        [
+          {
+            "node": "Build Digest",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Digest": {
+      "main": [
+        [
+          {
+            "node": "Notify Digest",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": [
+    "opsly",
+    "crm",
+    "bonus"
+  ]
+}

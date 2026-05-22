@@ -73,10 +73,14 @@ terraform.tfstate.backup
 *.tfvars
 infra/terraform/tfplan
 
-# Raíz: nunca `logs/` aquí (structure-guard + usar runtime/logs/)
+# Raíz: nunca `logs/` ni `tenants/` aquí (structure-guard + usar runtime/)
 /logs/
+/tenants/
+/tenants.bak/
 
 # Runtime directories (VPS/local runtime)
+.tmp-peskids-*.png
+
 runtime/logs/*
 runtime/letsencrypt/*
 runtime/tenants/*

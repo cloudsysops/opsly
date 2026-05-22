@@ -127,6 +127,26 @@
           { "max": 80, "skipBlankLines": true, "skipComments": true }
         ]
       }
+    },
+    {
+      "files": ["apps/web/**/*.ts", "apps/web/**/*.tsx"],
+      "parser": "@typescript-eslint/parser",
+      "parserOptions": {
+        "ecmaVersion": 2022,
+        "sourceType": "module"
+      },
+      "extends": [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/recommended",
+        "plugin:prettier/recommended"
+      ],
+      "rules": {
+        "complexity": ["error", 10],
+        "max-lines-per-function": [
+          "warn",
+          { "max": 50, "skipBlankLines": true, "skipComments": true }
+        ]
+      }
     }
   ]
 }

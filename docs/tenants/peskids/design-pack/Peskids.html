@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<title>Peskids · Sistema de diseño</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,500;1,600;1,700&family=Caveat+Brush&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+<style>
+  html, body { margin: 0; padding: 0; height: 100%; background: #f0eee9; }
+  body { font-family: 'Nunito', system-ui, sans-serif; }
+  #root { height: 100%; }
+  /* Hide native scrollbars on artboard content */
+  ::-webkit-scrollbar { width: 0; height: 0; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<!-- Starter components -->
+<script type="text/babel" src="src/design-canvas.jsx"></script>
+<script type="text/babel" src="src/ios-frame.jsx"></script>
+
+<!-- Peskids parts -->
+<script type="text/babel" src="src/logo.jsx"></script>
+<script type="text/babel" src="src/brand.jsx"></script>
+<script type="text/babel" src="src/app-home.jsx"></script>
+<script type="text/babel" src="src/app-flow.jsx"></script>
+<script type="text/babel" src="src/landing.jsx"></script>
+<script type="text/babel" src="src/admin.jsx"></script>
+<script type="text/babel" src="src/social.jsx"></script>
+<script type="text/babel" src="src/onboarding.jsx"></script>
+<script type="text/babel" src="src/print.jsx"></script>
+
+<script type="text/babel" data-presets="react">
+function App() {
+  return (
+    <DesignCanvas>
+      {/* ─────────── BRAND ─────────── */}
+      <DCSection id="brand" title="Fundamentos" subtitle="Marca, paleta, tipografía y componentes núcleo">
+        <DCArtboard id="foundations" label="Brand board" width={1180} height={1180}>
+          <BrandFoundations />
+        </DCArtboard>
+      </DCSection>
+
+      {/* ─────────── ONBOARDING ─────────── */}
+      <DCSection id="onboarding" title="App móvil · Onboarding" subtitle="Primer ingreso del padre">
+        <DCArtboard id="onb-welcome" label="1 · Bienvenida" width={402} height={874}>
+          <OnbWelcome />
+        </DCArtboard>
+        <DCArtboard id="onb-child" label="2 · Datos del peque" width={402} height={874}>
+          <OnbAddChild />
+        </DCArtboard>
+        <DCArtboard id="onb-checkout" label="3 · Plan + prueba" width={402} height={874}>
+          <OnbCheckout />
+        </DCArtboard>
+      </DCSection>
+
+      {/* ─────────── APP HOMES ─────────── */}
+      <DCSection id="app-homes" title="App móvil · Home" subtitle="3 variaciones para padres · iPhone 15 Pro">
+        <DCArtboard id="app-a" label="A · Acuático sereno" width={402} height={874}>
+          <AppHomeA />
+        </DCArtboard>
+        <DCArtboard id="app-b" label="B · Card-first" width={402} height={874}>
+          <AppHomeB />
+        </DCArtboard>
+        <DCArtboard id="app-c" label="C · Bold playful · dark" width={402} height={874}>
+          <AppHomeC />
+        </DCArtboard>
+      </DCSection>
+
+      {/* ─────────── APP FLOW ─────────── */}
+      <DCSection id="app-flow" title="App móvil · Flujo" subtitle="Pantallas clave del recorrido del padre">
+        <DCArtboard id="schedule" label="Agenda" width={402} height={874}>
+          <AppSchedule />
+        </DCArtboard>
+        <DCArtboard id="booking" label="Reservar clase" width={402} height={874}>
+          <AppBooking />
+        </DCArtboard>
+        <DCArtboard id="progress" label="Progreso de Mateo" width={402} height={874}>
+          <AppProgress />
+        </DCArtboard>
+        <DCArtboard id="payments" label="Pagos" width={402} height={874}>
+          <AppPayments />
+        </DCArtboard>
+        <DCArtboard id="messages" label="Mensajes · profe" width={402} height={874}>
+          <AppMessages />
+        </DCArtboard>
+        <DCArtboard id="tournament" label="Torneo · inscripción" width={402} height={874}>
+          <AppTournament />
+        </DCArtboard>
+      </DCSection>
+
+      {/* ─────────── LANDING ─────────── */}
+      <DCSection id="landing" title="Landing pública" subtitle="2 direcciones para peskids.co">
+        <DCArtboard id="landing-v1" label="V1 · Editorial calmo" width={1280} height={2400}>
+          <LandingV1 />
+        </DCArtboard>
+        <DCArtboard id="landing-v2" label="V2 · Brand bold" width={1280} height={2300}>
+          <LandingV2 />
+        </DCArtboard>
+      </DCSection>
+
+      {/* ─────────── ADMIN ─────────── */}
+      <DCSection id="admin" title="Portal Admin" subtitle="Para profesores y staff de Peskids">
+        <DCArtboard id="admin-dash" label="Dashboard" width={1280} height={820}>
+          <AdminPortal />
+        </DCArtboard>
+      </DCSection>
+
+      {/* ─────────── SOCIAL ─────────── */}
+      <DCSection id="ig" title="Instagram" subtitle="Plantillas de feed + story · @peskidsnatacion">
+        <DCArtboard id="ig-1" label="Post · Anuncio" width={540} height={540}>
+          <IgPost1 />
+        </DCArtboard>
+        <DCArtboard id="ig-2" label="Post · Logro de alumno" width={540} height={540}>
+          <IgPost2 />
+        </DCArtboard>
+        <DCArtboard id="ig-3" label="Post · Educativo carrusel" width={540} height={540}>
+          <IgPost3 />
+        </DCArtboard>
+        <DCArtboard id="ig-story" label="Story · Highlight" width={320} height={568}>
+          <IgStory />
+        </DCArtboard>
+      </DCSection>
+
+      {/* ─────────── PRINT & MERCH ─────────── */}
+      <DCSection id="print" title="Impresos" subtitle="Flyer A5 de inscripciones · doble cara">
+        <DCArtboard id="flyer-front" label="Flyer · frente" width={480} height={670}>
+          <FlyerFront />
+        </DCArtboard>
+        <DCArtboard id="flyer-back" label="Flyer · respaldo" width={480} height={670}>
+          <FlyerBack />
+        </DCArtboard>
+      </DCSection>
+
+      <DCSection id="merch" title="Marca aplicada" subtitle="Gorros, toalla, carnet del alumno">
+        <DCArtboard id="merch" label="Merch sheet" width={1180} height={720}>
+          <MerchSheet />
+        </DCArtboard>
+      </DCSection>
+
+      <DCPostIt top={120} left={60} rotate={-3} width={220}>
+        <strong>Peskids</strong> — sistema completo v1.
+        Logo recreado del IG. Paleta sacada de los 4 colores del pin.
+        Ajustamos cualquier pieza desde aquí.
+      </DCPostIt>
+    </DesignCanvas>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>

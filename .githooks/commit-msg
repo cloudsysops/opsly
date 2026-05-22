@@ -1,6 +1,18 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+if ! command -v npx >/dev/null 2>&1; then
+  for candidate in \
+    /usr/local/opt/node@20/bin \
+    /opt/homebrew/opt/node@20/bin
+  do
+    if [ -d "$candidate" ]; then
+      export PATH="$candidate:$PATH"
+      break
+    fi
+  done
+fi
+
 ROOT="$(git rev-parse --show-toplevel)"
 MSG_FILE="${1:-}"
 
@@ -38,11 +50,6 @@ if [ -n "$MODIFIED_CANONICAL" ]; then
     echo ""
     exit 1
   fi
-fi
-
-if ! command -v npx >/dev/null 2>&1; then
-  echo "commit-msg: npx no disponible, omitiendo commitlint"
-  exit 0
 fi
 
 npx commitlint --edit "$MSG_FILE"

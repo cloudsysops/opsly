@@ -38,7 +38,7 @@ jobs:
       - name: Strict npm audit
         run: |
           echo "Running strict dependency audit..."
-          npm audit --json > audit-report.json || true
+          npm audit --audit-level=moderate --json > audit-report.json || true
 
           # Check for CRITICAL vulnerabilities
           if grep -q '"severity":"critical"' audit-report.json; then

@@ -1,0 +1,53 @@
+http:
+  routers:
+    # Peskids main application router
+    peskids:
+      rule: "Host(`peskids.op-sly.com`)"
+      service: peskids
+      entryPoints:
+        - websecure
+      tls:
+        certResolver: letsencrypt
+        domains:
+          - main: peskids.op-sly.com
+
+    # n8n workflow automation router
+    n8n-peskids:
+      rule: "Host(`n8n-peskids.op-sly.com`)"
+      service: n8n-peskids
+      entryPoints:
+        - websecure
+      tls:
+        certResolver: letsencrypt
+        domains:
+          - main: n8n-peskids.op-sly.com
+
+    # Uptime Kuma monitoring router
+    uptime-peskids:
+      rule: "Host(`uptime-peskids.op-sly.com`)"
+      service: uptime-peskids
+      entryPoints:
+        - websecure
+      tls:
+        certResolver: letsencrypt
+        domains:
+          - main: uptime-peskids.op-sly.com
+
+  services:
+    # Peskids service backend definition
+    peskids:
+      loadBalancer:
+        servers:
+          - url: "http://peskids:3004"
+
+    # n8n service backend definition
+    n8n-peskids:
+      loadBalancer:
+        servers:
+          - url: "http://n8n_peskids:5678"
+
+    # Uptime Kuma service backend definition
+    uptime-peskids:
+      loadBalancer:
+        servers:
+          - url: "http://uptime_peskids:3001"
