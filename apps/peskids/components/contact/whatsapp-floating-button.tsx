@@ -3,6 +3,7 @@
 import { usePathname } from 'next/navigation'
 import { WhatsAppIcon } from '@/components/contact/whatsapp-icon'
 import { buildWhatsAppUrl, PESKIDS_CONTACT } from '@/lib/contact-channels'
+import { peskidsColorTokens } from '@/lib/tokens'
 import { cn } from '@/lib/utils'
 
 /** FAB fijo — canal principal; oculto en /admin. */
@@ -21,12 +22,17 @@ export function WhatsAppFloatingButton(): React.ReactElement | null {
       rel="noopener noreferrer"
       className={cn(
         'fixed bottom-5 right-4 z-[70] flex items-center gap-2.5 rounded-full',
-        'bg-[#25D366] px-4 py-3.5 text-white sm:bottom-6 sm:right-6 sm:px-5 sm:py-4',
-        'shadow-[0_8px_32px_rgba(37,211,102,0.55)] ring-4 ring-[#25D366]/30',
+        'px-4 py-3.5 text-white sm:bottom-6 sm:right-6 sm:px-5 sm:py-4',
         'transition-transform duration-200 hover:scale-[1.03] active:scale-[0.98]',
-        'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#25D366]',
+        'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2',
         'animate-[pulse-soft_2.5s_ease-in-out_infinite]'
       )}
+      style={{
+        backgroundColor: peskidsColorTokens.primary.whatsapp,
+        boxShadow: `0 8px 32px ${peskidsColorTokens.primary.whatsapp}8c`,
+        outlineColor: peskidsColorTokens.primary.whatsapp,
+        ringColor: `${peskidsColorTokens.primary.whatsapp}4d`,
+      }}
       aria-label={`Escribir por WhatsApp: ${PESKIDS_CONTACT.whatsapp.display}`}
       title="WhatsApp Peskids"
     >

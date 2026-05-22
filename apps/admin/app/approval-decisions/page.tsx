@@ -78,7 +78,7 @@ export default function ApprovalDecisionsPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] p-6 text-neutral-100">
+    <div className="min-h-screen bg-[#09090b] p-6 text-neutral-100">
       <div className="mx-auto max-w-5xl">
         <h1 className="mb-2 font-mono text-2xl font-semibold text-ops-green">
           Approval Gate Decisions

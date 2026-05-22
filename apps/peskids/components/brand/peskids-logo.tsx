@@ -1,4 +1,5 @@
 import { cn } from '@/lib/utils'
+import { peskidsColorTokens } from '@/lib/tokens'
 
 interface PeskidsLogoProps {
   size?: number
@@ -14,7 +15,7 @@ export function PeskidsLogo({ size = 96, className }: PeskidsLogoProps): React.R
         width: size,
         height: size,
         background:
-          'conic-gradient(from -45deg, #2DB7B0 0deg 90deg, #FFC20E 90deg 180deg, #0D4C63 180deg 270deg, #FF5A1F 270deg 360deg)',
+          `conic-gradient(from -45deg, ${peskidsColorTokens.primary.teal} 0deg 90deg, ${peskidsColorTokens.secondary.yellow} 90deg 180deg, ${peskidsColorTokens.primary.blue} 180deg 270deg, ${peskidsColorTokens.secondary.orange} 270deg 360deg)`,
       }}
       aria-hidden
     >
@@ -49,7 +50,7 @@ interface PeskidsLockupProps {
 
 export function PeskidsLockup({
   height = 48,
-  color = '#0D4C63',
+  color = peskidsColorTokens.primary.blue,
   tag = 'NATACIÓN · MEDELLÍN',
   className,
 }: PeskidsLockupProps): React.ReactElement {
@@ -92,7 +93,7 @@ interface PeskidsBrushProps {
 export function PeskidsBrush({
   children,
   size = 64,
-  color = '#0D4C63',
+  color = peskidsColorTokens.primary.blue,
   tilt = -2,
   className,
 }: PeskidsBrushProps): React.ReactElement {
@@ -112,7 +113,7 @@ export function PeskidsBrush({
 
 export function PeskidsWave({
   className,
-  color = '#2DB7B0',
+  color = peskidsColorTokens.primary.teal,
   height = 40,
 }: {
   className?: string
@@ -137,7 +138,7 @@ export function PeskidsWave({
 
 export function WiggleLine({
   width = 80,
-  color = '#2DB7B0',
+  color = peskidsColorTokens.primary.teal,
   className,
 }: {
   width?: number
@@ -159,7 +160,7 @@ export function WiggleLine({
 
 export function StarBurst({
   size = 32,
-  color = '#FFC20E',
+  color = peskidsColorTokens.secondary.yellow,
   className,
 }: {
   size?: number
