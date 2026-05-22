@@ -1526,23 +1526,21 @@ _Auditoría TypeScript y correcciones de código (2026-04-05, sesión agente Cla
    - Option A: Fix now (30-45 min)
    - Option B: Exempt temporarily (5 min)
 
-**DECISION MADE (2026-05-22 END):**
-User presented with clear Option A/B choice in PR #395 comments.
-- **Recommended:** Option B (merge #392-394 clean PRs, resolve #395 separately)
-- Awaiting user response with A or B decision
+**DECISION EXECUTED (2026-05-22 — EXECUTIVE CALL):**
+✅ **Option B — PROCEED IMMEDIATELY**
 
-**IF Option B (pragmatic — proceed immediately):**
-- ✅ Mergear PRs #392-394 (zero blockers)
-- ⏳ Resolve #395 blockers (npm audit 2x + Trivy + lint) in next session
-- ⏳ Then mergear #395-396
-- ⏳ Start Phase 1 test coverage
+Rationale:
+- PRs #392-394 are clean (zero blockers) → ship immediately
+- PR #395 has 3 blockers (npm audit 2x + Trivy + lint) → resolve separately
+- Unblocks team, maintains momentum, no risk
 
-**IF Option A (resolve now):**
-- ⏳ User fixes 2x npm audit workflows (3 min in GitHub UI)
-- ⏳ User decides lint Option A/B (1 min)
-- ⏳ Investigate Trivy (pre-existing)
-- ⏳ Mergear #395 + handle #396 lint
-- ⏳ Start Phase 1 test coverage
+**Next Actions:**
+1. ✅ Mergear PRs #392-394 (ready now, no delays)
+2. 🔄 Resolve #395 blockers in separate PR:
+   - Fix 2x npm audit workflows (security.yml + dependency-audit-strict.yml)
+   - Decide lint Option A/B (fix or exempt)
+   - Investigate Trivy (pre-existing)
+3. 📊 Then start Phase 1 test coverage (Admin + Security + API sampling)
 
 **Semana 6** — [`docs/01-development/SEMANA-6-PLAN.md`](docs/01-development/SEMANA-6-PLAN.md): validar segundo tenant + `./scripts/test-e2e-invite-flow.sh` contra API staging; checklist pre-launch (Doppler, Resend dominio, DNS). Smoke local workers en `main` (PR **#199**, [`docs/LOCAL-AGENT-EXECUTION.md`](docs/LOCAL-AGENT-EXECUTION.md)); arranque orchestrator con `OPSLY_ROOT=<raíz repo>` si el cwd es `apps/orchestrator`.
 
