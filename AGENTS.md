@@ -1495,18 +1495,30 @@ _Auditoría TypeScript y correcciones de código (2026-04-05, sesión agente Cla
 
 ## 🔄 Próximo paso inmediato
 
-<!-- Una sola tarea concreta. Actualizar al final de cada sesión -->
+**Status PRs Cleanup (2026-05-22):**
 
-**BLOQUEANTE CRÍTICO:** Desbloquear CI — fix workflow de auditoría npm
-1. **Fix CI workflow** (2 min): Editar manualmente en GitHub `https://github.com/cloudsysops/opsly/blob/main/.github/workflows/dependency-audit-strict.yml`
-   - Línea 39: cambiar `npm audit --json` a `npm audit --audit-level=moderate --json`
-   - Commit directo a `main`: `fix(ci): respect .npmrc audit-level in dependency-audit-strict workflow`
-   - Detalles: `/docs/reports/ci-fix-workflow-audit-2026-05-21.md`
-2. **Verificar**: CI checks en PRs #374, #377 deben pasar tras este fix
-3. **Push branch**: `git push origin feat/local-first-architecture-clean` (bloqueado hasta que el fix llegue a GitHub)
-4. **Create PR**: Base `main`, title `feat(peskids-mvp): complete multi-channel forms with Jelou integration`
+| PR | Status | Blocker | Action |
+|----|--------|---------|--------|
+| #392 | ✅ Ready | None | Merge when CI passes |
+| #393 | ✅ Ready | None | Merge when CI passes |
+| #394 | ✅ Ready | None | Merge when CI passes |
+| #395 | ⏳ Blocked | npm audit workflow | Fix line 96 (need `--audit-level=moderate`) |
+| #396 | ⏳ Blocked | Lint violations | Option A (fix) or Option B (exempt temp) |
 
-**LUEGO (post-merge):** Update AGENTS.md, run `./scripts/peskids-mvp-smoke.sh`, close related tickets.
+**Blocker 1: npm audit in PR #395**
+- Root cause: CI workflow line 96 doesn't respect `.npmrc audit-level=moderate`
+- Affects: `dependency-audit-strict.yml` audit-report job
+- **User action:** Edit line 96 in GitHub UI to add `--audit-level=moderate` flag
+- Once fixed → PR will pass (vulnerabilities pre-approved for MVP)
+
+**Blocker 2: Lint in PR #396**
+- New MAIA worker files trigger lint violations
+- **Option A:** Fix violations now (30-45 min) → cleaner PR
+- **Option B:** Exempt files in lint config (5 min) → remediate Phase 2
+- Decision needed from user
+
+**Immediate (no blockers):** Mergear PRs #392-394
+**Then:** Fix CI + lint decision → merge #395-396
 
 **Semana 6** — [`docs/01-development/SEMANA-6-PLAN.md`](docs/01-development/SEMANA-6-PLAN.md): validar segundo tenant + `./scripts/test-e2e-invite-flow.sh` contra API staging; checklist pre-launch (Doppler, Resend dominio, DNS). Smoke local workers en `main` (PR **#199**, [`docs/LOCAL-AGENT-EXECUTION.md`](docs/LOCAL-AGENT-EXECUTION.md)); arranque orchestrator con `OPSLY_ROOT=<raíz repo>` si el cwd es `apps/orchestrator`.
 
