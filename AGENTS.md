@@ -1505,11 +1505,18 @@ _Auditoría TypeScript y correcciones de código (2026-04-05, sesión agente Cla
 | #395 | ⏳ Blocked | npm audit workflow | Fix line 96 (need `--audit-level=moderate`) |
 | #396 | ⏳ Blocked | Lint violations | Option A (fix) or Option B (exempt temp) |
 
-**Blocker 1: npm audit in PR #395**
+**Blocker 1: npm audit in PR #395** ⚠️ **REQUIRES MANUAL USER FIX**
 - Root cause: CI workflow line 96 doesn't respect `.npmrc audit-level=moderate`
 - Affects: `dependency-audit-strict.yml` audit-report job
-- **User action:** Edit line 96 in GitHub UI to add `--audit-level=moderate` flag
-- Once fixed → PR will pass (vulnerabilities pre-approved for MVP)
+- GitHub OAuth scope blocks automated fixes to `.github/workflows/`
+
+**Manual fix (2 min in GitHub UI):**
+1. Go to: `https://github.com/cloudsysops/opsly/blob/main/.github/workflows/dependency-audit-strict.yml`
+2. Click pencil icon (edit)
+3. Find line 96: `npm audit --json > audit-report.json || true`
+4. Change to: `npm audit --audit-level=moderate --json > audit-report.json || true`
+5. Commit to main: `fix(ci): respect .npmrc audit-level=moderate in audit-report job`
+6. After commit → PR #395 CI checks will rerun and pass ✅
 
 **Blocker 2: Lint in PR #396**
 - New MAIA worker files trigger lint violations
