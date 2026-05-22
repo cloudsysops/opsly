@@ -1,7 +1,7 @@
 import type { NextRequest } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { jsonError, jsonOk } from '../../../../../../../../lib/api-response';
-import { HTTP_STATUS } from '../../../../../../../../lib/constants';
+import { jsonError, jsonOk } from '@/lib/api-response';
+import { HTTP_STATUS } from '@/lib/constants';
 
 interface StudentSubmission {
   submissionId: string;

@@ -6,7 +6,7 @@ last_review: 2026-05-19
 
 # Opsly Operational Blueprint — Security and Trust
 
-Modelo de confianza para PyMEs: **transparencia** sobre “seguridad de cartel”.
+Modelo de confianza para PyMEs: **transparencia** sobre “seguridad de cartel”. La misma plantilla aplica a nuevos clientes y a Peskids como piloto de referencia.
 
 ## Client ownership model
 
@@ -23,6 +23,7 @@ Opsly **no** reclama propiedad de datos del negocio del cliente.
 ## Account ownership
 
 - Invitar al cliente como **owner** en cada herramienta desde el día 1 cuando sea posible.
+- Staff interno, soporte y profesores usan invitación + rol; clientes y familias usan el acceso que mejor reduzca fricción, pero siempre con tenant isolation.
 - Opsly usa acceso **delegado** documentado (rol admin temporal), no cuenta compartida permanente.
 - Al extraer: revocar accesos Opsly en checklist.
 
@@ -94,7 +95,7 @@ No hace falta SIEM enterprise en MVP.
 
 ## Alineación Opsly platform
 
-Para portal/API Zero-Trust en el monorepo Opsly (no confundir con este blueprint PyME):
+Para portal/API Zero-Trust en el monorepo Opsly (no confundir con este blueprint PyME o con la plantilla de cliente):
 
 - `docs/SECURITY_CHECKLIST.md`
 - `resolveTrustedPortalSession` en rutas portal

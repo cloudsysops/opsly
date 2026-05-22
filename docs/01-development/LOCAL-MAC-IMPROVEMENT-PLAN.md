@@ -14,7 +14,19 @@ Desde la raíz del repo:
 ```bash
 ./scripts/local-mac-improve.sh              # chequeos + qué haría --apply-zsh
 ./scripts/local-mac-improve.sh --apply-zsh  # añade bloque idempotente a ~/.zshrc
+./scripts/install-ghostty-config.sh         # perfil Ghostty Opsly (workspace + tema)
 ```
+
+**Ghostty (terminal recomendado en Mac):** tras instalar [Ghostty](https://ghostty.org/download), enlaza `config/ghostty/config` y abre el repo con:
+
+```bash
+scripts/local-ghostty-open.sh
+scripts/local-app-open.sh ghostty "tmux attach -t opsly-agents"
+scripts/local-ghostty-agents.sh
+scripts/local-app-open.sh ghostty-agents
+```
+
+Permisos macOS (Accesibilidad, etc.): `docs/04-infrastructure/MACOS-LOCAL-AI-AUTOMATION.md`.
 
 El bloque define `claude-dop` y `opsly-doppler-run` usando `ops-intcloudsysops` y config `prd` por defecto (sobrescribible con `OPSLY_DOPPLER_PROJECT` / `OPSLY_DOPPLER_CONFIG`).
 

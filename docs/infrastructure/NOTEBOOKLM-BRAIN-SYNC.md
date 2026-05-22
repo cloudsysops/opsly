@@ -155,6 +155,24 @@ All `.md` files in `docs/brain/` including:
 - **Workflows**: Integration patterns, data flows
 - **Research**: Investigation notes, findings, context
 
+### Explicit Pattern Notes
+
+To keep the agent startup pack small but useful, sync the following
+pattern notes as text sources too:
+
+- `docs/obsidian/TAXONOMY.md`
+- `docs/obsidian/research/pattern-constellation.md`
+- `docs/obsidian/research/agent-pattern-matrix.md`
+- `docs/obsidian/research/frontier-pattern-radar.md`
+- `docs/obsidian/research/saas-pattern-radar.md`
+- `docs/obsidian/research/security-pattern-radar.md`
+- `docs/obsidian/research/trading-pattern-radar.md`
+- `docs/obsidian/sources/opsly-agent-pattern-sources.md`
+- `docs/obsidian/sources/frontier-pattern-sources.md`
+- `docs/obsidian/sources/saas-pattern-sources.md`
+- `docs/obsidian/sources/security-pattern-sources.md`
+- `docs/obsidian/sources/trading-pattern-sources.md`
+
 ### Skipped Files
 
 - `.obsidian/` (app configuration)

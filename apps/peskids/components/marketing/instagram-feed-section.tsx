@@ -9,6 +9,7 @@ import { cn } from '@/lib/utils'
 export async function InstagramFeedSection(): Promise<React.ReactElement> {
   const items = await loadInstagramFeedItems()
   const usingLivePosts = items.some((item) => item.thumbnailUrl)
+  const [featuredItem, ...restItems] = items
 
   return (
     <section
@@ -63,13 +64,17 @@ export async function InstagramFeedSection(): Promise<React.ReactElement> {
           </div>
         </div>
 
-        <ul className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-6">
-          {items.map((item) => (
-            <li key={item.id}>
-              <InstagramMediaCard item={item} />
-            </li>
-          ))}
-        </ul>
+        <div className="mt-10 grid gap-4 lg:grid-cols-[1.35fr_0.95fr]">
+          {featuredItem ? (
+            <InstagramMediaCard item={featuredItem} variant="featured" />
+          ) : null}
+
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-2">
+            {restItems.map((item) => (
+              <InstagramMediaCard key={item.id} item={item} />
+            ))}
+          </div>
+        </div>
 
         <p className="mt-8 text-center text-sm text-pk-mutedText">
           <Link

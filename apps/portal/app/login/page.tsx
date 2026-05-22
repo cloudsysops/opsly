@@ -18,11 +18,17 @@ export default function LoginPage(): ReactElement {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [passkeyError, setPasskeyError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [passkeyLoading, setPasskeyLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
+  const [googleError, setGoogleError] = useState<string | null>(null);
 
   const onSubmit = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
     setError(null);
+    setPasskeyError(null);
+    setGoogleError(null);
     setLoading(true);
     try {
       if (isValidPortalDemoLogin(email, password, window.location.hostname)) {
@@ -49,6 +55,54 @@ export default function LoginPage(): ReactElement {
       setError('Error al iniciar sesión');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const onPasskeySignIn = async (): Promise<void> => {
+    setError(null);
+    setPasskeyError(null);
+    setGoogleError(null);
+    setPasskeyLoading(true);
+    try {
+      const supabase = createClient();
+      const { error: passkeyErrorResult } = await supabase.auth.signInWithPasskey();
+      if (passkeyErrorResult) {
+        setPasskeyError(passkeyErrorResult.message);
+        return;
+      }
+      router.push('/dashboard');
+      router.refresh();
+    } catch {
+      setPasskeyError('No se pudo iniciar con passkey');
+    } finally {
+      setPasskeyLoading(false);
+    }
+  };
+
+  const onGoogleSignIn = async (): Promise<void> => {
+    setError(null);
+    setPasskeyError(null);
+    setGoogleError(null);
+    setGoogleLoading(true);
+    try {
+      const supabase = createClient();
+      const redirectTo =
+        typeof window !== 'undefined'
+          ? `${window.location.origin}/auth/callback?next=%2Fdashboard`
+          : '/auth/callback?next=%2Fdashboard';
+      const { error: oauthError } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo,
+        },
+      });
+      if (oauthError) {
+        setGoogleError(oauthError.message);
+      }
+    } catch {
+      setGoogleError('No se pudo iniciar con Google');
+    } finally {
+      setGoogleLoading(false);
     }
   };
 
@@ -84,6 +138,22 @@ export default function LoginPage(): ReactElement {
               className="rounded-sm border border-ops-red/40 bg-ops-red/10 px-3 py-2 text-sm text-ops-red"
             >
               {error}
+            </p>
+          ) : null}
+          {passkeyError ? (
+            <p
+              role="alert"
+              className="rounded-sm border border-ops-red/40 bg-ops-red/10 px-3 py-2 text-sm text-ops-red"
+            >
+              {passkeyError}
+            </p>
+          ) : null}
+          {googleError ? (
+            <p
+              role="alert"
+              className="rounded-sm border border-ops-red/40 bg-ops-red/10 px-3 py-2 text-sm text-ops-red"
+            >
+              {googleError}
             </p>
           ) : null}
           <div>
@@ -132,9 +202,41 @@ export default function LoginPage(): ReactElement {
               'Entrar'
             )}
           </Button>
+          <Button
+            type="button"
+            variant="default"
+            className="w-full"
+            onClick={() => void onPasskeySignIn()}
+            disabled={passkeyLoading}
+          >
+            {passkeyLoading ? (
+              <>
+                <Loader2 className="h-4 w-4 shrink-0 animate-spin" aria-hidden />
+                Verificando huella…
+              </>
+            ) : (
+              'Entrar con huella o passkey'
+            )}
+          </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            className="w-full"
+            onClick={() => void onGoogleSignIn()}
+            disabled={googleLoading}
+          >
+            {googleLoading ? (
+              <>
+                <Loader2 className="h-4 w-4 shrink-0 animate-spin" aria-hidden />
+                Redirigiendo a Google…
+              </>
+            ) : (
+              'Entrar con Google'
+            )}
+          </Button>
         </form>
         <p className="text-center text-xs leading-relaxed text-ops-gray">
-          ¿Primera vez? Revisa tu email de invitación y el enlace de activación.
+          Staff: invitación y contraseña. Familias: Google o invitación según el tenant.
         </p>
       </div>
     </main>

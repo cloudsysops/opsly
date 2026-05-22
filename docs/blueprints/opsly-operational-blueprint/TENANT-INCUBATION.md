@@ -6,7 +6,7 @@ last_review: 2026-05-19
 
 # Opsly Operational Blueprint — Tenant Incubation
 
-Opsly actúa como **incubadora operativa**: el cliente valida procesos dentro del ecosistema Opsly antes de tener su propia plataforma.
+Opsly actúa como **incubadora operativa**: el cliente valida procesos dentro del ecosistema Opsly antes de tener su propia plataforma. Esta etapa es la base reusable para nuevos clientes; ver [CLIENT-INCUBATION-TEMPLATE.md](./CLIENT-INCUBATION-TEMPLATE.md).
 
 ## Qué significa incubar
 
@@ -42,6 +42,7 @@ flowchart LR
 - Docs MVP: problema, dashboard objetivo, política IA.
 - Workflows mínimos (lead + feedback).
 - **Ejemplo:** `docs/tenants/peskids/` (escuela de natación).
+- **Plantilla base:** [CLIENT-INCUBATION-TEMPLATE.md](./CLIENT-INCUBATION-TEMPLATE.md)
 
 ### Active Pilot
 
@@ -94,6 +95,7 @@ flowchart LR
 - [ ] Presupuesto mensual de hosting acordado.
 - [ ] Política IA y aprobaciones firmadas o aceptadas por email.
 - [ ] Runbook “primer día sin Opsly” escrito.
+- [ ] El cliente acepta la plantilla reusable para otros tenants futuros.
 
 Ver [EXTRACTION-PATTERN.md](./EXTRACTION-PATTERN.md).
 

@@ -39,6 +39,8 @@ Antes de modificar codigo, infra, tests, workflows o docs operativas:
    `docs/brain/modules/` cuando exista.
 7. Aplicar guardrails: `docs/03-agents/AGENT-GUARDRAILS.md`.
 8. Aplicar Git workflow: `docs/01-development/GIT-WORKFLOW.md`.
+9. Revisar la taxonomia: `docs/obsidian/TAXONOMY.md` si la tarea implica
+   clasificacion, sintesis o organizacion del vault.
 
 Si falta `config/github-module-graph.json`, el agente debe operar con el repo
 actual y dejar registrado que el grafo de modulos todavia no esta generado.
@@ -54,6 +56,8 @@ Todo agente nuevo debe recibir este paquete minimo antes de ejecutar tareas:
 5. `docs/01-development/GIT-WORKFLOW.md` — ramas, PRs y cierre de trabajo.
 6. `config/knowledge-index.json` — indice documental si existe.
 7. `config/github-module-graph.json` — grafo de modulos si existe.
+8. `docs/obsidian/research/agent-pattern-matrix.md` — mapa de patrones reutilizables para runtime Python, security, training y verticales monetizables.
+9. `docs/obsidian/TAXONOMY.md` — taxonomia canonica de nodos, claims, patrones y promociones.
 
 Prompt minimo recomendado:
 
@@ -63,6 +67,14 @@ Trabaja como agente Opsly usando OpenClaw, Obsidian Brain y Graphyfi.
 No crees memoria paralela. Consulta config/knowledge-index.json y
 config/github-module-graph.json cuando existan. Respeta guardrails y Git workflow.
 ```
+
+Si la tarea toca agentes, seguridad defensiva, training o verticales nuevas,
+abre primero `docs/obsidian/research/agent-pattern-matrix.md` y su fuente
+`docs/obsidian/sources/opsly-agent-pattern-sources.md` para evitar arrancar
+sin el mapa de patrones ya consolidado.
+
+Si la tarea toca organizacion del vault, captura de notas o promotion de
+contenido, abre primero `docs/obsidian/TAXONOMY.md`.
 
 Si el agente no puede leer el filesystem, entregarle los contenidos o URLs raw de
 esos archivos. Si solo puede recibir un unico archivo, entregarle `AGENTS.md` con

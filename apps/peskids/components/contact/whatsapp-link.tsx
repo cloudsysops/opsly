@@ -1,3 +1,5 @@
+'use client'
+
 import Link from 'next/link'
 import { WhatsAppIcon } from '@/components/contact/whatsapp-icon'
 import { buildWhatsAppUrl, PESKIDS_CONTACT } from '@/lib/contact-channels'

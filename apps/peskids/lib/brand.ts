@@ -1,4 +1,4 @@
-import { peskidsColorTokens, peskidsTypographyTokens } from './tokens'
+import { peskidsColorTokens } from './tokens'
 
 /** Paleta y tipografía oficial — design pack Peskids v2 (Napkin) */
 export const BRAND = {
