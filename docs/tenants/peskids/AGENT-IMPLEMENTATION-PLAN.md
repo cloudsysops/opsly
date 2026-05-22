@@ -1294,10 +1294,10 @@ openssl req -x509 -newkey rsa:4096 \
   -days 365 -nodes -subj "/CN=${CLIENT_DOMAIN}"
 
 # 4. Start services
-docker-compose -f infra/docker-compose.yml up -d
+docker compose -f infra/docker-compose.yml up -d
 
 # 5. Run migrations
-docker-compose -f infra/docker-compose.yml exec -T supabase-db \
+docker compose -f infra/docker-compose.yml exec -T supabase-db \
   psql -U postgres -d peskids -f /migrations/001_peskids_base.sql
 
 # 6. Health check
