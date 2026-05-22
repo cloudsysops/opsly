@@ -84,7 +84,6 @@ export function extractFeedbackFromJelou(webhook: JelouWebhookPayload) {
 
   return {
     student_name: fields.student_name || fields.child_name || '',
-<<<<<<< HEAD
     satisfaction: parseInt(String(fields.satisfaction || fields.rating || '3'), 10),
     suggestion: fields.suggestion || fields.feedback || fields.notes || '',
     follow_up_wanted: fields.follow_up === 'yes' || fields.follow_up === true,
