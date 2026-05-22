@@ -1475,6 +1475,24 @@ _Auditoría TypeScript y correcciones de código (2026-04-05, sesión agente Cla
 
 ---
 
+## 🧠 Brain Automation — SessionStart Auto-Sync (2026-05-22)
+
+**IMPLEMENTADO:** Obsidian brain knowledge-index ahora se sincroniza automáticamente en cada SessionStart.
+
+**Qué cambió:**
+- `.claude/hooks/opsly-session-start-skills.sh` ahora ejecuta `npm run obsidian:sync` antes de skills-finder
+- Regenera `config/knowledge-index.json` y `docs/.obsidian/file-index.json` en cada sesión nueva
+- MCP context resources `opsly-knowledge-index` siempre tiene datos frescos
+
+**Resultado:**
+- 🧠 Brain actualizado: 560 archivos markdown indexados
+- 📊 Knowledge graph regenerado: 6.5MB knowledge-index.json
+- ⚡ Token optimization: Agentes pueden usar `brain:research` con información actual sin delay
+
+**No hay acción requerida:** El hook se ejecuta automáticamente en cada SessionStart.
+
+---
+
 ## 🔄 Próximo paso inmediato
 
 <!-- Una sola tarea concreta. Actualizar al final de cada sesión -->
