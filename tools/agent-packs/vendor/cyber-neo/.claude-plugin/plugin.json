@@ -1,0 +1,21 @@
+{
+  "name": "cyber-neo",
+  "description": "Open-source cybersecurity analysis agent. Scans any local project for vulnerabilities: code security (SAST), dependency CVEs (SCA), secret leaks, authentication/authorization flaws, cryptographic weaknesses, misconfigurations, supply chain risks, and CI/CD security. Covers all OWASP 2025 Top 10 and CWE Top 25 categories. Generates prioritized reports with remediation guidance. Invoke with /cyber-neo [path].",
+  "version": "0.1.0",
+  "author": {
+    "name": "mhenry"
+  },
+  "license": "MIT",
+  "keywords": [
+    "security",
+    "cybersecurity",
+    "SAST",
+    "SCA",
+    "vulnerability",
+    "OWASP",
+    "CWE",
+    "audit",
+    "secrets",
+    "supply-chain"
+  ]
+}

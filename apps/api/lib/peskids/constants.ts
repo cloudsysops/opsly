@@ -1,0 +1,26 @@
+/** Peskids incubation tenant slug (MVP). */
+export const PESKIDS_TENANT_SLUG = 'peskids' as const;
+
+export const PESKIDS_GRADE_VALUES = ['K-5', '6-8', '9-12', 'Other'] as const;
+
+export const PESKIDS_REFERRAL_SOURCES = [
+  'Google',
+  'Friend',
+  'Facebook',
+  'Instagram',
+  'Other',
+  'Not sure',
+] as const;
+
+export const PESKIDS_LEAD_STATUSES = [
+  'new',
+  'contacted',
+  'qualified',
+  'lost',
+  'converted',
+] as const;
+
+export const PESKIDS_FEEDBACK_STATUSES = ['new', 'reviewed', 'action_required', 'closed'] as const;
+
+/** Ratings at or below this value set feedback status to action_required. */
+export const PESKIDS_LOW_SATISFACTION_THRESHOLD = 3;

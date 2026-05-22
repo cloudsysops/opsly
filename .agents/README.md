@@ -39,7 +39,9 @@ Do not create a parallel memory. Respect guardrails and Git workflow.
 ```
 
 If a new agent becomes recurrent, add it to the list below and document its
-entrypoint, permissions and allowed paths.
+entrypoint, permissions and allowed paths. Pinned source copies for imported
+packs live under `tools/agent-packs/vendor/` and should be referenced from the
+runbooks, not duplicated in other roots.
 
 ## Agent Families
 

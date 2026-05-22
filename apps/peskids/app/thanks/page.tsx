@@ -1,36 +1,44 @@
 import Link from 'next/link'
+import { CheckCircle2 } from 'lucide-react'
+import { PeskidsLockup } from '@/components/brand/peskids-logo'
+import { SiteFooter } from '@/components/layout/site-footer'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
-export default function ThanksPage() {
+export default function ThanksPage(): React.ReactElement {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-green-50 to-white flex items-center justify-center">
-      <div className="max-w-md w-full text-center px-4">
-        <div className="mb-6 flex justify-center">
-          <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
-            <span className="text-3xl">✓</span>
-          </div>
-        </div>
+    <div className="flex min-h-screen flex-col bg-pk-bg">
+      <header className="border-b border-pk-border bg-pk-surface/90 px-6 py-4">
+        <PeskidsLockup height={36} />
+      </header>
 
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">
-          Thank You!
-        </h1>
-
-        <p className="text-gray-600 mb-8">
-          Your information has been received. We&apos;ll review your request and get back to you soon.
-        </p>
-
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-8">
-          <p className="text-sm text-blue-700">
-            <strong>What&apos;s next?</strong> Our team will review your information and contact you at the email or phone number you provided.
-          </p>
-        </div>
-
-        <Link
-          href="/"
-          className="btn-primary inline-block"
-        >
-          Back to Home
-        </Link>
-      </div>
+      <main className="flex flex-1 items-center justify-center px-4 py-16">
+        <Card className="w-full max-w-md text-center shadow-card-hover" accent="green">
+          <CardHeader className="items-center border-0 pb-0 pt-8">
+            <span className="mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-teal-50 text-pk-primary">
+              <CheckCircle2 className="h-9 w-9" aria-hidden />
+            </span>
+            <CardTitle className="text-2xl">¡Listo, recibimos tu solicitud!</CardTitle>
+            <CardDescription className="text-base">
+              Te contactaremos pronto para agendar la clase de prueba gratis.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6 pb-8">
+            <div className="rounded-xl border border-pk-border bg-pk-bg px-4 py-3 text-left text-sm text-pk-sub">
+              <p className="font-semibold text-pk-ink">¿Qué sigue?</p>
+              <p className="mt-1">
+                Revisa tu correo y WhatsApp. Nuestro equipo de Llanogrande confirma cupo y horario.
+              </p>
+            </div>
+            <Link href="/">
+              <Button variant="primary" fullWidth>
+                Volver al inicio
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
+      </main>
+      <SiteFooter />
     </div>
   )
 }

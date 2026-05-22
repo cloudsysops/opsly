@@ -15,6 +15,7 @@ tenant_slug: peskids
 - [ ] `curl` health n8n responde (ver abajo)
 - [ ] `curl` uptime responde
 - [ ] Contenedores `n8n_peskids` y uptime en `docker ps` (VPS)
+- [x] API MVP Peskids (smoke 2026-05-21): `API_BASE=https://api.op-sly.com ./scripts/peskids-mvp-smoke.sh` — detalle [DEPLOYMENT-2026-05-21.md](./DEPLOYMENT-2026-05-21.md)
 - [ ] Owner confirma recepción de alerta de prueba (manual)
 - [ ] Docs incubación [INCUBATION-CHECKLIST.md](./INCUBATION-CHECKLIST.md) al día
 

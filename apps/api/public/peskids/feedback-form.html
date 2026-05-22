@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Peskids — feedback padres</title>
+    <style>
+      body { font-family: system-ui, sans-serif; max-width: 32rem; margin: 2rem auto; padding: 0 1rem; }
+      label { display: block; margin-top: 1rem; font-weight: 600; }
+      input, select, textarea, button { width: 100%; margin-top: 0.25rem; padding: 0.5rem; box-sizing: border-box; }
+      button { margin-top: 1.5rem; background: #0ea5e9; color: #fff; border: none; cursor: pointer; }
+      .msg { margin-top: 1rem; padding: 0.75rem; border-radius: 4px; }
+      .ok { background: #dcfce7; }
+      .err { background: #fee2e2; }
+    </style>
+  </head>
+  <body>
+    <h1>Feedback Peskids</h1>
+    <p>Tu opinión nos ayuda a mejorar el programa.</p>
+    <form id="feedback-form">
+      <label>Nombre del niño/a <input name="child_name" required minlength="2" maxlength="50" /></label>
+      <label>Satisfacción (1–5)
+        <select name="satisfaction" required>
+          <option value="">Selecciona…</option>
+          <option value="1">1 — Muy insatisfecho</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5 — Muy satisfecho</option>
+        </select>
+      </label>
+      <label>Sugerencia (opcional) <textarea name="suggestion" maxlength="500" rows="4"></textarea></label>
+      <label><input type="checkbox" name="contact_me_back" value="true" /> Quiero que me contacten</label>
+      <button type="submit">Enviar feedback</button>
+    </form>
+    <div id="status" role="status" aria-live="polite"></div>
+    <script>
+      const apiBase = window.location.origin;
+      const form = document.getElementById('feedback-form');
+      const status = document.getElementById('status');
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        status.className = 'msg';
+        status.textContent = 'Enviando…';
+        const fd = new FormData(form);
+        const body = {
+          child_name: fd.get('child_name'),
+          satisfaction: Number(fd.get('satisfaction')),
+          suggestion: fd.get('suggestion') || undefined,
+          contact_me_back: fd.get('contact_me_back') === 'true',
+        };
+        if (!body.suggestion) delete body.suggestion;
+        try {
+          const res = await fetch(apiBase + '/api/public/tenants/peskids/feedback', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body),
+          });
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.error || 'Error');
+          status.className = 'msg ok';
+          status.textContent = '¡Gracias por tu feedback!';
+          form.reset();
+        } catch (err) {
+          status.className = 'msg err';
+          status.textContent = err.message || 'Algo salió mal. Intenta de nuevo.';
+        }
+      });
+    </script>
+  </body>
+</html>
