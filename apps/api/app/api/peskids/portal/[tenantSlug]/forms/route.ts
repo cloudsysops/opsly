@@ -12,6 +12,13 @@ interface FormMetadata {
   status: 'active' | 'archived';
 }
 
+interface InputFormField {
+  type: string;
+  label: string;
+  required?: boolean;
+  options?: { value: string; label: string }[];
+}
+
 function requireEnv(name: string): string {
   const value = process.env[name];
   if (!value) {
@@ -140,7 +147,7 @@ export async function POST(
 
     // Insert form fields if provided
     if (fields && Array.isArray(fields) && fields.length > 0) {
-      const fieldsData = fields.map((field: any, index: number) => ({
+      const fieldsData = fields.map((field: InputFormField, index: number) => ({
         form_id: formId,
         tenant_slug: tenantSlug,
         field_id: crypto.randomUUID(),

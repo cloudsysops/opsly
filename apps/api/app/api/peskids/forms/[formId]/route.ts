@@ -11,6 +11,15 @@ interface FormField {
   options?: { value: string; label: string }[];
 }
 
+interface DBFormField {
+  field_id: string;
+  field_type: string;
+  label: string;
+  required: boolean;
+  options?: { value: string; label: string }[];
+  order: number;
+}
+
 interface Form {
   id: string;
   title: string;
@@ -80,7 +89,7 @@ export async function GET(
       id: form.id,
       title: form.title,
       description: form.description || '',
-      fields: (fields || []).map((field: any) => ({
+      fields: (fields || []).map((field: DBFormField) => ({
         id: field.field_id,
         type: field.field_type,
         label: field.label,

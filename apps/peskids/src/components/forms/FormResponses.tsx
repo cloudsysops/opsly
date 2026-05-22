@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, Button } fro
 interface FormResponse {
   submissionId: string;
   completedAt: string;
-  data: Record<string, any>;
+  data: Record<string, string | number | boolean | null>;
 }
 
 interface FormResponsesProps {

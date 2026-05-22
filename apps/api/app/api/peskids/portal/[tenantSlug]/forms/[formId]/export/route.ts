@@ -2,6 +2,15 @@ import type { NextRequest } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { HTTP_STATUS } from '../../../../../../../../lib/constants';
 
+interface FormSubmission {
+  submission_id: string;
+  submission_data: Record<string, string | number | boolean | null>;
+  completed_at: string;
+  status: string;
+  score: number | null;
+  feedback: string | null;
+}
+
 function requireEnv(name: string): string {
   const value = process.env[name];
   if (!value) {
@@ -18,7 +27,7 @@ function getSupabaseClient() {
   });
 }
 
-function convertToCSV(submissions: any[]): string {
+function convertToCSV(submissions: FormSubmission[]): string {
   if (!submissions || submissions.length === 0) {
     return 'submission_id,completed_at,status,score,feedback\n';
   }
