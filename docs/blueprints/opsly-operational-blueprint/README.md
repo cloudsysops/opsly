@@ -6,7 +6,7 @@ last_review: 2026-05-19
 
 # Opsly Operational Blueprint
 
-Blueprint operativo reutilizable para **pequeños negocios** y **incubación de clientes** en Opsly. No es un producto terminado ni un clon de blueprints enterprise de Google Cloud.
+Blueprint operativo reutilizable para **pequeños negocios**, **incubación de clientes** y **futuras plataformas independientes** en Opsly. No es un producto terminado ni un clon de blueprints enterprise de Google Cloud.
 
 ## Qué es
 
@@ -60,7 +60,7 @@ flowchart LR
 3. **Extraer** — copiar módulos/docs seguros; Supabase y dominio propios
 4. **Conectar** — eventos opcionales hacia Opsly (metering, soporte)
 
-Ejemplo reciente: [Peskids](../../tenants/peskids/README.md) — piloto incubado, no el único caso de uso.
+Peskids es el **piloto de referencia** que valida este blueprint. Las futuras plataformas no deben inventar un modelo nuevo: deben partir de la [CLIENT-INCUBATION-TEMPLATE.md](./CLIENT-INCUBATION-TEMPLATE.md) y solo cambiar lo específico del cliente.
 
 ## Mapa del blueprint
 
@@ -92,4 +92,4 @@ Ejemplo reciente: [Peskids](../../tenants/peskids/README.md) — piloto incubado
 
 ## Estado
 
-**v0.1 — borrador inicial.** Revisar con producto y operaciones antes de tratarlo como canon.
+**v0.1 — borrador vivo.** Revisar con producto y operaciones antes de tratarlo como canon. Las lecciones de Peskids alimentan la siguiente revisión.

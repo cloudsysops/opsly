@@ -240,3 +240,19 @@ Peskids uses only:
 | Provider replaceable | [ARCHITECTURE.md](./ARCHITECTURE.md) | active |
 | Dashboards before autonomy | [DASHBOARD-SPEC.md](./DASHBOARD-SPEC.md) | planned |
 | Document before automating | [INCUBATION-CHECKLIST.md](./INCUBATION-CHECKLIST.md) | active |
+
+## Reusable platform baseline
+
+Lo que Peskids deja listo para futuras plataformas no es solo una UI; es una combinación de contrato operativo, seguridad y salida ordenada.
+
+| Reusable asset | What future platforms inherit |
+| --- | --- |
+| Tenant isolation | `tenant_id`, RLS, dashboards scoped by session |
+| Approval-first operations | Draft → approve → send, never auto-send by default |
+| Staff access model | Invite-only for admin / support / teachers |
+| Client access model | Login simple for families / customers, tenant-scoped |
+| Forms and submissions | Form builder, submission dashboards, analytics cards |
+| Extraction path | Dedicated VPS, migration checklist, rollback, handoff |
+| Trust model | Zero-trust backend, no secret sharing, audit logs |
+
+Future platforms should reuse this baseline and only replace tenant-specific content, integrations, domains, and branding.

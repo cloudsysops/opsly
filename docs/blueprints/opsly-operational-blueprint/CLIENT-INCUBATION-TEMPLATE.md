@@ -6,7 +6,7 @@ last_review: 2026-05-22
 
 # Opsly Operational Blueprint - Client Incubation Template
 
-Reusable template for onboarding a new client into Opsly, validating the MVP inside the Opsly control plane, and extracting to a dedicated client-owned platform when the business case is proven.
+Reusable template for onboarding a new client into Opsly, validating the MVP inside the Opsly control plane, and extracting to a dedicated client-owned platform when the business case is proven. This is the canonical starting point for future client platforms; Peskids is the reference pilot that validates it.
 
 ## Intended Use
 
