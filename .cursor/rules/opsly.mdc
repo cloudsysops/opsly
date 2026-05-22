@@ -45,7 +45,7 @@ consultar primero el Brain compartido y luego el codigo.
 
 ## Docs / Obsidian Brain — obligatorio
 
-- **Raíz del repo:** solo Markdown canónico: `AGENTS.md`, `README.md`, `ROADMAP.md`, `VISION.md`. No añadir otros `.md` en raíz (`ARCHITECTURE.md`, `HANDOFF.md`, etc.).
+- **Raíz del repo:** Markdown canónico: `AGENTS.md`, `README.md`, `ROADMAP.md`, `VISION.md`, más `SECURITY.md` / `CONTRIBUTING.md` / `CODE_OF_CONDUCT.md` (GitHub). No añadir otros `.md` en raíz (`ARCHITECTURE.md`, `HANDOFF.md`, etc.).
 - **Raíz de `docs/`:** exactamente **tres** hubs: `docs/README.md`, `docs/index.md`, `docs/STRUCTURE-GUARDRAILS.md`. Nada más en ese nivel (ni `.md` ni `.yaml`). Lista cerrada en `config/docs-root-allowlist.json`.
 - **Stubs de compatibilidad** (redirecciones cortas): `docs/stubs/` — ver `docs/stubs/README.md`. OpenAPI subset CI: `docs/00-architecture/openapi-opsly-api.yaml`.
 - Documentación nueva en la **carpeta dueña** (`docs/01-development/`, `docs/runbooks/`, `docs/adr/`, `docs/tenants/`, …). `npm run validate-structure`, pre-commit y `scripts/hooks/structure-guard.sh` fallan si se coloca un archivo no allowlisted en `docs/`.

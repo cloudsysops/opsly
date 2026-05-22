@@ -24,6 +24,16 @@ Objetivo: **una línea base (`main`) estable**, cambios integrados por **PR**, y
 
 Si varios agentes tocan el mismo tema, **una rama coordinada** o PRs encadenados (merge del primero y rebase del segundo sobre `main`), no muchas ramas divergentes sin merge.
 
+## Markdown en la raíz del repo (evitar CI rojo en PRs)
+
+`npm run validate-structure` solo permite estos `.md` en la raíz:
+
+`AGENTS.md`, `README.md`, `ROADMAP.md`, `VISION.md`, `SECURITY.md`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`.
+
+Cualquier otro documento (`ARCHITECTURE.md`, planes de sprint, informes) va bajo `docs/<carpeta-dueña>/` o `docs/stubs/` si es redirección. Los PRs creados desde la UI de GitHub (`cboteros-patch-*`) suelen añadir `SECURITY.md` u otros `.md` en raíz: o usan la lista anterior, o el job **Validate agent context** falla.
+
+Lista técnica: `config/root-whitelist.json` + `docs/STRUCTURE-GUARDRAILS.md`.
+
 ## Cómo terminar ramas pendientes (checklist)
 
 | Situación | Acción |
