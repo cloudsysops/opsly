@@ -190,6 +190,10 @@ async function processContact(
  */
 export async function runAILeadFollowupWorkflow(config: AIFollowupConfig): Promise<AIFollowupResult> {
   const ghlService = getGoHighLevelService();
+  const safeLogger = {
+    info: logger?.info?.bind(logger) ?? (() => {}),
+    error: logger?.error?.bind(logger) ?? (() => {}),
+  };
   const results: AIFollowupResult = {
     success: true,
     contactsProcessed: 0,
@@ -209,7 +213,7 @@ export async function runAILeadFollowupWorkflow(config: AIFollowupConfig): Promi
     });
 
     if (!contacts || contacts.length === 0) {
-      logger.info('No contacts found for AI follow-up', {
+      safeLogger.info('No contacts found for AI follow-up', {
         tenantId: config.tenantId,
         filters,
       });
@@ -241,7 +245,7 @@ export async function runAILeadFollowupWorkflow(config: AIFollowupConfig): Promi
     }
 
     // Log workflow completion
-    logger.info('AI lead follow-up workflow completed', {
+    safeLogger.info('AI lead follow-up workflow completed', {
       tenantId: config.tenantId,
       contactsProcessed: results.contactsProcessed,
       messagesSent: results.messagesSent,
@@ -254,7 +258,7 @@ export async function runAILeadFollowupWorkflow(config: AIFollowupConfig): Promi
     results.success = false;
     results.errors.push(`Workflow error: ${errorMsg}`);
 
-    logger.error('AI lead follow-up workflow failed', {
+    safeLogger.error('AI lead follow-up workflow failed', {
       tenantId: config.tenantId,
       error: errorMsg,
     });
