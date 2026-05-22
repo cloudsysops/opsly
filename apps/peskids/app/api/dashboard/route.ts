@@ -1,30 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { validateAdminRequest } from '@/lib/admin-auth'
 import { supabaseServer, getRecentMessages } from '@/lib/supabase'
 import type { Database, DashboardData } from '@/lib/types'
 
-function validateAdminAuth(req: NextRequest): { valid: boolean; error?: string } {
-  const authHeader = req.headers.get('authorization')
-  const adminSecret = process.env.DASHBOARD_ADMIN_SECRET
-
-  if (!adminSecret) {
-    return { valid: false, error: 'Admin authentication not configured' }
-  }
-
-  if (!authHeader) {
-    return { valid: false, error: 'Missing authorization header' }
-  }
-
-  const token = authHeader.replace('Bearer ', '')
-  if (token !== adminSecret) {
-    return { valid: false, error: 'Invalid admin token' }
-  }
-
-  return { valid: true }
-}
-
 export async function GET(req: NextRequest) {
   try {
-    const auth = validateAdminAuth(req)
+    const auth = validateAdminRequest(req)
     if (!auth.valid) {
       return NextResponse.json({ error: auth.error }, { status: 401 })
     }
