@@ -3,7 +3,10 @@ import { createClient } from '@supabase/supabase-js';
 import { jsonError, jsonOk } from '../../../../../../../lib/api-response';
 import { HTTP_STATUS } from '../../../../../../../lib/constants';
 import { triggerWebhooks } from '../../../../../../../lib/peskids-webhook-trigger';
-import type { WebhookConfig } from '../../../../../../../lib/peskids-types';
+import type {
+  WebhookConfig,
+  WebhookTriggerResult,
+} from '../../../../../../../lib/peskids-types';
 
 function requireEnv(name: string): string {
   const value = process.env[name];
@@ -83,7 +86,7 @@ export async function POST(
     }
 
     // Trigger webhooks for this form
-    let webhookResults: { success: number; failed: number; errors: string[] } | null = null;
+    let webhookResults: WebhookTriggerResult | null = null;
     try {
       const { data: webhooks } = await supabase
         .from('peskids.webhook_configs')
