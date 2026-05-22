@@ -1,0 +1,98 @@
+import type { NextRequest } from 'next/server';
+import { createClient } from '@supabase/supabase-js';
+import { jsonError, jsonOk } from '../../../../../../../lib/api-response';
+import { HTTP_STATUS } from '../../../../../../../lib/constants';
+
+interface FormMetadata {
+  formId: string;
+  formTitle: string;
+  description?: string;
+  submissionCount: number;
+  lastSubmissionAt?: string;
+  status: 'active' | 'archived';
+}
+
+function requireEnv(name: string): string {
+  const value = process.env[name];
+  if (!value) {
+    throw new Error(`Missing environment variable: ${name}`);
+  }
+  return value;
+}
+
+function getSupabaseClient() {
+  const url = requireEnv('NEXT_PUBLIC_SUPABASE_URL');
+  const serviceKey = requireEnv('SUPABASE_SERVICE_ROLE_KEY');
+  return createClient(url, serviceKey, {
+    auth: { autoRefreshToken: false, persistSession: false },
+  });
+}
+
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { tenantSlug: string } }
+): Promise<Response> {
+  try {
+    const tenantSlug = params.tenantSlug;
+
+    if (!tenantSlug) {
+      return jsonError('Missing tenant slug', HTTP_STATUS.BAD_REQUEST);
+    }
+
+    const supabase = getSupabaseClient();
+
+    // Fetch forms for this tenant
+    const { data: forms, error: formsError } = await supabase
+      .from('peskids.forms')
+      .select('id, form_id, title, description, status')
+      .eq('tenant_slug', tenantSlug)
+      .order('created_at', { ascending: false });
+
+    if (formsError) {
+      console.error('Failed to fetch forms:', formsError);
+      return jsonError('Failed to fetch forms', HTTP_STATUS.INTERNAL_ERROR);
+    }
+
+    // Count submissions for each form
+    const formIds = forms?.map((f) => f.id) || [];
+    const submissionCounts = new Map<string, number>();
+    const lastSubmissions = new Map<string, string>();
+
+    if (formIds.length > 0) {
+      const { data: submissions, error: submissionsError } = await supabase
+        .from('peskids.form_submissions')
+        .select('form_id, completed_at')
+        .eq('tenant_slug', tenantSlug)
+        .in('form_id', formIds);
+
+      if (!submissionsError && submissions) {
+        submissions.forEach((sub) => {
+          const count = submissionCounts.get(sub.form_id) || 0;
+          submissionCounts.set(sub.form_id, count + 1);
+
+          const lastSubmission = lastSubmissions.get(sub.form_id);
+          if (!lastSubmission || (sub.completed_at && sub.completed_at > lastSubmission)) {
+            lastSubmissions.set(sub.form_id, sub.completed_at || '');
+          }
+        });
+      }
+    }
+
+    // Map to FormMetadata
+    const formMetadata: FormMetadata[] = (forms || []).map((form) => ({
+      formId: form.form_id,
+      formTitle: form.title,
+      description: form.description,
+      submissionCount: submissionCounts.get(form.id) || 0,
+      lastSubmissionAt: lastSubmissions.get(form.id),
+      status: form.status,
+    }));
+
+    return jsonOk({
+      forms: formMetadata,
+    });
+  } catch (error) {
+    console.error('Forms endpoint error:', error);
+    return jsonError('Internal server error', HTTP_STATUS.INTERNAL_ERROR);
+  }
+}
