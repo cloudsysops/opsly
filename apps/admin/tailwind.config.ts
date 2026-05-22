@@ -1,5 +1,6 @@
 import type { Config } from 'tailwindcss';
 import tailwindcssAnimate from 'tailwindcss-animate';
+import { colorTokens } from '@intcloudsysops/components';
 
 const config: Config = {
   darkMode: ['class'],
@@ -8,14 +9,14 @@ const config: Config = {
     extend: {
       colors: {
         ops: {
-          bg: '#0A0E27',
-          surface: '#101734',
-          border: '#223064',
-          green: '#22c55e',
-          yellow: '#eab308',
-          red: '#ef4444',
-          gray: '#94a3b8',
-          blue: '#3388ff',
+          bg: colorTokens.background,
+          surface: colorTokens.surface,
+          border: colorTokens.border,
+          green: colorTokens.success,
+          yellow: colorTokens.warning,
+          red: colorTokens.danger,
+          gray: colorTokens.text.secondary,
+          blue: colorTokens.secondary,
           cyan: '#00FFFF',
           magenta: '#FF00FF',
           purple: '#9D00FF',

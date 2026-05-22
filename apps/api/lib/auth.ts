@@ -6,9 +6,22 @@ export function isPublicDemoRead(): boolean {
   return process.env.ADMIN_PUBLIC_DEMO_READ === 'true';
 }
 
+export function extractBearerToken(authHeader: string | null): string {
+  if (!authHeader) {
+    return '';
+  }
+
+  const [scheme, token] = authHeader.split(' ');
+  if (scheme.toLowerCase() === 'bearer' && token) {
+    return token.trim();
+  }
+
+  return '';
+}
+
 function readAdminTokenFromRequest(request: Request): string {
   const auth = request.headers.get('authorization');
-  const bearer = auth?.startsWith('Bearer ') === true ? auth.slice('Bearer '.length).trim() : '';
+  const bearer = extractBearerToken(auth);
   const headerToken = request.headers.get('x-admin-token')?.trim() ?? '';
   return bearer.length > 0 ? bearer : headerToken;
 }
