@@ -615,22 +615,19 @@ Week 4: Docs + runbook + MVP validation
 
 <!-- Actualizar al final de cada sesión -->
 
-**Sesión 2026-05-21 — Peskids MVP + CI Fix Documentado + Repo Sync ✅**
-- ✅ Peskids app (Next.js) — multi-channel forms platform con Jelou webhook integration
-- ✅ API routes — `/api/public/tenants/peskids/{feedback,leads}`, `/api/portal/tenant/[slug]/peskids/summary`
-- ✅ Supabase migration — `0053_peskids_mvp.sql` (schemas, RLS, triggers)
-- ✅ Docker/Traefik — `.dockerignore`, `Dockerfile`, `infra/traefik/dynamic/peskids.yml`
-- ✅ Tests — `/apps/api/lib/__tests__/peskids-schemas.test.ts` + smoke script
-- ✅ Documentation — `/apps/peskids/CLAUDE.md`, `/apps/peskids/DEPLOYMENT.md`
-- ✅ Main synced — 18 new commits from origin/main merged locally
-- ✅ Session reports created — `/docs/reports/ci-fix-workflow-audit-2026-05-21.md`, `/docs/reports/session-summary-2026-05-21.md`
-- ✅ Commit: `63f6019d fix(peskids): align port configuration and API routes for local-first dev setup`
-- 🔴 **CI BLOCKER (environment limitation, NOT code issue)**:
-  - Problem: `.github/workflows/dependency-audit-strict.yml` missing `--audit-level=moderate` flag
-  - Root cause: Workflow ignores `.npmrc audit-level=moderate` setting (MVP decision documented)
-  - Status: Fix committed locally (89b6e359) but blocked by test environment OAuth proxy
-  - Solution: Manual GitHub Web UI edit required (2 minutes) — see `/docs/reports/ci-fix-workflow-audit-2026-05-21.md`
-  - Impact: Will unblock all open PRs (#374, #377, etc) once deployed to production GitHub
+**Sesión 2026-05-22 — Peskids Production Live ✅**
+- ✅ Peskids production LIVE (2026-05-22 verified):
+  - `https://peskids.op-sly.com` → **HTTP 200** (landing page)
+  - `https://n8n-peskids.op-sly.com` → **HTTP 200** (n8n CRM, 4 workflows)
+  - `https://uptime-peskids.op-sly.com` → **HTTP 302 → /dashboard** (Uptime Kuma)
+  - `https://peskids.op-sly.com/admin` → **HTTP 307 → /admin/login** (auth gate)
+  - `POST /api/public/tenants/peskids/feedback` → **200** + `feedback_id`
+  - `POST /api/public/tenants/peskids/leads` → **200** + `lead_id`
+- ✅ VPS containers all healthy: `peskids` (1h), `n8n_peskids` (2h), `uptime_peskids` (5d)
+- ✅ Supabase migration `0053_peskids_mvp.sql` applied (leads + feedback tables + RLS)
+- ✅ PR #380 `Feat/peskids sprint 01` merged to main; Dependency Audit CI passing ✅
+- ✅ CI BLOCKER resolved: `--audit-level=moderate` flag in `dependency-audit-strict.yml` (line 39)
+- ⚠️ CI currently failing on unrelated `feat(gohighlevel)` PR (not a Peskids issue)
 
 **Producción multi-tenant (pack):** hub [`docs/tenants/README.md`](docs/tenants/README.md); baseline e inventario [`docs/tenants/production/TENANT-PRODUCTION-BASELINE.md`](docs/tenants/production/TENANT-PRODUCTION-BASELINE.md); checklist [`docs/tenants/runbooks/TENANT-PRODUCTION-CHECKLIST.md`](docs/tenants/runbooks/TENANT-PRODUCTION-CHECKLIST.md); hardening [`docs/tenants/production/TENANT-PRODUCTION-HARDENING.md`](docs/tenants/production/TENANT-PRODUCTION-HARDENING.md); rollout [`docs/tenants/runbooks/TENANT-PRODUCTION-ROLLOUT.md`](docs/tenants/runbooks/TENANT-PRODUCTION-ROLLOUT.md); API vs `apps/web`: [`docs/01-development/API-CORE-PORTFOLIO.md`](docs/01-development/API-CORE-PORTFOLIO.md); proxy: `INTERNAL_API_URL` / `NEXT_PUBLIC_API_URL`.
 
@@ -2031,47 +2028,10 @@ Est. 1-2h
 
 ---
 
-## 🔄 Estado Actual (2026-05-21 Session Resume)
+## 🔄 Estado Actual (2026-05-22 Session)
 
-**Agente:** Claude (context-resumed session)  
-**Actividad:** Unblock CI + cleanup obsolete branches  
-**Status:** In Progress
-
-### CI Blocker Status
-✅ **RESOLVED (already fixed in latest commit):** `.github/workflows/dependency-audit-strict.yml` now has `--audit-level=moderate` flag (line 41)  
-✅ **`.npmrc` configuration:** Documented HIGH vulnerabilities in transitive deps (Peskids Next.js 14 → upgrade Phase 2)
-
-### Cleanup Tasks (READY FOR EXECUTION)
-
-**BLOCKER RESOLUTION SCRIPT READY:**
-```bash
-# Run on VPS with root/sudo access:
-cd /opt/opsly
-sudo bash scripts/cleanup-tenants-bak.sh
-```
-
-This script will:
-1. Remove `tenants.bak/` directory (Docker-owned files)
-2. Validate repository structure passes
-3. Print commands to delete 3 obsolete branches
-
-**Manual steps if script fails:**
-```bash
-sudo rm -rf /opt/opsly/tenants.bak/
-cd /opt/opsly
-npm run validate-structure  # Should pass
-git push origin --delete codex/merge-vps-local-runtime-2026-05-15 feat/agent-apps-mcp-2026-05-15 backup/main-before-bypass-20260513-214923
-```
-
-**Status:**
-- ✅ Script created: `scripts/cleanup-tenants-bak.sh`
-- ✅ Awaiting root execution (VPS terminal or `sudo` prompt)
-- ⏳ After cleanup: 3 obsolete branches will delete successfully
-
-### Notes for Next Session
-- All canonical documentation updated (AGENTS.md, VISION.md)
-- CI is now passing (npm audit check fixed in prior session)
-- Four obsolete remote branches ready for deletion (need workflow validation bypass for tenants.bak)
-- VPS infrastructure stable (last check: 2026-05-21 23:20)
+**Agente:** Claude  
+**Actividad:** Verificar producción Peskids  
+**Status:** ✅ COMPLETO — todos los endpoints verificados
 
 ---
