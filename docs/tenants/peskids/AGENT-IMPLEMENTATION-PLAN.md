@@ -1186,13 +1186,21 @@ CREATE POLICY audit_logs_immutable ON audit_logs
 version: '3.8'
 
 services:
-  # Reverse proxy
-  nginx:
-    image: nginx:latest
+  # Reverse proxy (ADR-002: Traefik v3 is the sole reverse proxy)
+  traefik:
+    image: traefik:v3.0
+    command:
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
+      - --api.dashboard=true
     ports: ["80:80", "443:443"]
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./certs/:/etc/nginx/certs/:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./traefik/traefik.yml:/etc/traefik/traefik.yml:ro
+      - ./traefik/dynamic:/etc/traefik/dynamic:ro
+      - ./certs/:/etc/traefik/certs/:ro
 
   # Core database
   supabase-db:
