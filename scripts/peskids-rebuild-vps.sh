@@ -46,15 +46,13 @@ doppler run --project ops-intcloudsysops --config prd -- bash -c '
     --build-arg NEXT_PUBLIC_PESKIDS_WHATSAPP_PREFILL="$WAP" \
     -t ghcr.io/cloudsysops/peskids:latest .
 '
-doppler secrets download --no-file --format env --project ops-intcloudsysops --config prd \
-  > /opt/opsly/runtime/peskids.env
 docker stop peskids 2>/dev/null || true
 docker rm peskids 2>/dev/null || true
-# shellcheck disable=SC2046
-docker run -d --name peskids --restart unless-stopped \
+# Doppler JSON/multiline secrets break docker --env-file; inject at runtime instead.
+doppler run --project ops-intcloudsysops --config prd -- \
+  docker run -d --name peskids --restart unless-stopped \
   --network traefik-public \
   -p 127.0.0.1:3004:3004 \
-  --env-file /opt/opsly/runtime/peskids.env \
   ghcr.io/cloudsysops/peskids:latest
 sleep 3
 curl -sf http://127.0.0.1:3004/ >/dev/null && echo "ok   peskids local health"
