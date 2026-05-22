@@ -1,4 +1,3 @@
-import { randomUUID } from 'node:crypto';
 import { getGoHighLevelService } from '../service.js';
 import { logger } from '../../../observability/logger.js';
 import type { Contact, Task } from '../types.js';
