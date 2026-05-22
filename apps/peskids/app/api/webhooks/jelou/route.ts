@@ -109,9 +109,7 @@ async function handleFeedbackSubmission(webhook: any) {
         child_name: String(feedback.student_name),
         satisfaction: feedback.satisfaction,
         suggestion: String(feedback.suggestion),
-        follow_up_wanted: feedback.follow_up_wanted,
-        source: `jelou:${feedback.channel}`,
-        created_at: new Date().toISOString(),
+        contact_wanted: feedback.follow_up_wanted,
       })
       .select('id')
       .single();
