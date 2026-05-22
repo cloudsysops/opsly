@@ -1,6 +1,6 @@
 'use client'
 
-import { ArrowRight, FileText, Clock } from 'lucide-react'
+import { ArrowRight, Clock } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { peskidsColorTokens } from '@/lib/tokens'

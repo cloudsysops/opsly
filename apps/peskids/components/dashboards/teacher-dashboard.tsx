@@ -179,7 +179,7 @@ export function TeacherDashboard({
             {onExportSubmissions && submissions.length > 0 && (
               <Button
                 type="button"
-                variant="outline"
+                variant="secondary"
                 size="sm"
                 onClick={onExportSubmissions}
                 className="gap-2"
@@ -294,13 +294,13 @@ export function TeacherDashboard({
         </CardHeader>
         <CardContent>
           <div className="flex flex-wrap gap-3">
-            <Button type="button" variant="outline" size="sm" disabled={submissions.length === 0}>
+            <Button type="button" variant="secondary" size="sm" disabled={submissions.length === 0}>
               Marcar como revisadas
             </Button>
-            <Button type="button" variant="outline" size="sm" disabled={submissions.length === 0}>
+            <Button type="button" variant="secondary" size="sm" disabled={submissions.length === 0}>
               Enviar retroalimentación
             </Button>
-            <Button type="button" variant="outline" size="sm" disabled={submissions.length === 0}>
+            <Button type="button" variant="secondary" size="sm" disabled={submissions.length === 0}>
               Reasignar a estudiantes
             </Button>
           </div>
