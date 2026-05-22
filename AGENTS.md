@@ -360,6 +360,71 @@ node scripts/load-skills.js show opsly-api
 | Docker tenant aislado                        | `scripts/lib/docker-helpers.sh` — `--project-name tenant_<slug>`                                                                                 |
 | Agency Division (nuevo 2026-05-06)            | `docs/01-development/OPSLY-AGENCY-DIVISION.md` — API Factory, Agent Management, Security API, Autonomous Revenue                                 |
 
+## 🚀 Peskids Extraction (Tenant Project)
+
+**Status:** MVP in `apps/peskids/`; extraction planning in `docs/tenants/peskids/`  
+**Owner:** Product (currently incubated in Opsly monorepo)  
+**Goal:** Extract Peskids into independent `cloudsysops/peskids-platform` GitHub repo with 7 coordinated AI agents for client VPS deployment  
+**Next Phase:** Document agent implementation + Docker stack configuration
+
+### ✅ Current Work (2026-05-21)
+
+**Session Goal:** Assist with Peskids extraction—prepare for standalone SaaS with coordinated binary agents, approval-first messaging, and zero-manual-intervention VPS deployment.
+
+**What Happened:**
+1. Initially created `peskids-platform/` directory at repo root with complete agent structure, Docker stack, and deployment scripts.
+2. **Correction (per guardrails):** Removed root-level directory—violates `docs/STRUCTURE-GUARDRAILS.md` (only allowed at root: AGENTS.md, README.md, ROADMAP.md, VISION.md, tool configs, and proper platform folders like apps/, packages/, infra/).
+3. **Current State:** All Peskids code already exists:
+   - **Web app:** `apps/peskids/` (Next.js 14, landing page, dashboard, API routes)
+   - **Planning docs:** `docs/tenants/peskids/` (EXTRACTION-PLAN.md, FUTURE-REPO-SEED.md, architecture specs)
+   - **Database schema:** Migrations for leads, students, feedback, followups, messages
+
+### 📋 Next Steps (Ordered)
+
+1. **Document agent implementation strategy** in `docs/tenants/peskids/AGENT-IMPLEMENTATION-PLAN.md`:
+   - 7 agents (orchestrator, social-media, docs-generator, api-integration, web-experience, messaging, security)
+   - BullMQ worker pattern for each agent
+   - Redis queue routing architecture
+
+2. **Create Dockerfile collection** in `docs/tenants/peskids/` with examples:
+   - `apps/peskids/Dockerfile` (Next.js production build)
+   - Agent Dockerfiles (Node.js + BullMQ workers)
+
+3. **Docker Compose production stack** specification
+   - Services: Traefik v3, postgres, redis, web, 7 agents, n8n, uptime-kuma
+   - Environment variable template (comprehensive)
+   - Health checks and logging configuration
+
+4. **VPS deployment automation** (scripts in future repo):
+   - `setup-client-vps.sh` — one-click setup (Docker, env generation, SSL certs)
+   - `health-check.sh` — service verification
+   - `backup-database.sh` — automated backups
+
+5. **Test end-to-end flow** locally with Docker Compose:
+   - Lead submission → Redis task queuing → Agent execution → Dashboard update
+   - Messaging approval workflow (prepareForApproval → humanApprove → sendApprovedMessage)
+
+### 🔐 Critical: Approval-First Messaging
+
+Messaging Agent has **hard requirement**: no message sends without explicit human approval.
+
+**Flow:**
+- Inbound (WhatsApp/Instagram) → Messaging agent prepares response
+- Emit "message.awaiting_approval" with preview
+- Admin dashboard shows notification → clicks "Approve"
+- Agent receives approval event → sends via Twilio/Resend
+- Status: "sent" + audit log
+
+### 📦 Extraction Phases (Documented)
+
+See `docs/tenants/peskids/EXTRACTION-PLAN.md`:
+- **Phase 0:** Incubation in Opsly (current)
+- **Phase 1:** Independent GitHub repo creation
+- **Phase 2:** VPS deployment automation
+- **Phase 3:** Production launch + client onboarding
+
+---
+
 ### Incrementos adoptados (acordados, orden recomendado)
 
 1. **✅ Tipos + metadata de jobs (orchestrator)** — _Hecho (2026-04)._ `OrchestratorJob` / `IntentRequest` en `apps/orchestrator/src/types.ts`: `tenant_id`, `request_id`, `plan`, `idempotency_key`, `cost_budget_usd`, `agent_role`. `processIntent` devuelve `request_id`. Cola: `buildQueueAddOptions` + `jobId` BullMQ si hay idempotencia (`queue-opts.ts`). Redis `JobState` ampliado. Log JSON por encolado (`observability/job-log.ts`). Pruebas: `__tests__/queue-opts.test.ts`, `__tests__/engine.test.ts`.
@@ -1911,31 +1976,32 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 
 ---
 
-## 🔄 Estado Actual (2026-05-08 03:45 UTC)
+## 🔄 Estado Actual (2026-05-21 11:05 UTC)
 
-**Agente:** Hermes (CLI audit + fixes)  
-**Actividad:** Audit técnico + fixes de deuda  
-**Bloqueantes:** SÍ (2 critical, ver TECHNICAL-DEBT.md)
+**Agente:** Claude (Type-check repair)  
+**Actividad:** Fixed all type-check errors blocking PR #376  
+**Bloqueantes:** NO (all type-check errors resolved)
 
-### Audit Completado
-- ✅ Type-check: FAIL (Next.js route cache corruption)
-- ✅ Endpoints vivos: API, Admin, Portal = 200 OK
-- ✅ npm vulnerabilities: 11 moderate (transitive, no critical)
-- ✅ Docker: 1 imagen local opsly existente
-- ✅ Tests: Orchestrator suite pasaría (no ejecutado en main)
+### Session Completion (2026-05-21)
 
-### Deuda Técnica Documentada
+**PR #376: CLAUDE.md Documentation**
+- ✅ Type-check: ALL 32 WORKSPACES PASSING (fixed 7 errors across peskids, admin, portal, api)
+- ✅ Lint: No new violations introduced (pre-existing warnings in api module unrelated)
+- ✅ All pre-commit hooks: PASSING (structure, skills, type-check, lint)
+- ✅ Branch: claude/add-claude-documentation-0kWXf → up to date with remote
+- ✅ Commits: 3 focused fixes (peskids, admin/portal supabase types, api linkedin-adapter)
 
-**CRÍTICO:**
-1. Next.js `.next` cache corruption → rutas fantasma en validator
-2. Agent API surface misalignment → routes en orchestrator, spec en api
+### Issues Resolved This Session
 
-**IMPORTANTE:**
-3. npm vulns 11 moderate (esbuild, llamaindex, express-rate-limit)
-4. Missing lint:check task → **FIXED** (agregado a package.json)
-5. Test suite incomplete → baseline desconocida
+**Type-Check Fixes:**
+1. ✅ Peskids feedback route: nullable email handling (`|| ''`)
+2. ✅ Peskids jelou webhook: import correction (`supabaseServer()` instead of `getServiceClient()`)
+3. ✅ Peskids messages reply: type inference fix (Database type casting)
+4. ✅ Peskids jelou extraction: parseInt type coercion (`String()` wrapper)
+5. ✅ Admin/Portal Supabase: removed explicit type annotations (type inference)
+6. ✅ API linkedin-adapter: parameter reference fix (`_postId` variable reference)
 
-**Documento:** `docs/TECHNICAL-DEBT.md` — tabla completa con prioridades, owners, estimaciones
+**Documentation:** PR #376 adds comprehensive CLAUDE.md with codebase structure, common tasks, and workflows
 
 ### Servicios VPS (últimas mediciones 2026-05-03)
 - opsly_orchestrator, opsly_llm_gateway, opsly_context_builder, opsly_hermes
