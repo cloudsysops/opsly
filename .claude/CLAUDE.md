@@ -92,7 +92,7 @@ opsly/
 | **slack-bot** | Slack integration & notifications | Node.js | — | Production |
 | **web** | Public website | Next.js | — | Production |
 | **peskids** | Multi-channel form platform | Next.js | — | Active Development |
-| **ml** | ML pipeline runner | Python | — | Experimental |
+| **ml** | ML pipeline runner | TypeScript | — | Experimental |
 | **airflow** | Airflow DAG definitions | Python | — | Experimental |
 | **mcp-gateway** | MCP routing layer | Node.js | — | Production |
 | **mcp-rendering-server** | MCP content rendering | Node.js | — | Experimental |
