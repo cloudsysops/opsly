@@ -38,9 +38,14 @@ export function SiteFooter(): React.ReactElement {
             />
           </div>
         </div>
-        <div className="mt-10 flex flex-col gap-2 border-t border-white/10 pt-6 text-xs text-white/50 sm:flex-row sm:justify-between">
+        <div className="mt-10 flex flex-col gap-2 border-t border-white/10 pt-6 text-xs text-white/50 sm:flex-row sm:items-center sm:justify-between">
           <span>© {new Date().getFullYear()} Peskids · #TeamPesk</span>
-          <span>Más que natación, formamos para la vida.</span>
+          <span className="flex flex-wrap items-center gap-x-3 gap-y-1">
+            <span>Más que natación, formamos para la vida.</span>
+            <Link href="/admin" className="text-white/35 hover:text-white/60">
+              Staff
+            </Link>
+          </span>
         </div>
       </div>
     </footer>

@@ -65,10 +65,16 @@ export function parseJelouWebhook(rawPayload: unknown): JelouWebhookPayload {
 export function extractLeadFromJelou(webhook: JelouWebhookPayload) {
   const { fields } = webhook.data;
 
+  const modalityRaw = fields.class_modality || fields.modality || fields.modalidad
+  const classModality: 'llanogrande' | 'domicilio' =
+    modalityRaw === 'domicilio' || modalityRaw === 'a_domicilio' ? 'domicilio' : 'llanogrande'
+
   return {
     name: fields.name || fields.full_name || '',
     email: fields.email || '',
     phone: fields.phone || fields.phone_number || '',
+    class_modality: classModality,
+    neighborhood: String(fields.neighborhood || fields.barrio || fields.zona || '').trim(),
     interested_grade: fields.grade || fields.interested_grade || '',
     source: `jelou:${webhook.data.channel || 'web'}`,
     contact_id: webhook.data.contact_id,

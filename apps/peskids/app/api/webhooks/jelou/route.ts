@@ -54,6 +54,8 @@ async function handleLeadSubmission(webhook: JelouWebhookPayload) {
         name: String(lead.name),
         email: String(lead.email),
         phone: lead.phone != null ? String(lead.phone) : null,
+        class_modality: lead.class_modality,
+        neighborhood: lead.neighborhood || null,
         grade_interested: String(lead.interested_grade),
         referral_source: lead.source,
       })

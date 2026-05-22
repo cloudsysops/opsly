@@ -16,6 +16,8 @@ export type Database = {
           name: string
           email: string
           phone: string | null
+          class_modality: 'llanogrande' | 'domicilio' | null
+          neighborhood: string | null
           grade_interested: string
           referral_source: string | null
           status: 'new' | 'contacted' | 'enrolled' | 'archived'
@@ -28,6 +30,8 @@ export type Database = {
           name: string
           email: string
           phone?: string | null
+          class_modality?: 'llanogrande' | 'domicilio' | null
+          neighborhood?: string | null
           grade_interested: string
           referral_source?: string | null
           status?: 'new' | 'contacted' | 'enrolled' | 'archived'
@@ -116,6 +120,10 @@ export type Database = {
           sender_contact: string
           message_text: string
           external_id: string | null
+          direction: 'inbound' | 'draft' | 'outbound'
+          parent_message_id: string | null
+          status: 'pending' | 'approved' | 'sent' | null
+          ai_generated: boolean
           created_at: string
           updated_at: string
         }
@@ -126,6 +134,10 @@ export type Database = {
           sender_contact: string
           message_text: string
           external_id?: string | null
+          direction?: 'inbound' | 'draft' | 'outbound'
+          parent_message_id?: string | null
+          status?: 'pending' | 'approved' | 'sent' | null
+          ai_generated?: boolean
         }
         Update: Partial<Database['public']['Tables']['messages']['Insert']>
         Relationships: []
@@ -169,7 +181,10 @@ export interface OpslyEvent {
 
 export interface DashboardData {
   new_leads_count: number
-  new_leads: Pick<Database['public']['Tables']['leads']['Row'], 'id' | 'name' | 'email' | 'phone' | 'grade_interested'>[]
+  new_leads: Pick<
+    Database['public']['Tables']['leads']['Row'],
+    'id' | 'name' | 'email' | 'phone' | 'class_modality' | 'neighborhood' | 'grade_interested'
+  >[]
   active_students_count: number
   students_by_grade: Record<string, number>
   recent_feedback: Pick<Database['public']['Tables']['feedback']['Row'], 'id' | 'child_name' | 'satisfaction' | 'suggestion'>[]

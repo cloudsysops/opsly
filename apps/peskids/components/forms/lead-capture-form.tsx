@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Loader2, Send } from 'lucide-react'
 import { WhatsAppLink } from '@/components/contact/whatsapp-link'
+import { PESKIDS_CLASS_MODALITY_OPTIONS } from '@/lib/lead-modality'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
@@ -12,6 +13,8 @@ const initialForm = {
   name: '',
   email: '',
   phone: '',
+  class_modality: '',
+  neighborhood: '',
   grade_interested: '',
   referral_source: '',
 }
@@ -53,13 +56,20 @@ export function LeadCaptureForm(): React.ReactElement {
   }
 
   return (
-    <Card id="contacto" accent="teal" hover className="overflow-hidden shadow-card-hover">
-      <CardHeader className="border-0 bg-gradient-to-br from-pk-bg to-pk-surface pb-2">
-        <p className="pk-eyebrow text-pk-primary">Reserva</p>
-        <CardTitle className="text-2xl">Clase de prueba gratis</CardTitle>
+    <Card
+      id="contacto"
+      accent="teal"
+      hover
+      className="scroll-mt-28 overflow-hidden border-2 border-pk-primary/40 shadow-[0_20px_50px_rgba(45,183,176,0.22)] ring-2 ring-pk-primary/15"
+    >
+      <CardHeader className="border-0 bg-gradient-to-br from-pk-primary/10 via-pk-bg to-pk-surface pb-2">
+        <p className="pk-eyebrow text-pk-primary">Reserva aquí</p>
+        <CardTitle className="text-2xl sm:text-3xl">Clase de prueba gratis</CardTitle>
         <CardDescription>
-          Déjanos tus datos y te contactamos en menos de 48 horas hábiles.{' '}
-          <WhatsAppLink variant="ghost" label="O escríbenos por WhatsApp" className="mt-1 inline-flex" />
+          Clases en nuestra sede de <strong className="text-pk-ink">Llanogrande</strong> o{' '}
+          <strong className="text-pk-ink">a domicilio</strong> en el área metropolitana. Te
+          contactamos en menos de 48 horas hábiles.{' '}
+          <WhatsAppLink variant="button" label="Prefiero WhatsApp" className="mt-2 w-full sm:w-auto" />
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -115,6 +125,49 @@ export function LeadCaptureForm(): React.ReactElement {
           </div>
 
           <div>
+            <Label htmlFor="class_modality" required>
+              Modalidad de clase
+            </Label>
+            <select
+              id="class_modality"
+              name="class_modality"
+              value={formData.class_modality}
+              onChange={handleChange}
+              required
+              className="pk-select"
+            >
+              <option value="">¿Dónde prefieres la clase?</option>
+              {PESKIDS_CLASS_MODALITY_OPTIONS.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <Label htmlFor="neighborhood" required>
+              Barrio o zona
+            </Label>
+            <input
+              id="neighborhood"
+              type="text"
+              name="neighborhood"
+              value={formData.neighborhood}
+              onChange={handleChange}
+              required
+              minLength={2}
+              maxLength={80}
+              placeholder="Ej. Llanogrande, El Retiro, Envigado…"
+              className="pk-input"
+              autoComplete="address-level3"
+            />
+            <p className="mt-1 text-xs text-pk-sub">
+              Nos ayuda a ubicarte y, si eliges domicilio, coordinar la visita del instructor.
+            </p>
+          </div>
+
+          <div>
             <Label htmlFor="grade_interested" required>
               Edad o nivel de interés
             </Label>
@@ -146,7 +199,7 @@ export function LeadCaptureForm(): React.ReactElement {
               <option value="">Selecciona una opción</option>
               <option value="Google">Google / búsqueda</option>
               <option value="Friend">Recomendación</option>
-              <option value="Social">Instagram / redes</option>
+              <option value="Instagram">Instagram / redes</option>
               <option value="Other">Otro</option>
             </select>
           </div>

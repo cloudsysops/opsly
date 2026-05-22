@@ -52,7 +52,7 @@ echo "== Peskids MVP smoke (API_BASE=$API_BASE) =="
 run_curl curl -sfk "${API_BASE}/api/health" | head -c 120
 echo
 
-LEAD_PAYLOAD='{"name":"Smoke Test","email":"smoke-test@example.invalid","grade_interested":"K-5","referral_source":"Other"}'
+LEAD_PAYLOAD='{"name":"Smoke Test","email":"smoke-test@example.invalid","class_modality":"llanogrande","neighborhood":"Llanogrande","grade_interested":"K-5","referral_source":"Other"}'
 FEEDBACK_PAYLOAD='{"child_name":"Smoke Child","satisfaction":2,"suggestion":"Smoke low rating","contact_me_back":true}'
 
 echo "POST lead (test email .invalid)..."
