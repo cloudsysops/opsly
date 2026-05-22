@@ -1,0 +1,42 @@
+{
+  "name": "Opsly Heart — Budget Alerts",
+  "description": "Cada hora revisa costos LLM por tenant. Alerta a 80%, bloquea a 100%.",
+  "nodes": [
+    {
+      "name": "Schedule: cada hora",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "parameters": {
+        "rule": { "interval": [{ "field": "hours", "hoursInterval": 1 }] }
+      }
+    },
+    {
+      "name": "GET costos summary",
+      "type": "n8n-nodes-base.httpRequest",
+      "parameters": {
+        "url": "http://localhost:3000/api/costs/summary",
+        "method": "GET"
+      }
+    },
+    {
+      "name": "Filter: algún tenant >= 80%",
+      "type": "n8n-nodes-base.if",
+      "parameters": {
+        "conditions": {
+          "number": [{ "value1": "={{ $json.max_usage_pct }}", "operation": "largerEqual", "value2": 80 }]
+        }
+      }
+    },
+    {
+      "name": "Discord: alerta presupuesto",
+      "type": "n8n-nodes-base.httpRequest",
+      "parameters": {
+        "url": "={{ $env.DISCORD_WEBHOOK_URL }}",
+        "method": "POST",
+        "jsonBody": true,
+        "body": {
+          "content": "=⚠️ **Alerta de presupuesto LLM**\n{{ $json.alerts.map(a => `• ${a.tenant}: $${a.used_usd.toFixed(2)}/$${a.budget_usd.toFixed(2)} (${a.usage_pct}%)`).join('\\n') }}"
+        }
+      }
+    }
+  ]
+}

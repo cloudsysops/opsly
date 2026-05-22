@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
-# Open iTerm2 in the Opsly workspace (AppleScript).
+# Open a controlled iTerm2 window in the Opsly development workspace.
 #
 # Usage:
 #   scripts/local-iterm-open.sh
-#   scripts/local-iterm-open.sh "tmux attach -t opsly-agents"
+#   scripts/local-iterm-open.sh "tmux attach -t openclaw"
 #
-# Permissions: docs/04-infrastructure/MACOS-LOCAL-AI-AUTOMATION.md
+# The command runs under ~/opsly-workspace/opsly, not from arbitrary paths.
+# Requires AppleScript control of iTerm; see docs/04-infrastructure/MACOS-LOCAL-AI-AUTOMATION.md.
 set -euo pipefail
 
 WORKSPACE_ROOT="${OPSLY_LOCAL_WORKSPACE:-$HOME/opsly-workspace/opsly}"
@@ -14,7 +15,9 @@ COMMAND_TO_RUN="${1:-$DEFAULT_COMMAND}"
 
 if [[ ! -d "$WORKSPACE_ROOT" ]]; then
   echo "local-iterm-open: workspace not found: $WORKSPACE_ROOT" >&2
+  echo "Create the symlink (replace <CLONE> with the absolute path to your intcloudsysops clone):" >&2
   echo "  mkdir -p \"\$HOME/opsly-workspace\" && ln -s \"<CLONE>\" \"\$HOME/opsly-workspace/opsly\"" >&2
+  echo "Or set OPSLY_LOCAL_WORKSPACE to that directory." >&2
   exit 1
 fi
 

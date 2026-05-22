@@ -1,0 +1,4 @@
+# Install: pip install -r tools/live-automation/requirements.txt
+# (Use a venv; not wired into root npm ci.)
+obsws-python>=1.6.0,<2
+python-osc>=1.8.0,<2

@@ -1,32 +1,36 @@
 ---
 status: local
 owner: operations
-last_review: 2026-05-22
+last_review: 2026-05-14
 ---
 
 # Local Automation Guardrails
 
-Root: `~/opsly-workspace/opsly`.
+Use `~/opsly-workspace/opsly` as the local development root for automation.
 
 Allowed:
+- open iTerm2 with `scripts/local-iterm-open.sh`
+- open Cursor/VS Code/Docker with `scripts/local-app-open.sh`
+- run Docker, Colima, tests, builds, tmux, and localhost browser QA
+- **Structured** OBS / OSC via `tools/live-automation/` (`dispatch.py`, `osc_send.py`) after `npm run opsly:live:install` — never raw LLM mouse
 
-- Ghostty: `scripts/install-ghostty-config.sh`, `scripts/local-ghostty-open.sh`
-- iTerm2: `scripts/local-iterm-open.sh`
-- Cursor/VS Code/Docker: `scripts/local-app-open.sh`
-- Docker, Colima, tests, builds, tmux, localhost browser QA
+Forbidden without explicit human approval:
+- `sudo`
+- Keychain/iCloud access
+- writing outside `~/opsly-workspace`
+- exposing local agent `/execute` endpoints beyond localhost/Tailscale
+- changing macOS Privacy & Security settings (the **human** must toggle TCC; Codex cannot click System Settings)
 
-Forbidden without human approval:
+## When the human must grant permissions (checklist)
 
-- `sudo`, Keychain/iCloud, writes outside `~/opsly-workspace`
-- exposing `/execute` beyond localhost/Tailscale
-- changing macOS Privacy & Security (human toggles TCC)
+Ask the operator to complete **only** what applies; do not request Full Disk Access by default.
 
-## Permissions checklist
+1. **Accessibility:** Cursor, Codex (Desktop), iTerm2, VS Code — *System Settings → Privacy & Security → Accessibility*.
+2. **Automation / Apple Events:** after first `scripts/local-iterm-open.sh` run, approve *“X wants to control iTerm”* for the **caller** (Terminal / Cursor / iTerm).
+3. **Input Monitoring:** iTerm2 only if paste/typing automation fails.
+4. **Screen Recording:** only for visual QA.
+5. **Full Disk Access:** avoid; if unavoidable, iTerm2 or Cursor only.
 
-1. **Accessibility:** Cursor, Codex, **Ghostty**, iTerm2, VS Code.
-2. **Automation:** iTerm only when using `local-iterm-open.sh`.
-3. **Input Monitoring / Screen Recording / Full Disk:** only if needed (see main doc).
-
-Then Cmd+Q or `killall Ghostty`.
+Then: full quit (Cmd+Q) of affected apps, or `killall iTerm2`.
 
 Reference: `docs/04-infrastructure/MACOS-LOCAL-AI-AUTOMATION.md`.

@@ -1,0 +1,317 @@
+{
+  "version": "1.0.0",
+  "description": "Aplicaciones disponibles para agentes en opsly-quantum",
+  "host": "opsly-quantum",
+  "ip": "100.89.38.3",
+  "ssh_user": "dragon",
+  "ssh_key": "~/.ssh/vps_to_opsly_admin",
+  "apps": {
+    "editors": {
+      "cursor": {
+        "name": "Cursor",
+        "path": "/Applications/Cursor.app",
+        "command": "open -a Cursor",
+        "type": "editor"
+      },
+      "vscode": {
+        "name": "Visual Studio Code",
+        "path": "/Applications/Visual Studio Code.app",
+        "command": "open -a 'Visual Studio Code'",
+        "type": "editor"
+      },
+      "sublime": {
+        "name": "Sublime Text",
+        "path": "/Applications/Sublime Text.app",
+        "command": "open -a 'Sublime Text'",
+        "type": "editor"
+      }
+    },
+    "ai_agents": {
+      "claude": {
+        "name": "Claude",
+        "path": "/Applications/Claude.app",
+        "command": "open -a Claude",
+        "type": "agent"
+      },
+      "codex": {
+        "name": "Codex",
+        "path": "/Applications/Codex.app",
+        "command": "open -a Codex",
+        "type": "agent"
+      }
+    },
+    "llm": {
+      "ollama": {
+        "name": "Ollama",
+        "path": "/Applications/Ollama.app",
+        "command": "open -a Ollama",
+        "port": 11434,
+        "type": "llm"
+      }
+    },
+    "containers": {
+      "docker": {
+        "name": "Docker",
+        "path": "/Applications/Docker.app",
+        "command": "open -a Docker",
+        "type": "container"
+      }
+    },
+    "terminal": {
+      "iterm": {
+        "name": "iTerm",
+        "path": "/Applications/iTerm.app",
+        "command": "open -a iTerm",
+        "type": "terminal"
+      }
+    },
+    "productivity": {
+      "notion": {
+        "name": "Notion",
+        "path": "/Applications/Notion.app",
+        "command": "open -a Notion",
+        "type": "productivity"
+      },
+      "obsidian": {
+        "name": "Obsidian",
+        "path": "/Applications/Obsidian.app",
+        "command": "open -a Obsidian",
+        "type": "productivity"
+      }
+    },
+    "communication": {
+      "discord": {
+        "name": "Discord",
+        "path": "/Applications/Discord.app",
+        "command": "open -a Discord",
+        "type": "communication"
+      },
+      "slack": {
+        "name": "Slack",
+        "path": "/Applications/Slack.app",
+        "command": "open -a Slack",
+        "type": "communication"
+      },
+      "zoom": {
+        "name": "Zoom",
+        "path": "/Applications/zoom.us.app",
+        "command": "open -a zoom.us",
+        "type": "communication"
+      }
+    },
+    "music_production": {
+      "ableton": {
+        "name": "Ableton Live 12",
+        "path": "/Applications/Ableton Live 12 Trial.app",
+        "command": "open -a 'Ableton Live 12 Trial'",
+        "type": "daw"
+      },
+      "serato_dj": {
+        "name": "Serato DJ Pro",
+        "path": "/Applications/Serato DJ Pro.app",
+        "command": "open -a 'Serato DJ Pro'",
+        "type": "dj"
+      },
+      "serato_studio": {
+        "name": "Serato Studio",
+        "path": "/Applications/Serato Studio.app",
+        "command": "open -a 'Serato Studio'",
+        "type": "daw"
+      },
+      "rekordbox": {
+        "name": "rekordbox 7",
+        "path": "/Applications/rekordbox 7.app",
+        "command": "open -a 'rekordbox 7'",
+        "type": "dj"
+      },
+      "audacity": {
+        "name": "Audacity",
+        "path": "/Applications/Audacity.app",
+        "command": "open -a Audacity",
+        "type": "audio_editor"
+      }
+    },
+    "streaming": {
+      "obs": {
+        "name": "OBS Studio",
+        "path": "/Applications/OBS.app",
+        "command": "open -a OBS",
+        "type": "streaming"
+      }
+    },
+    "design_creation": {
+      "adobe_cc": {
+        "name": "Adobe Creative Cloud",
+        "path": "/Applications/Adobe Creative Cloud.app",
+        "command": "open -a 'Adobe Creative Cloud'",
+        "type": "design_suite"
+      },
+      "illustrator": {
+        "name": "Adobe Illustrator 2020",
+        "path": "/Applications/Adobe Illustrator 2020.app",
+        "command": "open -a 'Adobe Illustrator 2020'",
+        "type": "vector_design"
+      },
+      "affinity_designer": {
+        "name": "Affinity Designer 2",
+        "path": "/Applications/Affinity Designer 2.app",
+        "command": "open -a 'Affinity Designer 2'",
+        "type": "vector_design"
+      },
+      "affinity_photo": {
+        "name": "Affinity Photo 2",
+        "path": "/Applications/Affinity Photo 2.app",
+        "command": "open -a 'Affinity Photo 2'",
+        "type": "photo_editing"
+      },
+      "blender": {
+        "name": "Blender",
+        "path": "/Applications/Blender.app",
+        "command": "open -a Blender",
+        "type": "3d_animation"
+      },
+      "gimp": {
+        "name": "GIMP",
+        "path": "/Applications/GIMP.app",
+        "command": "open -a GIMP",
+        "type": "photo_editing"
+      },
+      "inkscape": {
+        "name": "Inkscape",
+        "path": "/Applications/Inkscape.app",
+        "command": "open -a Inkscape",
+        "type": "vector_design"
+      },
+      "krita": {
+        "name": "Krita",
+        "path": "/Applications/krita.app",
+        "command": "open -a krita",
+        "type": "digital_painting"
+      },
+      "google_earth": {
+        "name": "Google Earth Pro",
+        "path": "/Applications/Google Earth Pro.app",
+        "command": "open -a 'Google Earth Pro'",
+        "type": "maps_3d"
+      }
+    },
+    "system": {
+      "tailscale": {
+        "name": "Tailscale",
+        "path": "/Applications/Tailscale.app",
+        "command": "open -a Tailscale",
+        "type": "vpn"
+      },
+      "postman": {
+        "name": "Postman",
+        "path": "/Applications/Postman.app",
+        "command": "open -a Postman",
+        "type": "api"
+      },
+      "alfred": {
+        "name": "Alfred 3",
+        "path": "/Applications/Alfred 3.app",
+        "command": "open -a 'Alfred 3'",
+        "type": "automation"
+      },
+      "python3": {
+        "name": "Python 3.13",
+        "path": "/Applications/Python 3.13.app",
+        "command": "open -a 'Python 3.13'",
+        "type": "runtime"
+      },
+      "anaconda": {
+        "name": "Anaconda Navigator",
+        "path": "/Applications/Anaconda-Navigator.app",
+        "command": "open -a 'Anaconda Navigator'",
+        "type": "data_science"
+      },
+      "virtualbox": {
+        "name": "VirtualBox",
+        "path": "/Applications/VirtualBox.app",
+        "command": "open -a VirtualBox",
+        "type": "virtualization"
+      },
+      "wireshark": {
+        "name": "Wireshark",
+        "path": "/Applications/Wireshark.app",
+        "command": "open -a Wireshark",
+        "type": "network_analysis"
+      },
+      "terminus": {
+        "name": "Termius",
+        "path": "/Applications/Termius.app",
+        "command": "open -a Termius",
+        "type": "terminal"
+      }
+    },
+    "navigation": {
+      "chrome": {
+        "name": "Google Chrome",
+        "path": "/Applications/Google Chrome.app",
+        "command": "open -a 'Google Chrome'",
+        "type": "browser"
+      },
+      "safari": {
+        "name": "Safari",
+        "path": "/Applications/Safari.app",
+        "command": "open -a Safari",
+        "type": "browser"
+      }
+    },
+    "devtools": {
+      "github_desktop": {
+        "name": "GitHub Desktop",
+        "path": "/Applications/GitHub Desktop.app",
+        "command": "open -a 'GitHub Desktop'",
+        "type": "git"
+      },
+      "eclipse_java": {
+        "name": "Eclipse Java",
+        "path": "/Applications/Eclipse Java.app",
+        "command": "open -a 'Eclipse Java'",
+        "type": "ide"
+      },
+      "eclipse_js": {
+        "name": "Eclipse JavaScript",
+        "path": "/Applications/Eclipse JavaScript.app",
+        "command": "open -a 'Eclipse JavaScript'",
+        "type": "ide"
+      }
+    },
+    "cloud_storage": {
+      "google_drive": {
+        "name": "Google Drive",
+        "path": "/Applications/Google Drive.app",
+        "command": "open -a 'Google Drive'",
+        "type": "storage"
+      },
+      "onedrive": {
+        "name": "OneDrive",
+        "path": "/Applications/OneDrive.app",
+        "command": "open -a OneDrive",
+        "type": "storage"
+      }
+    },
+    "remote_access": {
+      "teamviewer": {
+        "name": "TeamViewer",
+        "path": "/Applications/TeamViewer.app",
+        "command": "open -a TeamViewer",
+        "type": "remote"
+      },
+      "anydesk": {
+        "name": "AnyDesk",
+        "path": "/Applications/AnyDesk.app",
+        "command": "open -a AnyDesk",
+        "type": "remote"
+      },
+      "chrome_remote": {
+        "name": "Chrome Remote Desktop",
+        "path": "/Applications/Chrome Remote Desktop Host Uninstaller.app",
+        "command": "open -a 'Chrome Remote Desktop'",
+        "type": "remote"
+      }
+    }
+  }
+}

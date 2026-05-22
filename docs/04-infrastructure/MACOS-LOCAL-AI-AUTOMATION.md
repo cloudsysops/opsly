@@ -1,69 +1,132 @@
 ---
 status: canon
 owner: operations
-last_review: 2026-05-22
+last_review: 2026-05-14
 ---
 
 # macOS Local AI Automation Policy
 
-Opsly agents may automate local developer tools through a constrained workspace and explicit allowlist.
+Opsly agents may automate local developer tools, but only through a constrained workspace and explicit tool allowlist.
 
 ## Workspace
+
+Canonical local workspace (replace `<CLONE>` with the **absolute path** to your `intcloudsysops` clone):
 
 ```bash
 mkdir -p ~/opsly-workspace
 ln -s "<CLONE>" ~/opsly-workspace/opsly
 ```
 
-Agents run from `~/opsly-workspace/opsly`. Override: `OPSLY_LOCAL_WORKSPACE` (must stay under `~/opsly-workspace/`).
+Agents should run commands from:
 
-## Terminals
-
-| Terminal | Script | Config |
-| --- | --- | --- |
-| **Ghostty** (preferred on Mac) | `scripts/local-ghostty-open.sh` | `config/ghostty/config` → `./scripts/install-ghostty-config.sh` |
-| iTerm2 | `scripts/local-iterm-open.sh` | AppleScript (Automation permission) |
-
-```bash
-./scripts/install-ghostty-config.sh
-scripts/local-ghostty-open.sh "tmux attach -t opsly-agents"
-scripts/local-ghostty-agents.sh
-scripts/local-app-open.sh ghostty
-scripts/local-app-open.sh ghostty-agents
+```text
+~/opsly-workspace/opsly
 ```
 
-Claude Code in Ghostty: set `preferredNotifChannel` to `"ghostty"` in `~/.claude/settings.local.json` (see [terminal notifications](https://docs.claude.com/en/terminal-config#get-a-terminal-bell-or-notification)).
+Optional override: set `OPSLY_LOCAL_WORKSPACE` to a directory **under** `~/opsly-workspace/` (see `scripts/local-iterm-open.sh`).
 
-## Allowed apps
+Do not use personal folders, iCloud, Downloads, Desktop, Keychain, or system directories as agent workspaces.
 
-- Ghostty, iTerm2, Cursor, Visual Studio Code
+## Allowed Tools
+
+Agents may open or automate:
+
+- iTerm2
+- Cursor
+- Visual Studio Code
 - Docker / Colima
 - Browser for localhost QA
-- OBS / Ableton only when the task needs media tooling
+- OBS / Ableton only when the task explicitly needs media tooling
 
-Helpers:
+Repo helpers:
 
 ```bash
+scripts/local-iterm-open.sh "tmux attach -t openclaw"
 scripts/local-app-open.sh cursor
 scripts/local-app-open.sh docker
 ```
 
-## macOS permissions (human only)
+## macOS Permissions
 
-1. **Accessibility:** Cursor, Codex (Desktop), **Ghostty**, iTerm2, VS Code. Optional: Raycast, Hammerspoon.
-2. **Automation / Apple Events:** on first `local-iterm-open.sh`, approve control of iTerm. Ghostty uses `open` + CLI args (usually no extra prompt).
-3. **Input Monitoring:** only if paste/typing automation fails in the terminal.
-4. **Screen Recording:** only for visual QA.
-5. **Full Disk Access:** avoid; if required, Ghostty or Cursor only, still under `~/opsly-workspace`.
+Ningún agente (Cursor, Codex, OpenCode) puede marcar estos permisos por ti: **debes hacerlo tú** en el Mac.
 
-After changes: **Cmd+Q** affected apps, or `killall Ghostty` / `killall iTerm2`.
+### Checklist — lo que te pedimos que configures (manual)
 
-We do **not** ask for: sudo, Keychain, iCloud, root.
+1. **Ajustes del sistema → Privacidad y seguridad → Accesibilidad**
+   Activa al menos: **Cursor**, **Codex** (si usas Codex Desktop), **iTerm2**, **Visual Studio Code**.
+   *Opcional si ya los usas para otras automatizaciones:* Raycast, Hammerspoon.
 
-## Forbidden
+2. **Primera vez que ejecutes `scripts/local-iterm-open.sh`**
+   macOS puede mostrar un diálogo del estilo *«Terminal quiere controlar iTerm»* o *«Cursor quiere controlar iTerm»* (AppleScript / Apple Events).
+   **Acepta** para la app que **lanza** el script (Terminal, iTerm, Cursor, etc.).
+   Si no aparece y falla el script: **Privacidad y seguridad → Automatización** (si existe en tu versión) y permite que la app controladora use **iTerm**.
+
+3. **Entrada de monitorización**
+   Solo si ves que **no llegan teclas o pegado** a iTerm cuando una herramienta automatiza la terminal. Entonces añade **iTerm2** (y solo si hace falta, la app que inyecta entrada).
+
+4. **Grabación de pantalla**
+   Solo si vas a hacer **QA visual** o automatización basada en imagen. Añade **Codex** y/o **iTerm2** según quien capture.
+
+5. **Acceso completo al disco**
+   **Evítalo.** Solo si algo falla leyendo configs fuera del home; si lo activas, hazlo para **iTerm2** o **Cursor**, no para binarios genéricos, y sigue trabajando solo bajo `~/opsly-workspace`.
+
+6. Tras cada cambio: **cierra la app por completo (Cmd+Q)** y vuelve a abrirla. Para iTerm: `killall iTerm2` y reabrir.
+
+### Reference table (English)
+
+| Section | Apps |
+| --- | --- |
+| Accessibility | Codex, Cursor, iTerm2, Visual Studio Code, Raycast, Hammerspoon (optional) |
+| Automation / Apple Events | The app that runs `osascript` or `local-iterm-open.sh` → allow controlling **iTerm** |
+| Input Monitoring | iTerm2 only if keyboard automation requires it |
+| Screen Recording | Codex/iTerm2 only if visual QA requires it |
+| Full Disk Access | Prefer none; if required, iTerm2/Cursor only, and still operate in `~/opsly-workspace` |
+
+We do **not** ask for: **Administrador** (sudo), **Keychain**, **iCloud**, ni acceso root.
+
+## Explicitly Forbidden
 
 - Automatic `sudo`
 - Keychain or iCloud access
-- Unrestricted Full Disk Access
-- `POST /execute` on public interfaces without Bearer auth
-- Writing outside `~/opsly-workspace` unless a human requests a specific path
+- Unrestricted Full Disk Access for arbitrary agents
+- Running agent HTTP bridges on public interfaces
+- Exposing `POST /execute` outside localhost/Tailscale without Bearer auth
+- Writing outside `~/opsly-workspace` unless a human asks for a specific file
+
+## Operating Model
+
+```mermaid
+graph TD
+  A["Claude / Codex / OpenCode"] --> B["Opsly Runtime"]
+  B --> C["Tool Permissions"]
+  C --> D["iTerm2"]
+  C --> E["Docker / Colima"]
+  C --> F["VSCode / Cursor"]
+  C --> G["OBS / Ableton"]
+  D --> H["~/opsly-workspace only"]
+  E --> H
+  F --> H
+```
+
+The rule is: AI controls specific tools for specific tasks. AI does not control the whole Mac.
+
+## Python live automation (OBS / OSC)
+
+Repo path: `tools/live-automation/`. Scripts `scripts/opsly-live-obs.sh` y `scripts/opsly-live-osc.sh` crean/actualizan el venv `tools/live-automation/.venv` e instalan dependencias antes de ejecutar.
+
+| npm script | Acción |
+| --- | --- |
+| `npm run opsly:live:obs -- '<json>'` | OBS WebSocket (env `OBS_WEBSOCKET_*`) |
+| `npm run opsly:live:osc -- /ruta/osc [valores…]` | UDP OSC |
+| `npm run opsly:live:test` | Tests unitarios (sin OBS) |
+| `npm run opsly:live:install` | `pip install` con el `python3` del sistema (opcional si usas los wrappers) |
+
+Ejemplos (OBS abierto con **Herramientas → Servidor WebSocket** activo y puerto por defecto 4455):
+
+```bash
+export OBS_WEBSOCKET_PASSWORD='…'   # si aplica
+npm run opsly:live:obs -- '{"action":"get_version"}'
+npm run opsly:live:osc -- /live/tempo 120
+```
+
+Si ves `Connection refused`, OBS no está escuchando en ese host/puerto o el servidor WebSocket está apagado.

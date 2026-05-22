@@ -98,7 +98,7 @@ services:
       VECTOR_STORE: weaviate
       WEAVIATE_ENDPOINT: ${DIFY_WEAVIATE_ENDPOINT:-http://host.docker.internal:8081}
     ports:
-      - '5001:5001'
+      - '5012:5001'
     networks:
       - internal
     depends_on:
