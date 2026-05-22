@@ -108,7 +108,7 @@ Return ONLY the message text, no quotes or formatting.`;
       error: error instanceof Error ? error.message : String(error),
     };
     if (logger?.error) {
-      logger.error('Failed to generate followup message', logMeta);
+      logger?.error?.('Failed to generate followup message', logMeta);
     } else {
       console.error('Failed to generate followup message', logMeta);
     }
