@@ -79,6 +79,8 @@ infra/terraform/tfplan
 /tenants.bak/
 
 # Runtime directories (VPS/local runtime)
+.tmp-peskids-*.png
+
 runtime/logs/*
 runtime/letsencrypt/*
 runtime/tenants/*

@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<title>Peskids · Sistema de diseño · Print</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,500;1,600;1,700&family=Caveat+Brush&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+<style>
+  /* ─── Page setup ─── */
+  @page { size: A4 landscape; margin: 0; }
+
+  html, body {
+    margin: 0; padding: 0;
+    font-family: 'Nunito', system-ui, sans-serif;
+    background: #fff; color: #0D4C63;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* The canonical A4 landscape in CSS pixels at 96dpi = 1123×794 */
+  /* We give ourselves a comfortable 1180×800 stage. */
+  :root {
+    --page-w: 1180px;
+    --page-h: 800px;
+    --pad: 36px;
+  }
+
+  .pp {
+    width: var(--page-w);
+    height: var(--page-h);
+    padding: var(--pad);
+    box-sizing: border-box;
+    break-after: page;
+    page-break-after: always;
+    position: relative;
+    overflow: hidden;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+  }
+  .pp:last-child { break-after: auto; page-break-after: auto; }
+
+  /* Header & footer chrome on each page */
+  .pp-head {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 18px;
+  }
+  .pp-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 0.22em;
+    text-transform: uppercase; color: #2DB7B0; font-weight: 700;
+  }
+  .pp-title {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900; font-size: 28px;
+    letter-spacing: -0.02em; color: #0D4C63;
+    line-height: 1; margin: 4px 0 0;
+  }
+  .pp-foot {
+    margin-top: auto;
+    display: flex; align-items: center; justify-content: space-between;
+    padding-top: 14px; border-top: 1px solid #E4ECF0;
+    font-size: 10px; color: #7D96A4;
+    font-family: 'JetBrains Mono', monospace; letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  /* Stage that holds a scaled artboard */
+  .pp-stage {
+    flex: 1;
+    position: relative;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+  }
+
+  /* Hide on screen until print? No — keep visible for proofing. */
+
+  /* Cover page */
+  .cover {
+    background: linear-gradient(140deg, #E6F6FB 0%, #fff 60%);
+  }
+  .cover h1 {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900; font-size: 96px;
+    letter-spacing: -0.04em; color: #0D4C63;
+    line-height: 0.95; margin: 0;
+  }
+  .cover .brush {
+    font-family: 'Caveat Brush', cursive;
+    font-weight: 400;
+    display: inline-block;
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" src="src/ios-frame.jsx"></script>
+<script type="text/babel" src="src/logo.jsx"></script>
+<script type="text/babel" src="src/brand.jsx"></script>
+<script type="text/babel" src="src/app-home.jsx"></script>
+<script type="text/babel" src="src/app-flow.jsx"></script>
+<script type="text/babel" src="src/landing.jsx"></script>
+<script type="text/babel" src="src/admin.jsx"></script>
+<script type="text/babel" src="src/social.jsx"></script>
+<script type="text/babel" src="src/onboarding.jsx"></script>
+<script type="text/babel" src="src/print.jsx"></script>
+
+<script type="text/babel" data-presets="react">
+
+// ─────────────────────────────────────────────────────────
+// Scaled artboard — fits child of (w × h) into the stage area.
+// ─────────────────────────────────────────────────────────
+function ScaledArtboard({ width, height, maxW = 1108, maxH = 660, children, fit = 'contain' }) {
+  const scale = fit === 'width'
+    ? maxW / width
+    : Math.min(maxW / width, maxH / height);
+  return (
+    <div style={{
+      position: 'relative',
+      width: width * scale,
+      height: height * scale,
+      overflow: 'hidden',
+    }}>
+      <div style={{
+        width, height,
+        transform: `scale(${scale})`,
+        transformOrigin: '0 0',
+        position: 'absolute', top: 0, left: 0,
+      }}>{children}</div>
+    </div>
+  );
+}
+
+function PrintPage({ eyebrow, title, page, total, children, className = '', style = {} }) {
+  return (
+    <section className={`pp ${className}`} style={style}>
+      <header className="pp-head">
+        <div>
+          <div className="pp-eyebrow">{eyebrow}</div>
+          <h2 className="pp-title">{title}</h2>
+        </div>
+        <PeskidsLockup height={32} tag="" />
+      </header>
+      <div className="pp-stage">{children}</div>
+      <footer className="pp-foot">
+        <span>Peskids · Sistema de diseño v1</span>
+        <span>{page} / {total}</span>
+      </footer>
+    </section>
+  );
+}
+
+// ─────────────────────────────────────────────────────────
+// Pages
+// ─────────────────────────────────────────────────────────
+function Cover() {
+  return (
+    <section className="pp cover">
+      <header className="pp-head">
+        <PeskidsLogo size={64} />
+        <div className="pp-eyebrow">Brand book · Mayo 2026</div>
+      </header>
+      <div className="pp-stage" style={{ flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'center', padding: '0 40px' }}>
+        <div className="pp-eyebrow" style={{ marginBottom: 18 }}>Sistema de diseño · v1.0</div>
+        <h1>
+          Aprenden.<br/>
+          Se divierten.<br/>
+          Son{' '}
+          <span className="brush" style={{ color: '#2DB7B0', transform: 'rotate(-3deg)' }}>Pes</span>
+          <span className="brush" style={{ color: '#FF5A1F', transform: 'rotate(-3deg)' }}>kids</span>
+          <span>.</span>
+        </h1>
+        <div style={{ fontSize: 20, color: '#3D6679', marginTop: 22, maxWidth: 700, lineHeight: 1.45 }}>
+          Academia de natación para niños desde 3 meses hasta 15 años. Marca, app, landing, admin, social, impreso y merch — un sistema completo.
+        </div>
+        <div style={{ marginTop: 30 }}>
+          <WiggleLine width={180} height={24} color="#2DB7B0" />
+        </div>
+      </div>
+      <footer className="pp-foot">
+        <span>Peskids · Sistema de diseño v1</span>
+        <span>Portada</span>
+      </footer>
+    </section>
+  );
+}
+
+function PageBrandBoard({ p, t }) {
+  return (
+    <PrintPage eyebrow="01 · Fundamentos" title="Brand board" page={p} total={t}>
+      <ScaledArtboard width={1180} height={1180} maxH={660}>
+        <BrandFoundations />
+      </ScaledArtboard>
+    </PrintPage>
+  );
+}
+
+function PageAppHomes({ p, t }) {
+  return (
+    <PrintPage eyebrow="02 · App móvil" title="Home · 3 variaciones" page={p} total={t}>
+      <div style={{ display: 'flex', gap: 28, alignItems: 'center' }}>
+        {[
+          { c: <AppHomeA />, l: 'A · Acuático sereno' },
+          { c: <AppHomeB />, l: 'B · Card-first' },
+          { c: <AppHomeC />, l: 'C · Bold playful' },
+        ].map((x,i)=>(
+          <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
+            <ScaledArtboard width={402} height={874} maxW={300} maxH={620}>
+              {x.c}
+            </ScaledArtboard>
+            <div style={{ fontFamily: 'Nunito', fontWeight: 800, fontSize: 13, color: '#0D4C63' }}>{x.l}</div>
+          </div>
+        ))}
+      </div>
+    </PrintPage>
+  );
+}
+
+function PageOnboarding({ p, t }) {
+  return (
+    <PrintPage eyebrow="03 · App móvil" title="Onboarding del padre" page={p} total={t}>
+      <div style={{ display: 'flex', gap: 36, alignItems: 'center' }}>
+        {[
+          { c: <OnbWelcome />,  l: '1 · Bienvenida' },
+          { c: <OnbAddChild />, l: '2 · Datos del peque' },
+          { c: <OnbCheckout />, l: '3 · Plan + prueba' },
+        ].map((x,i)=>(
+          <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
+            <ScaledArtboard width={402} height={874} maxW={300} maxH={620}>
+              {x.c}
+            </ScaledArtboard>
+            <div style={{ fontFamily: 'Nunito', fontWeight: 800, fontSize: 13, color: '#0D4C63' }}>{x.l}</div>
+          </div>
+        ))}
+      </div>
+    </PrintPage>
+  );
+}
+
+function PageAppFlow1({ p, t }) {
+  return (
+    <PrintPage eyebrow="04 · App móvil" title="Flujo · agenda, reserva, progreso" page={p} total={t}>
+      <div style={{ display: 'flex', gap: 36, alignItems: 'center' }}>
+        {[
+          { c: <AppSchedule />, l: 'Agenda' },
+          { c: <AppBooking />,  l: 'Reservar clase' },
+          { c: <AppProgress />, l: 'Progreso · Mateo' },
+        ].map((x,i)=>(
+          <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
+            <ScaledArtboard width={402} height={874} maxW={300} maxH={620}>
+              {x.c}
+            </ScaledArtboard>
+            <div style={{ fontFamily: 'Nunito', fontWeight: 800, fontSize: 13, color: '#0D4C63' }}>{x.l}</div>
+          </div>
+        ))}
+      </div>
+    </PrintPage>
+  );
+}
+
+function PageAppFlow2({ p, t }) {
+  return (
+    <PrintPage eyebrow="05 · App móvil" title="Flujo · pagos, mensajes, torneo" page={p} total={t}>
+      <div style={{ display: 'flex', gap: 36, alignItems: 'center' }}>
+        {[
+          { c: <AppPayments />,   l: 'Pagos' },
+          { c: <AppMessages />,   l: 'Mensajes · profe' },
+          { c: <AppTournament />, l: 'Torneo · inscripción' },
+        ].map((x,i)=>(
+          <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
+            <ScaledArtboard width={402} height={874} maxW={300} maxH={620}>
+              {x.c}
+            </ScaledArtboard>
+            <div style={{ fontFamily: 'Nunito', fontWeight: 800, fontSize: 13, color: '#0D4C63' }}>{x.l}</div>
+          </div>
+        ))}
+      </div>
+    </PrintPage>
+  );
+}
+
+function PageLanding({ which, p, t }) {
+  const C = which === 'v1' ? LandingV1 : LandingV2;
+  const label = which === 'v1' ? 'V1 · Editorial calmo' : 'V2 · Brand bold';
+  const height = which === 'v1' ? 2400 : 2300;
+  return (
+    <PrintPage eyebrow={`0${which === 'v1' ? 6 : 7} · Landing`} title={label} page={p} total={t}>
+      <ScaledArtboard width={1280} height={height} maxW={1100} maxH={660}>
+        <C />
+      </ScaledArtboard>
+    </PrintPage>
+  );
+}
+
+function PageAdmin({ p, t }) {
+  return (
+    <PrintPage eyebrow="08 · Admin" title="Portal de profesores · Dashboard" page={p} total={t}>
+      <ScaledArtboard width={1280} height={820} maxW={1100} maxH={660}>
+        <AdminPortal />
+      </ScaledArtboard>
+    </PrintPage>
+  );
+}
+
+function PageSocial({ p, t }) {
+  return (
+    <PrintPage eyebrow="09 · Social" title="Instagram · plantillas" page={p} total={t}>
+      <div style={{ display: 'flex', gap: 28, alignItems: 'center' }}>
+        {[
+          { c: <IgPost1 />, l: 'Anuncio',     w: 540, h: 540 },
+          { c: <IgPost2 />, l: 'Logro',       w: 540, h: 540 },
+          { c: <IgPost3 />, l: 'Educativo',   w: 540, h: 540 },
+          { c: <IgStory />, l: 'Story',       w: 320, h: 568 },
+        ].map((x,i)=>(
+          <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
+            <ScaledArtboard width={x.w} height={x.h} maxW={240} maxH={580}>
+              {x.c}
+            </ScaledArtboard>
+            <div style={{ fontFamily: 'Nunito', fontWeight: 800, fontSize: 13, color: '#0D4C63' }}>{x.l}</div>
+          </div>
+        ))}
+      </div>
+    </PrintPage>
+  );
+}
+
+function PagePrint({ p, t }) {
+  return (
+    <PrintPage eyebrow="10 · Impresos" title="Flyer A5 · doble cara" page={p} total={t}>
+      <div style={{ display: 'flex', gap: 64, alignItems: 'center' }}>
+        {[
+          { c: <FlyerFront />, l: 'Frente' },
+          { c: <FlyerBack />,  l: 'Respaldo' },
+        ].map((x,i)=>(
+          <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
+            <ScaledArtboard width={480} height={670} maxW={420} maxH={620}>
+              {x.c}
+            </ScaledArtboard>
+            <div style={{ fontFamily: 'Nunito', fontWeight: 800, fontSize: 13, color: '#0D4C63' }}>{x.l}</div>
+          </div>
+        ))}
+      </div>
+    </PrintPage>
+  );
+}
+
+function PageMerch({ p, t }) {
+  return (
+    <PrintPage eyebrow="11 · Aplicada" title="Marca aplicada · merch" page={p} total={t}>
+      <ScaledArtboard width={1180} height={720} maxW={1100} maxH={660}>
+        <MerchSheet />
+      </ScaledArtboard>
+    </PrintPage>
+  );
+}
+
+// ─────────────────────────────────────────────────────────
+// App
+// ─────────────────────────────────────────────────────────
+function App() {
+  const total = 11;
+  return (
+    <>
+      <Cover />
+      <PageBrandBoard p={1}  t={total} />
+      <PageAppHomes   p={2}  t={total} />
+      <PageOnboarding p={3}  t={total} />
+      <PageAppFlow1   p={4}  t={total} />
+      <PageAppFlow2   p={5}  t={total} />
+      <PageLanding which="v1" p={6} t={total} />
+      <PageLanding which="v2" p={7} t={total} />
+      <PageAdmin      p={8}  t={total} />
+      <PageSocial     p={9}  t={total} />
+      <PagePrint      p={10} t={total} />
+      <PageMerch      p={11} t={total} />
+    </>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+
+// Auto-print after content + fonts are loaded.
+(async () => {
+  // Wait for fonts
+  if (document.fonts && document.fonts.ready) {
+    try { await document.fonts.ready; } catch (e) {}
+  }
+  // Wait for Babel JSX to render + a little extra
+  await new Promise(r => setTimeout(r, 1500));
+  // Trigger print
+  window.print();
+})();
+</script>
+</body>
+</html>

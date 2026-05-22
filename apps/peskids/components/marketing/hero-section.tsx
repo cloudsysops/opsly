@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { PeskidsBrush, PeskidsWave, StarBurst, WiggleLine } from '@/components/brand/peskids-logo'
+import { WhatsAppLink } from '@/components/contact/whatsapp-link'
 
 const stats = [
   { num: '14', label: 'años enseñando' },
@@ -53,6 +54,7 @@ export function HeroSection(): React.ReactElement {
             >
               Ver portal de familias
             </Link>
+            <WhatsAppLink variant="button" label="WhatsApp" />
           </div>
           <div className="mt-10 flex flex-wrap gap-10">
             {stats.map((s) => (

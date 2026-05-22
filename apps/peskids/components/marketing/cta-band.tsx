@@ -1,4 +1,5 @@
 import { PeskidsWave } from '@/components/brand/peskids-logo'
+import { WhatsAppLink } from '@/components/contact/whatsapp-link'
 import { Button } from '@/components/ui/button'
 
 export function CtaBand(): React.ReactElement {
@@ -18,11 +19,14 @@ export function CtaBand(): React.ReactElement {
               formulario.
             </p>
           </div>
-          <a href="#contacto">
-            <Button variant="accent" size="lg" className="whitespace-nowrap">
-              Reservar prueba gratis →
-            </Button>
-          </a>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+            <a href="#contacto">
+              <Button variant="accent" size="lg" className="whitespace-nowrap">
+                Reservar prueba gratis →
+              </Button>
+            </a>
+            <WhatsAppLink variant="onDark" label="Escribir por WhatsApp" />
+          </div>
         </div>
       </div>
     </section>
