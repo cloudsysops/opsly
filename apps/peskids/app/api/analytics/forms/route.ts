@@ -1,50 +1,18 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { validateAdminRequest } from '@/lib/admin-auth'
+import { NextResponse } from 'next/server'
+import { createFormSubmissionService } from '@/lib/services/form-submission.service'
 
-export async function GET(req: NextRequest) {
+export async function GET(): Promise<NextResponse> {
   try {
-    const auth = validateAdminRequest(req)
-    if (!auth.valid) {
-      return NextResponse.json({ error: auth.error }, { status: 401 })
-    }
-
     const tenantId = process.env.NEXT_PUBLIC_TENANT_ID || 'peskids'
 
-    // Mock form analytics data - will be replaced with Supabase query
-    // when form_analytics table is created
-    const mockFormMetrics = [
-      {
-        formId: 'form-1',
-        formTitle: 'Encuesta de Satisfacción',
-        submissionsCount: 45,
-        abandonmentRate: 11,
-        avgCompletionTime: 3.5,
-        errorCount: 0,
-      },
-      {
-        formId: 'form-2',
-        formTitle: 'Retroalimentación del Programa',
-        submissionsCount: 32,
-        abandonmentRate: 24,
-        avgCompletionTime: 5.2,
-        errorCount: 2,
-      },
-      {
-        formId: 'form-3',
-        formTitle: 'Evaluación de Docentes',
-        submissionsCount: 28,
-        abandonmentRate: 15,
-        avgCompletionTime: 4.1,
-        errorCount: 0,
-      },
-    ]
-
-    const totalSubmissions = mockFormMetrics.reduce((sum, form) => sum + form.submissionsCount, 0)
+    const service = createFormSubmissionService()
+    const metrics = await service.getFormAnalytics()
+    const totalSubmissions = metrics.reduce((sum, form) => sum + form.submissionsCount, 0)
 
     return NextResponse.json({
-      metrics: mockFormMetrics,
+      metrics,
       summary: {
-        totalForms: mockFormMetrics.length,
+        totalForms: metrics.length,
         totalSubmissions,
         tenantId,
       },

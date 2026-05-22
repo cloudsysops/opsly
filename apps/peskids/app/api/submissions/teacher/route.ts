@@ -1,69 +1,20 @@
 import { NextResponse } from 'next/server'
+import { createFormSubmissionService } from '@/lib/services/form-submission.service'
 
 export async function GET(): Promise<NextResponse> {
   try {
     const tenantId = process.env.NEXT_PUBLIC_TENANT_ID || 'peskids'
 
-    // Mock student submissions data - will be replaced with Supabase query
-    // when form_submission table is created
-    const mockStudentSubmissions = [
-      {
-        submissionId: 'sub-101',
-        studentName: 'Carlos García',
-        studentId: 'std-1',
-        formTitle: 'Evaluación de Matemáticas',
-        submittedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
-        grade: 85,
-        maxGrade: 100,
-        feedback: 'Muy bien desarrollado, excelentes conceptos',
-        status: 'reviewed' as const,
-      },
-      {
-        submissionId: 'sub-102',
-        studentName: 'María López',
-        studentId: 'std-2',
-        formTitle: 'Evaluación de Matemáticas',
-        submittedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-        grade: undefined,
-        maxGrade: 100,
-        feedback: undefined,
-        status: 'pending' as const,
-      },
-      {
-        submissionId: 'sub-103',
-        studentName: 'Juan Rodríguez',
-        studentId: 'std-3',
-        formTitle: 'Evaluación de Lectura',
-        submittedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
-        grade: 72,
-        maxGrade: 100,
-        feedback: 'Requiere mejorar en comprensión de textos',
-        status: 'needs_revision' as const,
-      },
-      {
-        submissionId: 'sub-104',
-        studentName: 'Sofía Martínez',
-        studentId: 'std-4',
-        formTitle: 'Evaluación de Lectura',
-        submittedAt: new Date().toISOString(),
-        grade: undefined,
-        maxGrade: 100,
-        feedback: undefined,
-        status: 'pending' as const,
-      },
-    ]
+    const service = createFormSubmissionService()
+    const submissions = await service.getTeacherSubmissions()
 
-    const reviewedCount = mockStudentSubmissions.filter((s) => s.status === 'reviewed').length
-    const pendingCount = mockStudentSubmissions.filter((s) => s.status === 'pending').length
-    const needsRevisionCount = mockStudentSubmissions.filter(
-      (s) => s.status === 'needs_revision'
-    ).length
-    const uniqueStudents = new Set(
-      mockStudentSubmissions.map((s) => s.studentId)
-    ).size
+    const reviewedCount = submissions.filter((s) => s.status === 'reviewed').length
+    const pendingCount = submissions.filter((s) => s.status === 'pending').length
+    const needsRevisionCount = submissions.filter((s) => s.status === 'needs_revision').length
+    const uniqueStudents = new Set(submissions.map((s) => s.studentId)).size
 
     return NextResponse.json({
-      submissions: mockStudentSubmissions,
+      submissions,
       stats: {
         reviewedCount,
         pendingCount,
