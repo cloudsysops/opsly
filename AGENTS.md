@@ -1495,37 +1495,42 @@ _Auditoría TypeScript y correcciones de código (2026-04-05, sesión agente Cla
 
 ## 🔄 Próximo paso inmediato
 
-**Status PRs Cleanup (2026-05-22):**
+**Status PRs Cleanup (2026-05-22 — SESSION FINAL):**
 
-| PR | Status | Blocker | Action |
-|----|--------|---------|--------|
-| #392 | ✅ Ready | None | Merge when CI passes |
-| #393 | ✅ Ready | None | Merge when CI passes |
-| #394 | ✅ Ready | None | Merge when CI passes |
-| #395 | ⏳ Blocked | npm audit workflow | Fix line 96 (need `--audit-level=moderate`) |
-| #396 | ⏳ Blocked | Lint violations | Option A (fix) or Option B (exempt temp) |
+| PR | Status | Blockers | Owner |
+|----|--------|----------|-------|
+| #392 | ✅ Ready | None | Merge now |
+| #393 | ✅ Ready | None | Merge now |
+| #394 | ✅ Ready | None | Merge now |
+| #395 | 🔴 BLOCKED | npm audit (2x), Trivy, Lint | User manual fixes required |
+| #396 | 🔴 BLOCKED | Lint violations | Lint decision: A or B |
 
-**Blocker 1: npm audit in PR #395** ⚠️ **REQUIRES MANUAL USER FIX**
-- Root cause: CI workflow line 96 doesn't respect `.npmrc audit-level=moderate`
-- Affects: `dependency-audit-strict.yml` audit-report job
-- GitHub OAuth scope blocks automated fixes to `.github/workflows/`
+**PR #395 BLOCKERS (User action required):**
 
-**Manual fix (2 min in GitHub UI):**
-1. Go to: `https://github.com/cloudsysops/opsly/blob/main/.github/workflows/dependency-audit-strict.yml`
-2. Click pencil icon (edit)
-3. Find line 96: `npm audit --json > audit-report.json || true`
-4. Change to: `npm audit --audit-level=moderate --json > audit-report.json || true`
-5. Commit to main: `fix(ci): respect .npmrc audit-level=moderate in audit-report job`
-6. After commit → PR #395 CI checks will rerun and pass ✅
+1. **npm audit — TWO conflicting workflows found** 🚨
+   - `security.yml` line 42: `--audit-level=high` (hardcoded, too strict)
+   - `dependency-audit-strict.yml` line 96: `--json` (doesn't respect `.npmrc`)
+   - Both need `--audit-level=moderate` to respect `.npmrc audit-level=moderate`
 
-**Blocker 2: Lint in PR #396**
-- New MAIA worker files trigger lint violations
-- **Option A:** Fix violations now (30-45 min) → cleaner PR
-- **Option B:** Exempt files in lint config (5 min) → remediate Phase 2
-- Decision needed from user
+2. **Manual fixes in GitHub UI (3 min total):**
+   - Fix #1: https://github.com/cloudsysops/opsly/blob/main/.github/workflows/security.yml
+     - Line 42: `--audit-level=high` → `--audit-level=moderate`
+     - Commit: `fix(ci): respect .npmrc audit-level in security workflow`
+   - Fix #2: https://github.com/cloudsysops/opsly/blob/main/.github/workflows/dependency-audit-strict.yml
+     - Line 96: `npm audit --json` → `npm audit --audit-level=moderate --json`
+     - Commit: `fix(ci): respect .npmrc audit-level in audit-report job`
 
-**Immediate (no blockers):** Mergear PRs #392-394
-**Then:** Fix CI + lint decision → merge #395-396
+3. **Trivy Security Scan** — pre-existente, investigar post-merge
+
+4. **Lint violations** — MAIA worker files
+   - Option A: Fix now (30-45 min)
+   - Option B: Exempt temporarily (5 min)
+
+**NEXT SESSION PRIORITY:**
+- ✅ User fixes 2x npm audit workflows (3 min)
+- ⏳ User decides lint Option A/B
+- ⏳ Mergear #395-396 tras resolución de blockers
+- ⏳ Start Phase 1 test coverage (Admin + Security)
 
 **Semana 6** — [`docs/01-development/SEMANA-6-PLAN.md`](docs/01-development/SEMANA-6-PLAN.md): validar segundo tenant + `./scripts/test-e2e-invite-flow.sh` contra API staging; checklist pre-launch (Doppler, Resend dominio, DNS). Smoke local workers en `main` (PR **#199**, [`docs/LOCAL-AGENT-EXECUTION.md`](docs/LOCAL-AGENT-EXECUTION.md)); arranque orchestrator con `OPSLY_ROOT=<raíz repo>` si el cwd es `apps/orchestrator`.
 
