@@ -66,13 +66,79 @@ export function StudentSubmissionsPanel({ tenantSlug }: StudentSubmissionsPanelP
   };
 
   const pendingCount = submissions.filter((s) => s.status === 'pending_review').length;
+  const [selectedSubmissions, setSelectedSubmissions] = useState<Set<string>>(new Set());
+  const [isBulkGrading, setIsBulkGrading] = useState(false);
+  const [bulkScore, setBulkScore] = useState(75);
+
+  const handleSelectSubmission = (id: string) => {
+    const newSelected = new Set(selectedSubmissions);
+    if (newSelected.has(id)) {
+      newSelected.delete(id);
+    } else {
+      newSelected.add(id);
+    }
+    setSelectedSubmissions(newSelected);
+  };
+
+  const handleBulkGrade = async () => {
+    if (selectedSubmissions.size === 0) return;
+
+    setIsBulkGrading(true);
+    try {
+      const response = await fetch(`/api/peskids/portal/${tenantSlug}/submissions/bulk-grade`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          submissionIds: Array.from(selectedSubmissions),
+          score: bulkScore,
+        }),
+      });
+
+      if (!response.ok) throw new Error('Failed to grade submissions');
+
+      setSelectedSubmissions(new Set());
+      // Refresh submissions
+      setFilter('pending');
+    } catch (error) {
+      console.error('Error bulk grading:', error);
+    } finally {
+      setIsBulkGrading(false);
+    }
+  };
+
+  const handleExport = async () => {
+    try {
+      const response = await fetch(
+        `/api/peskids/portal/${tenantSlug}/forms/${filter}/export?format=csv`
+      );
+      if (!response.ok) throw new Error('Export failed');
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'submissions.csv';
+      a.click();
+    } catch (error) {
+      console.error('Error exporting:', error);
+    }
+  };
 
   return (
     <div className="w-full space-y-6">
       {/* Header */}
-      <div>
-        <h2 className="text-2xl font-bold text-neutral-100">Student Submissions</h2>
-        <p className="mt-1 text-sm text-ops-gray">Review and grade student work</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold text-neutral-100">Student Submissions</h2>
+          <p className="mt-1 text-sm text-ops-gray">Review and grade student work</p>
+        </div>
+        <Button
+          onClick={handleExport}
+          variant="outline"
+          className="border-ops-border text-ops-blue hover:bg-ops-surface"
+        >
+          📥 Export as CSV
+        </Button>
       </div>
 
       {/* Filter Tabs */}
@@ -134,9 +200,20 @@ export function StudentSubmissionsPanel({ tenantSlug }: StudentSubmissionsPanelP
       ) : (
         <div className="space-y-3">
           {submissions.map((submission) => (
-            <Card key={submission.submissionId} className="hover:border-ops-border/80">
+            <Card
+              key={submission.submissionId}
+              className={`cursor-pointer hover:border-ops-border/80 ${
+                selectedSubmissions.has(submission.submissionId) ? 'border-ops-blue bg-ops-surface/50' : ''
+              }`}
+            >
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
+                  <input
+                    type="checkbox"
+                    checked={selectedSubmissions.has(submission.submissionId)}
+                    onChange={() => handleSelectSubmission(submission.submissionId)}
+                    className="mr-4 h-4 w-4 rounded border-ops-border bg-ops-surface text-ops-blue"
+                  />
                   <div className="flex-1">
                     <div className="flex items-center gap-3">
                       <div>
@@ -181,17 +258,50 @@ export function StudentSubmissionsPanel({ tenantSlug }: StudentSubmissionsPanelP
       )}
 
       {/* Bulk Actions */}
-      {submissions.length > 0 && filter === 'pending' && (
+      {(selectedSubmissions.size > 0 || (submissions.length > 0 && filter === 'pending')) && (
         <Card className="border-ops-blue/30 bg-ops-surface/50">
           <CardContent className="py-4">
-            <div className="flex items-center justify-between">
-              <p className="text-sm text-ops-gray">
-                💡 {pendingCount} submission{pendingCount !== 1 ? 's' : ''} awaiting review
-              </p>
-              <Button size="sm" className="bg-ops-blue hover:bg-ops-blue/90">
-                Grade All
-              </Button>
-            </div>
+            {selectedSubmissions.size > 0 ? (
+              <div className="space-y-3">
+                <p className="text-sm font-medium text-ops-blue">
+                  {selectedSubmissions.size} submission{selectedSubmissions.size !== 1 ? 's' : ''} selected
+                </p>
+                <div className="flex items-center gap-3">
+                  <label className="text-sm text-ops-gray">Score (0-100):</label>
+                  <input
+                    type="range"
+                    min="0"
+                    max="100"
+                    value={bulkScore}
+                    onChange={(e) => setBulkScore(parseInt(e.target.value))}
+                    className="flex-1"
+                  />
+                  <span className="text-sm font-semibold text-neutral-100">{bulkScore}%</span>
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    onClick={handleBulkGrade}
+                    disabled={isBulkGrading}
+                    className="flex-1 bg-ops-green hover:bg-ops-green/90 disabled:opacity-50"
+                  >
+                    {isBulkGrading ? 'Grading...' : 'Grade Selected'}
+                  </Button>
+                  <Button
+                    onClick={() => setSelectedSubmissions(new Set())}
+                    variant="outline"
+                    className="border-ops-border text-ops-gray hover:bg-ops-surface"
+                  >
+                    Clear
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <div className="flex items-center justify-between">
+                <p className="text-sm text-ops-gray">
+                  💡 {pendingCount} submission{pendingCount !== 1 ? 's' : ''} awaiting review
+                </p>
+              </div>
+            )}
           </CardContent>
         </Card>
       )}
