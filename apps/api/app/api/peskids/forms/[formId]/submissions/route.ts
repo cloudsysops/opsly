@@ -27,6 +27,14 @@ interface FormSubmissionPayload {
   userId?: string;
 }
 
+interface WebhookConfig {
+  id: string;
+  webhook_url: string;
+  secret: string;
+  is_active: boolean;
+  failure_count: number;
+}
+
 export async function POST(
   request: NextRequest,
   { params }: { params: { formId: string } }
@@ -92,7 +100,8 @@ export async function POST(
         .eq('is_active', true);
 
       if (webhooks && webhooks.length > 0) {
-        webhookResults = await triggerWebhooks(webhooks as any, {
+        const typedWebhooks = webhooks as WebhookConfig[];
+        webhookResults = await triggerWebhooks(typedWebhooks, {
           form_id: formId,
           submission_id: submissionId,
           tenant_slug: form.tenant_slug,
