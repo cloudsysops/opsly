@@ -362,7 +362,8 @@ def scan_file(filepath: Path, compiled_patterns: list, target_root: str = "") ->
                         break  # One finding per line to avoid duplicates
 
     except (OSError, UnicodeDecodeError):
-        pass
+        # Intentionally skip unreadable/unopenable files so the scan can continue.
+        return findings
 
     return findings
 
@@ -404,8 +405,15 @@ def check_gitignore(target_dir: Path) -> list:
                         "description": f".env files exist ({', '.join(f.name for f in env_files)}) but .env is not in .gitignore",
                         "evidence": "Missing .env in .gitignore",
                     })
-    except OSError:
-        pass
+    except OSError as exc:
+        findings.append({
+            "type": "Unreadable .gitignore",
+            "severity": "medium",
+            "file": str(gitignore_path),
+            "line": 0,
+            "description": "Could not read .gitignore to verify sensitive patterns",
+            "evidence": str(exc),
+        })
 
     return findings
 
@@ -420,7 +428,8 @@ def get_staged_files() -> list:
         if result.returncode == 0:
             return [f for f in result.stdout.strip().split("\n") if f]
     except (subprocess.TimeoutExpired, FileNotFoundError):
-        pass
+        # Git may be unavailable or slow in some environments; fall back to no staged files.
+        return []
     return []
 
 

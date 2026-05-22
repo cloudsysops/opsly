@@ -1,1 +1,13 @@
+if ! command -v npx >/dev/null 2>&1; then
+  for candidate in \
+    /usr/local/opt/node@20/bin \
+    /opt/homebrew/opt/node@20/bin
+  do
+    if [ -d "$candidate" ]; then
+      export PATH="$candidate:$PATH"
+      break
+    fi
+  done
+fi
+
 npx --no -- commitlint --edit "$1"

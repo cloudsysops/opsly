@@ -1,5 +1,8 @@
 import { getServiceClient } from '../supabase';
-import { PESKIDS_LOW_SATISFACTION_THRESHOLD, PESKIDS_TENANT_SLUG } from './constants';
+import {
+  PESKIDS_LOW_SATISFACTION_THRESHOLD,
+  PESKIDS_TENANT_SLUG,
+} from './constants';
 import type { PeskidsFeedbackBody, PeskidsLeadBody } from './schemas';
 
 export type PeskidsLeadRow = {
@@ -63,7 +66,8 @@ export async function peskidsInsertLead(
 export async function peskidsInsertFeedback(
   body: PeskidsFeedbackBody
 ): Promise<{ ok: true; row: PeskidsFeedbackRow } | { ok: false; error: string }> {
-  const status = body.satisfaction < PESKIDS_LOW_SATISFACTION_THRESHOLD ? 'action_required' : 'new';
+  const status =
+    body.satisfaction < PESKIDS_LOW_SATISFACTION_THRESHOLD ? 'action_required' : 'new';
 
   const client = getServiceClient();
   const { data, error } = await client
@@ -106,7 +110,6 @@ export type PeskidsDashboardSummary = {
   low_rating_alerts: PeskidsFeedbackRow[];
 };
 
-// eslint-disable-next-line complexity, max-lines-per-function
 export async function peskidsFetchDashboardSummary(): Promise<
   { ok: true; summary: PeskidsDashboardSummary } | { ok: false; error: string }
 > {

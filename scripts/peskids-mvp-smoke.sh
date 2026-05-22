@@ -55,19 +55,6 @@ echo
 LEAD_PAYLOAD='{"name":"Smoke Test","email":"smoke-test@example.invalid","grade_interested":"K-5","referral_source":"Other"}'
 FEEDBACK_PAYLOAD='{"child_name":"Smoke Child","satisfaction":2,"suggestion":"Smoke low rating","contact_me_back":true}'
 
-assert_status() {
-  local actual="$1"
-  local expected="$2"
-  local label="$3"
-  local body_file="$4"
-  if [[ "$actual" != "$expected" ]]; then
-    echo "ERROR: $label expected HTTP $expected, got HTTP $actual" >&2
-    head -c 500 "$body_file" 2>/dev/null >&2 || true
-    echo >&2
-    exit 1
-  fi
-}
-
 echo "POST lead (test email .invalid)..."
 if [[ "$DRY_RUN" == true ]]; then
   run_curl curl -sfk -X POST "${API_BASE}/api/public/tenants/peskids/leads" \
@@ -106,11 +93,7 @@ else
   echo
 fi
 
-<<<<<<< HEAD
-echo "Forms (when API deployed):"
-=======
 echo "Forms:"
->>>>>>> 51126414 (chore(peskids): update deployment and smoke test scripts)
 echo "  ${API_BASE}/peskids/lead-form.html"
 echo "  ${API_BASE}/peskids/feedback-form.html"
 echo "Done."

@@ -2,36 +2,35 @@
 @tailwind components;
 @tailwind utilities;
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-pk-bg font-sans text-pk-ink antialiased;
+  }
+
+  ::selection {
+    @apply bg-pk-primary/25 text-pk-ink;
+  }
 }
 
-html {
-  scroll-behavior: smooth;
-}
+@layer components {
+  .pk-input {
+    @apply h-11 w-full rounded-xl border border-pk-border bg-pk-surface px-3.5 text-sm text-pk-ink shadow-sm transition-colors placeholder:text-pk-mutedText/80 focus:border-pk-primary focus:outline-none focus:ring-2 focus:ring-pk-primary/25;
+  }
 
-body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
+  .pk-select {
+    @apply pk-input appearance-none bg-[length:1rem] bg-[right_0.75rem_center] bg-no-repeat pr-10;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%237D96A4'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+  }
 
-input, textarea, select {
-  @apply rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent;
-}
+  .pk-eyebrow {
+    @apply font-mono text-xs font-bold uppercase tracking-[0.22em] text-pk-ink;
+  }
 
-button {
-  @apply font-medium transition-colors;
-}
-
-.btn-primary {
-  @apply px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700;
-}
-
-.btn-secondary {
-  @apply px-6 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300;
+  .pk-pill {
+    @apply inline-flex items-center gap-2 rounded-full border border-pk-border bg-pk-surface px-3 py-1.5 text-xs font-semibold text-pk-ink;
+  }
 }

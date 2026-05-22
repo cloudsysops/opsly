@@ -62,16 +62,16 @@ referral_source: {
 1. Validate all fields client-side
 2. If validation fails: show error message above field
 3. If validation passes:
-   - POST to /api/leads with form data
-   - Show "Sending..." loading state
-   - On success:
-     - Store lead in `leads` table
-     - Emit event: lead.created
-     - Send confirmation email to user
-     - Redirect to /thanks (or show thank-you modal)
-   - On error:
-     - Show error message: "Something went wrong. Try again."
-     - Keep form filled in so user can re-submit
+  - POST to /api/leads with form data
+  - Show "Sending..." loading state
+  - On success:
+    - Store lead in `leads` table
+    - Emit event: lead.created
+    - Redirect to /thanks (or show thank-you modal)
+    - Show an on-screen confirmation only; any email follow-up is future/manual
+  - On error:
+    - Show error message: "Something went wrong. Try again."
+    - Keep form filled in so user can re-submit
 ```
 
 ### Data Destination
@@ -109,10 +109,11 @@ CREATE TABLE leads (
 }
 ```
 
-### Admin Notification
+### Admin Notification (Sprint 01)
 
-- Email to owner: "New lead: Maria Rodriguez (K–5)"
-- Link to dashboard for follow-up
+- Dashboard: nueva tarjeta / fila en lista de leads (tiempo real si aplica)
+- **Sin** email automático al owner en Sprint 01
+- Owner abre dashboard o WhatsApp manual para contactar al padre
 
 ### Success Page
 
@@ -184,7 +185,8 @@ contact_me: {
    - Check: if satisfaction < 3, set flag for admin review
    - Store in `feedback` table
    - Emit event: feedback.created
-   - If satisfaction < 3: send alert email to admin
+   - If satisfaction < 3: flag for admin review in dashboard
+   - Optional alert email remains future/manual and is not part of Sprint 01
    - Show thank-you message
 3. If invalid: show field errors
 ```
@@ -222,12 +224,13 @@ CREATE TABLE feedback (
 }
 ```
 
-### Admin Alert
+### Admin Alert (Sprint 01)
 
 **If satisfaction < 3:**
-- Email to owner: "Low feedback: Emma Martinez (2 stars)"
-- Link to feedback detail in dashboard
-- Message: "Parent would like to discuss" (if contact_wanted = true)
+- Flag en dashboard + destacar en lista de feedback
+- **Sin** email automático al owner en Sprint 01
+- Si `contact_wanted = true`: mostrar badge "Padre pide contacto" en detalle
+- Seguimiento por WhatsApp manual según [WHATSAPP-CHANNEL.md](./WHATSAPP-CHANNEL.md)
 
 ### Success Message
 

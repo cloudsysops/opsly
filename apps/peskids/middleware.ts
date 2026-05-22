@@ -1,14 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server'
 
 export function middleware(req: NextRequest) {
-  if (req.nextUrl.pathname.startsWith('/admin')) {
-    const adminSecret = process.env.DASHBOARD_ADMIN_SECRET
+  const path = req.nextUrl.pathname
+  if (path === '/admin/login') {
+    return NextResponse.next()
+  }
 
-    // Check for admin token in cookie or session
+  if (path.startsWith('/admin')) {
+    const adminSecret = process.env.DASHBOARD_ADMIN_SECRET
     const adminToken = req.cookies.get('admin-token')?.value
 
-    if (!adminToken || adminToken !== adminSecret) {
-      return NextResponse.redirect(new URL('/', req.url))
+    if (!adminSecret || !adminToken || adminToken !== adminSecret) {
+      const login = new URL('/admin/login', req.url)
+      return NextResponse.redirect(login)
     }
   }
 
@@ -16,5 +20,5 @@ export function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/admin/:path*'],
+  matcher: ['/admin', '/admin/:path*'],
 }

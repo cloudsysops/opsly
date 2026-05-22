@@ -1,0 +1,45 @@
+import { PeskidsLockup } from '@/components/brand/peskids-logo'
+import { PeskidsWave } from '@/components/brand/peskids-logo'
+
+export function SiteFooter(): React.ReactElement {
+  return (
+    <footer className="relative mt-auto bg-pk-deep text-white">
+      <PeskidsWave color="rgba(76,184,176,0.15)" height={48} className="absolute left-0 right-0 top-0 -translate-y-full" />
+      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-8 lg:px-14">
+        <div className="flex flex-col gap-10 lg:flex-row lg:justify-between">
+          <div>
+            <PeskidsLockup height={44} color="#fff" tag="LLANOGRANDE · MEDELLÍN" />
+            <p className="mt-4 max-w-xs text-sm leading-relaxed text-white/70">
+              Clases de natación para niños. Sede principal en Llanogrande, Rionegro.
+            </p>
+          </div>
+          <div className="grid grid-cols-2 gap-8 text-sm sm:grid-cols-3 sm:gap-14">
+            <FooterCol title="Programa" items={['Niveles', 'Babyswim', 'Torneos', 'Vacacionales']} />
+            <FooterCol title="Información" items={['Sedes', 'Tarifas', 'Equipo', 'Preguntas']} />
+            <FooterCol
+              title="Contacto"
+              items={['+57 300 000 0000', 'hola@peskids.co', '@peskidsnatacion']}
+            />
+          </div>
+        </div>
+        <div className="mt-10 flex flex-col gap-2 border-t border-white/10 pt-6 text-xs text-white/50 sm:flex-row sm:justify-between">
+          <span>© {new Date().getFullYear()} Peskids · #TeamPesk</span>
+          <span>Más que natación, formamos para la vida.</span>
+        </div>
+      </div>
+    </footer>
+  )
+}
+
+function FooterCol({ title, items }: { title: string; items: string[] }): React.ReactElement {
+  return (
+    <div>
+      <p className="pk-eyebrow mb-3 text-white/50">{title}</p>
+      <ul className="flex flex-col gap-2 text-white/85">
+        {items.map((item) => (
+          <li key={item}>{item}</li>
+        ))}
+      </ul>
+    </div>
+  )
+}
