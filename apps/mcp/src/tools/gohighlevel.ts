@@ -1,9 +1,5 @@
 import { z } from 'zod';
-import {
-  getGoHighLevelService,
-  type Contact,
-  type Task,
-} from '@intcloudsysops/services/gohighlevel/index.js';
+import { getGoHighLevelService } from '@intcloudsysops/services/gohighlevel/index.js';
 import type { ToolDefinition, ToolContext } from '../types/index.js';
 
 // Input schemas
