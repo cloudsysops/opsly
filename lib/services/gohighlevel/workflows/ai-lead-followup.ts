@@ -59,7 +59,7 @@ Generate a brief, personalized follow-up message that:
 
   const userPrompt = `Generate a follow-up message for this client:
 Name: ${contact.firstName || ''} ${contact.lastName || ''}
-Last interaction: ${contact.lastInteraction || 'Not specified'}
+Last interaction: ${contact.updatedAt ?? contact.createdAt ?? 'Not specified'}
 Service: ${messageContext?.serviceType || 'Not specified'}
 Business: ${messageContext?.businessName || 'Not specified'}
 Owner: ${messageContext?.ownerName || 'Not specified'}
