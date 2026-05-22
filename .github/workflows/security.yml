@@ -39,10 +39,10 @@ jobs:
         id: audit
         run: |
           set +e
-          npm audit --audit-level=high --json > audit-report.json 2>&1
+          npm audit --audit-level=moderate --json > audit-report.json 2>&1
           EXIT_CODE=$?
           # Print summary (no secrets in output)
-          npm audit --audit-level=high 2>&1 || true
+          npm audit --audit-level=moderate 2>&1 || true
           exit $EXIT_CODE
 
       - name: Upload audit report
