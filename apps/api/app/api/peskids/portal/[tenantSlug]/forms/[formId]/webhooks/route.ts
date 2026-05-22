@@ -2,7 +2,7 @@ import type { NextRequest } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { jsonError, jsonOk } from '../../../../../../../lib/api-response';
 import { HTTP_STATUS } from '../../../../../../../lib/constants';
-import { createHmac, randomBytes } from 'crypto';
+import { randomBytes } from 'crypto';
 
 interface WebhookConfig {
   id: string;
