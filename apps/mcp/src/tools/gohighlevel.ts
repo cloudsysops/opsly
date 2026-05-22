@@ -58,7 +58,6 @@ const UpdateTaskInputSchema = z.object({
   title: z.string().optional(),
   description: z.string().optional(),
   dueDate: z.string().optional(),
-  status: z.enum(['open', 'completed']).optional(),
   priority: z.enum(['low', 'medium', 'high']).optional(),
 });
 
