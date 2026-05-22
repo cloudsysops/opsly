@@ -25,30 +25,9 @@ export function MyFormsPanel({ tenantSlug }: MyFormsPanelProps) {
     const fetchForms = async () => {
       setIsLoading(true);
       try {
-        // TODO: Fetch from API endpoint
-        // const response = await fetch(`/api/portal/peskids/${tenantSlug}/forms`);
-        // const data = await response.json();
-        // setForms(data.forms);
-
-        // Mock data for now
-        setForms([
-          {
-            formId: 'form_001',
-            formTitle: 'Lead Capture Form',
-            description: 'Collect basic information about new prospects',
-            submissionCount: 156,
-            lastSubmissionAt: new Date(Date.now() - 3600000).toISOString(),
-            status: 'active',
-          },
-          {
-            formId: 'form_002',
-            formTitle: 'Parent Feedback Survey',
-            description: 'Quarterly feedback from parents and guardians',
-            submissionCount: 89,
-            lastSubmissionAt: new Date(Date.now() - 172800000).toISOString(),
-            status: 'active',
-          },
-        ]);
+        const response = await fetch(`/api/peskids/portal/${tenantSlug}/forms`);
+        const data = await response.json();
+        setForms(data.forms);
       } catch (error) {
         console.error('Failed to fetch forms:', error);
       } finally {

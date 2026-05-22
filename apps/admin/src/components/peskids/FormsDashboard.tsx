@@ -33,52 +33,10 @@ export function FormsDashboard({ tenantSlug }: FormsDashboardProps) {
     const fetchFormAnalytics = async () => {
       setIsLoading(true);
       try {
-        // TODO: Fetch from API endpoint
-        // const response = await fetch(`/api/admin/peskids/${tenantSlug}/forms/analytics`);
-        // const data = await response.json();
-        // setForms(data.forms);
-        // setStats(data.stats);
-
-        // Mock data for now
-        setForms([
-          {
-            formId: 'form_001',
-            formTitle: 'Lead Capture Form',
-            submissionCount: 156,
-            abandonnmentRate: 0.12,
-            avgCompletionTimeSeconds: 245,
-            errorCount: 3,
-            uniqueUsers: 145,
-            lastSubmissionAt: new Date(Date.now() - 3600000).toISOString(),
-          },
-          {
-            formId: 'form_002',
-            formTitle: 'Parent Feedback Survey',
-            submissionCount: 89,
-            abandonnmentRate: 0.08,
-            avgCompletionTimeSeconds: 420,
-            errorCount: 1,
-            uniqueUsers: 85,
-            lastSubmissionAt: new Date(Date.now() - 7200000).toISOString(),
-          },
-          {
-            formId: 'form_003',
-            formTitle: 'Student Assessment',
-            submissionCount: 234,
-            abandonnmentRate: 0.05,
-            avgCompletionTimeSeconds: 600,
-            errorCount: 0,
-            uniqueUsers: 220,
-            lastSubmissionAt: new Date(Date.now() - 1800000).toISOString(),
-          },
-        ]);
-
-        setStats({
-          totalSubmissions: 479,
-          totalForms: 3,
-          avgCompletionTime: 420,
-          totalErrors: 4,
-        });
+        const response = await fetch(`/api/peskids/admin/${tenantSlug}/forms/analytics`);
+        const data = await response.json();
+        setForms(data.forms);
+        setStats(data.stats);
       } catch (error) {
         console.error('Failed to fetch form analytics:', error);
       } finally {

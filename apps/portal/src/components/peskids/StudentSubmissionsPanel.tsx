@@ -27,48 +27,9 @@ export function StudentSubmissionsPanel({ tenantSlug }: StudentSubmissionsPanelP
     const fetchSubmissions = async () => {
       setIsLoading(true);
       try {
-        // TODO: Fetch from API endpoint
-        // const response = await fetch(`/api/portal/peskids/${tenantSlug}/teacher/submissions?status=${filter}`);
-        // const data = await response.json();
-        // setSubmissions(data.submissions);
-
-        // Mock data for now
-        setSubmissions([
-          {
-            submissionId: 'sub_001',
-            studentName: 'Maria Garcia',
-            formTitle: 'Math Assessment',
-            submittedAt: new Date(Date.now() - 3600000).toISOString(),
-            status: 'pending_review',
-            feedbackProvided: false,
-          },
-          {
-            submissionId: 'sub_002',
-            studentName: 'Carlos Rodriguez',
-            formTitle: 'Reading Comprehension',
-            submittedAt: new Date(Date.now() - 7200000).toISOString(),
-            status: 'reviewed',
-            score: 85,
-            feedbackProvided: true,
-          },
-          {
-            submissionId: 'sub_003',
-            studentName: 'Ana Martinez',
-            formTitle: 'Science Project',
-            submittedAt: new Date(Date.now() - 86400000).toISOString(),
-            status: 'graded',
-            score: 92,
-            feedbackProvided: true,
-          },
-          {
-            submissionId: 'sub_004',
-            studentName: 'Juan Lopez',
-            formTitle: 'Math Assessment',
-            submittedAt: new Date(Date.now() - 1800000).toISOString(),
-            status: 'pending_review',
-            feedbackProvided: false,
-          },
-        ]);
+        const response = await fetch(`/api/peskids/portal/${tenantSlug}/teacher/submissions?status=${filter}`);
+        const data = await response.json();
+        setSubmissions(data.submissions);
       } catch (error) {
         console.error('Failed to fetch submissions:', error);
       } finally {
