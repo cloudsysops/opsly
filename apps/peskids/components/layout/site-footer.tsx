@@ -1,5 +1,8 @@
+import Link from 'next/link'
 import { PeskidsLockup } from '@/components/brand/peskids-logo'
 import { PeskidsWave } from '@/components/brand/peskids-logo'
+import { PESKIDS_CONTACT, buildWhatsAppUrl } from '@/lib/contact-channels'
+import { PESKIDS_INSTAGRAM } from '@/lib/instagram-feed'
 
 export function SiteFooter(): React.ReactElement {
   return (
@@ -18,7 +21,20 @@ export function SiteFooter(): React.ReactElement {
             <FooterCol title="Información" items={['Sedes', 'Tarifas', 'Equipo', 'Preguntas']} />
             <FooterCol
               title="Contacto"
-              items={['+57 300 000 0000', 'hola@peskids.co', '@peskidsnatacion']}
+              items={[
+                {
+                  label: PESKIDS_CONTACT.whatsapp.display,
+                  href: buildWhatsAppUrl(),
+                },
+                {
+                  label: PESKIDS_CONTACT.email,
+                  href: `mailto:${PESKIDS_CONTACT.email}`,
+                },
+                {
+                  label: PESKIDS_INSTAGRAM.handle,
+                  href: PESKIDS_INSTAGRAM.profileUrl,
+                },
+              ]}
             />
           </div>
         </div>
@@ -31,14 +47,31 @@ export function SiteFooter(): React.ReactElement {
   )
 }
 
-function FooterCol({ title, items }: { title: string; items: string[] }): React.ReactElement {
+type FooterItem = string | { label: string; href: string }
+
+function FooterCol({ title, items }: { title: string; items: FooterItem[] }): React.ReactElement {
   return (
     <div>
       <p className="pk-eyebrow mb-3 text-white/50">{title}</p>
       <ul className="flex flex-col gap-2 text-white/85">
-        {items.map((item) => (
-          <li key={item}>{item}</li>
-        ))}
+        {items.map((item) => {
+          const key = typeof item === 'string' ? item : item.href
+          if (typeof item === 'string') {
+            return <li key={key}>{item}</li>
+          }
+          return (
+            <li key={key}>
+              <Link
+                href={item.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-white"
+              >
+                {item.label}
+              </Link>
+            </li>
+          )
+        })}
       </ul>
     </div>
   )

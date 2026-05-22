@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Loader2, Send } from 'lucide-react'
+import { WhatsAppLink } from '@/components/contact/whatsapp-link'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
@@ -57,7 +58,8 @@ export function LeadCaptureForm(): React.ReactElement {
         <p className="pk-eyebrow text-pk-primary">Reserva</p>
         <CardTitle className="text-2xl">Clase de prueba gratis</CardTitle>
         <CardDescription>
-          Déjanos tus datos y te contactamos en menos de 48 horas hábiles.
+          Déjanos tus datos y te contactamos en menos de 48 horas hábiles.{' '}
+          <WhatsAppLink variant="ghost" label="O escríbenos por WhatsApp" className="mt-1 inline-flex" />
         </CardDescription>
       </CardHeader>
       <CardContent>

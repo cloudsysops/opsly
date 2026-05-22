@@ -72,6 +72,21 @@ Opciones: `--no-fetch`, `--base origin/main` (u otra rama base).
 
 Lista remotas **totalmente mergeadas** en la base (candidatas a borrar tras revisión humana), las **no mergeadas**, y locales con upstream **`[gone]`**.
 
+## Limpieza con archivo (ramas viejas)
+
+```bash
+# 1) Dry-run: guarda resumen en docs/01-development/archive/git-branches/YYYY-MM-DD/
+./scripts/git-branch-cleanup.sh
+
+# 2) Borrar remotas ya absorbidas por main (tras revisar el archivo)
+./scripts/git-branch-cleanup.sh --apply-merged
+
+# 3) Borrar locales huérfanas (upstream gone; no toca la rama actual ni PRs abiertos)
+./scripts/git-branch-cleanup.sh --apply-local-gone
+```
+
+Cada rama candidata genera `summary.md` (último commit, commits vs `main`, diff stat). **Protegidas:** `main`, rama actual, y heads de PRs abiertos (`gh pr list`).
+
 ## GitHub (recomendado)
 
 - Proteger `main`: exigir PR, comprobar que pasen los checks requeridos.

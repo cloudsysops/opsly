@@ -9,7 +9,7 @@ tenant_slug: peskids
 
 Peskids es un **tenant activo** en Opsly (plan **startup**) y el **primer piloto** del [Opsly Operational Blueprint v0.1](../../blueprints/opsly-operational-blueprint/README.md). Opsly actúa como **incubadora**: stack n8n + monitoreo, CRM base y capa de producto. Objetivo: **extraer** `peskids-platform` sin depender del runtime de orquestación de Opsly.
 
-**Fase actual:** MVP runtime en Opsly — [SPRINT-02-RUN.md](./SPRINT-02-RUN.md). **Deploy API prod:** [DEPLOYMENT-2026-05-21.md](./DEPLOYMENT-2026-05-21.md). Diseño: [SPRINT-01.md](./SPRINT-01.md).
+**Fase actual:** MVP runtime en Opsly — [SPRINT-02-RUN.md](./SPRINT-02-RUN.md). **Deploy API prod:** [DEPLOYMENT-2026-05-21.md](./DEPLOYMENT-2026-05-21.md). Diseño: [SPRINT-01.md](./SPRINT-01.md), pack Napkin: [DESIGN-PACK-REFERENCE.md](./DESIGN-PACK-REFERENCE.md).
 
 ## Estado actual (snapshot repo)
 

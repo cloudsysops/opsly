@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { Caveat_Brush, JetBrains_Mono, Nunito } from 'next/font/google'
+import { WhatsAppFloatingButton } from '@/components/contact/whatsapp-floating-button'
 import './globals.css'
 
 const fontNunito = Nunito({
@@ -39,7 +40,10 @@ export default function RootLayout({
       lang="es"
       className={`${fontNunito.variable} ${fontBrush.variable} ${fontMono.variable}`}
     >
-      <body>{children}</body>
+      <body>
+        {children}
+        <WhatsAppFloatingButton />
+      </body>
     </html>
   )
 }
