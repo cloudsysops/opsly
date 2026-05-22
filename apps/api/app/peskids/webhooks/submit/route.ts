@@ -1,3 +1,4 @@
+import type { NextRequest } from 'next/server';
 import { createHmac } from 'crypto';
 import { createClient } from '@supabase/supabase-js';
 import { jsonError, jsonOk } from '../../../../lib/api-response';
@@ -64,7 +65,7 @@ async function logAuditEvent(
   }
 }
 
-export async function POST(request: Request): Promise<Response> {
+export async function POST(request: NextRequest): Promise<Response> {
   try {
     const supabase = getSupabaseClient();
     const ipAddress = (request.headers.get('x-forwarded-for') ||
