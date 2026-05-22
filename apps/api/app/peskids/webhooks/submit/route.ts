@@ -183,7 +183,7 @@ export async function POST(request: NextRequest): Promise<Response> {
 
     return jsonError(
       'Internal server error processing webhook',
-      HTTP_STATUS.INTERNAL_SERVER_ERROR
+      HTTP_STATUS.INTERNAL_ERROR
     );
   }
 }
