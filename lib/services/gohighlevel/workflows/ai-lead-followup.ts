@@ -155,18 +155,15 @@ async function processContact(
     });
 
     // Create follow-up task (for manual review if needed)
-    const task: Task = {
-      id: randomUUID(),
+    // Create follow-up task (for manual review if needed)
+    const dueDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
+    const taskResult = await ghlService.createTask(config.tenantId, {
       contactId: contact.id,
       title: `Follow-up: ${contact.firstName || 'Contact'}`,
       description: `AI-generated follow-up sent via ${channel}. Review response and next steps.`,
-      dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
-      status: 'open',
+      dueDate,
       priority: 'medium',
-    };
-
-    const taskResult = await ghlService.createTask(config.tenantId, task);
-
+    });
     return {
       success: true,
       messageSent: !!sendResult,
