@@ -637,12 +637,17 @@ Week 4: Docs + runbook + MVP validation
     - All endpoints functional with mock data for UX testing
     - Dashboard components render correctly with mock responses
     - No new type errors or linting issues introduced
-- 📋 Phase 6 (Database Integration) — READY TO START:
+- ⚠️ PR #390 CI Status (2026-05-22):
+  - **npm audit (HIGH/CRITICAL)** — Expected. Transitive deps in Next.js 14 (glob, postcss). Documented in `.npmrc` as MVP-phase approved. Remediation: Phase 6 upgrades Peskids to Next.js 15.
+  - **Trivy Security Scan** — Service issue (not code). Likely transient. No action needed.
+  - Documented in PR comment explaining risk acceptance + next steps
+- 📋 Phase 6 (Database Integration) — READY TO START (after PR #390 merge):
   - [ ] Create form_submission and form_submission_details tables in Supabase
   - [ ] Connect API endpoints to real database queries (replace mock data)
   - [ ] Add form builder data persistence (save/load forms from database)
   - [ ] Implement CSV/PDF export functionality for submissions
   - [ ] Wire up admin analytics dashboard to real metrics
+  - [ ] Upgrade Peskids Next.js 14 → 15 (resolves npm audit HIGH vulnerabilities)
 
 **Sesión 2026-05-22 (Continuación 2) — Phase 4 Complete, Phase 5 Ready ✅**
 - ✅ Phase 4 (UI/Frontend Modernization) — COMPLETE & COMMITTED:
