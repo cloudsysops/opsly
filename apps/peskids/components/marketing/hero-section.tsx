@@ -54,7 +54,6 @@ export function HeroSection(): React.ReactElement {
               Ver portal de familias
             </Link>
           </div>
-
           <div className="mt-10 flex flex-wrap gap-10">
             {stats.map((s) => (
               <div key={s.label}>
