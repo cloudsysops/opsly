@@ -21,10 +21,10 @@ function getSupabaseClient() {
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { tenantSlug: string; formId: string } }
+  { params }: { params: Promise<{ tenantSlug: string; formId: string }> }
 ): Promise<Response> {
   try {
-    const { tenantSlug, formId } = params;
+    const { tenantSlug, formId } = await params;
 
     if (!tenantSlug || !formId) {
       return jsonError('Missing tenant slug or form ID', HTTP_STATUS.BAD_REQUEST);

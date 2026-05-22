@@ -41,10 +41,10 @@ function mapStatusToSubmissionStatus(
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { tenantSlug: string } }
+  { params }: { params: Promise<{ tenantSlug: string }> }
 ): Promise<Response> {
   try {
-    const tenantSlug = params.tenantSlug;
+    const { tenantSlug } = await params;
     const statusParam = request.nextUrl.searchParams.get('status') || 'pending';
 
     if (!tenantSlug) {

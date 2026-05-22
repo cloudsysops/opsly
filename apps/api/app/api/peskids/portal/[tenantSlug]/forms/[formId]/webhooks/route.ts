@@ -39,10 +39,10 @@ function generateSecret(): string {
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { tenantSlug: string; formId: string } }
+  { params }: { params: Promise<{ tenantSlug: string; formId: string }> }
 ): Promise<Response> {
   try {
-    const { tenantSlug, formId } = params;
+    const { tenantSlug, formId } = await params;
 
     if (!tenantSlug || !formId) {
       return jsonError('Missing tenant slug or form ID', HTTP_STATUS.BAD_REQUEST);
@@ -75,10 +75,10 @@ export async function GET(
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { tenantSlug: string; formId: string } }
+  { params }: { params: Promise<{ tenantSlug: string; formId: string }> }
 ): Promise<Response> {
   try {
-    const { tenantSlug, formId } = params;
+    const { tenantSlug, formId } = await params;
 
     if (!tenantSlug || !formId) {
       return jsonError('Missing tenant slug or form ID', HTTP_STATUS.BAD_REQUEST);
@@ -172,10 +172,10 @@ export async function POST(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { tenantSlug: string; formId: string } }
+  { params }: { params: Promise<{ tenantSlug: string; formId: string }> }
 ): Promise<Response> {
   try {
-    const { tenantSlug, formId } = params;
+    const { tenantSlug, formId } = await params;
     const { searchParams } = new URL(request.url);
     const webhookId = searchParams.get('webhook_id');
 
