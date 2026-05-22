@@ -96,3 +96,82 @@ export async function GET(
     return jsonError('Internal server error', HTTP_STATUS.INTERNAL_ERROR);
   }
 }
+
+export async function POST(
+  request: NextRequest,
+  { params }: { params: { tenantSlug: string } }
+): Promise<Response> {
+  try {
+    const tenantSlug = params.tenantSlug;
+
+    if (!tenantSlug) {
+      return jsonError('Missing tenant slug', HTTP_STATUS.BAD_REQUEST);
+    }
+
+    const body = await request.json();
+    const { title, description, fields, settings, status } = body;
+
+    if (!title) {
+      return jsonError('Form title is required', HTTP_STATUS.BAD_REQUEST);
+    }
+
+    const supabase = getSupabaseClient();
+    const formId = crypto.randomUUID();
+
+    // Create form
+    const { data: form, error: formError } = await supabase
+      .from('peskids.forms')
+      .insert({
+        form_id: formId,
+        tenant_slug: tenantSlug,
+        title,
+        description: description || '',
+        status: status || 'active',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      })
+      .select()
+      .single();
+
+    if (formError) {
+      console.error('Failed to create form:', formError);
+      return jsonError('Failed to create form', HTTP_STATUS.INTERNAL_ERROR);
+    }
+
+    // Insert form fields if provided
+    if (fields && Array.isArray(fields) && fields.length > 0) {
+      const fieldsData = fields.map((field: any, index: number) => ({
+        form_id: formId,
+        tenant_slug: tenantSlug,
+        field_id: crypto.randomUUID(),
+        field_type: field.type || 'text',
+        label: field.label || '',
+        required: field.required || false,
+        order: index,
+        options: field.options || null,
+        created_at: new Date().toISOString(),
+      }));
+
+      const { error: fieldsError } = await supabase
+        .from('peskids.form_fields')
+        .insert(fieldsData);
+
+      if (fieldsError) {
+        console.error('Failed to create form fields:', fieldsError);
+        // Continue - form was created, just fields failed
+      }
+    }
+
+    return jsonOk({
+      id: form.id,
+      formId,
+      title,
+      description,
+      status,
+      createdAt: form.created_at,
+    });
+  } catch (error) {
+    console.error('Form creation error:', error);
+    return jsonError('Internal server error', HTTP_STATUS.INTERNAL_ERROR);
+  }
+}
