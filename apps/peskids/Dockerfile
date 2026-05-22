@@ -6,8 +6,8 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies
-RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
+# Install dependencies (npm install: lockfile may lag package.json in standalone app)
+RUN npm install
 
 # Copy application code
 COPY . .
@@ -15,18 +15,13 @@ COPY . .
 # Build Next.js application
 RUN mkdir -p public && npm run build
 
-# Production stage
+# Production stage — reuse builder deps (lockfile is monorepo-managed)
 FROM node:20-alpine
 
 WORKDIR /app
 
-# Copy package files
-COPY package*.json ./
-
-# Install production dependencies only
-RUN if [ -f package-lock.json ]; then npm ci --omit=dev; else npm install --omit=dev; fi && npm cache clean --force
-
-# Copy built application from builder stage
+COPY --from=builder /app/package*.json ./
+COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/next.config.js ./next.config.js

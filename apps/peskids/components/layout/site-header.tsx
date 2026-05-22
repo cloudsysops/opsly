@@ -21,6 +21,9 @@ export function SiteHeader({ variant = 'marketing' }: SiteHeaderProps): React.Re
             <a href="#niveles" className="hover:text-pk-primary">
               Niveles
             </a>
+            <Link href="/familias" className="hover:text-pk-primary">
+              Familias
+            </Link>
             <a href="#contacto" className="hover:text-pk-primary">
               Contacto
             </a>

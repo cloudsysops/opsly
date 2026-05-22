@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { PeskidsBrush, PeskidsWave, StarBurst, WiggleLine } from '@/components/brand/peskids-logo'
 
 const stats = [
@@ -38,6 +39,21 @@ export function HeroSection(): React.ReactElement {
           </p>
 
           <WiggleLine width={120} className="mt-4" />
+
+          <div className="mt-8 flex flex-wrap gap-3">
+            <Link
+              href="#contacto"
+              className="inline-flex h-12 items-center justify-center rounded-full bg-pk-primary px-6 text-sm font-bold text-white shadow-md shadow-pk-primary/30 transition hover:bg-pk-primary-dark"
+            >
+              Reservar clase de prueba →
+            </Link>
+            <Link
+              href="/familias"
+              className="inline-flex h-12 items-center justify-center rounded-full border border-pk-border bg-pk-surface px-6 text-sm font-bold text-pk-ink transition hover:border-pk-primary/40 hover:bg-pk-snow"
+            >
+              Ver portal de familias
+            </Link>
+          </div>
 
           <div className="mt-10 flex flex-wrap gap-10">
             {stats.map((s) => (
