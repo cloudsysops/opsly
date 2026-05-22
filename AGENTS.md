@@ -391,7 +391,7 @@ node scripts/load-skills.js show opsly-api
    - Agent Dockerfiles (Node.js + BullMQ workers)
 
 3. **Docker Compose production stack** specification
-   - Services: nginx, postgres, redis, web, 7 agents, n8n, uptime-kuma
+   - Services: Traefik v3, postgres, redis, web, 7 agents, n8n, uptime-kuma
    - Environment variable template (comprehensive)
    - Health checks and logging configuration
 
