@@ -2,6 +2,7 @@ import type { NextRequest } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { jsonError, jsonOk } from '../../../../../../../lib/api-response';
 import { HTTP_STATUS } from '../../../../../../../lib/constants';
+import { triggerWebhooks } from '../../../../../../../lib/peskids-webhook-trigger';
 
 function requireEnv(name: string): string {
   const value = process.env[name];
@@ -21,7 +22,7 @@ function getSupabaseClient() {
 
 interface FormSubmissionPayload {
   formId: string;
-  submissionData: Record<string, any>;
+  submissionData: Record<string, string | number | boolean | null>;
   email?: string;
   userId?: string;
 }
@@ -80,6 +81,31 @@ export async function POST(
       return jsonError('Failed to save submission', HTTP_STATUS.INTERNAL_ERROR);
     }
 
+    // Trigger webhooks for this form
+    let webhookResults: { success: number; failed: number; errors: string[] } | null = null;
+    try {
+      const { data: webhooks } = await supabase
+        .from('peskids.webhook_configs')
+        .select('id, webhook_url, secret, is_active, failure_count')
+        .eq('form_id', formId)
+        .eq('tenant_slug', form.tenant_slug)
+        .eq('is_active', true);
+
+      if (webhooks && webhooks.length > 0) {
+        webhookResults = await triggerWebhooks(webhooks as any, {
+          form_id: formId,
+          submission_id: submissionId,
+          tenant_slug: form.tenant_slug,
+          form_data: body.submissionData,
+          timestamp: Date.now(),
+          user_id: body.userId,
+        });
+      }
+    } catch (webhookError) {
+      console.error('Failed to trigger webhooks:', webhookError);
+      // Continue - submission was created, just webhooks failed
+    }
+
     // Log audit event
     try {
       await supabase.rpc('log_audit_event', {
@@ -91,6 +117,8 @@ export async function POST(
         p_metadata: {
           form_id: formId,
           email: body.email,
+          webhooks_triggered: webhookResults?.success || 0,
+          webhooks_failed: webhookResults?.failed || 0,
         },
       });
     } catch (auditError) {
@@ -104,6 +132,7 @@ export async function POST(
       formId,
       status: 'completed',
       completedAt: submission.completed_at,
+      webhooks: webhookResults,
     });
   } catch (error) {
     console.error('Form submission error:', error);
