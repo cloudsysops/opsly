@@ -1021,11 +1021,16 @@ const worker = new Worker('security_agent:tasks', async (job) => {
 async function validateRequest(payload: any) {
   const { token, ip_address, user_agent } = payload;
 
+  const jwtSecret = process.env.JWT_SECRET;
+  if (!jwtSecret) {
+    throw new Error('JWT_SECRET environment variable must be set');
+  }
+
   try {
     // Verify JWT
     const decoded = jwt.verify(
       token,
-      process.env.JWT_SECRET || 'dev-secret'
+      jwtSecret
     ) as any;
 
     // Check token hasn't been revoked
