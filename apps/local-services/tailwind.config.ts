@@ -7,7 +7,7 @@ const config: Config = {
     extend: {
       colors: {
         ops: {
-          bg: '#0a0a0a',
+          bg: '#09090b',
           border: '#1e1e1e',
           green: '#22c55e',
         },

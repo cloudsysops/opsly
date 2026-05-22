@@ -6,7 +6,7 @@ const config: Config = {
     extend: {
       colors: {
         ops: {
-          bg: '#0a0a0a',
+          bg: '#09090b',
           card: '#111111',
           purple: '#7c3aed',
           indigo: '#6366f1',

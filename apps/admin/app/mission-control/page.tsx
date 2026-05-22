@@ -85,7 +85,7 @@ export default function MissionControlPage() {
   }, [baseUrl, mutateOpenClaw]);
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white p-6">
+    <div className="min-h-screen bg-[#09090b] text-white p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex justify-between items-center mb-8 flex-wrap gap-4">

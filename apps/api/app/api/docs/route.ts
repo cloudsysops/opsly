@@ -10,7 +10,7 @@ export function GET(): NextResponse {
   <title>Opsly API Docs</title>
   <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5/swagger-ui.css" />
   <style>
-    body { margin: 0; background: #0a0a0a; }
+    body { margin: 0; background: #09090b; }
     .swagger-ui .topbar { background: #111; }
   </style>
 </head>

@@ -341,7 +341,7 @@ export default function LandingPage() {
       )}
 
       {/* ── Nav ── */}
-      <nav className="fixed top-0 inset-x-0 z-40 border-b border-white/5 bg-[#0a0a0a]/80 backdrop-blur-sm">
+      <nav className="fixed top-0 inset-x-0 z-40 border-b border-white/5 bg-[#09090b]/80 backdrop-blur-sm">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
           <span className="font-bold text-xl tracking-tight ops-gradient-text">Opsly</span>
           <a

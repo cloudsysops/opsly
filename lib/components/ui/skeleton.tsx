@@ -1,5 +1,5 @@
 import type { CSSProperties, ReactElement } from 'react';
-import { cn } from '@/lib/utils';
+import { cn } from '../utils';
 
 export interface SkeletonProps {
   className?: string;

@@ -10,8 +10,8 @@ export type PortalInviteParams = {
 const PORTAL_INVITE_HTML_TEMPLATE = `<!DOCTYPE html>
 <html lang="es">
 <head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><title>Opsly</title></head>
-<body style="margin:0;background:#0a0a0a;color:#fafafa;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;">
-<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#0a0a0a;padding:32px 16px;"><tr><td align="center">
+<body style="margin:0;background:#09090b;color:#fafafa;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;">
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#09090b;padding:32px 16px;"><tr><td align="center">
 <table role="presentation" width="560" cellspacing="0" cellpadding="0" style="max-width:560px;background:#111111;border:1px solid #1e1e1e;border-radius:12px;padding:32px;">
 <tr><td style="font-size:22px;font-weight:700;letter-spacing:-0.02em;color:#22c55e;">Opsly</td></tr>
 <tr><td style="height:24px;"></td></tr>
@@ -19,7 +19,7 @@ const PORTAL_INVITE_HTML_TEMPLATE = `<!DOCTYPE html>
 <tr><td style="height:12px;"></td></tr>
 <tr><td style="font-size:15px;line-height:1.6;color:#d4d4d4;">Tu espacio <strong>{companyName}</strong> en Opsly está listo: automatización y monitoreo en un solo lugar.</td></tr>
 <tr><td style="height:28px;"></td></tr>
-<tr><td align="center"><a href="{activateUrl}" style="display:inline-block;background:#22c55e;color:#0a0a0a;text-decoration:none;font-weight:600;font-size:15px;padding:14px 28px;border-radius:8px;">Activar mi cuenta</a></td></tr>
+<tr><td align="center"><a href="{activateUrl}" style="display:inline-block;background:#22c55e;color:#09090b;text-decoration:none;font-weight:600;font-size:15px;padding:14px 28px;border-radius:8px;">Activar mi cuenta</a></td></tr>
 <tr><td style="height:28px;"></td></tr>
 <tr><td style="font-size:14px;line-height:1.6;color:#d4d4d4;"><strong style="color:#fafafa;">Primeros pasos</strong>
 <ol style="margin:12px 0 0 18px;padding:0;line-height:1.7;">
