@@ -70,7 +70,7 @@ Los padres lo llenan. Tú recibes sus datos aquí. No se pierde nada."
 "Ahora, aquí es el corazón de Peskids. Tu dashboard personal. Mira:
 
 **Card 1: Leads Nuevos Esta Semana**
-— Cuántos padres new solicitaron información
+— Cuántos padres nuevos solicitaron información
 — Nombres, emails, teléfonos
 — Qué grado les interesa
 — Un clic para hacer seguimiento
