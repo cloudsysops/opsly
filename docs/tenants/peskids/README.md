@@ -7,7 +7,7 @@ tenant_slug: peskids
 
 # Peskids — tenant incubado en Opsly
 
-Peskids es un **tenant activo** en Opsly (plan **startup**) y el **primer piloto** del [Opsly Operational Blueprint v0.1](../../blueprints/opsly-operational-blueprint/README.md). Opsly actúa como **incubadora**: stack n8n + monitoreo, CRM base y capa de producto. Objetivo: **extraer** `peskids-platform` sin depender del runtime de orquestación de Opsly.
+Peskids es un **tenant activo** en Opsly (plan **startup**) y el **piloto de referencia** del [Opsly Operational Blueprint v0.1](../../blueprints/opsly-operational-blueprint/README.md). Opsly actúa como **incubadora**: stack n8n + monitoreo, CRM base y capa de producto. El mismo blueprint alimenta la [plantilla reusable de clientes](../../blueprints/opsly-operational-blueprint/CLIENT-INCUBATION-TEMPLATE.md) para nuevos tenants. Objetivo: **extraer** `peskids-platform` sin depender del runtime de orquestación de Opsly.
 
 **Fase actual:** MVP runtime en Opsly — [SPRINT-02-RUN.md](./SPRINT-02-RUN.md). **Deploy API prod:** [DEPLOYMENT-2026-05-21.md](./DEPLOYMENT-2026-05-21.md). Diseño: [SPRINT-01.md](./SPRINT-01.md), pack Napkin: [DESIGN-PACK-REFERENCE.md](./DESIGN-PACK-REFERENCE.md).
 
@@ -91,9 +91,10 @@ Peskids es un **tenant activo** en Opsly (plan **startup**) y el **primer piloto
 
 ## Blueprint alignment
 
-- Blueprint en **draft v0.1**; Peskids lo **valida**, no lo canoniza.
+- Blueprint en **draft v0.1**; Peskids lo **valida** como piloto de referencia, no lo canoniza.
 - Ciclo: incubar → validar → extraer ([EXTRACTION-PLAN.md](./EXTRACTION-PLAN.md)).
 - Hub blueprint: [`../../blueprints/opsly-operational-blueprint/`](../../blueprints/opsly-operational-blueprint/)
+- Plantilla para otros clientes: [`../../blueprints/opsly-operational-blueprint/CLIENT-INCUBATION-TEMPLATE.md`](../../blueprints/opsly-operational-blueprint/CLIENT-INCUBATION-TEMPLATE.md)
 
 ## Config review (propuesta, no aplicada)
 

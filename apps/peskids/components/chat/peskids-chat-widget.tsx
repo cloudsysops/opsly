@@ -8,6 +8,8 @@ type ChatMessage = {
   role: 'user' | 'assistant'
   text: string
   fromLlm?: boolean
+  stage?: 'collecting' | 'handoff'
+  progress?: number
 }
 
 const SESSION_KEY = 'peskids_chat_session_id'
@@ -64,6 +66,8 @@ export function PeskidsChatWidget(): React.ReactElement | null {
         reply?: string
         disclaimer?: string
         from_llm?: boolean
+        stage?: 'collecting' | 'handoff'
+        progress?: number
         error?: string
       }
 
@@ -81,7 +85,13 @@ export function PeskidsChatWidget(): React.ReactElement | null {
       const suffix = data.disclaimer ? `\n\n_${data.disclaimer}_` : ''
       setMessages((prev) => [
         ...prev,
-        { role: 'assistant', text: `${data.reply}${suffix}`, fromLlm: data.from_llm },
+        {
+          role: 'assistant',
+          text: `${data.reply}${suffix}`,
+          fromLlm: data.from_llm,
+          stage: data.stage,
+          progress: data.progress,
+        },
       ])
     } catch {
       setMessages((prev) => [
@@ -136,6 +146,13 @@ export function PeskidsChatWidget(): React.ReactElement | null {
                 >
                   {m.text}
                 </p>
+                {m.role === 'assistant' && typeof m.progress === 'number' ? (
+                  <p className="mt-1 text-[11px] text-pk-sub">
+                    {m.stage === 'handoff'
+                      ? 'Listo para soporte humano'
+                      : `Recopilando datos · ${Math.max(1, Math.round(m.progress * 5))}/5`}
+                  </p>
+                ) : null}
               </div>
             ))}
             {sending ? (

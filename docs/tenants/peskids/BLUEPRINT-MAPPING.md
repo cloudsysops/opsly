@@ -1,6 +1,6 @@
 # Peskids ↔ Opsly Operational Blueprint Mapping
 
-**Purpose:** Define how Peskids (incubated tenant) aligns with and validates the Opsly Operational Blueprint v0.1  
+**Purpose:** Define how Peskids (incubated tenant) aligns with and validates the Opsly Operational Blueprint v0.1 and the reusable client incubation template for future tenants
 **Status:** Mapping v1.0 (Draft)  
 **Updated:** 2026-05-19
 
@@ -18,7 +18,7 @@
 - Admin dashboards show only current tenant's data
 - Events emit `tenant_id` for proper routing in Opsly event bus
 
-**Validation:** ✅ Peskids proves multi-tenant isolation is viable for real users
+**Validation:** ✅ Peskids proves multi-tenant isolation is viable for real users and acts as reference for future tenants
 
 ---
 

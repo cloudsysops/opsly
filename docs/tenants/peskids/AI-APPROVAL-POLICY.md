@@ -89,7 +89,7 @@ Cualquier excepción (p. ej. auto-ack “recibimos tu mensaje”) requiere:
 | Fase | Permitido | Prohibido |
 |------|-----------|-----------|
 | 0 — Manual | Owner responde en app WhatsApp | Bot / IA enviando |
-| 1 — Inbound | Webhook → log → dashboard | Auto-reply (salvo ack fijo pre-aprobado) |
+| 1 — Inbound | Webhook → log → dashboard, o auto-reply si `PESKIDS_WHATSAPP_REPLY_MODE=auto` | Auto-reply IA sin bandera explícita |
 | 2 — Borrador | IA → `draft` en dashboard | Envío |
 | 3 — Envío | Tras `approved` + registro `approved_by` | Envío masivo sin revisión |
 

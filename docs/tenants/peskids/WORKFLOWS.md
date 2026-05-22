@@ -122,8 +122,8 @@ Ver [WHATSAPP-CHANNEL.md](./WHATSAPP-CHANNEL.md).
 | Campo | Valor |
 |-------|--------|
 | **Trigger** | Webhook Jelou o Meta |
-| **Pasos** | Validar firma → log mensaje → evento → cola dashboard |
-| **Prohibido** | Auto-reply IA; envío sin `approved` |
+| **Pasos** | Validar firma → log mensaje → evento → generar pregunta IA o handoff → cola dashboard |
+| **Prohibido** | Cerrar cupos o enviar respuesta final sin `approved` |
 
 ### 6. `peskids-whatsapp-send-approved` (futuro)
 
@@ -131,7 +131,7 @@ Solo tras aprobación humana en dashboard; plantillas Meta si aplica.
 
 ## Qué no automatizar (MVP / Sprint 01)
 
-- Respuestas WhatsApp automáticas (manual en Fase 0; API en fases posteriores con aprobación)
+- Respuestas WhatsApp finales automáticas sin revisión
 - Publicación en redes
 - Cambios en datos de alumnos/padres sin ticket de aprobación
 - Suspender/reanudar stacks Docker

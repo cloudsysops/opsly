@@ -16,6 +16,7 @@ Un conjunto de **principios, capas, módulos y patrones** que el equipo Opsly us
 - Incubar tenants (p. ej. Peskids) dentro de Opsly con trazabilidad
 - Extraer después un **producto independiente** sin rehacer todo desde cero
 - Elegir proveedores con **bajo lock-in** y costos acotados
+- Repetir el mismo modelo para más clientes sin reescribir la arquitectura
 
 Inspiración de buenas prácticas (seguridad, observabilidad, confiabilidad, modularidad, documentación) — **no** copiar arquitecturas enterprise ni landing zones multi-cuenta.
 
@@ -70,6 +71,7 @@ Ejemplo reciente: [Peskids](../../tenants/peskids/README.md) — piloto incubado
 | [MODULES.md](./MODULES.md) | Módulos reutilizables |
 | [PROVIDER-MATRIX.md](./PROVIDER-MATRIX.md) | Elección de proveedores |
 | [TENANT-INCUBATION.md](./TENANT-INCUBATION.md) | Ciclo de vida del tenant |
+| [CLIENT-INCUBATION-TEMPLATE.md](./CLIENT-INCUBATION-TEMPLATE.md) | Plantilla reusable para nuevos clientes |
 | [EXTRACTION-PATTERN.md](./EXTRACTION-PATTERN.md) | Salida a plataforma propia |
 | [SECURITY-AND-TRUST.md](./SECURITY-AND-TRUST.md) | Confianza y datos |
 | [COMMERCIAL-PACKAGES.md](./COMMERCIAL-PACKAGES.md) | Paquetes comerciales |
@@ -86,7 +88,7 @@ Ejemplo reciente: [Peskids](../../tenants/peskids/README.md) — piloto incubado
 
 ## Piloto de referencia
 
-[Peskids](../../tenants/peskids/README.md) valida este blueprint en un tenant real (incubar → validar → extraer). El blueprint sigue en **draft v0.1**; las lecciones de Peskids alimentan `v0.2`, no convierten el borrador en canon.
+[Peskids](../../tenants/peskids/README.md) valida este blueprint en un tenant real (incubar → validar → extraer). La plantilla de cliente vive en [CLIENT-INCUBATION-TEMPLATE.md](./CLIENT-INCUBATION-TEMPLATE.md) y reutiliza la misma lógica para futuros tenants. El blueprint sigue en **draft v0.1**; las lecciones de Peskids alimentan `v0.2`, no convierten el borrador en canon.
 
 ## Estado
 

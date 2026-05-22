@@ -24,13 +24,17 @@ export function InviteActivate() {
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
   const [err, setErr] = useState<string | null>(null);
+  const [passkeyErr, setPasskeyErr] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [passkeyLoading, setPasskeyLoading] = useState(false);
+  const [passkeyReady, setPasskeyReady] = useState(false);
 
   const displayName = email.includes('@') ? email.split('@')[0] : 'equipo';
 
   async function onSubmit(e: FormSubmitEvent) {
     e.preventDefault();
     setErr(null);
+    setPasskeyErr(null);
     const validation = validateInviteActivationForm({
       password,
       confirm,
@@ -69,12 +73,30 @@ export function InviteActivate() {
         setErr(pwError.message);
         return;
       }
-      router.push('/dashboard');
-      router.refresh();
+      setPasskeyReady(true);
     } catch (error) {
       setErr(error instanceof Error ? error.message : 'No se pudo activar la cuenta');
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function onRegisterPasskey(): Promise<void> {
+    setPasskeyErr(null);
+    setPasskeyLoading(true);
+    try {
+      const supabase = createClient();
+      const { error: registerError } = await supabase.auth.registerPasskey();
+      if (registerError) {
+        setPasskeyErr(registerError.message);
+        return;
+      }
+      router.push('/dashboard');
+      router.refresh();
+    } catch (error) {
+      setPasskeyErr(error instanceof Error ? error.message : 'No se pudo activar la passkey');
+    } finally {
+      setPasskeyLoading(false);
     }
   }
 
@@ -94,6 +116,11 @@ export function InviteActivate() {
           {err ? (
             <div className="rounded border border-ops-red/40 bg-ops-red/10 px-3 py-2 text-sm text-ops-red">
               {err}
+            </div>
+          ) : null}
+          {passkeyErr ? (
+            <div className="rounded border border-ops-red/40 bg-ops-red/10 px-3 py-2 text-sm text-ops-red">
+              {passkeyErr}
             </div>
           ) : null}
           <div className="space-y-1">
@@ -127,7 +154,23 @@ export function InviteActivate() {
           <Button type="submit" variant="primary" className="w-full" disabled={loading}>
             {loading ? 'Activando...' : 'Activar mi cuenta'}
           </Button>
+          {passkeyReady ? (
+            <Button
+              type="button"
+              variant="default"
+              className="w-full"
+              onClick={() => void onRegisterPasskey()}
+              disabled={passkeyLoading}
+            >
+              {passkeyLoading ? 'Guardando huella...' : 'Guardar acceso con huella'}
+            </Button>
+          ) : null}
         </form>
+        {passkeyReady ? (
+          <p className="text-center text-xs leading-relaxed text-ops-gray">
+            Ya tienes la contraseña creada. Si tu navegador lo soporta, puedes registrar una passkey para entrar con huella o Touch ID.
+          </p>
+        ) : null}
       </div>
     </div>
   );

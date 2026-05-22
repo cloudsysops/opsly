@@ -7,7 +7,15 @@ export function createClient() {
     // Fallback for build without env - creates dummy client for prerendering
     const fallbackUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co';
     const fallbackAnon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder';
-    return createBrowserClient(fallbackUrl, fallbackAnon);
+    return createBrowserClient(fallbackUrl, fallbackAnon, {
+      auth: {
+        experimental: { passkey: true },
+      },
+    });
   }
-  return createBrowserClient(url, anon);
+  return createBrowserClient(url, anon, {
+    auth: {
+      experimental: { passkey: true },
+    },
+  });
 }

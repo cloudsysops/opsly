@@ -1,13 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { validateAdminRequest } from '@/lib/admin-auth'
+import { validateStaffSession } from '@/lib/staff-auth'
 import { supabaseServer, getRecentMessages } from '@/lib/supabase'
 import type { Database, DashboardData } from '@/lib/types'
 
-export async function GET(req: NextRequest) {
+export const dynamic = 'force-dynamic'
+
+export async function GET(_req: NextRequest) {
   try {
-    const auth = validateAdminRequest(req)
-    if (!auth.valid) {
-      return NextResponse.json({ error: auth.error }, { status: 401 })
+    const auth = await validateStaffSession()
+    if (!auth.ok) {
+      return NextResponse.json({ error: auth.error }, { status: auth.status })
     }
 
     const tenantId = process.env.NEXT_PUBLIC_TENANT_ID || 'peskids'

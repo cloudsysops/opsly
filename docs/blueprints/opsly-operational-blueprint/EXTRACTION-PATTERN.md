@@ -6,7 +6,7 @@ last_review: 2026-05-19
 
 # Opsly Operational Blueprint — Extraction Pattern
 
-Cómo sacar un tenant incubado a **plataforma independiente** sin romper al cliente ni a Opsly.
+Cómo sacar un tenant incubado a **plataforma independiente** sin romper al cliente ni a Opsly. Esta es la salida estándar para cualquier cliente que siga la plantilla reusable.
 
 ## Principio
 
@@ -121,4 +121,4 @@ Solo tras sign-off cliente:
 - Métricas agregadas vía webhook read-only.
 - Soporte Opsly como **servicio**, no runtime obligatorio.
 
-Ver [TENANT-INCUBATION.md](./TENANT-INCUBATION.md) etapa **Connected Client Platform**.
+Ver [TENANT-INCUBATION.md](./TENANT-INCUBATION.md) etapa **Connected Client Platform** y [CLIENT-INCUBATION-TEMPLATE.md](./CLIENT-INCUBATION-TEMPLATE.md) para la versión reusable.
