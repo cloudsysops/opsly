@@ -200,15 +200,15 @@ export async function runAILeadFollowupWorkflow(config: AIFollowupConfig): Promi
 
   try {
     // Fetch contacts
-    const filters = config.filters || {};
-    const contacts = await ghlService.getContacts(config.tenantId, {
+    const filters = config.filters ?? {};
+    const { data: contacts } = await ghlService.getContacts(config.tenantId, {
       status: filters.status,
       source: filters.source,
       limit: filters.limit || 10,
       offset: 0,
     });
 
-    if (!contacts || contacts.length === 0) {
+    if (contacts.length === 0) {
       safeLogger.info('No contacts found for AI follow-up', {
         tenantId: config.tenantId,
         filters,
