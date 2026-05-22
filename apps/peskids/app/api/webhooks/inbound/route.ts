@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabaseServer } from '@/lib/supabase'
+import { generatePeskidsChatReply, triggerN8nMessagePipeline } from '@/lib/chat-assistant'
 import { emitEvent } from '@/lib/events'
+import { storeDraftReply, storeInboundMessage } from '@/lib/message-store'
 
 type InboundSource = 'whatsapp' | 'instagram' | 'web'
 
@@ -74,26 +75,19 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    const tenantId = process.env.NEXT_PUBLIC_TENANT_ID || 'peskids'
-    const supabase = supabaseServer()
+    const { message, error } = await storeInboundMessage(normalized)
 
-    const { data, error } = await supabase
-      .from('messages')
-      .insert({
-        tenant_id: tenantId,
-        source: normalized.source,
-        sender_contact: normalized.sender_contact,
-        sender_name: normalized.sender_name,
-        message_text: normalized.message_text,
-        external_id: normalized.external_id,
-      })
-      .select('id, source, sender_name, sender_contact, message_text, created_at')
-      .single()
-
-    if (error) {
-      console.error('Inbound message insert failed:', error.message)
+    if (error || !message) {
+      console.error('Inbound message insert failed:', error)
       return NextResponse.json({ error: 'Failed to store message' }, { status: 500 })
     }
+
+    const assistant = await generatePeskidsChatReply(
+      normalized.message_text,
+      normalized.sender_name
+    )
+    await storeDraftReply(message.id, assistant.reply, normalized.source)
+    void triggerN8nMessagePipeline(message.id, normalized.message_text)
 
     await emitEvent('message.received', {
       source: normalized.source,
@@ -102,7 +96,15 @@ export async function POST(req: NextRequest) {
       timestamp: new Date().toISOString(),
     })
 
-    return NextResponse.json({ ok: true, message: data }, { status: 201 })
+    return NextResponse.json(
+      {
+        ok: true,
+        message,
+        draft_preview: assistant.reply,
+        from_llm: assistant.from_llm,
+      },
+      { status: 201 }
+    )
   } catch (error) {
     console.error('Inbound webhook error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })

@@ -27,42 +27,27 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ $env.SUPABASE_URL }}/rest/v1/messages",
-        "authentication": "genericCredentialType",
-        "genericCredentialType": "=supabaseServiceRole",
-        "sendBody": true,
-        "bodyParameters": {
+        "url": "={{ $env.PESKIDS_INBOUND_WEBHOOK_URL || 'https://peskids.op-sly.com/api/webhooks/inbound' }}",
+        "sendHeaders": true,
+        "headerParameters": {
           "parameters": [
             {
-              "name": "tenant_id",
-              "value": "=peskids"
+              "name": "Content-Type",
+              "value": "application/json"
             },
             {
-              "name": "source",
-              "value": "=instagram"
-            },
-            {
-              "name": "sender_contact",
-              "value": "={{ $node[\"Parse Message\"].json.sender_contact }}"
-            },
-            {
-              "name": "sender_name",
-              "value": "={{ $node[\"Parse Message\"].json.sender_name }}"
-            },
-            {
-              "name": "message_text",
-              "value": "={{ $node[\"Parse Message\"].json.message_text }}"
-            },
-            {
-              "name": "external_id",
-              "value": "={{ $node[\"Parse Message\"].json.external_id }}"
+              "name": "x-webhook-secret",
+              "value": "={{ $env.PESKIDS_INBOUND_WEBHOOK_SECRET || $env.JELOU_WEBHOOK_SECRET }}"
             }
           ]
         },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ source: 'instagram', sender_contact: $node[\"Parse Message\"].json.sender_contact, sender_name: $node[\"Parse Message\"].json.sender_name, message_text: $node[\"Parse Message\"].json.message_text, external_id: $node[\"Parse Message\"].json.external_id }) }}",
         "options": {}
       },
       "id": "insert-message",
-      "name": "Insert into Supabase",
+      "name": "POST Peskids Inbound",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.1,
       "position": [650, 300]

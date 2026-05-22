@@ -21,6 +21,14 @@
       <label>Nombre completo <input name="name" required minlength="2" maxlength="50" /></label>
       <label>Email <input name="email" type="email" required /></label>
       <label>Teléfono (opcional) <input name="phone" type="tel" /></label>
+      <label>Modalidad de clase
+        <select name="class_modality" required>
+          <option value="">Selecciona…</option>
+          <option value="llanogrande">Sede Llanogrande (Rionegro)</option>
+          <option value="domicilio">Clase a domicilio</option>
+        </select>
+      </label>
+      <label>Barrio o zona <input name="neighborhood" required minlength="2" maxlength="80" placeholder="Ej. Llanogrande, Envigado…" /></label>
       <label>Grado de interés
         <select name="grade_interested" required>
           <option value="">Selecciona…</option>

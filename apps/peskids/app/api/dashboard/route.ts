@@ -24,7 +24,7 @@ export async function GET(req: NextRequest) {
     // Fetch new leads this week
     const { data: newLeads, error: leadsError } = await supabase
       .from('leads')
-      .select('id, name, email, phone, grade_interested')
+      .select('id, name, email, phone, class_modality, neighborhood, grade_interested')
       .eq('tenant_id', tenantId)
       .gte('created_at', weekStartISO)
       .order('created_at', { ascending: false })
@@ -72,7 +72,13 @@ export async function GET(req: NextRequest) {
 
     const dashboardData: DashboardData = {
       new_leads_count: newLeads?.length || 0,
-      new_leads: (newLeads as Array<Pick<Database['public']['Tables']['leads']['Row'], 'id' | 'name' | 'email' | 'phone' | 'grade_interested'>>) || [],
+      new_leads:
+        (newLeads as Array<
+          Pick<
+            Database['public']['Tables']['leads']['Row'],
+            'id' | 'name' | 'email' | 'phone' | 'class_modality' | 'neighborhood' | 'grade_interested'
+          >
+        >) || [],
       active_students_count: students?.length || 0,
       students_by_grade: studentsByGrade,
       recent_feedback: (recentFeedback as Array<Pick<Database['public']['Tables']['feedback']['Row'], 'id' | 'child_name' | 'satisfaction' | 'suggestion'>>) || [],

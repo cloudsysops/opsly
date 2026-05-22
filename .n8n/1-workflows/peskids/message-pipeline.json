@@ -1,0 +1,50 @@
+{
+  "id": "peskids-message-pipeline",
+  "name": "Peskids Message Pipeline (notify)",
+  "active": true,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "peskids-message-pipeline",
+        "responseMode": "responseNode"
+      },
+      "id": "webhook-trigger",
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "functionCode": "const body = $input.first().json.body || $input.first().json;\nreturn {\n  message_id: body.message_id || '',\n  tenant_id: body.tenant_id || 'peskids',\n  logged_at: new Date().toISOString()\n};"
+      },
+      "id": "normalize",
+      "name": "Normalize",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "responseCode": 200,
+        "responseData": "={{ { ok: true, pipeline: 'peskids-message-pipeline', message_id: $node[\"Normalize\"].json.message_id } }}"
+      },
+      "id": "response",
+      "name": "Return OK",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [650, 300]
+    }
+  ],
+  "connections": {
+    "webhook-trigger": {
+      "main": [[{ "node": "normalize", "type": "main", "index": 0 }]]
+    },
+    "normalize": {
+      "main": [[{ "node": "response", "type": "main", "index": 0 }]]
+    }
+  },
+  "settings": { "executionOrder": "v1" },
+  "meta": { "instanceId": "peskids" }
+}
