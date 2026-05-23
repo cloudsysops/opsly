@@ -282,8 +282,8 @@ export const securityAgentTasks: AutonomousTask[] = [
     id: "security-002",
     title: "Secret Scanning: Remove hardcoded secrets, rotate tokens",
     agent: "security",
-    executor: "shell",
-    executorFallback: "claude-code",
+    executor: "claude-code",
+    executorFallback: "shell",
     priority: 1,
     prUrl: "https://github.com/cloudsysops/opsly/pull/security-002",
     description: `
