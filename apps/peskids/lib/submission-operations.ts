@@ -14,12 +14,12 @@ export interface BulkGradeRequest {
 }
 
 export class SubmissionOperations {
-  private supabase: ReturnType<typeof createClient>;
+  private supabase: any;
 
   constructor(supabaseUrl: string, supabaseKey: string) {
     this.supabase = createClient(supabaseUrl, supabaseKey, {
       auth: { autoRefreshToken: false, persistSession: false },
-    });
+    }) as any;
   }
 
   /**
@@ -120,16 +120,27 @@ export class SubmissionOperations {
       throw new Error(`Failed to fetch submissions: ${error.message}`);
     }
 
-    const stats = {
-      total: submissions?.length || 0,
-      graded: submissions?.filter((s) => s.status === 'graded').length || 0,
-      reviewed: submissions?.filter((s) => s.status === 'reviewed').length || 0,
-      pending: submissions?.filter((s) => s.status === 'pending_review').length || 0,
+    const submissionList = (submissions ?? []) as Array<{
+      status: 'graded' | 'reviewed' | 'pending_review' | string;
+      score?: number | null;
+    }>;
+
+    const stats: {
+      total: number;
+      graded: number;
+      reviewed: number;
+      pending: number;
+      averageScore?: number;
+    } = {
+      total: submissionList.length || 0,
+      graded: submissionList.filter((s) => s.status === 'graded').length || 0,
+      reviewed: submissionList.filter((s) => s.status === 'reviewed').length || 0,
+      pending: submissionList.filter((s) => s.status === 'pending_review').length || 0,
     };
 
-    const gradedScores = (submissions || [])
-      .filter((s) => s.score !== null && s.score !== undefined)
-      .map((s) => s.score);
+    const gradedScores = submissionList
+      .map((s) => s.score)
+      .filter((score): score is number => typeof score === 'number');
 
     if (gradedScores.length > 0) {
       stats.averageScore = gradedScores.reduce((a, b) => a + b, 0) / gradedScores.length;

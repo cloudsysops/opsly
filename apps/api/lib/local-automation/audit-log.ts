@@ -4,21 +4,7 @@ import { randomUUID } from 'node:crypto';
 
 import type { AutomationAuditEvent } from './types';
 
-function resolveRepoRoot(): string {
-  const cwd = process.cwd();
-  const normalizedCwd = path.normalize(cwd);
-
-  if (
-    path.basename(normalizedCwd) === 'api' &&
-    path.basename(path.dirname(normalizedCwd)) === 'apps'
-  ) {
-    return path.resolve(normalizedCwd, '..', '..');
-  }
-
-  return normalizedCwd;
-}
-
-const auditPath = path.join(resolveRepoRoot(), 'runtime', 'logs', 'local-automation.jsonl');
+const auditPath = path.join(process.cwd(), 'runtime', 'logs', 'local-automation.jsonl');
 
 export async function appendAutomationAuditEvent(
   event: Omit<AutomationAuditEvent, 'id' | 'ts'>

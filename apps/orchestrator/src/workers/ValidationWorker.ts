@@ -25,17 +25,7 @@ async function fetchCIConclusion(sha: string, token: string): Promise<CIConclusi
   const res = await fetch(url, {
     headers: { Authorization: `Bearer ${token}`, Accept: "application/vnd.github+json" },
   });
-  if (!res.ok) {
-    const body = await res.text().catch(() => "<unavailable>");
-    console.warn("Failed to fetch GitHub Actions runs", {
-      repo: REPO,
-      sha,
-      status: res.status,
-      statusText: res.statusText,
-      body,
-    });
-    return "pending";
-  }
+  if (!res.ok) return "failure";
 
   const data = (await res.json()) as { workflow_runs?: { status: string; conclusion: string | null }[] };
   const runs = data.workflow_runs ?? [];

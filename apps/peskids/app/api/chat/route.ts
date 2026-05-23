@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { generatePeskidsChatReply, triggerN8nMessagePipeline } from '@/lib/chat-assistant'
-import { storeDraftReply, storeInboundMessage } from '@/lib/message-store'
+import { triggerN8nMessagePipeline } from '@/lib/chat-assistant'
+import { storeDraftReply, storeInboundMessage, storeOutboundMessage } from '@/lib/message-store'
 import { emitEvent } from '@/lib/events'
+import { buildPeskidsIntakeTurn } from '@/lib/peskids-intake'
 
 const MAX_MESSAGE_LENGTH = 2000
 
@@ -35,8 +36,29 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Failed to store message' }, { status: 500 })
     }
 
-    const assistant = await generatePeskidsChatReply(messageText, body.sender_name)
-    const { draft } = await storeDraftReply(message.id, assistant.reply, 'web')
+    const intake = await buildPeskidsIntakeTurn({
+      senderContact: message.sender_contact,
+      senderName: body.sender_name,
+      source: 'web',
+      latestMessage: messageText,
+    })
+
+    await storeOutboundMessage({
+      parentId: message.id,
+      source: 'web',
+      sender_contact: message.sender_contact,
+      replyText: intake.reply,
+      aiGenerated: true,
+      senderName: 'Asistente Peskids',
+      status: 'sent',
+    })
+
+    const draft = intake.supportDraft
+      ? await storeDraftReply(message.id, intake.supportDraft, 'web', {
+          senderName: 'Asistente Peskids',
+          status: 'pending',
+        })
+      : { draft: null }
 
     void triggerN8nMessagePipeline(message.id, messageText)
 
@@ -44,17 +66,26 @@ export async function POST(req: NextRequest) {
       source: 'web',
       sender_contact: message.sender_contact,
       message_text: messageText,
+      intake_stage: intake.stage,
+      intake_progress: intake.progress,
+      intake_missing_field: intake.missingField,
       timestamp: new Date().toISOString(),
     })
 
     return NextResponse.json({
       ok: true,
       message_id: message.id,
-      draft_id: draft?.id ?? null,
-      reply: assistant.reply,
-      from_llm: assistant.from_llm,
+      draft_id: draft.draft?.id ?? null,
+      reply: intake.reply,
+      stage: intake.stage,
+      progress: intake.progress,
+      profile: intake.profile,
+      support_draft: intake.supportDraft,
+      from_llm: false,
       disclaimer:
-        'Respuesta orientativa. Para confirmar horarios o cupos, un asesor de Peskids te contactará.',
+        intake.stage === 'handoff'
+          ? 'Gracias. Un asesor de Peskids revisará tu caso y te contactará para confirmar los siguientes pasos.'
+          : 'Te haré algunas preguntas cortas para completar tu solicitud.',
     })
   } catch (error) {
     console.error('Chat API error:', error)

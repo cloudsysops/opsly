@@ -10,19 +10,6 @@ interface FormPreviewProps {
 }
 
 export function FormPreview({ form, compact = false }: FormPreviewProps): React.ReactElement {
-  const FIELD_TYPES_LABELS: Record<string, string> = {
-    text: 'Texto',
-    email: 'Correo',
-    phone: 'Teléfono',
-    number: 'Número',
-    textarea: 'Párrafo',
-    select: 'Menú',
-    checkbox: 'Casilla',
-    radio: 'Botón',
-    date: 'Fecha',
-    file: 'Archivo',
-  }
-
   if (compact) {
     return (
       <div className="rounded-lg border-2 border-pk-border p-4 bg-pk-surface">

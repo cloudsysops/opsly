@@ -22,6 +22,16 @@ export interface WebhookPayload {
 // El WebhookWorker (apps/orchestrator) consume esta cola.
 const ORCHESTRATOR_INTERNAL_URL = process.env.ORCHESTRATOR_INTERNAL_URL ?? 'http://localhost:3011';
 
+function orchestratorAuthHeaders(): HeadersInit {
+  const token = process.env.PLATFORM_ADMIN_TOKEN?.trim() ?? '';
+  if (token.length === 0) {
+    throw new Error('PLATFORM_ADMIN_TOKEN is required to dispatch webhooks');
+  }
+  return {
+    Authorization: `Bearer ${token}`,
+  };
+}
+
 export async function dispatchWebhookEvent(
   tenantSlug: string,
   event: WebhookEvent,
@@ -38,11 +48,15 @@ export async function dispatchWebhookEvent(
   };
 
   // Encola un job por webhook (idempotent: jobId = webhookId + event + timestamp)
+  const authHeaders = orchestratorAuthHeaders();
   await Promise.allSettled(
     webhooks.map((wh) =>
       fetch(`${ORCHESTRATOR_INTERNAL_URL}/internal/enqueue-webhook`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...authHeaders,
+        },
         body: JSON.stringify({
           webhookId: wh.id,
           url: wh.url,

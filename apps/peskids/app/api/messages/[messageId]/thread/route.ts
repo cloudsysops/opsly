@@ -1,14 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { validateAdminRequest } from '@/lib/admin-auth'
+import { validateStaffSession } from '@/lib/staff-auth'
 import { supabaseServer } from '@/lib/supabase'
 
 export async function GET(
-  req: NextRequest,
+  _req: NextRequest,
   context: { params: Promise<{ messageId: string }> }
 ) {
-  const auth = validateAdminRequest(req)
-  if (!auth.valid) {
-    return NextResponse.json({ error: auth.error }, { status: 401 })
+  const auth = await validateStaffSession()
+  if (!auth.ok) {
+    return NextResponse.json({ error: auth.error }, { status: auth.status })
   }
 
   const { messageId } = await context.params

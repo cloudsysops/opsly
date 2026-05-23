@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { validateAdminRequest } from '@/lib/admin-auth'
+import { validateStaffSession } from '@/lib/staff-auth'
 import { enqueueApprovedReply } from '@/lib/n8n-send'
 import { supabaseServer } from '@/lib/supabase'
 
@@ -8,9 +8,9 @@ export async function POST(
   context: { params: Promise<{ messageId: string }> }
 ) {
   try {
-    const auth = validateAdminRequest(req)
-    if (!auth.valid) {
-      return NextResponse.json({ error: auth.error }, { status: 401 })
+    const auth = await validateStaffSession()
+    if (!auth.ok) {
+      return NextResponse.json({ error: auth.error }, { status: auth.status })
     }
 
     const { messageId } = await context.params

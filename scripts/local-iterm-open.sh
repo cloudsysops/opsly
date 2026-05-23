@@ -29,17 +29,12 @@ case "$WORKSPACE_ROOT" in
     ;;
 esac
 
-export OPSLY_ITERM_WORKSPACE="$WORKSPACE_ROOT"
-export OPSLY_ITERM_COMMAND="$COMMAND_TO_RUN"
-
 osascript <<OSA
 tell application "iTerm"
   activate
   create window with default profile
-  set workspaceRoot to system attribute "OPSLY_ITERM_WORKSPACE"
-  set commandToRun to system attribute "OPSLY_ITERM_COMMAND"
   tell current session of current window
-    write text "cd " & quoted form of workspaceRoot & " && " & commandToRun
+    write text "cd \"$WORKSPACE_ROOT\" && $COMMAND_TO_RUN"
   end tell
 end tell
 OSA

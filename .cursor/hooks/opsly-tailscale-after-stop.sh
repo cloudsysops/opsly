@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 # Hook Cursor `stop`: registra fin de turno y opcionalmente comprueba Tailscale (ver env abajo).
-# Entrada: JSON del hook en stdin (se descarta; no se exporta en variables de entorno).
+# Entrada: JSON del hook en stdin (se conserva en OPSLY_HOOK_STDIN_JSON para auditoría).
 # Salida: JSON vacío (evento `stop` no requiere campos obligatorios en la hoja de Cursor hooks).
 set -euo pipefail
 
-cat >/dev/null || true
+HOOK_STDIN="$(cat || true)"
+export OPSLY_HOOK_STDIN_JSON="${HOOK_STDIN}"
 
 REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || true)"
 if [[ -z "${REPO_ROOT}" ]]; then

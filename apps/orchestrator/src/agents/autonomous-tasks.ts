@@ -142,8 +142,8 @@ export const devopsAgentTasks: AutonomousTask[] = [
     id: "devops-001",
     title: "Docker Compose Optimization: Memory Limits + YAML Anchors",
     agent: "devops",
-    executor: "cursor",
-    executorFallback: "claude-code",
+    executor: "shell",
+    executorFallback: "cursor",
     priority: 1,
     prUrl: "https://github.com/cloudsysops/opsly/pull/devops-001",
     description: `
@@ -282,8 +282,8 @@ export const securityAgentTasks: AutonomousTask[] = [
     id: "security-002",
     title: "Secret Scanning: Remove hardcoded secrets, rotate tokens",
     agent: "security",
-    executor: "claude-code",
-    executorFallback: "shell",
+    executor: "shell",
+    executorFallback: "claude-code",
     priority: 1,
     prUrl: "https://github.com/cloudsysops/opsly/pull/security-002",
     description: `

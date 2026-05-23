@@ -31,7 +31,6 @@ export function WhatsAppFloatingButton(): React.ReactElement | null {
         backgroundColor: peskidsColorTokens.primary.whatsapp,
         boxShadow: `0 8px 32px ${peskidsColorTokens.primary.whatsapp}8c`,
         outlineColor: peskidsColorTokens.primary.whatsapp,
-        ringColor: `${peskidsColorTokens.primary.whatsapp}4d`,
       }}
       aria-label={`Escribir por WhatsApp: ${PESKIDS_CONTACT.whatsapp.display}`}
       title="WhatsApp Peskids"

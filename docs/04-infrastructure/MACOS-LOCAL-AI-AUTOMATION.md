@@ -114,18 +114,19 @@ The rule is: AI controls specific tools for specific tasks. AI does not control 
 
 Repo path: `tools/live-automation/`. Scripts `scripts/opsly-live-obs.sh` y `scripts/opsly-live-osc.sh` crean/actualizan el venv `tools/live-automation/.venv` e instalan dependencias antes de ejecutar.
 
-| Comando | Acción |
+| npm script | Acción |
 | --- | --- |
-| `scripts/opsly-live-obs.sh '<json>'` | OBS WebSocket (env `OBS_WEBSOCKET_*`) |
-| `scripts/opsly-live-osc.sh /ruta/osc [valores…]` | UDP OSC |
-| `python3 -m pytest tools/live-automation/test_dispatch.py` | Tests unitarios (sin OBS) |
+| `npm run opsly:live:obs -- '<json>'` | OBS WebSocket (env `OBS_WEBSOCKET_*`) |
+| `npm run opsly:live:osc -- /ruta/osc [valores…]` | UDP OSC |
+| `npm run opsly:live:test` | Tests unitarios (sin OBS) |
+| `npm run opsly:live:install` | `pip install` con el `python3` del sistema (opcional si usas los wrappers) |
 
 Ejemplos (OBS abierto con **Herramientas → Servidor WebSocket** activo y puerto por defecto 4455):
 
 ```bash
 export OBS_WEBSOCKET_PASSWORD='…'   # si aplica
-scripts/opsly-live-obs.sh '{"action":"get_version"}'
-scripts/opsly-live-osc.sh /live/tempo 120
+npm run opsly:live:obs -- '{"action":"get_version"}'
+npm run opsly:live:osc -- /live/tempo 120
 ```
 
 Si ves `Connection refused`, OBS no está escuchando en ese host/puerto o el servidor WebSocket está apagado.

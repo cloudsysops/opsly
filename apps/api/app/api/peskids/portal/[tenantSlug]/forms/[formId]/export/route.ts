@@ -72,10 +72,10 @@ function convertToCSV(submissions: FormSubmission[]): string {
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { tenantSlug: string; formId: string } }
+  { params }: { params: Promise<{ tenantSlug: string; formId: string }> }
 ): Promise<Response> {
   try {
-    const { tenantSlug, formId } = params;
+    const { tenantSlug, formId } = await params;
     const { searchParams } = new URL(request.url);
     const format = searchParams.get('format') || 'csv';
 

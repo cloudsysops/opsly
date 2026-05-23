@@ -19,8 +19,7 @@ async function runSSH(cmd: string): Promise<{ ok: boolean; output: string }> {
   const execFileAsync = promisify(execFile);
   try {
     const { stdout, stderr } = await execFileAsync("ssh", [
-      "-o", "StrictHostKeyChecking=accept-new",
-      "-o", "BatchMode=yes",
+      "-o", "StrictHostKeyChecking=no",
       "-o", "ConnectTimeout=15",
       VPS_SSH,
       cmd,
@@ -64,15 +63,13 @@ export function startAutoDeployWorker(connection: object): Worker {
       );
 
       // 1. Pull + rebuild en VPS
-      const deployScript = [
-        `set -euo pipefail`,
+      const deployCmd = [
         `cd ${OPSLY_ROOT}`,
         `git fetch origin`,
         `git reset --hard origin/main`,
         `npm ci --workspace=apps/api --workspace=apps/admin 2>&1 | tail -5`,
         `docker compose -f infra/docker-compose.platform.yml up -d --build app 2>&1 | tail -10`,
       ].join(" && ");
-      const deployCmd = `bash -lc ${JSON.stringify(deployScript)}`;
 
       const deployResult = await runSSH(deployCmd);
 

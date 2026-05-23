@@ -3,16 +3,9 @@ import { Job, Queue, Worker } from 'bullmq';
 import { connection } from '../queue.js';
 import { getWorkerConcurrency } from '../worker-concurrency.js';
 import { logWorkerInfo, logWorkerError } from '../observability/worker-log.js';
-import type { WebhookPayload } from './webhook-types.js';
+import { isAllowedWebhookUrl, type WebhookJobData } from '../webhook-target.js';
 
 export const WEBHOOK_QUEUE = 'opsly-webhooks';
-
-export interface WebhookJobData {
-  webhookId: string;
-  url: string;
-  secret: string;
-  payload: WebhookPayload;
-}
 
 export const webhookQueue = new Queue<WebhookJobData>(WEBHOOK_QUEUE, { connection });
 
@@ -22,6 +15,9 @@ function signPayload(secret: string, body: string): string {
 
 async function deliverWebhook(job: Job<WebhookJobData>): Promise<void> {
   const { url, secret, payload } = job.data;
+  if (!isAllowedWebhookUrl(url)) {
+    throw new Error('Webhook delivery target blocked by policy');
+  }
   const body = JSON.stringify(payload);
   const signature = signPayload(secret, body);
 
@@ -90,3 +86,5 @@ export async function enqueueWebhookJob(data: WebhookJobData): Promise<void> {
     removeOnFail: { count: 100 },
   });
 }
+
+export type { WebhookJobData } from '../webhook-target.js';

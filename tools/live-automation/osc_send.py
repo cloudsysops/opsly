@@ -53,7 +53,7 @@ def main(argv: list[str] | None = None) -> int:
 
     client = udp_client.SimpleUDPClient(host, port)
     if not parsed:
-        client.send_message(args.address, [])
+        client.send_message(args.address)
     elif len(parsed) == 1:
         client.send_message(args.address, parsed[0])
     else:

@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useState, useCallback } from 'react';
-import { Button } from '@intcloudsysops/components';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@intcloudsysops/components';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormField } from '@/lib/form-types';
 
 interface FormSubmissionProps {

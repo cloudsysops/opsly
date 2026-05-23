@@ -3,7 +3,7 @@ import { randomUUID, parseBody, verifyPlatformAdminToken, assertTenantSlugOrThro
 import { enqueueJob } from '../../queue.js';
 import { enqueueWebhookJob } from '../../workers/WebhookWorker.js';
 import type { OrchestratorJob } from '../../types.js';
-import type { WebhookJobData } from '../../workers/WebhookWorker.js';
+import { parseWebhookJobData } from '../../webhook-target.js';
 import { jsonResponse, errorResponse } from '../router.js';
 
 export async function handleEnqueueOllama(ctx: RouteContext): Promise<void> {
@@ -90,9 +90,27 @@ export async function handleEnqueueOllama(ctx: RouteContext): Promise<void> {
 }
 
 export async function handleEnqueueWebhook(ctx: RouteContext): Promise<void> {
+  if (!verifyPlatformAdminToken(ctx.req)) {
+    errorResponse(ctx.res, 401, 'unauthorized');
+    return;
+  }
+
+  let body: unknown;
   try {
-    const body = (await parseBody(ctx.req)) as WebhookJobData;
-    await enqueueWebhookJob(body);
+    body = await parseBody(ctx.req);
+  } catch {
+    errorResponse(ctx.res, 400, 'Invalid JSON');
+    return;
+  }
+
+  const parsed = parseWebhookJobData(body);
+  if (!parsed.ok) {
+    errorResponse(ctx.res, 400, parsed.error);
+    return;
+  }
+
+  try {
+    await enqueueWebhookJob(parsed.data);
     jsonResponse(ctx.res, 202, { ok: true });
   } catch (err) {
     errorResponse(ctx.res, 400, String(err));

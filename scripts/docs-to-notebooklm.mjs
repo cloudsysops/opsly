@@ -15,9 +15,20 @@ const root = join(__dirname, '..');
 const DOCS = [
   'ARCHITECTURE.md',
   'AGENTS.md',
+  'docs/03-agents/AGENT-STARTUP-PROMPT.md',
+  'docs/obsidian/TAXONOMY.md',
+  'docs/obsidian/research/pattern-constellation.md',
   'docs/HERMES-INTEGRATION.md',
   'docs/NOTEBOOKLM-INTEGRATION.md',
   'docs/CODE-SNAPSHOTS.md',
+  'docs/obsidian/research/agent-pattern-matrix.md',
+  'docs/obsidian/sources/opsly-agent-pattern-sources.md',
+  'docs/obsidian/research/saas-pattern-radar.md',
+  'docs/obsidian/research/security-pattern-radar.md',
+  'docs/obsidian/research/trading-pattern-radar.md',
+  'docs/obsidian/sources/saas-pattern-sources.md',
+  'docs/obsidian/sources/security-pattern-sources.md',
+  'docs/obsidian/sources/trading-pattern-sources.md',
 ];
 
 try {

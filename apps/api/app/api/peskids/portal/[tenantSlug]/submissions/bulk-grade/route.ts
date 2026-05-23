@@ -1,7 +1,7 @@
 import type { NextRequest } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { jsonError, jsonOk } from '../../../../../../../../lib/api-response';
-import { HTTP_STATUS } from '../../../../../../../../lib/constants';
+import { jsonError, jsonOk } from '@/lib/api-response';
+import { HTTP_STATUS } from '@/lib/constants';
 
 function requireEnv(name: string): string {
   const value = process.env[name];
@@ -27,10 +27,10 @@ interface BulkGradeRequest {
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { tenantSlug: string } }
+  { params }: { params: Promise<{ tenantSlug: string }> }
 ): Promise<Response> {
   try {
-    const tenantSlug = params.tenantSlug;
+    const { tenantSlug } = await params;
 
     if (!tenantSlug) {
       return jsonError('Missing tenant slug', HTTP_STATUS.BAD_REQUEST);

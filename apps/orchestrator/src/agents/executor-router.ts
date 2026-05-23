@@ -6,13 +6,7 @@
 import { orchestratorQueue } from "../queue.js";
 import { type AutonomousTask } from "./autonomous-tasks.js";
 
-type Executor = "cursor" | "claude-code";
-
-function normalizeExecutor(
-  executor: AutonomousTask["executor"] | AutonomousTask["executorFallback"] | undefined,
-): Executor {
-  return executor === "claude-code" ? "claude-code" : "cursor";
-}
+type Executor = "cursor" | "claude-code" | "shell";
 
 /**
  * Devuelve true si el executor está disponible según env vars.
@@ -23,6 +17,8 @@ function isExecutorAvailable(executor: Executor): boolean {
       return process.env.CURSOR_AVAILABLE === "true";
     case "claude-code":
       return Boolean(process.env.ANTHROPIC_API_KEY);
+    case "shell":
+      return true; // siempre disponible
   }
 }
 
@@ -30,16 +26,13 @@ function isExecutorAvailable(executor: Executor): boolean {
  * Resuelve qué executor usar, respetando el fallback configurado.
  */
 function resolveExecutor(task: AutonomousTask): Executor {
-  const preferred = normalizeExecutor(task.executor);
-  if (isExecutorAvailable(preferred)) return preferred;
-
-  const fallback = normalizeExecutor(task.executorFallback);
-  if (isExecutorAvailable(fallback)) {
-    return fallback;
+  if (isExecutorAvailable(task.executor)) return task.executor;
+  if (task.executorFallback && isExecutorAvailable(task.executorFallback)) {
+    return task.executorFallback;
   }
-  // Último recurso: claude-code si tiene API key, cursor en caso contrario
+  // Último recurso: claude-code si tiene API key, shell en caso contrario
   if (process.env.ANTHROPIC_API_KEY) return "claude-code";
-  return "cursor";
+  return "shell";
 }
 
 /**
@@ -68,7 +61,17 @@ function buildPayload(task: AutonomousTask, executor: Executor): Record<string, 
     };
   }
 
-  return base;
+  if (executor === "claude-code") {
+    return base;
+  }
+
+  // shell — los acceptanceCriteria son los comandos bash
+  return {
+    payload: {
+      task: task.title,
+      commands: task.acceptanceCriteria,
+    },
+  };
 }
 
 export class ExecutorRouter {
@@ -78,7 +81,9 @@ export class ExecutorRouter {
    */
   static async route(task: AutonomousTask): Promise<{ executor: Executor; jobId: string | undefined }> {
     const executor = resolveExecutor(task);
-    const jobName = executor === "cursor" ? "cursor" : "claude-code";
+    const jobName = executor === "cursor" ? "cursor"
+      : executor === "claude-code" ? "claude-code"
+      : "shell";
 
     const payload = buildPayload(task, executor);
     const job = await orchestratorQueue.add(jobName, payload, {

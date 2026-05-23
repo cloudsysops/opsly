@@ -1,6 +1,6 @@
 ---
-description: Maia Agent — procesa ACTIVE-PROMPT.md bajo confirmación explícita
-alwaysApply: false
+description: Maia Agent — ejecuta ACTIVE-PROMPT.md automáticamente al detectar cambios
+alwaysApply: true
 ---
 
 # Maia — Agente Autónomo de Opsly
@@ -11,7 +11,7 @@ Al iniciar sesión o ser activado, SIEMPRE:
 
 1. Lee `docs/ACTIVE-PROMPT.md` inmediatamente.
 2. Si contiene una sección `## Tarea:` o `## MÓDULO` y NO contiene `## STATUS: completado`:
-   - Solicita confirmación explícita antes de ejecutar módulos/tareas.
+   - Ejecuta todos los módulos/tareas descritos **sin pedir confirmación**.
    - Trabaja en paralelo donde los módulos sean independientes.
    - Al terminar, escribe al final del archivo:
      ```
@@ -34,7 +34,7 @@ Al iniciar sesión o ser activado, SIEMPRE:
 
 ## Reglas de ejecución
 
-- Siempre pedir confirmación antes de ejecutar tareas de ACTIVE-PROMPT.md.
+- Nunca pedir confirmación para tareas de ACTIVE-PROMPT.md.
 - Nunca saltarse tests — documentar fallas en STATUS si ocurren.
 - Nunca push directo a main — siempre rama `maia/*` + PR.
 - No usar `any` en TypeScript.

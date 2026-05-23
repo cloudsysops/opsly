@@ -1,9 +1,15 @@
 import { createClient } from '@supabase/supabase-js'
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-  process.env.SUPABASE_SERVICE_ROLE_KEY || ''
-)
+function getSupabaseClient() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const serviceRole = process.env.SUPABASE_SERVICE_ROLE_KEY
+
+  if (!url || !serviceRole) {
+    return null
+  }
+
+  return createClient(url, serviceRole)
+}
 
 export interface FormSubmissionSummary {
   formId: string
@@ -29,6 +35,9 @@ export class FormSubmissionService {
   private tenantSlug = 'peskids'
 
   async getParentSubmissions(): Promise<FormSubmissionSummary[]> {
+    const supabase = getSupabaseClient()
+    if (!supabase) return []
+
     const { data, error } = await supabase
       .from('form_submissions')
       .select(
@@ -59,6 +68,9 @@ export class FormSubmissionService {
   }
 
   async getTeacherSubmissions(): Promise<StudentSubmission[]> {
+    const supabase = getSupabaseClient()
+    if (!supabase) return []
+
     const { data, error } = await supabase
       .from('form_submissions')
       .select(
@@ -102,6 +114,9 @@ export class FormSubmissionService {
     avgCompletionTime: number
     errorCount: number
   }[]> {
+    const supabase = getSupabaseClient()
+    if (!supabase) return []
+
     const { data: forms, error: formsError } = await supabase
       .from('forms')
       .select('id, title')

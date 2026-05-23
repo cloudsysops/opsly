@@ -28,13 +28,11 @@ async function getCostStatus(tenantSlug: string): Promise<CostStatus> {
 
   try {
     const raw = await redis.get(key);
-    const parsedUsedUsd = raw ? parseFloat(raw) : 0;
-    const usedUsd = Number.isFinite(parsedUsedUsd) && parsedUsedUsd >= 0 ? parsedUsedUsd : 0;
+    const usedUsd = raw ? parseFloat(raw) : 0;
 
     // Budget por defecto: $10 USD/mes. Override via SUPABASE si hay plan configurado.
     const budgetEnv = process.env[`BUDGET_USD_${tenantSlug.toUpperCase()}`];
-    const parsedBudgetUsd = budgetEnv ? parseFloat(budgetEnv) : 10;
-    const budgetUsd = Number.isFinite(parsedBudgetUsd) && parsedBudgetUsd > 0 ? parsedBudgetUsd : 10;
+    const budgetUsd = budgetEnv ? parseFloat(budgetEnv) : 10;
 
     return {
       used_usd: usedUsd,
