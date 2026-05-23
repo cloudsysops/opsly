@@ -15,15 +15,15 @@ export function CtaBand(): React.ReactElement {
           <div className="max-w-xl">
             <h2 className="text-4xl font-bold tracking-tight sm:text-5xl">La primera clase es gratis.</h2>
             <p className="mt-4 text-lg text-white/85">
-              Trae a tu peque a probar el método. Sin compromiso. Reserva en 30 segundos con el
-              formulario.
+              Trae a tu peque a probar el método. Sin compromiso. Reserva en menos de 2 minutos por
+              chat.
             </p>
           </div>
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
             <WhatsAppLink variant="onDark" label="WhatsApp — respuesta rápida" className="min-w-[200px]" />
             <a href="#contacto">
               <Button variant="accent" size="lg" className="whitespace-nowrap border-2 border-white/30">
-                Formulario de reserva →
+                Ir al chat de reserva →
               </Button>
             </a>
           </div>

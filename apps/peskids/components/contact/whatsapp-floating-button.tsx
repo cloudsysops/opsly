@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils'
 /** FAB fijo — canal principal; oculto en /admin. */
 export function WhatsAppFloatingButton(): React.ReactElement | null {
   const pathname = usePathname()
-  if (pathname.startsWith('/admin')) {
+  if (pathname?.startsWith('/admin')) {
     return null
   }
 
