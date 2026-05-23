@@ -2,15 +2,14 @@
 
 ## Supported Versions
 
-Use this section to tell people about which versions of your project are
-currently being supported with security updates.
+Opsly provides security updates for the `main` branch only. If you are using
+any other branch, fork, or older snapshot, please reproduce the issue against
+the latest `main` branch before reporting it.
 
-| Version | Supported          |
-| ------- | ------------------ |
-| 5.1.x   | :white_check_mark: |
-| 5.0.x   | :x:                |
-| 4.0.x   | :white_check_mark: |
-| < 4.0   | :x:                |
+| Branch / Release | Supported          |
+| ---------------- | ------------------ |
+| `main`           | :white_check_mark: |
+| All other branches / snapshots | :x: |
 
 ## Reporting a Vulnerability
 
