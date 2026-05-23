@@ -48,11 +48,14 @@ doppler run --project ops-intcloudsysops --config prd -- bash -c '
 '
 docker stop peskids 2>/dev/null || true
 docker rm peskids 2>/dev/null || true
-# Doppler JSON/multiline secrets break docker --env-file; inject at runtime instead.
-doppler run --project ops-intcloudsysops --config prd -- \
-  docker run -d --name peskids --restart unless-stopped \
+# doppler run only exports to the docker CLI process; pass secrets into the container.
+ENV_FILE="$(mktemp)"
+trap 'rm -f "$ENV_FILE"' EXIT
+doppler secrets download --no-file --format docker --project ops-intcloudsysops --config prd >"$ENV_FILE"
+docker run -d --name peskids --restart unless-stopped \
   --network traefik-public \
   -p 127.0.0.1:3004:3004 \
+  --env-file "$ENV_FILE" \
   ghcr.io/cloudsysops/peskids:latest
 sleep 3
 curl -sf http://127.0.0.1:3004/ >/dev/null && echo "ok   peskids local health"
