@@ -12,12 +12,6 @@ const sourceTone: Record<string, 'green' | 'coral' | 'teal'> = {
   web: 'teal',
 }
 
-function getAdminToken(): string | null {
-  if (typeof document === 'undefined') return null
-  const match = document.cookie.match(/(?:^|;\s*)admin-token=([^;]+)/)
-  return match?.[1] ? decodeURIComponent(match[1]) : null
-}
-
 type ThreadResponse = {
   inbound: { message_text: string; sender_name: string | null; sender_contact: string; source: string }
   suggested_reply: string | null
@@ -35,20 +29,19 @@ export function MessageInboxPanel({
   const [status, setStatus] = useState<string | null>(null)
 
   const openThread = useCallback(async (messageId: string) => {
-    const token = getAdminToken()
-    if (!token) {
-      setStatus('Inicia sesión en admin para responder.')
-      return
-    }
     setActiveId(messageId)
     setLoading(true)
     setStatus(null)
     try {
       const res = await fetch(`/api/messages/${messageId}/thread`, {
-        headers: { Authorization: `Bearer ${token}` },
+        credentials: 'include',
       })
       const data = (await res.json()) as ThreadResponse & { error?: string }
       if (!res.ok) {
+        if (res.status === 401) {
+          setStatus('Sesión vencida. Vuelve a iniciar sesión en admin.')
+          return
+        }
         setStatus(data.error ?? 'No se pudo cargar el hilo')
         return
       }
@@ -62,22 +55,24 @@ export function MessageInboxPanel({
 
   const sendReply = useCallback(async () => {
     if (!activeId || !replyText.trim()) return
-    const token = getAdminToken()
-    if (!token) return
 
     setSending(true)
     setStatus(null)
     try {
       const res = await fetch(`/api/messages/${activeId}/reply`, {
         method: 'POST',
+        credentials: 'include',
         headers: {
-          Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ replyText: replyText.trim() }),
       })
       const data = (await res.json()) as { message?: string; error?: string }
       if (!res.ok) {
+        if (res.status === 401) {
+          setStatus('Sesión vencida. Vuelve a iniciar sesión en admin.')
+          return
+        }
         setStatus(data.error ?? 'Error al enviar')
         return
       }

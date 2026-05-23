@@ -22,6 +22,10 @@ operacion.
 - Ciclo documental: [[01-development/DOCUMENTATION-LIFECYCLE|Documentation Lifecycle]]
 - Guardrails: [[03-agents/AGENT-GUARDRAILS|Agent Guardrails]]
 - Contrato cerebral: [[03-agents/AGENT-BRAIN-CONTRACT|Agent Brain Contract]]
+- Prompt de arranque: [[03-agents/AGENT-STARTUP-PROMPT|Agent Startup Prompt]]
+- Taxonomía Obsidian: [[../../obsidian/TAXONOMY|Obsidian Taxonomy]]
+- Hub de patrones: [[../../obsidian/research/pattern-constellation|Pattern Constellation]]
+- Sub-radar agentes: [[../../obsidian/research/agent-pattern-matrix|Agent Pattern Matrix]]
 
 ## Hubs
 
@@ -32,6 +36,18 @@ operacion.
 | [[brain/tenants/README|Tenants]] | A que cliente/tenant afecta? |
 | [[brain/workflows/README|Workflows]] | Que automatizacion o cola lo mueve? |
 | [[brain/architecture/README|Architecture]] | Que decision/ADR gobierna esto? |
+
+## Carga inicial recomendada para agentes
+
+1. [[03-agents/AGENT-BRAIN-CONTRACT|Agent Brain Contract]]
+2. [[03-agents/AGENT-STARTUP-PROMPT|Agent Startup Prompt]]
+3. [[../../obsidian/TAXONOMY|Obsidian Taxonomy]]
+4. [[../../obsidian/research/pattern-constellation|Pattern Constellation]]
+5. [[brain/agents/README|Agents MOC]]
+6. [[../../obsidian/research/agent-pattern-matrix|Agent Pattern Matrix]]
+7. [[../../obsidian/sources/opsly-agent-pattern-sources|Agent Pattern Sources]]
+8. [[brain/workflows/README|Workflows MOC]]
+9. [[brain/architecture/README|Architecture MOC]]
 
 ## Camino de trabajo para agentes
 
@@ -71,4 +87,3 @@ path:03-agents "local-agents"
 ```query
 path:04-infrastructure "Traefik" OR "Redis"
 ```
-

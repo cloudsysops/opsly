@@ -1,45 +1,44 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@intcloudsysops/components';
 import { FormBuilder } from './FormBuilder';
 import { FormPreview } from './FormPreview';
-import type { Form } from '../../lib/form-types';
+import type { Form } from '../../../lib/form-types';
 
 interface FormBuilderPageProps {
   tenantSlug: string;
-  formId?: string;
   initialForm?: Form;
 }
 
 export function FormBuilderPage({
   tenantSlug,
-  formId,
   initialForm,
 }: FormBuilderPageProps) {
+  const [activeTab, setActiveTab] = useState<'editor' | 'preview'>('editor');
   const [formData, setFormData] = useState<Form>(
     initialForm || {
       id: '',
+      tenantSlug,
       title: 'New Form',
       description: '',
       fields: [],
       settings: {
         successMessage: 'Thank you for your submission!',
       },
-      status: 'active',
+      status: 'draft',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     }
   );
 
-  const handleSaveForm = async () => {
+  const handleSaveForm = async (nextForm: Form = formData) => {
     try {
       const response = await fetch(`/api/peskids/portal/${tenantSlug}/forms`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(nextForm),
       });
 
       if (!response.ok) {
@@ -48,10 +47,7 @@ export function FormBuilderPage({
 
       const result = await response.json();
       alert('Form saved successfully!');
-      setFormData((prev) => ({
-        ...prev,
-        id: result.id,
-      }));
+      setFormData((prev) => ({ ...prev, id: result.id }));
     } catch (error) {
       console.error('Error saving form:', error);
       alert('Failed to save form. Please try again.');
@@ -68,30 +64,45 @@ export function FormBuilderPage({
           </p>
         </div>
         <button
-          onClick={handleSaveForm}
+          onClick={() => handleSaveForm()}
           className="rounded-lg bg-ops-green px-6 py-2 font-medium text-neutral-100 hover:bg-ops-green/90 transition"
         >
           Save Form
         </button>
       </div>
 
-      <Tabs defaultValue="editor" className="w-full">
-        <TabsList className="border-b border-ops-border">
-          <TabsTrigger value="editor">Editor</TabsTrigger>
-          <TabsTrigger value="preview">Preview</TabsTrigger>
-        </TabsList>
+      <div className="flex gap-2 border-b border-ops-border">
+        <button
+          type="button"
+          onClick={() => setActiveTab('editor')}
+          className={`px-4 py-2 text-sm font-medium transition ${
+            activeTab === 'editor'
+              ? 'border-b-2 border-ops-blue text-ops-blue'
+              : 'text-ops-gray hover:text-neutral-200'
+          }`}
+        >
+          Editor
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveTab('preview')}
+          className={`px-4 py-2 text-sm font-medium transition ${
+            activeTab === 'preview'
+              ? 'border-b-2 border-ops-blue text-ops-blue'
+              : 'text-ops-gray hover:text-neutral-200'
+          }`}
+        >
+          Preview
+        </button>
+      </div>
 
-        <TabsContent value="editor" className="py-6">
-          <FormBuilder
-            form={formData}
-            onChange={setFormData}
-          />
-        </TabsContent>
-
-        <TabsContent value="preview" className="py-6">
+      <div className="py-6">
+        {activeTab === 'editor' ? (
+          <FormBuilder form={formData} onSave={handleSaveForm} />
+        ) : (
           <FormPreview form={formData} />
-        </TabsContent>
-      </Tabs>
+        )}
+      </div>
     </div>
   );
 }

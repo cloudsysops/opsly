@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { generatePeskidsChatReply, triggerN8nMessagePipeline } from '@/lib/chat-assistant'
+import { triggerN8nMessagePipeline } from '@/lib/chat-assistant'
 import { emitEvent } from '@/lib/events'
-import { storeDraftReply, storeInboundMessage } from '@/lib/message-store'
+import { enqueueApprovedReply } from '@/lib/n8n-send'
+import { storeDraftReply, storeInboundMessage, storeOutboundMessage } from '@/lib/message-store'
+import { getPeskidsWhatsAppReplyMode, shouldAutoReplyWhatsApp } from '@/lib/whatsapp-reply-mode'
+import { buildPeskidsIntakeTurn } from '@/lib/peskids-intake'
 
 type InboundSource = 'whatsapp' | 'instagram' | 'web'
 
@@ -82,17 +85,65 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Failed to store message' }, { status: 500 })
     }
 
-    const assistant = await generatePeskidsChatReply(
-      normalized.message_text,
-      normalized.sender_name
-    )
-    await storeDraftReply(message.id, assistant.reply, normalized.source)
+    const intake = await buildPeskidsIntakeTurn({
+      senderContact: normalized.sender_contact,
+      senderName: normalized.sender_name,
+      source: normalized.source,
+      latestMessage: normalized.message_text,
+    })
+    const whatsappReplyMode = getPeskidsWhatsAppReplyMode()
+    const autoReplyEnabled = normalized.source === 'whatsapp' && shouldAutoReplyWhatsApp()
+    const outboundText = intake.reply
+
+    let sendResult: { ok: boolean; detail: string } = {
+      ok: false,
+      detail: autoReplyEnabled ? 'pending send' : `reply mode=${whatsappReplyMode}`,
+    }
+
+    if (autoReplyEnabled) {
+      sendResult = await enqueueApprovedReply({
+        messageId: message.id,
+        source: normalized.source,
+        sender_contact: normalized.sender_contact,
+        reply_text: outboundText,
+      })
+    }
+
+    await storeOutboundMessage({
+      parentId: message.id,
+      source: normalized.source,
+      sender_contact: normalized.sender_contact,
+      replyText: outboundText,
+      aiGenerated: true,
+      senderName: 'Asistente Peskids',
+      status: autoReplyEnabled && sendResult.ok ? 'sent' : 'pending',
+    })
+
+    if (intake.supportDraft) {
+      await storeDraftReply(message.id, intake.supportDraft, normalized.source, {
+        senderName: 'Asistente Peskids',
+        status: 'pending',
+      })
+    } else if (!autoReplyEnabled) {
+      await storeDraftReply(message.id, outboundText, normalized.source, {
+        senderName: 'Asistente Peskids',
+        status: 'pending',
+      })
+    }
+
     void triggerN8nMessagePipeline(message.id, normalized.message_text)
 
     await emitEvent('message.received', {
       source: normalized.source,
       sender_contact: normalized.sender_contact,
       message_text: normalized.message_text,
+      auto_reply_mode: whatsappReplyMode,
+      auto_reply_enabled: autoReplyEnabled,
+      auto_reply_sent: sendResult.ok,
+      auto_reply_detail: sendResult.detail,
+      intake_stage: intake.stage,
+      intake_progress: intake.progress,
+      intake_missing_field: intake.missingField,
       timestamp: new Date().toISOString(),
     })
 
@@ -100,8 +151,14 @@ export async function POST(req: NextRequest) {
       {
         ok: true,
         message,
-        draft_preview: assistant.reply,
-        from_llm: assistant.from_llm,
+        reply: outboundText,
+        status: autoReplyEnabled && sendResult.ok ? 'sent' : 'draft',
+        auto_reply_mode: whatsappReplyMode,
+        stage: intake.stage,
+        progress: intake.progress,
+        profile: intake.profile,
+        from_llm: false,
+        n8n: sendResult,
       },
       { status: 201 }
     )

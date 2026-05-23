@@ -13,18 +13,26 @@ const toneBg: Record<InstagramFallbackTone, string> = {
 
 interface InstagramMediaCardProps {
   item: InstagramFeedItem
+  variant?: 'compact' | 'featured'
 }
 
-export function InstagramMediaCard({ item }: InstagramMediaCardProps): React.ReactElement {
+export function InstagramMediaCard({
+  item,
+  variant = 'compact',
+}: InstagramMediaCardProps): React.ReactElement {
   const isVideo = item.mediaType === 'video' || item.mediaType === 'reel'
   const tone = item.fallback?.tone ?? 'teal'
+  const featured = variant === 'featured'
 
   return (
     <Link
       href={item.permalink}
       target="_blank"
       rel="noopener noreferrer"
-      className="group relative aspect-square overflow-hidden rounded-[1.5rem] shadow-card transition-shadow duration-200 hover:shadow-card-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pk-primary"
+      className={cn(
+        'group relative overflow-hidden shadow-card transition-shadow duration-200 hover:shadow-card-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pk-primary',
+        featured ? 'aspect-[4/3] rounded-[2rem]' : 'aspect-square rounded-[1.5rem]'
+      )}
       aria-label={
         item.caption
           ? `Ver en Instagram: ${item.caption}`
@@ -42,11 +50,21 @@ export function InstagramMediaCard({ item }: InstagramMediaCardProps): React.Rea
             decoding="async"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-pk-deep/75 via-transparent to-transparent opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
-          {item.caption ? (
-            <p className="absolute bottom-0 left-0 right-0 line-clamp-2 p-3 text-xs font-semibold text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-              {item.caption}
+          <div
+            className={cn(
+              'absolute inset-x-0 bottom-0 bg-gradient-to-t from-pk-deep/90 via-pk-deep/40 to-transparent p-3 text-white transition-transform duration-200',
+              featured ? 'translate-y-0' : 'translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100'
+            )}
+          >
+            <p className={cn('font-semibold leading-tight', featured ? 'text-sm sm:text-base' : 'text-xs')}>
+              {item.caption ?? item.fallback?.title ?? 'Peskids en Instagram'}
             </p>
-          ) : null}
+            {featured && item.fallback?.body ? (
+              <p className="mt-1 max-w-2xl text-xs leading-relaxed text-white/85 sm:text-sm">
+                {item.fallback.body}
+              </p>
+            ) : null}
+          </div>
         </>
       ) : (
         <div

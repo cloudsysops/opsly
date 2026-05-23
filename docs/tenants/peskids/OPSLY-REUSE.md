@@ -32,14 +32,15 @@ Guía completa: [`docs/01-development/LIBRARY-MODULES.md`](../../01-development/
 |-------------|-------------------|--------------------------------------|
 | `scripts/lib/google-auth.sh` | Service account / OAuth **Drive** y APIs Google Cloud | **No** — no es login de padres |
 | `apps/portal` + Supabase Auth | Email + invitación (`signInWithPassword`, magic invite) | **Sí, patrón** — mismo Supabase project |
-| Google OAuth en UI | **No implementado** en portal hoy (solo email/password) | **Fase 2:** `supabase.auth.signInWithOAuth({ provider: 'google' })` en portal o mini-app familias |
+| Google OAuth en UI | **Implementado en portal Opsly** como patrón reutilizable (familias) | **Usar** en portal de familias / Peskids; exigir provider Google activo en Supabase |
 
 Pasos cuando pidan “entrar con Google”:
 
 1. Activar proveedor Google en **Supabase Dashboard** → Authentication → Providers.
 2. Copiar patrón de `apps/portal/lib/supabase/client.ts` + `middleware.ts` (sesión cookie).
 3. Reutilizar **Zero-Trust** de Opsly: `resolveTrustedPortalSession` en `apps/api/lib/portal-trusted-identity.ts` si las familias consumen API bajo `/api/portal/tenant/peskids/…`.
-4. **No** copiar `NEXT_PUBLIC_PLATFORM_ADMIN_TOKEN`; admin Peskids sigue con `DASHBOARD_ADMIN_SECRET`.
+4. Staff / profesores / soporte siguen por **invitación + contraseña**; para esos roles puede añadirse passkey/MFA, pero **no** compartir login con familias.
+5. **No** copiar `NEXT_PUBLIC_PLATFORM_ADMIN_TOKEN`; admin Peskids sigue con `DASHBOARD_ADMIN_SECRET`.
 
 ## WhatsApp — Opsly vs web
 
@@ -48,6 +49,7 @@ Pasos cuando pidan “entrar con Google”:
 | Conversaciones en panel | `POST /api/webhooks/inbound` + dashboard | Botón `wa.me` → chat del negocio |
 | Automatización | n8n `peskids-whatsapp` (Baileys/Jelou) | No sustituye al botón público |
 | Config | Doppler: `JELOU_*`, `PESKIDS_INBOUND_*` | `NEXT_PUBLIC_PESKIDS_WHATSAPP_E164` |
+| Staff/admin auth | `DASHBOARD_ADMIN_SECRET` + sesión Supabase con rol/tenant | Reutilizable en repo propio para staff/support/teachers |
 
 Ver [`WHATSAPP-CHANNEL.md`](./WHATSAPP-CHANNEL.md).
 

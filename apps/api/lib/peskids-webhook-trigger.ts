@@ -26,6 +26,9 @@ export async function triggerWebhooks(
         .update(payloadJson)
         .digest('hex');
 
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
+
       const response = await fetch(webhook.webhook_url, {
         method: 'POST',
         headers: {
@@ -35,8 +38,10 @@ export async function triggerWebhooks(
           'X-Opsly-Delivery-ID': `${payload.submission_id}-${Date.now()}`,
         },
         body: payloadJson,
-        timeout: 10000, // 10 second timeout
+        signal: controller.signal,
       });
+
+      clearTimeout(timeoutId);
 
       if (response.ok) {
         results.success += 1;

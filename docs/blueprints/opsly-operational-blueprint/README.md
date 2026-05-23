@@ -6,7 +6,7 @@ last_review: 2026-05-19
 
 # Opsly Operational Blueprint
 
-Blueprint operativo reutilizable para **pequeños negocios** y **incubación de clientes** en Opsly. No es un producto terminado ni un clon de blueprints enterprise de Google Cloud.
+Blueprint operativo reutilizable para **pequeños negocios**, **incubación de clientes** y **futuras plataformas independientes** en Opsly. No es un producto terminado ni un clon de blueprints enterprise de Google Cloud.
 
 ## Qué es
 
@@ -16,6 +16,7 @@ Un conjunto de **principios, capas, módulos y patrones** que el equipo Opsly us
 - Incubar tenants (p. ej. Peskids) dentro de Opsly con trazabilidad
 - Extraer después un **producto independiente** sin rehacer todo desde cero
 - Elegir proveedores con **bajo lock-in** y costos acotados
+- Repetir el mismo modelo para más clientes sin reescribir la arquitectura
 
 Inspiración de buenas prácticas (seguridad, observabilidad, confiabilidad, modularidad, documentación) — **no** copiar arquitecturas enterprise ni landing zones multi-cuenta.
 
@@ -59,7 +60,7 @@ flowchart LR
 3. **Extraer** — copiar módulos/docs seguros; Supabase y dominio propios
 4. **Conectar** — eventos opcionales hacia Opsly (metering, soporte)
 
-Ejemplo reciente: [Peskids](../../tenants/peskids/README.md) — piloto incubado, no el único caso de uso.
+Peskids es el **piloto de referencia** que valida este blueprint. Las futuras plataformas no deben inventar un modelo nuevo: deben partir de la [CLIENT-INCUBATION-TEMPLATE.md](./CLIENT-INCUBATION-TEMPLATE.md) y solo cambiar lo específico del cliente.
 
 ## Mapa del blueprint
 
@@ -70,6 +71,7 @@ Ejemplo reciente: [Peskids](../../tenants/peskids/README.md) — piloto incubado
 | [MODULES.md](./MODULES.md) | Módulos reutilizables |
 | [PROVIDER-MATRIX.md](./PROVIDER-MATRIX.md) | Elección de proveedores |
 | [TENANT-INCUBATION.md](./TENANT-INCUBATION.md) | Ciclo de vida del tenant |
+| [CLIENT-INCUBATION-TEMPLATE.md](./CLIENT-INCUBATION-TEMPLATE.md) | Plantilla reusable para nuevos clientes |
 | [EXTRACTION-PATTERN.md](./EXTRACTION-PATTERN.md) | Salida a plataforma propia |
 | [SECURITY-AND-TRUST.md](./SECURITY-AND-TRUST.md) | Confianza y datos |
 | [COMMERCIAL-PACKAGES.md](./COMMERCIAL-PACKAGES.md) | Paquetes comerciales |
@@ -86,8 +88,8 @@ Ejemplo reciente: [Peskids](../../tenants/peskids/README.md) — piloto incubado
 
 ## Piloto de referencia
 
-[Peskids](../../tenants/peskids/README.md) valida este blueprint en un tenant real (incubar → validar → extraer). El blueprint sigue en **draft v0.1**; las lecciones de Peskids alimentan `v0.2`, no convierten el borrador en canon.
+[Peskids](../../tenants/peskids/README.md) valida este blueprint en un tenant real (incubar → validar → extraer). La plantilla de cliente vive en [CLIENT-INCUBATION-TEMPLATE.md](./CLIENT-INCUBATION-TEMPLATE.md) y reutiliza la misma lógica para futuros tenants. El blueprint sigue en **draft v0.1**; las lecciones de Peskids alimentan `v0.2`, no convierten el borrador en canon.
 
 ## Estado
 
-**v0.1 — borrador inicial.** Revisar con producto y operaciones antes de tratarlo como canon.
+**v0.1 — borrador vivo.** Revisar con producto y operaciones antes de tratarlo como canon. Las lecciones de Peskids alimentan la siguiente revisión.
