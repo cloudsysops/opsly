@@ -1,14 +1,14 @@
 'use client'
 
 import { Loader2 } from 'lucide-react'
+import { Suspense, useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useEffect, useState } from 'react'
 import { PeskidsLogo } from '@/components/brand/peskids-logo'
 import { Button } from '@/components/ui/button'
-import { isStaffUser } from '@/lib/staff-auth'
+import { isStaffUser } from '@/lib/staff-user'
 import { createClient } from '@/lib/supabase-browser'
 
-export default function AdminUpdatePasswordPage(): React.ReactElement {
+function UpdatePasswordForm(): React.ReactElement {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [password, setPassword] = useState('')
@@ -123,5 +123,19 @@ export default function AdminUpdatePasswordPage(): React.ReactElement {
         </form>
       </div>
     </div>
+  )
+}
+
+export default function AdminUpdatePasswordPage(): React.ReactElement {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center bg-pk-bg">
+          <Loader2 className="h-8 w-8 animate-spin text-pk-mint" aria-hidden />
+        </div>
+      }
+    >
+      <UpdatePasswordForm />
+    </Suspense>
   )
 }

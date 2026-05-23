@@ -1,7 +1,7 @@
 import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs'
 import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
-import { isStaffUser } from '@/lib/staff-auth'
+import { isStaffUser } from '@/lib/staff-user'
 import type { Database } from '@/lib/types'
 
 export async function middleware(req: NextRequest): Promise<NextResponse> {

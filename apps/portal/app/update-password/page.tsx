@@ -1,13 +1,13 @@
 'use client'
 
 import { Loader2 } from 'lucide-react'
+import { Suspense, useEffect, useState, type ReactElement } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useEffect, useState, type ReactElement } from 'react'
 import { Button } from '@/components/ui/button'
 import { isPortalTenantUser } from '@/lib/portal-access'
 import { createClient } from '@/lib/supabase'
 
-export default function UpdatePasswordPage(): ReactElement {
+function UpdatePasswordForm(): ReactElement {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [password, setPassword] = useState('')
@@ -117,5 +117,19 @@ export default function UpdatePasswordPage(): ReactElement {
         </form>
       </div>
     </main>
+  )
+}
+
+export default function UpdatePasswordPage(): ReactElement {
+  return (
+    <Suspense
+      fallback={
+        <main className="ops-auth-backdrop flex min-h-screen items-center justify-center">
+          <Loader2 className="h-8 w-8 animate-spin text-ops-green" aria-hidden />
+        </main>
+      }
+    >
+      <UpdatePasswordForm />
+    </Suspense>
   )
 }
