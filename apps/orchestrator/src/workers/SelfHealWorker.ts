@@ -12,6 +12,11 @@ export interface SelfHealPayload {
 
 const VPS_SSH = process.env.VPS_TAILSCALE_HOST ?? "vps-dragon@100.120.151.91";
 const OPSLY_ROOT = process.env.VPS_OPSLY_ROOT ?? "/opt/opsly";
+const SERVICE_NAME_PATTERN = /^[A-Za-z0-9][A-Za-z0-9_.-]{0,127}$/;
+
+function shellQuote(value: string): string {
+  return `'${value.replace(/'/g, `'\"'\"'`)}'`;
+}
 
 async function runSSH(cmd: string): Promise<{ ok: boolean; output: string }> {
   const { execFile } = await import("child_process");
@@ -42,6 +47,9 @@ export function startSelfHealWorker(connection: object): Worker {
       logWorkerLifecycle("start", "self-heal", job);
 
       const { tenant_slug, service, action, reason } = job.data;
+      if (!SERVICE_NAME_PATTERN.test(service)) {
+        throw new Error(`Invalid service name: ${service}`);
+      }
 
       await notifyDiscord(
         `🔧 Self-Heal iniciado`,
@@ -53,7 +61,7 @@ export function startSelfHealWorker(connection: object): Worker {
 
       switch (action) {
         case "restart":
-          result = await runSSH(`docker restart ${service} 2>&1 | tail -5`);
+          result = await runSSH(`docker restart -- ${shellQuote(service)} 2>&1 | tail -5`);
           break;
 
         case "refresh-env":
