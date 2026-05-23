@@ -3,6 +3,7 @@ import { triggerN8nMessagePipeline } from '@/lib/chat-assistant'
 import { storeDraftReply, storeInboundMessage, storeOutboundMessage } from '@/lib/message-store'
 import { emitEvent } from '@/lib/events'
 import { buildPeskidsIntakeTurn } from '@/lib/peskids-intake'
+import { submitLeadFromIntake } from '@/lib/peskids-lead-from-intake'
 
 const MAX_MESSAGE_LENGTH = 2000
 
@@ -59,6 +60,10 @@ export async function POST(req: NextRequest) {
           status: 'pending',
         })
       : { draft: null }
+
+    if (intake.stage === 'handoff') {
+      void submitLeadFromIntake(intake.profile)
+    }
 
     void triggerN8nMessagePipeline(message.id, messageText)
 

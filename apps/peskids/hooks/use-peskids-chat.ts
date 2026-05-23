@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState, type RefObject } from 'react'
 import { getOrCreateChatSessionId } from '@/lib/peskids-chat-session'
+import { peskidsIntakeWelcome } from '@/lib/peskids-intake-messages'
 
 export type PeskidsChatMessage = {
   role: 'user' | 'assistant'
@@ -13,7 +14,7 @@ export type PeskidsChatMessage = {
 
 const WELCOME: PeskidsChatMessage = {
   role: 'assistant',
-  text: '¡Hola! Soy el asistente de Peskids 🐠 Te ayudo a reservar una clase de prueba. ¿Cómo te llamas y qué edad tiene tu hijo o hija?',
+  text: `${peskidsIntakeWelcome('web')}\n\nPara empezar, ¿cómo te llamas (nombre del acudiente)?`,
 }
 
 export function usePeskidsChat(): {

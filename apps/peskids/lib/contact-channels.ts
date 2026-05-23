@@ -3,10 +3,10 @@
  * Número y mensaje por env en Doppler / runtime/peskids.env — sin hardcodear en componentes.
  */
 
+import { PESKIDS_WHATSAPP_INTAKE_PREFILL } from '@/lib/peskids-intake-messages'
+
 const DEFAULT_WHATSAPP_E164 = '573000000000'
 const DEFAULT_WHATSAPP_DISPLAY = '+57 300 000 0000'
-const DEFAULT_PREFILL =
-  'Hola Peskids, quiero información sobre clases de natación para mi hijo/a.'
 
 /** Solo dígitos E.164 sin + (ej. 573001234567). */
 export function normalizeWhatsAppE164(raw: string | undefined): string {
@@ -22,7 +22,8 @@ export const PESKIDS_CONTACT = {
     e164: normalizeWhatsAppE164(process.env.NEXT_PUBLIC_PESKIDS_WHATSAPP_E164),
     display:
       process.env.NEXT_PUBLIC_PESKIDS_WHATSAPP_DISPLAY?.trim() || DEFAULT_WHATSAPP_DISPLAY,
-    prefill: process.env.NEXT_PUBLIC_PESKIDS_WHATSAPP_PREFILL?.trim() || DEFAULT_PREFILL,
+    prefill:
+      process.env.NEXT_PUBLIC_PESKIDS_WHATSAPP_PREFILL?.trim() || PESKIDS_WHATSAPP_INTAKE_PREFILL,
   },
 } as const
 
