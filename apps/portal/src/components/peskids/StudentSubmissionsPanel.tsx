@@ -134,8 +134,8 @@ export function StudentSubmissionsPanel({ tenantSlug }: StudentSubmissionsPanelP
         </div>
         <Button
           onClick={handleExport}
-          variant="outline"
-          className="border-ops-border text-ops-blue hover:bg-ops-surface"
+          variant="ghost"
+          className="border border-ops-border text-ops-blue hover:bg-ops-surface"
         >
           📥 Export as CSV
         </Button>
@@ -243,8 +243,8 @@ export function StudentSubmissionsPanel({ tenantSlug }: StudentSubmissionsPanelP
                     {submission.status !== 'graded' && (
                       <Button
                         size="sm"
-                        variant="outline"
-                        className="border-ops-border text-ops-green hover:bg-ops-surface"
+                        variant="ghost"
+                        className="border border-ops-border text-ops-green hover:bg-ops-surface"
                       >
                         Grade
                       </Button>
@@ -288,8 +288,8 @@ export function StudentSubmissionsPanel({ tenantSlug }: StudentSubmissionsPanelP
                   </Button>
                   <Button
                     onClick={() => setSelectedSubmissions(new Set())}
-                    variant="outline"
-                    className="border-ops-border text-ops-gray hover:bg-ops-surface"
+                    variant="ghost"
+                    className="border border-ops-border text-ops-gray hover:bg-ops-surface"
                   >
                     Clear
                   </Button>

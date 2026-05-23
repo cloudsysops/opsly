@@ -122,16 +122,16 @@ export function MyFormsPanel({ tenantSlug }: MyFormsPanelProps) {
                   </div>
                   <div className="ml-6 flex flex-col gap-2">
                     <Button
-                      variant="outline"
+                      variant="ghost"
                       size="sm"
-                      className="border-ops-border text-ops-blue hover:bg-ops-surface"
+                      className="border border-ops-border text-ops-blue hover:bg-ops-surface"
                     >
                       Edit
                     </Button>
                     <Button
-                      variant="outline"
+                      variant="ghost"
                       size="sm"
-                      className="border-ops-border text-ops-blue hover:bg-ops-surface"
+                      className="border border-ops-border text-ops-blue hover:bg-ops-surface"
                     >
                       Responses
                     </Button>

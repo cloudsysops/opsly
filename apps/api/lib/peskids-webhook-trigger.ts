@@ -29,27 +29,29 @@ export async function triggerWebhooks(
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 10000);
 
-      const response = await fetch(webhook.webhook_url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Opsly-Signature': `sha256=${signature}`,
-          'X-Opsly-Webhook-ID': webhook.id,
-          'X-Opsly-Delivery-ID': `${payload.submission_id}-${Date.now()}`,
-        },
-        body: payloadJson,
-        signal: controller.signal,
-      });
+      try {
+        const response = await fetch(webhook.webhook_url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Opsly-Signature': `sha256=${signature}`,
+            'X-Opsly-Webhook-ID': webhook.id,
+            'X-Opsly-Delivery-ID': `${payload.submission_id}-${Date.now()}`,
+          },
+          body: payloadJson,
+          signal: controller.signal,
+        });
 
-      clearTimeout(timeoutId);
-
-      if (response.ok) {
-        results.success += 1;
-      } else {
-        results.failed += 1;
-        results.errors.push(
-          `Webhook ${webhook.id}: HTTP ${response.status} - ${response.statusText}`
-        );
+        if (response.ok) {
+          results.success += 1;
+        } else {
+          results.failed += 1;
+          results.errors.push(
+            `Webhook ${webhook.id}: HTTP ${response.status} - ${response.statusText}`
+          );
+        }
+      } finally {
+        clearTimeout(timeoutId);
       }
     } catch (error) {
       results.failed += 1;

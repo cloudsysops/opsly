@@ -1,6 +1,6 @@
 import type { NextRequest } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { HTTP_STATUS } from '../../../../../../../../lib/constants';
+import { HTTP_STATUS } from '@/lib/constants';
 
 interface FormSubmission {
   submission_id: string;
