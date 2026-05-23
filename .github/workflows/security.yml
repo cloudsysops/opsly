@@ -1,6 +1,6 @@
 # Opsly — workflow catalog: docs/ops/workflows-index.md
 # CVE & secret scanning — runs on every PR and weekly cron.
-# High/critical npm vulnerabilities block the PR (audit-level=high).
+# MVP policy: moderate+ npm audit gate (aligned with .npmrc audit-level=moderate).
 # Docker Scout CVE scan runs on images already pushed to GHCR (post-deploy).
 # TruffleHog secret scan runs in ci.yml (see: secret-scan job).
 
@@ -21,7 +21,7 @@ permissions:
 
 jobs:
   npm-audit:
-    name: npm audit (high+critical)
+    name: npm audit (moderate+)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -35,14 +35,14 @@ jobs:
       - name: npm ci
         run: npm ci
 
-      - name: npm audit — fail on high/critical
+      - name: npm audit — fail on moderate+
         id: audit
         run: |
           set +e
-          npm audit --audit-level=high --json > audit-report.json 2>&1
+          npm audit --audit-level=moderate --json > audit-report.json 2>&1
           EXIT_CODE=$?
           # Print summary (no secrets in output)
-          npm audit --audit-level=high 2>&1 || true
+          npm audit --audit-level=moderate 2>&1 || true
           exit $EXIT_CODE
 
       - name: Upload audit report
@@ -59,9 +59,9 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          BODY="## ⚠️ npm audit found HIGH/CRITICAL vulnerabilities
+          BODY="## ⚠️ npm audit found MODERATE+ vulnerabilities
 
-          Run \`npm audit --audit-level=high\` locally to see details.
+          Run \`npm audit --audit-level=moderate\` locally to see details.
           This PR cannot be merged until vulnerabilities are resolved or explicitly exempted.
 
           [Workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})"
