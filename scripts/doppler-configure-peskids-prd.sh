@@ -8,13 +8,17 @@ PROJECT="${DOPPLER_PROJECT:-ops-intcloudsysops}"
 CONFIG="${DOPPLER_CONFIG:-prd}"
 DRY_RUN=false
 FORCE=false
+INSTAGRAM_PERMALINKS_CLI=""
 
 usage() {
   cat <<'EOF'
-Usage: ./scripts/doppler-configure-peskids-prd.sh [--dry-run] [--force]
+Usage: ./scripts/doppler-configure-peskids-prd.sh [--dry-run] [--force] [--instagram-permalinks "url1,url2"]
 
   --dry-run  Show planned changes without writing to Doppler
   --force    Overwrite existing secrets (except Supabase keys unless missing)
+  --instagram-permalinks  Comma-separated Instagram post/reel URLs (optional)
+
+  Or: PESKIDS_INSTAGRAM_PERMALINKS="https://..." ./scripts/doppler-configure-peskids-prd.sh
 
 Sets Peskids vars in Doppler prd. Supabase URL/keys are copied from existing
 platform secrets when absent. Generates DASHBOARD_ADMIN_SECRET and
@@ -28,6 +32,10 @@ while [[ $# -gt 0 ]]; do
   case "$1" in
     --dry-run) DRY_RUN=true ;;
     --force) FORCE=true ;;
+    --instagram-permalinks)
+      shift
+      INSTAGRAM_PERMALINKS_CLI="${1:-}"
+      ;;
     -h|--help) usage; exit 0 ;;
     *) echo "Unknown option: $1" >&2; usage; exit 1 ;;
   esac
@@ -139,6 +147,24 @@ fi
 set_secret NEXT_PUBLIC_JELOU_WORKSPACE_ID "placeholder"
 set_secret NEXT_PUBLIC_JELOU_FORM_LEAD_ID "placeholder"
 set_secret NEXT_PUBLIC_JELOU_FORM_FEEDBACK_ID "placeholder"
+
+# --- Chat / WhatsApp / LLM (VPS: peskids container → LLM en puerto publicado en el host Docker) ---
+set_secret PESKIDS_WHATSAPP_REPLY_MODE "auto"
+if ! secret_exists PESKIDS_INBOUND_WEBHOOK_SECRET; then
+  INBOUND_SYNC="$(get_secret_plain JELOU_WEBHOOK_SECRET)"
+  set_secret PESKIDS_INBOUND_WEBHOOK_SECRET "$INBOUND_SYNC"
+  unset INBOUND_SYNC
+fi
+# Desde contenedor en traefik-public: gateway en el host (ajusta si usas otro bind en compose).
+set_secret LLM_GATEWAY_URL "http://172.17.0.1:3010"
+
+# Instagram: pegar permalinks reales con --instagram-permalinks o variable de entorno al invocar el script.
+INSTAGRAM_PERMALINKS="${PESKIDS_INSTAGRAM_PERMALINKS:-${INSTAGRAM_PERMALINKS_CLI}}"
+if [[ -n "$INSTAGRAM_PERMALINKS" ]]; then
+  set_secret INSTAGRAM_POST_PERMALINKS "$INSTAGRAM_PERMALINKS"
+elif ! secret_exists INSTAGRAM_POST_PERMALINKS; then
+  echo "  hint INSTAGRAM_POST_PERMALINKS unset — landing usa tarjetas de marca hasta copiar enlaces del perfil"
+fi
 
 echo ""
 echo "Done. Verify names (no values):"

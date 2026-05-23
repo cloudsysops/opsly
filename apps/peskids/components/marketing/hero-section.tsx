@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { PeskidsBrush, StarBurst, WiggleLine } from '@/components/brand/peskids-logo'
-import { LeadCaptureForm } from '@/components/forms/lead-capture-form'
+import { HeroChatCard } from '@/components/chat/hero-chat-card'
+import { HeroChatCta } from '@/components/chat/hero-chat-cta'
 import { WhatsAppLink } from '@/components/contact/whatsapp-link'
 import { peskidsColorTokens } from '@/lib/tokens'
 
@@ -45,24 +46,19 @@ export function HeroSection(): React.ReactElement {
           <WiggleLine width={120} className="mt-4" />
 
           <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
+            <HeroChatCta />
             <WhatsAppLink
               variant="hero"
               label="Escribir por WhatsApp"
               prefill="Hola Peskids, quiero reservar una clase de prueba de natación."
             />
-            <Link
-              href="#contacto"
-              className="inline-flex h-12 items-center justify-center rounded-full border-2 border-pk-primary bg-pk-surface px-6 text-sm font-bold text-pk-primary transition hover:bg-pk-primary/5"
-            >
-              O reserva con el formulario ↓
-            </Link>
           </div>
           <p className="mt-3 text-sm text-pk-sub">
             <Link href="/familias" className="font-semibold text-pk-primary hover:underline">
               Portal de familias
             </Link>
             {' · '}
-            Respuesta habitual en menos de 48 h
+            Reserva guiada por chat en menos de 2 minutos
           </p>
           <div className="mt-10 flex flex-wrap gap-10">
             {stats.map((s) => (
@@ -75,7 +71,7 @@ export function HeroSection(): React.ReactElement {
         </div>
 
         <div className="relative lg:sticky lg:top-24">
-          <LeadCaptureForm />
+          <HeroChatCard />
           <StarBurst size={24} className="pointer-events-none absolute -right-2 -top-3 hidden lg:block" />
         </div>
       </div>

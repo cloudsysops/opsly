@@ -5,6 +5,7 @@ import { enqueueApprovedReply } from '@/lib/n8n-send'
 import { storeDraftReply, storeInboundMessage, storeOutboundMessage } from '@/lib/message-store'
 import { getPeskidsWhatsAppReplyMode, shouldAutoReplyWhatsApp } from '@/lib/whatsapp-reply-mode'
 import { buildPeskidsIntakeTurn } from '@/lib/peskids-intake'
+import { submitLeadFromIntake } from '@/lib/peskids-lead-from-intake'
 
 type InboundSource = 'whatsapp' | 'instagram' | 'web'
 
@@ -118,6 +119,10 @@ export async function POST(req: NextRequest) {
       senderName: 'Asistente Peskids',
       status: autoReplyEnabled && sendResult.ok ? 'sent' : 'pending',
     })
+
+    if (intake.stage === 'handoff') {
+      void submitLeadFromIntake(intake.profile)
+    }
 
     if (intake.supportDraft) {
       await storeDraftReply(message.id, intake.supportDraft, normalized.source, {
