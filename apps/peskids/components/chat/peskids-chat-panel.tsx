@@ -1,6 +1,6 @@
 'use client'
 
-import type { RefObject } from 'react'
+import React, { type RefObject } from 'react'
 import { Send, X } from 'lucide-react'
 import type { PeskidsChatMessage } from '@/hooks/use-peskids-chat'
 import { cn } from '@/lib/utils'
@@ -65,7 +65,7 @@ export function PeskidsChatPanel({
         ) : null}
       </header>
 
-      <div ref={listRef} className="flex-1 space-y-3 overflow-y-auto px-3 py-3">
+      <div ref={listRef as React.LegacyRef<HTMLDivElement>} className="flex-1 space-y-3 overflow-y-auto px-3 py-3">
         {messages.map((m, i) => (
           <div
             key={`${i}-${m.role}`}

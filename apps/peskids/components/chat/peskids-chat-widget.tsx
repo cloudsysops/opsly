@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { MessageCircle, X } from 'lucide-react'
 import { usePathname } from 'next/navigation'
 import { PeskidsChatPanel } from '@/components/chat/peskids-chat-panel'
@@ -33,7 +33,7 @@ export function PeskidsChatWidget(): React.ReactElement | null {
             messages={chat.messages}
             input={chat.input}
             sending={chat.sending}
-            listRef={chat.listRef}
+            listRef={chat.listRef as React.RefObject<HTMLDivElement>}
             onInputChange={chat.setInput}
             onSend={() => void chat.sendMessage()}
             onClose={() => setOpen(false)}
