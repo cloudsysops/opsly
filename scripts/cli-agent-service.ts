@@ -3,7 +3,7 @@
 import express from 'express';
 import { spawn } from 'node:child_process';
 import { randomUUID, timingSafeEqual } from 'node:crypto';
-import { existsSync } from 'node:fs';
+import { existsSync, realpathSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 type ExecuteRequest = {
@@ -213,11 +213,21 @@ function isPathInside(parent: string, child: string): boolean {
   return child === parent || child.startsWith(normalizedParent);
 }
 
+function normalizeExistingPath(target: string): string {
+  const native = (realpathSync as typeof realpathSync & { native?: typeof realpathSync }).native;
+  return native ? native(target) : realpathSync(target);
+}
+
 function validateWorkspaceScope(): void {
   if (!existsSync(cwd)) {
     throw new Error(`Working directory does not exist: ${cwd}`);
   }
-  if (!isPathInside(allowedRoot, cwd)) {
+  if (!existsSync(allowedRoot)) {
+    throw new Error(`Allowed root does not exist: ${allowedRoot}`);
+  }
+  const resolvedAllowedRoot = normalizeExistingPath(allowedRoot);
+  const resolvedCwd = normalizeExistingPath(cwd);
+  if (!isPathInside(resolvedAllowedRoot, resolvedCwd)) {
     throw new Error(`Working directory is outside allowed root: ${cwd}`);
   }
 }
@@ -309,7 +319,11 @@ function runCommand(spec: CommandSpec): Promise<{ stdout: string; stderr: string
     const timeout = setTimeout(() => {
       timedOut = true;
       if (child.pid) {
-        process.kill(-child.pid, 'SIGTERM');
+        try {
+          process.kill(-child.pid, 'SIGTERM');
+        } catch {
+          // Process already exited or process group kill unsupported.
+        }
         setTimeout(() => {
           try {
             if (child.pid) process.kill(-child.pid, 'SIGKILL');
