@@ -15,11 +15,22 @@ export interface ClaudeCodePayload {
 const REPO = process.env.OPSLY_GITHUB_REPO ?? "cloudsysops/opsly";
 const MODEL = (process.env.ORCHESTRATOR_MODEL ?? "claude-sonnet-4-6") as Anthropic.Model;
 
+function sanitizeTaskIdForFilename(taskId: string): string {
+  const sanitizedTaskId = taskId.replace(/[^A-Za-z0-9_-]+/g, "-").replace(/^-+|-+$/g, "");
+
+  if (!sanitizedTaskId) {
+    throw new Error("task_id must contain at least one filename-safe character");
+  }
+
+  return sanitizedTaskId;
+}
+
 async function writeOutputToGitHub(taskId: string, content: string): Promise<void> {
   const token = resolveGithubPat();
   if (!token) throw new Error("GITHUB_TOKEN required");
 
-  const path = `docs/claude-code-output/${taskId}-${Date.now()}.md`;
+  const safeTaskId = sanitizeTaskIdForFilename(taskId);
+  const path = `docs/claude-code-output/${safeTaskId}-${Date.now()}.md`;
   const url = `https://api.github.com/repos/${REPO}/contents/${path}`;
 
   const res = await fetch(url, {
