@@ -1,5 +1,5 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
-import { runAILeadFollowupWorkflow, triggerFollowupForContact } from '@intcloudsysops/services/gohighlevel/index.js';
+import { runAILeadFollowupWorkflow, triggerFollowupForContact } from '@intcloudsysops/services/gohighlevel/full.js';
 
 interface RequestBody {
   mode: 'batch' | 'single';

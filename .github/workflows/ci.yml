@@ -44,6 +44,7 @@ jobs:
           npm ci
           (cd apps/ml && npm run build)
           (cd lib/git-branch-orchestrator && npm run build)
+          (cd lib/services && npm run build)
           (cd lib/session-manager && npm run build)
           (cd lib/runtime && npm run build)
 
@@ -166,6 +167,7 @@ jobs:
           npm ci
           # Build ALL internal packages first (required for tests that import them)
           (cd lib/git-branch-orchestrator && npm run build)
+          (cd lib/services && npm run build)
           (cd lib/session-manager && npm run build)
           (cd lib/runtime && npm run build)
           (cd apps/ml && npm run build)
@@ -224,6 +226,7 @@ jobs:
           # Build internal packages first (lib/* before orchestrator)
           (cd apps/ml && npm run build)
           (cd lib/git-branch-orchestrator && npm run build)
+          (cd lib/services && npm run build)
           (cd lib/session-manager && npm run build)
           (cd lib/runtime && npm run build)
           (cd apps/llm-gateway && npm run build)
@@ -344,10 +347,7 @@ jobs:
 
       - name: Upload Trivy results to GitHub Security tab
         uses: github/codeql-action/upload-sarif@v3
-        if: >-
-          always() &&
-          (github.event_name != 'pull_request' ||
-            github.event.pull_request.head.repo.full_name == github.repository)
+        if: always()
         continue-on-error: true
         with:
           sarif_file: 'trivy-results.sarif'

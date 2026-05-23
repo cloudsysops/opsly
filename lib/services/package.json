@@ -1,13 +1,36 @@
 {
   "name": "@intcloudsysops/services",
   "version": "1.0.0",
-  "description": "services description",
+  "description": "Shared service layer (repositories, integrations)",
   "type": "module",
-  "main": "./index.ts",
-  "types": "./index.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./gohighlevel": {
+      "types": "./dist/gohighlevel/index.d.ts",
+      "import": "./dist/gohighlevel/index.js",
+      "default": "./dist/gohighlevel/index.js"
+    },
+    "./gohighlevel/index.js": {
+      "types": "./dist/gohighlevel/index.d.ts",
+      "import": "./dist/gohighlevel/index.js",
+      "default": "./dist/gohighlevel/index.js"
+    },
+    "./gohighlevel/full.js": {
+      "types": "./dist/gohighlevel/full.d.ts",
+      "import": "./dist/gohighlevel/full.js",
+      "default": "./dist/gohighlevel/full.js"
+    }
+  },
   "scripts": {
-    "test": "echo 'No tests yet'",
-    "type-check": "echo 'services type-checked via root tsconfig'"
+    "build": "tsc",
+    "type-check": "tsc --noEmit",
+    "test": "echo 'No tests yet'"
   },
   "keywords": ["services"]
 }

@@ -1,7 +1,24 @@
 import { getGoHighLevelService } from '../service.js';
-import { createLogger } from '../../../observability/logger.js';
 
-const logger = createLogger('ghl-ai-followup');
+const logger = {
+  info: (message: string, context?: Record<string, unknown>) => {
+    console.error(JSON.stringify({ level: 'info', service: 'ghl-ai-followup', message, ...context }));
+  },
+  warn: (message: string, context?: Record<string, unknown>) => {
+    console.error(JSON.stringify({ level: 'warn', service: 'ghl-ai-followup', message, ...context }));
+  },
+  error: (message: string, err?: Error, context?: Record<string, unknown>) => {
+    console.error(
+      JSON.stringify({
+        level: 'error',
+        service: 'ghl-ai-followup',
+        message,
+        error: err?.message,
+        ...context,
+      }),
+    );
+  },
+};
 import type { Contact, Task } from '../types.js';
 
 /**
@@ -189,8 +206,7 @@ export async function runAILeadFollowupWorkflow(config: AIFollowupConfig): Promi
   const ghlService = getGoHighLevelService();
   const safeLogger = {
     info: logger.info.bind(logger),
-    error: (msg: string, meta?: Record<string, unknown>) =>
-      logger.error(msg, undefined, meta as Parameters<typeof logger.error>[2]),
+    error: (msg: string, meta?: Record<string, unknown>) => logger.error(msg, undefined, meta),
   };
   const results: AIFollowupResult = {
     success: true,
