@@ -32,7 +32,32 @@ El script **no imprime valores**. Reutiliza Supabase ya presente en `prd` y gene
    - `apps/peskids/migrations/001_create_peskids_schema.sql`
    - `apps/peskids/migrations/002_add_messages_table.sql`
 2. **VPS**: `ssh vps-dragon@100.120.151.91` → `cd /opt/opsly && ./scripts/vps-bootstrap.sh`
-3. **Vercel** (si despliegas ahí): copiar las mismas claves desde Doppler (`scripts/deploy-peskids-finish.sh` lista el conjunto).
+3. **GitHub Actions (producción en VPS)** — flujo canónico tras merge a `main`:
+   - La PR debe pasar el workflow **CI** (incluye `type-check` + `build` de `apps/peskids`).
+   - Al terminar CI en verde en `main`, corre **Deploy Peskids** (`.github/workflows/deploy-peskids.yml`): build GHCR + `./scripts/peskids-deploy-vps.sh` en el VPS.
+   - Manual: Actions → **Deploy Peskids** → Run workflow.
+   - Emergencia sin GHCR: `./scripts/peskids-rebuild-vps.sh` (build en el VPS).
+
+### Secretos GitHub (mismo valor que Doppler `prd`)
+
+Para el build de la imagen (wa.me en el cliente):
+
+| Secret GitHub | Doppler `prd` |
+|---------------|---------------|
+| `NEXT_PUBLIC_PESKIDS_WHATSAPP_E164` | `NEXT_PUBLIC_PESKIDS_WHATSAPP_E164` |
+| `NEXT_PUBLIC_PESKIDS_WHATSAPP_DISPLAY` | `NEXT_PUBLIC_PESKIDS_WHATSAPP_DISPLAY` |
+| `NEXT_PUBLIC_PESKIDS_WHATSAPP_PREFILL` | `NEXT_PUBLIC_PESKIDS_WHATSAPP_PREFILL` |
+
+Más SSH/Tailscale: ver `docs/runbooks/DEPLOY-GITHUB-ACTIONS.md` (`VPS_*`, `TAILSCALE_AUTHKEY`).
+
+**Sincronizar sin pegar valores en chat** (en tu Mac, con Doppler + `gh`):
+
+```bash
+./scripts/sync-peskids-whatsapp-secrets-to-github.sh --dry-run
+./scripts/sync-peskids-whatsapp-secrets-to-github.sh
+```
+
+Si faltan claves en Doppler: `./scripts/doppler-configure-peskids-prd.sh` o `./scripts/peskids-promote-whatsapp-doppler.sh`.
 
 ## Admin dashboard
 

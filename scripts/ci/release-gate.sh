@@ -18,13 +18,15 @@ npm ci
 echo "==> OpenAPI contract"
 npm run validate-openapi
 
-echo "==> TypeScript gate (api/admin/portal/mcp/orchestrator/ml/llm-gateway/context-builder)"
+echo "==> TypeScript gate (api/admin/portal/peskids/mcp/orchestrator/ml/llm-gateway/context-builder)"
 (cd apps/api && npx tsc --noEmit) &
 pid1=$!
 (cd apps/admin && npx tsc --noEmit) &
 pid2=$!
 (cd apps/portal && npx tsc --noEmit) &
 pid3=$!
+(cd apps/peskids && npm install --no-audit --no-fund && npx tsc --noEmit) &
+pid_peskids=$!
 (cd apps/mcp && npx tsc --noEmit) &
 pid4=$!
 (cd apps/orchestrator && npx tsc --noEmit) &
@@ -35,7 +37,7 @@ pid6=$!
 pid7=$!
 (cd apps/context-builder && npx tsc --noEmit) &
 pid8=$!
-wait $pid1 $pid2 $pid3 $pid4 $pid5 $pid6 $pid7 $pid8
+wait $pid1 $pid2 $pid3 $pid_peskids $pid4 $pid5 $pid6 $pid7 $pid8
 
 echo "==> Unit tests gate (api/orchestrator/portal)"
 (cd apps/api && npm test) &
