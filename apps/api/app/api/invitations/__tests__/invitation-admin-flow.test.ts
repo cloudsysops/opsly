@@ -90,6 +90,25 @@ describe('executeAdminInvitation', () => {
     expect(res.status).toBe(500);
   });
 
+  it('returns 200 with warning when email delivery was skipped (Resend test inbox)', async () => {
+    vi.mocked(supabaseMod.getServiceClient).mockReturnValue(mockClientForTenant(activeTenant));
+    vi.mocked(portalInvMod.sendPortalInvitationForTenant).mockResolvedValue({
+      link: 'https://portal.example/invite/tok?email=o%40a.com',
+      token: 'jwt-like-token-value-here-for-test',
+      emailDeliverySkipped: true,
+      emailDeliveryWarning: 'You can only send testing emails to your own email address',
+    });
+
+    const res = await executeAdminInvitation({
+      tenantRef: 'acme',
+      email: 'owner@acme.com',
+    });
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as Record<string, unknown>;
+    expect(body.email_delivery_skipped).toBe(true);
+    expect(body.token).toBe('jwt-like-token-value-here-for-test');
+  });
+
   it('passes undefined mode when omitted', async () => {
     vi.mocked(supabaseMod.getServiceClient).mockReturnValue(mockClientForTenant(activeTenant));
     vi.mocked(portalInvMod.sendPortalInvitationForTenant).mockResolvedValue({

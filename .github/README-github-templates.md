@@ -18,7 +18,7 @@ Este directorio agrupa **automatización** (`workflows/`), **plantillas** (issue
 | `ISSUE_TEMPLATE/feature_request.yml`          | Formulario de mejora                | New issue → Solicitud de funcionalidad          | Producto / equipo técnico                           |
 | `ISSUE_TEMPLATE/tenant_issue.yml`             | Incidencia por tenant               | New issue → Incidencia de tenant                | Operaciones / backend                               |
 | `ISSUE_TEMPLATE/config.yml`                   | Issues en blanco y enlaces de ayuda | Pantalla “New issue”                            | Todos                                               |
-| `copilot-instructions.md`                     | Límites y convenciones para Copilot | Al generar sugerencias en el editor             | Copilot / IDE                                       |
+| `copilot-instructions.md`                     | Límites y convenciones para Copilot (IDE + Coding Agent en PRs) | Editor y comentarios de PR en GitHub | Copilot; ver también `docs/03-agents/COPILOT-CODING-AGENT.md` |
 | `workflows/*.yml`                             | CI/CD y validaciones                | Push, PR, cron según cada workflow              | GitHub Actions (no documentados aquí en detalle)    |
 | `AGENTS.md`, `VISION.md`, `system_state.json` | Espejo de contexto (opcional)       | Lectura por humanos o agentes                   | Equipo + validación en CI si aplica                 |
 

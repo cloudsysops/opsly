@@ -95,11 +95,22 @@ if [[ "${HTTP_CODE}" != "200" ]]; then
     exit 0
   fi
   echo "❌ POST /api/invitations → HTTP ${HTTP_CODE}" >&2
+  if [[ "${RESPONSE}" == *"only send testing emails to your own email address"* ]]; then
+    echo "   Resend rechazó el destinatario. En CI usa OWNER_EMAIL=cboteros1@gmail.com y tenant intcloudsysops (owner_email en Supabase)." >&2
+    echo "   Tras deploy API: también acepta 200 con email_delivery_skipped si el envío falla pero el invite se crea." >&2
+  fi
   if [[ "${RESPONSE}" == *RESEND* || "${RESPONSE}" == *"API key is invalid"* ]]; then
     echo "   Revisa Doppler prd: RESEND_API_KEY (clave activa en resend.com) y RESEND_FROM_EMAIL o RESEND_FROM_ADDRESS; vps-bootstrap + recrear servicio app en VPS." >&2
   fi
   exit 1
 fi
+
+SKIPPED="$(echo "${RESPONSE}" | jq -r '.email_delivery_skipped // false' 2>/dev/null || echo false)"
+if [[ "${SKIPPED}" == "true" ]]; then
+  WARN="$(echo "${RESPONSE}" | jq -r '.warning // empty' 2>/dev/null)"
+  echo "⚠️ Invite OK; email no enviado (API): ${WARN:-email_delivery_skipped}"
+fi
+
 TOKEN="$(echo "${RESPONSE}" | jq -r .token)"
 
 if [[ "${TOKEN}" == "null" || -z "${TOKEN}" ]]; then

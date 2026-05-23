@@ -26,5 +26,6 @@ Cerebro operativo de agentes: contexto, prompts, roles, guardrails, Hive, OpenCl
 - [`../01-development/DOCUMENTATION-LIFECYCLE.md`](../01-development/DOCUMENTATION-LIFECYCLE.md) — plan → código → pruebas → docs → índices
 - `AGENT-GUARDRAILS.md`
 - `AGENTS.md`
+- `COPILOT-CODING-AGENT.md` — firewall del agente en PRs de GitHub (sin SSH/Tailscale)
 - `LOCAL-AGENT-EXECUTION.md`
 - `SOCIAL-MEDIA-AGENT-SYRA.md`

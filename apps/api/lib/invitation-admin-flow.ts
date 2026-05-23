@@ -90,7 +90,7 @@ export async function executeAdminInvitation(input: InvitationBodyInput): Promis
   const displayName = resolveDisplayName(tenant, input.name);
 
   try {
-    const { link, token } = await sendPortalInvitationForTenant({
+    const invite = await sendPortalInvitationForTenant({
       email: input.email,
       name: displayName,
       slug: tenant.slug,
@@ -99,9 +99,17 @@ export async function executeAdminInvitation(input: InvitationBodyInput): Promis
     return Response.json({
       ok: true,
       tenant_id: tenant.id,
-      link,
+      link: invite.link,
       email: emailNorm,
-      token,
+      token: invite.token,
+      ...(invite.emailDeliverySkipped
+        ? {
+            email_delivery_skipped: true,
+            warning:
+              invite.emailDeliveryWarning ??
+              'Invitation link created; email delivery skipped (test mode or provider restriction)',
+          }
+        : {}),
     });
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Invite failed';

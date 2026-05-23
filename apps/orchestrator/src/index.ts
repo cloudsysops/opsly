@@ -176,13 +176,12 @@ function startAllWorkers(): AsyncCleanup[] {
   ...(agentFarmWorker ? [async () => agentFarmWorker.close()] : []),
   ...(approvalGateResult ? [async () => approvalGateResult.worker.close()] : []),
   ...agentClassifierCleanup,
-    // Maia Life Systems
-    async () => selfHealWorker.close(),
-    async () => autoDeployWorker.close(),
-    async () => costGateWorker.close(),
-    async () => claudeCodeWorker.close(),
-    async () => validationWorker.close(),
-    async () => memoryWriterWorker.close(),
+    ...(selfHealWorker ? [async () => selfHealWorker.close()] : []),
+    ...(autoDeployWorker ? [async () => autoDeployWorker.close()] : []),
+    ...(costGateWorker ? [async () => costGateWorker.close()] : []),
+    ...(claudeCodeWorker ? [async () => claudeCodeWorker.close()] : []),
+    ...(validationWorker ? [async () => validationWorker.close()] : []),
+    ...(memoryWriterWorker ? [async () => memoryWriterWorker.close()] : []),
   );
 
   const localWorkersLabel = localAgentUnifiedOnly
