@@ -142,8 +142,8 @@ export const devopsAgentTasks: AutonomousTask[] = [
     id: "devops-001",
     title: "Docker Compose Optimization: Memory Limits + YAML Anchors",
     agent: "devops",
-    executor: "shell",
-    executorFallback: "cursor",
+    executor: "cursor",
+    executorFallback: "claude-code",
     priority: 1,
     prUrl: "https://github.com/cloudsysops/opsly/pull/devops-001",
     description: `
