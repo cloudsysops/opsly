@@ -12,7 +12,7 @@ Allowed:
 - open iTerm2 with `scripts/local-iterm-open.sh`
 - open Cursor/VS Code/Docker with `scripts/local-app-open.sh`
 - run Docker, Colima, tests, builds, tmux, and localhost browser QA
-- **Structured** OBS / OSC via `tools/live-automation/` (`dispatch.py`, `osc_send.py`) after `npm run opsly:live:install` — never raw LLM mouse
+- **Structured** OBS / OSC via `tools/live-automation/` (`dispatch.py`, `osc_send.py`) using `scripts/opsly-live-obs.sh` / `scripts/opsly-live-osc.sh` — never raw LLM mouse
 
 Forbidden without explicit human approval:
 - `sudo`
