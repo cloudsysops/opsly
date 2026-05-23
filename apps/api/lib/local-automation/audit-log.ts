@@ -3,19 +3,9 @@ import path from 'node:path';
 import { randomUUID } from 'node:crypto';
 
 import type { AutomationAuditEvent } from './types';
+import { resolveOpslyRepoRoot } from '../tools-execute';
 
-function resolveRepoRoot(): string {
-  const cwd = path.resolve(process.cwd());
-  const apiAppSuffix = path.join('apps', 'api');
-
-  if (cwd === apiAppSuffix || cwd.endsWith(`${path.sep}${apiAppSuffix}`)) {
-    return path.resolve(cwd, '..', '..');
-  }
-
-  return cwd;
-}
-
-const auditPath = path.join(resolveRepoRoot(), 'runtime', 'logs', 'local-automation.jsonl');
+const auditPath = path.join(resolveOpslyRepoRoot(), 'runtime', 'logs', 'local-automation.jsonl');
 
 export async function appendAutomationAuditEvent(
   event: Omit<AutomationAuditEvent, 'id' | 'ts'>
