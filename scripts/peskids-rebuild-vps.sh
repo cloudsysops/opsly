@@ -13,7 +13,8 @@ usage() {
   cat <<EOF
 Usage: ./scripts/peskids-rebuild-vps.sh [--dry-run]
 
-Rebuilds apps/peskids on VPS with Doppler build-args (NEXT_PUBLIC_PESKIDS_WHATSAPP_*).
+Rebuilds apps/peskids on VPS from source (docker build on VPS).
+Prefer CI path after merge: GitHub "Deploy Peskids" or ./scripts/peskids-deploy-vps.sh (GHCR pull).
 Requires: git pull on VPS already done, doppler scoped at $REPO_PATH.
 EOF
 }

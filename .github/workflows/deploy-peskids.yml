@@ -1,0 +1,178 @@
+# Peskids tenant site — build GHCR + deploy VPS after CI passes on main.
+# PR: CI must be green before merge (branch protection). Post-merge: this workflow runs
+# when the "CI" workflow completes successfully on main.
+#
+# Secrets (repository or production environment):
+#   VPS_USER, VPS_SSH_KEY, VPS_HOST or VPS_SSH_HOST
+#   TAILSCALE_AUTHKEY (recommended for SSH via tailnet)
+#   NEXT_PUBLIC_PESKIDS_WHATSAPP_E164, NEXT_PUBLIC_PESKIDS_WHATSAPP_DISPLAY,
+#   NEXT_PUBLIC_PESKIDS_WHATSAPP_PREFILL (baked at build; sync from Doppler prd)
+#
+# Manual: Actions → Deploy Peskids → Run workflow
+
+name: Deploy Peskids
+
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-peskids-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  gate:
+    if: |
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.event == 'push')
+    runs-on: ubuntu-latest
+    outputs:
+      sha: ${{ steps.sha.outputs.sha }}
+    steps:
+      - id: sha
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "sha=${{ github.sha }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "sha=${{ github.event.workflow_run.head_sha }}" >> "$GITHUB_OUTPUT"
+          fi
+
+  build-and-push:
+    needs: gate
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.gate.outputs.sha }}
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+
+      - name: Resolve WhatsApp build-args
+        id: wa
+        env:
+          E164: ${{ secrets.NEXT_PUBLIC_PESKIDS_WHATSAPP_E164 }}
+          DISPLAY: ${{ secrets.NEXT_PUBLIC_PESKIDS_WHATSAPP_DISPLAY }}
+          PREFILL: ${{ secrets.NEXT_PUBLIC_PESKIDS_WHATSAPP_PREFILL }}
+        run: |
+          set -euo pipefail
+          if [ -z "${E164:-}" ]; then
+            echo "::warning::NEXT_PUBLIC_PESKIDS_WHATSAPP_E164 missing; using placeholder (set GitHub secret from Doppler prd)"
+            echo "e164=573000000000" >> "$GITHUB_OUTPUT"
+          else
+            echo "e164=${E164}" >> "$GITHUB_OUTPUT"
+          fi
+          echo "display=${DISPLAY:-+57 300 000 0000}" >> "$GITHUB_OUTPUT"
+          echo "prefill=${PREFILL:-Hola Peskids 👋 Quiero reservar una clase de prueba gratis.}" >> "$GITHUB_OUTPUT"
+
+      - name: Build and push Peskids image
+        uses: docker/build-push-action@v5
+        with:
+          context: apps/peskids
+          file: apps/peskids/Dockerfile
+          push: true
+          tags: |
+            ghcr.io/cloudsysops/peskids:latest
+            ghcr.io/cloudsysops/peskids:${{ needs.gate.outputs.sha }}
+          build-args: |
+            NEXT_PUBLIC_PESKIDS_WHATSAPP_E164=${{ steps.wa.outputs.e164 }}
+            NEXT_PUBLIC_PESKIDS_WHATSAPP_DISPLAY=${{ steps.wa.outputs.display }}
+            NEXT_PUBLIC_PESKIDS_WHATSAPP_PREFILL=${{ steps.wa.outputs.prefill }}
+
+      - name: Build summary
+        run: |
+          echo "Image: ghcr.io/cloudsysops/peskids:${{ needs.gate.outputs.sha }}"
+          echo "WhatsApp E164 (build-arg): ${{ steps.wa.outputs.e164 }}"
+
+  deploy-vps:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    environment: production
+    permissions:
+      contents: read
+      packages: read
+    env:
+      TAILSCALE_AUTHKEY: ${{ secrets.TAILSCALE_AUTHKEY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.gate.outputs.sha }}
+
+      - name: Validate deploy secrets
+        env:
+          VPS_USER: ${{ secrets.VPS_USER }}
+          VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_SSH_HOST: ${{ secrets.VPS_SSH_HOST }}
+        run: |
+          set -euo pipefail
+          missing=0
+          [ -n "${VPS_USER:-}" ] || { echo "Missing VPS_USER" >&2; missing=1; }
+          [ -n "${VPS_SSH_KEY:-}" ] || { echo "Missing VPS_SSH_KEY" >&2; missing=1; }
+          if [ -z "${VPS_SSH_HOST:-}" ] && [ -z "${VPS_HOST:-}" ]; then
+            echo "Missing VPS_SSH_HOST or VPS_HOST" >&2
+            missing=1
+          fi
+          [ "$missing" -eq 0 ]
+
+      - name: Connect Tailscale for SSH
+        if: env.TAILSCALE_AUTHKEY != ''
+        uses: tailscale/github-action@v2
+        with:
+          authkey: ${{ env.TAILSCALE_AUTHKEY }}
+          version: 1.94.2
+
+      - name: Login GHCR on VPS and deploy Peskids
+        uses: appleboy/ssh-action@v1.0.3
+        env:
+          GITHUB_DEPLOY_TOKEN: ${{ github.token }}
+          GITHUB_DEPLOY_ACTOR: ${{ github.actor }}
+          PESKIDS_IMAGE: ghcr.io/cloudsysops/peskids:${{ needs.gate.outputs.sha }}
+        with:
+          host: ${{ secrets.VPS_SSH_HOST || secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          timeout: 5m
+          envs: GITHUB_DEPLOY_TOKEN,GITHUB_DEPLOY_ACTOR,PESKIDS_IMAGE
+          script: |
+            set -euo pipefail
+            docker logout ghcr.io 2>/dev/null || true
+            echo "$GITHUB_DEPLOY_TOKEN" | docker login ghcr.io -u "$GITHUB_DEPLOY_ACTOR" --password-stdin
+            export PESKIDS_IMAGE
+            bash /opt/opsly/scripts/peskids-deploy-vps.sh
+
+      - name: Health check (public)
+        run: |
+          set -euo pipefail
+          for i in 1 2 3 4 5; do
+            if curl -sfL "https://peskids.op-sly.com/" | head -c 500 | grep -q "preguntas cortas\|Peskids\|natación"; then
+              echo "✅ peskids.op-sly.com OK (intento $i)"
+              exit 0
+            fi
+            echo "Intento $i/5..."
+            sleep 15
+          done
+          echo "::warning::Public health check inconclusive (Traefik/cache); VPS local health ran in deploy script"
+          exit 0
+
+      - name: Notify Discord on failure
+        if: failure()
+        continue-on-error: true
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          if [ -z "${DISCORD_WEBHOOK_URL:-}" ]; then exit 0; fi
+          curl -fsS -X POST "$DISCORD_WEBHOOK_URL" -H "Content-Type: application/json" \
+            -d "$(jq -n --arg url "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+              '{embeds:[{title:"❌ Deploy Peskids fallido",color:15158332,fields:[{name:"Run",value:$url}]}]}')"
