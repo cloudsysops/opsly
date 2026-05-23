@@ -1,34 +1,57 @@
-# =============================================================================
+# ============================================================================
 # CODEOWNERS — Opsly (cloudsysops/opsly)
-# =============================================================================
-# Qué hace: indica a GitHub qué usuarios o equipos deben revisar cambios según
-#   la ruta de los archivos en un pull request (solicitudes de revisión automáticas).
-# Cuándo se activa: al abrir o actualizar un PR que toca archivos bajo esas rutas.
-#   La última regla que coincide con una ruta gana si hay solapamiento (orden importa).
-# Reutilizar en otro proyecto: sustituye @cloudsysops/* por tus equipos de GitHub
-#   (deben existir en la org o ser usuarios con acceso al repo) y ajusta rutas.
-# =============================================================================
+# ============================================================================
 
-# Propietario por defecto (todo lo que no cae en reglas más específicas más abajo).
-# Esta línea debe ir PRIMERO; las rutas concretas van después para sobrescribirla.
+# Qué hace: indica a GitHub qué usuarios o equipos deben revisar cambios según 
+#           la ruta de los archivos en un pull request (solicitudes de revisión 
+#           automáticas).
+
+# Cuándo se activa: al abrir o actualizar un PR que toca archivos bajo esas 
+#                   rutas. La última regla que coincide con una ruta gana si hay 
+#                   solapamiento (orden importa).
+
+# Reutilizar en otro proyecto: sustituye @cloudsysops/* por tus equipos de GitHub 
+#                              (deben existir en la org o ser usuarios; si no 
+#                              existen, el PR se queda esperando review imposible).
+
+# NOTA: Con un solo maintainer (solo tú), desactiva "Require code owner reviews" 
+#       en branch protection de main para evitar bloqueos. La barrera es CI + PR.
+
+# ============================================================================
+# PROPIETARIO POR DEFECTO — solo @cboteros
+# ============================================================================
 * @cboteros
 
-# API de control plane y automatización operativa → backend.
-apps/api/ @cloudsysops/backend
-scripts/ @cloudsysops/backend
+# ============================================================================
+# SENSIBLES O DE ALTO IMPACTO — también requieren @cboteros (es lo mismo, 
+#                               pero documentado para futuro)
+# ============================================================================
 
-# Interfaces Next.js (dashboard admin y workspace web) → frontend.
-apps/admin/ @cloudsysops/frontend
-apps/web/ @cloudsysops/frontend
-
-# Compose, Traefik, plantillas de tenant; Terraform cuando exista bajo infra/ → infra.
-infra/ @cloudsysops/infra
-infra/terraform/ @cloudsysops/infra
-
-# Esquema Postgres, RLS, migraciones → backend (misma línea de producto que API).
-supabase/ @cloudsysops/backend
-
-# Workflows y gobernanza GitHub → propietario del proyecto (cambios de seguridad/CI).
-# Esto evita que un bot o fork modifique workflows sin revisión humana.
-.github/ @cboteros
+# Workflows de CI/CD: cambios en automatización
 .github/workflows/ @cboteros
+
+# Infraestructura: terraform, docker, VPS
+infra/ @cboteros
+terraform/ @cboteros
+
+# Secretos, seguridad: Doppler, keys, env
+.env* @cboteros
+*.key @cboteros
+*.pem @cboteros
+
+# Configuración raíz: dependencias, builds globales
+package*.json @cboteros
+pnpm-lock.yaml @cboteros
+tsconfig.json @cboteros
+
+# Supabase: base de datos
+supabase/ @cboteros
+
+# ============================================================================
+# NOTAS PARA AGENTES IA
+# ============================================================================
+# - Si abres un PR, los checks CI (lint, build, secret-scan) son la barrera 
+#   real; no hay "code owner review" requerida porque solo tú eres owner.
+# - Si editas .github/CODEOWNERS, comprométete directamente; no pidas review.
+# - Si necesitas cambios en infra/ o .github/workflows/, abre PR normal; yo 
+#   revisaré y approbaré.
