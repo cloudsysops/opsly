@@ -1,17 +1,19 @@
+import { peskidsColorTokens } from './tokens'
+
 /** Paleta y tipografía oficial — design pack Peskids v2 (Napkin) */
 export const BRAND = {
-  azulProfundo: '#0D4C63',
-  turquesa: '#2DB7B0',
-  naranja: '#FF5A1F',
-  amarillo: '#FFC20E',
-  azulClaro: '#E6F6FB',
-  blanco: '#FFFFFF',
-  grisClaro: '#F2F4F7',
-  ink: '#0D4C63',
-  ink2: '#3D6679',
-  ink3: '#7D96A4',
-  line: '#E4ECF0',
-  snow: '#F7FBFD',
+  azulProfundo: peskidsColorTokens.primary.blue,
+  turquesa: peskidsColorTokens.primary.teal,
+  naranja: peskidsColorTokens.secondary.orange,
+  amarillo: peskidsColorTokens.secondary.yellow,
+  azulClaro: peskidsColorTokens.neutral.lightBorder,
+  blanco: peskidsColorTokens.neutral.white,
+  grisClaro: peskidsColorTokens.neutral.lightGray,
+  ink: peskidsColorTokens.primary.blue,
+  ink2: peskidsColorTokens.neutral.darkBg,
+  ink3: peskidsColorTokens.neutral.darkGray,
+  line: peskidsColorTokens.neutral.mediumGray,
+  snow: peskidsColorTokens.neutral.lightBg,
 } as const
 
 export type SwimLevel = {

@@ -1,0 +1,47 @@
+{
+  "name": "Opsly Eyes — Self-Heal Production",
+  "description": "Detecta fallos de health check y dispara SelfHealWorker via orchestrator",
+  "nodes": [
+    {
+      "name": "Schedule: cada 5 minutos",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "parameters": {
+        "rule": { "interval": [{ "field": "minutes", "minutesInterval": 5 }] }
+      }
+    },
+    {
+      "name": "GET health API",
+      "type": "n8n-nodes-base.httpRequest",
+      "parameters": {
+        "url": "https://api.ops.smiletripcare.com/api/health",
+        "method": "GET",
+        "timeout": 10000,
+        "continueOnFail": true
+      }
+    },
+    {
+      "name": "Filter: API caída",
+      "type": "n8n-nodes-base.if",
+      "parameters": {
+        "conditions": {
+          "boolean": [{ "value1": "={{ $json.error !== undefined || $json.status !== 'ok' }}", "value2": true }]
+        }
+      }
+    },
+    {
+      "name": "POST orchestrator: self-heal",
+      "type": "n8n-nodes-base.httpRequest",
+      "parameters": {
+        "url": "http://localhost:3000/api/maia/self-heal",
+        "method": "POST",
+        "jsonBody": true,
+        "body": {
+          "tenant_slug": "platform",
+          "service": "app",
+          "action": "restart",
+          "reason": "health_check_failed_n8n"
+        }
+      }
+    }
+  ]
+}

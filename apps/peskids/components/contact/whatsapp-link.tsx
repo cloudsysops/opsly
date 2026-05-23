@@ -1,6 +1,9 @@
+'use client'
+
 import Link from 'next/link'
 import { WhatsAppIcon } from '@/components/contact/whatsapp-icon'
 import { buildWhatsAppUrl, PESKIDS_CONTACT } from '@/lib/contact-channels'
+import { peskidsColorTokens } from '@/lib/tokens'
 import { cn } from '@/lib/utils'
 
 type WhatsAppLinkVariant = 'button' | 'hero' | 'pill' | 'ghost' | 'onDark'
@@ -22,16 +25,28 @@ export function WhatsAppLink({
 }: WhatsAppLinkProps): React.ReactElement {
   const href = buildWhatsAppUrl({ prefill })
 
+  const whatsappGreen = peskidsColorTokens.primary.whatsapp
+  const whatsappHover = peskidsColorTokens.status.success
+  const whatsappDark = peskidsColorTokens.dark.darkBlue
+
   const base =
     variant === 'hero'
-      ? 'inline-flex h-14 min-w-[220px] items-center justify-center gap-2.5 rounded-full bg-[#25D366] px-8 text-base font-bold text-white shadow-lg shadow-[#25D366]/45 ring-4 ring-[#25D366]/25 transition hover:bg-[#1ebe57] hover:shadow-xl active:scale-[0.99]'
+      ? cn(
+          'inline-flex h-14 min-w-[220px] items-center justify-center gap-2.5 rounded-full px-8 text-base font-bold text-white transition active:scale-[0.99]',
+          'shadow-lg hover:shadow-xl'
+        )
       : variant === 'button'
-        ? 'inline-flex h-12 items-center justify-center gap-2 rounded-full bg-[#25D366] px-6 text-sm font-bold text-white shadow-md shadow-[#25D366]/35 transition hover:bg-[#1ebe57] active:scale-[0.99]'
+        ? cn(
+            'inline-flex h-12 items-center justify-center gap-2 rounded-full px-6 text-sm font-bold text-white transition active:scale-[0.99]',
+            'shadow-md'
+          )
         : variant === 'onDark'
-        ? 'inline-flex h-12 items-center justify-center gap-2 rounded-full bg-[#25D366] px-6 text-sm font-bold text-white ring-2 ring-white/20 transition hover:bg-[#1ebe57] active:scale-[0.99]'
+        ? 'inline-flex h-12 items-center justify-center gap-2 rounded-full px-6 text-sm font-bold text-white ring-2 ring-white/20 transition active:scale-[0.99]'
         : variant === 'pill'
-          ? 'inline-flex items-center gap-2 rounded-full border border-[#25D366]/30 bg-[#25D366]/10 px-4 py-2 text-sm font-bold text-[#128C7E] transition hover:bg-[#25D366]/15'
-          : 'inline-flex items-center gap-2 text-sm font-semibold text-[#128C7E] hover:text-[#0d6b5f]'
+          ? cn(
+              'inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-bold transition'
+            )
+          : cn('inline-flex items-center gap-2 text-sm font-semibold', 'hover:underline')
 
   return (
     <Link
@@ -39,6 +54,44 @@ export function WhatsAppLink({
       target="_blank"
       rel="noopener noreferrer"
       className={cn(base, className)}
+      style={{
+        ...(variant === 'hero' && {
+          backgroundColor: whatsappGreen,
+          boxShadow: `0 10px 25px ${whatsappGreen}73, var(--tw-shadow)`,
+          color: '#ffffff',
+        }),
+        ...(variant === 'button' && {
+          backgroundColor: whatsappGreen,
+          boxShadow: `0 4px 12px ${whatsappGreen}59`,
+          color: '#ffffff',
+        }),
+        ...(variant === 'onDark' && {
+          backgroundColor: whatsappGreen,
+          color: '#ffffff',
+        }),
+        ...(variant === 'pill' && {
+          borderColor: `${whatsappGreen}4d`,
+          backgroundColor: `${whatsappGreen}1a`,
+          color: whatsappDark,
+        }),
+        ...(!variant || variant === 'ghost' && {
+          color: whatsappDark,
+        }),
+      }}
+      onMouseEnter={(e) => {
+        if (variant === 'hero' || variant === 'button' || variant === 'onDark') {
+          e.currentTarget.style.backgroundColor = whatsappHover
+        } else if (variant === 'pill') {
+          e.currentTarget.style.backgroundColor = `${whatsappGreen}26`
+        }
+      }}
+      onMouseLeave={(e) => {
+        if (variant === 'hero' || variant === 'button' || variant === 'onDark') {
+          e.currentTarget.style.backgroundColor = whatsappGreen
+        } else if (variant === 'pill') {
+          e.currentTarget.style.backgroundColor = `${whatsappGreen}1a`
+        }
+      }}
       aria-label={`Escribir por WhatsApp al ${PESKIDS_CONTACT.whatsapp.display}`}
     >
       {showIcon ? (

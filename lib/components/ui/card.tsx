@@ -1,6 +1,6 @@
 import { cva, type VariantProps } from 'class-variance-authority';
 import * as React from 'react';
-import { cn } from '@/lib/utils';
+import { cn } from '../utils';
 
 const cardVariants = cva(
   'rounded-xl border text-neutral-200 transition-[box-shadow,border-color,transform] duration-200 ease-out',
@@ -70,4 +70,11 @@ const CardContent = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDi
 );
 CardContent.displayName = 'CardContent';
 
-export { Card, CardContent, CardDescription, CardHeader, CardTitle };
+const CardFooter = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
+  ({ className, ...props }, ref) => (
+    <div ref={ref} className={cn('flex items-center justify-between border-t border-ops-border p-4', className)} {...props} />
+  )
+);
+CardFooter.displayName = 'CardFooter';
+
+export { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle };

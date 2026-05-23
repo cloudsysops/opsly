@@ -14,6 +14,7 @@ import {
 } from 'lucide-react'
 import { PeskidsLogo, PeskidsWave, StarBurst } from '@/components/brand/peskids-logo'
 import { Card, CardContent } from '@/components/ui/card'
+import { peskidsColorTokens } from '@/lib/tokens'
 import { cn } from '@/lib/utils'
 
 const parentActions = [
@@ -91,7 +92,7 @@ export function PortalShowcase(): React.ReactElement {
   return (
     <section className="relative overflow-hidden bg-pk-bg pb-16 pt-14 sm:pt-20">
       <PeskidsWave
-        color="rgba(45,183,176,0.08)"
+        color={`${peskidsColorTokens.primary.teal}14`}
         height={72}
         className="absolute left-0 right-0 top-0"
       />
@@ -141,7 +142,12 @@ export function PortalShowcase(): React.ReactElement {
             </div>
             <div className="absolute -left-4 bottom-8 max-w-[250px] rounded-[1.25rem] border border-pk-border bg-pk-surface p-4 shadow-card-hover">
               <div className="flex gap-3">
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#FFE38A] to-pk-sun text-xl">
+                <span
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-xl"
+                  style={{
+                    backgroundImage: `linear-gradient(to bottom right, ${peskidsColorTokens.secondary.lightYellow}, #FFC20E)`,
+                  }}
+                >
                   🦈
                 </span>
                 <div>
@@ -203,7 +209,12 @@ export function PortalShowcase(): React.ReactElement {
           </PreviewFrame>
         </div>
 
-        <div className="mt-14 overflow-hidden rounded-[2rem] bg-gradient-to-br from-pk-deep to-[#1B607E] text-white shadow-hero">
+        <div
+          className="mt-14 overflow-hidden rounded-[2rem] text-white shadow-hero"
+          style={{
+            backgroundImage: `linear-gradient(to bottom right, ${peskidsColorTokens.primary.blue}, ${peskidsColorTokens.dark.darkestBlue})`,
+          }}
+        >
           <div className="grid gap-6 px-6 py-8 sm:px-8 lg:grid-cols-[1.1fr_0.9fr] lg:px-10 lg:py-10">
             <div>
               <p className="pk-eyebrow text-white/50">Lleva esto a producción</p>
@@ -312,7 +323,12 @@ function HomePreview(): React.ReactElement {
       </div>
 
       <div className="p-5">
-        <div className="rounded-[1.75rem] bg-gradient-to-br from-pk-primary to-[#A8DDE3] p-5 text-white shadow-card-hover">
+        <div
+          className="rounded-[1.75rem] p-5 text-white shadow-card-hover"
+          style={{
+            backgroundImage: `linear-gradient(to bottom right, ${peskidsColorTokens.primary.teal}, ${peskidsColorTokens.secondary.lightTeal})`,
+          }}
+        >
           <div className="flex items-start justify-between gap-4">
             <div>
               <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-white/80">
@@ -360,7 +376,12 @@ function HomePreview(): React.ReactElement {
               <div className="font-mono text-[11px] font-bold text-pk-ink">62%</div>
             </div>
             <div className="mt-3 h-2 rounded-full bg-pk-border">
-              <div className="h-2 w-[62%] rounded-full bg-gradient-to-r from-pk-primary to-[#A8DDE3]" />
+              <div
+              className="h-2 w-[62%] rounded-full"
+              style={{
+                backgroundImage: `linear-gradient(to right, ${peskidsColorTokens.primary.teal}, ${peskidsColorTokens.secondary.lightTeal})`,
+              }}
+            />
             </div>
             <p className="mt-3 text-xs leading-relaxed text-pk-sub">
               Próximo logro · <span className="font-semibold text-pk-ink">Clavado de salida</span>
@@ -501,7 +522,12 @@ function ProgressPreview(): React.ReactElement {
   return (
     <div className="rounded-[1.75rem] border border-pk-border bg-white p-4">
       <div className="flex items-center gap-3">
-        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-[#FFE38A] to-pk-sun text-2xl">
+        <div
+          className="flex h-12 w-12 items-center justify-center rounded-2xl text-2xl"
+          style={{
+            backgroundImage: `linear-gradient(to bottom right, ${peskidsColorTokens.secondary.lightYellow}, #FFC20E)`,
+          }}
+        >
           🦈
         </div>
         <div>
@@ -519,7 +545,12 @@ function ProgressPreview(): React.ReactElement {
           <Waves className="h-8 w-8 text-white/25" aria-hidden />
         </div>
         <div className="mt-4 h-2 rounded-full bg-white/15">
-          <div className="h-2 w-[62%] rounded-full bg-gradient-to-r from-pk-primary to-pk-sun" />
+          <div
+            className="h-2 w-[62%] rounded-full"
+            style={{
+              backgroundImage: `linear-gradient(to right, ${peskidsColorTokens.primary.teal}, #FFC20E)`,
+            }}
+          />
         </div>
         <p className="mt-3 text-xs text-white/80">
           Próximo logro · <span className="font-semibold text-white">Clavado de salida</span>

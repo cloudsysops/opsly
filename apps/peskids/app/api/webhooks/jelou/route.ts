@@ -106,12 +106,10 @@ async function handleFeedbackSubmission(webhook: any) {
       .from('feedback')
       .insert({
         tenant_id: TENANT_ID,
-        student_name: feedback.student_name,
+        child_name: String(feedback.student_name),
         satisfaction: feedback.satisfaction,
-        suggestion: feedback.suggestion,
-        follow_up_wanted: feedback.follow_up_wanted,
-        source: `jelou:${feedback.channel}`,
-        created_at: new Date().toISOString(),
+        suggestion: String(feedback.suggestion),
+        contact_wanted: feedback.follow_up_wanted,
       })
       .select('id')
       .single();

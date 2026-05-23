@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { PeskidsBrush, StarBurst, WiggleLine } from '@/components/brand/peskids-logo'
 import { LeadCaptureForm } from '@/components/forms/lead-capture-form'
 import { WhatsAppLink } from '@/components/contact/whatsapp-link'
+import { peskidsColorTokens } from '@/lib/tokens'
 
 const stats = [
   { num: '14', label: 'años enseñando' },
@@ -25,10 +26,10 @@ export function HeroSection(): React.ReactElement {
             Se divierten.
             <br />
             Son{' '}
-            <PeskidsBrush color="#2DB7B0" size={56} tilt={-3} className="sm:text-[4.5rem]">
+            <PeskidsBrush color={peskidsColorTokens.primary.teal} size={56} tilt={-3} className="sm:text-[4.5rem]">
               Pes
             </PeskidsBrush>
-            <PeskidsBrush color="#FF5A1F" size={56} tilt={-3} className="sm:text-[4.5rem]">
+            <PeskidsBrush color={peskidsColorTokens.secondary.orange} size={56} tilt={-3} className="sm:text-[4.5rem]">
               kids
             </PeskidsBrush>
             <span className="text-pk-ink">.</span>

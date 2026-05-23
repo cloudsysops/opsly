@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "hooks": {
+    "stop": [
+      {
+        "command": ".cursor/hooks/opsly-tailscale-after-stop.sh",
+        "timeout": 25
+      }
+    ]
+  }
+}

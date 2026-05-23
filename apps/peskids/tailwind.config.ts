@@ -1,5 +1,6 @@
 import type { Config } from 'tailwindcss'
 import tailwindcssAnimate from 'tailwindcss-animate'
+import { peskidsColorTokens } from './lib/tokens'
 
 const config: Config = {
   content: [
@@ -10,21 +11,21 @@ const config: Config = {
     extend: {
       colors: {
         pk: {
-          bg: '#E6F6FB',
-          surface: '#FFFFFF',
-          muted: '#F2F4F7',
-          snow: '#F7FBFD',
-          border: '#E4ECF0',
-          ink: '#0D4C63',
-          sub: '#3D6679',
-          mutedText: '#7D96A4',
-          primary: '#2DB7B0',
-          'primary-dark': '#1a9a94',
-          deep: '#0D4C63',
-          accent: '#FF5A1F',
-          sun: '#FFC20E',
-          success: '#16a34a',
-          warning: '#ca8a04',
+          bg: peskidsColorTokens.neutral.lightBorder,
+          surface: peskidsColorTokens.neutral.white,
+          muted: peskidsColorTokens.neutral.lightGray,
+          snow: peskidsColorTokens.neutral.lightBg,
+          border: peskidsColorTokens.neutral.mediumGray,
+          ink: peskidsColorTokens.primary.blue,
+          sub: peskidsColorTokens.neutral.darkBg,
+          mutedText: peskidsColorTokens.neutral.darkGray,
+          primary: peskidsColorTokens.primary.teal,
+          'primary-dark': peskidsColorTokens.dark.darkBlue,
+          deep: peskidsColorTokens.primary.blue,
+          accent: peskidsColorTokens.secondary.orange,
+          sun: peskidsColorTokens.secondary.yellow,
+          success: peskidsColorTokens.status.success,
+          warning: peskidsColorTokens.secondary.yellow,
           danger: '#dc2626',
         },
       },

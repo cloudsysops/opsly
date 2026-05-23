@@ -44,6 +44,9 @@
     "opsly:vps-ssh:verify": "bash scripts/vps-ssh-verify.sh",
     "opsly:vps-ssh:bootstrap": "bash scripts/vps-ssh-bootstrap-from-admin.sh",
     "opsly:vps-ssh:to-admin": "bash scripts/setup-vps-ssh-to-opsly-admin.sh",
+    "opsly:tailscale:routes": "python3 scripts/opsly_tailscale_cli.py routes",
+    "opsly:tailscale:ping": "python3 scripts/opsly_tailscale_cli.py ping-vps",
+    "opsly:tailscale:hook-once": "python3 scripts/opsly_tailscale_cli.py agent-stop-hook",
     "opsly:drive:ensure-layout": "python3 scripts/opsly_drive_automation.py ensure-layout",
     "opsly:drive:upload-tenant-onboarding": "python3 scripts/opsly_drive_automation.py upload-tenant-pack",
     "opsly:chat": "python3 tools/cli/main.py chat",
@@ -72,6 +75,8 @@
     "opsly:local-aider-service": "OPSLY_CLI_AGENT=aider PORT=5009 tsx scripts/cli-agent-service.ts",
     "opsly:local-goose-service": "OPSLY_CLI_AGENT=goose PORT=5010 tsx scripts/cli-agent-service.ts",
     "opsly:local-playwright-service": "OPSLY_CLI_AGENT=playwright PORT=5011 tsx scripts/cli-agent-service.ts",
+    "opsly:ghostty:install-config": "bash scripts/install-ghostty-config.sh",
+    "opsly:ghostty:open": "bash scripts/local-ghostty-open.sh",
     "docs:sync": "node scripts/sync-docs.js && node scripts/generate-sprint-tracking.js && node scripts/generate-agents-assignments.js",
     "docs:watch": "nodemon --watch docs/implementation/status.yaml --exec \"npm run docs:sync\"",
     "test:docs": "bash scripts/test-sync-docs.sh",
@@ -202,6 +207,8 @@
   },
   "dependencies": {
     "@redis/client": "^1.6.1",
-    "js-tiktoken": "^1.0.21"
+    "js-tiktoken": "^1.0.21",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6"
   }
 }

@@ -28,6 +28,9 @@
     "AGENTS.md",
     "ROADMAP.md",
     "VISION.md",
+    "SECURITY.md",
+    "CONTRIBUTING.md",
+    "CODE_OF_CONDUCT.md",
     "commitlint.config.js",
     "Dockerfile.hermes",
     "Dockerfile.local-worker",
@@ -37,7 +40,8 @@
     ".opencode.json",
     ".mcp.json",
     ".opsly-drive-config.json",
-    ".npmrc"
+    ".npmrc",
+    ".trivyignore"
   ],
   "allowed_folders": [
     "apps",

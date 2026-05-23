@@ -1,5 +1,7 @@
 import { getGoHighLevelService } from '../service.js';
-import { logger } from '../../../observability/logger.js';
+import { createLogger } from '../../../observability/logger.js';
+
+const logger = createLogger('ghl-ai-followup');
 import type { Contact, Task } from '../types.js';
 
 /**
@@ -106,8 +108,8 @@ Return ONLY the message text, no quotes or formatting.`;
       contactId: contact.id,
       error: error instanceof Error ? error.message : String(error),
     };
-    if (logger?.error) {
-      logger?.error?.('Failed to generate followup message', logMeta);
+    if (logger.error) {
+      logger.error('Failed to generate followup message', undefined, logMeta);
     } else {
       console.error('Failed to generate followup message', logMeta);
     }
@@ -186,8 +188,9 @@ async function processContact(
 export async function runAILeadFollowupWorkflow(config: AIFollowupConfig): Promise<AIFollowupResult> {
   const ghlService = getGoHighLevelService();
   const safeLogger = {
-    info: logger?.info?.bind(logger) ?? (() => {}),
-    error: logger?.error?.bind(logger) ?? (() => {}),
+    info: logger.info.bind(logger),
+    error: (msg: string, meta?: Record<string, unknown>) =>
+      logger.error(msg, undefined, meta as Parameters<typeof logger.error>[2]),
   };
   const results: AIFollowupResult = {
     success: true,

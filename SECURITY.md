@@ -1,46 +1,37 @@
-# Security Policy
+# Security Policy — Opsly
 
-## Supported Versions
+## Supported versions
 
-Opsly provides security updates for the `main` branch only. If you are using
-any other branch, fork, or older snapshot, please reproduce the issue against
-the latest `main` branch before reporting it.
+| Branch / entorno | Soporte de parches de seguridad |
+| ---------------- | ------------------------------- |
+| `main` (producción Opsly) | Sí — prioridad operativa |
+| Ramas `feat/*` / `fix/*` abiertas | Solo durante el PR activo |
+| Tags o releases antiguos sin mantenimiento | No |
 
-| Branch / Release | Supported          |
-| ---------------- | ------------------ |
-| `main`           | :white_check_mark: |
-| All other branches / snapshots | :x: |
+## Reportar una vulnerabilidad
 
-## Reporting a Vulnerability
+**No** abras un issue público con detalles de explotación, credenciales ni datos de clientes.
 
-Please report suspected security vulnerabilities privately. **Do not open a public
-GitHub issue, discussion, or pull request for security reports**, as that may expose
-users before a fix is available.
+1. Envía un reporte privado al equipo de operaciones (canal acordado con el responsable del repo).
+2. Incluye: impacto, pasos para reproducir, versión/commit afectado y mitigación sugerida si la tienes.
+3. Espera acuse de recibo en un plazo orientativo de **72 h hábiles**; el tiempo de corrección depende de severidad y superficie (multi-tenant, API, VPS, secretos Doppler).
 
-Preferred reporting channels:
+## Alcance típico
 
-1. **GitHub Security Advisories**: use the repository's **Report a vulnerability**
-   feature to submit a private report.
-2. **Email**: if GitHub Security Advisories is unavailable, email
-   **security@example.com** with the subject line `Security vulnerability report`.
+- Acceso no autorizado a tenants, API admin/portal, MCP u orquestador.
+- Exposición de secretos en código, logs, commits o documentación.
+- Bypass de Zero-Trust en rutas `/api/portal/tenant/[slug]/*`.
+- SSH, Traefik o Redis expuestos fuera de la política (Tailscale + Cloudflare; ver `docs/04-infrastructure/SECURITY_CHECKLIST.md`).
 
-Please include, as much as possible:
+## Documentación interna
 
-- a clear description of the issue and the affected component or feature;
-- steps to reproduce the problem, including proof-of-concept code if available;
-- the affected version(s), commit hash, branch, or deployment details;
-- the potential impact and any known prerequisites for exploitation;
-- any suggested mitigations or fixes;
-- your name/handle and how you would like to be credited, if applicable.
+| Recurso | Ruta |
+| ------- | ---- |
+| Checklist operativo | [`docs/04-infrastructure/SECURITY_CHECKLIST.md`](docs/04-infrastructure/SECURITY_CHECKLIST.md) |
+| Mitigaciones VPS / red | [`docs/04-infrastructure/SECURITY-MITIGATIONS-2026-04-09.md`](docs/04-infrastructure/SECURITY-MITIGATIONS-2026-04-09.md) |
+| Guardrails para agentes | [`docs/03-agents/AGENT-GUARDRAILS.md`](docs/03-agents/AGENT-GUARDRAILS.md) |
+| Auditorías | [`docs/security/`](docs/security/) |
 
-What to expect after you report:
+## Secretos
 
-- We will acknowledge receipt within **3 business days**.
-- We will provide an initial triage assessment within **7 business days**.
-- We will send status updates at least every **14 days** until the issue is resolved
-  or closed.
-
-If the report is accepted, we will work on a fix, coordinate disclosure timing, and
-credit you if you would like to be acknowledged. If we determine the report is not a
-security vulnerability or cannot be reproduced, we will let you know with the reason
-we are closing it.
+Los secretos viven en **Doppler** (`ops-intcloudsysops/prd`); nunca en el repositorio ni en issues/PRs.

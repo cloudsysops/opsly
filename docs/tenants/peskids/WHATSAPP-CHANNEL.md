@@ -49,22 +49,27 @@ flowchart LR
 
 ### Fase 1 — Inbound documentado (MVP+1)
 
-**Objetivo:** registrar conversaciones sin responder automáticamente.
+**Objetivo:** registrar conversaciones y hacer intake conversacional automático antes del handoff humano.
 
 | Paso | Detalle |
 |------|---------|
 | Webhook | Proveedor → n8n `tenant_peskids` |
 | Guardar | Tabla `whatsapp_messages` o ampliar `leads` con `source: whatsapp` |
 | Evento | `whatsapp.message.received` (ver [EVENT-CONTRACT.md](./EVENT-CONTRACT.md)) |
-| UI | Cola “Mensajes WhatsApp” en dashboard (solo lectura + link a chat) |
-| Prohibido | Auto-reply “gracias por escribir” sin texto fijo pre-aprobado por owner |
+| UI | Cola “Mensajes WhatsApp” en dashboard (solo lectura + resumen IA + link a chat) |
+| IA | Hace preguntas cortas y captura nombre del acudiente, niño/a, edad, modalidad, zona y objetivo |
+| Prohibido | Cerrar cupos, dar precios exactos o enviar respuestas finales sin aprobación humana |
+
+**Modo operativo actual:** el canal puede quedar en `auto` para que WhatsApp responda con preguntas de intake y, al final, deje el handoff listo para soporte humano. Si se quiere pausar, cambiar a `draft`.
 
 ### Fase 2 — Borrador IA (opcional)
 
-- IA genera **borrador** de respuesta (`draft`).
-- Owner edita en dashboard.
+- IA genera **borrador** de handoff para soporte humano (`draft`).
+- Owner edita en dashboard antes de enviar la respuesta final.
 - Estados: `draft` → `approved` → `sent` ([AI-APPROVAL-POLICY.md](./AI-APPROVAL-POLICY.md)).
 - LLM solo vía **LLM Gateway** con `tenant_slug: peskids`.
+
+**Si `PESKIDS_WHATSAPP_REPLY_MODE=auto`:** la misma respuesta se envía automáticamente por n8n y queda registrada como `sent`.
 
 ### Fase 3 — Envío tras aprobación
 
@@ -78,9 +83,9 @@ flowchart LR
 |-------|--------|
 | **Trigger** | Webhook Jelou/Meta (POST) |
 | **Entrada** | `from`, `body`, `timestamp`, `message_id` |
-| **Pasos** | Validar firma → dedupe por `message_id` → insert log → emit event → notificar dashboard (no email auto Sprint 01) |
+| **Pasos** | Validar firma → dedupe por `message_id` → insert log → emit event → generar siguiente pregunta o handoff → notificar dashboard |
 | **Salida** | `whatsapp.message.received` |
-| **IA** | Opcional: clasificar intención → metadata, **sin** enviar |
+| **IA** | Clasificar intención, completar ficha y producir una sola pregunta o un handoff resumido |
 
 Workflow futuro: `peskids-whatsapp-send-approved` (solo tras aprobación humana).
 
@@ -101,6 +106,14 @@ Si el owner pide “mensaje de recibido” automático:
 2. Sin PII en el mensaje.
 3. Documentar en este archivo el texto exacto y fecha de aprobación.
 4. Revisar política Meta (mensajes de utilidad / plantillas).
+
+## Flujo conversacional recomendado
+
+1. La IA hace una pregunta corta.
+2. El cliente responde.
+3. La IA completa la ficha con lo que ya sabe.
+4. Cuando tiene lo mínimo, genera un resumen para soporte humano.
+5. El humano aprueba el cierre y decide la respuesta final.
 
 ## Checklist antes de activar API
 

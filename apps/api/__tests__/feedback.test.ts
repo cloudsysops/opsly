@@ -1,5 +1,4 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { NextRequest } from 'next/server';
 import { GET as feedbackGet, POST as feedbackPost } from '../app/api/feedback/route';
 import { POST as approvePost } from '../app/api/feedback/approve/route';
 import * as supabaseMod from '../lib/supabase';
@@ -28,6 +27,11 @@ vi.mock('../lib/portal-feedback-auth', () => ({
 import { llmCall } from '@intcloudsysops/llm-gateway';
 import { resolveTrustedFeedbackIdentity } from '../lib/portal-feedback-auth';
 import { analyzeFeedback, executeAutoImplement } from '@intcloudsysops/ml';
+
+function createNextRequest(url: string, init: RequestInit = {}): Request & { nextUrl: URL } {
+  const request = new Request(url, init);
+  return Object.assign(request, { nextUrl: new URL(url) }) as Request & { nextUrl: URL };
+}
 
 function chainableSupabaseForPostML() {
   return {
@@ -160,7 +164,7 @@ describe('/api/feedback', () => {
 
   it('GET sin token → 401', async () => {
     vi.mocked(supabaseMod.getServiceClient).mockReturnValue({} as never);
-    const res = await feedbackGet(new NextRequest(new URL('http://localhost/api/feedback')));
+    const res = await feedbackGet(createNextRequest('http://localhost/api/feedback'));
     expect(res.status).toBe(401);
   });
 
@@ -181,7 +185,7 @@ describe('/api/feedback', () => {
     } as never);
 
     const res = await feedbackGet(
-      new NextRequest(new URL('http://localhost/api/feedback'), {
+      createNextRequest('http://localhost/api/feedback', {
         headers: { 'x-admin-token': 'admin-secret-token' },
       })
     );
@@ -358,6 +362,38 @@ describe('/api/feedback', () => {
         notify_discord: false,
       },
       decision_id: 'd1',
+    });
+
+    const res = await feedbackPost(
+      new Request('http://localhost/api/feedback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          tenant_slug: 'acme',
+          user_email: 'u@acme.com',
+          message: 'x'.repeat(120),
+          conversation_id: 'conv-1',
+        }),
+      })
+    );
+
+    expect(res.status).toBe(200);
+    expect(analyzeFeedback).toHaveBeenCalled();
+    expect(executeAutoImplement).not.toHaveBeenCalled();
+  });
+
+  it('POST auto_implement no ejecuta implementacion automatica sin aprobacion humana', async () => {
+    vi.mocked(supabaseMod.getServiceClient).mockReturnValue(chainableSupabaseForPostML() as never);
+    vi.mocked(analyzeFeedback).mockResolvedValue({
+      output: {
+        decision_type: 'auto_implement',
+        criticality: 'low',
+        reasoning: 'test',
+        implementation_prompt: 'haz X',
+        user_response: 'Gracias',
+        notify_discord: false,
+      },
+      decision_id: 'd2',
     });
 
     const res = await feedbackPost(

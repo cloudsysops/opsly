@@ -22,7 +22,12 @@ fi
 if [[ "${NOTEBOOKLM_ENABLED:-false}" == "true" ]]; then
     echo ""
     echo "2. Consultando NotebookLM..."
-    Q="Resume en 5 bullets: 1) Qué se decidió hoy, 2) Qué está bloqueado, 3) Qué es prioritario, 4) Qué optimizar, 5) Qué NO hacer. Basado en AGENTS.md, ROADMAP.md y docs/adr/"
+    STARTUP_PROMPT_FILE="docs/03-agents/AGENT-STARTUP-PROMPT.md"
+    if [[ -f "$STARTUP_PROMPT_FILE" ]]; then
+        Q="$(cat "$STARTUP_PROMPT_FILE" | sed -n '/^```text$/,/^```$/p' | sed '1d;$d')"
+    else
+        Q="Resume el estado actual de Opsly en 5 bullets: 1) qué está funcionando, 2) qué está bloqueado, 3) qué patrones de agentes conviene cargar primero, 4) qué no hay que hacer, 5) qué vertical o tenant está más cerca de monetización. Prioriza AGENTS.md, VISION.md, AGENT-BRAIN-CONTRACT, Brain Dashboard, Agent Pattern Matrix y NotebookLM."
+    fi
     
     if node scripts/query-notebooklm.mjs "$Q" 2>/dev/null; then
         echo "  ✅ NotebookLM: OK"
@@ -57,5 +62,6 @@ echo "=== LISTO PARA TRABAJAR ==="
 echo ""
 echo "Próximos pasos:"
 echo "  - Revisa AGENTS.md para estado de sesión"
+echo "  - Revisa docs/03-agents/AGENT-STARTUP-PROMPT.md para el orden de arranque"
 echo "  - Si necesitas contexto profundo: node scripts/query-notebooklm.mjs"
 echo "  - Para ML con GCP: config vars en Doppler"

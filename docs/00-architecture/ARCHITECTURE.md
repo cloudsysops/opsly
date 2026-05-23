@@ -19,6 +19,104 @@ This document is the single technical authority for runtime architecture at the 
   - Traefik v3
   - Cloudflare proxy (recommended)
 
+## Current Production Topology (verified 2026-05-15)
+
+Production runs on the VPS `vps-dragon@100.120.151.91` through Tailscale, using Docker Compose and Traefik as the edge router. This snapshot reflects observed runtime state on 2026-05-15, not desired future state.
+
+```mermaid
+flowchart TB
+  User["Clientes / Admin"] --> CF["Cloudflare"]
+  CF --> Traefik["Traefik v3 VPS"]
+
+  Traefik --> Portal["Portal tenant :3002 healthy"]
+  Traefik --> Admin["Admin :3001 public 200 / container unhealthy"]
+  Traefik --> API["API :3000 unhealthy / health 500"]
+
+  API --> Supabase["Supabase platform + tenant schemas"]
+  API --> Redis["Redis BullMQ healthy"]
+  API --> DockerSock["Docker socket read-only / tenant ops"]
+
+  Redis --> Orchestrator["OpenClaw Orchestrator :3011 healthy"]
+  Orchestrator --> LLM["LLM Gateway :3010 health ok"]
+  Orchestrator --> TenantStacks["Tenant stacks n8n + Uptime Kuma"]
+  LLM --> Providers["OpenAI / OpenRouter / Ollama / other providers"]
+
+  Prom["Prometheus"] --> Grafana["Grafana"]
+  cAdvisor["cAdvisor"] --> Prom
+  RedisExporter["Redis Exporter"] --> Prom
+```
+
+### Plane separation
+
+```mermaid
+flowchart LR
+  subgraph Control["Control Plane VPS"]
+    Traefik
+    API["API"]
+    Admin
+    Portal
+    Orchestrator
+    LLM["LLM Gateway"]
+    Redis
+  end
+
+  subgraph Tenants["Tenant Data Plane"]
+    T1["smiletripcare n8n + uptime"]
+    T2["peskids n8n + uptime"]
+    T3["localrank n8n + uptime"]
+    T4["legalvial n8n + uptime"]
+    T5["jkboterolabs n8n + uptime"]
+    T6["intcloudsysops n8n + uptime"]
+  end
+
+  subgraph LocalAgents["Internal Agent Plane"]
+    Mac["opsly-admin local machine"]
+    Codex
+    Claude
+    OpenCode
+    Hermes
+    Decepticon
+  end
+
+  API --> Redis
+  Orchestrator --> Redis
+  Orchestrator --> LLM
+  Orchestrator --> Tenants
+  Mac --> Redis
+  Mac --> LocalAgents
+```
+
+### Automation flow
+
+```mermaid
+sequenceDiagram
+  participant User as Admin/User
+  participant Portal as Portal/Admin
+  participant API as API
+  participant Redis as Redis/BullMQ
+  participant Orchestrator as OpenClaw Orchestrator
+  participant Agent as Local/Remote Agent
+  participant Tenant as Tenant Stack
+
+  User->>Portal: acción o prompt
+  Portal->>API: request autenticado
+  API->>Redis: enqueue job
+  Orchestrator->>Redis: consume job
+  Orchestrator->>Agent: execute via adapter/HTTP
+  Agent-->>Orchestrator: result
+  Orchestrator->>Tenant: provision/update/inspect
+  Orchestrator-->>API: status/result
+  API-->>Portal: estado visible
+```
+
+### Production caveats
+
+- `apps/api` is currently degraded in production: Docker reports the `app` replicas as `unhealthy`, internal `/api/health` returns `500`, and logs show a Next.js dynamic route conflict: `ref` versus `slug`.
+- `https://api.op-sly.com/api/health` returned `404` during the 2026-05-15 check, so public API routing must be corrected before declaring the platform fully healthy.
+- `admin.op-sly.com` returned `200`, but the `opsly_admin` container was `unhealthy`; treat admin as partially degraded until its healthcheck is fixed.
+- `mcp` and `context-builder` are part of the canonical control plane and compose definition, but were not observed in the live `docker ps` snapshot.
+- Local CLI agents are internal operator infrastructure only; they are not a tenant-facing portal feature.
+
 ## App Classification
 
 ### Active modules
