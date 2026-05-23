@@ -4,10 +4,10 @@
 
 1. Leer `AGENTS.md` completo
 2. Leer `VISION.md` completo
-3. Verificar estado VPS: `ssh vps-dragon@100.120.151.91 "docker ps --format '{{.Names}}\t{{.Status}}' | grep -E 'n8n|uptime|infra|traefik'"`
-4. Verificar vars críticas Doppler: `DISCORD_WEBHOOK_URL`, `RESEND_API_KEY`, `GITHUB_TOKEN`
-5. Reportar gaps antes de continuar
-6. No ejecutar nada hasta confirmar el reporte
+3. **Estado VPS (sin SSH en PRs de Copilot):** leer `docs/04-infrastructure/PRODUCTION-STATUS-2026-05-15.md` y la sección 🔄 de `AGENTS.md`. Opcional smoke **HTTP público** (si el firewall del agente lo permite): `curl -sfk https://api.op-sly.com/api/health`. **No** ejecutar `ssh vps-dragon@100.120.151.91` desde el Coding Agent en GitHub — el firewall bloquea Tailscale (`100.120.151.91`, `100.64.0.0/10`). SSH/docker en VPS = **humano, Cursor local o Actions con secretos**, no Copilot en comentarios de PR.
+4. **Doppler:** en PRs de Copilot no usar `doppler secrets get`; asumir vars documentadas en `docs/DOPPLER-VARS.md` / `AGENTS.md`. Verificación real de `DISCORD_WEBHOOK_URL`, `RESEND_API_KEY`, `GITHUB_TOKEN` = humano o CI con `DOPPLER_TOKEN_*`.
+5. Reportar gaps antes de continuar (solo con evidencia del repo o CI, no inventar salida de SSH)
+6. No ejecutar nada destructivo en prod hasta confirmar el reporte
 
 ## CEREBRO COMPARTIDO OPSLY
 
@@ -86,9 +86,11 @@ En comentarios de PR, Copilot corre en un **sandbox de GitHub** con firewall de 
 
 **Sí hacer en PRs:** cambios en repo, `npm run type-check`, tests del workspace tocado, `npm run validate-structure` / `validate-openapi` si aplica.
 
-Si aparece *"Firewall rules blocked me…"*, expandir el comentario de Copilot para ver hosts exactos. Allowlist de org/repo: GitHub → **Settings → Copilot → Firewall** (documentación: `https://docs.github.com/en/copilot/how-tos/troubleshoot-copilot/troubleshoot-firewall-settings`). Dominios típicos Opsly: `registry.npmjs.org`, `*.supabase.co`, `*.op-sly.com`, `raw.githubusercontent.com`, `ghcr.io`.
+Si aparece *"Firewall rules blocked me…"* (p. ej. `100.120.151.91` + `ssh … docker ps`): **comportamiento esperado** — no reintentar SSH. Continuar con código/tests en el repo y pedir al humano verificación VPS si hace falta.
 
-Deploy a prod y `./scripts/peskids-rebuild-vps.sh` quedan para **humano o Cursor local**, no para el agente en el PR.
+**Allowlist (solo admin org/repo):** GitHub → **Settings → Copilot → Coding agent → Firewall** — documentación: `https://docs.github.com/en/copilot/how-tos/troubleshoot-copilot/troubleshoot-firewall-settings`. Dominios útiles Opsly: `registry.npmjs.org`, `*.supabase.co`, `*.op-sly.com`, `raw.githubusercontent.com`, `ghcr.io`. **No** añadir `100.120.151.91` ni rangos Tailscale salvo política de seguridad explícita (expone el VPS al sandbox de GitHub).
+
+Deploy a prod, `./scripts/peskids-rebuild-vps.sh` y cualquier `ssh vps-dragon@100.120.151.91` quedan para **humano o Cursor local** (Tailscale en la máquina del operador), no para el agente en el PR.
 
 ## Git workflow (obligatorio)
 
@@ -329,10 +331,10 @@ Patrón clave: **vi.mock antes de imports del handler**, mocks restablecidos con
 ### Validation scripts (antes de deploy)
 
 ```bash
-./scripts/validate-config.sh     # Verifica JSON, DNS, SSH VPS, Doppler vars críticas
-npm run validate-context          # Valida system_state.json
+./scripts/validate-config.sh     # Humano/Cursor con Tailscale: JSON, DNS, SSH VPS, Doppler
+npm run validate-context          # Valida system_state.json (OK en PR Copilot)
 npm run validate-skills           # Verifica metadatos en skills/user/*/
-npm run validate-openapi          # Valida docs/00-architecture/openapi-opsly-api.yaml: paths, estructura, rutas obligatorias
+npm run validate-openapi          # Valida openapi subset (OK en PR Copilot)
 ```
 
 ---
