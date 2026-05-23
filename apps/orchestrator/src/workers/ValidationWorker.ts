@@ -1,4 +1,4 @@
-import { Job, Queue, Worker } from "bullmq";
+import { Job, Worker } from "bullmq";
 import { resolveGithubPat } from "../lib/github-pat.js";
 import { logWorkerLifecycle } from "../observability/worker-log.js";
 import { notifyDiscord } from "./NotifyWorker.js";
