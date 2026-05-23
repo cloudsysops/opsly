@@ -74,6 +74,22 @@ Todo el trabajo de agentes debe usar la arquitectura OpenClaw:
 - Saltar `validate-config.sh`
 - **Acumular cambios** — siempre git add + commit tras cada tarea completada
 
+## Copilot Coding Agent — firewall en PRs (GitHub)
+
+En comentarios de PR, Copilot corre en un **sandbox de GitHub** con firewall de salida. **No es** el UFW del VPS ni Cloudflare.
+
+**Bloqueado por defecto (no intentar en feedback de PR):**
+
+- SSH / Tailscale (`100.120.151.91`, `100.64.0.0/10`)
+- Doppler CLI contra APIs internas
+- Smoke HTTP a staging/prod salvo que la org haya allowlisteado el dominio
+
+**Sí hacer en PRs:** cambios en repo, `npm run type-check`, tests del workspace tocado, `npm run validate-structure` / `validate-openapi` si aplica.
+
+Si aparece *"Firewall rules blocked me…"*, expandir el comentario de Copilot para ver hosts exactos. Allowlist de org/repo: GitHub → **Settings → Copilot → Firewall** (documentación: `https://docs.github.com/en/copilot/how-tos/troubleshoot-copilot/troubleshoot-firewall-settings`). Dominios típicos Opsly: `registry.npmjs.org`, `*.supabase.co`, `*.op-sly.com`, `raw.githubusercontent.com`, `ghcr.io`.
+
+Deploy a prod y `./scripts/peskids-rebuild-vps.sh` quedan para **humano o Cursor local**, no para el agente en el PR.
+
 ## Git workflow (obligatorio)
 
 **Tras completar cada tarea:**

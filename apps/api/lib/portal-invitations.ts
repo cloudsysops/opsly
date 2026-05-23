@@ -1,4 +1,5 @@
 import { escapeHtml, getInviteFromEmail, sendHtmlEmail } from './email';
+import { isEmailDeliverySkipped, isNonFatalEmailDeliveryError } from './email/delivery-mode';
 import { getServiceClient } from './supabase';
 
 export type PortalInviteParams = {
@@ -96,6 +97,8 @@ function buildPortalInviteHtml(
 export type PortalInviteLinkResult = {
   link: string;
   token: string;
+  emailDeliverySkipped?: boolean;
+  emailDeliveryWarning?: string;
 };
 
 async function generateInviteLink(
@@ -157,12 +160,33 @@ export async function sendPortalInvitationForTenant(
   const portalHome = getPortalSiteUrl();
   const html = buildPortalInviteHtml(params.name, params.name, activateUrl, portalHome);
 
-  await sendHtmlEmail({
-    to: params.email,
-    subject: `Tu plataforma ${params.name} está lista 🚀`,
-    html,
-    from: getInviteFromEmail(),
-  });
+  let emailDeliverySkipped = isEmailDeliverySkipped();
+  let emailDeliveryWarning: string | undefined = emailDeliverySkipped
+    ? 'EMAIL_DELIVERY_MODE=test (no Resend send)'
+    : undefined;
+  if (!emailDeliverySkipped) {
+  try {
+    await sendHtmlEmail({
+      to: params.email,
+      subject: `Tu plataforma ${params.name} está lista 🚀`,
+      html,
+      from: getInviteFromEmail(),
+    });
+  } catch (err) {
+    if (!isNonFatalEmailDeliveryError(err)) {
+      throw err;
+    }
+    emailDeliverySkipped = true;
+    emailDeliveryWarning =
+      err instanceof Error ? err.message : 'Email delivery skipped (test mode or provider restriction)';
+  }
+  }
 
-  return { link: activateUrl, token };
+  return {
+    link: activateUrl,
+    token,
+    ...(emailDeliverySkipped
+      ? { emailDeliverySkipped: true, emailDeliveryWarning }
+      : {}),
+  };
 }

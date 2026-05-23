@@ -55,6 +55,10 @@ export OPSLY_DOPPLER_CONFIG="\${OPSLY_DOPPLER_CONFIG:-${OPSLY_DOPPLER_CONFIG}}"
 alias claude-dop='doppler run --project "\$OPSLY_DOPPLER_PROJECT" --config "\$OPSLY_DOPPLER_CONFIG" -- claude'
 alias codex-dop='doppler run --project "\$OPSLY_DOPPLER_PROJECT" --config "\$OPSLY_DOPPLER_CONFIG" -- codex'
 alias opsly-doppler-run='doppler run --project "\$OPSLY_DOPPLER_PROJECT" --config "\$OPSLY_DOPPLER_CONFIG" --'
+# Codex CLI en terminal (como claude/opencode); priorizar brew, no solo Codex.app
+if [[ -x /usr/local/bin/codex ]]; then
+  alias codex='/usr/local/bin/codex'
+fi
 ${MARKER_END}
 EOF
 }

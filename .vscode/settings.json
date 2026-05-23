@@ -38,5 +38,35 @@
     "model": "gpt-4-turbo (GitHub Copilot)",
     "canonicalConfig": ".agents/config.json",
     "guardrailsFile": ".github/copilot-instructions.md"
+  },
+
+  "// --- Cursor / VS Code Ports (Opsly local stack) ---": "Ver config/agent-services.json + AGENTS.md Quick Commands",
+  "remote.autoForwardPorts": true,
+  "remote.autoForwardPortsSource": "hybrid",
+  "remote.portsAttributes": {
+    "80": { "label": "Traefik HTTP (local compose)", "onAutoForward": "silent" },
+    "8080": { "label": "Traefik dashboard (local)", "onAutoForward": "notify" },
+    "3000": { "label": "Opsly API", "onAutoForward": "notify" },
+    "3001": { "label": "Opsly Admin", "onAutoForward": "notify" },
+    "3002": { "label": "Opsly Portal", "onAutoForward": "notify" },
+    "3003": { "label": "OpenClaw MCP", "onAutoForward": "notify" },
+    "3004": { "label": "Peskids app", "onAutoForward": "notify" },
+    "3010": { "label": "LLM Gateway", "onAutoForward": "notify" },
+    "3011": { "label": "Orchestrator", "onAutoForward": "notify" },
+    "3012": { "label": "Context Builder", "onAutoForward": "notify" },
+    "6379": { "label": "Redis", "onAutoForward": "silent" },
+    "11434": { "label": "Ollama", "onAutoForward": "silent" },
+    "5001": { "label": "Agent: Cursor", "onAutoForward": "silent" },
+    "5002": { "label": "Agent: Claude", "onAutoForward": "silent" },
+    "5003": { "label": "Agent: Copilot", "onAutoForward": "silent" },
+    "5004": { "label": "Agent: OpenCode", "onAutoForward": "silent" },
+    "5005": { "label": "Agent: Codex", "onAutoForward": "silent" },
+    "5006": { "label": "Agent: OpenAI bridge", "onAutoForward": "silent" },
+    "5007": { "label": "Agent: Hermes", "onAutoForward": "silent" },
+    "5008": { "label": "Agent: Decepticon", "onAutoForward": "silent" },
+    "5009": { "label": "Agent: Aider", "onAutoForward": "silent" },
+    "5010": { "label": "Agent: Goose", "onAutoForward": "silent" },
+    "5011": { "label": "Agent: Playwright QA", "onAutoForward": "silent" },
+    "5012": { "label": "Dify API (local compose profile ai)", "onAutoForward": "silent" }
   }
 }

@@ -1,6 +1,7 @@
 import { Resend } from 'resend';
 import { JSON_PRETTY_PRINT_INDENT } from '../constants';
 import type { Tenant } from '../supabase/types';
+import { isEmailDeliverySkipped } from './delivery-mode';
 
 function requireEnv(name: string): string {
   const value = process.env[name];
@@ -71,6 +72,9 @@ export async function sendHtmlEmail(options: {
   html: string;
   from?: string;
 }): Promise<void> {
+  if (isEmailDeliverySkipped()) {
+    return;
+  }
   const resend = getResend();
   const from = options.from && options.from.length > 0 ? options.from : requireFromAddress();
   const { error } = await resend.emails.send({

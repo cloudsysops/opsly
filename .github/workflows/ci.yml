@@ -308,10 +308,15 @@ jobs:
           test -n "${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}"
           test -n "${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}"
       - name: Run E2E invite script
+        env:
+          # Resend test/sandbox: only delivers to the account owner inbox (see API logs).
+          # Must match platform.tenants.owner_email — intcloudsysops → cboteros1 in config/opsly.config.json.
+          E2E_INVITE_OWNER_EMAIL: cboteros1@gmail.com
+          E2E_INVITE_TENANT_SLUG: intcloudsysops
         run: |
           export ADMIN_TOKEN="${{ secrets.PLATFORM_ADMIN_TOKEN }}"
-          export OWNER_EMAIL="jkbotero78@gmail.com"
-          export TENANT_SLUG="localrank"
+          export OWNER_EMAIL="${E2E_INVITE_OWNER_EMAIL}"
+          export TENANT_SLUG="${E2E_INVITE_TENANT_SLUG}"
           bash scripts/test-e2e-invite-flow.sh
 
       - name: Run Playwright E2E tests (portal with Supabase)

@@ -52,6 +52,8 @@ tools/agents/prompts/secrets-*.md
 
 # package.json / package-lock.json: del monorepo; no ignorar. Cambios de deps menores → stash,
 # commit aparte, o rama; no añadir aquí.
+# Lockfiles dentro de apps/* instalan node_modules anidados y rompen npm audit en CI.
+apps/*/package-lock.json
 
 node_modules
 apps/api/coverage/
