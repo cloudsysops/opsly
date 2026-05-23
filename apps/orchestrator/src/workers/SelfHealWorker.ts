@@ -19,7 +19,8 @@ async function runSSH(cmd: string): Promise<{ ok: boolean; output: string }> {
   const execFileAsync = promisify(execFile);
   try {
     const { stdout, stderr } = await execFileAsync("ssh", [
-      "-o", "StrictHostKeyChecking=no",
+      "-o", "StrictHostKeyChecking=accept-new",
+      "-o", "BatchMode=yes",
       "-o", "ConnectTimeout=10",
       VPS_SSH,
       cmd,
