@@ -1,0 +1,97 @@
+{
+  "version": "2026-05-23",
+  "base_domain": "op-sly.com",
+  "default_agent_email": "cboteros1@gmail.com",
+  "notes": "Contraseñas nunca en este archivo. Solo Doppler o gestor de contraseñas del operador.",
+  "surfaces": [
+    {
+      "id": "api-health",
+      "name": "API health",
+      "url": "https://api.op-sly.com/api/health",
+      "auth": "none",
+      "expect_http": [200]
+    },
+    {
+      "id": "admin-login",
+      "name": "Opsly Admin login",
+      "url": "https://admin.op-sly.com/login",
+      "auth": "supabase",
+      "profile": "platform_super_admin",
+      "after_login": ["https://admin.op-sly.com/dashboard", "https://admin.op-sly.com/tenants", "https://admin.op-sly.com/costs"]
+    },
+    {
+      "id": "portal-login",
+      "name": "Opsly Portal login",
+      "url": "https://portal.op-sly.com/login",
+      "auth": "supabase",
+      "profile": "portal_tenant_user",
+      "note": "cboteros1@gmail.com es superuser/staff Peskids; el portal lo rechaza. Usar usuario invitado del tenant o email distinto.",
+      "after_login": [
+        "https://portal.op-sly.com/dashboard",
+        "https://portal.op-sly.com/dashboard/developer",
+        "https://portal.op-sly.com/dashboard/managed"
+      ]
+    },
+    {
+      "id": "peskids-landing",
+      "name": "Peskids landing",
+      "url": "https://peskids.op-sly.com/",
+      "auth": "none",
+      "expect_http": [200]
+    },
+    {
+      "id": "peskids-admin-login",
+      "name": "Peskids panel login",
+      "url": "https://peskids.op-sly.com/admin/login",
+      "auth": "supabase",
+      "profile": "peskids_staff",
+      "after_login": ["https://peskids.op-sly.com/admin"]
+    },
+    {
+      "id": "peskids-familias",
+      "name": "Peskids familias",
+      "url": "https://peskids.op-sly.com/familias",
+      "auth": "none",
+      "expect_http": [200, 302]
+    }
+  ],
+  "tenants": [
+    {
+      "slug": "smiletripcare",
+      "owner_email_config": "smiletripcare@gmail.com",
+      "n8n": "https://n8n-smiletripcare.op-sly.com",
+      "uptime": "https://uptime-smiletripcare.op-sly.com",
+      "auth": "n8n_doppler"
+    },
+    {
+      "slug": "localrank",
+      "owner_email_config": "jkbotero78@gmail.com",
+      "n8n": "https://n8n-localrank.op-sly.com",
+      "uptime": "https://uptime-localrank.op-sly.com",
+      "auth": "n8n_doppler"
+    },
+    {
+      "slug": "jkboterolabs",
+      "owner_email_config": "jkbotero78@gmail.com",
+      "n8n": "https://n8n-jkboterolabs.op-sly.com",
+      "uptime": "https://uptime-jkboterolabs.op-sly.com",
+      "auth": "n8n_doppler"
+    },
+    {
+      "slug": "peskids",
+      "owner_email_config": "sierrasantiago90@gmail.com",
+      "n8n": "https://n8n-peskids.op-sly.com",
+      "uptime": "https://uptime-peskids.op-sly.com",
+      "auth": "n8n_doppler",
+      "doppler_n8n_user": "TENANT_PESKIDS_N8N_USER",
+      "doppler_n8n_pass": "TENANT_PESKIDS_N8N_PASS"
+    },
+    {
+      "slug": "intcloudsysops",
+      "owner_email_config": "cboteros1@gmail.com",
+      "n8n": "https://n8n-intcloudsysops.op-sly.com",
+      "uptime": "https://uptime-intcloudsysops.op-sly.com",
+      "auth": "n8n_doppler"
+    }
+  ]
+}

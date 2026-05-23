@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { ContainerStatusGrid } from '@/components/tenants/ContainerStatusGrid';
 import { PlanBadge } from '@/components/tenants/PlanBadge';
 import { TenantActions } from '@/components/tenants/TenantActions';
+import { TenantSurfaceLinks } from '@/components/tenants/TenantSurfaceLinks';
 import { TenantStatusBadge } from '@/components/tenants/TenantStatusBadge';
 import { useTenant } from '@/hooks/useTenant';
 import { parseServiceUrls, uptimeStatusPageUrl } from '@/lib/service-urls';
@@ -36,7 +37,12 @@ function CopyUrlButton({ url }: { url: string }) {
 
 export default function TenantDetailPage() {
   const params = useParams();
-  const tenantRef = typeof params.tenantRef === 'string' ? params.tenantRef : '';
+  const tenantRef =
+    typeof params.slug === 'string'
+      ? params.slug
+      : typeof params.tenantRef === 'string'
+        ? params.tenantRef
+        : '';
   const router = useRouter();
   const { data, error, isLoading, mutate } = useTenant(tenantRef);
 
@@ -119,7 +125,20 @@ export default function TenantDetailPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle className="font-sans text-sm text-ops-gray">Accesos directos</CardTitle>
+          <CardTitle className="font-sans text-sm text-ops-gray">Revisar producto cliente</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <TenantSurfaceLinks
+            slug={tenant.slug}
+            services={tenant.services}
+            metadata={tenant.metadata}
+          />
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="font-sans text-sm text-ops-gray">Stack técnico (n8n / uptime)</CardTitle>
         </CardHeader>
         <CardContent className="flex flex-wrap gap-3">
           {urls.n8n ? (

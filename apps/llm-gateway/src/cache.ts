@@ -1,4 +1,5 @@
 import { createClient } from 'redis';
+import { countKeysByPattern } from './redis-scan.js';
 
 const REDIS_URL = process.env.REDIS_URL || 'redis://localhost:6379';
 const TTL_SECONDS = Number.parseInt(process.env.LLM_CACHE_TTL_SECONDS ?? '7200', 10) || 7200;
@@ -53,6 +54,6 @@ export async function cacheSet(
 export async function getCacheStats(tenantSlug: string): Promise<{ keys: number }> {
   const redis = await getClient();
   const pattern = `tenant:${tenantSlug}:llm:cache:*`;
-  const keys = await redis.keys(pattern);
-  return { keys: keys.length };
+  const keys = await countKeysByPattern(redis, pattern);
+  return { keys };
 }

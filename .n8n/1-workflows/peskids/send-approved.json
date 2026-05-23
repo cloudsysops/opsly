@@ -28,7 +28,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ $env.BAILEYS_SEND_URL || 'http://127.0.0.1:3999/send' }}",
+        "url": "={{ $env.BAILEYS_SEND_URL }}",
         "sendBody": true,
         "specifyBody": "json",
         "jsonBody": "={{ JSON.stringify({ to: $node[\"Parse Payload\"].json.to, text: $node[\"Parse Payload\"].json.text, source: $node[\"Parse Payload\"].json.source }) }}",

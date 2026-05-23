@@ -16,6 +16,7 @@ import {
 } from '@/components/ui/table';
 import { PlanBadge } from '@/components/tenants/PlanBadge';
 import { TenantStatusBadge } from '@/components/tenants/TenantStatusBadge';
+import { TenantSurfaceLinks } from '@/components/tenants/TenantSurfaceLinks';
 
 export function TenantTable({ tenants, search }: { tenants: Tenant[]; search: string }) {
   const [expandedSlug, setExpandedSlug] = useState<string | null>(null);
@@ -89,6 +90,17 @@ export function TenantTable({ tenants, search }: { tenants: Tenant[]; search: st
                         <div className="text-xs text-ops-gray">creado</div>
                         <div className="font-mono text-xs text-neutral-300">
                           {new Date(t.created_at).toLocaleString('es')}
+                        </div>
+                      </div>
+                      <div className="w-full border-t border-ops-border/60 pt-3">
+                        <div className="text-xs text-ops-gray">Revisar producto</div>
+                        <div className="mt-2">
+                          <TenantSurfaceLinks
+                            slug={t.slug}
+                            services={t.services}
+                            metadata={t.metadata}
+                            compact
+                          />
                         </div>
                       </div>
                       <div className="flex flex-wrap gap-2">
