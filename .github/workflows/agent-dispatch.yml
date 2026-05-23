@@ -10,10 +10,10 @@ jobs:
   agent-dispatch:
     runs-on: ubuntu-latest
     if: |
-      contains(github.event.issue.labels.*.name, 'agent:cursor') ||
-      contains(github.event.issue.labels.*.name, 'agent:opencode') ||
-      contains(github.event.pull_request.labels.*.name, 'agent:cursor') ||
-      contains(github.event.pull_request.labels.*.name, 'agent:opencode')
+      contains(join(github.event.issue.labels.*.name, ','), 'agent:cursor') ||
+      contains(join(github.event.issue.labels.*.name, ','), 'agent:opencode') ||
+      contains(join(github.event.pull_request.labels.*.name, ','), 'agent:cursor') ||
+      contains(join(github.event.pull_request.labels.*.name, ','), 'agent:opencode')
     steps:
       - uses: actions/checkout@v4
         with:
