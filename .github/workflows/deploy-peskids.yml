@@ -93,7 +93,6 @@ jobs:
       - name: Build summary
         run: |
           echo "Image: ghcr.io/cloudsysops/peskids:${{ needs.gate.outputs.sha }}"
-          echo "WhatsApp E164 (build-arg): ${{ steps.wa.outputs.e164 }}"
 
   deploy-vps:
     needs: build-and-push

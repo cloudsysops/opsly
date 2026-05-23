@@ -50,6 +50,15 @@ Para el build de la imagen (wa.me en el cliente):
 
 Más SSH/Tailscale: ver `docs/runbooks/DEPLOY-GITHUB-ACTIONS.md` (`VPS_*`, `TAILSCALE_AUTHKEY`).
 
+**Sincronizar sin pegar valores en chat** (en tu Mac, con Doppler + `gh`):
+
+```bash
+./scripts/sync-peskids-whatsapp-secrets-to-github.sh --dry-run
+./scripts/sync-peskids-whatsapp-secrets-to-github.sh
+```
+
+Si faltan claves en Doppler: `./scripts/doppler-configure-peskids-prd.sh` o `./scripts/peskids-promote-whatsapp-doppler.sh`.
+
 ## Admin dashboard
 
 Obtén el token **solo en tu terminal** (no pegar en chat):
