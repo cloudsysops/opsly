@@ -1,98 +1,29 @@
 'use client'
 
-import { Loader2 } from 'lucide-react'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { PeskidsLogo } from '@/components/brand/peskids-logo'
 import { Button } from '@/components/ui/button'
-import { buildRecoveryRedirectTo } from '@/lib/auth-recovery'
-import { createClient } from '@/lib/supabase-browser'
+import { PeskidsLogo } from '@/components/brand/peskids-logo'
 
 export default function AdminLoginPage(): React.ReactElement {
   const router = useRouter()
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [passkeyLoading, setPasskeyLoading] = useState(false)
+  const [token, setToken] = useState('')
   const [error, setError] = useState('')
-  const [passkeyError, setPasskeyError] = useState('')
-  const [resetSent, setResetSent] = useState(false)
-  const [resetLoading, setResetLoading] = useState(false)
-
-  async function handleForgotPassword(): Promise<void> {
-    const trimmed = email.trim()
-    if (!trimmed) {
-      setError('Escribe tu email primero.')
-      return
-    }
-    setResetLoading(true)
-    setError('')
-    setResetSent(false)
-    try {
-      const supabase = createClient()
-      const origin =
-        typeof window !== 'undefined' ? window.location.origin : 'https://peskids.op-sly.com'
-      const { error: resetError } = await supabase.auth.resetPasswordForEmail(trimmed, {
-        redirectTo: buildRecoveryRedirectTo(origin),
-      })
-      if (resetError) {
-        setError(resetError.message)
-        return
-      }
-      setResetSent(true)
-    } catch {
-      setError('No se pudo enviar el correo de recuperación.')
-    } finally {
-      setResetLoading(false)
-    }
-  }
+  const [loading, setLoading] = useState(false)
 
   async function handleSubmit(e: React.FormEvent): Promise<void> {
     e.preventDefault()
     setLoading(true)
     setError('')
-    setPasskeyError('')
 
     try {
-      const supabase = createClient()
-      const { error: signError } = await supabase.auth.signInWithPassword({
-        email: email.trim(),
-        password,
-      })
-
-      if (signError) {
-        setError(signError.message)
-        return
-      }
-
+      document.cookie = `admin-token=${token}; path=/; secure; samesite=strict`
       router.push('/admin')
       router.refresh()
     } catch {
-      setError('No se pudo conectar. Revisa que la app esté en marcha.')
+      setError('No se pudo iniciar sesión.')
     } finally {
       setLoading(false)
-    }
-  }
-
-  async function handlePasskey(): Promise<void> {
-    setPasskeyLoading(true)
-    setError('')
-    setPasskeyError('')
-
-    try {
-      const supabase = createClient()
-      const { error: signError } = await supabase.auth.signInWithPasskey()
-      if (signError) {
-        setPasskeyError(signError.message)
-        return
-      }
-
-      router.push('/admin')
-      router.refresh()
-    } catch {
-      setPasskeyError('No se pudo iniciar con passkey')
-    } finally {
-      setPasskeyLoading(false)
     }
   }
 
@@ -106,72 +37,23 @@ export default function AdminLoginPage(): React.ReactElement {
           Acceso al panel
         </h1>
         <p className="mt-2 text-center text-sm text-pk-sub">
-          Acceso por invitación para admin, soporte y profes. Usa tu cuenta real de Supabase.
+          Ingresa tu token de acceso administrativo.
         </p>
         <form onSubmit={(e) => void handleSubmit(e)} className="mt-6 space-y-4">
           <label className="block">
-            <span className="text-sm font-medium text-pk-ink">Email</span>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="pk-input mt-1"
-              autoComplete="email"
-              required
-            />
-          </label>
-          <label className="block">
-            <span className="text-sm font-medium text-pk-ink">Contraseña</span>
+            <span className="text-sm font-medium text-pk-ink">Token de administrador</span>
             <input
               type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              value={token}
+              onChange={(e) => setToken(e.target.value)}
               className="pk-input mt-1"
-              autoComplete="current-password"
+              placeholder="Pega tu token aquí"
               required
             />
           </label>
           {error ? <p className="text-sm text-red-600">{error}</p> : null}
-          {resetSent ? (
-            <p className="text-sm text-pk-mint">
-              Revisa tu correo (y spam). El enlace abre Peskids para definir una contraseña nueva.
-            </p>
-          ) : null}
-          {passkeyError ? <p className="text-sm text-red-600">{passkeyError}</p> : null}
-          <Button
-            type="button"
-            variant="ghost"
-            className="w-full text-sm"
-            disabled={resetLoading}
-            onClick={() => void handleForgotPassword()}
-          >
-            {resetLoading ? 'Enviando enlace…' : 'Olvidé mi contraseña'}
-          </Button>
-          <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? (
-              <>
-                <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
-                Entrando…
-              </>
-            ) : (
-              'Entrar al dashboard'
-            )}
-          </Button>
-          <Button
-            type="button"
-            variant="ghost"
-            className="w-full"
-            onClick={() => void handlePasskey()}
-            disabled={passkeyLoading}
-          >
-            {passkeyLoading ? (
-              <>
-                <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
-                Verificando huella…
-              </>
-            ) : (
-              'Entrar con huella o passkey'
-            )}
+          <Button type="submit" className="w-full" disabled={loading || !token}>
+            {loading ? 'Verificando…' : 'Acceder al dashboard'}
           </Button>
         </form>
       </div>

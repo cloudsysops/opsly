@@ -109,7 +109,6 @@ async function handleFeedbackSubmission(webhook: any) {
         child_name: String(feedback.student_name),
         satisfaction: feedback.satisfaction,
         suggestion: String(feedback.suggestion),
-        contact_wanted: feedback.follow_up_wanted,
       })
       .select('id')
       .single();
