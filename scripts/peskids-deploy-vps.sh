@@ -45,6 +45,9 @@ docker rm peskids 2>/dev/null || true
 ENV_FILE="\$(mktemp)"
 trap 'rm -f "\$ENV_FILE"' EXIT
 doppler secrets download --no-file --format docker --project ops-intcloudsysops --config prd >"\$ENV_FILE"
+# Strip platform-wide NEXT_PUBLIC_* that point at wrong API or Docker hostnames (browsers cannot use them).
+source ${REPO_PATH}/scripts/lib/peskids-docker-env-filter.sh
+filter_peskids_docker_env "\$ENV_FILE"
 
 docker run -d --name peskids --restart unless-stopped \\
   --network traefik-public \\

@@ -42,14 +42,19 @@ export async function updateSession(request: NextRequest): Promise<NextResponse>
 
   const pathname = request.nextUrl.pathname;
   const isLogin = pathname === '/login' || pathname.startsWith('/login/');
+  const isAuthPublic =
+    pathname.startsWith('/auth/') || pathname === '/update-password';
+  const hasRecoveryQuery =
+    Boolean(request.nextUrl.searchParams.get('code')) ||
+    request.nextUrl.searchParams.get('type') === 'recovery';
 
-  if (!user && !isLogin) {
+  if (!user && !isLogin && !isAuthPublic) {
     const redirectUrl = request.nextUrl.clone();
     redirectUrl.pathname = '/login';
     return NextResponse.redirect(redirectUrl);
   }
 
-  if (user && isLogin) {
+  if (user && isLogin && !hasRecoveryQuery) {
     const redirectUrl = request.nextUrl.clone();
     redirectUrl.pathname = '/dashboard';
     return NextResponse.redirect(redirectUrl);

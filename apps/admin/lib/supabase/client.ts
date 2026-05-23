@@ -6,5 +6,10 @@ const FALLBACK_SUPABASE_ANON_KEY = 'placeholder';
 export function createClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim() || FALLBACK_SUPABASE_URL;
   const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim() || FALLBACK_SUPABASE_ANON_KEY;
-  return createBrowserClient(url, anon);
+  return createBrowserClient(url, anon, {
+    auth: {
+      detectSessionInUrl: true,
+      flowType: 'pkce',
+    },
+  });
 }

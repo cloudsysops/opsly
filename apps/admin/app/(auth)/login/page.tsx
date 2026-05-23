@@ -3,6 +3,7 @@
 import { Loader2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { buildRecoveryRedirectTo } from '@/lib/auth-recovery';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -14,6 +15,8 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [resetSent, setResetSent] = useState(false);
+  const [resetLoading, setResetLoading] = useState(false);
 
   useEffect(() => {
     const supabase = createClient();
@@ -28,6 +31,34 @@ export default function LoginPage() {
         // Local demo mode can run without Supabase public env vars.
       });
   }, [router]);
+
+  async function onForgotPassword(): Promise<void> {
+    const trimmed = email.trim();
+    if (!trimmed) {
+      setError('Escribe tu email primero.');
+      return;
+    }
+    setResetLoading(true);
+    setError(null);
+    setResetSent(false);
+    try {
+      const supabase = createClient();
+      const origin =
+        typeof window !== 'undefined' ? window.location.origin : 'https://admin.op-sly.com';
+      const { error: resetError } = await supabase.auth.resetPasswordForEmail(trimmed, {
+        redirectTo: buildRecoveryRedirectTo(origin),
+      });
+      if (resetError) {
+        setError(resetError.message);
+        return;
+      }
+      setResetSent(true);
+    } catch {
+      setError('No se pudo enviar el correo de recuperación.');
+    } finally {
+      setResetLoading(false);
+    }
+  }
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -100,6 +131,20 @@ export default function LoginPage() {
                 />
               </div>
             </div>
+            {resetSent ? (
+              <p className="rounded border border-ops-green/40 bg-ops-green/10 px-3 py-2 font-sans text-sm text-ops-green">
+                Revisa tu correo. El enlace abre el admin Opsly para definir contraseña.
+              </p>
+            ) : null}
+            <Button
+              type="button"
+              variant="ghost"
+              className="w-full font-sans text-sm"
+              disabled={resetLoading}
+              onClick={() => void onForgotPassword()}
+            >
+              {resetLoading ? 'Enviando…' : 'Olvidé mi contraseña'}
+            </Button>
             <div className="space-y-1">
               <label className="font-sans text-xs text-ops-gray" htmlFor="password">
                 password

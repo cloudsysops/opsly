@@ -9,6 +9,8 @@ export function createClient() {
 
   return createBrowserClient<Database>(fallbackUrl, fallbackAnon, {
     auth: {
+      detectSessionInUrl: true,
+      flowType: 'pkce',
       experimental: { passkey: true },
     },
   })

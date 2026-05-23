@@ -1,12 +1,18 @@
 import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs'
 import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
-import { isStaffUser } from '@/lib/staff-auth'
+import { isStaffUser } from '@/lib/staff-user'
 import type { Database } from '@/lib/types'
 
 export async function middleware(req: NextRequest): Promise<NextResponse> {
   const path = req.nextUrl.pathname
-  if (path === '/admin/login' || path === '/api/admin/login') {
+  if (
+    path === '/admin/login' ||
+    path === '/admin/update-password' ||
+    path === '/api/admin/login' ||
+    path === '/auth/recovery' ||
+    path.startsWith('/auth/')
+  ) {
     return NextResponse.next()
   }
 

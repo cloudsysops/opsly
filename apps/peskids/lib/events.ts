@@ -1,6 +1,21 @@
 import { OpslyEvent } from './types'
 
-const OPSLY_EVENT_BUS_URL = process.env.OPSLY_EVENT_BUS_URL || process.env.NEXT_PUBLIC_OPSLY_EVENT_BUS_URL || 'http://localhost:3011/events'
+function opslyEventBusUrl(): string | null {
+  const raw =
+    process.env.OPSLY_EVENT_BUS_URL?.trim() ||
+    process.env.NEXT_PUBLIC_OPSLY_EVENT_BUS_URL?.trim() ||
+    ''
+  if (!raw) {
+    return null
+  }
+  if (raw.includes('localhost') || raw.includes('127.0.0.1')) {
+    if (process.env.NODE_ENV === 'production') {
+      console.error('OPSLY_EVENT_BUS_URL must not point to localhost in production')
+      return null
+    }
+  }
+  return raw.endsWith('/events') ? raw : `${raw.replace(/\/$/, '')}/events`
+}
 const TENANT_ID = process.env.NEXT_PUBLIC_TENANT_ID || 'peskids'
 
 export async function emitEvent(
@@ -16,8 +31,14 @@ export async function emitEvent(
     trace_id: traceId,
   }
 
+  const busUrl = opslyEventBusUrl()
+  if (!busUrl) {
+    console.warn(`Skipping event ${eventType}: OPSLY_EVENT_BUS_URL not configured`)
+    return
+  }
+
   try {
-    const response = await fetch(OPSLY_EVENT_BUS_URL, {
+    const response = await fetch(busUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

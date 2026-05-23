@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Inter, JetBrains_Mono } from 'next/font/google';
 import type { ReactElement, ReactNode } from 'react';
+import { AuthSessionRedirect } from '@/components/auth/auth-session-redirect';
 import './globals.css';
 
 const sans = Inter({
@@ -28,6 +29,7 @@ export default function RootLayout({
       <body
         className={`${sans.variable} ${mono.variable} min-h-screen bg-ops-bg font-sans antialiased`}
       >
+        <AuthSessionRedirect />
         {children}
       </body>
     </html>

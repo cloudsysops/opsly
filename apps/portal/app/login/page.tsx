@@ -11,6 +11,7 @@ import {
   PORTAL_DEMO_MODE_COOKIE,
   PORTAL_DEMO_TENANT_SLUG,
 } from '@/lib/demo-tenant';
+import { buildRecoveryRedirectTo } from '@/lib/auth-recovery';
 import { createClient } from '@/lib/supabase';
 
 export default function LoginPage(): ReactElement {
@@ -23,6 +24,36 @@ export default function LoginPage(): ReactElement {
   const [passkeyLoading, setPasskeyLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [googleError, setGoogleError] = useState<string | null>(null);
+  const [resetSent, setResetSent] = useState(false);
+  const [resetLoading, setResetLoading] = useState(false);
+
+  const onForgotPassword = async (): Promise<void> => {
+    const trimmed = email.trim();
+    if (!trimmed) {
+      setError('Escribe tu email primero.');
+      return;
+    }
+    setResetLoading(true);
+    setError(null);
+    setResetSent(false);
+    try {
+      const supabase = createClient();
+      const origin =
+        typeof window !== 'undefined' ? window.location.origin : 'https://portal.op-sly.com';
+      const { error: resetError } = await supabase.auth.resetPasswordForEmail(trimmed, {
+        redirectTo: buildRecoveryRedirectTo(origin),
+      });
+      if (resetError) {
+        setError(resetError.message);
+        return;
+      }
+      setResetSent(true);
+    } catch {
+      setError('No se pudo enviar el correo de recuperación.');
+    } finally {
+      setResetLoading(false);
+    }
+  };
 
   const onSubmit = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
@@ -156,6 +187,11 @@ export default function LoginPage(): ReactElement {
               {googleError}
             </p>
           ) : null}
+          {resetSent ? (
+            <p className="rounded-sm border border-ops-green/40 bg-ops-green/10 px-3 py-2 text-sm text-ops-green">
+              Revisa tu correo. El enlace abre el portal Opsly para definir una contraseña nueva.
+            </p>
+          ) : null}
           <div>
             <label
               htmlFor="email"
@@ -192,6 +228,15 @@ export default function LoginPage(): ReactElement {
               className="input-terminal-caret w-full rounded-sm border border-ops-border bg-ops-bg/80 px-3 py-2.5 text-sm text-neutral-100 outline-none transition-colors focus:border-ops-green focus:ring-2 focus:ring-ops-green/30"
             />
           </div>
+          <Button
+            type="button"
+            variant="ghost"
+            className="w-full text-sm"
+            disabled={resetLoading}
+            onClick={() => void onForgotPassword()}
+          >
+            {resetLoading ? 'Enviando enlace…' : 'Olvidé mi contraseña'}
+          </Button>
           <Button type="submit" variant="primary" className="w-full" disabled={loading}>
             {loading ? (
               <>
