@@ -1,0 +1,67 @@
+{
+  "name": "Opsly Feet — Stripe Checkout → Tenant Vivo",
+  "description": "Stripe checkout.session.completed → provisiona tenant → health check → Discord",
+  "nodes": [
+    {
+      "name": "Stripe Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "parameters": {
+        "path": "stripe-checkout",
+        "httpMethod": "POST",
+        "responseMode": "onReceived",
+        "responseData": "{ \"received\": true }"
+      }
+    },
+    {
+      "name": "Filter: checkout.session.completed",
+      "type": "n8n-nodes-base.if",
+      "parameters": {
+        "conditions": {
+          "string": [{ "value1": "={{ $json.body.type }}", "operation": "equal", "value2": "checkout.session.completed" }]
+        }
+      }
+    },
+    {
+      "name": "POST orchestrator: provision tenant",
+      "type": "n8n-nodes-base.httpRequest",
+      "parameters": {
+        "url": "http://localhost:3000/api/tenants/provision",
+        "method": "POST",
+        "jsonBody": true,
+        "body": {
+          "stripe_customer_id": "={{ $json.body.data.object.customer }}",
+          "email": "={{ $json.body.data.object.customer_details.email }}",
+          "plan": "startup",
+          "event_id": "={{ $json.body.id }}"
+        }
+      }
+    },
+    {
+      "name": "Esperar 2 minutos (Docker startup)",
+      "type": "n8n-nodes-base.wait",
+      "parameters": { "amount": 2, "unit": "minutes" }
+    },
+    {
+      "name": "Health check tenant",
+      "type": "n8n-nodes-base.httpRequest",
+      "parameters": {
+        "url": "=https://{{ $('POST orchestrator: provision tenant').json.slug }}.ops.smiletripcare.com/health",
+        "method": "GET",
+        "timeout": 15000,
+        "continueOnFail": true
+      }
+    },
+    {
+      "name": "Discord: tenant vivo",
+      "type": "n8n-nodes-base.httpRequest",
+      "parameters": {
+        "url": "={{ $env.DISCORD_WEBHOOK_URL }}",
+        "method": "POST",
+        "jsonBody": true,
+        "body": {
+          "content": "=🏢 Tenant `{{ $('POST orchestrator: provision tenant').json.slug }}` está vivo y respondiendo ✅"
+        }
+      }
+    }
+  ]
+}

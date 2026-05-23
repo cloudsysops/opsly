@@ -40,7 +40,8 @@
     ".opencode.json",
     ".mcp.json",
     ".opsly-drive-config.json",
-    ".npmrc"
+    ".npmrc",
+    ".trivyignore"
   ],
   "allowed_folders": [
     "apps",

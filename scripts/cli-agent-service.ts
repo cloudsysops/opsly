@@ -2,8 +2,9 @@
 
 import express from 'express';
 import { spawn } from 'node:child_process';
-import { randomUUID } from 'node:crypto';
+import { randomUUID, timingSafeEqual } from 'node:crypto';
 import { existsSync } from 'node:fs';
+import { resolve } from 'node:path';
 
 type ExecuteRequest = {
   job_id?: string;
@@ -25,9 +26,19 @@ app.use(express.json({ limit: '1mb' }));
 
 const agent = process.env.OPSLY_CLI_AGENT?.trim().toLowerCase() || 'codex';
 const port = Number.parseInt(process.env.PORT || defaultPortFor(agent), 10);
-const timeoutMs = Number.parseInt(process.env.OPSLY_CLI_AGENT_TIMEOUT_MS || '300000', 10);
-const cwd = process.env.OPSLY_CLI_AGENT_CWD || repoRoot;
+const timeoutMs = positiveInteger(process.env.OPSLY_CLI_AGENT_TIMEOUT_MS, 300000);
+const outputLimitBytes = positiveInteger(process.env.OPSLY_CLI_AGENT_OUTPUT_LIMIT_BYTES, 120000);
+const allowedRoot = resolve(process.env.OPSLY_CLI_AGENT_ALLOWED_CWD_PREFIX || repoRoot);
+const cwd = resolve(process.env.OPSLY_CLI_AGENT_CWD || repoRoot);
 const dryRun = process.env.OPSLY_CLI_AGENT_DRY_RUN === '1';
+const executeToken = process.env.OPSLY_CLI_AGENT_TOKEN || '';
+let inFlightJobId: string | null = null;
+
+function positiveInteger(value: string | undefined, fallback: number): number {
+  if (!value) return fallback;
+  const parsed = Number.parseInt(value, 10);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
+}
 
 function defaultPortFor(name: string): string {
   const ports: Record<string, string> = {
@@ -62,9 +73,16 @@ function buildPrompt(body: ExecuteRequest): string {
   ].join('\n');
 }
 
+function promptContent(body: ExecuteRequest): string {
+  return body.prompt_content || body.prompt || '';
+}
+
 function commandFor(prompt: string, body: ExecuteRequest): CommandSpec {
   const override = process.env.OPSLY_CLI_AGENT_COMMAND?.trim();
   if (override) {
+    if (process.env.OPSLY_CLI_AGENT_ALLOW_COMMAND_OVERRIDE !== '1') {
+      throw new Error('OPSLY_CLI_AGENT_COMMAND is disabled unless OPSLY_CLI_AGENT_ALLOW_COMMAND_OVERRIDE=1');
+    }
     return { command: override, args: [] };
   }
 
@@ -190,6 +208,72 @@ function commandFor(prompt: string, body: ExecuteRequest): CommandSpec {
   }
 }
 
+function isPathInside(parent: string, child: string): boolean {
+  const normalizedParent = parent.endsWith('/') ? parent : `${parent}/`;
+  return child === parent || child.startsWith(normalizedParent);
+}
+
+function validateWorkspaceScope(): void {
+  if (!existsSync(cwd)) {
+    throw new Error(`Working directory does not exist: ${cwd}`);
+  }
+  if (!isPathInside(allowedRoot, cwd)) {
+    throw new Error(`Working directory is outside allowed root: ${cwd}`);
+  }
+}
+
+function safeEquals(left: string, right: string): boolean {
+  const leftBuffer = Buffer.from(left);
+  const rightBuffer = Buffer.from(right);
+  if (leftBuffer.length !== rightBuffer.length) return false;
+  return timingSafeEqual(leftBuffer, rightBuffer);
+}
+
+function isAuthorized(req: express.Request): boolean {
+  if (!executeToken) return true;
+  const authHeader = req.header('authorization') || '';
+  const bearer = authHeader.match(/^Bearer\s+(.+)$/i)?.[1]?.trim() || '';
+  return bearer.length > 0 && safeEquals(bearer, executeToken);
+}
+
+function buildChildEnv(): NodeJS.ProcessEnv {
+  const baseAllowlist = [
+    'PATH',
+    'HOME',
+    'USER',
+    'LOGNAME',
+    'SHELL',
+    'TMPDIR',
+    'TEMP',
+    'TMP',
+    'TERM',
+    'LANG',
+    'LC_ALL',
+    'XDG_CONFIG_HOME',
+    'XDG_CACHE_HOME',
+    'CODEX_HOME',
+    'CLAUDE_CONFIG_DIR',
+    'OPENCODE_CONFIG',
+    'GOOSE_CONFIG_DIR',
+    'HERMES_HOME',
+    'NODE_OPTIONS',
+  ];
+  const extraAllowlist = (process.env.OPSLY_CLI_AGENT_ENV_ALLOWLIST || '')
+    .split(',')
+    .map((item) => item.trim())
+    .filter(Boolean);
+  const allowlist = new Set([...baseAllowlist, ...extraAllowlist]);
+  const env: NodeJS.ProcessEnv = {};
+
+  for (const key of allowlist) {
+    if (process.env[key] !== undefined) {
+      env[key] = process.env[key];
+    }
+  }
+
+  return env;
+}
+
 function redact(value: string): string {
   return value
     .replace(/sk-[A-Za-z0-9_-]{12,}/g, 'sk-***')
@@ -198,31 +282,49 @@ function redact(value: string): string {
     .replace(/(api[_-]?key|token|password)=([^\s]+)/gi, '$1=***');
 }
 
+function appendLimited(current: string, chunk: Buffer): string {
+  const next = current + chunk.toString();
+  if (Buffer.byteLength(next, 'utf8') <= outputLimitBytes) {
+    return next;
+  }
+
+  const truncated = Buffer.from(next).subarray(0, outputLimitBytes).toString('utf8');
+  return `${truncated}\n[opsly] output truncated at ${outputLimitBytes} bytes`;
+}
+
 function runCommand(spec: CommandSpec): Promise<{ stdout: string; stderr: string; code: number | null }> {
   return new Promise((resolvePromise, reject) => {
-    if (!existsSync(cwd)) {
-      reject(new Error(`Working directory does not exist: ${cwd}`));
-      return;
-    }
+    validateWorkspaceScope();
 
     const child = spawn(spec.command, spec.args, {
       cwd,
-      env: process.env,
+      detached: true,
+      env: buildChildEnv(),
       stdio: ['ignore', 'pipe', 'pipe'],
     });
 
     let stdout = '';
     let stderr = '';
+    let timedOut = false;
     const timeout = setTimeout(() => {
-      child.kill('SIGTERM');
-      reject(new Error(`Agent ${agent} timed out after ${timeoutMs}ms`));
+      timedOut = true;
+      if (child.pid) {
+        process.kill(-child.pid, 'SIGTERM');
+        setTimeout(() => {
+          try {
+            if (child.pid) process.kill(-child.pid, 'SIGKILL');
+          } catch {
+            // Process already exited.
+          }
+        }, 5000).unref();
+      }
     }, timeoutMs);
 
     child.stdout.on('data', (chunk) => {
-      stdout += chunk.toString();
+      stdout = appendLimited(stdout, chunk);
     });
     child.stderr.on('data', (chunk) => {
-      stderr += chunk.toString();
+      stderr = appendLimited(stderr, chunk);
     });
     child.on('error', (error) => {
       clearTimeout(timeout);
@@ -230,6 +332,10 @@ function runCommand(spec: CommandSpec): Promise<{ stdout: string; stderr: string
     });
     child.on('close', (code) => {
       clearTimeout(timeout);
+      if (timedOut) {
+        reject(new Error(`Agent ${agent} timed out after ${timeoutMs}ms`));
+        return;
+      }
       resolvePromise({ stdout: redact(stdout), stderr: redact(stderr), code });
     });
   });
@@ -242,6 +348,11 @@ app.get('/health', (_req, res) => {
     agent,
     dry_run: dryRun,
     cwd,
+    allowed_root: allowedRoot,
+    auth_required: Boolean(executeToken),
+    in_flight_job_id: inFlightJobId,
+    output_limit_bytes: outputLimitBytes,
+    timeout_ms: timeoutMs,
   });
 });
 
@@ -249,13 +360,29 @@ app.post('/execute', async (req, res) => {
   const started = Date.now();
   const body = req.body as ExecuteRequest;
   const jobId = body.job_id || randomUUID();
-  const prompt = buildPrompt({ ...body, job_id: jobId });
 
   try {
-    if (!prompt.trim()) {
+    if (!isAuthorized(req)) {
+      res.status(401).json({ success: false, job_id: jobId, error: 'unauthorized' });
+      return;
+    }
+
+    if (inFlightJobId) {
+      res.status(429).json({
+        success: false,
+        job_id: jobId,
+        error: `agent ${agent} is busy`,
+        in_flight_job_id: inFlightJobId,
+      });
+      return;
+    }
+
+    if (!promptContent(body).trim()) {
       res.status(400).json({ success: false, job_id: jobId, error: 'prompt_content is required' });
       return;
     }
+
+    const prompt = buildPrompt({ ...body, job_id: jobId });
 
     if (dryRun) {
       res.json({
@@ -268,6 +395,7 @@ app.post('/execute', async (req, res) => {
       return;
     }
 
+    inFlightJobId = jobId;
     const spec = commandFor(prompt, body);
     const result = await runCommand(spec);
     const content = result.stdout.trim() || result.stderr.trim();
@@ -289,6 +417,10 @@ app.post('/execute', async (req, res) => {
       error: redact(error instanceof Error ? error.message : String(error)),
       execution_time_ms: Date.now() - started,
     });
+  } finally {
+    if (inFlightJobId === jobId) {
+      inFlightJobId = null;
+    }
   }
 });
 

@@ -33,10 +33,10 @@ interface FormSubmissionPayload {
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { formId: string } }
+  { params }: { params: Promise<{ formId: string }> }
 ): Promise<Response> {
   try {
-    const formId = params.formId;
+    const { formId } = await params;
 
     if (!formId) {
       return jsonError('Missing form ID', HTTP_STATUS.BAD_REQUEST);

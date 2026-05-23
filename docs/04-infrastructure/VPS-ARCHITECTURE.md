@@ -1,87 +1,95 @@
 # VPS Architecture — Dragon's Lair
 
-Documento de referencia para el VPS Ubuntu (usuario `vps-dragon`): un solo edge **Traefik v3** en `:80` / `:443`, con **SmileTrip** (n8n), **Opsly** (API + Admin) y **monitoring** conviviendo en redes Docker aisladas donde aplica.
+Documento de referencia para el VPS Ubuntu (`vps-dragon@100.120.151.91`, Tailscale). El control plane de Opsly corre en `/opt/opsly` con Docker Compose y un único edge **Traefik v3** en `:80` / `:443`.
 
-## Servicios corriendo
+## Verified Production Status (2026-05-15)
 
-| Nombre (típico)                   | Imagen / stack                 | Dominio público                                             | Puerto interno              | Red Docker                               |
-| --------------------------------- | ------------------------------ | ----------------------------------------------------------- | --------------------------- | ---------------------------------------- |
-| `traefik`                         | `traefik:v3.0` (platform)      | `https://traefik.${PLATFORM_DOMAIN}` (dashboard, BasicAuth) | 80, 443 (host)              | `traefik-public`                         |
-| Réplicas `app`                    | `${APP_IMAGE}`                 | `https://api.${PLATFORM_DOMAIN}`                            | 3000                        | `traefik-public`, `internal`             |
-| `opsly_admin`                     | `${ADMIN_APP_IMAGE}`           | `https://admin.${PLATFORM_DOMAIN}`                          | 3001                        | `traefik-public`                         |
-| `redis`                           | `redis:7-alpine`               | (solo interno)                                              | 6379                        | `internal`                               |
-| `smiletrip_n8n`                   | SmileTrip compose              | `https://smiletripcare.com`                                 | 5678                        | `default` (SmileTrip) + `traefik-public` |
-| `smiletrip_nginx`                 | (SmileTrip)                    | **STOP** tras migración                                     | 80/443 (cuando está arriba) | SmileTrip                                |
-| Monitoring (Prometheus/Grafana/…) | `smiletrip/monitoring`         | según compose local                                         | según stack                 | `monitoring_mission` (típico)            |
-| Tenants n8n (por slug)            | generados en `~/opsly/tenants` | `https://n8n-{slug}.cloudsysops.com`                        | 5678 (típico)               | `traefik-public` + red del tenant        |
+Este estado fue verificado por SSH/Tailscale y checks HTTP. Refleja lo que está vivo hoy, incluyendo degradaciones.
 
-`PLATFORM_DOMAIN` en producción suele ser `opsly.cloudsysops.com` (API → `api.opsly.cloudsysops.com`, Admin → `admin.opsly.cloudsysops.com`, dashboard Traefik → `traefik.opsly.cloudsysops.com`).
+| Servicio / contenedor | Estado observado | Dominio / endpoint | Nota operativa |
+| --- | --- | --- | --- |
+| `traefik` | Running | `:80`, `:443`, dashboard local `127.0.0.1:8080` | Edge activo. |
+| `opsly_portal` | Healthy | `https://portal.op-sly.com/login` | Responde `200`. |
+| `opsly_admin` | Degraded | `https://admin.op-sly.com` | Público `200`, contenedor `unhealthy`. |
+| `infra-app-1`, `infra-app-2` | Blocked / unhealthy | `https://api.op-sly.com/api/health` | Público `404`; health interno `500`. Logs: conflicto Next.js `ref` vs `slug`. |
+| `opsly_orchestrator` | Healthy | interno `http://127.0.0.1:3011/health` | Responde `{"status":"ok","service":"orchestrator","role":"full","mode":"full-stack"}`. |
+| `opsly_llm_gateway` | Running / health ok | interno `http://127.0.0.1:3010/health` | Responde `{"status":"ok","service":"llm-gateway"}`. |
+| `infra-redis-1` | Healthy | Tailscale bind `100.120.151.91:6379` | Redis/BullMQ vivo. |
+| `opsly_prometheus` | Healthy | local `127.0.0.1:9090` | Métricas activas. |
+| `opsly_grafana` | Healthy | dominio Traefik configurado | Observabilidad activa. |
+| `opsly_cadvisor` | Healthy | internal | Métricas de contenedores. |
+| `opsly_watchtower` | Healthy | internal | Auto-update de imágenes etiquetadas. |
+| `mcp` | Missing in live `docker ps` | declarado en compose | Decidir si levantarlo o retirarlo del estado de prod. |
+| `context-builder` | Missing in live `docker ps` | declarado en compose | Decidir si levantarlo o retirarlo del estado de prod. |
+
+## Tenant stacks observed
+
+Todos estos stacks mostraron n8n y Uptime Kuma corriendo healthy en el VPS:
+
+| Tenant | Contenedores observados |
+| --- | --- |
+| `smiletripcare` | `n8n_smiletripcare`, `uptime_smiletripcare` |
+| `peskids` | `n8n_peskids`, `uptime_peskids` |
+| `localrank` | `n8n_localrank`, `uptime_localrank` |
+| `legalvial` | `n8n_legalvial`, `uptime_legalvial` |
+| `jkboterolabs` | `n8n_jkboterolabs`, `uptime_jkboterolabs` |
+| `intcloudsysops` | `n8n_intcloudsysops`, `uptime_intcloudsysops` |
 
 ## Stacks
 
-| Stack                                  | Ruta en el VPS                                                                                     |
-| -------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| SmileTrip                              | `/home/vps-dragon/smiletrip/` (compose principal en `docker/`)                                     |
-| Monitoring                             | `/home/vps-dragon/smiletrip/monitoring/`                                                           |
-| Opsly                                  | `/home/vps-dragon/opsly/`                                                                          |
-| Copia espejo config Traefik (opcional) | `/home/vps-dragon/traefik/` (sincronizada desde `opsly/infra/traefik/` por el script de migración) |
+| Stack | Ruta en el VPS |
+| --- | --- |
+| Opsly platform | `/opt/opsly` |
+| Platform compose | `/opt/opsly/infra/docker-compose.platform.yml` |
+| Tenant runtime | `/opt/opsly/runtime/tenants/` / runtime mounts según `.env` |
+| Traefik dynamic config | `/opt/opsly/infra/traefik` |
 
 ## Redes Docker
 
-| Red                          | Alcance                                                                                                         |
-| ---------------------------- | --------------------------------------------------------------------------------------------------------------- |
-| `traefik-public`             | **External** — edge compartido; Traefik, API, Admin, n8n (SmileTrip y tenants) publican routers aquí.           |
-| `internal` (platform)        | Bridge **internal** — Redis y tráfico API↔Redis (sin salida a Internet).                                        |
-| Red por defecto de SmileTrip | Tráfico interno del compose SmileTrip (`docker_internal` o nombre del proyecto; según su `docker-compose.yml`). |
-| `monitoring_mission`         | Red interna del stack de monitoring (nombre según su compose).                                                  |
-| Redes por tenant             | Cada tenant puede usar una red dedicada; el router público sigue en `traefik-public`.                           |
+| Red | Alcance |
+| --- | --- |
+| `traefik-public` | **External** — edge compartido; Traefik, portal, admin, API y tenants publican routers aquí. |
+| `infra_internal` | Bridge interno del compose plataforma; Redis, orchestrator, observabilidad y servicios internos. |
+| `infra_redis_edge` | Red edge para Redis/exporters y acceso Tailscale controlado. |
+| Redes por tenant | Cada tenant puede usar red dedicada; el router público sigue en `traefik-public`. |
 
 ## Edge routing (Traefik)
 
-| Dominio                      | Servicio / router                                               | Puerto backend |
-| ---------------------------- | --------------------------------------------------------------- | -------------- |
-| `smiletripcare.com`          | `smiletrip-n8n` (Docker provider)                               | 5678           |
-| `api.${PLATFORM_DOMAIN}`     | API Opsly (`app`)                                               | 3000           |
-| `admin.${PLATFORM_DOMAIN}`   | Opsly Admin (`opsly_admin`)                                     | 3001           |
-| `traefik.${PLATFORM_DOMAIN}` | API interna Traefik + BasicAuth                                 | —              |
-| `n8n-{slug}.cloudsysops.com` | Routers creados al aprovisionar tenant (labels / file provider) | 5678 (típico)  |
+| Dominio | Servicio / router | Puerto backend | Estado |
+| --- | --- | --- | --- |
+| `portal.op-sly.com` | `opsly_portal` | 3002 | Healthy |
+| `admin.op-sly.com` | `opsly_admin` | 3001 | Público `200`, Docker `unhealthy` |
+| `api.op-sly.com` | `app` | 3000 | Degradado; `404` público en `/api/health`, `500` interno |
+| `traefik.${PLATFORM_DOMAIN}` | dashboard Traefik + BasicAuth | api@internal | Activo si router coincide con `.env` |
+| Tenant n8n/uptime hosts | routers por stack tenant | 5678 / 3001 | Healthy para tenants observados |
+
+## Current blockers
+
+1. **API degraded:** corregir conflicto Next.js de rutas dinámicas en `apps/api/app/api`; no mezclar `[ref]` y `[slug]` cuando Next lo interpreta como el mismo path dinámico.
+2. **API routing:** verificar que el router Traefik del servicio `app` apunte consistentemente a `api.op-sly.com`.
+3. **API health:** recrear `app` y validar `/api/health` interno antes de declarar producción sana.
+4. **Admin healthcheck:** revisar por qué `admin.op-sly.com` responde `200` pero Docker marca `opsly_admin` como `unhealthy`.
+5. **MCP / Context Builder:** levantar o retirar del compose según la decisión real de producción.
 
 ## Comandos útiles
 
 ```bash
-# Logs Traefik (desde el repo Opsly)
-cd ~/opsly/infra && docker compose -f docker-compose.platform.yml logs -f traefik
+# Logs Traefik (desde el repo Opsly en VPS)
+cd /opt/opsly/infra && docker compose --env-file /opt/opsly/.env -f docker-compose.platform.yml logs -f traefik
 
-# Estado platform (Traefik + Redis + API + Admin)
-docker compose -f ~/opsly/infra/docker-compose.platform.yml ps
+# Estado platform
+cd /opt/opsly && docker compose --env-file /opt/opsly/.env -f infra/docker-compose.platform.yml ps
 
-# SmileTrip
-cd ~/smiletrip/docker && docker compose ps
+# Health interno orchestrator
+docker exec opsly_orchestrator node -e "fetch('http://127.0.0.1:3011/health').then(async r=>{console.log(r.status); console.log(await r.text())})"
 
-# Monitoring
-cd ~/smiletrip/monitoring && docker compose -f docker-compose.monitoring.yml ps
+# Health interno LLM Gateway
+docker exec opsly_llm_gateway sh -lc "curl -sf http://127.0.0.1:3010/health"
 
-# Nuevo tenant (requiere .env con TENANTS_PATH, TEMPLATE_PATH, etc.; ver scripts/onboard-tenant.sh)
-./scripts/onboard-tenant.sh --slug mi-cliente ...
+# Health API público esperado tras corregir bloqueo
+curl -sS -m 15 -w '\nHTTP_STATUS=%{http_code}\n' https://api.op-sly.com/api/health
 
 # Backup orientativo: volúmenes Redis/LetsEncrypt y directorio tenants
 docker run --rm -v opsly_redis_data:/data -v "$(pwd):/backup" alpine tar czf /backup/redis_data.tgz -C /data .
 # Ajustar nombre del volumen con: docker volume ls | grep redis
 ```
-
-## Rollback rápido (edge)
-
-Si necesitas volver al nginx de SmileTrip en 80/443:
-
-```bash
-docker stop traefik
-docker start smiletrip_nginx
-```
-
-(Primero Traefik para liberar :80/:443; si no, nginx no podrá enlazar los puertos.)
-
-`smiletrip_nginx` se **detiene** en la migración pero no se elimina (`docker rm`), precisamente para permitir este rollback.
-
-## Migración automatizada
-
-Ver `scripts/migrate-to-traefik.sh` (argumentos `--dry-run`, `--yes`). Genera `docker-compose.traefik.generated.yml` junto al compose de SmileTrip para labels Traefik **sin editar** el `docker-compose.yml` original del proyecto SmileTrip.
