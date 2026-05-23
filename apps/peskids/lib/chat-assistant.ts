@@ -14,10 +14,18 @@ No inventes precios ni horarios exactos. Si piden reservar, invita al formulario
 Nunca prometas cupo sin confirmación humana. Si no sabes algo, di que un asesor dará seguimiento.`
 
 function llmGatewayUrl(): string {
-  const base =
-    process.env.LLM_GATEWAY_URL ||
-    process.env.OPSLY_LLM_GATEWAY_URL ||
-    'http://127.0.0.1:3010'
+  const base = process.env.LLM_GATEWAY_URL?.trim() || process.env.OPSLY_LLM_GATEWAY_URL?.trim() || ''
+  if (!base) {
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error('LLM_GATEWAY_URL is required in production (set in Doppler prd, e.g. http://172.17.0.1:3010 on VPS)')
+    }
+    return 'http://127.0.0.1:3010'
+  }
+  if (base.includes('localhost') || base.includes('127.0.0.1')) {
+    if (process.env.NODE_ENV === 'production' && !base.includes('172.17.0.1')) {
+      throw new Error('LLM_GATEWAY_URL must not use localhost in production')
+    }
+  }
   return base.replace(/\/$/, '')
 }
 

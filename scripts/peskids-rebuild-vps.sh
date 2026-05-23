@@ -53,6 +53,8 @@ docker rm peskids 2>/dev/null || true
 ENV_FILE="$(mktemp)"
 trap 'rm -f "$ENV_FILE"' EXIT
 doppler secrets download --no-file --format docker --project ops-intcloudsysops --config prd >"$ENV_FILE"
+source /opt/opsly/scripts/lib/peskids-docker-env-filter.sh
+filter_peskids_docker_env "$ENV_FILE"
 docker run -d --name peskids --restart unless-stopped \
   --network traefik-public \
   -p 127.0.0.1:3004:3004 \

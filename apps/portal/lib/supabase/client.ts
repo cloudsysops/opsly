@@ -9,12 +9,16 @@ export function createClient() {
     const fallbackAnon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder';
     return createBrowserClient(fallbackUrl, fallbackAnon, {
       auth: {
+        detectSessionInUrl: true,
+        flowType: 'pkce',
         experimental: { passkey: true },
       },
     });
   }
   return createBrowserClient(url, anon, {
     auth: {
+      detectSessionInUrl: true,
+      flowType: 'pkce',
       experimental: { passkey: true },
     },
   });

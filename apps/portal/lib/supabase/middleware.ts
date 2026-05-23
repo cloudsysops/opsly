@@ -40,6 +40,11 @@ export async function updateSession(request: NextRequest): Promise<NextResponse>
   const isLogin = pathname === '/login' || pathname.startsWith('/login/');
   const isInvite = pathname.startsWith('/invite/');
   const isOnboarding = pathname.startsWith('/onboarding/');
+  const isAuthPublic =
+    pathname.startsWith('/auth/') || pathname === '/update-password';
+  const hasRecoveryQuery =
+    Boolean(request.nextUrl.searchParams.get('code')) ||
+    request.nextUrl.searchParams.get('type') === 'recovery';
 
   const isAdmin = pathname.startsWith('/admin');
   const hasDemoSession =
@@ -57,6 +62,7 @@ export async function updateSession(request: NextRequest): Promise<NextResponse>
     !hasDemoSession &&
     !isLogin &&
     !isInvite &&
+    !isAuthPublic &&
     (pathname.startsWith('/dashboard') || isOnboarding || isAdmin)
   ) {
     const redirectUrl = request.nextUrl.clone();
@@ -64,7 +70,7 @@ export async function updateSession(request: NextRequest): Promise<NextResponse>
     return NextResponse.redirect(redirectUrl);
   }
 
-  if ((user || hasDemoSession) && isLogin) {
+  if ((user || hasDemoSession) && isLogin && !hasRecoveryQuery) {
     const redirectUrl = request.nextUrl.clone();
     redirectUrl.pathname = '/dashboard';
     return NextResponse.redirect(redirectUrl);

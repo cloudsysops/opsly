@@ -5,6 +5,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { PeskidsLogo } from '@/components/brand/peskids-logo'
 import { Button } from '@/components/ui/button'
+import { buildRecoveryRedirectTo } from '@/lib/auth-recovery'
 import { createClient } from '@/lib/supabase-browser'
 
 export default function AdminLoginPage(): React.ReactElement {
@@ -15,6 +16,36 @@ export default function AdminLoginPage(): React.ReactElement {
   const [passkeyLoading, setPasskeyLoading] = useState(false)
   const [error, setError] = useState('')
   const [passkeyError, setPasskeyError] = useState('')
+  const [resetSent, setResetSent] = useState(false)
+  const [resetLoading, setResetLoading] = useState(false)
+
+  async function handleForgotPassword(): Promise<void> {
+    const trimmed = email.trim()
+    if (!trimmed) {
+      setError('Escribe tu email primero.')
+      return
+    }
+    setResetLoading(true)
+    setError('')
+    setResetSent(false)
+    try {
+      const supabase = createClient()
+      const origin =
+        typeof window !== 'undefined' ? window.location.origin : 'https://peskids.op-sly.com'
+      const { error: resetError } = await supabase.auth.resetPasswordForEmail(trimmed, {
+        redirectTo: buildRecoveryRedirectTo(origin),
+      })
+      if (resetError) {
+        setError(resetError.message)
+        return
+      }
+      setResetSent(true)
+    } catch {
+      setError('No se pudo enviar el correo de recuperación.')
+    } finally {
+      setResetLoading(false)
+    }
+  }
 
   async function handleSubmit(e: React.FormEvent): Promise<void> {
     e.preventDefault()
@@ -101,7 +132,21 @@ export default function AdminLoginPage(): React.ReactElement {
             />
           </label>
           {error ? <p className="text-sm text-red-600">{error}</p> : null}
+          {resetSent ? (
+            <p className="text-sm text-pk-mint">
+              Revisa tu correo (y spam). El enlace abre Peskids para definir una contraseña nueva.
+            </p>
+          ) : null}
           {passkeyError ? <p className="text-sm text-red-600">{passkeyError}</p> : null}
+          <Button
+            type="button"
+            variant="ghost"
+            className="w-full text-sm"
+            disabled={resetLoading}
+            onClick={() => void handleForgotPassword()}
+          >
+            {resetLoading ? 'Enviando enlace…' : 'Olvidé mi contraseña'}
+          </Button>
           <Button type="submit" className="w-full" disabled={loading}>
             {loading ? (
               <>

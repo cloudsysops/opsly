@@ -1,0 +1,30 @@
+# Opsly — Auth URL config (push to linked project: opsly-prod)
+# Apply: supabase config push --yes
+# Docs: https://supabase.com/docs/guides/auth/redirect-urls
+
+project_id = "jkwykpldnitavhmtuzmo"
+
+# Restore PostgREST exposure (config push must not drop platform).
+[api]
+enabled = true
+schemas = ["public", "graphql_public", "platform"]
+
+[auth]
+enabled = true
+# Default for Auth emails when redirect_to is omitted (multi-tenant: portal + tenants).
+site_url = "https://portal.op-sly.com"
+additional_redirect_urls = [
+  "https://peskids.op-sly.com/auth/recovery",
+  "https://peskids.op-sly.com/auth/callback",
+  "https://peskids.op-sly.com/admin/update-password",
+  "https://portal.op-sly.com/auth/recovery",
+  "https://portal.op-sly.com/auth/callback",
+  "https://portal.op-sly.com/update-password",
+  "https://admin.op-sly.com/auth/recovery",
+  "https://admin.op-sly.com/update-password",
+  "https://portal.op-sly.com/**",
+  "https://admin.op-sly.com/**",
+  "http://localhost:3000/**",
+  "http://localhost:3001/**",
+  "http://localhost:3002/**",
+]

@@ -61,9 +61,18 @@ export async function POST(
       reply_text: replyText.trim(),
     })
 
-    // Emit event to Opsly event bus
+    const rawBus = process.env.OPSLY_EVENT_BUS_URL?.trim() ?? ''
+    const eventBus = rawBus
+      ? rawBus.endsWith('/events')
+        ? rawBus
+        : `${rawBus.replace(/\/$/, '')}/events`
+      : ''
+
     try {
-      await fetch(process.env.NEXT_PUBLIC_OPSLY_EVENT_BUS_URL + '/events', {
+      if (!eventBus || eventBus.includes('localhost') || eventBus.includes('127.0.0.1')) {
+        throw new Error('OPSLY_EVENT_BUS_URL not configured for production')
+      }
+      await fetch(eventBus, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

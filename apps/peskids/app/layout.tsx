@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { Caveat_Brush, JetBrains_Mono, Nunito } from 'next/font/google'
+import { AuthSessionRedirect } from '@/components/auth/auth-session-redirect'
 import { PeskidsClientShell } from '@/components/chat/peskids-client-shell'
 import './globals.css'
 
@@ -41,6 +42,7 @@ export default function RootLayout({
       className={`${fontNunito.variable} ${fontBrush.variable} ${fontMono.variable}`}
     >
       <body>
+        <AuthSessionRedirect />
         <PeskidsClientShell>{children as React.ReactNode}</PeskidsClientShell>
       </body>
     </html>

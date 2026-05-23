@@ -108,7 +108,7 @@ PLATFORM_DOMAIN="${PLATFORM_DOMAIN:-op-sly.com}"
 set_secret OPSLY_API_BASE_URL "https://api.${PLATFORM_DOMAIN}"
 # Server routes use full URL (lib/events.ts); one route appends /events to NEXT_PUBLIC base.
 set_secret OPSLY_EVENT_BUS_URL "http://orchestrator:3011/events"
-set_secret NEXT_PUBLIC_OPSLY_EVENT_BUS_URL "http://orchestrator:3011"
+# Do not set NEXT_PUBLIC_OPSLY_EVENT_BUS_URL to Docker hostnames — unusable from browsers.
 
 # --- n8n (public webhook base; auth uses TENANT_PESKIDS_* on VPS compose) ---
 set_secret N8N_WEBHOOK_BASE_URL "https://n8n-peskids.${PLATFORM_DOMAIN}/webhook"
