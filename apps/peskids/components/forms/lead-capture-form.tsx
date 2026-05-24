@@ -36,20 +36,36 @@ export function LeadCaptureForm(): React.ReactElement {
     setError('')
 
     try {
-      const response = await fetch('/api/leads', {
+      // Map form fields to N8N lead capture webhook schema
+      const webhookPayload = {
+        full_name: formData.name,
+        email: formData.email,
+        phone: formData.phone || null,
+        source: 'web',
+        class_modality: formData.class_modality || null,
+        neighborhood: formData.neighborhood || null,
+        grade_interested: formData.grade_interested || null,
+        referral_source: formData.referral_source || null,
+      }
+
+      // Post to N8N webhook (lead-capture workflow)
+      const webhookUrl = process.env.NEXT_PUBLIC_N8N_LEAD_WEBHOOK || 'https://peskids.op-sly.com/webhooks/lead-capture'
+      const response = await fetch(webhookUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(webhookPayload),
       })
 
       if (!response.ok) {
-        throw new Error('Failed to submit form')
+        const errorText = await response.text()
+        console.error('N8N webhook error:', response.status, errorText)
+        throw new Error(`Webhook failed: ${response.status}`)
       }
 
       router.push('/thanks')
     } catch (err) {
       setError('No pudimos enviar tu solicitud. Intenta de nuevo en un momento.')
-      console.error(err)
+      console.error('Form submission error:', err)
     } finally {
       setLoading(false)
     }
