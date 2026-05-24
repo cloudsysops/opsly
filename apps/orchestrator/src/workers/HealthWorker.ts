@@ -83,14 +83,38 @@ async function resetFailures(redis: ReturnType<typeof createClient>, key: string
   await redis.del(key);
 }
 
-async function tryDockerRestart(slug: string): Promise<boolean> {
-  const { execa } = await import('execa');
-  try {
-    await execa('docker', ['compose', `--project-name=tenant_${slug}`, 'restart']);
-    return true;
-  } catch {
-    return false;
+const RESTARTABLE_SERVICE_CONTAINERS: Record<string, string> = {
+  n8n: 'n8n',
+  uptime: 'uptime',
+};
+
+export function buildTenantRestartAttempts(slug: string, svc: string): string[][] {
+  const containerPrefix = RESTARTABLE_SERVICE_CONTAINERS[svc];
+  const attempts: string[][] = [];
+
+  if (containerPrefix) {
+    attempts.push(['restart', `${containerPrefix}_${slug}`]);
+    attempts.push(['compose', `--project-name=tenant_${slug}`, 'restart', svc]);
   }
+
+  attempts.push(['compose', `--project-name=tenant_${slug}`, 'restart']);
+  return attempts;
+}
+
+export async function tryDockerRestart(slug: string, svc: string): Promise<boolean> {
+  const { execa } = await import('execa');
+  const attempts = buildTenantRestartAttempts(slug, svc);
+
+  for (const args of attempts) {
+    try {
+      await execa('docker', args);
+      return true;
+    } catch {
+      continue;
+    }
+  }
+
+  return false;
 }
 
 async function openGitHubIssue(slug: string, details: string): Promise<void> {
@@ -153,11 +177,11 @@ async function checkTenant(redis: ReturnType<typeof createClient>, slug: string)
         await redis.set(lockKey, '1', { EX: RESTART_LOCK_TTL });
         await notifyDiscord(
           `⚠️ Tenant unreachable — attempting restart`,
-          `**${slug}** / \`${svc}\` falló ${failures} veces consecutivas.\nURL: ${url}\nIntentando \`docker compose restart\`…`,
+          `**${slug}** / \`${svc}\` falló ${failures} veces consecutivas.\nURL: ${url}\nIntentando \`docker restart\`…`,
           'warning'
         );
 
-        const restarted = await tryDockerRestart(slug);
+        const restarted = await tryDockerRestart(slug, svc);
         if (restarted) {
           await notifyDiscord(
             `🔄 Restart triggered for ${slug}`,
