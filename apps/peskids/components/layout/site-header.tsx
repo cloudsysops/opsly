@@ -26,6 +26,12 @@ export function SiteHeader({ variant = 'marketing' }: SiteHeaderProps): React.Re
                 Familias
               </Link>
             </nav>
+            <Link
+              href="/familias/login"
+              className="hidden h-10 items-center justify-center rounded-full border border-pk-border bg-white px-4 text-xs font-bold text-pk-ink transition hover:border-pk-primary/40 hover:bg-pk-snow sm:inline-flex"
+            >
+              Acceso familias
+            </Link>
             <WhatsAppLink variant="button" label="WhatsApp" className="shrink-0" />
             <a
               href="#contacto"

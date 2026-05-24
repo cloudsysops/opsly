@@ -61,6 +61,14 @@ export async function POST(
       reply_text: replyText.trim(),
     })
 
+    if (sendResult.ok) {
+      await supabase
+        .from('messages')
+        .update({ status: 'sent' })
+        .eq('id', messageId)
+        .eq('tenant_id', tenantId)
+    }
+
     const rawBus = process.env.OPSLY_EVENT_BUS_URL?.trim() ?? ''
     const eventBus = rawBus
       ? rawBus.endsWith('/events')

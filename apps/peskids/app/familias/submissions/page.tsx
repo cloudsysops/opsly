@@ -2,8 +2,10 @@
 
 import { useCallback, useEffect, useState } from 'react'
 import { Loader2 } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 import { SubmissionsDashboard } from '@/components/dashboards/submissions-dashboard'
 import { Button } from '@/components/ui/button'
+import { createClient } from '@/lib/supabase-browser'
 
 interface FormSubmissionSummary {
   formId: string
@@ -14,9 +16,11 @@ interface FormSubmissionSummary {
 }
 
 export default function FamiliesSubmissionsPage(): React.ReactElement {
+  const router = useRouter()
   const [submissions, setSubmissions] = useState<FormSubmissionSummary[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [authChecked, setAuthChecked] = useState(false)
 
   const fetchSubmissions = useCallback(async (): Promise<void> => {
     try {
@@ -34,19 +38,48 @@ export default function FamiliesSubmissionsPage(): React.ReactElement {
   }, [])
 
   useEffect(() => {
-    void fetchSubmissions()
-  }, [fetchSubmissions])
+    const supabase = createClient()
+    void (async () => {
+      try {
+        const { data } = await supabase.auth.getSession()
+        if (!data.session?.user) {
+          router.replace('/familias/login?next=%2Ffamilias%2Fsubmissions')
+          return
+        }
+        const user = data.session.user
+        const metadata = {
+          ...((user.app_metadata ?? {}) as Record<string, unknown>),
+          ...((user.user_metadata ?? {}) as Record<string, unknown>),
+        }
+        if (metadata.role !== 'family' || metadata.tenant_slug !== 'peskids') {
+          await supabase.auth.updateUser({
+            data: {
+              role: 'family',
+              tenant_slug: 'peskids',
+            },
+          })
+        }
+        setAuthChecked(true)
+        void fetchSubmissions()
+      } catch (err) {
+        console.error(err)
+        setError('No se pudo validar la sesión de familia.')
+        setAuthChecked(true)
+        setLoading(false)
+      }
+    })()
+  }, [fetchSubmissions, router])
 
   const handleViewSubmission = (submissionId: string): void => {
     console.log('View submission:', submissionId)
     // TODO: Navigate to submission detail view
   }
 
-  if (loading) {
+  if (loading || !authChecked) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-pk-bg">
         <Loader2 className="h-10 w-10 animate-spin text-pk-primary" aria-hidden />
-        <p className="text-sm text-pk-sub">Cargando tus respuestas…</p>
+        <p className="text-sm text-pk-sub">Validando acceso de familia…</p>
       </div>
     )
   }

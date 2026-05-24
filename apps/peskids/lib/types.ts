@@ -190,5 +190,8 @@ export interface DashboardData {
   recent_feedback: Pick<Database['public']['Tables']['feedback']['Row'], 'id' | 'child_name' | 'satisfaction' | 'suggestion'>[]
   pending_followups_count: number
   pending_followups: Pick<Database['public']['Tables']['followups']['Row'], 'id' | 'contact_id' | 'due_date' | 'type'>[]
-  recent_messages: Pick<Database['public']['Tables']['messages']['Row'], 'id' | 'source' | 'sender_name' | 'sender_contact' | 'message_text' | 'created_at'>[]
+  recent_messages: Pick<
+    Database['public']['Tables']['messages']['Row'],
+    'id' | 'source' | 'sender_name' | 'sender_contact' | 'message_text' | 'created_at' | 'status'
+  >[]
 }

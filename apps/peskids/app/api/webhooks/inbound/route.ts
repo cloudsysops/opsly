@@ -6,6 +6,7 @@ import { storeDraftReply, storeInboundMessage, storeOutboundMessage } from '@/li
 import { getPeskidsWhatsAppReplyMode, shouldAutoReplyWhatsApp } from '@/lib/whatsapp-reply-mode'
 import { buildPeskidsIntakeTurn } from '@/lib/peskids-intake'
 import { submitLeadFromIntake } from '@/lib/peskids-lead-from-intake'
+import { supabaseServer } from '@/lib/supabase'
 
 type InboundSource = 'whatsapp' | 'instagram' | 'web'
 
@@ -119,6 +120,15 @@ export async function POST(req: NextRequest) {
       senderName: 'Asistente Peskids',
       status: autoReplyEnabled && sendResult.ok ? 'sent' : 'pending',
     })
+
+    if (autoReplyEnabled && sendResult.ok) {
+      const supabase = supabaseServer()
+      await supabase
+        .from('messages')
+        .update({ status: 'sent' })
+        .eq('id', message.id)
+        .eq('tenant_id', process.env.NEXT_PUBLIC_TENANT_ID || 'peskids')
+    }
 
     if (intake.stage === 'handoff') {
       void submitLeadFromIntake(intake.profile)

@@ -8,6 +8,16 @@ export type PortalInviteParams = {
   slug: string;
 };
 
+function isProductionRuntime(): boolean {
+  const nodeEnv = process.env.NODE_ENV?.trim().toLowerCase();
+  if (nodeEnv === 'production') {
+    return true;
+  }
+
+  const dopplerConfig = process.env.DOPPLER_CONFIG?.trim().toLowerCase();
+  return dopplerConfig === 'prd' || dopplerConfig === 'prod' || dopplerConfig === 'production';
+}
+
 const PORTAL_INVITE_HTML_TEMPLATE = `<!DOCTYPE html>
 <html lang="es">
 <head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><title>Opsly</title></head>
@@ -48,15 +58,19 @@ function requireEnv(name: string): string {
 }
 
 export function getPortalSiteUrl(): string {
-  const explicit = process.env.PORTAL_SITE_URL?.trim();
+  const explicit =
+    process.env.PORTAL_SITE_URL?.trim() ?? process.env.NEXT_PUBLIC_PORTAL_URL?.trim();
   if (explicit && explicit.length > 0) {
     return explicit.replace(/\/$/, '');
+  }
+  if (!isProductionRuntime()) {
+    return 'http://localhost:3002';
   }
   const domain = process.env.PLATFORM_DOMAIN?.trim() ?? process.env.PLATFORM_BASE_DOMAIN?.trim();
   if (domain && domain.length > 0) {
     return `https://portal.${domain}`;
   }
-  throw new Error('PORTAL_SITE_URL or PLATFORM_DOMAIN is required for portal invites');
+  return 'https://portal.op-sly.com';
 }
 
 function parseInviteTokenFromActionLink(actionLink: string): string | null {

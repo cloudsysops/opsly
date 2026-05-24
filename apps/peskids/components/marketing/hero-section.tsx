@@ -2,7 +2,6 @@ import Link from 'next/link'
 import { PeskidsBrush, StarBurst, WiggleLine } from '@/components/brand/peskids-logo'
 import { HeroChatCard } from '@/components/chat/hero-chat-card'
 import { HeroChatCta } from '@/components/chat/hero-chat-cta'
-import { WhatsAppLink } from '@/components/contact/whatsapp-link'
 import { peskidsColorTokens } from '@/lib/tokens'
 
 const stats = [
@@ -47,19 +46,14 @@ export function HeroSection(): React.ReactElement {
 
           <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
             <HeroChatCta />
-            <WhatsAppLink
-              variant="hero"
-              label="Escribir por WhatsApp"
-              prefill="Hola Peskids, quiero reservar una clase de prueba de natación."
-            />
-          </div>
-          <p className="mt-3 text-sm text-pk-sub">
-            <Link href="/familias" className="font-semibold text-pk-primary hover:underline">
+            <Link
+              href="/familias"
+              className="inline-flex h-12 items-center justify-center gap-2 rounded-full border border-pk-border bg-pk-surface px-6 text-sm font-bold text-pk-ink transition hover:border-pk-primary/40 hover:bg-pk-snow"
+            >
               Portal de familias
             </Link>
-            {' · '}
-            Reserva guiada por chat en menos de 2 minutos
-          </p>
+          </div>
+          <p className="mt-3 text-sm text-pk-sub">Reserva guiada por chat en menos de 2 minutos.</p>
           <div className="mt-10 flex flex-wrap gap-10">
             {stats.map((s) => (
               <div key={s.label}>

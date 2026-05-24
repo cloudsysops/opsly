@@ -39,6 +39,7 @@ export async function GET(
 
   return NextResponse.json({
     inbound,
+    status: inbound.status ?? 'pending',
     suggested_reply: latestDraft?.message_text ?? null,
     draft_id: latestDraft?.id ?? null,
   })

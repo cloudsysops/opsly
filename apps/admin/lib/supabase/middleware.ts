@@ -23,9 +23,10 @@ export async function updateSession(request: NextRequest): Promise<NextResponse>
   if (!url || !anon) {
     const pathname = request.nextUrl.pathname;
     const isLogin = pathname === '/login' || pathname.startsWith('/login/');
+    const isInvite = pathname.startsWith('/invite/');
     const isAuthPublic =
       pathname.startsWith('/auth/') || pathname === '/update-password';
-    if (!isLogin && !isAuthPublic) {
+    if (!isLogin && !isInvite && !isAuthPublic) {
       return redirectToLogin(request);
     }
     return supabaseResponse;
@@ -56,9 +57,10 @@ export async function updateSession(request: NextRequest): Promise<NextResponse>
 
   const pathname = request.nextUrl.pathname;
   const isLogin = pathname === '/login' || pathname.startsWith('/login/');
+  const isInvite = pathname.startsWith('/invite/');
   const isAuthPublic =
     pathname.startsWith('/auth/') || pathname === '/update-password';
-  if (!user && !isLogin && !isAuthPublic) {
+  if (!user && !isLogin && !isInvite && !isAuthPublic) {
     return redirectToLogin(request);
   }
 

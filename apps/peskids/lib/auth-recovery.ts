@@ -1,5 +1,11 @@
 /** Recovery email targets and cross-app routing (shared Supabase project). */
 
+import {
+  ADMIN_APP_ORIGIN,
+  PESKIDS_APP_ORIGIN,
+  PORTAL_APP_ORIGIN,
+} from './app-url'
+
 export type RecoveryApp = 'peskids_staff' | 'portal' | 'platform_admin'
 
 export type RecoveryTarget = {
@@ -9,12 +15,9 @@ export type RecoveryTarget = {
   updatePasswordPath: string
 }
 
-const PESKIDS_ORIGIN =
-  process.env.NEXT_PUBLIC_PESKIDS_SITE_URL?.trim() || 'https://peskids.op-sly.com'
-const PORTAL_ORIGIN =
-  process.env.NEXT_PUBLIC_PORTAL_URL?.trim() || 'https://portal.op-sly.com'
-const ADMIN_ORIGIN =
-  process.env.NEXT_PUBLIC_ADMIN_URL?.trim() || 'https://admin.op-sly.com'
+const PESKIDS_ORIGIN = PESKIDS_APP_ORIGIN
+const PORTAL_ORIGIN = PORTAL_APP_ORIGIN
+const ADMIN_ORIGIN = ADMIN_APP_ORIGIN
 
 const PESKIDS_STAFF_ROLES = new Set(['owner', 'admin', 'support', 'teacher'])
 
@@ -84,6 +87,59 @@ export function recoveryTargetFromMetadata(meta: Record<string, unknown>): Recov
 export function buildRecoveryRedirectTo(origin: string): string {
   const base = origin.replace(/\/$/, '')
   return `${base}/auth/recovery`
+}
+
+function inviteAuthParams(url: URL): URLSearchParams | null {
+  const hash = url.hash.replace(/^#/, '')
+  if (!hash) {
+    return null
+  }
+  return new URLSearchParams(hash)
+}
+
+/** Supabase invite callbacks (query or hash), including token-based links. */
+export function isInviteLink(url: URL): boolean {
+  if (url.searchParams.get('type')?.toLowerCase() === 'invite') {
+    return true
+  }
+
+  const token =
+    url.searchParams.get('token') ||
+    url.searchParams.get('token_hash') ||
+    url.searchParams.get('tokenHash')
+  if (token && url.searchParams.get('email')) {
+    return true
+  }
+
+  const params = inviteAuthParams(url)
+  if (!params) {
+    return false
+  }
+
+  if (params.get('type')?.toLowerCase() === 'invite') {
+    return true
+  }
+
+  const hashToken =
+    params.get('token') || params.get('token_hash') || params.get('tokenHash')
+  return Boolean(hashToken && params.get('email'))
+}
+
+export function inviteActivationPathFromUrl(url: URL, fallbackOrigin: string): string {
+  const base = fallbackOrigin.replace(/\/$/, '')
+  const params = inviteAuthParams(url)
+  const token =
+    url.searchParams.get('token') ||
+    url.searchParams.get('token_hash') ||
+    url.searchParams.get('tokenHash') ||
+    params?.get('token') ||
+    params?.get('token_hash') ||
+    params?.get('tokenHash') ||
+    ''
+  const email = url.searchParams.get('email') || params?.get('email') || ''
+  const tokenPart = token ? `/${encodeURIComponent(token)}` : ''
+  const emailPart = email ? `?email=${encodeURIComponent(email)}` : ''
+  return `${base}/invite${tokenPart}${emailPart}`
 }
 
 export function currentPeskidsRecoveryTarget(): RecoveryTarget {

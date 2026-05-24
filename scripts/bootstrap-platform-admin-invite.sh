@@ -70,6 +70,49 @@ echo "  superuser:    ${SUPERUSER}"
 echo "  doppler:      ${PROJECT}/${CONFIG}"
 echo "  dry-run:      ${DRY_RUN}"
 
+runtime_mode() {
+  local explicit="${OPSLY_APP_URL_MODE:-${OPSLY_RUNTIME_ENV:-${DOPPLER_CONFIG:-${NODE_ENV:-}}}}"
+  explicit="${explicit,,}"
+  case "$explicit" in
+    prod | prd | production)
+      echo "production"
+      ;;
+    dev | development | local | "")
+      echo "local"
+      ;;
+    *)
+      echo "local"
+      ;;
+  esac
+}
+
+resolve_site_url() {
+  local local_port="$1"
+  local env_name="$2"
+  local prod_subdomain="$3"
+  local fallback_prod="$4"
+  local public_env_name="NEXT_PUBLIC_${env_name}"
+  local explicit="${!env_name:-${!public_env_name:-}}"
+  explicit="${explicit%/}"
+  if [[ -n "$explicit" ]]; then
+    echo "$explicit"
+    return 0
+  fi
+
+  if [[ "$(runtime_mode)" == "local" ]]; then
+    echo "http://localhost:${local_port}"
+    return 0
+  fi
+
+  local domain="${PLATFORM_DOMAIN:-${PLATFORM_BASE_DOMAIN:-}}"
+  if [[ -n "$domain" ]]; then
+    echo "https://${prod_subdomain}.${domain}"
+    return 0
+  fi
+
+  echo "$fallback_prod"
+}
+
 export BOOTSTRAP_EMAIL="${EMAIL}"
 export BOOTSTRAP_TENANT_SLUG="${TENANT_SLUG}"
 export BOOTSTRAP_ROLE="${ROLE}"
@@ -90,10 +133,46 @@ if (!url || !serviceKey) {
   process.exit(1);
 }
 
-const portalBase = (process.env.PORTAL_SITE_URL || '').replace(/\/$/, '')
-  || (process.env.PLATFORM_DOMAIN
-    ? `https://portal.${process.env.PLATFORM_DOMAIN.trim()}`
-    : 'https://portal.op-sly.com');
+function runtimeMode() {
+  const explicit = (
+    process.env.OPSLY_APP_URL_MODE ||
+    process.env.OPSLY_RUNTIME_ENV ||
+    process.env.DOPPLER_CONFIG ||
+    process.env.NODE_ENV ||
+    ''
+  )
+    .trim()
+    .toLowerCase();
+  if (explicit === 'prod' || explicit === 'prd' || explicit === 'production') {
+    return 'production';
+  }
+  return 'local';
+}
+
+function resolveSiteUrl(localPort, explicitEnvName, prodSubdomain, fallbackProd) {
+  const explicit = (process.env[explicitEnvName] || '').trim().replace(/\/$/, '');
+  if (explicit) {
+    return explicit;
+  }
+  if (runtimeMode() === 'local') {
+    return `http://localhost:${localPort}`;
+  }
+  const domain = (process.env.PLATFORM_DOMAIN || process.env.PLATFORM_BASE_DOMAIN || '').trim();
+  if (domain) {
+    return `https://${prodSubdomain}.${domain}`;
+  }
+  return fallbackProd;
+}
+
+const portalBase = resolveSiteUrl(3002, 'PORTAL_SITE_URL', 'portal', 'https://portal.op-sly.com');
+const adminBase = resolveSiteUrl(3001, 'ADMIN_SITE_URL', 'admin', 'https://admin.op-sly.com');
+const peskidsBase = resolveSiteUrl(
+  3004,
+  'NEXT_PUBLIC_PESKIDS_SITE_URL',
+  'peskids',
+  'https://peskids.op-sly.com'
+);
+const inviteBase = tenantSlug === 'peskids' ? peskidsBase : portalBase;
 
 const displayName =
   tenantSlug === 'peskids' && role === 'owner' ? 'Peskids Owner' : 'Platform Admin';
@@ -152,7 +231,7 @@ async function inviteUser() {
     body: JSON.stringify({
       email,
       data: userMetadata,
-      redirect_to: `${portalBase}/invite`,
+      redirect_to: `${inviteBase}/invite`,
     }),
   });
   const body = await res.json();
@@ -175,7 +254,7 @@ async function generateInviteLink() {
       email,
       options: {
         data: userMetadata,
-        redirect_to: `${portalBase}/invite`,
+        redirect_to: `${inviteBase}/invite`,
       },
     }),
   });
@@ -248,11 +327,6 @@ function parseToken(actionLink) {
     }
   }
 
-  const adminBase = (process.env.ADMIN_SITE_URL || '').replace(/\/$/, '')
-    || (process.env.PLATFORM_DOMAIN
-      ? `https://admin.${process.env.PLATFORM_DOMAIN.trim()}`
-      : 'https://admin.op-sly.com');
-
   if (!dryRun) {
     if (existing) {
       const recoveryPayload = await generateRecoveryLink(adminBase);
@@ -273,7 +347,7 @@ function parseToken(actionLink) {
       if (actionLink) {
         const token = parseToken(actionLink);
         if (token) {
-          const manual = `${portalBase}/invite/${encodeURIComponent(token)}?email=${encodeURIComponent(email)}`;
+          const manual = `${inviteBase}/invite/${encodeURIComponent(token)}?email=${encodeURIComponent(email)}`;
           console.log('');
           console.log('Enlace manual invite (si el correo no llega):');
           console.log(manual);
@@ -286,9 +360,9 @@ function parseToken(actionLink) {
   console.log('Acceso esperado tras activar contraseña:');
   console.log(`  admin:  ${adminBase}/login  ← superuser / plataforma`);
   if (isSuperuser || tenantSlug === 'peskids') {
-    console.log('  peskids: https://peskids.op-sly.com/admin/login');
+    console.log(`  peskids: ${peskidsBase}/admin/login`);
   }
-  console.log(`  portal (${tenantSlug}): https://portal.op-sly.com/login`);
+  console.log(`  portal (${tenantSlug}): ${portalBase}/login`);
 })().catch((e) => {
   console.error('FAIL:', e.message || e);
   process.exit(1);

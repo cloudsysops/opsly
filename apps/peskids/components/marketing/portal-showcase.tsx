@@ -119,6 +119,14 @@ export function PortalShowcase(): React.ReactElement {
                 <ChevronRight className="h-4 w-4" aria-hidden />
               </Link>
               <Link
+                href="/familias/login"
+                className={cn(
+                  'inline-flex h-12 items-center justify-center gap-2 rounded-full border border-pk-primary/20 bg-white px-6 text-sm font-bold text-pk-ink transition-all duration-150 hover:border-pk-primary/40 hover:bg-pk-snow'
+                )}
+              >
+                Acceso familias
+              </Link>
+              <Link
                 href="/admin"
                 className={cn(
                   'inline-flex h-12 items-center justify-center gap-2 rounded-full border border-pk-border bg-pk-surface px-6 text-sm font-bold text-pk-ink transition-all duration-150 hover:border-pk-primary/40 hover:bg-pk-snow'

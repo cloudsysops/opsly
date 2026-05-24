@@ -58,6 +58,17 @@ export function DashboardView({
     )
   }, [data.new_leads, search])
 
+  const messageSummary = useMemo(() => {
+    return data.recent_messages.reduce(
+      (acc, msg) => {
+        const status = msg.status ?? 'pending'
+        acc[status] = (acc[status] ?? 0) + 1
+        return acc
+      },
+      { pending: 0, approved: 0, sent: 0 } as Record<'pending' | 'approved' | 'sent', number>
+    )
+  }, [data.recent_messages])
+
   return (
     <AdminShell lastUpdated={lastUpdated} onRefresh={onRefresh} refreshing={refreshing}>
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
@@ -75,6 +86,24 @@ export function DashboardView({
             className="pk-input"
           />
         </label>
+      </div>
+
+      <div className="mb-6 grid gap-3 sm:grid-cols-3">
+        <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-amber-700">Pendientes</p>
+          <p className="mt-1 text-2xl font-bold tabular-nums text-amber-900">{messageSummary.pending}</p>
+          <p className="text-xs text-amber-800/80">Mensajes esperando respuesta o revisión.</p>
+        </div>
+        <div className="rounded-2xl border border-violet-200 bg-violet-50 px-4 py-3">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-violet-700">Aprobados</p>
+          <p className="mt-1 text-2xl font-bold tabular-nums text-violet-900">{messageSummary.approved}</p>
+          <p className="text-xs text-violet-800/80">Listos para salir por el canal externo.</p>
+        </div>
+        <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-emerald-700">Enviados</p>
+          <p className="mt-1 text-2xl font-bold tabular-nums text-emerald-900">{messageSummary.sent}</p>
+          <p className="text-xs text-emerald-800/80">Conversaciones ya resueltas o cerradas.</p>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">

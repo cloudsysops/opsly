@@ -42,9 +42,10 @@ export async function storeInboundMessage(
       message_text: input.message_text,
       external_id: input.external_id,
       direction: 'inbound',
+      status: 'pending',
       ai_generated: false,
     })
-    .select('id, source, sender_name, sender_contact, message_text, created_at, direction, parent_message_id, ai_generated')
+    .select('id, source, sender_name, sender_contact, message_text, created_at, direction, parent_message_id, ai_generated, status')
     .single()
 
   if (error) {

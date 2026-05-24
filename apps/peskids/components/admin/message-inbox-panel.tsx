@@ -12,9 +12,28 @@ const sourceTone: Record<string, 'green' | 'coral' | 'teal'> = {
   web: 'teal',
 }
 
+const statusTone: Record<string, 'amber' | 'violet' | 'green' | 'neutral'> = {
+  pending: 'amber',
+  approved: 'violet',
+  sent: 'green',
+}
+
 type ThreadResponse = {
-  inbound: { message_text: string; sender_name: string | null; sender_contact: string; source: string }
+  inbound: {
+    message_text: string
+    sender_name: string | null
+    sender_contact: string
+    source: string
+    status?: string | null
+  }
+  status?: string | null
   suggested_reply: string | null
+}
+
+function statusLabel(status?: string | null): string {
+  if (status === 'sent') return 'Enviado'
+  if (status === 'approved') return 'Aprobado'
+  return 'Pendiente'
 }
 
 export function MessageInboxPanel({
@@ -27,6 +46,7 @@ export function MessageInboxPanel({
   const [loading, setLoading] = useState(false)
   const [sending, setSending] = useState(false)
   const [status, setStatus] = useState<string | null>(null)
+  const [threadState, setThreadState] = useState<string | null>(null)
 
   const openThread = useCallback(async (messageId: string) => {
     setActiveId(messageId)
@@ -45,6 +65,7 @@ export function MessageInboxPanel({
         setStatus(data.error ?? 'No se pudo cargar el hilo')
         return
       }
+      setThreadState(data.status ?? data.inbound.status ?? 'pending')
       setReplyText(data.suggested_reply ?? '')
     } catch {
       setStatus('Error al cargar borrador sugerido')
@@ -79,6 +100,7 @@ export function MessageInboxPanel({
       setStatus(data.message ?? 'Enviado')
       setActiveId(null)
       setReplyText('')
+      setThreadState('sent')
     } catch {
       setStatus('Error de red al enviar')
     } finally {
@@ -115,6 +137,13 @@ export function MessageInboxPanel({
                         {msg.sender_name || msg.sender_contact}
                       </p>
                       <Badge tone={tone}>{msg.source}</Badge>
+                      <Badge tone={statusTone[msg.status ?? 'pending'] ?? 'neutral'}>
+                        {msg.status === 'sent'
+                          ? 'Enviado'
+                          : msg.status === 'approved'
+                            ? 'Aprobado'
+                            : 'Pendiente'}
+                      </Badge>
                     </div>
                     <p className="mt-0.5 text-xs text-pk-sub">{preview}</p>
                   </div>
@@ -128,7 +157,12 @@ export function MessageInboxPanel({
 
       {activeId ? (
         <div className="rounded-xl border border-pk-border bg-pk-muted/30 p-3">
-          <p className="mb-2 text-xs font-medium text-pk-sub">Respuesta (editable · IA sugiere borrador)</p>
+          <div className="mb-2 flex items-center justify-between gap-2">
+            <p className="text-xs font-medium text-pk-sub">Respuesta (editable · IA sugiere borrador)</p>
+            <Badge tone={statusTone[threadState ?? 'pending'] ?? 'neutral'}>
+              {statusLabel(threadState)}
+            </Badge>
+          </div>
           {loading ? (
             <p className="flex items-center gap-2 text-xs text-pk-sub">
               <Loader2 className="h-3 w-3 animate-spin" /> Cargando borrador…

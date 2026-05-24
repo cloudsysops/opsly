@@ -9,6 +9,8 @@ export async function middleware(req: NextRequest): Promise<NextResponse> {
   if (
     path === '/admin/login' ||
     path === '/admin/update-password' ||
+    path === '/invite' ||
+    path.startsWith('/invite/') ||
     path === '/api/admin/login' ||
     path === '/auth/recovery' ||
     path.startsWith('/auth/')
@@ -20,23 +22,29 @@ export async function middleware(req: NextRequest): Promise<NextResponse> {
     return NextResponse.next()
   }
 
-  const response = NextResponse.next()
-  const supabase = createMiddlewareClient<Database>({
-    req: req as any,
-    res: response as any,
-  })
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  if (user && isStaffUser(user)) {
-    return response
-  }
-
   const adminSecret = process.env.DASHBOARD_ADMIN_SECRET?.trim() ?? ''
   const adminToken = req.cookies.get('admin-token')?.value?.trim() ?? ''
   if (adminSecret && adminToken === adminSecret) {
-    return response
+    return NextResponse.next()
+  }
+
+  const hasSupabaseAuth =
+    Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL) &&
+    Boolean(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
+
+  if (hasSupabaseAuth) {
+    const response = NextResponse.next()
+    const supabase = createMiddlewareClient<Database>({
+      req: req as any,
+      res: response as any,
+    })
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+
+    if (user && isStaffUser(user)) {
+      return response
+    }
   }
 
   const login = new URL('/admin/login', req.url)
