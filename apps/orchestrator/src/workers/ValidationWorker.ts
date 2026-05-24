@@ -20,7 +20,7 @@ const MAX_RETRIES = 3;
 const POLL_INTERVAL_MS = 30_000;
 const POLL_TIMEOUT_MS = 5 * 60_000;
 
-async function fetchCIConclusion(sha: string, token: string): Promise<CIConclusion> {
+export async function fetchCIConclusion(sha: string, token: string): Promise<CIConclusion> {
   const url = `https://api.github.com/repos/${REPO}/actions/runs?head_sha=${sha}&per_page=5`;
   const res = await fetch(url, {
     headers: { Authorization: `Bearer ${token}`, Accept: "application/vnd.github+json" },

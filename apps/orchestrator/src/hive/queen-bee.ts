@@ -1,7 +1,13 @@
 import { randomUUID } from 'node:crypto';
+import { generateGOAPPlan } from './goap/index.js';
 import { PheromoneChannel } from './pheromone-channel.js';
 import { HiveStateStore } from './hive-state.js';
 import type { BotRole, HiveTask, PheromoneMessage, Subtask } from './types.js';
+
+function hiveGoapEnabled(): boolean {
+  const v = process.env.OPSLY_HIVE_GOAP?.trim().toLowerCase();
+  return v === '1' || v === 'true' || v === 'yes';
+}
 
 const MAX_SUBTASK_RETRIES = 2;
 
@@ -16,6 +22,13 @@ export function inferBotRole(description: string): BotRole {
 }
 
 export function decomposeObjective(objective: string, hiveTaskId: string): Subtask[] {
+  if (hiveGoapEnabled()) {
+    const plan = generateGOAPPlan(objective, hiveTaskId);
+    if (plan.subtasks.length > 0) {
+      return plan.subtasks;
+    }
+  }
+
   const baseParts = objective
     .split(/\n|;|\.(?=\s+[A-ZÁÉÍÓÚÑa-záéíóúñ])/g)
     .map((p) => p.trim())

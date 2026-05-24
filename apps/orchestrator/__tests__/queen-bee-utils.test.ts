@@ -17,4 +17,23 @@ describe('queen-bee utils', () => {
     expect(subtasks[1]?.dependencies).toEqual(['task-1-subtask-1']);
     expect(subtasks[2]?.dependencies).toEqual(['task-1-subtask-2']);
   });
+
+  it('uses GOAP planner when OPSLY_HIVE_GOAP is enabled', () => {
+    const prev = process.env.OPSLY_HIVE_GOAP;
+    process.env.OPSLY_HIVE_GOAP = '1';
+    try {
+      const subtasks = decomposeObjective(
+        'Deploy release with security scan and tests',
+        'task-goap'
+      );
+      expect(subtasks.length).toBeGreaterThan(0);
+      expect(subtasks.some((s) => s.description.includes(':'))).toBe(true);
+    } finally {
+      if (prev === undefined) {
+        delete process.env.OPSLY_HIVE_GOAP;
+      } else {
+        process.env.OPSLY_HIVE_GOAP = prev;
+      }
+    }
+  });
 });

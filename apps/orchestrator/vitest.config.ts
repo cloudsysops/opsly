@@ -8,6 +8,7 @@ export default defineConfig({
     include: [
       'src/__tests__/**/*.test.ts',
       '__tests__/hermes.test.ts',
+      '__tests__/queen-bee-utils.test.ts',
       'src/hermes/__tests__/context-enricher.test.ts',
     ],
     coverage: {
