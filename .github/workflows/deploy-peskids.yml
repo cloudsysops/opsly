@@ -96,7 +96,7 @@ jobs:
           echo "WhatsApp E164 (build-arg): ${{ steps.wa.outputs.e164 }}"
 
   deploy-vps:
-    needs: build-and-push
+    needs: [gate, build-and-push]
     runs-on: ubuntu-latest
     environment: production
     permissions:
@@ -150,7 +150,6 @@ jobs:
             docker logout ghcr.io 2>/dev/null || true
             echo "$GITHUB_DEPLOY_TOKEN" | docker login ghcr.io -u "$GITHUB_DEPLOY_ACTOR" --password-stdin
             export PESKIDS_IMAGE
-            export PESKIDS_DEPLOY_IN_PLACE=1
             bash /opt/opsly/scripts/peskids-deploy-vps.sh
 
       - name: Health check (public)
