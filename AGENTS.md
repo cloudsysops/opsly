@@ -360,68 +360,76 @@ node scripts/load-skills.js show opsly-api
 | Docker tenant aislado                        | `scripts/lib/docker-helpers.sh` — `--project-name tenant_<slug>`                                                                                 |
 | Agency Division (nuevo 2026-05-06)            | `docs/01-development/OPSLY-AGENCY-DIVISION.md` — API Factory, Agent Management, Security API, Autonomous Revenue                                 |
 
-## 🚀 Peskids Extraction (Tenant Project)
+## 🚀 Peskids (Tenant Project, Phase 2 Implementation Ready)
 
-**Status:** MVP in `apps/peskids/`; extraction planning in `docs/tenants/peskids/`  
-**Owner:** Product (currently incubated in Opsly monorepo)  
-**Goal:** Extract Peskids into independent `cloudsysops/peskids-platform` GitHub repo with 7 coordinated AI agents for client VPS deployment  
-**Next Phase:** Document agent implementation + Docker stack configuration
+**Status:** ✅ Phase 1 MVP COMPLETE (production-ready); Phase 2 Week 1 code ready, awaiting SSH access for N8N deployment  
+**Owner:** sierrasantiago90@gmail.com (product owner, incubated in Opsly monorepo)  
+**Deployment:** VPS (peskids.op-sly.com) + Vercel planned (Phase 2 end)  
+**Current Phase:** Phase 2 Week 1 (N8N setup, lead capture workflows, RLS policies) — branch `feat/peskids-phase2`
 
-### ✅ Current Work (2026-05-21)
+### ✅ Phase 1 Completion (2026-05-24)
 
-**Session Goal:** Assist with Peskids extraction—prepare for standalone SaaS with coordinated binary agents, approval-first messaging, and zero-manual-intervention VPS deployment.
+**What's Complete (VERIFIED & LIVE):**
+1. **Landing page** — Lead capture form, benefits overview, CTA (live at https://peskids.op-sly.com)
+2. **Admin authentication** — Supabase email/password login (PR #407 merged):
+   - Owner email validation (sierrasantiago90@gmail.com)
+   - Role-based access (staff, teacher, parent roles ready for Phase 2)
+   - Production-secure (session-based, no static tokens)
+   - Token fallback maintained for backward compatibility
+3. **Admin dashboard** — Metrics placeholder, navigation ready for Phase 2 features
+4. **CI/CD pipeline** — GitHub Actions auto-deploy on main branch merge (fixed workflow lint error)
+5. **Database schema** — Migrations for leads, students, feedback, followups, messages, parents, teachers, classes
+6. **Documentation** — 35+ docs, CLIENT-HANDOFF-CHECKLIST for Sierra, extraction plan documented
 
-**What Happened:**
-1. Initially created `peskids-platform/` directory at repo root with complete agent structure, Docker stack, and deployment scripts.
-2. **Correction (per guardrails):** Removed root-level directory—violates `docs/STRUCTURE-GUARDRAILS.md` (only allowed at root: AGENTS.md, README.md, ROADMAP.md, VISION.md, tool configs, and proper platform folders like apps/, packages/, infra/).
-3. **Current State:** All Peskids code already exists:
-   - **Web app:** `apps/peskids/` (Next.js 14, landing page, dashboard, API routes)
-   - **Planning docs:** `docs/tenants/peskids/` (EXTRACTION-PLAN.md, FUTURE-REPO-SEED.md, architecture specs)
-   - **Database schema:** Migrations for leads, students, feedback, followups, messages
+**What's Ready to Test:**
+- URL: https://peskids.op-sly.com/admin
+- Action: Sign up / log in with sierrasantiago90@gmail.com
+- Verify: Dashboard loads, role shows as owner/staff
 
-### 📋 Next Steps (Ordered)
+### 📋 Phase 2 (Week 1 — Code Complete, Ready for Execution)
 
-1. **Document agent implementation strategy** in `docs/tenants/peskids/AGENT-IMPLEMENTATION-PLAN.md`:
-   - 7 agents (orchestrator, social-media, docs-generator, api-integration, web-experience, messaging, security)
-   - BullMQ worker pattern for each agent
-   - Redis queue routing architecture
+**Status:** Code prepared and committed to `feat/peskids-phase2` (2026-05-24)  
+**Timeline:** May 24-31 (Week 1), Jun 1-7 (Week 2)
 
-2. **Create Dockerfile collection** in `docs/tenants/peskids/` with examples:
-   - `apps/peskids/Dockerfile` (Next.js production build)
-   - Agent Dockerfiles (Node.js + BullMQ workers)
+**Week 1 (May 24-31) — Implementation Ready:**
+✅ **Completed (committed):**
+- Lead validation schema (Zod) — `apps/peskids/lib/validation/lead.schema.ts`
+- Updated landing page form to POST to N8N webhook — `apps/peskids/components/forms/lead-capture-form.tsx`
+- N8N workflows configuration guide — `docs/tenants/peskids/N8N-WORKFLOWS-GUIDE.md`
+- RLS migration (SQL) — `apps/peskids/migrations/20260524_add_rls_policies_peskids.sql`
+- Phase 2 Week 1 execution guide (step-by-step) — `docs/tenants/peskids/PHASE-2-WEEK1-EXECUTION-GUIDE.md`
+- Environment variables for N8N webhook — `apps/peskids/.env.example`
 
-3. **Docker Compose production stack** specification
-   - Services: Traefik v3, postgres, redis, web, 7 agents, n8n, uptime-kuma
-   - Environment variable template (comprehensive)
-   - Health checks and logging configuration
+⏳ **Blocked on:**
+- SSH access to VPS to run N8N setup script: `./scripts/setup-n8n-tenant.sh`
+- N8N container deployment (creates `tenant_peskids` service)
+- Manual workflow creation in N8N UI (lead-capture, hot-lead-alert)
 
-4. **VPS deployment automation** (scripts in future repo):
-   - `setup-client-vps.sh` — one-click setup (Docker, env generation, SSL certs)
-   - `health-check.sh` — service verification
-   - `backup-database.sh` — automated backups
+📋 **Day-by-Day Schedule (when SSH available):**
+- **Day 1 (May 24):** N8N container setup (2h) + lead capture workflow (2h)
+- **Day 2 (May 25):** Hot lead alert workflow (2h) + form integration (2h)
+- **Day 3 (May 26):** RLS policies migration (6h)
+- **Days 4-5 (May 27-28):** Buffer & testing
 
-5. **Test end-to-end flow** locally with Docker Compose:
-   - Lead submission → Redis task queuing → Agent execution → Dashboard update
-   - Messaging approval workflow (prepareForApproval → humanApprove → sendApprovedMessage)
+**Week 2 (Jun 1-7) — Planned (not yet implemented):**
+1. **Teacher dashboard** — Class management, feedback submission UI
+2. **Parent portal preview** — Students + grades view (optional if ahead)
+3. **WhatsApp/Jelou integration** — Two-way messaging via n8n workflows
+4. **Daily follow-up digest** — Scheduled n8n workflow (8am daily)
 
-### 🔐 Critical: Approval-First Messaging
+**Approval-First Messaging (Built-in, Phase 2 Week 2):**
+- Inbound message → n8n prepares response via Jelou webhook
+- Admin sees notification on dashboard → clicks "Approve"
+- Approved message sends via Jelou/Twilio
+- Audit log + status tracking
 
-Messaging Agent has **hard requirement**: no message sends without explicit human approval.
-
-**Flow:**
-- Inbound (WhatsApp/Instagram) → Messaging agent prepares response
-- Emit "message.awaiting_approval" with preview
-- Admin dashboard shows notification → clicks "Approve"
-- Agent receives approval event → sends via Twilio/Resend
-- Status: "sent" + audit log
-
-### 📦 Extraction Phases (Documented)
+### 📦 Extraction Path (When Client Scales)
 
 See `docs/tenants/peskids/EXTRACTION-PLAN.md`:
-- **Phase 0:** Incubation in Opsly (current)
-- **Phase 1:** Independent GitHub repo creation
-- **Phase 2:** VPS deployment automation
-- **Phase 3:** Production launch + client onboarding
+- **Phase 0:** Incubation in Opsly ✅ (NOW)
+- **Phase 1:** Independent `cloudsysops/peskids-platform` repo (>50 users)
+- **Phase 2:** Client's own VPS + custom domain (Year 2)
+- **Script:** `peskids-extract.sh` will automate migration
 
 ---
 
