@@ -1,0 +1,43 @@
+{
+  "version": "3.0",
+  "lastUpdated": "2026-05-24T00:00:00Z",
+  "status": "production",
+  "skills": [
+    {
+      "name": "opsly-context",
+      "category": "bootstrap",
+      "priority": "CRITICAL",
+      "description": "Load Opsly context: AGENTS.md + VISION.md + quick commands",
+      "usagePattern": "ALWAYS at session start"
+    },
+    {
+      "name": "opsly-peskids",
+      "category": "product",
+      "priority": "HIGH",
+      "description": "Peskids tenant: deployment, extraction, Phase 2 workflows",
+      "usagePattern": "When working on Peskids features or deployment"
+    },
+    {
+      "name": "opsly-api",
+      "category": "development",
+      "priority": "HIGH",
+      "description": "API routes, middleware, Supabase integration",
+      "usagePattern": "When adding/fixing API endpoints"
+    },
+    {
+      "name": "opsly-infra",
+      "category": "infrastructure",
+      "priority": "HIGH",
+      "description": "Docker, Vercel, VPS deployment, CI/CD",
+      "usagePattern": "When deploying or modifying infrastructure"
+    },
+    {
+      "name": "opsly-supabase",
+      "category": "database",
+      "priority": "HIGH",
+      "description": "Migrations, RLS, schema design, tenant isolation",
+      "usagePattern": "When modifying database schema"
+    }
+  ],
+  "lastSync": "2026-05-24"
+}
