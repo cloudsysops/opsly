@@ -19,5 +19,10 @@
   "noteComposerSide": "right",
   "livePreview": true,
   "newFileLocation": "folder",
-  "newFileFolderPath": "obsidian/inbox"
+  "newFileFolderPath": "brain/inbox",
+  "attachmentFolderPath": "brain/assets",
+  "promptDelete": false,
+  "vimMode": false,
+  "autoConvertHtml": true,
+  "tabSize": 2
 }

@@ -1,14 +1,22 @@
-# 🧠 Agent Sessions Brain Index
+---
+status: live
+owner: operations
+last_review: 2026-05-24
+tags:
+  - opsly/brain
+  - sessions
+  - moc
+---
 
-Generated: 2026-05-13T01:05:42.037Z
+# Agent Sessions Brain Index
 
-## By Agent
-- [[by-agent/claude|Claude]]
-- [[by-agent/cursor|Cursor]]
-- [[by-agent/codex|Codex]]
-- [[by-agent/workers|Workers]]
+Generated: 2026-05-24
+
+## Recent Sessions
+
+No hay notas de sesion individuales aun. Ver `AGENTS.md` para el diario de sesion completo.
 
 ## Vault Stats
-- **Notes:** 28
-- **Tags:** 0
-- **Categories:** , agents, architecture, modules, tenants, workflows
+
+- **Notes:** 28 (brain) + 567 (docs)
+- **Tags:** opsly/brain, opsly/module, opsly/tenant, opsly/workflow, opsly/architecture

@@ -2,6 +2,6 @@
   "id": "opsly-vault-001",
   "name": "Opsly Docs",
   "owner": "Cristian / Opsly Team",
-  "timezone": "UTC",
-  "description": "Opsly platform documentation & roadmap"
+  "timezone": "America/Bogota",
+  "description": "Opsly platform — brain, docs, ADRs, runbooks y patrones. Abrir como vault en Obsidian para ver el grafo completo."
 }

@@ -21,7 +21,7 @@ local-services, admin, social/Syra y cron jobs.
 
 ## Contratos
 
-- OpenAPI subset: [[00-architecture/openapi-opsly-api|OpenAPI Opsly API]]
+- OpenAPI subset: [OpenAPI Opsly API](00-architecture/openapi-opsly-api.yaml)
 - Portal Zero-Trust: [[04-infrastructure/SECURITY_CHECKLIST|Security Checklist]]
 - Tenants: [[tenants/README|Tenants]]
 

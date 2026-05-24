@@ -18,5 +18,5 @@ Tenant candidato con contexto legal y automatizacion documental.
 
 - Config: [`config/tenants/legalvial.json`](../../../config/tenants/legalvial.json)
 - Modelo: [[adr/ADR-016-legalvial-multitenant-model]]
-- Docs: [[tenants/legalvial/README|LegalVial]]
+- Docs: [[tenants/legalvial/LEGALVIAL-ARCHITECTURE-DECISION|LegalVial Architecture Decision]]
 
