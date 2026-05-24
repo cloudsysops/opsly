@@ -22,7 +22,7 @@ export function WhatsAppLink({
   prefill,
   label = 'WhatsApp',
   showIcon = true,
-}: WhatsAppLinkProps): React.ReactElement {
+}: WhatsAppLinkProps): JSX.Element {
   const href = buildWhatsAppUrl({ prefill })
 
   const whatsappGreen = peskidsColorTokens.primary.whatsapp

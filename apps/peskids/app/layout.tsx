@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import type { ReactNode } from 'react'
 import { Caveat_Brush, JetBrains_Mono, Nunito } from 'next/font/google'
 import { AuthSessionRedirect } from '@/components/auth/auth-session-redirect'
 import { PeskidsClientShell } from '@/components/chat/peskids-client-shell'
@@ -34,7 +35,7 @@ export const metadata: Metadata = {
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode
+  children: ReactNode
 }>) {
   return (
     <html
@@ -43,7 +44,7 @@ export default function RootLayout({
     >
       <body>
         <AuthSessionRedirect />
-        <PeskidsClientShell>{children as React.ReactNode}</PeskidsClientShell>
+        <PeskidsClientShell>{children}</PeskidsClientShell>
       </body>
     </html>
   )

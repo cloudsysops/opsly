@@ -101,7 +101,7 @@ else
       head -c 400 /tmp/pk-dash.json >&2 || true
       exit 1
     fi
-    if ! grep -q "Padre Demo Cliente" /tmp/pk-dash.json 2>/dev/null; then
+    if ! grep -q "Prueba WhatsApp Doppler" /tmp/pk-dash.json 2>/dev/null; then
       echo "WARN: demo message not found in dashboard JSON (¿migración messages aplicada?)" >&2
     else
       echo "ok   Mensaje visible en dashboard API"

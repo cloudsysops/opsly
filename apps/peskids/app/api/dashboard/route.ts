@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { validateStaffSession } from '@/lib/staff-auth'
+import { validateStaffRequest } from '@/lib/staff-auth'
 import { supabaseServer, getRecentMessages } from '@/lib/supabase'
 import type { Database, DashboardData } from '@/lib/types'
 
 export const dynamic = 'force-dynamic'
 
-export async function GET(_req: NextRequest) {
+export async function GET(req: NextRequest) {
   try {
-    const auth = await validateStaffSession()
+    const auth = await validateStaffRequest(req)
     if (!auth.ok) {
       return NextResponse.json({ error: auth.error }, { status: auth.status })
     }
