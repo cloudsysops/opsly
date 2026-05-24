@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: config
+tags:
+  - opsly/cursor-config
+---
+
 # Task: Complete Task Orchestrator Implementation + Worker Client
 
 **Date:** 2026-05-02  
@@ -350,3 +359,10 @@ Ask Claude (me) for help. That's why I'm here.
 ---
 
 **Adelante! 🚀 You've got this. This is the foundation for full Opsly autonomy.**
+
+---
+
+## Enlaces relacionados
+
+- [[.cursor/prompts/README|prompts]]
+- [[README|Inicio]]

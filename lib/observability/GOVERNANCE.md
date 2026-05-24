@@ -78,3 +78,10 @@ All Opsly services MUST use `@intcloudsysops/observability` for:
 
 - `README.md` — API documentation
 - `config/modules.json` — Module registry
+
+---
+
+## Enlaces relacionados
+
+- [[lib/observability/README|observability]]
+- [[README|Inicio]]

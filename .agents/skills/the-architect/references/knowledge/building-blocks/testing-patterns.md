@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: skill
+tags:
+  - opsly/agent-skill
+---
+
 # Building Block: Testing Patterns
 
 ## Decision Matrix
@@ -86,3 +95,10 @@ tests/
     users.ts
   setup.ts               # Global test setup
 ```
+
+---
+
+## Enlaces relacionados
+
+- [[.agents/skills/the-architect/references/README|references]]
+- [[README|Inicio]]

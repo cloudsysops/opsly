@@ -42,3 +42,10 @@ Para agregar un nuevo template:
 2. Incluir frontmatter con metadatos
 3. Agregar estructura, ejemplos y checklist
 4. Actualizar este README con el nuevo template
+
+---
+
+## Enlaces relacionados
+
+- [[packages/skills/templates/README|templates]]
+- [[README|Inicio]]

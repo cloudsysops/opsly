@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: script-doc
+tags:
+  - opsly/script
+---
+
 # Agent training (sandbox)
 
 ## Fuente de verdad (no editar en VPS con heredocs)
@@ -48,3 +57,10 @@ Desde Node/TS (o script interno), añadir a la cola `agent-classifier` un job co
 ```json
 { "taskDescription": "Renew SSL for n8n", "tenantSlug": "intcloudsysops", "request_id": "uuid" }
 ```
+
+---
+
+## Enlaces relacionados
+
+- [[scripts/agent-training/README|agent-training]]
+- [[README|Inicio]]

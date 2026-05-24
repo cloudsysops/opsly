@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: skill
+tags:
+  - opsly/agent-skill
+---
+
 <p align="center">
   <h1 align="center">The Architect</h1>
   <p align="center">
@@ -494,3 +503,10 @@ Licencia MIT. Ver [LICENSE](LICENSE) para detalles.
 ---
 
 ## Construido por [tododeia.com](https://tododeia.com)
+
+---
+
+## Enlaces relacionados
+
+- [[.agents/skills/the-architect/references/README|references]]
+- [[README|Inicio]]

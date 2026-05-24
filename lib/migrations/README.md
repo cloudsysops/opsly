@@ -193,3 +193,10 @@ const migration: Migration = {
 
 - `GOVERNANCE.md` — Migration standards, review process
 - `__tests__/` — Migration examples
+
+---
+
+## Enlaces relacionados
+
+- [[lib/migrations/README|migrations]]
+- [[README|Inicio]]

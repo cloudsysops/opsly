@@ -293,3 +293,10 @@ npx prisma migrate deploy
 - [ ] Se probó el rollback en staging
 - [ ] La migration no bloquea tablas grandes (usar CONCURRENTLY para índices)
 - [ ] Se documentó la razón de la migration en comments
+
+---
+
+## Enlaces relacionados
+
+- [[packages/skills/templates/README|templates]]
+- [[README|Inicio]]

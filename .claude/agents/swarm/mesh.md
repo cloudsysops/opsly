@@ -46,3 +46,10 @@ El `PheromoneChannel` soporta mesh — cualquier bot puede publicar/suscribirse 
 
 - `apps/orchestrator/src/hive/pheromone-channel.ts`
 - `apps/orchestrator/src/hive/types.ts`
+
+---
+
+## Enlaces relacionados
+
+- [[.claude/agents/README|agents]]
+- [[README|Inicio]]

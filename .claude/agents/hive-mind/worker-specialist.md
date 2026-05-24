@@ -53,3 +53,10 @@ Agente worker que ejecuta tareas específicas dentro del enjambre.
 
 - `apps/orchestrator/src/hive/bots/bot-factory.ts`
 - `apps/orchestrator/src/hive/types.ts`
+
+---
+
+## Enlaces relacionados
+
+- [[.claude/agents/README|agents]]
+- [[README|Inicio]]

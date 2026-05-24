@@ -12,3 +12,10 @@ The function should:
 
 Example usage:
   sayHello("World") → "Hello, World!"
+
+---
+
+## Enlaces relacionados
+
+- [[.cursor/prompts/README|prompts]]
+- [[README|Inicio]]

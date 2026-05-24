@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: package-doc
+tags:
+  - opsly/package
+---
+
 # Skills API
 
 > Documentación de la API de skills para integración
@@ -95,3 +104,10 @@ node scripts/skill-loader.js --context "mi query"
 # Validar todos
 bash scripts/skill-autoload.sh validate
 ```
+
+---
+
+## Enlaces relacionados
+
+- [[packages/skills/README|skills]]
+- [[README|Inicio]]

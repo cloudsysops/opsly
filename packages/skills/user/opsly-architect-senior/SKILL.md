@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: package-doc
+tags:
+  - opsly/package
+---
+
 # Opsly Architect Senior Skill
 
 > **Triggers:** `arquitectura`, `ADR`, `revisión`, `cambio de infra`, `riesgo`, `decisión`, `priorizar`
@@ -108,3 +117,10 @@ No listar secretos ni tokens en el análisis; usar `scripts/check-tokens.sh` y D
 | Riesgo sin mitigación | Análisis incompleto          | Usar plantilla de matriz de riesgo |
 | Prioridad desalineada | Ignoró fase actual en VISION | Verificar fase antes de priorizar  |
 | Secreto en análisis   | Copy-paste de logs/config    | Usar `scripts/check-tokens.sh`     |
+
+---
+
+## Enlaces relacionados
+
+- [[packages/skills/README|skills]]
+- [[README|Inicio]]

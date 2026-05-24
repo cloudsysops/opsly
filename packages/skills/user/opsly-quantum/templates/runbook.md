@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: package-doc
+tags:
+  - opsly/package
+---
+
 # Runbook: {SERVICE_NAME}
 
 ## Descripción
@@ -43,3 +52,10 @@ docker restart "{SERVICE_NAME}"
 
 - Equipo: según `AGENTS.md`
 - Alertas Discord: webhook vía Doppler (no en repo)
+
+---
+
+## Enlaces relacionados
+
+- [[packages/skills/README|skills]]
+- [[README|Inicio]]

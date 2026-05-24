@@ -47,3 +47,10 @@ Orquestador central del sistema Opsly. Gestiona colas BullMQ, workers, planifica
 - `apps/orchestrator/src/index.ts` — entry point
 - `apps/orchestrator/src/queue.ts` — configuración de colas
 - `apps/orchestrator/src/orchestrator-role.ts` — modos
+
+---
+
+## Enlaces relacionados
+
+- [[.claude/agents/README|agents]]
+- [[README|Inicio]]

@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: config
+tags:
+  - opsly/claude-config
+---
+
 # CLAUDE.md — Opsly Codebase Guide for AI Assistants
 
 **Last Updated:** 2026-05-22  
@@ -897,3 +906,10 @@ gh pr create --draft --base main --head <branch-name>
 ```
 
 This ensures continuity and helps the next agent (or session) start immediately with context.
+
+---
+
+## Enlaces relacionados
+
+- [[.claude/README|.claude]]
+- [[README|Inicio]]

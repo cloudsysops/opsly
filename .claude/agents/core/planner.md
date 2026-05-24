@@ -63,3 +63,10 @@ Agente especializado en planificación y descomposición de objetivos.
 - `ROADMAP.md` — timeline y milestones
 - `apps/orchestrator/src/hive/goap/` — GOAP planner implementation
 - `docs/adr/` — decisiones de arquitectura
+
+---
+
+## Enlaces relacionados
+
+- [[.claude/agents/README|agents]]
+- [[README|Inicio]]

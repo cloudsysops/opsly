@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: script-doc
+tags:
+  - opsly/script
+---
+
 # Opsly Scripts Guide
 
 This directory contains operational and deployment scripts organized by category.
@@ -84,3 +93,10 @@ SSH_HOST=${SSH_HOST:-100.120.151.91}
 DRY_RUN=${DRY_RUN:-false}
 VERBOSE=${VERBOSE:-false}
 ```
+
+---
+
+## Enlaces relacionados
+
+- [[scripts/README|scripts]]
+- [[README|Inicio]]

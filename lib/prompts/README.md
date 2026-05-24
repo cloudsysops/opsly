@@ -113,3 +113,10 @@ npm run test --workspace=@intcloudsysops/prompts
 
 - `GOVERNANCE.md` — Module governance, review process
 - `__tests__/` — Usage examples, integration tests
+
+---
+
+## Enlaces relacionados
+
+- [[lib/prompts/README|prompts]]
+- [[README|Inicio]]

@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: app-doc
+tags:
+  - opsly/app
+---
+
 # Admin — Invitations UI (Fase 2)
 
 Implementado: **`/invitations`** en `apps/admin` (formulario → `POST /api/invitations` vía `sendInvitation` en `lib/api-client.ts`). Tabla histórica / persistencia sigue pendiente (no hay `GET /api/invitations`).
@@ -42,3 +51,10 @@ Implementado: **`/invitations`** en `apps/admin` (formulario → `POST /api/invi
 
 - `CredentialReveal` (portal) — patrón copiar + ocultar.
 - Tabla shadcn + hooks de datos existentes en admin (`useTenants` para el select).
+
+---
+
+## Enlaces relacionados
+
+- [[apps/index|apps]]
+- [[README|Inicio]]

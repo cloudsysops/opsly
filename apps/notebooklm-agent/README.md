@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: app-doc
+tags:
+  - opsly/app
+---
+
 # NotebookLM Agent (Opsly)
 
 Integración **experimental** con [notebooklm-py](https://github.com/teng-lin/notebooklm-py) (API no oficial de Google NotebookLM).
@@ -36,3 +45,10 @@ Montar credenciales de notebooklm donde la librería las espera (perfil / `NOTEB
 Pensado para **business** y **enterprise**; validación de plan puede hacerse en API/MCP antes de llamar al agente.
 
 Ver `docs/adr/ADR-014-notebooklm-agent.md`.
+
+---
+
+## Enlaces relacionados
+
+- [[apps/notebooklm-agent/README|notebooklm-agent]]
+- [[README|Inicio]]

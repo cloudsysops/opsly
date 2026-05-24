@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: config
+tags:
+  - opsly/cursor-config
+---
+
 # Local Services — Phase 2 (automation / n8n)
 
 Referencia para Cursor: `@` este archivo al trabajar **Phase 2** (webhooks, n8n, proveedores externos).
@@ -24,3 +33,10 @@ Implementado en la API:
 
 - Phase 1 API: `docs/adr/ADR-041-local-services-phase-1-tenant-api.md`
 - Phase 2 webhooks: `docs/adr/ADR-042-local-services-phase-2-webhooks.md`
+
+---
+
+## Enlaces relacionados
+
+- [[.cursor/prompts/README|prompts]]
+- [[README|Inicio]]

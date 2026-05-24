@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: config
+tags:
+  - opsly/github
+---
+
 ## PROTOCOLO — INICIO DE SESIÓN
 
 **Antes de cualquier tarea, sin excepción:**

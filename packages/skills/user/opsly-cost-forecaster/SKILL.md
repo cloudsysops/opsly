@@ -85,3 +85,10 @@ Prefer a compact JSON-like summary when the user needs machine-readable output.
 3. Stripe invoice spike: explain actual versus forecast variance.
 4. Infra scale-up: include worker or VM cost uplift and break-even.
 5. Low-signal week: return low confidence and list the missing inputs.
+
+---
+
+## Enlaces relacionados
+
+- [[packages/skills/README|skills]]
+- [[README|Inicio]]

@@ -34,6 +34,8 @@
     "brain:sync": "npm run index-knowledge && npm run brain:connect:json",
     "brain:enhance": "bash scripts/obsidian-brain-enhance.sh",
     "brain:enhance:apply": "bash scripts/obsidian-brain-enhance.sh --apply",
+    "brain:enhance:full": "npm run brain:enhance:apply -- --vault .",
+    "brain:connect:full": "bash scripts/obsidian-brain-connect.sh --vault . --json",
     "brain:report": "bash scripts/obsidian-brain-connect.sh && echo '' && echo '=== Links rotos ===' && grep -A5 'broken_links' config/brain-connectivity.json 2>/dev/null | head -20",
     "validate-skills": "npm run validate-skills --prefix packages/skills/manifest",
     "test-skills-manifest": "npm test --prefix packages/skills/manifest",

@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: config
+tags:
+  - opsly/claude-config
+---
+
 # Agent Definitions (.claude/agents/)
 
 Definiciones de agentes Opsly en formato markdown con frontmatter.
@@ -46,3 +55,10 @@ references:   # Archivos de referencia en el repo
 - Rol descriptivo (no técnico)
 - Triggers en infinitivo o imperativo
 - Referencias a código real del monorepo
+
+---
+
+## Enlaces relacionados
+
+- [[.claude/agents/README|agents]]
+- [[README|Inicio]]

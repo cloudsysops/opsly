@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: skill
+tags:
+  - opsly/agent-skill
+---
+
 # Building Block: Styling Systems
 
 ## Decision Matrix
@@ -141,3 +150,10 @@ Always write base styles for mobile, then add breakpoint overrides:
 ```html
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
 ```
+
+---
+
+## Enlaces relacionados
+
+- [[.agents/skills/the-architect/references/README|references]]
+- [[README|Inicio]]

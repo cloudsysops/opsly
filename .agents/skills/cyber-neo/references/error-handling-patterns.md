@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: skill
+tags:
+  - opsly/agent-skill
+---
+
 # Error Handling and Exception Management Patterns
 
 OWASP A10:2025 — Mishandling of Exceptional Conditions, A02:2025 — Security Misconfiguration
@@ -513,3 +522,10 @@ app.use((err, req, res, next) => {
 | Empty/Silent Catches | CWE-390, CWE-391 | A10 | MEDIUM-HIGH | Security failures go undetected |
 | Debug Mode in Production | CWE-489, CWE-215 | A02 | CRITICAL | RCE (Flask), full source/config disclosure |
 | Missing Error Boundaries | CWE-755, CWE-248 | A10 | MEDIUM | DoS, inconsistent security state |
+
+---
+
+## Enlaces relacionados
+
+- [[.agents/README|.agents]]
+- [[README|Inicio]]

@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: package-doc
+tags:
+  - opsly/package
+---
+
 # Opsly Agent Teams Skill
 
 > **Triggers:** `bullmq`, `queue`, `job`, `worker`, `team`, `parallel`, `orchestration`
@@ -57,3 +66,10 @@ redis-cli HGETALL bullmq:job:job_xxx
 # Test metrics
 curl -sf http://localhost:3000/api/metrics/teams
 ```
+
+---
+
+## Enlaces relacionados
+
+- [[packages/skills/README|skills]]
+- [[README|Inicio]]

@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: config
+tags:
+  - opsly/claude-config
+---
+
 # Agent Enhancements — Características Adicionales para .claude/
 
 ## 1. State Compartido Entre Máquinas
@@ -442,3 +451,10 @@ create table prompt_templates (
 2. **Alto:** Telemetría + Cost Tracking
 3. **Medio:** Model Routing + Caché
 4. **Bajo:** Session Tracking + Prompt Registry
+
+---
+
+## Enlaces relacionados
+
+- [[.claude/README|.claude]]
+- [[README|Inicio]]

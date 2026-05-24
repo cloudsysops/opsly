@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: package-doc
+tags:
+  - opsly/package
+---
+
 # opsly-brain-researcher
 
 **Research Agent** — Agentes que investigan automáticamente el Obsidian Brain.
@@ -76,3 +85,10 @@ const result = await agent.investigate('¿Cómo está diseñado el tenant isolat
   "nextSteps": ["explore X", "...]
 }
 ```
+
+---
+
+## Enlaces relacionados
+
+- [[packages/skills/README|skills]]
+- [[README|Inicio]]

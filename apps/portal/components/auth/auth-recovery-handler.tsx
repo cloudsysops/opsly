@@ -26,7 +26,7 @@ export function AuthRecoveryHandler({
 
     const routeAwayIfWrongApp = (meta: Record<string, unknown>): boolean => {
       const target = recoveryTargetFromMetadata(meta)
-      if (target.app !== 'portal') {
+      if (target.app === 'peskids_staff') {
         setMessage('Redirigiendo a tu portal correcto…')
         forwardRecoveryToOrigin(target.origin)
         return true

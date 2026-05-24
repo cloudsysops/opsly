@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: skill
+tags:
+  - opsly/agent-skill
+---
+
 # JavaScript / Node.js Security Patterns
 
 Reference knowledge base for Cyber Neo security analysis of JavaScript and Node.js projects.
@@ -922,3 +931,10 @@ const win = new BrowserWindow({
 });
 // Use contextBridge in preload.js to expose only needed APIs
 ```
+
+---
+
+## Enlaces relacionados
+
+- [[.agents/README|.agents]]
+- [[README|Inicio]]

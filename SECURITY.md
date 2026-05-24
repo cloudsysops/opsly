@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: doc
+tags:
+  - opsly/doc
+---
+
 # Security Policy — Opsly
 
 ## Supported versions
@@ -35,3 +44,10 @@
 ## Secretos
 
 Los secretos viven en **Doppler** (`ops-intcloudsysops/prd`); nunca en el repositorio ni en issues/PRs.
+
+---
+
+## Enlaces relacionados
+
+- [[README|.]]
+- [[README|Inicio]]

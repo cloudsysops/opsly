@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: config
+tags:
+  - opsly/n8n
+---
+
 # ACTIVE-PROMPT — Espejo para n8n Agents
 
 **Archivo sincronizado automáticamente desde la raíz del repo.**
@@ -39,3 +48,10 @@ docker ps --format '{{.Names}} {{.Status}}'
 Solo editar este archivo si eres el dueño del repo. Un atacante con acceso de escritura podría ejecutar comandos arbitrarios vía n8n → GitHub → VPS.
 
 **Mitigación**: Mantener repo privado o validar contenido via n8n `Validate Message` node.
+
+---
+
+## Enlaces relacionados
+
+- [[.n8n/README|.n8n]]
+- [[README|Inicio]]

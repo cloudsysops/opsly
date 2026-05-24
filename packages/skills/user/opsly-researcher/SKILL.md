@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: package-doc
+tags:
+  - opsly/package
+---
+
 # opsly-researcher
 
 ## Objetivo
@@ -38,3 +47,10 @@ Investigar librerías, documentación y referencias externas para alimentar deci
   "max_results": 5
 }
 ```
+
+---
+
+## Enlaces relacionados
+
+- [[packages/skills/README|skills]]
+- [[README|Inicio]]

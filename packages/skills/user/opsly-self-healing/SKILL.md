@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: package-doc
+tags:
+  - opsly/package
+---
+
 # Opsly Self-Healing Skill
 
 > **Triggers:** `self-healing`, `auto-repair`, `healing`, `alerts`, `discord alerts`, `url failed`, `container down`, `domain mismatch`, `traefik 404`, `middleware`, `wildcard dns`
@@ -101,3 +110,10 @@ El agente tiene cooldown de 60 minutos por componente reparado (configurable via
 | Contenedor en loop | Docker no pudo recrear | Verificar compose syntax, disk space, puertos |
 | 404 en todos los tenants | Traefik no puede rutear (middlewares rotos) | Revisar logs de Traefik: `docker logs traefik \| grep "middleware"` |
 | n8n-*.op-sly.com: 000 | DNS devuelve IPv6 pero VPS no tiene IPv6 global | Asegurar wildcard en DNS-only (proxied=false) o forzar IPv4 |
+
+---
+
+## Enlaces relacionados
+
+- [[packages/skills/README|skills]]
+- [[README|Inicio]]

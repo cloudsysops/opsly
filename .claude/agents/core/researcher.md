@@ -51,3 +51,10 @@ Agente especializado en investigación y análisis. Es la primera línea antes d
 - `docs/brain/` — vault de conocimiento
 - `docs/00-architecture/` — documentación arquitectónica
 - `docs/adr/` — ADRs
+
+---
+
+## Enlaces relacionados
+
+- [[.claude/agents/README|agents]]
+- [[README|Inicio]]

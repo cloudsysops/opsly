@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: app-doc
+tags:
+  - opsly/app
+---
+
 # Ingestion Bunker (`@intcloudsysops/ingestion-service`)
 
 Servicio **ligero** (Express, sin Next.js) que recibe webhooks y eventos y los **enciola en BullMQ** en el mismo Redis que Opsly. No ejecuta lógica de negocio.
@@ -51,3 +60,10 @@ Configura en el dashboard de Stripe el endpoint de emergencia, por ejemplo:
 `https://ingest.<tu-dominio>/ingest/stripe`
 
 Así los eventos se acumulan en Redis aunque `api.*` no responda; al recuperarse la API, el orchestrator reenvía los jobs.
+
+---
+
+## Enlaces relacionados
+
+- [[apps/experimental/ingestion-service-archive/README|ingestion-service-archive]]
+- [[README|Inicio]]

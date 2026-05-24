@@ -114,3 +114,10 @@ None
 
 - `README.md` — API documentation, examples
 - `__tests__/` — Testing examples
+
+---
+
+## Enlaces relacionados
+
+- [[lib/testing/README|testing]]
+- [[README|Inicio]]

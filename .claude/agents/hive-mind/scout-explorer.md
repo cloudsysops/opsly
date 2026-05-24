@@ -44,3 +44,10 @@ Agente explorador que analiza el códigobase en busca de oportunidades, riesgos 
 - `scripts/` — herramientas de análisis
 - `docs/SECURITY_CHECKLIST.md`
 - `docs/testing/TEST-COVERAGE-ANALYSIS-*.md`
+
+---
+
+## Enlaces relacionados
+
+- [[.claude/agents/README|agents]]
+- [[README|Inicio]]

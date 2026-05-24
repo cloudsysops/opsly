@@ -116,3 +116,10 @@ const agent = await service.getAgent('a1', 'tenant-abc');
 
 - `GOVERNANCE.md` — Repository standards, review process
 - `__tests__/` — Repository and service examples
+
+---
+
+## Enlaces relacionados
+
+- [[lib/services/README|services]]
+- [[README|Inicio]]

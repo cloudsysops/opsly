@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: app-doc
+tags:
+  - opsly/app
+---
+
 # Orquestador Opsly (`@intcloudsysops/orchestrator`)
 
 **Nombre recomendado en runbooks y chat interno:** **Orquestador Opsly** o **BullMQ Orchestrator** — no confundir con el **OpenClaw CLI** (`openclaw` npm), que es otra pieza.
@@ -18,3 +27,10 @@
 - `docs/ORCHESTRATOR.md`
 - `docs/01-development/OPENCLAW-TERMINOLOGY.md`
 - `docs/00-architecture/OPENCLAW-ARCHITECTURE.md`
+
+---
+
+## Enlaces relacionados
+
+- [[apps/orchestrator/README|orchestrator]]
+- [[README|Inicio]]

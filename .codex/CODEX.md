@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: config
+tags:
+  - opsly/codex-config
+---
+
 # Codex in Opsly
 
 Codex works as an OpenClaw-aware executor and systems operator for Opsly.
@@ -63,3 +72,10 @@ pushes are only for explicitly allowed documentation closures.
 - `vendor/cyber-neo` and `vendor/the-architect` are pinned local copies of external agent packs.
 - Claude Code has matching installs under `~/.claude/skills/cyber-neo` and `~/.claude/agents/the-architect`.
 - Do not duplicate these packs into a second parallel system; reuse the pinned vendor copy or the local skill path.
+
+---
+
+## Enlaces relacionados
+
+- [[README|.]]
+- [[README|Inicio]]

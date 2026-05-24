@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: skill
+tags:
+  - opsly/agent-skill
+---
+
 # CWE Top 25 Most Dangerous Software Weaknesses — 2025
 
 Reference for detecting, classifying, and scoring vulnerabilities by CWE during security analysis.
@@ -400,3 +409,10 @@ Reference for detecting, classifying, and scoring vulnerabilities by CWE during 
 **Critical:** CWE-89, CWE-787, CWE-416, CWE-78, CWE-94, CWE-502, CWE-306
 **High:** CWE-79, CWE-352, CWE-862, CWE-22, CWE-125, CWE-434, CWE-190, CWE-918, CWE-863, CWE-798, CWE-327, CWE-269
 **Medium:** CWE-476, CWE-362, CWE-770, CWE-601, CWE-532, CWE-400
+
+---
+
+## Enlaces relacionados
+
+- [[.agents/README|.agents]]
+- [[README|Inicio]]

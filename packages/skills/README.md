@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: package-doc
+tags:
+  - opsly/package
+---
+
 # Skills Opsly v2.0 — Sistema Autónomo
 
 > Skills procedurales para agentes IA autónomos en **Opsly** — sin improvisar, sin preguntar.
@@ -261,3 +270,10 @@ node scripts/skill-finder.js --autonomous --json
 
 - 15 skills básicos
 - SKILL.md simples
+
+---
+
+## Enlaces relacionados
+
+- [[packages/skills/README|skills]]
+- [[README|Inicio]]

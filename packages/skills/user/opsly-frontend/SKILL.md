@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: package-doc
+tags:
+  - opsly/package
+---
+
 # Opsly Frontend Skill
 
 > **Triggers:** `componente`, `página`, `portal`, `admin`, `UI`, `frontend`, `react`, `tailwind`, `dashboard`, `formulario`
@@ -153,3 +162,10 @@ Ubicación: `apps/{portal,admin}/components/ui/`
 | 401 en Admin  | Token no enviado                   | Usar `api-client.ts`, no fetch directo  |
 | Estilos rotos | Clase Tailwind inexistente         | Usar tokens `ops-*` definidos en config |
 | FOUC          | Client component pesado            | Considerar server component + streaming |
+
+---
+
+## Enlaces relacionados
+
+- [[packages/skills/README|skills]]
+- [[README|Inicio]]

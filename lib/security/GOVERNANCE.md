@@ -109,3 +109,10 @@ None
 
 - `README.md` — API documentation, examples
 - `__tests__/` — Security examples
+
+---
+
+## Enlaces relacionados
+
+- [[lib/security/README|security]]
+- [[README|Inicio]]

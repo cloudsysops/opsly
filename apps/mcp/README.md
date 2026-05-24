@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: app-doc
+tags:
+  - opsly/app
+---
+
 # OpenClaw MCP Server
 
 Servidor MCP para exponer herramientas de control sobre Opsly.
@@ -80,3 +89,10 @@ La inferencia multi-modelo sigue centralizada en **llm-gateway** (no se exponen 
 
 - `opsly_startup`
 - `opsly_handoff`
+
+---
+
+## Enlaces relacionados
+
+- [[apps/mcp/README|mcp]]
+- [[README|Inicio]]

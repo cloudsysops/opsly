@@ -150,3 +150,10 @@ None
 
 - `README.md` — API documentation, examples
 - `__tests__/` — Migration examples
+
+---
+
+## Enlaces relacionados
+
+- [[lib/migrations/README|migrations]]
+- [[README|Inicio]]

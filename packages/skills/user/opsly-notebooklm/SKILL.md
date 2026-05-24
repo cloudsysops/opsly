@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: package-doc
+tags:
+  - opsly/package
+---
+
 # Opsly NotebookLM Agent Skill
 
 > **Triggers:** `notebooklm`, `podcast`, `audio`, `pdf`, `google`, `research`, `resumen`
@@ -86,3 +95,10 @@ node -e "const {executeNotebookLM} = require('./apps/notebooklm-agent'); execute
 # Verificar MCP tool
 curl -sf http://localhost:3003/tools | jq '.[] | select(.name=="notebooklm")'
 ```
+
+---
+
+## Enlaces relacionados
+
+- [[packages/skills/README|skills]]
+- [[README|Inicio]]

@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: skill
+tags:
+  - opsly/agent-skill
+---
+
 # IaC Security Reference: Dockerfile & Docker Compose
 
 ## Dockerfile Security Patterns
@@ -1003,3 +1012,10 @@ networks:
   app-network:
     driver: bridge
 ```
+
+---
+
+## Enlaces relacionados
+
+- [[.agents/README|.agents]]
+- [[README|Inicio]]

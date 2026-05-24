@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: package-doc
+tags:
+  - opsly/package
+---
+
 # Opsly Discord Notifications Skill
 
 > **Triggers:** `discord`, `notificación`, `webhook`, `alerta`, `deploy`, `commit`, `error`
@@ -50,3 +59,10 @@ DISCORD_WEBHOOK_URL="https://discord.com/api/webhooks/test" \
 # Verificar no-op con webhook vacío
 DISCORD_WEBHOOK_URL="" ./scripts/notify-discord.sh "Test" "Desc" "info" && echo "noop OK"
 ```
+
+---
+
+## Enlaces relacionados
+
+- [[packages/skills/README|skills]]
+- [[README|Inicio]]

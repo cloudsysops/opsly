@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: skill
+tags:
+  - opsly/agent-skill
+---
+
 # Phase 3: Architecture Confirmation
 
 Before generating the blueprint, present the proposed architecture and get user approval. This phase is a conversation, not a questionnaire.
@@ -41,3 +50,10 @@ Once the user confirms (or you've integrated their feedback):
 2. Proceed to Phase 4: GENERATE.
 
 If the user has significant changes, adjust and re-present. Don't loop more than twice — if alignment is hard, ask what the sticking point is directly.
+
+---
+
+## Enlaces relacionados
+
+- [[.agents/skills/the-architect/references/README|references]]
+- [[README|Inicio]]

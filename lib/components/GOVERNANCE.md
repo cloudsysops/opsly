@@ -80,3 +80,10 @@ All components in `lib/components/` must:
 - `README.md` — API documentation
 - `.storybook/` — Storybook configuration
 - `styles/tokens.ts` — Design tokens
+
+---
+
+## Enlaces relacionados
+
+- [[lib/components/README|components]]
+- [[README|Inicio]]

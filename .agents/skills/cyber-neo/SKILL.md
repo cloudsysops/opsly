@@ -577,3 +577,10 @@ If you find yourself thinking any of these, you are cutting corners:
 | "Checking auth on every route would take too long" | At minimum check admin/API routes. Scope up, don't skip. |
 | "I already found enough issues" | Complete all phases. The one you skip might be the critical one. |
 | "The framework probably handles this" | Verify it. Frameworks have defaults that can be disabled. |
+
+---
+
+## Enlaces relacionados
+
+- [[.agents/README|.agents]]
+- [[README|Inicio]]

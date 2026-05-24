@@ -121,3 +121,10 @@ rate(agent_errors[5m])
 
 - `GOVERNANCE.md` — Observability standards, alerting policy
 - `__tests__/` — Integration tests, examples
+
+---
+
+## Enlaces relacionados
+
+- [[lib/observability/README|observability]]
+- [[README|Inicio]]

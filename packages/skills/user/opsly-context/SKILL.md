@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: package-doc
+tags:
+  - opsly/package
+---
+
 # Opsly Context Skill
 
 > **Triggers:** `nueva sesión`, `inicio de sesión`, `claude modo supremo`, `agente`, `contexto`, `start`

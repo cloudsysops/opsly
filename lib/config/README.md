@@ -153,3 +153,10 @@ EVALUATION_STRICT_MODE=true
 
 - `GOVERNANCE.md` — Configuration standards, review process
 - `__tests__/` — Configuration examples
+
+---
+
+## Enlaces relacionados
+
+- [[lib/config/README|config]]
+- [[README|Inicio]]

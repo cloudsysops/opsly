@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: config
+tags:
+  - opsly/hermes
+---
+
 # Hermes Agent Context
 
 Hermes coordinates autonomous task state inside `apps/orchestrator` and must use
@@ -25,3 +34,10 @@ agent nodes from the shared graph. Every routed task should preserve:
 
 Hermes is not a second orchestrator. It reuses OpenClaw, BullMQ, Redis, Supabase,
 Context Builder and the shared Brain contract.
+
+---
+
+## Enlaces relacionados
+
+- [[README|.]]
+- [[README|Inicio]]

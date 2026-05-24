@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: package-doc
+tags:
+  - opsly/package
+---
+
 # Opsly MCP Tool Skill
 
 > **Triggers:** `mcp`, `tool`, `oauth`, `pkce`, `openclaw`, `mcp tool`, `tool definition`
@@ -71,3 +80,10 @@ curl -X POST http://localhost:3003/tools/mi_tool \
   -H "Content-Type: application/json" \
   -d '{"param":"valor"}'
 ```
+
+---
+
+## Enlaces relacionados
+
+- [[packages/skills/README|skills]]
+- [[README|Inicio]]

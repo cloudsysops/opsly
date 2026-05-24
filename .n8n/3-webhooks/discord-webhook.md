@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: config
+tags:
+  - opsly/n8n
+---
+
 # Discord Webhook — Configuración n8n
 
 Configuración del webhook Discord para recibir tareas y enviar respuestas.
@@ -54,3 +63,10 @@ curl -X POST "$N8N_WEBHOOK_URL" \
 - `scripts/test-n8n-webhook.sh` — smoke tests
 - `AGENTS.md` → "Ecosistema IA — OpenClaw" (flujo completo)
 - `docs/N8N-SETUP.md` — configuración inicial
+
+---
+
+## Enlaces relacionados
+
+- [[.n8n/README|.n8n]]
+- [[README|Inicio]]

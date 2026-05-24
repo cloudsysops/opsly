@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: skill
+tags:
+  - opsly/agent-skill
+---
+
 # Archetype: Internal Tool / Admin Dashboard
 
 ## Default Stack Recommendation
@@ -115,3 +124,10 @@ src/
 - `knowledge/building-blocks/database-patterns.md` — Schema design, pagination, naming conventions
 - `knowledge/building-blocks/state-management.md` — Server Components for data display, Zustand for UI state
 - `knowledge/building-blocks/testing-patterns.md` — E2E tests for core workflows
+
+---
+
+## Enlaces relacionados
+
+- [[.agents/skills/the-architect/references/README|references]]
+- [[README|Inicio]]

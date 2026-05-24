@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: app-doc
+tags:
+  - opsly/app
+---
+
 # Como una agencia puede escalar operaciones con Opsly
 
 _Asistido por IA_
@@ -23,3 +32,10 @@ Con costos de infraestructura bajos y herramientas IA orientadas a ejecucion, un
 ## Siguiente paso
 
 Si tu agencia quiere validar esta operativa, empieza con una vertical concreta y un flujo de 48h: onboarding + chequeo de salud + reporte operativo.
+
+---
+
+## Enlaces relacionados
+
+- [[apps/index|apps]]
+- [[README|Inicio]]

@@ -57,3 +57,10 @@ Agente especializado en implementación de código. Ejecuta tareas de desarrollo
 - `lib/` — módulos compartidos
 - `config/modules.json` — registro de módulos
 - `docs/01-development/LIBRARY-MODULES.md`
+
+---
+
+## Enlaces relacionados
+
+- [[.claude/agents/README|agents]]
+- [[README|Inicio]]

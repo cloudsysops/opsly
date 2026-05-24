@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: skill
+tags:
+  - opsly/agent-skill
+---
+
 # Supply Chain Security Patterns
 
 OWASP A03:2025 — Software Supply Chain Failures, A08:2025 — Software and Data Integrity Failures
@@ -530,3 +539,10 @@ npm install
 | Lock File Security | CWE-353, CWE-829 | A08 | HIGH | Non-reproducible builds, silent version changes |
 | Dependency Health | CWE-1104, CWE-1395 | A03 | MEDIUM-HIGH | Unpatched vulnerabilities, maintainer takeover |
 | Integrity Verification | CWE-353, CWE-494 | A08 | HIGH | Tampered packages/scripts served to application |
+
+---
+
+## Enlaces relacionados
+
+- [[.agents/README|.agents]]
+- [[README|Inicio]]

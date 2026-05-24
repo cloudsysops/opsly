@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: skill
+tags:
+  - opsly/agent-skill
+---
+
 # Web Security Patterns
 
 Reference knowledge base for Cyber Neo web application security analysis.
@@ -1190,3 +1199,10 @@ app.get('/files', (req, res) => {
 | XSS | CWE-79 | A05 | High |
 | Command Injection | CWE-78 | A05 | Critical |
 | Directory Traversal | CWE-22 | A01 | High |
+
+---
+
+## Enlaces relacionados
+
+- [[.agents/README|.agents]]
+- [[README|Inicio]]

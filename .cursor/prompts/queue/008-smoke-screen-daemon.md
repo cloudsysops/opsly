@@ -31,3 +31,10 @@ No modifiques codigo de producto y no hagas commit.
 - **Qué se hizo:** prompt enviado al orchestrator local y procesado por la cola `local-agents`.
 - **Resultado:** Sin salida detallada del orchestrator.
 - **Cómo verificar:** revisar `.cursor/prompts/queue/.metadata.json`, logs del orchestrator y `.cursor/responses/` si el servicio local generó artefactos.
+
+---
+
+## Enlaces relacionados
+
+- [[.cursor/prompts/README|prompts]]
+- [[README|Inicio]]

@@ -98,3 +98,10 @@ priority: 50000
 5. All E2E tests pass
 6. Git log is clean
 7. Code is organized and ready for review
+
+---
+
+## Enlaces relacionados
+
+- [[.cursor/prompts/README|prompts]]
+- [[README|Inicio]]

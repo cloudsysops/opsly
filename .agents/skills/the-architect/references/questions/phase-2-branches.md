@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: skill
+tags:
+  - opsly/agent-skill
+---
+
 # Phase 2: Archetype-Specific Deep Dive
 
 After classifying the project in Phase 1, use the matching section below. Ask 3-5 questions — adapt based on what the user already told you. Skip questions they've already answered.
@@ -148,3 +157,10 @@ After classifying the project in Phase 1, use the matching section below. Ask 3-
 - If search → `knowledge/building-blocks/database-patterns.md` (full-text search)
 - If monetization → load payment patterns
 - Always → `knowledge/building-blocks/frontend-stacks.md`
+
+---
+
+## Enlaces relacionados
+
+- [[.agents/skills/the-architect/references/README|references]]
+- [[README|Inicio]]

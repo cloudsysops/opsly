@@ -79,3 +79,10 @@ class AgentRepository extends BaseRepository<Agent> {
 
 - `README.md` — API documentation, examples
 - `__tests__/` — Repository examples, testing patterns
+
+---
+
+## Enlaces relacionados
+
+- [[lib/services/README|services]]
+- [[README|Inicio]]

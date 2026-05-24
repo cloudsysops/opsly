@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: config
+tags:
+  - opsly/claude-config
+---
+
 # /deploy — Workflow de Despliegue
 
 Ejecuta el deploy de Opsly. Ver detalles completos en `AGENTS.md` (sección "Infraestructura VPS-dragon") y `docs/runbooks/DEPLOY-GITHUB-ACTIONS.md`.
@@ -42,3 +51,10 @@ ssh vps-dragon@100.120.151.91 "docker ps --format '{{.Names}}\t{{.Status}}'"
 - `.github/workflows/deploy.yml` — pipeline GitHub Actions
 - `docs/runbooks/DEPLOY-GITHUB-ACTIONS.md` — runbook completo
 - `infra/docker-compose.platform.yml` — definición servicios
+
+---
+
+## Enlaces relacionados
+
+- [[.claude/README|.claude]]
+- [[README|Inicio]]

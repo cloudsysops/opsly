@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: package-doc
+tags:
+  - opsly/package
+---
+
 # Opsly Bash Script Skill
 
 > **Triggers:** `script bash`, `shell`, `automatización`, `bash script`, `shellscript`, `bash`

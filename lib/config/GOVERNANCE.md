@@ -80,3 +80,10 @@ None
 
 - `README.md` — API documentation, examples
 - `__tests__/` — Configuration examples
+
+---
+
+## Enlaces relacionados
+
+- [[lib/config/README|config]]
+- [[README|Inicio]]

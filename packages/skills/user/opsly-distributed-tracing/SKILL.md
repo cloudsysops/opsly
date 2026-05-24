@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: package-doc
+tags:
+  - opsly/package
+---
+
 # Opsly Distributed Tracing Skill
 
 > **Triggers:** `distributed tracing`, `tracing`, `opentelemetry`, `otel`, `traceparent`, `span`, `jaeger`, `tempo`, `request correlation`, `latency`, `p99`, `baggage`, `tenant_slug`, `request_id`
@@ -74,3 +83,10 @@ Casos mínimos a comprobar:
 ## Seguimiento
 
 Si la base del proceso aún no tiene OpenTelemetry, primero bootstrap del runtime y luego instrumentación por servicio. Si ya existe, solo amplía spans y propagación en los límites que falten.
+
+---
+
+## Enlaces relacionados
+
+- [[packages/skills/README|skills]]
+- [[README|Inicio]]

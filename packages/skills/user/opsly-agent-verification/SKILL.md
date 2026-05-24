@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: package-doc
+tags:
+  - opsly/package
+---
+
 # Opsly agent verification (marketplace discipline)
 
 > **Triggers:** `listo para merge`, `verificación antes de cerrar`, `evidencia antes de afirmar`, `smoke checklist`, `pre merge agente`, `type-check antes de commit`
@@ -28,3 +37,10 @@ Ejecutar y citar resultado (o adjuntar salida relevante sin secretos):
 ## Relación con hooks
 
 - El pre-commit local puede correr type-check + ESLint acotado; eso **no** reemplaza tests de workspace ni validate-openapi cuando apliquen.
+
+---
+
+## Enlaces relacionados
+
+- [[packages/skills/README|skills]]
+- [[README|Inicio]]

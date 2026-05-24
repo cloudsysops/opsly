@@ -106,3 +106,10 @@ async function executeAgent(agentId, input) {
 
 - `GOVERNANCE.md` — Error handling standards, review process
 - `__tests__/` — Error handling examples
+
+---
+
+## Enlaces relacionados
+
+- [[lib/errors/README|errors]]
+- [[README|Inicio]]

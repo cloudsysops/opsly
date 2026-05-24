@@ -171,3 +171,10 @@ console.log('Request ID:', json.requestId);
 
 - `GOVERNANCE.md` — API standards, review process
 - `__tests__/` — API examples
+
+---
+
+## Enlaces relacionados
+
+- [[lib/api/README|api]]
+- [[README|Inicio]]

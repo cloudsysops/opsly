@@ -34,3 +34,10 @@ Algoritmo de consenso distribuido para decisiones críticas. Los bots votan y se
 ### Implementación
 
 El `PheromoneChannel` con tipos `consensus_vote` y `consensus_decision` puede implementar Raft.
+
+---
+
+## Enlaces relacionados
+
+- [[.claude/agents/README|agents]]
+- [[README|Inicio]]

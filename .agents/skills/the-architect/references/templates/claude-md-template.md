@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: skill
+tags:
+  - opsly/agent-skill
+---
+
 # CLAUDE.md Template for Target Projects
 
 Use this template when generating Section 15 of the blueprint. Fill in every section. The generated CLAUDE.md must give Claude Code complete context to build autonomously.
@@ -90,3 +99,10 @@ Use this template when generating Section 15 of the blueprint. Fill in every sec
 - Code organization rules must be specific and actionable — "keep files short" is bad, "max 300 lines per component" is good.
 - Design system must include actual values (hex codes, px sizes) not vague descriptions.
 - Reglas are non-negotiable constraints. Include only rules that, if broken, would cause real problems.
+
+---
+
+## Enlaces relacionados
+
+- [[.agents/skills/the-architect/references/README|references]]
+- [[README|Inicio]]

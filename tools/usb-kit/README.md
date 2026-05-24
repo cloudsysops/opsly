@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: tool-doc
+tags:
+  - opsly/tool
+---
+
 # USB kit Opsly (herramienta de trabajo portátil)
 
 Kit de scripts y documentación para llevar en un pendrive **junto con un clon completo del repo** (incluye `config/opsly.config.json` e `infra/terraform/`). No guardes secretos en claro en el USB: usá **`pen-secrets.sh`** con [age](https://github.com/FiloSottile/age).
@@ -133,3 +142,10 @@ DRY_RUN=true ./pen-sync-repo.sh
 
 - **Contexto fijo:** `AGENTS.md`, `VISION.md`, `docs/VPS-ARCHITECTURE.md`, `docs/DNS_SETUP.md`, `infra/terraform/README.md`
 - **Sin secretos en git:** Doppler `prd`; `tools/usb-kit/secrets/` siempre ignorado por git
+
+---
+
+## Enlaces relacionados
+
+- [[tools/usb-kit/README|usb-kit]]
+- [[README|Inicio]]

@@ -110,3 +110,10 @@ Response:
 
 - `README.md` — API documentation, examples
 - `__tests__/` — API examples
+
+---
+
+## Enlaces relacionados
+
+- [[lib/api/README|api]]
+- [[README|Inicio]]

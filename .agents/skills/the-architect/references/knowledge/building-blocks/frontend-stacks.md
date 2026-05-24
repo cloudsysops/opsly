@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: skill
+tags:
+  - opsly/agent-skill
+---
+
 # Building Block: Frontend Stacks
 
 ## Decision Matrix
@@ -103,3 +112,10 @@ async function createPost(formData: FormData) {
 'use client'
 const form = useForm({ resolver: zodResolver(schema) })
 ```
+
+---
+
+## Enlaces relacionados
+
+- [[.agents/skills/the-architect/references/README|references]]
+- [[README|Inicio]]

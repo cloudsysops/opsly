@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: config
+tags:
+  - opsly/github
+---
+
 # Guía de `.github/` — plantillas y gobernanza (Opsly)
 
 <!--
@@ -34,3 +43,10 @@ Este directorio agrupa **automatización** (`workflows/`), **plantillas** (issue
 ## Workflows
 
 Los archivos en `workflows/` **no** se modifican en la tarea que generó esta guía; para cambios de CI/CD seguir el proceso habitual de PR y revisión de `infra`/`CODEOWNERS` según corresponda.
+
+---
+
+## Enlaces relacionados
+
+- [[.github/index|.github]]
+- [[README|Inicio]]

@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: package-doc
+tags:
+  - opsly/package
+---
+
 # Opsly Feedback ML Skill
 
 > **Triggers:** `feedback`, `ml`, `auto-implement`, `aprobación`, `clasificar`, `clasificación`
@@ -52,3 +61,10 @@ curl -sf -X POST https://api.op-sly.com/api/feedback/approve \
   -H "Authorization: Bearer $TOKEN" \
   -d '{"conversation_id":"conv_xxx"}'
 ```
+
+---
+
+## Enlaces relacionados
+
+- [[packages/skills/README|skills]]
+- [[README|Inicio]]

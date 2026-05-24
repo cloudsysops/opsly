@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: config
+tags:
+  - opsly/claude-config
+---
+
 # OrchestratorAgent — Coordinador Opsly
 
 Define cómo coordina tareas vía BullMQ/Temporal. Ver detalles completos en `AGENTS.md` (sección "Ecosistema IA – OpenClaw").
@@ -54,3 +63,10 @@ REDIS_URL=redis://100.120.151.91:6379
 - `docs/design/OAR.md` — contrato OAR
 - `docs/adr/ADR-011-orchestrator-bullmq.md` — decisión BullMQ
 - `AGENTS.md` — estado operativo y jobs recientes
+
+---
+
+## Enlaces relacionados
+
+- [[.claude/README|.claude]]
+- [[README|Inicio]]

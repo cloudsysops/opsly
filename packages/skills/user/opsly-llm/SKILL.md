@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: package-doc
+tags:
+  - opsly/package
+---
+
 # Opsly LLM Gateway Skill
 
 > **Triggers:** `llm`, `anthropic`, `openai`, `modelo`, `cache`, `ai`, `llmcall`, `gemini`, `sonnet`, `haiku`
@@ -61,3 +70,10 @@ curl -sf http://localhost:3005/health
 # Test llmCall directo
 node -e "const {llmCall} = require('./apps/llm-gateway'); llmCall({tenant_slug:'test',messages:[{role:'user',content:'ping'}]}).then(console.log)"
 ```
+
+---
+
+## Enlaces relacionados
+
+- [[packages/skills/README|skills]]
+- [[README|Inicio]]

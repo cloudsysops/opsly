@@ -142,3 +142,10 @@ datasets/adversarial/
 - `GOVERNANCE.md` — Quality standards, SLOs
 - `__tests__/` — Integration tests, examples
 - `config/modules.json` — Module registry
+
+---
+
+## Enlaces relacionados
+
+- [[lib/evaluation/README|evaluation]]
+- [[README|Inicio]]

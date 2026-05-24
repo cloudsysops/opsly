@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: tool-doc
+tags:
+  - opsly/tool
+---
+
 # Opsly Productivity — The Offer
 
 **For:** Barbers, Restaurant Owners, Construction Managers, Freelancers, Local Service Businesses
@@ -201,3 +210,10 @@ Or reply to this email with "Tell me more" and we'll call you within 24 hours.
 ---
 
 **PS:** Most of our customers are using Opsly within the first week and seeing results by week 2. You could be next.
+
+---
+
+## Enlaces relacionados
+
+- [[tools/productivity-starter/README|productivity-starter]]
+- [[README|Inicio]]

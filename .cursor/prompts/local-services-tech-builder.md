@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: config
+tags:
+  - opsly/cursor-config
+---
+
 # Local Services — Tech builder (Week 1 Phase)
 
 Canal de trabajo para Cursor Agent: **pegar este archivo con `@`** al iniciar la tarea o abrir un chat dedicado a Local Services.
@@ -42,3 +51,10 @@ Rama: cursor/local-services-week1-* — commit convencional al cerrar cada sub-t
 ## Referencia: prompts ampliados (producto)
 
 Para ventas, ops, automatización y roadmap multi-semana, usar los prompts dedicados en `.cursor/prompts/` (p. ej. `local-services-sales-closer.md`, `local-services-ops-admin.md`, `local-services-automation.md`, `local-services-mvp.md`). El esquema canónico en código es **`platform.ls_*`** y las rutas bajo `/api/local-services/…`, no un schema SQL separado `local_services.*` salvo que un ADR lo defina.
+
+---
+
+## Enlaces relacionados
+
+- [[.cursor/prompts/README|prompts]]
+- [[README|Inicio]]

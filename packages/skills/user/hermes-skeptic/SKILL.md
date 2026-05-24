@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: package-doc
+tags:
+  - opsly/package
+---
+
 # Hermes Skeptic Skill
 
 > **Triggers:** `skeptic`, `hermes-skeptic`, `riesgos`, `supuestos`, `failure modes`, `review plan`
@@ -52,3 +61,10 @@ Proceed | Proceed with guardrails | Block
 | Revision vaga | Riesgos sin impacto concreto | Asociar cada riesgo a tenant, costo, seguridad o operacion |
 | Olvidar costos | Nuevo proveedor sin aprobacion | Revisar `AGENTS.md` Control de costos |
 | Saltar metering | LLM directo desde feature | Enrutar por LLM Gateway y registrar Hermes |
+
+---
+
+## Enlaces relacionados
+
+- [[packages/skills/README|skills]]
+- [[README|Inicio]]

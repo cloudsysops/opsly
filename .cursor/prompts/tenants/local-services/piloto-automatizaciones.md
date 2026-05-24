@@ -34,3 +34,10 @@ purpose: servicio productivo — limpieza de equipos + upgrade + automatizacione
 
 - Invitaciones / Resend: dominio verificado si el email del owner no es de prueba.
 - Tras go-live, anotar en `AGENTS.md` (🔄) fecha y entorno **live**.
+
+---
+
+## Enlaces relacionados
+
+- [[.cursor/prompts/README|prompts]]
+- [[README|Inicio]]

@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: skill
+tags:
+  - opsly/agent-skill
+---
+
 # The Architect
 
 Use this skill when the user asks for a complete product or system blueprint, when a tenant needs a build plan, or when Opsly needs to convert an idea into an implementation-ready design.
@@ -33,3 +42,10 @@ Use this skill when the user asks for a complete product or system blueprint, wh
 - `references/templates/claude-md-template.md`
 - `references/knowledge/skills-registry.md`
 - `references/knowledge/stack-compatibility.md`
+
+---
+
+## Enlaces relacionados
+
+- [[.agents/README|.agents]]
+- [[README|Inicio]]

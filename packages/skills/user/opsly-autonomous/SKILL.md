@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: package-doc
+tags:
+  - opsly/package
+---
+
 # Opsly Autonomous Skill
 
 > **Triggers:** `autónomo`, `autonomous`, `godmode`, `auto`, `self-healing`, `auto-fix`, `auto-ejecutar`, `sin preguntar`, `ejecutar solo`
@@ -395,3 +404,10 @@ Este skill se integra con todos los skills existentes de Opsly:
 - **opsly-feedback-ml** — ML pipelines
 - **opsly-notebooklm** — Knowledge layer
 - **opsly-simplify** — Docker optimization
+
+---
+
+## Enlaces relacionados
+
+- [[packages/skills/README|skills]]
+- [[README|Inicio]]

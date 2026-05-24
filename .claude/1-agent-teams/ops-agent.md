@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: config
+tags:
+  - opsly/claude-config
+---
+
 # OpsAgent — Operaciones
 
 Gestiona ciclo de vida de tenants, health checks y deployments. Ver `AGENTS.md` para estado actual.
@@ -48,3 +57,10 @@ ssh vps-dragon@100.120.151.91 "cd /opt/opsly && git pull && \
 - `scripts/suspend-tenant.sh` / `resume-tenant.sh`
 - `docs/runbooks/DEPLOY-GITHUB-ACTIONS.md`
 - `docs/tenants/runbooks/TENANT-ONBOARDING-TRIAGE.md`
+
+---
+
+## Enlaces relacionados
+
+- [[.claude/README|.claude]]
+- [[README|Inicio]]

@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: skill
+tags:
+  - opsly/agent-skill
+---
+
 # Archetype: API / Backend Service
 
 ## Default Stack Recommendation
@@ -131,3 +140,10 @@ export default app
 - `knowledge/building-blocks/auth-patterns.md` — JWT patterns, API key auth
 - `knowledge/building-blocks/deployment-patterns.md` — Railway, Fly.io, Docker config
 - `knowledge/building-blocks/testing-patterns.md` — Integration tests for every endpoint
+
+---
+
+## Enlaces relacionados
+
+- [[.agents/skills/the-architect/references/README|references]]
+- [[README|Inicio]]

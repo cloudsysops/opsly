@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: package-doc
+tags:
+  - opsly/package
+---
+
 # Opsly Simplify Skill
 
 > **Triggers:** `docker`, `compose`, `optimización`, `yaml`, `dockerfile`, `healthcheck`, `memory`
@@ -279,3 +288,10 @@ docker-compose -f infra/docker-compose.platform.yml config | grep -A2 memory
 # Test build
 docker build -f apps/api/Dockerfile --target runner apps/api && echo "Build OK"
 ```
+
+---
+
+## Enlaces relacionados
+
+- [[packages/skills/README|skills]]
+- [[README|Inicio]]

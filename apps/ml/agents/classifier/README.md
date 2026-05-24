@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: app-doc
+tags:
+  - opsly/app
+---
+
 # Task classifier (sandbox)
 
 Entrenamiento local con Python (`scikit-learn`). No sustituye el clasificador LLM en `src/classifier.ts` (leads); es un experimento **sandbox** para categorías de tareas Opsly.
@@ -21,3 +30,10 @@ Desde TypeScript: `classifyTaskCategory` en `src/task-category-classifier.ts` ej
 ## Base de datos
 
 Schema `sandbox` y tablas: migración `supabase/migrations/0023_sandbox_agent_training.sql`. Aplicar con `npx supabase db push` (no ejecutar SQL a mano en prod sin revisión).
+
+---
+
+## Enlaces relacionados
+
+- [[apps/ml/agents/classifier/README|classifier]]
+- [[README|Inicio]]

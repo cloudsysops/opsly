@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: config
+tags:
+  - opsly/claude-config
+---
+
 # Context Slicing — Reducir Contexto
 
 Estrategias para no saturar el contexto con datos innecesarios.
@@ -43,3 +52,10 @@ const summary = { total_jobs: 1234, failed: 5, avg_duration_ms: 340 };
 - `docs/CLAUDE-WORKFLOW-OPTIMIZATION.md` — 10 técnicas
 - `context/system_state.json` — snapshots de estado
 - `AGENTS.md` — leer completo al iniciar, no re-enviar
+
+---
+
+## Enlaces relacionados
+
+- [[.claude/README|.claude]]
+- [[README|Inicio]]

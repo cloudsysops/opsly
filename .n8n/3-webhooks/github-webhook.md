@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: config
+tags:
+  - opsly/n8n
+---
+
 # GitHub Webhook — Configuración n8n
 
 Configuración para que n8n reciba eventos de GitHub (opcional).
@@ -46,3 +55,10 @@ curl -X POST "$GITHUB_WEBHOOK_URL" \
 - `.n8n/1-workflows/discord-to-github.json` — workflow que lee ACTIVE-PROMPT
 - `AGENTS.md` → "Ecosistema IA" (GitHub → VPS → Cursor)
 - `scripts/billy-prompt-monitor.sh` — monitor VPS
+
+---
+
+## Enlaces relacionados
+
+- [[.n8n/README|.n8n]]
+- [[README|Inicio]]

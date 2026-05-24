@@ -78,3 +78,10 @@ npx -y @playwright/mcp@latest --version 2>&1 | head -3
 npx -y @glifxyz/glif-mcp-server@latest --version 2>&1 | head -3
 npx -y chrome-devtools-mcp@latest --version 2>&1 | head -3
 ```
+
+---
+
+## Enlaces relacionados
+
+- [[docs/02-tools/README|02-tools]]
+- [[README|Inicio]]

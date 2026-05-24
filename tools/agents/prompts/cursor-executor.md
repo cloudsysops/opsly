@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: tool-doc
+tags:
+  - opsly/tool
+---
+
 # Cursor — Prompt Ejecutor Opsly
 
 Template de inicio de sesión para Cursor:
@@ -49,3 +58,10 @@ Bloqueantes: [lista o "ninguno"]
 - Secrets: solo Doppler, nunca en código
 - SSH VPS: solo Tailscale `100.120.151.91`
 - Validar: `npm run type-check` + tests workspace tocado
+
+---
+
+## Enlaces relacionados
+
+- [[tools/index|tools]]
+- [[README|Inicio]]

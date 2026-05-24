@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: tool-doc
+tags:
+  - opsly/tool
+---
+
 # Opsly Productivity Demo Package
 
 **15-minute sales pitch for non-technical business owners**
@@ -277,3 +286,10 @@ If something in this package is unclear or doesn't work, edit it.
 This is a living document. Make it better based on real demos.
 
 Good luck.
+
+---
+
+## Enlaces relacionados
+
+- [[tools/productivity-starter/README|productivity-starter]]
+- [[README|Inicio]]

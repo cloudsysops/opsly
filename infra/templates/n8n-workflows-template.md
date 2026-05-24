@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: infrastructure
+tags:
+  - opsly/infra
+---
+
 # Plantilla de workflows n8n por tenant
 
 Referencia para Fase 2: qué automatizar por defecto en cada stack tenant (p. ej. `smiletripcare`, `peskids`).  
@@ -74,3 +83,10 @@ Los workflows CRM base ya se versionan como JSON importable en `.n8n/1-workflows
 | **TODO**  | Pendiente de definir reglas de negocio del cliente |
 | **READY** | Patrón genérico documentado; implementar en UI     |
 | **PROD**  | Activo y monitorizado en el tenant                 |
+
+---
+
+## Enlaces relacionados
+
+- [[infra/index|infra]]
+- [[README|Inicio]]

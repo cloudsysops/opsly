@@ -40,3 +40,10 @@ Convertir la operacion financiera de Opsly en un bucle continuo de eficiencia:
    - impacto en usuario.
 4. Ejecutar solo acciones dentro de umbral autonomo.
 5. Reportar resultados y ajustar estrategia.
+
+---
+
+## Enlaces relacionados
+
+- [[packages/skills/README|skills]]
+- [[README|Inicio]]

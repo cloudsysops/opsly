@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: tool-doc
+tags:
+  - opsly/tool
+---
+
 # Claude — Prompt Arquitecto Opsly
 
 Pegar al iniciar sesión nueva con Claude:
@@ -50,3 +59,10 @@ Bloqueantes: [lista o "ninguno"]
 - Context Builder: apps/context-builder (puerto 3012)
 
 **SSH:** solo Tailscale `vps-dragon@100.120.151.91` (nunca la IP pública del VPS)
+
+---
+
+## Enlaces relacionados
+
+- [[tools/index|tools]]
+- [[README|Inicio]]

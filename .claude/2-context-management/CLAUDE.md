@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: config
+tags:
+  - opsly/claude-config
+---
+
 # Claude Context — Opsly
 
 ## Stack (detalle en `AGENTS.md` → "Stack (fijo)")
@@ -52,3 +61,10 @@ doppler run --project ops-intcloudsysops --config prd -- <command>
 - **Roadmap**: `ROADMAP.md`
 - **Arquitectura**: `docs/adr/`, `docs/OPENCLAW-ARCHITECTURE.md`
 - **Skills**: `skills/README.md`, `skills/user/`
+
+---
+
+## Enlaces relacionados
+
+- [[.claude/README|.claude]]
+- [[README|Inicio]]

@@ -192,3 +192,10 @@ const prompt = await loadPrompt('agent', { version: '2.0.0' });
 - `README.md` — API documentation, usage examples
 - `__tests__/` — Integration tests
 - `config/modules.json` — Module registry
+
+---
+
+## Enlaces relacionados
+
+- [[lib/prompts/README|prompts]]
+- [[README|Inicio]]

@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: config
+tags:
+  - opsly/claude-config
+---
+
 # SecurityAgent — Seguridad
 
 Implementa políticas Zero-Trust y monitorea accesos. Ver `docs/SECURITY_CHECKLIST.md` y `AGENTS.md` (sección "🔒 Seguridad y Multi-Tenancy").
@@ -45,3 +54,10 @@ sudo ufw allow 443/tcp
 - `docs/SECURITY-MITIGATIONS-2026-04-09.md`
 - `scripts/validate-config.sh`
 - `AGENTS.md` — reglas absolutas y multi-tenancy
+
+---
+
+## Enlaces relacionados
+
+- [[.claude/README|.claude]]
+- [[README|Inicio]]

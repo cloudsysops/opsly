@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: skill
+tags:
+  - opsly/agent-skill
+---
+
 # Building Block: Deployment Patterns
 
 ## Decision Matrix
@@ -98,3 +107,10 @@ ALGOLIA_ADMIN_KEY=
 - Use `.env.example` with placeholder values
 - `NEXT_PUBLIC_` prefix for client-exposed vars in Next.js
 - Validate all env vars at startup with Zod
+
+---
+
+## Enlaces relacionados
+
+- [[.agents/skills/the-architect/references/README|references]]
+- [[README|Inicio]]

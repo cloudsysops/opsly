@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: app-doc
+tags:
+  - opsly/app
+---
+
 # Peskids Production Deployment Guide
 
 ## Current Status ✅
@@ -135,3 +144,10 @@ If issues arise:
 **Next Step**: Create PR to main and merge
 **Deployment Target**: Vercel
 **Branch**: feat/peskids-sprint-01
+
+---
+
+## Enlaces relacionados
+
+- [[apps/peskids/README|peskids]]
+- [[README|Inicio]]

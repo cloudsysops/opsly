@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: app-doc
+tags:
+  - opsly/app
+---
+
 # mission-control Archive
 
 Archived on 2026-04-24 per ADR-031.
@@ -13,3 +22,10 @@ Archived on 2026-04-24 per ADR-031.
 2. Move back to active `apps/` namespace.
 3. Re-enable CI checks and deployment path.
 4. Update ADR and architecture docs with explicit role.
+
+---
+
+## Enlaces relacionados
+
+- [[apps/index|apps]]
+- [[README|Inicio]]

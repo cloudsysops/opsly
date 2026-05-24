@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: skill
+tags:
+  - opsly/agent-skill
+---
+
 # CI/CD Security Patterns
 
 OWASP A03:2025 (Software Supply Chain Failures), A08:2025 (Software and Data Integrity Failures)
@@ -476,3 +485,10 @@ jobs:
 | Unpinned Actions | CWE-829 | A08 | HIGH | Mutable refs allow silent supply chain attack |
 | Secret Handling | CWE-200, CWE-214 | A02, A08 | CRITICAL | Secrets in logs/process list/env dumps |
 | Supply Chain via CI | CWE-506, CWE-494 | A08 | HIGH | Malicious packages execute in privileged CI env |
+
+---
+
+## Enlaces relacionados
+
+- [[.agents/README|.agents]]
+- [[README|Inicio]]

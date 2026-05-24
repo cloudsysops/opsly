@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: skill
+tags:
+  - opsly/agent-skill
+---
+
 # Logging Security Patterns
 
 OWASP A09:2025 — Security Logging and Monitoring Failures
@@ -582,3 +591,10 @@ logger.info({
 | Log Injection | CWE-117 | A09, A05 | MEDIUM-HIGH | Log forging, evidence tampering, terminal exploits |
 | Missing Security Logging | CWE-778, CWE-223 | A09 | HIGH | Breaches go undetected, no forensic evidence |
 | Logging Configuration | CWE-532, CWE-779 | A09, A05 | MEDIUM | File exposure, DoS via disk exhaustion |
+
+---
+
+## Enlaces relacionados
+
+- [[.agents/README|.agents]]
+- [[README|Inicio]]

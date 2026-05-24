@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: skill
+tags:
+  - opsly/agent-skill
+---
+
 # Stack Compatibility Matrix
 
 Use this to validate tech stack decisions. Avoid known bad combinations.
@@ -79,3 +88,10 @@ Why it works: Fast to build. shadcn/ui has all the admin components (tables, for
 | Prisma | PostgreSQL (Supabase/Neon) | Best DX, great migrations |
 | Drizzle | PostgreSQL or SQLite (Turso) | Performance, SQL-like, edge compatible |
 | Mongoose | MongoDB | Only ORM for MongoDB |
+
+---
+
+## Enlaces relacionados
+
+- [[.agents/skills/the-architect/references/README|references]]
+- [[README|Inicio]]

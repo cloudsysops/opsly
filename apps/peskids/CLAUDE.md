@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: app-doc
+tags:
+  - opsly/app
+---
+
 # CLAUDE.md
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
@@ -394,3 +403,10 @@ For now: **Build everything here in Opsly.** The extraction plan is a reference,
 | Who owns peskids? | sierrasantiago90@gmail.com |
 | Can I extract to standalone now? | No — Phase 0 incubation. See EXTRACTION-PLAN.md. |
 | What's the next task? | Sprint 01: complete wireframes + forms spec + demo (all 6 tasks are `todo`) |
+
+---
+
+## Enlaces relacionados
+
+- [[apps/peskids/README|peskids]]
+- [[README|Inicio]]

@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: config
+tags:
+  - opsly/cursor-config
+---
+
 # CURSOR PROMPT: Local Services Ops Admin
 
 ## Context
@@ -218,3 +227,10 @@ Opsly Local Services
 ✅ Report includes findings + recommendations  
 ✅ Email templates render correctly in SendGrid  
 ✅ Follow-ups mention upsells naturally (not pushy)
+
+---
+
+## Enlaces relacionados
+
+- [[.cursor/prompts/README|prompts]]
+- [[README|Inicio]]

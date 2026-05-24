@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: skill
+tags:
+  - opsly/agent-skill
+---
+
 # Unified Multi-Agent Architecture — All Agents, One Config
 
 **Status:** Active on Local + VPS  
@@ -383,3 +392,10 @@ curl http://localhost:3010/metrics | jq '.routing'
 **Last verified:** 2026-05-12  
 **Agents active:** 6/6  
 **Sync status:** ✅ All in sync
+
+---
+
+## Enlaces relacionados
+
+- [[.agents/README|.agents]]
+- [[README|Inicio]]

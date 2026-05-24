@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: config
+tags:
+  - opsly/cursor-config
+---
+
 # Prompts Cursor (Opsly)
 
 Uso recomendado para **automatizar** el puente arquitectura → implementación:
@@ -17,3 +26,10 @@ Uso recomendado para **automatizar** el puente arquitectura → implementación:
 4. En cada sesión Agent: `@AGENTS.md` + `@tenant-context` o equivalente + `@.cursor/prompts/<vertical>.md`.
 
 No sustituye revisión humana ni PR; reduce deriva entre “lo acordado” y “lo implementado”.
+
+---
+
+## Enlaces relacionados
+
+- [[.cursor/prompts/README|prompts]]
+- [[README|Inicio]]

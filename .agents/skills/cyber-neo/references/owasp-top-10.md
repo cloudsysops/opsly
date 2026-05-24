@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: skill
+tags:
+  - opsly/agent-skill
+---
+
 # OWASP Top 10 — 2025 Edition
 
 Reference for classifying and scoring security findings against the OWASP 2025 Top 10.
@@ -270,3 +279,10 @@ Reference for classifying and scoring security findings against the OWASP 2025 T
 | A08:2025 | Software or Data Integrity Failures | Untrusted deserialization, unsigned updates |
 | A09:2025 | Security Logging and Monitoring Failures | Insufficient detection and response capability |
 | A10:2025 | Mishandling of Exceptional Conditions | Poor error handling, fail-open, resource exhaustion |
+
+---
+
+## Enlaces relacionados
+
+- [[.agents/README|.agents]]
+- [[README|Inicio]]

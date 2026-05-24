@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: config
+tags:
+  - opsly/cursor-config
+---
+
 # CURSOR PROMPT: Opsly Local Services MVP — Week 1-4 Roadmap
 
 ## Context
@@ -151,3 +160,10 @@ When working on this MVP, use these Cursor prompts for context:
 ---
 
 **Next: Start Week 1 with Tech Builder prompt.**
+
+---
+
+## Enlaces relacionados
+
+- [[.cursor/prompts/README|prompts]]
+- [[README|Inicio]]

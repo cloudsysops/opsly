@@ -160,3 +160,10 @@ const result = {
 
 - `GOVERNANCE.md` — Execution standards, review process
 - `__tests__/` — Execution examples
+
+---
+
+## Enlaces relacionados
+
+- [[lib/workflow/README|workflow]]
+- [[README|Inicio]]

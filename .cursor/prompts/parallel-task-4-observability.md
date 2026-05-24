@@ -44,3 +44,10 @@ Add comprehensive observability to the autonomous execution system.
 - Integration compiles without errors
 
 **Bonus:** Add to AUTONOMOUS-EXECUTION-GUIDE.md: "Metrics & Monitoring" section
+
+---
+
+## Enlaces relacionados
+
+- [[.cursor/prompts/README|prompts]]
+- [[README|Inicio]]

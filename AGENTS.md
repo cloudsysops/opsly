@@ -2447,3 +2447,10 @@ Est. 1-2h
 
 **Blockers:** Workflow file edits require GitHub UI or personal token (OAuth scope limit)
 
+
+---
+
+## Enlaces relacionados
+
+- [[.github/index|.github]]
+- [[README|Inicio]]

@@ -24,3 +24,10 @@ Design the optimal validation pipeline for the autonomous execution system.
 **Format:** Markdown with ASCII diagrams or links to visual examples.
 
 **Success:** Document is clear, actionable, and addresses all 5 sections.
+
+---
+
+## Enlaces relacionados
+
+- [[.cursor/prompts/README|prompts]]
+- [[README|Inicio]]

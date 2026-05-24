@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: skill
+tags:
+  - opsly/agent-skill
+---
+
 # Skills Registry
 
 Maps available Claude Code skills to blueprint sections. Use this during Phase 4 (Generate) to recommend the right skills for the build phase.
@@ -43,3 +52,10 @@ Example:
 | /shadcn-ui | Step 1 (scaffolding) | Set up and customize component library |
 | /seo-audit | Step 11 (polish) | Audit SEO before launch |
 ```
+
+---
+
+## Enlaces relacionados
+
+- [[.agents/skills/the-architect/references/README|references]]
+- [[README|Inicio]]

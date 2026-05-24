@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: package-doc
+tags:
+  - opsly/package
+---
+
 # Opsly API Skill
 
 > **Triggers:** `ruta API`, `next.js`, `route handler`, `endpoint`, `api route`, `rest`
@@ -72,3 +81,10 @@ describe('GET /api/mi-feature', () => {
 | TS2741      | `err.message` en objeto Error | `new Error(message)`              |
 | 500 en ruta | Supabase sin schema           | Añadir `Accept-Profile: platform` |
 | CORS        | Origen no permitido           | Verificar `lib/cors-origins.ts`   |
+
+---
+
+## Enlaces relacionados
+
+- [[packages/skills/README|skills]]
+- [[README|Inicio]]

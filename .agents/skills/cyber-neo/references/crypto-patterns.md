@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: skill
+tags:
+  - opsly/agent-skill
+---
+
 # Cryptographic Security Patterns
 
 Reference knowledge base for Cyber Neo cryptographic analysis.
@@ -652,3 +661,10 @@ private_key = ec.generate_private_key(ec.SECP256R1())
 | Keys in source code | CWE-321 | A04 | Critical | Use secrets manager |
 | RSA < 2048 bits | CWE-326 | A04 | High | RSA 2048+ or ECC P-256+ |
 | AES < 128 bits | CWE-326 | A04 | High | AES-128 minimum, prefer AES-256 |
+
+---
+
+## Enlaces relacionados
+
+- [[.agents/README|.agents]]
+- [[README|Inicio]]

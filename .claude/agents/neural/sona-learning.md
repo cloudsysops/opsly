@@ -40,3 +40,10 @@ Los resultados de tareas se almacenan en Redis (`hive:state`) y pueden alimentar
 
 - `apps/orchestrator/src/hive/hive-state.ts`
 - `apps/orchestrator/src/agents/conscious-layer.ts`
+
+---
+
+## Enlaces relacionados
+
+- [[.claude/agents/README|agents]]
+- [[README|Inicio]]

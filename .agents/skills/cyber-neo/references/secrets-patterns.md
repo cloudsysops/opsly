@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: skill
+tags:
+  - opsly/agent-skill
+---
+
 # Secret Detection Patterns
 
 Reference knowledge base for Cyber Neo secret scanning. Each pattern includes provider, type, regex, severity, and false-positive guidance.
@@ -201,3 +210,10 @@ Reference knowledge base for Cyber Neo secret scanning. Each pattern includes pr
 4. For private keys: check if the file is in a test fixtures directory (`test/`, `spec/`, `fixtures/`).
 5. For connection strings: `localhost`/`127.0.0.1` with common default passwords (`postgres`, `root`, `admin`) may be development-only.
 6. Check `.gitignore` to see if the file should have been excluded from version control.
+
+---
+
+## Enlaces relacionados
+
+- [[.agents/README|.agents]]
+- [[README|Inicio]]

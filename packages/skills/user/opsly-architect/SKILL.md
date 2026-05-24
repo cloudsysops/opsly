@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: package-doc
+tags:
+  - opsly/package
+---
+
 # Opsly Architect Skill
 
 > **Triggers:** `arquitectura`, `adr`, `riesgo`, `tradeoff`, `decision`, `diseño`, `escalabilidad`
@@ -32,3 +41,10 @@ Al tomar decisiones estructurales: nuevos módulos, cambios de contrato entre se
 | Propuesta sin pruebas | Se decide por intuición    | Adjuntar criterios y señales                   |
 | Rompe compatibilidad  | Falta análisis de callers  | Revisar consumidores antes de cambiar contrato |
 | Duplica sistemas      | No revisó código existente | Mapear primero los módulos ya presentes        |
+
+---
+
+## Enlaces relacionados
+
+- [[packages/skills/README|skills]]
+- [[README|Inicio]]

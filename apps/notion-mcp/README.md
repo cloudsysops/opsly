@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: app-doc
+tags:
+  - opsly/app
+---
+
 # `@intcloudsysops/notion-mcp`
 
 Servicio HTTP que expone tareas, standup y quality gates sobre **Notion** (misma base que ves en el navegador).
@@ -31,3 +40,10 @@ Con el servidor en marcha:
 
 - [docs/NOTION-MCP-SERVER.md](../../docs/NOTION-MCP-SERVER.md)
 - [docs/SETUP-NOTION-MCP.md](../../docs/SETUP-NOTION-MCP.md)
+
+---
+
+## Enlaces relacionados
+
+- [[apps/notion-mcp/README|notion-mcp]]
+- [[README|Inicio]]

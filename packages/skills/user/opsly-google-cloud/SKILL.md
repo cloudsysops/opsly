@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: package-doc
+tags:
+  - opsly/package
+---
+
 # Opsly Google Cloud Skill
 
 > **Triggers:** `gcp`, `google`, `drive`, `bigquery`, `vertex`, `cloud`, `service account`

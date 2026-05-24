@@ -19,3 +19,10 @@ Create a TypeScript utility module for testing the autonomous system.
 - ESM export syntax
 
 **Success:** TypeScript type-checks pass, file compiles without errors.
+
+---
+
+## Enlaces relacionados
+
+- [[.cursor/prompts/README|prompts]]
+- [[README|Inicio]]

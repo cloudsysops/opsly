@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: skill
+tags:
+  - opsly/agent-skill
+---
+
 # Archetype: Content Platform / CMS
 
 ## Default Stack Recommendation
@@ -133,3 +142,10 @@ sanity/                         # Sanity Studio config (if using Sanity)
 - `knowledge/building-blocks/database-patterns.md` — Full-text search, content schema design
 - `knowledge/building-blocks/deployment-patterns.md` — CDN, ISR configuration
 - `knowledge/building-blocks/testing-patterns.md` — E2E smoke tests for content rendering
+
+---
+
+## Enlaces relacionados
+
+- [[.agents/skills/the-architect/references/README|references]]
+- [[README|Inicio]]

@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: skill
+tags:
+  - opsly/agent-skill
+---
+
 # Building Block: Authentication Patterns
 
 ## Decision Matrix
@@ -66,3 +75,10 @@ Install: @supabase/ssr
 - Minimum: Google + GitHub (covers most developers)
 - Consumer apps: Google + Apple (Apple required for iOS if offering social login)
 - Enterprise: Google + Microsoft (covers corporate accounts)
+
+---
+
+## Enlaces relacionados
+
+- [[.agents/skills/the-architect/references/README|references]]
+- [[README|Inicio]]

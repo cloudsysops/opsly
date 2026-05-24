@@ -181,3 +181,10 @@ Tests can be organized by category:
 
 - `GOVERNANCE.md` — Testing standards, review process
 - `__tests__/` — Testing examples
+
+---
+
+## Enlaces relacionados
+
+- [[lib/testing/README|testing]]
+- [[README|Inicio]]

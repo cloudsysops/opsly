@@ -31,3 +31,10 @@ Algoritmo de consenso tolerante a fallos bizantinos. Útil cuando hay agentes po
 ### Implementación
 
 Actualmente no implementado en Opsly. Diseñado para futura integración con RuFlo Federation protocol.
+
+---
+
+## Enlaces relacionados
+
+- [[.claude/agents/README|agents]]
+- [[README|Inicio]]

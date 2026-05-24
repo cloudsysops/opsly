@@ -20,3 +20,10 @@ No hay notas de sesion individuales aun. Ver `AGENTS.md` para el diario de sesio
 
 - **Notes:** 28 (brain) + 567 (docs)
 - **Tags:** opsly/brain, opsly/module, opsly/tenant, opsly/workflow, opsly/architecture
+
+---
+
+## Enlaces relacionados
+
+- [[docs/brain/sessions/index|sessions]]
+- [[README|Inicio]]

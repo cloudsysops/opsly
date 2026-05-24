@@ -2,9 +2,13 @@
 
 import { usePathname } from 'next/navigation'
 import { useEffect } from 'react'
-import { isRecoveryLink } from '@/lib/auth-recovery'
+import {
+  inviteActivationPathFromUrl,
+  isInviteLink,
+  isRecoveryLink,
+} from '@/lib/auth-recovery'
 
-/** Forwards recovery tokens on `/` and `/login` to `/auth/recovery`. */
+/** Forwards Supabase invite/recovery tokens on `/` and `/login` to the correct auth page. */
 export function AuthSessionRedirect(): null {
   const pathname = usePathname()
 
@@ -21,6 +25,10 @@ export function AuthSessionRedirect(): null {
     }
 
     const url = new URL(window.location.href)
+    if (isInviteLink(url)) {
+      window.location.replace(inviteActivationPathFromUrl(url, window.location.origin))
+      return
+    }
     if (!isRecoveryLink(url)) {
       return
     }

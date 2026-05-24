@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: infrastructure
+tags:
+  - opsly/infra
+---
+
 # Terraform — DigitalOcean (Opsly)
 
 **Importante:** el droplet de **producción** ya existe. Ejecutá `terraform import digitalocean_droplet.production <id>` **antes** del primer `terraform apply` que gestione producción; si no, Terraform intentará **crear** otro droplet de producción.
@@ -94,3 +103,10 @@ En un clon **sin estado/import** del droplet de producción, un `plan` puede pro
 ## TODO (Fase 2)
 
 - Migrar el **backend** de `local` a **DigitalOcean Spaces** (u otro remoto con locking) y documentar `terraform init -migrate-state` para trabajo en equipo.
+
+---
+
+## Enlaces relacionados
+
+- [[infra/terraform/README|terraform]]
+- [[README|Inicio]]

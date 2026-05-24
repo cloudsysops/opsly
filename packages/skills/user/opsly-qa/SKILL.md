@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: package-doc
+tags:
+  - opsly/package
+---
+
 # Opsly QA Skill
 
 > **Triggers:** `qa`, `testing`, `test`, `audit`, `smoke`, `regresión`, `playwright`, `vitest`, `validación`
@@ -60,3 +69,10 @@ Cada hallazgo debe incluir:
 | 401 generalizado                    | Token no propagado desde frontend    | Revisar `api-client`/headers de auth    |
 | 404 endpoint esperado               | Ruta no desplegada o mal documentada | Reconcilia código, OpenAPI y deploy     |
 | React hook/hydration errors en prod | Patrón incorrecto de render          | Corregir hooks/SSR y revalidar en build |
+
+---
+
+## Enlaces relacionados
+
+- [[packages/skills/README|skills]]
+- [[README|Inicio]]

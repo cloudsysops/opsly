@@ -30,3 +30,10 @@ Dejar Opsly capaz de recibir jobs OpenClaw/local-agents, enrutar a agentes local
 - No tocar secretos ni imprimirlos.
 - No detener tmux/agentes vivos salvo que un proceso esté colgado.
 - No desplegar cambios al VPS hasta pasar type-check/test local.
+
+---
+
+## Enlaces relacionados
+
+- [[.cursor/index|.cursor]]
+- [[README|Inicio]]

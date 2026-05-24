@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: config
+tags:
+  - opsly/cursor-config
+---
+
 # LegalVial — Phase 2b automation prompt (fuente Drive)
 
 ## Alcance (Opsly vs solo LegalVial)
@@ -30,3 +39,10 @@ export GOOGLE_AUTH_STRATEGY="service_account_first"
 Opcional: tras correr el import, puedes versionar `.cursor/prompts/legalvial-phase2b-automation.drive.txt` como snapshot.
 
 Si queda vacío, revisa el Google Doc en Drive (contenido aceptado/publicado en el cuerpo).
+
+---
+
+## Enlaces relacionados
+
+- [[.cursor/prompts/README|prompts]]
+- [[README|Inicio]]

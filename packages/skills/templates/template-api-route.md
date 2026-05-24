@@ -207,3 +207,10 @@ GET /{{url-path}}?page=1&limit=10
 - [ ] La ruta tiene documentación JSDoc si es necesaria
 - [ ] Se ejecutó `npm run lint` y no hay errores
 - [ ] Se ejecutó `npm run test` y todos los tests pasan
+
+---
+
+## Enlaces relacionados
+
+- [[packages/skills/templates/README|templates]]
+- [[README|Inicio]]

@@ -63,7 +63,7 @@ if [ -f "$ROOT/scripts/phase-detector.sh" ]; then
 fi
 
 # ─── Brain sync (background) on doc changes ─────────────────────────
-if echo "$CHANGED" | rg -q "docs/.*\.md"; then
+if echo "$CHANGED" | rg -q "\.md$"; then
   echo "📗 Documentos cambiados, actualizando brain..."
-  (cd "$ROOT" && npm run brain:connect:json 2>/dev/null || true) &
+  (cd "$ROOT" && node scripts/utils/update-state.js 2>/dev/null || true) &
 fi

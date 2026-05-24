@@ -34,3 +34,10 @@ Ask the operator to complete **only** what applies; do not request Full Disk Acc
 Then: full quit (Cmd+Q) of affected apps, or `killall iTerm2`.
 
 Reference: `docs/04-infrastructure/MACOS-LOCAL-AI-AUTOMATION.md`.
+
+---
+
+## Enlaces relacionados
+
+- [[README|.]]
+- [[README|Inicio]]

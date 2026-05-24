@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: package-doc
+tags:
+  - opsly/package
+---
+
 # Opsly Supabase Skill
 
 > **Triggers:** `supabase`, `sql`, `migración`, `postgres`, `rls`, `database`, `schema`, `pgvector`
@@ -78,3 +87,10 @@ npx supabase db query --linked "SELECT tablename FROM pg_tables WHERE schemaname
 # Test RLS
 npx supabase db query --linked "SELECT * FROM platform.tenants LIMIT 1"
 ```
+
+---
+
+## Enlaces relacionados
+
+- [[packages/skills/README|skills]]
+- [[README|Inicio]]

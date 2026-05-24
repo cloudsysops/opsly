@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: package-doc
+tags:
+  - opsly/package
+---
+
 # opsly-niche-solution
 
 ## Objetivo
@@ -26,3 +35,10 @@ Resolver problemas operativos de un nicho comercial concreto con una propuesta e
 - Sin promesas tecnicas no verificables.
 - Sin cambios de arquitectura fuera del stack aprobado.
 - Sin gastos superiores a 5 USD sin aprobacion humana.
+
+---
+
+## Enlaces relacionados
+
+- [[packages/skills/README|skills]]
+- [[README|Inicio]]

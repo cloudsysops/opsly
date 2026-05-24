@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: skill
+tags:
+  - opsly/agent-skill
+---
+
 # VPS Production Setup — Auto-Sync + Health Checks
 
 **Goal:** VPS should ALWAYS be in sync with GitHub main, without manual intervention.
@@ -324,3 +333,10 @@ Everything else is automatic on VPS.
 ---
 
 **Production-ready.** Zero manual sync needed.
+
+---
+
+## Enlaces relacionados
+
+- [[.agents/README|.agents]]
+- [[README|Inicio]]

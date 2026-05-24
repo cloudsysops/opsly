@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: config
+tags:
+  - opsly/claude-config
+---
+
 # .claude/ Sync Guide — Trabajar igual en Local + VPS
 
 ## 1. Archivos que van a Git (sincronizados)
@@ -224,3 +233,10 @@ ssh vps-dragon@100.120.151.91 "cat .claude/settings.local.json | jq '.permission
 ---
 
 **Next:** Documentar en AGENTS.md qué agentes se cargan en cada máquina.
+
+---
+
+## Enlaces relacionados
+
+- [[.claude/README|.claude]]
+- [[README|Inicio]]

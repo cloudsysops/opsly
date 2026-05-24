@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: skill
+tags:
+  - opsly/agent-skill
+---
+
 # Opsly Local Agents
 
 This directory is a lightweight registry for local and external agent adapters.
@@ -52,3 +61,10 @@ runbooks, not duplicated in other roots.
 - OpenCode: `.opencode.json`
 - Hermes: `.hermes/HERMES.md`
 - Local workers: `apps/orchestrator/src/workers/Local*Worker.ts`
+
+---
+
+## Enlaces relacionados
+
+- [[.agents/README|.agents]]
+- [[README|Inicio]]

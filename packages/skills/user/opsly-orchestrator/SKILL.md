@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: package-doc
+tags:
+  - opsly/package
+---
+
 # Opsly Orchestrator Skill
 
 > **Triggers:** `n8n`, `workflow`, `OAR`, `orchestrator`, `super-agent`, `job`, `strategy`, `plan-execute`, `react strategy`
@@ -125,3 +134,10 @@ export async function processMiJob(job: Job): Promise<void> {
 | Job stuck en THINKING  | LLM timeout          | Configurar `toolTimeout` en estrategia    |
 | Memory vacío           | No se cargó contexto | Verificar `enrichJob()` antes de ejecutar |
 | Metering faltante      | No llamó meter\*     | Agregar metering en cada llamada LLM      |
+
+---
+
+## Enlaces relacionados
+
+- [[packages/skills/README|skills]]
+- [[README|Inicio]]

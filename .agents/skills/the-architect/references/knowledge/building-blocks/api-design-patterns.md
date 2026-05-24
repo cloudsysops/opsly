@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: skill
+tags:
+  - opsly/agent-skill
+---
+
 # Building Block: API Design Patterns
 
 ## Decision Matrix
@@ -101,3 +110,10 @@ const createSchema = z.object({
 ```
 
 Apply validation at the API boundary, not deep in business logic.
+
+---
+
+## Enlaces relacionados
+
+- [[.agents/skills/the-architect/references/README|references]]
+- [[README|Inicio]]

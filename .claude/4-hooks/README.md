@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: config
+tags:
+  - opsly/claude-config
+---
+
 # Git Hooks for Claude Workflow
 
 This folder is intended to be used as repository hooks path:
@@ -13,3 +22,10 @@ Included hooks:
 - `pre-push`: validates OpenAPI contract (if script exists).
 
 All hooks are POSIX shell scripts and should be executable.
+
+---
+
+## Enlaces relacionados
+
+- [[.claude/4-hooks/README|4-hooks]]
+- [[README|Inicio]]

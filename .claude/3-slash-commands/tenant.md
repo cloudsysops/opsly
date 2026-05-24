@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: config
+tags:
+  - opsly/claude-config
+---
+
 # /tenant — Crear/Depurar Tenant
 
 Gestiona tenants de prueba. Ver `AGENTS.md` (sección "Primer tenant en staging — smiletripcare") y `docs/tenants/runbooks/TENANT-ONBOARDING-TRIAGE.md`.
@@ -49,3 +58,10 @@ curl -X POST "https://api.op-sly.com/api/invitations" \
 - `scripts/onboard-tenant.sh` — script principal
 - `docs/tenants/runbooks/TENANT-ONBOARDING-TRIAGE.md` — troubleshooting
 - `infra/templates/` — plantilla Docker Compose
+
+---
+
+## Enlaces relacionados
+
+- [[.claude/README|.claude]]
+- [[README|Inicio]]

@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: config
+tags:
+  - opsly/claude-config
+---
+
 # /ai-cost — Consumo de Tokens
 
 Muestra costos LLM. Ver `AGENTS.md` (sección "Ecosistema IA") y `docs/COST-DASHBOARD.md`.
@@ -39,3 +48,10 @@ doppler run --project ops-intcloudsysops --config prd -- \
 - `apps/llm-gateway/src/logger.ts` — `logUsage()`
 - `docs/COST-DASHBOARD.md` — documentación completa
 - `GET /api/metrics/tenant/:slug` — métricas detalladas
+
+---
+
+## Enlaces relacionados
+
+- [[.claude/README|.claude]]
+- [[README|Inicio]]

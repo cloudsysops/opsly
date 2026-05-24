@@ -1,13 +1,22 @@
 #!/usr/bin/env bash
 # Brain connectivity audit: escanea docs/ y reporta qué tan conectado está el vault.
-# Uso: ./scripts/obsidian-brain-connect.sh [--json] [--report]
+# Uso: ./scripts/obsidian-brain-connect.sh [--vault <path>] [--json|--plain]
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 VAULT="${REPO_ROOT}/docs"
 OUT_REPORT="${REPO_ROOT}/config/brain-connectivity.json"
-MODE="${1:-plain}"
+MODE="plain"
+
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --vault) VAULT="$2"; shift 2 ;;
+    --json) MODE="--json"; shift ;;
+    --plain) MODE="plain"; shift ;;
+    *) shift ;;
+  esac
+done
 
 # Build array of full paths
 declare -a paths
@@ -111,7 +120,7 @@ else
   echo ""
   echo "========================================"
   echo "  Brain Connectivity Audit"
-  echo "  Vault: docs/ ($total archivos .md)"
+  echo "  Vault: ${VAULT#$REPO_ROOT/} ($total archivos .md)"
   echo "========================================"
   echo ""
   printf "  %-30s %5d\n" "Total archivos" "$total"
@@ -141,8 +150,7 @@ else
   echo "  Salud del vault: $health"
   echo "========================================"
   echo ""
-  echo "  Tip: abre docs/ como vault en Obsidian, filtra por path:brain"
-  echo "  para ver el grafo del cerebro (28 nodos curados)."
+  echo "  Tip: abre ${VAULT#$REPO_ROOT/} como vault en Obsidian"
   echo "========================================"
   echo ""
 fi

@@ -132,3 +132,10 @@ Track who accessed what costs:
 
 - `README.md` — API documentation, examples
 - `__tests__/` — Telemetry examples
+
+---
+
+## Enlaces relacionados
+
+- [[lib/telemetry/README|telemetry]]
+- [[README|Inicio]]

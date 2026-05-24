@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: app-doc
+tags:
+  - opsly/app
+---
+
 # Task Orchestrator
 
 Autonomous task execution and coordination system for Opsly. Manages task queues, worker assignment, and execution tracking for distributed autonomous operations.
@@ -458,3 +467,10 @@ save 900 1 300 10 60 10000
 - [Redis Documentation](https://redis.io/docs/)
 - [Zod Validation](https://zod.dev/)
 - [Express.js](https://expressjs.com/)
+
+---
+
+## Enlaces relacionados
+
+- [[apps/task-orchestrator/README|task-orchestrator]]
+- [[README|Inicio]]

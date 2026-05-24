@@ -41,3 +41,10 @@ Agente de facturación. Gestiona suscripciones Stripe, métricas de uso por tena
 - `apps/orchestrator/src/workers/CostGateWorker.ts`
 - `apps/api/lib/admin-costs.ts`
 - `apps/billing-service/`
+
+---
+
+## Enlaces relacionados
+
+- [[.claude/agents/README|agents]]
+- [[README|Inicio]]

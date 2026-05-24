@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: package-doc
+tags:
+  - opsly/package
+---
+
 # Opsly Supabase (marketplace / oficial)
 
 > **Triggers:** `supabase marketplace`, `supabase security`, `rls jwt`, `user_metadata unsafe`, `supabase mcp`, `supabase cli migration`, `security invoker view`
@@ -43,3 +52,10 @@
 ## Conflicto a evitar
 
 - No contradecir **ADR y AGENTS** del repo: schema `platform`, política de secretos Doppler, zonas rojas de migraciones en prod sin humano.
+
+---
+
+## Enlaces relacionados
+
+- [[packages/skills/README|skills]]
+- [[README|Inicio]]

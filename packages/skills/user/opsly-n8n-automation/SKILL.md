@@ -175,3 +175,10 @@ Context: Read https://raw.githubusercontent.com/cloudsysops/opsly/main/AGENTS.md
 | LLM cost reduction | >30% via Ollama routing |
 | Scripts auto-improved | 5+ per week |
 | Conventional commits | 100% with docs(n8n): prefix |
+
+---
+
+## Enlaces relacionados
+
+- [[packages/skills/README|skills]]
+- [[README|Inicio]]

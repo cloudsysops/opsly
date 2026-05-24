@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: skill
+tags:
+  - opsly/agent-skill
+---
+
 # Archetype: Mobile Application
 
 ## Default Stack Recommendation
@@ -128,3 +137,10 @@ assets/
 - `knowledge/building-blocks/state-management.md` — TanStack Query + Zustand for mobile
 - `knowledge/building-blocks/api-design-patterns.md` — If building the backend API too
 - `knowledge/building-blocks/testing-patterns.md` — Mobile testing with Detox/Maestro
+
+---
+
+## Enlaces relacionados
+
+- [[.agents/skills/the-architect/references/README|references]]
+- [[README|Inicio]]

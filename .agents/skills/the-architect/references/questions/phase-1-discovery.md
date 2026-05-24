@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: skill
+tags:
+  - opsly/agent-skill
+---
+
 # Phase 1: Discovery Questions
 
 These questions identify WHAT the user wants to build and classify it into an archetype. Ask conversationally — 2-3 questions at a time, not all at once.
@@ -63,3 +72,10 @@ After Q1-Q3, you should be able to classify. If ambiguous, ask one clarifying qu
 1. Tell the user which archetype you've identified and why
 2. Read `knowledge/archetypes/<archetype>.md`
 3. Proceed to Phase 2
+
+---
+
+## Enlaces relacionados
+
+- [[.agents/skills/the-architect/references/README|references]]
+- [[README|Inicio]]

@@ -27,3 +27,10 @@ export function sayHello(name: string): string {
 - Tests created
 - Type-checked
 - Ready for production
+
+---
+
+## Enlaces relacionados
+
+- [[.cursor/index|.cursor]]
+- [[README|Inicio]]

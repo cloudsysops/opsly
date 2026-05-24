@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: package-doc
+tags:
+  - opsly/package
+---
+
 # Context Builder Skill
 
 > **Triggers:** `context-builder`, `contexto`, `rag`, `memoria`, `knowledge-index`, `repo-first`
@@ -45,3 +54,10 @@ OPSLY_ROOT=/opt/opsly ./scripts/index-knowledge.sh
 | Planner sin docs nuevas | No se regenero `config/knowledge-index.json` | Ejecutar `npm run index-knowledge` |
 | Contexto con secretos | Se copio `.env` o salida Doppler completa | Registrar solo nombres/longitudes |
 | Segundo builder | Implementacion paralela en orchestrator | Integrar como cliente del servicio existente |
+
+---
+
+## Enlaces relacionados
+
+- [[packages/skills/README|skills]]
+- [[README|Inicio]]

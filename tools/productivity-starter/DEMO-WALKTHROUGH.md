@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: tool-doc
+tags:
+  - opsly/tool
+---
+
 # Opsly Productivity Demo — Step-By-Step Walkthrough
 
 **Duration:** 15 minutes
@@ -388,3 +397,10 @@ This demo works. Use it. Adapt it. Watch their face when they see the results da
 Then sign them up.
 
 Good luck.
+
+---
+
+## Enlaces relacionados
+
+- [[tools/productivity-starter/README|productivity-starter]]
+- [[README|Inicio]]

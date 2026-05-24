@@ -54,3 +54,10 @@ Agente de control de calidad. Revisa cambios antes de merge.
 - `docs/SECURITY_CHECKLIST.md`
 - `docs/01-development/`
 - `apps/api/__tests__/`
+
+---
+
+## Enlaces relacionados
+
+- [[.claude/agents/README|agents]]
+- [[README|Inicio]]

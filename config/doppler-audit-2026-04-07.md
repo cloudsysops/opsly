@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: config
+tags:
+  - opsly/config
+---
+
 # Auditoría Doppler — `ops-intcloudsysops` / `prd` (2026-04-07)
 
 **Metodología:** solo nombres de clave, sin valores. Regenerar la tabla tras cambios en el proyecto.
@@ -73,3 +82,10 @@ Columna «Válido»: marcar manualmente tras `validate-config.sh` y un deploy ve
 1. `doppler secrets get GO --plain` nunca en chat; usar siempre redirección a archivo local ignorado o `>/dev/null` para smoke.
 2. Alinear nombres duplicados Stripe (`STRIPE_KEY` vs `STRIPE_SECRET_KEY`) si ambos existen en el mismo config.
 3. Triggers de recordatorio en calendario para PAT GitHub y tokens admin.
+
+---
+
+## Enlaces relacionados
+
+- [[README|.]]
+- [[README|Inicio]]

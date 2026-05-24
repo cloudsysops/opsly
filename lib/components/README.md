@@ -103,3 +103,10 @@ export function TenantForm() {
 - `GOVERNANCE.md` — Component standards, review process
 - `.storybook/` — Storybook configuration
 - `__tests__/` — Component tests
+
+---
+
+## Enlaces relacionados
+
+- [[lib/components/README|components]]
+- [[README|Inicio]]

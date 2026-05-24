@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: tool-doc
+tags:
+  - opsly/tool
+---
+
 # Opsly Productivity Demo — 15-Minute Sales Script
 
 **Target:** Barbershop/Restaurant/Construction/Freelance owner struggling with manual client follow-ups
@@ -167,3 +176,10 @@ Let us know if you need anything else! 💇‍♀️"
 - ✅ User control (you approve everything)
 - ✅ Simplicity (no training needed)
 - ✅ Risk-free trial (30 days, no contract)
+
+---
+
+## Enlaces relacionados
+
+- [[tools/productivity-starter/README|productivity-starter]]
+- [[README|Inicio]]

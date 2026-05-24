@@ -301,3 +301,10 @@ describe('{{toolName}} MCP Tool', () => {
 - [ ] Los scopes OAuth están claros y documentados
 - [ ] Se ejecutó lint y no hay errores
 - [ ] Se ejecutaron los tests y pasan
+
+---
+
+## Enlaces relacionados
+
+- [[packages/skills/templates/README|templates]]
+- [[README|Inicio]]

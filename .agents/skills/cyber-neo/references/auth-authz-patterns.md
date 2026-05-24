@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: skill
+tags:
+  - opsly/agent-skill
+---
+
 # Authentication and Authorization Security Patterns
 
 Reference knowledge base for Cyber Neo authentication/authorization analysis.
@@ -797,3 +806,10 @@ if (process.env.NODE_ENV === 'development') {
 | Vertical Escalation | CWE-269 | A01 | Critical |
 | Missing RBAC | CWE-285 | A01 | High |
 | Broken Function Auth | CWE-285 | A01 | High |
+
+---
+
+## Enlaces relacionados
+
+- [[.agents/README|.agents]]
+- [[README|Inicio]]

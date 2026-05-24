@@ -46,3 +46,10 @@ La Queen actual en `queen-bee.ts` usa esta topología por defecto.
 
 - `apps/orchestrator/src/hive/queen-bee.ts`
 - `apps/orchestrator/src/hive/hive-orchestrator.ts`
+
+---
+
+## Enlaces relacionados
+
+- [[.claude/agents/README|agents]]
+- [[README|Inicio]]

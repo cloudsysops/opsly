@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: package-doc
+tags:
+  - opsly/package
+---
+
 # Opsly Vercel AI SDK (marketplace)
 
 > **Triggers:** `ai sdk`, `vercel ai`, `streamtext`, `generatetext`, `useChat`, `tool calling react`, `structured output llm`
@@ -40,3 +49,10 @@ Patrones de archivo comunes (Vercel): `app/api/chat/**`, `lib/ai/**` — en Opsl
 ## Cuándo **no** usar esta skill como fuente única
 
 - Jobs BullMQ, workers, MCP tools de plataforma → **`opsly-orchestrator`**, **`opsly-mcp`**, **`opsly-llm`**.
+
+---
+
+## Enlaces relacionados
+
+- [[packages/skills/README|skills]]
+- [[README|Inicio]]

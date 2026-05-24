@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: config
+tags:
+  - opsly/cursor-config
+---
+
 # CURSOR PROMPT: Local Services Automation Engineer
 
 ## Context
@@ -247,3 +256,10 @@ Each JSON file is exported from n8n UI.
 ✅ Review request links functional (Google/Yelp short URLs)  
 ✅ Calendar sync (optional) works with Google Calendar API  
 ✅ Zero duplicate emails (idempotency verified)
+
+---
+
+## Enlaces relacionados
+
+- [[.cursor/prompts/README|prompts]]
+- [[README|Inicio]]

@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: archive
+tags:
+  - opsly/archived
+---
+
 # Context Builder v2 (Super Agent) — Architecture
 
 ## Goal
@@ -165,3 +174,10 @@ This enables side-by-side comparison and fast rollback.
 - no secrets in repository; env from Doppler/host `.env`
 - keep admin-token checks in downstream APIs unchanged
 - maintain full audit (`request_id`, `tenant_slug`) for all packed outputs
+
+---
+
+## Enlaces relacionados
+
+- [[README|.]]
+- [[README|Inicio]]

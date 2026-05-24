@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: skill
+tags:
+  - opsly/agent-skill
+---
+
 # Building Block: State Management
 
 ## Decision Matrix
@@ -101,3 +110,10 @@ const channel = supabase
 - **Pusher / Ably**: Managed WebSocket service, easy setup
 - **Socket.io**: Self-hosted, more control, more ops
 - **Server-Sent Events**: One-way server→client, simpler than WebSocket
+
+---
+
+## Enlaces relacionados
+
+- [[.agents/skills/the-architect/references/README|references]]
+- [[README|Inicio]]

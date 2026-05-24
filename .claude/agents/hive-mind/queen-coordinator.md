@@ -54,3 +54,10 @@ Agente que coordina el enjambre (Hive). Es el punto de entrada para objetivos co
 
 - `apps/orchestrator/src/hive/` — sistema completo Hive
 - `docs/design/AGENT-ORCHESTRATION-INDEX.md`
+
+---
+
+## Enlaces relacionados
+
+- [[.claude/agents/README|agents]]
+- [[README|Inicio]]

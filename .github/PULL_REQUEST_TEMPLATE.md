@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: config
+tags:
+  - opsly/github
+---
+
 # <!--
 
 # PLANTILLA DE PULL REQUEST — Opsly (.github/PULL_REQUEST_TEMPLATE.md)
@@ -75,3 +84,10 @@ Cada ítem ayuda a mantener calidad y seguridad del monorepo.
 ## Notas para quien revisa
 
 <!-- Contexto, trade-offs, riesgos, enlaces a issues. -->
+
+---
+
+## Enlaces relacionados
+
+- [[.github/index|.github]]
+- [[README|Inicio]]

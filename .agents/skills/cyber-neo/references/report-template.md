@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: skill
+tags:
+  - opsly/agent-skill
+---
+
 # Cyber Neo Security Report Template
 
 This document defines the structure and rules for generating the final security report in Phase 7.
@@ -324,3 +333,10 @@ Eligible files exclude:
 - Files larger than 100KB (note these as skipped)
 
 Always report what was skipped and why, so the user knows what was not covered.
+
+---
+
+## Enlaces relacionados
+
+- [[.agents/README|.agents]]
+- [[README|Inicio]]

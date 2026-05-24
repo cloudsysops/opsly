@@ -113,3 +113,10 @@ Example format:
 - `README.md` — API documentation, examples
 - `__tests__/` — Integration tests
 - `datasets/` — Golden and adversarial test data
+
+---
+
+## Enlaces relacionados
+
+- [[lib/evaluation/README|evaluation]]
+- [[README|Inicio]]

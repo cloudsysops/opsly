@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: package-doc
+tags:
+  - opsly/package
+---
+
 # Opsly Stripe (marketplace / oficial)
 
 > **Triggers:** `stripe marketplace`, `stripe best practices`, `checkout session`, `payment intent`, `go live stripe`, `stripe api version`, `integración stripe oficial`
@@ -40,3 +49,10 @@
 ## Conflicto con arquitectura Opsly
 
 - Toda **trazabilidad y políticas de costo LLM** siguen yendo por **OpenClaw → LLM Gateway** (`opsly-llm`). Esta skill es solo para **pagos y billing Stripe**.
+
+---
+
+## Enlaces relacionados
+
+- [[packages/skills/README|skills]]
+- [[README|Inicio]]

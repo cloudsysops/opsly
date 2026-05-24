@@ -382,3 +382,10 @@ it('debería ejecutar callback después de delay', async () => {
 - [ ] Los tests cubran casos edge: empty, null, undefined, max values
 - [ ] Se ejecutó `npm run test` y todos los tests pasan
 - [ ] Se ejecutó `npm run test:coverage` y coverage > 80%
+
+---
+
+## Enlaces relacionados
+
+- [[packages/skills/templates/README|templates]]
+- [[README|Inicio]]

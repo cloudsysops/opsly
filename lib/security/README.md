@@ -144,3 +144,10 @@ const decrypted = decryptSecret(row.value);
 
 - `GOVERNANCE.md` — Security standards, review process
 - `__tests__/` — Security examples
+
+---
+
+## Enlaces relacionados
+
+- [[lib/security/README|security]]
+- [[README|Inicio]]

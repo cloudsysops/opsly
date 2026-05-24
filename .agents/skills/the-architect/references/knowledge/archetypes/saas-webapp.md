@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: skill
+tags:
+  - opsly/agent-skill
+---
+
 # Archetype: SaaS Web Application
 
 ## Default Stack Recommendation
@@ -122,3 +131,10 @@ public/
 - `knowledge/building-blocks/state-management.md` — Server Components + TanStack Query + Zustand (recommended combo)
 - `knowledge/building-blocks/deployment-patterns.md` — Vercel config, CI/CD, environment management
 - `knowledge/building-blocks/styling-systems.md` — Tailwind v4 setup, design tokens, shadcn/ui integration
+
+---
+
+## Enlaces relacionados
+
+- [[.agents/skills/the-architect/references/README|references]]
+- [[README|Inicio]]

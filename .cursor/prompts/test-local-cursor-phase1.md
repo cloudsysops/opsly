@@ -26,3 +26,10 @@ You are an executor agent running locally via the Opsly orchestrator.
 
 Test time: $(date)
 Agent: Cursor IDE on Opsly-mac2011
+
+---
+
+## Enlaces relacionados
+
+- [[.cursor/prompts/README|prompts]]
+- [[README|Inicio]]

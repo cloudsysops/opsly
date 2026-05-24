@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: infrastructure
+tags:
+  - opsly/infra
+---
+
 # ValidationOrchestrator Health Monitoring
 
 24/7 automated health monitoring and alerting system for ValidationOrchestrator.
@@ -202,3 +211,10 @@ curl -X POST "${DISCORD_WEBHOOK_HEALTH}" \
 3. Monitor first health check results
 4. Integrate Grafana alerts
 5. Document any custom procedures for your team
+
+---
+
+## Enlaces relacionados
+
+- [[infra/monitoring/README|monitoring]]
+- [[README|Inicio]]

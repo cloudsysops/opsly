@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: skill
+tags:
+  - opsly/agent-skill
+---
+
 # Python Security Patterns
 
 Reference knowledge base for Cyber Neo Python application security analysis.
@@ -933,3 +942,10 @@ def mask(value: str) -> str:
 
 logger.info(f"Token used: {mask(api_token)}")
 ```
+
+---
+
+## Enlaces relacionados
+
+- [[.agents/README|.agents]]
+- [[README|Inicio]]

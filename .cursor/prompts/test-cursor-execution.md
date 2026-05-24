@@ -22,3 +22,10 @@ You are an executor agent running locally on a developer's MacBook via the Opsly
 - Function is properly exported
 - TypeScript has no type errors
 - Can be imported and called successfully
+
+---
+
+## Enlaces relacionados
+
+- [[.cursor/prompts/README|prompts]]
+- [[README|Inicio]]

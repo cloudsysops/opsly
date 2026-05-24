@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: config
+tags:
+  - opsly/claude-config
+---
+
 # BillingAgent — Facturación
 
 Gestiona suscripciones Stripe, metering LLM y alertas de costos.
@@ -34,3 +43,10 @@ GROUP BY DATE(created_at) ORDER BY day;
 - `apps/api/lib/stripe/` — integración Stripe
 - `apps/llm-gateway/src/logger.ts` — `logUsage()` para `usage_events`
 - `docs/COST-DASHBOARD.md`
+
+---
+
+## Enlaces relacionados
+
+- [[.claude/README|.claude]]
+- [[README|Inicio]]

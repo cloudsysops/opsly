@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: package-doc
+tags:
+  - opsly/package
+---
+
 # Opsly Quantum Skill
 
 > **Triggers:** `orquestación`, `diagnóstico completo`, `multi-skill`, `quantum`, `maestro`, `visión global`
@@ -72,3 +81,10 @@ Cuando el agente necesita **visión completa** del monorepo Opsly: contexto, dia
 - `docs/OPSLYQUANTUM-SKILL-DESIGN.md`
 - `docs/OPSLYQUANTUM-USAGE.md`
 - `skills/user/opsly-quantum/templates/runbook.md`
+
+---
+
+## Enlaces relacionados
+
+- [[packages/skills/README|skills]]
+- [[README|Inicio]]

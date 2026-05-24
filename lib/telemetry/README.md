@@ -182,3 +182,10 @@ const providerCosts = telemetry.getCostByProvider();
 
 - `GOVERNANCE.md` — Cost tracking standards, review process
 - `__tests__/` — Telemetry examples
+
+---
+
+## Enlaces relacionados
+
+- [[lib/telemetry/README|telemetry]]
+- [[README|Inicio]]

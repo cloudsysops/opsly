@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: package-doc
+tags:
+  - opsly/package
+---
+
 # Opsly Tenant Operations Skill
 
 > **Triggers:** `onboard`, `tenant`, `suspend`, `resume`, `n8n`, `uptime`, `stack`, `cliente`
@@ -58,3 +67,10 @@ curl -sf https://n8n-micliente.op-sly.com/healthz
 # Ver logs
 docker logs n8n_micliente_1 --tail 50
 ```
+
+---
+
+## Enlaces relacionados
+
+- [[packages/skills/README|skills]]
+- [[README|Inicio]]

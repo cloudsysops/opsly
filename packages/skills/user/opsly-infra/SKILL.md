@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: package-doc
+tags:
+  - opsly/package
+---
+
 # Opsly Infra Skill
 
 > **Triggers:** `docker`, `compose`, `deploy`, `vps`, `ssh`, `traefik`, `script`, `bash`, `shell`, `dockerfile`, `healthcheck`, `memory`, `infra`

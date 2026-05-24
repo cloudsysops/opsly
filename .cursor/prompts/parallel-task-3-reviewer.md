@@ -29,3 +29,10 @@ Review the autonomous execution system for security, reliability, and best pract
 - Approval decision (safe for production or needs fixes)
 
 **Success:** Audit is thorough, findings are actionable, recommendation is clear.
+
+---
+
+## Enlaces relacionados
+
+- [[.cursor/prompts/README|prompts]]
+- [[README|Inicio]]

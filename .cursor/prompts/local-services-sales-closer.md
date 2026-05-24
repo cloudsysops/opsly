@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: config
+tags:
+  - opsly/cursor-config
+---
+
 # CURSOR PROMPT: Local Services Sales Closer
 
 ## Context
@@ -198,3 +207,10 @@ IF they ask price before committing time
 ✅ Warm tone maintained (customer feels heard)  
 ✅ Objection handled (if customer expresses concern)  
 ✅ Conversion: 40%+ of inquiries → booked appointment
+
+---
+
+## Enlaces relacionados
+
+- [[.cursor/prompts/README|prompts]]
+- [[README|Inicio]]

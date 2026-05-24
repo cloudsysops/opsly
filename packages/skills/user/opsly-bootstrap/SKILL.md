@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: package-doc
+tags:
+  - opsly/package
+---
+
 # Opsly Bootstrap Skill
 
 > **Triggers:** `nueva sesión`, `inicio`, `contexto`, `start`, `sesión`, `autónomo`, `autonomous`, `godmode`
@@ -103,3 +112,10 @@ Next.js 15 · React 19 · TypeScript 5.7 · Tailwind 3.4 · Supabase · Stripe �
 | Doppler fails           | Token sin scope                    | `doppler configure set token --scope /opt/opsly` |
 | Skills no cargados      | No ejecutó bootstrap               | Ejecutar este skill primero                      |
 | Contexto desactualizado | No leyó AGENTS.md                  | Siempre leer al inicio                           |
+
+---
+
+## Enlaces relacionados
+
+- [[packages/skills/README|skills]]
+- [[README|Inicio]]

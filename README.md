@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: doc
+tags:
+  - opsly/doc
+---
+
 # intcloudsysops — Opsly
 
 ![Structure Validation](https://github.com/cloudsysops/opsly/workflows/Structure%20Validation/badge.svg)
@@ -385,3 +394,10 @@ Tras el despliegue, el pipeline espera y llama `https://api.<PLATFORM_DOMAIN>/ap
 ## License
 
 MIT
+
+---
+
+## Enlaces relacionados
+
+- [[README|.]]
+- [[README|Inicio]]

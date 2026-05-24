@@ -117,3 +117,10 @@ When limit exceeded:
 
 - `README.md` — API documentation, examples
 - `__tests__/` — Execution examples
+
+---
+
+## Enlaces relacionados
+
+- [[lib/workflow/README|workflow]]
+- [[README|Inicio]]

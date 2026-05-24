@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: package-doc
+tags:
+  - opsly/package
+---
+
 # Opsly Skill Creator
 
 > **Triggers:** `crear skill`, `nueva skill`, `skill creator`, `automatizar proceso`, `capturar workflow`, `skill from`, `turn into skill`
@@ -267,3 +276,10 @@ Cuando un agente identifica un proceso que debería ser skill, puede crearla aut
 | Skill duplicada     | No verificó existentes          | Revisar `skills/user/` antes de crear      |
 | SKILL.md muy largo  | Toda la info en un archivo      | Mover detalles a `references/`             |
 | Skill sobreajustada | Escrita para un caso específico | Generalizar instrucciones y ejemplos       |
+
+---
+
+## Enlaces relacionados
+
+- [[packages/skills/README|skills]]
+- [[README|Inicio]]

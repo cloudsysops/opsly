@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: app-doc
+tags:
+  - opsly/app
+---
+
 # Peskids MVP
 
 After-school program management platform. Incubated in Opsly, designed for extraction to independent product.
@@ -128,3 +137,10 @@ MIT (during incubation in Opsly)
 Proprietary (after extraction)
 
 See `docs/tenants/peskids/EXTRACTION-PLAN.md#License-Decision` for details.
+
+---
+
+## Enlaces relacionados
+
+- [[apps/peskids/README|peskids]]
+- [[README|Inicio]]

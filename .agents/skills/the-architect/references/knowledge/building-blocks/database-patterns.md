@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: skill
+tags:
+  - opsly/agent-skill
+---
+
 # Building Block: Database Patterns
 
 ## Decision Matrix
@@ -71,3 +80,10 @@ npx drizzle-kit push                  # Quick push (dev only)
 - **Connection pooling**: Use connection pooler (Supabase has built-in, or use PgBouncer)
 - **Query optimization**: Use `EXPLAIN ANALYZE` before shipping complex queries
 - **Pagination**: Cursor-based for infinite scroll, offset-based for page numbers
+
+---
+
+## Enlaces relacionados
+
+- [[.agents/skills/the-architect/references/README|references]]
+- [[README|Inicio]]

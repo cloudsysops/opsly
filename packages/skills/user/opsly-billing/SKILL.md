@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: package-doc
+tags:
+  - opsly/package
+---
+
 # Opsly Billing Skill
 
 > **Triggers:** `stripe`, `billing`, `suscripción`, `subscription`, `invoice`, `factura`, `metering`, `usage`, `plan`
@@ -59,3 +68,10 @@ export async function POST(request: Request): Promise<Response> {
 ## Skill marketplace (oficial Stripe)
 
 Para criterios de producto Stripe (Checkout vs Charges, Billing, Connect) alineados a la documentación actual, cargar también **`opsly-stripe-marketplace`** (`skills/user/opsly-stripe-marketplace/SKILL.md`).
+
+---
+
+## Enlaces relacionados
+
+- [[packages/skills/README|skills]]
+- [[README|Inicio]]

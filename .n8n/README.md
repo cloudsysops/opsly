@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: config
+tags:
+  - opsly/n8n
+---
+
 # .n8n/ — Configuración de n8n Agents para Opsly
 
 Estructura para gestionar workflows n8n autónomos en Opsly (plataforma multi-tenant).
@@ -156,3 +165,10 @@ npm install -g n8n
 # Verificar
 n8n --version
 ```
+
+---
+
+## Enlaces relacionados
+
+- [[.n8n/README|.n8n]]
+- [[README|Inicio]]

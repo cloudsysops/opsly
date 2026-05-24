@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: tool-doc
+tags:
+  - opsly/tool
+---
+
 # Opsly CLI Agent
 
 Agente de terminal con soporte multi-provider y UI estilo Matrix.
@@ -48,3 +57,10 @@ OPENAI_API_KEY=your_key
 - Streaming typewriter
 - Integracion MCP
 - Modo interactivo
+
+---
+
+## Enlaces relacionados
+
+- [[tools/cli/README|cli]]
+- [[README|Inicio]]

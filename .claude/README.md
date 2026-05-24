@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: config
+tags:
+  - opsly/claude-config
+---
+
 # .claude/ — Configuración de Claude Code para Opsly
 
 Estructura para gestionar agentes, comandos y hooks en Claude Code dentro del proyecto Opsly (plataforma multi-tenant de agentes de IA).
@@ -153,3 +162,10 @@ npm ci
 # O verificar post-merge.sh:
 bash .claude/4-hooks/post-merge.sh
 ```
+
+---
+
+## Enlaces relacionados
+
+- [[.claude/README|.claude]]
+- [[README|Inicio]]

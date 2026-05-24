@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: app-doc
+tags:
+  - opsly/app
+---
+
 # Meta-Optimizer: Prompt Self-Improvement Framework
 
 ## Overview
@@ -205,3 +214,10 @@ if (metricsStore.isPromptInCooldown('routing-dispatch')) {
 - **ReAct Strategy**: `src/runtime/strategies/react-engine.ts`
 - **Orchestrator Engine**: `src/engine.ts`
 - **Health Server**: `src/health-server.ts`
+
+---
+
+## Enlaces relacionados
+
+- [[apps/orchestrator/src/meta/README|meta]]
+- [[README|Inicio]]

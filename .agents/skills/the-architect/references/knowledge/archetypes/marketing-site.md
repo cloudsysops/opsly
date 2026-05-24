@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: skill
+tags:
+  - opsly/agent-skill
+---
+
 # Archetype: Marketing / Landing Page Site
 
 ## Default Stack Recommendation
@@ -115,3 +124,10 @@ public/
 - `knowledge/building-blocks/deployment-patterns.md` — Vercel, Netlify, Cloudflare Pages comparison
 - `knowledge/building-blocks/styling-systems.md` — Tailwind v4 setup, typography system
 - `knowledge/building-blocks/testing-patterns.md` — E2E smoke tests for marketing sites
+
+---
+
+## Enlaces relacionados
+
+- [[.agents/skills/the-architect/references/README|references]]
+- [[README|Inicio]]

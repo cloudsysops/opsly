@@ -41,3 +41,10 @@ Usa este skill cuando una tarea de coding se delega a `jcode` desde el orchestra
 - `JCODE_MODEL` (opcional).
 - `JCODE_PROVIDER` (opcional; p. ej. `claude`, `openai`, `openrouter`, `copilot`).
 - Binario `jcode` disponible en el entorno donde corre el worker/sandbox.
+
+---
+
+## Enlaces relacionados
+
+- [[packages/skills/README|skills]]
+- [[README|Inicio]]

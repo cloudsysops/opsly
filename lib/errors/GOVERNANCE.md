@@ -71,3 +71,10 @@ AppError (base)
 
 - `README.md` — API documentation, examples
 - `__tests__/` — Error handling tests
+
+---
+
+## Enlaces relacionados
+
+- [[lib/errors/README|errors]]
+- [[README|Inicio]]

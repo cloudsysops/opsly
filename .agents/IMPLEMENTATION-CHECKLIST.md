@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: skill
+tags:
+  - opsly/agent-skill
+---
+
 # Multi-Agent Sync Implementation Checklist
 
 ## ✅ DONE (Crear hoy)
@@ -330,3 +339,10 @@ When you complete work, update AGENTS.md:
 
 **Start Date:** 2026-05-12  
 **Target Completion:** 2026-05-12 (same day)
+
+---
+
+## Enlaces relacionados
+
+- [[.agents/README|.agents]]
+- [[README|Inicio]]

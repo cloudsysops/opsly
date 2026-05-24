@@ -52,3 +52,10 @@ Agente especializado en testing. Escribe tests unitarios, de integración y E2E.
 - `apps/api/__tests__/` — tests existentes como ejemplo
 - `docs/testing/TEST-COVERAGE-ANALYSIS-2026-05-22.md`
 - `lib/testing/` — test utilities compartidas
+
+---
+
+## Enlaces relacionados
+
+- [[.claude/agents/README|agents]]
+- [[README|Inicio]]
