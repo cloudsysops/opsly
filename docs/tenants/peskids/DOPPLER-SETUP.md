@@ -22,6 +22,8 @@ El script **no imprime valores**. Reutiliza Supabase ya presente en `prd` y gene
 | `NEXT_PUBLIC_OPSLY_EVENT_BUS_URL` | `http://orchestrator:3011` (rutas que añaden `/events`) |
 | `N8N_WEBHOOK_BASE_URL` | `https://n8n-peskids.op-sly.com/webhook` |
 | `N8N_BASIC_AUTH_USER` / `N8N_BASIC_AUTH_PASSWORD` | Copiados de `TENANT_PESKIDS_N8N_*` si existen |
+| `TENANT_PESKIDS_MAKE_TEAM_ID` | Team Make (compartido hasta licencia multi-team) — ver [`MAKE-SETUP.md`](../../01-development/MAKE-SETUP.md) |
+| `TENANT_PESKIDS_MAKE_WEBHOOK_URL` | Hook `opsly-peskids-ingress` (automatización Make en paralelo a n8n) |
 | `DASHBOARD_ADMIN_SECRET` | Generado (`openssl rand -hex 32`) |
 | `JELOU_WEBHOOK_SECRET` | Generado; configurar el mismo valor en Jelou al activar webhooks |
 | `NEXT_PUBLIC_JELOU_*` | `placeholder` hasta tener IDs reales de Jelou |
