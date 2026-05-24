@@ -22,6 +22,8 @@ Guía para que un agente con navegador revise **URLs públicas** y **dashboards 
 - `is_superuser`: `true`
 - Email confirmado
 
+**Nota operativa:** esta cuenta de plataforma se trata como acceso global de Opsly. No hay una contraseña que debas recordar de memoria en el repo: si no tienes una activa, usa el flujo de recuperación desde `https://admin.op-sly.com/login` y define una nueva.
+
 **Con ese usuario puedes:**
 
 | Superficie | URL login | ¿Acceso esperado? |
@@ -34,7 +36,8 @@ Para **portal por tenant** (smiletripcare, intcloudsysops, etc.) hace falta un u
 
 ## Cómo obtener / resetear la contraseña (humano)
 
-1. En el login correspondiente → **«Olvidé mi contraseña»** (Peskids, portal y admin lo tienen en la rama de recuperación desplegada).
+1. En el login correspondiente → **«Olvidé mi contraseña»**. En Opsly Admin el flujo correcto es `https://admin.op-sly.com/login`; ahí debe aparecer el formulario de nueva contraseña cuando el enlace de recuperación es válido.
+   - Si el enlace solo muestra el formulario normal de email/password, el recovery expiró o el despliegue está desactualizado.
 2. O en [Supabase Dashboard](https://supabase.com/dashboard) → proyecto `jkwykpldnitavhmtuzmo` → Authentication → Users → `cboteros1@gmail.com` → **Send password recovery** (no compartir el enlace en Slack público).
 
 **No** pegues la contraseña en Cursor, Discord ni en issues de GitHub.
