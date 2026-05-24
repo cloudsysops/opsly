@@ -90,6 +90,14 @@ export function currentPeskidsRecoveryTarget(): RecoveryTarget {
   return recoveryTargetFromMetadata({ tenant_slug: 'peskids', role: 'admin' })
 }
 
+function hashAuthParams(url: URL): URLSearchParams | null {
+  const hash = url.hash.replace(/^#/, '')
+  if (!hash) {
+    return null
+  }
+  return new URLSearchParams(hash)
+}
+
 export function isRecoveryLink(url: URL): boolean {
   if (url.searchParams.get('code')) {
     return true
@@ -97,12 +105,21 @@ export function isRecoveryLink(url: URL): boolean {
   if (url.searchParams.get('type') === 'recovery') {
     return true
   }
-  const hash = url.hash.replace(/^#/, '')
-  if (!hash) {
+  const params = hashAuthParams(url)
+  if (!params) {
     return false
   }
-  const params = new URLSearchParams(hash)
-  return params.get('type') === 'recovery' || Boolean(params.get('access_token'))
+  if (params.get('type') === 'recovery' || Boolean(params.get('access_token'))) {
+    return true
+  }
+  const errorCode = params.get('error_code') ?? ''
+  if (
+    params.get('error') &&
+    (errorCode.startsWith('otp') || errorCode === 'flow_state_expired')
+  ) {
+    return true
+  }
+  return false
 }
 
 export function forwardRecoveryToOrigin(targetOrigin: string): void {

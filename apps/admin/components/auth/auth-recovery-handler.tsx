@@ -31,6 +31,20 @@ export function AuthRecoveryHandler(): React.ReactElement {
 
     void (async () => {
       const url = new URL(window.location.href)
+      const hashParams = new URLSearchParams(url.hash.replace(/^#/, ''))
+      const hashError = hashParams.get('error')
+      const hashErrorCode = hashParams.get('error_code') ?? ''
+      if (hashError && !url.searchParams.get('code')) {
+        const description =
+          hashParams.get('error_description')?.replace(/\+/g, ' ') ?? hashError
+        setMessage(
+          hashErrorCode === 'otp_expired'
+            ? 'El enlace expiró. Solicita uno nuevo desde /login.'
+            : description
+        )
+        return
+      }
+
       const code = url.searchParams.get('code')
       if (code) {
         const { data, error } = await supabase.auth.exchangeCodeForSession(code)

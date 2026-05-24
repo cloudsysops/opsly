@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Electrolize, JetBrains_Mono, Orbitron } from 'next/font/google';
+import { AuthSessionRedirect } from '@/components/auth/auth-session-redirect';
 import { AppChrome } from '@/components/layout/AppChrome';
 import { Providers } from '@/components/providers';
 import './globals.css';
@@ -37,6 +38,7 @@ export default function RootLayout({
         className={`${sans.variable} ${mono.variable} ${display.variable} min-h-screen font-sans antialiased`}
       >
         <Providers>
+          <AuthSessionRedirect />
           <AppChrome>{children}</AppChrome>
         </Providers>
       </body>

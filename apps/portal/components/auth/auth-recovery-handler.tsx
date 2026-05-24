@@ -44,6 +44,17 @@ export function AuthRecoveryHandler({
 
     if (hash) {
       const hashParams = new URLSearchParams(hash)
+      if (hashParams.get('error') && !code) {
+        const hashErrorCode = hashParams.get('error_code') ?? ''
+        const description =
+          hashParams.get('error_description')?.replace(/\+/g, ' ') ?? hashParams.get('error')
+        setMessage(
+          hashErrorCode === 'otp_expired'
+            ? 'El enlace expiró. Solicita uno nuevo desde «¿Olvidaste tu contraseña?».'
+            : (description ?? 'Enlace inválido.')
+        )
+        return
+      }
       const accessToken = hashParams.get('access_token')
       if (accessToken && routeAwayIfWrongApp(metadataFromJwtAccessToken(accessToken))) {
         return

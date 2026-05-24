@@ -42,10 +42,6 @@ export async function updateSession(request: NextRequest): Promise<NextResponse>
   const isOnboarding = pathname.startsWith('/onboarding/');
   const isAuthPublic =
     pathname.startsWith('/auth/') || pathname === '/update-password';
-  const hasRecoveryQuery =
-    Boolean(request.nextUrl.searchParams.get('code')) ||
-    request.nextUrl.searchParams.get('type') === 'recovery';
-
   const isAdmin = pathname.startsWith('/admin');
   const hasDemoSession =
     request.cookies.get(PORTAL_DEMO_COOKIE)?.value === '1' &&
@@ -70,11 +66,9 @@ export async function updateSession(request: NextRequest): Promise<NextResponse>
     return NextResponse.redirect(redirectUrl);
   }
 
-  if ((user || hasDemoSession) && isLogin && !hasRecoveryQuery) {
-    const redirectUrl = request.nextUrl.clone();
-    redirectUrl.pathname = '/dashboard';
-    return NextResponse.redirect(redirectUrl);
-  }
+  // Do not redirect away from /login when a session exists: recovery tokens are in the
+  // URL hash (#access_token=...) which never reaches the server. AuthSessionRedirect
+  // on / and /login forwards hash callbacks to /auth/recovery client-side.
 
   return supabaseResponse;
 }
