@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: doc
+tags:
+  - opsly/doc
+---
+
 # AUTONOMY GAP ANALYSIS — 2026-04-26
 
 ## Scope
@@ -81,3 +90,10 @@ Requested approval to proceed to Step 2 (Architecture Design) for:
 - ADR draft for SAFE-AEF,
 - orchestrator stubs (`sandbox_execution`, `evolution_worker`),
 - security policy document for autonomous execution.
+
+---
+
+## Enlaces relacionados
+
+- [[reports/README|reports]]
+- [[brain/README|Brain Central]]

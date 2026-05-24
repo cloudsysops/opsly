@@ -31,3 +31,10 @@ Not everyone can be the life of the party or even wants to be. There are many ad
 - [ ] Link this note to a topic MOC in Obsidian.
 - [ ] Decide if this source should be sent to NotebookLM.
 - [ ] If useful, create reusable playbook/skill improvement.
+
+---
+
+## Enlaces relacionados
+
+- [[brain/README|brain]]
+- [[brain/README|Brain Central]]

@@ -1598,3 +1598,10 @@ Docker Compose · Traefik v3 · Redis/BullMQ · Doppler · Resend · Discord
 - opsly_admin ✅
 - Prometheus/Grafana ✅
 ```
+
+---
+
+## Enlaces relacionados
+
+- [[03-agents/README|03-agents]]
+- [[brain/README|Brain Central]]

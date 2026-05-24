@@ -343,3 +343,10 @@ Margin: 80-88% ✅
 **Potential savings:** $150-200/month from Phase 3 (15%)  
 **Timeline:** 3-6 months for full optimization  
 **Impact:** Higher margins, better unit economics
+
+---
+
+## Enlaces relacionados
+
+- [[audits/README|audits]]
+- [[brain/README|Brain Central]]

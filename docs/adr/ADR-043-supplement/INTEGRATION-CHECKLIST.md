@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: adr
+tags:
+  - opsly/adr
+---
+
 # ADR-043: Integration Checklist for Syra ↔ OpenClaw
 
 **Decision Document:** ADR-033 - Intelligent Content Generation via LLM Gateway  
@@ -605,3 +614,10 @@
 **Checklist Version:** 1.0  
 **Last Updated:** 2026-05-08  
 **Owner:** Hermes Agent (Architect)
+
+---
+
+## Enlaces relacionados
+
+- [[adr/ADR-043-supplement/README|ADR-043-supplement]]
+- [[brain/README|Brain Central]]

@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: architecture
+tags:
+  - opsly/architecture
+---
+
 # Context Builder
 
 Librería (`apps/context-builder`) que mantiene **contexto de sesión** por tenant en Redis y prepara mensajes para el LLM (incluyendo resumen cuando la conversación crece).
@@ -45,3 +54,10 @@ En **Docker**, el servicio `context-builder` expone **GET `/health`** y **POST `
 - **Variables:** `OPS_REPO_ROOT` (raíz del clone), `KNOWLEDGE_INDEX_PATH` (ruta al JSON que consume el servicio).
 
 **LLM Gateway:** con `LLM_GATEWAY_REPO_CONTEXT=true` y `CONTEXT_BUILDER_URL=http://context-builder:3012`, `llmCall` antepone el bloque al **system**. Usar `skip_repo_context: true` en llamadas auxiliares (p. ej. planner JSON, resúmenes de sesión).
+
+---
+
+## Enlaces relacionados
+
+- [[00-architecture/README|00-architecture]]
+- [[brain/README|Brain Central]]

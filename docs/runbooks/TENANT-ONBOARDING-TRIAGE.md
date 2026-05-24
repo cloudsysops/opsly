@@ -9,3 +9,10 @@ last_review: 2026-05-10
 **Documento canónico:** [`tenants/runbooks/TENANT-ONBOARDING-TRIAGE.md`](../tenants/runbooks/TENANT-ONBOARDING-TRIAGE.md)
 
 No editar este stub.
+
+---
+
+## Enlaces relacionados
+
+- [[runbooks/README|runbooks]]
+- [[brain/README|Brain Central]]

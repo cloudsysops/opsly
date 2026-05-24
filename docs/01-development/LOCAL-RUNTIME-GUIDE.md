@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: guide
+tags:
+  - opsly/development
+---
+
 # Local Runtime Guide
 
 > Playbooks para configurar entorno local por OS.
@@ -181,3 +190,9 @@ npm run benchmark:local
 - docs/LOCAL-FIRST-ARCHITECTURE.md
 - ADR-024: Ollama Local Worker
 - scripts/runtime-setup-wizard.sh
+---
+
+## Enlaces relacionados
+
+- [[01-development/README|01-development]]
+- [[brain/README|Brain Central]]

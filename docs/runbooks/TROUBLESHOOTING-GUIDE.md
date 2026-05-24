@@ -433,3 +433,10 @@ curl -s https://dashboard.stripe.com/webhooks | grep "opsly"
 **Last updated:** 2026-05-08  
 **Maintainer:** @operations  
 **Related docs:** OPERATIONS-HANDBOOK.md, TECHNICAL-DEBT.md, PERFORMANCE-BOTTLENECK-ANALYSIS.md
+
+---
+
+## Enlaces relacionados
+
+- [[runbooks/README|runbooks]]
+- [[brain/README|Brain Central]]

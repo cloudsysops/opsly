@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: doc
+tags:
+  - opsly/doc
+---
+
 # ValidationOrchestrator - Estado de Despliegue
 
 **Fecha**: 2026-05-04 19:55 UTC  
@@ -155,3 +164,10 @@ docs/04-operations/
 **Branch**: `claude/opsly-defense-platform-sC0qH`  
 **All commits pushed**: 6 commits  
 **Working tree**: Clean ✅
+
+---
+
+## Enlaces relacionados
+
+- [[brain/README|brain]]
+- [[brain/README|Brain Central]]

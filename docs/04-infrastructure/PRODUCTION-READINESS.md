@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: infrastructure
+tags:
+  - opsly/infrastructure
+---
+
 # Production Readiness & Testing Plan
 **Status:** Sprints 6-16 Complete | Ready for Staging → Production  
 **Date:** 2026-05-01  
@@ -380,3 +389,10 @@ git push -f origin production
 **Document:** `docs/04-infrastructure/PRODUCTION-READINESS.md`  
 **Status:** Ready for QA Execution  
 **Owner:** QA Team + DevOps
+
+---
+
+## Enlaces relacionados
+
+- [[04-infrastructure/README|04-infrastructure]]
+- [[brain/README|Brain Central]]

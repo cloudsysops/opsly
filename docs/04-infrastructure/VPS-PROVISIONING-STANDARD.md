@@ -77,3 +77,10 @@ Every provisioned VPS must include:
 - service map.
 - rollback path.
 
+
+---
+
+## Enlaces relacionados
+
+- [[04-infrastructure/README|04-infrastructure]]
+- [[brain/README|Brain Central]]

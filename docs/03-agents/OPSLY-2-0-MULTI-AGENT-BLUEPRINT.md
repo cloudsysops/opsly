@@ -788,3 +788,10 @@ npm run task:create -- --title "Next feature"
 **Managed by:** You (approval gates only)  
 **Powered by:** Arena + Billy + Lili + Security + Docs agents  
 **Status:** Ready to build
+
+---
+
+## Enlaces relacionados
+
+- [[03-agents/README|03-agents]]
+- [[brain/README|Brain Central]]

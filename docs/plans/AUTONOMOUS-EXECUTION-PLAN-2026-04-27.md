@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: doc
+tags:
+  - opsly/doc
+---
+
 # Autonomous Execution Plan (24h)
 
 Date: 2026-04-27
@@ -109,3 +118,10 @@ python3 -m tools.cli.main research-run \
   --run-sandbox \
   --execute
 ```
+
+---
+
+## Enlaces relacionados
+
+- [[plans/README|plans]]
+- [[brain/README|Brain Central]]

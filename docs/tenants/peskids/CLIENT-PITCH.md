@@ -75,3 +75,10 @@ La plataforma técnica (Opsly) ya da **aislamiento**, **monitoreo** y **automati
 ---
 
 *Contacto operativo registrado: sierrasantiago90@gmail.com (validar con el cliente).*
+
+---
+
+## Enlaces relacionados
+
+- [[tenants/peskids/README|peskids]]
+- [[brain/README|Brain Central]]

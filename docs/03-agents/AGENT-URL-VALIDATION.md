@@ -101,9 +101,13 @@ Entregable: tabla URL | HTTP | login OK | notas
 | [`scripts/agent-validator-check-user.sh`](../../scripts/agent-validator-check-user.sh) | Comprueba metadata Supabase del email (sin password) |
 | [`scripts/validate-production-urls.sh`](../../scripts/validate-production-urls.sh) | Doppler/VPS sin localhost en URLs cliente |
 
-## Admin en modo demo (sin contraseña)
+## Admin en modo demo (sin contraseña) — NO en producción
 
-Si en el VPS está `ADMIN_PUBLIC_DEMO_READ=true` y build con `NEXT_PUBLIC_ADMIN_PUBLIC_DEMO=true`, **admin** permite ver dashboards en lectura **sin** login. No sustituye probar portal ni Peskids autenticado.
+**Producción:** `NEXT_PUBLIC_ADMIN_PUBLIC_DEMO` debe ser `false` en el build de `apps/admin` (CI `deploy.yml` lo fija). Con `NODE_ENV=production` el middleware **ignora** demo aunque la imagen antigua lo traiga horneado.
+
+Si además en el VPS está `ADMIN_PUBLIC_DEMO_READ=true`, la **API** permite GET de tenants/métricas sin token (solo lectura). En Doppler `prd` debe ser **`false`**.
+
+Verificación tras deploy: abrir https://admin.op-sly.com/ en ventana privada → debe redirigir a `/login`.
 
 ## Tenants desacoplados (VPS del cliente)
 
@@ -133,3 +137,10 @@ El admin Opsly resuelve enlaces con `apps/admin/lib/tenant-surfaces.ts` (ficha t
 - Inventario tenants: [`docs/tenants/production/TENANT-PRODUCTION-BASELINE.md`](../tenants/production/TENANT-PRODUCTION-BASELINE.md)
 - Demo Peskids: [`docs/tenants/peskids/CLIENT-DEMO-CHECKLIST.md`](../tenants/peskids/CLIENT-DEMO-CHECKLIST.md)
 - Recuperación contraseña: rama `feat/auth-recovery-forgot-password` / PR #406
+
+---
+
+## Enlaces relacionados
+
+- [[03-agents/README|03-agents]]
+- [[brain/README|Brain Central]]

@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: archive
+tags:
+  - opsly/history
+---
+
 # Opsly Code Consolidation Plan: Apps → Lib Modules
 
 **Date**: May 9, 2026
@@ -1332,3 +1341,10 @@ import { Button, Card, Input, useAuth } from '@intcloudsysops/lib-components';
 
 ---
 
+
+---
+
+## Enlaces relacionados
+
+- [[history/README|history]]
+- [[brain/README|Brain Central]]

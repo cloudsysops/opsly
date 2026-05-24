@@ -99,3 +99,10 @@ last_review: YYYY-MM-DD
 - Validación de estructura del repo (incluye raíz de `docs/` frente a `config/docs-root-allowlist.json`): `npm run validate-structure`.
 - Guard de staged files (raíz repo + raíz `docs/`): `bash scripts/hooks/structure-guard.sh`.
 - Validación de contexto JSON: `npm run validate-context`.
+
+---
+
+## Enlaces relacionados
+
+- [[brain/README|brain]]
+- [[brain/README|Brain Central]]

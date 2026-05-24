@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: doc
+tags:
+  - opsly/doc
+---
+
 # Growth Week 1: Agencias-Digitales Tier-1 Outreach Automation
 
 ## Overview
@@ -252,3 +261,10 @@ cat runtime/context/system_state.json | jq '.growth_experiments.week_1'
 - **System State**: `runtime/context/system_state.json` (metrics)
 - **Doppler Project**: `ops-intcloudsysops` / `prd` config
 - **Resend Account**: https://resend.com (API key in Doppler)
+
+---
+
+## Enlaces relacionados
+
+- [[brain/README|brain]]
+- [[brain/README|Brain Central]]

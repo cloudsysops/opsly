@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: tenant
+tags:
+  - opsly/tenant
+---
+
 # Peskids Production Hardening Blueprint
 
 Status: draft generated with The Architect on 2026-05-21.
@@ -125,3 +134,10 @@ curl -fsS https://api.op-sly.com/api/health
 - Do not bypass Opsly API for production writes unless the new direct path uses the same canonical schema and auth rules.
 - Keep n8n workflow activation manual until credentials and notifications are confirmed.
 - Commit Peskids hardening separately from unrelated agent/vendor imports.
+
+---
+
+## Enlaces relacionados
+
+- [[tenants/peskids/README|peskids]]
+- [[brain/README|Brain Central]]

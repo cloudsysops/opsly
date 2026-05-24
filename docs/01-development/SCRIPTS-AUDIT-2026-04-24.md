@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: guide
+tags:
+  - opsly/development
+---
+
 # Auditoría de Scripts — Opsly (ADR-032)
 
 **Fecha:** 2026-04-24  
@@ -454,3 +463,10 @@ EOF
 - Wrappers temporales会增加 superficie de paths
 
 **Recomendación:** Ejecutar migración en batches por categoría, probando workflows entre batches.
+
+---
+
+## Enlaces relacionados
+
+- [[01-development/README|01-development]]
+- [[brain/README|Brain Central]]

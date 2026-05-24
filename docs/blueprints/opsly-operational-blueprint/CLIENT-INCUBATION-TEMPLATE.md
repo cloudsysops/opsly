@@ -142,3 +142,10 @@ flowchart LR
 ## Reference pilot
 
 Peskids is the reference pilot for this template. Future clients should reuse the same lifecycle, role split, and migration rules instead of inventing a new one.
+
+---
+
+## Enlaces relacionados
+
+- [[blueprints/opsly-operational-blueprint/README|opsly-operational-blueprint]]
+- [[brain/README|Brain Central]]

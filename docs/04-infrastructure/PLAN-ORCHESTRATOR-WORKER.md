@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: infrastructure
+tags:
+  - opsly/infrastructure
+---
+
 # Plan de trabajo — Orchestrator (VPS) + Worker (Mac 2011)
 
 Orden lógico. **No** requiere API keys nuevas para el worker (solo `REDIS_URL` alineada al control plane).
@@ -78,3 +87,10 @@ ssh cboteros@100.80.41.29 "tmux capture-pane -t opsly-worker -p 2>/dev/null | ta
 ---
 
 _Última alineación: Dockerfile orchestrator + migración única `0030` para `tenant_insights`._
+
+---
+
+## Enlaces relacionados
+
+- [[04-infrastructure/README|04-infrastructure]]
+- [[brain/README|Brain Central]]

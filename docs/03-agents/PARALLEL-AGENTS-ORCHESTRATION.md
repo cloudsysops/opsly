@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: agent-doc
+tags:
+  - opsly/agents
+---
+
 # Parallel Agents Orchestration — ADR-025 Implementation
 
 **Date:** 2026-04-15  
@@ -281,3 +290,10 @@ docker exec opsly-redis redis-cli -n 0 ZRANGE bull:openclaw:pending 0 -1
 **Status:** READY FOR EXECUTION  
 **Created:** 2026-04-15  
 **Last Updated:** 2026-04-15
+
+---
+
+## Enlaces relacionados
+
+- [[03-agents/README|03-agents]]
+- [[brain/README|Brain Central]]

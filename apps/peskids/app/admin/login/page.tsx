@@ -1,23 +1,84 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { Button } from '@/components/ui/button'
+import { Loader2 } from 'lucide-react'
+import Link from 'next/link'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { Suspense, useEffect, useState } from 'react'
 import { PeskidsLogo } from '@/components/brand/peskids-logo'
+import { Button } from '@/components/ui/button'
+import { buildRecoveryRedirectTo } from '@/lib/auth-recovery'
+import { isStaffUser } from '@/lib/staff-user'
+import { createClient } from '@/lib/supabase-browser'
 
-export default function AdminLoginPage(): React.ReactElement {
+function AdminLoginForm(): React.ReactElement {
   const router = useRouter()
-  const [token, setToken] = useState('')
+  const searchParams = useSearchParams()
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [resetSent, setResetSent] = useState(false)
+  const [resetLoading, setResetLoading] = useState(false)
+
+  useEffect(() => {
+    const callbackError = searchParams.get('error')
+    if (callbackError) {
+      setError(callbackError)
+    }
+  }, [searchParams])
+
+  async function onForgotPassword(): Promise<void> {
+    const trimmed = email.trim()
+    if (!trimmed) {
+      setError('Escribe tu email arriba y vuelve a pulsar «¿Olvidaste tu contraseña?».')
+      return
+    }
+    setResetLoading(true)
+    setError('')
+    setResetSent(false)
+    try {
+      const supabase = createClient()
+      const origin =
+        typeof window !== 'undefined' ? window.location.origin : 'https://peskids.op-sly.com'
+      const { error: resetError } = await supabase.auth.resetPasswordForEmail(trimmed, {
+        redirectTo: buildRecoveryRedirectTo(origin),
+      })
+      if (resetError) {
+        setError(resetError.message)
+        return
+      }
+      setResetSent(true)
+    } catch {
+      setError('No se pudo enviar el correo de recuperación.')
+    } finally {
+      setResetLoading(false)
+    }
+  }
 
   async function handleSubmit(e: React.FormEvent): Promise<void> {
     e.preventDefault()
     setLoading(true)
     setError('')
+    setResetSent(false)
 
     try {
-      document.cookie = `admin-token=${token}; path=/; secure; samesite=strict`
+      const supabase = createClient()
+      const { data, error: signError } = await supabase.auth.signInWithPassword({
+        email: email.trim(),
+        password,
+      })
+      if (signError) {
+        setError(signError.message)
+        return
+      }
+      const user = data.user
+      if (!user || !isStaffUser(user)) {
+        await supabase.auth.signOut()
+        setError(
+          'Esta cuenta no tiene acceso al panel Peskids. Usa el portal Opsly o solicita acceso al administrador.'
+        )
+        return
+      }
       router.push('/admin')
       router.refresh()
     } catch {
@@ -37,26 +98,79 @@ export default function AdminLoginPage(): React.ReactElement {
           Acceso al panel
         </h1>
         <p className="mt-2 text-center text-sm text-pk-sub">
-          Ingresa tu token de acceso administrativo.
+          Ingresa con el email de tu cuenta de staff Peskids.
         </p>
         <form onSubmit={(e) => void handleSubmit(e)} className="mt-6 space-y-4">
           <label className="block">
-            <span className="text-sm font-medium text-pk-ink">Token de administrador</span>
+            <span className="text-sm font-medium text-pk-ink">Email</span>
             <input
-              type="password"
-              value={token}
-              onChange={(e) => setToken(e.target.value)}
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               className="pk-input mt-1"
-              placeholder="Pega tu token aquí"
+              autoComplete="email"
               required
             />
           </label>
+          <label className="block">
+            <span className="text-sm font-medium text-pk-ink">Contraseña</span>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="pk-input mt-1"
+              autoComplete="current-password"
+              required
+            />
+          </label>
+          <div className="flex justify-end">
+            <button
+              type="button"
+              className="text-sm font-medium text-pk-mint underline-offset-4 hover:underline disabled:opacity-50"
+              disabled={resetLoading}
+              onClick={() => void onForgotPassword()}
+            >
+              {resetLoading ? 'Enviando enlace…' : '¿Olvidaste tu contraseña?'}
+            </button>
+          </div>
+          {resetSent ? (
+            <p className="rounded-lg border border-pk-mint/40 bg-pk-mint/10 px-3 py-2 text-sm text-pk-ink">
+              Revisa tu correo. El enlace te llevará a elegir una contraseña nueva.
+            </p>
+          ) : null}
           {error ? <p className="text-sm text-red-600">{error}</p> : null}
-          <Button type="submit" className="w-full" disabled={loading || !token}>
-            {loading ? 'Verificando…' : 'Acceder al dashboard'}
+          <Button type="submit" className="w-full" disabled={loading}>
+            {loading ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+                Entrando…
+              </>
+            ) : (
+              'Acceder al dashboard'
+            )}
           </Button>
         </form>
+        <p className="mt-4 text-center text-xs text-pk-sub">
+          ¿Problemas con el enlace del correo?{' '}
+          <Link href="/admin/update-password" className="text-pk-mint hover:underline">
+            Definir contraseña
+          </Link>
+        </p>
       </div>
     </div>
+  )
+}
+
+export default function AdminLoginPage(): React.ReactElement {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center bg-pk-bg">
+          <Loader2 className="h-8 w-8 animate-spin text-pk-mint" aria-hidden />
+        </div>
+      }
+    >
+      <AdminLoginForm />
+    </Suspense>
   )
 }

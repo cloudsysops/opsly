@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: architecture
+tags:
+  - opsly/architecture
+---
+
 # 🔍 Code Review: Cursor Orchestrator Work - 2026-04-09
 
 **Reviewer:** Staff Engineer & QA  
@@ -452,3 +461,10 @@ default: {
 ```
 
 ---
+
+---
+
+## Enlaces relacionados
+
+- [[00-architecture/README|00-architecture]]
+- [[brain/README|Brain Central]]

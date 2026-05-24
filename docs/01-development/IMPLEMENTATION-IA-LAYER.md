@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: guide
+tags:
+  - opsly/development
+---
+
 # Guía de implementación — Capa IA (Opsly monorepo)
 
 > Para Cursor: implementar por **semanas** alineadas a [`ROADMAP.md`](../ROADMAP.md).  
@@ -62,3 +71,10 @@ npm run test --workspace=@intcloudsysops/orchestrator
 ## 9. Lo que este documento reemplaza
 
 Los borradores con **código Python** (`TenantHermesAgent`, `pip install hermes-agent`) son **patrones de referencia conceptual**. La implementación oficial en este repositorio es **TypeScript** en las rutas anteriores.
+
+---
+
+## Enlaces relacionados
+
+- [[01-development/README|01-development]]
+- [[brain/README|Brain Central]]

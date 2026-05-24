@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: tool-doc
+tags:
+  - opsly/tools
+---
+
 # 🚀 EXECUTION PLAN - LocalRank + NotebookLM (Tonight)
 
 **Date:** 2026-04-09  
@@ -195,3 +204,10 @@ git push origin main
 
 **Generated:** 2026-04-09  
 **Status:** 🟢 Ready to execute
+
+---
+
+## Enlaces relacionados
+
+- [[02-tools/README|02-tools]]
+- [[brain/README|Brain Central]]

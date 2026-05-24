@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: adr
+tags:
+  - opsly/adr
+---
+
 # ADR-017 — Equipos de workers por tenant y billing ampliado (roadmap)
 
 ## Estado
@@ -28,3 +37,10 @@ Se ha documentado un modelo de “equipos alquilables” con roles múltiples y 
 - `docs/WORKER-TEAM-ARCHITECTURE.md`
 - `docs/WORKER-TEAM-BILLING.md`
 - `docs/adr/ADR-011-event-driven-orchestrator.md`
+
+---
+
+## Enlaces relacionados
+
+- [[adr/README|adr]]
+- [[brain/README|Brain Central]]

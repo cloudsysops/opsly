@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: architecture
+tags:
+  - opsly/architecture
+---
+
 # Opsly Content Studio — Phase 2 Architecture
 
 ## Vision
@@ -239,3 +248,10 @@ POST /api/content/regenerate      # Rerun generators for a draft
 - [ ] Zero secrets leaked in 100 test posts
 - [ ] Compliance checker catches 90% of violations
 - [ ] Mission Control shows all drafts + status
+
+---
+
+## Enlaces relacionados
+
+- [[00-architecture/README|00-architecture]]
+- [[brain/README|Brain Central]]

@@ -530,3 +530,10 @@ sudo systemctl start cursor-agent
 - **VISION.md** — Product vision and Guardian Grid strategy
 - **docs/ORCHESTRATOR.md** — Orchestrator architecture
 - **docs/OPENCLAW-ARCHITECTURE.md** — OpenClaw framework
+
+---
+
+## Enlaces relacionados
+
+- [[03-agents/README|03-agents]]
+- [[brain/README|Brain Central]]

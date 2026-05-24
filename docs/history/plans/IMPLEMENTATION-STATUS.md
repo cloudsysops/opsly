@@ -78,3 +78,10 @@ note: Copia archivada (ADR-033). Vista actual en docs/generated/*.auto.md.
 ---
 
 _Última generación local/CI: 2026-04-24T17:53:25.092Z_
+
+---
+
+## Enlaces relacionados
+
+- [[history/README|history]]
+- [[brain/README|Brain Central]]

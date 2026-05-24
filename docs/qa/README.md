@@ -20,3 +20,10 @@ Flujo en **tres pasos**: tester humano → IA (priorización y prompts Cursor) �
 **Discord:** si el repo tiene el secret `DISCORD_WEBHOOK_URL`, el workflow [`.github/workflows/qa-issue-notify.yml`](../../.github/workflows/qa-issue-notify.yml) envía un aviso breve (título + enlace) al **canal vinculado a ese webhook** al abrir el issue o al añadir la etiqueta `qa-ui`.
 
 **Relacionado:** [`../TEST_PLAN.md`](../TEST_PLAN.md), [`../01-development/QA-REVIEW-COMPLETE.md`](../01-development/QA-REVIEW-COMPLETE.md), Playwright portal `npm run test:e2e --workspace=@intcloudsysops/portal`.
+
+---
+
+## Enlaces relacionados
+
+- [[qa/README|qa]]
+- [[brain/README|Brain Central]]

@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: guide
+tags:
+  - opsly/development
+---
+
 # Semana 5 — Feedback Loop API — COMPLETADO
 
 **Período:** 2026-04-26 → 2026-04-28 (planeado)  
@@ -210,3 +219,10 @@ API route.ts:GET
 **Branch:** main  
 **Type-check:** ✅ PASS (14/14)  
 **Status:** ✅ COMPLETADO
+
+---
+
+## Enlaces relacionados
+
+- [[01-development/README|01-development]]
+- [[brain/README|Brain Central]]

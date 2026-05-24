@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: infrastructure
+tags:
+  - opsly/infrastructure
+---
+
 # Testing worker y BullMQ (cola `openclaw`)
 
 Scripts para encolar jobs de prueba en la misma cola Redis que usa `apps/orchestrator` y monitorear el VPS.
@@ -84,3 +93,10 @@ Comprobar orchestrator: `docker ps | grep orchestrator`, logs `opsly_orchestrato
 ### Job `cursor` falla
 
 Configurar `GITHUB_TOKEN` (o `GITHUB_TOKEN_N8N`) en el servicio orchestrator o usar `--notify` para pruebas sin API GitHub.
+
+---
+
+## Enlaces relacionados
+
+- [[04-infrastructure/README|04-infrastructure]]
+- [[brain/README|Brain Central]]

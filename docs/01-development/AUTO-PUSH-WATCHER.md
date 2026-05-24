@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: guide
+tags:
+  - opsly/development
+---
+
 # Auto-push watcher (docs + `AGENTS.md`)
 
 Servicio opcional que vigila **`docs/`** y **`AGENTS.md`** en el clon de Opsly y, tras un periodo de estabilidad, ejecuta **`git add`**, **`commit`** y **`push`** a **`origin main`**.
@@ -64,3 +73,10 @@ Opciones: `--dry-run`, `--poll N`, `--debounce N`, `--branch main`, `--no-verify
 - `scripts/auto-push-watcher.sh`
 - `infra/systemd/opsly-watcher.service`
 - `docs/CLAUDE-WORKFLOW-OPTIMIZATION.md`
+
+---
+
+## Enlaces relacionados
+
+- [[01-development/README|01-development]]
+- [[brain/README|Brain Central]]

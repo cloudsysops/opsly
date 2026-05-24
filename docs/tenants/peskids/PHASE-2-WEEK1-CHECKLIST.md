@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: tenant
+tags:
+  - opsly/tenant
+---
+
 # Phase 2 Week 1 Checklist — N8N + RLS + Lead Capture
 
 **Week:** May 24 - May 31, 2026  
@@ -172,3 +181,10 @@ Track any issues here as you go:
 - [ ] Week 2 Kickoff: Teacher Dashboard + WhatsApp integration
 
 If all Week 1 items done by May 30, can start Week 2 early!
+
+---
+
+## Enlaces relacionados
+
+- [[tenants/peskids/README|peskids]]
+- [[brain/README|Brain Central]]

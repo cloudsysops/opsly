@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: doc
+tags:
+  - opsly/doc
+---
+
 # Repair queue y fallover (diseño — Opsly)
 
 **Estado:** diseño / contrato; la implementación será incremental en [`apps/orchestrator`](../../apps/orchestrator).  
@@ -65,3 +74,10 @@ flowchart LR
 ## Relación con el índice maestro
 
 Rutas de producto (A/B/C): [`docs/design/AGENT-ORCHESTRATION-INDEX.md`](../design/AGENT-ORCHESTRATION-INDEX.md).
+
+---
+
+## Enlaces relacionados
+
+- [[brain/README|brain]]
+- [[brain/README|Brain Central]]

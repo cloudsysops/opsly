@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: guide
+tags:
+  - opsly/development
+---
+
 # Knowledge Brain System — Obsidian como Cerebro Creciente
 
 > **Versión:** 1.0 | **Fecha:** 2026-04-21
@@ -594,3 +603,10 @@ python scripts/knowledge-collector.py
 - **Rate limiting** para no sobrecargar fuentes
 - **Cache local** para reducir requests
 - **Indices offline** para búsquedas rápidas
+
+---
+
+## Enlaces relacionados
+
+- [[01-development/README|01-development]]
+- [[brain/README|Brain Central]]

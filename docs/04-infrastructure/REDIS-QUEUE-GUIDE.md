@@ -415,3 +415,10 @@ redis-cli PING  # Verify connected
 **Owner:** @devops  
 **Last reviewed:** 2026-05-08  
 **Next review:** 2026-05-15
+
+---
+
+## Enlaces relacionados
+
+- [[04-infrastructure/README|04-infrastructure]]
+- [[brain/README|Brain Central]]

@@ -37,3 +37,10 @@ Snapshots y planes enterprise archivados: [`../history/plans/`](../history/plans
 
 - [ADR-033 — Canonicalización de docs](../adr/ADR-033-docs-canonicalization.md)
 - [ADR-035 — OpenClaw Context Builder + MCP per-tenant](../adr/ADR-035-openclaw-per-tenant.md) (PROPOSED)
+
+---
+
+## Enlaces relacionados
+
+- [[plans/README|plans]]
+- [[brain/README|Brain Central]]

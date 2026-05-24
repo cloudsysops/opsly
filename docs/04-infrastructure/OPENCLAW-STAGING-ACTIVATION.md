@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: infrastructure
+tags:
+  - opsly/infrastructure
+---
+
 # OpenClaw Staging Activation Plan
 
 **Status:** Ready for Deployment  
@@ -349,3 +358,10 @@ Before promoting to production, verify:
 - **Monitoring:** SRE team
 
 **Document:** `docs/04-infrastructure/OPENCLAW-STAGING-ACTIVATION.md`
+
+---
+
+## Enlaces relacionados
+
+- [[04-infrastructure/README|04-infrastructure]]
+- [[brain/README|Brain Central]]

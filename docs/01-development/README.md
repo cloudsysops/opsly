@@ -29,3 +29,10 @@ Roadmap vivo, planificación, sprints, estado de producto y handoffs de desarrol
 - `IMPLEMENTATION-IA-LAYER.md`
 - `SEMANA-6-PLAN.md`
 - `SPRINT-TRACKER.md`
+
+---
+
+## Enlaces relacionados
+
+- [[01-development/README|01-development]]
+- [[brain/README|Brain Central]]

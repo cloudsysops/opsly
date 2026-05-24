@@ -9,3 +9,10 @@ last_review: 2026-05-09
 The canonical roadmap lives in [`01-development/ROADMAP.md`](../01-development/ROADMAP.md).
 
 Do not edit this stub.
+
+---
+
+## Enlaces relacionados
+
+- [[stubs/README|stubs]]
+- [[brain/README|Brain Central]]

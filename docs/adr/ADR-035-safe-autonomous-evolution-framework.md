@@ -79,3 +79,10 @@ Adopt SAFE-AEF Phase 1 with four bounded capabilities:
 - `docs/reports/AUTONOMY-GAP-ANALYSIS-2026-04-26.md`
 - `docs/design/OAR.md`
 - `docs/adr/ADR-027-hybrid-compute-plane-k8s.md`
+
+---
+
+## Enlaces relacionados
+
+- [[adr/README|adr]]
+- [[brain/README|Brain Central]]

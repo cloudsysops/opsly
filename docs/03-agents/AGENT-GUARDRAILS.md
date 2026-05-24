@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: agent-doc
+tags:
+  - opsly/agents
+---
+
 # Guardrails para agentes (Cursor, Copilot, Claude, automatismos)
 
 > Políticas **obligatorias** además de `AGENTS.md`, `.cursor/rules/opsly.mdc` y [AGENTS-GUIDE.md](AGENTS-GUIDE.md).  
@@ -65,3 +74,10 @@ En CI: `validate-structure-strict` con `CI=true` valida raíz contra whitelist.
 ---
 
 **Última revisión:** 2026-05-10 — política raíz `docs/` + `config/docs-root-allowlist.json`; spec OpenAPI bajo `docs/00-architecture/`.
+
+---
+
+## Enlaces relacionados
+
+- [[03-agents/README|03-agents]]
+- [[brain/README|Brain Central]]

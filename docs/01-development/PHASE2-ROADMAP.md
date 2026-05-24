@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: guide
+tags:
+  - opsly/development
+---
+
 # Phase 2 Roadmap - Iteration Manager + Agent Trainer
 
 **Status:** Ready to implement after Phase 1 test passes  
@@ -371,3 +380,10 @@ Once you confirm Phase 1 test passes, I'll:
 ---
 
 **Let me know when Phase 1 is done! 🚀**
+
+---
+
+## Enlaces relacionados
+
+- [[01-development/README|01-development]]
+- [[brain/README|Brain Central]]

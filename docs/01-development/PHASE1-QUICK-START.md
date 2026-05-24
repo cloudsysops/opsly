@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: guide
+tags:
+  - opsly/development
+---
+
 # Phase 1 - Quick Start (5 min)
 
 ## 🚀 Just Run This
@@ -158,3 +167,10 @@ grep "failed\|Error" /tmp/autocommit.log
 ---
 
 **Ready? Run it now and tell me when it completes! 🚀**
+
+---
+
+## Enlaces relacionados
+
+- [[01-development/README|01-development]]
+- [[brain/README|Brain Central]]

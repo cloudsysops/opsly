@@ -99,3 +99,10 @@ Todas las capacidades IA bajo [AI-APPROVAL-POLICY.md](./AI-APPROVAL-POLICY.md).
 | Config plantilla desalineada con VPS | Validar con owner + checklist [INCUBATION-CHECKLIST.md](./INCUBATION-CHECKLIST.md) |
 | CRM genérico no encaja con negocio educativo | Workflows Peskids en [WORKFLOWS.md](./WORKFLOWS.md) |
 | Scope creep (WhatsApp, app móvil) | Mantener MVP acotado; extracción planificada |
+
+---
+
+## Enlaces relacionados
+
+- [[tenants/peskids/README|peskids]]
+- [[brain/README|Brain Central]]

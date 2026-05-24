@@ -433,3 +433,10 @@ async function onResponseDetected(responsePath: string): Promise<void> {
 - **LOCAL-AGENT-EXECUTION.md** — Basic execution system
 - **AGENTS.md** — Current session state
 - **docs/adr/ADR-XXX** (future) — Decision record for validation strategy
+
+---
+
+## Enlaces relacionados
+
+- [[03-agents/README|03-agents]]
+- [[brain/README|Brain Central]]

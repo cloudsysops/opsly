@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: adr
+tags:
+  - opsly/adr
+---
+
 # ADR-043: Intelligent Content Generation via LLM Gateway
 
 **Estado:** PROPUESTO | **Fecha:** 2026-05-08  
@@ -708,3 +717,10 @@ Rationale:
 **ADR-033 ACEPTADO**
 Autorizado por: Arquitecto de Sistema (Hermes Agent)
 Próxima revisión: 2026-06-08
+
+---
+
+## Enlaces relacionados
+
+- [[adr/README|adr]]
+- [[brain/README|Brain Central]]

@@ -9,3 +9,10 @@ last_review: 2026-05-10
 **Documento canónico:** [`tenants/production/TENANT-PRODUCTION-BASELINE.md`](../tenants/production/TENANT-PRODUCTION-BASELINE.md)
 
 No editar este stub; enlaces históricos desde infra apuntan aquí.
+
+---
+
+## Enlaces relacionados
+
+- [[04-infrastructure/README|04-infrastructure]]
+- [[brain/README|Brain Central]]

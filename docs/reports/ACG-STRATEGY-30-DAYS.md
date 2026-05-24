@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: doc
+tags:
+  - opsly/doc
+---
+
 # ACG Strategy 30 Days
 
 ## Diagnostico inicial
@@ -92,3 +101,10 @@ Opsly tiene una UVP clara: despliegue y operacion de automatizaciones multi-tena
 - Sin gasto > $5 sin aprobacion humana.
 - Outbound con revision humana previa (no spam automatico).
 - Contenido etiquetado como "Asistido por IA".
+
+---
+
+## Enlaces relacionados
+
+- [[reports/README|reports]]
+- [[brain/README|Brain Central]]

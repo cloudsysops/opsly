@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: guide
+tags:
+  - opsly/development
+---
+
 # FAQ — Opsly (operaciones y desarrollo)
 
 Enlaces: [Runbook admin](runbooks/admin.md) · [dev](runbooks/dev.md) · [managed](runbooks/managed.md) · [incident](runbooks/incident.md) · [ADR-006](adr/ADR-006-api-testing-vitest.md) · [ADR-007](adr/ADR-007-runbooks-y-documentacion-operativa.md) · [ADR-008](adr/ADR-008-terraform-digitalocean-plan.md) · [Terraform example](../infra/terraform/terraform.tfvars.example).
@@ -25,3 +34,10 @@ En la raíz: `npm run test` (Vitest en `apps/api` y otros workspaces que definan
 ## ¿Qué es el portal “developer” vs “managed”?
 
 Modos de experiencia portal derivados de metadata (`parsePortalMode` en `apps/api/lib/portal-me.ts`). Runbook de alto nivel: [managed](runbooks/managed.md).
+
+---
+
+## Enlaces relacionados
+
+- [[01-development/README|01-development]]
+- [[brain/README|Brain Central]]

@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: tenant
+tags:
+  - opsly/tenant
+---
+
 # Triage — onboarding de tenants (API + orquestador)
 
 Objetivo: en **menos de 15 minutos** localizar si el fallo es HTTP/API, fila BullMQ, Docker en VPS o Supabase.
@@ -66,3 +75,10 @@ SMOKE_ALLOW_PROD=1 bash scripts/smoke-tenant-provision-api.sh --cleanup
 ```
 
 Requiere `jq` y `curl`. `--cleanup` hace `DELETE /api/tenants/<id>` al final.
+
+---
+
+## Enlaces relacionados
+
+- [[tenants/README|tenants]]
+- [[brain/README|Brain Central]]

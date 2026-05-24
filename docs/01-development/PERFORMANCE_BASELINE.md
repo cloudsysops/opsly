@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: guide
+tags:
+  - opsly/development
+---
+
 # Performance baseline — Opsly
 
 Referencia **orientativa** para Fase 1 de validación; no sustituye APM ni pruebas de carga formales.
@@ -28,3 +37,10 @@ Las consultas usadas por código están en `apps/api/lib/fetch-host-metrics-prom
 ## Historial
 
 - **2026-04-06:** Baseline documentada (sin mediciones numéricas capturadas en runtime en este commit).
+
+---
+
+## Enlaces relacionados
+
+- [[01-development/README|01-development]]
+- [[brain/README|Brain Central]]

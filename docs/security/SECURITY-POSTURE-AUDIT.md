@@ -340,3 +340,10 @@ Infrastructure (45):
 Status: ✅ **AUDIT COMPLETE** | 🔴 **4 CRITICAL ITEMS** | 🟡 **5 IMPORTANT ITEMS**
 
 Next audit: 2026-05-15 (weekly)
+
+---
+
+## Enlaces relacionados
+
+- [[brain/README|brain]]
+- [[brain/README|Brain Central]]

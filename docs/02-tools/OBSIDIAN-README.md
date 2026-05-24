@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: tool-doc
+tags:
+  - opsly/tools
+---
+
 # Obsidian Vault — Opsly Docs
 
 ## What is This?

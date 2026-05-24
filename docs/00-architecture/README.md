@@ -30,3 +30,10 @@ Arquitectura estable de Opsly: control plane, data plane, OpenClaw, LLM Gateway,
 - `OPENCLAW-ARCHITECTURE.md`
 - `LLM-GATEWAY.md`
 - `ORCHESTRATOR.md`
+
+---
+
+## Enlaces relacionados
+
+- [[00-architecture/README|00-architecture]]
+- [[brain/README|Brain Central]]

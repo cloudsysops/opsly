@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: guide
+tags:
+  - opsly/development
+---
+
 # N8N Setup — Discord to GitHub
 
 > **Token GitHub:** el nombre **`GITHUB_TOKEN_N8N`** es histórico (cuando n8n llamaba a la API). En Doppler usa **`GITHUB_TOKEN`** como nombre principal; el código y los workflows aceptan cualquiera de los dos. Detalle: [`GITHUB-TOKEN.md`](./GITHUB-TOKEN.md).
@@ -111,3 +120,10 @@ doppler run --project ops-intcloudsysops --config prd -- \
 - **No llega confirmacion a Discord**: revisar `DISCORD_WEBHOOK_URL`.
 - **Webhook responde 200 pero no actualiza archivo**: validar obtencion de `sha` actual.
 - **Cursor no ejecuta**: verificar `cursor-prompt-monitor` activo y logs en `/opt/opsly/runtime/logs//cursor-prompt-monitor.log`.
+
+---
+
+## Enlaces relacionados
+
+- [[01-development/README|01-development]]
+- [[brain/README|Brain Central]]

@@ -19,3 +19,10 @@ Decisiones de arquitectura numeradas. Convención: un ID por decisión; suplemen
 1. Elegir el siguiente número libre.
 2. Crear `docs/adr/ADR-NNN-titulo-kebab.md` con contexto, decisión y consecuencias.
 3. Enlazar desde docs relacionadas (orquestación, infra, agentes).
+
+---
+
+## Enlaces relacionados
+
+- [[adr/README|adr]]
+- [[brain/README|Brain Central]]

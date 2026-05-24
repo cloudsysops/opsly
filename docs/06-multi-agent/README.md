@@ -18,3 +18,10 @@ Coordinación entre agentes, ejecución paralela, división de responsabilidades
 
 - Prompts concretos por agente; usar `../03-agents/` o `../prompts/`.
 - Estado generado; usar `../generated/`.
+
+---
+
+## Enlaces relacionados
+
+- [[06-multi-agent/README|06-multi-agent]]
+- [[brain/README|Brain Central]]

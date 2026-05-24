@@ -173,3 +173,10 @@ ssh vps-dragon@100.120.151.91
 ```
 
 Ver `docs/SSH-COMMANDS-LOCALRANK.md` para comandos de operación.
+
+---
+
+## Enlaces relacionados
+
+- [[history/README|history]]
+- [[brain/README|Brain Central]]

@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: doc
+tags:
+  - opsly/doc
+---
+
 # Parallel Agent Execution Architecture
 
 ## Overview
@@ -496,3 +505,10 @@ The Opsly autonomous execution system is architected for **distributed, parallel
 - ✅ Git auto-commit pipeline
 
 **Next Critical Step:** Deploy real agent services to remote machines and begin executing the queued parallel tasks.
+
+---
+
+## Enlaces relacionados
+
+- [[06-multi-agent/README|06-multi-agent]]
+- [[brain/README|Brain Central]]

@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: guide
+tags:
+  - opsly/development
+---
+
 # Sprints 13-14 Implementation: ML Feedback Loop + Portal & Notion Integration
 
 ## Overview
@@ -399,3 +408,10 @@ Test coverage:
 - [ ] Redis TTLs verified (7 days for scores, 30 days for metrics)
 - [ ] Tenant isolation tests passing
 - [ ] RLS policies verified in Supabase
+
+---
+
+## Enlaces relacionados
+
+- [[01-development/README|01-development]]
+- [[brain/README|Brain Central]]

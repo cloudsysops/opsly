@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: doc
+tags:
+  - opsly/doc
+---
+
 # Reporte de Investigacion Autonoma
 
 - ID: 2fccc968-1f7e-4fd0-ba07-e3357de8f2cf
@@ -19,3 +28,10 @@ Opsly autonomy phase1 evidence run 2
 ## Metadatos
 - total_results: 0
 - generated_by: tools/cli research-run
+
+---
+
+## Enlaces relacionados
+
+- [[brain/README|brain]]
+- [[brain/README|Brain Central]]

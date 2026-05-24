@@ -326,3 +326,10 @@ Status: Candidate for controlled deployment after env validation and smoke check
 ---
 
 **Any questions? Everything is explained in the detailed docs or ask.**
+
+---
+
+## Enlaces relacionados
+
+- [[03-agents/README|03-agents]]
+- [[brain/README|Brain Central]]

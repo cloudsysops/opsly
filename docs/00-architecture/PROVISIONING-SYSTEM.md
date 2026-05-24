@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: architecture
+tags:
+  - opsly/architecture
+---
+
 # Provisioning Multi-Nodo (Cloudsysops)
 
 Sistema base para provisionar nodos nuevos y agregarlos al cluster operativo de `intcloudsysops`.
@@ -75,3 +84,10 @@ Remover:
 - Requiere SSH por Tailscale para hosts remotos.
 - `provision-new-node.sh` valida modo `--dry-run` para cambios seguros.
 - Mantener `infra/nodes-registry.json` versionado en git como fuente de verdad operativa.
+
+---
+
+## Enlaces relacionados
+
+- [[00-architecture/README|00-architecture]]
+- [[brain/README|Brain Central]]

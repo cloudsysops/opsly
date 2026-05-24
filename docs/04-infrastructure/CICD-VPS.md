@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: infrastructure
+tags:
+  - opsly/infrastructure
+---
+
 # CI/CD → VPS (GitHub Actions)
 
 ## Flujo automático (workflow **Deploy**)
@@ -59,3 +68,10 @@ El disparo por `workflow_run` tras CI en `main` quedó **obsoleto** frente al mo
 curl -sfk "https://api.${STAGING_PLATFORM_DOMAIN}/api/health"
 curl -sfk "https://api.${PLATFORM_DOMAIN}/api/health"
 ```
+
+---
+
+## Enlaces relacionados
+
+- [[04-infrastructure/README|04-infrastructure]]
+- [[brain/README|Brain Central]]

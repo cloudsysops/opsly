@@ -44,3 +44,10 @@ v. 1. Principles -- v. 2. Representative 4GLS / James Martin with Joe Leben -- v
 - [ ] Link this note to a topic MOC in Obsidian.
 - [ ] Decide if this source should be sent to NotebookLM.
 - [ ] If useful, create reusable playbook/skill improvement.
+
+---
+
+## Enlaces relacionados
+
+- [[brain/README|brain]]
+- [[brain/README|Brain Central]]

@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: tool-doc
+tags:
+  - opsly/tools
+---
+
 # Guía: tokens, costes y ahorro en Opsly
 
 ## Para usuarios y agentes
@@ -38,3 +47,10 @@ npm run type-check
 
 - `docs/TOKEN-BILLING-SYSTEM.md` — diseño completo y estado.
 - `docs/00-architecture/LLM-GATEWAY.md` — proveedores, caché, `routing_bias`.
+
+---
+
+## Enlaces relacionados
+
+- [[02-tools/README|02-tools]]
+- [[brain/README|Brain Central]]

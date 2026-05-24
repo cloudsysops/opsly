@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: doc
+tags:
+  - opsly/doc
+---
+
 # Opsly CRM Starter Pack
 
 Workflows n8n plug-and-run para instalar en cualquier tenant Opsly.
@@ -68,3 +77,10 @@ curl -X POST "https://n8n-<slug>.<PLATFORM_DOMAIN>/webhook/opsly-crm-lead" \
     "deal_value": 1500
   }'
 ```
+
+---
+
+## Enlaces relacionados
+
+- [[n8n-workflows/crm/README|crm]]
+- [[brain/README|Brain Central]]

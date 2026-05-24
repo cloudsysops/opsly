@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: infrastructure
+tags:
+  - opsly/infrastructure
+---
+
 # Monitoreo de plataforma — Prometheus + Node Exporter
 
 Stack **versionado en el repo** bajo `infra/monitoring/` y servicios en `infra/docker-compose.platform.yml`:
@@ -37,3 +46,10 @@ El directorio home **`~/smiletrip/monitoring`** era ajeno al repo y contenía Gr
 ## Retención y volumen
 
 Datos TSDB: volumen Docker **`prometheus_data`**. Retención configurada en compose: **15 días** (ajustable en `command` de `prometheus`).
+
+---
+
+## Enlaces relacionados
+
+- [[04-infrastructure/README|04-infrastructure]]
+- [[brain/README|Brain Central]]

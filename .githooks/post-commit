@@ -61,3 +61,9 @@ if [ -f "$ROOT/scripts/phase-detector.sh" ]; then
   chmod +x "$ROOT/scripts/phase-detector.sh"
   "$ROOT/scripts/phase-detector.sh" 2>/dev/null || true
 fi
+
+# ─── Brain sync (background) on doc changes ─────────────────────────
+if echo "$CHANGED" | rg -q "docs/.*\.md"; then
+  echo "📗 Documentos cambiados, actualizando brain..."
+  (cd "$ROOT" && npm run brain:connect:json 2>/dev/null || true) &
+fi

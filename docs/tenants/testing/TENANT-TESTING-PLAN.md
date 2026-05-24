@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: tenant
+tags:
+  - opsly/tenant
+---
+
 # Plan de pruebas para tenants (staging)
 
 **Dominio base:** `op-sly.com` (sustituir si tu entorno usa otro `PLATFORM_DOMAIN`).  
@@ -62,3 +71,10 @@ Usar el email de soporte si está publicado en portal (`NEXT_PUBLIC_SUPPORT_EMAI
 - Backups automáticos por tenant según `VISION.md` / runbooks.
 - Monitoreo proactivo (Uptime + alertas).
 - Runbooks de troubleshooting por incidente (ya hay base en `docs/runbooks/`).
+
+---
+
+## Enlaces relacionados
+
+- [[tenants/README|tenants]]
+- [[brain/README|Brain Central]]

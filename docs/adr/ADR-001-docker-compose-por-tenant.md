@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: adr
+tags:
+  - opsly/adr
+---
+
 # ADR-001 — Docker Compose por tenant
 
 **Fecha:** 2026-04-04
@@ -24,3 +33,10 @@ Cada tenant tiene su propio docker-compose aislado.
 - Escalar = más VPS, no más complejidad
 - Cada tenant: red Docker aislada, volúmenes propios
 - Template: `infra/templates/docker-compose.tenant.yml.tpl`
+
+---
+
+## Enlaces relacionados
+
+- [[adr/README|adr]]
+- [[brain/README|Brain Central]]

@@ -570,3 +570,10 @@ docker-compose up -d llm-gateway rendering-engine
 **Date:** May 8, 2026  
 **Status:** Ready for Implementation  
 **Next Review:** May 15, 2026 (post-Phase-5-implementation)
+
+---
+
+## Enlaces relacionados
+
+- [[01-development/README|01-development]]
+- [[brain/README|Brain Central]]

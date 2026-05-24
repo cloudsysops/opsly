@@ -67,3 +67,10 @@ Dave McGillivray, Boston Marathon race director and the same for 30 other races 
 - [ ] Link this note to a topic MOC in Obsidian.
 - [ ] Decide if this source should be sent to NotebookLM.
 - [ ] If useful, create reusable playbook/skill improvement.
+
+---
+
+## Enlaces relacionados
+
+- [[brain/README|brain]]
+- [[brain/README|Brain Central]]

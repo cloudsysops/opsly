@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: tenant
+tags:
+  - opsly/tenant
+---
+
 # Opsly — Infraestructura compartida (capa platform)
 
 ## Alcance
@@ -24,3 +33,10 @@ Esta guía cubre lo **compartido** entre tenants (control plane), no el detalle 
 
 - Sin secretos en repo.
 - Tokens con rotación y alcance mínimo (GHCR, Supabase, etc.).
+
+---
+
+## Enlaces relacionados
+
+- [[tenants/README|tenants]]
+- [[brain/README|Brain Central]]

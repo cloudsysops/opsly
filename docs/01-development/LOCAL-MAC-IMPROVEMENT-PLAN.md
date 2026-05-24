@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: guide
+tags:
+  - opsly/development
+---
+
 # Plan: máquina local Mac (Opsly / intcloudsysops)
 
 Objetivo: secretos vía Doppler, Claude Code alineado, comprobaciones repetibles.
@@ -56,3 +65,10 @@ Si **ya tenías** el bloque `opsly-mac-integration` en `~/.zshrc` sin `codex-dop
 - Reglas Cursor / modelos: `.cursor/rules/opsly.mdc`
 - Stack completo local: `scripts/local-setup.sh` (Docker, Supabase, etc.)
 - **Mac como worker del orchestrator + autopilot:** `docs/04-infrastructure/MAC-ADMIN-ORCHESTRATOR-WORKER.md` y `./scripts/mac-admin-orchestrator-worker.sh`
+
+---
+
+## Enlaces relacionados
+
+- [[01-development/README|01-development]]
+- [[brain/README|Brain Central]]

@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: guide
+tags:
+  - opsly/development
+---
+
 # Wallet prepago — roadmap
 
 ## Estado: pausado (según ADR-017)
@@ -41,3 +50,10 @@ El sistema actual funciona con:
 ### Historial
 
 - 2026-04-12: Documentado estado pausado y alcance “solo USD”.
+
+---
+
+## Enlaces relacionados
+
+- [[01-development/README|01-development]]
+- [[brain/README|Brain Central]]

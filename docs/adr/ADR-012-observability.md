@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: adr
+tags:
+  - opsly/adr
+---
+
 # ADR-012: Observabilidad por Tenant
 
 ## Estado: ACEPTADO | Fecha: 2026-04-07
@@ -25,3 +34,10 @@ endpoint `GET /api/metrics/tenant/:slug` con:
 - Cada llamada LLM registra evento en Supabase
 - Admin dashboard muestra métricas por tenant
 - Base para billing por uso en Fase 3
+
+---
+
+## Enlaces relacionados
+
+- [[adr/README|adr]]
+- [[brain/README|Brain Central]]

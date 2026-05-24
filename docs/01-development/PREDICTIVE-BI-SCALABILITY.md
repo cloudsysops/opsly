@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: guide
+tags:
+  - opsly/development
+---
+
 # Predictive BI Engine — Estrategia de Escalabilidad
 
 ## Problema
@@ -117,3 +126,10 @@ async function getInsightWithFallback(tenantId: string) {
 2. **Añadir colas cuando sea necesario**: No optimices prematuramente
 3. **Monitorizar**: logs de duración por tenant
 4. **Alertas**: si > 30s por tenant = investigar
+
+---
+
+## Enlaces relacionados
+
+- [[01-development/README|01-development]]
+- [[brain/README|Brain Central]]

@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: adr
+tags:
+  - opsly/adr
+---
+
 # ADR-006 — Tests de API con Vitest (Node)
 
 **Fecha:** 2026-04-06  
@@ -17,3 +26,10 @@ Los tests unitarios y de integración ligera del paquete `apps/api` se ejecutan 
 
 - Nuevos módulos con IO deben exponer puntos testables o inyección vía mocks en `vi.mock`
 - No sustituye E2E contra VPS; validación de despliegue sigue en health checks y pruebas manuales acotadas
+
+---
+
+## Enlaces relacionados
+
+- [[adr/README|adr]]
+- [[brain/README|Brain Central]]

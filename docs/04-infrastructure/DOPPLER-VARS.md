@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: infrastructure
+tags:
+  - opsly/infrastructure
+---
+
 # Variables Doppler / secretos — referencia
 
 Proyecto típico en Doppler: `ops-intcloudsysops`, configs `prd` (producción), `stg` (staging), `qa`, `dev`.
@@ -287,3 +296,10 @@ doppler run --project ops-intcloudsysops --config prd -- ./scripts/validate-open
 ## Plataforma (otros)
 
 Ver también `scripts/check-tokens.sh` para la lista de variables validadas contra Doppler `prd`.
+
+---
+
+## Enlaces relacionados
+
+- [[04-infrastructure/README|04-infrastructure]]
+- [[brain/README|Brain Central]]

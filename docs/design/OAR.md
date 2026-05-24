@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: doc
+tags:
+  - opsly/doc
+---
+
 # Design Doc #1: Opsly Agentic Runtime (OAR)
 
 **Status:** En implementación (runtime + intent `oar_react` en orchestrator)  
@@ -233,3 +242,10 @@ El `ModeContext` (que persistes en Redis) inyecta configuración al OAR:
 - **[ADR-027](../adr/ADR-027-hybrid-compute-plane-k8s.md):** Hybrid Control Plane vs Compute Plane (K8s Strategy).
 - **[ADR-020](../adr/ADR-020-orchestrator-worker-separation.md):** Separación orchestrator / worker.
 - **[ADR-011](../adr/ADR-011-event-driven-orchestrator.md):** Orquestador event-driven.
+
+---
+
+## Enlaces relacionados
+
+- [[brain/README|brain]]
+- [[brain/README|Brain Central]]

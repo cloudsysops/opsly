@@ -235,3 +235,10 @@ console.timeEnd('audit-log-query');
 **Owner:** @eng (database optimization)  
 **Priority:** HIGH (1-2 hours implementation)  
 **Impact:** 10x performance improvement on some queries
+
+---
+
+## Enlaces relacionados
+
+- [[audits/README|audits]]
+- [[brain/README|Brain Central]]

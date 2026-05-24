@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: tenant
+tags:
+  - opsly/tenant
+---
+
 # Peskids MVP Demo Script
 
 **Duration:** 10 minutes  
@@ -492,3 +501,10 @@ A: "If we start Monday, Sprint 3 (live launch) is around June 8. Three weeks tot
 - Offer to simplify/remove features
 - Never push; respect their timeline
 
+
+---
+
+## Enlaces relacionados
+
+- [[tenants/peskids/README|peskids]]
+- [[brain/README|Brain Central]]

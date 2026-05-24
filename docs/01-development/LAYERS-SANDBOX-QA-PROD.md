@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: guide
+tags:
+  - opsly/development
+---
+
 # Capas de Despliegue: Sandbox → QA → Prod
 
 > **Versión:** 1.0 | **Fecha:** 2026-04-21
@@ -404,3 +413,10 @@ git pull origin main
    - name: Deploy $NEW_LAYER
      if: inputs.layer == '$NEW_LAYER'
    ```
+
+---
+
+## Enlaces relacionados
+
+- [[01-development/README|01-development]]
+- [[brain/README|Brain Central]]

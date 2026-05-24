@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: runbook
+tags:
+  - opsly/runbook
+---
+
 # Runbook — Local Services (Equipa) en producción
 
 **Marca comercial:** **Equipa** — limpieza de equipos y upgrade en campo (tenant técnico `local-services`).  
@@ -48,3 +57,10 @@ Mensaje mínimo para clientes: *“Equipa — servicio de limpieza de equipos e 
 ## 4. Cursor / equipo
 
 Prompts: `@.cursor/prompts/tenants/local-services/piloto-automatizaciones.md` + `@.cursor/prompts/local-services-tech-builder.md`.
+
+---
+
+## Enlaces relacionados
+
+- [[runbooks/README|runbooks]]
+- [[brain/README|Brain Central]]

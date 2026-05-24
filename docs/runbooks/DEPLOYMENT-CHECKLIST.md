@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: runbook
+tags:
+  - opsly/runbook
+---
+
 # Phase 8: VPS Deployment + Production Testing Checklist
 
 **Scope:** Deploy Phases 5-7 (Orchestrator, Agent Teams, Validation) to production VPS (100.120.151.91)
@@ -518,3 +527,10 @@ docker compose -f infra/docker-compose.platform.yml up -d
 **Last Updated:** 2026-05-05  
 **Maintained By:** Infrastructure Team  
 **Contact:** #opsly-infrastructure on Discord
+
+---
+
+## Enlaces relacionados
+
+- [[runbooks/README|runbooks]]
+- [[brain/README|Brain Central]]

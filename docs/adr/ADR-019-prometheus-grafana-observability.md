@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: adr
+tags:
+  - opsly/adr
+---
+
 # ADR-019: Prometheus + Grafana para Observabilidad de la Plataforma
 
 ## Estado: ACEPTADO | Fecha: 2026-04-12
@@ -111,3 +120,10 @@ Sprint 6 Gate: SLA dashboard muestra p99 < 500ms para el 95% de tenants.
 - `infra/monitoring/prometheus.yml`: scrape config
 - `infra/monitoring/grafana/`: provisioning automático
 - ADR-015: Hermes (fuente principal de métricas)
+
+---
+
+## Enlaces relacionados
+
+- [[adr/README|adr]]
+- [[brain/README|Brain Central]]

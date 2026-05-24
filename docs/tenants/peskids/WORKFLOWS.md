@@ -121,3 +121,10 @@ Sin valores en repo. Ejemplos de **nombres**:
 - Publicación en redes
 - Cambios en datos de alumnos/padres sin ticket de aprobación
 - Suspender/reanudar stacks Docker
+
+---
+
+## Enlaces relacionados
+
+- [[tenants/peskids/README|peskids]]
+- [[brain/README|Brain Central]]

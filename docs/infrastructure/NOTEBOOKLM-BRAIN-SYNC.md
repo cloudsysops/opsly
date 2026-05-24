@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: doc
+tags:
+  - opsly/doc
+---
+
 # NotebookLM ↔ Obsidian Brain Sync
 
 **Status:** ✅ ENABLED (Production-ready)
@@ -277,3 +286,10 @@ npm run brain:to-notebooklm
 - [ ] Set up NotebookLM query caching layer
 - [ ] Integrate NotebookLM responses into agent context initialization
 - [ ] Create dashboard showing sync status + query latency
+
+---
+
+## Enlaces relacionados
+
+- [[infrastructure/README|infrastructure]]
+- [[brain/README|Brain Central]]

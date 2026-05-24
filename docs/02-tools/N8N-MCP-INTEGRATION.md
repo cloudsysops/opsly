@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: tool-doc
+tags:
+  - opsly/tools
+---
+
 # n8n-MCP (czlonkowski) — integración Opsly
 
 Repositorio upstream: [czlonkowski/n8n-mcp](https://github.com/czlonkowski/n8n-mcp) (MIT). Expone un **servidor MCP** con documentación de nodos n8n, plantillas, validación y (opcional) gestión vía **API REST de n8n**.
@@ -59,3 +68,10 @@ Si expones por Traefik, añade router TLS con allowlist IP / Cloudflare Access; 
 - [README upstream](https://github.com/czlonkowski/n8n-mcp#readme) — herramientas, validación, self-host.
 - [Paquete npm `n8n-mcp`](https://www.npmjs.com/package/n8n-mcp) — binario `n8n-mcp` (stdio).
 - Opsly: [`apps/mcp/README.md`](../../apps/mcp/README.md), [`MCP-SERVERS.md`](MCP-SERVERS.md).
+
+---
+
+## Enlaces relacionados
+
+- [[02-tools/README|02-tools]]
+- [[brain/README|Brain Central]]

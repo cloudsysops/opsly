@@ -370,3 +370,10 @@ Once intcloudsysops is onboarded:
 **Done! You now have Hermes running in production.**
 
 For questions, check docs/SESSION-SUMMARY-COMPLETE.md or QUICK-REFERENCE-HERMES-OPSLY.md
+
+---
+
+## Enlaces relacionados
+
+- [[runbooks/README|runbooks]]
+- [[brain/README|Brain Central]]

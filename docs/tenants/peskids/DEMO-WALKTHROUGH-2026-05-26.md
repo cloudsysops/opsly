@@ -248,3 +248,10 @@ language: es
 **Version:** 1.0  
 **Last updated:** 2026-05-23  
 **Next review:** After Phase 1 sign-off (2026-05-26)
+
+---
+
+## Enlaces relacionados
+
+- [[tenants/peskids/README|peskids]]
+- [[brain/README|Brain Central]]

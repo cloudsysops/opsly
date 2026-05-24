@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: guide
+tags:
+  - opsly/development
+---
+
 # Semana 1 — Routing y costes visibles — COMPLETADO
 
 **Periodo:** 2026-04-14 → 2026-04-20  
@@ -108,3 +117,10 @@ Duration    14.08s
 **Ejecutado por:** Claude Haiku  
 **Branch:** main  
 **Commit:** 3780f01
+
+---
+
+## Enlaces relacionados
+
+- [[01-development/README|01-development]]
+- [[brain/README|Brain Central]]

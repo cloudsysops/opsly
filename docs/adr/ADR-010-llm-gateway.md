@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: adr
+tags:
+  - opsly/adr
+---
+
 # ADR-010: LLM Gateway con Cache Redis
 
 ## Estado: ACEPTADO | Fecha: 2026-04-07
@@ -31,3 +40,10 @@ servicio Opsly y los proveedores LLM.
 - No implementar OpenAI todavía (complejidad innecesaria)
 - No hacer gateway externo (HTTP extra hop)
 - No cachear respuestas con temperatura > 0
+
+---
+
+## Enlaces relacionados
+
+- [[adr/README|adr]]
+- [[brain/README|Brain Central]]

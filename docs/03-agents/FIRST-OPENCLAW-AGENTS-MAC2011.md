@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: agent-doc
+tags:
+  - opsly/agents
+---
+
 # Primeros agentes OpenClaw en el worker Mac 2011
 
 Guía corta para dejar **consumiendo la cola `openclaw`** al orchestrator en el hardware Ubuntu del Mac 2011. Detalle amplio: [`WORKER-SETUP-MAC2011.md`](WORKER-SETUP-MAC2011.md), [`ARCHITECTURE-DISTRIBUTED.md`](ARCHITECTURE-DISTRIBUTED.md), [`ORCHESTRATOR.md`](ORCHESTRATOR.md).
@@ -115,3 +124,10 @@ Tip: usa `--dry-run` para revisar payloads antes de encolar.
 | Cola, jobs, prioridades            | [`ORCHESTRATOR.md`](ORCHESTRATOR.md)                                                       |
 | MCP / tools (otro frente OpenClaw) | [`QUICKSTART-AGENTS.md`](QUICKSTART-AGENTS.md)                                             |
 | ADR Ollama worker                  | [`adr/ADR-024-ollama-local-worker-primary.md`](adr/ADR-024-ollama-local-worker-primary.md) |
+
+---
+
+## Enlaces relacionados
+
+- [[03-agents/README|03-agents]]
+- [[brain/README|Brain Central]]

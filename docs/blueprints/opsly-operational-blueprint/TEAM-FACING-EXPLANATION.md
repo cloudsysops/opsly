@@ -101,3 +101,10 @@ Usar o adaptar [CLIENT-FACING-EXPLANATION.md](./CLIENT-FACING-EXPLANATION.md). N
 1. Leer blueprint completo una vez.  
 2. Aplicar checklist al próximo piloto.  
 3. Proponer mejoras al blueprint vía PR **solo docs** en `docs/blueprints/opsly-operational-blueprint/`.
+
+---
+
+## Enlaces relacionados
+
+- [[blueprints/opsly-operational-blueprint/README|opsly-operational-blueprint]]
+- [[brain/README|Brain Central]]

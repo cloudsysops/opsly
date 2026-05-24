@@ -727,3 +727,10 @@ opencode deploy agent \
 **Deploy to:** GitHub (prompts/agents/) + OpenCode  
 **Format:** Markdown (copy-paste into OpenCode)  
 **Customization:** Per-team adjustments in team config
+
+---
+
+## Enlaces relacionados
+
+- [[03-agents/README|03-agents]]
+- [[brain/README|Brain Central]]

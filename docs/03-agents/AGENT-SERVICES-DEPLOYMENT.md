@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: agent-doc
+tags:
+  - opsly/agents
+---
+
 # Agent Services Deployment Guide
 
 ## Overview
@@ -289,3 +298,10 @@ curl http://localhost:3011/api/agents/service-urls | jq .
 # Force environment override
 AGENT_ENVIRONMENT=tailscale npm run dev --workspace=@intcloudsysops/orchestrator
 ```
+
+---
+
+## Enlaces relacionados
+
+- [[03-agents/README|03-agents]]
+- [[brain/README|Brain Central]]

@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: agent-doc
+tags:
+  - opsly/agents
+---
+
 # Multi-Agent Architecture: Opsly Fase 4
 
 **Status:** Production-Ready Implementation  
@@ -398,3 +407,10 @@ CONTEXT_BUILDER_TENANT_ISOLATION=true
 - [Langfuse Docs](https://langfuse.com/docs)
 - [Opsly ORCHESTRATOR.md](./ORCHESTRATOR.md)
 - [Opsly OPENCLAW-ARCHITECTURE.md](./OPENCLAW-ARCHITECTURE.md)
+
+---
+
+## Enlaces relacionados
+
+- [[03-agents/README|03-agents]]
+- [[brain/README|Brain Central]]

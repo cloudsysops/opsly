@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: doc
+tags:
+  - opsly/doc
+---
+
 # Agent Bootstrap System
 
 **Purpose:** Automatically initialize new agents entering the Opsly repository with complete configuration, skills, MCP tools, and context.
@@ -453,3 +462,10 @@ node scripts/mcp-bootstrap.js --no-health-check
 - `VISION.md` — Product north star (immutable)
 - `docs/01-development/SKILLS-SYSTEM.md` — Skill authoring
 - `docs/01-development/MCP-TOOLS.md` — MCP tool configuration
+
+---
+
+## Enlaces relacionados
+
+- [[infrastructure/README|infrastructure]]
+- [[brain/README|Brain Central]]

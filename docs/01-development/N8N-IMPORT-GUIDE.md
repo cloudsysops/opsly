@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: guide
+tags:
+  - opsly/development
+---
+
 # N8N Import Guide — Discord to GitHub
 
 Guia paso a paso para importar y verificar el workflow
@@ -117,3 +126,10 @@ doppler run --project ops-intcloudsysops --config prd -- \
 - [ ] Variables de entorno cargadas en n8n.
 - [ ] Webhook URL copiada desde n8n.
 - [ ] `curl` responde 200/2xx con payload `dry_run: true`.
+
+---
+
+## Enlaces relacionados
+
+- [[01-development/README|01-development]]
+- [[brain/README|Brain Central]]

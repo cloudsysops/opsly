@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: infrastructure
+tags:
+  - opsly/infrastructure
+---
+
 # Informe de auditoría de seguridad (automatizado en repo)
 
 **Fecha:** 2026-04-06  
@@ -41,3 +50,10 @@ Revalidar tras nuevas migraciones que alteren RLS o expongan tablas al rol `auth
 No se detectaron patrones obvios de secretos en el working tree ni vulnerabilidades npm en el reporte local. La postura RLS de plataforma es coherente con “solo service role” en las tablas citadas.
 
 **Qué no se hizo:** pentest, revisión de dependencias trazadas en tiempo de ejecución, revisión de permisos IAM/DO, ni verificación en producción.
+
+---
+
+## Enlaces relacionados
+
+- [[04-infrastructure/README|04-infrastructure]]
+- [[brain/README|Brain Central]]

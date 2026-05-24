@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: architecture
+tags:
+  - opsly/architecture
+---
+
 # Arquitectura distribuida — Opsly (objetivo)
 
 > **Alcance:** diseño objetivo para aliviar el VPS (disco/RAM) moviendo **carga pesada de inferencia y workers** a un nodo secundario (p. ej. **Mac 2011 + Ubuntu** en Tailscale). Alineado con `docs/HEAVY-SERVICES-DECISION.md` y `config/opsly.config.json`.  
@@ -156,3 +165,10 @@ Si se publica Ollama u OpenClaw por HTTPS, usar **Traefik en el VPS** con backen
 - `docs/DISK-USAGE-REPORT.md`
 - `docs/WORKER-SETUP-MAC2011.md`
 - `infra/docker-compose.platform.yml`
+
+---
+
+## Enlaces relacionados
+
+- [[00-architecture/README|00-architecture]]
+- [[brain/README|Brain Central]]

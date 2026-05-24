@@ -25,3 +25,10 @@ related: []
 ---
 
 **Last updated:** {{date:YYYY-MM-DD}}
+
+---
+
+## Enlaces relacionados
+
+- [[brain/README|brain]]
+- [[brain/README|Brain Central]]

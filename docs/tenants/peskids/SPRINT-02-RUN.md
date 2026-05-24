@@ -89,3 +89,10 @@ Esperar `HTTP 201` en POST lead (tenant `peskids` `active` en `platform.tenants`
 ## Siguiente (extracción)
 
 Cuando lo anterior esté estable 2–4 semanas → [FUTURE-REPO-SEED.md](./FUTURE-REPO-SEED.md).
+
+---
+
+## Enlaces relacionados
+
+- [[tenants/peskids/README|peskids]]
+- [[brain/README|Brain Central]]

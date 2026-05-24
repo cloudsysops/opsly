@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: guide
+tags:
+  - opsly/development
+---
+
 # MAIA Workers — Implementación completa
 
 > Documento generado por Claude (arquitecto). Contiene el código fuente de los 6 workers nuevos.
@@ -509,3 +518,10 @@ export function startMemoryWriterWorker(connection: object): Worker {
 | `feet-stripe-to-tenant.json` | Stripe checkout.completed → provision tenant → health check |
 | `heart-budget-alerts.json` | Schedule hourly → GET /api/costs/summary → Discord alert |
 | `maia-github-push.json` | GitHub push webhook → filter maia/* → POST /api/maia/callback |
+
+---
+
+## Enlaces relacionados
+
+- [[01-development/README|01-development]]
+- [[brain/README|Brain Central]]

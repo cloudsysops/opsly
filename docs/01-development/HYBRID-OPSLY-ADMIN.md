@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: guide
+tags:
+  - opsly/development
+---
+
 # Guía de operaciones: centro de mando (`opsly-admin`)
 
 **Estado:** Activo  
@@ -117,3 +126,10 @@ ssh vps-dragon "cd /opt/opsly/infra && docker compose --env-file /opt/opsly/.env
 - **Git / sesión:** `docs/SESSION-GIT-SYNC.md`
 - **OAR:** `docs/design/OAR.md`
 - **OpenClaw (MCP, colas):** `docs/OPENCLAW-ARCHITECTURE.md`
+
+---
+
+## Enlaces relacionados
+
+- [[01-development/README|01-development]]
+- [[brain/README|Brain Central]]

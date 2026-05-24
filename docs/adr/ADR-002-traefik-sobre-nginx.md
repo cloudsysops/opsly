@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: adr
+tags:
+  - opsly/adr
+---
+
 # ADR-002 — Traefik v3 como reverse proxy
 
 **Fecha:** 2026-04-04
@@ -24,3 +33,10 @@ Traefik v3 como único reverse proxy y gestor de SSL.
 - Todo nuevo servicio se expone con labels Traefik
 - Dashboard reservado en `traefik.${PLATFORM_DOMAIN}`
 - `admin.*` reservado para dashboard Opsly
+
+---
+
+## Enlaces relacionados
+
+- [[adr/README|adr]]
+- [[brain/README|Brain Central]]

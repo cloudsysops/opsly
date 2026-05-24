@@ -1095,3 +1095,10 @@ ORDER BY timestamp DESC;
 **Owner:** @engineering + @security  
 **Timeline:** Sprint 10-11 (3-4 weeks)  
 **Effort:** 40-60 hours (infra + agents + testing)
+
+---
+
+## Enlaces relacionados
+
+- [[adr/README|adr]]
+- [[brain/README|Brain Central]]

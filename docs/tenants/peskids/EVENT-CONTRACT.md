@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: tenant
+tags:
+  - opsly/tenant
+---
+
 # Peskids Event Contract
 
 **Purpose:** Define all events that Peskids emits to Opsly platform. Events are used for analytics, integrations, audit logs, and future automations.
@@ -451,3 +460,10 @@ const channel = supabase
 - `version` field in payload
 
 No breaking changes without new version.
+
+---
+
+## Enlaces relacionados
+
+- [[tenants/peskids/README|peskids]]
+- [[brain/README|Brain Central]]

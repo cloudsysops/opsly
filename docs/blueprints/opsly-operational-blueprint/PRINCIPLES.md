@@ -66,3 +66,10 @@ Usos permitidos: resumir, sugerir borrador, clasificar con revisión. Usos prohi
 - Secretos en repo o chat
 - Terraform para un negocio de 3 personas
 - Prometer SLA enterprise sin equipo 24/7
+
+---
+
+## Enlaces relacionados
+
+- [[blueprints/opsly-operational-blueprint/README|opsly-operational-blueprint]]
+- [[brain/README|Brain Central]]

@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: adr
+tags:
+  - opsly/adr
+---
+
 # ADR-032: Reorganize Scripts by Category
 
 **Status:** APPROVED (2026-04-24)  
@@ -49,3 +58,10 @@ mkdir -p scripts/{infra,deploy,tenant,ops,utils,ci}
 
 - Wrapper scripts remain until 2026-05-31.
 - After that date, remove wrappers once CI and runbooks no longer reference them.
+
+---
+
+## Enlaces relacionados
+
+- [[adr/README|adr]]
+- [[brain/README|Brain Central]]

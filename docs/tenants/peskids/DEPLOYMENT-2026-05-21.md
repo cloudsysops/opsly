@@ -133,3 +133,10 @@ APP_IMAGE=ghcr.io/cloudsysops/intcloudsysops-api:latest \
 ```
 
 Nota: la imagen GHCR `:latest` **no** expone rutas Peskids hasta nuevo build en CI.
+
+---
+
+## Enlaces relacionados
+
+- [[tenants/peskids/README|peskids]]
+- [[brain/README|Brain Central]]

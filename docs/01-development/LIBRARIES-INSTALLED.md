@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: guide
+tags:
+  - opsly/development
+---
+
 # 📦 LIBRERÍAS INSTALADAS - OPSLY ECOSYSTEM
 
 > **Última verificación**: 2026-04-09  
@@ -398,3 +407,10 @@ Status: READY FOR PRODUCTION 🚀
 - [Stack Technical Doc](../00-architecture/ARCHITECTURE.md)
 - [ADRs](./adr/)
 - [Setup Guide](../scripts/local-setup.sh)
+
+---
+
+## Enlaces relacionados
+
+- [[01-development/README|01-development]]
+- [[brain/README|Brain Central]]

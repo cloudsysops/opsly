@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: guide
+tags:
+  - opsly/development
+---
+
 # Local-First Architecture
 
 > Arquitectura que prioriza ejecución local antes de fallback a servicios cloud.
@@ -128,3 +137,9 @@ const result = await executeLocalAgent({
 - ADR-024: Ollama Local Worker
 - ADR-027: Hybrid Compute Plane
 - docs/IMPLEMENTATION-IA-LAYER.md
+---
+
+## Enlaces relacionados
+
+- [[01-development/README|01-development]]
+- [[brain/README|Brain Central]]

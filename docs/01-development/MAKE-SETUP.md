@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: guide
+tags:
+  - opsly/development
+---
+
 # Make.com — integración Opsly (plataforma + tenants)
 
 > Paridad con n8n: Opsly expone **automatización dual** — n8n self-hosted por tenant en VPS y **Make.com** (SaaS) por org/equipo/hook. Secretos en Doppler `ops-intcloudsysops` / `prd`.
@@ -124,3 +133,10 @@ ssh vps-dragon@100.120.151.91 'cd /opt/opsly && ./scripts/vps-bootstrap.sh'
 ```
 
 En Make UI: crear escenario por tenant con módulo **Webhooks → Custom webhook** y enlazar al hook `opsly-{slug}-ingress` (o reutilizar el URL ya en Doppler).
+
+---
+
+## Enlaces relacionados
+
+- [[01-development/README|01-development]]
+- [[brain/README|Brain Central]]

@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: architecture
+tags:
+  - opsly/architecture
+---
+
 # Diagramas Mermaid — Billing USD (Opsly)
 
 > **Alcance:** sistema actual en **USD** (sin wallet prepago). Wallet prepago: pausado según [ADR-030](adr/ADR-030-prepaid-token-wallet-roadmap.md) y [WALLET-PREPAID-ROADMAP](WALLET-PREPAID-ROADMAP.md).  
@@ -418,3 +427,10 @@ pie title Billing USD — visión aproximada
 - [WALLET-PREPAID-ROADMAP.md](WALLET-PREPAID-ROADMAP.md)
 - [TOKEN-BILLING-SYSTEM.md](TOKEN-BILLING-SYSTEM.md)
 - Código: `apps/api/lib/billing/budget-thresholds.ts`, `admin-costs-tenant-budgets.ts`, `apps/admin/app/costs/page.tsx`
+
+---
+
+## Enlaces relacionados
+
+- [[00-architecture/README|00-architecture]]
+- [[brain/README|Brain Central]]

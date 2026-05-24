@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: guide
+tags:
+  - opsly/development
+---
+
 # Sistema de tokens y billing — diseño y estado en Opsly
 
 > **Estado actual (código):** facturación y límites de uso IA pasan por **LLM Gateway** en **USD** y **tokens reales de proveedor**, con **planes** (`startup` / `business` / `enterprise`), **`PLAN_BUDGETS`** en `apps/llm-gateway/src/budget.ts`, presupuesto opcional por tenant (`tenant_budgets`), y **`usage_events`** en Supabase.  
@@ -74,3 +83,10 @@ Si se implementara wallet prepago, una tabla **orientativa** podría mapear **ta
 - `docs/adr/ADR-017-worker-teams-billing-roadmap.md`
 - `docs/adr/ADR-030-prepaid-token-wallet-roadmap.md`
 - `apps/llm-gateway/src/budget.ts`
+
+---
+
+## Enlaces relacionados
+
+- [[01-development/README|01-development]]
+- [[brain/README|Brain Central]]

@@ -130,3 +130,10 @@ npm run opsly:live:osc -- /live/tempo 120
 ```
 
 Si ves `Connection refused`, OBS no está escuchando en ese host/puerto o el servidor WebSocket está apagado.
+
+---
+
+## Enlaces relacionados
+
+- [[04-infrastructure/README|04-infrastructure]]
+- [[brain/README|Brain Central]]

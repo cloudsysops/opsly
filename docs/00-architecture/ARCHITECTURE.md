@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: architecture
+tags:
+  - opsly/architecture
+---
+
 # Opsly Architecture (Authority)
 
 This document is the single technical authority for runtime architecture at the platform level.
@@ -346,3 +355,10 @@ openclaw.context_builder.latency_ms{tenant_slug="alice"}
 openclaw.mcp.tool_calls_total{tenant_slug="alice"}
 openclaw.redis.namespace_bytes{tenant_slug="alice"}
 ```
+
+---
+
+## Enlaces relacionados
+
+- [[00-architecture/README|00-architecture]]
+- [[brain/README|Brain Central]]

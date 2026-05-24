@@ -205,3 +205,10 @@ If you cannot modify the workflow directly:
 2. Request GitHub write access or delegate the 2-minute manual edit
 3. Reference this document: `/docs/reports/ci-workflow-fix-deployment-blocked-2026-05-21.md`
 4. Provide them the exact change needed (copy-paste ready above)
+
+---
+
+## Enlaces relacionados
+
+- [[reports/README|reports]]
+- [[brain/README|Brain Central]]

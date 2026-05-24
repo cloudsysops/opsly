@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "generated_at": "2026-05-24T15:41:41Z",
+  "vault": "/Users/dragon/cboteros/proyectos/intcloudsysops/docs",
+  "stats": {
+    "total_files": 596,
+    "files_with_wikilinks": 593,
+    "orphans": 3,
+    "total_wikilinks": 1325,
+    "files_with_tags": 397,
+    "total_tags": 488,
+    "broken_links": 10,
+    "link_density": 2.22
+  },
+  "health": "fair",
+  "broken_links": ["02-tools/OBSIDIAN-RESEARCH-BRAIN.md -> [[MOC-Tema]]","02-tools/KNOWLEDGE-SYSTEM.md -> [[nombre]]","02-tools/OBSIDIAN-README.md -> [[DocName]]","02-tools/OBSIDIAN-README.md -> [[DocumentName]]","02-tools/OBSIDIAN-README.md -> [[MyDoc]]","02-tools/OBSIDIAN-README.md -> [[RelatedDoc]]","02-tools/OBSIDIAN-README.md -> [[wikilinks]]","index.md -> [[nota]]","obsidian/research/agent-pattern-matrix.md -> [[docs/blueprints/opsly-operational-blueprint/README]]","obsidian/index.md -> [[docs/README]]"]
+}

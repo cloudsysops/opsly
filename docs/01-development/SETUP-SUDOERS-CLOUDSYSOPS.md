@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: guide
+tags:
+  - opsly/development
+---
+
 # Setup Sudoers Cloudsysops
 
 Objetivo: permitir ejecución no interactiva del bootstrap de usuario/grupo
@@ -53,3 +62,10 @@ Validación:
 ```bash
 sudo rm -f /etc/sudoers.d/opsly-cloudsysops-bootstrap
 ```
+
+---
+
+## Enlaces relacionados
+
+- [[01-development/README|01-development]]
+- [[brain/README|Brain Central]]

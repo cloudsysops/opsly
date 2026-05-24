@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: doc
+tags:
+  - opsly/doc
+---
+
 # Quick wins (heuristic triage) — opsly open issues
 
 **Context:** 164 open issues; **160** share `automated` + `bug` + `tenant-health` — recurring **tenant unreachable after restart** style alerts.
@@ -20,3 +29,10 @@
 ## Candidates tagged in GitHub
 
 Use label **`quick-win`** on issues that are truly isolated (docs typo, one-line config, single-tenant false positive). **Do not** mass-tag the 160 automated duplicates without a dedupe policy.
+
+---
+
+## Enlaces relacionados
+
+- [[brain/README|brain]]
+- [[brain/README|Brain Central]]

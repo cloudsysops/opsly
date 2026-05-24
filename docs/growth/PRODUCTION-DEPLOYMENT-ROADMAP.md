@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: doc
+tags:
+  - opsly/doc
+---
+
 # Growth Campaign — Production Deployment Roadmap
 
 **Status:** Test Phase Complete (15/15 emails sent to test address)  
@@ -138,3 +147,10 @@ doppler run --project ops-intcloudsysops --config prd -- ./scripts/growth-outrea
 **Owner:** Growth Experiments (Autonomy Phase 3)  
 **Framework:** Resend API + Bash Automation  
 **Status:** Ready for Production (awaiting domain verification)
+
+---
+
+## Enlaces relacionados
+
+- [[brain/README|brain]]
+- [[brain/README|Brain Central]]

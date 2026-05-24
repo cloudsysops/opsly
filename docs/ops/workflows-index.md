@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: doc
+tags:
+  - opsly/doc
+---
+
 # Índice de workflows GitHub — Opsly (Maestro #3)
 
 **Objetivo:** una sola tabla maestra + TSV machine-readable + plan de revisión sin tocar la rama `main` sin PR.
@@ -47,3 +56,10 @@ Cada workflow bajo `.github/workflows/*.yml` incluye una línea de referencia al
 - **Maestro #2** — issue bankruptcy (`docs/ops/issue-bankruptcy-2026-05-03.md`).
 - **Maestro #3** — este índice + TSV + `archive-plan.sh` + cabeceras.
 - **Maestro #4** (pendiente) — SoT de docs / inventario ampliado.
+
+---
+
+## Enlaces relacionados
+
+- [[brain/README|brain]]
+- [[brain/README|Brain Central]]

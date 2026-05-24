@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: guide
+tags:
+  - opsly/development
+---
+
 # Test plan — intcloudsysops
 
 Casos en formato tabular para QA manual y trazabilidad hacia automatización.
@@ -83,3 +92,10 @@ Casos en formato tabular para QA manual y trazabilidad hacia automatización.
 | Badge de status correcto            | Tenants en distintos estados        | Abrir lista y detalle                         | Colores/labels según `active` / `suspended` / `failed` / etc. | Parcial              |
 | Modal confirmación en delete        | Detalle tenant                      | Clic Delete; intentar sin escribir slug       | No borra; con slug correcto ejecuta y refresca                | Parcial              |
 | Suspend/resume actualizan UI        | Permisos y tenant activo/suspendido | Clic Suspend o Resume                         | Badge y estado coherentes tras revalidación SWR               | Parcial              |
+
+---
+
+## Enlaces relacionados
+
+- [[01-development/README|01-development]]
+- [[brain/README|Brain Central]]

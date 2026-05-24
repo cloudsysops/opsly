@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: adr
+tags:
+  - opsly/adr
+---
+
 # ADR-011: Orchestrator Event-Driven con BullMQ
 
 ## Estado: ACEPTADO | Fecha: 2026-04-07
@@ -29,3 +38,10 @@ Worker -> Result Event -> State Store -> Notify
 - Redis existente se usa para 3 cosas: sessions, cache LLM, queues
 - Workers corren en el mismo proceso (monolito modular)
 - Estado de jobs en Redis con TTL 24h
+
+---
+
+## Enlaces relacionados
+
+- [[adr/README|adr]]
+- [[brain/README|Brain Central]]

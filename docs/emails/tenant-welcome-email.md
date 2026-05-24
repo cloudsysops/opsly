@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: doc
+tags:
+  - opsly/doc
+---
+
 # Email de Bienvenida - Cliente Opsly
 
 Plantilla **manual** (complemento al email automático que envía la API vía Resend al usar `POST /api/invitations`). Úsala si quieres un mensaje personal por fuera o como borrador para copiar/pegar.
@@ -119,3 +128,10 @@ Tu feedback es muy valioso.
 
 Gracias,  
 El equipo de Opsly
+
+---
+
+## Enlaces relacionados
+
+- [[brain/README|brain]]
+- [[brain/README|Brain Central]]

@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: agent-doc
+tags:
+  - opsly/agents
+---
+
 # Validación local + bucle de reintentos (autonomía incremental)
 
 ## Componentes
@@ -57,3 +66,10 @@ OPSLY_REPO_ROOT="$PWD" PLATFORM_ADMIN_TOKEN="…" \
 ```bash
 npm run test --workspace=@intcloudsysops/orchestrator -- --run iteration-manager
 ```
+
+---
+
+## Enlaces relacionados
+
+- [[03-agents/README|03-agents]]
+- [[brain/README|Brain Central]]

@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: adr
+tags:
+  - opsly/adr
+---
+
 # ADR-033 Complete Documentation Index
 
 **Decision:** Intelligent Content Generation via LLM Gateway (Syra ↔ OpenClaw Integration)  
@@ -457,3 +466,10 @@ Study these for implementation:
 **Prepared by:** Hermes Agent (Architecture AI)  
 **Date:** 2026-05-08  
 **For:** Opsly 2.0 Platform Architecture Council
+
+---
+
+## Enlaces relacionados
+
+- [[adr/ADR-043-supplement/README|ADR-043-supplement]]
+- [[brain/README|Brain Central]]

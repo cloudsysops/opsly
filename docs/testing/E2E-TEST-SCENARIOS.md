@@ -527,3 +527,10 @@ export async function seedTestData() {
 **Priority:** HIGH (critical workflows need coverage)  
 **Effort:** 4-6 hours implementation  
 **Tools:** Playwright or Cypress recommended
+
+---
+
+## Enlaces relacionados
+
+- [[testing/README|testing]]
+- [[brain/README|Brain Central]]

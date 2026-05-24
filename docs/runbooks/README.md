@@ -31,3 +31,10 @@ Procedimientos accionables para operar, desplegar, diagnosticar y recuperar Opsl
 - [`../tenants/runbooks/TENANT-PRODUCTION-ROLLOUT.md`](../tenants/runbooks/TENANT-PRODUCTION-ROLLOUT.md) — cohortes y rollback (stub aquí)
 - [`../tenants/runbooks/TENANT-ONBOARDING-TRIAGE.md`](../tenants/runbooks/TENANT-ONBOARDING-TRIAGE.md) — triage onboarding API
 - [`../tenants/README.md`](../tenants/README.md) — hub multi-tenant
+
+---
+
+## Enlaces relacionados
+
+- [[runbooks/README|runbooks]]
+- [[brain/README|Brain Central]]

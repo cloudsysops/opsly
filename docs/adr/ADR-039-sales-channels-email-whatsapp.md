@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: adr
+tags:
+  - opsly/adr
+---
+
 # ADR-039 — Sales channels: Email (Week 1-2) + WhatsApp (Week 1+)
 
 ## Estado
@@ -215,3 +224,10 @@ export TWILIO_WHATSAPP_NUMBER=+1401... # your business WhatsApp number
 - n8n workflows: `.n8n/1-workflows/local-services-lead-routing.json`
 - Twilio docs: https://www.twilio.com/docs/whatsapp
 - SendGrid templates: https://sendgrid.com/
+
+---
+
+## Enlaces relacionados
+
+- [[adr/README|adr]]
+- [[brain/README|Brain Central]]

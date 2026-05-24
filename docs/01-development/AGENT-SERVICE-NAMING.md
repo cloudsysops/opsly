@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: guide
+tags:
+  - opsly/development
+---
+
 # Nombres de agentes — Opsly vs binarios externos
 
 ## Regla
@@ -15,3 +24,10 @@ En `POST /api/local/prompt-submit`, frontmatter `agent:` y similares **aceptan**
 
 - `docs/01-development/OPENCLAW-TERMINOLOGY.md` — OpenClaw CLI vs Orquestador Opsly.
 - `docs/03-agents/LOCAL-AGENT-EXECUTION.md` — flujo local y cola `local-agents`.
+
+---
+
+## Enlaces relacionados
+
+- [[01-development/README|01-development]]
+- [[brain/README|Brain Central]]

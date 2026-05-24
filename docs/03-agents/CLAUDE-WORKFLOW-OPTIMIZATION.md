@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: agent-doc
+tags:
+  - opsly/agents
+---
+
 # Optimización de flujo de trabajo (Claude / Cursor / agentes)
 
 Diez técnicas para **reducir tiempo de ciclo y retrabajo** en el monorepo Opsly (~orden de magnitud: hasta **~70% menos fricción** cuando se aplican de forma consistente; el ahorro real depende del tipo de tarea).
@@ -53,3 +62,10 @@ Exploración de código en paralelo (subagentes) cuando las rutas no compiten po
 
 - `.cursor/rules/opsly.mdc` — reglas Cursor Opsly
 - `tools/tools/tools/tools/agents/prompts/cursor-executor.md` — plantilla ejecutor
+
+---
+
+## Enlaces relacionados
+
+- [[03-agents/README|03-agents]]
+- [[brain/README|Brain Central]]

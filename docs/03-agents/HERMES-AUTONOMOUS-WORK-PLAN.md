@@ -537,3 +537,10 @@ Each deliverable is VERIFIED before committing:
 ---
 
 *Plan autónomo: fases de ejecución históricas arriba se conservan como referencia; el estado vigente es la sección **Cierre en repo**.*
+
+---
+
+## Enlaces relacionados
+
+- [[03-agents/README|03-agents]]
+- [[brain/README|Brain Central]]

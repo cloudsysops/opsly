@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: adr
+tags:
+  - opsly/adr
+---
+
 # ADR-037 — Opsly Local Services como plataforma multi-tenant reusable
 
 ## Estado
@@ -119,3 +128,10 @@ test("tenant A no ve datos de tenant B", async () => {
 - Tenant Context: `/apps/api/lib/tenant-context.ts`
 - Base Repository: `/apps/api/lib/base-repository.ts`
 - API Pattern: `/apps/api/app/api/billing/` (similar structure)
+
+---
+
+## Enlaces relacionados
+
+- [[adr/README|adr]]
+- [[brain/README|Brain Central]]

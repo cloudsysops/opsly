@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: runbook
+tags:
+  - opsly/runbook
+---
+
 # Runbook — Incidentes (Opsly)
 
 **Objetivo:** restaurar servicio y acotar impacto con pasos repetibles.
@@ -31,3 +40,10 @@
 ## Contactos y secretos
 
 - Secretos solo vía Doppler; no pegar tokens en tickets públicos
+
+---
+
+## Enlaces relacionados
+
+- [[runbooks/README|runbooks]]
+- [[brain/README|Brain Central]]

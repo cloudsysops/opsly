@@ -1054,3 +1054,10 @@ COMPLETE: task-002
 - Security to prepare scanning rules
 - Docs to prepare template updates
 
+
+---
+
+## Enlaces relacionados
+
+- [[01-development/README|01-development]]
+- [[brain/README|Brain Central]]

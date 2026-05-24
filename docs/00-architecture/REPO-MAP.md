@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: architecture
+tags:
+  - opsly/architecture
+---
+
 # Mapa del monorepo Opsly
 
 > Una página para saber **dónde editar** y **qué no romper**. Complementa [`README.md`](README.md) y [`AGENTS.md`](../AGENTS.md).
@@ -49,3 +58,10 @@ npm run sync-agents
 ```
 
 Última revisión del mapa: 2026-04-30.
+
+---
+
+## Enlaces relacionados
+
+- [[00-architecture/README|00-architecture]]
+- [[brain/README|Brain Central]]

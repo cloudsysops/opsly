@@ -644,3 +644,10 @@ Texto que antes vivía solo en `docs/stubs/VISION.md`; la visión larga sigue si
 3. **Gobernanza por fases:** fase actual `dry-run` + guardrails (sin despliegues destructivos automáticos); fase siguiente sandbox remoto + rollback + evidencia auditable.
 
 **Principio:** autonomía progresiva con seguridad por defecto. Toda capacidad de auto-construcción o auto-evolución inicia en modo seguro (`dry-run`) y solo se promueve con aprobación explícita y trazabilidad.
+
+---
+
+## Enlaces relacionados
+
+- [[01-development/README|01-development]]
+- [[brain/README|Brain Central]]

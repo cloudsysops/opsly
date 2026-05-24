@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: guide
+tags:
+  - opsly/development
+---
+
 # Portafolio API — plano canónico vs `apps/web`
 
 ## Plano canónico
@@ -21,3 +30,10 @@ Detalle de mapeo y riesgos: [TENANT-PRODUCTION-BASELINE.md](../tenants/productio
 | GET | `/api/public/tenants/status` | Estado onboarding por `?email=` + rate limit Redis. |
 | GET, POST | `/api/v1/keys` | API keys por cabecera `x-tenant-id` (deuda de hardening documentada). |
 | DELETE | `/api/v1/keys/{id}` | Revocar clave. |
+
+---
+
+## Enlaces relacionados
+
+- [[01-development/README|01-development]]
+- [[brain/README|Brain Central]]

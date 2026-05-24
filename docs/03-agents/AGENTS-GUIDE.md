@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: agent-doc
+tags:
+  - opsly/agents
+---
+
 # Guía de agentes en paralelo — Opsly
 
 > **No es un segundo `AGENTS.md`.** La **fuente de verdad del estado operativo** (bloqueantes, próximo paso, URL raw, Fase 4) está en **`AGENTS.md`** en la raíz del repo — léelo **siempre** al iniciar trabajo. **Este documento** define únicamente **cómo coordinar varios asistentes o procesos** (Cursor, Claude, n8n, orchestrator) sin pisarse ni duplicar contexto.
@@ -70,3 +79,10 @@ Enlaces: `docs/OPENCLAW-ARCHITECTURE.md`, `docs/ORCHESTRATOR.md`, `apps/mcp/READ
 | Redis        | ✅     | Sin password                               |
 
 **Fix pendientes:** API `[id] !== [ref]` conflict (eliminar `apps/api/app/api/tenants/[ref]`), orchestrator rebuild con packages/ml.
+
+---
+
+## Enlaces relacionados
+
+- [[03-agents/README|03-agents]]
+- [[brain/README|Brain Central]]

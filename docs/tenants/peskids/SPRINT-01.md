@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: tenant
+tags:
+  - opsly/tenant
+---
+
 # Peskids Sprint 01 — MVP Foundation
 
 **Sprint Goal:** Define and validate the Peskids MVP surface. By end of Sprint 01, owner will have seen wireframes, forms, dashboard spec, and said "yes, build this."
@@ -335,3 +344,10 @@ Create DEMO-SCRIPT.md for reading to owner:
 **Move to Sprint 02:** Start building actual landing page, forms, and dashboard using the specs.
 
 No more planning. Only execution from here.
+
+---
+
+## Enlaces relacionados
+
+- [[tenants/peskids/README|peskids]]
+- [[brain/README|Brain Central]]

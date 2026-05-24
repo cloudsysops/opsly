@@ -387,3 +387,10 @@ Then pick the next Phase 5 component and execute step-by-step.
 **Status:** Ready for Phase 5 Implementation  
 **Effort Remaining:** ~35 hours (distributed over 2-3 weeks)  
 **Bottlenecks:** None (all dependencies available)
+
+---
+
+## Enlaces relacionados
+
+- [[01-development/README|01-development]]
+- [[brain/README|Brain Central]]

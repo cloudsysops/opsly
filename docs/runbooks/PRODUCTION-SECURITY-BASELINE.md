@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: runbook
+tags:
+  - opsly/runbook
+---
+
 # Baseline de seguridad — producción (mínimo)
 
 Checklist orientativa para operadores. **No** sustituye auditoría formal ni pentest.
@@ -26,3 +35,10 @@ Checklist orientativa para operadores. **No** sustituye auditoría formal ni pen
 ```
 
 (Desde entorno con Doppler o vars equivalentes; ver `docs/DOPPLER-VARS.md`.)
+
+---
+
+## Enlaces relacionados
+
+- [[runbooks/README|runbooks]]
+- [[brain/README|Brain Central]]

@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: tenant
+tags:
+  - opsly/tenant
+---
+
 # Guía de testing para tenants (staging)
 
 **Checklist corto:** [`TENANT-TESTING-PLAN.md`](TENANT-TESTING-PLAN.md).
@@ -47,3 +56,10 @@ No se añade un segundo endpoint paralelo de “tenant feedback” en la API: el
 Incluye: captura de pantalla, URL exacta, hora (UTC), mensaje de error del navegador o cuerpo de respuesta HTTP relevante (sin pegar secretos).
 
 Si el producto publica un email de soporte vía `NEXT_PUBLIC_SUPPORT_EMAIL`, úsalo en el portal; si no, contacta por el canal acordado con Opsly.
+
+---
+
+## Enlaces relacionados
+
+- [[tenants/README|tenants]]
+- [[brain/README|Brain Central]]

@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: runbook
+tags:
+  - opsly/runbook
+---
+
 # Runbook — Incidente: fallo de agente autónomo
 
 **Cuándo usar:** jobs BullMQ con `autonomy_risk` en **medium**/**high**, Cortex / Hive, o workers que ejecutan acciones sin interacción humana directa muestran fallos repetidos, coste inesperado o efectos en tenants.
@@ -40,3 +49,10 @@
 - Políticas por job: [`AUTONOMY-JOB-POLICY-MAP.md`](./AUTONOMY-JOB-POLICY-MAP.md)
 - Checklist go-live: [`AUTONOMOUS-PRODUCTION-GO-LIVE-CHECKLIST.md`](./AUTONOMOUS-PRODUCTION-GO-LIVE-CHECKLIST.md)
 - Autonomía en workers: [`AGENTS-AUTONOMOUS-RUNBOOK.md`](../03-agents/AGENTS-AUTONOMOUS-RUNBOOK.md)
+
+---
+
+## Enlaces relacionados
+
+- [[runbooks/README|runbooks]]
+- [[brain/README|Brain Central]]

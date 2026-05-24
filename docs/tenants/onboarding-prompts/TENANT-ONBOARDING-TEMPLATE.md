@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: tenant
+tags:
+  - opsly/tenant
+---
+
 # Opsly — Tenant onboarding (plantilla genérica, Opción B)
 
 ## Inputs (no hardcodear)
@@ -55,3 +64,10 @@ Variables mínimas:
 
 - Carpeta `EXECUTIONS/<tenant_slug>/` en Drive con logs por día (texto/markdown).
 - PR(s) en GitHub con commits pequeños y verificables (`npm run type-check`).
+
+---
+
+## Enlaces relacionados
+
+- [[tenants/README|tenants]]
+- [[brain/README|Brain Central]]

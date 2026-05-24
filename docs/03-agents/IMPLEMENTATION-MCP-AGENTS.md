@@ -1050,3 +1050,10 @@ SELECT * FROM audit_logs ORDER BY timestamp DESC;
 **Effort:** ~20-30 hours total  
 **Timeline:** 2-3 days with 1 engineer  
 **Support:** @engineering + @devops
+
+---
+
+## Enlaces relacionados
+
+- [[03-agents/README|03-agents]]
+- [[brain/README|Brain Central]]

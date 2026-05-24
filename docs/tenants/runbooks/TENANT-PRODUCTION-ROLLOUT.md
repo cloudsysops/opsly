@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: tenant
+tags:
+  - opsly/tenant
+---
+
 # Rollout progresivo a producción — cohortes (Opsly)
 
 > **Canónico:** editar este archivo (`docs/tenants/runbooks/`). Stub: [`docs/stubs/TENANT-PRODUCTION-ROLLOUT.md`](../../stubs/TENANT-PRODUCTION-ROLLOUT.md).
@@ -49,3 +58,10 @@ Documentar cada rollback en `AGENTS.md` (sesión) o ticket.
 - [TENANT-PRODUCTION-BASELINE.md](../production/TENANT-PRODUCTION-BASELINE.md)
 - [TENANT-PRODUCTION-HARDENING.md](../production/TENANT-PRODUCTION-HARDENING.md)
 - [OPERATIONS-HANDBOOK.md](../../runbooks/OPERATIONS-HANDBOOK.md) (si aplica procedimiento VPS)
+
+---
+
+## Enlaces relacionados
+
+- [[tenants/README|tenants]]
+- [[brain/README|Brain Central]]

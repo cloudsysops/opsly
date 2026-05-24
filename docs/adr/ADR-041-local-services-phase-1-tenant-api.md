@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: adr
+tags:
+  - opsly/adr
+---
+
 # ADR-041 — Local Services Phase 1: tenant API (`platform.ls_*`)
 
 ## Status
@@ -17,3 +26,10 @@ Local Services (Equipa) se trata como tenant Opsly con datos en schema `platform
 ## Consequences
 
 - n8n y automatismos externos no usan JWT portal; ver ADR complementario para webhooks Phase 2 (`/api/local-services/webhooks/{slug}/...`).
+
+---
+
+## Enlaces relacionados
+
+- [[adr/README|adr]]
+- [[brain/README|Brain Central]]

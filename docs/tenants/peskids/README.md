@@ -96,3 +96,10 @@ Campos nuevos (`portal_domain`, `incubation_status`, `product_repo_planned`) req
 - Inventario prod: [`../production/TENANT-PRODUCTION-BASELINE.md`](../production/TENANT-PRODUCTION-BASELINE.md)
 - Hub tenants: [`../README.md`](../README.md)
 - Brain (candidato): [`../../brain/tenants/peskids.md`](../../brain/tenants/peskids.md)
+
+---
+
+## Enlaces relacionados
+
+- [[tenants/peskids/README|peskids]]
+- [[brain/README|Brain Central]]

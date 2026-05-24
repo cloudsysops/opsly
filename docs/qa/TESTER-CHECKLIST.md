@@ -94,3 +94,10 @@ Copia y rellena **una tabla por hallazgo** (facilita issues y el prompt de IA en
 | **Notas** | Solo Chrome / solo rol X / … |
 
 Cuando termines, pega todas las tablas en un issue con la plantilla **QA hallazgo UI** o en un doc interno, y enlázalas en el prompt de [`BACKLOG-IA-PROMPT.md`](BACKLOG-IA-PROMPT.md).
+
+---
+
+## Enlaces relacionados
+
+- [[qa/README|qa]]
+- [[brain/README|Brain Central]]

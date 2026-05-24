@@ -178,3 +178,10 @@ flowchart LR
 ## Relación con documentación tenant
 
 Por cliente incubado: `docs/tenants/<slug>/` implementa este blueprint (ej. [Peskids](../../tenants/peskids/ARCHITECTURE.md)).
+
+---
+
+## Enlaces relacionados
+
+- [[blueprints/opsly-operational-blueprint/README|opsly-operational-blueprint]]
+- [[brain/README|Brain Central]]

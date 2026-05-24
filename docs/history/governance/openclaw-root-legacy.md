@@ -13,3 +13,10 @@ This file preserves the former root `.openclaw.md` content. Do not restore it to
 # .openclaw.md
 
 Este documento fue reubicado a [`docs/01-development/.openclaw.md`](docs/01-development/.openclaw.md).
+
+---
+
+## Enlaces relacionados
+
+- [[history/README|history]]
+- [[brain/README|Brain Central]]

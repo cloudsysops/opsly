@@ -9,3 +9,10 @@ last_review: 2026-05-10
 **Documento canónico:** [`tenants/production/TENANT-PRODUCTION-BASELINE.md`](../tenants/production/TENANT-PRODUCTION-BASELINE.md)
 
 No editar este stub; evita tablas duplicadas frente a `opsly.config` y `system_state`.
+
+---
+
+## Enlaces relacionados
+
+- [[stubs/README|stubs]]
+- [[brain/README|Brain Central]]

@@ -25,18 +25,20 @@ declare -a orphan_list
 
 for idx in "${!paths[@]}"; do
   f="${paths[$idx]}"
-  content=$(<"$f")
 
-  # Count wikilinks
-  links=$(echo "$content" | grep -o '\[\[[^]]*\]\]' | sort -u 2>/dev/null || true)
+  # Count wikilinks (grep directly on file, much faster on macOS)
+  links=$(grep -o '\[\[[^]]*\]\]' "$f" 2>/dev/null | sort -u || true)
   link_count=0
   if [ -n "$links" ]; then
-    link_count=$(echo "$links" | grep -c . 2>/dev/null || echo 0)
+    link_count=$(echo "$links" | wc -l | tr -d ' ')
   fi
 
-  # Tags from frontmatter
-  tags=$(echo "$content" | sed -n '/^---$/,/^---$/p' | grep -E '^\s+-\s+' | sed 's/^\s*-\s*//' || true)
-  tag_count=$(echo "$tags" | grep -c . || true) || tag_count=0
+  # Tags from frontmatter (read frontmatter via awk for speed)
+  tags=$(awk '/^---$/{c++; next} c==1 && /^[[:space:]]*- /{gsub(/^[[:space:]]*- /,""); print}' "$f" 2>/dev/null || true)
+  tag_count=0
+  if [ -n "$tags" ]; then
+    tag_count=$(echo "$tags" | wc -l | tr -d ' ')
+  fi
 
   if [ "$link_count" -gt 0 ]; then
     total_links=$((total_links + link_count))
@@ -50,7 +52,7 @@ for idx in "${!paths[@]}"; do
     total_tags=$((total_tags + tag_count))
   fi
 
-  # Broken links: resolve [[target]] against filesystem ($VAULT/target.md)
+  # Broken links: resolve [[target]] against filesystem
   while IFS= read -r link; do
     target=$(echo "$link" | sed 's/\[\[//; s/\]\]//; s/|.*//' | tr -d ' ')
     if [ -n "$target" ]; then

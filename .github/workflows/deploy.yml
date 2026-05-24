@@ -138,6 +138,7 @@ jobs:
             NEXT_PUBLIC_SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
             NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
             NEXT_PUBLIC_API_URL=https://api.${{ secrets.PLATFORM_DOMAIN }}
+            NEXT_PUBLIC_ADMIN_PUBLIC_DEMO=false
 
       - name: Build and push Portal image
         uses: docker/build-push-action@v5
@@ -286,6 +287,7 @@ jobs:
             NEXT_PUBLIC_SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
             NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
             NEXT_PUBLIC_API_URL=https://api.${{ steps.staging_domain.outputs.domain }}
+            NEXT_PUBLIC_ADMIN_PUBLIC_DEMO=false
 
       - name: Build and push Portal image (staging)
         uses: docker/build-push-action@v5

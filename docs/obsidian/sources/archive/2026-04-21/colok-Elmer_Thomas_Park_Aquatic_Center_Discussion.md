@@ -48,3 +48,10 @@ The City of Lawton's Communications & Marketing Manager Caitlin Gatlin spoke wit
 - [ ] Link this note to a topic MOC in Obsidian.
 - [ ] Decide if this source should be sent to NotebookLM.
 - [ ] If useful, create reusable playbook/skill improvement.
+
+---
+
+## Enlaces relacionados
+
+- [[brain/README|brain]]
+- [[brain/README|Brain Central]]

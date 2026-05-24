@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: agent-doc
+tags:
+  - opsly/agents
+---
+
 # Hermes Sprint Plan (6 semanas, alineado al repo)
 
 ## Desambiguación
@@ -61,3 +70,10 @@
 
 - [ADR-014: NotebookLM agent](../adr/ADR-014-notebooklm-agent.md) — experimental, browser automation
 - ADR futuro (TBD): límites de recursos Hermes en Compose, si se escala fuera del orchestrator monolítico
+
+---
+
+## Enlaces relacionados
+
+- [[03-agents/README|03-agents]]
+- [[brain/README|Brain Central]]

@@ -104,3 +104,10 @@ Si extracción falla: tenant `peskids` sigue en Opsly; reactivar workflows VPS; 
 | Costos LLM duplicados | Un solo gateway o billing claro |
 
 Ver también [FUTURE-REPO-SEED.md](./FUTURE-REPO-SEED.md).
+
+---
+
+## Enlaces relacionados
+
+- [[tenants/peskids/README|peskids]]
+- [[brain/README|Brain Central]]

@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: guide
+tags:
+  - opsly/development
+---
+
 # Uso del skill Opsly Quantum
 
 ## Ubicación
@@ -57,3 +66,10 @@ npm run validate-skills
 ## Diseño
 
 Ver `docs/OPSLYQUANTUM-SKILL-DESIGN.md`.
+
+---
+
+## Enlaces relacionados
+
+- [[01-development/README|01-development]]
+- [[brain/README|Brain Central]]

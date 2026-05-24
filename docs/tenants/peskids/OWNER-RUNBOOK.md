@@ -391,3 +391,10 @@ Puedes:
 
 [Link to: OWNER-RUNBOOK-EN.md] ← coming soon
 
+
+---
+
+## Enlaces relacionados
+
+- [[tenants/peskids/README|peskids]]
+- [[brain/README|Brain Central]]

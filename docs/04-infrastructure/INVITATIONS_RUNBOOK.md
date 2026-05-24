@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: infrastructure
+tags:
+  - opsly/infrastructure
+---
+
 # Invitaciones — Runbook Admin
 
 Guía operativa para enviar invitaciones al portal del tenant (staging/producción).
@@ -74,3 +83,10 @@ docker logs opsly_portal 2>&1 | tail -50
 
 - Formulario en **`/invitations`** (ver `apps/admin/INVITATIONS_UI.md`).
 - Listado de invitaciones pendientes requeriría nuevo modelo o integración con Supabase Auth.
+
+---
+
+## Enlaces relacionados
+
+- [[04-infrastructure/README|04-infrastructure]]
+- [[brain/README|Brain Central]]

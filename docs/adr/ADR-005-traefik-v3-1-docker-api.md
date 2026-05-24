@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: adr
+tags:
+  - opsly/adr
+---
+
 # ADR-005 — Traefik v3.3+ frente a Docker Engine 29.x
 
 **Fecha:** 2026-04-05  
@@ -20,3 +29,10 @@ Usar imagen **`traefik:v3.3`** en `infra/docker-compose.platform.yml` (negociaci
 ## Relación con otras ADR
 
 - **ADR-002:** sigue vigente la elección de Traefik v3 como proxy; esta ADR acota la **línea menor** mínima por compatibilidad con Docker API.
+
+---
+
+## Enlaces relacionados
+
+- [[adr/README|adr]]
+- [[brain/README|Brain Central]]

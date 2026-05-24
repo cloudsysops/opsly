@@ -133,3 +133,10 @@ Cómo aplicar el blueprint por vertical. **Un nicho = un MVP acotado.**
 4. Presupuesto al menos **Hybrid Recommended**.
 
 Ver [IMPLEMENTATION-CHECKLIST.md](./IMPLEMENTATION-CHECKLIST.md).
+
+---
+
+## Enlaces relacionados
+
+- [[blueprints/opsly-operational-blueprint/README|opsly-operational-blueprint]]
+- [[brain/README|Brain Central]]

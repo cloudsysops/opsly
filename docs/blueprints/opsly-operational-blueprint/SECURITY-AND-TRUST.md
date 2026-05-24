@@ -106,3 +106,10 @@ Este documento aplica al **blueprint operativo cliente**; la plataforma Opsly ti
 - No prometer “cumplimiento HIPAA/SOC2” sin contrato y arquitectura dedicada.
 - No almacenar tarjetas; usar Stripe/Wompi hosted checkout.
 - Menores (ej. escuelas): minimizar PII; consentimiento parental documentado.
+
+---
+
+## Enlaces relacionados
+
+- [[blueprints/opsly-operational-blueprint/README|opsly-operational-blueprint]]
+- [[brain/README|Brain Central]]

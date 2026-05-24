@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: infrastructure
+tags:
+  - opsly/infrastructure
+---
+
 # Incidente: disco VPS al límite
 
 ## Fecha
@@ -71,3 +80,10 @@ Orden de **tens de minutos** (incl. análisis y documentación).
 ## Cierre
 
 **Estado:** incidente mitigado; disco en rango operativo. **Seguimiento:** instalar cron de limpieza/alertas en VPS si falta; revisión semanal de `df` y `docker system df`.
+
+---
+
+## Enlaces relacionados
+
+- [[04-infrastructure/README|04-infrastructure]]
+- [[brain/README|Brain Central]]

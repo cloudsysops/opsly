@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: tool-doc
+tags:
+  - opsly/tools
+---
+
 # Obsidian + NotebookLM + n8n + External Agents Integration
 
 > **Status:** Planning | **Created:** 2026-04-21
@@ -343,3 +352,10 @@ curl -X POST https://api.opsly.com/api/webhooks/n8n/deploy \
 - **Rate limiting** por agent_id en hooks
 - **Audit log** de todas las invocaciones
 - **IP allowlist** para webhooks de n8n (configurable)
+
+---
+
+## Enlaces relacionados
+
+- [[02-tools/README|02-tools]]
+- [[brain/README|Brain Central]]

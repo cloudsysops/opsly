@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: runbook
+tags:
+  - opsly/runbook
+---
+
 # Mapa de políticas de autonomía por tipo de job
 
 **Implementación:** `apps/orchestrator/src/autonomy/policy.ts`  
@@ -67,3 +76,10 @@ Cualquier nuevo `JobType` en `apps/orchestrator/src/types.ts` debe:
 
 1. Añadirse explícitamente a **low** o **medium** en `policy.ts`, **o**
 2. Quedar en el default **high** por seguridad hasta revisión humana.
+
+---
+
+## Enlaces relacionados
+
+- [[runbooks/README|runbooks]]
+- [[brain/README|Brain Central]]

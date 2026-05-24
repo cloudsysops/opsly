@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: architecture
+tags:
+  - opsly/architecture
+---
+
 # Orchestrator — OpenClaw
 
 Servicio Node (`apps/orchestrator`) que consume la cola BullMQ **`openclaw`** en Redis y ejecuta workers especializados.
@@ -145,3 +154,10 @@ curl -sS -X POST "http://127.0.0.1:3010/v1/chat/completions" \
   -H "x-request-id: $(uuidgen)" \
   -d '{"tenant_slug":"localrank","messages":[{"role":"system","content":"Eres un orquestador experto. Devuelve SOLO JSON: reasoning + actions."},{"role":"user","content":"contexto: smoke"}]}'
 ```
+
+---
+
+## Enlaces relacionados
+
+- [[00-architecture/README|00-architecture]]
+- [[brain/README|Brain Central]]

@@ -48,3 +48,10 @@ Pattern Constellation, Agent Pattern Matrix y NotebookLM.
 - Human operators can paste this block into a fresh agent session.
 - Runtime bootstrap scripts should load this file before doing any work.
 - If NotebookLM is disabled, fall back to `AGENTS.md` and `config/knowledge-index.json`.
+
+---
+
+## Enlaces relacionados
+
+- [[03-agents/README|03-agents]]
+- [[brain/README|Brain Central]]

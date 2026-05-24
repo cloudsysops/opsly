@@ -59,3 +59,10 @@ Day    Target  Actual
 ---
 
 _No editar a mano — regenerar con `npm run docs:sync`._
+
+---
+
+## Enlaces relacionados
+
+- [[history/README|history]]
+- [[brain/README|Brain Central]]

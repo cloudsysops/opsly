@@ -91,3 +91,10 @@ Ejemplo reciente: [Peskids](../../tenants/peskids/README.md) — piloto incubado
 ## Estado
 
 **v0.1 — borrador inicial.** Revisar con producto y operaciones antes de tratarlo como canon.
+
+---
+
+## Enlaces relacionados
+
+- [[blueprints/opsly-operational-blueprint/README|opsly-operational-blueprint]]
+- [[brain/README|Brain Central]]

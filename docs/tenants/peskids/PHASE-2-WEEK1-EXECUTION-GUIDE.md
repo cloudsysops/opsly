@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: tenant
+tags:
+  - opsly/tenant
+---
+
 # Phase 2 Week 1 Execution Guide — Step-by-Step
 
 **Timeline:** May 24-31, 2026  
@@ -498,3 +507,10 @@ Once Week 1 is complete:
 4. **Daily Follow-Up Digest** (Day 5)
 
 See `PHASE-2-IMPLEMENTATION-PLAN.md` for full Week 2 details.
+
+---
+
+## Enlaces relacionados
+
+- [[tenants/peskids/README|peskids]]
+- [[brain/README|Brain Central]]

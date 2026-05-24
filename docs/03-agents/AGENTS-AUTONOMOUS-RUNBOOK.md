@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: agent-doc
+tags:
+  - opsly/agents
+---
+
 # Runbook: agentes OpenClaw en modo autónomo
 
 **Autónomo** aquí significa: **cola BullMQ `openclaw` siempre consumida** por el orchestrator en modo **worker** (`OPSLY_ORCHESTRATOR_MODE=worker-enabled`), con **Redis** del VPS y **LLM Gateway** alcanzable (Ollama u otros proveedores según `OLLAMA_URL`).
@@ -136,3 +145,10 @@ sudo systemctl restart opsly-worker   # si usas systemd
 - Primera puesta en marcha agentes: [`FIRST-OPENCLAW-AGENTS-MAC2011.md`](FIRST-OPENCLAW-AGENTS-MAC2011.md)
 - Plan Ollama worker: [`PLAN-OLLAMA-WORKER-2026-04-14.md`](PLAN-OLLAMA-WORKER-2026-04-14.md)
 - Git sync en todos los clones: [`SESSION-GIT-SYNC.md`](SESSION-GIT-SYNC.md), [`git-sync-repo.sh`](../scripts/git-sync-repo.sh)
+
+---
+
+## Enlaces relacionados
+
+- [[03-agents/README|03-agents]]
+- [[brain/README|Brain Central]]

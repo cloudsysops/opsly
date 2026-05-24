@@ -50,3 +50,10 @@ Oliver Ames Tigers vs Bridgewater Raynham Trojans OA 1 - BR 7 Final ASIAF Arena 
 - [ ] Link this note to a topic MOC in Obsidian.
 - [ ] Decide if this source should be sent to NotebookLM.
 - [ ] If useful, create reusable playbook/skill improvement.
+
+---
+
+## Enlaces relacionados
+
+- [[brain/README|brain]]
+- [[brain/README|Brain Central]]

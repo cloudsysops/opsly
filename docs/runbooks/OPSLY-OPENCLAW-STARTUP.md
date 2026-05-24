@@ -303,3 +303,10 @@ ssh vps-dragon@100.120.151.91 "df -h / && docker system df"
 ```
 
 Si el disco supera 90%, seguir `docs/01-development/HEAVY-SERVICES-DECISION.md` y `scripts/vps-cleanup-robust.sh` antes de activar servicios pesados.
+
+---
+
+## Enlaces relacionados
+
+- [[runbooks/README|runbooks]]
+- [[brain/README|Brain Central]]

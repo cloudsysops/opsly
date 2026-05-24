@@ -83,3 +83,10 @@ is missing.
   part of this customer-facing bonus.
 - If public routing returns `404`, stop customer demo work and recover
   Traefik/API/portal first.
+
+---
+
+## Enlaces relacionados
+
+- [[runbooks/README|runbooks]]
+- [[brain/README|Brain Central]]

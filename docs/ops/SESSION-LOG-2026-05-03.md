@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: doc
+tags:
+  - opsly/doc
+---
+
 # Session log — CI / actionlint hardening (2026-05-03)
 
 ## Hecho
@@ -21,3 +30,10 @@
 
 - Ninguno en actionlint tras los cambios; el CI remoto es la fuente de verdad final.
 - **PR #194:** revisar checks en GitHub tras el push (`gh pr status` mostró fallos parciales en cadena CI hasta que actionlint pase en remoto).
+
+---
+
+## Enlaces relacionados
+
+- [[brain/README|brain]]
+- [[brain/README|Brain Central]]

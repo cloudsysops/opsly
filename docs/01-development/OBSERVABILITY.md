@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: guide
+tags:
+  - opsly/development
+---
+
 # Observabilidad — Opsly (Prometheus / métricas host)
 
 Documentación alineada con el código en `apps/api/lib/fetch-host-metrics-prometheus.ts` y `apps/api/lib/prometheus.ts`.
@@ -67,3 +76,10 @@ groups:
 
 - [TROUBLESHOOTING.md](TROUBLESHOOTING.md)
 - [PERFORMANCE_BASELINE.md](PERFORMANCE_BASELINE.md)
+
+---
+
+## Enlaces relacionados
+
+- [[01-development/README|01-development]]
+- [[brain/README|Brain Central]]

@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: doc
+tags:
+  - opsly/doc
+---
+
 # Redis Password Rotation (Low Downtime)
 
 Este runbook rota la credencial de Redis minimizando impacto en `GET /api/portal/billing/summary` y en el metering en tiempo real.
@@ -133,3 +142,10 @@ Después:
 ## Nota de seguridad
 
 Si Redis está en `0.0.0.0`, no dejes `6379/tcp` abierto globalmente en producción. Restringe por IP de salida (Vercel/VPN/Tailscale) en UFW o firewall perimetral.
+
+---
+
+## Enlaces relacionados
+
+- [[brain/README|brain]]
+- [[brain/README|Brain Central]]

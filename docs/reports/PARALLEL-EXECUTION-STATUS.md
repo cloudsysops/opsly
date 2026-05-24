@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: doc
+tags:
+  - opsly/doc
+---
+
 # Parallel Execution System - Status & Next Steps
 
 ## ✅ Current Status
@@ -295,3 +304,10 @@ bash scripts/test-parallel-execution.sh
 ```
 
 Expected result: 4 responses generated, validated, and committed to git in ~3-5 minutes.
+
+---
+
+## Enlaces relacionados
+
+- [[reports/README|reports]]
+- [[brain/README|Brain Central]]

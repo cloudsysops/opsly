@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: doc
+tags:
+  - opsly/doc
+---
+
 # Issue triage snapshot — cloudsysops/opsly
 
 **Generated:** 2026-05-03 (local `gh` export)  
@@ -82,3 +91,10 @@ The open backlog is **dominated by automated tenant-health alerts** (labels `aut
 ## Triage labels (repo)
 
 Created or verified on `cloudsysops/opsly`: `stale-closed`, `needs-info`, `needs-owner`, `keep-backlog`, `quick-win`, `epic`.
+
+---
+
+## Enlaces relacionados
+
+- [[brain/README|brain]]
+- [[brain/README|Brain Central]]

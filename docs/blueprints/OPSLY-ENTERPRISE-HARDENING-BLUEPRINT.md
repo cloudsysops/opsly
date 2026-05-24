@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: doc
+tags:
+  - opsly/doc
+---
+
 # Opsly Enterprise Hardening Blueprint
 
 Status: draft generated with The Architect on 2026-05-21.
@@ -163,3 +172,10 @@ Recommended next slice:
 - No `npm audit fix --force` without isolated branch and app smoke.
 - No direct tenant shell access from the public portal.
 - No second orchestration system parallel to OpenClaw.
+
+---
+
+## Enlaces relacionados
+
+- [[brain/README|brain]]
+- [[brain/README|Brain Central]]

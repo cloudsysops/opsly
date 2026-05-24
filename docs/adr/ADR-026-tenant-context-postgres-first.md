@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: adr
+tags:
+  - opsly/adr
+---
+
 # ADR-026: Estrategia de contexto multi-tenant (Postgres nativo)
 
 **Estado:** Aceptada
@@ -34,3 +43,10 @@ Estrategia de **contexto nativo en base de datos**:
 
 - Migración: `supabase/migrations/0031_tenant_context_profile.sql`
 - Implementación: `apps/context-builder/src/tenant-profile.ts`, `context-pack-builder.ts`
+
+---
+
+## Enlaces relacionados
+
+- [[adr/README|adr]]
+- [[brain/README|Brain Central]]

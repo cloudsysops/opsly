@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: guide
+tags:
+  - opsly/development
+---
+
 # Sprint planning y task management (Opsly)
 
 Sistema unificado: **Notion** como colaboración en tiempo real, **YAML + docs generados** en el repo para agentes y CI, **GitHub** para issues y automatización.
@@ -81,3 +90,10 @@ El workflow [`.github/workflows/github-project-sync.yml`](../.github/workflows/g
 - [`docs/AUTO-SYNC-DOCS-SETUP.md`](AUTO-SYNC-DOCS-SETUP.md) — YAML → Markdown
 - [`docs/AGENTS-ORCHESTRATION.md`](AGENTS-ORCHESTRATION.md) — roles y escenarios
 - [`docs/DOPPLER-VARS.md`](DOPPLER-VARS.md) — variables Notion
+
+---
+
+## Enlaces relacionados
+
+- [[01-development/README|01-development]]
+- [[brain/README|Brain Central]]

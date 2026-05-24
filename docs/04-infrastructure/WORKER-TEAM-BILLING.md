@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: infrastructure
+tags:
+  - opsly/infrastructure
+---
+
 # Workers alquilables y billing — modelo y estado
 
 > **Estado:** documento de **modelo de negocio + integración técnica** con lo ya implementado. Las tablas de precio en dólares del prompt maestro son **ilustrativas**; la fuente comercial sigue siendo **`VISION.md`** y contratos reales.  
@@ -62,3 +71,10 @@ npm run type-check
 - `docs/00-architecture/LLM-GATEWAY.md`
 - `docs/ORCHESTRATOR.md`
 - `docs/SECURITY_CHECKLIST.md`
+
+---
+
+## Enlaces relacionados
+
+- [[04-infrastructure/README|04-infrastructure]]
+- [[brain/README|Brain Central]]

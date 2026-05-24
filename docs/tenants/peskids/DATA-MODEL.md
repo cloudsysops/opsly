@@ -180,3 +180,10 @@ Ver [EXTRACTION-PLAN.md](./EXTRACTION-PLAN.md): payloads deben incluir `tenant_s
 - Padres: solo sus `students` y `feedback` propios.
 - Docentes: solo sus `classes` y feedback de clase.
 - Service role: solo backend; nunca en cliente.
+
+---
+
+## Enlaces relacionados
+
+- [[tenants/peskids/README|peskids]]
+- [[brain/README|Brain Central]]

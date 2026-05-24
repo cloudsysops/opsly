@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: infrastructure
+tags:
+  - opsly/infrastructure
+---
+
 # Checklist — activación failover GCP (`opslyquantum`)
 
 ## Prerrequisitos
@@ -44,3 +53,10 @@
 - **Free tier / créditos:** condiciones según cuenta y región; no asumir coste $0 permanente — ver [precios](https://cloud.google.com/compute/pricing).
 - **Coste post-promoción:** orden de magnitud variable (no fijar en checklist; revisar factura GCP).
 - **Región por defecto en scripts:** `us-central1-a` (ajustar `GCP_ZONE` si aplica).
+
+---
+
+## Enlaces relacionados
+
+- [[04-infrastructure/README|04-infrastructure]]
+- [[brain/README|Brain Central]]

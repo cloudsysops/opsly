@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: tool-doc
+tags:
+  - opsly/tools
+---
+
 # Google Drive — espejo de documentación Opsly
 
 ## Objetivo
@@ -82,3 +91,10 @@ git add docs/GOOGLE-DRIVE-SYNC.md .opsly-drive-config.json
 git commit -m "config: google drive link added"
 git push origin main
 ```
+
+---
+
+## Enlaces relacionados
+
+- [[02-tools/README|02-tools]]
+- [[brain/README|Brain Central]]

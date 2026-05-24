@@ -544,3 +544,10 @@ CREATE TABLE agent_executions (
 **Duration:** 6 hours (continuous execution)  
 **Deliverables:** 10+ files, 3,000+ lines code, 50+ KB docs  
 **Ready for:** Production deployment or Phase 6 build-out
+
+---
+
+## Enlaces relacionados
+
+- [[01-development/README|01-development]]
+- [[brain/README|Brain Central]]

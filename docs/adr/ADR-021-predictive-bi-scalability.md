@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: adr
+tags:
+  - opsly/adr
+---
+
 # ADR-021: Estrategia de Escalabilidad - Predictive BI Engine
 
 **Fecha:** 2026-04-12  
@@ -359,3 +368,10 @@ async function generateInsights(tenantId: string) {
 - [PostgreSQL Partitioning](https://www.postgresql.org/docs/current/ddl-partitioning.html)
 - [ADR-009 OpenClaw MCP Architecture](./ADR-009-openclaw-mcp-architecture.md)
 - [Capa 2 Spec](./CAPA-2-PREDICTIVE-BI-SPEC.md)
+
+---
+
+## Enlaces relacionados
+
+- [[adr/README|adr]]
+- [[brain/README|Brain Central]]

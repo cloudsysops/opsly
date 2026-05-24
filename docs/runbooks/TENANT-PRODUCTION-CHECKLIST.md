@@ -9,3 +9,10 @@ last_review: 2026-05-10
 **Documento canónico:** [`tenants/runbooks/TENANT-PRODUCTION-CHECKLIST.md`](../tenants/runbooks/TENANT-PRODUCTION-CHECKLIST.md)
 
 No editar este stub.
+
+---
+
+## Enlaces relacionados
+
+- [[runbooks/README|runbooks]]
+- [[brain/README|Brain Central]]

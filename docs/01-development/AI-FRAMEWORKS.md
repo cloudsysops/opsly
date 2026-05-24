@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: guide
+tags:
+  - opsly/development
+---
+
 # AI Frameworks en intcloudsysops
 
 Este documento describe la integración base de `LangChain`, `LlamaIndex` y `Dify` en entorno local para acelerar pruebas del sistema DockWiki/pro.
@@ -67,3 +76,10 @@ Qué valida el script:
 - `DIFY_WEAVIATE_ENDPOINT`
 
 En local se usan defaults para bootstrap rápido. Para entorno productivo, definir valores reales en Doppler.
+
+---
+
+## Enlaces relacionados
+
+- [[01-development/README|01-development]]
+- [[brain/README|Brain Central]]

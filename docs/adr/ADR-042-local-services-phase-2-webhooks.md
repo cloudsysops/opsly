@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: adr
+tags:
+  - opsly/adr
+---
+
 # ADR-042 — Local Services Phase 2: n8n webhooks (HMAC, tenant path)
 
 ## Status
@@ -21,3 +30,10 @@ n8n y otros orquestadores deben llamar a la API sin sesión Supabase, manteniend
 
 - SendGrid / Twilio / Stripe en flujos n8n se configuran en n8n y Doppler; la API solo expone puntos de entrada firmados.
 - Rotación de secretos: actualizar env y credencial en n8n.
+
+---
+
+## Enlaces relacionados
+
+- [[adr/README|adr]]
+- [[brain/README|Brain Central]]

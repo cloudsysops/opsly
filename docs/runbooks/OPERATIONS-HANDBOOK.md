@@ -477,3 +477,10 @@ redis-cli -u "$REDIS_URL" FLUSHDB  # DANGEROUS! Use with caution
 **Next review:** 2026-05-15
 
 Contact @devops with questions or updates.
+
+---
+
+## Enlaces relacionados
+
+- [[runbooks/README|runbooks]]
+- [[brain/README|Brain Central]]

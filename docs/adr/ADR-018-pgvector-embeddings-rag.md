@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: adr
+tags:
+  - opsly/adr
+---
+
 # ADR-018: pgvector + Embeddings para RAG en decisiones Hermes
 
 ## Estado: PROPUESTO | Fecha: 2026-04-12
@@ -87,3 +96,10 @@ Sprint 6 Gate: accuracy de routing con RAG vs sin RAG > 90%.
 - ADR-015: Hermes orchestrator (decisiones que se enriquecen con RAG)
 - ADR-017: Wallet prepago (metering de llamadas a embedding API)
 - Sprint 3 Cursor prompt: `docs/SPRINT-CURSOR-PROMPTS.md`
+
+---
+
+## Enlaces relacionados
+
+- [[adr/README|adr]]
+- [[brain/README|Brain Central]]

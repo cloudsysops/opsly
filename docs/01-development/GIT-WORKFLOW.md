@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: guide
+tags:
+  - opsly/development
+---
+
 # Flujo Git — Opsly (ramas limpias y PRs)
 
 Objetivo: **una línea base (`main`) estable**, cambios integrados por **PR**, y pocas ramas huérfanas. Los agentes (Cursor, Claude, etc.) siguen el mismo orden que el equipo humano: **commit → push → PR → merge → borrar rama**.
@@ -106,3 +115,10 @@ Cada rama candidata genera `summary.md` (último commit, commits vs `main`, diff
 ## Cierre de sesión con solo `AGENTS.md` / espejos
 
 Cuando el único cambio sea documentación de sesión (`AGENTS.md`, `.github/AGENTS.md`), el flujo documentado en `AGENTS.md` puede hacer **commit + push directo a `main`** si el equipo lo permite; para **código, infra o tests**, usar **PR** (ver también `docs/03-agents/AGENT-GUARDRAILS.md`).
+
+---
+
+## Enlaces relacionados
+
+- [[01-development/README|01-development]]
+- [[brain/README|Brain Central]]

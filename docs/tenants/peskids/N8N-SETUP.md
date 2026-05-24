@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: tenant
+tags:
+  - opsly/tenant
+---
+
 # Peskids n8n Setup Guide (WhatsApp + Instagram)
 
 **Objetivo:** Centralizar mensajes de WhatsApp + Instagram en el dashboard de Peskids (approval-first).
@@ -171,3 +180,10 @@ Cada mensaje emite eventos automáticamente:
 - Agregar smart reply suggestions (approval-first AI)
 - Template messages para respuestas comunes
 - Análisis de sentimiento de mensajes
+
+---
+
+## Enlaces relacionados
+
+- [[tenants/peskids/README|peskids]]
+- [[brain/README|Brain Central]]

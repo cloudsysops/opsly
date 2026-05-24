@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: guide
+tags:
+  - opsly/development
+---
+
 # Procedimientos de limpieza — Opsly
 
 ## Requisitos
@@ -92,3 +101,10 @@ sudo systemctl enable --now opsly-cleanup.timer
 ## Contacto
 
 Discord opcional vía `DISCORD_WEBHOOK_URL` y `scripts/notify-discord.sh`.
+
+---
+
+## Enlaces relacionados
+
+- [[01-development/README|01-development]]
+- [[brain/README|Brain Central]]

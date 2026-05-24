@@ -50,3 +50,10 @@ Para producción, el browser solo debe hablar con `apps/api`; no publicar `/inte
 - Tools MCP de Portal son read-only por defecto.
 - Acciones destructivas o SSH requieren allowlist, feature flag y aprobación humana.
 - Registrar `tenant_slug`, `agent_id`, `session_id`, `request_id` cuando se conecte ejecución real de tools.
+
+---
+
+## Enlaces relacionados
+
+- [[runbooks/README|runbooks]]
+- [[brain/README|Brain Central]]

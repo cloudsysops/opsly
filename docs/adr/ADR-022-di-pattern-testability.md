@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: adr
+tags:
+  - opsly/adr
+---
+
 # ADR-022 — Dependency Injection sobre vi.mock para módulos con singletons
 
 **Fecha:** 2026-04-10  
@@ -85,3 +94,10 @@ campo opcional para ser testeable sin `vi.mock`.
 | `vi.doMock` dinámico        | Requiere `await import()` especial en cada test         |
 | Extraer a barrel re-export  | No resuelve el singleton; solo mueve el problema        |
 | Jest en vez de Vitest       | Cambio de herramienta desproporcionado para el problema |
+
+---
+
+## Enlaces relacionados
+
+- [[adr/README|adr]]
+- [[brain/README|Brain Central]]

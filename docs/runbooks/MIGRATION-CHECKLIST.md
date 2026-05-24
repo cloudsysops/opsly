@@ -55,3 +55,10 @@ dedicado.
 - Update support and monitoring contacts.
 - Record the migration outcome.
 
+
+---
+
+## Enlaces relacionados
+
+- [[runbooks/README|runbooks]]
+- [[brain/README|Brain Central]]

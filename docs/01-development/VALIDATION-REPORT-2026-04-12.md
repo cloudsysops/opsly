@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: guide
+tags:
+  - opsly/development
+---
+
 # Validation report — 2026-04-12
 
 **Repo:** Opsly monorepo (`intcloudsysops` / `cloudsysops/opsly`)  
@@ -141,3 +150,10 @@ REPORTE: este archivo
 ---
 
 _Fin del informe._
+
+---
+
+## Enlaces relacionados
+
+- [[01-development/README|01-development]]
+- [[brain/README|Brain Central]]

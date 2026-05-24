@@ -113,3 +113,10 @@ Documentar resultados en runbook del tenant, no en este blueprint.
 - LegalVial (modelo distinto): `docs/runbooks/LEGALVIAL-LOCALRANK-MODEL.md`
 
 Peskids es **tenant directo incubado**, no subcliente.
+
+---
+
+## Enlaces relacionados
+
+- [[blueprints/opsly-operational-blueprint/README|opsly-operational-blueprint]]
+- [[brain/README|Brain Central]]

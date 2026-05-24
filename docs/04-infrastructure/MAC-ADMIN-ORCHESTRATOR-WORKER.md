@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: infrastructure
+tags:
+  - opsly/infrastructure
+---
+
 # Mac principal (opsly-admin) — Worker del orquestador + herramientas locales (autopilot)
 
 Objetivo: que el **control plane** siga en el **VPS** y tu **Mac** consuma colas BullMQ de forma segura, ejecutando jobs que invocan **Cursor** (HTTP local) u otros endpoints configurados en `config/agent-services.json`.
@@ -89,3 +98,10 @@ O directamente: `./scripts/agents-autopilot.sh` (equivale si ya tienes env carga
 - ADR-020: `docs/adr/ADR-020-orchestrator-worker-separation.md`
 - Plan worker/VPS: `docs/04-infrastructure/PLAN-ORCHESTRATOR-WORKER.md`
 - Local agents: `AGENTS.md` (Local Agent Execution System)
+
+---
+
+## Enlaces relacionados
+
+- [[04-infrastructure/README|04-infrastructure]]
+- [[brain/README|Brain Central]]

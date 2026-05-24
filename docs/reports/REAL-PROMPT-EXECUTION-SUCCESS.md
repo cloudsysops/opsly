@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: doc
+tags:
+  - opsly/doc
+---
+
 # REAL PROMPT EXECUTION - SUMMARY
 
 ## Status: ✅ SUCCESS
@@ -99,3 +108,10 @@ Please provide a production-ready design.
 # 1. Fix unicorn-magic (if needed)
 cat > /home/user/opsly/apps/orchestrator/node_modules/unicorn-magic/package.json << 'EOF'
 {...}
+
+---
+
+## Enlaces relacionados
+
+- [[reports/README|reports]]
+- [[brain/README|Brain Central]]

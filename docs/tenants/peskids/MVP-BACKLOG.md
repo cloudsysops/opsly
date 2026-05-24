@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: tenant
+tags:
+  - opsly/tenant
+---
+
 # Peskids MVP Execution Backlog
 
 **What this is:** The complete set of work needed to launch Peskids MVP — organizing leads, tracking students, collecting parent feedback, and enabling follow-up workflows. This backlog breaks strategy into executable epics.
@@ -348,3 +357,10 @@
 - Teacher management
 - Calendar sync
 - Social media integration
+
+---
+
+## Enlaces relacionados
+
+- [[tenants/peskids/README|peskids]]
+- [[brain/README|Brain Central]]

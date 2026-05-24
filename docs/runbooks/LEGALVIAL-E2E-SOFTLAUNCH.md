@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: runbook
+tags:
+  - opsly/runbook
+---
+
 # LegalVial — E2E, soft-launch y rollback
 
 ## Smoke E2E (pre-producción o ventana controlada)
@@ -42,3 +51,10 @@ Referencias: [`ONBOARDING-NEW-CLIENT.md`](./ONBOARDING-NEW-CLIENT.md), [`TENANT-
 ## Métricas post-release (24–72 h)
 
 - Errores 5xx en API, latencia cola BullMQ, costes LLM por `tenant_slug`, alertas Discord.
+
+---
+
+## Enlaces relacionados
+
+- [[runbooks/README|runbooks]]
+- [[brain/README|Brain Central]]

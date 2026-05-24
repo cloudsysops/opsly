@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: guide
+tags:
+  - opsly/development
+---
+
 # Terminología — OpenClaw CLI vs Orquestador Opsly
 
 Evita usar **«OpenClaw»** solo para referirte al servicio Docker de colas: en conversación interna genera colisión con el **CLI** que instalás con npm.
@@ -44,3 +53,10 @@ npm run dev --workspace=@intcloudsysops/orchestrator
 - `docs/00-architecture/OPENCLAW-ARCHITECTURE.md` — arquitectura de colas y decisión.  
 - `docs/04-infrastructure/OPENCLAW-CLI-VPS-META-ORCHESTRATOR.md` — CLI en VPS + tmux.  
 - `apps/orchestrator/README.md` — rol del paquete **Orquestador Opsly**.
+
+---
+
+## Enlaces relacionados
+
+- [[01-development/README|01-development]]
+- [[brain/README|Brain Central]]

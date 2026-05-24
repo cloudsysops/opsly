@@ -128,3 +128,10 @@ flowchart TD
 ## Regla de oro
 
 Documentar en el tenant **qué proveedor usa cada capa** y **cómo salir** en una página. Actualizar al cambiar proveedor.
+
+---
+
+## Enlaces relacionados
+
+- [[blueprints/opsly-operational-blueprint/README|opsly-operational-blueprint]]
+- [[brain/README|Brain Central]]

@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: adr
+tags:
+  - opsly/adr
+---
+
 # ADR-033: Migrar Llamadas IA Legacy a LLM Gateway
 
 ## Estado
@@ -41,3 +50,9 @@ Auditoría 2026-05-17 detectó 2 archivos en orchestrator con llamadas directas 
 - LLM Gateway ya tiene endpoint `/v1/embeddings`
 - Modelo actual: `text-embedding-3-small` (1536 dims)
 - Gateway caching en Redis con TTL 7 días
+---
+
+## Enlaces relacionados
+
+- [[adr/README|adr]]
+- [[brain/README|Brain Central]]

@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: adr
+tags:
+  - opsly/adr
+---
+
 # ADR-043: Cost Optimization Deep Dive
 
 **Document Type:** Technical Reference  
@@ -509,3 +518,10 @@ COMBINED POTENTIAL: 80% additional savings
 **Last Updated:** 2026-05-08  
 **Architect:** Hermes Agent  
 **Finance Review:** Pending
+
+---
+
+## Enlaces relacionados
+
+- [[adr/ADR-043-supplement/README|ADR-043-supplement]]
+- [[brain/README|Brain Central]]

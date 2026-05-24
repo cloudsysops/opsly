@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: agent-doc
+tags:
+  - opsly/agents
+---
+
 # Hermes + agentes (Cursor, Claude, Copilot) y LLM local
 
 Este documento alinea **roles** y **cómo encajan** con Opsly: no añade un bus nuevo ni duplica el LLM Gateway.
@@ -30,3 +39,10 @@ Este documento alinea **roles** y **cómo encajan** con Opsly: no añade un bus 
 - [HERMES-INTEGRATION.md](./HERMES-INTEGRATION.md)
 - [ADR-024: Ollama local worker](adr/ADR-024-ollama-local-worker-primary.md)
 - `apps/orchestrator/src/hermes/DecisionEngine.ts`, `HermesOrchestrator.ts`, `workers/OllamaWorker.ts`
+
+---
+
+## Enlaces relacionados
+
+- [[03-agents/README|03-agents]]
+- [[brain/README|Brain Central]]

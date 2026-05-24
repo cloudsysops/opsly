@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: infrastructure
+tags:
+  - opsly/infrastructure
+---
+
 # ADR-024 Ollama Local Worker Deployment Runbook
 
 ## Overview
@@ -397,3 +406,10 @@ If Ollama fails and needs to be disabled:
 - Routing logic: `apps/llm-gateway/src/llm-direct.ts`
 - OllamaWorker: `apps/orchestrator/src/workers/OllamaWorker.ts`
 - Admin endpoint: `apps/api/app/api/admin/ollama-demo/route.ts`
+
+---
+
+## Enlaces relacionados
+
+- [[04-infrastructure/README|04-infrastructure]]
+- [[brain/README|Brain Central]]

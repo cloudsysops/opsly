@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: archive
+tags:
+  - opsly/history
+---
+
 # Opsly Consolidation Plan - Executive Summary
 
 **Date**: May 9, 2026
@@ -275,3 +284,10 @@ Phase 3 (optional, depends on Phase 2)
 |---------|------|--------|--------|
 | 1.0 | 2026-05-09 | Claude Code | Draft |
 
+
+---
+
+## Enlaces relacionados
+
+- [[history/README|history]]
+- [[brain/README|Brain Central]]

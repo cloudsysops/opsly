@@ -139,3 +139,10 @@ last_review: 2026-05-21
 | Structure violations fixed | 1 (pre-commit hook) |
 | CI blockers identified | 1 (workflow, fixable) |
 | Time to unblock PR | ~5 min (manual edit) |
+
+---
+
+## Enlaces relacionados
+
+- [[reports/README|reports]]
+- [[brain/README|Brain Central]]

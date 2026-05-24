@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: adr
+tags:
+  - opsly/adr
+---
+
 # ADR-023: Approval Gate — Fase 1 (MVP)
 
 ## Estado
@@ -22,3 +31,10 @@ Embeddings, pgvector adicional, reglas ML, auto-thresholds, fast path que omita 
 
 - Coste LLM por job de approval; tabla crece con cada ejecución.
 - No hay `tenant_id` obligatorio: el alcance es **plataforma / sandbox run**; opcional `deployment_id` para correlación CI.
+
+---
+
+## Enlaces relacionados
+
+- [[adr/README|adr]]
+- [[brain/README|Brain Central]]

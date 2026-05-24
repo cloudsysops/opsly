@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: tool-doc
+tags:
+  - opsly/tools
+---
+
 # NotebookLM Setup — Guía de instalación y uso
 
 > **Última actualización:** 2026-04-14
@@ -144,3 +153,10 @@ python apps/notebooklm-agent/src/workflows/report-to-podcast.py \
 - [`skills/user/opsly-notebooklm/SKILL.md`](../skills/user/opsly-notebooklm/SKILL.md)
 - [`docs/adr/ADR-025-notebooklm-knowledge-layer.md`](adr/ADR-025-notebooklm-knowledge-layer.md)
 - [notebooklm-py GitHub](https://github.com/teng-lin/notebooklm-py)
+
+---
+
+## Enlaces relacionados
+
+- [[02-tools/README|02-tools]]
+- [[brain/README|Brain Central]]

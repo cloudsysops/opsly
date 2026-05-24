@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: adr
+tags:
+  - opsly/adr
+---
+
 # ADR-003 — Doppler como gestor de secrets
 
 **Fecha:** 2026-04-04
@@ -24,3 +33,10 @@ Todos los secrets van a Doppler. Nunca en repo ni en `.env` commiteado.
 - `.env.example` (plantilla unificada) solo tiene placeholders; no commitear `.env` / `.env.local` reales
 - Scripts usan: `doppler run -- comando`
 - `config/doppler-ready.json` se borra tras importar
+
+---
+
+## Enlaces relacionados
+
+- [[adr/README|adr]]
+- [[brain/README|Brain Central]]

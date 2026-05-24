@@ -9,3 +9,10 @@ last_review: 2026-05-16
 The canonical document lives in [`01-development/DESIGN-REFERENCES.md`](../01-development/DESIGN-REFERENCES.md).
 
 Do not edit this stub.
+
+---
+
+## Enlaces relacionados
+
+- [[stubs/README|stubs]]
+- [[brain/README|Brain Central]]

@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: runbook
+tags:
+  - opsly/runbook
+---
+
 # Opsly Autonomous Production Runbook (60 Days)
 
 ## Scope
@@ -86,3 +95,10 @@ GitHub workflow:
 Rollback strategy:
 - If canary fails, stop rollout and run rollback procedure for core services.
 - Keep deployment SHA references to enable deterministic rollback from GHCR image tags.
+
+---
+
+## Enlaces relacionados
+
+- [[runbooks/README|runbooks]]
+- [[brain/README|Brain Central]]

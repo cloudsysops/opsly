@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: infrastructure
+tags:
+  - opsly/infrastructure
+---
+
 # Runbook AI Local-First
 
 Fecha: 2026-04-13  
@@ -123,3 +132,10 @@ Escalar inmediatamente cuando:
 Canal primario:
 
 - Discord `#alerts` (errores 429/402 y fallos de health críticos).
+
+---
+
+## Enlaces relacionados
+
+- [[04-infrastructure/README|04-infrastructure]]
+- [[brain/README|Brain Central]]

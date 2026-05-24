@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: tenant
+tags:
+  - opsly/tenant
+---
+
 # LegalVial — decisión ejecutiva (fuente Drive)
 
 ## Fuente canónica (Google Drive)
@@ -22,3 +31,10 @@ export GOOGLE_AUTH_STRATEGY="service_account_first"
 Opcional: tras correr el import, puedes versionar `docs/tenants/legalvial/LEGALVIAL-ARCHITECTURE-DECISION.drive.txt` como snapshot.
 
 Si queda vacío, revisa el Google Doc en Drive (contenido aceptado/publicado en el cuerpo).
+
+---
+
+## Enlaces relacionados
+
+- [[tenants/README|tenants]]
+- [[brain/README|Brain Central]]

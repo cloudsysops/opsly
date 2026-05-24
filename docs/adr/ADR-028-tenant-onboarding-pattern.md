@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: adr
+tags:
+  - opsly/adr
+---
+
 # ADR-028 — Patrón de onboarding por tenant (plantilla + config)
 
 ## Estado
@@ -30,3 +39,10 @@ Para mantener el mismo layout en Google Drive (fuera del repo), existe automatiz
 
 - `npm run opsly:drive:ensure-layout`
 - `npm run opsly:drive:upload-tenant-onboarding`
+
+---
+
+## Enlaces relacionados
+
+- [[adr/README|adr]]
+- [[brain/README|Brain Central]]

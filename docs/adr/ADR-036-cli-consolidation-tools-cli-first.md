@@ -73,3 +73,10 @@ When migration starts:
 
 - `docs/adr/ADR-035-safe-autonomous-evolution-framework.md`
 - `docs/plans/AUTONOMOUS-EXECUTION-PLAN-2026-04-27.md`
+
+---
+
+## Enlaces relacionados
+
+- [[adr/README|adr]]
+- [[brain/README|Brain Central]]

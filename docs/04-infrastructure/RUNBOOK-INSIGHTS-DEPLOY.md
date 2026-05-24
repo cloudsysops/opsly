@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: infrastructure
+tags:
+  - opsly/infrastructure
+---
+
 # Runbook: despliegue Capa 2 — Insights Engine (heurístico)
 
 No se requieren API keys nuevas (OpenAI, etc.). El motor usa `usage_events` y escribe en `tenant_insights`.
@@ -132,3 +141,10 @@ Respuesta esperada: JSON con `ok`, `tenants`, `totalInserted` (números según d
 | **2. Producción (VPS)** | Tras imagen API desplegada con este código + Doppler con `CRON_SECRET` + migración aplicada en el proyecto Supabase de prod. |
 
 Si algo falla, revisa logs del contenedor `app` y respuesta JSON del cron (401 → `CRON_SECRET` no coincide o vacío).
+
+---
+
+## Enlaces relacionados
+
+- [[04-infrastructure/README|04-infrastructure]]
+- [[brain/README|Brain Central]]

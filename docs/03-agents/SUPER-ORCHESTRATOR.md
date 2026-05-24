@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: agent-doc
+tags:
+  - opsly/agents
+---
+
 # Super Orchestrator v2
 
 > Sistema de orquestación multi-agente inteligente que controla Cursor, Claude, OpenCode, Ollama y más.
@@ -210,3 +219,9 @@ El bridge conecta los scripts Python con el orchestrator BullMQ existente:
 
 *Documento generado: 2026-05-06*
 *Repo: github.com/cloudsysops/opsly*
+---
+
+## Enlaces relacionados
+
+- [[03-agents/README|03-agents]]
+- [[brain/README|Brain Central]]

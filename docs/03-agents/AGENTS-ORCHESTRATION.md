@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: agent-doc
+tags:
+  - opsly/agents
+---
+
 # Agent orchestration (Opsly)
 
 Coordinación entre **Cursor**, **Claude**, **GitHub Actions** y el **product owner**, sin duplicar la fuente de verdad operativa (Notion + repo).
@@ -54,3 +63,10 @@ Regeneración: `npm run docs:sync` (ver [`AUTO-SYNC-DOCS-SETUP.md`](AUTO-SYNC-DO
 ## Discord
 
 Plantillas mínimas en `scripts/discord-notify.js` (webhook por env). No incluir secretos en el cuerpo del mensaje.
+
+---
+
+## Enlaces relacionados
+
+- [[03-agents/README|03-agents]]
+- [[brain/README|Brain Central]]

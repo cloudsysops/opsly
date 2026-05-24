@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: guide
+tags:
+  - opsly/development
+---
+
 # GitHub Settings — Opsly (`cloudsysops/opsly`)
 
 > Guía para configurar manualmente el repositorio. Estas settings **no se pueden
@@ -205,3 +214,10 @@ gh secret list --repo cloudsysops/opsly
 # Ver CODEOWNERS activo
 cat .github/CODEOWNERS
 ```
+
+---
+
+## Enlaces relacionados
+
+- [[01-development/README|01-development]]
+- [[brain/README|Brain Central]]

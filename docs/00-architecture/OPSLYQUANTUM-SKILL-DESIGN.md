@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: architecture
+tags:
+  - opsly/architecture
+---
+
 # Opsly Quantum — diseño del skill maestro
 
 ## Visión
@@ -54,3 +63,10 @@ No hay `config.yaml` con `access_secrets` en repo: los permisos los define el en
 - `skills/user/opsly-quantum/SKILL.md`
 - `docs/OPSLYQUANTUM-USAGE.md`
 - `skills/README.md`
+
+---
+
+## Enlaces relacionados
+
+- [[00-architecture/README|00-architecture]]
+- [[brain/README|Brain Central]]

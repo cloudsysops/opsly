@@ -114,3 +114,10 @@ Sin hardcodear dominios en código; usar env (`PLATFORM_DOMAIN`, `TENANT_BASE_DO
 2. ¿n8n permanece en Opsly VPS o se replica en deploy Vercel/serverless?
 3. ¿Jelou como canal primario post-MVP?
 4. Contrato de eventos con Opsly (auth, retry, idempotencia).
+
+---
+
+## Enlaces relacionados
+
+- [[tenants/peskids/README|peskids]]
+- [[brain/README|Brain Central]]

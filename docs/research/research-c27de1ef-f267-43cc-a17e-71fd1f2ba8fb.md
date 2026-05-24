@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: doc
+tags:
+  - opsly/doc
+---
+
 # Reporte de Investigacion Autonoma
 
 - ID: c27de1ef-f267-43cc-a17e-71fd1f2ba8fb
@@ -19,3 +28,10 @@ que capacidades faltan en Opsly para ser completamente autonomo
 ## Metadatos
 - total_results: 0
 - generated_by: tools/cli research-run
+
+---
+
+## Enlaces relacionados
+
+- [[brain/README|brain]]
+- [[brain/README|Brain Central]]

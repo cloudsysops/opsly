@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: infrastructure
+tags:
+  - opsly/infrastructure
+---
+
 # Worker como servicio persistente (systemd) — Mac 2011 Ubuntu
 
 ## Requisitos
@@ -73,3 +82,10 @@ EOF
 ## Alternativa sin sudo
 
 `./scripts/keep-worker-in-tmux.sh` — ver `docs/WORKER-SETUP-MAC2011.md`.
+
+---
+
+## Enlaces relacionados
+
+- [[04-infrastructure/README|04-infrastructure]]
+- [[brain/README|Brain Central]]

@@ -401,3 +401,10 @@ alerts:
 **Last reviewed:** 2026-05-08  
 **Next review:** 2026-05-15 (monthly)  
 **Escalation:** Cost spike >50% → Page on-call
+
+---
+
+## Enlaces relacionados
+
+- [[04-operations/README|04-operations]]
+- [[brain/README|Brain Central]]

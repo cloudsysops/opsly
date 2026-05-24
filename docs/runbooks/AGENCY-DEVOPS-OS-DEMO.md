@@ -100,3 +100,10 @@ Si el cambio es solo documental o ensayo local, generar reporte interno con:
 ## Mensaje de Cierre
 
 "Esto no es un IDE nuevo. Es una mesa de entrega gestionada encima del stack que tu agencia ya usa."
+
+---
+
+## Enlaces relacionados
+
+- [[runbooks/README|runbooks]]
+- [[brain/README|Brain Central]]

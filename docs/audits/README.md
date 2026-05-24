@@ -17,3 +17,10 @@ Auditorías técnicas, seguridad, performance, calidad y bases de cobertura.
 
 - Evidencia temporal de un smoke; usar `../reports/`.
 - Runbooks de corrección; usar `../runbooks/`.
+
+---
+
+## Enlaces relacionados
+
+- [[audits/README|audits]]
+- [[brain/README|Brain Central]]

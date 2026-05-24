@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: doc
+tags:
+  - opsly/doc
+---
+
 # CLI Migration Checklist (`tools/cli` -> `apps/cli`)
 
 Status: not started  
@@ -31,3 +40,10 @@ Policy reference: `docs/adr/ADR-036-cli-consolidation-tools-cli-first.md`
 - [ ] Observe one full cycle of autonomous operations without regressions.
 - [ ] Remove wrapper only after all callers move to `apps/cli`.
 - [ ] Update ADR status and final architecture docs.
+
+---
+
+## Enlaces relacionados
+
+- [[plans/README|plans]]
+- [[brain/README|Brain Central]]

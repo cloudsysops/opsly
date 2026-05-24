@@ -9,3 +9,10 @@ last_review: 2026-05-10
 **Documento canónico:** [`tenants/onboarding-prompts/INFRASTRUCTURE-SETUP.md`](../../tenants/onboarding-prompts/INFRASTRUCTURE-SETUP.md)
 
 No editar este stub.
+
+---
+
+## Enlaces relacionados
+
+- [[prompts/README|prompts]]
+- [[brain/README|Brain Central]]

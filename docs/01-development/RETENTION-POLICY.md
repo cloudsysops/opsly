@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: guide
+tags:
+  - opsly/development
+---
+
 # Política de retención de datos — Opsly
 
 Documento de referencia para operación y cumplimiento. Los valores son **objetivos**; la automatización concreta está en `scripts/vps-cleanup-robust.sh` y cron (ver `docs/OPS-CLEANUP-PROCEDURES.md`).
@@ -88,3 +97,10 @@ Conservar lo necesario para operar y auditar; eliminar de forma controlada lo qu
 - `docs/OPS-CLEANUP-PROCEDURES.md`
 - `scripts/vps-cleanup-robust.sh`, `scripts/disk-alert.sh`
 - `infra/cron/opsly-cleanup`, `infra/cron/logrotate-opsly-cleanup.conf`
+
+---
+
+## Enlaces relacionados
+
+- [[01-development/README|01-development]]
+- [[brain/README|Brain Central]]

@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: archive
+tags:
+  - opsly/history
+---
+
 # Consolidation Effort Breakdown - Detailed Work Estimates
 
 ---
@@ -391,3 +400,10 @@ If risks materialize, add buffer:
 
 ---
 
+
+---
+
+## Enlaces relacionados
+
+- [[history/README|history]]
+- [[brain/README|Brain Central]]

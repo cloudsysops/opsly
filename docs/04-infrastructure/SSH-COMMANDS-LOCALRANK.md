@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: infrastructure
+tags:
+  - opsly/infrastructure
+---
+
 # 📋 SSH COMMANDS - COPY & PASTE (LocalRank Onboarding - 2026-04-09)
 
 ## BLOQUE A: ONBOARDING VERIFICATION (SSH to VPS)
@@ -37,3 +46,10 @@ ssh vps-dragon@100.120.151.91 'cd /opt/opsly && docker compose --project-name te
 ---
 
 **Note:** Replace backticks in SQLite query if needed. Commands use single quotes to prevent shell expansion.
+
+---
+
+## Enlaces relacionados
+
+- [[04-infrastructure/README|04-infrastructure]]
+- [[brain/README|Brain Central]]

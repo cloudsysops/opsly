@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: infrastructure
+tags:
+  - opsly/infrastructure
+---
+
 # Vertex AI Setup (embeddings)
 
 Guía para habilitar **Vertex AI** (embeddings `text-embedding-004`) en Opsly: credenciales en Doppler, APIs en GCP y verificación local.
@@ -85,3 +94,10 @@ doppler run --project ops-intcloudsysops --config prd -- bash scripts/test-verte
 
 - ADR: `docs/adr/ADR-021-approval-gate-phase1.md`
 - Cliente: `apps/orchestrator/src/lib/vertex-ai-client.ts`
+
+---
+
+## Enlaces relacionados
+
+- [[04-infrastructure/README|04-infrastructure]]
+- [[brain/README|Brain Central]]

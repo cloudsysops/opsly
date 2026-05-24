@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: guide
+tags:
+  - opsly/development
+---
+
 # Semana 6 Informe — Segundo Cliente + E2E Validation
 
 **Fechas:** 2026-04-29 → 2026-05-03  
@@ -88,3 +97,10 @@ c2b029c feat(ops): rename cursor-prompt-monitor to billy-prompt-monitor
 
 **URL raw para próxima sesión:**  
 https://raw.githubusercontent.com/cloudsysops/opsly/main/AGENTS.md
+
+---
+
+## Enlaces relacionados
+
+- [[01-development/README|01-development]]
+- [[brain/README|Brain Central]]

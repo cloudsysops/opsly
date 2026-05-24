@@ -20,3 +20,10 @@ Redirecciones cortas a documentos canónicos. **No editar el contenido real aqu�
 | `TENANT-PRODUCTION-*.md` | [`../tenants/`](../tenants/README.md) |
 
 La raíz de `docs/` solo conserva hubs: [`../README.md`](../README.md), [`../index.md`](../index.md), [`../STRUCTURE-GUARDRAILS.md`](../STRUCTURE-GUARDRAILS.md).
+
+---
+
+## Enlaces relacionados
+
+- [[stubs/README|stubs]]
+- [[brain/README|Brain Central]]

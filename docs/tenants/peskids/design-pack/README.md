@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: tenant
+tags:
+  - opsly/tenant
+---
+
 # Peskids design pack (referencia)
 
 Prototipo Napkin exportado a JSX/HTML. **No se ejecuta en CI** — sirve para comparar con `apps/peskids/`.
@@ -13,3 +22,10 @@ Prototipo Napkin exportado a JSX/HTML. **No se ejecuta en CI** — sirve para co
 Assets binarios grandes (`uploads/*.png`) no están en git; usar el ZIP original del equipo de diseño.
 
 Ver: [../DESIGN-PACK-REFERENCE.md](../DESIGN-PACK-REFERENCE.md)
+
+---
+
+## Enlaces relacionados
+
+- [[tenants/peskids/design-pack/README|design-pack]]
+- [[brain/README|Brain Central]]

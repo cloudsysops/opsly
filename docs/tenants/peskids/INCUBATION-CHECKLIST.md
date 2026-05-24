@@ -78,3 +78,10 @@ Disparar creación de `cloudsysops/peskids-platform` solo cuando:
 - [ ] Hub [README.md](./README.md) completo
 - [ ] `docs/tenants/README.md` enlaza carpeta peskids
 - [ ] `docs/brain/tenants/peskids.md` actualizado a `incubated` (opcional, post-review)
+
+---
+
+## Enlaces relacionados
+
+- [[tenants/peskids/README|peskids]]
+- [[brain/README|Brain Central]]

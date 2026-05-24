@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: infrastructure
+tags:
+  - opsly/infrastructure
+---
+
 # Google Cloud Setup — Opsly
 
 ## Proyecto
@@ -66,3 +75,10 @@ doppler secrets set GOOGLE_USER_CREDENTIALS_JSON \
 ```
 
 `scripts/drive-sync.sh` usa por defecto `GOOGLE_AUTH_STRATEGY=user_first` (ver `scripts/lib/google-auth.sh`): intenta refrescar token de usuario antes que la SA.
+
+---
+
+## Enlaces relacionados
+
+- [[04-infrastructure/README|04-infrastructure]]
+- [[brain/README|Brain Central]]

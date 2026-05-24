@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: architecture
+tags:
+  - opsly/architecture
+---
+
 # Plan de Trabajo — LLM Gateway
 
 **Objetivo:** Endurecer el LLM Gateway para producción multi-tenant conobservabilidad, caching y budget controls.
@@ -203,3 +212,10 @@ export async function chatCompletions(req: Request): Promise<Response> {
 npx vitest create __tests__/chat-completions.test.ts
 npx vitest create __tests__/streaming.test.ts
 ```
+
+---
+
+## Enlaces relacionados
+
+- [[00-architecture/README|00-architecture]]
+- [[brain/README|Brain Central]]

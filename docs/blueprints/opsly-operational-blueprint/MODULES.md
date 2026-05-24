@@ -177,3 +177,10 @@ Módulos **reutilizables** entre nichos. Combinar 3–5 en un MVP; no implementa
 Opcional: AI Draft Assistant (solo drafts).
 
 Ver [IMPLEMENTATION-CHECKLIST.md](./IMPLEMENTATION-CHECKLIST.md).
+
+---
+
+## Enlaces relacionados
+
+- [[blueprints/opsly-operational-blueprint/README|opsly-operational-blueprint]]
+- [[brain/README|Brain Central]]

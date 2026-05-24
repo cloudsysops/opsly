@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: adr
+tags:
+  - opsly/adr
+---
+
 # ADR-024: Ollama Local como Provider Primary en Worker Remoto
 
 ## Estado: ACEPTADO | Fecha: 2026-04-14
@@ -115,3 +124,10 @@ export function resolveRoutingPreference(explicitModel, complexityLevel): Routin
 - `docs/WORKER-SETUP-MAC2011.md`
 - `docs/adr/ADR-020-orchestrator-worker-separation.md`
 - `docs/adr/ADR-010-llm-gateway.md`
+
+---
+
+## Enlaces relacionados
+
+- [[adr/README|adr]]
+- [[brain/README|Brain Central]]

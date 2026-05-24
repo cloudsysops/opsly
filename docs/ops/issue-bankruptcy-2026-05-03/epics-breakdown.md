@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: doc
+tags:
+  - opsly/doc
+---
+
 # Epic breakdown (suggested) — do **not** auto-create sub-issues
 
 Epics are **logical** groupings for humans to create manually when ready.
@@ -30,3 +39,10 @@ Epics are **logical** groupings for humans to create manually when ready.
 **Theme:** CVE, data leak, secret exposure.
 
 **Note:** Current open set had **0** title matches for security/CVE/data-leak heuristics; keep this epic for **manual** escalation when applicable — **never** auto-close.
+
+---
+
+## Enlaces relacionados
+
+- [[brain/README|brain]]
+- [[brain/README|Brain Central]]

@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: tool-doc
+tags:
+  - opsly/tools
+---
+
 # Notion MCP Server for Opsly
 
 > **MCP** = Model Context Protocol. Permite que agentes (Claude, Cursor, etc.) lean y escriban en Notion; los humanos ven los mismos datos en el navegador en tiempo real.
@@ -114,3 +123,10 @@ Webhooks de Notion → tu API → GitHub/Slack quedan **fuera del alcance** de e
 ## Documentación relacionada
 
 - [SETUP-NOTION-MCP.md](./SETUP-NOTION-MCP.md) — paso a paso integración y pruebas.
+
+---
+
+## Enlaces relacionados
+
+- [[02-tools/README|02-tools]]
+- [[brain/README|Brain Central]]

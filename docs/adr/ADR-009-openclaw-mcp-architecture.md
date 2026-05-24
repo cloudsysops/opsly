@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: adr
+tags:
+  - opsly/adr
+---
+
 # ADR-009: OpenClaw MCP Server Architecture
 
 **Estado:** ACEPTADO  
@@ -110,3 +119,10 @@ Adoptamos el estándar OAuth 2.0 + PKCE descrito para MCP en:
 | `execute_prompt`                                    | `executor:write`    |
 
 La verificación de scope aplica cuando el transporte hacia `callTool` incluye `Authorization`. Las llamadas in-process sin header conservan el comportamiento previo (tests y runners locales).
+
+---
+
+## Enlaces relacionados
+
+- [[adr/README|adr]]
+- [[brain/README|Brain Central]]

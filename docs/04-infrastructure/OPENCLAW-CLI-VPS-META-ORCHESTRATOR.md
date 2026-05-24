@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: infrastructure
+tags:
+  - opsly/infrastructure
+---
+
 # OpenClaw CLI en el VPS — meta-orquestación + tmux
 
 Objetivo: tener en el **VPS** el **cliente OpenClaw** (`openclaw` 2026.x, Node ≥ 22.12) como **capa de orquestación humana/canales** que coordina **otros agentes** (pool HTTP local en Mac, workers, o MCP/Opsly), **sin** sustituir el control plane Docker existente (**MCP 3003 + orchestrator 3011 + LLM gateway 3010**).
@@ -75,3 +84,10 @@ Los nombres exactos dependen de vuestro `openclaw configure` / `openclaw config`
 - `docs/00-architecture/OPENCLAW-ARCHITECTURE.md` — flujo MCP → Orquestador Opsly.
 - `docs/runbooks/OPSLY-OPENCLAW-STARTUP.md` — arranque y health.
 - `scripts/openclaw-vps-tmux-hub.sh` — sesión tmux `openclaw-hub`.
+
+---
+
+## Enlaces relacionados
+
+- [[04-infrastructure/README|04-infrastructure]]
+- [[brain/README|Brain Central]]

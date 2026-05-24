@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: architecture
+tags:
+  - opsly/architecture
+---
+
 # OpenClaw — Arquitectura de orquestación (Opsly)
 
 > **Terminología:** «OpenClaw» en este documento es la **arquitectura de colas y decisión** en Opsly. El **CLI** `openclaw` (npm) se llama **OpenClaw CLI**; el servicio Docker de colas es el **Orquestador Opsly** (`apps/orchestrator`). Ver **`docs/01-development/OPENCLAW-TERMINOLOGY.md`**.
@@ -66,3 +75,10 @@ Así se alivia CPU en el VPS sin cambiar el modelo de cola única (`openclaw` en
 - `apps/api/lib/orchestrator.ts` — orquestación actual de tenants.
 - `infra/docker-compose.platform.yml` — servicio `redis`.
 - `docs/adr/` — decisiones arquitectura existentes.
+
+---
+
+## Enlaces relacionados
+
+- [[00-architecture/README|00-architecture]]
+- [[brain/README|Brain Central]]

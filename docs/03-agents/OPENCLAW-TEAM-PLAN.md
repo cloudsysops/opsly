@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: agent-doc
+tags:
+  - opsly/agents
+---
+
 # 🚀 OpenClaw Team — Plan de Nivel Superior
 
 > **Misión:** Convertir Opsly en la plataforma de agentes autónomos más inteligente y autónoma dela industria.
@@ -281,3 +290,10 @@ bash scripts/update-agents.sh
 **Estado:** 🟢 **EJECUTANDO** — No nos detemos
 
 **URL:** https://raw.githubusercontent.com/cloudsysops/opsly/main/AGENTS.md
+
+---
+
+## Enlaces relacionados
+
+- [[03-agents/README|03-agents]]
+- [[brain/README|Brain Central]]

@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: guide
+tags:
+  - opsly/development
+---
+
 # Hosts and Project Paths
 
 Fecha de verificación: 2026-04-13
@@ -51,3 +60,10 @@ Modo simulación:
 ```bash
 ./scripts/setup-cloudsysops-user-all-hosts.sh --dry-run
 ```
+
+---
+
+## Enlaces relacionados
+
+- [[01-development/README|01-development]]
+- [[brain/README|Brain Central]]

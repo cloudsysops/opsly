@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: doc
+tags:
+  - opsly/doc
+---
+
 # Cyber Neo Opsly Scan
 
 Date: 2026-05-21
@@ -111,3 +120,10 @@ Notes:
 4. Add a CI secret scan that redacts values in logs.
 5. Open dependency upgrade tickets for `next`, `postcss`, `ws`, `langsmith`, and `llamaindex`.
 6. Run Cyber Neo focused scans per app before major deploys.
+
+---
+
+## Enlaces relacionados
+
+- [[reports/README|reports]]
+- [[brain/README|Brain Central]]

@@ -319,8 +319,11 @@ export async function getTenants(params: ListTenantsParams = {}): Promise<Tenant
   }
   try {
     return await request<TenantsListResponse>(`/api/tenants?${search.toString()}`);
-  } catch {
-    return demoTenants();
+  } catch (err) {
+    if (shouldUseLocalDemoData()) {
+      return demoTenants();
+    }
+    throw err;
   }
 }
 
@@ -397,8 +400,11 @@ export async function getAdminOverview(): Promise<AdminOverviewResponse> {
   }
   try {
     return await request<AdminOverviewResponse>('/api/admin/overview');
-  } catch {
-    return demoAdminOverview();
+  } catch (err) {
+    if (shouldUseLocalDemoData()) {
+      return demoAdminOverview();
+    }
+    throw err;
   }
 }
 
@@ -486,8 +492,11 @@ export async function getAdminCosts(): Promise<AdminCostsResponse> {
   }
   try {
     return await request<AdminCostsResponse>('/api/admin/costs');
-  } catch {
-    return demoAdminCosts();
+  } catch (err) {
+    if (shouldUseLocalDemoData()) {
+      return demoAdminCosts();
+    }
+    throw err;
   }
 }
 

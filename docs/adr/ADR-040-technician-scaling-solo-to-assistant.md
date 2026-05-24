@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: adr
+tags:
+  - opsly/adr
+---
+
 # ADR-040 — Technician scaling: Solo MVP (Week 1-4) → +Assistant (Week 5+)
 
 ## Estado
@@ -225,3 +234,10 @@ Once $10k/mo sustained:
 - Technician Portal: `apps/local-services/app/tech/` (create Week 5)
 - Assignment rules: `lib/repositories/booking-assignment.ts`
 - CRM module: `apps/api/app/api/local-services/assignment/route.ts`
+
+---
+
+## Enlaces relacionados
+
+- [[adr/README|adr]]
+- [[brain/README|Brain Central]]

@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: architecture
+tags:
+  - opsly/architecture
+---
+
 # Policy AI Local-First
 
 Fecha: 2026-04-13  
@@ -71,3 +80,10 @@ Los budgets se definen por variables `DAILY_BUDGET_*`.
 - Configuración por entorno (Doppler + env).
 - Comportamiento determinista para perfiles y tenants default.
 - Compatibilidad hacia atrás para rutas existentes del gateway.
+
+---
+
+## Enlaces relacionados
+
+- [[00-architecture/README|00-architecture]]
+- [[brain/README|Brain Central]]

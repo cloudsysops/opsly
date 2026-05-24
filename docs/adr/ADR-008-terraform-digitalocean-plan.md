@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: adr
+tags:
+  - opsly/adr
+---
+
 # ADR-008 — Terraform en DigitalOcean (plan sin apply automático)
 
 **Fecha:** 2026-04-06  
@@ -19,3 +28,10 @@ Toda ejecución en producción requiere **`terraform plan`** revisado por un hum
 
 - `terraform plan` con tokens inválidos falla en autenticación con DO; es esperado en entornos de plantilla
 - Estado local (`.tfstate`) no se commitea; para equipos grandes valorar backend remoto en fases posteriores
+
+---
+
+## Enlaces relacionados
+
+- [[adr/README|adr]]
+- [[brain/README|Brain Central]]

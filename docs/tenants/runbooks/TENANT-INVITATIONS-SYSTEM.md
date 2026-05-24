@@ -555,3 +555,10 @@ Then:
 **Status:** ✅ LIVE AND RUNNING  
 **Last Updated:** 2026-05-08  
 **Owner:** Hermes Autonomous System
+
+---
+
+## Enlaces relacionados
+
+- [[tenants/README|tenants]]
+- [[brain/README|Brain Central]]

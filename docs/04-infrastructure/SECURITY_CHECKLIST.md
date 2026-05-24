@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: infrastructure
+tags:
+  - opsly/infrastructure
+---
+
 # Security checklist — Opsly
 
 Lista operativa para releases y revisiones periódicas. Marca ítems según tu proceso (PR template, runbook interno, etc.).
@@ -184,3 +193,10 @@ Objetivo: reducir **OWASP API4/API6** (consumo descontrolado y flujos de negocio
 
 - [ ] Revisar [SECURITY_AUDIT_REPORT.md](SECURITY_AUDIT_REPORT.md) y actualizar tras cambios mayores en RLS o dependencias.
 - [ ] **Nueva:** Auditoría de seguridad multi-tenancy (2026-04-09) — aplicar mitigaciones críticas antes de producción con múltiples tenants.
+
+---
+
+## Enlaces relacionados
+
+- [[04-infrastructure/README|04-infrastructure]]
+- [[brain/README|Brain Central]]

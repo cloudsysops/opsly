@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: adr
+tags:
+  - opsly/adr
+---
+
 # ADR-034: CI Hygiene Policy
 
 **Status:** APPROVED
@@ -72,3 +81,10 @@ El check `docs-governance` (ADR-033) **NUNCA** puede saltarse.
 - Batch de shellcheck warnings → subir severidad a `-S warning` después del cleanup
 - Revisar `npm audit` findings caso por caso
 - Mantener **actionlint** (job Workflow Lint en `ci.yml`) sin falsos positivos “transientes”: los fallos repetidos suelen ser YAML/scripts deterministas; ver `docs/ops/workflows-index.md` § Workflow lint
+
+---
+
+## Enlaces relacionados
+
+- [[adr/README|adr]]
+- [[brain/README|Brain Central]]

@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: tenant
+tags:
+  - opsly/tenant
+---
+
 # Sprint 01 Status Report — MVP Foundation
 
 **Date:** May 21, 2026  
@@ -247,3 +256,10 @@ Once owner approves (expected: Friday, May 24), move to Phase 1:
 **Next step:** Schedule demo with owner for Week 1 end (May 24).  
 **Document prepared by:** Claude (AI Agent)  
 **Last updated:** May 21, 2026, 12:35 UTC
+
+---
+
+## Enlaces relacionados
+
+- [[tenants/peskids/README|peskids]]
+- [[brain/README|Brain Central]]

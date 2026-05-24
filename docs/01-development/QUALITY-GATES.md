@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: guide
+tags:
+  - opsly/development
+---
+
 # Quality gates — Opsly monorepo
 
 > Objetivo: calidad predecible **sin** duplicar hooks ni inventar comandos que no existan en `package.json`.
@@ -46,3 +55,10 @@ Evitar workflows que filtren por rutas **inexistentes** (`apps/orchestrator/src/
 
 - [`docs/CURSOR-DAILY-CHECKLIST.md`](CURSOR-DAILY-CHECKLIST.md)
 - [`SPRINT-TRACKER.md`](SPRINT-TRACKER.md)
+
+---
+
+## Enlaces relacionados
+
+- [[01-development/README|01-development]]
+- [[brain/README|Brain Central]]

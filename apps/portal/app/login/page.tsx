@@ -227,16 +227,17 @@ export default function LoginPage(): ReactElement {
               onChange={(ev) => setPassword(ev.target.value)}
               className="input-terminal-caret w-full rounded-sm border border-ops-border bg-ops-bg/80 px-3 py-2.5 text-sm text-neutral-100 outline-none transition-colors focus:border-ops-green focus:ring-2 focus:ring-ops-green/30"
             />
+            <div className="mt-2 flex justify-end">
+              <button
+                type="button"
+                className="text-sm text-ops-green underline-offset-4 hover:underline disabled:opacity-50"
+                disabled={resetLoading}
+                onClick={() => void onForgotPassword()}
+              >
+                {resetLoading ? 'Enviando enlace…' : '¿Olvidaste tu contraseña?'}
+              </button>
+            </div>
           </div>
-          <Button
-            type="button"
-            variant="ghost"
-            className="w-full text-sm"
-            disabled={resetLoading}
-            onClick={() => void onForgotPassword()}
-          >
-            {resetLoading ? 'Enviando enlace…' : 'Olvidé mi contraseña'}
-          </Button>
           <Button type="submit" variant="primary" className="w-full" disabled={loading}>
             {loading ? (
               <>

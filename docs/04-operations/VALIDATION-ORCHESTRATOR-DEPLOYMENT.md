@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: doc
+tags:
+  - opsly/doc
+---
+
 # ValidationOrchestrator Deployment & Operations Guide
 
 ## Overview
@@ -588,3 +597,10 @@ For issues or questions:
 
 **Last Updated**: 2026-05-04
 **Version**: 1.0.0
+
+---
+
+## Enlaces relacionados
+
+- [[04-operations/README|04-operations]]
+- [[brain/README|Brain Central]]

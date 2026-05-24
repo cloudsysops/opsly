@@ -170,3 +170,10 @@ Enviar una pagina con:
 - Cuanto tiempo se ahorro.
 - Donde hubo riesgo o friccion.
 - Recomendacion para el siguiente mes.
+
+---
+
+## Enlaces relacionados
+
+- [[runbooks/README|runbooks]]
+- [[brain/README|Brain Central]]

@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: runbook
+tags:
+  - opsly/runbook
+---
+
 # Runbook — Administración de plataforma (Opsly)
 
 **Audiencia:** operador con token `PLATFORM_ADMIN_TOKEN` y acceso a Doppler `prd`.  
@@ -28,3 +37,10 @@
 - `AGENTS.md` — estado y próximo paso
 - `docs/adr/` — decisiones de arquitectura
 - `docs/runbooks/incident.md` — respuesta a incidentes
+
+---
+
+## Enlaces relacionados
+
+- [[runbooks/README|runbooks]]
+- [[brain/README|Brain Central]]

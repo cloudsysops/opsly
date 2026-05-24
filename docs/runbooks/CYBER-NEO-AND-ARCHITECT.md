@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: runbook
+tags:
+  - opsly/runbook
+---
+
 # Cyber Neo and The Architect
 
 Status: installed locally on 2026-05-21.
@@ -48,3 +57,10 @@ For tenant apps, prefer the Opsly production path:
 - Peskids production hardening blueprint.
 - Opsly tenant app template blueprint.
 - Security review of tenant public forms and API proxy routes.
+
+---
+
+## Enlaces relacionados
+
+- [[runbooks/README|runbooks]]
+- [[brain/README|Brain Central]]

@@ -527,3 +527,10 @@ grep SLACK_ .env.mcp
 **Created:** 2026-05-08  
 **Status:** ✅ Complete  
 **Deliverables:** 30+ files, 4 services, 2 dashboards
+
+---
+
+## Enlaces relacionados
+
+- [[01-development/README|01-development]]
+- [[brain/README|Brain Central]]

@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: architecture
+tags:
+  - opsly/architecture
+---
+
 # LLM Gateway — Opsly (v2 Beast Mode)
 
 Punto único para llamadas a modelos desde `apps/ml`, `apps/context-builder` y cualquier workspace que importe `@intcloudsysops/llm-gateway`.
@@ -119,3 +128,10 @@ cd apps/llm-gateway && npm test
 ```
 
 Variable `LLM_BATCH_WINDOW_SCALE=0` en el script `test` del paquete para ventanas de batch instantáneas en CI.
+
+---
+
+## Enlaces relacionados
+
+- [[00-architecture/README|00-architecture]]
+- [[brain/README|Brain Central]]

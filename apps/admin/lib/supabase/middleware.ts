@@ -1,9 +1,16 @@
 import { createServerClient, type SetAllCookies } from '@supabase/ssr';
 import { type NextRequest, NextResponse } from 'next/server';
+import { isAdminPublicDemoEnabled } from '@/lib/admin-public-demo';
+
+function redirectToLogin(request: NextRequest): NextResponse {
+  const redirectUrl = request.nextUrl.clone();
+  redirectUrl.pathname = '/login';
+  redirectUrl.search = '';
+  return NextResponse.redirect(redirectUrl);
+}
 
 export async function updateSession(request: NextRequest): Promise<NextResponse> {
-  const publicDemo = process.env.NEXT_PUBLIC_ADMIN_PUBLIC_DEMO === 'true';
-  if (publicDemo) {
+  if (isAdminPublicDemoEnabled()) {
     return NextResponse.next({ request });
   }
 
@@ -14,6 +21,13 @@ export async function updateSession(request: NextRequest): Promise<NextResponse>
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   if (!url || !anon) {
+    const pathname = request.nextUrl.pathname;
+    const isLogin = pathname === '/login' || pathname.startsWith('/login/');
+    const isAuthPublic =
+      pathname.startsWith('/auth/') || pathname === '/update-password';
+    if (!isLogin && !isAuthPublic) {
+      return redirectToLogin(request);
+    }
     return supabaseResponse;
   }
 
@@ -45,9 +59,7 @@ export async function updateSession(request: NextRequest): Promise<NextResponse>
   const isAuthPublic =
     pathname.startsWith('/auth/') || pathname === '/update-password';
   if (!user && !isLogin && !isAuthPublic) {
-    const redirectUrl = request.nextUrl.clone();
-    redirectUrl.pathname = '/login';
-    return NextResponse.redirect(redirectUrl);
+    return redirectToLogin(request);
   }
 
   // Keep /login reachable when a session cookie exists: recovery tokens are in the hash only.

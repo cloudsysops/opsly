@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: tenant
+tags:
+  - opsly/tenant
+---
+
 # npm audit exemptions for Peskids MVP
 # These vulnerabilities are pre-existing in the MVP phase
 # and were documented + approved in PR #372
@@ -17,3 +26,10 @@
 # Timeline: Phase 2 will include Next.js 14→15 upgrade + dependency refresh
 
 # See: PR #372, .npmrc, docs/tenants/peskids/MVP-PLAN.md
+
+---
+
+## Enlaces relacionados
+
+- [[tenants/peskids/README|peskids]]
+- [[brain/README|Brain Central]]

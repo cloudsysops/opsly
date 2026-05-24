@@ -19,3 +19,10 @@ Archivos generados automáticamente desde fuentes estructuradas.
 - `AGENTS-ASSIGNMENTS.md`
 - `implementation-progress.auto.md`
 - `sprint-status.auto.md`
+
+---
+
+## Enlaces relacionados
+
+- [[generated/README|generated]]
+- [[brain/README|Brain Central]]

@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: doc
+tags:
+  - opsly/doc
+---
+
 # AUTONOMY-COMPLETION-PLAN Execution Report
 Date: 2026-04-29 | Owner: Opsly Autonomous Runtime | Mode: AGGRESSIVE (Cortex safe_active)
 
@@ -72,3 +81,10 @@ Date: 2026-04-29 | Owner: Opsly Autonomous Runtime | Mode: AGGRESSIVE (Cortex sa
 ---
 
 **Ready for:** Phase 4 activation (2026-05-06) OR Phase 3 optimization deepdive (this week)
+
+---
+
+## Enlaces relacionados
+
+- [[reports/README|reports]]
+- [[brain/README|Brain Central]]

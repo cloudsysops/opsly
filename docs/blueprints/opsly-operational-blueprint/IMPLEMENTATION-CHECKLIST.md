@@ -114,3 +114,10 @@ Lista práctica de punta a punta. Marcar en Notion/issue; no sustituye SOW.
 - Validar config tenant: `./scripts/validate-subclient-config.sh`
 - Producción tenants: `docs/tenants/production/TENANT-PRODUCTION-CHECKLIST.md`
 - Estructura docs: `npm run validate-structure`
+
+---
+
+## Enlaces relacionados
+
+- [[blueprints/opsly-operational-blueprint/README|opsly-operational-blueprint]]
+- [[brain/README|Brain Central]]

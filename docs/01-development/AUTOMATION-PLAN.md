@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: guide
+tags:
+  - opsly/development
+---
+
 # Plan de Automatizacion Opsly
 
 ## Version: 1.0 | Fecha: 2026-04-07 | Estado: EN PROGRESO
@@ -80,3 +89,10 @@
 - [ ] AGENTS.md en Drive actualizado tras cada commit.
 - [ ] Claude lee Drive en chat nuevo sin pegar contexto.
 - [ ] Cero intervencion manual de Cristian en el flujo.
+
+---
+
+## Enlaces relacionados
+
+- [[01-development/README|01-development]]
+- [[brain/README|Brain Central]]

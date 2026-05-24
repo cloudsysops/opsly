@@ -751,3 +751,10 @@ Phase 5.2d (Week 5+):
 **ROI:** 10-15x (voice cloning alone justifies cost)  
 **User Impact:** High (voice becomes brand identity)
 
+
+---
+
+## Enlaces relacionados
+
+- [[00-architecture/README|00-architecture]]
+- [[brain/README|Brain Central]]

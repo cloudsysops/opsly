@@ -140,3 +140,10 @@ Si el owner pide “mensaje de recibido” automático:
 - [FORMS-SPEC.md](./FORMS-SPEC.md)
 - [EVENT-CONTRACT.md](./EVENT-CONTRACT.md)
 - Blueprint: [PROVIDER-MATRIX.md](../../blueprints/opsly-operational-blueprint/PROVIDER-MATRIX.md)
+
+---
+
+## Enlaces relacionados
+
+- [[tenants/peskids/README|peskids]]
+- [[brain/README|Brain Central]]

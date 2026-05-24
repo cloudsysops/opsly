@@ -13,3 +13,10 @@ last_review: 2026-05-10
 | `COST-MONITORING-GUIDE.md` | [`../04-operations/COST-MONITORING-GUIDE.md`](../04-operations/COST-MONITORING-GUIDE.md) |
 
 Procedimientos paso a paso → [`../runbooks/`](../runbooks/README.md).
+
+---
+
+## Enlaces relacionados
+
+- [[operations/README|operations]]
+- [[brain/README|Brain Central]]

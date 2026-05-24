@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: guide
+tags:
+  - opsly/development
+---
+
 # Handoff — preparación testing tenants y diagnóstico (2026-04-11)
 
 ## Completado
@@ -35,3 +44,10 @@ ssh -o BatchMode=yes vps-dragon@100.120.151.91 "ls -la /opt/opsly/runtime/tenant
 
 - Feedback: `apps/api/app/api/feedback/route.ts`, `apps/api/lib/feedback/`
 - Health Supabase: `apps/api/app/api/health/route.ts`
+
+---
+
+## Enlaces relacionados
+
+- [[01-development/README|01-development]]
+- [[brain/README|Brain Central]]

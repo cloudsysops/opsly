@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: guide
+tags:
+  - opsly/development
+---
+
 # Decisión: servicios pesados en el VPS (48 GB)
 
 ## Contexto
@@ -59,3 +68,10 @@ Los servicios que exponen **`GET /health`** + **`POST /execute`** para Codex, Cl
 - `docs/LOCAL-AGENT-EXECUTION.md` — cola `local-agents` y agentes HTTP
 - `config/agent-capabilities.json` — routing por rol y riesgo
 - `tools/cli/docker_provisioner.py` — heurística `recommend_provision_host` (no provisionar herramientas pesadas en el VPS por defecto)
+
+---
+
+## Enlaces relacionados
+
+- [[01-development/README|01-development]]
+- [[brain/README|Brain Central]]

@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: infrastructure
+tags:
+  - opsly/infrastructure
+---
+
 # Worker Opsly — Mac 2011 (Ubuntu) controlado desde la Mac principal (opsly-admin)
 
 > **Primer arranque OpenClaw (workers en cola `openclaw`):** guía mínima en **`docs/FIRST-OPENCLAW-AGENTS-MAC2011.md`**.
@@ -271,3 +280,10 @@ Ademas, hay un timer nocturno diario a las **03:00** que ejecuta mantenimiento f
 - Orchestrator: `apps/orchestrator/`, `docs/ORCHESTRATOR.md`
 - Cola BullMQ / Redis: misma URL que en entorno de plataforma; no duplicar lógica sin revisar `REDIS_URL` en Doppler `prd`.
 - Decepticon (herramienta red team, opcional en este host): [`docs/DECEPTICON-WORKER.md`](DECEPTICON-WORKER.md), script `scripts/check-decepticon-worker.sh`.
+
+---
+
+## Enlaces relacionados
+
+- [[04-infrastructure/README|04-infrastructure]]
+- [[brain/README|Brain Central]]

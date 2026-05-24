@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: architecture
+tags:
+  - opsly/architecture
+---
+
 # Redis Namespace Isolation en Opsly
 
 ## Visión General
@@ -246,3 +255,10 @@ R: Sí, LLM Gateway soporta legacy mode. Set `LLM_GATEWAY_TENANT_AWARE=false`.
 - `.env.example` - Variables de configuración
 - `scripts/validate-redis-namespace.sh` - Script de validación
 - Tests en `__tests__/redis-namespace*.test.ts`
+
+---
+
+## Enlaces relacionados
+
+- [[00-architecture/README|00-architecture]]
+- [[brain/README|Brain Central]]

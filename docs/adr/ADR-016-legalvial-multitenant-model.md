@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: adr
+tags:
+  - opsly/adr
+---
+
 # ADR-016 — LegalVial: modelo multi-tenant (subcliente de LocalRank)
 
 ## Fuente canónica (Google Drive)
@@ -35,3 +44,10 @@ Si ese archivo queda vacío (solo BOM), el Google Doc en Drive **no tiene cuerpo
 - Modelo subcliente / matriz compartido–dedicado: [`docs/runbooks/LEGALVIAL-LOCALRANK-MODEL.md`](../runbooks/LEGALVIAL-LOCALRANK-MODEL.md)
 - Config, secretos y zero-trust: [`docs/runbooks/LEGALVIAL-CONFIG-ZERO-TRUST.md`](../runbooks/LEGALVIAL-CONFIG-ZERO-TRUST.md)
 - Registro: [`config/tenants/legalvial.json`](../../config/tenants/legalvial.json)
+
+---
+
+## Enlaces relacionados
+
+- [[adr/README|adr]]
+- [[brain/README|Brain Central]]

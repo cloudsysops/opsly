@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: infrastructure
+tags:
+  - opsly/infrastructure
+---
+
 # Flujos — orchestrator distribuido
 
 > Requiere `OPSLY_ORCHESTRATOR_ROLE` configurado; ver `docs/ARCHITECTURE-DISTRIBUTED.md` y `docs/ORCHESTRATOR.md`.
@@ -47,3 +56,10 @@ sequenceDiagram
 
 - Subir **concurrencia** en un worker: editar el worker concreto (`concurrency` en `Worker` de BullMQ) o levantar **otro** proceso `worker` en otro host con el mismo `REDIS_URL`.
 - No escalar el modo `control` horizontalmente sin revisar idempotencia de `TeamManager` / eventos (hoy un solo proceso `control` es lo esperado).
+
+---
+
+## Enlaces relacionados
+
+- [[04-infrastructure/README|04-infrastructure]]
+- [[brain/README|Brain Central]]

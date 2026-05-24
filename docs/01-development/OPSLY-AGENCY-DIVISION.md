@@ -349,3 +349,9 @@ const AGENCY_REDIS_KEYS = {
 - [SWARM-OPS-ARCHITECTURE.md](../../SWARM-OPS-ARCHITECTURE.md) — Arquitectura de enjambres
 - [OAR.md](../../design/OAR.md) — Opsly Agentic Runtime
 - [ROADMAP.md](../ROADMAP.md) — Planificación por sprint
+---
+
+## Enlaces relacionados
+
+- [[01-development/README|01-development]]
+- [[brain/README|Brain Central]]

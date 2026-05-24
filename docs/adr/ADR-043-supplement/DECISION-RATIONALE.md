@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: adr
+tags:
+  - opsly/adr
+---
+
 # ADR-043: Decision Rationale & Alternatives Analysis
 
 **Document Type:** Architecture Decision Record  
@@ -517,3 +526,10 @@ if (process.env.USE_GATEWAY_WRAPPER) {
 **Decision Authority:** Hermes Agent (Architect)  
 **Review Status:** Ready for stakeholder review  
 **Next Step:** Present to platform leads for approval
+
+---
+
+## Enlaces relacionados
+
+- [[adr/ADR-043-supplement/README|ADR-043-supplement]]
+- [[brain/README|Brain Central]]

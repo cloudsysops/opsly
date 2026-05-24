@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: guide
+tags:
+  - opsly/development
+---
+
 # ✅ QA Review Complete - Cursor Orchestrator Work
 
 **Date:** 2026-04-09 22:51 UTC  
@@ -199,3 +208,10 @@ All issues have documented fixes with copy-paste code samples.
 **Owner:** User (implements following `docs/ORCHESTRATOR-FIXES-EXECUTION.md`)  
 **Estimated Completion:** Tonight (30 min) or This Week (1.5 hours for all fixes)  
 **Next Step:** Choose implementation path (manual or ask Cursor)
+
+---
+
+## Enlaces relacionados
+
+- [[01-development/README|01-development]]
+- [[brain/README|Brain Central]]

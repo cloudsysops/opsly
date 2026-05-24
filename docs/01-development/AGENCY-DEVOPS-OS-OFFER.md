@@ -69,3 +69,10 @@ Reducir tiempo de entrega y soporte operativo usando agentes supervisados con tr
 ## CTA
 
 "Dame un repo, 5 tareas repetitivas y 14 dias. Te entrego evidencia de cuanto puede acelerar tu agencia sin cambiar tu IDE ni contratar mas developers."
+
+---
+
+## Enlaces relacionados
+
+- [[01-development/README|01-development]]
+- [[brain/README|Brain Central]]

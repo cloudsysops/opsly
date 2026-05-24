@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: guide
+tags:
+  - opsly/development
+---
+
 # Troubleshooting — Opsly
 
 Guía rápida sin depender de acceso humano a Doppler/VPS (salvo donde se indica).
@@ -48,3 +57,10 @@ Guía rápida sin depender de acceso humano a Doppler/VPS (salvo donde se indica
 - [Runbook incidente](runbooks/incident.md)
 - [AGENTS.md](../AGENTS.md) — estado operativo
 - [SECURITY_AUDIT_REPORT.md](SECURITY_AUDIT_REPORT.md)
+
+---
+
+## Enlaces relacionados
+
+- [[01-development/README|01-development]]
+- [[brain/README|Brain Central]]

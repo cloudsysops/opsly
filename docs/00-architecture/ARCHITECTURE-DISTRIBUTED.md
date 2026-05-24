@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: architecture
+tags:
+  - opsly/architecture
+---
+
 # Arquitectura distribuida — VPS (control) + Mac 2011 (workers)
 
 > **Implementación en código:** `OPSLY_ORCHESTRATOR_ROLE` (`control` \| `worker` \| `full`) y alias `OPSLY_ORCHESTRATOR_MODE` (`queue-only` \| `worker-enabled`). Ver `docs/ORCHESTRATOR.md`.
@@ -90,3 +99,10 @@ Sube estos valores solo tras medir CPU sostenida, crecimiento de `waiting` y lat
 - `docs/WORKER-FLOWS.md` — flujo lógico jobs / roles.
 - `docs/WORKER-SERVICE-MAC2011.md` — systemd en el Mac (si aplica).
 - `infra/systemd/opsly-workers-remote.service.example` — unidad ejemplo con `worker`.
+
+---
+
+## Enlaces relacionados
+
+- [[00-architecture/README|00-architecture]]
+- [[brain/README|Brain Central]]

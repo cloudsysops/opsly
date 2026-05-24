@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: doc
+tags:
+  - opsly/doc
+---
+
 # Autonomy Completion Plan
 
 Date: 2026-04-27  
@@ -208,3 +217,10 @@ Make autonomy sustainable and auditable.
 - Any recurring cost > 10 USD/month requires human approval.
 - Sandbox defaults to isolated network unless explicitly justified.
 - All autonomous changes must remain reversible and traceable.
+
+---
+
+## Enlaces relacionados
+
+- [[plans/README|plans]]
+- [[brain/README|Brain Central]]

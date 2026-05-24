@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: adr
+tags:
+  - opsly/adr
+---
+
 # ADR-015: Hermes como servicio Docker separado
 
 ## Estado
@@ -36,3 +45,10 @@ Ejecutar Hermes en el **mismo proceso** que el resto de workers es válido en en
 - ADR-014 (NotebookLM / notebooklm-py)
 - `docs/HERMES-SPRINT-PLAN.md` (si existe en rama)
 - `Dockerfile.hermes`, `infra/hermes/*.cjs`, `scripts/hermes-smoke-test.sh`
+
+---
+
+## Enlaces relacionados
+
+- [[adr/README|adr]]
+- [[brain/README|Brain Central]]

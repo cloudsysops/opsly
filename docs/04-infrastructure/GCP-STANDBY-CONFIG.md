@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: infrastructure
+tags:
+  - opsly/infrastructure
+---
+
 # GCP — standby pasivo (configuración)
 
 > Acompaña [`FAILOVER-GCP-ARCHITECTURE.md`](FAILOVER-GCP-ARCHITECTURE.md) y [`FAILOVER-RUNBOOK.md`](FAILOVER-RUNBOOK.md).
@@ -52,3 +61,10 @@ Variable opcional para etiquetar el nodo en JSON:
 3. Instalar Tailscale y clonar `/opt/opsly` o sincronizar con `scripts/sync-to-gcp.sh`.
 4. Añadir IP/host del origen GCP al pool en Cloudflare.
 5. Probar `curl https://api.<dominio>/api/health/lightweight` vía origen GCP cuando esté en el LB.
+
+---
+
+## Enlaces relacionados
+
+- [[04-infrastructure/README|04-infrastructure]]
+- [[brain/README|Brain Central]]

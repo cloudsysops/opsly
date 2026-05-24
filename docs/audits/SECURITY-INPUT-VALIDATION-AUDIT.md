@@ -421,3 +421,10 @@ describe('POST /api/checkout/session validation', () => {
 **Effort:** 5-7 hours total implementation  
 **Impact:** Prevent XSS, SQL injection, type errors, DoS attacks  
 **Risk if not fixed:** Security vulnerability, data corruption, crashes
+
+---
+
+## Enlaces relacionados
+
+- [[audits/README|audits]]
+- [[brain/README|Brain Central]]

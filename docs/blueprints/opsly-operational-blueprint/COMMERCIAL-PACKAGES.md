@@ -142,3 +142,10 @@ Paquetes **simples** para PyMEs. Rangos orientativos; ajustar por mercado y scop
 1. Discovery → elegir paquete.  
 2. SOW 1 página con módulos de [MODULES.md](./MODULES.md).  
 3. Incubación o extracción según [TENANT-INCUBATION.md](./TENANT-INCUBATION.md).
+
+---
+
+## Enlaces relacionados
+
+- [[blueprints/opsly-operational-blueprint/README|opsly-operational-blueprint]]
+- [[brain/README|Brain Central]]

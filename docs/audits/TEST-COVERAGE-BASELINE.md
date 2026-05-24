@@ -251,3 +251,10 @@ npm run test -- --coverage --reporters=html
 **Owner:** @qa (testing oversight)  
 **Priority:** HIGH (pay down technical debt)  
 **Impact:** Reduced regressions, faster deployment confidence
+
+---
+
+## Enlaces relacionados
+
+- [[audits/README|audits]]
+- [[brain/README|Brain Central]]

@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: guide
+tags:
+  - opsly/development
+---
+
 # Opsly — Knowledge Base para Agentes IA
 
 > **Última actualización:** 2026-04-14  

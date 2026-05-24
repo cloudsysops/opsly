@@ -13,3 +13,10 @@ last_review: 2026-05-10
 | `REDIS-QUEUE-GUIDE.md` | [`../04-infrastructure/REDIS-QUEUE-GUIDE.md`](../04-infrastructure/REDIS-QUEUE-GUIDE.md) |
 
 Ver [`../STRUCTURE-GUARDRAILS.md`](../STRUCTURE-GUARDRAILS.md) y [`../01-development/DOCUMENTATION-LIFECYCLE.md`](../01-development/DOCUMENTATION-LIFECYCLE.md).
+
+---
+
+## Enlaces relacionados
+
+- [[infrastructure/README|infrastructure]]
+- [[brain/README|Brain Central]]

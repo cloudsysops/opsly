@@ -9,3 +9,10 @@ last_review: 2026-05-10
 **Documento canónico:** [`../04-operations/COST-MONITORING-GUIDE.md`](../04-operations/COST-MONITORING-GUIDE.md)
 
 No editar este stub.
+
+---
+
+## Enlaces relacionados
+
+- [[operations/README|operations]]
+- [[brain/README|Brain Central]]

@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: guide
+tags:
+  - opsly/development
+---
+
 # Sincronización Git antes de trabajar (opsly-admin, opsly-worker, VPS)
 
 **Regla:** en cualquier host donde tengas el repo Opsly, **antes de editar código, ejecutar scripts de infra o reiniciar servicios**, actualiza el clon con `origin` en la **rama en la que estás trabajando** (fast-forward).
@@ -87,3 +96,10 @@ No hagas `git pull` sin `--ff-only` si la política del equipo es evitar merges 
 - Tailscale / nombres: [`TAILSCALE-NOMENCLATURA.md`](./TAILSCALE-NOMENCLATURA.md)
 - Worker: [`WORKER-SETUP-MAC2011.md`](./WORKER-SETUP-MAC2011.md), [`WORKER-SERVICE-MAC2011.md`](./WORKER-SERVICE-MAC2011.md)
 - CI/CD VPS: [`CICD-VPS.md`](./CICD-VPS.md)
+
+---
+
+## Enlaces relacionados
+
+- [[01-development/README|01-development]]
+- [[brain/README|Brain Central]]

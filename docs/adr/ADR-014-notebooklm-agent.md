@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: adr
+tags:
+  - opsly/adr
+---
+
 # ADR-014: NotebookLM Agent (EXPERIMENTAL)
 
 **Status:** EXPERIMENTAL  
@@ -199,3 +208,10 @@ NOTEBOOKLM_ENABLED=true \
 - Paquete workspace: `@intcloudsysops/notebooklm-agent`.
 - Scope MCP nuevo: `agents:write` (OAuth `claude-ai` y metadata well-known).
 - Coste marginal: uso de la cuenta Google del tenant/instancia.
+
+---
+
+## Enlaces relacionados
+
+- [[adr/README|adr]]
+- [[brain/README|Brain Central]]

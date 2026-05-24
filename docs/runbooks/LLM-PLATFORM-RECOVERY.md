@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: runbook
+tags:
+  - opsly/runbook
+---
+
 # Runbook: recuperar capa LLM y nodos (Opsly)
 
 Objetivo: volver a tener **Ollama local** (si aplica), **Redis**, **LLM Gateway** y **Orchestrator** en verde, sin exponer secretos en logs.
@@ -26,3 +35,10 @@ Contra staging: `curl -sfk "https://api.<PLATFORM_DOMAIN>/api/health"` (ajustar 
 ## SSH
 
 Solo por política del proyecto (p. ej. Tailscale al VPS); no pegar tokens ni API keys en tickets ni chat.
+
+---
+
+## Enlaces relacionados
+
+- [[runbooks/README|runbooks]]
+- [[brain/README|Brain Central]]

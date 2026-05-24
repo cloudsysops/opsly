@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: agent-doc
+tags:
+  - opsly/agents
+---
+
 # OpenClaw Observability — Sprints 15-16
 
 ## Introducción
@@ -589,3 +598,10 @@ curl "http://api:3000/api/tenants/acme-corp/skills/opsly-notebooklm/history?limi
 - [ ] Custom Grafana plugins para visualización OpenClaw
 - [ ] Distributed logs con correlation IDs
 - [ ] OpenTelemetry protocol (OTLP) en lugar de Jaeger agent
+
+---
+
+## Enlaces relacionados
+
+- [[03-agents/README|03-agents]]
+- [[brain/README|Brain Central]]

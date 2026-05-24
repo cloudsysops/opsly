@@ -887,3 +887,10 @@ Sensitivity Filter (Flag if requires approval)
 
 **Go/No-Go:** GO (high confidence)
 
+
+---
+
+## Enlaces relacionados
+
+- [[03-agents/README|03-agents]]
+- [[brain/README|Brain Central]]

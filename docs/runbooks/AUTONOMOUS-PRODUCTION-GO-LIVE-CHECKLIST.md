@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: runbook
+tags:
+  - opsly/runbook
+---
+
 # Checklist único — Go-live autonomía Opsly (staging → producción)
 
 **Ámbito:** promoción segura de capacidades autónomas según el plan de 60 días.  
@@ -51,3 +60,10 @@
 
 - Resumen 60 días: [`AUTONOMOUS-PROD-60D.md`](./AUTONOMOUS-PROD-60D.md)
 - Deploy Actions: [`DEPLOY-GITHUB-ACTIONS.md`](./DEPLOY-GITHUB-ACTIONS.md)
+
+---
+
+## Enlaces relacionados
+
+- [[runbooks/README|runbooks]]
+- [[brain/README|Brain Central]]

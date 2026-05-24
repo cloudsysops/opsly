@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: runbook
+tags:
+  - opsly/runbook
+---
+
 # LegalVial — configuración, secretos y zero-trust
 
 **Prerrequisito:** leer [LEGALVIAL-LOCALRANK-MODEL.md](./LEGALVIAL-LOCALRANK-MODEL.md).
@@ -36,3 +45,10 @@
 ```
 
 Falla si falta `tenant_slug` / `schema_name` en `config/tenants/*.json` o si hay `parent_tenant_slug` sin `client_slug`.
+
+---
+
+## Enlaces relacionados
+
+- [[runbooks/README|runbooks]]
+- [[brain/README|Brain Central]]

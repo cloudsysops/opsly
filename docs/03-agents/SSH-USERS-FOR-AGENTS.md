@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: agent-doc
+tags:
+  - opsly/agents
+---
+
 # SSH — qué usuario usar (humanos y agentes)
 
 Documento **canónico** para que agentes (Cursor, Claude, automatismos) y personas no mezclen usuarios entre máquinas Opsly.
@@ -59,3 +68,10 @@ Detalle y endurecimiento: [`VPS-SSH-WORKER-NODES.md`](VPS-SSH-WORKER-NODES.md).
 - [`TAILSCALE-NOMENCLATURA.md`](TAILSCALE-NOMENCLATURA.md) — MagicDNS, `~/.ssh/config` plantilla
 - [`WORKER-SETUP-MAC2011.md`](WORKER-SETUP-MAC2011.md) — Fase SSH en el worker
 - [`SESSION-GIT-SYNC.md`](SESSION-GIT-SYNC.md) — `git pull` en cada host
+
+---
+
+## Enlaces relacionados
+
+- [[03-agents/README|03-agents]]
+- [[brain/README|Brain Central]]

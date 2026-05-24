@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: adr
+tags:
+  - opsly/adr
+---
+
 # ADR-033 Executive Summary: Syra ↔ OpenClaw Integration
 
 **Date:** May 8, 2026  
@@ -398,3 +407,10 @@ A: No credentials leak. Request sanitization. Budget limits. Audit trail complet
 
 **ADR-043: Intelligent Content Generation via LLM Gateway**  
 *Empowering Syra with intelligent, cost-optimized, community-focused content generation.*
+
+---
+
+## Enlaces relacionados
+
+- [[adr/ADR-043-supplement/README|ADR-043-supplement]]
+- [[brain/README|Brain Central]]

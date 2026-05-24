@@ -56,3 +56,10 @@ Opsly coordinates execution through role-based agents:
 
 All agent jobs must include tenant context and request tracking.
 
+
+---
+
+## Enlaces relacionados
+
+- [[00-architecture/README|00-architecture]]
+- [[brain/README|Brain Central]]

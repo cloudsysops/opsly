@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: adr
+tags:
+  - opsly/adr
+---
+
 # ADR-043 — Publicación orgánica en Facebook Page vía Meta Graph API (Opsly)
 
 ## Estado
@@ -54,3 +63,10 @@ Aceptado — Fase 1 implementada en API (2026-05-10): `GET|POST /api/admin/faceb
 
 - Nombres concretos de variables Doppler (`META_PAGE_ACCESS_TOKEN`, `META_PAGE_ID`, `META_APP_SECRET`, etc.) se fijan al implementar; validar contra `scripts/check-tokens.sh` / listas CI si se añaden a `config/doppler-ci-required*.txt`.
 - Cualquier conector externo (p. ej. “Lite”) es **complementario**; no sustituye este ADR para producción.
+
+---
+
+## Enlaces relacionados
+
+- [[adr/README|adr]]
+- [[brain/README|Brain Central]]

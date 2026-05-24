@@ -220,3 +220,10 @@ Add entries under appropriate severity:
 ```
 
 Then move to ✅ RESOLVED when done, with completion date.
+
+---
+
+## Enlaces relacionados
+
+- [[01-development/README|01-development]]
+- [[brain/README|Brain Central]]

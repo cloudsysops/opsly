@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: runbook
+tags:
+  - opsly/runbook
+---
+
 # Kafka + Airflow Bootstrap (Opsly)
 
 ## Objetivo
@@ -29,3 +38,10 @@ docker compose -f infra/docker-compose.airflow.yml up -d
 2. Airflow web responde en `127.0.0.1:8081`.
 3. `type-check` de orquestator y llm-gateway en verde.
 4. Ningún servicio de producción principal degradado.
+
+---
+
+## Enlaces relacionados
+
+- [[runbooks/README|runbooks]]
+- [[brain/README|Brain Central]]

@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: guide
+tags:
+  - opsly/development
+---
+
 # Informe de uso de disco — VPS Opsly
 
 **Instantánea:** 2026-04-11 (comandos vía SSH `vps-dragon@100.120.151.91`).  
@@ -133,3 +142,10 @@ Ejecutado en el VPS (usuario con acceso Docker, **sin** eliminar contenedores en
 - Limpieza automatizada: `docs/OPS-CLEANUP-PROCEDURES.md`, `scripts/vps-cleanup-robust.sh`
 - Política: `docs/RETENTION-POLICY.md`
 - Servicios pesados: `docs/HEAVY-SERVICES-DECISION.md`
+
+---
+
+## Enlaces relacionados
+
+- [[01-development/README|01-development]]
+- [[brain/README|Brain Central]]

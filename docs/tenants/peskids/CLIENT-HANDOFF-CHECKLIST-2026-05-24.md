@@ -269,3 +269,10 @@ When you have **50+ paying customers** or **100+ real users:**
 - **Next review:** 2026-05-26 (post-Phase-2-start)
 
 **Questions?** Contact ops team or read detailed guides in `docs/tenants/peskids/`
+
+---
+
+## Enlaces relacionados
+
+- [[tenants/peskids/README|peskids]]
+- [[brain/README|Brain Central]]

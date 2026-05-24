@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: doc
+tags:
+  - opsly/doc
+---
+
 # Opsly — Agent assignments
 
 > **Generado automáticamente** — fuente: [`docs/implementation/status.yaml`](implementation/status.yaml).
@@ -58,3 +67,10 @@ Ver responsabilidades y flujos en [`docs/AGENTS-ORCHESTRATION.md`](AGENTS-ORCHES
 ---
 
 *No editar a mano — regenerar con `npm run docs:sync`.*
+
+---
+
+## Enlaces relacionados
+
+- [[generated/README|generated]]
+- [[brain/README|Brain Central]]

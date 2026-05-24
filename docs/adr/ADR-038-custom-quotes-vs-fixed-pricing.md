@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: adr
+tags:
+  - opsly/adr
+---
+
 # ADR-038 — Custom quotes (Claude-generated) vs fixed pricing
 
 ## Estado
@@ -173,3 +182,10 @@ vs local competitors (fixed "$99 diagnostic", "$150 cleaning"):
 - Ops Agent Prompt: `.cursor/prompts/local-services-ops-admin.md`
 - Quote generation flow: `docs/OPSLY-LOCAL-SERVICES.md` (Agent 2 section)
 - Pricing rules: `.env.local` or Doppler config per tenant
+
+---
+
+## Enlaces relacionados
+
+- [[adr/README|adr]]
+- [[brain/README|Brain Central]]

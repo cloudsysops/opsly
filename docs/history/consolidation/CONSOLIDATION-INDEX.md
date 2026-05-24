@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: archive
+tags:
+  - opsly/history
+---
+
 # Opsly Code Consolidation Plan - Document Index
 
 **Status**: Complete and Ready for Technical Review
@@ -308,3 +317,10 @@ Start with: **docs/history/consolidation/CONSOLIDATION-EFFORT-BREAKDOWN.md**
 **Git Commit**: 51f8805  
 **Reviewed**: Pending  
 
+
+---
+
+## Enlaces relacionados
+
+- [[history/README|history]]
+- [[brain/README|Brain Central]]

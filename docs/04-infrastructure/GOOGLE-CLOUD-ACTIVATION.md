@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: infrastructure
+tags:
+  - opsly/infrastructure
+---
+
 # Activación Google Cloud $300 — Guía para Cristian
 
 ## Cuándo activar
@@ -51,3 +60,10 @@ gcloud billing projects link PROJECT_ID \
 - `GOOGLE_CLOUD_PROJECT_ID=opsly-platform-personal`
 - `BIGQUERY_DATASET=opsly_analytics`
 - `VERTEX_AI_REGION=us-central1`
+
+---
+
+## Enlaces relacionados
+
+- [[04-infrastructure/README|04-infrastructure]]
+- [[brain/README|Brain Central]]

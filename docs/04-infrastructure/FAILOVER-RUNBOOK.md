@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: infrastructure
+tags:
+  - opsly/infrastructure
+---
+
 # Runbook — Failover y alta disponibilidad (Opsly)
 
 ## Estado actual (staging / plataforma típica)
@@ -75,3 +84,10 @@ Solo aplicable si tuviste **replicación** o backups coherentes:
 1. Causa raíz
 2. Tiempo de detección y de recuperación
 3. Acciones para evitar repetición
+
+---
+
+## Enlaces relacionados
+
+- [[04-infrastructure/README|04-infrastructure]]
+- [[brain/README|Brain Central]]

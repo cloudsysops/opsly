@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: adr
+tags:
+  - opsly/adr
+---
+
 # ADR-004 — Supabase con schema por tenant
 
 **Fecha:** 2026-04-04
@@ -20,3 +29,10 @@
 - Slug del tenant = nombre del schema
 - Onboarding crea el schema automáticamente
 - Backup por tenant = dump del schema correspondiente
+
+---
+
+## Enlaces relacionados
+
+- [[adr/README|adr]]
+- [[brain/README|Brain Central]]

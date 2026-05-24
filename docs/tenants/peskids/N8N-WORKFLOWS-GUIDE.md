@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: tenant
+tags:
+  - opsly/tenant
+---
+
 # N8N Workflows Guide — Peskids Phase 2
 
 **Date:** 2026-05-24  
@@ -256,3 +265,10 @@ Store all secrets in Doppler `ops-intcloudsysops/prd`:
 - Supabase Docs: https://supabase.com/docs
 - Resend Email: https://resend.com/docs
 - Jelou WhatsApp: [Provided by product owner]
+
+---
+
+## Enlaces relacionados
+
+- [[tenants/peskids/README|peskids]]
+- [[brain/README|Brain Central]]

@@ -78,3 +78,10 @@ do_not_edit: true
 ---
 
 *Última generación local/CI: 2026-05-08T18:14:33.016Z*
+
+---
+
+## Enlaces relacionados
+
+- [[generated/README|generated]]
+- [[brain/README|Brain Central]]

@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: agent-doc
+tags:
+  - opsly/agents
+---
+
 # Superagentes Opsly — Bootstrap completo
 
 Objetivo: dejar agentes AI con "superpoderes" listos desde cero:
@@ -72,3 +81,10 @@ Checklist:
 - `superagents-doctor.sh` con comandos base en verde
 - autopilot en running (`status-agents-autopilot.sh`)
 - MCP stdio levanta y lista tools/resources/prompts
+
+---
+
+## Enlaces relacionados
+
+- [[03-agents/README|03-agents]]
+- [[brain/README|Brain Central]]

@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: doc
+tags:
+  - opsly/doc
+---
+
 # Evidencia — Cierre Fase 1 autonomía (3 corridas E2E consecutivas)
 
 **Plan:** [`docs/plans/AUTONOMY-COMPLETION-PLAN-2026-04-27.md`](../plans/AUTONOMY-COMPLETION-PLAN-2026-04-27.md) — criterio: flujo `research-run → artefactos → (opcional) sandbox_execution → estado job → reporte`.
@@ -27,3 +36,10 @@
 # Con sandbox encolado de verdad (requiere gateway + orchestrator):
 AUTONOMY_E2E_EXECUTE=true ./scripts/autonomy-phase1-e2e-record.sh
 ```
+
+---
+
+## Enlaces relacionados
+
+- [[reports/README|reports]]
+- [[brain/README|Brain Central]]

@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: runbook
+tags:
+  - opsly/runbook
+---
+
 # Frontend Audit (Portal/Admin/Web)
 
 Fecha: 2026-04-07
@@ -18,3 +27,10 @@ Fecha: 2026-04-07
 - Estandarizar feedback de acciones con componente compartido de `toast/alert`.
 - Revisar accesibilidad en formularios (`aria-live` para errores, foco tras fallo).
 - Consolidar estados de carga de botones en componentes reutilizables.
+
+---
+
+## Enlaces relacionados
+
+- [[runbooks/README|runbooks]]
+- [[brain/README|Brain Central]]

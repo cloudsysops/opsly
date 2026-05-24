@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: runbook
+tags:
+  - opsly/runbook
+---
+
 # Auditoría disco y seguridad — VPS (`vps-dragon`)
 
 Runbook para **espacio en disco**, **Trivy** y **higiene** sin duplicar el script `scripts/cleanup-vps.sh`.
@@ -95,3 +104,10 @@ Existe también `scripts/vps-cleanup-robust.sh` (perfiles `--light` / `--aggress
 - [ ] UFW: SSH solo Tailscale (`docs` seguridad / `scripts/vps-secure.sh`).
 - [ ] Tras `prune`, comprobar `docker compose up -d` en `/opt/opsly/infra` si algún servicio no arranca.
 - [ ] No publicar reportes Trivy con secretos en repos o chats.
+
+---
+
+## Enlaces relacionados
+
+- [[runbooks/README|runbooks]]
+- [[brain/README|Brain Central]]

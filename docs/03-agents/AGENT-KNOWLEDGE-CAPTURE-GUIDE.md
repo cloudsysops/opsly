@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: agent-doc
+tags:
+  - opsly/agents
+---
+
 # Agent Knowledge Capture Integration Guide
 
 ## 🧠 Overview
@@ -484,3 +493,10 @@ See `docs/obsidian/inbox/` for real examples from agents.
 **Questions?** Check `docs/02-tools/OBSIDIAN-KNOWLEDGE-SYSTEM-STATUS.md` or raise an issue.
 
 **Status:** 🟢 Knowledge capture system live and integrated with Syra. Ready for all agents to start feeding the system.
+
+---
+
+## Enlaces relacionados
+
+- [[03-agents/README|03-agents]]
+- [[brain/README|Brain Central]]

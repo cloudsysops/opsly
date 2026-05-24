@@ -122,3 +122,10 @@ Solo tras sign-off cliente:
 - Soporte Opsly como **servicio**, no runtime obligatorio.
 
 Ver [TENANT-INCUBATION.md](./TENANT-INCUBATION.md) etapa **Connected Client Platform**.
+
+---
+
+## Enlaces relacionados
+
+- [[blueprints/opsly-operational-blueprint/README|opsly-operational-blueprint]]
+- [[brain/README|Brain Central]]

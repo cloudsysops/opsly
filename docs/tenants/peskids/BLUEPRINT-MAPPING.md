@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: tenant
+tags:
+  - opsly/tenant
+---
+
 # Peskids ↔ Opsly Operational Blueprint Mapping
 
 **Purpose:** Define how Peskids (incubated tenant) aligns with and validates the Opsly Operational Blueprint v0.1  
@@ -240,3 +249,10 @@ Peskids uses only:
 | Provider replaceable | [ARCHITECTURE.md](./ARCHITECTURE.md) | active |
 | Dashboards before autonomy | [DASHBOARD-SPEC.md](./DASHBOARD-SPEC.md) | planned |
 | Document before automating | [INCUBATION-CHECKLIST.md](./INCUBATION-CHECKLIST.md) | active |
+
+---
+
+## Enlaces relacionados
+
+- [[tenants/peskids/README|peskids]]
+- [[brain/README|Brain Central]]

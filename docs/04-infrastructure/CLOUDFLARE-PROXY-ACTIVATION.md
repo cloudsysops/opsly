@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: infrastructure
+tags:
+  - opsly/infrastructure
+---
+
 # Cloudflare Proxy — Runbook de activación
 
 > Cubre: activar Proxy (nube naranja) para `*.op-sly.com`,
@@ -143,3 +152,10 @@ Tras completar esta guía, marcar en `docs/SECURITY_CHECKLIST.md`:
 - `[x]` `CF_DNS_API_TOKEN` en Doppler `prd`
 - `[x]` Traefik `api.insecure: false` (sin dashboard expuesto)
 - `[x]` UFW: SSH solo Tailscale, 80/443 públicos
+
+---
+
+## Enlaces relacionados
+
+- [[04-infrastructure/README|04-infrastructure]]
+- [[brain/README|Brain Central]]

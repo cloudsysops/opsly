@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: tenant
+tags:
+  - opsly/tenant
+---
+
 # Peskids Standalone — Agent Implementation Plan
 
 **Document Status:** Active Implementation Phase  
@@ -1381,3 +1390,10 @@ echo "✅ Setup complete!"
 4. Docker Compose production stack spec
 5. One-click VPS deployment automation
 6. End-to-end testing with simulated webhooks
+
+---
+
+## Enlaces relacionados
+
+- [[tenants/peskids/README|peskids]]
+- [[brain/README|Brain Central]]

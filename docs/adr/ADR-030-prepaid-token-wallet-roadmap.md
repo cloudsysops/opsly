@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: adr
+tags:
+  - opsly/adr
+---
+
 # ADR-030 — Wallet prepago y “tokens” de cuenta (roadmap)
 
 ## Estado
@@ -23,3 +32,10 @@ El producto puede describirse con **créditos internos** (tokens abstractos) car
 
 - `docs/TOKEN-SYSTEM-GUIDE.md`
 - `docs/llm-gateway` (código `budget.ts`, `logger.ts`)
+
+---
+
+## Enlaces relacionados
+
+- [[adr/README|adr]]
+- [[brain/README|Brain Central]]

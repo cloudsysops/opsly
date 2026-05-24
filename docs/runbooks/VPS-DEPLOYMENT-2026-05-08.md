@@ -235,3 +235,10 @@ Post-execution, verify all items and report status.
 - Commit: `497b59e`
 
 **Status:** ✅ Ready for VPS deployment
+
+---
+
+## Enlaces relacionados
+
+- [[runbooks/README|runbooks]]
+- [[brain/README|Brain Central]]

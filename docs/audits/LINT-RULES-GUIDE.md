@@ -363,3 +363,10 @@ void sendEmailInBackground(user.email);
 **Priority:** MEDIUM (nice to have, but improves maintainability)  
 **Effort:** 2-4 hours (enable rules + fix violations)  
 **Impact:** Fewer bugs, consistent code style, easier refactoring
+
+---
+
+## Enlaces relacionados
+
+- [[audits/README|audits]]
+- [[brain/README|Brain Central]]

@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: guide
+tags:
+  - opsly/development
+---
+
 # Semana 2 — NotebookLM Plan Limiting + Orchestrator Smoke — COMPLETADO
 
 **Período:** 2026-04-20 → 2026-04-21  
@@ -235,3 +244,10 @@ Metering: usage_events {
 **Tests:** 101/101 ✅  
 **Type-check:** ✅ PASS  
 **Checkpoint:** ✅ "smoke orchestrator + job tipo acordado; NotebookLM no expuesto a Startup sin flag"
+
+---
+
+## Enlaces relacionados
+
+- [[01-development/README|01-development]]
+- [[brain/README|Brain Central]]

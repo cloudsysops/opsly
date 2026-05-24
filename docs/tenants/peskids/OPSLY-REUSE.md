@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: tenant
+tags:
+  - opsly/tenant
+---
+
 # Peskids — qué reutilizar de Opsly
 
 Mapa práctico para no duplicar el monorepo. **No** significa importar todo el portal en `apps/peskids` de golpe.
@@ -74,3 +83,10 @@ Ver [`INSTAGRAM-FEED.md`](./INSTAGRAM-FEED.md).
 2. Permalinks Instagram en `INSTAGRAM_POST_PERMALINKS`.
 3. Portal familias con Supabase Auth (email; Google opcional).
 4. Unificar leads: solo `apps/api/lib/peskids` **o** solo tablas en schema `peskids` (evitar dos fuentes).
+
+---
+
+## Enlaces relacionados
+
+- [[tenants/peskids/README|peskids]]
+- [[brain/README|Brain Central]]

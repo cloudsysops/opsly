@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: guide
+tags:
+  - opsly/development
+---
+
 # Manual del administrador — ecosistema Opsly
 
 **Audiencia:** operadores con acceso al VPS, Doppler `ops-intcloudsysops` / `prd`, GitHub `cloudsysops/opsly`, y (cuando aplique) token admin de la API.
@@ -199,3 +208,10 @@ URLs esperadas (plantilla): `https://n8n-<slug>.<PLATFORM_DOMAIN>/`, `https://up
 ---
 
 _Última revisión alineada al monorepo Opsly; las IPs y dominios de ejemplo deben sustituirse por los de tu entorno._
+
+---
+
+## Enlaces relacionados
+
+- [[01-development/README|01-development]]
+- [[brain/README|Brain Central]]

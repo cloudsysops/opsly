@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: infrastructure
+tags:
+  - opsly/infrastructure
+---
+
 # Arquitectura: equipos de workers OpenClaw (visión y roadmap)
 
 > **Estado:** diseño y alineación con el monorepo actual. **No** sustituye a `TeamManager` ni a las colas BullMQ existentes hasta un ADR y trabajo de producto explícitos.  
@@ -89,3 +98,10 @@ interface SharedContext {
 - `docs/WORKER-TEAM-BILLING.md` — medición y facturación.
 - `docs/WORKER-FLOWS.md` — control vs worker.
 - `docs/adr/ADR-017-worker-teams-billing-roadmap.md` — decisión de alcance.
+
+---
+
+## Enlaces relacionados
+
+- [[04-infrastructure/README|04-infrastructure]]
+- [[brain/README|Brain Central]]

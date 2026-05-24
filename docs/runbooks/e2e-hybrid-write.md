@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: runbook
+tags:
+  - opsly/runbook
+---
+
 # E2E: escritura híbrida (`/api/tools/execute`) en el VPS
 
 **Prerrequisito:** el servicio `app` monta el monorepo **lectura/escritura** (`infra/docker-compose.platform.yml`, volumen `../:/opt/opsly`).
@@ -39,3 +48,10 @@ trivy image ghcr.io/cloudsysops/intcloudsysops-api:latest
 
 - Ruta protegida por `PLATFORM_ADMIN_TOKEN` en `apps/api/app/api/tools/execute/route.ts`.
 - Paths restringidos por `safeResolvedPath` en `apps/api/lib/tools-execute.ts`.
+
+---
+
+## Enlaces relacionados
+
+- [[runbooks/README|runbooks]]
+- [[brain/README|Brain Central]]

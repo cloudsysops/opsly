@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: adr
+tags:
+  - opsly/adr
+---
+
 # ADR-027: Hybrid Control Plane vs Compute Plane (K8s Future Strategy)
 
 **Status:** Propuesto (Estrategia) / Diferido (Implementación)  
@@ -77,3 +86,10 @@ No se procederá a la migración del Compute Plane hasta que se cumpla **al meno
 - **[ADR-020](ADR-020-orchestrator-worker-separation.md):** Separación Orchestrator/Worker — Base para escalar workers independientemente.
 - **[ADR-011](ADR-011-event-driven-orchestrator.md):** Arquitectura Event-Driven — Justificación del uso de colas como backbone.
 - **`VISION.md`:** Despliegue por defecto Compose+VPS; este ADR define la **excepción estratégica** futura (compute plane opcional en K8s), no un reemplazo del control plane por defecto.
+
+---
+
+## Enlaces relacionados
+
+- [[adr/README|adr]]
+- [[brain/README|Brain Central]]

@@ -453,3 +453,10 @@ Once Phase 2 is stable:
 - `docs/03-agents/AUTONOMOUS-ITERATION.md` — System design
 - `docs/03-agents/LOCAL-AGENT-EXECUTION.md` — Phase 1 (execution)
 - `AGENTS.md` — Session state
+
+---
+
+## Enlaces relacionados
+
+- [[01-development/README|01-development]]
+- [[brain/README|Brain Central]]

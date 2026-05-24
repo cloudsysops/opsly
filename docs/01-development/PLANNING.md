@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: guide
+tags:
+  - opsly/development
+---
+
 # Opsly — Planificación macro (herramientas + enlaces)
 
 > **Roadmap semanal ejecutable:** [`ROADMAP.md`](ROADMAP.md) (canon en esta carpeta)  
@@ -37,3 +46,10 @@
 ## Alertas de retraso
 
 No hay bot interno obligatorio: usar **Discord** (`scripts/notify-discord.sh`), **GitHub Actions** (fallo de CI), o recordatorios del Project. Si se añade integración nueva, documentarla aquí y en `AGENTS.md`.
+
+---
+
+## Enlaces relacionados
+
+- [[01-development/README|01-development]]
+- [[brain/README|Brain Central]]

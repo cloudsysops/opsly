@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: tenant
+tags:
+  - opsly/tenant
+---
+
 # Peskids — Doppler (`ops-intcloudsysops` / `prd`)
 
 ## Automático (recomendado)
@@ -84,3 +93,10 @@ doppler secrets set NEXT_PUBLIC_JELOU_FORM_FEEDBACK_ID="<id>" --project ops-intc
 ```
 
 El `JELOU_WEBHOOK_SECRET` en Jelou debe coincidir con el de Doppler.
+
+---
+
+## Enlaces relacionados
+
+- [[tenants/peskids/README|peskids]]
+- [[brain/README|Brain Central]]

@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: runbook
+tags:
+  - opsly/runbook
+---
+
 # Runbook — Ventana de observación Cortex (24–48 h)
 
 **Objetivo:** validar estabilidad del orquestador y calidad de intents tras activar **Cortex en modo seguro**, sin ampliar superficie de riesgo.
@@ -61,3 +70,10 @@ OPSLY_CORTEX_DRY_RUN=true
 ```
 
 Recrear contenedor / reiniciar proceso orchestrator tras cambiar env.
+
+---
+
+## Enlaces relacionados
+
+- [[runbooks/README|runbooks]]
+- [[brain/README|Brain Central]]

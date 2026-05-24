@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: doc
+tags:
+  - opsly/doc
+---
+
 # 📋 CODE REVIEW: Agent Prompt Execution API Design
 
 **Reviewer**: Claude (AI) + You (Human)  
@@ -305,3 +314,10 @@ Please review the full design document and comment on:
 **Do you want to proceed with implementation?**  
 Or should we refine any aspects of the design first?
 
+
+---
+
+## Enlaces relacionados
+
+- [[reports/README|reports]]
+- [[brain/README|Brain Central]]

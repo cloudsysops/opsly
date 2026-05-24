@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: infrastructure
+tags:
+  - opsly/infrastructure
+---
+
 # Domain cutover runbook: `op-sly.com`
 
 Objetivo: activar `op-sly.com` con Cloudflare DNS autoritativo y Traefik ACME DNS-01.
@@ -95,3 +104,10 @@ Buscar eventos ACME/certificados emitidos para `*.op-sly.com` y hosts usados.
 - `portal.op-sly.com/_next/static/*`: cache allowed
 - Evitar `Cache Everything` global sobre API.
 
+
+---
+
+## Enlaces relacionados
+
+- [[04-infrastructure/README|04-infrastructure]]
+- [[brain/README|Brain Central]]

@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: infrastructure
+tags:
+  - opsly/infrastructure
+---
+
 # Billing Flush Worker — Vercel (cron + secretos + alertas)
 
 ## 1. Secreto `CRON_SECRET`
@@ -68,3 +77,10 @@ curl -sS -H "Authorization: Bearer $CRON_SECRET" "http://localhost:3000/api/cron
 ---
 
 **Nota monorepo:** Si el proyecto Vercel usa la raíz del repositorio completo (sin Root Directory `apps/api`), duplica o mueve `vercel.json` junto al `package.json` de la app Next que se construye, o ajusta la configuración del proyecto para que el build apunte a `apps/api`.
+
+---
+
+## Enlaces relacionados
+
+- [[04-infrastructure/README|04-infrastructure]]
+- [[brain/README|Brain Central]]

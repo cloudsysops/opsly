@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: adr
+tags:
+  - opsly/adr
+---
+
 # ADR-035 — OpenClaw (Context Builder + MCP) per-tenant para agentes IA dedicados
 
 **Fecha:** 2026-04-30
@@ -129,3 +138,10 @@ Con la emergencia de **agentes IA dedicados por tenant** (p. ej. opsAgent, billi
 - ADR-028: Patrón de onboarding por tenant
 - `docs/00-architecture/ARCHITECTURE.md` (sección OpenClaw per-tenant)
 - `.openclaw.md` (configuración OpenClaw)
+
+---
+
+## Enlaces relacionados
+
+- [[adr/README|adr]]
+- [[brain/README|Brain Central]]

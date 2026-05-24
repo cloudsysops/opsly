@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: guide
+tags:
+  - opsly/development
+---
+
 # Code snapshots (auto)
 
 Generado por scripts/generate-code-snapshots.mjs — no editar a mano.
@@ -588,3 +597,10 @@ export class NotebookLMClient {
   }
 }
 ```
+
+---
+
+## Enlaces relacionados
+
+- [[01-development/README|01-development]]
+- [[brain/README|Brain Central]]

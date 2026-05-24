@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: runbook
+tags:
+  - opsly/runbook
+---
+
 # Runbook — Onboarding de Nuevo Cliente (Opsly)
 
 **Audiencia:** operador con acceso SSH Tailscale, token admin y Doppler `prd`.  
@@ -331,3 +340,10 @@ docker volume rm tenant_{slug}_uptime_data 2>/dev/null || true
 
 **Última actualización:** 2026-04-24  
 **Mantenedor:** Equipo Opsly
+
+---
+
+## Enlaces relacionados
+
+- [[runbooks/README|runbooks]]
+- [[brain/README|Brain Central]]

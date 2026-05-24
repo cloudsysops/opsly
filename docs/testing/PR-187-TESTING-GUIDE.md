@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: test-doc
+tags:
+  - opsly/testing
+---
+
 # PR #187 Testing Guide: LLM Provider Expansion + Codex Agent
 
 ## Overview
@@ -351,3 +360,10 @@ PR #187 is **production-ready** when:
 - **Cost Optimization Rules**: `/config/cost-optimization-rules.yaml`
 - **Agent Registry Feedback**: `/apps/orchestrator/src/openclaw/registry-change-handler.ts`
 - **OpenClaw Controller**: `/apps/orchestrator/src/openclaw/controller.ts`
+
+---
+
+## Enlaces relacionados
+
+- [[testing/README|testing]]
+- [[brain/README|Brain Central]]

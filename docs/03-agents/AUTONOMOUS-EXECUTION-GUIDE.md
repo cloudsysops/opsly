@@ -580,3 +580,10 @@ This is a **complete autonomous system** for:
 **Start all 5 daemons, create a prompt, watch it execute autonomously.**
 
 Zero manual intervention needed once validation passes.
+
+---
+
+## Enlaces relacionados
+
+- [[03-agents/README|03-agents]]
+- [[brain/README|Brain Central]]

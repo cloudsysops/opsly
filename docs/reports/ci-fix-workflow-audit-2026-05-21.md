@@ -117,3 +117,10 @@ https://github.com/cloudsysops/opsly/actions/workflows/dependency-audit-strict.y
 - **Author:** Claude (automated)
 - **Changed file:** `.github/workflows/dependency-audit-strict.yml`
 - **Lines modified:** 38-41 (audit step)
+
+---
+
+## Enlaces relacionados
+
+- [[reports/README|reports]]
+- [[brain/README|Brain Central]]

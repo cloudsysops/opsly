@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: runbook
+tags:
+  - opsly/runbook
+---
+
 # Runbook — Desarrollo local (Opsly)
 
 **Audiencia:** desarrolladores del monorepo.
@@ -34,3 +43,10 @@
 - `README.md`
 - `docs/ARCHITECTURE.md`
 - `docs/TEST_PLAN.md`
+
+---
+
+## Enlaces relacionados
+
+- [[runbooks/README|runbooks]]
+- [[brain/README|Brain Central]]

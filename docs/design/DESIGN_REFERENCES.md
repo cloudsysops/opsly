@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: doc
+tags:
+  - opsly/doc
+---
+
 # Opsly Design System
 
 ## Overview
@@ -259,3 +268,10 @@ The Opsly Design System is a comprehensive collection of design resources, compo
                                                                                                                                                                                                                                                                 6. **Last Updated**: May 2026
                                                                                                                                                                                                                                                                 7. **Design System Version**: 1.0
                                                                                                                                                                                                                                                                 8. **Status**: Active & Maintained
+
+---
+
+## Enlaces relacionados
+
+- [[brain/README|brain]]
+- [[brain/README|Brain Central]]

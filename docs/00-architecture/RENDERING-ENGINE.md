@@ -643,3 +643,10 @@ infra/
 ---
 
 *Deployed 2026-05-08, by Hermes Autonomous System*
+
+---
+
+## Enlaces relacionados
+
+- [[00-architecture/README|00-architecture]]
+- [[brain/README|Brain Central]]

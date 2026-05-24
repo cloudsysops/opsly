@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: runbook
+tags:
+  - opsly/runbook
+---
+
 # LegalVial — checklist Go-Live (producción)
 
 Usar junto con [LEGALVIAL-LOCALRANK-MODEL.md](./LEGALVIAL-LOCALRANK-MODEL.md) y [LEGALVIAL-CONFIG-ZERO-TRUST.md](./LEGALVIAL-CONFIG-ZERO-TRUST.md).
@@ -38,3 +47,10 @@ Usar junto con [LEGALVIAL-LOCALRANK-MODEL.md](./LEGALVIAL-LOCALRANK-MODEL.md) y 
 - **Responsable:** _______________
 - **Fecha:** _______________
 - **Rollback:** ver [LEGALVIAL-E2E-SOFTLAUNCH.md](./LEGALVIAL-E2E-SOFTLAUNCH.md)
+
+---
+
+## Enlaces relacionados
+
+- [[runbooks/README|runbooks]]
+- [[brain/README|Brain Central]]

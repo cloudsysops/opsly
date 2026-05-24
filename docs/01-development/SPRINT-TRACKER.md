@@ -67,3 +67,10 @@ last_review: 2026-04-24
 ## Checklist de calidad (cada PR)
 
 Ver [`docs/QUALITY-GATES.md`](docs/QUALITY-GATES.md).
+
+---
+
+## Enlaces relacionados
+
+- [[01-development/README|01-development]]
+- [[brain/README|Brain Central]]

@@ -45,3 +45,10 @@ Screenshots y logo PNG grandes del ZIP viven en `uploads/` del archivo original 
 - Tarifas / pricing cards del `landing.jsx` V1 → sección en landing si el owner lo pide.  
 - `onboarding.jsx` / `app-home.jsx` → rutas bajo `/familias` o portal real con auth Opsly.  
 - `print.jsx` / `Peskids-print.html` → PDF o página `/print` para material impreso.
+
+---
+
+## Enlaces relacionados
+
+- [[tenants/peskids/README|peskids]]
+- [[brain/README|Brain Central]]

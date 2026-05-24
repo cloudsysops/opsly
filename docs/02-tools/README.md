@@ -25,3 +25,10 @@ Herramientas e integraciones que alimentan el Brain y la operación de agentes.
 - `OBSIDIAN-NOTEBOOKLM-N8N-INTEGRATION.md`
 - `NOTEBOOKLM-SETUP.md`
 - `N8N-MCP-INTEGRATION.md`
+
+---
+
+## Enlaces relacionados
+
+- [[02-tools/README|02-tools]]
+- [[brain/README|Brain Central]]

@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: runbook
+tags:
+  - opsly/runbook
+---
+
 # Super Agent Shadow Deploy Runbook
 
 Este runbook permite probar un stack **v2** (`context-builder-v2`, `mcp-v2`, `llm-gateway-v2`, `orchestrator-v2`) con rollback seguro al stack actual.
@@ -98,3 +107,10 @@ Si el health check final falla en modo super-agent:
 - Sin rutas Traefik públicas en v2
 - Secretos solo en `.env`/Doppler
 - Recomendado ejecutar primero en `--dry-run`
+
+---
+
+## Enlaces relacionados
+
+- [[runbooks/README|runbooks]]
+- [[brain/README|Brain Central]]

@@ -83,3 +83,10 @@ Luego abrir `/admin` y confirmar el mensaje en **Mensajes entrantes**.
 - [N8N-SETUP.md](./N8N-SETUP.md)
 - [DEMO-SCRIPT.md](./DEMO-SCRIPT.md) (pitch verbal)
 - [WHATSAPP-CHANNEL.md](./WHATSAPP-CHANNEL.md)
+
+---
+
+## Enlaces relacionados
+
+- [[tenants/peskids/README|peskids]]
+- [[brain/README|Brain Central]]

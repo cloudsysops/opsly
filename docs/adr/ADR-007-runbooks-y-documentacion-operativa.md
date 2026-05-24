@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: adr
+tags:
+  - opsly/adr
+---
+
 # ADR-007 — Estructura de runbooks y documentación operativa
 
 **Fecha:** 2026-04-06  
@@ -17,3 +26,10 @@ La documentación operativa vive bajo `docs/runbooks/` en Markdown, separada por
 
 - Cambios de proceso deben reflejarse en el runbook correspondiente o en ADR si alteran arquitectura
 - `docs/FAQ.md` concentra respuestas cortas y enlaces a runbooks/ADRs
+
+---
+
+## Enlaces relacionados
+
+- [[adr/README|adr]]
+- [[brain/README|Brain Central]]

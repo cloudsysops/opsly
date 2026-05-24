@@ -70,3 +70,10 @@ Figma: (pendiente — pegar link del file)
 
 - Wireframes admin costos: [`COST-DASHBOARD-WIREFRAMES.md`](COST-DASHBOARD-WIREFRAMES.md)
 - Orquestación / producto: [`../design/`](../design/)
+
+---
+
+## Enlaces relacionados
+
+- [[01-development/README|01-development]]
+- [[brain/README|Brain Central]]

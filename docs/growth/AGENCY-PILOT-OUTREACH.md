@@ -122,3 +122,10 @@ doppler run --project ops-intcloudsysops --config prd -- ./scripts/growth-outrea
 - Secuencia de follow-up lista.
 - Comandos de preview/dry-run/envio documentados.
 - Estado de seguridad claro: no enviar si Resend/domain no esta verificado.
+
+---
+
+## Enlaces relacionados
+
+- [[brain/README|brain]]
+- [[brain/README|Brain Central]]

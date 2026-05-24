@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: guide
+tags:
+  - opsly/development
+---
+
 # RTK (Rust Token Killer) — menos tokens en contexto de agente
 
 [RTK](https://github.com/rtk-ai/rtk) es un **CLI en Rust** que comprime la salida de comandos (`git`, tests, `docker`, etc.) **antes** de que entre en el contexto del LLM. Es **complementario** al LLM Gateway de Opsly (cache/routing en servidor): RTK reduce tokens en **sesiones de Cursor / Claude Code / terminal**, no en las llamadas HTTP de la API de producto.
@@ -89,3 +98,10 @@ La telemetría RTK está **desactivada por defecto**; opt-in explícito. Ver [do
 | `apps/llm-gateway`        | No integrado; distinto propósito |
 | Desarrollo local / Cursor | Sí: hooks + binario              |
 | Tenants / portal          | No aplica                        |
+
+---
+
+## Enlaces relacionados
+
+- [[01-development/README|01-development]]
+- [[brain/README|Brain Central]]

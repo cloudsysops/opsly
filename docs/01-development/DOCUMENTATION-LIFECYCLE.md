@@ -53,3 +53,10 @@ No crear un cuarto índice paralelo en prompts privados: **una fuente** por tipo
 - [`03-agents/AGENT-BRAIN-CONTRACT.md`](../03-agents/AGENT-BRAIN-CONTRACT.md)
 - [`02-tools/KNOWLEDGE-SYSTEM.md`](../02-tools/KNOWLEDGE-SYSTEM.md)
 - [`01-development/GIT-WORKFLOW.md`](GIT-WORKFLOW.md)
+
+---
+
+## Enlaces relacionados
+
+- [[01-development/README|01-development]]
+- [[brain/README|Brain Central]]

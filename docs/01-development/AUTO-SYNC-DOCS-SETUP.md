@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: guide
+tags:
+  - opsly/development
+---
+
 # Auto-sync de documentación (implementation status)
 
 Sistema para mantener **estado de implementación** alineado al código sin editar Markdown a mano.
@@ -79,3 +88,10 @@ npm run test:docs
 ```
 
 Equivale a `scripts/test-sync-docs.sh`: corre `docs:sync` y valida que el Markdown contenga fases y tabla de timestamps.
+
+---
+
+## Enlaces relacionados
+
+- [[01-development/README|01-development]]
+- [[brain/README|Brain Central]]

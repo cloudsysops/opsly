@@ -122,3 +122,10 @@ Solo si se define contrato (p. ej. métricas de uso). Evitar acoplar a BullMQ.
 | C | Desconexión total; Opsly archivado para Peskids |
 
 Decisión: ___ (documentar en ADR del nuevo repo).
+
+---
+
+## Enlaces relacionados
+
+- [[tenants/peskids/README|peskids]]
+- [[brain/README|Brain Central]]

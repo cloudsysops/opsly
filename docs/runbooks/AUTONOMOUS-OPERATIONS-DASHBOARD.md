@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: runbook
+tags:
+  - opsly/runbook
+---
+
 # Dashboard operacional — autonomía Opsly (4 métricas clave)
 
 **Objetivo:** una sola vista mental de salud para operación autónoma; la UI puede estar repartida en Admin hasta consolidarse.
@@ -33,3 +42,10 @@ Criterios numéricos y procedimiento: [`../plans/AUTONOMY-GO-NO-GO-WEEKLY.md`](.
 ## Evolución (producto)
 
 Unificar estas cuatro series en una sola página Admin (`/operations/autonomy`) es mejora opcional; hasta entonces este documento es el contrato de qué medir y dónde mirar.
+
+---
+
+## Enlaces relacionados
+
+- [[runbooks/README|runbooks]]
+- [[brain/README|Brain Central]]

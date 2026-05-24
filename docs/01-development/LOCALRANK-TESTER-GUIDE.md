@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: guide
+tags:
+  - opsly/development
+---
+
 # LocalRank — Guía de testing (Opsly beta)
 
 ## Bienvenido a Opsly beta
@@ -60,3 +69,10 @@ Usa el botón de feedback en el portal. El sistema clasifica mensajes para prior
 
 - **Tu cuenta:** jkbotero78@gmail.com
 - **Fundador:** cboteros1@gmail.com (Cristian)
+
+---
+
+## Enlaces relacionados
+
+- [[01-development/README|01-development]]
+- [[brain/README|Brain Central]]

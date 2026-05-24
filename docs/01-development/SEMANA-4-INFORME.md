@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: guide
+tags:
+  - opsly/development
+---
+
 # Semana 4 — Cost Transparency (Admin Dashboard) — COMPLETADO
 
 **Período:** 2026-04-23 → 2026-04-25  
@@ -199,3 +208,10 @@ Discord Webhook
 **Type-check:** ✅ PASS (14/14)  
 **Linting:** ✅ PASS (Prettier + ESLint)  
 **Status:** ✅ COMPLETADO
+
+---
+
+## Enlaces relacionados
+
+- [[01-development/README|01-development]]
+- [[brain/README|Brain Central]]

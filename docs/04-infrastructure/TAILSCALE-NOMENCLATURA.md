@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: infrastructure
+tags:
+  - opsly/infrastructure
+---
+
 # Tailscale — nombres de máquinas (Opsly)
 
 Tres conceptos distintos: **hostname del SO** (`/etc/hostname`), **nombre en Tailscale** (admin / MagicDNS) y **alias SSH** (`Host` en `~/.ssh/config`). En Opsly solo usamos **dos nombres MagicDNS** para equipos de trabajo y **un** `Host` SSH por cada uno (sin alias duplicados).
@@ -79,3 +88,10 @@ ssh opsly-worker "hostname && uname -a"
 ## Aviso `client != tailscaled`
 
 Si aparece advertencia de versión entre cliente y `tailscaled`, alinea versiones (`brew upgrade tailscale`, actualizar app). Suele ser cosmético si todo funciona.
+
+---
+
+## Enlaces relacionados
+
+- [[04-infrastructure/README|04-infrastructure]]
+- [[brain/README|Brain Central]]

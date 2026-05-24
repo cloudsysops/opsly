@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: adr
+tags:
+  - opsly/adr
+---
+
 # ADR-020: Separación control plane (VPS) ↔ worker plane (remoto)
 
 ## Estado: ACEPTADO | Fecha: 2026-04-12
@@ -29,3 +38,10 @@
 - `docs/adr/ADR-011-event-driven-orchestrator.md`
 - `apps/orchestrator/src/orchestrator-role.ts`
 - `apps/orchestrator/src/health-server.ts`
+
+---
+
+## Enlaces relacionados
+
+- [[adr/README|adr]]
+- [[brain/README|Brain Central]]

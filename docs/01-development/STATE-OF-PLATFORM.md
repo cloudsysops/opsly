@@ -400,3 +400,10 @@ curl 'http://localhost:9090/api/v1/query?query=up'
 *Last Update: 2026-05-08 14:35 UTC*  
 *Maintained by: Hermes Autonomous Agent Platform*  
 *Repository: https://github.com/cloudsysops/opsly*
+
+---
+
+## Enlaces relacionados
+
+- [[01-development/README|01-development]]
+- [[brain/README|Brain Central]]

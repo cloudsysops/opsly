@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: adr
+tags:
+  - opsly/adr
+---
+
 # ADR-043: Intelligent Content Generation via LLM Gateway
 
 ## 📋 Complete Documentation Package
@@ -374,3 +383,10 @@ Before implementing, understand:
 **ADR-033 Documentation Package**  
 **Status: READY FOR IMPLEMENTATION** ✅  
 **Approval: Pending stakeholder sign-off**
+
+---
+
+## Enlaces relacionados
+
+- [[adr/ADR-043-supplement/README|ADR-043-supplement]]
+- [[brain/README|Brain Central]]

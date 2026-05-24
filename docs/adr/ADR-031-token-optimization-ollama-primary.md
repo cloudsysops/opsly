@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: adr
+tags:
+  - opsly/adr
+---
+
 # ADR-031: Token Optimization — Ollama Local Primary + Docker Resource Limits
 
 > Nota: este documento quedó numerado como **ADR-031** para evitar colisión con `ADR-025-notebooklm-knowledge-layer.md`.
@@ -173,3 +182,10 @@ ORCHESTRATOR_CLAUDE_CONCURRENCY=2
 - **LLM Gateway:** `apps/llm-gateway/src/routing-hints.ts`
 - **Orchestrator:** `apps/orchestrator/src/workers.ts`
 - **Cost tracking:** `apps/llm-gateway/src/hermes.ts`
+
+---
+
+## Enlaces relacionados
+
+- [[adr/README|adr]]
+- [[brain/README|Brain Central]]

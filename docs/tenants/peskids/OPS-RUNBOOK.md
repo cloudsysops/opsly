@@ -82,3 +82,10 @@ Documentación plantillas repo:
 - Baseline prod: [`../production/TENANT-PRODUCTION-BASELINE.md`](../production/TENANT-PRODUCTION-BASELINE.md)
 - Arquitectura: [ARCHITECTURE.md](./ARCHITECTURE.md)
 - Workflows diseño: [WORKFLOWS.md](./WORKFLOWS.md)
+
+---
+
+## Enlaces relacionados
+
+- [[tenants/peskids/README|peskids]]
+- [[brain/README|Brain Central]]

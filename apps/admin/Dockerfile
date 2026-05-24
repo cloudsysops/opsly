@@ -16,8 +16,8 @@ COPY apps/admin ./apps/admin
 RUN npm ci --ignore-scripts --include=dev -w @intcloudsysops/admin
 WORKDIR /repo/apps/admin
 ENV NEXT_TELEMETRY_DISABLED=1
-# Demo sin login (familia/stakeholders). Override: docker build --build-arg NEXT_PUBLIC_ADMIN_PUBLIC_DEMO=false
-ARG NEXT_PUBLIC_ADMIN_PUBLIC_DEMO=true
+# Producción: false (login Supabase obligatorio). Solo local/staging: --build-arg NEXT_PUBLIC_ADMIN_PUBLIC_DEMO=true
+ARG NEXT_PUBLIC_ADMIN_PUBLIC_DEMO=false
 ENV NEXT_PUBLIC_ADMIN_PUBLIC_DEMO=$NEXT_PUBLIC_ADMIN_PUBLIC_DEMO
 # NEXT_PUBLIC_* se inyectan en build (no en runtime)
 ARG NEXT_PUBLIC_SUPABASE_URL

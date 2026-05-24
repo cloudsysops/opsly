@@ -577,3 +577,10 @@ Once all test suites pass:
 ---
 
 **Ready to test? Start with Test Suite 1 above!**
+
+---
+
+## Enlaces relacionados
+
+- [[testing/README|testing]]
+- [[brain/README|Brain Central]]

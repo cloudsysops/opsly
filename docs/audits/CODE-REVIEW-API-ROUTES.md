@@ -379,3 +379,10 @@ export async function POST(req: Request) {
 **Status:** ✅ Audit complete. Ready for implementation.  
 **Owner:** @eng (validation pattern standardization)  
 **Priority:** HIGH (4-8 hours total implementation)
+
+---
+
+## Enlaces relacionados
+
+- [[audits/README|audits]]
+- [[brain/README|Brain Central]]

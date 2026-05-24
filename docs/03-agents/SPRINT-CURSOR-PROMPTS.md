@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: agent-doc
+tags:
+  - opsly/agents
+---
+
 # Opsly — Cursor Prompts por Sprint
 
 # ====================================
@@ -404,3 +413,10 @@ GATE FINAL (Lunes 26 mayo 5 PM):
 | S4     | Vie 9 may  | 28/28       | Grafana dashboard live ✅ |
 | S5     | Vie 16 may | 32/32       | Cost dashboard live ✅    |
 | S6     | Lun 26 may | 40/40 + E2E | MVP launch 🚀             |
+
+---
+
+## Enlaces relacionados
+
+- [[03-agents/README|03-agents]]
+- [[brain/README|Brain Central]]

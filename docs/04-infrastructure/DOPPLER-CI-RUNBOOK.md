@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: infrastructure
+tags:
+  - opsly/infrastructure
+---
+
 # Runbook: validación Doppler en CI y local
 
 Referencia operativa para [`scripts/validate-doppler-vars.sh`](../scripts/validate-doppler-vars.sh) y [`.github/workflows/validate-doppler.yml`](../.github/workflows/validate-doppler.yml).
@@ -109,3 +118,10 @@ ls config/doppler-ci-required*.txt
 test -f .github/workflows/validate-doppler.yml && echo "workflow presente"
 grep -q DOPPLER-CI-RUNBOOK docs/DOPPLER-VARS.md 2>/dev/null || grep -q validate-doppler docs/DOPPLER-VARS.md
 ```
+
+---
+
+## Enlaces relacionados
+
+- [[04-infrastructure/README|04-infrastructure]]
+- [[brain/README|Brain Central]]

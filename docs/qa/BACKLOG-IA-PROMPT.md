@@ -86,3 +86,10 @@ Restricciones: Supabase Auth (no Clerk/Auth0); no inventes secretos; no asumas c
 
 **Evidencia esperada:** captura o nota de verificación + salida de comandos relevantes.
 ```
+
+---
+
+## Enlaces relacionados
+
+- [[qa/README|qa]]
+- [[brain/README|Brain Central]]

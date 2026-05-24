@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: test-doc
+tags:
+  - opsly/testing
+---
+
 # QA Testing Brief — OpenClaw Production Readiness
 **Date:** 2026-05-01  
 **Status:** Code Complete → Ready for QA Execution  
@@ -246,3 +255,10 @@ npm run test
 ```
 
 Good luck! 🚀
+
+---
+
+## Enlaces relacionados
+
+- [[testing/README|testing]]
+- [[brain/README|Brain Central]]

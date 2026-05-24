@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: tenant
+tags:
+  - opsly/tenant
+---
+
 # Opsly — Validación post-deploy (reusable por tenant)
 
 ## Objetivo
@@ -28,3 +37,10 @@ Confirmar que el **control plane** y el **tenant** quedaron en un estado consist
 ## Registro de evidencia
 
 Guardar salidas (curl/httpie) en `EXECUTIONS/<tenant_slug>/` como markdown/texto.
+
+---
+
+## Enlaces relacionados
+
+- [[tenants/README|tenants]]
+- [[brain/README|Brain Central]]

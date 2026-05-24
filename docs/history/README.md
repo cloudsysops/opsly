@@ -19,3 +19,10 @@ Documentos preservados por contexto histórico, pero que ya no son fuente de ver
 - `plans/`: planes históricos.
 - `consolidation/`: esfuerzos de consolidación cerrados.
 - `governance/`: archivos de gobernanza preservados por historial.
+
+---
+
+## Enlaces relacionados
+
+- [[history/README|history]]
+- [[brain/README|Brain Central]]

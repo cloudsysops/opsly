@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: test-doc
+tags:
+  - opsly/testing
+---
+
 # Phase 1 Test Plan - Local Agent Execution
 
 **Objetivo:** Validar que el sistema de ejecución local funciona end-to-end: Prompt → Orchestrator → Cursor → Git Commit
@@ -311,3 +320,10 @@ Then → **Phase 2: Iteration Manager + Agent Trainer**
 ---
 
 **Run this test now on your MacBook and let me know results! 🚀**
+
+---
+
+## Enlaces relacionados
+
+- [[testing/README|testing]]
+- [[brain/README|Brain Central]]

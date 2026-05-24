@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: infrastructure
+tags:
+  - opsly/infrastructure
+---
+
 # 🔒 Mitigaciones de Seguridad Multi-Tenancy (LocalRank Pilot - 2026-04-09)
 
 **Status:** Ready to execute  
@@ -424,3 +433,10 @@ sudo ufw status
 **Generated:** 2026-04-09  
 **Status:** Ready to execute  
 **Prerequisite:** Tailscale installed on Mac + authorized
+
+---
+
+## Enlaces relacionados
+
+- [[04-infrastructure/README|04-infrastructure]]
+- [[brain/README|Brain Central]]

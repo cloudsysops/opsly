@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: tool-doc
+tags:
+  - opsly/tools
+---
+
 # Plan: NotebookLM como Knowledge Layer Universal — 2026-04-14
 
 **ADR:** `docs/adr/ADR-025-notebooklm-knowledge-layer.md`
@@ -249,3 +258,10 @@ doppler secrets set NOTEBOOKLM_ENABLED=false \
 - FASE 4 (routing): 30 min
 - FASE 5 (validación): 15 min
 - Buffer: 15 min
+
+---
+
+## Enlaces relacionados
+
+- [[02-tools/README|02-tools]]
+- [[brain/README|Brain Central]]

@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: doc
+tags:
+  - opsly/doc
+---
+
 # Branch protection — `main` (manual, owner del repo)
 
 **No ejecutar desde un agente sin revisión humana.** Requiere rol de administración en `cloudsysops/opsly`.
@@ -59,3 +68,10 @@ Validad el payload contra un repo de prueba o con `gh api` en dry-run antes de a
 ## 5. CODEOWNERS
 
 Con reviews obligatorias, GitHub sugiere revisores según `.github/CODEOWNERS`. Los equipos `@cloudsysops/*` deben existir en la org o usarse handles válidos (p. ej. fallback `@cboteros`).
+
+---
+
+## Enlaces relacionados
+
+- [[brain/README|brain]]
+- [[brain/README|Brain Central]]

@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: doc
+tags:
+  - opsly/doc
+---
+
 # Agent orchestration — índice maestro (Opsly)
 
 **Estado:** documentación canónica de **rutas de implementación** (qué construir primero y dónde vive en el monorepo).  
@@ -77,3 +86,10 @@ Checklist y mitigaciones: [`docs/04-infrastructure/SECURITY_CHECKLIST.md`](../04
 1. Elegir **ruta A, B o C** y reflejar el foco en `AGENTS.md` (sección 🔄 / próximo paso).  
 2. Abrir PRs pequeños (schema → API → UI → n8n / jobs) con `npm run type-check` y tests del workspace tocado.  
 3. Para fallover automático a “repair”, seguir el diseño en [`docs/orchestrator/REPAIR-QUEUE.md`](../orchestrator/REPAIR-QUEUE.md) antes de escribir colas nuevas.
+
+---
+
+## Enlaces relacionados
+
+- [[brain/README|brain]]
+- [[brain/README|Brain Central]]

@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: tenant
+tags:
+  - opsly/tenant
+---
+
 # Baseline de producción — inventario tenants (Opsly)
 
 > **Canónico:** editar este archivo (`docs/tenants/production/`). Stub de compatibilidad: [`docs/stubs/TENANT-PRODUCTION-BASELINE.md`](../../stubs/TENANT-PRODUCTION-BASELINE.md).
@@ -71,3 +80,10 @@ Rutas bajo `apps/web/app/api/*` deben ser **proxies finos** hacia `apps/api` sal
 - [TENANT-PRODUCTION-HARDENING.md](./TENANT-PRODUCTION-HARDENING.md) — seguridad y evidencias.
 - [TENANT-PRODUCTION-ROLLOUT.md](../runbooks/TENANT-PRODUCTION-ROLLOUT.md) — cohortes y rollback.
 - [TENANT-ONBOARDING-TRIAGE.md](../runbooks/TENANT-ONBOARDING-TRIAGE.md)
+
+---
+
+## Enlaces relacionados
+
+- [[tenants/README|tenants]]
+- [[brain/README|Brain Central]]

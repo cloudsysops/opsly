@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: infrastructure
+tags:
+  - opsly/infrastructure
+---
+
 # Deploy en VPS, CI y índice de conocimiento
 
 Evita confundir **tres mecanismos distintos** en el VPS (`vps-dragon`, `/opt/opsly`).
@@ -44,3 +53,10 @@ Acceso recomendado por **Tailscale** (p. ej. `100.120.151.91`), no solo IP públ
 - `docs/AUTO-PUSH-WATCHER.md` — watcher de docs → GitHub.
 - `docs/CONTEXT-BUILDER.md` — índice y variables `KNOWLEDGE_INDEX_PATH`.
 - `.github/workflows/deploy.yml` — fetch/reset/compose en el VPS.
+
+---
+
+## Enlaces relacionados
+
+- [[04-infrastructure/README|04-infrastructure]]
+- [[brain/README|Brain Central]]

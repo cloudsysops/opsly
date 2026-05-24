@@ -270,3 +270,10 @@ Estos archivos son históricos — válidos como referencia pero **no deben guia
 ---
 
 _Actualizado: Sprint 3 ✅ | Próximo: Sprint 4 (Self-Healing + Context Persistence + CVE Scanning)_
+
+---
+
+## Enlaces relacionados
+
+- [[brain/README|brain]]
+- [[brain/README|Brain Central]]

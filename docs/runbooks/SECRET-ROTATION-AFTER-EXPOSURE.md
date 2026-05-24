@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: runbook
+tags:
+  - opsly/runbook
+---
+
 # Rotación de secretos tras exposición (chat, logs, tickets)
 
 Objetivo: asumir que cualquier secreto mostrado en una sesión compartida (Cursor, Slack, terminal grabado) está **comprometido** y debe rotarse sin volcar valores nuevos en el chat.
@@ -19,3 +28,10 @@ Objetivo: asumir que cualquier secreto mostrado en una sesión compartida (Curso
 
 - Variables: [docs/DOPPLER-VARS.md](../DOPPLER-VARS.md)
 - Traefik / token: [docs/04-infrastructure/CLOUDFLARE-PROXY-ACTIVATION.md](../04-infrastructure/CLOUDFLARE-PROXY-ACTIVATION.md)
+
+---
+
+## Enlaces relacionados
+
+- [[runbooks/README|runbooks]]
+- [[brain/README|Brain Central]]

@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: guide
+tags:
+  - opsly/development
+---
+
 # GitHub PAT — `GITHUB_TOKEN` vs `GITHUB_TOKEN_N8N`
 
 ## No confundir con el secreto del webhook n8n
@@ -41,3 +50,10 @@ doppler secrets set GITHUB_TOKEN --project ops-intcloudsysops --config prd < tok
 
 - `apps/orchestrator/src/lib/github-pat.ts` — `resolveGithubPat()`
 - `scripts/check-tokens.sh` — exige al menos uno de los dos nombres
+
+---
+
+## Enlaces relacionados
+
+- [[01-development/README|01-development]]
+- [[brain/README|Brain Central]]

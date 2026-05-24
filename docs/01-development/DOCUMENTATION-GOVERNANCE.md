@@ -191,3 +191,10 @@ A: File an issue or discussion on GitHub. Changes require team consensus and ADR
 
 **Q: Is documentation protected from deletion?**
 A: Yes, `main` branch rules prevent deletion. You can delete in feature branches, but main branch requires protection.
+
+---
+
+## Enlaces relacionados
+
+- [[01-development/README|01-development]]
+- [[brain/README|Brain Central]]

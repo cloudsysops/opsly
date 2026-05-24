@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: runbook
+tags:
+  - opsly/runbook
+---
+
 # LegalVial como subcliente de LocalRank — modelo operativo
 
 **Audiencia:** operaciones, ingeniería, agentes.  
@@ -48,3 +57,10 @@ Operar **LegalVial** en producción como **subcliente lógico** de **LocalRank**
 
 - Matriz y contrato entendidos por el equipo.
 - Toda automatización nueva que toque LegalVial incluye `tenant_slug` + trazabilidad acordada.
+
+---
+
+## Enlaces relacionados
+
+- [[runbooks/README|runbooks]]
+- [[brain/README|Brain Central]]

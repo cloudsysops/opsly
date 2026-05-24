@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: adr
+tags:
+  - opsly/adr
+---
+
 # ADR-025: NotebookLM como Knowledge Layer Universal para Agentes IA
 
 **Status:** PROPUESTO
@@ -178,3 +187,10 @@ export function getNotebookLMContext(query: string): string | undefined {
 - `docs/adr/ADR-014-notebooklm-agent.md`
 - `docs/adr/ADR-024-ollama-local-worker-primary.md`
 - `docs/AGENTS-GLOBAL-CONTEXT.md`
+
+---
+
+## Enlaces relacionados
+
+- [[adr/README|adr]]
+- [[brain/README|Brain Central]]

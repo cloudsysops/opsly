@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: tenant
+tags:
+  - opsly/tenant
+---
+
 # Hardening multi-tenant — evidencias (Opsly)
 
 > **Canónico:** editar este archivo (`docs/tenants/production/`). Stub: [`docs/stubs/TENANT-PRODUCTION-HARDENING.md`](../../stubs/TENANT-PRODUCTION-HARDENING.md).
@@ -45,3 +54,10 @@ Controles de seguridad y trazabilidad que deben mantenerse en **producción mult
 - [TENANT-PRODUCTION-BASELINE.md](./TENANT-PRODUCTION-BASELINE.md)
 - [TENANT-PRODUCTION-CHECKLIST.md](../runbooks/TENANT-PRODUCTION-CHECKLIST.md)
 - [TENANT-PRODUCTION-ROLLOUT.md](../runbooks/TENANT-PRODUCTION-ROLLOUT.md)
+
+---
+
+## Enlaces relacionados
+
+- [[tenants/README|tenants]]
+- [[brain/README|Brain Central]]

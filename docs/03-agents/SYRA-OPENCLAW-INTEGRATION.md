@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: agent-doc
+tags:
+  - opsly/agents
+---
+
 # Syra × OpenClaw/LLM Gateway Integration
 
 ## 🎯 Overview
@@ -438,3 +447,10 @@ curl http://localhost:3010/metrics | jq '.models'
 **Summary:** OpenClaw is Syra's intelligence layer. Without it, Syra uses templates. With it, Syra generates contextual, multi-platform content autonomously.
 
 **Both are production-ready. Deploy together for full functionality.**
+
+---
+
+## Enlaces relacionados
+
+- [[03-agents/README|03-agents]]
+- [[brain/README|Brain Central]]

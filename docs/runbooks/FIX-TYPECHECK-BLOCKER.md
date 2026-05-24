@@ -133,3 +133,10 @@ If none of this works:
 4. Last resort: `git clean -fdx` (DANGEROUS, loses untracked files)
 
 Contact @architect for ADR-028 decision.
+
+---
+
+## Enlaces relacionados
+
+- [[runbooks/README|runbooks]]
+- [[brain/README|Brain Central]]

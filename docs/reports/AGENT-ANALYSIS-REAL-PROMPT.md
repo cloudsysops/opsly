@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: doc
+tags:
+  - opsly/doc
+---
+
 # 🤖 CODEX AGENT ANALYSIS - Agent Prompt Execution API Design
 
 **Request ID**: real-prompt-1777808970  
@@ -528,3 +537,10 @@ This design provides:
 4. **Scope**: Should batch prompts be in MVP or Phase 2?
 5. **Timeline**: Is 5-week estimate realistic?
 
+
+---
+
+## Enlaces relacionados
+
+- [[reports/README|reports]]
+- [[brain/README|Brain Central]]

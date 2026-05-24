@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: architecture
+tags:
+  - opsly/architecture
+---
+
 # Sistema de Hooks de Integridad
 
 ## Propósito
@@ -83,3 +92,10 @@ npm run validate:strict:ci
 5. All hidden folders are authorized.
 6. No legacy path references.
 7. Symlink status report.
+
+---
+
+## Enlaces relacionados
+
+- [[00-architecture/README|00-architecture]]
+- [[brain/README|Brain Central]]

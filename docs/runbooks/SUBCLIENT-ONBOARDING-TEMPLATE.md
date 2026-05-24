@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: runbook
+tags:
+  - opsly/runbook
+---
+
 # Plantilla — onboarding de subcliente (tenant bajo tenant padre)
 
 Reutilizable para LegalVial y futuros subclientes. Ajustar nombres y dominios.
@@ -39,3 +48,10 @@ Reutilizable para LegalVial y futuros subclientes. Ajustar nombres y dominios.
 - Tiempo de alta (desde kickoff hasta Go-Live).
 - Errores de provisión en primera semana.
 - Incidentes P1/P2 primera quincena.
+
+---
+
+## Enlaces relacionados
+
+- [[runbooks/README|runbooks]]
+- [[brain/README|Brain Central]]

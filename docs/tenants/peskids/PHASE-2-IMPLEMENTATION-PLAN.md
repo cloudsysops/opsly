@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: tenant
+tags:
+  - opsly/tenant
+---
+
 # Phase 2 Implementation Plan — Peskids CRM & Multi-Tenant Features
 
 **Timeline:** 2 weeks (May 24 - Jun 7, 2026)  
@@ -220,3 +229,10 @@ Phase 2 is COMPLETE when:
 **TODAY:** Set up N8N container on VPS, test webhook connectivity.
 
 See `scripts/setup-n8n-tenant.sh` (to be created) for automated setup.
+
+---
+
+## Enlaces relacionados
+
+- [[tenants/peskids/README|peskids]]
+- [[brain/README|Brain Central]]

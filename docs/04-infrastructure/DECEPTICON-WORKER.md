@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: infrastructure
+tags:
+  - opsly/infrastructure
+---
+
 # Decepticon en worker opsly-mac2011 (Ubuntu)
 
 Guía para instalar [Decepticon](https://github.com/PurpleAILAB/Decepticon) en el nodo worker (Mac 2011 + Ubuntu, usuario típico `opslyquantum`, Tailscale **opsly-worker** / peer **opsly-mac2011**), **aislado** del monorepo Opsly en `~/opsly`, y notas sobre **integración con el LLM Gateway** de Opsly.
@@ -167,3 +176,10 @@ Variables: `DECEPTICON_WORKER_SSH` (destino SSH completo, p. ej. `opslyquantum@1
 
 - [Decepticon — Getting Started](https://github.com/PurpleAILAB/Decepticon/blob/main/docs/getting-started.md)
 - [Decepticon — install script](https://decepticon.red/install) (preflight: Docker Compose v2)
+
+---
+
+## Enlaces relacionados
+
+- [[04-infrastructure/README|04-infrastructure]]
+- [[brain/README|Brain Central]]

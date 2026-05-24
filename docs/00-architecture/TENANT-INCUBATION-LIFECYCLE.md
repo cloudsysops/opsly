@@ -144,3 +144,10 @@ Extract only when all of these are true:
 - No production change in this document.
 - No secret changes.
 
+
+---
+
+## Enlaces relacionados
+
+- [[00-architecture/README|00-architecture]]
+- [[brain/README|Brain Central]]

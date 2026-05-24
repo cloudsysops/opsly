@@ -348,3 +348,10 @@ export function performanceMiddleware(handler) {
 **Effort:** 3-4 hours implementation + testing  
 **Impact:** 10-150x performance improvement on critical endpoints  
 **ROI:** Reduced latency, better user experience, lower infrastructure costs
+
+---
+
+## Enlaces relacionados
+
+- [[audits/README|audits]]
+- [[brain/README|Brain Central]]

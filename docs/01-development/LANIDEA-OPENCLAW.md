@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: guide
+tags:
+  - opsly/development
+---
+
 # Lanidea OpenClaw - Equipos de Agentes en Docker
 
 ## Resumen
@@ -88,3 +97,10 @@ docker logs lanidea-orchestrator
 # Reiniciar servicios
 docker compose -f infra/docker-compose.lanidea.yml restart
 ```
+
+---
+
+## Enlaces relacionados
+
+- [[01-development/README|01-development]]
+- [[brain/README|Brain Central]]

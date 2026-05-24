@@ -11,10 +11,13 @@
             "id": "608ed7a5cd5018ec",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {},
-              "icon": "lucide-file",
-              "title": "New tab"
+              "type": "bases",
+              "state": {
+                "file": "Untitled.base",
+                "viewName": "Table"
+              },
+              "icon": "lucide-table",
+              "title": "Untitled"
             }
           }
         ]
@@ -37,7 +40,7 @@
               "type": "file-explorer",
               "state": {
                 "sortOrder": "alphabetical",
-                "autoReveal": false
+                "autoReveal": true
               },
               "icon": "lucide-folder-closed",
               "title": "Files"
@@ -179,9 +182,10 @@
   },
   "active": "418ec74650a3559b",
   "lastOpenFiles": [
+    "Untitled",
+    "Untitled.base",
     "nodes-registry.json",
     "systemd/opsly-worker.user.service",
-    "Untitled.base",
     "Untitled 1.base",
     "Untitled.canvas",
     "monitoring/grafana/dashboards/opsly-overview.json",
@@ -189,7 +193,6 @@
     "monitoring/grafana/provisioning/datasources/prometheus.yml",
     "monitoring/grafana/provisioning/datasources",
     "monitoring/grafana/provisioning/dashboards",
-    "monitoring/grafana/provisioning",
-    "monitoring/grafana/dashboards"
+    "monitoring/grafana/provisioning"
   ]
 }

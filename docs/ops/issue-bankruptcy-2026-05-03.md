@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: doc
+tags:
+  - opsly/doc
+---
+
 # Issue bankruptcy report — 2026-05-03
 
 **Repository:** `cloudsysops/opsly`  
@@ -38,3 +47,10 @@
 - `docs/ops/issue-bankruptcy-2026-05-03/issues-triage.md` — full table.
 - `docs/ops/issue-bankruptcy-2026-05-03/triage-commands.sh` — reviewed shell templates.
 - `docs/ops/issue-bankruptcy-2026-05-03/quick-wins.md`, `epics-breakdown.md` — planning only.
+
+---
+
+## Enlaces relacionados
+
+- [[brain/README|brain]]
+- [[brain/README|Brain Central]]

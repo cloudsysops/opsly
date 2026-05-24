@@ -29,3 +29,10 @@ Infraestructura de plataforma: VPS, Docker, Traefik, Cloudflare, Tailscale, Redi
 - [`../tenants/production/TENANT-PRODUCTION-BASELINE.md`](../tenants/production/TENANT-PRODUCTION-BASELINE.md) — inventario multi-tenant + mapa web→API (stub en esta carpeta)
 - [`../tenants/production/TENANT-PRODUCTION-HARDENING.md`](../tenants/production/TENANT-PRODUCTION-HARDENING.md) — controles de seguridad prod (stub en esta carpeta)
 - [`REDIS-QUEUE-GUIDE.md`](REDIS-QUEUE-GUIDE.md) — Redis, BullMQ y colas del orchestrator (stub histórico: [`../infrastructure/REDIS-QUEUE-GUIDE.md`](../infrastructure/REDIS-QUEUE-GUIDE.md))
+
+---
+
+## Enlaces relacionados
+
+- [[04-infrastructure/README|04-infrastructure]]
+- [[brain/README|Brain Central]]

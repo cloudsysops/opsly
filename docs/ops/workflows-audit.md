@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: doc
+tags:
+  - opsly/doc
+---
+
 # Auditoría de workflows GitHub — Opsly
 
 **Relacionado (Maestro #3):** [`workflows-index.md`](./workflows-index.md) · [`workflows-catalog.tsv`](./workflows-catalog.tsv) · `scripts/generate-workflows-catalog.sh` · `scripts/archive-plan.sh`
@@ -38,3 +47,10 @@
 - **¿Se usa?** `Sí` solo indica que hubo al menos una ejecución con conclusión `success` reciente según `gh run list --status success`. `?` = sin success encontrado en la muestra (puede ser workflow manual, raro, o siempre fallando hasta arreglar actionlint).
 - **Decisión `mantener`:** por defecto; **archivar/borrar** requiere acuerdo explícito del owner (p. ej. `deploy-pm2-vps` está desactivado con `if: false` dentro de `deploy.yml`, no es archivo aparte).
 - **Regenerar esta tabla:** desde la raíz del repo, volver a ejecutar el bucle `gh run list --repo cloudsysops/opsly --workflow <fichero> --limit 1 --status success`.
+
+---
+
+## Enlaces relacionados
+
+- [[brain/README|brain]]
+- [[brain/README|Brain Central]]

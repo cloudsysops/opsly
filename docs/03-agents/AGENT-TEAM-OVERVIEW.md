@@ -375,3 +375,10 @@ Opsly 2.0 Running Full Autonomy
 
 **The Opsly 2.0 Team is ready. Let's build.** 🚀
 
+
+---
+
+## Enlaces relacionados
+
+- [[03-agents/README|03-agents]]
+- [[brain/README|Brain Central]]

@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: doc
+tags:
+  - opsly/doc
+---
+
 # Parallel Multi-Agent Execution Guide
 
 ## Overview
@@ -445,3 +454,10 @@ curl -X POST http://localhost:5002/refine \
 
 **Last Updated**: 2026-05-04  
 **Version**: 3.0.0 (Parallel Execution + Feedback Loop)
+
+---
+
+## Enlaces relacionados
+
+- [[06-multi-agent/README|06-multi-agent]]
+- [[brain/README|Brain Central]]

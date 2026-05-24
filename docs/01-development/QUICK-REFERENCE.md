@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: guide
+tags:
+  - opsly/development
+---
+
 # Opsly — Quick Reference Card
 
 > Cheatsheet para agentes. Todo lo que necesitás en una página.
@@ -203,3 +212,10 @@ supabase/migrations/0019_agent_sessions.sql
 → `AGENTS.md` — estado de sesión y decisiones  
 → `docs/01-development/SPRINT-TRACKER.md` — semana operativa; `ROADMAP.md` — plan; `docs/history/plans/SPRINT-ROADMAP.md` — snapshot archivado  
 → `docs/adr/` — 15 decisiones de arquitectura
+
+---
+
+## Enlaces relacionados
+
+- [[01-development/README|01-development]]
+- [[brain/README|Brain Central]]

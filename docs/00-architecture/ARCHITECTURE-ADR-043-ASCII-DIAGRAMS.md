@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: architecture
+tags:
+  - opsly/architecture
+---
+
 # ADR-043: Architecture Diagram (ASCII)
 
 ## System Architecture: Syra ↔ OpenClaw Integration
@@ -399,3 +408,10 @@ RESPONSE TO CALLER
 **Diagram Version:** 1.0  
 **Last Updated:** 2026-05-08  
 **Architect:** Hermes Agent
+
+---
+
+## Enlaces relacionados
+
+- [[00-architecture/README|00-architecture]]
+- [[brain/README|Brain Central]]

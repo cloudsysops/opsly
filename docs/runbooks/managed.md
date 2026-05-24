@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: runbook
+tags:
+  - opsly/runbook
+---
+
 # Runbook — Operaciones _managed_ (cliente / tenant)
 
 **Audiencia:** equipo que atiende tenants con stack desplegado (n8n, Uptime Kuma, etc.) según plan.
@@ -22,3 +31,10 @@
 
 - Errores de orquestación o Docker en VPS → `docs/runbooks/incident.md`
 - Facturación/Stripe → verificar webhooks y estado en Supabase
+
+---
+
+## Enlaces relacionados
+
+- [[runbooks/README|runbooks]]
+- [[brain/README|Brain Central]]

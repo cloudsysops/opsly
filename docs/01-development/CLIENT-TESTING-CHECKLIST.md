@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: guide
+tags:
+  - opsly/development
+---
+
 # Checklist de pruebas — Clientes
 
 ## Antes de invitar
@@ -46,3 +55,10 @@
 
 - Responder al hilo de invitación o al contacto comercial.
 - Incidencias técnicas: según canal interno Opsly (no publicar secretos en tickets abiertos).
+
+---
+
+## Enlaces relacionados
+
+- [[01-development/README|01-development]]
+- [[brain/README|Brain Central]]

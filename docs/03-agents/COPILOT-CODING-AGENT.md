@@ -74,3 +74,10 @@ Instala Node 20, `npm ci`, Python 3.11 y Playwright para Chromium. Se dispara en
 - Multi-agente en paralelo: [`AGENTS-GUIDE.md`](AGENTS-GUIDE.md)
 - SSH usuarios: [`SSH-USERS-FOR-AGENTS.md`](SSH-USERS-FOR-AGENTS.md)
 - Guardrails: [`AGENT-GUARDRAILS.md`](AGENT-GUARDRAILS.md)
+
+---
+
+## Enlaces relacionados
+
+- [[03-agents/README|03-agents]]
+- [[brain/README|Brain Central]]

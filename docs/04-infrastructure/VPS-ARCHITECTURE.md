@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: infrastructure
+tags:
+  - opsly/infrastructure
+---
+
 # VPS Architecture — Dragon's Lair
 
 Documento de referencia para el VPS Ubuntu (`vps-dragon@100.120.151.91`, Tailscale). El control plane de Opsly corre en `/opt/opsly` con Docker Compose y un único edge **Traefik v3** en `:80` / `:443`.
@@ -93,3 +102,10 @@ curl -sS -m 15 -w '\nHTTP_STATUS=%{http_code}\n' https://api.op-sly.com/api/heal
 docker run --rm -v opsly_redis_data:/data -v "$(pwd):/backup" alpine tar czf /backup/redis_data.tgz -C /data .
 # Ajustar nombre del volumen con: docker volume ls | grep redis
 ```
+
+---
+
+## Enlaces relacionados
+
+- [[04-infrastructure/README|04-infrastructure]]
+- [[brain/README|Brain Central]]

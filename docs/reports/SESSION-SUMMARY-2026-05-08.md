@@ -250,3 +250,10 @@ From "Is this deployed?" to a production-ready multi-agent orchestration system 
 *Deployed 2026-05-08, by Hermes Agent*
 *All code in GitHub: cloudsysops/opsly@main*
 *Documentation: docs/04-infrastructure/MCP-ORCHESTRATOR-DEPLOYMENT.md*
+
+---
+
+## Enlaces relacionados
+
+- [[reports/README|reports]]
+- [[brain/README|Brain Central]]

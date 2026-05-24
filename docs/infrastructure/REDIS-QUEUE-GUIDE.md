@@ -9,3 +9,10 @@ last_review: 2026-05-10
 **Documento canónico:** [`../04-infrastructure/REDIS-QUEUE-GUIDE.md`](../04-infrastructure/REDIS-QUEUE-GUIDE.md)
 
 No editar este stub.
+
+---
+
+## Enlaces relacionados
+
+- [[infrastructure/README|infrastructure]]
+- [[brain/README|Brain Central]]

@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: agent-doc
+tags:
+  - opsly/agents
+---
+
 # Hermes — capa de orquestación de agentes (Opsly)
 
 ## Qué es
@@ -58,3 +67,10 @@ Incluye `__tests__/hermes.test.ts` y `src/hermes/__tests__/context-enricher.test
 - **Sin tareas procesadas:** no hay filas en `hermes_state` con `state = PENDING`; insertar tareas de prueba con `task_id` único.
 - **Tick no corre:** comprobar `HERMES_ENABLED`, rol del orchestrator (workers + control plane), y Redis/BullMQ accesibles.
 - **Métricas vacías en API:** verificar migración aplicada y credenciales service role.
+
+---
+
+## Enlaces relacionados
+
+- [[03-agents/README|03-agents]]
+- [[brain/README|Brain Central]]

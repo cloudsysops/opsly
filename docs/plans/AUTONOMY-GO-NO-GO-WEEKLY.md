@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: doc
+tags:
+  - opsly/doc
+---
+
 # Autonomy Weekly Go/No-Go Checklist
 
 ## Scope
@@ -51,3 +60,10 @@ This checklist decides whether Opsly can increase autonomous execution scope for
   - `DRY_RUN=true ITERATIONS=1 ENABLE_HERMES_TICK=true ENABLE_WORKER_SMOKE=true ./scripts/agents-autopilot.sh` passed.
 - Constraints kept:
   - `search_mode` remains `degraded` until `TAVILY_API_KEY` is available.
+
+---
+
+## Enlaces relacionados
+
+- [[plans/README|plans]]
+- [[brain/README|Brain Central]]

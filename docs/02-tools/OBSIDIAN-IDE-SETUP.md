@@ -84,3 +84,10 @@ Cuando el IDE soporte prompts MCP, usa `opsly_startup`. Debe leer AGENTS, VISION
 3. Abrir `docs/brain/dashboard.md`.
 4. Ir a la nota de modulo antes de editar codigo.
 5. Al cerrar, documentar cambios relevantes y correr `npm run obsidian:sync`.
+
+---
+
+## Enlaces relacionados
+
+- [[02-tools/README|02-tools]]
+- [[brain/README|Brain Central]]

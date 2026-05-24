@@ -22,3 +22,10 @@ Hub para **multi-tenant**: producción, runbooks, pruebas, onboarding y subclien
 Runbooks generales (LegalVial go-live, subclientes) siguen en [`../runbooks/`](../runbooks/README.md) (p. ej. `LEGALVIAL-*`, `SUBCLIENT-ONBOARDING-TEMPLATE.md`).
 
 Normas de ubicación: [`../STRUCTURE-GUARDRAILS.md`](../STRUCTURE-GUARDRAILS.md).
+
+---
+
+## Enlaces relacionados
+
+- [[tenants/README|tenants]]
+- [[brain/README|Brain Central]]

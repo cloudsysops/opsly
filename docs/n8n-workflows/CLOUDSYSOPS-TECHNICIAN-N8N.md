@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: doc
+tags:
+  - opsly/doc
+---
+
 # CloudSysOps technician — n8n (stub)
 
 Fase 3 del plan (WhatsApp / SMS / PDF / Stripe) **no está cableada en código** aún. Cuando existan webhooks estables:
@@ -11,3 +20,10 @@ Contratos HTTP públicos actuales (sin OpenClaw):
 - `GET /api/local-services/public/tenants/{slug}/available-slots?date=YYYY-MM-DD&service_external_id=pc-cleanup`
 
 Referencia de preset y metadata: `config/technician-tenant/cloudsysops.metadata.json` y `apps/api/lib/technician-tenant-profile.ts`.
+
+---
+
+## Enlaces relacionados
+
+- [[brain/README|brain]]
+- [[brain/README|Brain Central]]

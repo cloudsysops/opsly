@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: tool-doc
+tags:
+  - opsly/tools
+---
+
 # NotebookLM Integration Guide
 
 ## Overview
@@ -93,3 +102,10 @@ curl -X POST \
 - NotebookLM API: https://ai.google.dev/docs/notebooklm
 - NotebookLMClient: `apps/orchestrator/src/lib/notebooklm-client.ts`
 - Admin UI: `apps/admin/app/notebooklm/page.tsx`
+
+---
+
+## Enlaces relacionados
+
+- [[02-tools/README|02-tools]]
+- [[brain/README|Brain Central]]

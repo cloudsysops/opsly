@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: tenant
+tags:
+  - opsly/tenant
+---
+
 # Phase 2: WhatsApp + Instagram Live Testing
 
 **Status:** Ready to Begin  
@@ -173,3 +182,10 @@ Once Phase 2 validated:
 
 **Ready to begin Phase 2?**  
 Confirm, and we'll start with WhatsApp QR scan setup.
+
+---
+
+## Enlaces relacionados
+
+- [[tenants/peskids/README|peskids]]
+- [[brain/README|Brain Central]]

@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: tenant
+tags:
+  - opsly/tenant
+---
+
 # Peskids Forms Specification
 
 All forms are mobile-first, accessible (WCAG 2.1 AA), and validation-heavy (prevent bad data early).
@@ -351,3 +360,10 @@ Your input helps us improve the program.
 - [ ] Spam prevention (rate limiting on submit)
 - [ ] XSS protection (HTML escaping)
 - [ ] CSRF token validated on submit
+
+---
+
+## Enlaces relacionados
+
+- [[tenants/peskids/README|peskids]]
+- [[brain/README|Brain Central]]

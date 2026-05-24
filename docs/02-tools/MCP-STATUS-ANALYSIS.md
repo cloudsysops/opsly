@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: tool-doc
+tags:
+  - opsly/tools
+---
+
 # MCP Status Analysis — Opsly
 
 **Fecha:** 2026-04-13  
@@ -262,3 +271,10 @@ Debería:
 ---
 
 **Próximo paso:** Implementar Phase 1 (transporte stdio) para que el MCP funcione con Claude.ai.
+
+---
+
+## Enlaces relacionados
+
+- [[02-tools/README|02-tools]]
+- [[brain/README|Brain Central]]

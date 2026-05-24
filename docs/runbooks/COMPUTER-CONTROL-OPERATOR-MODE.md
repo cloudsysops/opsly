@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: runbook
+tags:
+  - opsly/runbook
+---
+
 # Opsly Operator Mode
 
 Use this runbook when you want a single working loop across:
@@ -59,3 +68,10 @@ Expected output:
 - Validate the change.
 - Commit only when the task is complete.
 
+
+---
+
+## Enlaces relacionados
+
+- [[runbooks/README|runbooks]]
+- [[brain/README|Brain Central]]

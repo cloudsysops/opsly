@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: guide
+tags:
+  - opsly/development
+---
+
 # Refactor Checklist (Monorepo)
 
 ## Alcance aplicado
@@ -53,3 +62,10 @@ doppler secrets set STRIPE_PRICE_ID_DEMO --project ops-intcloudsysops --config p
 - `npm run test -w @intcloudsysops/orchestrator`
 - `npm run build -w @intcloudsysops/mcp`
 - Confirmar endpoint/transporte MCP configurado en cliente Claude.
+
+---
+
+## Enlaces relacionados
+
+- [[01-development/README|01-development]]
+- [[brain/README|Brain Central]]

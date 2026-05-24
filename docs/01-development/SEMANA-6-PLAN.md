@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: guide
+tags:
+  - opsly/development
+---
+
 # Semana 6 — Segundo Cliente + Validación E2E
 
 **Ventana:** 2026-04-29 → 2026-05-03 (estimado)  
@@ -307,3 +316,10 @@ EOF
 ---
 
 **Próximo estado esperado:** Semana 6 ✅ COMPLETADO → Ready for Go-Live o siguiente sprint
+
+---
+
+## Enlaces relacionados
+
+- [[01-development/README|01-development]]
+- [[brain/README|Brain Central]]

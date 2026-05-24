@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: doc
+tags:
+  - opsly/doc
+---
+
 # Obsidian Plugins to Install (Manual)
 
 These plugins enhance Obsidian sync + productivity. Install via Obsidian UI.
@@ -55,3 +64,10 @@ After installing:
 
 If it worked: ✅ Auto-sync is active
 If not: Check Obsidian Git settings → auto-push enabled?
+
+---
+
+## Enlaces relacionados
+
+- [[brain/README|brain]]
+- [[brain/README|Brain Central]]

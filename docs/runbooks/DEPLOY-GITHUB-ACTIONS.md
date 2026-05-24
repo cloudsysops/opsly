@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: runbook
+tags:
+  - opsly/runbook
+---
+
 # Deploy desde GitHub Actions → VPS
 
 Objetivo: que el job **Deploy** (`.github/workflows/deploy.yml`) llegue al VPS por SSH, ejecute `docker compose pull/up` y pase el health check HTTPS.
@@ -38,3 +47,10 @@ curl -sfk "https://api.${PLATFORM_DOMAIN}/api/health"
 ```
 
 Sustituye `PLATFORM_DOMAIN` por el dominio base (mismo valor que en Doppler / secret `PLATFORM_DOMAIN`).
+
+---
+
+## Enlaces relacionados
+
+- [[runbooks/README|runbooks]]
+- [[brain/README|Brain Central]]

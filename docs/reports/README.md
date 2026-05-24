@@ -18,3 +18,10 @@ Snapshots, informes de sesión, evidencias E2E y análisis puntuales.
 
 - Planificación viva; usar `../01-development/`.
 - Auditorías formales; usar `../audits/`.
+
+---
+
+## Enlaces relacionados
+
+- [[reports/README|reports]]
+- [[brain/README|Brain Central]]

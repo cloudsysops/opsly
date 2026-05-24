@@ -62,3 +62,10 @@ Perfecto. No tiramos lo que funciona; lo conectamos poco a poco.
 ---
 
 *Documento interno derivado del Opsly Operational Blueprint. Versión orientada al cliente final.*
+
+---
+
+## Enlaces relacionados
+
+- [[blueprints/opsly-operational-blueprint/README|opsly-operational-blueprint]]
+- [[brain/README|Brain Central]]

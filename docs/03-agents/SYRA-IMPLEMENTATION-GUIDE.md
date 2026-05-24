@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: agent-doc
+tags:
+  - opsly/agents
+---
+
 # Syra Implementation Guide
 
 ## 🎯 Overview
@@ -402,3 +411,10 @@ Production readiness:
 **Questions?** → See `docs/03-agents/SOCIAL-MEDIA-AGENT-SYRA.md` or raise an issue.
 
 **Status:** 🟢 Production ready. Awaiting credentials + deployment approval.
+
+---
+
+## Enlaces relacionados
+
+- [[03-agents/README|03-agents]]
+- [[brain/README|Brain Central]]

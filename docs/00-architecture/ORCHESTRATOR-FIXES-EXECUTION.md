@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: architecture
+tags:
+  - opsly/architecture
+---
+
 # 📋 Quick Fix Execution Guide - Orchestrator Critical Issues
 
 **Target:** Fix 3 critical issues + 4 important issues  
@@ -402,3 +411,10 @@ ORCHESTRATOR_LLM_GATEWAY_URL=http://localhost:9999 npm run test -- __tests__/llm
 ✅ Code review complete
 
 **Estimated Readiness:** Ready for staging deployment after these fixes + manual integration testing
+
+---
+
+## Enlaces relacionados
+
+- [[00-architecture/README|00-architecture]]
+- [[brain/README|Brain Central]]

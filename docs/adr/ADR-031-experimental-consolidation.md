@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: adr
+tags:
+  - opsly/adr
+---
+
 # ADR-031: Consolidate Experimental Apps
 
 **Status:** APPROVED (2026-04-24)  
@@ -50,3 +59,10 @@ git mv apps/mission-control apps/experimental/mission-control-archive
 ## Notes
 
 `apps/agents` was not deleted in this ADR because `apps/notebooklm-agent` is an active module.
+
+---
+
+## Enlaces relacionados
+
+- [[adr/README|adr]]
+- [[brain/README|Brain Central]]

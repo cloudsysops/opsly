@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: guide
+tags:
+  - opsly/development
+---
+
 # ACTIVE-PROMPT — Opsly
 
 # Protocolo: leer AGENTS.md y VISION.md antes de ejecutar
@@ -367,3 +376,10 @@
 # - [ ] Disco VPS < 85%
 
 # - [ ] Discord notificado
+
+---
+
+## Enlaces relacionados
+
+- [[01-development/README|01-development]]
+- [[brain/README|Brain Central]]

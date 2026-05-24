@@ -219,3 +219,10 @@ This gives us a clean architecture + time to validate.
 4. If C: needs investigation spike
 
 Tag @devops + @eng once decision made.
+
+---
+
+## Enlaces relacionados
+
+- [[adr/README|adr]]
+- [[brain/README|Brain Central]]

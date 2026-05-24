@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: doc
+tags:
+  - opsly/doc
+---
+
 # ValidationOrchestrator Operational Guide
 
 ## Overview
@@ -1057,3 +1066,10 @@ For operational support:
 - Critical incidents: Tag `@OpsAgent` in #ops-alerts
 - Questions: Post in #ops-general
 - Documentation updates: Submit PR to `docs/04-operations/`
+
+---
+
+## Enlaces relacionados
+
+- [[04-operations/README|04-operations]]
+- [[brain/README|Brain Central]]

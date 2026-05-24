@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: architecture
+tags:
+  - opsly/architecture
+---
+
 # Dashboard de costos (admin)
 
 ## Acceso
@@ -49,3 +58,10 @@ sequenceDiagram
 - API: `apps/api/app/api/admin/costs/route.ts`, `apps/api/lib/admin-costs.ts`
 - Admin: `apps/admin/app/costs/page.tsx`, `apps/admin/components/costs/CostCard.tsx`
 - Cliente HTTP: `apps/admin/lib/api-client.ts` (`getAdminCosts`, `postCostDecision`)
+
+---
+
+## Enlaces relacionados
+
+- [[00-architecture/README|00-architecture]]
+- [[brain/README|Brain Central]]

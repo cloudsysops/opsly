@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: guide
+tags:
+  - opsly/development
+---
+
 # Semana 3 — Context Builder Integration + Session Continuity — COMPLETADO
 
 **Período:** 2026-04-22 → 2026-04-23  
@@ -290,3 +299,10 @@ Metering: usage_events {
 **Tests:** 106/106 ✅  
 **Type-check:** ✅ PASS  
 **Checkpoint:** ✅ "context-builder smoke + session persistence con request_id + decision history"
+
+---
+
+## Enlaces relacionados
+
+- [[01-development/README|01-development]]
+- [[brain/README|Brain Central]]

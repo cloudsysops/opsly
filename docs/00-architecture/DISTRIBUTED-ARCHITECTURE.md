@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: architecture
+tags:
+  - opsly/architecture
+---
+
 # Arquitectura distribuida — guía de operación
 
 > **Objetivo:** operar Opsly con **VPS** como control plane y **Mac 2011** (u otro worker) como nodo de **workers** y opcionalmente **Ollama / cargas pesadas**.  
@@ -120,3 +129,10 @@ Reducir modelo, o mover inferencia a proveedor vía LLM Gateway.
 - `docs/WORKER-SETUP-MAC2011.md` — SSH, Tailscale, `.env.worker`.
 - `docs/HEAVY-SERVICES-DECISION.md` — cuándo mover Ollama/OpenClaw.
 - `docs/INCIDENT-2026-04-11-DISCO-LLENO.md` — incidente disco (contexto).
+
+---
+
+## Enlaces relacionados
+
+- [[00-architecture/README|00-architecture]]
+- [[brain/README|Brain Central]]

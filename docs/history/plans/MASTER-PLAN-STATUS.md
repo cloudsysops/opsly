@@ -123,3 +123,10 @@ ssh vps-dragon@100.120.151.91 "echo ok"
 - **Migraciones SQL:** 18 (`supabase/migrations/`)
 - **Scripts operativos:** 38 (`scripts/`)
 - **Tenants activos en staging:** smiletripcare ✅ | localrank ⏳
+
+---
+
+## Enlaces relacionados
+
+- [[history/README|history]]
+- [[brain/README|Brain Central]]

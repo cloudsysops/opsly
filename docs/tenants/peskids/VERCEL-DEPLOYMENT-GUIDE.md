@@ -294,3 +294,10 @@ After Phase 1 sign-off by owner:
 4. Set up weekly reporting
 
 See `docs/tenants/peskids/PHASE-2-CHECKLIST.md`.
+
+---
+
+## Enlaces relacionados
+
+- [[tenants/peskids/README|peskids]]
+- [[brain/README|Brain Central]]

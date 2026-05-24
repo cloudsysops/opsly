@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: infrastructure
+tags:
+  - opsly/infrastructure
+---
+
 # Plan: OpenClaw Orchestrator + Ollama Local en Worker Mac 2011
 
 **Fecha:** 2026-04-14  
@@ -248,3 +257,10 @@ ssh vps-dragon@100.120.151.91 "cd /opt/opsly/infra && \
 # 3. Detener worker Mac 2011
 ssh opslyquantum@100.80.41.29 "tmux kill-session -t opsly-orchestrator 2>/dev/null || true"
 ```
+
+---
+
+## Enlaces relacionados
+
+- [[04-infrastructure/README|04-infrastructure]]
+- [[brain/README|Brain Central]]

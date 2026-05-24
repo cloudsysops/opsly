@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: doc
+tags:
+  - opsly/doc
+---
+
 # Revenue Execution 30D — Opsly para agencias
 
 ## Objetivo
@@ -60,3 +69,10 @@ Conseguir 3 pilotos pagados en 30 dias para validar Opsly como operacion gestion
 - No prometer autonomia de produccion sin aprobacion humana.
 - No activar servicios de pago nuevos sin aprobacion.
 - No aceptar pilotos gratis salvo caso estrategico aprobado.
+
+---
+
+## Enlaces relacionados
+
+- [[brain/README|brain]]
+- [[brain/README|Brain Central]]

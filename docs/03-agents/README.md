@@ -29,3 +29,10 @@ Cerebro operativo de agentes: contexto, prompts, roles, guardrails, Hive, OpenCl
 - `COPILOT-CODING-AGENT.md` — firewall del agente en PRs de GitHub (sin SSH/Tailscale)
 - `LOCAL-AGENT-EXECUTION.md`
 - `SOCIAL-MEDIA-AGENT-SYRA.md`
+
+---
+
+## Enlaces relacionados
+
+- [[03-agents/README|03-agents]]
+- [[brain/README|Brain Central]]

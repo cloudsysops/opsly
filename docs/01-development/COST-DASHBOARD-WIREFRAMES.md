@@ -310,3 +310,10 @@ Text:
 **Owner:** @frontend + @design  
 **Effort:** 20-30 hours (MVP phase)  
 **Priority:** MEDIUM (nice to have, improves insights)
+
+---
+
+## Enlaces relacionados
+
+- [[01-development/README|01-development]]
+- [[brain/README|Brain Central]]

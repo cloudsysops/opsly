@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: doc
+tags:
+  - opsly/doc
+---
+
 # Postman + Browser Smoke
 
 ## Import rapido en Postman
@@ -37,3 +46,10 @@ await fetch('https://api.op-sly.com/api/n8n/decide', {
 ```
 
 Guarda los tokens localmente en tu entorno, no en prompts compartidos.
+
+---
+
+## Enlaces relacionados
+
+- [[postman/README|postman]]
+- [[brain/README|Brain Central]]

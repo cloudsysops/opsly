@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: tool-doc
+tags:
+  - opsly/tools
+---
+
 # Obsidian Knowledge System for Opsly Agents
 
 ## 🎯 Status: PARTIALLY IMPLEMENTED
@@ -403,3 +412,10 @@ Continuous improvement loop
 - **FIX:** Regenerate index today, add GitHub Actions job, implement capture API
 
 **Next session:** Priority is to rebuild the knowledge feedback loop so agents feed the system and future agents learn from past work.
+
+---
+
+## Enlaces relacionados
+
+- [[02-tools/README|02-tools]]
+- [[brain/README|Brain Central]]

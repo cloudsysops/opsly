@@ -328,3 +328,10 @@ Not recommended unless forced by scale.
 ---
 
 **Questions?** Refer to `.github/workflows/deploy.yml` (CI/CD) or `.claude/CLAUDE.md` (operational commands).
+
+---
+
+## Enlaces relacionados
+
+- [[01-development/README|01-development]]
+- [[brain/README|Brain Central]]

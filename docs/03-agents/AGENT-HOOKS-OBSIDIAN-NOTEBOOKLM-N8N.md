@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: agent-doc
+tags:
+  - opsly/agents
+---
+
 # Agent Hooks — Obsidian + NotebookLM + n8n
 
 Integración unificada para agentes internos y externos:
@@ -83,3 +92,10 @@ Para cada herramienta nueva:
 2. Verificar `/mnt/skills/index.json`
 3. Confirmar que aplica regla reuse-first de skills
 4. Revisar si n8n recibió evento
+
+---
+
+## Enlaces relacionados
+
+- [[03-agents/README|03-agents]]
+- [[brain/README|Brain Central]]

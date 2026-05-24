@@ -462,3 +462,10 @@ For issues or questions:
 **Status:** ✅ **PRODUCTION READY**  
 **Deployed:** 2026-05-08  
 **Next:** Music rendering + advanced agent tools
+
+---
+
+## Enlaces relacionados
+
+- [[04-infrastructure/README|04-infrastructure]]
+- [[brain/README|Brain Central]]

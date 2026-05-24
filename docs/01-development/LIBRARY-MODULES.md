@@ -490,3 +490,10 @@ Before deploying breaking change:
 - `lib/{module}/README.md` — Per-module API documentation
 - `lib/{module}/GOVERNANCE.md` — Versioning, review, deprecation rules
 - `AGENTS.md` → "Modules & Registries" section
+
+---
+
+## Enlaces relacionados
+
+- [[01-development/README|01-development]]
+- [[brain/README|Brain Central]]

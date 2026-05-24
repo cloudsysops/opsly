@@ -371,3 +371,10 @@ CMD ["npm", "start"]
 **Priority:** MEDIUM (nice to have, but improves CI/CD speed + deployment efficiency)  
 **Effort:** 4-5 hours total  
 **Impact:** 60-70% smaller images + 30-50% faster builds
+
+---
+
+## Enlaces relacionados
+
+- [[audits/README|audits]]
+- [[brain/README|Brain Central]]

@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: agent-doc
+tags:
+  - opsly/agents
+---
+
 # Quickstart: agentes y tools con OpenClaw (Opsly)
 
 Guía **alineada al monorepo actual**. Para el norte del producto y reglas fijas: `VISION.md` y `AGENTS.md`.
@@ -125,3 +134,10 @@ En local, el admin suele estar en el puerto **3001** (`next dev -p 3001`):
 ---
 
 _Última alineación: monorepo Opsly — `apps/mcp` como fuente de verdad para tools._
+
+---
+
+## Enlaces relacionados
+
+- [[03-agents/README|03-agents]]
+- [[brain/README|Brain Central]]

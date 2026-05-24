@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: infrastructure
+tags:
+  - opsly/infrastructure
+---
+
 # Opsly Production Status — 2026-05-15
 
 Snapshot operativo tomado desde la máquina de desarrollo con acceso Tailscale al VPS `vps-dragon@100.120.151.91`. Este documento describe el estado observado; no declara que la plataforma esté completamente sana.
@@ -83,3 +92,10 @@ Operational interpretation: a Next.js route collision in `apps/api/app/api` is p
 - Canonical runtime architecture: [`../00-architecture/ARCHITECTURE.md`](../00-architecture/ARCHITECTURE.md)
 - VPS topology: [`VPS-ARCHITECTURE.md`](VPS-ARCHITECTURE.md)
 - Production compose: [`../../infra/docker-compose.platform.yml`](../../infra/docker-compose.platform.yml)
+
+---
+
+## Enlaces relacionados
+
+- [[04-infrastructure/README|04-infrastructure]]
+- [[brain/README|Brain Central]]

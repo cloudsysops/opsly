@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: agent-doc
+tags:
+  - opsly/agents
+---
+
 # Checklist diario — sesiones Cursor / agentes
 
 Copiar el bloque **“Hoy”** al iniciar la sesión. Contexto: [`AGENTS.md`](../AGENTS.md), [`ROADMAP.md`](../ROADMAP.md), [`SPRINT-TRACKER.md`](../01-development/SPRINT-TRACKER.md).
@@ -35,3 +44,10 @@ Tarea:
 Validación ejecutada:
 Bloqueantes:
 ```
+
+---
+
+## Enlaces relacionados
+
+- [[03-agents/README|03-agents]]
+- [[brain/README|Brain Central]]

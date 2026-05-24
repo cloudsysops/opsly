@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: infrastructure
+tags:
+  - opsly/infrastructure
+---
+
 # SSH desde el VPS hacia otros nodos (workers)
 
 > **Objetivo:** que el usuario del VPS (p. ej. `vps-dragon`) pueda abrir sesiones SSH **sin contraseña** hacia workers (Mac 2011, laptops, etc.) usando **clave pública**, solo por **Tailscale** (`100.64.0.0/10` o nombres MagicDNS).  
@@ -140,3 +149,10 @@ No puedes usar `ssh-copy-id` desde el VPS si aún no hay trust. Orden habitual:
 - `docs/TAILSCALE-NOMENCLATURA.md` — nombres `vps-dragon`, `opsly-worker`, IPs `100.x`
 - `docs/WORKER-SETUP-MAC2011.md` — prerrequisitos en el worker Ubuntu
 - `docs/ARCHITECTURE-DISTRIBUTED.md` — Redis y roles `queue-only` / `worker-enabled`
+
+---
+
+## Enlaces relacionados
+
+- [[04-infrastructure/README|04-infrastructure]]
+- [[brain/README|Brain Central]]

@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: guide
+tags:
+  - opsly/development
+---
+
 # Clientes a invitar — Opsly
 
 Seguimiento manual; la fuente de verdad de tenants sigue siendo `platform.tenants` en Supabase.
@@ -59,3 +68,10 @@ Ver ejemplo en `docs/INVITATIONS_RUNBOOK.md` (`tenantRef` + `email` + `mode`).
 
 - n8n: https://n8n-jkboterolabs.op-sly.com
 - Uptime: https://uptime-jkboterolabs.op-sly.com
+
+---
+
+## Enlaces relacionados
+
+- [[01-development/README|01-development]]
+- [[brain/README|Brain Central]]

@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: agent-doc
+tags:
+  - opsly/agents
+---
+
 # Security Policy — Autonomous Execution (SAFE-AEF Phase 1)
 
 ## Purpose
@@ -57,3 +66,10 @@ If an autonomy workflow violates policy:
 2. Collect logs by `request_id`.
 3. Open incident report.
 4. Add preventive rule before re-enabling.
+
+---
+
+## Enlaces relacionados
+
+- [[03-agents/README|03-agents]]
+- [[brain/README|Brain Central]]

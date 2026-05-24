@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: adr
+tags:
+  - opsly/adr
+---
+
 # ADR-013: Google Cloud + Open Source Integration Strategy
 
 ## Estado: ACEPTADO
@@ -48,3 +57,10 @@ Integrar Google Cloud y open source en 4 fases alineadas con el crecimiento de t
 - No usar Kubernetes hasta 10+ tenants
 - No pagar Vertex AI sin datos suficientes para fine-tuning
 - No abandonar Supabase por Cloud Spanner prematuramente
+
+---
+
+## Enlaces relacionados
+
+- [[adr/README|adr]]
+- [[brain/README|Brain Central]]

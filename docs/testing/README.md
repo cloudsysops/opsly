@@ -18,3 +18,10 @@ Escenarios E2E, planes QA, guías de prueba y validación de releases.
 
 - `E2E-TEST-SCENARIOS.md`
 - `QA-TESTING-BRIEF.md`
+
+---
+
+## Enlaces relacionados
+
+- [[testing/README|testing]]
+- [[brain/README|Brain Central]]

@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: tenant
+tags:
+  - opsly/tenant
+---
+
 # Checklist — Tenant listo para producción (Opsly)
 
 > **Canónico:** editar este archivo (`docs/tenants/runbooks/`). Stub: [`docs/stubs/TENANT-PRODUCTION-CHECKLIST.md`](../../stubs/TENANT-PRODUCTION-CHECKLIST.md).
@@ -61,3 +70,10 @@ Criterios verificables antes de marcar un tenant como **prod-ready**. Aplicar po
 - [TENANT-PRODUCTION-BASELINE.md](../production/TENANT-PRODUCTION-BASELINE.md)
 - [TENANT-PRODUCTION-HARDENING.md](../production/TENANT-PRODUCTION-HARDENING.md)
 - [TENANT-ONBOARDING-TRIAGE.md](./TENANT-ONBOARDING-TRIAGE.md)
+
+---
+
+## Enlaces relacionados
+
+- [[tenants/README|tenants]]
+- [[brain/README|Brain Central]]

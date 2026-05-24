@@ -322,3 +322,10 @@ Bad:
 ```
 
 Status: **RENUMBERING REQUIRED** before production use.
+
+---
+
+## Enlaces relacionados
+
+- [[brain/README|brain]]
+- [[brain/README|Brain Central]]

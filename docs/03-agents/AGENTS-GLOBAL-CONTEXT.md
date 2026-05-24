@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: agent-doc
+tags:
+  - opsly/agents
+---
+
 # AGENTS.md — Contexto Global para Todos los Agentes IA
 
 > **Ruta de aprendizaje obligatoria para TODO agente que trabaje con Opsly.**
@@ -152,3 +161,10 @@ VPS (control plane)                    Worker Mac 2011
 | Portal        | https://portal.op-sly.com                               |
 | API           | https://api.op-sly.com                                  |
 | VPS SSH       | `ssh vps-dragon@100.120.151.91`                                    |
+
+---
+
+## Enlaces relacionados
+
+- [[03-agents/README|03-agents]]
+- [[brain/README|Brain Central]]

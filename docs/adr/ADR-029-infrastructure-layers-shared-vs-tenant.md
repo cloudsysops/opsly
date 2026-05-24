@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: adr
+tags:
+  - opsly/adr
+---
+
 # ADR-029 — Capas de infraestructura: plataforma compartida vs runtime por tenant
 
 ## Estado
@@ -23,3 +32,10 @@ Los playbooks de onboarding deben:
 
 - Reduce riesgo de prompts “monolíticos” que intenten redesplegar toda la plataforma por cada cliente.
 - Fuerza claridad en PRs: ¿esto toca `apps/api`/`infra/docker-compose.platform.yml` o solo `tenants/<slug>/`?
+
+---
+
+## Enlaces relacionados
+
+- [[adr/README|adr]]
+- [[brain/README|Brain Central]]

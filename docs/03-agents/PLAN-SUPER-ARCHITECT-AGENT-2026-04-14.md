@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: agent-doc
+tags:
+  - opsly/agents
+---
+
 # Plan: Super Architect Agent — Orquestador OpenClaw Nivel Claude/Hermes/OpenCode
 
 **Fecha:** 2026-04-14
@@ -552,3 +561,10 @@ class SelfAwareness {
 - `apps/orchestrator/src/lib/notebooklm-client.ts`
 - `docs/adr/ADR-025-notebooklm-knowledge-layer.md`
 - `docs/PLAN-SKILLS-TO-NOTEBOOKLM-2026-04-14.md`
+
+---
+
+## Enlaces relacionados
+
+- [[03-agents/README|03-agents]]
+- [[brain/README|Brain Central]]

@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: infrastructure
+tags:
+  - opsly/infrastructure
+---
+
 # Arquitectura de failover — GCP (standby pasivo)
 
 > **Contexto:** complementa [`FAILOVER-RUNBOOK.md`](FAILOVER-RUNBOOK.md). Los importes y límites del **Free Trial / créditos** de GCP cambian; verifica siempre [Precios Compute Engine](https://cloud.google.com/compute/pricing) y las condiciones actuales de la cuenta.
@@ -112,3 +121,10 @@ Validar cuotas y facturación antes de escalar.
 ## Nota sobre costos “24 meses” en tablas externas
 
 Cualquier tabla de ahorro multi-año es **ilustrativa**: depende de precios vigentes, impuestos y si el proyecto GCP sigue en free tier o pasa a tarifa estándar. Usar solo como orden de magnitud.
+
+---
+
+## Enlaces relacionados
+
+- [[04-infrastructure/README|04-infrastructure]]
+- [[brain/README|Brain Central]]

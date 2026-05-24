@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: tenant
+tags:
+  - opsly/tenant
+---
+
 # Peskids — Chatbox inteligente + n8n
 
 ## Flujo
@@ -60,3 +69,10 @@ Aplicar `004_message_threads.sql` en el proyecto Supabase del tenant antes de de
 ## Política IA
 
 Ver [`AI-APPROVAL-POLICY.md`](AI-APPROVAL-POLICY.md): el widget muestra texto **orientativo**; WhatsApp/Instagram solo se envían tras **Aprobar y enviar** en el dashboard.
+
+---
+
+## Enlaces relacionados
+
+- [[tenants/peskids/README|peskids]]
+- [[brain/README|Brain Central]]

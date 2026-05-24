@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: tenant
+tags:
+  - opsly/tenant
+---
+
 # Peskids Admin Dashboard Specification
 
 **Purpose:** Single-screen view of all active leads, students, and feedback. Admin can quickly see what needs attention and take action (follow up, respond, etc.).
@@ -304,3 +313,10 @@ CREATE INDEX idx_followups_status_due ON followups(status, due_date);
 **Sprint 03:** Add settings/preferences, custom card order  
 **Sprint 04:** Add predictive trends, anomaly detection  
 **Later:** Advanced filters, custom metrics, integration with external dashboards
+
+---
+
+## Enlaces relacionados
+
+- [[tenants/peskids/README|peskids]]
+- [[brain/README|Brain Central]]

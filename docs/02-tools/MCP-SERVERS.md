@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: tool-doc
+tags:
+  - opsly/tools
+---
+
 # MCP Servers Configuration
 
 Available MCP servers for Claude integrations:
@@ -48,6 +57,18 @@ Available MCP servers for Claude integrations:
   - Designs, templates, exports
   - Use: `@canva generate design`
 
+## Research y navegador (Cursor local)
+
+Fragmento versionado: [`examples/cursor-mcp-research-browser.fragment.json`](examples/cursor-mcp-research-browser.fragment.json). Guía: [`CURSOR-MCP-SETUP.md`](CURSOR-MCP-SETUP.md).
+
+| Servidor | Uso |
+|----------|-----|
+| **perplexity** | Búsqueda web con citas (`PERPLEXITY_API_KEY`) |
+| **firecrawl** | Scrape / crawl de URLs (`FIRECRAWL_API_KEY`) |
+| **playwright** | Automatización de navegador (Microsoft `@playwright/mcp`) |
+| **glif** | Workflows Glif (`GLIF_API_TOKEN`) |
+| **chrome-devtools** | Chrome DevTools Protocol (sin API key) |
+
 ## Productivity
 
 - **Google Calendar** (https://gcal.mcp.claude.com/mcp)
@@ -88,3 +109,10 @@ The `apps/mcp` directory contains OpenClaw MCP server with tools:
 - `invite_*` - Invitation management
 - `suspend_*` - Tenant suspension
 - `execute_prompt_*` - AI prompt execution
+
+---
+
+## Enlaces relacionados
+
+- [[02-tools/README|02-tools]]
+- [[brain/README|Brain Central]]

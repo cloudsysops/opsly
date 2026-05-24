@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: tenant
+tags:
+  - opsly/tenant
+---
+
 # Peskids — Instagram en la landing
 
 Perfil oficial: [instagram.com/peskidsnatacion](https://www.instagram.com/peskidsnatacion/)
@@ -33,3 +42,10 @@ Sin esa variable, la web muestra **tarjetas de marca** (mismo estilo que el desi
 ## Límite técnico
 
 Instagram no expone el feed completo sin **Meta Graph API** (cuenta business + token). Esta integración usa **oEmbed** por URL: ideal para 6–12 posts elegidos, sin contraseña de Instagram en el servidor.
+
+---
+
+## Enlaces relacionados
+
+- [[tenants/peskids/README|peskids]]
+- [[brain/README|Brain Central]]

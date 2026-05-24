@@ -1,3 +1,12 @@
+---
+status: draft
+owner: operations
+last_review: 2026-05-24
+type: adr
+tags:
+  - opsly/adr
+---
+
 # ADR-033: Documentation canonicalization
 
 **Status:** ACCEPTED (2026-04-24)  
@@ -27,3 +36,10 @@
 ## Note on divergent worktrees
 
 Worktrees under `.claude/worktrees/` (e.g., `crazy-carson`) may contain pre-ADR-033 copies of scripts and docs. These are intentionally not synchronized with `main`. If a worktree is resurrected, re-apply ADR-033 in that context.
+
+---
+
+## Enlaces relacionados
+
+- [[adr/README|adr]]
+- [[brain/README|Brain Central]]

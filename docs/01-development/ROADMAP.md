@@ -142,3 +142,10 @@ Alineado a `VISION.md` Fase 3: self-service, observabilidad por tenant, vector D
 ## Regla de oro (repetida de VISION)
 
 Antes de añadir features grandes: ¿hay **clientes pagadores** validando la necesidad? Si no → priorizar validación.
+
+---
+
+## Enlaces relacionados
+
+- [[01-development/README|01-development]]
+- [[brain/README|Brain Central]]

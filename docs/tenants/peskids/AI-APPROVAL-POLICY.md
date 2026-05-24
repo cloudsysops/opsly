@@ -86,3 +86,10 @@ Cualquier excepción (p. ej. auto-ack “recibimos tu mensaje”) requiere:
 ## Revisión
 
 Revisar esta política al activar WhatsApp o al extraer `peskids-platform`.
+
+---
+
+## Enlaces relacionados
+
+- [[tenants/peskids/README|peskids]]
+- [[brain/README|Brain Central]]

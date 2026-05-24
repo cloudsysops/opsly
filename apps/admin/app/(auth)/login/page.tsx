@@ -131,20 +131,6 @@ export default function LoginPage() {
                 />
               </div>
             </div>
-            {resetSent ? (
-              <p className="rounded border border-ops-green/40 bg-ops-green/10 px-3 py-2 font-sans text-sm text-ops-green">
-                Revisa tu correo. El enlace abre el admin Opsly para definir contraseña.
-              </p>
-            ) : null}
-            <Button
-              type="button"
-              variant="ghost"
-              className="w-full font-sans text-sm"
-              disabled={resetLoading}
-              onClick={() => void onForgotPassword()}
-            >
-              {resetLoading ? 'Enviando…' : 'Olvidé mi contraseña'}
-            </Button>
             <div className="space-y-1">
               <label className="font-sans text-xs text-ops-gray" htmlFor="password">
                 password
@@ -157,7 +143,22 @@ export default function LoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
+              <div className="flex justify-end pt-1">
+                <button
+                  type="button"
+                  className="font-sans text-sm text-ops-green underline-offset-4 hover:underline disabled:opacity-50"
+                  disabled={resetLoading}
+                  onClick={() => void onForgotPassword()}
+                >
+                  {resetLoading ? 'Enviando enlace…' : '¿Olvidaste tu contraseña?'}
+                </button>
+              </div>
             </div>
+            {resetSent ? (
+              <p className="rounded border border-ops-green/40 bg-ops-green/10 px-3 py-2 font-sans text-sm text-ops-green">
+                Revisa tu correo. El enlace abre el admin Opsly para definir contraseña.
+              </p>
+            ) : null}
             <Button type="submit" variant="primary" className="w-full font-mono" disabled={loading}>
               {loading ? (
                 <>

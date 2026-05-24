@@ -151,3 +151,10 @@ Después de **implementar** y **ejecutar pruebas** relevantes (`type-check`, tes
   modulos, arquitectura, tenants, agentes y runbooks.
 - El siguiente incremento recomendado es generar `config/github-module-graph.json`
   desde `apps/*`, `packages/*`, Docker Compose, OpenAPI y rutas API.
+
+---
+
+## Enlaces relacionados
+
+- [[03-agents/README|03-agents]]
+- [[brain/README|Brain Central]]

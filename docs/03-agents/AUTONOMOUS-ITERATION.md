@@ -367,3 +367,10 @@ Execution 5:   95% success, 1.5 min (learned best approach)
 - `docs/03-agents/LOCAL-AGENT-EXECUTION.md` — Phase 1 (execution)
 - `docs/01-development/AGENT-PROMPT-QUEUE.md` — Queue structure
 - `AGENTS.md` — Session state tracking
+
+---
+
+## Enlaces relacionados
+
+- [[03-agents/README|03-agents]]
+- [[brain/README|Brain Central]]

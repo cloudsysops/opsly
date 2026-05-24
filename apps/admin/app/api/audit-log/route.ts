@@ -34,7 +34,8 @@ function demoAuditLog(): NextResponse {
 
 export async function GET(): Promise<NextResponse> {
   try {
-    const publicDemo = process.env.NEXT_PUBLIC_ADMIN_PUBLIC_DEMO === 'true';
+    const { isAdminPublicDemoEnabled } = await import('@/lib/admin-public-demo');
+    const publicDemo = isAdminPublicDemoEnabled();
     const userClient = await createServerSupabase();
     if (!publicDemo) {
       const {
