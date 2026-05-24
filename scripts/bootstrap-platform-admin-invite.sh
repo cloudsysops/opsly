@@ -164,15 +164,17 @@ function resolveSiteUrl(localPort, explicitEnvName, prodSubdomain, fallbackProd)
   return fallbackProd;
 }
 
-const portalBase = resolveSiteUrl(3002, 'PORTAL_SITE_URL', 'portal', 'https://portal.op-sly.com');
-const adminBase = resolveSiteUrl(3001, 'ADMIN_SITE_URL', 'admin', 'https://admin.op-sly.com');
-const peskidsBase = resolveSiteUrl(
-  3004,
-  'NEXT_PUBLIC_PESKIDS_SITE_URL',
-  'peskids',
-  'https://peskids.op-sly.com'
-);
-const inviteBase = tenantSlug === 'peskids' ? peskidsBase : portalBase;
+  const portalBase = resolveSiteUrl(3002, 'PORTAL_SITE_URL', 'portal', 'https://portal.op-sly.com');
+  const adminBase = resolveSiteUrl(3001, 'ADMIN_SITE_URL', 'admin', 'https://admin.op-sly.com');
+  const peskidsBase = resolveSiteUrl(
+    3004,
+    'NEXT_PUBLIC_PESKIDS_SITE_URL',
+    'peskids',
+    'https://peskids.op-sly.com'
+  );
+  const inviteBase = tenantSlug === 'peskids' ? peskidsBase : portalBase;
+  const recoveryBase =
+    isSuperuser || tenantSlug === 'intcloudsysops' ? adminBase : tenantSlug === 'peskids' ? peskidsBase : portalBase;
 
 const displayName =
   tenantSlug === 'peskids' && role === 'owner' ? 'Peskids Owner' : 'Platform Admin';
@@ -329,17 +331,17 @@ function parseToken(actionLink) {
 
   if (!dryRun) {
     if (existing) {
-      const recoveryPayload = await generateRecoveryLink(adminBase);
+      const recoveryPayload = await generateRecoveryLink(recoveryBase);
       const recoveryLink =
         recoveryPayload?.action_link || recoveryPayload?.properties?.action_link;
       if (recoveryLink) {
         console.log('');
-        console.log('Recovery admin (abrir una vez, ~1h):');
+        console.log('Recovery link (abrir una vez, ~1h):');
         console.log(recoveryLink);
         console.log('');
         console.log('Si Supabase redirige al portal: añade en Dashboard → Auth → URL:');
-        console.log(`  ${adminBase}/auth/recovery`);
-        console.log(`  ${adminBase}/update-password`);
+        console.log(`  ${recoveryBase}/auth/recovery`);
+        console.log(`  ${recoveryBase}/update-password`);
       }
     } else {
       const linkPayload = await generateInviteLink();

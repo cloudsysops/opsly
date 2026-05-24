@@ -7,6 +7,7 @@ import { AIInsightsPanel } from '@/components/dashboard/AIInsightsPanel';
 import { CpuGauge } from '@/components/dashboard/CpuGauge';
 import { PlatformOverview } from '@/components/dashboard/PlatformOverview';
 import { QuickActions } from '@/components/dashboard/QuickActions';
+import { TenantSwitcher } from '@/components/dashboard/TenantSwitcher';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Bot, Radar, Sparkles } from 'lucide-react';
@@ -73,6 +74,8 @@ export default function DashboardPage() {
           </span>
         ) : null}
       </div>
+
+      <TenantSwitcher />
 
       {error ? (
         <div className="holo-border rounded-xl bg-ops-red/15 px-3 py-2 font-sans text-sm text-ops-red">
