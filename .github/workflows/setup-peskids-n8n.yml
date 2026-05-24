@@ -1,69 +1,20 @@
-I don't have SSH access and can't be granted it directly because of how this remote execution environment works. Let me explain the three practical paths forward:
+# Manual: import Peskids n8n workflows on VPS (container n8n_peskids).
+# Requires production environment secrets: VPS_USER, VPS_SSH_KEY, VPS_SSH_HOST or VPS_HOST;
+# TAILSCALE_AUTHKEY recommended for SSH via tailnet.
 
-**Why I can't do SSH directly:**
-- I run sandboxed in a ephemeral container without persistent credentials
-- SSH keys would need to be stored in the environment, which breaks security
-- The Bash tool I have access to runs inside this container, not on your VPS
-
-**Your three options (ranked by speed):**
-
-1. **GitHub Actions (Fastest, no manual SSH needed)**
-   - You manually add the workflow file via GitHub web UI (1 minute)
-   - Click "Run workflow" button in Actions tab
-   - GitHub's Tailscale integration SSH's into your VPS automatically using stored secrets
-   - Status → email notification when done
-   - **Downside:** One-time manual file add; then fully automated
-
-2. **You execute from your mobile with Tailscale (Immediate, most control)**
-   - Open Tailscale on mobile → Connect to your network
-   - SSH: `ssh vps-dragon@100.120.151.91`
-   - Then: `cd /opt/opsly && bash scripts/setup-n8n-tenant.sh`
-   - **Benefit:** You see real-time output; can debug if needed
-   - **Time:** ~5 minutes
-
-3. **I execute a local script, you push results (Not viable yet)**
-   - Would need you to export VPS_SSH_KEY to a local .env
-   - Then I could run bash scripts that SSH
-   - **Security risk** — keys in plaintext; not recommended
-
----
-
-**My recommendation:** **Use option 1 (GitHub Actions).** Here's why:
-
-✅ Zero security risk (secrets stay in Doppler/GitHub)  
-✅ Fully automated (no manual SSH)  
-✅ Reproducible (workflow can re-run anytime)  
-✅ Logged & audited (workflow history in GitHub)  
-✅ Sets precedent for future deployments  
-
-**Quick path to execute:**
-
-1. Go to: https://github.com/cloudsysops/opsly/actions
-2. Click **"New workflow"** → **"set up a workflow yourself"**
-3. Paste the contents of `.github/workflows/setup-peskids-n8n.yml` (I'll provide below)
-4. Save as `setup-peskids-n8n.yml`
-5. Go to **Actions** tab → find the workflow → **"Run workflow"**
-6. Inputs:
-   - VPS host: `100.120.151.91`
-   - Dry run: `false`
-7. Click **"Run workflow"** → watch logs in real-time
-
-Here's the validated workflow file ready to paste:
-
-```yaml
 name: Setup Peskids N8N
 
 on:
   workflow_dispatch:
     inputs:
       vps_host:
-        description: VPS host
+        description: VPS host override (Tailscale IP or hostname)
         required: false
-        default: 100.120.151.91
+        default: "100.120.151.91"
       dry_run:
-        description: Dry run mode
+        description: Dry run (list workflows only, no import)
         required: false
-        default: 'false'
+        default: "false"
 
 concurrency:
   group: setup-peskids-n8n
@@ -75,54 +26,78 @@ jobs:
     environment: production
     permissions:
       contents: read
+    env:
+      TAILSCALE_AUTHKEY: ${{ secrets.TAILSCALE_AUTHKEY }}
     steps:
       - uses: actions/checkout@v4
 
-      - name: Connect Tailscale
+      - name: Validate deploy secrets
+        env:
+          VPS_USER: ${{ secrets.VPS_USER }}
+          VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_SSH_HOST: ${{ secrets.VPS_SSH_HOST }}
+        run: |
+          set -euo pipefail
+          missing=0
+          [ -n "${VPS_USER:-}" ] || { echo "Missing VPS_USER" >&2; missing=1; }
+          [ -n "${VPS_SSH_KEY:-}" ] || { echo "Missing VPS_SSH_KEY" >&2; missing=1; }
+          if [ -z "${VPS_SSH_HOST:-}" ] && [ -z "${VPS_HOST:-}" ] && [ -z "${{ inputs.vps_host }}" ]; then
+            echo "Missing VPS_SSH_HOST, VPS_HOST, or vps_host input" >&2
+            missing=1
+          fi
+          [ "$missing" -eq 0 ]
+
+      - name: Connect Tailscale for SSH
         if: env.TAILSCALE_AUTHKEY != ''
         uses: tailscale/github-action@v2
         with:
-          authkey: ${{ secrets.TAILSCALE_AUTHKEY }}
+          authkey: ${{ env.TAILSCALE_AUTHKEY }}
           version: 1.94.2
-        env:
-          TAILSCALE_AUTHKEY: ${{ secrets.TAILSCALE_AUTHKEY }}
 
-      - name: Run N8N setup script
+      - name: Import Peskids n8n workflows on VPS
+        uses: appleboy/ssh-action@v1.0.3
         env:
-          VPS_HOST: ${{ inputs.vps_host }}
-          VPS_USER: ${{ secrets.VPS_USER }}
-          VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
           DRY_RUN: ${{ inputs.dry_run }}
-        run: bash ./scripts/setup-n8n-tenant.sh
+        with:
+          host: ${{ inputs.vps_host || secrets.VPS_SSH_HOST || secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          timeout: 10m
+          envs: DRY_RUN
+          script: |
+            set -euo pipefail
+            cd /opt/opsly
+            git fetch origin main
+            git checkout main
+            git pull --ff-only origin main
+            args=()
+            if [ "${DRY_RUN:-false}" = "true" ]; then
+              args+=(--dry-run)
+            fi
+            ./scripts/install-peskids-n8n-workflows.sh "${args[@]}"
 
-      - name: Health check
+      - name: Health check (n8n public)
+        if: inputs.dry_run != 'true'
         run: |
           set +e
           for i in 1 2 3; do
-            if curl -sfL https://peskids.op-sly.com/n8n/ | head -c 100 | grep -q "n8n"; then
-              echo "✅ N8N accessible"
+            if curl -sfk "https://n8n-peskids.op-sly.com/healthz" | head -c 200 | grep -qE 'ok|n8n'; then
+              echo "n8n-peskids.op-sly.com OK (attempt $i)"
               exit 0
             fi
             echo "Attempt $i/3..."
             sleep 10
           done
-          echo "⚠️  Could not verify N8N (may be starting)"
+          echo "::warning::Could not verify n8n healthz (container may still be starting)"
           exit 0
 
-      - name: Notify Discord
+      - name: Notify Discord on failure
         if: failure()
         continue-on-error: true
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: |
-          if [ -z "$DISCORD_WEBHOOK_URL" ]; then exit 0; fi
+          if [ -z "${DISCORD_WEBHOOK_URL:-}" ]; then exit 0; fi
           curl -fsS -X POST "$DISCORD_WEBHOOK_URL" -H "Content-Type: application/json" \
-            -d "{\"embeds\":[{\"title\":\"❌ Setup Peskids N8N failed\",\"color\":15158332,\"fields\":[{\"name\":\"Run\",\"value\":\"https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}\"}]}]}"
-```
-
-**Once workflow runs successfully:**
-- N8N container starts on VPS (port 5678 internally, routed via Traefik)
-- Accessible at: `https://peskids.op-sly.com/n8n/`
-- Next: Create 3 workflows inside N8N UI (Day 1-3 timeline from guide)
-
-Does this path work for you, or do you prefer the Tailscale SSH option?
+            -d "{\"embeds\":[{\"title\":\"Setup Peskids N8N failed\",\"color\":15158332,\"fields\":[{\"name\":\"Run\",\"value\":\"https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}\"}]}]}"
