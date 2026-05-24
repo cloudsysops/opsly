@@ -5,9 +5,9 @@ import { useEffect } from 'react'
 import { inviteActivationPathFromUrl, isInviteLink, isRecoveryLink } from '@/lib/auth-recovery'
 
 /**
- * When Supabase emails use /login#access_token=… (Site URL fallback), forward to
- * /auth/recovery before middleware or login UI drop the hash. Invite links go to
- * /invite/[token] with email preserved.
+ * When Supabase emails use /login#access_token=… (Site URL fallback), keep the
+ * recovery payload on /login so the login page can render the recovery flow.
+ * Invite links go to /invite/[token] with email preserved.
  */
 export function AuthSessionRedirect(): null {
   const pathname = usePathname()
@@ -27,11 +27,10 @@ export function AuthSessionRedirect(): null {
     if (!isRecoveryLink(url)) {
       return
     }
-    if (pathname.startsWith('/auth/recovery')) {
+    if (pathname === '/login' || pathname.startsWith('/login/')) {
       return
     }
-    const target = `/auth/recovery${url.search}${url.hash}`
-    window.location.replace(target)
+    window.location.replace(`/login${url.search}${url.hash}`)
   }, [pathname])
 
   return null

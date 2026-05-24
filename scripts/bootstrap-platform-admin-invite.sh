@@ -279,7 +279,7 @@ async function generateRecoveryLink(adminBase) {
       type: 'recovery',
       email,
       options: {
-        redirect_to: `${adminBase}/auth/recovery`,
+        redirect_to: `${adminBase}/login`,
       },
     }),
   });
@@ -340,7 +340,7 @@ function parseToken(actionLink) {
         console.log(recoveryLink);
         console.log('');
         console.log('Si Supabase redirige al portal: añade en Dashboard → Auth → URL:');
-        console.log(`  ${recoveryBase}/auth/recovery`);
+        console.log(`  ${recoveryBase}/login`);
         console.log(`  ${recoveryBase}/update-password`);
       }
     } else {

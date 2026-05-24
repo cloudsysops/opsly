@@ -3,7 +3,8 @@
 import { Loader2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { buildRecoveryRedirectTo } from '@/lib/auth-recovery';
+import { AuthRecoveryHandler } from '@/components/auth/auth-recovery-handler';
+import { buildRecoveryRedirectTo, isRecoveryLink } from '@/lib/auth-recovery';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -17,6 +18,7 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [resetSent, setResetSent] = useState(false);
   const [resetLoading, setResetLoading] = useState(false);
+  const [recoveryMode, setRecoveryMode] = useState(false);
 
   useEffect(() => {
     const supabase = createClient();
@@ -31,6 +33,24 @@ export default function LoginPage() {
         // Local demo mode can run without Supabase public env vars.
       });
   }, [router]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+    setRecoveryMode(isRecoveryLink(new URL(window.location.href)));
+  }, []);
+
+  if (recoveryMode) {
+    return (
+      <main
+        id="main-content"
+        className="ops-auth-backdrop flex min-h-screen flex-col items-center justify-center p-6"
+      >
+        <AuthRecoveryHandler />
+      </main>
+    );
+  }
 
   async function onForgotPassword(): Promise<void> {
     const trimmed = email.trim();

@@ -1,6 +1,6 @@
 export function buildRecoveryRedirectTo(origin: string): string {
   const base = origin.replace(/\/$/, '')
-  return `${base}/auth/recovery`
+  return `${base}/login`
 }
 
 function inviteAuthParams(url: URL): URLSearchParams | null {
