@@ -9,14 +9,14 @@ type AIInsightsPanelProps = {
   containers: number;
 };
 
-function statusByCpu(cpuPercent: number): 'NEURAL SYNC' | 'PATTERN DETECTED' | 'TEMPORAL DRIFT' {
+function statusByCpu(cpuPercent: number): 'SALUD ESTABLE' | 'REVISAR CARGA' | 'SOBRECARGA' {
   if (cpuPercent < 60) {
-    return 'NEURAL SYNC';
+    return 'SALUD ESTABLE';
   }
   if (cpuPercent < 85) {
-    return 'PATTERN DETECTED';
+    return 'REVISAR CARGA';
   }
-  return 'TEMPORAL DRIFT';
+  return 'SOBRECARGA';
 }
 
 export function AIInsightsPanel({ cpuPercent, activeTenants, containers }: AIInsightsPanelProps) {
@@ -28,7 +28,7 @@ export function AIInsightsPanel({ cpuPercent, activeTenants, containers }: AIIns
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <BrainCircuit className="h-4 w-4 text-ops-magenta" />
-          IA Insights
+          Señales operativas
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -36,23 +36,23 @@ export function AIInsightsPanel({ cpuPercent, activeTenants, containers }: AIIns
           <div className="rounded-xl border border-ops-cyan/40 bg-ops-cyan/10 p-3">
             <div className="mb-1 flex items-center gap-2 text-xs text-ops-cyan">
               <Radar className="h-3.5 w-3.5 animate-pulse-dot" />
-              Neural status
+              Estado CPU
             </div>
             <p className="digital-readout text-sm">{status}</p>
           </div>
           <div className="rounded-xl border border-ops-magenta/40 bg-ops-magenta/10 p-3">
             <div className="mb-1 flex items-center gap-2 text-xs text-ops-magenta">
               <Sparkles className="h-3.5 w-3.5 animate-neon-flicker" />
-              Predicción 30m
+              Tendencia 30m
             </div>
             <p className="digital-readout text-sm">
-              +{Math.max(3, Math.round(activeTenants * 0.8))}% load trend
+              +{Math.max(3, Math.round(activeTenants * 0.8))}% carga estimada
             </p>
           </div>
           <div className="rounded-xl border border-ops-purple/40 bg-ops-purple/10 p-3">
             <div className="mb-1 flex items-center gap-2 text-xs text-ops-purple">
               <Zap className="h-3.5 w-3.5 animate-pulse-dot" />
-              Sync confidence
+              Confianza de sync
             </div>
             <p className="digital-readout text-sm">{Math.max(72, 100 - Math.round(cpuPercent / 2))}%</p>
           </div>
@@ -60,7 +60,7 @@ export function AIInsightsPanel({ cpuPercent, activeTenants, containers }: AIIns
 
         <div className="space-y-2 rounded-xl border border-ops-border bg-ops-bg/60 p-3">
           <div className="flex items-center justify-between text-xs text-ops-gray">
-            <span>Holographic activity index</span>
+            <span>Índice operativo</span>
             <span className="digital-readout text-ops-cyan">{aiLoad}%</span>
           </div>
           <div className="h-2 overflow-hidden rounded-full bg-ops-border/60">
@@ -70,7 +70,8 @@ export function AIInsightsPanel({ cpuPercent, activeTenants, containers }: AIIns
             />
           </div>
           <p className="text-xs text-neutral-300">
-            Sugerencia IA: prioriza workers de inferencia y activa cooldown de pipelines no críticos.
+            Recomendación: prioriza workers críticos y difiere pipelines no urgentes si la carga
+            sigue subiendo.
           </p>
         </div>
       </CardContent>

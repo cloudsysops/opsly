@@ -1,7 +1,16 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { Plus, MailPlus, CreditCard, Settings, Users, TrendingUp, Boxes } from 'lucide-react';
+import {
+  Plus,
+  MailPlus,
+  CreditCard,
+  Settings,
+  Users,
+  Boxes,
+  Network,
+  LayoutGrid,
+} from 'lucide-react';
 
 const actions = [
   {
@@ -17,6 +26,12 @@ const actions = [
     color: 'bg-cyan-500/10 text-cyan-400 hover:bg-cyan-500/20',
   },
   {
+    label: 'Mission Control',
+    href: '/mission-control/office',
+    icon: LayoutGrid,
+    color: 'bg-fuchsia-500/10 text-fuchsia-300 hover:bg-fuchsia-500/20',
+  },
+  {
     label: 'Invitar',
     href: '/invitations',
     icon: MailPlus,
@@ -29,16 +44,16 @@ const actions = [
     color: 'bg-yellow-500/10 text-yellow-400 hover:bg-yellow-500/20',
   },
   {
-    label: 'Teams',
+    label: 'Agentes',
     href: '/agents',
     icon: Users,
     color: 'bg-purple-500/10 text-purple-400 hover:bg-purple-500/20',
   },
   {
-    label: 'Insights',
-    href: '/insights',
-    icon: TrendingUp,
-    color: 'bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20',
+    label: 'API Surface',
+    href: '/api-surface',
+    icon: Network,
+    color: 'bg-sky-500/10 text-sky-300 hover:bg-sky-500/20',
   },
   {
     label: 'Settings',
@@ -53,8 +68,13 @@ export function QuickActions() {
 
   return (
     <div className="space-y-3">
-      <h2 className="font-mono text-xs uppercase tracking-wider text-ops-gray">Acciones rápidas</h2>
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-7">
+      <div className="flex items-end justify-between gap-3">
+        <h2 className="font-mono text-xs uppercase tracking-wider text-ops-gray">
+          Acciones rápidas
+        </h2>
+        <p className="font-sans text-[11px] text-ops-gray">Accesos operativos frecuentes</p>
+      </div>
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
         {actions.map((action) => {
           const Icon = action.icon;
           return (
@@ -62,8 +82,8 @@ export function QuickActions() {
               key={action.label}
               onClick={() => router.push(action.href)}
               className={`
-                flex flex-col items-center justify-center gap-1.5 rounded-lg border border-white/10 p-3
-                transition-all hover:scale-[1.02] active:scale-[0.98]
+                flex min-h-[84px] flex-col items-center justify-center gap-1.5 rounded-xl border border-white/10 p-3
+                text-center transition-all hover:translate-y-[-1px] hover:border-white/20 active:translate-y-[0]
                 ${action.color}
               `}
             >

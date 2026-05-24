@@ -26,22 +26,22 @@ declare global {
 const INITIAL_MESSAGES: ChatMessage[] = [
   {
     role: 'assistant',
-    text: 'IA Assist online. Ask about metrics, anomalies, or deployment recommendations.',
+    text: 'Asistente operativo listo. Pregunta por métricas, colas o despliegues.',
   },
 ];
 
 function aiReply(input: string): string {
   const value = input.toLowerCase();
   if (value.includes('cpu')) {
-    return 'Pattern detected: throttle high-cost agents and prioritize neural queue tier-1.';
+    return 'Recomendación: reduce carga de workers no críticos y revisa colas activas.';
   }
   if (value.includes('tenant')) {
-    return 'Recommendation: focus onboarding bottlenecks and auto-tag high-variance tenants.';
+    return 'Recomendación: revisa onboarding y tenants con más fricción operativa.';
   }
   if (value.includes('deploy')) {
-    return 'Precheck: confirm VPS_* and PLATFORM_DOMAIN secrets before the next release window.';
+    return 'Antes del despliegue confirma variables de entorno y health checks.';
   }
-  return 'Neural sync complete. Suggestion: monitor predictive load panels and apply staged rollout.';
+  return 'Recomendación: revisa carga, actividad y estado de los servicios antes de mover algo.';
 }
 
 export function AIChatAssistant() {
@@ -94,7 +94,7 @@ export function AIChatAssistant() {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Bot className="h-4 w-4 text-ops-magenta" />
-          Cyber Assistant
+          Asistente operativo
         </CardTitle>
       </CardHeader>
       <CardContent className="flex h-full min-h-[460px] flex-col gap-3">
@@ -125,7 +125,7 @@ export function AIChatAssistant() {
           <input
             value={input}
             onChange={(event) => setInput(event.target.value)}
-            placeholder="Type command for AI..."
+            placeholder="Escribe una consulta operativa..."
             className="holo-border flex-1 rounded-lg bg-ops-bg/70 px-3 py-2 text-xs text-neutral-100 outline-none"
           />
           <button

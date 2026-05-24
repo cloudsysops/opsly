@@ -23,25 +23,45 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-const nav = [
-  { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/machines', label: 'Máquinas', icon: Boxes },
-  { href: '/tenants', label: 'Tenants', icon: Server },
-  { href: '/invitations', label: 'Invitations', icon: Mail },
-  { href: '/metrics/llm', label: 'LLM Metrics', icon: BarChart3 },
-  { href: '/api-surface', label: 'API Surface', icon: Network },
-  { href: '/agents', label: 'Agent Teams', icon: Activity },
-  { href: '/agents-team', label: 'Agents Config', icon: Activity },
-  { href: '/mission-control/office', label: 'Mission Control', icon: LayoutGrid },
-  { href: '/mission-control/local-runtime', label: 'Local Runtime', icon: Wrench },
-  { href: '/openclaw/ide', label: 'IDE Octopus', icon: Code2 },
-  { href: '/openclaw-governance', label: 'OpenClaw Governance', icon: Gavel },
-  { href: '/costs', label: 'Costos', icon: CircleDollarSign },
-  { href: '/notebooklm', label: 'NotebookLM', icon: BookOpen },
-  { href: '/feedback', label: 'Feedback', icon: MessageSquare },
-  { href: '/approval-decisions', label: 'Approval Gate', icon: ShieldCheck },
-  { href: '/defense-platform', label: 'Defense', icon: ShieldAlert },
-  { href: '/settings', label: 'Settings', icon: Settings },
+const navSections = [
+  {
+    title: 'Operar',
+    items: [
+      { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+      { href: '/tenants', label: 'Tenants', icon: Server },
+      { href: '/machines', label: 'Máquinas', icon: Boxes },
+      { href: '/invitations', label: 'Invitaciones', icon: Mail },
+    ],
+  },
+  {
+    title: 'Observar',
+    items: [
+      { href: '/metrics/llm', label: 'LLM Metrics', icon: BarChart3 },
+      { href: '/api-surface', label: 'API Surface', icon: Network },
+      { href: '/feedback', label: 'Feedback', icon: MessageSquare },
+      { href: '/costs', label: 'Costos', icon: CircleDollarSign },
+      { href: '/notebooklm', label: 'NotebookLM', icon: BookOpen },
+    ],
+  },
+  {
+    title: 'Agentes',
+    items: [
+      { href: '/agents', label: 'Agent Teams', icon: Activity },
+      { href: '/agents-team', label: 'Agents Config', icon: Activity },
+      { href: '/mission-control/office', label: 'Mission Control', icon: LayoutGrid },
+      { href: '/mission-control/local-runtime', label: 'Local Runtime', icon: Wrench },
+      { href: '/openclaw/ide', label: 'IDE Octopus', icon: Code2 },
+      { href: '/openclaw-governance', label: 'OpenClaw Governance', icon: Gavel },
+    ],
+  },
+  {
+    title: 'Seguridad',
+    items: [
+      { href: '/approval-decisions', label: 'Approval Gate', icon: ShieldCheck },
+      { href: '/defense-platform', label: 'Defense', icon: ShieldAlert },
+      { href: '/settings', label: 'Settings', icon: Settings },
+    ],
+  },
 ];
 
 export function Sidebar() {
@@ -59,25 +79,34 @@ export function Sidebar() {
         <div className="relative mt-1 text-[10px] uppercase tracking-[0.24em] text-ops-magenta">Admin</div>
       </div>
       <nav className="flex flex-1 flex-col gap-0.5 p-2">
-        {nav.map(({ href, label, icon: Icon }) => {
-          const active = pathname === href || pathname.startsWith(`${href}/`);
-          return (
-            <Link
-              key={href}
-              href={href}
-              prefetch={false}
-              className={cn(
-                'cyber-hover flex items-center gap-2 rounded-lg border border-transparent px-3 py-2 font-sans text-sm transition-colors',
-                active
-                  ? 'holo-border bg-ops-cyan/10 text-ops-cyan shadow-[0_0_20px_rgba(0,255,255,0.25)]'
-                  : 'text-neutral-300 hover:bg-ops-purple/10 hover:text-ops-cyan'
-              )}
-            >
-              <Icon className={cn('h-4 w-4 shrink-0', active ? 'animate-neon-flicker text-ops-cyan' : '')} />
-              {label}
-            </Link>
-          );
-        })}
+        {navSections.map((section) => (
+          <div key={section.title} className="mb-2 space-y-1">
+            <div className="px-3 pt-2 font-mono text-[10px] uppercase tracking-[0.22em] text-ops-gray">
+              {section.title}
+            </div>
+            {section.items.map(({ href, label, icon: Icon }) => {
+              const active = pathname === href || pathname.startsWith(`${href}/`);
+              return (
+                <Link
+                  key={href}
+                  href={href}
+                  prefetch={false}
+                  className={cn(
+                    'cyber-hover flex items-center gap-2 rounded-lg border border-transparent px-3 py-2.5 font-sans text-sm transition-colors',
+                    active
+                      ? 'holo-border bg-ops-cyan/10 text-ops-cyan shadow-[0_0_20px_rgba(0,255,255,0.25)]'
+                      : 'text-neutral-300 hover:bg-ops-purple/10 hover:text-ops-cyan'
+                  )}
+                >
+                  <Icon
+                    className={cn('h-4 w-4 shrink-0', active ? 'animate-neon-flicker text-ops-cyan' : '')}
+                  />
+                  {label}
+                </Link>
+              );
+            })}
+          </div>
+        ))}
       </nav>
     </aside>
   );

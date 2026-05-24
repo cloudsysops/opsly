@@ -16,8 +16,13 @@ const labels: Record<string, string> = {
   invitations: 'Invitations',
   metrics: 'Metrics',
   agents: 'Agent Teams',
+  'agents-team': 'Agents Config',
   costs: 'Costos',
   'api-surface': 'API Surface',
+  'mission-control': 'Mission Control',
+  openclaw: 'OpenClaw',
+  'defense-platform': 'Defense',
+  'approval-decisions': 'Approval Gate',
 };
 
 function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {

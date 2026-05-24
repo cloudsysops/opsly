@@ -59,7 +59,7 @@ export function PlatformOverview(): React.ReactElement {
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-2">
         <h2 className="font-mono text-xs uppercase tracking-wider text-ops-gray">
-          Plataforma · VPS, local, orquestación y LLM
+          Vista de plataforma · VPS, nodo local, orquestación y LLM
         </h2>
         <span className="font-mono text-[10px] text-ops-gray">
           Actualizado {new Date(overview.generated_at).toLocaleString('es')}
@@ -89,7 +89,7 @@ export function PlatformOverview(): React.ReactElement {
         <Card className="lg:col-span-1">
           <CardHeader className="pb-2">
             <CardTitle className="font-sans text-xs font-normal uppercase tracking-wide text-ops-gray">
-              VPS (Prometheus)
+              VPS
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-2 font-mono text-sm text-neutral-200">
@@ -129,7 +129,7 @@ export function PlatformOverview(): React.ReactElement {
         <Card className="lg:col-span-1">
           <CardHeader className="pb-2">
             <CardTitle className="font-sans text-xs font-normal uppercase tracking-wide text-ops-gray">
-              Máquina local (Mac / worker)
+              Nodo local
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-2 font-mono text-sm text-neutral-200">
@@ -201,7 +201,7 @@ export function PlatformOverview(): React.ReactElement {
       <Card>
         <CardHeader className="pb-2">
           <CardTitle className="font-sans text-xs font-normal uppercase tracking-wide text-ops-gray">
-            Colas · orquestador y agentes
+            Colas operativas
           </CardTitle>
         </CardHeader>
         <CardContent className="overflow-x-auto">
