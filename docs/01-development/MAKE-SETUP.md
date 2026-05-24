@@ -104,6 +104,18 @@ Referencia API: [Make API — Hooks](https://developers.make.com/api-documentati
 
 Docs n8n: [`N8N-SETUP.md`](./N8N-SETUP.md). Peskids: [`../tenants/peskids/DOPPLER-SETUP.md`](../tenants/peskids/DOPPLER-SETUP.md).
 
+## Errores frecuentes (agentes / terminal)
+
+| Incorrecto | Correcto |
+|------------|----------|
+| `MAKE_API_KEY` / `doppler secrets set MAKE_API_KEY=...` | **`MAKE_API_TOKEN`** — nombre ya en Doppler; no crear clave duplicada |
+| Pegar el token en chat o en un commit | Solo en Doppler UI o `doppler secrets set` desde tu Mac (sin mostrar valor) |
+| `doppler secrets set` manual con placeholder | `./scripts/doppler-configure-make-prd.sh` (idempotente; usa el token existente) |
+| `git push origin main` para “desplegar” fixes | Rama `feat/*` o `fix/*` → **PR** → merge; ver [`GIT-WORKFLOW.md`](./GIT-WORKFLOW.md) |
+| Verificar con `doppler secrets get MAKE_API_KEY` | `doppler secrets get MAKE_API_TOKEN --project ops-intcloudsysops --config prd --plain` (solo en tu terminal) |
+
+Tras merge a `main`, CI/Deploy propagan env al VPS (`vps-bootstrap.sh`); no hace falta push directo a `main` desde el agente.
+
 ## Post-configuración
 
 ```bash

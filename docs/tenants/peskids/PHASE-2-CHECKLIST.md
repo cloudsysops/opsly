@@ -56,12 +56,22 @@
 
 ### Step 5: Setup Make.com → n8n Webhook
 
+Doppler (`prd`) debe tener Make ya configurado — ver [`MAKE-SETUP.md`](../../01-development/MAKE-SETUP.md). No uses `MAKE_API_KEY` (no existe); el token canónico es **`MAKE_API_TOKEN`**.
+
+```bash
+# Mac local — solo si faltan vars Make en Doppler
+./scripts/doppler-configure-make-prd.sh --dry-run
+./scripts/doppler-configure-make-prd.sh
+```
+
 - [ ] In Make.com scenario: **Add module → HTTP → Make a request**
-- [ ] Configure:
-  ```
-  URL: http://n8n-peskids:5678/webhook/peskids-instagram
-  Method: POST
-  Body (JSON):
+- [ ] **URL** (público, no hostname Docker interno):
+  - n8n: `https://n8n-peskids.op-sly.com/webhook/peskids-instagram`  
+    (o valor de `N8N_WEBHOOK_BASE_URL` en Doppler + `/peskids-instagram`)
+  - Opcional ingress Make: `TENANT_PESKIDS_MAKE_WEBHOOK_URL` en Doppler (`opsly-peskids-ingress`)
+- [ ] Method: **POST**
+- [ ] Body (JSON):
+  ```json
   {
     "from_id": "{{instagram.user_id}}",
     "sender_handle": "{{instagram.username}}",

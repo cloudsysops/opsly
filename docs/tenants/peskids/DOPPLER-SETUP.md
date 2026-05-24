@@ -10,6 +10,8 @@
 
 El script **no imprime valores**. Reutiliza Supabase ya presente en `prd` y genera `DASHBOARD_ADMIN_SECRET` y `JELOU_WEBHOOK_SECRET` si faltan.
 
+Make.com (plataforma + hook Peskids): [`MAKE-SETUP.md`](../../01-development/MAKE-SETUP.md) y `./scripts/doppler-configure-make-prd.sh` (requiere `MAKE_API_TOKEN` ya en `prd`; **no** usar nombre `MAKE_API_KEY`).
+
 ## Variables en `prd`
 
 | Variable | Origen / valor |

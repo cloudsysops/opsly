@@ -207,7 +207,11 @@
     "next": "15.5.18",
     "qs": "6.15.2",
     "@types/react": "^19.2.14",
-    "@types/react-dom": "^19.2.3"
+    "@types/react-dom": "^19.2.3",
+    "peskids": {
+      "@types/react": "19.2.14",
+      "@types/react-dom": "19.2.3"
+    }
   },
   "dependencies": {
     "@redis/client": "^1.6.1",
