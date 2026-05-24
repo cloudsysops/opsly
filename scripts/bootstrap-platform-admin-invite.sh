@@ -186,6 +186,29 @@ async function generateInviteLink() {
   return body;
 }
 
+async function generateRecoveryLink(adminBase) {
+  const res = await fetch(`${url}/auth/v1/admin/generate_link`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${serviceKey}`,
+      apikey: serviceKey,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      type: 'recovery',
+      email,
+      options: {
+        redirect_to: `${adminBase}/auth/recovery`,
+      },
+    }),
+  });
+  const body = await res.json();
+  if (!res.ok) {
+    throw new Error(body.msg || body.message || `recovery link HTTP ${res.status}`);
+  }
+  return body;
+}
+
 function parseToken(actionLink) {
   try {
     return new URL(actionLink).searchParams.get('token');
@@ -200,12 +223,15 @@ function parseToken(actionLink) {
 
   if (existing) {
     console.log('USER_EXISTS:', existing.id);
+    console.log('confirmed:', existing.email_confirmed_at ? 'yes' : 'no');
+    console.log('last_sign_in:', existing.last_sign_in_at || 'never');
     if (dryRun) {
-      console.log('DRY_RUN: actualizaría metadata y reenviaría invite');
+      console.log('DRY_RUN: actualizaría metadata y enviaría recovery a admin (no invite)');
       process.exit(0);
     }
     await updateUser(existing.id);
     console.log('OK: metadata actualizada (admin + superuser + tenant_slug)');
+    console.log('SKIP: invite API (usuario ya registrado — usar recovery abajo)');
   } else if (dryRun) {
     console.log('DRY_RUN: crearía usuario e invitaría por email');
     process.exit(0);
@@ -222,23 +248,43 @@ function parseToken(actionLink) {
     }
   }
 
+  const adminBase = (process.env.ADMIN_SITE_URL || '').replace(/\/$/, '')
+    || (process.env.PLATFORM_DOMAIN
+      ? `https://admin.${process.env.PLATFORM_DOMAIN.trim()}`
+      : 'https://admin.op-sly.com');
+
   if (!dryRun) {
-    const linkPayload = await generateInviteLink();
-    const actionLink = linkPayload?.action_link || linkPayload?.properties?.action_link;
-    if (actionLink) {
-      const token = parseToken(actionLink);
-      if (token) {
-        const manual = `${portalBase}/invite/${encodeURIComponent(token)}?email=${encodeURIComponent(email)}`;
+    if (existing) {
+      const recoveryPayload = await generateRecoveryLink(adminBase);
+      const recoveryLink =
+        recoveryPayload?.action_link || recoveryPayload?.properties?.action_link;
+      if (recoveryLink) {
         console.log('');
-        console.log('Enlace manual (si el correo no llega):');
-        console.log(manual);
+        console.log('Recovery admin (abrir una vez, ~1h):');
+        console.log(recoveryLink);
+        console.log('');
+        console.log('Si Supabase redirige al portal: añade en Dashboard → Auth → URL:');
+        console.log(`  ${adminBase}/auth/recovery`);
+        console.log(`  ${adminBase}/update-password`);
+      }
+    } else {
+      const linkPayload = await generateInviteLink();
+      const actionLink = linkPayload?.action_link || linkPayload?.properties?.action_link;
+      if (actionLink) {
+        const token = parseToken(actionLink);
+        if (token) {
+          const manual = `${portalBase}/invite/${encodeURIComponent(token)}?email=${encodeURIComponent(email)}`;
+          console.log('');
+          console.log('Enlace manual invite (si el correo no llega):');
+          console.log(manual);
+        }
       }
     }
   }
 
   console.log('');
   console.log('Acceso esperado tras activar contraseña:');
-  console.log('  admin:  https://admin.op-sly.com/login');
+  console.log(`  admin:  ${adminBase}/login  ← superuser / plataforma`);
   if (isSuperuser || tenantSlug === 'peskids') {
     console.log('  peskids: https://peskids.op-sly.com/admin/login');
   }

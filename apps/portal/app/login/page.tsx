@@ -2,7 +2,7 @@
 
 import type { FormEvent, ReactElement } from 'react';
 import { Loader2 } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import {
@@ -14,10 +14,34 @@ import {
 import { buildRecoveryRedirectTo } from '@/lib/auth-recovery';
 import { createClient } from '@/lib/supabase';
 
+const ADMIN_LOGIN_URL = 'https://admin.op-sly.com/login';
+
+function hashAuthErrorMessage(): string | null {
+  if (typeof window === 'undefined') {
+    return null;
+  }
+  const hash = window.location.hash.replace(/^#/, '');
+  if (!hash) {
+    return null;
+  }
+  const params = new URLSearchParams(hash);
+  if (!params.get('error')) {
+    return null;
+  }
+  const code = params.get('error_code') ?? '';
+  const description =
+    params.get('error_description')?.replace(/\+/g, ' ') ?? params.get('error') ?? 'Enlace inválido.';
+  if (code === 'otp_expired') {
+    return `El enlace de invitación o recuperación expiró (${description}). Solicita uno nuevo. Si eres administrador de Opsly, usa ${ADMIN_LOGIN_URL} (no el portal de clientes).`;
+  }
+  return description;
+}
+
 export default function LoginPage(): ReactElement {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [hashError, setHashError] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [passkeyError, setPasskeyError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -26,6 +50,10 @@ export default function LoginPage(): ReactElement {
   const [googleError, setGoogleError] = useState<string | null>(null);
   const [resetSent, setResetSent] = useState(false);
   const [resetLoading, setResetLoading] = useState(false);
+
+  useEffect(() => {
+    setHashError(hashAuthErrorMessage());
+  }, []);
 
   const onForgotPassword = async (): Promise<void> => {
     const trimmed = email.trim();
@@ -163,6 +191,17 @@ export default function LoginPage(): ReactElement {
           className="space-y-4 rounded-lg border border-ops-border/80 bg-ops-surface/60 p-6 shadow-xl shadow-black/30 backdrop-blur-sm"
           aria-busy={loading}
         >
+          {hashError ? (
+            <p
+              role="alert"
+              className="rounded-sm border border-ops-amber-500/40 bg-ops-amber-500/10 px-3 py-2 text-sm text-amber-200"
+            >
+              {hashError}{' '}
+              <a href={ADMIN_LOGIN_URL} className="font-medium text-ops-green underline">
+                Ir al admin
+              </a>
+            </p>
+          ) : null}
           {error ? (
             <p
               role="alert"
