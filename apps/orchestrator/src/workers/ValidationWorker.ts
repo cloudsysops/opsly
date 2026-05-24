@@ -22,10 +22,19 @@ const POLL_TIMEOUT_MS = 5 * 60_000;
 
 export async function fetchCIConclusion(sha: string, token: string): Promise<CIConclusion> {
   const url = `https://api.github.com/repos/${REPO}/actions/runs?head_sha=${sha}&per_page=5`;
-  const res = await fetch(url, {
-    headers: { Authorization: `Bearer ${token}`, Accept: "application/vnd.github+json" },
-  });
-  if (!res.ok) return "failure";
+  let res: Response;
+  try {
+    res = await fetch(url, {
+      headers: { Authorization: `Bearer ${token}`, Accept: "application/vnd.github+json" },
+    });
+  } catch {
+    return "pending";
+  }
+
+  if (!res.ok) {
+    if (res.status >= 500) return "pending";
+    return "failure";
+  }
 
   const data = (await res.json()) as { workflow_runs?: { status: string; conclusion: string | null }[] };
   const runs = data.workflow_runs ?? [];
