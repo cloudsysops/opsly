@@ -1,0 +1,102 @@
+{
+  "version": "1.0.0",
+  "description": "MAIA Plugin Registry — Workers autónomos auto-registrables",
+  "plugins": [
+    {
+      "id": "maia-self-heal",
+      "name": "SelfHealWorker",
+      "version": "1.0.0",
+      "description": "Reinicia y repara servicios en VPS vía SSH",
+      "module": "../../apps/orchestrator/src/workers/SelfHealWorker.js",
+      "export": "startSelfHealWorker",
+      "queue": "openclaw",
+      "jobName": "self-heal",
+      "concurrency": 3,
+      "envGate": "OPSLY_MAIA_WORKERS_ENABLED",
+      "dependencies": [],
+      "category": "maia-life-systems",
+      "tags": ["self-heal", "vps", "ssh", "recovery"]
+    },
+    {
+      "id": "maia-auto-deploy",
+      "name": "AutoDeployWorker",
+      "version": "1.0.0",
+      "description": "Despliegue automático desde main branch",
+      "module": "../../apps/orchestrator/src/workers/AutoDeployWorker.js",
+      "export": "startAutoDeployWorker",
+      "queue": "openclaw",
+      "jobName": "auto-deploy",
+      "concurrency": 1,
+      "envGate": "OPSLY_MAIA_WORKERS_ENABLED",
+      "dependencies": [],
+      "category": "maia-life-systems",
+      "tags": ["deploy", "ci-cd", "git"]
+    },
+    {
+      "id": "maia-cost-gate",
+      "name": "CostGateWorker",
+      "version": "1.0.0",
+      "description": "Control de presupuesto LLM por tenant",
+      "module": "../../apps/orchestrator/src/workers/CostGateWorker.js",
+      "export": "startCostGateWorker",
+      "queue": "openclaw",
+      "jobName": "cost-check",
+      "concurrency": 20,
+      "envGate": "OPSLY_MAIA_WORKERS_ENABLED",
+      "dependencies": [],
+      "category": "maia-life-systems",
+      "tags": ["cost", "budget", "metering"]
+    },
+    {
+      "id": "maia-claude-code",
+      "name": "ClaudeCodeWorker",
+      "version": "1.0.0",
+      "description": "Ejecución autónoma de tareas vía Anthropic API",
+      "module": "../../apps/orchestrator/src/workers/ClaudeCodeWorker.js",
+      "export": "startClaudeCodeWorker",
+      "queue": "openclaw",
+      "jobName": "claude-code",
+      "concurrency": 2,
+      "envGate": "OPSLY_MAIA_WORKERS_ENABLED",
+      "dependencies": [],
+      "category": "maia-life-systems",
+      "tags": ["claude", "llm", "code-generation"]
+    },
+    {
+      "id": "maia-validation",
+      "name": "ValidationWorker",
+      "version": "1.0.0",
+      "description": "Valida CI/CD y ejecuta tareas de control de calidad",
+      "module": "../../apps/orchestrator/src/workers/ValidationWorker.js",
+      "export": "startValidationWorker",
+      "queue": "openclaw",
+      "jobName": "validate",
+      "concurrency": 5,
+      "envGate": "OPSLY_MAIA_WORKERS_ENABLED",
+      "dependencies": [],
+      "category": "maia-life-systems",
+      "tags": ["validation", "ci", "quality"]
+    },
+    {
+      "id": "maia-memory-writer",
+      "name": "MemoryWriterWorker",
+      "version": "1.0.0",
+      "description": "Persiste estado en MAIA-STATUS.md vía GitHub API",
+      "module": "../../apps/orchestrator/src/workers/MemoryWriterWorker.js",
+      "export": "startMemoryWriterWorker",
+      "queue": "openclaw",
+      "jobName": "memory-write",
+      "concurrency": 1,
+      "envGate": "OPSLY_MAIA_WORKERS_ENABLED",
+      "dependencies": ["maia-validation"],
+      "category": "maia-life-systems",
+      "tags": ["memory", "persistence", "status"]
+    }
+  ],
+  "categories": {
+    "maia-life-systems": {
+      "description": "Sistema de ciclo de vida autónomo — 6 workers de mantenimiento continuo",
+      "envGate": "OPSLY_MAIA_WORKERS_ENABLED"
+    }
+  }
+}
