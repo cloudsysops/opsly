@@ -1,5 +1,6 @@
 'use client'
 
+import React from 'react'
 import { MessageCircle } from 'lucide-react'
 import { PeskidsChatPanel } from '@/components/chat/peskids-chat-panel'
 import { WhatsAppLink } from '@/components/contact/whatsapp-link'
@@ -16,7 +17,7 @@ export function HeroChatCard(): React.ReactElement {
         messages={chat.messages}
         input={chat.input}
         sending={chat.sending}
-        listRef={chat.listRef}
+        listRef={chat.listRef as React.RefObject<HTMLDivElement>}
         onInputChange={chat.setInput}
         onSend={() => void chat.sendMessage()}
       />
