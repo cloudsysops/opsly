@@ -360,68 +360,55 @@ node scripts/load-skills.js show opsly-api
 | Docker tenant aislado                        | `scripts/lib/docker-helpers.sh` — `--project-name tenant_<slug>`                                                                                 |
 | Agency Division (nuevo 2026-05-06)            | `docs/01-development/OPSLY-AGENCY-DIVISION.md` — API Factory, Agent Management, Security API, Autonomous Revenue                                 |
 
-## 🚀 Peskids Extraction (Tenant Project)
+## 🚀 Peskids (Tenant Project, Phase 1 MVP Complete)
 
-**Status:** MVP in `apps/peskids/`; extraction planning in `docs/tenants/peskids/`  
-**Owner:** Product (currently incubated in Opsly monorepo)  
-**Goal:** Extract Peskids into independent `cloudsysops/peskids-platform` GitHub repo with 7 coordinated AI agents for client VPS deployment  
-**Next Phase:** Document agent implementation + Docker stack configuration
+**Status:** ✅ Phase 1 MVP COMPLETE — production-ready; extraction planning in progress  
+**Owner:** sierrasantiago90@gmail.com (product owner, incubated in Opsly monorepo)  
+**Deployment:** VPS (peskids.op-sly.com) + Vercel planned (Phase 2)  
+**Next Focus:** N8N workflows, WhatsApp integration, RLS policies
 
-### ✅ Current Work (2026-05-21)
+### ✅ Phase 1 Completion (2026-05-24)
 
-**Session Goal:** Assist with Peskids extraction—prepare for standalone SaaS with coordinated binary agents, approval-first messaging, and zero-manual-intervention VPS deployment.
+**What's Complete (VERIFIED & LIVE):**
+1. **Landing page** — Lead capture form, benefits overview, CTA (live at https://peskids.op-sly.com)
+2. **Admin authentication** — Supabase email/password login (PR #407 merged):
+   - Owner email validation (sierrasantiago90@gmail.com)
+   - Role-based access (staff, teacher, parent roles ready for Phase 2)
+   - Production-secure (session-based, no static tokens)
+   - Token fallback maintained for backward compatibility
+3. **Admin dashboard** — Metrics placeholder, navigation ready for Phase 2 features
+4. **CI/CD pipeline** — GitHub Actions auto-deploy on main branch merge (fixed workflow lint error)
+5. **Database schema** — Migrations for leads, students, feedback, followups, messages, parents, teachers, classes
+6. **Documentation** — 35+ docs, CLIENT-HANDOFF-CHECKLIST for Sierra, extraction plan documented
 
-**What Happened:**
-1. Initially created `peskids-platform/` directory at repo root with complete agent structure, Docker stack, and deployment scripts.
-2. **Correction (per guardrails):** Removed root-level directory—violates `docs/STRUCTURE-GUARDRAILS.md` (only allowed at root: AGENTS.md, README.md, ROADMAP.md, VISION.md, tool configs, and proper platform folders like apps/, packages/, infra/).
-3. **Current State:** All Peskids code already exists:
-   - **Web app:** `apps/peskids/` (Next.js 14, landing page, dashboard, API routes)
-   - **Planning docs:** `docs/tenants/peskids/` (EXTRACTION-PLAN.md, FUTURE-REPO-SEED.md, architecture specs)
-   - **Database schema:** Migrations for leads, students, feedback, followups, messages
+**What's Ready to Test:**
+- URL: https://peskids.op-sly.com/admin
+- Action: Sign up / log in with sierrasantiago90@gmail.com
+- Verify: Dashboard loads, role shows as owner/staff
 
-### 📋 Next Steps (Ordered)
+### 📋 Phase 2 (Starting Next)
 
-1. **Document agent implementation strategy** in `docs/tenants/peskids/AGENT-IMPLEMENTATION-PLAN.md`:
-   - 7 agents (orchestrator, social-media, docs-generator, api-integration, web-experience, messaging, security)
-   - BullMQ worker pattern for each agent
-   - Redis queue routing architecture
+**Scope (2 weeks):**
+1. **N8N workflows** — Hot lead alerts, follow-up reminders, feedback digests
+2. **Jelou webhook** — Lead form submissions → `leads` table
+3. **WhatsApp integration** — Two-way messaging via Jelou
+4. **RLS policies** — Database row-level security for multi-user support
+5. **Teacher dashboard** — Class management, feedback submission
+6. **Parent portal preview** — (Optional Phase 2.5) Students + grades view
 
-2. **Create Dockerfile collection** in `docs/tenants/peskids/` with examples:
-   - `apps/peskids/Dockerfile` (Next.js production build)
-   - Agent Dockerfiles (Node.js + BullMQ workers)
+**Approval-First Messaging (Built-in):**
+- Inbound message → Messaging agent prepares response
+- Admin sees notification on dashboard → clicks "Approve"
+- Approved message sends via Jelou/Twilio
+- Audit log + status tracking
 
-3. **Docker Compose production stack** specification
-   - Services: Traefik v3, postgres, redis, web, 7 agents, n8n, uptime-kuma
-   - Environment variable template (comprehensive)
-   - Health checks and logging configuration
-
-4. **VPS deployment automation** (scripts in future repo):
-   - `setup-client-vps.sh` — one-click setup (Docker, env generation, SSL certs)
-   - `health-check.sh` — service verification
-   - `backup-database.sh` — automated backups
-
-5. **Test end-to-end flow** locally with Docker Compose:
-   - Lead submission → Redis task queuing → Agent execution → Dashboard update
-   - Messaging approval workflow (prepareForApproval → humanApprove → sendApprovedMessage)
-
-### 🔐 Critical: Approval-First Messaging
-
-Messaging Agent has **hard requirement**: no message sends without explicit human approval.
-
-**Flow:**
-- Inbound (WhatsApp/Instagram) → Messaging agent prepares response
-- Emit "message.awaiting_approval" with preview
-- Admin dashboard shows notification → clicks "Approve"
-- Agent receives approval event → sends via Twilio/Resend
-- Status: "sent" + audit log
-
-### 📦 Extraction Phases (Documented)
+### 📦 Extraction Path (When Client Scales)
 
 See `docs/tenants/peskids/EXTRACTION-PLAN.md`:
-- **Phase 0:** Incubation in Opsly (current)
-- **Phase 1:** Independent GitHub repo creation
-- **Phase 2:** VPS deployment automation
-- **Phase 3:** Production launch + client onboarding
+- **Phase 0:** Incubation in Opsly ✅ (NOW)
+- **Phase 1:** Independent `cloudsysops/peskids-platform` repo (>50 users)
+- **Phase 2:** Client's own VPS + custom domain (Year 2)
+- **Script:** `peskids-extract.sh` will automate migration
 
 ---
 
