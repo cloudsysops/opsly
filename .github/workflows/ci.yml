@@ -320,8 +320,8 @@ jobs:
       - name: Run E2E invite script
         run: |
           export ADMIN_TOKEN="${{ secrets.PLATFORM_ADMIN_TOKEN }}"
-          export OWNER_EMAIL="jkbotero78@gmail.com"
-          export TENANT_SLUG="localrank"
+          export OWNER_EMAIL="cboteros1@gmail.com"
+          export TENANT_REF="intcloudsysops"
           bash scripts/test-e2e-invite-flow.sh
 
       - name: Run Playwright E2E tests (portal with Supabase)
