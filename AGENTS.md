@@ -360,12 +360,12 @@ node scripts/load-skills.js show opsly-api
 | Docker tenant aislado                        | `scripts/lib/docker-helpers.sh` — `--project-name tenant_<slug>`                                                                                 |
 | Agency Division (nuevo 2026-05-06)            | `docs/01-development/OPSLY-AGENCY-DIVISION.md` — API Factory, Agent Management, Security API, Autonomous Revenue                                 |
 
-## 🚀 Peskids (Tenant Project, Phase 1 MVP Complete)
+## 🚀 Peskids (Tenant Project, Phase 2 Implementation Ready)
 
-**Status:** ✅ Phase 1 MVP COMPLETE — production-ready; extraction planning in progress  
+**Status:** ✅ Phase 1 MVP COMPLETE (production-ready); Phase 2 Week 1 code ready, awaiting SSH access for N8N deployment  
 **Owner:** sierrasantiago90@gmail.com (product owner, incubated in Opsly monorepo)  
-**Deployment:** VPS (peskids.op-sly.com) + Vercel planned (Phase 2)  
-**Next Focus:** N8N workflows, WhatsApp integration, RLS policies
+**Deployment:** VPS (peskids.op-sly.com) + Vercel planned (Phase 2 end)  
+**Current Phase:** Phase 2 Week 1 (N8N setup, lead capture workflows, RLS policies) — branch `feat/peskids-phase2`
 
 ### ✅ Phase 1 Completion (2026-05-24)
 
@@ -386,18 +386,39 @@ node scripts/load-skills.js show opsly-api
 - Action: Sign up / log in with sierrasantiago90@gmail.com
 - Verify: Dashboard loads, role shows as owner/staff
 
-### 📋 Phase 2 (Starting Next)
+### 📋 Phase 2 (Week 1 — Code Complete, Ready for Execution)
 
-**Scope (2 weeks):**
-1. **N8N workflows** — Hot lead alerts, follow-up reminders, feedback digests
-2. **Jelou webhook** — Lead form submissions → `leads` table
-3. **WhatsApp integration** — Two-way messaging via Jelou
-4. **RLS policies** — Database row-level security for multi-user support
-5. **Teacher dashboard** — Class management, feedback submission
-6. **Parent portal preview** — (Optional Phase 2.5) Students + grades view
+**Status:** Code prepared and committed to `feat/peskids-phase2` (2026-05-24)  
+**Timeline:** May 24-31 (Week 1), Jun 1-7 (Week 2)
 
-**Approval-First Messaging (Built-in):**
-- Inbound message → Messaging agent prepares response
+**Week 1 (May 24-31) — Implementation Ready:**
+✅ **Completed (committed):**
+- Lead validation schema (Zod) — `apps/peskids/lib/validation/lead.schema.ts`
+- Updated landing page form to POST to N8N webhook — `apps/peskids/components/forms/lead-capture-form.tsx`
+- N8N workflows configuration guide — `docs/tenants/peskids/N8N-WORKFLOWS-GUIDE.md`
+- RLS migration (SQL) — `apps/peskids/migrations/20260524_add_rls_policies_peskids.sql`
+- Phase 2 Week 1 execution guide (step-by-step) — `docs/tenants/peskids/PHASE-2-WEEK1-EXECUTION-GUIDE.md`
+- Environment variables for N8N webhook — `apps/peskids/.env.example`
+
+⏳ **Blocked on:**
+- SSH access to VPS to run N8N setup script: `./scripts/setup-n8n-tenant.sh`
+- N8N container deployment (creates `tenant_peskids` service)
+- Manual workflow creation in N8N UI (lead-capture, hot-lead-alert)
+
+📋 **Day-by-Day Schedule (when SSH available):**
+- **Day 1 (May 24):** N8N container setup (2h) + lead capture workflow (2h)
+- **Day 2 (May 25):** Hot lead alert workflow (2h) + form integration (2h)
+- **Day 3 (May 26):** RLS policies migration (6h)
+- **Days 4-5 (May 27-28):** Buffer & testing
+
+**Week 2 (Jun 1-7) — Planned (not yet implemented):**
+1. **Teacher dashboard** — Class management, feedback submission UI
+2. **Parent portal preview** — Students + grades view (optional if ahead)
+3. **WhatsApp/Jelou integration** — Two-way messaging via n8n workflows
+4. **Daily follow-up digest** — Scheduled n8n workflow (8am daily)
+
+**Approval-First Messaging (Built-in, Phase 2 Week 2):**
+- Inbound message → n8n prepares response via Jelou webhook
 - Admin sees notification on dashboard → clicks "Approve"
 - Approved message sends via Jelou/Twilio
 - Audit log + status tracking
