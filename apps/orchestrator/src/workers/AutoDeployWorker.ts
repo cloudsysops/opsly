@@ -1,6 +1,6 @@
-import { Job, Worker } from "bullmq";
-import { logWorkerLifecycle } from "../observability/worker-log.js";
-import { notifyDiscord } from "./NotifyWorker.js";
+import { Job, Worker } from 'bullmq';
+import { logWorkerLifecycle } from '../observability/worker-log.js';
+import { notifyDiscord } from './NotifyWorker.js';
 
 export interface AutoDeployPayload {
   commit_sha: string;
@@ -8,22 +8,21 @@ export interface AutoDeployPayload {
   triggered_by?: string;
 }
 
-const VPS_SSH = process.env.VPS_TAILSCALE_HOST ?? "vps-dragon@100.120.151.91";
-const OPSLY_ROOT = process.env.VPS_OPSLY_ROOT ?? "/opt/opsly";
-const PLATFORM_DOMAIN = process.env.PLATFORM_DOMAIN ?? "ops.smiletripcare.com";
+const VPS_SSH = process.env.VPS_TAILSCALE_HOST ?? 'vps-dragon@100.120.151.91';
+const OPSLY_ROOT = process.env.VPS_OPSLY_ROOT ?? '/opt/opsly';
+const PLATFORM_DOMAIN = process.env.PLATFORM_DOMAIN ?? 'ops.smiletripcare.com';
 const HEALTH_TIMEOUT_MS = 60_000;
 
 async function runSSH(cmd: string): Promise<{ ok: boolean; output: string }> {
-  const { execFile } = await import("child_process");
-  const { promisify } = await import("util");
+  const { execFile } = await import('child_process');
+  const { promisify } = await import('util');
   const execFileAsync = promisify(execFile);
   try {
-    const { stdout, stderr } = await execFileAsync("ssh", [
-      "-o", "StrictHostKeyChecking=no",
-      "-o", "ConnectTimeout=15",
-      VPS_SSH,
-      cmd,
-    ], { timeout: 120_000 });
+    const { stdout, stderr } = await execFileAsync(
+      'ssh',
+      ['-o', 'StrictHostKeyChecking=no', '-o', 'ConnectTimeout=15', VPS_SSH, cmd],
+      { timeout: 120_000 }
+    );
     return { ok: true, output: stdout + stderr };
   } catch (err) {
     return { ok: false, output: err instanceof Error ? err.message : String(err) };
@@ -41,25 +40,25 @@ async function healthCheck(url: string): Promise<boolean> {
 
 export function startAutoDeployWorker(connection: object): Worker {
   return new Worker<AutoDeployPayload>(
-    "openclaw",
+    'openclaw',
     async (job: Job<AutoDeployPayload>) => {
-      if (job.name !== "auto-deploy") return;
+      if (job.name !== 'auto-deploy') return;
 
       const t0 = Date.now();
-      logWorkerLifecycle("start", "auto-deploy", job);
+      logWorkerLifecycle('start', 'auto-deploy', job);
 
       const { commit_sha, branch, triggered_by } = job.data;
 
       // Solo desplegar desde main
-      if (branch !== "main" && branch !== "refs/heads/main") {
-        logWorkerLifecycle("complete", "auto-deploy", job, { skipped: true, branch });
-        return { skipped: true, reason: "not main branch" };
+      if (branch !== 'main' && branch !== 'refs/heads/main') {
+        logWorkerLifecycle('complete', 'auto-deploy', job, { skipped: true, branch });
+        return { skipped: true, reason: 'not main branch' };
       }
 
       await notifyDiscord(
-        "🚀 Auto-Deploy iniciado",
-        `Commit: ${commit_sha.slice(0, 8)}\nBranch: ${branch}\nTriggered by: ${triggered_by ?? "CI"}`,
-        "info"
+        '🚀 Auto-Deploy iniciado',
+        `Commit: ${commit_sha.slice(0, 8)}\nBranch: ${branch}\nTriggered by: ${triggered_by ?? 'CI'}`,
+        'info'
       );
 
       // 1. Pull + rebuild en VPS
@@ -69,43 +68,43 @@ export function startAutoDeployWorker(connection: object): Worker {
         `git reset --hard origin/main`,
         `npm ci --workspace=apps/api --workspace=apps/admin 2>&1 | tail -5`,
         `docker compose -f infra/docker-compose.platform.yml up -d --build app 2>&1 | tail -10`,
-      ].join(" && ");
+      ].join(' && ');
 
       const deployResult = await runSSH(deployCmd);
 
       if (!deployResult.ok) {
         await notifyDiscord(
-          "🚨 Deploy falló en VPS",
+          '🚨 Deploy falló en VPS',
           `Commit: ${commit_sha.slice(0, 8)}\nError: ${deployResult.output.slice(0, 300)}`,
-          "error"
+          'error'
         );
-        logWorkerLifecycle("fail", "auto-deploy", job, { duration_ms: Date.now() - t0 });
+        logWorkerLifecycle('fail', 'auto-deploy', job, { duration_ms: Date.now() - t0 });
         throw new Error(`Deploy SSH failed: ${deployResult.output}`);
       }
 
       // 2. Esperar 30s para que el container arranque
-      await new Promise(resolve => setTimeout(resolve, 30_000));
+      await new Promise((resolve) => setTimeout(resolve, 30_000));
 
       // 3. Health check
       const healthy = await healthCheck(`https://api.${PLATFORM_DOMAIN}/api/health`);
 
       if (!healthy) {
         await notifyDiscord(
-          "🚨 Deploy: health check falló",
+          '🚨 Deploy: health check falló',
           `Commit: ${commit_sha.slice(0, 8)}\nAPI no responde. Rollback manual requerido.`,
-          "error"
+          'error'
         );
-        logWorkerLifecycle("fail", "auto-deploy", job, { duration_ms: Date.now() - t0 });
-        throw new Error("Health check failed after deploy");
+        logWorkerLifecycle('fail', 'auto-deploy', job, { duration_ms: Date.now() - t0 });
+        throw new Error('Health check failed after deploy');
       }
 
       await notifyDiscord(
-        "✅ Deploy exitoso",
+        '✅ Deploy exitoso',
         `Commit: ${commit_sha.slice(0, 8)}\nhttps://api.${PLATFORM_DOMAIN}/api/health ✓`,
-        "success"
+        'success'
       );
 
-      logWorkerLifecycle("complete", "auto-deploy", job, {
+      logWorkerLifecycle('complete', 'auto-deploy', job, {
         duration_ms: Date.now() - t0,
         commit_sha,
       });
