@@ -8,6 +8,8 @@ export type PortalInviteParams = {
   slug: string;
 };
 
+const PESKIDS_TENANT_SLUG = 'peskids';
+
 function isProductionRuntime(): boolean {
   const nodeEnv = process.env.NODE_ENV?.trim().toLowerCase();
   if (nodeEnv === 'production') {
@@ -20,23 +22,23 @@ function isProductionRuntime(): boolean {
 
 const PORTAL_INVITE_HTML_TEMPLATE = `<!DOCTYPE html>
 <html lang="es">
-<head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><title>Opsly</title></head>
+<head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><title>{brandName}</title></head>
 <body style="margin:0;background:#09090b;color:#fafafa;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;">
 <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#09090b;padding:32px 16px;"><tr><td align="center">
 <table role="presentation" width="560" cellspacing="0" cellpadding="0" style="max-width:560px;background:#111111;border:1px solid #1e1e1e;border-radius:12px;padding:32px;">
-<tr><td style="font-size:22px;font-weight:700;letter-spacing:-0.02em;color:#22c55e;">Opsly</td></tr>
+<tr><td style="font-size:22px;font-weight:700;letter-spacing:-0.02em;color:#22c55e;">{brandName}</td></tr>
 <tr><td style="height:24px;"></td></tr>
 <tr><td style="font-size:18px;line-height:1.5;">Hola {displayName},</td></tr>
 <tr><td style="height:12px;"></td></tr>
-<tr><td style="font-size:15px;line-height:1.6;color:#d4d4d4;">Tu espacio <strong>{companyName}</strong> en Opsly está listo: automatización y monitoreo en un solo lugar.</td></tr>
+<tr><td style="font-size:15px;line-height:1.6;color:#d4d4d4;">Tu espacio <strong>{companyName}</strong> está listo: activa tu acceso y entra al panel correspondiente.</td></tr>
 <tr><td style="height:28px;"></td></tr>
 <tr><td align="center"><a href="{activateUrl}" style="display:inline-block;background:#22c55e;color:#09090b;text-decoration:none;font-weight:600;font-size:15px;padding:14px 28px;border-radius:8px;">Activar mi cuenta</a></td></tr>
 <tr><td style="height:28px;"></td></tr>
 <tr><td style="font-size:14px;line-height:1.6;color:#d4d4d4;"><strong style="color:#fafafa;">Primeros pasos</strong>
 <ol style="margin:12px 0 0 18px;padding:0;line-height:1.7;">
 <li>Pulsa <strong>Activar mi cuenta</strong> y define una contraseña segura.</li>
-<li>Accede al <a href="{portalHomeUrl}" style="color:#22c55e;text-decoration:none;">portal</a> y revisa tu dashboard.</li>
-<li>En modo desarrollador encontrarás la URL de n8n, Uptime Kuma y credenciales cuando apliquen.</li>
+<li>Accede al <a href="{portalHomeUrl}" style="color:#22c55e;text-decoration:none;">panel</a> y revisa tu dashboard.</li>
+<li>En modo desarrollador encontrarás las URLs y credenciales cuando apliquen.</li>
 </ol></td></tr>
 <tr><td style="height:20px;"></td></tr>
 <tr><td style="font-size:14px;line-height:1.6;color:#d4d4d4;"><strong style="color:#fafafa;">Feedback</strong><br />
@@ -57,20 +59,56 @@ function requireEnv(name: string): string {
   return value;
 }
 
+function getSiteUrlFromEnv(options: {
+  envName: string;
+  localPort: number;
+  prodSubdomain: string;
+  prodFallback: string;
+}): string {
+  const explicit = process.env[options.envName]?.trim();
+  if (explicit && explicit.length > 0) {
+    return explicit.replace(/\/$/, '');
+  }
+  if (!isProductionRuntime()) {
+    return `http://localhost:${options.localPort}`;
+  }
+  const domain = process.env.PLATFORM_DOMAIN?.trim() ?? process.env.PLATFORM_BASE_DOMAIN?.trim();
+  if (domain && domain.length > 0) {
+    return `https://${options.prodSubdomain}.${domain}`;
+  }
+  return options.prodFallback;
+}
+
 export function getPortalSiteUrl(): string {
   const explicit =
     process.env.PORTAL_SITE_URL?.trim() ?? process.env.NEXT_PUBLIC_PORTAL_URL?.trim();
   if (explicit && explicit.length > 0) {
     return explicit.replace(/\/$/, '');
   }
-  if (!isProductionRuntime()) {
-    return 'http://localhost:3002';
+  return getSiteUrlFromEnv({
+    envName: 'PORTAL_SITE_URL',
+    localPort: 3002,
+    prodSubdomain: 'portal',
+    prodFallback: 'https://portal.op-sly.com',
+  });
+}
+
+function getTenantSiteUrl(slug: string): string {
+  if (slug === PESKIDS_TENANT_SLUG) {
+    const explicit =
+      process.env.NEXT_PUBLIC_PESKIDS_SITE_URL?.trim() ?? process.env.PESKIDS_SITE_URL?.trim();
+    if (explicit && explicit.length > 0) {
+      return explicit.replace(/\/$/, '');
+    }
+    return getSiteUrlFromEnv({
+      envName: 'NEXT_PUBLIC_PESKIDS_SITE_URL',
+      localPort: 3004,
+      prodSubdomain: 'peskids',
+      prodFallback: 'https://peskids.op-sly.com',
+    });
   }
-  const domain = process.env.PLATFORM_DOMAIN?.trim() ?? process.env.PLATFORM_BASE_DOMAIN?.trim();
-  if (domain && domain.length > 0) {
-    return `https://portal.${domain}`;
-  }
-  return 'https://portal.op-sly.com';
+
+  return getPortalSiteUrl();
 }
 
 function parseInviteTokenFromActionLink(actionLink: string): string | null {
@@ -94,17 +132,20 @@ function buildPortalInviteHtml(
   displayName: string,
   companyName: string,
   activateUrl: string,
-  portalHomeUrl: string
+  homeUrl: string,
+  brandName: string
 ): string {
   const safeName = escapeHtml(displayName);
   const safeCompany = escapeHtml(companyName);
   const safeUrl = escapeHtml(activateUrl);
-  const safePortal = escapeHtml(portalHomeUrl);
+  const safeHome = escapeHtml(homeUrl);
+  const safeBrand = escapeHtml(brandName);
   const safeFooter = escapeHtml(footerLineFromEnv());
   return PORTAL_INVITE_HTML_TEMPLATE.replace('{displayName}', safeName)
+    .replace('{brandName}', safeBrand)
     .replace('{companyName}', safeCompany)
     .replace('{activateUrl}', safeUrl)
-    .replace('{portalHomeUrl}', safePortal)
+    .replace('{portalHomeUrl}', safeHome)
     .replace('{footerLine}', safeFooter);
 }
 
@@ -122,7 +163,7 @@ async function generateInviteLink(
   mode?: 'developer' | 'managed'
 ): Promise<PortalInviteLinkResult> {
   const admin = getServiceClient();
-  const portalBase = getPortalSiteUrl();
+  const tenantBase = getTenantSiteUrl(slug);
 
   const userData: Record<string, string> = {
     full_name: name,
@@ -137,7 +178,7 @@ async function generateInviteLink(
     email,
     options: {
       data: userData,
-      redirectTo: `${portalBase}/invite`,
+      redirectTo: `${tenantBase}/invite`,
     },
   });
 
@@ -154,7 +195,7 @@ async function generateInviteLink(
     throw new Error('Could not parse invite token from action_link');
   }
 
-  const link = `${portalBase}/invite/${encodeURIComponent(token)}?email=${encodeURIComponent(email)}`;
+  const link = `${tenantBase}/invite/${encodeURIComponent(token)}?email=${encodeURIComponent(email)}`;
   return { link, token };
 }
 
@@ -171,8 +212,12 @@ export async function sendPortalInvitationForTenant(
     params.mode
   );
 
-  const portalHome = getPortalSiteUrl();
-  const html = buildPortalInviteHtml(params.name, params.name, activateUrl, portalHome);
+  const homeUrl =
+    params.slug === PESKIDS_TENANT_SLUG
+      ? `${getTenantSiteUrl(params.slug)}/admin/login`
+      : `${getTenantSiteUrl(params.slug)}/login`;
+  const brandName = params.slug === PESKIDS_TENANT_SLUG ? 'Peskids' : 'Opsly';
+  const html = buildPortalInviteHtml(params.name, params.name, activateUrl, homeUrl, brandName);
 
   let emailDeliverySkipped = isEmailDeliverySkipped();
   let emailDeliveryWarning: string | undefined = emailDeliverySkipped

@@ -449,6 +449,9 @@ export default function LandingPage() {
               © {new Date().getFullYear()} Opsly. Todos los derechos reservados.
             </p>
             <div className="flex gap-6 text-white/30 text-sm">
+              <a href="/legal" className="hover:text-white/60">
+                Legal
+              </a>
               <a href="/legal/terms" className="hover:text-white/60">
                 Términos
               </a>

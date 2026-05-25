@@ -1,6 +1,7 @@
 import Link from 'next/link'
+import { Instagram } from 'lucide-react'
 import { PeskidsLockup } from '@/components/brand/peskids-logo'
-import { WhatsAppLink } from '@/components/contact/whatsapp-link'
+import { PESKIDS_INSTAGRAM } from '@/lib/instagram-feed'
 
 interface SiteHeaderProps {
   variant?: 'marketing' | 'minimal'
@@ -19,8 +20,8 @@ export function SiteHeader({ variant = 'marketing' }: SiteHeaderProps): React.Re
               <a href="#niveles" className="hover:text-pk-primary">
                 Niveles
               </a>
-              <a href="#contacto" className="hover:text-pk-primary">
-                Reservar
+              <a href="#redes" className="hover:text-pk-primary">
+                Redes
               </a>
               <Link href="/familias" className="hover:text-pk-primary">
                 Familias
@@ -32,13 +33,15 @@ export function SiteHeader({ variant = 'marketing' }: SiteHeaderProps): React.Re
             >
               Acceso familias
             </Link>
-            <WhatsAppLink variant="button" label="WhatsApp" className="shrink-0" />
-            <a
-              href="#contacto"
-              className="inline-flex h-10 items-center justify-center rounded-full bg-pk-primary px-4 text-xs font-bold text-white shadow-sm sm:hidden"
+            <Link
+              href={PESKIDS_INSTAGRAM.profileUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex h-10 items-center justify-center gap-2 rounded-full bg-pk-primary px-4 text-xs font-bold text-white shadow-sm transition hover:bg-pk-primary/90 sm:hidden"
             >
-              Reservar
-            </a>
+              <Instagram className="h-4 w-4" aria-hidden />
+              Seguir
+            </Link>
           </div>
         ) : null}
       </div>

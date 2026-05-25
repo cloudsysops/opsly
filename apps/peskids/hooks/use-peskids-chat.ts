@@ -2,7 +2,11 @@
 
 import { useCallback, useEffect, useRef, useState, type RefObject } from 'react'
 import { getOrCreateChatSessionId } from '@/lib/peskids-chat-session'
-import { peskidsIntakeWelcome } from '@/lib/peskids-intake-messages'
+import {
+  peskidsIntakeWelcome,
+  peskidsSupportWelcome,
+  type PeskidsChatMode,
+} from '@/lib/peskids-intake-messages'
 
 export type PeskidsChatMessage = {
   role: 'user' | 'assistant'
@@ -10,24 +14,41 @@ export type PeskidsChatMessage = {
   fromLlm?: boolean
   stage?: 'collecting' | 'handoff'
   progress?: number
+  quickReplies?: PeskidsChatQuickReply[] | null
+  inputMode?: 'text' | 'choice'
 }
 
-const WELCOME: PeskidsChatMessage = {
-  role: 'assistant',
-  text: `${peskidsIntakeWelcome('web')}\n\nPara empezar, ¿cómo te llamas (nombre del acudiente)?`,
+export type PeskidsChatQuickReply = {
+  label: string
+  value: string
 }
 
-export function usePeskidsChat(): {
+function buildWelcome(mode: PeskidsChatMode): PeskidsChatMessage {
+  if (mode === 'support') {
+    return {
+      role: 'assistant',
+      text: `${peskidsSupportWelcome('web')}\n\n¿Puedes contarnos cuál es el caso?`,
+    }
+  }
+
+  return {
+    role: 'assistant',
+    text: `${peskidsIntakeWelcome('web')}\n\nPara empezar, ¿cómo te llamas (nombre del acudiente)?`,
+  }
+}
+
+export function usePeskidsChat(mode: PeskidsChatMode = 'admissions'): {
+  mode: PeskidsChatMode
   messages: PeskidsChatMessage[]
   input: string
   setInput: (value: string) => void
   sending: boolean
-  sendMessage: () => Promise<void>
+  sendMessage: (textOverride?: string) => Promise<void>
   listRef: RefObject<HTMLDivElement | null>
 } {
   const [input, setInput] = useState('')
   const [sending, setSending] = useState(false)
-  const [messages, setMessages] = useState<PeskidsChatMessage[]>([WELCOME])
+  const [messages, setMessages] = useState<PeskidsChatMessage[]>([buildWelcome(mode)])
   const listRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -36,11 +57,11 @@ export function usePeskidsChat(): {
     }
   }, [messages])
 
-  const sendMessage = useCallback(async () => {
-    const text = input.trim()
+  const sendMessage = useCallback(async (textOverride?: string) => {
+    const text = (textOverride ?? input).trim()
     if (!text || sending) return
 
-    setInput('')
+    if (!textOverride) setInput('')
     setMessages((prev) => [...prev, { role: 'user', text }])
     setSending(true)
 
@@ -50,7 +71,8 @@ export function usePeskidsChat(): {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           message: text,
-          session_id: getOrCreateChatSessionId(),
+          session_id: getOrCreateChatSessionId(mode),
+          mode,
         }),
       })
       const data = (await res.json()) as {
@@ -59,6 +81,8 @@ export function usePeskidsChat(): {
         from_llm?: boolean
         stage?: 'collecting' | 'handoff'
         progress?: number
+        input_mode?: 'text' | 'choice'
+        quick_replies?: PeskidsChatQuickReply[] | null
         error?: string
       }
 
@@ -82,6 +106,8 @@ export function usePeskidsChat(): {
           fromLlm: data.from_llm,
           stage: data.stage,
           progress: data.progress,
+          quickReplies: data.quick_replies ?? null,
+          inputMode: data.input_mode,
         },
       ])
     } catch {
@@ -95,7 +121,7 @@ export function usePeskidsChat(): {
     } finally {
       setSending(false)
     }
-  }, [input, sending])
+  }, [input, mode, sending])
 
-  return { messages, input, setInput, sending, sendMessage, listRef }
+  return { mode, messages, input, setInput, sending, sendMessage, listRef }
 }

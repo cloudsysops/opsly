@@ -31,7 +31,7 @@ function UpdatePasswordForm(): React.ReactElement {
       }
       if (!isStaffUser(session.user)) {
         setError(
-          'Esta cuenta no tiene acceso al panel Peskids. Usa el portal Opsly o solicita acceso al administrador.'
+          'Esta cuenta no tiene acceso al panel Peskids. Solicita acceso al equipo de Peskids.'
         )
         setReady(false)
         return

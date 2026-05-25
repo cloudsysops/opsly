@@ -13,6 +13,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { TeacherDashboard } from '@/components/dashboards/teacher-dashboard'
+import { GrowthWidget } from '@/components/progress/growth-widget'
 import { cn } from '@/lib/utils'
 
 type DaySlot = {
@@ -143,14 +144,11 @@ function TeacherCalendarShowcase(): React.ReactElement {
       <div className="flex items-center justify-between gap-4 border-b border-pk-border bg-pk-snow px-5 py-4">
         <div>
           <p className="font-bold text-pk-ink">Calendario semanal</p>
-          <p className="text-xs text-pk-mutedText">Agenda mensual + timeline del día</p>
+          <p className="text-xs text-pk-mutedText">Agenda semanal y ritmo del día</p>
         </div>
         <div className="flex gap-2">
           <div className="rounded-full border border-pk-border bg-white px-3 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-pk-mutedText">
-            Hoy
-          </div>
-          <div className="rounded-full border border-pk-border bg-white px-3 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-pk-mutedText">
-            Clase
+            Semana activa
           </div>
         </div>
       </div>
@@ -290,15 +288,18 @@ export function TeacherWeeklyDashboard(): React.ReactElement {
   return (
     <div className="space-y-6">
       <section className="overflow-hidden rounded-[2rem] border border-pk-border bg-gradient-to-br from-white via-white to-teal-50/80 shadow-hero">
-        <div className="grid gap-10 px-5 py-6 sm:px-8 sm:py-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:px-10 lg:py-10">
+        <div className="grid gap-10 px-5 py-6 sm:px-8 sm:py-8 lg:grid-cols-[1.08fr_0.92fr] lg:items-center lg:px-10 lg:py-10">
           <div className="relative z-10">
-            <p className="pk-eyebrow">Peskids · Profesores</p>
-            <h1 className="mt-4 max-w-2xl text-4xl font-bold tracking-tight text-pk-ink sm:text-5xl lg:text-[4.4rem]">
-              Tu calendario, tus clases y el aula en un solo lugar.
+            <div className="flex flex-wrap items-center gap-2">
+              <p className="pk-eyebrow">Peskids · Profesores</p>
+              <Badge tone="violet">Sierra · profesor principal</Badge>
+            </div>
+            <h1 className="mt-4 max-w-2xl text-3xl font-bold tracking-tight text-pk-ink sm:text-4xl lg:text-[3.9rem]">
+              Todo tu día de clases, con calendario, seguimiento y feedback en una sola portada.
             </h1>
-            <p className="mt-5 max-w-xl text-lg leading-relaxed text-pk-sub">
-              La vista del profesor se lee como una portada de producto: qué viene hoy, qué grupo
-              toca, qué observaciones hay y qué entregas necesitan revisión.
+            <p className="mt-5 max-w-xl text-base leading-relaxed text-pk-sub sm:text-lg">
+              Esta vista prioriza lo que un profesor principal necesita ver al abrir el panel:
+              agenda, grupos, observaciones, entregas y respuestas de familias sin saltar entre pantallas.
             </p>
 
             <div className="mt-8 flex flex-wrap gap-3">
@@ -325,12 +326,25 @@ export function TeacherWeeklyDashboard(): React.ReactElement {
 
           <div className="relative">
             <TeacherCalendarShowcase />
-            <div className="absolute -right-3 top-5 rounded-full border border-pk-border bg-white px-3 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-pk-mutedText shadow-card">
-              Semana activa
-            </div>
           </div>
         </div>
       </section>
+
+      <GrowthWidget
+        eyebrow="Progreso del equipo"
+        title="Metas, constancia y logros del aula"
+        description="Una lectura rápida de qué está avanzando bien, qué requiere cierre y qué gana terreno cada semana."
+        mission="Guiar cada clase con orden, paciencia y seguimiento para que el grupo avance sin fricción."
+        vision="Un aula donde cada alumno progresa con confianza y cada familia recibe claridad a tiempo."
+        objectives={['Asistencia completa', 'Feedback enviado', 'Observaciones cerradas']}
+        achievements={['Clase impecable', '5 días de racha', 'Familias al día']}
+        streakLabel="Racha activa del profesor"
+        streakValue="12"
+        progressLabel="Avance semanal del aula"
+        progressPercent={78}
+        accent="violet"
+        className="mt-6"
+      />
 
       <div className="grid grid-cols-1 gap-5 xl:grid-cols-3">
         <Card className="xl:col-span-2">
@@ -346,14 +360,16 @@ export function TeacherWeeklyDashboard(): React.ReactElement {
               <div key={`${slot.day}-${slot.time}`} className="rounded-2xl border border-pk-border bg-white p-4">
                 <div className="flex items-start justify-between gap-2">
                   <div>
-                    <p className="text-sm font-semibold text-pk-ink">{slot.className}</p>
+                    <div className="flex items-center gap-2">
+                      <p className="text-sm font-semibold text-pk-ink">{slot.className}</p>
+                      <Badge tone={slot.status === 'ongoing' ? 'amber' : 'teal'}>
+                        {slot.status === 'ongoing' ? 'En curso' : slot.status === 'done' ? 'Hecha' : 'Agenda'}
+                      </Badge>
+                    </div>
                     <p className="text-xs text-pk-sub">
-                      {slot.time} · {slot.students} estudiantes
+                      {slot.day} · {slot.time} · {slot.students} estudiantes
                     </p>
                   </div>
-                  <Badge tone={slot.status === 'ongoing' ? 'amber' : 'teal'}>
-                    {slot.status === 'ongoing' ? 'En curso' : 'Agenda'}
-                  </Badge>
                 </div>
                 <div className="mt-3 flex flex-wrap gap-2">
                   <Button type="button" size="sm" variant="secondary">

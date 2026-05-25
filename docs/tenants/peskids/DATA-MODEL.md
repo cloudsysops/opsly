@@ -29,6 +29,10 @@ tenant_slug: peskids
 | email | text | nullable |
 | phone | text | nullable |
 | notes | text | |
+| referral_code | text | unique share code for the family |
+| referred_by_code | text | nullable — referral code used on signup |
+| referral_discount_cents | int | accumulated credit for invoice |
+| referral_redemptions | int | successful referrals counted |
 | owner_user_id | uuid | nullable — equipo interno |
 | created_at | timestamptz | |
 | updated_at | timestamptz | |

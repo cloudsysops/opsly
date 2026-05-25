@@ -1,7 +1,14 @@
 'use client'
 
 import Link from 'next/link'
-import { Home, LayoutDashboard, MessageSquare, RefreshCw, Users } from 'lucide-react'
+import {
+  GraduationCap,
+  Home,
+  LayoutDashboard,
+  MessageSquare,
+  RefreshCw,
+  Users,
+} from 'lucide-react'
 import { PeskidsLogo } from '@/components/brand/peskids-logo'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
@@ -18,6 +25,8 @@ const navOps = [
   { icon: LayoutDashboard, label: 'Dashboard', active: true, href: '/admin' },
   { icon: Users, label: 'Leads', href: '/admin' },
   { icon: MessageSquare, label: 'Mensajes', href: '/admin' },
+  { icon: GraduationCap, label: 'Profesores', href: '/teacher/dashboard' },
+  { icon: Users, label: 'Familias', href: '/familias' },
 ]
 
 export function AdminShell({
@@ -28,29 +37,39 @@ export function AdminShell({
 }: AdminShellProps): React.ReactElement {
   return (
     <div className="flex min-h-screen bg-pk-bg">
-      {/* Sidebar — diseño admin.jsx */}
-      <aside className="hidden w-56 shrink-0 flex-col bg-pk-deep text-white md:flex">
-        <div className="flex items-center gap-2.5 border-b border-white/10 px-4 py-5">
-          <PeskidsLogo size={32} />
-          <div>
-            <p className="text-sm font-bold tracking-tight">Peskids</p>
-            <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-white/50">Admin</p>
+      <aside className="hidden w-64 shrink-0 flex-col border-r border-white/8 bg-[#11253d] text-white md:flex">
+        <div className="border-b border-white/10 px-5 py-5">
+          <div className="flex items-center gap-3">
+            <PeskidsLogo size={34} />
+            <div>
+              <p className="text-sm font-semibold tracking-tight">Peskids</p>
+              <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-white/50">
+                Admin
+              </p>
+            </div>
+          </div>
+          <div className="mt-4 rounded-2xl border border-white/10 bg-white/5 px-3 py-3">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-white/45">
+              Sede activa
+            </p>
+            <p className="mt-1 text-sm font-medium text-white">Llanogrande</p>
+            <p className="text-xs text-white/55">Operación, soporte y seguimiento de familias.</p>
           </div>
         </div>
 
-        <nav className="flex-1 px-2 py-4">
-          <p className="px-3 py-2 font-mono text-[10px] uppercase tracking-[0.18em] text-white/50">
-            Operación
+        <nav className="flex-1 px-3 py-4">
+          <p className="px-3 py-2 font-mono text-[10px] uppercase tracking-[0.18em] text-white/45">
+            Panel
           </p>
           {navOps.map((item) => (
             <Link
               key={item.label}
               href={item.href}
               className={cn(
-                'mb-0.5 flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-semibold transition-colors',
+                'mb-1 flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold transition-colors',
                 item.active
-                  ? 'bg-white/12 text-white'
-                  : 'text-white/70 hover:bg-white/8 hover:text-white'
+                  ? 'bg-white/12 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]'
+                  : 'text-white/72 hover:bg-white/7 hover:text-white'
               )}
             >
               <item.icon className="h-4 w-4 opacity-80" aria-hidden />
@@ -58,24 +77,29 @@ export function AdminShell({
             </Link>
           ))}
         </nav>
-
-        <div className="m-3 rounded-xl border border-pk-primary/30 bg-pk-primary/15 p-3">
-          <p className="text-xs font-bold">Sede Llanogrande</p>
-          <p className="text-[10px] text-white/60">Panel Opsly · tiempo real</p>
-        </div>
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="flex h-16 items-center justify-between gap-4 border-b border-pk-border bg-pk-surface px-5 sm:px-7">
+        <header className="flex min-h-16 items-center justify-between gap-4 border-b border-pk-border bg-pk-surface px-5 py-3 sm:px-7">
           <div className="flex items-center gap-3 md:hidden">
             <PeskidsLogo size={28} />
-            <span className="font-bold text-pk-ink">Admin</span>
+            <div>
+              <p className="text-sm font-semibold text-pk-ink">Peskids</p>
+              <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-pk-mutedText">
+                Admin
+              </p>
+            </div>
           </div>
           <div className="hidden md:block">
-            <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-pk-mutedText">
-              Dashboard
-            </p>
-            <p className="text-lg font-bold tracking-tight text-pk-ink">
+            <div className="flex items-center gap-2">
+              <span className="rounded-full border border-pk-border bg-pk-muted px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-pk-mutedText">
+                Operación en vivo
+              </span>
+              <span className="rounded-full border border-teal-200 bg-teal-50 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-teal-700">
+                Llanogrande
+              </span>
+            </div>
+            <p className="mt-1 text-lg font-semibold tracking-tight text-pk-ink">
               {new Date().toLocaleDateString('es-CO', {
                 weekday: 'long',
                 day: 'numeric',

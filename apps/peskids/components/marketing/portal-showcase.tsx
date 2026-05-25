@@ -2,6 +2,7 @@ import Link from 'next/link'
 import {
   CalendarClock,
   CreditCard,
+  Gift,
   MessageSquare,
   Sparkles,
   Star,
@@ -11,8 +12,11 @@ import {
   ClipboardList,
   ShieldCheck,
   Waves,
+  BadgePercent,
+  Link2,
 } from 'lucide-react'
 import { PeskidsLogo, PeskidsWave, StarBurst } from '@/components/brand/peskids-logo'
+import { GrowthWidget } from '@/components/progress/growth-widget'
 import { Card, CardContent } from '@/components/ui/card'
 import { peskidsColorTokens } from '@/lib/tokens'
 import { cn } from '@/lib/utils'
@@ -101,11 +105,10 @@ export function PortalShowcase(): React.ReactElement {
           <div className="relative z-10">
             <p className="pk-eyebrow">Portal de familias</p>
             <h1 className="mt-4 max-w-xl text-4xl font-bold tracking-tight text-pk-ink sm:text-5xl lg:text-[4.5rem]">
-              La experiencia de Peskids, organizada para padres y staff.
+              Todo lo importante de Peskids, en un solo lugar.
             </h1>
             <p className="mt-5 max-w-xl text-lg leading-relaxed text-pk-sub">
-              Reservas, progreso, mensajes y pagos en una sola vista. El mismo sistema sirve
-              para familias, operación y marketing sin cambiar de lenguaje visual.
+              Reservas, progreso, mensajes y pagos para familias y staff.
             </p>
 
             <div className="mt-8 flex flex-wrap gap-3">
@@ -137,9 +140,9 @@ export function PortalShowcase(): React.ReactElement {
             </div>
 
             <div className="mt-10 grid max-w-xl grid-cols-3 gap-4">
-              <MetricCard value="1" label="portal para familias" />
-              <MetricCard value="5" label="flujos visibles" />
-              <MetricCard value="Tiempo real" label="operación y mensajes" compact />
+              <MetricCard value="1" label="portal" />
+              <MetricCard value="5" label="flujos" />
+              <MetricCard value="Tiempo real" label="mensajes" compact />
             </div>
           </div>
 
@@ -217,6 +220,106 @@ export function PortalShowcase(): React.ReactElement {
           </PreviewFrame>
         </div>
 
+        <div className="mt-14">
+          <GrowthWidget
+            eyebrow="Metas y logros"
+            title="Progreso que se entiende de un vistazo"
+            description="Cada familia ve qué se logró, qué sigue y qué necesita constancia para avanzar sin perder tiempo."
+            mission="Acompañar al niño con claridad, constancia y señales simples para que toda la familia vea el avance."
+            vision="Un peque autónomo en el agua y una familia que entiende el camino sin fricción."
+            objectives={['Asistencia', 'Confianza', 'Técnica']}
+            achievements={['Primera clase completada', 'Burbujas', 'Flotación dorsal']}
+            streakLabel="Racha familiar"
+            streakValue="8"
+            progressLabel="Progreso hacia el siguiente nivel"
+            progressPercent={62}
+            accent="amber"
+          />
+        </div>
+
+        <div className="mt-14 overflow-hidden rounded-[2rem] border border-pk-border bg-white shadow-card">
+          <div className="grid gap-0 lg:grid-cols-[0.95fr_1.05fr]">
+            <div className="border-b border-pk-border bg-pk-snow p-6 lg:border-b-0 lg:border-r">
+              <p className="pk-eyebrow">Referidos y descuento</p>
+              <h2 className="mt-3 text-2xl font-bold tracking-tight text-pk-ink sm:text-3xl">
+                Comparte tu link y suma crédito para la factura.
+              </h2>
+              <p className="mt-4 max-w-lg text-sm leading-relaxed text-pk-sub">
+                El crédito se acumula automáticamente cuando alguien se registra con tu link.
+              </p>
+
+              <div className="mt-6 grid gap-3 sm:grid-cols-3">
+                <MiniReferralStep
+                  icon={Link2}
+                  title="1. Comparte"
+                  text="Pega tu link donde quieras."
+                />
+                <MiniReferralStep
+                  icon={Gift}
+                  title="2. Se registra"
+                  text="La familia entra con tu código."
+                />
+                <MiniReferralStep
+                  icon={BadgePercent}
+                  title="3. Se acredita"
+                  text="Tu saldo queda listo para aplicar."
+                />
+              </div>
+            </div>
+
+            <div className="p-6 sm:p-8">
+              <div className="rounded-[1.5rem] border border-pk-border bg-pk-bg p-5">
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <p className="text-sm font-bold text-pk-ink">Tu espacio de familia</p>
+                    <p className="mt-1 text-xs text-pk-mutedText">Código, referidos y saldo.</p>
+                  </div>
+                  <span className="rounded-full bg-pk-primary/10 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-pk-primary">
+                    Activo
+                  </span>
+                </div>
+
+                <div className="mt-5 grid gap-3 sm:grid-cols-2">
+                  <div className="rounded-2xl bg-white p-4 shadow-sm">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-pk-mutedText">
+                      Código de familia
+                    </p>
+                    <p className="mt-2 font-mono text-lg font-semibold text-pk-ink">PK-8H2KQ9</p>
+                  </div>
+                  <div className="rounded-2xl bg-white p-4 shadow-sm">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-pk-mutedText">
+                      Crédito acumulado
+                    </p>
+                    <p className="mt-2 text-lg font-semibold text-pk-primary">20.000 COP</p>
+                  </div>
+                </div>
+
+                <div className="mt-4 rounded-2xl border border-dashed border-pk-border bg-white/70 p-4">
+                  <p className="text-xs font-semibold text-pk-ink">Cómo se ve en la plataforma</p>
+                  <p className="mt-1 text-xs leading-relaxed text-pk-sub">
+                    Verás el crédito antes de que salga el cobro.
+                  </p>
+                </div>
+
+                <div className="mt-5 flex flex-wrap gap-3">
+                  <Link
+                    href="/familias/login"
+                    className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-pk-primary px-5 text-sm font-bold text-white transition hover:bg-pk-primary-dark"
+                  >
+                    Acceso familias
+                  </Link>
+                  <Link
+                    href="/#contacto"
+                    className="inline-flex h-11 items-center justify-center gap-2 rounded-full border border-pk-border bg-white px-5 text-sm font-bold text-pk-ink transition hover:border-pk-primary/30 hover:bg-pk-snow"
+                  >
+                    Reservar clase
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div
           className="mt-14 overflow-hidden rounded-[2rem] text-white shadow-hero"
           style={{
@@ -225,14 +328,13 @@ export function PortalShowcase(): React.ReactElement {
         >
           <div className="grid gap-6 px-6 py-8 sm:px-8 lg:grid-cols-[1.1fr_0.9fr] lg:px-10 lg:py-10">
             <div>
-              <p className="pk-eyebrow text-white/50">Lleva esto a producción</p>
+              <p className="pk-eyebrow text-white/50">Portal listo</p>
               <h2 className="mt-2 max-w-2xl text-2xl font-bold tracking-tight sm:text-3xl">
-                Una base visual lista para familias, staff y ventas.
+                Una base visual clara para familias y equipo.
               </h2>
               <p className="mt-4 max-w-xl text-sm leading-relaxed text-white/75">
-                Esta vista permite enseñar el producto sin explicar la arquitectura. La familia
-                ve su progreso, el staff ve la operación y el equipo comercial tiene un relato
-                claro para el cliente.
+                El usuario ve progreso, agenda y mensajes en un solo lugar. El equipo puede
+                operar sin fricción y mostrar el producto con claridad.
               </p>
             </div>
 
@@ -815,6 +917,26 @@ function MiniStat({
     <div className={cn('rounded-2xl p-3', toneClass)}>
       <p className="text-[10px] font-bold uppercase tracking-[0.14em] opacity-75">{label}</p>
       <p className="mt-1 text-lg font-bold tracking-tight">{value}</p>
+    </div>
+  )
+}
+
+function MiniReferralStep({
+  icon: Icon,
+  title,
+  text,
+}: {
+  icon: typeof Gift
+  title: string
+  text: string
+}): React.ReactElement {
+  return (
+    <div className="rounded-2xl border border-pk-border bg-white p-4 shadow-sm">
+      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-pk-primary/10 text-pk-primary">
+        <Icon className="h-4 w-4" aria-hidden />
+      </div>
+      <p className="mt-3 text-sm font-bold text-pk-ink">{title}</p>
+      <p className="mt-1 text-xs leading-relaxed text-pk-sub">{text}</p>
     </div>
   )
 }

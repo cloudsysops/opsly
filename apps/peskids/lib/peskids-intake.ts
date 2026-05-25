@@ -4,6 +4,11 @@ import {
   buildSupportHandoffDraft,
   handoffReplyToUser,
   peskidsIntakeWelcome,
+  peskidsSupportWelcome,
+  questionSpecForField,
+  type PeskidsChatMode,
+  type PeskidsIntakeChoice,
+  type PeskidsIntakeInputMode,
   type PeskidsIntakeProfile,
   type PeskidsIntakeStage,
 } from '@/lib/peskids-intake-messages'
@@ -20,6 +25,8 @@ export type PeskidsIntakeTurn = {
   profile: PeskidsIntakeProfile
   missingField: string | null
   capturedFields: string[]
+  inputMode: PeskidsIntakeInputMode
+  quickReplies: PeskidsIntakeChoice[] | null
 }
 
 const GENERIC_NAMES = new Set([
@@ -41,9 +48,58 @@ const GRADE_PATTERNS: Array<{ value: string; test: RegExp }> = [
 ]
 
 const REFERRAL_PATTERNS: Array<{ value: string; test: RegExp }> = [
+  { value: 'Referido', test: /\b(amig[oa]|recomendaci[oó]n|referid[oa]|conocid[oa])\b/i },
   { value: 'Instagram', test: /\b(instagram|ig|reels?|historia)\b/i },
-  { value: 'Google', test: /\b(google|busqu[eé]|internet)\b/i },
-  { value: 'Friend', test: /\b(amig[oa]|recomendaci[oó]n|referid[oa]|conocid[oa])\b/i },
+  { value: 'Página web', test: /\b(p[aá]gina web|web|sitio web|website)\b/i },
+  { value: 'WhatsApp', test: /\b(whatsapp|wa\.?me)\b/i },
+  { value: 'Google / buscador', test: /\b(google|busqu[eé]|internet|buscador)\b/i },
+  { value: 'Google Maps', test: /\b(google maps?|maps)\b/i },
+  { value: 'Facebook', test: /\b(facebook|fb)\b/i },
+  { value: 'Otro', test: /\b(otro|otros)\b/i },
+]
+
+const SPECIAL_CONDITION_PATTERNS: Array<{ value: 'yes' | 'no'; test: RegExp }> = [
+  { value: 'yes', test: /\b(s[ií]|sí|si)\b.*\b(condici[oó]n|asma|alerg|epilep|autis|tdah|discap|respir|cardi|medic|cirug|limit)\b/i },
+  { value: 'yes', test: /\b(condici[oó]n|asma|alerg|epilep|autis|tdah|discap|respir|cardi|medic|cirug|limit)\b/i },
+  { value: 'no', test: /\b(no|ninguna|ninguno|nada)\b/i },
+]
+
+const TEACHER_PREFERENCE_PATTERNS: Array<{ value: NonNullable<PeskidsIntakeProfile['teacherPreference']>; test: RegExp }> = [
+  { value: 'woman', test: /\b(mujer|femenin[oa]|profe mujer|profesora)\b/i },
+  { value: 'man', test: /\b(hombre|masculin[oa]|profe hombre|profesor)\b/i },
+  { value: 'prefer_not_to_say', test: /\b(prefiero no decir|prefiero no responder|sin decir|no quiero decir)\b/i },
+  { value: 'none', test: /\b(no importa|cualquiera|sin preferencia|me da igual)\b/i },
+]
+
+const ISSUE_TYPE_PATTERNS: Array<{
+  value: NonNullable<PeskidsIntakeProfile['issueType']>
+  test: RegExp
+}> = [
+  { value: 'class', test: /\b(clase|clases|profesor|profesora|instructor|instructora)\b/i },
+  { value: 'schedule', test: /\b(horario|hora|agenda|turno|cambio de turno|reagendar)\b/i },
+  { value: 'reschedule', test: /\b(reprogramar|reagendar|mover la clase|cambiar la clase)\b/i },
+  { value: 'cancel', test: /\b(cancelar|cancelaci[oó]n|anular la clase|suspender la clase)\b/i },
+  { value: 'payment', test: /\b(pago|factura|cobro|transferencia|saldo|cuenta)\b/i },
+  { value: 'attendance', test: /\b(asistencia|falt[ao]|\bno pudo ir\b|\bno asist[ií]|\bausencia)\b/i },
+  { value: 'feedback', test: /\b(feedback|retroalimentaci[oó]n|comentario|nota)\b/i },
+  { value: 'access', test: /\b(acceso|entrar|login|contraseñ|password|usuario)\b/i },
+  { value: 'other', test: /\b(otro|ayuda general|soporte|consulta)\b/i },
+]
+
+const URGENCY_PATTERNS: Array<{ value: NonNullable<PeskidsIntakeProfile['urgency']>; test: RegExp }> = [
+  { value: 'today', test: /\b(hoy|ahora|urgente|ya)\b/i },
+  { value: 'this_week', test: /\b(esta semana|durante la semana|en estos d[ií]as)\b/i },
+  { value: 'when_possible', test: /\b(cuando puedan|sin afán|tranquilo|no urgente)\b/i },
+]
+
+const SUPPORT_CONTACT_PATTERNS: Array<{
+  value: NonNullable<PeskidsIntakeProfile['preferredContact']>
+  test: RegExp
+}> = [
+  { value: 'chat', test: /\b(aqu[ií] mismo|mismo chat|por aqu[ií]|chat)\b/i },
+  { value: 'whatsapp', test: /\b(whatsapp|wa\.?me)\b/i },
+  { value: 'phone', test: /\b(llamada|llámenme|telefono|tel[eé]fono|celular)\b/i },
+  { value: 'email', test: /\b(correo|email|mail)\b/i },
 ]
 
 function normalizeText(value: string): string {
@@ -170,17 +226,57 @@ function extractReferralSource(text: string): string | undefined {
   return undefined
 }
 
+function extractSpecialCondition(text: string): PeskidsIntakeProfile['specialCondition'] | undefined {
+  for (const { value, test } of SPECIAL_CONDITION_PATTERNS) {
+    if (test.test(text)) return value
+  }
+  return undefined
+}
+
+function extractTeacherPreference(text: string): PeskidsIntakeProfile['teacherPreference'] | undefined {
+  for (const { value, test } of TEACHER_PREFERENCE_PATTERNS) {
+    if (test.test(text)) return value
+  }
+  return undefined
+}
+
+function extractIssueType(text: string): PeskidsIntakeProfile['issueType'] | undefined {
+  for (const { value, test } of ISSUE_TYPE_PATTERNS) {
+    if (test.test(text)) return value
+  }
+  return undefined
+}
+
+function extractUrgency(text: string): PeskidsIntakeProfile['urgency'] | undefined {
+  for (const { value, test } of URGENCY_PATTERNS) {
+    if (test.test(text)) return value
+  }
+  return undefined
+}
+
+function extractPreferredContact(text: string): PeskidsIntakeProfile['preferredContact'] | undefined {
+  for (const { value, test } of SUPPORT_CONTACT_PATTERNS) {
+    if (test.test(text)) return value
+  }
+  return undefined
+}
+
 function profileFromText(text: string): Partial<PeskidsIntakeProfile> {
   return {
     parentName: extractParentName(text),
     email: extractEmail(text),
     phone: extractPhone(text),
+    specialCondition: extractSpecialCondition(text),
+    teacherPreference: extractTeacherPreference(text),
     childName: extractChildName(text),
     childAge: extractChildAge(text),
     classModality: extractClassModality(text),
     neighborhood: extractNeighborhood(text),
     gradeInterested: extractGradeInterested(text),
     referralSource: extractReferralSource(text),
+    issueType: extractIssueType(text),
+    urgency: extractUrgency(text),
+    preferredContact: extractPreferredContact(text),
   }
 }
 
@@ -189,41 +285,19 @@ function mergeProfile(base: PeskidsIntakeProfile, update: Partial<PeskidsIntakeP
     parentName: base.parentName ?? update.parentName,
     email: base.email ?? update.email,
     phone: base.phone ?? update.phone,
+    specialCondition: base.specialCondition ?? update.specialCondition,
+    specialConditionDetails: base.specialConditionDetails ?? update.specialConditionDetails,
+    teacherPreference: base.teacherPreference ?? update.teacherPreference,
     classModality: base.classModality ?? update.classModality,
     neighborhood: base.neighborhood ?? update.neighborhood,
     gradeInterested: base.gradeInterested ?? update.gradeInterested,
     referralSource: base.referralSource ?? update.referralSource,
     childName: base.childName ?? update.childName,
     childAge: base.childAge ?? update.childAge,
-  }
-}
-
-function questionForField(field: string, profile: PeskidsIntakeProfile): string {
-  switch (field) {
-    case 'parentName':
-      return 'Para empezar, ¿cómo te llamas (nombre del acudiente)?'
-    case 'email':
-      return `Gracias${profile.parentName ? `, ${profile.parentName}` : ''}. ¿Cuál es tu correo electrónico? Lo usamos para confirmar la clase de prueba.`
-    case 'classModality':
-      return (
-        '¿Dónde prefieren la clase?\n' +
-        '1️⃣ Sede Llanogrande (Rionegro)\n' +
-        '2️⃣ Clase a domicilio en el área metropolitana'
-      )
-    case 'neighborhood':
-      return '¿En qué barrio o zona viven? (Nos ayuda a ubicarlos y coordinar si es a domicilio.)'
-    case 'gradeInterested':
-      return (
-        '¿Qué edad o nivel tiene el niño o la niña?\n' +
-        '• Babyswim / K–5 (desde 3 meses)\n' +
-        '• 6–8 años (Peces · Delfines)\n' +
-        '• 9–12 años (Tiburones · Olímpicos)\n' +
-        '• Otro / consulta general'
-      )
-    case 'phone':
-      return '¿Cuál número de WhatsApp o celular prefieres para que te contactemos?'
-  default:
-      return '¿Me compartes un poco más de información para completar tu solicitud?'
+    issueType: base.issueType ?? update.issueType,
+    issueDetails: base.issueDetails ?? update.issueDetails,
+    urgency: base.urgency ?? update.urgency,
+    preferredContact: base.preferredContact ?? update.preferredContact,
   }
 }
 
@@ -239,20 +313,43 @@ function isGreetingOnly(text: string): boolean {
   )
 }
 
-function requiredFieldOrder(profile: PeskidsIntakeProfile): Array<keyof PeskidsIntakeProfile> {
+function requiredFieldOrder(profile: PeskidsIntakeProfile, mode: PeskidsChatMode): Array<keyof PeskidsIntakeProfile> {
+  if (mode === 'support') {
+    const order: Array<keyof PeskidsIntakeProfile> = [
+      'parentName',
+      'childName',
+      'issueType',
+      'issueDetails',
+      'urgency',
+      'preferredContact',
+    ]
+    if (!profile.phone) order.push('phone')
+    if (!profile.email) order.push('email')
+    return order
+  }
+
   const order: Array<keyof PeskidsIntakeProfile> = [
     'parentName',
+    'referralSource',
+    'specialCondition',
+    'teacherPreference',
     'email',
     'classModality',
     'neighborhood',
     'gradeInterested',
   ]
+  if (profile.specialCondition === 'yes' && !profile.specialConditionDetails) {
+    order.splice(3, 0, 'specialConditionDetails')
+  }
   if (!profile.phone) order.push('phone')
   return order
 }
 
-function firstMissingField(profile: PeskidsIntakeProfile): keyof PeskidsIntakeProfile | null {
-  return requiredFieldOrder(profile).find((field) => !profile[field]) ?? null
+function firstMissingField(
+  profile: PeskidsIntakeProfile,
+  mode: PeskidsChatMode
+): keyof PeskidsIntakeProfile | null {
+  return requiredFieldOrder(profile, mode).find((field) => !profile[field]) ?? null
 }
 
 /** Asigna la respuesta directa del usuario al campo que acabamos de preguntar. */
@@ -274,6 +371,20 @@ function applyDirectAnswer(
       const email = extractEmail(trimmed)
       return email ? { email } : {}
     }
+    case 'specialCondition': {
+      const specialCondition = extractSpecialCondition(trimmed)
+      if (specialCondition) return { specialCondition }
+      return {}
+    }
+    case 'specialConditionDetails': {
+      if (trimmed.length < 3) return {}
+      return { specialConditionDetails: trimmed }
+    }
+    case 'teacherPreference': {
+      const teacherPreference = extractTeacherPreference(trimmed)
+      if (teacherPreference) return { teacherPreference }
+      return {}
+    }
     case 'phone': {
       const phone = extractPhone(trimmed)
       return phone ? { phone } : {}
@@ -293,6 +404,29 @@ function applyDirectAnswer(
       if (trimmed.length <= 40) return { gradeInterested: trimmed }
       return {}
     }
+    case 'referralSource': {
+      if (trimmed.length <= 60) return { referralSource: trimmed }
+      return {}
+    }
+    case 'issueType': {
+      const issueType = extractIssueType(trimmed)
+      if (issueType) return { issueType }
+      return {}
+    }
+    case 'issueDetails': {
+      if (trimmed.length < 3) return {}
+      return { issueDetails: trimmed }
+    }
+    case 'urgency': {
+      const urgency = extractUrgency(trimmed)
+      if (urgency) return { urgency }
+      return {}
+    }
+    case 'preferredContact': {
+      const preferredContact = extractPreferredContact(trimmed)
+      if (preferredContact) return { preferredContact }
+      return {}
+    }
     default:
       return {}
   }
@@ -303,7 +437,9 @@ export async function buildPeskidsIntakeTurn(params: {
   senderName?: string
   source: MessageSource
   latestMessage: string
+  mode?: PeskidsChatMode
 }): Promise<PeskidsIntakeTurn> {
+  const mode = params.mode ?? 'admissions'
   const history = await getConversationMessages(params.senderContact, 16)
   const inboundHistory = history.filter((message) => message.direction === 'inbound' || !message.direction)
 
@@ -326,7 +462,11 @@ export async function buildPeskidsIntakeTurn(params: {
     profile.parentName = normalizeName(params.senderName)
   }
 
-  const missingBeforeLatest = firstMissingField(profile)
+  if (profile.specialCondition !== 'yes') {
+    profile.specialConditionDetails = undefined
+  }
+
+  const missingBeforeLatest = firstMissingField(profile, mode)
 
   if (params.latestMessage) {
     profile = mergeProfile(profile, profileFromText(params.latestMessage))
@@ -335,7 +475,7 @@ export async function buildPeskidsIntakeTurn(params: {
     }
   }
 
-  const requiredOrder = requiredFieldOrder(profile)
+  const requiredOrder = requiredFieldOrder(profile, mode)
   const missingField = requiredOrder.find((field) => !profile[field]) ?? null
   const capturedFields = requiredOrder.filter((field) => Boolean(profile[field])).map(String)
   const stage = missingField ? 'collecting' : 'handoff'
@@ -343,13 +483,17 @@ export async function buildPeskidsIntakeTurn(params: {
 
   const isFirstTurn = inboundHistory.length <= 1
   const showWelcome = isFirstTurn && (isGreetingOnly(params.latestMessage) || capturedFields.length === 0)
+  const questionSpec = missingField ? questionSpecForField(missingField, profile, mode) : null
 
   let reply: string
   if (missingField) {
-    const question = questionForField(missingField, profile)
-    reply = showWelcome ? `${peskidsIntakeWelcome(params.source)}\n\n${question}` : question
+    const question = questionSpec?.prompt ?? '¿Me compartes un poco más de información para completar tu solicitud?'
+    reply =
+      showWelcome
+        ? `${mode === 'support' ? peskidsSupportWelcome(params.source) : peskidsIntakeWelcome(params.source)}\n\n${question}`
+        : question
   } else {
-    reply = handoffReplyToUser(profile)
+    reply = mode === 'support' ? supportHandoffReplyToUser(profile) : handoffReplyToUser(profile)
   }
 
   const supportDraft = missingField
@@ -360,6 +504,7 @@ export async function buildPeskidsIntakeTurn(params: {
         senderContact: params.senderContact,
         source: params.source,
         messageCount: inboundHistory.length,
+        mode,
       })
 
   return {
@@ -370,5 +515,56 @@ export async function buildPeskidsIntakeTurn(params: {
     profile,
     missingField,
     capturedFields,
+    inputMode: questionSpec?.inputMode ?? 'text',
+    quickReplies: questionSpec?.choices ?? null,
   }
+}
+
+function supportHandoffReplyToUser(profile: PeskidsIntakeProfile): string {
+  const name = profile.parentName ?? 'familia'
+  const issue =
+    profile.issueType === 'class'
+      ? 'clase'
+      : profile.issueType === 'schedule'
+        ? 'horario'
+        : profile.issueType === 'reschedule'
+          ? 'reprogramar clase'
+          : profile.issueType === 'cancel'
+            ? 'cancelar clase'
+          : profile.issueType === 'payment'
+            ? 'pago'
+            : profile.issueType === 'attendance'
+              ? 'asistencia'
+              : profile.issueType === 'feedback'
+                ? 'feedback'
+                : profile.issueType === 'access'
+                  ? 'acceso'
+                  : 'otro'
+  const urgency =
+    profile.urgency === 'today'
+      ? 'hoy'
+      : profile.urgency === 'this_week'
+        ? 'esta semana'
+        : profile.urgency === 'when_possible'
+          ? 'cuando puedan'
+          : '—'
+
+  return (
+    `Gracias, ${name}. Ya tengo tu caso de soporte.\n\n` +
+    `• Estudiante: ${profile.childName ?? '—'}\n` +
+    `• Tipo de soporte: ${issue}\n` +
+    `• Detalle: ${profile.issueDetails ?? '—'}\n` +
+    `• Urgencia: ${urgency}\n` +
+    `• Preferencia de respuesta: ${
+      profile.preferredContact === 'whatsapp'
+        ? 'WhatsApp'
+        : profile.preferredContact === 'phone'
+          ? 'Llamada'
+          : profile.preferredContact === 'email'
+            ? 'Correo'
+            : 'Aquí mismo'
+      }\n\n` +
+    `Un miembro del equipo revisará tu caso y te responderá por el canal elegido.\n` +
+    `Si necesitas reprogramar o cancelar clase, el equipo confirmará primero la política aplicable antes de mover nada.`
+  )
 }

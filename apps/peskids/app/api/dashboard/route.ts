@@ -15,7 +15,9 @@ function isMissingExpandedFeedbackColumn(error: { message?: string } | null | un
     message.includes('rating') ||
     message.includes('ai_summary') ||
     message.includes('body') ||
-    message.includes('status')
+    message.includes('status') ||
+    message.includes('visibility') ||
+    message.includes('audience')
   )
 }
 
@@ -68,19 +70,35 @@ export async function GET(req: NextRequest) {
       studentsByGrade[student.grade] = (studentsByGrade[student.grade] || 0) + 1
     })
 
-    // Fetch recent feedback
-    const recentFeedbackQuery = async () =>
-      supabase
-        .from('feedback')
-        .select('id, child_name, satisfaction, suggestion, author_type, subject_type, body, rating, status')
-        .eq('tenant_id', tenantId)
-        .order('created_at', { ascending: false })
-        .limit(5)
-
     let recentFeedback: DashboardData['recent_feedback'] | null = null
+    let privateFamilyNotes: DashboardData['private_family_notes'] | null = null
     let feedbackError: { message?: string } | null = null
 
-    ;({ data: recentFeedback, error: feedbackError } = await recentFeedbackQuery())
+    const feedbackQuery = async () =>
+      supabase
+        .from('feedback')
+        .select(
+          'id, child_name, satisfaction, suggestion, author_type, subject_type, visibility, audience, parent_email, body, rating, status, created_at'
+        )
+        .eq('tenant_id', tenantId)
+        .order('created_at', { ascending: false })
+        .limit(20)
+
+    const feedbackResult = await feedbackQuery()
+    const recentFeedbackRows = (feedbackResult.data ?? []) as Array<
+      DashboardData['recent_feedback'][number] & { created_at?: string }
+    >
+    feedbackError = feedbackResult.error
+
+    if (!feedbackError) {
+      recentFeedback = recentFeedbackRows
+        .filter((feedback) => feedback.visibility !== 'private')
+        .slice(0, 5) as DashboardData['recent_feedback']
+      privateFamilyNotes = recentFeedbackRows
+        .filter((feedback) => feedback.visibility === 'private' && feedback.audience === 'family')
+        .slice(0, 5) as DashboardData['private_family_notes']
+    }
+
     if (feedbackError && isMissingExpandedFeedbackColumn(feedbackError)) {
       const fallback = await supabase
         .from('feedback')
@@ -90,6 +108,7 @@ export async function GET(req: NextRequest) {
         .limit(5)
       recentFeedback = fallback.data as unknown as DashboardData['recent_feedback']
       feedbackError = fallback.error
+      privateFamilyNotes = []
     }
 
     if (feedbackError) throw feedbackError
@@ -115,6 +134,8 @@ export async function GET(req: NextRequest) {
       students_by_grade: studentsByGrade,
       recent_feedback:
         (recentFeedback as unknown as DashboardData['recent_feedback']) || [],
+      private_family_notes:
+        (privateFamilyNotes as unknown as DashboardData['private_family_notes']) || [],
       pending_followups_count: pendingFollowups?.length || 0,
       pending_followups: (pendingFollowups as DashboardData['pending_followups']) || [],
       followups: (followups as DashboardData['followups']) || [],

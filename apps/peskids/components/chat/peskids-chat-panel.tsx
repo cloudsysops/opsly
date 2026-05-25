@@ -3,6 +3,7 @@
 import React, { type RefObject } from 'react'
 import { Check, Send, X } from 'lucide-react'
 import type { PeskidsChatMessage, PeskidsChatQuickReply } from '@/hooks/use-peskids-chat'
+import type { PeskidsChatMode } from '@/lib/peskids-intake-messages'
 import { cn } from '@/lib/utils'
 
 type PeskidsChatPanelProps = {
@@ -15,6 +16,7 @@ type PeskidsChatPanelProps = {
   onQuickReply?: (reply: PeskidsChatQuickReply) => void
   onClose?: () => void
   variant: 'inline' | 'floating'
+  mode?: PeskidsChatMode
   className?: string
 }
 
@@ -28,9 +30,11 @@ export function PeskidsChatPanel({
   onQuickReply,
   onClose,
   variant,
+  mode = 'admissions',
   className,
 }: PeskidsChatPanelProps): React.ReactElement {
   const isInline = variant === 'inline'
+  const isSupport = mode === 'support'
 
   return (
     <div
@@ -47,12 +51,14 @@ export function PeskidsChatPanel({
       <header className="flex items-center justify-between bg-pk-primary px-4 py-3 text-white">
         <div>
           <p className="font-display text-sm font-bold">
-            {isInline ? 'Reserva por chat' : 'Peskids'}
+            {isSupport ? (isInline ? 'Soporte de familias' : 'Peskids · Soporte') : isInline ? 'Reserva por chat' : 'Peskids'}
           </p>
           <p className="text-[11px] opacity-90">
-            {isInline
-              ? 'Clase de prueba gratis · te guiamos paso a paso'
-              : 'Asistente IA · orientativo, no reemplaza evaluación profesional'}
+            {isSupport
+              ? 'Incidencias, seguimiento y ayuda operativa'
+              : isInline
+                ? 'Clase de prueba gratis · te guiamos paso a paso'
+                : 'Asistente IA · orientativo, no reemplaza evaluación profesional'}
           </p>
         </div>
         {onClose ? (
@@ -129,7 +135,13 @@ export function PeskidsChatPanel({
           type="text"
           value={input}
           onChange={(e) => onInputChange(e.target.value)}
-          placeholder={isInline ? 'Escribe tu respuesta o elige una opción…' : 'Escribe tu pregunta…'}
+          placeholder={
+            isSupport
+              ? 'Escribe tu caso o elige una opción…'
+              : isInline
+                ? 'Escribe tu respuesta o elige una opción…'
+                : 'Escribe tu pregunta…'
+          }
           className="pk-input flex-1 text-sm"
           disabled={sending}
           maxLength={2000}

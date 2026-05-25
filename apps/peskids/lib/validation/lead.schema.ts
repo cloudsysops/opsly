@@ -9,6 +9,8 @@ export const createLeadSchema = z.object({
   neighborhood: z.string().optional(),
   grade_interested: z.string().optional(),
   referral_source: z.string().optional(),
+  referral_code: z.string().optional(),
+  referred_by_code: z.string().optional(),
 })
 
 export type CreateLeadInput = z.infer<typeof createLeadSchema>
@@ -22,4 +24,6 @@ export const leadFieldMap: Record<string, string> = {
   neighborhood: 'neighborhood',
   grade_interested: 'grade_interested',
   referral_source: 'referral_source',
+  referral_code: 'referral_code',
+  referred_by_code: 'referred_by_code',
 }

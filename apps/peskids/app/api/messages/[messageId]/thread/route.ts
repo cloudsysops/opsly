@@ -2,6 +2,10 @@ import { NextRequest, NextResponse } from 'next/server'
 import { validateStaffSession } from '@/lib/staff-auth'
 import { supabaseServer } from '@/lib/supabase'
 
+function detectConversationMode(senderContact: string): 'admissions' | 'support' {
+  return senderContact.includes('web:support:') ? 'support' : 'admissions'
+}
+
 export async function GET(
   _req: NextRequest,
   context: { params: Promise<{ messageId: string }> }
@@ -40,6 +44,7 @@ export async function GET(
   return NextResponse.json({
     inbound,
     status: inbound.status ?? 'pending',
+    conversation_mode: detectConversationMode(inbound.sender_contact),
     suggested_reply: latestDraft?.message_text ?? null,
     draft_id: latestDraft?.id ?? null,
   })

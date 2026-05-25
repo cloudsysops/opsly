@@ -17,6 +17,7 @@ export interface FormSubmissionSummary {
   submissionId: string
   submittedAt: string
   status: 'completed' | 'pending' | 'reviewed'
+  studentName?: string
 }
 
 export interface StudentSubmission {
@@ -25,10 +26,13 @@ export interface StudentSubmission {
   studentId: string
   formTitle: string
   submittedAt: string
+  parentEmail?: string | null
   grade?: number
   maxGrade: number
   feedback?: string
   status: 'reviewed' | 'pending' | 'needs_revision'
+  studentLevel?: string
+  progressPercent?: number
 }
 
 export class FormSubmissionService {
@@ -45,6 +49,7 @@ export class FormSubmissionService {
         submission_id,
         completed_at,
         status,
+        form_data,
         form_id,
         form:form_id(title)
       `
@@ -64,6 +69,7 @@ export class FormSubmissionService {
       submissionId: row.submission_id,
       submittedAt: row.completed_at || new Date().toISOString(),
       status: row.status === 'graded' ? 'reviewed' : row.status === 'submitted' ? 'completed' : 'pending',
+      studentName: row.form_data?.student_name || row.form_data?.child_name || row.form_data?.name || undefined,
     }))
   }
 
@@ -99,10 +105,30 @@ export class FormSubmissionService {
       studentId: row.user_id || `std-${Math.random().toString(36).substr(2, 9)}`,
       formTitle: row.form?.title || 'Untitled Form',
       submittedAt: row.completed_at || new Date().toISOString(),
+      parentEmail:
+        row.form_data?.parent_email ||
+        row.form_data?.family_email ||
+        row.form_data?.email ||
+        row.form_data?.guardian_email ||
+        null,
       grade: row.score,
       maxGrade: 100,
       feedback: row.feedback,
       status: row.status === 'graded' ? 'reviewed' : row.status === 'submitted' ? 'pending' : 'needs_revision',
+      studentLevel:
+        row.form_data?.grade_interested ||
+        row.form_data?.gradeInterested ||
+        row.form_data?.grade_or_level ||
+        row.form_data?.level ||
+        undefined,
+      progressPercent:
+        typeof row.score === 'number'
+          ? Math.max(0, Math.min(100, Math.round((row.score / 100) * 100)))
+          : row.status === 'graded'
+            ? 100
+            : row.status === 'submitted'
+              ? 70
+              : 45,
     }))
   }
 

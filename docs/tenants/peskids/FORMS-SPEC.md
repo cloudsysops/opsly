@@ -29,6 +29,7 @@ All forms are mobile-first, accessible (WCAG 2.1 AA), and validation-heavy (prev
 | phone | tel | ❌ optional | phone-format or empty | "(555) 123-4567" |
 | grade_interested | select | ✅ yes | enum: K–5 / 6–8 / 9–12 / Other | "Select grade..." |
 | referral_source | select | ❌ optional | enum: Google / Friend / Facebook / Instagram / Other / Not sure | "How did you hear?" |
+| referred_by_code | hidden | ❌ optional | referral code from shared link | auto-filled from `?ref=` |
 
 ### Validation Rules
 
@@ -62,6 +63,11 @@ grade_interested: {
 referral_source: {
   required: false,
   enum: ["Google", "Friend", "Facebook", "Instagram", "Other", "Not sure"]
+},
+
+referred_by_code: {
+  required: false,
+  pattern: /^[A-Z0-9-]{4,24}$/
 }
 ```
 
@@ -74,10 +80,11 @@ referral_source: {
    - POST to /api/leads with form data
    - Show "Sending..." loading state
    - On success:
-     - Store lead in `leads` table
-     - Emit event: lead.created
-     - Send confirmation email to user
-     - Redirect to /thanks (or show thank-you modal)
+   - Store lead in `leads` table
+   - Generate `referral_code` for the new family
+   - Emit event: lead.created
+   - Send confirmation email to user
+   - Redirect to /thanks (or show thank-you modal)
    - On error:
      - Show error message: "Something went wrong. Try again."
      - Keep form filled in so user can re-submit
@@ -114,7 +121,9 @@ CREATE TABLE leads (
   "email": "maria@example.com",
   "phone": "+1-555-123-4567",
   "grade_interested": "K-5",
-  "referral_source": "Friend"
+  "referral_source": "Friend",
+  "referral_code": "PK-ABC12345",
+  "referred_by_code": "PK-XYZ99999"
 }
 ```
 

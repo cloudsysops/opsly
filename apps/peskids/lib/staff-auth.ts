@@ -1,11 +1,7 @@
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
-import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import type { NextRequest } from 'next/server'
 import type { User } from '@supabase/supabase-js'
-import { supabaseServer } from './supabase'
 import { isStaffUser } from './staff-user'
-import type { Database } from './types'
 
 export { isStaffUser } from './staff-user'
 
@@ -23,77 +19,29 @@ export async function validateStaffRequest(req: NextRequest): Promise<StaffAuthR
     return { ok: true, method: 'secret' }
   }
 
-  if (!bearer) {
-    return await validateStaffSessionFromCookies(req.cookies.getAll())
-  }
+  const cookieAccessToken = extractAccessTokenFromCookies(req.cookies.getAll())
 
-  if (!process.env.SUPABASE_SERVICE_ROLE_KEY || !process.env.NEXT_PUBLIC_SUPABASE_URL) {
-    return { ok: false, status: 503, error: 'Staff auth not configured' }
-  }
-
-  try {
-    const supabase = supabaseServer(bearer)
-    const {
-      data: { user },
-      error,
-    } = await supabase.auth.getUser()
-
-    if (error || !user) {
-      return { ok: false, status: 401, error: 'Unauthorized' }
-    }
-    if (!isStaffUser(user)) {
-      return { ok: false, status: 403, error: 'Forbidden' }
-    }
-
-    return { ok: true, method: 'supabase', user }
-  } catch {
+  if (!bearer && !cookieAccessToken) {
     return { ok: false, status: 401, error: 'Unauthorized' }
   }
-}
 
-async function validateStaffSessionFromCookies(
-  requestCookies: Array<{ name: string; value: string }>
-): Promise<StaffAuthResult> {
-  const adminSecret = process.env.DASHBOARD_ADMIN_SECRET?.trim() ?? ''
-  const cookieToken = requestCookies.find((cookie) => cookie.name === 'admin-token')?.value?.trim() ?? ''
+  const token = bearer || cookieAccessToken
 
-  if (adminSecret && cookieToken === adminSecret) {
-    return { ok: true, method: 'secret' }
-  }
-
-  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+  if (!process.env.SUPABASE_SERVICE_ROLE_KEY || !process.env.SUPABASE_URL) {
     return { ok: false, status: 503, error: 'Staff auth not configured' }
   }
 
   try {
-    const supabase = createServerClient<Database>(
-      process.env.NEXT_PUBLIC_SUPABASE_URL,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-      {
-        cookies: {
-          getAll() {
-            return requestCookies.map(({ name, value }) => ({ name, value }))
-          },
-          setAll() {
-            return undefined
-          },
-        },
-      }
-    )
+    const user = await fetchSupabaseUser(token)
 
-    const {
-      data: { user },
-      error,
-    } = await supabase.auth.getUser()
-
-    if (error || !user) {
+    if (!user) {
       return { ok: false, status: 401, error: 'Unauthorized' }
     }
     if (!isStaffUser(user)) {
       return { ok: false, status: 403, error: 'Forbidden' }
     }
 
-    return { ok: true, method: 'supabase', user }
+    return { ok: true, method: bearer ? 'supabase' : 'supabase', user }
   } catch {
     return { ok: false, status: 401, error: 'Unauthorized' }
   }
@@ -108,21 +56,22 @@ export async function validateStaffSession(): Promise<StaffAuthResult> {
     return { ok: true, method: 'secret' }
   }
 
-  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+  if (!process.env.SUPABASE_SERVICE_ROLE_KEY || !process.env.SUPABASE_URL) {
     return { ok: false, status: 503, error: 'Staff auth not configured' }
   }
 
+  const cookieAccessToken = extractAccessTokenFromCookies(
+    cookieStore.getAll().map((cookie) => ({ name: cookie.name, value: cookie.value }))
+  )
+
+  if (!cookieAccessToken) {
+    return { ok: false, status: 401, error: 'Unauthorized' }
+  }
+
   try {
-    const supabase = createRouteHandlerClient<Database>({
-      cookies: async () => cookieStore,
-    })
+    const user = await fetchSupabaseUser(cookieAccessToken)
 
-    const {
-      data: { user },
-      error,
-    } = await supabase.auth.getUser()
-
-    if (error || !user) {
+    if (!user) {
       return { ok: false, status: 401, error: 'Unauthorized' }
     }
     if (!isStaffUser(user)) {
@@ -133,4 +82,41 @@ export async function validateStaffSession(): Promise<StaffAuthResult> {
   } catch {
     return { ok: false, status: 401, error: 'Unauthorized' }
   }
+}
+
+function extractAccessTokenFromCookies(
+  requestCookies: Array<{ name: string; value: string }>
+): string {
+  const authCookie = requestCookies.find((cookie) => cookie.name.startsWith('sb-') && cookie.name.endsWith('-auth-token'))
+  if (!authCookie?.value) return ''
+
+  const raw = authCookie.value.trim()
+  const encoded = raw.startsWith('base64-') ? raw.slice('base64-'.length) : raw
+
+  try {
+    const json = Buffer.from(encoded, 'base64').toString('utf8')
+    const parsed = JSON.parse(json) as { access_token?: string }
+    return typeof parsed.access_token === 'string' ? parsed.access_token.trim() : ''
+  } catch {
+    return ''
+  }
+}
+
+async function fetchSupabaseUser(token: string): Promise<User | null> {
+  const supabaseUrl = process.env.SUPABASE_URL?.trim()
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY?.trim()
+  if (!supabaseUrl || !serviceRoleKey) return null
+
+  const response = await fetch(`${supabaseUrl}/auth/v1/user`, {
+    headers: {
+      apikey: serviceRoleKey,
+      authorization: `Bearer ${token}`,
+    },
+  })
+
+  if (!response.ok) {
+    return null
+  }
+
+  return (await response.json()) as User
 }

@@ -11,6 +11,7 @@ interface FormSubmissionSummary {
   submissionId: string
   submittedAt: string
   status: 'completed' | 'pending' | 'reviewed'
+  studentName?: string
 }
 
 interface SubmissionsDashboardProps {
@@ -163,6 +164,9 @@ export function SubmissionsDashboard({
                 >
                   <div className="flex-1 min-w-0">
                     <p className="font-medium text-pk-ink truncate">{submission.formTitle}</p>
+                    {submission.studentName ? (
+                      <p className="mt-0.5 text-xs text-pk-mutedText truncate">{submission.studentName}</p>
+                    ) : null}
                     <div className="flex items-center gap-2 mt-1 text-xs text-pk-mutedText">
                       <Clock className="h-3 w-3" />
                       {formatDate(submission.submittedAt)}

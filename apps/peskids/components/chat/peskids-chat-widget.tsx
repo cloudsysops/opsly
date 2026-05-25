@@ -22,7 +22,7 @@ export function PeskidsChatWidget(): React.ReactElement | null {
     return () => window.removeEventListener(PESKIDS_CHAT_OPEN_EVENT, onOpen)
   }, [])
 
-  if (isAdmin) return null
+  if (isAdmin || isHome) return null
 
   return (
     <>

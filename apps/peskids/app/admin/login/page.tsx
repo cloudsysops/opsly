@@ -75,7 +75,7 @@ function AdminLoginForm(): React.ReactElement {
       if (!user || !isStaffUser(user)) {
         await supabase.auth.signOut()
         setError(
-          'Esta cuenta no tiene acceso al panel Peskids. Usa el portal Opsly o solicita acceso al administrador.'
+          'Esta cuenta no tiene acceso al panel Peskids. Solicita acceso al equipo de Peskids.'
         )
         return
       }

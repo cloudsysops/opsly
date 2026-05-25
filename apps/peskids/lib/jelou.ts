@@ -77,6 +77,7 @@ export function extractLeadFromJelou(webhook: JelouWebhookPayload) {
     neighborhood: String(fields.neighborhood || fields.barrio || fields.zona || '').trim(),
     interested_grade: fields.grade || fields.interested_grade || '',
     source: `jelou:${webhook.data.channel || 'web'}`,
+    referred_by_code: String(fields.referred_by_code || fields.referral_code || '').trim().toUpperCase(),
     contact_id: webhook.data.contact_id,
     raw_payload: webhook,
   };

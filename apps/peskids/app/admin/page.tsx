@@ -14,11 +14,12 @@ export default function AdminDashboard(): React.ReactElement {
   const [refreshing, setRefreshing] = useState(false)
   const [error, setError] = useState('')
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null)
+  const [range, setRange] = useState<'week' | 'month'>('week')
 
   const fetchDashboard = useCallback(async (isPoll = false): Promise<void> => {
     if (isPoll) setRefreshing(true)
     try {
-      const response = await fetch('/api/dashboard', { credentials: 'include' })
+      const response = await fetch(`/api/dashboard?range=${range}`, { credentials: 'include' })
       if (!response.ok) throw new Error('Failed to fetch dashboard')
       const dashboardData: DashboardData = await response.json()
       setData(dashboardData)
@@ -31,7 +32,7 @@ export default function AdminDashboard(): React.ReactElement {
       setLoading(false)
       setRefreshing(false)
     }
-  }, [])
+  }, [range])
 
   useEffect(() => {
     void fetchDashboard()
@@ -65,6 +66,8 @@ export default function AdminDashboard(): React.ReactElement {
     <DashboardView
       data={data}
       lastUpdated={lastUpdated}
+      range={range}
+      onRangeChange={setRange}
       onRefresh={() => void fetchDashboard(true)}
       refreshing={refreshing}
     />

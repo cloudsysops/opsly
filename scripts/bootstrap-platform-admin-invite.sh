@@ -290,12 +290,66 @@ async function generateRecoveryLink(adminBase) {
   return body;
 }
 
+async function sendInviteEmail(activateUrl) {
+  const resendKey = process.env.RESEND_API_KEY?.trim();
+  if (!resendKey) {
+    console.log('WARN: RESEND_API_KEY vacío; solo se imprime el enlace manual');
+    return;
+  }
+
+  const from =
+    process.env.RESEND_INVITE_FROM_EMAIL?.trim() ||
+    process.env.RESEND_FROM_EMAIL?.trim() ||
+    process.env.RESEND_FROM_ADDRESS?.trim() ||
+    'hello@opsly.sh';
+
+  const brand = tenantSlug === 'peskids' ? 'Peskids' : 'Opsly';
+  const subject =
+    tenantSlug === 'peskids'
+      ? 'Peskids · acceso de staff/admin'
+      : 'Opsly · acceso al portal';
+  const homeUrl = tenantSlug === 'peskids' ? `${inviteBase}/admin/login` : `${inviteBase}/login`;
+  const html = `
+    <div style="font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;line-height:1.5;color:#111">
+      <h2 style="margin:0 0 16px">${brand}</h2>
+      <p>Hola ${email},</p>
+      <p>Tu acceso para <strong>${brand}</strong> ya está listo. Actívalo desde este enlace:</p>
+      <p><a href="${activateUrl}">${activateUrl}</a></p>
+      <p>Después de activar tu contraseña, entra al panel desde:</p>
+      <p><a href="${homeUrl}">${homeUrl}</a></p>
+    </div>
+  `;
+
+  const response = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${resendKey}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      from,
+      to: email,
+      subject,
+      html,
+    }),
+  });
+  const body = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    throw new Error(body?.message || body?.error || `Resend HTTP ${response.status}`);
+  }
+}
+
 function parseToken(actionLink) {
   try {
     return new URL(actionLink).searchParams.get('token');
   } catch {
     return null;
   }
+}
+
+function buildRecoveryVerifyLink(token, redirectTo) {
+  const redirect = encodeURIComponent(redirectTo);
+  return `${url}/auth/v1/verify?token=${encodeURIComponent(token)}&type=recovery&redirect_to=${redirect}`;
 }
 
 (async () => {
@@ -317,16 +371,7 @@ function parseToken(actionLink) {
     console.log('DRY_RUN: crearía usuario e invitaría por email');
     process.exit(0);
   } else {
-    try {
-      await inviteUser();
-      console.log('OK: invite enviado por Supabase Auth (revisa bandeja de entrada)');
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : String(err);
-      if (!/already|registered|exists/i.test(msg)) {
-        throw err;
-      }
-      console.log('WARN: invite API:', msg);
-    }
+    console.log('INFO: creando invite sin usar el email automático de Supabase');
   }
 
   if (!dryRun) {
@@ -335,13 +380,18 @@ function parseToken(actionLink) {
       const recoveryLink =
         recoveryPayload?.action_link || recoveryPayload?.properties?.action_link;
       if (recoveryLink) {
+        const token = parseToken(recoveryLink);
+        const manualRecovery =
+          token && recoveryBase
+            ? buildRecoveryVerifyLink(token, `${recoveryBase}/auth/recovery`)
+            : recoveryLink;
         console.log('');
         console.log('Recovery link (abrir una vez, ~1h):');
-        console.log(recoveryLink);
+        console.log(manualRecovery);
         console.log('');
         console.log('Si Supabase redirige al portal: añade en Dashboard → Auth → URL:');
-        console.log(`  ${recoveryBase}/login`);
-        console.log(`  ${recoveryBase}/update-password`);
+        console.log(`  ${recoveryBase}/auth/recovery`);
+        console.log(`  ${recoveryBase}/admin/update-password`);
       }
     } else {
       const linkPayload = await generateInviteLink();
@@ -353,6 +403,13 @@ function parseToken(actionLink) {
           console.log('');
           console.log('Enlace manual invite (si el correo no llega):');
           console.log(manual);
+          try {
+            await sendInviteEmail(manual);
+            console.log('OK: invite enviado por Resend (revisa bandeja de entrada)');
+          } catch (err) {
+            const msg = err instanceof Error ? err.message : String(err);
+            console.log('WARN: correo manual no enviado:', msg);
+          }
         }
       }
     }

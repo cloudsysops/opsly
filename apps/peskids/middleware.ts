@@ -1,6 +1,6 @@
-import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs'
 import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
+import { createServerClient, type SetAllCookies } from '@supabase/ssr'
 import { isStaffUser } from '@/lib/staff-user'
 import type { Database } from '@/lib/types'
 
@@ -28,23 +28,37 @@ export async function middleware(req: NextRequest): Promise<NextResponse> {
     return NextResponse.next()
   }
 
-  const hasSupabaseAuth =
-    Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL) &&
-    Boolean(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  if (!url || !anon) {
+    const login = new URL('/admin/login', req.url)
+    return NextResponse.redirect(login)
+  }
 
-  if (hasSupabaseAuth) {
-    const response = NextResponse.next()
-    const supabase = createMiddlewareClient<Database>({
-      req: req as any,
-      res: response as any,
-    })
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
+  let response = NextResponse.next({ request: req })
+  const supabase = createServerClient<Database>(url, anon, {
+    cookies: {
+      getAll() {
+        return req.cookies.getAll()
+      },
+      setAll(cookiesToSet: Parameters<SetAllCookies>[0]) {
+        cookiesToSet.forEach(({ name, value }) => {
+          req.cookies.set(name, value)
+        })
+        response = NextResponse.next({ request: req })
+        cookiesToSet.forEach(({ name, value, options }) => {
+          response.cookies.set(name, value, options)
+        })
+      },
+    },
+  })
 
-    if (user && isStaffUser(user)) {
-      return response
-    }
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (user && isStaffUser(user)) {
+    return response
   }
 
   const login = new URL('/admin/login', req.url)

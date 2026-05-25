@@ -13,6 +13,7 @@ export async function POST(req: NextRequest) {
       message?: string
       session_id?: string
       sender_name?: string
+      mode?: 'admissions' | 'support'
     }
 
     const messageText = body.message?.trim() ?? ''
@@ -42,6 +43,7 @@ export async function POST(req: NextRequest) {
       senderName: body.sender_name,
       source: 'web',
       latestMessage: messageText,
+      mode: body.mode ?? 'admissions',
     })
 
     await storeOutboundMessage({
@@ -61,7 +63,7 @@ export async function POST(req: NextRequest) {
         })
       : { draft: null }
 
-    if (intake.stage === 'handoff') {
+    if (body.mode !== 'support' && intake.stage === 'handoff') {
       void submitLeadFromIntake(intake.profile)
     }
 
@@ -86,9 +88,13 @@ export async function POST(req: NextRequest) {
       progress: intake.progress,
       profile: intake.profile,
       support_draft: intake.supportDraft,
+      input_mode: intake.inputMode,
+      quick_replies: intake.quickReplies,
       from_llm: false,
       disclaimer:
-        intake.stage === 'handoff'
+        body.mode === 'support'
+          ? 'Tu caso quedó listo para el equipo de soporte. Si requiere reprogramación o cancelación, primero lo valida una persona del equipo.'
+          : intake.stage === 'handoff'
           ? 'Gracias. Un asesor de Peskids revisará tu caso y te contactará para confirmar los siguientes pasos.'
           : 'Te haré algunas preguntas cortas para completar tu solicitud.',
     })

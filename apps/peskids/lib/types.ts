@@ -20,6 +20,10 @@ export type Database = {
           neighborhood: string | null
           grade_interested: string
           referral_source: string | null
+          referral_code: string | null
+          referred_by_code: string | null
+          referral_discount_cents: number
+          referral_redemptions: number
           status: 'new' | 'contacted' | 'enrolled' | 'archived'
           admin_notes: string | null
           created_at: string
@@ -34,6 +38,10 @@ export type Database = {
           neighborhood?: string | null
           grade_interested: string
           referral_source?: string | null
+          referral_code?: string | null
+          referred_by_code?: string | null
+          referral_discount_cents?: number
+          referral_redemptions?: number
           status?: 'new' | 'contacted' | 'enrolled' | 'archived'
           admin_notes?: string | null
         }
@@ -72,6 +80,16 @@ export type Database = {
           suggestion: string | null
           contact_wanted: boolean
           parent_email: string | null
+          author_type: 'parent' | 'teacher' | 'staff'
+          author_ref_id: string | null
+          subject_type: 'general' | 'class' | 'student' | 'operations'
+          subject_ref_id: string | null
+          visibility: 'public' | 'private'
+          audience: 'family' | 'teacher' | 'admin'
+          body: string | null
+          rating: number | null
+          status: 'new' | 'reviewed' | 'action_required' | 'closed'
+          ai_summary: string | null
           created_at: string
           updated_at: string
         }
@@ -82,6 +100,16 @@ export type Database = {
           suggestion?: string | null
           contact_wanted?: boolean
           parent_email?: string | null
+          author_type?: 'parent' | 'teacher' | 'staff'
+          author_ref_id?: string | null
+          subject_type?: 'general' | 'class' | 'student' | 'operations'
+          subject_ref_id?: string | null
+          visibility?: 'public' | 'private'
+          audience?: 'family' | 'teacher' | 'admin'
+          body?: string | null
+          rating?: number | null
+          status?: 'new' | 'reviewed' | 'action_required' | 'closed'
+          ai_summary?: string | null
         }
         Update: Partial<Database['public']['Tables']['feedback']['Insert']>
         Relationships: []
@@ -183,15 +211,68 @@ export interface DashboardData {
   new_leads_count: number
   new_leads: Pick<
     Database['public']['Tables']['leads']['Row'],
-    'id' | 'name' | 'email' | 'phone' | 'class_modality' | 'neighborhood' | 'grade_interested'
+    | 'id'
+    | 'name'
+    | 'email'
+    | 'phone'
+    | 'class_modality'
+    | 'neighborhood'
+    | 'grade_interested'
+    | 'status'
+    | 'admin_notes'
+    | 'referral_code'
+    | 'referred_by_code'
+    | 'referral_discount_cents'
+    | 'referral_redemptions'
   >[]
   active_students_count: number
   students_by_grade: Record<string, number>
-  recent_feedback: Pick<Database['public']['Tables']['feedback']['Row'], 'id' | 'child_name' | 'satisfaction' | 'suggestion'>[]
-  pending_followups_count: number
-  pending_followups: Pick<Database['public']['Tables']['followups']['Row'], 'id' | 'contact_id' | 'due_date' | 'type'>[]
-  recent_messages: Pick<
-    Database['public']['Tables']['messages']['Row'],
-    'id' | 'source' | 'sender_name' | 'sender_contact' | 'message_text' | 'created_at' | 'status'
+  recent_feedback: Pick<
+    Database['public']['Tables']['feedback']['Row'],
+    | 'id'
+    | 'child_name'
+    | 'satisfaction'
+    | 'suggestion'
+    | 'author_type'
+    | 'subject_type'
+    | 'visibility'
+    | 'audience'
+    | 'parent_email'
+    | 'body'
+    | 'rating'
+    | 'status'
   >[]
+  private_family_notes: Pick<
+    Database['public']['Tables']['feedback']['Row'],
+    | 'id'
+    | 'child_name'
+    | 'satisfaction'
+    | 'suggestion'
+    | 'author_type'
+    | 'subject_type'
+    | 'visibility'
+    | 'audience'
+    | 'parent_email'
+    | 'body'
+    | 'rating'
+    | 'status'
+    | 'created_at'
+  >[]
+  pending_followups_count: number
+  pending_followups: Pick<
+    Database['public']['Tables']['followups']['Row'],
+    'id' | 'contact_id' | 'contact_type' | 'due_date' | 'type' | 'status' | 'notes'
+  >[]
+  followups: Pick<
+    Database['public']['Tables']['followups']['Row'],
+    'id' | 'contact_id' | 'contact_type' | 'due_date' | 'type' | 'status' | 'notes'
+  >[]
+  recent_messages: Array<
+    Pick<
+      Database['public']['Tables']['messages']['Row'],
+      'id' | 'source' | 'sender_name' | 'sender_contact' | 'message_text' | 'created_at' | 'status' | 'direction'
+    > & {
+      conversation_mode: 'admissions' | 'support'
+    }
+  >
 }

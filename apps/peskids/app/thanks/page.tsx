@@ -4,8 +4,16 @@ import { PeskidsLockup } from '@/components/brand/peskids-logo'
 import { SiteFooter } from '@/components/layout/site-footer'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { ReferralLinkCard } from '@/components/referrals/referral-link-card'
 
-export default function ThanksPage(): React.ReactElement {
+export default function ThanksPage({
+  searchParams,
+}: {
+  searchParams?: { referral_link?: string; referral_code?: string }
+}): React.ReactElement {
+  const referralLink = searchParams?.referral_link?.trim() || ''
+  const referralCode = searchParams?.referral_code?.trim() || ''
+
   return (
     <div className="flex min-h-screen flex-col bg-pk-bg">
       <header className="border-b border-pk-border bg-pk-surface/90 px-6 py-4">
@@ -24,6 +32,9 @@ export default function ThanksPage(): React.ReactElement {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6 pb-8">
+            {referralLink && referralCode ? (
+              <ReferralLinkCard referralLink={referralLink} referralCode={referralCode} />
+            ) : null}
             <div className="rounded-xl border border-pk-border bg-pk-bg px-4 py-3 text-left text-sm text-pk-sub">
               <p className="font-semibold text-pk-ink">¿Qué sigue?</p>
               <p className="mt-1">

@@ -8,6 +8,7 @@ interface StatCardProps {
   value: number
   icon: LucideIcon
   accent?: 'teal' | 'green' | 'amber' | 'coral' | 'violet' | 'slate'
+  sectionId?: string
   children?: React.ReactNode
 }
 
@@ -26,10 +27,11 @@ export function StatCard({
   value,
   icon: Icon,
   accent = 'teal',
+  sectionId,
   children,
 }: StatCardProps): React.ReactElement {
   return (
-    <Card accent={accent} hover className="flex h-full flex-col">
+    <Card accent={accent} hover className="flex h-full flex-col" data-admin-section={sectionId}>
       <CardHeader className="flex flex-row items-start justify-between gap-3 pb-2">
         <div>
           <CardTitle className="text-base">{title}</CardTitle>

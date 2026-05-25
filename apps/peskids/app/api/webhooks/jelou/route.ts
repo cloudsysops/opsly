@@ -15,6 +15,7 @@ import {
   extractLeadFromJelou,
   extractFeedbackFromJelou,
 } from '@/lib/jelou';
+import type { Database } from '@/lib/types';
 
 const JELOU_WEBHOOK_SECRET = process.env.JELOU_WEBHOOK_SECRET || 'dev-secret';
 const TENANT_ID = process.env.PESKIDS_TENANT_ID || 'peskids-mvp';
@@ -172,7 +173,7 @@ async function handleFeedbackSubmission(webhook: any) {
 
   try {
     // Insert feedback into database
-    const expandedPayload = {
+    const expandedPayload: Database['public']['Tables']['feedback']['Insert'] = {
       tenant_id: TENANT_ID,
       child_name: String(feedback.student_name),
       satisfaction: feedback.satisfaction,
@@ -188,7 +189,7 @@ async function handleFeedbackSubmission(webhook: any) {
       status: (feedback.satisfaction <= 2 ? 'action_required' : 'new') as 'action_required' | 'new',
     };
 
-    const legacyPayload = {
+    const legacyPayload: Database['public']['Tables']['feedback']['Insert'] = {
       tenant_id: TENANT_ID,
       child_name: String(feedback.student_name),
       satisfaction: feedback.satisfaction,

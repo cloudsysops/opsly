@@ -61,7 +61,10 @@ export async function emitLeadCreated(
   email: string,
   phone: string | null,
   gradeInterested: string,
-  referralSource: string | null
+  referralSource: string | null,
+  referralCode?: string | null,
+  referredByCode?: string | null,
+  referralLink?: string | null
 ): Promise<void> {
   await emitEvent('lead.created', {
     lead_id: leadId,
@@ -70,30 +73,63 @@ export async function emitLeadCreated(
     phone,
     grade_interested: gradeInterested,
     referral_source: referralSource,
+    referral_code: referralCode ?? null,
+    referred_by_code: referredByCode ?? null,
+    referral_link: referralLink ?? null,
   })
 }
 
-export async function emitFeedbackCreated(
-  feedbackId: string,
-  childName: string,
-  satisfaction: number,
-  suggestion: string | null,
+export async function emitFeedbackCreated(params: {
+  feedbackId: string
+  childName: string
+  satisfaction: number
+  suggestion: string | null
   parentEmail: string | null
-): Promise<void> {
+  authorType?: 'parent' | 'teacher' | 'staff'
+  subjectType?: 'general' | 'class' | 'student' | 'operations'
+  visibility?: 'public' | 'private'
+  audience?: 'family' | 'teacher' | 'admin'
+  body?: string | null
+  rating?: number | null
+}): Promise<void> {
+  const {
+    feedbackId,
+    childName,
+    satisfaction,
+    suggestion,
+    parentEmail,
+    authorType = 'parent',
+    subjectType = 'student',
+    visibility = 'public',
+    audience = 'family',
+    body = suggestion,
+    rating = satisfaction,
+  } = params
+
   await emitEvent('feedback.created', {
     feedback_id: feedbackId,
     child_name: childName,
     satisfaction,
     suggestion,
     parent_email: parentEmail,
+    author_type: authorType,
+    subject_type: subjectType,
+    visibility,
+    audience,
+    body,
+    rating,
   })
 
-  if (satisfaction < 3) {
+  if ((rating ?? satisfaction) < 3) {
     await emitEvent('feedback.alert', {
       feedback_id: feedbackId,
       alert_type: 'low_satisfaction',
-      satisfaction,
+      satisfaction: rating ?? satisfaction,
       child_name: childName,
+      author_type: authorType,
+      subject_type: subjectType,
+      visibility,
+      audience,
     })
   }
 }

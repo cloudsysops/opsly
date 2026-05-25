@@ -32,6 +32,17 @@ export const supabaseServer = (token?: string) => {
 /** Alias for webhook routes (same service-role client). */
 export const getServiceClient = supabaseServer
 
+export type RecentMessageWithMode = Pick<
+  Database['public']['Tables']['messages']['Row'],
+  'id' | 'source' | 'sender_name' | 'sender_contact' | 'message_text' | 'created_at' | 'direction' | 'status'
+> & {
+  conversation_mode: 'admissions' | 'support'
+}
+
+function detectConversationMode(senderContact: string): 'admissions' | 'support' {
+  return senderContact.includes('web:support:') ? 'support' : 'admissions'
+}
+
 export async function getRecentMessages(tenantId: string, limit: number = 10) {
   const client = supabaseServer()
   const { data, error } = await client
@@ -47,5 +58,8 @@ export async function getRecentMessages(tenantId: string, limit: number = 10) {
     return []
   }
 
-  return data || []
+  return (data || []).map((message) => ({
+    ...message,
+    conversation_mode: detectConversationMode(message.sender_contact),
+  })) as RecentMessageWithMode[]
 }

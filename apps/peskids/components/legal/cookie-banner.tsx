@@ -44,12 +44,12 @@ export function CookieBanner(): React.ReactElement | null {
       role="dialog"
       aria-label="Aviso de cookies"
       aria-live="polite"
-      className="fixed bottom-4 left-4 right-4 z-50 mx-auto max-w-2xl rounded-2xl border border-pk-border bg-white p-4 shadow-xl sm:bottom-6 sm:left-6 sm:right-6"
+      className="fixed bottom-4 left-4 right-4 z-50 mx-auto max-w-xl rounded-2xl border border-pk-border/80 bg-white/95 p-3 shadow-xl backdrop-blur sm:bottom-5 sm:left-5 sm:right-auto sm:max-w-lg"
     >
       <div className="flex items-start gap-3">
         <div className="flex-1">
           <p className="text-sm font-semibold text-pk-ink">Usamos cookies esenciales</p>
-          <p className="mt-1 text-xs leading-relaxed text-pk-sub">
+          <p className="mt-1 text-[11px] leading-relaxed text-pk-sub">
             Solo usamos cookies estrictamente necesarias para el funcionamiento del sitio
             (sesión de staff). No hay cookies de rastreo ni publicidad.{' '}
             <Link href="/cookies" className="text-pk-primary hover:underline">
@@ -66,7 +66,7 @@ export function CookieBanner(): React.ReactElement | null {
           <X className="h-4 w-4" />
         </button>
       </div>
-      <div className="mt-3 flex gap-2">
+      <div className="mt-3 flex flex-wrap gap-2">
         <button
           type="button"
           onClick={accept}

@@ -1,6 +1,7 @@
 import { getServiceClient } from '@/lib/supabase'
 import type { PeskidsIntakeProfile } from '@/lib/peskids-intake'
 import { gradeInterestedLabel } from '@/lib/peskids-intake-messages'
+import { buildPeskidsReferralCode } from '@/lib/peskids-referrals'
 
 /** Registra lead en Supabase cuando el intake conversacional está completo. */
 export async function submitLeadFromIntake(profile: PeskidsIntakeProfile): Promise<{ ok: boolean }> {
@@ -21,7 +22,7 @@ export async function submitLeadFromIntake(profile: PeskidsIntakeProfile): Promi
   try {
     const supabase = getServiceClient()
     const tenantId = process.env.NEXT_PUBLIC_TENANT_ID || 'peskids'
-    const { error } = await supabase.from('leads').insert({
+    const { data, error } = await supabase.from('leads').insert({
       tenant_id: tenantId,
       name: profile.parentName,
       email: profile.email,
@@ -30,12 +31,30 @@ export async function submitLeadFromIntake(profile: PeskidsIntakeProfile): Promi
       neighborhood: profile.neighborhood,
       grade_interested: profile.gradeInterested,
       referral_source: profile.referralSource?.trim() ? profile.referralSource.trim() : 'chat-intake',
+      referral_discount_cents: 0,
+      referral_redemptions: 0,
       status: 'new',
-    })
+    }).select('id, referral_code')
 
     if (error) {
       console.error('Lead from intake failed:', error.message)
       return { ok: false }
+    }
+
+    const lead = data?.[0]
+    if (lead?.id && !lead.referral_code) {
+      const referralCode = buildPeskidsReferralCode({
+        tenantId,
+        leadId: lead.id,
+        email: profile.email,
+      })
+      const { error: referralUpdateError } = await supabase
+        .from('leads')
+        .update({ referral_code: referralCode })
+        .eq('id', lead.id)
+      if (referralUpdateError) {
+        console.warn('Referral code persistence failed:', referralUpdateError.message)
+      }
     }
 
     const opslyBase = process.env.OPSLY_API_BASE_URL?.replace(/\/$/, '')

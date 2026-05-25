@@ -14,6 +14,10 @@ enabled = true
 # Default for Auth emails when redirect_to is omitted (multi-tenant: portal + tenants).
 site_url = "https://portal.op-sly.com"
 additional_redirect_urls = [
+  "https://peskids.op-sly.com/invite",
+  "https://peskids.op-sly.com/invite/**",
+  "http://localhost:3004/invite",
+  "http://localhost:3004/invite/**",
   "https://peskids.op-sly.com/auth/recovery",
   "https://peskids.op-sly.com/auth/callback",
   "https://peskids.op-sly.com/admin/update-password",
