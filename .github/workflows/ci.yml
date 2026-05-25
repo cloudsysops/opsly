@@ -311,6 +311,11 @@ jobs:
       - name: npm ci
         run: |
           npm ci
+
+      - name: Install Playwright browsers
+        run: |
+          npx playwright install --with-deps chromium
+
       - name: Validate E2E required secrets
         run: |
           set -euo pipefail
