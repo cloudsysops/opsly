@@ -16,23 +16,10 @@ import {
   extractFeedbackFromJelou,
 } from '@/lib/jelou';
 import type { Database } from '@/lib/types';
+import { isMissingExpandedFeedbackColumn } from '@/lib/utils/db-compat';
 
 const JELOU_WEBHOOK_SECRET = process.env.JELOU_WEBHOOK_SECRET || 'dev-secret';
 const TENANT_ID = process.env.PESKIDS_TENANT_ID || 'peskids-mvp';
-
-function isMissingExpandedFeedbackColumn(error: { message?: string } | null | undefined): boolean {
-  const message = error?.message?.toLowerCase() ?? '';
-  return (
-    message.includes('author_type') ||
-    message.includes('author_ref_id') ||
-    message.includes('subject_type') ||
-    message.includes('subject_ref_id') ||
-    message.includes('rating') ||
-    message.includes('ai_summary') ||
-    message.includes('body') ||
-    message.includes('status')
-  );
-}
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
   try {

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { supabaseServer } from '@/lib/supabase'
 import { emitFeedbackCreated } from '@/lib/events'
 import { rateLimit, getClientIdentifier } from '@/lib/rate-limit'
+import { isMissingExpandedFeedbackColumn } from '@/lib/utils/db-compat'
 import type { Database } from '@/lib/types'
 
 const VALID_AUTHOR_TYPES = new Set(['parent', 'teacher', 'staff'] as const)
@@ -18,22 +19,6 @@ function asOptionalUuid(value: unknown): string | null {
   const raw = asTrimmedString(value)
   if (!raw) return null
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(raw) ? raw : null
-}
-
-function isMissingExpandedFeedbackColumn(error: { message?: string } | null | undefined): boolean {
-  const message = error?.message?.toLowerCase() ?? ''
-  return (
-    message.includes('author_type') ||
-    message.includes('author_ref_id') ||
-    message.includes('subject_type') ||
-    message.includes('subject_ref_id') ||
-    message.includes('rating') ||
-    message.includes('ai_summary') ||
-    message.includes('body') ||
-    message.includes('status') ||
-    message.includes('visibility') ||
-    message.includes('audience')
-  )
 }
 
 export async function POST(request: NextRequest) {
