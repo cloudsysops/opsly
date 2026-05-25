@@ -3,91 +3,66 @@ import { supabaseServer } from '@/lib/supabase'
 import { emitFeedbackCreated } from '@/lib/events'
 import { rateLimit, getClientIdentifier } from '@/lib/rate-limit'
 import { isMissingExpandedFeedbackColumn } from '@/lib/utils/db-compat'
+import { feedbackSchema } from '@/lib/validation/feedback.schema'
 import type { Database } from '@/lib/types'
 
-const VALID_AUTHOR_TYPES = new Set(['parent', 'teacher', 'staff'] as const)
-const VALID_SUBJECT_TYPES = new Set(['general', 'class', 'student', 'operations'] as const)
-const VALID_VISIBILITIES = new Set(['public', 'private'] as const)
-const VALID_AUDIENCES = new Set(['family', 'teacher', 'admin'] as const)
-const VALID_STATUSES = new Set(['new', 'reviewed', 'action_required', 'closed'] as const)
-
-function asTrimmedString(value: unknown): string {
-  return typeof value === 'string' ? value.trim() : ''
-}
-
-function asOptionalUuid(value: unknown): string | null {
-  const raw = asTrimmedString(value)
-  if (!raw) return null
-  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(raw) ? raw : null
-}
-
 export async function POST(request: NextRequest) {
+  const requestId = request.headers.get('x-request-id') ?? crypto.randomUUID()
+
   try {
     const clientId = getClientIdentifier(request.headers)
     if (!rateLimit(clientId, 5, 60000)) {
       return NextResponse.json(
-        { error: 'Too many requests. Please try again in a few moments.' },
+        { ok: false, error: 'Too many requests. Please try again in a few moments.', request_id: requestId },
         { status: 429 }
       )
     }
 
-    const body = await request.json()
-    const childName = asTrimmedString(body.child_name ?? body.student_name ?? body.name)
-    const message = asTrimmedString(body.body ?? body.suggestion ?? body.feedback ?? body.notes)
-    const satisfactionRaw = body.rating ?? body.satisfaction
-    const satisfaction = Number(satisfactionRaw)
-    const authorType = VALID_AUTHOR_TYPES.has(body.author_type) ? body.author_type : 'parent'
-    const subjectType = VALID_SUBJECT_TYPES.has(body.subject_type) ? body.subject_type : 'student'
-    const visibility = VALID_VISIBILITIES.has(body.visibility)
-      ? body.visibility
-      : authorType === 'staff'
-        ? 'private'
-        : 'public'
-    const audience = VALID_AUDIENCES.has(body.audience)
-      ? body.audience
-      : authorType === 'teacher'
-        ? 'family'
-        : authorType === 'staff'
-          ? 'family'
-          : 'teacher'
-    const status = VALID_STATUSES.has(body.status) ? body.status : 'new'
-    const contactWanted = Boolean(body.contact_wanted)
-    const parentEmail = asTrimmedString(body.parent_email) || null
-    const authorRefId = asOptionalUuid(body.author_ref_id)
-    const subjectRefId = asOptionalUuid(body.subject_ref_id)
-
-    // Validation
-    if (!childName || childName.length < 2 || childName.length > 80) {
+    const raw = await request.json()
+    const result = feedbackSchema.safeParse(raw)
+    if (!result.success) {
       return NextResponse.json(
-        { error: 'Child name must be between 2 and 80 characters' },
+        { ok: false, error: result.error.issues[0]?.message ?? 'Invalid input', request_id: requestId },
         { status: 400 }
       )
     }
 
-    if (typeof satisfaction !== 'number' || satisfaction < 1 || satisfaction > 5) {
+    const data = result.data
+    const childName = (data.child_name ?? data.student_name ?? data.name)
+    const message = (data.body ?? data.suggestion ?? data.feedback ?? data.notes)
+    const satisfaction = (data.rating ?? data.satisfaction)
+
+    if (!childName || childName.length < 2) {
       return NextResponse.json(
-        { error: 'Rating must be a number between 1 and 5' },
+        { ok: false, error: 'Child name must be between 2 and 80 characters', request_id: requestId },
         { status: 400 }
       )
     }
 
     if (!message || message.length < 2) {
       return NextResponse.json(
-        { error: 'Feedback message is required' },
+        { ok: false, error: 'Feedback message is required', request_id: requestId },
         { status: 400 }
       )
     }
 
-    if (message.length > 1200) {
+    if (satisfaction === undefined) {
       return NextResponse.json(
-        { error: 'Feedback message must be 1200 characters or less' },
+        { ok: false, error: 'Rating must be a number between 1 and 5', request_id: requestId },
         { status: 400 }
       )
     }
 
-    if (audience !== 'admin' && !parentEmail) {
+    const authorType = data.author_type
+    const subjectType = data.subject_type
+    const visibility = data.visibility ?? (authorType === 'staff' ? 'private' : 'public')
+    const audience =
+      data.audience ??
+      (authorType === 'teacher' || authorType === 'staff' ? 'family' : 'teacher')
+
+    if (audience !== 'admin' && !data.parent_email) {
       return NextResponse.json(
-        { error: 'Family email is required for this feedback' },
+        { ok: false, error: 'Family email is required for this feedback', request_id: requestId },
         { status: 400 }
       )
     }
@@ -95,34 +70,34 @@ export async function POST(request: NextRequest) {
     const tenantId = process.env.NEXT_PUBLIC_TENANT_ID || 'peskids'
     const supabase = supabaseServer()
 
-    // Insert into database
     const feedbackPayload: Database['public']['Tables']['feedback']['Insert'] = {
       tenant_id: tenantId,
       child_name: childName,
       satisfaction,
       suggestion: message,
-      contact_wanted: contactWanted,
-      parent_email: parentEmail,
+      contact_wanted: data.contact_wanted,
+      parent_email: data.parent_email ?? null,
       author_type: authorType,
-      author_ref_id: authorRefId,
+      author_ref_id: data.author_ref_id ?? null,
       subject_type: subjectType,
-      subject_ref_id: subjectRefId,
+      subject_ref_id: data.subject_ref_id ?? null,
       visibility,
       audience,
       body: message,
       rating: satisfaction,
-      status,
+      status: data.status,
     }
-    const legacyFeedbackPayload: Database['public']['Tables']['feedback']['Insert'] = {
+
+    const legacyPayload: Database['public']['Tables']['feedback']['Insert'] = {
       tenant_id: tenantId,
       child_name: childName,
       satisfaction,
       suggestion: message,
-      contact_wanted: contactWanted,
-      parent_email: parentEmail,
+      contact_wanted: data.contact_wanted,
+      parent_email: data.parent_email ?? null,
     }
 
-    const { data, error } = await supabase
+    const { data: row, error } = await supabase
       .from('feedback')
       .insert(feedbackPayload)
       .select()
@@ -130,21 +105,21 @@ export async function POST(request: NextRequest) {
 
     if (error) {
       if (isMissingExpandedFeedbackColumn(error)) {
-        const { data: legacyData, error: legacyError } = await supabase
+        const { data: legacyRow, error: legacyError } = await supabase
           .from('feedback')
-          .insert(legacyFeedbackPayload)
+          .insert(legacyPayload)
           .select()
           .single()
 
         if (legacyError) {
-          console.error('Database error:', legacyError)
+          console.error('[feedback] db error (legacy):', legacyError, { request_id: requestId })
           return NextResponse.json(
-            { error: 'Failed to create feedback' },
+            { ok: false, error: 'Failed to create feedback', request_id: requestId },
             { status: 500 }
           )
         }
 
-        const legacyFeedback = legacyData as Database['public']['Tables']['feedback']['Row']
+        const legacyFeedback = legacyRow as Database['public']['Tables']['feedback']['Row']
         try {
           await emitFeedbackCreated({
             feedbackId: legacyFeedback.id,
@@ -160,21 +135,23 @@ export async function POST(request: NextRequest) {
             rating: legacyFeedback.satisfaction,
           })
         } catch (eventError) {
-          console.error('Event emission error:', eventError)
+          console.error('[feedback] event error:', eventError)
         }
 
         return NextResponse.json(
-          { id: legacyFeedback.id, message: 'Feedback submitted successfully' },
+          { ok: true, id: legacyFeedback.id, request_id: requestId },
           { status: 201 }
         )
       }
 
-      console.error('Database error:', error)
-      return NextResponse.json({ error: 'Failed to create feedback' }, { status: 500 })
+      console.error('[feedback] db error:', error, { request_id: requestId })
+      return NextResponse.json(
+        { ok: false, error: 'Failed to create feedback', request_id: requestId },
+        { status: 500 }
+      )
     }
 
-    // Emit event
-    const feedback = data as Database['public']['Tables']['feedback']['Row']
+    const feedback = row as Database['public']['Tables']['feedback']['Row']
     try {
       await emitFeedbackCreated({
         feedbackId: feedback.id,
@@ -190,17 +167,17 @@ export async function POST(request: NextRequest) {
         rating: feedback.rating,
       })
     } catch (eventError) {
-      console.error('Event emission error:', eventError)
+      console.error('[feedback] event error:', eventError)
     }
 
     return NextResponse.json(
-      { id: feedback.id, message: 'Feedback submitted successfully' },
+      { ok: true, id: feedback.id, request_id: requestId },
       { status: 201 }
     )
   } catch (error) {
-    console.error('API error:', error)
+    console.error('[feedback] unhandled error:', error, { request_id: requestId })
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { ok: false, error: 'Internal server error', request_id: requestId },
       { status: 500 }
     )
   }
