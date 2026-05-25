@@ -96,7 +96,7 @@ jobs:
           echo "WhatsApp E164 (build-arg): ${{ steps.wa.outputs.e164 }}"
 
   deploy-vps:
-    needs: build-and-push
+    needs: [gate, build-and-push]
     runs-on: ubuntu-latest
     environment: production
     permissions:
