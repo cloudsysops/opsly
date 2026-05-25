@@ -68,8 +68,12 @@ if [[ "$DRY_RUN" == true ]]; then
   exit 0
 fi
 
+# GitHub Actions lands on the VPS via ssh-action; nested ssh to self fails (publickey).
 if [[ "${PESKIDS_DEPLOY_IN_PLACE:-}" == "1" || "${PESKIDS_DEPLOY_IN_PLACE:-}" == "true" ]]; then
   echo "Deploy in place (already on VPS)"
+  run_deploy_on_host "$REPO_PATH" "$IMAGE"
+elif [[ -d "${REPO_PATH}/.git" ]] && [[ "$(cd "${REPO_PATH}" && pwd -P)" == "$(pwd -P)" ]]; then
+  echo "Deploy in place (cwd is ${REPO_PATH})"
   run_deploy_on_host "$REPO_PATH" "$IMAGE"
 else
   ssh -o BatchMode=yes "$SSH_HOST" \

@@ -144,12 +144,13 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
           timeout: 5m
-          envs: GITHUB_DEPLOY_TOKEN,GITHUB_DEPLOY_ACTOR,PESKIDS_IMAGE
+          envs: GITHUB_DEPLOY_TOKEN,GITHUB_DEPLOY_ACTOR,PESKIDS_IMAGE,PESKIDS_DEPLOY_IN_PLACE
           script: |
             set -euo pipefail
             docker logout ghcr.io 2>/dev/null || true
             echo "$GITHUB_DEPLOY_TOKEN" | docker login ghcr.io -u "$GITHUB_DEPLOY_ACTOR" --password-stdin
             export PESKIDS_IMAGE
+            export PESKIDS_DEPLOY_IN_PLACE=1
             bash /opt/opsly/scripts/peskids-deploy-vps.sh
 
       - name: Health check (public)
