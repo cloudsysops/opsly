@@ -1,7 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import { Loader2, Send } from 'lucide-react'
 import { WhatsAppLink } from '@/components/contact/whatsapp-link'
 import { PESKIDS_CLASS_MODALITY_OPTIONS } from '@/lib/lead-modality'
@@ -19,11 +20,18 @@ const initialForm = {
   referral_source: '',
 }
 
+// Version of the parental+treatment consent policy shown to the user
+const CONSENT_POLICY_VERSION = 'pk-parental-v1+pk-privacy-v1@1.0'
+
 export function LeadCaptureForm(): React.ReactElement {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [formData, setFormData] = useState(initialForm)
+  const [consentTreatment, setConsentTreatment] = useState(false)
+  const [consentMarketing, setConsentMarketing] = useState(false)
+  const referredByCode = useMemo(() => searchParams.get('ref')?.trim().toUpperCase() ?? '', [searchParams])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>): void => {
     const { name, value } = e.target
@@ -36,7 +44,37 @@ export function LeadCaptureForm(): React.ReactElement {
     setError('')
 
     try {
-      // Map form fields to N8N lead capture webhook schema
+      const apiPayload = {
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone || null,
+        class_modality: formData.class_modality || null,
+        neighborhood: formData.neighborhood || null,
+        grade_interested: formData.grade_interested || null,
+        referral_source: formData.referral_source || null,
+        referred_by_code: referredByCode || null,
+        consent_treatment: consentTreatment,
+        consent_marketing: consentMarketing,
+        consent_policy_version: CONSENT_POLICY_VERSION,
+      }
+
+      const apiResponse = await fetch('/api/leads', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(apiPayload),
+      })
+
+      if (!apiResponse.ok) {
+        const apiErrorText = await apiResponse.text()
+        console.error('Peskids lead API error:', apiResponse.status, apiErrorText)
+        throw new Error(`Lead API failed: ${apiResponse.status}`)
+      }
+
+      const apiResult = (await apiResponse.json()) as {
+        referral_link?: string | null
+        referral_code?: string | null
+      }
+
       const webhookPayload = {
         full_name: formData.name,
         email: formData.email,
@@ -46,23 +84,27 @@ export function LeadCaptureForm(): React.ReactElement {
         neighborhood: formData.neighborhood || null,
         grade_interested: formData.grade_interested || null,
         referral_source: formData.referral_source || null,
+        referred_by_code: referredByCode || null,
+        referral_code: apiResult.referral_code || null,
       }
 
-      // Post to N8N webhook (lead-capture workflow)
       const webhookUrl = process.env.NEXT_PUBLIC_N8N_LEAD_WEBHOOK || 'https://peskids.op-sly.com/webhooks/lead-capture'
-      const response = await fetch(webhookUrl, {
+      void fetch(webhookUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(webhookPayload),
+      }).catch((err) => {
+        console.warn('N8N webhook mirror failed:', err)
       })
 
-      if (!response.ok) {
-        const errorText = await response.text()
-        console.error('N8N webhook error:', response.status, errorText)
-        throw new Error(`Webhook failed: ${response.status}`)
+      const thanksUrl = new URL('/thanks', window.location.origin)
+      if (apiResult.referral_link) {
+        thanksUrl.searchParams.set('referral_link', apiResult.referral_link)
       }
-
-      router.push('/thanks')
+      if (apiResult.referral_code) {
+        thanksUrl.searchParams.set('referral_code', apiResult.referral_code)
+      }
+      router.push(`${thanksUrl.pathname}${thanksUrl.search}`)
     } catch (err) {
       setError('No pudimos enviar tu solicitud. Intenta de nuevo en un momento.')
       console.error('Form submission error:', err)
@@ -87,6 +129,11 @@ export function LeadCaptureForm(): React.ReactElement {
           contactamos en menos de 48 horas hábiles.{' '}
           <WhatsAppLink variant="button" label="Prefiero WhatsApp" className="mt-2 w-full sm:w-auto" />
         </CardDescription>
+        {referredByCode ? (
+          <p className="mt-3 rounded-xl border border-pk-primary/20 bg-pk-primary/10 px-3 py-2 text-xs font-medium text-pk-primary">
+            Código de recomendación activo: <span className="font-mono">{referredByCode}</span>
+          </p>
+        ) : null}
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -220,6 +267,47 @@ export function LeadCaptureForm(): React.ReactElement {
             </select>
           </div>
 
+          <div className="space-y-3 rounded-xl border border-pk-border bg-pk-muted/60 px-4 py-3 text-xs text-pk-sub">
+            <label className="flex cursor-pointer items-start gap-2.5">
+              <input
+                type="checkbox"
+                checked={consentTreatment}
+                onChange={(e) => setConsentTreatment(e.target.checked)}
+                className="mt-0.5 h-4 w-4 shrink-0 rounded border-pk-border accent-pk-primary"
+                required
+                aria-required="true"
+              />
+              <span>
+                <strong>Autorización obligatoria:</strong> Soy padre, madre o tutor legal y
+                autorizo a Peskids para tratar los datos del menor y los míos propios conforme
+                a la{' '}
+                <a href="/privacy" target="_blank" rel="noopener" className="text-pk-primary hover:underline">
+                  Política de Privacidad
+                </a>{' '}
+                y el{' '}
+                <a href="/aviso-parental" target="_blank" rel="noopener" className="text-pk-primary hover:underline">
+                  Aviso Parental
+                </a>
+                . Los datos serán compartidos con{' '}
+                <strong>Jelou</strong> (mensajería) y nuestra{' '}
+                <strong>automatización interna</strong> para coordinar la clase de prueba.
+              </span>
+            </label>
+            <label className="flex cursor-pointer items-start gap-2.5">
+              <input
+                type="checkbox"
+                checked={consentMarketing}
+                onChange={(e) => setConsentMarketing(e.target.checked)}
+                className="mt-0.5 h-4 w-4 shrink-0 rounded border-pk-border accent-pk-primary"
+              />
+              <span>
+                <strong>Opcional:</strong> Acepto recibir comunicaciones sobre el programa
+                (novedades, torneos, promociones) por WhatsApp o correo electrónico. Puedo
+                cancelar en cualquier momento.
+              </span>
+            </label>
+          </div>
+
           {error ? (
             <div
               className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800"
@@ -229,7 +317,7 @@ export function LeadCaptureForm(): React.ReactElement {
             </div>
           ) : null}
 
-          <Button type="submit" disabled={loading} fullWidth size="lg">
+          <Button type="submit" disabled={loading || !consentTreatment} fullWidth size="lg">
             {loading ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin" aria-hidden />

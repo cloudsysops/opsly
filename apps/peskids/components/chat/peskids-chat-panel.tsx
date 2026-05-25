@@ -1,8 +1,8 @@
 'use client'
 
 import React, { type RefObject } from 'react'
-import { Send, X } from 'lucide-react'
-import type { PeskidsChatMessage } from '@/hooks/use-peskids-chat'
+import { Check, Send, X } from 'lucide-react'
+import type { PeskidsChatMessage, PeskidsChatQuickReply } from '@/hooks/use-peskids-chat'
 import { cn } from '@/lib/utils'
 
 type PeskidsChatPanelProps = {
@@ -12,6 +12,7 @@ type PeskidsChatPanelProps = {
   listRef: RefObject<HTMLDivElement | null>
   onInputChange: (value: string) => void
   onSend: () => void
+  onQuickReply?: (reply: PeskidsChatQuickReply) => void
   onClose?: () => void
   variant: 'inline' | 'floating'
   className?: string
@@ -24,6 +25,7 @@ export function PeskidsChatPanel({
   listRef,
   onInputChange,
   onSend,
+  onQuickReply,
   onClose,
   variant,
   className,
@@ -50,7 +52,7 @@ export function PeskidsChatPanel({
           <p className="text-[11px] opacity-90">
             {isInline
               ? 'Clase de prueba gratis · te guiamos paso a paso'
-              : 'Asistente · respuesta orientativa'}
+              : 'Asistente IA · orientativo, no reemplaza evaluación profesional'}
           </p>
         </div>
         {onClose ? (
@@ -66,6 +68,16 @@ export function PeskidsChatPanel({
       </header>
 
       <div ref={listRef as React.LegacyRef<HTMLDivElement>} className="flex-1 space-y-3 overflow-y-auto px-3 py-3">
+        {messages.length === 0 ? (
+          <p className="rounded-xl bg-pk-muted px-3 py-2 text-[11px] leading-relaxed text-pk-sub">
+            Este chat usa <strong>inteligencia artificial</strong> para orientarte. Las
+            respuestas son informativas y no reemplazan la evaluación de nuestros instructores.
+            Las conversaciones se almacenan temporalmente para mejorar el servicio.{' '}
+            <a href="/privacy" className="text-pk-primary hover:underline">
+              Ver política de privacidad.
+            </a>
+          </p>
+        ) : null}
         {messages.map((m, i) => (
           <div
             key={`${i}-${m.role}`}
@@ -79,6 +91,21 @@ export function PeskidsChatPanel({
             >
               {m.text}
             </p>
+            {m.role === 'assistant' && m.quickReplies?.length ? (
+              <div className="mt-2 flex max-w-[90%] flex-wrap gap-2">
+                {m.quickReplies.map((reply) => (
+                  <button
+                    key={reply.value}
+                    type="button"
+                    onClick={() => onQuickReply?.(reply)}
+                    className="inline-flex items-center gap-1.5 rounded-full border border-pk-primary/20 bg-pk-bg px-3 py-1.5 text-xs font-semibold text-pk-ink transition hover:border-pk-primary/40 hover:bg-white"
+                  >
+                    <Check className="h-3.5 w-3.5 text-pk-primary" aria-hidden />
+                    {reply.label}
+                  </button>
+                ))}
+              </div>
+            ) : null}
             {m.role === 'assistant' && typeof m.progress === 'number' ? (
               <p className="mt-1 text-[11px] text-pk-sub">
                 {m.stage === 'handoff'
@@ -102,7 +129,7 @@ export function PeskidsChatPanel({
           type="text"
           value={input}
           onChange={(e) => onInputChange(e.target.value)}
-          placeholder={isInline ? 'Ej: Hola, soy María, mi hijo tiene 4 años…' : 'Escribe tu pregunta…'}
+          placeholder={isInline ? 'Escribe tu respuesta o elige una opción…' : 'Escribe tu pregunta…'}
           className="pk-input flex-1 text-sm"
           disabled={sending}
           maxLength={2000}

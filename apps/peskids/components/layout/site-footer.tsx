@@ -16,7 +16,7 @@ export function SiteFooter(): React.ReactElement {
               Clases de natación para niños. Sede principal en Llanogrande, Rionegro.
             </p>
           </div>
-          <div className="grid grid-cols-2 gap-8 text-sm sm:grid-cols-3 sm:gap-14">
+          <div className="grid grid-cols-2 gap-8 text-sm sm:grid-cols-4 sm:gap-14">
             <FooterCol title="Programa" items={['Niveles', 'Babyswim', 'Torneos', 'Vacacionales']} />
             <FooterCol title="Información" items={['Sedes', 'Tarifas', 'Equipo', 'Preguntas']} />
             <FooterCol
@@ -34,6 +34,16 @@ export function SiteFooter(): React.ReactElement {
                   label: PESKIDS_INSTAGRAM.handle,
                   href: PESKIDS_INSTAGRAM.profileUrl,
                 },
+              ]}
+            />
+            <FooterCol
+              title="Legal"
+              items={[
+                { label: 'Privacidad', href: '/privacy' },
+                { label: 'Términos', href: '/terms' },
+                { label: 'Aviso Parental', href: '/aviso-parental' },
+                { label: 'Cookies', href: '/cookies' },
+                { label: 'Mis derechos', href: '/dsar' },
               ]}
             />
           </div>
@@ -68,8 +78,8 @@ function FooterCol({ title, items }: { title: string; items: FooterItem[] }): Re
             <li key={key}>
               <Link
                 href={item.href}
-                target="_blank"
-                rel="noopener noreferrer"
+                target={item.href.startsWith('/') ? undefined : '_blank'}
+                rel={item.href.startsWith('/') ? undefined : 'noopener noreferrer'}
                 className="hover:text-white"
               >
                 {item.label}

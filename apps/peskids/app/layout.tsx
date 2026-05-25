@@ -3,6 +3,7 @@ import type { ReactNode } from 'react'
 import { Caveat_Brush, JetBrains_Mono, Nunito } from 'next/font/google'
 import { AuthSessionRedirect } from '@/components/auth/auth-session-redirect'
 import { PeskidsClientShell } from '@/components/chat/peskids-client-shell'
+import { CookieBanner } from '@/components/legal/cookie-banner'
 import './globals.css'
 
 const fontNunito = Nunito({
@@ -45,6 +46,7 @@ export default function RootLayout({
       <body>
         <AuthSessionRedirect />
         <PeskidsClientShell>{children}</PeskidsClientShell>
+        <CookieBanner />
       </body>
     </html>
   )
