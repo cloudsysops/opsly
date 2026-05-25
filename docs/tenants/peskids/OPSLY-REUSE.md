@@ -21,6 +21,7 @@ Mapa práctico para no duplicar el monorepo. **No** significa importar todo el p
 | n8n tenant | `n8n_peskids` + workflows `.n8n/1-workflows/peskids/` | WhatsApp inbound → `/api/webhooks/inbound` |
 | Doppler | `ops-intcloudsysops/prd` | `runtime/peskids.env` en VPS |
 | Traefik | `infra/traefik/dynamic/peskids.yml` | `peskids.op-sly.com` |
+| Tenant invite / recovery | `apps/peskids/lib/auth-recovery.ts`, `/invite/[token]`, `/admin/login` | Invitación y recuperación separadas por tenant; no usar el portal como fallback de staff |
 
 ## Módulos `lib/*` recomendados (cuando crezca el producto)
 
@@ -50,6 +51,7 @@ Pasos cuando pidan “entrar con Google”:
 3. Reutilizar **Zero-Trust** de Opsly: `resolveTrustedPortalSession` en `apps/api/lib/portal-trusted-identity.ts` si las familias consumen API bajo `/api/portal/tenant/peskids/…`.
 4. Staff / profesores / soporte siguen por **invitación + contraseña**; para esos roles puede añadirse passkey/MFA, pero **no** compartir login con familias.
 5. **No** copiar `NEXT_PUBLIC_PLATFORM_ADMIN_TOKEN`; admin Peskids sigue con `DASHBOARD_ADMIN_SECRET`.
+6. Cada invitación staff debe salir con `tenant_slug: peskids` explícito; si la metadata no coincide, corregirla antes de enviar.
 
 ## WhatsApp — Opsly vs web
 

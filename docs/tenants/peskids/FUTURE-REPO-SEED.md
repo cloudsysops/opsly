@@ -93,6 +93,10 @@ POST eventos documentados en [EXTRACTION-PLAN.md](./EXTRACTION-PLAN.md).
 
 Solo si se define contrato (p. ej. métricas de uso). Evitar acoplar a BullMQ.
 
+### Acceso
+
+El repo futuro debe conservar el mismo criterio de hoy: invitaciones y recovery **tenant-scoped** para staff de Peskids. No reutilizar el login del portal como ruta por defecto para administradores o profesores del producto.
+
 ## CI/CD mínimo (Vercel)
 
 - PR: lint + type-check + tests

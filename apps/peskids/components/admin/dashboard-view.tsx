@@ -190,7 +190,7 @@ export function DashboardView({
         title: 'Cerrar seguimientos abiertos',
         description: `${data.pending_followups_count} seguimiento(s) siguen en cola.`,
         tone: 'coral' as const,
-        anchor: 'seguimientos',
+        anchor: 'follow-up',
       }
     }
 
@@ -207,7 +207,7 @@ export function DashboardView({
       title: 'Todo al día',
       description: 'No hay acciones urgentes en este momento.',
       tone: 'green' as const,
-      anchor: 'inicio',
+      anchor: 'dashboard',
     }
   }, [
     data.new_leads_count,
@@ -234,7 +234,7 @@ export function DashboardView({
   return (
     <AdminShell lastUpdated={lastUpdated} onRefresh={onRefresh} refreshing={refreshing}>
       <section
-        data-admin-section="inicio"
+        data-admin-section="dashboard"
         className="mb-6 overflow-hidden rounded-3xl border border-pk-border bg-gradient-to-br from-white via-white to-teal-50/60 p-5 shadow-card sm:p-6"
       >
         <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
@@ -576,7 +576,7 @@ export function DashboardView({
         </StatCard>
 
         <StatCard
-          sectionId="seguimientos"
+          sectionId="follow-up"
           title="Seguimientos pendientes"
           description="Acciones por cerrar"
           value={data.pending_followups_count}

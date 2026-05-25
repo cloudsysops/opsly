@@ -13,7 +13,7 @@ Status: draft generated with The Architect on 2026-05-21.
 
 ## 1. Goal
 
-Make Peskids a production-grade tenant app running on Opsly infrastructure, with no Vercel dependency, reliable lead/feedback capture, owner visibility, and a clear path to a future standalone `peskids-platform`.
+Make Peskids a production-grade tenant app running on Opsly infrastructure, with no Vercel dependency, reliable lead/feedback capture, tenant-specific invite/recovery flows, owner visibility, and a clear path to a future standalone `peskids-platform`.
 
 ## 2. Current Production Shape
 
@@ -76,6 +76,13 @@ Owner routes to add:
 - `GET /api/portal/tenant/peskids/peskids/leads`
 - `GET /api/portal/tenant/peskids/peskids/feedback`
 
+Access routes that must remain tenant-scoped:
+
+- `https://peskids.op-sly.com/invite/[token]`
+- `https://peskids.op-sly.com/admin/login`
+- `https://peskids.op-sly.com/auth/recovery`
+- `https://peskids.op-sly.com/admin/update-password`
+
 ## 6. Frontend
 
 Keep the first production UI small:
@@ -101,7 +108,8 @@ No Vercel dependency for the production pilot.
 
 - No secrets in repo.
 - Public routes only accept validated lead/feedback payloads.
-- Owner dashboard must require portal JWT and tenant slug match.
+- Owner dashboard must require tenant-scoped auth and tenant slug match.
+- Invite and recovery links issued for Peskids staff must resolve to Peskids, not the shared portal by default.
 - n8n workflow activation requires explicit operator action.
 - Cyber Neo secret scans should summarize findings only; do not paste raw matched values.
 
@@ -109,12 +117,13 @@ No Vercel dependency for the production pilot.
 
 1. Stabilize `apps/peskids` Docker build with lockfile and reproducible installs.
 2. Keep `/api/leads` and `/api/feedback` proxying to Opsly API until app schema is migrated.
-3. Replace app-local dashboard API with Opsly portal-authenticated summary API.
-4. Add smoke script for `https://peskids.op-sly.com` root, lead proxy, and feedback proxy.
-5. Add Uptime Kuma monitors for root, API health, lead form, feedback form, n8n, and uptime.
-6. Import CRM workflows into n8n after owner approval.
-7. Add backup/export runbook for Peskids leads and feedback.
-8. Decide extraction threshold for `peskids-platform`.
+3. Keep tenant-specific invite/recovery paths wired to Peskids auth and add a smoke check for staff invite activation.
+4. Replace app-local dashboard API with tenant-authenticated summary API.
+5. Add smoke script for `https://peskids.op-sly.com` root, lead proxy, feedback proxy, and staff login.
+6. Add Uptime Kuma monitors for root, API health, lead form, feedback form, n8n, and uptime.
+7. Import CRM workflows into n8n after owner approval.
+8. Add backup/export runbook for Peskids leads and feedback.
+9. Decide extraction threshold for `peskids-platform`.
 
 ## 10. Validation
 
@@ -132,6 +141,7 @@ curl -fsS https://api.op-sly.com/api/health
 - Work in small slices.
 - Do not move Peskids to Vercel.
 - Do not bypass Opsly API for production writes unless the new direct path uses the same canonical schema and auth rules.
+- Do not let staff invite/recovery fall back to the shared portal unless the metadata explicitly resolves there.
 - Keep n8n workflow activation manual until credentials and notifications are confirmed.
 - Commit Peskids hardening separately from unrelated agent/vendor imports.
 

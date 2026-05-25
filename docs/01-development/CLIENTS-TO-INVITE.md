@@ -15,6 +15,7 @@ Seguimiento manual; la fuente de verdad de tenants sigue siendo `platform.tenant
 
 | Slug         | Email (debe ser `owner_email`) | Nombre / notas           | Estado    |
 | ------------ | ------------------------------ | ------------------------ | --------- |
+| peskids      | sierrasantiago90@gmail.com     | Owner Peskids            | Listo     |
 | localrank    | jkbotero78@gmail.com           | Juan Carlos (ajustar)    | Pendiente |
 | jkboterolabs | Mismo u otro según fila en DB  | Completar desde Supabase | Pendiente |
 
@@ -32,6 +33,14 @@ export PLATFORM_ADMIN_TOKEN="$(doppler secrets get PLATFORM_ADMIN_TOKEN --plain 
   --email jkbotero78@gmail.com \
   --name "Juan Carlos"
 ```
+
+Para Peskids, usa el wrapper tenant-scoped:
+
+```bash
+./scripts/send-peskids-invitation.sh --email sierrasantiago90@gmail.com --role owner
+```
+
+Si el usuario ya existe en Supabase, el mismo comando genera recovery en el tenant correcto.
 
 Vista previa del template manual (no envía email):
 

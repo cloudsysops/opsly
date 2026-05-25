@@ -57,7 +57,8 @@ Marcar con fecha y responsable. Evidencia en notas o enlace a ticket — no secr
 
 ## Integración Opsly
 
-- [ ] **Portal invite** — ¿owner tiene acceso portal Opsly? sí / no / N/A
+- [ ] **Invite tenant-scoped** — staff/owner recibe invitación propia de Peskids y aterriza en `/admin/login`; no debe caer al portal compartido por error
+- [ ] **Portal invite** — ¿owner necesita además acceso al portal Opsly para operación compartida? sí / no / N/A
 - [ ] **Eventos extracción** — lista en [EXTRACTION-PLAN.md](./EXTRACTION-PLAN.md) priorizada
 
 ## Extracción (trigger)

@@ -44,7 +44,7 @@ flowchart TB
 | Capa | Componente | Rol para Peskids |
 |------|------------|------------------|
 | Opsly | `platform.tenants` row `peskids` | Identidad, plan, owner |
-| Opsly | Portal (opcional) | Login owner si hay invitación |
+| Opsly | Portal (opcional) | Login owner si el flujo lo requiere; no es fallback de staff Peskids |
 | VPS | `tenant_peskids` Compose | Aislamiento por slug |
 | VPS | n8n | Automatización workflows |
 | VPS | Uptime Kuma | Salud URLs |
@@ -98,6 +98,9 @@ Eventos canónicos: [EXTRACTION-PLAN.md](./EXTRACTION-PLAN.md).
 | n8n | `n8n-peskids.{PLATFORM_DOMAIN}` | Puede migrar a subdominio propio |
 | Uptime | `uptime-peskids.{PLATFORM_DOMAIN}` | Idem |
 | App producto | — | `app.peskids.com` (TBD con owner) |
+| Invitación staff | `https://peskids.op-sly.com/invite/[token]` | Siempre tenant-scoped |
+| Login staff | `https://peskids.op-sly.com/admin/login` | Siempre tenant-scoped |
+| Recovery staff | `https://peskids.op-sly.com/auth/recovery` | Nunca portal genérico por defecto |
 
 Sin hardcodear dominios en código; usar env (`PLATFORM_DOMAIN`, `TENANT_BASE_DOMAIN`).
 
@@ -105,6 +108,7 @@ Sin hardcodear dominios en código; usar env (`PLATFORM_DOMAIN`, `TENANT_BASE_DO
 
 - Mismo host VPS que otros tenants (riesgo operativo compartido — ver baseline prod).
 - Secretos por tenant en **Doppler** (nombres estables); no en repo.
+- Invitaciones y recovery: siempre `tenant_slug: peskids` + metadata explícita; no inferir destino desde el email.
 - Jobs/eventos futuros: siempre `tenant_slug: peskids` + `request_id`.
 - Subcliente: **no aplica** (sin `parent_tenant_slug`).
 

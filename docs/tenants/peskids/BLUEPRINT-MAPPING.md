@@ -104,6 +104,18 @@ weekly_report.generated → Email to owner
 
 **Validation:** ✅ Peskids operational data is minimal, justified, and secured
 
+### 7. Tenant Invitations and Recovery
+
+**Blueprint Principle:** Each tenant owns its own invite and recovery path. Access must resolve to the tenant that issued it, not to the shared portal by default.
+
+**Peskids Implementation:**
+- Staff invitations are tenant-scoped and carry `tenant_slug: peskids` in metadata.
+- Invite links land in Peskids (`/invite/[token]` → `/admin/login`) and recovery returns to the same tenant.
+- Portal Opsly remains available for the shared control plane, but it is not the fallback destination for Peskids staff.
+- Existing links remain supported as long as their metadata resolves to the correct tenant.
+
+**Validation:** ✅ Peskids proves a tenant can have its own safe invite/recovery flow without breaking the shared portal
+
 ---
 
 ## Operational Blueprint Validation
@@ -115,6 +127,7 @@ weekly_report.generated → Email to owner
 - RLS policy setup ✅
 - API key generation ✅
 - Event bus subscription ✅
+- Tenant invite/recovery route creation ✅
 - First form submission → first event ✅
 
 **What's deferred (Phase 3):**

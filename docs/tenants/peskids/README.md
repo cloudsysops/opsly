@@ -33,12 +33,21 @@ Peskids es un **tenant activo** en la plataforma Opsly (plan **startup**). Opsly
 - Catálogo marketplace n8n: **CRM Starter Pack** aplicable a tenants `startup` ([`config/n8n-workflows/catalog.json`](../../../config/n8n-workflows/catalog.json)).
 - Instalador referencia: `scripts/install-crm-workflows.sh` (no ejecutar desde doc sin aprobación).
 
+## Modelo de acceso e invitaciones
+
+- **Cada tenant tiene su propio camino de invitación y recuperación.**
+- Para Peskids, el acceso de staff vive en el tenant: `/invite/[token]` → `/admin/login` → `/auth/recovery` si hace falta.
+- El `tenant_slug` debe ir explícito en la metadata de invitación; no se debe inferir desde el correo ni caer al portal genérico por accidente.
+- El portal Opsly sigue existiendo como plano de control multi-tenant, pero **no** como fallback operativo para staff de Peskids.
+- Familias y staff no comparten el mismo mecanismo de acceso: staff/owner por invitación + contraseña; familias por el flujo definido en el producto (Google / invitación según el caso).
+
 ## Qué falta (incubación)
 
 - Contexto comercial y alcance MVP acordado con el owner.
 - `config/tenants/peskids.json` alineado a realidad (workflows, dominio, notas de producto).
 - Modelo de datos de producto (Supabase futuro) y dashboards padres/estudiantes/docentes.
 - Workflows Peskids **específicos** (más allá del CRM genérico Opsly).
+- Wrapper o helper de invitación específico por tenant para evitar invitar Peskids con el flujo equivocado.
 - Política AI y métricas del primer dashboard.
 - Decisión de dominio, WhatsApp (Jelou) y redes — **futuro**, no en MVP infra.
 - Eventos hacia/desde Opsly para extracción ([EXTRACTION-PLAN.md](./EXTRACTION-PLAN.md)).

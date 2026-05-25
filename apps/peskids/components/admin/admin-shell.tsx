@@ -1,8 +1,11 @@
 'use client'
 
 import Link from 'next/link'
+import { useEffect, useState } from 'react'
+import { usePathname } from 'next/navigation'
 import {
-  GraduationCap,
+  CalendarClock,
+  type LucideIcon,
   Home,
   LayoutDashboard,
   MessageSquare,
@@ -21,13 +24,19 @@ interface AdminShellProps {
   refreshing?: boolean
 }
 
+interface NavItem {
+  icon: LucideIcon
+  label: string
+  href: string
+}
+
 const navOps = [
-  { icon: LayoutDashboard, label: 'Dashboard', active: true, href: '/admin' },
-  { icon: Users, label: 'Leads', href: '/admin' },
-  { icon: MessageSquare, label: 'Mensajes', href: '/admin' },
-  { icon: GraduationCap, label: 'Profesores', href: '/teacher/dashboard' },
-  { icon: Users, label: 'Familias', href: '/familias' },
-]
+  { icon: Home, label: 'Landing', href: '/' },
+  { icon: LayoutDashboard, label: 'Dashboard', href: '/admin' },
+  { icon: Users, label: 'Leads', href: '/admin#leads' },
+  { icon: MessageSquare, label: 'Feedback', href: '/admin#feedback' },
+  { icon: CalendarClock, label: 'Follow-up', href: '/admin#follow-up' },
+] satisfies NavItem[]
 
 export function AdminShell({
   children,
@@ -35,6 +44,52 @@ export function AdminShell({
   onRefresh,
   refreshing,
 }: AdminShellProps): React.ReactElement {
+  const pathname = usePathname()
+  const [hash, setHash] = useState('')
+
+  useEffect(() => {
+    const syncHash = (): void => {
+      setHash(window.location.hash)
+    }
+
+    syncHash()
+    window.addEventListener('hashchange', syncHash)
+    window.addEventListener('popstate', syncHash)
+
+    return () => {
+      window.removeEventListener('hashchange', syncHash)
+      window.removeEventListener('popstate', syncHash)
+    }
+  }, [])
+
+  const isActive = (item: NavItem): boolean => {
+    if (item.label === 'Landing') {
+      return pathname === '/'
+    }
+
+    if (pathname !== '/admin') {
+      return false
+    }
+
+    if (item.label === 'Dashboard') {
+      return hash === '' || hash === '#dashboard'
+    }
+
+    if (item.label === 'Leads') {
+      return hash === '#leads'
+    }
+
+    if (item.label === 'Feedback') {
+      return hash === '#feedback'
+    }
+
+    if (item.label === 'Follow-up') {
+      return hash === '#follow-up'
+    }
+
+    return false
+  }
+
   return (
     <div className="flex min-h-screen bg-pk-bg">
       <aside className="hidden w-64 shrink-0 flex-col border-r border-white/8 bg-[#11253d] text-white md:flex">
@@ -67,7 +122,7 @@ export function AdminShell({
               href={item.href}
               className={cn(
                 'mb-1 flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold transition-colors',
-                item.active
+                isActive(item)
                   ? 'bg-white/12 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]'
                   : 'text-white/72 hover:bg-white/7 hover:text-white'
               )}
