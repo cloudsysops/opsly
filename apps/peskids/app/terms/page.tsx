@@ -17,7 +17,7 @@ export default function TermsPage(): React.ReactElement {
       <section>
         <h2>1. Aceptación</h2>
         <p>
-          Al usar el sitio web de Peskids (en adelante "el Sitio") o al enviar el formulario
+          Al usar el sitio web de Peskids (en adelante &quot;el Sitio&quot;) o al enviar el formulario
           de solicitud de clase de prueba, usted acepta estos Términos y Condiciones. Si no
           está de acuerdo, no use el Sitio.
         </p>

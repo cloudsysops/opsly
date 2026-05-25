@@ -112,8 +112,12 @@ export default function PrivacyPage(): React.ReactElement {
           </li>
         </ul>
         <p>
-          Estas transferencias se realizan a países con niveles adecuados de protección o bajo
-          cláusulas contractuales estándar. No vendemos datos a terceros.
+          Algunos de estos sub-procesadores están ubicados en los Estados Unidos, país que no
+          figura en la lista de países con nivel adecuado de protección emitida por la
+          Superintendencia de Industria y Comercio (SIC). Conforme al artículo 26 de la
+          Ley 1581 de 2012, las transferencias a dichos países se realizan con base en la{' '}
+          <strong>autorización expresa del titular</strong>, quien ha sido informado de este
+          hecho antes de otorgar el consentimiento. No vendemos datos a terceros.
         </p>
       </section>
 
