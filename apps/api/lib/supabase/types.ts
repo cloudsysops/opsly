@@ -165,6 +165,12 @@ export type PortAllocationInsert = {
 export type PortAllocationUpdate = Partial<Omit<PortAllocation, 'port'>>;
 
 export type Database = {
+  governance: {
+    Tables: Record<string, Record<string, unknown>>;
+    Views: Record<string, never>;
+    Functions: Record<string, never>;
+    Enums: Record<string, never>;
+  };
   public: {
     Tables: Record<string, never>;
     Views: Record<string, never>;
