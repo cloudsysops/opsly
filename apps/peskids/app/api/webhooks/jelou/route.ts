@@ -14,8 +14,9 @@ import {
   parseJelouWebhook,
   extractLeadFromJelou,
   extractFeedbackFromJelou,
+  type JelouWebhookPayload,
 } from '@/lib/jelou';
-import type { Database } from '@/lib/types';
+import type { Database, Json } from '@/lib/types';
 import { isMissingExpandedFeedbackColumn } from '@/lib/utils/db-compat';
 
 const JELOU_WEBHOOK_SECRET = process.env.JELOU_WEBHOOK_SECRET || 'dev-secret';
@@ -52,7 +53,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   }
 }
 
-async function handleLeadSubmission(webhook: any) {
+async function handleLeadSubmission(webhook: JelouWebhookPayload) {
   const supabase = supabaseServer();
   const lead = extractLeadFromJelou(webhook);
 
@@ -154,7 +155,7 @@ async function handleLeadSubmission(webhook: any) {
   }
 }
 
-async function handleFeedbackSubmission(webhook: any) {
+async function handleFeedbackSubmission(webhook: JelouWebhookPayload) {
   const supabase = supabaseServer();
   const feedback = extractFeedbackFromJelou(webhook);
 
@@ -283,7 +284,7 @@ async function handleFeedbackSubmission(webhook: any) {
 
 async function logWebhookReceipt(
   event_type: string,
-  webhook: any,
+  webhook: JelouWebhookPayload,
   record_id: string
 ) {
   try {
@@ -293,7 +294,7 @@ async function logWebhookReceipt(
       provider: 'jelou',
       event_type,
       record_id,
-      payload: webhook,
+      payload: webhook as unknown as Json,
       received_at: new Date().toISOString(),
     });
   } catch (error) {

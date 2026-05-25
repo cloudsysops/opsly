@@ -1,8 +1,4 @@
-/**
- * Jelou Integration
- * Handles multi-channel form submissions via Jelou (WhatsApp, SMS, email)
- * https://jelou.ai
- */
+import crypto from 'crypto'
 
 export interface JelouWebhookPayload {
   event: string;
@@ -30,16 +26,19 @@ export interface JelouFormField {
  * Jelou signs webhooks with X-Jelou-Signature header
  */
 export function verifyJelouSignature(payload: string, signature: string, secret: string): boolean {
-  const crypto = require('crypto');
   const expectedSignature = crypto
     .createHmac('sha256', secret)
     .update(payload)
-    .digest('hex');
+    .digest('hex')
 
-  return crypto.timingSafeEqual(
-    Buffer.from(signature),
-    Buffer.from(expectedSignature)
-  );
+  try {
+    return crypto.timingSafeEqual(
+      Buffer.from(signature, 'hex'),
+      Buffer.from(expectedSignature, 'hex')
+    )
+  } catch {
+    return false
+  }
 }
 
 /**
