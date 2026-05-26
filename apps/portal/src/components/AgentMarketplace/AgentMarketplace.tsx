@@ -193,8 +193,9 @@ export const AgentMarketplace: React.FC = () => {
         <div className="config-form">
           {/* Agent Name */}
           <div className="form-group">
-            <label>Agent Name</label>
+            <label htmlFor="agent-name">Agent Name</label>
             <input
+              id="agent-name"
               type="text"
               placeholder="e.g., my-code-reviewer"
               value={config.name}
@@ -204,32 +205,40 @@ export const AgentMarketplace: React.FC = () => {
 
           {/* Description */}
           <div className="form-group">
-            <label>Description</label>
+            <label htmlFor="agent-description">Description</label>
             <textarea
+              id="agent-description"
               placeholder="What does this agent do?"
               value={config.description}
-              onChange={(e) => setConfig({ ...config, description: e.target.value })}
+              onChange={(e) =>
+                setConfig({ ...config, description: e.target.value })
+              }
               rows={3}
             />
           </div>
 
           {/* System Instructions */}
           <div className="form-group">
-            <label>System Instructions</label>
+            <label htmlFor="agent-instructions">System Instructions</label>
             <textarea
+              id="agent-instructions"
               placeholder="How should the agent behave?"
               value={config.instructions}
-              onChange={(e) => setConfig({ ...config, instructions: e.target.value })}
+              onChange={(e) =>
+                setConfig({ ...config, instructions: e.target.value })
+              }
               rows={4}
             />
           </div>
 
           {/* Model Selection */}
           <div className="form-group">
-            <label>LLM Model</label>
+            <label htmlFor="agent-model">LLM Model</label>
             <select
+              id="agent-model"
               value={config.model}
               onChange={(e) => setConfig({ ...config, model: e.target.value })}
+              aria-describedby="model-helper-text"
             >
               {MODELS.map((model) => (
                 <option key={model} value={model}>
