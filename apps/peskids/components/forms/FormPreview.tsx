@@ -60,7 +60,10 @@ export function FormPreview({ form, isEditing = false }: FormPreviewProps) {
         <Card className="border-ops-blue/30 bg-ops-surface/50">
           <CardContent className="py-4">
             <p className="text-xs text-ops-gray">
-              💡 <span className="ml-2">This is a preview. Changes will appear here as you build your form.</span>
+              💡{' '}
+              <span className="ml-2">
+                This is a preview. Changes will appear here as you build your form.
+              </span>
             </p>
           </CardContent>
         </Card>
@@ -94,14 +97,20 @@ function FieldPreview({ field }: FieldPreviewProps) {
           <CardContent className="pt-6">
             {fieldLabel}
             <input
-              type={field.type === 'email' ? 'email' : field.type === 'phone' ? 'tel' : field.type === 'number' ? 'number' : 'text'}
+              type={
+                field.type === 'email'
+                  ? 'email'
+                  : field.type === 'phone'
+                    ? 'tel'
+                    : field.type === 'number'
+                      ? 'number'
+                      : 'text'
+              }
               placeholder={field.placeholder || `Enter ${field.label.toLowerCase()}`}
               disabled
               className={`${baseInputClass} disabled:cursor-not-allowed disabled:opacity-50`}
             />
-            {field.description && (
-              <p className="mt-2 text-xs text-ops-gray">{field.description}</p>
-            )}
+            {field.description && <p className="mt-2 text-xs text-ops-gray">{field.description}</p>}
           </CardContent>
         </Card>
       );
@@ -117,9 +126,7 @@ function FieldPreview({ field }: FieldPreviewProps) {
               rows={4}
               className={`${baseInputClass} disabled:cursor-not-allowed disabled:opacity-50`}
             />
-            {field.description && (
-              <p className="mt-2 text-xs text-ops-gray">{field.description}</p>
-            )}
+            {field.description && <p className="mt-2 text-xs text-ops-gray">{field.description}</p>}
           </CardContent>
         </Card>
       );
@@ -129,15 +136,16 @@ function FieldPreview({ field }: FieldPreviewProps) {
         <Card>
           <CardContent className="pt-6">
             {fieldLabel}
-            <select disabled className={`${baseInputClass} disabled:cursor-not-allowed disabled:opacity-50`}>
+            <select
+              disabled
+              className={`${baseInputClass} disabled:cursor-not-allowed disabled:opacity-50`}
+            >
               <option>Select an option</option>
               {field.options?.map((option) => (
                 <option key={option.value}>{option.label}</option>
               ))}
             </select>
-            {field.description && (
-              <p className="mt-2 text-xs text-ops-gray">{field.description}</p>
-            )}
+            {field.description && <p className="mt-2 text-xs text-ops-gray">{field.description}</p>}
           </CardContent>
         </Card>
       );
@@ -159,9 +167,7 @@ function FieldPreview({ field }: FieldPreviewProps) {
                 </label>
               ))}
             </div>
-            {field.description && (
-              <p className="mt-2 text-xs text-ops-gray">{field.description}</p>
-            )}
+            {field.description && <p className="mt-2 text-xs text-ops-gray">{field.description}</p>}
           </CardContent>
         </Card>
       );
@@ -183,9 +189,7 @@ function FieldPreview({ field }: FieldPreviewProps) {
                 </label>
               ))}
             </div>
-            {field.description && (
-              <p className="mt-2 text-xs text-ops-gray">{field.description}</p>
-            )}
+            {field.description && <p className="mt-2 text-xs text-ops-gray">{field.description}</p>}
           </CardContent>
         </Card>
       );
@@ -200,9 +204,7 @@ function FieldPreview({ field }: FieldPreviewProps) {
               disabled
               className={`${baseInputClass} disabled:cursor-not-allowed disabled:opacity-50`}
             />
-            {field.description && (
-              <p className="mt-2 text-xs text-ops-gray">{field.description}</p>
-            )}
+            {field.description && <p className="mt-2 text-xs text-ops-gray">{field.description}</p>}
           </CardContent>
         </Card>
       );
@@ -217,9 +219,7 @@ function FieldPreview({ field }: FieldPreviewProps) {
               disabled
               className={`${baseInputClass} disabled:cursor-not-allowed disabled:opacity-50`}
             />
-            {field.description && (
-              <p className="mt-2 text-xs text-ops-gray">{field.description}</p>
-            )}
+            {field.description && <p className="mt-2 text-xs text-ops-gray">{field.description}</p>}
           </CardContent>
         </Card>
       );

@@ -1,11 +1,11 @@
-'use client'
+'use client';
 
-import type { DashboardData } from '@/lib/types'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { FeedbackComposer } from '@/components/feedback/feedback-composer'
+import type { DashboardData } from '@/lib/types';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { FeedbackComposer } from '@/components/feedback/feedback-composer';
 
 interface DashboardActivityCardsProps {
-  data: DashboardData
+  data: DashboardData;
 }
 
 export function DashboardActivityCards({ data }: DashboardActivityCardsProps): React.ReactElement {
@@ -30,8 +30,8 @@ export function DashboardActivityCards({ data }: DashboardActivityCardsProps): R
             </p>
           </div>
           <div className="col-span-2 rounded-xl border border-dashed border-pk-border bg-teal-50/50 p-4 text-sm text-pk-sub">
-            Los mensajes y leads llegan desde web, WhatsApp e Instagram. Si algo no aparece,
-            revisa la sincronización de canales y el estado operativo del día.
+            Los mensajes y leads llegan desde web, WhatsApp e Instagram. Si algo no aparece, revisa
+            la sincronización de canales y el estado operativo del día.
           </div>
         </CardContent>
       </Card>
@@ -60,5 +60,5 @@ export function DashboardActivityCards({ data }: DashboardActivityCardsProps): R
         </CardContent>
       </Card>
     </>
-  )
+  );
 }

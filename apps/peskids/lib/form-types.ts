@@ -1,6 +1,16 @@
 // Form builder and submission type definitions
 
-export type FieldType = 'text' | 'email' | 'phone' | 'number' | 'textarea' | 'select' | 'checkbox' | 'radio' | 'date' | 'file';
+export type FieldType =
+  | 'text'
+  | 'email'
+  | 'phone'
+  | 'number'
+  | 'textarea'
+  | 'select'
+  | 'checkbox'
+  | 'radio'
+  | 'date'
+  | 'file';
 
 export interface FormField {
   id: string;

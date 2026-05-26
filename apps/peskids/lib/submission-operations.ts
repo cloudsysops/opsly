@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { createClient } from '@supabase/supabase-js';
 
 export interface SubmissionExportOptions {
@@ -19,7 +20,7 @@ export class SubmissionOperations {
   constructor(supabaseUrl: string, supabaseKey: string) {
     this.supabase = createClient(supabaseUrl, supabaseKey, {
       auth: { autoRefreshToken: false, persistSession: false },
-    }) as any;
+    });
   }
 
   /**
@@ -187,11 +188,7 @@ export class SubmissionOperations {
   /**
    * Convert submissions array to CSV string
    */
-  private convertToCSV(
-    submissions: any[],
-    fields?: string[],
-    includeMetadata?: boolean
-  ): string {
+  private convertToCSV(submissions: any[], fields?: string[], includeMetadata?: boolean): string {
     if (!submissions || submissions.length === 0) {
       return 'No submissions to export';
     }
@@ -217,7 +214,10 @@ export class SubmissionOperations {
         .map((col) => {
           let value: any;
 
-          if (includeMetadata && ['submission_id', 'completed_at', 'status', 'score', 'feedback'].includes(col)) {
+          if (
+            includeMetadata &&
+            ['submission_id', 'completed_at', 'status', 'score', 'feedback'].includes(col)
+          ) {
             value = sub[col];
           } else {
             value = sub.submission_data?.[col];

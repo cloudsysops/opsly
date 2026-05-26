@@ -1,35 +1,38 @@
-import type { User } from '@supabase/supabase-js'
+import type { User } from '@supabase/supabase-js';
 import {
   tenantRoleFromUserMetadata,
   tenantSlugFromUserMetadata,
-} from '../../../lib/runtime/src/tenant-identity'
+} from '../../../lib/runtime/src/tenant-identity';
 
-const STAFF_ROLES = new Set(['owner', 'admin', 'support', 'teacher'])
+const STAFF_ROLES = new Set(['owner', 'admin', 'support', 'teacher']);
 
 function getTenantSlug(): string {
-  return (process.env.NEXT_PUBLIC_TENANT_ID || 'peskids').trim().toLowerCase()
+  return (process.env.NEXT_PUBLIC_TENANT_ID || 'peskids').trim().toLowerCase();
 }
 
 /** Client-safe: no imports from next/headers. */
 export function isStaffUser(user: User): boolean {
-  const role = tenantRoleFromUserMetadata(user)
-  const tenantSlug = tenantSlugFromUserMetadata(user)
+  const role = tenantRoleFromUserMetadata(user);
+  const tenantSlug = tenantSlugFromUserMetadata(user);
 
   if (tenantSlug && tenantSlug !== getTenantSlug()) {
-    return false
+    return false;
   }
 
-  const userMeta = user.user_metadata && typeof user.user_metadata === 'object' && !Array.isArray(user.user_metadata)
-    ? (user.user_metadata as Record<string, unknown>)
-    : {}
-  const appMeta = user.app_metadata && typeof user.app_metadata === 'object' && !Array.isArray(user.app_metadata)
-    ? (user.app_metadata as Record<string, unknown>)
-    : {}
-  const isSuperuser =
-    userMeta.is_superuser === true || appMeta.is_superuser === true
+  const userMeta =
+    user.user_metadata &&
+    typeof user.user_metadata === 'object' &&
+    !Array.isArray(user.user_metadata)
+      ? (user.user_metadata as Record<string, unknown>)
+      : {};
+  const appMeta =
+    user.app_metadata && typeof user.app_metadata === 'object' && !Array.isArray(user.app_metadata)
+      ? (user.app_metadata as Record<string, unknown>)
+      : {};
+  const isSuperuser = userMeta.is_superuser === true || appMeta.is_superuser === true;
 
   if (isSuperuser) {
-    return true
+    return true;
   }
-  return role ? STAFF_ROLES.has(role) : false
+  return role ? STAFF_ROLES.has(role) : false;
 }

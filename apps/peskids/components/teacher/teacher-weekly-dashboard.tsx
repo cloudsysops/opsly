@@ -1,37 +1,46 @@
-'use client'
+'use client';
 
-import { useEffect, useMemo, useState } from 'react'
-import { ClipboardList, MessageSquare, PencilLine, RotateCcw, CheckCircle2 } from 'lucide-react'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { GrowthWidget } from '@/components/progress/growth-widget'
-import { TeacherCalendarShowcase } from './teacher-calendar-showcase'
-import { TeacherSubmissionsSection, type TeacherSubmissionsResponse } from './teacher-submissions-section'
+import { useEffect, useMemo, useState } from 'react';
+import { ClipboardList, MessageSquare, PencilLine, RotateCcw, CheckCircle2 } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { GrowthWidget } from '@/components/progress/growth-widget';
+import { TeacherCalendarShowcase } from './teacher-calendar-showcase';
+import {
+  TeacherSubmissionsSection,
+  type TeacherSubmissionsResponse,
+} from './teacher-submissions-section';
 
 type DaySlot = {
-  day: string
-  time: string
-  className: string
-  students: number
-  status: 'scheduled' | 'ongoing' | 'done'
-}
+  day: string;
+  time: string;
+  className: string;
+  students: number;
+  status: 'scheduled' | 'ongoing' | 'done';
+};
 
 type TeacherNote = {
-  id: string
-  student: string
-  className: string
-  note: string
-  priority: 'alta' | 'media' | 'baja'
-}
+  id: string;
+  student: string;
+  className: string;
+  note: string;
+  priority: 'alta' | 'media' | 'baja';
+};
 
 const weeklyAgenda: DaySlot[] = [
   { day: 'Lun', time: '07:00', className: 'Grupo Iniciación', students: 8, status: 'done' },
   { day: 'Mar', time: '16:00', className: 'Técnica Junior', students: 10, status: 'scheduled' },
   { day: 'Mié', time: '07:00', className: 'Grupo Iniciación', students: 8, status: 'ongoing' },
   { day: 'Jue', time: '16:00', className: 'Avanzado', students: 6, status: 'scheduled' },
-  { day: 'Vie', time: '07:00', className: 'Seguimiento familiar', students: 5, status: 'scheduled' },
-]
+  {
+    day: 'Vie',
+    time: '07:00',
+    className: 'Seguimiento familiar',
+    students: 5,
+    status: 'scheduled',
+  },
+];
 
 const teacherNotes: TeacherNote[] = [
   {
@@ -55,7 +64,7 @@ const teacherNotes: TeacherNote[] = [
     note: 'Muy buen control, dejar como referente del grupo.',
     priority: 'baja',
   },
-]
+];
 
 const classCards = [
   {
@@ -82,25 +91,25 @@ const classCards = [
     value: '4',
     tone: 'violet',
   },
-] as const
+] as const;
 
 export function TeacherWeeklyDashboard(): React.ReactElement {
-  const [teacherData, setTeacherData] = useState<TeacherSubmissionsResponse | null>(null)
-  const [isLoadingTeacherData, setIsLoadingTeacherData] = useState(true)
-  const [teacherDataError, setTeacherDataError] = useState<string | null>(null)
+  const [teacherData, setTeacherData] = useState<TeacherSubmissionsResponse | null>(null);
+  const [isLoadingTeacherData, setIsLoadingTeacherData] = useState(true);
+  const [teacherDataError, setTeacherDataError] = useState<string | null>(null);
 
   const todayAgenda = useMemo(
     () => weeklyAgenda.filter((slot) => slot.day === 'Mié' || slot.status !== 'done'),
     []
-  )
+  );
 
   const responseCards = useMemo(() => {
     if (!teacherData) {
-      return classCards
+      return classCards;
     }
 
-    const totalResponses = teacherData.submissions.length
-    const needsAttention = teacherData.stats.pendingCount + teacherData.stats.needsRevisionCount
+    const totalResponses = teacherData.submissions.length;
+    const needsAttention = teacherData.stats.pendingCount + teacherData.stats.needsRevisionCount;
 
     return [
       classCards[0],
@@ -117,46 +126,47 @@ export function TeacherWeeklyDashboard(): React.ReactElement {
         value: String(needsAttention),
         tone: 'amber',
       },
-    ] as const
-  }, [teacherData])
+    ] as const;
+  }, [teacherData]);
 
   useEffect(() => {
-    const controller = new AbortController()
+    const controller = new AbortController();
 
     const loadTeacherData = async (): Promise<void> => {
       try {
-        setIsLoadingTeacherData(true)
-        setTeacherDataError(null)
+        setIsLoadingTeacherData(true);
+        setTeacherDataError(null);
 
         const response = await fetch('/api/submissions/teacher', {
           signal: controller.signal,
-        })
+        });
 
         if (!response.ok) {
-          throw new Error(`Teacher submissions request failed with ${response.status}`)
+          throw new Error(`Teacher submissions request failed with ${response.status}`);
         }
 
-        const payload = (await response.json()) as TeacherSubmissionsResponse
+        const payload = (await response.json()) as TeacherSubmissionsResponse;
         if (!controller.signal.aborted) {
-          setTeacherData(payload)
+          setTeacherData(payload);
         }
       } catch (error_) {
         if (!controller.signal.aborted) {
-          const message = error_ instanceof Error ? error_.message : 'No se pudieron cargar las respuestas.'
-          setTeacherDataError(message)
-          setTeacherData(null)
+          const message =
+            error_ instanceof Error ? error_.message : 'No se pudieron cargar las respuestas.';
+          setTeacherDataError(message);
+          setTeacherData(null);
         }
       } finally {
         if (!controller.signal.aborted) {
-          setIsLoadingTeacherData(false)
+          setIsLoadingTeacherData(false);
         }
       }
-    }
+    };
 
-    void loadTeacherData()
+    void loadTeacherData();
 
-    return () => controller.abort()
-  }, [])
+    return () => controller.abort();
+  }, []);
 
   return (
     <div className="space-y-6">
@@ -172,7 +182,8 @@ export function TeacherWeeklyDashboard(): React.ReactElement {
             </h1>
             <p className="mt-5 max-w-xl text-base leading-relaxed text-pk-sub sm:text-lg">
               Esta vista prioriza lo que un profesor principal necesita ver al abrir el panel:
-              agenda, grupos, observaciones, entregas y respuestas de familias sin saltar entre pantallas.
+              agenda, grupos, observaciones, entregas y respuestas de familias sin saltar entre
+              pantallas.
             </p>
 
             <div className="mt-8 flex flex-wrap gap-3">
@@ -186,7 +197,10 @@ export function TeacherWeeklyDashboard(): React.ReactElement {
 
             <div className="mt-10 grid max-w-2xl grid-cols-2 gap-4 md:grid-cols-4">
               {responseCards.map((card) => (
-                <div key={card.title} className="rounded-2xl border border-pk-border bg-white/90 p-4 shadow-card">
+                <div
+                  key={card.title}
+                  className="rounded-2xl border border-pk-border bg-white/90 p-4 shadow-card"
+                >
                   <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-pk-mutedText">
                     {card.title}
                   </p>
@@ -230,13 +244,20 @@ export function TeacherWeeklyDashboard(): React.ReactElement {
           </CardHeader>
           <CardContent className="space-y-3">
             {todayAgenda.map((slot) => (
-              <div key={`${slot.day}-${slot.time}`} className="rounded-2xl border border-pk-border bg-white p-4">
+              <div
+                key={`${slot.day}-${slot.time}`}
+                className="rounded-2xl border border-pk-border bg-white p-4"
+              >
                 <div className="flex items-start justify-between gap-2">
                   <div>
                     <div className="flex items-center gap-2">
                       <p className="text-sm font-semibold text-pk-ink">{slot.className}</p>
                       <Badge tone={slot.status === 'ongoing' ? 'amber' : 'teal'}>
-                        {slot.status === 'ongoing' ? 'En curso' : slot.status === 'done' ? 'Hecha' : 'Agenda'}
+                        {slot.status === 'ongoing'
+                          ? 'En curso'
+                          : slot.status === 'done'
+                            ? 'Hecha'
+                            : 'Agenda'}
                       </Badge>
                     </div>
                     <p className="text-xs text-pk-sub">
@@ -269,7 +290,9 @@ export function TeacherWeeklyDashboard(): React.ReactElement {
               <MessageSquare className="h-4 w-4 text-pk-primary" aria-hidden />
               Observaciones y feedback
             </CardTitle>
-            <CardDescription>Notas cortas para dar seguimiento sin abrir otra herramienta.</CardDescription>
+            <CardDescription>
+              Notas cortas para dar seguimiento sin abrir otra herramienta.
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
             {teacherNotes.map((note) => (
@@ -279,7 +302,15 @@ export function TeacherWeeklyDashboard(): React.ReactElement {
                     <p className="text-sm font-semibold text-pk-ink">{note.student}</p>
                     <p className="text-xs text-pk-sub">{note.className}</p>
                   </div>
-                  <Badge tone={note.priority === 'alta' ? 'amber' : note.priority === 'media' ? 'violet' : 'green'}>
+                  <Badge
+                    tone={
+                      note.priority === 'alta'
+                        ? 'amber'
+                        : note.priority === 'media'
+                          ? 'violet'
+                          : 'green'
+                    }
+                  >
                     {note.priority}
                   </Badge>
                 </div>
@@ -311,7 +342,11 @@ export function TeacherWeeklyDashboard(): React.ReactElement {
         </Card>
       </div>
 
-      <TeacherSubmissionsSection data={teacherData} isLoading={isLoadingTeacherData} error={teacherDataError} />
+      <TeacherSubmissionsSection
+        data={teacherData}
+        isLoading={isLoadingTeacherData}
+        error={teacherDataError}
+      />
     </div>
-  )
+  );
 }

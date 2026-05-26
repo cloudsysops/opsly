@@ -1,12 +1,12 @@
-'use client'
+'use client';
 
-import { Form } from '@/lib/form-types'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { peskidsColorTokens } from '@/lib/tokens'
+import { Form } from '@/lib/form-types';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { peskidsColorTokens } from '@/lib/tokens';
 
 interface FormPreviewProps {
-  form: Form
-  compact?: boolean
+  form: Form;
+  compact?: boolean;
 }
 
 export function FormPreview({ form, compact = false }: FormPreviewProps): React.ReactElement {
@@ -17,7 +17,7 @@ export function FormPreview({ form, compact = false }: FormPreviewProps): React.
         {form.description && <p className="mt-1 text-xs text-pk-mutedText">{form.description}</p>}
         <p className="mt-2 text-xs text-pk-mutedText">{form.fields.length} campos</p>
       </div>
-    )
+    );
   }
 
   return (
@@ -38,12 +38,19 @@ export function FormPreview({ form, compact = false }: FormPreviewProps): React.
                     {field.label}
                     {field.required && <span className="text-red-500"> *</span>}
                   </span>
-                  {field.description && <p className="mt-1 text-xs text-pk-mutedText">{field.description}</p>}
+                  {field.description && (
+                    <p className="mt-1 text-xs text-pk-mutedText">{field.description}</p>
+                  )}
                 </label>
 
                 <div className="mt-2 rounded bg-pk-bg px-3 py-2 text-sm text-pk-mutedText border border-pk-border">
                   {field.type === 'textarea' ? (
-                    <textarea disabled placeholder={field.placeholder} className="w-full bg-transparent" rows={3} />
+                    <textarea
+                      disabled
+                      placeholder={field.placeholder}
+                      className="w-full bg-transparent"
+                      rows={3}
+                    />
                   ) : field.type === 'select' ? (
                     <select disabled className="w-full bg-transparent">
                       <option>{field.placeholder || 'Selecciona…'}</option>
@@ -70,7 +77,12 @@ export function FormPreview({ form, compact = false }: FormPreviewProps): React.
                       ))}
                     </div>
                   ) : field.type === 'file' ? (
-                    <input type="file" disabled placeholder={field.placeholder} className="w-full bg-transparent" />
+                    <input
+                      type="file"
+                      disabled
+                      placeholder={field.placeholder}
+                      className="w-full bg-transparent"
+                    />
                   ) : (
                     <input
                       type={field.type}
@@ -81,7 +93,9 @@ export function FormPreview({ form, compact = false }: FormPreviewProps): React.
                   )}
                 </div>
 
-                {index < form.fields.length - 1 && <div className="mt-4 border-b border-pk-border" />}
+                {index < form.fields.length - 1 && (
+                  <div className="mt-4 border-b border-pk-border" />
+                )}
               </div>
             ))
           )}
@@ -115,13 +129,17 @@ export function FormPreview({ form, compact = false }: FormPreviewProps): React.
         <div className="mt-4 space-y-2 rounded-lg bg-pk-bg px-3 py-2">
           <p className="text-xs font-medium text-pk-mutedText">Configuración</p>
           <ul className="space-y-1 text-xs text-pk-mutedText">
-            <li>• Estado: <span className="font-medium">{form.status}</span></li>
-            <li>• Campos: <span className="font-medium">{form.fields.length}</span></li>
+            <li>
+              • Estado: <span className="font-medium">{form.status}</span>
+            </li>
+            <li>
+              • Campos: <span className="font-medium">{form.fields.length}</span>
+            </li>
             {form.settings.requiresAuth && <li>• Requiere autenticación</li>}
             {form.settings.successUrl && <li>• Redirige a: {form.settings.successUrl}</li>}
           </ul>
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }

@@ -1,33 +1,30 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { validateStaffSession } from '@/lib/staff-auth'
-import { supabaseServer } from '@/lib/supabase'
+import { NextRequest, NextResponse } from 'next/server';
+import { validateStaffSession } from '@/lib/staff-auth';
+import { supabaseServer } from '@/lib/supabase';
 
 function detectConversationMode(senderContact: string): 'admissions' | 'support' {
-  return senderContact.includes('web:support:') ? 'support' : 'admissions'
+  return senderContact.includes('web:support:') ? 'support' : 'admissions';
 }
 
-export async function GET(
-  _req: NextRequest,
-  context: { params: Promise<{ messageId: string }> }
-) {
-  const auth = await validateStaffSession()
+export async function GET(_req: NextRequest, context: { params: Promise<{ messageId: string }> }) {
+  const auth = await validateStaffSession();
   if (!auth.ok) {
-    return NextResponse.json({ error: auth.error }, { status: auth.status })
+    return NextResponse.json({ error: auth.error }, { status: auth.status });
   }
 
-  const { messageId } = await context.params
-  const tenantId = process.env.NEXT_PUBLIC_TENANT_ID || 'peskids'
-  const supabase = supabaseServer()
+  const { messageId } = await context.params;
+  const tenantId = process.env.NEXT_PUBLIC_TENANT_ID || 'peskids';
+  const supabase = supabaseServer();
 
   const { data: inbound, error: inboundError } = await supabase
     .from('messages')
     .select('*')
     .eq('id', messageId)
     .eq('tenant_id', tenantId)
-    .maybeSingle()
+    .maybeSingle();
 
   if (inboundError || !inbound) {
-    return NextResponse.json({ error: 'Message not found' }, { status: 404 })
+    return NextResponse.json({ error: 'Message not found' }, { status: 404 });
   }
 
   const { data: drafts } = await supabase
@@ -37,9 +34,9 @@ export async function GET(
     .eq('parent_message_id', messageId)
     .eq('direction', 'draft')
     .order('created_at', { ascending: false })
-    .limit(1)
+    .limit(1);
 
-  const latestDraft = drafts?.[0] ?? null
+  const latestDraft = drafts?.[0] ?? null;
 
   return NextResponse.json({
     inbound,
@@ -47,5 +44,5 @@ export async function GET(
     conversation_mode: detectConversationMode(inbound.sender_contact),
     suggested_reply: latestDraft?.message_text ?? null,
     draft_id: latestDraft?.id ?? null,
-  })
+  });
 }

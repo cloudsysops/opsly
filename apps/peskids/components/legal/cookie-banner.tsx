@@ -1,43 +1,43 @@
-'use client'
+'use client';
 
-import { useEffect, useState } from 'react'
-import Link from 'next/link'
-import { X } from 'lucide-react'
+import { useEffect, useState } from 'react';
+import Link from 'next/link';
+import { X } from 'lucide-react';
 
-const STORAGE_KEY = 'pk-cookie-consent'
+const STORAGE_KEY = 'pk-cookie-consent';
 
 export function CookieBanner(): React.ReactElement | null {
-  const [visible, setVisible] = useState(false)
+  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
     try {
-      const saved = localStorage.getItem(STORAGE_KEY)
-      if (!saved) setVisible(true)
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (!saved) setVisible(true);
     } catch {
       // Private browsing or storage blocked — show banner to be safe
-      setVisible(true)
+      setVisible(true);
     }
-  }, [])
+  }, []);
 
   const accept = (): void => {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({ accepted: true, at: Date.now() }))
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ accepted: true, at: Date.now() }));
     } catch {
       // ignore
     }
-    setVisible(false)
-  }
+    setVisible(false);
+  };
 
   const dismiss = (): void => {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({ accepted: false, at: Date.now() }))
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ accepted: false, at: Date.now() }));
     } catch {
       // ignore
     }
-    setVisible(false)
-  }
+    setVisible(false);
+  };
 
-  if (!visible) return null
+  if (!visible) return null;
 
   return (
     <div
@@ -52,8 +52,8 @@ export function CookieBanner(): React.ReactElement | null {
             Usamos cookies esenciales
           </p>
           <p className="mt-0.5 text-[10px] leading-snug text-pk-sub sm:mt-1 sm:text-[11px] sm:leading-relaxed">
-            Solo usamos cookies estrictamente necesarias para el funcionamiento del sitio
-            (sesión de staff). No hay cookies de rastreo ni publicidad.{' '}
+            Solo usamos cookies estrictamente necesarias para el funcionamiento del sitio (sesión de
+            staff). No hay cookies de rastreo ni publicidad.{' '}
             <Link href="/cookies" className="text-pk-primary hover:underline">
               Ver política
             </Link>
@@ -84,5 +84,5 @@ export function CookieBanner(): React.ReactElement | null {
         </Link>
       </div>
     </div>
-  )
+  );
 }

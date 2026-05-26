@@ -1,63 +1,63 @@
-'use client'
+'use client';
 
-import { Loader2, LogIn, ShieldCheck, Sparkles } from 'lucide-react'
-import Link from 'next/link'
-import { useRouter, useSearchParams } from 'next/navigation'
-import { useEffect, useMemo, useState } from 'react'
-import { PeskidsLockup } from '@/components/brand/peskids-logo'
-import { Button } from '@/components/ui/button'
-import { createClient } from '@/lib/supabase-browser'
+import { Loader2, LogIn, ShieldCheck, Sparkles } from 'lucide-react';
+import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useMemo, useState } from 'react';
+import { PeskidsLockup } from '@/components/brand/peskids-logo';
+import { Button } from '@/components/ui/button';
+import { createClient } from '@/lib/supabase-browser';
 
 function getRedirectTarget(nextParam: string | null): string {
-  const next = nextParam?.trim()
+  const next = nextParam?.trim();
   if (next && next.startsWith('/')) {
-    return next
+    return next;
   }
-  return '/familias/submissions'
+  return '/familias/submissions';
 }
 
 export function FamilyGoogleLogin(): React.ReactElement {
-  const router = useRouter()
-  const searchParams = useSearchParams()
-  const next = useMemo(() => getRedirectTarget(searchParams.get('next')), [searchParams])
-  const [loading, setLoading] = useState(false)
-  const [checking, setChecking] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const next = useMemo(() => getRedirectTarget(searchParams.get('next')), [searchParams]);
+  const [loading, setLoading] = useState(false);
+  const [checking, setChecking] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const supabase = createClient()
+    const supabase = createClient();
     void supabase.auth.getSession().then(({ data }) => {
       if (data.session?.user) {
-        router.replace(next)
-        router.refresh()
-        return
+        router.replace(next);
+        router.refresh();
+        return;
       }
-      setChecking(false)
-    })
-  }, [next, router])
+      setChecking(false);
+    });
+  }, [next, router]);
 
   async function onGoogleSignIn(): Promise<void> {
-    setLoading(true)
-    setError(null)
+    setLoading(true);
+    setError(null);
     try {
-      const supabase = createClient()
+      const supabase = createClient();
       const redirectTo =
         typeof window !== 'undefined'
           ? `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`
-          : `/auth/callback?next=${encodeURIComponent(next)}`
+          : `/auth/callback?next=${encodeURIComponent(next)}`;
       const { error: oauthError } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
           redirectTo,
         },
-      })
+      });
       if (oauthError) {
-        setError(oauthError.message)
+        setError(oauthError.message);
       }
     } catch {
-      setError('No se pudo iniciar con Google.')
+      setError('No se pudo iniciar con Google.');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
@@ -66,7 +66,7 @@ export function FamilyGoogleLogin(): React.ReactElement {
       <div className="flex min-h-screen items-center justify-center bg-[radial-gradient(circle_at_top,_rgba(60,190,190,0.18),_transparent_34%),linear-gradient(180deg,#f4fbfd_0%,#ecf7fb_48%,#e8f4f8_100%)]">
         <Loader2 className="h-8 w-8 animate-spin text-pk-primary" aria-hidden />
       </div>
-    )
+    );
   }
 
   return (
@@ -94,9 +94,8 @@ export function FamilyGoogleLogin(): React.ReactElement {
                     Entrar con Google
                   </h1>
                   <p className="max-w-lg text-base leading-7 text-pk-sub sm:text-lg">
-                    Un acceso simple, seguro y consistente con la marca Peskids. Las familias
-                    entran con Google; el acceso del staff sigue separado por invitación y
-                    contraseña.
+                    Un acceso simple, seguro y consistente con la marca Peskids. Las familias entran
+                    con Google; el acceso del staff sigue separado por invitación y contraseña.
                   </p>
                 </div>
               </div>
@@ -138,8 +137,8 @@ export function FamilyGoogleLogin(): React.ReactElement {
                   Accede al panel de familias
                 </h2>
                 <p className="text-sm leading-6 text-pk-sub sm:text-base">
-                  Si ya entraste antes, te llevamos directo al panel de familias. Si no, inicia
-                  con Google para continuar.
+                  Si ya entraste antes, te llevamos directo al panel de familias. Si no, inicia con
+                  Google para continuar.
                 </p>
               </div>
 
@@ -191,5 +190,5 @@ export function FamilyGoogleLogin(): React.ReactElement {
         </div>
       </div>
     </main>
-  )
+  );
 }

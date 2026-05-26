@@ -1,9 +1,9 @@
-import { PeskidsWave } from '@/components/brand/peskids-logo'
-import { peskidsColorTokens } from '@/lib/tokens'
-import { PortalShowcaseHero } from './portal-showcase-hero'
-import { PortalShowcaseFeatures } from './portal-showcase-features'
-import { PortalShowcaseTestimonials } from './portal-showcase-testimonials'
-import { PortalShowcaseCTA } from './portal-showcase-cta'
+import { PeskidsWave } from '@/components/brand/peskids-logo';
+import { peskidsColorTokens } from '@/lib/tokens';
+import { PortalShowcaseHero } from './portal-showcase-hero';
+import { PortalShowcaseFeatures } from './portal-showcase-features';
+import { PortalShowcaseTestimonials } from './portal-showcase-testimonials';
+import { PortalShowcaseCTA } from './portal-showcase-cta';
 
 export function PortalShowcase(): React.ReactElement {
   return (
@@ -26,5 +26,5 @@ export function PortalShowcase(): React.ReactElement {
         <PortalShowcaseCTA />
       </div>
     </section>
-  )
+  );
 }

@@ -1,10 +1,10 @@
-import { Suspense } from 'react'
-import { FamilyGoogleLogin } from './family-google-login'
+import { Suspense } from 'react';
+import { FamilyGoogleLogin } from './family-google-login';
 
 export const metadata = {
   title: 'Peskids · Acceso familias',
   description: 'Acceso para familias de Peskids con Google.',
-}
+};
 
 export default function FamiliesLoginPage(): React.ReactElement {
   return (
@@ -17,5 +17,5 @@ export default function FamiliesLoginPage(): React.ReactElement {
     >
       <FamilyGoogleLogin />
     </Suspense>
-  )
+  );
 }

@@ -1,8 +1,8 @@
-'use client'
+'use client';
 
-import Link from 'next/link'
-import { useEffect, useState } from 'react'
-import { usePathname } from 'next/navigation'
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import { usePathname } from 'next/navigation';
 import {
   CalendarClock,
   type LucideIcon,
@@ -12,23 +12,23 @@ import {
   RefreshCw,
   ShieldCheck,
   Users,
-} from 'lucide-react'
-import { PeskidsLogo } from '@/components/brand/peskids-logo'
-import { Button } from '@/components/ui/button'
-import { cn } from '@/lib/utils'
-import { formatRelativeTime } from '@/lib/utils'
+} from 'lucide-react';
+import { PeskidsLogo } from '@/components/brand/peskids-logo';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
+import { formatRelativeTime } from '@/lib/utils';
 
 interface AdminShellProps {
-  children: React.ReactNode
-  lastUpdated: Date | null
-  onRefresh?: () => void
-  refreshing?: boolean
+  children: React.ReactNode;
+  lastUpdated: Date | null;
+  onRefresh?: () => void;
+  refreshing?: boolean;
 }
 
 interface NavItem {
-  icon: LucideIcon
-  label: string
-  href: string
+  icon: LucideIcon;
+  label: string;
+  href: string;
 }
 
 const navOps = [
@@ -38,7 +38,7 @@ const navOps = [
   { icon: Users, label: 'Leads', href: '/admin#leads' },
   { icon: MessageSquare, label: 'Feedback', href: '/admin#feedback' },
   { icon: CalendarClock, label: 'Follow-up', href: '/admin#follow-up' },
-] satisfies NavItem[]
+] satisfies NavItem[];
 
 export function AdminShell({
   children,
@@ -46,55 +46,55 @@ export function AdminShell({
   onRefresh,
   refreshing,
 }: AdminShellProps): React.ReactElement {
-  const pathname = usePathname()
-  const [hash, setHash] = useState('')
+  const pathname = usePathname();
+  const [hash, setHash] = useState('');
 
   useEffect(() => {
     const syncHash = (): void => {
-      setHash(window.location.hash)
-    }
+      setHash(window.location.hash);
+    };
 
-    syncHash()
-    window.addEventListener('hashchange', syncHash)
-    window.addEventListener('popstate', syncHash)
+    syncHash();
+    window.addEventListener('hashchange', syncHash);
+    window.addEventListener('popstate', syncHash);
 
     return () => {
-      window.removeEventListener('hashchange', syncHash)
-      window.removeEventListener('popstate', syncHash)
-    }
-  }, [])
+      window.removeEventListener('hashchange', syncHash);
+      window.removeEventListener('popstate', syncHash);
+    };
+  }, []);
 
   const isActive = (item: NavItem): boolean => {
     if (item.label === 'Landing') {
-      return pathname === '/'
+      return pathname === '/';
     }
 
     if (pathname !== '/admin') {
-      return false
+      return false;
     }
 
     if (item.label === 'Dashboard') {
-      return hash === '' || hash === '#dashboard'
+      return hash === '' || hash === '#dashboard';
     }
 
     if (item.label === 'Equipo') {
-      return hash === '#team'
+      return hash === '#team';
     }
 
     if (item.label === 'Leads') {
-      return hash === '#leads'
+      return hash === '#leads';
     }
 
     if (item.label === 'Feedback') {
-      return hash === '#feedback'
+      return hash === '#feedback';
     }
 
     if (item.label === 'Follow-up') {
-      return hash === '#follow-up'
+      return hash === '#follow-up';
     }
 
-    return false
-  }
+    return false;
+  };
 
   return (
     <div className="flex min-h-screen bg-pk-bg">
@@ -191,5 +191,5 @@ export function AdminShell({
         <main className="flex-1 overflow-auto p-5 sm:p-6">{children}</main>
       </div>
     </div>
-  )
+  );
 }

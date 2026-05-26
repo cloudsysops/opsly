@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import { z } from 'zod';
 
 export const feedbackSchema = z.object({
   child_name: z.string().min(2).max(80).optional(),
@@ -19,6 +19,6 @@ export const feedbackSchema = z.object({
   parent_email: z.string().email().nullable().optional(),
   author_ref_id: z.string().uuid().nullable().optional(),
   subject_ref_id: z.string().uuid().nullable().optional(),
-})
+});
 
-export type FeedbackInput = z.infer<typeof feedbackSchema>
+export type FeedbackInput = z.infer<typeof feedbackSchema>;

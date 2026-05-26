@@ -1,29 +1,24 @@
-import Link from 'next/link'
-import { ChevronRight } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import Link from 'next/link';
+import { ChevronRight } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 function MetricCard({
   value,
   label,
   compact,
 }: {
-  value: string
-  label: string
-  compact?: boolean
+  value: string;
+  label: string;
+  compact?: boolean;
 }): React.ReactElement {
   return (
     <div className="rounded-2xl border border-pk-border bg-pk-surface p-4 shadow-card">
-      <p
-        className={cn(
-          'font-bold tracking-tight text-pk-ink',
-          compact ? 'text-sm' : 'text-2xl'
-        )}
-      >
+      <p className={cn('font-bold tracking-tight text-pk-ink', compact ? 'text-sm' : 'text-2xl')}>
         {value}
       </p>
       <p className="mt-1 text-xs leading-relaxed text-pk-mutedText">{label}</p>
     </div>
-  )
+  );
 }
 
 export function PortalShowcaseHero(): React.ReactElement {
@@ -71,5 +66,5 @@ export function PortalShowcaseHero(): React.ReactElement {
         <MetricCard value="Tiempo real" label="mensajes" compact />
       </div>
     </div>
-  )
+  );
 }

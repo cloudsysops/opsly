@@ -1,15 +1,15 @@
-import Link from 'next/link'
-import { Gift, BadgePercent, Link2 } from 'lucide-react'
-import { peskidsColorTokens } from '@/lib/tokens'
+import Link from 'next/link';
+import { Gift, BadgePercent, Link2 } from 'lucide-react';
+import { peskidsColorTokens } from '@/lib/tokens';
 
 function MiniReferralStep({
   icon: Icon,
   title,
   text,
 }: {
-  icon: typeof Gift
-  title: string
-  text: string
+  icon: typeof Gift;
+  title: string;
+  text: string;
 }): React.ReactElement {
   return (
     <div className="rounded-2xl border border-pk-border bg-white p-4 shadow-sm">
@@ -19,7 +19,7 @@ function MiniReferralStep({
       <p className="mt-3 text-sm font-bold text-pk-ink">{title}</p>
       <p className="mt-1 text-xs leading-relaxed text-pk-sub">{text}</p>
     </div>
-  )
+  );
 }
 
 function ReferralSection(): React.ReactElement {
@@ -36,11 +36,7 @@ function ReferralSection(): React.ReactElement {
           </p>
 
           <div className="mt-6 grid gap-3 sm:grid-cols-3">
-            <MiniReferralStep
-              icon={Link2}
-              title="1. Comparte"
-              text="Pega tu link donde quieras."
-            />
+            <MiniReferralStep icon={Link2} title="1. Comparte" text="Pega tu link donde quieras." />
             <MiniReferralStep
               icon={Gift}
               title="2. Se registra"
@@ -106,7 +102,7 @@ function ReferralSection(): React.ReactElement {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 function FinalCTA(): React.ReactElement {
@@ -124,8 +120,8 @@ function FinalCTA(): React.ReactElement {
             Una base visual clara para familias y equipo.
           </h2>
           <p className="mt-4 max-w-xl text-sm leading-relaxed text-white/75">
-            El usuario ve progreso, agenda y mensajes en un solo lugar. El equipo puede
-            operar sin fricción y mostrar el producto con claridad.
+            El usuario ve progreso, agenda y mensajes en un solo lugar. El equipo puede operar sin
+            fricción y mostrar el producto con claridad.
           </p>
         </div>
 
@@ -145,7 +141,7 @@ function FinalCTA(): React.ReactElement {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 export function PortalShowcaseCTA(): React.ReactElement {
@@ -159,5 +155,5 @@ export function PortalShowcaseCTA(): React.ReactElement {
         <FinalCTA />
       </div>
     </>
-  )
+  );
 }

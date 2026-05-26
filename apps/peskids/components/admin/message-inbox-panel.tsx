@@ -1,119 +1,122 @@
-'use client'
+'use client';
 
-import { useCallback, useState } from 'react'
-import { Copy, Loader2, Mail, Phone, Reply } from 'lucide-react'
-import type { DashboardData } from '@/lib/types'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
+import { useCallback, useState } from 'react';
+import { Copy, Loader2, Mail, Phone, Reply } from 'lucide-react';
+import type { DashboardData } from '@/lib/types';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 
 const sourceTone: Record<string, 'green' | 'coral' | 'teal'> = {
   whatsapp: 'green',
   instagram: 'coral',
   web: 'teal',
-}
+};
 
 const statusTone: Record<string, 'amber' | 'violet' | 'green' | 'neutral'> = {
   pending: 'amber',
   approved: 'violet',
   sent: 'green',
-}
+};
 
 type ThreadResponse = {
   inbound: {
-    message_text: string
-    sender_name: string | null
-    sender_contact: string
-    source: string
-    status?: string | null
-  }
-  conversation_mode?: 'admissions' | 'support'
-  status?: string | null
-  suggested_reply: string | null
-}
+    message_text: string;
+    sender_name: string | null;
+    sender_contact: string;
+    source: string;
+    status?: string | null;
+  };
+  conversation_mode?: 'admissions' | 'support';
+  status?: string | null;
+  suggested_reply: string | null;
+};
 
 function statusLabel(status?: string | null): string {
-  if (status === 'sent') return 'Enviado'
-  if (status === 'approved') return 'Aprobado'
-  return 'Pendiente'
+  if (status === 'sent') return 'Enviado';
+  if (status === 'approved') return 'Aprobado';
+  return 'Pendiente';
 }
 
 function conversationLabel(mode?: string): string {
-  if (mode === 'support') return 'Soporte'
-  if (mode === 'admissions') return 'Admisión'
-  return 'Canal'
+  if (mode === 'support') return 'Soporte';
+  if (mode === 'admissions') return 'Admisión';
+  return 'Canal';
 }
 
 function normalizeDigits(value: string): string {
-  return value.replace(/\D+/g, '')
+  return value.replace(/\D+/g, '');
 }
 
 function getContactHref(source: string, contact: string): string | null {
-  if (!contact.trim()) return null
-  if (contact.includes('@')) return `mailto:${contact.trim()}`
+  if (!contact.trim()) return null;
+  if (contact.includes('@')) return `mailto:${contact.trim()}`;
   if (source === 'whatsapp') {
-    const digits = normalizeDigits(contact)
-    return digits ? `https://wa.me/${digits}` : null
+    const digits = normalizeDigits(contact);
+    return digits ? `https://wa.me/${digits}` : null;
   }
-  return null
+  return null;
 }
 
 export function MessageInboxPanel({
   messages,
 }: {
-  messages: DashboardData['recent_messages']
+  messages: DashboardData['recent_messages'];
 }): React.ReactElement {
-  const [activeId, setActiveId] = useState<string | null>(null)
-  const [replyText, setReplyText] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [sending, setSending] = useState(false)
-  const [status, setStatus] = useState<string | null>(null)
-  const [threadState, setThreadState] = useState<string | null>(null)
-  const [threadMode, setThreadMode] = useState<'admissions' | 'support' | null>(null)
-  const [copiedId, setCopiedId] = useState<string | null>(null)
+  const [activeId, setActiveId] = useState<string | null>(null);
+  const [replyText, setReplyText] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [status, setStatus] = useState<string | null>(null);
+  const [threadState, setThreadState] = useState<string | null>(null);
+  const [threadMode, setThreadMode] = useState<'admissions' | 'support' | null>(null);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
 
   const openThread = useCallback(async (messageId: string) => {
-    setActiveId(messageId)
-    setLoading(true)
-    setStatus(null)
-    setThreadMode(null)
+    setActiveId(messageId);
+    setLoading(true);
+    setStatus(null);
+    setThreadMode(null);
     try {
       const res = await fetch(`/api/messages/${messageId}/thread`, {
         credentials: 'include',
-      })
-      const data = (await res.json()) as ThreadResponse & { error?: string }
+      });
+      const data = (await res.json()) as ThreadResponse & { error?: string };
       if (!res.ok) {
         if (res.status === 401) {
-          setStatus('Sesión vencida. Vuelve a iniciar sesión en admin.')
-          return
+          setStatus('Sesión vencida. Vuelve a iniciar sesión en admin.');
+          return;
         }
-        setStatus(data.error ?? 'No se pudo cargar el hilo')
-        return
+        setStatus(data.error ?? 'No se pudo cargar el hilo');
+        return;
       }
-      setThreadState(data.status ?? data.inbound.status ?? 'pending')
-      setThreadMode(data.conversation_mode ?? null)
-      setReplyText(data.suggested_reply ?? '')
+      setThreadState(data.status ?? data.inbound.status ?? 'pending');
+      setThreadMode(data.conversation_mode ?? null);
+      setReplyText(data.suggested_reply ?? '');
     } catch {
-      setStatus('Error al cargar borrador sugerido')
+      setStatus('Error al cargar borrador sugerido');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }, [])
+  }, []);
 
   const copyMessage = useCallback(async (messageId: string, text: string) => {
     try {
-      await navigator.clipboard.writeText(text)
-      setCopiedId(messageId)
-      window.setTimeout(() => setCopiedId((current) => (current === messageId ? null : current)), 1200)
+      await navigator.clipboard.writeText(text);
+      setCopiedId(messageId);
+      window.setTimeout(
+        () => setCopiedId((current) => (current === messageId ? null : current)),
+        1200
+      );
     } catch {
-      window.prompt('Copia este texto', text)
+      window.prompt('Copia este texto', text);
     }
-  }, [])
+  }, []);
 
   const sendReply = useCallback(async () => {
-    if (!activeId || !replyText.trim()) return
+    if (!activeId || !replyText.trim()) return;
 
-    setSending(true)
-    setStatus(null)
+    setSending(true);
+    setStatus(null);
     try {
       const res = await fetch(`/api/messages/${activeId}/reply`, {
         method: 'POST',
@@ -122,41 +125,39 @@ export function MessageInboxPanel({
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ replyText: replyText.trim() }),
-      })
-      const data = (await res.json()) as { message?: string; error?: string }
+      });
+      const data = (await res.json()) as { message?: string; error?: string };
       if (!res.ok) {
         if (res.status === 401) {
-          setStatus('Sesión vencida. Vuelve a iniciar sesión en admin.')
-          return
+          setStatus('Sesión vencida. Vuelve a iniciar sesión en admin.');
+          return;
         }
-        setStatus(data.error ?? 'Error al enviar')
-        return
+        setStatus(data.error ?? 'Error al enviar');
+        return;
       }
-      setStatus(data.message ?? 'Enviado')
-      setActiveId(null)
-      setReplyText('')
-      setThreadState('sent')
-      setThreadMode(null)
+      setStatus(data.message ?? 'Enviado');
+      setActiveId(null);
+      setReplyText('');
+      setThreadState('sent');
+      setThreadMode(null);
     } catch {
-      setStatus('Error de red al enviar')
+      setStatus('Error de red al enviar');
     } finally {
-      setSending(false)
+      setSending(false);
     }
-  }, [activeId, replyText])
+  }, [activeId, replyText]);
 
   if (messages.length === 0) {
-    return <p className="text-sm text-pk-sub">Sin mensajes entrantes recientes.</p>
+    return <p className="text-sm text-pk-sub">Sin mensajes entrantes recientes.</p>;
   }
 
   return (
     <div className="space-y-3">
       <ul className="max-h-52 space-y-2 overflow-y-auto">
         {messages.map((msg) => {
-          const tone = sourceTone[msg.source] ?? 'teal'
+          const tone = sourceTone[msg.source] ?? 'teal';
           const preview =
-            msg.message_text.length > 48
-              ? `${msg.message_text.slice(0, 48)}…`
-              : msg.message_text
+            msg.message_text.length > 48 ? `${msg.message_text.slice(0, 48)}…` : msg.message_text;
           return (
             <li key={msg.id}>
               <div
@@ -214,8 +215,8 @@ export function MessageInboxPanel({
                       size="sm"
                       variant="secondary"
                       onClick={() => {
-                        const href = getContactHref(msg.source, msg.sender_contact)
-                        if (href) window.open(href, '_blank', 'noopener,noreferrer')
+                        const href = getContactHref(msg.source, msg.sender_contact);
+                        if (href) window.open(href, '_blank', 'noopener,noreferrer');
                       }}
                     >
                       {msg.source === 'whatsapp' ? (
@@ -245,7 +246,7 @@ export function MessageInboxPanel({
                 </div>
               </div>
             </li>
-          )
+          );
         })}
       </ul>
 
@@ -295,5 +296,5 @@ export function MessageInboxPanel({
 
       {status ? <p className="text-xs text-pk-sub">{status}</p> : null}
     </div>
-  )
+  );
 }

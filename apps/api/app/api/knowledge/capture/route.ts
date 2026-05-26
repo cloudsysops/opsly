@@ -25,7 +25,12 @@ async function writeKnowledgeToInbox(
   const timestamp = new Date().toISOString();
   const tags = body.tags ? body.tags : [agentName];
   const sanitizedTags = tags
-    .map((tag) => tag.toLowerCase().replace(/[^a-z0-9-]/g, '').trim())
+    .map((tag) =>
+      tag
+        .toLowerCase()
+        .replace(/[^a-z0-9-]/g, '')
+        .trim()
+    )
     .filter((tag) => tag.length > 0);
   const tagsStr = sanitizedTags.map((tag) => `#${tag}`).join(' ');
 

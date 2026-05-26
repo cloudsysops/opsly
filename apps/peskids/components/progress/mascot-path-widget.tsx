@@ -1,17 +1,17 @@
-'use client'
+'use client';
 
-import { useMemo, useState } from 'react'
-import { BadgeCheck, ChevronRight, Sparkles } from 'lucide-react'
-import { SWIM_LEVELS } from '@/lib/brand'
-import { cn } from '@/lib/utils'
+import { useMemo, useState } from 'react';
+import { BadgeCheck, ChevronRight, Sparkles } from 'lucide-react';
+import { SWIM_LEVELS } from '@/lib/brand';
+import { cn } from '@/lib/utils';
 
 type MascotOption = {
-  id: string
-  name: string
-  emoji: string
-  subtitle: string
-  tone: 'teal' | 'amber' | 'violet' | 'coral' | 'green'
-}
+  id: string;
+  name: string;
+  emoji: string;
+  subtitle: string;
+  tone: 'teal' | 'amber' | 'violet' | 'coral' | 'green';
+};
 
 const mascotOptions: MascotOption[] = [
   { id: 'bubble', name: 'Burbuja', emoji: '💧', subtitle: 'Primer contacto', tone: 'teal' },
@@ -19,7 +19,7 @@ const mascotOptions: MascotOption[] = [
   { id: 'dolphin', name: 'Delfín', emoji: '🐬', subtitle: 'Coordina y avanza', tone: 'amber' },
   { id: 'shark', name: 'Tiburón', emoji: '🦈', subtitle: 'Fuerza y control', tone: 'violet' },
   { id: 'trophy', name: 'Campeón', emoji: '🏆', subtitle: 'Meta superada', tone: 'coral' },
-]
+];
 
 const toneStyles: Record<MascotOption['tone'], string> = {
   teal: 'border-teal-200 bg-teal-50 text-teal-700',
@@ -27,31 +27,38 @@ const toneStyles: Record<MascotOption['tone'], string> = {
   violet: 'border-violet-200 bg-violet-50 text-violet-700',
   coral: 'border-rose-200 bg-rose-50 text-rose-700',
   green: 'border-emerald-200 bg-emerald-50 text-emerald-700',
-}
+};
 
 export function MascotPathWidget({
   title = 'Elige tu mascota',
   description = 'Tu peque puede escoger su avatar y verlo crecer con cada nivel.',
   className,
 }: {
-  title?: string
-  description?: string
-  className?: string
+  title?: string;
+  description?: string;
+  className?: string;
 }): React.ReactElement {
-  const [selectedMascotId, setSelectedMascotId] = useState(mascotOptions[1]?.id ?? mascotOptions[0].id)
+  const [selectedMascotId, setSelectedMascotId] = useState(
+    mascotOptions[1]?.id ?? mascotOptions[0].id
+  );
 
   const selectedMascot = useMemo(
     () => mascotOptions.find((option) => option.id === selectedMascotId) ?? mascotOptions[0],
     [selectedMascotId]
-  )
+  );
 
   const currentLevel = useMemo(() => {
-    const index = mascotOptions.findIndex((option) => option.id === selectedMascot.id)
-    return Math.min(SWIM_LEVELS.length, Math.max(1, index + 2))
-  }, [selectedMascot.id])
+    const index = mascotOptions.findIndex((option) => option.id === selectedMascot.id);
+    return Math.min(SWIM_LEVELS.length, Math.max(1, index + 2));
+  }, [selectedMascot.id]);
 
   return (
-    <section className={cn('overflow-hidden rounded-[2rem] border border-pk-border bg-white shadow-card', className)}>
+    <section
+      className={cn(
+        'overflow-hidden rounded-[2rem] border border-pk-border bg-white shadow-card',
+        className
+      )}
+    >
       <div className="border-b border-pk-border bg-pk-snow px-5 py-4">
         <p className="font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-pk-mutedText">
           Mascota y avatar
@@ -91,8 +98,8 @@ export function MascotPathWidget({
             </div>
             <div className="mt-3 space-y-2">
               {SWIM_LEVELS.map((level) => {
-                const active = level.n <= currentLevel
-                const reached = level.n === currentLevel
+                const active = level.n <= currentLevel;
+                const reached = level.n === currentLevel;
                 return (
                   <div
                     key={level.n}
@@ -123,7 +130,7 @@ export function MascotPathWidget({
                       </span>
                     ) : null}
                   </div>
-                )
+                );
               })}
             </div>
           </div>
@@ -136,14 +143,16 @@ export function MascotPathWidget({
                 <p className="font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-pk-mutedText">
                   Selección
                 </p>
-                <p className="mt-1 text-sm font-semibold text-pk-ink">Toca un avatar para elegirlo</p>
+                <p className="mt-1 text-sm font-semibold text-pk-ink">
+                  Toca un avatar para elegirlo
+                </p>
               </div>
               <Sparkles className="h-5 w-5 text-pk-primary" aria-hidden />
             </div>
 
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
               {mascotOptions.map((option) => {
-                const active = option.id === selectedMascotId
+                const active = option.id === selectedMascotId;
                 return (
                   <button
                     key={option.id}
@@ -163,9 +172,15 @@ export function MascotPathWidget({
                       <p className="text-sm font-semibold text-pk-ink">{option.name}</p>
                       <p className="text-xs text-pk-mutedText">{option.subtitle}</p>
                     </div>
-                    <ChevronRight className={cn('h-4 w-4 shrink-0', active ? 'text-pk-primary' : 'text-pk-mutedText')} aria-hidden />
+                    <ChevronRight
+                      className={cn(
+                        'h-4 w-4 shrink-0',
+                        active ? 'text-pk-primary' : 'text-pk-mutedText'
+                      )}
+                      aria-hidden
+                    />
                   </button>
-                )
+                );
               })}
             </div>
           </div>
@@ -181,7 +196,7 @@ export function MascotPathWidget({
 
             <div className="mt-4 grid grid-cols-6 gap-2">
               {SWIM_LEVELS.map((level) => {
-                const active = level.n <= currentLevel
+                const active = level.n <= currentLevel;
                 return (
                   <div
                     key={level.n}
@@ -192,12 +207,12 @@ export function MascotPathWidget({
                   >
                     {level.emoji}
                   </div>
-                )
+                );
               })}
             </div>
           </div>
         </div>
       </div>
     </section>
-  )
+  );
 }

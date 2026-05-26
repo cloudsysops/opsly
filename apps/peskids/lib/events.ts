@@ -1,22 +1,22 @@
-import { OpslyEvent } from './types'
+import { OpslyEvent } from './types';
 
 function opslyEventBusUrl(): string | null {
   const raw =
     process.env.OPSLY_EVENT_BUS_URL?.trim() ||
     process.env.NEXT_PUBLIC_OPSLY_EVENT_BUS_URL?.trim() ||
-    ''
+    '';
   if (!raw) {
-    return null
+    return null;
   }
   if (raw.includes('localhost') || raw.includes('127.0.0.1')) {
     if (process.env.NODE_ENV === 'production') {
-      console.error('OPSLY_EVENT_BUS_URL must not point to localhost in production')
-      return null
+      console.error('OPSLY_EVENT_BUS_URL must not point to localhost in production');
+      return null;
     }
   }
-  return raw.endsWith('/events') ? raw : `${raw.replace(/\/$/, '')}/events`
+  return raw.endsWith('/events') ? raw : `${raw.replace(/\/$/, '')}/events`;
 }
-const TENANT_ID = process.env.NEXT_PUBLIC_TENANT_ID || 'peskids'
+const TENANT_ID = process.env.NEXT_PUBLIC_TENANT_ID || 'peskids';
 
 export async function emitEvent(
   eventType: string,
@@ -29,12 +29,12 @@ export async function emitEvent(
     created_at: new Date().toISOString(),
     data,
     trace_id: traceId,
-  }
+  };
 
-  const busUrl = opslyEventBusUrl()
+  const busUrl = opslyEventBusUrl();
   if (!busUrl) {
-    console.warn(`Skipping event ${eventType}: OPSLY_EVENT_BUS_URL not configured`)
-    return
+    console.warn(`Skipping event ${eventType}: OPSLY_EVENT_BUS_URL not configured`);
+    return;
   }
 
   try {
@@ -45,13 +45,13 @@ export async function emitEvent(
         'X-Peskids-Event': 'true',
       },
       body: JSON.stringify(event),
-    })
+    });
 
     if (!response.ok) {
-      console.error(`Failed to emit event ${eventType}:`, response.statusText)
+      console.error(`Failed to emit event ${eventType}:`, response.statusText);
     }
   } catch (error) {
-    console.error(`Error emitting event ${eventType}:`, error)
+    console.error(`Error emitting event ${eventType}:`, error);
   }
 }
 
@@ -76,21 +76,21 @@ export async function emitLeadCreated(
     referral_code: referralCode ?? null,
     referred_by_code: referredByCode ?? null,
     referral_link: referralLink ?? null,
-  })
+  });
 }
 
 export async function emitFeedbackCreated(params: {
-  feedbackId: string
-  childName: string
-  satisfaction: number
-  suggestion: string | null
-  parentEmail: string | null
-  authorType?: 'parent' | 'teacher' | 'staff'
-  subjectType?: 'general' | 'class' | 'student' | 'operations'
-  visibility?: 'public' | 'private'
-  audience?: 'family' | 'teacher' | 'admin'
-  body?: string | null
-  rating?: number | null
+  feedbackId: string;
+  childName: string;
+  satisfaction: number;
+  suggestion: string | null;
+  parentEmail: string | null;
+  authorType?: 'parent' | 'teacher' | 'staff';
+  subjectType?: 'general' | 'class' | 'student' | 'operations';
+  visibility?: 'public' | 'private';
+  audience?: 'family' | 'teacher' | 'admin';
+  body?: string | null;
+  rating?: number | null;
 }): Promise<void> {
   const {
     feedbackId,
@@ -104,7 +104,7 @@ export async function emitFeedbackCreated(params: {
     audience = 'family',
     body = suggestion,
     rating = satisfaction,
-  } = params
+  } = params;
 
   await emitEvent('feedback.created', {
     feedback_id: feedbackId,
@@ -118,7 +118,7 @@ export async function emitFeedbackCreated(params: {
     audience,
     body,
     rating,
-  })
+  });
 
   if ((rating ?? satisfaction) < 3) {
     await emitEvent('feedback.alert', {
@@ -130,6 +130,6 @@ export async function emitFeedbackCreated(params: {
       subject_type: subjectType,
       visibility,
       audience,
-    })
+    });
   }
 }

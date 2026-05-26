@@ -1,32 +1,25 @@
-'use client'
+'use client';
 
-import {
-  Compass,
-  Flame,
-  Sparkles,
-  Target,
-  Trophy,
-  BadgeCheck,
-} from 'lucide-react'
-import { Badge } from '@/components/ui/badge'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
-import { cn } from '@/lib/utils'
+import { Compass, Flame, Sparkles, Target, Trophy, BadgeCheck } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { cn } from '@/lib/utils';
 
 type GrowthWidgetProps = {
-  eyebrow: string
-  title: string
-  description: string
-  mission: string
-  vision: string
-  objectives: string[]
-  achievements: string[]
-  streakLabel: string
-  streakValue: string
-  progressLabel: string
-  progressPercent: number
-  accent?: 'teal' | 'amber' | 'violet' | 'coral'
-  className?: string
-}
+  eyebrow: string;
+  title: string;
+  description: string;
+  mission: string;
+  vision: string;
+  objectives: string[];
+  achievements: string[];
+  streakLabel: string;
+  streakValue: string;
+  progressLabel: string;
+  progressPercent: number;
+  accent?: 'teal' | 'amber' | 'violet' | 'coral';
+  className?: string;
+};
 
 const accentStyles: Record<
   NonNullable<GrowthWidgetProps['accent']>,
@@ -36,7 +29,7 @@ const accentStyles: Record<
   amber: { badge: 'amber', ring: 'ring-amber-200/70', bar: 'from-pk-sun to-[#FFD85C]' },
   violet: { badge: 'violet', ring: 'ring-violet-200/70', bar: 'from-violet-500 to-violet-300' },
   coral: { badge: 'coral', ring: 'ring-rose-200/70', bar: 'from-pk-accent to-[#FF9E8C]' },
-}
+};
 
 export function GrowthWidget({
   eyebrow,
@@ -53,8 +46,8 @@ export function GrowthWidget({
   accent = 'teal',
   className,
 }: GrowthWidgetProps): React.ReactElement {
-  const accentStyle = accentStyles[accent]
-  const normalizedProgress = Math.max(0, Math.min(100, progressPercent))
+  const accentStyle = accentStyles[accent];
+  const normalizedProgress = Math.max(0, Math.min(100, progressPercent));
 
   return (
     <Card className={cn('overflow-hidden border-pk-border bg-white shadow-card', className)}>
@@ -150,5 +143,5 @@ export function GrowthWidget({
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }

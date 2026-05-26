@@ -1,12 +1,12 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { Plus, Trash2, Copy, Eye, EyeOff } from 'lucide-react'
-import { Form, FormField, FieldType } from '@/lib/form-types'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Label } from '@/components/ui/label'
-import { peskidsColorTokens } from '@/lib/tokens'
+import { useState } from 'react';
+import { Plus, Trash2, Copy, Eye, EyeOff } from 'lucide-react';
+import { Form, FormField, FieldType } from '@/lib/form-types';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
+import { peskidsColorTokens } from '@/lib/tokens';
 
 const FIELD_TYPES: { value: FieldType; label: string }[] = [
   { value: 'text', label: 'Texto' },
@@ -19,15 +19,19 @@ const FIELD_TYPES: { value: FieldType; label: string }[] = [
   { value: 'radio', label: 'Botón de radio' },
   { value: 'date', label: 'Fecha' },
   { value: 'file', label: 'Archivo' },
-]
+];
 
 interface FormBuilderProps {
-  initialForm?: Form
-  onSave: (form: Form) => Promise<void>
-  isLoading?: boolean
+  initialForm?: Form;
+  onSave: (form: Form) => Promise<void>;
+  isLoading?: boolean;
 }
 
-export function FormBuilder({ initialForm, onSave, isLoading = false }: FormBuilderProps): React.ReactElement {
+export function FormBuilder({
+  initialForm,
+  onSave,
+  isLoading = false,
+}: FormBuilderProps): React.ReactElement {
   const [form, setForm] = useState<Form>(
     initialForm || {
       id: `form_${Date.now()}`,
@@ -43,26 +47,26 @@ export function FormBuilder({ initialForm, onSave, isLoading = false }: FormBuil
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     }
-  )
+  );
 
-  const [showPreview, setShowPreview] = useState(false)
-  const [selectedFieldId, setSelectedFieldId] = useState<string | null>(null)
+  const [showPreview, setShowPreview] = useState(false);
+  const [selectedFieldId, setSelectedFieldId] = useState<string | null>(null);
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     setForm((prev) => ({
       ...prev,
       title: e.target.value,
       updatedAt: new Date().toISOString(),
-    }))
-  }
+    }));
+  };
 
   const handleDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>): void => {
     setForm((prev) => ({
       ...prev,
       description: e.target.value,
       updatedAt: new Date().toISOString(),
-    }))
-  }
+    }));
+  };
 
   const handleAddField = (fieldType: FieldType): void => {
     const newField: FormField = {
@@ -70,52 +74,52 @@ export function FormBuilder({ initialForm, onSave, isLoading = false }: FormBuil
       type: fieldType,
       label: `Campo de ${fieldType}`,
       required: false,
-    }
+    };
 
     setForm((prev) => ({
       ...prev,
       fields: [...prev.fields, newField],
       updatedAt: new Date().toISOString(),
-    }))
-  }
+    }));
+  };
 
   const handleUpdateField = (fieldId: string, updates: Partial<FormField>): void => {
     setForm((prev) => ({
       ...prev,
       fields: prev.fields.map((f) => (f.id === fieldId ? { ...f, ...updates } : f)),
       updatedAt: new Date().toISOString(),
-    }))
-  }
+    }));
+  };
 
   const handleDuplicateField = (fieldId: string): void => {
-    const fieldToDuplicate = form.fields.find((f) => f.id === fieldId)
-    if (!fieldToDuplicate) return
+    const fieldToDuplicate = form.fields.find((f) => f.id === fieldId);
+    if (!fieldToDuplicate) return;
 
     const newField: FormField = {
       ...fieldToDuplicate,
       id: `field_${Date.now()}`,
       label: `${fieldToDuplicate.label} (copia)`,
-    }
+    };
 
     setForm((prev) => ({
       ...prev,
       fields: [...prev.fields, newField],
       updatedAt: new Date().toISOString(),
-    }))
-  }
+    }));
+  };
 
   const handleRemoveField = (fieldId: string): void => {
     setForm((prev) => ({
       ...prev,
       fields: prev.fields.filter((f) => f.id !== fieldId),
       updatedAt: new Date().toISOString(),
-    }))
-    setSelectedFieldId(null)
-  }
+    }));
+    setSelectedFieldId(null);
+  };
 
   const handleSave = async (): Promise<void> => {
-    await onSave(form)
-  }
+    await onSave(form);
+  };
 
   return (
     <div className="space-y-6">
@@ -187,8 +191,8 @@ export function FormBuilder({ initialForm, onSave, isLoading = false }: FormBuil
                         <button
                           type="button"
                           onClick={(e) => {
-                            e.stopPropagation()
-                            handleDuplicateField(field.id)
+                            e.stopPropagation();
+                            handleDuplicateField(field.id);
                           }}
                           className="rounded p-1 text-pk-mutedText hover:bg-pk-muted hover:text-pk-ink"
                           title="Duplicar campo"
@@ -198,8 +202,8 @@ export function FormBuilder({ initialForm, onSave, isLoading = false }: FormBuil
                         <button
                           type="button"
                           onClick={(e) => {
-                            e.stopPropagation()
-                            handleRemoveField(field.id)
+                            e.stopPropagation();
+                            handleRemoveField(field.id);
                           }}
                           className="rounded p-1 text-pk-mutedText hover:bg-red-100 hover:text-red-600"
                           title="Eliminar campo"
@@ -225,8 +229,8 @@ export function FormBuilder({ initialForm, onSave, isLoading = false }: FormBuil
               </CardHeader>
               <CardContent className="space-y-3">
                 {(() => {
-                  const field = form.fields.find((f) => f.id === selectedFieldId)
-                  if (!field) return null
+                  const field = form.fields.find((f) => f.id === selectedFieldId);
+                  if (!field) return null;
 
                   return (
                     <>
@@ -252,7 +256,9 @@ export function FormBuilder({ initialForm, onSave, isLoading = false }: FormBuil
                             id="field-placeholder"
                             type="text"
                             value={field.placeholder || ''}
-                            onChange={(e) => handleUpdateField(field.id, { placeholder: e.target.value })}
+                            onChange={(e) =>
+                              handleUpdateField(field.id, { placeholder: e.target.value })
+                            }
                             className="pk-input"
                           />
                         </div>
@@ -265,7 +271,9 @@ export function FormBuilder({ initialForm, onSave, isLoading = false }: FormBuil
                         <textarea
                           id="field-description"
                           value={field.description || ''}
-                          onChange={(e) => handleUpdateField(field.id, { description: e.target.value })}
+                          onChange={(e) =>
+                            handleUpdateField(field.id, { description: e.target.value })
+                          }
                           className="pk-input min-h-[60px] text-sm"
                         />
                       </div>
@@ -274,13 +282,15 @@ export function FormBuilder({ initialForm, onSave, isLoading = false }: FormBuil
                         <input
                           type="checkbox"
                           checked={field.required}
-                          onChange={(e) => handleUpdateField(field.id, { required: e.target.checked })}
+                          onChange={(e) =>
+                            handleUpdateField(field.id, { required: e.target.checked })
+                          }
                           className="h-4 w-4 rounded"
                         />
                         <span className="text-sm font-medium text-pk-ink">Campo requerido</span>
                       </label>
                     </>
-                  )
+                  );
                 })()}
               </CardContent>
             </Card>
@@ -365,7 +375,9 @@ export function FormBuilder({ initialForm, onSave, isLoading = false }: FormBuil
                       {field.label}
                       {field.required && <span className="text-red-500"> *</span>}
                     </label>
-                    {field.description && <p className="text-xs text-pk-mutedText mt-1">{field.description}</p>}
+                    {field.description && (
+                      <p className="text-xs text-pk-mutedText mt-1">{field.description}</p>
+                    )}
                     <div className="mt-2 rounded bg-pk-bg px-3 py-2 text-sm text-pk-mutedText">
                       {field.type === 'textarea'
                         ? '[Área de texto]'
@@ -383,5 +395,5 @@ export function FormBuilder({ initialForm, onSave, isLoading = false }: FormBuil
         </Card>
       )}
     </div>
-  )
+  );
 }

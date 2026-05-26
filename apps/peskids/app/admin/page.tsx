@@ -1,44 +1,47 @@
-'use client'
+'use client';
 
-import { useCallback, useEffect, useState } from 'react'
-import { Loader2 } from 'lucide-react'
-import type { DashboardData } from '@/lib/types'
-import { DashboardView } from '@/components/admin/dashboard-view'
-import { Button } from '@/components/ui/button'
+import { useCallback, useEffect, useState } from 'react';
+import { Loader2 } from 'lucide-react';
+import type { DashboardData } from '@/lib/types';
+import { DashboardView } from '@/components/admin/dashboard-view';
+import { Button } from '@/components/ui/button';
 
-const POLL_MS = 5000
+const POLL_MS = 5000;
 
 export default function AdminDashboard(): React.ReactElement {
-  const [data, setData] = useState<DashboardData | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [refreshing, setRefreshing] = useState(false)
-  const [error, setError] = useState('')
-  const [lastUpdated, setLastUpdated] = useState<Date | null>(null)
-  const [range, setRange] = useState<'week' | 'month'>('week')
+  const [data, setData] = useState<DashboardData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [error, setError] = useState('');
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+  const [range, setRange] = useState<'week' | 'month'>('week');
 
-  const fetchDashboard = useCallback(async (isPoll = false): Promise<void> => {
-    if (isPoll) setRefreshing(true)
-    try {
-      const response = await fetch(`/api/dashboard?range=${range}`, { credentials: 'include' })
-      if (!response.ok) throw new Error('Failed to fetch dashboard')
-      const dashboardData: DashboardData = await response.json()
-      setData(dashboardData)
-      setLastUpdated(new Date())
-      setError('')
-    } catch (err) {
-      setError('No se pudo cargar el panel. Revisa la API y Supabase.')
-      console.error(err)
-    } finally {
-      setLoading(false)
-      setRefreshing(false)
-    }
-  }, [range])
+  const fetchDashboard = useCallback(
+    async (isPoll = false): Promise<void> => {
+      if (isPoll) setRefreshing(true);
+      try {
+        const response = await fetch(`/api/dashboard?range=${range}`, { credentials: 'include' });
+        if (!response.ok) throw new Error('Failed to fetch dashboard');
+        const dashboardData: DashboardData = await response.json();
+        setData(dashboardData);
+        setLastUpdated(new Date());
+        setError('');
+      } catch (err) {
+        setError('No se pudo cargar el panel. Revisa la API y Supabase.');
+        console.error(err);
+      } finally {
+        setLoading(false);
+        setRefreshing(false);
+      }
+    },
+    [range]
+  );
 
   useEffect(() => {
-    void fetchDashboard()
-    const interval = setInterval(() => void fetchDashboard(true), POLL_MS)
-    return () => clearInterval(interval)
-  }, [fetchDashboard])
+    void fetchDashboard();
+    const interval = setInterval(() => void fetchDashboard(true), POLL_MS);
+    return () => clearInterval(interval);
+  }, [fetchDashboard]);
 
   if (loading) {
     return (
@@ -46,7 +49,7 @@ export default function AdminDashboard(): React.ReactElement {
         <Loader2 className="h-10 w-10 animate-spin text-pk-primary" aria-hidden />
         <p className="text-sm text-pk-sub">Cargando panel operativo…</p>
       </div>
-    )
+    );
   }
 
   if (error || !data || !lastUpdated) {
@@ -59,7 +62,7 @@ export default function AdminDashboard(): React.ReactElement {
           </Button>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -71,5 +74,5 @@ export default function AdminDashboard(): React.ReactElement {
       onRefresh={() => void fetchDashboard(true)}
       refreshing={refreshing}
     />
-  )
+  );
 }

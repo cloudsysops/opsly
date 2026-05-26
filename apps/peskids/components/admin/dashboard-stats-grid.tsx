@@ -1,6 +1,6 @@
-'use client'
+'use client';
 
-import { useCallback, useState } from 'react'
+import { useCallback, useState } from 'react';
 import {
   Copy,
   Mail,
@@ -10,15 +10,15 @@ import {
   Users,
   CalendarClock,
   MessageSquare,
-} from 'lucide-react'
-import type { DashboardData } from '@/lib/types'
-import { StatCard } from '@/components/admin/stat-card'
-import { classModalityLabel } from '@/lib/lead-modality'
-import { buildPeskidsReferralLink } from '@/lib/peskids-referral-links'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { MessageInboxPanel } from '@/components/admin/message-inbox-panel'
-import { cn } from '@/lib/utils'
+} from 'lucide-react';
+import type { DashboardData } from '@/lib/types';
+import { StatCard } from '@/components/admin/stat-card';
+import { classModalityLabel } from '@/lib/lead-modality';
+import { buildPeskidsReferralLink } from '@/lib/peskids-referral-links';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { MessageInboxPanel } from '@/components/admin/message-inbox-panel';
+import { cn } from '@/lib/utils';
 
 function StarRating({ value }: { value: number }): React.ReactElement {
   return (
@@ -31,7 +31,7 @@ function StarRating({ value }: { value: number }): React.ReactElement {
         />
       ))}
     </span>
-  )
+  );
 }
 
 const leadStatusLabel: Record<DashboardData['new_leads'][number]['status'], string> = {
@@ -39,96 +39,110 @@ const leadStatusLabel: Record<DashboardData['new_leads'][number]['status'], stri
   contacted: 'Contactado',
   enrolled: 'Matriculado',
   archived: 'Archivado',
-}
+};
 
-const leadStatusTone: Record<DashboardData['new_leads'][number]['status'], 'amber' | 'violet' | 'green' | 'neutral'> = {
+const leadStatusTone: Record<
+  DashboardData['new_leads'][number]['status'],
+  'amber' | 'violet' | 'green' | 'neutral'
+> = {
   new: 'amber',
   contacted: 'violet',
   enrolled: 'green',
   archived: 'neutral',
-}
+};
 
 const followupTypeLabel: Record<DashboardData['followups'][number]['contact_type'], string> = {
   lead: 'Lead',
   student: 'Estudiante',
   parent: 'Familia',
-}
+};
 
 const followupStatusLabel: Record<DashboardData['followups'][number]['status'], string> = {
   pending: 'Pendiente',
   completed: 'Completado',
   cancelled: 'Cancelado',
-}
+};
 
-const followupStatusTone: Record<DashboardData['followups'][number]['status'], 'amber' | 'green' | 'neutral'> = {
+const followupStatusTone: Record<
+  DashboardData['followups'][number]['status'],
+  'amber' | 'green' | 'neutral'
+> = {
   pending: 'amber',
   completed: 'green',
   cancelled: 'neutral',
-}
+};
 
-const leadStatusFilterLabel: Record<'all' | DashboardData['new_leads'][number]['status'], string> = {
-  all: 'Todos',
-  new: 'Nuevos',
-  contacted: 'Contactados',
-  enrolled: 'Matriculados',
-  archived: 'Archivados',
-}
+const leadStatusFilterLabel: Record<'all' | DashboardData['new_leads'][number]['status'], string> =
+  {
+    all: 'Todos',
+    new: 'Nuevos',
+    contacted: 'Contactados',
+    enrolled: 'Matriculados',
+    archived: 'Archivados',
+  };
 
-const followupStatusFilterLabel: Record<'all' | DashboardData['followups'][number]['status'], string> = {
+const followupStatusFilterLabel: Record<
+  'all' | DashboardData['followups'][number]['status'],
+  string
+> = {
   all: 'Todos',
   pending: 'Pendientes',
   completed: 'Completados',
   cancelled: 'Cancelados',
-}
+};
 
 function toDigits(value: string): string {
-  return value.replace(/\D+/g, '')
+  return value.replace(/\D+/g, '');
 }
 
 function mailtoHref(email: string): string {
-  return `mailto:${encodeURIComponent(email)}`
+  return `mailto:${encodeURIComponent(email)}`;
 }
 
 function whatsappHref(phone: string): string | null {
-  const digits = toDigits(phone)
-  if (!digits) return null
-  return `https://wa.me/${digits}`
+  const digits = toDigits(phone);
+  if (!digits) return null;
+  return `https://wa.me/${digits}`;
 }
 
 interface DashboardStatsGridProps {
-  data: DashboardData
-  search: string
+  data: DashboardData;
+  search: string;
 }
 
 export function DashboardStatsGrid({ data, search }: DashboardStatsGridProps): React.ReactElement {
-  const [leadStatusFilter, setLeadStatusFilter] = useState<'all' | DashboardData['new_leads'][number]['status']>('all')
-  const [followupStatusFilter, setFollowupStatusFilter] = useState<'all' | DashboardData['followups'][number]['status']>('all')
+  const [leadStatusFilter, setLeadStatusFilter] = useState<
+    'all' | DashboardData['new_leads'][number]['status']
+  >('all');
+  const [followupStatusFilter, setFollowupStatusFilter] = useState<
+    'all' | DashboardData['followups'][number]['status']
+  >('all');
 
   const filteredLeads = data.new_leads.filter((l) => {
-    const q = search.trim().toLowerCase()
+    const q = search.trim().toLowerCase();
     const matchesSearch =
       !q ||
       l.name.toLowerCase().includes(q) ||
       l.email.toLowerCase().includes(q) ||
       (l.phone?.toLowerCase().includes(q) ?? false) ||
       (l.neighborhood?.toLowerCase().includes(q) ?? false) ||
-      classModalityLabel(l.class_modality).toLowerCase().includes(q)
-    const matchesStatus = leadStatusFilter === 'all' || l.status === leadStatusFilter
-    return matchesSearch && matchesStatus
-  })
+      classModalityLabel(l.class_modality).toLowerCase().includes(q);
+    const matchesStatus = leadStatusFilter === 'all' || l.status === leadStatusFilter;
+    return matchesSearch && matchesStatus;
+  });
 
   const filteredFollowups = data.followups.filter((followup) => {
-    if (followupStatusFilter === 'all') return true
-    return followup.status === followupStatusFilter
-  })
+    if (followupStatusFilter === 'all') return true;
+    return followup.status === followupStatusFilter;
+  });
 
   const handleCopy = useCallback(async (text: string) => {
     try {
-      await navigator.clipboard.writeText(text)
+      await navigator.clipboard.writeText(text);
     } catch {
-      window.prompt('Copia este texto', text)
+      window.prompt('Copia este texto', text);
     }
-  }, [])
+  }, []);
 
   return (
     <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
@@ -156,8 +170,8 @@ export function DashboardStatsGrid({ data, search }: DashboardStatsGridProps): R
         <ul className="max-h-72 space-y-3 overflow-y-auto pr-1">
           {filteredLeads.length > 0 ? (
             filteredLeads.map((lead) => {
-              const referralCode = lead.referral_code
-              const phoneHref = lead.phone ? whatsappHref(lead.phone) : null
+              const referralCode = lead.referral_code;
+              const phoneHref = lead.phone ? whatsappHref(lead.phone) : null;
 
               return (
                 <li
@@ -179,7 +193,9 @@ export function DashboardStatsGrid({ data, search }: DashboardStatsGridProps): R
                   <div className="mt-2 flex flex-wrap gap-1.5">
                     <Badge tone="amber">{classModalityLabel(lead.class_modality)}</Badge>
                     <Badge tone="teal">{lead.grade_interested}</Badge>
-                    {lead.referral_code ? <Badge tone="green">Ref {lead.referral_code}</Badge> : null}
+                    {lead.referral_code ? (
+                      <Badge tone="green">Ref {lead.referral_code}</Badge>
+                    ) : null}
                     {lead.referred_by_code ? <Badge tone="violet">Recomendado</Badge> : null}
                   </div>
 
@@ -218,7 +234,9 @@ export function DashboardStatsGrid({ data, search }: DashboardStatsGridProps): R
                         type="button"
                         size="sm"
                         variant="secondary"
-                        onClick={() => window.open(mailtoHref(lead.email), '_blank', 'noopener,noreferrer')}
+                        onClick={() =>
+                          window.open(mailtoHref(lead.email), '_blank', 'noopener,noreferrer')
+                        }
                       >
                         <Mail className="h-4 w-4" aria-hidden />
                         <span className="ml-1">Correo</span>
@@ -248,7 +266,7 @@ export function DashboardStatsGrid({ data, search }: DashboardStatsGridProps): R
                     ) : null}
                   </div>
                 </li>
-              )
+              );
             })
           ) : (
             <p className="text-sm text-pk-sub">
@@ -299,9 +317,19 @@ export function DashboardStatsGrid({ data, search }: DashboardStatsGridProps): R
                       {fb.visibility === 'private' ? 'Privado' : 'Público'}
                     </Badge>
                     <Badge
-                      tone={fb.author_type === 'teacher' ? 'violet' : fb.author_type === 'staff' ? 'teal' : 'amber'}
+                      tone={
+                        fb.author_type === 'teacher'
+                          ? 'violet'
+                          : fb.author_type === 'staff'
+                            ? 'teal'
+                            : 'amber'
+                      }
                     >
-                      {fb.author_type === 'teacher' ? 'Profesor' : fb.author_type === 'staff' ? 'Equipo' : 'Familia'}
+                      {fb.author_type === 'teacher'
+                        ? 'Profesor'
+                        : fb.author_type === 'staff'
+                          ? 'Equipo'
+                          : 'Familia'}
                     </Badge>
                     <StarRating value={fb.rating ?? fb.satisfaction} />
                   </div>
@@ -388,11 +416,12 @@ export function DashboardStatsGrid({ data, search }: DashboardStatsGridProps): R
                       {fu.type}
                     </span>
                     <p className="mt-1 text-[11px] text-pk-sub">
-                      {followupTypeLabel[fu.contact_type]} ·{' '}
-                      {followupStatusLabel[fu.status]}
+                      {followupTypeLabel[fu.contact_type]} · {followupStatusLabel[fu.status]}
                     </p>
                   </div>
-                  <Badge tone={followupStatusTone[fu.status]}>{followupStatusLabel[fu.status]}</Badge>
+                  <Badge tone={followupStatusTone[fu.status]}>
+                    {followupStatusLabel[fu.status]}
+                  </Badge>
                 </div>
                 <p className="mt-1 text-pk-sub">
                   Vence {new Date(fu.due_date).toLocaleDateString('es-CO')}
@@ -434,5 +463,5 @@ export function DashboardStatsGrid({ data, search }: DashboardStatsGridProps): R
         <MessageInboxPanel messages={data.recent_messages} />
       </StatCard>
     </div>
-  )
+  );
 }

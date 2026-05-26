@@ -1,35 +1,35 @@
-'use client'
+'use client';
 
-import { Loader2 } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { TeacherDashboard } from '@/components/dashboards/teacher-dashboard'
+import { Loader2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { TeacherDashboard } from '@/components/dashboards/teacher-dashboard';
 
 export type TeacherSubmission = {
-  submissionId: string
-  studentName: string
-  studentId: string
-  formTitle: string
-  submittedAt: string
-  grade?: number
-  maxGrade: number
-  feedback?: string
-  status: 'reviewed' | 'pending' | 'needs_revision'
-}
+  submissionId: string;
+  studentName: string;
+  studentId: string;
+  formTitle: string;
+  submittedAt: string;
+  grade?: number;
+  maxGrade: number;
+  feedback?: string;
+  status: 'reviewed' | 'pending' | 'needs_revision';
+};
 
 export type TeacherSubmissionsResponse = {
-  submissions: TeacherSubmission[]
+  submissions: TeacherSubmission[];
   stats: {
-    reviewedCount: number
-    pendingCount: number
-    needsRevisionCount: number
-    uniqueStudents: number
-  }
-}
+    reviewedCount: number;
+    pendingCount: number;
+    needsRevisionCount: number;
+    uniqueStudents: number;
+  };
+};
 
 interface TeacherSubmissionsSectionProps {
-  data: TeacherSubmissionsResponse | null
-  isLoading: boolean
-  error: string | null
+  data: TeacherSubmissionsResponse | null;
+  isLoading: boolean;
+  error: string | null;
 }
 
 export function TeacherSubmissionsSection({
@@ -58,7 +58,7 @@ export function TeacherSubmissionsSection({
             type="button"
             variant="secondary"
             onClick={() => {
-              window.location.href = '/teacher/submissions'
+              window.location.href = '/teacher/submissions';
             }}
           >
             Ver entregas
@@ -67,7 +67,7 @@ export function TeacherSubmissionsSection({
             type="button"
             variant="ghost"
             onClick={() => {
-              window.location.reload()
+              window.location.reload();
             }}
           >
             Actualizar
@@ -93,11 +93,11 @@ export function TeacherSubmissionsSection({
             submissions={data?.submissions ?? []}
             isLoading={false}
             onReviewSubmission={() => {
-              window.location.href = '/teacher/submissions'
+              window.location.href = '/teacher/submissions';
             }}
           />
         )}
       </div>
     </section>
-  )
+  );
 }

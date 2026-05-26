@@ -1,10 +1,10 @@
-import Link from 'next/link'
-import { Instagram } from 'lucide-react'
-import { PeskidsLockup } from '@/components/brand/peskids-logo'
-import { PESKIDS_INSTAGRAM } from '@/lib/instagram-feed'
+import Link from 'next/link';
+import { Instagram } from 'lucide-react';
+import { PeskidsLockup } from '@/components/brand/peskids-logo';
+import { PESKIDS_INSTAGRAM } from '@/lib/instagram-feed';
 
 interface SiteHeaderProps {
-  variant?: 'marketing' | 'minimal'
+  variant?: 'marketing' | 'minimal';
 }
 
 export function SiteHeader({ variant = 'marketing' }: SiteHeaderProps): React.ReactElement {
@@ -46,5 +46,5 @@ export function SiteHeader({ variant = 'marketing' }: SiteHeaderProps): React.Re
         ) : null}
       </div>
     </header>
-  )
+  );
 }

@@ -1,15 +1,15 @@
-import { Bell } from 'lucide-react'
-import { StarBurst } from '@/components/brand/peskids-logo'
-import { GrowthWidget } from '@/components/progress/growth-widget'
-import { peskidsColorTokens } from '@/lib/tokens'
-import { cn } from '@/lib/utils'
+import { Bell } from 'lucide-react';
+import { StarBurst } from '@/components/brand/peskids-logo';
+import { GrowthWidget } from '@/components/progress/growth-widget';
+import { peskidsColorTokens } from '@/lib/tokens';
+import { cn } from '@/lib/utils';
 
 const parentActions = [
   { icon: null, label: 'Reservar' },
   { icon: null, label: 'Pagar' },
   { icon: null, label: 'Mensaje' },
   { icon: null, label: 'Progreso' },
-]
+];
 
 const week = [
   { day: 'Lun', date: 18, has: false },
@@ -19,7 +19,7 @@ const week = [
   { day: 'Vie', date: 22, has: false },
   { day: 'Sáb', date: 23, has: true },
   { day: 'Dom', date: 24, has: false },
-]
+];
 
 function HomePreview(): React.ReactElement {
   return (
@@ -71,7 +71,10 @@ function HomePreview(): React.ReactElement {
 
         <div className="mt-4 grid grid-cols-4 gap-2">
           {parentActions.map(({ label }) => (
-            <div key={label} className="rounded-2xl border border-pk-border bg-pk-surface py-3 text-center">
+            <div
+              key={label}
+              className="rounded-2xl border border-pk-border bg-pk-surface py-3 text-center"
+            >
               <p className="mt-2 text-[11px] font-semibold text-pk-ink">{label}</p>
             </div>
           ))}
@@ -130,7 +133,12 @@ function HomePreview(): React.ReactElement {
                   >
                     {day.day}
                   </p>
-                  <p className={cn('mt-1 text-[14px] font-bold', day.today ? 'text-white' : 'text-pk-ink')}>
+                  <p
+                    className={cn(
+                      'mt-1 text-[14px] font-bold',
+                      day.today ? 'text-white' : 'text-pk-ink'
+                    )}
+                  >
                     {day.date}
                   </p>
                   <div
@@ -152,7 +160,7 @@ function HomePreview(): React.ReactElement {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 export function PortalShowcaseTestimonials(): React.ReactElement {
@@ -200,5 +208,5 @@ export function PortalShowcaseTestimonials(): React.ReactElement {
         />
       </div>
     </div>
-  )
+  );
 }

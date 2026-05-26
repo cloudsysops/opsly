@@ -1,24 +1,24 @@
-'use client'
+'use client';
 
-import { useId } from 'react'
-import { FeedbackComposerRating } from './feedback-composer-rating'
+import { useId } from 'react';
+import { FeedbackComposerRating } from './feedback-composer-rating';
 
 interface FeedbackComposerFieldsProps {
-  childName: string
-  onChildNameChange: (value: string) => void
-  childNameLabel: string
-  childNameHidden: boolean
-  childNameLocked: boolean
-  familyEmail: string
-  onFamilyEmailChange: (value: string) => void
-  parentEmailLabel: string
-  parentEmailHidden: boolean
-  parentEmailLocked: boolean
-  rating: number
-  onRatingChange: (value: number) => void
-  message: string
-  onMessageChange: (value: string) => void
-  subjectHint?: string
+  childName: string;
+  onChildNameChange: (value: string) => void;
+  childNameLabel: string;
+  childNameHidden: boolean;
+  childNameLocked: boolean;
+  familyEmail: string;
+  onFamilyEmailChange: (value: string) => void;
+  parentEmailLabel: string;
+  parentEmailHidden: boolean;
+  parentEmailLocked: boolean;
+  rating: number;
+  onRatingChange: (value: number) => void;
+  message: string;
+  onMessageChange: (value: string) => void;
+  subjectHint?: string;
 }
 
 export function FeedbackComposerFields({
@@ -38,10 +38,10 @@ export function FeedbackComposerFields({
   onMessageChange,
   subjectHint,
 }: FeedbackComposerFieldsProps): React.ReactElement {
-  const reactId = useId()
-  const childInputId = `${reactId}-child`
-  const emailInputId = `${reactId}-email`
-  const messageInputId = `${reactId}-message`
+  const reactId = useId();
+  const childInputId = `${reactId}-child`;
+  const emailInputId = `${reactId}-email`;
+  const messageInputId = `${reactId}-message`;
 
   return (
     <div className="space-y-5">
@@ -99,5 +99,5 @@ export function FeedbackComposerFields({
         />
       </div>
     </div>
-  )
+  );
 }

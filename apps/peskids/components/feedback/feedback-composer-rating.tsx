@@ -1,24 +1,27 @@
-'use client'
+'use client';
 
-import { Star } from 'lucide-react'
-import { Badge } from '@/components/ui/badge'
-import { cn } from '@/lib/utils'
+import { Star } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
 
 interface FeedbackComposerRatingProps {
-  value: number
-  onChange: (value: number) => void
+  value: number;
+  onChange: (value: number) => void;
 }
 
 function getRatingLabel(rating: number): string {
-  if (rating >= 5) return 'Excelente'
-  if (rating === 4) return 'Muy bien'
-  if (rating === 3) return 'Bien'
-  if (rating === 2) return 'Necesita ajustes'
-  return 'Requiere atención'
+  if (rating >= 5) return 'Excelente';
+  if (rating === 4) return 'Muy bien';
+  if (rating === 3) return 'Bien';
+  if (rating === 2) return 'Necesita ajustes';
+  return 'Requiere atención';
 }
 
-export function FeedbackComposerRating({ value, onChange }: FeedbackComposerRatingProps): React.ReactElement {
-  const ratingLabel = getRatingLabel(value)
+export function FeedbackComposerRating({
+  value,
+  onChange,
+}: FeedbackComposerRatingProps): React.ReactElement {
+  const ratingLabel = getRatingLabel(value);
 
   return (
     <div className="space-y-2">
@@ -28,7 +31,7 @@ export function FeedbackComposerRating({ value, onChange }: FeedbackComposerRati
       </div>
       <div className="flex flex-wrap gap-2">
         {Array.from({ length: 5 }, (_, index) => index + 1).map((num) => {
-          const active = value === num
+          const active = value === num;
           return (
             <button
               key={num}
@@ -44,9 +47,9 @@ export function FeedbackComposerRating({ value, onChange }: FeedbackComposerRati
             >
               <Star className={cn('h-4 w-4', active && 'fill-current')} aria-hidden />
             </button>
-          )
+          );
         })}
       </div>
     </div>
-  )
+  );
 }

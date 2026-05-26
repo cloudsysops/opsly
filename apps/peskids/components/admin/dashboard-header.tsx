@@ -1,32 +1,32 @@
-'use client'
+'use client';
 
-import { Copy } from 'lucide-react'
-import type { DashboardData } from '@/lib/types'
-import { Button } from '@/components/ui/button'
-import { cn } from '@/lib/utils'
+import { Copy } from 'lucide-react';
+import type { DashboardData } from '@/lib/types';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 interface DashboardHeaderProps {
-  data: DashboardData
-  range: 'week' | 'month'
-  onRangeChange: (range: 'week' | 'month') => void
-  search: string
-  onSearchChange: (search: string) => void
+  data: DashboardData;
+  range: 'week' | 'month';
+  onRangeChange: (range: 'week' | 'month') => void;
+  search: string;
+  onSearchChange: (search: string) => void;
   nextAction: {
-    title: string
-    description: string
-    tone: 'amber' | 'coral' | 'teal' | 'green'
-    anchor: string
-  }
-  syncLabel: string
-  onScrollToSection: (anchor: string) => void
-  onCopySync: () => void
+    title: string;
+    description: string;
+    tone: 'amber' | 'coral' | 'teal' | 'green';
+    anchor: string;
+  };
+  syncLabel: string;
+  onScrollToSection: (anchor: string) => void;
+  onCopySync: () => void;
   messageSummary: {
-    pending: number
-    approved: number
-    sent: number
-    supportPending: number
-    admissionsPending: number
-  }
+    pending: number;
+    approved: number;
+    sent: number;
+    supportPending: number;
+    admissionsPending: number;
+  };
 }
 
 export function DashboardHeader({
@@ -108,25 +108,39 @@ export function DashboardHeader({
             </p>
             <div className="mt-3 grid grid-cols-2 gap-2">
               <div className="rounded-xl bg-pk-muted px-3 py-2">
-                <p className="text-[10px] uppercase tracking-[0.12em] text-pk-mutedText">Atención</p>
+                <p className="text-[10px] uppercase tracking-[0.12em] text-pk-mutedText">
+                  Atención
+                </p>
                 <p className="mt-1 text-sm font-semibold text-pk-ink">
                   {messageSummary.supportPending + messageSummary.admissionsPending} pendientes
                 </p>
               </div>
               <div className="rounded-xl bg-pk-muted px-3 py-2">
-                <p className="text-[10px] uppercase tracking-[0.12em] text-pk-mutedText">Seguimiento</p>
-                <p className="mt-1 text-sm font-semibold text-pk-ink">{data.pending_followups_count} abiertos</p>
+                <p className="text-[10px] uppercase tracking-[0.12em] text-pk-mutedText">
+                  Seguimiento
+                </p>
+                <p className="mt-1 text-sm font-semibold text-pk-ink">
+                  {data.pending_followups_count} abiertos
+                </p>
               </div>
               <div className="rounded-xl bg-pk-muted px-3 py-2">
-                <p className="text-[10px] uppercase tracking-[0.12em] text-pk-mutedText">Captación</p>
-                <p className="mt-1 text-sm font-semibold text-pk-ink">{data.new_leads_count} leads</p>
+                <p className="text-[10px] uppercase tracking-[0.12em] text-pk-mutedText">
+                  Captación
+                </p>
+                <p className="mt-1 text-sm font-semibold text-pk-ink">
+                  {data.new_leads_count} leads
+                </p>
               </div>
               <div className="rounded-xl bg-pk-muted px-3 py-2">
                 <p className="text-[10px] uppercase tracking-[0.12em] text-pk-mutedText">Soporte</p>
-                <p className="mt-1 text-sm font-semibold text-pk-ink">{messageSummary.supportPending} casos</p>
+                <p className="mt-1 text-sm font-semibold text-pk-ink">
+                  {messageSummary.supportPending} casos
+                </p>
               </div>
               <div className="rounded-xl bg-pk-muted px-3 py-2">
-                <p className="text-[10px] uppercase tracking-[0.12em] text-pk-mutedText">Sincronía</p>
+                <p className="text-[10px] uppercase tracking-[0.12em] text-pk-mutedText">
+                  Sincronía
+                </p>
                 <p className="mt-1 text-sm font-semibold text-pk-ink">{syncLabel}</p>
               </div>
             </div>
@@ -167,5 +181,5 @@ export function DashboardHeader({
         </div>
       </div>
     </section>
-  )
+  );
 }

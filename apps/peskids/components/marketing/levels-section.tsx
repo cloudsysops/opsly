@@ -1,5 +1,5 @@
-import { SWIM_LEVELS } from '@/lib/brand'
-import { Card, CardContent } from '@/components/ui/card'
+import { SWIM_LEVELS } from '@/lib/brand';
+import { Card, CardContent } from '@/components/ui/card';
 
 export function LevelsSection(): React.ReactElement {
   return (
@@ -13,7 +13,8 @@ export function LevelsSection(): React.ReactElement {
             </h2>
           </div>
           <p className="max-w-sm text-sm leading-relaxed text-pk-sub">
-            Cada nivel tiene logros concretos. Avanzas cuando los dominas, no por edad ni por tiempo.
+            Cada nivel tiene logros concretos. Avanzas cuando los dominas, no por edad ni por
+            tiempo.
           </p>
         </div>
 
@@ -45,5 +46,5 @@ export function LevelsSection(): React.ReactElement {
         </div>
       </div>
     </section>
-  )
+  );
 }

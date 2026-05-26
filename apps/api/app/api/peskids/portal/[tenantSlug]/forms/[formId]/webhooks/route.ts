@@ -53,7 +53,9 @@ export async function GET(
     // Get webhook configs for this form
     const { data: configs, error: configError } = await supabase
       .from('peskids.webhook_configs')
-      .select('id, form_id, tenant_slug, webhook_url, is_active, failure_count, last_triggered_at, created_at, updated_at')
+      .select(
+        'id, form_id, tenant_slug, webhook_url, is_active, failure_count, last_triggered_at, created_at, updated_at'
+      )
       .eq('tenant_slug', tenantSlug)
       .eq('form_id', formId)
       .order('created_at', { ascending: false });

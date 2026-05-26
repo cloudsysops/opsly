@@ -38,11 +38,23 @@ export async function POST(
 
     const body = (await request.json()) as Partial<BulkGradeRequest>;
 
-    if (!body.submissionIds || !Array.isArray(body.submissionIds) || body.submissionIds.length === 0) {
-      return jsonError('submissionIds array is required and must not be empty', HTTP_STATUS.BAD_REQUEST);
+    if (
+      !body.submissionIds ||
+      !Array.isArray(body.submissionIds) ||
+      body.submissionIds.length === 0
+    ) {
+      return jsonError(
+        'submissionIds array is required and must not be empty',
+        HTTP_STATUS.BAD_REQUEST
+      );
     }
 
-    if (body.score === undefined || typeof body.score !== 'number' || body.score < 0 || body.score > 100) {
+    if (
+      body.score === undefined ||
+      typeof body.score !== 'number' ||
+      body.score < 0 ||
+      body.score > 100
+    ) {
       return jsonError('Score must be a number between 0 and 100', HTTP_STATUS.BAD_REQUEST);
     }
 

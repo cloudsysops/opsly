@@ -1,36 +1,42 @@
-'use client'
+'use client';
 
-import { useEffect, useState } from 'react'
-import { Loader2, Send } from 'lucide-react'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { cn } from '@/lib/utils'
-import { FeedbackComposerFields } from './feedback-composer-fields'
-import { submitFeedback, type FeedbackAuthorType, type FeedbackSubjectType, type FeedbackVisibility, type FeedbackAudience } from './feedback-composer-submission'
+import { useEffect, useState } from 'react';
+import { Loader2, Send } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { cn } from '@/lib/utils';
+import { FeedbackComposerFields } from './feedback-composer-fields';
+import {
+  submitFeedback,
+  type FeedbackAuthorType,
+  type FeedbackSubjectType,
+  type FeedbackVisibility,
+  type FeedbackAudience,
+} from './feedback-composer-submission';
 
 interface FeedbackComposerProps {
-  title: string
-  description: string
-  submitLabel: string
-  authorType: FeedbackAuthorType
-  subjectType: FeedbackSubjectType
-  childNameLabel?: string
-  childNameDefault?: string
-  childNameLocked?: boolean
-  childNameHidden?: boolean
-  parentEmailLabel?: string
-  parentEmailDefault?: string
-  parentEmailLocked?: boolean
-  parentEmailHidden?: boolean
-  parentEmail?: string | null
-  authorRefId?: string | null
-  subjectRefId?: string | null
-  subjectHint?: string
-  visibility?: FeedbackVisibility
-  audience?: FeedbackAudience
-  className?: string
-  onSubmitted?: () => void
+  title: string;
+  description: string;
+  submitLabel: string;
+  authorType: FeedbackAuthorType;
+  subjectType: FeedbackSubjectType;
+  childNameLabel?: string;
+  childNameDefault?: string;
+  childNameLocked?: boolean;
+  childNameHidden?: boolean;
+  parentEmailLabel?: string;
+  parentEmailDefault?: string;
+  parentEmailLocked?: boolean;
+  parentEmailHidden?: boolean;
+  parentEmail?: string | null;
+  authorRefId?: string | null;
+  subjectRefId?: string | null;
+  subjectHint?: string;
+  visibility?: FeedbackVisibility;
+  audience?: FeedbackAudience;
+  className?: string;
+  onSubmitted?: () => void;
 }
 
 export function FeedbackComposer({
@@ -56,28 +62,28 @@ export function FeedbackComposer({
   className,
   onSubmitted,
 }: FeedbackComposerProps): React.ReactElement {
-  const [childName, setChildName] = useState(childNameDefault)
-  const [familyEmail, setFamilyEmail] = useState(parentEmailDefault || parentEmail || '')
-  const [rating, setRating] = useState(3)
-  const [message, setMessage] = useState('')
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [success, setSuccess] = useState('')
-  const [error, setError] = useState('')
+  const [childName, setChildName] = useState(childNameDefault);
+  const [familyEmail, setFamilyEmail] = useState(parentEmailDefault || parentEmail || '');
+  const [rating, setRating] = useState(3);
+  const [message, setMessage] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [success, setSuccess] = useState('');
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    setChildName(childNameDefault)
-  }, [childNameDefault])
+    setChildName(childNameDefault);
+  }, [childNameDefault]);
 
   useEffect(() => {
-    setFamilyEmail(parentEmailDefault || parentEmail || '')
-  }, [parentEmail, parentEmailDefault])
+    setFamilyEmail(parentEmailDefault || parentEmail || '');
+  }, [parentEmail, parentEmailDefault]);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>): Promise<void> => {
-    event.preventDefault()
+    event.preventDefault();
 
-    setIsSubmitting(true)
-    setError('')
-    setSuccess('')
+    setIsSubmitting(true);
+    setError('');
+    setSuccess('');
 
     const result = await submitFeedback({
       childName,
@@ -95,25 +101,25 @@ export function FeedbackComposer({
       subjectRefId,
       visibility,
       audience,
-    })
+    });
 
     if (result.ok) {
-      setSuccess(result.message || 'Feedback enviado correctamente.')
-      setMessage('')
-      setRating(3)
+      setSuccess(result.message || 'Feedback enviado correctamente.');
+      setMessage('');
+      setRating(3);
       if (!childNameLocked && !childNameHidden) {
-        setChildName('')
+        setChildName('');
       }
       if (!parentEmailLocked && !parentEmailHidden) {
-        setFamilyEmail('')
+        setFamilyEmail('');
       }
-      onSubmitted?.()
+      onSubmitted?.();
     } else {
-      setError(result.error || 'No se pudo enviar el feedback.')
+      setError(result.error || 'No se pudo enviar el feedback.');
     }
 
-    setIsSubmitting(false)
-  }
+    setIsSubmitting(false);
+  };
 
   return (
     <Card className={cn('border-pk-border/80 bg-white', className)}>
@@ -161,12 +167,16 @@ export function FeedbackComposer({
               </p>
             </div>
             <Button type="submit" variant="primary" disabled={isSubmitting}>
-              {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : <Send className="h-4 w-4" aria-hidden />}
+              {isSubmitting ? (
+                <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+              ) : (
+                <Send className="h-4 w-4" aria-hidden />
+              )}
               <span>{submitLabel}</span>
             </Button>
           </div>
         </form>
       </CardContent>
     </Card>
-  )
+  );
 }

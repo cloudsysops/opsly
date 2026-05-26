@@ -1,5 +1,5 @@
-import type { MessageSource } from '@/lib/message-store'
-import { getConversationMessages } from '@/lib/message-store'
+import type { MessageSource } from '@/lib/message-store';
+import { getConversationMessages } from '@/lib/message-store';
 import {
   buildSupportHandoffDraft,
   handoffReplyToUser,
@@ -11,23 +11,23 @@ import {
   type PeskidsIntakeInputMode,
   type PeskidsIntakeProfile,
   type PeskidsIntakeStage,
-} from '@/lib/peskids-intake-messages'
+} from '@/lib/peskids-intake-messages';
 
-export type { PeskidsIntakeProfile, PeskidsIntakeStage }
+export type { PeskidsIntakeProfile, PeskidsIntakeStage };
 
-type PeskidsClassModality = NonNullable<PeskidsIntakeProfile['classModality']>
+type PeskidsClassModality = NonNullable<PeskidsIntakeProfile['classModality']>;
 
 export type PeskidsIntakeTurn = {
-  stage: PeskidsIntakeStage
-  progress: number
-  reply: string
-  supportDraft: string | null
-  profile: PeskidsIntakeProfile
-  missingField: string | null
-  capturedFields: string[]
-  inputMode: PeskidsIntakeInputMode
-  quickReplies: PeskidsIntakeChoice[] | null
-}
+  stage: PeskidsIntakeStage;
+  progress: number;
+  reply: string;
+  supportDraft: string | null;
+  profile: PeskidsIntakeProfile;
+  missingField: string | null;
+  capturedFields: string[];
+  inputMode: PeskidsIntakeInputMode;
+  quickReplies: PeskidsIntakeChoice[] | null;
+};
 
 const GENERIC_NAMES = new Set([
   'contacto',
@@ -38,14 +38,14 @@ const GENERIC_NAMES = new Set([
   'asistente',
   'asistente peskids',
   'unknown',
-])
+]);
 
 const GRADE_PATTERNS: Array<{ value: string; test: RegExp }> = [
   { value: 'K-5', test: /\b(babyswim|beb[eé]|bebe|k-?\s*5|3\s*meses|4\s*meses|5\s*meses)\b/i },
   { value: '6-8', test: /\b(6|7|8)\s*(años?|ano)\b|\bpeces\b|\bdelfines\b/i },
   { value: '9-12', test: /\b(9|10|11|12)\s*(años?|ano)\b|\btiburones\b|\bol[ií]mpicos\b/i },
   { value: 'Other', test: /\b(otro|consulta general|adolescente|15\s*años)\b/i },
-]
+];
 
 const REFERRAL_PATTERNS: Array<{ value: string; test: RegExp }> = [
   { value: 'Referido', test: /\b(amig[oa]|recomendaci[oó]n|referid[oa]|conocid[oa])\b/i },
@@ -56,120 +56,140 @@ const REFERRAL_PATTERNS: Array<{ value: string; test: RegExp }> = [
   { value: 'Google Maps', test: /\b(google maps?|maps)\b/i },
   { value: 'Facebook', test: /\b(facebook|fb)\b/i },
   { value: 'Otro', test: /\b(otro|otros)\b/i },
-]
+];
 
 const SPECIAL_CONDITION_PATTERNS: Array<{ value: 'yes' | 'no'; test: RegExp }> = [
-  { value: 'yes', test: /\b(s[ií]|sí|si)\b.*\b(condici[oó]n|asma|alerg|epilep|autis|tdah|discap|respir|cardi|medic|cirug|limit)\b/i },
-  { value: 'yes', test: /\b(condici[oó]n|asma|alerg|epilep|autis|tdah|discap|respir|cardi|medic|cirug|limit)\b/i },
+  {
+    value: 'yes',
+    test: /\b(s[ií]|sí|si)\b.*\b(condici[oó]n|asma|alerg|epilep|autis|tdah|discap|respir|cardi|medic|cirug|limit)\b/i,
+  },
+  {
+    value: 'yes',
+    test: /\b(condici[oó]n|asma|alerg|epilep|autis|tdah|discap|respir|cardi|medic|cirug|limit)\b/i,
+  },
   { value: 'no', test: /\b(no|ninguna|ninguno|nada)\b/i },
-]
+];
 
-const TEACHER_PREFERENCE_PATTERNS: Array<{ value: NonNullable<PeskidsIntakeProfile['teacherPreference']>; test: RegExp }> = [
+const TEACHER_PREFERENCE_PATTERNS: Array<{
+  value: NonNullable<PeskidsIntakeProfile['teacherPreference']>;
+  test: RegExp;
+}> = [
   { value: 'woman', test: /\b(mujer|femenin[oa]|profe mujer|profesora)\b/i },
   { value: 'man', test: /\b(hombre|masculin[oa]|profe hombre|profesor)\b/i },
-  { value: 'prefer_not_to_say', test: /\b(prefiero no decir|prefiero no responder|sin decir|no quiero decir)\b/i },
+  {
+    value: 'prefer_not_to_say',
+    test: /\b(prefiero no decir|prefiero no responder|sin decir|no quiero decir)\b/i,
+  },
   { value: 'none', test: /\b(no importa|cualquiera|sin preferencia|me da igual)\b/i },
-]
+];
 
 const ISSUE_TYPE_PATTERNS: Array<{
-  value: NonNullable<PeskidsIntakeProfile['issueType']>
-  test: RegExp
+  value: NonNullable<PeskidsIntakeProfile['issueType']>;
+  test: RegExp;
 }> = [
   { value: 'class', test: /\b(clase|clases|profesor|profesora|instructor|instructora)\b/i },
   { value: 'schedule', test: /\b(horario|hora|agenda|turno|cambio de turno|reagendar)\b/i },
   { value: 'reschedule', test: /\b(reprogramar|reagendar|mover la clase|cambiar la clase)\b/i },
   { value: 'cancel', test: /\b(cancelar|cancelaci[oó]n|anular la clase|suspender la clase)\b/i },
   { value: 'payment', test: /\b(pago|factura|cobro|transferencia|saldo|cuenta)\b/i },
-  { value: 'attendance', test: /\b(asistencia|falt[ao]|\bno pudo ir\b|\bno asist[ií]|\bausencia)\b/i },
+  {
+    value: 'attendance',
+    test: /\b(asistencia|falt[ao]|\bno pudo ir\b|\bno asist[ií]|\bausencia)\b/i,
+  },
   { value: 'feedback', test: /\b(feedback|retroalimentaci[oó]n|comentario|nota)\b/i },
   { value: 'access', test: /\b(acceso|entrar|login|contraseñ|password|usuario)\b/i },
   { value: 'other', test: /\b(otro|ayuda general|soporte|consulta)\b/i },
-]
+];
 
-const URGENCY_PATTERNS: Array<{ value: NonNullable<PeskidsIntakeProfile['urgency']>; test: RegExp }> = [
+const URGENCY_PATTERNS: Array<{
+  value: NonNullable<PeskidsIntakeProfile['urgency']>;
+  test: RegExp;
+}> = [
   { value: 'today', test: /\b(hoy|ahora|urgente|ya)\b/i },
   { value: 'this_week', test: /\b(esta semana|durante la semana|en estos d[ií]as)\b/i },
   { value: 'when_possible', test: /\b(cuando puedan|sin afán|tranquilo|no urgente)\b/i },
-]
+];
 
 const SUPPORT_CONTACT_PATTERNS: Array<{
-  value: NonNullable<PeskidsIntakeProfile['preferredContact']>
-  test: RegExp
+  value: NonNullable<PeskidsIntakeProfile['preferredContact']>;
+  test: RegExp;
 }> = [
   { value: 'chat', test: /\b(aqu[ií] mismo|mismo chat|por aqu[ií]|chat)\b/i },
   { value: 'whatsapp', test: /\b(whatsapp|wa\.?me)\b/i },
   { value: 'phone', test: /\b(llamada|llámenme|telefono|tel[eé]fono|celular)\b/i },
   { value: 'email', test: /\b(correo|email|mail)\b/i },
-]
+];
 
 function normalizeText(value: string): string {
-  return value.trim().replace(/\s+/g, ' ').replace(/[“”]/g, '"')
+  return value.trim().replace(/\s+/g, ' ').replace(/[“”]/g, '"');
 }
 
 function normalizeName(value: string): string {
-  return normalizeText(value).replace(/^[-:,.\s]+/, '').replace(/[\s,.!?]+$/, '')
+  return normalizeText(value)
+    .replace(/^[-:,.\s]+/, '')
+    .replace(/[\s,.!?]+$/, '');
 }
 
 function isGenericName(value?: string | null): boolean {
-  if (!value) return true
-  return GENERIC_NAMES.has(value.trim().toLowerCase())
+  if (!value) return true;
+  return GENERIC_NAMES.has(value.trim().toLowerCase());
 }
 
 function extractEmail(text: string): string | undefined {
-  const match = text.match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i)
-  return match?.[0]?.toLowerCase()
+  const match = text.match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i);
+  return match?.[0]?.toLowerCase();
 }
 
 function extractPhone(text: string): string | undefined {
-  const match = text.match(/(\+?57\s?)?(\d{3})[\s.-]?(\d{3})[\s.-]?(\d{4})/)
+  const match = text.match(/(\+?57\s?)?(\d{3})[\s.-]?(\d{3})[\s.-]?(\d{4})/);
   if (match) {
-    const digits = (match[1] ?? '') + match[2] + match[3] + match[4]
-    return digits.replace(/\D/g, '')
+    const digits = (match[1] ?? '') + match[2] + match[3] + match[4];
+    return digits.replace(/\D/g, '');
   }
-  const loose = text.match(/(\+?\d[\d\s().-]{8,}\d)/)
-  return loose?.[1]?.replace(/\D/g, '')
+  const loose = text.match(/(\+?\d[\d\s().-]{8,}\d)/);
+  return loose?.[1]?.replace(/\D/g, '');
 }
 
 export function phoneFromSenderContact(senderContact: string): string | undefined {
-  const digits = senderContact.replace(/\D/g, '')
-  if (digits.length >= 10) return digits
-  return undefined
+  const digits = senderContact.replace(/\D/g, '');
+  if (digits.length >= 10) return digits;
+  return undefined;
 }
 
 function extractParentName(text: string): string | undefined {
   const patterns = [
     /(?:soy|me llamo|mi nombre es)\s+([A-Za-zÁÉÍÓÚÜÑáéíóúüñ][A-Za-zÁÉÍÓÚÜÑáéíóúüñ\s.'-]{1,45})/i,
     /(?:acudiente|mamá|mama|papá|papa)\s*:?\s*([A-Za-zÁÉÍÓÚÜÑáéíóúüñ][A-Za-zÁÉÍÓÚÜÑáéíóúüñ\s.'-]{1,45})/i,
-  ]
+  ];
   for (const pattern of patterns) {
-    const match = text.match(pattern)
-    if (match?.[1]) return normalizeName(match[1])
+    const match = text.match(pattern);
+    if (match?.[1]) return normalizeName(match[1]);
   }
-  return undefined
+  return undefined;
 }
 
 function extractChildName(text: string): string | undefined {
   const patterns = [
     /(?:mi hijo|mi hija|mi niño|mi niña)\s+(?:se llama\s+)?([A-Za-zÁÉÍÓÚÜÑáéíóúüñ][A-Za-zÁÉÍÓÚÜÑáéíóúüñ\s.'-]{1,45})/i,
     /(?:se llama|nombre del niño|nombre de la niña)\s*:?\s*([A-Za-zÁÉÍÓÚÜÑáéíóúüñ][A-Za-zÁÉÍÓÚÜÑáéíóúüñ\s.'-]{1,45})/i,
-  ]
+  ];
   for (const pattern of patterns) {
-    const match = text.match(pattern)
-    if (match?.[1]) return normalizeName(match[1])
+    const match = text.match(pattern);
+    if (match?.[1]) return normalizeName(match[1]);
   }
-  return undefined
+  return undefined;
 }
 
 function extractChildAge(text: string): string | undefined {
-  const match = text.match(/(\d{1,2})\s*(años?|año|meses?|mes)/i)
-  if (!match) return undefined
-  return `${match[1]} ${match[2].toLowerCase()}`
+  const match = text.match(/(\d{1,2})\s*(años?|año|meses?|mes)/i);
+  if (!match) return undefined;
+  return `${match[1]} ${match[2].toLowerCase()}`;
 }
 
 function extractClassModality(text: string): PeskidsClassModality | undefined {
-  const lower = text.toLowerCase()
+  const lower = text.toLowerCase();
   if (lower.includes('domicilio') || lower.includes('a domicilio') || lower.includes('en casa')) {
-    return 'domicilio'
+    return 'domicilio';
   }
   if (
     lower.includes('sede') ||
@@ -177,88 +197,94 @@ function extractClassModality(text: string): PeskidsClassModality | undefined {
     lower.includes('rionegro') ||
     lower.includes('en la piscina')
   ) {
-    return 'llanogrande'
+    return 'llanogrande';
   }
-  if (/\b(1|uno|primera)\b/.test(lower) && lower.includes('opc')) return 'llanogrande'
-  if (/\b(2|dos|segunda)\b/.test(lower) && lower.includes('opc')) return 'domicilio'
-  return undefined
+  if (/\b(1|uno|primera)\b/.test(lower) && lower.includes('opc')) return 'llanogrande';
+  if (/\b(2|dos|segunda)\b/.test(lower) && lower.includes('opc')) return 'domicilio';
+  return undefined;
 }
 
 function extractNeighborhood(text: string): string | undefined {
   const patterns = [
     /(?:vivo en|vivimos en|barrio|zona|sector)\s+([A-Za-zÁÉÍÓÚÜÑáéíóúüñ0-9\s.'-]{2,60})/i,
     /(?:en el barrio|en la zona|en)\s+([A-Za-zÁÉÍÓÚÜÑáéíóúüñ][A-Za-zÁÉÍÓÚÜÑáéíóúüñ0-9\s.'-]{2,50})/i,
-  ]
+  ];
   for (const pattern of patterns) {
-    const match = text.match(pattern)
+    const match = text.match(pattern);
     if (match?.[1]) {
-      const value = normalizeName(match[1])
-      if (!/^(sede|domicilio|llanogrande)$/i.test(value)) return value
+      const value = normalizeName(match[1]);
+      if (!/^(sede|domicilio|llanogrande)$/i.test(value)) return value;
     }
   }
-  return undefined
+  return undefined;
 }
 
 function extractGradeInterested(text: string): string | undefined {
-  const upper = text.toUpperCase()
-  if (/\bK-?5\b/.test(upper)) return 'K-5'
-  if (/\b6-?8\b/.test(upper)) return '6-8'
-  if (/\b9-?12\b/.test(upper)) return '9-12'
+  const upper = text.toUpperCase();
+  if (/\bK-?5\b/.test(upper)) return 'K-5';
+  if (/\b6-?8\b/.test(upper)) return '6-8';
+  if (/\b9-?12\b/.test(upper)) return '9-12';
   for (const { value, test } of GRADE_PATTERNS) {
-    if (test.test(text)) return value
+    if (test.test(text)) return value;
   }
-  const age = extractChildAge(text)
+  const age = extractChildAge(text);
   if (age) {
-    const n = parseInt(age, 10)
+    const n = parseInt(age, 10);
     if (!Number.isNaN(n)) {
-      if (n <= 5 || age.includes('mes')) return 'K-5'
-      if (n >= 6 && n <= 8) return '6-8'
-      if (n >= 9) return '9-12'
+      if (n <= 5 || age.includes('mes')) return 'K-5';
+      if (n >= 6 && n <= 8) return '6-8';
+      if (n >= 9) return '9-12';
     }
   }
-  return undefined
+  return undefined;
 }
 
 function extractReferralSource(text: string): string | undefined {
   for (const { value, test } of REFERRAL_PATTERNS) {
-    if (test.test(text)) return value
+    if (test.test(text)) return value;
   }
-  return undefined
+  return undefined;
 }
 
-function extractSpecialCondition(text: string): PeskidsIntakeProfile['specialCondition'] | undefined {
+function extractSpecialCondition(
+  text: string
+): PeskidsIntakeProfile['specialCondition'] | undefined {
   for (const { value, test } of SPECIAL_CONDITION_PATTERNS) {
-    if (test.test(text)) return value
+    if (test.test(text)) return value;
   }
-  return undefined
+  return undefined;
 }
 
-function extractTeacherPreference(text: string): PeskidsIntakeProfile['teacherPreference'] | undefined {
+function extractTeacherPreference(
+  text: string
+): PeskidsIntakeProfile['teacherPreference'] | undefined {
   for (const { value, test } of TEACHER_PREFERENCE_PATTERNS) {
-    if (test.test(text)) return value
+    if (test.test(text)) return value;
   }
-  return undefined
+  return undefined;
 }
 
 function extractIssueType(text: string): PeskidsIntakeProfile['issueType'] | undefined {
   for (const { value, test } of ISSUE_TYPE_PATTERNS) {
-    if (test.test(text)) return value
+    if (test.test(text)) return value;
   }
-  return undefined
+  return undefined;
 }
 
 function extractUrgency(text: string): PeskidsIntakeProfile['urgency'] | undefined {
   for (const { value, test } of URGENCY_PATTERNS) {
-    if (test.test(text)) return value
+    if (test.test(text)) return value;
   }
-  return undefined
+  return undefined;
 }
 
-function extractPreferredContact(text: string): PeskidsIntakeProfile['preferredContact'] | undefined {
+function extractPreferredContact(
+  text: string
+): PeskidsIntakeProfile['preferredContact'] | undefined {
   for (const { value, test } of SUPPORT_CONTACT_PATTERNS) {
-    if (test.test(text)) return value
+    if (test.test(text)) return value;
   }
-  return undefined
+  return undefined;
 }
 
 function profileFromText(text: string): Partial<PeskidsIntakeProfile> {
@@ -277,10 +303,13 @@ function profileFromText(text: string): Partial<PeskidsIntakeProfile> {
     issueType: extractIssueType(text),
     urgency: extractUrgency(text),
     preferredContact: extractPreferredContact(text),
-  }
+  };
 }
 
-function mergeProfile(base: PeskidsIntakeProfile, update: Partial<PeskidsIntakeProfile>): PeskidsIntakeProfile {
+function mergeProfile(
+  base: PeskidsIntakeProfile,
+  update: Partial<PeskidsIntakeProfile>
+): PeskidsIntakeProfile {
   return {
     parentName: base.parentName ?? update.parentName,
     email: base.email ?? update.email,
@@ -298,22 +327,25 @@ function mergeProfile(base: PeskidsIntakeProfile, update: Partial<PeskidsIntakeP
     issueDetails: base.issueDetails ?? update.issueDetails,
     urgency: base.urgency ?? update.urgency,
     preferredContact: base.preferredContact ?? update.preferredContact,
-  }
+  };
 }
 
 function formatProgress(captured: number, required: number): number {
-  if (required <= 0) return 1
-  return Math.min(1, captured / required)
+  if (required <= 0) return 1;
+  return Math.min(1, captured / required);
 }
 
 function isGreetingOnly(text: string): boolean {
-  const t = text.trim().toLowerCase()
+  const t = text.trim().toLowerCase();
   return /^(hola|buenas|buenos d[ií]as|buenas tardes|buenas noches|hey|hi|hello|saludos|buen d[ií]a)[!.?\s]*$/i.test(
     t
-  )
+  );
 }
 
-function requiredFieldOrder(profile: PeskidsIntakeProfile, mode: PeskidsChatMode): Array<keyof PeskidsIntakeProfile> {
+function requiredFieldOrder(
+  profile: PeskidsIntakeProfile,
+  mode: PeskidsChatMode
+): Array<keyof PeskidsIntakeProfile> {
   if (mode === 'support') {
     const order: Array<keyof PeskidsIntakeProfile> = [
       'parentName',
@@ -322,10 +354,10 @@ function requiredFieldOrder(profile: PeskidsIntakeProfile, mode: PeskidsChatMode
       'issueDetails',
       'urgency',
       'preferredContact',
-    ]
-    if (!profile.phone) order.push('phone')
-    if (!profile.email) order.push('email')
-    return order
+    ];
+    if (!profile.phone) order.push('phone');
+    if (!profile.email) order.push('email');
+    return order;
   }
 
   const order: Array<keyof PeskidsIntakeProfile> = [
@@ -337,19 +369,19 @@ function requiredFieldOrder(profile: PeskidsIntakeProfile, mode: PeskidsChatMode
     'classModality',
     'neighborhood',
     'gradeInterested',
-  ]
+  ];
   if (profile.specialCondition === 'yes' && !profile.specialConditionDetails) {
-    order.splice(3, 0, 'specialConditionDetails')
+    order.splice(3, 0, 'specialConditionDetails');
   }
-  if (!profile.phone) order.push('phone')
-  return order
+  if (!profile.phone) order.push('phone');
+  return order;
 }
 
 function firstMissingField(
   profile: PeskidsIntakeProfile,
   mode: PeskidsChatMode
 ): keyof PeskidsIntakeProfile | null {
-  return requiredFieldOrder(profile, mode).find((field) => !profile[field]) ?? null
+  return requiredFieldOrder(profile, mode).find((field) => !profile[field]) ?? null;
 }
 
 /** Asigna la respuesta directa del usuario al campo que acabamos de preguntar. */
@@ -357,143 +389,147 @@ function applyDirectAnswer(
   field: keyof PeskidsIntakeProfile,
   text: string
 ): Partial<PeskidsIntakeProfile> {
-  const trimmed = normalizeText(text)
-  if (!trimmed || isGreetingOnly(trimmed)) return {}
+  const trimmed = normalizeText(text);
+  if (!trimmed || isGreetingOnly(trimmed)) return {};
 
   switch (field) {
     case 'parentName': {
-      if (extractEmail(trimmed) || extractPhone(trimmed)) return {}
-      const name = extractParentName(trimmed) ?? normalizeName(trimmed)
-      if (name.length < 2 || name.length > 60) return {}
-      return { parentName: name }
+      if (extractEmail(trimmed) || extractPhone(trimmed)) return {};
+      const name = extractParentName(trimmed) ?? normalizeName(trimmed);
+      if (name.length < 2 || name.length > 60) return {};
+      return { parentName: name };
     }
     case 'email': {
-      const email = extractEmail(trimmed)
-      return email ? { email } : {}
+      const email = extractEmail(trimmed);
+      return email ? { email } : {};
     }
     case 'specialCondition': {
-      const specialCondition = extractSpecialCondition(trimmed)
-      if (specialCondition) return { specialCondition }
-      return {}
+      const specialCondition = extractSpecialCondition(trimmed);
+      if (specialCondition) return { specialCondition };
+      return {};
     }
     case 'specialConditionDetails': {
-      if (trimmed.length < 3) return {}
-      return { specialConditionDetails: trimmed }
+      if (trimmed.length < 3) return {};
+      return { specialConditionDetails: trimmed };
     }
     case 'teacherPreference': {
-      const teacherPreference = extractTeacherPreference(trimmed)
-      if (teacherPreference) return { teacherPreference }
-      return {}
+      const teacherPreference = extractTeacherPreference(trimmed);
+      if (teacherPreference) return { teacherPreference };
+      return {};
     }
     case 'phone': {
-      const phone = extractPhone(trimmed)
-      return phone ? { phone } : {}
+      const phone = extractPhone(trimmed);
+      return phone ? { phone } : {};
     }
     case 'classModality': {
-      const modality = extractClassModality(trimmed)
-      return modality ? { classModality: modality } : {}
+      const modality = extractClassModality(trimmed);
+      return modality ? { classModality: modality } : {};
     }
     case 'neighborhood': {
-      const neighborhood = extractNeighborhood(trimmed) ?? normalizeName(trimmed)
-      if (neighborhood.length < 2) return {}
-      return { neighborhood }
+      const neighborhood = extractNeighborhood(trimmed) ?? normalizeName(trimmed);
+      if (neighborhood.length < 2) return {};
+      return { neighborhood };
     }
     case 'gradeInterested': {
-      const grade = extractGradeInterested(trimmed)
-      if (grade) return { gradeInterested: grade }
-      if (trimmed.length <= 40) return { gradeInterested: trimmed }
-      return {}
+      const grade = extractGradeInterested(trimmed);
+      if (grade) return { gradeInterested: grade };
+      if (trimmed.length <= 40) return { gradeInterested: trimmed };
+      return {};
     }
     case 'referralSource': {
-      if (trimmed.length <= 60) return { referralSource: trimmed }
-      return {}
+      if (trimmed.length <= 60) return { referralSource: trimmed };
+      return {};
     }
     case 'issueType': {
-      const issueType = extractIssueType(trimmed)
-      if (issueType) return { issueType }
-      return {}
+      const issueType = extractIssueType(trimmed);
+      if (issueType) return { issueType };
+      return {};
     }
     case 'issueDetails': {
-      if (trimmed.length < 3) return {}
-      return { issueDetails: trimmed }
+      if (trimmed.length < 3) return {};
+      return { issueDetails: trimmed };
     }
     case 'urgency': {
-      const urgency = extractUrgency(trimmed)
-      if (urgency) return { urgency }
-      return {}
+      const urgency = extractUrgency(trimmed);
+      if (urgency) return { urgency };
+      return {};
     }
     case 'preferredContact': {
-      const preferredContact = extractPreferredContact(trimmed)
-      if (preferredContact) return { preferredContact }
-      return {}
+      const preferredContact = extractPreferredContact(trimmed);
+      if (preferredContact) return { preferredContact };
+      return {};
     }
     default:
-      return {}
+      return {};
   }
 }
 
 export async function buildPeskidsIntakeTurn(params: {
-  senderContact: string
-  senderName?: string
-  source: MessageSource
-  latestMessage: string
-  mode?: PeskidsChatMode
+  senderContact: string;
+  senderName?: string;
+  source: MessageSource;
+  latestMessage: string;
+  mode?: PeskidsChatMode;
 }): Promise<PeskidsIntakeTurn> {
-  const mode = params.mode ?? 'admissions'
-  const history = await getConversationMessages(params.senderContact, 16)
-  const inboundHistory = history.filter((message) => message.direction === 'inbound' || !message.direction)
+  const mode = params.mode ?? 'admissions';
+  const history = await getConversationMessages(params.senderContact, 16);
+  const inboundHistory = history.filter(
+    (message) => message.direction === 'inbound' || !message.direction
+  );
 
-  let profile: PeskidsIntakeProfile = {}
+  let profile: PeskidsIntakeProfile = {};
 
   if (params.source === 'whatsapp') {
-    const fromWa = phoneFromSenderContact(params.senderContact)
-    if (fromWa) profile.phone = fromWa
+    const fromWa = phoneFromSenderContact(params.senderContact);
+    if (fromWa) profile.phone = fromWa;
   }
 
   const priorInbound = inboundHistory.filter(
     (message) => message.message_text.trim() !== params.latestMessage.trim()
-  )
+  );
 
   for (const message of priorInbound) {
-    profile = mergeProfile(profile, profileFromText(message.message_text))
+    profile = mergeProfile(profile, profileFromText(message.message_text));
   }
 
   if (!profile.parentName && params.senderName && !isGenericName(params.senderName)) {
-    profile.parentName = normalizeName(params.senderName)
+    profile.parentName = normalizeName(params.senderName);
   }
 
   if (profile.specialCondition !== 'yes') {
-    profile.specialConditionDetails = undefined
+    profile.specialConditionDetails = undefined;
   }
 
-  const missingBeforeLatest = firstMissingField(profile, mode)
+  const missingBeforeLatest = firstMissingField(profile, mode);
 
   if (params.latestMessage) {
-    profile = mergeProfile(profile, profileFromText(params.latestMessage))
+    profile = mergeProfile(profile, profileFromText(params.latestMessage));
     if (missingBeforeLatest && !profile[missingBeforeLatest]) {
-      profile = mergeProfile(profile, applyDirectAnswer(missingBeforeLatest, params.latestMessage))
+      profile = mergeProfile(profile, applyDirectAnswer(missingBeforeLatest, params.latestMessage));
     }
   }
 
-  const requiredOrder = requiredFieldOrder(profile, mode)
-  const missingField = requiredOrder.find((field) => !profile[field]) ?? null
-  const capturedFields = requiredOrder.filter((field) => Boolean(profile[field])).map(String)
-  const stage = missingField ? 'collecting' : 'handoff'
-  const progress = formatProgress(capturedFields.length, requiredOrder.length)
+  const requiredOrder = requiredFieldOrder(profile, mode);
+  const missingField = requiredOrder.find((field) => !profile[field]) ?? null;
+  const capturedFields = requiredOrder.filter((field) => Boolean(profile[field])).map(String);
+  const stage = missingField ? 'collecting' : 'handoff';
+  const progress = formatProgress(capturedFields.length, requiredOrder.length);
 
-  const isFirstTurn = inboundHistory.length <= 1
-  const showWelcome = isFirstTurn && (isGreetingOnly(params.latestMessage) || capturedFields.length === 0)
-  const questionSpec = missingField ? questionSpecForField(missingField, profile, mode) : null
+  const isFirstTurn = inboundHistory.length <= 1;
+  const showWelcome =
+    isFirstTurn && (isGreetingOnly(params.latestMessage) || capturedFields.length === 0);
+  const questionSpec = missingField ? questionSpecForField(missingField, profile, mode) : null;
 
-  let reply: string
+  let reply: string;
   if (missingField) {
-    const question = questionSpec?.prompt ?? '¿Me compartes un poco más de información para completar tu solicitud?'
-    reply =
-      showWelcome
-        ? `${mode === 'support' ? peskidsSupportWelcome(params.source) : peskidsIntakeWelcome(params.source)}\n\n${question}`
-        : question
+    const question =
+      questionSpec?.prompt ??
+      '¿Me compartes un poco más de información para completar tu solicitud?';
+    reply = showWelcome
+      ? `${mode === 'support' ? peskidsSupportWelcome(params.source) : peskidsIntakeWelcome(params.source)}\n\n${question}`
+      : question;
   } else {
-    reply = mode === 'support' ? supportHandoffReplyToUser(profile) : handoffReplyToUser(profile)
+    reply = mode === 'support' ? supportHandoffReplyToUser(profile) : handoffReplyToUser(profile);
   }
 
   const supportDraft = missingField
@@ -505,7 +541,7 @@ export async function buildPeskidsIntakeTurn(params: {
         source: params.source,
         messageCount: inboundHistory.length,
         mode,
-      })
+      });
 
   return {
     stage,
@@ -517,11 +553,11 @@ export async function buildPeskidsIntakeTurn(params: {
     capturedFields,
     inputMode: questionSpec?.inputMode ?? 'text',
     quickReplies: questionSpec?.choices ?? null,
-  }
+  };
 }
 
 function supportHandoffReplyToUser(profile: PeskidsIntakeProfile): string {
-  const name = profile.parentName ?? 'familia'
+  const name = profile.parentName ?? 'familia';
   const issue =
     profile.issueType === 'class'
       ? 'clase'
@@ -531,15 +567,15 @@ function supportHandoffReplyToUser(profile: PeskidsIntakeProfile): string {
           ? 'reprogramar clase'
           : profile.issueType === 'cancel'
             ? 'cancelar clase'
-          : profile.issueType === 'payment'
-            ? 'pago'
-            : profile.issueType === 'attendance'
-              ? 'asistencia'
-              : profile.issueType === 'feedback'
-                ? 'feedback'
-                : profile.issueType === 'access'
-                  ? 'acceso'
-                  : 'otro'
+            : profile.issueType === 'payment'
+              ? 'pago'
+              : profile.issueType === 'attendance'
+                ? 'asistencia'
+                : profile.issueType === 'feedback'
+                  ? 'feedback'
+                  : profile.issueType === 'access'
+                    ? 'acceso'
+                    : 'otro';
   const urgency =
     profile.urgency === 'today'
       ? 'hoy'
@@ -547,7 +583,7 @@ function supportHandoffReplyToUser(profile: PeskidsIntakeProfile): string {
         ? 'esta semana'
         : profile.urgency === 'when_possible'
           ? 'cuando puedan'
-          : '—'
+          : '—';
 
   return (
     `Gracias, ${name}. Ya tengo tu caso de soporte.\n\n` +
@@ -563,8 +599,8 @@ function supportHandoffReplyToUser(profile: PeskidsIntakeProfile): string {
           : profile.preferredContact === 'email'
             ? 'Correo'
             : 'Aquí mismo'
-      }\n\n` +
+    }\n\n` +
     `Un miembro del equipo revisará tu caso y te responderá por el canal elegido.\n` +
     `Si necesitas reprogramar o cancelar clase, el equipo confirmará primero la política aplicable antes de mover nada.`
-  )
+  );
 }

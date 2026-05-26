@@ -353,7 +353,11 @@ function deriveExtractionReadiness(tenant: {
   if (tenant.plan === 'demo') {
     return { ready: false, reason: 'demo tenants are never extracted' };
   }
-  if (tenant.workflowsCount >= 4 || tenant.stage === 'dedicated_vps' || tenant.stage === 'independent_platform') {
+  if (
+    tenant.workflowsCount >= 4 ||
+    tenant.stage === 'dedicated_vps' ||
+    tenant.stage === 'independent_platform'
+  ) {
     return { ready: true, reason: 'workflow bundle and operational boundary are in place' };
   }
   return { ready: false, reason: 'more workflow coverage or operational stabilization required' };
@@ -464,7 +468,9 @@ function permissionIdsForAgent(
   }
 
   const catalog = foundation.agent_governance.permissions_catalog;
-  return Array.from(permissions).filter((permission) => catalog.some((item) => item.id === permission));
+  return Array.from(permissions).filter((permission) =>
+    catalog.some((item) => item.id === permission)
+  );
 }
 
 function deriveAgentConnectivity(agent: AgentsTeamEntry): PlatformAgentConnectivity {
@@ -502,7 +508,9 @@ function normalizeAgentRows(
       id: agent.id,
       name: agent.name,
       role: agent.role,
-      tenant_scope: agent.allowed_paths.some((p) => p.startsWith('apps/peskids') || p.includes('tenant'))
+      tenant_scope: agent.allowed_paths.some(
+        (p) => p.startsWith('apps/peskids') || p.includes('tenant')
+      )
         ? 'tenant-scoped'
         : 'global',
       capabilities,
@@ -515,7 +523,9 @@ function normalizeAgentRows(
       },
       heartbeat: {
         last_seen_at: lastSeen,
-        interval_seconds: agent.rate_limit?.requests_per_minute ? Math.max(10, Math.floor(60 / agent.rate_limit.requests_per_minute)) : 60,
+        interval_seconds: agent.rate_limit?.requests_per_minute
+          ? Math.max(10, Math.floor(60 / agent.rate_limit.requests_per_minute))
+          : 60,
         stale_after_seconds: 5 * 60,
         source: lastSeen ? 'config' : 'manual',
       },
@@ -611,7 +621,9 @@ async function buildTenantRegistry(): Promise<PlatformTenantRegistryEntry[]> {
   ]);
   const baseDomain = opslyConfig.domains?.base ?? 'op-sly.com';
   const opslyTenants = new Map((opslyConfig.tenants ?? []).map((tenant) => [tenant.slug, tenant]));
-  return tenantFiles.map((fileRow) => normalizeTenantRow(fileRow, opslyTenants.get(fileRow.tenant_slug), foundation, baseDomain));
+  return tenantFiles.map((fileRow) =>
+    normalizeTenantRow(fileRow, opslyTenants.get(fileRow.tenant_slug), foundation, baseDomain)
+  );
 }
 
 async function buildAgentRegistry(): Promise<PlatformAgentRegistryEntry[]> {
@@ -623,7 +635,9 @@ async function buildAgentRegistry(): Promise<PlatformAgentRegistryEntry[]> {
   return normalizeAgentRows(agentsTeam, servicesConfig, foundation);
 }
 
-function summarizeByStage(items: PlatformTenantRegistryEntry[]): Record<TenantLifecycleStageId, number> {
+function summarizeByStage(
+  items: PlatformTenantRegistryEntry[]
+): Record<TenantLifecycleStageId, number> {
   const summary: Record<TenantLifecycleStageId, number> = {
     incubated_tenant: 0,
     mvp_validation: 0,
@@ -704,23 +718,31 @@ export async function getPlatformAgentRegistry(): Promise<{
 }
 
 export async function getMissionControlFoundationReadModel(): Promise<MissionControlReadModel> {
-  const [tenantRegistry, agentRegistry, openclaw, opslyConfig, orchestratorHealth, llmHealth, redisHealth, approvalQueue] =
-    await Promise.all([
-      getPlatformTenantRegistry(),
-      getPlatformAgentRegistry(),
-      getOpenClawMissionControlSnapshot(),
-      readOpslyConfig(),
-      probeBaseUrl(process.env.ORCHESTRATOR_INTERNAL_URL?.trim() ?? 'http://orchestrator:3011'),
-      probeBaseUrl(
-        process.env.MCP_LLM_GATEWAY_URL?.trim() ??
-          process.env.LLM_GATEWAY_INTERNAL_URL?.trim() ??
-          process.env.ORCHESTRATOR_LLM_GATEWAY_URL?.trim() ??
-          process.env.LLM_GATEWAY_URL?.trim() ??
-          'http://llm-gateway:3010'
-      ),
-      pingRedis(),
-      readApprovalGateQueue(),
-    ]);
+  const [
+    tenantRegistry,
+    agentRegistry,
+    openclaw,
+    opslyConfig,
+    orchestratorHealth,
+    llmHealth,
+    redisHealth,
+    approvalQueue,
+  ] = await Promise.all([
+    getPlatformTenantRegistry(),
+    getPlatformAgentRegistry(),
+    getOpenClawMissionControlSnapshot(),
+    readOpslyConfig(),
+    probeBaseUrl(process.env.ORCHESTRATOR_INTERNAL_URL?.trim() ?? 'http://orchestrator:3011'),
+    probeBaseUrl(
+      process.env.MCP_LLM_GATEWAY_URL?.trim() ??
+        process.env.LLM_GATEWAY_INTERNAL_URL?.trim() ??
+        process.env.ORCHESTRATOR_LLM_GATEWAY_URL?.trim() ??
+        process.env.LLM_GATEWAY_URL?.trim() ??
+        'http://llm-gateway:3010'
+    ),
+    pingRedis(),
+    readApprovalGateQueue(),
+  ]);
 
   const apiConnectivity: HealthSignal = 'up';
   const vpsStatus = aggregateVpsStatus({
