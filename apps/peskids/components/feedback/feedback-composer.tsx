@@ -7,12 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
 import { FeedbackComposerFields } from './feedback-composer-fields'
-import { submitFeedback } from './feedback-composer-submission'
-
-type FeedbackAuthorType = 'parent' | 'teacher' | 'staff'
-type FeedbackSubjectType = 'general' | 'class' | 'student' | 'operations'
-type FeedbackVisibility = 'public' | 'private'
-type FeedbackAudience = 'family' | 'teacher' | 'admin'
+import { submitFeedback, type FeedbackAuthorType, type FeedbackSubjectType, type FeedbackVisibility, type FeedbackAudience } from './feedback-composer-submission'
 
 interface FeedbackComposerProps {
   title: string

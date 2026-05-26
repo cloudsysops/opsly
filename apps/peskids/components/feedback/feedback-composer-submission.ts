@@ -1,7 +1,7 @@
-type FeedbackAuthorType = 'parent' | 'teacher' | 'staff'
-type FeedbackSubjectType = 'general' | 'class' | 'student' | 'operations'
-type FeedbackVisibility = 'public' | 'private'
-type FeedbackAudience = 'family' | 'teacher' | 'admin'
+export type FeedbackAuthorType = 'parent' | 'teacher' | 'staff'
+export type FeedbackSubjectType = 'general' | 'class' | 'student' | 'operations'
+export type FeedbackVisibility = 'public' | 'private'
+export type FeedbackAudience = 'family' | 'teacher' | 'admin'
 
 interface SubmissionParams {
   childName: string
