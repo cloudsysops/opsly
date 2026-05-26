@@ -4,20 +4,22 @@ import { validateStaffRequest } from '@/lib/staff-auth'
 import { isStaffUser } from '@/lib/staff-user'
 import { createFormSubmissionService } from '@/lib/services/form-submission.service'
 import { buildTeacherRoleMetrics } from '@/lib/role-metrics'
+import { errorJson, resolveRequestId, successJson } from '@/lib/api-response'
 
 export async function GET(req: NextRequest): Promise<NextResponse> {
+  const requestId = resolveRequestId(req)
   try {
     const auth = await validateStaffRequest(req)
     if (!auth.ok) {
-      return NextResponse.json({ error: auth.error }, { status: auth.status })
+      return errorJson(requestId, auth.error, auth.status)
     }
     if (auth.method !== 'secret' && auth.user && !isStaffUser(auth.user)) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+      return errorJson(requestId, 'Forbidden', 403)
     }
 
     const snapshot = await loadPeskidsBiSnapshot()
     if (snapshot?.teacher) {
-      return NextResponse.json({
+      return successJson(requestId, {
         metrics: snapshot.teacher,
         summary: {
           totalSubmissions: snapshot.teacher.totalSubmissions,
@@ -30,7 +32,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     const submissions = await service.getTeacherSubmissions()
     const metrics = await buildTeacherRoleMetrics(submissions)
 
-    return NextResponse.json({
+    return successJson(requestId, {
       metrics,
       summary: {
         totalSubmissions: metrics.totalSubmissions,
@@ -38,7 +40,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
       },
     })
   } catch (error) {
-    console.error('Teacher metrics API error:', error)
-    return NextResponse.json({ error: 'Failed to fetch teacher metrics' }, { status: 500 })
+    console.error('Teacher metrics API error:', error, { request_id: requestId })
+    return errorJson(requestId, 'Failed to fetch teacher metrics', 500)
   }
 }

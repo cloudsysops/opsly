@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { validateFamilyRequest } from '@/lib/family-auth'
 import { validateStaffRequest } from '@/lib/staff-auth'
 import { isStaffUser } from '@/lib/staff-user'
@@ -8,6 +8,7 @@ import {
   getSubmissionChatContext,
 } from '@/lib/submission-chat'
 import { getConversationMessages, storeInboundMessage, storeOutboundMessage } from '@/lib/message-store'
+import { errorJson, resolveRequestId, successJson } from '@/lib/api-response'
 
 const MAX_MESSAGE_LENGTH = 1400
 
@@ -65,15 +66,16 @@ export async function GET(
   req: NextRequest,
   context: { params: Promise<{ submissionId: string }> }
 ) {
+  const requestId = resolveRequestId(req)
   const { submissionId } = await context.params
   const access = await resolveChatAccess(req, submissionId)
   if (!access.ok) {
-    return NextResponse.json({ error: access.error }, { status: access.status })
+    return errorJson(requestId, access.error, access.status)
   }
 
   const messages = await getConversationMessages(access.context.threadContact, 100)
 
-  return NextResponse.json({
+  return successJson(requestId, {
     submission_id: access.context.submissionId,
     student_name: access.context.studentName,
     parent_email: access.context.parentEmail,
@@ -88,20 +90,21 @@ export async function POST(
   req: NextRequest,
   context: { params: Promise<{ submissionId: string }> }
 ) {
+  const requestId = resolveRequestId(req)
   try {
     const { submissionId } = await context.params
     const access = await resolveChatAccess(req, submissionId)
     if (!access.ok) {
-      return NextResponse.json({ error: access.error }, { status: access.status })
+      return errorJson(requestId, access.error, access.status)
     }
 
     const raw = (await req.json()) as { message?: string }
     const messageText = raw.message?.trim() ?? ''
     if (!messageText) {
-      return NextResponse.json({ error: 'Message cannot be empty' }, { status: 400 })
+      return errorJson(requestId, 'Message cannot be empty', 400)
     }
     if (messageText.length > MAX_MESSAGE_LENGTH) {
-      return NextResponse.json({ error: 'Message too long' }, { status: 400 })
+      return errorJson(requestId, 'Message too long', 400)
     }
 
     const threadContact = buildSubmissionChatContact(submissionId)
@@ -116,10 +119,11 @@ export async function POST(
       })
 
       if (error || !message) {
-        return NextResponse.json({ error: 'Failed to store message' }, { status: 500 })
+        return errorJson(requestId, 'Failed to store message', 500)
       }
 
-      return NextResponse.json(
+      return successJson(
+        requestId,
         {
           ok: true,
           message_id: message.id,
@@ -127,7 +131,7 @@ export async function POST(
           thread_contact: threadContact,
           message: 'Mensaje enviado',
         },
-        { status: 201 }
+        201
       )
     }
 
@@ -142,10 +146,11 @@ export async function POST(
     })
 
     if (error || !message) {
-      return NextResponse.json({ error: 'Failed to store message' }, { status: 500 })
+      return errorJson(requestId, 'Failed to store message', 500)
     }
 
-    return NextResponse.json(
+    return successJson(
+      requestId,
       {
         ok: true,
         message_id: message.id,
@@ -153,10 +158,10 @@ export async function POST(
         thread_contact: threadContact,
         message: 'Mensaje enviado',
       },
-      { status: 201 }
+      201
     )
   } catch (error) {
-    console.error('Submission chat API error:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    console.error('Submission chat API error:', error, { request_id: requestId })
+    return errorJson(requestId, 'Internal server error', 500)
   }
 }

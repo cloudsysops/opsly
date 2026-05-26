@@ -9,6 +9,7 @@
     "start": "next start -p 3004",
     "lint": "next lint",
     "type-check": "tsc --noEmit",
+    "test": "vitest run",
     "bi:snapshot": "python3 analytics/peskids_bi.py"
   },
   "dependencies": {

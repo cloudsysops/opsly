@@ -23,10 +23,16 @@ describe('GET /api/submissions', () => {
     validateFamilyRequestMock.mockResolvedValue({ ok: false, status: 401, error: 'Unauthorized' })
     const { GET } = await import('../route')
 
-    const response = await GET({} as never)
+    const response = await GET({
+      headers: new Headers({ 'x-request-id': 'req-submissions-401' }),
+    } as never)
 
     expect(response.status).toBe(401)
-    await expect(response.json()).resolves.toEqual({ error: 'Unauthorized' })
+    await expect(response.json()).resolves.toEqual({
+      ok: false,
+      error: 'Unauthorized',
+      request_id: 'req-submissions-401',
+    })
     expect(getParentSubmissionsMock).not.toHaveBeenCalled()
   })
 
@@ -40,7 +46,9 @@ describe('GET /api/submissions', () => {
     ])
     const { GET } = await import('../route')
 
-    const response = await GET({} as never)
+    const response = await GET({
+      headers: new Headers({ 'x-request-id': 'req-submissions-200' }),
+    } as never)
     const payload = await response.json()
 
     expect(response.status).toBe(200)
@@ -48,5 +56,6 @@ describe('GET /api/submissions', () => {
     expect(getParentSubmissionsMock).toHaveBeenCalledWith('family@example.com')
     expect(payload.submissions).toHaveLength(1)
     expect(payload.userRole).toBe('parent')
+    expect(payload.request_id).toBe('req-submissions-200')
   })
 })

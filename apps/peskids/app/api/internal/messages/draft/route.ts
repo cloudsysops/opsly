@@ -1,5 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { storeDraftReply } from '@/lib/message-store';
+import { errorJson, resolveRequestId, successJson } from '@/lib/api-response';
 
 function internalSecret(): string | undefined {
   return (
@@ -17,8 +18,10 @@ function verifyInternal(req: NextRequest): boolean {
 }
 
 export async function POST(req: NextRequest) {
+  const requestId = resolveRequestId(req);
+
   if (!verifyInternal(req)) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return errorJson(requestId, 'Unauthorized', 401);
   }
 
   const body = (await req.json()) as {
@@ -32,16 +35,13 @@ export async function POST(req: NextRequest) {
   const source = body.source ?? 'whatsapp';
 
   if (!parentId || !draftText) {
-    return NextResponse.json(
-      { error: 'parent_message_id and draft_text required' },
-      { status: 400 }
-    );
+    return errorJson(requestId, 'parent_message_id and draft_text required', 400);
   }
 
   const { draft, error } = await storeDraftReply(parentId, draftText, source);
   if (error || !draft) {
-    return NextResponse.json({ error: error ?? 'Failed to store draft' }, { status: 500 });
+    return errorJson(requestId, error ?? 'Failed to store draft', 500);
   }
 
-  return NextResponse.json({ ok: true, draft }, { status: 201 });
+  return successJson(requestId, { ok: true, draft }, 201);
 }

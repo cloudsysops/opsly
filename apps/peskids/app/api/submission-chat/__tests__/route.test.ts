@@ -74,11 +74,15 @@ describe('submission chat route', () => {
     ])
 
     const { GET } = await import('../[submissionId]/route')
-    const response = await GET({} as never, { params: Promise.resolve({ submissionId: 'sub-1' }) })
+    const response = await GET(
+      { headers: new Headers({ 'x-request-id': 'req-subchat-get' }) } as never,
+      { params: Promise.resolve({ submissionId: 'sub-1' }) }
+    )
     const payload = await response.json()
 
     expect(response.status).toBe(200)
     expect(payload.messages).toHaveLength(1)
+    expect(payload.request_id).toBe('req-subchat-get')
   })
 
   it('stores a family message as inbound', async () => {
@@ -108,6 +112,7 @@ describe('submission chat route', () => {
     const { POST } = await import('../[submissionId]/route')
     const response = await POST(
       {
+        headers: new Headers({ 'x-request-id': 'req-subchat-family' }),
         json: async () => ({ message: 'Voy tarde' }),
       } as never,
       { params: Promise.resolve({ submissionId: 'sub-1' }) }
@@ -120,6 +125,14 @@ describe('submission chat route', () => {
         message_text: 'Voy tarde',
       })
     )
+    await expect(response.json()).resolves.toEqual({
+      ok: true,
+      message_id: 'm2',
+      viewer_role: 'family',
+      thread_contact: 'submission-chat:sub-1',
+      message: 'Mensaje enviado',
+      request_id: 'req-subchat-family',
+    })
   })
 
   it('stores a teacher message as outbound', async () => {
@@ -155,6 +168,7 @@ describe('submission chat route', () => {
     const { POST } = await import('../[submissionId]/route')
     const response = await POST(
       {
+        headers: new Headers({ 'x-request-id': 'req-subchat-staff' }),
         json: async () => ({ message: 'Lleva tabla hoy' }),
       } as never,
       { params: Promise.resolve({ submissionId: 'sub-2' }) }
@@ -167,5 +181,13 @@ describe('submission chat route', () => {
         replyText: 'Lleva tabla hoy',
       })
     )
+    await expect(response.json()).resolves.toEqual({
+      ok: true,
+      message_id: 'm3',
+      viewer_role: 'staff',
+      thread_contact: 'submission-chat:sub-2',
+      message: 'Mensaje enviado',
+      request_id: 'req-subchat-staff',
+    })
   })
 })

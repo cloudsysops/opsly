@@ -352,19 +352,20 @@ node scripts/load-skills.js show opsly-api
 
 **Hermes + LLM local (Cursor/Claude/Copilot en doc):** con `HERMES_DISPATCH_OPENCLAW=true` y `HERMES_LOCAL_LLM_FIRST=true`, tareas `decision` + esfuerzo `S` encolan job `ollama` (gateway `llama_local`). Matriz: [`docs/HERMES-LOCAL-AGENTS-STACK.md`](docs/HERMES-LOCAL-AGENTS-STACK.md).
 
-**Servicios VPS (2026-04-14 01:45 UTC):**
+**Servicios VPS (2026-05-26 21:15 UTC):**
 
-| Servicio      | Status     | Puerto | Notes                                           |
-| ------------- | ---------- | ------ | ----------------------------------------------- |
-| Traefik       | ✅ Running | 80/443 | Router principal                                |
-| API (app)     | ⚠️ Error   | 3000   | `[id] !== [ref]` conflict en imagen GHCR        |
-| Admin         | ✅ Running | 3001   | `admin.op-sly.com`                   |
-| Portal        | ✅ Running | 3002   | `portal.op-sly.com`                  |
-| MCP           | ✅ Running | 3003   | Herramientas disponibles                        |
-| Orchestrator  | ✅ Running | 3011   | OAR + Mode System COMPLETO (Semana 1)           |
-| Redis         | ✅ Running | 6379   | Sin password (bug compose)                      |
-| n8n (tenants) | ✅ Running | -      | smiletripcare, localrank, jkboterolabs, peskids |
-| Uptime Kuma   | ✅ Running | -      | Por tenant                                      |
+| Servicio          | Status            | Puerto | Notes                                                     |
+| ------------------ | ----------------- | ------ | --------------------------------------------------------- |
+| Traefik            | ✅ Running        | 80/443 | Router principal                                          |
+| API (app)          | ✅ Healthy        | 3000   | `api.op-sly.com/api/health` OK                            |
+| Admin              | ✅ Running        | 3001   | `admin.op-sly.com`                                        |
+| Portal             | ✅ Running        | 3002   | `portal.op-sly.com`                                       |
+| MCP                | ✅ Running        | 3003   | Herramientas disponibles                                  |
+| Orchestrator       | ✅ Running        | 3011   | OAR + Mode System COMPLETO (Semana 1)                    |
+| Redis              | ✅ Running        | 6379   | Sin password (bug compose documentado en histórico)       |
+| n8n (tenants)      | ✅ Running        | -      | smiletripcare, localrank, jkboterolabs, peskids          |
+| Uptime Kuma        | ✅ Running        | -      | Por tenant                                                |
+| Peskids app stack  | ✅ Running        | 3004   | `peskids` healthy, `n8n_peskids` / `uptime_peskids` live  |
 
 **Sesión 2026-04-20 — Semana 5 Completada ✅ (Feedback Loop API)**
 

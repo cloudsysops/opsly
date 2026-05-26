@@ -1,61 +1,10 @@
 'use client';
 
 import { useCallback, useState } from 'react';
-import { Copy, Loader2, Mail, Phone, Reply } from 'lucide-react';
 import type { DashboardData } from '@/lib/types';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-
-const sourceTone: Record<string, 'green' | 'coral' | 'teal'> = {
-  whatsapp: 'green',
-  instagram: 'coral',
-  web: 'teal',
-};
-
-const statusTone: Record<string, 'amber' | 'violet' | 'green' | 'neutral'> = {
-  pending: 'amber',
-  approved: 'violet',
-  sent: 'green',
-};
-
-type ThreadResponse = {
-  inbound: {
-    message_text: string;
-    sender_name: string | null;
-    sender_contact: string;
-    source: string;
-    status?: string | null;
-  };
-  conversation_mode?: 'admissions' | 'support';
-  status?: string | null;
-  suggested_reply: string | null;
-};
-
-function statusLabel(status?: string | null): string {
-  if (status === 'sent') return 'Enviado';
-  if (status === 'approved') return 'Aprobado';
-  return 'Pendiente';
-}
-
-function conversationLabel(mode?: string): string {
-  if (mode === 'support') return 'Soporte';
-  if (mode === 'admissions') return 'Admisión';
-  return 'Canal';
-}
-
-function normalizeDigits(value: string): string {
-  return value.replace(/\D+/g, '');
-}
-
-function getContactHref(source: string, contact: string): string | null {
-  if (!contact.trim()) return null;
-  if (contact.includes('@')) return `mailto:${contact.trim()}`;
-  if (source === 'whatsapp') {
-    const digits = normalizeDigits(contact);
-    return digits ? `https://wa.me/${digits}` : null;
-  }
-  return null;
-}
+import { MessageInboxItem } from './message-inbox-item';
+import { MessageReplyComposer } from './message-reply-composer';
+import { type ThreadResponse } from './message-inbox-utils';
 
 export function MessageInboxPanel({
   messages,
@@ -154,145 +103,37 @@ export function MessageInboxPanel({
   return (
     <div className="space-y-3">
       <ul className="max-h-52 space-y-2 overflow-y-auto">
-        {messages.map((msg) => {
-          const tone = sourceTone[msg.source] ?? 'teal';
-          const preview =
-            msg.message_text.length > 48 ? `${msg.message_text.slice(0, 48)}…` : msg.message_text;
-          return (
-            <li key={msg.id}>
-              <div
-                className={`w-full rounded-lg border px-3 py-2 text-left transition-colors ${
-                  activeId === msg.id ? 'border-pk-primary bg-pk-muted/60' : 'border-pk-border/80'
-                }`}
-              >
-                <button
-                  type="button"
-                  onClick={() => void openThread(msg.id)}
-                  className="w-full text-left"
-                >
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="min-w-0 flex-1">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <p className="truncate text-sm font-medium text-pk-ink">
-                          {msg.sender_name || msg.sender_contact}
-                        </p>
-                        <Badge tone={msg.conversation_mode === 'support' ? 'coral' : 'teal'}>
-                          {conversationLabel(msg.conversation_mode)}
-                        </Badge>
-                        <Badge tone={tone}>{msg.source}</Badge>
-                        <Badge tone={statusTone[msg.status ?? 'pending'] ?? 'neutral'}>
-                          {msg.status === 'sent'
-                            ? 'Enviado'
-                            : msg.status === 'approved'
-                              ? 'Aprobado'
-                              : 'Pendiente'}
-                        </Badge>
-                        {msg.direction ? (
-                          <Badge tone="neutral">
-                            {msg.direction === 'inbound' ? 'Entrada' : msg.direction}
-                          </Badge>
-                        ) : null}
-                      </div>
-                      <p className="mt-0.5 text-xs text-pk-sub">{preview}</p>
-                    </div>
-                    <Reply className="h-3.5 w-3.5 shrink-0 text-pk-primary" aria-hidden />
-                  </div>
-                </button>
-
-                <div className="mt-2 flex flex-wrap gap-2">
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => void openThread(msg.id)}
-                  >
-                    <Reply className="h-4 w-4" aria-hidden />
-                    <span className="ml-1">Responder</span>
-                  </Button>
-                  {getContactHref(msg.source, msg.sender_contact) ? (
-                    <Button
-                      type="button"
-                      size="sm"
-                      variant="secondary"
-                      onClick={() => {
-                        const href = getContactHref(msg.source, msg.sender_contact);
-                        if (href) window.open(href, '_blank', 'noopener,noreferrer');
-                      }}
-                    >
-                      {msg.source === 'whatsapp' ? (
-                        <Phone className="h-4 w-4" aria-hidden />
-                      ) : (
-                        <Mail className="h-4 w-4" aria-hidden />
-                      )}
-                      <span className="ml-1">
-                        {msg.source === 'whatsapp' ? 'Abrir contacto' : 'Correo'}
-                      </span>
-                    </Button>
-                  ) : null}
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant="ghost"
-                    onClick={() =>
-                      void copyMessage(
-                        msg.id,
-                        `${msg.sender_name || msg.sender_contact}\n${msg.message_text}`
-                      )
-                    }
-                  >
-                    <Copy className="h-4 w-4" aria-hidden />
-                    <span className="ml-1">{copiedId === msg.id ? 'Copiado' : 'Copiar'}</span>
-                  </Button>
-                </div>
-              </div>
-            </li>
-          );
-        })}
+        {messages.map((message) => (
+          <MessageInboxItem
+            key={message.id}
+            message={message}
+            isActive={activeId === message.id}
+            copied={copiedId === message.id}
+            onOpenThread={(messageId) => {
+              void openThread(messageId);
+            }}
+            onCopyMessage={(messageId, text) => {
+              void copyMessage(messageId, text);
+            }}
+          />
+        ))}
       </ul>
 
-      {activeId ? (
-        <div className="rounded-xl border border-pk-border bg-pk-muted/30 p-3">
-          <div className="mb-2 flex items-center justify-between gap-2">
-            <p className="text-xs font-medium text-pk-sub">
-              Respuesta editable. La IA propone un borrador; tú decides qué sale.
-            </p>
-            <div className="flex items-center gap-2">
-              <Badge tone={threadMode === 'support' ? 'coral' : 'teal'}>
-                {conversationLabel(threadMode ?? undefined)}
-              </Badge>
-              <Badge tone={statusTone[threadState ?? 'pending'] ?? 'neutral'}>
-                {statusLabel(threadState)}
-              </Badge>
-            </div>
-          </div>
-          {loading ? (
-            <p className="flex items-center gap-2 text-xs text-pk-sub">
-              <Loader2 className="h-3 w-3 animate-spin" /> Cargando borrador…
-            </p>
-          ) : (
-            <textarea
-              value={replyText}
-              onChange={(e) => setReplyText(e.target.value)}
-              rows={4}
-              className="pk-input w-full text-sm"
-              placeholder="Escribe la respuesta aprobada…"
-            />
-          )}
-          <div className="mt-2 flex gap-2">
-            <Button
-              type="button"
-              size="sm"
-              disabled={sending || loading || !replyText.trim()}
-              onClick={() => void sendReply()}
-            >
-              {sending ? 'Enviando…' : 'Aprobar y enviar'}
-            </Button>
-            <Button type="button" size="sm" variant="ghost" onClick={() => setActiveId(null)}>
-              Cancelar
-            </Button>
-          </div>
-        </div>
-      ) : null}
+      <MessageReplyComposer
+        active={activeId !== null}
+        loading={loading}
+        sending={sending}
+        replyText={replyText}
+        threadState={threadState}
+        threadMode={threadMode}
+        onReplyChange={setReplyText}
+        onSend={() => {
+          void sendReply();
+        }}
+        onCancel={() => {
+          setActiveId(null);
+        }}
+      />
 
       {status ? <p className="text-xs text-pk-sub">{status}</p> : null}
     </div>

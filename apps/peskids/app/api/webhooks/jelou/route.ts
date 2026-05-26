@@ -32,7 +32,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     }
 
     console.warn(`[jelou] unknown form type: ${webhook.data.form_id}`);
-    return NextResponse.json({ status: 'ignored' });
+    return NextResponse.json({ status: 'ignored', request_id: requestId });
   } catch (error) {
     console.error('[jelou] unhandled error:', error, { request_id: requestId });
     return NextResponse.json(

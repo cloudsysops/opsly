@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { triggerN8nMessagePipeline } from '@/lib/chat-assistant';
 import { emitEvent } from '@/lib/events';
 import { enqueueApprovedReply } from '@/lib/n8n-send';
@@ -7,6 +7,7 @@ import { getPeskidsWhatsAppReplyMode, shouldAutoReplyWhatsApp } from '@/lib/what
 import { buildPeskidsIntakeTurn } from '@/lib/peskids-intake';
 import { submitLeadFromIntake } from '@/lib/peskids-lead-from-intake';
 import { supabaseServer } from '@/lib/supabase';
+import { errorJson, resolveRequestId, successJson } from '@/lib/api-response';
 
 type InboundSource = 'whatsapp' | 'instagram' | 'web';
 
@@ -69,25 +70,24 @@ function normalizePayload(body: InboundPayload): {
 }
 
 export async function POST(req: NextRequest) {
+  const requestId = resolveRequestId(req);
+
   try {
     if (!verifyInboundSecret(req)) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return errorJson(requestId, 'Unauthorized', 401);
     }
 
     const body = (await req.json()) as InboundPayload;
     const normalized = normalizePayload(body);
     if (!normalized) {
-      return NextResponse.json(
-        { error: 'Invalid payload: require from/sender_contact and text/message' },
-        { status: 400 }
-      );
+      return errorJson(requestId, 'Invalid payload: require from/sender_contact and text/message', 400);
     }
 
     const { message, error } = await storeInboundMessage(normalized);
 
     if (error || !message) {
-      console.error('Inbound message insert failed:', error);
-      return NextResponse.json({ error: 'Failed to store message' }, { status: 500 });
+      console.error('Inbound message insert failed:', error, { request_id: requestId });
+      return errorJson(requestId, 'Failed to store message', 500);
     }
 
     const intake = await buildPeskidsIntakeTurn({
@@ -165,7 +165,8 @@ export async function POST(req: NextRequest) {
       timestamp: new Date().toISOString(),
     });
 
-    return NextResponse.json(
+    return successJson(
+      requestId,
       {
         ok: true,
         message,
@@ -178,10 +179,10 @@ export async function POST(req: NextRequest) {
         from_llm: false,
         n8n: sendResult,
       },
-      { status: 201 }
+      201
     );
   } catch (error) {
-    console.error('Inbound webhook error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    console.error('Inbound webhook error:', error, { request_id: requestId });
+    return errorJson(requestId, 'Internal server error', 500);
   }
 }

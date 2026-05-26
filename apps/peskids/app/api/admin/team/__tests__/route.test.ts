@@ -31,9 +31,14 @@ describe('GET /api/admin/team', () => {
     })
 
     const { GET } = await import('../route')
-    const response = await GET()
+    const response = await GET({ headers: new Headers({ 'x-request-id': 'req-team-403' }) } as never)
 
     expect(response.status).toBe(403)
+    await expect(response.json()).resolves.toEqual({
+      ok: false,
+      error: 'Forbidden',
+      request_id: 'req-team-403',
+    })
     expect(loadPeskidsTeamMock).not.toHaveBeenCalled()
   })
 
@@ -55,11 +60,12 @@ describe('GET /api/admin/team', () => {
     })
 
     const { GET } = await import('../route')
-    const response = await GET()
+    const response = await GET({ headers: new Headers({ 'x-request-id': 'req-team-200' }) } as never)
     const json = await response.json()
 
     expect(response.status).toBe(200)
     expect(json.ok).toBe(true)
+    expect(json.request_id).toBe('req-team-200')
     expect(loadPeskidsTeamMock).toHaveBeenCalled()
   })
 })

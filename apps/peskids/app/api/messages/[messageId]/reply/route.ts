@@ -1,13 +1,15 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { validateStaffSession } from '@/lib/staff-auth';
 import { enqueueApprovedReply } from '@/lib/n8n-send';
 import { supabaseServer } from '@/lib/supabase';
+import { errorJson, resolveRequestId, successJson } from '@/lib/api-response';
 
 export async function POST(req: NextRequest, context: { params: Promise<{ messageId: string }> }) {
+  const requestId = resolveRequestId(req);
   try {
     const auth = await validateStaffSession();
     if (!auth.ok) {
-      return NextResponse.json({ error: auth.error }, { status: auth.status });
+      return errorJson(requestId, auth.error, auth.status);
     }
 
     const { messageId } = await context.params;
@@ -15,7 +17,7 @@ export async function POST(req: NextRequest, context: { params: Promise<{ messag
     const { replyText } = await req.json();
 
     if (!replyText || replyText.trim().length === 0) {
-      return NextResponse.json({ error: 'Reply text cannot be empty' }, { status: 400 });
+      return errorJson(requestId, 'Reply text cannot be empty', 400);
     }
 
     const supabase = supabaseServer();
@@ -29,7 +31,7 @@ export async function POST(req: NextRequest, context: { params: Promise<{ messag
       .single();
 
     if (fetchError || !originalMessage) {
-      return NextResponse.json({ error: 'Message not found' }, { status: 404 });
+      return errorJson(requestId, 'Message not found', 404);
     }
 
     const { data: replyRecord, error: insertError } = await supabase
@@ -94,8 +96,10 @@ export async function POST(req: NextRequest, context: { params: Promise<{ messag
       // Non-blocking: continue even if event bus fails
     }
 
-    return NextResponse.json(
+    return successJson(
+      requestId,
       {
+        ok: true,
         success: true,
         replyRecord,
         n8n: sendResult,
@@ -103,10 +107,10 @@ export async function POST(req: NextRequest, context: { params: Promise<{ messag
           ? 'Respuesta registrada y encolada en n8n para envío.'
           : 'Respuesta registrada. n8n no disponible — revisa N8N_WEBHOOK_BASE_URL.',
       },
-      { status: 201 }
+      201
     );
   } catch (error) {
-    console.error('Reply API error:', error);
-    return NextResponse.json({ error: 'Failed to process reply' }, { status: 500 });
+    console.error('Reply API error:', error, { request_id: requestId });
+    return errorJson(requestId, 'Failed to process reply', 500);
   }
 }

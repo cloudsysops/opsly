@@ -32,9 +32,10 @@ describe('POST /api/families/access', () => {
     const res = await POST(req)
     expect(res.status).toBe(202)
 
-    const body = (await res.json()) as { ok: boolean; message: string }
+    const body = (await res.json()) as { ok: boolean; message: string; request_id: string }
     expect(body.ok).toBe(true)
     expect(body.message).toContain('enlace seguro')
+    expect(body.request_id).toBeDefined()
     expect(requestFamilyAccessInviteMock).toHaveBeenCalledWith({
       email: 'family@example.com',
       name: 'Familia Sierra',
@@ -51,5 +52,10 @@ describe('POST /api/families/access', () => {
 
     const res = await POST(req)
     expect(res.status).toBe(400)
+    await expect(res.json()).resolves.toEqual({
+      ok: false,
+      error: 'Email requerido',
+      request_id: expect.any(String),
+    })
   })
 })

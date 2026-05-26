@@ -1,7 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { getServiceClient } from '@/lib/supabase';
 import { buildPeskidsReferralCode, PESKIDS_REFERRAL_DISCOUNT_CENTS } from '@/lib/peskids-referrals';
 import { buildPeskidsReferralLink, normalizeReferralCode } from '@/lib/peskids-referral-links';
+import { errorJson, resolveRequestId, successJson } from '@/lib/api-response';
 
 type LeadBody = {
   name: string;
@@ -20,26 +21,29 @@ type LeadBody = {
 };
 
 export async function POST(request: NextRequest) {
+  const requestId = resolveRequestId(request);
+
   try {
     const body = (await request.json()) as LeadBody;
 
     if (!process.env.SUPABASE_SERVICE_ROLE_KEY || !process.env.NEXT_PUBLIC_SUPABASE_URL) {
-      return NextResponse.json({ error: 'Database not configured' }, { status: 500 });
+      return errorJson(requestId, 'Database not configured', 500);
     }
 
-    const supabase = getServiceClient();
     const tenantId = process.env.NEXT_PUBLIC_TENANT_ID || 'peskids';
     const referredByCode = normalizeReferralCode(body.referred_by_code);
 
     // Consent audit log — governance.consents table wired in Phase 3
     if (!body.consent_treatment) {
-      return NextResponse.json({ error: 'Consent required' }, { status: 400 });
+      return errorJson(requestId, 'Consent required', 400);
     }
     console.warn('[peskids][lead] consent', {
       treatment: body.consent_treatment,
       marketing: body.consent_marketing ?? false,
       policy_version: body.consent_policy_version,
     });
+
+    const supabase = getServiceClient();
 
     const leadPayload = {
       tenant_id: tenantId,
@@ -85,8 +89,8 @@ export async function POST(request: NextRequest) {
     const { data, error } = insertResult;
 
     if (error) {
-      console.error('Lead insertion failed:', error.message);
-      return NextResponse.json({ error: 'Failed to create lead' }, { status: 400 });
+      console.error('Lead insertion failed:', error.message, { request_id: requestId });
+      return errorJson(requestId, 'Failed to create lead', 400);
     }
 
     const lead = data?.[0];
@@ -138,18 +142,20 @@ export async function POST(request: NextRequest) {
 
     const referralLink = referralCode ? buildPeskidsReferralLink(referralCode) : null;
 
-    return NextResponse.json(
+    return successJson(
+      requestId,
       {
+        ok: true,
         id: lead?.id,
         referral_code: referralCode,
         referral_link: referralLink,
         referral_discount_cents: supportsReferralColumns ? (lead?.referral_discount_cents ?? 0) : 0,
         message: 'Lead created successfully',
       },
-      { status: 201 }
+      201
     );
   } catch (error) {
-    console.error('Peskids lead endpoint error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    console.error('Peskids lead endpoint error:', error, { request_id: requestId });
+    return errorJson(requestId, 'Internal server error', 500);
   }
 }

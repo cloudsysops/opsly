@@ -1,26 +1,28 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { loadPeskidsBiSnapshot } from '../../../../lib/bi-snapshot'
 import { validateFamilyRequest } from '@/lib/family-auth'
 import { createFormSubmissionService } from '@/lib/services/form-submission.service'
 import { buildFamilyRoleMetrics } from '@/lib/role-metrics'
 import { supabaseServer } from '@/lib/supabase'
+import { errorJson, resolveRequestId, successJson } from '@/lib/api-response'
 
 export async function GET(req: NextRequest) {
+  const requestId = resolveRequestId(req)
   const auth = await validateFamilyRequest(req)
   if (!auth.ok) {
-    return NextResponse.json({ error: auth.error }, { status: auth.status })
+    return errorJson(requestId, auth.error, auth.status)
   }
 
   const parentEmail = auth.user.email?.trim() ?? ''
   if (!parentEmail) {
-    return NextResponse.json({ error: 'Family email not found in session' }, { status: 400 })
+    return errorJson(requestId, 'Family email not found in session', 400)
   }
 
   const tenantId = process.env.NEXT_PUBLIC_TENANT_ID || 'peskids'
   const snapshot = await loadPeskidsBiSnapshot()
   const snapshotMetrics = snapshot?.families.byParentEmail[parentEmail.toLowerCase()]
   if (snapshotMetrics) {
-    return NextResponse.json({
+    return successJson(requestId, {
       parentEmail,
       tenantId,
       metrics: snapshotMetrics,
@@ -40,12 +42,12 @@ export async function GET(req: NextRequest) {
     .limit(20)
 
   if (feedbackResult.error) {
-    return NextResponse.json({ error: 'Failed to fetch family metrics' }, { status: 500 })
+    return errorJson(requestId, 'Failed to fetch family metrics', 500)
   }
 
   const metrics = await buildFamilyRoleMetrics(submissions, feedbackResult.data ?? [])
 
-  return NextResponse.json({
+  return successJson(requestId, {
     parentEmail,
     tenantId,
     metrics,

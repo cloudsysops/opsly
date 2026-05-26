@@ -1,13 +1,16 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { triggerN8nMessagePipeline } from '@/lib/chat-assistant';
 import { storeDraftReply, storeInboundMessage, storeOutboundMessage } from '@/lib/message-store';
 import { emitEvent } from '@/lib/events';
 import { buildPeskidsIntakeTurn } from '@/lib/peskids-intake';
 import { submitLeadFromIntake } from '@/lib/peskids-lead-from-intake';
+import { errorJson, resolveRequestId, successJson } from '@/lib/api-response';
 
 const MAX_MESSAGE_LENGTH = 2000;
 
 export async function POST(req: NextRequest) {
+  const requestId = resolveRequestId(req);
+
   try {
     const body = (await req.json()) as {
       message?: string;
@@ -20,7 +23,7 @@ export async function POST(req: NextRequest) {
     const sessionId = body.session_id?.trim() ?? 'web-anonymous';
 
     if (!messageText || messageText.length > MAX_MESSAGE_LENGTH) {
-      return NextResponse.json({ error: 'message required (max 2000 chars)' }, { status: 400 });
+      return errorJson(requestId, 'message required (max 2000 chars)', 400);
     }
 
     const { message, error: storeError } = await storeInboundMessage({
@@ -32,7 +35,7 @@ export async function POST(req: NextRequest) {
     });
 
     if (storeError || !message) {
-      return NextResponse.json({ error: 'Failed to store message' }, { status: 500 });
+      return errorJson(requestId, 'Failed to store message', 500);
     }
 
     const intake = await buildPeskidsIntakeTurn({
@@ -76,7 +79,7 @@ export async function POST(req: NextRequest) {
       timestamp: new Date().toISOString(),
     });
 
-    return NextResponse.json({
+    return successJson(requestId, {
       ok: true,
       message_id: message.id,
       draft_id: draft.draft?.id ?? null,
@@ -96,7 +99,7 @@ export async function POST(req: NextRequest) {
             : 'Te haré algunas preguntas cortas para completar tu solicitud.',
     });
   } catch (error) {
-    console.error('Chat API error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    console.error('Chat API error:', error, { request_id: requestId });
+    return errorJson(requestId, 'Internal server error', 500);
   }
 }

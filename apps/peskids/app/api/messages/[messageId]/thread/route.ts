@@ -1,15 +1,17 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { validateStaffSession } from '@/lib/staff-auth';
 import { supabaseServer } from '@/lib/supabase';
+import { errorJson, resolveRequestId, successJson } from '@/lib/api-response';
 
 function detectConversationMode(senderContact: string): 'admissions' | 'support' {
   return senderContact.includes('web:support:') ? 'support' : 'admissions';
 }
 
 export async function GET(_req: NextRequest, context: { params: Promise<{ messageId: string }> }) {
+  const requestId = resolveRequestId(_req);
   const auth = await validateStaffSession();
   if (!auth.ok) {
-    return NextResponse.json({ error: auth.error }, { status: auth.status });
+    return errorJson(requestId, auth.error, auth.status);
   }
 
   const { messageId } = await context.params;
@@ -24,7 +26,7 @@ export async function GET(_req: NextRequest, context: { params: Promise<{ messag
     .maybeSingle();
 
   if (inboundError || !inbound) {
-    return NextResponse.json({ error: 'Message not found' }, { status: 404 });
+    return errorJson(requestId, 'Message not found', 404);
   }
 
   const { data: drafts } = await supabase
@@ -38,7 +40,7 @@ export async function GET(_req: NextRequest, context: { params: Promise<{ messag
 
   const latestDraft = drafts?.[0] ?? null;
 
-  return NextResponse.json({
+  return successJson(requestId, {
     inbound,
     status: inbound.status ?? 'pending',
     conversation_mode: detectConversationMode(inbound.sender_contact),

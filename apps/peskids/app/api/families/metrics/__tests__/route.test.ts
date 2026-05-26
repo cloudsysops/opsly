@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const validateFamilyRequestMock = vi.fn()
 const getParentSubmissionsMock = vi.fn()
@@ -34,6 +34,37 @@ vi.mock('@/lib/supabase', () => ({
 }))
 
 describe('GET /api/families/metrics', () => {
+  beforeEach(() => {
+    validateFamilyRequestMock.mockReset()
+    getParentSubmissionsMock.mockReset()
+    buildFamilyRoleMetricsMock.mockReset()
+    selectMock.mockClear()
+    eqMock.mockClear()
+    orderMock.mockClear()
+    limitMock.mockClear()
+  })
+
+  it('returns auth failures with request_id', async () => {
+    validateFamilyRequestMock.mockResolvedValue({
+      ok: false,
+      status: 401,
+      error: 'Unauthorized',
+    })
+
+    const { GET } = await import('../route')
+    const response = await GET({
+      headers: new Headers({ 'x-request-id': 'req-family-metrics-401' }),
+      cookies: { getAll: () => [] },
+    } as never)
+
+    expect(response.status).toBe(401)
+    await expect(response.json()).resolves.toEqual({
+      ok: false,
+      error: 'Unauthorized',
+      request_id: 'req-family-metrics-401',
+    })
+  })
+
   it('returns family metrics for the authenticated family', async () => {
     validateFamilyRequestMock.mockResolvedValue({
       ok: true,
@@ -55,15 +86,15 @@ describe('GET /api/families/metrics', () => {
 
     const { GET } = await import('../route')
     const response = await GET({
-      headers: new Headers(),
+      headers: new Headers({ 'x-request-id': 'req-family-metrics-200' }),
       cookies: { getAll: () => [] },
     } as never)
     const payload = await response.json()
 
     expect(response.status).toBe(200)
     expect(payload.metrics.totalSubmissions).toBe(1)
+    expect(payload.request_id).toBe('req-family-metrics-200')
     expect(getParentSubmissionsMock).toHaveBeenCalledWith('family@example.com')
     expect(buildFamilyRoleMetricsMock).toHaveBeenCalled()
   })
 })
-

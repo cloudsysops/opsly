@@ -1,13 +1,15 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { validateFamilyRequest } from '@/lib/family-auth';
 import { supabaseServer } from '@/lib/supabase';
 import { isMissingExpandedFeedbackColumn } from '@/lib/utils/db-compat';
 import type { Database } from '@/lib/types';
+import { errorJson, resolveRequestId, successJson } from '@/lib/api-response';
 
 export async function GET(req: NextRequest) {
+  const requestId = resolveRequestId(req);
   const auth = await validateFamilyRequest(req);
   if (!auth.ok) {
-    return NextResponse.json({ error: auth.error }, { status: auth.status });
+    return errorJson(requestId, auth.error, auth.status);
   }
 
   const tenantId = process.env.NEXT_PUBLIC_TENANT_ID || 'peskids';
@@ -15,7 +17,7 @@ export async function GET(req: NextRequest) {
   const supabase = supabaseServer();
 
   if (!parentEmail) {
-    return NextResponse.json({ error: 'Family email not found in session' }, { status: 400 });
+    return errorJson(requestId, 'Family email not found in session', 400);
   }
 
   const recentFeedbackQuery = async () =>
@@ -47,10 +49,10 @@ export async function GET(req: NextRequest) {
   }
 
   if (error) {
-    return NextResponse.json({ error: 'Failed to fetch family feedback' }, { status: 500 });
+    return errorJson(requestId, 'Failed to fetch family feedback', 500);
   }
 
-  return NextResponse.json({
+  return successJson(requestId, {
     feedback,
     count: feedback.length,
     parentEmail,
