@@ -15,6 +15,7 @@ import type { DashboardData } from '@/lib/types'
 import { AdminShell } from '@/components/admin/admin-shell'
 import { MessageInboxPanel } from '@/components/admin/message-inbox-panel'
 import { StatCard } from '@/components/admin/stat-card'
+import { TeamPanel } from '@/components/admin/team-panel'
 import { classModalityLabel } from '@/lib/lead-modality'
 import { buildPeskidsReferralLink } from '@/lib/peskids-referral-links'
 import { Badge } from '@/components/ui/badge'
@@ -356,6 +357,10 @@ export function DashboardView({
           </div>
         </div>
       </section>
+
+      <div className="mb-5">
+        <TeamPanel />
+      </div>
 
       <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
         <StatCard

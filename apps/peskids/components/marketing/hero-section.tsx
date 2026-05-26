@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { Waves } from 'lucide-react'
+import { ArrowRight, GraduationCap, ShieldCheck, Waves } from 'lucide-react'
 import { PeskidsBrush, StarBurst, WiggleLine } from '@/components/brand/peskids-logo'
 import { HeroChatCard } from '@/components/chat/hero-chat-card'
 import { HeroChatCta } from '@/components/chat/hero-chat-cta'
@@ -44,6 +44,80 @@ export function HeroSection(): React.ReactElement {
             <strong className="text-white">sede Llanogrande</strong> o{' '}
             <strong className="text-white">a domicilio</strong> en el área metropolitana.
           </p>
+
+          <div className="mt-8 grid gap-3 sm:grid-cols-3">
+            <Link
+              href="/familias/login"
+              className="group rounded-2xl border border-white/10 bg-white/10 px-4 py-4 text-left transition hover:border-white/25 hover:bg-white/15"
+            >
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-white/55">
+                    Familias
+                  </p>
+                  <p className="mt-1 text-sm font-semibold text-white">Entrar con Google</p>
+                </div>
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/12 text-white">
+                  <Waves className="h-5 w-5" aria-hidden />
+                </div>
+              </div>
+              <p className="mt-3 text-xs leading-5 text-white/65">
+                Acceso directo al panel de familias y sus reservas.
+              </p>
+              <span className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-pk-primary">
+                Ir al acceso
+                <ArrowRight className="h-3.5 w-3.5 transition group-hover:translate-x-0.5" aria-hidden />
+              </span>
+            </Link>
+
+            <Link
+              href="/teacher/login"
+              className="group rounded-2xl border border-white/10 bg-white/10 px-4 py-4 text-left transition hover:border-white/25 hover:bg-white/15"
+            >
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-white/55">
+                    Profesores
+                  </p>
+                  <p className="mt-1 text-sm font-semibold text-white">Panel de trabajo</p>
+                </div>
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/12 text-white">
+                  <GraduationCap className="h-5 w-5" aria-hidden />
+                </div>
+              </div>
+              <p className="mt-3 text-xs leading-5 text-white/65">
+                Clases, seguimientos y gestión operativa del día a día.
+              </p>
+              <span className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-pk-primary">
+                Ir al acceso
+                <ArrowRight className="h-3.5 w-3.5 transition group-hover:translate-x-0.5" aria-hidden />
+              </span>
+            </Link>
+
+            <Link
+              href="/admin/login"
+              className="group rounded-2xl border border-white/10 bg-white/10 px-4 py-4 text-left transition hover:border-white/25 hover:bg-white/15"
+            >
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-white/55">
+                    Admin
+                  </p>
+                  <p className="mt-1 text-sm font-semibold text-white">Panel administrativo</p>
+                </div>
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/12 text-white">
+                  <ShieldCheck className="h-5 w-5" aria-hidden />
+                </div>
+              </div>
+              <p className="mt-3 text-xs leading-5 text-white/65">
+                Leads, feedback, follow-up y configuración del equipo.
+              </p>
+              <span className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-pk-primary">
+                Ir al acceso
+                <ArrowRight className="h-3.5 w-3.5 transition group-hover:translate-x-0.5" aria-hidden />
+              </span>
+            </Link>
+          </div>
 
           <WiggleLine width={120} color="rgba(76,184,176,0.95)" className="mt-4" />
 

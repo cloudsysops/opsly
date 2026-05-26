@@ -10,6 +10,7 @@ import {
   LayoutDashboard,
   MessageSquare,
   RefreshCw,
+  ShieldCheck,
   Users,
 } from 'lucide-react'
 import { PeskidsLogo } from '@/components/brand/peskids-logo'
@@ -33,6 +34,7 @@ interface NavItem {
 const navOps = [
   { icon: Home, label: 'Landing', href: '/' },
   { icon: LayoutDashboard, label: 'Dashboard', href: '/admin' },
+  { icon: ShieldCheck, label: 'Equipo', href: '/admin#team' },
   { icon: Users, label: 'Leads', href: '/admin#leads' },
   { icon: MessageSquare, label: 'Feedback', href: '/admin#feedback' },
   { icon: CalendarClock, label: 'Follow-up', href: '/admin#follow-up' },
@@ -73,6 +75,10 @@ export function AdminShell({
 
     if (item.label === 'Dashboard') {
       return hash === '' || hash === '#dashboard'
+    }
+
+    if (item.label === 'Equipo') {
+      return hash === '#team'
     }
 
     if (item.label === 'Leads') {

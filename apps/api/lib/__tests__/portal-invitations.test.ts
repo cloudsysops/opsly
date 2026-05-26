@@ -71,6 +71,12 @@ describe('sendPortalInvitationForTenant', () => {
         html: expect.stringContaining('http://localhost:3004/admin/login'),
       })
     );
+    expect(emailMod.sendHtmlEmail).toHaveBeenCalledWith(
+      expect.objectContaining({
+        subject: 'Tu acceso al panel de Peskids está listo',
+        html: expect.stringContaining('http://localhost:3004/brand/logo-reference.png'),
+      })
+    );
   });
 
   it('uses the portal base for non-peskids tenants', async () => {

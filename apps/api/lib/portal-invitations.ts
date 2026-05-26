@@ -21,34 +21,76 @@ function isProductionRuntime(): boolean {
 
 const PORTAL_INVITE_HTML_TEMPLATE = `<!DOCTYPE html>
 <html lang="es">
-<head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><title>{brandName}</title></head>
-<body style="margin:0;background:#09090b;color:#fafafa;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;">
-<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#09090b;padding:32px 16px;"><tr><td align="center">
-<table role="presentation" width="560" cellspacing="0" cellpadding="0" style="max-width:560px;background:#111111;border:1px solid #1e1e1e;border-radius:12px;padding:32px;">
-<tr><td style="font-size:22px;font-weight:700;letter-spacing:-0.02em;color:#22c55e;">{brandName}</td></tr>
-<tr><td style="height:24px;"></td></tr>
-<tr><td style="font-size:18px;line-height:1.5;">Hola {displayName},</td></tr>
-<tr><td style="height:12px;"></td></tr>
-<tr><td style="font-size:15px;line-height:1.6;color:#d4d4d4;">Tu espacio <strong>{companyName}</strong> está listo: activa tu acceso y entra al panel correspondiente.</td></tr>
-<tr><td style="height:28px;"></td></tr>
-<tr><td align="center"><a href="{activateUrl}" style="display:inline-block;background:#22c55e;color:#09090b;text-decoration:none;font-weight:600;font-size:15px;padding:14px 28px;border-radius:8px;">Activar mi cuenta</a></td></tr>
-<tr><td style="height:28px;"></td></tr>
-<tr><td style="font-size:14px;line-height:1.6;color:#d4d4d4;"><strong style="color:#fafafa;">Primeros pasos</strong>
-<ol style="margin:12px 0 0 18px;padding:0;line-height:1.7;">
-<li>Pulsa <strong>Activar mi cuenta</strong> y define una contraseña segura.</li>
-<li>Accede al <a href="{portalHomeUrl}" style="color:#22c55e;text-decoration:none;">panel</a> y revisa tu dashboard.</li>
-<li>En modo desarrollador encontrarás las URLs y credenciales cuando apliquen.</li>
-</ol></td></tr>
-<tr><td style="height:20px;"></td></tr>
-<tr><td style="font-size:14px;line-height:1.6;color:#d4d4d4;"><strong style="color:#fafafa;">Feedback</strong><br />
-En el panel hay un chat de feedback: úsalo para reportar incidencias o sugerencias; el equipo lo revisa.</td></tr>
-<tr><td style="height:28px;"></td></tr>
-<tr><td style="font-size:13px;font-weight:600;color:#a3a3a3;text-transform:uppercase;letter-spacing:0.06em;">Incluido en tu plan</td></tr>
-<tr><td style="height:12px;"></td></tr>
-<tr><td style="font-size:14px;line-height:1.8;color:#e5e5e5;"><div>✅ Motor de automatización (n8n)</div><div>✅ Monitor de disponibilidad 24/7</div><div>✅ Enlaces dedicados para tu organización</div></td></tr>
-<tr><td style="height:28px;"></td></tr>
-<tr><td style="font-size:12px;color:#737373;border-top:1px solid #1e1e1e;padding-top:20px;">{footerLine}</td></tr>
-</table></td></tr></table></body></html>`;
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{brandName}</title>
+</head>
+<body style="margin:0;background:#eef7fb;color:#0f172a;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:linear-gradient(180deg,#e8f4fb 0%,#f7fbfd 100%);padding:40px 16px;">
+    <tr>
+      <td align="center">
+        <table role="presentation" width="600" cellspacing="0" cellpadding="0" style="max-width:600px;width:100%;background:#ffffff;border:1px solid #d7e7ef;border-radius:24px;overflow:hidden;box-shadow:0 18px 60px rgba(15,23,42,0.08);">
+          <tr>
+            <td style="background:linear-gradient(135deg,#dff4f6 0%,#eef7fb 100%);padding:28px 32px 22px 32px;">
+              <table role="presentation" cellspacing="0" cellpadding="0" style="width:100%;">
+                <tr>
+                  <td valign="middle" style="width:72px;">
+                    {logoBlock}
+                  </td>
+                  <td valign="middle" style="padding-left:16px;">
+                    <div style="font-size:12px;letter-spacing:0.14em;text-transform:uppercase;color:#0f766e;font-weight:700;">Acceso al panel</div>
+                    <div style="font-size:28px;line-height:1.1;font-weight:800;color:#0f172a;margin-top:6px;">{brandName}</div>
+                    <div style="font-size:14px;line-height:1.5;color:#334155;margin-top:6px;">Tu espacio está listo para activar acceso y continuar en el panel correcto.</div>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:34px 32px 24px 32px;">
+              <div style="font-size:18px;line-height:1.6;color:#0f172a;font-weight:700;">Hola {displayName},</div>
+              <div style="height:12px;"></div>
+              <div style="font-size:15px;line-height:1.75;color:#334155;">
+                Tu acceso para <strong>{companyName}</strong> ya está preparado.
+                Solo falta activar la contraseña y entrar al panel.
+              </div>
+              <div style="height:26px;"></div>
+              <table role="presentation" cellspacing="0" cellpadding="0" style="margin:0 auto;">
+                <tr>
+                  <td align="center" bgcolor="#14b8a6" style="border-radius:999px;">
+                    <a href="{activateUrl}" style="display:inline-block;padding:14px 28px;font-size:15px;font-weight:700;color:#ffffff;text-decoration:none;border-radius:999px;">Activar mi cuenta</a>
+                  </td>
+                </tr>
+              </table>
+              <div style="height:24px;"></div>
+              <div style="padding:18px 20px;border-radius:18px;background:#f8fcfd;border:1px solid #d6eef0;">
+                <div style="font-size:13px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:#0f766e;">Siguientes pasos</div>
+                <ol style="margin:12px 0 0 18px;padding:0;font-size:14px;line-height:1.8;color:#334155;">
+                  <li>Abre <strong>Activar mi cuenta</strong> y define una contraseña segura.</li>
+                  <li>Entra al <a href="{portalHomeUrl}" style="color:#0f766e;text-decoration:none;font-weight:700;">panel</a> y revisa tu dashboard.</li>
+                  <li>Si el correo no llega, usa el enlace manual de respaldo o revisa el spam.</li>
+                </ol>
+              </div>
+              <div style="height:22px;"></div>
+              <div style="font-size:14px;line-height:1.7;color:#475569;">
+                En el panel también verás feedback, seguimiento y accesos dedicados para tu organización.
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:0 32px 28px 32px;">
+              <div style="border-top:1px solid #e2edf3;padding-top:18px;font-size:12px;line-height:1.6;color:#64748b;">
+                {footerLine}
+              </div>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
 
 function requireEnv(name: string): string {
   const value = process.env[name];
@@ -137,12 +179,25 @@ function footerLineFromEnv(): string {
   return 'Opsly';
 }
 
+function buildLogoBlock(logoUrl: string | null, brandName: string): string {
+  if (!logoUrl) {
+    return `<div style="width:64px;height:64px;border-radius:20px;background:#14b8a6;color:#ffffff;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:16px;line-height:1.1;text-align:center;">${escapeHtml(
+      brandName
+    )}</div>`;
+  }
+
+  return `<img src="${escapeHtml(logoUrl)}" alt="${escapeHtml(
+    brandName
+  )}" width="64" height="64" style="display:block;width:64px;height:64px;border-radius:20px;object-fit:cover;border:1px solid rgba(15,118,110,0.16);" />`;
+}
+
 function buildPortalInviteHtml(
   displayName: string,
   companyName: string,
   activateUrl: string,
   homeUrl: string,
-  brandName: string
+  brandName: string,
+  logoUrl: string | null
 ): string {
   const safeName = escapeHtml(displayName);
   const safeCompany = escapeHtml(companyName);
@@ -150,11 +205,13 @@ function buildPortalInviteHtml(
   const safeHome = escapeHtml(homeUrl);
   const safeBrand = escapeHtml(brandName);
   const safeFooter = escapeHtml(footerLineFromEnv());
+  const safeLogoBlock = buildLogoBlock(logoUrl, brandName);
   return PORTAL_INVITE_HTML_TEMPLATE.replace('{displayName}', safeName)
     .replace('{brandName}', safeBrand)
     .replace('{companyName}', safeCompany)
     .replace('{activateUrl}', safeUrl)
     .replace('{portalHomeUrl}', safeHome)
+    .replace('{logoBlock}', safeLogoBlock)
     .replace('{footerLine}', safeFooter);
 }
 
@@ -222,6 +279,7 @@ export async function sendPortalInvitationForTenant(
   );
 
   const siteUrl = getTenantSiteUrl(params.slug);
+  const logoUrl = params.slug === 'peskids' ? `${siteUrl}/brand/logo-reference.png` : null;
   const homeUrl = resolveTenantSiteTarget(params.slug, {
     portal: {
       siteUrl: getPortalSiteUrl(),
@@ -237,28 +295,38 @@ export async function sendPortalInvitationForTenant(
     ],
   }).loginUrl;
   const brandName = params.slug === 'peskids' ? 'Peskids' : 'Opsly';
-  const html = buildPortalInviteHtml(params.name, params.name, activateUrl, homeUrl, brandName);
+  const html = buildPortalInviteHtml(
+    params.name,
+    params.name,
+    activateUrl,
+    homeUrl,
+    brandName,
+    logoUrl
+  );
 
   let emailDeliverySkipped = isEmailDeliverySkipped();
   let emailDeliveryWarning: string | undefined = emailDeliverySkipped
     ? 'EMAIL_DELIVERY_MODE=test (no Resend send)'
     : undefined;
   if (!emailDeliverySkipped) {
-  try {
-    await sendHtmlEmail({
-      to: params.email,
-      subject: `Tu plataforma ${params.name} está lista 🚀`,
-      html,
-      from: getInviteFromEmail(),
-    });
-  } catch (err) {
-    if (!isNonFatalEmailDeliveryError(err)) {
-      throw err;
+    try {
+      await sendHtmlEmail({
+        to: params.email,
+        subject:
+          params.slug === 'peskids'
+            ? 'Tu acceso al panel de Peskids está listo'
+            : `Tu plataforma ${params.name} está lista 🚀`,
+        html,
+        from: getInviteFromEmail(),
+      });
+    } catch (err) {
+      if (!isNonFatalEmailDeliveryError(err)) {
+        throw err;
+      }
+      emailDeliverySkipped = true;
+      emailDeliveryWarning =
+        err instanceof Error ? err.message : 'Email delivery skipped (test mode or provider restriction)';
     }
-    emailDeliverySkipped = true;
-    emailDeliveryWarning =
-      err instanceof Error ? err.message : 'Email delivery skipped (test mode or provider restriction)';
-  }
   }
 
   return {

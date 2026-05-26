@@ -1,12 +1,14 @@
 'use client'
 
 import { Loader2 } from 'lucide-react'
+import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Suspense, useEffect, useState } from 'react'
 import { PeskidsLogo } from '@/components/brand/peskids-logo'
 import { Button } from '@/components/ui/button'
 import { buildRecoveryRedirectTo } from '@/lib/auth-recovery'
 import { isStaffUser } from '@/lib/staff-user'
+import { tenantRoleFromUserMetadata } from '../../../../../lib/runtime/src/tenant-identity'
 import { createClient } from '@/lib/supabase-browser'
 
 function browserSupabaseConfigured(): boolean {
@@ -18,6 +20,13 @@ function browserSupabaseConfigured(): boolean {
 
 function authFetchErrorMessage(): string {
   return 'El acceso al panel no está configurado correctamente en este despliegue. Usa "¿Olvidaste tu contraseña?" o avisa al equipo.'
+}
+
+function resolvePostLoginPath(role: string | undefined): string {
+  if (role === 'teacher') {
+    return '/teacher/dashboard'
+  }
+  return '/admin'
 }
 
 function AdminLoginForm(): React.ReactElement {
@@ -105,7 +114,7 @@ function AdminLoginForm(): React.ReactElement {
         )
         return
       }
-      router.push('/admin')
+      router.push(resolvePostLoginPath(tenantRoleFromUserMetadata(user)))
       router.refresh()
     } catch {
       setError(authFetchErrorMessage())
@@ -117,6 +126,20 @@ function AdminLoginForm(): React.ReactElement {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-pk-bg px-4">
       <div className="w-full max-w-md rounded-2xl border border-pk-border bg-white p-8 shadow-card">
+        <div className="mb-5 flex items-center justify-center gap-2 rounded-full border border-pk-border bg-pk-muted px-2 py-2">
+          <Link
+            href="/admin/login"
+            className="rounded-full bg-white px-4 py-2 text-xs font-semibold text-pk-ink shadow-sm transition hover:bg-pk-snow"
+          >
+            Panel administrativo
+          </Link>
+          <Link
+            href="/teacher/login"
+            className="rounded-full px-4 py-2 text-xs font-semibold text-pk-sub transition hover:bg-white hover:text-pk-ink"
+          >
+            Panel de profesores
+          </Link>
+        </div>
         <div className="mb-6 flex justify-center">
           <PeskidsLogo size={72} />
         </div>
