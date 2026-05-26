@@ -5,6 +5,8 @@ import { rateLimit, getClientIdentifier } from '@/lib/rate-limit';
 import { isMissingExpandedFeedbackColumn } from '@/lib/utils/db-compat';
 import { feedbackSchema } from '@/lib/validation/feedback.schema';
 import type { Database } from '@/lib/types';
+import { validateFamilyRequest } from '@/lib/family-auth';
+import { validateStaffRequest } from '@/lib/staff-auth';
 
 export async function POST(request: NextRequest) {
   const requestId = request.headers.get('x-request-id') ?? crypto.randomUUID();
@@ -70,6 +72,21 @@ export async function POST(request: NextRequest) {
     const visibility = data.visibility ?? (authorType === 'staff' ? 'private' : 'public');
     const audience =
       data.audience ?? (authorType === 'teacher' || authorType === 'staff' ? 'family' : 'teacher');
+
+    const requiresStaffAuth = audience === 'admin' || authorType === 'teacher' || authorType === 'staff';
+    const authResult = requiresStaffAuth
+      ? await validateStaffRequest(request)
+      : await validateFamilyRequest(request);
+
+    if (!authResult.ok) {
+      const status = requiresStaffAuth && authResult.status === 401 ? 403 : authResult.status;
+      const message = requiresStaffAuth && authResult.status === 401 ? 'Forbidden' : authResult.error;
+
+      return NextResponse.json(
+        { ok: false, error: message, request_id: requestId },
+        { status }
+      );
+    }
 
     if (audience !== 'admin' && !data.parent_email) {
       return NextResponse.json(

@@ -35,6 +35,9 @@
 ### Phase 3 Tests Added ✅
 - `lib/__tests__/dashboard.service.test.ts`
 - `lib/__tests__/jelou.service.test.ts`
+- `lib/__tests__/role-metrics.test.ts`
+- `lib/__tests__/submission-chat.test.ts`
+- `lib/__tests__/submission-operations.test.ts`
 - `app/api/dashboard/__tests__/route.test.ts`
 - `app/api/leads/__tests__/route.test.ts`
 - `app/api/chat/__tests__/route.test.ts`
@@ -44,8 +47,10 @@
 - `app/api/messages/[messageId]/reply/__tests__/route.test.ts`
 - `app/api/messages/[messageId]/thread/__tests__/route.test.ts`
 - `app/api/admin/login/__tests__/route.test.ts`
+- `app/api/analytics/__tests__/forms-route.test.ts`
 - `app/api/webhooks/inbound/__tests__/route.test.ts`
 - `app/api/webhooks/jelou/__tests__/route.test.ts`
+- `components/feedback/feedback-composer-submission.test.ts`
 - `vitest.config.ts` + `npm run test --workspace=apps/peskids`
 
 **Validation:**
@@ -56,9 +61,15 @@
 - ✅ message reply/thread route contract tests green
 - ✅ admin team auth/contract tests green
 - ✅ admin login contract tests green
+- ✅ analytics forms auth/contract tests green
 - ✅ inbound webhook auth/payload/success tests green
 - ✅ jelou webhook signature/delegation/error tests green
 - ✅ family access + submission chat + submissions + teacher submission contracts green
+- ✅ feedback route family/staff auth tests green
+- ✅ client feedback submission helper tests green
+- ✅ submission chat helper/context tests green
+- ✅ role metrics aggregation tests green
+- ✅ submission operations export/stats/bulk actions tests green
 - ✅ `npm run type-check --workspace=apps/peskids`
 - ✅ `npm run build --workspace=apps/peskids`
 
@@ -76,6 +87,7 @@
 | `/api/admin/team` | Staff auth + role gating | ✅ | ✅ DONE |
 | `/api/families/access` | Family auth + link-state payload | ✅ | ✅ DONE |
 | `/api/admin/login` | Admin auth + cookie response | ✅ | ✅ DONE |
+| `/api/analytics/forms` | Staff auth + analytics payload | ✅ | ✅ DONE |
 | `/api/submission-chat/[submissionId]` | Family auth + chat thread/messages | ✅ | ✅ DONE |
 | `/api/submissions` | Family auth + parent email filtering | ✅ | ✅ DONE |
 | `/api/submissions/teacher` | Staff auth + role gate restore | ✅ | ✅ DONE |
@@ -92,7 +104,7 @@
 ```typescript
 { ok: false, error: "...", request_id: requestId }
 ```
-✅ En dashboard / feedback / leads / chat / families metrics / families feedback / families access / internal draft / messages reply / messages thread / admin team / admin login / submission chat / submissions / teacher submissions / teacher metrics / inbound webhook / jelou webhook
+✅ En dashboard / feedback / leads / chat / families metrics / families feedback / families access / internal draft / messages reply / messages thread / admin team / admin login / analytics forms / submission chat / submissions / teacher submissions / teacher metrics / inbound webhook / jelou webhook
 
 **Shared helper added:**
 - `lib/api-response.ts` centraliza `resolveRequestId()`, `errorJson()`, y `successJson()`
@@ -159,6 +171,8 @@
 - Commit `6395f14`: Wrapped peskids routes with `runTrustedPortalDalForPathSlug`
 - **Affected routes:** `/api/peskids/admin/[tenantSlug]/forms/analytics` + 6 others
 - **Impact on refactor:** Service extraction must preserve auth middleware
+- `GET /api/analytics/forms`: now enforces `validateStaffRequest()` before analytics reads
+- `POST /api/feedback`: now requires staff auth for `audience=admin` or `author_type=teacher|staff`, and family auth for parent-family flows
 
 ### LGPD/Consent Validation Status ✅
 - Found in jelou.service: Referral code + lead data handling
@@ -205,7 +219,12 @@
 | **Route edge cases** | ✅ PASS | dashboard, leads, chat, family, message, and internal draft contracts covered |
 | **Webhook route tests** | ✅ PASS | inbound + jelou auth/delegation/error paths covered |
 | **Admin auth contracts** | ✅ PASS | admin team GET/POST now enforce consistent request-scoped payloads |
+| **Analytics auth contracts** | ✅ PASS | forms analytics now requires staff auth and returns request-scoped failures |
 | **Submission contracts** | ✅ PASS | family + teacher submission endpoints now aligned and authenticated |
+| **Client feedback flow** | ✅ PASS | submission helper now validates fields, normalizes payloads, and propagates API errors |
+| **Submission chat helper** | ✅ PASS | context resolution, email fallback, thread detection, and route guard regressions covered |
+| **Role metrics helpers** | ✅ PASS | family/teacher aggregates now have direct regression coverage |
+| **Submission operations helpers** | ✅ PASS | export, grading, deletion, and stats flows now have direct regression coverage |
 | **Files <300 lines** | ✅ PASS | Inbox shell now 141 lines |
 | **Phase 2 split** | ✅ DONE | Landing, dashboard, teacher, and inbox splits complete |
 

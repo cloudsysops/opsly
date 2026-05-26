@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const mocks = vi.hoisted(() => ({
   validateFamilyRequestMock: vi.fn(),
@@ -50,6 +50,45 @@ vi.mock('@/lib/message-store', () => ({
 }))
 
 describe('submission chat route', () => {
+  beforeEach(() => {
+    validateFamilyRequestMock.mockReset()
+    validateStaffRequestMock.mockReset()
+    isStaffUserMock.mockReset()
+    isStaffUserMock.mockReturnValue(true)
+    getSubmissionChatContextMock.mockReset()
+    getConversationMessagesMock.mockReset()
+    storeInboundMessageMock.mockReset()
+    storeOutboundMessageMock.mockReset()
+    tenantRoleFromUserMetadataMock.mockReset()
+    tenantRoleFromUserMetadataMock.mockReturnValue('teacher')
+  })
+
+  it('rejects a family user trying to open another family thread', async () => {
+    validateFamilyRequestMock.mockResolvedValue({
+      ok: true,
+      user: { email: 'other-family@example.com' },
+    })
+    getSubmissionChatContextMock.mockResolvedValue({
+      submissionId: 'sub-1',
+      studentName: 'Mateo',
+      parentEmail: 'family@example.com',
+      threadContact: 'submission-chat:sub-1',
+    })
+
+    const { GET } = await import('../[submissionId]/route')
+    const response = await GET(
+      { headers: new Headers({ 'x-request-id': 'req-subchat-forbidden' }) } as never,
+      { params: Promise.resolve({ submissionId: 'sub-1' }) }
+    )
+
+    expect(response.status).toBe(403)
+    await expect(response.json()).resolves.toEqual({
+      ok: false,
+      error: 'Forbidden',
+      request_id: 'req-subchat-forbidden',
+    })
+  })
+
   it('returns the family thread when the family owns the submission', async () => {
     validateFamilyRequestMock.mockResolvedValue({
       ok: true,
@@ -188,6 +227,37 @@ describe('submission chat route', () => {
       thread_contact: 'submission-chat:sub-2',
       message: 'Mensaje enviado',
       request_id: 'req-subchat-staff',
+    })
+  })
+
+  it('rejects empty messages before touching storage', async () => {
+    validateFamilyRequestMock.mockResolvedValue({
+      ok: true,
+      user: { email: 'family@example.com' },
+    })
+    getSubmissionChatContextMock.mockResolvedValue({
+      submissionId: 'sub-1',
+      studentName: 'Mateo',
+      parentEmail: 'family@example.com',
+      threadContact: 'submission-chat:sub-1',
+    })
+
+    const { POST } = await import('../[submissionId]/route')
+    const response = await POST(
+      {
+        headers: new Headers({ 'x-request-id': 'req-subchat-empty' }),
+        json: async () => ({ message: '   ' }),
+      } as never,
+      { params: Promise.resolve({ submissionId: 'sub-1' }) }
+    )
+
+    expect(response.status).toBe(400)
+    expect(storeInboundMessageMock).not.toHaveBeenCalled()
+    expect(storeOutboundMessageMock).not.toHaveBeenCalled()
+    await expect(response.json()).resolves.toEqual({
+      ok: false,
+      error: 'Message cannot be empty',
+      request_id: 'req-subchat-empty',
     })
   })
 })

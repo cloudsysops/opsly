@@ -1,10 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-const validateStaffSessionMock = vi.fn()
+const validateStaffRequestMock = vi.fn()
 const getFormAnalyticsMock = vi.fn()
 
 vi.mock('@/lib/staff-auth', () => ({
-  validateStaffSession: validateStaffSessionMock,
+  validateStaffRequest: validateStaffRequestMock,
 }))
 
 vi.mock('@/lib/services/form-submission.service', () => ({
@@ -15,23 +15,27 @@ vi.mock('@/lib/services/form-submission.service', () => ({
 
 describe('GET /api/analytics/forms', () => {
   beforeEach(() => {
-    validateStaffSessionMock.mockReset()
+    validateStaffRequestMock.mockReset()
     getFormAnalyticsMock.mockReset()
   })
 
   it('rejects unauthenticated requests', async () => {
-    validateStaffSessionMock.mockResolvedValue({ ok: false, status: 401, error: 'Unauthorized' })
+    validateStaffRequestMock.mockResolvedValue({ ok: false, status: 401, error: 'Unauthorized' })
     const { GET } = await import('../forms/route')
 
-    const response = await GET({} as never)
+    const response = await GET({ headers: new Headers({ 'x-request-id': 'analytics-401' }) } as never)
 
     expect(response.status).toBe(401)
-    await expect(response.json()).resolves.toEqual({ error: 'Unauthorized' })
+    await expect(response.json()).resolves.toEqual({
+      ok: false,
+      error: 'Unauthorized',
+      request_id: 'analytics-401',
+    })
     expect(getFormAnalyticsMock).not.toHaveBeenCalled()
   })
 
   it('returns analytics for authenticated staff', async () => {
-    validateStaffSessionMock.mockResolvedValue({
+    validateStaffRequestMock.mockResolvedValue({
       ok: true,
       method: 'supabase',
       user: {
@@ -52,12 +56,28 @@ describe('GET /api/analytics/forms', () => {
     ])
     const { GET } = await import('../forms/route')
 
-    const response = await GET({} as never)
+    const response = await GET({ headers: new Headers({ 'x-request-id': 'analytics-200' }) } as never)
     const payload = await response.json()
 
     expect(response.status).toBe(200)
-    expect(validateStaffSessionMock).toHaveBeenCalled()
+    expect(validateStaffRequestMock).toHaveBeenCalled()
     expect(getFormAnalyticsMock).toHaveBeenCalled()
+    expect(payload.request_id).toBe('analytics-200')
     expect(payload.summary.totalForms).toBe(1)
+  })
+
+  it('returns request-scoped 500 payloads when analytics fails', async () => {
+    validateStaffRequestMock.mockResolvedValue({ ok: true, method: 'secret' })
+    getFormAnalyticsMock.mockRejectedValue(new Error('db offline'))
+    const { GET } = await import('../forms/route')
+
+    const response = await GET({ headers: new Headers({ 'x-request-id': 'analytics-500' }) } as never)
+
+    expect(response.status).toBe(500)
+    await expect(response.json()).resolves.toEqual({
+      ok: false,
+      error: 'Failed to fetch form analytics',
+      request_id: 'analytics-500',
+    })
   })
 })

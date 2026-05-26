@@ -31,6 +31,9 @@ export async function submitFeedback(params: SubmissionParams): Promise<Submissi
   const trimmedChildName = params.childName.trim();
   const trimmedEmail = params.familyEmail.trim();
   const trimmedMessage = params.message.trim();
+  const resolvedParentEmail = params.parentEmailHidden
+    ? (params.parentEmail ?? params.parentEmailDefault)
+    : trimmedEmail;
 
   if (!params.childNameHidden && !trimmedChildName) {
     return { ok: false, error: 'Escribe el nombre de la familia o del estudiante.' };
@@ -59,9 +62,7 @@ export async function submitFeedback(params: SubmissionParams): Promise<Submissi
         satisfaction: params.rating,
         body: trimmedMessage,
         suggestion: trimmedMessage,
-        parent_email: params.parentEmailHidden
-          ? (params.parentEmail ?? params.parentEmailDefault)
-          : trimmedEmail,
+        parent_email: resolvedParentEmail,
         author_ref_id: params.authorRefId,
         subject_ref_id: params.subjectRefId,
         visibility: params.visibility,

@@ -5,6 +5,7 @@ import {
   tenantRoleFromUserMetadata,
   tenantSlugFromUserMetadata,
 } from '@/lib/runtime/tenant-identity';
+import { supabaseServer } from '@/lib/supabase';
 
 const FAMILY_ROLES = new Set(['family', 'parent']);
 
@@ -59,6 +60,44 @@ export function isFamilyUser(user: User): boolean {
   return role ? FAMILY_ROLES.has(role) : false;
 }
 
+async function hasLinkedFamilyAccess(user: User): Promise<boolean> {
+  const tenantSlug = tenantSlugFromUserMetadata(user);
+  const expectedTenant = (process.env.NEXT_PUBLIC_TENANT_ID || 'peskids').trim().toLowerCase();
+  if (tenantSlug && tenantSlug !== expectedTenant) {
+    return false;
+  }
+
+  const email = user.email?.trim().toLowerCase();
+  if (!email) {
+    return false;
+  }
+
+  try {
+    const client = supabaseServer() as unknown as {
+      from: (table: string) => {
+        select: (columns: string) => {
+          eq: (column: string, value: string) => {
+            ilike: (column: string, value: string) => {
+              limit: (value: number) => Promise<{ data: Array<{ id: string }> | null; error: unknown }>
+            }
+          }
+        }
+      }
+    };
+
+    const { data, error } = await client
+      .from('students')
+      .select('id')
+      .eq('tenant_id', expectedTenant)
+      .ilike('parent_email', email)
+      .limit(1);
+
+    return !error && Array.isArray(data) && data.length > 0;
+  } catch {
+    return false;
+  }
+}
+
 export async function validateFamilyRequest(
   req: NextRequest
 ): Promise<{ ok: true; user: User } | { ok: false; status: number; error: string }> {
@@ -80,7 +119,7 @@ export async function validateFamilyRequest(
     if (!user) {
       return { ok: false, status: 401, error: 'Unauthorized' };
     }
-    if (!isFamilyUser(user)) {
+    if (!isFamilyUser(user) && !(await hasLinkedFamilyAccess(user))) {
       return { ok: false, status: 403, error: 'Forbidden' };
     }
 
@@ -111,7 +150,7 @@ export async function validateFamilySession(): Promise<
     if (!user) {
       return { ok: false, status: 401, error: 'Unauthorized' };
     }
-    if (!isFamilyUser(user)) {
+    if (!isFamilyUser(user) && !(await hasLinkedFamilyAccess(user))) {
       return { ok: false, status: 403, error: 'Forbidden' };
     }
 

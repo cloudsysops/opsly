@@ -2,8 +2,9 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const orderMock = vi.fn()
 const notMock = vi.fn(() => ({ order: orderMock }))
-const eqMock = vi.fn(() => ({ not: notMock }))
-const selectMock = vi.fn(() => ({ eq: eqMock }))
+const eqChain = { eq: vi.fn(), not: notMock, order: orderMock }
+eqChain.eq.mockImplementation(() => eqChain)
+const selectMock = vi.fn(() => eqChain)
 const fromMock = vi.fn(() => ({ select: selectMock }))
 const createClientMock = vi.fn(() => ({ from: fromMock }))
 
@@ -16,7 +17,7 @@ describe('FormSubmissionService', () => {
     createClientMock.mockClear()
     fromMock.mockClear()
     selectMock.mockClear()
-    eqMock.mockClear()
+    eqChain.eq.mockClear()
     notMock.mockClear()
     orderMock.mockReset()
     process.env.NEXT_PUBLIC_SUPABASE_URL = 'https://project.supabase.co'
@@ -35,17 +36,6 @@ describe('FormSubmissionService', () => {
           form_data: {
             parent_email: 'family@example.com',
             student_name: 'Mateo',
-          },
-        },
-        {
-          submission_id: 's2',
-          completed_at: '2026-05-02T12:00:00Z',
-          status: 'graded',
-          form_id: 'f2',
-          form: { title: 'Natación 2' },
-          form_data: {
-            parent_email: 'other@example.com',
-            student_name: 'Sofía',
           },
         },
       ],

@@ -39,10 +39,13 @@ export class FormSubmissionService {
   private tenantSlug = 'peskids';
 
   async getParentSubmissions(parentEmail?: string): Promise<FormSubmissionSummary[]> {
+    const normalizedParentEmail = parentEmail?.trim().toLowerCase() ?? '';
+    if (!normalizedParentEmail) return [];
+
     const supabase = getSupabaseClient();
     if (!supabase) return [];
 
-    let query = supabase
+    const query = supabase
       .from('form_submissions')
       .select(
         `
@@ -55,12 +58,9 @@ export class FormSubmissionService {
       `
       )
       .eq('tenant_slug', this.tenantSlug)
+      .eq('parent_email', normalizedParentEmail)
       .not('user_id', 'is', null)
       .order('completed_at', { ascending: false });
-
-    if (parentEmail) {
-      query = query.eq('parent_email', parentEmail);
-    }
 
     const { data, error } = await query;
 
