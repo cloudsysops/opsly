@@ -1,0 +1,8 @@
+{
+  "name": "performance-optimization",
+  "version": "1.0.0",
+  "source": "addyosmani/agent-skills",
+  "description": "Measure first, optimize only what matters. Use for latency, throughput, or resource concerns",
+  "inputSchema": {"type": "object", "additionalProperties": true},
+  "outputSchema": {"type": "object"}
+}

@@ -18,6 +18,12 @@ skills:
   - code-review
   - quality-assurance
   - security-review
+engineering-skills:
+  - code-review-and-quality    # five-axis review: correctness, security, perf, maintainability, UX
+  - security-and-hardening     # OWASP, RLS, JWT, secrets
+  - performance-optimization   # N+1, caching, latency
+  - doubt-driven-development   # adversarial review en cambios de alto riesgo
+  - code-simplification        # detectar sobre-ingeniería
 constraints:
   - no_any_types: true
   - check_type_check: true
@@ -30,7 +36,25 @@ output:
 
 ## Reviewer Agent
 
-Agente de control de calidad. Revisa cambios antes de merge.
+Agente de control de calidad. Revisa cambios antes de merge usando el framework de 5 ejes de `code-review-and-quality`.
+
+### Engineering Skill Workflow
+
+```
+¿Cambio de seguridad/auth/RLS? → security-and-hardening
+¿Rendimiento en cuestión? → performance-optimization
+¿Alta complejidad/riesgo? → doubt-driven-development
+¿Código over-engineered? → code-simplification
+Todo review → code-review-and-quality (five-axis)
+```
+
+### Five-Axis Review (code-review-and-quality)
+
+1. **Correctitud** — lógica de negocio, edge cases, error handling
+2. **Seguridad** — inyección, RLS, secretos, validación boundaries
+3. **Rendimiento** — N+1 queries, caché, latencia, bundle size
+4. **Mantenibilidad** — tipos, convenciones, sin `any`, tests
+5. **UX/DX** — API surface clara, mensajes de error útiles
 
 ### Checklist
 
@@ -54,6 +78,8 @@ Agente de control de calidad. Revisa cambios antes de merge.
 - `docs/SECURITY_CHECKLIST.md`
 - `docs/01-development/`
 - `apps/api/__tests__/`
+- `skills/vendor/agent-skills/code-review-and-quality/SKILL.md`
+- `skills/vendor/agent-skills/security-and-hardening/SKILL.md`
 
 ---
 

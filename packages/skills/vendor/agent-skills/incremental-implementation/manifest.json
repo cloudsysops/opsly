@@ -1,0 +1,8 @@
+{
+  "name": "incremental-implementation",
+  "version": "1.0.0",
+  "source": "addyosmani/agent-skills",
+  "description": "Build in thin vertical slices. Use for any multi-file feature implementation",
+  "inputSchema": {"type": "object", "additionalProperties": true},
+  "outputSchema": {"type": "object"}
+}

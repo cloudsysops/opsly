@@ -1,0 +1,8 @@
+{
+  "name": "deprecation-and-migration",
+  "version": "1.0.0",
+  "source": "addyosmani/agent-skills",
+  "description": "Safe deprecation strategy with migration paths. Use when removing or replacing APIs or patterns",
+  "inputSchema": {"type": "object", "additionalProperties": true},
+  "outputSchema": {"type": "object"}
+}

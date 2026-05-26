@@ -1,0 +1,8 @@
+{
+  "name": "api-and-interface-design",
+  "version": "1.0.0",
+  "source": "addyosmani/agent-skills",
+  "description": "Design stable APIs with clear contracts. Use for new endpoints, interface changes, or API versioning",
+  "inputSchema": {"type": "object", "additionalProperties": true},
+  "outputSchema": {"type": "object"}
+}

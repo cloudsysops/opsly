@@ -1,0 +1,8 @@
+{
+  "name": "debugging-and-error-recovery",
+  "version": "1.0.0",
+  "source": "addyosmani/agent-skills",
+  "description": "Reproduce, localize, fix, guard. Use when something broke in production or dev",
+  "inputSchema": {"type": "object", "additionalProperties": true},
+  "outputSchema": {"type": "object"}
+}

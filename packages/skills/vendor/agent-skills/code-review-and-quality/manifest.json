@@ -1,0 +1,8 @@
+{
+  "name": "code-review-and-quality",
+  "version": "1.0.0",
+  "source": "addyosmani/agent-skills",
+  "description": "Five-axis code review with quality gates. Use before merge or when reviewing PRs",
+  "inputSchema": {"type": "object", "additionalProperties": true},
+  "outputSchema": {"type": "object"}
+}

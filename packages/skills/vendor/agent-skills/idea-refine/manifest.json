@@ -1,0 +1,8 @@
+{
+  "name": "idea-refine",
+  "version": "1.0.0",
+  "source": "addyosmani/agent-skills",
+  "description": "Refine vague ideas through structured divergent thinking. Use before spec when requirements are fuzzy",
+  "inputSchema": {"type": "object", "additionalProperties": true},
+  "outputSchema": {"type": "object"}
+}

@@ -1,0 +1,8 @@
+{
+  "name": "using-agent-skills",
+  "version": "1.0.0",
+  "source": "addyosmani/agent-skills",
+  "description": "Meta-skill: discover and invoke the right engineering skill for any development task",
+  "inputSchema": {"type": "object", "additionalProperties": true},
+  "outputSchema": {"type": "object"}
+}

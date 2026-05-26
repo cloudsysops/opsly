@@ -1,0 +1,8 @@
+{
+  "name": "planning-and-task-breakdown",
+  "version": "1.0.0",
+  "source": "addyosmani/agent-skills",
+  "description": "Decompose work into verifiable tasks with dependency graphs. Use when scope needs sizing",
+  "inputSchema": {"type": "object", "additionalProperties": true},
+  "outputSchema": {"type": "object"}
+}

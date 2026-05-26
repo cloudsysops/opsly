@@ -1,0 +1,8 @@
+{
+  "name": "shipping-and-launch",
+  "version": "1.0.0",
+  "source": "addyosmani/agent-skills",
+  "description": "Pre-launch checklist, monitoring, rollback plan. Use before deploying to production",
+  "inputSchema": {"type": "object", "additionalProperties": true},
+  "outputSchema": {"type": "object"}
+}

@@ -1,0 +1,8 @@
+{
+  "name": "interview-me",
+  "version": "1.0.0",
+  "source": "addyosmani/agent-skills",
+  "description": "Surface what the user actually wants before planning. Use at session start when requirements are unclear",
+  "inputSchema": {"type": "object", "additionalProperties": true},
+  "outputSchema": {"type": "object"}
+}

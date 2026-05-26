@@ -1,0 +1,8 @@
+{
+  "name": "code-simplification",
+  "version": "1.0.0",
+  "source": "addyosmani/agent-skills",
+  "description": "Reduce complexity without changing behavior. Use when code is over-engineered",
+  "inputSchema": {"type": "object", "additionalProperties": true},
+  "outputSchema": {"type": "object"}
+}

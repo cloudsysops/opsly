@@ -1,0 +1,8 @@
+{
+  "name": "git-workflow-and-versioning",
+  "version": "1.0.0",
+  "source": "addyosmani/agent-skills",
+  "description": "Atomic commits, clean history, semantic PRs. Use for branching, commits, pull requests",
+  "inputSchema": {"type": "object", "additionalProperties": true},
+  "outputSchema": {"type": "object"}
+}

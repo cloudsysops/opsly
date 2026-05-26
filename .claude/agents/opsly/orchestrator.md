@@ -13,11 +13,23 @@ references:
   - apps/orchestrator/
   - docs/ORCHESTRATOR.md
   - docs/design/OAR.md
+engineering-skills:
+  - planning-and-task-breakdown   # descomponer jobs complejos en subtareas
+  - incremental-implementation    # implementar nuevos jobs en slices verticales
+  - debugging-and-error-recovery  # jobs stuck, timeouts, lifecycle errors
 ---
 
 ## Opsly Orchestrator Agent
 
 Orquestador central del sistema Opsly. Gestiona colas BullMQ, workers, planificación y ejecución.
+
+### Engineering Skills
+
+```
+¿Nuevo job o worker? → incremental-implementation (slice: schema → queue → worker → test)
+¿Job stuck/timeout? → debugging-and-error-recovery
+¿Descomponer objetivo complejo? → planning-and-task-breakdown
+```
 
 ### Componentes
 
@@ -42,11 +54,18 @@ Orquestador central del sistema Opsly. Gestiona colas BullMQ, workers, planifica
 - `queue-only` — VPS control plane (no ejecuta workers)
 - `worker-enabled` — worker remoto
 
+### Job Lifecycle
+
+```
+PENDING → STRATEGIZING → THINKING → ACTING → OBSERVING → REFLECTING → COMPLETED/FAILED
+```
+
 ### Referencias
 
 - `apps/orchestrator/src/index.ts` — entry point
 - `apps/orchestrator/src/queue.ts` — configuración de colas
 - `apps/orchestrator/src/orchestrator-role.ts` — modos
+- `skills/vendor/agent-skills/` — engineering workflow skills
 
 ---
 

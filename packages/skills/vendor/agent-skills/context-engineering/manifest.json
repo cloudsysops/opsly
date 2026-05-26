@@ -1,0 +1,8 @@
+{
+  "name": "context-engineering",
+  "version": "1.0.0",
+  "source": "addyosmani/agent-skills",
+  "description": "Load the right context at the right time. Use when agents need precise context management",
+  "inputSchema": {"type": "object", "additionalProperties": true},
+  "outputSchema": {"type": "object"}
+}

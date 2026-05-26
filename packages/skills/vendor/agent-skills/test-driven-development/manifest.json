@@ -1,0 +1,8 @@
+{
+  "name": "test-driven-development",
+  "version": "1.0.0",
+  "source": "addyosmani/agent-skills",
+  "description": "Failing test first, then make it pass. Use when writing tests or TDD is required",
+  "inputSchema": {"type": "object", "additionalProperties": true},
+  "outputSchema": {"type": "object"}
+}

@@ -1,0 +1,8 @@
+{
+  "name": "documentation-and-adrs",
+  "version": "1.0.0",
+  "source": "addyosmani/agent-skills",
+  "description": "Document the why, not just the what. Use for ADRs, runbooks, and technical docs",
+  "inputSchema": {"type": "object", "additionalProperties": true},
+  "outputSchema": {"type": "object"}
+}

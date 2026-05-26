@@ -1,0 +1,8 @@
+{
+  "name": "frontend-ui-engineering",
+  "version": "1.0.0",
+  "source": "addyosmani/agent-skills",
+  "description": "Production-quality UI with accessibility. Use for React components, layouts, design systems",
+  "inputSchema": {"type": "object", "additionalProperties": true},
+  "outputSchema": {"type": "object"}
+}

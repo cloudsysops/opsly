@@ -1,0 +1,8 @@
+{
+  "name": "ci-cd-and-automation",
+  "version": "1.0.0",
+  "source": "addyosmani/agent-skills",
+  "description": "Automated quality gates on every change. Use for CI pipeline work, deployment automation",
+  "inputSchema": {"type": "object", "additionalProperties": true},
+  "outputSchema": {"type": "object"}
+}

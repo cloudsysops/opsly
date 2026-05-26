@@ -1,0 +1,8 @@
+{
+  "name": "doubt-driven-development",
+  "version": "1.0.0",
+  "source": "addyosmani/agent-skills",
+  "description": "Adversarial review of every non-trivial decision. Use for high-stakes or unfamiliar code",
+  "inputSchema": {"type": "object", "additionalProperties": true},
+  "outputSchema": {"type": "object"}
+}

@@ -1,0 +1,8 @@
+{
+  "name": "spec-driven-development",
+  "version": "1.0.0",
+  "source": "addyosmani/agent-skills",
+  "description": "Requirements and acceptance criteria before code. Use for new features or ambiguous changes",
+  "inputSchema": {"type": "object", "additionalProperties": true},
+  "outputSchema": {"type": "object"}
+}

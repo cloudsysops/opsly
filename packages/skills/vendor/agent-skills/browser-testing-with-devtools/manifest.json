@@ -1,0 +1,8 @@
+{
+  "name": "browser-testing-with-devtools",
+  "version": "1.0.0",
+  "source": "addyosmani/agent-skills",
+  "description": "Chrome DevTools MCP for runtime verification. Use for browser-based testing and performance profiling",
+  "inputSchema": {"type": "object", "additionalProperties": true},
+  "outputSchema": {"type": "object"}
+}

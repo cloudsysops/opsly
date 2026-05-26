@@ -1,0 +1,8 @@
+{
+  "name": "source-driven-development",
+  "version": "1.0.0",
+  "source": "addyosmani/agent-skills",
+  "description": "Verify against official docs before implementing. Use when working with external APIs or libraries",
+  "inputSchema": {"type": "object", "additionalProperties": true},
+  "outputSchema": {"type": "object"}
+}

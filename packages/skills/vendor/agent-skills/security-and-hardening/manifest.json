@@ -1,0 +1,8 @@
+{
+  "name": "security-and-hardening",
+  "version": "1.0.0",
+  "source": "addyosmani/agent-skills",
+  "description": "OWASP prevention, input validation, least privilege. Use for security review or auth changes",
+  "inputSchema": {"type": "object", "additionalProperties": true},
+  "outputSchema": {"type": "object"}
+}

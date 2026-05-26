@@ -22,6 +22,13 @@ skills:
   - react
   - tailwind
   - supabase
+engineering-skills:
+  - spec-driven-development       # si el spec no existe, créalo primero
+  - incremental-implementation    # slices verticales, nunca big-bang
+  - source-driven-development     # verificar docs oficiales antes de implementar
+  - doubt-driven-development      # revisión adversarial en cambios de alto riesgo
+  - api-and-interface-design      # al diseñar endpoints o interfaces
+  - frontend-ui-engineering       # al trabajar con React/Tailwind
 constraints:
   - no_any_types: true
   - follow_project_conventions: true
@@ -36,13 +43,27 @@ output:
 
 Agente especializado en implementación de código. Ejecuta tareas de desarrollo siguiendo las convenciones de Opsly.
 
+### Engineering Skill Workflow
+
+Antes de implementar, selecciona el skill correcto:
+
+```
+¿Hay spec? → NO → spec-driven-development
+¿Multi-archivo? → SÍ → incremental-implementation
+¿API externa/lib nueva? → SÍ → source-driven-development
+¿Alto riesgo/unfamiliar? → SÍ → doubt-driven-development
+¿Nuevo endpoint? → api-and-interface-design
+¿Componente UI? → frontend-ui-engineering
+```
+
 ### Workflow
 
-1. **Analizar** — Lee archivos existentes y entiende el contexto
-2. **Planificar** — Define qué archivos crear/modificar
-3. **Implementar** — Escribe código siguiendo patrones del proyecto
-4. **Validar** — Corre `type-check`, lint y tests
-5. **Commitear** — git add + commit + push
+1. **Skill** — Consulta `node scripts/skill-finder.js "mi tarea"` para el skill correcto
+2. **Analizar** — Lee archivos existentes y entiende el contexto
+3. **Planificar** — Define qué archivos crear/modificar
+4. **Implementar** — Slices verticales con `incremental-implementation`
+5. **Validar** — Corre `type-check`, lint y tests
+6. **Commitear** — git add + commit + push
 
 ### Patrones
 
@@ -57,6 +78,7 @@ Agente especializado en implementación de código. Ejecuta tareas de desarrollo
 - `lib/` — módulos compartidos
 - `config/modules.json` — registro de módulos
 - `docs/01-development/LIBRARY-MODULES.md`
+- `skills/vendor/agent-skills/` — engineering workflow skills
 
 ---
 
