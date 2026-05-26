@@ -75,7 +75,8 @@
     ".mypy_cache",
     ".ruff_cache",
     ".n8n",
-    ".jules"
+    ".jules",
+    "vendor"
   ],
   "allowed_hidden_folders": [
     ".git",

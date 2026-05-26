@@ -1,0 +1,83 @@
+{
+  "name": "opsly-agent-skills-bridge",
+  "version": "1.0.0",
+  "description": "Bridge layer integrating Addy Osmani's agent-skills production best practices with Opsly domain patterns",
+  "category": "development",
+  "priority": "high",
+  "status": "stable",
+  "triggers": [
+    "spec",
+    "plan",
+    "build",
+    "test",
+    "review",
+    "simplify",
+    "ship",
+    "production practices",
+    "best practices",
+    "software quality",
+    "agile workflow",
+    "development lifecycle"
+  ],
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "phase": {
+        "type": "string",
+        "enum": ["define", "plan", "build", "verify", "review", "simplify", "ship"],
+        "description": "Development lifecycle phase"
+      },
+      "context": {
+        "type": "string",
+        "description": "Opsly domain context (e.g., 'api-route', 'orchestrator-job', 'guardian-shield')"
+      },
+      "autonomous": {
+        "type": "boolean",
+        "description": "Run autonomously without user confirmation"
+      }
+    },
+    "required": ["phase"]
+  },
+  "outputSchema": {
+    "type": "object",
+    "properties": {
+      "skill_guide": {
+        "type": "string",
+        "description": "Agent-skills principle adapted to Opsly context"
+      },
+      "template": {
+        "type": "string",
+        "description": "Opsly-specific template or checklist"
+      },
+      "command": {
+        "type": "string",
+        "description": "Executable command or next step"
+      }
+    }
+  },
+  "dependencies": [
+    "vendor/agent-skills",
+    "opsly-architect-senior",
+    "opsly-api",
+    "opsly-infra",
+    "opsly-orchestrator"
+  ],
+  "tags": [
+    "agent-skills",
+    "best-practices",
+    "production",
+    "quality",
+    "development-lifecycle",
+    "bridge"
+  ],
+  "author": "Opsly Architects",
+  "license": "MIT (agent-skills) + Opsly internal",
+  "external_sources": [
+    {
+      "name": "agent-skills",
+      "url": "https://github.com/addyosmani/agent-skills",
+      "license": "MIT",
+      "local_path": "vendor/agent-skills"
+    }
+  ]
+}

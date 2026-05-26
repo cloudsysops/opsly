@@ -99,6 +99,72 @@ Templates: `skills/templates/` — `template-api-route.md`, `template-migration.
 
 ---
 
+## AGENT SKILLS BRIDGE
+
+**Integrated:** Addy Osmani's 23 production-grade skills (https://github.com/addyosmani/agent-skills)  
+**Adapter:** `opsly-agent-skills-bridge` bridges agent-skills to Opsly domain patterns  
+**Location:** `vendor/agent-skills/` + `skills/user/opsly-agent-skills-bridge/`
+
+### Usage
+
+Load skills by development phase + domain context:
+
+```bash
+# Define (spec, requirements, ADR)
+node scripts/load-agent-skills.js --phase define --context api
+
+# Plan (task breakdown, Hive slicing)
+node scripts/load-agent-skills.js --phase plan --context orchestrator
+
+# Build (TDD + multi-tenant isolation)
+node scripts/load-agent-skills.js --phase build --context api
+
+# Verify (browser tests, debugging)
+node scripts/load-agent-skills.js --phase verify
+
+# Review (code quality, security audit)
+node scripts/load-agent-skills.js --phase review --context security
+
+# Simplify (clarity, extract to lib/)
+node scripts/load-agent-skills.js --phase simplify
+
+# Ship (canary deploy, feature flags)
+node scripts/load-agent-skills.js --phase ship --context infra
+
+# List all skills
+node scripts/load-agent-skills.js --list-all
+```
+
+### Domains
+
+- **api:** OpenAPI spec + Zod validation, multi-tenant isolation, rate limiting
+- **frontend:** React components, a11y, CLS/LCP, dark mode
+- **orchestrator:** BullMQ jobs, Hive subtasks, error recovery, retry logic
+- **test:** Multi-tenant isolation in tests, Vitest + mocks, coverage gates
+- **security:** Doppler secrets, Zero-Trust validation, Cyber Neo scans, audit logs
+- **infra:** Docker Compose (no K8s default), Traefik, VPS, canary deploy
+
+### Opsly Guardrails (Always Applied)
+
+✅ **TypeScript:** No `any` (always specific types)  
+✅ **Multi-tenant:** `tenant_slug` on every scope boundary  
+✅ **Secrets:** Doppler only (never hardcoded)  
+✅ **Zero-Trust:** Portal routes validate `resolveTrustedPortalSession()`  
+✅ **Composition:** Docker Compose (no K8s default)  
+✅ **Testing:** Vitest + multi-tenant isolation  
+✅ **CI:** Type-check, tests, coverage gates before merge
+
+**If agent-skills conflicts with these guardrails, Opsly rules win.**
+
+### References
+
+- **Guide:** `docs/01-development/AGENT-SKILLS-INTEGRATION.md`
+- **Bridge Skill:** `skills/user/opsly-agent-skills-bridge/SKILL.md`
+- **Loader Script:** `scripts/load-agent-skills.js`
+- **Agent-skills Repo:** https://github.com/addyosmani/agent-skills
+
+---
+
 ## CODE RULES
 
 - **Reuse first:** check `lib/` before writing new logic

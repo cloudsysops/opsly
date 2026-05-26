@@ -31,6 +31,26 @@
       "path": "skills/user/opsly-quantum/"
     },
     {
+      "name": "opsly-agent-skills-bridge",
+      "version": "1.0.0",
+      "description": "Bridge layer integrating Addy Osmani's agent-skills (23 production best practices) with Opsly domain patterns. Maps /spec, /plan, /build, /test, /review, /simplify, /ship to Opsly context (API, orchestrator, multi-tenant, security).",
+      "category": "development",
+      "priority": "high",
+      "usage": "Activate with /spec, /plan, /build, /test, /review, /code-simplify, /ship or run: node scripts/load-agent-skills.js --phase <phase>",
+      "path": "skills/user/opsly-agent-skills-bridge/",
+      "triggers": [
+        "spec",
+        "plan",
+        "build",
+        "test",
+        "review",
+        "simplify",
+        "ship",
+        "agent-skills",
+        "best practices"
+      ]
+    },
+    {
       "name": "opsly-autonomous",
       "version": "1.0.0",
       "description": "Modo autónomo: detectar contexto, cargar skills sin intervención humana, decidir y actuar. Modo NO CONFIRMAR.",
@@ -271,7 +291,10 @@
       "category": "ai",
       "priority": "low",
       "usage": "Generar contenido a partir de documentos (PDF→podcast+slides+infografía)",
-      "requires": ["NOTEBOOKLM_ENABLED=true", "plan: business|enterprise"],
+      "requires": [
+        "NOTEBOOKLM_ENABLED=true",
+        "plan: business|enterprise"
+      ],
       "path": "skills/user/opsly-notebooklm/"
     },
     {
