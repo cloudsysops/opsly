@@ -1,7 +1,7 @@
 {
   "version": 1,
-  "root": "/Users/dragon/cboteros/proyectos/intcloudsysops",
-  "generated_at": "2026-05-30T14:47:57.069Z",
+  "root": "/home/user/opsly",
+  "generated_at": "2026-05-26T17:11:56.020Z",
   "files": [
     {
       "path": ".agents/IMPLEMENTATION-CHECKLIST.md",
