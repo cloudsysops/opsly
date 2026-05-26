@@ -6,23 +6,12 @@ import {
   inviteActivationErrorMessage,
   validateInviteActivationForm,
 } from '@/lib/invite-activation-validation'
-import { recoveryTargetFromMetadata } from '@/lib/auth-recovery'
+import { resolveInviteActivationRedirectPath } from '@/lib/invite-routing'
 import { createClient } from '@/lib/supabase-browser'
 import { useParams, useSearchParams } from 'next/navigation'
 import { useMemo, useState } from 'react'
 
 type FormSubmitEvent = Parameters<NonNullable<React.ComponentProps<'form'>['onSubmit']>>[0]
-
-function targetPathForTenant(meta: Record<string, unknown>): string {
-  const target = recoveryTargetFromMetadata(meta)
-  if (target.app === 'platform_admin') {
-    return `${target.origin.replace(/\/$/, '')}/dashboard`
-  }
-  if (target.app === 'peskids_staff') {
-    return `${target.origin.replace(/\/$/, '')}/admin`
-  }
-  return `${target.origin.replace(/\/$/, '')}/dashboard`
-}
 
 export function InviteActivate(): React.ReactElement {
   const params = useParams()
@@ -66,7 +55,7 @@ export function InviteActivate(): React.ReactElement {
           ...((data.user?.app_metadata ?? {}) as Record<string, unknown>),
           ...((data.user?.user_metadata ?? {}) as Record<string, unknown>),
         }
-        const redirectPath = targetPathForTenant(meta)
+        const redirectPath = resolveInviteActivationRedirectPath(meta)
         const { error: pwError } = await supabase.auth.updateUser({ password })
         if (pwError) {
           setErr(pwError.message)
@@ -89,7 +78,7 @@ export function InviteActivate(): React.ReactElement {
         ...((data.user?.app_metadata ?? {}) as Record<string, unknown>),
         ...((data.user?.user_metadata ?? {}) as Record<string, unknown>),
       }
-      const redirectPath = targetPathForTenant(meta)
+      const redirectPath = resolveInviteActivationRedirectPath(meta)
       const { error: pwError } = await supabase.auth.updateUser({ password })
       if (pwError) {
         setErr(pwError.message)

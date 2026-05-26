@@ -39,8 +39,8 @@ export function AuthRecoveryHandler({
       return false
     }
 
-    const finishToUpdatePassword = (): void => {
-      router.replace(updatePasswordPath)
+    const finishToUpdatePassword = (targetPath?: string): void => {
+      router.replace(targetPath || updatePasswordPath)
     }
 
     const url = new URL(window.location.href)
@@ -62,7 +62,7 @@ export function AuthRecoveryHandler({
           ...((session.user.user_metadata ?? {}) as Record<string, unknown>),
         }
         if (!routeAwayIfWrongApp(meta)) {
-          finishToUpdatePassword()
+          finishToUpdatePassword(recoveryTargetFromMetadata(meta).updatePasswordPath)
         }
       }
     })
@@ -82,8 +82,10 @@ export function AuthRecoveryHandler({
           if (routeAwayIfWrongApp(meta)) {
             return
           }
+          finishToUpdatePassword(recoveryTargetFromMetadata(meta).updatePasswordPath)
+          return
         }
-        finishToUpdatePassword()
+        finishToUpdatePassword(expected.updatePasswordPath)
         return
       }
 
@@ -95,11 +97,11 @@ export function AuthRecoveryHandler({
             ...((session.user.user_metadata ?? {}) as Record<string, unknown>),
           }
           if (!routeAwayIfWrongApp(meta)) {
-            finishToUpdatePassword()
+            finishToUpdatePassword(recoveryTargetFromMetadata(meta).updatePasswordPath)
           }
           return
         }
-        setMessage('Enlace inválido o expirado. Solicita uno nuevo desde /admin/login.')
+        setMessage('Enlace inválido o expirado. Solicita uno nuevo desde tu acceso correspondiente.')
         return
       }
 

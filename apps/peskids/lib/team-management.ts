@@ -299,7 +299,7 @@ function buildInviteHtml(params: {
       : params.role === 'support'
         ? 'Soporte'
         : 'Profesor'
-  const flowLabel = params.flow === 'recovery' ? 'Definir contraseña' : 'Activar acceso'
+  const flowLabel = params.flow === 'recovery' ? 'Actualizar contraseña' : 'Activar acceso'
   return `<!DOCTYPE html>
   <html lang="es"><head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><title>${safeBrandName}</title></head>
   <body style="margin:0;background:#eef7fb;color:#0f172a;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;">
@@ -322,7 +322,7 @@ function buildInviteHtml(params: {
             <div style="font-size:18px;line-height:1.6;color:#0f172a;font-weight:700;">Hola ${safeDisplayName},</div>
             <div style="height:12px;"></div>
             <div style="font-size:15px;line-height:1.75;color:#334155;">
-              Tu acceso para <strong>${safeBrandName}</strong> ya está listo. Pulsa el botón para ${params.flow === 'recovery' ? 'definir una contraseña nueva' : 'activar tu cuenta'} y entrar al panel correcto.
+              Tu acceso para <strong>${safeBrandName}</strong> ya está listo. Pulsa el botón para ${params.flow === 'recovery' ? 'crear una contraseña nueva' : 'activar tu cuenta'} y entrar al panel correcto.
             </div>
             <div style="height:26px;"></div>
             <table role="presentation" cellspacing="0" cellpadding="0" style="margin:0 auto;"><tr>

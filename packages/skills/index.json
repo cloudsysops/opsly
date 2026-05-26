@@ -1,6 +1,6 @@
 {
   "version": "3.1.0",
-  "generated": "2026-05-10T00:00:00Z",
+  "generated": "2026-05-26T00:00:00Z",
   "description": "Índice de todos los skills disponibles en Opsly para agentes IA autónomos (incl. adaptaciones marketplace Cursor)",
   "skills": [
     {
@@ -111,15 +111,24 @@
       "usage": "Crear migraciones SQL o diseñar queries contra schema platform",
       "path": "skills/user/opsly-supabase/"
     },
-    {
-      "name": "opsly-tenant",
-      "version": "1.0.0",
-      "description": "Onboarding, suspensión, resume, diagnóstico de stacks por tenant. Onboarding, suspensión, resume o diagnóstico de stacks por tenant",
-      "category": "operations",
-      "priority": "high",
-      "usage": "Onboarding, suspensión, resume o diagnóstico de stacks por tenant",
-      "path": "skills/user/opsly-tenant/"
-    },
+      {
+        "name": "opsly-tenant",
+        "version": "1.0.0",
+        "description": "Onboarding, suspensión, resume, diagnóstico de stacks por tenant. Onboarding, suspensión, resume o diagnóstico de stacks por tenant",
+        "category": "operations",
+        "priority": "high",
+        "usage": "Onboarding, suspensión, resume o diagnóstico de stacks por tenant",
+        "path": "skills/user/opsly-tenant/"
+      },
+      {
+        "name": "opsly-peskids",
+        "version": "1.0.0",
+        "description": "Peskids tenant-specific product and operations work. Use when changing landing, admin, teacher, support, families, auth, routes, docs, or deployment for the Peskids tenant.",
+        "category": "operations",
+        "priority": "high",
+        "usage": "Peskids tenant-specific product, auth, routing, docs, deployment, and role-specific UI work",
+        "path": "skills/user/opsly-peskids/"
+      },
     {
       "name": "opsly-infra",
       "version": "1.1.0",
@@ -601,7 +610,7 @@
     "ai": ["opsly-llm", "opsly-notebooklm", "opsly-feedback-ml", "opsly-ai-sdk-vercel"],
     "integration": ["opsly-mcp", "opsly-google-cloud"],
     "database": ["opsly-supabase", "opsly-supabase-marketplace"],
-    "operations": ["opsly-tenant"],
+    "operations": ["opsly-tenant", "opsly-peskids"],
     "infrastructure": ["opsly-infra"],
     "orchestration": ["opsly-orchestrator", "opsly-agent-teams", "opsly-jcode"],
     "billing": ["opsly-billing", "opsly-stripe-marketplace"],

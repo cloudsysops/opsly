@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { validateStaffSession } from '@/lib/staff-auth'
+import { isOperationalStaffUser } from '@/lib/staff-user'
 import { supabaseServer } from '@/lib/supabase'
 
 function detectConversationMode(senderContact: string): 'admissions' | 'support' {
@@ -13,6 +14,9 @@ export async function GET(
   const auth = await validateStaffSession()
   if (!auth.ok) {
     return NextResponse.json({ error: auth.error }, { status: auth.status })
+  }
+  if (auth.method !== 'secret' && auth.user && !isOperationalStaffUser(auth.user)) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
   }
 
   const { messageId } = await context.params

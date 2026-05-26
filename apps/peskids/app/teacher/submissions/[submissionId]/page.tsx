@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { ArrowLeft, Download, Loader2, MessageSquare, Users } from 'lucide-react'
 import { useParams } from 'next/navigation'
+import { SubmissionChatPanel } from '@/components/chat/submission-chat-panel'
 import { FeedbackComposer } from '@/components/feedback/feedback-composer'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -243,7 +244,7 @@ export default function TeacherSubmissionDetailPage(): React.ReactElement {
                 <Users className="h-4 w-4 text-pk-primary" aria-hidden />
                 Nivel del estudiante
               </CardTitle>
-              <CardDescription>Dato de interés capturado en el intake.</CardDescription>
+              <CardDescription>Dato útil para ubicar al alumno en el grupo correcto.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
               <p className="text-xl font-semibold text-pk-ink">{normalizedLevel}</p>
@@ -259,14 +260,14 @@ export default function TeacherSubmissionDetailPage(): React.ReactElement {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
                 <MessageSquare className="h-4 w-4 text-pk-primary" aria-hidden />
-                Feedback del profesor
+                Observación del profesor
               </CardTitle>
-              <CardDescription>Notas para devolver la entrega sin salir del flujo de clase.</CardDescription>
+              <CardDescription>Notas para devolver la entrega sin salir del flujo docente.</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="rounded-2xl border border-pk-border bg-pk-muted/25 p-4">
                 <p className="text-sm text-pk-sub">
-                  {selectedSubmission.feedback || 'Todavía no se ha agregado feedback para esta entrega.'}
+                  {selectedSubmission.feedback || 'Todavía no se ha agregado una observación para esta entrega.'}
                 </p>
               </div>
             </CardContent>
@@ -293,13 +294,13 @@ export default function TeacherSubmissionDetailPage(): React.ReactElement {
                   style={{ width: `${Math.max(0, Math.min(100, progressPercent))}%` }}
                 />
               </div>
-              <p className="text-sm text-pk-sub">
-                {progressPercent >= 90
-                  ? 'Muy cerca del cierre del nivel.'
-                  : progressPercent >= 60
-                    ? 'Va bien; sigue consolidando técnica.'
-                    : 'Está en fase inicial y necesita más acompañamiento.'}
-              </p>
+                <p className="text-sm text-pk-sub">
+                  {progressPercent >= 90
+                    ? 'Muy cerca del cierre del nivel.'
+                    : progressPercent >= 60
+                      ? 'Va bien; sigue consolidando técnica.'
+                      : 'Está en fase inicial y necesita más acompañamiento.'}
+                </p>
               <div className="pt-1 text-sm text-pk-sub">
                 <p>
                   <span className="font-medium text-pk-ink">ID estudiante:</span> {selectedSubmission.studentId}
@@ -314,7 +315,7 @@ export default function TeacherSubmissionDetailPage(): React.ReactElement {
         </div>
 
         <FeedbackComposer
-          title="Enviar feedback a la familia"
+          title="Enviar observación a la familia"
           description="Comparte avances, observaciones y próximos pasos sin salir de la ficha."
           submitLabel="Enviar a la familia"
           authorType="teacher"
@@ -331,7 +332,16 @@ export default function TeacherSubmissionDetailPage(): React.ReactElement {
           subjectRefId={selectedSubmission.studentId}
           visibility="public"
           audience="family"
-          subjectHint={`Este feedback quedará ligado a ${selectedSubmission.studentName} y servirá para el seguimiento familiar.`}
+          subjectHint={`Esta observación quedará ligada a ${selectedSubmission.studentName} y servirá para el seguimiento familiar.`}
+          className="mt-4"
+        />
+
+        <SubmissionChatPanel
+          submissionId={selectedSubmission.submissionId}
+          title="Chat con la familia"
+          description="Ajusta materiales, horarios o cualquier detalle operativo con la familia en este mismo hilo."
+          sendLabel="Enviar a familia"
+          placeholder="Escribe lo que necesites coordinar con la familia..."
           className="mt-4"
         />
       </div>

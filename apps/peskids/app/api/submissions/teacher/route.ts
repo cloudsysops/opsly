@@ -1,5 +1,9 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
+import { tenantRoleFromUserMetadata } from '../../../../../../lib/runtime/src/tenant-identity'
+import { validateStaffRequest } from '@/lib/staff-auth'
 import { createFormSubmissionService } from '@/lib/services/form-submission.service'
+
+const TEACHER_VISIBLE_ROLES = new Set(['teacher', 'admin', 'owner'])
 
 function withTimeout<T>(promise: Promise<T>, timeoutMs: number, fallback: T): Promise<T> {
   return new Promise<T>((resolve) => {
@@ -18,8 +22,19 @@ function withTimeout<T>(promise: Promise<T>, timeoutMs: number, fallback: T): Pr
   })
 }
 
-export async function GET(): Promise<NextResponse> {
+export async function GET(req: NextRequest): Promise<NextResponse> {
   try {
+    const auth = await validateStaffRequest(req)
+    if (!auth.ok) {
+      return NextResponse.json({ error: auth.error }, { status: auth.status })
+    }
+    if (auth.method !== 'secret' && auth.user) {
+      const role = tenantRoleFromUserMetadata(auth.user)
+      if (!role || !TEACHER_VISIBLE_ROLES.has(role)) {
+        return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+      }
+    }
+
     const tenantId = process.env.NEXT_PUBLIC_TENANT_ID || 'peskids'
 
     const service = createFormSubmissionService()

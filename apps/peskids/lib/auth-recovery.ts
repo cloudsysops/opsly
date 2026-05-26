@@ -35,6 +35,10 @@ const ROUTING_CONFIG: RecoveryRoutingConfig = {
       origin: PESKIDS_APP_ORIGIN,
       staffRoles: ['owner', 'admin', 'support', 'teacher'],
       updatePasswordPath: '/admin/update-password',
+      updatePasswordPathByRole: {
+        support: '/support/update-password',
+        teacher: '/teacher/update-password',
+      },
     },
   ],
 }

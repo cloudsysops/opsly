@@ -26,6 +26,9 @@ function resolvePostLoginPath(role: string | undefined): string {
   if (role === 'teacher') {
     return '/teacher/dashboard'
   }
+  if (role === 'support') {
+    return '/support/dashboard'
+  }
   return '/admin'
 }
 
@@ -138,6 +141,12 @@ function AdminLoginForm(): React.ReactElement {
             className="rounded-full px-4 py-2 text-xs font-semibold text-pk-sub transition hover:bg-white hover:text-pk-ink"
           >
             Panel de profesores
+          </Link>
+          <Link
+            href="/support/login"
+            className="rounded-full px-4 py-2 text-xs font-semibold text-pk-sub transition hover:bg-white hover:text-pk-ink"
+          >
+            Panel de soporte
           </Link>
         </div>
         <div className="mb-6 flex justify-center">

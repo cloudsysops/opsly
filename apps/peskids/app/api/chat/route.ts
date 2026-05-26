@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { triggerN8nMessagePipeline } from '@/lib/chat-assistant'
 import { storeDraftReply, storeInboundMessage, storeOutboundMessage } from '@/lib/message-store'
 import { emitEvent } from '@/lib/events'
+import { getClientIdentifier, rateLimit } from '@/lib/rate-limit'
 import { buildPeskidsIntakeTurn } from '@/lib/peskids-intake'
 import { submitLeadFromIntake } from '@/lib/peskids-lead-from-intake'
 
@@ -17,7 +18,17 @@ export async function POST(req: NextRequest) {
     }
 
     const messageText = body.message?.trim() ?? ''
-    const sessionId = body.session_id?.trim() ?? 'web-anonymous'
+    const clientId = getClientIdentifier(req.headers)
+    const sessionId = body.session_id?.trim().replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 64) || 'web-anonymous'
+    const senderName = body.sender_name?.trim().slice(0, 80) || 'Visitante web'
+    const mode = body.mode === 'support' ? 'support' : 'admissions'
+
+    if (
+      !rateLimit(`chat:${clientId}`, 12, 5 * 60 * 1000) ||
+      !rateLimit(`chat-session:${clientId}:${sessionId}`, 6, 2 * 60 * 1000)
+    ) {
+      return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
+    }
 
     if (!messageText || messageText.length > MAX_MESSAGE_LENGTH) {
       return NextResponse.json(
@@ -29,7 +40,7 @@ export async function POST(req: NextRequest) {
     const { message, error: storeError } = await storeInboundMessage({
       source: 'web',
       sender_contact: `web:${sessionId}`,
-      sender_name: body.sender_name?.trim() || 'Visitante web',
+      sender_name: senderName,
       message_text: messageText,
       external_id: `web-${sessionId}-${Date.now()}`,
     })
@@ -40,10 +51,10 @@ export async function POST(req: NextRequest) {
 
     const intake = await buildPeskidsIntakeTurn({
       senderContact: message.sender_contact,
-      senderName: body.sender_name,
+      senderName,
       source: 'web',
       latestMessage: messageText,
-      mode: body.mode ?? 'admissions',
+      mode,
     })
 
     await storeOutboundMessage({
@@ -63,7 +74,7 @@ export async function POST(req: NextRequest) {
         })
       : { draft: null }
 
-    if (body.mode !== 'support' && intake.stage === 'handoff') {
+    if (mode !== 'support' && intake.stage === 'handoff') {
       void submitLeadFromIntake(intake.profile)
     }
 
@@ -92,7 +103,7 @@ export async function POST(req: NextRequest) {
       quick_replies: intake.quickReplies,
       from_llm: false,
       disclaimer:
-        body.mode === 'support'
+        mode === 'support'
           ? 'Tu caso quedó listo para el equipo de soporte. Si requiere reprogramación o cancelación, primero lo valida una persona del equipo.'
           : intake.stage === 'handoff'
           ? 'Gracias. Un asesor de Peskids revisará tu caso y te contactará para confirmar los siguientes pasos.'

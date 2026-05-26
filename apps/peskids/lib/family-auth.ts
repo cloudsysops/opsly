@@ -1,6 +1,7 @@
 import { cookies } from 'next/headers'
 import type { NextRequest } from 'next/server'
 import type { User } from '@supabase/supabase-js'
+import { supabaseServer } from '@/lib/supabase'
 import { tenantRoleFromUserMetadata, tenantSlugFromUserMetadata } from '../../../lib/runtime/src/tenant-identity'
 
 const FAMILY_ROLES = new Set(['family', 'parent'])
@@ -42,6 +43,26 @@ async function fetchSupabaseUser(token: string): Promise<User | null> {
   return (await response.json()) as User
 }
 
+async function hasFamilyStudentAccess(email: string): Promise<boolean> {
+  const trimmedEmail = email.trim().toLowerCase()
+  if (!trimmedEmail) return false
+
+  try {
+    const tenantId = (process.env.NEXT_PUBLIC_TENANT_ID || 'peskids').trim()
+    const supabase = supabaseServer()
+    const { data, error } = await supabase
+      .from('students')
+      .select('id')
+      .eq('tenant_id', tenantId)
+      .ilike('parent_email', trimmedEmail)
+      .limit(1)
+
+    return !error && Boolean(data?.length)
+  } catch {
+    return false
+  }
+}
+
 export function isFamilyUser(user: User): boolean {
   const role = tenantRoleFromUserMetadata(user)
   const tenantSlug = tenantSlugFromUserMetadata(user)
@@ -75,11 +96,22 @@ export async function validateFamilyRequest(
     if (!user) {
       return { ok: false, status: 401, error: 'Unauthorized' }
     }
-    if (!isFamilyUser(user)) {
+
+    const expectedTenant = (process.env.NEXT_PUBLIC_TENANT_ID || 'peskids').trim().toLowerCase()
+    const tenantSlug = tenantSlugFromUserMetadata(user)
+    if (tenantSlug && tenantSlug !== expectedTenant) {
       return { ok: false, status: 403, error: 'Forbidden' }
     }
 
-    return { ok: true, user }
+    if (isFamilyUser(user)) {
+      return { ok: true, user }
+    }
+
+    if (user.email && (await hasFamilyStudentAccess(user.email))) {
+      return { ok: true, user }
+    }
+
+    return { ok: false, status: 403, error: 'Forbidden' }
   } catch {
     return { ok: false, status: 401, error: 'Unauthorized' }
   }
@@ -106,11 +138,22 @@ export async function validateFamilySession(): Promise<
     if (!user) {
       return { ok: false, status: 401, error: 'Unauthorized' }
     }
-    if (!isFamilyUser(user)) {
+
+    const expectedTenant = (process.env.NEXT_PUBLIC_TENANT_ID || 'peskids').trim().toLowerCase()
+    const tenantSlug = tenantSlugFromUserMetadata(user)
+    if (tenantSlug && tenantSlug !== expectedTenant) {
       return { ok: false, status: 403, error: 'Forbidden' }
     }
 
-    return { ok: true, user }
+    if (isFamilyUser(user)) {
+      return { ok: true, user }
+    }
+
+    if (user.email && (await hasFamilyStudentAccess(user.email))) {
+      return { ok: true, user }
+    }
+
+    return { ok: false, status: 403, error: 'Forbidden' }
   } catch {
     return { ok: false, status: 401, error: 'Unauthorized' }
   }

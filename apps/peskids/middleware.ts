@@ -1,17 +1,21 @@
 import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
 import { createServerClient, type SetAllCookies } from '@supabase/ssr'
-import { isStaffUser } from '@/lib/staff-user'
+import {
+  isAdminSurfaceUser,
+  isSupportSurfaceUser,
+  isTeacherSurfaceUser,
+} from '@/lib/staff-user'
 import type { Database } from '@/lib/types'
 import { isPathUnderAuthSurface } from '../../lib/runtime/src/tenant-auth-surface'
 
 const PESKIDS_AUTH_SURFACE = {
-  entryPaths: ['/', '/admin/login'],
-  loginPaths: ['/admin/login'],
+  entryPaths: ['/', '/admin/login', '/teacher/login', '/support/login'],
+  loginPaths: ['/admin/login', '/teacher/login', '/support/login'],
   invitePath: '/invite',
   recoveryPath: '/auth/recovery',
-  updatePasswordPaths: ['/admin/update-password'],
-  authPrefixes: ['/auth/'],
+  updatePasswordPaths: ['/admin/update-password', '/teacher/update-password', '/support/update-password'],
+  authPrefixes: ['/auth/', '/teacher/login/', '/support/login/'],
 } as const
 
 export async function middleware(req: NextRequest): Promise<NextResponse> {
@@ -20,7 +24,15 @@ export async function middleware(req: NextRequest): Promise<NextResponse> {
     return NextResponse.next()
   }
 
-  if (!path.startsWith('/admin')) {
+  const surface = path.startsWith('/teacher')
+    ? 'teacher'
+    : path.startsWith('/support')
+      ? 'support'
+      : path.startsWith('/admin')
+        ? 'admin'
+        : null
+
+  if (!surface) {
     return NextResponse.next()
   }
 
@@ -33,7 +45,7 @@ export async function middleware(req: NextRequest): Promise<NextResponse> {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL
   const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
   if (!url || !anon) {
-    const login = new URL('/admin/login', req.url)
+    const login = new URL(path.startsWith('/support') ? '/support/login' : '/admin/login', req.url)
     return NextResponse.redirect(login)
   }
 
@@ -59,14 +71,33 @@ export async function middleware(req: NextRequest): Promise<NextResponse> {
     data: { user },
   } = await supabase.auth.getUser()
 
-  if (user && isStaffUser(user)) {
+  const hasSurfaceAccess =
+    user &&
+    (surface === 'teacher'
+      ? isTeacherSurfaceUser(user)
+      : surface === 'support'
+        ? isSupportSurfaceUser(user)
+        : isAdminSurfaceUser(user))
+
+  if (hasSurfaceAccess) {
     return response
   }
 
-  const login = new URL('/admin/login', req.url)
+  const login = new URL(
+    surface === 'teacher' ? '/teacher/login' : surface === 'support' ? '/support/login' : '/admin/login',
+    req.url
+  )
   return NextResponse.redirect(login)
 }
 
 export const config = {
-  matcher: ['/admin', '/admin/:path*', '/api/admin/login'],
+  matcher: [
+    '/admin',
+    '/admin/:path*',
+    '/support',
+    '/support/:path*',
+    '/teacher',
+    '/teacher/:path*',
+    '/api/admin/login',
+  ],
 }

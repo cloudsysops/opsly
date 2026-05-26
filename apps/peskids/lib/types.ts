@@ -275,4 +275,58 @@ export interface DashboardData {
       conversation_mode: 'admissions' | 'support'
     }
   >
+  bi_snapshot?: PeskidsBiSnapshot | null
+}
+
+export interface PeskidsBiFamilyMetrics {
+  totalSubmissions: number
+  reviewedSubmissions: number
+  pendingSubmissions: number
+  averageSatisfaction: number
+  privateNotesCount: number
+  activeChatThreads: number
+  recentMessages: number
+  latestActivityAt: string | null
+}
+
+export interface PeskidsBiTeacherMetrics {
+  totalSubmissions: number
+  reviewedCount: number
+  pendingCount: number
+  needsRevisionCount: number
+  uniqueStudents: number
+  uniqueFamilies: number
+  averageGrade: number
+  averageProgress: number
+  activeChatThreads: number
+  recentFamilyMessages: number
+  latestActivityAt: string | null
+}
+
+export interface PeskidsBiAdminMetrics {
+  activeStudents: number
+  newLeads7d: number
+  openFollowups: number
+  activeChats: number
+  avgSatisfaction: number
+  alerts: string[]
+}
+
+export interface PeskidsBiTrendPoint {
+  date: string
+  leads: number
+  messages: number
+  followups: number
+  feedback: number
+}
+
+export interface PeskidsBiSnapshot {
+  generatedAt: string
+  tenantId: string
+  admin: PeskidsBiAdminMetrics
+  teacher: PeskidsBiTeacherMetrics
+  families: {
+    byParentEmail: Record<string, PeskidsBiFamilyMetrics>
+  }
+  trends: PeskidsBiTrendPoint[]
 }

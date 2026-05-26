@@ -9,6 +9,18 @@ describe('recoveryTargetFromMetadata', () => {
     expect(target.updatePasswordPath).toBe('/admin/update-password')
   })
 
+  it('routes support recovery to the support update-password page', () => {
+    const target = recoveryTargetFromMetadata({ tenant_slug: 'peskids', role: 'support' })
+    expect(target.app).toBe('peskids_staff')
+    expect(target.updatePasswordPath).toBe('/support/update-password')
+  })
+
+  it('routes teacher recovery to the teacher update-password page', () => {
+    const target = recoveryTargetFromMetadata({ tenant_slug: 'peskids', role: 'teacher' })
+    expect(target.app).toBe('peskids_staff')
+    expect(target.updatePasswordPath).toBe('/teacher/update-password')
+  })
+
   it('routes smiletripcare tenant to portal', () => {
     const target = recoveryTargetFromMetadata({ tenant_slug: 'smiletripcare', role: 'owner' })
     expect(target.app).toBe('portal')

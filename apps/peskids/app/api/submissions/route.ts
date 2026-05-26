@@ -1,13 +1,24 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { createFormSubmissionService } from '@/lib/services/form-submission.service'
+import { validateFamilyRequest } from '@/lib/family-auth'
 
-export async function GET(): Promise<NextResponse> {
+export async function GET(req: NextRequest): Promise<NextResponse> {
   try {
+    const auth = await validateFamilyRequest(req)
+    if (!auth.ok) {
+      return NextResponse.json({ error: auth.error }, { status: auth.status })
+    }
+
+    const familyEmail = auth.user.email?.trim() ?? ''
+    if (!familyEmail) {
+      return NextResponse.json({ error: 'Family email not found in session' }, { status: 400 })
+    }
+
     const tenantId = process.env.NEXT_PUBLIC_TENANT_ID || 'peskids'
     const userRole = 'parent'
 
     const service = createFormSubmissionService()
-    const submissions = await service.getParentSubmissions()
+    const submissions = await service.getParentSubmissions(familyEmail)
 
     return NextResponse.json({
       submissions,

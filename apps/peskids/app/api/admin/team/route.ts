@@ -25,6 +25,14 @@ export async function GET() {
     return NextResponse.json({ error: auth.error }, { status: auth.status })
   }
 
+  const currentRole =
+    auth.method === 'secret' || !auth.user
+      ? null
+      : (tenantRoleFromUserMetadata(auth.user) as TeamRole | null)
+  if (!canManageTeam(currentRole, auth.method)) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+  }
+
   const team = await loadPeskidsTeam()
   return NextResponse.json({ ok: true, ...team })
 }

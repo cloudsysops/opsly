@@ -86,6 +86,17 @@ See `docs/tenants/peskids/DASHBOARD-SPEC.md` and `FORMS-SPEC.md` for full specs.
 
 Dashboard updates every 2 seconds via polling. In production, use Supabase Realtime subscriptions.
 
+## BI Snapshot
+
+Peskids can generate a runtime BI snapshot with Python and pandas for admin, teacher, and family metrics.
+
+```bash
+cd apps/peskids
+npm run bi:snapshot
+```
+
+By default the snapshot is written to `runtime/analytics/peskids-bi.json` and is consumed by the admin dashboard when present.
+
 ## Events
 
 All user actions emit events to Opsly event bus:

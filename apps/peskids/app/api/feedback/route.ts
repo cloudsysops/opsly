@@ -4,6 +4,8 @@ import { emitFeedbackCreated } from '@/lib/events'
 import { rateLimit, getClientIdentifier } from '@/lib/rate-limit'
 import { isMissingExpandedFeedbackColumn } from '@/lib/utils/db-compat'
 import { feedbackSchema } from '@/lib/validation/feedback.schema'
+import { validateFamilyRequest } from '@/lib/family-auth'
+import { validateStaffRequest } from '@/lib/staff-auth'
 import type { Database } from '@/lib/types'
 
 export async function POST(request: NextRequest) {
@@ -28,6 +30,11 @@ export async function POST(request: NextRequest) {
     }
 
     const data = result.data
+    const hasAuthHints = Boolean(request.headers.get('authorization') || request.headers.get('cookie'))
+    const staffAuth = hasAuthHints ? await validateStaffRequest(request) : { ok: false } as const
+    const familyAuth = !staffAuth.ok && hasAuthHints ? await validateFamilyRequest(request) : { ok: false } as const
+    const isStaffRequest = staffAuth.ok
+    const isFamilyRequest = familyAuth.ok
     const childName = (data.child_name ?? data.student_name ?? data.name)
     const message = (data.body ?? data.suggestion ?? data.feedback ?? data.notes)
     const satisfaction = (data.rating ?? data.satisfaction)
@@ -53,17 +60,28 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const authorType = data.author_type
+    const authorType = isStaffRequest
+      ? data.author_type === 'teacher'
+        ? 'teacher'
+        : 'staff'
+      : 'parent'
     const subjectType = data.subject_type
-    const visibility = data.visibility ?? (authorType === 'staff' ? 'private' : 'public')
-    const audience =
-      data.audience ??
-      (authorType === 'teacher' || authorType === 'staff' ? 'family' : 'teacher')
+    const visibility = isStaffRequest ? data.visibility ?? 'private' : 'public'
+    const audience = isStaffRequest
+      ? data.audience ?? (authorType === 'teacher' ? 'family' : 'admin')
+      : 'family'
 
-    if (audience !== 'admin' && !data.parent_email) {
+    if (!data.parent_email && (audience !== 'admin' || !isStaffRequest || isFamilyRequest)) {
       return NextResponse.json(
         { ok: false, error: 'Family email is required for this feedback', request_id: requestId },
         { status: 400 }
+      )
+    }
+
+    if (!isStaffRequest && data.audience === 'admin') {
+      return NextResponse.json(
+        { ok: false, error: 'Admin feedback requires staff authentication', request_id: requestId },
+        { status: 403 }
       )
     }
 

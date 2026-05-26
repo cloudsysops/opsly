@@ -6,12 +6,13 @@ import { PeskidsChatProvider } from '@/components/chat/peskids-chat-provider'
 import { PeskidsFloatingChatDock } from '@/components/chat/peskids-floating-chat-dock'
 import { WhatsAppFloatingButton } from '@/components/contact/whatsapp-floating-button'
 import { PESKIDS_CHAT_OPEN_EVENT } from '@/lib/peskids-chat-session'
-import type { PeskidsChatMode } from '@/lib/peskids-intake-messages'
+import { getPeskidsChatMode } from '@/lib/peskids-surface'
 
 export function PeskidsClientShell({ children }: { children: ReactNode }): React.ReactElement {
   const [chatOpen, setChatOpen] = useState(false)
   const pathname = usePathname()
-  const mode: PeskidsChatMode = pathname?.startsWith('/familias') ? 'support' : 'admissions'
+  const mode = getPeskidsChatMode(pathname)
+  const chatMode = mode ?? 'admissions'
 
   useEffect(() => {
     const openChat = (): void => setChatOpen(true)
@@ -20,10 +21,10 @@ export function PeskidsClientShell({ children }: { children: ReactNode }): React
   }, [])
 
   return (
-    <PeskidsChatProvider mode={mode}>
+    <PeskidsChatProvider mode={chatMode}>
       {children}
-      <PeskidsFloatingChatDock open={chatOpen} onClose={() => setChatOpen(false)} />
-      <WhatsAppFloatingButton />
+      {mode ? <PeskidsFloatingChatDock open={chatOpen} onClose={() => setChatOpen(false)} /> : null}
+      {mode ? <WhatsAppFloatingButton /> : null}
     </PeskidsChatProvider>
   )
 }

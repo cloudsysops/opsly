@@ -8,12 +8,12 @@ import {
 } from '../../../../lib/runtime/src/tenant-auth-surface'
 
 const PESKIDS_AUTH_SURFACE = {
-  entryPaths: ['/', '/admin/login'],
-  loginPaths: ['/admin/login'],
+  entryPaths: ['/', '/admin/login', '/teacher/login', '/support/login'],
+  loginPaths: ['/admin/login', '/teacher/login', '/support/login'],
   invitePath: '/invite',
   recoveryPath: '/auth/recovery',
-  updatePasswordPaths: ['/admin/update-password'],
-  authPrefixes: ['/admin/login/'],
+  updatePasswordPaths: ['/admin/update-password', '/teacher/update-password', '/support/update-password'],
+  authPrefixes: ['/admin/login/', '/teacher/login/', '/support/login/'],
 } as const
 
 /**

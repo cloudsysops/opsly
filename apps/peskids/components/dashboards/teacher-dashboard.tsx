@@ -112,7 +112,7 @@ export function TeacherDashboard({
               <div>
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-pk-mutedText">Respuestas revisadas</p>
+                    <p className="text-sm text-pk-mutedText">Entregas revisadas</p>
                     <p className="text-3xl font-bold text-pk-ink mt-1">{reviewedCount}</p>
                   </div>
                   <div
@@ -135,7 +135,7 @@ export function TeacherDashboard({
               <div>
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-pk-mutedText">Pendientes de revisar</p>
+                    <p className="text-sm text-pk-mutedText">Pendientes de revisión</p>
                     <p className="text-3xl font-bold text-pk-ink mt-1">{pendingCount}</p>
                   </div>
                   <div className="rounded-lg p-3 bg-yellow-100">
@@ -173,8 +173,8 @@ export function TeacherDashboard({
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle>Respuestas de estudiantes</CardTitle>
-              <CardDescription>Revisa y califica las respuestas enviadas</CardDescription>
+              <CardTitle>Entregas del aula</CardTitle>
+              <CardDescription>Revisa y califica las entregas enviadas</CardDescription>
             </div>
             {onExportSubmissions && submissions.length > 0 && (
               <Button
@@ -199,7 +199,7 @@ export function TeacherDashboard({
             </div>
           ) : submissions.length === 0 ? (
             <p className="py-6 text-center text-sm text-pk-mutedText">
-              No hay respuestas de estudiantes aún
+              No hay entregas de estudiantes aún
             </p>
           ) : (
             <div className="overflow-x-auto">
@@ -267,7 +267,7 @@ export function TeacherDashboard({
       <Card>
         <CardHeader>
           <CardTitle>Rúbrica de evaluación</CardTitle>
-          <CardDescription>Criterios de evaluación para calificar respuestas</CardDescription>
+          <CardDescription>Criterios de evaluación para calificar entregas</CardDescription>
         </CardHeader>
         <CardContent>
           {isLoading ? (
@@ -289,8 +289,8 @@ export function TeacherDashboard({
       {/* Bulk Actions */}
       <Card>
         <CardHeader>
-          <CardTitle>Acciones en lote</CardTitle>
-          <CardDescription>Realiza acciones sobre múltiples respuestas</CardDescription>
+          <CardTitle>Acciones del aula</CardTitle>
+          <CardDescription>Realiza acciones sobre múltiples entregas</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex flex-wrap gap-3">
@@ -298,7 +298,7 @@ export function TeacherDashboard({
               Marcar como revisadas
             </Button>
             <Button type="button" variant="secondary" size="sm" disabled={submissions.length === 0}>
-              Enviar retroalimentación
+              Enviar observaciones
             </Button>
             <Button type="button" variant="secondary" size="sm" disabled={submissions.length === 0}>
               Reasignar a estudiantes

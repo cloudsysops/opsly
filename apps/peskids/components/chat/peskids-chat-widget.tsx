@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation'
 import { PeskidsChatPanel } from '@/components/chat/peskids-chat-panel'
 import { usePeskidsChatContext } from '@/components/chat/peskids-chat-provider'
 import { PESKIDS_CHAT_OPEN_EVENT } from '@/lib/peskids-chat-session'
+import { shouldShowPeskidsChatWidgets } from '@/lib/peskids-surface'
 import { cn } from '@/lib/utils'
 
 export function PeskidsChatWidget(): React.ReactElement | null {
@@ -13,7 +14,7 @@ export function PeskidsChatWidget(): React.ReactElement | null {
   const [open, setOpen] = useState(false)
   const chat = usePeskidsChatContext()
 
-  const isAdmin = pathname?.startsWith('/admin') ?? false
+  const showWidgets = shouldShowPeskidsChatWidgets(pathname)
   const isHome = pathname === '/'
 
   useEffect(() => {
@@ -22,7 +23,7 @@ export function PeskidsChatWidget(): React.ReactElement | null {
     return () => window.removeEventListener(PESKIDS_CHAT_OPEN_EVENT, onOpen)
   }, [])
 
-  if (isAdmin || isHome) return null
+  if (!showWidgets || isHome) return null
 
   return (
     <>

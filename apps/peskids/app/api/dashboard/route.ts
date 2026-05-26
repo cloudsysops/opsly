@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { validateStaffRequest } from '@/lib/staff-auth'
+import { isOperationalStaffUser } from '@/lib/staff-user'
 import { fetchDashboardData } from '@/lib/services/dashboard.service'
 
 export const dynamic = 'force-dynamic'
@@ -13,6 +14,12 @@ export async function GET(req: NextRequest) {
       return NextResponse.json(
         { ok: false, error: auth.error, request_id: requestId },
         { status: auth.status }
+      )
+    }
+    if (auth.method !== 'secret' && auth.user && !isOperationalStaffUser(auth.user)) {
+      return NextResponse.json(
+        { ok: false, error: 'Forbidden', request_id: requestId },
+        { status: 403 }
       )
     }
 

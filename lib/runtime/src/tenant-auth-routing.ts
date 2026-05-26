@@ -13,6 +13,7 @@ export type TenantRecoveryRule = {
   origin: string
   staffRoles: readonly string[]
   updatePasswordPath: string
+  updatePasswordPathByRole?: Record<string, string>
 }
 
 export type RecoveryRoutingConfig = {
@@ -37,6 +38,17 @@ function metadataRecord(meta: unknown): Record<string, unknown> {
     return {}
   }
   return meta as Record<string, unknown>
+}
+
+function resolveUpdatePasswordPath(
+  rule: { updatePasswordPath: string; updatePasswordPathByRole?: Record<string, string> },
+  role: string
+): string {
+  const rolePath = rule.updatePasswordPathByRole?.[role]?.trim()
+  if (rolePath) {
+    return rolePath
+  }
+  return rule.updatePasswordPath
 }
 
 export function metadataFromJwtAccessToken(accessToken: string): Record<string, unknown> {
@@ -94,7 +106,7 @@ export function resolveRecoveryTargetFromMetadata(
       app: tenantRule.app,
       origin: tenantRule.origin,
       recoveryPath: '/auth/recovery',
-      updatePasswordPath: tenantRule.updatePasswordPath,
+      updatePasswordPath: resolveUpdatePasswordPath(tenantRule, role),
     }
   }
 

@@ -83,7 +83,7 @@ export function MessageInboxPanel({
       const data = (await res.json()) as ThreadResponse & { error?: string }
       if (!res.ok) {
         if (res.status === 401) {
-          setStatus('Sesión vencida. Vuelve a iniciar sesión en admin.')
+          setStatus('Sesión vencida. Vuelve a iniciar sesión en tu panel.')
           return
         }
         setStatus(data.error ?? 'No se pudo cargar el hilo')
@@ -126,7 +126,7 @@ export function MessageInboxPanel({
       const data = (await res.json()) as { message?: string; error?: string }
       if (!res.ok) {
         if (res.status === 401) {
-          setStatus('Sesión vencida. Vuelve a iniciar sesión en admin.')
+          setStatus('Sesión vencida. Vuelve a iniciar sesión en tu panel.')
           return
         }
         setStatus(data.error ?? 'Error al enviar')

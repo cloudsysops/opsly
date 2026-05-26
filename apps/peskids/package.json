@@ -8,7 +8,8 @@
     "build": "next build",
     "start": "next start -p 3004",
     "lint": "next lint",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "bi:snapshot": "python3 analytics/peskids_bi.py"
   },
   "dependencies": {
     "@supabase/auth-helpers-nextjs": "^0.8.7",

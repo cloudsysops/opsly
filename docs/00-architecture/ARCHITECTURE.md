@@ -28,6 +28,23 @@ This document is the single technical authority for runtime architecture at the 
   - Traefik v3
   - Cloudflare proxy (recommended)
 
+## Tenant Analytics / BI
+
+- Default analytics runtime:
+  - Python batch jobs with `pandas`
+  - snapshot artifacts keyed by `tenant_slug`
+  - dashboards read the snapshot contract instead of recomputing heavy BI inline
+- Interchange layer:
+  - Apache Arrow or Parquet-compatible artifacts when moving tabular data between tools
+- Visualization:
+  - existing Opsly dashboards first
+  - Apache Superset only if the tenant needs self-service BI on top of SQL sources
+- Distributed compute:
+  - Apache Spark is not the default core runtime for tenant incubation
+  - introduce Spark only when a tenant proves that single-node batch processing is no longer enough
+
+See ADR-045 for the decision record.
+
 ## Current Production Topology (verified 2026-05-15)
 
 Production runs on the VPS `vps-dragon@100.120.151.91` through Tailscale, using Docker Compose and Traefik as the edge router. This snapshot reflects observed runtime state on 2026-05-15, not desired future state.

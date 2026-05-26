@@ -25,6 +25,7 @@ import { FeedbackComposer } from '@/components/feedback/feedback-composer'
 import { cn, formatRelativeTime } from '@/lib/utils'
 
 interface DashboardViewProps {
+  surface?: 'admin' | 'support'
   data: DashboardData
   lastUpdated: Date
   range: 'week' | 'month'
@@ -109,6 +110,7 @@ function whatsappHref(phone: string): string | null {
 }
 
 export function DashboardView({
+  surface = 'admin',
   data,
   lastUpdated,
   range,
@@ -233,7 +235,12 @@ export function DashboardView({
   }, [])
 
   return (
-    <AdminShell lastUpdated={lastUpdated} onRefresh={onRefresh} refreshing={refreshing}>
+    <AdminShell
+      surface={surface}
+      lastUpdated={lastUpdated}
+      onRefresh={onRefresh}
+      refreshing={refreshing}
+    >
       <section
         data-admin-section="dashboard"
         className="mb-6 overflow-hidden rounded-3xl border border-pk-border bg-gradient-to-br from-white via-white to-teal-50/60 p-5 shadow-card sm:p-6"
@@ -241,13 +248,17 @@ export function DashboardView({
         <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
           <div className="max-w-2xl">
             <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-pk-mutedText">
-              Peskids / Admin
+              Peskids / {surface === 'support' ? 'Soporte' : 'Admin'}
             </p>
             <h2 className="mt-1 font-display text-2xl font-semibold tracking-tight text-pk-ink sm:text-3xl">
-              Operación diaria de familias, leads y soporte.
+              {surface === 'support'
+                ? 'Atención diaria de familias, leads y seguimientos.'
+                : 'Operación diaria de familias, leads y soporte.'}
             </h2>
             <p className="mt-2 max-w-xl text-sm leading-6 text-pk-sub">
-              Un panel para decidir rápido qué atender, qué cerrar y qué seguir hoy.
+              {surface === 'support'
+                ? 'Un panel para resolver casos, revisar conversaciones y cerrar seguimientos hoy.'
+                : 'Un panel para decidir rápido qué atender, qué cerrar y qué seguir hoy.'}
             </p>
 
             <div className="mt-5 flex flex-wrap gap-2 text-[11px] font-medium text-pk-sub">
@@ -358,9 +369,108 @@ export function DashboardView({
         </div>
       </section>
 
-      <div className="mb-5">
-        <TeamPanel />
-      </div>
+      {data.bi_snapshot ? (
+        <section
+          data-admin-section="bi"
+          className="mb-5 overflow-hidden rounded-3xl border border-pk-border bg-white shadow-card"
+        >
+          <div className="border-b border-pk-border bg-gradient-to-r from-teal-50 to-white px-5 py-4 sm:px-6">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-pk-mutedText">
+                  Analítica Peskids
+                </p>
+                <h3 className="mt-1 text-lg font-semibold text-pk-ink">BI calculado con Python y pandas</h3>
+                <p className="mt-1 text-sm text-pk-sub">
+                  Instantánea generada en batch para decisiones operativas, pedagógicas y comerciales.
+                </p>
+              </div>
+              <Badge tone="teal">
+                Actualizado {formatRelativeTime(new Date(data.bi_snapshot.generatedAt))}
+              </Badge>
+            </div>
+          </div>
+
+          <div className="grid gap-4 p-5 sm:p-6 lg:grid-cols-[1.1fr_0.9fr]">
+            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+              <div className="rounded-2xl border border-pk-border bg-pk-snow p-4">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-pk-mutedText">Niños activos</p>
+                <p className="mt-1 text-3xl font-bold text-pk-ink">{data.bi_snapshot.admin.activeStudents}</p>
+                <p className="mt-1 text-xs text-pk-sub">Base operativa del tenant</p>
+              </div>
+              <div className="rounded-2xl border border-pk-border bg-pk-snow p-4">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-pk-mutedText">Chats activos</p>
+                <p className="mt-1 text-3xl font-bold text-pk-ink">{data.bi_snapshot.admin.activeChats}</p>
+                <p className="mt-1 text-xs text-pk-sub">Hilos con familia o soporte</p>
+              </div>
+              <div className="rounded-2xl border border-pk-border bg-pk-snow p-4">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-pk-mutedText">Satisfacción</p>
+                <p className="mt-1 text-3xl font-bold text-pk-ink">{data.bi_snapshot.admin.avgSatisfaction}/5</p>
+                <p className="mt-1 text-xs text-pk-sub">Promedio de feedback reciente</p>
+              </div>
+              <div className="rounded-2xl border border-pk-border bg-pk-snow p-4">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-pk-mutedText">Alertas</p>
+                <p className="mt-1 text-3xl font-bold text-pk-ink">{data.bi_snapshot.admin.alerts.length}</p>
+                <p className="mt-1 text-xs text-pk-sub">Señales que exigen decisión</p>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <div className="rounded-2xl border border-pk-border bg-pk-snow p-4">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-pk-mutedText">
+                  Alertas activas
+                </p>
+                {data.bi_snapshot.admin.alerts.length > 0 ? (
+                  <ul className="mt-3 space-y-2 text-sm text-pk-ink">
+                    {data.bi_snapshot.admin.alerts.map((alert) => (
+                      <li key={alert} className="rounded-xl border border-amber-100 bg-white px-3 py-2">
+                        {alert}
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="mt-3 text-sm text-pk-sub">Sin alertas relevantes en este momento.</p>
+                )}
+              </div>
+
+              <div className="rounded-2xl border border-pk-border bg-pk-snow p-4">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-pk-mutedText">
+                  Tendencia 14 días
+                </p>
+                {data.bi_snapshot.trends.length > 0 ? (
+                  <div className="mt-3 space-y-2">
+                    {data.bi_snapshot.trends.slice(-7).map((point) => (
+                      <div key={point.date} className="grid grid-cols-[72px_repeat(4,1fr)] gap-2 text-xs">
+                        <span className="font-mono text-pk-mutedText">{point.date}</span>
+                        <span className="rounded-lg bg-white px-2 py-1 text-center text-pk-ink">
+                          {point.leads} leads
+                        </span>
+                        <span className="rounded-lg bg-white px-2 py-1 text-center text-pk-ink">
+                          {point.messages} msgs
+                        </span>
+                        <span className="rounded-lg bg-white px-2 py-1 text-center text-pk-ink">
+                          {point.followups} seg.
+                        </span>
+                        <span className="rounded-lg bg-white px-2 py-1 text-center text-pk-ink">
+                          {point.feedback} fb
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="mt-3 text-sm text-pk-sub">No hay serie histórica todavía.</p>
+                )}
+              </div>
+            </div>
+          </div>
+        </section>
+      ) : null}
+
+      {surface === 'admin' ? (
+        <div className="mb-5">
+          <TeamPanel />
+        </div>
+      ) : null}
 
       <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
         <StatCard
@@ -550,35 +660,37 @@ export function DashboardView({
           </ul>
         </StatCard>
 
-        <StatCard
-          sectionId="notes"
-          title="Notas privadas a familias"
-          description="Solo las ve la familia y el equipo"
-          value={data.private_family_notes.length}
-          icon={Mail}
-          accent="violet"
-        >
-          <ul className="max-h-52 space-y-3 overflow-y-auto">
-            {data.private_family_notes.length > 0 ? (
-              data.private_family_notes.map((note) => (
-                <li key={note.id} className="rounded-2xl border border-pk-border/70 bg-white p-3">
-                  <div className="flex items-center justify-between gap-2">
-                    <p className="text-sm font-medium text-pk-ink">{note.child_name}</p>
-                    <Badge tone="violet">Privado</Badge>
-                  </div>
-                  <p className="mt-1 text-xs text-pk-sub">
-                    {note.parent_email || 'Familia sin correo'}
-                  </p>
-                  <p className="mt-2 text-sm text-pk-sub line-clamp-2">
-                    {note.body ?? note.suggestion ?? 'Sin contenido'}
-                  </p>
-                </li>
-              ))
-            ) : (
-              <p className="text-sm text-pk-sub">No hay notas privadas todavía.</p>
-            )}
-          </ul>
-        </StatCard>
+        {surface === 'admin' ? (
+          <StatCard
+            sectionId="notes"
+            title="Notas privadas a familias"
+            description="Solo las ve la familia y el equipo"
+            value={data.private_family_notes.length}
+            icon={Mail}
+            accent="violet"
+          >
+            <ul className="max-h-52 space-y-3 overflow-y-auto">
+              {data.private_family_notes.length > 0 ? (
+                data.private_family_notes.map((note) => (
+                  <li key={note.id} className="rounded-2xl border border-pk-border/70 bg-white p-3">
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="text-sm font-medium text-pk-ink">{note.child_name}</p>
+                      <Badge tone="violet">Privado</Badge>
+                    </div>
+                    <p className="mt-1 text-xs text-pk-sub">
+                      {note.parent_email || 'Familia sin correo'}
+                    </p>
+                    <p className="mt-2 text-sm text-pk-sub line-clamp-2">
+                      {note.body ?? note.suggestion ?? 'Sin contenido'}
+                    </p>
+                  </li>
+                ))
+              ) : (
+                <p className="text-sm text-pk-sub">No hay notas privadas todavía.</p>
+              )}
+            </ul>
+          </StatCard>
+        ) : null}
 
         <StatCard
           sectionId="follow-up"
@@ -690,29 +802,31 @@ export function DashboardView({
           </CardContent>
         </Card>
 
-        <Card className="md:col-span-2 xl:col-span-3">
-          <CardHeader>
-            <CardTitle className="text-base">Enviar nota privada</CardTitle>
-            <CardDescription>
-              Útil para observaciones sensibles o seguimiento puntual que solo debe ver la familia.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <FeedbackComposer
-              title="Nota privada para familia"
-              description="Escribe una observación directa para una familia. Los profesores no la verán."
-              submitLabel="Guardar nota"
-              authorType="staff"
-              subjectType="student"
-              childNameLabel="Nombre del estudiante"
-              parentEmailLabel="Email de la familia"
-              parentEmailHidden={false}
-              visibility="private"
-              audience="family"
-              subjectHint="Esta nota se guardará solo para la familia y el equipo de administración."
-            />
-          </CardContent>
-        </Card>
+        {surface === 'admin' ? (
+          <Card className="md:col-span-2 xl:col-span-3">
+            <CardHeader>
+              <CardTitle className="text-base">Enviar nota privada</CardTitle>
+              <CardDescription>
+                Útil para observaciones sensibles o seguimiento puntual que solo debe ver la familia.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <FeedbackComposer
+                title="Nota privada para familia"
+                description="Escribe una observación directa para una familia. Los profesores no la verán."
+                submitLabel="Guardar nota"
+                authorType="staff"
+                subjectType="student"
+                childNameLabel="Nombre del estudiante"
+                parentEmailLabel="Email de la familia"
+                parentEmailHidden={false}
+                visibility="private"
+                audience="family"
+                subjectHint="Esta nota se guardará solo para la familia y el equipo de administración."
+              />
+            </CardContent>
+          </Card>
+        ) : null}
       </div>
     </AdminShell>
   )

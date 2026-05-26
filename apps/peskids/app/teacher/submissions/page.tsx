@@ -72,7 +72,7 @@ export default function TeacherSubmissionsPage(): React.ReactElement {
       setSubmissions(data.submissions || [])
       setError('')
     } catch (err) {
-      setError('No se pudieron cargar las respuestas de estudiantes. Intenta más tarde.')
+      setError('No se pudieron cargar las entregas del aula. Intenta más tarde.')
       console.error(err)
     } finally {
       setLoading(false)
@@ -157,7 +157,7 @@ export default function TeacherSubmissionsPage(): React.ReactElement {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-pk-bg">
         <Loader2 className="h-10 w-10 animate-spin text-pk-primary" aria-hidden />
-        <p className="text-sm text-pk-sub">Cargando respuestas de estudiantes…</p>
+        <p className="text-sm text-pk-sub">Cargando entregas del aula…</p>
       </div>
     )
   }
@@ -185,11 +185,11 @@ export default function TeacherSubmissionsPage(): React.ReactElement {
                 Peskids / Profesores
               </p>
               <h1 className="mt-1 font-display text-2xl font-semibold tracking-tight text-pk-ink sm:text-3xl">
-                Respuestas de estudiantes
+                Entregas del aula
               </h1>
               <p className="mt-2 max-w-xl text-sm leading-6 text-pk-sub">
-                Revisa entregas, deja feedback y exporta el seguimiento del aula sin salir de la
-                superficie de trabajo del profesor.
+                Revisa entregas, deja observaciones y exporta el seguimiento del grupo sin salir
+                de la superficie de trabajo del profesor.
               </p>
             </div>
 
@@ -201,15 +201,19 @@ export default function TeacherSubmissionsPage(): React.ReactElement {
                 <Download className="h-4 w-4" aria-hidden />
                 <span className="ml-1">Exportar CSV</span>
               </Button>
-              <Button type="button" variant="ghost" onClick={() => (window.location.href = '/teacher/dashboard')}>
-                Volver al dashboard
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => (window.location.href = '/teacher/dashboard')}
+              >
+                Volver al panel docente
               </Button>
             </div>
           </div>
         </section>
 
         <FeedbackComposer
-          title="Feedback para la familia"
+          title="Observación para la familia"
           description="Comparte avances, observaciones y próximos pasos de un alumno sin salir de esta vista."
           submitLabel="Enviar a la familia"
           authorType="teacher"
@@ -303,7 +307,7 @@ export default function TeacherSubmissionsPage(): React.ReactElement {
                 </div>
               </div>
               <p className="text-sm text-pk-sub">
-                {selectedSubmission.feedback || 'Aún no hay feedback agregado para esta entrega.'}
+                {selectedSubmission.feedback || 'Aún no hay observaciones agregadas para esta entrega.'}
               </p>
               <div className="grid gap-3 sm:grid-cols-2">
                 <div className="rounded-2xl border border-pk-border bg-white p-4">
@@ -332,10 +336,10 @@ export default function TeacherSubmissionsPage(): React.ReactElement {
                   onClick={() => {
                     window.location.href = `/teacher/submissions/${selectedSubmission.submissionId}`
                   }}
-                >
-                  Abrir ficha
-                  <ArrowRight className="h-4 w-4" aria-hidden />
-                </Button>
+                  >
+                    Abrir ficha
+                    <ArrowRight className="h-4 w-4" aria-hidden />
+                  </Button>
                 <Button
                   type="button"
                   variant="ghost"

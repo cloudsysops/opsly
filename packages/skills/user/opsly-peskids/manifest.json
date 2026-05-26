@@ -1,0 +1,50 @@
+{
+  "name": "opsly-peskids",
+  "version": "1.0.0",
+  "description": "Peskids tenant-specific product and operations work. Use when changing landing, admin, teacher, support, families, auth, routes, docs, or deployment for the Peskids tenant.",
+  "triggers": [
+    "Peskids",
+    "peskids",
+    "familias",
+    "teacher",
+    "support",
+    "admin",
+    "landing",
+    "dashboard",
+    "leads",
+    "feedback",
+    "follow-up",
+    "tenant_slug",
+    "invite",
+    "recovery",
+    "login",
+    "tenant"
+  ],
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "surface": {
+        "type": "string",
+        "description": "landing | families | teacher | support | admin | api | docs | deploy"
+      },
+      "task": {
+        "type": "string",
+        "description": "Qué se necesita cambiar o validar"
+      },
+      "tenantSlug": {
+        "type": "string",
+        "description": "Tenant slug, normalmente peskids"
+      }
+    },
+    "additionalProperties": true
+  },
+  "outputSchema": {
+    "type": "object",
+    "properties": {
+      "tenantSlug": { "type": "string" },
+      "surface": { "type": "string" },
+      "nextAction": { "type": "string" }
+    }
+  },
+  "crossReferences": ["opsly-tenant", "opsly-frontend", "opsly-api", "opsly-supabase", "opsly-infra", "opsly-qa"]
+}

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { validateStaffSession } from '@/lib/staff-auth'
+import { isOperationalStaffUser } from '@/lib/staff-user'
 import { enqueueApprovedReply } from '@/lib/n8n-send'
 import { supabaseServer } from '@/lib/supabase'
 
@@ -11,6 +12,9 @@ export async function POST(
     const auth = await validateStaffSession()
     if (!auth.ok) {
       return NextResponse.json({ error: auth.error }, { status: auth.status })
+    }
+    if (auth.method !== 'secret' && auth.user && !isOperationalStaffUser(auth.user)) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
     const { messageId } = await context.params

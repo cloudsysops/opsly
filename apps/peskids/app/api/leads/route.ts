@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
 import { getServiceClient } from '@/lib/supabase'
+import { getClientIdentifier, rateLimit } from '@/lib/rate-limit'
 import {
   buildPeskidsReferralCode,
   PESKIDS_REFERRAL_DISCOUNT_CENTS,
@@ -8,6 +10,15 @@ import {
   buildPeskidsReferralLink,
   normalizeReferralCode,
 } from '@/lib/peskids-referral-links'
+import { createLeadSchema } from '@/lib/validation/lead.schema'
+
+const leadSubmissionSchema = createLeadSchema.extend({
+  full_name: z.string().min(2).max(100),
+  grade_interested: z.string().min(1).max(60),
+  consent_treatment: z.boolean(),
+  consent_marketing: z.boolean().optional(),
+  consent_policy_version: z.string().max(32).optional(),
+})
 
 type LeadBody = {
   name: string
@@ -27,7 +38,35 @@ type LeadBody = {
 
 export async function POST(request: NextRequest) {
   try {
-    const body = (await request.json()) as LeadBody
+    const clientId = getClientIdentifier(request.headers)
+    if (!rateLimit(`leads:${clientId}`, 5, 10 * 60 * 1000)) {
+      return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
+    }
+
+    const raw = (await request.json()) as Partial<LeadBody> & { full_name?: string }
+    const normalized = {
+      full_name: (raw.full_name ?? raw.name ?? '').trim(),
+      email: (raw.email ?? '').trim(),
+      phone: raw.phone?.trim() || undefined,
+      source: 'web' as const,
+      class_modality: raw.class_modality,
+      neighborhood: raw.neighborhood,
+      grade_interested: (raw.grade_interested ?? '').trim(),
+      referral_source: raw.referral_source,
+      referral_code: raw.referral_code,
+      referred_by_code: raw.referred_by_code,
+      consent_treatment: raw.consent_treatment,
+      consent_marketing: raw.consent_marketing,
+      consent_policy_version: raw.consent_policy_version,
+    }
+    const parsedLead = leadSubmissionSchema.safeParse(normalized)
+    if (!parsedLead.success) {
+      return NextResponse.json(
+        { error: parsedLead.error.issues[0]?.message ?? 'Invalid input' },
+        { status: 400 }
+      )
+    }
+    const body = parsedLead.data
 
     if (!process.env.SUPABASE_SERVICE_ROLE_KEY || !process.env.NEXT_PUBLIC_SUPABASE_URL) {
       return NextResponse.json({ error: 'Database not configured' }, { status: 500 })
@@ -49,7 +88,7 @@ export async function POST(request: NextRequest) {
 
     const leadPayload = {
       tenant_id: tenantId,
-      name: body.name,
+      name: body.full_name,
       email: body.email,
       phone: body.phone?.trim() ? body.phone.trim() : null,
       class_modality: body.class_modality || null,

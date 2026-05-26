@@ -1,8 +1,18 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
+import { validateStaffSession } from '@/lib/staff-auth'
+import { isOperationalStaffUser } from '../../../../lib/staff-user'
 import { createFormSubmissionService } from '@/lib/services/form-submission.service'
 
-export async function GET(): Promise<NextResponse> {
+export async function GET(_req: NextRequest): Promise<NextResponse> {
   try {
+    const auth = await validateStaffSession()
+    if (!auth.ok) {
+      return NextResponse.json({ error: auth.error }, { status: auth.status })
+    }
+    if (auth.method !== 'secret' && auth.user && !isOperationalStaffUser(auth.user)) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    }
+
     const tenantId = process.env.NEXT_PUBLIC_TENANT_ID || 'peskids'
 
     const service = createFormSubmissionService()

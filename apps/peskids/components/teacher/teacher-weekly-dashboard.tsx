@@ -54,6 +54,20 @@ type TeacherSubmissionsResponse = {
   }
 }
 
+type TeacherRoleMetrics = {
+  totalSubmissions: number
+  reviewedCount: number
+  pendingCount: number
+  needsRevisionCount: number
+  uniqueStudents: number
+  uniqueFamilies: number
+  averageGrade: number
+  averageProgress: number
+  activeChatThreads: number
+  recentFamilyMessages: number
+  latestActivityAt: string | null
+}
+
 type CalendarTimelineItem = {
   time: string
   title: string
@@ -114,8 +128,8 @@ const classCards = [
     tone: 'amber',
   },
   {
-    title: 'Mensajes',
-    description: 'Familias esperando respuesta',
+    title: 'Familias',
+    description: 'Mensajes por responder',
     value: '4',
     tone: 'violet',
   },
@@ -215,6 +229,7 @@ export function TeacherWeeklyDashboard(): React.ReactElement {
   const [teacherData, setTeacherData] = useState<TeacherSubmissionsResponse | null>(null)
   const [isLoadingTeacherData, setIsLoadingTeacherData] = useState(true)
   const [teacherDataError, setTeacherDataError] = useState<string | null>(null)
+  const [teacherMetrics, setTeacherMetrics] = useState<TeacherRoleMetrics | null>(null)
 
   const todayAgenda = useMemo(
     () => weeklyAgenda.filter((slot) => slot.day === 'Mié' || slot.status !== 'done'),
@@ -226,26 +241,36 @@ export function TeacherWeeklyDashboard(): React.ReactElement {
       return classCards
     }
 
-    const totalResponses = teacherData.submissions.length
-    const needsAttention = teacherData.stats.pendingCount + teacherData.stats.needsRevisionCount
+    const activeThreads = teacherMetrics?.activeChatThreads ?? 0
+    const averageProgress = teacherMetrics?.averageProgress ?? 0
 
     return [
-      classCards[0],
-      classCards[1],
       {
-        title: 'Respuestas',
-        description: 'Subidas por estudiantes en el aula',
-        value: String(totalResponses),
+        title: 'Estudiantes',
+        description: 'Con entregas activas',
+        value: String(teacherMetrics?.uniqueStudents ?? teacherData.stats.uniqueStudents),
+        tone: 'teal',
+      },
+      {
+        title: 'Revisadas',
+        description: 'Entregas cerradas',
+        value: String(teacherMetrics?.reviewedCount ?? teacherData.stats.reviewedCount),
+        tone: 'green',
+      },
+      {
+        title: 'Chats activos',
+        description: 'Hilos con familia',
+        value: String(activeThreads),
         tone: 'violet',
       },
       {
-        title: 'Pendientes',
-        description: 'Requieren seguimiento hoy',
-        value: String(needsAttention),
+        title: 'Progreso medio',
+        description: 'Avance del grupo',
+        value: `${averageProgress}%`,
         tone: 'amber',
       },
     ] as const
-  }, [teacherData])
+  }, [teacherData, teacherMetrics])
 
   useEffect(() => {
     const controller = new AbortController()
@@ -269,13 +294,31 @@ export function TeacherWeeklyDashboard(): React.ReactElement {
         }
       } catch (error_) {
         if (!controller.signal.aborted) {
-          const message = error_ instanceof Error ? error_.message : 'No se pudieron cargar las respuestas.'
+          const message = error_ instanceof Error ? error_.message : 'No se pudieron cargar las entregas.'
           setTeacherDataError(message)
           setTeacherData(null)
+          setTeacherMetrics(null)
         }
       } finally {
         if (!controller.signal.aborted) {
           setIsLoadingTeacherData(false)
+        }
+      }
+
+      try {
+        const metricsResponse = await fetch('/api/submissions/teacher/metrics', {
+          signal: controller.signal,
+        })
+        if (metricsResponse.ok) {
+          const metricsPayload = (await metricsResponse.json()) as { metrics?: TeacherRoleMetrics }
+          if (!controller.signal.aborted) {
+            setTeacherMetrics(metricsPayload.metrics ?? null)
+          }
+        }
+      } catch (error_) {
+        if (!controller.signal.aborted) {
+          console.warn('Teacher metrics unavailable:', error_)
+          setTeacherMetrics(null)
         }
       }
     }
@@ -292,14 +335,14 @@ export function TeacherWeeklyDashboard(): React.ReactElement {
           <div className="relative z-10">
             <div className="flex flex-wrap items-center gap-2">
               <p className="pk-eyebrow">Peskids · Profesores</p>
-              <Badge tone="violet">Sierra · profesor principal</Badge>
+              <Badge tone="violet">Panel docente</Badge>
             </div>
             <h1 className="mt-4 max-w-2xl text-3xl font-bold tracking-tight text-pk-ink sm:text-4xl lg:text-[3.9rem]">
-              Todo tu día de clases, con calendario, seguimiento y feedback en una sola portada.
+              Tu agenda docente, con clases, asistencia y seguimiento académico en una sola portada.
             </h1>
             <p className="mt-5 max-w-xl text-base leading-relaxed text-pk-sub sm:text-lg">
-              Esta vista prioriza lo que un profesor principal necesita ver al abrir el panel:
-              agenda, grupos, observaciones, entregas y respuestas de familias sin saltar entre pantallas.
+              Esta vista prioriza lo que un profesor necesita ver al abrir el panel: agenda,
+              grupos, observaciones, entregas y comunicación con familias sin saltar entre pantallas.
             </p>
 
             <div className="mt-8 flex flex-wrap gap-3">
@@ -331,16 +374,16 @@ export function TeacherWeeklyDashboard(): React.ReactElement {
       </section>
 
       <GrowthWidget
-        eyebrow="Progreso del equipo"
-        title="Metas, constancia y logros del aula"
-        description="Una lectura rápida de qué está avanzando bien, qué requiere cierre y qué gana terreno cada semana."
-        mission="Guiar cada clase con orden, paciencia y seguimiento para que el grupo avance sin fricción."
-        vision="Un aula donde cada alumno progresa con confianza y cada familia recibe claridad a tiempo."
-        objectives={['Asistencia completa', 'Feedback enviado', 'Observaciones cerradas']}
-        achievements={['Clase impecable', '5 días de racha', 'Familias al día']}
-        streakLabel="Racha activa del profesor"
+        eyebrow="Progreso del grupo"
+        title="Constancia, avances y cierres del aula"
+        description="Una lectura rápida de qué va bien, qué necesita revisión y qué está listo para cerrar esta semana."
+        mission="Guiar cada clase con orden y paciencia para que el grupo avance con confianza."
+        vision="Un aula donde cada alumno progresa y cada familia recibe claridad a tiempo."
+        objectives={['Asistencia completa', 'Observaciones cerradas', 'Entregas revisadas']}
+        achievements={['Clase ordenada', '5 días de racha', 'Seguimiento al día']}
+        streakLabel="Racha docente activa"
         streakValue="12"
-        progressLabel="Avance semanal del aula"
+        progressLabel="Avance semanal del grupo"
         progressPercent={78}
         accent="violet"
         className="mt-6"
@@ -394,9 +437,9 @@ export function TeacherWeeklyDashboard(): React.ReactElement {
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
               <MessageSquare className="h-4 w-4 text-pk-primary" aria-hidden />
-              Observaciones y feedback
+              Observaciones del grupo
             </CardTitle>
-            <CardDescription>Notas cortas para dar seguimiento sin abrir otra herramienta.</CardDescription>
+            <CardDescription>Notas cortas para seguimiento pedagógico sin salir del panel.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
             {teacherNotes.map((note) => (
@@ -418,21 +461,21 @@ export function TeacherWeeklyDashboard(): React.ReactElement {
 
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Acciones rápidas</CardTitle>
-            <CardDescription>Trabajo del día en una sola vista.</CardDescription>
+            <CardTitle className="text-base">Acciones de clase</CardTitle>
+            <CardDescription>Lo esencial para cerrar el día con orden.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-2">
             <Button type="button" className="w-full justify-start" variant="secondary">
-              Marcar asistencia
+              Registrar asistencia
             </Button>
             <Button type="button" className="w-full justify-start" variant="ghost">
-              Registrar nota de clase
+              Añadir observación
             </Button>
             <Button type="button" className="w-full justify-start" variant="ghost">
-              Revisar feedback familiar
+              Revisar mensajes de familias
             </Button>
             <Button type="button" className="w-full justify-start" variant="ghost">
-              Ver agenda de la semana
+              Ver planificación semanal
             </Button>
           </CardContent>
         </Card>
@@ -442,14 +485,14 @@ export function TeacherWeeklyDashboard(): React.ReactElement {
         <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>
             <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-pk-mutedText">
-              Respuestas del aula
+              Entregas del aula
             </p>
             <h2 className="mt-1 font-display text-xl font-semibold tracking-tight text-pk-ink">
-              Entregas y feedback listos para revisar.
+              Entregas y comentarios listos para revisar.
             </h2>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-pk-sub">
-              Esta capa muestra respuestas reales de estudiantes para revisar, calificar y devolver
-              sin salir del flujo de clase.
+              Esta capa muestra entregas reales de estudiantes para revisar, calificar y devolver
+              sin salir del flujo docente.
             </p>
           </div>
 
@@ -485,7 +528,7 @@ export function TeacherWeeklyDashboard(): React.ReactElement {
             <div className="flex min-h-[180px] items-center justify-center rounded-2xl border border-pk-border bg-pk-muted/25">
               <div className="flex items-center gap-2 text-sm text-pk-sub">
                 <Loader2 className="h-4 w-4 animate-spin text-pk-primary" aria-hidden />
-                Cargando respuestas del aula
+                Cargando entregas del aula
               </div>
             </div>
           ) : (

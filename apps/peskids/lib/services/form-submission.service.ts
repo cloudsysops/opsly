@@ -35,10 +35,29 @@ export interface StudentSubmission {
   progressPercent?: number
 }
 
+function normalizeEmail(value: string | null | undefined): string {
+  return value?.trim().toLowerCase() ?? ''
+}
+
+function extractParentEmail(row: any): string {
+  const directEmail =
+    row.parent_email ||
+    row.form_data?.parent_email ||
+    row.form_data?.family_email ||
+    row.form_data?.email ||
+    row.form_data?.guardian_email ||
+    null
+
+  return normalizeEmail(directEmail)
+}
+
 export class FormSubmissionService {
   private tenantSlug = 'peskids'
 
-  async getParentSubmissions(): Promise<FormSubmissionSummary[]> {
+  async getParentSubmissions(parentEmail?: string): Promise<FormSubmissionSummary[]> {
+    const normalizedParentEmail = normalizeEmail(parentEmail)
+    if (!normalizedParentEmail) return []
+
     const supabase = getSupabaseClient()
     if (!supabase) return []
 
@@ -63,14 +82,16 @@ export class FormSubmissionService {
       return []
     }
 
-    return (data || []).map((row: any) => ({
-      formId: row.form_id,
-      formTitle: row.form?.title || 'Untitled Form',
-      submissionId: row.submission_id,
-      submittedAt: row.completed_at || new Date().toISOString(),
-      status: row.status === 'graded' ? 'reviewed' : row.status === 'submitted' ? 'completed' : 'pending',
-      studentName: row.form_data?.student_name || row.form_data?.child_name || row.form_data?.name || undefined,
-    }))
+    return (data || [])
+      .filter((row: any) => extractParentEmail(row) === normalizedParentEmail)
+      .map((row: any) => ({
+        formId: row.form_id,
+        formTitle: row.form?.title || 'Untitled Form',
+        submissionId: row.submission_id,
+        submittedAt: row.completed_at || new Date().toISOString(),
+        status: row.status === 'graded' ? 'reviewed' : row.status === 'submitted' ? 'completed' : 'pending',
+        studentName: row.form_data?.student_name || row.form_data?.child_name || row.form_data?.name || undefined,
+      }))
   }
 
   async getTeacherSubmissions(): Promise<StudentSubmission[]> {

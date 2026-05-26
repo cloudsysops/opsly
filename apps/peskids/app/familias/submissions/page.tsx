@@ -35,6 +35,17 @@ interface FamilyFeedbackNote {
   parent_email: string | null
 }
 
+interface FamilyRoleMetrics {
+  totalSubmissions: number
+  reviewedSubmissions: number
+  pendingSubmissions: number
+  averageSatisfaction: number
+  privateNotesCount: number
+  activeChatThreads: number
+  recentMessages: number
+  latestActivityAt: string | null
+}
+
 export default function FamiliesSubmissionsPage(): React.ReactElement {
   const router = useRouter()
   const [submissions, setSubmissions] = useState<FormSubmissionSummary[]>([])
@@ -44,6 +55,7 @@ export default function FamiliesSubmissionsPage(): React.ReactElement {
   const [familyEmail, setFamilyEmail] = useState<string | null>(null)
   const [familyUserId, setFamilyUserId] = useState<string | null>(null)
   const [familyNotes, setFamilyNotes] = useState<FamilyFeedbackNote[]>([])
+  const [familyMetrics, setFamilyMetrics] = useState<FamilyRoleMetrics | null>(null)
 
   const fetchSubmissions = useCallback(async (): Promise<void> => {
     try {
@@ -72,6 +84,18 @@ export default function FamiliesSubmissionsPage(): React.ReactElement {
     }
   }, [])
 
+  const fetchFamilyMetrics = useCallback(async (): Promise<void> => {
+    try {
+      const response = await fetch('/api/families/metrics', { credentials: 'include' })
+      if (!response.ok) throw new Error('Failed to fetch family metrics')
+      const data = (await response.json()) as { metrics?: FamilyRoleMetrics }
+      setFamilyMetrics(data.metrics ?? null)
+    } catch (err) {
+      console.error(err)
+      setFamilyMetrics(null)
+    }
+  }, [])
+
   useEffect(() => {
     const supabase = createClient()
     void (async () => {
@@ -84,21 +108,10 @@ export default function FamiliesSubmissionsPage(): React.ReactElement {
         const user = data.session.user
         setFamilyEmail(user.email ?? null)
         setFamilyUserId(user.id)
-        const metadata = {
-          ...((user.app_metadata ?? {}) as Record<string, unknown>),
-          ...((user.user_metadata ?? {}) as Record<string, unknown>),
-        }
-        if (metadata.role !== 'family' || metadata.tenant_slug !== 'peskids') {
-          await supabase.auth.updateUser({
-            data: {
-              role: 'family',
-              tenant_slug: 'peskids',
-            },
-          })
-        }
         setAuthChecked(true)
         void fetchSubmissions()
         void fetchFamilyNotes()
+        void fetchFamilyMetrics()
       } catch (err) {
         console.error(err)
         setError('No se pudo validar la sesión de familia.')
@@ -106,11 +119,10 @@ export default function FamiliesSubmissionsPage(): React.ReactElement {
         setLoading(false)
       }
     })()
-  }, [fetchFamilyNotes, fetchSubmissions, router])
+  }, [fetchFamilyMetrics, fetchFamilyNotes, fetchSubmissions, router])
 
   const handleViewSubmission = (submissionId: string): void => {
-    console.log('View submission:', submissionId)
-    // TODO: Navigate to submission detail view
+    router.push(`/familias/submissions/${submissionId}`)
   }
 
   const publicNotes = useMemo(
@@ -171,10 +183,45 @@ export default function FamiliesSubmissionsPage(): React.ReactElement {
               </div>
 
               <div className="mt-10 grid max-w-xl grid-cols-2 gap-4 sm:grid-cols-4">
-                <FamilyMetricCard value={String(submissions.length)} label="respuestas" />
-                <FamilyMetricCard value={String(reviewedCountFrom(submissions))} label="revisadas" />
-                <FamilyMetricCard value={String(pendingCountFrom(submissions))} label="pendientes" />
-                <FamilyMetricCard value="Tiempo real" label="mensajes" compact />
+                <FamilyMetricCard
+                  value={String(familyMetrics?.totalSubmissions ?? submissions.length)}
+                  label="respuestas"
+                />
+                <FamilyMetricCard
+                  value={String(familyMetrics?.reviewedSubmissions ?? reviewedCountFrom(submissions))}
+                  label="revisadas"
+                />
+                <FamilyMetricCard
+                  value={String(familyMetrics?.pendingSubmissions ?? pendingCountFrom(submissions))}
+                  label="pendientes"
+                />
+                <FamilyMetricCard
+                  value={String(familyMetrics?.activeChatThreads ?? 0)}
+                  label="chats activos"
+                  compact
+                />
+              </div>
+              <div className="mt-4 grid max-w-xl grid-cols-2 gap-4 sm:grid-cols-4">
+                <FamilyMetricCard
+                  value={String(familyMetrics?.averageSatisfaction ?? 0)}
+                  label="satisfacción media"
+                  compact
+                />
+                <FamilyMetricCard
+                  value={String(familyMetrics?.privateNotesCount ?? privateNotes.length)}
+                  label="notas privadas"
+                  compact
+                />
+                <FamilyMetricCard
+                  value={String(familyMetrics?.recentMessages ?? 0)}
+                  label="mensajes recientes"
+                  compact
+                />
+                <FamilyMetricCard
+                  value={familyMetrics?.latestActivityAt ? new Date(familyMetrics.latestActivityAt).toLocaleDateString('es-CO') : '—'}
+                  label="última actividad"
+                  compact
+                />
               </div>
             </div>
 

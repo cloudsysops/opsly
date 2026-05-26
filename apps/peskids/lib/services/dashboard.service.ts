@@ -1,6 +1,7 @@
 import { supabaseServer, getRecentMessages } from '@/lib/supabase'
 import { isMissingExpandedFeedbackColumn } from '@/lib/utils/db-compat'
 import type { Database, DashboardData } from '@/lib/types'
+import { loadPeskidsBiSnapshot } from '@/lib/bi-snapshot'
 
 type Range = 'week' | 'month'
 
@@ -89,6 +90,7 @@ export async function fetchDashboardData(tenantId: string, range: Range): Promis
 
   const pendingFollowups = (followups ?? []).filter((f) => f.status === 'pending')
   const recentMessages = await getRecentMessages(tenantId, 10)
+  const biSnapshot = await loadPeskidsBiSnapshot()
 
   return {
     new_leads_count: newLeads?.length || 0,
@@ -101,5 +103,6 @@ export async function fetchDashboardData(tenantId: string, range: Range): Promis
     pending_followups: (pendingFollowups as DashboardData['pending_followups']) || [],
     followups: (followups as DashboardData['followups']) || [],
     recent_messages: (recentMessages as DashboardData['recent_messages']) || [],
+    bi_snapshot: biSnapshot,
   }
 }

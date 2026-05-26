@@ -4,13 +4,14 @@ import { usePathname } from 'next/navigation'
 import { WhatsAppIcon } from '@/components/contact/whatsapp-icon'
 import { PESKIDS_CONTACT } from '@/lib/contact-channels'
 import { dispatchOpenPeskidsChat } from '@/lib/peskids-chat-session'
+import { shouldShowPeskidsChatWidgets } from '@/lib/peskids-surface'
 import { peskidsColorTokens } from '@/lib/tokens'
 import { cn } from '@/lib/utils'
 
-/** FAB fijo — canal principal; oculto en /admin. */
+/** FAB fijo — canal principal; oculto en superficies de staff y auth. */
 export function WhatsAppFloatingButton(): React.ReactElement | null {
   const pathname = usePathname()
-  if (pathname?.startsWith('/admin')) {
+  if (!shouldShowPeskidsChatWidgets(pathname)) {
     return null
   }
   const isFamilyArea = pathname?.startsWith('/familias') ?? false
