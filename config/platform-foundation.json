@@ -1,0 +1,114 @@
+{
+  "version": 1,
+  "updated_at": "2026-05-25",
+  "tenant_lifecycle": {
+    "stages": [
+      {
+        "id": "incubated_tenant",
+        "label": "Incubated Tenant",
+        "description": "Tenant lives inside Opsly as a governed pilot with template-only deployment."
+      },
+      {
+        "id": "mvp_validation",
+        "label": "MVP Validation",
+        "description": "Tenant is proving the first workflows and operating assumptions."
+      },
+      {
+        "id": "operational_stabilization",
+        "label": "Operational Stabilization",
+        "description": "Tenant has repeatable workflows, monitoring, and support playbooks."
+      },
+      {
+        "id": "dedicated_vps",
+        "label": "Dedicated VPS",
+        "description": "Tenant can be provisioned to an isolated VPS with extraction prep in place."
+      },
+      {
+        "id": "independent_platform",
+        "label": "Independent Platform",
+        "description": "Tenant has enough operating maturity to run as its own platform stack."
+      },
+      {
+        "id": "connected_client_platform",
+        "label": "Connected Client Platform",
+        "description": "Extracted client platform that remains connected to Opsly governance and observability."
+      }
+    ],
+    "default_stage_by_status": {
+      "provisioning": "incubated_tenant",
+      "active": "mvp_validation",
+      "suspended": "operational_stabilization",
+      "failed": "operational_stabilization",
+      "deleted": "independent_platform"
+    },
+    "deployment_readiness": {
+      "template_ready": "tenant template exists and can be bootstrapped safely",
+      "workflow_bootstrap_ready": "first workflow bundle and approvals are defined",
+      "vps_ready": "dedicated VPS provisioning can be prepared",
+      "extraction_ready": "tenant can be extracted with bounded operator work",
+      "blocked": "an explicit approval or dependency is missing"
+    }
+  },
+  "agent_governance": {
+    "approval_boundary": "approval-first",
+    "workflow_boundary": "workflow-first",
+    "tenant_scoping": "tenant-scoped",
+    "permissions_catalog": [
+      {
+        "id": "mission_control.read",
+        "label": "Read mission control",
+        "approval_required": false
+      },
+      {
+        "id": "tenants.read",
+        "label": "Read tenant registry",
+        "approval_required": false
+      },
+      {
+        "id": "agents.read",
+        "label": "Read agent registry",
+        "approval_required": false
+      },
+      {
+        "id": "agents.heartbeat",
+        "label": "Emit agent heartbeat",
+        "approval_required": false
+      },
+      {
+        "id": "provisioning.read",
+        "label": "Inspect provisioning plan",
+        "approval_required": false
+      },
+      {
+        "id": "provisioning.execute",
+        "label": "Execute provisioning step",
+        "approval_required": true
+      },
+      {
+        "id": "openclaw.route",
+        "label": "Route OpenClaw work",
+        "approval_required": false
+      },
+      {
+        "id": "openclaw.monitor",
+        "label": "Observe OpenClaw runtime",
+        "approval_required": false
+      }
+    ]
+  },
+  "mission_control_contract": {
+    "views": [
+      "vps_health",
+      "tenants",
+      "backups",
+      "ssl",
+      "workflows",
+      "uptime",
+      "ai_agent_status",
+      "pending_approvals",
+      "extraction_readiness"
+    ],
+    "recovery_posture": "reversible",
+    "data_posture": "read-only-first"
+  }
+}

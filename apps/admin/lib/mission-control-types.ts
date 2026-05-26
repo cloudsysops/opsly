@@ -152,3 +152,127 @@ export function mapIntentToLifecycle(intent: OpenClawIntentRuntime): AgentLifecy
   }
   return 'idle';
 }
+
+export type PlatformTenantLifecycleStageId =
+  | 'incubated_tenant'
+  | 'mvp_validation'
+  | 'operational_stabilization'
+  | 'dedicated_vps'
+  | 'independent_platform'
+  | 'connected_client_platform';
+
+export type HealthSignal = 'up' | 'down' | 'unknown';
+export type ReadinessSignal = 'ready' | 'blocked' | 'unknown';
+export type OperationalStatus = 'healthy' | 'degraded' | 'blocked' | 'unknown';
+
+export type MissionControlTenant = {
+  slug: string;
+  name: string;
+  plan: string;
+  owner_email: string | null;
+  schema_name: string | null;
+  platform_domain: string | null;
+  workflows_count: number;
+  status: string;
+  lifecycle_stage: PlatformTenantLifecycleStageId;
+  lifecycle_label: string;
+  operational_status: OperationalStatus;
+  extraction_ready: boolean;
+  extraction_reason: string | null;
+  deployment_readiness: ReadinessSignal;
+  backup_ready: boolean;
+  ssl_ready: boolean;
+  uptime_ready: boolean;
+  notes: string | null;
+  source: string;
+};
+
+export type MissionControlAgent = {
+  id: string;
+  name: string;
+  role: string;
+  tenant_scope: 'global' | 'tenant-scoped';
+  capabilities: string[];
+  permissions: string[];
+  enabled: boolean;
+  approval_boundary: 'approval-first' | 'workflow-first' | 'read-only';
+  health: {
+    status: OperationalStatus;
+    connectivity: {
+      api_connectivity: HealthSignal;
+      redis_connectivity: HealthSignal;
+      llm_gateway_connectivity: HealthSignal;
+      backup_readiness: ReadinessSignal;
+      deployment_readiness: ReadinessSignal;
+    };
+  };
+  heartbeat: {
+    last_seen_at: string | null;
+    interval_seconds: number;
+    stale_after_seconds: number;
+    source: 'config' | 'runtime' | 'manual';
+  };
+  model: string | null;
+  fallback_model: string | null;
+  url: string | null;
+  specialization: string[];
+};
+
+export type MissionControlFoundationSnapshot = {
+  generated_at: string;
+  vps: {
+    host: string;
+    status: OperationalStatus;
+    api_connectivity: HealthSignal;
+    orchestrator_connectivity: HealthSignal;
+    llm_gateway_connectivity: HealthSignal;
+    redis_connectivity: HealthSignal;
+  };
+  tenants: {
+    total: number;
+    by_stage: Record<PlatformTenantLifecycleStageId, number>;
+    extraction_ready: number;
+    items: MissionControlTenant[];
+  };
+  backups: {
+    status: ReadinessSignal;
+    policy: string;
+    ready_tenants: number;
+    last_success_at: string | null;
+  };
+  ssl: {
+    status: ReadinessSignal;
+    wildcard_domain: string;
+    ready_tenants: number;
+  };
+  workflows: {
+    status: ReadinessSignal;
+    total: number;
+    bootstrap_ready: number;
+  };
+  uptime: {
+    status: ReadinessSignal;
+    services: Array<{ name: string; status: HealthSignal; url: string | null }>;
+  };
+  ai_agents: {
+    total: number;
+    healthy: number;
+    degraded: number;
+    blocked: number;
+    items: MissionControlAgent[];
+  };
+  pending_approvals: {
+    count: number;
+    queues: Array<{ queue: string; waiting: number; active: number }>;
+  };
+  extraction_readiness: {
+    ready: number;
+    blocked: number;
+    items: Array<{
+      slug: string;
+      stage: PlatformTenantLifecycleStageId;
+      ready: boolean;
+      reason: string | null;
+    }>;
+  };
+};

@@ -110,6 +110,12 @@ export default function MissionControlPage() {
             >
               Chat
             </Link>
+            <Link
+              href="/mission-control/foundation"
+              className="px-4 py-2 rounded-lg font-medium transition-colors bg-cyan-700/90 hover:bg-cyan-600 text-white border border-cyan-500/40"
+            >
+              Foundation
+            </Link>
             <button
               onClick={handleRefresh}
               className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg font-medium transition-colors"
