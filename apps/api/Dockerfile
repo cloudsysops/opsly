@@ -8,6 +8,7 @@ COPY apps/api/package.json ./apps/api/
 COPY apps/ml/package.json ./apps/ml/
 COPY apps/llm-gateway/package.json ./apps/llm-gateway/
 COPY apps/notebooklm-agent/package.json ./apps/notebooklm-agent/
+COPY lib/content-studio/package.json ./lib/content-studio/
 RUN npm ci --ignore-scripts \
   -w @intcloudsysops/types \
   -w @intcloudsysops/llm-gateway \
@@ -27,6 +28,7 @@ COPY apps/ml ./apps/ml
 COPY apps/llm-gateway ./apps/llm-gateway
 COPY apps/notebooklm-agent ./apps/notebooklm-agent
 COPY packages/types ./packages/types
+COPY lib/content-studio ./lib/content-studio
 RUN npm ci --ignore-scripts \
   -w @intcloudsysops/types \
   -w @intcloudsysops/llm-gateway \
