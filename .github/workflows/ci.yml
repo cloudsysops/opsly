@@ -42,7 +42,9 @@ jobs:
         run: |
           set -euo pipefail
           npm ci
+          (cd packages/types && npm run build)
           (cd lib/services && npm run build)
+          (cd lib/content-studio && npm run build)
           (cd apps/ml && npm run build)
           (cd lib/git-branch-orchestrator && npm run build)
           (cd lib/session-manager && npm run build)
@@ -121,8 +123,10 @@ jobs:
           set -euo pipefail
           npm ci
           # Build internal packages first (required for tests that import them)
+          (cd packages/types && npm run build)
           (cd apps/notebooklm-agent && npm run build) 2>/dev/null || true
           (cd lib/services && npm run build)
+          (cd lib/content-studio && npm run build)
           (cd lib/git-branch-orchestrator && npm run build)
           (cd lib/session-manager && npm run build)
           (cd lib/runtime && npm run build)
@@ -170,7 +174,9 @@ jobs:
           export REDIS_URL="${REDIS_URL:-redis://127.0.0.1:6379}"
           npm ci
           # Build ALL internal packages first (required for tests that import them)
+          (cd packages/types && npm run build)
           (cd lib/services && npm run build)
+          (cd lib/content-studio && npm run build)
           (cd lib/git-branch-orchestrator && npm run build)
           (cd lib/session-manager && npm run build)
           (cd lib/runtime && npm run build)
@@ -228,8 +234,10 @@ jobs:
           set -euo pipefail
           npm ci
           # Build internal packages first (lib/* before orchestrator)
+          (cd packages/types && npm run build)
           (cd apps/ml && npm run build)
           (cd lib/services && npm run build)
+          (cd lib/content-studio && npm run build)
           (cd lib/git-branch-orchestrator && npm run build)
           (cd lib/session-manager && npm run build)
           (cd lib/runtime && npm run build)
