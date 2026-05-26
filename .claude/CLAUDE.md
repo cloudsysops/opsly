@@ -157,7 +157,7 @@ node scripts/load-agent-skills.js --list-all
 
 ### References
 
-- **Guide:** `docs/AGENT-SKILLS-INTEGRATION.md`
+- **Guide:** `docs/01-development/AGENT-SKILLS-INTEGRATION.md`
 - **Bridge Skill:** `skills/user/opsly-agent-skills-bridge/SKILL.md`
 - **Loader Script:** `scripts/load-agent-skills.js`
 - **Agent-skills Repo:** https://github.com/addyosmani/agent-skills
