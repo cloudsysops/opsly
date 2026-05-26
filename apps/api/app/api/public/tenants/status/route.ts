@@ -92,10 +92,19 @@ export function GET(request: Request): Promise<Response> {
       return Response.json({ status: 'not_found' as const });
     }
 
+    const services = (tenant.services as Record<string, unknown>) || {};
+
+    // 🔒 Security: Only expose non-sensitive service URLs to the public status endpoint.
+    // Explicitly omit credentials (n8n_basic_auth_password) and internal ports.
+    const publicServices = {
+      n8n: services.n8n,
+      uptime_kuma: services.uptime_kuma,
+    };
+
     return Response.json({
       status: tenant.status,
       progress: tenant.progress,
-      services: tenant.services as Json,
+      services: publicServices,
     });
   });
 }
