@@ -1,7 +1,7 @@
 ---
 status: canon
 owner: operations
-last_review: 2026-05-21
+last_review: 2026-05-26
 ---
 
 # Opsly — Contexto del Agente
@@ -651,6 +651,15 @@ Week 4: Docs + runbook + MVP validation
 ## 🔄 Estado actual
 
 <!-- Actualizar al final de cada sesión -->
+
+**Sesión 2026-05-26 — Peskids production readiness cerrada ✅**
+- ✅ VPS `app` reconstruido desde fuente con `apps/api/Dockerfile` actualizado: `npm ci` ya ve el grafo completo de workspaces y la imagen `intcloudsysops-api:peskids-latest` vuelve a arrancar sana.
+- ✅ `https://api.op-sly.com/api/health` responde `200` desde producción.
+- ✅ `https://api.op-sly.com/api/portal/health?slug=peskids` devuelve los endpoints canónicos de monitoreo:
+  - `https://n8n-peskids.op-sly.com`
+  - `https://uptime-peskids.op-sly.com`
+- ✅ Smoke de Peskids completo en producción: landing, admin login, health, lead `201`, feedback `201`, n8n health, Uptime Kuma.
+- ✅ Árbol local limpio al final de la sesión; solo se mantuvo WIP ajeno fuera del alcance y fue limpiado.
 
 **Sesión 2026-05-22 (Continuación 4) — Deep Cleanup & Infrastructure Merge ✅**
 

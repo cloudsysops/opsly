@@ -1,7 +1,7 @@
 ---
 status: active
 owner: product
-last_review: 2026-05-21
+last_review: 2026-05-26
 tenant_slug: peskids
 ---
 
@@ -52,6 +52,8 @@ docker compose -f docker-compose.platform.yml --env-file /opt/opsly/.env up -d -
 
 **Flujo alternativo (CI rojo / imagen GHCR sin rutas Peskids):** ver [DEPLOYMENT-2026-05-21.md](./DEPLOYMENT-2026-05-21.md) — build `intcloudsysops-api:peskids-latest` en VPS.
 
+**Estado actualizado (2026-05-26):** el flujo alternativo quedó validado otra vez con el `apps/api/Dockerfile` corregido; el VPS recompuso `app`, `api.op-sly.com/api/health` quedó en `200` y el portal health público ya devuelve `n8n-peskids.op-sly.com` + `uptime-peskids.op-sly.com`.
+
 ### 3. Smoke
 
 ```bash
@@ -75,6 +77,8 @@ Esperar `HTTP 201` en POST lead (tenant `peskids` `active` en `platform.tenants`
 - [x] Migración `0053` aplicada en Supabase prod (2026-05-21)
 - [x] POST lead → 201 + fila en `peskids_leads` (smoke prod)
 - [x] POST feedback rating 2 → `needs_attention: true` (smoke prod)
+- [x] `GET /api/portal/health?slug=peskids` devuelve servicios canónicos de monitoreo (2026-05-26)
+- [x] Smoke de producción revalidado (2026-05-26)
 - [ ] Owner ve summary con JWT portal (pendiente demo owner)
 - [x] VPS n8n/uptime healthy ([OPS-RUNBOOK.md](./OPS-RUNBOOK.md))
 

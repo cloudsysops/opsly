@@ -1,7 +1,7 @@
 ---
 status: canon
 owner: operations
-last_review: 2026-04-27
+last_review: 2026-05-26
 ---
 
 # Opsly — Contexto del Agente
@@ -322,7 +322,16 @@ node scripts/load-skills.js show opsly-api
 
 <!-- Actualizar al final de cada sesión -->
 
-**Fecha última actualización:** 2026-04-26 — **Estabilización prod:** health `https://api.op-sly.com/api/health` OK (supabase+redis); E2E invite ejecutado en `prd` con `scripts/test-e2e-invite-flow.sh --tenant-ref intcloudsysops` (resultado idempotente: usuario ya registrado, smoke aceptado); workflow deploy activo en GitHub Actions (`deploy.yml`) tras fix de sintaxis Tailscale y timeout SSH 2m. **Sprint histórico Semana 5:** [`docs/SEMANA-5-INFORME.md`](docs/SEMANA-5-INFORME.md), [`ROADMAP.md`](ROADMAP.md).
+**Sesión 2026-05-26 — Peskids production readiness cerrada ✅**
+- ✅ VPS `app` reconstruido desde fuente con `apps/api/Dockerfile` actualizado: `npm ci` ya ve el grafo completo de workspaces y la imagen `intcloudsysops-api:peskids-latest` vuelve a arrancar sana.
+- ✅ `https://api.op-sly.com/api/health` responde `200` desde producción.
+- ✅ `https://api.op-sly.com/api/portal/health?slug=peskids` devuelve los endpoints canónicos de monitoreo:
+  - `https://n8n-peskids.op-sly.com`
+  - `https://uptime-peskids.op-sly.com`
+- ✅ Smoke de Peskids completo en producción: landing, admin login, health, lead `201`, feedback `201`, n8n health, Uptime Kuma.
+- ✅ Árbol local limpio al final de la sesión; solo se mantuvo WIP ajeno fuera del alcance y fue limpiado.
+
+**Fecha última actualización:** 2026-05-26 — **Estabilización prod:** health `https://api.op-sly.com/api/health` OK (supabase+redis); Peskids live con portal health canónico `n8n-peskids.op-sly.com` + `uptime-peskids.op-sly.com`; smoke completo revalidado en producción el 2026-05-26. **Sprint histórico Semana 5:** [`docs/SEMANA-5-INFORME.md`](docs/SEMANA-5-INFORME.md), [`ROADMAP.md`](ROADMAP.md).
 
 **Siguiente fase:** Semana 6 (Segundo Cliente + E2E), ventana **2026-04-29 → 2026-05-03** ⏳ **EN PROGRESO**. Plan: [`docs/SEMANA-6-PLAN.md`](docs/SEMANA-6-PLAN.md).
 
