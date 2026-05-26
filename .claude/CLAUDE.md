@@ -15,8 +15,9 @@ tags: [opsly/claude-config]
 ## SESSION STARTUP
 
 1. Read (in order): [AGENTS.md](https://raw.githubusercontent.com/cloudsysops/opsly/main/AGENTS.md) → [VISION.md](https://raw.githubusercontent.com/cloudsysops/opsly/main/VISION.md)
-2. `git status && git log --oneline -3`
-3. `node scripts/skill-finder.js "your task" --autonomous`
+2. `bash scripts/git-session-brief.sh` para ver **rama + tema + áreas tocadas**; al cambiar de rama, el hook `post-checkout` lo repite automáticamente
+3. `git status && git log --oneline -3`
+4. `bash .claude/hooks/opsly-session-start-skills.sh` o `node scripts/skill-finder.js "your task" --autonomous`
 
 **Abort if:** Doppler secrets missing · AGENTS.md >7 days stale · VPS/Redis unreachable
 
@@ -147,6 +148,13 @@ gh pr create --draft --base main --head <branch-name>
 ```
 
 Commit format: `feat|fix|docs|refactor|test|chore(scope): description`
+
+## BRANCH / THEME DISCIPLINE
+
+- Una sesión = una rama = un tema.
+- Si el worktree toca más de un tema grande, dividir antes de editar.
+- Si estás en `main` con cambios locales, crear rama primero.
+- Si la rama no representa el tema, renombrar o recrear la rama antes de seguir.
 
 ---
 

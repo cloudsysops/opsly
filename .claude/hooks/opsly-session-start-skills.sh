@@ -24,7 +24,13 @@ fi
 
 printf '\n'
 
-# 2. SKILLS FINDER — Recomendaciones contextuales de skills
+# 2. BRANCH / THEME — Rama, tema y mezcla de ámbitos
+if [[ -f "${ROOT}/scripts/git-session-brief.sh" ]]; then
+  bash "${ROOT}/scripts/git-session-brief.sh"
+  printf '\n'
+fi
+
+# 3. SKILLS FINDER — Recomendaciones contextuales de skills
 QUERY="opsly bootstrap context skills"
 if command -v jq >/dev/null 2>&1 && [[ -n "${INPUT// }" ]]; then
   SRC="$(echo "$INPUT" | jq -r '.source // empty' 2>/dev/null || true)"
@@ -39,7 +45,7 @@ if [[ ! -f "${ROOT}/scripts/skill-finder.js" ]]; then
   exit 0
 fi
 
-OUT="$(node "${ROOT}/scripts/skill-finder.js" "$QUERY" --autonomous --json 2>&1)" || exit 0
+OUT="$(NODE_NO_WARNINGS=1 node "${ROOT}/scripts/skill-finder.js" "$QUERY" --autonomous --json 2>/dev/null)" || exit 0
 
 if command -v jq >/dev/null 2>&1; then
   OUT="$(printf '%s' "$OUT" | jq -c '

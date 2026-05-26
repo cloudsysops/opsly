@@ -13,6 +13,13 @@ alwaysApply: true
 - **Auditoría sin riesgo:** `./scripts/git-branch-hygiene.sh` (solo lectura; lista mergeadas y divergencia).
 - **Documentación completa:** `docs/01-development/GIT-WORKFLOW.md`.
 
+## Regla de sesión
+
+- Antes de editar, identificar **rama + tema + worktree**.
+- Si el worktree mezcla más de un tema grande, dividir antes de seguir.
+- Si estás en `main` con cambios locales, crear rama primero.
+- Si la rama no representa el tema, renombrar o recrear la rama antes de seguir.
+
 ## Al cerrar una tarea (agente)
 
 1. Orden: **commit** (conventional, type-check) → **push** de la rama → **PR** a `main` → **merge** → borrar rama (GitHub auto o `git push origin --delete <rama>`).
