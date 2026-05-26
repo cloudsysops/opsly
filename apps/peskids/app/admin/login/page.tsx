@@ -1,7 +1,6 @@
 'use client'
 
 import { Loader2 } from 'lucide-react'
-import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Suspense, useEffect, useState } from 'react'
 import { PeskidsLogo } from '@/components/brand/peskids-logo'
@@ -9,6 +8,17 @@ import { Button } from '@/components/ui/button'
 import { buildRecoveryRedirectTo } from '@/lib/auth-recovery'
 import { isStaffUser } from '@/lib/staff-user'
 import { createClient } from '@/lib/supabase-browser'
+
+function browserSupabaseConfigured(): boolean {
+  return Boolean(
+    process.env.NEXT_PUBLIC_SUPABASE_URL?.trim() &&
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim()
+  )
+}
+
+function authFetchErrorMessage(): string {
+  return 'El acceso al panel no está configurado correctamente en este despliegue. Usa "¿Olvidaste tu contraseña?" o avisa al equipo.'
+}
 
 function AdminLoginForm(): React.ReactElement {
   const router = useRouter()
@@ -33,6 +43,10 @@ function AdminLoginForm(): React.ReactElement {
       setError('Escribe tu email arriba y vuelve a pulsar «¿Olvidaste tu contraseña?».')
       return
     }
+    if (!browserSupabaseConfigured()) {
+      setError(authFetchErrorMessage())
+      return
+    }
     setResetLoading(true)
     setError('')
     setResetSent(false)
@@ -44,12 +58,16 @@ function AdminLoginForm(): React.ReactElement {
         redirectTo: buildRecoveryRedirectTo(origin),
       })
       if (resetError) {
-        setError(resetError.message)
+        setError(
+          resetError.message.toLowerCase().includes('fetch')
+            ? authFetchErrorMessage()
+            : resetError.message
+        )
         return
       }
       setResetSent(true)
     } catch {
-      setError('No se pudo enviar el correo de recuperación.')
+      setError(authFetchErrorMessage())
     } finally {
       setResetLoading(false)
     }
@@ -62,13 +80,21 @@ function AdminLoginForm(): React.ReactElement {
     setResetSent(false)
 
     try {
+      if (!browserSupabaseConfigured()) {
+        setError(authFetchErrorMessage())
+        return
+      }
       const supabase = createClient()
       const { data, error: signError } = await supabase.auth.signInWithPassword({
         email: email.trim(),
         password,
       })
       if (signError) {
-        setError(signError.message)
+        setError(
+          signError.message.toLowerCase().includes('fetch')
+            ? authFetchErrorMessage()
+            : signError.message
+        )
         return
       }
       const user = data.user
@@ -82,7 +108,7 @@ function AdminLoginForm(): React.ReactElement {
       router.push('/admin')
       router.refresh()
     } catch {
-      setError('No se pudo iniciar sesión.')
+      setError(authFetchErrorMessage())
     } finally {
       setLoading(false)
     }
@@ -151,10 +177,7 @@ function AdminLoginForm(): React.ReactElement {
           </Button>
         </form>
         <p className="mt-4 text-center text-xs text-pk-sub">
-          ¿Problemas con el enlace del correo?{' '}
-          <Link href="/admin/update-password" className="text-pk-mint hover:underline">
-            Definir contraseña
-          </Link>
+          Si tu contraseña no sirve, usa «¿Olvidaste tu contraseña?» para generar un enlace nuevo.
         </p>
       </div>
     </div>
