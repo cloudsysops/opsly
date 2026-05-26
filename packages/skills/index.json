@@ -31,6 +31,26 @@
       "path": "skills/user/opsly-quantum/"
     },
     {
+      "name": "opsly-agent-skills-bridge",
+      "version": "1.0.0",
+      "description": "Bridge layer integrating Addy Osmani's agent-skills (23 production best practices) with Opsly domain patterns. Maps /spec, /plan, /build, /test, /review, /simplify, /ship to Opsly context (API, orchestrator, multi-tenant, security).",
+      "category": "development",
+      "priority": "high",
+      "usage": "Activate with /spec, /plan, /build, /test, /review, /code-simplify, /ship or run: node scripts/load-agent-skills.js --phase <phase>",
+      "path": "skills/user/opsly-agent-skills-bridge/",
+      "triggers": [
+        "spec",
+        "plan",
+        "build",
+        "test",
+        "review",
+        "simplify",
+        "ship",
+        "agent-skills",
+        "best practices"
+      ]
+    },
+    {
       "name": "opsly-autonomous",
       "version": "1.0.0",
       "description": "Modo autónomo: detectar contexto, cargar skills sin intervención humana, decidir y actuar. Modo NO CONFIRMAR.",
@@ -262,7 +282,10 @@
       "category": "ai",
       "priority": "low",
       "usage": "Generar contenido a partir de documentos (PDF→podcast+slides+infografía)",
-      "requires": ["NOTEBOOKLM_ENABLED=true", "plan: business|enterprise"],
+      "requires": [
+        "NOTEBOOKLM_ENABLED=true",
+        "plan: business|enterprise"
+      ],
       "path": "skills/user/opsly-notebooklm/"
     },
     {
@@ -339,23 +362,70 @@
     }
   ],
   "categories": {
-    "tooling": ["opsly-skill-creator"],
-    "bootstrap": ["opsly-context", "opsly-bootstrap"],
-    "master": ["opsly-quantum"],
-    "autonomy": ["opsly-autonomous"],
-    "architecture": ["opsly-architect-senior", "opsly-architect"],
-    "development": ["opsly-api", "opsly-bash", "opsly-frontend"],
-    "ai": ["opsly-llm", "opsly-notebooklm", "opsly-feedback-ml", "opsly-ai-sdk-vercel"],
-    "integration": ["opsly-mcp", "opsly-google-cloud"],
-    "database": ["opsly-supabase", "opsly-supabase-marketplace"],
-    "operations": ["opsly-tenant"],
-    "infrastructure": ["opsly-infra"],
-    "orchestration": ["opsly-orchestrator", "opsly-agent-teams", "opsly-jcode"],
-    "billing": ["opsly-billing", "opsly-stripe-marketplace"],
-    "qa": ["opsly-qa", "opsly-agent-verification"],
-    "notifications": ["opsly-discord"],
-    "optimization": ["opsly-simplify"],
-    "research": ["opsly-researcher"],
+    "tooling": [
+      "opsly-skill-creator"
+    ],
+    "bootstrap": [
+      "opsly-context",
+      "opsly-bootstrap"
+    ],
+    "master": [
+      "opsly-quantum"
+    ],
+    "autonomy": [
+      "opsly-autonomous"
+    ],
+    "architecture": [
+      "opsly-architect-senior",
+      "opsly-architect"
+    ],
+    "development": [
+      "opsly-api",
+      "opsly-bash",
+      "opsly-frontend"
+    ],
+    "ai": [
+      "opsly-llm",
+      "opsly-notebooklm",
+      "opsly-feedback-ml",
+      "opsly-ai-sdk-vercel"
+    ],
+    "integration": [
+      "opsly-mcp",
+      "opsly-google-cloud"
+    ],
+    "database": [
+      "opsly-supabase",
+      "opsly-supabase-marketplace"
+    ],
+    "operations": [
+      "opsly-tenant"
+    ],
+    "infrastructure": [
+      "opsly-infra"
+    ],
+    "orchestration": [
+      "opsly-orchestrator",
+      "opsly-agent-teams",
+      "opsly-jcode"
+    ],
+    "billing": [
+      "opsly-billing",
+      "opsly-stripe-marketplace"
+    ],
+    "qa": [
+      "opsly-qa",
+      "opsly-agent-verification"
+    ],
+    "notifications": [
+      "opsly-discord"
+    ],
+    "optimization": [
+      "opsly-simplify"
+    ],
+    "research": [
+      "opsly-researcher"
+    ],
     "marketplace": [
       "opsly-stripe-marketplace",
       "opsly-supabase-marketplace",
@@ -364,19 +434,58 @@
     ]
   },
   "quick_reference": {
-    "nueva_sesion": ["opsly-context"],
-    "orquestacion": ["opsly-quantum"],
-    "autonomo": ["opsly-autonomous"],
-    "desarrollo_api": ["opsly-api", "opsly-bash", "opsly-jcode"],
-    "ia_ml": ["opsly-llm", "opsly-feedback-ml", "opsly-notebooklm"],
-    "infra": ["opsly-infra", "opsly-tenant", "opsly-discord", "opsly-self-healing"],
-    "self_healing": ["opsly-self-healing", "opsly-infra", "opsly-discord"],
-    "revision_arquitectura": ["opsly-architect-senior"],
-    "investigacion_externa": ["opsly-researcher"],
-    "stripe_oficial": ["opsly-billing", "opsly-stripe-marketplace"],
-    "supabase_oficial": ["opsly-supabase", "opsly-supabase-marketplace"],
-    "frontend_ai_chat": ["opsly-frontend", "opsly-ai-sdk-vercel"],
-    "cierre_tarea_agente": ["opsly-agent-verification", "opsly-qa"]
+    "nueva_sesion": [
+      "opsly-context"
+    ],
+    "orquestacion": [
+      "opsly-quantum"
+    ],
+    "autonomo": [
+      "opsly-autonomous"
+    ],
+    "desarrollo_api": [
+      "opsly-api",
+      "opsly-bash",
+      "opsly-jcode"
+    ],
+    "ia_ml": [
+      "opsly-llm",
+      "opsly-feedback-ml",
+      "opsly-notebooklm"
+    ],
+    "infra": [
+      "opsly-infra",
+      "opsly-tenant",
+      "opsly-discord",
+      "opsly-self-healing"
+    ],
+    "self_healing": [
+      "opsly-self-healing",
+      "opsly-infra",
+      "opsly-discord"
+    ],
+    "revision_arquitectura": [
+      "opsly-architect-senior"
+    ],
+    "investigacion_externa": [
+      "opsly-researcher"
+    ],
+    "stripe_oficial": [
+      "opsly-billing",
+      "opsly-stripe-marketplace"
+    ],
+    "supabase_oficial": [
+      "opsly-supabase",
+      "opsly-supabase-marketplace"
+    ],
+    "frontend_ai_chat": [
+      "opsly-frontend",
+      "opsly-ai-sdk-vercel"
+    ],
+    "cierre_tarea_agente": [
+      "opsly-agent-verification",
+      "opsly-qa"
+    ]
   },
   "deprecated": {
     "opsly-bootstrap": "Usar opsly-context",
