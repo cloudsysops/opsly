@@ -1,20 +1,13 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
-import {
-  CheckCircle2,
-  ClipboardList,
-  MessageSquare,
-  Loader2,
-  PencilLine,
-  RotateCcw,
-} from 'lucide-react'
+import { ClipboardList, MessageSquare, PencilLine, RotateCcw, CheckCircle2 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { TeacherDashboard } from '@/components/dashboards/teacher-dashboard'
 import { GrowthWidget } from '@/components/progress/growth-widget'
-import { cn } from '@/lib/utils'
+import { TeacherCalendarShowcase } from './teacher-calendar-showcase'
+import { TeacherSubmissionsSection, type TeacherSubmissionsResponse } from './teacher-submissions-section'
 
 type DaySlot = {
   day: string
@@ -30,36 +23,6 @@ type TeacherNote = {
   className: string
   note: string
   priority: 'alta' | 'media' | 'baja'
-}
-
-type TeacherSubmission = {
-  submissionId: string
-  studentName: string
-  studentId: string
-  formTitle: string
-  submittedAt: string
-  grade?: number
-  maxGrade: number
-  feedback?: string
-  status: 'reviewed' | 'pending' | 'needs_revision'
-}
-
-type TeacherSubmissionsResponse = {
-  submissions: TeacherSubmission[]
-  stats: {
-    reviewedCount: number
-    pendingCount: number
-    needsRevisionCount: number
-    uniqueStudents: number
-  }
-}
-
-type CalendarTimelineItem = {
-  time: string
-  title: string
-  tag: string
-  tone: 'teal' | 'slate'
-  highlight?: boolean
 }
 
 const weeklyAgenda: DaySlot[] = [
@@ -120,96 +83,6 @@ const classCards = [
     tone: 'violet',
   },
 ] as const
-
-const monthWeeks = [
-  [null, null, 1, 2, 3, 4, 5],
-  [6, 7, 8, 9, 10, 11, 12],
-  [13, 14, 15, 16, 17, 18, 19],
-  [20, { d: 21, today: true }, 22, 23, { d: 24, has: true }, 25, 26],
-  [27, 28, 29, 30, 31, null, null],
-] as const
-
-const calendarTimeline: CalendarTimelineItem[] = [
-  { time: '7:00', title: 'Iniciación · Llanogrande', tag: 'Grupo pequeño', tone: 'teal' },
-  { time: '10:30', title: 'Técnica Junior', tag: 'Trabajo respiración', tone: 'slate' },
-  { time: '3:30', title: 'Hoy · Grupo Iniciación', tag: 'Clase confirmada', tone: 'teal', highlight: true },
-  { time: '5:00', title: 'Avanzado', tag: 'Pendiente de asistencia', tone: 'slate' },
-] as const
-
-function TeacherCalendarShowcase(): React.ReactElement {
-  const dayLabels = ['L', 'M', 'M', 'J', 'V', 'S', 'D']
-
-  return (
-    <div className="overflow-hidden rounded-[2rem] border border-pk-border bg-white shadow-hero">
-      <div className="flex items-center justify-between gap-4 border-b border-pk-border bg-pk-snow px-5 py-4">
-        <div>
-          <p className="font-bold text-pk-ink">Calendario semanal</p>
-          <p className="text-xs text-pk-mutedText">Agenda semanal y ritmo del día</p>
-        </div>
-        <div className="flex gap-2">
-          <div className="rounded-full border border-pk-border bg-white px-3 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-pk-mutedText">
-            Semana activa
-          </div>
-        </div>
-      </div>
-
-      <div className="p-5">
-        <div className="grid grid-cols-7 gap-1">
-          {dayLabels.map((label) => (
-            <div key={label} className="pb-1 text-center text-[10px] font-bold uppercase tracking-[0.08em] text-pk-mutedText">
-              {label}
-            </div>
-          ))}
-          {monthWeeks.flat().map((cell, index) => {
-            if (cell === null) return <div key={index} />
-            const day = typeof cell === 'object' ? cell.d : cell
-            const today = typeof cell === 'object' && 'today' in cell && cell.today
-            const has = typeof cell === 'object' && 'has' in cell && cell.has
-
-            return (
-              <div
-                key={index}
-                className={cn(
-                  'relative flex aspect-square items-center justify-center rounded-xl border text-sm font-bold',
-                  today ? 'border-pk-deep bg-pk-deep text-white' : has ? 'border-pk-primary text-pk-ink' : 'border-transparent text-pk-ink'
-                )}
-              >
-                {day}
-                {has && !today ? <span className="absolute bottom-1 h-1 w-1 rounded-full bg-pk-primary" /> : null}
-                {today ? <span className="absolute bottom-1 h-1 w-1 rounded-full bg-pk-sun" /> : null}
-              </div>
-            )
-          })}
-        </div>
-
-        <div className="mt-4 space-y-2">
-          {calendarTimeline.map((item) => {
-            const toneMap = {
-              teal: 'bg-pk-primary text-white',
-              slate: 'border border-pk-border bg-pk-snow text-pk-ink',
-            } as const
-
-            return (
-              <div
-                key={item.title}
-                className={cn('rounded-2xl px-3 py-3', toneMap[item.tone], item.highlight && 'shadow-card-hover')}
-              >
-                <div className="flex items-center justify-between gap-3">
-                  <p className="font-mono text-[10px] uppercase tracking-[0.18em] opacity-80">{item.time}</p>
-                  {item.highlight ? <CheckCircle2 className="h-4 w-4" aria-hidden /> : null}
-                </div>
-                <p className="mt-1 text-sm font-bold">{item.title}</p>
-                <p className={cn('mt-1 text-[11px]', item.tone === 'slate' ? 'opacity-70' : 'opacity-90')}>
-                  {item.tag}
-                </p>
-              </div>
-            )
-          })}
-        </div>
-      </div>
-    </div>
-  )
-}
 
 export function TeacherWeeklyDashboard(): React.ReactElement {
   const [teacherData, setTeacherData] = useState<TeacherSubmissionsResponse | null>(null)
@@ -438,67 +311,7 @@ export function TeacherWeeklyDashboard(): React.ReactElement {
         </Card>
       </div>
 
-      <section className="rounded-3xl border border-pk-border bg-white p-5 shadow-card sm:p-6">
-        <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-          <div>
-            <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-pk-mutedText">
-              Respuestas del aula
-            </p>
-            <h2 className="mt-1 font-display text-xl font-semibold tracking-tight text-pk-ink">
-              Entregas y feedback listos para revisar.
-            </h2>
-            <p className="mt-2 max-w-2xl text-sm leading-6 text-pk-sub">
-              Esta capa muestra respuestas reales de estudiantes para revisar, calificar y devolver
-              sin salir del flujo de clase.
-            </p>
-          </div>
-
-          <div className="flex flex-wrap gap-2">
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={() => {
-                window.location.href = '/teacher/submissions'
-              }}
-            >
-              Ver entregas
-            </Button>
-            <Button
-              type="button"
-              variant="ghost"
-              onClick={() => {
-                window.location.reload()
-              }}
-            >
-              Actualizar
-            </Button>
-          </div>
-        </div>
-
-        <div className="mt-5">
-          {teacherDataError ? (
-            <div className="flex min-h-[180px] flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-pk-border bg-pk-muted/25 p-6 text-center">
-              <p className="text-sm font-medium text-pk-ink">No se pudo cargar el aula</p>
-              <p className="max-w-md text-sm text-pk-sub">{teacherDataError}</p>
-            </div>
-          ) : isLoadingTeacherData ? (
-            <div className="flex min-h-[180px] items-center justify-center rounded-2xl border border-pk-border bg-pk-muted/25">
-              <div className="flex items-center gap-2 text-sm text-pk-sub">
-                <Loader2 className="h-4 w-4 animate-spin text-pk-primary" aria-hidden />
-                Cargando respuestas del aula
-              </div>
-            </div>
-          ) : (
-            <TeacherDashboard
-              submissions={teacherData?.submissions ?? []}
-              isLoading={false}
-              onReviewSubmission={() => {
-                window.location.href = '/teacher/submissions'
-              }}
-            />
-          )}
-        </div>
-      </section>
+      <TeacherSubmissionsSection data={teacherData} isLoading={isLoadingTeacherData} error={teacherDataError} />
     </div>
   )
 }
