@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-05-26T16:35:58.613Z",
-  "totalFiles": 615,
+  "lastIndexed": "2026-05-26T17:16:43.070Z",
+  "totalFiles": 619,
   "vaultRoot": "docs",
   "files": [
     "00-architecture/ARCHITECTURE-ADR-043-ASCII-DIAGRAMS.md",
@@ -29,6 +29,7 @@
     "00-architecture/REDIS_NAMESPACE_ISOLATION.md",
     "00-architecture/RENDERING-ENGINE.md",
     "00-architecture/REPO-MAP.md",
+    "00-architecture/TENANT-ANALYTICS-IMPLEMENTATION-GUIDE.md",
     "00-architecture/TENANT-INCUBATION-LIFECYCLE.md",
     "01-development/.openclaw.md",
     "01-development/ACTIVE-PROMPT.md",
@@ -36,6 +37,7 @@
     "01-development/AGENCY-DEVOPS-OS-OFFER.md",
     "01-development/AGENT-PROMPT-QUEUE.md",
     "01-development/AGENT-SERVICE-NAMING.md",
+    "01-development/AGENT-SKILLS-INTEGRATION.md",
     "01-development/AI-FRAMEWORKS.md",
     "01-development/API-CORE-PORTFOLIO.md",
     "01-development/AUTO-PUSH-WATCHER.md",
@@ -299,6 +301,8 @@
     "adr/ADR-043-supplement/INTEGRATION-CHECKLIST.md",
     "adr/ADR-043-supplement/README.md",
     "adr/ADR-044-core-first-tenant-slug-extraction.md",
+    "adr/ADR-045-tenant-analytics-batch-python-pandas-arrow.md",
+    "adr/ADR-046-family-email-invite-access.md",
     "adr/README.md",
     "audits/CODE-REVIEW-API-ROUTES.md",
     "audits/COST-DEEP-DIVE.md",
