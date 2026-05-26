@@ -1,6 +1,6 @@
 {
-  "lastIndexed": "2026-05-26T16:25:39.238Z",
-  "totalFiles": 614,
+  "lastIndexed": "2026-05-26T16:35:58.613Z",
+  "totalFiles": 615,
   "vaultRoot": "docs",
   "files": [
     "00-architecture/ARCHITECTURE-ADR-043-ASCII-DIAGRAMS.md",
@@ -589,6 +589,7 @@
     "tenants/peskids/PHASE-2-CHECKLIST.md",
     "tenants/peskids/PHASE-2-IMPLEMENTATION-PLAN.md",
     "tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md",
+    "tenants/peskids/PHASE-2-WEEK-1-HANDOFF-FOR-VPS-EXECUTION.md",
     "tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md",
     "tenants/peskids/PHASE-2-WEEK-1-VPS-SETUP.md",
     "tenants/peskids/PHASE-2-WEEK1-CHECKLIST.md",
