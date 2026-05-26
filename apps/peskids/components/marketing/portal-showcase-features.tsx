@@ -1,9 +1,5 @@
 import {
-  CalendarClock,
-  CreditCard,
-  MessageSquare,
   Sparkles,
-  Star,
   CheckCircle2,
   ClipboardList,
   ShieldCheck,
