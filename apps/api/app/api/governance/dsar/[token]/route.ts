@@ -14,7 +14,9 @@ export async function GET(
   const { data, error } = await client
     .schema('governance')
     .from('dsar_requests')
-    .select('id, tenant_id, subject_email, request_type, status, created_at, sla_deadline, fulfilled_at')
+    .select(
+      'id, tenant_id, subject_email, request_type, status, created_at, sla_deadline, fulfilled_at'
+    )
     .eq('verification_token', token)
     .single();
 

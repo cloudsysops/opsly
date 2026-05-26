@@ -28,10 +28,7 @@ const neighborhoodField = z
   .trim()
   .min(2, 'neighborhood must be at least 2 characters')
   .max(80, 'neighborhood must be at most 80 characters')
-  .regex(
-    /^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑüÜ\s.,#-]+$/,
-    'neighborhood contains invalid characters'
-  );
+  .regex(/^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑüÜ\s.,#-]+$/, 'neighborhood contains invalid characters');
 
 export const peskidsLeadBodySchema = z.object({
   tenant_slug: z.literal(PESKIDS_TENANT_SLUG).optional().default(PESKIDS_TENANT_SLUG),
