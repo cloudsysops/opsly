@@ -55,14 +55,14 @@ export function HeroSection(): React.ReactElement {
                   <p className="text-xs font-semibold uppercase tracking-[0.18em] text-white/55">
                     Familias
                   </p>
-                  <p className="mt-1 text-sm font-semibold text-white">Entrar con Google</p>
+                  <p className="mt-1 text-sm font-semibold text-white">Entrar con correo</p>
                 </div>
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/12 text-white">
                   <Waves className="h-5 w-5" aria-hidden />
                 </div>
               </div>
               <p className="mt-3 text-xs leading-5 text-white/65">
-                Acceso directo al panel de familias y sus reservas.
+                Acceso directo al panel de familias y sus reservas con enlace seguro.
               </p>
               <span className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-pk-primary">
                 Ir al acceso

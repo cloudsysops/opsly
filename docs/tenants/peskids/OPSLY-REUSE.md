@@ -42,13 +42,13 @@ Guía completa: [`docs/01-development/LIBRARY-MODULES.md`](../../01-development/
 |-------------|-------------------|--------------------------------------|
 | `scripts/lib/google-auth.sh` | Service account / OAuth **Drive** y APIs Google Cloud | **No** — no es login de padres |
 | `apps/portal` + Supabase Auth | Email + invitación (`signInWithPassword`, magic invite) | **Sí, patrón** — mismo Supabase project |
-| Google OAuth en UI | **Implementado en portal Opsly** como patrón reutilizable (familias) | **Usar** en portal de familias / Peskids; exigir provider Google activo en Supabase |
+| Email invite / magic link en UI | **Implementado como patrón reusable** para familias | **Usar** en portal de familias / Peskids; el correo debe estar autorizado por alumno o reserva aprobada |
 
-Pasos cuando pidan “entrar con Google”:
+Pasos cuando pidan acceso de familias:
 
-1. Activar proveedor Google en **Supabase Dashboard** → Authentication → Providers.
-2. Copiar patrón de `apps/portal/lib/supabase/client.ts` + `middleware.ts` (sesión cookie).
-3. Reutilizar **Zero-Trust** de Opsly: `resolveTrustedPortalSession` en `apps/api/lib/portal-trusted-identity.ts` si las familias consumen API bajo `/api/portal/tenant/peskids/…`.
+1. Pedir el correo con el que se registró la reserva o con el que ya existe el alumno.
+2. Verificar que el correo coincida con `students.parent_email` o con una reserva `enrolled`.
+3. Emitir un enlace seguro por Supabase Auth hacia `/auth/callback?next=/familias/submissions`.
 4. Staff / profesores / soporte siguen por **invitación + contraseña**; para esos roles puede añadirse passkey/MFA, pero **no** compartir login con familias.
 5. **No** copiar `NEXT_PUBLIC_PLATFORM_ADMIN_TOKEN`; admin Peskids sigue con `DASHBOARD_ADMIN_SECRET`.
 6. Cada invitación staff debe salir con `tenant_slug: peskids` explícito; si la metadata no coincide, corregirla antes de enviar.

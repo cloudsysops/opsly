@@ -42,7 +42,7 @@ Peskids es un **tenant activo** en la plataforma Opsly (plan **startup**). Opsly
 - Para Peskids, el acceso de staff vive en el tenant: `/invite/[token]` → `/admin/login` → `/auth/recovery` si hace falta.
 - El `tenant_slug` debe ir explícito en la metadata de invitación; no se debe inferir desde el correo ni caer al portal genérico por accidente.
 - El portal Opsly sigue existiendo como plano de control multi-tenant, pero **no** como fallback operativo para staff de Peskids.
-- Familias y staff no comparten el mismo mecanismo de acceso: staff/owner por invitación + contraseña; familias por el flujo definido en el producto (Google / invitación según el caso).
+- Familias y staff no comparten el mismo mecanismo de acceso: staff/owner por invitación + contraseña; familias por enlace seguro por correo emitido solo si el email ya está asociado a un estudiante o a una reserva aprobada.
 
 ## Qué falta (incubación)
 
