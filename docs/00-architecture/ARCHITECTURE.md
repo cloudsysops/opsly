@@ -1,7 +1,7 @@
 ---
 status: draft
 owner: operations
-last_review: 2026-05-24
+last_review: 2026-05-25
 type: architecture
 tags:
   - opsly/architecture
@@ -154,10 +154,11 @@ sequenceDiagram
 
 ## Design Principles
 
-1. Extend existing modules; do not create parallel runtimes.
-2. Keep backward compatibility for APIs and queue contracts.
-3. Prefer incremental changes validated by type-check/tests.
-4. Route AI calls through orchestrator + llm-gateway patterns.
+1. Build reusable capabilities once in Opsly core, activate them by `tenant_slug`, and preserve a clean extraction path to a dedicated VPS when the tenant matures.
+2. Extend existing modules; do not create parallel runtimes.
+3. Keep backward compatibility for APIs and queue contracts.
+4. Prefer incremental changes validated by type-check/tests.
+5. Route AI calls through orchestrator + llm-gateway patterns.
 
 ## Hive / SwarmOps Runtime (2026-04-28)
 
@@ -179,6 +180,7 @@ sequenceDiagram
 
 - `VISION.md`
 - `AGENTS.md`
+- `TENANT-INCUBATION-LIFECYCLE.md`
 - `docs/adr/ADR-031-experimental-consolidation.md`
 - `docs/adr/ADR-032-scripts-organization.md`
 

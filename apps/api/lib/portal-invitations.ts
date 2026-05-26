@@ -1,14 +1,13 @@
 import { escapeHtml, getInviteFromEmail, sendHtmlEmail } from './email';
 import { isEmailDeliverySkipped, isNonFatalEmailDeliveryError } from './email/delivery-mode';
 import { getServiceClient } from './supabase';
+import { resolveTenantSiteTarget } from '../../../lib/runtime/src/tenant-site-routing'
 
 export type PortalInviteParams = {
   email: string;
   name: string;
   slug: string;
 };
-
-const PESKIDS_TENANT_SLUG = 'peskids';
 
 function isProductionRuntime(): boolean {
   const nodeEnv = process.env.NODE_ENV?.trim().toLowerCase();
@@ -94,21 +93,31 @@ export function getPortalSiteUrl(): string {
 }
 
 function getTenantSiteUrl(slug: string): string {
-  if (slug === PESKIDS_TENANT_SLUG) {
-    const explicit =
-      process.env.NEXT_PUBLIC_PESKIDS_SITE_URL?.trim() ?? process.env.PESKIDS_SITE_URL?.trim();
-    if (explicit && explicit.length > 0) {
-      return explicit.replace(/\/$/, '');
-    }
-    return getSiteUrlFromEnv({
+  const portalSiteUrl = getPortalSiteUrl();
+  const peskidsSiteUrl =
+    process.env.NEXT_PUBLIC_PESKIDS_SITE_URL?.trim() ??
+    process.env.PESKIDS_SITE_URL?.trim() ??
+    getSiteUrlFromEnv({
       envName: 'NEXT_PUBLIC_PESKIDS_SITE_URL',
       localPort: 3004,
       prodSubdomain: 'peskids',
       prodFallback: 'https://peskids.op-sly.com',
     });
-  }
 
-  return getPortalSiteUrl();
+  return resolveTenantSiteTarget(slug, {
+    portal: {
+      siteUrl: portalSiteUrl,
+      loginPath: '/login',
+    },
+    tenantRules: [
+      {
+        tenantSlug: 'peskids',
+        siteUrl: peskidsSiteUrl,
+        loginPath: '/login',
+        staffLoginPath: '/admin/login',
+      },
+    ],
+  }).siteUrl;
 }
 
 function parseInviteTokenFromActionLink(actionLink: string): string | null {
@@ -212,11 +221,22 @@ export async function sendPortalInvitationForTenant(
     params.mode
   );
 
-  const homeUrl =
-    params.slug === PESKIDS_TENANT_SLUG
-      ? `${getTenantSiteUrl(params.slug)}/admin/login`
-      : `${getTenantSiteUrl(params.slug)}/login`;
-  const brandName = params.slug === PESKIDS_TENANT_SLUG ? 'Peskids' : 'Opsly';
+  const siteUrl = getTenantSiteUrl(params.slug);
+  const homeUrl = resolveTenantSiteTarget(params.slug, {
+    portal: {
+      siteUrl: getPortalSiteUrl(),
+      loginPath: '/login',
+    },
+    tenantRules: [
+      {
+        tenantSlug: 'peskids',
+        siteUrl,
+        loginPath: '/login',
+        staffLoginPath: '/admin/login',
+      },
+    ],
+  }).loginUrl;
+  const brandName = params.slug === 'peskids' ? 'Peskids' : 'Opsly';
   const html = buildPortalInviteHtml(params.name, params.name, activateUrl, homeUrl, brandName);
 
   let emailDeliverySkipped = isEmailDeliverySkipped();

@@ -34,7 +34,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: '20'
           cache: npm
           cache-dependency-path: package-lock.json
 
@@ -113,7 +113,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: '20'
           cache: npm
           cache-dependency-path: package-lock.json
       - name: npm ci + unit tests (api/portal/mcp/ml/llm-gateway)
@@ -161,7 +161,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: '20'
           cache: npm
           cache-dependency-path: package-lock.json
       - name: npm ci + integration tests (orchestrator + llm-gateway cache namespace with Redis)
@@ -219,7 +219,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: '20'
           cache: npm
           cache-dependency-path: package-lock.json
 
@@ -304,18 +304,13 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: '20'
           cache: npm
           cache-dependency-path: package-lock.json
 
       - name: npm ci
         run: |
           npm ci
-
-      - name: Install Playwright browsers
-        run: |
-          npx playwright install --with-deps chromium
-
       - name: Validate E2E required secrets
         run: |
           set -euo pipefail
@@ -325,40 +320,15 @@ jobs:
       - name: Run E2E invite script
         run: |
           export ADMIN_TOKEN="${{ secrets.PLATFORM_ADMIN_TOKEN }}"
-          export OWNER_EMAIL="cboteros1@gmail.com"
-          export TENANT_REF="intcloudsysops"
+          export OWNER_EMAIL="jkbotero78@gmail.com"
+          export TENANT_SLUG="localrank"
           bash scripts/test-e2e-invite-flow.sh
-
-      - name: Build portal app for local E2E
-        run: |
-          npm run build --workspace=@intcloudsysops/portal
-
-      - name: Start portal app for local E2E
-        env:
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
-          NEXT_PUBLIC_PLATFORM_DOMAIN: portal.op-sly.com
-          PORTAL_URL: http://127.0.0.1:3002
-        run: |
-          set -euo pipefail
-          nohup npm run start --workspace=@intcloudsysops/portal >/tmp/portal-e2e.log 2>&1 &
-          for i in 1 2 3 4 5 6 7 8 9 10 11 12; do
-            if curl -sf http://127.0.0.1:3002/login >/dev/null; then
-              echo "Portal E2E server is ready"
-              exit 0
-            fi
-            sleep 5
-          done
-          echo "::error::Portal E2E server did not become ready"
-          tail -n 200 /tmp/portal-e2e.log || true
-          exit 1
 
       - name: Run Playwright E2E tests (portal with Supabase)
         run: |
           export NEXT_PUBLIC_SUPABASE_URL="${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}"
           export NEXT_PUBLIC_SUPABASE_ANON_KEY="${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}"
-          export NEXT_PUBLIC_PLATFORM_DOMAIN="portal.op-sly.com"
-          export PORTAL_URL="http://127.0.0.1:3002"
+          export PORTAL_URL="https://portal.ops.smiletripcare.com"
           npm run test:e2e --workspace=@intcloudsysops/portal
 
 

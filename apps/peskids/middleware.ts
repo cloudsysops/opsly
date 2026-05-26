@@ -3,18 +3,20 @@ import { NextResponse } from 'next/server'
 import { createServerClient, type SetAllCookies } from '@supabase/ssr'
 import { isStaffUser } from '@/lib/staff-user'
 import type { Database } from '@/lib/types'
+import { isPathUnderAuthSurface } from '../../lib/runtime/src/tenant-auth-surface'
+
+const PESKIDS_AUTH_SURFACE = {
+  entryPaths: ['/', '/admin/login'],
+  loginPaths: ['/admin/login'],
+  invitePath: '/invite',
+  recoveryPath: '/auth/recovery',
+  updatePasswordPaths: ['/admin/update-password'],
+  authPrefixes: ['/auth/'],
+} as const
 
 export async function middleware(req: NextRequest): Promise<NextResponse> {
   const path = req.nextUrl.pathname
-  if (
-    path === '/admin/login' ||
-    path === '/admin/update-password' ||
-    path === '/invite' ||
-    path.startsWith('/invite/') ||
-    path === '/api/admin/login' ||
-    path === '/auth/recovery' ||
-    path.startsWith('/auth/')
-  ) {
+  if (isPathUnderAuthSurface(path, PESKIDS_AUTH_SURFACE) || path === '/api/admin/login') {
     return NextResponse.next()
   }
 

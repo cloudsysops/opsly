@@ -7,6 +7,9 @@ tenant_slug: peskids
 
 # Peskids — tenant incubado en Opsly
 
+> Nota de contexto: la producción activa hoy vive en `https://peskids.op-sly.com` sobre VPS + Docker.
+> Los documentos antiguos que mencionan `peskids.vercel.app` son históricos y no representan el deploy actual.
+
 Peskids es un **tenant activo** en la plataforma Opsly (plan **startup**). Opsly actúa como **incubadora y plano de control**: stack n8n + monitoreo, CRM base y futura capa de datos/producto. El objetivo a medio plazo es **extraer** un producto independiente (`peskids-platform`) sin romper Opsly ni depender permanentemente del runtime de orquestación de Opsly.
 
 ## Estado actual (snapshot repo)

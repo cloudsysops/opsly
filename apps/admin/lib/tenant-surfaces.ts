@@ -1,5 +1,6 @@
 import type { Json } from './types';
 import { parseServiceUrls } from './service-urls';
+import { resolveTenantSiteTarget } from '../../../lib/runtime/src/tenant-site-routing'
 
 /** Cómo opera el tenant respecto al control plane Opsly. */
 export type TenantDeploymentMode = 'incubated' | 'dedicated';
@@ -15,10 +16,6 @@ export type TenantSurfaces = {
   slug: string;
   deploymentMode: TenantDeploymentMode;
   links: TenantSurfaceLink[];
-};
-
-const INCUBATED_STAFF_ORIGIN: Record<string, string> = {
-  peskids: 'https://peskids.op-sly.com',
 };
 
 function metadataRecord(meta: Json): Record<string, unknown> {
@@ -47,6 +44,28 @@ function platformDomain(): string {
     process.env.PLATFORM_DOMAIN?.trim() ||
     'op-sly.com'
   );
+}
+
+function resolveIncubatedStaffOrigin(slug: string): string | null {
+  const target = resolveTenantSiteTarget(slug, {
+    portal: {
+      siteUrl: `https://portal.${platformDomain()}`,
+      loginPath: '/login',
+    },
+    tenantRules: [
+      {
+        tenantSlug: 'peskids',
+        siteUrl:
+          process.env.NEXT_PUBLIC_PESKIDS_SITE_URL?.trim() ||
+          process.env.PESKIDS_SITE_URL?.trim() ||
+          'https://peskids.op-sly.com',
+        loginPath: '/login',
+        staffLoginPath: '/admin/login',
+      },
+    ],
+  });
+
+  return target.siteUrl;
 }
 
 function resolveDeploymentMode(meta: Record<string, unknown>): TenantDeploymentMode {
@@ -81,7 +100,7 @@ export function resolveTenantSurfaces(
   const staffApp = readString(meta, 'staff_app_url');
   const portalApp = readString(meta, 'portal_app_url');
   const incubatedStaff =
-    staffApp ?? INCUBATED_STAFF_ORIGIN[slug] ?? (clientBase ? `${normalizeOrigin(clientBase)}/admin` : null);
+    staffApp ?? resolveIncubatedStaffOrigin(slug) ?? (clientBase ? `${normalizeOrigin(clientBase)}/admin` : null);
 
   const links: TenantSurfaceLink[] = [];
 

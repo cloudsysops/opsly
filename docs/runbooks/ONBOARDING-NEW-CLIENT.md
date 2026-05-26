@@ -1,7 +1,7 @@
 ---
 status: draft
 owner: operations
-last_review: 2026-05-24
+last_review: 2026-05-25
 type: runbook
 tags:
   - opsly/runbook
@@ -12,6 +12,9 @@ tags:
 **Audiencia:** operador con acceso SSH Tailscale, token admin y Doppler `prd`.  
 **Frecuencia:** por cada nuevo tenant que se provisioning.  
 **Tiempo estimado:** 15-30 minutos.
+
+> [!NOTE]
+> Política operativa: cualquier capacidad reutilizable se implementa primero en Opsly core, se activa por `tenant_slug` y solo luego se considera extracción a VPS propio del tenant. No crear forks permanentes por tenant para features comunes.
 
 **Subcliente / tenant hijo (p. ej. LegalVial bajo LocalRank):** usar además la plantilla [`SUBCLIENT-ONBOARDING-TEMPLATE.md`](./SUBCLIENT-ONBOARDING-TEMPLATE.md) y `./scripts/validate-subclient-config.sh`.
 
@@ -222,6 +225,12 @@ ssh vps-dragon@100.120.151.91 "docker ps --format 'table {{.Names}}\t{{.Status}}
 ---
 
 ## 6. Post-Onboarding
+
+### 6.0 Regla de evolución
+
+- Si el onboarding introdujo una capacidad reusable, volver a documentarla en `AGENTS.md`, `VISION.md` y el lifecycle antes de tocar un fork por tenant.
+- Si el tenant ya demuestra uso estable y el negocio lo justifica, preparar checklist de extracción en lugar de seguir agregando lógica específica al control plane.
+- Si solo cambia branding, URLs o permisos, hacerlo por configuración/metadata del tenant, no duplicando módulos.
 
 ### 6.1 Actualizar Configuración
 

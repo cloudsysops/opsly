@@ -29,8 +29,8 @@ Versión: Spanish (Español) — [English version](#english-version)
 
 | Recurso | URL | Usuario |
 |---------|-----|---------|
-| Landing page | `https://peskids.vercel.app` | Público |
-| Admin panel | `https://peskids.vercel.app/admin` | Solo con contraseña |
+| Landing page | `https://peskids.op-sly.com` | Público |
+| Admin panel | `https://peskids.op-sly.com/admin` | Solo con contraseña |
 | Formulario de lead | Embedded en landing | Público |
 | Feedback (padres) | Link en footer | Público |
 | Slack alerts | #peskids-alerts | Auto (si config) |
@@ -43,7 +43,7 @@ Versión: Spanish (Español) — [English version](#english-version)
 
 ### Acceso
 
-1. Ve a: `https://peskids.vercel.app/admin`
+1. Ve a: `https://peskids.op-sly.com/admin`
 2. Se abrirá un diálogo pidiendo contraseña
 3. Pega tu **contraseña de admin**
 4. Click "Entrar"
@@ -255,7 +255,7 @@ Puedes:
 ### "¿Dónde veo mi dominio personalizado?"
 
 **Phase 2 feature.** Por ahora:
-- URL compartida: `https://peskids.vercel.app`
+- URL compartida: `https://peskids.op-sly.com`
 - En Phase 2: Podemos conectar `peskids.co` (si tienes dominio)
 
 ### "¿Puedo cambiar colores/logo?"
@@ -271,7 +271,7 @@ Puedes:
 **Opción A (rápido):** Contacta ops@intcloudsysops.com → rotamos en <1h
 
 **Opción B (si necesitas acceso AHORA):**
-1. Borra cookies del sitio (Ctrl+Shift+Del → peskids.vercel.app)
+1. Borra cookies del sitio (Ctrl+Shift+Del → peskids.op-sly.com)
 2. Intenta login de nuevo (nueva sesión)
 3. Hay token en browser localStorage — no lo compartas
 
@@ -311,7 +311,7 @@ Puedes:
 ### P: ¿Cuánto cuesta Peskids?
 
 **R:** MVP (Phase 1) está incluido en tu suscripción de Opsly. 
-- Hosting: Vercel ~$10–20/mes
+- Hosting: VPS + Docker (incluido en Opsly infra)
 - Base de datos: Supabase ~$15–30/mes (escala con datos)
 - Total: ~$25–50/mes (muy competitivo)
 
@@ -323,9 +323,9 @@ Puedes:
 
 **R:** Sí. Phase 2 feature. Contacta ops para añadir staff.
 
-### P: ¿Qué pasa si Vercel se cae?
+### P: ¿Qué pasa si el hosting se cae?
 
-**R:** Muy raro. Si pasa, recibirás alerta en Slack + status page. Somos miembros de Vercel Enterprise, prioridad alta.
+**R:** Recibirás alerta en Slack + status page. El servicio está monitorizado por Uptime Kuma y los checks de GitHub Actions.
 
 ### P: ¿Puedo integrar Peskids con mi CRM/ERP?
 

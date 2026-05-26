@@ -7,6 +7,19 @@ import {
   isInviteLink,
   isRecoveryLink,
 } from '@/lib/auth-recovery'
+import {
+  isLoginSurfacePath,
+  isRecoverySurfacePath,
+} from '../../../../lib/runtime/src/tenant-auth-surface'
+
+const PORTAL_AUTH_SURFACE = {
+  entryPaths: ['/', '/login'],
+  loginPaths: ['/login'],
+  invitePath: '/invite',
+  recoveryPath: '/auth/recovery',
+  updatePasswordPaths: ['/update-password'],
+  authPrefixes: ['/login/'],
+} as const
 
 /** Forwards Supabase invite/recovery tokens on `/` and `/login` to the correct auth page. */
 export function AuthSessionRedirect(): null {
@@ -17,10 +30,10 @@ export function AuthSessionRedirect(): null {
       return
     }
 
-    if (pathname !== '/' && pathname !== '/login' && !pathname.startsWith('/login/')) {
+    if (!isLoginSurfacePath(pathname, PORTAL_AUTH_SURFACE)) {
       return
     }
-    if (pathname.startsWith('/auth/recovery')) {
+    if (isRecoverySurfacePath(pathname, PORTAL_AUTH_SURFACE)) {
       return
     }
 

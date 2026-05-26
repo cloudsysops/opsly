@@ -1,7 +1,7 @@
 ---
 status: canon
 owner: product
-last_review: 2026-05-09
+last_review: 2026-05-25
 ---
 
 # Opsly — Visión y Objetivos
@@ -194,6 +194,8 @@ Opsly es defensa ética:
 ## Principios de Arquitectura
 
 - Aislamiento por tenant con Docker Compose + Traefik por subdominio.
+- Toda feature nueva nace en Opsly core, se direcciona por `tenant_slug` y se diseña con ruta de extracción a VPS propio cuando el tenant madure.
+- Branding, configuración y permisos pueden ser específicos del tenant; la lógica reusable no se bifurca por cliente.
 - Control plane único en `apps/api` y servicios OpenClaw.
 - Escalamiento incremental: vertical primero, horizontal con demanda real.
 - Seguridad Zero-Trust en rutas dinámicas y sesiones portal.
@@ -219,6 +221,7 @@ Opsly es defensa ética:
 - Hardcodear secrets (todo va a Doppler)
 - Usar `any` en TypeScript
 - Crear scripts no idempotentes
+- Implementar features reutilizables como forks permanentes por tenant; primero se hacen genéricas y se activan por `tenant_slug`.
 - Tomar decisiones de arquitectura sin documentarlas en AGENTS.md
 
 ## Roadmap por fases (revisado 2026-04-04)

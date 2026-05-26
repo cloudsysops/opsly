@@ -2,6 +2,19 @@
 
 import { useEffect } from 'react'
 import { inviteActivationPathFromUrl, isInviteLink, isRecoveryLink } from '@/lib/auth-recovery'
+import {
+  isLoginSurfacePath,
+  isRecoverySurfacePath,
+} from '../../../../lib/runtime/src/tenant-auth-surface'
+
+const PESKIDS_AUTH_SURFACE = {
+  entryPaths: ['/', '/admin/login'],
+  loginPaths: ['/admin/login'],
+  invitePath: '/invite',
+  recoveryPath: '/auth/recovery',
+  updatePasswordPaths: ['/admin/update-password'],
+  authPrefixes: ['/admin/login/'],
+} as const
 
 /**
  * Recovery links that hit the public landing or admin login are forwarded to /auth/recovery.
@@ -13,10 +26,10 @@ export function AuthSessionRedirect(): null {
     }
 
     const url = new URL(window.location.href)
-    const isLanding = url.pathname === '/'
-    const isAdminLogin = url.pathname === '/admin/login' || url.pathname.startsWith('/admin/login/')
-    const isAuthRoute = url.pathname.startsWith('/auth/')
-    if (!isLanding && !isAdminLogin && !isAuthRoute) {
+    if (!isLoginSurfacePath(url.pathname, PESKIDS_AUTH_SURFACE)) {
+      return
+    }
+    if (isRecoverySurfacePath(url.pathname, PESKIDS_AUTH_SURFACE)) {
       return
     }
 

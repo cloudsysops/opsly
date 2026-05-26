@@ -38,7 +38,7 @@ echo -e "\n${BLUE}Step 3: Creating PR via GitHub API${NC}"
 PR_PAYLOAD=$(cat <<'EOF'
 {
   "title": "feat(peskids): deploy sprint 02 MVP to production",
-  "body": "Deploy peskids MVP to production.\n\n## Features\n- Lead capture form with Jelou.ai integration\n- Parent feedback surveys\n- Admin dashboard for management\n- Multi-tenant isolation via Supabase RLS\n- Event-driven architecture with Opsly event bus\n- Vercel production deployment configuration\n\n## Status\n✅ Code pushed and ready\n✅ Next.js build verified\n✅ Environment variables documented",
+  "body": "Deploy Peskids MVP to production.\n\n## Features\n- Lead capture form with Jelou.ai integration\n- Parent feedback surveys\n- Admin dashboard for management\n- Multi-tenant isolation via Supabase RLS\n- Event-driven architecture with Opsly event bus\n- Opsly VPS production deployment\n\n## Status\n✅ Code pushed and ready\n✅ Next.js build verified\n✅ Environment variables documented",
   "head": "feat/peskids-sprint-01",
   "base": "main"
 }
@@ -100,17 +100,19 @@ else
     echo "3. Merge to main branch"
 fi
 
-# Step 7: Vercel deployment info
-echo -e "\n${BLUE}Step 7: Vercel Deployment${NC}"
-echo "Once PR is merged to main, Vercel will auto-deploy if GitHub integration is enabled."
+# Step 7: Current deployment info
+echo -e "\n${BLUE}Step 7: Current Production Deployment${NC}"
+echo "Once PR is merged to main, GitHub Actions runs CI and then Deploy Peskids."
 echo ""
-echo "If auto-deploy doesn't trigger, manually:"
-echo "1. Go to https://vercel.com/cloudsysops"
-echo "2. Select 'opsly' project"
-echo "3. Create new deployment from main branch"
-echo "4. Root directory: apps/peskids"
+echo "Current deployment flow:"
+echo "1. CI validates the merge on main"
+echo "2. Deploy Peskids builds ghcr.io/cloudsysops/peskids"
+echo "3. The VPS pulls the image and runs scripts/peskids-deploy-vps.sh"
 echo ""
-echo "Configure these environment variables in Vercel:"
+echo "Production URL:"
+echo "  - https://peskids.op-sly.com"
+echo ""
+echo "Production secrets come from Doppler/GitHub environment:"
 echo "  - NEXT_PUBLIC_SUPABASE_URL"
 echo "  - NEXT_PUBLIC_SUPABASE_ANON_KEY"
 echo "  - NEXT_PUBLIC_TENANT_ID (set to: peskids)"
@@ -122,11 +124,11 @@ echo "  - JELOU_WEBHOOK_SECRET"
 # Step 8: Deployment complete
 echo -e "\n${GREEN}✅ Deployment preparation complete!${NC}"
 echo ""
-echo "Application URL: https://peskids.vercel.app"
+echo "Application URL: https://peskids.op-sly.com"
 echo ""
 echo "Next steps:"
 echo "1. Verify PR is merged: git log --oneline | head -1"
-echo "2. Check Vercel dashboard for deployment status"
+echo "2. Check GitHub Actions deploy status and VPS logs"
 echo "3. Test production deployment once live"
 echo ""
 echo "For issues, see: apps/peskids/DEPLOYMENT.md"

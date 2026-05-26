@@ -70,49 +70,6 @@ echo "  superuser:    ${SUPERUSER}"
 echo "  doppler:      ${PROJECT}/${CONFIG}"
 echo "  dry-run:      ${DRY_RUN}"
 
-runtime_mode() {
-  local explicit="${OPSLY_APP_URL_MODE:-${OPSLY_RUNTIME_ENV:-${DOPPLER_CONFIG:-${NODE_ENV:-}}}}"
-  explicit="${explicit,,}"
-  case "$explicit" in
-    prod | prd | production)
-      echo "production"
-      ;;
-    dev | development | local | "")
-      echo "local"
-      ;;
-    *)
-      echo "local"
-      ;;
-  esac
-}
-
-resolve_site_url() {
-  local local_port="$1"
-  local env_name="$2"
-  local prod_subdomain="$3"
-  local fallback_prod="$4"
-  local public_env_name="NEXT_PUBLIC_${env_name}"
-  local explicit="${!env_name:-${!public_env_name:-}}"
-  explicit="${explicit%/}"
-  if [[ -n "$explicit" ]]; then
-    echo "$explicit"
-    return 0
-  fi
-
-  if [[ "$(runtime_mode)" == "local" ]]; then
-    echo "http://localhost:${local_port}"
-    return 0
-  fi
-
-  local domain="${PLATFORM_DOMAIN:-${PLATFORM_BASE_DOMAIN:-}}"
-  if [[ -n "$domain" ]]; then
-    echo "https://${prod_subdomain}.${domain}"
-    return 0
-  fi
-
-  echo "$fallback_prod"
-}
-
 export BOOTSTRAP_EMAIL="${EMAIL}"
 export BOOTSTRAP_TENANT_SLUG="${TENANT_SLUG}"
 export BOOTSTRAP_ROLE="${ROLE}"
@@ -133,48 +90,10 @@ if (!url || !serviceKey) {
   process.exit(1);
 }
 
-function runtimeMode() {
-  const explicit = (
-    process.env.OPSLY_APP_URL_MODE ||
-    process.env.OPSLY_RUNTIME_ENV ||
-    process.env.DOPPLER_CONFIG ||
-    process.env.NODE_ENV ||
-    ''
-  )
-    .trim()
-    .toLowerCase();
-  if (explicit === 'prod' || explicit === 'prd' || explicit === 'production') {
-    return 'production';
-  }
-  return 'local';
-}
-
-function resolveSiteUrl(localPort, explicitEnvName, prodSubdomain, fallbackProd) {
-  const explicit = (process.env[explicitEnvName] || '').trim().replace(/\/$/, '');
-  if (explicit) {
-    return explicit;
-  }
-  if (runtimeMode() === 'local') {
-    return `http://localhost:${localPort}`;
-  }
-  const domain = (process.env.PLATFORM_DOMAIN || process.env.PLATFORM_BASE_DOMAIN || '').trim();
-  if (domain) {
-    return `https://${prodSubdomain}.${domain}`;
-  }
-  return fallbackProd;
-}
-
-  const portalBase = resolveSiteUrl(3002, 'PORTAL_SITE_URL', 'portal', 'https://portal.op-sly.com');
-  const adminBase = resolveSiteUrl(3001, 'ADMIN_SITE_URL', 'admin', 'https://admin.op-sly.com');
-  const peskidsBase = resolveSiteUrl(
-    3004,
-    'NEXT_PUBLIC_PESKIDS_SITE_URL',
-    'peskids',
-    'https://peskids.op-sly.com'
-  );
-  const inviteBase = tenantSlug === 'peskids' ? peskidsBase : portalBase;
-  const recoveryBase =
-    isSuperuser || tenantSlug === 'intcloudsysops' ? adminBase : tenantSlug === 'peskids' ? peskidsBase : portalBase;
+const portalBase = (process.env.PORTAL_SITE_URL || '').replace(/\/$/, '')
+  || (process.env.PLATFORM_DOMAIN
+    ? `https://portal.${process.env.PLATFORM_DOMAIN.trim()}`
+    : 'https://portal.op-sly.com');
 
 const displayName =
   tenantSlug === 'peskids' && role === 'owner' ? 'Peskids Owner' : 'Platform Admin';
@@ -233,7 +152,7 @@ async function inviteUser() {
     body: JSON.stringify({
       email,
       data: userMetadata,
-      redirect_to: `${inviteBase}/invite`,
+      redirect_to: `${portalBase}/invite`,
     }),
   });
   const body = await res.json();
@@ -256,7 +175,7 @@ async function generateInviteLink() {
       email,
       options: {
         data: userMetadata,
-        redirect_to: `${inviteBase}/invite`,
+        redirect_to: `${portalBase}/invite`,
       },
     }),
   });
@@ -279,7 +198,7 @@ async function generateRecoveryLink(adminBase) {
       type: 'recovery',
       email,
       options: {
-        redirect_to: `${adminBase}/login`,
+        redirect_to: `${adminBase}/auth/recovery`,
       },
     }),
   });
@@ -290,66 +209,12 @@ async function generateRecoveryLink(adminBase) {
   return body;
 }
 
-async function sendInviteEmail(activateUrl) {
-  const resendKey = process.env.RESEND_API_KEY?.trim();
-  if (!resendKey) {
-    console.log('WARN: RESEND_API_KEY vacío; solo se imprime el enlace manual');
-    return;
-  }
-
-  const from =
-    process.env.RESEND_INVITE_FROM_EMAIL?.trim() ||
-    process.env.RESEND_FROM_EMAIL?.trim() ||
-    process.env.RESEND_FROM_ADDRESS?.trim() ||
-    'hello@opsly.sh';
-
-  const brand = tenantSlug === 'peskids' ? 'Peskids' : 'Opsly';
-  const subject =
-    tenantSlug === 'peskids'
-      ? 'Peskids · acceso de staff/admin'
-      : 'Opsly · acceso al portal';
-  const homeUrl = tenantSlug === 'peskids' ? `${inviteBase}/admin/login` : `${inviteBase}/login`;
-  const html = `
-    <div style="font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;line-height:1.5;color:#111">
-      <h2 style="margin:0 0 16px">${brand}</h2>
-      <p>Hola ${email},</p>
-      <p>Tu acceso para <strong>${brand}</strong> ya está listo. Actívalo desde este enlace:</p>
-      <p><a href="${activateUrl}">${activateUrl}</a></p>
-      <p>Después de activar tu contraseña, entra al panel desde:</p>
-      <p><a href="${homeUrl}">${homeUrl}</a></p>
-    </div>
-  `;
-
-  const response = await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${resendKey}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      from,
-      to: email,
-      subject,
-      html,
-    }),
-  });
-  const body = await response.json().catch(() => ({}));
-  if (!response.ok) {
-    throw new Error(body?.message || body?.error || `Resend HTTP ${response.status}`);
-  }
-}
-
 function parseToken(actionLink) {
   try {
     return new URL(actionLink).searchParams.get('token');
   } catch {
     return null;
   }
-}
-
-function buildRecoveryVerifyLink(token, redirectTo) {
-  const redirect = encodeURIComponent(redirectTo);
-  return `${url}/auth/v1/verify?token=${encodeURIComponent(token)}&type=recovery&redirect_to=${redirect}`;
 }
 
 (async () => {
@@ -371,27 +236,36 @@ function buildRecoveryVerifyLink(token, redirectTo) {
     console.log('DRY_RUN: crearía usuario e invitaría por email');
     process.exit(0);
   } else {
-    console.log('INFO: creando invite sin usar el email automático de Supabase');
+    try {
+      await inviteUser();
+      console.log('OK: invite enviado por Supabase Auth (revisa bandeja de entrada)');
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      if (!/already|registered|exists/i.test(msg)) {
+        throw err;
+      }
+      console.log('WARN: invite API:', msg);
+    }
   }
+
+  const adminBase = (process.env.ADMIN_SITE_URL || '').replace(/\/$/, '')
+    || (process.env.PLATFORM_DOMAIN
+      ? `https://admin.${process.env.PLATFORM_DOMAIN.trim()}`
+      : 'https://admin.op-sly.com');
 
   if (!dryRun) {
     if (existing) {
-      const recoveryPayload = await generateRecoveryLink(recoveryBase);
+      const recoveryPayload = await generateRecoveryLink(adminBase);
       const recoveryLink =
         recoveryPayload?.action_link || recoveryPayload?.properties?.action_link;
       if (recoveryLink) {
-        const token = parseToken(recoveryLink);
-        const manualRecovery =
-          token && recoveryBase
-            ? buildRecoveryVerifyLink(token, `${recoveryBase}/auth/recovery`)
-            : recoveryLink;
         console.log('');
-        console.log('Recovery link (abrir una vez, ~1h):');
-        console.log(manualRecovery);
+        console.log('Recovery admin (abrir una vez, ~1h):');
+        console.log(recoveryLink);
         console.log('');
         console.log('Si Supabase redirige al portal: añade en Dashboard → Auth → URL:');
-        console.log(`  ${recoveryBase}/auth/recovery`);
-        console.log(`  ${recoveryBase}/admin/update-password`);
+        console.log(`  ${adminBase}/auth/recovery`);
+        console.log(`  ${adminBase}/update-password`);
       }
     } else {
       const linkPayload = await generateInviteLink();
@@ -399,17 +273,10 @@ function buildRecoveryVerifyLink(token, redirectTo) {
       if (actionLink) {
         const token = parseToken(actionLink);
         if (token) {
-          const manual = `${inviteBase}/invite/${encodeURIComponent(token)}?email=${encodeURIComponent(email)}`;
+          const manual = `${portalBase}/invite/${encodeURIComponent(token)}?email=${encodeURIComponent(email)}`;
           console.log('');
           console.log('Enlace manual invite (si el correo no llega):');
           console.log(manual);
-          try {
-            await sendInviteEmail(manual);
-            console.log('OK: invite enviado por Resend (revisa bandeja de entrada)');
-          } catch (err) {
-            const msg = err instanceof Error ? err.message : String(err);
-            console.log('WARN: correo manual no enviado:', msg);
-          }
         }
       }
     }
@@ -419,9 +286,9 @@ function buildRecoveryVerifyLink(token, redirectTo) {
   console.log('Acceso esperado tras activar contraseña:');
   console.log(`  admin:  ${adminBase}/login  ← superuser / plataforma`);
   if (isSuperuser || tenantSlug === 'peskids') {
-    console.log(`  peskids: ${peskidsBase}/admin/login`);
+    console.log('  peskids: https://peskids.op-sly.com/admin/login');
   }
-  console.log(`  portal (${tenantSlug}): ${portalBase}/login`);
+  console.log(`  portal (${tenantSlug}): https://portal.op-sly.com/login`);
 })().catch((e) => {
   console.error('FAIL:', e.message || e);
   process.exit(1);

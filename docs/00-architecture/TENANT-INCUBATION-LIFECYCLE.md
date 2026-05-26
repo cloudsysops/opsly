@@ -1,7 +1,7 @@
 ---
 status: canon
 owner: architecture
-last_review: 2026-05-21
+last_review: 2026-05-25
 ---
 
 # Tenant Incubation Lifecycle
@@ -9,6 +9,39 @@ last_review: 2026-05-21
 Opsly incubates new clients inside the existing VPS and shared control plane
 first. Dedicated infrastructure is provisioned only after the tenant proves
 real usage, business value, and a clean migration path.
+
+## Multi-tenant contract
+
+- New features are implemented once in Opsly core.
+- Tenant-specific behavior is selected by `tenant_slug` and capability flags.
+- Branding, login surface, and routing can differ per tenant; shared logic does
+  not fork permanently by client.
+- When the tenant grows, the same product contract should be movable to a
+  dedicated VPS with minimal code changes.
+
+```mermaid
+flowchart LR
+  A[New capability request] --> B[Implement in Opsly core]
+  B --> C[Activate by tenant_slug]
+  C --> D[Incubated tenant in shared VPS]
+  D --> E{Tenant stable and approved?}
+  E -- no --> D
+  E -- yes --> F[Extraction candidate]
+  F --> G[Dedicated VPS provisioning]
+  G --> H[Tenant migration]
+  H --> I[Connected client platform]
+```
+
+```mermaid
+stateDiagram-v2
+  [*] --> Incubation
+  Incubation --> Validation: real usage
+  Validation --> ExtractionCandidate: stable + approved
+  ExtractionCandidate --> DedicatedVPS: infra ready
+  DedicatedVPS --> Migration: move app/data/config
+  Migration --> ConnectedClientPlatform: tenant owns runtime
+  ConnectedClientPlatform --> [*]
+```
 
 ## Principios
 
@@ -108,6 +141,7 @@ Exit criteria:
 
 - Tenant runs from its dedicated VPS.
 - Shared Opsly dependencies are removed or replaced.
+- New tenant-specific features are configuration-driven, not code forks.
 
 ## Stage 6 - Connected Client Platform
 
@@ -136,6 +170,7 @@ Extract only when all of these are true:
 - The client approves the move.
 - The business case is validated.
 - The migration checklist is complete.
+- The feature set is already modeled in Opsly core by `tenant_slug` and can be reused by another tenant without a second implementation.
 
 ## Non-goals
 

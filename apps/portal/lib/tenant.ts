@@ -1,5 +1,6 @@
 import { getApiBaseUrl } from './api';
 import { requestPortalApi } from './http';
+import { tenantSlugFromUserMetadata } from '../../../lib/runtime/src/tenant-identity'
 import {
   portalBillingSummaryUrl,
   portalHealthUrl,
@@ -35,27 +36,6 @@ import type {
   ShieldScorePayload,
   ShieldSecretFinding,
 } from '@/types';
-
-/**
- * Lee `tenant_slug` del JWT de Supabase cuando está presente (invitaciones / portal).
- */
-export function tenantSlugFromUserMetadata(
-  user: { user_metadata?: unknown } | null | undefined
-): string | undefined {
-  if (
-    !user?.user_metadata ||
-    typeof user.user_metadata !== 'object' ||
-    Array.isArray(user.user_metadata)
-  ) {
-    return undefined;
-  }
-  const ts = (user.user_metadata as Record<string, unknown>).tenant_slug;
-  if (typeof ts !== 'string') {
-    return undefined;
-  }
-  const trimmed = ts.trim();
-  return trimmed.length > 0 ? trimmed : undefined;
-}
 
 /**
  * Payload del tenant portal. Con `tenantSlug` llama a
@@ -250,6 +230,8 @@ export async function fetchPortalHealth(
     cache: 'no-store',
   });
 }
+
+export { tenantSlugFromUserMetadata }
 
 export async function fetchShieldSecrets(
   accessToken: string,

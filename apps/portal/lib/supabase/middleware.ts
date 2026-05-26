@@ -1,6 +1,22 @@
 import { createServerClient, type SetAllCookies } from '@supabase/ssr';
 import { type NextRequest, NextResponse } from 'next/server';
 import { PORTAL_DEMO_COOKIE } from '@/lib/demo-tenant';
+import {
+  isInviteSurfacePath,
+  isLoginSurfacePath,
+  isPathUnderAuthSurface,
+  isRecoverySurfacePath,
+  isUpdatePasswordSurfacePath,
+} from '../../../../lib/runtime/src/tenant-auth-surface'
+
+const PORTAL_AUTH_SURFACE = {
+  entryPaths: ['/', '/login'],
+  loginPaths: ['/login'],
+  invitePath: '/invite',
+  recoveryPath: '/auth/recovery',
+  updatePasswordPaths: ['/update-password'],
+  authPrefixes: ['/auth/'],
+} as const;
 
 export async function updateSession(request: NextRequest): Promise<NextResponse> {
   let supabaseResponse = NextResponse.next({
@@ -37,11 +53,13 @@ export async function updateSession(request: NextRequest): Promise<NextResponse>
   } = await supabase.auth.getUser();
 
   const pathname = request.nextUrl.pathname;
-  const isLogin = pathname === '/login' || pathname.startsWith('/login/');
-  const isInvite = pathname.startsWith('/invite/');
+  const isLogin = isLoginSurfacePath(pathname, PORTAL_AUTH_SURFACE);
+  const isInvite = isInviteSurfacePath(pathname, PORTAL_AUTH_SURFACE);
   const isOnboarding = pathname.startsWith('/onboarding/');
   const isAuthPublic =
-    pathname.startsWith('/auth/') || pathname === '/update-password';
+    isPathUnderAuthSurface(pathname, PORTAL_AUTH_SURFACE) ||
+    isRecoverySurfacePath(pathname, PORTAL_AUTH_SURFACE) ||
+    isUpdatePasswordSurfacePath(pathname, PORTAL_AUTH_SURFACE);
   const isAdmin = pathname.startsWith('/admin');
   const hasDemoSession =
     request.cookies.get(PORTAL_DEMO_COOKIE)?.value === '1' &&

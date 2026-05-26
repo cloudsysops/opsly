@@ -1,19 +1,9 @@
 import { cookies } from 'next/headers'
 import type { NextRequest } from 'next/server'
 import type { User } from '@supabase/supabase-js'
+import { tenantRoleFromUserMetadata, tenantSlugFromUserMetadata } from '../../../lib/runtime/src/tenant-identity'
 
 const FAMILY_ROLES = new Set(['family', 'parent'])
-
-function normalize(value: unknown): string {
-  return typeof value === 'string' ? value.trim().toLowerCase() : ''
-}
-
-function metadataRecord(meta: unknown): Record<string, unknown> {
-  if (!meta || typeof meta !== 'object' || Array.isArray(meta)) {
-    return {}
-  }
-  return meta as Record<string, unknown>
-}
 
 function extractAccessTokenFromCookies(
   requestCookies: Array<{ name: string; value: string }>
@@ -53,17 +43,15 @@ async function fetchSupabaseUser(token: string): Promise<User | null> {
 }
 
 export function isFamilyUser(user: User): boolean {
-  const userMeta = metadataRecord(user.user_metadata)
-  const appMeta = metadataRecord(user.app_metadata)
-  const role = normalize(userMeta.role) || normalize(appMeta.role)
-  const tenantSlug = normalize(userMeta.tenant_slug) || normalize(appMeta.tenant_slug)
+  const role = tenantRoleFromUserMetadata(user)
+  const tenantSlug = tenantSlugFromUserMetadata(user)
   const expectedTenant = (process.env.NEXT_PUBLIC_TENANT_ID || 'peskids').trim().toLowerCase()
 
   if (tenantSlug && tenantSlug !== expectedTenant) {
     return false
   }
 
-  return FAMILY_ROLES.has(role)
+  return role ? FAMILY_ROLES.has(role) : false
 }
 
 export async function validateFamilyRequest(

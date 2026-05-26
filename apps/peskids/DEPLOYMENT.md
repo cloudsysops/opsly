@@ -11,49 +11,36 @@ tags:
 
 ## Current Status ✅
 
-- **Code Ready**: All peskids MVP code committed and pushed to `feat/peskids-sprint-01`
-- **Build Verified**: Next.js build completes successfully (exit code 0)
-- **Vercel Config**: `vercel.json` configured with:
-  - Build command: `npm run build`
-  - Output directory: `.next`
-  - Environment variable mappings ready
-- **Git**: Changes staged in branch ready for PR/merge
+- **Code Ready**: Peskids runs from the Opsly monorepo and deploys from `main`
+- **Build Verified**: production build is validated in CI before deploy
+- **Deploy Target**: GHCR image + VPS container on `peskids.op-sly.com`
+- **Git**: merges to `main` trigger the deploy workflow once CI passes
 
 ## Deployment Steps
 
-### 1. Create PR from feat/peskids-sprint-01 → main
+### 1. Create PR from your feature branch → main
 
 ```bash
 gh pr create \
   --base main \
-  --head feat/peskids-sprint-01 \
-  --title "feat(peskids): deploy sprint 02 MVP to production" \
-  --body "Deploy peskids MVP with lead capture, feedback system, admin dashboard, and Jelou integration"
+  --head <your-branch> \
+  --title "feat(peskids): deploy to production" \
+  --body "Deploy Peskids to production with tenant-scoped auth, landing page, and admin dashboard"
 ```
 
 Or manually on GitHub:
-- Go to: https://github.com/cloudsysops/opsly/pull/new/feat/peskids-sprint-01...main
+- Go to: https://github.com/cloudsysops/opsly/pull/new/<your-branch>...main
 - Create PR with title and description above
 
 ### 2. Merge PR to main
 
 Once approved, merge the PR to main branch. This will trigger:
 - GitHub CI checks
-- Vercel GitHub integration (if configured)
+- Deploy Peskids workflow (`.github/workflows/deploy-peskids.yml`)
 
-### 3. Set Up Vercel Project
+### 3. Configure production secrets
 
-If not auto-detected by GitHub integration:
-
-1. Go to https://vercel.com
-2. Create new project from git repository
-3. Select: cloudsysops/opsly repository
-4. Root directory: `apps/peskids`
-5. Framework preset: Next.js 14
-
-### 4. Configure Environment Variables in Vercel
-
-Add these secrets from Doppler (`ops-intcloudsysops` / `prd`):
+Add these secrets from Doppler (`ops-intcloudsysops` / `prd`) and GitHub environment secrets:
 
 **Public Environment (NEXT_PUBLIC_*):**
 - `NEXT_PUBLIC_SUPABASE_URL` → Supabase project URL
@@ -70,16 +57,20 @@ Add these secrets from Doppler (`ops-intcloudsysops` / `prd`):
 - `JELOU_WEBHOOK_SECRET` → Webhook signature verification
 - `N8N_WEBHOOK_BASE_URL` → n8n webhook endpoint
 
-### 5. Deploy to Production
+### 4. Deploy to Production
 
-Vercel will auto-deploy on push to main, or manually trigger:
-- Vercel dashboard → Deployments → Redeploy
+Deployment is automated by GitHub Actions:
+1. CI must pass on `main`
+2. `Deploy Peskids` builds `ghcr.io/cloudsysops/peskids`
+3. The VPS pulls the image and runs `scripts/peskids-deploy-vps.sh`
 
-### 6. Verify Deployment
+If you need a manual redeploy, run the deploy workflow from GitHub Actions or execute the VPS script from the VPS host.
+
+### 5. Verify Deployment
 
 Once live, test:
-- Landing page: `https://peskids.vercel.app`
-- Admin dashboard: `https://peskids.vercel.app/admin`
+- Landing page: `https://peskids.op-sly.com`
+- Admin dashboard: `https://peskids.op-sly.com/admin`
 - Lead form submission
 - Webhook health check
 
@@ -87,7 +78,7 @@ Once live, test:
 
 ```
 ┌─────────────────────────────────────────┐
-│         Vercel (peskids.vercel.app)     │
+│        Opsly VPS (peskids.op-sly.com)   │
 │  ┌──────────────────────────────────┐   │
 │  │  Next.js 14 Frontend + API Routes│   │
 │  │  ├─ Landing page                 │   │
@@ -110,7 +101,7 @@ Once live, test:
 
 See `.env.example` for complete variable documentation.
 
-Key variables for Vercel:
+Key variables for production:
 - All `NEXT_PUBLIC_*` variables: accessible from client
 - `SUPABASE_SERVICE_ROLE_KEY`: server-side only, never expose
 - `DASHBOARD_ADMIN_SECRET`: authentication for admin routes
@@ -118,32 +109,31 @@ Key variables for Vercel:
 
 ## Post-Deployment
 
-1. **Monitor**: Check Vercel dashboard for errors
+1. **Monitor**: Check GitHub Actions and VPS logs for errors
 2. **Test**: Verify lead capture → Supabase flow
 3. **Health Check**: Test admin dashboard login
 4. **Webhooks**: Verify Jelou webhooks are being received
-5. **Analytics**: Enable Vercel Analytics in dashboard
+5. **Analytics**: Review Opsly observability / uptime monitors
 
 ## Rollback
 
 If issues arise:
 1. Merge revert PR to main (in GitHub)
-2. Vercel will auto-deploy previous version
-3. Or manually redeploy earlier commit from Vercel dashboard
+2. Deploy Peskids will pick the previous main commit once merged
+3. Or re-run the deploy workflow for an earlier commit if needed
 
 ## Support
 
-- Vercel docs: https://vercel.com/docs
 - Next.js 14 docs: https://nextjs.org/docs
 - Supabase docs: https://supabase.com/docs
 - Jelou integration: https://jelou.ai/docs
 
 ---
 
-**Status**: ✅ Code ready for production
-**Next Step**: Create PR to main and merge
-**Deployment Target**: Vercel
-**Branch**: feat/peskids-sprint-01
+**Status**: ✅ Production runs on Opsly VPS
+**Next Step**: Merge to `main` and let Deploy Peskids run
+**Deployment Target**: VPS + GHCR
+**Branch**: main
 
 ---
 

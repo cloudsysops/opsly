@@ -1,6 +1,16 @@
 import { createServerClient, type SetAllCookies } from '@supabase/ssr';
 import { type NextRequest, NextResponse } from 'next/server';
 import { isAdminPublicDemoEnabled } from '@/lib/admin-public-demo';
+import { isPathUnderAuthSurface } from '../../../../lib/runtime/src/tenant-auth-surface'
+
+const ADMIN_AUTH_SURFACE = {
+  entryPaths: ['/', '/login'],
+  loginPaths: ['/login'],
+  invitePath: '/invite',
+  recoveryPath: '/auth/recovery',
+  updatePasswordPaths: ['/update-password'],
+  authPrefixes: ['/auth/'],
+} as const;
 
 function redirectToLogin(request: NextRequest): NextResponse {
   const redirectUrl = request.nextUrl.clone();
@@ -22,10 +32,9 @@ export async function updateSession(request: NextRequest): Promise<NextResponse>
   const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   if (!url || !anon) {
     const pathname = request.nextUrl.pathname;
+    const isAuthPublic = isPathUnderAuthSurface(pathname, ADMIN_AUTH_SURFACE);
     const isLogin = pathname === '/login' || pathname.startsWith('/login/');
     const isInvite = pathname.startsWith('/invite/');
-    const isAuthPublic =
-      pathname.startsWith('/auth/') || pathname === '/update-password';
     if (!isLogin && !isInvite && !isAuthPublic) {
       return redirectToLogin(request);
     }
@@ -58,8 +67,7 @@ export async function updateSession(request: NextRequest): Promise<NextResponse>
   const pathname = request.nextUrl.pathname;
   const isLogin = pathname === '/login' || pathname.startsWith('/login/');
   const isInvite = pathname.startsWith('/invite/');
-  const isAuthPublic =
-    pathname.startsWith('/auth/') || pathname === '/update-password';
+  const isAuthPublic = isPathUnderAuthSurface(pathname, ADMIN_AUTH_SURFACE);
   if (!user && !isLogin && !isInvite && !isAuthPublic) {
     return redirectToLogin(request);
   }

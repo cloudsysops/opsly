@@ -16,11 +16,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Peskids — After-School Program Management Platform
 
 **Status:** MVP Phase (Phase 0 Incubation); tenant within Opsly monorepo  
-**Stack:** Next.js 14 (TypeScript), Supabase, n8n, Vercel target  
+**Stack:** Next.js 14 (TypeScript), Supabase, n8n, Opsly VPS target
 **Tenant slug:** `peskids`  
 **Team:** owner: sierrasantiago90@gmail.com  
 **Dev port:** 3004  
-**Prod URL:** https://peskids.vercel.app (not yet live)  
+**Prod URL:** https://peskids.op-sly.com (live)
 
 ---
 
@@ -383,7 +383,7 @@ Peskids is currently in **Phase 0 (Incubation)**. Extraction is NOT immediate.
 1. Clone blueprint from `docs/tenants/peskids/FUTURE-REPO-SEED.md`
 2. Create new repo: `cloudsysops/peskids-platform`
 3. Migrate schema (parameterize `tenant_slug`, remove hardcoded Opsly refs)
-4. Set up own Supabase project + Vercel + Stripe
+4. Set up own Supabase project + separate hosting + Stripe
 5. Integrate with Opsly via event webhooks (not schema sharing)
 
 For now: **Build everything here in Opsly.** The extraction plan is a reference, not a blocker.

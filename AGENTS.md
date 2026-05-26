@@ -181,8 +181,11 @@ con facturación Stripe, backups automáticos y dashboard de administración.
 - **DO:** todo tráfico IA pasa por OpenClaw → LLM Gateway (sin llamadas LLM directas fuera de ese flujo).
 - **DO:** incluir `tenant_slug` y `request_id` en cada job/orquestación para trazabilidad.
 - **DO:** tratar NotebookLM como **EXPERIMENTAL** (solo Business+ y `NOTEBOOKLM_ENABLED=true`).
+- **DO:** todo capability nuevo nace en Opsly core, se activa por `tenant_slug` y solo luego se desacopla a VPS propio del tenant.
+- **DO:** si un tenant escala, actualizar primero `AGENTS.md`, `VISION.md` y la arquitectura Mermaid antes de cambiar código de tenant.
 - **NO:** exponer SSH en IP pública; acceso admin solo por Tailscale `100.120.151.91`.
 - **NO:** hardcodear secrets, tokens o IPs en código/scripts/docs operativos.
+- **NO:** crear forks permanentes por tenant para features reutilizables; branding y datos sí, lógica común no.
 
 ---
 

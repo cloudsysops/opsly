@@ -1,7 +1,7 @@
 ---
 status: canon
 owner: architecture
-last_review: 2026-05-09
+last_review: 2026-05-25
 ---
 
 # Architecture MOC
@@ -24,7 +24,8 @@ Arquitectura estable de Opsly: control plane, data plane, OpenClaw, LLM Gateway,
 
 - `openapi-opsly-api.yaml` — contrato HTTP subset (portal, health, feedback); CI `npm run validate-openapi`.
 - `ARCHITECTURE.md`
-- `TENANT-INCUBATION-LIFECYCLE.md`
+- `TENANT-INCUBATION-LIFECYCLE.md` — contrato multi-tenant: core primero, `tenant_slug` como frontera, extracción a VPS propio
+- `../adr/ADR-044-core-first-tenant-slug-extraction.md` — decisión formal: core-first, `tenant_slug` activation, clean extraction
 - `OPSLY-CONTROL-PLANE.md`
 - `ARCHITECTURE-DISTRIBUTED.md`
 - `OPENCLAW-ARCHITECTURE.md`
