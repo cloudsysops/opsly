@@ -1,4 +1,5 @@
-import { PORTAL_URL_PROBE } from './constants';
+import { CACHE_TTL, PORTAL_URL_PROBE } from './constants';
+import { getCache, setCache } from './redis-cache';
 import { getServiceClient } from './supabase';
 import type { Json, Tenant, TenantMembership } from './supabase/types';
 
@@ -56,14 +57,30 @@ export async function portalUrlReachable(url: string | null): Promise<boolean> {
   if (url === null || url.length === 0) {
     return false;
   }
+
+  // Cache reachability to avoid redundant HTTP probes on every dashboard load.
+  // Bolt Optimization: reduces external network calls and dashboard latency.
+  const cacheKey = `reachable:${url}`;
+  const cached = await getCache<boolean>(cacheKey);
+  if (cached !== null) {
+    return cached;
+  }
+
   try {
     const res = await fetch(url, {
       method: 'GET',
       redirect: 'follow',
       signal: AbortSignal.timeout(PORTAL_URL_PROBE.TIMEOUT_MS),
     });
-    return res.status > 0 && res.status < PORTAL_URL_PROBE.STATUS_EXCLUSIVE_MAX;
+    const reachable = res.status > 0 && res.status < PORTAL_URL_PROBE.STATUS_EXCLUSIVE_MAX;
+
+    // Background cache set
+    void setCache(cacheKey, reachable, CACHE_TTL.SHORT);
+
+    return reachable;
   } catch {
+    // Also cache failures briefly to prevent hammering an offline service
+    void setCache(cacheKey, false, CACHE_TTL.SHORT);
     return false;
   }
 }
