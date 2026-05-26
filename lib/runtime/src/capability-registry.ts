@@ -75,7 +75,10 @@ async function detectCommandPresence(
   return (await deps.commandExists(command)) ? 'available' : 'unavailable';
 }
 
-function summaryForCapabilities(profile: RuntimeProfile, capabilities: RuntimeCapability[]): string {
+function summaryForCapabilities(
+  profile: RuntimeProfile,
+  capabilities: RuntimeCapability[]
+): string {
   const available = capabilities.filter((cap) => cap.presence === 'available').length;
   const editors = capabilities.filter(
     (cap) => cap.category === 'editor' && cap.presence === 'available'

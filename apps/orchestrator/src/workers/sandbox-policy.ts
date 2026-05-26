@@ -54,11 +54,9 @@ export interface SandboxValidationError {
 }
 
 export class SandboxPolicyViolation extends Error {
-  constructor(
-    public violations: SandboxValidationError[],
-  ) {
+  constructor(public violations: SandboxValidationError[]) {
     super(
-      `Sandbox policy violation: ${violations.map((v) => `${v.field}: ${v.reason}`).join('; ')}`,
+      `Sandbox policy violation: ${violations.map((v) => `${v.field}: ${v.reason}`).join('; ')}`
     );
     this.name = 'SandboxPolicyViolation';
   }
@@ -66,7 +64,7 @@ export class SandboxPolicyViolation extends Error {
 
 export function assertSandboxAllowed(
   data: { image: string; timeout_seconds: number; allow_network?: boolean },
-  policy: SandboxPolicy,
+  policy: SandboxPolicy
 ): void {
   const violations: SandboxValidationError[] = [];
 

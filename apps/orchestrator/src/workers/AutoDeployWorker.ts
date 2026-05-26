@@ -10,7 +10,7 @@ export interface AutoDeployPayload {
 
 const VPS_SSH = process.env.VPS_TAILSCALE_HOST ?? 'vps-dragon@100.120.151.91';
 const OPSLY_ROOT = process.env.VPS_OPSLY_ROOT ?? '/opt/opsly';
-const PLATFORM_DOMAIN = process.env.PLATFORM_DOMAIN ?? 'ops.smiletripcare.com';
+const PLATFORM_DOMAIN = process.env.PLATFORM_DOMAIN ?? 'op-sly.com';
 const HEALTH_TIMEOUT_MS = 60_000;
 
 async function runSSH(cmd: string): Promise<{ ok: boolean; output: string }> {

@@ -118,6 +118,23 @@ describe('ValidationOrchestrator E2E - Feedback Loop Integration', () => {
       expect(exported).toBeDefined();
       expect(typeof exported).toBe('object');
     });
+
+    it('should calculate system average metrics', async () => {
+      // Mock metrics store to return specific performance stats
+      (metricsStore as any).getAgentPerformance = async () => ({
+        agent_role: 'executor',
+        total_attempts: 10,
+        commit_rate: 0.8,
+        iterate_rate: 0.1,
+        escalate_rate: 0.1,
+        avg_iterations: 1.5,
+        avg_validation_time_ms: 1200,
+      });
+
+      const metrics = await dashboard.getMetrics();
+      expect(metrics.system_health.avg_validation_time_ms).toBeGreaterThan(0);
+      expect(metrics.system_health.escalation_rate_pct).toBeGreaterThanOrEqual(0);
+    });
   });
 
   describe('Phase 5: Feedback Adaptation in Routing Decisions', () => {
@@ -181,6 +198,50 @@ describe('ValidationOrchestrator E2E - Feedback Loop Integration', () => {
 
       const result = await feedbackLayer.applyValidationFeedback('unknown_intent', mockDecision as any);
       expect(result.adapted).toBeDefined();
+    });
+
+    it('should adapt to quality bias when escalation rate is high', async () => {
+      // Mock metrics store to return high escalation rate
+      (feedbackLayer as any).metricsStore.getIntentValidationHistory = async () => ({
+        total_validations: 10,
+        escalate_count: 3, // 30% escalation rate
+        commit_count: 7,
+        iterate_count: 0,
+        common_errors: [],
+      });
+
+      const mockDecision = {
+        llm: { routing_bias: 'balanced' },
+        agent: { role: 'executor' },
+      };
+
+      const result = await feedbackLayer.applyValidationFeedback('test_intent', mockDecision as any);
+      expect(result.adapted.llm.routing_bias).toBe('quality');
+      expect(result.adaptations[0]).toContain('High escalation rate');
+    });
+
+    it('should adapt to cost bias when performance is consistently successful', async () => {
+      // Mock metrics store to return high success rate
+      (feedbackLayer as any).metricsStore.getIntentValidationHistory = async () => ({
+        total_validations: 20,
+        escalate_count: 0,
+        commit_count: 20,
+        iterate_count: 0,
+        common_errors: [],
+      });
+      (feedbackLayer as any).metricsStore.getAgentPerformance = async () => ({
+        commit_rate: 0.95,
+        avg_iterations: 1.1,
+        iterate_rate: 0.05,
+      });
+
+      const mockDecision = {
+        llm: { routing_bias: 'balanced' },
+        agent: { role: 'executor' },
+      };
+
+      const result = await feedbackLayer.applyValidationFeedback('test_intent', mockDecision as any);
+      expect(result.adapted.llm.routing_bias).toBe('cost');
     });
   });
 

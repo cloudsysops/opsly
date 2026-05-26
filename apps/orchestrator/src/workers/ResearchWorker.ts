@@ -19,27 +19,35 @@ async function llmCall(
   tenantSlug: string,
   requestId: string
 ): Promise<string> {
-  const response = await fetch(`${process.env.ORCHESTRATOR_LLM_GATEWAY_URL || 'http://llm-gateway:3010'}/v1/text`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${process.env.ANTHROPIC_API_KEY || ''}`,
-    },
-    body: JSON.stringify({
-      tenant_slug: tenantSlug,
-      request_id: requestId,
-      prompt,
-      task_type: 'summarize',
-      routing_bias: 'cost',
-      usage_metadata: {
-        requested_model: model,
-        requested_max_tokens: maxTokens,
-        worker: 'research',
+  const response = await fetch(
+    `${process.env.ORCHESTRATOR_LLM_GATEWAY_URL || 'http://llm-gateway:3010'}/v1/text`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${process.env.ANTHROPIC_API_KEY || ''}`,
       },
-    }),
-  });
+      body: JSON.stringify({
+        tenant_slug: tenantSlug,
+        request_id: requestId,
+        prompt,
+        task_type: 'summarize',
+        routing_bias: 'cost',
+        usage_metadata: {
+          requested_model: model,
+          requested_max_tokens: maxTokens,
+          worker: 'research',
+        },
+      }),
+    }
+  );
 
-  const data = (await response.json()) as { content?: string; text?: string; error?: string; message?: string };
+  const data = (await response.json()) as {
+    content?: string;
+    text?: string;
+    error?: string;
+    message?: string;
+  };
   if (data.error) {
     throw new Error(`LLM call failed: ${data.message ?? data.error}`);
   }
@@ -82,7 +90,9 @@ function calculateRelevance(result: TavilyResult, query: string, context?: strin
 
   if (context) {
     const contextWords = context.toLowerCase().split(/\s+/);
-    const contextMatches = contextWords.filter((w) => result.content.toLowerCase().includes(w)).length;
+    const contextMatches = contextWords.filter((w) =>
+      result.content.toLowerCase().includes(w)
+    ).length;
     score += (contextMatches / contextWords.length) * 0.1;
   }
 
@@ -90,7 +100,14 @@ function calculateRelevance(result: TavilyResult, query: string, context?: strin
 }
 
 export async function processResearchJob(job: Job<ResearchExecutionPayload>): Promise<unknown> {
-  const { query, tenant_slug, request_id, depth = 'standard', topic_context, initiated_by } = job.data;
+  const {
+    query,
+    tenant_slug,
+    request_id,
+    depth = 'standard',
+    topic_context,
+    initiated_by,
+  } = job.data;
   const researchRunId = randomUUID();
 
   const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!);
@@ -144,7 +161,10 @@ Formato: texto plano, sin markdown.
     );
 
     const duration = Date.now() - startTime;
-    const avgRelevance = scoredResults.length > 0 ? scoredResults.reduce((acc, r) => acc + r.relevance_score, 0) / scoredResults.length : 0;
+    const avgRelevance =
+      scoredResults.length > 0
+        ? scoredResults.reduce((acc, r) => acc + r.relevance_score, 0) / scoredResults.length
+        : 0;
 
     await supabase.from('research_artifacts').update({
       status: 'completed',

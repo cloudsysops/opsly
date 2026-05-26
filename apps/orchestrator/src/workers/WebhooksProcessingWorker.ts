@@ -116,7 +116,10 @@ export function startWebhooksProcessingWorker(): Worker<StripeIngestJobData> {
   );
 
   worker.on('failed', (job, err) => {
-    logWorkerError('webhooks-processing', 'Job failed', { jobId: job?.id, error: err instanceof Error ? err.message : String(err) });
+    logWorkerError('webhooks-processing', 'Job failed', {
+      jobId: job?.id,
+      error: err instanceof Error ? err.message : String(err),
+    });
   });
 
   return worker;

@@ -95,7 +95,7 @@ function detectOS(): { os: EnvironmentCapabilities['os']; version: string; arch:
   const platform = process.platform;
   let osType: EnvironmentCapabilities['os'] = 'unknown';
   let osVersion = 'unknown';
-  let arch = os.arch();
+  const arch = os.arch();
 
   switch (platform) {
     case 'darwin':
@@ -140,24 +140,34 @@ async function runCommand(cmd: string, timeout = 5000): Promise<string> {
  */
 async function detectCursor(): Promise<AgentDetection> {
   const platform = process.platform;
-  const possiblePaths = platform === 'darwin'
-    ? ['/Applications/Cursor.app/Contents/MacOS/Cursor', '~/Library/Application Support/Cursor/Code/Cursor']
-    : platform === 'linux'
-    ? ['/usr/bin/cursor', '~/.cursor/.../cursor']
-    : ['C:\\Program Files\\Cursor\\Cursor.exe', '%LOCALAPPDATA%\\Programs\\Cursor\\Cursor.exe'];
+  const possiblePaths =
+    platform === 'darwin'
+      ? [
+          '/Applications/Cursor.app/Contents/MacOS/Cursor',
+          '~/Library/Application Support/Cursor/Code/Cursor',
+        ]
+      : platform === 'linux'
+        ? ['/usr/bin/cursor', '~/.cursor/.../cursor']
+        : ['C:\\Program Files\\Cursor\\Cursor.exe', '%LOCALAPPDATA%\\Programs\\Cursor\\Cursor.exe'];
 
   const name = 'cursor';
 
   // Check if command exists
-  const cmdExists = runSync(`which ${name} 2>/dev/null || command -v ${name} 2>/dev/null || echo ""`);
+  const cmdExists = runSync(
+    `which ${name} 2>/dev/null || command -v ${name} 2>/dev/null || echo ""`
+  );
 
   for (const path of possiblePaths) {
     try {
-      const expanded = path.replace('~', os.homedir()).replace('%LOCALAPPDATA%', process.env.LOCALAPPDATA || '');
+      const expanded = path
+        .replace('~', os.homedir())
+        .replace('%LOCALAPPDATA%', process.env.LOCALAPPDATA || '');
       if (fs.existsSync(expanded)) {
         return { name, installed: true, path: expanded };
       }
-    } catch { /* ignore */ }
+    } catch {
+      /* ignore */
+    }
   }
 
   return { name, installed: !!cmdExists, executable: cmdExists || undefined };
@@ -170,13 +180,12 @@ async function detectClaude(): Promise<AgentDetection> {
   const name = 'claude';
 
   // Check for claude CLI
-  const cliPath = await runCommand(`which claude 2>/dev/null || which claude-cli 2>/dev/null || echo ""`);
+  const cliPath = await runCommand(
+    `which claude 2>/dev/null || which claude-cli 2>/dev/null || echo ""`
+  );
 
   // Check for Claude app (macOS)
-  const appPaths = [
-    '/Applications/Claude.app',
-    '~/Library/Application Support/Claude',
-  ];
+  const appPaths = ['/Applications/Claude.app', '~/Library/Application Support/Claude'];
 
   for (const path of appPaths) {
     const expanded = path.replace('~', os.homedir());
@@ -235,13 +244,20 @@ async function detectOllama(): Promise<OllamaInfo> {
   let models: string[] = [];
 
   try {
-    const listResult = await runCommand('ollama list 2>/dev/null || ollama ps 2>/dev/null || echo ""', 10000);
+    const listResult = await runCommand(
+      'ollama list 2>/dev/null || ollama ps 2>/dev/null || echo ""',
+      10000
+    );
     running = listResult.length > 0;
 
     // Parse models
-    const lines = listResult.split('\n').filter(l => l.trim() && !l.includes('NAME') && !l.includes('---'));
-    models = lines.map(l => l.split(/\s+/)[0]).filter(Boolean);
-  } catch { /* ignore */ }
+    const lines = listResult
+      .split('\n')
+      .filter((l) => l.trim() && !l.includes('NAME') && !l.includes('---'));
+    models = lines.map((l) => l.split(/\s+/)[0]).filter(Boolean);
+  } catch {
+    /* ignore */
+  }
 
   return {
     installed: true,
@@ -269,7 +285,9 @@ async function detectTools(): Promise<ToolDetection> {
     try {
       await runCommand('docker info 2>/dev/null | head -1 || echo ""');
       dockerRunning = true;
-    } catch { /* ignore */ }
+    } catch {
+      /* ignore */
+    }
   }
 
   return {
@@ -297,8 +315,8 @@ function getSystemResources(): SystemResources {
 
   const totalMem = os.totalmem();
   const freeMem = os.freemem();
-  const memoryGB = Math.round(totalMem / (1024 ** 3));
-  const memoryUsedGB = Math.round((totalMem - freeMem) / (1024 ** 3));
+  const memoryGB = Math.round(totalMem / 1024 ** 3);
+  const memoryUsedGB = Math.round((totalMem - freeMem) / 1024 ** 3);
 
   // Disk - approximate (would need platform-specific for accurate)
   let diskGB = 0;
@@ -307,10 +325,12 @@ function getSystemResources(): SystemResources {
   try {
     if (process.platform !== 'win32') {
       const stat = fs.statfsSync('/');
-      diskGB = Math.round((stat.bsize * stat.blocks) / (1024 ** 3));
-      diskFreeGB = Math.round((stat.bsize * stat.bfree) / (1024 ** 3));
+      diskGB = Math.round((stat.bsize * stat.blocks) / 1024 ** 3);
+      diskFreeGB = Math.round((stat.bsize * stat.bfree) / 1024 ** 3);
     }
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
 
   const loadAverage = os.loadavg();
 
@@ -321,7 +341,11 @@ function getSystemResources(): SystemResources {
     memoryUsedGB,
     diskGB,
     diskFreeGB,
-    loadAverage: [Math.round(loadAverage[0] * 100) / 100, Math.round(loadAverage[1] * 100) / 100, Math.round(loadAverage[2] * 100) / 100],
+    loadAverage: [
+      Math.round(loadAverage[0] * 100) / 100,
+      Math.round(loadAverage[1] * 100) / 100,
+      Math.round(loadAverage[2] * 100) / 100,
+    ],
   };
 }
 
@@ -365,7 +389,7 @@ function selectRecommendedAgent(
   }
 
   // Find highest
-  const max = Object.entries(scores).reduce((a, b) => b[1] > a[1] ? b : a);
+  const max = Object.entries(scores).reduce((a, b) => (b[1] > a[1] ? b : a));
   return max[0] as EnvironmentCapabilities['recommendedAgent'];
 }
 
@@ -379,7 +403,7 @@ function calculateConfidence(
   resources: SystemResources
 ): number {
   let score = 0;
-  let total = 10;
+  const total = 10;
 
   if (agents.cursor.installed) score++;
   if (agents.claude.installed) score++;
@@ -461,7 +485,8 @@ export async function healthCheck(): Promise<HealthCheckResult> {
   }
 
   // Disk check
-  const diskPercent = ((env.resources.diskGB - env.resources.diskFreeGB) / env.resources.diskGB) * 100;
+  const diskPercent =
+    ((env.resources.diskGB - env.resources.diskFreeGB) / env.resources.diskGB) * 100;
   if (diskPercent > 90) {
     result.diskOk = false;
     result.errors.push(`Disk critical: ${Math.round(diskPercent)}% used`);

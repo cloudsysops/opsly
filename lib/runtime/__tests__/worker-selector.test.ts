@@ -19,7 +19,12 @@ describe('worker-selector', () => {
           codex: { name: 'codex', installed: false },
           opencode: { name: 'opencode', installed: false },
         },
-        ollama: { installed: true, running: true, models: ['llama3.2'], url: 'http://localhost:11434' },
+        ollama: {
+          installed: true,
+          running: true,
+          models: ['llama3.2'],
+          url: 'http://localhost:11434',
+        },
         tools: { hasNode: true } as any,
         resources: { cpuCores: 8, memoryGB: 16 } as any,
         recommendedAgent: 'cursor',
@@ -54,7 +59,7 @@ describe('worker-selector', () => {
       };
 
       const workers = getWorkerConfig(env);
-      const localWorker = workers.find(w => w.type === 'local');
+      const localWorker = workers.find((w) => w.type === 'local');
 
       expect(localWorker).toBeDefined();
       expect(localWorker?.priority).toBe(10);
@@ -67,7 +72,12 @@ describe('worker-selector', () => {
         arch: 'x64',
         hostname: 'test',
         agents: { cursor: { name: 'cursor', installed: false } } as any,
-        ollama: { installed: true, running: true, models: ['llama3.2'], url: 'http://localhost:11434' },
+        ollama: {
+          installed: true,
+          running: true,
+          models: ['llama3.2'],
+          url: 'http://localhost:11434',
+        },
         tools: { hasNode: true } as any,
         resources: { cpuCores: 8, memoryGB: 16 } as any,
         recommendedAgent: 'ollama',
@@ -76,7 +86,7 @@ describe('worker-selector', () => {
       };
 
       const workers = getWorkerConfig(env);
-      const ollamaWorker = workers.find(w => w.type === 'ollama');
+      const ollamaWorker = workers.find((w) => w.type === 'ollama');
 
       expect(ollamaWorker).toBeDefined();
       expect(ollamaWorker?.costPerToken).toBe(0);

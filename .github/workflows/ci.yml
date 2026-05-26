@@ -340,11 +340,14 @@ jobs:
           export TENANT_SLUG="localrank"
           bash scripts/test-e2e-invite-flow.sh
 
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps chromium
+
       - name: Run Playwright E2E tests (portal with Supabase)
         run: |
           export NEXT_PUBLIC_SUPABASE_URL="${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}"
           export NEXT_PUBLIC_SUPABASE_ANON_KEY="${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}"
-          export PORTAL_URL="https://portal.ops.smiletripcare.com"
+          export PORTAL_URL="https://portal.op-sly.com"
           npm run test:e2e --workspace=@intcloudsysops/portal
 
 
