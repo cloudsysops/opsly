@@ -10,18 +10,28 @@ cd "$REPO_ROOT"
 echo "🤖 [Startup] Cargando contexto Opsly..."
 echo ""
 
-# 1. Verificar servicios
-echo "1. Checking servicios..."
+# 1. Rama y tema
+echo "1. Rama y tema..."
+if [[ -x "$REPO_ROOT/scripts/git-session-brief.sh" ]]; then
+    bash "$REPO_ROOT/scripts/git-session-brief.sh" || true
+else
+    echo "  ⚠️  session brief no disponible"
+fi
+
+echo ""
+
+# 2. Verificar servicios
+echo "2. Checking servicios..."
 if curl -sf --max-time 5 http://localhost:3000/api/health >/dev/null 2>&1; then
     echo "  ✅ API: UP"
 else
     echo "  ⚠️  API: DOWN (verificar con docker compose)"
 fi
 
-# 2. Cargar NotebookLM si está habilitado
+# 3. Cargar NotebookLM si está habilitado
 if [[ "${NOTEBOOKLM_ENABLED:-false}" == "true" ]]; then
     echo ""
-    echo "2. Consultando NotebookLM..."
+    echo "3. Consultando NotebookLM..."
     STARTUP_PROMPT_FILE="docs/03-agents/AGENT-STARTUP-PROMPT.md"
     if [[ -f "$STARTUP_PROMPT_FILE" ]]; then
         Q="$(cat "$STARTUP_PROMPT_FILE" | sed -n '/^```text$/,/^```$/p' | sed '1d;$d')"
@@ -45,7 +55,7 @@ else
 fi
 
 echo ""
-echo "3. Stack ML..."
+echo "4. Stack ML..."
 if npm run type-check --workspace=@intcloudsysops/ml 2>/dev/null; then
     echo "  ✅ ML workspace: compilado"
 else
@@ -53,7 +63,7 @@ else
 fi
 
 echo ""
-echo "4. Repos && Tenants..."
+echo "5. Repos && Tenants..."
 echo "  Apps: $(ls apps/ | tr '\n' ' ')"
 echo "  Tenants: $(cat context/system_state.json | jq -r '.tenants[] .slug' 2>/dev/null | tr '\n' ' ')"
 

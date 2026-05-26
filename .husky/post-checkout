@@ -1,0 +1,11 @@
+#!/usr/bin/env sh
+set -e
+ROOT="$(git rev-parse --show-toplevel)"
+cd "$ROOT" || exit 1
+
+if [ -x "$ROOT/.githooks/post-checkout" ]; then
+  exec "$ROOT/.githooks/post-checkout" "$@"
+fi
+
+echo "husky post-checkout: .githooks/post-checkout no encontrado o sin permisos" >&2
+exit 1

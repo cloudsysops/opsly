@@ -33,6 +33,13 @@ Objetivo: **una línea base (`main`) estable**, cambios integrados por **PR**, y
 
 Si varios agentes tocan el mismo tema, **una rama coordinada** o PRs encadenados (merge del primero y rebase del segundo sobre `main`), no muchas ramas divergentes sin merge.
 
+## Regla de sesión
+
+- Una sesión debe tener **una rama y un tema dominante**.
+- Si el worktree mezcla áreas grandes distintas, dividir antes de seguir.
+- Si se empieza en `main` con cambios locales, crear rama antes de editar.
+- Si la rama ya no representa el tema real, crear una nueva rama o worktree y mover el trabajo.
+
 ## Markdown en la raíz del repo (evitar CI rojo en PRs)
 
 `npm run validate-structure` solo permite estos `.md` en la raíz:
