@@ -36,6 +36,7 @@
 - `lib/__tests__/dashboard.service.test.ts`
 - `lib/__tests__/jelou.service.test.ts`
 - `lib/__tests__/role-metrics.test.ts`
+- `lib/__tests__/message-store.test.ts`
 - `lib/__tests__/submission-chat.test.ts`
 - `lib/__tests__/submission-operations.test.ts`
 - `app/api/dashboard/__tests__/route.test.ts`
@@ -68,6 +69,7 @@
 - ✅ feedback route family/staff auth tests green
 - ✅ client feedback submission helper tests green
 - ✅ submission chat helper/context tests green
+- ✅ message store insert/read helper tests green
 - ✅ role metrics aggregation tests green
 - ✅ submission operations export/stats/bulk actions tests green
 - ✅ `npm run type-check --workspace=apps/peskids`
@@ -223,6 +225,7 @@
 | **Submission contracts** | ✅ PASS | family + teacher submission endpoints now aligned and authenticated |
 | **Client feedback flow** | ✅ PASS | submission helper now validates fields, normalizes payloads, and propagates API errors |
 | **Submission chat helper** | ✅ PASS | context resolution, email fallback, thread detection, and route guard regressions covered |
+| **Message store helpers** | ✅ PASS | inbound/draft/outbound persistence defaults and conversation reads now have direct regression coverage |
 | **Role metrics helpers** | ✅ PASS | family/teacher aggregates now have direct regression coverage |
 | **Submission operations helpers** | ✅ PASS | export, grading, deletion, and stats flows now have direct regression coverage |
 | **Files <300 lines** | ✅ PASS | Inbox shell now 141 lines |
