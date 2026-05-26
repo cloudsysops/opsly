@@ -324,6 +324,9 @@ jobs:
           export TENANT_REF="intcloudsysops"
           bash scripts/test-e2e-invite-flow.sh
 
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps chromium
+
       - name: Run Playwright E2E tests (portal with Supabase)
         run: |
           export NEXT_PUBLIC_SUPABASE_URL="${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}"
