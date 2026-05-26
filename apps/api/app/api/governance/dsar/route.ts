@@ -41,10 +41,7 @@ export async function POST(request: NextRequest): Promise<Response> {
 
   const parsed = dsarSchema.safeParse(body);
   if (!parsed.success) {
-    return Response.json(
-      { error: 'Invalid payload', details: parsed.error.flatten() },
-      { status: 400 }
-    );
+    return Response.json({ error: 'Invalid payload', details: parsed.error.flatten() }, { status: 400 });
   }
 
   const { tenant_id, subject_email, request_type } = parsed.data;
@@ -74,14 +71,11 @@ export async function POST(request: NextRequest): Promise<Response> {
   // TODO: send verification email via Resend with token link
   // await sendDsarVerificationEmail({ subject_email, token: verification_token, tenant_id });
 
-  return Response.json(
-    {
-      ok: true,
-      request_id: data.id,
-      created_at: data.created_at,
-      sla_deadline: data.sla_deadline,
-      message: 'Request received. Check your email for a verification link.',
-    },
-    { status: 201 }
-  );
+  return Response.json({
+    ok: true,
+    request_id: data.id,
+    created_at: data.created_at,
+    sla_deadline: data.sla_deadline,
+    message: 'Request received. Check your email for a verification link.',
+  }, { status: 201 });
 }

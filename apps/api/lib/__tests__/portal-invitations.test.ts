@@ -63,9 +63,7 @@ describe('sendPortalInvitationForTenant', () => {
     expect(emailMod.sendHtmlEmail).toHaveBeenCalledWith(
       expect.objectContaining({
         to: 'peskids.admin@gmail.com',
-        html: expect.stringContaining(
-          'http://localhost:3004/invite/tok_123?email=peskids.admin%40gmail.com'
-        ),
+        html: expect.stringContaining('http://localhost:3004/invite/tok_123?email=peskids.admin%40gmail.com'),
       })
     );
     expect(emailMod.sendHtmlEmail).toHaveBeenCalledWith(

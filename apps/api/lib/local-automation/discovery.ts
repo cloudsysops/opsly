@@ -11,10 +11,7 @@ const execFileAsync = promisify(execFile);
 const EXEC_TIMEOUT_MS = 4_000;
 const OUTPUT_LIMIT = 2_000;
 
-async function safeExec(
-  command: string,
-  args: string[]
-): Promise<{ stdout: string; stderr: string }> {
+async function safeExec(command: string, args: string[]): Promise<{ stdout: string; stderr: string }> {
   const result = await execFileAsync(command, args, {
     timeout: EXEC_TIMEOUT_MS,
     maxBuffer: 64 * 1024,
@@ -98,9 +95,7 @@ async function isAppRunning(appName: string): Promise<boolean> {
   const processName = appName.replace(/\.app$/i, '');
   try {
     const { stdout } = await safeExec('/bin/ps', ['-axo', 'comm=']);
-    return stdout
-      .split('\n')
-      .some((line) => line.includes(`/${processName}.app/`) || line.endsWith(`/${processName}`));
+    return stdout.split('\n').some((line) => line.includes(`/${processName}.app/`) || line.endsWith(`/${processName}`));
   } catch {
     return false;
   }
@@ -108,9 +103,7 @@ async function isAppRunning(appName: string): Promise<boolean> {
 
 export async function listApplicationsDirectory(): Promise<AppStatus[]> {
   const config = await loadLocalAutomationTools();
-  const appTools = Object.entries(config.tools).filter(
-    ([, tool]) => typeof tool.app_name === 'string'
-  );
+  const appTools = Object.entries(config.tools).filter(([, tool]) => typeof tool.app_name === 'string');
   return Promise.all(
     appTools.map(async ([id, tool]) => {
       const appName = tool.app_name ?? id;

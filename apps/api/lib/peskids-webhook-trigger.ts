@@ -1,5 +1,9 @@
 import { createHmac } from 'crypto';
-import type { WebhookConfig, WebhookTriggerPayload, WebhookTriggerResult } from './peskids-types';
+import type {
+  WebhookConfig,
+  WebhookTriggerPayload,
+  WebhookTriggerResult,
+} from './peskids-types';
 
 export async function triggerWebhooks(
   webhooks: WebhookConfig[],
@@ -18,7 +22,9 @@ export async function triggerWebhooks(
 
     try {
       const payloadJson = JSON.stringify(payload);
-      const signature = createHmac('sha256', webhook.secret).update(payloadJson).digest('hex');
+      const signature = createHmac('sha256', webhook.secret)
+        .update(payloadJson)
+        .digest('hex');
 
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 10000);
@@ -58,5 +64,7 @@ export async function triggerWebhooks(
 }
 
 export function generateWebhookSignature(payload: string, secret: string): string {
-  return `sha256=${createHmac('sha256', secret).update(payload).digest('hex')}`;
+  return `sha256=${createHmac('sha256', secret)
+    .update(payload)
+    .digest('hex')}`;
 }

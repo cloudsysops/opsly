@@ -17,7 +17,10 @@ export async function assertPeskidsTenantPublic(slug: string): Promise<Response 
     return Response.json({ error: msg }, { status });
   }
   if (lookup.row.status !== 'active') {
-    return Response.json({ error: 'Tenant not available' }, { status: HTTP_STATUS.FORBIDDEN });
+    return Response.json(
+      { error: 'Tenant not available' },
+      { status: HTTP_STATUS.FORBIDDEN }
+    );
   }
   return null;
 }

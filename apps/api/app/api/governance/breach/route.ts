@@ -31,10 +31,7 @@ export async function POST(request: NextRequest): Promise<Response> {
 
   const parsed = breachSchema.safeParse(body);
   if (!parsed.success) {
-    return Response.json(
-      { error: 'Invalid payload', details: parsed.error.flatten() },
-      { status: 400 }
-    );
+    return Response.json({ error: 'Invalid payload', details: parsed.error.flatten() }, { status: 400 });
   }
 
   const client = getServiceClient();
@@ -53,8 +50,5 @@ export async function POST(request: NextRequest): Promise<Response> {
   // TODO: trigger Discord alert to #ops-alerts via observability
   // await alertDiscord({ title: `[BREACH] ${parsed.data.title}`, severity: parsed.data.severity });
 
-  return Response.json(
-    { ok: true, breach_id: data.id, logged_at: data.created_at },
-    { status: 201 }
-  );
+  return Response.json({ ok: true, breach_id: data.id, logged_at: data.created_at }, { status: 201 });
 }

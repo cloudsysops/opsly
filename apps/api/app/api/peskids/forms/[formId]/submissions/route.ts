@@ -3,7 +3,10 @@ import { createClient } from '@supabase/supabase-js';
 import { jsonError, jsonOk } from '@/lib/api-response';
 import { HTTP_STATUS } from '@/lib/constants';
 import { triggerWebhooks } from '@/lib/peskids-webhook-trigger';
-import type { WebhookConfig, WebhookTriggerResult } from '@/lib/peskids-types';
+import type {
+  WebhookConfig,
+  WebhookTriggerResult,
+} from '@/lib/peskids-types';
 
 function requireEnv(name: string): string {
   const value = process.env[name];
@@ -39,7 +42,7 @@ export async function POST(
       return jsonError('Missing form ID', HTTP_STATUS.BAD_REQUEST);
     }
 
-    const body = (await request.json()) as Partial<FormSubmissionPayload>;
+    const body = await request.json() as Partial<FormSubmissionPayload>;
 
     if (!body.submissionData) {
       return jsonError('Submission data is required', HTTP_STATUS.BAD_REQUEST);

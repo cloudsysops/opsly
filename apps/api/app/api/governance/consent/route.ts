@@ -21,16 +21,12 @@ export async function POST(request: NextRequest): Promise<Response> {
 
   const parsed = consentSchema.safeParse(body);
   if (!parsed.success) {
-    return Response.json(
-      { error: 'Invalid payload', details: parsed.error.flatten() },
-      { status: 400 }
-    );
+    return Response.json({ error: 'Invalid payload', details: parsed.error.flatten() }, { status: 400 });
   }
 
-  const ip =
-    request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
-    request.headers.get('x-real-ip') ??
-    null;
+  const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
+    ?? request.headers.get('x-real-ip')
+    ?? null;
   const user_agent = request.headers.get('user-agent') ?? null;
 
   const client = getServiceClient();
@@ -50,8 +46,5 @@ export async function POST(request: NextRequest): Promise<Response> {
     return Response.json({ error: 'Failed to record consent' }, { status: 500 });
   }
 
-  return Response.json(
-    { ok: true, consent_id: data.id, granted_at: data.granted_at },
-    { status: 201 }
-  );
+  return Response.json({ ok: true, consent_id: data.id, granted_at: data.granted_at }, { status: 201 });
 }
