@@ -1,3 +1,45 @@
+// ─── AI Generation ───────────────────────────────────────────────────────────
+
+export type ContentTopic = 'opsly' | 'technology' | 'motivation';
+
+export interface AIGenerationParams {
+  topic: ContentTopic;
+  tenant_slug: string;
+  /** 'both' generates es + en captions in one call */
+  language: 'es' | 'en' | 'both';
+  /** Default: ['instagram', 'youtube', 'tiktok'] */
+  platforms?: string[];
+  /** Additional context injected into the AI prompt */
+  context?: string;
+  tone?: ToneOfVoice;
+}
+
+export interface ReelScene {
+  scene: string;
+  copy: string;
+  duration_sec: number;
+}
+
+export interface BilingualCaption {
+  platform: string;
+  es: string;
+  en: string;
+  hashtags: string[];
+  characterCount: number;
+}
+
+export interface AIContentResult {
+  topic: ContentTopic;
+  language: 'es' | 'en' | 'both';
+  story_hook: string;
+  call_to_action: string;
+  image_prompt: string;
+  reel_script: ReelScene[];
+  captions: BilingualCaption[];
+}
+
+// ─── Event-driven Content ─────────────────────────────────────────────────────
+
 export type ContentEventType =
   | 'session_created'
   | 'deployment_success'
