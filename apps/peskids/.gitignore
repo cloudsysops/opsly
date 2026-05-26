@@ -10,7 +10,11 @@ coverage/
 .next/
 out/
 build/
-runtime/
+runtime/*
+!runtime/
+!runtime/tenant-identity.ts
+!runtime/tenant-auth-routing.ts
+!runtime/tenant-auth-surface.ts
 
 # Environment
 .env

@@ -34,7 +34,7 @@ vi.mock('@/lib/staff-user', () => ({
   isStaffUser: isStaffUserMock,
 }))
 
-vi.mock('../../../../../../lib/runtime/src/tenant-identity', () => ({
+vi.mock('@/lib/runtime/tenant-identity', () => ({
   tenantRoleFromUserMetadata: tenantRoleFromUserMetadataMock,
 }))
 

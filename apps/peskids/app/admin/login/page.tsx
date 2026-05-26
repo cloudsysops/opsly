@@ -8,7 +8,7 @@ import { PeskidsLogo } from '@/components/brand/peskids-logo';
 import { Button } from '@/components/ui/button';
 import { buildRecoveryRedirectTo } from '@/lib/auth-recovery';
 import { isStaffUser } from '@/lib/staff-user';
-import { tenantRoleFromUserMetadata } from '../../../../../lib/runtime/src/tenant-identity';
+import { tenantRoleFromUserMetadata } from '@/lib/runtime/tenant-identity';
 import { createClient } from '@/lib/supabase-browser';
 
 function browserSupabaseConfigured(): boolean {

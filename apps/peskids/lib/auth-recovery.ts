@@ -10,7 +10,7 @@ import {
   resolveRecoveryTargetFromMetadata,
   type RecoveryTarget,
   type RecoveryRoutingConfig,
-} from '../../../lib/runtime/src/tenant-auth-routing';
+} from '@/lib/runtime/tenant-auth-routing';
 
 import { ADMIN_APP_ORIGIN, PESKIDS_APP_ORIGIN, PORTAL_APP_ORIGIN } from './app-url';
 

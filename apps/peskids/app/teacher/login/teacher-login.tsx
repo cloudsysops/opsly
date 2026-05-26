@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { buildRecoveryRedirectTo } from '@/lib/auth-recovery';
 import { isStaffUser } from '@/lib/staff-user';
 import { createClient } from '@/lib/supabase-browser';
-import { tenantRoleFromUserMetadata } from '../../../../../lib/runtime/src/tenant-identity';
+import { tenantRoleFromUserMetadata } from '@/lib/runtime/tenant-identity';
 
 function browserSupabaseConfigured(): boolean {
   return Boolean(

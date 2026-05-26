@@ -2,7 +2,7 @@ import type { User } from '@supabase/supabase-js';
 import {
   tenantRoleFromUserMetadata,
   tenantSlugFromUserMetadata,
-} from '../../../lib/runtime/src/tenant-identity';
+} from '@/lib/runtime/tenant-identity';
 
 const STAFF_ROLES = new Set(['owner', 'admin', 'support', 'teacher']);
 

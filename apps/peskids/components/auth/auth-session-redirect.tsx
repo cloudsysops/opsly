@@ -5,7 +5,7 @@ import { inviteActivationPathFromUrl, isInviteLink, isRecoveryLink } from '@/lib
 import {
   isLoginSurfacePath,
   isRecoverySurfacePath,
-} from '../../../../lib/runtime/src/tenant-auth-surface';
+} from '@/lib/runtime/tenant-auth-surface';
 
 const PESKIDS_AUTH_SURFACE = {
   entryPaths: ['/', '/admin/login'],

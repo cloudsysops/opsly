@@ -4,7 +4,7 @@ import type { User } from '@supabase/supabase-js';
 import {
   tenantRoleFromUserMetadata,
   tenantSlugFromUserMetadata,
-} from '../../../lib/runtime/src/tenant-identity';
+} from '@/lib/runtime/tenant-identity';
 
 const FAMILY_ROLES = new Set(['family', 'parent']);
 

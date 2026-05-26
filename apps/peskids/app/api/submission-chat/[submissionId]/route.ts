@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { validateFamilyRequest } from '@/lib/family-auth'
 import { validateStaffRequest } from '@/lib/staff-auth'
 import { isStaffUser } from '@/lib/staff-user'
-import { tenantRoleFromUserMetadata } from '../../../../../../lib/runtime/src/tenant-identity'
+import { tenantRoleFromUserMetadata } from '@/lib/runtime/tenant-identity'
 import {
   buildSubmissionChatContact,
   getSubmissionChatContext,

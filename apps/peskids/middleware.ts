@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 import { createServerClient, type SetAllCookies } from '@supabase/ssr';
 import { isStaffUser } from '@/lib/staff-user';
 import type { Database } from '@/lib/types';
-import { isPathUnderAuthSurface } from '../../lib/runtime/src/tenant-auth-surface';
+import { isPathUnderAuthSurface } from '@/lib/runtime/tenant-auth-surface';
 
 const PESKIDS_AUTH_SURFACE = {
   entryPaths: ['/', '/admin/login'],

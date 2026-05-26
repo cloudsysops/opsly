@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import { tenantRoleFromUserMetadata } from '../../../../../../lib/runtime/src/tenant-identity';
+import { tenantRoleFromUserMetadata } from '@/lib/runtime/tenant-identity';
 import { validateStaffSession } from '@/lib/staff-auth';
 import { invitePeskidsTeamMember, loadPeskidsTeam, type TeamRole } from '@/lib/team-management';
 
