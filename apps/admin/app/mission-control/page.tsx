@@ -116,6 +116,12 @@ export default function MissionControlPage() {
             >
               Foundation
             </Link>
+            <Link
+              href="/mission-control/incubation"
+              className="px-4 py-2 rounded-lg font-medium transition-colors bg-fuchsia-700/90 hover:bg-fuchsia-600 text-white border border-fuchsia-500/40"
+            >
+              Incubation
+            </Link>
             <button
               onClick={handleRefresh}
               className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg font-medium transition-colors"

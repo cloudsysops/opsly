@@ -18,6 +18,9 @@ curl -H "Authorization: Bearer <admin-token>" \
   http://127.0.0.1:3000/api/admin/mission-control | jq .
 
 curl -H "Authorization: Bearer <admin-token>" \
+  "http://127.0.0.1:3000/api/admin/mission-control/incubation?slug=peskids" | jq .
+
+curl -H "Authorization: Bearer <admin-token>" \
   http://127.0.0.1:3000/api/admin/agents | jq .
 
 curl -H "Authorization: Bearer <admin-token>" \
@@ -37,11 +40,15 @@ scripts/provisioning/tenant-bootstrap-skeleton.sh --tenant peskids --stage mvp_v
 - No production tenant is modified.
 - The provisioning script prints a dry-run plan only.
 - Approval boundaries remain explicit.
+- The incubation view is a planning surface, not a mutating workflow.
 
 ## Troubleshooting
 
 - If `/api/admin/mission-control` fails, check `REDIS_URL`,
   `ORCHESTRATOR_INTERNAL_URL`, and the LLM gateway base URL envs.
+- If `/api/admin/mission-control/incubation` fails, check that the tenant slug
+  exists in `config/opsly.config.json` or the `OPSLY_INCUBATION_DEFAULT_TENANT`
+  fallback.
 - If a tenant appears blocked, inspect the lifecycle stage and extraction readiness
   in `config/platform-foundation.json` plus the tenant source file under `config/tenants/`.
 - If an agent is degraded, verify the config in `config/agents-team.json` and the service

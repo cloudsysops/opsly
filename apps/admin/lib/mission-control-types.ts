@@ -276,3 +276,72 @@ export type MissionControlFoundationSnapshot = {
     }>;
   };
 };
+
+export type IncubationStepStatus = 'completed' | 'ready' | 'blocked';
+
+export type IncubationMachineStep = {
+  id: string;
+  label: string;
+  owner: 'opsly' | 'tenant' | 'operator';
+  approval_required: boolean;
+  reversible: boolean;
+  status: IncubationStepStatus;
+  purpose: string;
+};
+
+export type IncubationMachineGate = {
+  id: string;
+  label: string;
+  required: boolean;
+  satisfied: boolean;
+  reason: string | null;
+};
+
+export type IncubationMachineCandidate = {
+  slug: string;
+  name: string;
+  plan: string;
+  stage: PlatformTenantLifecycleStageId;
+  stage_label: string;
+  extraction_ready: boolean;
+  operational_status: OperationalStatus;
+  workflows_count: number;
+};
+
+export type IncubationMachineSnapshot = {
+  generated_at: string;
+  selected_tenant_slug: string | null;
+  selected_tenant: MissionControlTenant | null;
+  lifecycle: {
+    stages: Array<{
+      id: PlatformTenantLifecycleStageId;
+      label: string;
+      description: string;
+    }>;
+    current_stage: {
+      id: PlatformTenantLifecycleStageId;
+      label: string;
+      description: string;
+    } | null;
+    next_stage: {
+      id: PlatformTenantLifecycleStageId;
+      label: string;
+      description: string;
+    } | null;
+  };
+  summary: string;
+  next_action: string;
+  bundle: {
+    name: string;
+    components: string[];
+  };
+  steps: IncubationMachineStep[];
+  gates: IncubationMachineGate[];
+  agent_governance: {
+    total: number;
+    healthy: number;
+    degraded: number;
+    blocked: number;
+  };
+  candidates: IncubationMachineCandidate[];
+};

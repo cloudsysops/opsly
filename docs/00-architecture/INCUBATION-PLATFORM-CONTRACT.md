@@ -27,6 +27,7 @@ This first increment is read-only and keeps the current infrastructure model int
 ### Read model endpoints
 
 - `GET /api/admin/mission-control`
+- `GET /api/admin/mission-control/incubation`
 - `GET /api/admin/agents`
 - `GET /api/admin/tenants/registry`
 
@@ -45,6 +46,7 @@ This first increment is read-only and keeps the current infrastructure model int
 - Defines a governed agent registry.
 - Adds read-only health and readiness reporting.
 - Exposes Mission Control as a read model.
+- Adds an incubation machine view for per-tenant project plans.
 - Keeps provisioning as a skeleton only.
 
 ## What this increment does not do

@@ -81,6 +81,12 @@ export default function MissionControlFoundationPage() {
           </div>
           <div className="flex flex-wrap gap-2">
             <Link
+              href="/mission-control/incubation"
+              className="rounded-full border border-fuchsia-500/40 bg-fuchsia-500/10 px-4 py-2 text-sm text-fuchsia-200 hover:bg-fuchsia-500/15"
+            >
+              Incubation
+            </Link>
+            <Link
               href="/mission-control"
               className="rounded-full border border-zinc-700 bg-zinc-900 px-4 py-2 text-sm text-zinc-200 hover:border-cyan-500/50"
             >
