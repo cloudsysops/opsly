@@ -74,7 +74,8 @@
     "node_modules",
     ".mypy_cache",
     ".ruff_cache",
-    ".n8n"
+    ".n8n",
+    ".jules"
   ],
   "allowed_hidden_folders": [
     ".git",
@@ -92,7 +93,8 @@
     ".turbo",
     ".mypy_cache",
     ".ruff_cache",
-    ".n8n"
+    ".n8n",
+    ".jules"
   ],
   "allowed_extensions_in_root": [],
   "blocked_patterns": [
