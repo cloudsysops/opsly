@@ -3,12 +3,7 @@
 
 FROM node:20-alpine AS deps
 WORKDIR /repo
-COPY package.json package-lock.json ./
-COPY apps/api/package.json ./apps/api/
-COPY apps/ml/package.json ./apps/ml/
-COPY apps/llm-gateway/package.json ./apps/llm-gateway/
-COPY apps/notebooklm-agent/package.json ./apps/notebooklm-agent/
-COPY lib/content-studio/package.json ./lib/content-studio/
+COPY . .
 RUN npm ci --ignore-scripts \
   -w @intcloudsysops/types \
   -w @intcloudsysops/llm-gateway \
@@ -19,22 +14,7 @@ RUN npm ci --ignore-scripts \
 FROM node:20-alpine AS builder
 
 WORKDIR /repo
-COPY --from=deps /repo/node_modules ./node_modules
-COPY --from=deps /repo/package.json ./package.json
-COPY --from=deps /repo/package-lock.json ./package-lock.json
-COPY apps/api ./apps/api
-COPY config/n8n-workflows/catalog.json ./config/n8n-workflows/catalog.json
-COPY apps/ml ./apps/ml
-COPY apps/llm-gateway ./apps/llm-gateway
-COPY apps/notebooklm-agent ./apps/notebooklm-agent
-COPY packages/types ./packages/types
-COPY lib/content-studio ./lib/content-studio
-RUN npm ci --ignore-scripts \
-  -w @intcloudsysops/types \
-  -w @intcloudsysops/llm-gateway \
-  -w @intcloudsysops/ml \
-  -w @intcloudsysops/notebooklm-agent \
-  -w @intcloudsysops/api
+COPY --from=deps /repo ./
 RUN npm run build -w @intcloudsysops/types && \
     npm run build -w @intcloudsysops/llm-gateway && \
     npm run build -w @intcloudsysops/ml && \
