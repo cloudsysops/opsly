@@ -6,11 +6,17 @@ import {
   portalUrlReachable,
   readPortalTenantSlugFromUser,
 } from '../portal-me';
+import * as redisCacheMod from '../redis-cache';
 import * as supabaseMod from '../supabase';
 import type { Json } from '../supabase/types';
 
 vi.mock('../supabase', () => ({
   getServiceClient: vi.fn(),
+}));
+
+vi.mock('../redis-cache', () => ({
+  getCache: vi.fn(),
+  setCache: vi.fn(),
 }));
 
 describe('parsePortalServices', () => {
@@ -75,6 +81,7 @@ describe('parsePortalMode', () => {
 describe('portalUrlReachable', () => {
   beforeEach(() => {
     vi.stubGlobal('fetch', vi.fn());
+    vi.mocked(redisCacheMod.getCache).mockResolvedValue(null);
   });
   afterEach(() => {
     vi.unstubAllGlobals();
@@ -104,6 +111,18 @@ describe('portalUrlReachable', () => {
   it('is false when fetch throws', async () => {
     vi.mocked(fetch).mockRejectedValueOnce(new Error('network'));
     await expect(portalUrlReachable('https://x')).resolves.toBe(false);
+  });
+
+  it('returns cached value if present', async () => {
+    vi.mocked(redisCacheMod.getCache).mockResolvedValueOnce(true);
+    await expect(portalUrlReachable('https://cached')).resolves.toBe(true);
+    expect(fetch).not.toHaveBeenCalled();
+  });
+
+  it('sets cache on success', async () => {
+    vi.mocked(fetch).mockResolvedValueOnce(new Response(null, { status: 200 }));
+    await portalUrlReachable('https://new');
+    expect(redisCacheMod.setCache).toHaveBeenCalledWith('reachable:https://new', true, expect.any(Number));
   });
 });
 
