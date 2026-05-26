@@ -4,58 +4,58 @@ import { createWorker } from './create-worker.js';
 const WEBHOOK = process.env.DISCORD_WEBHOOK_URL || '';
 
 export async function notifyDiscord(
-	title: string,
-	message: string,
-	type: 'success' | 'error' | 'info' | 'warning' = 'info'
+  title: string,
+  message: string,
+  type: 'success' | 'error' | 'info' | 'warning' = 'info'
 ): Promise<void> {
-	if (!WEBHOOK) {
-		return;
-	}
+  if (!WEBHOOK) {
+    return;
+  }
 
-	const colors = {
-		success: 3066993,
-		error: 15158332,
-		warning: 16776960,
-		info: 3447003,
-	} as const;
+  const colors = {
+    success: 3066993,
+    error: 15158332,
+    warning: 16776960,
+    info: 3447003,
+  } as const;
 
-	await fetch(WEBHOOK, {
-		method: 'POST',
-		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({
-			embeds: [
-				{
-					title,
-					description: message,
-					color: colors[type],
-					timestamp: new Date().toISOString(),
-					footer: { text: 'Opsly Platform · OpenClaw' },
-				},
-			],
-		}),
-	}).catch(() => {});
+  await fetch(WEBHOOK, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      embeds: [
+        {
+          title,
+          description: message,
+          color: colors[type],
+          timestamp: new Date().toISOString(),
+          footer: { text: 'Opsly Platform · OpenClaw' },
+        },
+      ],
+    }),
+  }).catch(() => {});
 }
 
 async function processNotifyJob(job: Job): Promise<{ success: true }> {
-	const payload = job.data.payload as {
-		title?: string;
-		message?: string;
-		type?: 'success' | 'error' | 'info' | 'warning';
-	};
-	await notifyDiscord(
-		payload.title || 'OpenClaw notificacion',
-		payload.message || 'Sin mensaje',
-		payload.type || 'info'
-	);
-	return { success: true };
+  const payload = job.data.payload as {
+    title?: string;
+    message?: string;
+    type?: 'success' | 'error' | 'info' | 'warning';
+  };
+  await notifyDiscord(
+    payload.title || 'OpenClaw notificacion',
+    payload.message || 'Sin mensaje',
+    payload.type || 'info'
+  );
+  return { success: true };
 }
 
 export function startNotifyWorker(connection: object) {
-	return createWorker({
-		jobName: 'notify',
-		workerName: 'notify',
-		concurrencyKey: 'notify',
-		connection,
-		processFn: processNotifyJob,
-	});
+  return createWorker({
+    jobName: 'notify',
+    workerName: 'notify',
+    concurrencyKey: 'notify',
+    connection,
+    processFn: processNotifyJob,
+  });
 }

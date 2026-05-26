@@ -39,7 +39,7 @@ export function startSuperOrchestratorWorker(connection: object) {
         type: 'super_orchestrator',
         tenant_slug: tenantSlug,
         request_id: job.id!,
-        started_at: new Date().toISOString()
+        started_at: new Date().toISOString(),
       });
 
       try {
@@ -52,7 +52,7 @@ export function startSuperOrchestratorWorker(connection: object) {
             intent: data.intent,
             context,
             capabilities,
-            max_latency_ms
+            max_latency_ms,
           },
           tenantSlug,
           initiatedBy
@@ -61,12 +61,14 @@ export function startSuperOrchestratorWorker(connection: object) {
         await setJobState(job.id!, {
           status: result.success ? 'completed' : 'failed',
           completed_at: new Date().toISOString(),
-          result: result.success ? {
-            provider: result.provider,
-            output: result.output?.substring(0, 500),
-            latency_ms: result.latency_ms
-          } : undefined,
-          error: result.error
+          result: result.success
+            ? {
+                provider: result.provider,
+                output: result.output?.substring(0, 500),
+                latency_ms: result.latency_ms,
+              }
+            : undefined,
+          error: result.error,
         });
 
         return {
@@ -76,13 +78,13 @@ export function startSuperOrchestratorWorker(connection: object) {
           latency_ms: result.latency_ms,
           cost: result.cost,
           commit: result.commit,
-          n8n: result.n8n
+          n8n: result.n8n,
         };
       } catch (error) {
         await setJobState(job.id!, {
           status: 'failed',
           completed_at: new Date().toISOString(),
-          error: String(error)
+          error: String(error),
         });
 
         throw error;

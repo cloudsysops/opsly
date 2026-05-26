@@ -34,7 +34,12 @@ async function processGeneralEvent(job: Job<GeneralEventJobData>): Promise<void>
       throw new Error(`Forward general-events ${res.status}: ${snippet}`);
     }
   } else {
-    logWorkerInfo('general-events', 'Event ingested', { jobId: job.id, type: job.data.type, tenantId: job.data.tenantId, receivedAt: job.data.receivedAt });
+    logWorkerInfo('general-events', 'Event ingested', {
+      jobId: job.id,
+      type: job.data.type,
+      tenantId: job.data.tenantId,
+      receivedAt: job.data.receivedAt,
+    });
   }
 
   logWorkerLifecycle('complete', 'general-events', job, { duration_ms: Date.now() - t0 });

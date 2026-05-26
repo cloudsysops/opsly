@@ -98,7 +98,11 @@ export function incrementSessionCommandCount(agentId: string, sessionId?: string
   runtime.record.commands_executed += 1;
 }
 
-export function completeTerminalSession(agentId: string, exitCode?: number | null, sessionId?: string): void {
+export function completeTerminalSession(
+  agentId: string,
+  exitCode?: number | null,
+  sessionId?: string
+): void {
   const runtime = getSessionRuntime(agentId, sessionId);
   if (!runtime) return;
   runtime.record.status = 'completed';
@@ -118,7 +122,10 @@ export function failTerminalSession(agentId: string, error: string, sessionId?: 
   runtime.child = undefined;
 }
 
-export function stopTerminalSession(agentId: string, sessionId?: string): { success: boolean; reason?: string } {
+export function stopTerminalSession(
+  agentId: string,
+  sessionId?: string
+): { success: boolean; reason?: string } {
   const runtime = getSessionRuntime(agentId, sessionId);
   if (!runtime) {
     return { success: false, reason: 'session_not_found' };
@@ -133,7 +140,10 @@ export function stopTerminalSession(agentId: string, sessionId?: string): { succ
   return { success: true };
 }
 
-export function getTerminalSession(agentId: string, sessionId?: string): TerminalSessionRecord | null {
+export function getTerminalSession(
+  agentId: string,
+  sessionId?: string
+): TerminalSessionRecord | null {
   return getSessionRuntime(agentId, sessionId)?.record ?? null;
 }
 

@@ -7,6 +7,8 @@
     "dev": "tsx watch src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "test": "vitest run",
     "test:hermes": "vitest run __tests__/hermes.test.ts src/hermes/__tests__/context-enricher.test.ts",
     "test:watch": "vitest watch",

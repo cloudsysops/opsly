@@ -199,11 +199,15 @@ export function startHealthWorker(connection: {
   });
 
   redis.on('error', (err) => {
-    logWorkerError('health', 'Redis error', { message: err instanceof Error ? err.message : String(err) });
+    logWorkerError('health', 'Redis error', {
+      message: err instanceof Error ? err.message : String(err),
+    });
   });
 
   const connectPromise = redis.connect().catch((err) => {
-    logWorkerError('health', 'Redis connect failed', { message: err instanceof Error ? err.message : String(err) });
+    logWorkerError('health', 'Redis connect failed', {
+      message: err instanceof Error ? err.message : String(err),
+    });
     return null;
   });
 
@@ -214,12 +218,16 @@ export function startHealthWorker(connection: {
 
   // Primera ejecución inmediata
   void tick().catch((err) => {
-    logWorkerError('health', 'Initial tick error', { message: err instanceof Error ? err.message : String(err) });
+    logWorkerError('health', 'Initial tick error', {
+      message: err instanceof Error ? err.message : String(err),
+    });
   });
 
   const timer = setInterval(() => {
     void tick().catch((err) => {
-      logWorkerError('health', 'Tick error', { message: err instanceof Error ? err.message : String(err) });
+      logWorkerError('health', 'Tick error', {
+        message: err instanceof Error ? err.message : String(err),
+      });
     });
   }, HEALTH_INTERVAL_MS);
 

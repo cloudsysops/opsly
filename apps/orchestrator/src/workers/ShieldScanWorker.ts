@@ -55,12 +55,16 @@ export function startShieldScanWorker(): ShieldScanWorkerHandle {
   }
 
   void tick().catch((err) => {
-    logWorkerError('shield-scan', 'Initial tick error', { message: err instanceof Error ? err.message : String(err) });
+    logWorkerError('shield-scan', 'Initial tick error', {
+      message: err instanceof Error ? err.message : String(err),
+    });
   });
 
   const timer = setInterval(() => {
     void tick().catch((err) => {
-      logWorkerError('shield-scan', 'Tick error', { message: err instanceof Error ? err.message : String(err) });
+      logWorkerError('shield-scan', 'Tick error', {
+        message: err instanceof Error ? err.message : String(err),
+      });
     });
   }, SHIELD_SCAN_INTERVAL_MS);
 

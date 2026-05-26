@@ -74,8 +74,12 @@ tell application "System Events" to keystroke "${prompt.replace(/"/g, '\\"')}"`;
         const proc = spawn('osascript', ['-e', script], { timeout });
         let output = '';
 
-        proc.stdout.on('data', (data) => { output += data.toString(); });
-        proc.stderr.on('data', (data) => { output += data.toString(); });
+        proc.stdout.on('data', (data) => {
+          output += data.toString();
+        });
+        proc.stderr.on('data', (data) => {
+          output += data.toString();
+        });
 
         proc.on('close', (code) => {
           resolve({
@@ -153,8 +157,12 @@ async function executeWithClaude(prompt: string, timeout: number): Promise<Execu
       let output = '';
       let error = '';
 
-      proc.stdout.on('data', (data) => { output += data.toString(); });
-      proc.stderr.on('data', (data) => { error += data.toString(); });
+      proc.stdout.on('data', (data) => {
+        output += data.toString();
+      });
+      proc.stderr.on('data', (data) => {
+        error += data.toString();
+      });
 
       proc.on('close', (code) => {
         if (code === 0 && output) {
@@ -213,8 +221,12 @@ async function executeWithOllama(
       let output = '';
       let error = '';
 
-      proc.stdout.on('data', (data) => { output += data.toString(); });
-      proc.stderr.on('data', (data) => { error += data.toString(); });
+      proc.stdout.on('data', (data) => {
+        output += data.toString();
+      });
+      proc.stderr.on('data', (data) => {
+        error += data.toString();
+      });
 
       proc.on('close', (code) => {
         // Ollama puede producir output en stdout o stderr dependiendo del modelo
@@ -269,7 +281,9 @@ async function executeWithCodex(prompt: string, timeout: number): Promise<Execut
 
       let output = '';
 
-      proc.stdout.on('data', (data) => { output += data.toString(); });
+      proc.stdout.on('data', (data) => {
+        output += data.toString();
+      });
 
       proc.on('close', (code) => {
         resolve({
@@ -311,7 +325,9 @@ async function executeWithOpenCode(prompt: string, timeout: number): Promise<Exe
 
       let output = '';
 
-      proc.stdout.on('data', (data) => { output += data.toString(); });
+      proc.stdout.on('data', (data) => {
+        output += data.toString();
+      });
 
       proc.on('close', (code) => {
         resolve({
@@ -361,9 +377,8 @@ export async function executeLocalAgent(request: ExecutionRequest): Promise<Exec
 
   // Select agent
   const agentInput = request.agent || 'auto';
-  const selectedAgent = agentInput === 'auto'
-    ? selectAgentForBudget(env, request.budget || 'medium')
-    : agentInput;
+  const selectedAgent =
+    agentInput === 'auto' ? selectAgentForBudget(env, request.budget || 'medium') : agentInput;
 
   const timeout = request.timeout || 60000;
 
@@ -404,7 +419,7 @@ export async function executeWithRetry(
 
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
     if (attempt > 0) {
-      await new Promise(resolve => setTimeout(resolve, retryDelay));
+      await new Promise((resolve) => setTimeout(resolve, retryDelay));
     }
 
     const result = await executeLocalAgent({
@@ -424,12 +439,14 @@ export async function executeWithRetry(
     }
   }
 
-  return lastResult || {
-    success: false,
-    error: 'Max retries exceeded',
-    agent: 'unknown',
-    duration: 0,
-  };
+  return (
+    lastResult || {
+      success: false,
+      error: 'Max retries exceeded',
+      agent: 'unknown',
+      duration: 0,
+    }
+  );
 }
 
 export default { executeLocalAgent, executeWithRetry };

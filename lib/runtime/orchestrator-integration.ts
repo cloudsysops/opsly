@@ -78,7 +78,6 @@ export async function processOrchestratorJob(
       executionTime: Date.now() - startTime,
       tokensUsed: executionResult.tokens,
     };
-
   } catch (error: any) {
     return {
       jobId: request.jobId,
@@ -106,10 +105,7 @@ export async function handleInternalLocalFirstRequest(
 export async function getLocalFirstStatus() {
   const { detectEnvironment, healthCheck } = await import('./environment-detector');
 
-  const [env, health] = await Promise.all([
-    detectEnvironment(),
-    healthCheck(),
-  ]);
+  const [env, health] = await Promise.all([detectEnvironment(), healthCheck()]);
 
   return {
     available: health.healthy,

@@ -15,9 +15,9 @@ export default defineConfig({
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
       include: [
-        'src/lib/validation-metrics.ts',
-        'src/lib/validation-feedback.ts',
-        'src/lib/validation-dashboard.ts',
+        'src/lib/validation/validation-metrics.ts',
+        'src/lib/validation/validation-feedback.ts',
+        'src/lib/validation/validation-dashboard.ts',
         'src/lib/local-worker-pool.ts',
       ],
       exclude: ['src/__tests__/**', 'src/types/**'],

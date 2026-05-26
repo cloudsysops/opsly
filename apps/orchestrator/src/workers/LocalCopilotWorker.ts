@@ -2,7 +2,12 @@ import { Job, Worker } from 'bullmq';
 import { promises as fsp } from 'fs';
 import * as path from 'path';
 import { getAgentServiceRegistry } from '../lib/agent/agent-service-registry.js';
-import { logWorkerLifecycle, logWorkerInfo, logWorkerWarn, logWorkerError } from '../observability/worker-log.js';
+import {
+  logWorkerLifecycle,
+  logWorkerInfo,
+  logWorkerWarn,
+  logWorkerError,
+} from '../observability/worker-log.js';
 import { getWorkerConcurrency } from '../worker-concurrency.js';
 import { createValidationOrchestrator } from '../lib/validation/validation-orchestrator.js';
 import { writeValidationGuard } from '../lib/validation/validation-utils.js';
@@ -66,7 +71,13 @@ async function processLocalCopilotJob(
     const githubToken = process.env.GITHUB_TOKEN?.trim() || process.env.GITHUB_TOKEN_N8N?.trim();
     if (!githubToken) {
       logWorkerWarn('local-copilot', 'GITHUB_TOKEN not configured, falling back to Claude');
-      return await fallbackToClaudeViaGateway(promptContent, jobId, agentRole, cursorDir, validationOrchestrator);
+      return await fallbackToClaudeViaGateway(
+        promptContent,
+        jobId,
+        agentRole,
+        cursorDir,
+        validationOrchestrator
+      );
     }
 
     // Prepare request for GitHub Copilot Chat API
@@ -95,7 +106,7 @@ async function processLocalCopilotJob(
         response = await fetch('https://copilot-chat.github.com/api/chat', {
           method: 'POST',
           headers: {
-            'Authorization': `Bearer ${githubToken}`,
+            Authorization: `Bearer ${githubToken}`,
             'Content-Type': 'application/json',
             'User-Agent': 'Opsly-Copilot-Worker/1.0',
           },
@@ -115,7 +126,11 @@ async function processLocalCopilotJob(
         }
 
         const backoffMs = Math.pow(2, retryCount) * 1000; // exponential backoff: 2s, 4s
-        logWorkerWarn('local-copilot', 'Retrying after backoff', { retry: retryCount, maxRetries, backoffMs });
+        logWorkerWarn('local-copilot', 'Retrying after backoff', {
+          retry: retryCount,
+          maxRetries,
+          backoffMs,
+        });
         await new Promise((resolve) => setTimeout(resolve, backoffMs));
       }
     }
@@ -131,23 +146,26 @@ async function processLocalCopilotJob(
 
     // Handle authentication errors
     if (response!.status === 401 || response!.status === 403) {
-      logWorkerWarn('local-copilot', 'Authentication failed, falling back to Claude', { status: response!.status });
-      return await fallbackToClaudeViaGateway(promptContent, jobId, agentRole, cursorDir, validationOrchestrator);
+      logWorkerWarn('local-copilot', 'Authentication failed, falling back to Claude', {
+        status: response!.status,
+      });
+      return await fallbackToClaudeViaGateway(
+        promptContent,
+        jobId,
+        agentRole,
+        cursorDir,
+        validationOrchestrator
+      );
     }
 
     // Handle other HTTP errors
     if (!response!.ok) {
-      throw new Error(
-        `Copilot API error: ${response!.status} ${response!.statusText}`
-      );
+      throw new Error(`Copilot API error: ${response!.status} ${response!.statusText}`);
     }
 
     const result = (await response!.json()) as any;
     const responseText =
-      result.choices?.[0]?.message?.content ||
-      result.content ||
-      result.message ||
-      '';
+      result.choices?.[0]?.message?.content || result.content || result.message || '';
 
     if (!responseText) {
       throw new Error('Empty response from Copilot API');
@@ -177,9 +195,18 @@ ${responseText}
     logWorkerInfo('local-copilot', 'Response written', { path: responsePath });
 
     // Validate response and get decision
-    const decision = await validationOrchestrator.validateAndDecide(jobId, agentRole, responsePath, 1, 3);
+    const decision = await validationOrchestrator.validateAndDecide(
+      jobId,
+      agentRole,
+      responsePath,
+      1,
+      3
+    );
 
-    logWorkerInfo('local-copilot', 'Validation decision', { action: decision.action, reason: decision.reason });
+    logWorkerInfo('local-copilot', 'Validation decision', {
+      action: decision.action,
+      reason: decision.reason,
+    });
 
     // Write validation guard to prevent double-commits
     await writeValidationGuard(jobId, decision.action, path.join(cursorDir, '.validation'));
@@ -212,8 +239,7 @@ ${responseText}
         validationOrchestrator
       );
     } catch (fallbackErr) {
-      const fallbackMsg =
-        fallbackErr instanceof Error ? fallbackErr.message : String(fallbackErr);
+      const fallbackMsg = fallbackErr instanceof Error ? fallbackErr.message : String(fallbackErr);
       logWorkerError('local-copilot', 'Claude fallback also failed', { error: fallbackMsg });
 
       return {
@@ -277,7 +303,13 @@ ${responseText}
 
   await fsp.writeFile(responsePath, responseContent, 'utf-8');
 
-  const decision = await validationOrchestrator.validateAndDecide(jobId, agentRole, responsePath, 1, 3);
+  const decision = await validationOrchestrator.validateAndDecide(
+    jobId,
+    agentRole,
+    responsePath,
+    1,
+    3
+  );
 
   await writeValidationGuard(jobId, decision.action, path.join(cursorDir, '.validation'));
 

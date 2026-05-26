@@ -76,12 +76,15 @@ export class TestValidatorWorker {
     return Array.from(workspaces);
   }
 
-  private runValidation(type: 'type-check' | 'test' | 'build', workspaces?: string[]): ValidationResult {
+  private runValidation(
+    type: 'type-check' | 'test' | 'build',
+    workspaces?: string[]
+  ): ValidationResult {
     const startTime = Date.now();
 
     try {
       let command = '';
-      let args: string[] = [];
+      const args: string[] = [];
 
       switch (type) {
         case 'type-check':
@@ -173,7 +176,9 @@ export class TestValidatorWorker {
 
       // Detect affected workspaces
       const workspaces = this.extractWorkspaces(content);
-      logWorkerInfo('test-validator', 'Detected workspaces', { workspaces: workspaces.join(', ') || 'none' });
+      logWorkerInfo('test-validator', 'Detected workspaces', {
+        workspaces: workspaces.join(', ') || 'none',
+      });
 
       // Run validation suite
       logWorkerInfo('test-validator', 'Starting validation suite', { attempt });
@@ -237,14 +242,22 @@ export class TestValidatorWorker {
       const reportPath = filePath.replace(/\.md$/, '.validation.json');
       await fsp.writeFile(reportPath, JSON.stringify(report, null, 2), 'utf-8');
 
-      logWorkerInfo('test-validator', 'Validation complete', { overallStatus, totalDuration_ms: totalDuration, attempt });
+      logWorkerInfo('test-validator', 'Validation complete', {
+        overallStatus,
+        totalDuration_ms: totalDuration,
+        attempt,
+      });
       logWorkerInfo('test-validator', 'Validation result', { overallStatus, nextAction });
 
       if (errors.length > 0) {
-        logWorkerWarn('test-validator', 'Validation errors found', { errors: errors.map((e) => `[${e.type}] ${e.message}`) });
+        logWorkerWarn('test-validator', 'Validation errors found', {
+          errors: errors.map((e) => `[${e.type}] ${e.message}`),
+        });
       }
     } catch (err) {
-      logWorkerError('test-validator', 'Fatal error during validation', { error: err instanceof Error ? err.message : String(err) });
+      logWorkerError('test-validator', 'Fatal error during validation', {
+        error: err instanceof Error ? err.message : String(err),
+      });
     }
   }
 
@@ -259,7 +272,9 @@ export class TestValidatorWorker {
     try {
       await fsp.mkdir(this.responsesDir, { recursive: true });
     } catch (err) {
-      logWorkerError('test-validator', 'Failed to create responses directory', { error: err instanceof Error ? err.message : String(err) });
+      logWorkerError('test-validator', 'Failed to create responses directory', {
+        error: err instanceof Error ? err.message : String(err),
+      });
     }
 
     // Import chokidar for file watching
@@ -268,11 +283,7 @@ export class TestValidatorWorker {
 
       const watcher = watch(`${this.responsesDir}/*.md`, {
         persistent: true,
-        ignored: [
-          '**/.validation.json',
-          '**/.*',
-          '**/*.validation.json',
-        ],
+        ignored: ['**/.validation.json', '**/.*', '**/*.validation.json'],
       });
 
       watcher.on('add', (filePath: string) => {
@@ -284,12 +295,16 @@ export class TestValidatorWorker {
       });
 
       watcher.on('error', (err: unknown) => {
-        logWorkerError('test-validator', 'Watcher error', { error: err instanceof Error ? err.message : String(err) });
+        logWorkerError('test-validator', 'Watcher error', {
+          error: err instanceof Error ? err.message : String(err),
+        });
       });
 
       logWorkerInfo('test-validator', 'Ready. Watching for response files');
     } catch (err) {
-      logWorkerError('test-validator', 'Failed to start watcher', { error: err instanceof Error ? err.message : String(err) });
+      logWorkerError('test-validator', 'Failed to start watcher', {
+        error: err instanceof Error ? err.message : String(err),
+      });
     }
   }
 }

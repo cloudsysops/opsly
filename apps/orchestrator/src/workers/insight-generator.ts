@@ -393,7 +393,10 @@ export class InsightGenerator {
     // Intentar adquirir lock para evitar procesamiento concurrente
     const lock = await redis.set(lockKey, '1', 'EX', this.processingLockTTL, 'NX');
     if (!lock) {
-		logWorkerInfo('insight-generator', `Insight generation already in progress for tenant ${tenantId}`);
+      logWorkerInfo(
+        'insight-generator',
+        `Insight generation already in progress for tenant ${tenantId}`
+      );
       return [];
     }
 
@@ -428,7 +431,11 @@ export class InsightGenerator {
         insights.push(growthInsight);
       }
 
-		logWorkerInfo('insight-generator', `Generated ${insights.length} insights for tenant ${tenantId}`, { tenantId, insightCount: insights.length });
+      logWorkerInfo(
+        'insight-generator',
+        `Generated ${insights.length} insights for tenant ${tenantId}`,
+        { tenantId, insightCount: insights.length }
+      );
       return insights;
     } finally {
       await redis.del(lockKey);
@@ -483,8 +490,8 @@ export class InsightGenerator {
       .select()
       .single();
 
-	if (error) {
-		logWorkerError('insight-generator', `Error saving insight: ${error.message}`);
+    if (error) {
+      logWorkerError('insight-generator', `Error saving insight: ${error.message}`);
       throw error;
     }
 
@@ -543,8 +550,8 @@ export class InsightGenerator {
       .select()
       .single();
 
-	if (error) {
-		logWorkerError('insight-generator', `Error saving revenue insight: ${error.message}`);
+    if (error) {
+      logWorkerError('insight-generator', `Error saving revenue insight: ${error.message}`);
       return null;
     }
 
@@ -581,8 +588,8 @@ export class InsightGenerator {
       .select()
       .single();
 
-	if (error) {
-		logWorkerError('insight-generator', `Error saving anomaly insight: ${error.message}`);
+    if (error) {
+      logWorkerError('insight-generator', `Error saving anomaly insight: ${error.message}`);
       throw error;
     }
 
@@ -620,8 +627,8 @@ export class InsightGenerator {
       .select()
       .single();
 
-	if (error) {
-		logWorkerError('insight-generator', `Error saving growth insight: ${error.message}`);
+    if (error) {
+      logWorkerError('insight-generator', `Error saving growth insight: ${error.message}`);
       throw error;
     }
 
@@ -693,11 +700,19 @@ const insightWorker = new Worker(
 );
 
 insightWorker.on('completed', (job, result) => {
-	logWorkerInfo('insight-generator', `Insight generation completed for tenant ${result.tenantId}: ${result.insightsGenerated} insights`, { tenantId: result.tenantId, insightsGenerated: result.insightsGenerated });
+  logWorkerInfo(
+    'insight-generator',
+    `Insight generation completed for tenant ${result.tenantId}: ${result.insightsGenerated} insights`,
+    { tenantId: result.tenantId, insightsGenerated: result.insightsGenerated }
+  );
 });
 
 insightWorker.on('failed', (job, err) => {
-	logWorkerError('insight-generator', `Insight generation failed for job ${job?.id}: ${err.message}`, { jobId: job?.id, error: err.message });
+  logWorkerError(
+    'insight-generator',
+    `Insight generation failed for job ${job?.id}: ${err.message}`,
+    { jobId: job?.id, error: err.message }
+  );
 });
 
 // ============================================
@@ -705,26 +720,26 @@ insightWorker.on('failed', (job, err) => {
 // ============================================
 
 if (require.main === module) {
-	const tenantId = process.argv[2];
+  const tenantId = process.argv[2];
 
-	if (!tenantId) {
-		logWorkerInfo('insight-generator', 'Usage: npx ts-node insight-generator.ts <tenant_id>');
-		process.exit(1);
-	}
+  if (!tenantId) {
+    logWorkerInfo('insight-generator', 'Usage: npx ts-node insight-generator.ts <tenant_id>');
+    process.exit(1);
+  }
 
-	const generator = new InsightGenerator();
-	generator
-		.generateInsights(tenantId)
-		.then((insights) => {
-			logWorkerInfo('insight-generator', `Generated ${insights.length} insights:`, {
-				insights: insights.map((i) => `[${i.insight_type}] ${i.title}`),
-			});
-			process.exit(0);
-		})
-		.catch((err) => {
-			logWorkerError('insight-generator', 'Error', { error: String(err) });
-			process.exit(1);
-		});
+  const generator = new InsightGenerator();
+  generator
+    .generateInsights(tenantId)
+    .then((insights) => {
+      logWorkerInfo('insight-generator', `Generated ${insights.length} insights:`, {
+        insights: insights.map((i) => `[${i.insight_type}] ${i.title}`),
+      });
+      process.exit(0);
+    })
+    .catch((err) => {
+      logWorkerError('insight-generator', 'Error', { error: String(err) });
+      process.exit(1);
+    });
 }
 
 export { insightWorker, insightQueue };
