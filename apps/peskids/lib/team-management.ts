@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { supabaseServer } from '@/lib/supabase';
 import { PESKIDS_APP_ORIGIN } from '@/lib/app-url';
 

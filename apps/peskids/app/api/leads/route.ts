@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextRequest, NextResponse } from 'next/server';
 import { getServiceClient } from '@/lib/supabase';
 import { buildPeskidsReferralCode, PESKIDS_REFERRAL_DISCOUNT_CENTS } from '@/lib/peskids-referrals';
