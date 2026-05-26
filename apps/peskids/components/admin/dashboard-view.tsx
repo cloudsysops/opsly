@@ -137,7 +137,7 @@ export function DashboardView({
       </div>
 
       <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
-        <DashboardStatsGrid data={data} search={search} range={range} />
+        <DashboardStatsGrid data={data} search={search} />
 
         <DashboardActivityCards data={data} />
       </div>

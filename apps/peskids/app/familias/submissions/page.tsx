@@ -109,7 +109,7 @@ export default function FamiliesSubmissionsPage(): React.ReactElement {
   }, [fetchFamilyNotes, fetchSubmissions, router])
 
   const handleViewSubmission = (submissionId: string): void => {
-    console.log('View submission:', submissionId)
+    console.warn('View submission:', submissionId)
     // TODO: Navigate to submission detail view
   }
 

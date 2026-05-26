@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
     if (!body.consent_treatment) {
       return NextResponse.json({ error: 'Consent required' }, { status: 400 })
     }
-    console.info('[peskids][lead] consent', {
+    console.warn('[peskids][lead] consent', {
       treatment: body.consent_treatment,
       marketing: body.consent_marketing ?? false,
       policy_version: body.consent_policy_version,
