@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { resolveLoginPath, resolvePostAuthPath } from '../callback/route'
+import { resolveLoginPath, resolvePostAuthPath } from '../../../lib/auth-callback'
 
 describe('resolveLoginPath', () => {
   it('routes families errors to the family login', () => {

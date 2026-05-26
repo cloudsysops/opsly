@@ -1,31 +1,5 @@
 import { createServerClient, type SetAllCookies } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
-import type { User } from '@supabase/supabase-js';
-
-export function resolveLoginPath(nextPath: string): string {
-  if (nextPath.startsWith('/familias')) return '/familias/login';
-  if (nextPath.startsWith('/teacher')) return '/teacher/login';
-  if (nextPath.startsWith('/support')) return '/support/login';
-  return '/admin/login';
-}
-
-export function resolvePostAuthPath(next: string | null, user: User): string {
-  if (next) return next.startsWith('/') ? next : '/admin';
-  const role = (user.user_metadata as Record<string, unknown>)?.role as string | undefined;
-  if (role === 'family') return '/familias/submissions';
-  if (role === 'teacher') return '/teacher/submissions';
-  if (role === 'support') return '/support/dashboard';
-  return '/admin';
-}
-
-function getSupabaseConfig(): { url: string; anon: string } | null {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim() ?? '';
-  const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim() ?? '';
-  if (!url || !anon) {
-    return null;
-  }
-  return { url, anon };
-}
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
   const nextPath = request.nextUrl.searchParams.get('next') || '/admin';
@@ -33,13 +7,16 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
   redirectUrl.pathname = nextPath.startsWith('/') ? nextPath : '/admin';
   redirectUrl.search = '';
 
-  const config = getSupabaseConfig();
-  if (!config) {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim() ?? '';
+  const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim() ?? '';
+  const hasConfig = !!(url && anon);
+
+  if (!hasConfig) {
     return NextResponse.redirect(redirectUrl);
   }
 
   const response = NextResponse.redirect(redirectUrl);
-  const supabase = createServerClient(config.url, config.anon, {
+  const supabase = createServerClient(url, anon, {
     cookies: {
       getAll() {
         return request.cookies.getAll();
