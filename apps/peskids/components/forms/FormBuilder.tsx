@@ -102,9 +102,7 @@ export function FormBuilder({ form, onSave, isLoading = false }: FormBuilderProp
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <label className="mb-2 block text-sm font-medium text-neutral-200">
-              Form Title
-            </label>
+            <label className="mb-2 block text-sm font-medium text-neutral-200">Form Title</label>
             <input
               type="text"
               value={formData.title}
@@ -115,14 +113,10 @@ export function FormBuilder({ form, onSave, isLoading = false }: FormBuilderProp
           </div>
 
           <div>
-            <label className="mb-2 block text-sm font-medium text-neutral-200">
-              Description
-            </label>
+            <label className="mb-2 block text-sm font-medium text-neutral-200">Description</label>
             <textarea
               value={formData.description || ''}
-              onChange={(e) =>
-                setFormData((prev) => ({ ...prev, description: e.target.value }))
-              }
+              onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
               className="w-full rounded border border-ops-border bg-ops-surface px-3 py-2 text-neutral-100"
               placeholder="Enter form description"
               rows={3}
@@ -268,9 +262,7 @@ function FieldEditor({ field, onUpdate }: FieldEditorProps) {
 
         {field.type === 'textarea' || field.type === 'text' ? (
           <div>
-            <label className="mb-2 block text-sm font-medium text-neutral-200">
-              Placeholder
-            </label>
+            <label className="mb-2 block text-sm font-medium text-neutral-200">Placeholder</label>
             <input
               type="text"
               value={field.placeholder || ''}

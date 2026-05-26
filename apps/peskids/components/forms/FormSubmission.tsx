@@ -34,7 +34,7 @@ export function FormSubmission({ form, onSubmit, isLoading = false }: FormSubmis
       }
 
       if (field.type === 'phone' && value) {
-        const phoneRegex = /^[\d\s\-\+\(\)]+$/;
+        const phoneRegex = /^[\d\s+()\\-]+$/;
         if (!phoneRegex.test(String(value))) {
           newErrors[field.id] = 'Please enter a valid phone number';
         }
@@ -75,7 +75,9 @@ export function FormSubmission({ form, onSubmit, isLoading = false }: FormSubmis
             <h2 className="mb-2 text-2xl font-semibold text-neutral-100">
               {form.settings.successMessage || 'Thank you for your submission!'}
             </h2>
-            <p className="text-ops-gray">We have received your response and will be in touch soon.</p>
+            <p className="text-ops-gray">
+              We have received your response and will be in touch soon.
+            </p>
             <Button
               onClick={() => setSubmitted(false)}
               className="mt-6 bg-ops-blue hover:bg-ops-blue/90"
@@ -101,7 +103,9 @@ export function FormSubmission({ form, onSubmit, isLoading = false }: FormSubmis
         <div className="w-full overflow-hidden rounded bg-ops-surface">
           <div
             className="h-1 bg-ops-green transition-all"
-            style={{ width: `${((form.fields.length - Object.keys(errors).length) / form.fields.length) * 100}%` }}
+            style={{
+              width: `${((form.fields.length - Object.keys(errors).length) / form.fields.length) * 100}%`,
+            }}
           />
         </div>
       )}
@@ -160,9 +164,7 @@ function FormFieldInput({ field, value, error, onChange }: FormFieldInputProps) 
     </label>
   );
 
-  const errorMessage = error && (
-    <p className="mt-1 text-xs text-ops-red">{error}</p>
-  );
+  const errorMessage = error && <p className="mt-1 text-xs text-ops-red">{error}</p>;
 
   switch (field.type) {
     case 'text':
@@ -173,7 +175,15 @@ function FormFieldInput({ field, value, error, onChange }: FormFieldInputProps) 
         <div>
           {label}
           <input
-            type={field.type === 'email' ? 'email' : field.type === 'phone' ? 'tel' : field.type === 'number' ? 'number' : 'text'}
+            type={
+              field.type === 'email'
+                ? 'email'
+                : field.type === 'phone'
+                  ? 'tel'
+                  : field.type === 'number'
+                    ? 'number'
+                    : 'text'
+            }
             value={String(value || '')}
             onChange={(e) => onChange(e.target.value)}
             placeholder={field.placeholder}

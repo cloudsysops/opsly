@@ -10,13 +10,9 @@ import {
   resolveRecoveryTargetFromMetadata,
   type RecoveryTarget,
   type RecoveryRoutingConfig,
-} from '../../../lib/runtime/src/tenant-auth-routing'
+} from '../../../lib/runtime/src/tenant-auth-routing';
 
-import {
-  ADMIN_APP_ORIGIN,
-  PESKIDS_APP_ORIGIN,
-  PORTAL_APP_ORIGIN,
-} from './app-url'
+import { ADMIN_APP_ORIGIN, PESKIDS_APP_ORIGIN, PORTAL_APP_ORIGIN } from './app-url';
 
 const ROUTING_CONFIG: RecoveryRoutingConfig = {
   portal: {
@@ -41,9 +37,9 @@ const ROUTING_CONFIG: RecoveryRoutingConfig = {
       },
     },
   ],
-}
+};
 
-export type { RecoveryTarget }
+export type { RecoveryTarget };
 export {
   buildRecoveryRedirectTo,
   forwardRecoveryToOrigin,
@@ -51,12 +47,12 @@ export {
   isInviteLink,
   isRecoveryLink,
   metadataFromJwtAccessToken,
-}
+};
 
 export function recoveryTargetFromMetadata(meta: Record<string, unknown>): RecoveryTarget {
-  return resolveRecoveryTargetFromMetadata(meta, ROUTING_CONFIG)
+  return resolveRecoveryTargetFromMetadata(meta, ROUTING_CONFIG);
 }
 
 export function currentPeskidsRecoveryTarget(): RecoveryTarget {
-  return recoveryTargetFromMetadata({ tenant_slug: 'peskids', role: 'admin' })
+  return recoveryTargetFromMetadata({ tenant_slug: 'peskids', role: 'admin' });
 }

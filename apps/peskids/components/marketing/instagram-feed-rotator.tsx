@@ -1,65 +1,65 @@
-'use client'
+'use client';
 
-import { useEffect, useMemo, useState } from 'react'
-import { ChevronLeft, ChevronRight, Film, Instagram, Images, Play } from 'lucide-react'
-import { InstagramMediaCard } from '@/components/marketing/instagram-media-card'
-import { PESKIDS_INSTAGRAM, type InstagramFeedItem } from '@/lib/instagram-feed'
-import { cn } from '@/lib/utils'
+import { useEffect, useMemo, useState } from 'react';
+import { ChevronLeft, ChevronRight, Film, Instagram, Images, Play } from 'lucide-react';
+import { InstagramMediaCard } from '@/components/marketing/instagram-media-card';
+import { PESKIDS_INSTAGRAM, type InstagramFeedItem } from '@/lib/instagram-feed';
+import { cn } from '@/lib/utils';
 
 interface InstagramFeedRotatorProps {
-  items: InstagramFeedItem[]
+  items: InstagramFeedItem[];
 }
 
-export function InstagramFeedRotator({ items }: InstagramFeedRotatorProps): React.ReactElement | null {
-  const safeItems = useMemo(() => (items.length > 0 ? items : []), [items])
-  const [activeIndex, setActiveIndex] = useState(0)
-  const [previewLimit, setPreviewLimit] = useState(4)
+export function InstagramFeedRotator({
+  items,
+}: InstagramFeedRotatorProps): React.ReactElement | null {
+  const safeItems = useMemo(() => (items.length > 0 ? items : []), [items]);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [previewLimit, setPreviewLimit] = useState(4);
 
   useEffect(() => {
-    if (safeItems.length < 2) return
+    if (safeItems.length < 2) return;
     const interval = window.setInterval(() => {
-      setActiveIndex((current) => (current + 1) % safeItems.length)
-    }, 5200)
+      setActiveIndex((current) => (current + 1) % safeItems.length);
+    }, 5200);
 
-    return () => window.clearInterval(interval)
-  }, [safeItems.length])
+    return () => window.clearInterval(interval);
+  }, [safeItems.length]);
 
   useEffect(() => {
     if (activeIndex >= safeItems.length) {
-      setActiveIndex(0)
+      setActiveIndex(0);
     }
-  }, [activeIndex, safeItems.length])
+  }, [activeIndex, safeItems.length]);
 
   useEffect(() => {
     const updatePreviewLimit = (): void => {
       if (window.innerWidth >= 1440) {
-        setPreviewLimit(6)
-        return
+        setPreviewLimit(6);
+        return;
       }
       if (window.innerWidth >= 1024) {
-        setPreviewLimit(4)
-        return
+        setPreviewLimit(4);
+        return;
       }
-      setPreviewLimit(3)
-    }
+      setPreviewLimit(3);
+    };
 
-    updatePreviewLimit()
-    window.addEventListener('resize', updatePreviewLimit)
-    return () => window.removeEventListener('resize', updatePreviewLimit)
-  }, [])
+    updatePreviewLimit();
+    window.addEventListener('resize', updatePreviewLimit);
+    return () => window.removeEventListener('resize', updatePreviewLimit);
+  }, []);
 
   if (safeItems.length === 0) {
-    return null
+    return null;
   }
 
-  const activeItem = safeItems[activeIndex]
-  const previewItems = safeItems
-    .filter((_, index) => index !== activeIndex)
-    .slice(0, previewLimit)
+  const activeItem = safeItems[activeIndex];
+  const previewItems = safeItems.filter((_, index) => index !== activeIndex).slice(0, previewLimit);
 
   const move = (delta: number): void => {
-    setActiveIndex((current) => (current + delta + safeItems.length) % safeItems.length)
-  }
+    setActiveIndex((current) => (current + delta + safeItems.length) % safeItems.length);
+  };
 
   return (
     <div className="grid gap-4 lg:grid-cols-[1.28fr_0.72fr]">
@@ -72,9 +72,7 @@ export function InstagramFeedRotator({ items }: InstagramFeedRotatorProps): Reac
               <Instagram className="h-4 w-4 text-pk-primary" aria-hidden />
               Rotación automática
             </p>
-            <p className="mt-1 text-sm font-semibold text-pk-ink">
-              {PESKIDS_INSTAGRAM.handle}
-            </p>
+            <p className="mt-1 text-sm font-semibold text-pk-ink">{PESKIDS_INSTAGRAM.handle}</p>
           </div>
 
           <div className="flex items-center gap-2">
@@ -99,8 +97,8 @@ export function InstagramFeedRotator({ items }: InstagramFeedRotatorProps): Reac
 
         <div className="mt-4 grid gap-3 lg:grid-cols-2 2xl:grid-cols-3">
           {previewItems.map((item, index) => {
-            const absoluteIndex = safeItems.findIndex((candidate) => candidate.id === item.id)
-            const isActive = absoluteIndex === activeIndex
+            const absoluteIndex = safeItems.findIndex((candidate) => candidate.id === item.id);
+            const isActive = absoluteIndex === activeIndex;
 
             return (
               <button
@@ -127,7 +125,6 @@ export function InstagramFeedRotator({ items }: InstagramFeedRotatorProps): Reac
                   )}
                 >
                   {item.thumbnailUrl ? (
-                    // eslint-disable-next-line @next/next/no-img-element -- Instagram CDN hostnames vary.
                     <img
                       src={item.thumbnailUrl}
                       alt={item.caption ?? 'Publicación de Peskids en Instagram'}
@@ -159,7 +156,7 @@ export function InstagramFeedRotator({ items }: InstagramFeedRotatorProps): Reac
                   </p>
                 </div>
               </button>
-            )
+            );
           })}
         </div>
 
@@ -185,5 +182,5 @@ export function InstagramFeedRotator({ items }: InstagramFeedRotatorProps): Reac
         </p>
       </div>
     </div>
-  )
+  );
 }

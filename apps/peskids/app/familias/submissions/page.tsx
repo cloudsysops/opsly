@@ -1,140 +1,128 @@
-'use client'
+'use client';
 
-import { useCallback, useEffect, useMemo, useState, type ComponentType } from 'react'
-import { CalendarClock, Gift, Loader2, MessageSquare, Star } from 'lucide-react'
-import { useRouter } from 'next/navigation'
-import { SubmissionsDashboard } from '@/components/dashboards/submissions-dashboard'
-import { FeedbackComposer } from '@/components/feedback/feedback-composer'
-import { GrowthWidget } from '@/components/progress/growth-widget'
-import { MascotPathWidget } from '@/components/progress/mascot-path-widget'
-import { Badge } from '@/components/ui/badge'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { createClient } from '@/lib/supabase-browser'
+import { useCallback, useEffect, useMemo, useState, type ComponentType } from 'react';
+import { CalendarClock, Gift, Loader2, MessageSquare, Star } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { SubmissionsDashboard } from '@/components/dashboards/submissions-dashboard';
+import { FeedbackComposer } from '@/components/feedback/feedback-composer';
+import { GrowthWidget } from '@/components/progress/growth-widget';
+import { MascotPathWidget } from '@/components/progress/mascot-path-widget';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { createClient } from '@/lib/supabase-browser';
 
 interface FormSubmissionSummary {
-  formId: string
-  formTitle: string
-  submissionId: string
-  submittedAt: string
-  status: 'completed' | 'pending' | 'reviewed'
-  studentName?: string
+  formId: string;
+  formTitle: string;
+  submissionId: string;
+  submittedAt: string;
+  status: 'completed' | 'pending' | 'reviewed';
+  studentName?: string;
 }
 
 interface FamilyFeedbackNote {
-  id: string
-  child_name: string
-  suggestion: string | null
-  body: string | null
-  author_type: 'parent' | 'teacher' | 'staff'
-  visibility: 'public' | 'private'
-  audience: 'family' | 'teacher' | 'admin'
-  rating: number | null
-  status: string
-  created_at: string
-  parent_email: string | null
-}
-
-interface FamilyRoleMetrics {
-  totalSubmissions: number
-  reviewedSubmissions: number
-  pendingSubmissions: number
-  averageSatisfaction: number
-  privateNotesCount: number
-  activeChatThreads: number
-  recentMessages: number
-  latestActivityAt: string | null
+  id: string;
+  child_name: string;
+  suggestion: string | null;
+  body: string | null;
+  author_type: 'parent' | 'teacher' | 'staff';
+  visibility: 'public' | 'private';
+  audience: 'family' | 'teacher' | 'admin';
+  rating: number | null;
+  status: string;
+  created_at: string;
+  parent_email: string | null;
 }
 
 export default function FamiliesSubmissionsPage(): React.ReactElement {
-  const router = useRouter()
-  const [submissions, setSubmissions] = useState<FormSubmissionSummary[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState('')
-  const [authChecked, setAuthChecked] = useState(false)
-  const [familyEmail, setFamilyEmail] = useState<string | null>(null)
-  const [familyUserId, setFamilyUserId] = useState<string | null>(null)
-  const [familyNotes, setFamilyNotes] = useState<FamilyFeedbackNote[]>([])
-  const [familyMetrics, setFamilyMetrics] = useState<FamilyRoleMetrics | null>(null)
+  const router = useRouter();
+  const [submissions, setSubmissions] = useState<FormSubmissionSummary[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [authChecked, setAuthChecked] = useState(false);
+  const [familyEmail, setFamilyEmail] = useState<string | null>(null);
+  const [familyUserId, setFamilyUserId] = useState<string | null>(null);
+  const [familyNotes, setFamilyNotes] = useState<FamilyFeedbackNote[]>([]);
 
   const fetchSubmissions = useCallback(async (): Promise<void> => {
     try {
-      const response = await fetch('/api/submissions', { credentials: 'include' })
-      if (!response.ok) throw new Error('Failed to fetch submissions')
-      const data = await response.json()
-      setSubmissions(data.submissions || [])
-      setError('')
+      const response = await fetch('/api/submissions', { credentials: 'include' });
+      if (!response.ok) throw new Error('Failed to fetch submissions');
+      const data = await response.json();
+      setSubmissions(data.submissions || []);
+      setError('');
     } catch (err) {
-      setError('No se pudieron cargar tus respuestas. Intenta más tarde.')
-      console.error(err)
+      setError('No se pudieron cargar tus respuestas. Intenta más tarde.');
+      console.error(err);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }, [])
+  }, []);
 
   const fetchFamilyNotes = useCallback(async (): Promise<void> => {
     try {
-      const response = await fetch('/api/families/feedback', { credentials: 'include' })
-      if (!response.ok) throw new Error('Failed to fetch family feedback')
-      const data = (await response.json()) as { feedback?: FamilyFeedbackNote[] }
-      setFamilyNotes(data.feedback || [])
+      const response = await fetch('/api/families/feedback', { credentials: 'include' });
+      if (!response.ok) throw new Error('Failed to fetch family feedback');
+      const data = (await response.json()) as { feedback?: FamilyFeedbackNote[] };
+      setFamilyNotes(data.feedback || []);
     } catch (err) {
-      console.error(err)
-      setFamilyNotes([])
+      console.error(err);
+      setFamilyNotes([]);
     }
-  }, [])
-
-  const fetchFamilyMetrics = useCallback(async (): Promise<void> => {
-    try {
-      const response = await fetch('/api/families/metrics', { credentials: 'include' })
-      if (!response.ok) throw new Error('Failed to fetch family metrics')
-      const data = (await response.json()) as { metrics?: FamilyRoleMetrics }
-      setFamilyMetrics(data.metrics ?? null)
-    } catch (err) {
-      console.error(err)
-      setFamilyMetrics(null)
-    }
-  }, [])
+  }, []);
 
   useEffect(() => {
-    const supabase = createClient()
+    const supabase = createClient();
     void (async () => {
       try {
-        const { data } = await supabase.auth.getSession()
+        const { data } = await supabase.auth.getSession();
         if (!data.session?.user) {
-          router.replace('/familias/login?next=%2Ffamilias%2Fsubmissions')
-          return
+          router.replace('/familias/login?next=%2Ffamilias%2Fsubmissions');
+          return;
         }
-        const user = data.session.user
-        setFamilyEmail(user.email ?? null)
-        setFamilyUserId(user.id)
-        setAuthChecked(true)
-        void fetchSubmissions()
-        void fetchFamilyNotes()
-        void fetchFamilyMetrics()
+        const user = data.session.user;
+        setFamilyEmail(user.email ?? null);
+        setFamilyUserId(user.id);
+        const metadata = {
+          ...((user.app_metadata ?? {}) as Record<string, unknown>),
+          ...((user.user_metadata ?? {}) as Record<string, unknown>),
+        };
+        if (metadata.role !== 'family' || metadata.tenant_slug !== 'peskids') {
+          await supabase.auth.updateUser({
+            data: {
+              role: 'family',
+              tenant_slug: 'peskids',
+            },
+          });
+        }
+        setAuthChecked(true);
+        void fetchSubmissions();
+        void fetchFamilyNotes();
       } catch (err) {
-        console.error(err)
-        setError('No se pudo validar la sesión de familia.')
-        setAuthChecked(true)
-        setLoading(false)
+        console.error(err);
+        setError('No se pudo validar la sesión de familia.');
+        setAuthChecked(true);
+        setLoading(false);
       }
-    })()
-  }, [fetchFamilyMetrics, fetchFamilyNotes, fetchSubmissions, router])
+    })();
+  }, [fetchFamilyNotes, fetchSubmissions, router]);
 
   const handleViewSubmission = (submissionId: string): void => {
-    router.push(`/familias/submissions/${submissionId}`)
-  }
+    console.warn('View submission:', submissionId);
+    // TODO: Navigate to submission detail view
+  };
 
   const publicNotes = useMemo(
     () => familyNotes.filter((note) => note.visibility !== 'private'),
     [familyNotes]
-  )
+  );
   const privateNotes = useMemo(
     () => familyNotes.filter((note) => note.visibility === 'private'),
     [familyNotes]
-  )
+  );
 
-  const defaultChildName = submissions[0]?.studentName ?? ''
+  const defaultChildName = submissions[0]?.studentName ?? '';
 
   if (loading || !authChecked) {
     return (
@@ -142,7 +130,7 @@ export default function FamiliesSubmissionsPage(): React.ReactElement {
         <Loader2 className="h-10 w-10 animate-spin text-pk-primary" aria-hidden />
         <p className="text-sm text-pk-sub">Validando acceso de familia…</p>
       </div>
-    )
+    );
   }
 
   if (error) {
@@ -155,7 +143,7 @@ export default function FamiliesSubmissionsPage(): React.ReactElement {
           </Button>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -169,59 +157,37 @@ export default function FamiliesSubmissionsPage(): React.ReactElement {
                 Tu progreso, tus clases y tu feedback, en una sola portada.
               </h1>
               <p className="mt-5 max-w-2xl text-base leading-relaxed text-pk-sub sm:text-lg">
-                Aquí puedes revisar respuestas, dejar feedback al profesor y seguir el avance de
-                tu peque sin perder tiempo entre pantallas.
+                Aquí puedes revisar respuestas, dejar feedback al profesor y seguir el avance de tu
+                peque sin perder tiempo entre pantallas.
               </p>
 
               <div className="mt-8 flex flex-wrap gap-3">
-                <Button type="button" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+                <Button
+                  type="button"
+                  onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                >
                   Ver progreso
                 </Button>
-                <Button type="button" variant="secondary" onClick={() => window.scrollTo({ top: 900, behavior: 'smooth' })}>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={() => window.scrollTo({ top: 900, behavior: 'smooth' })}
+                >
                   Ver feedback
                 </Button>
               </div>
 
               <div className="mt-10 grid max-w-xl grid-cols-2 gap-4 sm:grid-cols-4">
+                <FamilyMetricCard value={String(submissions.length)} label="respuestas" />
                 <FamilyMetricCard
-                  value={String(familyMetrics?.totalSubmissions ?? submissions.length)}
-                  label="respuestas"
-                />
-                <FamilyMetricCard
-                  value={String(familyMetrics?.reviewedSubmissions ?? reviewedCountFrom(submissions))}
+                  value={String(reviewedCountFrom(submissions))}
                   label="revisadas"
                 />
                 <FamilyMetricCard
-                  value={String(familyMetrics?.pendingSubmissions ?? pendingCountFrom(submissions))}
+                  value={String(pendingCountFrom(submissions))}
                   label="pendientes"
                 />
-                <FamilyMetricCard
-                  value={String(familyMetrics?.activeChatThreads ?? 0)}
-                  label="chats activos"
-                  compact
-                />
-              </div>
-              <div className="mt-4 grid max-w-xl grid-cols-2 gap-4 sm:grid-cols-4">
-                <FamilyMetricCard
-                  value={String(familyMetrics?.averageSatisfaction ?? 0)}
-                  label="satisfacción media"
-                  compact
-                />
-                <FamilyMetricCard
-                  value={String(familyMetrics?.privateNotesCount ?? privateNotes.length)}
-                  label="notas privadas"
-                  compact
-                />
-                <FamilyMetricCard
-                  value={String(familyMetrics?.recentMessages ?? 0)}
-                  label="mensajes recientes"
-                  compact
-                />
-                <FamilyMetricCard
-                  value={familyMetrics?.latestActivityAt ? new Date(familyMetrics.latestActivityAt).toLocaleDateString('es-CO') : '—'}
-                  label="última actividad"
-                  compact
-                />
+                <FamilyMetricCard value="Tiempo real" label="mensajes" compact />
               </div>
             </div>
 
@@ -232,7 +198,9 @@ export default function FamiliesSubmissionsPage(): React.ReactElement {
                     <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-pk-mutedText">
                       Próxima clase
                     </p>
-                    <p className="mt-1 text-2xl font-bold tracking-tight text-pk-ink">Hoy · 3:30 pm</p>
+                    <p className="mt-1 text-2xl font-bold tracking-tight text-pk-ink">
+                      Hoy · 3:30 pm
+                    </p>
                   </div>
                   <span className="rounded-full bg-pk-primary/10 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-pk-primary">
                     Confirmada
@@ -267,8 +235,8 @@ export default function FamiliesSubmissionsPage(): React.ReactElement {
                 </p>
                 <p className="mt-2 text-lg font-bold">Familia al día</p>
                 <p className="mt-2 text-sm leading-6 text-white/80">
-                  El equipo puede revisar tu avance, tu feedback y tus próximos pasos sin
-                  esconder la información importante.
+                  El equipo puede revisar tu avance, tu feedback y tus próximos pasos sin esconder
+                  la información importante.
                 </p>
               </div>
             </div>
@@ -320,7 +288,10 @@ export default function FamiliesSubmissionsPage(): React.ReactElement {
                   <div className="mt-4 space-y-3">
                     {publicNotes.length > 0 ? (
                       publicNotes.map((note) => (
-                        <div key={note.id} className="rounded-2xl border border-pk-border bg-white p-4">
+                        <div
+                          key={note.id}
+                          className="rounded-2xl border border-pk-border bg-white p-4"
+                        >
                           <div className="flex items-start justify-between gap-2">
                             <div>
                               <p className="text-sm font-semibold text-pk-ink">{note.child_name}</p>
@@ -351,14 +322,19 @@ export default function FamiliesSubmissionsPage(): React.ReactElement {
                       <p className="text-xs font-semibold uppercase tracking-[0.14em] text-white/70">
                         Notas del equipo
                       </p>
-                      <p className="text-sm text-white/75">{privateNotes.length} nota(s) privadas</p>
+                      <p className="text-sm text-white/75">
+                        {privateNotes.length} nota(s) privadas
+                      </p>
                     </div>
                     <Badge tone="violet">Privado</Badge>
                   </div>
                   <div className="mt-4 space-y-3">
                     {privateNotes.length > 0 ? (
                       privateNotes.map((note) => (
-                        <div key={note.id} className="rounded-2xl border border-white/10 bg-white/10 p-4">
+                        <div
+                          key={note.id}
+                          className="rounded-2xl border border-white/10 bg-white/10 p-4"
+                        >
                           <div className="flex items-start justify-between gap-2">
                             <div>
                               <p className="text-sm font-semibold text-white">{note.child_name}</p>
@@ -396,24 +372,25 @@ export default function FamiliesSubmissionsPage(): React.ReactElement {
               También puedes dejar feedback al profesor desde aquí.
             </h2>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-pk-sub">
-              Cuéntanos cómo va la clase, qué le ayuda más a tu hijo o hija y qué deberíamos ajustar para la próxima sesión.
+              Cuéntanos cómo va la clase, qué le ayuda más a tu hijo o hija y qué deberíamos ajustar
+              para la próxima sesión.
             </p>
           </div>
 
-        <FeedbackComposer
-          title="Feedback para el profesor"
-          description="Escribe aquí la opinión de tu familia sobre la clase."
-          submitLabel="Enviar feedback"
-          authorType="parent"
-          subjectType="class"
-          childNameLabel="Nombre del niño o niña"
-          childNameDefault={defaultChildName}
-          parentEmail={familyEmail}
-          authorRefId={familyUserId}
-          visibility="public"
-          audience="teacher"
-          subjectHint="Tu comentario llega al equipo de Peskids como una nota directa para el profesor y el seguimiento."
-        />
+          <FeedbackComposer
+            title="Feedback para el profesor"
+            description="Escribe aquí la opinión de tu familia sobre la clase."
+            submitLabel="Enviar feedback"
+            authorType="parent"
+            subjectType="class"
+            childNameLabel="Nombre del niño o niña"
+            childNameDefault={defaultChildName}
+            parentEmail={familyEmail}
+            authorRefId={familyUserId}
+            visibility="public"
+            audience="teacher"
+            subjectHint="Tu comentario llega al equipo de Peskids como una nota directa para el profesor y el seguimiento."
+          />
         </div>
 
         <SubmissionsDashboard
@@ -423,15 +400,15 @@ export default function FamiliesSubmissionsPage(): React.ReactElement {
         />
       </div>
     </div>
-  )
+  );
 }
 
 function reviewedCountFrom(submissions: FormSubmissionSummary[]): number {
-  return submissions.filter((submission) => submission.status === 'reviewed').length
+  return submissions.filter((submission) => submission.status === 'reviewed').length;
 }
 
 function pendingCountFrom(submissions: FormSubmissionSummary[]): number {
-  return submissions.filter((submission) => submission.status === 'pending').length
+  return submissions.filter((submission) => submission.status === 'pending').length;
 }
 
 function FamilyMetricCard({
@@ -439,31 +416,33 @@ function FamilyMetricCard({
   label,
   compact = false,
 }: {
-  value: string
-  label: string
-  compact?: boolean
+  value: string;
+  label: string;
+  compact?: boolean;
 }): React.ReactElement {
   return (
     <div className="rounded-2xl border border-pk-border bg-white p-4 shadow-card">
-      <p className={compact ? 'text-sm font-semibold text-pk-ink' : 'text-2xl font-bold text-pk-ink'}>
+      <p
+        className={compact ? 'text-sm font-semibold text-pk-ink' : 'text-2xl font-bold text-pk-ink'}
+      >
         {value}
       </p>
       <p className="mt-1 text-xs leading-relaxed text-pk-mutedText">{label}</p>
     </div>
-  )
+  );
 }
 
 function MiniFamilyAction({
   icon: Icon,
   label,
 }: {
-  icon: ComponentType<{ className?: string; 'aria-hidden'?: boolean }>
-  label: string
+  icon: ComponentType<{ className?: string; 'aria-hidden'?: boolean }>;
+  label: string;
 }): React.ReactElement {
   return (
     <div className="rounded-2xl border border-pk-border bg-pk-snow px-3 py-3 text-center">
       <Icon className="mx-auto h-4 w-4 text-pk-primary" aria-hidden />
       <p className="mt-2 text-[11px] font-semibold text-pk-ink">{label}</p>
     </div>
-  )
+  );
 }

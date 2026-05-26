@@ -1,29 +1,28 @@
-'use client'
+'use client';
 
-import React, { useEffect, useState } from 'react'
-import { MessageCircle, X } from 'lucide-react'
-import { usePathname } from 'next/navigation'
-import { PeskidsChatPanel } from '@/components/chat/peskids-chat-panel'
-import { usePeskidsChatContext } from '@/components/chat/peskids-chat-provider'
-import { PESKIDS_CHAT_OPEN_EVENT } from '@/lib/peskids-chat-session'
-import { shouldShowPeskidsChatWidgets } from '@/lib/peskids-surface'
-import { cn } from '@/lib/utils'
+import React, { useEffect, useState } from 'react';
+import { MessageCircle, X } from 'lucide-react';
+import { usePathname } from 'next/navigation';
+import { PeskidsChatPanel } from '@/components/chat/peskids-chat-panel';
+import { usePeskidsChatContext } from '@/components/chat/peskids-chat-provider';
+import { PESKIDS_CHAT_OPEN_EVENT } from '@/lib/peskids-chat-session';
+import { cn } from '@/lib/utils';
 
 export function PeskidsChatWidget(): React.ReactElement | null {
-  const pathname = usePathname()
-  const [open, setOpen] = useState(false)
-  const chat = usePeskidsChatContext()
+  const pathname = usePathname();
+  const [open, setOpen] = useState(false);
+  const chat = usePeskidsChatContext();
 
-  const showWidgets = shouldShowPeskidsChatWidgets(pathname)
-  const isHome = pathname === '/'
+  const isAdmin = pathname?.startsWith('/admin') ?? false;
+  const isHome = pathname === '/';
 
   useEffect(() => {
-    const onOpen = (): void => setOpen(true)
-    window.addEventListener(PESKIDS_CHAT_OPEN_EVENT, onOpen)
-    return () => window.removeEventListener(PESKIDS_CHAT_OPEN_EVENT, onOpen)
-  }, [])
+    const onOpen = (): void => setOpen(true);
+    window.addEventListener(PESKIDS_CHAT_OPEN_EVENT, onOpen);
+    return () => window.removeEventListener(PESKIDS_CHAT_OPEN_EVENT, onOpen);
+  }, []);
 
-  if (!showWidgets || isHome) return null
+  if (isAdmin || isHome) return null;
 
   return (
     <>
@@ -56,5 +55,5 @@ export function PeskidsChatWidget(): React.ReactElement | null {
         {open ? <X className="h-6 w-6" /> : <MessageCircle className="h-6 w-6" />}
       </button>
     </>
-  )
+  );
 }

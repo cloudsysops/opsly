@@ -1,8 +1,8 @@
-'use client'
+'use client';
 
-import Link from 'next/link'
-import { useEffect, useState } from 'react'
-import { usePathname } from 'next/navigation'
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import { usePathname } from 'next/navigation';
 import {
   CalendarClock,
   type LucideIcon,
@@ -12,134 +12,89 @@ import {
   RefreshCw,
   ShieldCheck,
   Users,
-} from 'lucide-react'
-import { PeskidsLogo } from '@/components/brand/peskids-logo'
-import { Button } from '@/components/ui/button'
-import { cn } from '@/lib/utils'
-import { formatRelativeTime } from '@/lib/utils'
+} from 'lucide-react';
+import { PeskidsLogo } from '@/components/brand/peskids-logo';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
+import { formatRelativeTime } from '@/lib/utils';
 
 interface AdminShellProps {
-  children: React.ReactNode
-  lastUpdated: Date | null
-  onRefresh?: () => void
-  refreshing?: boolean
-  surface?: 'admin' | 'support'
+  children: React.ReactNode;
+  lastUpdated: Date | null;
+  onRefresh?: () => void;
+  refreshing?: boolean;
 }
 
 interface NavItem {
-  icon: LucideIcon
-  label: string
-  href: string
+  icon: LucideIcon;
+  label: string;
+  href: string;
 }
 
-const adminNavOps = [
+const navOps = [
   { icon: Home, label: 'Landing', href: '/' },
   { icon: LayoutDashboard, label: 'Dashboard', href: '/admin' },
   { icon: ShieldCheck, label: 'Equipo', href: '/admin#team' },
   { icon: Users, label: 'Leads', href: '/admin#leads' },
-  { icon: MessageSquare, label: 'Mensajes', href: '/admin#mensajes' },
   { icon: MessageSquare, label: 'Feedback', href: '/admin#feedback' },
   { icon: CalendarClock, label: 'Follow-up', href: '/admin#follow-up' },
-] satisfies NavItem[]
-
-const supportNavOps = [
-  { icon: Home, label: 'Landing', href: '/' },
-  { icon: LayoutDashboard, label: 'Dashboard', href: '/support/dashboard' },
-  { icon: MessageSquare, label: 'Mensajes', href: '/support/dashboard#mensajes' },
-  { icon: Users, label: 'Leads', href: '/support/dashboard#leads' },
-  { icon: MessageSquare, label: 'Feedback', href: '/support/dashboard#feedback' },
-  { icon: CalendarClock, label: 'Follow-up', href: '/support/dashboard#follow-up' },
-] satisfies NavItem[]
+] satisfies NavItem[];
 
 export function AdminShell({
   children,
   lastUpdated,
   onRefresh,
   refreshing,
-  surface = 'admin',
 }: AdminShellProps): React.ReactElement {
-  const pathname = usePathname()
-  const [hash, setHash] = useState('')
-  const navOps = surface === 'support' ? supportNavOps : adminNavOps
+  const pathname = usePathname();
+  const [hash, setHash] = useState('');
 
   useEffect(() => {
     const syncHash = (): void => {
-      setHash(window.location.hash)
-    }
+      setHash(window.location.hash);
+    };
 
-    syncHash()
-    window.addEventListener('hashchange', syncHash)
-    window.addEventListener('popstate', syncHash)
+    syncHash();
+    window.addEventListener('hashchange', syncHash);
+    window.addEventListener('popstate', syncHash);
 
     return () => {
-      window.removeEventListener('hashchange', syncHash)
-      window.removeEventListener('popstate', syncHash)
-    }
-  }, [])
+      window.removeEventListener('hashchange', syncHash);
+      window.removeEventListener('popstate', syncHash);
+    };
+  }, []);
 
   const isActive = (item: NavItem): boolean => {
     if (item.label === 'Landing') {
-      return pathname === '/'
-    }
-
-    if (surface === 'support') {
-      if (!pathname.startsWith('/support')) {
-        return false
-      }
-
-      if (item.label === 'Dashboard') {
-        return hash === '' || hash === '#dashboard'
-      }
-
-      if (item.label === 'Leads') {
-        return hash === '#leads'
-      }
-
-      if (item.label === 'Mensajes') {
-        return hash === '#mensajes'
-      }
-
-      if (item.label === 'Feedback') {
-        return hash === '#feedback'
-      }
-
-      if (item.label === 'Follow-up') {
-        return hash === '#follow-up'
-      }
-
-      return false
+      return pathname === '/';
     }
 
     if (pathname !== '/admin') {
-      return false
+      return false;
     }
 
     if (item.label === 'Dashboard') {
-      return hash === '' || hash === '#dashboard'
+      return hash === '' || hash === '#dashboard';
     }
 
     if (item.label === 'Equipo') {
-      return hash === '#team'
+      return hash === '#team';
     }
 
     if (item.label === 'Leads') {
-      return hash === '#leads'
-    }
-
-    if (item.label === 'Mensajes') {
-      return hash === '#mensajes'
+      return hash === '#leads';
     }
 
     if (item.label === 'Feedback') {
-      return hash === '#feedback'
+      return hash === '#feedback';
     }
 
     if (item.label === 'Follow-up') {
-      return hash === '#follow-up'
+      return hash === '#follow-up';
     }
 
-    return false
-  }
+    return false;
+  };
 
   return (
     <div className="flex min-h-screen bg-pk-bg">
@@ -150,7 +105,7 @@ export function AdminShell({
             <div>
               <p className="text-sm font-semibold tracking-tight">Peskids</p>
               <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-white/50">
-                {surface === 'support' ? 'Soporte' : 'Admin'}
+                Admin
               </p>
             </div>
           </div>
@@ -159,12 +114,8 @@ export function AdminShell({
               Sede activa
             </p>
             <p className="mt-1 text-sm font-medium text-white">Llanogrande</p>
-              <p className="text-xs text-white/55">
-                {surface === 'support'
-                  ? 'Soporte y seguimiento de familias.'
-                  : 'Operación, soporte y seguimiento de familias.'}
-              </p>
-            </div>
+            <p className="text-xs text-white/55">Operación, soporte y seguimiento de familias.</p>
+          </div>
         </div>
 
         <nav className="flex-1 px-3 py-4">
@@ -196,7 +147,7 @@ export function AdminShell({
             <div>
               <p className="text-sm font-semibold text-pk-ink">Peskids</p>
               <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-pk-mutedText">
-                {surface === 'support' ? 'Soporte' : 'Admin'}
+                Admin
               </p>
             </div>
           </div>
@@ -240,5 +191,5 @@ export function AdminShell({
         <main className="flex-1 overflow-auto p-5 sm:p-6">{children}</main>
       </div>
     </div>
-  )
+  );
 }

@@ -1,13 +1,13 @@
-import * as React from 'react'
-import { cn } from '@/lib/utils'
+import * as React from 'react';
+import { cn } from '@/lib/utils';
 
-type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'accent' | 'deep' | 'outline'
-type ButtonSize = 'sm' | 'md' | 'lg'
+type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'accent' | 'deep' | 'outline';
+type ButtonSize = 'sm' | 'md' | 'lg';
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: ButtonVariant
-  size?: ButtonSize
-  fullWidth?: boolean
+  variant?: ButtonVariant;
+  size?: ButtonSize;
+  fullWidth?: boolean;
 }
 
 const variantClasses: Record<ButtonVariant, string> = {
@@ -21,13 +21,13 @@ const variantClasses: Record<ButtonVariant, string> = {
   accent:
     'bg-pk-sun text-pk-ink shadow-md shadow-pk-sun/40 hover:brightness-105 active:scale-[0.99]',
   deep: 'bg-pk-deep text-white shadow-md hover:brightness-110',
-}
+};
 
 const sizeClasses: Record<ButtonSize, string> = {
   sm: 'h-9 px-4 text-xs rounded-lg',
   md: 'h-10 px-5 text-sm rounded-full',
   lg: 'h-12 px-7 text-base rounded-full',
-}
+};
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant = 'primary', size = 'md', fullWidth, type = 'button', ...props }, ref) => (
@@ -44,5 +44,5 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       {...props}
     />
   )
-)
-Button.displayName = 'Button'
+);
+Button.displayName = 'Button';

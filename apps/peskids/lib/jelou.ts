@@ -1,4 +1,4 @@
-import crypto from 'crypto'
+import crypto from 'crypto';
 
 export interface JelouWebhookPayload {
   event: string;
@@ -26,18 +26,15 @@ export interface JelouFormField {
  * Jelou signs webhooks with X-Jelou-Signature header
  */
 export function verifyJelouSignature(payload: string, signature: string, secret: string): boolean {
-  const expectedSignature = crypto
-    .createHmac('sha256', secret)
-    .update(payload)
-    .digest('hex')
+  const expectedSignature = crypto.createHmac('sha256', secret).update(payload).digest('hex');
 
   try {
     return crypto.timingSafeEqual(
       Buffer.from(signature, 'hex'),
       Buffer.from(expectedSignature, 'hex')
-    )
+    );
   } catch {
-    return false
+    return false;
   }
 }
 
@@ -53,7 +50,7 @@ export function parseJelouWebhook(rawPayload: unknown): JelouWebhookPayload {
 
   return {
     event: payload.event as string,
-    timestamp: payload.timestamp as string || new Date().toISOString(),
+    timestamp: (payload.timestamp as string) || new Date().toISOString(),
     data: payload.data as JelouWebhookPayload['data'],
   };
 }
@@ -64,9 +61,9 @@ export function parseJelouWebhook(rawPayload: unknown): JelouWebhookPayload {
 export function extractLeadFromJelou(webhook: JelouWebhookPayload) {
   const { fields } = webhook.data;
 
-  const modalityRaw = fields.class_modality || fields.modality || fields.modalidad
+  const modalityRaw = fields.class_modality || fields.modality || fields.modalidad;
   const classModality: 'llanogrande' | 'domicilio' =
-    modalityRaw === 'domicilio' || modalityRaw === 'a_domicilio' ? 'domicilio' : 'llanogrande'
+    modalityRaw === 'domicilio' || modalityRaw === 'a_domicilio' ? 'domicilio' : 'llanogrande';
 
   return {
     name: fields.name || fields.full_name || '',
@@ -76,7 +73,9 @@ export function extractLeadFromJelou(webhook: JelouWebhookPayload) {
     neighborhood: String(fields.neighborhood || fields.barrio || fields.zona || '').trim(),
     interested_grade: fields.grade || fields.interested_grade || '',
     source: `jelou:${webhook.data.channel || 'web'}`,
-    referred_by_code: String(fields.referred_by_code || fields.referral_code || '').trim().toUpperCase(),
+    referred_by_code: String(fields.referred_by_code || fields.referral_code || '')
+      .trim()
+      .toUpperCase(),
     contact_id: webhook.data.contact_id,
     raw_payload: webhook,
   };

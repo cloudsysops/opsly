@@ -59,9 +59,7 @@ describe('GET /api/admin/mission-control/incubation', () => {
     vi.mocked(requireAdminAccess).mockResolvedValue(
       Response.json({ error: 'forbidden' }, { status: 403 }) as never
     );
-    const res = await GET(
-      new Request('http://localhost/api/admin/mission-control/incubation')
-    );
+    const res = await GET(new Request('http://localhost/api/admin/mission-control/incubation'));
     expect(res.status).toBe(403);
   });
 

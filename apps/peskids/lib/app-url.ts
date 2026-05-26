@@ -27,8 +27,7 @@ export function resolveAppOrigin(config: AppUrlConfig): string {
   const fallbackEnvName = config.envName.startsWith('NEXT_PUBLIC_')
     ? config.envName.replace(/^NEXT_PUBLIC_/, '')
     : `NEXT_PUBLIC_${config.envName}`;
-  const explicit =
-    process.env[config.envName]?.trim() ?? process.env[fallbackEnvName]?.trim();
+  const explicit = process.env[config.envName]?.trim() ?? process.env[fallbackEnvName]?.trim();
   if (explicit && explicit.length > 0) {
     return normalizeUrl(explicit);
   }
@@ -37,8 +36,7 @@ export function resolveAppOrigin(config: AppUrlConfig): string {
     return `http://localhost:${config.localPort}`;
   }
 
-  const domain =
-    process.env.PLATFORM_DOMAIN?.trim() ?? process.env.PLATFORM_BASE_DOMAIN?.trim();
+  const domain = process.env.PLATFORM_DOMAIN?.trim() ?? process.env.PLATFORM_BASE_DOMAIN?.trim();
   if (domain && domain.length > 0) {
     return `https://${config.prodSubdomain}.${domain}`;
   }

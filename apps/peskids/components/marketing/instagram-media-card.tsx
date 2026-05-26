@@ -1,28 +1,28 @@
-import Link from 'next/link'
-import { Film, Images, Instagram, Play } from 'lucide-react'
-import { PeskidsLogo } from '@/components/brand/peskids-logo'
-import type { InstagramFeedItem, InstagramFallbackTone } from '@/lib/instagram-feed'
-import { cn } from '@/lib/utils'
+import Link from 'next/link';
+import { Film, Images, Instagram, Play } from 'lucide-react';
+import { PeskidsLogo } from '@/components/brand/peskids-logo';
+import type { InstagramFeedItem, InstagramFallbackTone } from '@/lib/instagram-feed';
+import { cn } from '@/lib/utils';
 
 const toneBg: Record<InstagramFallbackTone, string> = {
   teal: 'bg-pk-primary',
   deep: 'bg-pk-deep',
   coral: 'bg-pk-accent',
   sun: 'bg-gradient-to-br from-pk-sun to-pk-accent',
-}
+};
 
 interface InstagramMediaCardProps {
-  item: InstagramFeedItem
-  variant?: 'compact' | 'featured'
+  item: InstagramFeedItem;
+  variant?: 'compact' | 'featured';
 }
 
 export function InstagramMediaCard({
   item,
   variant = 'compact',
 }: InstagramMediaCardProps): React.ReactElement {
-  const isVideo = item.mediaType === 'video' || item.mediaType === 'reel'
-  const tone = item.fallback?.tone ?? 'teal'
-  const featured = variant === 'featured'
+  const isVideo = item.mediaType === 'video' || item.mediaType === 'reel';
+  const tone = item.fallback?.tone ?? 'teal';
+  const featured = variant === 'featured';
 
   return (
     <Link
@@ -41,7 +41,6 @@ export function InstagramMediaCard({
     >
       {item.thumbnailUrl ? (
         <>
-          {/* eslint-disable-next-line @next/next/no-img-element -- CDN Instagram (hostnames variables) */}
           <img
             src={item.thumbnailUrl}
             alt={item.caption ?? 'Publicación de Peskids en Instagram'}
@@ -53,10 +52,17 @@ export function InstagramMediaCard({
           <div
             className={cn(
               'absolute inset-x-0 bottom-0 bg-gradient-to-t from-pk-deep/90 via-pk-deep/40 to-transparent p-3 text-white transition-transform duration-200',
-              featured ? 'translate-y-0' : 'translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100'
+              featured
+                ? 'translate-y-0'
+                : 'translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100'
             )}
           >
-            <p className={cn('font-semibold leading-tight', featured ? 'text-sm sm:text-base' : 'text-xs')}>
+            <p
+              className={cn(
+                'font-semibold leading-tight',
+                featured ? 'text-sm sm:text-base' : 'text-xs'
+              )}
+            >
               {item.caption ?? item.fallback?.title ?? 'Peskids en Instagram'}
             </p>
             {featured && item.fallback?.body ? (
@@ -68,10 +74,7 @@ export function InstagramMediaCard({
         </>
       ) : (
         <div
-          className={cn(
-            'flex h-full w-full flex-col justify-between p-4 text-white',
-            toneBg[tone]
-          )}
+          className={cn('flex h-full w-full flex-col justify-between p-4 text-white', toneBg[tone])}
         >
           <div className="flex items-center justify-between">
             <PeskidsLogo size={28} />
@@ -84,9 +87,7 @@ export function InstagramMediaCard({
             <p className="mt-1 text-sm font-bold leading-tight">
               {item.fallback?.title ?? 'Peskids'}
             </p>
-            <p className="mt-1 text-[11px] leading-relaxed text-white/90">
-              {item.fallback?.body}
-            </p>
+            <p className="mt-1 text-[11px] leading-relaxed text-white/90">{item.fallback?.body}</p>
           </div>
         </div>
       )}
@@ -102,5 +103,5 @@ export function InstagramMediaCard({
         <span>{isVideo ? 'Video' : item.mediaType === 'carousel' ? 'Álbum' : 'Foto'}</span>
       </div>
     </Link>
-  )
+  );
 }

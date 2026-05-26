@@ -58,7 +58,13 @@ export async function trackFormSubmissionEvent(
   tenantSlug: string,
   formId: string,
   submissionId: string,
-  eventType: 'started' | 'page_viewed' | 'field_error' | 'validation_error' | 'abandoned' | 'completed',
+  eventType:
+    | 'started'
+    | 'page_viewed'
+    | 'field_error'
+    | 'validation_error'
+    | 'abandoned'
+    | 'completed',
   options?: {
     userId?: string;
     fieldName?: string;
@@ -69,18 +75,16 @@ export async function trackFormSubmissionEvent(
   try {
     const supabase = getSupabaseClient();
 
-    const { error } = await supabase
-      .from('peskids.submission_events')
-      .insert({
-        tenant_slug: tenantSlug,
-        form_id: formId,
-        submission_id: submissionId,
-        user_id: options?.userId || null,
-        event_type: eventType,
-        field_name: options?.fieldName || null,
-        error_message: options?.errorMessage || null,
-        metadata: options?.metadata || {},
-      });
+    const { error } = await supabase.from('peskids.submission_events').insert({
+      tenant_slug: tenantSlug,
+      form_id: formId,
+      submission_id: submissionId,
+      user_id: options?.userId || null,
+      event_type: eventType,
+      field_name: options?.fieldName || null,
+      error_message: options?.errorMessage || null,
+      metadata: options?.metadata || {},
+    });
 
     if (error) {
       console.error('Failed to track form submission event:', error);
@@ -132,18 +136,16 @@ export async function updateFormAnalytics(
       }
     } else {
       // Insert new record if it doesn't exist
-      const { error } = await supabase
-        .from('peskids.form_analytics')
-        .insert({
-          tenant_slug: tenantSlug,
-          form_id: formId,
-          date,
-          submissions_count: updates.submissionCount || 0,
-          unique_users: updates.uniqueUsers || 0,
-          avg_completion_time_seconds: updates.avgCompletionTime,
-          abandonment_rate: updates.abandonmentRate,
-          error_count: updates.errorCount || 0,
-        });
+      const { error } = await supabase.from('peskids.form_analytics').insert({
+        tenant_slug: tenantSlug,
+        form_id: formId,
+        date,
+        submissions_count: updates.submissionCount || 0,
+        unique_users: updates.uniqueUsers || 0,
+        avg_completion_time_seconds: updates.avgCompletionTime,
+        abandonment_rate: updates.abandonmentRate,
+        error_count: updates.errorCount || 0,
+      });
 
       if (error) {
         console.error('Failed to create form analytics record:', error);

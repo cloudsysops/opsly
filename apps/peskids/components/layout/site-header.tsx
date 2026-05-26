@@ -1,10 +1,10 @@
-import Link from 'next/link'
-import { Instagram } from 'lucide-react'
-import { PeskidsLockup } from '@/components/brand/peskids-logo'
-import { PESKIDS_INSTAGRAM } from '@/lib/instagram-feed'
+import Link from 'next/link';
+import { Instagram } from 'lucide-react';
+import { PeskidsLockup } from '@/components/brand/peskids-logo';
+import { PESKIDS_INSTAGRAM } from '@/lib/instagram-feed';
 
 interface SiteHeaderProps {
-  variant?: 'marketing' | 'minimal'
+  variant?: 'marketing' | 'minimal';
 }
 
 export function SiteHeader({ variant = 'marketing' }: SiteHeaderProps): React.ReactElement {
@@ -37,7 +37,7 @@ export function SiteHeader({ variant = 'marketing' }: SiteHeaderProps): React.Re
               href={PESKIDS_INSTAGRAM.profileUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex h-10 items-center justify-center gap-2 rounded-full bg-pk-primary px-4 text-xs font-bold text-white shadow-sm transition hover:bg-pk-primary/90 sm:hidden"
+              className="inline-flex h-10 items-center justify-center gap-2 rounded-full bg-pk-primary px-4 text-xs font-bold text-white shadow-sm transition hover:bg-pk-primary/90"
             >
               <Instagram className="h-4 w-4" aria-hidden />
               Seguir
@@ -46,5 +46,5 @@ export function SiteHeader({ variant = 'marketing' }: SiteHeaderProps): React.Re
         ) : null}
       </div>
     </header>
-  )
+  );
 }

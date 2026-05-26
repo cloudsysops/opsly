@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import { z } from 'zod';
 
 export const createLeadSchema = z.object({
   full_name: z.string().min(2, 'Name must be at least 2 characters').max(100),
@@ -11,9 +11,9 @@ export const createLeadSchema = z.object({
   referral_source: z.string().optional(),
   referral_code: z.string().optional(),
   referred_by_code: z.string().optional(),
-})
+});
 
-export type CreateLeadInput = z.infer<typeof createLeadSchema>
+export type CreateLeadInput = z.infer<typeof createLeadSchema>;
 
 export const leadFieldMap: Record<string, string> = {
   name: 'full_name',
@@ -26,4 +26,4 @@ export const leadFieldMap: Record<string, string> = {
   referral_source: 'referral_source',
   referral_code: 'referral_code',
   referred_by_code: 'referred_by_code',
-}
+};

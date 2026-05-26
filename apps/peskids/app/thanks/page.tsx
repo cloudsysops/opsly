@@ -1,24 +1,24 @@
-import Link from 'next/link'
-import { CheckCircle2 } from 'lucide-react'
-import { PeskidsLockup } from '@/components/brand/peskids-logo'
-import { SiteFooter } from '@/components/layout/site-footer'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { ReferralLinkCard } from '@/components/referrals/referral-link-card'
+import Link from 'next/link';
+import { CheckCircle2 } from 'lucide-react';
+import { PeskidsLockup } from '@/components/brand/peskids-logo';
+import { SiteFooter } from '@/components/layout/site-footer';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { ReferralLinkCard } from '@/components/referrals/referral-link-card';
 
 type ThanksSearchParams = Promise<{
-  referral_link?: string
-  referral_code?: string
-}>
+  referral_link?: string;
+  referral_code?: string;
+}>;
 
 export default async function ThanksPage({
   searchParams,
 }: {
-  searchParams?: ThanksSearchParams
+  searchParams?: ThanksSearchParams;
 }): Promise<React.ReactElement> {
-  const resolvedSearchParams = (await searchParams) ?? {}
-  const referralLink = resolvedSearchParams.referral_link?.trim() || ''
-  const referralCode = resolvedSearchParams.referral_code?.trim() || ''
+  const resolvedSearchParams = (await searchParams) ?? {};
+  const referralLink = resolvedSearchParams.referral_link?.trim() || '';
+  const referralCode = resolvedSearchParams.referral_code?.trim() || '';
 
   return (
     <div className="flex min-h-screen flex-col bg-pk-bg">
@@ -57,5 +57,5 @@ export default async function ThanksPage({
       </main>
       <SiteFooter />
     </div>
-  )
+  );
 }

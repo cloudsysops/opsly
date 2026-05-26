@@ -1,27 +1,27 @@
-'use client'
+'use client';
 
-import { BookOpen, Users, CheckCircle, MessageSquare, Download } from 'lucide-react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { peskidsColorTokens } from '@/lib/tokens'
+import { BookOpen, Users, CheckCircle, MessageSquare, Download } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { peskidsColorTokens } from '@/lib/tokens';
 
 interface StudentSubmission {
-  submissionId: string
-  studentName: string
-  studentId: string
-  formTitle: string
-  submittedAt: string
-  grade?: number
-  maxGrade: number
-  feedback?: string
-  status: 'reviewed' | 'pending' | 'needs_revision'
+  submissionId: string;
+  studentName: string;
+  studentId: string;
+  formTitle: string;
+  submittedAt: string;
+  grade?: number;
+  maxGrade: number;
+  feedback?: string;
+  status: 'reviewed' | 'pending' | 'needs_revision';
 }
 
 interface TeacherDashboardProps {
-  submissions: StudentSubmission[]
-  isLoading?: boolean
-  onReviewSubmission?: (submissionId: string) => void
-  onExportSubmissions?: () => void
+  submissions: StudentSubmission[];
+  isLoading?: boolean;
+  onReviewSubmission?: (submissionId: string) => void;
+  onExportSubmissions?: () => void;
 }
 
 export function TeacherDashboard({
@@ -30,52 +30,52 @@ export function TeacherDashboard({
   onReviewSubmission,
   onExportSubmissions,
 }: TeacherDashboardProps): React.ReactElement {
-  const reviewedCount = submissions.filter((s) => s.status === 'reviewed').length
-  const pendingCount = submissions.filter((s) => s.status === 'pending').length
-  const needsRevisionCount = submissions.filter((s) => s.status === 'needs_revision').length
-  const uniqueStudents = new Set(submissions.map((s) => s.studentId)).size
+  const reviewedCount = submissions.filter((s) => s.status === 'reviewed').length;
+  const pendingCount = submissions.filter((s) => s.status === 'pending').length;
+  const needsRevisionCount = submissions.filter((s) => s.status === 'needs_revision').length;
+  const uniqueStudents = new Set(submissions.map((s) => s.studentId)).size;
 
-  const skeletonClass = 'h-20 bg-pk-muted animate-pulse rounded-lg'
+  const skeletonClass = 'h-20 bg-pk-muted animate-pulse rounded-lg';
 
   const formatDate = (dateString: string): string => {
     try {
-      const date = new Date(dateString)
+      const date = new Date(dateString);
       return date.toLocaleDateString('es-CO', {
         month: 'short',
         day: 'numeric',
         hour: '2-digit',
         minute: '2-digit',
-      })
+      });
     } catch {
-      return dateString
+      return dateString;
     }
-  }
+  };
 
   const getStatusColor = (status: string): string => {
     switch (status) {
       case 'reviewed':
-        return peskidsColorTokens.status.success
+        return peskidsColorTokens.status.success;
       case 'needs_revision':
-        return '#dc2626'
+        return '#dc2626';
       case 'pending':
-        return peskidsColorTokens.secondary.orange
+        return peskidsColorTokens.secondary.orange;
       default:
-        return peskidsColorTokens.neutral.mediumGray
+        return peskidsColorTokens.neutral.mediumGray;
     }
-  }
+  };
 
   const getStatusLabel = (status: string): string => {
     switch (status) {
       case 'reviewed':
-        return 'Revisado'
+        return 'Revisado';
       case 'needs_revision':
-        return 'Requiere revisión'
+        return 'Requiere revisión';
       case 'pending':
-        return 'Pendiente'
+        return 'Pendiente';
       default:
-        return status
+        return status;
     }
-  }
+  };
 
   return (
     <div className="space-y-6">
@@ -119,7 +119,10 @@ export function TeacherDashboard({
                     className="rounded-lg p-3"
                     style={{ backgroundColor: `${peskidsColorTokens.status.success}20` }}
                   >
-                    <CheckCircle className="h-6 w-6" style={{ color: peskidsColorTokens.status.success }} />
+                    <CheckCircle
+                      className="h-6 w-6"
+                      style={{ color: peskidsColorTokens.status.success }}
+                    />
                   </div>
                 </div>
               </div>
@@ -216,8 +219,13 @@ export function TeacherDashboard({
                 </thead>
                 <tbody>
                   {submissions.map((submission) => (
-                    <tr key={submission.submissionId} className="border-b border-pk-border hover:bg-pk-bg">
-                      <td className="py-3 px-3 text-pk-ink font-medium">{submission.studentName}</td>
+                    <tr
+                      key={submission.submissionId}
+                      className="border-b border-pk-border hover:bg-pk-bg"
+                    >
+                      <td className="py-3 px-3 text-pk-ink font-medium">
+                        {submission.studentName}
+                      </td>
                       <td className="py-3 px-3 text-pk-ink">{submission.formTitle}</td>
                       <td className="py-3 px-3 text-pk-mutedText text-xs">
                         {formatDate(submission.submittedAt)}
@@ -307,5 +315,5 @@ export function TeacherDashboard({
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

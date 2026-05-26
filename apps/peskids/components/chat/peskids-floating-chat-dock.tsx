@@ -1,21 +1,21 @@
-'use client'
+'use client';
 
-import type { ReactElement, RefObject } from 'react'
-import { PeskidsChatPanel } from '@/components/chat/peskids-chat-panel'
-import { usePeskidsChatContext } from '@/components/chat/peskids-chat-provider'
+import type { ReactElement, RefObject } from 'react';
+import { PeskidsChatPanel } from '@/components/chat/peskids-chat-panel';
+import { usePeskidsChatContext } from '@/components/chat/peskids-chat-provider';
 
 interface PeskidsFloatingChatDockProps {
-  open: boolean
-  onClose: () => void
+  open: boolean;
+  onClose: () => void;
 }
 
 export function PeskidsFloatingChatDock({
   open,
   onClose,
 }: PeskidsFloatingChatDockProps): ReactElement | null {
-  const chat = usePeskidsChatContext()
+  const chat = usePeskidsChatContext();
 
-  if (!open) return null
+  if (!open) return null;
 
   return (
     <div className="fixed bottom-20 left-4 z-[80] h-[min(520px,72vh)] w-[min(380px,calc(100vw-2rem))] sm:left-6 sm:bottom-6">
@@ -33,5 +33,5 @@ export function PeskidsFloatingChatDock({
         className="h-full"
       />
     </div>
-  )
+  );
 }

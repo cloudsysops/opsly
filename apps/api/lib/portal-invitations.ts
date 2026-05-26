@@ -1,7 +1,7 @@
 import { escapeHtml, getInviteFromEmail, sendHtmlEmail } from './email';
 import { isEmailDeliverySkipped, isNonFatalEmailDeliveryError } from './email/delivery-mode';
 import { getServiceClient } from './supabase';
-import { resolveTenantSiteTarget } from '../../../lib/runtime/src/tenant-site-routing'
+import { resolveTenantSiteTarget } from '../../../lib/runtime/src/tenant-site-routing';
 
 export type PortalInviteParams = {
   email: string;
@@ -325,15 +325,15 @@ export async function sendPortalInvitationForTenant(
       }
       emailDeliverySkipped = true;
       emailDeliveryWarning =
-        err instanceof Error ? err.message : 'Email delivery skipped (test mode or provider restriction)';
+        err instanceof Error
+          ? err.message
+          : 'Email delivery skipped (test mode or provider restriction)';
     }
   }
 
   return {
     link: activateUrl,
     token,
-    ...(emailDeliverySkipped
-      ? { emailDeliverySkipped: true, emailDeliveryWarning }
-      : {}),
+    ...(emailDeliverySkipped ? { emailDeliverySkipped: true, emailDeliveryWarning } : {}),
   };
 }

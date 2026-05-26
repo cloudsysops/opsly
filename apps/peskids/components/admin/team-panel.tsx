@@ -1,94 +1,99 @@
-'use client'
+'use client';
 
-import { useEffect, useMemo, useState } from 'react'
-import { Copy, Loader2, Mail, UserPlus, Users } from 'lucide-react'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import type { TeamInviteResult, TeamMemberSummary, TeamViewData, TeamRole } from '@/lib/team-management'
-import { cn } from '@/lib/utils'
+import { useEffect, useMemo, useState } from 'react';
+import { Copy, Loader2, Mail, UserPlus, Users } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import type {
+  TeamInviteResult,
+  TeamMemberSummary,
+  TeamViewData,
+  TeamRole,
+} from '@/lib/team-management';
+import { cn } from '@/lib/utils';
 
 type InviteState = {
-  email: string
-  name: string
-  role: Exclude<TeamRole, 'owner'>
-}
+  email: string;
+  name: string;
+  role: Exclude<TeamRole, 'owner'>;
+};
 
 const ROLE_LABEL: Record<TeamRole, string> = {
   owner: 'Owner',
   admin: 'Admin',
   support: 'Soporte',
   teacher: 'Profesor',
-}
+};
 
 const ROLE_TONE: Record<TeamRole, 'green' | 'violet' | 'teal' | 'amber'> = {
   owner: 'green',
   admin: 'violet',
   support: 'teal',
   teacher: 'amber',
-}
+};
 
 const STATUS_LABEL: Record<TeamMemberSummary['status'], string> = {
   invited: 'Invitado',
   active: 'Activo',
   disabled: 'Bloqueado',
-}
+};
 
 const STATUS_TONE: Record<TeamMemberSummary['status'], 'amber' | 'green' | 'neutral'> = {
   invited: 'amber',
   active: 'green',
   disabled: 'neutral',
-}
+};
 
 function buildNameFallback(email: string): string {
-  return email.split('@')[0]?.replace(/[._-]+/g, ' ') || email
+  return email.split('@')[0]?.replace(/[._-]+/g, ' ') || email;
 }
 
 export function TeamPanel(): React.ReactElement {
-  const [team, setTeam] = useState<TeamViewData | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [refreshing, setRefreshing] = useState(false)
-  const [error, setError] = useState('')
-  const [warning, setWarning] = useState('')
-  const [inviteError, setInviteError] = useState('')
-  const [inviteResult, setInviteResult] = useState<TeamInviteResult | null>(null)
-  const [copyOk, setCopyOk] = useState(false)
+  const [team, setTeam] = useState<TeamViewData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [error, setError] = useState('');
+  const [warning, setWarning] = useState('');
+  const [inviteError, setInviteError] = useState('');
+  const [inviteResult, setInviteResult] = useState<TeamInviteResult | null>(null);
+  const [copyOk, setCopyOk] = useState(false);
   const [form, setForm] = useState<InviteState>({
     email: '',
     name: '',
     role: 'teacher',
-  })
-  const [submitting, setSubmitting] = useState(false)
+  });
+  const [submitting, setSubmitting] = useState(false);
 
   const loadTeam = async (isRefresh = false): Promise<void> => {
     if (isRefresh) {
-      setRefreshing(true)
+      setRefreshing(true);
     } else {
-      setLoading(true)
+      setLoading(true);
     }
     try {
-      const res = await fetch('/api/admin/team', { credentials: 'include' })
-      const json = (await res.json()) as TeamViewData & { error?: string }
+      const res = await fetch('/api/admin/team', { credentials: 'include' });
+      const json = (await res.json()) as TeamViewData & { error?: string };
       if (!res.ok) {
-        throw new Error(json.error || 'No se pudo cargar el equipo')
+        throw new Error(json.error || 'No se pudo cargar el equipo');
       }
-      setTeam(json)
-      setWarning(json.warnings?.join(' · ') || '')
-      setError('')
+      setTeam(json);
+      setWarning(json.warnings?.join(' · ') || '');
+      setError('');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'No se pudo cargar el equipo')
+      setError(err instanceof Error ? err.message : 'No se pudo cargar el equipo');
     } finally {
-      setLoading(false)
-      setRefreshing(false)
+      setLoading(false);
+      setRefreshing(false);
     }
-  }
+  };
 
   useEffect(() => {
-    void loadTeam()
-  }, [])
+    void loadTeam();
+  }, []);
 
   const counts = useMemo(() => {
-    const members = team?.members ?? []
+    const members = team?.members ?? [];
     return {
       total: members.length,
       invited: members.filter((member) => member.status === 'invited').length,
@@ -96,44 +101,44 @@ export function TeamPanel(): React.ReactElement {
       support: members.filter((member) => member.role === 'support').length,
       teacher: members.filter((member) => member.role === 'teacher').length,
       admin: members.filter((member) => member.role === 'admin').length,
-    }
-  }, [team])
+    };
+  }, [team]);
 
   async function copyLink(link: string): Promise<void> {
     try {
-      await navigator.clipboard.writeText(link)
-      setCopyOk(true)
-      window.setTimeout(() => setCopyOk(false), 2000)
+      await navigator.clipboard.writeText(link);
+      setCopyOk(true);
+      window.setTimeout(() => setCopyOk(false), 2000);
     } catch {
-      window.prompt('Copia este enlace', link)
+      window.prompt('Copia este enlace', link);
     }
   }
 
   async function submitInvite(e: React.FormEvent): Promise<void> {
-    e.preventDefault()
-    setSubmitting(true)
-    setInviteError('')
-    setInviteResult(null)
+    e.preventDefault();
+    setSubmitting(true);
+    setInviteError('');
+    setInviteResult(null);
     try {
-      const email = form.email.trim()
-      const name = form.name.trim() || buildNameFallback(email)
+      const email = form.email.trim();
+      const name = form.name.trim() || buildNameFallback(email);
       const res = await fetch('/api/admin/team', {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, name, role: form.role }),
-      })
-      const json = (await res.json()) as TeamInviteResult & { error?: string }
+      });
+      const json = (await res.json()) as TeamInviteResult & { error?: string };
       if (!res.ok) {
-        throw new Error(json.error || 'No se pudo generar la invitación')
+        throw new Error(json.error || 'No se pudo generar la invitación');
       }
-      setInviteResult(json)
-      setForm({ email: '', name: '', role: form.role })
-      await loadTeam(true)
+      setInviteResult(json);
+      setForm({ email: '', name: '', role: form.role });
+      await loadTeam(true);
     } catch (err) {
-      setInviteError(err instanceof Error ? err.message : 'No se pudo generar la invitación')
+      setInviteError(err instanceof Error ? err.message : 'No se pudo generar la invitación');
     } finally {
-      setSubmitting(false)
+      setSubmitting(false);
     }
   }
 
@@ -151,7 +156,8 @@ export function TeamPanel(): React.ReactElement {
             Staff, invitados y soporte
           </h3>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-pk-sub">
-            Gestiona aquí profesores, administradores y soporte. Si algo falla en memberships, el panel sigue mostrando el enlace de acceso.
+            Gestiona aquí profesores, administradores y soporte. Si algo falla en memberships, el
+            panel sigue mostrando el enlace de acceso.
           </p>
         </div>
 
@@ -191,7 +197,8 @@ export function TeamPanel(): React.ReactElement {
           <CardHeader className="pb-3">
             <CardTitle className="text-lg">Invitar miembro</CardTitle>
             <CardDescription>
-              Genera acceso para profesores, admin o soporte. El correo saldrá con branding de Peskids y fallback de enlace manual.
+              Genera acceso para profesores, admin o soporte. El correo saldrá con branding de
+              Peskids y fallback de enlace manual.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -248,17 +255,29 @@ export function TeamPanel(): React.ReactElement {
                   </p>
                   <p className="mt-1 break-all">{inviteResult.link}</p>
                   <div className="mt-3 flex flex-wrap gap-2">
-                    <Button type="button" size="sm" onClick={() => void copyLink(inviteResult.link)}>
+                    <Button
+                      type="button"
+                      size="sm"
+                      onClick={() => void copyLink(inviteResult.link)}
+                    >
                       <Copy className="mr-2 h-4 w-4" aria-hidden />
                       {copyOk ? 'Copiado' : 'Copiar enlace'}
                     </Button>
-                    <Button type="button" size="sm" variant="secondary" onClick={() => setInviteResult(null)}>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="secondary"
+                      onClick={() => setInviteResult(null)}
+                    >
                       Cerrar
                     </Button>
                   </div>
                   {inviteResult.emailDeliverySkipped ? (
                     <p className="mt-2 text-xs text-emerald-800">
-                      Email no enviado automáticamente: {inviteResult.emailDeliveryWarning || inviteResult.warning || 'usa el enlace manual'}
+                      Email no enviado automáticamente:{' '}
+                      {inviteResult.emailDeliveryWarning ||
+                        inviteResult.warning ||
+                        'usa el enlace manual'}
                     </p>
                   ) : null}
                 </div>
@@ -278,8 +297,16 @@ export function TeamPanel(): React.ReactElement {
                     </>
                   )}
                 </Button>
-                <Button type="button" variant="ghost" onClick={() => void loadTeam(true)} disabled={refreshing || loading}>
-                  <Users className={cn('mr-2 h-4 w-4', (refreshing || loading) && 'animate-spin')} aria-hidden />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={() => void loadTeam(true)}
+                  disabled={refreshing || loading}
+                >
+                  <Users
+                    className={cn('mr-2 h-4 w-4', (refreshing || loading) && 'animate-spin')}
+                    aria-hidden
+                  />
                   Actualizar lista
                 </Button>
               </div>
@@ -303,7 +330,10 @@ export function TeamPanel(): React.ReactElement {
             ) : (team?.members.length ?? 0) > 0 ? (
               <ul className="space-y-3">
                 {team?.members.map((member) => (
-                  <li key={`${member.email}-${member.role}`} className="rounded-2xl border border-pk-border bg-pk-muted/40 px-4 py-3">
+                  <li
+                    key={`${member.email}-${member.role}`}
+                    className="rounded-2xl border border-pk-border bg-pk-muted/40 px-4 py-3"
+                  >
                     <div className="flex items-start justify-between gap-3">
                       <div>
                         <p className="font-semibold text-pk-ink">
@@ -313,7 +343,9 @@ export function TeamPanel(): React.ReactElement {
                       </div>
                       <div className="flex flex-col items-end gap-2">
                         <Badge tone={ROLE_TONE[member.role]}>{ROLE_LABEL[member.role]}</Badge>
-                        <Badge tone={STATUS_TONE[member.status]}>{STATUS_LABEL[member.status]}</Badge>
+                        <Badge tone={STATUS_TONE[member.status]}>
+                          {STATUS_LABEL[member.status]}
+                        </Badge>
                       </div>
                     </div>
                     <div className="mt-2 flex items-center gap-2 text-[11px] text-pk-sub">
@@ -325,12 +357,13 @@ export function TeamPanel(): React.ReactElement {
               </ul>
             ) : (
               <div className="rounded-2xl border border-dashed border-pk-border bg-pk-muted/40 px-4 py-6 text-sm text-pk-sub">
-                Todavía no hay miembros sincronizados. Puedes invitar profesor, soporte o admin desde el formulario.
+                Todavía no hay miembros sincronizados. Puedes invitar profesor, soporte o admin
+                desde el formulario.
               </div>
             )}
           </CardContent>
         </Card>
       </div>
     </section>
-  )
+  );
 }

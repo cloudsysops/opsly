@@ -1,5 +1,5 @@
-import { Inbox, MessageCircle, Shield, Waves } from 'lucide-react'
-import { Card, CardContent, CardDescription, CardTitle } from '@/components/ui/card'
+import { Inbox, MessageCircle, Shield, Waves } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardTitle } from '@/components/ui/card';
 
 const features = [
   {
@@ -26,7 +26,7 @@ const features = [
     description: 'Multi-tenant seguro con n8n, monitoreo y secretos en Doppler.',
     accent: 'violet' as const,
   },
-]
+];
 
 export function OpslyFeatureGrid(): React.ReactElement {
   return (
@@ -53,5 +53,5 @@ export function OpslyFeatureGrid(): React.ReactElement {
         </div>
       </div>
     </section>
-  )
+  );
 }
