@@ -1,0 +1,71 @@
+{
+  "id": "peskids-lead-capture",
+  "name": "Peskids - Lead Capture",
+  "active": true,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "peskids-lead",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "peskids-lead-webhook",
+      "name": "Lead Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [0, 0]
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $json.body ?? $json;\nconst now = new Date().toISOString();\nreturn [{\n  json: {\n    tenant_slug: 'peskids',\n    name: body.full_name || body.name || 'Unknown',\n    email: body.email || null,\n    phone: body.phone || null,\n    source: body.source || 'web',\n    class_modality: body.class_modality || null,\n    neighborhood: body.neighborhood || null,\n    grade_interested: body.grade_interested || null,\n    referral_source: body.referral_source || null,\n    referral_code: body.referral_code || null,\n    referred_by_code: body.referred_by_code || null,\n    received_at: now\n  }\n}];"
+      },
+      "id": "peskids-normalize",
+      "name": "Normalize Lead",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [260, 0]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { ok: true, workflow: 'peskids-lead-capture', received_at: new Date().toISOString() } }}",
+        "options": {
+          "responseCode": 202
+        }
+      },
+      "id": "peskids-response",
+      "name": "Accepted",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [520, 0]
+    }
+  ],
+  "connections": {
+    "Lead Webhook": {
+      "main": [
+        [
+          {
+            "node": "Normalize Lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Lead": {
+      "main": [
+        [
+          {
+            "node": "Accepted",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

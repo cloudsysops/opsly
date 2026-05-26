@@ -93,7 +93,7 @@ export function LeadCaptureForm(): React.ReactElement {
 
       const webhookUrl =
         process.env.NEXT_PUBLIC_N8N_LEAD_WEBHOOK ||
-        'https://peskids.op-sly.com/webhooks/lead-capture';
+        'https://n8n-peskids.op-sly.com/webhook/peskids-lead';
       void fetch(webhookUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

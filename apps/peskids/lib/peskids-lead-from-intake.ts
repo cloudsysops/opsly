@@ -84,6 +84,27 @@ export async function submitLeadFromIntake(
       });
     }
 
+    const n8nWebhook = process.env.NEXT_PUBLIC_N8N_LEAD_WEBHOOK;
+    if (n8nWebhook) {
+      void fetch(n8nWebhook, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          full_name: profile.parentName,
+          email: profile.email,
+          phone: profile.phone,
+          source: 'chat-intake',
+          class_modality: profile.classModality,
+          neighborhood: profile.neighborhood,
+          grade_interested: profile.gradeInterested,
+          referral_source: profile.referralSource ?? 'chat-intake',
+        }),
+        signal: AbortSignal.timeout(8_000),
+      }).catch((err) => {
+        console.warn('N8N webhook mirror failed:', err);
+      });
+    }
+
     return { ok: true };
   } catch (err) {
     console.error('submitLeadFromIntake error:', err);
