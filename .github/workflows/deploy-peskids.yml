@@ -59,12 +59,13 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ github.token }}
 
-      - name: Resolve WhatsApp build-args
+      - name: Resolve build-args
         id: wa
         env:
           E164: ${{ secrets.NEXT_PUBLIC_PESKIDS_WHATSAPP_E164 }}
           DISPLAY: ${{ secrets.NEXT_PUBLIC_PESKIDS_WHATSAPP_DISPLAY }}
           PREFILL: ${{ secrets.NEXT_PUBLIC_PESKIDS_WHATSAPP_PREFILL }}
+          N8N_LEAD: ${{ secrets.NEXT_PUBLIC_N8N_LEAD_WEBHOOK }}
         run: |
           set -euo pipefail
           if [ -z "${E164:-}" ]; then
@@ -75,6 +76,7 @@ jobs:
           fi
           echo "display=${DISPLAY:-+57 300 000 0000}" >> "$GITHUB_OUTPUT"
           echo "prefill=${PREFILL:-Hola Peskids 👋 Quiero reservar una clase de prueba gratis.}" >> "$GITHUB_OUTPUT"
+          echo "n8n_lead=${N8N_LEAD:-https://n8n-peskids.op-sly.com/webhook/peskids-lead}" >> "$GITHUB_OUTPUT"
 
       - name: Build and push Peskids image
         uses: docker/build-push-action@v5
@@ -91,11 +93,13 @@ jobs:
             NEXT_PUBLIC_PESKIDS_WHATSAPP_E164=${{ steps.wa.outputs.e164 }}
             NEXT_PUBLIC_PESKIDS_WHATSAPP_DISPLAY=${{ steps.wa.outputs.display }}
             NEXT_PUBLIC_PESKIDS_WHATSAPP_PREFILL=${{ steps.wa.outputs.prefill }}
+            NEXT_PUBLIC_N8N_LEAD_WEBHOOK=${{ steps.wa.outputs.n8n_lead }}
 
       - name: Build summary
         run: |
           echo "Image: ghcr.io/cloudsysops/peskids:${{ needs.gate.outputs.sha }}"
           echo "WhatsApp E164 (build-arg): ${{ steps.wa.outputs.e164 }}"
+          echo "N8N lead webhook: ${{ steps.wa.outputs.n8n_lead }}"
 
   deploy-vps:
     needs: [gate, build-and-push]
