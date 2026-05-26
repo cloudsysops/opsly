@@ -1,7 +1,7 @@
 {
   "version": 1,
   "root": "/home/user/opsly",
-  "generated_at": "2026-05-26T15:37:45.655Z",
+  "generated_at": "2026-05-26T16:03:00.918Z",
   "files": [
     {
       "path": ".agents/IMPLEMENTATION-CHECKLIST.md",
@@ -22011,6 +22011,104 @@
         "workflows"
       ],
       "size_bytes": 8374
+    },
+    {
+      "path": "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md",
+      "title": "Phase 2 Week 1: Environment Variables & N8N Webhook Setup",
+      "keywords": [
+        "already",
+        "app",
+        "blocking",
+        "call",
+        "configuration",
+        "connection",
+        "copy",
+        "create",
+        "current",
+        "doppler",
+        "env",
+        "environment",
+        "form",
+        "from",
+        "implemented",
+        "integration",
+        "local",
+        "markdown",
+        "n8n",
+        "node",
+        "non",
+        "opsly",
+        "overview",
+        "payload",
+        "peskids",
+        "phase",
+        "setup",
+        "step",
+        "structure",
+        "test",
+        "update",
+        "url",
+        "values",
+        "variable",
+        "variables",
+        "webhook",
+        "week"
+      ],
+      "size_bytes": 7171
+    },
+    {
+      "path": "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md",
+      "title": "Phase 2 Week 1: Readiness Report",
+      "keywords": [
+        "api",
+        "app",
+        "apps",
+        "blockers",
+        "capture",
+        "code",
+        "completed",
+        "components",
+        "configuration",
+        "container",
+        "create",
+        "deployment",
+        "docs",
+        "documentation",
+        "endpoint",
+        "environment",
+        "executive",
+        "form",
+        "forms",
+        "lead",
+        "leads",
+        "markdown",
+        "n8n",
+        "opsly",
+        "peskids",
+        "phase",
+        "policies",
+        "readiness",
+        "ready",
+        "report",
+        "require",
+        "rls",
+        "route",
+        "script",
+        "scripts",
+        "setup",
+        "sql",
+        "ssh",
+        "summary",
+        "tenant",
+        "tenants",
+        "testing",
+        "tsx",
+        "validation",
+        "vps",
+        "week",
+        "workflows"
+      ],
+      "size_bytes": 8880
     },
     {
       "path": "docs/tenants/peskids/PHASE-2-WEEK-1-VPS-SETUP.md",
@@ -84072,6 +84170,7 @@
       "docs/tenants/peskids/DEPLOYMENT-2026-05-21.md",
       "docs/tenants/peskids/OPSLY-REUSE.md",
       "docs/tenants/peskids/CLIENT-HANDOFF-CHECKLIST-2026-05-24.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md",
       "docs/tenants/peskids/PHASE-2-WEEK1-CHECKLIST.md",
       "docs/tenants/peskids/MVP-BACKLOG.md",
       "docs/tenants/peskids/AGENT-IMPLEMENTATION-PLAN.md",
@@ -84081,6 +84180,7 @@
       "docs/tenants/peskids/DESIGN-PACK-REFERENCE.md",
       "docs/tenants/peskids/PHASE-2-IMPLEMENTATION-PLAN.md",
       "docs/tenants/peskids/INSTAGRAM-FEED.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md",
       "docs/tenants/peskids/FUTURE-REPO-SEED.md",
       "docs/tenants/peskids/PHASE-2-CHECKLIST.md",
       "docs/tenants/README.md",
@@ -86432,6 +86532,7 @@
       "docs/tenants/peskids/DEPLOYMENT-2026-05-21.md",
       "docs/tenants/peskids/OPSLY-REUSE.md",
       "docs/tenants/peskids/CLIENT-HANDOFF-CHECKLIST-2026-05-24.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md",
       "docs/tenants/peskids/PHASE-2-WEEK1-CHECKLIST.md",
       "docs/tenants/peskids/MVP-BACKLOG.md",
       "docs/tenants/peskids/AGENT-IMPLEMENTATION-PLAN.md",
@@ -86441,6 +86542,7 @@
       "docs/tenants/peskids/DESIGN-PACK-REFERENCE.md",
       "docs/tenants/peskids/PHASE-2-IMPLEMENTATION-PLAN.md",
       "docs/tenants/peskids/INSTAGRAM-FEED.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md",
       "docs/tenants/peskids/FUTURE-REPO-SEED.md",
       "docs/tenants/peskids/PHASE-2-CHECKLIST.md",
       "docs/tenants/README.md",
@@ -87512,6 +87614,7 @@
       "docs/tenants/peskids/EXTRACTION-PLAN.md",
       "docs/tenants/peskids/OPS-RUNBOOK.md",
       "docs/tenants/peskids/WHATSAPP-CHANNEL.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md",
       "docs/tenants/peskids/AGENT-IMPLEMENTATION-PLAN.md",
       "docs/tenants/runbooks/TENANT-PRODUCTION-CHECKLIST.md",
       "docs/tenants/runbooks/TENANT-ONBOARDING-TRIAGE.md",
@@ -89144,6 +89247,7 @@
       "docs/adr/ADR-009-openclaw-mcp-architecture.md",
       "docs/adr/ADR-036-cli-consolidation-tools-cli-first.md",
       "docs/adr/ADR-031-experimental-consolidation.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md",
       "docs/tenants/peskids/DESIGN-PACK-REFERENCE.md",
       "docs/tenants/production/TENANT-PRODUCTION-BASELINE.md",
       ".claude/CLAUDE.md",
@@ -89436,6 +89540,7 @@
       "docs/adr/ADR-043-supplement/INTEGRATION-CHECKLIST.md",
       "docs/tenants/peskids/REFACTOR-AUDIT-2026-05-26.md",
       "docs/tenants/peskids/PHASE-2-WEEK1-EXECUTION-GUIDE.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md",
       "docs/testing/PR-187-TESTING-GUIDE.md",
       "docs/reports/REVIEW-AGENT-ANALYSIS.md",
       "docs/reports/SESSION-SUMMARY-2026-05-08.md",
@@ -89566,6 +89671,8 @@
       "docs/02-tools/NOTEBOOKLM-INTEGRATION.md",
       "docs/adr/ADR-043-supplement/INTEGRATION-CHECKLIST.md",
       "docs/tenants/peskids/VERCEL-DEPLOYMENT-GUIDE.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md",
       "docs/reports/ci-workflow-fix-deployment-blocked-2026-05-21.md",
       ".agents/skills/the-architect/references/knowledge/building-blocks/deployment-patterns.md",
       ".agents/VPS-PRODUCTION-SETUP.md"
@@ -89798,6 +89905,7 @@
       "docs/04-infrastructure/MONITORING.md",
       "docs/03-agents/SUPER-ORCHESTRATOR.md",
       "docs/adr/ADR-006-api-testing-vitest.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md",
       ".agents/skills/cyber-neo/references/lang-javascript.md",
       ".agents/VPS-PRODUCTION-SETUP.md"
     ],
@@ -90020,8 +90128,10 @@
       "docs/tenants/peskids/PHASE-2-WEEK-1-VPS-SETUP.md",
       "docs/tenants/peskids/N8N-WORKFLOWS-GUIDE.md",
       "docs/tenants/peskids/CLIENT-HANDOFF-CHECKLIST-2026-05-24.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md",
       "docs/tenants/peskids/PHASE-2-WEEK1-CHECKLIST.md",
       "docs/tenants/peskids/PHASE-2-IMPLEMENTATION-PLAN.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md",
       "docs/tenants/peskids/PHASE-2-CHECKLIST.md",
       "docs/testing/PHASE1-TEST-PLAN.md",
       "docs/testing/PHASE-2-TESTING.md",
@@ -91560,6 +91670,7 @@
       "docs/02-tools/NOTEBOOKLM-INTEGRATION.md",
       "docs/adr/ADR-006-api-testing-vitest.md",
       "docs/tenants/peskids/PHASE-2-WEEK1-EXECUTION-GUIDE.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md",
       "docs/tenants/peskids/PHASE-2-WEEK1-CHECKLIST.md",
       "docs/tenants/peskids/PHASE-2-CHECKLIST.md",
       "docs/tenants/testing/TENANT-TESTING-GUIDE.md",
@@ -92721,6 +92832,7 @@
       "docs/02-tools/KNOWLEDGE-SYSTEM.md",
       "docs/02-tools/OBSIDIAN-KNOWLEDGE-SYSTEM-STATUS.md",
       "docs/adr/ADR-032-scripts-organization.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md",
       ".agents/VPS-PRODUCTION-SETUP.md"
     ],
     "stsforcehttps": [
@@ -92799,6 +92911,7 @@
       "docs/tenants/peskids/PHASE-2-WEEK-1-VPS-SETUP.md",
       "docs/tenants/peskids/OPS-RUNBOOK.md",
       "docs/tenants/peskids/DEPLOYMENT-2026-05-21.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md",
       "docs/tenants/peskids/PHASE-2-CHECKLIST.md",
       "docs/reports/audit-2026-04-07.md",
       "docs/blueprints/opsly-operational-blueprint/CLIENT-INCUBATION-TEMPLATE.md",
@@ -93283,6 +93396,7 @@
       "docs/tenants/peskids/DEMO-WALKTHROUGH-2026-05-26.md",
       "docs/tenants/peskids/SPRINT-01-STATUS.md",
       "docs/tenants/peskids/SPRINT-01.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md",
       "docs/tenants/peskids/DEMO-SCRIPT.md",
       "docs/tenants/runbooks/TENANT-ONBOARDING-TRIAGE.md",
       ".claude/SYNC-GUIDE.md",
@@ -93527,6 +93641,7 @@
       "tools/agent-packs/vendor/cyber-neo/skills/cyber-neo/references/lang-python.md",
       "docs/01-development/SPRINTS_13_14.md",
       "docs/03-agents/HERMES-INTEGRATION.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md",
       ".agents/skills/cyber-neo/references/lang-javascript.md",
       ".agents/skills/cyber-neo/references/cwe-top-25.md",
       ".agents/skills/cyber-neo/references/lang-python.md"
@@ -93643,6 +93758,7 @@
       "docs/tenants/peskids/BLUEPRINT-MAPPING.md",
       "docs/tenants/peskids/README.md",
       "docs/tenants/peskids/OPS-RUNBOOK.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md",
       "docs/tenants/peskids/PHASE-2-IMPLEMENTATION-PLAN.md",
       "docs/tenants/runbooks/TENANT-PRODUCTION-CHECKLIST.md",
       "docs/tenants/runbooks/TENANT-ONBOARDING-TRIAGE.md",
@@ -93827,8 +93943,10 @@
       "docs/tenants/peskids/PHASE-2-WEEK-1-VPS-SETUP.md",
       "docs/tenants/peskids/WHATSAPP-CHANNEL.md",
       "docs/tenants/peskids/N8N-WORKFLOWS-GUIDE.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md",
       "docs/tenants/peskids/PHASE-2-WEEK1-CHECKLIST.md",
       "docs/tenants/peskids/PHASE-2-IMPLEMENTATION-PLAN.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md",
       "docs/tenants/peskids/PHASE-2-CHECKLIST.md",
       "docs/tenants/testing/TENANT-TESTING-GUIDE.md",
       "docs/tenants/testing/TENANT-TESTING-PLAN.md",
@@ -94210,6 +94328,7 @@
       "docs/tenants/peskids/PHASE-2-WEEK1-EXECUTION-GUIDE.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-VPS-SETUP.md",
       "docs/tenants/peskids/N8N-WORKFLOWS-GUIDE.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md",
       "docs/tenants/peskids/PHASE-2-WEEK1-CHECKLIST.md",
       "docs/tenants/peskids/AGENT-IMPLEMENTATION-PLAN.md",
       "docs/tenants/peskids/PHASE-2-IMPLEMENTATION-PLAN.md"
@@ -95725,6 +95844,7 @@
       "docs/tenants/peskids/MVP-BACKLOG.md",
       "docs/tenants/peskids/AGENT-IMPLEMENTATION-PLAN.md",
       "docs/tenants/peskids/PHASE-2-IMPLEMENTATION-PLAN.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md",
       "docs/testing/QA-TESTING-BRIEF.md",
       ".claude/AGENTS-ENHANCEMENTS.md",
       ".agents/skills/the-architect/references/CLAUDE.md",
@@ -95958,6 +96078,7 @@
       "docs/tenants/peskids/PHASE-2-WEEK-1-VPS-SETUP.md",
       "docs/tenants/peskids/OPS-RUNBOOK.md",
       "docs/tenants/peskids/N8N-WORKFLOWS-GUIDE.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md",
       "docs/tenants/peskids/PHASE-2-IMPLEMENTATION-PLAN.md",
       "docs/tenants/onboarding-prompts/TENANT-ONBOARDING-TEMPLATE.md",
       "docs/brain/workflows/README.md",
@@ -98201,6 +98322,7 @@
       "docs/operations/README.md",
       "docs/adr/ADR-033-docs-canonicalization.md",
       "docs/adr/ADR-034-ci-hygiene.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md",
       "docs/tenants/peskids/AGENT-IMPLEMENTATION-PLAN.md",
       "docs/brain/workflows/shield.md",
       "docs/brain/workflows/billing.md",
@@ -98453,6 +98575,7 @@
       "docs/02-tools/NOTEBOOKLM-INTEGRATION.md",
       "docs/adr/ADR-043-supplement/INTEGRATION-CHECKLIST.md",
       "docs/tenants/peskids/VERCEL-DEPLOYMENT-GUIDE.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md",
       "docs/tenants/peskids/PHASE-2-CHECKLIST.md",
       "docs/testing/PR-187-TESTING-GUIDE.md",
       "docs/testing/E2E-TEST-SCENARIOS.md",
@@ -98490,7 +98613,8 @@
       "vendor/agency-agents/integrations/openclaw/ux-architect/AGENTS.md",
       "docs/runbooks/DEPLOYMENT-CHECKLIST.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-VPS-SETUP.md",
-      "docs/tenants/peskids/N8N-WORKFLOWS-GUIDE.md"
+      "docs/tenants/peskids/N8N-WORKFLOWS-GUIDE.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md"
     ],
     "cooldown": [
       "packages/skills/user/opsly-self-healing/SKILL.md"
@@ -99232,6 +99356,7 @@
       "docs/tenants/peskids/SPRINT-01-STATUS.md",
       "docs/tenants/peskids/SPRINT-01.md",
       "docs/tenants/peskids/FORMS-SPEC.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md",
       "docs/tenants/onboarding-prompts/DEPLOYMENT-VALIDATION.md",
       "docs/testing/QA-TESTING-BRIEF.md",
       "docs/testing/PHASE-2-TESTING.md",
@@ -100411,6 +100536,7 @@
       "docs/03-agents/LOCAL-AGENT-EXECUTION.md",
       "docs/02-tools/OBSIDIAN-NOTEBOOKLM-N8N-INTEGRATION.md",
       "docs/adr/ADR-043-supplement/INTEGRATION-CHECKLIST.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md",
       "docs/reports/AGENT-ANALYSIS-REAL-PROMPT.md"
     ],
     "minimo": [
@@ -100453,6 +100579,7 @@
       "docs/superpowers/specs/2026-05-25-peskids-opsly-refactor-design.md",
       "docs/01-development/TECHNICAL-DEBT.md",
       "docs/01-development/PERFORMANCE_BASELINE.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md",
       ".agents/skills/the-architect/references/knowledge/archetypes/api-backend.md"
     ],
     "ruta": [
@@ -101508,6 +101635,7 @@
       "docs/04-infrastructure/PLAN-OLLAMA-WORKER-2026-04-14.md",
       "docs/04-infrastructure/WORKER-TESTING.md",
       "docs/03-agents/AGENT-URL-VALIDATION.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md",
       ".agents/skills/the-architect/references/knowledge/building-blocks/api-design-patterns.md"
     ],
     "validacion": [
@@ -102221,6 +102349,7 @@
       "docs/03-agents/SOCIAL-MEDIA-AGENT-SYRA.md",
       "docs/02-tools/NOTEBOOKLM-INTEGRATION.md",
       "docs/tenants/peskids/AGENT-IMPLEMENTATION-PLAN.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md",
       "docs/tenants/runbooks/TENANT-INVITATIONS-SYSTEM.md",
       "docs/testing/PR-187-TESTING-GUIDE.md",
       "docs/testing/E2E-TEST-SCENARIOS.md",
@@ -102831,6 +102960,7 @@
       "docs/tenants/peskids/PHASE-2-WEEK1-EXECUTION-GUIDE.md",
       "docs/tenants/peskids/VERCEL-DEPLOYMENT-GUIDE.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-VPS-SETUP.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md",
       "docs/tenants/peskids/PHASE-2-CHECKLIST.md",
       "docs/tenants/runbooks/TENANT-INVITATIONS-SYSTEM.md",
       ".agents/skills/cyber-neo/SKILL.md",
@@ -104046,6 +104176,7 @@
       "docs/03-agents/OPSLY-2-0-MULTI-AGENT-BLUEPRINT.md",
       "docs/02-tools/OBSIDIAN-KNOWLEDGE-SYSTEM-STATUS.md",
       "docs/adr/ADR-032-scripts-organization.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md",
       "docs/reports/session-summary-2026-05-21.md",
       ".agents/skills/cyber-neo/references/report-template.md",
       ".agents/skills/the-architect/references/templates/claude-md-template.md",
@@ -109030,6 +109161,7 @@
       "docs/adr/ADR-033-docs-canonicalization.md",
       "docs/adr/ADR-043-supplement/COMPLETE-INDEX.md",
       "docs/adr/ADR-043-supplement/README.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md",
       "docs/reports/PARALLEL-EXECUTION-STATUS.md",
       "docs/reports/SESSION-SUMMARY-2026-05-08.md",
       "docs/reports/session-summary-2026-05-21.md"
@@ -113927,6 +114059,8 @@
       "docs/02-tools/NOTEBOOKLM-INTEGRATION.md",
       "docs/adr/ADR-043-supplement/INTEGRATION-CHECKLIST.md",
       "docs/tenants/peskids/N8N-WORKFLOWS-GUIDE.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md",
       "docs/testing/PR-187-TESTING-GUIDE.md",
       "docs/security/SECURITY-POSTURE-AUDIT.md",
       ".agents/skills/cyber-neo/references/supply-chain.md",
@@ -114001,6 +114135,7 @@
       "docs/tenants/peskids/PRODUCTION-HARDENING-BLUEPRINT.md",
       "docs/tenants/peskids/VERCEL-DEPLOYMENT-GUIDE.md",
       "docs/tenants/peskids/DEPLOYMENT-2026-05-21.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md",
       "docs/tenants/onboarding-prompts/DEPLOYMENT-VALIDATION.md",
       "docs/reports/PARALLEL-EXECUTION-STATUS.md",
       "docs/reports/ci-workflow-fix-deployment-blocked-2026-05-21.md",
@@ -114403,6 +114538,7 @@
       "docs/tenants/peskids/N8N-WORKFLOWS-GUIDE.md",
       "docs/tenants/peskids/DEPLOYMENT-2026-05-21.md",
       "docs/tenants/peskids/CLIENT-DEMO-CHECKLIST.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md",
       "docs/reports/audit-2026-04-07.md"
     ],
     "intcloudsysops": [
@@ -116011,6 +116147,7 @@
       "docs/adr/ADR-037-opsly-local-services-multi-tenant.md",
       "docs/adr/ADR-042-local-services-phase-2-webhooks.md",
       "docs/adr/ADR-024-ollama-local-worker-primary.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md",
       "docs/brain/modules/orchestrator.md",
       "docs/brain/modules/local-services.md",
       "docs/brain/workflows/local-agents.md",
@@ -116175,6 +116312,7 @@
       "docs/tenants/peskids/WORKFLOWS.md",
       "docs/tenants/peskids/EVENT-CONTRACT.md",
       "docs/tenants/peskids/SPRINT-01-STATUS.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md",
       "docs/tenants/peskids/MVP-BACKLOG.md",
       "docs/reports/VALIDATION-REPORT-2026-04-12.md",
       "docs/reports/AUTONOMY-EXECUTION-2026-04-29.md",
@@ -116241,8 +116379,10 @@
       "docs/tenants/peskids/PHASE-2-WEEK-1-VPS-SETUP.md",
       "docs/tenants/peskids/N8N-WORKFLOWS-GUIDE.md",
       "docs/tenants/peskids/CLIENT-HANDOFF-CHECKLIST-2026-05-24.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md",
       "docs/tenants/peskids/PHASE-2-WEEK1-CHECKLIST.md",
       "docs/tenants/peskids/PHASE-2-IMPLEMENTATION-PLAN.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md",
       "docs/reports/AGENT-ANALYSIS-REAL-PROMPT.md",
       "docs/reports/AUTONOMY-EXECUTION-2026-04-29.md",
       "docs/reports/PARALLEL-EXECUTION-2026-04-29.md",
@@ -116859,6 +116999,7 @@
       "docs/tenants/peskids/SPRINT-01.md",
       "docs/tenants/peskids/FORMS-SPEC.md",
       "docs/tenants/peskids/N8N-WORKFLOWS-GUIDE.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md",
       "docs/tenants/peskids/PHASE-2-WEEK1-CHECKLIST.md",
       "docs/tenants/peskids/MVP-BACKLOG.md",
       "docs/tenants/peskids/DEMO-SCRIPT.md",
@@ -118589,6 +118730,7 @@
       "docs/04-infrastructure/PRODUCTION-READINESS.md",
       "docs/02-tools/EXECUTION-PLAN-LOCALRANK-NOTEBOOKLM.md",
       "docs/tenants/peskids/PHASE-2-WEEK1-EXECUTION-GUIDE.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md",
       "docs/testing/PHASE1-TEST-PLAN.md",
       ".agents/skills/the-architect/references/questions/phase-1-discovery.md",
       ".agents/VPS-PRODUCTION-SETUP.md"
@@ -118683,6 +118825,7 @@
       "docs/adr/ADR-043-supplement/COST-OPTIMIZATION-DEEP-DIVE.md",
       "docs/adr/ADR-043-supplement/README.md",
       "docs/adr/ADR-043-supplement/EXECUTIVE-SUMMARY.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md",
       "docs/reports/AUTONOMY-GAP-ANALYSIS-2026-04-26.md",
       "docs/security/SECURITY-POSTURE-AUDIT.md",
       ".agents/skills/cyber-neo/references/report-template.md"
@@ -118900,6 +119043,7 @@
       "docs/adr/ADR-043-supplement/README.md",
       "docs/adr/ADR-043-supplement/EXECUTIVE-SUMMARY.md",
       "docs/tenants/peskids/CLIENT-HANDOFF-CHECKLIST-2026-05-24.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md",
       "docs/tenants/peskids/MVP-BACKLOG.md",
       "docs/reports/REVIEW-AGENT-ANALYSIS.md",
       "docs/reports/PARALLEL-EXECUTION-2026-04-29.md",
@@ -119860,6 +120004,7 @@
       "docs/03-agents/AGENT-URL-VALIDATION.md",
       "docs/adr/ADR-021-predictive-bi-scalability.md",
       "docs/tenants/peskids/README.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md",
       "docs/tenants/README.md",
       "docs/tenants/runbooks/TENANT-ONBOARDING-TRIAGE.md",
       "docs/tenants/runbooks/TENANT-INVITATIONS-SYSTEM.md",
@@ -120550,6 +120695,7 @@
       "docs/audits/DOCKER-OPTIMIZATION.md",
       "docs/adr/ADR-036-cli-consolidation-tools-cli-first.md",
       "docs/adr/ADR-035-safe-autonomous-evolution-framework.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md",
       "docs/blueprints/OPSLY-ENTERPRISE-HARDENING-BLUEPRINT.md"
     ],
     "normalize": [
@@ -120768,8 +120914,10 @@
       "docs/tenants/peskids/PHASE-2-WEEK1-EXECUTION-GUIDE.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-VPS-SETUP.md",
       "docs/tenants/peskids/DOPPLER-SETUP.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md",
       "docs/tenants/peskids/PHASE-2-WEEK1-CHECKLIST.md",
       "docs/tenants/peskids/PHASE-2-IMPLEMENTATION-PLAN.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md",
       "docs/tenants/peskids/PHASE-2-CHECKLIST.md",
       "docs/tenants/onboarding-prompts/INFRASTRUCTURE-SETUP.md",
       "docs/testing/PR-187-TESTING-GUIDE.md",
@@ -121262,6 +121410,7 @@
       "docs/adr/ADR-043-supplement/COST-OPTIMIZATION-DEEP-DIVE.md",
       "docs/adr/ADR-043-supplement/EXECUTIVE-SUMMARY.md",
       "docs/tenants/peskids/PRODUCTION-HARDENING-BLUEPRINT.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md",
       "docs/reports/PARALLEL-EXECUTION-STATUS.md",
       "docs/reports/ci-fix-workflow-audit-2026-05-21.md",
       "docs/reports/AUTONOMY-GAP-ANALYSIS-2026-04-26.md",
@@ -122123,6 +122272,8 @@
       "vendor/agency-agents/integrations/openclaw/mobile-app-builder/AGENTS.md",
       "docs/superpowers/specs/2026-05-25-peskids-opsly-refactor-design.md",
       "docs/00-architecture/ARCHITECTURE.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md",
       "docs/tenants/onboarding-prompts/TENANT-ONBOARDING-TEMPLATE.md",
       ".agents/skills/the-architect/references/knowledge/archetypes/mobile-app.md",
       ".agents/skills/the-architect/references/knowledge/building-blocks/deployment-patterns.md",
@@ -122163,6 +122314,7 @@
       "docs/tenants/peskids/PHASE-2-WEEK1-CHECKLIST.md",
       "docs/tenants/peskids/AGENT-IMPLEMENTATION-PLAN.md",
       "docs/tenants/peskids/PHASE-2-IMPLEMENTATION-PLAN.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md",
       "docs/tenants/peskids/PHASE-2-CHECKLIST.md",
       "docs/reports/REVIEW-AGENT-ANALYSIS.md",
       ".agents/VPS-PRODUCTION-SETUP.md"
@@ -122330,6 +122482,7 @@
       "docs/tenants/peskids/CHATBOX-N8N.md",
       "docs/tenants/peskids/VERCEL-DEPLOYMENT-GUIDE.md",
       "docs/tenants/peskids/DOPPLER-SETUP.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md",
       "docs/tenants/peskids/FUTURE-REPO-SEED.md",
       "docs/reports/audit-2026-04-07.md",
       ".claude/2-context-management/CLAUDE.md",
@@ -122640,6 +122793,7 @@
       "docs/03-agents/SSH-USERS-FOR-AGENTS.md",
       "docs/02-tools/EXECUTION-PLAN-LOCALRANK-NOTEBOOKLM.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-VPS-SETUP.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md",
       ".claude/README.md"
     ],
     "sugerida": [
@@ -122809,6 +122963,7 @@
       "tools/agent-packs/vendor/cyber-neo/skills/cyber-neo/references/secrets-patterns.md",
       "docs/01-development/PHASE-2-DEPLOYMENT.md",
       "docs/tenants/peskids/N8N-WORKFLOWS-GUIDE.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md",
       ".agents/skills/cyber-neo/references/secrets-patterns.md"
     ],
     "gitlab": [
@@ -123206,6 +123361,7 @@
       "docs/obsidian/research/trading-pattern-radar.md",
       "docs/obsidian/research/security-pattern-radar.md",
       "docs/04-infrastructure/SSH-COMMANDS-LOCALRANK.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md",
       ".agents/skills/cyber-neo/references/iac-docker.md",
       ".agents/VPS-PRODUCTION-SETUP.md"
     ],
@@ -123231,6 +123387,7 @@
       "docs/02-tools/SETUP-NOTION-MCP.md",
       "docs/adr/ADR-031-token-optimization-ollama-primary.md",
       "docs/tenants/peskids/CHATBOX-N8N.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md",
       "docs/tenants/peskids/FUTURE-REPO-SEED.md",
       ".agents/skills/cyber-neo/references/iac-docker.md"
     ],
@@ -124302,6 +124459,7 @@
       "docs/adr/ADR-039-sales-channels-email-whatsapp.md",
       "docs/adr/ADR-028-agent-api-routing.md",
       "docs/adr/ADR-043-supplement/COST-OPTIMIZATION-DEEP-DIVE.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md",
       "docs/reports/ci-fix-workflow-audit-2026-05-21.md",
       "docs/blueprints/OPSLY-ENTERPRISE-HARDENING-BLUEPRINT.md"
     ],
@@ -124945,6 +125103,7 @@
       "docs/tenants/peskids/PHASE-2-WEEK1-EXECUTION-GUIDE.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-VPS-SETUP.md",
       "docs/tenants/peskids/PHASE-2-WEEK1-CHECKLIST.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md",
       ".agents/skills/the-architect/references/knowledge/archetypes/mobile-app.md"
     ],
     "capture": [
@@ -124969,6 +125128,7 @@
       "docs/tenants/peskids/PHASE-2-WEEK-1-VPS-SETUP.md",
       "docs/tenants/peskids/SPRINT-01.md",
       "docs/tenants/peskids/N8N-WORKFLOWS-GUIDE.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md",
       "docs/tenants/peskids/PHASE-2-WEEK1-CHECKLIST.md",
       "docs/tenants/peskids/MVP-BACKLOG.md",
       "docs/tenants/peskids/PHASE-2-IMPLEMENTATION-PLAN.md",
@@ -125526,6 +125686,7 @@
       "docs/03-agents/AUTONOMOUS-ITERATION.md",
       "docs/03-agents/VALIDATION-AND-ITERATION-SYSTEM.md",
       "docs/tenants/peskids/REFACTOR-AUDIT-2026-05-26.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md",
       ".agents/skills/the-architect/references/knowledge/building-blocks/frontend-stacks.md",
       ".agents/skills/the-architect/references/knowledge/building-blocks/styling-systems.md",
       ".agents/skills/the-architect/references/knowledge/building-blocks/state-management.md"
@@ -126586,6 +126747,7 @@
       "docs/runbooks/VPS-DEPLOYMENT-2026-05-08.md",
       "docs/01-development/QA-REVIEW-COMPLETE.md",
       "docs/audits/SECURITY-INPUT-VALIDATION-AUDIT.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md",
       "docs/tenants/runbooks/TENANT-INVITATIONS-SYSTEM.md",
       "docs/testing/PHASE1-TEST-PLAN.md",
       "docs/reports/REVIEW-AGENT-ANALYSIS.md",
@@ -128106,6 +128268,7 @@
       "docs/tenants/peskids/DEPLOYMENT-2026-05-21.md",
       "docs/tenants/peskids/OPSLY-REUSE.md",
       "docs/tenants/peskids/CLIENT-HANDOFF-CHECKLIST-2026-05-24.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md",
       "docs/tenants/peskids/MVP-BACKLOG.md",
       "docs/tenants/peskids/AGENT-IMPLEMENTATION-PLAN.md",
       "docs/tenants/peskids/CLIENT-DEMO-CHECKLIST.md",
@@ -128114,6 +128277,7 @@
       "docs/tenants/peskids/DESIGN-PACK-REFERENCE.md",
       "docs/tenants/peskids/PHASE-2-IMPLEMENTATION-PLAN.md",
       "docs/tenants/peskids/INSTAGRAM-FEED.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md",
       "docs/tenants/peskids/FUTURE-REPO-SEED.md",
       "docs/brain/tenants/peskids.md",
       "docs/blueprints/opsly-operational-blueprint/NICHE-PLAYBOOKS.md"
@@ -128385,6 +128549,8 @@
       "docs/tenants/peskids/VERCEL-DEPLOYMENT-GUIDE.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-VPS-SETUP.md",
       "docs/tenants/peskids/SPRINT-01.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md",
       ".claude/AGENTS-ENHANCEMENTS.md",
       ".agents/UNIFIED-AGENT-ARCHITECTURE.md",
       ".agents/VPS-PRODUCTION-SETUP.md"
@@ -135924,6 +136090,7 @@
       "docs/01-development/SEMANA-1-INFORME.md",
       "docs/04-infrastructure/PRODUCTION-READINESS.md",
       "docs/adr/ADR-036-cli-consolidation-tools-cli-first.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md",
       "docs/tenants/peskids/MVP-BACKLOG.md",
       "docs/testing/QA-TESTING-BRIEF.md"
     ],
@@ -139304,7 +139471,8 @@
       "vendor/agency-agents/integrations/opencode/agents/embedded-firmware-engineer.md",
       "vendor/agency-agents/integrations/openclaw/embedded-firmware-engineer/AGENTS.md",
       "docs/01-development/TECHNICAL-DEBT.md",
-      "docs/04-infrastructure/PRODUCTION-STATUS-2026-05-15.md"
+      "docs/04-infrastructure/PRODUCTION-STATUS-2026-05-15.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md"
     ],
     "connect": [
       "vendor/agency-agents/integrations/qwen/agents/embedded-firmware-engineer.md",
@@ -139560,6 +139728,7 @@
       "docs/adr/ADR-043-supplement/DECISION-RATIONALE.md",
       "docs/tenants/peskids/SPRINT-01-STATUS.md",
       "docs/tenants/peskids/SPRINT-01.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md",
       "docs/reports/ci-workflow-fix-deployment-blocked-2026-05-21.md"
     ],
     "coaching": [
@@ -140204,7 +140373,8 @@
       "vendor/agency-agents/integrations/kimi/reality-checker/system.md",
       "vendor/agency-agents/integrations/antigravity/agency-reality-checker/SKILL.md",
       "vendor/agency-agents/integrations/opencode/agents/reality-checker.md",
-      "vendor/agency-agents/integrations/openclaw/reality-checker/AGENTS.md"
+      "vendor/agency-agents/integrations/openclaw/reality-checker/AGENTS.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md"
     ],
     "screenshots": [
       "vendor/agency-agents/integrations/qwen/agents/reality-checker.md",
@@ -145016,6 +145186,7 @@
       "docs/history/plans/IMPLEMENTATION-STATUS.md",
       "docs/01-development/VALIDATION-REPORT-2026-04-12.md",
       "docs/04-infrastructure/VPS-ARCHITECTURE.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md",
       "docs/reports/AUTONOMY-EXECUTION-2026-04-29.md"
     ],
     "comment": [
@@ -146670,8 +146841,10 @@
       "docs/tenants/peskids/PHASE-2-WEEK-1-VPS-SETUP.md",
       "docs/tenants/peskids/SPRINT-01.md",
       "docs/tenants/peskids/FORMS-SPEC.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md",
       "docs/tenants/peskids/PHASE-2-WEEK1-CHECKLIST.md",
       "docs/tenants/peskids/PHASE-2-IMPLEMENTATION-PLAN.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md",
       "docs/blueprints/opsly-operational-blueprint/IMPLEMENTATION-CHECKLIST.md"
     ],
     "genre": [
@@ -146755,7 +146928,8 @@
       "vendor/agency-agents/integrations/openclaw/brand-guardian/SOUL.md"
     ],
     "values": [
-      "vendor/agency-agents/integrations/openclaw/brand-guardian/AGENTS.md"
+      "vendor/agency-agents/integrations/openclaw/brand-guardian/AGENTS.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md"
     ],
     "folder": [
       "vendor/agency-agents/integrations/openclaw/roblox-systems-scripter/AGENTS.md"
@@ -147717,7 +147891,8 @@
     ],
     "tsx": [
       "docs/superpowers/specs/2026-05-25-peskids-opsly-refactor-design.md",
-      "docs/tenants/peskids/REFACTOR-AUDIT-2026-05-26.md"
+      "docs/tenants/peskids/REFACTOR-AUDIT-2026-05-26.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md"
     ],
     "controlled": [
       "docs/plans/CLI-MIGRATION-CHECKLIST.md",
@@ -148037,6 +148212,7 @@
       "docs/runbooks/AUTONOMOUS-PROD-60D.md",
       "docs/tenants/peskids/PHASE-2-WEEK1-EXECUTION-GUIDE.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-VPS-SETUP.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md",
       "docs/tenants/peskids/PHASE-2-WEEK1-CHECKLIST.md",
       "docs/tenants/peskids/PHASE-2-IMPLEMENTATION-PLAN.md"
     ],
@@ -148148,7 +148324,8 @@
     "completed": [
       "docs/ops/issue-bankruptcy-2026-05-03.md",
       "docs/tenants/peskids/REFACTOR-AUDIT-2026-05-26.md",
-      "docs/tenants/peskids/EVENT-CONTRACT.md"
+      "docs/tenants/peskids/EVENT-CONTRACT.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md"
     ],
     "projections": [
       "docs/ops/issue-bankruptcy-2026-05-03.md"
@@ -148857,7 +149034,8 @@
       "docs/tenants/peskids/OWNER-RUNBOOK.md",
       "docs/tenants/peskids/PHASE-2-WEEK-1-VPS-SETUP.md",
       "docs/tenants/peskids/MVP-PLAN.md",
-      "docs/tenants/peskids/CLIENT-HANDOFF-CHECKLIST-2026-05-24.md"
+      "docs/tenants/peskids/CLIENT-HANDOFF-CHECKLIST-2026-05-24.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md"
     ],
     "makers": [
       "docs/history/consolidation/CONSOLIDATION-INDEX.md"
@@ -151037,7 +151215,8 @@
     ],
     "payload": [
       "docs/00-architecture/ARCHITECTURE-ADR-043-ASCII-DIAGRAMS.md",
-      "docs/01-development/N8N-IMPORT-GUIDE.md"
+      "docs/01-development/N8N-IMPORT-GUIDE.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md"
     ],
     "syra": [
       "docs/00-architecture/ARCHITECTURE-ADR-043-ASCII-DIAGRAMS.md",
@@ -152237,7 +152416,8 @@
     "implemented": [
       "docs/01-development/SPRINTS_13_14.md",
       "docs/02-tools/OBSIDIAN-KNOWLEDGE-SYSTEM-STATUS.md",
-      "docs/tenants/peskids/REFACTOR-AUDIT-2026-05-26.md"
+      "docs/tenants/peskids/REFACTOR-AUDIT-2026-05-26.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md"
     ],
     "scores": [
       "docs/01-development/SPRINTS_13_14.md"
@@ -153338,7 +153518,8 @@
       "docs/audits/COST-DEEP-DIVE.md"
     ],
     "variable": [
-      "docs/audits/COST-DEEP-DIVE.md"
+      "docs/audits/COST-DEEP-DIVE.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md"
     ],
     "completados": [
       "docs/05-deployment-status/DEPLOYMENT-STATUS-2026-05-04.md"
@@ -154710,7 +154891,8 @@
       "docs/tenants/peskids/FORMS-SPEC.md"
     ],
     "forms": [
-      "docs/tenants/peskids/FORMS-SPEC.md"
+      "docs/tenants/peskids/FORMS-SPEC.md",
+      "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md"
     ],
     "inspeccion": [
       "docs/tenants/peskids/OPS-RUNBOOK.md"
@@ -156246,6 +156428,8 @@
     "docs/tenants/peskids/OWNER-RUNBOOK.md",
     "docs/tenants/peskids/PHASE-2-CHECKLIST.md",
     "docs/tenants/peskids/PHASE-2-IMPLEMENTATION-PLAN.md",
+    "docs/tenants/peskids/PHASE-2-WEEK-1-ENV-SETUP.md",
+    "docs/tenants/peskids/PHASE-2-WEEK-1-READINESS-REPORT.md",
     "docs/tenants/peskids/PHASE-2-WEEK-1-VPS-SETUP.md",
     "docs/tenants/peskids/PHASE-2-WEEK1-CHECKLIST.md",
     "docs/tenants/peskids/PHASE-2-WEEK1-EXECUTION-GUIDE.md",
