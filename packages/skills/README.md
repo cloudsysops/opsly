@@ -185,6 +185,10 @@ En `skills/templates/`:
 
 ## Integración
 
+### Pack vendor `addyosmani/agent-skills`
+
+El pack externo ya vive en `skills/vendor/agent-skills/` y está registrado en `skills/index.json`. El loader de Opsly ya resuelve `path`, así que `node scripts/load-skills.js bootstrap` y `node scripts/skill-finder.js ...` pueden cargar esas skills directamente para agentes internos sin duplicar archivos en `skills/user/`.
+
 ### Claude / Cursor
 
 Añadir a `.claude/CLAUDE.md`:

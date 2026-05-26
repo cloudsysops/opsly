@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.57.0",
+    "@intcloudsysops/content-studio": "*",
     "@intcloudsysops/llm-gateway": "^1.0.0",
     "@intcloudsysops/notebooklm-agent": "^1.0.0",
     "@intcloudsysops/services": "^1.0.0",

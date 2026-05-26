@@ -21,7 +21,6 @@ import { fileURLToPath } from 'node:url';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = join(__dirname, '..');
 const SKILLS_INDEX = join(REPO_ROOT, 'skills', 'index.json');
-const SKILLS_DIR = join(REPO_ROOT, 'skills', 'user');
 
 function loadIndex() {
   if (!existsSync(SKILLS_INDEX)) {
@@ -30,8 +29,13 @@ function loadIndex() {
   return JSON.parse(readFileSync(SKILLS_INDEX, 'utf8'));
 }
 
-function loadSkillMarkdown(skillName) {
-  const skillPath = join(SKILLS_DIR, skillName, 'SKILL.md');
+function resolveSkillDir(skill) {
+  const relativePath = skill.path || `skills/user/${skill.name}/`;
+  return join(REPO_ROOT, relativePath);
+}
+
+function loadSkillMarkdown(skill) {
+  const skillPath = join(resolveSkillDir(skill), 'SKILL.md');
   if (!existsSync(skillPath)) {
     return null;
   }
@@ -43,7 +47,7 @@ function loadAllSkills() {
   const skills = [];
 
   for (const skill of index.skills) {
-    const markdown = loadSkillMarkdown(skill.name);
+    const markdown = loadSkillMarkdown(skill);
     skills.push({
       ...skill,
       content: markdown,
@@ -87,12 +91,11 @@ function listSkills(category = null) {
 
   if (category) {
     const cats = index.categories[category];
-    if (!cats) {
-      throw new Error(
-        `Categoría "${category}" no encontrada. Disponibles: ${Object.keys(index.categories).join(', ')}`
-      );
+    if (cats) {
+      return cats.map((name) => index.skills.find((s) => s.name === name));
     }
-    return cats.map((name) => index.skills.find((s) => s.name === name));
+
+    return index.skills.filter((skill) => skill.category === category);
   }
 
   return index.skills;

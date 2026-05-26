@@ -1,5 +1,11 @@
 import { createServer, type IncomingMessage, type ServerResponse } from 'node:http';
 import { handleOAuthRequest } from './auth/oauth-server.js';
+import {
+  generateAIContent,
+  generateAIContentBilingual,
+  createLLMClient,
+  type AIGenerationParams,
+} from '@intcloudsysops/content-studio';
 
 const DEFAULT_PORT = 3003;
 
@@ -59,6 +65,76 @@ async function handleHttp(req: IncomingMessage, res: ServerResponse): Promise<vo
   if (req.method === 'GET' && pathname === '/health') {
     res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
     res.end(JSON.stringify({ status: 'ok', service: 'mcp' }));
+    return;
+  }
+
+  // ── Content Studio: POST /content/generate ─────────────────────────────────
+  if (req.method === 'OPTIONS' && pathname.startsWith('/content/')) {
+    sendCorsPreflight(res, 'POST, OPTIONS');
+    return;
+  }
+
+  if (req.method === 'POST' && pathname === '/content/generate') {
+    const raw = await readRequestBody(req);
+    let params: AIGenerationParams;
+    try {
+      params = JSON.parse(raw) as AIGenerationParams;
+      if (!params.topic || !['opsly', 'technology', 'motivation'].includes(params.topic)) {
+        throw new Error('topic must be opsly | technology | motivation');
+      }
+      if (!params.tenant_slug) throw new Error('tenant_slug is required');
+      params.language = params.language ?? 'both';
+      params.platforms = params.platforms ?? ['instagram', 'youtube', 'tiktok'];
+    } catch (err) {
+      res.writeHead(400, { 'Content-Type': 'application/json; charset=utf-8' });
+      res.end(JSON.stringify({ ok: false, error: String(err) }));
+      return;
+    }
+    const client = createLLMClient(params.tenant_slug);
+    if (params.language === 'both') {
+      const result = await generateAIContentBilingual(params, client);
+      res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+      res.end(JSON.stringify({ ok: true, result }));
+    } else {
+      const draft = await generateAIContent(params, client);
+      res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+      res.end(JSON.stringify({ ok: true, draft }));
+    }
+    return;
+  }
+
+  // ── Content Studio: POST /content/batch ────────────────────────────────────
+  if (req.method === 'POST' && pathname === '/content/batch') {
+    const raw = await readRequestBody(req);
+    let requests: AIGenerationParams[];
+    try {
+      const parsed = JSON.parse(raw) as { requests: AIGenerationParams[] };
+      requests = parsed.requests;
+      if (!Array.isArray(requests) || requests.length === 0 || requests.length > 5) {
+        throw new Error('requests must be an array of 1-5 items');
+      }
+    } catch (err) {
+      res.writeHead(400, { 'Content-Type': 'application/json; charset=utf-8' });
+      res.end(JSON.stringify({ ok: false, error: String(err) }));
+      return;
+    }
+    const results = await Promise.allSettled(
+      requests.map((params) => {
+        const client = createLLMClient(params.tenant_slug ?? 'opsly');
+        params.language = params.language ?? 'both';
+        params.platforms = params.platforms ?? ['instagram', 'youtube', 'tiktok'];
+        return params.language === 'both'
+          ? generateAIContentBilingual(params, client)
+          : generateAIContent(params, client);
+      })
+    );
+    const drafts = results.map((r, i) =>
+      r.status === 'fulfilled'
+        ? { ok: true, index: i, data: r.value }
+        : { ok: false, index: i, error: r.reason instanceof Error ? r.reason.message : String(r.reason) }
+    );
+    res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+    res.end(JSON.stringify({ ok: true, drafts }));
     return;
   }
 

@@ -176,6 +176,32 @@ Eres el arquitecto senior de **Opsly** — plataforma multi-tenant SaaS
 que despliega stacks de agentes autónomos (n8n, Uptime Kuma) por cliente,
 con facturación Stripe, backups automáticos y dashboard de administración.
 
+## Roadmap Vivo
+
+**Objetivo compartido:** **Opsly = una agencia de agentes e incubadora de plataformas**.
+
+**/goal operativo:** poner esto operativo para validar y testear con Peskids sin romper Peskids.
+
+**Prioridad actual para todos los agentes:**
+1. Consolidar `Opsly Core` como control plane único.
+2. Formalizar `Mission Control`, `tenant registry`, `agent registry` y `provisioning`.
+3. Convertir `Peskids` en tenant piloto repetible, no en fork especial.
+4. Preparar extracción por tenant a VPS propio sin cambiar el contrato del producto.
+5. Usar skills para estandarizar cómo trabajan los agentes internos.
+
+**Regla mental obligatoria:**
+- `Core` = sirve a varios clientes.
+- `Tenant` = sirve a un cliente.
+- `Agent` = ejecuta trabajo gobernado.
+- `Skill` = define cómo trabaja un agente.
+
+**No negociar:**
+- No crear control planes paralelos.
+- No crear forks por cliente para capacidades comunes.
+- No introducir Kubernetes, Swarm o multi-cloud sin ADR explícito.
+- No permitir IA sin `OpenClaw -> LLM Gateway` y sin trazabilidad por `tenant_slug` / `request_id`.
+- No romper Peskids al validar la plataforma.
+
 ## Reglas Rápidas – DOs y NOs para Agentes
 
 - **DO:** todo tráfico IA pasa por OpenClaw → LLM Gateway (sin llamadas LLM directas fuera de ese flujo).
