@@ -1,4 +1,8 @@
-import { parsePortalMode, parsePortalServices, portalUrlReachable } from './portal-me';
+import {
+  parsePortalMode,
+  portalUrlReachable,
+  resolvePortalServicesForTenant,
+} from './portal-me';
 import type { TrustedPortalSession } from './portal-trusted-identity';
 
 /**
@@ -7,7 +11,7 @@ import type { TrustedPortalSession } from './portal-trusted-identity';
  */
 export async function respondTrustedPortalMe(session: TrustedPortalSession): Promise<Response> {
   const { user, tenant: lookup } = session;
-  const svc = parsePortalServices(lookup.services);
+  const svc = resolvePortalServicesForTenant(lookup.slug, lookup.services);
   const [n8n_reachable, uptime_reachable] = await Promise.all([
     portalUrlReachable(svc.n8n_url),
     portalUrlReachable(svc.uptime_url),

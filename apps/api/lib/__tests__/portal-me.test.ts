@@ -5,6 +5,7 @@ import {
   parsePortalServices,
   portalUrlReachable,
   readPortalTenantSlugFromUser,
+  resolvePortalServicesForTenant,
 } from '../portal-me';
 import * as redisCacheMod from '../redis-cache';
 import * as supabaseMod from '../supabase';
@@ -58,6 +59,38 @@ describe('parsePortalServices', () => {
       uptime: 'https://u.example',
     });
     expect(r.uptime_url).toBe('https://u.example');
+  });
+});
+
+describe('resolvePortalServicesForTenant', () => {
+  it('uses canonical Peskids monitoring URLs regardless of stored services', () => {
+    expect(
+      resolvePortalServicesForTenant('peskids', {
+        n8n: 'https://n8n.old.example',
+        uptime: 'https://uptime.old.example',
+        n8n_basic_auth_user: 'u',
+        n8n_basic_auth_password: 'p',
+      })
+    ).toEqual({
+      n8n_url: 'https://n8n-peskids.op-sly.com',
+      uptime_url: 'https://uptime-peskids.op-sly.com',
+      n8n_user: 'u',
+      n8n_password: 'p',
+    });
+  });
+
+  it('keeps generic tenants unchanged', () => {
+    expect(
+      resolvePortalServicesForTenant('acme', {
+        n8n: 'https://n8n.acme',
+        uptime: 'https://uptime.acme',
+      })
+    ).toEqual({
+      n8n_url: 'https://n8n.acme',
+      uptime_url: 'https://uptime.acme',
+      n8n_user: null,
+      n8n_password: null,
+    });
   });
 });
 

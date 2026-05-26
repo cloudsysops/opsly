@@ -45,6 +45,28 @@ export function parsePortalServices(services: Json): {
   return { n8n_url, uptime_url, n8n_user, n8n_password };
 }
 
+export function resolvePortalServicesForTenant(
+  tenantSlug: string,
+  services: Json
+): {
+  n8n_url: string | null;
+  uptime_url: string | null;
+  n8n_user: string | null;
+  n8n_password: string | null;
+} {
+  const parsed = parsePortalServices(services);
+
+  if (tenantSlug === 'peskids') {
+    return {
+      ...parsed,
+      n8n_url: 'https://n8n-peskids.op-sly.com',
+      uptime_url: 'https://uptime-peskids.op-sly.com',
+    };
+  }
+
+  return parsed;
+}
+
 export function parsePortalMode(meta: unknown): PortalMode | null {
   const raw = readString(meta, 'mode') ?? readString(meta, 'portal_mode');
   if (raw === 'developer' || raw === 'managed' || raw === 'security_defense') {

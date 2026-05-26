@@ -6,5 +6,5 @@
   "workflows_count": 4,
   "pricing_per_unit": 0,
   "currency": "USD",
-  "notes": "Incubado en Opsly (piloto). Tenant directo, plan startup, owner sierrasantiango90@gmail.com. CRM Starter Pack (4 workflows) documentado en VPS 2026-04-30. MVP y extracción: docs/tenants/peskids/. Sin parent_tenant_slug."
+  "notes": "Incubado en Opsly (piloto). Tenant directo, plan startup, owner sierrasantiago90@gmail.com. CRM Starter Pack (4 workflows) documentado en VPS 2026-04-30. MVP y extracción: docs/tenants/peskids/. Sin parent_tenant_slug."
 }
