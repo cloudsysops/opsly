@@ -1,5 +1,5 @@
 import { Bell } from 'lucide-react'
-import { PeskidsWave, StarBurst } from '@/components/brand/peskids-logo'
+import { StarBurst } from '@/components/brand/peskids-logo'
 import { GrowthWidget } from '@/components/progress/growth-widget'
 import { peskidsColorTokens } from '@/lib/tokens'
 import { cn } from '@/lib/utils'

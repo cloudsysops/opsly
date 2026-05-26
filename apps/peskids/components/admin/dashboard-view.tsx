@@ -1,7 +1,6 @@
 'use client'
 
 import { useCallback, useMemo, useState } from 'react'
-import { Copy } from 'lucide-react'
 import type { DashboardData } from '@/lib/types'
 import { AdminShell } from '@/components/admin/admin-shell'
 import { TeamPanel } from '@/components/admin/team-panel'

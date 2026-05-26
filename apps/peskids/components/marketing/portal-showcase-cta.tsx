@@ -1,7 +1,6 @@
 import Link from 'next/link'
 import { Gift, BadgePercent, Link2 } from 'lucide-react'
 import { peskidsColorTokens } from '@/lib/tokens'
-import { cn } from '@/lib/utils'
 
 function MiniReferralStep({
   icon: Icon,

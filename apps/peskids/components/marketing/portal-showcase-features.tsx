@@ -1,39 +1,18 @@
 import {
   CalendarClock,
   CreditCard,
-  Gift,
   MessageSquare,
   Sparkles,
   Star,
-  Bell,
   CheckCircle2,
   ClipboardList,
   ShieldCheck,
   Waves,
-  BadgePercent,
-  Link2,
 } from 'lucide-react'
 import { PeskidsLogo } from '@/components/brand/peskids-logo'
 import { Card, CardContent } from '@/components/ui/card'
 import { peskidsColorTokens } from '@/lib/tokens'
 import { cn } from '@/lib/utils'
-
-const parentActions = [
-  { icon: CalendarClock, label: 'Reservar' },
-  { icon: CreditCard, label: 'Pagar' },
-  { icon: MessageSquare, label: 'Mensaje' },
-  { icon: Star, label: 'Progreso' },
-]
-
-const week = [
-  { day: 'Lun', date: 18, has: false },
-  { day: 'Mar', date: 19, has: true, attended: true },
-  { day: 'Mié', date: 20, has: false },
-  { day: 'Jue', date: 21, has: true, today: true },
-  { day: 'Vie', date: 22, has: false },
-  { day: 'Sáb', date: 23, has: true },
-  { day: 'Dom', date: 24, has: false },
-]
 
 const milestones = [
   { name: 'Burbujas', state: 'done', date: 'mar 2025' },
