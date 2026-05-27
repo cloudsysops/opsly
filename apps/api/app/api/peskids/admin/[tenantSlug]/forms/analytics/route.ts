@@ -42,7 +42,7 @@ export async function GET(
 
         // Fetch forms for this tenant
         const { data: forms, error: formsError } = await supabase
-          .from('peskids.forms')
+          .schema('peskids').from('forms')
           .select('id, form_id, title')
           .eq('tenant_slug', tenantSlug)
           .eq('status', 'active');
@@ -65,7 +65,7 @@ export async function GET(
 
         if (formIds.length > 0) {
           const { data: analyticsData, error: analyticsError } = await supabase
-            .from('peskids.form_analytics')
+            .schema('peskids').from('form_analytics')
             .select(
               'form_id, submissions_count, unique_users, avg_completion_time_seconds, abandonment_rate, error_count'
             )
@@ -79,7 +79,7 @@ export async function GET(
 
         // Fetch latest submissions for each form
         const { data: submissions, error: submissionsError } = await supabase
-          .from('peskids.form_submissions')
+          .schema('peskids').from('form_submissions')
           .select('form_id, completed_at')
           .eq('tenant_slug', tenantSlug)
           .eq('status', 'submitted')

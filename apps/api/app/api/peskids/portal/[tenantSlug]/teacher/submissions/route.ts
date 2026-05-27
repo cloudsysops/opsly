@@ -46,7 +46,7 @@ export async function GET(
 
         // Build query for submissions
         let query = supabase
-          .from('peskids.form_submissions')
+          .schema('peskids').from('form_submissions')
           .select('id, submission_id, form_id, form_data, completed_at, score, feedback, status')
           .eq('tenant_slug', tenantSlug);
 
@@ -75,7 +75,7 @@ export async function GET(
         const formTitleMap = new Map<string, string>();
         if (formIds.size > 0) {
           const { data: forms } = await supabase
-            .from('peskids.forms')
+            .schema('peskids').from('forms')
             .select('id, title')
             .in('id', Array.from(formIds));
 

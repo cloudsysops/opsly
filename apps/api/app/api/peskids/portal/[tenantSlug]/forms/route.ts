@@ -34,7 +34,7 @@ export async function GET(
 
         // Fetch forms for this tenant
         const { data: forms, error: formsError } = await supabase
-          .from('peskids.forms')
+          .schema('peskids').from('forms')
           .select('id, form_id, title, description, status')
           .eq('tenant_slug', tenantSlug)
           .order('created_at', { ascending: false });
@@ -51,7 +51,7 @@ export async function GET(
 
         if (formIds.length > 0) {
           const { data: submissions, error: submissionsError } = await supabase
-            .from('peskids.form_submissions')
+            .schema('peskids').from('form_submissions')
             .select('form_id, completed_at')
             .eq('tenant_slug', tenantSlug)
             .in('form_id', formIds);
@@ -110,7 +110,7 @@ export async function POST(
 
       // Create form
       const { data: form, error: formError } = await supabase
-        .from('peskids.forms')
+        .schema('peskids').from('forms')
         .insert({
           form_id: formId,
           tenant_slug: tenantSlug,
@@ -143,7 +143,7 @@ export async function POST(
         }));
 
         const { error: fieldsError } = await supabase
-          .from('peskids.form_fields')
+          .schema('peskids').from('form_fields')
           .insert(fieldsData);
 
         if (fieldsError) {
@@ -154,7 +154,7 @@ export async function POST(
 
       // Log audit event
       try {
-        await supabase.rpc('log_audit_event', {
+        await supabase.schema('peskids').rpc('log_audit_event', {
           p_action: 'form_created',
           p_actor_id: session.user.id,
           p_tenant_slug: tenantSlug,

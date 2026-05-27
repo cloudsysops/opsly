@@ -48,7 +48,7 @@ export async function POST(
 
       // Update submissions
       const { data: updated, error: updateError } = await supabase
-        .from('peskids.form_submissions')
+        .schema('peskids').from('form_submissions')
         .update({
           score: body.score,
           feedback: body.feedback || null,
@@ -66,7 +66,7 @@ export async function POST(
 
       // Log audit event
       try {
-        await supabase.rpc('log_audit_event', {
+        await supabase.schema('peskids').rpc('log_audit_event', {
           p_action: 'form_submissions_bulk_graded',
           p_actor_id: session.user.id,
           p_tenant_slug: tenantSlug,

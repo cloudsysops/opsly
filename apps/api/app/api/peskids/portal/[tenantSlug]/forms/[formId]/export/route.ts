@@ -100,7 +100,7 @@ export async function GET(
 
         // Verify form exists
         const { data: form, error: formError } = await supabase
-          .from('peskids.forms')
+          .schema('peskids').from('forms')
           .select('id, title')
           .eq('form_id', formId)
           .eq('tenant_slug', tenantSlug)
@@ -112,7 +112,7 @@ export async function GET(
 
         // Get submissions
         const { data: submissions, error: submissionsError } = await supabase
-          .from('peskids.form_submissions')
+          .schema('peskids').from('form_submissions')
           .select('submission_id, submission_data, completed_at, status, score, feedback')
           .eq('form_id', formId)
           .eq('tenant_slug', tenantSlug)
@@ -141,7 +141,7 @@ export async function GET(
 
         // Log audit event
         try {
-          await supabase.rpc('log_audit_event', {
+          await supabase.schema('peskids').rpc('log_audit_event', {
             p_action: 'form_submissions_exported',
             p_actor_id: session.user.id,
             p_tenant_slug: tenantSlug,
