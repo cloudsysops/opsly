@@ -1,25 +1,9 @@
 import type { NextRequest } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
 import { jsonError, jsonOk } from '@/lib/api-response';
 import { HTTP_STATUS } from '@/lib/constants';
 import { triggerWebhooks } from '@/lib/peskids-webhook-trigger';
 import type { WebhookConfig, WebhookTriggerResult } from '@/lib/peskids-types';
-
-function requireEnv(name: string): string {
-  const value = process.env[name];
-  if (!value) {
-    throw new Error(`Missing environment variable: ${name}`);
-  }
-  return value;
-}
-
-function getSupabaseClient() {
-  const url = requireEnv('NEXT_PUBLIC_SUPABASE_URL');
-  const serviceKey = requireEnv('SUPABASE_SERVICE_ROLE_KEY');
-  return createClient(url, serviceKey, {
-    auth: { autoRefreshToken: false, persistSession: false },
-  });
-}
+import { getServiceClient } from '@/lib/supabase';
 
 interface FormSubmissionPayload {
   formId: string;
@@ -45,7 +29,7 @@ export async function POST(
       return jsonError('Submission data is required', HTTP_STATUS.BAD_REQUEST);
     }
 
-    const supabase = getSupabaseClient();
+    const supabase = getServiceClient();
 
     // Get form to find tenant_slug
     const { data: form, error: formError } = await supabase

@@ -1,8 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
-
-const SUPABASE_URL = process.env.SUPABASE_URL || '';
-const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+import { getServiceClient } from '@/lib/supabase';
 
 // Sprint 9: These functions will be implemented in @intcloudsysops/notebooklm-agent
 interface TenantNotebookConfig {
@@ -58,7 +55,7 @@ export async function GET(
 ): Promise<NextResponse> {
   try {
     const { slug } = await params;
-    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
+    const supabase = getServiceClient();
 
     // Validar que el tenant existe
     const { data: tenant, error: tenantError } = await supabase
@@ -120,7 +117,7 @@ export async function POST(
     const body = await request.json().catch(() => ({}));
     const { action } = body;
 
-    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
+    const supabase = getServiceClient();
 
     // Validar que el tenant existe
     const { data: tenant, error: tenantError } = await supabase

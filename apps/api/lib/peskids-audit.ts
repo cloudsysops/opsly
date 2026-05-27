@@ -1,4 +1,4 @@
-import { createClient } from '@supabase/supabase-js';
+import { getServiceClient } from './supabase';
 
 interface AuditLogOptions {
   tenantSlug: string;
@@ -11,25 +11,9 @@ interface AuditLogOptions {
   userAgent?: string;
 }
 
-function requireEnv(name: string): string {
-  const value = process.env[name];
-  if (!value) {
-    throw new Error(`Missing environment variable: ${name}`);
-  }
-  return value;
-}
-
-function getSupabaseClient() {
-  const url = requireEnv('NEXT_PUBLIC_SUPABASE_URL');
-  const serviceKey = requireEnv('SUPABASE_SERVICE_ROLE_KEY');
-  return createClient(url, serviceKey, {
-    auth: { autoRefreshToken: false, persistSession: false },
-  });
-}
-
 export async function logPeskidsAuditEvent(options: AuditLogOptions): Promise<string | null> {
   try {
-    const supabase = getSupabaseClient();
+    const supabase = getServiceClient();
 
     const { data, error } = await supabase.rpc('peskids.log_audit_event', {
       p_tenant_slug: options.tenantSlug,
@@ -73,7 +57,7 @@ export async function trackFormSubmissionEvent(
   }
 ): Promise<void> {
   try {
-    const supabase = getSupabaseClient();
+    const supabase = getServiceClient();
 
     const { error } = await supabase.from('peskids.submission_events').insert({
       tenant_slug: tenantSlug,
@@ -107,7 +91,7 @@ export async function updateFormAnalytics(
   }
 ): Promise<void> {
   try {
-    const supabase = getSupabaseClient();
+    const supabase = getServiceClient();
 
     // Try to update existing record
     const { data: existing } = await supabase
