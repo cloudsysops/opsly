@@ -1,8 +1,8 @@
 import type { NextRequest } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
 import { jsonError, jsonOk } from '@/lib/api-response';
 import { HTTP_STATUS } from '@/lib/constants';
 import { runTrustedPortalDalForPathSlug, PORTAL_READ_ACCESS } from '@/lib/portal-tenant-dal';
+import { getServiceClient } from '@/lib/supabase';
 
 interface FormMetadata {
   formId: string;
@@ -20,22 +20,6 @@ interface InputFormField {
   options?: { value: string; label: string }[];
 }
 
-function requireEnv(name: string): string {
-  const value = process.env[name];
-  if (!value) {
-    throw new Error(`Missing environment variable: ${name}`);
-  }
-  return value;
-}
-
-function getSupabaseClient() {
-  const url = requireEnv('NEXT_PUBLIC_SUPABASE_URL');
-  const serviceKey = requireEnv('SUPABASE_SERVICE_ROLE_KEY');
-  return createClient(url, serviceKey, {
-    auth: { autoRefreshToken: false, persistSession: false },
-  });
-}
-
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ tenantSlug: string }> }
@@ -46,11 +30,11 @@ export async function GET(
     tenantSlug,
     async () => {
       try {
-        const supabase = getSupabaseClient();
+        const supabase = getServiceClient();
 
         // Fetch forms for this tenant
         const { data: forms, error: formsError } = await supabase
-          .from('peskids.forms')
+          .schema('peskids').from('forms')
           .select('id, form_id, title, description, status')
           .eq('tenant_slug', tenantSlug)
           .order('created_at', { ascending: false });
@@ -67,7 +51,7 @@ export async function GET(
 
         if (formIds.length > 0) {
           const { data: submissions, error: submissionsError } = await supabase
-            .from('peskids.form_submissions')
+            .schema('peskids').from('form_submissions')
             .select('form_id, completed_at')
             .eq('tenant_slug', tenantSlug)
             .in('form_id', formIds);
@@ -112,7 +96,7 @@ export async function POST(
   { params }: { params: Promise<{ tenantSlug: string }> }
 ): Promise<Response> {
   const { tenantSlug } = await params;
-  return runTrustedPortalDalForPathSlug(request, tenantSlug, async () => {
+  return runTrustedPortalDalForPathSlug(request, tenantSlug, async (session) => {
     try {
       const body = await request.json();
       const { title, description, fields, status } = body;
@@ -121,12 +105,12 @@ export async function POST(
         return jsonError('Form title is required', HTTP_STATUS.BAD_REQUEST);
       }
 
-      const supabase = getSupabaseClient();
+      const supabase = getServiceClient();
       const formId = crypto.randomUUID();
 
       // Create form
       const { data: form, error: formError } = await supabase
-        .from('peskids.forms')
+        .schema('peskids').from('forms')
         .insert({
           form_id: formId,
           tenant_slug: tenantSlug,
@@ -159,13 +143,30 @@ export async function POST(
         }));
 
         const { error: fieldsError } = await supabase
-          .from('peskids.form_fields')
+          .schema('peskids').from('form_fields')
           .insert(fieldsData);
 
         if (fieldsError) {
           console.error('Failed to create form fields:', fieldsError);
           // Continue - form was created, just fields failed
         }
+      }
+
+      // Log audit event
+      try {
+        await supabase.schema('peskids').rpc('log_audit_event', {
+          p_action: 'form_created',
+          p_actor_id: session.user.id,
+          p_tenant_slug: tenantSlug,
+          p_resource_id: formId,
+          p_resource_type: 'form',
+          p_metadata: {
+            title,
+            fields_count: fields?.length || 0,
+          },
+        });
+      } catch (auditError) {
+        console.error('Failed to log audit event:', auditError);
       }
 
       return jsonOk({

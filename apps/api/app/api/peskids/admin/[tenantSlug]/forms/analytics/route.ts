@@ -1,8 +1,8 @@
 import type { NextRequest } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
 import { jsonError, jsonOk } from '@/lib/api-response';
 import { HTTP_STATUS } from '@/lib/constants';
 import { runTrustedPortalDalForPathSlug, PORTAL_READ_ACCESS } from '@/lib/portal-tenant-dal';
+import { getServiceClient } from '@/lib/supabase';
 
 interface FormAnalytics {
   formId: string;
@@ -22,21 +22,6 @@ interface StatsResponse {
   totalErrors: number;
 }
 
-function requireEnv(name: string): string {
-  const value = process.env[name];
-  if (!value) {
-    throw new Error(`Missing environment variable: ${name}`);
-  }
-  return value;
-}
-
-function getSupabaseClient() {
-  const url = requireEnv('NEXT_PUBLIC_SUPABASE_URL');
-  const serviceKey = requireEnv('SUPABASE_SERVICE_ROLE_KEY');
-  return createClient(url, serviceKey, {
-    auth: { autoRefreshToken: false, persistSession: false },
-  });
-}
 
 export async function GET(
   request: NextRequest,
@@ -53,11 +38,11 @@ export async function GET(
           return jsonError('Missing tenant slug', HTTP_STATUS.BAD_REQUEST);
         }
 
-        const supabase = getSupabaseClient();
+        const supabase = getServiceClient();
 
         // Fetch forms for this tenant
         const { data: forms, error: formsError } = await supabase
-          .from('peskids.forms')
+          .schema('peskids').from('forms')
           .select('id, form_id, title')
           .eq('tenant_slug', tenantSlug)
           .eq('status', 'active');
@@ -80,7 +65,7 @@ export async function GET(
 
         if (formIds.length > 0) {
           const { data: analyticsData, error: analyticsError } = await supabase
-            .from('peskids.form_analytics')
+            .schema('peskids').from('form_analytics')
             .select(
               'form_id, submissions_count, unique_users, avg_completion_time_seconds, abandonment_rate, error_count'
             )
@@ -94,7 +79,7 @@ export async function GET(
 
         // Fetch latest submissions for each form
         const { data: submissions, error: submissionsError } = await supabase
-          .from('peskids.form_submissions')
+          .schema('peskids').from('form_submissions')
           .select('form_id, completed_at')
           .eq('tenant_slug', tenantSlug)
           .eq('status', 'submitted')

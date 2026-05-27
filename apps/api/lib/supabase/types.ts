@@ -171,6 +171,57 @@ export type Database = {
     Functions: Record<string, never>;
     Enums: Record<string, never>;
   };
+  peskids: {
+    Tables: {
+      forms: {
+        Row: PeskidsForm;
+        Insert: Partial<PeskidsForm>;
+        Update: Partial<PeskidsForm>;
+      };
+      form_fields: {
+        Row: PeskidsFormField;
+        Insert: Partial<PeskidsFormField>;
+        Update: Partial<PeskidsFormField>;
+      };
+      form_submissions: {
+        Row: PeskidsFormSubmission;
+        Insert: Partial<PeskidsFormSubmission>;
+        Update: Partial<PeskidsFormSubmission>;
+      };
+      webhook_configs: {
+        Row: PeskidsWebhookConfig;
+        Insert: Partial<PeskidsWebhookConfig>;
+        Update: Partial<PeskidsWebhookConfig>;
+      };
+      form_analytics: {
+        Row: PeskidsFormAnalytics;
+        Insert: Partial<PeskidsFormAnalytics>;
+        Update: Partial<PeskidsFormAnalytics>;
+      };
+      submission_events: {
+        Row: PeskidsSubmissionEvent;
+        Insert: Partial<PeskidsSubmissionEvent>;
+        Update: Partial<PeskidsSubmissionEvent>;
+      };
+    };
+    Views: Record<string, never>;
+    Functions: {
+      log_audit_event: {
+        Args: {
+          p_tenant_slug: string;
+          p_actor_id: string | null;
+          p_action: string;
+          p_resource_type: string;
+          p_resource_id: string;
+          p_metadata?: Json;
+          p_ip_address?: string | null;
+          p_user_agent?: string | null;
+        };
+        Returns: string;
+      };
+    };
+    Enums: Record<string, never>;
+  };
   public: {
     Tables: Record<string, never>;
     Views: Record<string, never>;
@@ -738,4 +789,88 @@ export type Database = {
     Functions: Record<string, never>;
     Enums: Record<string, never>;
   };
+};
+
+export type PeskidsForm = {
+  id: string;
+  form_id: string;
+  tenant_slug: string;
+  title: string;
+  description: string | null;
+  status: 'active' | 'archived';
+  settings: Json;
+  created_at: string;
+  updated_at: string;
+};
+
+export type PeskidsFormField = {
+  id: string;
+  form_id: string;
+  field_id: string;
+  field_type: string;
+  label: string;
+  placeholder: string | null;
+  required: boolean;
+  options: Json;
+  validation: Json;
+  order_index: number;
+  created_at: string;
+};
+
+export type PeskidsFormSubmission = {
+  id: string;
+  submission_id: string;
+  tenant_slug: string;
+  form_id: string;
+  user_id: string | null;
+  form_data: Json;
+  status: 'started' | 'submitted' | 'reviewed' | 'graded';
+  score: number | null;
+  feedback: string | null;
+  ip_address: string | null;
+  user_agent: string | null;
+  started_at: string;
+  completed_at: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type PeskidsWebhookConfig = {
+  id: string;
+  form_id: string;
+  tenant_slug: string;
+  webhook_url: string;
+  secret: string;
+  is_active: boolean;
+  failure_count: number;
+  last_triggered_at: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type PeskidsFormAnalytics = {
+  id: string;
+  tenant_slug: string;
+  form_id: string;
+  date: string;
+  submissions_count: number;
+  unique_users: number;
+  avg_completion_time_seconds: number | null;
+  abandonment_rate: number | null;
+  error_count: number;
+  created_at: string;
+  updated_at: string;
+};
+
+export type PeskidsSubmissionEvent = {
+  id: string;
+  tenant_slug: string;
+  form_id: string;
+  submission_id: string;
+  user_id: string | null;
+  event_type: string;
+  field_name: string | null;
+  error_message: string | null;
+  metadata: Json;
+  created_at: string;
 };
