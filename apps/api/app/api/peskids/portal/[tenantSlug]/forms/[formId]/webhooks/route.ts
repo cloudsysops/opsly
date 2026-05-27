@@ -1,9 +1,9 @@
 import type { NextRequest } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
 import { jsonError, jsonOk } from '@/lib/api-response';
 import { HTTP_STATUS } from '@/lib/constants';
 import { randomBytes } from 'crypto';
 import { runTrustedPortalDalForPathSlug, PORTAL_READ_ACCESS } from '@/lib/portal-tenant-dal';
+import { getServiceClient } from '@/lib/supabase';
 
 interface WebhookConfig {
   id: string;
@@ -18,21 +18,6 @@ interface WebhookConfig {
   updated_at: string;
 }
 
-function requireEnv(name: string): string {
-  const value = process.env[name];
-  if (!value) {
-    throw new Error(`Missing environment variable: ${name}`);
-  }
-  return value;
-}
-
-function getSupabaseClient() {
-  const url = requireEnv('NEXT_PUBLIC_SUPABASE_URL');
-  const serviceKey = requireEnv('SUPABASE_SERVICE_ROLE_KEY');
-  return createClient(url, serviceKey, {
-    auth: { autoRefreshToken: false, persistSession: false },
-  });
-}
 
 function generateSecret(): string {
   return randomBytes(32).toString('hex');
@@ -53,7 +38,7 @@ export async function GET(
           return jsonError('Missing tenant slug or form ID', HTTP_STATUS.BAD_REQUEST);
         }
 
-        const supabase = getSupabaseClient();
+        const supabase = getServiceClient();
 
         // Get webhook configs for this form
         const { data: configs, error: configError } = await supabase
@@ -89,7 +74,7 @@ export async function POST(
 ): Promise<Response> {
   const { tenantSlug, formId } = await params;
 
-  return runTrustedPortalDalForPathSlug(request, tenantSlug, async () => {
+  return runTrustedPortalDalForPathSlug(request, tenantSlug, async (session) => {
     try {
       if (!tenantSlug || !formId) {
         return jsonError('Missing tenant slug or form ID', HTTP_STATUS.BAD_REQUEST);
@@ -108,7 +93,7 @@ export async function POST(
         return jsonError('Invalid webhook_url format', HTTP_STATUS.BAD_REQUEST);
       }
 
-      const supabase = getSupabaseClient();
+      const supabase = getServiceClient();
 
       // Verify form exists and belongs to tenant
       const { data: form, error: formError } = await supabase
@@ -150,7 +135,7 @@ export async function POST(
       try {
         await supabase.rpc('log_audit_event', {
           p_action: 'form_webhook_configured',
-          p_actor_id: 'teacher',
+          p_actor_id: session.user.id,
           p_tenant_slug: tenantSlug,
           p_resource_id: formId,
           p_resource_type: 'form',
@@ -188,7 +173,7 @@ export async function DELETE(
 ): Promise<Response> {
   const { tenantSlug, formId } = await params;
 
-  return runTrustedPortalDalForPathSlug(request, tenantSlug, async () => {
+  return runTrustedPortalDalForPathSlug(request, tenantSlug, async (session) => {
     try {
       const { searchParams } = new URL(request.url);
       const webhookId = searchParams.get('webhook_id');
@@ -197,7 +182,7 @@ export async function DELETE(
         return jsonError('Missing required parameters', HTTP_STATUS.BAD_REQUEST);
       }
 
-      const supabase = getSupabaseClient();
+      const supabase = getServiceClient();
 
       // Delete webhook config
       const { error: deleteError } = await supabase
@@ -216,7 +201,7 @@ export async function DELETE(
       try {
         await supabase.rpc('log_audit_event', {
           p_action: 'form_webhook_deleted',
-          p_actor_id: 'teacher',
+          p_actor_id: session.user.id,
           p_tenant_slug: tenantSlug,
           p_resource_id: formId,
           p_resource_type: 'form',

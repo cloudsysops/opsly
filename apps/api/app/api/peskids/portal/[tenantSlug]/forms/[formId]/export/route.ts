@@ -1,7 +1,7 @@
 import type { NextRequest } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
 import { HTTP_STATUS } from '@/lib/constants';
 import { runTrustedPortalDalForPathSlug, PORTAL_READ_ACCESS } from '@/lib/portal-tenant-dal';
+import { getServiceClient } from '@/lib/supabase';
 
 interface FormSubmission {
   submission_id: string;
@@ -12,21 +12,6 @@ interface FormSubmission {
   feedback: string | null;
 }
 
-function requireEnv(name: string): string {
-  const value = process.env[name];
-  if (!value) {
-    throw new Error(`Missing environment variable: ${name}`);
-  }
-  return value;
-}
-
-function getSupabaseClient() {
-  const url = requireEnv('NEXT_PUBLIC_SUPABASE_URL');
-  const serviceKey = requireEnv('SUPABASE_SERVICE_ROLE_KEY');
-  return createClient(url, serviceKey, {
-    auth: { autoRefreshToken: false, persistSession: false },
-  });
-}
 
 function convertToCSV(submissions: FormSubmission[]): string {
   if (!submissions || submissions.length === 0) {
@@ -94,7 +79,7 @@ export async function GET(
   return runTrustedPortalDalForPathSlug(
     request,
     tenantSlug,
-    async () => {
+    async (session) => {
       try {
         const { searchParams } = new URL(request.url);
         const format = searchParams.get('format') || 'csv';
@@ -111,7 +96,7 @@ export async function GET(
           });
         }
 
-        const supabase = getSupabaseClient();
+        const supabase = getServiceClient();
 
         // Verify form exists
         const { data: form, error: formError } = await supabase
@@ -158,7 +143,7 @@ export async function GET(
         try {
           await supabase.rpc('log_audit_event', {
             p_action: 'form_submissions_exported',
-            p_actor_id: 'teacher',
+            p_actor_id: session.user.id,
             p_tenant_slug: tenantSlug,
             p_resource_id: formId,
             p_resource_type: 'form',

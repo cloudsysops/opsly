@@ -1,24 +1,8 @@
 import type { NextRequest } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
 import { jsonError, jsonOk } from '@/lib/api-response';
 import { HTTP_STATUS } from '@/lib/constants';
 import { runTrustedPortalDalForPathSlug } from '@/lib/portal-tenant-dal';
-
-function requireEnv(name: string): string {
-  const value = process.env[name];
-  if (!value) {
-    throw new Error(`Missing environment variable: ${name}`);
-  }
-  return value;
-}
-
-function getSupabaseClient() {
-  const url = requireEnv('NEXT_PUBLIC_SUPABASE_URL');
-  const serviceKey = requireEnv('SUPABASE_SERVICE_ROLE_KEY');
-  return createClient(url, serviceKey, {
-    auth: { autoRefreshToken: false, persistSession: false },
-  });
-}
+import { getServiceClient } from '@/lib/supabase';
 
 interface BulkGradeRequest {
   submissionIds: string[];
@@ -32,7 +16,7 @@ export async function POST(
 ): Promise<Response> {
   const { tenantSlug } = await params;
 
-  return runTrustedPortalDalForPathSlug(request, tenantSlug, async () => {
+  return runTrustedPortalDalForPathSlug(request, tenantSlug, async (session) => {
     try {
       if (!tenantSlug) {
         return jsonError('Missing tenant slug', HTTP_STATUS.BAD_REQUEST);
@@ -60,7 +44,7 @@ export async function POST(
         return jsonError('Score must be a number between 0 and 100', HTTP_STATUS.BAD_REQUEST);
       }
 
-      const supabase = getSupabaseClient();
+      const supabase = getServiceClient();
 
       // Update submissions
       const { data: updated, error: updateError } = await supabase
@@ -84,7 +68,7 @@ export async function POST(
       try {
         await supabase.rpc('log_audit_event', {
           p_action: 'form_submissions_bulk_graded',
-          p_actor_id: 'teacher', // Would be actual user ID in real app
+          p_actor_id: session.user.id,
           p_tenant_slug: tenantSlug,
           p_resource_id: 'bulk',
           p_resource_type: 'form_submission',

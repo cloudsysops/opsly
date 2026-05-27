@@ -1,8 +1,8 @@
 import type { NextRequest } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
 import { jsonError, jsonOk } from '@/lib/api-response';
 import { HTTP_STATUS } from '@/lib/constants';
 import { runTrustedPortalDalForPathSlug, PORTAL_READ_ACCESS } from '@/lib/portal-tenant-dal';
+import { getServiceClient } from '@/lib/supabase';
 
 interface StudentSubmission {
   submissionId: string;
@@ -14,21 +14,6 @@ interface StudentSubmission {
   feedbackProvided: boolean;
 }
 
-function requireEnv(name: string): string {
-  const value = process.env[name];
-  if (!value) {
-    throw new Error(`Missing environment variable: ${name}`);
-  }
-  return value;
-}
-
-function getSupabaseClient() {
-  const url = requireEnv('NEXT_PUBLIC_SUPABASE_URL');
-  const serviceKey = requireEnv('SUPABASE_SERVICE_ROLE_KEY');
-  return createClient(url, serviceKey, {
-    auth: { autoRefreshToken: false, persistSession: false },
-  });
-}
 
 function mapStatusToSubmissionStatus(
   status: string,
@@ -57,7 +42,7 @@ export async function GET(
           return jsonError('Missing tenant slug', HTTP_STATUS.BAD_REQUEST);
         }
 
-        const supabase = getSupabaseClient();
+        const supabase = getServiceClient();
 
         // Build query for submissions
         let query = supabase
