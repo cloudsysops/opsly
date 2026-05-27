@@ -1,8 +1,11 @@
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
+import { getRedisClient } from './cache.js';
 import { platformSchema } from './supabase-helpers.js';
 import type { LLMRequest, UsageEvent } from './types.js';
 
 let supabaseClient: ReturnType<typeof createSupabaseClient> | null = null;
+
+const USAGE_CACHE_TTL = 60; // 1 minute
 
 function getSupabaseClient(): ReturnType<typeof createSupabaseClient> | null {
   if (supabaseClient) {
@@ -62,6 +65,17 @@ export async function getTenantUsage(
   cache_hits: number;
   top_model: string | null;
 }> {
+  const cacheKey = `usage:tenant:${tenantSlug}:${period}`;
+  try {
+    const redis = await getRedisClient();
+    const cached = await redis.get(cacheKey);
+    if (cached) {
+      return JSON.parse(cached);
+    }
+  } catch (e) {
+    console.warn('[llm-gateway] Redis cache get failed:', e);
+  }
+
   const supabase = getSupabaseClient();
   if (!supabase) {
     return {
@@ -103,7 +117,7 @@ export async function getTenantUsage(
     }
   }
 
-  return {
+  const result = {
     tokens_input: rows.reduce((sum, row) => sum + row.tokens_input, 0),
     tokens_output: rows.reduce((sum, row) => sum + row.tokens_output, 0),
     cost_usd: rows.reduce((sum, row) => sum + row.cost_usd, 0),
@@ -111,6 +125,15 @@ export async function getTenantUsage(
     cache_hits: rows.filter((row) => row.cache_hit).length,
     top_model,
   };
+
+  try {
+    const redis = await getRedisClient();
+    await redis.setEx(cacheKey, USAGE_CACHE_TTL, JSON.stringify(result));
+  } catch (e) {
+    console.warn('[llm-gateway] Redis cache set failed:', e);
+  }
+
+  return result;
 }
 
 /**
@@ -124,6 +147,17 @@ export async function getPlatformLlmUsage(period: 'today' | 'month' = 'today'): 
   cache_hits: number;
   top_model: string | null;
 }> {
+  const cacheKey = `usage:platform:${period}`;
+  try {
+    const redis = await getRedisClient();
+    const cached = await redis.get(cacheKey);
+    if (cached) {
+      return JSON.parse(cached);
+    }
+  } catch (e) {
+    console.warn('[llm-gateway] Redis cache get failed:', e);
+  }
+
   const supabase = getSupabaseClient();
   if (!supabase) {
     return {
@@ -163,7 +197,7 @@ export async function getPlatformLlmUsage(period: 'today' | 'month' = 'today'): 
     }
   }
 
-  return {
+  const result = {
     tokens_input: rows.reduce((sum, row) => sum + row.tokens_input, 0),
     tokens_output: rows.reduce((sum, row) => sum + row.tokens_output, 0),
     cost_usd: rows.reduce((sum, row) => sum + row.cost_usd, 0),
@@ -171,4 +205,13 @@ export async function getPlatformLlmUsage(period: 'today' | 'month' = 'today'): 
     cache_hits: rows.filter((row) => row.cache_hit).length,
     top_model,
   };
+
+  try {
+    const redis = await getRedisClient();
+    await redis.setEx(cacheKey, USAGE_CACHE_TTL, JSON.stringify(result));
+  } catch (e) {
+    console.warn('[llm-gateway] Redis cache set failed:', e);
+  }
+
+  return result;
 }
