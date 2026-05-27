@@ -28,14 +28,14 @@ async function logAuditEvent(
   metadata: Record<string, unknown>,
   ipAddress?: string
 ): Promise<void> {
-  const { error } = await supabase.rpc('peskids.log_audit_event', {
+  const { error } = await supabase.schema('peskids').rpc('log_audit_event', {
     p_tenant_slug: tenantSlug,
     p_actor_id: null,
     p_action: action,
     p_resource_type: 'form_submission',
     p_resource_id: resourceId,
     p_metadata: metadata,
-    p_ip_address: ipAddress,
+    p_ip_address: ipAddress || null,
     p_user_agent: null,
   });
 
@@ -120,7 +120,8 @@ export async function POST(request: NextRequest): Promise<Response> {
 
     // Fetch webhook config for this form
     const { data: webhookConfig, error: fetchError } = await supabase
-      .from('peskids.webhook_configs')
+      .schema('peskids')
+      .from('webhook_configs')
       .select('id, secret')
       .eq('tenant_slug', tenant_slug)
       .eq('form_id', form_id)
@@ -174,17 +175,20 @@ export async function POST(request: NextRequest): Promise<Response> {
     );
 
     // Store submission event
-    const { error: eventError } = await supabase.from('peskids.submission_events').insert({
-      tenant_slug,
-      form_id,
-      submission_id: submission_id as string,
-      user_id: payload.user_id || null,
-      event_type: 'completed',
-      metadata: {
-        webhook_triggered: true,
-        timestamp: payload.timestamp,
-      },
-    });
+    const { error: eventError } = await supabase
+      .schema('peskids')
+      .from('submission_events')
+      .insert({
+        tenant_slug,
+        form_id,
+        submission_id: submission_id as string,
+        user_id: payload.user_id || null,
+        event_type: 'completed',
+        metadata: {
+          webhook_triggered: true,
+          timestamp: payload.timestamp,
+        },
+      });
 
     if (eventError) {
       console.error('Failed to store submission event:', eventError);
@@ -192,7 +196,8 @@ export async function POST(request: NextRequest): Promise<Response> {
 
     // Update webhook last_triggered_at
     await supabase
-      .from('peskids.webhook_configs')
+      .schema('peskids')
+      .from('webhook_configs')
       .update({
         last_triggered_at: new Date().toISOString(),
         failure_count: 0,

@@ -48,7 +48,8 @@ export async function GET(
 
     // Get form
     const { data: form, error: formError } = await supabase
-      .schema('peskids').from('forms')
+      .schema('peskids')
+      .from('forms')
       .select('id, form_id, tenant_slug, title, description, status, created_at, updated_at')
       .eq('form_id', formId)
       .single();
@@ -59,7 +60,8 @@ export async function GET(
 
     // Get form fields
     const { data: fields, error: fieldsError } = await supabase
-      .schema('peskids').from('form_fields')
+      .schema('peskids')
+      .from('form_fields')
       .select('field_id, field_type, label, required, options, order')
       .eq('form_id', formId)
       .order('order', { ascending: true });

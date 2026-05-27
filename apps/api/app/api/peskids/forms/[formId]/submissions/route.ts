@@ -33,7 +33,8 @@ export async function POST(
 
     // Get form to find tenant_slug
     const { data: form, error: formError } = await supabase
-      .schema('peskids').from('forms')
+      .schema('peskids')
+      .from('forms')
       .select('id, form_id, tenant_slug')
       .eq('form_id', formId)
       .single();
@@ -46,7 +47,8 @@ export async function POST(
 
     // Create submission
     const { data: submission, error: submissionError } = await supabase
-      .schema('peskids').from('form_submissions')
+      .schema('peskids')
+      .from('form_submissions')
       .insert({
         submission_id: submissionId,
         form_id: formId,
@@ -70,7 +72,8 @@ export async function POST(
     let webhookResults: WebhookTriggerResult | null = null;
     try {
       const { data: webhooks } = await supabase
-        .schema('peskids').from('webhook_configs')
+        .schema('peskids')
+        .from('webhook_configs')
         .select('id, webhook_url, secret, is_active, failure_count')
         .eq('form_id', formId)
         .eq('tenant_slug', form.tenant_slug)
