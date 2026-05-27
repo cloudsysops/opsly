@@ -193,6 +193,16 @@ export type Database = {
         Insert: Partial<PeskidsWebhookConfig>;
         Update: Partial<PeskidsWebhookConfig>;
       };
+      form_analytics: {
+        Row: PeskidsFormAnalytics;
+        Insert: Partial<PeskidsFormAnalytics>;
+        Update: Partial<PeskidsFormAnalytics>;
+      };
+      submission_events: {
+        Row: PeskidsSubmissionEvent;
+        Insert: Partial<PeskidsSubmissionEvent>;
+        Update: Partial<PeskidsSubmissionEvent>;
+      };
     };
     Views: Record<string, never>;
     Functions: {
@@ -836,4 +846,31 @@ export type PeskidsWebhookConfig = {
   last_triggered_at: string | null;
   created_at: string;
   updated_at: string;
+};
+
+export type PeskidsFormAnalytics = {
+  id: string;
+  tenant_slug: string;
+  form_id: string;
+  date: string;
+  submissions_count: number;
+  unique_users: number;
+  avg_completion_time_seconds: number | null;
+  abandonment_rate: number | null;
+  error_count: number;
+  created_at: string;
+  updated_at: string;
+};
+
+export type PeskidsSubmissionEvent = {
+  id: string;
+  tenant_slug: string;
+  form_id: string;
+  submission_id: string;
+  user_id: string | null;
+  event_type: string;
+  field_name: string | null;
+  error_message: string | null;
+  metadata: Json;
+  created_at: string;
 };
