@@ -28,8 +28,14 @@ jobs:
       - name: Generate code snapshots
         run: npm run docs:code-snapshots
       - name: Push docs to NotebookLM
+        continue-on-error: true
         env:
           NOTEBOOKLM_ENABLED: ${{ secrets.NOTEBOOKLM_ENABLED }}
           NOTEBOOKLM_NOTEBOOK_ID: ${{ secrets.NOTEBOOKLM_NOTEBOOK_ID }}
           NOTEBOOKLM_DEFAULT_TENANT_SLUG: ${{ vars.NOTEBOOKLM_DEFAULT_TENANT_SLUG }}
-        run: npm run docs:to-notebooklm
+        run: |
+          if [ ! -f apps/notebooklm-agent/dist/client.py ]; then
+            echo "Skipping NotebookLM sync: apps/notebooklm-agent/dist/client.py is missing"
+            exit 0
+          fi
+          npm run docs:to-notebooklm
