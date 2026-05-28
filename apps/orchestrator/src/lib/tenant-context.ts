@@ -16,11 +16,8 @@ function getTenantSupabase(): SupabaseClient | null {
   }
   tenantSupabase = createClient(url, key, {
     auth: { persistSession: false },
-    global: {
-      fetch: (...args) => fetch(...args),
-    },
     realtime: {
-      transport: ws,
+      transport: ws as any,
     },
   });
   return tenantSupabase;

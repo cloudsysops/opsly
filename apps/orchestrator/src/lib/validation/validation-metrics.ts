@@ -61,11 +61,8 @@ export class ValidationMetricsStore {
     } else {
       this.supabase = createClient(url, key, {
         auth: { persistSession: false },
-        global: {
-          fetch: (...args) => fetch(...args),
-        },
         realtime: {
-          transport: ws,
+          transport: ws as any,
         },
       });
     }
