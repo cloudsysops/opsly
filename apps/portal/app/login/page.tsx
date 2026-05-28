@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
+import { Input, PasswordInput } from '@/components/ui/input';
 import {
   isValidPortalDemoLogin,
   PORTAL_DEMO_COOKIE,
@@ -239,7 +240,7 @@ export default function LoginPage(): ReactElement {
             >
               Email
             </label>
-            <input
+            <Input
               id="email"
               name="email"
               type="email"
@@ -247,7 +248,7 @@ export default function LoginPage(): ReactElement {
               required
               value={email}
               onChange={(ev) => setEmail(ev.target.value)}
-              className="input-terminal-caret w-full rounded-sm border border-ops-border bg-ops-bg/80 px-3 py-2.5 text-sm text-neutral-100 outline-none transition-colors focus:border-ops-green focus:ring-2 focus:ring-ops-green/30"
+              className="input-terminal-caret bg-ops-bg/80 focus:border-ops-green"
             />
           </div>
           <div>
@@ -257,15 +258,14 @@ export default function LoginPage(): ReactElement {
             >
               Contraseña
             </label>
-            <input
+            <PasswordInput
               id="password"
               name="password"
-              type="password"
               autoComplete="current-password"
               required
               value={password}
               onChange={(ev) => setPassword(ev.target.value)}
-              className="input-terminal-caret w-full rounded-sm border border-ops-border bg-ops-bg/80 px-3 py-2.5 text-sm text-neutral-100 outline-none transition-colors focus:border-ops-green focus:ring-2 focus:ring-ops-green/30"
+              className="input-terminal-caret bg-ops-bg/80 focus:border-ops-green"
             />
             <div className="mt-2 flex justify-end">
               <button
