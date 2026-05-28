@@ -92,10 +92,16 @@ export function GET(request: Request): Promise<Response> {
       return Response.json({ status: 'not_found' as const });
     }
 
+    const rawServices = (tenant.services as Record<string, unknown>) || {};
+    const sanitizedServices = {
+      n8n: rawServices.n8n,
+      uptime: rawServices.uptime || rawServices.uptime_kuma,
+    };
+
     return Response.json({
       status: tenant.status,
       progress: tenant.progress,
-      services: tenant.services as Json,
+      services: sanitizedServices,
     });
   });
 }

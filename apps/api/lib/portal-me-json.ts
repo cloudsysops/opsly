@@ -18,6 +18,13 @@ export async function respondTrustedPortalMe(session: TrustedPortalSession): Pro
   ]);
   const mode = parsePortalMode(user.user_metadata);
 
+  // Explicitly allow-list fields from services sent to the portal.
+  // We NEVER return credentials (n8n_user, n8n_password) to the browser.
+  const sanitizedSvc = {
+    n8n_url: svc.n8n_url,
+    uptime_url: svc.uptime_url,
+  };
+
   return Response.json({
     tenant_id: lookup.id,
     slug: lookup.slug,
@@ -27,7 +34,7 @@ export async function respondTrustedPortalMe(session: TrustedPortalSession): Pro
     mode,
     role: session.membership.role,
     created_at: lookup.created_at,
-    services: svc,
+    services: sanitizedSvc,
     health: { n8n_reachable, uptime_reachable },
   });
 }
