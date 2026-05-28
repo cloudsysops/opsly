@@ -47,6 +47,8 @@
     "opsly:tailscale:routes": "python3 scripts/opsly_tailscale_cli.py routes",
     "opsly:tailscale:ping": "python3 scripts/opsly_tailscale_cli.py ping-vps",
     "opsly:tailscale:hook-once": "python3 scripts/opsly_tailscale_cli.py agent-stop-hook",
+    "opsly:vps:housekeeping": "bash scripts/vps-docker-housekeeping.sh",
+    "opsly:vps:housekeeping:dry-run": "bash scripts/vps-docker-housekeeping.sh --dry-run --auto",
     "opsly:drive:ensure-layout": "python3 scripts/opsly_drive_automation.py ensure-layout",
     "opsly:drive:upload-tenant-onboarding": "python3 scripts/opsly_drive_automation.py upload-tenant-pack",
     "opsly:chat": "python3 tools/cli/main.py chat",

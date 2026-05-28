@@ -1,0 +1,146 @@
+{
+  "id": "peskids-hot-lead-alert",
+  "name": "Peskids - Hot Lead Alert",
+  "active": true,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 5
+            }
+          ]
+        }
+      },
+      "id": "schedule-trigger",
+      "name": "Every 5 Minutes",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [0, 0]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $env.SUPABASE_URL }}/rest/v1/leads",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "apikey", "value": "={{ $env.SUPABASE_SERVICE_ROLE_KEY }}" },
+            { "name": "Authorization", "value": "=Bearer {{ $env.SUPABASE_SERVICE_ROLE_KEY }}" }
+          ]
+        },
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            { "name": "tenant_id", "value": "eq.peskids" },
+            { "name": "status", "value": "eq.new" },
+            { "name": "created_at", "value": "=gte.{{ new Date(Date.now() - 6 * 60 * 1000).toISOString() }}" },
+            { "name": "select", "value": "id,name,email,phone,class_modality,neighborhood,grade_interested,referral_source,created_at" },
+            { "name": "order", "value": "created_at.desc" }
+          ]
+        },
+        "options": {}
+      },
+      "id": "query-new-leads",
+      "name": "Query New Leads",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [260, 0]
+    },
+    {
+      "parameters": {
+        "jsCode": "const leads = $input.all();\nif (!leads || leads.length === 0 || !leads[0].json || !Array.isArray(leads[0].json) || leads[0].json.length === 0) {\n  return [];\n}\nreturn leads[0].json.map(lead => ({ json: lead }));"
+      },
+      "id": "check-leads",
+      "name": "Extract Leads",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [520, 0]
+    },
+    {
+      "parameters": {
+        "jsCode": "const lead = $json;\nconst modality = lead.class_modality ? `📍 Modalidad: ${lead.class_modality}` : '';\nconst neighborhood = lead.neighborhood ? `\\n🏘️ Barrio: ${lead.neighborhood}` : '';\nconst grade = lead.grade_interested ? `\\n📚 Grado: ${lead.grade_interested}` : '';\nconst referral = lead.referral_source ? `\\n🔗 Fuente: ${lead.referral_source}` : '';\nconst time = new Date(lead.created_at).toLocaleString('es-CO', { timeZone: 'America/Bogota' });\n\nreturn [{\n  json: {\n    lead_id: lead.id,\n    discord_message: {\n      embeds: [{\n        title: `🔥 Nuevo Lead Peskids: ${lead.name}`,\n        color: 16711680,\n        fields: [\n          { name: '📧 Email', value: lead.email || 'N/A', inline: true },\n          { name: '📞 Teléfono', value: lead.phone || 'N/A', inline: true },\n          { name: modality || '📍 Modalidad', value: lead.class_modality || 'N/A', inline: true },\n          { name: '🏘️ Barrio', value: lead.neighborhood || 'N/A', inline: true },\n          { name: '📚 Grado', value: lead.grade_interested || 'N/A', inline: true },\n          { name: '🔗 Fuente', value: lead.referral_source || 'web', inline: true }\n        ],\n        footer: { text: `⏰ ${time} (Bogotá)` }\n      }]\n    }\n  }\n}];"
+      },
+      "id": "format-alert",
+      "name": "Format Alert",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [780, 0]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.OPSLY_CRM_NOTIFY_WEBHOOK_URL }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Content-Type", "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.discord_message) }}",
+        "options": {}
+      },
+      "id": "discord-notify",
+      "name": "Discord Notification",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1040, 0]
+    }
+  ],
+  "connections": {
+    "Every 5 Minutes": {
+      "main": [
+        [
+          {
+            "node": "Query New Leads",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Query New Leads": {
+      "main": [
+        [
+          {
+            "node": "Extract Leads",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Leads": {
+      "main": [
+        [
+          {
+            "node": "Format Alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Alert": {
+      "main": [
+        [
+          {
+            "node": "Discord Notification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {
+    "instanceId": "peskids"
+  }
+}

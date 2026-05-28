@@ -31,7 +31,11 @@ fi
 mkdir -p "${OPS_ROOT}/logs"
 chmod 755 "${OPS_ROOT}/logs"
 
-chmod 755 "${OPS_ROOT}/scripts/vps-cleanup-robust.sh" "${OPS_ROOT}/scripts/disk-alert.sh"
+chmod 755 \
+  "${OPS_ROOT}/scripts/vps-cleanup-robust.sh" \
+  "${OPS_ROOT}/scripts/vps-docker-housekeeping.sh" \
+  "${OPS_ROOT}/scripts/disk-alert.sh"
+chmod 755 "${OPS_ROOT}/scripts/ops/vps_docker_housekeeping.py" 2>/dev/null || true
 
 cp "${OPS_ROOT}/infra/cron/opsly-cleanup" /etc/cron.d/opsly-cleanup
 chmod 644 /etc/cron.d/opsly-cleanup

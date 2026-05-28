@@ -64,9 +64,15 @@ export class AgentTrainer {
       console.warn('[AgentTrainer] Supabase credentials not configured, patterns disabled');
       this.supabase = null;
     } else {
-      this.supabase = createClient(url, key, {
-        auth: { persistSession: false },
-      });
+      try {
+        this.supabase = createClient(url, key, {
+          auth: { persistSession: false },
+        });
+      } catch (err) {
+        // In Node.js 20 CI, realtime websocket bootstrap can throw at client creation time.
+        console.warn('[AgentTrainer] Supabase client unavailable, patterns disabled:', err);
+        this.supabase = null;
+      }
     }
 
     this.startCleanupSchedule();
