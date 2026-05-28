@@ -11,9 +11,19 @@
     "type-check": "tsc --noEmit",
     "test": "vitest run",
     "bi:snapshot": "python3 analytics/peskids_bi.py",
-    "vapid:generate": "node scripts/generate-vapid-keys.mjs"
+    "vapid:generate": "node scripts/generate-vapid-keys.mjs",
+    "cap:sync": "npx cap sync",
+    "cap:ios": "npx cap sync && npx cap open ios",
+    "cap:android": "npx cap sync && npx cap open android",
+    "cap:build": "next build && npx cap sync"
   },
   "dependencies": {
+    "@capacitor/android": "^8.3.4",
+    "@capacitor/app": "^8.1.0",
+    "@capacitor/cli": "^8.3.4",
+    "@capacitor/core": "^8.3.4",
+    "@capacitor/ios": "^8.3.4",
+    "@capacitor/push-notifications": "^8.1.1",
     "@supabase/auth-helpers-nextjs": "^0.8.7",
     "@supabase/ssr": "^0.6.1",
     "@supabase/supabase-js": "^2.106.0",

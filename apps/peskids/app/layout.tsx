@@ -5,6 +5,7 @@ import { AuthSessionRedirect } from '@/components/auth/auth-session-redirect';
 import { PeskidsClientShell } from '@/components/chat/peskids-client-shell';
 import { CookieBanner } from '@/components/legal/cookie-banner';
 import { SwRegister } from '@/components/pwa/sw-register';
+import { NativePushRegister } from '@/components/pwa/native-push-register';
 import './globals.css';
 
 const fontNunito = Nunito({
@@ -48,6 +49,7 @@ export default function RootLayout({
         <PeskidsClientShell>{children}</PeskidsClientShell>
         <CookieBanner />
         <SwRegister />
+        <NativePushRegister />
       </body>
     </html>
   );
