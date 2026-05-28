@@ -1,4 +1,5 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
+import ws from 'ws';
 
 export interface ValidationMetric {
   job_id: string;
@@ -60,6 +61,12 @@ export class ValidationMetricsStore {
     } else {
       this.supabase = createClient(url, key, {
         auth: { persistSession: false },
+        global: {
+          fetch: (...args) => fetch(...args),
+        },
+        realtime: {
+          transport: ws,
+        },
       });
     }
   }

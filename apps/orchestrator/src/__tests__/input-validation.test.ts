@@ -16,7 +16,7 @@ describe('Input Validation Tests', () => {
     });
 
     afterEach(() => {
-      trainer.destroy();
+      trainer?.destroy();
       delete process.env.NEXT_PUBLIC_SUPABASE_URL;
       delete process.env.SUPABASE_SERVICE_ROLE_KEY;
     });
@@ -242,7 +242,7 @@ describe('Input Validation Tests', () => {
     });
 
     afterEach(() => {
-      orchestrator.destroy();
+      orchestrator?.destroy();
     });
 
     it('handles empty goal string', async () => {

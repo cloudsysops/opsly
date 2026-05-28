@@ -1,5 +1,6 @@
 import { AsyncLocalStorage } from 'node:async_hooks';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
+import ws from 'ws';
 import type { OrchestratorJob } from '../types.js';
 import type { TenantPlan } from '../decision-engine.js';
 
@@ -15,6 +16,12 @@ function getTenantSupabase(): SupabaseClient | null {
   }
   tenantSupabase = createClient(url, key, {
     auth: { persistSession: false },
+    global: {
+      fetch: (...args) => fetch(...args),
+    },
+    realtime: {
+      transport: ws,
+    },
   });
   return tenantSupabase;
 }

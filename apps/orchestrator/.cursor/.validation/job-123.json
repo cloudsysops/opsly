@@ -5,7 +5,7 @@
     "reason": "Max iterations (3) reached. Final errors: type-check: ENOENT: no such file or directory, open '/tmp/response.md'",
     "metadata": {
       "iterationCount": 5,
-      "validationTime": 0,
+      "validationTime": 1,
       "failedChecks": [
         "type-check"
       ]
@@ -13,7 +13,7 @@
   },
   "validationReport": {
     "job_id": "job-123",
-    "timestamp": "2026-05-27T03:05:31.244Z",
+    "timestamp": "2026-05-28T02:32:43.284Z",
     "attempt": 5,
     "validations": [
       {
@@ -25,7 +25,7 @@
     "overall_status": "failed",
     "can_retry": false,
     "next_action": "escalate",
-    "total_duration_ms": 0,
+    "total_duration_ms": 1,
     "errors": [
       {
         "type": "type-check",
@@ -33,5 +33,5 @@
       }
     ]
   },
-  "timestamp": "2026-05-27T03:05:31.244Z"
+  "timestamp": "2026-05-28T02:32:43.284Z"
 }

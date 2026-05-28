@@ -1,5 +1,6 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import crypto from 'crypto';
+import ws from 'ws';
 
 const DEFAULT_VALIDATION_CHECKS = ['type-check', 'test', 'build'];
 const DEFAULT_PATTERN_LIMIT = 100;
@@ -66,6 +67,12 @@ export class AgentTrainer {
     } else {
       this.supabase = createClient(url, key, {
         auth: { persistSession: false },
+        global: {
+          fetch: (...args) => fetch(...args),
+        },
+        realtime: {
+          transport: ws,
+        },
       });
     }
 
